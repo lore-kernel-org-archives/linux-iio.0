@@ -1,204 +1,341 @@
-Return-Path: <knaack.h@gmx.de>
-Message-ID: <540642CA.9080007@gmx.de>
-Date: Wed, 03 Sep 2014 00:20:58 +0200
-From: Hartmut Knaack <knaack.h@gmx.de>
-MIME-Version: 1.0
-To: =?ISO-8859-1?Q?Heiko_St=FCbner?= <heiko@sntech.de>,
- Jonathan Cameron <jic23@kernel.org>
-CC: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
- linux-iio@vger.kernel.org, linux-rockchip@lists.infradead.org,
- devicetree@vger.kernel.org
-Subject: Re: [PATCH] iio: adc: rockchip_saradc: add support for rk3066-tsadc
- variant
-References: <1999284.oRCTeZRSv1@diego>
-In-Reply-To: <1999284.oRCTeZRSv1@diego>
-Content-Type: text/plain; charset=ISO-8859-1
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mga11.intel.com ([192.55.52.93]:11306 "EHLO mga11.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1755218AbaIHWYs (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Mon, 8 Sep 2014 18:24:48 -0400
+From: Jacob Pan <jacob.jun.pan@linux.intel.com>
+To: IIO <linux-iio@vger.kernel.org>,
+	LKML <linux-kernel@vger.kernel.org>,
+	DEVICE TREE <devicetree@vger.kernel.org>,
+	Lee Jones <lee.jones@linaro.org>
+Cc: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+	Aaron Lu <aaron.lu@intel.com>, Alan Cox <alan@linux.intel.com>,
+	Jean Delvare <khali@linux-fr.org>,
+	Samuel Ortiz <sameo@linux.intel.com>,
+	Liam Girdwood <lgirdwood@gmail.com>,
+	Mark Brown <broonie@kernel.org>,
+	Grant Likely <grant.likely@linaro.org>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Rob Herring <robh+dt@kernel.org>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Fugang Duan <B38611@freescale.com>,
+	Arnd Bergmann <arnd@arndb.de>,
+	Zubair Lutfullah <zubair.lutfullah@gmail.com>,
+	Sebastian Reichel <sre@debian.org>,
+	Johannes Thumshirn <johannes.thumshirn@men.de>,
+	Philippe Reynes <tremyfr@yahoo.fr>,
+	Angelo Compagnucci <angelo.compagnucci@gmail.com>,
+	Doug Anderson <dianders@chromium.org>,
+	Jacob Pan <jacob.jun.pan@linux.intel.com>
+Subject: [PATCH 4/4] iio/adc/axp288: add support for axp288 gpadc
+Date: Mon,  8 Sep 2014 15:24:06 -0700
+Message-Id: <1410215046-31751-5-git-send-email-jacob.jun.pan@linux.intel.com>
+In-Reply-To: <1410215046-31751-1-git-send-email-jacob.jun.pan@linux.intel.com>
+References: <1410215046-31751-1-git-send-email-jacob.jun.pan@linux.intel.com>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Heiko Stübner schrieb:
-> Older Rockchip SoCs, at least the rk3066, used a slightly modified saradc
-> for temperature measurements. This so called tsadc does not contain any
-> active parts like temperature interrupts and only supports polling the
-> current temperature. The returned voltage can then be converted by a
-> suitable thermal driver to and actual temperature and used for thermal
-> handling.
->
-> Signed-off-by: Heiko Stuebner <heiko@sntech.de>
-> ---
-Looks mostly good to me, just some minor style issues inline.
-> This is a different IP than the rk3288-tsadc Ceasar provided a driver for.
-> As the commit messages states, the one used on the rk3066 is just a saradc,
-> while the new tsadc in the rk3288 contains active components for thermal
-> handling.
->
-> A working example using the pending iio-thermal driver can found on
-> https://github.com/mmind/linux-rockchip/commit/c07e02f069d9677d489f254176619fae36f2aad0
->
->  .../bindings/iio/adc/rockchip-saradc.txt           |  2 +-
->  drivers/iio/adc/rockchip_saradc.c                  | 62 +++++++++++++++++-----
->  2 files changed, 50 insertions(+), 14 deletions(-)
->
-> diff --git a/Documentation/devicetree/bindings/iio/adc/rockchip-saradc.txt b/Documentation/devicetree/bindings/iio/adc/rockchip-saradc.txt
-> index 5d3ec1d..a9a5fe1 100644
-> --- a/Documentation/devicetree/bindings/iio/adc/rockchip-saradc.txt
-> +++ b/Documentation/devicetree/bindings/iio/adc/rockchip-saradc.txt
-> @@ -1,7 +1,7 @@
->  Rockchip Successive Approximation Register (SAR) A/D Converter bindings
->  
->  Required properties:
-> -- compatible: Should be "rockchip,saradc"
-> +- compatible: Should be "rockchip,saradc" or "rockchip,rk3066-tsadc"
->  - reg: physical base address of the controller and length of memory mapped
->         region.
->  - interrupts: The interrupt number to the cpu. The interrupt specifier format
-> diff --git a/drivers/iio/adc/rockchip_saradc.c b/drivers/iio/adc/rockchip_saradc.c
-> index e074a0b..7effada 100644
-> --- a/drivers/iio/adc/rockchip_saradc.c
-> +++ b/drivers/iio/adc/rockchip_saradc.c
-> @@ -18,13 +18,13 @@
->  #include <linux/interrupt.h>
->  #include <linux/io.h>
->  #include <linux/of.h>
-> +#include <linux/of_device.h>
->  #include <linux/clk.h>
->  #include <linux/completion.h>
->  #include <linux/regulator/consumer.h>
->  #include <linux/iio/iio.h>
->  
->  #define SARADC_DATA			0x00
-> -#define SARADC_DATA_MASK		0x3ff
->  
->  #define SARADC_STAS			0x04
->  #define SARADC_STAS_BUSY		BIT(0)
-> @@ -38,15 +38,22 @@
->  #define SARADC_DLY_PU_SOC		0x0c
->  #define SARADC_DLY_PU_SOC_MASK		0x3f
->  
-> -#define SARADC_BITS			10
->  #define SARADC_TIMEOUT			msecs_to_jiffies(100)
->  
-> +struct rockchip_saradc_data {
-> +	int				num_bits;
-> +	const struct iio_chan_spec	*channels;
-> +	int				num_channels;
-> +	unsigned long			clk_rate;
-> +};
-> +
->  struct rockchip_saradc {
->  	void __iomem		*regs;
->  	struct clk		*pclk;
->  	struct clk		*clk;
->  	struct completion	completion;
->  	struct regulator	*vref;
-> +	const struct rockchip_saradc_data *data;
->  	u16			last_val;
->  };
-The alignment of the whole block should be adjusted to fit with the new element.
->  
-> @@ -90,7 +97,7 @@ static int rockchip_saradc_read_raw(struct iio_dev *indio_dev,
->  		}
->  
->  		*val = ret / 1000;
-> -		*val2 = SARADC_BITS;
-> +		*val2 = info->data->num_bits;
->  		return IIO_VAL_FRACTIONAL_LOG2;
->  	default:
->  		return -EINVAL;
-> @@ -103,7 +110,7 @@ static irqreturn_t rockchip_saradc_isr(int irq, void *dev_id)
->  
->  	/* Read value */
->  	info->last_val = readl_relaxed(info->regs + SARADC_DATA);
-> -	info->last_val &= SARADC_DATA_MASK;
-> +	info->last_val &= BIT(info->data->num_bits) - 1;
-I think using GENMASK would reflect the intention better, that you want to mask out your data.
->  
->  	/* Clear irq & power down adc */
->  	writel_relaxed(0, info->regs + SARADC_CTRL);
-> @@ -133,12 +140,44 @@ static const struct iio_chan_spec rockchip_saradc_iio_channels[] = {
->  	ADC_CHANNEL(2, "adc2"),
->  };
->  
-> +static const struct rockchip_saradc_data saradc_data = {
-> +	.num_bits = 10,
-> +	.channels = rockchip_saradc_iio_channels,
-> +	.num_channels = ARRAY_SIZE(rockchip_saradc_iio_channels),
-> +	.clk_rate = 1000000,
-> +};
-> +
-> +static const struct iio_chan_spec rockchip_rk3066_tsadc_iio_channels[] = {
-> +	ADC_CHANNEL(0, "adc0"),
-> +	ADC_CHANNEL(1, "adc1"),
-> +};
-> +
-> +static const struct rockchip_saradc_data rk3066_tsadc_data = {
-> +	.num_bits = 12,
-> +	.channels = rockchip_rk3066_tsadc_iio_channels,
-> +	.num_channels = ARRAY_SIZE(rockchip_rk3066_tsadc_iio_channels),
-> +	.clk_rate = 50000,
-> +};
-> +
-> +static const struct of_device_id rockchip_saradc_match[] = {
-> +	{
-> +		.compatible = "rockchip,saradc",
-> +		.data = &saradc_data,
-> +	}, {
-> +		.compatible = "rockchip,rk3066-tsadc",
-> +		.data = &rk3066_tsadc_data,
-> +	},
-> +	{},
-> +};
-> +MODULE_DEVICE_TABLE(of, rockchip_saradc_match);
-> +
->  static int rockchip_saradc_probe(struct platform_device *pdev)
->  {
->  	struct rockchip_saradc *info = NULL;
->  	struct device_node *np = pdev->dev.of_node;
->  	struct iio_dev *indio_dev = NULL;
->  	struct resource	*mem;
-> +	const struct of_device_id *match;
->  	int ret;
->  	int irq;
->  
-> @@ -152,6 +191,9 @@ static int rockchip_saradc_probe(struct platform_device *pdev)
->  	}
->  	info = iio_priv(indio_dev);
->  
-> +	match = of_match_device(rockchip_saradc_match, &pdev->dev);
-> +	info->data = match->data;
-> +
->  	mem = platform_get_resource(pdev, IORESOURCE_MEM, 0);
->  	info->regs = devm_ioremap_resource(&pdev->dev, mem);
->  	if (IS_ERR(info->regs))
-> @@ -195,7 +237,7 @@ static int rockchip_saradc_probe(struct platform_device *pdev)
->  	 * Use a default of 1MHz for the converter clock.
->  	 * This may become user-configurable in the future.
->  	 */
-> -	ret = clk_set_rate(info->clk, 1000000);
-> +	ret = clk_set_rate(info->clk, info->data->clk_rate);
->  	if (ret < 0) {
->  		dev_err(&pdev->dev, "failed to set adc clk rate, %d\n", ret);
->  		return ret;
-> @@ -227,8 +269,8 @@ static int rockchip_saradc_probe(struct platform_device *pdev)
->  	indio_dev->info = &rockchip_saradc_iio_info;
->  	indio_dev->modes = INDIO_DIRECT_MODE;
->  
-> -	indio_dev->channels = rockchip_saradc_iio_channels;
-> -	indio_dev->num_channels = ARRAY_SIZE(rockchip_saradc_iio_channels);
-> +	indio_dev->channels = info->data->channels;
-> +	indio_dev->num_channels = info->data->num_channels;
->  
->  	ret = iio_device_register(indio_dev);
->  	if (ret)
-> @@ -296,12 +338,6 @@ static int rockchip_saradc_resume(struct device *dev)
->  static SIMPLE_DEV_PM_OPS(rockchip_saradc_pm_ops,
->  			 rockchip_saradc_suspend, rockchip_saradc_resume);
->  
-> -static const struct of_device_id rockchip_saradc_match[] = {
-> -	{ .compatible = "rockchip,saradc" },
-> -	{},
-> -};
-> -MODULE_DEVICE_TABLE(of, rockchip_saradc_match);
-> -
->  static struct platform_driver rockchip_saradc_driver = {
->  	.probe		= rockchip_saradc_probe,
->  	.remove		= rockchip_saradc_remove,
+Platform driver for XPowers AXP288 ADC, which is a customized PMIC for Intel
+Baytrail-CR platforms. GPADC device enumerates as one of the PMIC MFD cell
+devices. It uses IIO infrastructure to communicate with userspace and
+consumer drivers.
+
+Usages of ADC channels include battery charging and thermal sensors.
+
+Based on initial work by:
+Ramakrishna Pallala <ramakrishna.pallala@intel.com>
+
+Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
+---
+ drivers/iio/adc/Kconfig        |   8 ++
+ drivers/iio/adc/Makefile       |   1 +
+ drivers/iio/adc/axp288_gpadc.c | 250 +++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 259 insertions(+)
+ create mode 100644 drivers/iio/adc/axp288_gpadc.c
+
+diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+index 11b048a..f5c61c0 100644
+--- a/drivers/iio/adc/Kconfig
++++ b/drivers/iio/adc/Kconfig
+@@ -279,4 +279,12 @@ config XILINX_XADC
+ 	  The driver can also be build as a module. If so, the module will be called
+ 	  xilinx-xadc.
+ 
++config AXP288_GPADC
++	tristate "X-Power AXP288 GPADC driver"
++	depends on MFD_AXP2XX
++	help
++	  Say yes here to have support for X-Power power management IC (PMIC) ADC
++	  device. Depending on platform configuration, this general purpose ADC can
++	  be used for sampling sensors such as thermal resisters.
++
+ endmenu
+diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
+index ad81b51..8bf0104 100644
+--- a/drivers/iio/adc/Makefile
++++ b/drivers/iio/adc/Makefile
+@@ -30,3 +30,4 @@ obj-$(CONFIG_VF610_ADC) += vf610_adc.o
+ obj-$(CONFIG_VIPERBOARD_ADC) += viperboard_adc.o
+ xilinx-xadc-y := xilinx-xadc-core.o xilinx-xadc-events.o
+ obj-$(CONFIG_XILINX_XADC) += xilinx-xadc.o
++obj-$(CONFIG_AXP288_GPADC) += axp288_gpadc.o
+diff --git a/drivers/iio/adc/axp288_gpadc.c b/drivers/iio/adc/axp288_gpadc.c
+new file mode 100644
+index 0000000..7ca6bbf
+--- /dev/null
++++ b/drivers/iio/adc/axp288_gpadc.c
+@@ -0,0 +1,250 @@
++/*
++ * axp288_gpadc.c - Xpower AXP288 PMIC GPADC Driver
++ *
++ * Copyright (C) 2014 Intel Corporation
++ *
++ * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License as published by
++ * the Free Software Foundation; version 2 of the License.
++ *
++ * This program is distributed in the hope that it will be useful, but
++ * WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	See the GNU
++ * General Public License for more details.
++ *
++ */
++
++#include <linux/module.h>
++#include <linux/kernel.h>
++#include <linux/device.h>
++#include <linux/regmap.h>
++#include <linux/mfd/axp2xx.h>
++#include <linux/platform_device.h>
++
++#include <linux/iio/iio.h>
++#include <linux/iio/machine.h>
++#include <linux/iio/driver.h>
++#define ADC_EN_MASK			0xF1
++#define ADC_TS_PIN_GPADC                0xF2
++#define ADC_TS_PIN_ON                   0xF3
++
++struct gpadc_info {
++	unsigned int irq;
++	struct device *dev;
++	struct regmap *regmap;
++};
++
++#define ADC_CHANNEL(_type, _channel, _address)	        \
++	{								\
++		.indexed = 1,						\
++		.type = _type,						\
++		.channel = _channel,					\
++		.address = _address,					\
++		.datasheet_name = "CH"#_channel,			\
++		.scan_index = _channel,					\
++		.scan_type = {						\
++			.sign = 'u',					\
++			.realbits = 12,					\
++			.storagebits = 32,				\
++			.endianness = IIO_LE,				\
++		},							\
++		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),		\
++	}
++
++static const struct iio_chan_spec const axp288_adc_channels[] = {
++	ADC_CHANNEL(IIO_TEMP, 0, AXP288_TS_ADC_H),
++	ADC_CHANNEL(IIO_TEMP, 1, AXP288_PMIC_ADC_H),
++	ADC_CHANNEL(IIO_TEMP, 2, AXP288_GP_ADC_H),
++	ADC_CHANNEL(IIO_CURRENT, 3, AXP20X_BATT_CHRG_I_H),
++	ADC_CHANNEL(IIO_CURRENT, 4, AXP20X_BATT_DISCHRG_I_H),
++	ADC_CHANNEL(IIO_VOLTAGE, 5, AXP20X_BATT_V_H),
++};
++
++#define ADC_MAP(_adc_channel_label,				\
++		     _consumer_dev_name,			\
++		     _consumer_channel)				\
++	{							\
++		.adc_channel_label = _adc_channel_label,	\
++		.consumer_dev_name = _consumer_dev_name,	\
++		.consumer_channel = _consumer_channel,		\
++	}
++
++/* for consumer drivers */
++static struct iio_map axp288_iio_default_maps[] = {
++	ADC_MAP("TS_PIN", "axp288-batt", "axp288-batt-temp"),
++	ADC_MAP("PMIC_TEMP", "axp288-pmic", "axp288-pmic-temp"),
++	ADC_MAP("GPADC", "axp288-gpadc", "axp288-system-temp"),
++	ADC_MAP("BATT_CHG_I", "axp288-chrg", "axp288-chrg-curr"),
++	ADC_MAP("BATT_DISCHRG_I", "axp288-chrg", "axp288-chrg-d-curr"),
++	ADC_MAP("BATT_V", "axp288-batt", "axp288-batt-volt"),
++	{},
++};
++
++static int axp288_adc_read_raw(struct iio_dev *indio_dev,
++			struct iio_chan_spec const *chan,
++			int *val, int *val2, long m)
++{
++	int ret;
++	struct gpadc_info *info = iio_priv(indio_dev);
++	unsigned int th, tl;
++
++	mutex_lock(&indio_dev->mlock);
++
++	/* special case for GPADC sample */
++	if (chan->address == AXP288_GP_ADC_H)
++		regmap_write(info->regmap, AXP288_ADC_TS_PIN_CTRL,
++			ADC_TS_PIN_GPADC);
++
++	ret = regmap_read(info->regmap, chan->address, &th);
++	if (ret) {
++		dev_err(&indio_dev->dev, "sample raw data high failed\n");
++		goto exit_done;
++	}
++
++	ret = regmap_read(info->regmap, chan->address + 1, &tl);
++	if (ret) {
++		dev_err(&indio_dev->dev, "sample raw data low failed\n");
++		goto exit_done;
++	}
++
++	*val = (th << 4) + ((tl >> 4) & 0x0F);
++	ret = IIO_VAL_INT;
++
++exit_done:
++	if (chan->address == AXP288_GP_ADC_H)
++		regmap_write(info->regmap, AXP288_ADC_TS_PIN_CTRL,
++			ADC_TS_PIN_ON);
++
++	mutex_unlock(&indio_dev->mlock);
++
++	return ret;
++}
++
++static int axp288_gpadc_enable(struct regmap *regmap, bool enable)
++{
++	unsigned int pin_on, adc_en;
++
++	if (enable) {
++		pin_on = ADC_TS_PIN_ON;
++		adc_en = ADC_EN_MASK;
++	} else {
++		pin_on = ~ADC_TS_PIN_ON;
++		adc_en = ~ADC_EN_MASK;
++	}
++	if (regmap_write(regmap, AXP288_ADC_TS_PIN_CTRL, pin_on))
++		return -EIO;
++
++	return regmap_write(regmap, AXP20X_ADC_EN1, ~ADC_EN_MASK);
++}
++
++static const struct iio_info axp288_iio_info = {
++	.read_raw = &axp288_adc_read_raw,
++	.driver_module = THIS_MODULE,
++};
++
++static int axp288_gpadc_probe(struct platform_device *pdev)
++{
++	int err;
++	struct gpadc_info *info;
++	struct iio_dev *indio_dev;
++	struct axp2xx_dev *axp2xx = dev_get_drvdata(pdev->dev.parent);
++	int irq;
++
++	indio_dev = devm_iio_device_alloc(&pdev->dev, sizeof(*info));
++	if (!indio_dev)
++		return -ENOMEM;
++
++	info = iio_priv(indio_dev);
++	irq = platform_get_irq(pdev, 0);
++	if (irq < 0) {
++		dev_err(&pdev->dev, "no irq resource?\n");
++		return irq;
++	}
++	info->irq = irq;
++	platform_set_drvdata(pdev, indio_dev);
++	info->regmap = axp2xx->regmap;
++	axp288_gpadc_enable(axp2xx->regmap, true);
++
++	indio_dev->dev.parent = &pdev->dev;
++	indio_dev->name = pdev->name;
++	indio_dev->channels = axp288_adc_channels;
++	indio_dev->num_channels = ARRAY_SIZE(axp288_adc_channels);
++	indio_dev->info = &axp288_iio_info;
++	indio_dev->modes = INDIO_DIRECT_MODE;
++	/* REVISIT: override default map with platform data */
++	err = iio_map_array_register(indio_dev, axp288_iio_default_maps);
++	if (err)
++		goto err_disable_dev;
++
++	err = iio_device_register(indio_dev);
++	if (err < 0) {
++		dev_err(&pdev->dev, "unable to register iio device\n");
++		goto err_array_unregister;
++	}
++	return 0;
++
++err_array_unregister:
++	iio_map_array_unregister(indio_dev);
++err_disable_dev:
++	axp288_gpadc_enable(axp2xx->regmap, false);
++	return err;
++}
++
++static int axp288_gpadc_remove(struct platform_device *pdev)
++{
++	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
++
++	iio_device_unregister(indio_dev);
++	iio_map_array_unregister(indio_dev);
++
++	return 0;
++}
++
++#if defined(CONFIG_PM_SLEEP) || defined(CONFIG_PM_RUNTIME)
++static int axp288_gpadc_suspend(struct device *dev)
++{
++	int ret;
++	struct iio_dev *indio_dev = dev_get_drvdata(dev);
++	struct gpadc_info *info = iio_priv(indio_dev);
++
++	mutex_lock(&indio_dev->mlock);
++	ret = axp288_gpadc_enable(info->regmap, false);
++	mutex_unlock(&indio_dev->mlock);
++
++	return ret;
++}
++
++static int axp288_gpadc_resume(struct device *dev)
++{
++	int ret;
++	struct iio_dev *indio_dev = dev_get_drvdata(dev);
++	struct gpadc_info *info = iio_priv(indio_dev);
++
++	mutex_lock(&indio_dev->mlock);
++	ret = axp288_gpadc_enable(info->regmap, true);
++	mutex_unlock(&indio_dev->mlock);
++
++	return ret;
++}
++#endif
++
++static UNIVERSAL_DEV_PM_OPS(axp288_gpadc_pm_ops, axp288_gpadc_suspend,
++			axp288_gpadc_resume, NULL);
++
++static struct platform_driver axp288_gpadc_driver = {
++	.probe = axp288_gpadc_probe,
++	.remove = axp288_gpadc_remove,
++	.driver = {
++		.name = "axp288_adc",
++		.owner = THIS_MODULE,
++		.pm = &axp288_gpadc_pm_ops,
++	},
++};
++
++module_platform_driver(axp288_gpadc_driver);
++
++MODULE_AUTHOR("Jacob Pan <jacob.jun.pan@linux.intel.com>");
++MODULE_DESCRIPTION("Dollar Cove Xpower AXP288 General Purpose ADC Driver");
++MODULE_LICENSE("GPL");
+-- 
+1.9.1
+
