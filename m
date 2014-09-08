@@ -1,29 +1,23 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from eusmtp01.atmel.com ([212.144.249.243]:59044 "EHLO
-	eusmtp01.atmel.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751683AbaIHG5G (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 8 Sep 2014 02:57:06 -0400
-Date: Mon, 8 Sep 2014 08:57:24 +0200
+Return-Path: <ludovic.desroches@atmel.com>
+Date: Mon, 8 Sep 2014 09:11:57 +0200
 From: Ludovic Desroches <ludovic.desroches@atmel.com>
-To: Hartmut Knaack <knaack.h@gmx.de>
+To: Alexandre Belloni <alexandre.belloni@free-electrons.com>
 CC: Ludovic Desroches <ludovic.desroches@atmel.com>,
-	<linux-arm-kernel@lists.infradead.org>,
-	<linux-iio@vger.kernel.org>, <jic23@kernel.org>,
-	<alexandre.belloni@free-electrons.com>, <josh.wu@atmel.com>,
-	<nicolas.ferre@atmel.com>, <maxime.ripard@free-electrons.com>
+	<linux-arm-kernel@lists.infradead.org>, <linux-iio@vger.kernel.org>,
+	<jic23@kernel.org>, <josh.wu@atmel.com>, <nicolas.ferre@atmel.com>,
+	<maxime.ripard@free-electrons.com>
 Subject: Re: [RESEND PATCH] iio: adc: at91: don't use the last converted data
  register
-Message-ID: <20140908065724.GE4434@ldesroches-Latitude-E6320>
+Message-ID: <20140908071157.GF4434@ldesroches-Latitude-E6320>
 References: <1409726069-13054-1-git-send-email-ludovic.desroches@atmel.com>
- <540B5470.2030404@gmx.de>
+ <20140903083506.GF10093@piout.net>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
-In-Reply-To: <540B5470.2030404@gmx.de>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+In-Reply-To: <20140903083506.GF10093@piout.net>
+List-ID: <linux-iio@vger.kernel.org>
 
-On Sat, Sep 06, 2014 at 08:37:36PM +0200, Hartmut Knaack wrote:
-> Ludovic Desroches schrieb:
+On Wed, Sep 03, 2014 at 10:35:06AM +0200, Alexandre Belloni wrote:
+> On 03/09/2014 at 08:34:29 +0200, Ludovic Desroches wrote :
 > > If touchscreen mode is enabled and a conversion is requested on another
 > > channel, the result in the last converted data register can be a
 > > touchscreen relative value. Starting a conversion involves to do a
@@ -32,18 +26,36 @@ On Sat, Sep 06, 2014 at 08:37:36PM +0200, Hartmut Knaack wrote:
 > > its content may be a touchscreen conversion.
 > > To remove this temporal constraint, the conversion value is taken from
 > > the channel data register.
-> I would recommend to drop eoc_mask and use GENMASK instead. Also, using BIT(chan->channel) would be a good idea.
-
-Thanks for your advice, I'll use these macros for v2.
-
+> > 
 > > Signed-off-by: Ludovic Desroches <ludovic.desroches@atmel.com>
+> 
+> I wondering whether we should get rid of drdy in the trigger path too.
+
+Yes we can, then we have to use other interrupts. It could be
+interesting because when conversion is done, it is done on all active
+channels and touchscreen (if touchscreen mode is enabled of course).
+Enabling drdy will cause to receive an interrupt after each conversion
+(usually we are not fast enough to process irqs one by one, when we get
+the first drdy irq and when we read the status register, others
+conversions have already been completed). So getting rid of drdy is a
+good idea but choosing the appropriate interrupt is a bit more
+complicated:
+- if using touchscreen with pressure measurement, we can rely on prdy
+- if using touchscreen without pressure measurement, we can rely on yrdy
+- if not using touchscreen, we can rely on EOCx where x is the higher
+  channel number.
+
+> Maybe this can be done in a follow-up patch. Else,
+> 
+> Acked-by: Alexandre Belloni <alexandre.belloni@free-electrons.com>
+> 
 > > ---
-> >
+> > 
 > > Sorry for the noise, there was a typo in the CC list.
-> >
+> > 
 > >  drivers/iio/adc/at91_adc.c |   14 +++++++++-----
 > >  1 file changed, 9 insertions(+), 5 deletions(-)
-> >
+> > 
 > > diff --git a/drivers/iio/adc/at91_adc.c b/drivers/iio/adc/at91_adc.c
 > > index 3b5bacd..dde22cb 100644
 > > --- a/drivers/iio/adc/at91_adc.c
@@ -114,4 +126,11 @@ Thanks for your advice, I'll use these macros for v2.
 > >  
 > >  		st->last_value = 0;
 > >  		st->done = false;
+> > -- 
+> > 1.7.9.5
+> > 
 > 
+> -- 
+> Alexandre Belloni, Free Electrons
+> Embedded Linux, Kernel and Android engineering
+> http://free-electrons.com
