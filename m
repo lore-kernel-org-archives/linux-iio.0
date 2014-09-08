@@ -1,65 +1,50 @@
-Return-Path: <sudipm.mukherjee@gmail.com>
-Date: Thu, 4 Sep 2014 22:42:28 +0530
-From: Sudip Mukherjee <sudipm.mukherjee@gmail.com>
-To: Lars-Peter Clausen <lars@metafoo.de>
-Cc: Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	"open list:STAGING - INDUSTR..." <linux-iio@vger.kernel.org>,
-	open list:  STAGING SUBSYSTEM <devel@driverdev.osuosl.org>,
-	open list <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] staging: iio: adc: mxs-lradc.c: sparse warning of
- incorrect type
-Message-ID: <20140904171228.GA2069@fool>
-References: <1409849142-12185-1-git-send-email-sudipm.mukherjee@gmail.com>
- <5408983D.30002@metafoo.de>
+Return-Path: <irina.tirdea@intel.com>
+From: "Tirdea, Irina" <irina.tirdea@intel.com>
+To: Hartmut Knaack <knaack.h@gmx.de>
+CC: Lars-Peter Clausen <lars@metafoo.de>, Peter Meerwald <pmeerw@pmeerw.net>,
+	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "Jonathan
+ Cameron" <jic23@kernel.org>, "linux-iio@vger.kernel.org"
+	<linux-iio@vger.kernel.org>
+Subject: RE: [PATCH] iio: gyro: bmg160: only set power state if PM_RUNTIME
+ is defined
+Date: Mon, 8 Sep 2014 13:50:01 +0000
+Message-ID: <1F3AC3675D538145B1661F571FE1805F199761AE@IRSMSX105.ger.corp.intel.com>
+References: <1409655759-28849-1-git-send-email-irina.tirdea@intel.com>
+ <540AFA13.6010207@gmx.de>
+In-Reply-To: <540AFA13.6010207@gmx.de>
+Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <5408983D.30002@metafoo.de>
 List-ID: <linux-iio@vger.kernel.org>
 
-On Thu, Sep 04, 2014 at 06:50:05PM +0200, Lars-Peter Clausen wrote:
-> On 09/04/2014 06:45 PM, Sudip Mukherjee wrote:
-> >fixed sparse warning : incorrect type in argument 1
-> >		       (different address spaces)
-> >
-> >Signed-off-by: Sudip Mukherjee <sudip@vectorindia.org>
-> >---
-> >  drivers/staging/iio/adc/mxs-lradc.c | 9 ++++++---
-> >  1 file changed, 6 insertions(+), 3 deletions(-)
-> >
-> >diff --git a/drivers/staging/iio/adc/mxs-lradc.c b/drivers/staging/iio/adc/mxs-lradc.c
-> >index 468327f..d8d1fe1 100644
-> >--- a/drivers/staging/iio/adc/mxs-lradc.c
-> >+++ b/drivers/staging/iio/adc/mxs-lradc.c
-> >@@ -1545,9 +1545,12 @@ static int mxs_lradc_probe(struct platform_device *pdev)
-> >  	/* Grab the memory area */
-> >  	iores = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-> >  	lradc->dev = &pdev->dev;
-> >-	lradc->base = devm_ioremap_resource(dev, iores);
-> >-	if (IS_ERR(lradc->base))
-> >-		return PTR_ERR(lradc->base);
-> >+	void *tempptr;
-> >+
-> >+	tempptr = devm_ioremap_resource(dev, iores);
-> >+	if (IS_ERR(tempptr))
-> >+		return PTR_ERR(tempptr);
-> >+	lradc->base = tempptr;
-> 
-> This makes no sense at all... devm_ioremap_resource() returns a
-> iomem pointer lrdac->base is a iomem pointer.
 
-sparse is giving warning for argument 1 of IS_ERR. 
-
-> 
-> Please make sure that you have the latest version of sparse
-> installed on your system.
-> 
+> -----Original Message-----
+> From: linux-iio-owner@vger.kernel.org [mailto:linux-iio-owner@vger.kernel=
+.org] On Behalf Of Hartmut Knaack
+> Sent: 06 September, 2014 15:12
+> To: Tirdea, Irina; Jonathan Cameron; linux-iio@vger.kernel.org
+> Cc: Lars-Peter Clausen; Peter Meerwald; Srinivas Pandruvada; linux-kernel=
+@vger.kernel.org
+> Subject: Re: [PATCH] iio: gyro: bmg160: only set power state if PM_RUNTIM=
+E is defined
+>=20
+> Irina Tirdea schrieb:
+> > When CONFIG_PM_RUNTIME is not defined and bmg160 tries to power
+> > off the device, bmg160_set_power_state will call pm_runtime_put_autosus=
+pend,
+> > which is not implemented (wil return -ENOSYS).
 > >
-> >  	lradc->clk = devm_clk_get(&pdev->dev, NULL);
-> >  	if (IS_ERR(lradc->clk)) {
-> >
-> 
+> > Only call bmg160_set_power_state when CONFIG_PM_RUNTIME is defined.
+> Unless there is anything more to come, what about putting the #ifdef into=
+ first line inside bmg160_set_power_state() and just an
+> #endif before the return 0 at the end? Saves 5 lines.
 
-thanks
-sudip
+Thanks for the suggestion! Will fix it in v2.
+
+> > Signed-off-by: Irina Tirdea <irina.tirdea@intel.com>
+> > Reviewed-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+> > ---
+
+
+Thanks,
+Irina
