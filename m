@@ -1,100 +1,75 @@
-Return-Path: <ludovic.desroches@atmel.com>
-From: Ludovic Desroches <ludovic.desroches@atmel.com>
-To: <linux-arm-kernel@lists.infradead.org>, <linux-iio@vger.kernel.org>
-CC: <jic23@kernel.org>, <=alexandre.belloni@free-electrons.com>,
-	<josh.wu@atmel.com>, <nicolas.ferre@atmel.com>,
-	<maxime.ripard@free-electrons.com>, Ludovic Desroches
-	<ludovic.desroches@atmel.com>
-Subject: [PATCH] iio: adc: at91: don't use the last converted data register
-Date: Wed, 3 Sep 2014 08:26:40 +0200
-Message-ID: <1409725600-12961-1-git-send-email-ludovic.desroches@atmel.com>
-MIME-Version: 1.0
-Content-Type: text/plain
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mga01.intel.com ([192.55.52.88]:3269 "EHLO mga01.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1753878AbaIHOJV (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Mon, 8 Sep 2014 10:09:21 -0400
+From: Irina Tirdea <irina.tirdea@intel.com>
+To: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org
+Cc: Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+	linux-kernel@vger.kernel.org, Beomho Seo <beomho.seo@samsung.com>,
+	Irina Tirdea <irina.tirdea@intel.com>
+Subject: [PATCH v2] iio: magn: ak8975: fix unnecessary casting between char* and const char*
+Date: Mon,  8 Sep 2014 17:18:08 +0300
+Message-Id: <1410185888-18622-1-git-send-email-irina.tirdea@intel.com>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-If touchscreen mode is enabled and a conversion is requested on another
-channel, the result in the last converted data register can be a
-touchscreen relative value. Starting a conversion involves to do a
-conversion for all active channel. It starts with ADC channels and ends
-with touchscreen channels. Then if ADC_LCD register is not read quickly,
-its content may be a touchscreen conversion.
-To remove this temporal constraint, the conversion value is taken from
-the channel data register.
+Use const char* instead of casting const char* to char*.
 
-Signed-off-by: Ludovic Desroches <ludovic.desroches@atmel.com>
+Signed-off-by: Irina Tirdea <irina.tirdea@intel.com>
 ---
- drivers/iio/adc/at91_adc.c |   14 +++++++++-----
- 1 file changed, 9 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/iio/adc/at91_adc.c b/drivers/iio/adc/at91_adc.c
-index 3b5bacd..dde22cb 100644
---- a/drivers/iio/adc/at91_adc.c
-+++ b/drivers/iio/adc/at91_adc.c
-@@ -196,6 +196,7 @@ struct at91_adc_state {
- 	bool			done;
- 	int			irq;
- 	u16			last_value;
-+	int			chnb;
- 	struct mutex		lock;
- 	u8			num_channels;
- 	void __iomem		*reg_base;
-@@ -274,7 +275,7 @@ void handle_adc_eoc_trigger(int irq, struct iio_dev *idev)
- 		disable_irq_nosync(irq);
- 		iio_trigger_poll(idev->trig, iio_get_time_ns());
- 	} else {
--		st->last_value = at91_adc_readl(st, AT91_ADC_LCDR);
-+		st->last_value = at91_adc_readl(st, AT91_ADC_CHAN(st, st->chnb));
- 		st->done = true;
- 		wake_up_interruptible(&st->wq_data_avail);
- 	}
-@@ -348,10 +349,11 @@ static irqreturn_t at91_adc_rl_interrupt(int irq, void *private)
- 	struct iio_dev *idev = private;
- 	struct at91_adc_state *st = iio_priv(idev);
- 	u32 status = at91_adc_readl(st, st->registers->status_register);
-+	const u32 eoc_mask = (1 << st->num_channels) - 1;
- 	unsigned int reg;
+Changes in v2:
+ - fixed identation as Hartmut Knaack suggested
+
+ drivers/iio/magnetometer/ak8975.c |   10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
+
+diff --git a/drivers/iio/magnetometer/ak8975.c b/drivers/iio/magnetometer/ak8975.c
+index a235792..bf5ef07 100644
+--- a/drivers/iio/magnetometer/ak8975.c
++++ b/drivers/iio/magnetometer/ak8975.c
+@@ -477,8 +477,8 @@ static const struct acpi_device_id ak_acpi_match[] = {
+ };
+ MODULE_DEVICE_TABLE(acpi, ak_acpi_match);
  
- 	status &= at91_adc_readl(st, AT91_ADC_IMR);
--	if (status & st->registers->drdy_mask)
-+	if (status & eoc_mask)
- 		handle_adc_eoc_trigger(irq, idev);
+-static char *ak8975_match_acpi_device(struct device *dev,
+-				enum asahi_compass_chipset *chipset)
++static const char *ak8975_match_acpi_device(struct device *dev,
++					    enum asahi_compass_chipset *chipset)
+ {
+ 	const struct acpi_device_id *id;
  
- 	if (status & AT91RL_ADC_IER_PEN) {
-@@ -413,12 +415,13 @@ static irqreturn_t at91_adc_9x5_interrupt(int irq, void *private)
- 	struct iio_dev *idev = private;
- 	struct at91_adc_state *st = iio_priv(idev);
- 	u32 status = at91_adc_readl(st, st->registers->status_register);
-+	const u32 eoc_mask = (1 << st->num_channels) - 1;
- 	const uint32_t ts_data_irq_mask =
- 		AT91_ADC_IER_XRDY |
- 		AT91_ADC_IER_YRDY |
- 		AT91_ADC_IER_PRDY;
+@@ -487,7 +487,7 @@ static char *ak8975_match_acpi_device(struct device *dev,
+ 		return NULL;
+ 	*chipset = (int)id->driver_data;
  
--	if (status & st->registers->drdy_mask)
-+	if (status & eoc_mask)
- 		handle_adc_eoc_trigger(irq, idev);
+-	return (char *)dev_name(dev);
++	return dev_name(dev);
+ }
  
- 	if (status & AT91_ADC_IER_PEN) {
-@@ -689,9 +692,10 @@ static int at91_adc_read_raw(struct iio_dev *idev,
- 	case IIO_CHAN_INFO_RAW:
- 		mutex_lock(&st->lock);
+ static int ak8975_probe(struct i2c_client *client,
+@@ -497,7 +497,7 @@ static int ak8975_probe(struct i2c_client *client,
+ 	struct iio_dev *indio_dev;
+ 	int eoc_gpio;
+ 	int err;
+-	char *name = NULL;
++	const char *name = NULL;
  
-+		st->chnb = chan->channel;
- 		at91_adc_writel(st, AT91_ADC_CHER,
- 				AT91_ADC_CH(chan->channel));
--		at91_adc_writel(st, AT91_ADC_IER, st->registers->drdy_mask);
-+		at91_adc_writel(st, AT91_ADC_IER, 1 << chan->channel);
- 		at91_adc_writel(st, AT91_ADC_CR, AT91_ADC_START);
- 
- 		ret = wait_event_interruptible_timeout(st->wq_data_avail,
-@@ -708,7 +712,7 @@ static int at91_adc_read_raw(struct iio_dev *idev,
- 
- 		at91_adc_writel(st, AT91_ADC_CHDR,
- 				AT91_ADC_CH(chan->channel));
--		at91_adc_writel(st, AT91_ADC_IDR, st->registers->drdy_mask);
-+		at91_adc_writel(st, AT91_ADC_IDR, 1 << chan->channel);
- 
- 		st->last_value = 0;
- 		st->done = false;
+ 	/* Grab and set up the supplied GPIO. */
+ 	if (client->dev.platform_data)
+@@ -539,7 +539,7 @@ static int ak8975_probe(struct i2c_client *client,
+ 	if (id) {
+ 		data->chipset =
+ 			(enum asahi_compass_chipset)(id->driver_data);
+-		name = (char *) id->name;
++		name = id->name;
+ 	} else if (ACPI_HANDLE(&client->dev))
+ 		name = ak8975_match_acpi_device(&client->dev, &data->chipset);
+ 	else
 -- 
 1.7.9.5
+
