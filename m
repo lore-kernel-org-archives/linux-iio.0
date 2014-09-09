@@ -1,117 +1,84 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pa0-f42.google.com ([209.85.220.42]:39837 "EHLO
-	mail-pa0-f42.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754329AbaIQIYY (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 17 Sep 2014 04:24:24 -0400
-From: Sanchayan Maity <maitysanchayan@gmail.com>
-To: shawn.guo@freescale.com
-Cc: stefan@agner.ch, B38611@freescale.com, linux@arm.linux.org.uk,
-	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-	jic23@kernel.org, linux-iio@vger.kernel.org,
-	Sanchayan Maity <maitysanchayan@gmail.com>
-Subject: =?UTF-8?q?=5BPATCH=202/2=5D=20ARM=3A=20imx=3A=20vf610-adc=3A=20Add=20temperature=20sensor=20support?=
-Date: Wed, 17 Sep 2014 13:53:17 +0530
-Message-Id: <0cd6b1bdf146a0c9024a804742078ce77a38e184.1410873422.git.maitysanchayan@gmail.com>
-In-Reply-To: <cover.1410873422.git.maitysanchayan@gmail.com>
-References: <cover.1410873422.git.maitysanchayan@gmail.com>
-In-Reply-To: <cover.1410873422.git.maitysanchayan@gmail.com>
-References: <cover.1410873422.git.maitysanchayan@gmail.com>
+Received: from bombadil.infradead.org ([198.137.202.9]:48300 "EHLO
+	bombadil.infradead.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753963AbaIIAEj (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 8 Sep 2014 20:04:39 -0400
+Date: Mon, 8 Sep 2014 17:04:30 -0700
+From: Darren Hart <dvhart@infradead.org>
+To: Azael Avalos <coproscefalo@gmail.com>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jonathan Cameron <jic23@kernel.org>
+Cc: Matthew Garrett <matthew.garrett@nebula.com>,
+	"platform-driver-x86@vger.kernel.org"
+	<platform-driver-x86@vger.kernel.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	linux-iio@vger.kernel.org
+Subject: Re: [PATCH 3/5] toshiba_acpi: Add accelerometer input polled device
+Message-ID: <20140909000429.GB5835@vmdeb7>
+References: <1409937247-2525-1-git-send-email-coproscefalo@gmail.com>
+ <1409937247-2525-4-git-send-email-coproscefalo@gmail.com>
+ <20140906024253.GB11389@vmdeb7>
+ <CAGdLNWGhdQU3Fpud9Zgvx3AQ5Lb=WdEkJb_wWTb1hJoHxXPXpQ@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <CAGdLNWGhdQU3Fpud9Zgvx3AQ5Lb=WdEkJb_wWTb1hJoHxXPXpQ@mail.gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Vybrid ADC module includes a temperature sensor which
-is connected to channel number 26. This patch adds
-support for the sensor. The raw value is read and the
-temperature calculated in degree Celsius which is
-returned using the IIO_CHAN_INFO_PROCESSED option.
+On Fri, Sep 05, 2014 at 11:04:18PM -0600, Azael Avalos wrote:
+> Hi there,
+> 
+> 2014-09-05 20:42 GMT-06:00 Darren Hart <dvhart@infradead.org>:
+> > On Fri, Sep 05, 2014 at 11:14:05AM -0600, Azael Avalos wrote:
+> >> The accelerometer sensor is very sensitive, and having userspace
+> >> poll the sysfs position entry is not very battery friendly.
+> >>
+> >> This patch removes the sysfs entry and instead, it creates an
+> >> input polled device (joystick) for the built-in accelerometer.
+> >
+> > Hrm, while sysfs details can change across kernel versions, usually due to
+> > driver core changes, we try to keep them as consistent as possible so as not to
+> > break userspace.
+> >
+> > That said, if we are going to try and come up with a better model for
+> > representing an accelerometer, wouldn't treating it as an IIO device be the more
+> > logical approach?
+> 
+> Yes of course, but the actual accelerometer device (sensor?) is not
+> really exposed,
+> only certain "functions" it provides, and they are divided across two
+> different ACPI devices,
+> TOS620A exposes the protection, and the TOS1900 (and et. al.) only
+> exposes the axes.
 
-Signed-off-by: Sanchayan Maity <maitysanchayan@gmail.com>
----
- drivers/iio/adc/vf610_adc.c |   34 +++++++++++++++++++++++++++++++---
- 1 file changed, 31 insertions(+), 3 deletions(-)
+As I understand it, IIO defines an interface to a device, a standard sysfs set
+of properties. I should think we could provide the appropriate callbacks even
+for a partially implemented (or a pair of) accelerometer.
 
-diff --git a/drivers/iio/adc/vf610_adc.c b/drivers/iio/adc/vf610_adc.c
-index 44799eb5..aa682aa 100644
---- a/drivers/iio/adc/vf610_adc.c
-+++ b/drivers/iio/adc/vf610_adc.c
-@@ -91,7 +91,7 @@
- #define VF610_ADC_CAL			0x80
- 
- /* Other field define */
--#define VF610_ADC_ADCHC(x)		((x) & 0xF)
-+#define VF610_ADC_ADCHC(x)		((x) & 0x1F)
- #define VF610_ADC_AIEN			(0x1 << 7)
- #define VF610_ADC_CONV_DISABLE		0x1F
- #define VF610_ADC_HS_COCO0		0x1
-@@ -137,7 +137,7 @@ struct vf610_adc {
- 	struct clk *clk;
- 
- 	u32 vref_uv;
--	u32 value;
-+	int value;
- 	struct regulator *vref;
- 	struct vf610_adc_feature adc_feature;
- 
-@@ -153,6 +153,15 @@ struct vf610_adc {
- 				BIT(IIO_CHAN_INFO_SAMP_FREQ),	\
- }
- 
-+#define VF610_ADC_TEMPERATURE_CHAN(_idx, _chan_type) {		\
-+	.type = (_chan_type),					\
-+	.indexed = 1,							\
-+	.channel = (_idx),						\
-+	.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED),		\
-+	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE) |	\
-+				BIT(IIO_CHAN_INFO_SAMP_FREQ),	\
-+}
-+
- static const struct iio_chan_spec vf610_adc_iio_channels[] = {
- 	VF610_ADC_CHAN(0, IIO_VOLTAGE),
- 	VF610_ADC_CHAN(1, IIO_VOLTAGE),
-@@ -170,6 +179,7 @@ static const struct iio_chan_spec vf610_adc_iio_channels[] = {
- 	VF610_ADC_CHAN(13, IIO_VOLTAGE),
- 	VF610_ADC_CHAN(14, IIO_VOLTAGE),
- 	VF610_ADC_CHAN(15, IIO_VOLTAGE),
-+	VF610_ADC_TEMPERATURE_CHAN(26, IIO_TEMP),
- 	/* sentinel */
- };
- 
-@@ -451,6 +461,7 @@ static int vf610_read_raw(struct iio_dev *indio_dev,
- 
- 	switch (mask) {
- 	case IIO_CHAN_INFO_RAW:
-+	case IIO_CHAN_INFO_PROCESSED:
- 		mutex_lock(&indio_dev->mlock);
- 		reinit_completion(&info->completion);
- 
-@@ -468,7 +479,24 @@ static int vf610_read_raw(struct iio_dev *indio_dev,
- 			return ret;
- 		}
- 
--		*val = info->value;
-+		switch (chan->type)	{
-+		case IIO_VOLTAGE:
-+			*val = info->value;
-+			break;
-+		case IIO_TEMP:
-+			/*
-+			* Calculate in degree celsius times 1000
-+			* Using sensor slope of 1.84 mV/°C and
-+			* V at 25°C of 696mv
-+			*/
-+			info->value -= 864;
-+			info->value = 25000 - info->value * 1000000 / 1840;
-+			*val = info->value;
-+			break;
-+		default:
-+			break;
-+		}
-+
- 		mutex_unlock(&indio_dev->mlock);
- 		return IIO_VAL_INT;
- 
+Jonathan, what are your thoughts here. Is such a "device" (ACPI accessors to
+axis and threshold) a candidate for IIO, or is this input polled device more
+appropriate?
+
+> 
+> I see your point in breaking userspace, but given the fact that it was
+> recently introduced,
+> I didn't thought it was already "adopted", that's why I decided to
+> remove the sysfs entry.
+
+Looks like since 3.15 if I read the log correctly. That is fairly recent and
+this is not one of the "defined interfaces" in the sysfs documentation.
+
+Greg, can you weigh in here - does this change count as "breaking userspace", or
+is this more inline with the scheduler knobs in /proc/sched_debug which can
+change from version to version.
+
+> 
+> Then we might as well keep the sysfs entry and have the input polled
+> device as well.
+
+Let's see what Greg has to say. If he isn't bothered by the change, I won't push
+the issue.
+
 -- 
-1.7.9.5
-
+Darren Hart
+Intel Open Source Technology Center
