@@ -1,75 +1,129 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga14.intel.com ([192.55.52.115]:21727 "EHLO mga14.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751411AbaILTgt (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Fri, 12 Sep 2014 15:36:49 -0400
-Date: Fri, 12 Sep 2014 12:36:45 -0700
-From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-To: Maxime Ripard <maxime.ripard@free-electrons.com>
-Cc: IIO <linux-iio@vger.kernel.org>,
-	LKML <linux-kernel@vger.kernel.org>,
-	DEVICE TREE <devicetree@vger.kernel.org>,
-	Lee Jones <lee.jones@linaro.org>,
-	Carlo Caione <carlo@caione.org>,
-	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
-	Aaron Lu <aaron.lu@intel.com>, Alan Cox <alan@linux.intel.com>,
-	Jean Delvare <khali@linux-fr.org>,
-	Samuel Ortiz <sameo@linux.intel.com>,
-	Liam Girdwood <lgirdwood@gmail.com>,
-	Mark Brown <broonie@kernel.org>,
-	Grant Likely <grant.likely@linaro.org>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+Received: from mout.kundenserver.de ([212.227.17.10]:58205 "EHLO
+	mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755572AbaIIKc5 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 9 Sep 2014 06:32:57 -0400
+From: Arnd Bergmann <arnd@arndb.de>
+To: Stanimir Varbanov <svarbanov@mm-sol.com>
+Cc: Ian Campbell <ijc+devicetree@hellion.org.uk>,
+	Pawel Moll <pawel.moll@arm.com>,
 	Rob Herring <robh+dt@kernel.org>,
+	Kumar Gala <galak@codeaurora.org>,
+	Mark Rutland <mark.rutland@arm.com>,
+	Grant Likely <grant.likely@linaro.org>,
+	Jonathan Cameron <jic23@kernel.org>,
+	linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 	Lars-Peter Clausen <lars@metafoo.de>,
 	Hartmut Knaack <knaack.h@gmx.de>,
-	Fugang Duan <B38611@freescale.com>,
-	Arnd Bergmann <arnd@arndb.de>,
-	Zubair Lutfullah <zubair.lutfullah@gmail.com>,
-	Sebastian Reichel <sre@debian.org>,
-	Johannes Thumshirn <johannes.thumshirn@men.de>,
-	Philippe Reynes <tremyfr@yahoo.fr>,
 	Angelo Compagnucci <angelo.compagnucci@gmail.com>,
 	Doug Anderson <dianders@chromium.org>,
-	Ramakrishna Pallala <ramakrishna.pallala@intel.com>,
-	Peter Meerwald <pmeerw@pmeerw.net>
-Subject: Re: [PATCH v3 0/5] Initial support for XPowers AXP288 PMIC
-Message-ID: <20140912123645.3bc6058f@ultegra>
-In-Reply-To: <20140912151824.GU31276@lukather>
-References: <1410477357-6407-1-git-send-email-jacob.jun.pan@linux.intel.com>
-	<20140912151824.GU31276@lukather>
+	Fugang Duan <B38611@freescale.com>,
+	Johannes Thumshirn <johannes.thumshirn@men.de>,
+	Jean Delvare <jdelvare@suse.de>,
+	Philippe Reynes <tremyfr@yahoo.fr>,
+	Lee Jones <lee.jones@linaro.org>,
+	Josh Cartwright <joshc@codeaurora.org>,
+	Stephen Boyd <sboyd@codeaurora.org>,
+	David Collins <collinsd@codeaurora.org>,
+	"Ivan T. Ivanov" <iivanov@mm-sol.com>
+Subject: Re: [PATCH 1/2] iio: vadc: Qualcomm SPMI PMIC voltage ADC driver
+Date: Tue, 09 Sep 2014 12:32:26 +0200
+Message-ID: <7045486.CbS74HiY8I@wuerfel>
+In-Reply-To: <540DCB78.8060206@mm-sol.com>
+References: <1409919274-13419-1-git-send-email-svarbanov@mm-sol.com> <3899885.YaIxR1zelv@wuerfel> <540DCB78.8060206@mm-sol.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset="us-ascii"
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Fri, 12 Sep 2014 17:18:24 +0200
-Maxime Ripard <maxime.ripard@free-electrons.com> wrote:
+On Monday 08 September 2014 18:30:00 Stanimir Varbanov wrote:
+> >>> These numbers all look hardware specific, so why put macros into the
+> >>> device tree rather than using them directly?
+> >>
+> >> The idea was to use #defines in DT nodes when we need to overwrite the
+> >> adc channel parameters, see example in 2/2 how it will be used.
+> > 
+> > I don't understand. The node in the example has
+> > 
+> > +               /* Channel node */
+> > +               usb_id_nopull@39 {
+> > +                       qcom,channel = <VADC_LR_MUX10_USB_ID>;
+> > ...
+> > +               };
+> > 
+> > 
+> > And VADC_LR_MUX10_USB_ID is defined to 0x39.  How is this helping anything?
+> > You just introduce an artificial dependency on the header file, which makes
+> > it a mess to merge the patches or do updates, and anybody who needs to
+> > make updates to this now has to go through the same pain, to update the
+> > dts files, the driver and the binding document in lockstep.
+> > 
+> > Why not remove the qcom,channel property completely and use a 'reg'
+> > property with #address-cells=<1>, #size-cells=<0> and put the number
+> > directly in there, with no need for obfuscation macros?
+> 
+> OK thanks for the remarks. I will fix this mess.
+> 
+> I hope you are expecting to see this:
+> 
+> pmic_vadc: vadc@3100 {
+>         #address-cells = <1>;
+>         #size-cells = <0>;
+>         #io-channel-cells = <1>;
+>         io-channel-ranges;
+> 
+>         usb_id_nopull@39 {
+>                 reg = <0x39>;
+>         };
+> };
+> 
+> and use the vadc channel from usb device node
+> 
+> usb {
+>         ...
+>         io-channels = <&pmic_vadc 0x39>;
+>         io-channel-names = "usbidnopull";
+> };
 
-> On Thu, Sep 11, 2014 at 04:15:52PM -0700, Jacob Pan wrote:
-> > XPowers AXP288 is a customized PMIC found on some Intel Baytrail-CR
-> > platforms. It comes with sub-functions such as USB charging, fuel
-> > gauge, ADC, and many LDO and BUCK channels.
-> > 
-> > By extending the existing AXP20x driver, this patchset adds basic
-> > support for AXP288 PMIC with GPADC as one MFD cell device driver.
-> > It also adds hooks for ACPI opregion handler driver which can be
-> > used to handle ACPI requests.
-> > 
-> > Currently, the PMIC driver in this patchset does not support
-> > platform data enumeration. But when ACPI _DSD and unified device
-> > properties become available, cell devices with platform data will
-> > be added.
-> > 
-> > This patch does not use intel_soc_pmic core for i2c and regmap
-> > handling in that axp288 shares similar programming interface with
-> > other Xpower PMICs supported in axp20x.c. Therefore, extending
-> > axp20x.c to include axp288 makes more sense.
-> > 
-> > Changes
-> >  v3:	- put all file rename changes in 1/5
-> 
-> The variables renaming are still not in 1/5....
-> 
-1/5 is for file rename such that the follow up patches are more
-readable. There are so many details in variable rename, I think it
-belongs to the patch that expands the new device support.
+The ID stuff looks good now, but I had not noticed the
+"io-channel-names" property before. I think you misunderstood
+the purpose of that, because it is very similar to the name of the
+adc provider (usb_id_nopull@39).
+
+Like anything else that we refer to by name (interrupt, reg,
+clock, regulator, ...), the name used in the client is supposed
+to be a string that identifies what the connection means to the
+client, not what it means to the provider. This string is
+supposed to be defined in the binding of the client device and
+independent of what other hardware block provides it.
+
+E.g. if you have two usb devices that need a separate adc channel,
+it could look like
+
+pmic_vadc: vadc@3100 {
+
+	usb_1_id_nopull@39 {
+		reg = 0x39;
+	};
+	usb_2_id_nopull@40 {
+		reg = 0x40;
+	};
+
+};
+
+usb@100000 {
+	io-channels = <&pmic_vadc 0x39>;
+	io-channel-names = "vadc";
+};
+
+usb@200000 {
+	io-channels = <&pmic_vadc 0x40>;
+	io-channel-names = "vadc";
+};
+
+Now the usb driver just asks for an io channel named "vadc"
+and the ADC core code will perform that lookup.
+
+	Arnd
