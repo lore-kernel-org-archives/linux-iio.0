@@ -1,16 +1,16 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga02.intel.com ([134.134.136.20]:21412 "EHLO mga02.intel.com"
+Received: from mga01.intel.com ([192.55.52.88]:7811 "EHLO mga01.intel.com"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751364AbaIJET5 convert rfc822-to-8bit (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 10 Sep 2014 00:19:57 -0400
-From: "Pallala, Ramakrishna" <ramakrishna.pallala@intel.com>
-To: Jacob Pan <jacob.jun.pan@linux.intel.com>,
-	IIO <linux-iio@vger.kernel.org>,
+	id S1756531AbaIINEE (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Tue, 9 Sep 2014 09:04:04 -0400
+From: Jacob Pan <jacob.jun.pan@linux.intel.com>
+To: IIO <linux-iio@vger.kernel.org>,
 	LKML <linux-kernel@vger.kernel.org>,
 	DEVICE TREE <devicetree@vger.kernel.org>,
 	Lee Jones <lee.jones@linaro.org>
-CC: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
-	"Lu, Aaron" <aaron.lu@intel.com>, Alan Cox <alan@linux.intel.com>,
+Cc: Carlo Caione <carlo@caione.org>,
+	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+	Aaron Lu <aaron.lu@intel.com>, Alan Cox <alan@linux.intel.com>,
 	Jean Delvare <khali@linux-fr.org>,
 	Samuel Ortiz <sameo@linux.intel.com>,
 	Liam Girdwood <lgirdwood@gmail.com>,
@@ -21,41 +21,62 @@ CC: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
 	Lars-Peter Clausen <lars@metafoo.de>,
 	Hartmut Knaack <knaack.h@gmx.de>,
 	Fugang Duan <B38611@freescale.com>,
-	"Arnd Bergmann" <arnd@arndb.de>,
+	Arnd Bergmann <arnd@arndb.de>,
 	Zubair Lutfullah <zubair.lutfullah@gmail.com>,
 	Sebastian Reichel <sre@debian.org>,
 	Johannes Thumshirn <johannes.thumshirn@men.de>,
 	Philippe Reynes <tremyfr@yahoo.fr>,
-	"Angelo Compagnucci" <angelo.compagnucci@gmail.com>,
-	Doug Anderson <dianders@chromium.org>
-Subject: RE: [PATCH 4/4] iio/adc/axp288: add support for axp288 gpadc
-Date: Wed, 10 Sep 2014 04:19:49 +0000
-Message-ID: <D854C92F57B1B347B57E531E78D05EAD576EDB3F@BGSMSX104.gar.corp.intel.com>
-References: <1410215046-31751-1-git-send-email-jacob.jun.pan@linux.intel.com>
- <1410215046-31751-5-git-send-email-jacob.jun.pan@linux.intel.com>
-In-Reply-To: <1410215046-31751-5-git-send-email-jacob.jun.pan@linux.intel.com>
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
+	Angelo Compagnucci <angelo.compagnucci@gmail.com>,
+	Doug Anderson <dianders@chromium.org>,
+	Ramakrishna Pallala <ramakrishna.pallala@intel.com>,
+	Jacob Pan <jacob.jun.pan@linux.intel.com>
+Subject: [PATCH v2 0/4] Initial support for XPowers AXP288 PMIC
+Date: Tue,  9 Sep 2014 06:02:51 -0700
+Message-Id: <1410267775-4683-1-git-send-email-jacob.jun.pan@linux.intel.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Hi Jacob,
+XPowers AXP288 is a customized PMIC found on some Intel Baytrail-CR platforms.
+It comes with sub-functions such as USB charging, fuel gauge, ADC, and many LDO
+and BUCK channels.
 
-> +#if defined(CONFIG_PM_SLEEP) || defined(CONFIG_PM_RUNTIME) static int 
-> +axp288_gpadc_suspend(struct device *dev) {
-> +	int ret;
-> +	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-> +	struct gpadc_info *info = iio_priv(indio_dev);
-> +
-> +	mutex_lock(&indio_dev->mlock);
-> +	ret = axp288_gpadc_enable(info->regmap, false);
-> +	mutex_unlock(&indio_dev->mlock);
-> +
-> +	return ret;
-> +}
+By extending the existing AXP20x driver, this patchset adds basic support
+for AXP288 PMIC with GPADC as one MFD cell device driver. It also adds hooks
+for ACPI opregion handler driver which can be used to handle ACPI requests.
 
-AXP288 has integrated fuel gauge which relies on VBATT and IBATT ADC measurements. If we disable the ADC then Fuel Gauge will get stuck.
-So for the proper functioning of this integrated fuel gauging ADC measurements should always be ON.
+Currently, the PMIC driver in this patchset does not support platform data
+enumeration. But when ACPI _DSD and unified device properties become available,
+cell devices with platform data will be added.
 
-Thanks,
-Ram
+This patch does not use intel_soc_pmic core for i2c and regmap handling in that
+axp288 shares similar programming interface with other Xpower PMICs supported in
+axp20x.c. Therefore, extending axp20x.c to include axp288 makes more sense.
+
+Changes v2:
+	- use format -M for 1/4
+	- minor tweak based on Maxime's review
+
+Jacob Pan (4):
+  mfd/axp20x: rename files to support more devices
+  mfd/axp2xx: extend axp20x to support axp288 pmic
+  regulator/axp20x: use axp2xx consolidated header
+  iio/adc/axp288: add support for axp288 gpadc
+
+ drivers/iio/adc/Kconfig                  |   8 +
+ drivers/iio/adc/Makefile                 |   1 +
+ drivers/iio/adc/axp288_gpadc.c           | 250 ++++++++++++++++
+ drivers/mfd/Kconfig                      |   7 +-
+ drivers/mfd/Makefile                     |   2 +-
+ drivers/mfd/axp20x.c                     | 258 ----------------
+ drivers/mfd/axp2xx.c                     | 496 +++++++++++++++++++++++++++++++
+ drivers/regulator/axp20x-regulator.c     |   6 +-
+ include/linux/mfd/{axp20x.h => axp2xx.h} |  57 +++-
+ 9 files changed, 819 insertions(+), 266 deletions(-)
+ create mode 100644 drivers/iio/adc/axp288_gpadc.c
+ delete mode 100644 drivers/mfd/axp20x.c
+ create mode 100644 drivers/mfd/axp2xx.c
+ rename include/linux/mfd/{axp20x.h => axp2xx.h} (79%)
+
+-- 
+1.9.1
+
