@@ -1,411 +1,373 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:56820 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752798AbaINUlk (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 14 Sep 2014 16:41:40 -0400
-Message-ID: <5415FD82.2040604@kernel.org>
-Date: Sun, 14 Sep 2014 21:41:38 +0100
-From: Jonathan Cameron <jic23@kernel.org>
+Received: from ns.pmeerw.net ([87.118.82.44]:57488 "EHLO pmeerw.net"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1750784AbaIINqg (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Tue, 9 Sep 2014 09:46:36 -0400
+Date: Tue, 9 Sep 2014 15:46:31 +0200 (CEST)
+From: Peter Meerwald <pmeerw@pmeerw.net>
+To: Jacob Pan <jacob.jun.pan@linux.intel.com>
+cc: IIO <linux-iio@vger.kernel.org>,
+	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Ramakrishna Pallala <ramakrishna.pallala@intel.com>
+Subject: Re: [PATCH v2 4/4] iio/adc/axp288: add support for axp288 gpadc
+In-Reply-To: <1410267775-4683-5-git-send-email-jacob.jun.pan@linux.intel.com>
+Message-ID: <alpine.DEB.2.01.1409091509110.26919@pmeerw.net>
+References: <1410267775-4683-1-git-send-email-jacob.jun.pan@linux.intel.com> <1410267775-4683-5-git-send-email-jacob.jun.pan@linux.intel.com>
 MIME-Version: 1.0
-To: Peter Meerwald <pmeerw@pmeerw.net>
-CC: linux-iio@vger.kernel.org,
-	Oleksandr Kravchenko <o.v.kravchenko@globallogic.com>
-Subject: Re: [PATCH v2 11/11] iio:bma180: Add BMA250 chip support
-References: <1408488206-2633-1-git-send-email-pmeerw@pmeerw.net> <1408488206-2633-12-git-send-email-pmeerw@pmeerw.net> <5415EC72.20409@kernel.org> <alpine.DEB.2.01.1409142159400.15094@pmeerw.net>
-In-Reply-To: <alpine.DEB.2.01.1409142159400.15094@pmeerw.net>
-Content-Type: text/plain; charset=windows-1252
+Content-Type: TEXT/PLAIN; charset=US-ASCII
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 14/09/14 21:00, Peter Meerwald wrote:
-> 
->>> the BMA250 has only 10-bit resolution; while the data readout registers
->>> have identical layout, the configuration is completely different compared
->>> to the BMA180
->>>
->>> datasheet: http://ae-bst.resource.bosch.com/media/products/dokumente/bma250/BST-BMA250-DS002-05.pdf
->>>
->>> Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
->>> Cc: Oleksandr Kravchenko <o.v.kravchenko@globallogic.com>
-> 
->> Fair bit of fuzz from my fixups but I think this has merged right...
->> Applied
-> 
-> thanks for fixing things up, very busy weekend for you!
-> 
-Had a few weeks out for one reason or another so had some catching up to do...
+Hello,
 
-J
->> Jonathan
->>> ---
->>>  drivers/iio/accel/Kconfig  |   6 +-
->>>  drivers/iio/accel/bma180.c | 161 +++++++++++++++++++++++++++++++++++----------
->>>  2 files changed, 130 insertions(+), 37 deletions(-)
->>>
->>> diff --git a/drivers/iio/accel/Kconfig b/drivers/iio/accel/Kconfig
->>> index 7e2d187..8a62006 100644
->>> --- a/drivers/iio/accel/Kconfig
->>> +++ b/drivers/iio/accel/Kconfig
->>> @@ -6,13 +6,13 @@
->>>  menu "Accelerometers"
->>>  
->>>  config BMA180
->>> -	tristate "Bosch BMA180 3-Axis Accelerometer Driver"
->>> +	tristate "Bosch BMA180/BMA250 3-Axis Accelerometer Driver"
->>>  	depends on I2C
->>>  	select IIO_BUFFER
->>>  	select IIO_TRIGGERED_BUFFER
->>>  	help
->>> -	  Say Y here if you want to build a driver for the Bosch BMA180
->>> -	  triaxial acceleration sensor.
->>> +	  Say Y here if you want to build a driver for the Bosch BMA180 or
->>> +	  BMA250 triaxial acceleration sensor.
->>>  
->>>  	  To compile this driver as a module, choose M here: the
->>>  	  module will be called bma180.
->>> diff --git a/drivers/iio/accel/bma180.c b/drivers/iio/accel/bma180.c
->>> index 9fbc81f..c8e0a0a 100644
->>> --- a/drivers/iio/accel/bma180.c
->>> +++ b/drivers/iio/accel/bma180.c
->>> @@ -3,9 +3,15 @@
->>>   *
->>>   * Copyright 2013 Oleksandr Kravchenko <x0199363@ti.com>
->>>   *
->>> + * Support for BMA250 (c) Peter Meerwald <pmeerw@pmeerw.net>
->>> + *
->>>   * This file is subject to the terms and conditions of version 2 of
->>>   * the GNU General Public License.  See the file COPYING in the main
->>>   * directory of this archive for more details.
->>> + *
->>> + * SPI is not supported by driver
->>> + * BMA180: 7-bit I2C slave address 0x40 or 0x41
->>> + * BMA250: 7-bit I2C slave address 0x18 or 0x19
->>>   */
->>>  
->>>  #include <linux/module.h>
->>> @@ -23,13 +29,13 @@
->>>  #include <linux/iio/trigger_consumer.h>
->>>  #include <linux/iio/triggered_buffer.h>
->>>  
->>> -#define BMA180_DRV_NAME "bma180"
->>> -#define BMA180_IRQ_NAME "bma180_event"
->>> -
->>>  enum {
->>>  	BMA180,
->>> +	BMA250,
->>>  };
->>>  
->>> +struct bma180_data;
->> And here is the missing forward definition from the earlier patch.
->>> +
->>>  struct bma180_part_info {
->>>  	const struct iio_chan_spec *channels;
->>>  	unsigned num_channels;
->>> @@ -37,6 +43,15 @@ struct bma180_part_info {
->>>  	unsigned num_scales;
->>>  	const int *bw_table;
->>>  	unsigned num_bw;
->>> +
->>> +	u8 int_reset_reg, int_reset_mask;
->>> +	u8 sleep_reg, sleep_mask;
->>> +	u8 bw_reg, bw_mask;
->>> +	u8 scale_reg, scale_mask;
->>> +	u8 power_reg, power_mask, lowpower_val;
->>> +	u8 int_enable_reg, int_enable_mask;
->>> +	u8 softreset_reg;
->>> +
->>>  	int (*chip_config)(struct bma180_data *data);
->>>  	void (*chip_disable)(struct bma180_data *data);
->>>  };
->>> @@ -75,13 +90,23 @@ struct bma180_part_info {
->>>  #define BMA180_ID_REG_VAL	0x03
->>>  
->>>  /* Chip power modes */
->>> -#define BMA180_LOW_NOISE	0x00
->>>  #define BMA180_LOW_POWER	0x03
->>>  
->>> -/* Defaults values */
->>> -#define BMA180_DEF_PMODE	false
->>> -#define BMA180_DEF_BW		20
->>> -#define BMA180_DEF_SCALE	2452
->>> +#define BMA250_RANGE_REG	0x0f
->>> +#define BMA250_BW_REG		0x10
->>> +#define BMA250_POWER_REG	0x11
->>> +#define BMA250_RESET_REG	0x14
->>> +#define BMA250_INT_ENABLE_REG	0x17
->>> +#define BMA250_INT_MAP_REG	0x1a
->>> +#define BMA250_INT_RESET_REG	0x21
->>> +
->>> +#define BMA250_RANGE_MASK	GENMASK(3, 0) /* Range of accel values */
->>> +#define BMA250_BW_MASK		GENMASK(4, 0) /* Accel bandwidth */
->>> +#define BMA250_SUSPEND_MASK	BIT(7) /* chip will sleep */
->>> +#define BMA250_LOWPOWER_MASK	BIT(6)
->>> +#define BMA250_DATA_INTEN_MASK	BIT(4)
->>> +#define BMA250_INT1_DATA_MASK	BIT(0)
->>> +#define BMA250_INT_RESET_MASK	BIT(7) /* Reset pending interrupts */
->>>  
->>>  struct bma180_data {
->>>  	struct i2c_client *client;
->>> @@ -105,6 +130,10 @@ enum bma180_chan {
->>>  static int bma180_bw_table[] = { 10, 20, 40, 75, 150, 300 }; /* Hz */
->>>  static int bma180_scale_table[] = { 1275, 1863, 2452, 3727, 4903, 9709, 19417 };
->>>  
->>> +static int bma250_bw_table[] = { 8, 16, 31, 63, 125, 250 }; /* Hz */
->>> +static int bma250_scale_table[] = { 0, 0, 0, 38344, 0, 76590, 0, 0, 153180, 0,
->>> +	0, 0, 306458 };
->>> +
->>>  static int bma180_get_data_reg(struct bma180_data *data, enum bma180_chan chan)
->>>  {
->>>  	int ret;
->>> @@ -143,7 +172,8 @@ static int bma180_set_bits(struct bma180_data *data, u8 reg, u8 mask, u8 val)
->>>  
->>>  static int bma180_reset_intr(struct bma180_data *data)
->>>  {
->>> -	int ret = bma180_set_bits(data, BMA180_CTRL_REG0, BMA180_RESET_INT, 1);
->>> +	int ret = bma180_set_bits(data, data->part_info->int_reset_reg,
->>> +		data->part_info->int_reset_mask, 1);
->>>  
->>>  	if (ret)
->>>  		dev_err(&data->client->dev, "failed to reset interrupt\n");
->>> @@ -153,10 +183,8 @@ static int bma180_reset_intr(struct bma180_data *data)
->>>  
->>>  static int bma180_set_new_data_intr_state(struct bma180_data *data, bool state)
->>>  {
->>> -	u8 reg_val = state ? BMA180_NEW_DATA_INT : 0x00;
->>> -	int ret = i2c_smbus_write_byte_data(data->client, BMA180_CTRL_REG3,
->>> -			reg_val);
->>> -
->>> +	int ret = bma180_set_bits(data, data->part_info->int_enable_reg,
->>> +			data->part_info->int_enable_mask, state);
->>>  	if (ret)
->>>  		goto err;
->>>  	ret = bma180_reset_intr(data);
->>> @@ -173,7 +201,8 @@ err:
->>>  
->>>  static int bma180_set_sleep_state(struct bma180_data *data, bool state)
->>>  {
->>> -	int ret = bma180_set_bits(data, BMA180_CTRL_REG0, BMA180_SLEEP, state);
->>> +	int ret = bma180_set_bits(data, data->part_info->sleep_reg,
->>> +		data->part_info->sleep_mask, state);
->>>  
->>>  	if (ret) {
->>>  		dev_err(&data->client->dev,
->>> @@ -205,8 +234,8 @@ static int bma180_set_bw(struct bma180_data *data, int val)
->>>  
->>>  	for (i = 0; i < data->part_info->num_bw; ++i) {
->>>  		if (data->part_info->bw_table[i] == val) {
->>> -			ret = bma180_set_bits(data,
->>> -					BMA180_BW_TCS, BMA180_BW, i);
->>> +			ret = bma180_set_bits(data, data->part_info->bw_reg,
->>> +				data->part_info->bw_mask, i);
->>>  			if (ret) {
->>>  				dev_err(&data->client->dev,
->>>  					"failed to set bandwidth\n");
->>> @@ -229,8 +258,8 @@ static int bma180_set_scale(struct bma180_data *data, int val)
->>>  
->>>  	for (i = 0; i < data->part_info->num_scales; ++i)
->>>  		if (data->part_info->scale_table[i] == val) {
->>> -			ret = bma180_set_bits(data,
->>> -					BMA180_OFFSET_LSB1, BMA180_RANGE, i);
->>> +			ret = bma180_set_bits(data, data->part_info->scale_reg,
->>> +				data->part_info->scale_mask, i);
->>>  			if (ret) {
->>>  				dev_err(&data->client->dev,
->>>  					"failed to set scale\n");
->>> @@ -245,9 +274,9 @@ static int bma180_set_scale(struct bma180_data *data, int val)
->>>  
->>>  static int bma180_set_pmode(struct bma180_data *data, bool mode)
->>>  {
->>> -	u8 reg_val = mode ? BMA180_LOW_POWER : BMA180_LOW_NOISE;
->>> -	int ret = bma180_set_bits(data, BMA180_TCO_Z, BMA180_MODE_CONFIG,
->>> -			reg_val);
->>> +	u8 reg_val = mode ? data->part_info->lowpower_val : 0;
->>> +	int ret = bma180_set_bits(data, data->part_info->power_reg,
->>> +		data->part_info->power_mask, reg_val);
->>>  
->>>  	if (ret) {
->>>  		dev_err(&data->client->dev, "failed to set power mode\n");
->>> @@ -261,7 +290,7 @@ static int bma180_set_pmode(struct bma180_data *data, bool mode)
->>>  static int bma180_soft_reset(struct bma180_data *data)
->>>  {
->>>  	int ret = i2c_smbus_write_byte_data(data->client,
->>> -			BMA180_RESET, BMA180_RESET_VAL);
->>> +		data->part_info->softreset_reg, BMA180_RESET_VAL);
->>>  
->>>  	if (ret)
->>>  		dev_err(&data->client->dev, "failed to reset the chip\n");
->>> @@ -288,7 +317,11 @@ static int bma180_chip_init(struct bma180_data *data)
->>>  	 */
->>>  	msleep(20);
->>>  
->>> -	return 0;
->>> +	ret = bma180_set_new_data_intr_state(data, false);
->>> +	if (ret)
->>> +		return ret;
->>> +
->>> +	return bma180_set_pmode(data, false);
->>>  }
->>>  
->>>  static int bma180_chip_config(struct bma180_data *data)
->>> @@ -303,19 +336,37 @@ static int bma180_chip_config(struct bma180_data *data)
->>>  	ret = bma180_set_ee_writing_state(data, true);
->>>  	if (ret)
->>>  		goto err;
->>> -	ret = bma180_set_new_data_intr_state(data, false);
->>> +	ret = bma180_set_bits(data, BMA180_OFFSET_LSB1, BMA180_SMP_SKIP, 1);
->>>  	if (ret)
->>>  		goto err;
->>> -	ret = bma180_set_bits(data, BMA180_OFFSET_LSB1, BMA180_SMP_SKIP, 1);
->>> +	ret = bma180_set_bw(data, 20); /* 20 Hz */
->>>  	if (ret)
->>>  		goto err;
->>> -	ret = bma180_set_pmode(data, BMA180_DEF_PMODE);
->>> +	ret = bma180_set_scale(data, 2452); /* 2 G */
->>>  	if (ret)
->>>  		goto err;
->>> -	ret = bma180_set_bw(data, BMA180_DEF_BW);
->>> +
->>> +	return 0;
->>> +
->>> +err:
->>> +	dev_err(&data->client->dev, "failed to config the chip\n");
->>> +	return ret;
->>> +}
->>> +
->>> +static int bma250_chip_config(struct bma180_data *data)
->>> +{
->>> +	int ret = bma180_chip_init(data);
->>> +
->>> +	if (ret)
->>> +		goto err;
->>> +	ret = bma180_set_bw(data, 16); /* 16 Hz */
->>> +	if (ret)
->>> +		goto err;
->>> +	ret = bma180_set_scale(data, 38344); /* 2 G */
->>>  	if (ret)
->>>  		goto err;
->>> -	ret = bma180_set_scale(data, BMA180_DEF_SCALE);
->>> +	ret = bma180_set_bits(data, BMA250_INT_MAP_REG,
->>> +		BMA250_INT1_DATA_MASK, 1);
->>>  	if (ret)
->>>  		goto err;
->>>  
->>> @@ -341,6 +392,19 @@ err:
->>>  	dev_err(&data->client->dev, "failed to disable the chip\n");
->>>  }
->>>  
->>> +static void bma250_chip_disable(struct bma180_data *data)
->>> +{
->>> +	if (bma180_set_new_data_intr_state(data, false))
->>> +		goto err;
->>> +	if (bma180_set_sleep_state(data, true))
->>> +		goto err;
->>> +
->>> +	return;
->>> +
->>> +err:
->>> +	dev_err(&data->client->dev, "failed to disable the chip\n");
->>> +}
->>> +
->>>  static ssize_t bma180_show_avail(char *buf, const int *vals, unsigned n,
->>>  				 bool micros)
->>>  {
->>> @@ -543,14 +607,43 @@ static const struct iio_chan_spec bma180_channels[] = {
->>>  	IIO_CHAN_SOFT_TIMESTAMP(4),
->>>  };
->>>  
->>> +static const struct iio_chan_spec bma250_channels[] = {
->>> +	BMA180_ACC_CHANNEL(X, 10),
->>> +	BMA180_ACC_CHANNEL(Y, 10),
->>> +	BMA180_ACC_CHANNEL(Z, 10),
->>> +	BMA180_TEMP_CHANNEL,
->>> +	IIO_CHAN_SOFT_TIMESTAMP(4),
->>> +};
->>> +
->>>  static const struct bma180_part_info bma180_part_info[] = {
->>>  	[BMA180] = {
->>>  		bma180_channels, ARRAY_SIZE(bma180_channels),
->>>  		bma180_scale_table, ARRAY_SIZE(bma180_scale_table),
->>>  		bma180_bw_table, ARRAY_SIZE(bma180_bw_table),
->>> +		BMA180_CTRL_REG0, BMA180_RESET_INT,
->>> +		BMA180_CTRL_REG0, BMA180_SLEEP,
->>> +		BMA180_BW_TCS, BMA180_BW,
->>> +		BMA180_OFFSET_LSB1, BMA180_RANGE,
->>> +		BMA180_TCO_Z, BMA180_MODE_CONFIG, BMA180_LOW_POWER,
->>> +		BMA180_CTRL_REG3, BMA180_NEW_DATA_INT,
->>> +		BMA180_RESET,
->>>  		bma180_chip_config,
->>>  		bma180_chip_disable,
->>>  	},
->>> +	[BMA250] = {
->>> +		bma250_channels, ARRAY_SIZE(bma250_channels),
->>> +		bma250_scale_table, ARRAY_SIZE(bma250_scale_table),
->>> +		bma250_bw_table, ARRAY_SIZE(bma250_bw_table),
->>> +		BMA250_INT_RESET_REG, BMA250_INT_RESET_MASK,
->>> +		BMA250_POWER_REG, BMA250_SUSPEND_MASK,
->>> +		BMA250_BW_REG, BMA250_BW_MASK,
->>> +		BMA250_RANGE_REG, BMA250_RANGE_MASK,
->>> +		BMA250_POWER_REG, BMA250_LOWPOWER_MASK, 1,
->>> +		BMA250_INT_ENABLE_REG, BMA250_DATA_INTEN_MASK,
->>> +		BMA250_RESET_REG,
->>> +		bma250_chip_config,
->>> +		bma250_chip_disable,
->>> +	},
->>>  };
->>>  
->>>  static irqreturn_t bma180_trigger_handler(int irq, void *p)
->>> @@ -626,11 +719,10 @@ static int bma180_probe(struct i2c_client *client,
->>>  		goto err_chip_disable;
->>>  
->>>  	mutex_init(&data->mutex);
->>> -
->>>  	indio_dev->dev.parent = &client->dev;
->>>  	indio_dev->channels = data->part_info->channels;
->>>  	indio_dev->num_channels = data->part_info->num_channels;
->>> -	indio_dev->name = BMA180_DRV_NAME;
->>> +	indio_dev->name = id->name;
->>>  	indio_dev->modes = INDIO_DIRECT_MODE;
->>>  	indio_dev->info = &bma180_info;
->>>  
->>> @@ -644,7 +736,7 @@ static int bma180_probe(struct i2c_client *client,
->>>  
->>>  		ret = devm_request_irq(&client->dev, client->irq,
->>>  			iio_trigger_generic_data_rdy_poll, IRQF_TRIGGER_RISING,
->>> -			BMA180_IRQ_NAME, data->trig);
->>> +			"bma180_event", data->trig);
->>>  		if (ret) {
->>>  			dev_err(&client->dev, "unable to request IRQ\n");
->>>  			goto err_trigger_free;
->>> @@ -741,7 +833,8 @@ static SIMPLE_DEV_PM_OPS(bma180_pm_ops, bma180_suspend, bma180_resume);
->>>  #endif
->>>  
->>>  static struct i2c_device_id bma180_ids[] = {
->>> -	{ BMA180_DRV_NAME, BMA180 },
->>> +	{ "bma180", BMA180 },
->>> +	{ "bma250", BMA250 },
->>>  	{ }
->>>  };
->>>  
->>> @@ -749,7 +842,7 @@ MODULE_DEVICE_TABLE(i2c, bma180_id);
->>>  
->>>  static struct i2c_driver bma180_driver = {
->>>  	.driver = {
->>> -		.name	= BMA180_DRV_NAME,
->>> +		.name	= "bma180",
->>>  		.owner	= THIS_MODULE,
->>>  		.pm	= BMA180_PM_OPS,
->>>  	},
->>> @@ -762,5 +855,5 @@ module_i2c_driver(bma180_driver);
->>>  
->>>  MODULE_AUTHOR("Kravchenko Oleksandr <x0199363@ti.com>");
->>>  MODULE_AUTHOR("Texas Instruments, Inc.");
->>> -MODULE_DESCRIPTION("Bosch BMA180 triaxial acceleration sensor");
->>> +MODULE_DESCRIPTION("Bosch BMA180/BMA250 triaxial acceleration sensor");
->>>  MODULE_LICENSE("GPL");
->>>
->> --
->> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
->> the body of a message to majordomo@vger.kernel.org
->> More majordomo info at  http://vger.kernel.org/majordomo-info.html
->>
+> Platform driver for XPowers AXP288 ADC, which is a customized PMIC for Intel
+
+XPower's
+
+> Baytrail-CR platforms. GPADC device enumerates as one of the PMIC MFD cell
+> devices. It uses IIO infrastructure to communicate with userspace and
+> consumer drivers.
 > 
+> Usages of ADC channels include battery charging and thermal sensors.
+> 
+> Based on initial work by:
+> Ramakrishna Pallala <ramakrishna.pallala@intel.com>
+
+some trivial comments inline
+
+> Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
+> ---
+>  drivers/iio/adc/Kconfig        |   8 ++
+>  drivers/iio/adc/Makefile       |   1 +
+>  drivers/iio/adc/axp288_gpadc.c | 250 +++++++++++++++++++++++++++++++++++++++++
+>  3 files changed, 259 insertions(+)
+>  create mode 100644 drivers/iio/adc/axp288_gpadc.c
+> 
+> diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+> index 11b048a..f5c61c0 100644
+> --- a/drivers/iio/adc/Kconfig
+> +++ b/drivers/iio/adc/Kconfig
+> @@ -279,4 +279,12 @@ config XILINX_XADC
+>  	  The driver can also be build as a module. If so, the module will be called
+>  	  xilinx-xadc.
+>  
+> +config AXP288_GPADC
+
+alphabetic order please
+
+> +	tristate "X-Power AXP288 GPADC driver"
+
+XPower
+
+> +	depends on MFD_AXP2XX
+> +	help
+> +	  Say yes here to have support for X-Power power management IC (PMIC) ADC
+> +	  device. Depending on platform configuration, this general purpose ADC can
+> +	  be used for sampling sensors such as thermal resisters.
+
+resistors
+
+> +
+>  endmenu
+> diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
+> index ad81b51..8bf0104 100644
+> --- a/drivers/iio/adc/Makefile
+> +++ b/drivers/iio/adc/Makefile
+> @@ -30,3 +30,4 @@ obj-$(CONFIG_VF610_ADC) += vf610_adc.o
+>  obj-$(CONFIG_VIPERBOARD_ADC) += viperboard_adc.o
+>  xilinx-xadc-y := xilinx-xadc-core.o xilinx-xadc-events.o
+>  obj-$(CONFIG_XILINX_XADC) += xilinx-xadc.o
+> +obj-$(CONFIG_AXP288_GPADC) += axp288_gpadc.o
+> diff --git a/drivers/iio/adc/axp288_gpadc.c b/drivers/iio/adc/axp288_gpadc.c
+> new file mode 100644
+> index 0000000..7ca6bbf
+> --- /dev/null
+> +++ b/drivers/iio/adc/axp288_gpadc.c
+> @@ -0,0 +1,250 @@
+> +/*
+> + * axp288_gpadc.c - Xpower AXP288 PMIC GPADC Driver
+> + *
+> + * Copyright (C) 2014 Intel Corporation
+> + *
+> + * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> + *
+> + * This program is free software; you can redistribute it and/or modify
+> + * it under the terms of the GNU General Public License as published by
+> + * the Free Software Foundation; version 2 of the License.
+> + *
+> + * This program is distributed in the hope that it will be useful, but
+> + * WITHOUT ANY WARRANTY; without even the implied warranty of
+> + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	See the GNU
+> + * General Public License for more details.
+> + *
+> + */
+> +
+> +#include <linux/module.h>
+> +#include <linux/kernel.h>
+> +#include <linux/device.h>
+> +#include <linux/regmap.h>
+> +#include <linux/mfd/axp2xx.h>
+> +#include <linux/platform_device.h>
+> +
+> +#include <linux/iio/iio.h>
+> +#include <linux/iio/machine.h>
+> +#include <linux/iio/driver.h>
+
+newline
+
+> +#define ADC_EN_MASK			0xF1
+> +#define ADC_TS_PIN_GPADC                0xF2
+> +#define ADC_TS_PIN_ON                   0xF3
+
+use a likely unique prefix for all #defines, functions, e.g. AXP288_ADC_
+
+> +
+> +struct gpadc_info {
+> +	unsigned int irq;
+
+irq is 'int' in _probe()
+
+> +	struct device *dev;
+> +	struct regmap *regmap;
+> +};
+> +
+> +#define ADC_CHANNEL(_type, _channel, _address)	        \
+> +	{								\
+> +		.indexed = 1,						\
+> +		.type = _type,						\
+> +		.channel = _channel,					\
+> +		.address = _address,					\
+> +		.datasheet_name = "CH"#_channel,			\
+> +		.scan_index = _channel,					\
+
+driver doesn't offer buffered interface, so no scan_index, scan_type 
+needed
+
+> +		.scan_type = {						\
+> +			.sign = 'u',					\
+> +			.realbits = 12,					\
+> +			.storagebits = 32,				\
+> +			.endianness = IIO_LE,				\
+> +		},							\
+> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),		\
+> +	}
+> +
+> +static const struct iio_chan_spec const axp288_adc_channels[] = {
+> +	ADC_CHANNEL(IIO_TEMP, 0, AXP288_TS_ADC_H),
+> +	ADC_CHANNEL(IIO_TEMP, 1, AXP288_PMIC_ADC_H),
+> +	ADC_CHANNEL(IIO_TEMP, 2, AXP288_GP_ADC_H),
+
+what unit are these values in?
+IIO wants milli degrees Celsius
+
+> +	ADC_CHANNEL(IIO_CURRENT, 3, AXP20X_BATT_CHRG_I_H),
+> +	ADC_CHANNEL(IIO_CURRENT, 4, AXP20X_BATT_DISCHRG_I_H),
+
+there are no current channels documented in 
+Documentation/ABI/testing/sysfs-bus-iio yet, need to describe
+
+what unit?
+
+> +	ADC_CHANNEL(IIO_VOLTAGE, 5, AXP20X_BATT_V_H),
+> +};
+> +
+> +#define ADC_MAP(_adc_channel_label,				\
+> +		     _consumer_dev_name,			\
+> +		     _consumer_channel)				\
+> +	{							\
+> +		.adc_channel_label = _adc_channel_label,	\
+> +		.consumer_dev_name = _consumer_dev_name,	\
+> +		.consumer_channel = _consumer_channel,		\
+> +	}
+> +
+> +/* for consumer drivers */
+
+const probably
+
+> +static struct iio_map axp288_iio_default_maps[] = {
+> +	ADC_MAP("TS_PIN", "axp288-batt", "axp288-batt-temp"),
+> +	ADC_MAP("PMIC_TEMP", "axp288-pmic", "axp288-pmic-temp"),
+> +	ADC_MAP("GPADC", "axp288-gpadc", "axp288-system-temp"),
+> +	ADC_MAP("BATT_CHG_I", "axp288-chrg", "axp288-chrg-curr"),
+> +	ADC_MAP("BATT_DISCHRG_I", "axp288-chrg", "axp288-chrg-d-curr"),
+> +	ADC_MAP("BATT_V", "axp288-batt", "axp288-batt-volt"),
+> +	{},
+> +};
+> +
+> +static int axp288_adc_read_raw(struct iio_dev *indio_dev,
+> +			struct iio_chan_spec const *chan,
+> +			int *val, int *val2, long m)
+> +{
+> +	int ret;
+> +	struct gpadc_info *info = iio_priv(indio_dev);
+> +	unsigned int th, tl;
+> +
+> +	mutex_lock(&indio_dev->mlock);
+> +
+> +	/* special case for GPADC sample */
+> +	if (chan->address == AXP288_GP_ADC_H)
+> +		regmap_write(info->regmap, AXP288_ADC_TS_PIN_CTRL,
+> +			ADC_TS_PIN_GPADC);
+> +
+> +	ret = regmap_read(info->regmap, chan->address, &th);
+> +	if (ret) {
+> +		dev_err(&indio_dev->dev, "sample raw data high failed\n");
+> +		goto exit_done;
+> +	}
+> +
+> +	ret = regmap_read(info->regmap, chan->address + 1, &tl);
+> +	if (ret) {
+> +		dev_err(&indio_dev->dev, "sample raw data low failed\n");
+> +		goto exit_done;
+> +	}
+> +
+> +	*val = (th << 4) + ((tl >> 4) & 0x0F);
+> +	ret = IIO_VAL_INT;
+> +
+> +exit_done:
+> +	if (chan->address == AXP288_GP_ADC_H)
+> +		regmap_write(info->regmap, AXP288_ADC_TS_PIN_CTRL,
+> +			ADC_TS_PIN_ON);
+> +
+> +	mutex_unlock(&indio_dev->mlock);
+> +
+> +	return ret;
+> +}
+> +
+> +static int axp288_gpadc_enable(struct regmap *regmap, bool enable)
+> +{
+> +	unsigned int pin_on, adc_en;
+> +
+> +	if (enable) {
+> +		pin_on = ADC_TS_PIN_ON;
+> +		adc_en = ADC_EN_MASK;
+> +	} else {
+> +		pin_on = ~ADC_TS_PIN_ON;
+> +		adc_en = ~ADC_EN_MASK;
+> +	}
+> +	if (regmap_write(regmap, AXP288_ADC_TS_PIN_CTRL, pin_on))
+> +		return -EIO;
+> +
+> +	return regmap_write(regmap, AXP20X_ADC_EN1, ~ADC_EN_MASK);
+> +}
+> +
+> +static const struct iio_info axp288_iio_info = {
+> +	.read_raw = &axp288_adc_read_raw,
+> +	.driver_module = THIS_MODULE,
+> +};
+> +
+> +static int axp288_gpadc_probe(struct platform_device *pdev)
+> +{
+> +	int err;
+> +	struct gpadc_info *info;
+> +	struct iio_dev *indio_dev;
+> +	struct axp2xx_dev *axp2xx = dev_get_drvdata(pdev->dev.parent);
+> +	int irq;
+> +
+> +	indio_dev = devm_iio_device_alloc(&pdev->dev, sizeof(*info));
+> +	if (!indio_dev)
+> +		return -ENOMEM;
+> +
+> +	info = iio_priv(indio_dev);
+> +	irq = platform_get_irq(pdev, 0);
+> +	if (irq < 0) {
+> +		dev_err(&pdev->dev, "no irq resource?\n");
+> +		return irq;
+> +	}
+> +	info->irq = irq;
+> +	platform_set_drvdata(pdev, indio_dev);
+> +	info->regmap = axp2xx->regmap;
+> +	axp288_gpadc_enable(axp2xx->regmap, true);
+> +
+> +	indio_dev->dev.parent = &pdev->dev;
+> +	indio_dev->name = pdev->name;
+> +	indio_dev->channels = axp288_adc_channels;
+> +	indio_dev->num_channels = ARRAY_SIZE(axp288_adc_channels);
+> +	indio_dev->info = &axp288_iio_info;
+> +	indio_dev->modes = INDIO_DIRECT_MODE;
+> +	/* REVISIT: override default map with platform data */
+> +	err = iio_map_array_register(indio_dev, axp288_iio_default_maps);
+> +	if (err)
+> +		goto err_disable_dev;
+> +
+> +	err = iio_device_register(indio_dev);
+> +	if (err < 0) {
+> +		dev_err(&pdev->dev, "unable to register iio device\n");
+> +		goto err_array_unregister;
+> +	}
+> +	return 0;
+> +
+> +err_array_unregister:
+> +	iio_map_array_unregister(indio_dev);
+> +err_disable_dev:
+> +	axp288_gpadc_enable(axp2xx->regmap, false);
+> +	return err;
+> +}
+> +
+> +static int axp288_gpadc_remove(struct platform_device *pdev)
+> +{
+> +	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
+> +
+> +	iio_device_unregister(indio_dev);
+> +	iio_map_array_unregister(indio_dev);
+
+axp288_gpadc_enable(axp2xx->regmap, false);
+
+> +
+> +	return 0;
+> +}
+> +
+> +#if defined(CONFIG_PM_SLEEP) || defined(CONFIG_PM_RUNTIME)
+> +static int axp288_gpadc_suspend(struct device *dev)
+> +{
+> +	int ret;
+> +	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+> +	struct gpadc_info *info = iio_priv(indio_dev);
+> +
+> +	mutex_lock(&indio_dev->mlock);
+> +	ret = axp288_gpadc_enable(info->regmap, false);
+> +	mutex_unlock(&indio_dev->mlock);
+> +
+> +	return ret;
+> +}
+> +
+> +static int axp288_gpadc_resume(struct device *dev)
+> +{
+> +	int ret;
+> +	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+> +	struct gpadc_info *info = iio_priv(indio_dev);
+> +
+> +	mutex_lock(&indio_dev->mlock);
+> +	ret = axp288_gpadc_enable(info->regmap, true);
+> +	mutex_unlock(&indio_dev->mlock);
+> +
+> +	return ret;
+> +}
+> +#endif
+> +
+> +static UNIVERSAL_DEV_PM_OPS(axp288_gpadc_pm_ops, axp288_gpadc_suspend,
+> +			axp288_gpadc_resume, NULL);
+> +
+> +static struct platform_driver axp288_gpadc_driver = {
+> +	.probe = axp288_gpadc_probe,
+> +	.remove = axp288_gpadc_remove,
+> +	.driver = {
+> +		.name = "axp288_adc",
+> +		.owner = THIS_MODULE,
+> +		.pm = &axp288_gpadc_pm_ops,
+> +	},
+> +};
+> +
+> +module_platform_driver(axp288_gpadc_driver);
+> +
+> +MODULE_AUTHOR("Jacob Pan <jacob.jun.pan@linux.intel.com>");
+> +MODULE_DESCRIPTION("Dollar Cove Xpower AXP288 General Purpose ADC Driver");
+> +MODULE_LICENSE("GPL");
+> 
+
+-- 
+
+Peter Meerwald
++43-664-2444418 (mobile)
