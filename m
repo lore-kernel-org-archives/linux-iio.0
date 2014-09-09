@@ -1,163 +1,112 @@
-Return-Path: <knaack.h@gmx.de>
-Message-ID: <540F7DB7.9090007@gmx.de>
-Date: Wed, 10 Sep 2014 00:22:47 +0200
-From: Hartmut Knaack <knaack.h@gmx.de>
-MIME-Version: 1.0
-To: Stanimir Varbanov <svarbanov@mm-sol.com>,
- Ian Campbell <ijc+devicetree@hellion.org.uk>,
- Pawel Moll <pawel.moll@arm.com>, Rob Herring <robh+dt@kernel.org>,
- Kumar Gala <galak@codeaurora.org>,
- Mark Rutland <mark.rutland@arm.com>,
- Grant Likely <grant.likely@linaro.org>,
- Jonathan Cameron <jic23@kernel.org>
-CC: linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Lars-Peter Clausen <lars@metafoo.de>,
- Angelo Compagnucci <angelo.compagnucci@gmail.com>,
- Doug Anderson <dianders@chromium.org>,
- Fugang Duan <B38611@freescale.com>,
- Johannes Thumshirn <johannes.thumshirn@men.de>,
- Jean Delvare <jdelvare@suse.de>,
- Philippe Reynes <tremyfr@yahoo.fr>, Lee Jones <lee.jones@linaro.org>,
- Josh Cartwright <joshc@codeaurora.org>,
- Stephen Boyd <sboyd@codeaurora.org>,
- David Collins <collinsd@codeaurora.org>,
- "Ivan T. Ivanov" <iivanov@mm-sol.com>
-Subject: Re: [PATCH 2/2] DT: iio: vadc: document dt binding
-References: <1409919274-13419-1-git-send-email-svarbanov@mm-sol.com> <1409919274-13419-3-git-send-email-svarbanov@mm-sol.com>
-In-Reply-To: <1409919274-13419-3-git-send-email-svarbanov@mm-sol.com>
-Content-Type: text/plain; charset=ISO-8859-15
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mga01.intel.com ([192.55.52.88]:43390 "EHLO mga01.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1756271AbaIINEO (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Tue, 9 Sep 2014 09:04:14 -0400
+From: Jacob Pan <jacob.jun.pan@linux.intel.com>
+To: IIO <linux-iio@vger.kernel.org>,
+	LKML <linux-kernel@vger.kernel.org>,
+	DEVICE TREE <devicetree@vger.kernel.org>,
+	Lee Jones <lee.jones@linaro.org>
+Cc: Carlo Caione <carlo@caione.org>,
+	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+	Aaron Lu <aaron.lu@intel.com>, Alan Cox <alan@linux.intel.com>,
+	Jean Delvare <khali@linux-fr.org>,
+	Samuel Ortiz <sameo@linux.intel.com>,
+	Liam Girdwood <lgirdwood@gmail.com>,
+	Mark Brown <broonie@kernel.org>,
+	Grant Likely <grant.likely@linaro.org>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Rob Herring <robh+dt@kernel.org>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Fugang Duan <B38611@freescale.com>,
+	Arnd Bergmann <arnd@arndb.de>,
+	Zubair Lutfullah <zubair.lutfullah@gmail.com>,
+	Sebastian Reichel <sre@debian.org>,
+	Johannes Thumshirn <johannes.thumshirn@men.de>,
+	Philippe Reynes <tremyfr@yahoo.fr>,
+	Angelo Compagnucci <angelo.compagnucci@gmail.com>,
+	Doug Anderson <dianders@chromium.org>,
+	Ramakrishna Pallala <ramakrishna.pallala@intel.com>,
+	Jacob Pan <jacob.jun.pan@linux.intel.com>
+Subject: [PATCH v2 1/4] mfd/axp20x: rename files to support more devices
+Date: Tue,  9 Sep 2014 06:02:52 -0700
+Message-Id: <1410267775-4683-2-git-send-email-jacob.jun.pan@linux.intel.com>
+In-Reply-To: <1410267775-4683-1-git-send-email-jacob.jun.pan@linux.intel.com>
+References: <1410267775-4683-1-git-send-email-jacob.jun.pan@linux.intel.com>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Stanimir Varbanov schrieb, Am 05.09.2014 14:14:
-> Document DT binding for Qualcomm SPMI PMIC voltage ADC
-> driver.
-> 
-> Signed-off-by: Stanimir Varbanov <svarbanov@mm-sol.com>
-> Signed-off-by: Ivan T. Ivanov <iivanov@mm-sol.com>
-> ---
->  .../devicetree/bindings/iio/adc/qcom,spmi-vadc.txt |  110 ++++++++++++++++++++
->  1 files changed, 110 insertions(+), 0 deletions(-)
->  create mode 100644 Documentation/devicetree/bindings/iio/adc/qcom,spmi-vadc.txt
-> 
-> diff --git a/Documentation/devicetree/bindings/iio/adc/qcom,spmi-vadc.txt b/Documentation/devicetree/bindings/iio/adc/qcom,spmi-vadc.txt
-> new file mode 100644
-> index 0000000..f9c780f
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/iio/adc/qcom,spmi-vadc.txt
-> @@ -0,0 +1,110 @@
-> +Qualcomm's SPMI PMIC voltage ADC
-> +
-> +SPMI PMIC voltage ADC (VADC) provides interface to clients to read
-> +voltage. A 15 bit ADC is used for voltage measurements. There are multiple
-> +peripherals to the VADC and the scope of the driver is to provide interface
-> +for the USR peripheral of the VADC.
-> +
-> +VADC node:
-> +
-> +- compatible:
-> +    Usage: required
-> +    Value type: <string>
-> +    Definition: Should contain "qcom,spmi-vadc".
-> +
-> +- reg:
-> +    Usage: required
-> +    Value type: <u32>
-> +    Definition: Base address in the SPMI PMIC register map.
-> +
-> +- interrupts:
-> +    Usage: required
-> +    Value type: <prop-encoded-array>
-> +    Definition: End of convertion interrupt number.
-Typo: conversion
-> +
-> +- qcom,poll-eoc:
-> +    Usage: optional
-> +    Value type: <empty>
-> +    Definition: Use polling instead of interrupt for end of conversion
-> +            completion.
-> +
-> +Channel node properities:
-Typo: properties
-> +
-> +- qcom,channel:
-> +    Usage: required
-> +    Value type: <u32>
-> +    Definition: AMUX channel number.
-> +
-> +- qcom,decimation:
-> +    Usage: optional
-> +    Value type: <u32>
-> +    Definition: Sampling rate to use for the individual channel measurement.
-> +            Quicker measurements can be made by reducing decimation ratio.
-> +            Valid values are 512, 1024, 2048, 4096.
-> +            If property is not found, default value of 512 will be used.
-> +
-> +- qcom,pre-scaling:
-> +    Usage: optional
-> +    Value type: <u32 array>
-> +    Definition: Used for scaling the channel input signal before the signal is
-> +            fed to VADC. The configuration for this node is to know the
-> +            pre-determined ratio and use it for post scaling. Select one from
-> +            the following options.
-> +            <1 1>, <1 3>, <1 4>, <1 6>, <1 20>, <1 8>, <10 81>, <1 10>
-> +            If property is not found default value depending of chip will be used.
-> +
-> +- qcom,ratiometric:
-> +    Usage: optional
-> +    Value type: <empty>
-> +    Definition: Channel calibration type. If this property is specified
-> +            VADC will use the VDD reference(1.8V) and GND for channel
-> +            calibration. If properity is not found, channel will be
-Typo: property
-> +            calibrated with 625mv and 1.25V reference channels.
-> +
-> +- qcom,hw-settle-time:
-> +    Usage: optional
-> +    Value type: <u32>
-> +    Definition: Time between AMUX getting configured and the ADC starting
-> +            conversion. Delay = 100us * (value) for value < 11, and
-> +            2ms * (value - 10) otherwise.
-> +            Valid values are: 0, 100, 200, 300, 400, 500, 600, 700, 800,
-> +            900 us and 1, 2, 4, 6, 8, 10 ms
-> +            If property is not found, channel will use 0us.
-> +
-> +- qcom,avg-samples:
-> +    Usage: optional
-> +    Value type: <u32>
-> +    Definition: Number of samples to be used for measurement.
-> +            Fast averaging provides the option to obtain a single measurement
-> +            from the ADC that is an average of multiple samples. The value
-> +            selected is 2^(value).
-> +            Valid values are: 1, 2, 4, 8, 16, 32, 64, 128, 256, 512
-> +            If property is not found, 1 sample will be used.
-> +
-> +- label:
-> +    Usage: optional
-> +    Value type: <string>
-> +    Definition: Channel name used for sysfs entry. If not provided
-> +            configuration device node name will be used.
-> +
-> +NOTE: At least one channel node is required.
-> +
-> +Example:
-> +	/* VADC node */
-> +	vadc@3100 {
-> +		compatible = "qcom,spmi-vadc";
-> +		reg = <0x3100>;
-> +		interrupts = <0x0 0x31 0x0 IRQ_TYPE_EDGE_RISING>;
-> +		#io-channel-cells = <1>;
-> +		io-channel-ranges;
-> +
-> +		/* Channel node */
-> +		usb_id_nopull@39 {
-> +			qcom,channel = <VADC_LR_MUX10_USB_ID>;
-> +			qcom,decimation = <512>;
-> +			qcom,ratiometric;
-> +			qcom,hw-settle-time = <200>;
-> +			qcom,avg-samples = <1>;
-> +			qcom,pre-scaling = <1 3>
-> +		};
-> +	};
-> 
+More XPowers PMIC devices can be supported by extending this driver, so
+rename it to axp2xx to cover axp288 variant.
+
+Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
+---
+ drivers/mfd/Kconfig                      | 7 ++++---
+ drivers/mfd/Makefile                     | 2 +-
+ drivers/mfd/{axp20x.c => axp2xx.c}       | 2 +-
+ include/linux/mfd/{axp20x.h => axp2xx.h} | 0
+ 4 files changed, 6 insertions(+), 5 deletions(-)
+ rename drivers/mfd/{axp20x.c => axp2xx.c} (99%)
+ rename include/linux/mfd/{axp20x.h => axp2xx.h} (100%)
+
+diff --git a/drivers/mfd/Kconfig b/drivers/mfd/Kconfig
+index de5abf2..42a70a3 100644
+--- a/drivers/mfd/Kconfig
++++ b/drivers/mfd/Kconfig
+@@ -67,14 +67,15 @@ config MFD_BCM590XX
+ 	help
+ 	  Support for the BCM590xx PMUs from Broadcom
+ 
+-config MFD_AXP20X
+-	bool "X-Powers AXP20X"
++config MFD_AXP2XX
++	bool "X-Powers AXP2XX"
+ 	select MFD_CORE
+ 	select REGMAP_I2C
+ 	select REGMAP_IRQ
+ 	depends on I2C=y
+ 	help
+-	  If you say Y here you get support for the X-Powers AXP202 and AXP209.
++	  If you say Y here you get support for the X-Powers AXP202, AXP209 and
++	  AXP288 power management IC (PMIC).
+ 	  This driver include only the core APIs. You have to select individual
+ 	  components like regulators or the PEK (Power Enable Key) under the
+ 	  corresponding menus.
+diff --git a/drivers/mfd/Makefile b/drivers/mfd/Makefile
+index f001487..55d76b3 100644
+--- a/drivers/mfd/Makefile
++++ b/drivers/mfd/Makefile
+@@ -103,7 +103,7 @@ obj-$(CONFIG_PMIC_DA9052)	+= da9052-irq.o
+ obj-$(CONFIG_PMIC_DA9052)	+= da9052-core.o
+ obj-$(CONFIG_MFD_DA9052_SPI)	+= da9052-spi.o
+ obj-$(CONFIG_MFD_DA9052_I2C)	+= da9052-i2c.o
+-obj-$(CONFIG_MFD_AXP20X)	+= axp20x.o
++obj-$(CONFIG_MFD_AXP2XX)	+= axp2xx.o
+ 
+ obj-$(CONFIG_MFD_LP3943)	+= lp3943.o
+ obj-$(CONFIG_MFD_LP8788)	+= lp8788.o lp8788-irq.o
+diff --git a/drivers/mfd/axp20x.c b/drivers/mfd/axp2xx.c
+similarity index 99%
+rename from drivers/mfd/axp20x.c
+rename to drivers/mfd/axp2xx.c
+index dee6539..c534443 100644
+--- a/drivers/mfd/axp20x.c
++++ b/drivers/mfd/axp2xx.c
+@@ -21,7 +21,7 @@
+ #include <linux/regmap.h>
+ #include <linux/slab.h>
+ #include <linux/regulator/consumer.h>
+-#include <linux/mfd/axp20x.h>
++#include <linux/mfd/axp2xx.h>
+ #include <linux/mfd/core.h>
+ #include <linux/of_device.h>
+ #include <linux/of_irq.h>
+diff --git a/include/linux/mfd/axp20x.h b/include/linux/mfd/axp2xx.h
+similarity index 100%
+rename from include/linux/mfd/axp20x.h
+rename to include/linux/mfd/axp2xx.h
+-- 
+1.9.1
+
