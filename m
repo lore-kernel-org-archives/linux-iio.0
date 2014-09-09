@@ -1,491 +1,163 @@
-Return-Path: <laurentiu.palcu@intel.com>
-Date: Mon, 1 Sep 2014 16:03:54 +0300
-From: Laurentiu Palcu <laurentiu.palcu@intel.com>
-To: Peter Meerwald <pmeerw@pmeerw.net>
-Cc: Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
-	linux-iio@vger.kernel.org
-Subject: Re: [PATCH v3 3/3] iio: accel: BMC150: add support for other Bosch
- chips
-Message-ID: <20140901130354.GD12606@lpalcu-linux>
-References: <1409301488-22166-4-git-send-email-laurentiu.palcu@intel.com>
- <1409562698-13202-1-git-send-email-laurentiu.palcu@intel.com>
- <alpine.DEB.2.01.1409011259470.16344@pmeerw.net>
- <20140901125509.GC12606@lpalcu-linux>
+Return-Path: <knaack.h@gmx.de>
+Message-ID: <540F7DB7.9090007@gmx.de>
+Date: Wed, 10 Sep 2014 00:22:47 +0200
+From: Hartmut Knaack <knaack.h@gmx.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <20140901125509.GC12606@lpalcu-linux>
+To: Stanimir Varbanov <svarbanov@mm-sol.com>,
+ Ian Campbell <ijc+devicetree@hellion.org.uk>,
+ Pawel Moll <pawel.moll@arm.com>, Rob Herring <robh+dt@kernel.org>,
+ Kumar Gala <galak@codeaurora.org>,
+ Mark Rutland <mark.rutland@arm.com>,
+ Grant Likely <grant.likely@linaro.org>,
+ Jonathan Cameron <jic23@kernel.org>
+CC: linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Lars-Peter Clausen <lars@metafoo.de>,
+ Angelo Compagnucci <angelo.compagnucci@gmail.com>,
+ Doug Anderson <dianders@chromium.org>,
+ Fugang Duan <B38611@freescale.com>,
+ Johannes Thumshirn <johannes.thumshirn@men.de>,
+ Jean Delvare <jdelvare@suse.de>,
+ Philippe Reynes <tremyfr@yahoo.fr>, Lee Jones <lee.jones@linaro.org>,
+ Josh Cartwright <joshc@codeaurora.org>,
+ Stephen Boyd <sboyd@codeaurora.org>,
+ David Collins <collinsd@codeaurora.org>,
+ "Ivan T. Ivanov" <iivanov@mm-sol.com>
+Subject: Re: [PATCH 2/2] DT: iio: vadc: document dt binding
+References: <1409919274-13419-1-git-send-email-svarbanov@mm-sol.com> <1409919274-13419-3-git-send-email-svarbanov@mm-sol.com>
+In-Reply-To: <1409919274-13419-3-git-send-email-svarbanov@mm-sol.com>
+Content-Type: text/plain; charset=ISO-8859-15
 List-ID: <linux-iio@vger.kernel.org>
 
-On Mon, Sep 01, 2014 at 03:55:09PM +0300, Laurentiu Palcu wrote:
-> Hi Peter,
+Stanimir Varbanov schrieb, Am 05.09.2014 14:14:
+> Document DT binding for Qualcomm SPMI PMIC voltage ADC
+> driver.
 > 
-> On Mon, Sep 01, 2014 at 01:02:02PM +0200, Peter Meerwald wrote:
-> > 
-> > > The following chips are either similar or have only the resolution
-> > > different. Hence, change this driver to support these chips too:
-> > > 
-> > > BMI055  - combo chip (accelerometer part is identical to BMC150's)
-> > > BMA255  - identical to BMC150's accelerometer
-> > > BMA222E - 8 bit resolution
-> > > BMA250E - 10 bit resolution
-> > > BMA280  - 14 bit resolution
-> > > 
-> > > Additionally:
-> > >  * add bmc150_accel_match_acpi_device() function to check that the device
-> > >    has been enumerated through ACPI;
-> > >  * rename bmc150_accel_acpi_gpio_probe() to bmc150_accel_gpio_probe()
-> > >    since the ACPI matching has been moved to the new function.  Also, this
-> > >    will allow for the GPIO matching to be done against a device tree too, not only
-> > >    ACPI tree;
-> > 
-> > similar comment below
-> >  
-> > > Signed-off-by: Laurentiu Palcu <laurentiu.palcu@intel.com>
-> > > ---
-> > > 
-> > > Changes in v3:
-> > >  * remove the chip id macros since they were not used anywhere else and put the id
-> > >    values directly in the chip info table;
-> > >  * fix the unnecessary casting from const char * to char * and back;
-> > > 
-> > > Thank you Jonathan for the reviews,
-> > > laurentiu
-> > > 
-> > >  drivers/iio/accel/bmc150-accel.c | 225 +++++++++++++++++++++++++++++----------
-> > >  1 file changed, 171 insertions(+), 54 deletions(-)
-> > > 
-> > > diff --git a/drivers/iio/accel/bmc150-accel.c b/drivers/iio/accel/bmc150-accel.c
-> > > index 0e6566a..72f4250 100644
-> > > --- a/drivers/iio/accel/bmc150-accel.c
-> > > +++ b/drivers/iio/accel/bmc150-accel.c
-> > > @@ -1,5 +1,12 @@
-> > >  /*
-> > > - * BMC150 3-axis accelerometer driver
-> > > + * 3-axis accelerometer driver supporting following Bosch-Sensortec chips:
-> > > + *  - BMC150
-> > > + *  - BMI055
-> > > + *  - BMA255
-> > > + *  - BMA250E
-> > > + *  - BMA222E
-> > > + *  - BMA280
-> > > + *
-> > >   * Copyright (c) 2014, Intel Corporation.
-> > >   *
-> > >   * This program is free software; you can redistribute it and/or modify it
-> > > @@ -34,7 +41,6 @@
-> > >  #define BMC150_ACCEL_GPIO_NAME			"bmc150_accel_int"
-> > >  
-> > >  #define BMC150_ACCEL_REG_CHIP_ID		0x00
-> > > -#define BMC150_ACCEL_CHIP_ID_VAL		0xFA
-> > >  
-> > >  #define BMC150_ACCEL_REG_INT_STATUS_2		0x0B
-> > >  #define BMC150_ACCEL_ANY_MOTION_MASK		0x07
-> > > @@ -126,6 +132,18 @@ enum bmc150_power_modes {
-> > >  	BMC150_ACCEL_SLEEP_MODE_SUSPEND = 0x04,
-> > >  };
-> > >  
-> > > +struct bmc150_scale_info {
-> > > +	int scale;
-> > > +	int range;
-> > 
-> > range could be u8 and probably named reg_range to have the same naming 
-> > convention for these mappings (see below, reg_value)
-> I'm not keen on changing unrelated things in the same patch, since this
-> declaration existed in the original patch and I only moved it several
-> line up, but I agree that the naming should be consistent.
+> Signed-off-by: Stanimir Varbanov <svarbanov@mm-sol.com>
+> Signed-off-by: Ivan T. Ivanov <iivanov@mm-sol.com>
+> ---
+>  .../devicetree/bindings/iio/adc/qcom,spmi-vadc.txt |  110 ++++++++++++++++++++
+>  1 files changed, 110 insertions(+), 0 deletions(-)
+>  create mode 100644 Documentation/devicetree/bindings/iio/adc/qcom,spmi-vadc.txt
 > 
-> However, I would rename it 'reg_value' too, as it's done below, not
-> 'reg_range', because it represents the value we write in the register for
-> a certain scale.
-My bad. I spoke too fast... :/ I guess reg_range is fine here.
-
-laurentiu
-
+> diff --git a/Documentation/devicetree/bindings/iio/adc/qcom,spmi-vadc.txt b/Documentation/devicetree/bindings/iio/adc/qcom,spmi-vadc.txt
+> new file mode 100644
+> index 0000000..f9c780f
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/iio/adc/qcom,spmi-vadc.txt
+> @@ -0,0 +1,110 @@
+> +Qualcomm's SPMI PMIC voltage ADC
+> +
+> +SPMI PMIC voltage ADC (VADC) provides interface to clients to read
+> +voltage. A 15 bit ADC is used for voltage measurements. There are multiple
+> +peripherals to the VADC and the scope of the driver is to provide interface
+> +for the USR peripheral of the VADC.
+> +
+> +VADC node:
+> +
+> +- compatible:
+> +    Usage: required
+> +    Value type: <string>
+> +    Definition: Should contain "qcom,spmi-vadc".
+> +
+> +- reg:
+> +    Usage: required
+> +    Value type: <u32>
+> +    Definition: Base address in the SPMI PMIC register map.
+> +
+> +- interrupts:
+> +    Usage: required
+> +    Value type: <prop-encoded-array>
+> +    Definition: End of convertion interrupt number.
+Typo: conversion
+> +
+> +- qcom,poll-eoc:
+> +    Usage: optional
+> +    Value type: <empty>
+> +    Definition: Use polling instead of interrupt for end of conversion
+> +            completion.
+> +
+> +Channel node properities:
+Typo: properties
+> +
+> +- qcom,channel:
+> +    Usage: required
+> +    Value type: <u32>
+> +    Definition: AMUX channel number.
+> +
+> +- qcom,decimation:
+> +    Usage: optional
+> +    Value type: <u32>
+> +    Definition: Sampling rate to use for the individual channel measurement.
+> +            Quicker measurements can be made by reducing decimation ratio.
+> +            Valid values are 512, 1024, 2048, 4096.
+> +            If property is not found, default value of 512 will be used.
+> +
+> +- qcom,pre-scaling:
+> +    Usage: optional
+> +    Value type: <u32 array>
+> +    Definition: Used for scaling the channel input signal before the signal is
+> +            fed to VADC. The configuration for this node is to know the
+> +            pre-determined ratio and use it for post scaling. Select one from
+> +            the following options.
+> +            <1 1>, <1 3>, <1 4>, <1 6>, <1 20>, <1 8>, <10 81>, <1 10>
+> +            If property is not found default value depending of chip will be used.
+> +
+> +- qcom,ratiometric:
+> +    Usage: optional
+> +    Value type: <empty>
+> +    Definition: Channel calibration type. If this property is specified
+> +            VADC will use the VDD reference(1.8V) and GND for channel
+> +            calibration. If properity is not found, channel will be
+Typo: property
+> +            calibrated with 625mv and 1.25V reference channels.
+> +
+> +- qcom,hw-settle-time:
+> +    Usage: optional
+> +    Value type: <u32>
+> +    Definition: Time between AMUX getting configured and the ADC starting
+> +            conversion. Delay = 100us * (value) for value < 11, and
+> +            2ms * (value - 10) otherwise.
+> +            Valid values are: 0, 100, 200, 300, 400, 500, 600, 700, 800,
+> +            900 us and 1, 2, 4, 6, 8, 10 ms
+> +            If property is not found, channel will use 0us.
+> +
+> +- qcom,avg-samples:
+> +    Usage: optional
+> +    Value type: <u32>
+> +    Definition: Number of samples to be used for measurement.
+> +            Fast averaging provides the option to obtain a single measurement
+> +            from the ADC that is an average of multiple samples. The value
+> +            selected is 2^(value).
+> +            Valid values are: 1, 2, 4, 8, 16, 32, 64, 128, 256, 512
+> +            If property is not found, 1 sample will be used.
+> +
+> +- label:
+> +    Usage: optional
+> +    Value type: <string>
+> +    Definition: Channel name used for sysfs entry. If not provided
+> +            configuration device node name will be used.
+> +
+> +NOTE: At least one channel node is required.
+> +
+> +Example:
+> +	/* VADC node */
+> +	vadc@3100 {
+> +		compatible = "qcom,spmi-vadc";
+> +		reg = <0x3100>;
+> +		interrupts = <0x0 0x31 0x0 IRQ_TYPE_EDGE_RISING>;
+> +		#io-channel-cells = <1>;
+> +		io-channel-ranges;
+> +
+> +		/* Channel node */
+> +		usb_id_nopull@39 {
+> +			qcom,channel = <VADC_LR_MUX10_USB_ID>;
+> +			qcom,decimation = <512>;
+> +			qcom,ratiometric;
+> +			qcom,hw-settle-time = <200>;
+> +			qcom,avg-samples = <1>;
+> +			qcom,pre-scaling = <1 3>
+> +		};
+> +	};
 > 
-> I'll send a v4 with this renaming and, also, change it from int to u8.
-> 
-> laurentiu
-> 
-> > 
-> > > +};
-> > > +
-> > > +struct bmc150_accel_chip_info {
-> > > +	u8 chip_id;
-> > > +	const struct iio_chan_spec *channels;
-> > > +	int num_channels;
-> > > +	const struct bmc150_scale_info scale_table[4];
-> > > +};
-> > > +
-> > >  struct bmc150_accel_data {
-> > >  	struct i2c_client *client;
-> > >  	struct iio_trigger *dready_trig;
-> > > @@ -140,6 +158,7 @@ struct bmc150_accel_data {
-> > >  	bool dready_trigger_on;
-> > >  	bool motion_trigger_on;
-> > >  	int64_t timestamp;
-> > > +	const struct bmc150_accel_chip_info *chip_info;
-> > >  };
-> > >  
-> > >  static const struct {
-> > > @@ -168,14 +187,6 @@ static const struct {
-> > >  				     {0x0F, 1} };
-> > >  
-> > >  static const struct {
-> > > -	int scale;
-> > > -	int range;
-> > > -} bmc150_accel_scale_table[] = { {9610, BMC150_ACCEL_DEF_RANGE_2G},
-> > > -				 {19122, BMC150_ACCEL_DEF_RANGE_4G},
-> > > -				 {38344, BMC150_ACCEL_DEF_RANGE_8G},
-> > > -				 {76590, BMC150_ACCEL_DEF_RANGE_16G} };
-> > > -
-> > > -static const struct {
-> > >  	int sleep_dur;
-> > >  	int reg_value;
-> > 
-> > reg_value could be u8
-> > 
-> > >  } bmc150_accel_sleep_value_table[] = { {0, 0},
-> > > @@ -267,7 +278,7 @@ static int bmc150_accel_chip_init(struct bmc150_accel_data *data)
-> > >  	}
-> > >  
-> > >  	dev_dbg(&data->client->dev, "Chip Id %x\n", ret);
-> > > -	if (ret != BMC150_ACCEL_CHIP_ID_VAL) {
-> > > +	if (ret != data->chip_info->chip_id) {
-> > >  		dev_err(&data->client->dev, "Invalid chip %x\n", ret);
-> > >  		return -ENODEV;
-> > >  	}
-> > > @@ -541,19 +552,19 @@ static int bmc150_accel_set_scale(struct bmc150_accel_data *data, int val)
-> > >  {
-> > >  	int ret, i;
-> > >  
-> > > -	for (i = 0; i < ARRAY_SIZE(bmc150_accel_scale_table); ++i) {
-> > > -		if (bmc150_accel_scale_table[i].scale == val) {
-> > > +	for (i = 0; i < ARRAY_SIZE(data->chip_info->scale_table); ++i) {
-> > > +		if (data->chip_info->scale_table[i].scale == val) {
-> > >  			ret = i2c_smbus_write_byte_data(
-> > >  					data->client,
-> > >  					BMC150_ACCEL_REG_PMU_RANGE,
-> > > -					bmc150_accel_scale_table[i].range);
-> > > +					data->chip_info->scale_table[i].range);
-> > >  			if (ret < 0) {
-> > >  				dev_err(&data->client->dev,
-> > >  					"Error writing pmu_range\n");
-> > >  				return ret;
-> > >  			}
-> > >  
-> > > -			data->range = bmc150_accel_scale_table[i].range;
-> > > +			data->range = data->chip_info->scale_table[i].range;
-> > >  			return 0;
-> > >  		}
-> > >  	}
-> > > @@ -580,10 +591,12 @@ static int bmc150_accel_get_temp(struct bmc150_accel_data *data, int *val)
-> > >  	return IIO_VAL_INT;
-> > >  }
-> > >  
-> > > -static int bmc150_accel_get_axis(struct bmc150_accel_data *data, int axis,
-> > > +static int bmc150_accel_get_axis(struct bmc150_accel_data *data,
-> > > +				 struct iio_chan_spec const *chan,
-> > >  				 int *val)
-> > >  {
-> > >  	int ret;
-> > > +	int axis = chan->scan_index;
-> > >  
-> > >  	mutex_lock(&data->mutex);
-> > >  	ret = bmc150_accel_set_power_state(data, true);
-> > > @@ -600,7 +613,8 @@ static int bmc150_accel_get_axis(struct bmc150_accel_data *data, int axis,
-> > >  		mutex_unlock(&data->mutex);
-> > >  		return ret;
-> > >  	}
-> > > -	*val = sign_extend32(ret >> 4, 11);
-> > > +	*val = sign_extend32(ret >> chan->scan_type.shift,
-> > > +			     chan->scan_type.realbits - 1);
-> > >  	ret = bmc150_accel_set_power_state(data, false);
-> > >  	mutex_unlock(&data->mutex);
-> > >  	if (ret < 0)
-> > > @@ -625,9 +639,7 @@ static int bmc150_accel_read_raw(struct iio_dev *indio_dev,
-> > >  			if (iio_buffer_enabled(indio_dev))
-> > >  				return -EBUSY;
-> > >  			else
-> > > -				return bmc150_accel_get_axis(data,
-> > > -							     chan->scan_index,
-> > > -							     val);
-> > > +				return bmc150_accel_get_axis(data, chan, val);
-> > >  		default:
-> > >  			return -EINVAL;
-> > >  		}
-> > > @@ -647,12 +659,13 @@ static int bmc150_accel_read_raw(struct iio_dev *indio_dev,
-> > >  		{
-> > >  			int i;
-> > >  
-> > > -			for (i = 0; i < ARRAY_SIZE(bmc150_accel_scale_table);
-> > > -									 ++i) {
-> > > -				if (bmc150_accel_scale_table[i].range ==
-> > > +			for (i = 0;
-> > > +			     i < ARRAY_SIZE(data->chip_info->scale_table);
-> > > +			     ++i) {
-> > > +				if (data->chip_info->scale_table[i].range ==
-> > >  								data->range) {
-> > >  					*val2 =
-> > > -					bmc150_accel_scale_table[i].scale;
-> > > +					data->chip_info->scale_table[i].scale;
-> > >  					return IIO_VAL_INT_PLUS_MICRO;
-> > >  				}
-> > >  			}
-> > > @@ -840,7 +853,7 @@ static const struct iio_event_spec bmc150_accel_event = {
-> > >  				 BIT(IIO_EV_INFO_PERIOD)
-> > >  };
-> > >  
-> > > -#define BMC150_ACCEL_CHANNEL(_axis) {					\
-> > > +#define BMC150_ACCEL_CHANNEL(_axis, bits) {				\
-> > >  	.type = IIO_ACCEL,						\
-> > >  	.modified = 1,							\
-> > >  	.channel2 = IIO_MOD_##_axis,					\
-> > > @@ -850,26 +863,101 @@ static const struct iio_event_spec bmc150_accel_event = {
-> > >  	.scan_index = AXIS_##_axis,					\
-> > >  	.scan_type = {							\
-> > >  		.sign = 's',						\
-> > > -		.realbits = 12,					\
-> > > +		.realbits = (bits),					\
-> > >  		.storagebits = 16,					\
-> > > -		.shift = 4,						\
-> > > +		.shift = 16 - (bits),					\
-> > >  	},								\
-> > >  	.event_spec = &bmc150_accel_event,				\
-> > >  	.num_event_specs = 1						\
-> > >  }
-> > >  
-> > > -static const struct iio_chan_spec bmc150_accel_channels[] = {
-> > > -	{
-> > > -		.type = IIO_TEMP,
-> > > -		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
-> > > -				      BIT(IIO_CHAN_INFO_SCALE) |
-> > > -				      BIT(IIO_CHAN_INFO_OFFSET),
-> > > -		.scan_index = -1,
-> > > +#define BMC150_ACCEL_CHANNELS(bits) {					\
-> > > +	{								\
-> > > +		.type = IIO_TEMP,					\
-> > > +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |		\
-> > > +				      BIT(IIO_CHAN_INFO_SCALE) |	\
-> > > +				      BIT(IIO_CHAN_INFO_OFFSET),	\
-> > > +		.scan_index = -1,					\
-> > > +	},								\
-> > > +	BMC150_ACCEL_CHANNEL(X, bits),					\
-> > > +	BMC150_ACCEL_CHANNEL(Y, bits),					\
-> > > +	BMC150_ACCEL_CHANNEL(Z, bits),					\
-> > > +	IIO_CHAN_SOFT_TIMESTAMP(3),					\
-> > > +}
-> > > +
-> > > +static const struct iio_chan_spec bma222e_accel_channels[] =
-> > > +	BMC150_ACCEL_CHANNELS(8);
-> > > +static const struct iio_chan_spec bma250e_accel_channels[] =
-> > > +	BMC150_ACCEL_CHANNELS(10);
-> > > +static const struct iio_chan_spec bmc150_accel_channels[] =
-> > > +	BMC150_ACCEL_CHANNELS(12);
-> > > +static const struct iio_chan_spec bma280_accel_channels[] =
-> > > +	BMC150_ACCEL_CHANNELS(14);
-> > > +
-> > > +enum {
-> > > +	bmc150,
-> > > +	bmi055,
-> > > +	bma255,
-> > > +	bma250e,
-> > > +	bma222e,
-> > > +	bma280,
-> > > +};
-> > > +
-> > > +static const struct bmc150_accel_chip_info bmc150_accel_chip_info_tbl[] = {
-> > > +	[bmc150] = {
-> > > +		.chip_id = 0xFA,
-> > > +		.channels = bmc150_accel_channels,
-> > > +		.num_channels = ARRAY_SIZE(bmc150_accel_channels),
-> > > +		.scale_table = { {9610, BMC150_ACCEL_DEF_RANGE_2G},
-> > > +				 {19122, BMC150_ACCEL_DEF_RANGE_4G},
-> > > +				 {38344, BMC150_ACCEL_DEF_RANGE_8G},
-> > > +				 {76590, BMC150_ACCEL_DEF_RANGE_16G} },
-> > > +	},
-> > > +	[bmi055] = {
-> > > +		.chip_id = 0xFA,
-> > > +		.channels = bmc150_accel_channels,
-> > > +		.num_channels = ARRAY_SIZE(bmc150_accel_channels),
-> > > +		.scale_table = { {9610, BMC150_ACCEL_DEF_RANGE_2G},
-> > > +				 {19122, BMC150_ACCEL_DEF_RANGE_4G},
-> > > +				 {38344, BMC150_ACCEL_DEF_RANGE_8G},
-> > > +				 {76590, BMC150_ACCEL_DEF_RANGE_16G} },
-> > > +	},
-> > > +	[bma255] = {
-> > > +		.chip_id = 0xFA,
-> > > +		.channels = bmc150_accel_channels,
-> > > +		.num_channels = ARRAY_SIZE(bmc150_accel_channels),
-> > > +		.scale_table = { {9610, BMC150_ACCEL_DEF_RANGE_2G},
-> > > +				 {19122, BMC150_ACCEL_DEF_RANGE_4G},
-> > > +				 {38344, BMC150_ACCEL_DEF_RANGE_8G},
-> > > +				 {76590, BMC150_ACCEL_DEF_RANGE_16G} },
-> > > +	},
-> > > +	[bma250e] = {
-> > > +		.chip_id = 0xF9,
-> > > +		.channels = bma250e_accel_channels,
-> > > +		.num_channels = ARRAY_SIZE(bma250e_accel_channels),
-> > > +		.scale_table = { {38344, BMC150_ACCEL_DEF_RANGE_2G},
-> > > +				 {76590, BMC150_ACCEL_DEF_RANGE_4G},
-> > > +				 {153277, BMC150_ACCEL_DEF_RANGE_8G},
-> > > +				 {306457, BMC150_ACCEL_DEF_RANGE_16G} },
-> > > +	},
-> > > +	[bma222e] = {
-> > > +		.chip_id = 0xF8,
-> > > +		.channels = bma222e_accel_channels,
-> > > +		.num_channels = ARRAY_SIZE(bma222e_accel_channels),
-> > > +		.scale_table = { {153277, BMC150_ACCEL_DEF_RANGE_2G},
-> > > +				 {306457, BMC150_ACCEL_DEF_RANGE_4G},
-> > > +				 {612915, BMC150_ACCEL_DEF_RANGE_8G},
-> > > +				 {1225831, BMC150_ACCEL_DEF_RANGE_16G} },
-> > > +	},
-> > > +	[bma280] = {
-> > > +		.chip_id = 0xFB,
-> > > +		.channels = bma280_accel_channels,
-> > > +		.num_channels = ARRAY_SIZE(bma280_accel_channels),
-> > > +		.scale_table = { {2392, BMC150_ACCEL_DEF_RANGE_2G},
-> > > +				 {4785, BMC150_ACCEL_DEF_RANGE_4G},
-> > > +				 {9581, BMC150_ACCEL_DEF_RANGE_8G},
-> > > +				 {19152, BMC150_ACCEL_DEF_RANGE_16G} },
-> > >  	},
-> > > -	BMC150_ACCEL_CHANNEL(X),
-> > > -	BMC150_ACCEL_CHANNEL(Y),
-> > > -	BMC150_ACCEL_CHANNEL(Z),
-> > > -	IIO_CHAN_SOFT_TIMESTAMP(3),
-> > >  };
-> > >  
-> > >  static const struct iio_info bmc150_accel_info = {
-> > > @@ -1040,10 +1128,23 @@ static irqreturn_t bmc150_accel_data_rdy_trig_poll(int irq, void *private)
-> > >  		return IRQ_HANDLED;
-> > >  }
-> > >  
-> > > -static int bmc150_accel_acpi_gpio_probe(struct i2c_client *client,
-> > > -					struct bmc150_accel_data *data)
-> > > +static const char *bmc150_accel_match_acpi_device(struct device *dev, int *data)
-> > >  {
-> > >  	const struct acpi_device_id *id;
-> > > +
-> > > +	id = acpi_match_device(dev->driver->acpi_match_table, dev);
-> > > +
-> > > +	if (!id)
-> > > +		return NULL;
-> > > +
-> > > +	*data = (int) id->driver_data;
-> > > +
-> > > +	return dev_name(dev);
-> > > +}
-> > > +
-> > > +static int bmc150_accel_gpio_probe(struct i2c_client *client,
-> > > +					struct bmc150_accel_data *data)
-> > > +{
-> > >  	struct device *dev;
-> > >  	struct gpio_desc *gpio;
-> > >  	int ret;
-> > > @@ -1052,17 +1153,11 @@ static int bmc150_accel_acpi_gpio_probe(struct i2c_client *client,
-> > >  		return -EINVAL;
-> > >  
-> > >  	dev = &client->dev;
-> > > -	if (!ACPI_HANDLE(dev))
-> > > -		return -ENODEV;
-> > > -
-> > > -	id = acpi_match_device(dev->driver->acpi_match_table, dev);
-> > > -	if (!id)
-> > > -		return -ENODEV;
-> > >  
-> > >  	/* data ready gpio interrupt pin */
-> > >  	gpio = devm_gpiod_get_index(dev, BMC150_ACCEL_GPIO_NAME, 0);
-> > >  	if (IS_ERR(gpio)) {
-> > > -		dev_err(dev, "Failed: acpi gpio get index\n");
-> > > +		dev_err(dev, "Failed: gpio get index\n");
-> > >  		return PTR_ERR(gpio);
-> > >  	}
-> > >  
-> > > @@ -1083,6 +1178,8 @@ static int bmc150_accel_probe(struct i2c_client *client,
-> > >  	struct bmc150_accel_data *data;
-> > >  	struct iio_dev *indio_dev;
-> > >  	int ret;
-> > > +	const char *name = NULL;
-> > > +	int chip_id = 0;
-> > >  
-> > >  	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
-> > >  	if (!indio_dev)
-> > > @@ -1092,6 +1189,16 @@ static int bmc150_accel_probe(struct i2c_client *client,
-> > >  	i2c_set_clientdata(client, indio_dev);
-> > >  	data->client = client;
-> > >  
-> > > +	if (id) {
-> > > +		name = id->name;
-> > > +		chip_id = id->driver_data;
-> > > +	}
-> > > +
-> > > +	if (ACPI_HANDLE(&client->dev))
-> > > +		name = bmc150_accel_match_acpi_device(&client->dev, &chip_id);
-> > > +
-> > > +	data->chip_info = &bmc150_accel_chip_info_tbl[chip_id];
-> > > +
-> > >  	ret = bmc150_accel_chip_init(data);
-> > >  	if (ret < 0)
-> > >  		return ret;
-> > > @@ -1099,14 +1206,14 @@ static int bmc150_accel_probe(struct i2c_client *client,
-> > >  	mutex_init(&data->mutex);
-> > >  
-> > >  	indio_dev->dev.parent = &client->dev;
-> > > -	indio_dev->channels = bmc150_accel_channels;
-> > > -	indio_dev->num_channels = ARRAY_SIZE(bmc150_accel_channels);
-> > > -	indio_dev->name = BMC150_ACCEL_DRV_NAME;
-> > > +	indio_dev->channels = data->chip_info->channels;
-> > > +	indio_dev->num_channels = data->chip_info->num_channels;
-> > > +	indio_dev->name = name;
-> > >  	indio_dev->modes = INDIO_DIRECT_MODE;
-> > >  	indio_dev->info = &bmc150_accel_info;
-> > >  
-> > >  	if (client->irq < 0)
-> > > -		client->irq = bmc150_accel_acpi_gpio_probe(client, data);
-> > > +		client->irq = bmc150_accel_gpio_probe(client, data);
-> > >  
-> > >  	if (client->irq >= 0) {
-> > >  		ret = devm_request_threaded_irq(
-> > > @@ -1284,14 +1391,24 @@ static const struct dev_pm_ops bmc150_accel_pm_ops = {
-> > >  };
-> > >  
-> > >  static const struct acpi_device_id bmc150_accel_acpi_match[] = {
-> > > -	{"BSBA0150", 0},
-> > > -	{"BMC150A", 0},
-> > > +	{"BSBA0150",	bmc150},
-> > > +	{"BMC150A",	bmc150},
-> > > +	{"BMI055A",	bmi055},
-> > > +	{"BMA0255",	bma255},
-> > > +	{"BMA250E",	bma250e},
-> > > +	{"BMA222E",	bma222e},
-> > > +	{"BMA0280",	bma280},
-> > >  	{ },
-> > >  };
-> > >  MODULE_DEVICE_TABLE(acpi, bmc150_accel_acpi_match);
-> > >  
-> > >  static const struct i2c_device_id bmc150_accel_id[] = {
-> > > -	{"bmc150_accel", 0},
-> > > +	{"bmc150_accel",	bmc150},
-> > > +	{"bmi055_accel",	bmi055},
-> > > +	{"bma255",		bma255},
-> > > +	{"bma250e",		bma250e},
-> > > +	{"bma222e",		bma222e},
-> > > +	{"bma280",		bma280},
-> > >  	{}
-> > >  };
-> > >  
-> > > 
-> > 
-> > -- 
-> > 
-> > Peter Meerwald
-> > +43-664-2444418 (mobile)
-> > --
-> > To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> > the body of a message to majordomo@vger.kernel.org
-> > More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
