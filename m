@@ -1,57 +1,85 @@
-Return-Path: <hadess@hadess.net>
-Message-ID: <1410289105.4077.19.camel@hadess.net>
-Subject: Re: [PATCH] iio:kxcjk-1013: Add support for SMO8500 device
-From: Bastien Nocera <hadess@hadess.net>
-To: Daniel Baluta <daniel.baluta@intel.com>
-Cc: linux-iio@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>
-Date: Tue, 09 Sep 2014 20:58:25 +0200
-In-Reply-To: <CAEnQRZD+cTqhBSfE2qeTHFh6zJ1a6L6Zrqt9YmTeGkQ9fAqbqg@mail.gmail.com>
-References: <1410283148.4077.16.camel@hadess.net>
-	 <CAEnQRZD+cTqhBSfE2qeTHFh6zJ1a6L6Zrqt9YmTeGkQ9fAqbqg@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Mime-Version: 1.0
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mga01.intel.com ([192.55.52.88]:47843 "EHLO mga01.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1753744AbaIINEa (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Tue, 9 Sep 2014 09:04:30 -0400
+From: Jacob Pan <jacob.jun.pan@linux.intel.com>
+To: IIO <linux-iio@vger.kernel.org>,
+	LKML <linux-kernel@vger.kernel.org>,
+	DEVICE TREE <devicetree@vger.kernel.org>,
+	Lee Jones <lee.jones@linaro.org>
+Cc: Carlo Caione <carlo@caione.org>,
+	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+	Aaron Lu <aaron.lu@intel.com>, Alan Cox <alan@linux.intel.com>,
+	Jean Delvare <khali@linux-fr.org>,
+	Samuel Ortiz <sameo@linux.intel.com>,
+	Liam Girdwood <lgirdwood@gmail.com>,
+	Mark Brown <broonie@kernel.org>,
+	Grant Likely <grant.likely@linaro.org>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Rob Herring <robh+dt@kernel.org>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Fugang Duan <B38611@freescale.com>,
+	Arnd Bergmann <arnd@arndb.de>,
+	Zubair Lutfullah <zubair.lutfullah@gmail.com>,
+	Sebastian Reichel <sre@debian.org>,
+	Johannes Thumshirn <johannes.thumshirn@men.de>,
+	Philippe Reynes <tremyfr@yahoo.fr>,
+	Angelo Compagnucci <angelo.compagnucci@gmail.com>,
+	Doug Anderson <dianders@chromium.org>,
+	Ramakrishna Pallala <ramakrishna.pallala@intel.com>,
+	Jacob Pan <jacob.jun.pan@linux.intel.com>
+Subject: [PATCH v2 3/4] regulator/axp20x: use axp2xx consolidated header
+Date: Tue,  9 Sep 2014 06:02:54 -0700
+Message-Id: <1410267775-4683-4-git-send-email-jacob.jun.pan@linux.intel.com>
+In-Reply-To: <1410267775-4683-1-git-send-email-jacob.jun.pan@linux.intel.com>
+References: <1410267775-4683-1-git-send-email-jacob.jun.pan@linux.intel.com>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Hey Daniel,
+AXP20x driver has been extended to support axp288 variant. Header file
+and common data structures has also been renamed to suit the new
+scope of devices supported.
 
-On Tue, 2014-09-09 at 21:53 +0300, Daniel Baluta wrote:
-> Hi Bastien,
-> 
-> On Tue, Sep 9, 2014 at 8:19 PM, Bastien Nocera <hadess@hadess.net> wrote:
-> > The Onda v975w tablet contains an accelerometer that's advertised over
-> > ACPI as SMO8500. This device is however a KXCJ9 accelerometer as
-> > can be seen in the Windows driver's INF file.
-> 
-> >
-> > ---
-> >
-> > I tested the patch, and it works correctly in my testing. However,
-> > there's no GPIO pin for the "data ready" interrupt, and this throws an
-> > error that looks fatal in the logs (could this be downgraded?), and
-> > the name of the device doesn't match the hid-sensor-hub ones, making it
-> > hard for user-space to discover them.
-> > (https://github.com/hadess/iio-sensor-proxy is my attempt at something
-> >  that integrates with user-space and the IIO sensors)
-> >
-> 
-> How does your ACPI .dsl file looks like?
+This patch makes use of the renamed header and structure.
 
-I uploaded it to the kernel bugzilla for another bug, it's at:
-https://bugzilla.kernel.org/attachment.cgi?id=149331
+Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
+---
+ drivers/regulator/axp20x-regulator.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-> > It will also conflict with Daniel's patch here:
-> > http://www.spinics.net/lists/linux-iio/msg14438.html
-> 
-> It shouldn't. The patch is already in togreg branch of Jonathan's tree
-> [1].
+diff --git a/drivers/regulator/axp20x-regulator.c b/drivers/regulator/axp20x-regulator.c
+index 004aadb..c9b6803 100644
+--- a/drivers/regulator/axp20x-regulator.c
++++ b/drivers/regulator/axp20x-regulator.c
+@@ -20,7 +20,7 @@
+ #include <linux/of_device.h>
+ #include <linux/platform_device.h>
+ #include <linux/regmap.h>
+-#include <linux/mfd/axp20x.h>
++#include <linux/mfd/axp2xx.h>
+ #include <linux/regulator/driver.h>
+ #include <linux/regulator/of_regulator.h>
+ 
+@@ -161,7 +161,7 @@ static struct of_regulator_match axp20x_matches[] = {
+ 
+ static int axp20x_set_dcdc_freq(struct platform_device *pdev, u32 dcdcfreq)
+ {
+-	struct axp20x_dev *axp20x = dev_get_drvdata(pdev->dev.parent);
++	struct axp2xx_dev *axp20x = dev_get_drvdata(pdev->dev.parent);
+ 
+ 	if (dcdcfreq < 750) {
+ 		dcdcfreq = 750;
+@@ -232,7 +232,7 @@ static int axp20x_set_dcdc_workmode(struct regulator_dev *rdev, int id, u32 work
+ static int axp20x_regulator_probe(struct platform_device *pdev)
+ {
+ 	struct regulator_dev *rdev;
+-	struct axp20x_dev *axp20x = dev_get_drvdata(pdev->dev.parent);
++	struct axp2xx_dev *axp20x = dev_get_drvdata(pdev->dev.parent);
+ 	struct regulator_config config = { };
+ 	struct regulator_init_data *init_data;
+ 	int ret, i;
+-- 
+1.9.1
 
-I used the upstream linus kernel, which I probably shouldn't have done,
-but hey, IIO was just one of the several class of devices that needs
-work on this tablet ;)
-
->  Anyhow,
-> it will conflict with this one [2].
-
-Right. I'm fine to rebase it if it looks correct otherwise.
-
-Cheers
