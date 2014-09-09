@@ -1,108 +1,71 @@
-Return-Path: <ludovic.desroches@atmel.com>
-Date: Wed, 10 Sep 2014 13:53:29 +0200
-From: Ludovic Desroches <ludovic.desroches@atmel.com>
-To: Hartmut Knaack <knaack.h@gmx.de>
-CC: Ludovic Desroches <ludovic.desroches@atmel.com>,
-	<linux-arm-kernel@lists.infradead.org>, <linux-iio@vger.kernel.org>,
-	<jic23@kernel.org>, <alexandre.belloni@free-electrons.com>,
-	<josh.wu@atmel.com>, <nicolas.ferre@atmel.com>,
-	<maxime.ripard@free-electrons.com>
-Subject: Re: [PATCH v2] iio: adc: at91: don't use the last converted data
- register
-Message-ID: <20140910115329.GO4434@ldesroches-Latitude-E6320>
-References: <1410165631-8688-1-git-send-email-ludovic.desroches@atmel.com>
- <540F771D.5040106@gmx.de>
+Return-Path: <Adam.Thomson.Opensource@diasemi.com>
+From: "Opensource [Adam Thomson]" <Adam.Thomson.Opensource@diasemi.com>
+To: Varka Bhadram <varkabhadram@gmail.com>, "Opensource [Adam Thomson]"
+	<Adam.Thomson.Opensource@diasemi.com>, Lee Jones <lee.jones@linaro.org>,
+	Samuel Ortiz <sameo@linux.intel.com>, Jonathan Cameron <jic23@kernel.org>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>, Sebastian Reichel
+	<sre@kernel.org>, Dmitry Eremin-Solenikov <dbaryshkov@gmail.com>, "David
+ Woodhouse" <dwmw2@infradead.org>, "linux-pm@vger.kernel.org"
+	<linux-pm@vger.kernel.org>, Rob Herring <robh+dt@kernel.org>, Pawel Moll
+	<pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell
+	<ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>,
+	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, Andrew Morton
+	<akpm@linux-foundation.org>, Joe Perches <joe@perches.com>
+CC: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "Support
+ Opensource" <Support.Opensource@diasemi.com>
+Subject: RE: [PATCH v2 1/7] mfd: Add support for DA9150 combined charger &
+ fuel-gauge device
+Date: Tue, 9 Sep 2014 10:32:40 +0000
+Message-ID: <2E89032DDAA8B9408CB92943514A0337AB5144B5@SW-EX-MBX01.diasemi.com>
+References: <cover.1409145187.git.Adam.Thomson.Opensource@diasemi.com>
+ <d6c7de200c9447dbafa74ee76739da943a0b73b2.1409145187.git.Adam.Thomson.Opensource@diasemi.com>
+ <53FF16BC.9050701@gmail.com>
+In-Reply-To: <53FF16BC.9050701@gmail.com>
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-In-Reply-To: <540F771D.5040106@gmx.de>
 List-ID: <linux-iio@vger.kernel.org>
 
-On Tue, Sep 09, 2014 at 11:54:37PM +0200, Hartmut Knaack wrote:
-> Ludovic Desroches schrieb, Am 08.09.2014 10:40:
-> > If touchscreen mode is enabled and a conversion is requested on another
-> > channel, the result in the last converted data register can be a
-> > touchscreen relative value. Starting a conversion involves to do a
-> > conversion for all active channel. It starts with ADC channels and ends
-> > with touchscreen channels. Then if ADC_LCD register is not read quickly,
-> > its content may be a touchscreen conversion.
-> > To remove this temporal constraint, the conversion value is taken from
-> > the channel data register.
-> > 
-> > Acked-by: Alexandre Belloni <alexandre.belloni@free-electrons.com>
-> > Signed-off-by: Ludovic Desroches <ludovic.desroches@atmel.com>
-> > ---
-> > 
-> > Changes from v1:
-> > - use GENMASK and BIT macros
-> > 
-> >  drivers/iio/adc/at91_adc.c |   12 +++++++-----
-> >  1 file changed, 7 insertions(+), 5 deletions(-)
-> > 
-> > diff --git a/drivers/iio/adc/at91_adc.c b/drivers/iio/adc/at91_adc.c
-> > index 3b5bacd..1812d12 100644
-> > --- a/drivers/iio/adc/at91_adc.c
-> > +++ b/drivers/iio/adc/at91_adc.c
-> > @@ -196,6 +196,7 @@ struct at91_adc_state {
-> >  	bool			done;
-> >  	int			irq;
-> >  	u16			last_value;
-> > +	int			chnb;
-> >  	struct mutex		lock;
-> >  	u8			num_channels;
-> >  	void __iomem		*reg_base;
-> > @@ -274,7 +275,7 @@ void handle_adc_eoc_trigger(int irq, struct iio_dev *idev)
-> >  		disable_irq_nosync(irq);
-> >  		iio_trigger_poll(idev->trig, iio_get_time_ns());
-> >  	} else {
-> > -		st->last_value = at91_adc_readl(st, AT91_ADC_LCDR);
-> > +		st->last_value = at91_adc_readl(st, AT91_ADC_CHAN(st, st->chnb));
-> >  		st->done = true;
-> >  		wake_up_interruptible(&st->wq_data_avail);
-> >  	}
-> > @@ -351,7 +352,7 @@ static irqreturn_t at91_adc_rl_interrupt(int irq, void *private)
-> >  	unsigned int reg;
-> >  
-> >  	status &= at91_adc_readl(st, AT91_ADC_IMR);
-> > -	if (status & st->registers->drdy_mask)
-> > +	if (status & GENMASK(st->num_channels, 0))
-> You need to use st->num_channels - 1, since GENMASK starts counting from bit position 0.
-
-Right, thanks to catch it, I was thinking channel number instead of
-number of channels when writing it...
-
-> >  		handle_adc_eoc_trigger(irq, idev);
-> >  
-> >  	if (status & AT91RL_ADC_IER_PEN) {
-> > @@ -418,7 +419,7 @@ static irqreturn_t at91_adc_9x5_interrupt(int irq, void *private)
-> >  		AT91_ADC_IER_YRDY |
-> >  		AT91_ADC_IER_PRDY;
-> >  
-> > -	if (status & st->registers->drdy_mask)
-> > +	if (status & GENMASK(st->num_channels, 0))
-> Same here.
-> >  		handle_adc_eoc_trigger(irq, idev);
-> >  
-> >  	if (status & AT91_ADC_IER_PEN) {
-> > @@ -689,9 +690,10 @@ static int at91_adc_read_raw(struct iio_dev *idev,
-> >  	case IIO_CHAN_INFO_RAW:
-> >  		mutex_lock(&st->lock);
-> >  
-> > +		st->chnb = chan->channel;
-> >  		at91_adc_writel(st, AT91_ADC_CHER,
-> >  				AT91_ADC_CH(chan->channel));
-> > -		at91_adc_writel(st, AT91_ADC_IER, st->registers->drdy_mask);
-> > +		at91_adc_writel(st, AT91_ADC_IER, BIT(chan->channel));
-> >  		at91_adc_writel(st, AT91_ADC_CR, AT91_ADC_START);
-> >  
-> >  		ret = wait_event_interruptible_timeout(st->wq_data_avail,
-> > @@ -708,7 +710,7 @@ static int at91_adc_read_raw(struct iio_dev *idev,
-> >  
-> >  		at91_adc_writel(st, AT91_ADC_CHDR,
-> >  				AT91_ADC_CH(chan->channel));
-> > -		at91_adc_writel(st, AT91_ADC_IDR, st->registers->drdy_mask);
-> > +		at91_adc_writel(st, AT91_ADC_IDR, BIT(chan->channel));
-> >  
-> >  		st->last_value = 0;
-> >  		st->done = false;
-> > 
-> 
+T24gQXVndXN0IDI4LCAyMDE0IDEyOjQ3LCBWYXJrYSBCaGFkcmFtIHdyb3RlOg0KDQo+IE9uIDA4
+LzI4LzIwMTQgMDQ6MTggUE0sIEFkYW0gVGhvbXNvbiB3cm90ZToNCj4gDQo+ICguLi4pDQo+IA0K
+PiA+ICtzdGF0aWMgaW50IGRhOTE1MF9wcm9iZShzdHJ1Y3QgaTJjX2NsaWVudCAqY2xpZW50LA0K
+PiA+ICsJCQljb25zdCBzdHJ1Y3QgaTJjX2RldmljZV9pZCAqaWQpDQo+ID4gK3sNCj4gPiArCXN0
+cnVjdCBkYTkxNTAgKmRhOTE1MDsNCj4gPiArCWludCByZXQ7DQo+ID4gKw0KPiA+ICsJZGE5MTUw
+ID0gZGV2bV9remFsbG9jKCZjbGllbnQtPmRldiwgc2l6ZW9mKHN0cnVjdCBkYTkxNTApLCBHRlBf
+S0VSTkVMKTsNCj4gPiArCWlmIChkYTkxNTAgPT0gTlVMTCkNCj4gPiArCQlyZXR1cm4gLUVOT01F
+TTsNCj4gDQo+IGRhOTE1MCA9IGRldm1fa3phbGxvYygmY2xpZW50LT5kZXYsIHNpemVvZigqZGE5
+MTUwKSwgR0ZQX0tFUk5FTCk7DQo+IGlmICghZGE5MTUwKQ0KPiAJcmV0dXJuIC1FTk9NRU07DQoN
+Ck9rLCBubyByZWFsIGRpZmZlcmVuY2UsIGJ1dCBjYW4gY2hhbmdlIGl0Lg0KDQo+IA0KPiA+ICsJ
+ZGE5MTUwLT5kZXYgPSAmY2xpZW50LT5kZXY7DQo+ID4gKwlkYTkxNTAtPmlycSA9IGNsaWVudC0+
+aXJxOw0KPiA+ICsJaTJjX3NldF9jbGllbnRkYXRhKGNsaWVudCwgZGE5MTUwKTsNCj4gPiArCWRl
+dl9zZXRfZHJ2ZGF0YShkYTkxNTAtPmRldiwgZGE5MTUwKTsNCj4gPiArDQo+ID4gKwlkYTkxNTAt
+PnJlZ21hcCA9IGRldm1fcmVnbWFwX2luaXRfaTJjKGNsaWVudCwgJmRhOTE1MF9yZWdtYXBfY29u
+ZmlnKTsNCj4gPiArCWlmIChJU19FUlIoZGE5MTUwLT5yZWdtYXApKSB7DQo+ID4gKwkJcmV0ID0g
+UFRSX0VSUihkYTkxNTAtPnJlZ21hcCk7DQo+ID4gKwkJZGV2X2VycihkYTkxNTAtPmRldiwgIkZh
+aWxlZCB0byBhbGxvY2F0ZSByZWdpc3RlciBtYXA6ICVkXG4iLA0KPiA+ICsJCQlyZXQpOw0KPiA+
+ICsJCXJldHVybiByZXQ7DQo+ID4gKwl9DQo+ID4gKw0KPiA+ICsJcmV0dXJuIGRhOTE1MF9kZXZp
+Y2VfaW5pdChkYTkxNTApOw0KPiA+ICt9DQo+ID4gKw0KPiA+ICtzdGF0aWMgaW50IGRhOTE1MF9y
+ZW1vdmUoc3RydWN0IGkyY19jbGllbnQgKmNsaWVudCkNCj4gPiArew0KPiA+ICsJc3RydWN0IGRh
+OTE1MCAqZGE5MTUwID0gaTJjX2dldF9jbGllbnRkYXRhKGNsaWVudCk7DQo+ID4gKw0KPiA+ICsJ
+ZGE5MTUwX2RldmljZV9leGl0KGRhOTE1MCk7DQo+ID4gKw0KPiA+ICsJcmV0dXJuIDA7DQo+ID4g
+K30NCj4gPiArDQo+ID4gK3N0YXRpYyB2b2lkIGRhOTE1MF9zaHV0ZG93bihzdHJ1Y3QgaTJjX2Ns
+aWVudCAqY2xpZW50KQ0KPiA+ICt7DQo+ID4gKwlzdHJ1Y3QgZGE5MTUwICpkYTkxNTAgPSBpMmNf
+Z2V0X2NsaWVudGRhdGEoY2xpZW50KTsNCj4gPiArDQo+ID4gKwlkYTkxNTBfZGV2aWNlX3NodXRk
+b3duKGRhOTE1MCk7DQo+ID4gK30NCj4gPiArDQo+ID4gK3N0YXRpYyBjb25zdCBzdHJ1Y3QgaTJj
+X2RldmljZV9pZCBkYTkxNTBfaTJjX2lkW10gPSB7DQo+ID4gKwl7ICJkYTkxNTAiLCAwIH0sDQo+
+ID4gKwl7IH0NCj4gPiArfTsNCj4gPiArTU9EVUxFX0RFVklDRV9UQUJMRShpMmMsIGRhOTE1MF9p
+MmNfaWQpOw0KPiA+ICsNCj4gPiArc3RhdGljIGNvbnN0IHN0cnVjdCBvZl9kZXZpY2VfaWQgZGE5
+MTUwX29mX21hdGNoW10gPSB7DQo+ID4gKwl7IC5jb21wYXRpYmxlID0gImRsZyxkYTkxNTAiLCB9
+LA0KPiA+ICsJeyB9DQo+ID4gK307DQo+ID4gKw0KPiANCj4gbWlzc2VkIE1PRFVMRV9ERVZJQ0Vf
+VEFCTEUob2YsIC4uLikgICA/DQoNCk9rLCB3aWxsIGFkZCB0aGF0IGluLg0KDQo+IA0KPiA+ICtz
+dGF0aWMgc3RydWN0IGkyY19kcml2ZXIgZGE5MTUwX2RyaXZlciA9IHsNCj4gPiArCS5kcml2ZXIJ
+PSB7DQo+ID4gKwkJLm5hbWUJPSAiZGE5MTUwIiwNCj4gPiArCQkub3duZXIJPSBUSElTX01PRFVM
+RSwNCj4gDQo+IE5vIG5lZWQgdG8gdXBkYXRlIHRoaXMgZmllbGQuLi4NCg0KT2ssIHdpbGwgcmVt
+b3ZlIC5vd25lciBzZXR0aW5nLg0KDQo+IA0KPiA+ICsJCS5vZl9tYXRjaF90YWJsZSA9IG9mX21h
+dGNoX3B0cihkYTkxNTBfb2ZfbWF0Y2gpLA0KPiA+ICsJfSwNCj4gPiArCS5wcm9iZQkJPSBkYTkx
+NTBfcHJvYmUsDQo+ID4gKwkucmVtb3ZlCQk9IGRhOTE1MF9yZW1vdmUsDQo+ID4gKwkuc2h1dGRv
+d24JPSBkYTkxNTBfc2h1dGRvd24sDQo+ID4gKwkuaWRfdGFibGUJPSBkYTkxNTBfaTJjX2lkLA0K
+PiA+ICt9Ow0KPiA+ICsNCj4gPiArbW9kdWxlX2kyY19kcml2ZXIoZGE5MTUwX2RyaXZlcik7DQo+
+ID4gKw0KPiA+ICtNT0RVTEVfREVTQ1JJUFRJT04oIkkyQyBEcml2ZXIgZm9yIERBOTE1MCIpOw0K
+PiA+ICtNT0RVTEVfQVVUSE9SKCJBZGFtIFRob21zb24NCj4gPEFkYW0uVGhvbXNvbi5PcGVuc291
+cmNlQGRpYXNlbWkuY29tIik7DQo+ID4gK01PRFVMRV9MSUNFTlNFKCJHUEwiKTsNCj4gPg0KPiAt
+LQ0KPiBSZWdhcmRzLA0KPiBWYXJrYSBCaGFkcmFtLg0KDQo=
