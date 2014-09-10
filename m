@@ -1,82 +1,93 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga01.intel.com ([192.55.52.88]:7811 "EHLO mga01.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1756531AbaIINEE (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Tue, 9 Sep 2014 09:04:04 -0400
-From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-To: IIO <linux-iio@vger.kernel.org>,
-	LKML <linux-kernel@vger.kernel.org>,
-	DEVICE TREE <devicetree@vger.kernel.org>,
-	Lee Jones <lee.jones@linaro.org>
-Cc: Carlo Caione <carlo@caione.org>,
-	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
-	Aaron Lu <aaron.lu@intel.com>, Alan Cox <alan@linux.intel.com>,
-	Jean Delvare <khali@linux-fr.org>,
-	Samuel Ortiz <sameo@linux.intel.com>,
-	Liam Girdwood <lgirdwood@gmail.com>,
-	Mark Brown <broonie@kernel.org>,
-	Grant Likely <grant.likely@linaro.org>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Rob Herring <robh+dt@kernel.org>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Fugang Duan <B38611@freescale.com>,
-	Arnd Bergmann <arnd@arndb.de>,
-	Zubair Lutfullah <zubair.lutfullah@gmail.com>,
-	Sebastian Reichel <sre@debian.org>,
-	Johannes Thumshirn <johannes.thumshirn@men.de>,
-	Philippe Reynes <tremyfr@yahoo.fr>,
-	Angelo Compagnucci <angelo.compagnucci@gmail.com>,
-	Doug Anderson <dianders@chromium.org>,
-	Ramakrishna Pallala <ramakrishna.pallala@intel.com>,
-	Jacob Pan <jacob.jun.pan@linux.intel.com>
-Subject: [PATCH v2 0/4] Initial support for XPowers AXP288 PMIC
-Date: Tue,  9 Sep 2014 06:02:51 -0700
-Message-Id: <1410267775-4683-1-git-send-email-jacob.jun.pan@linux.intel.com>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <dvhart@infradead.org>
+Date: Tue, 9 Sep 2014 20:35:20 -0700
+From: Darren Hart <dvhart@infradead.org>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Azael Avalos <coproscefalo@gmail.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Matthew Garrett <matthew.garrett@nebula.com>,
+	"platform-driver-x86@vger.kernel.org" <platform-driver-x86@vger.kernel.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	linux-iio@vger.kernel.org
+Subject: Re: [PATCH 3/5] toshiba_acpi: Add accelerometer input polled device
+Message-ID: <20140910033520.GC39541@vmdeb7>
+References: <1409937247-2525-1-git-send-email-coproscefalo@gmail.com>
+ <1409937247-2525-4-git-send-email-coproscefalo@gmail.com>
+ <20140906024253.GB11389@vmdeb7>
+ <CAGdLNWGhdQU3Fpud9Zgvx3AQ5Lb=WdEkJb_wWTb1hJoHxXPXpQ@mail.gmail.com>
+ <20140909000429.GB5835@vmdeb7>
+ <20140909013553.GC16363@kroah.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <20140909013553.GC16363@kroah.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-XPowers AXP288 is a customized PMIC found on some Intel Baytrail-CR platforms.
-It comes with sub-functions such as USB charging, fuel gauge, ADC, and many LDO
-and BUCK channels.
+On Mon, Sep 08, 2014 at 06:35:53PM -0700, Greg Kroah-Hartman wrote:
+> On Mon, Sep 08, 2014 at 05:04:30PM -0700, Darren Hart wrote:
+> > On Fri, Sep 05, 2014 at 11:04:18PM -0600, Azael Avalos wrote:
+> > > Hi there,
+> > > 
+> > > 2014-09-05 20:42 GMT-06:00 Darren Hart <dvhart@infradead.org>:
+> > > > On Fri, Sep 05, 2014 at 11:14:05AM -0600, Azael Avalos wrote:
+> > > >> The accelerometer sensor is very sensitive, and having userspace
+> > > >> poll the sysfs position entry is not very battery friendly.
+> > > >>
+> > > >> This patch removes the sysfs entry and instead, it creates an
+> > > >> input polled device (joystick) for the built-in accelerometer.
+> > > >
+> > > > Hrm, while sysfs details can change across kernel versions, usually due to
+> > > > driver core changes, we try to keep them as consistent as possible so as not to
+> > > > break userspace.
+> > > >
+> > > > That said, if we are going to try and come up with a better model for
+> > > > representing an accelerometer, wouldn't treating it as an IIO device be the more
+> > > > logical approach?
+> > > 
+> > > Yes of course, but the actual accelerometer device (sensor?) is not
+> > > really exposed,
+> > > only certain "functions" it provides, and they are divided across two
+> > > different ACPI devices,
+> > > TOS620A exposes the protection, and the TOS1900 (and et. al.) only
+> > > exposes the axes.
+> > 
+> > As I understand it, IIO defines an interface to a device, a standard sysfs set
+> > of properties. I should think we could provide the appropriate callbacks even
+> > for a partially implemented (or a pair of) accelerometer.
+> > 
+> > Jonathan, what are your thoughts here. Is such a "device" (ACPI accessors to
+> > axis and threshold) a candidate for IIO, or is this input polled device more
+> > appropriate?
+> > 
+> > > 
+> > > I see your point in breaking userspace, but given the fact that it was
+> > > recently introduced,
+> > > I didn't thought it was already "adopted", that's why I decided to
+> > > remove the sysfs entry.
+> > 
+> > Looks like since 3.15 if I read the log correctly. That is fairly recent and
+> > this is not one of the "defined interfaces" in the sysfs documentation.
+> > 
+> > Greg, can you weigh in here - does this change count as "breaking userspace", or
+> > is this more inline with the scheduler knobs in /proc/sched_debug which can
+> > change from version to version.
+> > 
+> > > 
+> > > Then we might as well keep the sysfs entry and have the input polled
+> > > device as well.
+> > 
+> > Let's see what Greg has to say. If he isn't bothered by the change, I won't push
+> > the issue.
+> 
+> If it should be an IIO device, great, make it an IIO device, and move
+> away from a custom sysfs interface that matches nothing else.
+> 
+> But I really doubt it should be a joystick device, that just doesn't
+> make sense at all.
 
-By extending the existing AXP20x driver, this patchset adds basic support
-for AXP288 PMIC with GPADC as one MFD cell device driver. It also adds hooks
-for ACPI opregion handler driver which can be used to handle ACPI requests.
+I immediately went to a tablet with a marble maze game and it didn't seem too
+crazy, but I don't suppose that is what people are actually doing with it...
 
-Currently, the PMIC driver in this patchset does not support platform data
-enumeration. But when ACPI _DSD and unified device properties become available,
-cell devices with platform data will be added.
-
-This patch does not use intel_soc_pmic core for i2c and regmap handling in that
-axp288 shares similar programming interface with other Xpower PMICs supported in
-axp20x.c. Therefore, extending axp20x.c to include axp288 makes more sense.
-
-Changes v2:
-	- use format -M for 1/4
-	- minor tweak based on Maxime's review
-
-Jacob Pan (4):
-  mfd/axp20x: rename files to support more devices
-  mfd/axp2xx: extend axp20x to support axp288 pmic
-  regulator/axp20x: use axp2xx consolidated header
-  iio/adc/axp288: add support for axp288 gpadc
-
- drivers/iio/adc/Kconfig                  |   8 +
- drivers/iio/adc/Makefile                 |   1 +
- drivers/iio/adc/axp288_gpadc.c           | 250 ++++++++++++++++
- drivers/mfd/Kconfig                      |   7 +-
- drivers/mfd/Makefile                     |   2 +-
- drivers/mfd/axp20x.c                     | 258 ----------------
- drivers/mfd/axp2xx.c                     | 496 +++++++++++++++++++++++++++++++
- drivers/regulator/axp20x-regulator.c     |   6 +-
- include/linux/mfd/{axp20x.h => axp2xx.h} |  57 +++-
- 9 files changed, 819 insertions(+), 266 deletions(-)
- create mode 100644 drivers/iio/adc/axp288_gpadc.c
- delete mode 100644 drivers/mfd/axp20x.c
- create mode 100644 drivers/mfd/axp2xx.c
- rename include/linux/mfd/{axp20x.h => axp2xx.h} (79%)
+What are people actually doing with this thing Azael?
 
 -- 
-1.9.1
-
+Darren Hart
+Intel Open Source Technology Center
