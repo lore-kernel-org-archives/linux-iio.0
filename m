@@ -1,103 +1,108 @@
-Return-Path: <denis.ciocca@st.com>
-From: Denis CIOCCA <denis.ciocca@st.com>
-To: jic23@kernel.org
-Cc: linux-iio@vger.kernel.org, Denis Ciocca <denis.ciocca@st.com>
-Subject: [PATCH] iio:magnetometer: bugfix magnetometers gain values
-Date: Wed, 10 Sep 2014 14:55:37 +0200
-Message-Id: <1410353737-17542-1-git-send-email-denis.ciocca@st.com>
+Return-Path: <ludovic.desroches@atmel.com>
+Date: Wed, 10 Sep 2014 13:53:29 +0200
+From: Ludovic Desroches <ludovic.desroches@atmel.com>
+To: Hartmut Knaack <knaack.h@gmx.de>
+CC: Ludovic Desroches <ludovic.desroches@atmel.com>,
+	<linux-arm-kernel@lists.infradead.org>, <linux-iio@vger.kernel.org>,
+	<jic23@kernel.org>, <alexandre.belloni@free-electrons.com>,
+	<josh.wu@atmel.com>, <nicolas.ferre@atmel.com>,
+	<maxime.ripard@free-electrons.com>
+Subject: Re: [PATCH v2] iio: adc: at91: don't use the last converted data
+ register
+Message-ID: <20140910115329.GO4434@ldesroches-Latitude-E6320>
+References: <1410165631-8688-1-git-send-email-ludovic.desroches@atmel.com>
+ <540F771D.5040106@gmx.de>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+In-Reply-To: <540F771D.5040106@gmx.de>
 List-ID: <linux-iio@vger.kernel.org>
 
-This patch fix gains values. The first driver was designed using
-engineering samples, in mass production the values are changed.
+On Tue, Sep 09, 2014 at 11:54:37PM +0200, Hartmut Knaack wrote:
+> Ludovic Desroches schrieb, Am 08.09.2014 10:40:
+> > If touchscreen mode is enabled and a conversion is requested on another
+> > channel, the result in the last converted data register can be a
+> > touchscreen relative value. Starting a conversion involves to do a
+> > conversion for all active channel. It starts with ADC channels and ends
+> > with touchscreen channels. Then if ADC_LCD register is not read quickly,
+> > its content may be a touchscreen conversion.
+> > To remove this temporal constraint, the conversion value is taken from
+> > the channel data register.
+> > 
+> > Acked-by: Alexandre Belloni <alexandre.belloni@free-electrons.com>
+> > Signed-off-by: Ludovic Desroches <ludovic.desroches@atmel.com>
+> > ---
+> > 
+> > Changes from v1:
+> > - use GENMASK and BIT macros
+> > 
+> >  drivers/iio/adc/at91_adc.c |   12 +++++++-----
+> >  1 file changed, 7 insertions(+), 5 deletions(-)
+> > 
+> > diff --git a/drivers/iio/adc/at91_adc.c b/drivers/iio/adc/at91_adc.c
+> > index 3b5bacd..1812d12 100644
+> > --- a/drivers/iio/adc/at91_adc.c
+> > +++ b/drivers/iio/adc/at91_adc.c
+> > @@ -196,6 +196,7 @@ struct at91_adc_state {
+> >  	bool			done;
+> >  	int			irq;
+> >  	u16			last_value;
+> > +	int			chnb;
+> >  	struct mutex		lock;
+> >  	u8			num_channels;
+> >  	void __iomem		*reg_base;
+> > @@ -274,7 +275,7 @@ void handle_adc_eoc_trigger(int irq, struct iio_dev *idev)
+> >  		disable_irq_nosync(irq);
+> >  		iio_trigger_poll(idev->trig, iio_get_time_ns());
+> >  	} else {
+> > -		st->last_value = at91_adc_readl(st, AT91_ADC_LCDR);
+> > +		st->last_value = at91_adc_readl(st, AT91_ADC_CHAN(st, st->chnb));
+> >  		st->done = true;
+> >  		wake_up_interruptible(&st->wq_data_avail);
+> >  	}
+> > @@ -351,7 +352,7 @@ static irqreturn_t at91_adc_rl_interrupt(int irq, void *private)
+> >  	unsigned int reg;
+> >  
+> >  	status &= at91_adc_readl(st, AT91_ADC_IMR);
+> > -	if (status & st->registers->drdy_mask)
+> > +	if (status & GENMASK(st->num_channels, 0))
+> You need to use st->num_channels - 1, since GENMASK starts counting from bit position 0.
 
-Signed-off-by: Denis Ciocca <denis.ciocca@st.com>
----
- drivers/iio/magnetometer/st_magn_core.c | 52 +++++++++++++++++++--------------
- 1 file changed, 30 insertions(+), 22 deletions(-)
+Right, thanks to catch it, I was thinking channel number instead of
+number of channels when writing it...
 
-diff --git a/drivers/iio/magnetometer/st_magn_core.c b/drivers/iio/magnetometer/st_magn_core.c
-index a4b6413..68cae86 100644
---- a/drivers/iio/magnetometer/st_magn_core.c
-+++ b/drivers/iio/magnetometer/st_magn_core.c
-@@ -42,7 +42,8 @@
- #define ST_MAGN_FS_AVL_5600MG			5600
- #define ST_MAGN_FS_AVL_8000MG			8000
- #define ST_MAGN_FS_AVL_8100MG			8100
--#define ST_MAGN_FS_AVL_10000MG			10000
-+#define ST_MAGN_FS_AVL_12000MG			12000
-+#define ST_MAGN_FS_AVL_16000MG			16000
- 
- /* CUSTOM VALUES FOR SENSOR 1 */
- #define ST_MAGN_1_WAI_EXP			0x3c
-@@ -69,20 +70,20 @@
- #define ST_MAGN_1_FS_AVL_4700_VAL		0x05
- #define ST_MAGN_1_FS_AVL_5600_VAL		0x06
- #define ST_MAGN_1_FS_AVL_8100_VAL		0x07
--#define ST_MAGN_1_FS_AVL_1300_GAIN_XY		1100
--#define ST_MAGN_1_FS_AVL_1900_GAIN_XY		855
--#define ST_MAGN_1_FS_AVL_2500_GAIN_XY		670
--#define ST_MAGN_1_FS_AVL_4000_GAIN_XY		450
--#define ST_MAGN_1_FS_AVL_4700_GAIN_XY		400
--#define ST_MAGN_1_FS_AVL_5600_GAIN_XY		330
--#define ST_MAGN_1_FS_AVL_8100_GAIN_XY		230
--#define ST_MAGN_1_FS_AVL_1300_GAIN_Z		980
--#define ST_MAGN_1_FS_AVL_1900_GAIN_Z		760
--#define ST_MAGN_1_FS_AVL_2500_GAIN_Z		600
--#define ST_MAGN_1_FS_AVL_4000_GAIN_Z		400
--#define ST_MAGN_1_FS_AVL_4700_GAIN_Z		355
--#define ST_MAGN_1_FS_AVL_5600_GAIN_Z		295
--#define ST_MAGN_1_FS_AVL_8100_GAIN_Z		205
-+#define ST_MAGN_1_FS_AVL_1300_GAIN_XY		909
-+#define ST_MAGN_1_FS_AVL_1900_GAIN_XY		1169
-+#define ST_MAGN_1_FS_AVL_2500_GAIN_XY		1492
-+#define ST_MAGN_1_FS_AVL_4000_GAIN_XY		2222
-+#define ST_MAGN_1_FS_AVL_4700_GAIN_XY		2500
-+#define ST_MAGN_1_FS_AVL_5600_GAIN_XY		3030
-+#define ST_MAGN_1_FS_AVL_8100_GAIN_XY		4347
-+#define ST_MAGN_1_FS_AVL_1300_GAIN_Z		1020
-+#define ST_MAGN_1_FS_AVL_1900_GAIN_Z		1315
-+#define ST_MAGN_1_FS_AVL_2500_GAIN_Z		1666
-+#define ST_MAGN_1_FS_AVL_4000_GAIN_Z		2500
-+#define ST_MAGN_1_FS_AVL_4700_GAIN_Z		2816
-+#define ST_MAGN_1_FS_AVL_5600_GAIN_Z		3389
-+#define ST_MAGN_1_FS_AVL_8100_GAIN_Z		4878
- #define ST_MAGN_1_MULTIREAD_BIT			false
- 
- /* CUSTOM VALUES FOR SENSOR 2 */
-@@ -105,10 +106,12 @@
- #define ST_MAGN_2_FS_MASK			0x60
- #define ST_MAGN_2_FS_AVL_4000_VAL		0x00
- #define ST_MAGN_2_FS_AVL_8000_VAL		0x01
--#define ST_MAGN_2_FS_AVL_10000_VAL		0x02
--#define ST_MAGN_2_FS_AVL_4000_GAIN		430
--#define ST_MAGN_2_FS_AVL_8000_GAIN		230
--#define ST_MAGN_2_FS_AVL_10000_GAIN		230
-+#define ST_MAGN_2_FS_AVL_12000_VAL		0x02
-+#define ST_MAGN_2_FS_AVL_16000_VAL		0x03
-+#define ST_MAGN_2_FS_AVL_4000_GAIN		146
-+#define ST_MAGN_2_FS_AVL_8000_GAIN		292
-+#define ST_MAGN_2_FS_AVL_12000_GAIN		438
-+#define ST_MAGN_2_FS_AVL_16000_GAIN		584
- #define ST_MAGN_2_MULTIREAD_BIT			false
- #define ST_MAGN_2_OUT_X_L_ADDR			0x28
- #define ST_MAGN_2_OUT_Y_L_ADDR			0x2a
-@@ -266,9 +269,14 @@ static const struct st_sensors st_magn_sensors[] = {
- 					.gain = ST_MAGN_2_FS_AVL_8000_GAIN,
- 				},
- 				[2] = {
--					.num = ST_MAGN_FS_AVL_10000MG,
--					.value = ST_MAGN_2_FS_AVL_10000_VAL,
--					.gain = ST_MAGN_2_FS_AVL_10000_GAIN,
-+					.num = ST_MAGN_FS_AVL_12000MG,
-+					.value = ST_MAGN_2_FS_AVL_12000_VAL,
-+					.gain = ST_MAGN_2_FS_AVL_12000_GAIN,
-+				},
-+				[3] = {
-+					.num = ST_MAGN_FS_AVL_16000MG,
-+					.value = ST_MAGN_2_FS_AVL_16000_VAL,
-+					.gain = ST_MAGN_2_FS_AVL_16000_GAIN,
- 				},
- 			},
- 		},
--- 
-1.9.1
+> >  		handle_adc_eoc_trigger(irq, idev);
+> >  
+> >  	if (status & AT91RL_ADC_IER_PEN) {
+> > @@ -418,7 +419,7 @@ static irqreturn_t at91_adc_9x5_interrupt(int irq, void *private)
+> >  		AT91_ADC_IER_YRDY |
+> >  		AT91_ADC_IER_PRDY;
+> >  
+> > -	if (status & st->registers->drdy_mask)
+> > +	if (status & GENMASK(st->num_channels, 0))
+> Same here.
+> >  		handle_adc_eoc_trigger(irq, idev);
+> >  
+> >  	if (status & AT91_ADC_IER_PEN) {
+> > @@ -689,9 +690,10 @@ static int at91_adc_read_raw(struct iio_dev *idev,
+> >  	case IIO_CHAN_INFO_RAW:
+> >  		mutex_lock(&st->lock);
+> >  
+> > +		st->chnb = chan->channel;
+> >  		at91_adc_writel(st, AT91_ADC_CHER,
+> >  				AT91_ADC_CH(chan->channel));
+> > -		at91_adc_writel(st, AT91_ADC_IER, st->registers->drdy_mask);
+> > +		at91_adc_writel(st, AT91_ADC_IER, BIT(chan->channel));
+> >  		at91_adc_writel(st, AT91_ADC_CR, AT91_ADC_START);
+> >  
+> >  		ret = wait_event_interruptible_timeout(st->wq_data_avail,
+> > @@ -708,7 +710,7 @@ static int at91_adc_read_raw(struct iio_dev *idev,
+> >  
+> >  		at91_adc_writel(st, AT91_ADC_CHDR,
+> >  				AT91_ADC_CH(chan->channel));
+> > -		at91_adc_writel(st, AT91_ADC_IDR, st->registers->drdy_mask);
+> > +		at91_adc_writel(st, AT91_ADC_IDR, BIT(chan->channel));
+> >  
+> >  		st->last_value = 0;
+> >  		st->done = false;
+> > 
+> 
