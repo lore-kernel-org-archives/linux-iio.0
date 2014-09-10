@@ -1,123 +1,331 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-ig0-f169.google.com ([209.85.213.169]:38794 "EHLO
-	mail-ig0-f169.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751142AbaIJIMJ (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 10 Sep 2014 04:12:09 -0400
-Received: by mail-ig0-f169.google.com with SMTP id r2so917834igi.2
-        for <linux-iio@vger.kernel.org>; Wed, 10 Sep 2014 01:12:09 -0700 (PDT)
-Date: Wed, 10 Sep 2014 09:12:01 +0100
-From: Lee Jones <lee.jones@linaro.org>
-To: Jacob Pan <jacob.jun.pan@linux.intel.com>
-Cc: IIO <linux-iio@vger.kernel.org>,
-	LKML <linux-kernel@vger.kernel.org>,
-	DEVICE TREE <devicetree@vger.kernel.org>,
-	Carlo Caione <carlo@caione.org>,
-	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
-	Aaron Lu <aaron.lu@intel.com>, Alan Cox <alan@linux.intel.com>,
-	Jean Delvare <khali@linux-fr.org>,
-	Samuel Ortiz <sameo@linux.intel.com>,
-	Liam Girdwood <lgirdwood@gmail.com>,
-	Mark Brown <broonie@kernel.org>,
-	Grant Likely <grant.likely@linaro.org>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Rob Herring <robh+dt@kernel.org>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Fugang Duan <B38611@freescale.com>,
-	Arnd Bergmann <arnd@arndb.de>,
-	Zubair Lutfullah <zubair.lutfullah@gmail.com>,
-	Sebastian Reichel <sre@debian.org>,
-	Johannes Thumshirn <johannes.thumshirn@men.de>,
-	Philippe Reynes <tremyfr@yahoo.fr>,
-	Angelo Compagnucci <angelo.compagnucci@gmail.com>,
-	Doug Anderson <dianders@chromium.org>,
-	Ramakrishna Pallala <ramakrishna.pallala@intel.com>
-Subject: Re: [PATCH v2 1/4] mfd/axp20x: rename files to support more devices
-Message-ID: <20140910081201.GK30307@lee--X1>
-References: <1410267775-4683-1-git-send-email-jacob.jun.pan@linux.intel.com>
- <1410267775-4683-2-git-send-email-jacob.jun.pan@linux.intel.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-In-Reply-To: <1410267775-4683-2-git-send-email-jacob.jun.pan@linux.intel.com>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <daniel.baluta@intel.com>
+From: Daniel Baluta <daniel.baluta@intel.com>
+To: jic23@kernel.org
+Cc: daniel.baluta@intel.com,
+	knaack.h@gmx.de,
+	linux-iio@vger.kernel.org,
+	pmeerw@pmeerw.net,
+	linux-kernel@vger.kernel.org,
+	Tsechih_Lin@asus.com
+Subject: [PATCH v7] iio: Add Dyna-Image AL3320A ambient light sensor driver
+Date: Wed, 10 Sep 2014 09:57:06 +0300
+Message-Id: <1410332226-5481-1-git-send-email-daniel.baluta@intel.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-On Tue, 09 Sep 2014, Jacob Pan wrote:
+Minimal implementation. This driver provides raw illuminance readings.
 
-> More XPowers PMIC devices can be supported by extending this driver, so
-> rename it to axp2xx to cover axp288 variant.
-> 
-> Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
-> ---
->  drivers/mfd/Kconfig                      | 7 ++++---
->  drivers/mfd/Makefile                     | 2 +-
->  drivers/mfd/{axp20x.c => axp2xx.c}       | 2 +-
->  include/linux/mfd/{axp20x.h => axp2xx.h} | 0
->  4 files changed, 6 insertions(+), 5 deletions(-)
->  rename drivers/mfd/{axp20x.c => axp2xx.c} (99%)
->  rename include/linux/mfd/{axp20x.h => axp2xx.h} (100%)
+This is based on drivers/hwmon/al3320.c (*) driver from msm tree written
+by Tsechih Lin <Tsechih_Lin@asus.com>
 
-Acked-by: Lee Jones <lee.jones@linaro.org>
+* https://android.googlesource.com/kernel/msm.git
 
-> diff --git a/drivers/mfd/Kconfig b/drivers/mfd/Kconfig
-> index de5abf2..42a70a3 100644
-> --- a/drivers/mfd/Kconfig
-> +++ b/drivers/mfd/Kconfig
-> @@ -67,14 +67,15 @@ config MFD_BCM590XX
->  	help
->  	  Support for the BCM590xx PMUs from Broadcom
->  
-> -config MFD_AXP20X
-> -	bool "X-Powers AXP20X"
-> +config MFD_AXP2XX
-> +	bool "X-Powers AXP2XX"
->  	select MFD_CORE
->  	select REGMAP_I2C
->  	select REGMAP_IRQ
->  	depends on I2C=y
->  	help
-> -	  If you say Y here you get support for the X-Powers AXP202 and AXP209.
-> +	  If you say Y here you get support for the X-Powers AXP202, AXP209 and
-> +	  AXP288 power management IC (PMIC).
->  	  This driver include only the core APIs. You have to select individual
->  	  components like regulators or the PEK (Power Enable Key) under the
->  	  corresponding menus.
-> diff --git a/drivers/mfd/Makefile b/drivers/mfd/Makefile
-> index f001487..55d76b3 100644
-> --- a/drivers/mfd/Makefile
-> +++ b/drivers/mfd/Makefile
-> @@ -103,7 +103,7 @@ obj-$(CONFIG_PMIC_DA9052)	+= da9052-irq.o
->  obj-$(CONFIG_PMIC_DA9052)	+= da9052-core.o
->  obj-$(CONFIG_MFD_DA9052_SPI)	+= da9052-spi.o
->  obj-$(CONFIG_MFD_DA9052_I2C)	+= da9052-i2c.o
-> -obj-$(CONFIG_MFD_AXP20X)	+= axp20x.o
-> +obj-$(CONFIG_MFD_AXP2XX)	+= axp2xx.o
->  
->  obj-$(CONFIG_MFD_LP3943)	+= lp3943.o
->  obj-$(CONFIG_MFD_LP8788)	+= lp8788.o lp8788-irq.o
-> diff --git a/drivers/mfd/axp20x.c b/drivers/mfd/axp2xx.c
-> similarity index 99%
-> rename from drivers/mfd/axp20x.c
-> rename to drivers/mfd/axp2xx.c
-> index dee6539..c534443 100644
-> --- a/drivers/mfd/axp20x.c
-> +++ b/drivers/mfd/axp2xx.c
-> @@ -21,7 +21,7 @@
->  #include <linux/regmap.h>
->  #include <linux/slab.h>
->  #include <linux/regulator/consumer.h>
-> -#include <linux/mfd/axp20x.h>
-> +#include <linux/mfd/axp2xx.h>
->  #include <linux/mfd/core.h>
->  #include <linux/of_device.h>
->  #include <linux/of_irq.h>
-> diff --git a/include/linux/mfd/axp20x.h b/include/linux/mfd/axp2xx.h
-> similarity index 100%
-> rename from include/linux/mfd/axp20x.h
-> rename to include/linux/mfd/axp2xx.h
+Signed-off-by: Daniel Baluta <daniel.baluta@intel.com>
+---
+Changes since v6: (reported by Hartmut)
+        * drop variable i and reuse ret
 
+Changes since v5: (reported by Hartmut)
+        * fix comments for al3320a_range
+        * make sure we always use a valid index in al3320a_scales
+
+Changes since v4: (reported by Peter)
+        * no need to fix endianess when reading raw value
+
+Changes since v3: (reported by Hartmut and Jonathan)
+        * dropped the local store for the range, instead read it when necessary
+        * removed wrapper functions
+        * added in_illuminance_scale_available attribute
+        * fix bug when reading raw value, use i2c_smbus_read_word instead of
+          i2c_smbus_read_word_swapped and fix the endianess after read.
+        * small coding style fixes
+
+Changes since v2: (reported by Peter Meerwald)
+        * removed definition of DATA_HIGH and SW_RESET as they are not used
+        * added a comment to al3320a_get_adc_value() function
+        * added thresholds on TODO list
+        * small style fixes
+
+Changes since v1: (reported by Peter Meerwald)
+        * used u8 instead of int for passing gain and mean_time
+        * used i2c_smbus_read_word_swapped instead of 2 x i2c_smbus_read_byte_data
+        * used devm_iio_device_register instead of iio_device_register
+        * small style fixes
+ drivers/iio/light/Kconfig   |  10 ++
+ drivers/iio/light/Makefile  |   1 +
+ drivers/iio/light/al3320a.c | 232 ++++++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 243 insertions(+)
+ create mode 100644 drivers/iio/light/al3320a.c
+
+diff --git a/drivers/iio/light/Kconfig b/drivers/iio/light/Kconfig
+index bf05ca5..5bea821 100644
+--- a/drivers/iio/light/Kconfig
++++ b/drivers/iio/light/Kconfig
+@@ -17,6 +17,16 @@ config ADJD_S311
+ 	 This driver can also be built as a module.  If so, the module
+ 	 will be called adjd_s311.
+ 
++config AL3320A
++	tristate "AL3320A ambient light sensor"
++	depends on I2C
++	help
++	 Say Y here if you want to build a driver for the Dyna Image AL3320A
++	 ambient light sensor.
++
++	 To compile this driver as a module, choose M here: the
++	 module will be called al3320a.
++
+ config APDS9300
+ 	tristate "APDS9300 ambient light sensor"
+ 	depends on I2C
+diff --git a/drivers/iio/light/Makefile b/drivers/iio/light/Makefile
+index 8b8c09f..47877a3 100644
+--- a/drivers/iio/light/Makefile
++++ b/drivers/iio/light/Makefile
+@@ -4,6 +4,7 @@
+ 
+ # When adding new entries keep the list in alphabetical order
+ obj-$(CONFIG_ADJD_S311)		+= adjd_s311.o
++obj-$(CONFIG_AL3320A)		+= al3320a.o
+ obj-$(CONFIG_APDS9300)		+= apds9300.o
+ obj-$(CONFIG_CM32181)		+= cm32181.o
+ obj-$(CONFIG_CM36651)		+= cm36651.o
+diff --git a/drivers/iio/light/al3320a.c b/drivers/iio/light/al3320a.c
+new file mode 100644
+index 0000000..6aac651
+--- /dev/null
++++ b/drivers/iio/light/al3320a.c
+@@ -0,0 +1,232 @@
++/*
++ * AL3320A - Dyna Image Ambient Light Sensor
++ *
++ * Copyright (c) 2014, Intel Corporation.
++ *
++ * This file is subject to the terms and conditions of version 2 of
++ * the GNU General Public License.  See the file COPYING in the main
++ * directory of this archive for more details.
++ *
++ * IIO driver for AL3320A (7-bit I2C slave address 0x1C).
++ *
++ * TODO: interrupt support, thresholds
++ *
++ */
++
++#include <linux/module.h>
++#include <linux/init.h>
++#include <linux/i2c.h>
++
++#include <linux/iio/iio.h>
++#include <linux/iio/sysfs.h>
++
++#define AL3320A_DRV_NAME "al3320a"
++
++#define AL3320A_REG_CONFIG		0x00
++#define AL3320A_REG_STATUS		0x01
++#define AL3320A_REG_INT			0x02
++#define AL3320A_REG_WAIT		0x06
++#define AL3320A_REG_CONFIG_RANGE	0x07
++#define AL3320A_REG_PERSIST		0x08
++#define AL3320A_REG_MEAN_TIME		0x09
++#define AL3320A_REG_ADUMMY		0x0A
++#define AL3320A_REG_DATA_LOW		0x22
++
++#define AL3320A_REG_LOW_THRESH_LOW	0x30
++#define AL3320A_REG_LOW_THRESH_HIGH	0x31
++#define AL3320A_REG_HIGH_THRESH_LOW	0x32
++#define AL3320A_REG_HIGH_THRESH_HIGH	0x33
++
++#define AL3320A_CONFIG_DISABLE		0x00
++#define AL3320A_CONFIG_ENABLE		0x01
++
++#define AL3320A_GAIN_SHIFT		1
++#define AL3320A_GAIN_MASK		(BIT(2) | BIT(1))
++
++/* chip params default values */
++#define AL3320A_DEFAULT_MEAN_TIME	4
++#define AL3320A_DEFAULT_WAIT_TIME	0 /* no waiting */
++
++#define AL3320A_SCALE_AVAILABLE "0.512 0.128 0.032 0.01"
++
++enum al3320a_range {
++	AL3320A_RANGE_1, /* 33.28 Klx */
++	AL3320A_RANGE_2, /* 8.32 Klx  */
++	AL3320A_RANGE_3, /* 2.08 Klx  */
++	AL3320A_RANGE_4  /* 0.65 Klx  */
++};
++
++static const int al3320a_scales[][2] = {
++	{0, 512000}, {0, 128000}, {0, 32000}, {0, 10000}
++};
++
++struct al3320a_data {
++	struct i2c_client *client;
++};
++
++static const struct iio_chan_spec al3320a_channels[] = {
++	{
++		.type	= IIO_LIGHT,
++		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
++				      BIT(IIO_CHAN_INFO_SCALE),
++	}
++};
++
++static IIO_CONST_ATTR(in_illuminance_scale_available, AL3320A_SCALE_AVAILABLE);
++
++static struct attribute *al3320a_attributes[] = {
++	&iio_const_attr_in_illuminance_scale_available.dev_attr.attr,
++	NULL,
++};
++
++static const struct attribute_group al3320a_attribute_group = {
++	.attrs = al3320a_attributes,
++};
++
++static int al3320a_init(struct al3320a_data *data)
++{
++	int ret;
++
++	/* power on */
++	ret = i2c_smbus_write_byte_data(data->client, AL3320A_REG_CONFIG,
++					AL3320A_CONFIG_ENABLE);
++	if (ret < 0)
++		return ret;
++
++	ret = i2c_smbus_write_byte_data(data->client, AL3320A_REG_CONFIG_RANGE,
++					AL3320A_RANGE_3 << AL3320A_GAIN_SHIFT);
++	if (ret < 0)
++		return ret;
++
++	ret = i2c_smbus_write_byte_data(data->client, AL3320A_REG_MEAN_TIME,
++					AL3320A_DEFAULT_MEAN_TIME);
++	if (ret < 0)
++		return ret;
++
++	ret = i2c_smbus_write_byte_data(data->client, AL3320A_REG_WAIT,
++					AL3320A_DEFAULT_WAIT_TIME);
++	if (ret < 0)
++		return ret;
++
++	return 0;
++}
++
++static int al3320a_read_raw(struct iio_dev *indio_dev,
++			    struct iio_chan_spec const *chan, int *val,
++			    int *val2, long mask)
++{
++	struct al3320a_data *data = iio_priv(indio_dev);
++	int ret;
++
++	switch (mask) {
++	case IIO_CHAN_INFO_RAW:
++		/*
++		 * ALS ADC value is stored in two adjacent registers:
++		 * - low byte of output is stored at AL3320A_REG_DATA_LOW
++		 * - high byte of output is stored at AL3320A_REG_DATA_LOW + 1
++		 */
++		ret = i2c_smbus_read_word_data(data->client,
++					       AL3320A_REG_DATA_LOW);
++		if (ret < 0)
++			return ret;
++		*val = ret;
++		return IIO_VAL_INT;
++	case IIO_CHAN_INFO_SCALE:
++		ret = i2c_smbus_read_byte_data(data->client,
++					       AL3320A_REG_CONFIG_RANGE);
++		if (ret < 0)
++			return ret;
++
++		ret = (ret & AL3320A_GAIN_MASK) >> AL3320A_GAIN_SHIFT;
++		*val = al3320a_scales[ret][0];
++		*val2 = al3320a_scales[ret][1];
++
++		return IIO_VAL_INT_PLUS_MICRO;
++	}
++	return -EINVAL;
++}
++
++static int al3320a_write_raw(struct iio_dev *indio_dev,
++			     struct iio_chan_spec const *chan, int val,
++			     int val2, long mask)
++{
++	struct al3320a_data *data = iio_priv(indio_dev);
++	int i;
++
++	switch (mask) {
++	case IIO_CHAN_INFO_SCALE:
++		for (i = 0; i < ARRAY_SIZE(al3320a_scales); i++) {
++			if (val == al3320a_scales[i][0] &&
++			    val2 == al3320a_scales[i][1])
++				return i2c_smbus_write_byte_data(data->client,
++					AL3320A_REG_CONFIG_RANGE,
++					i << AL3320A_GAIN_SHIFT);
++		}
++		break;
++	}
++	return -EINVAL;
++}
++
++static const struct iio_info al3320a_info = {
++	.driver_module	= THIS_MODULE,
++	.read_raw	= al3320a_read_raw,
++	.write_raw	= al3320a_write_raw,
++	.attrs		= &al3320a_attribute_group,
++};
++
++static int al3320a_probe(struct i2c_client *client,
++			 const struct i2c_device_id *id)
++{
++	struct al3320a_data *data;
++	struct iio_dev *indio_dev;
++	int ret;
++
++	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
++	if (!indio_dev)
++		return -ENOMEM;
++
++	data = iio_priv(indio_dev);
++	i2c_set_clientdata(client, indio_dev);
++	data->client = client;
++
++	indio_dev->dev.parent = &client->dev;
++	indio_dev->info = &al3320a_info;
++	indio_dev->name = AL3320A_DRV_NAME;
++	indio_dev->channels = al3320a_channels;
++	indio_dev->num_channels = ARRAY_SIZE(al3320a_channels);
++	indio_dev->modes = INDIO_DIRECT_MODE;
++
++	ret = al3320a_init(data);
++	if (ret < 0) {
++		dev_err(&client->dev, "al3320a chip init failed\n");
++		return ret;
++	}
++	return devm_iio_device_register(&client->dev, indio_dev);
++}
++
++static int al3320a_remove(struct i2c_client *client)
++{
++	return i2c_smbus_write_byte_data(client, AL3320A_REG_CONFIG,
++					 AL3320A_CONFIG_DISABLE);
++}
++
++static const struct i2c_device_id al3320a_id[] = {
++	{"al3320a", 0},
++	{}
++};
++MODULE_DEVICE_TABLE(i2c, al3320a_id);
++
++static struct i2c_driver al3320a_driver = {
++	.driver = {
++		.name = AL3320A_DRV_NAME,
++	},
++	.probe		= al3320a_probe,
++	.remove		= al3320a_remove,
++	.id_table	= al3320a_id,
++};
++
++module_i2c_driver(al3320a_driver);
++
++MODULE_AUTHOR("Daniel Baluta <daniel.baluta@intel.com>");
++MODULE_DESCRIPTION("AL3320A Ambient Light Sensor driver");
++MODULE_LICENSE("GPL v2");
 -- 
-Lee Jones
-Linaro STMicroelectronics Landing Team Lead
-Linaro.org │ Open source software for ARM SoCs
-Follow Linaro: Facebook | Twitter | Blog
+1.9.1
