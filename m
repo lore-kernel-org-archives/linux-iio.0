@@ -1,98 +1,83 @@
-Return-Path: <ludovic.desroches@atmel.com>
-From: Ludovic Desroches <ludovic.desroches@atmel.com>
-To: <linux-arm-kernel@lists.infradead.org>, <linux-iio@vger.kernel.org>
-CC: <jic23@kernel.org>, <alexandre.belloni@free-electrons.com>,
-	<josh.wu@atmel.com>, <nicolas.ferre@atmel.com>,
-	<maxime.ripard@free-electrons.com>, <knaack.h@gmx.de>, Ludovic Desroches
-	<ludovic.desroches@atmel.com>
-Subject: [PATCH v3] iio: adc: at91: don't use the last converted data register
-Date: Wed, 10 Sep 2014 16:02:27 +0200
-Message-ID: <1410357747-29797-1-git-send-email-ludovic.desroches@atmel.com>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from atrey.karlin.mff.cuni.cz ([195.113.26.193]:58133 "EHLO
+	atrey.karlin.mff.cuni.cz" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751102AbaIJNgO (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 10 Sep 2014 09:36:14 -0400
+Date: Wed, 10 Sep 2014 15:36:07 +0200
+From: Pavel Machek <pavel@denx.de>
+To: Denis CIOCCA <denis.ciocca@st.com>
+Cc: Linus Walleij <linus.walleij@linaro.org>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Eric Piel <eric.piel@tremplin-utc.net>,
+	Yan Burman <burman.yan@gmail.com>,
+	Yan Burman <yanb@mellanox.com>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	Lee Jones <lee.jones@linaro.org>,
+	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>
+Subject: Re: [PATCH] iio: st-sensors: add support for lis3lv02d accelerometer
+Message-ID: <20140910133607.GA13361@xo-6d-61-c0.localdomain>
+References: <1408815064-5763-1-git-send-email-linus.walleij@linaro.org>
+ <53FB6205.5020704@kernel.org>
+ <CACRpkdb5NXJiTvaHz9_nJiZcFsyVnjPYjaYZ1YH9meBgJhoTJA@mail.gmail.com>
+ <54104B26.5080707@st.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-List-ID: <linux-iio@vger.kernel.org>
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <54104B26.5080707@st.com>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-If touchscreen mode is enabled and a conversion is requested on another
-channel, the result in the last converted data register can be a
-touchscreen relative value. Starting a conversion involves to do a
-conversion for all active channel. It starts with ADC channels and ends
-with touchscreen channels. Then if ADC_LCD register is not read quickly,
-its content may be a touchscreen conversion.
-To remove this temporal constraint, the conversion value is taken from
-the channel data register.
+Hi!
 
-Acked-by: Alexandre Belloni <alexandre.belloni@free-electrons.com>
-Signed-off-by: Ludovic Desroches <ludovic.desroches@atmel.com>
----
+> I'm sorry but I was in business trip. I think that current lis3lv02d 
+> supports more things, I want to support everything in the current IIO 
+> drivers but always I have no time.
 
-Changes from v2:
-- fix GENMASK indexes
+Ok then, can you add hwmon interfaces from the other driver to your one? That way,
+we can deprecate one of them...
 
-Changes from v1:
-- use GENMASK and BIT macros
+									Pavel
 
- drivers/iio/adc/at91_adc.c |   12 +++++++-----
- 1 file changed, 7 insertions(+), 5 deletions(-)
+> 
+> BR,
+> Denis
+> 
+> 
+> On 08/27/14 15:38, Linus Walleij wrote:
+> > On Mon, Aug 25, 2014 at 6:19 PM, Jonathan Cameron <jic23@kernel.org> wrote:
+> >> On 23/08/14 18:31, Linus Walleij wrote:
+> >>> This adds support for the LIS3LV02 accelerometer found in the
+> >>> ST Microelectronics Nomadik board series.
+> >>>
+> >>> Cc: devicetree@vger.kernel.org
+> >>> Cc: Denis CIOCCA <denis.ciocca@st.com>
+> >>> Cc: Lee Jones <lee.jones@linaro.org>
+> >>> Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+> >> This is a little 'interesting', given the part is already supported by
+> >> drivers/misc/lis3lv02d*.c and already has bindings under there.
+> >> Documentation/devicetree/bindings/misc/lis302.txt
+> >> (some of these are interesting).
+> > Grrr how come I missed this... It was originally merged as a
+> > hwmon driver.
+> >
+> >
+> >>> +/* CUSTOM VALUES FOR SENSOR 4 */
+> >>>
+> >> I wish now we'd nipped this naming convention in the bud and insisted
+> >> on naming after a relevant part. Oh well.
+> > Well we can always make an invasive patch fixing that. I can
+> > probably do it using sed or something.
+> >
+> >> Do we think this is the right way to handle the alternative support
+> >> here?
+> > Well this patch is a driver using the IIO framework and was written
+> > by ST, but the other driver support a few other interesting features
+> > and seems to be for the laptop usecase.
+> >
+> > Adding the other authors to the TO: line...
+> >
+> > Yours,
+> > Linus Walleij
 
-diff --git a/drivers/iio/adc/at91_adc.c b/drivers/iio/adc/at91_adc.c
-index 3b5bacd..ad51808 100644
---- a/drivers/iio/adc/at91_adc.c
-+++ b/drivers/iio/adc/at91_adc.c
-@@ -196,6 +196,7 @@ struct at91_adc_state {
- 	bool			done;
- 	int			irq;
- 	u16			last_value;
-+	int			chnb;
- 	struct mutex		lock;
- 	u8			num_channels;
- 	void __iomem		*reg_base;
-@@ -274,7 +275,7 @@ void handle_adc_eoc_trigger(int irq, struct iio_dev *idev)
- 		disable_irq_nosync(irq);
- 		iio_trigger_poll(idev->trig, iio_get_time_ns());
- 	} else {
--		st->last_value = at91_adc_readl(st, AT91_ADC_LCDR);
-+		st->last_value = at91_adc_readl(st, AT91_ADC_CHAN(st, st->chnb));
- 		st->done = true;
- 		wake_up_interruptible(&st->wq_data_avail);
- 	}
-@@ -351,7 +352,7 @@ static irqreturn_t at91_adc_rl_interrupt(int irq, void *private)
- 	unsigned int reg;
- 
- 	status &= at91_adc_readl(st, AT91_ADC_IMR);
--	if (status & st->registers->drdy_mask)
-+	if (status & GENMASK(st->num_channels - 1, 0))
- 		handle_adc_eoc_trigger(irq, idev);
- 
- 	if (status & AT91RL_ADC_IER_PEN) {
-@@ -418,7 +419,7 @@ static irqreturn_t at91_adc_9x5_interrupt(int irq, void *private)
- 		AT91_ADC_IER_YRDY |
- 		AT91_ADC_IER_PRDY;
- 
--	if (status & st->registers->drdy_mask)
-+	if (status & GENMASK(st->num_channels - 1, 0))
- 		handle_adc_eoc_trigger(irq, idev);
- 
- 	if (status & AT91_ADC_IER_PEN) {
-@@ -689,9 +690,10 @@ static int at91_adc_read_raw(struct iio_dev *idev,
- 	case IIO_CHAN_INFO_RAW:
- 		mutex_lock(&st->lock);
- 
-+		st->chnb = chan->channel;
- 		at91_adc_writel(st, AT91_ADC_CHER,
- 				AT91_ADC_CH(chan->channel));
--		at91_adc_writel(st, AT91_ADC_IER, st->registers->drdy_mask);
-+		at91_adc_writel(st, AT91_ADC_IER, BIT(chan->channel));
- 		at91_adc_writel(st, AT91_ADC_CR, AT91_ADC_START);
- 
- 		ret = wait_event_interruptible_timeout(st->wq_data_avail,
-@@ -708,7 +710,7 @@ static int at91_adc_read_raw(struct iio_dev *idev,
- 
- 		at91_adc_writel(st, AT91_ADC_CHDR,
- 				AT91_ADC_CH(chan->channel));
--		at91_adc_writel(st, AT91_ADC_IDR, st->registers->drdy_mask);
-+		at91_adc_writel(st, AT91_ADC_IDR, BIT(chan->channel));
- 
- 		st->last_value = 0;
- 		st->done = false;
 -- 
-1.7.9.5
+(english) http://www.livejournal.com/~pavelmachek
+(cesky, pictures) http://atrey.karlin.mff.cuni.cz/~pavel/picture/horses/blog.html
