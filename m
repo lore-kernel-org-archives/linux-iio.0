@@ -1,52 +1,74 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-we0-f180.google.com ([74.125.82.180]:49987 "EHLO
-	mail-we0-f180.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752000AbaIJTgE (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 10 Sep 2014 15:36:04 -0400
-MIME-Version: 1.0
-In-Reply-To: <5410A652.8070006@kernel.org>
-References: <1410332226-5481-1-git-send-email-daniel.baluta@intel.com>
-	<54109112.90508@gmx.de>
-	<5410A652.8070006@kernel.org>
-Date: Wed, 10 Sep 2014 22:36:02 +0300
-Message-ID: <CAEnQRZAu5X6j4HG8_hbrx8ZSKqYcdQCg=SodX63jvM_71_USrQ@mail.gmail.com>
-Subject: Re: [PATCH v7] iio: Add Dyna-Image AL3320A ambient light sensor driver
-From: Daniel Baluta <daniel.baluta@intel.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Hartmut Knaack <knaack.h@gmx.de>,
-	Daniel Baluta <daniel.baluta@intel.com>,
-	linux-iio@vger.kernel.org, Peter Meerwald <pmeerw@pmeerw.net>,
-	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-	Tsechih_Lin@asus.com
-Content-Type: text/plain; charset=UTF-8
+Received: from mail-pa0-f45.google.com ([209.85.220.45]:47308 "EHLO
+	mail-pa0-f45.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751971AbaIJWTe convert rfc822-to-8bit (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 10 Sep 2014 18:19:34 -0400
+Received: by mail-pa0-f45.google.com with SMTP id rd3so7839297pab.18
+        for <linux-iio@vger.kernel.org>; Wed, 10 Sep 2014 15:19:33 -0700 (PDT)
+Date: Wed, 10 Sep 2014 15:19:00 -0700
+Subject: Re: DMA sampling and IIO
+From: John Syn <john3909@gmail.com>
+To: <linux-iio@vger.kernel.org>
+CC: Mark Brown <broonie@kernel.org>,
+	Lars-Peter Clausen <lars@metafoo.de>
+Message-ID: <D03616A9.44F32%john3909@gmail.com>
+References: <CF17C5B7.1940A%john3909@gmail.com>
+ <52F35C5B.7080409@metafoo.de>
+ <CF19225A.196C9%john3909@gmail.com>
+ <52F3FB6E.3070201@metafoo.de>
+ <20140207132058.GN32298@sirena.org.uk>
+In-Reply-To: <20140207132058.GN32298@sirena.org.uk>
+Mime-version: 1.0
+Content-type: text/plain;
+	charset="ISO-8859-1"
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Wed, Sep 10, 2014 at 10:28 PM, Jonathan Cameron <jic23@kernel.org> wrote:
-> On 10/09/14 18:57, Hartmut Knaack wrote:
->> Daniel Baluta schrieb, Am 10.09.2014 08:57:
->>> Minimal implementation. This driver provides raw illuminance readings.
->>>
->>> This is based on drivers/hwmon/al3320.c (*) driver from msm tree written
->>> by Tsechih Lin <Tsechih_Lin@asus.com>
->>>
->>> * https://android.googlesource.com/kernel/msm.git
->>>
->>> Signed-off-by: Daniel Baluta <daniel.baluta@intel.com>
->> Reviewed-by: Hartmut Knaack <knaack.h@gmx.de>
-> Thanks Daniel.
-> Also thanks to Hartmut for reviewing stamina.
->
-> I've been effectively offline for a 10 days (some of it spent in a fridge)
-> so am even more grateful to those who help with reviewing than normal.
->
-> Applied to the togreg branch of iio.git which I will push out as testing
-> for the autobuilders to play when not in an airport departure lounge on the
-> 30 mins of free airport wifi.  What fun.
->
-> I wonder if this will send?
+I¹m following Mark¹s suggestion and using the audio API to stream the
+samples from the ADE7878. I created a small circuit that translates the
+ADE7878 HSDC (SPI style interface) to I2S type interface so that the
+ADE7878 samples can be treated like samples from a codec. The ADE7878
+outputs 16 samples which I treat as 16 slots in a traditional audio
+channel. 
 
-Well, it's here ;). Have a nice flight!
+My platform is a BeagleBoneBlack (BBB) so I¹m using a McASP interface for
+I2S. 
 
-thanks,
-Daniel.
+Next, I used the SPDIF RX codec as a template to create a ade78xx type
+codec and then modified davinci-evm.c link in the ade78xx codec.
+Everything seems to load OK and I see a /dev/snd/pcmC0D0c device. Now when
+I try to use arecord, it simply hangs and I think the problem occurs
+because the ade7854-i2c driver is in the IIO folder and my ade78xx driver
+is in the audio folder and currently there is no coordination to start and
+stop streaming, which probably causes under runs, over run errors. In a
+traditional Codec, the I2C and I2S functionality is in the same driver so
+it is easy to coordinate start streaming and stop streaming.
+
+What is the best way to handle this problem?
+
+Regards,
+
+John
+
+
+
+
+On 2/7/14, 5:20 AM, "Mark Brown" <broonie@kernel.org> wrote:
+
+>On Thu, Feb 06, 2014 at 10:15:26PM +0100, Lars-Peter Clausen wrote:
+>
+>> I guess this is because it is the traditional area where I2S is used
+>>and nobody
+>> cared so far about using it somewhere else in the context of the Linux
+>>kernel.
+>> Not having to have a extra layer of abstraction in the middle between
+>>ALSA/ASoC
+>> and the I2S peripheral driver helped to keep things simple.
+>
+>Plus many of the uses actually found that the audio APIs were doing
+>useful things for them anyway - the DMA bit is reasonably useful way of
+>transferring continuous streams of data and nothing much cares if that
+>data is actually audio or not so long as the application on top doesn't
+>mind.
+
+
