@@ -1,129 +1,113 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mout.kundenserver.de ([212.227.17.10]:58205 "EHLO
-	mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755572AbaIIKc5 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 9 Sep 2014 06:32:57 -0400
-From: Arnd Bergmann <arnd@arndb.de>
-To: Stanimir Varbanov <svarbanov@mm-sol.com>
-Cc: Ian Campbell <ijc+devicetree@hellion.org.uk>,
-	Pawel Moll <pawel.moll@arm.com>,
-	Rob Herring <robh+dt@kernel.org>,
-	Kumar Gala <galak@codeaurora.org>,
-	Mark Rutland <mark.rutland@arm.com>,
-	Grant Likely <grant.likely@linaro.org>,
-	Jonathan Cameron <jic23@kernel.org>,
-	linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Angelo Compagnucci <angelo.compagnucci@gmail.com>,
-	Doug Anderson <dianders@chromium.org>,
-	Fugang Duan <B38611@freescale.com>,
-	Johannes Thumshirn <johannes.thumshirn@men.de>,
-	Jean Delvare <jdelvare@suse.de>,
-	Philippe Reynes <tremyfr@yahoo.fr>,
-	Lee Jones <lee.jones@linaro.org>,
-	Josh Cartwright <joshc@codeaurora.org>,
-	Stephen Boyd <sboyd@codeaurora.org>,
-	David Collins <collinsd@codeaurora.org>,
-	"Ivan T. Ivanov" <iivanov@mm-sol.com>
-Subject: Re: [PATCH 1/2] iio: vadc: Qualcomm SPMI PMIC voltage ADC driver
-Date: Tue, 09 Sep 2014 12:32:26 +0200
-Message-ID: <7045486.CbS74HiY8I@wuerfel>
-In-Reply-To: <540DCB78.8060206@mm-sol.com>
-References: <1409919274-13419-1-git-send-email-svarbanov@mm-sol.com> <3899885.YaIxR1zelv@wuerfel> <540DCB78.8060206@mm-sol.com>
+Received: from eusmtp01.atmel.com ([212.144.249.243]:50553 "EHLO
+	eusmtp01.atmel.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751552AbaIJOEY (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 10 Sep 2014 10:04:24 -0400
+Message-ID: <54105A65.3040009@atmel.com>
+Date: Wed, 10 Sep 2014 16:04:21 +0200
+From: Nicolas Ferre <nicolas.ferre@atmel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+To: Ludovic Desroches <ludovic.desroches@atmel.com>,
+	<linux-arm-kernel@lists.infradead.org>, <linux-iio@vger.kernel.org>
+CC: <jic23@kernel.org>, <alexandre.belloni@free-electrons.com>,
+	<josh.wu@atmel.com>, <maxime.ripard@free-electrons.com>,
+	<knaack.h@gmx.de>
+Subject: Re: [PATCH v3] iio: adc: at91: don't use the last converted data
+ register
+References: <1410357747-29797-1-git-send-email-ludovic.desroches@atmel.com>
+In-Reply-To: <1410357747-29797-1-git-send-email-ludovic.desroches@atmel.com>
+Content-Type: text/plain; charset="ISO-8859-1"
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Monday 08 September 2014 18:30:00 Stanimir Varbanov wrote:
-> >>> These numbers all look hardware specific, so why put macros into the
-> >>> device tree rather than using them directly?
-> >>
-> >> The idea was to use #defines in DT nodes when we need to overwrite the
-> >> adc channel parameters, see example in 2/2 how it will be used.
-> > 
-> > I don't understand. The node in the example has
-> > 
-> > +               /* Channel node */
-> > +               usb_id_nopull@39 {
-> > +                       qcom,channel = <VADC_LR_MUX10_USB_ID>;
-> > ...
-> > +               };
-> > 
-> > 
-> > And VADC_LR_MUX10_USB_ID is defined to 0x39.  How is this helping anything?
-> > You just introduce an artificial dependency on the header file, which makes
-> > it a mess to merge the patches or do updates, and anybody who needs to
-> > make updates to this now has to go through the same pain, to update the
-> > dts files, the driver and the binding document in lockstep.
-> > 
-> > Why not remove the qcom,channel property completely and use a 'reg'
-> > property with #address-cells=<1>, #size-cells=<0> and put the number
-> > directly in there, with no need for obfuscation macros?
+On 10/09/2014 16:02, Ludovic Desroches :
+> If touchscreen mode is enabled and a conversion is requested on another
+> channel, the result in the last converted data register can be a
+> touchscreen relative value. Starting a conversion involves to do a
+> conversion for all active channel. It starts with ADC channels and ends
+> with touchscreen channels. Then if ADC_LCD register is not read quickly,
+> its content may be a touchscreen conversion.
+> To remove this temporal constraint, the conversion value is taken from
+> the channel data register.
 > 
-> OK thanks for the remarks. I will fix this mess.
+> Acked-by: Alexandre Belloni <alexandre.belloni@free-electrons.com>
+> Signed-off-by: Ludovic Desroches <ludovic.desroches@atmel.com>
+
+Acked-by: Nicolas Ferre <nicolas.ferre@atmel.com>
+
+> ---
 > 
-> I hope you are expecting to see this:
+> Changes from v2:
+> - fix GENMASK indexes
 > 
-> pmic_vadc: vadc@3100 {
->         #address-cells = <1>;
->         #size-cells = <0>;
->         #io-channel-cells = <1>;
->         io-channel-ranges;
+> Changes from v1:
+> - use GENMASK and BIT macros
 > 
->         usb_id_nopull@39 {
->                 reg = <0x39>;
->         };
-> };
+>  drivers/iio/adc/at91_adc.c |   12 +++++++-----
+>  1 file changed, 7 insertions(+), 5 deletions(-)
 > 
-> and use the vadc channel from usb device node
+> diff --git a/drivers/iio/adc/at91_adc.c b/drivers/iio/adc/at91_adc.c
+> index 3b5bacd..ad51808 100644
+> --- a/drivers/iio/adc/at91_adc.c
+> +++ b/drivers/iio/adc/at91_adc.c
+> @@ -196,6 +196,7 @@ struct at91_adc_state {
+>  	bool			done;
+>  	int			irq;
+>  	u16			last_value;
+> +	int			chnb;
+>  	struct mutex		lock;
+>  	u8			num_channels;
+>  	void __iomem		*reg_base;
+> @@ -274,7 +275,7 @@ void handle_adc_eoc_trigger(int irq, struct iio_dev *idev)
+>  		disable_irq_nosync(irq);
+>  		iio_trigger_poll(idev->trig, iio_get_time_ns());
+>  	} else {
+> -		st->last_value = at91_adc_readl(st, AT91_ADC_LCDR);
+> +		st->last_value = at91_adc_readl(st, AT91_ADC_CHAN(st, st->chnb));
+>  		st->done = true;
+>  		wake_up_interruptible(&st->wq_data_avail);
+>  	}
+> @@ -351,7 +352,7 @@ static irqreturn_t at91_adc_rl_interrupt(int irq, void *private)
+>  	unsigned int reg;
+>  
+>  	status &= at91_adc_readl(st, AT91_ADC_IMR);
+> -	if (status & st->registers->drdy_mask)
+> +	if (status & GENMASK(st->num_channels - 1, 0))
+>  		handle_adc_eoc_trigger(irq, idev);
+>  
+>  	if (status & AT91RL_ADC_IER_PEN) {
+> @@ -418,7 +419,7 @@ static irqreturn_t at91_adc_9x5_interrupt(int irq, void *private)
+>  		AT91_ADC_IER_YRDY |
+>  		AT91_ADC_IER_PRDY;
+>  
+> -	if (status & st->registers->drdy_mask)
+> +	if (status & GENMASK(st->num_channels - 1, 0))
+>  		handle_adc_eoc_trigger(irq, idev);
+>  
+>  	if (status & AT91_ADC_IER_PEN) {
+> @@ -689,9 +690,10 @@ static int at91_adc_read_raw(struct iio_dev *idev,
+>  	case IIO_CHAN_INFO_RAW:
+>  		mutex_lock(&st->lock);
+>  
+> +		st->chnb = chan->channel;
+>  		at91_adc_writel(st, AT91_ADC_CHER,
+>  				AT91_ADC_CH(chan->channel));
+> -		at91_adc_writel(st, AT91_ADC_IER, st->registers->drdy_mask);
+> +		at91_adc_writel(st, AT91_ADC_IER, BIT(chan->channel));
+>  		at91_adc_writel(st, AT91_ADC_CR, AT91_ADC_START);
+>  
+>  		ret = wait_event_interruptible_timeout(st->wq_data_avail,
+> @@ -708,7 +710,7 @@ static int at91_adc_read_raw(struct iio_dev *idev,
+>  
+>  		at91_adc_writel(st, AT91_ADC_CHDR,
+>  				AT91_ADC_CH(chan->channel));
+> -		at91_adc_writel(st, AT91_ADC_IDR, st->registers->drdy_mask);
+> +		at91_adc_writel(st, AT91_ADC_IDR, BIT(chan->channel));
+>  
+>  		st->last_value = 0;
+>  		st->done = false;
 > 
-> usb {
->         ...
->         io-channels = <&pmic_vadc 0x39>;
->         io-channel-names = "usbidnopull";
-> };
 
-The ID stuff looks good now, but I had not noticed the
-"io-channel-names" property before. I think you misunderstood
-the purpose of that, because it is very similar to the name of the
-adc provider (usb_id_nopull@39).
 
-Like anything else that we refer to by name (interrupt, reg,
-clock, regulator, ...), the name used in the client is supposed
-to be a string that identifies what the connection means to the
-client, not what it means to the provider. This string is
-supposed to be defined in the binding of the client device and
-independent of what other hardware block provides it.
-
-E.g. if you have two usb devices that need a separate adc channel,
-it could look like
-
-pmic_vadc: vadc@3100 {
-
-	usb_1_id_nopull@39 {
-		reg = 0x39;
-	};
-	usb_2_id_nopull@40 {
-		reg = 0x40;
-	};
-
-};
-
-usb@100000 {
-	io-channels = <&pmic_vadc 0x39>;
-	io-channel-names = "vadc";
-};
-
-usb@200000 {
-	io-channels = <&pmic_vadc 0x40>;
-	io-channel-names = "vadc";
-};
-
-Now the usb driver just asks for an io channel named "vadc"
-and the ADC core code will perform that lookup.
-
-	Arnd
+-- 
+Nicolas Ferre
