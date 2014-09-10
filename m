@@ -1,49 +1,103 @@
 Return-Path: <denis.ciocca@st.com>
 From: Denis CIOCCA <denis.ciocca@st.com>
-To: Linus Walleij <linus.walleij@linaro.org>,
-        Jonathan Cameron <jic23@kernel.org>, Pavel Machek <pavel@ucw.cz>,
-        Eric Piel <eric.piel@tremplin-utc.net>,
-        Yan Burman <burman.yan@gmail.com>, Yan Burman <yanb@mellanox.com>
-Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-        Lee Jones <lee.jones@linaro.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>
-Date: Wed, 10 Sep 2014 14:59:18 +0200
-Subject: Re: [PATCH] iio: st-sensors: add support for lis3lv02d accelerometer
-Message-ID: <54104B26.5080707@st.com>
-References: <1408815064-5763-1-git-send-email-linus.walleij@linaro.org>
-	<53FB6205.5020704@kernel.org>
- <CACRpkdb5NXJiTvaHz9_nJiZcFsyVnjPYjaYZ1YH9meBgJhoTJA@mail.gmail.com>
-In-Reply-To: <CACRpkdb5NXJiTvaHz9_nJiZcFsyVnjPYjaYZ1YH9meBgJhoTJA@mail.gmail.com>
-Content-Type: text/plain; charset="utf-8"
-MIME-Version: 1.0
+To: jic23@kernel.org
+Cc: linux-iio@vger.kernel.org, Denis Ciocca <denis.ciocca@st.com>
+Subject: [PATCH] iio:magnetometer: bugfix magnetometers gain values
+Date: Wed, 10 Sep 2014 14:55:37 +0200
+Message-Id: <1410353737-17542-1-git-send-email-denis.ciocca@st.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-Q2lhbyBndXlzLA0KDQpJJ20gc29ycnkgYnV0IEkgd2FzIGluIGJ1c2luZXNzIHRyaXAuIEkgdGhp
-bmsgdGhhdCBjdXJyZW50IGxpczNsdjAyZCANCnN1cHBvcnRzIG1vcmUgdGhpbmdzLCBJIHdhbnQg
-dG8gc3VwcG9ydCBldmVyeXRoaW5nIGluIHRoZSBjdXJyZW50IElJTyANCmRyaXZlcnMgYnV0IGFs
-d2F5cyBJIGhhdmUgbm8gdGltZS4NCg0KQlIsDQpEZW5pcw0KDQoNCk9uIDA4LzI3LzE0IDE1OjM4
-LCBMaW51cyBXYWxsZWlqIHdyb3RlOg0KPiBPbiBNb24sIEF1ZyAyNSwgMjAxNCBhdCA2OjE5IFBN
-LCBKb25hdGhhbiBDYW1lcm9uIDxqaWMyM0BrZXJuZWwub3JnPiB3cm90ZToNCj4+IE9uIDIzLzA4
-LzE0IDE4OjMxLCBMaW51cyBXYWxsZWlqIHdyb3RlOg0KPj4+IFRoaXMgYWRkcyBzdXBwb3J0IGZv
-ciB0aGUgTElTM0xWMDIgYWNjZWxlcm9tZXRlciBmb3VuZCBpbiB0aGUNCj4+PiBTVCBNaWNyb2Vs
-ZWN0cm9uaWNzIE5vbWFkaWsgYm9hcmQgc2VyaWVzLg0KPj4+DQo+Pj4gQ2M6IGRldmljZXRyZWVA
-dmdlci5rZXJuZWwub3JnDQo+Pj4gQ2M6IERlbmlzIENJT0NDQSA8ZGVuaXMuY2lvY2NhQHN0LmNv
-bT4NCj4+PiBDYzogTGVlIEpvbmVzIDxsZWUuam9uZXNAbGluYXJvLm9yZz4NCj4+PiBTaWduZWQt
-b2ZmLWJ5OiBMaW51cyBXYWxsZWlqIDxsaW51cy53YWxsZWlqQGxpbmFyby5vcmc+DQo+PiBUaGlz
-IGlzIGEgbGl0dGxlICdpbnRlcmVzdGluZycsIGdpdmVuIHRoZSBwYXJ0IGlzIGFscmVhZHkgc3Vw
-cG9ydGVkIGJ5DQo+PiBkcml2ZXJzL21pc2MvbGlzM2x2MDJkKi5jIGFuZCBhbHJlYWR5IGhhcyBi
-aW5kaW5ncyB1bmRlciB0aGVyZS4NCj4+IERvY3VtZW50YXRpb24vZGV2aWNldHJlZS9iaW5kaW5n
-cy9taXNjL2xpczMwMi50eHQNCj4+IChzb21lIG9mIHRoZXNlIGFyZSBpbnRlcmVzdGluZykuDQo+
-IEdycnIgaG93IGNvbWUgSSBtaXNzZWQgdGhpcy4uLiBJdCB3YXMgb3JpZ2luYWxseSBtZXJnZWQg
-YXMgYQ0KPiBod21vbiBkcml2ZXIuDQo+DQo+DQo+Pj4gKy8qIENVU1RPTSBWQUxVRVMgRk9SIFNF
-TlNPUiA0ICovDQo+Pj4NCj4+IEkgd2lzaCBub3cgd2UnZCBuaXBwZWQgdGhpcyBuYW1pbmcgY29u
-dmVudGlvbiBpbiB0aGUgYnVkIGFuZCBpbnNpc3RlZA0KPj4gb24gbmFtaW5nIGFmdGVyIGEgcmVs
-ZXZhbnQgcGFydC4gT2ggd2VsbC4NCj4gV2VsbCB3ZSBjYW4gYWx3YXlzIG1ha2UgYW4gaW52YXNp
-dmUgcGF0Y2ggZml4aW5nIHRoYXQuIEkgY2FuDQo+IHByb2JhYmx5IGRvIGl0IHVzaW5nIHNlZCBv
-ciBzb21ldGhpbmcuDQo+DQo+PiBEbyB3ZSB0aGluayB0aGlzIGlzIHRoZSByaWdodCB3YXkgdG8g
-aGFuZGxlIHRoZSBhbHRlcm5hdGl2ZSBzdXBwb3J0DQo+PiBoZXJlPw0KPiBXZWxsIHRoaXMgcGF0
-Y2ggaXMgYSBkcml2ZXIgdXNpbmcgdGhlIElJTyBmcmFtZXdvcmsgYW5kIHdhcyB3cml0dGVuDQo+
-IGJ5IFNULCBidXQgdGhlIG90aGVyIGRyaXZlciBzdXBwb3J0IGEgZmV3IG90aGVyIGludGVyZXN0
-aW5nIGZlYXR1cmVzDQo+IGFuZCBzZWVtcyB0byBiZSBmb3IgdGhlIGxhcHRvcCB1c2VjYXNlLg0K
-Pg0KPiBBZGRpbmcgdGhlIG90aGVyIGF1dGhvcnMgdG8gdGhlIFRPOiBsaW5lLi4uDQo+DQo+IFlv
-dXJzLA0KPiBMaW51cyBXYWxsZWlqDQo=
+This patch fix gains values. The first driver was designed using
+engineering samples, in mass production the values are changed.
+
+Signed-off-by: Denis Ciocca <denis.ciocca@st.com>
+---
+ drivers/iio/magnetometer/st_magn_core.c | 52 +++++++++++++++++++--------------
+ 1 file changed, 30 insertions(+), 22 deletions(-)
+
+diff --git a/drivers/iio/magnetometer/st_magn_core.c b/drivers/iio/magnetometer/st_magn_core.c
+index a4b6413..68cae86 100644
+--- a/drivers/iio/magnetometer/st_magn_core.c
++++ b/drivers/iio/magnetometer/st_magn_core.c
+@@ -42,7 +42,8 @@
+ #define ST_MAGN_FS_AVL_5600MG			5600
+ #define ST_MAGN_FS_AVL_8000MG			8000
+ #define ST_MAGN_FS_AVL_8100MG			8100
+-#define ST_MAGN_FS_AVL_10000MG			10000
++#define ST_MAGN_FS_AVL_12000MG			12000
++#define ST_MAGN_FS_AVL_16000MG			16000
+ 
+ /* CUSTOM VALUES FOR SENSOR 1 */
+ #define ST_MAGN_1_WAI_EXP			0x3c
+@@ -69,20 +70,20 @@
+ #define ST_MAGN_1_FS_AVL_4700_VAL		0x05
+ #define ST_MAGN_1_FS_AVL_5600_VAL		0x06
+ #define ST_MAGN_1_FS_AVL_8100_VAL		0x07
+-#define ST_MAGN_1_FS_AVL_1300_GAIN_XY		1100
+-#define ST_MAGN_1_FS_AVL_1900_GAIN_XY		855
+-#define ST_MAGN_1_FS_AVL_2500_GAIN_XY		670
+-#define ST_MAGN_1_FS_AVL_4000_GAIN_XY		450
+-#define ST_MAGN_1_FS_AVL_4700_GAIN_XY		400
+-#define ST_MAGN_1_FS_AVL_5600_GAIN_XY		330
+-#define ST_MAGN_1_FS_AVL_8100_GAIN_XY		230
+-#define ST_MAGN_1_FS_AVL_1300_GAIN_Z		980
+-#define ST_MAGN_1_FS_AVL_1900_GAIN_Z		760
+-#define ST_MAGN_1_FS_AVL_2500_GAIN_Z		600
+-#define ST_MAGN_1_FS_AVL_4000_GAIN_Z		400
+-#define ST_MAGN_1_FS_AVL_4700_GAIN_Z		355
+-#define ST_MAGN_1_FS_AVL_5600_GAIN_Z		295
+-#define ST_MAGN_1_FS_AVL_8100_GAIN_Z		205
++#define ST_MAGN_1_FS_AVL_1300_GAIN_XY		909
++#define ST_MAGN_1_FS_AVL_1900_GAIN_XY		1169
++#define ST_MAGN_1_FS_AVL_2500_GAIN_XY		1492
++#define ST_MAGN_1_FS_AVL_4000_GAIN_XY		2222
++#define ST_MAGN_1_FS_AVL_4700_GAIN_XY		2500
++#define ST_MAGN_1_FS_AVL_5600_GAIN_XY		3030
++#define ST_MAGN_1_FS_AVL_8100_GAIN_XY		4347
++#define ST_MAGN_1_FS_AVL_1300_GAIN_Z		1020
++#define ST_MAGN_1_FS_AVL_1900_GAIN_Z		1315
++#define ST_MAGN_1_FS_AVL_2500_GAIN_Z		1666
++#define ST_MAGN_1_FS_AVL_4000_GAIN_Z		2500
++#define ST_MAGN_1_FS_AVL_4700_GAIN_Z		2816
++#define ST_MAGN_1_FS_AVL_5600_GAIN_Z		3389
++#define ST_MAGN_1_FS_AVL_8100_GAIN_Z		4878
+ #define ST_MAGN_1_MULTIREAD_BIT			false
+ 
+ /* CUSTOM VALUES FOR SENSOR 2 */
+@@ -105,10 +106,12 @@
+ #define ST_MAGN_2_FS_MASK			0x60
+ #define ST_MAGN_2_FS_AVL_4000_VAL		0x00
+ #define ST_MAGN_2_FS_AVL_8000_VAL		0x01
+-#define ST_MAGN_2_FS_AVL_10000_VAL		0x02
+-#define ST_MAGN_2_FS_AVL_4000_GAIN		430
+-#define ST_MAGN_2_FS_AVL_8000_GAIN		230
+-#define ST_MAGN_2_FS_AVL_10000_GAIN		230
++#define ST_MAGN_2_FS_AVL_12000_VAL		0x02
++#define ST_MAGN_2_FS_AVL_16000_VAL		0x03
++#define ST_MAGN_2_FS_AVL_4000_GAIN		146
++#define ST_MAGN_2_FS_AVL_8000_GAIN		292
++#define ST_MAGN_2_FS_AVL_12000_GAIN		438
++#define ST_MAGN_2_FS_AVL_16000_GAIN		584
+ #define ST_MAGN_2_MULTIREAD_BIT			false
+ #define ST_MAGN_2_OUT_X_L_ADDR			0x28
+ #define ST_MAGN_2_OUT_Y_L_ADDR			0x2a
+@@ -266,9 +269,14 @@ static const struct st_sensors st_magn_sensors[] = {
+ 					.gain = ST_MAGN_2_FS_AVL_8000_GAIN,
+ 				},
+ 				[2] = {
+-					.num = ST_MAGN_FS_AVL_10000MG,
+-					.value = ST_MAGN_2_FS_AVL_10000_VAL,
+-					.gain = ST_MAGN_2_FS_AVL_10000_GAIN,
++					.num = ST_MAGN_FS_AVL_12000MG,
++					.value = ST_MAGN_2_FS_AVL_12000_VAL,
++					.gain = ST_MAGN_2_FS_AVL_12000_GAIN,
++				},
++				[3] = {
++					.num = ST_MAGN_FS_AVL_16000MG,
++					.value = ST_MAGN_2_FS_AVL_16000_VAL,
++					.gain = ST_MAGN_2_FS_AVL_16000_GAIN,
+ 				},
+ 			},
+ 		},
+-- 
+1.9.1
