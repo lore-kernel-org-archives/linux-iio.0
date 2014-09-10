@@ -1,332 +1,245 @@
-Return-Path: <knaack.h@gmx.de>
-Message-ID: <54109112.90508@gmx.de>
-Date: Wed, 10 Sep 2014 19:57:38 +0200
-From: Hartmut Knaack <knaack.h@gmx.de>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail1.bemta5.messagelabs.com ([195.245.231.138]:26713 "EHLO
+	mail1.bemta5.messagelabs.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1750734AbaIJP7D (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 10 Sep 2014 11:59:03 -0400
+From: "Opensource [Adam Thomson]" <Adam.Thomson.Opensource@diasemi.com>
+To: Lee Jones <lee.jones@linaro.org>,
+	"Opensource [Adam Thomson]" <Adam.Thomson.Opensource@diasemi.com>
+CC: Samuel Ortiz <sameo@linux.intel.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	Sebastian Reichel <sre@kernel.org>,
+	Dmitry Eremin-Solenikov <dbaryshkov@gmail.com>,
+	"David Woodhouse" <dwmw2@infradead.org>,
+	"linux-pm@vger.kernel.org" <linux-pm@vger.kernel.org>,
+	Rob Herring <robh+dt@kernel.org>,
+	Pawel Moll <pawel.moll@arm.com>,
+	Mark Rutland <mark.rutland@arm.com>,
+	Ian Campbell <ijc+devicetree@hellion.org.uk>,
+	Kumar Gala <galak@codeaurora.org>,
+	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Joe Perches <joe@perches.com>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"Support Opensource" <Support.Opensource@diasemi.com>
+Subject: RE: [PATCH v2 1/7] mfd: Add support for DA9150 combined charger &
+ fuel-gauge device
+Date: Wed, 10 Sep 2014 15:58:56 +0000
+Message-ID: <2E89032DDAA8B9408CB92943514A0337AB514846@SW-EX-MBX01.diasemi.com>
+References: <cover.1409145187.git.Adam.Thomson.Opensource@diasemi.com>
+ <d6c7de200c9447dbafa74ee76739da943a0b73b2.1409145187.git.Adam.Thomson.Opensource@diasemi.com>
+ <20140828163608.GY24579@lee--X1>
+ <2E89032DDAA8B9408CB92943514A0337AB5144CE@SW-EX-MBX01.diasemi.com>
+ <20140910094951.GN30307@lee--X1>
+In-Reply-To: <20140910094951.GN30307@lee--X1>
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-To: Daniel Baluta <daniel.baluta@intel.com>, jic23@kernel.org
-CC: linux-iio@vger.kernel.org, pmeerw@pmeerw.net,
- linux-kernel@vger.kernel.org, Tsechih_Lin@asus.com
-Subject: Re: [PATCH v7] iio: Add Dyna-Image AL3320A ambient light sensor driver
-References: <1410332226-5481-1-git-send-email-daniel.baluta@intel.com>
-In-Reply-To: <1410332226-5481-1-git-send-email-daniel.baluta@intel.com>
-Content-Type: text/plain; charset=ISO-8859-15
-List-ID: <linux-iio@vger.kernel.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Daniel Baluta schrieb, Am 10.09.2014 08:57:
-> Minimal implementation. This driver provides raw illuminance readings.
-> 
-> This is based on drivers/hwmon/al3320.c (*) driver from msm tree written
-> by Tsechih Lin <Tsechih_Lin@asus.com>
-> 
-> * https://android.googlesource.com/kernel/msm.git
-> 
-> Signed-off-by: Daniel Baluta <daniel.baluta@intel.com>
-Reviewed-by: Hartmut Knaack <knaack.h@gmx.de>
-> ---
-> Changes since v6: (reported by Hartmut)
->         * drop variable i and reuse ret
-> 
-> Changes since v5: (reported by Hartmut)
->         * fix comments for al3320a_range
->         * make sure we always use a valid index in al3320a_scales
-> 
-> Changes since v4: (reported by Peter)
->         * no need to fix endianess when reading raw value
-> 
-> Changes since v3: (reported by Hartmut and Jonathan)
->         * dropped the local store for the range, instead read it when necessary
->         * removed wrapper functions
->         * added in_illuminance_scale_available attribute
->         * fix bug when reading raw value, use i2c_smbus_read_word instead of
->           i2c_smbus_read_word_swapped and fix the endianess after read.
->         * small coding style fixes
-> 
-> Changes since v2: (reported by Peter Meerwald)
->         * removed definition of DATA_HIGH and SW_RESET as they are not used
->         * added a comment to al3320a_get_adc_value() function
->         * added thresholds on TODO list
->         * small style fixes
-> 
-> Changes since v1: (reported by Peter Meerwald)
->         * used u8 instead of int for passing gain and mean_time
->         * used i2c_smbus_read_word_swapped instead of 2 x i2c_smbus_read_byte_data
->         * used devm_iio_device_register instead of iio_device_register
->         * small style fixes
->  drivers/iio/light/Kconfig   |  10 ++
->  drivers/iio/light/Makefile  |   1 +
->  drivers/iio/light/al3320a.c | 232 ++++++++++++++++++++++++++++++++++++++++++++
->  3 files changed, 243 insertions(+)
->  create mode 100644 drivers/iio/light/al3320a.c
-> 
-> diff --git a/drivers/iio/light/Kconfig b/drivers/iio/light/Kconfig
-> index bf05ca5..5bea821 100644
-> --- a/drivers/iio/light/Kconfig
-> +++ b/drivers/iio/light/Kconfig
-> @@ -17,6 +17,16 @@ config ADJD_S311
->  	 This driver can also be built as a module.  If so, the module
->  	 will be called adjd_s311.
->  
-> +config AL3320A
-> +	tristate "AL3320A ambient light sensor"
-> +	depends on I2C
-> +	help
-> +	 Say Y here if you want to build a driver for the Dyna Image AL3320A
-> +	 ambient light sensor.
-> +
-> +	 To compile this driver as a module, choose M here: the
-> +	 module will be called al3320a.
-> +
->  config APDS9300
->  	tristate "APDS9300 ambient light sensor"
->  	depends on I2C
-> diff --git a/drivers/iio/light/Makefile b/drivers/iio/light/Makefile
-> index 8b8c09f..47877a3 100644
-> --- a/drivers/iio/light/Makefile
-> +++ b/drivers/iio/light/Makefile
-> @@ -4,6 +4,7 @@
->  
->  # When adding new entries keep the list in alphabetical order
->  obj-$(CONFIG_ADJD_S311)		+= adjd_s311.o
-> +obj-$(CONFIG_AL3320A)		+= al3320a.o
->  obj-$(CONFIG_APDS9300)		+= apds9300.o
->  obj-$(CONFIG_CM32181)		+= cm32181.o
->  obj-$(CONFIG_CM36651)		+= cm36651.o
-> diff --git a/drivers/iio/light/al3320a.c b/drivers/iio/light/al3320a.c
-> new file mode 100644
-> index 0000000..6aac651
-> --- /dev/null
-> +++ b/drivers/iio/light/al3320a.c
-> @@ -0,0 +1,232 @@
-> +/*
-> + * AL3320A - Dyna Image Ambient Light Sensor
-> + *
-> + * Copyright (c) 2014, Intel Corporation.
-> + *
-> + * This file is subject to the terms and conditions of version 2 of
-> + * the GNU General Public License.  See the file COPYING in the main
-> + * directory of this archive for more details.
-> + *
-> + * IIO driver for AL3320A (7-bit I2C slave address 0x1C).
-> + *
-> + * TODO: interrupt support, thresholds
-> + *
-> + */
-> +
-> +#include <linux/module.h>
-> +#include <linux/init.h>
-> +#include <linux/i2c.h>
-> +
-> +#include <linux/iio/iio.h>
-> +#include <linux/iio/sysfs.h>
-> +
-> +#define AL3320A_DRV_NAME "al3320a"
-> +
-> +#define AL3320A_REG_CONFIG		0x00
-> +#define AL3320A_REG_STATUS		0x01
-> +#define AL3320A_REG_INT			0x02
-> +#define AL3320A_REG_WAIT		0x06
-> +#define AL3320A_REG_CONFIG_RANGE	0x07
-> +#define AL3320A_REG_PERSIST		0x08
-> +#define AL3320A_REG_MEAN_TIME		0x09
-> +#define AL3320A_REG_ADUMMY		0x0A
-> +#define AL3320A_REG_DATA_LOW		0x22
-> +
-> +#define AL3320A_REG_LOW_THRESH_LOW	0x30
-> +#define AL3320A_REG_LOW_THRESH_HIGH	0x31
-> +#define AL3320A_REG_HIGH_THRESH_LOW	0x32
-> +#define AL3320A_REG_HIGH_THRESH_HIGH	0x33
-> +
-> +#define AL3320A_CONFIG_DISABLE		0x00
-> +#define AL3320A_CONFIG_ENABLE		0x01
-> +
-> +#define AL3320A_GAIN_SHIFT		1
-> +#define AL3320A_GAIN_MASK		(BIT(2) | BIT(1))
-> +
-> +/* chip params default values */
-> +#define AL3320A_DEFAULT_MEAN_TIME	4
-> +#define AL3320A_DEFAULT_WAIT_TIME	0 /* no waiting */
-> +
-> +#define AL3320A_SCALE_AVAILABLE "0.512 0.128 0.032 0.01"
-> +
-> +enum al3320a_range {
-> +	AL3320A_RANGE_1, /* 33.28 Klx */
-> +	AL3320A_RANGE_2, /* 8.32 Klx  */
-> +	AL3320A_RANGE_3, /* 2.08 Klx  */
-> +	AL3320A_RANGE_4  /* 0.65 Klx  */
-> +};
-> +
-> +static const int al3320a_scales[][2] = {
-> +	{0, 512000}, {0, 128000}, {0, 32000}, {0, 10000}
-> +};
-> +
-> +struct al3320a_data {
-> +	struct i2c_client *client;
-> +};
-> +
-> +static const struct iio_chan_spec al3320a_channels[] = {
-> +	{
-> +		.type	= IIO_LIGHT,
-> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
-> +				      BIT(IIO_CHAN_INFO_SCALE),
-> +	}
-> +};
-> +
-> +static IIO_CONST_ATTR(in_illuminance_scale_available, AL3320A_SCALE_AVAILABLE);
-> +
-> +static struct attribute *al3320a_attributes[] = {
-> +	&iio_const_attr_in_illuminance_scale_available.dev_attr.attr,
-> +	NULL,
-> +};
-> +
-> +static const struct attribute_group al3320a_attribute_group = {
-> +	.attrs = al3320a_attributes,
-> +};
-> +
-> +static int al3320a_init(struct al3320a_data *data)
-> +{
-> +	int ret;
-> +
-> +	/* power on */
-> +	ret = i2c_smbus_write_byte_data(data->client, AL3320A_REG_CONFIG,
-> +					AL3320A_CONFIG_ENABLE);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	ret = i2c_smbus_write_byte_data(data->client, AL3320A_REG_CONFIG_RANGE,
-> +					AL3320A_RANGE_3 << AL3320A_GAIN_SHIFT);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	ret = i2c_smbus_write_byte_data(data->client, AL3320A_REG_MEAN_TIME,
-> +					AL3320A_DEFAULT_MEAN_TIME);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	ret = i2c_smbus_write_byte_data(data->client, AL3320A_REG_WAIT,
-> +					AL3320A_DEFAULT_WAIT_TIME);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	return 0;
-> +}
-> +
-> +static int al3320a_read_raw(struct iio_dev *indio_dev,
-> +			    struct iio_chan_spec const *chan, int *val,
-> +			    int *val2, long mask)
-> +{
-> +	struct al3320a_data *data = iio_priv(indio_dev);
-> +	int ret;
-> +
-> +	switch (mask) {
-> +	case IIO_CHAN_INFO_RAW:
-> +		/*
-> +		 * ALS ADC value is stored in two adjacent registers:
-> +		 * - low byte of output is stored at AL3320A_REG_DATA_LOW
-> +		 * - high byte of output is stored at AL3320A_REG_DATA_LOW + 1
-> +		 */
-> +		ret = i2c_smbus_read_word_data(data->client,
-> +					       AL3320A_REG_DATA_LOW);
-> +		if (ret < 0)
-> +			return ret;
-> +		*val = ret;
-> +		return IIO_VAL_INT;
-> +	case IIO_CHAN_INFO_SCALE:
-> +		ret = i2c_smbus_read_byte_data(data->client,
-> +					       AL3320A_REG_CONFIG_RANGE);
-> +		if (ret < 0)
-> +			return ret;
-> +
-> +		ret = (ret & AL3320A_GAIN_MASK) >> AL3320A_GAIN_SHIFT;
-> +		*val = al3320a_scales[ret][0];
-> +		*val2 = al3320a_scales[ret][1];
-> +
-> +		return IIO_VAL_INT_PLUS_MICRO;
-> +	}
-> +	return -EINVAL;
-> +}
-> +
-> +static int al3320a_write_raw(struct iio_dev *indio_dev,
-> +			     struct iio_chan_spec const *chan, int val,
-> +			     int val2, long mask)
-> +{
-> +	struct al3320a_data *data = iio_priv(indio_dev);
-> +	int i;
-> +
-> +	switch (mask) {
-> +	case IIO_CHAN_INFO_SCALE:
-> +		for (i = 0; i < ARRAY_SIZE(al3320a_scales); i++) {
-> +			if (val == al3320a_scales[i][0] &&
-> +			    val2 == al3320a_scales[i][1])
-> +				return i2c_smbus_write_byte_data(data->client,
-> +					AL3320A_REG_CONFIG_RANGE,
-> +					i << AL3320A_GAIN_SHIFT);
-> +		}
-> +		break;
-> +	}
-> +	return -EINVAL;
-> +}
-> +
-> +static const struct iio_info al3320a_info = {
-> +	.driver_module	= THIS_MODULE,
-> +	.read_raw	= al3320a_read_raw,
-> +	.write_raw	= al3320a_write_raw,
-> +	.attrs		= &al3320a_attribute_group,
-> +};
-> +
-> +static int al3320a_probe(struct i2c_client *client,
-> +			 const struct i2c_device_id *id)
-> +{
-> +	struct al3320a_data *data;
-> +	struct iio_dev *indio_dev;
-> +	int ret;
-> +
-> +	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
-> +	if (!indio_dev)
-> +		return -ENOMEM;
-> +
-> +	data = iio_priv(indio_dev);
-> +	i2c_set_clientdata(client, indio_dev);
-> +	data->client = client;
-> +
-> +	indio_dev->dev.parent = &client->dev;
-> +	indio_dev->info = &al3320a_info;
-> +	indio_dev->name = AL3320A_DRV_NAME;
-> +	indio_dev->channels = al3320a_channels;
-> +	indio_dev->num_channels = ARRAY_SIZE(al3320a_channels);
-> +	indio_dev->modes = INDIO_DIRECT_MODE;
-> +
-> +	ret = al3320a_init(data);
-> +	if (ret < 0) {
-> +		dev_err(&client->dev, "al3320a chip init failed\n");
-> +		return ret;
-> +	}
-> +	return devm_iio_device_register(&client->dev, indio_dev);
-> +}
-> +
-> +static int al3320a_remove(struct i2c_client *client)
-> +{
-> +	return i2c_smbus_write_byte_data(client, AL3320A_REG_CONFIG,
-> +					 AL3320A_CONFIG_DISABLE);
-> +}
-> +
-> +static const struct i2c_device_id al3320a_id[] = {
-> +	{"al3320a", 0},
-> +	{}
-> +};
-> +MODULE_DEVICE_TABLE(i2c, al3320a_id);
-> +
-> +static struct i2c_driver al3320a_driver = {
-> +	.driver = {
-> +		.name = AL3320A_DRV_NAME,
-> +	},
-> +	.probe		= al3320a_probe,
-> +	.remove		= al3320a_remove,
-> +	.id_table	= al3320a_id,
-> +};
-> +
-> +module_i2c_driver(al3320a_driver);
-> +
-> +MODULE_AUTHOR("Daniel Baluta <daniel.baluta@intel.com>");
-> +MODULE_DESCRIPTION("AL3320A Ambient Light Sensor driver");
-> +MODULE_LICENSE("GPL v2");
-> 
+T24gU2VwdGVtYmVyIDEwLCAyMDE0IDEwOjUwLCBMZWUgSm9uZXMgd3JvdGU6DQoNCj4gT24gVHVl
+LCAwOSBTZXAgMjAxNCwgT3BlbnNvdXJjZSBbQWRhbSBUaG9tc29uXSB3cm90ZToNCj4gDQo+ID4g
+T24gQXVndXN0IDI4LCAyMDE0IDE3OjM2LCBMZWUgSm9uZXMgd3JvdGU6DQo+ID4NCj4gPiBUaGFu
+a3MgZm9yIHRoZSBmZWVkYmFjay4gQXMgYSBnZW5lcmFsIGNvbW1lbnQgYSBjb3VwbGUgb2YgdGhl
+IGl0ZW1zIHlvdSd2ZQ0KPiA+IGlkZW50aWZpZWQgcmVsYXRlIHRvIGZ1dHVyZSB1cGRhdGVzIChh
+ZGRpdGlvbmFsIGZ1bmN0aW9uYWxpdHkgYmVpbmcgYWRkZWQpLg0KPiA+IEkgYWxyZWFkeSBoYXZl
+IGNvZGUgaW4gcGxhY2UgZm9yIHRoaXMgYnV0IGhhdmUgc3RyaXBwZWQgb3V0IGEgY291cGxlIG9m
+IHRoZQ0KPiA+IGRyaXZlcnMganVzdCB0byByZWR1Y2UgdGhlIGNodXJuIGFuZCBzaXplIG9mIHBh
+dGNoIHN1Ym1pc3Npb24uIFRoZXNlIHdpbGwgYmUNCj4gPiBhZGRlZCBvbmNlIHRoZXNlIHBhdGNo
+ZXMgaGF2ZSBiZWVuIGFjY2VwdGVkLg0KPiA+DQo+ID4gV2hlcmUgdGhpcyBpcyB0aGUgY2FzZSwg
+SSBoYXZlIGFkZGVkIG5vdGVzIGluLWxpbmUgYWdhaW5zdCB0aGUgcmVsZXZhbnQNCj4gPiBjb21t
+ZW50cyB5b3UgbWFkZS4NCj4gPg0KPiA+ID4gT24gVGh1LCAyOCBBdWcgMjAxNCwgQWRhbSBUaG9t
+c29uIHdyb3RlOg0KPiA+ID4NCj4gPiA+ID4gREE5MTUwIGlzIGEgY29tYmluZWQgQ2hhcmdlciBh
+bmQgRnVlbC1HYXVnZSBJQywgd2l0aCBhZGRpdGlvbmFsDQo+ID4gPiA+IEdQSU8gYW5kIEdQQURD
+IGZ1bmN0aW9uYWxpdHkuDQo+ID4gPiA+DQo+ID4gPiA+IFNpZ25lZC1vZmYtYnk6IEFkYW0gVGhv
+bXNvbiA8QWRhbS5UaG9tc29uLk9wZW5zb3VyY2VAZGlhc2VtaS5jb20+DQo+ID4gPiA+IC0tLQ0K
+PiA+ID4gPiAgZHJpdmVycy9tZmQvS2NvbmZpZyAgICAgICAgICAgICAgICAgIHwgICAxMiArDQo+
+ID4gPiA+ICBkcml2ZXJzL21mZC9NYWtlZmlsZSAgICAgICAgICAgICAgICAgfCAgICAyICsNCj4g
+PiA+ID4gIGRyaXZlcnMvbWZkL2RhOTE1MC1jb3JlLmMgICAgICAgICAgICB8ICAzMzIgKysrKysr
+KysrKw0KPiA+ID4gPiAgZHJpdmVycy9tZmQvZGE5MTUwLWkyYy5jICAgICAgICAgICAgIHwgIDE3
+NiArKysrKysNCj4gPiA+DQo+ID4gPiBEbyB5b3UgYWxzbyBoYXZlIGFub3RoZXIsIHNheSBTUEkg
+dmVyc2lvbj8NCj4gPg0KPiA+IE5vLCBub3QgeWV0LCBidXQgdGhpcyBpcyBzb21ldGhpbmcgdGhh
+dCB3ZSBtYXkgYWRkIGxhdGVyIGFzIHRoZSBkZXZpY2UgZG9lcw0KPiA+IHN1cHBvcnQgU1BJLg0K
+PiANCj4gSSdtIG5vdCBzdXJlIHdlIHdhbnQgdG8gc3BsaXQgdXAgdGhlIGZpbGVzIGxpa2UgdGhp
+cyBmb3IgYW4gJ2lmIHdlDQo+IGRlY2lkZSB0byBwcm9kdWNlIGFuIFNQSSB2YXJpYW50IGluIHRo
+ZSBmdXR1cmUnLiAgSWYgeW91IGRvLCB0aGVuIHlvdQ0KPiBjYW4gc3BsaXQgdGhlIGZpbGVzIHVw
+LiAgVW50aWwgdGhlbiwgc3RpY2sgZXZlcnl0aGluZyBpbiAtY29yZS4NCg0KUmlnaHQuIENhbid0
+IHNheSBJIGFncmVlIGhlcmUsIGJ1dCB3aWxsIHJlZmFjdG9yLg0KDQo+IA0KPiANCj4gPiA+ID4g
+IGluY2x1ZGUvbGludXgvbWZkL2RhOTE1MC9jb3JlLmggICAgICB8ICAgODAgKysrDQo+ID4gPiA+
+ICBpbmNsdWRlL2xpbnV4L21mZC9kYTkxNTAvcGRhdGEuaCAgICAgfCAgIDIxICsNCj4gPiA+ID4g
+IGluY2x1ZGUvbGludXgvbWZkL2RhOTE1MC9yZWdpc3RlcnMuaCB8IDExNTMNCj4gPiA+ICsrKysr
+KysrKysrKysrKysrKysrKysrKysrKysrKysrKysNCj4gPiA+ID4gIDcgZmlsZXMgY2hhbmdlZCwg
+MTc3NiBpbnNlcnRpb25zKCspDQo+ID4gPiA+ICBjcmVhdGUgbW9kZSAxMDA2NDQgZHJpdmVycy9t
+ZmQvZGE5MTUwLWNvcmUuYw0KPiA+ID4gPiAgY3JlYXRlIG1vZGUgMTAwNjQ0IGRyaXZlcnMvbWZk
+L2RhOTE1MC1pMmMuYw0KPiA+ID4gPiAgY3JlYXRlIG1vZGUgMTAwNjQ0IGluY2x1ZGUvbGludXgv
+bWZkL2RhOTE1MC9jb3JlLmgNCj4gPiA+ID4gIGNyZWF0ZSBtb2RlIDEwMDY0NCBpbmNsdWRlL2xp
+bnV4L21mZC9kYTkxNTAvcGRhdGEuaA0KPiA+ID4gPiAgY3JlYXRlIG1vZGUgMTAwNjQ0IGluY2x1
+ZGUvbGludXgvbWZkL2RhOTE1MC9yZWdpc3RlcnMuaA0KPiA+ID4gPg0KPiA+ID4gPiBkaWZmIC0t
+Z2l0IGEvZHJpdmVycy9tZmQvS2NvbmZpZyBiL2RyaXZlcnMvbWZkL0tjb25maWcNCj4gPiA+ID4g
+aW5kZXggZGU1YWJmMi4uNzZhZGIyYyAxMDA2NDQNCj4gPiA+ID4gLS0tIGEvZHJpdmVycy9tZmQv
+S2NvbmZpZw0KPiA+ID4gPiArKysgYi9kcml2ZXJzL21mZC9LY29uZmlnDQo+ID4gPiA+IEBAIC0x
+ODMsNiArMTgzLDE4IEBAIGNvbmZpZyBNRkRfREE5MDYzDQo+ID4gPiA+ICAJICBBZGRpdGlvbmFs
+IGRyaXZlcnMgbXVzdCBiZSBlbmFibGVkIGluIG9yZGVyIHRvIHVzZSB0aGUgZnVuY3Rpb25hbGl0
+eQ0KPiA+ID4gPiAgCSAgb2YgdGhlIGRldmljZS4NCj4gPiA+ID4NCj4gPiA+ID4gK2NvbmZpZyBN
+RkRfREE5MTUwDQo+ID4gPiA+ICsJYm9vbCAiRGlhbG9nIFNlbWljb25kdWN0b3IgREE5MTUwIENo
+YXJnZXIgRnVlbC1HYXVnZSBjaGlwIg0KPiA+ID4NCj4gPiA+IFdoeSBjYW4ndCB0aGlzIGJlIGJ1
+aWx0IGFzIGEgbW9kdWxlPw0KPiA+DQo+ID4gTm8gcmVhc29uLiBXaWxsIGNoYW5nZSBpdC4NCj4g
+Pg0KPiA+ID4NCj4gPiA+ID4gKwlkZXBlbmRzIG9uIEkyQz15DQo+ID4gPiA+ICsJc2VsZWN0IE1G
+RF9DT1JFDQo+ID4gPiA+ICsJc2VsZWN0IFJFR01BUF9JMkMNCj4gPiA+ID4gKwlzZWxlY3QgUkVH
+TUFQX0lSUQ0KPiA+ID4gPiArCWhlbHANCj4gPiA+ID4gKwkgIFRoaXMgYWRkcyBzdXBwb3J0IGZv
+ciB0aGUgREE5MTUwIGludGVncmF0ZWQgY2hhcmdlciBhbmQgZnVlbC1nYXVnZQ0KPiA+ID4gPiAr
+CSAgY2hpcC4gVGhpcyBkcml2ZXIgcHJvdmlkZXMgY29tbW9uIHN1cHBvcnQgZm9yIGFjY2Vzc2lu
+ZyB0aGUgZGV2aWNlLg0KPiA+ID4gPiArCSAgQWRkaXRpb25hbCBkcml2ZXJzIG11c3QgYmUgZW5h
+YmxlZCBpbiBvcmRlciB0byB1c2UgdGhlIHNwZWNpZmljDQo+ID4gPiA+ICsJICBmZWF0dXJlcyBv
+ZiB0aGUgZGV2aWNlLg0KPiA+ID4gPiArDQo+ID4gPiA+ICBjb25maWcgTUZEX01DMTNYWFgNCj4g
+PiA+ID4gIAl0cmlzdGF0ZQ0KPiA+ID4gPiAgCWRlcGVuZHMgb24gKFNQSV9NQVNURVIgfHwgSTJD
+KQ0KPiA+ID4gPiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9tZmQvTWFrZWZpbGUgYi9kcml2ZXJzL21m
+ZC9NYWtlZmlsZQ0KPiA+ID4gPiBpbmRleCBmMDAxNDg3Li4wOThkZmExIDEwMDY0NA0KPiA+ID4g
+PiAtLS0gYS9kcml2ZXJzL21mZC9NYWtlZmlsZQ0KPiA+ID4gPiArKysgYi9kcml2ZXJzL21mZC9N
+YWtlZmlsZQ0KPiA+ID4gPiBAQCAtMTE0LDYgKzExNCw4IEBAIG9iai0kKENPTkZJR19NRkRfREE5
+MDU1KQkrPSBkYTkwNTUubw0KPiA+ID4gPiAgZGE5MDYzLW9ianMJCQk6PSBkYTkwNjMtY29yZS5v
+IGRhOTA2My1pcnEubyBkYTkwNjMtDQo+IGkyYy5vDQo+ID4gPiA+ICBvYmotJChDT05GSUdfTUZE
+X0RBOTA2MykJKz0gZGE5MDYzLm8NCj4gPiA+ID4NCj4gPiA+ID4gK29iai0kKENPTkZJR19NRkRf
+REE5MTUwKQkrPSBkYTkxNTAtY29yZS5vIGRhOTE1MC1pMmMubw0KPiA+ID4gPiArDQo+ID4gPg0K
+PiA+ID4gRG8gdGhlIG90aGVyIGRyaXZlcnMgc21lbGw/ICBQbGVhc2UgYnV0dCB1cCBhZ2FpbnN0
+IHRoZW0uDQo+ID4gPg0KPiA+ID4gSSdtIG5vdCBlbnRpcmVseSBzdXJlIHdoeSB0aGVyZSBhcmUg
+c28gbWFueSAnXG4ncyBpbiB0aGUgTWFrZWZpbGUhDQo+ID4NCj4gPiBPa2V5IGRva2V5LiBXaWxs
+IGNoYW5nZS4NCj4gPg0KPiA+ID4NCj4gPiA+ID4gIG9iai0kKENPTkZJR19NRkRfTUFYMTQ1Nzcp
+CSs9IG1heDE0NTc3Lm8NCj4gPiA+ID4gIG9iai0kKENPTkZJR19NRkRfTUFYNzc2ODYpCSs9IG1h
+eDc3Njg2Lm8NCj4gPiA+ID4gIG9iai0kKENPTkZJR19NRkRfTUFYNzc2OTMpCSs9IG1heDc3Njkz
+Lm8NCj4gPiA+ID4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvbWZkL2RhOTE1MC1jb3JlLmMgYi9kcml2
+ZXJzL21mZC9kYTkxNTAtY29yZS5jDQo+ID4gPiA+IG5ldyBmaWxlIG1vZGUgMTAwNjQ0DQo+ID4g
+PiA+IGluZGV4IDAwMDAwMDAuLjAyOWEzMGINCj4gPiA+ID4gLS0tIC9kZXYvbnVsbA0KPiA+ID4g
+PiArKysgYi9kcml2ZXJzL21mZC9kYTkxNTAtY29yZS5jDQo+ID4gPiA+IEBAIC0wLDAgKzEsMzMy
+IEBADQo+ID4gPiA+ICsvKg0KPiA+ID4gPiArICogREE5MTUwIENvcmUgTUZEIERyaXZlcg0KPiA+
+ID4gPiArICoNCj4gPiA+ID4gKyAqIENvcHlyaWdodCAoYykgMjAxNCBEaWFsb2cgU2VtaWNvbmR1
+Y3Rvcg0KPiA+ID4gPiArICoNCj4gPiA+ID4gKyAqIEF1dGhvcjogQWRhbSBUaG9tc29uIDxBZGFt
+LlRob21zb24uT3BlbnNvdXJjZUBkaWFzZW1pLmNvbT4NCj4gPiA+ID4gKyAqDQo+ID4gPiA+ICsg
+KiBUaGlzIHByb2dyYW0gaXMgZnJlZSBzb2Z0d2FyZTsgeW91IGNhbiByZWRpc3RyaWJ1dGUgIGl0
+IGFuZC9vciBtb2RpZnkgaXQNCj4gPiA+ID4gKyAqIHVuZGVyICB0aGUgdGVybXMgb2YgIHRoZSBH
+TlUgR2VuZXJhbCAgUHVibGljIExpY2Vuc2UgYXMgcHVibGlzaGVkIGJ5IHRoZQ0KPiA+ID4gPiAr
+ICogRnJlZSBTb2Z0d2FyZSBGb3VuZGF0aW9uOyAgZWl0aGVyIHZlcnNpb24gMiBvZiB0aGUgIExp
+Y2Vuc2UsIG9yIChhdCB5b3VyDQo+ID4gPiA+ICsgKiBvcHRpb24pIGFueSBsYXRlciB2ZXJzaW9u
+Lg0KPiA+ID4gPiArICovDQo+ID4gPiA+ICsNCj4gPiA+ID4gKyNpbmNsdWRlIDxsaW51eC9rZXJu
+ZWwuaD4NCj4gPiA+ID4gKyNpbmNsdWRlIDxsaW51eC9tb2R1bGUuaD4NCj4gPiA+ID4gKyNpbmNs
+dWRlIDxsaW51eC9wbGF0Zm9ybV9kZXZpY2UuaD4NCj4gPiA+ID4gKyNpbmNsdWRlIDxsaW51eC9z
+bGFiLmg+DQo+ID4gPiA+ICsjaW5jbHVkZSA8bGludXgvaXJxLmg+DQo+ID4gPiA+ICsjaW5jbHVk
+ZSA8bGludXgvaW50ZXJydXB0Lmg+DQo+ID4gPiA+ICsjaW5jbHVkZSA8bGludXgvbWZkL2NvcmUu
+aD4NCj4gPiA+ID4gKw0KPiA+ID4NCj4gPiA+IE5vIHJlYWwgbmVlZCBmb3IgdGhpcyAnXG4nLg0K
+PiA+DQo+ID4gSSBjYW4gY2hhbmdlIHRoaXMsIGJ1dCBteSByZWFzb24gd2FzIHRvIHNlcGFyYXRl
+IGNvbW1vbiBrZXJuZWwgaW5jbHVkZXMgZnJvbQ0KPiA+IGRldmljZSBzcGVjaWZpYyBvbmVzLCBm
+b3IgcmVhZGFiaWxpdHkuDQo+IA0KPiBJdCBpc24ndCBhbnkgbGVzcyByZWFkYWJsZSB3aXRoIHRo
+ZSAnXG4nIHJlbW92ZWQuDQoNCkkgcHJlZmVyIHdpdGgsIGJ1dCBwZXJzb25hbCBwcmVmZXJlbmNl
+IEkgZ3Vlc3MuIEFueXdheSwgd2lsbCB1cGRhdGUuDQoNCj4gDQo+ID4gPiA+ICsjaW5jbHVkZSA8
+bGludXgvbWZkL2RhOTE1MC9jb3JlLmg+DQo+ID4gPiA+ICsjaW5jbHVkZSA8bGludXgvbWZkL2Rh
+OTE1MC9yZWdpc3RlcnMuaD4NCj4gPiA+ID4gKyNpbmNsdWRlIDxsaW51eC9tZmQvZGE5MTUwL3Bk
+YXRhLmg+DQo+ID4gPiA+ICsNCj4gPiA+ID4gK3U4IGRhOTE1MF9yZWdfcmVhZChzdHJ1Y3QgZGE5
+MTUwICpkYTkxNTAsIHUxNiByZWcpDQo+ID4gPiA+ICt7DQo+ID4gPiA+ICsJaW50IHZhbCwgcmV0
+Ow0KPiA+ID4gPiArDQo+ID4gPiA+ICsJcmV0ID0gcmVnbWFwX3JlYWQoZGE5MTUwLT5yZWdtYXAs
+IHJlZywgJnZhbCk7DQo+ID4gPiA+ICsJaWYgKHJldCA8IDApDQo+ID4gPg0KPiA+ID4gV2hhdCBp
+ZiByZXQgPiAwPyAgSXMgdGhhdCBhIGdvb2QgdGhpbmc/IDopDQo+ID4gPg0KPiA+ID4gSnVzdCAn
+aWYgKHJldCknLg0KPiA+DQo+ID4gRmluZSwgd2lsbCBjaGFuZ2UuDQo+ID4NCj4gPiA+DQo+ID4g
+PiA+ICsJCWRldl9lcnIoZGE5MTUwLT5kZXYsICJGYWlsZWQgdG8gcmVhZCBmcm9tIHJlZyAweCV4
+OiAlZFxuIiwNCj4gPiA+ID4gKwkJCXJlZywgcmV0KTsNCj4gPiA+ID4gKw0KPiA+ID4gPiArCXJl
+dHVybiAodTgpIHZhbDsNCj4gPiA+ID4gK30NCj4gPiA+ID4gK0VYUE9SVF9TWU1CT0xfR1BMKGRh
+OTE1MF9yZWdfcmVhZCk7DQo+ID4gPg0KPiA+ID4gTm90IHN1cmUgSSBsaWtlIHRoaXMgYWJzdHJh
+Y3Rpb24gc3R1ZmYuICBJIGNvdWxkIHVuZGVyc3RhbmQgaWYgdGhlcmUNCj4gPiA+IHdlcmUgbG9j
+a2luZyBpbnZvbHZlZCwgYnV0IHRoZXJlIGlzbid0LiAgWW91IGRvbid0IGFwcGVhciB0byBjaGVj
+ayBmb3INCj4gPiA+IGVycm9ycyBpbiB0aGUgc3Vib3JkaW5hdGUgZHJpdmVycyBlaXRoZXIsIHJh
+dGhlciB5b3UganVzdCBwbG91Z2ggb24NCj4gPiA+IGFoZWFkLiAgTm90IHN1cmUgdGhhdCdzIGEg
+Z29vZCBpZGVhIGVpdGhlci4NCj4gPiA+DQo+ID4gPiBBbnlvbmUgaGF2ZSBhIHNlY29uZCBvcGlu
+aW9uPw0KPiA+DQo+ID4gVGhlIHJlYXNvbiBmb3IgdGhlc2UgaXMgYmVjYXVzZSBmdXR1cmUgcGF0
+Y2hlcyB0byBhZGQgYWRkaXRpb25hbCBmdW5jdGlvbmFsaXR5DQo+ID4gd2lsbCBpbnRyb2R1Y2Ug
+STJDIGFjY2VzcyBmdW5jdGlvbnMgd2hpY2ggZG8gbm90IHVzZSByZWdtYXAgYW5kIGFjY2VzcyB0
+aGUNCj4gPiBkZXZpY2UgdmlhIGEgc2VwYXJhdGUgSTJDIGFkZHJlc3MgZm9yIHRoaXMgcHVycG9z
+ZS4gSSB3aWxsIG5lZWQgdG8gcHJvdmlkZQ0KPiA+IGFjY2VzcyBmdW5jdGlvbnMgZm9yIHRoYXQs
+IGFuZCBzbyBoYXZpbmcgYSBjb21tb24gc3R5bGUgb2YgSTJDIGFjY2VzcyBtYWtlcw0KPiA+IHNl
+bnNlIGZvciB0aGlzIGRyaXZlci4gTWVhbnMgYW55IGFjY2VzcyBqdXN0IG5lZWRzIHRvIHByb3Zp
+ZGUgdGhlIE1GRCBwcml2YXRlDQo+ID4gZGF0YSwgYW5kIHRoZSByZWxldmFudCBmdW5jdGlvbnMg
+dGFrZSBjYXJlIG9mIHRoZSByZXN0LiBJIHRoaW5rIHRoaXMgaXMgY2xlYW5lcg0KPiA+IGluIHRo
+aXMgaW5zdGFuY2UuDQo+IA0KPiBTbyBsb25nIGFzIHRoZXNlIGFwcGVhciBzb29uLiAgT3RoZXJ3
+aXNlIGl0J3MganVzdCBjcnVmdC4NCg0KSGF2ZSBvdGhlciBwYXRjaGVzIGFscmVhZHkgaW4gcGxh
+Y2UgYW5kIHJlYWR5IHRvIGdvLiBXaGVuIHRoaXMgcGF0Y2ggc2V0IGlzDQphY2NlcHRlZCwgSSB3
+aWxsIGJlZ2luIHN1Ym1pc3Npb24gb2YgdGhlIHJlbWFpbmluZyBkcml2ZXJzLg0KDQo+IA0KPiBb
+Li4uXQ0KPiANCj4gPiA+ID4gKy8qIEhlbHBlciBmdW5jdGlvbnMgZm9yIHN1Yi1kZXZpY2VzIHRv
+IHJlcXVlc3QvZnJlZSBJUlFzICovDQo+ID4gPiA+ICtpbnQgZGE5MTUwX3JlZ2lzdGVyX2lycShz
+dHJ1Y3QgcGxhdGZvcm1fZGV2aWNlICpwZGV2LCB2b2lkICpkZXZfaWQsDQo+ID4gPiA+ICsJCQlp
+cnFfaGFuZGxlcl90IGhhbmRsZXIsIGNvbnN0IGNoYXIgKm5hbWUpDQo+ID4gPiA+ICt7DQo+ID4g
+PiA+ICsJaW50IGlycSwgcmV0Ow0KPiA+ID4gPiArDQo+ID4gPiA+ICsJaXJxID0gcGxhdGZvcm1f
+Z2V0X2lycV9ieW5hbWUocGRldiwgbmFtZSk7DQo+ID4gPiA+ICsJaWYgKGlycSA8IDApDQo+ID4g
+PiA+ICsJCXJldHVybiBpcnE7DQo+ID4gPiA+ICsNCj4gPiA+ID4gKwlyZXQgPSBkZXZtX3JlcXVl
+c3RfdGhyZWFkZWRfaXJxKCZwZGV2LT5kZXYsIGlycSwgTlVMTCwgaGFuZGxlciwNCj4gPiA+ID4g
+KwkJCQkJSVJRRl9PTkVTSE9ULCBuYW1lLCBkZXZfaWQpOw0KPiA+ID4gPiArCWlmIChyZXQpDQo+
+ID4gPiA+ICsJCWRldl9lcnIoJnBkZXYtPmRldiwgIkZhaWxlZCB0byByZXF1ZXN0IElSUSAlZDog
+JWRcbiIsIGlycSwgcmV0KTsNCj4gPiA+ID4gKw0KPiA+ID4gPiArCXJldHVybiByZXQ7DQo+ID4g
+PiA+ICt9DQo+ID4gPiA+ICtFWFBPUlRfU1lNQk9MX0dQTChkYTkxNTBfcmVnaXN0ZXJfaXJxKTsN
+Cj4gPiA+DQo+ID4gPiBXaHkgZG8gdGhleSBuZWVkIGhlbHA/ICBXaGF0IHByb2JsZW0gZG9lcyBh
+ZGRpbmcgdGhlc2UgbGF5ZXJzIHNvbHZlPw0KPiA+DQo+ID4gTWVhbnMgSSBkb24ndCBoYXZlIHRv
+IGtlZXAgYWRkaW5nIHByaW50IGVycm9yIGxpbmVzIGV2ZXJ5d2hlcmUgZWxzZSBpZiB0aGlzDQo+
+ID4gZnVuY3Rpb24gdGFrZXMgY2FyZSBvZiBpdC4gVGhvdWdodCB0aGF0IHdvdWxkIGJlIGNsZWFu
+ZXIuDQo+IA0KPiBZb3Ugb25seSBuZWVkIHRvIHJlcXVlc3QgZWFjaCBJUlEgb25jZS4gIEl0J3Mg
+anVzdCBtb3JlIGFic3RyYWN0aW9uDQo+IGZvciB0aGUgc2FrZSBvZiBpdC4gIEkgd291bGQgcHJl
+ZmVyIGlmIHlvdSByZW1vdmVkIHRoZW0uDQoNClllcywgYnV0IGluIHRoZSBjaGFyZ2VyIGRyaXZl
+ciBmb3IgZXhhbXBsZSwgdGhlcmUgYXJlIDQgSVJRcyB0byByZXF1ZXN0LiBJZg0KSSBkb24ndCB1
+c2UgdGhpcyBhcHByb2FjaCB0aGUgSVJRIHJlcXVlc3RpbmcgYmVjb21lcyBibG9hdGVkLCBoZW5j
+ZSB3aHkgSSB3ZW50DQpmb3IgYSBjb21tb24gZnVuY3Rpb24gbGlrZSB0aGlzLiBUaG91Z2h0IGdl
+bmVyYWxseSB0aGUgaW50ZW50aW9uIHdhcyB0byBjdXQNCmRvd24gb24gcmVwZWF0ZWQgY29kZT8N
+Cg0KPiANCj4gPiA+ID4gK3ZvaWQgZGE5MTUwX3JlbGVhc2VfaXJxKHN0cnVjdCBwbGF0Zm9ybV9k
+ZXZpY2UgKnBkZXYsIHZvaWQgKmRldl9pZCwNCj4gPiA+ID4gKwkJICAgICAgIGNvbnN0IGNoYXIg
+Km5hbWUpDQo+ID4gPiA+ICt7DQo+ID4gPiA+ICsJaW50IGlycTsNCj4gPiA+ID4gKw0KPiA+ID4g
+PiArCWlycSA9IHBsYXRmb3JtX2dldF9pcnFfYnluYW1lKHBkZXYsIG5hbWUpOw0KPiA+ID4gPiAr
+CWlmIChpcnEgPCAwKQ0KPiA+ID4gPiArCQlyZXR1cm47DQo+ID4gPiA+ICsNCj4gPiA+ID4gKwlk
+ZXZtX2ZyZWVfaXJxKCZwZGV2LT5kZXYsIGlycSwgZGV2X2lkKTsNCj4gPiA+ID4gK30NCj4gPiA+
+ID4gK0VYUE9SVF9TWU1CT0xfR1BMKGRhOTE1MF9yZWxlYXNlX2lycSk7DQo+ID4gPg0KPiA+ID4g
+RG8geW91IGV2ZXIgcmVsZWFzZSB0aGUgSVJRIGFuZCBub3QgdW5iaW5kIHRoZSBkcml2ZXI/DQo+
+ID4gPg0KPiA+ID4gQXJlIHRoZXJlIG9yZGVyaW5nIGlzc3VlcyBhdCBwbGF5IGhlcmU/DQo+ID4g
+Pg0KPiA+ID4gSWYgbm90LCB0aGVyZSdzIG5vIG5lZWQgdG8gY29uZHVjdCBhIG1hbnVhbCBmcmVl
+Lg0KPiA+DQo+ID4gSW4gdGhlIGNoYXJnZXIgZHJpdmVyLCBpbiB0aGUgcmVtb3ZlIGZ1bmN0aW9u
+IHRoZXJlIGlzIGEgbmVlZCBJIGJlbGlldmUgdG8NCj4gPiBmcmVlIHRoZSBJUlFzIGJlZm9yZSBv
+dGhlciBpdGVtcyBhcmUgY2xlYXJlZCB1cCAoZS5nLiBwb3dlcl9zdXBwbHkgY2xhc3NlcyksDQo+
+ID4gc28gdGhpcyBpcyB3aHkgSSBoYXZlIGFkZGVkIHRoaXMgaW4gaGVyZS4NCj4gDQo+IENhbiB5
+b3UgaGFuZGxlIHRoaXMgc2VwYXJhdGVseSBpbiB0aGUgQ2hhcmdlciBkcml2ZXIgdGhlbiBwbGVh
+c2U/DQo+IA0KPiBbLi4uXQ0KDQpJZiBJIGhhdmUgdG8gcmVtb3ZlIHRoZSBJUlEgcmVnaXN0ZXIg
+ZnVuY3Rpb24sIHRoZW4geWVzLCBvdGhlcndpc2UgaXQgbWFrZXMgbW9yZQ0Kc2Vuc2UgdG8gaGF2
+ZSB0aGUgcGFpciBvZiBmdW5jdGlvbnMgaW4gdGhlIE1GRCBjb3JlIEkgd291bGQgc2F5Lg0KDQo+
+IA0KPiA+ID4gPiArCWlmIChwZGF0YSkNCj4gPiA+ID4gKwkJZGE5MTUwLT5pcnFfYmFzZSA9IHBk
+YXRhLT5pcnFfYmFzZTsNCj4gPiA+ID4gKwllbHNlDQo+ID4gPiA+ICsJCWRhOTE1MC0+aXJxX2Jh
+c2UgPSAtMTsNCj4gPiA+DQo+ID4gPiBwZGF0YSA/IHBkYXRhLT5pcnFfYmFzZSA6IC0xOw0KPiA+
+DQo+ID4gVGhpcyBpcyBsZWZ0IHRoaXMgd2F5IGFzIGxhdGVyIHVwZGF0ZXMgdG8gYWRkIGFkZGl0
+aW9uYWwgZnVuY3Rpb25hbGl0eSB3aWxsDQo+ID4gcmVxdWlyZSBhZGR0aW9uYWwgd29yayB0byBi
+ZSBkb25lIHdpdGggdGhlIHBsYXRmb3JtIGRhdGEuIFNlZW1lZCBwb2ludGxlc3MNCj4gPiBjaGFu
+Z2luZyBpdCBoZXJlIGp1c3QgdG8gY2hhbmdlIGl0IGJhY2sgbGF0ZXIuDQo+IA0KPiBZb3UncmUg
+bm90IGNoYW5naW5nIGFueXRoaW5nLCBhcyB0aGlzIGlzIHRoZSBpbnRyb2R1Y3Rpb24gb2YgdGhl
+IGNvZGUuDQo+IEkgY2FuJ3QgdGVsbCB5b3UgaG93IG1hbnkgdGltZXMgSSd2ZSBoZWFyZCAiSSB3
+aWxsIGNoYW5nZSBpdCBsYXRlciIsDQo+IG9yICJkb2luZyBpdCB0aGlzIHdheSB3aWxsIHN1cHBv
+cnQgc3Vic2VxdWVudCBzdWJtaXNzaW9ucyIsIHRoZW4NCj4gcmVjZWl2ZWQgbm8gbW9yZSBwYXRj
+aGVzLiAgSXQncyBva2F5IHRvIGRvIGl0IG5pY2VseSBub3cgYW5kIGV4cGFuZA0KPiBpdCBiYWNr
+IG91dCBpbiB0aGUgbmV3IHBhdGNoZXMuDQo+IA0KPiBbLi4uXQ0KDQpJdCBhcHBlYXJzIHRoYXQg
+d2F5IHRvIHlvdSBidXQgSSBoYXZlIHRvIG1vZGlmeSBteSBjb2RlIGZvciBzdW1iaXNzaW9uIGFz
+IHRoZQ0KbG9jYWwgY29kZSBJIGhhdmUgY292ZXJzIGFsbCBmdW5jdGlvbmFsaXR5LiBBbSBoYXZp
+bmcgdG8gcmVmYWN0b3IgYWdhaW4gYW5kDQphZ2FpbiBqdXN0IHRvIHN1aXQgdGhpcyBpbml0aWFs
+IHN1Ym1pc3Npb24sIGFuZCB0aGVuIEkgaGF2ZSB0byByZXZlcnQgaXQgYmFjaw0KYWdhaW4gd2hl
+biBzdWJtaXR0aW5nIHRoZSBsYXN0IGNvdXBsZSBvZiBkcml2ZXJzLiBUaW1lIGNvbnN1bWluZywg
+YW5kIHF1aXRlDQpmcnVzdHJhdGluZyB3aGVuIHRoZSBpbnRlbnRpb24gd2FzIHRvIG1ha2UgdGhl
+IHdob2xlIHByb2Nlc3MgZWFzaWVyLiBBbnl3YXksDQp3aWxsIHVwZGF0ZSBmb3Igbm93IGFuZCBy
+ZXZlcnQgaW4gc3Vic2VxdWVudCBwYXRjaGVzLg0KDQo+IA0KPiA+ID4gPiArCWRhOTE1MCA9IGRl
+dm1fa3phbGxvYygmY2xpZW50LT5kZXYsIHNpemVvZihzdHJ1Y3QgZGE5MTUwKSwgR0ZQX0tFUk5F
+TCk7DQo+ID4gPg0KPiA+ID4gc2l6ZW9mKCpkYTkxNTApDQo+ID4NCj4gPiBTYW1lIGRpZmZlcmVu
+Y2UsIGJ1dCBvay4NCj4gDQo+IEl0J3MgbW9yZSBzdWNjaW5jdCBhbmQgYWxtb3N0IGFsd2F5cyBk
+b25lIHRoaXMgd2F5IGJlY2F1c2Ugb2YgaXQuDQo+IA0KPiBbLi4uXQ0KPiANCj4gPiA+ID4gK3N0
+cnVjdCBkYTkxNTBfcGRhdGEgew0KPiA+ID4gPiArCWludCBpcnFfYmFzZTsNCj4gPiA+ID4gK307
+DQo+ID4gPg0KPiA+ID4gSnVzdCBwdXQgdGhpcyBpbiBjb3JlLmggYW5kIGRvIGF3YXkgd2l0aHQg
+dGhpcyBoZWFkZXIgZmlsZS4NCj4gPg0KPiA+IFRoZSByZWFzb24gZm9yIHRoaXMgaXMgdGhhdCBJ
+IHdpbGwgYWRkIG1vcmUgcGxhdGZvcm0gZGF0YSBpdGVtcyBsYXRlciB3aXRoDQo+ID4gc3Vic2Vx
+dWVudCBzdWJtaXNzaW9ucyBmb3IgYWRkaXRpb25hbCBmZWF0dXJlcy4gSXQgZmVsdCBjbGVhbmVy
+IHRvIHNlcGFyYXRlIG91dA0KPiA+IHRoZXNlIHN0cnVjdHVyZXMgdGhhbiB0aHJvdyBpdCBpbiB0
+aGUgY29yZS5oIGhlYWRlci4gSG93ZXZlciBpZiBpdCdzIGdvaW5nIHRvDQo+ID4gYmUgYSBwcm9i
+bGVtIEknbGwgZm9sZCB0aGlzIGludG8gY29yZS5oDQo+IA0KPiBNb3JlICJJIHdpbGwicy4gOikN
+Cj4gDQo+IFBsZWFzZSBkbyB3aGF0J3MgcmlnaHQgZm9yICd0aGlzIHN1Ym1pc3Npb24nLiAgSWYg
+dGhpbmdzIGNoYW5nZSBsYXRlcg0KPiB5b3UgY2FuIGFjdCBhY2NvcmRpbmdseS4NCg0KSXQncyBu
+b3QgYSBjYXNlIG9mICdpZiB0aGluZ3MgY2hhbmdlJy4gVGhleSB3aWxsLiBBbnl3YXksIHdpbGwg
+cmVmYWN0b3Igbm93IGFuZA0KcmV2ZXJ0IGxhdGVyLg0KDQo+IA0KPiAtLQ0KPiBMZWUgSm9uZXMN
+Cj4gTGluYXJvIFNUTWljcm9lbGVjdHJvbmljcyBMYW5kaW5nIFRlYW0gTGVhZA0KPiBMaW5hcm8u
+b3JnIOKUgiBPcGVuIHNvdXJjZSBzb2Z0d2FyZSBmb3IgQVJNIFNvQ3MNCj4gRm9sbG93IExpbmFy
+bzogRmFjZWJvb2sgfCBUd2l0dGVyIHwgQmxvZw0K
