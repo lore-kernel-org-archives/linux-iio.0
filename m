@@ -1,108 +1,52 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from top.free-electrons.com ([176.31.233.9]:56963 "EHLO
-	mail.free-electrons.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1751927AbaILTPI (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 12 Sep 2014 15:15:08 -0400
-Date: Fri, 12 Sep 2014 17:18:24 +0200
-From: Maxime Ripard <maxime.ripard@free-electrons.com>
-To: Jacob Pan <jacob.jun.pan@linux.intel.com>
-Cc: IIO <linux-iio@vger.kernel.org>,
-	LKML <linux-kernel@vger.kernel.org>,
-	DEVICE TREE <devicetree@vger.kernel.org>,
-	Lee Jones <lee.jones@linaro.org>,
-	Carlo Caione <carlo@caione.org>,
-	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
-	Aaron Lu <aaron.lu@intel.com>, Alan Cox <alan@linux.intel.com>,
-	Jean Delvare <khali@linux-fr.org>,
-	Samuel Ortiz <sameo@linux.intel.com>,
-	Liam Girdwood <lgirdwood@gmail.com>,
-	Mark Brown <broonie@kernel.org>,
-	Grant Likely <grant.likely@linaro.org>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Rob Herring <robh+dt@kernel.org>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Fugang Duan <B38611@freescale.com>,
-	Arnd Bergmann <arnd@arndb.de>,
-	Zubair Lutfullah <zubair.lutfullah@gmail.com>,
-	Sebastian Reichel <sre@debian.org>,
-	Johannes Thumshirn <johannes.thumshirn@men.de>,
-	Philippe Reynes <tremyfr@yahoo.fr>,
-	Angelo Compagnucci <angelo.compagnucci@gmail.com>,
-	Doug Anderson <dianders@chromium.org>,
-	Ramakrishna Pallala <ramakrishna.pallala@intel.com>,
-	Peter Meerwald <pmeerw@pmeerw.net>
-Subject: Re: [PATCH v3 0/5] Initial support for XPowers AXP288 PMIC
-Message-ID: <20140912151824.GU31276@lukather>
-References: <1410477357-6407-1-git-send-email-jacob.jun.pan@linux.intel.com>
+Received: from mail-we0-f180.google.com ([74.125.82.180]:49987 "EHLO
+	mail-we0-f180.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752000AbaIJTgE (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 10 Sep 2014 15:36:04 -0400
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="K6Vt3zCKtaqyTnPU"
-In-Reply-To: <1410477357-6407-1-git-send-email-jacob.jun.pan@linux.intel.com>
+In-Reply-To: <5410A652.8070006@kernel.org>
+References: <1410332226-5481-1-git-send-email-daniel.baluta@intel.com>
+	<54109112.90508@gmx.de>
+	<5410A652.8070006@kernel.org>
+Date: Wed, 10 Sep 2014 22:36:02 +0300
+Message-ID: <CAEnQRZAu5X6j4HG8_hbrx8ZSKqYcdQCg=SodX63jvM_71_USrQ@mail.gmail.com>
+Subject: Re: [PATCH v7] iio: Add Dyna-Image AL3320A ambient light sensor driver
+From: Daniel Baluta <daniel.baluta@intel.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Hartmut Knaack <knaack.h@gmx.de>,
+	Daniel Baluta <daniel.baluta@intel.com>,
+	linux-iio@vger.kernel.org, Peter Meerwald <pmeerw@pmeerw.net>,
+	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+	Tsechih_Lin@asus.com
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
+On Wed, Sep 10, 2014 at 10:28 PM, Jonathan Cameron <jic23@kernel.org> wrote:
+> On 10/09/14 18:57, Hartmut Knaack wrote:
+>> Daniel Baluta schrieb, Am 10.09.2014 08:57:
+>>> Minimal implementation. This driver provides raw illuminance readings.
+>>>
+>>> This is based on drivers/hwmon/al3320.c (*) driver from msm tree written
+>>> by Tsechih Lin <Tsechih_Lin@asus.com>
+>>>
+>>> * https://android.googlesource.com/kernel/msm.git
+>>>
+>>> Signed-off-by: Daniel Baluta <daniel.baluta@intel.com>
+>> Reviewed-by: Hartmut Knaack <knaack.h@gmx.de>
+> Thanks Daniel.
+> Also thanks to Hartmut for reviewing stamina.
+>
+> I've been effectively offline for a 10 days (some of it spent in a fridge)
+> so am even more grateful to those who help with reviewing than normal.
+>
+> Applied to the togreg branch of iio.git which I will push out as testing
+> for the autobuilders to play when not in an airport departure lounge on the
+> 30 mins of free airport wifi.  What fun.
+>
+> I wonder if this will send?
 
---K6Vt3zCKtaqyTnPU
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Well, it's here ;). Have a nice flight!
 
-On Thu, Sep 11, 2014 at 04:15:52PM -0700, Jacob Pan wrote:
-> XPowers AXP288 is a customized PMIC found on some Intel Baytrail-CR platf=
-orms.
-> It comes with sub-functions such as USB charging, fuel gauge, ADC, and ma=
-ny LDO
-> and BUCK channels.
->=20
-> By extending the existing AXP20x driver, this patchset adds basic support
-> for AXP288 PMIC with GPADC as one MFD cell device driver. It also adds ho=
-oks
-> for ACPI opregion handler driver which can be used to handle ACPI request=
-s.
->=20
-> Currently, the PMIC driver in this patchset does not support platform data
-> enumeration. But when ACPI _DSD and unified device properties become avai=
-lable,
-> cell devices with platform data will be added.
->=20
-> This patch does not use intel_soc_pmic core for i2c and regmap handling i=
-n that
-> axp288 shares similar programming interface with other Xpower PMICs suppo=
-rted in
-> axp20x.c. Therefore, extending axp20x.c to include axp288 makes more sens=
-e.
->=20
-> Changes
->  v3:	- put all file rename changes in 1/5
-
-The variables renaming are still not in 1/5....
-
---=20
-Maxime Ripard, Free Electrons
-Embedded Linux, Kernel and Android engineering
-http://free-electrons.com
-
---K6Vt3zCKtaqyTnPU
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
-
-iQIcBAEBAgAGBQJUEw7AAAoJEBx+YmzsjxAgYi4P/3ns+5+YnbGJGUxtQECppx2c
-UV+PkBjF5Z/5EXr2WbsAv2pnqr0KoT0YYY41HyNeq3qvlFcvpteaTVvT08uj2z2m
-F91dSWuTKkjkLCYorhlldhA7YakBKNCzgGHHNkyRP/sFimcxkexOvr9s1PMha7mC
-bV655aqhnD6kvgyNlUwJabeNPt9af3QSrTTTpuKcwqu/qFsKJs2JhxuvncJLWQYc
-jt0thJbaEq8C98PgXDOOHztGo7PqMq3sPRkp6D8jaqpRiY+ixAN8z5+2ZQnceh34
-z2xaoMAlMRvp51Leb0QLnfDDd6l9QHB19FVchqMb2RnJ9ykrMKmRavxtojKKiCj7
-jo/DdraQFHv89IzcWGGzIBFl76rl6KSNsMHZryqrnb0ocEO+2qjLkL/rMSt0wuad
-lugZZfP9oLJDlT+KbQ3A0oLpr3qyxdnvWQLZgqdkSUCzD5kNuKL9/8hj+w4AdkwD
-M4DgOyPsMIQVuh77TaIPEuQ5PhWtDfYpfB1PH1MeCkb3nL/ZgpIiVdo4gRD0UbRa
-EauVIhBzZQKfip9FmTzEG/W8HsSD7cpDH3xFXrkn9OTIINp6E9cW7hQfrjqsPFct
-n/ruVIevK8LZRtH1sgiamPl1bzejg649J5QVaIvfhHZIqgtmZOZ7jWCROoqtM6j0
-stKgyUJUrKy/xqsuSHZd
-=HkLt
------END PGP SIGNATURE-----
-
---K6Vt3zCKtaqyTnPU--
+thanks,
+Daniel.
