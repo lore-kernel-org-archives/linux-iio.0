@@ -1,52 +1,63 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pa0-f51.google.com ([209.85.220.51]:64420 "EHLO
-	mail-pa0-f51.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754329AbaIQIYS (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 17 Sep 2014 04:24:18 -0400
-From: Sanchayan Maity <maitysanchayan@gmail.com>
-To: shawn.guo@freescale.com
-Cc: stefan@agner.ch, B38611@freescale.com, linux@arm.linux.org.uk,
-	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-	jic23@kernel.org, linux-iio@vger.kernel.org,
-	Sanchayan Maity <maitysanchayan@gmail.com>
-Subject: [PATCH 1/2] ARM: dts: vf610-colibri: Add ADC support
-Date: Wed, 17 Sep 2014 13:53:16 +0530
-Message-Id: <1015e874d5b13795e38069402a66b4798d79b632.1410873422.git.maitysanchayan@gmail.com>
-In-Reply-To: <cover.1410873422.git.maitysanchayan@gmail.com>
-References: <cover.1410873422.git.maitysanchayan@gmail.com>
-In-Reply-To: <cover.1410873422.git.maitysanchayan@gmail.com>
-References: <cover.1410873422.git.maitysanchayan@gmail.com>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <lee.jones@linaro.org>
+Date: Wed, 10 Sep 2014 10:51:19 +0100
+From: Lee Jones <lee.jones@linaro.org>
+To: "Opensource [Adam Thomson]" <Adam.Thomson.Opensource@diasemi.com>
+Cc: Varka Bhadram <varkabhadram@gmail.com>,
+	Samuel Ortiz <sameo@linux.intel.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	Sebastian Reichel <sre@kernel.org>,
+	Dmitry Eremin-Solenikov <dbaryshkov@gmail.com>,
+	David Woodhouse <dwmw2@infradead.org>,
+	"linux-pm@vger.kernel.org" <linux-pm@vger.kernel.org>,
+	Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>,
+	Mark Rutland <mark.rutland@arm.com>,
+	Ian Campbell <ijc+devicetree@hellion.org.uk>,
+	Kumar Gala <galak@codeaurora.org>,
+	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Joe Perches <joe@perches.com>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	Support Opensource <Support.Opensource@diasemi.com>
+Subject: Re: [PATCH v2 1/7] mfd: Add support for DA9150 combined charger &
+ fuel-gauge device
+Message-ID: <20140910095119.GO30307@lee--X1>
+References: <cover.1409145187.git.Adam.Thomson.Opensource@diasemi.com>
+ <d6c7de200c9447dbafa74ee76739da943a0b73b2.1409145187.git.Adam.Thomson.Opensource@diasemi.com>
+ <53FF16BC.9050701@gmail.com>
+ <2E89032DDAA8B9408CB92943514A0337AB5144B5@SW-EX-MBX01.diasemi.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+In-Reply-To: <2E89032DDAA8B9408CB92943514A0337AB5144B5@SW-EX-MBX01.diasemi.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-Enable ADC support for Colibri VF61 modules
+On Tue, 09 Sep 2014, Opensource [Adam Thomson] wrote:
+> On August 28, 2014 12:47, Varka Bhadram wrote:
+> 
+> > On 08/28/2014 04:18 PM, Adam Thomson wrote:
+> > 
+> > (...)
+> > 
+> > > +static int da9150_probe(struct i2c_client *client,
+> > > +			const struct i2c_device_id *id)
+> > > +{
+> > > +	struct da9150 *da9150;
+> > > +	int ret;
+> > > +
+> > > +	da9150 = devm_kzalloc(&client->dev, sizeof(struct da9150), GFP_KERNEL);
+> > > +	if (da9150 == NULL)
+> > > +		return -ENOMEM;
+> > 
+> > da9150 = devm_kzalloc(&client->dev, sizeof(*da9150), GFP_KERNEL);
+> > if (!da9150)
+> > 	return -ENOMEM;
+> 
+> Ok, no real difference, but can change it.
 
-Signed-off-by: Sanchayan Maity <maitysanchayan@gmail.com>
----
- arch/arm/boot/dts/vf610-colibri.dtsi |   10 ++++++++++
- 1 file changed, 10 insertions(+)
+Not functionally, but we like to do things as succinctly as possible.
 
-diff --git a/arch/arm/boot/dts/vf610-colibri.dtsi b/arch/arm/boot/dts/vf610-colibri.dtsi
-index 0cd8343..275ebec 100644
---- a/arch/arm/boot/dts/vf610-colibri.dtsi
-+++ b/arch/arm/boot/dts/vf610-colibri.dtsi
-@@ -69,6 +69,16 @@
- 	status = "okay";
- };
- 
-+&adc0 {
-+	pinctrl-names = "default";
-+	status = "okay";
-+};
-+
-+&adc1 {
-+	pinctrl-names = "default";
-+	status = "okay";
-+};
-+
- &iomuxc {
- 	vf610-colibri {
- 		pinctrl_esdhc1: esdhc1grp {
 -- 
-1.7.9.5
-
+Lee Jones
+Linaro STMicroelectronics Landing Team Lead
+Linaro.org │ Open source software for ARM SoCs
+Follow Linaro: Facebook | Twitter | Blog
