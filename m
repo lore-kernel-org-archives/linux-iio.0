@@ -1,352 +1,489 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:51711 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:51772 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752330AbaIJT2i (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 10 Sep 2014 15:28:38 -0400
-Message-ID: <5410A652.8070006@kernel.org>
-Date: Wed, 10 Sep 2014 20:28:18 +0100
+	with ESMTP id S1752000AbaIJTfv (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 10 Sep 2014 15:35:51 -0400
+Message-ID: <5410A814.40509@kernel.org>
+Date: Wed, 10 Sep 2014 20:35:48 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Hartmut Knaack <knaack.h@gmx.de>,
-	Daniel Baluta <daniel.baluta@intel.com>
-CC: linux-iio@vger.kernel.org, pmeerw@pmeerw.net,
-	linux-kernel@vger.kernel.org, Tsechih_Lin@asus.com
-Subject: Re: [PATCH v7] iio: Add Dyna-Image AL3320A ambient light sensor driver
-References: <1410332226-5481-1-git-send-email-daniel.baluta@intel.com> <54109112.90508@gmx.de>
-In-Reply-To: <54109112.90508@gmx.de>
-Content-Type: text/plain; charset=iso-8859-15
+To: Laurentiu Palcu <laurentiu.palcu@intel.com>
+CC: Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v5 3/3] iio: accel: BMC150: add support for other Bosch
+ chips
+References: <1409581756-19083-1-git-send-email-laurentiu.palcu@intel.com> <1409650219-11225-1-git-send-email-laurentiu.palcu@intel.com>
+In-Reply-To: <1409650219-11225-1-git-send-email-laurentiu.palcu@intel.com>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 10/09/14 18:57, Hartmut Knaack wrote:
-> Daniel Baluta schrieb, Am 10.09.2014 08:57:
->> Minimal implementation. This driver provides raw illuminance readings.
->>
->> This is based on drivers/hwmon/al3320.c (*) driver from msm tree written
->> by Tsechih Lin <Tsechih_Lin@asus.com>
->>
->> * https://android.googlesource.com/kernel/msm.git
->>
->> Signed-off-by: Daniel Baluta <daniel.baluta@intel.com>
-> Reviewed-by: Hartmut Knaack <knaack.h@gmx.de>
-Thanks Daniel.
-Also thanks to Hartmut for reviewing stamina.
-
-I've been effectively offline for a 10 days (some of it spent in a fridge)
-so am even more grateful to those who help with reviewing than normal.
-
-Applied to the togreg branch of iio.git which I will push out as testing
-for the autobuilders to play when not in an airport departure lounge on the
-30 mins of free airport wifi.  What fun.
-
-I wonder if this will send?
-
->> ---
->> Changes since v6: (reported by Hartmut)
->>         * drop variable i and reuse ret
->>
->> Changes since v5: (reported by Hartmut)
->>         * fix comments for al3320a_range
->>         * make sure we always use a valid index in al3320a_scales
->>
->> Changes since v4: (reported by Peter)
->>         * no need to fix endianess when reading raw value
->>
->> Changes since v3: (reported by Hartmut and Jonathan)
->>         * dropped the local store for the range, instead read it when necessary
->>         * removed wrapper functions
->>         * added in_illuminance_scale_available attribute
->>         * fix bug when reading raw value, use i2c_smbus_read_word instead of
->>           i2c_smbus_read_word_swapped and fix the endianess after read.
->>         * small coding style fixes
->>
->> Changes since v2: (reported by Peter Meerwald)
->>         * removed definition of DATA_HIGH and SW_RESET as they are not used
->>         * added a comment to al3320a_get_adc_value() function
->>         * added thresholds on TODO list
->>         * small style fixes
->>
->> Changes since v1: (reported by Peter Meerwald)
->>         * used u8 instead of int for passing gain and mean_time
->>         * used i2c_smbus_read_word_swapped instead of 2 x i2c_smbus_read_byte_data
->>         * used devm_iio_device_register instead of iio_device_register
->>         * small style fixes
->>  drivers/iio/light/Kconfig   |  10 ++
->>  drivers/iio/light/Makefile  |   1 +
->>  drivers/iio/light/al3320a.c | 232 ++++++++++++++++++++++++++++++++++++++++++++
->>  3 files changed, 243 insertions(+)
->>  create mode 100644 drivers/iio/light/al3320a.c
->>
->> diff --git a/drivers/iio/light/Kconfig b/drivers/iio/light/Kconfig
->> index bf05ca5..5bea821 100644
->> --- a/drivers/iio/light/Kconfig
->> +++ b/drivers/iio/light/Kconfig
->> @@ -17,6 +17,16 @@ config ADJD_S311
->>  	 This driver can also be built as a module.  If so, the module
->>  	 will be called adjd_s311.
->>  
->> +config AL3320A
->> +	tristate "AL3320A ambient light sensor"
->> +	depends on I2C
->> +	help
->> +	 Say Y here if you want to build a driver for the Dyna Image AL3320A
->> +	 ambient light sensor.
->> +
->> +	 To compile this driver as a module, choose M here: the
->> +	 module will be called al3320a.
->> +
->>  config APDS9300
->>  	tristate "APDS9300 ambient light sensor"
->>  	depends on I2C
->> diff --git a/drivers/iio/light/Makefile b/drivers/iio/light/Makefile
->> index 8b8c09f..47877a3 100644
->> --- a/drivers/iio/light/Makefile
->> +++ b/drivers/iio/light/Makefile
->> @@ -4,6 +4,7 @@
->>  
->>  # When adding new entries keep the list in alphabetical order
->>  obj-$(CONFIG_ADJD_S311)		+= adjd_s311.o
->> +obj-$(CONFIG_AL3320A)		+= al3320a.o
->>  obj-$(CONFIG_APDS9300)		+= apds9300.o
->>  obj-$(CONFIG_CM32181)		+= cm32181.o
->>  obj-$(CONFIG_CM36651)		+= cm36651.o
->> diff --git a/drivers/iio/light/al3320a.c b/drivers/iio/light/al3320a.c
->> new file mode 100644
->> index 0000000..6aac651
->> --- /dev/null
->> +++ b/drivers/iio/light/al3320a.c
->> @@ -0,0 +1,232 @@
->> +/*
->> + * AL3320A - Dyna Image Ambient Light Sensor
->> + *
->> + * Copyright (c) 2014, Intel Corporation.
->> + *
->> + * This file is subject to the terms and conditions of version 2 of
->> + * the GNU General Public License.  See the file COPYING in the main
->> + * directory of this archive for more details.
->> + *
->> + * IIO driver for AL3320A (7-bit I2C slave address 0x1C).
->> + *
->> + * TODO: interrupt support, thresholds
->> + *
->> + */
->> +
->> +#include <linux/module.h>
->> +#include <linux/init.h>
->> +#include <linux/i2c.h>
->> +
->> +#include <linux/iio/iio.h>
->> +#include <linux/iio/sysfs.h>
->> +
->> +#define AL3320A_DRV_NAME "al3320a"
->> +
->> +#define AL3320A_REG_CONFIG		0x00
->> +#define AL3320A_REG_STATUS		0x01
->> +#define AL3320A_REG_INT			0x02
->> +#define AL3320A_REG_WAIT		0x06
->> +#define AL3320A_REG_CONFIG_RANGE	0x07
->> +#define AL3320A_REG_PERSIST		0x08
->> +#define AL3320A_REG_MEAN_TIME		0x09
->> +#define AL3320A_REG_ADUMMY		0x0A
->> +#define AL3320A_REG_DATA_LOW		0x22
->> +
->> +#define AL3320A_REG_LOW_THRESH_LOW	0x30
->> +#define AL3320A_REG_LOW_THRESH_HIGH	0x31
->> +#define AL3320A_REG_HIGH_THRESH_LOW	0x32
->> +#define AL3320A_REG_HIGH_THRESH_HIGH	0x33
->> +
->> +#define AL3320A_CONFIG_DISABLE		0x00
->> +#define AL3320A_CONFIG_ENABLE		0x01
->> +
->> +#define AL3320A_GAIN_SHIFT		1
->> +#define AL3320A_GAIN_MASK		(BIT(2) | BIT(1))
->> +
->> +/* chip params default values */
->> +#define AL3320A_DEFAULT_MEAN_TIME	4
->> +#define AL3320A_DEFAULT_WAIT_TIME	0 /* no waiting */
->> +
->> +#define AL3320A_SCALE_AVAILABLE "0.512 0.128 0.032 0.01"
->> +
->> +enum al3320a_range {
->> +	AL3320A_RANGE_1, /* 33.28 Klx */
->> +	AL3320A_RANGE_2, /* 8.32 Klx  */
->> +	AL3320A_RANGE_3, /* 2.08 Klx  */
->> +	AL3320A_RANGE_4  /* 0.65 Klx  */
->> +};
->> +
->> +static const int al3320a_scales[][2] = {
->> +	{0, 512000}, {0, 128000}, {0, 32000}, {0, 10000}
->> +};
->> +
->> +struct al3320a_data {
->> +	struct i2c_client *client;
->> +};
->> +
->> +static const struct iio_chan_spec al3320a_channels[] = {
->> +	{
->> +		.type	= IIO_LIGHT,
->> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
->> +				      BIT(IIO_CHAN_INFO_SCALE),
->> +	}
->> +};
->> +
->> +static IIO_CONST_ATTR(in_illuminance_scale_available, AL3320A_SCALE_AVAILABLE);
->> +
->> +static struct attribute *al3320a_attributes[] = {
->> +	&iio_const_attr_in_illuminance_scale_available.dev_attr.attr,
->> +	NULL,
->> +};
->> +
->> +static const struct attribute_group al3320a_attribute_group = {
->> +	.attrs = al3320a_attributes,
->> +};
->> +
->> +static int al3320a_init(struct al3320a_data *data)
->> +{
->> +	int ret;
->> +
->> +	/* power on */
->> +	ret = i2c_smbus_write_byte_data(data->client, AL3320A_REG_CONFIG,
->> +					AL3320A_CONFIG_ENABLE);
->> +	if (ret < 0)
->> +		return ret;
->> +
->> +	ret = i2c_smbus_write_byte_data(data->client, AL3320A_REG_CONFIG_RANGE,
->> +					AL3320A_RANGE_3 << AL3320A_GAIN_SHIFT);
->> +	if (ret < 0)
->> +		return ret;
->> +
->> +	ret = i2c_smbus_write_byte_data(data->client, AL3320A_REG_MEAN_TIME,
->> +					AL3320A_DEFAULT_MEAN_TIME);
->> +	if (ret < 0)
->> +		return ret;
->> +
->> +	ret = i2c_smbus_write_byte_data(data->client, AL3320A_REG_WAIT,
->> +					AL3320A_DEFAULT_WAIT_TIME);
->> +	if (ret < 0)
->> +		return ret;
->> +
->> +	return 0;
->> +}
->> +
->> +static int al3320a_read_raw(struct iio_dev *indio_dev,
->> +			    struct iio_chan_spec const *chan, int *val,
->> +			    int *val2, long mask)
->> +{
->> +	struct al3320a_data *data = iio_priv(indio_dev);
->> +	int ret;
->> +
->> +	switch (mask) {
->> +	case IIO_CHAN_INFO_RAW:
->> +		/*
->> +		 * ALS ADC value is stored in two adjacent registers:
->> +		 * - low byte of output is stored at AL3320A_REG_DATA_LOW
->> +		 * - high byte of output is stored at AL3320A_REG_DATA_LOW + 1
->> +		 */
->> +		ret = i2c_smbus_read_word_data(data->client,
->> +					       AL3320A_REG_DATA_LOW);
->> +		if (ret < 0)
->> +			return ret;
->> +		*val = ret;
->> +		return IIO_VAL_INT;
->> +	case IIO_CHAN_INFO_SCALE:
->> +		ret = i2c_smbus_read_byte_data(data->client,
->> +					       AL3320A_REG_CONFIG_RANGE);
->> +		if (ret < 0)
->> +			return ret;
->> +
->> +		ret = (ret & AL3320A_GAIN_MASK) >> AL3320A_GAIN_SHIFT;
->> +		*val = al3320a_scales[ret][0];
->> +		*val2 = al3320a_scales[ret][1];
->> +
->> +		return IIO_VAL_INT_PLUS_MICRO;
->> +	}
->> +	return -EINVAL;
->> +}
->> +
->> +static int al3320a_write_raw(struct iio_dev *indio_dev,
->> +			     struct iio_chan_spec const *chan, int val,
->> +			     int val2, long mask)
->> +{
->> +	struct al3320a_data *data = iio_priv(indio_dev);
->> +	int i;
->> +
->> +	switch (mask) {
->> +	case IIO_CHAN_INFO_SCALE:
->> +		for (i = 0; i < ARRAY_SIZE(al3320a_scales); i++) {
->> +			if (val == al3320a_scales[i][0] &&
->> +			    val2 == al3320a_scales[i][1])
->> +				return i2c_smbus_write_byte_data(data->client,
->> +					AL3320A_REG_CONFIG_RANGE,
->> +					i << AL3320A_GAIN_SHIFT);
->> +		}
->> +		break;
->> +	}
->> +	return -EINVAL;
->> +}
->> +
->> +static const struct iio_info al3320a_info = {
->> +	.driver_module	= THIS_MODULE,
->> +	.read_raw	= al3320a_read_raw,
->> +	.write_raw	= al3320a_write_raw,
->> +	.attrs		= &al3320a_attribute_group,
->> +};
->> +
->> +static int al3320a_probe(struct i2c_client *client,
->> +			 const struct i2c_device_id *id)
->> +{
->> +	struct al3320a_data *data;
->> +	struct iio_dev *indio_dev;
->> +	int ret;
->> +
->> +	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
->> +	if (!indio_dev)
->> +		return -ENOMEM;
->> +
->> +	data = iio_priv(indio_dev);
->> +	i2c_set_clientdata(client, indio_dev);
->> +	data->client = client;
->> +
->> +	indio_dev->dev.parent = &client->dev;
->> +	indio_dev->info = &al3320a_info;
->> +	indio_dev->name = AL3320A_DRV_NAME;
->> +	indio_dev->channels = al3320a_channels;
->> +	indio_dev->num_channels = ARRAY_SIZE(al3320a_channels);
->> +	indio_dev->modes = INDIO_DIRECT_MODE;
->> +
->> +	ret = al3320a_init(data);
->> +	if (ret < 0) {
->> +		dev_err(&client->dev, "al3320a chip init failed\n");
->> +		return ret;
->> +	}
->> +	return devm_iio_device_register(&client->dev, indio_dev);
->> +}
->> +
->> +static int al3320a_remove(struct i2c_client *client)
->> +{
->> +	return i2c_smbus_write_byte_data(client, AL3320A_REG_CONFIG,
->> +					 AL3320A_CONFIG_DISABLE);
->> +}
->> +
->> +static const struct i2c_device_id al3320a_id[] = {
->> +	{"al3320a", 0},
->> +	{}
->> +};
->> +MODULE_DEVICE_TABLE(i2c, al3320a_id);
->> +
->> +static struct i2c_driver al3320a_driver = {
->> +	.driver = {
->> +		.name = AL3320A_DRV_NAME,
->> +	},
->> +	.probe		= al3320a_probe,
->> +	.remove		= al3320a_remove,
->> +	.id_table	= al3320a_id,
->> +};
->> +
->> +module_i2c_driver(al3320a_driver);
->> +
->> +MODULE_AUTHOR("Daniel Baluta <daniel.baluta@intel.com>");
->> +MODULE_DESCRIPTION("AL3320A Ambient Light Sensor driver");
->> +MODULE_LICENSE("GPL v2");
->>
+On 02/09/14 10:30, Laurentiu Palcu wrote:
+> The following chips are either similar or have only the resolution
+> different. Hence, change this driver to support these chips too:
+> 
+> BMI055  - combo chip (accelerometer part is identical to BMC150's)
+> BMA255  - identical to BMC150's accelerometer
+> BMA222E - 8 bit resolution
+> BMA250E - 10 bit resolution
+> BMA280  - 14 bit resolution
+> 
+> Additionally:
+>  * add bmc150_accel_match_acpi_device() function to check that the device
+>    has been enumerated through ACPI;
+>  * rename bmc150_accel_acpi_gpio_probe() to bmc150_accel_gpio_probe()
+>    since the ACPI matching has been moved to the new function.  Also, this
+>    will allow for the GPIO matching to be done against a device tree too, not only
+>    ACPI tree;
+>  * rename bmc150_scale_info struct member 'range' to 'reg_range' to be
+>    consistent with the naming convention used elsewhere in the driver
+>    and declare it u8, instead of int;
+>  * change CONFIG description to list all supported chips;
+> 
+> Signed-off-by: Laurentiu Palcu <laurentiu.palcu@intel.com>
+Looks fine to me, though I'm not really in a fit state to review right now.
+Srinivas, do you want to give an Ack?
+> ---
+> 
+> Changes in v5:
+>  * addressed Joe's suggestion to rewrite a small portion of the code to make it
+>    more readable;
+>  * changed the CONFIG description according to Srinivas's advise;
+> 
+> Changes in v4:
+>  * address Peter's comments: see 3rd bullet in the commit's message. As a result, do
+>    some re-indentation to make lines fit 80 chars;
+> 
+> Changes in v3:
+>  * remove the chip id macros since they were not used anywhere else and put the id
+>    values directly in the chip info table;
+>  * fix the unnecessary casting from const char * to char * and back;
+> 
+> laurentiu
+> 
+>  drivers/iio/accel/Kconfig        |   4 +-
+>  drivers/iio/accel/bmc150-accel.c | 234 +++++++++++++++++++++++++++++----------
+>  2 files changed, 178 insertions(+), 60 deletions(-)
+> 
+> diff --git a/drivers/iio/accel/Kconfig b/drivers/iio/accel/Kconfig
+> index 01b857e..01a2151 100644
+> --- a/drivers/iio/accel/Kconfig
+> +++ b/drivers/iio/accel/Kconfig
+> @@ -23,7 +23,9 @@ config BMC150_ACCEL
+>  	select IIO_BUFFER
+>  	select IIO_TRIGGERED_BUFFER
+>  	help
+> -	  Say yes here to build support for the Bosch BMC150 accelerometer.
+> +	  Say yes here to build support for the following Bosch accelerometers:
+> +	  BMC150, BMI055, BMA250E, BMA222E, BMA255, BMA280.
+> +
+>  	  Currently this only supports the device via an i2c interface.
+>  
+>  	  This is a combo module with both accelerometer and magnetometer.
+> diff --git a/drivers/iio/accel/bmc150-accel.c b/drivers/iio/accel/bmc150-accel.c
+> index 0e6566a..22c096c 100644
+> --- a/drivers/iio/accel/bmc150-accel.c
+> +++ b/drivers/iio/accel/bmc150-accel.c
+> @@ -1,5 +1,12 @@
+>  /*
+> - * BMC150 3-axis accelerometer driver
+> + * 3-axis accelerometer driver supporting following Bosch-Sensortec chips:
+> + *  - BMC150
+> + *  - BMI055
+> + *  - BMA255
+> + *  - BMA250E
+> + *  - BMA222E
+> + *  - BMA280
+> + *
+>   * Copyright (c) 2014, Intel Corporation.
+>   *
+>   * This program is free software; you can redistribute it and/or modify it
+> @@ -34,7 +41,6 @@
+>  #define BMC150_ACCEL_GPIO_NAME			"bmc150_accel_int"
+>  
+>  #define BMC150_ACCEL_REG_CHIP_ID		0x00
+> -#define BMC150_ACCEL_CHIP_ID_VAL		0xFA
+>  
+>  #define BMC150_ACCEL_REG_INT_STATUS_2		0x0B
+>  #define BMC150_ACCEL_ANY_MOTION_MASK		0x07
+> @@ -126,6 +132,18 @@ enum bmc150_power_modes {
+>  	BMC150_ACCEL_SLEEP_MODE_SUSPEND = 0x04,
+>  };
+>  
+> +struct bmc150_scale_info {
+> +	int scale;
+> +	u8 reg_range;
+> +};
+> +
+> +struct bmc150_accel_chip_info {
+> +	u8 chip_id;
+> +	const struct iio_chan_spec *channels;
+> +	int num_channels;
+> +	const struct bmc150_scale_info scale_table[4];
+> +};
+> +
+>  struct bmc150_accel_data {
+>  	struct i2c_client *client;
+>  	struct iio_trigger *dready_trig;
+> @@ -140,6 +158,7 @@ struct bmc150_accel_data {
+>  	bool dready_trigger_on;
+>  	bool motion_trigger_on;
+>  	int64_t timestamp;
+> +	const struct bmc150_accel_chip_info *chip_info;
+>  };
+>  
+>  static const struct {
+> @@ -168,16 +187,8 @@ static const struct {
+>  				     {0x0F, 1} };
+>  
+>  static const struct {
+> -	int scale;
+> -	int range;
+> -} bmc150_accel_scale_table[] = { {9610, BMC150_ACCEL_DEF_RANGE_2G},
+> -				 {19122, BMC150_ACCEL_DEF_RANGE_4G},
+> -				 {38344, BMC150_ACCEL_DEF_RANGE_8G},
+> -				 {76590, BMC150_ACCEL_DEF_RANGE_16G} };
+> -
+> -static const struct {
+>  	int sleep_dur;
+> -	int reg_value;
+> +	u8 reg_value;
+>  } bmc150_accel_sleep_value_table[] = { {0, 0},
+>  				       {500, BMC150_ACCEL_SLEEP_500_MICRO},
+>  				       {1000, BMC150_ACCEL_SLEEP_1_MS},
+> @@ -267,7 +278,7 @@ static int bmc150_accel_chip_init(struct bmc150_accel_data *data)
+>  	}
+>  
+>  	dev_dbg(&data->client->dev, "Chip Id %x\n", ret);
+> -	if (ret != BMC150_ACCEL_CHIP_ID_VAL) {
+> +	if (ret != data->chip_info->chip_id) {
+>  		dev_err(&data->client->dev, "Invalid chip %x\n", ret);
+>  		return -ENODEV;
+>  	}
+> @@ -541,19 +552,19 @@ static int bmc150_accel_set_scale(struct bmc150_accel_data *data, int val)
+>  {
+>  	int ret, i;
+>  
+> -	for (i = 0; i < ARRAY_SIZE(bmc150_accel_scale_table); ++i) {
+> -		if (bmc150_accel_scale_table[i].scale == val) {
+> +	for (i = 0; i < ARRAY_SIZE(data->chip_info->scale_table); ++i) {
+> +		if (data->chip_info->scale_table[i].scale == val) {
+>  			ret = i2c_smbus_write_byte_data(
+> -					data->client,
+> -					BMC150_ACCEL_REG_PMU_RANGE,
+> -					bmc150_accel_scale_table[i].range);
+> +				     data->client,
+> +				     BMC150_ACCEL_REG_PMU_RANGE,
+> +				     data->chip_info->scale_table[i].reg_range);
+>  			if (ret < 0) {
+>  				dev_err(&data->client->dev,
+>  					"Error writing pmu_range\n");
+>  				return ret;
+>  			}
+>  
+> -			data->range = bmc150_accel_scale_table[i].range;
+> +			data->range = data->chip_info->scale_table[i].reg_range;
+>  			return 0;
+>  		}
+>  	}
+> @@ -580,10 +591,12 @@ static int bmc150_accel_get_temp(struct bmc150_accel_data *data, int *val)
+>  	return IIO_VAL_INT;
+>  }
+>  
+> -static int bmc150_accel_get_axis(struct bmc150_accel_data *data, int axis,
+> +static int bmc150_accel_get_axis(struct bmc150_accel_data *data,
+> +				 struct iio_chan_spec const *chan,
+>  				 int *val)
+>  {
+>  	int ret;
+> +	int axis = chan->scan_index;
+>  
+>  	mutex_lock(&data->mutex);
+>  	ret = bmc150_accel_set_power_state(data, true);
+> @@ -600,7 +613,8 @@ static int bmc150_accel_get_axis(struct bmc150_accel_data *data, int axis,
+>  		mutex_unlock(&data->mutex);
+>  		return ret;
+>  	}
+> -	*val = sign_extend32(ret >> 4, 11);
+> +	*val = sign_extend32(ret >> chan->scan_type.shift,
+> +			     chan->scan_type.realbits - 1);
+>  	ret = bmc150_accel_set_power_state(data, false);
+>  	mutex_unlock(&data->mutex);
+>  	if (ret < 0)
+> @@ -625,9 +639,7 @@ static int bmc150_accel_read_raw(struct iio_dev *indio_dev,
+>  			if (iio_buffer_enabled(indio_dev))
+>  				return -EBUSY;
+>  			else
+> -				return bmc150_accel_get_axis(data,
+> -							     chan->scan_index,
+> -							     val);
+> +				return bmc150_accel_get_axis(data, chan, val);
+>  		default:
+>  			return -EINVAL;
+>  		}
+> @@ -646,13 +658,13 @@ static int bmc150_accel_read_raw(struct iio_dev *indio_dev,
+>  		case IIO_ACCEL:
+>  		{
+>  			int i;
+> +			const struct bmc150_scale_info *si;
+> +			int st_size = ARRAY_SIZE(data->chip_info->scale_table);
+>  
+> -			for (i = 0; i < ARRAY_SIZE(bmc150_accel_scale_table);
+> -									 ++i) {
+> -				if (bmc150_accel_scale_table[i].range ==
+> -								data->range) {
+> -					*val2 =
+> -					bmc150_accel_scale_table[i].scale;
+> +			for (i = 0; i < st_size; ++i) {
+> +				si = &data->chip_info->scale_table[i];
+> +				if (si->reg_range == data->range) {
+> +					*val2 = si->scale;
+>  					return IIO_VAL_INT_PLUS_MICRO;
+>  				}
+>  			}
+> @@ -840,7 +852,7 @@ static const struct iio_event_spec bmc150_accel_event = {
+>  				 BIT(IIO_EV_INFO_PERIOD)
+>  };
+>  
+> -#define BMC150_ACCEL_CHANNEL(_axis) {					\
+> +#define BMC150_ACCEL_CHANNEL(_axis, bits) {				\
+>  	.type = IIO_ACCEL,						\
+>  	.modified = 1,							\
+>  	.channel2 = IIO_MOD_##_axis,					\
+> @@ -850,26 +862,101 @@ static const struct iio_event_spec bmc150_accel_event = {
+>  	.scan_index = AXIS_##_axis,					\
+>  	.scan_type = {							\
+>  		.sign = 's',						\
+> -		.realbits = 12,					\
+> +		.realbits = (bits),					\
+>  		.storagebits = 16,					\
+> -		.shift = 4,						\
+> +		.shift = 16 - (bits),					\
+>  	},								\
+>  	.event_spec = &bmc150_accel_event,				\
+>  	.num_event_specs = 1						\
+>  }
+>  
+> -static const struct iio_chan_spec bmc150_accel_channels[] = {
+> -	{
+> -		.type = IIO_TEMP,
+> -		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
+> -				      BIT(IIO_CHAN_INFO_SCALE) |
+> -				      BIT(IIO_CHAN_INFO_OFFSET),
+> -		.scan_index = -1,
+> +#define BMC150_ACCEL_CHANNELS(bits) {					\
+> +	{								\
+> +		.type = IIO_TEMP,					\
+> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |		\
+> +				      BIT(IIO_CHAN_INFO_SCALE) |	\
+> +				      BIT(IIO_CHAN_INFO_OFFSET),	\
+> +		.scan_index = -1,					\
+> +	},								\
+> +	BMC150_ACCEL_CHANNEL(X, bits),					\
+> +	BMC150_ACCEL_CHANNEL(Y, bits),					\
+> +	BMC150_ACCEL_CHANNEL(Z, bits),					\
+> +	IIO_CHAN_SOFT_TIMESTAMP(3),					\
+> +}
+> +
+> +static const struct iio_chan_spec bma222e_accel_channels[] =
+> +	BMC150_ACCEL_CHANNELS(8);
+> +static const struct iio_chan_spec bma250e_accel_channels[] =
+> +	BMC150_ACCEL_CHANNELS(10);
+> +static const struct iio_chan_spec bmc150_accel_channels[] =
+> +	BMC150_ACCEL_CHANNELS(12);
+> +static const struct iio_chan_spec bma280_accel_channels[] =
+> +	BMC150_ACCEL_CHANNELS(14);
+> +
+> +enum {
+> +	bmc150,
+> +	bmi055,
+> +	bma255,
+> +	bma250e,
+> +	bma222e,
+> +	bma280,
+> +};
+> +
+> +static const struct bmc150_accel_chip_info bmc150_accel_chip_info_tbl[] = {
+> +	[bmc150] = {
+> +		.chip_id = 0xFA,
+> +		.channels = bmc150_accel_channels,
+> +		.num_channels = ARRAY_SIZE(bmc150_accel_channels),
+> +		.scale_table = { {9610, BMC150_ACCEL_DEF_RANGE_2G},
+> +				 {19122, BMC150_ACCEL_DEF_RANGE_4G},
+> +				 {38344, BMC150_ACCEL_DEF_RANGE_8G},
+> +				 {76590, BMC150_ACCEL_DEF_RANGE_16G} },
+> +	},
+> +	[bmi055] = {
+> +		.chip_id = 0xFA,
+> +		.channels = bmc150_accel_channels,
+> +		.num_channels = ARRAY_SIZE(bmc150_accel_channels),
+> +		.scale_table = { {9610, BMC150_ACCEL_DEF_RANGE_2G},
+> +				 {19122, BMC150_ACCEL_DEF_RANGE_4G},
+> +				 {38344, BMC150_ACCEL_DEF_RANGE_8G},
+> +				 {76590, BMC150_ACCEL_DEF_RANGE_16G} },
+> +	},
+> +	[bma255] = {
+> +		.chip_id = 0xFA,
+> +		.channels = bmc150_accel_channels,
+> +		.num_channels = ARRAY_SIZE(bmc150_accel_channels),
+> +		.scale_table = { {9610, BMC150_ACCEL_DEF_RANGE_2G},
+> +				 {19122, BMC150_ACCEL_DEF_RANGE_4G},
+> +				 {38344, BMC150_ACCEL_DEF_RANGE_8G},
+> +				 {76590, BMC150_ACCEL_DEF_RANGE_16G} },
+> +	},
+> +	[bma250e] = {
+> +		.chip_id = 0xF9,
+> +		.channels = bma250e_accel_channels,
+> +		.num_channels = ARRAY_SIZE(bma250e_accel_channels),
+> +		.scale_table = { {38344, BMC150_ACCEL_DEF_RANGE_2G},
+> +				 {76590, BMC150_ACCEL_DEF_RANGE_4G},
+> +				 {153277, BMC150_ACCEL_DEF_RANGE_8G},
+> +				 {306457, BMC150_ACCEL_DEF_RANGE_16G} },
+> +	},
+> +	[bma222e] = {
+> +		.chip_id = 0xF8,
+> +		.channels = bma222e_accel_channels,
+> +		.num_channels = ARRAY_SIZE(bma222e_accel_channels),
+> +		.scale_table = { {153277, BMC150_ACCEL_DEF_RANGE_2G},
+> +				 {306457, BMC150_ACCEL_DEF_RANGE_4G},
+> +				 {612915, BMC150_ACCEL_DEF_RANGE_8G},
+> +				 {1225831, BMC150_ACCEL_DEF_RANGE_16G} },
+> +	},
+> +	[bma280] = {
+> +		.chip_id = 0xFB,
+> +		.channels = bma280_accel_channels,
+> +		.num_channels = ARRAY_SIZE(bma280_accel_channels),
+> +		.scale_table = { {2392, BMC150_ACCEL_DEF_RANGE_2G},
+> +				 {4785, BMC150_ACCEL_DEF_RANGE_4G},
+> +				 {9581, BMC150_ACCEL_DEF_RANGE_8G},
+> +				 {19152, BMC150_ACCEL_DEF_RANGE_16G} },
+>  	},
+> -	BMC150_ACCEL_CHANNEL(X),
+> -	BMC150_ACCEL_CHANNEL(Y),
+> -	BMC150_ACCEL_CHANNEL(Z),
+> -	IIO_CHAN_SOFT_TIMESTAMP(3),
+>  };
+>  
+>  static const struct iio_info bmc150_accel_info = {
+> @@ -1040,10 +1127,23 @@ static irqreturn_t bmc150_accel_data_rdy_trig_poll(int irq, void *private)
+>  		return IRQ_HANDLED;
+>  }
+>  
+> -static int bmc150_accel_acpi_gpio_probe(struct i2c_client *client,
+> -					struct bmc150_accel_data *data)
+> +static const char *bmc150_accel_match_acpi_device(struct device *dev, int *data)
+>  {
+>  	const struct acpi_device_id *id;
+> +
+> +	id = acpi_match_device(dev->driver->acpi_match_table, dev);
+> +
+> +	if (!id)
+> +		return NULL;
+> +
+> +	*data = (int) id->driver_data;
+> +
+> +	return dev_name(dev);
+> +}
+> +
+> +static int bmc150_accel_gpio_probe(struct i2c_client *client,
+> +					struct bmc150_accel_data *data)
+> +{
+>  	struct device *dev;
+>  	struct gpio_desc *gpio;
+>  	int ret;
+> @@ -1052,17 +1152,11 @@ static int bmc150_accel_acpi_gpio_probe(struct i2c_client *client,
+>  		return -EINVAL;
+>  
+>  	dev = &client->dev;
+> -	if (!ACPI_HANDLE(dev))
+> -		return -ENODEV;
+> -
+> -	id = acpi_match_device(dev->driver->acpi_match_table, dev);
+> -	if (!id)
+> -		return -ENODEV;
+>  
+>  	/* data ready gpio interrupt pin */
+>  	gpio = devm_gpiod_get_index(dev, BMC150_ACCEL_GPIO_NAME, 0);
+>  	if (IS_ERR(gpio)) {
+> -		dev_err(dev, "Failed: acpi gpio get index\n");
+> +		dev_err(dev, "Failed: gpio get index\n");
+>  		return PTR_ERR(gpio);
+>  	}
+>  
+> @@ -1083,6 +1177,8 @@ static int bmc150_accel_probe(struct i2c_client *client,
+>  	struct bmc150_accel_data *data;
+>  	struct iio_dev *indio_dev;
+>  	int ret;
+> +	const char *name = NULL;
+> +	int chip_id = 0;
+>  
+>  	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
+>  	if (!indio_dev)
+> @@ -1092,6 +1188,16 @@ static int bmc150_accel_probe(struct i2c_client *client,
+>  	i2c_set_clientdata(client, indio_dev);
+>  	data->client = client;
+>  
+> +	if (id) {
+> +		name = id->name;
+> +		chip_id = id->driver_data;
+> +	}
+> +
+> +	if (ACPI_HANDLE(&client->dev))
+> +		name = bmc150_accel_match_acpi_device(&client->dev, &chip_id);
+> +
+> +	data->chip_info = &bmc150_accel_chip_info_tbl[chip_id];
+> +
+>  	ret = bmc150_accel_chip_init(data);
+>  	if (ret < 0)
+>  		return ret;
+> @@ -1099,14 +1205,14 @@ static int bmc150_accel_probe(struct i2c_client *client,
+>  	mutex_init(&data->mutex);
+>  
+>  	indio_dev->dev.parent = &client->dev;
+> -	indio_dev->channels = bmc150_accel_channels;
+> -	indio_dev->num_channels = ARRAY_SIZE(bmc150_accel_channels);
+> -	indio_dev->name = BMC150_ACCEL_DRV_NAME;
+> +	indio_dev->channels = data->chip_info->channels;
+> +	indio_dev->num_channels = data->chip_info->num_channels;
+> +	indio_dev->name = name;
+>  	indio_dev->modes = INDIO_DIRECT_MODE;
+>  	indio_dev->info = &bmc150_accel_info;
+>  
+>  	if (client->irq < 0)
+> -		client->irq = bmc150_accel_acpi_gpio_probe(client, data);
+> +		client->irq = bmc150_accel_gpio_probe(client, data);
+>  
+>  	if (client->irq >= 0) {
+>  		ret = devm_request_threaded_irq(
+> @@ -1284,14 +1390,24 @@ static const struct dev_pm_ops bmc150_accel_pm_ops = {
+>  };
+>  
+>  static const struct acpi_device_id bmc150_accel_acpi_match[] = {
+> -	{"BSBA0150", 0},
+> -	{"BMC150A", 0},
+> +	{"BSBA0150",	bmc150},
+> +	{"BMC150A",	bmc150},
+> +	{"BMI055A",	bmi055},
+> +	{"BMA0255",	bma255},
+> +	{"BMA250E",	bma250e},
+> +	{"BMA222E",	bma222e},
+> +	{"BMA0280",	bma280},
+>  	{ },
+>  };
+>  MODULE_DEVICE_TABLE(acpi, bmc150_accel_acpi_match);
+>  
+>  static const struct i2c_device_id bmc150_accel_id[] = {
+> -	{"bmc150_accel", 0},
+> +	{"bmc150_accel",	bmc150},
+> +	{"bmi055_accel",	bmi055},
+> +	{"bma255",		bma255},
+> +	{"bma250e",		bma250e},
+> +	{"bma222e",		bma222e},
+> +	{"bma280",		bma280},
+>  	{}
+>  };
+>  
 > 
