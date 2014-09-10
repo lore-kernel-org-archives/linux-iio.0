@@ -1,84 +1,75 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from bombadil.infradead.org ([198.137.202.9]:48300 "EHLO
-	bombadil.infradead.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753963AbaIIAEj (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 8 Sep 2014 20:04:39 -0400
-Date: Mon, 8 Sep 2014 17:04:30 -0700
-From: Darren Hart <dvhart@infradead.org>
-To: Azael Avalos <coproscefalo@gmail.com>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jonathan Cameron <jic23@kernel.org>
-Cc: Matthew Garrett <matthew.garrett@nebula.com>,
-	"platform-driver-x86@vger.kernel.org"
-	<platform-driver-x86@vger.kernel.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	linux-iio@vger.kernel.org
-Subject: Re: [PATCH 3/5] toshiba_acpi: Add accelerometer input polled device
-Message-ID: <20140909000429.GB5835@vmdeb7>
-References: <1409937247-2525-1-git-send-email-coproscefalo@gmail.com>
- <1409937247-2525-4-git-send-email-coproscefalo@gmail.com>
- <20140906024253.GB11389@vmdeb7>
- <CAGdLNWGhdQU3Fpud9Zgvx3AQ5Lb=WdEkJb_wWTb1hJoHxXPXpQ@mail.gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <CAGdLNWGhdQU3Fpud9Zgvx3AQ5Lb=WdEkJb_wWTb1hJoHxXPXpQ@mail.gmail.com>
+Received: from mail-pd0-f180.google.com ([209.85.192.180]:55861 "EHLO
+	mail-pd0-f180.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752562AbaIJWnz convert rfc822-to-8bit (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 10 Sep 2014 18:43:55 -0400
+Received: by mail-pd0-f180.google.com with SMTP id ft15so10093779pdb.39
+        for <linux-iio@vger.kernel.org>; Wed, 10 Sep 2014 15:43:55 -0700 (PDT)
+Date: Wed, 10 Sep 2014 15:43:50 -0700
+Subject: Re: DMA sampling and IIO
+From: John Syn <john3909@gmail.com>
+To: <linux-iio@vger.kernel.org>
+CC: Mark Brown <broonie@kernel.org>,
+	Lars-Peter Clausen <lars@metafoo.de>
+Message-ID: <D036210C.44F7D%john3909@gmail.com>
+References: <CF17C5B7.1940A%john3909@gmail.com> <52F35C5B.7080409@metafoo.de> <CF19225A.196C9%john3909@gmail.com> <52F3FB6E.3070201@metafoo.de>
+In-Reply-To: <20140207132058.GN32298@sirena.org.uk>
+Mime-version: 1.0
+Content-type: text/plain;
+	charset="ISO-8859-1"
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Fri, Sep 05, 2014 at 11:04:18PM -0600, Azael Avalos wrote:
-> Hi there,
-> 
-> 2014-09-05 20:42 GMT-06:00 Darren Hart <dvhart@infradead.org>:
-> > On Fri, Sep 05, 2014 at 11:14:05AM -0600, Azael Avalos wrote:
-> >> The accelerometer sensor is very sensitive, and having userspace
-> >> poll the sysfs position entry is not very battery friendly.
-> >>
-> >> This patch removes the sysfs entry and instead, it creates an
-> >> input polled device (joystick) for the built-in accelerometer.
-> >
-> > Hrm, while sysfs details can change across kernel versions, usually due to
-> > driver core changes, we try to keep them as consistent as possible so as not to
-> > break userspace.
-> >
-> > That said, if we are going to try and come up with a better model for
-> > representing an accelerometer, wouldn't treating it as an IIO device be the more
-> > logical approach?
-> 
-> Yes of course, but the actual accelerometer device (sensor?) is not
-> really exposed,
-> only certain "functions" it provides, and they are divided across two
-> different ACPI devices,
-> TOS620A exposes the protection, and the TOS1900 (and et. al.) only
-> exposes the axes.
+I¹m following Mark¹s suggestion and using the audio API to stream the
+samples from the ADE7878. I created a small circuit that translates the
+ADE7878 HSDC (SPI style interface) to I2S type interface so that the
+ADE7878 samples can be treated like samples from a codec. The ADE7878
+outputs 16 samples which I treat as 16 slots in a traditional audio
+channel. 
 
-As I understand it, IIO defines an interface to a device, a standard sysfs set
-of properties. I should think we could provide the appropriate callbacks even
-for a partially implemented (or a pair of) accelerometer.
+My platform is a BeagleBoneBlack (BBB) so I¹m using a McASP interface for
+I2S. 
 
-Jonathan, what are your thoughts here. Is such a "device" (ACPI accessors to
-axis and threshold) a candidate for IIO, or is this input polled device more
-appropriate?
+Next, I used the SPDIF RX codec as a template to create a ade78xx type
+codec and then modified davinci-evm.c link in the ade78xx codec.
+Everything seems to load OK and I see a /dev/snd/pcmC0D0c device. Now when
+I try to use arecord, it simply hangs and I think the problem occurs
+because the ade7854-i2c driver is in the IIO folder and my ade78xx driver
+is in the audio folder and currently there is no coordination to start and
+stop streaming, which probably causes under runs, over run errors. In a
+traditional Codec, the I2C and I2S functionality is in the same driver so
+it is easy to coordinate start streaming and stop streaming.
 
-> 
-> I see your point in breaking userspace, but given the fact that it was
-> recently introduced,
-> I didn't thought it was already "adopted", that's why I decided to
-> remove the sysfs entry.
+What is the best way to handle this problem?
 
-Looks like since 3.15 if I read the log correctly. That is fairly recent and
-this is not one of the "defined interfaces" in the sysfs documentation.
+BTW, I used this wiki as a reference:
 
-Greg, can you weigh in here - does this change count as "breaking userspace", or
-is this more inline with the scheduler knobs in /proc/sched_debug which can
-change from version to version.
+http://processors.wiki.ti.com/index.php/Sitara_Linux_SDK_Audio_DAC_Example
 
-> 
-> Then we might as well keep the sysfs entry and have the input polled
-> device as well.
 
-Let's see what Greg has to say. If he isn't bothered by the change, I won't push
-the issue.
+Regards,
 
--- 
-Darren Hart
-Intel Open Source Technology Center
+John
+
+
+
+
+On 2/7/14, 5:20 AM, "Mark Brown" <broonie@kernel.org> wrote:
+
+>On Thu, Feb 06, 2014 at 10:15:26PM +0100, Lars-Peter Clausen wrote:
+>
+>> I guess this is because it is the traditional area where I2S is used
+>>and nobody
+>> cared so far about using it somewhere else in the context of the Linux
+>>kernel.
+>> Not having to have a extra layer of abstraction in the middle between
+>>ALSA/ASoC
+>> and the I2S peripheral driver helped to keep things simple.
+>
+>Plus many of the uses actually found that the audio APIs were doing
+>useful things for them anyway - the DMA bit is reasonably useful way of
+>transferring continuous streams of data and nothing much cares if that
+>data is actually audio or not so long as the application on top doesn't
+>mind.
+
+
