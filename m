@@ -1,103 +1,104 @@
-Return-Path: <ludovic.desroches@atmel.com>
-From: Ludovic Desroches <ludovic.desroches@atmel.com>
-To: <linux-arm-kernel@lists.infradead.org>, <linux-iio@vger.kernel.org>
-CC: <jic23@kernel.org>, <alexandre.belloni@free-electrons.com>,
-	<josh.wu@atmel.com>, <nicolas.ferre@atmel.com>,
-	<maxime.ripard@free-electrons.com>, Ludovic Desroches
-	<ludovic.desroches@atmel.com>
-Subject: [RESEND PATCH] iio: adc: at91: don't use the last converted data register
-Date: Wed, 3 Sep 2014 08:34:29 +0200
-Message-ID: <1409726069-13054-1-git-send-email-ludovic.desroches@atmel.com>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:51745 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753337AbaIJTc6 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 10 Sep 2014 15:32:58 -0400
+Message-ID: <5410A766.8020005@kernel.org>
+Date: Wed, 10 Sep 2014 20:32:54 +0100
+From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain
-List-ID: <linux-iio@vger.kernel.org>
+To: Laurentiu Palcu <laurentiu.palcu@intel.com>,
+	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+	Joe Perches <joe@perches.com>
+CC: Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 3/3] iio: accel: BMC150: add support for other Bosch
+ chips
+References: <1409301488-22166-4-git-send-email-laurentiu.palcu@intel.com> <1409562698-13202-1-git-send-email-laurentiu.palcu@intel.com> <1409585783.2664.18.camel@joe-AO725> <1409586696.3318.11.camel@spandruv-hsb-test> <20140902103010.GF12606@lpalcu-linux>
+In-Reply-To: <20140902103010.GF12606@lpalcu-linux>
+Content-Type: text/plain; charset=windows-1252
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-If touchscreen mode is enabled and a conversion is requested on another
-channel, the result in the last converted data register can be a
-touchscreen relative value. Starting a conversion involves to do a
-conversion for all active channel. It starts with ADC channels and ends
-with touchscreen channels. Then if ADC_LCD register is not read quickly,
-its content may be a touchscreen conversion.
-To remove this temporal constraint, the conversion value is taken from
-the channel data register.
+On 02/09/14 11:30, Laurentiu Palcu wrote:
+> On Mon, Sep 01, 2014 at 08:51:36AM -0700, Srinivas Pandruvada wrote:
+>> On Mon, 2014-09-01 at 08:36 -0700, Joe Perches wrote:
+>>> On Mon, 2014-09-01 at 12:11 +0300, Laurentiu Palcu wrote:
+>>>> The following chips are either similar or have only the resolution
+>>>> different. Hence, change this driver to support these chips too:
+>>>>
+>>>> BMI055  - combo chip (accelerometer part is identical to BMC150's)
+>>>> BMA255  - identical to BMC150's accelerometer
+>>>> BMA222E - 8 bit resolution
+>>>> BMA250E - 10 bit resolution
+>>>> BMA280  - 14 bit resolution
+>>>>
+>>>> Additionally:
+>>>>  * add bmc150_accel_match_acpi_device() function to check that the device
+>>>>    has been enumerated through ACPI;
+>>>>  * rename bmc150_accel_acpi_gpio_probe() to bmc150_accel_gpio_probe()
+>>>>    since the ACPI matching has been moved to the new function.  Also, this
+>>>>    will allow for the GPIO matching to be done against a device tree too, not only
+>>>>    ACPI tree;
+>>> []
+>>>> diff --git a/drivers/iio/accel/bmc150-accel.c b/drivers/iio/accel/bmc150-accel.c
+>>> []
+>>>> @@ -647,12 +659,13 @@ static int bmc150_accel_read_raw(struct iio_dev *indio_dev,
+>>>>  		{
+>>>>  			int i;
+>>>>  
+>>>> -			for (i = 0; i < ARRAY_SIZE(bmc150_accel_scale_table);
+>>>> -									 ++i) {
+>>>> -				if (bmc150_accel_scale_table[i].range ==
+>>>> +			for (i = 0;
+>>>> +			     i < ARRAY_SIZE(data->chip_info->scale_table);
+>>>> +			     ++i) {
+>>>> +				if (data->chip_info->scale_table[i].range ==
+>>>>  								data->range) {
+>>>>  					*val2 =
+>>>> -					bmc150_accel_scale_table[i].scale;
+>>>> +					data->chip_info->scale_table[i].scale;
+>>>>  					return IIO_VAL_INT_PLUS_MICRO;
+>>>>  				}
+>>>>  			}
+>>>
+>>> This looks like it would read a lot better with
+>>> a temporary for data->chip_info->scale_table[i]
+>>>
+>>> so these could become:
+>>>
+>>> 			for (i = 0; i < etc; i++) {
+>>> 				type *temp = &data->chip_info->scale_table[i];
+>>> 				if (temp->range == data->range) {
+>>> 					*val2 = temp->scale;
+>>> 					return IIO_VAL_INT_PLUS_MICRO;
+>>> 				}
+> Rewrote this part in v5. Thanks for the suggestion.
+> 
+>>>
+>>> Maybe all the bmc150_ variable names could be removed.
+>>> The prefixes don't seem to serve a purpose other than
+>>> to make the code longer.
+>>>
+>>> The filename could be changed to be more generic.
+>> Then this will also require change in the CONFIG name to match. This
+>> will require all current users to change the config file once they
+>> update to new version of the driver, which they don't like to change
+>> once product config is finalized. Since the most of the chips will just
+>> differ by a number at the end and they may not be compatible to each
+>> other, finding a common name will be challenge.
+>> Instead the CONFIG description for this module should explicitly state
+>> the names of chips it is compatible to.
+> v5 contains the changed CONFIG description that includes the new added chips.
+Agreed. Don't rename the driver.  Now, if companies went with naming based on
+the interface it might be a good idea.  In reality it is a nightmare so much
+better to keep to a name that covers one part and as you say, make it clear
+in the Kconfig help what other parts are supported...
 
-Signed-off-by: Ludovic Desroches <ludovic.desroches@atmel.com>
----
-
-Sorry for the noise, there was a typo in the CC list.
-
- drivers/iio/adc/at91_adc.c |   14 +++++++++-----
- 1 file changed, 9 insertions(+), 5 deletions(-)
-
-diff --git a/drivers/iio/adc/at91_adc.c b/drivers/iio/adc/at91_adc.c
-index 3b5bacd..dde22cb 100644
---- a/drivers/iio/adc/at91_adc.c
-+++ b/drivers/iio/adc/at91_adc.c
-@@ -196,6 +196,7 @@ struct at91_adc_state {
- 	bool			done;
- 	int			irq;
- 	u16			last_value;
-+	int			chnb;
- 	struct mutex		lock;
- 	u8			num_channels;
- 	void __iomem		*reg_base;
-@@ -274,7 +275,7 @@ void handle_adc_eoc_trigger(int irq, struct iio_dev *idev)
- 		disable_irq_nosync(irq);
- 		iio_trigger_poll(idev->trig, iio_get_time_ns());
- 	} else {
--		st->last_value = at91_adc_readl(st, AT91_ADC_LCDR);
-+		st->last_value = at91_adc_readl(st, AT91_ADC_CHAN(st, st->chnb));
- 		st->done = true;
- 		wake_up_interruptible(&st->wq_data_avail);
- 	}
-@@ -348,10 +349,11 @@ static irqreturn_t at91_adc_rl_interrupt(int irq, void *private)
- 	struct iio_dev *idev = private;
- 	struct at91_adc_state *st = iio_priv(idev);
- 	u32 status = at91_adc_readl(st, st->registers->status_register);
-+	const u32 eoc_mask = (1 << st->num_channels) - 1;
- 	unsigned int reg;
- 
- 	status &= at91_adc_readl(st, AT91_ADC_IMR);
--	if (status & st->registers->drdy_mask)
-+	if (status & eoc_mask)
- 		handle_adc_eoc_trigger(irq, idev);
- 
- 	if (status & AT91RL_ADC_IER_PEN) {
-@@ -413,12 +415,13 @@ static irqreturn_t at91_adc_9x5_interrupt(int irq, void *private)
- 	struct iio_dev *idev = private;
- 	struct at91_adc_state *st = iio_priv(idev);
- 	u32 status = at91_adc_readl(st, st->registers->status_register);
-+	const u32 eoc_mask = (1 << st->num_channels) - 1;
- 	const uint32_t ts_data_irq_mask =
- 		AT91_ADC_IER_XRDY |
- 		AT91_ADC_IER_YRDY |
- 		AT91_ADC_IER_PRDY;
- 
--	if (status & st->registers->drdy_mask)
-+	if (status & eoc_mask)
- 		handle_adc_eoc_trigger(irq, idev);
- 
- 	if (status & AT91_ADC_IER_PEN) {
-@@ -689,9 +692,10 @@ static int at91_adc_read_raw(struct iio_dev *idev,
- 	case IIO_CHAN_INFO_RAW:
- 		mutex_lock(&st->lock);
- 
-+		st->chnb = chan->channel;
- 		at91_adc_writel(st, AT91_ADC_CHER,
- 				AT91_ADC_CH(chan->channel));
--		at91_adc_writel(st, AT91_ADC_IER, st->registers->drdy_mask);
-+		at91_adc_writel(st, AT91_ADC_IER, 1 << chan->channel);
- 		at91_adc_writel(st, AT91_ADC_CR, AT91_ADC_START);
- 
- 		ret = wait_event_interruptible_timeout(st->wq_data_avail,
-@@ -708,7 +712,7 @@ static int at91_adc_read_raw(struct iio_dev *idev,
- 
- 		at91_adc_writel(st, AT91_ADC_CHDR,
- 				AT91_ADC_CH(chan->channel));
--		at91_adc_writel(st, AT91_ADC_IDR, st->registers->drdy_mask);
-+		at91_adc_writel(st, AT91_ADC_IDR, 1 << chan->channel);
- 
- 		st->last_value = 0;
- 		st->done = false;
--- 
-1.7.9.5
+Jonathan
+> 
+> thanks,
+> laurentiu
+> 
