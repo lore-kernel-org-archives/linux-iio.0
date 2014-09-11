@@ -1,341 +1,566 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga11.intel.com ([192.55.52.93]:11306 "EHLO mga11.intel.com"
+Received: from mga02.intel.com ([134.134.136.20]:13717 "EHLO mga02.intel.com"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1755218AbaIHWYs (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Mon, 8 Sep 2014 18:24:48 -0400
-From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-To: IIO <linux-iio@vger.kernel.org>,
-	LKML <linux-kernel@vger.kernel.org>,
-	DEVICE TREE <devicetree@vger.kernel.org>,
-	Lee Jones <lee.jones@linaro.org>
-Cc: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
-	Aaron Lu <aaron.lu@intel.com>, Alan Cox <alan@linux.intel.com>,
-	Jean Delvare <khali@linux-fr.org>,
-	Samuel Ortiz <sameo@linux.intel.com>,
-	Liam Girdwood <lgirdwood@gmail.com>,
-	Mark Brown <broonie@kernel.org>,
-	Grant Likely <grant.likely@linaro.org>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Rob Herring <robh+dt@kernel.org>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Fugang Duan <B38611@freescale.com>,
-	Arnd Bergmann <arnd@arndb.de>,
-	Zubair Lutfullah <zubair.lutfullah@gmail.com>,
-	Sebastian Reichel <sre@debian.org>,
-	Johannes Thumshirn <johannes.thumshirn@men.de>,
-	Philippe Reynes <tremyfr@yahoo.fr>,
-	Angelo Compagnucci <angelo.compagnucci@gmail.com>,
-	Doug Anderson <dianders@chromium.org>,
-	Jacob Pan <jacob.jun.pan@linux.intel.com>
-Subject: [PATCH 4/4] iio/adc/axp288: add support for axp288 gpadc
-Date: Mon,  8 Sep 2014 15:24:06 -0700
-Message-Id: <1410215046-31751-5-git-send-email-jacob.jun.pan@linux.intel.com>
-In-Reply-To: <1410215046-31751-1-git-send-email-jacob.jun.pan@linux.intel.com>
-References: <1410215046-31751-1-git-send-email-jacob.jun.pan@linux.intel.com>
+	id S1751697AbaIKWm7 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Thu, 11 Sep 2014 18:42:59 -0400
+From: Kuppuswamy Sathyanarayanan
+	<sathyanarayanan.kuppuswamy@linux.intel.com>
+To: jic23@kernel.org
+Cc: linux-iio@vger.kernel.org, srinivas.pandruvada@linux.intel.com,
+	sathyanarayanan.kuppuswamy@linux.intel.com
+Subject: [PATCH v5 1/1] iio: jsa1212: Add JSA1212 proximity/ALS sensor
+Date: Thu, 11 Sep 2014 15:38:38 -0700
+Message-Id: <140bab9fd39b1be51d930736464ac608841ea50d.1410474814.git.sathyanarayanan.kuppuswamy@linux.intel.com>
+In-Reply-To: <cover.1410474814.git.sathyanarayanan.kuppuswamy@linux.intel.com>
+References: <cover.1410474814.git.sathyanarayanan.kuppuswamy@linux.intel.com>
+In-Reply-To: <cover.1410474814.git.sathyanarayanan.kuppuswamy@linux.intel.com>
+References: <cover.1410474814.git.sathyanarayanan.kuppuswamy@linux.intel.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Platform driver for XPowers AXP288 ADC, which is a customized PMIC for Intel
-Baytrail-CR platforms. GPADC device enumerates as one of the PMIC MFD cell
-devices. It uses IIO infrastructure to communicate with userspace and
-consumer drivers.
+This patch adds a new driver for solteam opto JSA1212 proximity and
+ambient light sensor.
 
-Usages of ADC channels include battery charging and thermal sensors.
+Basic details of the chip can be found here.
 
-Based on initial work by:
-Ramakrishna Pallala <ramakrishna.pallala@intel.com>
+http://www.solteamopto.com.tw/detail.php?ms=3&po_unit=2&pt_unit=29&p_unit=120
 
-Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
+Signed-off-by: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
+Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
 ---
- drivers/iio/adc/Kconfig        |   8 ++
- drivers/iio/adc/Makefile       |   1 +
- drivers/iio/adc/axp288_gpadc.c | 250 +++++++++++++++++++++++++++++++++++++++++
- 3 files changed, 259 insertions(+)
- create mode 100644 drivers/iio/adc/axp288_gpadc.c
+ drivers/iio/light/Kconfig   |  10 +
+ drivers/iio/light/Makefile  |   1 +
+ drivers/iio/light/jsa1212.c | 488 ++++++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 499 insertions(+)
+ create mode 100644 drivers/iio/light/jsa1212.c
 
-diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
-index 11b048a..f5c61c0 100644
---- a/drivers/iio/adc/Kconfig
-+++ b/drivers/iio/adc/Kconfig
-@@ -279,4 +279,12 @@ config XILINX_XADC
- 	  The driver can also be build as a module. If so, the module will be called
- 	  xilinx-xadc.
+diff --git a/drivers/iio/light/Kconfig b/drivers/iio/light/Kconfig
+index bf05ca5..b81d8a3 100644
+--- a/drivers/iio/light/Kconfig
++++ b/drivers/iio/light/Kconfig
+@@ -99,6 +99,16 @@ config HID_SENSOR_PROX
+ 	  To compile this driver as a module, choose M here: the
+ 	  module will be called hid-sensor-prox.
  
-+config AXP288_GPADC
-+	tristate "X-Power AXP288 GPADC driver"
-+	depends on MFD_AXP2XX
++config JSA1212
++	tristate "JSA1212 ALS and proximity sensor driver"
++	depends on I2C
 +	help
-+	  Say yes here to have support for X-Power power management IC (PMIC) ADC
-+	  device. Depending on platform configuration, this general purpose ADC can
-+	  be used for sampling sensors such as thermal resisters.
++	 Say Y here if you want to build a IIO driver for JSA1212
++	 proximity & ALS sensor device.
 +
- endmenu
-diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
-index ad81b51..8bf0104 100644
---- a/drivers/iio/adc/Makefile
-+++ b/drivers/iio/adc/Makefile
-@@ -30,3 +30,4 @@ obj-$(CONFIG_VF610_ADC) += vf610_adc.o
- obj-$(CONFIG_VIPERBOARD_ADC) += viperboard_adc.o
- xilinx-xadc-y := xilinx-xadc-core.o xilinx-xadc-events.o
- obj-$(CONFIG_XILINX_XADC) += xilinx-xadc.o
-+obj-$(CONFIG_AXP288_GPADC) += axp288_gpadc.o
-diff --git a/drivers/iio/adc/axp288_gpadc.c b/drivers/iio/adc/axp288_gpadc.c
++	 To compile this driver as a module, choose M here:
++	 the module will be called jsa1212.
++
+ config SENSORS_LM3533
+ 	tristate "LM3533 ambient light sensor"
+ 	depends on MFD_LM3533
+diff --git a/drivers/iio/light/Makefile b/drivers/iio/light/Makefile
+index 8b8c09f..23c6aa9 100644
+--- a/drivers/iio/light/Makefile
++++ b/drivers/iio/light/Makefile
+@@ -11,6 +11,7 @@ obj-$(CONFIG_GP2AP020A00F)	+= gp2ap020a00f.o
+ obj-$(CONFIG_HID_SENSOR_ALS)	+= hid-sensor-als.o
+ obj-$(CONFIG_HID_SENSOR_PROX)	+= hid-sensor-prox.o
+ obj-$(CONFIG_ISL29125)		+= isl29125.o
++obj-$(CONFIG_JSA1212)		+= jsa1212.o
+ obj-$(CONFIG_SENSORS_LM3533)	+= lm3533-als.o
+ obj-$(CONFIG_LTR501)		+= ltr501.o
+ obj-$(CONFIG_SENSORS_TSL2563)	+= tsl2563.o
+diff --git a/drivers/iio/light/jsa1212.c b/drivers/iio/light/jsa1212.c
 new file mode 100644
-index 0000000..7ca6bbf
+index 0000000..a7ee0ef
 --- /dev/null
-+++ b/drivers/iio/adc/axp288_gpadc.c
-@@ -0,0 +1,250 @@
++++ b/drivers/iio/light/jsa1212.c
+@@ -0,0 +1,488 @@
 +/*
-+ * axp288_gpadc.c - Xpower AXP288 PMIC GPADC Driver
++ * JSA1212 Ambient Light & Proximity Sensor Driver
 + *
-+ * Copyright (C) 2014 Intel Corporation
++ * Copyright (c) 2014, Intel Corporation.
 + *
-+ * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
++ * This program is free software; you can redistribute it and/or modify it
++ * under the terms and conditions of the GNU General Public License,
++ * version 2, as published by the Free Software Foundation.
 + *
-+ * This program is free software; you can redistribute it and/or modify
-+ * it under the terms of the GNU General Public License as published by
-+ * the Free Software Foundation; version 2 of the License.
++ * This program is distributed in the hope it will be useful, but WITHOUT
++ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
++ * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
++ * more details.
 + *
-+ * This program is distributed in the hope that it will be useful, but
-+ * WITHOUT ANY WARRANTY; without even the implied warranty of
-+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	See the GNU
-+ * General Public License for more details.
++ * JSA1212 I2C slave address: 0x44(ADDR tied to GND), 0x45(ADDR tied to VDD)
 + *
++ * TODO: Interrupt support, thresholds, range support.
 + */
 +
-+#include <linux/module.h>
 +#include <linux/kernel.h>
-+#include <linux/device.h>
++#include <linux/slab.h>
++#include <linux/module.h>
++#include <linux/moduleparam.h>
++#include <linux/delay.h>
++#include <linux/i2c.h>
++#include <linux/mutex.h>
++#include <linux/slab.h>
++#include <linux/acpi.h>
 +#include <linux/regmap.h>
-+#include <linux/mfd/axp2xx.h>
-+#include <linux/platform_device.h>
-+
 +#include <linux/iio/iio.h>
-+#include <linux/iio/machine.h>
-+#include <linux/iio/driver.h>
-+#define ADC_EN_MASK			0xF1
-+#define ADC_TS_PIN_GPADC                0xF2
-+#define ADC_TS_PIN_ON                   0xF3
++#include <linux/iio/sysfs.h>
 +
-+struct gpadc_info {
-+	unsigned int irq;
-+	struct device *dev;
++/* JSA1212 reg address */
++#define JSA1212_CONF_REG		0x01
++#define JSA1212_INT_REG			0x02
++#define JSA1212_PXS_LT_REG		0x03
++#define JSA1212_PXS_HT_REG		0x04
++#define JSA1212_ALS_TH1_REG		0x05
++#define JSA1212_ALS_TH2_REG		0x06
++#define JSA1212_ALS_TH3_REG		0x07
++#define JSA1212_PXS_DATA_REG		0x08
++#define JSA1212_ALS_DT1_REG		0x09
++#define JSA1212_ALS_DT2_REG		0x0A
++#define JSA1212_ALS_RNG_REG		0x0B
++#define JSA1212_MAX_REG			0x0C
++
++/* JSA1212 reg masks */
++#define JSA1212_CONF_MASK		0xFF
++#define JSA1212_INT_MASK		0xFF
++#define JSA1212_PXS_LT_MASK		0xFF
++#define JSA1212_PXS_HT_MASK		0xFF
++#define JSA1212_ALS_TH1_MASK		0xFF
++#define JSA1212_ALS_TH2_LT_MASK		0x0F
++#define JSA1212_ALS_TH2_HT_MASK		0xF0
++#define JSA1212_ALS_TH3_MASK		0xFF
++#define JSA1212_PXS_DATA_MASK		0xFF
++#define JSA1212_ALS_DATA_MASK		0x0FFF
++#define JSA1212_ALS_DT1_MASK		0xFF
++#define JSA1212_ALS_DT2_MASK		0x0F
++#define JSA1212_ALS_RNG_MASK		0x07
++#define JSA1212_REG_MASK		0xFF
++
++/* JSA1212 CONF REG bits */
++#define JSA1212_CONF_PXS_MASK		0x80
++#define JSA1212_CONF_PXS_ENABLE		0x80
++#define JSA1212_CONF_PXS_DISABLE	0x00
++#define JSA1212_CONF_ALS_MASK		0x04
++#define JSA1212_CONF_ALS_ENABLE		0x04
++#define JSA1212_CONF_ALS_DISABLE	0x00
++#define JSA1212_CONF_IRDR_MASK		0x08
++#define JSA1212_CONF_IRDR_ENABLE	0x08
++#define JSA1212_CONF_IRDR_DISABLE	0x00
++#define JSA1212_CONF_PXS_SLP_MASK	0x70
++#define JSA1212_CONF_PXS_SLP_0MS	0x70
++#define JSA1212_CONF_PXS_SLP_12MS	0x60
++#define JSA1212_CONF_PXS_SLP_50MS	0x50
++#define JSA1212_CONF_PXS_SLP_75MS	0x40
++#define JSA1212_CONF_PXS_SLP_100MS	0x30
++#define JSA1212_CONF_PXS_SLP_200MS	0x20
++#define JSA1212_CONF_PXS_SLP_400MS	0x10
++#define JSA1212_CONF_PXS_SLP_800MS	0x00
++
++/* JSA1212 INT REG bits */
++#define JSA1212_INT_CTRL_MASK		0x01
++#define JSA1212_INT_CTRL_EITHER		0x00
++#define JSA1212_INT_CTRL_BOTH		0x01
++#define JSA1212_INT_ALS_PRST_MASK	0x06
++#define JSA1212_INT_ALS_PRST_1CONV	0x00
++#define JSA1212_INT_ALS_PRST_4CONV	0x02
++#define JSA1212_INT_ALS_PRST_8CONV	0x04
++#define JSA1212_INT_ALS_PRST_16CONV	0x06
++#define JSA1212_INT_ALS_FLAG_MASK	0x08
++#define JSA1212_INT_ALS_FLAG_CLR	0x00
++#define JSA1212_INT_PXS_PRST_MASK	0x60
++#define JSA1212_INT_PXS_PRST_1CONV	0x00
++#define JSA1212_INT_PXS_PRST_4CONV	0x20
++#define JSA1212_INT_PXS_PRST_8CONV	0x40
++#define JSA1212_INT_PXS_PRST_16CONV	0x60
++#define JSA1212_INT_PXS_FLAG_MASK	0x80
++#define JSA1212_INT_PXS_FLAG_CLR	0x00
++
++/* JSA1212 ALS RNG REG bits */
++#define JSA1212_ALS_RNG_0_2048		0x00
++#define JSA1212_ALS_RNG_0_1024		0x01
++#define JSA1212_ALS_RNG_0_512		0x02
++#define JSA1212_ALS_RNG_0_256		0x03
++#define JSA1212_ALS_RNG_0_128		0x04
++
++/* JSA1212 INT threshold range */
++#define JSA1212_ALS_TH_MIN	0x0000
++#define JSA1212_ALS_TH_MAX	0x0FFF
++#define JSA1212_PXS_TH_MIN	0x00
++#define JSA1212_PXS_TH_MAX	0xFF
++
++#define JSA1212_ALS_DELAY_MS	0xC8
++#define JSA1212_PXS_DELAY_MS	0x64
++
++#define JSA1212_DRIVER_NAME	"jsa1212"
++#define JSA1212_REGMAP_NAME	"jsa1212_regmap"
++
++enum jsa1212_op_mode {
++	JSA1212_OPMODE_ALS_EN,
++	JSA1212_OPMODE_PXS_EN,
++};
++
++struct jsa1212_data {
++	struct i2c_client *client;
++	struct mutex lock;
++	u8 als_rng_idx;
++	bool als_en; /* ALS enable status */
++	bool pxs_en; /* proximity enable status */
 +	struct regmap *regmap;
 +};
 +
-+#define ADC_CHANNEL(_type, _channel, _address)	        \
-+	{								\
-+		.indexed = 1,						\
-+		.type = _type,						\
-+		.channel = _channel,					\
-+		.address = _address,					\
-+		.datasheet_name = "CH"#_channel,			\
-+		.scan_index = _channel,					\
-+		.scan_type = {						\
-+			.sign = 'u',					\
-+			.realbits = 12,					\
-+			.storagebits = 32,				\
-+			.endianness = IIO_LE,				\
-+		},							\
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),		\
-+	}
++/* ALS range idx to val mapping */
++static const int jsa1212_als_range_val[] = {2048, 1024, 512, 256, 128,
++						128, 128, 128};
 +
-+static const struct iio_chan_spec const axp288_adc_channels[] = {
-+	ADC_CHANNEL(IIO_TEMP, 0, AXP288_TS_ADC_H),
-+	ADC_CHANNEL(IIO_TEMP, 1, AXP288_PMIC_ADC_H),
-+	ADC_CHANNEL(IIO_TEMP, 2, AXP288_GP_ADC_H),
-+	ADC_CHANNEL(IIO_CURRENT, 3, AXP20X_BATT_CHRG_I_H),
-+	ADC_CHANNEL(IIO_CURRENT, 4, AXP20X_BATT_DISCHRG_I_H),
-+	ADC_CHANNEL(IIO_VOLTAGE, 5, AXP20X_BATT_V_H),
-+};
-+
-+#define ADC_MAP(_adc_channel_label,				\
-+		     _consumer_dev_name,			\
-+		     _consumer_channel)				\
-+	{							\
-+		.adc_channel_label = _adc_channel_label,	\
-+		.consumer_dev_name = _consumer_dev_name,	\
-+		.consumer_channel = _consumer_channel,		\
-+	}
-+
-+/* for consumer drivers */
-+static struct iio_map axp288_iio_default_maps[] = {
-+	ADC_MAP("TS_PIN", "axp288-batt", "axp288-batt-temp"),
-+	ADC_MAP("PMIC_TEMP", "axp288-pmic", "axp288-pmic-temp"),
-+	ADC_MAP("GPADC", "axp288-gpadc", "axp288-system-temp"),
-+	ADC_MAP("BATT_CHG_I", "axp288-chrg", "axp288-chrg-curr"),
-+	ADC_MAP("BATT_DISCHRG_I", "axp288-chrg", "axp288-chrg-d-curr"),
-+	ADC_MAP("BATT_V", "axp288-batt", "axp288-batt-volt"),
-+	{},
-+};
-+
-+static int axp288_adc_read_raw(struct iio_dev *indio_dev,
-+			struct iio_chan_spec const *chan,
-+			int *val, int *val2, long m)
++/* Enables or disables ALS function based on status */
++static int jsa1212_als_enable(struct jsa1212_data *data, u8 status)
 +{
 +	int ret;
-+	struct gpadc_info *info = iio_priv(indio_dev);
-+	unsigned int th, tl;
 +
-+	mutex_lock(&indio_dev->mlock);
++	ret = regmap_update_bits(data->regmap, JSA1212_CONF_REG,
++				JSA1212_CONF_ALS_MASK,
++				status);
++	if (ret < 0)
++		return ret;
 +
-+	/* special case for GPADC sample */
-+	if (chan->address == AXP288_GP_ADC_H)
-+		regmap_write(info->regmap, AXP288_ADC_TS_PIN_CTRL,
-+			ADC_TS_PIN_GPADC);
-+
-+	ret = regmap_read(info->regmap, chan->address, &th);
-+	if (ret) {
-+		dev_err(&indio_dev->dev, "sample raw data high failed\n");
-+		goto exit_done;
-+	}
-+
-+	ret = regmap_read(info->regmap, chan->address + 1, &tl);
-+	if (ret) {
-+		dev_err(&indio_dev->dev, "sample raw data low failed\n");
-+		goto exit_done;
-+	}
-+
-+	*val = (th << 4) + ((tl >> 4) & 0x0F);
-+	ret = IIO_VAL_INT;
-+
-+exit_done:
-+	if (chan->address == AXP288_GP_ADC_H)
-+		regmap_write(info->regmap, AXP288_ADC_TS_PIN_CTRL,
-+			ADC_TS_PIN_ON);
-+
-+	mutex_unlock(&indio_dev->mlock);
++	data->als_en = status ? true : false;
 +
 +	return ret;
 +}
 +
-+static int axp288_gpadc_enable(struct regmap *regmap, bool enable)
++/* Enables or disables PXS function based on status */
++static int jsa1212_pxs_enable(struct jsa1212_data *data, u8 status)
 +{
-+	unsigned int pin_on, adc_en;
++	int ret;
 +
-+	if (enable) {
-+		pin_on = ADC_TS_PIN_ON;
-+		adc_en = ADC_EN_MASK;
-+	} else {
-+		pin_on = ~ADC_TS_PIN_ON;
-+		adc_en = ~ADC_EN_MASK;
-+	}
-+	if (regmap_write(regmap, AXP288_ADC_TS_PIN_CTRL, pin_on))
-+		return -EIO;
++	ret = regmap_update_bits(data->regmap, JSA1212_CONF_REG,
++				JSA1212_CONF_PXS_MASK,
++				status);
++	if (ret < 0)
++		return ret;
 +
-+	return regmap_write(regmap, AXP20X_ADC_EN1, ~ADC_EN_MASK);
++	data->pxs_en = status ? true : false;
++
++	return ret;
 +}
 +
-+static const struct iio_info axp288_iio_info = {
-+	.read_raw = &axp288_adc_read_raw,
-+	.driver_module = THIS_MODULE,
++static int jsa1212_read_als_data(struct jsa1212_data *data,
++				unsigned int *val)
++{
++	int ret;
++	u8 als_data[2];
++
++	ret = jsa1212_als_enable(data, JSA1212_CONF_ALS_ENABLE);
++	if (ret < 0)
++		return ret;
++
++	/* Delay for data output */
++	msleep(JSA1212_ALS_DELAY_MS);
++
++	/* Read 12 bit data */
++	ret = regmap_bulk_read(data->regmap, JSA1212_ALS_DT1_REG, als_data, 2);
++	if (ret < 0) {
++		dev_err(&data->client->dev, "als data read err\n");
++		goto als_data_read_err;
++	}
++
++	*val = le16_to_cpup((__le16 *)als_data);
++
++als_data_read_err:
++	ret = jsa1212_als_enable(data, JSA1212_CONF_ALS_DISABLE);
++	if (ret < 0)
++		return ret;
++
++	return 0;
++}
++
++static int jsa1212_read_pxs_data(struct jsa1212_data *data,
++				unsigned int *val)
++{
++	int ret;
++	unsigned int pxs_data;
++
++	ret = jsa1212_pxs_enable(data, JSA1212_CONF_PXS_ENABLE);
++	if (ret < 0)
++		return ret;
++
++	/* Delay for data output */
++	msleep(JSA1212_PXS_DELAY_MS);
++
++	/* Read out all data */
++	ret = regmap_read(data->regmap, JSA1212_PXS_DATA_REG, &pxs_data);
++	if (ret < 0) {
++		dev_err(&data->client->dev, "pxs data read err\n");
++		goto pxs_data_read_err;
++	}
++
++	*val = pxs_data & JSA1212_PXS_DATA_MASK;
++
++pxs_data_read_err:
++	ret = jsa1212_pxs_enable(data, JSA1212_CONF_PXS_DISABLE);
++	if (ret < 0)
++		return ret;
++
++	return 0;
++}
++
++static int jsa1212_read_raw(struct iio_dev *indio_dev,
++				struct iio_chan_spec const *chan,
++				int *val, int *val2, long mask)
++{
++	int ret;
++	struct jsa1212_data *data = iio_priv(indio_dev);
++
++	switch (mask) {
++	case IIO_CHAN_INFO_RAW:
++		mutex_lock(&data->lock);
++		switch (chan->type) {
++		case IIO_LIGHT:
++			ret = jsa1212_read_als_data(data, val);
++			break;
++		case IIO_PROXIMITY:
++			ret = jsa1212_read_pxs_data(data, val);
++			break;
++		default:
++			ret = -EINVAL;
++			break;
++		}
++		ret = ret < 0 ? ret : IIO_VAL_INT;
++		mutex_unlock(&data->lock);
++		break;
++	case IIO_CHAN_INFO_SCALE:
++		switch (chan->type) {
++		case IIO_LIGHT:
++			*val = jsa1212_als_range_val[data->als_rng_idx];
++			*val2 = BIT(12); /* Max 12 bit value */
++			ret = IIO_VAL_FRACTIONAL;
++			break;
++		default:
++			ret = -EINVAL;
++			break;
++		}
++		break;
++	default:
++		ret = -EINVAL;
++		break;
++	}
++
++	return ret;
++}
++
++static const struct iio_chan_spec jsa1212_channels[] = {
++	{
++		.type = IIO_LIGHT,
++		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
++			BIT(IIO_CHAN_INFO_SCALE),
++	},
++	{
++		.type = IIO_PROXIMITY,
++		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
++	}
 +};
 +
-+static int axp288_gpadc_probe(struct platform_device *pdev)
-+{
-+	int err;
-+	struct gpadc_info *info;
-+	struct iio_dev *indio_dev;
-+	struct axp2xx_dev *axp2xx = dev_get_drvdata(pdev->dev.parent);
-+	int irq;
++static const struct iio_info jsa1212_info = {
++	.driver_module		= THIS_MODULE,
++	.read_raw		= &jsa1212_read_raw,
++};
 +
-+	indio_dev = devm_iio_device_alloc(&pdev->dev, sizeof(*info));
++static int jsa1212_chip_init(struct jsa1212_data *data)
++{
++	int ret;
++
++	ret = regmap_write(data->regmap, JSA1212_CONF_REG,
++				(JSA1212_CONF_PXS_SLP_50MS |
++				JSA1212_CONF_IRDR_ENABLE));
++	if (ret < 0)
++		return ret;
++
++	ret = regmap_write(data->regmap, JSA1212_INT_REG,
++				JSA1212_INT_ALS_PRST_4CONV);
++	if (ret < 0)
++		return ret;
++
++	data->als_rng_idx = JSA1212_ALS_RNG_0_2048;
++
++	return 0;
++}
++
++static bool jsa1212_is_volatile_reg(struct device *dev, unsigned int reg)
++{
++	switch (reg) {
++	case JSA1212_PXS_DATA_REG:
++	case JSA1212_ALS_DT1_REG:
++	case JSA1212_ALS_DT2_REG:
++	case JSA1212_INT_REG:
++		return true;
++	default:
++		return false;
++	}
++}
++
++static struct regmap_config jsa1212_regmap_config = {
++	.name =  JSA1212_REGMAP_NAME,
++	.reg_bits = 8,
++	.val_bits = 8,
++	.max_register = JSA1212_MAX_REG,
++	.cache_type = REGCACHE_RBTREE,
++	.volatile_reg = jsa1212_is_volatile_reg,
++};
++
++static int jsa1212_probe(struct i2c_client *client,
++			     const struct i2c_device_id *id)
++{
++	struct jsa1212_data *jsa1212_data;
++	struct iio_dev *indio_dev;
++	struct regmap *regmap;
++	int ret;
++
++	if (!i2c_check_functionality(client->adapter, I2C_FUNC_SMBUS_BYTE_DATA))
++		return -ENODEV;
++
++	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*jsa1212_data));
 +	if (!indio_dev)
 +		return -ENOMEM;
 +
-+	info = iio_priv(indio_dev);
-+	irq = platform_get_irq(pdev, 0);
-+	if (irq < 0) {
-+		dev_err(&pdev->dev, "no irq resource?\n");
-+		return irq;
++	regmap = devm_regmap_init_i2c(client, &jsa1212_regmap_config);
++	if (IS_ERR(regmap)) {
++		dev_err(&client->dev, "Regmap initialization failed.\n");
++		return PTR_ERR(regmap);
 +	}
-+	info->irq = irq;
-+	platform_set_drvdata(pdev, indio_dev);
-+	info->regmap = axp2xx->regmap;
-+	axp288_gpadc_enable(axp2xx->regmap, true);
 +
-+	indio_dev->dev.parent = &pdev->dev;
-+	indio_dev->name = pdev->name;
-+	indio_dev->channels = axp288_adc_channels;
-+	indio_dev->num_channels = ARRAY_SIZE(axp288_adc_channels);
-+	indio_dev->info = &axp288_iio_info;
++	jsa1212_data = iio_priv(indio_dev);
++
++	i2c_set_clientdata(client, indio_dev);
++	jsa1212_data->client = client;
++	jsa1212_data->regmap = regmap;
++
++	mutex_init(&jsa1212_data->lock);
++
++	ret = jsa1212_chip_init(jsa1212_data);
++	if (ret < 0)
++		return ret;
++
++	indio_dev->dev.parent = &client->dev;
++	indio_dev->channels = jsa1212_channels;
++	indio_dev->num_channels = ARRAY_SIZE(jsa1212_channels);
++	indio_dev->name = JSA1212_DRIVER_NAME;
 +	indio_dev->modes = INDIO_DIRECT_MODE;
-+	/* REVISIT: override default map with platform data */
-+	err = iio_map_array_register(indio_dev, axp288_iio_default_maps);
-+	if (err)
-+		goto err_disable_dev;
 +
-+	err = iio_device_register(indio_dev);
-+	if (err < 0) {
-+		dev_err(&pdev->dev, "unable to register iio device\n");
-+		goto err_array_unregister;
++	indio_dev->info = &jsa1212_info;
++
++	ret = iio_device_register(indio_dev);
++	if (ret < 0) {
++		dev_err(&client->dev, "%s: register device failed\n", __func__);
++		return ret;
 +	}
-+	return 0;
 +
-+err_array_unregister:
-+	iio_map_array_unregister(indio_dev);
-+err_disable_dev:
-+	axp288_gpadc_enable(axp2xx->regmap, false);
-+	return err;
++	return 0;
 +}
 +
-+static int axp288_gpadc_remove(struct platform_device *pdev)
++ /* power off the device */
++static int jsa1212_power_off(struct jsa1212_data *data)
 +{
-+	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
++	int ret;
++
++	mutex_lock(&data->lock);
++
++	ret = regmap_update_bits(data->regmap, JSA1212_CONF_REG,
++				JSA1212_CONF_ALS_MASK |
++				JSA1212_CONF_PXS_MASK,
++				JSA1212_CONF_ALS_DISABLE |
++				JSA1212_CONF_PXS_DISABLE);
++
++	if (ret < 0)
++		dev_err(&data->client->dev, "power off cmd failed\n");
++
++	mutex_unlock(&data->lock);
++
++	return ret;
++}
++
++
++static int jsa1212_remove(struct i2c_client *client)
++{
++	struct iio_dev *indio_dev = i2c_get_clientdata(client);
++	struct jsa1212_data *data = iio_priv(indio_dev);
 +
 +	iio_device_unregister(indio_dev);
-+	iio_map_array_unregister(indio_dev);
 +
-+	return 0;
++	return jsa1212_power_off(data);
 +}
 +
-+#if defined(CONFIG_PM_SLEEP) || defined(CONFIG_PM_RUNTIME)
-+static int axp288_gpadc_suspend(struct device *dev)
++#ifdef CONFIG_PM_SLEEP
++static int jsa1212_suspend(struct device *dev)
 +{
-+	int ret;
-+	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-+	struct gpadc_info *info = iio_priv(indio_dev);
++	struct jsa1212_data *data;
 +
-+	mutex_lock(&indio_dev->mlock);
-+	ret = axp288_gpadc_enable(info->regmap, false);
-+	mutex_unlock(&indio_dev->mlock);
++	data = iio_priv(i2c_get_clientdata(to_i2c_client(dev)));
 +
++	return jsa1212_power_off(data);
++}
++
++static int jsa1212_resume(struct device *dev)
++{
++	int ret = 0;
++	struct jsa1212_data *data;
++
++	data = iio_priv(i2c_get_clientdata(to_i2c_client(dev)));
++
++	mutex_lock(&data->lock);
++
++	if (data->als_en) {
++		ret = jsa1212_als_enable(data, JSA1212_CONF_ALS_ENABLE);
++		if (ret < 0) {
++			dev_err(dev, "als resume failed\n");
++			goto unlock_and_ret;
++		}
++	}
++
++	if (data->pxs_en) {
++		ret = jsa1212_pxs_enable(data, JSA1212_CONF_PXS_ENABLE);
++		if (ret < 0)
++			dev_err(dev, "pxs resume failed\n");
++	}
++
++unlock_and_ret:
++	mutex_unlock(&data->lock);
 +	return ret;
 +}
 +
-+static int axp288_gpadc_resume(struct device *dev)
-+{
-+	int ret;
-+	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-+	struct gpadc_info *info = iio_priv(indio_dev);
++static SIMPLE_DEV_PM_OPS(jsa1212_pm_ops, jsa1212_suspend, jsa1212_resume);
 +
-+	mutex_lock(&indio_dev->mlock);
-+	ret = axp288_gpadc_enable(info->regmap, true);
-+	mutex_unlock(&indio_dev->mlock);
-+
-+	return ret;
-+}
++#define JSA1212_PM_OPS (&jsa1212_pm_ops)
++#else
++#define JSA1212_PM_OPS NULL
 +#endif
 +
-+static UNIVERSAL_DEV_PM_OPS(axp288_gpadc_pm_ops, axp288_gpadc_suspend,
-+			axp288_gpadc_resume, NULL);
-+
-+static struct platform_driver axp288_gpadc_driver = {
-+	.probe = axp288_gpadc_probe,
-+	.remove = axp288_gpadc_remove,
-+	.driver = {
-+		.name = "axp288_adc",
-+		.owner = THIS_MODULE,
-+		.pm = &axp288_gpadc_pm_ops,
-+	},
++static const struct acpi_device_id jsa1212_acpi_match[] = {
++	{"JSA1212", 0},
++	{ },
 +};
++MODULE_DEVICE_TABLE(acpi, jsa1212_acpi_match);
 +
-+module_platform_driver(axp288_gpadc_driver);
++static const struct i2c_device_id jsa1212_id[] = {
++	{ JSA1212_DRIVER_NAME, 0 },
++	{ }
++};
++MODULE_DEVICE_TABLE(i2c, jsa1212_id);
 +
-+MODULE_AUTHOR("Jacob Pan <jacob.jun.pan@linux.intel.com>");
-+MODULE_DESCRIPTION("Dollar Cove Xpower AXP288 General Purpose ADC Driver");
-+MODULE_LICENSE("GPL");
++static struct i2c_driver jsa1212_driver = {
++	.driver = {
++		.name	= JSA1212_DRIVER_NAME,
++		.pm	= JSA1212_PM_OPS,
++		.owner	= THIS_MODULE,
++		.acpi_match_table = ACPI_PTR(jsa1212_acpi_match),
++	},
++	.probe		= jsa1212_probe,
++	.remove		= jsa1212_remove,
++	.id_table	= jsa1212_id,
++};
++module_i2c_driver(jsa1212_driver);
++
++MODULE_AUTHOR("Sathya Kuppuswamy <sathyanarayanan.kuppuswamy@linux.intel.com>");
++MODULE_DESCRIPTION("JSA1212 proximity/ambient light sensor driver");
++MODULE_LICENSE("GPL v2");
 -- 
 1.9.1
 
