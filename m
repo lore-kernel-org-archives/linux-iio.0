@@ -1,232 +1,181 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mout.gmx.net ([212.227.17.21]:49560 "EHLO mout.gmx.net"
+Received: from ns.mm-sol.com ([37.157.136.199]:33724 "EHLO extserv.mm-sol.com"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751171AbaIUM1V (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Sun, 21 Sep 2014 08:27:21 -0400
-Message-ID: <541EC41D.9050305@gmx.de>
-Date: Sun, 21 Sep 2014 14:27:09 +0200
-From: Hartmut Knaack <knaack.h@gmx.de>
-MIME-Version: 1.0
-To: David Barksdale <dbarksdale@uplogix.com>,
-	Jonathan Cameron <jic23@kernel.org>
-CC: Peter Meerwald <pmeerw@pmeerw.net>, linux-kernel@vger.kernel.org,
-	linux-iio@vger.kernel.org
-Subject: Re: [PATCH v2] IIO: add si7020 driver
-References: <1411070470-24348-1-git-send-email-dbarksdale@uplogix.com>
-In-Reply-To: <1411070470-24348-1-git-send-email-dbarksdale@uplogix.com>
-Content-Type: text/plain; charset=ISO-8859-15
+	id S1751308AbaIKPOo (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Thu, 11 Sep 2014 11:14:44 -0400
+From: Stanimir Varbanov <svarbanov@mm-sol.com>
+To: Ian Campbell <ijc+devicetree@hellion.org.uk>,
+	Pawel Moll <pawel.moll@arm.com>,
+	Rob Herring <robh+dt@kernel.org>,
+	Kumar Gala <galak@codeaurora.org>,
+	Mark Rutland <mark.rutland@arm.com>,
+	Grant Likely <grant.likely@linaro.org>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Arnd Bergmann <arnd@arndb.de>
+Cc: linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Angelo Compagnucci <angelo.compagnucci@gmail.com>,
+	Doug Anderson <dianders@chromium.org>,
+	Fugang Duan <B38611@freescale.com>,
+	Johannes Thumshirn <johannes.thumshirn@men.de>,
+	Jean Delvare <jdelvare@suse.de>,
+	Philippe Reynes <tremyfr@yahoo.fr>,
+	Lee Jones <lee.jones@linaro.org>,
+	Josh Cartwright <joshc@codeaurora.org>,
+	Stephen Boyd <sboyd@codeaurora.org>,
+	David Collins <collinsd@codeaurora.org>,
+	Stanimir Varbanov <svarbanov@mm-sol.com>,
+	"Ivan T. Ivanov" <iivanov@mm-sol.com>
+Subject: [PATCH v2 2/2] DT: iio: vadc: document dt binding
+Date: Thu, 11 Sep 2014 18:13:23 +0300
+Message-Id: <1410448403-19402-3-git-send-email-svarbanov@mm-sol.com>
+In-Reply-To: <1410448403-19402-1-git-send-email-svarbanov@mm-sol.com>
+References: <1410448403-19402-1-git-send-email-svarbanov@mm-sol.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-David Barksdale schrieb, Am 18.09.2014 22:01:
-> This patch adds support to the Industrial IO subsystem
-> for the Silicon Labs Si7013/20/21 Relative Humidity and
-> Temperature Sensors.
-> 
-> Website: http://www.silabs.com/products/sensors/humidity-sensors/Pages/si7013-20-21.aspx
-> 
-> These are i2c devices which measure relative humidity
-> and temperature and all use the same protocol. The
-> Si7013 has an additional input with programmable
-> linearization which is not supported because that's
-> complicated and I didn't need it.
-> 
-> Signed-off-by: David Barksdale <dbarksdale@uplogix.com>
-> 
-Hi,
-I'm not really convinced of the concept of treating all measurements as 16 bit data, since the datasheet states a maximum resolution of 14 bits for temperature and 12 bits for humidity. It also states, that the 2 LSBs contain an identifier rather than measured data. So, the least to do would be to mask out everything, which is not measured data (which should also include the 2 MSBs of humidity channel). Even better would be to also apply a shift and treat the data with the real resolution (especially for scale, as it would represent the sensitivity of the sensor a bit better).
-Besides that, I think it would be a good idea to initialize the sensor during probe (for example set resolution to maximum), since you can never be sure, in which state the sensor has been before.
-Also, find some small style issues inline.
-> --
-> Changes since v1:
-> * Renamed to si7020 and replaced Si701x/2x with Si7013/20/21.
-> * Removed unneeded mutex.
-> * Pre-computed floating-point constant expressions.
-> * Removed address_list and I2C_CLASS_HWMON.
-> 
-> ---
->  drivers/iio/humidity/Kconfig  |  10 +++
->  drivers/iio/humidity/Makefile |   1 +
->  drivers/iio/humidity/si7020.c | 142 ++++++++++++++++++++++++++++++++++++++++++
->  3 files changed, 153 insertions(+)
-> 
-> diff --git a/drivers/iio/humidity/Kconfig b/drivers/iio/humidity/Kconfig
-> index e116bd8..4813b79 100644
-> --- a/drivers/iio/humidity/Kconfig
-> +++ b/drivers/iio/humidity/Kconfig
-> @@ -22,4 +22,14 @@ config SI7005
->  	  To compile this driver as a module, choose M here: the module
->  	  will be called si7005.
->  
-> +config SI7020
-> +	tristate "Si7013/20/21 Relative Humidity and Temperature Sensors"
-> +	depends on I2C
-> +	help
-> +	  Say yes here to build support for the Silicon Labs Si7013/20/21
-> +	  Relative Humidity and Temperature Sensors.
-> +
-> +	  To compile this driver as a module, choose M here: the module
-> +	  will be called si7020.
-> +
->  endmenu
-> diff --git a/drivers/iio/humidity/Makefile b/drivers/iio/humidity/Makefile
-> index e3f3d94..86e2d26 100644
-> --- a/drivers/iio/humidity/Makefile
-> +++ b/drivers/iio/humidity/Makefile
-> @@ -4,3 +4,4 @@
->  
->  obj-$(CONFIG_DHT11) += dht11.o
->  obj-$(CONFIG_SI7005) += si7005.o
-> +obj-$(CONFIG_SI7020) += si7020.o
-> diff --git a/drivers/iio/humidity/si7020.c b/drivers/iio/humidity/si7020.c
-> new file mode 100644
-> index 0000000..cabdb7d
-> --- /dev/null
-> +++ b/drivers/iio/humidity/si7020.c
-> @@ -0,0 +1,142 @@
-> +/*
-> + * si7020.c - Silicon Labs Si7013/20/21 Relative Humidity and Temp Sensors
-> + * Copyright (c) 2013,2014  Uplogix, Inc.
-> + * David Barksdale <dbarksdale@uplogix.com>
-> + *
-> + * This program is free software; you can redistribute it and/or modify it
-> + * under the terms and conditions of the GNU General Public License,
-> + * version 2, as published by the Free Software Foundation.
-> + *
-> + * This program is distributed in the hope that it will be useful,
-> + * but WITHOUT ANY WARRANTY; without even the implied warranty of
-> + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-> + * GNU General Public License for more details.
-> + */
-> +
-> +/*
-> + * The Silicon Labs Si7013/20/21 Relative Humidity and Temperature Sensors
-> + * are i2c devices which have an identical programming interface for
-> + * measuring relative humidity and temperature. The Si7013 has an additional
-> + * temperature input which this driver does not support.
-> + *
-> + * Data Sheets:
-> + *   Si7013: http://www.silabs.com/Support%20Documents/TechnicalDocs/Si7013.pdf
-> + *   Si7020: http://www.silabs.com/Support%20Documents/TechnicalDocs/Si7020.pdf
-> + *   Si7021: http://www.silabs.com/Support%20Documents/TechnicalDocs/Si7021.pdf
-> + */
-> +
-> +#include <linux/i2c.h>
-> +#include <linux/module.h>
-> +#include <linux/slab.h>
-> +#include <linux/sysfs.h>
-> +
-> +#include <linux/iio/iio.h>
-> +#include <linux/iio/sysfs.h>
-> +
-> +enum {
-> +	/* Measure Relative Humidity, Hold Master Mode */
-> +	SI7020CMD_RH_HOLD	= 0xE5,
-> +	/* Measure Temperature, Hold Master Mode */
-> +	SI7020CMD_TEMP_HOLD	= 0xE3,
-> +};
-> +
-> +static int si7020_read_raw(struct iio_dev *indio_dev,
-> +			   struct iio_chan_spec const *chan, int *val,
-> +			   int *val2, long mask)
-> +{
-> +	struct i2c_client **client = iio_priv(indio_dev);
-> +	int ret;
-> +
-> +	switch (mask) {
-> +	case IIO_CHAN_INFO_RAW:
-> +		ret = i2c_smbus_read_word_data(*client,
-> +					       chan->type == IIO_TEMP ?
-> +					       SI7020CMD_TEMP_HOLD :
-> +					       SI7020CMD_RH_HOLD);
-> +		if (ret < 0)
-> +			return ret;
-> +		*val = ret;
-> +		return IIO_VAL_INT;
-> +	case IIO_CHAN_INFO_SCALE:
-> +		if (chan->type == IIO_TEMP)
-> +			*val = 175720; /* = 175.72 * 1000 */
-> +		else
-> +			*val = 125 * 1000;
-> +		*val2 = 65536;
-> +		return IIO_VAL_FRACTIONAL;
-> +	case IIO_CHAN_INFO_OFFSET:
-> +		if (chan->type == IIO_TEMP)
-> +			*val = -17473; /* = -46.85 * 65536 / 175.72 */
-> +		else
-> +			*val = -3146; /* = -6 * 65536 / 125 */
-> +		return IIO_VAL_INT;
-> +	default:
-> +		break;
-> +	}
-> +
-> +	return -EINVAL;
-> +}
-> +
-> +static const struct iio_chan_spec si7020_channels[] = {
-> +	{
-> +		.type = IIO_HUMIDITYRELATIVE,
-> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
-> +			BIT(IIO_CHAN_INFO_SCALE) | BIT(IIO_CHAN_INFO_OFFSET),
-> +	},
-> +	{
-> +		.type = IIO_TEMP,
-> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
-> +			BIT(IIO_CHAN_INFO_SCALE) | BIT(IIO_CHAN_INFO_OFFSET),
-> +	}
-> +};
-> +
-> +static const struct iio_info si7020_info = {
-> +	.read_raw = si7020_read_raw,
-> +	.driver_module = THIS_MODULE,
-> +};
-> +
-> +static int si7020_probe(struct i2c_client *client,
-> +			const struct i2c_device_id *id)
-> +{
-> +	struct iio_dev *dev;
-Better name it indio_dev.
-> +	struct i2c_client **data;
-> +
-> +	if (!i2c_check_functionality(client->adapter, I2C_FUNC_SMBUS_WORD_DATA))
-> +		return -ENODEV;
-> +
-> +	dev = devm_iio_device_alloc(&client->dev, sizeof(*client));
-> +	if (!dev)
-> +		return -ENOMEM;
-> +
-> +	data = iio_priv(dev);
-> +	*data = client;
-> +	i2c_set_clientdata(client, dev);
-> +
-> +	dev->dev.parent = &client->dev;
-> +	dev->name = dev_name(&client->dev);
-> +	dev->modes = INDIO_DIRECT_MODE;
-> +	dev->info = &si7020_info;
-> +	dev->channels = si7020_channels;
-> +	dev->num_channels = ARRAY_SIZE(si7020_channels);
-> +
-> +	return devm_iio_device_register(&client->dev, dev);
-> +}
-> +
-> +static const struct i2c_device_id si7020_id[] = {
-> +	{ "si7020", 0 },
-> +	{ }
-> +};
-> +MODULE_DEVICE_TABLE(i2c, si7020_id);
-> +
-> +static struct i2c_driver si7020_driver = {
-> +	.driver.name	= "si7020",
-> +	.probe		= si7020_probe,
-> +	.id_table	= si7020_id,
-> +};
-> +
-> +module_i2c_driver(si7020_driver);
-> +MODULE_DESCRIPTION("Silicon Labs Si7013/20/21 "
-Trailing whitespace in string.
-> +		   "Relative Humidity and Temperature Sensors");
-> +MODULE_AUTHOR("David Barksdale <dbarksdale@uplogix.com>");
-> +MODULE_LICENSE("GPL");
-> +
-> 
+Document DT binding for Qualcomm SPMI PMIC voltage ADC
+driver.
+
+Signed-off-by: Stanimir Varbanov <svarbanov@mm-sol.com>
+Signed-off-by: Ivan T. Ivanov <iivanov@mm-sol.com>
+---
+ .../devicetree/bindings/iio/adc/qcom,spmi-vadc.txt |  123 ++++++++++++++++++++
+ 1 files changed, 123 insertions(+), 0 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/iio/adc/qcom,spmi-vadc.txt
+
+diff --git a/Documentation/devicetree/bindings/iio/adc/qcom,spmi-vadc.txt b/Documentation/devicetree/bindings/iio/adc/qcom,spmi-vadc.txt
+new file mode 100644
+index 0000000..5abb491
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/adc/qcom,spmi-vadc.txt
+@@ -0,0 +1,123 @@
++Qualcomm's SPMI PMIC voltage ADC
++
++SPMI PMIC voltage ADC (VADC) provides interface to clients to read
++voltage. A 15 bit ADC is used for voltage measurements. There are multiple
++peripherals to the VADC and the scope of the driver is to provide interface
++for the USR peripheral of the VADC.
++
++VADC node:
++
++- compatible:
++    Usage: required
++    Value type: <string>
++    Definition: Should contain "qcom,spmi-vadc".
++
++- reg:
++    Usage: required
++    Value type: <u32>
++    Definition: Base address in the SPMI PMIC register map.
++
++- address-cells:
++    Usage: required
++    Value type: <u32>
++    Definition: Must be one.
++
++- size-cells:
++    Usage: required
++    Value type: <u32>
++    Definition: Must be zero.
++
++- interrupts:
++    Usage: required
++    Value type: <prop-encoded-array>
++    Definition: End of convertion interrupt number.
++
++- qcom,poll-eoc:
++    Usage: optional
++    Value type: <empty>
++    Definition: Use polling instead of interrupt for end of conversion
++            completion.
++
++Channel node properties:
++
++- reg:
++    Usage: required
++    Value type: <u32>
++    Definition: AMUX channel number.
++            See include/dt-bindings/iio/qcom,spmi-pmic-vadc.h
++
++- qcom,decimation:
++    Usage: optional
++    Value type: <u32>
++    Definition: Sampling rate to use for the individual channel measurement.
++            Quicker measurements can be made by reducing decimation ratio.
++            Valid values are 512, 1024, 2048, 4096.
++            If property is not found, default value of 512 will be used.
++
++- qcom,pre-scaling:
++    Usage: optional
++    Value type: <u32 array>
++    Definition: Used for scaling the channel input signal before the signal is
++            fed to VADC. The configuration for this node is to know the
++            pre-determined ratio and use it for post scaling. Select one from
++            the following options.
++            <1 1>, <1 3>, <1 4>, <1 6>, <1 20>, <1 8>, <10 81>, <1 10>
++            If property is not found default value depending of chip will be used.
++
++- qcom,ratiometric:
++    Usage: optional
++    Value type: <empty>
++    Definition: Channel calibration type. If this property is specified
++            VADC will use the VDD reference(1.8V) and GND for channel
++            calibration. If property is not found, channel will be
++            calibrated with 625mV and 1.25V reference channels.
++
++- qcom,hw-settle-time:
++    Usage: optional
++    Value type: <u32>
++    Definition: Time between AMUX getting configured and the ADC starting
++            conversion. Delay = 100us * (value) for value < 11, and
++            2ms * (value - 10) otherwise.
++            Valid values are: 0, 100, 200, 300, 400, 500, 600, 700, 800,
++            900 us and 1, 2, 4, 6, 8, 10 ms
++            If property is not found, channel will use 0us.
++
++- qcom,avg-samples:
++    Usage: optional
++    Value type: <u32>
++    Definition: Number of samples to be used for measurement.
++            Fast averaging provides the option to obtain a single measurement
++            from the ADC that is an average of multiple samples. The value
++            selected is 2^(value).
++            Valid values are: 1, 2, 4, 8, 16, 32, 64, 128, 256, 512
++            If property is not found, 1 sample will be used.
++
++NOTE: At least one channel node is required.
++
++Example:
++	/* VADC node */
++	pmic_vadc: vadc@3100 {
++		compatible = "qcom,spmi-vadc";
++		reg = <0x3100 0x100>;
++		interrupts = <0x0 0x31 0x0 IRQ_TYPE_EDGE_RISING>;
++		#address-cells = <1>;
++		#size-cells = <0>;
++		#io-channel-cells = <1>;
++		io-channel-ranges;
++
++		/* Channel node */
++		usb_id_nopull {
++			reg = <VADC_LR_MUX10_USB_ID>;
++			qcom,decimation = <512>;
++			qcom,ratiometric;
++			qcom,hw-settle-time = <200>;
++			qcom,avg-samples = <1>;
++			qcom,pre-scaling = <1 3>;
++		};
++	};
++
++	/* IIO client node */
++	usb {
++		io-channels = <&pmic_vadc VADC_LR_MUX10_USB_ID>;
++		io-channel-names = "vadc";
++	};
+-- 
+1.7.0.4
 
