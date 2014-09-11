@@ -1,252 +1,565 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from relay05.mycloudmailbox.com ([199.244.76.203]:50071 "EHLO
-	relay05.mycloudmailbox.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1750968AbaI2S3H (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 29 Sep 2014 14:29:07 -0400
-From: David Barksdale <dbarksdale@uplogix.com>
-To: Jonathan Cameron <jic23@kernel.org>
-CC: David Barksdale <dbarksdale@uplogix.com>,
-	<linux-kernel@vger.kernel.org>, <linux-iio@vger.kernel.org>
-Subject: [PATCH v4] IIO: add si7020 driver
-Date: Mon, 29 Sep 2014 13:28:55 -0500
-Message-ID: <1412015335-19648-1-git-send-email-dbarksdale@uplogix.com>
-MIME-Version: 1.0
-Content-Type: text/plain
+Received: from mga02.intel.com ([134.134.136.20]:52498 "EHLO mga02.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1752642AbaIKANI (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Wed, 10 Sep 2014 20:13:08 -0400
+From: Kuppuswamy Sathyanarayanan
+	<sathyanarayanan.kuppuswamy@linux.intel.com>
+To: jic23@kernel.org
+Cc: linux-iio@vger.kernel.org, srinivas.pandruvada@linux.intel.com,
+	sathyanarayanan.kuppuswamy@linux.intel.com
+Subject: [PATCH v4 1/1] iio: jsa1212: Add JSA1212 proximity/ALS sensor
+Date: Wed, 10 Sep 2014 17:09:18 -0700
+Message-Id: <6e2db76ca3688c86a36a5adcca0b89ecf436cebf.1410393352.git.sathyanarayanan.kuppuswamy@linux.intel.com>
+In-Reply-To: <cover.1410393352.git.sathyanarayanan.kuppuswamy@linux.intel.com>
+References: <cover.1410393352.git.sathyanarayanan.kuppuswamy@linux.intel.com>
+In-Reply-To: <cover.1410393352.git.sathyanarayanan.kuppuswamy@linux.intel.com>
+References: <cover.1410393352.git.sathyanarayanan.kuppuswamy@linux.intel.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-This patch adds support to the Industrial IO subsystem
-for the Silicon Labs Si7013/20/21 Relative Humidity and
-Temperature Sensors.
+This patch adds a new driver for solteam opto JSA1212 proximity and
+ambient light sensor.
 
-Website: http://www.silabs.com/products/sensors/humidity-sensors/Pages/si7013-20-21.aspx
+Basic details of the chip can be found here.
 
-These are i2c devices which measure relative humidity
-and temperature and all use the same protocol. The
-Si7013 has an additional input with programmable
-linearization which is not supported because that's
-complicated and I didn't need it.
+http://www.solteamopto.com.tw/detail.php?ms=3&po_unit=2&pt_unit=29&p_unit=120
 
-Signed-off-by: David Barksdale <dbarksdale@uplogix.com>
-
---
-Changes since v1:
-* Renamed to si7020 and replaced Si701x/2x with Si7013/20/21.
-* Removed unneeded mutex.
-* Pre-computed floating-point constant expressions.
-* Removed address_list and I2C_CLASS_HWMON.
-
-Changes since v2:
-* Return correct raw sensor values.
-* Rename dev variable to indio_dev.
-* Issue a software reset command during probe.
-* Un-broke string literal.
-
-Changes since v3:
-* enum changed to #define
-
+Signed-off-by: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
+Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
 ---
- drivers/iio/humidity/Kconfig  |  10 +++
- drivers/iio/humidity/Makefile |   1 +
- drivers/iio/humidity/si7020.c | 163 ++++++++++++++++++++++++++++++++++++++++++
- 3 files changed, 174 insertions(+)
+ drivers/iio/light/Kconfig   |  10 +
+ drivers/iio/light/Makefile  |   1 +
+ drivers/iio/light/jsa1212.c | 487 ++++++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 498 insertions(+)
+ create mode 100644 drivers/iio/light/jsa1212.c
 
-diff --git a/drivers/iio/humidity/Kconfig b/drivers/iio/humidity/Kconfig
-index e116bd8..4813b79 100644
---- a/drivers/iio/humidity/Kconfig
-+++ b/drivers/iio/humidity/Kconfig
-@@ -22,4 +22,14 @@ config SI7005
- 	  To compile this driver as a module, choose M here: the module
- 	  will be called si7005.
+diff --git a/drivers/iio/light/Kconfig b/drivers/iio/light/Kconfig
+index bf05ca5..b81d8a3 100644
+--- a/drivers/iio/light/Kconfig
++++ b/drivers/iio/light/Kconfig
+@@ -99,6 +99,16 @@ config HID_SENSOR_PROX
+ 	  To compile this driver as a module, choose M here: the
+ 	  module will be called hid-sensor-prox.
  
-+config SI7020
-+	tristate "Si7013/20/21 Relative Humidity and Temperature Sensors"
++config JSA1212
++	tristate "JSA1212 ALS and proximity sensor driver"
 +	depends on I2C
 +	help
-+	  Say yes here to build support for the Silicon Labs Si7013/20/21
-+	  Relative Humidity and Temperature Sensors.
++	 Say Y here if you want to build a IIO driver for JSA1212
++	 proximity & ALS sensor device.
 +
-+	  To compile this driver as a module, choose M here: the module
-+	  will be called si7020.
++	 To compile this driver as a module, choose M here:
++	 the module will be called jsa1212.
 +
- endmenu
-diff --git a/drivers/iio/humidity/Makefile b/drivers/iio/humidity/Makefile
-index e3f3d94..86e2d26 100644
---- a/drivers/iio/humidity/Makefile
-+++ b/drivers/iio/humidity/Makefile
-@@ -4,3 +4,4 @@
- 
- obj-$(CONFIG_DHT11) += dht11.o
- obj-$(CONFIG_SI7005) += si7005.o
-+obj-$(CONFIG_SI7020) += si7020.o
-diff --git a/drivers/iio/humidity/si7020.c b/drivers/iio/humidity/si7020.c
+ config SENSORS_LM3533
+ 	tristate "LM3533 ambient light sensor"
+ 	depends on MFD_LM3533
+diff --git a/drivers/iio/light/Makefile b/drivers/iio/light/Makefile
+index 8b8c09f..23c6aa9 100644
+--- a/drivers/iio/light/Makefile
++++ b/drivers/iio/light/Makefile
+@@ -11,6 +11,7 @@ obj-$(CONFIG_GP2AP020A00F)	+= gp2ap020a00f.o
+ obj-$(CONFIG_HID_SENSOR_ALS)	+= hid-sensor-als.o
+ obj-$(CONFIG_HID_SENSOR_PROX)	+= hid-sensor-prox.o
+ obj-$(CONFIG_ISL29125)		+= isl29125.o
++obj-$(CONFIG_JSA1212)		+= jsa1212.o
+ obj-$(CONFIG_SENSORS_LM3533)	+= lm3533-als.o
+ obj-$(CONFIG_LTR501)		+= ltr501.o
+ obj-$(CONFIG_SENSORS_TSL2563)	+= tsl2563.o
+diff --git a/drivers/iio/light/jsa1212.c b/drivers/iio/light/jsa1212.c
 new file mode 100644
-index 0000000..db60ab7
+index 0000000..9974bac
 --- /dev/null
-+++ b/drivers/iio/humidity/si7020.c
-@@ -0,0 +1,163 @@
++++ b/drivers/iio/light/jsa1212.c
+@@ -0,0 +1,487 @@
 +/*
-+ * si7020.c - Silicon Labs Si7013/20/21 Relative Humidity and Temp Sensors
-+ * Copyright (c) 2013,2014  Uplogix, Inc.
-+ * David Barksdale <dbarksdale@uplogix.com>
++ * JSA1212 Ambient Light & Proximity Sensor Driver
++ *
++ * Copyright (c) 2014, Intel Corporation.
 + *
 + * This program is free software; you can redistribute it and/or modify it
 + * under the terms and conditions of the GNU General Public License,
 + * version 2, as published by the Free Software Foundation.
 + *
-+ * This program is distributed in the hope that it will be useful,
-+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
-+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-+ * GNU General Public License for more details.
++ * This program is distributed in the hope it will be useful, but WITHOUT
++ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
++ * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
++ * more details.
 + */
 +
-+/*
-+ * The Silicon Labs Si7013/20/21 Relative Humidity and Temperature Sensors
-+ * are i2c devices which have an identical programming interface for
-+ * measuring relative humidity and temperature. The Si7013 has an additional
-+ * temperature input which this driver does not support.
-+ *
-+ * Data Sheets:
-+ *   Si7013: http://www.silabs.com/Support%20Documents/TechnicalDocs/Si7013.pdf
-+ *   Si7020: http://www.silabs.com/Support%20Documents/TechnicalDocs/Si7020.pdf
-+ *   Si7021: http://www.silabs.com/Support%20Documents/TechnicalDocs/Si7021.pdf
-+ */
-+
++#include <linux/kernel.h>
++#include <linux/slab.h>
++#include <linux/module.h>
++#include <linux/moduleparam.h>
 +#include <linux/delay.h>
 +#include <linux/i2c.h>
-+#include <linux/module.h>
++#include <linux/interrupt.h>
++#include <linux/irq.h>
++#include <linux/mutex.h>
 +#include <linux/slab.h>
-+#include <linux/sysfs.h>
-+
++#include <linux/acpi.h>
++#include <linux/regmap.h>
 +#include <linux/iio/iio.h>
 +#include <linux/iio/sysfs.h>
 +
-+/* Measure Relative Humidity, Hold Master Mode */
-+#define SI7020CMD_RH_HOLD	0xE5
-+/* Measure Temperature, Hold Master Mode */
-+#define SI7020CMD_TEMP_HOLD	0xE3
-+/* Software Reset */
-+#define SI7020CMD_RESET		0xFE
++/* JSA1212 reg address */
++#define JSA1212_CONF_REG		0x01
++#define JSA1212_INT_REG			0x02
++#define JSA1212_PXS_LT_REG		0x03
++#define JSA1212_PXS_HT_REG		0x04
++#define JSA1212_ALS_TH1_REG		0x05
++#define JSA1212_ALS_TH2_REG		0x06
++#define JSA1212_ALS_TH3_REG		0x07
++#define JSA1212_PXS_DATA_REG		0x08
++#define JSA1212_ALS_DT1_REG		0x09
++#define JSA1212_ALS_DT2_REG		0x0A
++#define JSA1212_ALS_RNG_REG		0x0B
++#define JSA1212_MAX_REG			0x0C
 +
-+static int si7020_read_raw(struct iio_dev *indio_dev,
-+			   struct iio_chan_spec const *chan, int *val,
-+			   int *val2, long mask)
++/* JSA1212 reg masks */
++#define JSA1212_CONF_MASK		0xFF
++#define JSA1212_INT_MASK		0xFF
++#define JSA1212_PXS_LT_MASK		0xFF
++#define JSA1212_PXS_HT_MASK		0xFF
++#define JSA1212_ALS_TH1_MASK		0xFF
++#define JSA1212_ALS_TH2_LT_MASK		0x0F
++#define JSA1212_ALS_TH2_HT_MASK		0xF0
++#define JSA1212_ALS_TH3_MASK		0xFF
++#define JSA1212_PXS_DATA_MASK		0xFF
++#define JSA1212_ALS_DATA_MASK		0xFFF
++#define JSA1212_ALS_DT1_MASK		0xFF
++#define JSA1212_ALS_DT2_MASK		0x0F
++#define JSA1212_ALS_RNG_MASK		0x07
++#define JSA1212_REG_MASK		0xFF
++
++/* JSA1212 CONF REG bits */
++#define JSA1212_CONF_PXS_MASK		0x80
++#define JSA1212_CONF_PXS_ENABLE		0x80
++#define JSA1212_CONF_PXS_DISABLE	0x00
++#define JSA1212_CONF_ALS_MASK		0x04
++#define JSA1212_CONF_ALS_ENABLE		0x04
++#define JSA1212_CONF_ALS_DISABLE	0x00
++#define JSA1212_CONF_IRDR_MASK		0x08
++#define JSA1212_CONF_IRDR_ENABLE	0x08
++#define JSA1212_CONF_IRDR_DISABLE	0x00
++#define JSA1212_CONF_PXS_SLP_MASK	0x70
++#define JSA1212_CONF_PXS_SLP_0MS	0x70
++#define JSA1212_CONF_PXS_SLP_12MS	0x60
++#define JSA1212_CONF_PXS_SLP_50MS	0x50
++#define JSA1212_CONF_PXS_SLP_75MS	0x40
++#define JSA1212_CONF_PXS_SLP_100MS	0x30
++#define JSA1212_CONF_PXS_SLP_200MS	0x20
++#define JSA1212_CONF_PXS_SLP_400MS	0x10
++#define JSA1212_CONF_PXS_SLP_800MS	0x00
++
++/* JSA1212 INT REG bits */
++#define JSA1212_INT_CTRL_MASK		0x01
++#define JSA1212_INT_CTRL_EITHER		0x00
++#define JSA1212_INT_CTRL_BOTH		0x01
++#define JSA1212_INT_ALS_PRST_MASK	0x06
++#define JSA1212_INT_ALS_PRST_1CONV	0x00
++#define JSA1212_INT_ALS_PRST_4CONV	0x02
++#define JSA1212_INT_ALS_PRST_8CONV	0x04
++#define JSA1212_INT_ALS_PRST_16CONV	0x06
++#define JSA1212_INT_ALS_FLAG_MASK	0x08
++#define JSA1212_INT_ALS_FLAG_CLR	0x00
++#define JSA1212_INT_PXS_PRST_MASK	0x60
++#define JSA1212_INT_PXS_PRST_1CONV	0x00
++#define JSA1212_INT_PXS_PRST_4CONV	0x20
++#define JSA1212_INT_PXS_PRST_8CONV	0x40
++#define JSA1212_INT_PXS_PRST_16CONV	0x60
++#define JSA1212_INT_PXS_FLAG_MASK	0x80
++#define JSA1212_INT_PXS_FLAG_CLR	0x00
++
++/* JSA1212 ALS RNG REG bits */
++#define JSA1212_ALS_RNG_0_2048		0x00
++#define JSA1212_ALS_RNG_0_1024		0x01
++#define JSA1212_ALS_RNG_0_512		0x02
++#define JSA1212_ALS_RNG_0_256		0x03
++#define JSA1212_ALS_RNG_0_128		0x04
++
++/* JSA1212 INT threshold range */
++#define JSA1212_ALS_TH_MIN	0x0000
++#define JSA1212_ALS_TH_MAX	0x0FFF
++#define JSA1212_PXS_TH_MIN	0x00
++#define JSA1212_PXS_TH_MAX	0xFF
++
++#define JSA1212_ALS_DELAY_MS	0xC8
++#define JSA1212_PXS_DELAY_MS	0x64
++
++#define JSA1212_DRIVER_NAME	"jsa1212"
++#define JSA1212_REGMAP_NAME	"jsa1212_regmap"
++
++enum jsa1212_op_mode {
++	JSA1212_OPMODE_ALS_EN,
++	JSA1212_OPMODE_PXS_EN,
++};
++
++struct jsa1212_data {
++	struct i2c_client *client;
++	struct mutex lock;
++	u8 als_rng_idx;
++	bool als_en; /* ALS enable status */
++	bool pxs_en; /* proximity enable status */
++	struct regmap *regmap;
++};
++
++/* ALS range idx to val mapping */
++static const int jsa1212_als_range_val[] = {2048, 1024, 512, 256, 128,
++						128, 128, 128};
++
++/* Enables or disables ALS function based on status */
++static int jsa1212_als_enable(struct jsa1212_data *data, u8 status)
 +{
-+	struct i2c_client **client = iio_priv(indio_dev);
 +	int ret;
++
++	ret = regmap_update_bits(data->regmap, JSA1212_CONF_REG,
++				JSA1212_CONF_ALS_MASK,
++				status);
++	if (ret < 0)
++		return ret;
++
++	data->als_en = status ? true : false;
++
++	return ret;
++}
++
++/* Enables or disables PXS function based on status */
++static int jsa1212_pxs_enable(struct jsa1212_data *data, u8 status)
++{
++	int ret;
++
++	ret = regmap_update_bits(data->regmap, JSA1212_CONF_REG,
++				JSA1212_CONF_PXS_MASK,
++				status);
++	if (ret < 0)
++		return ret;
++
++	data->pxs_en = status ? true : false;
++
++	return ret;
++}
++
++static int jsa1212_read_als_data(struct jsa1212_data *data,
++				unsigned int *val)
++{
++	int ret;
++	u8 als_data[2];
++
++	ret = jsa1212_als_enable(data, JSA1212_CONF_ALS_ENABLE);
++	if (ret < 0)
++		return ret;
++
++	/* Delay for data output */
++	msleep(JSA1212_ALS_DELAY_MS);
++
++	/* Read 12 bit data */
++	ret = regmap_bulk_read(data->regmap, JSA1212_ALS_DT1_REG, als_data, 2);
++	if (ret < 0) {
++		dev_err(&data->client->dev, "als data read err\n");
++		return ret;
++	}
++
++	*val = le16_to_cpup((__le16 *)als_data);
++
++	ret = jsa1212_als_enable(data, JSA1212_CONF_ALS_DISABLE);
++	if (ret < 0)
++		return ret;
++
++	return 0;
++}
++
++static int jsa1212_read_pxs_data(struct jsa1212_data *data,
++				unsigned int *val)
++{
++	int ret;
++	unsigned int pxs_data;
++
++	ret = jsa1212_pxs_enable(data, JSA1212_CONF_PXS_ENABLE);
++	if (ret < 0)
++		return ret;
++
++	/* Delay for data output */
++	msleep(JSA1212_PXS_DELAY_MS);
++
++	/* Read out all data */
++	ret = regmap_read(data->regmap, JSA1212_PXS_DATA_REG, &pxs_data);
++	if (ret < 0) {
++		dev_err(&data->client->dev, "pxs data read err\n");
++		return ret;
++	}
++
++	*val = pxs_data & JSA1212_PXS_DATA_MASK;
++
++	ret = jsa1212_pxs_enable(data, JSA1212_CONF_PXS_DISABLE);
++	if (ret < 0)
++		return ret;
++
++	return 0;
++}
++
++static int jsa1212_read_raw(struct iio_dev *indio_dev,
++				struct iio_chan_spec const *chan,
++				int *val, int *val2, long mask)
++{
++	int ret;
++	struct jsa1212_data *data = iio_priv(indio_dev);
 +
 +	switch (mask) {
 +	case IIO_CHAN_INFO_RAW:
-+		ret = i2c_smbus_read_word_data(*client,
-+					       chan->type == IIO_TEMP ?
-+					       SI7020CMD_TEMP_HOLD :
-+					       SI7020CMD_RH_HOLD);
-+		if (ret < 0)
-+			return ret;
-+		if (chan->type == IIO_TEMP)
-+			*val = ret >> 2;
-+		else
-+			*val = (ret & 0x3FFF) >> 2;
-+		return IIO_VAL_INT;
++		mutex_lock(&data->lock);
++		switch (chan->type) {
++		case IIO_LIGHT:
++			ret = jsa1212_read_als_data(data, val);
++			break;
++		case IIO_PROXIMITY:
++			ret = jsa1212_read_pxs_data(data, val);
++			break;
++		default:
++			ret = -EINVAL;
++			break;
++		}
++		ret = ret < 0 ? ret : IIO_VAL_INT;
++		mutex_unlock(&data->lock);
++		break;
 +	case IIO_CHAN_INFO_SCALE:
-+		if (chan->type == IIO_TEMP)
-+			*val = 175720; /* = 175.72 * 1000 */
-+		else
-+			*val = 125 * 1000;
-+		*val2 = 65536 >> 2;
-+		return IIO_VAL_FRACTIONAL;
-+	case IIO_CHAN_INFO_OFFSET:
-+		/* Since iio_convert_raw_to_processed_unlocked assumes offset
-+		 * is an integer we have to round these values and lose
-+		 * accuracy.
-+		 * Relative humidity will be 0.0032959% too high and
-+		 * temperature will be 0.00277344 degrees too high.
-+		 * This is no big deal because it's within the accuracy of the
-+		 * sensor.
-+		 */
-+		if (chan->type == IIO_TEMP)
-+			*val = -4368; /* = -46.85 * (65536 >> 2) / 175.72 */
-+		else
-+			*val = -786; /* = -6 * (65536 >> 2) / 125 */
-+		return IIO_VAL_INT;
++		switch (chan->type) {
++		case IIO_LIGHT:
++			*val = jsa1212_als_range_val[data->als_rng_idx];
++			*val2 = BIT(12); /* Max 12 bit value */
++			ret = IIO_VAL_FRACTIONAL;
++			break;
++		default:
++			ret = -EINVAL;
++			break;
++		}
++		break;
 +	default:
++		ret = -EINVAL;
 +		break;
 +	}
 +
-+	return -EINVAL;
++	return ret;
 +}
 +
-+static const struct iio_chan_spec si7020_channels[] = {
++static const struct iio_chan_spec jsa1212_channels[] = {
 +	{
-+		.type = IIO_HUMIDITYRELATIVE,
++		.type = IIO_LIGHT,
 +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
-+			BIT(IIO_CHAN_INFO_SCALE) | BIT(IIO_CHAN_INFO_OFFSET),
++			BIT(IIO_CHAN_INFO_SCALE),
 +	},
 +	{
-+		.type = IIO_TEMP,
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
-+			BIT(IIO_CHAN_INFO_SCALE) | BIT(IIO_CHAN_INFO_OFFSET),
++		.type = IIO_PROXIMITY,
++		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
 +	}
 +};
 +
-+static const struct iio_info si7020_info = {
-+	.read_raw = si7020_read_raw,
-+	.driver_module = THIS_MODULE,
++static const struct iio_info jsa1212_info = {
++	.driver_module		= THIS_MODULE,
++	.read_raw		= &jsa1212_read_raw,
 +};
 +
-+static int si7020_probe(struct i2c_client *client,
-+			const struct i2c_device_id *id)
++static int jsa1212_chip_init(struct jsa1212_data *data)
 +{
-+	struct iio_dev *indio_dev;
-+	struct i2c_client **data;
 +	int ret;
 +
-+	if (!i2c_check_functionality(client->adapter,
-+				     I2C_FUNC_SMBUS_WRITE_BYTE |
-+				     I2C_FUNC_SMBUS_READ_WORD_DATA))
-+		return -ENODEV;
-+
-+	/* Reset device, loads default settings. */
-+	ret = i2c_smbus_write_byte(client, SI7020CMD_RESET);
++	ret = regmap_write(data->regmap, JSA1212_CONF_REG,
++				(JSA1212_CONF_PXS_SLP_50MS |
++				JSA1212_CONF_IRDR_ENABLE));
 +	if (ret < 0)
 +		return ret;
-+	/* Wait the maximum power-up time after software reset. */
-+	msleep(15);
 +
-+	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*client));
++	ret = regmap_write(data->regmap, JSA1212_INT_REG,
++				JSA1212_INT_ALS_PRST_4CONV);
++	if (ret < 0)
++		return ret;
++
++	data->als_rng_idx = JSA1212_ALS_RNG_0_2048;
++
++	return 0;
++}
++
++static bool jsa1212_is_volatile_reg(struct device *dev, unsigned int reg)
++{
++	switch (reg) {
++	case JSA1212_PXS_DATA_REG:
++	case JSA1212_ALS_DT1_REG:
++	case JSA1212_ALS_DT2_REG:
++	case JSA1212_INT_REG:
++		return true;
++	default:
++		return false;
++	}
++}
++
++static struct regmap_config jsa1212_regmap_config = {
++	.name =  JSA1212_REGMAP_NAME,
++	.reg_bits = 8,
++	.val_bits = 8,
++	.max_register = JSA1212_MAX_REG,
++	.cache_type = REGCACHE_RBTREE,
++	.volatile_reg = jsa1212_is_volatile_reg,
++};
++
++static int jsa1212_probe(struct i2c_client *client,
++			     const struct i2c_device_id *id)
++{
++	struct jsa1212_data *jsa1212_data;
++	struct iio_dev *indio_dev;
++	struct regmap *regmap;
++	int ret;
++
++	if (!i2c_check_functionality(client->adapter, I2C_FUNC_SMBUS_BYTE_DATA))
++		return -ENODEV;
++
++	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*jsa1212_data));
 +	if (!indio_dev)
 +		return -ENOMEM;
 +
-+	data = iio_priv(indio_dev);
-+	*data = client;
++	regmap = devm_regmap_init_i2c(client, &jsa1212_regmap_config);
++	if (IS_ERR(regmap)) {
++		dev_err(&client->dev, "Regmap initialization failed.\n");
++		return PTR_ERR(regmap);
++	}
++
++	jsa1212_data = iio_priv(indio_dev);
++
 +	i2c_set_clientdata(client, indio_dev);
++	jsa1212_data->client = client;
++	jsa1212_data->regmap = regmap;
++
++	mutex_init(&jsa1212_data->lock);
++
++	ret = jsa1212_chip_init(jsa1212_data);
++	if (ret < 0)
++		return ret;
 +
 +	indio_dev->dev.parent = &client->dev;
-+	indio_dev->name = dev_name(&client->dev);
++	indio_dev->channels = jsa1212_channels;
++	indio_dev->num_channels = ARRAY_SIZE(jsa1212_channels);
++	indio_dev->name = JSA1212_DRIVER_NAME;
 +	indio_dev->modes = INDIO_DIRECT_MODE;
-+	indio_dev->info = &si7020_info;
-+	indio_dev->channels = si7020_channels;
-+	indio_dev->num_channels = ARRAY_SIZE(si7020_channels);
 +
-+	return devm_iio_device_register(&client->dev, indio_dev);
++	indio_dev->info = &jsa1212_info;
++
++	ret = iio_device_register(indio_dev);
++	if (ret < 0) {
++		dev_err(&client->dev, "%s: register device failed\n", __func__);
++		return ret;
++	}
++
++	return 0;
 +}
 +
-+static const struct i2c_device_id si7020_id[] = {
-+	{ "si7020", 0 },
++ /* power off the device */
++static int jsa1212_power_off(struct jsa1212_data *data)
++{
++	int ret;
++
++	mutex_lock(&data->lock);
++
++	ret = regmap_update_bits(data->regmap, JSA1212_CONF_REG,
++				JSA1212_CONF_ALS_MASK |
++				JSA1212_CONF_PXS_MASK,
++				JSA1212_CONF_ALS_DISABLE |
++				JSA1212_CONF_PXS_DISABLE);
++
++	if (ret < 0)
++		dev_err(&data->client->dev, "power off cmd failed\n");
++
++	mutex_unlock(&data->lock);
++
++	return ret;
++}
++
++
++static int jsa1212_remove(struct i2c_client *client)
++{
++	struct iio_dev *indio_dev = i2c_get_clientdata(client);
++	struct jsa1212_data *data = iio_priv(indio_dev);
++	int ret;
++
++	iio_device_unregister(indio_dev);
++
++	ret = jsa1212_power_off(data);
++
++	return ret;
++}
++
++#ifdef CONFIG_PM_SLEEP
++static int jsa1212_suspend(struct device *dev)
++{
++	struct jsa1212_data *data;
++
++	data = iio_priv(i2c_get_clientdata(to_i2c_client(dev)));
++
++	return jsa1212_power_off(data);
++}
++
++static int jsa1212_resume(struct device *dev)
++{
++	int ret = 0;
++	struct jsa1212_data *data;
++
++	data = iio_priv(i2c_get_clientdata(to_i2c_client(dev)));
++
++	mutex_lock(&data->lock);
++
++	if (data->als_en) {
++		ret = jsa1212_als_enable(data, JSA1212_CONF_ALS_ENABLE);
++		if (ret < 0) {
++			dev_err(dev, "als resume failed\n");
++			goto unlock_and_ret;
++		}
++	}
++
++	if (data->pxs_en) {
++		ret = jsa1212_pxs_enable(data, JSA1212_CONF_PXS_ENABLE);
++		if (ret < 0)
++			dev_err(dev, "pxs resume failed\n");
++	}
++
++unlock_and_ret:
++	mutex_unlock(&data->lock);
++	return ret;
++}
++
++static SIMPLE_DEV_PM_OPS(jsa1212_pm_ops, jsa1212_suspend, jsa1212_resume);
++
++#define JSA1212_PM_OPS (&jsa1212_pm_ops)
++#else
++#define JSA1212_PM_OPS NULL
++#endif
++
++static const struct acpi_device_id jsa1212_acpi_match[] = {
++	{"JSA1212", 0},
++	{ },
++};
++MODULE_DEVICE_TABLE(acpi, jsa1212_acpi_match);
++
++static const struct i2c_device_id jsa1212_id[] = {
++	{ JSA1212_DRIVER_NAME, 0 },
 +	{ }
 +};
-+MODULE_DEVICE_TABLE(i2c, si7020_id);
++MODULE_DEVICE_TABLE(i2c, jsa1212_id);
 +
-+static struct i2c_driver si7020_driver = {
-+	.driver.name	= "si7020",
-+	.probe		= si7020_probe,
-+	.id_table	= si7020_id,
++static struct i2c_driver jsa1212_driver = {
++	.driver = {
++		.name	= JSA1212_DRIVER_NAME,
++		.pm	= JSA1212_PM_OPS,
++		.owner	= THIS_MODULE,
++		.acpi_match_table = ACPI_PTR(jsa1212_acpi_match),
++	},
++	.probe		= jsa1212_probe,
++	.remove		= jsa1212_remove,
++	.id_table	= jsa1212_id,
 +};
++module_i2c_driver(jsa1212_driver);
 +
-+module_i2c_driver(si7020_driver);
-+MODULE_DESCRIPTION("Silicon Labs Si7013/20/21 Relative Humidity and Temperature Sensors");
-+MODULE_AUTHOR("David Barksdale <dbarksdale@uplogix.com>");
-+MODULE_LICENSE("GPL");
-+
++MODULE_AUTHOR("Sathya Kuppuswamy <sathyanarayanan.kuppuswamy@linux.intel.com>");
++MODULE_DESCRIPTION("JSA1212 proximity/ambient light sensor driver");
++MODULE_LICENSE("GPL v2");
 -- 
-tg: (0f33be0..) upstream/si7020 (depends on: upstream/master)
+1.9.1
+
