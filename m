@@ -1,20 +1,17 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mout.gmx.net ([212.227.15.19]:61348 "EHLO mout.gmx.net"
+Received: from mga02.intel.com ([134.134.136.20]:52851 "EHLO mga02.intel.com"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S932633AbaIRVw3 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Thu, 18 Sep 2014 17:52:29 -0400
-Message-ID: <541B5401.1010707@gmx.de>
-Date: Thu, 18 Sep 2014 23:52:01 +0200
-From: Hartmut Knaack <knaack.h@gmx.de>
-MIME-Version: 1.0
-To: Jacob Pan <jacob.jun.pan@linux.intel.com>
-CC: IIO <linux-iio@vger.kernel.org>,
+	id S1751215AbaIKXRb (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Thu, 11 Sep 2014 19:17:31 -0400
+From: Jacob Pan <jacob.jun.pan@linux.intel.com>
+To: IIO <linux-iio@vger.kernel.org>,
 	LKML <linux-kernel@vger.kernel.org>,
 	DEVICE TREE <devicetree@vger.kernel.org>,
-	Lee Jones <lee.jones@linaro.org>,
-	Carlo Caione <carlo@caione.org>,
+	Lee Jones <lee.jones@linaro.org>
+Cc: Carlo Caione <carlo@caione.org>,
 	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
 	Aaron Lu <aaron.lu@intel.com>, Alan Cox <alan@linux.intel.com>,
+	Jean Delvare <khali@linux-fr.org>,
 	Samuel Ortiz <sameo@linux.intel.com>,
 	Liam Girdwood <lgirdwood@gmail.com>,
 	Mark Brown <broonie@kernel.org>,
@@ -22,6 +19,7 @@ CC: IIO <linux-iio@vger.kernel.org>,
 	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 	Rob Herring <robh+dt@kernel.org>,
 	Lars-Peter Clausen <lars@metafoo.de>,
+	Hartmut Knaack <knaack.h@gmx.de>,
 	Fugang Duan <B38611@freescale.com>,
 	Arnd Bergmann <arnd@arndb.de>,
 	Zubair Lutfullah <zubair.lutfullah@gmail.com>,
@@ -33,392 +31,115 @@ CC: IIO <linux-iio@vger.kernel.org>,
 	Ramakrishna Pallala <ramakrishna.pallala@intel.com>,
 	Peter Meerwald <pmeerw@pmeerw.net>,
 	Maxime Ripard <maxime.ripard@free-electrons.com>,
-	Rafael Wysocki <rafael.j.wysocki@intel.com>
-Subject: Re: [PATCH v4 2/3] iio/adc: add support for axp288 adc
-References: <1410912715-25903-1-git-send-email-jacob.jun.pan@linux.intel.com>	<1410912715-25903-3-git-send-email-jacob.jun.pan@linux.intel.com>	<541A0910.90806@gmx.de> <20140917161322.7cc7e061@ultegra>
-In-Reply-To: <20140917161322.7cc7e061@ultegra>
-Content-Type: text/plain; charset=ISO-8859-1
+	Jacob Pan <jacob.jun.pan@linux.intel.com>
+Subject: [PATCH v3 1/5] mfd/axp20x: rename files to support more devices
+Date: Thu, 11 Sep 2014 16:15:53 -0700
+Message-Id: <1410477357-6407-2-git-send-email-jacob.jun.pan@linux.intel.com>
+In-Reply-To: <1410477357-6407-1-git-send-email-jacob.jun.pan@linux.intel.com>
+References: <1410477357-6407-1-git-send-email-jacob.jun.pan@linux.intel.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Jacob Pan schrieb, Am 18.09.2014 01:13:
-> On Thu, 18 Sep 2014 00:20:00 +0200
-> Hartmut Knaack <knaack.h@gmx.de> wrote:
-> 
->> Jacob Pan schrieb, Am 17.09.2014 02:11:
->>> Platform driver for X-Powers AXP288 ADC, which is a sub-device of
->>> the customized AXP288 PMIC for Intel Baytrail-CR platforms. GPADC
->>> device enumerates as one of the MFD cell devices. It uses IIO
->>> infrastructure to communicate with userspace and consumer drivers.
->>>
->>> Usages of ADC channels include battery charging and thermal sensors.
->>>
->> You are progressing, but still a few issues left. One thing is
->> indentation in some places (I feel like being pretty annoying about
->> this), others are commented in line.
-> I don't see the indentation issue, perhaps it is the difference in the
-> editors we use?
-> 
->>> Based on initial work by:
->>> Ramakrishna Pallala <ramakrishna.pallala@intel.com>
->>>
->>> Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
->>> ---
->>>  drivers/iio/adc/Kconfig      |   8 ++
->>>  drivers/iio/adc/Makefile     |   1 +
->>>  drivers/iio/adc/axp288_adc.c | 254
->>> +++++++++++++++++++++++++++++++++++++++++++ 3 files changed, 263
->>> insertions(+) create mode 100644 drivers/iio/adc/axp288_adc.c
->>>
->>> diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
->>> index 11b048a..db2681b 100644
->>> --- a/drivers/iio/adc/Kconfig
->>> +++ b/drivers/iio/adc/Kconfig
->>> @@ -127,6 +127,14 @@ config AT91_ADC
->>>  	help
->>>  	  Say yes here to build support for Atmel AT91 ADC.
->>>  
->>> +config AXP288_ADC
->>> +	tristate "X-Powers AXP288 ADC driver"
->>> +	depends on MFD_AXP20X
->>> +	help
->>> +	  Say yes here to have support for X-Powers power
->>> management IC (PMIC) ADC
->>> +	  device. Depending on platform configuration, this
->>> general purpose ADC can
->>> +	  be used for sampling sensors such as thermal resistors.
->>> +
->>>  config EXYNOS_ADC
->>>  	tristate "Exynos ADC driver support"
->>>  	depends on ARCH_EXYNOS || (OF && COMPILE_TEST)
->>> diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
->>> index ad81b51..19640f9 100644
->>> --- a/drivers/iio/adc/Makefile
->>> +++ b/drivers/iio/adc/Makefile
->>> @@ -14,6 +14,7 @@ obj-$(CONFIG_AD7793) += ad7793.o
->>>  obj-$(CONFIG_AD7887) += ad7887.o
->>>  obj-$(CONFIG_AD799X) += ad799x.o
->>>  obj-$(CONFIG_AT91_ADC) += at91_adc.o
->>> +obj-$(CONFIG_AXP288_ADC) += axp288_adc.o
->>>  obj-$(CONFIG_EXYNOS_ADC) += exynos_adc.o
->>>  obj-$(CONFIG_LP8788_ADC) += lp8788_adc.o
->>>  obj-$(CONFIG_MAX1027) += max1027.o
->>> diff --git a/drivers/iio/adc/axp288_adc.c
->>> b/drivers/iio/adc/axp288_adc.c new file mode 100644
->>> index 0000000..333c624
->>> --- /dev/null
->>> +++ b/drivers/iio/adc/axp288_adc.c
->>> @@ -0,0 +1,254 @@
->>> +/*
->>> + * axp288_adc.c - X-Powers AXP288 PMIC ADC Driver
->>> + *
->>> + * Copyright (C) 2014 Intel Corporation
->>> + *
->>> + *
->>> ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
->>> + *
->>> + * This program is free software; you can redistribute it and/or
->>> modify
->>> + * it under the terms of the GNU General Public License as
->>> published by
->>> + * the Free Software Foundation; version 2 of the License.
->>> + *
->>> + * This program is distributed in the hope that it will be useful,
->>> but
->>> + * WITHOUT ANY WARRANTY; without even the implied warranty of
->>> + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	See
->>> the GNU
->>> + * General Public License for more details.
->>> + *
->>> + */
->>> +
->>> +#include <linux/module.h>
->>> +#include <linux/kernel.h>
->>> +#include <linux/device.h>
->>> +#include <linux/regmap.h>
->>> +#include <linux/mfd/axp20x.h>
->>> +#include <linux/platform_device.h>
->>> +
->>> +#include <linux/iio/iio.h>
->>> +#include <linux/iio/machine.h>
->>> +#include <linux/iio/driver.h>
->>> +
->>> +#define AXP288_ADC_EN_MASK		0xF1
->>> +#define AXP288_ADC_TS_PIN_GPADC		0xF2
->>> +#define AXP288_ADC_TS_PIN_ON		0xF3
->>> +
->>> +enum axp288_adc_id {
->>> +	AXP288_ADC_TS,
->>> +	AXP288_ADC_PMIC,
->>> +	AXP288_ADC_GP,
->>> +	AXP288_ADC_BATT_CHRG_I,
->>> +	AXP288_ADC_BATT_DISCHRG_I,
->>> +	AXP288_ADC_BATT_V,
->>> +	AXP288_ADC_NR_CHAN,
->>> +};
->>> +
->>> +struct axp288_adc_info {
->>> +	int irq;
->>> +	struct device *dev;
->>> +	struct regmap *regmap;
->>> +};
->>> +
->>> +static const struct iio_chan_spec const axp288_adc_channels[] = {
->>> +	{
->>> +		.indexed = 1,
->>> +		.type = IIO_TEMP,
->>> +		.channel = 0,
->>> +		.address = AXP288_TS_ADC_H,
->>> +		.datasheet_name = "CH0",
->>> +	}, {
->>> +		.indexed = 1,
->>> +		.type = IIO_TEMP,
->>> +		.channel = 1,
->>> +		.address = AXP288_PMIC_ADC_H,
->>> +		.datasheet_name = "CH1",
->>> +	}, {
->>> +		.indexed = 1,
->>> +		.type = IIO_TEMP,
->>> +		.channel = 2,
->>> +		.address = AXP288_GP_ADC_H,
->>> +		.datasheet_name = "CH2",
->>> +	}, {
->>> +		.indexed = 1,
->>> +		.type = IIO_CURRENT,
->>> +		.channel = 3,
->>> +		.address = AXP20X_BATT_CHRG_I_H,
->>> +		.datasheet_name = "CH3",
->>> +		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED),
->>> +	}, {
->>> +		.indexed = 1,
->>> +		.type = IIO_CURRENT,
->>> +		.channel = 4,
->>> +		.address = AXP20X_BATT_DISCHRG_I_H,
->>> +		.datasheet_name = "CH4",
->>> +		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED),
->>> +	}, {
->>> +		.indexed = 1,
->>> +		.type = IIO_VOLTAGE,
->>> +		.channel = 5,
->>> +		.address = AXP20X_BATT_V_H,
->>> +		.datasheet_name = "CH5",
->>> +		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED),
->>> +	},
->>> +};
->>> +
->>> +#define AXP288_ADC_MAP(_adc_channel_label,
->>> _consumer_dev_name,	\
->>> +		_consumer_channel)				\
->>> +	{							\
->>> +		.adc_channel_label = _adc_channel_label,	\
->>> +		.consumer_dev_name = _consumer_dev_name,	\
->>> +		.consumer_channel =
->>> _consumer_channel,		\
->>> +	}
->>> +
->>> +/* for consumer drivers */
->>> +static struct iio_map axp288_adc_default_maps[] = {
->>> +	AXP288_ADC_MAP("TS_PIN", "axp288-batt",
->>> "axp288-batt-temp"),
->>> +	AXP288_ADC_MAP("PMIC_TEMP", "axp288-pmic",
->>> "axp288-pmic-temp"),
->>> +	AXP288_ADC_MAP("GPADC", "axp288-gpadc",
->>> "axp288-system-temp"),
->>> +	AXP288_ADC_MAP("BATT_CHG_I", "axp288-chrg",
->>> "axp288-chrg-curr"),
->>> +	AXP288_ADC_MAP("BATT_DISCHRG_I", "axp288-chrg",
->>> "axp288-chrg-d-curr"),
->>> +	AXP288_ADC_MAP("BATT_V", "axp288-batt",
->>> "axp288-batt-volt"),
->>> +	{},
->>> +};
->>> +
->>> +static int axp288_adc_read_raw(struct iio_dev *indio_dev,
->>> +			struct iio_chan_spec const *chan,
->>> +			int *val, int *val2, long mask)
-Here is an indentation issue. See [1] how it can look like (although it is fine to have several parameters in every line).
+More XPowers PMIC devices can be supported by extending this driver, so
+rename it to axp2xx to cover axp288 variant.
 
-[1] https://git.kernel.org/cgit/linux/kernel/git/jic23/iio.git/tree/drivers/iio/adc/max1363.c?h=testing#n414
+Acked-by: Lee Jones <lee.jones@linaro.org>
+Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
+---
+ drivers/mfd/Kconfig                      | 7 ++++---
+ drivers/mfd/Makefile                     | 2 +-
+ drivers/mfd/{axp20x.c => axp2xx.c}       | 6 +++---
+ include/linux/mfd/{axp20x.h => axp2xx.h} | 6 +++---
+ 4 files changed, 11 insertions(+), 10 deletions(-)
+ rename drivers/mfd/{axp20x.c => axp2xx.c} (97%)
+ rename include/linux/mfd/{axp20x.h => axp2xx.h} (98%)
 
->>> +{
->>> +	int ret;
->>> +	struct axp288_adc_info *info = iio_priv(indio_dev);
->>> +	u8 buf[2];
->> You could use __be16 instead. Then you just need to use
->> be16_to_cpu(), shift 4 bits to the right and mask the result with
->> 0xFF.
->>> +
->>> +	mutex_lock(&indio_dev->mlock);
->>> +	switch (mask) {
->>> +	case IIO_CHAN_INFO_RAW:
->>> +		/* special case for GPADC sample */
->>> +		if (chan->address == AXP288_GP_ADC_H) {
->>> +			ret = regmap_write(info->regmap,
->>> AXP288_ADC_TS_PIN_CTRL,
->>> +					AXP288_ADC_TS_PIN_GPADC);
->>> +			if (ret) {
->>> +				dev_err(&indio_dev->dev, "GPADC
->>> mode\n");
->>> +				mutex_unlock(&indio_dev->mlock);
->>> +				return ret;
->> You may even just goto the mutex_unlock at the end of the function.
->> Would safe a few bytes here in the source - up to you. More
->> interesting is, if the error message is required, as you don't have
->> one below, when switching to TS_PIN_ON.
-> i don't have preference, the previous reviews don't like goto.
-Yeah, that's probably always a decision between quick exit path vs. low code duplication. They weight pretty equal in this case.
->>> +			}
->>> +		}
->>> +	case IIO_CHAN_INFO_PROCESSED:
->>> +		ret = regmap_bulk_read(info->regmap,
->>> chan->address, buf, 2);
->>> +		if (ret) {
->>> +			dev_err(&indio_dev->dev, "sample raw data
->>> failed\n");
->>> +			break;
->>> +		}
->>> +		*val = (buf[0] << 4) + ((buf[1] >> 4) & 0x0F);
->>> +		ret = IIO_VAL_INT;
->>> +		break;
->>> +	default:
->>> +		ret = -EINVAL;
->>> +	}
->>> +
->>> +	if (mask == IIO_CHAN_INFO_RAW && chan->address ==
->>> AXP288_GP_ADC_H)
->>> +		ret = regmap_write(info->regmap,
->>> AXP288_ADC_TS_PIN_CTRL,
->>> +			AXP288_ADC_TS_PIN_ON);
->>> +
->>> +	mutex_unlock(&indio_dev->mlock);
->>> +
->>> +	return ret;
->>> +}
->>> +
->>> +static int axp288_adc_enable(struct regmap *regmap, bool enable)
->>> +{
->>> +	unsigned int pin_on, adc_en;
->>> +
->>> +	if (enable) {
->>> +		pin_on = AXP288_ADC_TS_PIN_ON;
->>> +		adc_en = AXP288_ADC_EN_MASK;
-This one, adc_en ^^^^^ is what I meant. It gets set here and below, but not used again.
-I would expect, that you intended to write it to AXP20X_ADC_EN1 at the end of this function.
->>> +	} else {
->>> +		pin_on = ~AXP288_ADC_TS_PIN_ON;
->>> +		adc_en = ~AXP288_ADC_EN_MASK;
->>> +	}
->>> +	if (regmap_write(regmap, AXP288_ADC_TS_PIN_CTRL, pin_on))
->>> +		return -EIO;
->>> +
->>> +	return regmap_write(regmap, AXP20X_ADC_EN1,
->>> ~AXP288_ADC_EN_MASK);
->> So, what's the deal about the variable adc_en?
-> well, I am trying to be consistent with the data sheet. in axp202
-> datasheet, register 82h is named "ADC Enable 1". In axp288 datasheet,
-> the same register 82h is named ADC Enable. I am going with adc_en1 to
-> better scale for more "ADC Enable X".
->>> +}
->>> +
->>> +static const struct iio_info axp288_adc_iio_info = {
->>> +	.read_raw = &axp288_adc_read_raw,
->>> +	.driver_module = THIS_MODULE,
->>> +};
->>> +
->>> +static int axp288_adc_probe(struct platform_device *pdev)
->>> +{
->>> +	int ret;
->>> +	struct axp288_adc_info *info;
->>> +	struct iio_dev *indio_dev;
->>> +	struct axp20x_dev *axp20x =
->>> dev_get_drvdata(pdev->dev.parent); +
->>> +	indio_dev = devm_iio_device_alloc(&pdev->dev,
->>> sizeof(*info));
->>> +	if (!indio_dev)
->>> +		return -ENOMEM;
->>> +
->>> +	info = iio_priv(indio_dev);
->>> +	info->irq = platform_get_irq(pdev, 0);
->>> +	if (info->irq < 0) {
->>> +		dev_err(&pdev->dev, "no irq resource?\n");
->>> +		return info->irq;
->>> +	}
->>> +	platform_set_drvdata(pdev, indio_dev);
->>> +	info->regmap = axp20x->regmap;
->>> +	ret = axp288_adc_enable(axp20x->regmap, true);
->>> +	if (ret) {
->>> +		dev_err(&pdev->dev, "Unable to enable ADC
->>> device\n");
->>> +		return ret;
->>> +	}
->>> +
->>> +	indio_dev->dev.parent = &pdev->dev;
->>> +	indio_dev->name = pdev->name;
->>> +	indio_dev->channels = axp288_adc_channels;
->>> +	indio_dev->num_channels = ARRAY_SIZE(axp288_adc_channels);
->>> +	indio_dev->info = &axp288_adc_iio_info;
->>> +	indio_dev->modes = INDIO_DIRECT_MODE;
->>> +	ret = iio_map_array_register(indio_dev,
->>> axp288_adc_default_maps);
->>> +	if (ret < 0)
->>> +		goto err_disable_dev;
->>> +
->>> +	ret = iio_device_register(indio_dev);
->>> +	if (ret < 0) {
->>> +		dev_err(&pdev->dev, "unable to register iio
->>> device\n");
->>> +		goto err_array_unregister;
->>> +	}
->>> +
->>> +	return 0;
->>> +
->>> +err_array_unregister:
->>> +	iio_map_array_unregister(indio_dev);
->>> +err_disable_dev:
->>> +	ret = axp288_adc_enable(axp20x->regmap, false);
->> Don't set ret here. We want to return the error code from the
->> function that failed above.
->>> +
-> good point. thanks for the review.
-> 
->>> +	return ret;
->>> +}
->>> +
->>> +static int axp288_adc_remove(struct platform_device *pdev)
->>> +{
->>> +	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
->>> +	struct axp20x_dev *axp20x =
->>> dev_get_drvdata(pdev->dev.parent); +
->>> +	if (axp288_adc_enable(axp20x->regmap, false))
->>> +		dev_err(&pdev->dev, "Unable to disable ADC
->>> device\n");
->>> +	iio_device_unregister(indio_dev);
->>> +	iio_map_array_unregister(indio_dev);
->>> +
->>> +	return 0;
->>> +}
->>> +
->>> +static struct platform_driver axp288_adc_driver = {
->>> +	.probe = axp288_adc_probe,
->>> +	.remove = axp288_adc_remove,
->>> +	.driver = {
->>> +		.name = "axp288_adc",
->>> +		.owner = THIS_MODULE,
->>> +	},
->>> +};
->>> +
->>> +module_platform_driver(axp288_adc_driver);
->>> +
->>> +MODULE_AUTHOR("Jacob Pan <jacob.jun.pan@linux.intel.com>");
->>> +MODULE_DESCRIPTION("X-Powers AXP288 ADC Driver");
->>> +MODULE_LICENSE("GPL");
->>>
->>
-> 
-> [Jacob Pan]
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> 
+diff --git a/drivers/mfd/Kconfig b/drivers/mfd/Kconfig
+index de5abf2..42a70a3 100644
+--- a/drivers/mfd/Kconfig
++++ b/drivers/mfd/Kconfig
+@@ -67,14 +67,15 @@ config MFD_BCM590XX
+ 	help
+ 	  Support for the BCM590xx PMUs from Broadcom
+ 
+-config MFD_AXP20X
+-	bool "X-Powers AXP20X"
++config MFD_AXP2XX
++	bool "X-Powers AXP2XX"
+ 	select MFD_CORE
+ 	select REGMAP_I2C
+ 	select REGMAP_IRQ
+ 	depends on I2C=y
+ 	help
+-	  If you say Y here you get support for the X-Powers AXP202 and AXP209.
++	  If you say Y here you get support for the X-Powers AXP202, AXP209 and
++	  AXP288 power management IC (PMIC).
+ 	  This driver include only the core APIs. You have to select individual
+ 	  components like regulators or the PEK (Power Enable Key) under the
+ 	  corresponding menus.
+diff --git a/drivers/mfd/Makefile b/drivers/mfd/Makefile
+index 3fcfdfc..8d0beb2 100644
+--- a/drivers/mfd/Makefile
++++ b/drivers/mfd/Makefile
+@@ -103,7 +103,7 @@ obj-$(CONFIG_PMIC_DA9052)	+= da9052-irq.o
+ obj-$(CONFIG_PMIC_DA9052)	+= da9052-core.o
+ obj-$(CONFIG_MFD_DA9052_SPI)	+= da9052-spi.o
+ obj-$(CONFIG_MFD_DA9052_I2C)	+= da9052-i2c.o
+-obj-$(CONFIG_MFD_AXP20X)	+= axp20x.o
++obj-$(CONFIG_MFD_AXP2XX)	+= axp2xx.o
+ 
+ obj-$(CONFIG_MFD_LP3943)	+= lp3943.o
+ obj-$(CONFIG_MFD_LP8788)	+= lp8788.o lp8788-irq.o
+diff --git a/drivers/mfd/axp20x.c b/drivers/mfd/axp2xx.c
+similarity index 97%
+rename from drivers/mfd/axp20x.c
+rename to drivers/mfd/axp2xx.c
+index dee6539..332a8a0 100644
+--- a/drivers/mfd/axp20x.c
++++ b/drivers/mfd/axp2xx.c
+@@ -1,7 +1,7 @@
+ /*
+- * axp20x.c - MFD core driver for the X-Powers AXP202 and AXP209
++ * axp2xx.c - MFD core driver for the X-Powers AXP202 and AXP209
+  *
+- * AXP20x comprises an adaptive USB-Compatible PWM charger, 2 BUCK DC-DC
++ * AXP2xx comprises an adaptive USB-Compatible PWM charger, 2 BUCK DC-DC
+  * converters, 5 LDOs, multiple 12-bit ADCs of voltage, current and temperature
+  * as well as 4 configurable GPIOs.
+  *
+@@ -21,7 +21,7 @@
+ #include <linux/regmap.h>
+ #include <linux/slab.h>
+ #include <linux/regulator/consumer.h>
+-#include <linux/mfd/axp20x.h>
++#include <linux/mfd/axp2xx.h>
+ #include <linux/mfd/core.h>
+ #include <linux/of_device.h>
+ #include <linux/of_irq.h>
+diff --git a/include/linux/mfd/axp20x.h b/include/linux/mfd/axp2xx.h
+similarity index 98%
+rename from include/linux/mfd/axp20x.h
+rename to include/linux/mfd/axp2xx.h
+index d0e31a2..a36d91b 100644
+--- a/include/linux/mfd/axp20x.h
++++ b/include/linux/mfd/axp2xx.h
+@@ -8,8 +8,8 @@
+  * published by the Free Software Foundation.
+  */
+ 
+-#ifndef __LINUX_MFD_AXP20X_H
+-#define __LINUX_MFD_AXP20X_H
++#ifndef __LINUX_MFD_AXP2XX_H
++#define __LINUX_MFD_AXP2XX_H
+ 
+ enum {
+ 	AXP202_ID = 0,
+@@ -177,4 +177,4 @@ struct axp20x_dev {
+ 	long				variant;
+ };
+ 
+-#endif /* __LINUX_MFD_AXP20X_H */
++#endif /* __LINUX_MFD_AXP2XX_H */
+-- 
+1.9.1
 
