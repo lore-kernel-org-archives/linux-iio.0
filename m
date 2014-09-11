@@ -1,79 +1,71 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga11.intel.com ([192.55.52.93]:5801 "EHLO mga11.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1754665AbaIHWYo (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Mon, 8 Sep 2014 18:24:44 -0400
-From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-To: IIO <linux-iio@vger.kernel.org>,
-	LKML <linux-kernel@vger.kernel.org>,
-	DEVICE TREE <devicetree@vger.kernel.org>,
-	Lee Jones <lee.jones@linaro.org>
-Cc: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
-	Aaron Lu <aaron.lu@intel.com>, Alan Cox <alan@linux.intel.com>,
-	Jean Delvare <khali@linux-fr.org>,
-	Samuel Ortiz <sameo@linux.intel.com>,
-	Liam Girdwood <lgirdwood@gmail.com>,
-	Mark Brown <broonie@kernel.org>,
-	Grant Likely <grant.likely@linaro.org>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Rob Herring <robh+dt@kernel.org>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Fugang Duan <B38611@freescale.com>,
-	Arnd Bergmann <arnd@arndb.de>,
-	Zubair Lutfullah <zubair.lutfullah@gmail.com>,
-	Sebastian Reichel <sre@debian.org>,
-	Johannes Thumshirn <johannes.thumshirn@men.de>,
-	Philippe Reynes <tremyfr@yahoo.fr>,
-	Angelo Compagnucci <angelo.compagnucci@gmail.com>,
-	Doug Anderson <dianders@chromium.org>,
-	Jacob Pan <jacob.jun.pan@linux.intel.com>
-Subject: [PATCH 0/4] Initial support for XPowers AXP288 PMIC
-Date: Mon,  8 Sep 2014 15:24:02 -0700
-Message-Id: <1410215046-31751-1-git-send-email-jacob.jun.pan@linux.intel.com>
+Received: from mail-oa0-f43.google.com ([209.85.219.43]:36441 "EHLO
+	mail-oa0-f43.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751931AbaIKJNZ (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 11 Sep 2014 05:13:25 -0400
+Received: by mail-oa0-f43.google.com with SMTP id m19so2704247oag.16
+        for <linux-iio@vger.kernel.org>; Thu, 11 Sep 2014 02:13:24 -0700 (PDT)
+MIME-Version: 1.0
+In-Reply-To: <53FB6205.5020704@kernel.org>
+References: <1408815064-5763-1-git-send-email-linus.walleij@linaro.org>
+	<53FB6205.5020704@kernel.org>
+Date: Thu, 11 Sep 2014 11:13:24 +0200
+Message-ID: <CACRpkdZuSsePVjPpmLV5bs5VOcbnH2_gK4-kOfbpBM1-7Q=zgQ@mail.gmail.com>
+Subject: Re: [PATCH] iio: st-sensors: add support for lis3lv02d accelerometer
+From: Linus Walleij <linus.walleij@linaro.org>
+To: Jonathan Cameron <jic23@kernel.org>,
+	Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	Denis CIOCCA <denis.ciocca@st.com>,
+	Lee Jones <lee.jones@linaro.org>,
+	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-XPowers AXP288 is a customized PMIC found on some Intel Baytrail-CR platforms.
-It comes with sub-functions such as USB charging, fuel gauge, ADC, and many LDO
-and BUCK channels.
+On Mon, Aug 25, 2014 at 6:19 PM, Jonathan Cameron <jic23@kernel.org> wrote:
+> On 23/08/14 18:31, Linus Walleij wrote:
+>> This adds support for the LIS3LV02 accelerometer found in the
+>> ST Microelectronics Nomadik board series.
+>>
+>> Cc: devicetree@vger.kernel.org
+>> Cc: Denis CIOCCA <denis.ciocca@st.com>
+>> Cc: Lee Jones <lee.jones@linaro.org>
+>> Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+>
+> If anyone wants to look at what the misc driver supports that we still
+> don't have in the IIO driver then that would be great!
 
-By extending the existing AXP20x driver, this patchset adds basic support
-for AXP288 PMIC with GPADC as one MFD cell device driver. It also adds hooks
-for ACPI opregion handler driver which can be used to handle ACPI requests.
+I had a quick look at it:
 
-Currently, the PMIC driver in this patchset does not support platform data
-enumeration. But when ACPI _DSD and unified device properties become available,
-cell devices with platform data will be added.
+- The misc driver has a bridge that optionally registers the
+  accelerometer as a joystick in the input subsystem, so it
+  can be used as a polled joystick. That looks like something
+  we would want to be able to do for any accelerometer in a
+  generic glue file in IIO I think?
 
-This patch does not use intel_soc_pmic core for i2c and regmap handling in that
-axp288 shares similar programming interface with other Xpower PMICs supported in
-axp20x.c. Therefore, extending axp20x.c to include axp288 makes more sense.
+- Ability to generate a "free-fall event" on a misc device
+  if the device containing the sensor is dropped. A special
+  interrupt can be enabled on the device for this. I can't quite
+  see how userspace is supposed to react to it, because this
+  miscdevice userspace ABI is sort of complex.
 
+- Some driver-specific sysfs power management stuff
 
-Jacob Pan (4):
-  mfd/axp20x: rename files to support more devices
-  mfd/axp2xx: extend axp20x to support axp288 pmic
-  regulator/axp20x: use axp2xx consolidated header
-  iio/adc/axp288: add support for axp288 gpadc
+- Context save/restore registers for power-off handling.
 
- drivers/iio/adc/Kconfig              |   8 +
- drivers/iio/adc/Makefile             |   1 +
- drivers/iio/adc/axp288_gpadc.c       | 250 ++++++++++++++++++
- drivers/mfd/Kconfig                  |   7 +-
- drivers/mfd/Makefile                 |   2 +-
- drivers/mfd/axp20x.c                 | 258 ------------------
- drivers/mfd/axp2xx.c                 | 500 +++++++++++++++++++++++++++++++++++
- drivers/regulator/axp20x-regulator.c |   6 +-
- include/linux/mfd/axp20x.h           | 180 -------------
- include/linux/mfd/axp2xx.h           | 235 ++++++++++++++++
- 10 files changed, 1002 insertions(+), 445 deletions(-)
- create mode 100644 drivers/iio/adc/axp288_gpadc.c
- delete mode 100644 drivers/mfd/axp20x.c
- create mode 100644 drivers/mfd/axp2xx.c
- delete mode 100644 include/linux/mfd/axp20x.h
- create mode 100644 include/linux/mfd/axp2xx.h
+- Trigger selftest from sysfs : I suspect this could be ported
+  over to all the ST Micro devices, as they are similar in that
+  way, same kind of test registers.
 
--- 
-1.9.1
+- Possible to enable high-pass filter from the DT config.
+  (Should that not be dynamic?)
 
+Apart from that it has a custom sysfs interface to read the
+accelerometer, similar to the IIO interface. It seems to *only* support
+raw values AFAICT  though, not sensitivity adjustment, so my patch
+gives the ability to have better sensor handling in the kernel from an
+IIO point of view.
+
+Yours,
+Linus Walleij
