@@ -1,152 +1,96 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:55825 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752626AbaINRsY (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 14 Sep 2014 13:48:24 -0400
-Message-ID: <5415D4E6.1030607@kernel.org>
-Date: Sun, 14 Sep 2014 18:48:22 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-MIME-Version: 1.0
-To: Peter Meerwald <pmeerw@pmeerw.net>
-CC: linux-iio@vger.kernel.org,
-	Oleksandr Kravchenko <o.v.kravchenko@globallogic.com>
-Subject: Re: [PATCH v2 04/11] iio:bma180: Use bool instead of int for state
-References: <1408488206-2633-1-git-send-email-pmeerw@pmeerw.net> <1408488206-2633-5-git-send-email-pmeerw@pmeerw.net>
-In-Reply-To: <1408488206-2633-5-git-send-email-pmeerw@pmeerw.net>
-Content-Type: text/plain; charset=windows-1252
+Received: from mga02.intel.com ([134.134.136.20]:52851 "EHLO mga02.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751066AbaIKXRa (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Thu, 11 Sep 2014 19:17:30 -0400
+From: Jacob Pan <jacob.jun.pan@linux.intel.com>
+To: IIO <linux-iio@vger.kernel.org>,
+	LKML <linux-kernel@vger.kernel.org>,
+	DEVICE TREE <devicetree@vger.kernel.org>,
+	Lee Jones <lee.jones@linaro.org>
+Cc: Carlo Caione <carlo@caione.org>,
+	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+	Aaron Lu <aaron.lu@intel.com>, Alan Cox <alan@linux.intel.com>,
+	Jean Delvare <khali@linux-fr.org>,
+	Samuel Ortiz <sameo@linux.intel.com>,
+	Liam Girdwood <lgirdwood@gmail.com>,
+	Mark Brown <broonie@kernel.org>,
+	Grant Likely <grant.likely@linaro.org>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Rob Herring <robh+dt@kernel.org>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Fugang Duan <B38611@freescale.com>,
+	Arnd Bergmann <arnd@arndb.de>,
+	Zubair Lutfullah <zubair.lutfullah@gmail.com>,
+	Sebastian Reichel <sre@debian.org>,
+	Johannes Thumshirn <johannes.thumshirn@men.de>,
+	Philippe Reynes <tremyfr@yahoo.fr>,
+	Angelo Compagnucci <angelo.compagnucci@gmail.com>,
+	Doug Anderson <dianders@chromium.org>,
+	Ramakrishna Pallala <ramakrishna.pallala@intel.com>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Maxime Ripard <maxime.ripard@free-electrons.com>,
+	Jacob Pan <jacob.jun.pan@linux.intel.com>
+Subject: [PATCH v3 0/5] Initial support for XPowers AXP288 PMIC
+Date: Thu, 11 Sep 2014 16:15:52 -0700
+Message-Id: <1410477357-6407-1-git-send-email-jacob.jun.pan@linux.intel.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 19/08/14 23:43, Peter Meerwald wrote:
-> Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
-> Cc: Oleksandr Kravchenko <o.v.kravchenko@globallogic.com>
-applied.
-> ---
->  drivers/iio/accel/bma180.c | 36 +++++++++++++++---------------------
->  1 file changed, 15 insertions(+), 21 deletions(-)
-> 
-> diff --git a/drivers/iio/accel/bma180.c b/drivers/iio/accel/bma180.c
-> index 284598d..aa7566f 100644
-> --- a/drivers/iio/accel/bma180.c
-> +++ b/drivers/iio/accel/bma180.c
-> @@ -62,11 +62,8 @@
->  #define BMA180_LOW_NOISE	0x00
->  #define BMA180_LOW_POWER	0x03
->  
-> -#define BMA180_LOW_NOISE_STR	"low_noise"
-> -#define BMA180_LOW_POWER_STR	"low_power"
-> -
->  /* Defaults values */
-> -#define BMA180_DEF_PMODE	0
-> +#define BMA180_DEF_PMODE	false
->  #define BMA180_DEF_BW		20
->  #define BMA180_DEF_SCALE	2452
->  
-> @@ -80,10 +77,10 @@ struct bma180_data {
->  	struct i2c_client *client;
->  	struct iio_trigger *trig;
->  	struct mutex mutex;
-> -	int sleep_state;
-> +	bool sleep_state;
->  	int scale;
->  	int bw;
-> -	int pmode;
-> +	bool pmode;
->  	char *buff;
->  };
->  
-> @@ -133,7 +130,7 @@ static int bma180_reset_intr(struct bma180_data *data)
->  	return ret;
->  }
->  
-> -static int bma180_set_new_data_intr_state(struct bma180_data *data, int state)
-> +static int bma180_set_new_data_intr_state(struct bma180_data *data, bool state)
->  {
->  	u8 reg_val = state ? BMA180_NEW_DATA_INT : 0x00;
->  	int ret = i2c_smbus_write_byte_data(data->client, BMA180_CTRL_REG3,
-> @@ -153,7 +150,7 @@ err:
->  	return ret;
->  }
->  
-> -static int bma180_set_sleep_state(struct bma180_data *data, int state)
-> +static int bma180_set_sleep_state(struct bma180_data *data, bool state)
->  {
->  	int ret = bma180_set_bits(data, BMA180_CTRL_REG0, BMA180_SLEEP, state);
->  
-> @@ -167,7 +164,7 @@ static int bma180_set_sleep_state(struct bma180_data *data, int state)
->  	return 0;
->  }
->  
-> -static int bma180_set_ee_writing_state(struct bma180_data *data, int state)
-> +static int bma180_set_ee_writing_state(struct bma180_data *data, bool state)
->  {
->  	int ret = bma180_set_bits(data, BMA180_CTRL_REG0, BMA180_EE_W, state);
->  
-> @@ -225,7 +222,7 @@ static int bma180_set_scale(struct bma180_data *data, int val)
->  	return -EINVAL;
->  }
->  
-> -static int bma180_set_pmode(struct bma180_data *data, int mode)
-> +static int bma180_set_pmode(struct bma180_data *data, bool mode)
->  {
->  	u8 reg_val = mode ? BMA180_LOW_POWER : BMA180_LOW_NOISE;
->  	int ret = bma180_set_bits(data, BMA180_TCO_Z, BMA180_MODE_CONFIG,
-> @@ -275,10 +272,10 @@ static int bma180_chip_init(struct bma180_data *data)
->  	ret = bma180_set_bits(data, BMA180_CTRL_REG0, BMA180_DIS_WAKE_UP, 1);
->  	if (ret)
->  		goto err;
-> -	ret = bma180_set_ee_writing_state(data, 1);
-> +	ret = bma180_set_ee_writing_state(data, true);
->  	if (ret)
->  		goto err;
-> -	ret = bma180_set_new_data_intr_state(data, 0);
-> +	ret = bma180_set_new_data_intr_state(data, false);
->  	if (ret)
->  		goto err;
->  	ret = bma180_set_bits(data, BMA180_OFFSET_LSB1, BMA180_SMP_SKIP, 1);
-> @@ -303,11 +300,11 @@ err:
->  
->  static void bma180_chip_disable(struct bma180_data *data)
->  {
-> -	if (bma180_set_new_data_intr_state(data, 0))
-> +	if (bma180_set_new_data_intr_state(data, false))
->  		goto err;
-> -	if (bma180_set_ee_writing_state(data, 0))
-> +	if (bma180_set_ee_writing_state(data, false))
->  		goto err;
-> -	if (bma180_set_sleep_state(data, 1))
-> +	if (bma180_set_sleep_state(data, true))
->  		goto err;
->  
->  	return;
-> @@ -410,10 +407,7 @@ static const struct iio_info bma180_info = {
->  	.driver_module		= THIS_MODULE,
->  };
->  
-> -static const char * const bma180_power_modes[] = {
-> -	BMA180_LOW_NOISE_STR,
-> -	BMA180_LOW_POWER_STR,
-> -};
-> +static const char * const bma180_power_modes[] = { "low_noise", "low_power" };
->  
->  static int bma180_get_power_mode(struct iio_dev *indio_dev,
->  		const struct iio_chan_spec *chan)
-> @@ -633,7 +627,7 @@ static int bma180_suspend(struct device *dev)
->  	int ret;
->  
->  	mutex_lock(&data->mutex);
-> -	ret = bma180_set_sleep_state(data, 1);
-> +	ret = bma180_set_sleep_state(data, true);
->  	mutex_unlock(&data->mutex);
->  
->  	return ret;
-> @@ -646,7 +640,7 @@ static int bma180_resume(struct device *dev)
->  	int ret;
->  
->  	mutex_lock(&data->mutex);
-> -	ret = bma180_set_sleep_state(data, 0);
-> +	ret = bma180_set_sleep_state(data, false);
->  	mutex_unlock(&data->mutex);
->  
->  	return ret;
-> 
+XPowers AXP288 is a customized PMIC found on some Intel Baytrail-CR platforms.
+It comes with sub-functions such as USB charging, fuel gauge, ADC, and many LDO
+and BUCK channels.
+
+By extending the existing AXP20x driver, this patchset adds basic support
+for AXP288 PMIC with GPADC as one MFD cell device driver. It also adds hooks
+for ACPI opregion handler driver which can be used to handle ACPI requests.
+
+Currently, the PMIC driver in this patchset does not support platform data
+enumeration. But when ACPI _DSD and unified device properties become available,
+cell devices with platform data will be added.
+
+This patch does not use intel_soc_pmic core for i2c and regmap handling in that
+axp288 shares similar programming interface with other Xpower PMICs supported in
+axp20x.c. Therefore, extending axp20x.c to include axp288 makes more sense.
+
+Changes
+ v3:	- put all file rename changes in 1/5
+ 	- add iio documentation for in_current_raw/scale
+	- removed global variables in axp2xx
+	- removed pm callbacks from GPADC
+	- removed ACPI opregion cell device
+	- added scales to ADC current and voltage
+	- removed ADC thermal sensor from sysfs, kernel internal use only
+
+ v2:
+	- use format -M for 1/4
+	- minor tweak based on Maxime's review
+
+
+Jacob Pan (5):
+  mfd/axp20x: rename files to support more devices
+  mfd/axp2xx: extend axp20x to support axp288 pmic
+  regulator/axp20x: use axp2xx consolidated header
+  iio/adc/axp288: add support for axp288 gpadc
+  iio: add documentation for current attribute
+
+ Documentation/ABI/testing/sysfs-bus-iio  |   8 +
+ drivers/iio/adc/Kconfig                  |   8 +
+ drivers/iio/adc/Makefile                 |   1 +
+ drivers/iio/adc/axp288_gpadc.c           | 238 +++++++++++++++
+ drivers/mfd/Kconfig                      |   7 +-
+ drivers/mfd/Makefile                     |   2 +-
+ drivers/mfd/axp20x.c                     | 258 ----------------
+ drivers/mfd/axp2xx.c                     | 493 +++++++++++++++++++++++++++++++
+ drivers/regulator/axp20x-regulator.c     |   6 +-
+ include/linux/mfd/{axp20x.h => axp2xx.h} |  66 ++++-
+ 10 files changed, 818 insertions(+), 269 deletions(-)
+ create mode 100644 drivers/iio/adc/axp288_gpadc.c
+ delete mode 100644 drivers/mfd/axp20x.c
+ create mode 100644 drivers/mfd/axp2xx.c
+ rename include/linux/mfd/{axp20x.h => axp2xx.h} (76%)
+
+-- 
+1.9.1
+
