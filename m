@@ -1,106 +1,76 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:56439 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752652AbaINT0u (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 14 Sep 2014 15:26:50 -0400
-Message-ID: <5415EBF9.3050103@kernel.org>
-Date: Sun, 14 Sep 2014 20:26:49 +0100
-From: Jonathan Cameron <jic23@kernel.org>
+Received: from mezzanine.sirena.org.uk ([106.187.55.193]:36163 "EHLO
+	mezzanine.sirena.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753007AbaILHjY (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 12 Sep 2014 03:39:24 -0400
+Date: Fri, 12 Sep 2014 08:39:00 +0100
+From: Mark Brown <broonie@debian.org>
+To: Jacob Pan <jacob.jun.pan@linux.intel.com>
+Cc: IIO <linux-iio@vger.kernel.org>,
+	LKML <linux-kernel@vger.kernel.org>,
+	DEVICE TREE <devicetree@vger.kernel.org>,
+	Lee Jones <lee.jones@linaro.org>,
+	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+	Aaron Lu <aaron.lu@intel.com>, Alan Cox <alan@linux.intel.com>,
+	Jean Delvare <khali@linux-fr.org>,
+	Samuel Ortiz <sameo@linux.intel.com>,
+	Liam Girdwood <lgirdwood@gmail.com>,
+	Grant Likely <grant.likely@linaro.org>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Rob Herring <robh+dt@kernel.org>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Fugang Duan <B38611@freescale.com>,
+	Arnd Bergmann <arnd@arndb.de>,
+	Zubair Lutfullah <zubair.lutfullah@gmail.com>,
+	Sebastian Reichel <sre@debian.org>,
+	Johannes Thumshirn <johannes.thumshirn@men.de>,
+	Philippe Reynes <tremyfr@yahoo.fr>,
+	Angelo Compagnucci <angelo.compagnucci@gmail.com>,
+	Doug Anderson <dianders@chromium.org>
+Message-ID: <20140912073900.GP7960@sirena.org.uk>
+References: <1410215046-31751-1-git-send-email-jacob.jun.pan@linux.intel.com>
+ <1410215046-31751-4-git-send-email-jacob.jun.pan@linux.intel.com>
+ <20140909112516.GR2601@sirena.org.uk>
+ <20140911152650.74767024@ultegra>
 MIME-Version: 1.0
-To: Peter Meerwald <pmeerw@pmeerw.net>
-CC: linux-iio@vger.kernel.org,
-	Oleksandr Kravchenko <o.v.kravchenko@globallogic.com>
-Subject: Re: [PATCH v2 10/11] iio:bma180: Implement _available sysfs attribute
- dynamically
-References: <1408488206-2633-1-git-send-email-pmeerw@pmeerw.net> <1408488206-2633-11-git-send-email-pmeerw@pmeerw.net>
-In-Reply-To: <1408488206-2633-11-git-send-email-pmeerw@pmeerw.net>
-Content-Type: text/plain; charset=windows-1252
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="hHiQ9nAwW5IGN2dL"
+In-Reply-To: <20140911152650.74767024@ultegra>
+Subject: Re: [PATCH 3/4] regulator/axp20x: use axp2xx consolidated header
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 19/08/14 23:43, Peter Meerwald wrote:
-> makes it easier to add more chip variants and removes redundancy:
-> scales and frequencies are now stated just once
-> 
-> Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
-> Cc: Oleksandr Kravchenko <o.v.kravchenko@globallogic.com>
-Applied.
-> ---
->  drivers/iio/accel/bma180.c | 54 ++++++++++++++++++++++++++++++++++++----------
->  1 file changed, 43 insertions(+), 11 deletions(-)
-> 
-> diff --git a/drivers/iio/accel/bma180.c b/drivers/iio/accel/bma180.c
-> index 6e940b0..9fbc81f 100644
-> --- a/drivers/iio/accel/bma180.c
-> +++ b/drivers/iio/accel/bma180.c
-> @@ -83,12 +83,6 @@ struct bma180_part_info {
->  #define BMA180_DEF_BW		20
->  #define BMA180_DEF_SCALE	2452
->  
-> -/* Available values for sysfs */
-> -#define BMA180_FLP_FREQ_AVAILABLE \
-> -	"10 20 40 75 150 300"
-> -#define BMA180_SCALE_AVAILABLE \
-> -	"0.001275 0.001863 0.002452 0.003727 0.004903 0.009709 0.019417"
-> -
->  struct bma180_data {
->  	struct i2c_client *client;
->  	struct iio_trigger *trig;
-> @@ -347,13 +341,51 @@ err:
->  	dev_err(&data->client->dev, "failed to disable the chip\n");
->  }
->  
-> -static IIO_CONST_ATTR(in_accel_filter_low_pass_3db_frequency_available,
-> -		BMA180_FLP_FREQ_AVAILABLE);
-> -static IIO_CONST_ATTR(in_accel_scale_available, BMA180_SCALE_AVAILABLE);
-> +static ssize_t bma180_show_avail(char *buf, const int *vals, unsigned n,
-> +				 bool micros)
-> +{
-> +	size_t len = 0;
-> +	int i;
-> +
-> +	for (i = 0; i < n; i++) {
-> +		if (!vals[i])
-> +			continue;
-> +		len += scnprintf(buf + len, PAGE_SIZE - len,
-> +			micros ? "0.%06d " : "%d ", vals[i]);
-> +	}
-> +	buf[len - 1] = '\n';
-> +
-> +	return len;
-> +}
-> +
-> +static ssize_t bma180_show_filter_freq_avail(struct device *dev,
-> +				struct device_attribute *attr, char *buf)
-> +{
-> +	struct bma180_data *data = iio_priv(dev_to_iio_dev(dev));
-> +
-> +	return bma180_show_avail(buf, data->part_info->bw_table,
-> +		data->part_info->num_bw, false);
-> +}
-> +
-> +static ssize_t bma180_show_scale_avail(struct device *dev,
-> +				struct device_attribute *attr, char *buf)
-> +{
-> +	struct bma180_data *data = iio_priv(dev_to_iio_dev(dev));
-> +
-> +	return bma180_show_avail(buf, data->part_info->scale_table,
-> +		data->part_info->num_scales, true);
-> +}
-> +
-> +static IIO_DEVICE_ATTR(in_accel_filter_low_pass_3db_frequency_available,
-> +	S_IRUGO, bma180_show_filter_freq_avail, NULL, 0);
-> +
-> +static IIO_DEVICE_ATTR(in_accel_scale_available,
-> +	S_IRUGO, bma180_show_scale_avail, NULL, 0);
->  
->  static struct attribute *bma180_attributes[] = {
-> -	&iio_const_attr_in_accel_filter_low_pass_3db_frequency_available.dev_attr.attr,
-> -	&iio_const_attr_in_accel_scale_available.dev_attr.attr,
-> +	&iio_dev_attr_in_accel_filter_low_pass_3db_frequency_available.
-> +		dev_attr.attr,
-> +	&iio_dev_attr_in_accel_scale_available.dev_attr.attr,
->  	NULL,
->  };
->  
-> 
+
+--hHiQ9nAwW5IGN2dL
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+
+On Thu, Sep 11, 2014 at 03:26:50PM -0700, Jacob Pan wrote:
+> Mark Brown <broonie@debian.org> wrote:
+
+> > but is it really worth the effort of renaming everything?  That's
+> > going to cause problems for things like the stable workflow.
+
+> sorry for the late reply. IMHO, consistent and correct naming has
+> longer term benefit. how can i help to make the stable workflow easier?
+
+Not do the rename - it makes doing a git cherry-pick easier.
+
+--hHiQ9nAwW5IGN2dL
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2
+
+iQEcBAEBAgAGBQJUEqMTAAoJECTWi3JdVIfQq2sH/30hPjsGPESzE2pIVY1cIi19
+pOKvb0WfjbYwyS1/nkGnNvHas1rvGWlFbm0TalnzMQ5yj/UPaYJBQCRbuFUFzEnJ
+h/jVGSKcawpVuMcmworDupOY050ueHbZ3B2quuyoIi2jUy+k+941eg8/tWcO0ZDf
+++e23Vwm+YQ5QL52Glr2dVCqfiAtP4jg/SSw/r4PJ1BfmwnQO0Zj0xJ4kMVy0ecd
+OxZHwqxHXQxppXxbwqt+XrecCPN9o29DKu9dEurkpqXkQLDcFdX6Qq682Rp+vPdH
+E9FrNuIY9MjD1aME0pPmfnEcPPZGxJw/yrCdxxGF13ZVbTdrG1xawhV1tqnOEoo=
+=wIrp
+-----END PGP SIGNATURE-----
+
+--hHiQ9nAwW5IGN2dL--
