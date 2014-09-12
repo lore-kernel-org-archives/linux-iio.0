@@ -1,76 +1,49 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mezzanine.sirena.org.uk ([106.187.55.193]:36163 "EHLO
-	mezzanine.sirena.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753007AbaILHjY (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 12 Sep 2014 03:39:24 -0400
-Date: Fri, 12 Sep 2014 08:39:00 +0100
-From: Mark Brown <broonie@debian.org>
-To: Jacob Pan <jacob.jun.pan@linux.intel.com>
-Cc: IIO <linux-iio@vger.kernel.org>,
-	LKML <linux-kernel@vger.kernel.org>,
-	DEVICE TREE <devicetree@vger.kernel.org>,
-	Lee Jones <lee.jones@linaro.org>,
-	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
-	Aaron Lu <aaron.lu@intel.com>, Alan Cox <alan@linux.intel.com>,
-	Jean Delvare <khali@linux-fr.org>,
-	Samuel Ortiz <sameo@linux.intel.com>,
-	Liam Girdwood <lgirdwood@gmail.com>,
-	Grant Likely <grant.likely@linaro.org>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Rob Herring <robh+dt@kernel.org>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Fugang Duan <B38611@freescale.com>,
-	Arnd Bergmann <arnd@arndb.de>,
-	Zubair Lutfullah <zubair.lutfullah@gmail.com>,
-	Sebastian Reichel <sre@debian.org>,
-	Johannes Thumshirn <johannes.thumshirn@men.de>,
-	Philippe Reynes <tremyfr@yahoo.fr>,
-	Angelo Compagnucci <angelo.compagnucci@gmail.com>,
-	Doug Anderson <dianders@chromium.org>
-Message-ID: <20140912073900.GP7960@sirena.org.uk>
-References: <1410215046-31751-1-git-send-email-jacob.jun.pan@linux.intel.com>
- <1410215046-31751-4-git-send-email-jacob.jun.pan@linux.intel.com>
- <20140909112516.GR2601@sirena.org.uk>
- <20140911152650.74767024@ultegra>
+Received: from smtp-out-138.synserver.de ([212.40.185.138]:1192 "EHLO
+	smtp-out-138.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750997AbaILRZJ (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 12 Sep 2014 13:25:09 -0400
+Message-ID: <54132C78.9000300@metafoo.de>
+Date: Fri, 12 Sep 2014 19:25:12 +0200
+From: Lars-Peter Clausen <lars@metafoo.de>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="hHiQ9nAwW5IGN2dL"
-In-Reply-To: <20140911152650.74767024@ultegra>
-Subject: Re: [PATCH 3/4] regulator/axp20x: use axp2xx consolidated header
+To: Subbaraya Sundeep Bhatta <subbaraya.sundeep.bhatta@xilinx.com>,
+	jic23@kernel.org, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+CC: michals@xilinx.com, svemula@xilinx.com, anirudh@xilinx.com,
+	Subbaraya Sundeep Bhatta <sbhatta@xilinx.com>
+Subject: Re: [PATCH] iio: adc: xilinx-xadc: assign auxiliary channels address
+ correctly
+References: <344d9464-c489-42cd-b9c4-a63759f8f6da@BL2FFO11FD040.protection.gbl>
+In-Reply-To: <344d9464-c489-42cd-b9c4-a63759f8f6da@BL2FFO11FD040.protection.gbl>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
+On 09/11/2014 10:55 AM, Subbaraya Sundeep Bhatta wrote:
+> This patch fixes incorrect logic for assigning address
+> to auxiliary channels of xilinx xadc.
+>
+> Signed-off-by: Subbaraya Sundeep Bhatta <sbhatta@xilinx.com>
 
---hHiQ9nAwW5IGN2dL
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Acked-by: Lars-Peter Clausen <lars@metafoo.de>
 
-On Thu, Sep 11, 2014 at 03:26:50PM -0700, Jacob Pan wrote:
-> Mark Brown <broonie@debian.org> wrote:
+> ---
+>   drivers/iio/adc/xilinx-xadc-core.c |    2 +-
+>   1 files changed, 1 insertions(+), 1 deletions(-)
+>
+> diff --git a/drivers/iio/adc/xilinx-xadc-core.c b/drivers/iio/adc/xilinx-xadc-core.c
+> index fd2745c..626b397 100644
+> --- a/drivers/iio/adc/xilinx-xadc-core.c
+> +++ b/drivers/iio/adc/xilinx-xadc-core.c
+> @@ -1126,7 +1126,7 @@ static int xadc_parse_dt(struct iio_dev *indio_dev, struct device_node *np,
+>   				chan->address = XADC_REG_VPVN;
+>   			} else {
+>   				chan->scan_index = 15 + reg;
+> -				chan->scan_index = XADC_REG_VAUX(reg - 1);
+> +				chan->address = XADC_REG_VAUX(reg - 1);
+>   			}
+>   			num_channels++;
+>   			chan++;
+>
 
-> > but is it really worth the effort of renaming everything?  That's
-> > going to cause problems for things like the stable workflow.
-
-> sorry for the late reply. IMHO, consistent and correct naming has
-> longer term benefit. how can i help to make the stable workflow easier?
-
-Not do the rename - it makes doing a git cherry-pick easier.
-
---hHiQ9nAwW5IGN2dL
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2
-
-iQEcBAEBAgAGBQJUEqMTAAoJECTWi3JdVIfQq2sH/30hPjsGPESzE2pIVY1cIi19
-pOKvb0WfjbYwyS1/nkGnNvHas1rvGWlFbm0TalnzMQ5yj/UPaYJBQCRbuFUFzEnJ
-h/jVGSKcawpVuMcmworDupOY050ueHbZ3B2quuyoIi2jUy+k+941eg8/tWcO0ZDf
-++e23Vwm+YQ5QL52Glr2dVCqfiAtP4jg/SSw/r4PJ1BfmwnQO0Zj0xJ4kMVy0ecd
-OxZHwqxHXQxppXxbwqt+XrecCPN9o29DKu9dEurkpqXkQLDcFdX6Qq682Rp+vPdH
-E9FrNuIY9MjD1aME0pPmfnEcPPZGxJw/yrCdxxGF13ZVbTdrG1xawhV1tqnOEoo=
-=wIrp
------END PGP SIGNATURE-----
-
---hHiQ9nAwW5IGN2dL--
