@@ -1,214 +1,108 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pa0-f41.google.com ([209.85.220.41]:35279 "EHLO
-	mail-pa0-f41.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754250AbaIPWIS (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 16 Sep 2014 18:08:18 -0400
-Received: by mail-pa0-f41.google.com with SMTP id bj1so679397pad.14
-        for <linux-iio@vger.kernel.org>; Tue, 16 Sep 2014 15:08:17 -0700 (PDT)
-Date: Tue, 16 Sep 2014 15:07:40 -0700
-From: Lee Jones <lee.jones@linaro.org>
-To: "Opensource [Adam Thomson]" <Adam.Thomson.Opensource@diasemi.com>
-Cc: Samuel Ortiz <sameo@linux.intel.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	Sebastian Reichel <sre@kernel.org>,
-	Dmitry Eremin-Solenikov <dbaryshkov@gmail.com>,
-	David Woodhouse <dwmw2@infradead.org>,
-	"linux-pm@vger.kernel.org" <linux-pm@vger.kernel.org>,
+Received: from top.free-electrons.com ([176.31.233.9]:56963 "EHLO
+	mail.free-electrons.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S1751927AbaILTPI (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 12 Sep 2014 15:15:08 -0400
+Date: Fri, 12 Sep 2014 17:18:24 +0200
+From: Maxime Ripard <maxime.ripard@free-electrons.com>
+To: Jacob Pan <jacob.jun.pan@linux.intel.com>
+Cc: IIO <linux-iio@vger.kernel.org>,
+	LKML <linux-kernel@vger.kernel.org>,
+	DEVICE TREE <devicetree@vger.kernel.org>,
+	Lee Jones <lee.jones@linaro.org>,
+	Carlo Caione <carlo@caione.org>,
+	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+	Aaron Lu <aaron.lu@intel.com>, Alan Cox <alan@linux.intel.com>,
+	Jean Delvare <khali@linux-fr.org>,
+	Samuel Ortiz <sameo@linux.intel.com>,
+	Liam Girdwood <lgirdwood@gmail.com>,
+	Mark Brown <broonie@kernel.org>,
+	Grant Likely <grant.likely@linaro.org>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 	Rob Herring <robh+dt@kernel.org>,
-	Pawel Moll <pawel.moll@arm.com>,
-	Mark Rutland <mark.rutland@arm.com>,
-	Ian Campbell <ijc+devicetree@hellion.org.uk>,
-	Kumar Gala <galak@codeaurora.org>,
-	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	Joe Perches <joe@perches.com>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	Support Opensource <Support.Opensource@diasemi.com>
-Subject: Re: [PATCH v2 1/7] mfd: Add support for DA9150 combined charger &
- fuel-gauge device
-Message-ID: <20140916220740.GQ25162@lee--X1>
-References: <cover.1409145187.git.Adam.Thomson.Opensource@diasemi.com>
- <d6c7de200c9447dbafa74ee76739da943a0b73b2.1409145187.git.Adam.Thomson.Opensource@diasemi.com>
- <20140828163608.GY24579@lee--X1>
- <2E89032DDAA8B9408CB92943514A0337AB5144CE@SW-EX-MBX01.diasemi.com>
- <20140910094951.GN30307@lee--X1>
- <2E89032DDAA8B9408CB92943514A0337AB514846@SW-EX-MBX01.diasemi.com>
- <20140915223924.GC25162@lee--X1>
- <2E89032DDAA8B9408CB92943514A0337AB514E7C@SW-EX-MBX01.diasemi.com>
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Fugang Duan <B38611@freescale.com>,
+	Arnd Bergmann <arnd@arndb.de>,
+	Zubair Lutfullah <zubair.lutfullah@gmail.com>,
+	Sebastian Reichel <sre@debian.org>,
+	Johannes Thumshirn <johannes.thumshirn@men.de>,
+	Philippe Reynes <tremyfr@yahoo.fr>,
+	Angelo Compagnucci <angelo.compagnucci@gmail.com>,
+	Doug Anderson <dianders@chromium.org>,
+	Ramakrishna Pallala <ramakrishna.pallala@intel.com>,
+	Peter Meerwald <pmeerw@pmeerw.net>
+Subject: Re: [PATCH v3 0/5] Initial support for XPowers AXP288 PMIC
+Message-ID: <20140912151824.GU31276@lukather>
+References: <1410477357-6407-1-git-send-email-jacob.jun.pan@linux.intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-In-Reply-To: <2E89032DDAA8B9408CB92943514A0337AB514E7C@SW-EX-MBX01.diasemi.com>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="K6Vt3zCKtaqyTnPU"
+In-Reply-To: <1410477357-6407-1-git-send-email-jacob.jun.pan@linux.intel.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Tue, 16 Sep 2014, Opensource [Adam Thomson] wrote:
 
-> On September 15, 2014 23:39, Lee Jones wrote:
-> 
-> > On Wed, 10 Sep 2014, Opensource [Adam Thomson] wrote:
-> > > On September 10, 2014 10:50, Lee Jones wrote:
-> > > > On Tue, 09 Sep 2014, Opensource [Adam Thomson] wrote:
-> > > >
-> > > > > On August 28, 2014 17:36, Lee Jones wrote:
-> > > > >
-> > > > > Thanks for the feedback. As a general comment a couple of the items you've
-> > > > > identified relate to future updates (additional functionality being added).
-> > > > > I already have code in place for this but have stripped out a couple of the
-> > > > > drivers just to reduce the churn and size of patch submission. These will be
-> > > > > added once these patches have been accepted.
-> > > > >
-> > > > > Where this is the case, I have added notes in-line against the relevant
-> > > > > comments you made.
-> > > > >
-> > > > > > On Thu, 28 Aug 2014, Adam Thomson wrote:
-> > > > > >
-> > > > > > > DA9150 is a combined Charger and Fuel-Gauge IC, with additional
-> > > > > > > GPIO and GPADC functionality.
-> > > > > > >
-> > > > > > > Signed-off-by: Adam Thomson
-> > <Adam.Thomson.Opensource@diasemi.com>
-> > > > > > > ---
-> > > > > > >  drivers/mfd/Kconfig                  |   12 +
-> > > > > > >  drivers/mfd/Makefile                 |    2 +
-> > > > > > >  drivers/mfd/da9150-core.c            |  332 ++++++++++
-> > > > > > >  drivers/mfd/da9150-i2c.c             |  176 ++++++
-> > 
-> > [...]
-> > 
-> > > > > > > +/* Helper functions for sub-devices to request/free IRQs */
-> > > > > > > +int da9150_register_irq(struct platform_device *pdev, void *dev_id,
-> > > > > > > +			irq_handler_t handler, const char *name)
-> > > > > > > +{
-> > > > > > > +	int irq, ret;
-> > > > > > > +
-> > > > > > > +	irq = platform_get_irq_byname(pdev, name);
-> > > > > > > +	if (irq < 0)
-> > > > > > > +		return irq;
-> > > > > > > +
-> > > > > > > +	ret = devm_request_threaded_irq(&pdev->dev, irq, NULL, handler,
-> > > > > > > +					IRQF_ONESHOT, name, dev_id);
-> > > > > > > +	if (ret)
-> > > > > > > +		dev_err(&pdev->dev, "Failed to request IRQ %d: %d\n", irq,
-> > ret);
-> > > > > > > +
-> > > > > > > +	return ret;
-> > > > > > > +}
-> > > > > > > +EXPORT_SYMBOL_GPL(da9150_register_irq);
-> > > > > >
-> > > > > > Why do they need help?  What problem does adding these layers solve?
-> > > > >
-> > > > > Means I don't have to keep adding print error lines everywhere else if this
-> > > > > function takes care of it. Thought that would be cleaner.
-> > > >
-> > > > You only need to request each IRQ once.  It's just more abstraction
-> > > > for the sake of it.  I would prefer if you removed them.
-> > >
-> > > Yes, but in the charger driver for example, there are 4 IRQs to request. If
-> > > I don't use this approach the IRQ requesting becomes bloated, hence why I went
-> > > for a common function like this. Thought generally the intention was to cut
-> > > down on repeated code?
-> > 
-> > If you're worried about bloat in .probe() it's okay to define a new
-> > function within the charger driver; however, creating a call-back into
-> > the MFD driver like this I think it over-kill for 4 requests.
-> 
-> I could do something just in the charger, but why not have something which can
-> be used for all sub-devices? There is also an IRQ used in the IIO ADC driver and
-> there will be another in the later fuel-gauge driver too. Doesn't make sense to
-> me not to do in the MFD code when that will provide a simple common call for all
-> sub-devices. What is your concern with adding something like this, just so I'm
-> clear?
+--K6Vt3zCKtaqyTnPU
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-I guess my last response wasn't as descriptive as it could have been.
-I don't think that any helper function is required at all.  No need to
-abstract/obfuscate how the IRQ is obtained and registered.  What I
-meant by 'do it in the charger driver' was, copy and paste all of the
-platform_get_irq_byname() and devm_request_threaded_irq() calls from
-.probe() into a separate function, but only if you are worried about a
-bloated .probe().  Personally I'd just leave them in there.
+On Thu, Sep 11, 2014 at 04:15:52PM -0700, Jacob Pan wrote:
+> XPowers AXP288 is a customized PMIC found on some Intel Baytrail-CR platf=
+orms.
+> It comes with sub-functions such as USB charging, fuel gauge, ADC, and ma=
+ny LDO
+> and BUCK channels.
+>=20
+> By extending the existing AXP20x driver, this patchset adds basic support
+> for AXP288 PMIC with GPADC as one MFD cell device driver. It also adds ho=
+oks
+> for ACPI opregion handler driver which can be used to handle ACPI request=
+s.
+>=20
+> Currently, the PMIC driver in this patchset does not support platform data
+> enumeration. But when ACPI _DSD and unified device properties become avai=
+lable,
+> cell devices with platform data will be added.
+>=20
+> This patch does not use intel_soc_pmic core for i2c and regmap handling i=
+n that
+> axp288 shares similar programming interface with other Xpower PMICs suppo=
+rted in
+> axp20x.c. Therefore, extending axp20x.c to include axp288 makes more sens=
+e.
+>=20
+> Changes
+>  v3:	- put all file rename changes in 1/5
 
-Bottom line is; I don't feel there is a necessity for any helper
-function here.  I think it adds unnecessary complexity for the sake of
-saving a few lines of code.
+The variables renaming are still not in 1/5....
 
-If you still think there is a requirement for it, perhaps a more
-system-wide devm_request_threaded_irq_byname() is in order instead?
+--=20
+Maxime Ripard, Free Electrons
+Embedded Linux, Kernel and Android engineering
+http://free-electrons.com
 
-> > > > > > > +void da9150_release_irq(struct platform_device *pdev, void *dev_id,
-> > > > > > > +		       const char *name)
-> > > > > > > +{
-> > > > > > > +	int irq;
-> > > > > > > +
-> > > > > > > +	irq = platform_get_irq_byname(pdev, name);
-> > > > > > > +	if (irq < 0)
-> > > > > > > +		return;
-> > > > > > > +
-> > > > > > > +	devm_free_irq(&pdev->dev, irq, dev_id);
-> > > > > > > +}
-> > > > > > > +EXPORT_SYMBOL_GPL(da9150_release_irq);
-> > > > > >
-> > > > > > Do you ever release the IRQ and not unbind the driver?
-> > > > > >
-> > > > > > Are there ordering issues at play here?
-> > > > > >
-> > > > > > If not, there's no need to conduct a manual free.
-> > > > >
-> > > > > In the charger driver, in the remove function there is a need I believe to
-> > > > > free the IRQs before other items are cleared up (e.g. power_supply classes),
-> > > > > so this is why I have added this in here.
-> > > >
-> > > > Can you handle this separately in the Charger driver then please?
-> > > >
-> > > > [...]
-> > >
-> > > If I have to remove the IRQ register function, then yes, otherwise it makes more
-> > > sense to have the pair of functions in the MFD core I would say.
-> > 
-> > I would prefer you to remove the call-back please.
-> 
-> Right.
-> 
-> > 
-> > > > > > > +	if (pdata)
-> > > > > > > +		da9150->irq_base = pdata->irq_base;
-> > > > > > > +	else
-> > > > > > > +		da9150->irq_base = -1;
-> > > > > >
-> > > > > > pdata ? pdata->irq_base : -1;
-> > > > >
-> > > > > This is left this way as later updates to add additional functionality will
-> > > > > require addtional work to be done with the platform data. Seemed pointless
-> > > > > changing it here just to change it back later.
-> > > >
-> > > > You're not changing anything, as this is the introduction of the code.
-> > > > I can't tell you how many times I've heard "I will change it later",
-> > > > or "doing it this way will support subsequent submissions", then
-> > > > received no more patches.  It's okay to do it nicely now and expand
-> > > > it back out in the new patches.
-> > > >
-> > > > [...]
-> > >
-> > > It appears that way to you but I have to modify my code for sumbission as the
-> > > local code I have covers all functionality. Am having to refactor again and
-> > > again just to suit this initial submission, and then I have to revert it back
-> > > again when submitting the last couple of drivers. Time consuming, and quite
-> > > frustrating when the intention was to make the whole process easier. Anyway,
-> > > will update for now and revert in subsequent patches.
-> > 
-> > I sincerely hope the refactorings won't add too much effort, but it's
-> > difficult to have one rule for the masses and different ones for
-> > others.
-> 
-> I do understand that, and that's fair enough. Is just frustrating when you're
-> trying to do a proper job. Anyway, am sure I'll live. :)
+--K6Vt3zCKtaqyTnPU
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
 
-I know how you feel, as I've been on the receiving end of such rules
-more than once, but you could have probably re-factored twice in the
-time it's taken us to have this conversation. :)
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
 
--- 
-Lee Jones
-Linaro STMicroelectronics Landing Team Lead
-Linaro.org │ Open source software for ARM SoCs
-Follow Linaro: Facebook | Twitter | Blog
+iQIcBAEBAgAGBQJUEw7AAAoJEBx+YmzsjxAgYi4P/3ns+5+YnbGJGUxtQECppx2c
+UV+PkBjF5Z/5EXr2WbsAv2pnqr0KoT0YYY41HyNeq3qvlFcvpteaTVvT08uj2z2m
+F91dSWuTKkjkLCYorhlldhA7YakBKNCzgGHHNkyRP/sFimcxkexOvr9s1PMha7mC
+bV655aqhnD6kvgyNlUwJabeNPt9af3QSrTTTpuKcwqu/qFsKJs2JhxuvncJLWQYc
+jt0thJbaEq8C98PgXDOOHztGo7PqMq3sPRkp6D8jaqpRiY+ixAN8z5+2ZQnceh34
+z2xaoMAlMRvp51Leb0QLnfDDd6l9QHB19FVchqMb2RnJ9ykrMKmRavxtojKKiCj7
+jo/DdraQFHv89IzcWGGzIBFl76rl6KSNsMHZryqrnb0ocEO+2qjLkL/rMSt0wuad
+lugZZfP9oLJDlT+KbQ3A0oLpr3qyxdnvWQLZgqdkSUCzD5kNuKL9/8hj+w4AdkwD
+M4DgOyPsMIQVuh77TaIPEuQ5PhWtDfYpfB1PH1MeCkb3nL/ZgpIiVdo4gRD0UbRa
+EauVIhBzZQKfip9FmTzEG/W8HsSD7cpDH3xFXrkn9OTIINp6E9cW7hQfrjqsPFct
+n/ruVIevK8LZRtH1sgiamPl1bzejg649J5QVaIvfhHZIqgtmZOZ7jWCROoqtM6j0
+stKgyUJUrKy/xqsuSHZd
+=HkLt
+-----END PGP SIGNATURE-----
+
+--K6Vt3zCKtaqyTnPU--
