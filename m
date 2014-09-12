@@ -1,70 +1,75 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:56432 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752652AbaINT0a (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 14 Sep 2014 15:26:30 -0400
-Message-ID: <5415EBE5.20607@kernel.org>
-Date: Sun, 14 Sep 2014 20:26:29 +0100
-From: Jonathan Cameron <jic23@kernel.org>
+Received: from mga14.intel.com ([192.55.52.115]:21727 "EHLO mga14.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751411AbaILTgt (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Fri, 12 Sep 2014 15:36:49 -0400
+Date: Fri, 12 Sep 2014 12:36:45 -0700
+From: Jacob Pan <jacob.jun.pan@linux.intel.com>
+To: Maxime Ripard <maxime.ripard@free-electrons.com>
+Cc: IIO <linux-iio@vger.kernel.org>,
+	LKML <linux-kernel@vger.kernel.org>,
+	DEVICE TREE <devicetree@vger.kernel.org>,
+	Lee Jones <lee.jones@linaro.org>,
+	Carlo Caione <carlo@caione.org>,
+	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+	Aaron Lu <aaron.lu@intel.com>, Alan Cox <alan@linux.intel.com>,
+	Jean Delvare <khali@linux-fr.org>,
+	Samuel Ortiz <sameo@linux.intel.com>,
+	Liam Girdwood <lgirdwood@gmail.com>,
+	Mark Brown <broonie@kernel.org>,
+	Grant Likely <grant.likely@linaro.org>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Rob Herring <robh+dt@kernel.org>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Fugang Duan <B38611@freescale.com>,
+	Arnd Bergmann <arnd@arndb.de>,
+	Zubair Lutfullah <zubair.lutfullah@gmail.com>,
+	Sebastian Reichel <sre@debian.org>,
+	Johannes Thumshirn <johannes.thumshirn@men.de>,
+	Philippe Reynes <tremyfr@yahoo.fr>,
+	Angelo Compagnucci <angelo.compagnucci@gmail.com>,
+	Doug Anderson <dianders@chromium.org>,
+	Ramakrishna Pallala <ramakrishna.pallala@intel.com>,
+	Peter Meerwald <pmeerw@pmeerw.net>
+Subject: Re: [PATCH v3 0/5] Initial support for XPowers AXP288 PMIC
+Message-ID: <20140912123645.3bc6058f@ultegra>
+In-Reply-To: <20140912151824.GU31276@lukather>
+References: <1410477357-6407-1-git-send-email-jacob.jun.pan@linux.intel.com>
+	<20140912151824.GU31276@lukather>
 MIME-Version: 1.0
-To: Peter Meerwald <pmeerw@pmeerw.net>
-CC: linux-iio@vger.kernel.org,
-	Oleksandr Kravchenko <o.v.kravchenko@globallogic.com>
-Subject: Re: [PATCH v2 09/11] iio:bma180: Prepare for accelerometer channels
- with different resolutions
-References: <1408488206-2633-1-git-send-email-pmeerw@pmeerw.net> <1408488206-2633-10-git-send-email-pmeerw@pmeerw.net>
-In-Reply-To: <1408488206-2633-10-git-send-email-pmeerw@pmeerw.net>
-Content-Type: text/plain; charset=windows-1252
+Content-Type: text/plain; charset=US-ASCII
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 19/08/14 23:43, Peter Meerwald wrote:
-> allow to specify channels resolution and compute shift assuming
-> 16-bit registers and MSB allocation
+On Fri, 12 Sep 2014 17:18:24 +0200
+Maxime Ripard <maxime.ripard@free-electrons.com> wrote:
+
+> On Thu, Sep 11, 2014 at 04:15:52PM -0700, Jacob Pan wrote:
+> > XPowers AXP288 is a customized PMIC found on some Intel Baytrail-CR
+> > platforms. It comes with sub-functions such as USB charging, fuel
+> > gauge, ADC, and many LDO and BUCK channels.
+> > 
+> > By extending the existing AXP20x driver, this patchset adds basic
+> > support for AXP288 PMIC with GPADC as one MFD cell device driver.
+> > It also adds hooks for ACPI opregion handler driver which can be
+> > used to handle ACPI requests.
+> > 
+> > Currently, the PMIC driver in this patchset does not support
+> > platform data enumeration. But when ACPI _DSD and unified device
+> > properties become available, cell devices with platform data will
+> > be added.
+> > 
+> > This patch does not use intel_soc_pmic core for i2c and regmap
+> > handling in that axp288 shares similar programming interface with
+> > other Xpower PMICs supported in axp20x.c. Therefore, extending
+> > axp20x.c to include axp288 makes more sense.
+> > 
+> > Changes
+> >  v3:	- put all file rename changes in 1/5
 > 
-> Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
-> Cc: Oleksandr Kravchenko <o.v.kravchenko@globallogic.com>
-Applied
-> ---
->  drivers/iio/accel/bma180.c | 12 ++++++------
->  1 file changed, 6 insertions(+), 6 deletions(-)
+> The variables renaming are still not in 1/5....
 > 
-> diff --git a/drivers/iio/accel/bma180.c b/drivers/iio/accel/bma180.c
-> index a25b060..6e940b0 100644
-> --- a/drivers/iio/accel/bma180.c
-> +++ b/drivers/iio/accel/bma180.c
-> @@ -474,7 +474,7 @@ static const struct iio_chan_spec_ext_info bma180_ext_info[] = {
->  	{ },
->  };
->  
-> -#define BMA180_ACC_CHANNEL(_axis) {					\
-> +#define BMA180_ACC_CHANNEL(_axis, _bits) {				\
->  	.type = IIO_ACCEL,						\
->  	.modified = 1,							\
->  	.channel2 = IIO_MOD_##_axis,					\
-> @@ -484,9 +484,9 @@ static const struct iio_chan_spec_ext_info bma180_ext_info[] = {
->  	.scan_index = AXIS_##_axis,					\
->  	.scan_type = {							\
->  		.sign = 's',						\
-> -		.realbits = 14,						\
-> +		.realbits = _bits,					\
->  		.storagebits = 16,					\
-> -		.shift = 2,						\
-> +		.shift = 16 - _bits,					\
->  	},								\
->  	.ext_info = bma180_ext_info,					\
->  }
-> @@ -504,9 +504,9 @@ static const struct iio_chan_spec_ext_info bma180_ext_info[] = {
->  }
->  
->  static const struct iio_chan_spec bma180_channels[] = {
-> -	BMA180_ACC_CHANNEL(X),
-> -	BMA180_ACC_CHANNEL(Y),
-> -	BMA180_ACC_CHANNEL(Z),
-> +	BMA180_ACC_CHANNEL(X, 14),
-> +	BMA180_ACC_CHANNEL(Y, 14),
-> +	BMA180_ACC_CHANNEL(Z, 14),
->  	BMA180_TEMP_CHANNEL,
->  	IIO_CHAN_SOFT_TIMESTAMP(4),
->  };
-> 
+1/5 is for file rename such that the follow up patches are more
+readable. There are so many details in variable rename, I think it
+belongs to the patch that expands the new device support.
