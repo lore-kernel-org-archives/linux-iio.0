@@ -1,75 +1,60 @@
-Return-Path: <knaack.h@gmx.de>
-Message-ID: <5415948C.6080509@gmx.de>
-Date: Sun, 14 Sep 2014 15:13:48 +0200
-From: Hartmut Knaack <knaack.h@gmx.de>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:49303 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752124AbaIMUFD (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 13 Sep 2014 16:05:03 -0400
+Message-ID: <5414A36B.3000106@kernel.org>
+Date: Sat, 13 Sep 2014 21:04:59 +0100
+From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Jonathan Cameron <jic23@kernel.org>,
- Jacob Pan <jacob.jun.pan@linux.intel.com>,
- IIO <linux-iio@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>,
- DEVICE TREE <devicetree@vger.kernel.org>,
- Lee Jones <lee.jones@linaro.org>
-CC: Carlo Caione <carlo@caione.org>,
- Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
- Aaron Lu <aaron.lu@intel.com>, Alan Cox <alan@linux.intel.com>,
- Samuel Ortiz <sameo@linux.intel.com>,
- Liam Girdwood <lgirdwood@gmail.com>, Mark Brown <broonie@kernel.org>,
- Grant Likely <grant.likely@linaro.org>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Rob Herring <robh+dt@kernel.org>,
- Lars-Peter Clausen <lars@metafoo.de>, Fugang Duan <B38611@freescale.com>,
- Arnd Bergmann <arnd@arndb.de>,
- Zubair Lutfullah <zubair.lutfullah@gmail.com>,
- Sebastian Reichel <sre@debian.org>,
- Johannes Thumshirn <johannes.thumshirn@men.de>,
- Philippe Reynes <tremyfr@yahoo.fr>,
- Angelo Compagnucci <angelo.compagnucci@gmail.com>,
- Doug Anderson <dianders@chromium.org>,
- Ramakrishna Pallala <ramakrishna.pallala@intel.com>,
- Peter Meerwald <pmeerw@pmeerw.net>,
- Maxime Ripard <maxime.ripard@free-electrons.com>
-Subject: Re: [PATCH v3 5/5] iio: add documentation for current attribute
-References: <1410477357-6407-1-git-send-email-jacob.jun.pan@linux.intel.com> <1410477357-6407-6-git-send-email-jacob.jun.pan@linux.intel.com> <5414A138.9080602@kernel.org>
-In-Reply-To: <5414A138.9080602@kernel.org>
+To: Lars-Peter Clausen <lars@metafoo.de>,
+	Subbaraya Sundeep Bhatta <subbaraya.sundeep.bhatta@xilinx.com>,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+CC: michals@xilinx.com, svemula@xilinx.com, anirudh@xilinx.com,
+	Subbaraya Sundeep Bhatta <sbhatta@xilinx.com>
+Subject: Re: [PATCH] iio: adc: xilinx-xadc: assign auxiliary channels address
+ correctly
+References: <344d9464-c489-42cd-b9c4-a63759f8f6da@BL2FFO11FD040.protection.gbl> <54132C78.9000300@metafoo.de>
+In-Reply-To: <54132C78.9000300@metafoo.de>
 Content-Type: text/plain; charset=windows-1252
-List-ID: <linux-iio@vger.kernel.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Jonathan Cameron schrieb, Am 13.09.2014 21:55:
-> On 12/09/14 00:15, Jacob Pan wrote:
->> Add documentation for input current raw reading and scale.
+On 12/09/14 18:25, Lars-Peter Clausen wrote:
+> On 09/11/2014 10:55 AM, Subbaraya Sundeep Bhatta wrote:
+>> This patch fixes incorrect logic for assigning address
+>> to auxiliary channels of xilinx xadc.
 >>
->> Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
-> The content is fine, but please look at how the other types are handled.
-> The raw attribute is described along with the units etc in it's own
-> section, but the _scale attribute just gets lumped in with the equivalent
-> for all the other channel types.
+>> Signed-off-by: Subbaraya Sundeep Bhatta <sbhatta@xilinx.com>
 > 
-> Thanks,
+> Acked-by: Lars-Peter Clausen <lars@metafoo.de>
+Applied to the fixes-togreg branch of iio.git and flagged
+for stable.
+
+Thanks,
+
+Jonathan
 > 
-> Jonathan
 >> ---
->>  Documentation/ABI/testing/sysfs-bus-iio | 8 ++++++++
->>  1 file changed, 8 insertions(+)
+>>   drivers/iio/adc/xilinx-xadc-core.c |    2 +-
+>>   1 files changed, 1 insertions(+), 1 deletions(-)
 >>
->> diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
->> index d760b02..3c76bd8 100644
->> --- a/Documentation/ABI/testing/sysfs-bus-iio
->> +++ b/Documentation/ABI/testing/sysfs-bus-iio
->> @@ -1028,3 +1028,11 @@ Contact:	linux-iio@vger.kernel.org
->>  Description:
->>  		Raw value of rotation from true/magnetic north measured with
->>  		or without compensation from tilt sensors.
->> +
->> +What:		/sys/bus/iio/devices/iio:deviceX/in_currentX_raw
->> +What:		/sys/bus/iio/devices/iio:deviceX/in_currentX_scale
->> +KernelVersion:	3.18
->> +Contact:	linux-iio@vger.kernel.org
->> +Description:
->> +		Raw current measurement from channel X. Units after application of
->> +		scale and offset are milliamps.
-Where is the offset?
+>> diff --git a/drivers/iio/adc/xilinx-xadc-core.c b/drivers/iio/adc/xilinx-xadc-core.c
+>> index fd2745c..626b397 100644
+>> --- a/drivers/iio/adc/xilinx-xadc-core.c
+>> +++ b/drivers/iio/adc/xilinx-xadc-core.c
+>> @@ -1126,7 +1126,7 @@ static int xadc_parse_dt(struct iio_dev *indio_dev, struct device_node *np,
+>>                   chan->address = XADC_REG_VPVN;
+>>               } else {
+>>                   chan->scan_index = 15 + reg;
+>> -                chan->scan_index = XADC_REG_VAUX(reg - 1);
+>> +                chan->address = XADC_REG_VAUX(reg - 1);
+>>               }
+>>               num_channels++;
+>>               chan++;
 >>
-> --
+> 
+> -- 
 > To unsubscribe from this list: send the line "unsubscribe linux-iio" in
 > the body of a message to majordomo@vger.kernel.org
 > More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> 
