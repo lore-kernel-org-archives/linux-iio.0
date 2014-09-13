@@ -1,155 +1,76 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:48203 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:49204 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751733AbaIMQ41 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 13 Sep 2014 12:56:27 -0400
-Message-ID: <54147738.9030106@kernel.org>
-Date: Sat, 13 Sep 2014 17:56:24 +0100
+	with ESMTP id S1752112AbaIMTzj (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 13 Sep 2014 15:55:39 -0400
+Message-ID: <5414A138.9080602@kernel.org>
+Date: Sat, 13 Sep 2014 20:55:36 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Laurentiu Palcu <laurentiu.palcu@intel.com>
-CC: Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
+To: Jacob Pan <jacob.jun.pan@linux.intel.com>,
+	IIO <linux-iio@vger.kernel.org>,
+	LKML <linux-kernel@vger.kernel.org>,
+	DEVICE TREE <devicetree@vger.kernel.org>,
+	Lee Jones <lee.jones@linaro.org>
+CC: Carlo Caione <carlo@caione.org>,
+	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+	Aaron Lu <aaron.lu@intel.com>, Alan Cox <alan@linux.intel.com>,
+	Samuel Ortiz <sameo@linux.intel.com>,
+	Liam Girdwood <lgirdwood@gmail.com>,
+	Mark Brown <broonie@kernel.org>,
+	Grant Likely <grant.likely@linaro.org>,
 	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Teodora Baluta <teodora.baluta@intel.com>,
-	Sachin Kamat <sachin.kamat@linaro.org>,
-	Derek Basehore <dbasehore@chromium.org>,
-	Jingoo Han <jg1.han@samsung.com>, linux-iio@vger.kernel.org,
-	devel@driverdev.osuosl.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 3/3] staging: iio: light: isl29018: add ACPI support
-References: <1409322382-30021-4-git-send-email-laurentiu.palcu@intel.com> <1409563234-13746-1-git-send-email-laurentiu.palcu@intel.com>
-In-Reply-To: <1409563234-13746-1-git-send-email-laurentiu.palcu@intel.com>
+	Rob Herring <robh+dt@kernel.org>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Fugang Duan <B38611@freescale.com>,
+	Arnd Bergmann <arnd@arndb.de>,
+	Zubair Lutfullah <zubair.lutfullah@gmail.com>,
+	Sebastian Reichel <sre@debian.org>,
+	Johannes Thumshirn <johannes.thumshirn@men.de>,
+	Philippe Reynes <tremyfr@yahoo.fr>,
+	Angelo Compagnucci <angelo.compagnucci@gmail.com>,
+	Doug Anderson <dianders@chromium.org>,
+	Ramakrishna Pallala <ramakrishna.pallala@intel.com>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Maxime Ripard <maxime.ripard@free-electrons.com>
+Subject: Re: [PATCH v3 5/5] iio: add documentation for current attribute
+References: <1410477357-6407-1-git-send-email-jacob.jun.pan@linux.intel.com> <1410477357-6407-6-git-send-email-jacob.jun.pan@linux.intel.com>
+In-Reply-To: <1410477357-6407-6-git-send-email-jacob.jun.pan@linux.intel.com>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 01/09/14 10:20, Laurentiu Palcu wrote:
-> Add support for enumerating the device through ACPI.
+On 12/09/14 00:15, Jacob Pan wrote:
+> Add documentation for input current raw reading and scale.
 > 
-> Signed-off-by: Laurentiu Palcu <laurentiu.palcu@intel.com>
-Applied to the togreg branch of iio.git - initially pushed out as
-testing for the autobuilders to play.
+> Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
+The content is fine, but please look at how the other types are handled.
+The raw attribute is described along with the units etc in it's own
+section, but the _scale attribute just gets lumped in with the equivalent
+for all the other channel types.
 
 Thanks,
 
 Jonathan
 > ---
+>  Documentation/ABI/testing/sysfs-bus-iio | 8 ++++++++
+>  1 file changed, 8 insertions(+)
 > 
-> Changes in v2:
->  * fix the unnecessary casting from const char * to char * and back;
-> 
-> Thank you Jonathan for the reviews,
-> laurentiu
-> 
->  drivers/staging/iio/light/isl29018.c | 46 +++++++++++++++++++++++++++++++-----
->  1 file changed, 40 insertions(+), 6 deletions(-)
-> 
-> diff --git a/drivers/staging/iio/light/isl29018.c b/drivers/staging/iio/light/isl29018.c
-> index b50f126..65a35da 100644
-> --- a/drivers/staging/iio/light/isl29018.c
-> +++ b/drivers/staging/iio/light/isl29018.c
-> @@ -30,6 +30,7 @@
->  #include <linux/slab.h>
->  #include <linux/iio/iio.h>
->  #include <linux/iio/sysfs.h>
-> +#include <linux/acpi.h>
->  
->  #define CONVERSION_TIME_MS		100
->  
-> @@ -656,12 +657,28 @@ static const struct chip_info chip_info_tbl[] = {
->  	},
->  };
->  
-> +static const char *isl29018_match_acpi_device(struct device *dev, int *data)
-> +{
-> +	const struct acpi_device_id *id;
+> diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
+> index d760b02..3c76bd8 100644
+> --- a/Documentation/ABI/testing/sysfs-bus-iio
+> +++ b/Documentation/ABI/testing/sysfs-bus-iio
+> @@ -1028,3 +1028,11 @@ Contact:	linux-iio@vger.kernel.org
+>  Description:
+>  		Raw value of rotation from true/magnetic north measured with
+>  		or without compensation from tilt sensors.
 > +
-> +	id = acpi_match_device(dev->driver->acpi_match_table, dev);
-> +
-> +	if (!id)
-> +		return NULL;
-> +
-> +	*data = (int) id->driver_data;
-> +
-> +	return dev_name(dev);
-> +}
-> +
->  static int isl29018_probe(struct i2c_client *client,
->  			 const struct i2c_device_id *id)
->  {
->  	struct isl29018_chip *chip;
->  	struct iio_dev *indio_dev;
->  	int err;
-> +	const char *name = NULL;
-> +	int dev_id = 0;
->  
->  	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*chip));
->  	if (indio_dev == NULL) {
-> @@ -673,9 +690,17 @@ static int isl29018_probe(struct i2c_client *client,
->  	i2c_set_clientdata(client, indio_dev);
->  	chip->dev = &client->dev;
->  
-> +	if (id) {
-> +		name = id->name;
-> +		dev_id = id->driver_data;
-> +	}
-> +
-> +	if (ACPI_HANDLE(&client->dev))
-> +		name = isl29018_match_acpi_device(&client->dev, &dev_id);
-> +
->  	mutex_init(&chip->lock);
->  
-> -	chip->type = id->driver_data;
-> +	chip->type = dev_id;
->  	chip->lux_scale = 1;
->  	chip->lux_uscale = 0;
->  	chip->range = 1000;
-> @@ -683,7 +708,7 @@ static int isl29018_probe(struct i2c_client *client,
->  	chip->suspended = false;
->  
->  	chip->regmap = devm_regmap_init_i2c(client,
-> -				chip_info_tbl[id->driver_data].regmap_cfg);
-> +				chip_info_tbl[dev_id].regmap_cfg);
->  	if (IS_ERR(chip->regmap)) {
->  		err = PTR_ERR(chip->regmap);
->  		dev_err(chip->dev, "regmap initialization failed: %d\n", err);
-> @@ -694,10 +719,10 @@ static int isl29018_probe(struct i2c_client *client,
->  	if (err)
->  		return err;
->  
-> -	indio_dev->info = chip_info_tbl[id->driver_data].indio_info;
-> -	indio_dev->channels = chip_info_tbl[id->driver_data].channels;
-> -	indio_dev->num_channels = chip_info_tbl[id->driver_data].num_channels;
-> -	indio_dev->name = id->name;
-> +	indio_dev->info = chip_info_tbl[dev_id].indio_info;
-> +	indio_dev->channels = chip_info_tbl[dev_id].channels;
-> +	indio_dev->num_channels = chip_info_tbl[dev_id].num_channels;
-> +	indio_dev->name = name;
->  	indio_dev->dev.parent = &client->dev;
->  	indio_dev->modes = INDIO_DIRECT_MODE;
->  	err = devm_iio_device_register(&client->dev, indio_dev);
-> @@ -747,6 +772,14 @@ static SIMPLE_DEV_PM_OPS(isl29018_pm_ops, isl29018_suspend, isl29018_resume);
->  #define ISL29018_PM_OPS NULL
->  #endif
->  
-> +static const struct acpi_device_id isl29018_acpi_match[] = {
-> +	{"ISL29018", isl29018},
-> +	{"ISL29023", isl29023},
-> +	{"ISL29035", isl29035},
-> +	{},
-> +};
-> +MODULE_DEVICE_TABLE(acpi, isl29018_acpi_match);
-> +
->  static const struct i2c_device_id isl29018_id[] = {
->  	{"isl29018", isl29018},
->  	{"isl29023", isl29023},
-> @@ -768,6 +801,7 @@ static struct i2c_driver isl29018_driver = {
->  	.class	= I2C_CLASS_HWMON,
->  	.driver	 = {
->  			.name = "isl29018",
-> +			.acpi_match_table = ACPI_PTR(isl29018_acpi_match),
->  			.pm = ISL29018_PM_OPS,
->  			.owner = THIS_MODULE,
->  			.of_match_table = isl29018_of_match,
+> +What:		/sys/bus/iio/devices/iio:deviceX/in_currentX_raw
+> +What:		/sys/bus/iio/devices/iio:deviceX/in_currentX_scale
+> +KernelVersion:	3.18
+> +Contact:	linux-iio@vger.kernel.org
+> +Description:
+> +		Raw current measurement from channel X. Units after application of
+> +		scale and offset are milliamps.
 > 
