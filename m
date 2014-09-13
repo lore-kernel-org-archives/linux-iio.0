@@ -1,205 +1,154 @@
-Return-Path: <knaack.h@gmx.de>
-Message-ID: <5414CB03.1000104@gmx.de>
-Date: Sun, 14 Sep 2014 00:53:55 +0200
-From: Hartmut Knaack <knaack.h@gmx.de>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:49252 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752101AbaIMUAl (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 13 Sep 2014 16:00:41 -0400
+Message-ID: <5414A264.8090100@kernel.org>
+Date: Sat, 13 Sep 2014 21:00:36 +0100
+From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: =?ISO-8859-1?Q?Heiko_St=FCbner?= <heiko@sntech.de>,
- Jonathan Cameron <jic23@kernel.org>
-CC: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
- linux-iio@vger.kernel.org, linux-rockchip@lists.infradead.org,
- devicetree@vger.kernel.org
-Subject: Re: [PATCH v2] iio: adc: rockchip_saradc: add support for rk3066-tsadc
- variant
-References: <1629907.fyghANjlk9@diego>
-In-Reply-To: <1629907.fyghANjlk9@diego>
-Content-Type: text/plain; charset=ISO-8859-1
-List-ID: <linux-iio@vger.kernel.org>
+To: Jacob Pan <jacob.jun.pan@linux.intel.com>,
+	IIO <linux-iio@vger.kernel.org>,
+	LKML <linux-kernel@vger.kernel.org>,
+	DEVICE TREE <devicetree@vger.kernel.org>,
+	Lee Jones <lee.jones@linaro.org>
+CC: Carlo Caione <carlo@caione.org>,
+	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+	Aaron Lu <aaron.lu@intel.com>, Alan Cox <alan@linux.intel.com>,
+	Samuel Ortiz <sameo@linux.intel.com>,
+	Liam Girdwood <lgirdwood@gmail.com>,
+	Mark Brown <broonie@kernel.org>,
+	Grant Likely <grant.likely@linaro.org>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Rob Herring <robh+dt@kernel.org>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Fugang Duan <B38611@freescale.com>,
+	Arnd Bergmann <arnd@arndb.de>,
+	Zubair Lutfullah <zubair.lutfullah@gmail.com>,
+	Sebastian Reichel <sre@debian.org>,
+	Johannes Thumshirn <johannes.thumshirn@men.de>,
+	Philippe Reynes <tremyfr@yahoo.fr>,
+	Angelo Compagnucci <angelo.compagnucci@gmail.com>,
+	Doug Anderson <dianders@chromium.org>,
+	Ramakrishna Pallala <ramakrishna.pallala@intel.com>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Maxime Ripard <maxime.ripard@free-electrons.com>
+Subject: Re: [PATCH v3 1/5] mfd/axp20x: rename files to support more devices
+References: <1410477357-6407-1-git-send-email-jacob.jun.pan@linux.intel.com> <1410477357-6407-2-git-send-email-jacob.jun.pan@linux.intel.com>
+In-Reply-To: <1410477357-6407-2-git-send-email-jacob.jun.pan@linux.intel.com>
+Content-Type: text/plain; charset=windows-1252
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Heiko Stübner schrieb, Am 11.09.2014 00:22:
-> Older Rockchip SoCs, at least the rk3066, used a slightly modified saradc
-> for temperature measurements. This so called tsadc does not contain any
-> active parts like temperature interrupts and only supports polling the
-> current temperature. The returned voltage can then be converted by a
-> suitable thermal driver to and actual temperature and used for thermal
-> handling.
+On 12/09/14 00:15, Jacob Pan wrote:
+> More XPowers PMIC devices can be supported by extending this driver, so
+> rename it to axp2xx to cover axp288 variant.
 > 
-Looking over it again, I have a two more comments inline.
-> Signed-off-by: Heiko Stuebner <heiko@sntech.de>
+> Acked-by: Lee Jones <lee.jones@linaro.org>
+> Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
+I'm not sure this rename is a good idea (or the original wild
+card was for that matter).
+
+For example, just a quick look at the xpowers website shows there is a AXP228
+which just got swept up by the name change.
+
+Best plan, in my view, is to always name a driver after an individual part it
+supports and rely on Kconfig description to say what else is supported.
+Bit late here, but perhaps best not to make things worse!
 > ---
-> changes since v1:
-> - use GENMASK instead of creating the mask manually
->   as suggested by Hartmut Knaack
+>  drivers/mfd/Kconfig                      | 7 ++++---
+>  drivers/mfd/Makefile                     | 2 +-
+>  drivers/mfd/{axp20x.c => axp2xx.c}       | 6 +++---
+>  include/linux/mfd/{axp20x.h => axp2xx.h} | 6 +++---
+>  4 files changed, 11 insertions(+), 10 deletions(-)
+>  rename drivers/mfd/{axp20x.c => axp2xx.c} (97%)
+>  rename include/linux/mfd/{axp20x.h => axp2xx.h} (98%)
 > 
-> I've also opted for simply keeping the indent mismatch in
-> struct rockchip_saradc, as I don't think it's worth the churn
-> it produces
-> 
->  .../bindings/iio/adc/rockchip-saradc.txt           |  2 +-
->  drivers/iio/adc/rockchip_saradc.c                  | 62 +++++++++++++++++-----
->  2 files changed, 50 insertions(+), 14 deletions(-)
-> 
-> diff --git a/Documentation/devicetree/bindings/iio/adc/rockchip-saradc.txt b/Documentation/devicetree/bindings/iio/adc/rockchip-saradc.txt
-> index 5d3ec1d..a9a5fe1 100644
-> --- a/Documentation/devicetree/bindings/iio/adc/rockchip-saradc.txt
-> +++ b/Documentation/devicetree/bindings/iio/adc/rockchip-saradc.txt
+> diff --git a/drivers/mfd/Kconfig b/drivers/mfd/Kconfig
+> index de5abf2..42a70a3 100644
+> --- a/drivers/mfd/Kconfig
+> +++ b/drivers/mfd/Kconfig
+> @@ -67,14 +67,15 @@ config MFD_BCM590XX
+>  	help
+>  	  Support for the BCM590xx PMUs from Broadcom
+>  
+> -config MFD_AXP20X
+> -	bool "X-Powers AXP20X"
+> +config MFD_AXP2XX
+> +	bool "X-Powers AXP2XX"
+>  	select MFD_CORE
+>  	select REGMAP_I2C
+>  	select REGMAP_IRQ
+>  	depends on I2C=y
+>  	help
+> -	  If you say Y here you get support for the X-Powers AXP202 and AXP209.
+> +	  If you say Y here you get support for the X-Powers AXP202, AXP209 and
+> +	  AXP288 power management IC (PMIC).
+>  	  This driver include only the core APIs. You have to select individual
+>  	  components like regulators or the PEK (Power Enable Key) under the
+>  	  corresponding menus.
+> diff --git a/drivers/mfd/Makefile b/drivers/mfd/Makefile
+> index 3fcfdfc..8d0beb2 100644
+> --- a/drivers/mfd/Makefile
+> +++ b/drivers/mfd/Makefile
+> @@ -103,7 +103,7 @@ obj-$(CONFIG_PMIC_DA9052)	+= da9052-irq.o
+>  obj-$(CONFIG_PMIC_DA9052)	+= da9052-core.o
+>  obj-$(CONFIG_MFD_DA9052_SPI)	+= da9052-spi.o
+>  obj-$(CONFIG_MFD_DA9052_I2C)	+= da9052-i2c.o
+> -obj-$(CONFIG_MFD_AXP20X)	+= axp20x.o
+> +obj-$(CONFIG_MFD_AXP2XX)	+= axp2xx.o
+>  
+>  obj-$(CONFIG_MFD_LP3943)	+= lp3943.o
+>  obj-$(CONFIG_MFD_LP8788)	+= lp8788.o lp8788-irq.o
+> diff --git a/drivers/mfd/axp20x.c b/drivers/mfd/axp2xx.c
+> similarity index 97%
+> rename from drivers/mfd/axp20x.c
+> rename to drivers/mfd/axp2xx.c
+> index dee6539..332a8a0 100644
+> --- a/drivers/mfd/axp20x.c
+> +++ b/drivers/mfd/axp2xx.c
 > @@ -1,7 +1,7 @@
->  Rockchip Successive Approximation Register (SAR) A/D Converter bindings
->  
->  Required properties:
-> -- compatible: Should be "rockchip,saradc"
-> +- compatible: Should be "rockchip,saradc" or "rockchip,rk3066-tsadc"
->  - reg: physical base address of the controller and length of memory mapped
->         region.
->  - interrupts: The interrupt number to the cpu. The interrupt specifier format
-> diff --git a/drivers/iio/adc/rockchip_saradc.c b/drivers/iio/adc/rockchip_saradc.c
-> index e074a0b..99200b7 100644
-> --- a/drivers/iio/adc/rockchip_saradc.c
-> +++ b/drivers/iio/adc/rockchip_saradc.c
-> @@ -18,13 +18,13 @@
->  #include <linux/interrupt.h>
->  #include <linux/io.h>
->  #include <linux/of.h>
-> +#include <linux/of_device.h>
->  #include <linux/clk.h>
->  #include <linux/completion.h>
+>  /*
+> - * axp20x.c - MFD core driver for the X-Powers AXP202 and AXP209
+> + * axp2xx.c - MFD core driver for the X-Powers AXP202 and AXP209
+>   *
+> - * AXP20x comprises an adaptive USB-Compatible PWM charger, 2 BUCK DC-DC
+> + * AXP2xx comprises an adaptive USB-Compatible PWM charger, 2 BUCK DC-DC
+>   * converters, 5 LDOs, multiple 12-bit ADCs of voltage, current and temperature
+>   * as well as 4 configurable GPIOs.
+>   *
+> @@ -21,7 +21,7 @@
+>  #include <linux/regmap.h>
+>  #include <linux/slab.h>
 >  #include <linux/regulator/consumer.h>
->  #include <linux/iio/iio.h>
+> -#include <linux/mfd/axp20x.h>
+> +#include <linux/mfd/axp2xx.h>
+>  #include <linux/mfd/core.h>
+>  #include <linux/of_device.h>
+>  #include <linux/of_irq.h>
+> diff --git a/include/linux/mfd/axp20x.h b/include/linux/mfd/axp2xx.h
+> similarity index 98%
+> rename from include/linux/mfd/axp20x.h
+> rename to include/linux/mfd/axp2xx.h
+> index d0e31a2..a36d91b 100644
+> --- a/include/linux/mfd/axp20x.h
+> +++ b/include/linux/mfd/axp2xx.h
+> @@ -8,8 +8,8 @@
+>   * published by the Free Software Foundation.
+>   */
 >  
->  #define SARADC_DATA			0x00
-> -#define SARADC_DATA_MASK		0x3ff
+> -#ifndef __LINUX_MFD_AXP20X_H
+> -#define __LINUX_MFD_AXP20X_H
+> +#ifndef __LINUX_MFD_AXP2XX_H
+> +#define __LINUX_MFD_AXP2XX_H
 >  
->  #define SARADC_STAS			0x04
->  #define SARADC_STAS_BUSY		BIT(0)
-> @@ -38,15 +38,22 @@
->  #define SARADC_DLY_PU_SOC		0x0c
->  #define SARADC_DLY_PU_SOC_MASK		0x3f
->  
-> -#define SARADC_BITS			10
->  #define SARADC_TIMEOUT			msecs_to_jiffies(100)
->  
-> +struct rockchip_saradc_data {
-> +	int				num_bits;
-> +	const struct iio_chan_spec	*channels;
-> +	int				num_channels;
-> +	unsigned long			clk_rate;
-> +};
-> +
->  struct rockchip_saradc {
->  	void __iomem		*regs;
->  	struct clk		*pclk;
->  	struct clk		*clk;
->  	struct completion	completion;
->  	struct regulator	*vref;
-> +	const struct rockchip_saradc_data *data;
->  	u16			last_val;
+>  enum {
+>  	AXP202_ID = 0,
+> @@ -177,4 +177,4 @@ struct axp20x_dev {
+>  	long				variant;
 >  };
 >  
-> @@ -90,7 +97,7 @@ static int rockchip_saradc_read_raw(struct iio_dev *indio_dev,
->  		}
->  
->  		*val = ret / 1000;
-> -		*val2 = SARADC_BITS;
-> +		*val2 = info->data->num_bits;
->  		return IIO_VAL_FRACTIONAL_LOG2;
->  	default:
->  		return -EINVAL;
-> @@ -103,7 +110,7 @@ static irqreturn_t rockchip_saradc_isr(int irq, void *dev_id)
->  
->  	/* Read value */
->  	info->last_val = readl_relaxed(info->regs + SARADC_DATA);
-> -	info->last_val &= SARADC_DATA_MASK;
-> +	info->last_val &= GENMASK(info->data->num_bits - 1, 0);
->  
->  	/* Clear irq & power down adc */
->  	writel_relaxed(0, info->regs + SARADC_CTRL);
-> @@ -133,12 +140,44 @@ static const struct iio_chan_spec rockchip_saradc_iio_channels[] = {
->  	ADC_CHANNEL(2, "adc2"),
->  };
->  
-> +static const struct rockchip_saradc_data saradc_data = {
-> +	.num_bits = 10,
-> +	.channels = rockchip_saradc_iio_channels,
-> +	.num_channels = ARRAY_SIZE(rockchip_saradc_iio_channels),
-> +	.clk_rate = 1000000,
-> +};
-> +
-> +static const struct iio_chan_spec rockchip_rk3066_tsadc_iio_channels[] = {
-> +	ADC_CHANNEL(0, "adc0"),
-> +	ADC_CHANNEL(1, "adc1"),
-> +};
-> +
-> +static const struct rockchip_saradc_data rk3066_tsadc_data = {
-> +	.num_bits = 12,
-> +	.channels = rockchip_rk3066_tsadc_iio_channels,
-> +	.num_channels = ARRAY_SIZE(rockchip_rk3066_tsadc_iio_channels),
-> +	.clk_rate = 50000,
-> +};
-> +
-> +static const struct of_device_id rockchip_saradc_match[] = {
-> +	{
-> +		.compatible = "rockchip,saradc",
-> +		.data = &saradc_data,
-> +	}, {
-> +		.compatible = "rockchip,rk3066-tsadc",
-> +		.data = &rk3066_tsadc_data,
-> +	},
-> +	{},
-> +};
-> +MODULE_DEVICE_TABLE(of, rockchip_saradc_match);
-> +
->  static int rockchip_saradc_probe(struct platform_device *pdev)
->  {
->  	struct rockchip_saradc *info = NULL;
->  	struct device_node *np = pdev->dev.of_node;
->  	struct iio_dev *indio_dev = NULL;
->  	struct resource	*mem;
-> +	const struct of_device_id *match;
->  	int ret;
->  	int irq;
->  
-> @@ -152,6 +191,9 @@ static int rockchip_saradc_probe(struct platform_device *pdev)
->  	}
->  	info = iio_priv(indio_dev);
->  
-> +	match = of_match_device(rockchip_saradc_match, &pdev->dev);
-Is it 100% safe to go on without checking match for validity?
-> +	info->data = match->data;
-> +
->  	mem = platform_get_resource(pdev, IORESOURCE_MEM, 0);
->  	info->regs = devm_ioremap_resource(&pdev->dev, mem);
->  	if (IS_ERR(info->regs))
-> @@ -195,7 +237,7 @@ static int rockchip_saradc_probe(struct platform_device *pdev)
->  	 * Use a default of 1MHz for the converter clock.
->  	 * This may become user-configurable in the future.
->  	 */
-This comment becomes invalid and should be adjusted or droped.
-> -	ret = clk_set_rate(info->clk, 1000000);
-> +	ret = clk_set_rate(info->clk, info->data->clk_rate);
->  	if (ret < 0) {
->  		dev_err(&pdev->dev, "failed to set adc clk rate, %d\n", ret);
->  		return ret;
-> @@ -227,8 +269,8 @@ static int rockchip_saradc_probe(struct platform_device *pdev)
->  	indio_dev->info = &rockchip_saradc_iio_info;
->  	indio_dev->modes = INDIO_DIRECT_MODE;
->  
-> -	indio_dev->channels = rockchip_saradc_iio_channels;
-> -	indio_dev->num_channels = ARRAY_SIZE(rockchip_saradc_iio_channels);
-> +	indio_dev->channels = info->data->channels;
-> +	indio_dev->num_channels = info->data->num_channels;
->  
->  	ret = iio_device_register(indio_dev);
->  	if (ret)
-> @@ -296,12 +338,6 @@ static int rockchip_saradc_resume(struct device *dev)
->  static SIMPLE_DEV_PM_OPS(rockchip_saradc_pm_ops,
->  			 rockchip_saradc_suspend, rockchip_saradc_resume);
->  
-> -static const struct of_device_id rockchip_saradc_match[] = {
-> -	{ .compatible = "rockchip,saradc" },
-> -	{},
-> -};
-> -MODULE_DEVICE_TABLE(of, rockchip_saradc_match);
-> -
->  static struct platform_driver rockchip_saradc_driver = {
->  	.probe		= rockchip_saradc_probe,
->  	.remove		= rockchip_saradc_remove,
+> -#endif /* __LINUX_MFD_AXP20X_H */
+> +#endif /* __LINUX_MFD_AXP2XX_H */
 > 
