@@ -1,508 +1,205 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:49461 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752070AbaIMUhN (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 13 Sep 2014 16:37:13 -0400
-Message-ID: <5414AAEC.5020403@kernel.org>
-Date: Sat, 13 Sep 2014 21:37:00 +0100
-From: Jonathan Cameron <jic23@kernel.org>
+Return-Path: <knaack.h@gmx.de>
+Message-ID: <5414CB03.1000104@gmx.de>
+Date: Sun, 14 Sep 2014 00:53:55 +0200
+From: Hartmut Knaack <knaack.h@gmx.de>
 MIME-Version: 1.0
-To: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-CC: Laurentiu Palcu <laurentiu.palcu@intel.com>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v5 3/3] iio: accel: BMC150: add support for other Bosch
- chips
-References: <1409581756-19083-1-git-send-email-laurentiu.palcu@intel.com>	 <1409650219-11225-1-git-send-email-laurentiu.palcu@intel.com>	 <5410A814.40509@kernel.org> <1410378182.29185.23.camel@spandruv-desktop.jf.intel.com>
-In-Reply-To: <1410378182.29185.23.camel@spandruv-desktop.jf.intel.com>
-Content-Type: text/plain; charset=utf-8
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+To: =?ISO-8859-1?Q?Heiko_St=FCbner?= <heiko@sntech.de>,
+ Jonathan Cameron <jic23@kernel.org>
+CC: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+ linux-iio@vger.kernel.org, linux-rockchip@lists.infradead.org,
+ devicetree@vger.kernel.org
+Subject: Re: [PATCH v2] iio: adc: rockchip_saradc: add support for rk3066-tsadc
+ variant
+References: <1629907.fyghANjlk9@diego>
+In-Reply-To: <1629907.fyghANjlk9@diego>
+Content-Type: text/plain; charset=ISO-8859-1
+List-ID: <linux-iio@vger.kernel.org>
 
-On 10/09/14 20:43, Srinivas Pandruvada wrote:
-> On Wed, 2014-09-10 at 20:35 +0100, Jonathan Cameron wrote:
->> On 02/09/14 10:30, Laurentiu Palcu wrote:
->>> The following chips are either similar or have only the resolution
->>> different. Hence, change this driver to support these chips too:
->>>
->>> BMI055  - combo chip (accelerometer part is identical to BMC150's)
->>> BMA255  - identical to BMC150's accelerometer
->>> BMA222E - 8 bit resolution
->>> BMA250E - 10 bit resolution
->>> BMA280  - 14 bit resolution
->>>
->>> Additionally:
->>>  * add bmc150_accel_match_acpi_device() function to check that the device
->>>    has been enumerated through ACPI;
->>>  * rename bmc150_accel_acpi_gpio_probe() to bmc150_accel_gpio_probe()
->>>    since the ACPI matching has been moved to the new function.  Also, this
->>>    will allow for the GPIO matching to be done against a device tree too, not only
->>>    ACPI tree;
->>>  * rename bmc150_scale_info struct member 'range' to 'reg_range' to be
->>>    consistent with the naming convention used elsewhere in the driver
->>>    and declare it u8, instead of int;
->>>  * change CONFIG description to list all supported chips;
->>>
->>> Signed-off-by: Laurentiu Palcu <laurentiu.palcu@intel.com>
->> Looks fine to me, though I'm not really in a fit state to review right now.
->> Srinivas, do you want to give an Ack?
-> Sure
+Heiko Stübner schrieb, Am 11.09.2014 00:22:
+> Older Rockchip SoCs, at least the rk3066, used a slightly modified saradc
+> for temperature measurements. This so called tsadc does not contain any
+> active parts like temperature interrupts and only supports polling the
+> current temperature. The returned voltage can then be converted by a
+> suitable thermal driver to and actual temperature and used for thermal
+> handling.
 > 
-> Acked-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-Applied to the togreg branch of iio.git - initially pushed out as testing
-for the autobuilders to play.
-
-Thanks,
-
-Jonathan
+Looking over it again, I have a two more comments inline.
+> Signed-off-by: Heiko Stuebner <heiko@sntech.de>
+> ---
+> changes since v1:
+> - use GENMASK instead of creating the mask manually
+>   as suggested by Hartmut Knaack
 > 
->>> ---
->>>
->>> Changes in v5:
->>>  * addressed Joe's suggestion to rewrite a small portion of the code to make it
->>>    more readable;
->>>  * changed the CONFIG description according to Srinivas's advise;
->>>
->>> Changes in v4:
->>>  * address Peter's comments: see 3rd bullet in the commit's message. As a result, do
->>>    some re-indentation to make lines fit 80 chars;
->>>
->>> Changes in v3:
->>>  * remove the chip id macros since they were not used anywhere else and put the id
->>>    values directly in the chip info table;
->>>  * fix the unnecessary casting from const char * to char * and back;
->>>
->>> laurentiu
->>>
->>>  drivers/iio/accel/Kconfig        |   4 +-
->>>  drivers/iio/accel/bmc150-accel.c | 234 +++++++++++++++++++++++++++++----------
->>>  2 files changed, 178 insertions(+), 60 deletions(-)
->>>
->>> diff --git a/drivers/iio/accel/Kconfig b/drivers/iio/accel/Kconfig
->>> index 01b857e..01a2151 100644
->>> --- a/drivers/iio/accel/Kconfig
->>> +++ b/drivers/iio/accel/Kconfig
->>> @@ -23,7 +23,9 @@ config BMC150_ACCEL
->>>  	select IIO_BUFFER
->>>  	select IIO_TRIGGERED_BUFFER
->>>  	help
->>> -	  Say yes here to build support for the Bosch BMC150 accelerometer.
->>> +	  Say yes here to build support for the following Bosch accelerometers:
->>> +	  BMC150, BMI055, BMA250E, BMA222E, BMA255, BMA280.
->>> +
->>>  	  Currently this only supports the device via an i2c interface.
->>>  
->>>  	  This is a combo module with both accelerometer and magnetometer.
->>> diff --git a/drivers/iio/accel/bmc150-accel.c b/drivers/iio/accel/bmc150-accel.c
->>> index 0e6566a..22c096c 100644
->>> --- a/drivers/iio/accel/bmc150-accel.c
->>> +++ b/drivers/iio/accel/bmc150-accel.c
->>> @@ -1,5 +1,12 @@
->>>  /*
->>> - * BMC150 3-axis accelerometer driver
->>> + * 3-axis accelerometer driver supporting following Bosch-Sensortec chips:
->>> + *  - BMC150
->>> + *  - BMI055
->>> + *  - BMA255
->>> + *  - BMA250E
->>> + *  - BMA222E
->>> + *  - BMA280
->>> + *
->>>   * Copyright (c) 2014, Intel Corporation.
->>>   *
->>>   * This program is free software; you can redistribute it and/or modify it
->>> @@ -34,7 +41,6 @@
->>>  #define BMC150_ACCEL_GPIO_NAME			"bmc150_accel_int"
->>>  
->>>  #define BMC150_ACCEL_REG_CHIP_ID		0x00
->>> -#define BMC150_ACCEL_CHIP_ID_VAL		0xFA
->>>  
->>>  #define BMC150_ACCEL_REG_INT_STATUS_2		0x0B
->>>  #define BMC150_ACCEL_ANY_MOTION_MASK		0x07
->>> @@ -126,6 +132,18 @@ enum bmc150_power_modes {
->>>  	BMC150_ACCEL_SLEEP_MODE_SUSPEND = 0x04,
->>>  };
->>>  
->>> +struct bmc150_scale_info {
->>> +	int scale;
->>> +	u8 reg_range;
->>> +};
->>> +
->>> +struct bmc150_accel_chip_info {
->>> +	u8 chip_id;
->>> +	const struct iio_chan_spec *channels;
->>> +	int num_channels;
->>> +	const struct bmc150_scale_info scale_table[4];
->>> +};
->>> +
->>>  struct bmc150_accel_data {
->>>  	struct i2c_client *client;
->>>  	struct iio_trigger *dready_trig;
->>> @@ -140,6 +158,7 @@ struct bmc150_accel_data {
->>>  	bool dready_trigger_on;
->>>  	bool motion_trigger_on;
->>>  	int64_t timestamp;
->>> +	const struct bmc150_accel_chip_info *chip_info;
->>>  };
->>>  
->>>  static const struct {
->>> @@ -168,16 +187,8 @@ static const struct {
->>>  				     {0x0F, 1} };
->>>  
->>>  static const struct {
->>> -	int scale;
->>> -	int range;
->>> -} bmc150_accel_scale_table[] = { {9610, BMC150_ACCEL_DEF_RANGE_2G},
->>> -				 {19122, BMC150_ACCEL_DEF_RANGE_4G},
->>> -				 {38344, BMC150_ACCEL_DEF_RANGE_8G},
->>> -				 {76590, BMC150_ACCEL_DEF_RANGE_16G} };
->>> -
->>> -static const struct {
->>>  	int sleep_dur;
->>> -	int reg_value;
->>> +	u8 reg_value;
->>>  } bmc150_accel_sleep_value_table[] = { {0, 0},
->>>  				       {500, BMC150_ACCEL_SLEEP_500_MICRO},
->>>  				       {1000, BMC150_ACCEL_SLEEP_1_MS},
->>> @@ -267,7 +278,7 @@ static int bmc150_accel_chip_init(struct bmc150_accel_data *data)
->>>  	}
->>>  
->>>  	dev_dbg(&data->client->dev, "Chip Id %x\n", ret);
->>> -	if (ret != BMC150_ACCEL_CHIP_ID_VAL) {
->>> +	if (ret != data->chip_info->chip_id) {
->>>  		dev_err(&data->client->dev, "Invalid chip %x\n", ret);
->>>  		return -ENODEV;
->>>  	}
->>> @@ -541,19 +552,19 @@ static int bmc150_accel_set_scale(struct bmc150_accel_data *data, int val)
->>>  {
->>>  	int ret, i;
->>>  
->>> -	for (i = 0; i < ARRAY_SIZE(bmc150_accel_scale_table); ++i) {
->>> -		if (bmc150_accel_scale_table[i].scale == val) {
->>> +	for (i = 0; i < ARRAY_SIZE(data->chip_info->scale_table); ++i) {
->>> +		if (data->chip_info->scale_table[i].scale == val) {
->>>  			ret = i2c_smbus_write_byte_data(
->>> -					data->client,
->>> -					BMC150_ACCEL_REG_PMU_RANGE,
->>> -					bmc150_accel_scale_table[i].range);
->>> +				     data->client,
->>> +				     BMC150_ACCEL_REG_PMU_RANGE,
->>> +				     data->chip_info->scale_table[i].reg_range);
->>>  			if (ret < 0) {
->>>  				dev_err(&data->client->dev,
->>>  					"Error writing pmu_range\n");
->>>  				return ret;
->>>  			}
->>>  
->>> -			data->range = bmc150_accel_scale_table[i].range;
->>> +			data->range = data->chip_info->scale_table[i].reg_range;
->>>  			return 0;
->>>  		}
->>>  	}
->>> @@ -580,10 +591,12 @@ static int bmc150_accel_get_temp(struct bmc150_accel_data *data, int *val)
->>>  	return IIO_VAL_INT;
->>>  }
->>>  
->>> -static int bmc150_accel_get_axis(struct bmc150_accel_data *data, int axis,
->>> +static int bmc150_accel_get_axis(struct bmc150_accel_data *data,
->>> +				 struct iio_chan_spec const *chan,
->>>  				 int *val)
->>>  {
->>>  	int ret;
->>> +	int axis = chan->scan_index;
->>>  
->>>  	mutex_lock(&data->mutex);
->>>  	ret = bmc150_accel_set_power_state(data, true);
->>> @@ -600,7 +613,8 @@ static int bmc150_accel_get_axis(struct bmc150_accel_data *data, int axis,
->>>  		mutex_unlock(&data->mutex);
->>>  		return ret;
->>>  	}
->>> -	*val = sign_extend32(ret >> 4, 11);
->>> +	*val = sign_extend32(ret >> chan->scan_type.shift,
->>> +			     chan->scan_type.realbits - 1);
->>>  	ret = bmc150_accel_set_power_state(data, false);
->>>  	mutex_unlock(&data->mutex);
->>>  	if (ret < 0)
->>> @@ -625,9 +639,7 @@ static int bmc150_accel_read_raw(struct iio_dev *indio_dev,
->>>  			if (iio_buffer_enabled(indio_dev))
->>>  				return -EBUSY;
->>>  			else
->>> -				return bmc150_accel_get_axis(data,
->>> -							     chan->scan_index,
->>> -							     val);
->>> +				return bmc150_accel_get_axis(data, chan, val);
->>>  		default:
->>>  			return -EINVAL;
->>>  		}
->>> @@ -646,13 +658,13 @@ static int bmc150_accel_read_raw(struct iio_dev *indio_dev,
->>>  		case IIO_ACCEL:
->>>  		{
->>>  			int i;
->>> +			const struct bmc150_scale_info *si;
->>> +			int st_size = ARRAY_SIZE(data->chip_info->scale_table);
->>>  
->>> -			for (i = 0; i < ARRAY_SIZE(bmc150_accel_scale_table);
->>> -									 ++i) {
->>> -				if (bmc150_accel_scale_table[i].range ==
->>> -								data->range) {
->>> -					*val2 =
->>> -					bmc150_accel_scale_table[i].scale;
->>> +			for (i = 0; i < st_size; ++i) {
->>> +				si = &data->chip_info->scale_table[i];
->>> +				if (si->reg_range == data->range) {
->>> +					*val2 = si->scale;
->>>  					return IIO_VAL_INT_PLUS_MICRO;
->>>  				}
->>>  			}
->>> @@ -840,7 +852,7 @@ static const struct iio_event_spec bmc150_accel_event = {
->>>  				 BIT(IIO_EV_INFO_PERIOD)
->>>  };
->>>  
->>> -#define BMC150_ACCEL_CHANNEL(_axis) {					\
->>> +#define BMC150_ACCEL_CHANNEL(_axis, bits) {				\
->>>  	.type = IIO_ACCEL,						\
->>>  	.modified = 1,							\
->>>  	.channel2 = IIO_MOD_##_axis,					\
->>> @@ -850,26 +862,101 @@ static const struct iio_event_spec bmc150_accel_event = {
->>>  	.scan_index = AXIS_##_axis,					\
->>>  	.scan_type = {							\
->>>  		.sign = 's',						\
->>> -		.realbits = 12,					\
->>> +		.realbits = (bits),					\
->>>  		.storagebits = 16,					\
->>> -		.shift = 4,						\
->>> +		.shift = 16 - (bits),					\
->>>  	},								\
->>>  	.event_spec = &bmc150_accel_event,				\
->>>  	.num_event_specs = 1						\
->>>  }
->>>  
->>> -static const struct iio_chan_spec bmc150_accel_channels[] = {
->>> -	{
->>> -		.type = IIO_TEMP,
->>> -		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
->>> -				      BIT(IIO_CHAN_INFO_SCALE) |
->>> -				      BIT(IIO_CHAN_INFO_OFFSET),
->>> -		.scan_index = -1,
->>> +#define BMC150_ACCEL_CHANNELS(bits) {					\
->>> +	{								\
->>> +		.type = IIO_TEMP,					\
->>> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |		\
->>> +				      BIT(IIO_CHAN_INFO_SCALE) |	\
->>> +				      BIT(IIO_CHAN_INFO_OFFSET),	\
->>> +		.scan_index = -1,					\
->>> +	},								\
->>> +	BMC150_ACCEL_CHANNEL(X, bits),					\
->>> +	BMC150_ACCEL_CHANNEL(Y, bits),					\
->>> +	BMC150_ACCEL_CHANNEL(Z, bits),					\
->>> +	IIO_CHAN_SOFT_TIMESTAMP(3),					\
->>> +}
->>> +
->>> +static const struct iio_chan_spec bma222e_accel_channels[] =
->>> +	BMC150_ACCEL_CHANNELS(8);
->>> +static const struct iio_chan_spec bma250e_accel_channels[] =
->>> +	BMC150_ACCEL_CHANNELS(10);
->>> +static const struct iio_chan_spec bmc150_accel_channels[] =
->>> +	BMC150_ACCEL_CHANNELS(12);
->>> +static const struct iio_chan_spec bma280_accel_channels[] =
->>> +	BMC150_ACCEL_CHANNELS(14);
->>> +
->>> +enum {
->>> +	bmc150,
->>> +	bmi055,
->>> +	bma255,
->>> +	bma250e,
->>> +	bma222e,
->>> +	bma280,
->>> +};
->>> +
->>> +static const struct bmc150_accel_chip_info bmc150_accel_chip_info_tbl[] = {
->>> +	[bmc150] = {
->>> +		.chip_id = 0xFA,
->>> +		.channels = bmc150_accel_channels,
->>> +		.num_channels = ARRAY_SIZE(bmc150_accel_channels),
->>> +		.scale_table = { {9610, BMC150_ACCEL_DEF_RANGE_2G},
->>> +				 {19122, BMC150_ACCEL_DEF_RANGE_4G},
->>> +				 {38344, BMC150_ACCEL_DEF_RANGE_8G},
->>> +				 {76590, BMC150_ACCEL_DEF_RANGE_16G} },
->>> +	},
->>> +	[bmi055] = {
->>> +		.chip_id = 0xFA,
->>> +		.channels = bmc150_accel_channels,
->>> +		.num_channels = ARRAY_SIZE(bmc150_accel_channels),
->>> +		.scale_table = { {9610, BMC150_ACCEL_DEF_RANGE_2G},
->>> +				 {19122, BMC150_ACCEL_DEF_RANGE_4G},
->>> +				 {38344, BMC150_ACCEL_DEF_RANGE_8G},
->>> +				 {76590, BMC150_ACCEL_DEF_RANGE_16G} },
->>> +	},
->>> +	[bma255] = {
->>> +		.chip_id = 0xFA,
->>> +		.channels = bmc150_accel_channels,
->>> +		.num_channels = ARRAY_SIZE(bmc150_accel_channels),
->>> +		.scale_table = { {9610, BMC150_ACCEL_DEF_RANGE_2G},
->>> +				 {19122, BMC150_ACCEL_DEF_RANGE_4G},
->>> +				 {38344, BMC150_ACCEL_DEF_RANGE_8G},
->>> +				 {76590, BMC150_ACCEL_DEF_RANGE_16G} },
->>> +	},
->>> +	[bma250e] = {
->>> +		.chip_id = 0xF9,
->>> +		.channels = bma250e_accel_channels,
->>> +		.num_channels = ARRAY_SIZE(bma250e_accel_channels),
->>> +		.scale_table = { {38344, BMC150_ACCEL_DEF_RANGE_2G},
->>> +				 {76590, BMC150_ACCEL_DEF_RANGE_4G},
->>> +				 {153277, BMC150_ACCEL_DEF_RANGE_8G},
->>> +				 {306457, BMC150_ACCEL_DEF_RANGE_16G} },
->>> +	},
->>> +	[bma222e] = {
->>> +		.chip_id = 0xF8,
->>> +		.channels = bma222e_accel_channels,
->>> +		.num_channels = ARRAY_SIZE(bma222e_accel_channels),
->>> +		.scale_table = { {153277, BMC150_ACCEL_DEF_RANGE_2G},
->>> +				 {306457, BMC150_ACCEL_DEF_RANGE_4G},
->>> +				 {612915, BMC150_ACCEL_DEF_RANGE_8G},
->>> +				 {1225831, BMC150_ACCEL_DEF_RANGE_16G} },
->>> +	},
->>> +	[bma280] = {
->>> +		.chip_id = 0xFB,
->>> +		.channels = bma280_accel_channels,
->>> +		.num_channels = ARRAY_SIZE(bma280_accel_channels),
->>> +		.scale_table = { {2392, BMC150_ACCEL_DEF_RANGE_2G},
->>> +				 {4785, BMC150_ACCEL_DEF_RANGE_4G},
->>> +				 {9581, BMC150_ACCEL_DEF_RANGE_8G},
->>> +				 {19152, BMC150_ACCEL_DEF_RANGE_16G} },
->>>  	},
->>> -	BMC150_ACCEL_CHANNEL(X),
->>> -	BMC150_ACCEL_CHANNEL(Y),
->>> -	BMC150_ACCEL_CHANNEL(Z),
->>> -	IIO_CHAN_SOFT_TIMESTAMP(3),
->>>  };
->>>  
->>>  static const struct iio_info bmc150_accel_info = {
->>> @@ -1040,10 +1127,23 @@ static irqreturn_t bmc150_accel_data_rdy_trig_poll(int irq, void *private)
->>>  		return IRQ_HANDLED;
->>>  }
->>>  
->>> -static int bmc150_accel_acpi_gpio_probe(struct i2c_client *client,
->>> -					struct bmc150_accel_data *data)
->>> +static const char *bmc150_accel_match_acpi_device(struct device *dev, int *data)
->>>  {
->>>  	const struct acpi_device_id *id;
->>> +
->>> +	id = acpi_match_device(dev->driver->acpi_match_table, dev);
->>> +
->>> +	if (!id)
->>> +		return NULL;
->>> +
->>> +	*data = (int) id->driver_data;
->>> +
->>> +	return dev_name(dev);
->>> +}
->>> +
->>> +static int bmc150_accel_gpio_probe(struct i2c_client *client,
->>> +					struct bmc150_accel_data *data)
->>> +{
->>>  	struct device *dev;
->>>  	struct gpio_desc *gpio;
->>>  	int ret;
->>> @@ -1052,17 +1152,11 @@ static int bmc150_accel_acpi_gpio_probe(struct i2c_client *client,
->>>  		return -EINVAL;
->>>  
->>>  	dev = &client->dev;
->>> -	if (!ACPI_HANDLE(dev))
->>> -		return -ENODEV;
->>> -
->>> -	id = acpi_match_device(dev->driver->acpi_match_table, dev);
->>> -	if (!id)
->>> -		return -ENODEV;
->>>  
->>>  	/* data ready gpio interrupt pin */
->>>  	gpio = devm_gpiod_get_index(dev, BMC150_ACCEL_GPIO_NAME, 0);
->>>  	if (IS_ERR(gpio)) {
->>> -		dev_err(dev, "Failed: acpi gpio get index\n");
->>> +		dev_err(dev, "Failed: gpio get index\n");
->>>  		return PTR_ERR(gpio);
->>>  	}
->>>  
->>> @@ -1083,6 +1177,8 @@ static int bmc150_accel_probe(struct i2c_client *client,
->>>  	struct bmc150_accel_data *data;
->>>  	struct iio_dev *indio_dev;
->>>  	int ret;
->>> +	const char *name = NULL;
->>> +	int chip_id = 0;
->>>  
->>>  	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
->>>  	if (!indio_dev)
->>> @@ -1092,6 +1188,16 @@ static int bmc150_accel_probe(struct i2c_client *client,
->>>  	i2c_set_clientdata(client, indio_dev);
->>>  	data->client = client;
->>>  
->>> +	if (id) {
->>> +		name = id->name;
->>> +		chip_id = id->driver_data;
->>> +	}
->>> +
->>> +	if (ACPI_HANDLE(&client->dev))
->>> +		name = bmc150_accel_match_acpi_device(&client->dev, &chip_id);
->>> +
->>> +	data->chip_info = &bmc150_accel_chip_info_tbl[chip_id];
->>> +
->>>  	ret = bmc150_accel_chip_init(data);
->>>  	if (ret < 0)
->>>  		return ret;
->>> @@ -1099,14 +1205,14 @@ static int bmc150_accel_probe(struct i2c_client *client,
->>>  	mutex_init(&data->mutex);
->>>  
->>>  	indio_dev->dev.parent = &client->dev;
->>> -	indio_dev->channels = bmc150_accel_channels;
->>> -	indio_dev->num_channels = ARRAY_SIZE(bmc150_accel_channels);
->>> -	indio_dev->name = BMC150_ACCEL_DRV_NAME;
->>> +	indio_dev->channels = data->chip_info->channels;
->>> +	indio_dev->num_channels = data->chip_info->num_channels;
->>> +	indio_dev->name = name;
->>>  	indio_dev->modes = INDIO_DIRECT_MODE;
->>>  	indio_dev->info = &bmc150_accel_info;
->>>  
->>>  	if (client->irq < 0)
->>> -		client->irq = bmc150_accel_acpi_gpio_probe(client, data);
->>> +		client->irq = bmc150_accel_gpio_probe(client, data);
->>>  
->>>  	if (client->irq >= 0) {
->>>  		ret = devm_request_threaded_irq(
->>> @@ -1284,14 +1390,24 @@ static const struct dev_pm_ops bmc150_accel_pm_ops = {
->>>  };
->>>  
->>>  static const struct acpi_device_id bmc150_accel_acpi_match[] = {
->>> -	{"BSBA0150", 0},
->>> -	{"BMC150A", 0},
->>> +	{"BSBA0150",	bmc150},
->>> +	{"BMC150A",	bmc150},
->>> +	{"BMI055A",	bmi055},
->>> +	{"BMA0255",	bma255},
->>> +	{"BMA250E",	bma250e},
->>> +	{"BMA222E",	bma222e},
->>> +	{"BMA0280",	bma280},
->>>  	{ },
->>>  };
->>>  MODULE_DEVICE_TABLE(acpi, bmc150_accel_acpi_match);
->>>  
->>>  static const struct i2c_device_id bmc150_accel_id[] = {
->>> -	{"bmc150_accel", 0},
->>> +	{"bmc150_accel",	bmc150},
->>> +	{"bmi055_accel",	bmi055},
->>> +	{"bma255",		bma255},
->>> +	{"bma250e",		bma250e},
->>> +	{"bma222e",		bma222e},
->>> +	{"bma280",		bma280},
->>>  	{}
->>>  };
->>>  
->>>
+> I've also opted for simply keeping the indent mismatch in
+> struct rockchip_saradc, as I don't think it's worth the churn
+> it produces
 > 
+>  .../bindings/iio/adc/rockchip-saradc.txt           |  2 +-
+>  drivers/iio/adc/rockchip_saradc.c                  | 62 +++++++++++++++++-----
+>  2 files changed, 50 insertions(+), 14 deletions(-)
 > 
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> diff --git a/Documentation/devicetree/bindings/iio/adc/rockchip-saradc.txt b/Documentation/devicetree/bindings/iio/adc/rockchip-saradc.txt
+> index 5d3ec1d..a9a5fe1 100644
+> --- a/Documentation/devicetree/bindings/iio/adc/rockchip-saradc.txt
+> +++ b/Documentation/devicetree/bindings/iio/adc/rockchip-saradc.txt
+> @@ -1,7 +1,7 @@
+>  Rockchip Successive Approximation Register (SAR) A/D Converter bindings
+>  
+>  Required properties:
+> -- compatible: Should be "rockchip,saradc"
+> +- compatible: Should be "rockchip,saradc" or "rockchip,rk3066-tsadc"
+>  - reg: physical base address of the controller and length of memory mapped
+>         region.
+>  - interrupts: The interrupt number to the cpu. The interrupt specifier format
+> diff --git a/drivers/iio/adc/rockchip_saradc.c b/drivers/iio/adc/rockchip_saradc.c
+> index e074a0b..99200b7 100644
+> --- a/drivers/iio/adc/rockchip_saradc.c
+> +++ b/drivers/iio/adc/rockchip_saradc.c
+> @@ -18,13 +18,13 @@
+>  #include <linux/interrupt.h>
+>  #include <linux/io.h>
+>  #include <linux/of.h>
+> +#include <linux/of_device.h>
+>  #include <linux/clk.h>
+>  #include <linux/completion.h>
+>  #include <linux/regulator/consumer.h>
+>  #include <linux/iio/iio.h>
+>  
+>  #define SARADC_DATA			0x00
+> -#define SARADC_DATA_MASK		0x3ff
+>  
+>  #define SARADC_STAS			0x04
+>  #define SARADC_STAS_BUSY		BIT(0)
+> @@ -38,15 +38,22 @@
+>  #define SARADC_DLY_PU_SOC		0x0c
+>  #define SARADC_DLY_PU_SOC_MASK		0x3f
+>  
+> -#define SARADC_BITS			10
+>  #define SARADC_TIMEOUT			msecs_to_jiffies(100)
+>  
+> +struct rockchip_saradc_data {
+> +	int				num_bits;
+> +	const struct iio_chan_spec	*channels;
+> +	int				num_channels;
+> +	unsigned long			clk_rate;
+> +};
+> +
+>  struct rockchip_saradc {
+>  	void __iomem		*regs;
+>  	struct clk		*pclk;
+>  	struct clk		*clk;
+>  	struct completion	completion;
+>  	struct regulator	*vref;
+> +	const struct rockchip_saradc_data *data;
+>  	u16			last_val;
+>  };
+>  
+> @@ -90,7 +97,7 @@ static int rockchip_saradc_read_raw(struct iio_dev *indio_dev,
+>  		}
+>  
+>  		*val = ret / 1000;
+> -		*val2 = SARADC_BITS;
+> +		*val2 = info->data->num_bits;
+>  		return IIO_VAL_FRACTIONAL_LOG2;
+>  	default:
+>  		return -EINVAL;
+> @@ -103,7 +110,7 @@ static irqreturn_t rockchip_saradc_isr(int irq, void *dev_id)
+>  
+>  	/* Read value */
+>  	info->last_val = readl_relaxed(info->regs + SARADC_DATA);
+> -	info->last_val &= SARADC_DATA_MASK;
+> +	info->last_val &= GENMASK(info->data->num_bits - 1, 0);
+>  
+>  	/* Clear irq & power down adc */
+>  	writel_relaxed(0, info->regs + SARADC_CTRL);
+> @@ -133,12 +140,44 @@ static const struct iio_chan_spec rockchip_saradc_iio_channels[] = {
+>  	ADC_CHANNEL(2, "adc2"),
+>  };
+>  
+> +static const struct rockchip_saradc_data saradc_data = {
+> +	.num_bits = 10,
+> +	.channels = rockchip_saradc_iio_channels,
+> +	.num_channels = ARRAY_SIZE(rockchip_saradc_iio_channels),
+> +	.clk_rate = 1000000,
+> +};
+> +
+> +static const struct iio_chan_spec rockchip_rk3066_tsadc_iio_channels[] = {
+> +	ADC_CHANNEL(0, "adc0"),
+> +	ADC_CHANNEL(1, "adc1"),
+> +};
+> +
+> +static const struct rockchip_saradc_data rk3066_tsadc_data = {
+> +	.num_bits = 12,
+> +	.channels = rockchip_rk3066_tsadc_iio_channels,
+> +	.num_channels = ARRAY_SIZE(rockchip_rk3066_tsadc_iio_channels),
+> +	.clk_rate = 50000,
+> +};
+> +
+> +static const struct of_device_id rockchip_saradc_match[] = {
+> +	{
+> +		.compatible = "rockchip,saradc",
+> +		.data = &saradc_data,
+> +	}, {
+> +		.compatible = "rockchip,rk3066-tsadc",
+> +		.data = &rk3066_tsadc_data,
+> +	},
+> +	{},
+> +};
+> +MODULE_DEVICE_TABLE(of, rockchip_saradc_match);
+> +
+>  static int rockchip_saradc_probe(struct platform_device *pdev)
+>  {
+>  	struct rockchip_saradc *info = NULL;
+>  	struct device_node *np = pdev->dev.of_node;
+>  	struct iio_dev *indio_dev = NULL;
+>  	struct resource	*mem;
+> +	const struct of_device_id *match;
+>  	int ret;
+>  	int irq;
+>  
+> @@ -152,6 +191,9 @@ static int rockchip_saradc_probe(struct platform_device *pdev)
+>  	}
+>  	info = iio_priv(indio_dev);
+>  
+> +	match = of_match_device(rockchip_saradc_match, &pdev->dev);
+Is it 100% safe to go on without checking match for validity?
+> +	info->data = match->data;
+> +
+>  	mem = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+>  	info->regs = devm_ioremap_resource(&pdev->dev, mem);
+>  	if (IS_ERR(info->regs))
+> @@ -195,7 +237,7 @@ static int rockchip_saradc_probe(struct platform_device *pdev)
+>  	 * Use a default of 1MHz for the converter clock.
+>  	 * This may become user-configurable in the future.
+>  	 */
+This comment becomes invalid and should be adjusted or droped.
+> -	ret = clk_set_rate(info->clk, 1000000);
+> +	ret = clk_set_rate(info->clk, info->data->clk_rate);
+>  	if (ret < 0) {
+>  		dev_err(&pdev->dev, "failed to set adc clk rate, %d\n", ret);
+>  		return ret;
+> @@ -227,8 +269,8 @@ static int rockchip_saradc_probe(struct platform_device *pdev)
+>  	indio_dev->info = &rockchip_saradc_iio_info;
+>  	indio_dev->modes = INDIO_DIRECT_MODE;
+>  
+> -	indio_dev->channels = rockchip_saradc_iio_channels;
+> -	indio_dev->num_channels = ARRAY_SIZE(rockchip_saradc_iio_channels);
+> +	indio_dev->channels = info->data->channels;
+> +	indio_dev->num_channels = info->data->num_channels;
+>  
+>  	ret = iio_device_register(indio_dev);
+>  	if (ret)
+> @@ -296,12 +338,6 @@ static int rockchip_saradc_resume(struct device *dev)
+>  static SIMPLE_DEV_PM_OPS(rockchip_saradc_pm_ops,
+>  			 rockchip_saradc_suspend, rockchip_saradc_resume);
+>  
+> -static const struct of_device_id rockchip_saradc_match[] = {
+> -	{ .compatible = "rockchip,saradc" },
+> -	{},
+> -};
+> -MODULE_DEVICE_TABLE(of, rockchip_saradc_match);
+> -
+>  static struct platform_driver rockchip_saradc_driver = {
+>  	.probe		= rockchip_saradc_probe,
+>  	.remove		= rockchip_saradc_remove,
 > 
