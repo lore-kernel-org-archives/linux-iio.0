@@ -1,18 +1,19 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:55819 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:56381 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752645AbaINRsD (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 14 Sep 2014 13:48:03 -0400
-Message-ID: <5415D4D0.3080707@kernel.org>
-Date: Sun, 14 Sep 2014 18:48:00 +0100
+	with ESMTP id S1752702AbaINTUa (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 14 Sep 2014 15:20:30 -0400
+Message-ID: <5415EA7C.2020200@kernel.org>
+Date: Sun, 14 Sep 2014 20:20:28 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
 To: Peter Meerwald <pmeerw@pmeerw.net>
 CC: linux-iio@vger.kernel.org,
 	Oleksandr Kravchenko <o.v.kravchenko@globallogic.com>
-Subject: Re: [PATCH v2 03/11] iio:bma180: Rename BMA_180 to BMA180_
-References: <1408488206-2633-1-git-send-email-pmeerw@pmeerw.net> <1408488206-2633-4-git-send-email-pmeerw@pmeerw.net>
-In-Reply-To: <1408488206-2633-4-git-send-email-pmeerw@pmeerw.net>
+Subject: Re: [PATCH v2 07/11] iio:bma180: Introduce part_info to differentiate
+ further chip variants
+References: <1408488206-2633-1-git-send-email-pmeerw@pmeerw.net> <1408488206-2633-8-git-send-email-pmeerw@pmeerw.net>
+In-Reply-To: <1408488206-2633-8-git-send-email-pmeerw@pmeerw.net>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
@@ -20,31 +21,117 @@ List-Id: linux-iio@vger.kernel.org
 On 19/08/14 23:43, Peter Meerwald wrote:
 > Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
 > Cc: Oleksandr Kravchenko <o.v.kravchenko@globallogic.com>
-Applied.
+applied
 > ---
->  drivers/iio/accel/bma180.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
+>  drivers/iio/accel/bma180.c | 41 ++++++++++++++++++++++++++++++++---------
+>  1 file changed, 32 insertions(+), 9 deletions(-)
 > 
 > diff --git a/drivers/iio/accel/bma180.c b/drivers/iio/accel/bma180.c
-> index d7f34b4..284598d 100644
+> index 5838318..fc7c7b8 100644
 > --- a/drivers/iio/accel/bma180.c
 > +++ b/drivers/iio/accel/bma180.c
-> @@ -56,7 +56,7 @@
->  /* We have to write this value in reset register to do soft reset */
->  #define BMA180_RESET_VAL	0xb6
+> @@ -26,6 +26,19 @@
+>  #define BMA180_DRV_NAME "bma180"
+>  #define BMA180_IRQ_NAME "bma180_event"
 >  
-> -#define BMA_180_ID_REG_VAL	0x03
-> +#define BMA180_ID_REG_VAL	0x03
+> +enum {
+> +	BMA180,
+> +};
+> +
+> +struct bma180_part_info {
+> +	const struct iio_chan_spec *channels;
+> +	unsigned num_channels;
+> +	const int *scale_table;
+> +	unsigned num_scales;
+> +	const int *bw_table;
+> +	unsigned num_bw;
+> +};
+> +
+>  /* Register set */
+>  #define BMA180_CHIP_ID		0x00 /* Need to distinguish BMA180 from other */
+>  #define BMA180_ACC_X_LSB	0x02 /* First of 6 registers of accel data */
+> @@ -77,6 +90,7 @@
+>  struct bma180_data {
+>  	struct i2c_client *client;
+>  	struct iio_trigger *trig;
+> +	const struct bma180_part_info *part_info;
+>  	struct mutex mutex;
+>  	bool sleep_state;
+>  	int scale;
+> @@ -193,8 +207,8 @@ static int bma180_set_bw(struct bma180_data *data, int val)
+>  	if (data->sleep_state)
+>  		return -EBUSY;
 >  
->  /* Chip power modes */
->  #define BMA180_LOW_NOISE	0x00
-> @@ -258,7 +258,7 @@ static int bma180_chip_init(struct bma180_data *data)
+> -	for (i = 0; i < ARRAY_SIZE(bma180_bw_table); ++i) {
+> -		if (bma180_bw_table[i] == val) {
+> +	for (i = 0; i < data->part_info->num_bw; ++i) {
+> +		if (data->part_info->bw_table[i] == val) {
+>  			ret = bma180_set_bits(data,
+>  					BMA180_BW_TCS, BMA180_BW, i);
+>  			if (ret) {
+> @@ -217,8 +231,8 @@ static int bma180_set_scale(struct bma180_data *data, int val)
+>  	if (data->sleep_state)
+>  		return -EBUSY;
 >  
+> -	for (i = 0; i < ARRAY_SIZE(bma180_scale_table); ++i)
+> -		if (bma180_scale_table[i] == val) {
+> +	for (i = 0; i < data->part_info->num_scales; ++i)
+> +		if (data->part_info->scale_table[i] == val) {
+>  			ret = bma180_set_bits(data,
+>  					BMA180_OFFSET_LSB1, BMA180_RANGE, i);
+>  			if (ret) {
+> @@ -488,6 +502,14 @@ static const struct iio_chan_spec bma180_channels[] = {
+>  	IIO_CHAN_SOFT_TIMESTAMP(4),
+>  };
+>  
+> +static const struct bma180_part_info bma180_part_info[] = {
+> +	[BMA180] = {
+> +		bma180_channels, ARRAY_SIZE(bma180_channels),
+> +		bma180_scale_table, ARRAY_SIZE(bma180_scale_table),
+> +		bma180_bw_table, ARRAY_SIZE(bma180_bw_table),
+> +	},
+> +};
+> +
+>  static irqreturn_t bma180_trigger_handler(int irq, void *p)
+>  {
+>  	struct iio_poll_func *pf = p;
+> @@ -554,6 +576,7 @@ static int bma180_probe(struct i2c_client *client,
+>  	data = iio_priv(indio_dev);
+>  	i2c_set_clientdata(client, indio_dev);
+>  	data->client = client;
+> +	data->part_info = &bma180_part_info[id->driver_data];
+>  
+>  	ret = bma180_chip_init(data);
 >  	if (ret < 0)
->  		goto err;
-> -	if (ret != BMA_180_ID_REG_VAL) {
-> +	if (ret != BMA180_ID_REG_VAL) {
->  		ret = -ENODEV;
->  		goto err;
->  	}
+> @@ -562,8 +585,8 @@ static int bma180_probe(struct i2c_client *client,
+>  	mutex_init(&data->mutex);
+>  
+>  	indio_dev->dev.parent = &client->dev;
+> -	indio_dev->channels = bma180_channels;
+> -	indio_dev->num_channels = ARRAY_SIZE(bma180_channels);
+> +	indio_dev->channels = data->part_info->channels;
+> +	indio_dev->num_channels = data->part_info->num_channels;
+>  	indio_dev->name = BMA180_DRV_NAME;
+>  	indio_dev->modes = INDIO_DIRECT_MODE;
+>  	indio_dev->info = &bma180_info;
+> @@ -674,8 +697,8 @@ static SIMPLE_DEV_PM_OPS(bma180_pm_ops, bma180_suspend, bma180_resume);
+>  #define BMA180_PM_OPS NULL
+>  #endif
+>  
+> -static struct i2c_device_id bma180_id[] = {
+> -	{ BMA180_DRV_NAME, 0 },
+> +static struct i2c_device_id bma180_ids[] = {
+> +	{ BMA180_DRV_NAME, BMA180 },
+>  	{ }
+>  };
+>  
+> @@ -689,7 +712,7 @@ static struct i2c_driver bma180_driver = {
+>  	},
+>  	.probe		= bma180_probe,
+>  	.remove		= bma180_remove,
+> -	.id_table	= bma180_id,
+> +	.id_table	= bma180_ids,
+>  };
+>  
+>  module_i2c_driver(bma180_driver);
 > 
