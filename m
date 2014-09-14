@@ -1,95 +1,73 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:35882 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:56593 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751755AbaI0JwN (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 27 Sep 2014 05:52:13 -0400
-Message-ID: <542688C9.6010009@kernel.org>
-Date: Sat, 27 Sep 2014 10:52:09 +0100
+	with ESMTP id S1752766AbaINTyy (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 14 Sep 2014 15:54:54 -0400
+Message-ID: <5415F286.6050405@kernel.org>
+Date: Sun, 14 Sep 2014 20:54:46 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Lars-Peter Clausen <lars@metafoo.de>
-CC: Hartmut Knaack <knaack.h@gmx.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	Daniel Baluta <daniel.baluta@intel.com>,
-	linux-iio@vger.kernel.org
-Subject: Re: [PATCH v2 3/4] staging:iio:ad5933: Report temperature as raw
- value
-References: <1411655235-7635-1-git-send-email-lars@metafoo.de> <1411655235-7635-3-git-send-email-lars@metafoo.de>
-In-Reply-To: <1411655235-7635-3-git-send-email-lars@metafoo.de>
+To: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+	Peter Meerwald <pmeerw@pmeerw.net>
+CC: linux-iio@vger.kernel.org
+Subject: Re: [PATCH 1/3] iio:kxcjk-1013: Correct error messages
+References: <1405370318-19699-1-git-send-email-pmeerw@pmeerw.net> <1405370318-19699-2-git-send-email-pmeerw@pmeerw.net> <53C46095.9020002@linux.intel.com> <53CBF3A1.6030508@kernel.org>
+In-Reply-To: <53CBF3A1.6030508@kernel.org>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 25/09/14 15:27, Lars-Peter Clausen wrote:
-> We shouldn't be doing the unit conversion in kernel space. Just report the
-> raw value for the property and the scale. Userspace can do the conversion if
-> necessary.
+On 20/07/14 17:51, Jonathan Cameron wrote:
+> On 14/07/14 23:58, Srinivas Pandruvada wrote:
+>> On 07/14/2014 01:38 PM, Peter Meerwald wrote:
+>>> Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
+>>> Cc: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+> This one doesn't apply cleanly on top of Srinivas' patches that I took
+> earlier today.  I'll hold it for now as it's not as urgent as the next
+> one and sort it out after Srinivas' series is all in place.
 > 
-> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
-Technically you are allowed to do this under the ABI so I'm a little dubious about
-this one except in that the driver has broken for some time an no one has
-noticed hence this is unlikely to cause too many problems!
-
-Will need to hold this anyway until after the fixes have gone through..
-
-> ---
-> Changes from v1:
-> 	* Slightly restructured error path to make it clear that the mutex is
-> 	  only unlocked when it was locked before.
-> ---
->  drivers/staging/iio/impedance-analyzer/ad5933.c | 20 ++++++++++----------
->  1 file changed, 10 insertions(+), 10 deletions(-)
+No longer relevant as far as I can see so dropped.
+> J
+>>> ---
+>>>   drivers/iio/accel/kxcjk-1013.c | 6 +++---
+>>>   1 file changed, 3 insertions(+), 3 deletions(-)
+>>>
+>>> diff --git a/drivers/iio/accel/kxcjk-1013.c b/drivers/iio/accel/kxcjk-1013.c
+>>> index 72a6dbb..a11588c 100644
+>>> --- a/drivers/iio/accel/kxcjk-1013.c
+>>> +++ b/drivers/iio/accel/kxcjk-1013.c
+>>> @@ -144,7 +144,7 @@ static int kxcjk1013_chip_ack_intr(struct kxcjk1013_data *data)
+>>>
+>>>       ret = i2c_smbus_read_byte_data(data->client, KXCJK1013_REG_INT_REL);
+>>>       if (ret < 0) {
+>>> -        dev_err(&data->client->dev, "Error writing reg_int_rel\n");
+>>> +        dev_err(&data->client->dev, "Error reading reg_int_rel\n");
+>>>           return ret;
+>>>       }
+>>>
+>>> @@ -183,7 +183,7 @@ static int kxcjk1013_chip_init(struct kxcjk1013_data *data)
+>>>       ret = i2c_smbus_write_byte_data(data->client, KXCJK1013_REG_CTRL1,
+>>>                       ret);
+>>>       if (ret < 0) {
+>>> -        dev_err(&data->client->dev, "Error reading reg_ctrl\n");
+>>> +        dev_err(&data->client->dev, "Error writing reg_ctrl1\n");
+>>>           return ret;
+>>>       }
+>>>
+>>> @@ -337,7 +337,7 @@ static int kxcjk1013_get_acc_reg(struct kxcjk1013_data *data, int axis)
+>>>       ret = i2c_smbus_read_word_data(data->client, reg);
+>>>       if (ret < 0) {
+>>>           dev_err(&data->client->dev,
+>>> -            "failed to read accel_%c registers\n", 'x' + axis);
+>>> +            "failed to read accel_%c register\n", 'x' + axis);
+>>>           return ret;
+>>>       }
+>>>
+>>>
+>> Reviewed-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+>>
 > 
-> diff --git a/drivers/staging/iio/impedance-analyzer/ad5933.c b/drivers/staging/iio/impedance-analyzer/ad5933.c
-> index b6bd609..95b17c5 100644
-> --- a/drivers/staging/iio/impedance-analyzer/ad5933.c
-> +++ b/drivers/staging/iio/impedance-analyzer/ad5933.c
-> @@ -113,7 +113,8 @@ static const struct iio_chan_spec ad5933_channels[] = {
->  		.type = IIO_TEMP,
->  		.indexed = 1,
->  		.channel = 0,
-> -		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED),
-> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
-> +			BIT(IIO_CHAN_INFO_SCALE),
->  		.address = AD5933_REG_TEMP_DATA,
->  		.scan_index = -1,
->  		.scan_type = {
-> @@ -520,12 +521,11 @@ static int ad5933_read_raw(struct iio_dev *indio_dev,
->  {
->  	struct ad5933_state *st = iio_priv(indio_dev);
->  	__be16 dat;
-> -	int ret = -EINVAL;
-> +	int ret;
->  
-> -	mutex_lock(&indio_dev->mlock);
->  	switch (m) {
->  	case IIO_CHAN_INFO_RAW:
-> -	case IIO_CHAN_INFO_PROCESSED:
-> +		mutex_lock(&indio_dev->mlock);
->  		if (iio_buffer_enabled(indio_dev)) {
->  			ret = -EBUSY;
->  			goto out;
-> @@ -543,16 +543,16 @@ static int ad5933_read_raw(struct iio_dev *indio_dev,
->  		if (ret < 0)
->  			goto out;
->  		mutex_unlock(&indio_dev->mlock);
-> -		ret = be16_to_cpu(dat);
-> -		/* Temp in Milli degrees Celsius */
-> -		if (ret < 8192)
-> -			*val = ret * 1000 / 32;
-> -		else
-> -			*val = (ret - 16384) * 1000 / 32;
-> +		*val = sign_extend32(be16_to_cpu(dat), 13);
->  
->  		return IIO_VAL_INT;
-> +	case IIO_CHAN_INFO_SCALE:
-> +		*val = 1000;
-> +		*val2 = 5;
-> +		return IIO_VAL_FRACTIONAL_LOG2;
->  	}
->  
-> +	return -EINVAL;
->  out:
->  	mutex_unlock(&indio_dev->mlock);
->  	return ret;
-> 
+> -- 
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
