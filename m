@@ -1,118 +1,86 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:55806 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:55815 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752523AbaINRrG (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 14 Sep 2014 13:47:06 -0400
-Message-ID: <5415D498.90509@kernel.org>
-Date: Sun, 14 Sep 2014 18:47:04 +0100
+	with ESMTP id S1752843AbaINRrd (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 14 Sep 2014 13:47:33 -0400
+Message-ID: <5415D4B3.5050006@kernel.org>
+Date: Sun, 14 Sep 2014 18:47:31 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
 To: Peter Meerwald <pmeerw@pmeerw.net>
 CC: linux-iio@vger.kernel.org,
 	Oleksandr Kravchenko <o.v.kravchenko@globallogic.com>
-Subject: Re: [PATCH v2 01/11] iio:bma180: Enable use of device without IRQ
-References: <1408488206-2633-1-git-send-email-pmeerw@pmeerw.net> <1408488206-2633-2-git-send-email-pmeerw@pmeerw.net>
-In-Reply-To: <1408488206-2633-2-git-send-email-pmeerw@pmeerw.net>
+Subject: Re: [PATCH v2 02/11] iio:bma180: Prefix remaining tables and functions
+ with bma18_
+References: <1408488206-2633-1-git-send-email-pmeerw@pmeerw.net> <1408488206-2633-3-git-send-email-pmeerw@pmeerw.net>
+In-Reply-To: <1408488206-2633-3-git-send-email-pmeerw@pmeerw.net>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
 On 19/08/14 23:43, Peter Meerwald wrote:
+> and minor cleanups
+> 
 > Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
 > Cc: Oleksandr Kravchenko <o.v.kravchenko@globallogic.com>
 Applied.
 > ---
->  drivers/iio/accel/bma180.c | 54 +++++++++++++++++++++++++---------------------
->  1 file changed, 29 insertions(+), 25 deletions(-)
+>  drivers/iio/accel/bma180.c | 16 ++++++++--------
+>  1 file changed, 8 insertions(+), 8 deletions(-)
 > 
 > diff --git a/drivers/iio/accel/bma180.c b/drivers/iio/accel/bma180.c
-> index a077cc8..f5e26fb 100644
+> index f5e26fb..d7f34b4 100644
 > --- a/drivers/iio/accel/bma180.c
 > +++ b/drivers/iio/accel/bma180.c
-> @@ -529,7 +529,6 @@ static int bma180_probe(struct i2c_client *client,
+> @@ -49,7 +49,7 @@
+>  #define BMA180_SMP_SKIP		BIT(0)
+>  
+>  /* Bit masks for registers bit fields */
+> -#define BMA180_RANGE		0x0e /* Range of measured accel values*/
+> +#define BMA180_RANGE		0x0e /* Range of measured accel values */
+>  #define BMA180_BW		0xf0 /* Accel bandwidth */
+>  #define BMA180_MODE_CONFIG	0x03 /* Config operation modes */
+>  
+> @@ -93,8 +93,8 @@ enum bma180_axis {
+>  	AXIS_Z,
+>  };
+>  
+> -static int bw_table[] = { 10, 20, 40, 75, 150, 300 }; /* Hz */
+> -static int scale_table[] = { 1275, 1863, 2452, 3727, 4903, 9709, 19417 };
+> +static int bma180_bw_table[] = { 10, 20, 40, 75, 150, 300 }; /* Hz */
+> +static int bma180_scale_table[] = { 1275, 1863, 2452, 3727, 4903, 9709, 19417 };
+>  
+>  static int bma180_get_acc_reg(struct bma180_data *data, enum bma180_axis axis)
 >  {
->  	struct bma180_data *data;
->  	struct iio_dev *indio_dev;
-> -	struct iio_trigger *trig;
->  	int ret;
+> @@ -107,7 +107,7 @@ static int bma180_get_acc_reg(struct bma180_data *data, enum bma180_axis axis)
+>  	ret = i2c_smbus_read_word_data(data->client, reg);
+>  	if (ret < 0)
+>  		dev_err(&data->client->dev,
+> -			"failed to read accel_%c registers\n", 'x' + axis);
+> +			"failed to read accel_%c register\n", 'x' + axis);
 >  
->  	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
-> @@ -553,29 +552,31 @@ static int bma180_probe(struct i2c_client *client,
->  	indio_dev->modes = INDIO_DIRECT_MODE;
->  	indio_dev->info = &bma180_info;
+>  	return ret;
+>  }
+> @@ -185,8 +185,8 @@ static int bma180_set_bw(struct bma180_data *data, int val)
+>  	if (data->sleep_state)
+>  		return -EBUSY;
 >  
-> -	trig = iio_trigger_alloc("%s-dev%d", indio_dev->name, indio_dev->id);
-> -	if (!trig) {
-> -		ret = -ENOMEM;
-> -		goto err_chip_disable;
-> -	}
-> +	if (client->irq > 0) {
-> +		data->trig = iio_trigger_alloc("%s-dev%d", indio_dev->name,
-> +			indio_dev->id);
-> +		if (!data->trig) {
-> +			ret = -ENOMEM;
-> +			goto err_chip_disable;
-> +		}
+> -	for (i = 0; i < ARRAY_SIZE(bw_table); ++i) {
+> -		if (bw_table[i] == val) {
+> +	for (i = 0; i < ARRAY_SIZE(bma180_bw_table); ++i) {
+> +		if (bma180_bw_table[i] == val) {
+>  			ret = bma180_set_bits(data,
+>  					BMA180_BW_TCS, BMA180_BW, i);
+>  			if (ret) {
+> @@ -209,8 +209,8 @@ static int bma180_set_scale(struct bma180_data *data, int val)
+>  	if (data->sleep_state)
+>  		return -EBUSY;
 >  
-> -	ret = devm_request_irq(&client->dev, client->irq,
-> -			iio_trigger_generic_data_rdy_poll,
-> -			IRQF_TRIGGER_RISING, BMA180_IRQ_NAME, trig);
-> -	if (ret) {
-> -		dev_err(&client->dev, "unable to request IRQ\n");
-> -		goto err_trigger_free;
-> -	}
-> +		ret = devm_request_irq(&client->dev, client->irq,
-> +			iio_trigger_generic_data_rdy_poll, IRQF_TRIGGER_RISING,
-> +			BMA180_IRQ_NAME, data->trig);
-> +		if (ret) {
-> +			dev_err(&client->dev, "unable to request IRQ\n");
-> +			goto err_trigger_free;
-> +		}
->  
-> -	trig->dev.parent = &client->dev;
-> -	trig->ops = &bma180_trigger_ops;
-> -	iio_trigger_set_drvdata(trig, indio_dev);
-> -	data->trig = trig;
-> -	indio_dev->trig = trig;
-> +		data->trig->dev.parent = &client->dev;
-> +		data->trig->ops = &bma180_trigger_ops;
-> +		iio_trigger_set_drvdata(data->trig, indio_dev);
-> +		indio_dev->trig = data->trig;
->  
-> -	ret = iio_trigger_register(trig);
-> -	if (ret)
-> -		goto err_trigger_free;
-> +		ret = iio_trigger_register(data->trig);
-> +		if (ret)
-> +			goto err_trigger_free;
-> +	}
->  
->  	ret = iio_triggered_buffer_setup(indio_dev, NULL,
->  			bma180_trigger_handler, NULL);
-> @@ -595,9 +596,10 @@ static int bma180_probe(struct i2c_client *client,
->  err_buffer_cleanup:
->  	iio_triggered_buffer_cleanup(indio_dev);
->  err_trigger_unregister:
-> -	iio_trigger_unregister(trig);
-> +	if (data->trig)
-> +		iio_trigger_unregister(data->trig);
->  err_trigger_free:
-> -	iio_trigger_free(trig);
-> +	iio_trigger_free(data->trig);
->  err_chip_disable:
->  	bma180_chip_disable(data);
->  
-> @@ -611,8 +613,10 @@ static int bma180_remove(struct i2c_client *client)
->  
->  	iio_device_unregister(indio_dev);
->  	iio_triggered_buffer_cleanup(indio_dev);
-> -	iio_trigger_unregister(data->trig);
-> -	iio_trigger_free(data->trig);
-> +	if (data->trig) {
-> +		iio_trigger_unregister(data->trig);
-> +		iio_trigger_free(data->trig);
-> +	}
->  
->  	mutex_lock(&data->mutex);
->  	bma180_chip_disable(data);
+> -	for (i = 0; i < ARRAY_SIZE(scale_table); ++i)
+> -		if (scale_table[i] == val) {
+> +	for (i = 0; i < ARRAY_SIZE(bma180_scale_table); ++i)
+> +		if (bma180_scale_table[i] == val) {
+>  			ret = bma180_set_bits(data,
+>  					BMA180_OFFSET_LSB1, BMA180_RANGE, i);
+>  			if (ret) {
 > 
