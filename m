@@ -1,702 +1,399 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga02.intel.com ([134.134.136.20]:52851 "EHLO mga02.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751658AbaIKXRc (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Thu, 11 Sep 2014 19:17:32 -0400
-From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-To: IIO <linux-iio@vger.kernel.org>,
-	LKML <linux-kernel@vger.kernel.org>,
-	DEVICE TREE <devicetree@vger.kernel.org>,
-	Lee Jones <lee.jones@linaro.org>
-Cc: Carlo Caione <carlo@caione.org>,
-	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
-	Aaron Lu <aaron.lu@intel.com>, Alan Cox <alan@linux.intel.com>,
-	Jean Delvare <khali@linux-fr.org>,
-	Samuel Ortiz <sameo@linux.intel.com>,
-	Liam Girdwood <lgirdwood@gmail.com>,
-	Mark Brown <broonie@kernel.org>,
-	Grant Likely <grant.likely@linaro.org>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Rob Herring <robh+dt@kernel.org>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Fugang Duan <B38611@freescale.com>,
-	Arnd Bergmann <arnd@arndb.de>,
-	Zubair Lutfullah <zubair.lutfullah@gmail.com>,
-	Sebastian Reichel <sre@debian.org>,
-	Johannes Thumshirn <johannes.thumshirn@men.de>,
-	Philippe Reynes <tremyfr@yahoo.fr>,
-	Angelo Compagnucci <angelo.compagnucci@gmail.com>,
-	Doug Anderson <dianders@chromium.org>,
-	Ramakrishna Pallala <ramakrishna.pallala@intel.com>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	Maxime Ripard <maxime.ripard@free-electrons.com>,
-	Jacob Pan <jacob.jun.pan@linux.intel.com>
-Subject: [PATCH v3 2/5] mfd/axp2xx: extend axp20x to support axp288 pmic
-Date: Thu, 11 Sep 2014 16:15:54 -0700
-Message-Id: <1410477357-6407-3-git-send-email-jacob.jun.pan@linux.intel.com>
-In-Reply-To: <1410477357-6407-1-git-send-email-jacob.jun.pan@linux.intel.com>
-References: <1410477357-6407-1-git-send-email-jacob.jun.pan@linux.intel.com>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:56455 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752652AbaINT2w (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 14 Sep 2014 15:28:52 -0400
+Message-ID: <5415EC72.20409@kernel.org>
+Date: Sun, 14 Sep 2014 20:28:50 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+MIME-Version: 1.0
+To: Peter Meerwald <pmeerw@pmeerw.net>
+CC: linux-iio@vger.kernel.org,
+	Oleksandr Kravchenko <o.v.kravchenko@globallogic.com>
+Subject: Re: [PATCH v2 11/11] iio:bma180: Add BMA250 chip support
+References: <1408488206-2633-1-git-send-email-pmeerw@pmeerw.net> <1408488206-2633-12-git-send-email-pmeerw@pmeerw.net>
+In-Reply-To: <1408488206-2633-12-git-send-email-pmeerw@pmeerw.net>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-XPower AXP288 is a customized PMIC for Intel Baytrail-CR platforms. Similar
-to AXP202/209, AXP288 comes with USB charger, more LDO and BUCK channels, and
-AD converter. It also provides extended status and interrupt reporting
-capabilities than the devices supported in axp20x.c.
+On 19/08/14 23:43, Peter Meerwald wrote:
+> the BMA250 has only 10-bit resolution; while the data readout registers
+> have identical layout, the configuration is completely different compared
+> to the BMA180
+> 
+> datasheet: http://ae-bst.resource.bosch.com/media/products/dokumente/bma250/BST-BMA250-DS002-05.pdf
+> 
+> Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
+> Cc: Oleksandr Kravchenko <o.v.kravchenko@globallogic.com>
+Fair bit of fuzz from my fixups but I think this has merged right...
 
-In addition to feature extension, this patch also adds ACPI binding for
-enumeration and hooks for ACPI custom operational region handlers.
+Applied
 
-Common data structures and constants have been renamed from axp20x to axp2xx
-in order to suit the extended scope of devices.
-
-This consolidated driver should support more Xpowers' PMICs in both device
-tree and ACPI enumerated platforms.
-
-Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
----
- drivers/mfd/axp2xx.c       | 423 +++++++++++++++++++++++++++++++++++----------
- include/linux/mfd/axp2xx.h |  60 ++++++-
- 2 files changed, 388 insertions(+), 95 deletions(-)
-
-diff --git a/drivers/mfd/axp2xx.c b/drivers/mfd/axp2xx.c
-index 332a8a0..300f895 100644
---- a/drivers/mfd/axp2xx.c
-+++ b/drivers/mfd/axp2xx.c
-@@ -1,9 +1,9 @@
- /*
-- * axp2xx.c - MFD core driver for the X-Powers AXP202 and AXP209
-+ * axp2xx.c - MFD core driver for the X-Powers' Power Management ICs
-  *
-- * AXP2xx comprises an adaptive USB-Compatible PWM charger, 2 BUCK DC-DC
-- * converters, 5 LDOs, multiple 12-bit ADCs of voltage, current and temperature
-- * as well as 4 configurable GPIOs.
-+ * AXP2xx typically comprises an adaptive USB-Compatible PWM charger, BUCK DC-DC
-+ * converters, LDOs, multiple 12-bit ADCs of voltage, current and temperature
-+ * as well as configurable GPIOs.
-  *
-  * Author: Carlo Caione <carlo@caione.org>
-  *
-@@ -25,9 +25,16 @@
- #include <linux/mfd/core.h>
- #include <linux/of_device.h>
- #include <linux/of_irq.h>
-+#include <linux/acpi.h>
- 
- #define AXP20X_OFF	0x80
- 
-+static const char *axp2xx_model_names[] = {
-+	"AXP202",
-+	"AXP209",
-+	"AXP288",
-+};
-+
- static const struct regmap_range axp20x_writeable_ranges[] = {
- 	regmap_reg_range(AXP20X_DATACACHE(0), AXP20X_IRQ5_STATE),
- 	regmap_reg_range(AXP20X_DCDC_MODE, AXP20X_FG_RES),
-@@ -47,6 +54,25 @@ static const struct regmap_access_table axp20x_volatile_table = {
- 	.n_yes_ranges	= ARRAY_SIZE(axp20x_volatile_ranges),
- };
- 
-+static const struct regmap_range axp288_writeable_ranges[] = {
-+	regmap_reg_range(AXP20X_DATACACHE(0), AXP20X_IRQ6_STATE),
-+	regmap_reg_range(AXP20X_DCDC_MODE, AXP288_FG_TUNE5),
-+};
-+
-+static const struct regmap_range axp288_volatile_ranges[] = {
-+	regmap_reg_range(AXP20X_IRQ1_EN,  AXP20X_IPSOUT_V_HIGH_L),
-+};
-+
-+static const struct regmap_access_table axp288_writeable_table = {
-+	.yes_ranges	= axp288_writeable_ranges,
-+	.n_yes_ranges	= ARRAY_SIZE(axp288_writeable_ranges),
-+};
-+
-+static const struct regmap_access_table axp288_volatile_table = {
-+	.yes_ranges	= axp288_volatile_ranges,
-+	.n_yes_ranges	= ARRAY_SIZE(axp288_volatile_ranges),
-+};
-+
- static struct resource axp20x_pek_resources[] = {
- 	{
- 		.name	= "PEK_DBR",
-@@ -61,7 +87,40 @@ static struct resource axp20x_pek_resources[] = {
- 	},
- };
- 
--static const struct regmap_config axp20x_regmap_config = {
-+static struct resource axp288_battery_resources[] = {
-+	{
-+		.start = AXP288_IRQ_QWBTU,
-+		.end   = AXP288_IRQ_QWBTU,
-+		.flags = IORESOURCE_IRQ,
-+	},
-+	{
-+		.start = AXP288_IRQ_WBTU,
-+		.end   = AXP288_IRQ_WBTU,
-+		.flags = IORESOURCE_IRQ,
-+	},
-+	{
-+		.start = AXP288_IRQ_QWBTO,
-+		.end   = AXP288_IRQ_QWBTO,
-+		.flags = IORESOURCE_IRQ,
-+	},
-+	{
-+		.start = AXP288_IRQ_WBTO,
-+		.end   = AXP288_IRQ_WBTO,
-+		.flags = IORESOURCE_IRQ,
-+	},
-+	{
-+		.start = AXP288_IRQ_WL2,
-+		.end   = AXP288_IRQ_WL2,
-+		.flags = IORESOURCE_IRQ,
-+	},
-+	{
-+		.start = AXP288_IRQ_WL1,
-+		.end   = AXP288_IRQ_WL1,
-+		.flags = IORESOURCE_IRQ,
-+	},
-+};
-+
-+static struct regmap_config axp20x_regmap_config = {
- 	.reg_bits	= 8,
- 	.val_bits	= 8,
- 	.wr_table	= &axp20x_writeable_table,
-@@ -70,47 +129,96 @@ static const struct regmap_config axp20x_regmap_config = {
- 	.cache_type	= REGCACHE_RBTREE,
- };
- 
--#define AXP20X_IRQ(_irq, _off, _mask) \
--	[AXP20X_IRQ_##_irq] = { .reg_offset = (_off), .mask = BIT(_mask) }
-+static struct regmap_config axp288_regmap_config = {
-+	.reg_bits	= 8,
-+	.val_bits	= 8,
-+	.wr_table	= &axp288_writeable_table,
-+	.volatile_table	= &axp288_volatile_table,
-+	.max_register	= AXP288_FG_TUNE5,
-+	.cache_type	= REGCACHE_RBTREE,
-+};
-+
-+#define INIT_REGMAP_IRQ(_variant, _irq, _off, _mask)			\
-+	[_variant##_IRQ_##_irq] = { .reg_offset = (_off), .mask = BIT(_mask) }
- 
- static const struct regmap_irq axp20x_regmap_irqs[] = {
--	AXP20X_IRQ(ACIN_OVER_V,		0, 7),
--	AXP20X_IRQ(ACIN_PLUGIN,		0, 6),
--	AXP20X_IRQ(ACIN_REMOVAL,	0, 5),
--	AXP20X_IRQ(VBUS_OVER_V,		0, 4),
--	AXP20X_IRQ(VBUS_PLUGIN,		0, 3),
--	AXP20X_IRQ(VBUS_REMOVAL,	0, 2),
--	AXP20X_IRQ(VBUS_V_LOW,		0, 1),
--	AXP20X_IRQ(BATT_PLUGIN,		1, 7),
--	AXP20X_IRQ(BATT_REMOVAL,	1, 6),
--	AXP20X_IRQ(BATT_ENT_ACT_MODE,	1, 5),
--	AXP20X_IRQ(BATT_EXIT_ACT_MODE,	1, 4),
--	AXP20X_IRQ(CHARG,		1, 3),
--	AXP20X_IRQ(CHARG_DONE,		1, 2),
--	AXP20X_IRQ(BATT_TEMP_HIGH,	1, 1),
--	AXP20X_IRQ(BATT_TEMP_LOW,	1, 0),
--	AXP20X_IRQ(DIE_TEMP_HIGH,	2, 7),
--	AXP20X_IRQ(CHARG_I_LOW,		2, 6),
--	AXP20X_IRQ(DCDC1_V_LONG,	2, 5),
--	AXP20X_IRQ(DCDC2_V_LONG,	2, 4),
--	AXP20X_IRQ(DCDC3_V_LONG,	2, 3),
--	AXP20X_IRQ(PEK_SHORT,		2, 1),
--	AXP20X_IRQ(PEK_LONG,		2, 0),
--	AXP20X_IRQ(N_OE_PWR_ON,		3, 7),
--	AXP20X_IRQ(N_OE_PWR_OFF,	3, 6),
--	AXP20X_IRQ(VBUS_VALID,		3, 5),
--	AXP20X_IRQ(VBUS_NOT_VALID,	3, 4),
--	AXP20X_IRQ(VBUS_SESS_VALID,	3, 3),
--	AXP20X_IRQ(VBUS_SESS_END,	3, 2),
--	AXP20X_IRQ(LOW_PWR_LVL1,	3, 1),
--	AXP20X_IRQ(LOW_PWR_LVL2,	3, 0),
--	AXP20X_IRQ(TIMER,		4, 7),
--	AXP20X_IRQ(PEK_RIS_EDGE,	4, 6),
--	AXP20X_IRQ(PEK_FAL_EDGE,	4, 5),
--	AXP20X_IRQ(GPIO3_INPUT,		4, 3),
--	AXP20X_IRQ(GPIO2_INPUT,		4, 2),
--	AXP20X_IRQ(GPIO1_INPUT,		4, 1),
--	AXP20X_IRQ(GPIO0_INPUT,		4, 0),
-+	INIT_REGMAP_IRQ(AXP20X, ACIN_OVER_V,		0, 7),
-+	INIT_REGMAP_IRQ(AXP20X, ACIN_PLUGIN,		0, 6),
-+	INIT_REGMAP_IRQ(AXP20X, ACIN_REMOVAL,	        0, 5),
-+	INIT_REGMAP_IRQ(AXP20X, VBUS_OVER_V,		0, 4),
-+	INIT_REGMAP_IRQ(AXP20X, VBUS_PLUGIN,		0, 3),
-+	INIT_REGMAP_IRQ(AXP20X, VBUS_REMOVAL,	        0, 2),
-+	INIT_REGMAP_IRQ(AXP20X, VBUS_V_LOW,		0, 1),
-+	INIT_REGMAP_IRQ(AXP20X, BATT_PLUGIN,		1, 7),
-+	INIT_REGMAP_IRQ(AXP20X, BATT_REMOVAL,	        1, 6),
-+	INIT_REGMAP_IRQ(AXP20X, BATT_ENT_ACT_MODE,	1, 5),
-+	INIT_REGMAP_IRQ(AXP20X, BATT_EXIT_ACT_MODE,	1, 4),
-+	INIT_REGMAP_IRQ(AXP20X, CHARG,		        1, 3),
-+	INIT_REGMAP_IRQ(AXP20X, CHARG_DONE,		1, 2),
-+	INIT_REGMAP_IRQ(AXP20X, BATT_TEMP_HIGH,	        1, 1),
-+	INIT_REGMAP_IRQ(AXP20X, BATT_TEMP_LOW,	        1, 0),
-+	INIT_REGMAP_IRQ(AXP20X, DIE_TEMP_HIGH,	        2, 7),
-+	INIT_REGMAP_IRQ(AXP20X, CHARG_I_LOW,		2, 6),
-+	INIT_REGMAP_IRQ(AXP20X, DCDC1_V_LONG,	        2, 5),
-+	INIT_REGMAP_IRQ(AXP20X, DCDC2_V_LONG,	        2, 4),
-+	INIT_REGMAP_IRQ(AXP20X, DCDC3_V_LONG,	        2, 3),
-+	INIT_REGMAP_IRQ(AXP20X, PEK_SHORT,		2, 1),
-+	INIT_REGMAP_IRQ(AXP20X, PEK_LONG,		2, 0),
-+	INIT_REGMAP_IRQ(AXP20X, N_OE_PWR_ON,		3, 7),
-+	INIT_REGMAP_IRQ(AXP20X, N_OE_PWR_OFF,	        3, 6),
-+	INIT_REGMAP_IRQ(AXP20X, VBUS_VALID,		3, 5),
-+	INIT_REGMAP_IRQ(AXP20X, VBUS_NOT_VALID,	        3, 4),
-+	INIT_REGMAP_IRQ(AXP20X, VBUS_SESS_VALID,	3, 3),
-+	INIT_REGMAP_IRQ(AXP20X, VBUS_SESS_END,	        3, 2),
-+	INIT_REGMAP_IRQ(AXP20X, LOW_PWR_LVL1,	        3, 1),
-+	INIT_REGMAP_IRQ(AXP20X, LOW_PWR_LVL2,	        3, 0),
-+	INIT_REGMAP_IRQ(AXP20X, TIMER,		        4, 7),
-+	INIT_REGMAP_IRQ(AXP20X, PEK_RIS_EDGE,	        4, 6),
-+	INIT_REGMAP_IRQ(AXP20X, PEK_FAL_EDGE,	        4, 5),
-+	INIT_REGMAP_IRQ(AXP20X, GPIO3_INPUT,		4, 3),
-+	INIT_REGMAP_IRQ(AXP20X, GPIO2_INPUT,		4, 2),
-+	INIT_REGMAP_IRQ(AXP20X, GPIO1_INPUT,		4, 1),
-+	INIT_REGMAP_IRQ(AXP20X, GPIO0_INPUT,		4, 0),
-+};
-+
-+/* some IRQs are compatible with axp20x models */
-+static const struct regmap_irq axp288_regmap_irqs[] = {
-+	INIT_REGMAP_IRQ(AXP20X, VBUS_REMOVAL,           0, 2),
-+	INIT_REGMAP_IRQ(AXP20X, VBUS_PLUGIN,            0, 3),
-+	INIT_REGMAP_IRQ(AXP20X, VBUS_OVER_V,            0, 4),
-+
-+	INIT_REGMAP_IRQ(AXP20X, CHARG_DONE,             1, 2),
-+	INIT_REGMAP_IRQ(AXP20X, CHARG,                  1, 3),
-+	INIT_REGMAP_IRQ(AXP288, SAFE_QUIT,              1, 4),
-+	INIT_REGMAP_IRQ(AXP288, SAFE_ENTER,             1, 5),
-+	INIT_REGMAP_IRQ(AXP20X, BATT_REMOVAL,           1, 6),
-+	INIT_REGMAP_IRQ(AXP20X, BATT_PLUGIN,            1, 7),
-+
-+	INIT_REGMAP_IRQ(AXP288, QWBTU,                  2, 0),
-+	INIT_REGMAP_IRQ(AXP288, WBTU,                   2, 1),
-+	INIT_REGMAP_IRQ(AXP288, QWBTO,                  2, 2),
-+	INIT_REGMAP_IRQ(AXP288, WBTU,                   2, 3),
-+	INIT_REGMAP_IRQ(AXP288, QCBTU,                  2, 4),
-+	INIT_REGMAP_IRQ(AXP288, CBTU,                   2, 5),
-+	INIT_REGMAP_IRQ(AXP288, QCBTO,                  2, 6),
-+	INIT_REGMAP_IRQ(AXP288, CBTO,                   2, 7),
-+
-+	INIT_REGMAP_IRQ(AXP288, WL2,                    3, 0),
-+	INIT_REGMAP_IRQ(AXP288, WL1,                    3, 1),
-+	INIT_REGMAP_IRQ(AXP288, GPADC,                  3, 2),
-+	INIT_REGMAP_IRQ(AXP288, OT,                     3, 7),
-+
-+	INIT_REGMAP_IRQ(AXP288, GPIO0,                  4, 0),
-+	INIT_REGMAP_IRQ(AXP288, GPIO1,                  4, 1),
-+	INIT_REGMAP_IRQ(AXP288, POKO,                   4, 2),
-+	INIT_REGMAP_IRQ(AXP288, POKL,                   4, 3),
-+	INIT_REGMAP_IRQ(AXP288, POKS,                   4, 4),
-+	INIT_REGMAP_IRQ(AXP288, POKN,                   4, 5),
-+	INIT_REGMAP_IRQ(AXP288, POKP,                   4, 6),
-+	INIT_REGMAP_IRQ(AXP20X, TIMER,                  4, 7),
-+
-+	INIT_REGMAP_IRQ(AXP288, MV_CHNG,                5, 0),
-+	INIT_REGMAP_IRQ(AXP288, BC_USB_CHNG,            5, 1),
- };
- 
- static const struct of_device_id axp20x_of_match[] = {
-@@ -123,19 +231,26 @@ MODULE_DEVICE_TABLE(of, axp20x_of_match);
- /*
-  * This is useless for OF-enabled devices, but it is needed by I2C subsystem
-  */
--static const struct i2c_device_id axp20x_i2c_id[] = {
-+static const struct i2c_device_id axp2xx_i2c_id[] = {
-+	{ },
-+};
-+MODULE_DEVICE_TABLE(i2c, axp2xx_i2c_id);
-+
-+static struct acpi_device_id axp2xx_acpi_match[] = {
-+	{
-+		.id = "INT33F4",
-+		.driver_data = (kernel_ulong_t)AXP288_ID,
-+	},
- 	{ },
- };
--MODULE_DEVICE_TABLE(i2c, axp20x_i2c_id);
-+MODULE_DEVICE_TABLE(acpi, axp2xx_acpi_match);
- 
--static const struct regmap_irq_chip axp20x_regmap_irq_chip = {
--	.name			= "axp20x_irq_chip",
-+/* common irq chip attributes only */
-+static struct regmap_irq_chip axp2xx_regmap_irq_chip = {
-+	.name			= "axp2xx_irq_chip",
- 	.status_base		= AXP20X_IRQ1_STATE,
- 	.ack_base		= AXP20X_IRQ1_STATE,
- 	.mask_base		= AXP20X_IRQ1_EN,
--	.num_regs		= 5,
--	.irqs			= axp20x_regmap_irqs,
--	.num_irqs		= ARRAY_SIZE(axp20x_regmap_irqs),
- 	.mask_invert		= true,
- 	.init_ack_masked	= true,
- };
-@@ -161,98 +276,218 @@ static struct mfd_cell axp20x_cells[] = {
- 	},
- };
- 
--static struct axp20x_dev *axp20x_pm_power_off;
--static void axp20x_power_off(void)
-+static struct resource axp288_adc_resources[] = {
-+	{
-+		.name	= "GPADC",
-+		.start = AXP288_IRQ_GPADC,
-+		.end   = AXP288_IRQ_GPADC,
-+		.flags = IORESOURCE_IRQ,
-+	},
-+};
-+
-+static struct resource axp288_charger_resources[] = {
-+	{
-+		.start = AXP288_IRQ_OV,
-+		.end   = AXP288_IRQ_OV,
-+		.flags = IORESOURCE_IRQ,
-+	},
-+	{
-+		.start = AXP288_IRQ_DONE,
-+		.end   = AXP288_IRQ_DONE,
-+		.flags = IORESOURCE_IRQ,
-+	},
-+	{
-+		.start = AXP288_IRQ_CHARGING,
-+		.end   = AXP288_IRQ_CHARGING,
-+		.flags = IORESOURCE_IRQ,
-+	},
-+	{
-+		.start = AXP288_IRQ_SAFE_QUIT,
-+		.end   = AXP288_IRQ_SAFE_QUIT,
-+		.flags = IORESOURCE_IRQ,
-+	},
-+	{
-+		.start = AXP288_IRQ_SAFE_ENTER,
-+		.end   = AXP288_IRQ_SAFE_ENTER,
-+		.flags = IORESOURCE_IRQ,
-+	},
-+	{
-+		.start = AXP288_IRQ_QCBTU,
-+		.end   = AXP288_IRQ_QCBTU,
-+		.flags = IORESOURCE_IRQ,
-+	},
-+	{
-+		.start = AXP288_IRQ_CBTU,
-+		.end   = AXP288_IRQ_CBTU,
-+		.flags = IORESOURCE_IRQ,
-+	},
-+	{
-+		.start = AXP288_IRQ_QCBTO,
-+		.end   = AXP288_IRQ_QCBTO,
-+		.flags = IORESOURCE_IRQ,
-+	},
-+	{
-+		.start = AXP288_IRQ_CBTO,
-+		.end   = AXP288_IRQ_CBTO,
-+		.flags = IORESOURCE_IRQ,
-+	},
-+};
-+
-+static struct mfd_cell axp288_cells[] = {
-+	{
-+		.name = "axp288_adc",
-+		.num_resources = ARRAY_SIZE(axp288_adc_resources),
-+		.resources = axp288_adc_resources,
-+	},
-+	{
-+		.name = "axp288_charger",
-+		.num_resources = ARRAY_SIZE(axp288_charger_resources),
-+		.resources = axp288_charger_resources,
-+	},
-+	{
-+		.name = "axp288_battery",
-+		.num_resources = ARRAY_SIZE(axp288_battery_resources),
-+		.resources = axp288_battery_resources,
-+	},
-+};
-+
-+static struct axp2xx_dev *axp2xx_pm_power_off;
-+static void axp2xx_power_off(void)
- {
--	regmap_write(axp20x_pm_power_off->regmap, AXP20X_OFF_CTRL,
-+	if (axp2xx_pm_power_off->variant == AXP288_ID)
-+		return;
-+	regmap_write(axp2xx_pm_power_off->regmap, AXP20X_OFF_CTRL,
- 		     AXP20X_OFF);
- }
- 
--static int axp20x_i2c_probe(struct i2c_client *i2c,
--			 const struct i2c_device_id *id)
-+static int axp2xx_match_device(struct axp2xx_dev *axp2xx, struct device *dev)
- {
--	struct axp20x_dev *axp20x;
-+	const struct acpi_device_id *acpi_id;
- 	const struct of_device_id *of_id;
-+
-+	of_id = of_match_device(axp2xx_of_match, dev);
-+	if (of_id)
-+		axp2xx->variant = (long) of_id->data;
-+	else {
-+		acpi_id = acpi_match_device(dev->driver->acpi_match_table, dev);
-+		if (!acpi_id || !acpi_id->driver_data) {
-+			dev_err(dev, "Unable to determine ID\n");
-+			return -ENODEV;
-+		}
-+		axp2xx->variant = (long) acpi_id->driver_data;
-+	}
-+	switch (axp2xx->variant) {
-+	case AXP202_ID:
-+	case AXP209_ID:
-+		axp2xx->nr_cells = ARRAY_SIZE(axp20x_cells);
-+		axp2xx->cells = axp20x_cells;
-+		axp2xx->regmap_cfg = &axp20x_regmap_config;
-+		axp2xx_regmap_irq_chip.num_regs	= 5;
-+		axp2xx_regmap_irq_chip.irqs = axp20x_regmap_irqs;
-+		axp2xx_regmap_irq_chip.num_irqs	=
-+			ARRAY_SIZE(axp20x_regmap_irqs);
-+		break;
-+	case AXP288_ID:
-+		axp2xx->cells = axp288_cells;
-+		axp2xx->nr_cells = ARRAY_SIZE(axp288_cells);
-+		axp2xx->regmap_cfg = &axp288_regmap_config;
-+		axp2xx_regmap_irq_chip.irqs = axp288_regmap_irqs;
-+		axp2xx_regmap_irq_chip.num_irqs	=
-+			ARRAY_SIZE(axp288_regmap_irqs);
-+		axp2xx_regmap_irq_chip.num_regs	= 6;
-+		break;
-+	default:
-+		dev_err(dev, "unsupported AXP2XX ID %lu\n", axp2xx->variant);
-+		return -ENODEV;
-+	}
-+	dev_info(dev, "AXP2xx variant %s found\n",
-+		axp2xx_model_names[axp2xx->variant]);
-+
-+	return 0;
-+}
-+
-+static int axp2xx_i2c_probe(struct i2c_client *i2c,
-+			const struct i2c_device_id *id)
-+{
-+	struct axp2xx_dev *axp2xx;
- 	int ret;
- 
--	axp20x = devm_kzalloc(&i2c->dev, sizeof(*axp20x), GFP_KERNEL);
--	if (!axp20x)
-+	axp2xx = devm_kzalloc(&i2c->dev, sizeof(*axp2xx), GFP_KERNEL);
-+	if (!axp2xx)
- 		return -ENOMEM;
- 
--	of_id = of_match_device(axp20x_of_match, &i2c->dev);
--	if (!of_id) {
--		dev_err(&i2c->dev, "Unable to setup AXP20X data\n");
--		return -ENODEV;
--	}
--	axp20x->variant = (long) of_id->data;
-+	ret = axp2xx_match_device(axp2xx, &i2c->dev);
-+	if (ret)
-+		return ret;
- 
--	axp20x->i2c_client = i2c;
--	axp20x->dev = &i2c->dev;
--	dev_set_drvdata(axp20x->dev, axp20x);
-+	axp2xx->i2c_client = i2c;
-+	axp2xx->dev = &i2c->dev;
-+	dev_set_drvdata(axp2xx->dev, axp2xx);
- 
--	axp20x->regmap = devm_regmap_init_i2c(i2c, &axp20x_regmap_config);
--	if (IS_ERR(axp20x->regmap)) {
--		ret = PTR_ERR(axp20x->regmap);
-+	axp2xx->regmap = devm_regmap_init_i2c(i2c, axp2xx->regmap_cfg);
-+	if (IS_ERR(axp2xx->regmap)) {
-+		ret = PTR_ERR(axp2xx->regmap);
- 		dev_err(&i2c->dev, "regmap init failed: %d\n", ret);
- 		return ret;
- 	}
- 
--	ret = regmap_add_irq_chip(axp20x->regmap, i2c->irq,
-+	ret = regmap_add_irq_chip(axp2xx->regmap, i2c->irq,
- 				  IRQF_ONESHOT | IRQF_SHARED, -1,
--				  &axp20x_regmap_irq_chip,
--				  &axp20x->regmap_irqc);
-+				  &axp2xx_regmap_irq_chip,
-+				  &axp2xx->regmap_irqc);
- 	if (ret) {
- 		dev_err(&i2c->dev, "failed to add irq chip: %d\n", ret);
- 		return ret;
- 	}
- 
--	ret = mfd_add_devices(axp20x->dev, -1, axp20x_cells,
--			      ARRAY_SIZE(axp20x_cells), NULL, 0, NULL);
-+	ret = mfd_add_devices(axp2xx->dev, -1, axp2xx->cells,
-+			axp2xx->nr_cells, NULL, 0, NULL);
- 
- 	if (ret) {
- 		dev_err(&i2c->dev, "failed to add MFD devices: %d\n", ret);
--		regmap_del_irq_chip(i2c->irq, axp20x->regmap_irqc);
-+		regmap_del_irq_chip(i2c->irq, axp2xx->regmap_irqc);
- 		return ret;
- 	}
- 
- 	if (!pm_power_off) {
--		axp20x_pm_power_off = axp20x;
--		pm_power_off = axp20x_power_off;
-+		axp2xx_pm_power_off = axp2xx;
-+		pm_power_off = axp2xx_power_off;
- 	}
- 
--	dev_info(&i2c->dev, "AXP20X driver loaded\n");
-+	dev_info(&i2c->dev, "AXP2XX driver loaded\n");
- 
- 	return 0;
- }
- 
--static int axp20x_i2c_remove(struct i2c_client *i2c)
-+static int axp2xx_i2c_remove(struct i2c_client *i2c)
- {
--	struct axp20x_dev *axp20x = i2c_get_clientdata(i2c);
-+	struct axp2xx_dev *axp2xx = i2c_get_clientdata(i2c);
- 
--	if (axp20x == axp20x_pm_power_off) {
--		axp20x_pm_power_off = NULL;
-+	if (axp2xx == axp2xx_pm_power_off) {
-+		axp2xx_pm_power_off = NULL;
- 		pm_power_off = NULL;
- 	}
- 
--	mfd_remove_devices(axp20x->dev);
--	regmap_del_irq_chip(axp20x->i2c_client->irq, axp20x->regmap_irqc);
-+	mfd_remove_devices(axp2xx->dev);
-+	regmap_del_irq_chip(axp2xx->i2c_client->irq, axp2xx->regmap_irqc);
- 
- 	return 0;
- }
- 
--static struct i2c_driver axp20x_i2c_driver = {
-+static struct i2c_driver axp2xx_i2c_driver = {
- 	.driver = {
--		.name	= "axp20x",
-+		.name	= "axp2xx",
- 		.owner	= THIS_MODULE,
--		.of_match_table	= of_match_ptr(axp20x_of_match),
-+		.of_match_table	= of_match_ptr(axp2xx_of_match),
-+		.acpi_match_table = ACPI_PTR(axp2xx_acpi_match),
- 	},
--	.probe		= axp20x_i2c_probe,
--	.remove		= axp20x_i2c_remove,
--	.id_table	= axp20x_i2c_id,
-+	.probe		= axp2xx_i2c_probe,
-+	.remove		= axp2xx_i2c_remove,
-+	.id_table	= axp2xx_i2c_id,
- };
- 
--module_i2c_driver(axp20x_i2c_driver);
-+module_i2c_driver(axp2xx_i2c_driver);
- 
--MODULE_DESCRIPTION("PMIC MFD core driver for AXP20X");
-+MODULE_DESCRIPTION("PMIC MFD core driver for AXP2XX");
- MODULE_AUTHOR("Carlo Caione <carlo@caione.org>");
- MODULE_LICENSE("GPL");
-diff --git a/include/linux/mfd/axp2xx.h b/include/linux/mfd/axp2xx.h
-index a36d91b..331cf6e 100644
---- a/include/linux/mfd/axp2xx.h
-+++ b/include/linux/mfd/axp2xx.h
-@@ -14,6 +14,8 @@
- enum {
- 	AXP202_ID = 0,
- 	AXP209_ID,
-+	AXP288_ID,
-+	NR_AXP2XX_VARIANTS,
- };
- 
- #define AXP20X_DATACACHE(m)		(0x04 + (m))
-@@ -49,11 +51,13 @@ enum {
- #define AXP20X_IRQ3_EN			0x42
- #define AXP20X_IRQ4_EN			0x43
- #define AXP20X_IRQ5_EN			0x44
-+#define AXP20X_IRQ6_EN			0x45
- #define AXP20X_IRQ1_STATE		0x48
- #define AXP20X_IRQ2_STATE		0x49
- #define AXP20X_IRQ3_STATE		0x4a
- #define AXP20X_IRQ4_STATE		0x4b
- #define AXP20X_IRQ5_STATE		0x4c
-+#define AXP20X_IRQ6_STATE		0x4d
- 
- /* ADC */
- #define AXP20X_ACIN_V_ADC_H		0x56
-@@ -116,6 +120,15 @@ enum {
- #define AXP20X_CC_CTRL			0xb8
- #define AXP20X_FG_RES			0xb9
- 
-+/* AXP288 specific registers */
-+#define AXP288_PMIC_ADC_H               0x56
-+#define AXP288_PMIC_ADC_L               0x57
-+#define AXP288_ADC_TS_PIN_CTRL          0x84
-+
-+#define AXP288_PMIC_ADC_EN              0x84
-+#define AXP288_FG_TUNE5			0xed
-+
-+
- /* Regulators IDs */
- enum {
- 	AXP20X_LDO1 = 0,
-@@ -169,12 +182,57 @@ enum {
- 	AXP20X_IRQ_GPIO0_INPUT,
- };
- 
--struct axp20x_dev {
-+enum axp288_irqs {
-+	AXP288_IRQ_VBUS_FALL     = 2,
-+	AXP288_IRQ_VBUS_RISE,
-+	AXP288_IRQ_OV,
-+	AXP288_IRQ_FALLING_ALT,
-+	AXP288_IRQ_RISING_ALT,
-+	AXP288_IRQ_OV_ALT,
-+	AXP288_IRQ_DONE          = 10,
-+	AXP288_IRQ_CHARGING,
-+	AXP288_IRQ_SAFE_QUIT,
-+	AXP288_IRQ_SAFE_ENTER,
-+	AXP288_IRQ_ABSENT,
-+	AXP288_IRQ_APPEND,
-+	AXP288_IRQ_QWBTU,
-+	AXP288_IRQ_WBTU,
-+	AXP288_IRQ_QWBTO,
-+	AXP288_IRQ_WBTO,
-+	AXP288_IRQ_QCBTU,
-+	AXP288_IRQ_CBTU,
-+	AXP288_IRQ_QCBTO,
-+	AXP288_IRQ_CBTO,
-+	AXP288_IRQ_WL2,
-+	AXP288_IRQ_WL1,
-+	AXP288_IRQ_GPADC,
-+	AXP288_IRQ_OT            = 31,
-+	AXP288_IRQ_GPIO0,
-+	AXP288_IRQ_GPIO1,
-+	AXP288_IRQ_POKO,
-+	AXP288_IRQ_POKL,
-+	AXP288_IRQ_POKS,
-+	AXP288_IRQ_POKN,
-+	AXP288_IRQ_POKP,
-+	AXP288_IRQ_TIMER,
-+	AXP288_IRQ_MV_CHNG,
-+	AXP288_IRQ_BC_USB_CHNG,
-+};
-+
-+#define AXP288_TS_ADC_H		0x58
-+#define AXP288_TS_ADC_L		0x59
-+#define AXP288_GP_ADC_H		0x5a
-+#define AXP288_GP_ADC_L		0x5b
-+
-+struct axp2xx_dev {
- 	struct device			*dev;
- 	struct i2c_client		*i2c_client;
- 	struct regmap			*regmap;
- 	struct regmap_irq_chip_data	*regmap_irqc;
- 	long				variant;
-+	int                             nr_cells;
-+	struct mfd_cell                 *cells;
-+	struct regmap_config            *regmap_cfg;
- };
- 
- #endif /* __LINUX_MFD_AXP2XX_H */
--- 
-1.9.1
-
+Jonathan
+> ---
+>  drivers/iio/accel/Kconfig  |   6 +-
+>  drivers/iio/accel/bma180.c | 161 +++++++++++++++++++++++++++++++++++----------
+>  2 files changed, 130 insertions(+), 37 deletions(-)
+> 
+> diff --git a/drivers/iio/accel/Kconfig b/drivers/iio/accel/Kconfig
+> index 7e2d187..8a62006 100644
+> --- a/drivers/iio/accel/Kconfig
+> +++ b/drivers/iio/accel/Kconfig
+> @@ -6,13 +6,13 @@
+>  menu "Accelerometers"
+>  
+>  config BMA180
+> -	tristate "Bosch BMA180 3-Axis Accelerometer Driver"
+> +	tristate "Bosch BMA180/BMA250 3-Axis Accelerometer Driver"
+>  	depends on I2C
+>  	select IIO_BUFFER
+>  	select IIO_TRIGGERED_BUFFER
+>  	help
+> -	  Say Y here if you want to build a driver for the Bosch BMA180
+> -	  triaxial acceleration sensor.
+> +	  Say Y here if you want to build a driver for the Bosch BMA180 or
+> +	  BMA250 triaxial acceleration sensor.
+>  
+>  	  To compile this driver as a module, choose M here: the
+>  	  module will be called bma180.
+> diff --git a/drivers/iio/accel/bma180.c b/drivers/iio/accel/bma180.c
+> index 9fbc81f..c8e0a0a 100644
+> --- a/drivers/iio/accel/bma180.c
+> +++ b/drivers/iio/accel/bma180.c
+> @@ -3,9 +3,15 @@
+>   *
+>   * Copyright 2013 Oleksandr Kravchenko <x0199363@ti.com>
+>   *
+> + * Support for BMA250 (c) Peter Meerwald <pmeerw@pmeerw.net>
+> + *
+>   * This file is subject to the terms and conditions of version 2 of
+>   * the GNU General Public License.  See the file COPYING in the main
+>   * directory of this archive for more details.
+> + *
+> + * SPI is not supported by driver
+> + * BMA180: 7-bit I2C slave address 0x40 or 0x41
+> + * BMA250: 7-bit I2C slave address 0x18 or 0x19
+>   */
+>  
+>  #include <linux/module.h>
+> @@ -23,13 +29,13 @@
+>  #include <linux/iio/trigger_consumer.h>
+>  #include <linux/iio/triggered_buffer.h>
+>  
+> -#define BMA180_DRV_NAME "bma180"
+> -#define BMA180_IRQ_NAME "bma180_event"
+> -
+>  enum {
+>  	BMA180,
+> +	BMA250,
+>  };
+>  
+> +struct bma180_data;
+And here is the missing forward definition from the earlier patch.
+> +
+>  struct bma180_part_info {
+>  	const struct iio_chan_spec *channels;
+>  	unsigned num_channels;
+> @@ -37,6 +43,15 @@ struct bma180_part_info {
+>  	unsigned num_scales;
+>  	const int *bw_table;
+>  	unsigned num_bw;
+> +
+> +	u8 int_reset_reg, int_reset_mask;
+> +	u8 sleep_reg, sleep_mask;
+> +	u8 bw_reg, bw_mask;
+> +	u8 scale_reg, scale_mask;
+> +	u8 power_reg, power_mask, lowpower_val;
+> +	u8 int_enable_reg, int_enable_mask;
+> +	u8 softreset_reg;
+> +
+>  	int (*chip_config)(struct bma180_data *data);
+>  	void (*chip_disable)(struct bma180_data *data);
+>  };
+> @@ -75,13 +90,23 @@ struct bma180_part_info {
+>  #define BMA180_ID_REG_VAL	0x03
+>  
+>  /* Chip power modes */
+> -#define BMA180_LOW_NOISE	0x00
+>  #define BMA180_LOW_POWER	0x03
+>  
+> -/* Defaults values */
+> -#define BMA180_DEF_PMODE	false
+> -#define BMA180_DEF_BW		20
+> -#define BMA180_DEF_SCALE	2452
+> +#define BMA250_RANGE_REG	0x0f
+> +#define BMA250_BW_REG		0x10
+> +#define BMA250_POWER_REG	0x11
+> +#define BMA250_RESET_REG	0x14
+> +#define BMA250_INT_ENABLE_REG	0x17
+> +#define BMA250_INT_MAP_REG	0x1a
+> +#define BMA250_INT_RESET_REG	0x21
+> +
+> +#define BMA250_RANGE_MASK	GENMASK(3, 0) /* Range of accel values */
+> +#define BMA250_BW_MASK		GENMASK(4, 0) /* Accel bandwidth */
+> +#define BMA250_SUSPEND_MASK	BIT(7) /* chip will sleep */
+> +#define BMA250_LOWPOWER_MASK	BIT(6)
+> +#define BMA250_DATA_INTEN_MASK	BIT(4)
+> +#define BMA250_INT1_DATA_MASK	BIT(0)
+> +#define BMA250_INT_RESET_MASK	BIT(7) /* Reset pending interrupts */
+>  
+>  struct bma180_data {
+>  	struct i2c_client *client;
+> @@ -105,6 +130,10 @@ enum bma180_chan {
+>  static int bma180_bw_table[] = { 10, 20, 40, 75, 150, 300 }; /* Hz */
+>  static int bma180_scale_table[] = { 1275, 1863, 2452, 3727, 4903, 9709, 19417 };
+>  
+> +static int bma250_bw_table[] = { 8, 16, 31, 63, 125, 250 }; /* Hz */
+> +static int bma250_scale_table[] = { 0, 0, 0, 38344, 0, 76590, 0, 0, 153180, 0,
+> +	0, 0, 306458 };
+> +
+>  static int bma180_get_data_reg(struct bma180_data *data, enum bma180_chan chan)
+>  {
+>  	int ret;
+> @@ -143,7 +172,8 @@ static int bma180_set_bits(struct bma180_data *data, u8 reg, u8 mask, u8 val)
+>  
+>  static int bma180_reset_intr(struct bma180_data *data)
+>  {
+> -	int ret = bma180_set_bits(data, BMA180_CTRL_REG0, BMA180_RESET_INT, 1);
+> +	int ret = bma180_set_bits(data, data->part_info->int_reset_reg,
+> +		data->part_info->int_reset_mask, 1);
+>  
+>  	if (ret)
+>  		dev_err(&data->client->dev, "failed to reset interrupt\n");
+> @@ -153,10 +183,8 @@ static int bma180_reset_intr(struct bma180_data *data)
+>  
+>  static int bma180_set_new_data_intr_state(struct bma180_data *data, bool state)
+>  {
+> -	u8 reg_val = state ? BMA180_NEW_DATA_INT : 0x00;
+> -	int ret = i2c_smbus_write_byte_data(data->client, BMA180_CTRL_REG3,
+> -			reg_val);
+> -
+> +	int ret = bma180_set_bits(data, data->part_info->int_enable_reg,
+> +			data->part_info->int_enable_mask, state);
+>  	if (ret)
+>  		goto err;
+>  	ret = bma180_reset_intr(data);
+> @@ -173,7 +201,8 @@ err:
+>  
+>  static int bma180_set_sleep_state(struct bma180_data *data, bool state)
+>  {
+> -	int ret = bma180_set_bits(data, BMA180_CTRL_REG0, BMA180_SLEEP, state);
+> +	int ret = bma180_set_bits(data, data->part_info->sleep_reg,
+> +		data->part_info->sleep_mask, state);
+>  
+>  	if (ret) {
+>  		dev_err(&data->client->dev,
+> @@ -205,8 +234,8 @@ static int bma180_set_bw(struct bma180_data *data, int val)
+>  
+>  	for (i = 0; i < data->part_info->num_bw; ++i) {
+>  		if (data->part_info->bw_table[i] == val) {
+> -			ret = bma180_set_bits(data,
+> -					BMA180_BW_TCS, BMA180_BW, i);
+> +			ret = bma180_set_bits(data, data->part_info->bw_reg,
+> +				data->part_info->bw_mask, i);
+>  			if (ret) {
+>  				dev_err(&data->client->dev,
+>  					"failed to set bandwidth\n");
+> @@ -229,8 +258,8 @@ static int bma180_set_scale(struct bma180_data *data, int val)
+>  
+>  	for (i = 0; i < data->part_info->num_scales; ++i)
+>  		if (data->part_info->scale_table[i] == val) {
+> -			ret = bma180_set_bits(data,
+> -					BMA180_OFFSET_LSB1, BMA180_RANGE, i);
+> +			ret = bma180_set_bits(data, data->part_info->scale_reg,
+> +				data->part_info->scale_mask, i);
+>  			if (ret) {
+>  				dev_err(&data->client->dev,
+>  					"failed to set scale\n");
+> @@ -245,9 +274,9 @@ static int bma180_set_scale(struct bma180_data *data, int val)
+>  
+>  static int bma180_set_pmode(struct bma180_data *data, bool mode)
+>  {
+> -	u8 reg_val = mode ? BMA180_LOW_POWER : BMA180_LOW_NOISE;
+> -	int ret = bma180_set_bits(data, BMA180_TCO_Z, BMA180_MODE_CONFIG,
+> -			reg_val);
+> +	u8 reg_val = mode ? data->part_info->lowpower_val : 0;
+> +	int ret = bma180_set_bits(data, data->part_info->power_reg,
+> +		data->part_info->power_mask, reg_val);
+>  
+>  	if (ret) {
+>  		dev_err(&data->client->dev, "failed to set power mode\n");
+> @@ -261,7 +290,7 @@ static int bma180_set_pmode(struct bma180_data *data, bool mode)
+>  static int bma180_soft_reset(struct bma180_data *data)
+>  {
+>  	int ret = i2c_smbus_write_byte_data(data->client,
+> -			BMA180_RESET, BMA180_RESET_VAL);
+> +		data->part_info->softreset_reg, BMA180_RESET_VAL);
+>  
+>  	if (ret)
+>  		dev_err(&data->client->dev, "failed to reset the chip\n");
+> @@ -288,7 +317,11 @@ static int bma180_chip_init(struct bma180_data *data)
+>  	 */
+>  	msleep(20);
+>  
+> -	return 0;
+> +	ret = bma180_set_new_data_intr_state(data, false);
+> +	if (ret)
+> +		return ret;
+> +
+> +	return bma180_set_pmode(data, false);
+>  }
+>  
+>  static int bma180_chip_config(struct bma180_data *data)
+> @@ -303,19 +336,37 @@ static int bma180_chip_config(struct bma180_data *data)
+>  	ret = bma180_set_ee_writing_state(data, true);
+>  	if (ret)
+>  		goto err;
+> -	ret = bma180_set_new_data_intr_state(data, false);
+> +	ret = bma180_set_bits(data, BMA180_OFFSET_LSB1, BMA180_SMP_SKIP, 1);
+>  	if (ret)
+>  		goto err;
+> -	ret = bma180_set_bits(data, BMA180_OFFSET_LSB1, BMA180_SMP_SKIP, 1);
+> +	ret = bma180_set_bw(data, 20); /* 20 Hz */
+>  	if (ret)
+>  		goto err;
+> -	ret = bma180_set_pmode(data, BMA180_DEF_PMODE);
+> +	ret = bma180_set_scale(data, 2452); /* 2 G */
+>  	if (ret)
+>  		goto err;
+> -	ret = bma180_set_bw(data, BMA180_DEF_BW);
+> +
+> +	return 0;
+> +
+> +err:
+> +	dev_err(&data->client->dev, "failed to config the chip\n");
+> +	return ret;
+> +}
+> +
+> +static int bma250_chip_config(struct bma180_data *data)
+> +{
+> +	int ret = bma180_chip_init(data);
+> +
+> +	if (ret)
+> +		goto err;
+> +	ret = bma180_set_bw(data, 16); /* 16 Hz */
+> +	if (ret)
+> +		goto err;
+> +	ret = bma180_set_scale(data, 38344); /* 2 G */
+>  	if (ret)
+>  		goto err;
+> -	ret = bma180_set_scale(data, BMA180_DEF_SCALE);
+> +	ret = bma180_set_bits(data, BMA250_INT_MAP_REG,
+> +		BMA250_INT1_DATA_MASK, 1);
+>  	if (ret)
+>  		goto err;
+>  
+> @@ -341,6 +392,19 @@ err:
+>  	dev_err(&data->client->dev, "failed to disable the chip\n");
+>  }
+>  
+> +static void bma250_chip_disable(struct bma180_data *data)
+> +{
+> +	if (bma180_set_new_data_intr_state(data, false))
+> +		goto err;
+> +	if (bma180_set_sleep_state(data, true))
+> +		goto err;
+> +
+> +	return;
+> +
+> +err:
+> +	dev_err(&data->client->dev, "failed to disable the chip\n");
+> +}
+> +
+>  static ssize_t bma180_show_avail(char *buf, const int *vals, unsigned n,
+>  				 bool micros)
+>  {
+> @@ -543,14 +607,43 @@ static const struct iio_chan_spec bma180_channels[] = {
+>  	IIO_CHAN_SOFT_TIMESTAMP(4),
+>  };
+>  
+> +static const struct iio_chan_spec bma250_channels[] = {
+> +	BMA180_ACC_CHANNEL(X, 10),
+> +	BMA180_ACC_CHANNEL(Y, 10),
+> +	BMA180_ACC_CHANNEL(Z, 10),
+> +	BMA180_TEMP_CHANNEL,
+> +	IIO_CHAN_SOFT_TIMESTAMP(4),
+> +};
+> +
+>  static const struct bma180_part_info bma180_part_info[] = {
+>  	[BMA180] = {
+>  		bma180_channels, ARRAY_SIZE(bma180_channels),
+>  		bma180_scale_table, ARRAY_SIZE(bma180_scale_table),
+>  		bma180_bw_table, ARRAY_SIZE(bma180_bw_table),
+> +		BMA180_CTRL_REG0, BMA180_RESET_INT,
+> +		BMA180_CTRL_REG0, BMA180_SLEEP,
+> +		BMA180_BW_TCS, BMA180_BW,
+> +		BMA180_OFFSET_LSB1, BMA180_RANGE,
+> +		BMA180_TCO_Z, BMA180_MODE_CONFIG, BMA180_LOW_POWER,
+> +		BMA180_CTRL_REG3, BMA180_NEW_DATA_INT,
+> +		BMA180_RESET,
+>  		bma180_chip_config,
+>  		bma180_chip_disable,
+>  	},
+> +	[BMA250] = {
+> +		bma250_channels, ARRAY_SIZE(bma250_channels),
+> +		bma250_scale_table, ARRAY_SIZE(bma250_scale_table),
+> +		bma250_bw_table, ARRAY_SIZE(bma250_bw_table),
+> +		BMA250_INT_RESET_REG, BMA250_INT_RESET_MASK,
+> +		BMA250_POWER_REG, BMA250_SUSPEND_MASK,
+> +		BMA250_BW_REG, BMA250_BW_MASK,
+> +		BMA250_RANGE_REG, BMA250_RANGE_MASK,
+> +		BMA250_POWER_REG, BMA250_LOWPOWER_MASK, 1,
+> +		BMA250_INT_ENABLE_REG, BMA250_DATA_INTEN_MASK,
+> +		BMA250_RESET_REG,
+> +		bma250_chip_config,
+> +		bma250_chip_disable,
+> +	},
+>  };
+>  
+>  static irqreturn_t bma180_trigger_handler(int irq, void *p)
+> @@ -626,11 +719,10 @@ static int bma180_probe(struct i2c_client *client,
+>  		goto err_chip_disable;
+>  
+>  	mutex_init(&data->mutex);
+> -
+>  	indio_dev->dev.parent = &client->dev;
+>  	indio_dev->channels = data->part_info->channels;
+>  	indio_dev->num_channels = data->part_info->num_channels;
+> -	indio_dev->name = BMA180_DRV_NAME;
+> +	indio_dev->name = id->name;
+>  	indio_dev->modes = INDIO_DIRECT_MODE;
+>  	indio_dev->info = &bma180_info;
+>  
+> @@ -644,7 +736,7 @@ static int bma180_probe(struct i2c_client *client,
+>  
+>  		ret = devm_request_irq(&client->dev, client->irq,
+>  			iio_trigger_generic_data_rdy_poll, IRQF_TRIGGER_RISING,
+> -			BMA180_IRQ_NAME, data->trig);
+> +			"bma180_event", data->trig);
+>  		if (ret) {
+>  			dev_err(&client->dev, "unable to request IRQ\n");
+>  			goto err_trigger_free;
+> @@ -741,7 +833,8 @@ static SIMPLE_DEV_PM_OPS(bma180_pm_ops, bma180_suspend, bma180_resume);
+>  #endif
+>  
+>  static struct i2c_device_id bma180_ids[] = {
+> -	{ BMA180_DRV_NAME, BMA180 },
+> +	{ "bma180", BMA180 },
+> +	{ "bma250", BMA250 },
+>  	{ }
+>  };
+>  
+> @@ -749,7 +842,7 @@ MODULE_DEVICE_TABLE(i2c, bma180_id);
+>  
+>  static struct i2c_driver bma180_driver = {
+>  	.driver = {
+> -		.name	= BMA180_DRV_NAME,
+> +		.name	= "bma180",
+>  		.owner	= THIS_MODULE,
+>  		.pm	= BMA180_PM_OPS,
+>  	},
+> @@ -762,5 +855,5 @@ module_i2c_driver(bma180_driver);
+>  
+>  MODULE_AUTHOR("Kravchenko Oleksandr <x0199363@ti.com>");
+>  MODULE_AUTHOR("Texas Instruments, Inc.");
+> -MODULE_DESCRIPTION("Bosch BMA180 triaxial acceleration sensor");
+> +MODULE_DESCRIPTION("Bosch BMA180/BMA250 triaxial acceleration sensor");
+>  MODULE_LICENSE("GPL");
+> 
