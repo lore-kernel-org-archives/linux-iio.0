@@ -1,198 +1,73 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:48422 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751812AbaIMRcT (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 13 Sep 2014 13:32:19 -0400
-Message-ID: <54147F9F.3070804@kernel.org>
-Date: Sat, 13 Sep 2014 18:32:15 +0100
-From: Jonathan Cameron <jic23@kernel.org>
+Return-Path: <knaack.h@gmx.de>
+Message-ID: <5415948C.6080509@gmx.de>
+Date: Sun, 14 Sep 2014 15:13:48 +0200
+From: Hartmut Knaack <knaack.h@gmx.de>
 MIME-Version: 1.0
-To: Hartmut Knaack <knaack.h@gmx.de>,
-	Stanimir Varbanov <svarbanov@mm-sol.com>,
-	Ian Campbell <ijc+devicetree@hellion.org.uk>,
-	Pawel Moll <pawel.moll@arm.com>,
-	Rob Herring <robh+dt@kernel.org>,
-	Kumar Gala <galak@codeaurora.org>,
-	Mark Rutland <mark.rutland@arm.com>,
-	Grant Likely <grant.likely@linaro.org>,
-	Arnd Bergmann <arnd@arndb.de>
-CC: linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Angelo Compagnucci <angelo.compagnucci@gmail.com>,
-	Doug Anderson <dianders@chromium.org>,
-	Fugang Duan <B38611@freescale.com>,
-	Johannes Thumshirn <johannes.thumshirn@men.de>,
-	Jean Delvare <jdelvare@suse.de>,
-	Philippe Reynes <tremyfr@yahoo.fr>,
-	Lee Jones <lee.jones@linaro.org>,
-	Josh Cartwright <joshc@codeaurora.org>,
-	Stephen Boyd <sboyd@codeaurora.org>,
-	David Collins <collinsd@codeaurora.org>,
-	"Ivan T. Ivanov" <iivanov@mm-sol.com>
-Subject: Re: [PATCH v2 2/2] DT: iio: vadc: document dt binding
-References: <1410448403-19402-1-git-send-email-svarbanov@mm-sol.com> <1410448403-19402-3-git-send-email-svarbanov@mm-sol.com> <5413832F.6040503@gmx.de>
-In-Reply-To: <5413832F.6040503@gmx.de>
-Content-Type: text/plain; charset=iso-8859-15
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+To: Jonathan Cameron <jic23@kernel.org>,
+ Jacob Pan <jacob.jun.pan@linux.intel.com>,
+ IIO <linux-iio@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>,
+ DEVICE TREE <devicetree@vger.kernel.org>,
+ Lee Jones <lee.jones@linaro.org>
+CC: Carlo Caione <carlo@caione.org>,
+ Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+ Aaron Lu <aaron.lu@intel.com>, Alan Cox <alan@linux.intel.com>,
+ Samuel Ortiz <sameo@linux.intel.com>,
+ Liam Girdwood <lgirdwood@gmail.com>, Mark Brown <broonie@kernel.org>,
+ Grant Likely <grant.likely@linaro.org>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Rob Herring <robh+dt@kernel.org>,
+ Lars-Peter Clausen <lars@metafoo.de>, Fugang Duan <B38611@freescale.com>,
+ Arnd Bergmann <arnd@arndb.de>,
+ Zubair Lutfullah <zubair.lutfullah@gmail.com>,
+ Sebastian Reichel <sre@debian.org>,
+ Johannes Thumshirn <johannes.thumshirn@men.de>,
+ Philippe Reynes <tremyfr@yahoo.fr>,
+ Angelo Compagnucci <angelo.compagnucci@gmail.com>,
+ Doug Anderson <dianders@chromium.org>,
+ Ramakrishna Pallala <ramakrishna.pallala@intel.com>,
+ Peter Meerwald <pmeerw@pmeerw.net>,
+ Maxime Ripard <maxime.ripard@free-electrons.com>
+Subject: Re: [PATCH v3 5/5] iio: add documentation for current attribute
+References: <1410477357-6407-1-git-send-email-jacob.jun.pan@linux.intel.com> <1410477357-6407-6-git-send-email-jacob.jun.pan@linux.intel.com> <5414A138.9080602@kernel.org>
+In-Reply-To: <5414A138.9080602@kernel.org>
+Content-Type: text/plain; charset=windows-1252
+List-ID: <linux-iio@vger.kernel.org>
 
-On 13/09/14 00:35, Hartmut Knaack wrote:
-> Stanimir Varbanov schrieb, Am 11.09.2014 17:13:
->> Document DT binding for Qualcomm SPMI PMIC voltage ADC
->> driver.
+Jonathan Cameron schrieb, Am 13.09.2014 21:55:
+> On 12/09/14 00:15, Jacob Pan wrote:
+>> Add documentation for input current raw reading and scale.
 >>
-> Still one typo left.
->> Signed-off-by: Stanimir Varbanov <svarbanov@mm-sol.com>
->> Signed-off-by: Ivan T. Ivanov <iivanov@mm-sol.com>
->> ---
->>  .../devicetree/bindings/iio/adc/qcom,spmi-vadc.txt |  123 ++++++++++++++++++++
->>  1 files changed, 123 insertions(+), 0 deletions(-)
->>  create mode 100644 Documentation/devicetree/bindings/iio/adc/qcom,spmi-vadc.txt
->>
->> diff --git a/Documentation/devicetree/bindings/iio/adc/qcom,spmi-vadc.txt b/Documentation/devicetree/bindings/iio/adc/qcom,spmi-vadc.txt
->> new file mode 100644
->> index 0000000..5abb491
->> --- /dev/null
->> +++ b/Documentation/devicetree/bindings/iio/adc/qcom,spmi-vadc.txt
->> @@ -0,0 +1,123 @@
->> +Qualcomm's SPMI PMIC voltage ADC
->> +
->> +SPMI PMIC voltage ADC (VADC) provides interface to clients to read
->> +voltage. A 15 bit ADC is used for voltage measurements. There are multiple
->> +peripherals to the VADC and the scope of the driver is to provide interface
->> +for the USR peripheral of the VADC.
->> +
->> +VADC node:
->> +
->> +- compatible:
->> +    Usage: required
->> +    Value type: <string>
->> +    Definition: Should contain "qcom,spmi-vadc".
->> +
->> +- reg:
->> +    Usage: required
->> +    Value type: <u32>
->> +    Definition: Base address in the SPMI PMIC register map.
->> +
->> +- address-cells:
->> +    Usage: required
->> +    Value type: <u32>
->> +    Definition: Must be one.
->> +
->> +- size-cells:
->> +    Usage: required
->> +    Value type: <u32>
->> +    Definition: Must be zero.
->> +
->> +- interrupts:
->> +    Usage: required
->> +    Value type: <prop-encoded-array>
->> +    Definition: End of convertion interrupt number.
-> Typo: conversion
->> +
->> +- qcom,poll-eoc:
->> +    Usage: optional
->> +    Value type: <empty>
->> +    Definition: Use polling instead of interrupt for end of conversion
->> +            completion.
->> +
->> +Channel node properties:
->> +
->> +- reg:
->> +    Usage: required
->> +    Value type: <u32>
->> +    Definition: AMUX channel number.
->> +            See include/dt-bindings/iio/qcom,spmi-pmic-vadc.h
->> +
->> +- qcom,decimation:
->> +    Usage: optional
->> +    Value type: <u32>
->> +    Definition: Sampling rate to use for the individual channel measurement.
->> +            Quicker measurements can be made by reducing decimation ratio.
->> +            Valid values are 512, 1024, 2048, 4096.
->> +            If property is not found, default value of 512 will be used.
->> +
->> +- qcom,pre-scaling:
->> +    Usage: optional
->> +    Value type: <u32 array>
->> +    Definition: Used for scaling the channel input signal before the signal is
->> +            fed to VADC. The configuration for this node is to know the
->> +            pre-determined ratio and use it for post scaling. Select one from
->> +            the following options.
->> +            <1 1>, <1 3>, <1 4>, <1 6>, <1 20>, <1 8>, <10 81>, <1 10>
->> +            If property is not found default value depending of chip will be used.
->> +
->> +- qcom,ratiometric:
->> +    Usage: optional
->> +    Value type: <empty>
->> +    Definition: Channel calibration type. If this property is specified
->> +            VADC will use the VDD reference(1.8V) and GND for channel
->> +            calibration. If property is not found, channel will be
->> +            calibrated with 625mV and 1.25V reference channels.
->> +
->> +- qcom,hw-settle-time:
->> +    Usage: optional
->> +    Value type: <u32>
->> +    Definition: Time between AMUX getting configured and the ADC starting
->> +            conversion. Delay = 100us * (value) for value < 11, and
->> +            2ms * (value - 10) otherwise.
->> +            Valid values are: 0, 100, 200, 300, 400, 500, 600, 700, 800,
->> +            900 us and 1, 2, 4, 6, 8, 10 ms
->> +            If property is not found, channel will use 0us.
->> +
->> +- qcom,avg-samples:
->> +    Usage: optional
->> +    Value type: <u32>
->> +    Definition: Number of samples to be used for measurement.
->> +            Fast averaging provides the option to obtain a single measurement
->> +            from the ADC that is an average of multiple samples. The value
->> +            selected is 2^(value).
->> +            Valid values are: 1, 2, 4, 8, 16, 32, 64, 128, 256, 512
->> +            If property is not found, 1 sample will be used.
->> +
->> +NOTE: At least one channel node is required.
-
-Why?  As far as I can see it will register all the channels anyway.  If that is not the intent
-you need to build the iio_chan_spec array rather than using a static one.
-
-I'm fine with it providing channels with sensible defaults if they aren't overridden, but then
-it should work fine with no channel nodes.
-
-Jonathan
-
-
->> +
->> +Example:
->> +	/* VADC node */
->> +	pmic_vadc: vadc@3100 {
->> +		compatible = "qcom,spmi-vadc";
->> +		reg = <0x3100 0x100>;
->> +		interrupts = <0x0 0x31 0x0 IRQ_TYPE_EDGE_RISING>;
->> +		#address-cells = <1>;
->> +		#size-cells = <0>;
->> +		#io-channel-cells = <1>;
->> +		io-channel-ranges;
->> +
->> +		/* Channel node */
->> +		usb_id_nopull {
->> +			reg = <VADC_LR_MUX10_USB_ID>;
->> +			qcom,decimation = <512>;
->> +			qcom,ratiometric;
->> +			qcom,hw-settle-time = <200>;
->> +			qcom,avg-samples = <1>;
->> +			qcom,pre-scaling = <1 3>;
->> +		};
->> +	};
->> +
->> +	/* IIO client node */
->> +	usb {
->> +		io-channels = <&pmic_vadc VADC_LR_MUX10_USB_ID>;
->> +		io-channel-names = "vadc";
->> +	};
->>
+>> Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
+> The content is fine, but please look at how the other types are handled.
+> The raw attribute is described along with the units etc in it's own
+> section, but the _scale attribute just gets lumped in with the equivalent
+> for all the other channel types.
 > 
+> Thanks,
+> 
+> Jonathan
+>> ---
+>>  Documentation/ABI/testing/sysfs-bus-iio | 8 ++++++++
+>>  1 file changed, 8 insertions(+)
+>>
+>> diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
+>> index d760b02..3c76bd8 100644
+>> --- a/Documentation/ABI/testing/sysfs-bus-iio
+>> +++ b/Documentation/ABI/testing/sysfs-bus-iio
+>> @@ -1028,3 +1028,11 @@ Contact:	linux-iio@vger.kernel.org
+>>  Description:
+>>  		Raw value of rotation from true/magnetic north measured with
+>>  		or without compensation from tilt sensors.
+>> +
+>> +What:		/sys/bus/iio/devices/iio:deviceX/in_currentX_raw
+>> +What:		/sys/bus/iio/devices/iio:deviceX/in_currentX_scale
+>> +KernelVersion:	3.18
+>> +Contact:	linux-iio@vger.kernel.org
+>> +Description:
+>> +		Raw current measurement from channel X. Units after application of
+>> +		scale and offset are milliamps.
+Where is the offset?
+>>
 > --
 > To unsubscribe from this list: send the line "unsubscribe linux-iio" in
 > the body of a message to majordomo@vger.kernel.org
