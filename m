@@ -1,165 +1,136 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-ig0-f178.google.com ([209.85.213.178]:42993 "EHLO
-	mail-ig0-f178.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751231AbaIJJOD (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 10 Sep 2014 05:14:03 -0400
-Received: by mail-ig0-f178.google.com with SMTP id hn18so6015197igb.5
-        for <linux-iio@vger.kernel.org>; Wed, 10 Sep 2014 02:14:01 -0700 (PDT)
-Date: Wed, 10 Sep 2014 10:13:54 +0100
-From: Lee Jones <lee.jones@linaro.org>
-To: Jacob Pan <jacob.jun.pan@linux.intel.com>
-Cc: IIO <linux-iio@vger.kernel.org>,
-	LKML <linux-kernel@vger.kernel.org>,
-	DEVICE TREE <devicetree@vger.kernel.org>,
-	Carlo Caione <carlo@caione.org>,
-	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
-	Aaron Lu <aaron.lu@intel.com>, Alan Cox <alan@linux.intel.com>,
-	Jean Delvare <khali@linux-fr.org>,
-	Samuel Ortiz <sameo@linux.intel.com>,
-	Liam Girdwood <lgirdwood@gmail.com>,
-	Mark Brown <broonie@kernel.org>,
-	Grant Likely <grant.likely@linaro.org>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Rob Herring <robh+dt@kernel.org>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Fugang Duan <B38611@freescale.com>,
-	Arnd Bergmann <arnd@arndb.de>,
-	Zubair Lutfullah <zubair.lutfullah@gmail.com>,
-	Sebastian Reichel <sre@debian.org>,
-	Johannes Thumshirn <johannes.thumshirn@men.de>,
-	Philippe Reynes <tremyfr@yahoo.fr>,
-	Angelo Compagnucci <angelo.compagnucci@gmail.com>,
-	Doug Anderson <dianders@chromium.org>,
-	Ramakrishna Pallala <ramakrishna.pallala@intel.com>
-Subject: Re: [PATCH v2 2/4] mfd/axp2xx: extend axp20x to support axp288 pmic
-Message-ID: <20140910091354.GL30307@lee--X1>
-References: <1410267775-4683-1-git-send-email-jacob.jun.pan@linux.intel.com>
- <1410267775-4683-3-git-send-email-jacob.jun.pan@linux.intel.com>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:56426 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752652AbaINTZ1 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 14 Sep 2014 15:25:27 -0400
+Message-ID: <5415EBA5.4090901@kernel.org>
+Date: Sun, 14 Sep 2014 20:25:25 +0100
+From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-In-Reply-To: <1410267775-4683-3-git-send-email-jacob.jun.pan@linux.intel.com>
+To: Peter Meerwald <pmeerw@pmeerw.net>
+CC: linux-iio@vger.kernel.org,
+	Oleksandr Kravchenko <o.v.kravchenko@globallogic.com>
+Subject: Re: [PATCH v2 08/11] iio:bma180: Introduce part-specific _config()
+ and disable() code
+References: <1408488206-2633-1-git-send-email-pmeerw@pmeerw.net> <1408488206-2633-9-git-send-email-pmeerw@pmeerw.net> <5415EA84.6050005@kernel.org>
+In-Reply-To: <5415EA84.6050005@kernel.org>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Tue, 09 Sep 2014, Jacob Pan wrote:
+On 14/09/14 20:20, Jonathan Cameron wrote:
+> On 19/08/14 23:43, Peter Meerwald wrote:
+>> move part of bma180_init() to bma180_config() (split initialization and
+>> configuration code); configuration is heavily chip-specific
+>>
+>> Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
+>> Cc: Oleksandr Kravchenko <o.v.kravchenko@globallogic.com>
+> applied
+Actually - minor fixlet in here as well.
+>> ---
+>>  drivers/iio/accel/bma180.c | 31 +++++++++++++++++++++----------
+>>  1 file changed, 21 insertions(+), 10 deletions(-)
+>>
+>> diff --git a/drivers/iio/accel/bma180.c b/drivers/iio/accel/bma180.c
+>> index fc7c7b8..a25b060 100644
+>> --- a/drivers/iio/accel/bma180.c
+>> +++ b/drivers/iio/accel/bma180.c
+>> @@ -37,6 +37,8 @@ struct bma180_part_info {
+>>  	unsigned num_scales;
+>>  	const int *bw_table;
+>>  	unsigned num_bw;
+>> +	int (*chip_config)(struct bma180_data *data);
+>> +	void (*chip_disable)(struct bma180_data *data);
+struct bma180_data hasn't been defined yet.  I've added a forward definition above this
+to fix that up rather that reordering the rest of the file.
 
-> XPower AXP288 is a customized PMIC for Intel Baytrail-CR platforms. Similar
-> to AXP202/209, AXP288 comes with USB charger, more LDO and BUCK channels, and
-> AD converter. It also provides extended status and interrupt reporting
-> capabilities than the devices supported in axp20x.c.
+Jonathan
+>>  };
+>>  
+>>  /* Register set */
+>> @@ -279,21 +281,28 @@ static int bma180_chip_init(struct bma180_data *data)
+>>  	int ret = i2c_smbus_read_byte_data(data->client, BMA180_CHIP_ID);
+>>  
+>>  	if (ret < 0)
+>> -		goto err;
+>> -	if (ret != BMA180_ID_REG_VAL) {
+>> -		ret = -ENODEV;
+>> -		goto err;
+>> -	}
+>> +		return ret;
+>> +	if (ret != BMA180_ID_REG_VAL)
+>> +		return -ENODEV;
+>>  
+>>  	ret = bma180_soft_reset(data);
+>>  	if (ret)
+>> -		goto err;
+>> +		return ret;
+>>  	/*
+>>  	 * No serial transaction should occur within minimum 10 us
+>>  	 * after soft_reset command
+>>  	 */
+>>  	msleep(20);
+>>  
+>> +	return 0;
+>> +}
+>> +
+>> +static int bma180_chip_config(struct bma180_data *data)
+>> +{
+>> +	int ret = bma180_chip_init(data);
+>> +
+>> +	if (ret)
+>> +		goto err;
+>>  	ret = bma180_set_bits(data, BMA180_CTRL_REG0, BMA180_DIS_WAKE_UP, 1);
+>>  	if (ret)
+>>  		goto err;
+>> @@ -319,7 +328,7 @@ static int bma180_chip_init(struct bma180_data *data)
+>>  	return 0;
+>>  
+>>  err:
+>> -	dev_err(&data->client->dev, "failed to init the chip\n");
+>> +	dev_err(&data->client->dev, "failed to config the chip\n");
+>>  	return ret;
+>>  }
+>>  
+>> @@ -507,6 +516,8 @@ static const struct bma180_part_info bma180_part_info[] = {
+>>  		bma180_channels, ARRAY_SIZE(bma180_channels),
+>>  		bma180_scale_table, ARRAY_SIZE(bma180_scale_table),
+>>  		bma180_bw_table, ARRAY_SIZE(bma180_bw_table),
+>> +		bma180_chip_config,
+>> +		bma180_chip_disable,
+>>  	},
+>>  };
+>>  
+>> @@ -578,7 +589,7 @@ static int bma180_probe(struct i2c_client *client,
+>>  	data->client = client;
+>>  	data->part_info = &bma180_part_info[id->driver_data];
+>>  
+>> -	ret = bma180_chip_init(data);
+>> +	ret = data->part_info->chip_config(data);
+>>  	if (ret < 0)
+>>  		goto err_chip_disable;
+>>  
+>> @@ -640,7 +651,7 @@ err_trigger_unregister:
+>>  err_trigger_free:
+>>  	iio_trigger_free(data->trig);
+>>  err_chip_disable:
+>> -	bma180_chip_disable(data);
+>> +	data->part_info->chip_disable(data);
+>>  
+>>  	return ret;
+>>  }
+>> @@ -658,7 +669,7 @@ static int bma180_remove(struct i2c_client *client)
+>>  	}
+>>  
+>>  	mutex_lock(&data->mutex);
+>> -	bma180_chip_disable(data);
+>> +	data->part_info->chip_disable(data);
+>>  	mutex_unlock(&data->mutex);
+>>  
+>>  	return 0;
+>>
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
 > 
-> In addition to feature extension, this patch also adds ACPI binding for
-> enumeration and hooks for ACPI custom operational region handlers.
-> 
-> Files and common data structures have been renamed from axp20x to axp2xx
-> in order to suit the extended scope of devices.
-> 
-> This consolidated driver should support more Xpower PMICs in both device
-> tree and ACPI based platforms.
-> 
-> Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
-> ---
->  drivers/mfd/axp2xx.c       | 426 +++++++++++++++++++++++++++++++++++----------
->  include/linux/mfd/axp2xx.h |  57 +++++-
->  2 files changed, 388 insertions(+), 95 deletions(-)
-> 
-> diff --git a/drivers/mfd/axp2xx.c b/drivers/mfd/axp2xx.c
-> index c534443..4830bbe 100644
-> --- a/drivers/mfd/axp2xx.c
-> +++ b/drivers/mfd/axp2xx.c
-> @@ -1,9 +1,9 @@
->  /*
-> - * axp20x.c - MFD core driver for the X-Powers AXP202 and AXP209
-> + * axp2xx.c - MFD core driver for the X-Powers AXP202, AXP209, and AXP288
-
-Any renaming should be part of the renaming patch.
-
-Please remove the supported devices from the description.
-
-> - * AXP20x comprises an adaptive USB-Compatible PWM charger, 2 BUCK DC-DC
-> - * converters, 5 LDOs, multiple 12-bit ADCs of voltage, current and temperature
-> - * as well as 4 configurable GPIOs.
-> + * AXP2xx typically comprises an adaptive USB-Compatible PWM charger, BUCK DC-DC
-> + * converters, LDOs, multiple 12-bit ADCs of voltage, current and temperature
-> + * as well as configurable GPIOs.
->   *
->   * Author: Carlo Caione <carlo@caione.org>
->   *
-> @@ -25,9 +25,14 @@
->  #include <linux/mfd/core.h>
->  #include <linux/of_device.h>
->  #include <linux/of_irq.h>
-> +#include <linux/acpi.h>
->  
->  #define AXP20X_OFF	0x80
->  
-> +static struct mfd_cell *axp2xx_cells;
-> +static int axp2xx_nr_cells;
-> +static struct regmap_config *regmap_cfg;
-
-Only use globals if you 'really' have to.
-
-[...]
-
-> +static int axp2xx_match_device(struct axp2xx_dev *axp2xx, struct device *dev)
->  {
-> -	struct axp20x_dev *axp20x;
-> +	const struct acpi_device_id *acpi_id;
->  	const struct of_device_id *of_id;
-> -	int ret;
->  
-> -	axp20x = devm_kzalloc(&i2c->dev, sizeof(*axp20x), GFP_KERNEL);
-> -	if (!axp20x)
-> -		return -ENOMEM;
-> +	of_id = of_match_device(axp2xx_of_match, dev);
-> +	if (of_id) {
-> +		axp2xx->variant = (long) of_id->data;
-> +		goto found_match;
-
-Place the ACPI stuff in an else instead of using goto.
-
-> +	}
->  
-> -	of_id = of_match_device(axp20x_of_match, &i2c->dev);
-> -	if (!of_id) {
-> -		dev_err(&i2c->dev, "Unable to setup AXP20X data\n");
-> +	acpi_id = acpi_match_device(dev->driver->acpi_match_table, dev);
-> +	if (!acpi_id || !acpi_id->driver_data) {
-> +		dev_err(dev, "Unable to setup AXP2XX ACPI data\n");
-> +		return -ENODEV;
-> +	}
-> +	axp2xx->variant = (long) acpi_id->driver_data;
-
-I think adding ACPI support should be in its own patch.
-
-[...]
-
-> +static int axp2xx_i2c_probe(struct i2c_client *i2c,
-> +			const struct i2c_device_id *id)
-> +{
-> +	struct axp2xx_dev *axp2xx;
-> +	int ret;
-> +
-> +	axp2xx = devm_kzalloc(&i2c->dev, sizeof(*axp2xx), GFP_KERNEL);
-> +	if (!axp2xx)
-> +		return -ENOMEM;
-> +
-> +	ret = axp2xx_match_device(axp2xx, &i2c->dev);
-> +	if (ret)
-> +		return ret;
-
-'\n'.
-
-> +	axp2xx->i2c_client = i2c;
-> +	axp2xx->dev = &i2c->dev;
-> +	dev_set_drvdata(axp2xx->dev, axp2xx);
-
-I'll do a more thorough review once all of the patches are split up
-and grouped nicely.
-
--- 
-Lee Jones
-Linaro STMicroelectronics Landing Team Lead
-Linaro.org │ Open source software for ARM SoCs
-Follow Linaro: Facebook | Twitter | Blog
