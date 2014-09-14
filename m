@@ -1,86 +1,71 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:55815 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:56377 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752843AbaINRrd (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 14 Sep 2014 13:47:33 -0400
-Message-ID: <5415D4B3.5050006@kernel.org>
-Date: Sun, 14 Sep 2014 18:47:31 +0100
+	with ESMTP id S1752702AbaINTUZ (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 14 Sep 2014 15:20:25 -0400
+Message-ID: <5415EA75.4040007@kernel.org>
+Date: Sun, 14 Sep 2014 20:20:21 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
 To: Peter Meerwald <pmeerw@pmeerw.net>
 CC: linux-iio@vger.kernel.org,
 	Oleksandr Kravchenko <o.v.kravchenko@globallogic.com>
-Subject: Re: [PATCH v2 02/11] iio:bma180: Prefix remaining tables and functions
- with bma18_
-References: <1408488206-2633-1-git-send-email-pmeerw@pmeerw.net> <1408488206-2633-3-git-send-email-pmeerw@pmeerw.net>
-In-Reply-To: <1408488206-2633-3-git-send-email-pmeerw@pmeerw.net>
+Subject: Re: [PATCH v2 06/11] iio:bma180: Drop _update_scan_mode()
+References: <1408488206-2633-1-git-send-email-pmeerw@pmeerw.net> <1408488206-2633-7-git-send-email-pmeerw@pmeerw.net>
+In-Reply-To: <1408488206-2633-7-git-send-email-pmeerw@pmeerw.net>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
 On 19/08/14 23:43, Peter Meerwald wrote:
-> and minor cleanups
+> statically allocate maximum size
 > 
 > Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
 > Cc: Oleksandr Kravchenko <o.v.kravchenko@globallogic.com>
-Applied.
+applied
+
 > ---
->  drivers/iio/accel/bma180.c | 16 ++++++++--------
->  1 file changed, 8 insertions(+), 8 deletions(-)
+>  drivers/iio/accel/bma180.c | 18 +-----------------
+>  1 file changed, 1 insertion(+), 17 deletions(-)
 > 
 > diff --git a/drivers/iio/accel/bma180.c b/drivers/iio/accel/bma180.c
-> index f5e26fb..d7f34b4 100644
+> index 91260a0..5838318 100644
 > --- a/drivers/iio/accel/bma180.c
 > +++ b/drivers/iio/accel/bma180.c
-> @@ -49,7 +49,7 @@
->  #define BMA180_SMP_SKIP		BIT(0)
->  
->  /* Bit masks for registers bit fields */
-> -#define BMA180_RANGE		0x0e /* Range of measured accel values*/
-> +#define BMA180_RANGE		0x0e /* Range of measured accel values */
->  #define BMA180_BW		0xf0 /* Accel bandwidth */
->  #define BMA180_MODE_CONFIG	0x03 /* Config operation modes */
->  
-> @@ -93,8 +93,8 @@ enum bma180_axis {
->  	AXIS_Z,
+> @@ -82,7 +82,7 @@ struct bma180_data {
+>  	int scale;
+>  	int bw;
+>  	bool pmode;
+> -	char *buff;
+> +	u8 buff[16]; /* 3x 16-bit + 8-bit + padding + timestamp */
 >  };
 >  
-> -static int bw_table[] = { 10, 20, 40, 75, 150, 300 }; /* Hz */
-> -static int scale_table[] = { 1275, 1863, 2452, 3727, 4903, 9709, 19417 };
-> +static int bma180_bw_table[] = { 10, 20, 40, 75, 150, 300 }; /* Hz */
-> +static int bma180_scale_table[] = { 1275, 1863, 2452, 3727, 4903, 9709, 19417 };
->  
->  static int bma180_get_acc_reg(struct bma180_data *data, enum bma180_axis axis)
->  {
-> @@ -107,7 +107,7 @@ static int bma180_get_acc_reg(struct bma180_data *data, enum bma180_axis axis)
->  	ret = i2c_smbus_read_word_data(data->client, reg);
->  	if (ret < 0)
->  		dev_err(&data->client->dev,
-> -			"failed to read accel_%c registers\n", 'x' + axis);
-> +			"failed to read accel_%c register\n", 'x' + axis);
->  
->  	return ret;
+>  enum bma180_chan {
+> @@ -408,26 +408,10 @@ static int bma180_write_raw(struct iio_dev *indio_dev,
+>  	}
 >  }
-> @@ -185,8 +185,8 @@ static int bma180_set_bw(struct bma180_data *data, int val)
->  	if (data->sleep_state)
->  		return -EBUSY;
 >  
-> -	for (i = 0; i < ARRAY_SIZE(bw_table); ++i) {
-> -		if (bw_table[i] == val) {
-> +	for (i = 0; i < ARRAY_SIZE(bma180_bw_table); ++i) {
-> +		if (bma180_bw_table[i] == val) {
->  			ret = bma180_set_bits(data,
->  					BMA180_BW_TCS, BMA180_BW, i);
->  			if (ret) {
-> @@ -209,8 +209,8 @@ static int bma180_set_scale(struct bma180_data *data, int val)
->  	if (data->sleep_state)
->  		return -EBUSY;
+> -static int bma180_update_scan_mode(struct iio_dev *indio_dev,
+> -		const unsigned long *scan_mask)
+> -{
+> -	struct bma180_data *data = iio_priv(indio_dev);
+> -
+> -	if (data->buff)
+> -		devm_kfree(&indio_dev->dev, data->buff);
+> -	data->buff = devm_kzalloc(&indio_dev->dev,
+> -			indio_dev->scan_bytes, GFP_KERNEL);
+> -	if (!data->buff)
+> -		return -ENOMEM;
+> -
+> -	return 0;
+> -}
+> -
+>  static const struct iio_info bma180_info = {
+>  	.attrs			= &bma180_attrs_group,
+>  	.read_raw		= bma180_read_raw,
+>  	.write_raw		= bma180_write_raw,
+> -	.update_scan_mode	= bma180_update_scan_mode,
+>  	.driver_module		= THIS_MODULE,
+>  };
 >  
-> -	for (i = 0; i < ARRAY_SIZE(scale_table); ++i)
-> -		if (scale_table[i] == val) {
-> +	for (i = 0; i < ARRAY_SIZE(bma180_scale_table); ++i)
-> +		if (bma180_scale_table[i] == val) {
->  			ret = bma180_set_bits(data,
->  					BMA180_OFFSET_LSB1, BMA180_RANGE, i);
->  			if (ret) {
 > 
