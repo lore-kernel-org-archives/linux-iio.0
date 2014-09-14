@@ -1,60 +1,129 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:55721 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:54609 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752851AbaINReY (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 14 Sep 2014 13:34:24 -0400
-Message-ID: <5415D19E.9030105@kernel.org>
-Date: Sun, 14 Sep 2014 18:34:22 +0100
+	with ESMTP id S1752513AbaINOOY (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 14 Sep 2014 10:14:24 -0400
+Message-ID: <5415A2BE.7060405@kernel.org>
+Date: Sun, 14 Sep 2014 15:14:22 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Daniel Baluta <daniel.baluta@intel.com>
-CC: pmeerw@pmeerw.net, srinivas.pandruvada@linux.intel.com,
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iio: accel: kxcjk-1013: Fix defined but unused warning
-References: <1409757192-17546-1-git-send-email-daniel.baluta@intel.com>
-In-Reply-To: <1409757192-17546-1-git-send-email-daniel.baluta@intel.com>
+To: Octavian Purdila <tavi.purdila@gmail.com>,
+	Karol Wrona <k.wrona@samsung.com>
+CC: linux-iio@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>,
+	lkml <linux-kernel@vger.kernel.org>,
+	Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
+	Kyungmin Park <kyungmin.park@samsung.com>
+Subject: Re: [RFC/PATCH 0/6] iio: Add sensorhub driver
+References: <1409756150-30889-1-git-send-email-k.wrona@samsung.com>	<476dc5c4-557d-467c-9583-201b10b7e1df@email.android.com>	<540DC356.5040907@samsung.com> <CAMoF9u1+6b_3So7hLQ9iLCeFye5nggJvganGdqpeNmvu+5HqPQ@mail.gmail.com>
+In-Reply-To: <CAMoF9u1+6b_3So7hLQ9iLCeFye5nggJvganGdqpeNmvu+5HqPQ@mail.gmail.com>
 Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 03/09/14 16:13, Daniel Baluta wrote:
-> Noticed when compiling with CONFIG_PM_RUNTIME not set:
-> kxcjk-1013.c: warning: ‘kxcjk1013_get_startup_times’ defined but not used [-Wunused-function]
+On 11/09/14 12:05, Octavian Purdila wrote:
+> On Mon, Sep 8, 2014 at 5:55 PM, Karol Wrona <k.wrona@samsung.com> wrote:
+>> On 09/03/2014 09:52 PM, Jonathan Cameron wrote:
+>>>
+>>>
+>>> On September 3, 2014 3:55:44 PM GMT+01:00, Karol Wrona
+>>> <k.wrona@samsung.com> wrote:
+>>>>
+>>>> Hello,
+>>>>
+>>>> This patchset adds support for sensorhub. It is an external mcu which
+>>>> manages
+>>>> and collects data from several sensors i.e. on Galaxy Gear 2 watch.
+>>>>
+>>>> It contains:
+>>>> - spi driver for sensorhub device
+>>>> - DT binding for the device
+>>>> - IIO common utils for ssp sensors, a trigger module
+>>>> - IIO accelerometer driver
+>>>> - IIO gyroscope driver
+>>>>
+>>>> Generally this is an attempt to generalize sensors handling on some
+>>>> Samsung
+>>>> boards which have multiple sensors IC and also sensorhub does some data
+>>>> processing itself.
+>>>>
+>>>> I would like to get your opinion about such solution. The idea is that
+>>>> data communication layer gives control and data to proper IIO sensor
+>>>> devices.
+>>>> In this case I chose that sensor drivers are platform ones represented
+>>>> by
+>>>> child nodes of sensorhub in DT. These compatibles are used mainly to
+>>>> match
+>>>> sensor to driver. For example at this stage there is one accelerometer
+>>>> but on
+>>>> other board can have different one with changed data format etc. In
+>>>> this case
+>>>> ssp_accel_sensor driver could handle several physical devices of accel
+>>>> class.
+>>>> Unfortunately the firmware gives only an information about used sensor
+>>>> type,
+>>>> the driver can find out that there is an accelerometer on board but
+>>>> nothing
+>>>> specific about the sensor.
+>>>
+>>> Will look at this later... In the meantime..
+>>
+>> Before code review I want to know your opinion if passing information
+>> about sensors in that way is ok - It's a hack but currently the firmware
+>> do not provide such information and I do not know if I will be able to
+>> change it.
+>>>>
+>>>> Other question:
+>>>> The sensorhub can implement some devices which are non common for IIO
+>>>> and hard
+>>>> to standardise. These ones need two way communication (raw write will
+>>>> not be
+>>>> proper for that) and can produce data packets with flexible size to
+>>>> 2KB).
+>>>> I'm wondering if it is worth to look for solution in IIO and implement
+>>>> something like IIO_BULK sensor with no standard channel description
+>>>> or solve this problem using cdev. This is the reason why the part of
+>>>> the
+>>>> patchset is intended to be placed in misc.
+>>>
+>>> Out of curiosity, what are these other sensors, roughly?  If they are
+>>> popular I am
+>>>   sure there will be more out there soon!  Ideally we would work out how
+>>> to standardize these. So convince is it can't be
+>>>   done!
+>>
+>> These are very specific for Galaxy Gear watch like movement detector,
+>> pedometer,
+>> put down motion etc. The functionalities are mainly implemented by sensorhub
+>> firmware, these ones are not physical chips. My first idea was to use IIO
+>> for typical
+>> sensors only (I can have there a bunch of thermometers, accelerometers,
+>> lightsensors ...)
+>> and one cdev for others. In this case data interpretation would be done by
+>> userspace.
+>> So:
+>> - these specific "sensors" will be only implemented on some Samsung's boards
+>> and depend on firmware.
+>> - there will be a lot of it  - most of them are represented by an integer
+>> value but there
+>> are some which can send much more data.
+>>
+>>
 > 
-> Introduced by commit 124e1b1d (iio: accel: kxcjk-1013: support runtime pm).
+> Hi Karol,
 > 
-> Reviewed-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-> Signed-off-by: Daniel Baluta <daniel.baluta@intel.com>
-Note, convention is author first in this list then reviewers etc then sign offs from
-those handling the patch.
-
-Applied to the togreg branch of iio.git - initially pushed out as testing.
-
-Thanks,
-
-J
-> ---
->  drivers/iio/accel/kxcjk-1013.c | 2 ++
->  1 file changed, 2 insertions(+)
+> With the addition of new sensor types in Android (pedometer,
+> significant motion) and probably more to come in L-dessert, and with
+> the proliferation of sensor hub solutions, I am sure that we are going
+> to see more of these types of sensors coming.
 > 
-> diff --git a/drivers/iio/accel/kxcjk-1013.c b/drivers/iio/accel/kxcjk-1013.c
-> index 736231d..eb1b8b6 100644
-> --- a/drivers/iio/accel/kxcjk-1013.c
-> +++ b/drivers/iio/accel/kxcjk-1013.c
-> @@ -307,6 +307,7 @@ static int kxcjk1013_chip_init(struct kxcjk1013_data *data)
->  	return 0;
->  }
->  
-> +#ifdef CONFIG_PM_RUNTIME
->  static int kxcjk1013_get_startup_times(struct kxcjk1013_data *data)
->  {
->  	int i;
-> @@ -318,6 +319,7 @@ static int kxcjk1013_get_startup_times(struct kxcjk1013_data *data)
->  
->  	return KXCJK1013_MAX_STARTUP_TIME_US;
->  }
-> +#endif
->  
->  static int kxcjk1013_set_power_state(struct kxcjk1013_data *data, bool on)
->  {
+> With that in mind, I think it is worth trying to standardize the new
+> sensors at the kernel level. Having the data interpretation done in
+> userspace is going to make it hard to write portable application
+> across different sensors.
+I absolutely agree on this.  We may well need to extend IIO in new directions
+to do it, but we need a consistent interface for these signal types.
+(might take us a little while to pin down what it is however! Best get
+started :)
+
+Jonathan
 > 
