@@ -1,79 +1,152 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mailout3.samsung.com ([203.254.224.33]:32615 "EHLO
-	mailout3.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752686AbaIPJDm (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 16 Sep 2014 05:03:42 -0400
-From: Naveen Krishna Chatradhi <ch.naveen@samsung.com>
-To: linux-iio@vger.kernel.org, linux-samsung-soc@vger.kernel.org,
-	devicetree@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org, cw00.choi@samsung.com,
-	gregkh@linuxfoundation.org, naveenkrishna.ch@gmail.com,
-	lars@metafoo.de, cpgs@samsung.com, grundler@chromium.org,
-	jic23@kernel.org
-Subject: [PATCH v2 2/3] Documentation: dt-bindings: update exynos-adc.txt with
- syscon handle
-Date: Tue, 16 Sep 2014 14:28:50 +0530
-Message-id: <1410857931-4980-3-git-send-email-ch.naveen@samsung.com>
-In-reply-to: <1410857931-4980-1-git-send-email-ch.naveen@samsung.com>
-References: <1410857931-4980-1-git-send-email-ch.naveen@samsung.com>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:55825 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752626AbaINRsY (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 14 Sep 2014 13:48:24 -0400
+Message-ID: <5415D4E6.1030607@kernel.org>
+Date: Sun, 14 Sep 2014 18:48:22 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+MIME-Version: 1.0
+To: Peter Meerwald <pmeerw@pmeerw.net>
+CC: linux-iio@vger.kernel.org,
+	Oleksandr Kravchenko <o.v.kravchenko@globallogic.com>
+Subject: Re: [PATCH v2 04/11] iio:bma180: Use bool instead of int for state
+References: <1408488206-2633-1-git-send-email-pmeerw@pmeerw.net> <1408488206-2633-5-git-send-email-pmeerw@pmeerw.net>
+In-Reply-To: <1408488206-2633-5-git-send-email-pmeerw@pmeerw.net>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-This patch updates the DT bindings for ADC in exynos-adc.txt with the
-syscon phandle to the ADC nodes.
-
-Signed-off-by: Naveen Krishna Chatradhi <ch.naveen@samsung.com>
-To: devicetree@vger.kernel.org
----
- .../devicetree/bindings/arm/samsung/exynos-adc.txt |    9 +++++++--
- 1 file changed, 7 insertions(+), 2 deletions(-)
-
-diff --git a/Documentation/devicetree/bindings/arm/samsung/exynos-adc.txt b/Documentation/devicetree/bindings/arm/samsung/exynos-adc.txt
-index 709efaa..c368210 100644
---- a/Documentation/devicetree/bindings/arm/samsung/exynos-adc.txt
-+++ b/Documentation/devicetree/bindings/arm/samsung/exynos-adc.txt
-@@ -43,13 +43,16 @@ Required properties:
- 				   compatible ADC block)
- - vdd-supply		VDD input supply.
- 
-+- samsung,syscon-phandle Contains the PMU system controller node
-+			(To access the ADC_PHY register on Exynos5250/5420/5800/3250)
-+
- Note: child nodes can be added for auto probing from device tree.
- 
- Example: adding device info in dtsi file
- 
- adc: adc@12D10000 {
- 	compatible = "samsung,exynos-adc-v1";
--	reg = <0x12D10000 0x100>, <0x10040718 0x4>;
-+	reg = <0x12D10000 0x100>;
- 	interrupts = <0 106 0>;
- 	#io-channel-cells = <1>;
- 	io-channel-ranges;
-@@ -58,13 +61,14 @@ adc: adc@12D10000 {
- 	clock-names = "adc";
- 
- 	vdd-supply = <&buck5_reg>;
-+	samsung,syscon-phandle = <&pmu_system_controller>;
- };
- 
- Example: adding device info in dtsi file for Exynos3250 with additional sclk
- 
- adc: adc@126C0000 {
- 	compatible = "samsung,exynos3250-adc", "samsung,exynos-adc-v2;
--	reg = <0x126C0000 0x100>, <0x10020718 0x4>;
-+	reg = <0x126C0000 0x100>;
- 	interrupts = <0 137 0>;
- 	#io-channel-cells = <1>;
- 	io-channel-ranges;
-@@ -73,6 +77,7 @@ adc: adc@126C0000 {
- 	clock-names = "adc", "sclk";
- 
- 	vdd-supply = <&buck5_reg>;
-+	samsung,syscon-phandle = <&pmu_system_controller>;
- };
- 
- Example: Adding child nodes in dts file
--- 
-1.7.9.5
-
+On 19/08/14 23:43, Peter Meerwald wrote:
+> Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
+> Cc: Oleksandr Kravchenko <o.v.kravchenko@globallogic.com>
+applied.
+> ---
+>  drivers/iio/accel/bma180.c | 36 +++++++++++++++---------------------
+>  1 file changed, 15 insertions(+), 21 deletions(-)
+> 
+> diff --git a/drivers/iio/accel/bma180.c b/drivers/iio/accel/bma180.c
+> index 284598d..aa7566f 100644
+> --- a/drivers/iio/accel/bma180.c
+> +++ b/drivers/iio/accel/bma180.c
+> @@ -62,11 +62,8 @@
+>  #define BMA180_LOW_NOISE	0x00
+>  #define BMA180_LOW_POWER	0x03
+>  
+> -#define BMA180_LOW_NOISE_STR	"low_noise"
+> -#define BMA180_LOW_POWER_STR	"low_power"
+> -
+>  /* Defaults values */
+> -#define BMA180_DEF_PMODE	0
+> +#define BMA180_DEF_PMODE	false
+>  #define BMA180_DEF_BW		20
+>  #define BMA180_DEF_SCALE	2452
+>  
+> @@ -80,10 +77,10 @@ struct bma180_data {
+>  	struct i2c_client *client;
+>  	struct iio_trigger *trig;
+>  	struct mutex mutex;
+> -	int sleep_state;
+> +	bool sleep_state;
+>  	int scale;
+>  	int bw;
+> -	int pmode;
+> +	bool pmode;
+>  	char *buff;
+>  };
+>  
+> @@ -133,7 +130,7 @@ static int bma180_reset_intr(struct bma180_data *data)
+>  	return ret;
+>  }
+>  
+> -static int bma180_set_new_data_intr_state(struct bma180_data *data, int state)
+> +static int bma180_set_new_data_intr_state(struct bma180_data *data, bool state)
+>  {
+>  	u8 reg_val = state ? BMA180_NEW_DATA_INT : 0x00;
+>  	int ret = i2c_smbus_write_byte_data(data->client, BMA180_CTRL_REG3,
+> @@ -153,7 +150,7 @@ err:
+>  	return ret;
+>  }
+>  
+> -static int bma180_set_sleep_state(struct bma180_data *data, int state)
+> +static int bma180_set_sleep_state(struct bma180_data *data, bool state)
+>  {
+>  	int ret = bma180_set_bits(data, BMA180_CTRL_REG0, BMA180_SLEEP, state);
+>  
+> @@ -167,7 +164,7 @@ static int bma180_set_sleep_state(struct bma180_data *data, int state)
+>  	return 0;
+>  }
+>  
+> -static int bma180_set_ee_writing_state(struct bma180_data *data, int state)
+> +static int bma180_set_ee_writing_state(struct bma180_data *data, bool state)
+>  {
+>  	int ret = bma180_set_bits(data, BMA180_CTRL_REG0, BMA180_EE_W, state);
+>  
+> @@ -225,7 +222,7 @@ static int bma180_set_scale(struct bma180_data *data, int val)
+>  	return -EINVAL;
+>  }
+>  
+> -static int bma180_set_pmode(struct bma180_data *data, int mode)
+> +static int bma180_set_pmode(struct bma180_data *data, bool mode)
+>  {
+>  	u8 reg_val = mode ? BMA180_LOW_POWER : BMA180_LOW_NOISE;
+>  	int ret = bma180_set_bits(data, BMA180_TCO_Z, BMA180_MODE_CONFIG,
+> @@ -275,10 +272,10 @@ static int bma180_chip_init(struct bma180_data *data)
+>  	ret = bma180_set_bits(data, BMA180_CTRL_REG0, BMA180_DIS_WAKE_UP, 1);
+>  	if (ret)
+>  		goto err;
+> -	ret = bma180_set_ee_writing_state(data, 1);
+> +	ret = bma180_set_ee_writing_state(data, true);
+>  	if (ret)
+>  		goto err;
+> -	ret = bma180_set_new_data_intr_state(data, 0);
+> +	ret = bma180_set_new_data_intr_state(data, false);
+>  	if (ret)
+>  		goto err;
+>  	ret = bma180_set_bits(data, BMA180_OFFSET_LSB1, BMA180_SMP_SKIP, 1);
+> @@ -303,11 +300,11 @@ err:
+>  
+>  static void bma180_chip_disable(struct bma180_data *data)
+>  {
+> -	if (bma180_set_new_data_intr_state(data, 0))
+> +	if (bma180_set_new_data_intr_state(data, false))
+>  		goto err;
+> -	if (bma180_set_ee_writing_state(data, 0))
+> +	if (bma180_set_ee_writing_state(data, false))
+>  		goto err;
+> -	if (bma180_set_sleep_state(data, 1))
+> +	if (bma180_set_sleep_state(data, true))
+>  		goto err;
+>  
+>  	return;
+> @@ -410,10 +407,7 @@ static const struct iio_info bma180_info = {
+>  	.driver_module		= THIS_MODULE,
+>  };
+>  
+> -static const char * const bma180_power_modes[] = {
+> -	BMA180_LOW_NOISE_STR,
+> -	BMA180_LOW_POWER_STR,
+> -};
+> +static const char * const bma180_power_modes[] = { "low_noise", "low_power" };
+>  
+>  static int bma180_get_power_mode(struct iio_dev *indio_dev,
+>  		const struct iio_chan_spec *chan)
+> @@ -633,7 +627,7 @@ static int bma180_suspend(struct device *dev)
+>  	int ret;
+>  
+>  	mutex_lock(&data->mutex);
+> -	ret = bma180_set_sleep_state(data, 1);
+> +	ret = bma180_set_sleep_state(data, true);
+>  	mutex_unlock(&data->mutex);
+>  
+>  	return ret;
+> @@ -646,7 +640,7 @@ static int bma180_resume(struct device *dev)
+>  	int ret;
+>  
+>  	mutex_lock(&data->mutex);
+> -	ret = bma180_set_sleep_state(data, 0);
+> +	ret = bma180_set_sleep_state(data, false);
+>  	mutex_unlock(&data->mutex);
+>  
+>  	return ret;
+> 
