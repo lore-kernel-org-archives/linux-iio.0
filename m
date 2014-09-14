@@ -1,71 +1,45 @@
-Return-Path: <pmeerw@pmeerw.net>
-Date: Sun, 14 Sep 2014 22:43:56 +0200 (CEST)
-From: Peter Meerwald <pmeerw@pmeerw.net>
-To: Jonathan Cameron <jic23@kernel.org>
-cc: bruce bushby <bruce.bushby@gmail.com>, linux-iio@vger.kernel.org
-Subject: Re: Need some help porting IIO based driver from 3.4 to 3.16
- kernel
-In-Reply-To: <25e65d5c-2bfc-449c-93c4-111c3c766922@email.android.com>
-Message-ID: <alpine.DEB.2.01.1409142241110.15094@pmeerw.net>
-References: <CAHvj1qauaxANPHaZo_WoeF7pSmXDzJ0YynOoW-Wvz6AvMEF-Jw@mail.gmail.com> <25e65d5c-2bfc-449c-93c4-111c3c766922@email.android.com>
-MIME-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-yk0-f169.google.com ([209.85.160.169]:55256 "EHLO
+	mail-yk0-f169.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752846AbaINXjb (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 14 Sep 2014 19:39:31 -0400
+Received: by mail-yk0-f169.google.com with SMTP id 20so1701210yks.28
+        for <linux-iio@vger.kernel.org>; Sun, 14 Sep 2014 16:39:30 -0700 (PDT)
+From: Chris Ruffin <cmruffin@gmail.com>
+To: linux-iio@vger.kernel.org
+Cc: Chris Ruffin <cmruffin@gmail.com>
+Subject: [PATCH] staging: iio: accel: remove unnecessary syntax
+Date: Sun, 14 Sep 2014 19:38:57 -0400
+Message-Id: <1410737937-10773-1-git-send-email-cmruffin@gmail.com>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Hello,
+The else clause in the conditional of lis3l02dq_data_rdy_trig_poll()
+does not make consistent use of braces with the rest of the
+conditional.  Fix this coding style problem by removing the
+unnecessary conditional altogether.
 
-> >I wanted to ask for some advice/pointers for porting this IIO based
-> >"imu" driver:
-> >https://android.googlesource.com/kernel/msm/+/android-msm-hammerhead-3.4-kk-fr2/drivers/staging/iio/imu/inv_mpu
-> >
-> >to a 3.16 kernel.
-> >
-> >I'm struggling to make sense of the header files in that the header
-> >names appear to have changed and the definitions are completely
-> >different.
-> >
-> >My compiles bombs with this message:
-> >
-> >  CC [M]  drivers/iio/imu/inv_mpu/inv_mpu_core.o
-> >In file included from drivers/iio/imu/inv_mpu/inv_mpu_core.c:31:0:
-> >drivers/iio/imu/inv_mpu/inv_mpu_iio.h:23:17: fatal error: iio.h: No
-> >such file or directory
-> > #include "iio.h"
+Signed-off-by: Chris Ruffin <cmruffin@gmail.com>
+---
+ drivers/staging/iio/accel/lis3l02dq_ring.c |    5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-iio moved out of staging after 3.4
-
-try #include <linux/iio/iio.h>
-
-> >But my kernel has this "iio" header file:
-> >[bruce@build iio]$ pwd
-> >/home/bruce/buildroot/output/build/linux-3.16.2/drivers/iio
-> >[bruce@build iio]$ ls -l iio_core.h
-> >-rw-rw-r--. 1 bruce bruce 2155 Sep  6 00:37 iio_core.h
-> >[bruce@build iio]$
-> >
-> >
-> >So I'm guessing "iio.h" has evolved and is now "iio_core.h"? ....but
-> >they seem so different?
-> iio.h is now in include/linux/iio with a lot of the other headers...
-> 
-> 
-> 
-> 
-> >
-> >
-> >Any help/pointers much appreciated!!!
-> >
-> >
-> >Thanks
-> >Bruce
-> >--
-> >To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> >the body of a message to majordomo@vger.kernel.org
-> >More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> 
-> 
-
+diff --git a/drivers/staging/iio/accel/lis3l02dq_ring.c b/drivers/staging/iio/accel/lis3l02dq_ring.c
+index 1d934ee..9efc77b 100644
+--- a/drivers/staging/iio/accel/lis3l02dq_ring.c
++++ b/drivers/staging/iio/accel/lis3l02dq_ring.c
+@@ -34,8 +34,9 @@ irqreturn_t lis3l02dq_data_rdy_trig_poll(int irq, void *private)
+ 	if (st->trigger_on) {
+ 		iio_trigger_poll(st->trig);
+ 		return IRQ_HANDLED;
+-	} else
+-		return IRQ_WAKE_THREAD;
++	}
++
++	return IRQ_WAKE_THREAD;
+ }
+ 
+ static const u8 read_all_tx_array[] = {
 -- 
+1.7.10.4
 
-Peter Meerwald
-+43-664-2444418 (mobile)
