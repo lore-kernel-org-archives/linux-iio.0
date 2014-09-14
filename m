@@ -1,117 +1,93 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:55604 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:55108 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752707AbaINRUA (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 14 Sep 2014 13:20:00 -0400
-Message-ID: <5415CE3B.4090000@kernel.org>
-Date: Sun, 14 Sep 2014 18:19:55 +0100
+	with ESMTP id S1752641AbaINPpr (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 14 Sep 2014 11:45:47 -0400
+Message-ID: <5415B82A.8000205@kernel.org>
+Date: Sun, 14 Sep 2014 16:45:46 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Nicolas Ferre <nicolas.ferre@atmel.com>,
-	Ludovic Desroches <ludovic.desroches@atmel.com>,
-	linux-arm-kernel@lists.infradead.org, linux-iio@vger.kernel.org
-CC: alexandre.belloni@free-electrons.com, josh.wu@atmel.com,
-	maxime.ripard@free-electrons.com, knaack.h@gmx.de
-Subject: Re: [PATCH v3] iio: adc: at91: don't use the last converted data
- register
-References: <1410357747-29797-1-git-send-email-ludovic.desroches@atmel.com> <54105A65.3040009@atmel.com>
-In-Reply-To: <54105A65.3040009@atmel.com>
+To: Karol Wrona <k.wrona@samsung.com>, linux-iio@vger.kernel.org,
+	Arnd Bergmann <arnd@arndb.de>, linux-kernel@vger.kernel.org
+CC: Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
+	Kyungmin Park <kyungmin.park@samsung.com>
+Subject: Re: [RFC/PATCH 3/6] sensorhub: Add sensorhub bindings
+References: <1409756150-30889-1-git-send-email-k.wrona@samsung.com> <1409756150-30889-4-git-send-email-k.wrona@samsung.com>
+In-Reply-To: <1409756150-30889-4-git-send-email-k.wrona@samsung.com>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 10/09/14 15:04, Nicolas Ferre wrote:
-> On 10/09/2014 16:02, Ludovic Desroches :
->> If touchscreen mode is enabled and a conversion is requested on another
->> channel, the result in the last converted data register can be a
->> touchscreen relative value. Starting a conversion involves to do a
->> conversion for all active channel. It starts with ADC channels and ends
->> with touchscreen channels. Then if ADC_LCD register is not read quickly,
->> its content may be a touchscreen conversion.
->> To remove this temporal constraint, the conversion value is taken from
->> the channel data register.
->>
->> Acked-by: Alexandre Belloni <alexandre.belloni@free-electrons.com>
->> Signed-off-by: Ludovic Desroches <ludovic.desroches@atmel.com>
+On 03/09/14 15:55, Karol Wrona wrote:
+> Add sensorhub bindings for sensorhub on Galaxy Gear 2.
 > 
-> Acked-by: Nicolas Ferre <nicolas.ferre@atmel.com>
-Applied with 2 lines of fuzz to the fixes-togreg branch of iio.git
+> Signed-off-by: Karol Wrona <k.wrona@samsung.com>
+> Acked-by: Kyungmin Park <kyungmin.park@samsung.com>
+> ---
+>  .../devicetree/bindings/misc/sensorhub.txt         |   51 ++++++++++++++++++++
+>  1 file changed, 51 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/misc/sensorhub.txt
+> 
+> diff --git a/Documentation/devicetree/bindings/misc/sensorhub.txt b/Documentation/devicetree/bindings/misc/sensorhub.txt
+> new file mode 100644
+> index 0000000..b43c2b7
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/misc/sensorhub.txt
+> @@ -0,0 +1,50 @@
+> +Samsung Sensorhub driver
+> +
+> +Sensorhub is MCU which manages several sensors and also play the role
+> +of virtual sensor device.
+> +
+> +Required properties:
+> +- compatible: "samsung,sensorhub-rinato" or "samsung,sensorhub-thermostat"
+> +- spi-max-frequency: max SPI clock frequency
+> +- interrupt-parent
+> +- interrupts: communication interrupt
+> +- ap-mcu-int: [out] ap to sensorhub line - used during communication
+Ah, why call it int?  I assumed when reading some of the code that it was an interrupt line.
 
-Thanks,
+> +- mcu-ap-int: [in] sensorhub to ap - used during communication
+> +- mcu-reset: [out] sensorhub reset
+> +- mag-table: magnitude table
+Magnitude of what?
+> +
+> +Optional properties:
+> +- sensor's nodes:
+> +  compatible = "samsung,mpu6500-accel"
+> +  compatible = "samsung,mpu6500-gyro"
+> +  compatible = "samsung,adpd142"
+> +
+> +Sensor compatibles are used to match proper sensor driver to real sensor on
+> +the board. The firmware does not give such information, so it helps to specify
+> +some sensors properties. Sensors have "samsung" prefixes because frequently
+> +they will not have much in common with sensors used without sensorhub because
+> +it can do some data processing.
+I wonder if we can make the ssp bit explicit as well.  Chances are samsung might
+have another device similar to this (but with a different driver) in future.
 
-Jonathan
-> 
->> ---
->>
->> Changes from v2:
->> - fix GENMASK indexes
->>
->> Changes from v1:
->> - use GENMASK and BIT macros
->>
->>  drivers/iio/adc/at91_adc.c |   12 +++++++-----
->>  1 file changed, 7 insertions(+), 5 deletions(-)
->>
->> diff --git a/drivers/iio/adc/at91_adc.c b/drivers/iio/adc/at91_adc.c
->> index 3b5bacd..ad51808 100644
->> --- a/drivers/iio/adc/at91_adc.c
->> +++ b/drivers/iio/adc/at91_adc.c
->> @@ -196,6 +196,7 @@ struct at91_adc_state {
->>  	bool			done;
->>  	int			irq;
->>  	u16			last_value;
->> +	int			chnb;
->>  	struct mutex		lock;
->>  	u8			num_channels;
->>  	void __iomem		*reg_base;
->> @@ -274,7 +275,7 @@ void handle_adc_eoc_trigger(int irq, struct iio_dev *idev)
->>  		disable_irq_nosync(irq);
->>  		iio_trigger_poll(idev->trig, iio_get_time_ns());
->>  	} else {
->> -		st->last_value = at91_adc_readl(st, AT91_ADC_LCDR);
->> +		st->last_value = at91_adc_readl(st, AT91_ADC_CHAN(st, st->chnb));
->>  		st->done = true;
->>  		wake_up_interruptible(&st->wq_data_avail);
->>  	}
->> @@ -351,7 +352,7 @@ static irqreturn_t at91_adc_rl_interrupt(int irq, void *private)
->>  	unsigned int reg;
->>  
->>  	status &= at91_adc_readl(st, AT91_ADC_IMR);
->> -	if (status & st->registers->drdy_mask)
->> +	if (status & GENMASK(st->num_channels - 1, 0))
->>  		handle_adc_eoc_trigger(irq, idev);
->>  
->>  	if (status & AT91RL_ADC_IER_PEN) {
->> @@ -418,7 +419,7 @@ static irqreturn_t at91_adc_9x5_interrupt(int irq, void *private)
->>  		AT91_ADC_IER_YRDY |
->>  		AT91_ADC_IER_PRDY;
->>  
->> -	if (status & st->registers->drdy_mask)
->> +	if (status & GENMASK(st->num_channels - 1, 0))
->>  		handle_adc_eoc_trigger(irq, idev);
->>  
->>  	if (status & AT91_ADC_IER_PEN) {
->> @@ -689,9 +690,10 @@ static int at91_adc_read_raw(struct iio_dev *idev,
->>  	case IIO_CHAN_INFO_RAW:
->>  		mutex_lock(&st->lock);
->>  
->> +		st->chnb = chan->channel;
->>  		at91_adc_writel(st, AT91_ADC_CHER,
->>  				AT91_ADC_CH(chan->channel));
->> -		at91_adc_writel(st, AT91_ADC_IER, st->registers->drdy_mask);
->> +		at91_adc_writel(st, AT91_ADC_IER, BIT(chan->channel));
->>  		at91_adc_writel(st, AT91_ADC_CR, AT91_ADC_START);
->>  
->>  		ret = wait_event_interruptible_timeout(st->wq_data_avail,
->> @@ -708,7 +710,7 @@ static int at91_adc_read_raw(struct iio_dev *idev,
->>  
->>  		at91_adc_writel(st, AT91_ADC_CHDR,
->>  				AT91_ADC_CH(chan->channel));
->> -		at91_adc_writel(st, AT91_ADC_IDR, st->registers->drdy_mask);
->> +		at91_adc_writel(st, AT91_ADC_IDR, BIT(chan->channel));
->>  
->>  		st->last_value = 0;
->>  		st->done = false;
->>
-> 
+> +
+> +Example:
+> +
+> +	shub_spi: shub {
+> +		compatible = "samsung,rinato-ssp-spi";
+> +		spi-max-frequency = <5000000>;
+> +		interrupt-parent = <&gpx0>;
+> +		interrupts = <2 0>;
+> +		ap-mcu-int = <&gpx0 0 0>;
+> +		mcu-ap-int = <&gpx0 4 0>;
+> +		mcu-reset = <&gpx0 5 0>;
+> +		mag-table = /bits/ 8 <110 85 171 71 203 195 0 67
+> +				208 56 175 244 206 213 0 92 250 0
+> +				55 48 189 252 171 243 13 45 250>;
+> +		sensor@0 {
+> +			compatible = "samsung,mpu6500-accel";
+> +		};
+> +		sensor@1 {
+> +			compatible = "samsung,mpu6500-gyro";
+> +		};
+> +		sensor@2 {
+> +			compatible = "samsung,adpd142";
+> +		};
+> +	};
 > 
