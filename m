@@ -1,181 +1,117 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ns.mm-sol.com ([37.157.136.199]:33724 "EHLO extserv.mm-sol.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751308AbaIKPOo (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Thu, 11 Sep 2014 11:14:44 -0400
-From: Stanimir Varbanov <svarbanov@mm-sol.com>
-To: Ian Campbell <ijc+devicetree@hellion.org.uk>,
-	Pawel Moll <pawel.moll@arm.com>,
-	Rob Herring <robh+dt@kernel.org>,
-	Kumar Gala <galak@codeaurora.org>,
-	Mark Rutland <mark.rutland@arm.com>,
-	Grant Likely <grant.likely@linaro.org>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Arnd Bergmann <arnd@arndb.de>
-Cc: linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Angelo Compagnucci <angelo.compagnucci@gmail.com>,
-	Doug Anderson <dianders@chromium.org>,
-	Fugang Duan <B38611@freescale.com>,
-	Johannes Thumshirn <johannes.thumshirn@men.de>,
-	Jean Delvare <jdelvare@suse.de>,
-	Philippe Reynes <tremyfr@yahoo.fr>,
-	Lee Jones <lee.jones@linaro.org>,
-	Josh Cartwright <joshc@codeaurora.org>,
-	Stephen Boyd <sboyd@codeaurora.org>,
-	David Collins <collinsd@codeaurora.org>,
-	Stanimir Varbanov <svarbanov@mm-sol.com>,
-	"Ivan T. Ivanov" <iivanov@mm-sol.com>
-Subject: [PATCH v2 2/2] DT: iio: vadc: document dt binding
-Date: Thu, 11 Sep 2014 18:13:23 +0300
-Message-Id: <1410448403-19402-3-git-send-email-svarbanov@mm-sol.com>
-In-Reply-To: <1410448403-19402-1-git-send-email-svarbanov@mm-sol.com>
-References: <1410448403-19402-1-git-send-email-svarbanov@mm-sol.com>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:55617 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752707AbaINRVz (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 14 Sep 2014 13:21:55 -0400
+Message-ID: <5415CEB0.8070105@kernel.org>
+Date: Sun, 14 Sep 2014 18:21:52 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+MIME-Version: 1.0
+To: Denis CIOCCA <denis.ciocca@st.com>
+CC: linux-iio@vger.kernel.org
+Subject: Re: [PATCH] iio:magnetometer: bugfix magnetometers gain values
+References: <1410353737-17542-1-git-send-email-denis.ciocca@st.com>
+In-Reply-To: <1410353737-17542-1-git-send-email-denis.ciocca@st.com>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Document DT binding for Qualcomm SPMI PMIC voltage ADC
-driver.
+On 10/09/14 13:55, Denis CIOCCA wrote:
+> This patch fix gains values. The first driver was designed using
+> engineering samples, in mass production the values are changed.
+> 
+> Signed-off-by: Denis Ciocca <denis.ciocca@st.com>
+Applied to the fixes-togreg branch of iio.git and marked for stable.
 
-Signed-off-by: Stanimir Varbanov <svarbanov@mm-sol.com>
-Signed-off-by: Ivan T. Ivanov <iivanov@mm-sol.com>
----
- .../devicetree/bindings/iio/adc/qcom,spmi-vadc.txt |  123 ++++++++++++++++++++
- 1 files changed, 123 insertions(+), 0 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/iio/adc/qcom,spmi-vadc.txt
+Thanks,
 
-diff --git a/Documentation/devicetree/bindings/iio/adc/qcom,spmi-vadc.txt b/Documentation/devicetree/bindings/iio/adc/qcom,spmi-vadc.txt
-new file mode 100644
-index 0000000..5abb491
---- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/adc/qcom,spmi-vadc.txt
-@@ -0,0 +1,123 @@
-+Qualcomm's SPMI PMIC voltage ADC
-+
-+SPMI PMIC voltage ADC (VADC) provides interface to clients to read
-+voltage. A 15 bit ADC is used for voltage measurements. There are multiple
-+peripherals to the VADC and the scope of the driver is to provide interface
-+for the USR peripheral of the VADC.
-+
-+VADC node:
-+
-+- compatible:
-+    Usage: required
-+    Value type: <string>
-+    Definition: Should contain "qcom,spmi-vadc".
-+
-+- reg:
-+    Usage: required
-+    Value type: <u32>
-+    Definition: Base address in the SPMI PMIC register map.
-+
-+- address-cells:
-+    Usage: required
-+    Value type: <u32>
-+    Definition: Must be one.
-+
-+- size-cells:
-+    Usage: required
-+    Value type: <u32>
-+    Definition: Must be zero.
-+
-+- interrupts:
-+    Usage: required
-+    Value type: <prop-encoded-array>
-+    Definition: End of convertion interrupt number.
-+
-+- qcom,poll-eoc:
-+    Usage: optional
-+    Value type: <empty>
-+    Definition: Use polling instead of interrupt for end of conversion
-+            completion.
-+
-+Channel node properties:
-+
-+- reg:
-+    Usage: required
-+    Value type: <u32>
-+    Definition: AMUX channel number.
-+            See include/dt-bindings/iio/qcom,spmi-pmic-vadc.h
-+
-+- qcom,decimation:
-+    Usage: optional
-+    Value type: <u32>
-+    Definition: Sampling rate to use for the individual channel measurement.
-+            Quicker measurements can be made by reducing decimation ratio.
-+            Valid values are 512, 1024, 2048, 4096.
-+            If property is not found, default value of 512 will be used.
-+
-+- qcom,pre-scaling:
-+    Usage: optional
-+    Value type: <u32 array>
-+    Definition: Used for scaling the channel input signal before the signal is
-+            fed to VADC. The configuration for this node is to know the
-+            pre-determined ratio and use it for post scaling. Select one from
-+            the following options.
-+            <1 1>, <1 3>, <1 4>, <1 6>, <1 20>, <1 8>, <10 81>, <1 10>
-+            If property is not found default value depending of chip will be used.
-+
-+- qcom,ratiometric:
-+    Usage: optional
-+    Value type: <empty>
-+    Definition: Channel calibration type. If this property is specified
-+            VADC will use the VDD reference(1.8V) and GND for channel
-+            calibration. If property is not found, channel will be
-+            calibrated with 625mV and 1.25V reference channels.
-+
-+- qcom,hw-settle-time:
-+    Usage: optional
-+    Value type: <u32>
-+    Definition: Time between AMUX getting configured and the ADC starting
-+            conversion. Delay = 100us * (value) for value < 11, and
-+            2ms * (value - 10) otherwise.
-+            Valid values are: 0, 100, 200, 300, 400, 500, 600, 700, 800,
-+            900 us and 1, 2, 4, 6, 8, 10 ms
-+            If property is not found, channel will use 0us.
-+
-+- qcom,avg-samples:
-+    Usage: optional
-+    Value type: <u32>
-+    Definition: Number of samples to be used for measurement.
-+            Fast averaging provides the option to obtain a single measurement
-+            from the ADC that is an average of multiple samples. The value
-+            selected is 2^(value).
-+            Valid values are: 1, 2, 4, 8, 16, 32, 64, 128, 256, 512
-+            If property is not found, 1 sample will be used.
-+
-+NOTE: At least one channel node is required.
-+
-+Example:
-+	/* VADC node */
-+	pmic_vadc: vadc@3100 {
-+		compatible = "qcom,spmi-vadc";
-+		reg = <0x3100 0x100>;
-+		interrupts = <0x0 0x31 0x0 IRQ_TYPE_EDGE_RISING>;
-+		#address-cells = <1>;
-+		#size-cells = <0>;
-+		#io-channel-cells = <1>;
-+		io-channel-ranges;
-+
-+		/* Channel node */
-+		usb_id_nopull {
-+			reg = <VADC_LR_MUX10_USB_ID>;
-+			qcom,decimation = <512>;
-+			qcom,ratiometric;
-+			qcom,hw-settle-time = <200>;
-+			qcom,avg-samples = <1>;
-+			qcom,pre-scaling = <1 3>;
-+		};
-+	};
-+
-+	/* IIO client node */
-+	usb {
-+		io-channels = <&pmic_vadc VADC_LR_MUX10_USB_ID>;
-+		io-channel-names = "vadc";
-+	};
--- 
-1.7.0.4
-
+Jonathan
+> ---
+>  drivers/iio/magnetometer/st_magn_core.c | 52 +++++++++++++++++++--------------
+>  1 file changed, 30 insertions(+), 22 deletions(-)
+> 
+> diff --git a/drivers/iio/magnetometer/st_magn_core.c b/drivers/iio/magnetometer/st_magn_core.c
+> index a4b6413..68cae86 100644
+> --- a/drivers/iio/magnetometer/st_magn_core.c
+> +++ b/drivers/iio/magnetometer/st_magn_core.c
+> @@ -42,7 +42,8 @@
+>  #define ST_MAGN_FS_AVL_5600MG			5600
+>  #define ST_MAGN_FS_AVL_8000MG			8000
+>  #define ST_MAGN_FS_AVL_8100MG			8100
+> -#define ST_MAGN_FS_AVL_10000MG			10000
+> +#define ST_MAGN_FS_AVL_12000MG			12000
+> +#define ST_MAGN_FS_AVL_16000MG			16000
+>  
+>  /* CUSTOM VALUES FOR SENSOR 1 */
+>  #define ST_MAGN_1_WAI_EXP			0x3c
+> @@ -69,20 +70,20 @@
+>  #define ST_MAGN_1_FS_AVL_4700_VAL		0x05
+>  #define ST_MAGN_1_FS_AVL_5600_VAL		0x06
+>  #define ST_MAGN_1_FS_AVL_8100_VAL		0x07
+> -#define ST_MAGN_1_FS_AVL_1300_GAIN_XY		1100
+> -#define ST_MAGN_1_FS_AVL_1900_GAIN_XY		855
+> -#define ST_MAGN_1_FS_AVL_2500_GAIN_XY		670
+> -#define ST_MAGN_1_FS_AVL_4000_GAIN_XY		450
+> -#define ST_MAGN_1_FS_AVL_4700_GAIN_XY		400
+> -#define ST_MAGN_1_FS_AVL_5600_GAIN_XY		330
+> -#define ST_MAGN_1_FS_AVL_8100_GAIN_XY		230
+> -#define ST_MAGN_1_FS_AVL_1300_GAIN_Z		980
+> -#define ST_MAGN_1_FS_AVL_1900_GAIN_Z		760
+> -#define ST_MAGN_1_FS_AVL_2500_GAIN_Z		600
+> -#define ST_MAGN_1_FS_AVL_4000_GAIN_Z		400
+> -#define ST_MAGN_1_FS_AVL_4700_GAIN_Z		355
+> -#define ST_MAGN_1_FS_AVL_5600_GAIN_Z		295
+> -#define ST_MAGN_1_FS_AVL_8100_GAIN_Z		205
+> +#define ST_MAGN_1_FS_AVL_1300_GAIN_XY		909
+> +#define ST_MAGN_1_FS_AVL_1900_GAIN_XY		1169
+> +#define ST_MAGN_1_FS_AVL_2500_GAIN_XY		1492
+> +#define ST_MAGN_1_FS_AVL_4000_GAIN_XY		2222
+> +#define ST_MAGN_1_FS_AVL_4700_GAIN_XY		2500
+> +#define ST_MAGN_1_FS_AVL_5600_GAIN_XY		3030
+> +#define ST_MAGN_1_FS_AVL_8100_GAIN_XY		4347
+> +#define ST_MAGN_1_FS_AVL_1300_GAIN_Z		1020
+> +#define ST_MAGN_1_FS_AVL_1900_GAIN_Z		1315
+> +#define ST_MAGN_1_FS_AVL_2500_GAIN_Z		1666
+> +#define ST_MAGN_1_FS_AVL_4000_GAIN_Z		2500
+> +#define ST_MAGN_1_FS_AVL_4700_GAIN_Z		2816
+> +#define ST_MAGN_1_FS_AVL_5600_GAIN_Z		3389
+> +#define ST_MAGN_1_FS_AVL_8100_GAIN_Z		4878
+>  #define ST_MAGN_1_MULTIREAD_BIT			false
+>  
+>  /* CUSTOM VALUES FOR SENSOR 2 */
+> @@ -105,10 +106,12 @@
+>  #define ST_MAGN_2_FS_MASK			0x60
+>  #define ST_MAGN_2_FS_AVL_4000_VAL		0x00
+>  #define ST_MAGN_2_FS_AVL_8000_VAL		0x01
+> -#define ST_MAGN_2_FS_AVL_10000_VAL		0x02
+> -#define ST_MAGN_2_FS_AVL_4000_GAIN		430
+> -#define ST_MAGN_2_FS_AVL_8000_GAIN		230
+> -#define ST_MAGN_2_FS_AVL_10000_GAIN		230
+> +#define ST_MAGN_2_FS_AVL_12000_VAL		0x02
+> +#define ST_MAGN_2_FS_AVL_16000_VAL		0x03
+> +#define ST_MAGN_2_FS_AVL_4000_GAIN		146
+> +#define ST_MAGN_2_FS_AVL_8000_GAIN		292
+> +#define ST_MAGN_2_FS_AVL_12000_GAIN		438
+> +#define ST_MAGN_2_FS_AVL_16000_GAIN		584
+>  #define ST_MAGN_2_MULTIREAD_BIT			false
+>  #define ST_MAGN_2_OUT_X_L_ADDR			0x28
+>  #define ST_MAGN_2_OUT_Y_L_ADDR			0x2a
+> @@ -266,9 +269,14 @@ static const struct st_sensors st_magn_sensors[] = {
+>  					.gain = ST_MAGN_2_FS_AVL_8000_GAIN,
+>  				},
+>  				[2] = {
+> -					.num = ST_MAGN_FS_AVL_10000MG,
+> -					.value = ST_MAGN_2_FS_AVL_10000_VAL,
+> -					.gain = ST_MAGN_2_FS_AVL_10000_GAIN,
+> +					.num = ST_MAGN_FS_AVL_12000MG,
+> +					.value = ST_MAGN_2_FS_AVL_12000_VAL,
+> +					.gain = ST_MAGN_2_FS_AVL_12000_GAIN,
+> +				},
+> +				[3] = {
+> +					.num = ST_MAGN_FS_AVL_16000MG,
+> +					.value = ST_MAGN_2_FS_AVL_16000_VAL,
+> +					.gain = ST_MAGN_2_FS_AVL_16000_GAIN,
+>  				},
+>  			},
+>  		},
+> 
