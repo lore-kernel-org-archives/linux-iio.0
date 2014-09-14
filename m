@@ -1,386 +1,80 @@
-Return-Path: <svarbanov@mm-sol.com>
-Message-ID: <5416F3E2.3030009@mm-sol.com>
-Date: Mon, 15 Sep 2014 17:12:50 +0300
-From: Stanimir Varbanov <svarbanov@mm-sol.com>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:56813 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752798AbaINUkx (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 14 Sep 2014 16:40:53 -0400
+Message-ID: <5415FD4F.9000606@kernel.org>
+Date: Sun, 14 Sep 2014 21:40:47 +0100
+From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Jonathan Cameron <jic23@kernel.org>
-CC: Hartmut Knaack <knaack.h@gmx.de>,
- Ian Campbell <ijc+devicetree@hellion.org.uk>,
- Pawel Moll <pawel.moll@arm.com>, Rob Herring <robh+dt@kernel.org>,
- Kumar Gala <galak@codeaurora.org>,
- Mark Rutland <mark.rutland@arm.com>,
- Grant Likely <grant.likely@linaro.org>,
- Arnd Bergmann <arnd@arndb.de>, linux-arm-msm@vger.kernel.org,
- linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
- devicetree@vger.kernel.org,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Lars-Peter Clausen <lars@metafoo.de>,
- Angelo Compagnucci <angelo.compagnucci@gmail.com>,
- Doug Anderson <dianders@chromium.org>,
- Fugang Duan <B38611@freescale.com>,
- Johannes Thumshirn <johannes.thumshirn@men.de>,
- Jean Delvare <jdelvare@suse.de>,
- Philippe Reynes <tremyfr@yahoo.fr>, Lee Jones <lee.jones@linaro.org>,
- Josh Cartwright <joshc@codeaurora.org>,
- Stephen Boyd <sboyd@codeaurora.org>,
- David Collins <collinsd@codeaurora.org>,
- "Ivan T. Ivanov" <iivanov@mm-sol.com>
-Subject: Re: [PATCH v2 1/2] iio: vadc: Qualcomm SPMI PMIC voltage ADC driver
-References: <1410448403-19402-1-git-send-email-svarbanov@mm-sol.com> <1410448403-19402-2-git-send-email-svarbanov@mm-sol.com> <54138151.8010902@gmx.de> <54147E97.60808@kernel.org>
-In-Reply-To: <54147E97.60808@kernel.org>
-Content-Type: text/plain; charset=ISO-8859-15
-List-ID: <linux-iio@vger.kernel.org>
+To: Greg KH <gregkh@linuxfoundation.org>
+CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Subject: [PULL] First set of IIO fixes for the 3.17 cycle
+Content-Type: text/plain; charset=utf-8
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Hi Jonathan,
+The following changes since commit eb29835fb3ae9f7a8c8a4ae92e192052c3473557:
 
-Thanks for the review!
+  staging: android: fix a possible memory leak (2014-08-17 07:15:10 -0700)
 
-On 09/13/2014 08:27 PM, Jonathan Cameron wrote:
-> On 13/09/14 00:27, Hartmut Knaack wrote:
->> Stanimir Varbanov schrieb, Am 11.09.2014 17:13:
->>> The voltage ADC is peripheral of Qualcomm SPMI PMIC chips. It has
->>> 15bits resolution and register space inside PMIC accessible across
->>> SPMI bus.
->>>
->>> The vadc driver registers itself through IIO interface.
->>>
->> Looks already pretty good. Things you should consider in regard of common coding style are to use the variable name ret instead of rc, since it is used in almost all adc drivers and thus makes reviewing a bit easier. Besides that, you seem to use unsigned as well as unsigned int, so to be consistent, please stick to one of them. Other comments in line.
-> 
-> A few additional comments from me.  My biggest question is whether
-> you are actually making life difficult for yourself by having
-> vadc_channels and vadc->channels (don't like the similar naming btw!)
-> in different orders.  I think you can move the ordering into the device
-> tree reading code rather than doing it in lots of other places.  Hence
-> rather than an order based on the device tree description, put the
-> data into a fixed ofer in vadc->channels.
-> 
-> Entirely possible I'm missing something though :)
->>> Signed-off-by: Stanimir Varbanov <svarbanov@mm-sol.com>
->>> Signed-off-by: Ivan T. Ivanov <iivanov@mm-sol.com>
->>> ---
->>>  drivers/iio/adc/Kconfig                       |   11 +
->>>  drivers/iio/adc/Makefile                      |    1 +
->>>  drivers/iio/adc/qcom-spmi-vadc.c              |  999 +++++++++++++++++++++++++
->>>  include/dt-bindings/iio/qcom,spmi-pmic-vadc.h |  119 +++
->>>  4 files changed, 1130 insertions(+), 0 deletions(-)
->>>  create mode 100644 drivers/iio/adc/qcom-spmi-vadc.c
->>>  create mode 100644 include/dt-bindings/iio/qcom,spmi-pmic-vadc.h
+are available in the git repository at:
 
-<snip>
+  git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git tags/iio-fixes-3.17a
 
->>> +
->>> +static int
->> Don't wrap line here.
->>> +vadc_read_raw(struct iio_dev *indio_dev, struct iio_chan_spec const *chan,
->>> +	      int *val, int *val2, long mask)
->>> +{
->>> +	struct vadc_priv *vadc = iio_priv(indio_dev);
->>> +	struct vadc_channel *vchan;
->>> +	struct vadc_result result;
->>> +	int rc;
->>> +
-> It is a bit of a pitty we can't avoid this lookup. Normally I'd suggest
-> putting an index in chan->address but you've already used that.
-> The purpose of this is to (I think) allow you to have the private
-> data stored in a random order... What is the benefit of doing that?
-> (see various comments elsewhere)
+for you to fetch changes up to a31d0928999fbf33b3a6042e8bcb7b7f7e07d094:
 
-So the vadc_channels array describe all possible vadc channels for all
-supported PMICs from this driver. On the other side vadc->channels
-pointer should contain only the channels described in DT.
+  iio:magnetometer: bugfix magnetometers gain values (2014-09-14 18:21:23 +0100)
 
-Thus we need a below function to check is the current channel is active
-for the current DT (current PMIC version). This is because we have in
-vadc_channels the full set of channels but not every supported PMIC have
-support for them.
+----------------------------------------------------------------
+First round of IIO fixes for the 3.17 cycle.
 
-I agree that this peace of code is not so clear. So I will try to rework
-this and register to the IIO core only those channels that have channel
-descriptions in DT.
+* Fix an overwritten error return that can prevent deferred probing when
+  using of_iio_channel_get_by_name
+* A series that deals with an incorrect reference count when the default
+  trigger is set within the main probe routine for a driver.  Can result
+  in a double free if the trigger is changed.
+* Fix a buglet with xilinx-xadc concerning setup of the address for an
+  aux channel.
+* At91 adc driver could sometimes get a touchscreen reading rather than
+  the intended adc channel.  This is fixed by using the channel data register
+  instead.
+* Fix some ST magnetometer gain values that differ in production parts from
+  the prerelease ones used for driver development.
 
-Also I wonder can I use iio_chan_spec::address field as a pointer to
-private structure with vadc channel properties like decimation, prescale
-etc. got from DT or the default values.
+----------------------------------------------------------------
+Denis CIOCCA (1):
+      iio:magnetometer: bugfix magnetometers gain values
 
-> 
->>> +	vchan = vadc_find_channel(vadc, chan->channel);
->>> +	if (!vchan)
->>> +		return -EINVAL;
->>> +
->>> +	if (!vadc->is_ref_measured) {
->>> +		rc = vadc_measure_reference_points(vadc);
->>> +		if (rc)
->>> +			return rc;
->>> +
->>> +		vadc->is_ref_measured = true;
->>> +	}
->>> +
->>> +	switch (mask) {
->>> +	case IIO_CHAN_INFO_PROCESSED:
->>> +		rc = vadc_do_conversion(vadc, vchan, &result.adc_code);
->>> +		if (rc)
->>> +			return rc;
->>> +
->>> +		vadc_calibrate(vadc, vchan, &result);
->>> +
->>> +		*val = result.physical;
-> I'm a little suspicious here.  Are the resulting values in milivolts for
-> all the channels?  Very handy if so, but seems a little unlikely with 15 bit
-> ADC that you'd have no part of greater accuracy than a milivolt.
+Johannes Pointner (1):
+      iio:inkern: fix overwritten -EPROBE_DEFER in of_iio_channel_get_by_name
 
-In fact *val is in microvolts. What is the expected unit from IIO ADC users?
+Ludovic Desroches (1):
+      iio: adc: at91: don't use the last converted data register
 
->>> +		rc = IIO_VAL_INT;
->> return IIO_VAL_INT;
->>> +		break;
->>> +	default:
->>> +		rc = -EINVAL;
->>> +		break;
->> Drop default case, or leave empty.
->>> +	}
->>> +
->>> +	return rc;
->> return -EINVAL;
->>> +}
->>> +
->>> +static const struct iio_info vadc_info = {
->>> +	.read_raw = vadc_read_raw,
->>> +	.driver_module = THIS_MODULE,
->>> +};
->>> +
->>> +#define VADC_CHAN(_id, _pre)						\
->>> +	[VADC_##_id] = {						\
->>> +		.type = IIO_VOLTAGE,					\
-> A few of the below look to be temp sensors.  If they are hardwired
-> in some way to this functionality (i.e. is it on chip) then it might be
-> nice to reflect this in the channel type.
+Srinivas Pandruvada (8):
+      iio:trigger: modify return value for iio_trigger_get
+      iio: accel: bma180: Fix indio_dev->trig assignment
+      iio: adc: ad_sigma_delta: Fix indio_dev->trig assignment
+      iio: hid_sensor_hub: Fix indio_dev->trig assignment
+      iio: st_sensors: Fix indio_dev->trig assignment
+      iio: gyro: itg3200: Fix indio_dev->trig assignment
+      iio: inv_mpu6050: Fix indio_dev->trig assignment
+      iio: meter: ade7758: Fix indio_dev->trig assignment
 
-There are a dedicated channels to measure temperature. Those channels
-have connected thermistor but I don't think it is on chip. So the
-returned adc code is in microvolts and we have a translation table to
-convert measured voltage to miliCelsius. I thought that if I mark the
-channel type as IIO_TEMP then the user would expect the returned units
-to be miliCelsius. If that assumption is not correct I can change the
-type of those channels.
+Subbaraya Sundeep Bhatta (1):
+      iio: adc: xilinx-xadc: assign auxiliary channels address correctly
 
->>> +		.indexed = 1,						\
->>> +		.channel = VADC_##_id,					\
->>> +		.address = _pre,					\
->>> +		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED),	\
->>> +		.datasheet_name = __stringify(VADC_##_id),		\
->>> +		.scan_type = {						\
->>> +			.sign		= 's',				\
->>> +			.realbits	= 15,				\
->>> +			.storagebits	= 16,				\
->>> +			.endianness	= IIO_CPU,			\
->>> +		},							\
->>> +	},
->>> +
->>> +static const struct iio_chan_spec vadc_channels[] = {
->>> +	VADC_CHAN(USBIN, 4)				/* 0x00 */
->>> +	VADC_CHAN(DCIN, 4)
->>> +	VADC_CHAN(VCHG_SNS, 3)
->>> +	VADC_CHAN(SPARE1_03, 1)
->>> +	VADC_CHAN(USB_ID_MV, 1)
->>> +	VADC_CHAN(VCOIN, 1)
->>> +	VADC_CHAN(VBAT_SNS, 1)
->>> +	VADC_CHAN(VSYS, 1)
->>> +	VADC_CHAN(DIE_TEMP, 0)
->>> +	VADC_CHAN(REF_625MV, 0)
->>> +	VADC_CHAN(REF_1250MV, 0)
->>> +	VADC_CHAN(CHG_TEMP, 0)
->>> +	VADC_CHAN(SPARE1, 0)
->>> +	VADC_CHAN(SPARE2, 0)
->>> +	VADC_CHAN(GND_REF, 0)
->>> +	VADC_CHAN(VDD_VADC, 0)				/* 0x0f */
->>> +
->>> +	VADC_CHAN(P_MUX1_1_1, 0)			/* 0x10 */
->>> +	VADC_CHAN(P_MUX2_1_1, 0)
->>> +	VADC_CHAN(P_MUX3_1_1, 0)
->>> +	VADC_CHAN(P_MUX4_1_1, 0)
->>> +	VADC_CHAN(P_MUX5_1_1, 0)
->>> +	VADC_CHAN(P_MUX6_1_1, 0)
->>> +	VADC_CHAN(P_MUX7_1_1, 0)
->>> +	VADC_CHAN(P_MUX8_1_1, 0)
->>> +	VADC_CHAN(P_MUX9_1_1, 0)
->>> +	VADC_CHAN(P_MUX10_1_1, 0)
->>> +	VADC_CHAN(P_MUX11_1_1, 0)
->>> +	VADC_CHAN(P_MUX12_1_1, 0)
->>> +	VADC_CHAN(P_MUX13_1_1, 0)
->>> +	VADC_CHAN(P_MUX14_1_1, 0)
->>> +	VADC_CHAN(P_MUX15_1_1, 0)
->>> +	VADC_CHAN(P_MUX16_1_1, 0)			/* 0x1f */
->>> +
->>> +	VADC_CHAN(P_MUX1_1_3, 1)			/* 0x20 */
->>> +	VADC_CHAN(P_MUX2_1_3, 1)
->>> +	VADC_CHAN(P_MUX3_1_3, 1)
->>> +	VADC_CHAN(P_MUX4_1_3, 1)
->>> +	VADC_CHAN(P_MUX5_1_3, 1)
->>> +	VADC_CHAN(P_MUX6_1_3, 1)
->>> +	VADC_CHAN(P_MUX7_1_3, 1)
->>> +	VADC_CHAN(P_MUX8_1_3, 1)
->>> +	VADC_CHAN(P_MUX9_1_3, 1)
->>> +	VADC_CHAN(P_MUX10_1_3, 1)
->>> +	VADC_CHAN(P_MUX11_1_3, 1)
->>> +	VADC_CHAN(P_MUX12_1_3, 1)
->>> +	VADC_CHAN(P_MUX13_1_3, 1)
->>> +	VADC_CHAN(P_MUX14_1_3, 1)
->>> +	VADC_CHAN(P_MUX15_1_3, 1)
->>> +	VADC_CHAN(P_MUX16_1_3, 1)			/* 0x2f */
->>> +
->>> +	VADC_CHAN(LR_MUX1_BAT_THERM, 0)			/* 0x30 */
->>> +	VADC_CHAN(LR_MUX2_BAT_ID, 0)
->>> +	VADC_CHAN(LR_MUX3_XO_THERM, 0)
->>> +	VADC_CHAN(LR_MUX4_AMUX_THM1, 0)
->>> +	VADC_CHAN(LR_MUX5_AMUX_THM2, 0)
->>> +	VADC_CHAN(LR_MUX6_AMUX_THM3, 0)
->>> +	VADC_CHAN(LR_MUX7_HW_ID, 0)
->>> +	VADC_CHAN(LR_MUX8_AMUX_THM4, 0)
->>> +	VADC_CHAN(LR_MUX9_AMUX_THM5, 0)
->>> +	VADC_CHAN(LR_MUX10_USB_ID, 0)
->>> +	VADC_CHAN(AMUX_PU1, 0)
->>> +	VADC_CHAN(AMUX_PU2, 0)
->>> +	VADC_CHAN(LR_MUX3_BUF_XO_THERM, 0)		/* 0x3c */
->>> +
->>> +	VADC_CHAN(LR_MUX1_PU1_BAT_THERM, 0)		/* 0x70 */
->>> +	VADC_CHAN(LR_MUX2_PU1_BAT_ID, 0)
->>> +	VADC_CHAN(LR_MUX3_PU1_XO_THERM, 0)
->>> +	VADC_CHAN(LR_MUX4_PU1_AMUX_THM1, 0)
->>> +	VADC_CHAN(LR_MUX5_PU1_AMUX_THM2, 0)
->>> +	VADC_CHAN(LR_MUX6_PU1_AMUX_THM3, 0)
->>> +	VADC_CHAN(LR_MUX7_PU1_AMUX_HW_ID, 0)
->>> +	VADC_CHAN(LR_MUX8_PU1_AMUX_THM4, 0)
->>> +	VADC_CHAN(LR_MUX9_PU1_AMUX_THM5, 0)
->>> +	VADC_CHAN(LR_MUX10_PU1_AMUX_USB_ID, 0)		/* 0x79 */
->>> +	VADC_CHAN(LR_MUX3_BUF_PU1_XO_THERM, 0)		/* 0x7c */
->>> +
->>> +	VADC_CHAN(LR_MUX1_PU2_BAT_THERM, 0)		/* 0xb0 */
->>> +	VADC_CHAN(LR_MUX2_PU2_BAT_ID, 0)
->>> +	VADC_CHAN(LR_MUX3_PU2_XO_THERM, 0)
->>> +	VADC_CHAN(LR_MUX4_PU2_AMUX_THM1, 0)
->>> +	VADC_CHAN(LR_MUX5_PU2_AMUX_THM2, 0)
->>> +	VADC_CHAN(LR_MUX6_PU2_AMUX_THM3, 0)
->>> +	VADC_CHAN(LR_MUX7_PU2_AMUX_HW_ID, 0)
->>> +	VADC_CHAN(LR_MUX8_PU2_AMUX_THM4, 0)
->>> +	VADC_CHAN(LR_MUX9_PU2_AMUX_THM5, 0)
->>> +	VADC_CHAN(LR_MUX10_PU2_AMUX_USB_ID, 0)		/* 0xb9 */
->>> +	VADC_CHAN(LR_MUX3_BUF_PU2_XO_THERM, 0)		/* 0xbc */
->>> +
->>> +	VADC_CHAN(LR_MUX1_PU1_PU2_BAT_THERM, 0)		/* 0xf0 */
->>> +	VADC_CHAN(LR_MUX2_PU1_PU2_BAT_ID, 0)
->>> +	VADC_CHAN(LR_MUX3_PU1_PU2_XO_THERM, 0)
->>> +	VADC_CHAN(LR_MUX4_PU1_PU2_AMUX_THM1, 0)
->>> +	VADC_CHAN(LR_MUX5_PU1_PU2_AMUX_THM2, 0)
->>> +	VADC_CHAN(LR_MUX6_PU1_PU2_AMUX_THM3, 0)
->>> +	VADC_CHAN(LR_MUX7_PU1_PU2_AMUX_HW_ID, 0)
->>> +	VADC_CHAN(LR_MUX8_PU1_PU2_AMUX_THM4, 0)
->>> +	VADC_CHAN(LR_MUX9_PU1_PU2_AMUX_THM5, 0)
->>> +	VADC_CHAN(LR_MUX10_PU1_PU2_AMUX_USB_ID, 0)	/* 0xf9 */
->>> +	VADC_CHAN(LR_MUX3_BUF_PU1_PU2_XO_THERM, 0)	/* 0xfc */
->>> +};
->>> +
->>> +static int
->>> +vadc_get_dt_channel_data(struct vadc_priv *vadc, struct device_node *node)
->>> +{
->>> +	struct vadc_channel *vchan;
->>> +	u32 channel, value, varr[2];
->>> +	int rc, pre, time, avg, decim;
->> Drop pre, time, avg and decim and reuse rc instead?
->>> +	const char *name = node->name;
->>> +
->>> +	rc = of_property_read_u32(node, "reg", &channel);
->>> +	if (rc) {
->>> +		dev_dbg(vadc->dev, "invalid channel number %s\n", name);
->>> +		return -EINVAL;
->>> +	}
->>> +
->>> +	if (channel >= vadc->nchannels) {
->>> +		dev_dbg(vadc->dev, "%s invalid channel number %d\n", name,
->>> +			channel);
->>> +		return -EINVAL;
->>> +	}
->>> +
->>> +	vchan = &vadc->channels[channel];
-> Could you not have these in the same order as the iio_chan_spec array?
-> Hence move the lookups that are scattered elsewhere in the driver to here?
-> 
-
-<snip>
-
->>> +static int vadc_probe(struct platform_device *pdev)
->>> +{
->>> +	struct device_node *node = pdev->dev.of_node;
->>> +	struct device *dev = &pdev->dev;
->>> +	struct iio_dev *indio_dev;
->>> +	struct vadc_channel *vchan;
->>> +	struct vadc_priv *vadc;
->>> +	struct resource *res;
->>> +	struct regmap *regmap;
->>> +	int rc, irq_eoc, n;
->> unsigned int n?
->>> +
->>> +	regmap = dev_get_regmap(dev->parent, NULL);
->>> +	if (!regmap)
->>> +		return -ENODEV;
->>> +
->>> +	indio_dev = devm_iio_device_alloc(dev, sizeof(*vadc));
->>> +	if (!indio_dev)
->>> +		return -ENOMEM;
->>> +
->>> +	vadc = iio_priv(indio_dev);
->>> +	vadc->dev = dev;
->>> +	vadc->regmap = regmap;
->>> +	vadc->is_ref_measured = false;
->>> +	init_completion(&vadc->complete);
->>> +
->>> +	vadc->nchannels = ARRAY_SIZE(vadc_channels);
->>> +	vadc->channels = devm_kcalloc(dev, vadc->nchannels,
->>> +				      sizeof(*vadc->channels), GFP_KERNEL);
-> Interesting.  This is always the same size as the vadc_channels so you
-> might as well keep them in the same order and simplify various corners of
-> the code.
->>> +	if (!vadc->channels)
->>> +		return -ENOMEM;
->>> +
-> I wonder if we can't vadc->channels rather more different from vadc_channels?
-> Perhaps vadc->channelspriv or similar? Confused me a little at first.
->>> +	for (n = 0; n < vadc->nchannels; n++) {
->>> +		vchan = &vadc->channels[n];
->>> +		/* set default channel properties */
->>> +		vchan->number = -1;	/* inactive */
->>> +		vchan->prescaling = vadc_channels[n].address;
->>> +		vchan->decimation = VADC_DEF_DECIMATION;
->>> +		vchan->hw_settle_time = VADC_DEF_HW_SETTLE_TIME;
->>> +		vchan->avg_samples = VADC_DEF_AVG_SAMPLES;
->>> +		vchan->calibration = VADC_DEF_CALIB_TYPE;
->>> +	}
->>> +
->>> +	platform_set_drvdata(pdev, vadc);
->>> +
->>> +	res = platform_get_resource(pdev, IORESOURCE_REG, 0);
->>> +	if (!res)
->>> +		return -ENODEV;
->>> +
->>> +	vadc->base = res->start;
->>> +
->>> +	rc = vadc_version_check(vadc);
->>> +	if (rc < 0)
->>> +		return -ENODEV;
->>> +
->>> +	rc = vadc_get_dt_data(vadc, node);
->>> +	if (rc < 0)
->>> +		return rc;
->>> +
-> Do we need an explicit flag to indicate poll mode rather than just
-> using the absense of the irq being specified to select that mode?
-
-I will think about this. Maybe I will check the returned value from
-platform_get_irq to see is the IRQ resource exist. If the IRQ doesn't
-exist I will fallback to polling.
-
-<snip>
-
-
--- 
-regards,
-Stan
+ drivers/iio/accel/bma180.c                         |  2 +-
+ drivers/iio/adc/ad_sigma_delta.c                   |  2 +-
+ drivers/iio/adc/at91_adc.c                         | 12 ++---
+ drivers/iio/adc/xilinx-xadc-core.c                 |  2 +-
+ .../iio/common/hid-sensors/hid-sensor-trigger.c    |  3 +-
+ drivers/iio/common/st_sensors/st_sensors_trigger.c |  2 +-
+ drivers/iio/gyro/itg3200_buffer.c                  |  2 +-
+ drivers/iio/imu/inv_mpu6050/inv_mpu_trigger.c      |  2 +-
+ drivers/iio/inkern.c                               |  2 +-
+ drivers/iio/magnetometer/st_magn_core.c            | 52 +++++++++++++---------
+ drivers/staging/iio/meter/ade7758_trigger.c        |  2 +-
+ include/linux/iio/trigger.h                        |  4 +-
+ 12 files changed, 50 insertions(+), 37 deletions(-)
