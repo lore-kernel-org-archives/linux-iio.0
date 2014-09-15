@@ -1,150 +1,184 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mailout3.w1.samsung.com ([210.118.77.13]:52059 "EHLO
-	mailout3.w1.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753446AbaIHOzV (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 8 Sep 2014 10:55:21 -0400
-Message-id: <540DC356.5040907@samsung.com>
-Date: Mon, 08 Sep 2014 16:55:18 +0200
-From: Karol Wrona <k.wrona@samsung.com>
-MIME-version: 1.0
-To: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
-	Arnd Bergmann <arnd@arndb.de>, linux-kernel@vger.kernel.org
-Cc: Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
-	Kyungmin Park <kyungmin.park@samsung.com>
-Subject: Re: [RFC/PATCH 0/6] iio: Add sensorhub driver
-References: <1409756150-30889-1-git-send-email-k.wrona@samsung.com>
- <476dc5c4-557d-467c-9583-201b10b7e1df@email.android.com>
-In-reply-to: <476dc5c4-557d-467c-9583-201b10b7e1df@email.android.com>
-Content-type: text/plain; charset=utf-8; format=flowed
+Received: from mail-ie0-f181.google.com ([209.85.223.181]:58653 "EHLO
+	mail-ie0-f181.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S933010AbaIOWSd (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 15 Sep 2014 18:18:33 -0400
+Received: by mail-ie0-f181.google.com with SMTP id lx4so5413740iec.40
+        for <linux-iio@vger.kernel.org>; Mon, 15 Sep 2014 15:18:32 -0700 (PDT)
+Date: Mon, 15 Sep 2014 23:18:27 +0100
+From: Lee Jones <lee.jones@linaro.org>
+To: Jacob Pan <jacob.jun.pan@linux.intel.com>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	IIO <linux-iio@vger.kernel.org>,
+	LKML <linux-kernel@vger.kernel.org>,
+	DEVICE TREE <devicetree@vger.kernel.org>,
+	Carlo Caione <carlo@caione.org>,
+	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+	Aaron Lu <aaron.lu@intel.com>, Alan Cox <alan@linux.intel.com>,
+	Samuel Ortiz <sameo@linux.intel.com>,
+	Liam Girdwood <lgirdwood@gmail.com>,
+	Mark Brown <broonie@kernel.org>,
+	Grant Likely <grant.likely@linaro.org>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Rob Herring <robh+dt@kernel.org>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Fugang Duan <B38611@freescale.com>,
+	Arnd Bergmann <arnd@arndb.de>,
+	Zubair Lutfullah <zubair.lutfullah@gmail.com>,
+	Sebastian Reichel <sre@debian.org>,
+	Johannes Thumshirn <johannes.thumshirn@men.de>,
+	Philippe Reynes <tremyfr@yahoo.fr>,
+	Angelo Compagnucci <angelo.compagnucci@gmail.com>,
+	Doug Anderson <dianders@chromium.org>,
+	Ramakrishna Pallala <ramakrishna.pallala@intel.com>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Maxime Ripard <maxime.ripard@free-electrons.com>
+Subject: Re: [PATCH v3 1/5] mfd/axp20x: rename files to support more devices
+Message-ID: <20140915221827.GA25162@lee--X1>
+References: <1410477357-6407-1-git-send-email-jacob.jun.pan@linux.intel.com>
+ <1410477357-6407-2-git-send-email-jacob.jun.pan@linux.intel.com>
+ <5414A264.8090100@kernel.org>
+ <20140915092817.071fd722@ultegra>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+In-Reply-To: <20140915092817.071fd722@ultegra>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 09/03/2014 09:52 PM, Jonathan Cameron wrote:
->
-> On September 3, 2014 3:55:44 PM GMT+01:00, Karol Wrona <k.wrona@samsung.com> wrote:
->> Hello,
->>
->> This patchset adds support for sensorhub. It is an external mcu which
->> manages
->> and collects data from several sensors i.e. on Galaxy Gear 2 watch.
->>
->> It contains:
->> - spi driver for sensorhub device
->> - DT binding for the device
->> - IIO common utils for ssp sensors, a trigger module
->> - IIO accelerometer driver
->> - IIO gyroscope driver
->>
->> Generally this is an attempt to generalize sensors handling on some
->> Samsung
->> boards which have multiple sensors IC and also sensorhub does some data
->> processing itself.
->>
->> I would like to get your opinion about such solution. The idea is that
->> data communication layer gives control and data to proper IIO sensor
->> devices.
->> In this case I chose that sensor drivers are platform ones represented
->> by
->> child nodes of sensorhub in DT. These compatibles are used mainly to
->> match
->> sensor to driver. For example at this stage there is one accelerometer
->> but on
->> other board can have different one with changed data format etc. In
->> this case
->> ssp_accel_sensor driver could handle several physical devices of accel
->> class.
->> Unfortunately the firmware gives only an information about used sensor
->> type,
->> the driver can find out that there is an accelerometer on board but
->> nothing
->> specific about the sensor.
-> Will look at this later... In the meantime..
-Before code review I want to know your opinion if passing information
-about sensors in that way is ok - It's a hack but currently the firmware
-do not provide such information and I do not know if I will be able to
-change it.
->> Other question:
->> The sensorhub can implement some devices which are non common for IIO
->> and hard
->> to standardise. These ones need two way communication (raw write will
->> not be
->> proper for that) and can produce data packets with flexible size to
->> 2KB).
->> I'm wondering if it is worth to look for solution in IIO and implement
->> something like IIO_BULK sensor with no standard channel description
->> or solve this problem using cdev. This is the reason why the part of
->> the
->> patchset is intended to be placed in misc.
-> Out of curiosity, what are these other sensors, roughly?  If they are popular I am
->   sure there will be more out there soon!  Ideally we would work out how to standardize these. So convince is it can't be
->   done!
-These are very specific for Galaxy Gear watch like movement detector, 
-pedometer,
-put down motion etc. The functionalities are mainly implemented by sensorhub
-firmware, these ones are not physical chips. My first idea was to use 
-IIO for typical
-sensors only (I can have there a bunch of thermometers, accelerometers, 
-lightsensors ...)
-and one cdev for others. In this case data interpretation would be done 
-by userspace.
-So:
-- these specific "sensors" will be only implemented on some Samsung's boards
-and depend on firmware.
-- there will be a lot of it  - most of them are represented by an 
-integer value but there
-are some which can send much more data.
+On Mon, 15 Sep 2014, Jacob Pan wrote:
 
->> Regards,
->> Karol
->>
->> Karol Wrona (6):
->>   iio:sensorhub: Add sensorhub common library
->>   misc: sensorhub: Add sensorhub driver
->>   sensorhub: Add sensorhub bindings
->>   iio: sensorhub: Add sensorhub iio commons
->>   iio: sensorhub: Add sensorhub accelerometer sensor
->>   iio: sensorhub: Add sensorhub gyroscope sensor
->>
->> .../devicetree/bindings/misc/sensorhub.txt         |   51 ++
->> drivers/iio/accel/Makefile                         |    2 +
->> drivers/iio/accel/ssp_accel_sensor.c               |  240 ++++++
->> drivers/iio/common/Kconfig                         |    1 +
->> drivers/iio/common/Makefile                        |    1 +
->> drivers/iio/common/ssp_sensors/Kconfig             |   15 +
->> drivers/iio/common/ssp_sensors/Makefile            |    6 +
->> .../iio/common/ssp_sensors/ssp-sensor-trigger.c    |   92 +++
->> drivers/iio/common/ssp_sensors/ssp_iio.c           |   35 +
->> drivers/iio/common/ssp_sensors/ssp_iio_sensor.h    |   62 ++
->> drivers/iio/gyro/Makefile                          |    2 +
->> drivers/iio/gyro/ssp_gyro_sensor.c                 |  225 ++++++
->> drivers/misc/Kconfig                               |    1 +
->> drivers/misc/Makefile                              |    1 +
->> drivers/misc/sensorhub/Kconfig                     |   13 +
->> drivers/misc/sensorhub/Makefile                    |    8 +
->> drivers/misc/sensorhub/ssp.h                       |  323 ++++++++
->> drivers/misc/sensorhub/ssp_data.c                  |   61 ++
->> drivers/misc/sensorhub/ssp_dev.c                   |  782
->> ++++++++++++++++++++
->> drivers/misc/sensorhub/ssp_firmware.c              |  571
->> ++++++++++++++
->> drivers/misc/sensorhub/ssp_spi.c                   |  700
->> ++++++++++++++++++
->> include/linux/iio/common/ssp_sensors.h             |   82 ++
->> 22 files changed, 3274 insertions(+)
->> create mode 100644 Documentation/devicetree/bindings/misc/sensorhub.txt
->> create mode 100644 drivers/iio/accel/ssp_accel_sensor.c
->> create mode 100644 drivers/iio/common/ssp_sensors/Kconfig
->> create mode 100644 drivers/iio/common/ssp_sensors/Makefile
->> create mode 100644 drivers/iio/common/ssp_sensors/ssp-sensor-trigger.c
->> create mode 100644 drivers/iio/common/ssp_sensors/ssp_iio.c
->> create mode 100644 drivers/iio/common/ssp_sensors/ssp_iio_sensor.h
->> create mode 100644 drivers/iio/gyro/ssp_gyro_sensor.c
->> create mode 100644 drivers/misc/sensorhub/Kconfig
->> create mode 100644 drivers/misc/sensorhub/Makefile
->> create mode 100644 drivers/misc/sensorhub/ssp.h
->> create mode 100644 drivers/misc/sensorhub/ssp_data.c
->> create mode 100644 drivers/misc/sensorhub/ssp_dev.c
->> create mode 100644 drivers/misc/sensorhub/ssp_firmware.c
->> create mode 100644 drivers/misc/sensorhub/ssp_spi.c
->> create mode 100644 include/linux/iio/common/ssp_sensors.h
+> On Sat, 13 Sep 2014 21:00:36 +0100
+> Jonathan Cameron <jic23@kernel.org> wrote:
+> 
+> > On 12/09/14 00:15, Jacob Pan wrote:
+> > > More XPowers PMIC devices can be supported by extending this
+> > > driver, so rename it to axp2xx to cover axp288 variant.
+> > > 
+> > > Acked-by: Lee Jones <lee.jones@linaro.org>
+> > > Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
+> > I'm not sure this rename is a good idea (or the original wild
+> > card was for that matter).
+> > 
+> > For example, just a quick look at the xpowers website shows there is
+> > a AXP228 which just got swept up by the name change.
+> > 
+> > Best plan, in my view, is to always name a driver after an individual
+> > part it supports and rely on Kconfig description to say what else is
+> > supported. Bit late here, but perhaps best not to make things worse!
+> > > ---
+> OK. I agree with this plan to keep axp20x name and modify Kconfig
+> description.
+> 
+> Lee is that OK with you? please help to make a decision here.
 
+I have no strong opinion either way.
+
+> > >  drivers/mfd/Kconfig                      | 7 ++++---
+> > >  drivers/mfd/Makefile                     | 2 +-
+> > >  drivers/mfd/{axp20x.c => axp2xx.c}       | 6 +++---
+> > >  include/linux/mfd/{axp20x.h => axp2xx.h} | 6 +++---
+> > >  4 files changed, 11 insertions(+), 10 deletions(-)
+> > >  rename drivers/mfd/{axp20x.c => axp2xx.c} (97%)
+> > >  rename include/linux/mfd/{axp20x.h => axp2xx.h} (98%)
+> > > 
+> > > diff --git a/drivers/mfd/Kconfig b/drivers/mfd/Kconfig
+> > > index de5abf2..42a70a3 100644
+> > > --- a/drivers/mfd/Kconfig
+> > > +++ b/drivers/mfd/Kconfig
+> > > @@ -67,14 +67,15 @@ config MFD_BCM590XX
+> > >  	help
+> > >  	  Support for the BCM590xx PMUs from Broadcom
+> > >  
+> > > -config MFD_AXP20X
+> > > -	bool "X-Powers AXP20X"
+> > > +config MFD_AXP2XX
+> > > +	bool "X-Powers AXP2XX"
+> > >  	select MFD_CORE
+> > >  	select REGMAP_I2C
+> > >  	select REGMAP_IRQ
+> > >  	depends on I2C=y
+> > >  	help
+> > > -	  If you say Y here you get support for the X-Powers
+> > > AXP202 and AXP209.
+> > > +	  If you say Y here you get support for the X-Powers
+> > > AXP202, AXP209 and
+> > > +	  AXP288 power management IC (PMIC).
+> > >  	  This driver include only the core APIs. You have to
+> > > select individual components like regulators or the PEK (Power
+> > > Enable Key) under the corresponding menus.
+> > > diff --git a/drivers/mfd/Makefile b/drivers/mfd/Makefile
+> > > index 3fcfdfc..8d0beb2 100644
+> > > --- a/drivers/mfd/Makefile
+> > > +++ b/drivers/mfd/Makefile
+> > > @@ -103,7 +103,7 @@ obj-$(CONFIG_PMIC_DA9052)	+= da9052-irq.o
+> > >  obj-$(CONFIG_PMIC_DA9052)	+= da9052-core.o
+> > >  obj-$(CONFIG_MFD_DA9052_SPI)	+= da9052-spi.o
+> > >  obj-$(CONFIG_MFD_DA9052_I2C)	+= da9052-i2c.o
+> > > -obj-$(CONFIG_MFD_AXP20X)	+= axp20x.o
+> > > +obj-$(CONFIG_MFD_AXP2XX)	+= axp2xx.o
+> > >  
+> > >  obj-$(CONFIG_MFD_LP3943)	+= lp3943.o
+> > >  obj-$(CONFIG_MFD_LP8788)	+= lp8788.o lp8788-irq.o
+> > > diff --git a/drivers/mfd/axp20x.c b/drivers/mfd/axp2xx.c
+> > > similarity index 97%
+> > > rename from drivers/mfd/axp20x.c
+> > > rename to drivers/mfd/axp2xx.c
+> > > index dee6539..332a8a0 100644
+> > > --- a/drivers/mfd/axp20x.c
+> > > +++ b/drivers/mfd/axp2xx.c
+> > > @@ -1,7 +1,7 @@
+> > >  /*
+> > > - * axp20x.c - MFD core driver for the X-Powers AXP202 and AXP209
+> > > + * axp2xx.c - MFD core driver for the X-Powers AXP202 and AXP209
+> > >   *
+> > > - * AXP20x comprises an adaptive USB-Compatible PWM charger, 2 BUCK
+> > > DC-DC
+> > > + * AXP2xx comprises an adaptive USB-Compatible PWM charger, 2 BUCK
+> > > DC-DC
+> > >   * converters, 5 LDOs, multiple 12-bit ADCs of voltage, current
+> > > and temperature
+> > >   * as well as 4 configurable GPIOs.
+> > >   *
+> > > @@ -21,7 +21,7 @@
+> > >  #include <linux/regmap.h>
+> > >  #include <linux/slab.h>
+> > >  #include <linux/regulator/consumer.h>
+> > > -#include <linux/mfd/axp20x.h>
+> > > +#include <linux/mfd/axp2xx.h>
+> > >  #include <linux/mfd/core.h>
+> > >  #include <linux/of_device.h>
+> > >  #include <linux/of_irq.h>
+> > > diff --git a/include/linux/mfd/axp20x.h b/include/linux/mfd/axp2xx.h
+> > > similarity index 98%
+> > > rename from include/linux/mfd/axp20x.h
+> > > rename to include/linux/mfd/axp2xx.h
+> > > index d0e31a2..a36d91b 100644
+> > > --- a/include/linux/mfd/axp20x.h
+> > > +++ b/include/linux/mfd/axp2xx.h
+> > > @@ -8,8 +8,8 @@
+> > >   * published by the Free Software Foundation.
+> > >   */
+> > >  
+> > > -#ifndef __LINUX_MFD_AXP20X_H
+> > > -#define __LINUX_MFD_AXP20X_H
+> > > +#ifndef __LINUX_MFD_AXP2XX_H
+> > > +#define __LINUX_MFD_AXP2XX_H
+> > >  
+> > >  enum {
+> > >  	AXP202_ID = 0,
+> > > @@ -177,4 +177,4 @@ struct axp20x_dev {
+> > >  	long				variant;
+> > >  };
+> > >  
+> > > -#endif /* __LINUX_MFD_AXP20X_H */
+> > > +#endif /* __LINUX_MFD_AXP2XX_H */
+> > > 
+> 
+> [Jacob Pan]
+
+-- 
+Lee Jones
+Linaro STMicroelectronics Landing Team Lead
+Linaro.org │ Open source software for ARM SoCs
+Follow Linaro: Facebook | Twitter | Blog
