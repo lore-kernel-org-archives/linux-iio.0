@@ -1,49 +1,53 @@
-Return-Path: <dvhart@infradead.org>
-Date: Mon, 15 Sep 2014 14:13:58 -0700
-From: Darren Hart <dvhart@infradead.org>
-To: "H. Peter Anvin" <hpa@linux.intel.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Azael Avalos <coproscefalo@gmail.com>,
-	platform-driver-x86@vger.kernel.org, linux-kernel@vger.kernel.org,
-	"Rafael J. Wysocki" <rjw@rjwysocki.net>,
-	Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org
-Subject: Re: [PATCH v2 3/5] toshiba_acpi: Fix accelerometer direction
- reporting
-Message-ID: <20140915211358.GA64909@vmdeb7>
-References: <1410569437-3066-1-git-send-email-coproscefalo@gmail.com>
- <1410569437-3066-2-git-send-email-coproscefalo@gmail.com>
- <20140915192923.GA61529@vmdeb7>
- <20140915195617.GA3652@kroah.com>
- <541753A3.8010102@linux.intel.com>
+Return-Path: <svarbanov@mm-sol.com>
+Message-ID: <5416F4B1.2020509@mm-sol.com>
+Date: Mon, 15 Sep 2014 17:16:17 +0300
+From: Stanimir Varbanov <svarbanov@mm-sol.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <541753A3.8010102@linux.intel.com>
+To: Hartmut Knaack <knaack.h@gmx.de>
+CC: Ian Campbell <ijc+devicetree@hellion.org.uk>,
+ Pawel Moll <pawel.moll@arm.com>,
+ Rob Herring <robh+dt@kernel.org>, Kumar Gala <galak@codeaurora.org>,
+ Mark Rutland <mark.rutland@arm.com>,
+ Grant Likely <grant.likely@linaro.org>,
+ Jonathan Cameron <jic23@kernel.org>,
+ Arnd Bergmann <arnd@arndb.de>, linux-arm-msm@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
+ devicetree@vger.kernel.org,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Lars-Peter Clausen <lars@metafoo.de>,
+ Angelo Compagnucci <angelo.compagnucci@gmail.com>,
+ Doug Anderson <dianders@chromium.org>,
+ Fugang Duan <B38611@freescale.com>,
+ Johannes Thumshirn <johannes.thumshirn@men.de>,
+ Jean Delvare <jdelvare@suse.de>,
+ Philippe Reynes <tremyfr@yahoo.fr>, Lee Jones <lee.jones@linaro.org>,
+ Josh Cartwright <joshc@codeaurora.org>,
+ Stephen Boyd <sboyd@codeaurora.org>,
+ David Collins <collinsd@codeaurora.org>,
+ "Ivan T. Ivanov" <iivanov@mm-sol.com>
+Subject: Re: [PATCH v2 1/2] iio: vadc: Qualcomm SPMI PMIC voltage ADC driver
+References: <1410448403-19402-1-git-send-email-svarbanov@mm-sol.com> <1410448403-19402-2-git-send-email-svarbanov@mm-sol.com> <54138151.8010902@gmx.de>
+In-Reply-To: <54138151.8010902@gmx.de>
+Content-Type: text/plain; charset=ISO-8859-15
 List-ID: <linux-iio@vger.kernel.org>
 
-On Mon, Sep 15, 2014 at 02:01:23PM -0700, H. Peter Anvin wrote:
-> On 09/15/2014 12:56 PM, Greg Kroah-Hartman wrote:
-> > 
-> >> I have also suggested this device (2 actually) would be better supported as an
-> >> IIO accelerometer device, but even that would change the sysfs interface by
-> >> removing these altogether and using the IIO standardized path and accelerometer
-> >> interface.
-> > 
-> > That's a better goal overall, then the "odd" sysfs files are now gone,
-> > to be replaced with the standard interface which all tools should
-> > already be using.
-> > 
-> 
-> I would definitely agree with that, although I understood there were
-> technical concerns with that?
-> 
-> 	-hpa
+Thanks for the comments!
 
-Yes, the accelerometer is hidden behind two ACPI HIDs with a very limited polled
-position and acceleration threshold interface. I've asked the IIO maintainer if
-this would be feasible to use as an IIO device, but have not yet heard back.
+On 09/13/2014 02:27 AM, Hartmut Knaack wrote:
+> Stanimir Varbanov schrieb, Am 11.09.2014 17:13:
+>> The voltage ADC is peripheral of Qualcomm SPMI PMIC chips. It has
+>> 15bits resolution and register space inside PMIC accessible across
+>> SPMI bus.
+>>
+>> The vadc driver registers itself through IIO interface.
+>>
+> Looks already pretty good. Things you should consider in regard of common coding style are to use the variable name ret instead of rc, since it is used in almost all adc drivers and thus makes reviewing a bit easier. Besides that, you seem to use unsigned as well as unsigned int, so to be consistent, please stick to one of them. Other comments in line.
 
-Jonathan and linux-iio added to Cc.
+OK, I will take into account your comments.
+
+<snip>
+
 
 -- 
-Darren Hart
-Intel Open Source Technology Center
+regards,
+Stan
