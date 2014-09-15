@@ -1,650 +1,221 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:55651 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752732AbaINR0W (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 14 Sep 2014 13:26:22 -0400
-Message-ID: <5415CFBB.2000401@kernel.org>
-Date: Sun, 14 Sep 2014 18:26:19 +0100
-From: Jonathan Cameron <jic23@kernel.org>
+Received: from bear.ext.ti.com ([192.94.94.41]:46660 "EHLO bear.ext.ti.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751561AbaIOFWH (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Mon, 15 Sep 2014 01:22:07 -0400
+Date: Mon, 15 Sep 2014 00:21:37 -0500
+From: Felipe Balbi <balbi@ti.com>
+To: Jonathan Cameron <jic23@kernel.org>
+CC: Felipe Balbi <balbi@ti.com>, <linux-iio@vger.kernel.org>,
+	<pmeerw@pmeerw.net>
+Subject: Re: [RESEND PATCH] iio: light: add support for TI's opt3001 light
+ sensor
+Message-ID: <20140915052137.GA11866@saruman.home>
+Reply-To: <balbi@ti.com>
+References: <1409671066-25747-1-git-send-email-balbi@ti.com>
+ <54147632.9090204@kernel.org>
 MIME-Version: 1.0
-To: "Opensource [Adam Thomson]" <Adam.Thomson.Opensource@diasemi.com>,
-	Peter Meerwald <pmeerw@pmeerw.net>
-CC: Lee Jones <lee.jones@linaro.org>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	Support Opensource <Support.Opensource@diasemi.com>
-Subject: Re: [PATCH v2 3/7] iio: Add support for DA9150 GPADC
-References: <cover.1409145187.git.Adam.Thomson.Opensource@diasemi.com> <619abd3b3123933487b3e8e9cdc7cdca70bbfd98.1409145187.git.Adam.Thomson.Opensource@diasemi.com> <alpine.DEB.2.01.1408281314570.5194@pmeerw.net> <54022D8E.8040903@kernel.org> <2E89032DDAA8B9408CB92943514A0337AB5144FC@SW-EX-MBX01.diasemi.com>
-In-Reply-To: <2E89032DDAA8B9408CB92943514A0337AB5144FC@SW-EX-MBX01.diasemi.com>
-Content-Type: text/plain; charset=utf-8
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="cWoXeonUoKmBZSoM"
+In-Reply-To: <54147632.9090204@kernel.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 09/09/14 11:53, Opensource [Adam Thomson] wrote:
-> On August 30, 2014 21:01, Jonathan Cameron wrote:
-> 
->> On 28/08/14 12:28, Peter Meerwald wrote:
->>>
->>> some minor comments inline
->> A few more from me + make sure all your units match the ABI and in
->> particular that everything you use is documented in
->> Documentation/ABI/testing/syfs-bus-iio.  Some stuff that only
->> exists in staging drivers isn't documented in there as yet
->> (current measurements for example) so the docs will need additions
->> alongside this driver.
->>
->> Thanks,
->>
->> Jonathan
->>>
->>>> This patch adds support for DA9150 Charger & Fuel-Gauge IC GPADC.
->>>>
->>>> Signed-off-by: Adam Thomson <Adam.Thomson.Opensource@diasemi.com>
->>>> ---
->>>>  drivers/iio/adc/Kconfig        |   9 +
->>>>  drivers/iio/adc/Makefile       |   1 +
->>>>  drivers/iio/adc/da9150-gpadc.c | 430
->> +++++++++++++++++++++++++++++++++++++++++
->>>>  3 files changed, 440 insertions(+)
->>>>  create mode 100644 drivers/iio/adc/da9150-gpadc.c
->>>>
->>>> diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
->>>> index 11b048a..8041347 100644
->>>> --- a/drivers/iio/adc/Kconfig
->>>> +++ b/drivers/iio/adc/Kconfig
->>>> @@ -127,6 +127,15 @@ config AT91_ADC
->>>>  	help
->>>>  	  Say yes here to build support for Atmel AT91 ADC.
->>>>
->>>> +config DA9150_GPADC
->>>> +	tristate "Dialog DA9150 GPADC driver support"
->>>> +	depends on MFD_DA9150
->>>> +	help
->>>> +	  Say yes here to build support for Dialog DA9150 GPADC.
->>>> +
->>>> +	  This driver can also be built as a module. If chosen, the module name
->>>> +	  will be da9150-gpadc.
->>>> +
->>>>  config EXYNOS_ADC
->>>>  	tristate "Exynos ADC driver support"
->>>>  	depends on ARCH_EXYNOS || (OF && COMPILE_TEST)
->>>> diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
->>>> index ad81b51..48413d2 100644
->>>> --- a/drivers/iio/adc/Makefile
->>>> +++ b/drivers/iio/adc/Makefile
->>>> @@ -14,6 +14,7 @@ obj-$(CONFIG_AD7793) += ad7793.o
->>>>  obj-$(CONFIG_AD7887) += ad7887.o
->>>>  obj-$(CONFIG_AD799X) += ad799x.o
->>>>  obj-$(CONFIG_AT91_ADC) += at91_adc.o
->>>> +obj-$(CONFIG_DA9150_GPADC) += da9150-gpadc.o
->>>>  obj-$(CONFIG_EXYNOS_ADC) += exynos_adc.o
->>>>  obj-$(CONFIG_LP8788_ADC) += lp8788_adc.o
->>>>  obj-$(CONFIG_MAX1027) += max1027.o
->>>> diff --git a/drivers/iio/adc/da9150-gpadc.c b/drivers/iio/adc/da9150-gpadc.c
->>>> new file mode 100644
->>>> index 0000000..21a21a9
->>>> --- /dev/null
->>>> +++ b/drivers/iio/adc/da9150-gpadc.c
->>>> @@ -0,0 +1,430 @@
->>>> +/*
->>>> + * DA9150 GPADC Driver
->>>> + *
->>>> + * Copyright (c) 2014 Dialog Semiconductor
->>>> + *
->>>> + * Author: Adam Thomson <Adam.Thomson.Opensource@diasemi.com>
->>>> + *
->>>> + * This program is free software; you can redistribute  it and/or modify it
->>>> + * under  the terms of  the GNU General  Public License as published by the
->>>> + * Free Software Foundation;  either version 2 of the  License, or (at your
->>>> + * option) any later version.
->>>> + */
->>>> +
->>>> +#include <linux/kernel.h>
->>>> +#include <linux/slab.h>
->>>> +#include <linux/module.h>
->>>> +#include <linux/platform_device.h>
->>>> +#include <linux/interrupt.h>
->>>> +
->>>> +#include <linux/mfd/da9150/core.h>
->>>> +#include <linux/mfd/da9150/pdata.h>
->>>> +#include <linux/mfd/da9150/registers.h>
->>>> +
->>>> +#include <linux/iio/iio.h>
->>>> +#include <linux/iio/machine.h>
->>>> +#include <linux/iio/driver.h>
->>>> +
->>>> +
->>>> +/* Channels */
->>>> +enum da9150_gpadc_hw_channel {
->>>> +	DA9150_GPADC_HW_CHAN_GPIOA_2V = 0,
->>>> +	DA9150_GPADC_HW_CHAN_GPIOA_2V_,
->>>
->>> why the underscore_ notation?
->>> couldn't you use e.g. DA9150_GPADC_HW_CHAN_GPIOB_2V = 2?
->>>
->>>> +	DA9150_GPADC_HW_CHAN_GPIOB_2V,
->>>> +	DA9150_GPADC_HW_CHAN_GPIOB_2V_,
->>>> +	DA9150_GPADC_HW_CHAN_GPIOC_2V,
->>>> +	DA9150_GPADC_HW_CHAN_GPIOC_2V_,
->>>> +	DA9150_GPADC_HW_CHAN_GPIOD_2V,
->>>> +	DA9150_GPADC_HW_CHAN_GPIOD_2V_,
->>>> +	DA9150_GPADC_HW_CHAN_IBUS_SENSE,
->>>> +	DA9150_GPADC_HW_CHAN_IBUS_SENSE_,
->>>> +	DA9150_GPADC_HW_CHAN_VBUS_DIV,
->>>> +	DA9150_GPADC_HW_CHAN_VBUS_DIV_,
->>>> +	DA9150_GPADC_HW_CHAN_ID,
->>>> +	DA9150_GPADC_HW_CHAN_ID_,
->>>> +	DA9150_GPADC_HW_CHAN_VSYS,
->>>> +	DA9150_GPADC_HW_CHAN_VSYS_,
->>>> +	DA9150_GPADC_HW_CHAN_GPIOA_5V,
->>>> +	DA9150_GPADC_HW_CHAN_GPIOA_5V_,
->>>> +	DA9150_GPADC_HW_CHAN_GPIOB_5V,
->>>> +	DA9150_GPADC_HW_CHAN_GPIOB_5V_,
->>>> +	DA9150_GPADC_HW_CHAN_GPIOC_5V,
->>>> +	DA9150_GPADC_HW_CHAN_GPIOC_5V_,
->>>> +	DA9150_GPADC_HW_CHAN_GPIOD_5V,
->>>> +	DA9150_GPADC_HW_CHAN_GPIOD_5V_,
->>>> +	DA9150_GPADC_HW_CHAN_VBAT,
->>>> +	DA9150_GPADC_HW_CHAN_VBAT_,
->>>> +	DA9150_GPADC_HW_CHAN_TBAT,
->>>> +	DA9150_GPADC_HW_CHAN_TBAT_,
->>>> +	DA9150_GPADC_HW_CHAN_TJUNC_CORE,
->>>> +	DA9150_GPADC_HW_CHAN_TJUNC_CORE_,
->>>> +	DA9150_GPADC_HW_CHAN_TJUNC_OVP,
->>>> +	DA9150_GPADC_HW_CHAN_TJUNC_OVP_,
->>>> +};
->>>> +
->>>> +enum da9150_gpadc_channel {
->>>> +	DA9150_GPADC_CHAN_GPIOA = 0,
->>>> +	DA9150_GPADC_CHAN_GPIOB,
->>>> +	DA9150_GPADC_CHAN_GPIOC,
->>>> +	DA9150_GPADC_CHAN_GPIOD,
->>>> +	DA9150_GPADC_CHAN_IBUS,
->>>> +	DA9150_GPADC_CHAN_VBUS,
->>>> +	DA9150_GPADC_CHAN_ID,
->>>> +	DA9150_GPADC_CHAN_VSYS,
->>>> +	DA9150_GPADC_CHAN_VBAT,
->>>> +	DA9150_GPADC_CHAN_TBAT,
->>>> +	DA9150_GPADC_CHAN_TJUNC_CORE,
->>>> +	DA9150_GPADC_CHAN_TJUNC_OVP,
->>>> +};
->>>> +
->>>> +/* Private data */
->>>> +struct da9150_gpadc {
->>>> +	struct da9150 *da9150;
->>>> +	struct device *dev;
->>>> +
->>>> +	struct mutex lock;
->>>> +	struct completion complete;
->>>> +};
->>>> +
->>>> +
->>>> +static irqreturn_t da9150_gpadc_irq(int irq, void *data)
->>>> +{
->>>> +
->>>> +	struct da9150_gpadc *gpadc = data;
->>>> +
->>>> +	complete(&gpadc->complete);
->>>> +
->>>> +	return IRQ_HANDLED;
->>>> +}
->>>> +
->>>> +int da9150_gpadc_read_adc(struct da9150_gpadc *gpadc, int hw_chan)
->>>
->>> static?
->>>
->>>> +{
->>>> +	u8 result_regs[2];
->>>> +	int result;
->>>> +
->>>> +	mutex_lock(&gpadc->lock);
->>>> +
->>>> +	/* Set channel & enable measurement */
->>>> +	da9150_reg_write(gpadc->da9150, DA9150_GPADC_MAN,
->>>> +			 (DA9150_GPADC_EN_MASK |
->>>> +			  hw_chan << DA9150_GPADC_MUX_SHIFT));
->>>> +
->>>> +	/* Consume left-over completion from a previous timeout */
->>>> +	try_wait_for_completion(&gpadc->complete);
->>>> +
->>>> +	/* Check for actual completion */
->>>> +	wait_for_completion_timeout(&gpadc->complete, msecs_to_jiffies(5));
->>>> +
->>>> +	/* Read result and status from device */
->>>> +	da9150_bulk_read(gpadc->da9150, DA9150_GPADC_RES_A, 2, result_regs);
->>>> +
->>>> +	mutex_unlock(&gpadc->lock);
->>>> +
->>>> +	/* Check to make sure device really has completed reading */
->>>> +	if (result_regs[1] & DA9150_GPADC_RUN_MASK) {
->>>> +		dev_err(gpadc->dev, "Timeout on channel %d of GP-ADC\n",
->>>
->>> GPADC everywhere else
->>>
->>>> +			hw_chan);
->>>> +		return -ETIMEDOUT;
->>>> +	}
->>>> +
->>>> +	/* LSBs - 2 bits */
->>>> +	result = (result_regs[1] & DA9150_GPADC_RES_L_MASK) >>
->>>> +		 DA9150_GPADC_RES_L_SHIFT;
->>>> +	/* MSBs - 8 bits */
->>>> +	result |= result_regs[0] << DA9150_GPADC_RES_L_BITS;
->>>
->>> can't the read be done with a 16bit read?
->>>
->>>> +
->>>> +	return result;
->>>> +}
->>>> +
->>>> +static inline int da9150_gpadc_gpio_5v_voltage_now(int raw_val)
->>>> +{
->>>> +	/* Convert to uV */
->>>> +	return (((6 * ((raw_val * 1000) + 500)) / 1024) * 1000);
->> Base units of voltage are millivolts.  See Documentation/ABI/testing/sysfs-bus-iio.
-> 
-> Right. Ok.
-> 
->>>
->>> outer parenthesis not needed, here and below
->>>
->>>> +}
->>>> +
->>>> +static inline int da9150_gpadc_ibus_current_avg(int raw_val)
->>>> +{
->>>> +	/* Convert to uA */
->>>> +	return (((4 * ((raw_val * 1000) + 500)) / 2048) * 1000);
->> interestingly this is actually our first current channel outside staging.
->> As such the docs don't cover it.  Please add, keeping inline with the
->> units used in hwmon. mA, IIRC
-> 
-> Right, ok.
-> 
->>>> +}
->>>> +
->>>> +static inline int da9150_gpadc_vbus_21v_voltage_now(int raw_val)
->>>> +{
->>>> +	/* Convert to uV */
->>>> +	return (((21 * ((raw_val * 1000) + 500)) / 1024) * 1000);
->>>> +}
->>>> +
->>>> +static inline int da9150_gpadc_vsys_6v_voltage_now(int raw_val)
->>>> +{
->>>> +	/* Convert to uV */
->>>> +	return (((3 * ((raw_val * 1000) + 500)) / 512) * 1000);
->>>> +}
->>>> +
->>>> +static inline int da9150_gpadc_tjunc_temp(int raw_val)
->>>> +{
->>>> +	/* Convert to 0.1 degrees C */
->>>
->>> IIO wants mille degrees C
->> Exactly.  Please check all of these correspond to the base units required
->> by the documentation.  Most of these might be better handled as raw
->> with scale and offset provided, letting the maths be doing in userspace using
->> floating point.
-> 
-> Some are needed by the charger driver. The intention of adding the conversions
-> here was so this knowledge was not needed in the charger driver. Seems wrong to
-> move the calculations out of the IIO driver. Most of these are not simple linear
-> so scale and offset will not work, unless I'm missing something.
-Umm. They all appear to be simple linear conversions to me - be it written a form
-that slightly obscures that fact. But I'm not that fussed if you really want to
-do them in kernel.
-> 
->>>
->>>> +	return (((879 - (1023 - raw_val)) * 10000) / 4420);
->>>> +}
->>>> +
->>>> +static inline int da9150_gpadc_vbat_voltage_now(int raw_val)
->>>> +{
->>>> +	/* Convert to uV */
->>>> +	return ((2932 * raw_val) + 1500000);
->>>> +}
->>>> +
->>>> +int da9150_gpadc_read_processed(struct da9150_gpadc *gpadc, int channel,
->>>> +				int hw_chan)
->>>
->>> static?
->>>
->>>> +{
->>>> +	int raw_val, ret;
->>>> +
->>>> +	raw_val = da9150_gpadc_read_adc(gpadc, hw_chan);
->>>> +	if (raw_val < 0)
->>>> +		return raw_val;
->>>> +
->>>> +	switch (channel) {
->>>> +	case DA9150_GPADC_CHAN_GPIOA:
->>>> +	case DA9150_GPADC_CHAN_GPIOB:
->>>> +	case DA9150_GPADC_CHAN_GPIOC:
->>>> +	case DA9150_GPADC_CHAN_GPIOD:
->>>> +		ret = da9150_gpadc_gpio_5v_voltage_now(raw_val);
->>>
->>> could return directly ...
->>>
->>>> +		break;
->>>> +	case DA9150_GPADC_CHAN_IBUS:
->>>> +		ret = da9150_gpadc_ibus_current_avg(raw_val);
->>>> +		break;
->>>> +	case DA9150_GPADC_CHAN_VBUS:
->>>> +		ret = da9150_gpadc_vbus_21v_voltage_now(raw_val);
->>>> +		break;
->>>> +	case DA9150_GPADC_CHAN_VSYS:
->>>> +		ret = da9150_gpadc_vsys_6v_voltage_now(raw_val);
->>>> +		break;
->>>> +	case DA9150_GPADC_CHAN_TJUNC_CORE:
->>>> +	case DA9150_GPADC_CHAN_TJUNC_OVP:
->>>> +		ret = da9150_gpadc_tjunc_temp(raw_val);
->>>> +		break;
->>>> +	default:
->>>> +		/* No processing for other channels so return raw value */
->>>> +		ret = raw_val;
->>>> +		break;
->>>> +	}
->>>
->>> and save the final return
->>>> +
->>>> +	return ret;
->>>> +}
->>>> +
->>>> +int da9150_gpadc_read_scale(int channel)
->>>
->>> static?
->>>
->>>> +{
->>>> +	int ret;
->>>> +
->>>> +	switch (channel) {
->>>> +	case DA9150_GPADC_CHAN_VBAT:
->>>> +		ret = 2932;
->>>
->>> return directly?
->>>
->>>> +		break;
->>>> +	default:
->>>> +		ret = -EINVAL;
->>>> +	}
->>>> +
->>>> +	return ret;
->>>> +}
->>>> +
->>>> +int da9150_gpadc_read_offset(int channel)
->>>> +{
->>>> +	int ret;
->>>> +
->>>> +	switch (channel) {
->>>> +	case DA9150_GPADC_CHAN_VBAT:
->>>> +		ret = 1500000 / 2932;
->>>
->>> return directly?
->>>
->>>> +		break;
->>>> +	default:
->>>> +		ret = -EINVAL;
->>>> +	}
->>>> +
->>>> +	return ret;
->>>> +}
->>>> +
->>>> +int da9150_gpadc_read_raw(struct iio_dev *indio_dev,
->>>> +			  struct iio_chan_spec const *chan,
->>>> +			  int *val, int *val2, long mask)
->>>
->>> static?
->>>
->>>> +{
->>>> +	struct da9150_gpadc *gpadc = iio_priv(indio_dev);
->>>> +	int ret;
->>>> +
->>>> +	if ((chan->channel < DA9150_GPADC_CHAN_GPIOA) ||
->>>> +	    (chan->channel > DA9150_GPADC_CHAN_TJUNC_OVP))
->>>> +		return -EINVAL;
->>>> +
->>>> +	switch (mask) {
->>>> +	case IIO_CHAN_INFO_RAW:
->>>> +	case IIO_CHAN_INFO_PROCESSED:
->> Would be cleaner to have each of these functions use ret for return code
->> including IIO_VAL_INT and pass val as an arguement.  Would get rid
->> of the fiddly handling at the end of this function and allow direct
->> returns from each of the case statements.
->>
->> Also, are the base units of all of these channels really giving us
->> an integer result?  E.g. mV, mA etc? Not impossible, but seems unlikely!
-> 
-> Ok, I can make that change. Wouldn't say what was there now is fiddly, but am
-> happy to update.
-> 
-> In terms of base units, they are actually in V or A, rather than say mV or mA,
-> according to the datasheet, but as there's no floating point support in the
-> kernel the sensible option was to provide them in smaller units and provide
-> greater accuracy.
-No it really isn't. There is no floating point in kernel, so we simulate the
-effect using the IIO_VAL types and a pair of 32bit integers.  It's not ideal
-but it does allow us to cover any plausible range.  The reason other drivers need to
-match it is that we need a clean ABI to userspace.  Hence they must all be the same.
-This is why we try to move the conversions into userspace where possible.  It can
-be done in kernel but is admittedly rather fiddly!
-> 
->>
->>>> +		ret = da9150_gpadc_read_processed(gpadc, chan->channel,
->>>> +						  chan->address);
->>>> +		break;
->>>> +	case IIO_CHAN_INFO_SCALE:
->>>> +		ret = da9150_gpadc_read_scale(chan->channel);
->>>> +		break;
->>>> +	case IIO_CHAN_INFO_OFFSET:
->>>> +		ret = da9150_gpadc_read_offset(chan->channel);
->>>> +		break;
->>>> +	default:
->>>> +		ret = -EINVAL;
->>>> +		break;
->>>> +	}
->>>> +
->>>> +	if (ret < 0)
->>>> +		return ret;
->>>> +
->>>> +	*val = ret;
->>>> +
->>>> +	return IIO_VAL_INT;
->>>> +}
->>>> +
->>>> +static const struct iio_info da9150_gpadc_info = {
->>>> +	.read_raw = &da9150_gpadc_read_raw,
->>>> +	.driver_module = THIS_MODULE,
->>>> +};
->>>> +
->>>> +#define GPADC_CHANNEL(_id, _hw_id, _type, chan_info, _ext_name) {	\
->>>> +	.type = _type,							\
->>>> +	.indexed = 1,							\
->>>
->>> there is only one current channel, it should not be indexed
->> Optional. Either way userspace should cope fine. At one point I thought
->> about insisting everything was indexed, to reduce userspace complexity
->> (ever so slightly) but was a bit late by the time I thought of it ;)
-> 
-> If it's ok, I will leave as is as to keep this macro common.
-> 
->>>
->>>> +	.channel = DA9150_GPADC_CHAN_##_id,				\
->>>> +	.address = DA9150_GPADC_HW_CHAN_##_hw_id,			\
->>>> +	.info_mask_separate = chan_info,				\
->>>> +	.extend_name = _ext_name,					\
->>>> +	.datasheet_name = #_id,						\
->>>> +}
->>>> +
->>>> +#define GPADC_CHANNEL_RAW(_id, _hw_id, _type, _ext_name)	\
->>>> +	GPADC_CHANNEL(_id, _hw_id, _type, BIT(IIO_CHAN_INFO_RAW),
->> _ext_name)
->>>> +
->>>> +#define GPADC_CHANNEL_SCALED(_id, _hw_id, _type, _ext_name)	\
->>>> +	GPADC_CHANNEL(_id, _hw_id, _type,			\
->>>> +		      BIT(IIO_CHAN_INFO_RAW) |			\
->>>> +		      BIT(IIO_CHAN_INFO_SCALE) |		\
->>>> +		      BIT(IIO_CHAN_INFO_OFFSET),		\
->>>> +		      _ext_name)
->>>> +
->>>> +#define GPADC_CHANNEL_PROCESSED(_id, _hw_id, _type, _ext_name)
->> 	\
->>>> +	GPADC_CHANNEL(_id, _hw_id, _type, BIT(IIO_CHAN_INFO_PROCESSED),	\
->>>> +		      _ext_name)
->> This macro and similar need a DA9150 prefix to avoid likely name clashes in
->> future.
-> 
-> Fair point. Will update.
-> 
->>>> +
->>>> +/* Supported channels */
->>>> +static const struct iio_chan_spec da9150_gpadc_channels[] = {
->>>> +	GPADC_CHANNEL_PROCESSED(GPIOA, GPIOA_5V, IIO_VOLTAGE, "GPIOA"),
->>>> +	GPADC_CHANNEL_PROCESSED(GPIOB, GPIOB_5V, IIO_VOLTAGE, "GPIOB"),
->>>> +	GPADC_CHANNEL_PROCESSED(GPIOC, GPIOC_5V, IIO_VOLTAGE, "GPIOC"),
->>>> +	GPADC_CHANNEL_PROCESSED(GPIOD, GPIOD_5V, IIO_VOLTAGE, "GPIOD"),
->>>> +	GPADC_CHANNEL_PROCESSED(IBUS, IBUS_SENSE, IIO_CURRENT, "IBUS"),
->>>> +	GPADC_CHANNEL_PROCESSED(VBUS, VBUS_DIV_, IIO_VOLTAGE, "VBUS"),
->>>> +	GPADC_CHANNEL_RAW(ID, ID, IIO_VOLTAGE, "ID"),
->>>> +	GPADC_CHANNEL_PROCESSED(VSYS, VSYS, IIO_VOLTAGE, "VSYS"),
->>>> +	GPADC_CHANNEL_SCALED(VBAT, VBAT, IIO_VOLTAGE, "VBAT"),
->>>> +	GPADC_CHANNEL_RAW(TBAT, TBAT, IIO_VOLTAGE, "TBAT"),
->>>> +	GPADC_CHANNEL_PROCESSED(TJUNC_CORE, TJUNC_CORE, IIO_TEMP,
->> "TJUNC_CORE"),
->>>> +	GPADC_CHANNEL_PROCESSED(TJUNC_OVP, TJUNC_OVP, IIO_TEMP,
->> "TJUNC_OVP"),
->>>> +};
->>>> +
->>>> +/* Default maps used by da9150-charger */
->>>> +static struct iio_map da9150_gpadc_default_maps[] = {
->>>> +	{
->>>> +		.consumer_dev_name = "da9150-charger",
->>>> +		.consumer_channel = "CHAN_IBUS",
->>>> +		.adc_channel_label = "IBUS",
->>>> +	},
->>>> +	{
->>>> +		.consumer_dev_name = "da9150-charger",
->>>> +		.consumer_channel = "CHAN_VBUS",
->>>> +		.adc_channel_label = "VBUS",
->>>> +	},
->>>> +	{
->>>> +		.consumer_dev_name = "da9150-charger",
->>>> +		.consumer_channel = "CHAN_TJUNC",
->>>> +		.adc_channel_label = "TJUNC_CORE",
->>>> +	},
->>>> +	{
->>>> +		.consumer_dev_name = "da9150-charger",
->>>> +		.consumer_channel = "CHAN_VBAT",
->>>> +		.adc_channel_label = "VBAT",
->>>> +	},
->>>> +	{},
->>>> +};
->>>> +
->>>> +static int da9150_gpadc_probe(struct platform_device *pdev)
->>>> +{
->>>> +	struct device *dev = &pdev->dev;
->>>> +	struct da9150 *da9150 = dev_get_drvdata(dev->parent);
->>>> +	struct da9150_gpadc *gpadc;
->>>> +	struct iio_dev *indio_dev;
->>>> +	int ret;
->>>> +
->>>> +	indio_dev = devm_iio_device_alloc(&pdev->dev,
->>>> +					  sizeof(struct da9150_gpadc));
->>>> +	if (!indio_dev) {
->>>> +		dev_err(&pdev->dev, "Failed to allocate IIO device\n");
->>>> +		return -ENOMEM;
->>>> +	}
->>>> +	gpadc = iio_priv(indio_dev);
->>>> +
->>>> +	platform_set_drvdata(pdev, indio_dev);
->>>> +	gpadc->da9150 = da9150;
->>>> +	gpadc->dev = dev;
->>>> +
->>>> +	ret = iio_map_array_register(indio_dev, da9150_gpadc_default_maps);
->>>> +	if (ret) {
->>>> +		dev_err(dev, "Failed to register IIO maps: %d\n", ret);
->>>> +		goto iio_map_fail;
->>>
->>> just return here?
->>>
->>>> +	}
->>>> +
->>>> +	mutex_init(&gpadc->lock);
->>>> +	init_completion(&gpadc->complete);
->>>> +
->>>> +	/* Register IRQ */
->>>> +	ret = da9150_register_irq(pdev, gpadc, da9150_gpadc_irq, "GPADC");
->> This function wants renaming to indicate that it is doing a managed
->> irq request... devm_da9150 etc would be conventional ;)
-> 
-> Yep, it's a good point. Will update.
-> 
->>>> +	if (ret < 0)
->>>> +		goto irq_fail;
->>>> +
->>>> +	indio_dev->name = dev_name(dev);
->>>> +	indio_dev->dev.parent = dev;
->>>> +	indio_dev->dev.of_node = pdev->dev.of_node;
->>>> +	indio_dev->info = &da9150_gpadc_info;
->>>> +	indio_dev->modes = INDIO_DIRECT_MODE;
->>>> +	indio_dev->channels = da9150_gpadc_channels;
->>>> +	indio_dev->num_channels = ARRAY_SIZE(da9150_gpadc_channels);
->>>> +
->>>> +	ret = iio_device_register(indio_dev);
->>>> +	if (ret) {
->>>> +		dev_err(dev, "Failed to register IIO device: %d\n", ret);
->>>> +		goto iio_dev_fail;
->>>> +	}
->>>> +
->>>> +	return ret;
->>>> +
->>>> +iio_dev_fail:
->>>> +irq_fail:
->>>
->>> why two labels?
->>>
->>>> +	iio_map_array_unregister(indio_dev);
->>>> +
->>>> +iio_map_fail:
->>>> +	return ret;
->>>> +}
->>>> +
->>>> +static int da9150_gpadc_remove(struct platform_device *pdev)
->>>> +{
->>>> +	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
->>>> +
->>>> +	iio_map_array_unregister(indio_dev);
->>>
->>> unregister irq?
->> Not actually needed as it was a devm register - having said that
->> the function should indicate that it's naming.
-> 
-> Agreed.
-> 
->>>
->>>> +	iio_device_unregister(indio_dev);
->>>> +
->>>> +	return 0;
->>>> +}
->>>> +
->>>> +static struct platform_driver da9150_gpadc_driver = {
->>>> +	.driver = {
->>>> +		.name = "da9150-gpadc",
->>>> +		.owner = THIS_MODULE,
->>>> +	},
->>>> +	.probe = da9150_gpadc_probe,
->>>> +	.remove = da9150_gpadc_remove,
->>>> +};
->>>> +
->>>> +module_platform_driver(da9150_gpadc_driver);
->>>> +
->>>> +MODULE_DESCRIPTION("GPADC Driver for DA9150");
->>>> +MODULE_AUTHOR("Adam Thomson
->> <Adam.Thomson.Opensource@diasemi.com");
->>>> +MODULE_LICENSE("GPL");
->>>> --
->>>> 1.9.3
->>>>
->>>> --
->>>> To unsubscribe from this list: send the line "unsubscribe linux-kernel" in
->>>> the body of a message to majordomo@vger.kernel.org
->>>> More majordomo info at  http://vger.kernel.org/majordomo-info.html
->>>> Please read the FAQ at  http://www.tux.org/lkml/
->>>>
->>>
+--cWoXeonUoKmBZSoM
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+Hi,
+
+On Sat, Sep 13, 2014 at 05:52:02PM +0100, Jonathan Cameron wrote:
+> On 02/09/14 16:17, Felipe Balbi wrote:
+> > TI's opt3001 light sensor is a simple and yet powerful
+> > little device. The device provides 99% IR rejection,
+> > Automatic full-scale, very low power consumption and
+> > measurements from 0.01 to 83k lux.
+> >=20
+> > This patch adds support for that device using the IIO
+> > framework.
+> >=20
+> > Signed-off-by: Felipe Balbi <balbi@ti.com>
+> > ---
+> >=20
+> > Resending as I saw no changes on the thread.
+> Hi Felipe,
+>=20
+> Sorry for the delay on this, entirely my fault - been busy and forgot
+> I still had questions about what was going on in here (yup its the
+> hysteresis bit again!)
+
+right, this is starting to become way too much headache for such a
+simple device. Sorry will not help me getting this driver upstream. When
+I first sent this (August 6), we didn't even have v3.17-rc1, now we're
+about to tag -rc5 and I'm worried this driver will not hit v3.18 merge
+window.
+
+> Anyhow, I'm afraid I am still a little confused about the meaning you
+> have assigned to Hysteresis in this driver.
+>=20
+> Let me conjecture on what might be going on here (I may be entirely
+> wrong).
+>=20
+> Normally a hysteresis value in IIO is defined as the 'distance' back
+> from a threshold that a signal must go before it may retrip the
+> threshold.
+> This threshold value is separately controlled. Thus if we have a
+> rising threshold of 10 and an hysteresis of 2 - to get two events the
+> signal must first rise past 10, then drop back below 8 and rise again
+> past 10.
+> If it drops below 10 but not 8 and rises again past 10 then we will
+> not get an event.
+>=20
+> So having the same register for both the hysteresis and the threshold
+> doesn't with this description make much sense.  It would mean that you
+> could only have a threshold of say 10 and a hysteresis of 10, thus in
+> effect meaning the signal would always have to cross 0 before the next
+> event whatever the combined threshold / hysteresis value?
+>=20
+> Perhaps instead the device is automatically adjusting the threshold
+> when we cross it and the 'hysteresis' here is with respect to a the
+> previous threshold?
+>=20
+> Thus if we start with a value of 0 and hysteresis is set to 2 it will
+> trigger an event at:
+>=20
+> 2, 4, 6, 8, 10 as we rise?
+>=20
+> This sort of auto adjustment of levels isn't uncommon in light sensors
+> (where the point of the interrupt is to notify the operating system
+> that a 'significant' change has occurred and things like screen
+> brightness may need adjusting.
+>=20
+> If so then the current hysteresis interface does not apply, nor does
+> the Rate of Change (ROC) interface as this is dependent on amount of
+> change, not how fast it changed.  Hence we needs something new to
+> handle this cleanly. I would suggest a new event type.  Perhaps
+> something with sysfs attr naming along the lines of
+> What:		/sys/.../iio:deviceX/events/in_light_change_rising_en
+> What:           /sys/.../iio:deviceX/events/in_light_change_rising_value
+>=20
+> etc?
+
+will you just tell me what you want ? I really cannot give a crap
+anymore. This has already taken me over a month of my time for such a
+simple little device, not to mention your confusing and contradicting
+change requests.
+
+(could you also trim your responses ? it's very annoying to scroll so
+much)
+
+> > +#define OPT3001_RESULT		0x00
+> > +#define OPT3001_CONFIGURATION	0x01
+> > +#define OPT3001_LOW_LIMIT	0x02
+> > +#define OPT3001_HIGH_LIMIT	0x03
+> > +#define OPT3001_MANUFACTURER_ID	0x7e
+> > +#define OPT3001_DEVICE_ID	0x7f
+> > +
+> > +#define OPT3001_CONFIGURATION_RN_MASK (0xf << 12)
+> > +#define OPT3001_CONFIGURATION_RN_AUTO (0xc << 12)
+> > +
+> > +#define OPT3001_CONFIGURATION_CT	BIT(11)
+> > +
+> > +#define OPT3001_CONFIGURATION_M_MASK	(3 << 9)
+> > +#define OPT3001_CONFIGURATION_M_SHUTDOWN (0 << 9)
+> > +#define OPT3001_CONFIGURATION_M_SINGLE (1 << 9)
+> > +#define OPT3001_CONFIGURATION_M_CONTINUOUS (2 << 9) /* also 3 << 9 */
+> > +
+>=20
+> I guess this naming is straight off the datasheet, but it is rather
+> more cryptic than perhaps it needs to be!  That's kind of an issue
+> with the datasheet choices rather than what you have here however!
+
+man, are you nit-picky!! These are named as such to make grepping on
+documentation easier. It's better to have something that matches
+documentation, don't you think ? otherwise, future users/developers of
+these driver will need either a shit ton of comments explaining that A
+maps to B in docs, or will need a fscking crystal ball to read my mind.
+Assuming I'll still remember what I meant.
+
+> > +static int opt3001_remove(struct i2c_client *client)
+> > +{
+> > +	struct iio_dev *iio =3D i2c_get_clientdata(client);
+> > +	struct opt3001 *opt =3D iio_priv(iio);
+> > +	int ret;
+> > +	u16 reg;
+> > +
+> > +	free_irq(client->irq, iio);
+> > +	iio_device_unregister(iio);
+> > +
+> > +	ret =3D i2c_smbus_read_word_swapped(opt->client, OPT3001_CONFIGURATIO=
+N);
+> > +	if (ret < 0) {
+> > +		dev_err(opt->dev, "failed to read register %02x\n",
+> > +				OPT3001_CONFIGURATION);
+> > +		return ret;
+> > +	}
+> > +
+> > +	reg =3D ret;
+> > +	opt3001_set_mode(opt, &reg, OPT3001_CONFIGURATION_M_SHUTDOWN);
+> > +
+> > +	ret =3D i2c_smbus_write_word_swapped(opt->client, OPT3001_CONFIGURATI=
+ON,
+> > +			reg);
+> > +	if (ret < 0) {
+> > +		dev_err(opt->dev, "failed to write register %02x\n",
+> > +				OPT3001_CONFIGURATION);
+> > +		return ret;
+> > +	}
+> > +
+> > +	iio_device_free(iio);
+>
+> Use the devm_iio_device_alloc and you can drop the need to free it.
+> I don't really mind, but I'll almost guarantee that someone will post
+> a follow up patch doing this if you don't.  As it will be ever so
+> slightly cleaner, I'll probably take that patch.
+
+here's the original driver:
+
+http://www.spinics.net/lists/linux-iio/msg14331.html
+
+notice that it *WAS* *USING* devm_iio_device_alloc(), until:
+
+http://www.spinics.net/lists/linux-iio/msg14421.html
+
+you *SPECIFICALLY* asked for *NON* *DEVM* versions!!
+
+So figure out what you really want, let me know and I'll code it all up
+quickly and hopefully still get this into v3.18 merge window. I sent
+this driver *very* early to be doubly sure it would hit v3.18 and there
+was a long hiatus from yourself which is now jeopardizing what I was
+expecting. That, coupled with your contradicting requests, has just put
+me in a bad mood, even before Monday, hurray.
+
+cheers
+
+--=20
+balbi
+
+--cWoXeonUoKmBZSoM
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
+
+iQIcBAEBAgAGBQJUFndhAAoJEIaOsuA1yqREVtkP/A/29/CjZkqd+flqgpQ1f1ul
+rMvOESt4w24IVNhOkOBW+QMKQI2PbA7a/3hyaguacDQZ4q3KptgpaYKS3QlPrEfc
+xDwxZzZ6Ww3sXR8C/W193ulyw5jGnhmzPEnFKujlgIKy2UbstDDJTpwI574Fsjq0
+jTAwoD4zLEwhnWmBFQ8FEoakIhVLL7535Pb0zgtvBuazqG+XuF7YQq2tiGtQykZj
+K311qlu11bpuO7INduMyL6Vw7MwIknIVYazjA9F6WXKTkCFytzYNopriBHp4/GLQ
+FMJlPHIhPQGazHz5DF+5lJbcRodlI3JGFvrUjsTxVfOG8GsHG/gcQiszzEnT82wz
+pXqJ+soHb/HURJYXIUNpF+9fA7sAjDDvGsSRfvTEtifymbpYXz9MTglhPVFlu4cV
+7yKRp3PBq30f1G0qpVUtICdPkejXuijGsS2SK146aGQR1BiN1l6eFQLxhwYP6lyg
+YwN20OI71ibLDnbm5ziuWxZTWcjaGrp/NIGcnsdESg5QttZfdcchfvgExl9XTSGT
+aNHoVpnl654gcL0MkKG17xObSQU/iT9LF8i1cJFmm+1MxJcc13e63Ghem/8G1JYq
+4kTXp5DNtOiSgawHWjHV93MfX5dovr7Tut5MulqRhDlVh/Ah2nsTNBiBC4RS0/qZ
+f3xG4sG12rcFYA3Cxyeh
+=9qSK
+-----END PGP SIGNATURE-----
+
+--cWoXeonUoKmBZSoM--
