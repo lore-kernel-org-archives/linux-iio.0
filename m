@@ -1,221 +1,425 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from bear.ext.ti.com ([192.94.94.41]:46660 "EHLO bear.ext.ti.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751561AbaIOFWH (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Mon, 15 Sep 2014 01:22:07 -0400
-Date: Mon, 15 Sep 2014 00:21:37 -0500
-From: Felipe Balbi <balbi@ti.com>
-To: Jonathan Cameron <jic23@kernel.org>
-CC: Felipe Balbi <balbi@ti.com>, <linux-iio@vger.kernel.org>,
-	<pmeerw@pmeerw.net>
-Subject: Re: [RESEND PATCH] iio: light: add support for TI's opt3001 light
- sensor
-Message-ID: <20140915052137.GA11866@saruman.home>
-Reply-To: <balbi@ti.com>
-References: <1409671066-25747-1-git-send-email-balbi@ti.com>
- <54147632.9090204@kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:34819 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752224AbaIOQLx (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 15 Sep 2014 12:11:53 -0400
+In-Reply-To: <5416F3E2.3030009@mm-sol.com>
+References: <1410448403-19402-1-git-send-email-svarbanov@mm-sol.com> <1410448403-19402-2-git-send-email-svarbanov@mm-sol.com> <54138151.8010902@gmx.de> <54147E97.60808@kernel.org> <5416F3E2.3030009@mm-sol.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="cWoXeonUoKmBZSoM"
-In-Reply-To: <54147632.9090204@kernel.org>
+Content-Type: text/plain;
+ charset=UTF-8
+Subject: Re: [PATCH v2 1/2] iio: vadc: Qualcomm SPMI PMIC voltage ADC driver
+From: Jonathan Cameron <jic23@kernel.org>
+Date: Mon, 15 Sep 2014 17:11:37 +0100
+To: Stanimir Varbanov <svarbanov@mm-sol.com>
+CC: Hartmut Knaack <knaack.h@gmx.de>,
+	Ian Campbell <ijc+devicetree@hellion.org.uk>,
+	Pawel Moll <pawel.moll@arm.com>,
+	Rob Herring <robh+dt@kernel.org>,
+	Kumar Gala <galak@codeaurora.org>,
+	Mark Rutland <mark.rutland@arm.com>,
+	Grant Likely <grant.likely@linaro.org>,
+	Arnd Bergmann <arnd@arndb.de>, linux-arm-msm@vger.kernel.org,
+	linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Angelo Compagnucci <angelo.compagnucci@gmail.com>,
+	Doug Anderson <dianders@chromium.org>,
+	Fugang Duan <B38611@freescale.com>,
+	Johannes Thumshirn <johannes.thumshirn@men.de>,
+	Jean Delvare <jdelvare@suse.de>,
+	Philippe Reynes <tremyfr@yahoo.fr>,
+	Lee Jones <lee.jones@linaro.org>,
+	Josh Cartwright <joshc@codeaurora.org>,
+	Stephen Boyd <sboyd@codeaurora.org>,
+	David Collins <collinsd@codeaurora.org>,
+	"Ivan T. Ivanov" <iivanov@mm-sol.com>
+Message-ID: <4dbc485f-599a-4b50-854c-c2e1c44d4810@email.android.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
---cWoXeonUoKmBZSoM
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
 
-Hi,
 
-On Sat, Sep 13, 2014 at 05:52:02PM +0100, Jonathan Cameron wrote:
-> On 02/09/14 16:17, Felipe Balbi wrote:
-> > TI's opt3001 light sensor is a simple and yet powerful
-> > little device. The device provides 99% IR rejection,
-> > Automatic full-scale, very low power consumption and
-> > measurements from 0.01 to 83k lux.
-> >=20
-> > This patch adds support for that device using the IIO
-> > framework.
-> >=20
-> > Signed-off-by: Felipe Balbi <balbi@ti.com>
-> > ---
-> >=20
-> > Resending as I saw no changes on the thread.
-> Hi Felipe,
->=20
-> Sorry for the delay on this, entirely my fault - been busy and forgot
-> I still had questions about what was going on in here (yup its the
-> hysteresis bit again!)
-
-right, this is starting to become way too much headache for such a
-simple device. Sorry will not help me getting this driver upstream. When
-I first sent this (August 6), we didn't even have v3.17-rc1, now we're
-about to tag -rc5 and I'm worried this driver will not hit v3.18 merge
-window.
-
-> Anyhow, I'm afraid I am still a little confused about the meaning you
-> have assigned to Hysteresis in this driver.
->=20
-> Let me conjecture on what might be going on here (I may be entirely
-> wrong).
->=20
-> Normally a hysteresis value in IIO is defined as the 'distance' back
-> from a threshold that a signal must go before it may retrip the
-> threshold.
-> This threshold value is separately controlled. Thus if we have a
-> rising threshold of 10 and an hysteresis of 2 - to get two events the
-> signal must first rise past 10, then drop back below 8 and rise again
-> past 10.
-> If it drops below 10 but not 8 and rises again past 10 then we will
-> not get an event.
->=20
-> So having the same register for both the hysteresis and the threshold
-> doesn't with this description make much sense.  It would mean that you
-> could only have a threshold of say 10 and a hysteresis of 10, thus in
-> effect meaning the signal would always have to cross 0 before the next
-> event whatever the combined threshold / hysteresis value?
->=20
-> Perhaps instead the device is automatically adjusting the threshold
-> when we cross it and the 'hysteresis' here is with respect to a the
-> previous threshold?
->=20
-> Thus if we start with a value of 0 and hysteresis is set to 2 it will
-> trigger an event at:
->=20
-> 2, 4, 6, 8, 10 as we rise?
->=20
-> This sort of auto adjustment of levels isn't uncommon in light sensors
-> (where the point of the interrupt is to notify the operating system
-> that a 'significant' change has occurred and things like screen
-> brightness may need adjusting.
->=20
-> If so then the current hysteresis interface does not apply, nor does
-> the Rate of Change (ROC) interface as this is dependent on amount of
-> change, not how fast it changed.  Hence we needs something new to
-> handle this cleanly. I would suggest a new event type.  Perhaps
-> something with sysfs attr naming along the lines of
-> What:		/sys/.../iio:deviceX/events/in_light_change_rising_en
-> What:           /sys/.../iio:deviceX/events/in_light_change_rising_value
->=20
-> etc?
-
-will you just tell me what you want ? I really cannot give a crap
-anymore. This has already taken me over a month of my time for such a
-simple little device, not to mention your confusing and contradicting
-change requests.
-
-(could you also trim your responses ? it's very annoying to scroll so
-much)
-
-> > +#define OPT3001_RESULT		0x00
-> > +#define OPT3001_CONFIGURATION	0x01
-> > +#define OPT3001_LOW_LIMIT	0x02
-> > +#define OPT3001_HIGH_LIMIT	0x03
-> > +#define OPT3001_MANUFACTURER_ID	0x7e
-> > +#define OPT3001_DEVICE_ID	0x7f
-> > +
-> > +#define OPT3001_CONFIGURATION_RN_MASK (0xf << 12)
-> > +#define OPT3001_CONFIGURATION_RN_AUTO (0xc << 12)
-> > +
-> > +#define OPT3001_CONFIGURATION_CT	BIT(11)
-> > +
-> > +#define OPT3001_CONFIGURATION_M_MASK	(3 << 9)
-> > +#define OPT3001_CONFIGURATION_M_SHUTDOWN (0 << 9)
-> > +#define OPT3001_CONFIGURATION_M_SINGLE (1 << 9)
-> > +#define OPT3001_CONFIGURATION_M_CONTINUOUS (2 << 9) /* also 3 << 9 */
-> > +
->=20
-> I guess this naming is straight off the datasheet, but it is rather
-> more cryptic than perhaps it needs to be!  That's kind of an issue
-> with the datasheet choices rather than what you have here however!
-
-man, are you nit-picky!! These are named as such to make grepping on
-documentation easier. It's better to have something that matches
-documentation, don't you think ? otherwise, future users/developers of
-these driver will need either a shit ton of comments explaining that A
-maps to B in docs, or will need a fscking crystal ball to read my mind.
-Assuming I'll still remember what I meant.
-
-> > +static int opt3001_remove(struct i2c_client *client)
-> > +{
-> > +	struct iio_dev *iio =3D i2c_get_clientdata(client);
-> > +	struct opt3001 *opt =3D iio_priv(iio);
-> > +	int ret;
-> > +	u16 reg;
-> > +
-> > +	free_irq(client->irq, iio);
-> > +	iio_device_unregister(iio);
-> > +
-> > +	ret =3D i2c_smbus_read_word_swapped(opt->client, OPT3001_CONFIGURATIO=
-N);
-> > +	if (ret < 0) {
-> > +		dev_err(opt->dev, "failed to read register %02x\n",
-> > +				OPT3001_CONFIGURATION);
-> > +		return ret;
-> > +	}
-> > +
-> > +	reg =3D ret;
-> > +	opt3001_set_mode(opt, &reg, OPT3001_CONFIGURATION_M_SHUTDOWN);
-> > +
-> > +	ret =3D i2c_smbus_write_word_swapped(opt->client, OPT3001_CONFIGURATI=
-ON,
-> > +			reg);
-> > +	if (ret < 0) {
-> > +		dev_err(opt->dev, "failed to write register %02x\n",
-> > +				OPT3001_CONFIGURATION);
-> > +		return ret;
-> > +	}
-> > +
-> > +	iio_device_free(iio);
+On September 15, 2014 3:12:50 PM GMT+01:00, Stanimir Varbanov <svarbanov@mm-sol.com> wrote:
+>Hi Jonathan,
 >
-> Use the devm_iio_device_alloc and you can drop the need to free it.
-> I don't really mind, but I'll almost guarantee that someone will post
-> a follow up patch doing this if you don't.  As it will be ever so
-> slightly cleaner, I'll probably take that patch.
+>Thanks for the review!
+>
+>On 09/13/2014 08:27 PM, Jonathan Cameron wrote:
+>> On 13/09/14 00:27, Hartmut Knaack wrote:
+>>> Stanimir Varbanov schrieb, Am 11.09.2014 17:13:
+>>>> The voltage ADC is peripheral of Qualcomm SPMI PMIC chips. It has
+>>>> 15bits resolution and register space inside PMIC accessible across
+>>>> SPMI bus.
+>>>>
+>>>> The vadc driver registers itself through IIO interface.
+>>>>
+>>> Looks already pretty good. Things you should consider in regard of
+>common coding style are to use the variable name ret instead of rc,
+>since it is used in almost all adc drivers and thus makes reviewing a
+>bit easier. Besides that, you seem to use unsigned as well as unsigned
+>int, so to be consistent, please stick to one of them. Other comments
+>in line.
+>> 
+>> A few additional comments from me.  My biggest question is whether
+>> you are actually making life difficult for yourself by having
+>> vadc_channels and vadc->channels (don't like the similar naming btw!)
+>> in different orders.  I think you can move the ordering into the
+>device
+>> tree reading code rather than doing it in lots of other places. 
+>Hence
+>> rather than an order based on the device tree description, put the
+>> data into a fixed ofer in vadc->channels.
+>> 
+>> Entirely possible I'm missing something though :)
+>>>> Signed-off-by: Stanimir Varbanov <svarbanov@mm-sol.com>
+>>>> Signed-off-by: Ivan T. Ivanov <iivanov@mm-sol.com>
+>>>> ---
+>>>>  drivers/iio/adc/Kconfig                       |   11 +
+>>>>  drivers/iio/adc/Makefile                      |    1 +
+>>>>  drivers/iio/adc/qcom-spmi-vadc.c              |  999
+>+++++++++++++++++++++++++
+>>>>  include/dt-bindings/iio/qcom,spmi-pmic-vadc.h |  119 +++
+>>>>  4 files changed, 1130 insertions(+), 0 deletions(-)
+>>>>  create mode 100644 drivers/iio/adc/qcom-spmi-vadc.c
+>>>>  create mode 100644 include/dt-bindings/iio/qcom,spmi-pmic-vadc.h
+>
+><snip>
+>
+>>>> +
+>>>> +static int
+>>> Don't wrap line here.
+>>>> +vadc_read_raw(struct iio_dev *indio_dev, struct iio_chan_spec
+>const *chan,
+>>>> +	      int *val, int *val2, long mask)
+>>>> +{
+>>>> +	struct vadc_priv *vadc = iio_priv(indio_dev);
+>>>> +	struct vadc_channel *vchan;
+>>>> +	struct vadc_result result;
+>>>> +	int rc;
+>>>> +
+>> It is a bit of a pitty we can't avoid this lookup. Normally I'd
+>suggest
+>> putting an index in chan->address but you've already used that.
+>> The purpose of this is to (I think) allow you to have the private
+>> data stored in a random order... What is the benefit of doing that?
+>> (see various comments elsewhere)
+>
+>So the vadc_channels array describe all possible vadc channels for all
+>supported PMICs from this driver. On the other side vadc->channels
+>pointer should contain only the channels described in DT.
+>
+>Thus we need a below function to check is the current channel is active
+>for the current DT (current PMIC version). This is because we have in
+>vadc_channels the full set of channels but not every supported PMIC
+>have
+>support for them.
+>
+>I agree that this peace of code is not so clear. So I will try to
+>rework
+>this and register to the IIO core only those channels that have channel
+>descriptions in DT.
+Cool
+>
+>Also I wonder can I use iio_chan_spec::address field as a pointer to
+>private structure with vadc channel properties like decimation,
+>prescale
+>etc. got from DT or the default values.
+Yes or an index into an array of them perhaps?
+>
+>> 
+>>>> +	vchan = vadc_find_channel(vadc, chan->channel);
+>>>> +	if (!vchan)
+>>>> +		return -EINVAL;
+>>>> +
+>>>> +	if (!vadc->is_ref_measured) {
+>>>> +		rc = vadc_measure_reference_points(vadc);
+>>>> +		if (rc)
+>>>> +			return rc;
+>>>> +
+>>>> +		vadc->is_ref_measured = true;
+>>>> +	}
+>>>> +
+>>>> +	switch (mask) {
+>>>> +	case IIO_CHAN_INFO_PROCESSED:
+>>>> +		rc = vadc_do_conversion(vadc, vchan, &result.adc_code);
+>>>> +		if (rc)
+>>>> +			return rc;
+>>>> +
+>>>> +		vadc_calibrate(vadc, vchan, &result);
+>>>> +
+>>>> +		*val = result.physical;
+>> I'm a little suspicious here.  Are the resulting values in milivolts
+>for
+>> all the channels?  Very handy if so, but seems a little unlikely with
+>15 bit
+>> ADC that you'd have no part of greater accuracy than a milivolt.
+>
+>In fact *val is in microvolts. What is the expected unit from IIO ADC
+>users?
+See Documentation/ABI/sysfs-bus-iio
+Millivolts I think... We copied hwmon where possible.
+>
+>>>> +		rc = IIO_VAL_INT;
+>>> return IIO_VAL_INT;
+>>>> +		break;
+>>>> +	default:
+>>>> +		rc = -EINVAL;
+>>>> +		break;
+>>> Drop default case, or leave empty.
+>>>> +	}
+>>>> +
+>>>> +	return rc;
+>>> return -EINVAL;
+>>>> +}
+>>>> +
+>>>> +static const struct iio_info vadc_info = {
+>>>> +	.read_raw = vadc_read_raw,
+>>>> +	.driver_module = THIS_MODULE,
+>>>> +};
+>>>> +
+>>>> +#define VADC_CHAN(_id, _pre)						\
+>>>> +	[VADC_##_id] = {						\
+>>>> +		.type = IIO_VOLTAGE,					\
+>> A few of the below look to be temp sensors.  If they are hardwired
+>> in some way to this functionality (i.e. is it on chip) then it might
+>be
+>> nice to reflect this in the channel type.
+>
+>There are a dedicated channels to measure temperature. Those channels
+>have connected thermistor but I don't think it is on chip. So the
+>returned adc code is in microvolts and we have a translation table to
+>convert measured voltage to miliCelsius. I thought that if I mark the
+>channel type as IIO_TEMP then the user would expect the returned units
+>to be miliCelsius. If that assumption is not correct I can change the
+>type of those channels.
+You are correct. Leave them as voltages.
+If they were hardwired inside the chip it would be different.
+>
+>>>> +		.indexed = 1,						\
+>>>> +		.channel = VADC_##_id,					\
+>>>> +		.address = _pre,					\
+>>>> +		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED),	\
+>>>> +		.datasheet_name = __stringify(VADC_##_id),		\
+>>>> +		.scan_type = {						\
+>>>> +			.sign		= 's',				\
+>>>> +			.realbits	= 15,				\
+>>>> +			.storagebits	= 16,				\
+>>>> +			.endianness	= IIO_CPU,			\
+>>>> +		},							\
+>>>> +	},
+>>>> +
+>>>> +static const struct iio_chan_spec vadc_channels[] = {
+>>>> +	VADC_CHAN(USBIN, 4)				/* 0x00 */
+>>>> +	VADC_CHAN(DCIN, 4)
+>>>> +	VADC_CHAN(VCHG_SNS, 3)
+>>>> +	VADC_CHAN(SPARE1_03, 1)
+>>>> +	VADC_CHAN(USB_ID_MV, 1)
+>>>> +	VADC_CHAN(VCOIN, 1)
+>>>> +	VADC_CHAN(VBAT_SNS, 1)
+>>>> +	VADC_CHAN(VSYS, 1)
+>>>> +	VADC_CHAN(DIE_TEMP, 0)
+>>>> +	VADC_CHAN(REF_625MV, 0)
+>>>> +	VADC_CHAN(REF_1250MV, 0)
+>>>> +	VADC_CHAN(CHG_TEMP, 0)
+>>>> +	VADC_CHAN(SPARE1, 0)
+>>>> +	VADC_CHAN(SPARE2, 0)
+>>>> +	VADC_CHAN(GND_REF, 0)
+>>>> +	VADC_CHAN(VDD_VADC, 0)				/* 0x0f */
+>>>> +
+>>>> +	VADC_CHAN(P_MUX1_1_1, 0)			/* 0x10 */
+>>>> +	VADC_CHAN(P_MUX2_1_1, 0)
+>>>> +	VADC_CHAN(P_MUX3_1_1, 0)
+>>>> +	VADC_CHAN(P_MUX4_1_1, 0)
+>>>> +	VADC_CHAN(P_MUX5_1_1, 0)
+>>>> +	VADC_CHAN(P_MUX6_1_1, 0)
+>>>> +	VADC_CHAN(P_MUX7_1_1, 0)
+>>>> +	VADC_CHAN(P_MUX8_1_1, 0)
+>>>> +	VADC_CHAN(P_MUX9_1_1, 0)
+>>>> +	VADC_CHAN(P_MUX10_1_1, 0)
+>>>> +	VADC_CHAN(P_MUX11_1_1, 0)
+>>>> +	VADC_CHAN(P_MUX12_1_1, 0)
+>>>> +	VADC_CHAN(P_MUX13_1_1, 0)
+>>>> +	VADC_CHAN(P_MUX14_1_1, 0)
+>>>> +	VADC_CHAN(P_MUX15_1_1, 0)
+>>>> +	VADC_CHAN(P_MUX16_1_1, 0)			/* 0x1f */
+>>>> +
+>>>> +	VADC_CHAN(P_MUX1_1_3, 1)			/* 0x20 */
+>>>> +	VADC_CHAN(P_MUX2_1_3, 1)
+>>>> +	VADC_CHAN(P_MUX3_1_3, 1)
+>>>> +	VADC_CHAN(P_MUX4_1_3, 1)
+>>>> +	VADC_CHAN(P_MUX5_1_3, 1)
+>>>> +	VADC_CHAN(P_MUX6_1_3, 1)
+>>>> +	VADC_CHAN(P_MUX7_1_3, 1)
+>>>> +	VADC_CHAN(P_MUX8_1_3, 1)
+>>>> +	VADC_CHAN(P_MUX9_1_3, 1)
+>>>> +	VADC_CHAN(P_MUX10_1_3, 1)
+>>>> +	VADC_CHAN(P_MUX11_1_3, 1)
+>>>> +	VADC_CHAN(P_MUX12_1_3, 1)
+>>>> +	VADC_CHAN(P_MUX13_1_3, 1)
+>>>> +	VADC_CHAN(P_MUX14_1_3, 1)
+>>>> +	VADC_CHAN(P_MUX15_1_3, 1)
+>>>> +	VADC_CHAN(P_MUX16_1_3, 1)			/* 0x2f */
+>>>> +
+>>>> +	VADC_CHAN(LR_MUX1_BAT_THERM, 0)			/* 0x30 */
+>>>> +	VADC_CHAN(LR_MUX2_BAT_ID, 0)
+>>>> +	VADC_CHAN(LR_MUX3_XO_THERM, 0)
+>>>> +	VADC_CHAN(LR_MUX4_AMUX_THM1, 0)
+>>>> +	VADC_CHAN(LR_MUX5_AMUX_THM2, 0)
+>>>> +	VADC_CHAN(LR_MUX6_AMUX_THM3, 0)
+>>>> +	VADC_CHAN(LR_MUX7_HW_ID, 0)
+>>>> +	VADC_CHAN(LR_MUX8_AMUX_THM4, 0)
+>>>> +	VADC_CHAN(LR_MUX9_AMUX_THM5, 0)
+>>>> +	VADC_CHAN(LR_MUX10_USB_ID, 0)
+>>>> +	VADC_CHAN(AMUX_PU1, 0)
+>>>> +	VADC_CHAN(AMUX_PU2, 0)
+>>>> +	VADC_CHAN(LR_MUX3_BUF_XO_THERM, 0)		/* 0x3c */
+>>>> +
+>>>> +	VADC_CHAN(LR_MUX1_PU1_BAT_THERM, 0)		/* 0x70 */
+>>>> +	VADC_CHAN(LR_MUX2_PU1_BAT_ID, 0)
+>>>> +	VADC_CHAN(LR_MUX3_PU1_XO_THERM, 0)
+>>>> +	VADC_CHAN(LR_MUX4_PU1_AMUX_THM1, 0)
+>>>> +	VADC_CHAN(LR_MUX5_PU1_AMUX_THM2, 0)
+>>>> +	VADC_CHAN(LR_MUX6_PU1_AMUX_THM3, 0)
+>>>> +	VADC_CHAN(LR_MUX7_PU1_AMUX_HW_ID, 0)
+>>>> +	VADC_CHAN(LR_MUX8_PU1_AMUX_THM4, 0)
+>>>> +	VADC_CHAN(LR_MUX9_PU1_AMUX_THM5, 0)
+>>>> +	VADC_CHAN(LR_MUX10_PU1_AMUX_USB_ID, 0)		/* 0x79 */
+>>>> +	VADC_CHAN(LR_MUX3_BUF_PU1_XO_THERM, 0)		/* 0x7c */
+>>>> +
+>>>> +	VADC_CHAN(LR_MUX1_PU2_BAT_THERM, 0)		/* 0xb0 */
+>>>> +	VADC_CHAN(LR_MUX2_PU2_BAT_ID, 0)
+>>>> +	VADC_CHAN(LR_MUX3_PU2_XO_THERM, 0)
+>>>> +	VADC_CHAN(LR_MUX4_PU2_AMUX_THM1, 0)
+>>>> +	VADC_CHAN(LR_MUX5_PU2_AMUX_THM2, 0)
+>>>> +	VADC_CHAN(LR_MUX6_PU2_AMUX_THM3, 0)
+>>>> +	VADC_CHAN(LR_MUX7_PU2_AMUX_HW_ID, 0)
+>>>> +	VADC_CHAN(LR_MUX8_PU2_AMUX_THM4, 0)
+>>>> +	VADC_CHAN(LR_MUX9_PU2_AMUX_THM5, 0)
+>>>> +	VADC_CHAN(LR_MUX10_PU2_AMUX_USB_ID, 0)		/* 0xb9 */
+>>>> +	VADC_CHAN(LR_MUX3_BUF_PU2_XO_THERM, 0)		/* 0xbc */
+>>>> +
+>>>> +	VADC_CHAN(LR_MUX1_PU1_PU2_BAT_THERM, 0)		/* 0xf0 */
+>>>> +	VADC_CHAN(LR_MUX2_PU1_PU2_BAT_ID, 0)
+>>>> +	VADC_CHAN(LR_MUX3_PU1_PU2_XO_THERM, 0)
+>>>> +	VADC_CHAN(LR_MUX4_PU1_PU2_AMUX_THM1, 0)
+>>>> +	VADC_CHAN(LR_MUX5_PU1_PU2_AMUX_THM2, 0)
+>>>> +	VADC_CHAN(LR_MUX6_PU1_PU2_AMUX_THM3, 0)
+>>>> +	VADC_CHAN(LR_MUX7_PU1_PU2_AMUX_HW_ID, 0)
+>>>> +	VADC_CHAN(LR_MUX8_PU1_PU2_AMUX_THM4, 0)
+>>>> +	VADC_CHAN(LR_MUX9_PU1_PU2_AMUX_THM5, 0)
+>>>> +	VADC_CHAN(LR_MUX10_PU1_PU2_AMUX_USB_ID, 0)	/* 0xf9 */
+>>>> +	VADC_CHAN(LR_MUX3_BUF_PU1_PU2_XO_THERM, 0)	/* 0xfc */
+>>>> +};
+>>>> +
+>>>> +static int
+>>>> +vadc_get_dt_channel_data(struct vadc_priv *vadc, struct
+>device_node *node)
+>>>> +{
+>>>> +	struct vadc_channel *vchan;
+>>>> +	u32 channel, value, varr[2];
+>>>> +	int rc, pre, time, avg, decim;
+>>> Drop pre, time, avg and decim and reuse rc instead?
+>>>> +	const char *name = node->name;
+>>>> +
+>>>> +	rc = of_property_read_u32(node, "reg", &channel);
+>>>> +	if (rc) {
+>>>> +		dev_dbg(vadc->dev, "invalid channel number %s\n", name);
+>>>> +		return -EINVAL;
+>>>> +	}
+>>>> +
+>>>> +	if (channel >= vadc->nchannels) {
+>>>> +		dev_dbg(vadc->dev, "%s invalid channel number %d\n", name,
+>>>> +			channel);
+>>>> +		return -EINVAL;
+>>>> +	}
+>>>> +
+>>>> +	vchan = &vadc->channels[channel];
+>> Could you not have these in the same order as the iio_chan_spec
+>array?
+>> Hence move the lookups that are scattered elsewhere in the driver to
+>here?
+>> 
+>
+><snip>
+>
+>>>> +static int vadc_probe(struct platform_device *pdev)
+>>>> +{
+>>>> +	struct device_node *node = pdev->dev.of_node;
+>>>> +	struct device *dev = &pdev->dev;
+>>>> +	struct iio_dev *indio_dev;
+>>>> +	struct vadc_channel *vchan;
+>>>> +	struct vadc_priv *vadc;
+>>>> +	struct resource *res;
+>>>> +	struct regmap *regmap;
+>>>> +	int rc, irq_eoc, n;
+>>> unsigned int n?
+>>>> +
+>>>> +	regmap = dev_get_regmap(dev->parent, NULL);
+>>>> +	if (!regmap)
+>>>> +		return -ENODEV;
+>>>> +
+>>>> +	indio_dev = devm_iio_device_alloc(dev, sizeof(*vadc));
+>>>> +	if (!indio_dev)
+>>>> +		return -ENOMEM;
+>>>> +
+>>>> +	vadc = iio_priv(indio_dev);
+>>>> +	vadc->dev = dev;
+>>>> +	vadc->regmap = regmap;
+>>>> +	vadc->is_ref_measured = false;
+>>>> +	init_completion(&vadc->complete);
+>>>> +
+>>>> +	vadc->nchannels = ARRAY_SIZE(vadc_channels);
+>>>> +	vadc->channels = devm_kcalloc(dev, vadc->nchannels,
+>>>> +				      sizeof(*vadc->channels), GFP_KERNEL);
+>> Interesting.  This is always the same size as the vadc_channels so
+>you
+>> might as well keep them in the same order and simplify various
+>corners of
+>> the code.
+>>>> +	if (!vadc->channels)
+>>>> +		return -ENOMEM;
+>>>> +
+>> I wonder if we can't vadc->channels rather more different from
+>vadc_channels?
+>> Perhaps vadc->channelspriv or similar? Confused me a little at first.
+>>>> +	for (n = 0; n < vadc->nchannels; n++) {
+>>>> +		vchan = &vadc->channels[n];
+>>>> +		/* set default channel properties */
+>>>> +		vchan->number = -1;	/* inactive */
+>>>> +		vchan->prescaling = vadc_channels[n].address;
+>>>> +		vchan->decimation = VADC_DEF_DECIMATION;
+>>>> +		vchan->hw_settle_time = VADC_DEF_HW_SETTLE_TIME;
+>>>> +		vchan->avg_samples = VADC_DEF_AVG_SAMPLES;
+>>>> +		vchan->calibration = VADC_DEF_CALIB_TYPE;
+>>>> +	}
+>>>> +
+>>>> +	platform_set_drvdata(pdev, vadc);
+>>>> +
+>>>> +	res = platform_get_resource(pdev, IORESOURCE_REG, 0);
+>>>> +	if (!res)
+>>>> +		return -ENODEV;
+>>>> +
+>>>> +	vadc->base = res->start;
+>>>> +
+>>>> +	rc = vadc_version_check(vadc);
+>>>> +	if (rc < 0)
+>>>> +		return -ENODEV;
+>>>> +
+>>>> +	rc = vadc_get_dt_data(vadc, node);
+>>>> +	if (rc < 0)
+>>>> +		return rc;
+>>>> +
+>> Do we need an explicit flag to indicate poll mode rather than just
+>> using the absense of the irq being specified to select that mode?
+>
+>I will think about this. Maybe I will check the returned value from
+>platform_get_irq to see is the IRQ resource exist. If the IRQ doesn't
+>exist I will fallback to polling.
+That was my thought.
+>
+><snip>
 
-here's the original driver:
-
-http://www.spinics.net/lists/linux-iio/msg14331.html
-
-notice that it *WAS* *USING* devm_iio_device_alloc(), until:
-
-http://www.spinics.net/lists/linux-iio/msg14421.html
-
-you *SPECIFICALLY* asked for *NON* *DEVM* versions!!
-
-So figure out what you really want, let me know and I'll code it all up
-quickly and hopefully still get this into v3.18 merge window. I sent
-this driver *very* early to be doubly sure it would hit v3.18 and there
-was a long hiatus from yourself which is now jeopardizing what I was
-expecting. That, coupled with your contradicting requests, has just put
-me in a bad mood, even before Monday, hurray.
-
-cheers
-
---=20
-balbi
-
---cWoXeonUoKmBZSoM
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
-
-iQIcBAEBAgAGBQJUFndhAAoJEIaOsuA1yqREVtkP/A/29/CjZkqd+flqgpQ1f1ul
-rMvOESt4w24IVNhOkOBW+QMKQI2PbA7a/3hyaguacDQZ4q3KptgpaYKS3QlPrEfc
-xDwxZzZ6Ww3sXR8C/W193ulyw5jGnhmzPEnFKujlgIKy2UbstDDJTpwI574Fsjq0
-jTAwoD4zLEwhnWmBFQ8FEoakIhVLL7535Pb0zgtvBuazqG+XuF7YQq2tiGtQykZj
-K311qlu11bpuO7INduMyL6Vw7MwIknIVYazjA9F6WXKTkCFytzYNopriBHp4/GLQ
-FMJlPHIhPQGazHz5DF+5lJbcRodlI3JGFvrUjsTxVfOG8GsHG/gcQiszzEnT82wz
-pXqJ+soHb/HURJYXIUNpF+9fA7sAjDDvGsSRfvTEtifymbpYXz9MTglhPVFlu4cV
-7yKRp3PBq30f1G0qpVUtICdPkejXuijGsS2SK146aGQR1BiN1l6eFQLxhwYP6lyg
-YwN20OI71ibLDnbm5ziuWxZTWcjaGrp/NIGcnsdESg5QttZfdcchfvgExl9XTSGT
-aNHoVpnl654gcL0MkKG17xObSQU/iT9LF8i1cJFmm+1MxJcc13e63Ghem/8G1JYq
-4kTXp5DNtOiSgawHWjHV93MfX5dovr7Tut5MulqRhDlVh/Ah2nsTNBiBC4RS0/qZ
-f3xG4sG12rcFYA3Cxyeh
-=9qSK
------END PGP SIGNATURE-----
-
---cWoXeonUoKmBZSoM--
+-- 
+Sent from my Android phone with K-9 Mail. Please excuse my brevity.
