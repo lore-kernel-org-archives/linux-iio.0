@@ -1,47 +1,198 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mout.gmx.net ([212.227.15.15]:54283 "EHLO mout.gmx.net"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1755226AbaIOVhN (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Mon, 15 Sep 2014 17:37:13 -0400
-Message-ID: <54175C04.70302@gmx.de>
-Date: Mon, 15 Sep 2014 23:37:08 +0200
-From: Hartmut Knaack <knaack.h@gmx.de>
+Return-Path: <heiko@sntech.de>
+From: Heiko =?ISO-8859-1?Q?St=FCbner?= <heiko@sntech.de>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org, linux-rockchip@lists.infradead.org, devicetree@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>
+Subject: [PATCH v3] iio: adc: rockchip_saradc: add support for rk3066-tsadc variant
+Date: Mon, 15 Sep 2014 23:47:30 +0200
+Message-ID: <2689686.WEM6GuFSAn@diego>
 MIME-Version: 1.0
-To: Chris Ruffin <cmruffin@gmail.com>, linux-iio@vger.kernel.org
-Subject: Re: [PATCH] staging: iio: accel: remove unnecessary syntax
-References: <1410737937-10773-1-git-send-email-cmruffin@gmail.com>
-In-Reply-To: <1410737937-10773-1-git-send-email-cmruffin@gmail.com>
-Content-Type: text/plain; charset=ISO-8859-15
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"
+List-ID: <linux-iio@vger.kernel.org>
 
-Chris Ruffin schrieb, Am 15.09.2014 01:38:
-> The else clause in the conditional of lis3l02dq_data_rdy_trig_poll()
-> does not make consistent use of braces with the rest of the
-> conditional.  Fix this coding style problem by removing the
-> unnecessary conditional altogether.
-> 
-> Signed-off-by: Chris Ruffin <cmruffin@gmail.com>
-Acked-by: Hartmut Knaack <knaack.h@gmx.de>
-> ---
->  drivers/staging/iio/accel/lis3l02dq_ring.c |    5 +++--
->  1 file changed, 3 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/staging/iio/accel/lis3l02dq_ring.c b/drivers/staging/iio/accel/lis3l02dq_ring.c
-> index 1d934ee..9efc77b 100644
-> --- a/drivers/staging/iio/accel/lis3l02dq_ring.c
-> +++ b/drivers/staging/iio/accel/lis3l02dq_ring.c
-> @@ -34,8 +34,9 @@ irqreturn_t lis3l02dq_data_rdy_trig_poll(int irq, void *private)
->  	if (st->trigger_on) {
->  		iio_trigger_poll(st->trig);
->  		return IRQ_HANDLED;
-> -	} else
-> -		return IRQ_WAKE_THREAD;
-> +	}
-> +
-> +	return IRQ_WAKE_THREAD;
->  }
->  
->  static const u8 read_all_tx_array[] = {
-> 
+Older Rockchip SoCs, at least the rk3066, used a slightly modified saradc
+for temperature measurements. This so called tsadc does not contain any
+active parts like temperature interrupts and only supports polling the
+current temperature. The returned voltage can then be converted by a
+suitable thermal driver to and actual temperature and used for thermal
+handling.
 
+Signed-off-by: Heiko Stuebner <heiko@sntech.de>
+---
+changes since v2:
+- adapt message about the clk rate
+changes since v1:
+- use GENMASK instead of creating the mask manually
+  as suggested by Hartmut Knaack
+
+ .../bindings/iio/adc/rockchip-saradc.txt           |  2 +-
+ drivers/iio/adc/rockchip_saradc.c                  | 64 +++++++++++++++++-----
+ 2 files changed, 51 insertions(+), 15 deletions(-)
+
+diff --git a/Documentation/devicetree/bindings/iio/adc/rockchip-saradc.txt b/Documentation/devicetree/bindings/iio/adc/rockchip-saradc.txt
+index 5d3ec1d..a9a5fe1 100644
+--- a/Documentation/devicetree/bindings/iio/adc/rockchip-saradc.txt
++++ b/Documentation/devicetree/bindings/iio/adc/rockchip-saradc.txt
+@@ -1,7 +1,7 @@
+ Rockchip Successive Approximation Register (SAR) A/D Converter bindings
+ 
+ Required properties:
+-- compatible: Should be "rockchip,saradc"
++- compatible: Should be "rockchip,saradc" or "rockchip,rk3066-tsadc"
+ - reg: physical base address of the controller and length of memory mapped
+        region.
+ - interrupts: The interrupt number to the cpu. The interrupt specifier format
+diff --git a/drivers/iio/adc/rockchip_saradc.c b/drivers/iio/adc/rockchip_saradc.c
+index e074a0b..b546bc1 100644
+--- a/drivers/iio/adc/rockchip_saradc.c
++++ b/drivers/iio/adc/rockchip_saradc.c
+@@ -18,13 +18,13 @@
+ #include <linux/interrupt.h>
+ #include <linux/io.h>
+ #include <linux/of.h>
++#include <linux/of_device.h>
+ #include <linux/clk.h>
+ #include <linux/completion.h>
+ #include <linux/regulator/consumer.h>
+ #include <linux/iio/iio.h>
+ 
+ #define SARADC_DATA			0x00
+-#define SARADC_DATA_MASK		0x3ff
+ 
+ #define SARADC_STAS			0x04
+ #define SARADC_STAS_BUSY		BIT(0)
+@@ -38,15 +38,22 @@
+ #define SARADC_DLY_PU_SOC		0x0c
+ #define SARADC_DLY_PU_SOC_MASK		0x3f
+ 
+-#define SARADC_BITS			10
+ #define SARADC_TIMEOUT			msecs_to_jiffies(100)
+ 
++struct rockchip_saradc_data {
++	int				num_bits;
++	const struct iio_chan_spec	*channels;
++	int				num_channels;
++	unsigned long			clk_rate;
++};
++
+ struct rockchip_saradc {
+ 	void __iomem		*regs;
+ 	struct clk		*pclk;
+ 	struct clk		*clk;
+ 	struct completion	completion;
+ 	struct regulator	*vref;
++	const struct rockchip_saradc_data *data;
+ 	u16			last_val;
+ };
+ 
+@@ -90,7 +97,7 @@ static int rockchip_saradc_read_raw(struct iio_dev *indio_dev,
+ 		}
+ 
+ 		*val = ret / 1000;
+-		*val2 = SARADC_BITS;
++		*val2 = info->data->num_bits;
+ 		return IIO_VAL_FRACTIONAL_LOG2;
+ 	default:
+ 		return -EINVAL;
+@@ -103,7 +110,7 @@ static irqreturn_t rockchip_saradc_isr(int irq, void *dev_id)
+ 
+ 	/* Read value */
+ 	info->last_val = readl_relaxed(info->regs + SARADC_DATA);
+-	info->last_val &= SARADC_DATA_MASK;
++	info->last_val &= GENMASK(info->data->num_bits - 1, 0);
+ 
+ 	/* Clear irq & power down adc */
+ 	writel_relaxed(0, info->regs + SARADC_CTRL);
+@@ -133,12 +140,44 @@ static const struct iio_chan_spec rockchip_saradc_iio_channels[] = {
+ 	ADC_CHANNEL(2, "adc2"),
+ };
+ 
++static const struct rockchip_saradc_data saradc_data = {
++	.num_bits = 10,
++	.channels = rockchip_saradc_iio_channels,
++	.num_channels = ARRAY_SIZE(rockchip_saradc_iio_channels),
++	.clk_rate = 1000000,
++};
++
++static const struct iio_chan_spec rockchip_rk3066_tsadc_iio_channels[] = {
++	ADC_CHANNEL(0, "adc0"),
++	ADC_CHANNEL(1, "adc1"),
++};
++
++static const struct rockchip_saradc_data rk3066_tsadc_data = {
++	.num_bits = 12,
++	.channels = rockchip_rk3066_tsadc_iio_channels,
++	.num_channels = ARRAY_SIZE(rockchip_rk3066_tsadc_iio_channels),
++	.clk_rate = 50000,
++};
++
++static const struct of_device_id rockchip_saradc_match[] = {
++	{
++		.compatible = "rockchip,saradc",
++		.data = &saradc_data,
++	}, {
++		.compatible = "rockchip,rk3066-tsadc",
++		.data = &rk3066_tsadc_data,
++	},
++	{},
++};
++MODULE_DEVICE_TABLE(of, rockchip_saradc_match);
++
+ static int rockchip_saradc_probe(struct platform_device *pdev)
+ {
+ 	struct rockchip_saradc *info = NULL;
+ 	struct device_node *np = pdev->dev.of_node;
+ 	struct iio_dev *indio_dev = NULL;
+ 	struct resource	*mem;
++	const struct of_device_id *match;
+ 	int ret;
+ 	int irq;
+ 
+@@ -152,6 +191,9 @@ static int rockchip_saradc_probe(struct platform_device *pdev)
+ 	}
+ 	info = iio_priv(indio_dev);
+ 
++	match = of_match_device(rockchip_saradc_match, &pdev->dev);
++	info->data = match->data;
++
+ 	mem = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+ 	info->regs = devm_ioremap_resource(&pdev->dev, mem);
+ 	if (IS_ERR(info->regs))
+@@ -192,10 +234,10 @@ static int rockchip_saradc_probe(struct platform_device *pdev)
+ 	}
+ 
+ 	/*
+-	 * Use a default of 1MHz for the converter clock.
++	 * Use a default value for the converter clock.
+ 	 * This may become user-configurable in the future.
+ 	 */
+-	ret = clk_set_rate(info->clk, 1000000);
++	ret = clk_set_rate(info->clk, info->data->clk_rate);
+ 	if (ret < 0) {
+ 		dev_err(&pdev->dev, "failed to set adc clk rate, %d\n", ret);
+ 		return ret;
+@@ -227,8 +269,8 @@ static int rockchip_saradc_probe(struct platform_device *pdev)
+ 	indio_dev->info = &rockchip_saradc_iio_info;
+ 	indio_dev->modes = INDIO_DIRECT_MODE;
+ 
+-	indio_dev->channels = rockchip_saradc_iio_channels;
+-	indio_dev->num_channels = ARRAY_SIZE(rockchip_saradc_iio_channels);
++	indio_dev->channels = info->data->channels;
++	indio_dev->num_channels = info->data->num_channels;
+ 
+ 	ret = iio_device_register(indio_dev);
+ 	if (ret)
+@@ -296,12 +338,6 @@ static int rockchip_saradc_resume(struct device *dev)
+ static SIMPLE_DEV_PM_OPS(rockchip_saradc_pm_ops,
+ 			 rockchip_saradc_suspend, rockchip_saradc_resume);
+ 
+-static const struct of_device_id rockchip_saradc_match[] = {
+-	{ .compatible = "rockchip,saradc" },
+-	{},
+-};
+-MODULE_DEVICE_TABLE(of, rockchip_saradc_match);
+-
+ static struct platform_driver rockchip_saradc_driver = {
+ 	.probe		= rockchip_saradc_probe,
+ 	.remove		= rockchip_saradc_remove,
+-- 
+2.0.1
