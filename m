@@ -1,85 +1,49 @@
-Return-Path: <Adam.Thomson.Opensource@diasemi.com>
-From: "Opensource [Adam Thomson]" <Adam.Thomson.Opensource@diasemi.com>
-To: Jonathan Cameron <jic23@kernel.org>, "Opensource [Adam Thomson]"
-	<Adam.Thomson.Opensource@diasemi.com>, Peter Meerwald <pmeerw@pmeerw.net>
-CC: Lee Jones <lee.jones@linaro.org>, "linux-iio@vger.kernel.org"
-	<linux-iio@vger.kernel.org>, Support Opensource
-	<Support.Opensource@diasemi.com>
-Subject: RE: [PATCH v2 3/7] iio: Add support for DA9150 GPADC
-Date: Mon, 15 Sep 2014 10:32:49 +0000
-Message-ID: <2E89032DDAA8B9408CB92943514A0337AB514D38@SW-EX-MBX01.diasemi.com>
-References: <cover.1409145187.git.Adam.Thomson.Opensource@diasemi.com>
- <619abd3b3123933487b3e8e9cdc7cdca70bbfd98.1409145187.git.Adam.Thomson.Opensource@diasemi.com>
- <alpine.DEB.2.01.1408281314570.5194@pmeerw.net>
- <54022D8E.8040903@kernel.org>
- <2E89032DDAA8B9408CB92943514A0337AB5144FC@SW-EX-MBX01.diasemi.com>
- <5415CFBB.2000401@kernel.org>
-In-Reply-To: <5415CFBB.2000401@kernel.org>
-Content-Type: text/plain; charset="utf-8"
+Return-Path: <dvhart@infradead.org>
+Date: Mon, 15 Sep 2014 14:13:58 -0700
+From: Darren Hart <dvhart@infradead.org>
+To: "H. Peter Anvin" <hpa@linux.intel.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Azael Avalos <coproscefalo@gmail.com>,
+	platform-driver-x86@vger.kernel.org, linux-kernel@vger.kernel.org,
+	"Rafael J. Wysocki" <rjw@rjwysocki.net>,
+	Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org
+Subject: Re: [PATCH v2 3/5] toshiba_acpi: Fix accelerometer direction
+ reporting
+Message-ID: <20140915211358.GA64909@vmdeb7>
+References: <1410569437-3066-1-git-send-email-coproscefalo@gmail.com>
+ <1410569437-3066-2-git-send-email-coproscefalo@gmail.com>
+ <20140915192923.GA61529@vmdeb7>
+ <20140915195617.GA3652@kroah.com>
+ <541753A3.8010102@linux.intel.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <541753A3.8010102@linux.intel.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-T24gU2VwdGVtYmVyIDE0LCAyMDE0IDE4OjI2LCBKb25hdGhhbiBDYW1lcm9uIHdyb3RlOg0KDQo+
-ID4+Pj4gK30NCj4gPj4+PiArDQo+ID4+Pj4gK3N0YXRpYyBpbmxpbmUgaW50IGRhOTE1MF9ncGFk
-Y192YnVzXzIxdl92b2x0YWdlX25vdyhpbnQgcmF3X3ZhbCkNCj4gPj4+PiArew0KPiA+Pj4+ICsJ
-LyogQ29udmVydCB0byB1ViAqLw0KPiA+Pj4+ICsJcmV0dXJuICgoKDIxICogKChyYXdfdmFsICog
-MTAwMCkgKyA1MDApKSAvIDEwMjQpICogMTAwMCk7DQo+ID4+Pj4gK30NCj4gPj4+PiArDQo+ID4+
-Pj4gK3N0YXRpYyBpbmxpbmUgaW50IGRhOTE1MF9ncGFkY192c3lzXzZ2X3ZvbHRhZ2Vfbm93KGlu
-dCByYXdfdmFsKQ0KPiA+Pj4+ICt7DQo+ID4+Pj4gKwkvKiBDb252ZXJ0IHRvIHVWICovDQo+ID4+
-Pj4gKwlyZXR1cm4gKCgoMyAqICgocmF3X3ZhbCAqIDEwMDApICsgNTAwKSkgLyA1MTIpICogMTAw
-MCk7DQo+ID4+Pj4gK30NCj4gPj4+PiArDQo+ID4+Pj4gK3N0YXRpYyBpbmxpbmUgaW50IGRhOTE1
-MF9ncGFkY190anVuY190ZW1wKGludCByYXdfdmFsKQ0KPiA+Pj4+ICt7DQo+ID4+Pj4gKwkvKiBD
-b252ZXJ0IHRvIDAuMSBkZWdyZWVzIEMgKi8NCj4gPj4+DQo+ID4+PiBJSU8gd2FudHMgbWlsbGUg
-ZGVncmVlcyBDDQo+ID4+IEV4YWN0bHkuICBQbGVhc2UgY2hlY2sgYWxsIG9mIHRoZXNlIGNvcnJl
-c3BvbmQgdG8gdGhlIGJhc2UgdW5pdHMgcmVxdWlyZWQNCj4gPj4gYnkgdGhlIGRvY3VtZW50YXRp
-b24uICBNb3N0IG9mIHRoZXNlIG1pZ2h0IGJlIGJldHRlciBoYW5kbGVkIGFzIHJhdw0KPiA+PiB3
-aXRoIHNjYWxlIGFuZCBvZmZzZXQgcHJvdmlkZWQsIGxldHRpbmcgdGhlIG1hdGhzIGJlIGRvaW5n
-IGluIHVzZXJzcGFjZSB1c2luZw0KPiA+PiBmbG9hdGluZyBwb2ludC4NCj4gPg0KPiA+IFNvbWUg
-YXJlIG5lZWRlZCBieSB0aGUgY2hhcmdlciBkcml2ZXIuIFRoZSBpbnRlbnRpb24gb2YgYWRkaW5n
-IHRoZSBjb252ZXJzaW9ucw0KPiA+IGhlcmUgd2FzIHNvIHRoaXMga25vd2xlZGdlIHdhcyBub3Qg
-bmVlZGVkIGluIHRoZSBjaGFyZ2VyIGRyaXZlci4gU2VlbXMgd3JvbmcgdG8NCj4gPiBtb3ZlIHRo
-ZSBjYWxjdWxhdGlvbnMgb3V0IG9mIHRoZSBJSU8gZHJpdmVyLiBNb3N0IG9mIHRoZXNlIGFyZSBu
-b3Qgc2ltcGxlIGxpbmVhcg0KPiA+IHNvIHNjYWxlIGFuZCBvZmZzZXQgd2lsbCBub3Qgd29yaywg
-dW5sZXNzIEknbSBtaXNzaW5nIHNvbWV0aGluZy4NCj4gVW1tLiBUaGV5IGFsbCBhcHBlYXIgdG8g
-YmUgc2ltcGxlIGxpbmVhciBjb252ZXJzaW9ucyB0byBtZSAtIGJlIGl0IHdyaXR0ZW4gYSBmb3Jt
-DQo+IHRoYXQgc2xpZ2h0bHkgb2JzY3VyZXMgdGhhdCBmYWN0LiBCdXQgSSdtIG5vdCB0aGF0IGZ1
-c3NlZCBpZiB5b3UgcmVhbGx5IHdhbnQgdG8NCj4gZG8gdGhlbSBpbiBrZXJuZWwuDQoNCkkgbG9v
-a2VkIGF0IHRoZSB2b2x0YWdlIGNhbGN1bGF0aW9ucyBhbmQgaG93IEkgY291bGQgdXNlIHRoZSBz
-Y2FsZSAmIG9mZnNldA0KZmVhdHVyZXMgYWxyZWFkeSBwcm92aWRlZC4gVGhlIHByb2JsZW0gaXMg
-dGhhdCB0aGUgb2Zmc2V0IHZhbHVlIGlzIGEgZnJhY3Rpb24NCmlmIGFkZGVkIHRvIHRoZSByYXcg
-dmFsdWUgZmlyc3QgYmVmb3JlIHNjYWxlIChhcyB3b3VsZCBiZSBkb25lIGluIHRoZSBpbmtlcm4u
-Yw0KY29kZSksIHNvIEkgY291bGQgbm90IHNlZSBhIHdheSB0byBnZXQgYW4gYWNjdXJhdGUgZW5v
-dWdoIHJlc3VsdCB3aXRob3V0IGRvaW5nDQp0aGUgY2FsY3VsYXRpb24gaGVyZS4gSSB3aWxsIGhv
-d2V2ZXIgcmVtb3ZlIHRoZSBmdW5jdGlvbiBmb3IgdGp1bmNfdGVtcCBhcyB0aGlzDQpjYW4gYmUg
-ZG9uZSB1c2luZyBzY2FsZSBhbmQgb2Zmc2V0LCBzbyB3aWxsIHVwZGF0ZSBhY2NvcmRpbmdseS4N
-Cg0KPiA+Pj4+ICt7DQo+ID4+Pj4gKwlzdHJ1Y3QgZGE5MTUwX2dwYWRjICpncGFkYyA9IGlpb19w
-cml2KGluZGlvX2Rldik7DQo+ID4+Pj4gKwlpbnQgcmV0Ow0KPiA+Pj4+ICsNCj4gPj4+PiArCWlm
-ICgoY2hhbi0+Y2hhbm5lbCA8IERBOTE1MF9HUEFEQ19DSEFOX0dQSU9BKSB8fA0KPiA+Pj4+ICsJ
-ICAgIChjaGFuLT5jaGFubmVsID4gREE5MTUwX0dQQURDX0NIQU5fVEpVTkNfT1ZQKSkNCj4gPj4+
-PiArCQlyZXR1cm4gLUVJTlZBTDsNCj4gPj4+PiArDQo+ID4+Pj4gKwlzd2l0Y2ggKG1hc2spIHsN
-Cj4gPj4+PiArCWNhc2UgSUlPX0NIQU5fSU5GT19SQVc6DQo+ID4+Pj4gKwljYXNlIElJT19DSEFO
-X0lORk9fUFJPQ0VTU0VEOg0KPiA+PiBXb3VsZCBiZSBjbGVhbmVyIHRvIGhhdmUgZWFjaCBvZiB0
-aGVzZSBmdW5jdGlvbnMgdXNlIHJldCBmb3IgcmV0dXJuIGNvZGUNCj4gPj4gaW5jbHVkaW5nIElJ
-T19WQUxfSU5UIGFuZCBwYXNzIHZhbCBhcyBhbiBhcmd1ZW1lbnQuICBXb3VsZCBnZXQgcmlkDQo+
-ID4+IG9mIHRoZSBmaWRkbHkgaGFuZGxpbmcgYXQgdGhlIGVuZCBvZiB0aGlzIGZ1bmN0aW9uIGFu
-ZCBhbGxvdyBkaXJlY3QNCj4gPj4gcmV0dXJucyBmcm9tIGVhY2ggb2YgdGhlIGNhc2Ugc3RhdGVt
-ZW50cy4NCj4gPj4NCj4gPj4gQWxzbywgYXJlIHRoZSBiYXNlIHVuaXRzIG9mIGFsbCBvZiB0aGVz
-ZSBjaGFubmVscyByZWFsbHkgZ2l2aW5nIHVzDQo+ID4+IGFuIGludGVnZXIgcmVzdWx0PyAgRS5n
-LiBtViwgbUEgZXRjPyBOb3QgaW1wb3NzaWJsZSwgYnV0IHNlZW1zIHVubGlrZWx5IQ0KPiA+DQo+
-ID4gT2ssIEkgY2FuIG1ha2UgdGhhdCBjaGFuZ2UuIFdvdWxkbid0IHNheSB3aGF0IHdhcyB0aGVy
-ZSBub3cgaXMgZmlkZGx5LCBidXQgYW0NCj4gPiBoYXBweSB0byB1cGRhdGUuDQo+ID4NCj4gPiBJ
-biB0ZXJtcyBvZiBiYXNlIHVuaXRzLCB0aGV5IGFyZSBhY3R1YWxseSBpbiBWIG9yIEEsIHJhdGhl
-ciB0aGFuIHNheSBtViBvciBtQSwNCj4gPiBhY2NvcmRpbmcgdG8gdGhlIGRhdGFzaGVldCwgYnV0
-IGFzIHRoZXJlJ3Mgbm8gZmxvYXRpbmcgcG9pbnQgc3VwcG9ydCBpbiB0aGUNCj4gPiBrZXJuZWwg
-dGhlIHNlbnNpYmxlIG9wdGlvbiB3YXMgdG8gcHJvdmlkZSB0aGVtIGluIHNtYWxsZXIgdW5pdHMg
-YW5kIHByb3ZpZGUNCj4gPiBncmVhdGVyIGFjY3VyYWN5Lg0KPiBObyBpdCByZWFsbHkgaXNuJ3Qu
-IFRoZXJlIGlzIG5vIGZsb2F0aW5nIHBvaW50IGluIGtlcm5lbCwgc28gd2Ugc2ltdWxhdGUgdGhl
-DQo+IGVmZmVjdCB1c2luZyB0aGUgSUlPX1ZBTCB0eXBlcyBhbmQgYSBwYWlyIG9mIDMyYml0IGlu
-dGVnZXJzLiAgSXQncyBub3QgaWRlYWwNCj4gYnV0IGl0IGRvZXMgYWxsb3cgdXMgdG8gY292ZXIg
-YW55IHBsYXVzaWJsZSByYW5nZS4gIFRoZSByZWFzb24gb3RoZXIgZHJpdmVycyBuZWVkIHRvDQo+
-IG1hdGNoIGl0IGlzIHRoYXQgd2UgbmVlZCBhIGNsZWFuIEFCSSB0byB1c2Vyc3BhY2UuICBIZW5j
-ZSB0aGV5IG11c3QgYWxsIGJlIHRoZSBzYW1lLg0KPiBUaGlzIGlzIHdoeSB3ZSB0cnkgdG8gbW92
-ZSB0aGUgY29udmVyc2lvbnMgaW50byB1c2Vyc3BhY2Ugd2hlcmUgcG9zc2libGUuICBJdCBjYW4N
-Cj4gYmUgZG9uZSBpbiBrZXJuZWwgYnV0IGlzIGFkbWl0dGVkbHkgcmF0aGVyIGZpZGRseSENCg0K
-T2YgY291cnNlLiBXaWxsIG1ha2Ugc3VyZSB0aGUgY29ycmVjdCB0eXBlcyBhcmUgcHJvdmlkZWQg
-dG8ga2VlcCBpbi1saW5lIHdpdGgNCnRoaXMuIFRoYW5rcy4NCg==
+On Mon, Sep 15, 2014 at 02:01:23PM -0700, H. Peter Anvin wrote:
+> On 09/15/2014 12:56 PM, Greg Kroah-Hartman wrote:
+> > 
+> >> I have also suggested this device (2 actually) would be better supported as an
+> >> IIO accelerometer device, but even that would change the sysfs interface by
+> >> removing these altogether and using the IIO standardized path and accelerometer
+> >> interface.
+> > 
+> > That's a better goal overall, then the "odd" sysfs files are now gone,
+> > to be replaced with the standard interface which all tools should
+> > already be using.
+> > 
+> 
+> I would definitely agree with that, although I understood there were
+> technical concerns with that?
+> 
+> 	-hpa
+
+Yes, the accelerometer is hidden behind two ACPI HIDs with a very limited polled
+position and acceleration threshold interface. I've asked the IIO maintainer if
+this would be feasible to use as an IIO device, but have not yet heard back.
+
+Jonathan and linux-iio added to Cc.
+
+-- 
+Darren Hart
+Intel Open Source Technology Center
