@@ -1,88 +1,143 @@
-Return-Path: <iivanov@mm-sol.com>
-Message-ID: <1410342595.2359.14.camel@iivanov-dev>
-Subject: Re: [PATCH 1/2] iio: vadc: Qualcomm SPMI PMIC voltage ADC driver
-From: "Ivan T. Ivanov" <iivanov@mm-sol.com>
-To: Stanimir Varbanov <svarbanov@mm-sol.com>
-Cc: Arnd Bergmann <arnd@arndb.de>, Ian Campbell
- <ijc+devicetree@hellion.org.uk>,  Pawel Moll <pawel.moll@arm.com>, Rob
- Herring <robh+dt@kernel.org>, Kumar Gala <galak@codeaurora.org>,  Mark
- Rutland <mark.rutland@arm.com>, Grant Likely <grant.likely@linaro.org>,
- Jonathan Cameron <jic23@kernel.org>, linux-arm-msm@vger.kernel.org,
- linux-kernel@vger.kernel.org,  linux-iio@vger.kernel.org,
- devicetree@vger.kernel.org, Greg Kroah-Hartman
- <gregkh@linuxfoundation.org>, Lars-Peter Clausen <lars@metafoo.de>, Hartmut
- Knaack <knaack.h@gmx.de>, Angelo Compagnucci
- <angelo.compagnucci@gmail.com>, Doug Anderson <dianders@chromium.org>,
- Fugang Duan <B38611@freescale.com>, Johannes Thumshirn
- <johannes.thumshirn@men.de>, Jean Delvare <jdelvare@suse.de>, Philippe
- Reynes <tremyfr@yahoo.fr>, Lee Jones <lee.jones@linaro.org>, Josh
- Cartwright <joshc@codeaurora.org>, Stephen Boyd <sboyd@codeaurora.org>,
- David Collins <collinsd@codeaurora.org>
-Date: Wed, 10 Sep 2014 12:49:55 +0300
-In-Reply-To: <540EF769.9080002@mm-sol.com>
-References: <1409919274-13419-1-git-send-email-svarbanov@mm-sol.com>
-	 <3899885.YaIxR1zelv@wuerfel> <540DCB78.8060206@mm-sol.com>
-	 <7045486.CbS74HiY8I@wuerfel> <540EF769.9080002@mm-sol.com>
-Content-Type: text/plain; charset="UTF-8"
-Mime-Version: 1.0
+Return-Path: <Adam.Thomson.Opensource@diasemi.com>
+From: "Opensource [Adam Thomson]" <Adam.Thomson.Opensource@diasemi.com>
+To: Lee Jones <lee.jones@linaro.org>, "Opensource [Adam Thomson]"
+	<Adam.Thomson.Opensource@diasemi.com>
+CC: Samuel Ortiz <sameo@linux.intel.com>, Jonathan Cameron <jic23@kernel.org>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>, Sebastian Reichel
+	<sre@kernel.org>, Dmitry Eremin-Solenikov <dbaryshkov@gmail.com>, "David
+ Woodhouse" <dwmw2@infradead.org>, "linux-pm@vger.kernel.org"
+	<linux-pm@vger.kernel.org>, Rob Herring <robh+dt@kernel.org>, Pawel Moll
+	<pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell
+	<ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>,
+	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, Andrew Morton
+	<akpm@linux-foundation.org>, Joe Perches <joe@perches.com>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "Support
+ Opensource" <Support.Opensource@diasemi.com>
+Subject: RE: [PATCH v2 1/7] mfd: Add support for DA9150 combined charger &
+ fuel-gauge device
+Date: Tue, 16 Sep 2014 10:50:21 +0000
+Message-ID: <2E89032DDAA8B9408CB92943514A0337AB514E7C@SW-EX-MBX01.diasemi.com>
+References: <cover.1409145187.git.Adam.Thomson.Opensource@diasemi.com>
+ <d6c7de200c9447dbafa74ee76739da943a0b73b2.1409145187.git.Adam.Thomson.Opensource@diasemi.com>
+ <20140828163608.GY24579@lee--X1>
+ <2E89032DDAA8B9408CB92943514A0337AB5144CE@SW-EX-MBX01.diasemi.com>
+ <20140910094951.GN30307@lee--X1>
+ <2E89032DDAA8B9408CB92943514A0337AB514846@SW-EX-MBX01.diasemi.com>
+ <20140915223924.GC25162@lee--X1>
+In-Reply-To: <20140915223924.GC25162@lee--X1>
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
 List-ID: <linux-iio@vger.kernel.org>
 
-Hi,
-
-On Tue, 2014-09-09 at 15:49 +0300, Stanimir Varbanov wrote:
-> On 09/09/2014 01:32 PM, Arnd Bergmann wrote:
-> > On Monday 08 September 2014 18:30:00 Stanimir Varbanov wrote:
-> >>>>> These numbers all look hardware specific, so why put macros into the
-> >>>>> device tree rather than using them directly?
-> >>>>
-> >>>> The idea was to use #defines in DT nodes when we need to overwrite the
-> >>>> adc channel parameters, see example in 2/2 how it will be used.
-> >>>
-> >>> I don't understand. The node in the example has
-> >>>
-> >>> +               /* Channel node */
-> >>> +               usb_id_nopull@39 {
-> >>> +                       qcom,channel = <VADC_LR_MUX10_USB_ID>;
-> >>> ...
-> >>> +               };
-> >>>
-> >>>
-> >>> And VADC_LR_MUX10_USB_ID is defined to 0x39.  How is this helping anything?
-> >>> You just introduce an artificial dependency on the header file, which makes
-> >>> it a mess to merge the patches or do updates, and anybody who needs to
-> >>> make updates to this now has to go through the same pain, to update the
-> >>> dts files, the driver and the binding document in lockstep.
-> >>>
-> >>> Why not remove the qcom,channel property completely and use a 'reg'
-> >>> property with #address-cells=<1>, #size-cells=<0> and put the number
-> >>> directly in there, with no need for obfuscation macros?
-> >>
-> >> OK thanks for the remarks. I will fix this mess.
-> >>
-> >> I hope you are expecting to see this:
-> >>
-> >> pmic_vadc: vadc@3100 {
-> >>         #address-cells = <1>;
-> >>         #size-cells = <0>;
-> >>         #io-channel-cells = <1>;
-> >>         io-channel-ranges;
-> >>
-> >>         usb_id_nopull@39 {
-> >>                 reg = <0x39>;
-> >>         };
-> >> };
-> >>
-> >> and use the vadc channel from usb device node
-> >>
-> >> usb {
-> >>         ...
-> >>         io-channels = <&pmic_vadc 0x39>;
-
-I believe this will be more readable and clear.
-
-	     io-channels = <&pmic_vadc VADC_LR_MUX10_USB_ID>;
-
-I would like to keep channels definitions macros in DT header.
-
-Regards,
-Ivan
+T24gU2VwdGVtYmVyIDE1LCAyMDE0IDIzOjM5LCBMZWUgSm9uZXMgd3JvdGU6DQoNCj4gT24gV2Vk
+LCAxMCBTZXAgMjAxNCwgT3BlbnNvdXJjZSBbQWRhbSBUaG9tc29uXSB3cm90ZToNCj4gPiBPbiBT
+ZXB0ZW1iZXIgMTAsIDIwMTQgMTA6NTAsIExlZSBKb25lcyB3cm90ZToNCj4gPiA+IE9uIFR1ZSwg
+MDkgU2VwIDIwMTQsIE9wZW5zb3VyY2UgW0FkYW0gVGhvbXNvbl0gd3JvdGU6DQo+ID4gPg0KPiA+
+ID4gPiBPbiBBdWd1c3QgMjgsIDIwMTQgMTc6MzYsIExlZSBKb25lcyB3cm90ZToNCj4gPiA+ID4N
+Cj4gPiA+ID4gVGhhbmtzIGZvciB0aGUgZmVlZGJhY2suIEFzIGEgZ2VuZXJhbCBjb21tZW50IGEg
+Y291cGxlIG9mIHRoZSBpdGVtcyB5b3UndmUNCj4gPiA+ID4gaWRlbnRpZmllZCByZWxhdGUgdG8g
+ZnV0dXJlIHVwZGF0ZXMgKGFkZGl0aW9uYWwgZnVuY3Rpb25hbGl0eSBiZWluZyBhZGRlZCkuDQo+
+ID4gPiA+IEkgYWxyZWFkeSBoYXZlIGNvZGUgaW4gcGxhY2UgZm9yIHRoaXMgYnV0IGhhdmUgc3Ry
+aXBwZWQgb3V0IGEgY291cGxlIG9mIHRoZQ0KPiA+ID4gPiBkcml2ZXJzIGp1c3QgdG8gcmVkdWNl
+IHRoZSBjaHVybiBhbmQgc2l6ZSBvZiBwYXRjaCBzdWJtaXNzaW9uLiBUaGVzZSB3aWxsIGJlDQo+
+ID4gPiA+IGFkZGVkIG9uY2UgdGhlc2UgcGF0Y2hlcyBoYXZlIGJlZW4gYWNjZXB0ZWQuDQo+ID4g
+PiA+DQo+ID4gPiA+IFdoZXJlIHRoaXMgaXMgdGhlIGNhc2UsIEkgaGF2ZSBhZGRlZCBub3RlcyBp
+bi1saW5lIGFnYWluc3QgdGhlIHJlbGV2YW50DQo+ID4gPiA+IGNvbW1lbnRzIHlvdSBtYWRlLg0K
+PiA+ID4gPg0KPiA+ID4gPiA+IE9uIFRodSwgMjggQXVnIDIwMTQsIEFkYW0gVGhvbXNvbiB3cm90
+ZToNCj4gPiA+ID4gPg0KPiA+ID4gPiA+ID4gREE5MTUwIGlzIGEgY29tYmluZWQgQ2hhcmdlciBh
+bmQgRnVlbC1HYXVnZSBJQywgd2l0aCBhZGRpdGlvbmFsDQo+ID4gPiA+ID4gPiBHUElPIGFuZCBH
+UEFEQyBmdW5jdGlvbmFsaXR5Lg0KPiA+ID4gPiA+ID4NCj4gPiA+ID4gPiA+IFNpZ25lZC1vZmYt
+Ynk6IEFkYW0gVGhvbXNvbg0KPiA8QWRhbS5UaG9tc29uLk9wZW5zb3VyY2VAZGlhc2VtaS5jb20+
+DQo+ID4gPiA+ID4gPiAtLS0NCj4gPiA+ID4gPiA+ICBkcml2ZXJzL21mZC9LY29uZmlnICAgICAg
+ICAgICAgICAgICAgfCAgIDEyICsNCj4gPiA+ID4gPiA+ICBkcml2ZXJzL21mZC9NYWtlZmlsZSAg
+ICAgICAgICAgICAgICAgfCAgICAyICsNCj4gPiA+ID4gPiA+ICBkcml2ZXJzL21mZC9kYTkxNTAt
+Y29yZS5jICAgICAgICAgICAgfCAgMzMyICsrKysrKysrKysNCj4gPiA+ID4gPiA+ICBkcml2ZXJz
+L21mZC9kYTkxNTAtaTJjLmMgICAgICAgICAgICAgfCAgMTc2ICsrKysrKw0KPiANCj4gWy4uLl0N
+Cj4gDQo+ID4gPiA+ID4gPiArLyogSGVscGVyIGZ1bmN0aW9ucyBmb3Igc3ViLWRldmljZXMgdG8g
+cmVxdWVzdC9mcmVlIElSUXMgKi8NCj4gPiA+ID4gPiA+ICtpbnQgZGE5MTUwX3JlZ2lzdGVyX2ly
+cShzdHJ1Y3QgcGxhdGZvcm1fZGV2aWNlICpwZGV2LCB2b2lkICpkZXZfaWQsDQo+ID4gPiA+ID4g
+PiArCQkJaXJxX2hhbmRsZXJfdCBoYW5kbGVyLCBjb25zdCBjaGFyICpuYW1lKQ0KPiA+ID4gPiA+
+ID4gK3sNCj4gPiA+ID4gPiA+ICsJaW50IGlycSwgcmV0Ow0KPiA+ID4gPiA+ID4gKw0KPiA+ID4g
+PiA+ID4gKwlpcnEgPSBwbGF0Zm9ybV9nZXRfaXJxX2J5bmFtZShwZGV2LCBuYW1lKTsNCj4gPiA+
+ID4gPiA+ICsJaWYgKGlycSA8IDApDQo+ID4gPiA+ID4gPiArCQlyZXR1cm4gaXJxOw0KPiA+ID4g
+PiA+ID4gKw0KPiA+ID4gPiA+ID4gKwlyZXQgPSBkZXZtX3JlcXVlc3RfdGhyZWFkZWRfaXJxKCZw
+ZGV2LT5kZXYsIGlycSwgTlVMTCwgaGFuZGxlciwNCj4gPiA+ID4gPiA+ICsJCQkJCUlSUUZfT05F
+U0hPVCwgbmFtZSwgZGV2X2lkKTsNCj4gPiA+ID4gPiA+ICsJaWYgKHJldCkNCj4gPiA+ID4gPiA+
+ICsJCWRldl9lcnIoJnBkZXYtPmRldiwgIkZhaWxlZCB0byByZXF1ZXN0IElSUSAlZDogJWRcbiIs
+IGlycSwNCj4gcmV0KTsNCj4gPiA+ID4gPiA+ICsNCj4gPiA+ID4gPiA+ICsJcmV0dXJuIHJldDsN
+Cj4gPiA+ID4gPiA+ICt9DQo+ID4gPiA+ID4gPiArRVhQT1JUX1NZTUJPTF9HUEwoZGE5MTUwX3Jl
+Z2lzdGVyX2lycSk7DQo+ID4gPiA+ID4NCj4gPiA+ID4gPiBXaHkgZG8gdGhleSBuZWVkIGhlbHA/
+ICBXaGF0IHByb2JsZW0gZG9lcyBhZGRpbmcgdGhlc2UgbGF5ZXJzIHNvbHZlPw0KPiA+ID4gPg0K
+PiA+ID4gPiBNZWFucyBJIGRvbid0IGhhdmUgdG8ga2VlcCBhZGRpbmcgcHJpbnQgZXJyb3IgbGlu
+ZXMgZXZlcnl3aGVyZSBlbHNlIGlmIHRoaXMNCj4gPiA+ID4gZnVuY3Rpb24gdGFrZXMgY2FyZSBv
+ZiBpdC4gVGhvdWdodCB0aGF0IHdvdWxkIGJlIGNsZWFuZXIuDQo+ID4gPg0KPiA+ID4gWW91IG9u
+bHkgbmVlZCB0byByZXF1ZXN0IGVhY2ggSVJRIG9uY2UuICBJdCdzIGp1c3QgbW9yZSBhYnN0cmFj
+dGlvbg0KPiA+ID4gZm9yIHRoZSBzYWtlIG9mIGl0LiAgSSB3b3VsZCBwcmVmZXIgaWYgeW91IHJl
+bW92ZWQgdGhlbS4NCj4gPg0KPiA+IFllcywgYnV0IGluIHRoZSBjaGFyZ2VyIGRyaXZlciBmb3Ig
+ZXhhbXBsZSwgdGhlcmUgYXJlIDQgSVJRcyB0byByZXF1ZXN0LiBJZg0KPiA+IEkgZG9uJ3QgdXNl
+IHRoaXMgYXBwcm9hY2ggdGhlIElSUSByZXF1ZXN0aW5nIGJlY29tZXMgYmxvYXRlZCwgaGVuY2Ug
+d2h5IEkgd2VudA0KPiA+IGZvciBhIGNvbW1vbiBmdW5jdGlvbiBsaWtlIHRoaXMuIFRob3VnaHQg
+Z2VuZXJhbGx5IHRoZSBpbnRlbnRpb24gd2FzIHRvIGN1dA0KPiA+IGRvd24gb24gcmVwZWF0ZWQg
+Y29kZT8NCj4gDQo+IElmIHlvdSdyZSB3b3JyaWVkIGFib3V0IGJsb2F0IGluIC5wcm9iZSgpIGl0
+J3Mgb2theSB0byBkZWZpbmUgYSBuZXcNCj4gZnVuY3Rpb24gd2l0aGluIHRoZSBjaGFyZ2VyIGRy
+aXZlcjsgaG93ZXZlciwgY3JlYXRpbmcgYSBjYWxsLWJhY2sgaW50bw0KPiB0aGUgTUZEIGRyaXZl
+ciBsaWtlIHRoaXMgSSB0aGluayBpdCBvdmVyLWtpbGwgZm9yIDQgcmVxdWVzdHMuDQoNCkkgY291
+bGQgZG8gc29tZXRoaW5nIGp1c3QgaW4gdGhlIGNoYXJnZXIsIGJ1dCB3aHkgbm90IGhhdmUgc29t
+ZXRoaW5nIHdoaWNoIGNhbg0KYmUgdXNlZCBmb3IgYWxsIHN1Yi1kZXZpY2VzPyBUaGVyZSBpcyBh
+bHNvIGFuIElSUSB1c2VkIGluIHRoZSBJSU8gQURDIGRyaXZlciBhbmQNCnRoZXJlIHdpbGwgYmUg
+YW5vdGhlciBpbiB0aGUgbGF0ZXIgZnVlbC1nYXVnZSBkcml2ZXIgdG9vLiBEb2Vzbid0IG1ha2Ug
+c2Vuc2UgdG8NCm1lIG5vdCB0byBkbyBpbiB0aGUgTUZEIGNvZGUgd2hlbiB0aGF0IHdpbGwgcHJv
+dmlkZSBhIHNpbXBsZSBjb21tb24gY2FsbCBmb3IgYWxsDQpzdWItZGV2aWNlcy4gV2hhdCBpcyB5
+b3VyIGNvbmNlcm4gd2l0aCBhZGRpbmcgc29tZXRoaW5nIGxpa2UgdGhpcywganVzdCBzbyBJJ20N
+CmNsZWFyPw0KDQo+IA0KPiA+ID4gPiA+ID4gK3ZvaWQgZGE5MTUwX3JlbGVhc2VfaXJxKHN0cnVj
+dCBwbGF0Zm9ybV9kZXZpY2UgKnBkZXYsIHZvaWQgKmRldl9pZCwNCj4gPiA+ID4gPiA+ICsJCSAg
+ICAgICBjb25zdCBjaGFyICpuYW1lKQ0KPiA+ID4gPiA+ID4gK3sNCj4gPiA+ID4gPiA+ICsJaW50
+IGlycTsNCj4gPiA+ID4gPiA+ICsNCj4gPiA+ID4gPiA+ICsJaXJxID0gcGxhdGZvcm1fZ2V0X2ly
+cV9ieW5hbWUocGRldiwgbmFtZSk7DQo+ID4gPiA+ID4gPiArCWlmIChpcnEgPCAwKQ0KPiA+ID4g
+PiA+ID4gKwkJcmV0dXJuOw0KPiA+ID4gPiA+ID4gKw0KPiA+ID4gPiA+ID4gKwlkZXZtX2ZyZWVf
+aXJxKCZwZGV2LT5kZXYsIGlycSwgZGV2X2lkKTsNCj4gPiA+ID4gPiA+ICt9DQo+ID4gPiA+ID4g
+PiArRVhQT1JUX1NZTUJPTF9HUEwoZGE5MTUwX3JlbGVhc2VfaXJxKTsNCj4gPiA+ID4gPg0KPiA+
+ID4gPiA+IERvIHlvdSBldmVyIHJlbGVhc2UgdGhlIElSUSBhbmQgbm90IHVuYmluZCB0aGUgZHJp
+dmVyPw0KPiA+ID4gPiA+DQo+ID4gPiA+ID4gQXJlIHRoZXJlIG9yZGVyaW5nIGlzc3VlcyBhdCBw
+bGF5IGhlcmU/DQo+ID4gPiA+ID4NCj4gPiA+ID4gPiBJZiBub3QsIHRoZXJlJ3Mgbm8gbmVlZCB0
+byBjb25kdWN0IGEgbWFudWFsIGZyZWUuDQo+ID4gPiA+DQo+ID4gPiA+IEluIHRoZSBjaGFyZ2Vy
+IGRyaXZlciwgaW4gdGhlIHJlbW92ZSBmdW5jdGlvbiB0aGVyZSBpcyBhIG5lZWQgSSBiZWxpZXZl
+IHRvDQo+ID4gPiA+IGZyZWUgdGhlIElSUXMgYmVmb3JlIG90aGVyIGl0ZW1zIGFyZSBjbGVhcmVk
+IHVwIChlLmcuIHBvd2VyX3N1cHBseSBjbGFzc2VzKSwNCj4gPiA+ID4gc28gdGhpcyBpcyB3aHkg
+SSBoYXZlIGFkZGVkIHRoaXMgaW4gaGVyZS4NCj4gPiA+DQo+ID4gPiBDYW4geW91IGhhbmRsZSB0
+aGlzIHNlcGFyYXRlbHkgaW4gdGhlIENoYXJnZXIgZHJpdmVyIHRoZW4gcGxlYXNlPw0KPiA+ID4N
+Cj4gPiA+IFsuLi5dDQo+ID4NCj4gPiBJZiBJIGhhdmUgdG8gcmVtb3ZlIHRoZSBJUlEgcmVnaXN0
+ZXIgZnVuY3Rpb24sIHRoZW4geWVzLCBvdGhlcndpc2UgaXQgbWFrZXMgbW9yZQ0KPiA+IHNlbnNl
+IHRvIGhhdmUgdGhlIHBhaXIgb2YgZnVuY3Rpb25zIGluIHRoZSBNRkQgY29yZSBJIHdvdWxkIHNh
+eS4NCj4gDQo+IEkgd291bGQgcHJlZmVyIHlvdSB0byByZW1vdmUgdGhlIGNhbGwtYmFjayBwbGVh
+c2UuDQoNClJpZ2h0Lg0KDQo+IA0KPiA+ID4gPiA+ID4gKwlpZiAocGRhdGEpDQo+ID4gPiA+ID4g
+PiArCQlkYTkxNTAtPmlycV9iYXNlID0gcGRhdGEtPmlycV9iYXNlOw0KPiA+ID4gPiA+ID4gKwll
+bHNlDQo+ID4gPiA+ID4gPiArCQlkYTkxNTAtPmlycV9iYXNlID0gLTE7DQo+ID4gPiA+ID4NCj4g
+PiA+ID4gPiBwZGF0YSA/IHBkYXRhLT5pcnFfYmFzZSA6IC0xOw0KPiA+ID4gPg0KPiA+ID4gPiBU
+aGlzIGlzIGxlZnQgdGhpcyB3YXkgYXMgbGF0ZXIgdXBkYXRlcyB0byBhZGQgYWRkaXRpb25hbCBm
+dW5jdGlvbmFsaXR5IHdpbGwNCj4gPiA+ID4gcmVxdWlyZSBhZGR0aW9uYWwgd29yayB0byBiZSBk
+b25lIHdpdGggdGhlIHBsYXRmb3JtIGRhdGEuIFNlZW1lZCBwb2ludGxlc3MNCj4gPiA+ID4gY2hh
+bmdpbmcgaXQgaGVyZSBqdXN0IHRvIGNoYW5nZSBpdCBiYWNrIGxhdGVyLg0KPiA+ID4NCj4gPiA+
+IFlvdSdyZSBub3QgY2hhbmdpbmcgYW55dGhpbmcsIGFzIHRoaXMgaXMgdGhlIGludHJvZHVjdGlv
+biBvZiB0aGUgY29kZS4NCj4gPiA+IEkgY2FuJ3QgdGVsbCB5b3UgaG93IG1hbnkgdGltZXMgSSd2
+ZSBoZWFyZCAiSSB3aWxsIGNoYW5nZSBpdCBsYXRlciIsDQo+ID4gPiBvciAiZG9pbmcgaXQgdGhp
+cyB3YXkgd2lsbCBzdXBwb3J0IHN1YnNlcXVlbnQgc3VibWlzc2lvbnMiLCB0aGVuDQo+ID4gPiBy
+ZWNlaXZlZCBubyBtb3JlIHBhdGNoZXMuICBJdCdzIG9rYXkgdG8gZG8gaXQgbmljZWx5IG5vdyBh
+bmQgZXhwYW5kDQo+ID4gPiBpdCBiYWNrIG91dCBpbiB0aGUgbmV3IHBhdGNoZXMuDQo+ID4gPg0K
+PiA+ID4gWy4uLl0NCj4gPg0KPiA+IEl0IGFwcGVhcnMgdGhhdCB3YXkgdG8geW91IGJ1dCBJIGhh
+dmUgdG8gbW9kaWZ5IG15IGNvZGUgZm9yIHN1bWJpc3Npb24gYXMgdGhlDQo+ID4gbG9jYWwgY29k
+ZSBJIGhhdmUgY292ZXJzIGFsbCBmdW5jdGlvbmFsaXR5LiBBbSBoYXZpbmcgdG8gcmVmYWN0b3Ig
+YWdhaW4gYW5kDQo+ID4gYWdhaW4ganVzdCB0byBzdWl0IHRoaXMgaW5pdGlhbCBzdWJtaXNzaW9u
+LCBhbmQgdGhlbiBJIGhhdmUgdG8gcmV2ZXJ0IGl0IGJhY2sNCj4gPiBhZ2FpbiB3aGVuIHN1Ym1p
+dHRpbmcgdGhlIGxhc3QgY291cGxlIG9mIGRyaXZlcnMuIFRpbWUgY29uc3VtaW5nLCBhbmQgcXVp
+dGUNCj4gPiBmcnVzdHJhdGluZyB3aGVuIHRoZSBpbnRlbnRpb24gd2FzIHRvIG1ha2UgdGhlIHdo
+b2xlIHByb2Nlc3MgZWFzaWVyLiBBbnl3YXksDQo+ID4gd2lsbCB1cGRhdGUgZm9yIG5vdyBhbmQg
+cmV2ZXJ0IGluIHN1YnNlcXVlbnQgcGF0Y2hlcy4NCj4gDQo+IEkgc2luY2VyZWx5IGhvcGUgdGhl
+IHJlZmFjdG9yaW5ncyB3b24ndCBhZGQgdG9vIG11Y2ggZWZmb3J0LCBidXQgaXQncw0KPiBkaWZm
+aWN1bHQgdG8gaGF2ZSBvbmUgcnVsZSBmb3IgdGhlIG1hc3NlcyBhbmQgZGlmZmVyZW50IG9uZXMg
+Zm9yDQo+IG90aGVycy4NCg0KSSBkbyB1bmRlcnN0YW5kIHRoYXQsIGFuZCB0aGF0J3MgZmFpciBl
+bm91Z2guIElzIGp1c3QgZnJ1c3RyYXRpbmcgd2hlbiB5b3UncmUNCnRyeWluZyB0byBkbyBhIHBy
+b3BlciBqb2IuIEFueXdheSwgYW0gc3VyZSBJJ2xsIGxpdmUuIDopDQoNCj4gDQo+IC0tDQo+IExl
+ZSBKb25lcw0KPiBMaW5hcm8gU1RNaWNyb2VsZWN0cm9uaWNzIExhbmRpbmcgVGVhbSBMZWFkDQo+
+IExpbmFyby5vcmcg4pSCIE9wZW4gc291cmNlIHNvZnR3YXJlIGZvciBBUk0gU29Dcw0KPiBGb2xs
+b3cgTGluYXJvOiBGYWNlYm9vayB8IFR3aXR0ZXIgfCBCbG9nDQo=
