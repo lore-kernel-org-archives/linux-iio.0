@@ -1,71 +1,151 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:56377 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752702AbaINTUZ (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 14 Sep 2014 15:20:25 -0400
-Message-ID: <5415EA75.4040007@kernel.org>
-Date: Sun, 14 Sep 2014 20:20:21 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-MIME-Version: 1.0
-To: Peter Meerwald <pmeerw@pmeerw.net>
-CC: linux-iio@vger.kernel.org,
-	Oleksandr Kravchenko <o.v.kravchenko@globallogic.com>
-Subject: Re: [PATCH v2 06/11] iio:bma180: Drop _update_scan_mode()
-References: <1408488206-2633-1-git-send-email-pmeerw@pmeerw.net> <1408488206-2633-7-git-send-email-pmeerw@pmeerw.net>
-In-Reply-To: <1408488206-2633-7-git-send-email-pmeerw@pmeerw.net>
-Content-Type: text/plain; charset=windows-1252
+Received: from mailout3.samsung.com ([203.254.224.33]:32615 "EHLO
+	mailout3.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752706AbaIPJDj (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 16 Sep 2014 05:03:39 -0400
+From: Naveen Krishna Chatradhi <ch.naveen@samsung.com>
+To: linux-iio@vger.kernel.org, linux-samsung-soc@vger.kernel.org,
+	devicetree@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org, cw00.choi@samsung.com,
+	gregkh@linuxfoundation.org, naveenkrishna.ch@gmail.com,
+	lars@metafoo.de, cpgs@samsung.com, grundler@chromium.org,
+	jic23@kernel.org
+Subject: [PATCH v2 1/3] iio: exyno-adc: use syscon for PMU register access
+Date: Tue, 16 Sep 2014 14:28:49 +0530
+Message-id: <1410857931-4980-2-git-send-email-ch.naveen@samsung.com>
+In-reply-to: <1410857931-4980-1-git-send-email-ch.naveen@samsung.com>
+References: <1410857931-4980-1-git-send-email-ch.naveen@samsung.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 19/08/14 23:43, Peter Meerwald wrote:
-> statically allocate maximum size
-> 
-> Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
-> Cc: Oleksandr Kravchenko <o.v.kravchenko@globallogic.com>
-applied
+This patch updates the IIO based ADC driver to use syscon and regmap
+APIs to access and use PMU registers instead of remapping the PMU
+registers in the driver.
 
-> ---
->  drivers/iio/accel/bma180.c | 18 +-----------------
->  1 file changed, 1 insertion(+), 17 deletions(-)
-> 
-> diff --git a/drivers/iio/accel/bma180.c b/drivers/iio/accel/bma180.c
-> index 91260a0..5838318 100644
-> --- a/drivers/iio/accel/bma180.c
-> +++ b/drivers/iio/accel/bma180.c
-> @@ -82,7 +82,7 @@ struct bma180_data {
->  	int scale;
->  	int bw;
->  	bool pmode;
-> -	char *buff;
-> +	u8 buff[16]; /* 3x 16-bit + 8-bit + padding + timestamp */
->  };
->  
->  enum bma180_chan {
-> @@ -408,26 +408,10 @@ static int bma180_write_raw(struct iio_dev *indio_dev,
->  	}
->  }
->  
-> -static int bma180_update_scan_mode(struct iio_dev *indio_dev,
-> -		const unsigned long *scan_mask)
-> -{
-> -	struct bma180_data *data = iio_priv(indio_dev);
-> -
-> -	if (data->buff)
-> -		devm_kfree(&indio_dev->dev, data->buff);
-> -	data->buff = devm_kzalloc(&indio_dev->dev,
-> -			indio_dev->scan_bytes, GFP_KERNEL);
-> -	if (!data->buff)
-> -		return -ENOMEM;
-> -
-> -	return 0;
-> -}
-> -
->  static const struct iio_info bma180_info = {
->  	.attrs			= &bma180_attrs_group,
->  	.read_raw		= bma180_read_raw,
->  	.write_raw		= bma180_write_raw,
-> -	.update_scan_mode	= bma180_update_scan_mode,
->  	.driver_module		= THIS_MODULE,
->  };
->  
-> 
+Signed-off-by: Naveen Krishna Chatradhi <ch.naveen@samsung.com>
+To: linux-iio@vger.kernel.org
+---
+Changes since v1:
+Rebased on top of togreg branch of IIO git
+
+ drivers/iio/adc/exynos_adc.c |   30 +++++++++++++++++++++---------
+ 1 file changed, 21 insertions(+), 9 deletions(-)
+
+diff --git a/drivers/iio/adc/exynos_adc.c b/drivers/iio/adc/exynos_adc.c
+index 43620fd..fe03177 100644
+--- a/drivers/iio/adc/exynos_adc.c
++++ b/drivers/iio/adc/exynos_adc.c
+@@ -39,6 +39,8 @@
+ #include <linux/iio/iio.h>
+ #include <linux/iio/machine.h>
+ #include <linux/iio/driver.h>
++#include <linux/mfd/syscon.h>
++#include <linux/regmap.h>
+ 
+ /* S3C/EXYNOS4412/5250 ADC_V1 registers definitions */
+ #define ADC_V1_CON(x)		((x) + 0x00)
+@@ -90,11 +92,14 @@
+ 
+ #define EXYNOS_ADC_TIMEOUT	(msecs_to_jiffies(100))
+ 
++#define EXYNOS_ADCV1_PHY_OFFSET	0x0718
++#define EXYNOS_ADCV2_PHY_OFFSET	0x0720
++
+ struct exynos_adc {
+ 	struct exynos_adc_data	*data;
+ 	struct device		*dev;
+ 	void __iomem		*regs;
+-	void __iomem		*enable_reg;
++	struct regmap		*pmu_map;
+ 	struct clk		*clk;
+ 	struct clk		*sclk;
+ 	unsigned int		irq;
+@@ -110,6 +115,7 @@ struct exynos_adc_data {
+ 	int num_channels;
+ 	bool needs_sclk;
+ 	bool needs_adc_phy;
++	int phy_offset;
+ 	u32 mask;
+ 
+ 	void (*init_hw)(struct exynos_adc *info);
+@@ -183,7 +189,7 @@ static void exynos_adc_v1_init_hw(struct exynos_adc *info)
+ 	u32 con1;
+ 
+ 	if (info->data->needs_adc_phy)
+-		writel(1, info->enable_reg);
++		regmap_write(info->pmu_map, info->data->phy_offset, 1);
+ 
+ 	/* set default prescaler values and Enable prescaler */
+ 	con1 =  ADC_V1_CON_PRSCLV(49) | ADC_V1_CON_PRSCEN;
+@@ -198,7 +204,7 @@ static void exynos_adc_v1_exit_hw(struct exynos_adc *info)
+ 	u32 con;
+ 
+ 	if (info->data->needs_adc_phy)
+-		writel(0, info->enable_reg);
++		regmap_write(info->pmu_map, info->data->phy_offset, 0);
+ 
+ 	con = readl(ADC_V1_CON(info->regs));
+ 	con |= ADC_V1_CON_STANDBY;
+@@ -225,6 +231,7 @@ static const struct exynos_adc_data exynos_adc_v1_data = {
+ 	.num_channels	= MAX_ADC_V1_CHANNELS,
+ 	.mask		= ADC_DATX_MASK,	/* 12 bit ADC resolution */
+ 	.needs_adc_phy	= true,
++	.phy_offset	= EXYNOS_ADCV1_PHY_OFFSET,
+ 
+ 	.init_hw	= exynos_adc_v1_init_hw,
+ 	.exit_hw	= exynos_adc_v1_exit_hw,
+@@ -314,7 +321,7 @@ static void exynos_adc_v2_init_hw(struct exynos_adc *info)
+ 	u32 con1, con2;
+ 
+ 	if (info->data->needs_adc_phy)
+-		writel(1, info->enable_reg);
++		regmap_write(info->pmu_map, info->data->phy_offset, 1);
+ 
+ 	con1 = ADC_V2_CON1_SOFT_RESET;
+ 	writel(con1, ADC_V2_CON1(info->regs));
+@@ -332,7 +339,7 @@ static void exynos_adc_v2_exit_hw(struct exynos_adc *info)
+ 	u32 con;
+ 
+ 	if (info->data->needs_adc_phy)
+-		writel(0, info->enable_reg);
++		regmap_write(info->pmu_map, info->data->phy_offset, 0);
+ 
+ 	con = readl(ADC_V2_CON1(info->regs));
+ 	con &= ~ADC_CON_EN_START;
+@@ -362,6 +369,7 @@ static const struct exynos_adc_data exynos_adc_v2_data = {
+ 	.num_channels	= MAX_ADC_V2_CHANNELS,
+ 	.mask		= ADC_DATX_MASK, /* 12 bit ADC resolution */
+ 	.needs_adc_phy	= true,
++	.phy_offset	= EXYNOS_ADCV2_PHY_OFFSET,
+ 
+ 	.init_hw	= exynos_adc_v2_init_hw,
+ 	.exit_hw	= exynos_adc_v2_exit_hw,
+@@ -374,6 +382,7 @@ static const struct exynos_adc_data exynos3250_adc_data = {
+ 	.mask		= ADC_DATX_MASK, /* 12 bit ADC resolution */
+ 	.needs_sclk	= true,
+ 	.needs_adc_phy	= true,
++	.phy_offset	= EXYNOS_ADCV1_PHY_OFFSET,
+ 
+ 	.init_hw	= exynos_adc_v2_init_hw,
+ 	.exit_hw	= exynos_adc_v2_exit_hw,
+@@ -558,10 +567,13 @@ static int exynos_adc_probe(struct platform_device *pdev)
+ 
+ 
+ 	if (info->data->needs_adc_phy) {
+-		mem = platform_get_resource(pdev, IORESOURCE_MEM, 1);
+-		info->enable_reg = devm_ioremap_resource(&pdev->dev, mem);
+-		if (IS_ERR(info->enable_reg))
+-			return PTR_ERR(info->enable_reg);
++		info->pmu_map = syscon_regmap_lookup_by_phandle(
++					pdev->dev.of_node,
++					"samsung,syscon-phandle");
++		if (IS_ERR(info->pmu_map)) {
++			dev_err(&pdev->dev, "syscon regmap lookup failed.\n");
++			return PTR_ERR(info->pmu_map);
++		}
+ 	}
+ 
+ 	irq = platform_get_irq(pdev, 0);
+-- 
+1.7.9.5
+
