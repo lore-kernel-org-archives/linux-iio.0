@@ -1,223 +1,210 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:43334 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752211AbaIPRVi (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 16 Sep 2014 13:21:38 -0400
-In-Reply-To: <20140916170316.GD19010@saruman.home>
-References: <1409671066-25747-1-git-send-email-balbi@ti.com> <54147632.9090204@kernel.org> <20140915052137.GA11866@saruman.home> <20140916170316.GD19010@saruman.home>
+Received: from mout.gmx.net ([212.227.15.15]:62325 "EHLO mout.gmx.net"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1753765AbaIPWIb (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Tue, 16 Sep 2014 18:08:31 -0400
+Message-ID: <5418B4D4.2070806@gmx.de>
+Date: Wed, 17 Sep 2014 00:08:20 +0200
+From: Hartmut Knaack <knaack.h@gmx.de>
 MIME-Version: 1.0
-Content-Type: text/plain;
- charset=UTF-8
-Subject: Re: [RESEND PATCH] iio: light: add support for TI's opt3001 light sensor
-From: Jonathan Cameron <jic23@kernel.org>
-Date: Tue, 16 Sep 2014 18:21:32 +0100
-To: balbi@ti.com
-CC: linux-iio@vger.kernel.org, pmeerw@pmeerw.net
-Message-ID: <6d1c8ab5-1052-4a8b-afc4-baeed1a5a0aa@email.android.com>
+To: =?ISO-8859-1?Q?Heiko_St=FCbner?= <heiko@sntech.de>,
+	Jonathan Cameron <jic23@kernel.org>
+CC: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
+	linux-rockchip@lists.infradead.org, devicetree@vger.kernel.org
+Subject: Re: [PATCH v3] iio: adc: rockchip_saradc: add support for rk3066-tsadc
+ variant
+References: <2689686.WEM6GuFSAn@diego>
+In-Reply-To: <2689686.WEM6GuFSAn@diego>
+Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
+Heiko Stübner schrieb, Am 15.09.2014 23:47:
+> Older Rockchip SoCs, at least the rk3066, used a slightly modified saradc
+> for temperature measurements. This so called tsadc does not contain any
+> active parts like temperature interrupts and only supports polling the
+> current temperature. The returned voltage can then be converted by a
+> suitable thermal driver to and actual temperature and used for thermal
+> handling.
+> 
+> Signed-off-by: Heiko Stuebner <heiko@sntech.de>
+Acked-by: Hartmut Knaack <knaack.h@gmx.de>
+> ---
+> changes since v2:
+> - adapt message about the clk rate
+> changes since v1:
+> - use GENMASK instead of creating the mask manually
+>   as suggested by Hartmut Knaack
+> 
+>  .../bindings/iio/adc/rockchip-saradc.txt           |  2 +-
+>  drivers/iio/adc/rockchip_saradc.c                  | 64 +++++++++++++++++-----
+>  2 files changed, 51 insertions(+), 15 deletions(-)
+> 
+> diff --git a/Documentation/devicetree/bindings/iio/adc/rockchip-saradc.txt b/Documentation/devicetree/bindings/iio/adc/rockchip-saradc.txt
+> index 5d3ec1d..a9a5fe1 100644
+> --- a/Documentation/devicetree/bindings/iio/adc/rockchip-saradc.txt
+> +++ b/Documentation/devicetree/bindings/iio/adc/rockchip-saradc.txt
+> @@ -1,7 +1,7 @@
+>  Rockchip Successive Approximation Register (SAR) A/D Converter bindings
+>  
+>  Required properties:
+> -- compatible: Should be "rockchip,saradc"
+> +- compatible: Should be "rockchip,saradc" or "rockchip,rk3066-tsadc"
+>  - reg: physical base address of the controller and length of memory mapped
+>         region.
+>  - interrupts: The interrupt number to the cpu. The interrupt specifier format
+> diff --git a/drivers/iio/adc/rockchip_saradc.c b/drivers/iio/adc/rockchip_saradc.c
+> index e074a0b..b546bc1 100644
+> --- a/drivers/iio/adc/rockchip_saradc.c
+> +++ b/drivers/iio/adc/rockchip_saradc.c
+> @@ -18,13 +18,13 @@
+>  #include <linux/interrupt.h>
+>  #include <linux/io.h>
+>  #include <linux/of.h>
+> +#include <linux/of_device.h>
+>  #include <linux/clk.h>
+>  #include <linux/completion.h>
+>  #include <linux/regulator/consumer.h>
+>  #include <linux/iio/iio.h>
+>  
+>  #define SARADC_DATA			0x00
+> -#define SARADC_DATA_MASK		0x3ff
+>  
+>  #define SARADC_STAS			0x04
+>  #define SARADC_STAS_BUSY		BIT(0)
+> @@ -38,15 +38,22 @@
+>  #define SARADC_DLY_PU_SOC		0x0c
+>  #define SARADC_DLY_PU_SOC_MASK		0x3f
+>  
+> -#define SARADC_BITS			10
+>  #define SARADC_TIMEOUT			msecs_to_jiffies(100)
+>  
+> +struct rockchip_saradc_data {
+> +	int				num_bits;
+> +	const struct iio_chan_spec	*channels;
+> +	int				num_channels;
+> +	unsigned long			clk_rate;
+> +};
+> +
+>  struct rockchip_saradc {
+>  	void __iomem		*regs;
+>  	struct clk		*pclk;
+>  	struct clk		*clk;
+>  	struct completion	completion;
+>  	struct regulator	*vref;
+> +	const struct rockchip_saradc_data *data;
+>  	u16			last_val;
+>  };
+>  
+> @@ -90,7 +97,7 @@ static int rockchip_saradc_read_raw(struct iio_dev *indio_dev,
+>  		}
+>  
+>  		*val = ret / 1000;
+> -		*val2 = SARADC_BITS;
+> +		*val2 = info->data->num_bits;
+>  		return IIO_VAL_FRACTIONAL_LOG2;
+>  	default:
+>  		return -EINVAL;
+> @@ -103,7 +110,7 @@ static irqreturn_t rockchip_saradc_isr(int irq, void *dev_id)
+>  
+>  	/* Read value */
+>  	info->last_val = readl_relaxed(info->regs + SARADC_DATA);
+> -	info->last_val &= SARADC_DATA_MASK;
+> +	info->last_val &= GENMASK(info->data->num_bits - 1, 0);
+>  
+>  	/* Clear irq & power down adc */
+>  	writel_relaxed(0, info->regs + SARADC_CTRL);
+> @@ -133,12 +140,44 @@ static const struct iio_chan_spec rockchip_saradc_iio_channels[] = {
+>  	ADC_CHANNEL(2, "adc2"),
+>  };
+>  
+> +static const struct rockchip_saradc_data saradc_data = {
+> +	.num_bits = 10,
+> +	.channels = rockchip_saradc_iio_channels,
+> +	.num_channels = ARRAY_SIZE(rockchip_saradc_iio_channels),
+> +	.clk_rate = 1000000,
+> +};
+> +
+> +static const struct iio_chan_spec rockchip_rk3066_tsadc_iio_channels[] = {
+> +	ADC_CHANNEL(0, "adc0"),
+> +	ADC_CHANNEL(1, "adc1"),
+> +};
+> +
+> +static const struct rockchip_saradc_data rk3066_tsadc_data = {
+> +	.num_bits = 12,
+> +	.channels = rockchip_rk3066_tsadc_iio_channels,
+> +	.num_channels = ARRAY_SIZE(rockchip_rk3066_tsadc_iio_channels),
+> +	.clk_rate = 50000,
+> +};
+> +
+> +static const struct of_device_id rockchip_saradc_match[] = {
+> +	{
+> +		.compatible = "rockchip,saradc",
+> +		.data = &saradc_data,
+> +	}, {
+> +		.compatible = "rockchip,rk3066-tsadc",
+> +		.data = &rk3066_tsadc_data,
+> +	},
+> +	{},
+> +};
+> +MODULE_DEVICE_TABLE(of, rockchip_saradc_match);
+> +
+>  static int rockchip_saradc_probe(struct platform_device *pdev)
+>  {
+>  	struct rockchip_saradc *info = NULL;
+>  	struct device_node *np = pdev->dev.of_node;
+>  	struct iio_dev *indio_dev = NULL;
+>  	struct resource	*mem;
+> +	const struct of_device_id *match;
+>  	int ret;
+>  	int irq;
+>  
+> @@ -152,6 +191,9 @@ static int rockchip_saradc_probe(struct platform_device *pdev)
+>  	}
+>  	info = iio_priv(indio_dev);
+>  
+> +	match = of_match_device(rockchip_saradc_match, &pdev->dev);
+> +	info->data = match->data;
+> +
+>  	mem = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+>  	info->regs = devm_ioremap_resource(&pdev->dev, mem);
+>  	if (IS_ERR(info->regs))
+> @@ -192,10 +234,10 @@ static int rockchip_saradc_probe(struct platform_device *pdev)
+>  	}
+>  
+>  	/*
+> -	 * Use a default of 1MHz for the converter clock.
+> +	 * Use a default value for the converter clock.
+>  	 * This may become user-configurable in the future.
+>  	 */
+> -	ret = clk_set_rate(info->clk, 1000000);
+> +	ret = clk_set_rate(info->clk, info->data->clk_rate);
+>  	if (ret < 0) {
+>  		dev_err(&pdev->dev, "failed to set adc clk rate, %d\n", ret);
+>  		return ret;
+> @@ -227,8 +269,8 @@ static int rockchip_saradc_probe(struct platform_device *pdev)
+>  	indio_dev->info = &rockchip_saradc_iio_info;
+>  	indio_dev->modes = INDIO_DIRECT_MODE;
+>  
+> -	indio_dev->channels = rockchip_saradc_iio_channels;
+> -	indio_dev->num_channels = ARRAY_SIZE(rockchip_saradc_iio_channels);
+> +	indio_dev->channels = info->data->channels;
+> +	indio_dev->num_channels = info->data->num_channels;
+>  
+>  	ret = iio_device_register(indio_dev);
+>  	if (ret)
+> @@ -296,12 +338,6 @@ static int rockchip_saradc_resume(struct device *dev)
+>  static SIMPLE_DEV_PM_OPS(rockchip_saradc_pm_ops,
+>  			 rockchip_saradc_suspend, rockchip_saradc_resume);
+>  
+> -static const struct of_device_id rockchip_saradc_match[] = {
+> -	{ .compatible = "rockchip,saradc" },
+> -	{},
+> -};
+> -MODULE_DEVICE_TABLE(of, rockchip_saradc_match);
+> -
+>  static struct platform_driver rockchip_saradc_driver = {
+>  	.probe		= rockchip_saradc_probe,
+>  	.remove		= rockchip_saradc_remove,
+> 
 
-http://marc.info/?l=linux-iio&m=141077611429500&w=2
-
-On September 16, 2014 6:03:16 PM GMT+01:00, Felipe Balbi <balbi@ti.com> wrote:
->ping
->
->On Mon, Sep 15, 2014 at 12:21:37AM -0500, Felipe Balbi wrote:
->> Hi,
->> 
->> On Sat, Sep 13, 2014 at 05:52:02PM +0100, Jonathan Cameron wrote:
->> > On 02/09/14 16:17, Felipe Balbi wrote:
->> > > TI's opt3001 light sensor is a simple and yet powerful
->> > > little device. The device provides 99% IR rejection,
->> > > Automatic full-scale, very low power consumption and
->> > > measurements from 0.01 to 83k lux.
->> > > 
->> > > This patch adds support for that device using the IIO
->> > > framework.
->> > > 
->> > > Signed-off-by: Felipe Balbi <balbi@ti.com>
->> > > ---
->> > > 
->> > > Resending as I saw no changes on the thread.
->> > Hi Felipe,
->> > 
->> > Sorry for the delay on this, entirely my fault - been busy and
->forgot
->> > I still had questions about what was going on in here (yup its the
->> > hysteresis bit again!)
->> 
->> right, this is starting to become way too much headache for such a
->> simple device. Sorry will not help me getting this driver upstream.
->When
->> I first sent this (August 6), we didn't even have v3.17-rc1, now
->we're
->> about to tag -rc5 and I'm worried this driver will not hit v3.18
->merge
->> window.
->> 
->> > Anyhow, I'm afraid I am still a little confused about the meaning
->you
->> > have assigned to Hysteresis in this driver.
->> > 
->> > Let me conjecture on what might be going on here (I may be entirely
->> > wrong).
->> > 
->> > Normally a hysteresis value in IIO is defined as the 'distance'
->back
->> > from a threshold that a signal must go before it may retrip the
->> > threshold.
->> > This threshold value is separately controlled. Thus if we have a
->> > rising threshold of 10 and an hysteresis of 2 - to get two events
->the
->> > signal must first rise past 10, then drop back below 8 and rise
->again
->> > past 10.
->> > If it drops below 10 but not 8 and rises again past 10 then we will
->> > not get an event.
->> > 
->> > So having the same register for both the hysteresis and the
->threshold
->> > doesn't with this description make much sense.  It would mean that
->you
->> > could only have a threshold of say 10 and a hysteresis of 10, thus
->in
->> > effect meaning the signal would always have to cross 0 before the
->next
->> > event whatever the combined threshold / hysteresis value?
->> > 
->> > Perhaps instead the device is automatically adjusting the threshold
->> > when we cross it and the 'hysteresis' here is with respect to a the
->> > previous threshold?
->> > 
->> > Thus if we start with a value of 0 and hysteresis is set to 2 it
->will
->> > trigger an event at:
->> > 
->> > 2, 4, 6, 8, 10 as we rise?
->> > 
->> > This sort of auto adjustment of levels isn't uncommon in light
->sensors
->> > (where the point of the interrupt is to notify the operating system
->> > that a 'significant' change has occurred and things like screen
->> > brightness may need adjusting.
->> > 
->> > If so then the current hysteresis interface does not apply, nor
->does
->> > the Rate of Change (ROC) interface as this is dependent on amount
->of
->> > change, not how fast it changed.  Hence we needs something new to
->> > handle this cleanly. I would suggest a new event type.  Perhaps
->> > something with sysfs attr naming along the lines of
->> > What:		/sys/.../iio:deviceX/events/in_light_change_rising_en
->> > What:          
->/sys/.../iio:deviceX/events/in_light_change_rising_value
->> > 
->> > etc?
->> 
->> will you just tell me what you want ? I really cannot give a crap
->> anymore. This has already taken me over a month of my time for such a
->> simple little device, not to mention your confusing and contradicting
->> change requests.
->> 
->> (could you also trim your responses ? it's very annoying to scroll so
->> much)
->> 
->> > > +#define OPT3001_RESULT		0x00
->> > > +#define OPT3001_CONFIGURATION	0x01
->> > > +#define OPT3001_LOW_LIMIT	0x02
->> > > +#define OPT3001_HIGH_LIMIT	0x03
->> > > +#define OPT3001_MANUFACTURER_ID	0x7e
->> > > +#define OPT3001_DEVICE_ID	0x7f
->> > > +
->> > > +#define OPT3001_CONFIGURATION_RN_MASK (0xf << 12)
->> > > +#define OPT3001_CONFIGURATION_RN_AUTO (0xc << 12)
->> > > +
->> > > +#define OPT3001_CONFIGURATION_CT	BIT(11)
->> > > +
->> > > +#define OPT3001_CONFIGURATION_M_MASK	(3 << 9)
->> > > +#define OPT3001_CONFIGURATION_M_SHUTDOWN (0 << 9)
->> > > +#define OPT3001_CONFIGURATION_M_SINGLE (1 << 9)
->> > > +#define OPT3001_CONFIGURATION_M_CONTINUOUS (2 << 9) /* also 3 <<
->9 */
->> > > +
->> > 
->> > I guess this naming is straight off the datasheet, but it is rather
->> > more cryptic than perhaps it needs to be!  That's kind of an issue
->> > with the datasheet choices rather than what you have here however!
->> 
->> man, are you nit-picky!! These are named as such to make grepping on
->> documentation easier. It's better to have something that matches
->> documentation, don't you think ? otherwise, future users/developers
->of
->> these driver will need either a shit ton of comments explaining that
->A
->> maps to B in docs, or will need a fscking crystal ball to read my
->mind.
->> Assuming I'll still remember what I meant.
->> 
->> > > +static int opt3001_remove(struct i2c_client *client)
->> > > +{
->> > > +	struct iio_dev *iio = i2c_get_clientdata(client);
->> > > +	struct opt3001 *opt = iio_priv(iio);
->> > > +	int ret;
->> > > +	u16 reg;
->> > > +
->> > > +	free_irq(client->irq, iio);
->> > > +	iio_device_unregister(iio);
->> > > +
->> > > +	ret = i2c_smbus_read_word_swapped(opt->client,
->OPT3001_CONFIGURATION);
->> > > +	if (ret < 0) {
->> > > +		dev_err(opt->dev, "failed to read register %02x\n",
->> > > +				OPT3001_CONFIGURATION);
->> > > +		return ret;
->> > > +	}
->> > > +
->> > > +	reg = ret;
->> > > +	opt3001_set_mode(opt, &reg, OPT3001_CONFIGURATION_M_SHUTDOWN);
->> > > +
->> > > +	ret = i2c_smbus_write_word_swapped(opt->client,
->OPT3001_CONFIGURATION,
->> > > +			reg);
->> > > +	if (ret < 0) {
->> > > +		dev_err(opt->dev, "failed to write register %02x\n",
->> > > +				OPT3001_CONFIGURATION);
->> > > +		return ret;
->> > > +	}
->> > > +
->> > > +	iio_device_free(iio);
->> >
->> > Use the devm_iio_device_alloc and you can drop the need to free it.
->> > I don't really mind, but I'll almost guarantee that someone will
->post
->> > a follow up patch doing this if you don't.  As it will be ever so
->> > slightly cleaner, I'll probably take that patch.
->> 
->> here's the original driver:
->> 
->> http://www.spinics.net/lists/linux-iio/msg14331.html
->> 
->> notice that it *WAS* *USING* devm_iio_device_alloc(), until:
->> 
->> http://www.spinics.net/lists/linux-iio/msg14421.html
->> 
->> you *SPECIFICALLY* asked for *NON* *DEVM* versions!!
->> 
->> So figure out what you really want, let me know and I'll code it all
->up
->> quickly and hopefully still get this into v3.18 merge window. I sent
->> this driver *very* early to be doubly sure it would hit v3.18 and
->there
->> was a long hiatus from yourself which is now jeopardizing what I was
->> expecting. That, coupled with your contradicting requests, has just
->put
->> me in a bad mood, even before Monday, hurray.
->> 
->> cheers
->> 
->> -- 
->> balbi
-
--- 
-Sent from my Android phone with K-9 Mail. Please excuse my brevity.
