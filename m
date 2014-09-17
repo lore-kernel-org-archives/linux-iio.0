@@ -1,94 +1,52 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga14.intel.com ([192.55.52.115]:28808 "EHLO mga14.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1752935AbaIQAMF (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Tue, 16 Sep 2014 20:12:05 -0400
-From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-To: IIO <linux-iio@vger.kernel.org>,
-	LKML <linux-kernel@vger.kernel.org>,
-	DEVICE TREE <devicetree@vger.kernel.org>,
-	Lee Jones <lee.jones@linaro.org>
-Cc: Carlo Caione <carlo@caione.org>,
-	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
-	Aaron Lu <aaron.lu@intel.com>, Alan Cox <alan@linux.intel.com>,
-	Jean Delvare <khali@linux-fr.org>,
-	Samuel Ortiz <sameo@linux.intel.com>,
-	Liam Girdwood <lgirdwood@gmail.com>,
-	Mark Brown <broonie@kernel.org>,
-	Grant Likely <grant.likely@linaro.org>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Rob Herring <robh+dt@kernel.org>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Fugang Duan <B38611@freescale.com>,
-	Arnd Bergmann <arnd@arndb.de>,
-	Zubair Lutfullah <zubair.lutfullah@gmail.com>,
-	Sebastian Reichel <sre@debian.org>,
-	Johannes Thumshirn <johannes.thumshirn@men.de>,
-	Philippe Reynes <tremyfr@yahoo.fr>,
-	Angelo Compagnucci <angelo.compagnucci@gmail.com>,
-	Doug Anderson <dianders@chromium.org>,
-	Ramakrishna Pallala <ramakrishna.pallala@intel.com>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	Maxime Ripard <maxime.ripard@free-electrons.com>,
-	Rafael Wysocki <rafael.j.wysocki@intel.com>,
-	Jacob Pan <jacob.jun.pan@linux.intel.com>
-Subject: [PATCH v4 0/3] Initial support for XPowers AXP288 PMIC
-Date: Tue, 16 Sep 2014 17:11:52 -0700
-Message-Id: <1410912715-25903-1-git-send-email-jacob.jun.pan@linux.intel.com>
+Received: from mail-pa0-f51.google.com ([209.85.220.51]:64420 "EHLO
+	mail-pa0-f51.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754329AbaIQIYS (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 17 Sep 2014 04:24:18 -0400
+From: Sanchayan Maity <maitysanchayan@gmail.com>
+To: shawn.guo@freescale.com
+Cc: stefan@agner.ch, B38611@freescale.com, linux@arm.linux.org.uk,
+	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+	jic23@kernel.org, linux-iio@vger.kernel.org,
+	Sanchayan Maity <maitysanchayan@gmail.com>
+Subject: [PATCH 1/2] ARM: dts: vf610-colibri: Add ADC support
+Date: Wed, 17 Sep 2014 13:53:16 +0530
+Message-Id: <1015e874d5b13795e38069402a66b4798d79b632.1410873422.git.maitysanchayan@gmail.com>
+In-Reply-To: <cover.1410873422.git.maitysanchayan@gmail.com>
+References: <cover.1410873422.git.maitysanchayan@gmail.com>
+In-Reply-To: <cover.1410873422.git.maitysanchayan@gmail.com>
+References: <cover.1410873422.git.maitysanchayan@gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-X-Powers AXP288 is a customized PMIC found on some Intel Baytrail-CR platforms.
-It comes with sub-functions such as USB charging, fuel gauge, ADC, and many LDO
-and BUCK channels.
+Enable ADC support for Colibri VF61 modules
 
-By extending the existing AXP20x driver, this patchset adds basic support
-for AXP288 PMIC with ADC as one MFD cell device driver.
+Signed-off-by: Sanchayan Maity <maitysanchayan@gmail.com>
+---
+ arch/arm/boot/dts/vf610-colibri.dtsi |   10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
-Currently, the PMIC driver in this patchset does not support platform data
-enumeration. But when ACPI _DSD and unified device properties become available,
-cell devices with platform data will be added.
-
-This patch does not use intel_soc_pmic core for i2c and regmap handling in that
-axp288 shares similar programming interface with other X-Power PMICs supported in
-axp20x.c. Therefore, extending axp20x.c to include axp288 makes more sense.
-
-Changes
- v4:	- removed rename patch, use Kconfig description to list supported devices
- 	- misc clean up in ADC code, use regmap_bulk_read and improve error
-	  handling, etc.
-	- remove IIO ADC scale, treat raw data as processed since the unit is
-	  already in IIO expected milliamps.
-
- v3:	- put all file rename changes in 1/5
- 	- add iio documentation for in_current_raw/scale
-	- removed global variables in axp2xx
-	- removed pm callbacks from GPADC
-	- removed ACPI opregion cell device
-	- added scales to ADC current and voltage
-	- removed ADC thermal sensor from sysfs, kernel internal use only
-
- v2:
-	- use format -M for 1/4
-	- minor tweak based on Maxime's review
-
-
-Jacob Pan (3):
-  mfd/axp20x: extend axp20x to support axp288 pmic
-  iio/adc: add support for axp288 adc
-  iio: add documentation for current attribute
-
- Documentation/ABI/testing/sysfs-bus-iio |   9 +
- drivers/iio/adc/Kconfig                 |   8 +
- drivers/iio/adc/Makefile                |   1 +
- drivers/iio/adc/axp288_adc.c            | 254 +++++++++++++++++++++++
- drivers/mfd/Kconfig                     |   3 +-
- drivers/mfd/axp20x.c                    | 353 ++++++++++++++++++++++++++------
- include/linux/mfd/axp20x.h              |  58 ++++++
- 7 files changed, 626 insertions(+), 60 deletions(-)
- create mode 100644 drivers/iio/adc/axp288_adc.c
-
+diff --git a/arch/arm/boot/dts/vf610-colibri.dtsi b/arch/arm/boot/dts/vf610-colibri.dtsi
+index 0cd8343..275ebec 100644
+--- a/arch/arm/boot/dts/vf610-colibri.dtsi
++++ b/arch/arm/boot/dts/vf610-colibri.dtsi
+@@ -69,6 +69,16 @@
+ 	status = "okay";
+ };
+ 
++&adc0 {
++	pinctrl-names = "default";
++	status = "okay";
++};
++
++&adc1 {
++	pinctrl-names = "default";
++	status = "okay";
++};
++
+ &iomuxc {
+ 	vf610-colibri {
+ 		pinctrl_esdhc1: esdhc1grp {
 -- 
-1.9.1
+1.7.9.5
 
