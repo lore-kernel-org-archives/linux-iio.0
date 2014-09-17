@@ -1,105 +1,34 @@
-Return-Path: <knaack.h@gmx.de>
-Message-ID: <540B5470.2030404@gmx.de>
-Date: Sat, 06 Sep 2014 20:37:36 +0200
-From: Hartmut Knaack <knaack.h@gmx.de>
-MIME-Version: 1.0
-To: Ludovic Desroches <ludovic.desroches@atmel.com>,
- linux-arm-kernel@lists.infradead.org, linux-iio@vger.kernel.org
-CC: jic23@kernel.org, alexandre.belloni@free-electrons.com,
- josh.wu@atmel.com, nicolas.ferre@atmel.com,
- maxime.ripard@free-electrons.com
-Subject: Re: [RESEND PATCH] iio: adc: at91: don't use the last converted data
- register
-References: <1409726069-13054-1-git-send-email-ludovic.desroches@atmel.com>
-In-Reply-To: <1409726069-13054-1-git-send-email-ludovic.desroches@atmel.com>
-Content-Type: text/plain; charset=ISO-8859-15
+Return-Path: <maitysanchayan@gmail.com>
+From: Sanchayan Maity <maitysanchayan@gmail.com>
+To: shawn.guo@freescale.com
+Cc: stefan@agner.ch,
+	B38611@freescale.com,
+	linux@arm.linux.org.uk,
+	linux-arm-kernel@lists.infradead.org,
+	linux-kernel@vger.kernel.org,
+	jic23@kernel.org,
+	linux-iio@vger.kernel.org,
+	Sanchayan Maity <maitysanchayan@gmail.com>
+Subject: [PATCH 0/2] Add ADC support for Colibri VF61 and implement temperature sensor for vf610-adc
+Date: Wed, 17 Sep 2014 13:53:15 +0530
+Message-Id: <cover.1410873422.git.maitysanchayan@gmail.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-Ludovic Desroches schrieb:
-> If touchscreen mode is enabled and a conversion is requested on another
-> channel, the result in the last converted data register can be a
-> touchscreen relative value. Starting a conversion involves to do a
-> conversion for all active channel. It starts with ADC channels and ends
-> with touchscreen channels. Then if ADC_LCD register is not read quickly,
-> its content may be a touchscreen conversion.
-> To remove this temporal constraint, the conversion value is taken from
-> the channel data register.
-I would recommend to drop eoc_mask and use GENMASK instead. Also, using BIT(chan->channel) would be a good idea.
-> Signed-off-by: Ludovic Desroches <ludovic.desroches@atmel.com>
-> ---
->
-> Sorry for the noise, there was a typo in the CC list.
->
->  drivers/iio/adc/at91_adc.c |   14 +++++++++-----
->  1 file changed, 9 insertions(+), 5 deletions(-)
->
-> diff --git a/drivers/iio/adc/at91_adc.c b/drivers/iio/adc/at91_adc.c
-> index 3b5bacd..dde22cb 100644
-> --- a/drivers/iio/adc/at91_adc.c
-> +++ b/drivers/iio/adc/at91_adc.c
-> @@ -196,6 +196,7 @@ struct at91_adc_state {
->  	bool			done;
->  	int			irq;
->  	u16			last_value;
-> +	int			chnb;
->  	struct mutex		lock;
->  	u8			num_channels;
->  	void __iomem		*reg_base;
-> @@ -274,7 +275,7 @@ void handle_adc_eoc_trigger(int irq, struct iio_dev *idev)
->  		disable_irq_nosync(irq);
->  		iio_trigger_poll(idev->trig, iio_get_time_ns());
->  	} else {
-> -		st->last_value = at91_adc_readl(st, AT91_ADC_LCDR);
-> +		st->last_value = at91_adc_readl(st, AT91_ADC_CHAN(st, st->chnb));
->  		st->done = true;
->  		wake_up_interruptible(&st->wq_data_avail);
->  	}
-> @@ -348,10 +349,11 @@ static irqreturn_t at91_adc_rl_interrupt(int irq, void *private)
->  	struct iio_dev *idev = private;
->  	struct at91_adc_state *st = iio_priv(idev);
->  	u32 status = at91_adc_readl(st, st->registers->status_register);
-> +	const u32 eoc_mask = (1 << st->num_channels) - 1;
->  	unsigned int reg;
->  
->  	status &= at91_adc_readl(st, AT91_ADC_IMR);
-> -	if (status & st->registers->drdy_mask)
-> +	if (status & eoc_mask)
->  		handle_adc_eoc_trigger(irq, idev);
->  
->  	if (status & AT91RL_ADC_IER_PEN) {
-> @@ -413,12 +415,13 @@ static irqreturn_t at91_adc_9x5_interrupt(int irq, void *private)
->  	struct iio_dev *idev = private;
->  	struct at91_adc_state *st = iio_priv(idev);
->  	u32 status = at91_adc_readl(st, st->registers->status_register);
-> +	const u32 eoc_mask = (1 << st->num_channels) - 1;
->  	const uint32_t ts_data_irq_mask =
->  		AT91_ADC_IER_XRDY |
->  		AT91_ADC_IER_YRDY |
->  		AT91_ADC_IER_PRDY;
->  
-> -	if (status & st->registers->drdy_mask)
-> +	if (status & eoc_mask)
->  		handle_adc_eoc_trigger(irq, idev);
->  
->  	if (status & AT91_ADC_IER_PEN) {
-> @@ -689,9 +692,10 @@ static int at91_adc_read_raw(struct iio_dev *idev,
->  	case IIO_CHAN_INFO_RAW:
->  		mutex_lock(&st->lock);
->  
-> +		st->chnb = chan->channel;
->  		at91_adc_writel(st, AT91_ADC_CHER,
->  				AT91_ADC_CH(chan->channel));
-> -		at91_adc_writel(st, AT91_ADC_IER, st->registers->drdy_mask);
-> +		at91_adc_writel(st, AT91_ADC_IER, 1 << chan->channel);
->  		at91_adc_writel(st, AT91_ADC_CR, AT91_ADC_START);
->  
->  		ret = wait_event_interruptible_timeout(st->wq_data_avail,
-> @@ -708,7 +712,7 @@ static int at91_adc_read_raw(struct iio_dev *idev,
->  
->  		at91_adc_writel(st, AT91_ADC_CHDR,
->  				AT91_ADC_CH(chan->channel));
-> -		at91_adc_writel(st, AT91_ADC_IDR, st->registers->drdy_mask);
-> +		at91_adc_writel(st, AT91_ADC_IDR, 1 << chan->channel);
->  
->  		st->last_value = 0;
->  		st->done = false;
+Add ADC nodes for Colibri VF61 modules.
+
+Vybrid ADC module includes a temperature sensor which
+is connected to channel number 26. This patch adds
+support for the sensor. The raw value is read and the
+temperature calculated in degree Celsius which is
+returned using the IIO_CHAN_INFO_PROCESSED option.
+
+Sanchayan Maity (2):
+  ARM: dts: vf610-colibri: Add ADC support
+  ARM: imx: vf610-adc: Add temperature sensor support
+
+ arch/arm/boot/dts/vf610-colibri.dtsi |   10 ++++++++++
+ drivers/iio/adc/vf610_adc.c          |   34 +++++++++++++++++++++++++++++++---
+ 2 files changed, 41 insertions(+), 3 deletions(-)
+
+-- 
+1.7.9.5
