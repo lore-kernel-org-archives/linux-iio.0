@@ -1,153 +1,236 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ns.mm-sol.com ([37.157.136.199]:36603 "EHLO extserv.mm-sol.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1756681AbaIRJ5Y (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Thu, 18 Sep 2014 05:57:24 -0400
-Message-ID: <541AAC80.1090708@mm-sol.com>
-Date: Thu, 18 Sep 2014 12:57:20 +0300
-From: Stanimir Varbanov <svarbanov@mm-sol.com>
+Return-Path: <balbi@ti.com>
+Date: Wed, 17 Sep 2014 10:00:41 -0500
+From: Felipe Balbi <balbi@ti.com>
+To: Felipe Balbi <balbi@ti.com>
+CC: Jonathan Cameron <jic23@kernel.org>, <linux-iio@vger.kernel.org>,
+        <pmeerw@pmeerw.net>, Andrew Morton <akpm@linux-foundation.org>
+Subject: Re: [RESEND PATCH] iio: light: add support for TI's opt3001 light
+ sensor
+Message-ID: <20140917150041.GA6903@saruman.home>
+Reply-To: <balbi@ti.com>
+References: <1409671066-25747-1-git-send-email-balbi@ti.com>
+ <54147632.9090204@kernel.org>
+ <20140915052137.GA11866@saruman.home>
+ <20140916170316.GD19010@saruman.home>
 MIME-Version: 1.0
-To: Jonathan Cameron <jic23@kernel.org>
-CC: Hartmut Knaack <knaack.h@gmx.de>,
-	Ian Campbell <ijc+devicetree@hellion.org.uk>,
-	Pawel Moll <pawel.moll@arm.com>,
-	Rob Herring <robh+dt@kernel.org>,
-	Kumar Gala <galak@codeaurora.org>,
-	Mark Rutland <mark.rutland@arm.com>,
-	Grant Likely <grant.likely@linaro.org>,
-	Arnd Bergmann <arnd@arndb.de>, linux-arm-msm@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-	devicetree@vger.kernel.org,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Angelo Compagnucci <angelo.compagnucci@gmail.com>,
-	Doug Anderson <dianders@chromium.org>,
-	Fugang Duan <B38611@freescale.com>,
-	Johannes Thumshirn <johannes.thumshirn@men.de>,
-	Jean Delvare <jdelvare@suse.de>,
-	Philippe Reynes <tremyfr@yahoo.fr>,
-	Lee Jones <lee.jones@linaro.org>,
-	Josh Cartwright <joshc@codeaurora.org>,
-	Stephen Boyd <sboyd@codeaurora.org>,
-	David Collins <collinsd@codeaurora.org>,
-	"Ivan T. Ivanov" <iivanov@mm-sol.com>
-Subject: Re: [PATCH v2 1/2] iio: vadc: Qualcomm SPMI PMIC voltage ADC driver
-References: <1410448403-19402-1-git-send-email-svarbanov@mm-sol.com> <1410448403-19402-2-git-send-email-svarbanov@mm-sol.com> <54138151.8010902@gmx.de> <54147E97.60808@kernel.org> <5416F3E2.3030009@mm-sol.com> <4dbc485f-599a-4b50-854c-c2e1c44d4810@email.android.com>
-In-Reply-To: <4dbc485f-599a-4b50-854c-c2e1c44d4810@email.android.com>
-Content-Type: text/plain; charset=UTF-8
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="zYM0uCDKw75PZbzx"
+In-Reply-To: <20140916170316.GD19010@saruman.home>
+List-ID: <linux-iio@vger.kernel.org>
 
-Hi Jonathan,
+--zYM0uCDKw75PZbzx
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-On 09/15/2014 07:11 PM, Jonathan Cameron wrote:
-> 
-> 
-> On September 15, 2014 3:12:50 PM GMT+01:00, Stanimir Varbanov <svarbanov@mm-sol.com> wrote:
->> Hi Jonathan,
->>
->> Thanks for the review!
->>
->> On 09/13/2014 08:27 PM, Jonathan Cameron wrote:
->>> On 13/09/14 00:27, Hartmut Knaack wrote:
->>>> Stanimir Varbanov schrieb, Am 11.09.2014 17:13:
->>>>> The voltage ADC is peripheral of Qualcomm SPMI PMIC chips. It has
->>>>> 15bits resolution and register space inside PMIC accessible across
->>>>> SPMI bus.
->>>>>
->>>>> The vadc driver registers itself through IIO interface.
->>>>>
->>>> Looks already pretty good. Things you should consider in regard of
->> common coding style are to use the variable name ret instead of rc,
->> since it is used in almost all adc drivers and thus makes reviewing a
->> bit easier. Besides that, you seem to use unsigned as well as unsigned
->> int, so to be consistent, please stick to one of them. Other comments
->> in line.
->>>
->>> A few additional comments from me.  My biggest question is whether
->>> you are actually making life difficult for yourself by having
->>> vadc_channels and vadc->channels (don't like the similar naming btw!)
->>> in different orders.  I think you can move the ordering into the
->> device
->>> tree reading code rather than doing it in lots of other places. 
->> Hence
->>> rather than an order based on the device tree description, put the
->>> data into a fixed ofer in vadc->channels.
->>>
->>> Entirely possible I'm missing something though :)
->>>>> Signed-off-by: Stanimir Varbanov <svarbanov@mm-sol.com>
->>>>> Signed-off-by: Ivan T. Ivanov <iivanov@mm-sol.com>
->>>>> ---
->>>>>  drivers/iio/adc/Kconfig                       |   11 +
->>>>>  drivers/iio/adc/Makefile                      |    1 +
->>>>>  drivers/iio/adc/qcom-spmi-vadc.c              |  999
->> +++++++++++++++++++++++++
->>>>>  include/dt-bindings/iio/qcom,spmi-pmic-vadc.h |  119 +++
->>>>>  4 files changed, 1130 insertions(+), 0 deletions(-)
->>>>>  create mode 100644 drivers/iio/adc/qcom-spmi-vadc.c
->>>>>  create mode 100644 include/dt-bindings/iio/qcom,spmi-pmic-vadc.h
+ping
 
-<snip>
+On Tue, Sep 16, 2014 at 12:03:16PM -0500, Felipe Balbi wrote:
+> ping
+>=20
+> On Mon, Sep 15, 2014 at 12:21:37AM -0500, Felipe Balbi wrote:
+> > Hi,
+> >=20
+> > On Sat, Sep 13, 2014 at 05:52:02PM +0100, Jonathan Cameron wrote:
+> > > On 02/09/14 16:17, Felipe Balbi wrote:
+> > > > TI's opt3001 light sensor is a simple and yet powerful
+> > > > little device. The device provides 99% IR rejection,
+> > > > Automatic full-scale, very low power consumption and
+> > > > measurements from 0.01 to 83k lux.
+> > > >=20
+> > > > This patch adds support for that device using the IIO
+> > > > framework.
+> > > >=20
+> > > > Signed-off-by: Felipe Balbi <balbi@ti.com>
+> > > > ---
+> > > >=20
+> > > > Resending as I saw no changes on the thread.
+> > > Hi Felipe,
+> > >=20
+> > > Sorry for the delay on this, entirely my fault - been busy and forgot
+> > > I still had questions about what was going on in here (yup its the
+> > > hysteresis bit again!)
+> >=20
+> > right, this is starting to become way too much headache for such a
+> > simple device. Sorry will not help me getting this driver upstream. When
+> > I first sent this (August 6), we didn't even have v3.17-rc1, now we're
+> > about to tag -rc5 and I'm worried this driver will not hit v3.18 merge
+> > window.
+> >=20
+> > > Anyhow, I'm afraid I am still a little confused about the meaning you
+> > > have assigned to Hysteresis in this driver.
+> > >=20
+> > > Let me conjecture on what might be going on here (I may be entirely
+> > > wrong).
+> > >=20
+> > > Normally a hysteresis value in IIO is defined as the 'distance' back
+> > > from a threshold that a signal must go before it may retrip the
+> > > threshold.
+> > > This threshold value is separately controlled. Thus if we have a
+> > > rising threshold of 10 and an hysteresis of 2 - to get two events the
+> > > signal must first rise past 10, then drop back below 8 and rise again
+> > > past 10.
+> > > If it drops below 10 but not 8 and rises again past 10 then we will
+> > > not get an event.
+> > >=20
+> > > So having the same register for both the hysteresis and the threshold
+> > > doesn't with this description make much sense.  It would mean that you
+> > > could only have a threshold of say 10 and a hysteresis of 10, thus in
+> > > effect meaning the signal would always have to cross 0 before the next
+> > > event whatever the combined threshold / hysteresis value?
+> > >=20
+> > > Perhaps instead the device is automatically adjusting the threshold
+> > > when we cross it and the 'hysteresis' here is with respect to a the
+> > > previous threshold?
+> > >=20
+> > > Thus if we start with a value of 0 and hysteresis is set to 2 it will
+> > > trigger an event at:
+> > >=20
+> > > 2, 4, 6, 8, 10 as we rise?
+> > >=20
+> > > This sort of auto adjustment of levels isn't uncommon in light sensors
+> > > (where the point of the interrupt is to notify the operating system
+> > > that a 'significant' change has occurred and things like screen
+> > > brightness may need adjusting.
+> > >=20
+> > > If so then the current hysteresis interface does not apply, nor does
+> > > the Rate of Change (ROC) interface as this is dependent on amount of
+> > > change, not how fast it changed.  Hence we needs something new to
+> > > handle this cleanly. I would suggest a new event type.  Perhaps
+> > > something with sysfs attr naming along the lines of
+> > > What:		/sys/.../iio:deviceX/events/in_light_change_rising_en
+> > > What:           /sys/.../iio:deviceX/events/in_light_change_rising_va=
+lue
+> > >=20
+> > > etc?
+> >=20
+> > will you just tell me what you want ? I really cannot give a crap
+> > anymore. This has already taken me over a month of my time for such a
+> > simple little device, not to mention your confusing and contradicting
+> > change requests.
+> >=20
+> > (could you also trim your responses ? it's very annoying to scroll so
+> > much)
+> >=20
+> > > > +#define OPT3001_RESULT		0x00
+> > > > +#define OPT3001_CONFIGURATION	0x01
+> > > > +#define OPT3001_LOW_LIMIT	0x02
+> > > > +#define OPT3001_HIGH_LIMIT	0x03
+> > > > +#define OPT3001_MANUFACTURER_ID	0x7e
+> > > > +#define OPT3001_DEVICE_ID	0x7f
+> > > > +
+> > > > +#define OPT3001_CONFIGURATION_RN_MASK (0xf << 12)
+> > > > +#define OPT3001_CONFIGURATION_RN_AUTO (0xc << 12)
+> > > > +
+> > > > +#define OPT3001_CONFIGURATION_CT	BIT(11)
+> > > > +
+> > > > +#define OPT3001_CONFIGURATION_M_MASK	(3 << 9)
+> > > > +#define OPT3001_CONFIGURATION_M_SHUTDOWN (0 << 9)
+> > > > +#define OPT3001_CONFIGURATION_M_SINGLE (1 << 9)
+> > > > +#define OPT3001_CONFIGURATION_M_CONTINUOUS (2 << 9) /* also 3 << 9=
+ */
+> > > > +
+> > >=20
+> > > I guess this naming is straight off the datasheet, but it is rather
+> > > more cryptic than perhaps it needs to be!  That's kind of an issue
+> > > with the datasheet choices rather than what you have here however!
+> >=20
+> > man, are you nit-picky!! These are named as such to make grepping on
+> > documentation easier. It's better to have something that matches
+> > documentation, don't you think ? otherwise, future users/developers of
+> > these driver will need either a shit ton of comments explaining that A
+> > maps to B in docs, or will need a fscking crystal ball to read my mind.
+> > Assuming I'll still remember what I meant.
+> >=20
+> > > > +static int opt3001_remove(struct i2c_client *client)
+> > > > +{
+> > > > +	struct iio_dev *iio =3D i2c_get_clientdata(client);
+> > > > +	struct opt3001 *opt =3D iio_priv(iio);
+> > > > +	int ret;
+> > > > +	u16 reg;
+> > > > +
+> > > > +	free_irq(client->irq, iio);
+> > > > +	iio_device_unregister(iio);
+> > > > +
+> > > > +	ret =3D i2c_smbus_read_word_swapped(opt->client, OPT3001_CONFIGUR=
+ATION);
+> > > > +	if (ret < 0) {
+> > > > +		dev_err(opt->dev, "failed to read register %02x\n",
+> > > > +				OPT3001_CONFIGURATION);
+> > > > +		return ret;
+> > > > +	}
+> > > > +
+> > > > +	reg =3D ret;
+> > > > +	opt3001_set_mode(opt, &reg, OPT3001_CONFIGURATION_M_SHUTDOWN);
+> > > > +
+> > > > +	ret =3D i2c_smbus_write_word_swapped(opt->client, OPT3001_CONFIGU=
+RATION,
+> > > > +			reg);
+> > > > +	if (ret < 0) {
+> > > > +		dev_err(opt->dev, "failed to write register %02x\n",
+> > > > +				OPT3001_CONFIGURATION);
+> > > > +		return ret;
+> > > > +	}
+> > > > +
+> > > > +	iio_device_free(iio);
+> > >
+> > > Use the devm_iio_device_alloc and you can drop the need to free it.
+> > > I don't really mind, but I'll almost guarantee that someone will post
+> > > a follow up patch doing this if you don't.  As it will be ever so
+> > > slightly cleaner, I'll probably take that patch.
+> >=20
+> > here's the original driver:
+> >=20
+> > http://www.spinics.net/lists/linux-iio/msg14331.html
+> >=20
+> > notice that it *WAS* *USING* devm_iio_device_alloc(), until:
+> >=20
+> > http://www.spinics.net/lists/linux-iio/msg14421.html
+> >=20
+> > you *SPECIFICALLY* asked for *NON* *DEVM* versions!!
+> >=20
+> > So figure out what you really want, let me know and I'll code it all up
+> > quickly and hopefully still get this into v3.18 merge window. I sent
+> > this driver *very* early to be doubly sure it would hit v3.18 and there
+> > was a long hiatus from yourself which is now jeopardizing what I was
+> > expecting. That, coupled with your contradicting requests, has just put
+> > me in a bad mood, even before Monday, hurray.
+> >=20
+> > cheers
+> >=20
+> > --=20
+> > balbi
+>=20
+>=20
+>=20
+> --=20
+> balbi
 
->>>>> +	vchan = vadc_find_channel(vadc, chan->channel);
->>>>> +	if (!vchan)
->>>>> +		return -EINVAL;
->>>>> +
->>>>> +	if (!vadc->is_ref_measured) {
->>>>> +		rc = vadc_measure_reference_points(vadc);
->>>>> +		if (rc)
->>>>> +			return rc;
->>>>> +
->>>>> +		vadc->is_ref_measured = true;
->>>>> +	}
->>>>> +
->>>>> +	switch (mask) {
->>>>> +	case IIO_CHAN_INFO_PROCESSED:
->>>>> +		rc = vadc_do_conversion(vadc, vchan, &result.adc_code);
->>>>> +		if (rc)
->>>>> +			return rc;
->>>>> +
->>>>> +		vadc_calibrate(vadc, vchan, &result);
->>>>> +
->>>>> +		*val = result.physical;
->>> I'm a little suspicious here.  Are the resulting values in milivolts
->> for
->>> all the channels?  Very handy if so, but seems a little unlikely with
->> 15 bit
->>> ADC that you'd have no part of greater accuracy than a milivolt.
->>
->> In fact *val is in microvolts. What is the expected unit from IIO ADC
->> users?
-> See Documentation/ABI/sysfs-bus-iio
-> Millivolts I think... We copied hwmon where possible.
-
-I'm a bit confused about these units. I searched references of
-iio_read_channel_processed() and found a few.
-
-The iio_hwmon expecting milivolts. On the other side lp8788-charger.c
-registers a get_property method in charger-manager.c, which expects
-microvolts in get_batt_uV().
-
-I also wonder how to implement IIO read_raw() method so as not to lose
-precision (if assume we must return millivolts). As far I can see it
-should be some combination of IIO_CHAN_INFO_RAW and IIO_CHAN_INFO_SCALE
-masks. Any hints?
-
->>
->>>>> +		rc = IIO_VAL_INT;
->>>> return IIO_VAL_INT;
->>>>> +		break;
->>>>> +	default:
->>>>> +		rc = -EINVAL;
->>>>> +		break;
->>>> Drop default case, or leave empty.
->>>>> +	}
->>>>> +
->>>>> +	return rc;
->>>> return -EINVAL;
->>>>> +}
 
 
--- 
-regards,
-Stan
+--=20
+balbi
+
+--zYM0uCDKw75PZbzx
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
+
+iQIcBAEBAgAGBQJUGaIZAAoJEIaOsuA1yqREA4UP/3rr0n67phfR5dBh3wbyb05g
+ansuCS4rCILdM5lTNgIb8ScnEu6p/2afBDf2OhygDYWCVYbJC5OpXWvCwQatCBC7
+++LgvqsSK7gqLD0KMeaCweIhnOmHIpvCgeVcwwcwMuJXuQh5GvbUwr+luTq6/+EP
+qLUTg/q6lthtO6D9KOxxHT8/Fr898QCgE+A03u6MggZn1Ycfwr72kmRYRePC8Il6
+Y0hcckNav7QM7Bb8vZS42f4w8JqSDKSlx8+iHhcYReWzCJ5d2gHnTyUKcBmJ8MTy
+yAyrMC8BL9qg69KJMT5A/nDEC46OQ5C2H0KjAGnd6T3TuSPcVYQ3fvwcDngbMZ+6
+7AML6ykVqlSO1+hBvsr4pwE2SkOvub6acrHDwNF6zA1KJy5iJ+2ewP8kRcT/o90u
+KYmyj4SJR9yc80JgUcIFswOq9x+E0oggw/+XJBGtbNrRPrpD6Ptz380Bj+Wq6yix
+40kMK+U5ZuvWYiBmb/zNJ/954R5RfI4i+wKn+GspTRMsigoUBdkShy2OvCRPYt/H
+0IW1OPONHoOO73W9QMnhKaLWZeWhv1DGpEP0AFRiFJhYNRFldC4wZscFZjTp59A3
+nXGmzHR/cFjO7HVHBZJMR2+46fvx3MZMYhnLCNVA2emgrBOcpDWqvpBtbtVyP2H+
+19DUPyG5c0b1apkNZmFV
+=MEhK
+-----END PGP SIGNATURE-----
+
+--zYM0uCDKw75PZbzx--
