@@ -1,230 +1,94 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-we0-f172.google.com ([74.125.82.172]:51837 "EHLO
-	mail-we0-f172.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753737AbaIXPPb (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 24 Sep 2014 11:15:31 -0400
-MIME-Version: 1.0
-In-Reply-To: <1411570979-19473-1-git-send-email-dbarksdale@uplogix.com>
-References: <1411570979-19473-1-git-send-email-dbarksdale@uplogix.com>
-Date: Wed, 24 Sep 2014 18:15:28 +0300
-Message-ID: <CAEnQRZBP5rjU0E8ptApw78v4SWZY28YDkpRz6fhBd_+jkZzvDA@mail.gmail.com>
-Subject: Re: [PATCH v3] IIO: add si7020 driver
-From: Daniel Baluta <daniel.baluta@intel.com>
-To: David Barksdale <dbarksdale@uplogix.com>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-	linux-iio@vger.kernel.org
-Content-Type: text/plain; charset=UTF-8
+Received: from mga14.intel.com ([192.55.52.115]:28808 "EHLO mga14.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1752935AbaIQAMF (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Tue, 16 Sep 2014 20:12:05 -0400
+From: Jacob Pan <jacob.jun.pan@linux.intel.com>
+To: IIO <linux-iio@vger.kernel.org>,
+	LKML <linux-kernel@vger.kernel.org>,
+	DEVICE TREE <devicetree@vger.kernel.org>,
+	Lee Jones <lee.jones@linaro.org>
+Cc: Carlo Caione <carlo@caione.org>,
+	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+	Aaron Lu <aaron.lu@intel.com>, Alan Cox <alan@linux.intel.com>,
+	Jean Delvare <khali@linux-fr.org>,
+	Samuel Ortiz <sameo@linux.intel.com>,
+	Liam Girdwood <lgirdwood@gmail.com>,
+	Mark Brown <broonie@kernel.org>,
+	Grant Likely <grant.likely@linaro.org>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Rob Herring <robh+dt@kernel.org>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Fugang Duan <B38611@freescale.com>,
+	Arnd Bergmann <arnd@arndb.de>,
+	Zubair Lutfullah <zubair.lutfullah@gmail.com>,
+	Sebastian Reichel <sre@debian.org>,
+	Johannes Thumshirn <johannes.thumshirn@men.de>,
+	Philippe Reynes <tremyfr@yahoo.fr>,
+	Angelo Compagnucci <angelo.compagnucci@gmail.com>,
+	Doug Anderson <dianders@chromium.org>,
+	Ramakrishna Pallala <ramakrishna.pallala@intel.com>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Maxime Ripard <maxime.ripard@free-electrons.com>,
+	Rafael Wysocki <rafael.j.wysocki@intel.com>,
+	Jacob Pan <jacob.jun.pan@linux.intel.com>
+Subject: [PATCH v4 0/3] Initial support for XPowers AXP288 PMIC
+Date: Tue, 16 Sep 2014 17:11:52 -0700
+Message-Id: <1410912715-25903-1-git-send-email-jacob.jun.pan@linux.intel.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Wed, Sep 24, 2014 at 6:02 PM, David Barksdale <dbarksdale@uplogix.com> wrote:
-> This patch adds support to the Industrial IO subsystem
-> for the Silicon Labs Si7013/20/21 Relative Humidity and
-> Temperature Sensors.
->
-> Website: http://www.silabs.com/products/sensors/humidity-sensors/Pages/si7013-20-21.aspx
->
-> These are i2c devices which measure relative humidity
-> and temperature and all use the same protocol. The
-> Si7013 has an additional input with programmable
-> linearization which is not supported because that's
-> complicated and I didn't need it.
->
-> Signed-off-by: David Barksdale <dbarksdale@uplogix.com>
->
-> --
-> Changes since v1:
-> * Renamed to si7020 and replaced Si701x/2x with Si7013/20/21.
-> * Removed unneeded mutex.
-> * Pre-computed floating-point constant expressions.
-> * Removed address_list and I2C_CLASS_HWMON.
->
-> Changes since v2:
-> * Return correct raw sensor values.
-> * Rename dev variable to indio_dev.
-> * Issue a software reset command during probe.
-> * Un-broke string literal.
->
-> ---
->  drivers/iio/humidity/Kconfig  |  10 +++
->  drivers/iio/humidity/Makefile |   1 +
->  drivers/iio/humidity/si7020.c | 165 ++++++++++++++++++++++++++++++++++++++++++
->  3 files changed, 176 insertions(+)
->
-> diff --git a/drivers/iio/humidity/Kconfig b/drivers/iio/humidity/Kconfig
-> index e116bd8..4813b79 100644
-> --- a/drivers/iio/humidity/Kconfig
-> +++ b/drivers/iio/humidity/Kconfig
-> @@ -22,4 +22,14 @@ config SI7005
->           To compile this driver as a module, choose M here: the module
->           will be called si7005.
->
-> +config SI7020
-> +       tristate "Si7013/20/21 Relative Humidity and Temperature Sensors"
-> +       depends on I2C
-> +       help
-> +         Say yes here to build support for the Silicon Labs Si7013/20/21
-> +         Relative Humidity and Temperature Sensors.
-> +
-> +         To compile this driver as a module, choose M here: the module
-> +         will be called si7020.
-> +
->  endmenu
-> diff --git a/drivers/iio/humidity/Makefile b/drivers/iio/humidity/Makefile
-> index e3f3d94..86e2d26 100644
-> --- a/drivers/iio/humidity/Makefile
-> +++ b/drivers/iio/humidity/Makefile
-> @@ -4,3 +4,4 @@
->
->  obj-$(CONFIG_DHT11) += dht11.o
->  obj-$(CONFIG_SI7005) += si7005.o
-> +obj-$(CONFIG_SI7020) += si7020.o
-> diff --git a/drivers/iio/humidity/si7020.c b/drivers/iio/humidity/si7020.c
-> new file mode 100644
-> index 0000000..4aacb55
-> --- /dev/null
-> +++ b/drivers/iio/humidity/si7020.c
-> @@ -0,0 +1,165 @@
-> +/*
-> + * si7020.c - Silicon Labs Si7013/20/21 Relative Humidity and Temp Sensors
-> + * Copyright (c) 2013,2014  Uplogix, Inc.
-> + * David Barksdale <dbarksdale@uplogix.com>
-> + *
-> + * This program is free software; you can redistribute it and/or modify it
-> + * under the terms and conditions of the GNU General Public License,
-> + * version 2, as published by the Free Software Foundation.
-> + *
-> + * This program is distributed in the hope that it will be useful,
-> + * but WITHOUT ANY WARRANTY; without even the implied warranty of
-> + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-> + * GNU General Public License for more details.
-> + */
-> +
-> +/*
-> + * The Silicon Labs Si7013/20/21 Relative Humidity and Temperature Sensors
-> + * are i2c devices which have an identical programming interface for
-> + * measuring relative humidity and temperature. The Si7013 has an additional
-> + * temperature input which this driver does not support.
-> + *
-> + * Data Sheets:
-> + *   Si7013: http://www.silabs.com/Support%20Documents/TechnicalDocs/Si7013.pdf
-> + *   Si7020: http://www.silabs.com/Support%20Documents/TechnicalDocs/Si7020.pdf
-> + *   Si7021: http://www.silabs.com/Support%20Documents/TechnicalDocs/Si7021.pdf
-> + */
-> +
-> +#include <linux/delay.h>
-> +#include <linux/i2c.h>
-> +#include <linux/module.h>
-> +#include <linux/slab.h>
-> +#include <linux/sysfs.h>
-> +
-> +#include <linux/iio/iio.h>
-> +#include <linux/iio/sysfs.h>
-> +
-> +enum {
-> +       /* Measure Relative Humidity, Hold Master Mode */
-> +       SI7020CMD_RH_HOLD       = 0xE5,
-> +       /* Measure Temperature, Hold Master Mode */
-> +       SI7020CMD_TEMP_HOLD     = 0xE3,
-> +       /* Software Reset */
-> +       SI7020CMD_RESET         = 0xFE,
-> +};
-> +
-> +static int si7020_read_raw(struct iio_dev *indio_dev,
-> +                          struct iio_chan_spec const *chan, int *val,
-> +                          int *val2, long mask)
-> +{
-> +       struct i2c_client **client = iio_priv(indio_dev);
-> +       int ret;
-> +
-> +       switch (mask) {
-> +       case IIO_CHAN_INFO_RAW:
-> +               ret = i2c_smbus_read_word_data(*client,
-> +                                              chan->type == IIO_TEMP ?
-> +                                              SI7020CMD_TEMP_HOLD :
-> +                                              SI7020CMD_RH_HOLD);
-> +               if (ret < 0)
-> +                       return ret;
-> +               if (chan->type == IIO_TEMP)
-> +                       *val = ret >> 2;
-> +               else
-> +                       *val = (ret & 0x3FFF) >> 2;
-> +               return IIO_VAL_INT;
-> +       case IIO_CHAN_INFO_SCALE:
-> +               if (chan->type == IIO_TEMP)
-> +                       *val = 175720; /* = 175.72 * 1000 */
-> +               else
-> +                       *val = 125 * 1000;
-> +               *val2 = 65536 >> 2;
-> +               return IIO_VAL_FRACTIONAL;
-> +       case IIO_CHAN_INFO_OFFSET:
-> +               /* Since iio_convert_raw_to_processed_unlocked assumes offset
-> +                * is an integer we have to round these values and lose
-> +                * accuracy.
-> +                * Relative humidity will be 0.0032959% too high and
-> +                * temperature will be 0.00277344 degrees too high.
-> +                * This is no big deal because it's within the accuracy of the
-> +                * sensor.
-> +                */
-> +               if (chan->type == IIO_TEMP)
-> +                       *val = -4368; /* = -46.85 * (65536 >> 2) / 175.72 */
-> +               else
-> +                       *val = -786; /* = -6 * (65536 >> 2) / 125 */
-> +               return IIO_VAL_INT;
-> +       default:
-> +               break;
-> +       }
-> +
-> +       return -EINVAL;
-> +}
-> +
-> +static const struct iio_chan_spec si7020_channels[] = {
-> +       {
-> +               .type = IIO_HUMIDITYRELATIVE,
-> +               .info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
-> +                       BIT(IIO_CHAN_INFO_SCALE) | BIT(IIO_CHAN_INFO_OFFSET),
-> +       },
-> +       {
-> +               .type = IIO_TEMP,
-> +               .info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
-> +                       BIT(IIO_CHAN_INFO_SCALE) | BIT(IIO_CHAN_INFO_OFFSET),
-> +       }
-> +};
-> +
-> +static const struct iio_info si7020_info = {
-> +       .read_raw = si7020_read_raw,
-> +       .driver_module = THIS_MODULE,
-> +};
-> +
-> +static int si7020_probe(struct i2c_client *client,
-> +                       const struct i2c_device_id *id)
-> +{
-> +       struct iio_dev *indio_dev;
-> +       struct i2c_client **data;
-> +       int ret;
-> +
-> +       if (!i2c_check_functionality(client->adapter,
-> +                                    I2C_FUNC_SMBUS_WRITE_BYTE |
-> +                                    I2C_FUNC_SMBUS_READ_WORD_DATA))
-> +               return -ENODEV;
-> +
-> +       /* Reset device, loads default settings. */
-> +       ret = i2c_smbus_write_byte(client, SI7020CMD_RESET);
-> +       if (ret < 0)
-> +               return ret;
-> +       /* Wait the maximum power-up time after software reset. */
-> +       msleep(15);
+X-Powers AXP288 is a customized PMIC found on some Intel Baytrail-CR platforms.
+It comes with sub-functions such as USB charging, fuel gauge, ADC, and many LDO
+and BUCK channels.
 
-Nit: checkpatch.pl says:
+By extending the existing AXP20x driver, this patchset adds basic support
+for AXP288 PMIC with ADC as one MFD cell device driver.
 
-WARNING: msleep < 20ms can sleep for up to 20ms; see
-Documentation/timers/timers-howto.txt
-#155: FILE: drivers/iio/humidity/si7020.c:129:
-+ msleep(15);
+Currently, the PMIC driver in this patchset does not support platform data
+enumeration. But when ACPI _DSD and unified device properties become available,
+cell devices with platform data will be added.
 
-Sorry for spotting this so late in the review. I don't now if this is
-a real problem.
+This patch does not use intel_soc_pmic core for i2c and regmap handling in that
+axp288 shares similar programming interface with other X-Power PMICs supported in
+axp20x.c. Therefore, extending axp20x.c to include axp288 makes more sense.
 
-thanks,
-Daniel.
+Changes
+ v4:	- removed rename patch, use Kconfig description to list supported devices
+ 	- misc clean up in ADC code, use regmap_bulk_read and improve error
+	  handling, etc.
+	- remove IIO ADC scale, treat raw data as processed since the unit is
+	  already in IIO expected milliamps.
+
+ v3:	- put all file rename changes in 1/5
+ 	- add iio documentation for in_current_raw/scale
+	- removed global variables in axp2xx
+	- removed pm callbacks from GPADC
+	- removed ACPI opregion cell device
+	- added scales to ADC current and voltage
+	- removed ADC thermal sensor from sysfs, kernel internal use only
+
+ v2:
+	- use format -M for 1/4
+	- minor tweak based on Maxime's review
+
+
+Jacob Pan (3):
+  mfd/axp20x: extend axp20x to support axp288 pmic
+  iio/adc: add support for axp288 adc
+  iio: add documentation for current attribute
+
+ Documentation/ABI/testing/sysfs-bus-iio |   9 +
+ drivers/iio/adc/Kconfig                 |   8 +
+ drivers/iio/adc/Makefile                |   1 +
+ drivers/iio/adc/axp288_adc.c            | 254 +++++++++++++++++++++++
+ drivers/mfd/Kconfig                     |   3 +-
+ drivers/mfd/axp20x.c                    | 353 ++++++++++++++++++++++++++------
+ include/linux/mfd/axp20x.h              |  58 ++++++
+ 7 files changed, 626 insertions(+), 60 deletions(-)
+ create mode 100644 drivers/iio/adc/axp288_adc.c
+
+-- 
+1.9.1
+
