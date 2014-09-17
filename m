@@ -1,451 +1,628 @@
-Return-Path: <jacob.jun.pan@linux.intel.com>
-Date: Tue, 16 Sep 2014 11:21:59 -0700
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mga14.intel.com ([192.55.52.115]:28808 "EHLO mga14.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1754118AbaIQAMI (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Tue, 16 Sep 2014 20:12:08 -0400
 From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-To: Hartmut Knaack <knaack.h@gmx.de>
-Cc: Jonathan Cameron <jic23@kernel.org>, Peter Meerwald <pmeerw@pmeerw.net>,
- IIO <linux-iio@vger.kernel.org>, Srinivas Pandruvada
- <srinivas.pandruvada@linux.intel.com>, Lars-Peter Clausen
- <lars@metafoo.de>, Ramakrishna Pallala <ramakrishna.pallala@intel.com>
-Subject: Re: [PATCH v3 4/5] iio/adc/axp288: add support for axp288 gpadc
-Message-ID: <20140916112159.2a9dc5dd@ultegra>
-In-Reply-To: <54159372.3020903@gmx.de>
-References: <1410477357-6407-1-git-send-email-jacob.jun.pan@linux.intel.com>
-	<1410477357-6407-5-git-send-email-jacob.jun.pan@linux.intel.com>
-	<alpine.DEB.2.01.1409121428240.9934@pmeerw.net>
-	<5414A075.6090904@kernel.org>
-	<54159372.3020903@gmx.de>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-List-ID: <linux-iio@vger.kernel.org>
+To: IIO <linux-iio@vger.kernel.org>,
+	LKML <linux-kernel@vger.kernel.org>,
+	DEVICE TREE <devicetree@vger.kernel.org>,
+	Lee Jones <lee.jones@linaro.org>
+Cc: Carlo Caione <carlo@caione.org>,
+	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+	Aaron Lu <aaron.lu@intel.com>, Alan Cox <alan@linux.intel.com>,
+	Jean Delvare <khali@linux-fr.org>,
+	Samuel Ortiz <sameo@linux.intel.com>,
+	Liam Girdwood <lgirdwood@gmail.com>,
+	Mark Brown <broonie@kernel.org>,
+	Grant Likely <grant.likely@linaro.org>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Rob Herring <robh+dt@kernel.org>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Fugang Duan <B38611@freescale.com>,
+	Arnd Bergmann <arnd@arndb.de>,
+	Zubair Lutfullah <zubair.lutfullah@gmail.com>,
+	Sebastian Reichel <sre@debian.org>,
+	Johannes Thumshirn <johannes.thumshirn@men.de>,
+	Philippe Reynes <tremyfr@yahoo.fr>,
+	Angelo Compagnucci <angelo.compagnucci@gmail.com>,
+	Doug Anderson <dianders@chromium.org>,
+	Ramakrishna Pallala <ramakrishna.pallala@intel.com>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Maxime Ripard <maxime.ripard@free-electrons.com>,
+	Rafael Wysocki <rafael.j.wysocki@intel.com>,
+	Jacob Pan <jacob.jun.pan@linux.intel.com>
+Subject: [PATCH v4 1/3] mfd/axp20x: extend axp20x to support axp288 pmic
+Date: Tue, 16 Sep 2014 17:11:53 -0700
+Message-Id: <1410912715-25903-2-git-send-email-jacob.jun.pan@linux.intel.com>
+In-Reply-To: <1410912715-25903-1-git-send-email-jacob.jun.pan@linux.intel.com>
+References: <1410912715-25903-1-git-send-email-jacob.jun.pan@linux.intel.com>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Sun, 14 Sep 2014 15:09:06 +0200
-Hartmut Knaack <knaack.h@gmx.de> wrote:
-Thanks for the review, most points are taken, please comments inline.
+X-Powers AXP288 is a customized PMIC for Intel Baytrail-CR platforms. Similar
+to AXP202/209, AXP288 comes with USB charger, more LDO and BUCK channels, and
+AD converters. It also provides extended status and interrupt reporting
+capabilities than the devices currently supported in axp20x.c.
 
-> Jonathan Cameron schrieb, Am 13.09.2014 21:52:
-> > On 12/09/14 13:44, Peter Meerwald wrote:
-> >>
-> >>> Platform driver for XPowers AXP288 ADC, which is a sub-device of
-> >>> the customized PMIC for Intel Baytrail-CR platforms. GPADC device
-> >>> enumerates as one of the MFD cell devices. It uses IIO
-> >>> infrastructure to communicate with userspace and consumer drivers.
-> >>>
-> >>> Usages of ADC channels include battery charging and thermal
-> >>> sensors.
-> >>
-> >> minor nitpicking below
-> > A few more bits and pieces from me.
-> And even some more.
-> > 
-> > Jonathan
-> >>
-> >>> Based on initial work by:
-> >>> Ramakrishna Pallala <ramakrishna.pallala@intel.com>
-> >>>
-> >>> Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
-> >>> ---
-> >>>  drivers/iio/adc/Kconfig        |   8 ++
-> >>>  drivers/iio/adc/Makefile       |   1 +
-> >>>  drivers/iio/adc/axp288_gpadc.c | 238
-> >>> +++++++++++++++++++++++++++++++++++++++++ 3 files changed, 247
-> >>> insertions(+) create mode 100644 drivers/iio/adc/axp288_gpadc.c
-> >>>
-> >>> diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
-> >>> index 11b048a..d02a08e 100644
-> >>> --- a/drivers/iio/adc/Kconfig
-> >>> +++ b/drivers/iio/adc/Kconfig
-> >>> @@ -127,6 +127,14 @@ config AT91_ADC
-> >>>  	help
-> >>>  	  Say yes here to build support for Atmel AT91 ADC.
-> >>>
-> >>> +config AXP288_GPADC
-> >>> +	tristate "X-Power AXP288 GPADC driver"
-> >>> +	depends on MFD_AXP2XX
-> >>> +	help
-> >>> +	  Say yes here to have support for X-Power power
-> >>> management IC (PMIC) ADC
-> >>> +	  device. Depending on platform configuration, this
-> >>> general purpose ADC can
-> >>> +	  be used for sampling sensors such as thermal resistors.
-> >>> +
-> >>>  config EXYNOS_ADC
-> >>>  	tristate "Exynos ADC driver support"
-> >>>  	depends on ARCH_EXYNOS || (OF && COMPILE_TEST)
-> >>> diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
-> >>> index ad81b51..8bf0104 100644
-> >>> --- a/drivers/iio/adc/Makefile
-> >>> +++ b/drivers/iio/adc/Makefile
-> >>> @@ -30,3 +30,4 @@ obj-$(CONFIG_VF610_ADC) += vf610_adc.o
-> >>>  obj-$(CONFIG_VIPERBOARD_ADC) += viperboard_adc.o
-> >>>  xilinx-xadc-y := xilinx-xadc-core.o xilinx-xadc-events.o
-> >>>  obj-$(CONFIG_XILINX_XADC) += xilinx-xadc.o
-> >>> +obj-$(CONFIG_AXP288_GPADC) += axp288_gpadc.o
-> Insert in alphabetic order.
-> >>> diff --git a/drivers/iio/adc/axp288_gpadc.c
-> >>> b/drivers/iio/adc/axp288_gpadc.c new file mode 100644
-> >>> index 0000000..aaa24b0
-> >>> --- /dev/null
-> >>> +++ b/drivers/iio/adc/axp288_gpadc.c
-> >>> @@ -0,0 +1,238 @@
-> >>> +/*
-> >>> + * axp288_gpadc.c - Xpower AXP288 PMIC GPADC Driver
-> >>
-> >> X-Power
-> >>
-> >>> + *
-> >>> + * Copyright (C) 2014 Intel Corporation
-> >>> + *
-> >>> + *
-> >>> ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-> >>> + *
-> >>> + * This program is free software; you can redistribute it and/or
-> >>> modify
-> >>> + * it under the terms of the GNU General Public License as
-> >>> published by
-> >>> + * the Free Software Foundation; version 2 of the License.
-> >>> + *
-> >>> + * This program is distributed in the hope that it will be
-> >>> useful, but
-> >>> + * WITHOUT ANY WARRANTY; without even the implied warranty of
-> >>> + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-> >>> See the GNU
-> >>> + * General Public License for more details.
-> >>> + *
-> >>> + */
-> >>> +
-> >>> +#include <linux/module.h>
-> >>> +#include <linux/kernel.h>
-> >>> +#include <linux/device.h>
-> >>> +#include <linux/regmap.h>
-> >>> +#include <linux/mfd/axp2xx.h>
-> >>> +#include <linux/platform_device.h>
-> >>> +
-> >>> +#include <linux/iio/iio.h>
-> >>> +#include <linux/iio/machine.h>
-> >>> +#include <linux/iio/driver.h>
-> >>> +
-> >>> +#define AXP288_ADC_EN_MASK		       0xF1
-> >>> +#define AXP288_ADC_TS_PIN_GPADC                0xF2
-> >>> +#define AXP288_ADC_TS_PIN_ON                   0xF3
-> Use tabs instead of whitespaces for alignment.
-> >>> +
-> >>> +enum axp288_adc_id {
-> >>> +	AXP288_ADC_TS,
-> >>> +	AXP288_ADC_PMIC,
-> >>> +	AXP288_ADC_GP,
-> >>> +	AXP288_ADC_BATT_CHRG_I,
-> >>> +	AXP288_ADC_BATT_DISCHRG_I,
-> >>> +	AXP288_ADC_BATT_V,
-> >>> +	AXP288_ADC_NR_CHAN,
-> >>> +};
-> >>> +
-> >>> +static const int axp288_scale[AXP288_ADC_NR_CHAN] = {
-> >>
-> >> axp288_adc_scale
-> >>
-> >>> +	[AXP288_ADC_BATT_CHRG_I] = 1,
-> >>> +	[AXP288_ADC_BATT_DISCHRG_I] = 1,
-> >>> +	[AXP288_ADC_BATT_V] = 1,
-> >>> +};
-> >>> +
-> >>> +struct gpadc_info {
-> >>
-> >> axp288_adc_info
-> >>
-> >>> +	int irq;
-> >>> +	struct device *dev;
-> >>> +	struct regmap *regmap;
-> >>> +};
-> >>> +
-> >>> +#define ADC_CHANNEL(_type, _channel, _address,
-> >>> _info_mask)		\
-> >>
-> >> AXP288_ADC_CHANNEL
-> >>
-> >>> +
-> >>> {								\
-> >>> +		.indexed =
-> >>> 1,						\
-> >>> +		.type =
-> >>> _type,						\
-> >>> +		.channel =
-> >>> _channel,					\
-> >>> +		.address =
-> >>> _address,					\
-> >>> +		.datasheet_name =
-> >>> "CH"#_channel,			\
-> >>> +		.info_mask_separate =
-> >>> _info_mask,		        \
-> >>> +	}
-> > I'm not entirely convinced this little macro actually helps seeing
-> > as there is only one fixed element and a little saving on the
-> > datasheet name. Would be tempted to just list it long hand below
-> > for simplicity.
-> > 
-> >>> +
-> >>> +static const struct iio_chan_spec const axp288_adc_channels[] = {
-> >>> +	ADC_CHANNEL(IIO_TEMP, 0, AXP288_TS_ADC_H, 0),
-> >>> +	ADC_CHANNEL(IIO_TEMP, 1, AXP288_PMIC_ADC_H, 0),
-> >>> +	ADC_CHANNEL(IIO_TEMP, 2, AXP288_GP_ADC_H, 0),
-> > So these first three have no known scale or offset? Fair enough if
-> > true.
-> > 
-> >>> +	ADC_CHANNEL(IIO_CURRENT, 3, AXP20X_BATT_CHRG_I_H,
-> >>> +		(BIT(IIO_CHAN_INFO_RAW) |
-> >>> BIT(IIO_CHAN_INFO_SCALE))),
-> > So the output of these (raw*scale) is in milliamps as per the ABI?
-> > (it would be unusual if they are!)
-> > 
-> >>> +	ADC_CHANNEL(IIO_CURRENT, 4, AXP20X_BATT_DISCHRG_I_H,
-> >>> +		(BIT(IIO_CHAN_INFO_RAW) |
-> >>> BIT(IIO_CHAN_INFO_SCALE))),
-> >>> +	ADC_CHANNEL(IIO_VOLTAGE, 5, AXP20X_BATT_V_H,
-> >>> +		(BIT(IIO_CHAN_INFO_RAW) |
-> >>> BIT(IIO_CHAN_INFO_SCALE))), +};
-> >>> +
-> >>> +#define
-> >>> ADC_MAP(_adc_channel_label,				\
-> >>
-> >> AXP288_ADC_MAP
-> >>
-> >>> +		     _consumer_dev_name,			\
-> >>> +
-> >>> _consumer_channel)				\
-> Why not put all parameters in first line?
-it is over 80 chars.
-> >>> +	{
-> >>> \
-> >>> +		.adc_channel_label = _adc_channel_label,	\
-> >>> +		.consumer_dev_name = _consumer_dev_name,	\
-> >>> +		.consumer_channel =
-> >>> _consumer_channel,		\
-> >>> +	}
-> >>> +
-> >>> +/* for consumer drivers */
-> >>> +static struct iio_map axp288_iio_default_maps[] = {
-> >>
-> >> axp288_adc_iio_default_maps
-> >>
-> >>> +	ADC_MAP("TS_PIN", "axp288-batt", "axp288-batt-temp"),
-> >>> +	ADC_MAP("PMIC_TEMP", "axp288-pmic", "axp288-pmic-temp"),
-> >>> +	ADC_MAP("GPADC", "axp288-gpadc", "axp288-system-temp"),
-> >>> +	ADC_MAP("BATT_CHG_I", "axp288-chrg", "axp288-chrg-curr"),
-> >>> +	ADC_MAP("BATT_DISCHRG_I", "axp288-chrg",
-> >>> "axp288-chrg-d-curr"),
-> >>> +	ADC_MAP("BATT_V", "axp288-batt", "axp288-batt-volt"),
-> >>> +	{},
-> >>> +};
-> >>> +
-> >>> +static int axp288_adc_read_raw(struct iio_dev *indio_dev,
-> >>> +			struct iio_chan_spec const *chan,
-> >>> +			int *val, int *val2, long mask)
-> Improve indentation of parameters.
-> >>> +{
-> >>> +	int ret;
-> >>> +	struct gpadc_info *info = iio_priv(indio_dev);
-> >>> +	unsigned int th, tl;
-> >>> +
-> >>> +	mutex_lock(&indio_dev->mlock);
-> >>> +
-> >>> +	switch (mask) {
-> >>> +	case IIO_CHAN_INFO_RAW:
-> >>> +		/* special case for GPADC sample */
-> >>> +		if (chan->address == AXP288_GP_ADC_H)
-> >>> +			regmap_write(info->regmap,
-> >>> AXP288_ADC_TS_PIN_CTRL,
-> >>> +				AXP288_ADC_TS_PIN_GPADC);
-> Improve indentation. Also check for error on regmap_write.
-> >>> +		ret = regmap_read(info->regmap, chan->address,
-> >>> &th);
-> Better use regmap_bulk_read?
-good idea. will do.
-> >>> +		if (ret) {
-> >>> +			dev_err(&indio_dev->dev, "sample raw
-> >>> data high failed\n");
-> >>> +			break;
-> >>> +		}
-> >>> +		ret = regmap_read(info->regmap, chan->address +
-> >>> 1, &tl);
-> >>> +		if (ret) {
-> >>> +			dev_err(&indio_dev->dev, "sample raw
-> >>> data low failed\n");
-> >>> +			break;
-> >>> +		}
-> >>> +
-> >>> +		*val = (th << 4) + ((tl >> 4) & 0x0F);
-> >>> +		ret = IIO_VAL_INT;
-> >>> +		break;
-> >>> +	case IIO_CHAN_INFO_SCALE:
-> >>> +		*val = axp288_scale[chan->channel];
-> >>
-> >> either set
-> >> *val2 = 0 or
-> >> ret = IIO_VAL_INT;
-> > This one. No point in misleading userspace into thinking their might
-> > be a decimal part sometimes. If they are as it appears all 1, then
-> > those channels can use IIO_CHAN_INFO_PROCESSED and skip exporting
-> > this at all.
-> >>
-> >>> +		ret = IIO_VAL_INT_PLUS_MICRO;
-> >>> +		break;
-> >>> +	default:
-> >>> +		ret = -EINVAL;
-> >>> +	}
-> >>> +
-> >>> +	if (IIO_CHAN_INFO_RAW && chan->address ==
-> >>> AXP288_GP_ADC_H)
-> > 
-> > Well, IIO_CHAN_INFO_RAW is always going to be false, so I'm
-> > guessing this isn't what was intended...
-> > mask == IIO_CHAN_INFO_RAW I would imagine.
-> >>> +		regmap_write(info->regmap,
-> >>> AXP288_ADC_TS_PIN_CTRL,
-> >>> +			AXP288_ADC_TS_PIN_ON);
-> Improve indentation.
-> >>> +
-> >>> +	mutex_unlock(&indio_dev->mlock);
-> >>> +
-> >>> +	return ret;
-> >>> +}
-> >>> +
-> >>> +static int axp288_gpadc_enable(struct regmap *regmap, bool
-> >>> enable)
-> >>
-> >> axp288_adc_enable()
-> >>
-> >>> +{
-> >>> +	unsigned int pin_on, adc_en;
-> >>> +
-> >>> +	if (enable) {
-> >>> +		pin_on = AXP288_ADC_TS_PIN_ON;
-> >>> +		adc_en = AXP288_ADC_EN_MASK;
-> >>> +	} else {
-> >>> +		pin_on = ~AXP288_ADC_TS_PIN_ON;
-> >>> +		adc_en = ~AXP288_ADC_EN_MASK;
-> >>> +	}
-> >>> +	if (regmap_write(regmap, AXP288_ADC_TS_PIN_CTRL, pin_on))
-> >>> +		return -EIO;
-> Better return real error value of regmap_write().
-> >>> +
-> >>> +	return regmap_write(regmap, AXP20X_ADC_EN1,
-> >>> ~AXP288_ADC_EN_MASK);
-> Didn't you mean to write adc_en?
-No, EN1 is the register.
-> >>> +}
-> >>> +
-> >>> +static const struct iio_info axp288_iio_info = {
-> >>
-> >> axp288_adc_iio_info
-> > or axp288_adc_info would do.
-> >>
-> >>> +	.read_raw = &axp288_adc_read_raw,
-> >>> +	.driver_module = THIS_MODULE,
-> >>> +};
-> >>> +
-> >>> +static int axp288_gpadc_probe(struct platform_device *pdev)
-> >>
-> >> axp288_adc_probe()
-> >>
-> >>> +{
-> >>> +	int err;
-> >>> +	struct gpadc_info *info;
-> >>> +	struct iio_dev *indio_dev;
-> >>> +	struct axp2xx_dev *axp2xx =
-> >>> dev_get_drvdata(pdev->dev.parent);
-> >>> +	int irq;
-> Move irq in one line with err, or use err instead of irq (and better
-> call it ret), or as Peter suggested below.
-yes, removed local irq.
-> >>> +
-> >>> +	indio_dev = devm_iio_device_alloc(&pdev->dev,
-> >>> sizeof(*info));
-> >>> +	if (!indio_dev)
-> >>> +		return -ENOMEM;
-> >>> +
-> >>> +	info = iio_priv(indio_dev);
-> >>> +	irq = platform_get_irq(pdev, 0);
-> >>
-> >> could save local irq variable and directly assign to info->irq
-> >>
-> >>> +	if (irq < 0) {
-> >>> +		dev_err(&pdev->dev, "no irq resource?\n");
-> >>> +		return irq;
-> >>> +	}
-> >>> +	info->irq = irq;
-> >>> +	platform_set_drvdata(pdev, indio_dev);
-> >>> +	info->regmap = axp2xx->regmap;
-> >>> +	axp288_gpadc_enable(axp2xx->regmap, true);
-> This function can return errors, check for them.
-> >>> +
-> >>> +	indio_dev->dev.parent = &pdev->dev;
-> >>> +	indio_dev->name = pdev->name;
-> >>> +	indio_dev->channels = axp288_adc_channels;
-> >>> +	indio_dev->num_channels =
-> >>> ARRAY_SIZE(axp288_adc_channels);
-> >>> +	indio_dev->info = &axp288_iio_info;
-> >>> +	indio_dev->modes = INDIO_DIRECT_MODE;
-> >>> +	/* REVISIT: override default map with platform data */
-> >>> +	err = iio_map_array_register(indio_dev,
-> >>> axp288_iio_default_maps);
-> >>> +	if (err)
-> >>
-> >> maybe err < 0, just to be consistent with below
-> >>
-> >>> +		goto err_disable_dev;
-> >>> +
-> >>> +	err = iio_device_register(indio_dev);
-> >>> +	if (err < 0) {
-> >>> +		dev_err(&pdev->dev, "unable to register iio
-> >>> device\n");
-> >>> +		goto err_array_unregister;
-> >>> +	}
-> >>> +	return 0;
-> >>> +
-> >>> +err_array_unregister:
-> >>> +	iio_map_array_unregister(indio_dev);
-> >>> +err_disable_dev:
-> >>> +	axp288_gpadc_enable(axp2xx->regmap, false);
-> >>> +	return err;
-> >>> +}
-> >>> +
-> >>> +static int axp288_gpadc_remove(struct platform_device *pdev)
-> >>> +{
-> >>> +	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
-> >>> +
-> >>> +	iio_device_unregister(indio_dev);
-> >>> +	iio_map_array_unregister(indio_dev);
-> >>
-> >> axp288_gpadc_enable(axp2xx->regmap, false);
-> >>
-> >>> +
-> >>> +	return 0;
-> >>> +}
-> >>> +
-> >>> +static struct platform_driver axp288_gpadc_driver = {
-> >>> +	.probe = axp288_gpadc_probe,
-> >>> +	.remove = axp288_gpadc_remove,
-> >>> +	.driver = {
-> >>> +		.name = "axp288_adc",
-> >>> +		.owner = THIS_MODULE,
-> >>> +	},
-> >>> +};
-> >>> +
-> >>> +module_platform_driver(axp288_gpadc_driver);
-> >>> +
-> >>> +MODULE_AUTHOR("Jacob Pan <jacob.jun.pan@linux.intel.com>");
-> >>> +MODULE_DESCRIPTION("Dollar Cove Xpower AXP288 General Purpose
-> >>> ADC Driver");
-> >>
-> >> X-Power
-> >>
-> >>> +MODULE_LICENSE("GPL");
-> >>>
-> >>
-> > --
-> > To unsubscribe from this list: send the line "unsubscribe
-> > linux-iio" in the body of a message to majordomo@vger.kernel.org
-> > More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> > 
-> 
+In addition to feature extension, this patch also adds ACPI binding for
+enumeration.
 
-[Jacob Pan]
+This consolidated driver should support more X-Powers' PMICs in both device
+tree and ACPI enumerated platforms.
+
+Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
+---
+ drivers/mfd/Kconfig        |   3 +-
+ drivers/mfd/axp20x.c       | 353 +++++++++++++++++++++++++++++++++++++--------
+ include/linux/mfd/axp20x.h |  58 ++++++++
+ 3 files changed, 354 insertions(+), 60 deletions(-)
+
+diff --git a/drivers/mfd/Kconfig b/drivers/mfd/Kconfig
+index de5abf2..c183edb 100644
+--- a/drivers/mfd/Kconfig
++++ b/drivers/mfd/Kconfig
+@@ -74,7 +74,8 @@ config MFD_AXP20X
+ 	select REGMAP_IRQ
+ 	depends on I2C=y
+ 	help
+-	  If you say Y here you get support for the X-Powers AXP202 and AXP209.
++	  If you say Y here you get support for the X-Powers AXP202, AXP209 and
++	  AXP288 power management IC (PMIC).
+ 	  This driver include only the core APIs. You have to select individual
+ 	  components like regulators or the PEK (Power Enable Key) under the
+ 	  corresponding menus.
+diff --git a/drivers/mfd/axp20x.c b/drivers/mfd/axp20x.c
+index dee6539..8e03e59 100644
+--- a/drivers/mfd/axp20x.c
++++ b/drivers/mfd/axp20x.c
+@@ -1,9 +1,9 @@
+ /*
+- * axp20x.c - MFD core driver for the X-Powers AXP202 and AXP209
++ * axp20x.c - MFD core driver for the X-Powers' Power Management ICs
+  *
+- * AXP20x comprises an adaptive USB-Compatible PWM charger, 2 BUCK DC-DC
+- * converters, 5 LDOs, multiple 12-bit ADCs of voltage, current and temperature
+- * as well as 4 configurable GPIOs.
++ * AXP20x typically comprises an adaptive USB-Compatible PWM charger, BUCK DC-DC
++ * converters, LDOs, multiple 12-bit ADCs of voltage, current and temperature
++ * as well as configurable GPIOs.
+  *
+  * Author: Carlo Caione <carlo@caione.org>
+  *
+@@ -25,9 +25,16 @@
+ #include <linux/mfd/core.h>
+ #include <linux/of_device.h>
+ #include <linux/of_irq.h>
++#include <linux/acpi.h>
+ 
+ #define AXP20X_OFF	0x80
+ 
++static const char *axp20x_model_names[] = {
++	"AXP202",
++	"AXP209",
++	"AXP288",
++};
++
+ static const struct regmap_range axp20x_writeable_ranges[] = {
+ 	regmap_reg_range(AXP20X_DATACACHE(0), AXP20X_IRQ5_STATE),
+ 	regmap_reg_range(AXP20X_DCDC_MODE, AXP20X_FG_RES),
+@@ -47,6 +54,25 @@ static const struct regmap_access_table axp20x_volatile_table = {
+ 	.n_yes_ranges	= ARRAY_SIZE(axp20x_volatile_ranges),
+ };
+ 
++static const struct regmap_range axp288_writeable_ranges[] = {
++	regmap_reg_range(AXP20X_DATACACHE(0), AXP20X_IRQ6_STATE),
++	regmap_reg_range(AXP20X_DCDC_MODE, AXP288_FG_TUNE5),
++};
++
++static const struct regmap_range axp288_volatile_ranges[] = {
++	regmap_reg_range(AXP20X_IRQ1_EN,  AXP20X_IPSOUT_V_HIGH_L),
++};
++
++static const struct regmap_access_table axp288_writeable_table = {
++	.yes_ranges	= axp288_writeable_ranges,
++	.n_yes_ranges	= ARRAY_SIZE(axp288_writeable_ranges),
++};
++
++static const struct regmap_access_table axp288_volatile_table = {
++	.yes_ranges	= axp288_volatile_ranges,
++	.n_yes_ranges	= ARRAY_SIZE(axp288_volatile_ranges),
++};
++
+ static struct resource axp20x_pek_resources[] = {
+ 	{
+ 		.name	= "PEK_DBR",
+@@ -61,7 +87,40 @@ static struct resource axp20x_pek_resources[] = {
+ 	},
+ };
+ 
+-static const struct regmap_config axp20x_regmap_config = {
++static struct resource axp288_battery_resources[] = {
++	{
++		.start = AXP288_IRQ_QWBTU,
++		.end   = AXP288_IRQ_QWBTU,
++		.flags = IORESOURCE_IRQ,
++	},
++	{
++		.start = AXP288_IRQ_WBTU,
++		.end   = AXP288_IRQ_WBTU,
++		.flags = IORESOURCE_IRQ,
++	},
++	{
++		.start = AXP288_IRQ_QWBTO,
++		.end   = AXP288_IRQ_QWBTO,
++		.flags = IORESOURCE_IRQ,
++	},
++	{
++		.start = AXP288_IRQ_WBTO,
++		.end   = AXP288_IRQ_WBTO,
++		.flags = IORESOURCE_IRQ,
++	},
++	{
++		.start = AXP288_IRQ_WL2,
++		.end   = AXP288_IRQ_WL2,
++		.flags = IORESOURCE_IRQ,
++	},
++	{
++		.start = AXP288_IRQ_WL1,
++		.end   = AXP288_IRQ_WL1,
++		.flags = IORESOURCE_IRQ,
++	},
++};
++
++static struct regmap_config axp20x_regmap_config = {
+ 	.reg_bits	= 8,
+ 	.val_bits	= 8,
+ 	.wr_table	= &axp20x_writeable_table,
+@@ -70,47 +129,96 @@ static const struct regmap_config axp20x_regmap_config = {
+ 	.cache_type	= REGCACHE_RBTREE,
+ };
+ 
+-#define AXP20X_IRQ(_irq, _off, _mask) \
+-	[AXP20X_IRQ_##_irq] = { .reg_offset = (_off), .mask = BIT(_mask) }
++static struct regmap_config axp288_regmap_config = {
++	.reg_bits	= 8,
++	.val_bits	= 8,
++	.wr_table	= &axp288_writeable_table,
++	.volatile_table	= &axp288_volatile_table,
++	.max_register	= AXP288_FG_TUNE5,
++	.cache_type	= REGCACHE_RBTREE,
++};
++
++#define INIT_REGMAP_IRQ(_variant, _irq, _off, _mask)			\
++	[_variant##_IRQ_##_irq] = { .reg_offset = (_off), .mask = BIT(_mask) }
+ 
+ static const struct regmap_irq axp20x_regmap_irqs[] = {
+-	AXP20X_IRQ(ACIN_OVER_V,		0, 7),
+-	AXP20X_IRQ(ACIN_PLUGIN,		0, 6),
+-	AXP20X_IRQ(ACIN_REMOVAL,	0, 5),
+-	AXP20X_IRQ(VBUS_OVER_V,		0, 4),
+-	AXP20X_IRQ(VBUS_PLUGIN,		0, 3),
+-	AXP20X_IRQ(VBUS_REMOVAL,	0, 2),
+-	AXP20X_IRQ(VBUS_V_LOW,		0, 1),
+-	AXP20X_IRQ(BATT_PLUGIN,		1, 7),
+-	AXP20X_IRQ(BATT_REMOVAL,	1, 6),
+-	AXP20X_IRQ(BATT_ENT_ACT_MODE,	1, 5),
+-	AXP20X_IRQ(BATT_EXIT_ACT_MODE,	1, 4),
+-	AXP20X_IRQ(CHARG,		1, 3),
+-	AXP20X_IRQ(CHARG_DONE,		1, 2),
+-	AXP20X_IRQ(BATT_TEMP_HIGH,	1, 1),
+-	AXP20X_IRQ(BATT_TEMP_LOW,	1, 0),
+-	AXP20X_IRQ(DIE_TEMP_HIGH,	2, 7),
+-	AXP20X_IRQ(CHARG_I_LOW,		2, 6),
+-	AXP20X_IRQ(DCDC1_V_LONG,	2, 5),
+-	AXP20X_IRQ(DCDC2_V_LONG,	2, 4),
+-	AXP20X_IRQ(DCDC3_V_LONG,	2, 3),
+-	AXP20X_IRQ(PEK_SHORT,		2, 1),
+-	AXP20X_IRQ(PEK_LONG,		2, 0),
+-	AXP20X_IRQ(N_OE_PWR_ON,		3, 7),
+-	AXP20X_IRQ(N_OE_PWR_OFF,	3, 6),
+-	AXP20X_IRQ(VBUS_VALID,		3, 5),
+-	AXP20X_IRQ(VBUS_NOT_VALID,	3, 4),
+-	AXP20X_IRQ(VBUS_SESS_VALID,	3, 3),
+-	AXP20X_IRQ(VBUS_SESS_END,	3, 2),
+-	AXP20X_IRQ(LOW_PWR_LVL1,	3, 1),
+-	AXP20X_IRQ(LOW_PWR_LVL2,	3, 0),
+-	AXP20X_IRQ(TIMER,		4, 7),
+-	AXP20X_IRQ(PEK_RIS_EDGE,	4, 6),
+-	AXP20X_IRQ(PEK_FAL_EDGE,	4, 5),
+-	AXP20X_IRQ(GPIO3_INPUT,		4, 3),
+-	AXP20X_IRQ(GPIO2_INPUT,		4, 2),
+-	AXP20X_IRQ(GPIO1_INPUT,		4, 1),
+-	AXP20X_IRQ(GPIO0_INPUT,		4, 0),
++	INIT_REGMAP_IRQ(AXP20X, ACIN_OVER_V,		0, 7),
++	INIT_REGMAP_IRQ(AXP20X, ACIN_PLUGIN,		0, 6),
++	INIT_REGMAP_IRQ(AXP20X, ACIN_REMOVAL,	        0, 5),
++	INIT_REGMAP_IRQ(AXP20X, VBUS_OVER_V,		0, 4),
++	INIT_REGMAP_IRQ(AXP20X, VBUS_PLUGIN,		0, 3),
++	INIT_REGMAP_IRQ(AXP20X, VBUS_REMOVAL,	        0, 2),
++	INIT_REGMAP_IRQ(AXP20X, VBUS_V_LOW,		0, 1),
++	INIT_REGMAP_IRQ(AXP20X, BATT_PLUGIN,		1, 7),
++	INIT_REGMAP_IRQ(AXP20X, BATT_REMOVAL,	        1, 6),
++	INIT_REGMAP_IRQ(AXP20X, BATT_ENT_ACT_MODE,	1, 5),
++	INIT_REGMAP_IRQ(AXP20X, BATT_EXIT_ACT_MODE,	1, 4),
++	INIT_REGMAP_IRQ(AXP20X, CHARG,		        1, 3),
++	INIT_REGMAP_IRQ(AXP20X, CHARG_DONE,		1, 2),
++	INIT_REGMAP_IRQ(AXP20X, BATT_TEMP_HIGH,	        1, 1),
++	INIT_REGMAP_IRQ(AXP20X, BATT_TEMP_LOW,	        1, 0),
++	INIT_REGMAP_IRQ(AXP20X, DIE_TEMP_HIGH,	        2, 7),
++	INIT_REGMAP_IRQ(AXP20X, CHARG_I_LOW,		2, 6),
++	INIT_REGMAP_IRQ(AXP20X, DCDC1_V_LONG,	        2, 5),
++	INIT_REGMAP_IRQ(AXP20X, DCDC2_V_LONG,	        2, 4),
++	INIT_REGMAP_IRQ(AXP20X, DCDC3_V_LONG,	        2, 3),
++	INIT_REGMAP_IRQ(AXP20X, PEK_SHORT,		2, 1),
++	INIT_REGMAP_IRQ(AXP20X, PEK_LONG,		2, 0),
++	INIT_REGMAP_IRQ(AXP20X, N_OE_PWR_ON,		3, 7),
++	INIT_REGMAP_IRQ(AXP20X, N_OE_PWR_OFF,	        3, 6),
++	INIT_REGMAP_IRQ(AXP20X, VBUS_VALID,		3, 5),
++	INIT_REGMAP_IRQ(AXP20X, VBUS_NOT_VALID,	        3, 4),
++	INIT_REGMAP_IRQ(AXP20X, VBUS_SESS_VALID,	3, 3),
++	INIT_REGMAP_IRQ(AXP20X, VBUS_SESS_END,	        3, 2),
++	INIT_REGMAP_IRQ(AXP20X, LOW_PWR_LVL1,	        3, 1),
++	INIT_REGMAP_IRQ(AXP20X, LOW_PWR_LVL2,	        3, 0),
++	INIT_REGMAP_IRQ(AXP20X, TIMER,		        4, 7),
++	INIT_REGMAP_IRQ(AXP20X, PEK_RIS_EDGE,	        4, 6),
++	INIT_REGMAP_IRQ(AXP20X, PEK_FAL_EDGE,	        4, 5),
++	INIT_REGMAP_IRQ(AXP20X, GPIO3_INPUT,		4, 3),
++	INIT_REGMAP_IRQ(AXP20X, GPIO2_INPUT,		4, 2),
++	INIT_REGMAP_IRQ(AXP20X, GPIO1_INPUT,		4, 1),
++	INIT_REGMAP_IRQ(AXP20X, GPIO0_INPUT,		4, 0),
++};
++
++/* some IRQs are compatible with axp20x models */
++static const struct regmap_irq axp288_regmap_irqs[] = {
++	INIT_REGMAP_IRQ(AXP20X, VBUS_REMOVAL,           0, 2),
++	INIT_REGMAP_IRQ(AXP20X, VBUS_PLUGIN,            0, 3),
++	INIT_REGMAP_IRQ(AXP20X, VBUS_OVER_V,            0, 4),
++
++	INIT_REGMAP_IRQ(AXP20X, CHARG_DONE,             1, 2),
++	INIT_REGMAP_IRQ(AXP20X, CHARG,                  1, 3),
++	INIT_REGMAP_IRQ(AXP288, SAFE_QUIT,              1, 4),
++	INIT_REGMAP_IRQ(AXP288, SAFE_ENTER,             1, 5),
++	INIT_REGMAP_IRQ(AXP20X, BATT_REMOVAL,           1, 6),
++	INIT_REGMAP_IRQ(AXP20X, BATT_PLUGIN,            1, 7),
++
++	INIT_REGMAP_IRQ(AXP288, QWBTU,                  2, 0),
++	INIT_REGMAP_IRQ(AXP288, WBTU,                   2, 1),
++	INIT_REGMAP_IRQ(AXP288, QWBTO,                  2, 2),
++	INIT_REGMAP_IRQ(AXP288, WBTU,                   2, 3),
++	INIT_REGMAP_IRQ(AXP288, QCBTU,                  2, 4),
++	INIT_REGMAP_IRQ(AXP288, CBTU,                   2, 5),
++	INIT_REGMAP_IRQ(AXP288, QCBTO,                  2, 6),
++	INIT_REGMAP_IRQ(AXP288, CBTO,                   2, 7),
++
++	INIT_REGMAP_IRQ(AXP288, WL2,                    3, 0),
++	INIT_REGMAP_IRQ(AXP288, WL1,                    3, 1),
++	INIT_REGMAP_IRQ(AXP288, GPADC,                  3, 2),
++	INIT_REGMAP_IRQ(AXP288, OT,                     3, 7),
++
++	INIT_REGMAP_IRQ(AXP288, GPIO0,                  4, 0),
++	INIT_REGMAP_IRQ(AXP288, GPIO1,                  4, 1),
++	INIT_REGMAP_IRQ(AXP288, POKO,                   4, 2),
++	INIT_REGMAP_IRQ(AXP288, POKL,                   4, 3),
++	INIT_REGMAP_IRQ(AXP288, POKS,                   4, 4),
++	INIT_REGMAP_IRQ(AXP288, POKN,                   4, 5),
++	INIT_REGMAP_IRQ(AXP288, POKP,                   4, 6),
++	INIT_REGMAP_IRQ(AXP20X, TIMER,                  4, 7),
++
++	INIT_REGMAP_IRQ(AXP288, MV_CHNG,                5, 0),
++	INIT_REGMAP_IRQ(AXP288, BC_USB_CHNG,            5, 1),
+ };
+ 
+ static const struct of_device_id axp20x_of_match[] = {
+@@ -128,14 +236,21 @@ static const struct i2c_device_id axp20x_i2c_id[] = {
+ };
+ MODULE_DEVICE_TABLE(i2c, axp20x_i2c_id);
+ 
+-static const struct regmap_irq_chip axp20x_regmap_irq_chip = {
++static struct acpi_device_id axp20x_acpi_match[] = {
++	{
++		.id = "INT33F4",
++		.driver_data = (kernel_ulong_t)AXP288_ID,
++	},
++	{ },
++};
++MODULE_DEVICE_TABLE(acpi, axp20x_acpi_match);
++
++/* common irq chip attributes only */
++static struct regmap_irq_chip axp20x_regmap_irq_chip = {
+ 	.name			= "axp20x_irq_chip",
+ 	.status_base		= AXP20X_IRQ1_STATE,
+ 	.ack_base		= AXP20X_IRQ1_STATE,
+ 	.mask_base		= AXP20X_IRQ1_EN,
+-	.num_regs		= 5,
+-	.irqs			= axp20x_regmap_irqs,
+-	.num_irqs		= ARRAY_SIZE(axp20x_regmap_irqs),
+ 	.mask_invert		= true,
+ 	.init_ack_masked	= true,
+ };
+@@ -161,36 +276,155 @@ static struct mfd_cell axp20x_cells[] = {
+ 	},
+ };
+ 
++static struct resource axp288_adc_resources[] = {
++	{
++		.name	= "GPADC",
++		.start = AXP288_IRQ_GPADC,
++		.end   = AXP288_IRQ_GPADC,
++		.flags = IORESOURCE_IRQ,
++	},
++};
++
++static struct resource axp288_charger_resources[] = {
++	{
++		.start = AXP288_IRQ_OV,
++		.end   = AXP288_IRQ_OV,
++		.flags = IORESOURCE_IRQ,
++	},
++	{
++		.start = AXP288_IRQ_DONE,
++		.end   = AXP288_IRQ_DONE,
++		.flags = IORESOURCE_IRQ,
++	},
++	{
++		.start = AXP288_IRQ_CHARGING,
++		.end   = AXP288_IRQ_CHARGING,
++		.flags = IORESOURCE_IRQ,
++	},
++	{
++		.start = AXP288_IRQ_SAFE_QUIT,
++		.end   = AXP288_IRQ_SAFE_QUIT,
++		.flags = IORESOURCE_IRQ,
++	},
++	{
++		.start = AXP288_IRQ_SAFE_ENTER,
++		.end   = AXP288_IRQ_SAFE_ENTER,
++		.flags = IORESOURCE_IRQ,
++	},
++	{
++		.start = AXP288_IRQ_QCBTU,
++		.end   = AXP288_IRQ_QCBTU,
++		.flags = IORESOURCE_IRQ,
++	},
++	{
++		.start = AXP288_IRQ_CBTU,
++		.end   = AXP288_IRQ_CBTU,
++		.flags = IORESOURCE_IRQ,
++	},
++	{
++		.start = AXP288_IRQ_QCBTO,
++		.end   = AXP288_IRQ_QCBTO,
++		.flags = IORESOURCE_IRQ,
++	},
++	{
++		.start = AXP288_IRQ_CBTO,
++		.end   = AXP288_IRQ_CBTO,
++		.flags = IORESOURCE_IRQ,
++	},
++};
++
++static struct mfd_cell axp288_cells[] = {
++	{
++		.name = "axp288_adc",
++		.num_resources = ARRAY_SIZE(axp288_adc_resources),
++		.resources = axp288_adc_resources,
++	},
++	{
++		.name = "axp288_charger",
++		.num_resources = ARRAY_SIZE(axp288_charger_resources),
++		.resources = axp288_charger_resources,
++	},
++	{
++		.name = "axp288_battery",
++		.num_resources = ARRAY_SIZE(axp288_battery_resources),
++		.resources = axp288_battery_resources,
++	},
++};
++
+ static struct axp20x_dev *axp20x_pm_power_off;
+ static void axp20x_power_off(void)
+ {
++	if (axp20x_pm_power_off->variant == AXP288_ID)
++		return;
+ 	regmap_write(axp20x_pm_power_off->regmap, AXP20X_OFF_CTRL,
+ 		     AXP20X_OFF);
+ }
+ 
++static int axp20x_match_device(struct axp20x_dev *axp20x, struct device *dev)
++{
++	const struct acpi_device_id *acpi_id;
++	const struct of_device_id *of_id;
++
++	of_id = of_match_device(axp20x_of_match, dev);
++	if (of_id)
++		axp20x->variant = (long) of_id->data;
++	else {
++		acpi_id = acpi_match_device(dev->driver->acpi_match_table, dev);
++		if (!acpi_id || !acpi_id->driver_data) {
++			dev_err(dev, "Unable to determine ID\n");
++			return -ENODEV;
++		}
++		axp20x->variant = (long) acpi_id->driver_data;
++	}
++	switch (axp20x->variant) {
++	case AXP202_ID:
++	case AXP209_ID:
++		axp20x->nr_cells = ARRAY_SIZE(axp20x_cells);
++		axp20x->cells = axp20x_cells;
++		axp20x->regmap_cfg = &axp20x_regmap_config;
++		axp20x_regmap_irq_chip.num_regs	= 5;
++		axp20x_regmap_irq_chip.irqs = axp20x_regmap_irqs;
++		axp20x_regmap_irq_chip.num_irqs	=
++			ARRAY_SIZE(axp20x_regmap_irqs);
++		break;
++	case AXP288_ID:
++		axp20x->cells = axp288_cells;
++		axp20x->nr_cells = ARRAY_SIZE(axp288_cells);
++		axp20x->regmap_cfg = &axp288_regmap_config;
++		axp20x_regmap_irq_chip.irqs = axp288_regmap_irqs;
++		axp20x_regmap_irq_chip.num_irqs	=
++			ARRAY_SIZE(axp288_regmap_irqs);
++		axp20x_regmap_irq_chip.num_regs	= 6;
++		break;
++	default:
++		dev_err(dev, "unsupported AXP20X ID %lu\n", axp20x->variant);
++		return -ENODEV;
++	}
++	dev_info(dev, "AXP20x variant %s found\n",
++		axp20x_model_names[axp20x->variant]);
++
++	return 0;
++}
++
+ static int axp20x_i2c_probe(struct i2c_client *i2c,
+-			 const struct i2c_device_id *id)
++			const struct i2c_device_id *id)
+ {
+ 	struct axp20x_dev *axp20x;
+-	const struct of_device_id *of_id;
+ 	int ret;
+ 
+ 	axp20x = devm_kzalloc(&i2c->dev, sizeof(*axp20x), GFP_KERNEL);
+ 	if (!axp20x)
+ 		return -ENOMEM;
+ 
+-	of_id = of_match_device(axp20x_of_match, &i2c->dev);
+-	if (!of_id) {
+-		dev_err(&i2c->dev, "Unable to setup AXP20X data\n");
+-		return -ENODEV;
+-	}
+-	axp20x->variant = (long) of_id->data;
++	ret = axp20x_match_device(axp20x, &i2c->dev);
++	if (ret)
++		return ret;
+ 
+ 	axp20x->i2c_client = i2c;
+ 	axp20x->dev = &i2c->dev;
+ 	dev_set_drvdata(axp20x->dev, axp20x);
+ 
+-	axp20x->regmap = devm_regmap_init_i2c(i2c, &axp20x_regmap_config);
++	axp20x->regmap = devm_regmap_init_i2c(i2c, axp20x->regmap_cfg);
+ 	if (IS_ERR(axp20x->regmap)) {
+ 		ret = PTR_ERR(axp20x->regmap);
+ 		dev_err(&i2c->dev, "regmap init failed: %d\n", ret);
+@@ -206,8 +440,8 @@ static int axp20x_i2c_probe(struct i2c_client *i2c,
+ 		return ret;
+ 	}
+ 
+-	ret = mfd_add_devices(axp20x->dev, -1, axp20x_cells,
+-			      ARRAY_SIZE(axp20x_cells), NULL, 0, NULL);
++	ret = mfd_add_devices(axp20x->dev, -1, axp20x->cells,
++			axp20x->nr_cells, NULL, 0, NULL);
+ 
+ 	if (ret) {
+ 		dev_err(&i2c->dev, "failed to add MFD devices: %d\n", ret);
+@@ -245,6 +479,7 @@ static struct i2c_driver axp20x_i2c_driver = {
+ 		.name	= "axp20x",
+ 		.owner	= THIS_MODULE,
+ 		.of_match_table	= of_match_ptr(axp20x_of_match),
++		.acpi_match_table = ACPI_PTR(axp20x_acpi_match),
+ 	},
+ 	.probe		= axp20x_i2c_probe,
+ 	.remove		= axp20x_i2c_remove,
+diff --git a/include/linux/mfd/axp20x.h b/include/linux/mfd/axp20x.h
+index d0e31a2..ffc69e2 100644
+--- a/include/linux/mfd/axp20x.h
++++ b/include/linux/mfd/axp20x.h
+@@ -14,6 +14,8 @@
+ enum {
+ 	AXP202_ID = 0,
+ 	AXP209_ID,
++	AXP288_ID,
++	NR_AXP20X_VARIANTS,
+ };
+ 
+ #define AXP20X_DATACACHE(m)		(0x04 + (m))
+@@ -49,11 +51,13 @@ enum {
+ #define AXP20X_IRQ3_EN			0x42
+ #define AXP20X_IRQ4_EN			0x43
+ #define AXP20X_IRQ5_EN			0x44
++#define AXP20X_IRQ6_EN			0x45
+ #define AXP20X_IRQ1_STATE		0x48
+ #define AXP20X_IRQ2_STATE		0x49
+ #define AXP20X_IRQ3_STATE		0x4a
+ #define AXP20X_IRQ4_STATE		0x4b
+ #define AXP20X_IRQ5_STATE		0x4c
++#define AXP20X_IRQ6_STATE		0x4d
+ 
+ /* ADC */
+ #define AXP20X_ACIN_V_ADC_H		0x56
+@@ -116,6 +120,15 @@ enum {
+ #define AXP20X_CC_CTRL			0xb8
+ #define AXP20X_FG_RES			0xb9
+ 
++/* AXP288 specific registers */
++#define AXP288_PMIC_ADC_H               0x56
++#define AXP288_PMIC_ADC_L               0x57
++#define AXP288_ADC_TS_PIN_CTRL          0x84
++
++#define AXP288_PMIC_ADC_EN              0x84
++#define AXP288_FG_TUNE5			0xed
++
++
+ /* Regulators IDs */
+ enum {
+ 	AXP20X_LDO1 = 0,
+@@ -169,12 +182,57 @@ enum {
+ 	AXP20X_IRQ_GPIO0_INPUT,
+ };
+ 
++enum axp288_irqs {
++	AXP288_IRQ_VBUS_FALL     = 2,
++	AXP288_IRQ_VBUS_RISE,
++	AXP288_IRQ_OV,
++	AXP288_IRQ_FALLING_ALT,
++	AXP288_IRQ_RISING_ALT,
++	AXP288_IRQ_OV_ALT,
++	AXP288_IRQ_DONE          = 10,
++	AXP288_IRQ_CHARGING,
++	AXP288_IRQ_SAFE_QUIT,
++	AXP288_IRQ_SAFE_ENTER,
++	AXP288_IRQ_ABSENT,
++	AXP288_IRQ_APPEND,
++	AXP288_IRQ_QWBTU,
++	AXP288_IRQ_WBTU,
++	AXP288_IRQ_QWBTO,
++	AXP288_IRQ_WBTO,
++	AXP288_IRQ_QCBTU,
++	AXP288_IRQ_CBTU,
++	AXP288_IRQ_QCBTO,
++	AXP288_IRQ_CBTO,
++	AXP288_IRQ_WL2,
++	AXP288_IRQ_WL1,
++	AXP288_IRQ_GPADC,
++	AXP288_IRQ_OT            = 31,
++	AXP288_IRQ_GPIO0,
++	AXP288_IRQ_GPIO1,
++	AXP288_IRQ_POKO,
++	AXP288_IRQ_POKL,
++	AXP288_IRQ_POKS,
++	AXP288_IRQ_POKN,
++	AXP288_IRQ_POKP,
++	AXP288_IRQ_TIMER,
++	AXP288_IRQ_MV_CHNG,
++	AXP288_IRQ_BC_USB_CHNG,
++};
++
++#define AXP288_TS_ADC_H		0x58
++#define AXP288_TS_ADC_L		0x59
++#define AXP288_GP_ADC_H		0x5a
++#define AXP288_GP_ADC_L		0x5b
++
+ struct axp20x_dev {
+ 	struct device			*dev;
+ 	struct i2c_client		*i2c_client;
+ 	struct regmap			*regmap;
+ 	struct regmap_irq_chip_data	*regmap_irqc;
+ 	long				variant;
++	int                             nr_cells;
++	struct mfd_cell                 *cells;
++	struct regmap_config            *regmap_cfg;
+ };
+ 
+ #endif /* __LINUX_MFD_AXP20X_H */
+-- 
+1.9.1
+
