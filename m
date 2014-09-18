@@ -1,309 +1,259 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga11.intel.com ([192.55.52.93]:43240 "EHLO mga11.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751280AbaIRMc5 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Thu, 18 Sep 2014 08:32:57 -0400
-Date: Thu, 18 Sep 2014 05:32:52 -0700
-From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-To: Lee Jones <lee.jones@linaro.org>
-Cc: IIO <linux-iio@vger.kernel.org>,
-	LKML <linux-kernel@vger.kernel.org>,
-	DEVICE TREE <devicetree@vger.kernel.org>,
-	Carlo Caione <carlo@caione.org>,
-	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
-	Aaron Lu <aaron.lu@intel.com>, Alan Cox <alan@linux.intel.com>,
-	Jean Delvare <khali@linux-fr.org>,
-	Samuel Ortiz <sameo@linux.intel.com>,
-	Liam Girdwood <lgirdwood@gmail.com>,
-	Mark Brown <broonie@kernel.org>,
-	Grant Likely <grant.likely@linaro.org>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Rob Herring <robh+dt@kernel.org>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Fugang Duan <B38611@freescale.com>,
-	Arnd Bergmann <arnd@arndb.de>,
-	Zubair Lutfullah <zubair.lutfullah@gmail.com>,
-	Sebastian Reichel <sre@debian.org>,
-	Johannes Thumshirn <johannes.thumshirn@men.de>,
-	Philippe Reynes <tremyfr@yahoo.fr>,
-	Angelo Compagnucci <angelo.compagnucci@gmail.com>,
-	Doug Anderson <dianders@chromium.org>,
-	Ramakrishna Pallala <ramakrishna.pallala@intel.com>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	Maxime Ripard <maxime.ripard@free-electrons.com>,
-	Rafael Wysocki <rafael.j.wysocki@intel.com>
-Subject: Re: [PATCH v4 1/3] mfd/axp20x: extend axp20x to support axp288 pmic
-Message-ID: <20140918053252.34829684@ultegra>
-In-Reply-To: <20140918053926.GC8740@lee--X1>
-References: <1410912715-25903-1-git-send-email-jacob.jun.pan@linux.intel.com>
-	<1410912715-25903-2-git-send-email-jacob.jun.pan@linux.intel.com>
-	<20140918053926.GC8740@lee--X1>
+Return-Path: <pmeerw@pmeerw.net>
+Date: Thu, 18 Sep 2014 19:43:23 +0200 (CEST)
+From: Peter Meerwald <pmeerw@pmeerw.net>
+To: David Barksdale <dbarksdale@uplogix.com>
+cc: Jonathan Cameron <jic23@kernel.org>, linux-kernel@vger.kernel.org,
+    linux-iio@vger.kernel.org
+Subject: Re: [PATCH] IIO: add si701x driver
+In-Reply-To: <1411056475-22283-1-git-send-email-dbarksdale@uplogix.com>
+Message-ID: <alpine.DEB.2.01.1409181926001.30983@pmeerw.net>
+References: <1411056475-22283-1-git-send-email-dbarksdale@uplogix.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: TEXT/PLAIN; charset=US-ASCII
+List-ID: <linux-iio@vger.kernel.org>
 
-On Wed, 17 Sep 2014 22:39:26 -0700
-Lee Jones <lee.jones@linaro.org> wrote:
 
-> On Tue, 16 Sep 2014, Jacob Pan wrote:
+> This patch adds support to the Industrial IO subsystem
+> for the Silicon Labs Si701x/2x Relative Humidity and
+> Temperature Sensors.
+
+the name si701x is problematic; the si7015 for example is supported by 
+the si7005 driver
+
+how about calling the driver si7020 and stating that it also supports 
+si7013, si7021 -- the x notation in driver names always leads to touble...
+
+the additional features of the si7013 are not supported by the driver
+ 
+> Website: http://www.silabs.com/products/sensors/humidity-sensors/Pages/si7013-20-21.aspx
 > 
-> > X-Powers AXP288 is a customized PMIC for Intel Baytrail-CR
-> > platforms. Similar to AXP202/209, AXP288 comes with USB charger,
-> > more LDO and BUCK channels, and AD converters. It also provides
-> > extended status and interrupt reporting capabilities than the
-> > devices currently supported in axp20x.c.
-> > 
-> > In addition to feature extension, this patch also adds ACPI binding
-> > for enumeration.
-> > 
-> > This consolidated driver should support more X-Powers' PMICs in
-> > both device tree and ACPI enumerated platforms.
-> > 
-> > Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
-> > ---
-> >  drivers/mfd/Kconfig        |   3 +-
-> >  drivers/mfd/axp20x.c       | 353
-> > +++++++++++++++++++++++++++++++++++++--------
-> > include/linux/mfd/axp20x.h |  58 ++++++++ 3 files changed, 354
-> > insertions(+), 60 deletions(-)
-> > 
-> > diff --git a/drivers/mfd/Kconfig b/drivers/mfd/Kconfig
-> > index de5abf2..c183edb 100644
-> > --- a/drivers/mfd/Kconfig
-> > +++ b/drivers/mfd/Kconfig
-> > @@ -74,7 +74,8 @@ config MFD_AXP20X
-> >  	select REGMAP_IRQ
-> >  	depends on I2C=y
-> >  	help
-> > -	  If you say Y here you get support for the X-Powers
-> > AXP202 and AXP209.
-> > +	  If you say Y here you get support for the X-Powers
-> > AXP202, AXP209 and
-> > +	  AXP288 power management IC (PMIC).
-> >  	  This driver include only the core APIs. You have to
-> > select individual components like regulators or the PEK (Power
-> > Enable Key) under the corresponding menus.
+> These are i2c devices which measure relative humidity
+> and temperature and all use the same protocol. The
+> Si7013 has an additional input with programmable
+> linearization which is not supported because that's
+> complicated and I didn't need it.
 > 
-> [...]
+> Signed-off-by: David Barksdale <dbarksdale@uplogix.com>
 > 
-> > -static const struct regmap_config axp20x_regmap_config = {
+> ---
+>  drivers/iio/humidity/Kconfig  |  10 +++
+>  drivers/iio/humidity/Makefile |   1 +
+>  drivers/iio/humidity/si701x.c | 159 ++++++++++++++++++++++++++++++++++++++++++
+>  3 files changed, 170 insertions(+)
 > 
-> [...]
-> 
-> > +static struct regmap_config axp20x_regmap_config = {
-> 
-> Why have you removed const status?
-I did not use const * in axp20x_dev, let me add that. good point.
-> 
-> >  	.reg_bits	= 8,
-> >  	.val_bits	= 8,
-> >  	.wr_table	= &axp20x_writeable_table,
-> > @@ -70,47 +129,96 @@ static const struct regmap_config
-> > axp20x_regmap_config = { .cache_type	= REGCACHE_RBTREE,
-> >  };
-> >  
-> > -#define AXP20X_IRQ(_irq, _off, _mask) \
-> > -	[AXP20X_IRQ_##_irq] = { .reg_offset = (_off), .mask =
-> > BIT(_mask) } +static struct regmap_config axp288_regmap_config = {
-> 
-> const?
-> 
-ditto
-> > +	.reg_bits	= 8,
-> > +	.val_bits	= 8,
-> > +	.wr_table	= &axp288_writeable_table,
-> > +	.volatile_table	= &axp288_volatile_table,
-> > +	.max_register	= AXP288_FG_TUNE5,
-> > +	.cache_type	= REGCACHE_RBTREE,
-> > +};
-> 
-> [...]
-> 
-> > -static const struct regmap_irq_chip axp20x_regmap_irq_chip = {
-> > +static struct acpi_device_id axp20x_acpi_match[] = {
-> > +	{
-> > +		.id = "INT33F4",
-> > +		.driver_data = (kernel_ulong_t)AXP288_ID,
-> 
-> Why do you need to cast this?
-> 
-to make sure match driver_data which is different in acpi_device_id than
-of_device_id.
-> > +	},
-> > +	{ },
-> > +};
-> > +MODULE_DEVICE_TABLE(acpi, axp20x_acpi_match);
-> > +
-> > +/* common irq chip attributes only */
-> > +static struct regmap_irq_chip axp20x_regmap_irq_chip = {
-> >  	.name			= "axp20x_irq_chip",
-> >  	.status_base		= AXP20X_IRQ1_STATE,
-> >  	.ack_base		= AXP20X_IRQ1_STATE,
-> >  	.mask_base		= AXP20X_IRQ1_EN,
-> > -	.num_regs		= 5,
-> > -	.irqs			= axp20x_regmap_irqs,
-> > -	.num_irqs		= ARRAY_SIZE(axp20x_regmap_irqs),
-> >  	.mask_invert		= true,
-> >  	.init_ack_masked	= true,
-> >  };
-> > @@ -161,36 +276,155 @@ static struct mfd_cell axp20x_cells[] = {
-> >  	},
-> >  };
-> 
-> [...]
-> 
-> > +static int axp20x_match_device(struct axp20x_dev *axp20x, struct
-> > device *dev) +{
-> > +	const struct acpi_device_id *acpi_id;
-> > +	const struct of_device_id *of_id;
-> > +
-> > +	of_id = of_match_device(axp20x_of_match, dev);
-> > +	if (of_id)
-> > +		axp20x->variant = (long) of_id->data;
-> > +	else {
-> > +		acpi_id =
-> > acpi_match_device(dev->driver->acpi_match_table, dev);
-> > +		if (!acpi_id || !acpi_id->driver_data) {
-> > +			dev_err(dev, "Unable to determine ID\n");
-> > +			return -ENODEV;
-> > +		}
-> > +		axp20x->variant = (long) acpi_id->driver_data;
-> > +	}
-> 
-> We can do better error handling here and give the user a better sense
-> of what happened if anything were to go wrong.  Do:
-> 
-> if (dev->of_node)
->   of_id = of_match_device()
->   if (!of_id)
->     error()
-this will give false error on ACPI based platforms, right? in reality
-this driver will only run on ACPI or OF platform not both, so IMHO
-there is not need to give user a specific error since they already know
-what platform I am running.
->   variant = of_id->data;
-> else
->   acpi_id = acpi_match_device()
->   if (!acpi_id)
->     error()
->   variant = acpi_id->driver_data;
-> 
-> > +	switch (axp20x->variant) {
-> > +	case AXP202_ID:
-> > +	case AXP209_ID:
-> > +		axp20x->nr_cells = ARRAY_SIZE(axp20x_cells);
-> > +		axp20x->cells = axp20x_cells;
-> > +		axp20x->regmap_cfg = &axp20x_regmap_config;
-> > +		axp20x_regmap_irq_chip.num_regs	= 5;
-> > +		axp20x_regmap_irq_chip.irqs = axp20x_regmap_irqs;
-> > +		axp20x_regmap_irq_chip.num_irqs	=
-> > +			ARRAY_SIZE(axp20x_regmap_irqs);
-> > +		break;
-> > +	case AXP288_ID:
-> > +		axp20x->cells = axp288_cells;
-> > +		axp20x->nr_cells = ARRAY_SIZE(axp288_cells);
-> > +		axp20x->regmap_cfg = &axp288_regmap_config;
-> > +		axp20x_regmap_irq_chip.irqs = axp288_regmap_irqs;
-> > +		axp20x_regmap_irq_chip.num_irqs	=
-> > +			ARRAY_SIZE(axp288_regmap_irqs);
-> > +		axp20x_regmap_irq_chip.num_regs	= 6;
-> > +		break;
-> > +	default:
-> > +		dev_err(dev, "unsupported AXP20X ID %lu\n",
-> > axp20x->variant);
-> > +		return -ENODEV;
-> 
-> -EINVAL might be better here.
-I was considering the return value gets propagated to probe function
-which is used to query the existence of a device per driver model. But
-I have no strong preference.
-> 
-> > +	}
-> > +	dev_info(dev, "AXP20x variant %s found\n",
-> > +		axp20x_model_names[axp20x->variant]);
-> > +
-> > +	return 0;
-> > +}
-> > +
-> >  static int axp20x_i2c_probe(struct i2c_client *i2c,
-> > -			 const struct i2c_device_id *id)
-> > +			const struct i2c_device_id *id)
-> 
-> Sneaky. ;)
-I should not fix the extra white spaces here, unrelated to this patch.
-will remove.
-> 
-> >  {
-> >  	struct axp20x_dev *axp20x;
-> > -	const struct of_device_id *of_id;
-> >  	int ret;
-> >  
-> >  	axp20x = devm_kzalloc(&i2c->dev, sizeof(*axp20x),
-> > GFP_KERNEL); if (!axp20x)
-> >  		return -ENOMEM;
-> >  
-> > -	of_id = of_match_device(axp20x_of_match, &i2c->dev);
-> > -	if (!of_id) {
-> > -		dev_err(&i2c->dev, "Unable to setup AXP20X
-> > data\n");
-> > -		return -ENODEV;
-> > -	}
-> > -	axp20x->variant = (long) of_id->data;
-> > +	ret = axp20x_match_device(axp20x, &i2c->dev);
-> > +	if (ret)
-> > +		return ret;
-> >  
-> >  	axp20x->i2c_client = i2c;
-> >  	axp20x->dev = &i2c->dev;
-> >  	dev_set_drvdata(axp20x->dev, axp20x);
-> >  
-> > -	axp20x->regmap = devm_regmap_init_i2c(i2c,
-> > &axp20x_regmap_config);
-> > +	axp20x->regmap = devm_regmap_init_i2c(i2c,
-> > axp20x->regmap_cfg); if (IS_ERR(axp20x->regmap)) {
-> >  		ret = PTR_ERR(axp20x->regmap);
-> >  		dev_err(&i2c->dev, "regmap init failed: %d\n",
-> > ret); @@ -206,8 +440,8 @@ static int axp20x_i2c_probe(struct
-> > i2c_client *i2c, return ret;
-> >  	}
-> >  
-> > -	ret = mfd_add_devices(axp20x->dev, -1, axp20x_cells,
-> > -			      ARRAY_SIZE(axp20x_cells), NULL, 0,
-> > NULL);
-> > +	ret = mfd_add_devices(axp20x->dev, -1, axp20x->cells,
-> > +			axp20x->nr_cells, NULL, 0, NULL);
-> >  
-> >  	if (ret) {
-> >  		dev_err(&i2c->dev, "failed to add MFD devices:
-> > %d\n", ret);
-> 
-> [...]
-> 
-> > diff --git a/include/linux/mfd/axp20x.h b/include/linux/mfd/axp20x.h
-> > index d0e31a2..ffc69e2 100644
-> > --- a/include/linux/mfd/axp20x.h
-> > +++ b/include/linux/mfd/axp20x.h
-> 
-> [...]
-> 
-> >  struct axp20x_dev {
-> >  	struct device			*dev;
-> >  	struct i2c_client		*i2c_client;
-> >  	struct regmap			*regmap;
-> >  	struct regmap_irq_chip_data	*regmap_irqc;
-> >  	long				variant;
-> > +	int                             nr_cells;
-> > +	struct mfd_cell                 *cells;
-> > +	struct regmap_config            *regmap_cfg;
-> 
-> const?
-> 
-yes
-> >  };
-> >  
-> >  #endif /* __LINUX_MFD_AXP20X_H */
+> diff --git a/drivers/iio/humidity/Kconfig b/drivers/iio/humidity/Kconfig
+> index e116bd8..ba0ef61 100644
+> --- a/drivers/iio/humidity/Kconfig
+> +++ b/drivers/iio/humidity/Kconfig
+> @@ -22,4 +22,14 @@ config SI7005
+>  	  To compile this driver as a module, choose M here: the module
+>  	  will be called si7005.
+>  
+> +config SI701X
+> +	tristate "Si701x/2x Relative Humidity and Temperature Sensors"
+> +	depends on I2C
+> +	help
+> +	  Say yes here to build support for the Silicon Labs Si701x/2x Relative
+> +	  Humidity and Temperature Sensors.
+> +
+> +	  To compile this driver as a module, choose M here: the module
+> +	  will be called si701x.
+> +
+>  endmenu
+> diff --git a/drivers/iio/humidity/Makefile b/drivers/iio/humidity/Makefile
+> index e3f3d94..d2e9645 100644
+> --- a/drivers/iio/humidity/Makefile
+> +++ b/drivers/iio/humidity/Makefile
+> @@ -4,3 +4,4 @@
+>  
+>  obj-$(CONFIG_DHT11) += dht11.o
+>  obj-$(CONFIG_SI7005) += si7005.o
+> +obj-$(CONFIG_SI701X) += si701x.o
+> diff --git a/drivers/iio/humidity/si701x.c b/drivers/iio/humidity/si701x.c
+> new file mode 100644
+> index 0000000..1a2ee22
+> --- /dev/null
+> +++ b/drivers/iio/humidity/si701x.c
+> @@ -0,0 +1,159 @@
+> +/*
+> + * si701x.c - Silicon Labs Si701x/2x Relative Humidity and Temperature Sensors
+> + * Copyright (c) 2013,2014  Uplogix, Inc.
+> + * David Barksdale <dbarksdale@uplogix.com>
+> + *
+> + * This program is free software; you can redistribute it and/or modify it
+> + * under the terms and conditions of the GNU General Public License,
+> + * version 2, as published by the Free Software Foundation.
+> + *
+> + * This program is distributed in the hope that it will be useful,
+> + * but WITHOUT ANY WARRANTY; without even the implied warranty of
+> + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+> + * GNU General Public License for more details.
+> + */
+> +
+> +/*
+> + * The Silicon Labs Si701x/2x Relative Humidity and Temperature Sensors
+> + * are i2c devices which have an identical programming interface for
+> + * measuring relative humidity and temperature. The Si7013 has an additional
+> + * temperature input which this driver does not support.
+> + *
+> + * Data Sheets:
+> + *   Si7013: http://www.silabs.com/Support%20Documents/TechnicalDocs/Si7013.pdf
+> + *   Si7020: http://www.silabs.com/Support%20Documents/TechnicalDocs/Si7020.pdf
+> + *   Si7021: http://www.silabs.com/Support%20Documents/TechnicalDocs/Si7021.pdf
+> + */
+> +
+> +#include <linux/i2c.h>
+> +#include <linux/module.h>
+> +#include <linux/slab.h>
+> +#include <linux/sysfs.h>
+> +
+> +#include <linux/iio/iio.h>
+> +#include <linux/iio/sysfs.h>
+> +
+> +enum {
+> +	/* Measure Relative Humidity, Hold Master Mode */
+> +	SI701XCMD_RH_HOLD	= 0xE5,
+> +	/* Measure Temperature, Hold Master Mode */
+> +	SI701XCMD_TEMP_HOLD	= 0xE3,
+> +};
+> +
+> +struct si701x_data {
+> +	struct i2c_client *client;
+> +	struct mutex lock;
+> +};
+> +
+> +static int si701x_read_raw(struct iio_dev *indio_dev,
+> +			   struct iio_chan_spec const *chan, int *val,
+> +			   int *val2, long mask)
+> +{
+> +	struct si701x_data *data = iio_priv(indio_dev);
+> +	int ret;
+> +
+> +	switch (mask) {
+> +	case IIO_CHAN_INFO_RAW:
+> +		mutex_lock(&data->lock);
+
+is the locking needed? what is protected?
+
+> +		ret = i2c_smbus_read_word_data(data->client,
+> +					       chan->type == IIO_TEMP ?
+> +					       SI701XCMD_TEMP_HOLD :
+> +					       SI701XCMD_RH_HOLD);
+> +		mutex_unlock(&data->lock);
+> +		if (ret < 0)
+> +			return ret;
+> +		*val = ret;
+> +		return IIO_VAL_INT;
+> +	case IIO_CHAN_INFO_SCALE:
+> +		if (chan->type == IIO_TEMP) {
+> +			*val = 175.72 * 1000;
+
+floating-point constants in kernel space makes me nervous
+
+> +			*val2 = 65536;
+
+could set val2 once after the if
+
+> +		} else {
+> +			*val = 125 * 1000;
+> +			*val2 = 65536;
+> +		}
+> +		return IIO_VAL_FRACTIONAL;
+> +	case IIO_CHAN_INFO_OFFSET:
+> +		if (chan->type == IIO_TEMP)
+> +			*val = -46.85 * 65536 / 175.72;
+> +		else
+> +			*val = -6 * 65536 / 125;
+> +		return IIO_VAL_INT;
+> +	default:
+> +		break;
+> +	}
+> +
+> +	return -EINVAL;
+> +}
+> +
+> +static const struct iio_chan_spec si701x_channels[] = {
+> +	{
+> +		.type = IIO_HUMIDITYRELATIVE,
+> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
+> +			BIT(IIO_CHAN_INFO_SCALE) | BIT(IIO_CHAN_INFO_OFFSET),
+> +	},
+> +	{
+> +		.type = IIO_TEMP,
+> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
+> +			BIT(IIO_CHAN_INFO_SCALE) | BIT(IIO_CHAN_INFO_OFFSET),
+> +	}
+> +};
+> +
+> +static const struct iio_info si701x_info = {
+> +	.read_raw = si701x_read_raw,
+> +	.driver_module = THIS_MODULE,
+> +};
+> +
+> +static int si701x_probe(struct i2c_client *client,
+> +			const struct i2c_device_id *id)
+> +{
+> +	struct iio_dev *dev;
+> +	struct si701x_data *data;
+> +
+> +	if (!i2c_check_functionality(client->adapter, I2C_FUNC_SMBUS_WORD_DATA))
+> +		return -ENODEV;
+> +
+> +	dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
+> +	if (!dev)
+> +		return -ENOMEM;
+> +
+> +	data = iio_priv(dev);
+> +	i2c_set_clientdata(client, dev);
+> +	data->client = client;
+> +	mutex_init(&data->lock);
+> +
+> +	dev->dev.parent = &client->dev;
+> +	dev->name = dev_name(&client->dev);
+> +	dev->modes = INDIO_DIRECT_MODE;
+> +	dev->info = &si701x_info;
+> +	dev->channels = si701x_channels;
+> +	dev->num_channels = ARRAY_SIZE(si701x_channels);
+> +
+> +	return devm_iio_device_register(&client->dev, dev);
+> +}
+> +
+> +static const unsigned short si701x_address_list[] = {
+> +	0x40,
+
+the alternate address is 0x41
+
+> +	I2C_CLIENT_END
+> +};
+> +
+> +static const struct i2c_device_id si701x_id[] = {
+> +	{ "si701x", 0 },
+> +	{ }
+> +};
+> +MODULE_DEVICE_TABLE(i2c, si701x_id);
+> +
+> +static struct i2c_driver si701x_driver = {
+> +	.class		= I2C_CLASS_HWMON,
+> +	.driver.name	= "si701x",
+> +	.probe		= si701x_probe,
+> +	.address_list	= si701x_address_list,
+> +	.id_table	= si701x_id,
+
+address_list and I2C_CLASS_HWMON -- what for?
+
+if doing auto-probing, I'd check the chip's ID
+
+> +};
+> +
+> +module_i2c_driver(si701x_driver);
+> +MODULE_DESCRIPTION("Silicon Labs Si701x/2x "
+> +		   "Relative Humidity and Temperature Sensors");
+> +MODULE_AUTHOR("David Barksdale <dbarksdale@uplogix.com>");
+> +MODULE_LICENSE("GPL");
+> +
 > 
 
-thanks for the review.
+-- 
+
+Peter Meerwald
++43-664-2444418 (mobile)
