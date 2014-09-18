@@ -1,286 +1,215 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pa0-f49.google.com ([209.85.220.49]:61456 "EHLO
-	mail-pa0-f49.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1757546AbaIRFkO (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 18 Sep 2014 01:40:14 -0400
-Received: by mail-pa0-f49.google.com with SMTP id lf10so710473pab.36
-        for <linux-iio@vger.kernel.org>; Wed, 17 Sep 2014 22:40:14 -0700 (PDT)
-Date: Wed, 17 Sep 2014 22:39:26 -0700
-From: Lee Jones <lee.jones@linaro.org>
-To: Jacob Pan <jacob.jun.pan@linux.intel.com>
-Cc: IIO <linux-iio@vger.kernel.org>,
-	LKML <linux-kernel@vger.kernel.org>,
-	DEVICE TREE <devicetree@vger.kernel.org>,
-	Carlo Caione <carlo@caione.org>,
-	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
-	Aaron Lu <aaron.lu@intel.com>, Alan Cox <alan@linux.intel.com>,
-	Jean Delvare <khali@linux-fr.org>,
-	Samuel Ortiz <sameo@linux.intel.com>,
-	Liam Girdwood <lgirdwood@gmail.com>,
-	Mark Brown <broonie@kernel.org>,
-	Grant Likely <grant.likely@linaro.org>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Rob Herring <robh+dt@kernel.org>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Fugang Duan <B38611@freescale.com>,
-	Arnd Bergmann <arnd@arndb.de>,
-	Zubair Lutfullah <zubair.lutfullah@gmail.com>,
-	Sebastian Reichel <sre@debian.org>,
-	Johannes Thumshirn <johannes.thumshirn@men.de>,
-	Philippe Reynes <tremyfr@yahoo.fr>,
-	Angelo Compagnucci <angelo.compagnucci@gmail.com>,
-	Doug Anderson <dianders@chromium.org>,
-	Ramakrishna Pallala <ramakrishna.pallala@intel.com>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	Maxime Ripard <maxime.ripard@free-electrons.com>,
-	Rafael Wysocki <rafael.j.wysocki@intel.com>
-Subject: Re: [PATCH v4 1/3] mfd/axp20x: extend axp20x to support axp288 pmic
-Message-ID: <20140918053926.GC8740@lee--X1>
-References: <1410912715-25903-1-git-send-email-jacob.jun.pan@linux.intel.com>
- <1410912715-25903-2-git-send-email-jacob.jun.pan@linux.intel.com>
+Received: from mout.gmx.net ([212.227.15.19]:53580 "EHLO mout.gmx.net"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1755372AbaIRVy6 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Thu, 18 Sep 2014 17:54:58 -0400
+Message-ID: <541B54AA.9050000@gmx.de>
+Date: Thu, 18 Sep 2014 23:54:50 +0200
+From: Hartmut Knaack <knaack.h@gmx.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-In-Reply-To: <1410912715-25903-2-git-send-email-jacob.jun.pan@linux.intel.com>
+To: balbi@ti.com
+CC: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
+	pmeerw@pmeerw.net, Andrew Morton <akpm@linux-foundation.org>
+Subject: Re: [RESEND PATCH] iio: light: add support for TI's opt3001 light
+ sensor
+References: <1409671066-25747-1-git-send-email-balbi@ti.com> <54147632.9090204@kernel.org> <20140915052137.GA11866@saruman.home> <20140916170316.GD19010@saruman.home> <20140917150041.GA6903@saruman.home> <20140918133631.GA24847@saruman.home>
+In-Reply-To: <20140918133631.GA24847@saruman.home>
+Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Tue, 16 Sep 2014, Jacob Pan wrote:
+Problems receiving mails from Jonathan and the list?
 
-> X-Powers AXP288 is a customized PMIC for Intel Baytrail-CR platforms. Similar
-> to AXP202/209, AXP288 comes with USB charger, more LDO and BUCK channels, and
-> AD converters. It also provides extended status and interrupt reporting
-> capabilities than the devices currently supported in axp20x.c.
+http://marc.info/?l=linux-iio&m=141077611429500&w=2
+
+Felipe Balbi schrieb, Am 18.09.2014 15:36:
+> ping
 > 
-> In addition to feature extension, this patch also adds ACPI binding for
-> enumeration.
+> On Wed, Sep 17, 2014 at 10:00:41AM -0500, Felipe Balbi wrote:
+>> ping
+>>
+>> On Tue, Sep 16, 2014 at 12:03:16PM -0500, Felipe Balbi wrote:
+>>> ping
+>>>
+>>> On Mon, Sep 15, 2014 at 12:21:37AM -0500, Felipe Balbi wrote:
+>>>> Hi,
+>>>>
+>>>> On Sat, Sep 13, 2014 at 05:52:02PM +0100, Jonathan Cameron wrote:
+>>>>> On 02/09/14 16:17, Felipe Balbi wrote:
+>>>>>> TI's opt3001 light sensor is a simple and yet powerful
+>>>>>> little device. The device provides 99% IR rejection,
+>>>>>> Automatic full-scale, very low power consumption and
+>>>>>> measurements from 0.01 to 83k lux.
+>>>>>>
+>>>>>> This patch adds support for that device using the IIO
+>>>>>> framework.
+>>>>>>
+>>>>>> Signed-off-by: Felipe Balbi <balbi@ti.com>
+>>>>>> ---
+>>>>>>
+>>>>>> Resending as I saw no changes on the thread.
+>>>>> Hi Felipe,
+>>>>>
+>>>>> Sorry for the delay on this, entirely my fault - been busy and forgot
+>>>>> I still had questions about what was going on in here (yup its the
+>>>>> hysteresis bit again!)
+>>>>
+>>>> right, this is starting to become way too much headache for such a
+>>>> simple device. Sorry will not help me getting this driver upstream. When
+>>>> I first sent this (August 6), we didn't even have v3.17-rc1, now we're
+>>>> about to tag -rc5 and I'm worried this driver will not hit v3.18 merge
+>>>> window.
+>>>>
+>>>>> Anyhow, I'm afraid I am still a little confused about the meaning you
+>>>>> have assigned to Hysteresis in this driver.
+>>>>>
+>>>>> Let me conjecture on what might be going on here (I may be entirely
+>>>>> wrong).
+>>>>>
+>>>>> Normally a hysteresis value in IIO is defined as the 'distance' back
+>>>>> from a threshold that a signal must go before it may retrip the
+>>>>> threshold.
+>>>>> This threshold value is separately controlled. Thus if we have a
+>>>>> rising threshold of 10 and an hysteresis of 2 - to get two events the
+>>>>> signal must first rise past 10, then drop back below 8 and rise again
+>>>>> past 10.
+>>>>> If it drops below 10 but not 8 and rises again past 10 then we will
+>>>>> not get an event.
+>>>>>
+>>>>> So having the same register for both the hysteresis and the threshold
+>>>>> doesn't with this description make much sense.  It would mean that you
+>>>>> could only have a threshold of say 10 and a hysteresis of 10, thus in
+>>>>> effect meaning the signal would always have to cross 0 before the next
+>>>>> event whatever the combined threshold / hysteresis value?
+>>>>>
+>>>>> Perhaps instead the device is automatically adjusting the threshold
+>>>>> when we cross it and the 'hysteresis' here is with respect to a the
+>>>>> previous threshold?
+>>>>>
+>>>>> Thus if we start with a value of 0 and hysteresis is set to 2 it will
+>>>>> trigger an event at:
+>>>>>
+>>>>> 2, 4, 6, 8, 10 as we rise?
+>>>>>
+>>>>> This sort of auto adjustment of levels isn't uncommon in light sensors
+>>>>> (where the point of the interrupt is to notify the operating system
+>>>>> that a 'significant' change has occurred and things like screen
+>>>>> brightness may need adjusting.
+>>>>>
+>>>>> If so then the current hysteresis interface does not apply, nor does
+>>>>> the Rate of Change (ROC) interface as this is dependent on amount of
+>>>>> change, not how fast it changed.  Hence we needs something new to
+>>>>> handle this cleanly. I would suggest a new event type.  Perhaps
+>>>>> something with sysfs attr naming along the lines of
+>>>>> What:		/sys/.../iio:deviceX/events/in_light_change_rising_en
+>>>>> What:           /sys/.../iio:deviceX/events/in_light_change_rising_value
+>>>>>
+>>>>> etc?
+>>>>
+>>>> will you just tell me what you want ? I really cannot give a crap
+>>>> anymore. This has already taken me over a month of my time for such a
+>>>> simple little device, not to mention your confusing and contradicting
+>>>> change requests.
+>>>>
+>>>> (could you also trim your responses ? it's very annoying to scroll so
+>>>> much)
+>>>>
+>>>>>> +#define OPT3001_RESULT		0x00
+>>>>>> +#define OPT3001_CONFIGURATION	0x01
+>>>>>> +#define OPT3001_LOW_LIMIT	0x02
+>>>>>> +#define OPT3001_HIGH_LIMIT	0x03
+>>>>>> +#define OPT3001_MANUFACTURER_ID	0x7e
+>>>>>> +#define OPT3001_DEVICE_ID	0x7f
+>>>>>> +
+>>>>>> +#define OPT3001_CONFIGURATION_RN_MASK (0xf << 12)
+>>>>>> +#define OPT3001_CONFIGURATION_RN_AUTO (0xc << 12)
+>>>>>> +
+>>>>>> +#define OPT3001_CONFIGURATION_CT	BIT(11)
+>>>>>> +
+>>>>>> +#define OPT3001_CONFIGURATION_M_MASK	(3 << 9)
+>>>>>> +#define OPT3001_CONFIGURATION_M_SHUTDOWN (0 << 9)
+>>>>>> +#define OPT3001_CONFIGURATION_M_SINGLE (1 << 9)
+>>>>>> +#define OPT3001_CONFIGURATION_M_CONTINUOUS (2 << 9) /* also 3 << 9 */
+>>>>>> +
+>>>>>
+>>>>> I guess this naming is straight off the datasheet, but it is rather
+>>>>> more cryptic than perhaps it needs to be!  That's kind of an issue
+>>>>> with the datasheet choices rather than what you have here however!
+>>>>
+>>>> man, are you nit-picky!! These are named as such to make grepping on
+>>>> documentation easier. It's better to have something that matches
+>>>> documentation, don't you think ? otherwise, future users/developers of
+>>>> these driver will need either a shit ton of comments explaining that A
+>>>> maps to B in docs, or will need a fscking crystal ball to read my mind.
+>>>> Assuming I'll still remember what I meant.
+>>>>
+>>>>>> +static int opt3001_remove(struct i2c_client *client)
+>>>>>> +{
+>>>>>> +	struct iio_dev *iio = i2c_get_clientdata(client);
+>>>>>> +	struct opt3001 *opt = iio_priv(iio);
+>>>>>> +	int ret;
+>>>>>> +	u16 reg;
+>>>>>> +
+>>>>>> +	free_irq(client->irq, iio);
+>>>>>> +	iio_device_unregister(iio);
+>>>>>> +
+>>>>>> +	ret = i2c_smbus_read_word_swapped(opt->client, OPT3001_CONFIGURATION);
+>>>>>> +	if (ret < 0) {
+>>>>>> +		dev_err(opt->dev, "failed to read register %02x\n",
+>>>>>> +				OPT3001_CONFIGURATION);
+>>>>>> +		return ret;
+>>>>>> +	}
+>>>>>> +
+>>>>>> +	reg = ret;
+>>>>>> +	opt3001_set_mode(opt, &reg, OPT3001_CONFIGURATION_M_SHUTDOWN);
+>>>>>> +
+>>>>>> +	ret = i2c_smbus_write_word_swapped(opt->client, OPT3001_CONFIGURATION,
+>>>>>> +			reg);
+>>>>>> +	if (ret < 0) {
+>>>>>> +		dev_err(opt->dev, "failed to write register %02x\n",
+>>>>>> +				OPT3001_CONFIGURATION);
+>>>>>> +		return ret;
+>>>>>> +	}
+>>>>>> +
+>>>>>> +	iio_device_free(iio);
+>>>>>
+>>>>> Use the devm_iio_device_alloc and you can drop the need to free it.
+>>>>> I don't really mind, but I'll almost guarantee that someone will post
+>>>>> a follow up patch doing this if you don't.  As it will be ever so
+>>>>> slightly cleaner, I'll probably take that patch.
+>>>>
+>>>> here's the original driver:
+>>>>
+>>>> http://www.spinics.net/lists/linux-iio/msg14331.html
+>>>>
+>>>> notice that it *WAS* *USING* devm_iio_device_alloc(), until:
+>>>>
+>>>> http://www.spinics.net/lists/linux-iio/msg14421.html
+>>>>
+>>>> you *SPECIFICALLY* asked for *NON* *DEVM* versions!!
+>>>>
+>>>> So figure out what you really want, let me know and I'll code it all up
+>>>> quickly and hopefully still get this into v3.18 merge window. I sent
+>>>> this driver *very* early to be doubly sure it would hit v3.18 and there
+>>>> was a long hiatus from yourself which is now jeopardizing what I was
+>>>> expecting. That, coupled with your contradicting requests, has just put
+>>>> me in a bad mood, even before Monday, hurray.
+>>>>
+>>>> cheers
+>>>>
+>>>> -- 
+>>>> balbi
+>>>
+>>>
+>>>
+>>> -- 
+>>> balbi
+>>
+>>
+>>
+>> -- 
+>> balbi
 > 
-> This consolidated driver should support more X-Powers' PMICs in both device
-> tree and ACPI enumerated platforms.
 > 
-> Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
-> ---
->  drivers/mfd/Kconfig        |   3 +-
->  drivers/mfd/axp20x.c       | 353 +++++++++++++++++++++++++++++++++++++--------
->  include/linux/mfd/axp20x.h |  58 ++++++++
->  3 files changed, 354 insertions(+), 60 deletions(-)
 > 
-> diff --git a/drivers/mfd/Kconfig b/drivers/mfd/Kconfig
-> index de5abf2..c183edb 100644
-> --- a/drivers/mfd/Kconfig
-> +++ b/drivers/mfd/Kconfig
-> @@ -74,7 +74,8 @@ config MFD_AXP20X
->  	select REGMAP_IRQ
->  	depends on I2C=y
->  	help
-> -	  If you say Y here you get support for the X-Powers AXP202 and AXP209.
-> +	  If you say Y here you get support for the X-Powers AXP202, AXP209 and
-> +	  AXP288 power management IC (PMIC).
->  	  This driver include only the core APIs. You have to select individual
->  	  components like regulators or the PEK (Power Enable Key) under the
->  	  corresponding menus.
 
-[...]
-
-> -static const struct regmap_config axp20x_regmap_config = {
-
-[...]
-
-> +static struct regmap_config axp20x_regmap_config = {
-
-Why have you removed const status?
-
->  	.reg_bits	= 8,
->  	.val_bits	= 8,
->  	.wr_table	= &axp20x_writeable_table,
-> @@ -70,47 +129,96 @@ static const struct regmap_config axp20x_regmap_config = {
->  	.cache_type	= REGCACHE_RBTREE,
->  };
->  
-> -#define AXP20X_IRQ(_irq, _off, _mask) \
-> -	[AXP20X_IRQ_##_irq] = { .reg_offset = (_off), .mask = BIT(_mask) }
-> +static struct regmap_config axp288_regmap_config = {
-
-const?
-
-> +	.reg_bits	= 8,
-> +	.val_bits	= 8,
-> +	.wr_table	= &axp288_writeable_table,
-> +	.volatile_table	= &axp288_volatile_table,
-> +	.max_register	= AXP288_FG_TUNE5,
-> +	.cache_type	= REGCACHE_RBTREE,
-> +};
-
-[...]
-
-> -static const struct regmap_irq_chip axp20x_regmap_irq_chip = {
-> +static struct acpi_device_id axp20x_acpi_match[] = {
-> +	{
-> +		.id = "INT33F4",
-> +		.driver_data = (kernel_ulong_t)AXP288_ID,
-
-Why do you need to cast this?
-
-> +	},
-> +	{ },
-> +};
-> +MODULE_DEVICE_TABLE(acpi, axp20x_acpi_match);
-> +
-> +/* common irq chip attributes only */
-> +static struct regmap_irq_chip axp20x_regmap_irq_chip = {
->  	.name			= "axp20x_irq_chip",
->  	.status_base		= AXP20X_IRQ1_STATE,
->  	.ack_base		= AXP20X_IRQ1_STATE,
->  	.mask_base		= AXP20X_IRQ1_EN,
-> -	.num_regs		= 5,
-> -	.irqs			= axp20x_regmap_irqs,
-> -	.num_irqs		= ARRAY_SIZE(axp20x_regmap_irqs),
->  	.mask_invert		= true,
->  	.init_ack_masked	= true,
->  };
-> @@ -161,36 +276,155 @@ static struct mfd_cell axp20x_cells[] = {
->  	},
->  };
-
-[...]
-
-> +static int axp20x_match_device(struct axp20x_dev *axp20x, struct device *dev)
-> +{
-> +	const struct acpi_device_id *acpi_id;
-> +	const struct of_device_id *of_id;
-> +
-> +	of_id = of_match_device(axp20x_of_match, dev);
-> +	if (of_id)
-> +		axp20x->variant = (long) of_id->data;
-> +	else {
-> +		acpi_id = acpi_match_device(dev->driver->acpi_match_table, dev);
-> +		if (!acpi_id || !acpi_id->driver_data) {
-> +			dev_err(dev, "Unable to determine ID\n");
-> +			return -ENODEV;
-> +		}
-> +		axp20x->variant = (long) acpi_id->driver_data;
-> +	}
-
-We can do better error handling here and give the user a better sense
-of what happened if anything were to go wrong.  Do:
-
-if (dev->of_node)
-  of_id = of_match_device()
-  if (!of_id)
-    error()
-  variant = of_id->data;
-else
-  acpi_id = acpi_match_device()
-  if (!acpi_id)
-    error()
-  variant = acpi_id->driver_data;
-
-> +	switch (axp20x->variant) {
-> +	case AXP202_ID:
-> +	case AXP209_ID:
-> +		axp20x->nr_cells = ARRAY_SIZE(axp20x_cells);
-> +		axp20x->cells = axp20x_cells;
-> +		axp20x->regmap_cfg = &axp20x_regmap_config;
-> +		axp20x_regmap_irq_chip.num_regs	= 5;
-> +		axp20x_regmap_irq_chip.irqs = axp20x_regmap_irqs;
-> +		axp20x_regmap_irq_chip.num_irqs	=
-> +			ARRAY_SIZE(axp20x_regmap_irqs);
-> +		break;
-> +	case AXP288_ID:
-> +		axp20x->cells = axp288_cells;
-> +		axp20x->nr_cells = ARRAY_SIZE(axp288_cells);
-> +		axp20x->regmap_cfg = &axp288_regmap_config;
-> +		axp20x_regmap_irq_chip.irqs = axp288_regmap_irqs;
-> +		axp20x_regmap_irq_chip.num_irqs	=
-> +			ARRAY_SIZE(axp288_regmap_irqs);
-> +		axp20x_regmap_irq_chip.num_regs	= 6;
-> +		break;
-> +	default:
-> +		dev_err(dev, "unsupported AXP20X ID %lu\n", axp20x->variant);
-> +		return -ENODEV;
-
--EINVAL might be better here.
-
-> +	}
-> +	dev_info(dev, "AXP20x variant %s found\n",
-> +		axp20x_model_names[axp20x->variant]);
-> +
-> +	return 0;
-> +}
-> +
->  static int axp20x_i2c_probe(struct i2c_client *i2c,
-> -			 const struct i2c_device_id *id)
-> +			const struct i2c_device_id *id)
-
-Sneaky. ;)
-
->  {
->  	struct axp20x_dev *axp20x;
-> -	const struct of_device_id *of_id;
->  	int ret;
->  
->  	axp20x = devm_kzalloc(&i2c->dev, sizeof(*axp20x), GFP_KERNEL);
->  	if (!axp20x)
->  		return -ENOMEM;
->  
-> -	of_id = of_match_device(axp20x_of_match, &i2c->dev);
-> -	if (!of_id) {
-> -		dev_err(&i2c->dev, "Unable to setup AXP20X data\n");
-> -		return -ENODEV;
-> -	}
-> -	axp20x->variant = (long) of_id->data;
-> +	ret = axp20x_match_device(axp20x, &i2c->dev);
-> +	if (ret)
-> +		return ret;
->  
->  	axp20x->i2c_client = i2c;
->  	axp20x->dev = &i2c->dev;
->  	dev_set_drvdata(axp20x->dev, axp20x);
->  
-> -	axp20x->regmap = devm_regmap_init_i2c(i2c, &axp20x_regmap_config);
-> +	axp20x->regmap = devm_regmap_init_i2c(i2c, axp20x->regmap_cfg);
->  	if (IS_ERR(axp20x->regmap)) {
->  		ret = PTR_ERR(axp20x->regmap);
->  		dev_err(&i2c->dev, "regmap init failed: %d\n", ret);
-> @@ -206,8 +440,8 @@ static int axp20x_i2c_probe(struct i2c_client *i2c,
->  		return ret;
->  	}
->  
-> -	ret = mfd_add_devices(axp20x->dev, -1, axp20x_cells,
-> -			      ARRAY_SIZE(axp20x_cells), NULL, 0, NULL);
-> +	ret = mfd_add_devices(axp20x->dev, -1, axp20x->cells,
-> +			axp20x->nr_cells, NULL, 0, NULL);
->  
->  	if (ret) {
->  		dev_err(&i2c->dev, "failed to add MFD devices: %d\n", ret);
-
-[...]
-
-> diff --git a/include/linux/mfd/axp20x.h b/include/linux/mfd/axp20x.h
-> index d0e31a2..ffc69e2 100644
-> --- a/include/linux/mfd/axp20x.h
-> +++ b/include/linux/mfd/axp20x.h
-
-[...]
-
->  struct axp20x_dev {
->  	struct device			*dev;
->  	struct i2c_client		*i2c_client;
->  	struct regmap			*regmap;
->  	struct regmap_irq_chip_data	*regmap_irqc;
->  	long				variant;
-> +	int                             nr_cells;
-> +	struct mfd_cell                 *cells;
-> +	struct regmap_config            *regmap_cfg;
-
-const?
-
->  };
->  
->  #endif /* __LINUX_MFD_AXP20X_H */
-
--- 
-Lee Jones
-Linaro STMicroelectronics Landing Team Lead
-Linaro.org │ Open source software for ARM SoCs
-Follow Linaro: Facebook | Twitter | Blog
