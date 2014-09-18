@@ -1,99 +1,153 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from bombadil.infradead.org ([198.137.202.9]:53095 "EHLO
-	bombadil.infradead.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755656AbaIQSiO (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 17 Sep 2014 14:38:14 -0400
-Date: Wed, 17 Sep 2014 11:38:09 -0700
-From: Darren Hart <dvhart@infradead.org>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Azael Avalos <coproscefalo@gmail.com>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Matthew Garrett <matthew.garrett@nebula.com>,
-	"platform-driver-x86@vger.kernel.org"
-	<platform-driver-x86@vger.kernel.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	linux-iio@vger.kernel.org
-Subject: Re: [PATCH 3/5] toshiba_acpi: Add accelerometer input polled device
-Message-ID: <20140917183809.GA7517@vmdeb7>
-References: <1409937247-2525-1-git-send-email-coproscefalo@gmail.com>
- <1409937247-2525-4-git-send-email-coproscefalo@gmail.com>
- <20140906024253.GB11389@vmdeb7>
- <CAGdLNWGhdQU3Fpud9Zgvx3AQ5Lb=WdEkJb_wWTb1hJoHxXPXpQ@mail.gmail.com>
- <20140909000429.GB5835@vmdeb7>
- <10ee37dc-4645-48c4-9155-89b60b38f4cf@email.android.com>
+Received: from ns.mm-sol.com ([37.157.136.199]:36603 "EHLO extserv.mm-sol.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1756681AbaIRJ5Y (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Thu, 18 Sep 2014 05:57:24 -0400
+Message-ID: <541AAC80.1090708@mm-sol.com>
+Date: Thu, 18 Sep 2014 12:57:20 +0300
+From: Stanimir Varbanov <svarbanov@mm-sol.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <10ee37dc-4645-48c4-9155-89b60b38f4cf@email.android.com>
+To: Jonathan Cameron <jic23@kernel.org>
+CC: Hartmut Knaack <knaack.h@gmx.de>,
+	Ian Campbell <ijc+devicetree@hellion.org.uk>,
+	Pawel Moll <pawel.moll@arm.com>,
+	Rob Herring <robh+dt@kernel.org>,
+	Kumar Gala <galak@codeaurora.org>,
+	Mark Rutland <mark.rutland@arm.com>,
+	Grant Likely <grant.likely@linaro.org>,
+	Arnd Bergmann <arnd@arndb.de>, linux-arm-msm@vger.kernel.org,
+	linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Angelo Compagnucci <angelo.compagnucci@gmail.com>,
+	Doug Anderson <dianders@chromium.org>,
+	Fugang Duan <B38611@freescale.com>,
+	Johannes Thumshirn <johannes.thumshirn@men.de>,
+	Jean Delvare <jdelvare@suse.de>,
+	Philippe Reynes <tremyfr@yahoo.fr>,
+	Lee Jones <lee.jones@linaro.org>,
+	Josh Cartwright <joshc@codeaurora.org>,
+	Stephen Boyd <sboyd@codeaurora.org>,
+	David Collins <collinsd@codeaurora.org>,
+	"Ivan T. Ivanov" <iivanov@mm-sol.com>
+Subject: Re: [PATCH v2 1/2] iio: vadc: Qualcomm SPMI PMIC voltage ADC driver
+References: <1410448403-19402-1-git-send-email-svarbanov@mm-sol.com> <1410448403-19402-2-git-send-email-svarbanov@mm-sol.com> <54138151.8010902@gmx.de> <54147E97.60808@kernel.org> <5416F3E2.3030009@mm-sol.com> <4dbc485f-599a-4b50-854c-c2e1c44d4810@email.android.com>
+In-Reply-To: <4dbc485f-599a-4b50-854c-c2e1c44d4810@email.android.com>
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Wed, Sep 17, 2014 at 05:36:31PM +0100, Jonathan Cameron wrote:
-> 
-> 
-> On September 9, 2014 1:04:30 AM GMT+01:00, Darren Hart <dvhart@infradead.org> wrote:
-> >On Fri, Sep 05, 2014 at 11:04:18PM -0600, Azael Avalos wrote:
-> >> Hi there,
-> >> 
-> >> 2014-09-05 20:42 GMT-06:00 Darren Hart <dvhart@infradead.org>:
-> >> > On Fri, Sep 05, 2014 at 11:14:05AM -0600, Azael Avalos wrote:
-> >> >> The accelerometer sensor is very sensitive, and having userspace
-> >> >> poll the sysfs position entry is not very battery friendly.
-> >> >>
-> >> >> This patch removes the sysfs entry and instead, it creates an
-> >> >> input polled device (joystick) for the built-in accelerometer.
-> >> >
-> >> > Hrm, while sysfs details can change across kernel versions, usually
-> >due to
-> >> > driver core changes, we try to keep them as consistent as possible
-> >so as not to
-> >> > break userspace.
-> >> >
-> >> > That said, if we are going to try and come up with a better model
-> >for
-> >> > representing an accelerometer, wouldn't treating it as an IIO
-> >device be the more
-> >> > logical approach?
-> >> 
-> >> Yes of course, but the actual accelerometer device (sensor?) is not
-> >> really exposed,
-> >> only certain "functions" it provides, and they are divided across two
-> >> different ACPI devices,
-> >> TOS620A exposes the protection, and the TOS1900 (and et. al.) only
-> >> exposes the axes.
-> >
-> >As I understand it, IIO defines an interface to a device, a standard
-> >sysfs set
-> >of properties. I should think we could provide the appropriate
-> >callbacks even
-> >for a partially implemented (or a pair of) accelerometer.
-> >
-> >Jonathan, what are your thoughts here. Is such a "device" (ACPI
-> >accessors to
-> >axis and threshold) a candidate for IIO, or is this input polled device
-> >more
-> >appropriate?
-> Absolutely fine in IIO.
-> 
-> Sorry I took so long to reply. Read the title and expected more detailed issue so queued
->  it up for when I had more time. Oops.
-> 
-> Only slight gotcha is that there is some debate over the iio timer trigger
->  configuration interface which would be equivalent of a polled input device.
-> 
-> Hence it hasn't merged yet.
-> Comes down to how these are instantiated. Lars-Peter Clausen is planning a configfs
->  proposal rather than how we do the user space trigger creation currently.
-> 
-> A user space trigger would work but then you loose lack of hitting sysfs files.
+Hi Jonathan,
 
-Thanks Jonathan,
+On 09/15/2014 07:11 PM, Jonathan Cameron wrote:
+> 
+> 
+> On September 15, 2014 3:12:50 PM GMT+01:00, Stanimir Varbanov <svarbanov@mm-sol.com> wrote:
+>> Hi Jonathan,
+>>
+>> Thanks for the review!
+>>
+>> On 09/13/2014 08:27 PM, Jonathan Cameron wrote:
+>>> On 13/09/14 00:27, Hartmut Knaack wrote:
+>>>> Stanimir Varbanov schrieb, Am 11.09.2014 17:13:
+>>>>> The voltage ADC is peripheral of Qualcomm SPMI PMIC chips. It has
+>>>>> 15bits resolution and register space inside PMIC accessible across
+>>>>> SPMI bus.
+>>>>>
+>>>>> The vadc driver registers itself through IIO interface.
+>>>>>
+>>>> Looks already pretty good. Things you should consider in regard of
+>> common coding style are to use the variable name ret instead of rc,
+>> since it is used in almost all adc drivers and thus makes reviewing a
+>> bit easier. Besides that, you seem to use unsigned as well as unsigned
+>> int, so to be consistent, please stick to one of them. Other comments
+>> in line.
+>>>
+>>> A few additional comments from me.  My biggest question is whether
+>>> you are actually making life difficult for yourself by having
+>>> vadc_channels and vadc->channels (don't like the similar naming btw!)
+>>> in different orders.  I think you can move the ordering into the
+>> device
+>>> tree reading code rather than doing it in lots of other places. 
+>> Hence
+>>> rather than an order based on the device tree description, put the
+>>> data into a fixed ofer in vadc->channels.
+>>>
+>>> Entirely possible I'm missing something though :)
+>>>>> Signed-off-by: Stanimir Varbanov <svarbanov@mm-sol.com>
+>>>>> Signed-off-by: Ivan T. Ivanov <iivanov@mm-sol.com>
+>>>>> ---
+>>>>>  drivers/iio/adc/Kconfig                       |   11 +
+>>>>>  drivers/iio/adc/Makefile                      |    1 +
+>>>>>  drivers/iio/adc/qcom-spmi-vadc.c              |  999
+>> +++++++++++++++++++++++++
+>>>>>  include/dt-bindings/iio/qcom,spmi-pmic-vadc.h |  119 +++
+>>>>>  4 files changed, 1130 insertions(+), 0 deletions(-)
+>>>>>  create mode 100644 drivers/iio/adc/qcom-spmi-vadc.c
+>>>>>  create mode 100644 include/dt-bindings/iio/qcom,spmi-pmic-vadc.h
 
-Azael, please follow-up with the IIO folks and if you want to modify the
-interface, please do so via IIO so it uses a consistent interface and we can
-eliminate these custom sysfs files.
+<snip>
 
-Thanks,
+>>>>> +	vchan = vadc_find_channel(vadc, chan->channel);
+>>>>> +	if (!vchan)
+>>>>> +		return -EINVAL;
+>>>>> +
+>>>>> +	if (!vadc->is_ref_measured) {
+>>>>> +		rc = vadc_measure_reference_points(vadc);
+>>>>> +		if (rc)
+>>>>> +			return rc;
+>>>>> +
+>>>>> +		vadc->is_ref_measured = true;
+>>>>> +	}
+>>>>> +
+>>>>> +	switch (mask) {
+>>>>> +	case IIO_CHAN_INFO_PROCESSED:
+>>>>> +		rc = vadc_do_conversion(vadc, vchan, &result.adc_code);
+>>>>> +		if (rc)
+>>>>> +			return rc;
+>>>>> +
+>>>>> +		vadc_calibrate(vadc, vchan, &result);
+>>>>> +
+>>>>> +		*val = result.physical;
+>>> I'm a little suspicious here.  Are the resulting values in milivolts
+>> for
+>>> all the channels?  Very handy if so, but seems a little unlikely with
+>> 15 bit
+>>> ADC that you'd have no part of greater accuracy than a milivolt.
+>>
+>> In fact *val is in microvolts. What is the expected unit from IIO ADC
+>> users?
+> See Documentation/ABI/sysfs-bus-iio
+> Millivolts I think... We copied hwmon where possible.
+
+I'm a bit confused about these units. I searched references of
+iio_read_channel_processed() and found a few.
+
+The iio_hwmon expecting milivolts. On the other side lp8788-charger.c
+registers a get_property method in charger-manager.c, which expects
+microvolts in get_batt_uV().
+
+I also wonder how to implement IIO read_raw() method so as not to lose
+precision (if assume we must return millivolts). As far I can see it
+should be some combination of IIO_CHAN_INFO_RAW and IIO_CHAN_INFO_SCALE
+masks. Any hints?
+
+>>
+>>>>> +		rc = IIO_VAL_INT;
+>>>> return IIO_VAL_INT;
+>>>>> +		break;
+>>>>> +	default:
+>>>>> +		rc = -EINVAL;
+>>>>> +		break;
+>>>> Drop default case, or leave empty.
+>>>>> +	}
+>>>>> +
+>>>>> +	return rc;
+>>>> return -EINVAL;
+>>>>> +}
+
 
 -- 
-Darren Hart
-Intel Open Source Technology Center
+regards,
+Stan
