@@ -1,103 +1,309 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pa0-f52.google.com ([209.85.220.52]:49060 "EHLO
-	mail-pa0-f52.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752198AbaIRLxq (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 18 Sep 2014 07:53:46 -0400
-From: Sanchayan Maity <maitysanchayan@gmail.com>
-To: shawn.guo@freescale.com
-Cc: stefan@agner.ch, jic23@kernel.org, B38611@freescale.com,
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-	Sanchayan Maity <maitysanchayan@gmail.com>
-Subject: =?UTF-8?q?=5BPATCH=20v2=5D=20ARM=3A=20imx=3A=20vf610-adc=3A=20Add=20temperature=20sensor=20support?=
-Date: Thu, 18 Sep 2014 17:23:23 +0530
-Message-Id: <c5c79290b29e416c4afffe298d9a2a25b00a1f75.1411039381.git.maitysanchayan@gmail.com>
-In-Reply-To: <cover.1411039381.git.maitysanchayan@gmail.com>
-References: <cover.1411039381.git.maitysanchayan@gmail.com>
-In-Reply-To: <cover.1411039381.git.maitysanchayan@gmail.com>
-References: <cover.1411039381.git.maitysanchayan@gmail.com>
+Received: from mga11.intel.com ([192.55.52.93]:43240 "EHLO mga11.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751280AbaIRMc5 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Thu, 18 Sep 2014 08:32:57 -0400
+Date: Thu, 18 Sep 2014 05:32:52 -0700
+From: Jacob Pan <jacob.jun.pan@linux.intel.com>
+To: Lee Jones <lee.jones@linaro.org>
+Cc: IIO <linux-iio@vger.kernel.org>,
+	LKML <linux-kernel@vger.kernel.org>,
+	DEVICE TREE <devicetree@vger.kernel.org>,
+	Carlo Caione <carlo@caione.org>,
+	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+	Aaron Lu <aaron.lu@intel.com>, Alan Cox <alan@linux.intel.com>,
+	Jean Delvare <khali@linux-fr.org>,
+	Samuel Ortiz <sameo@linux.intel.com>,
+	Liam Girdwood <lgirdwood@gmail.com>,
+	Mark Brown <broonie@kernel.org>,
+	Grant Likely <grant.likely@linaro.org>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Rob Herring <robh+dt@kernel.org>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Fugang Duan <B38611@freescale.com>,
+	Arnd Bergmann <arnd@arndb.de>,
+	Zubair Lutfullah <zubair.lutfullah@gmail.com>,
+	Sebastian Reichel <sre@debian.org>,
+	Johannes Thumshirn <johannes.thumshirn@men.de>,
+	Philippe Reynes <tremyfr@yahoo.fr>,
+	Angelo Compagnucci <angelo.compagnucci@gmail.com>,
+	Doug Anderson <dianders@chromium.org>,
+	Ramakrishna Pallala <ramakrishna.pallala@intel.com>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Maxime Ripard <maxime.ripard@free-electrons.com>,
+	Rafael Wysocki <rafael.j.wysocki@intel.com>
+Subject: Re: [PATCH v4 1/3] mfd/axp20x: extend axp20x to support axp288 pmic
+Message-ID: <20140918053252.34829684@ultegra>
+In-Reply-To: <20140918053926.GC8740@lee--X1>
+References: <1410912715-25903-1-git-send-email-jacob.jun.pan@linux.intel.com>
+	<1410912715-25903-2-git-send-email-jacob.jun.pan@linux.intel.com>
+	<20140918053926.GC8740@lee--X1>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=US-ASCII
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Vybrid ADC peripheral includes a temperature sensor
-which is connected to channel number 26. This patch
-adds support for the sensor. The raw value is read
-and the temperature calculated in milli degree Celsius,
-which is returned using IIO_CHAN_INFO_PROCESSED option.
+On Wed, 17 Sep 2014 22:39:26 -0700
+Lee Jones <lee.jones@linaro.org> wrote:
 
-Signed-off-by: Sanchayan Maity <maitysanchayan@gmail.com>
----
- drivers/iio/adc/vf610_adc.c |   28 ++++++++++++++++++++++++++--
- 1 file changed, 26 insertions(+), 2 deletions(-)
+> On Tue, 16 Sep 2014, Jacob Pan wrote:
+> 
+> > X-Powers AXP288 is a customized PMIC for Intel Baytrail-CR
+> > platforms. Similar to AXP202/209, AXP288 comes with USB charger,
+> > more LDO and BUCK channels, and AD converters. It also provides
+> > extended status and interrupt reporting capabilities than the
+> > devices currently supported in axp20x.c.
+> > 
+> > In addition to feature extension, this patch also adds ACPI binding
+> > for enumeration.
+> > 
+> > This consolidated driver should support more X-Powers' PMICs in
+> > both device tree and ACPI enumerated platforms.
+> > 
+> > Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
+> > ---
+> >  drivers/mfd/Kconfig        |   3 +-
+> >  drivers/mfd/axp20x.c       | 353
+> > +++++++++++++++++++++++++++++++++++++--------
+> > include/linux/mfd/axp20x.h |  58 ++++++++ 3 files changed, 354
+> > insertions(+), 60 deletions(-)
+> > 
+> > diff --git a/drivers/mfd/Kconfig b/drivers/mfd/Kconfig
+> > index de5abf2..c183edb 100644
+> > --- a/drivers/mfd/Kconfig
+> > +++ b/drivers/mfd/Kconfig
+> > @@ -74,7 +74,8 @@ config MFD_AXP20X
+> >  	select REGMAP_IRQ
+> >  	depends on I2C=y
+> >  	help
+> > -	  If you say Y here you get support for the X-Powers
+> > AXP202 and AXP209.
+> > +	  If you say Y here you get support for the X-Powers
+> > AXP202, AXP209 and
+> > +	  AXP288 power management IC (PMIC).
+> >  	  This driver include only the core APIs. You have to
+> > select individual components like regulators or the PEK (Power
+> > Enable Key) under the corresponding menus.
+> 
+> [...]
+> 
+> > -static const struct regmap_config axp20x_regmap_config = {
+> 
+> [...]
+> 
+> > +static struct regmap_config axp20x_regmap_config = {
+> 
+> Why have you removed const status?
+I did not use const * in axp20x_dev, let me add that. good point.
+> 
+> >  	.reg_bits	= 8,
+> >  	.val_bits	= 8,
+> >  	.wr_table	= &axp20x_writeable_table,
+> > @@ -70,47 +129,96 @@ static const struct regmap_config
+> > axp20x_regmap_config = { .cache_type	= REGCACHE_RBTREE,
+> >  };
+> >  
+> > -#define AXP20X_IRQ(_irq, _off, _mask) \
+> > -	[AXP20X_IRQ_##_irq] = { .reg_offset = (_off), .mask =
+> > BIT(_mask) } +static struct regmap_config axp288_regmap_config = {
+> 
+> const?
+> 
+ditto
+> > +	.reg_bits	= 8,
+> > +	.val_bits	= 8,
+> > +	.wr_table	= &axp288_writeable_table,
+> > +	.volatile_table	= &axp288_volatile_table,
+> > +	.max_register	= AXP288_FG_TUNE5,
+> > +	.cache_type	= REGCACHE_RBTREE,
+> > +};
+> 
+> [...]
+> 
+> > -static const struct regmap_irq_chip axp20x_regmap_irq_chip = {
+> > +static struct acpi_device_id axp20x_acpi_match[] = {
+> > +	{
+> > +		.id = "INT33F4",
+> > +		.driver_data = (kernel_ulong_t)AXP288_ID,
+> 
+> Why do you need to cast this?
+> 
+to make sure match driver_data which is different in acpi_device_id than
+of_device_id.
+> > +	},
+> > +	{ },
+> > +};
+> > +MODULE_DEVICE_TABLE(acpi, axp20x_acpi_match);
+> > +
+> > +/* common irq chip attributes only */
+> > +static struct regmap_irq_chip axp20x_regmap_irq_chip = {
+> >  	.name			= "axp20x_irq_chip",
+> >  	.status_base		= AXP20X_IRQ1_STATE,
+> >  	.ack_base		= AXP20X_IRQ1_STATE,
+> >  	.mask_base		= AXP20X_IRQ1_EN,
+> > -	.num_regs		= 5,
+> > -	.irqs			= axp20x_regmap_irqs,
+> > -	.num_irqs		= ARRAY_SIZE(axp20x_regmap_irqs),
+> >  	.mask_invert		= true,
+> >  	.init_ack_masked	= true,
+> >  };
+> > @@ -161,36 +276,155 @@ static struct mfd_cell axp20x_cells[] = {
+> >  	},
+> >  };
+> 
+> [...]
+> 
+> > +static int axp20x_match_device(struct axp20x_dev *axp20x, struct
+> > device *dev) +{
+> > +	const struct acpi_device_id *acpi_id;
+> > +	const struct of_device_id *of_id;
+> > +
+> > +	of_id = of_match_device(axp20x_of_match, dev);
+> > +	if (of_id)
+> > +		axp20x->variant = (long) of_id->data;
+> > +	else {
+> > +		acpi_id =
+> > acpi_match_device(dev->driver->acpi_match_table, dev);
+> > +		if (!acpi_id || !acpi_id->driver_data) {
+> > +			dev_err(dev, "Unable to determine ID\n");
+> > +			return -ENODEV;
+> > +		}
+> > +		axp20x->variant = (long) acpi_id->driver_data;
+> > +	}
+> 
+> We can do better error handling here and give the user a better sense
+> of what happened if anything were to go wrong.  Do:
+> 
+> if (dev->of_node)
+>   of_id = of_match_device()
+>   if (!of_id)
+>     error()
+this will give false error on ACPI based platforms, right? in reality
+this driver will only run on ACPI or OF platform not both, so IMHO
+there is not need to give user a specific error since they already know
+what platform I am running.
+>   variant = of_id->data;
+> else
+>   acpi_id = acpi_match_device()
+>   if (!acpi_id)
+>     error()
+>   variant = acpi_id->driver_data;
+> 
+> > +	switch (axp20x->variant) {
+> > +	case AXP202_ID:
+> > +	case AXP209_ID:
+> > +		axp20x->nr_cells = ARRAY_SIZE(axp20x_cells);
+> > +		axp20x->cells = axp20x_cells;
+> > +		axp20x->regmap_cfg = &axp20x_regmap_config;
+> > +		axp20x_regmap_irq_chip.num_regs	= 5;
+> > +		axp20x_regmap_irq_chip.irqs = axp20x_regmap_irqs;
+> > +		axp20x_regmap_irq_chip.num_irqs	=
+> > +			ARRAY_SIZE(axp20x_regmap_irqs);
+> > +		break;
+> > +	case AXP288_ID:
+> > +		axp20x->cells = axp288_cells;
+> > +		axp20x->nr_cells = ARRAY_SIZE(axp288_cells);
+> > +		axp20x->regmap_cfg = &axp288_regmap_config;
+> > +		axp20x_regmap_irq_chip.irqs = axp288_regmap_irqs;
+> > +		axp20x_regmap_irq_chip.num_irqs	=
+> > +			ARRAY_SIZE(axp288_regmap_irqs);
+> > +		axp20x_regmap_irq_chip.num_regs	= 6;
+> > +		break;
+> > +	default:
+> > +		dev_err(dev, "unsupported AXP20X ID %lu\n",
+> > axp20x->variant);
+> > +		return -ENODEV;
+> 
+> -EINVAL might be better here.
+I was considering the return value gets propagated to probe function
+which is used to query the existence of a device per driver model. But
+I have no strong preference.
+> 
+> > +	}
+> > +	dev_info(dev, "AXP20x variant %s found\n",
+> > +		axp20x_model_names[axp20x->variant]);
+> > +
+> > +	return 0;
+> > +}
+> > +
+> >  static int axp20x_i2c_probe(struct i2c_client *i2c,
+> > -			 const struct i2c_device_id *id)
+> > +			const struct i2c_device_id *id)
+> 
+> Sneaky. ;)
+I should not fix the extra white spaces here, unrelated to this patch.
+will remove.
+> 
+> >  {
+> >  	struct axp20x_dev *axp20x;
+> > -	const struct of_device_id *of_id;
+> >  	int ret;
+> >  
+> >  	axp20x = devm_kzalloc(&i2c->dev, sizeof(*axp20x),
+> > GFP_KERNEL); if (!axp20x)
+> >  		return -ENOMEM;
+> >  
+> > -	of_id = of_match_device(axp20x_of_match, &i2c->dev);
+> > -	if (!of_id) {
+> > -		dev_err(&i2c->dev, "Unable to setup AXP20X
+> > data\n");
+> > -		return -ENODEV;
+> > -	}
+> > -	axp20x->variant = (long) of_id->data;
+> > +	ret = axp20x_match_device(axp20x, &i2c->dev);
+> > +	if (ret)
+> > +		return ret;
+> >  
+> >  	axp20x->i2c_client = i2c;
+> >  	axp20x->dev = &i2c->dev;
+> >  	dev_set_drvdata(axp20x->dev, axp20x);
+> >  
+> > -	axp20x->regmap = devm_regmap_init_i2c(i2c,
+> > &axp20x_regmap_config);
+> > +	axp20x->regmap = devm_regmap_init_i2c(i2c,
+> > axp20x->regmap_cfg); if (IS_ERR(axp20x->regmap)) {
+> >  		ret = PTR_ERR(axp20x->regmap);
+> >  		dev_err(&i2c->dev, "regmap init failed: %d\n",
+> > ret); @@ -206,8 +440,8 @@ static int axp20x_i2c_probe(struct
+> > i2c_client *i2c, return ret;
+> >  	}
+> >  
+> > -	ret = mfd_add_devices(axp20x->dev, -1, axp20x_cells,
+> > -			      ARRAY_SIZE(axp20x_cells), NULL, 0,
+> > NULL);
+> > +	ret = mfd_add_devices(axp20x->dev, -1, axp20x->cells,
+> > +			axp20x->nr_cells, NULL, 0, NULL);
+> >  
+> >  	if (ret) {
+> >  		dev_err(&i2c->dev, "failed to add MFD devices:
+> > %d\n", ret);
+> 
+> [...]
+> 
+> > diff --git a/include/linux/mfd/axp20x.h b/include/linux/mfd/axp20x.h
+> > index d0e31a2..ffc69e2 100644
+> > --- a/include/linux/mfd/axp20x.h
+> > +++ b/include/linux/mfd/axp20x.h
+> 
+> [...]
+> 
+> >  struct axp20x_dev {
+> >  	struct device			*dev;
+> >  	struct i2c_client		*i2c_client;
+> >  	struct regmap			*regmap;
+> >  	struct regmap_irq_chip_data	*regmap_irqc;
+> >  	long				variant;
+> > +	int                             nr_cells;
+> > +	struct mfd_cell                 *cells;
+> > +	struct regmap_config            *regmap_cfg;
+> 
+> const?
+> 
+yes
+> >  };
+> >  
+> >  #endif /* __LINUX_MFD_AXP20X_H */
+> 
 
-diff --git a/drivers/iio/adc/vf610_adc.c b/drivers/iio/adc/vf610_adc.c
-index 44799eb5..cec257d 100644
---- a/drivers/iio/adc/vf610_adc.c
-+++ b/drivers/iio/adc/vf610_adc.c
-@@ -91,7 +91,7 @@
- #define VF610_ADC_CAL			0x80
- 
- /* Other field define */
--#define VF610_ADC_ADCHC(x)		((x) & 0xF)
-+#define VF610_ADC_ADCHC(x)		((x) & 0x1F)
- #define VF610_ADC_AIEN			(0x1 << 7)
- #define VF610_ADC_CONV_DISABLE		0x1F
- #define VF610_ADC_HS_COCO0		0x1
-@@ -153,6 +153,12 @@ struct vf610_adc {
- 				BIT(IIO_CHAN_INFO_SAMP_FREQ),	\
- }
- 
-+#define VF610_ADC_TEMPERATURE_CHAN(_idx, _chan_type) {	\
-+	.type = (_chan_type),			\
-+	.channel = (_idx),				\
-+	.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED),	\
-+}
-+
- static const struct iio_chan_spec vf610_adc_iio_channels[] = {
- 	VF610_ADC_CHAN(0, IIO_VOLTAGE),
- 	VF610_ADC_CHAN(1, IIO_VOLTAGE),
-@@ -170,6 +176,7 @@ static const struct iio_chan_spec vf610_adc_iio_channels[] = {
- 	VF610_ADC_CHAN(13, IIO_VOLTAGE),
- 	VF610_ADC_CHAN(14, IIO_VOLTAGE),
- 	VF610_ADC_CHAN(15, IIO_VOLTAGE),
-+	VF610_ADC_TEMPERATURE_CHAN(26, IIO_TEMP),
- 	/* sentinel */
- };
- 
-@@ -451,6 +458,7 @@ static int vf610_read_raw(struct iio_dev *indio_dev,
- 
- 	switch (mask) {
- 	case IIO_CHAN_INFO_RAW:
-+	case IIO_CHAN_INFO_PROCESSED:
- 		mutex_lock(&indio_dev->mlock);
- 		reinit_completion(&info->completion);
- 
-@@ -468,7 +476,23 @@ static int vf610_read_raw(struct iio_dev *indio_dev,
- 			return ret;
- 		}
- 
--		*val = info->value;
-+		switch (chan->type)	{
-+		case IIO_VOLTAGE:
-+			*val = info->value;
-+			break;
-+		case IIO_TEMP:
-+			/*
-+			* Calculate in degree Celsius times 1000
-+			* Using sensor slope of 1.84 mV/°C and
-+			* V at 25°C of 696mv
-+			*/
-+			*val = 25000 - ((int)info->value - 864) * 1000000 / 1840;
-+			break;
-+		default:
-+			mutex_unlock(&indio_dev->mlock);
-+			return -EINVAL;
-+		}
-+
- 		mutex_unlock(&indio_dev->mlock);
- 		return IIO_VAL_INT;
- 
--- 
-1.7.9.5
-
+thanks for the review.
