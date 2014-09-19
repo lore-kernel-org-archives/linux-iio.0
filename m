@@ -1,38 +1,25 @@
-Return-Path: <Shawn.Guo@freescale.com>
-Date: Thu, 18 Sep 2014 21:34:27 +0800
-From: Shawn Guo <shawn.guo@freescale.com>
-To: Sanchayan Maity <maitysanchayan@gmail.com>
-CC: <stefan@agner.ch>, <jic23@kernel.org>, <B38611@freescale.com>,
-	<linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v2] Implement temperature sensor for vf610-adc
-Message-ID: <20140918133426.GI4796@dragon>
-References: <cover.1411039381.git.maitysanchayan@gmail.com>
+Return-Path: <gregkh@linuxfoundation.org>
+Date: Fri, 19 Sep 2014 15:30:33 -0700
+From: Greg KH <gregkh@linuxfoundation.org>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Subject: Re: [PULL] First set of IIO fixes for the 3.17 cycle
+Message-ID: <20140919223033.GA29786@kroah.com>
+References: <5415FD4F.9000606@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-In-Reply-To: <cover.1411039381.git.maitysanchayan@gmail.com>
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <5415FD4F.9000606@kernel.org>
 List-ID: <linux-iio@vger.kernel.org>
 
-On Thu, Sep 18, 2014 at 05:23:22PM +0530, Sanchayan Maity wrote:
-> Vybrid ADC peripheral includes a temperature sensor
-> which is connected to channel number 26. The patch
-> adds support for the sensor. The raw value is read
-> and the temperature calculated in milli degree Celsius,
-> which is returned using IIO_CHAN_INFO_PROCESSED option.
+On Sun, Sep 14, 2014 at 09:40:47PM +0100, Jonathan Cameron wrote:
+> The following changes since commit eb29835fb3ae9f7a8c8a4ae92e192052c3473557:
 > 
-> Sanchayan Maity (1):
->   ARM: imx: vf610-adc: Add temperature sensor support
+>   staging: android: fix a possible memory leak (2014-08-17 07:15:10 -0700)
+> 
+> are available in the git repository at:
+> 
+>   git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git tags/iio-fixes-3.17a
 
-This is not an arch/arm/mach-imx patch, so shouldn't be prefixed with
-"ARM: imx: ".  And also it's more appropriate to put Jonathan Cameron
-<jic23@kernel.org> on "To:", since he is responsible for picking
-drivers/iio/adc patches.
+Pulled and pushed out, thanks.
 
-Shawn
-
-> 
->  drivers/iio/adc/vf610_adc.c |   28 ++++++++++++++++++++++++++--
->  1 file changed, 26 insertions(+), 2 deletions(-)
-> 
-> -- 
-> 1.7.9.5
-> 
+greg k-h
