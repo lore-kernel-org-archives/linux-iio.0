@@ -1,222 +1,231 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:49103 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:49208 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751188AbaIUMkz (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 21 Sep 2014 08:40:55 -0400
-Message-ID: <541EC752.5010100@kernel.org>
-Date: Sun, 21 Sep 2014 13:40:50 +0100
+	with ESMTP id S1751025AbaIUNBV (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 21 Sep 2014 09:01:21 -0400
+Message-ID: <541ECC1D.50604@kernel.org>
+Date: Sun, 21 Sep 2014 14:01:17 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Hartmut Knaack <knaack.h@gmx.de>,
-	=?windows-1252?Q?Heiko_St=FCbner?= <heiko@sntech.de>
-CC: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-	linux-rockchip@lists.infradead.org, devicetree@vger.kernel.org
-Subject: Re: [PATCH v3] iio: adc: rockchip_saradc: add support for rk3066-tsadc
- variant
-References: <2689686.WEM6GuFSAn@diego> <5418B4D4.2070806@gmx.de>
-In-Reply-To: <5418B4D4.2070806@gmx.de>
+To: Jacob Pan <jacob.jun.pan@linux.intel.com>,
+	IIO <linux-iio@vger.kernel.org>,
+	LKML <linux-kernel@vger.kernel.org>,
+	DEVICE TREE <devicetree@vger.kernel.org>,
+	Lee Jones <lee.jones@linaro.org>
+CC: Carlo Caione <carlo@caione.org>,
+	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+	Aaron Lu <aaron.lu@intel.com>, Alan Cox <alan@linux.intel.com>,
+	Samuel Ortiz <sameo@linux.intel.com>,
+	Liam Girdwood <lgirdwood@gmail.com>,
+	Mark Brown <broonie@kernel.org>,
+	Grant Likely <grant.likely@linaro.org>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Rob Herring <robh+dt@kernel.org>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Fugang Duan <B38611@freescale.com>,
+	Arnd Bergmann <arnd@arndb.de>,
+	Zubair Lutfullah <zubair.lutfullah@gmail.com>,
+	Sebastian Reichel <sre@debian.org>,
+	Johannes Thumshirn <johannes.thumshirn@men.de>,
+	Philippe Reynes <tremyfr@yahoo.fr>,
+	Angelo Compagnucci <angelo.compagnucci@gmail.com>,
+	Doug Anderson <dianders@chromium.org>,
+	Ramakrishna Pallala <ramakrishna.pallala@intel.com>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Maxime Ripard <maxime.ripard@free-electrons.com>,
+	Rafael Wysocki <rafael.j.wysocki@intel.com>
+Subject: Re: [PATCH v4 1/3] mfd/axp20x: extend axp20x to support axp288 pmic
+References: <1410912715-25903-1-git-send-email-jacob.jun.pan@linux.intel.com> <1410912715-25903-2-git-send-email-jacob.jun.pan@linux.intel.com>
+In-Reply-To: <1410912715-25903-2-git-send-email-jacob.jun.pan@linux.intel.com>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 16/09/14 23:08, Hartmut Knaack wrote:
-> Heiko Stübner schrieb, Am 15.09.2014 23:47:
->> Older Rockchip SoCs, at least the rk3066, used a slightly modified saradc
->> for temperature measurements. This so called tsadc does not contain any
->> active parts like temperature interrupts and only supports polling the
->> current temperature. The returned voltage can then be converted by a
->> suitable thermal driver to and actual temperature and used for thermal
->> handling.
->>
->> Signed-off-by: Heiko Stuebner <heiko@sntech.de>
-> Acked-by: Hartmut Knaack <knaack.h@gmx.de>
-Applied to the togreg branch of iio.git -initially pushed out as testing
-for the autobuilders to play.
-
-Thanks,
+On 17/09/14 01:11, Jacob Pan wrote:
+> X-Powers AXP288 is a customized PMIC for Intel Baytrail-CR platforms. Similar
+> to AXP202/209, AXP288 comes with USB charger, more LDO and BUCK channels, and
+> AD converters. It also provides extended status and interrupt reporting
+> capabilities than the devices currently supported in axp20x.c.
+>
+> In addition to feature extension, this patch also adds ACPI binding for
+> enumeration.
+>
+> This consolidated driver should support more X-Powers' PMICs in both device
+> tree and ACPI enumerated platforms.
+>
+> Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
+One suggested improvement inline.  When you a driver moves from supporting
+one part to a couple with different configurations, a good pattern is
+to pick between const configuration structures rather than having one
+that is modified (or copied and then modified).
 
 Jonathan
->> ---
->> changes since v2:
->> - adapt message about the clk rate
->> changes since v1:
->> - use GENMASK instead of creating the mask manually
->>   as suggested by Hartmut Knaack
->>
->>  .../bindings/iio/adc/rockchip-saradc.txt           |  2 +-
->>  drivers/iio/adc/rockchip_saradc.c                  | 64 +++++++++++++++++-----
->>  2 files changed, 51 insertions(+), 15 deletions(-)
->>
->> diff --git a/Documentation/devicetree/bindings/iio/adc/rockchip-saradc.txt b/Documentation/devicetree/bindings/iio/adc/rockchip-saradc.txt
->> index 5d3ec1d..a9a5fe1 100644
->> --- a/Documentation/devicetree/bindings/iio/adc/rockchip-saradc.txt
->> +++ b/Documentation/devicetree/bindings/iio/adc/rockchip-saradc.txt
->> @@ -1,7 +1,7 @@
->>  Rockchip Successive Approximation Register (SAR) A/D Converter bindings
->>  
->>  Required properties:
->> -- compatible: Should be "rockchip,saradc"
->> +- compatible: Should be "rockchip,saradc" or "rockchip,rk3066-tsadc"
->>  - reg: physical base address of the controller and length of memory mapped
->>         region.
->>  - interrupts: The interrupt number to the cpu. The interrupt specifier format
->> diff --git a/drivers/iio/adc/rockchip_saradc.c b/drivers/iio/adc/rockchip_saradc.c
->> index e074a0b..b546bc1 100644
->> --- a/drivers/iio/adc/rockchip_saradc.c
->> +++ b/drivers/iio/adc/rockchip_saradc.c
->> @@ -18,13 +18,13 @@
->>  #include <linux/interrupt.h>
->>  #include <linux/io.h>
->>  #include <linux/of.h>
->> +#include <linux/of_device.h>
->>  #include <linux/clk.h>
->>  #include <linux/completion.h>
->>  #include <linux/regulator/consumer.h>
->>  #include <linux/iio/iio.h>
->>  
->>  #define SARADC_DATA			0x00
->> -#define SARADC_DATA_MASK		0x3ff
->>  
->>  #define SARADC_STAS			0x04
->>  #define SARADC_STAS_BUSY		BIT(0)
->> @@ -38,15 +38,22 @@
->>  #define SARADC_DLY_PU_SOC		0x0c
->>  #define SARADC_DLY_PU_SOC_MASK		0x3f
->>  
->> -#define SARADC_BITS			10
->>  #define SARADC_TIMEOUT			msecs_to_jiffies(100)
->>  
->> +struct rockchip_saradc_data {
->> +	int				num_bits;
->> +	const struct iio_chan_spec	*channels;
->> +	int				num_channels;
->> +	unsigned long			clk_rate;
->> +};
->> +
->>  struct rockchip_saradc {
->>  	void __iomem		*regs;
->>  	struct clk		*pclk;
->>  	struct clk		*clk;
->>  	struct completion	completion;
->>  	struct regulator	*vref;
->> +	const struct rockchip_saradc_data *data;
->>  	u16			last_val;
->>  };
->>  
->> @@ -90,7 +97,7 @@ static int rockchip_saradc_read_raw(struct iio_dev *indio_dev,
->>  		}
->>  
->>  		*val = ret / 1000;
->> -		*val2 = SARADC_BITS;
->> +		*val2 = info->data->num_bits;
->>  		return IIO_VAL_FRACTIONAL_LOG2;
->>  	default:
->>  		return -EINVAL;
->> @@ -103,7 +110,7 @@ static irqreturn_t rockchip_saradc_isr(int irq, void *dev_id)
->>  
->>  	/* Read value */
->>  	info->last_val = readl_relaxed(info->regs + SARADC_DATA);
->> -	info->last_val &= SARADC_DATA_MASK;
->> +	info->last_val &= GENMASK(info->data->num_bits - 1, 0);
->>  
->>  	/* Clear irq & power down adc */
->>  	writel_relaxed(0, info->regs + SARADC_CTRL);
->> @@ -133,12 +140,44 @@ static const struct iio_chan_spec rockchip_saradc_iio_channels[] = {
->>  	ADC_CHANNEL(2, "adc2"),
->>  };
->>  
->> +static const struct rockchip_saradc_data saradc_data = {
->> +	.num_bits = 10,
->> +	.channels = rockchip_saradc_iio_channels,
->> +	.num_channels = ARRAY_SIZE(rockchip_saradc_iio_channels),
->> +	.clk_rate = 1000000,
->> +};
->> +
->> +static const struct iio_chan_spec rockchip_rk3066_tsadc_iio_channels[] = {
->> +	ADC_CHANNEL(0, "adc0"),
->> +	ADC_CHANNEL(1, "adc1"),
->> +};
->> +
->> +static const struct rockchip_saradc_data rk3066_tsadc_data = {
->> +	.num_bits = 12,
->> +	.channels = rockchip_rk3066_tsadc_iio_channels,
->> +	.num_channels = ARRAY_SIZE(rockchip_rk3066_tsadc_iio_channels),
->> +	.clk_rate = 50000,
->> +};
->> +
->> +static const struct of_device_id rockchip_saradc_match[] = {
->> +	{
->> +		.compatible = "rockchip,saradc",
->> +		.data = &saradc_data,
->> +	}, {
->> +		.compatible = "rockchip,rk3066-tsadc",
->> +		.data = &rk3066_tsadc_data,
->> +	},
->> +	{},
->> +};
->> +MODULE_DEVICE_TABLE(of, rockchip_saradc_match);
->> +
->>  static int rockchip_saradc_probe(struct platform_device *pdev)
->>  {
->>  	struct rockchip_saradc *info = NULL;
->>  	struct device_node *np = pdev->dev.of_node;
->>  	struct iio_dev *indio_dev = NULL;
->>  	struct resource	*mem;
->> +	const struct of_device_id *match;
->>  	int ret;
->>  	int irq;
->>  
->> @@ -152,6 +191,9 @@ static int rockchip_saradc_probe(struct platform_device *pdev)
->>  	}
->>  	info = iio_priv(indio_dev);
->>  
->> +	match = of_match_device(rockchip_saradc_match, &pdev->dev);
->> +	info->data = match->data;
->> +
->>  	mem = platform_get_resource(pdev, IORESOURCE_MEM, 0);
->>  	info->regs = devm_ioremap_resource(&pdev->dev, mem);
->>  	if (IS_ERR(info->regs))
->> @@ -192,10 +234,10 @@ static int rockchip_saradc_probe(struct platform_device *pdev)
->>  	}
->>  
->>  	/*
->> -	 * Use a default of 1MHz for the converter clock.
->> +	 * Use a default value for the converter clock.
->>  	 * This may become user-configurable in the future.
->>  	 */
->> -	ret = clk_set_rate(info->clk, 1000000);
->> +	ret = clk_set_rate(info->clk, info->data->clk_rate);
->>  	if (ret < 0) {
->>  		dev_err(&pdev->dev, "failed to set adc clk rate, %d\n", ret);
->>  		return ret;
->> @@ -227,8 +269,8 @@ static int rockchip_saradc_probe(struct platform_device *pdev)
->>  	indio_dev->info = &rockchip_saradc_iio_info;
->>  	indio_dev->modes = INDIO_DIRECT_MODE;
->>  
->> -	indio_dev->channels = rockchip_saradc_iio_channels;
->> -	indio_dev->num_channels = ARRAY_SIZE(rockchip_saradc_iio_channels);
->> +	indio_dev->channels = info->data->channels;
->> +	indio_dev->num_channels = info->data->num_channels;
->>  
->>  	ret = iio_device_register(indio_dev);
->>  	if (ret)
->> @@ -296,12 +338,6 @@ static int rockchip_saradc_resume(struct device *dev)
->>  static SIMPLE_DEV_PM_OPS(rockchip_saradc_pm_ops,
->>  			 rockchip_saradc_suspend, rockchip_saradc_resume);
->>  
->> -static const struct of_device_id rockchip_saradc_match[] = {
->> -	{ .compatible = "rockchip,saradc" },
->> -	{},
->> -};
->> -MODULE_DEVICE_TABLE(of, rockchip_saradc_match);
->> -
->>  static struct platform_driver rockchip_saradc_driver = {
->>  	.probe		= rockchip_saradc_probe,
->>  	.remove		= rockchip_saradc_remove,
->>
-> 
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> 
+> ---
+>  drivers/mfd/Kconfig        |   3 +-
+>  drivers/mfd/axp20x.c       | 353 +++++++++++++++++++++++++++++++++++++--------
+>  include/linux/mfd/axp20x.h |  58 ++++++++
+>  3 files changed, 354 insertions(+), 60 deletions(-)
+>
+...
+
+> -static const struct regmap_irq_chip axp20x_regmap_irq_chip = {
+> +static struct acpi_device_id axp20x_acpi_match[] = {
+> +	{
+> +		.id = "INT33F4",
+> +		.driver_data = (kernel_ulong_t)AXP288_ID,
+> +	},
+> +	{ },
+> +};
+> +MODULE_DEVICE_TABLE(acpi, axp20x_acpi_match);
+> +
+> +/* common irq chip attributes only */
+> +static struct regmap_irq_chip axp20x_regmap_irq_chip = {
+>  	.name			= "axp20x_irq_chip",
+>  	.status_base		= AXP20X_IRQ1_STATE,
+>  	.ack_base		= AXP20X_IRQ1_STATE,
+>  	.mask_base		= AXP20X_IRQ1_EN,
+> -	.num_regs		= 5,
+> -	.irqs			= axp20x_regmap_irqs,
+> -	.num_irqs		= ARRAY_SIZE(axp20x_regmap_irqs),
+>  	.mask_invert		= true,
+>  	.init_ack_masked	= true,
+>  };
+> @@ -161,36 +276,155 @@ static struct mfd_cell axp20x_cells[] = {
+>  	},
+>  };
+>
+> +static struct resource axp288_adc_resources[] = {
+> +	{
+> +		.name	= "GPADC",
+> +		.start = AXP288_IRQ_GPADC,
+> +		.end   = AXP288_IRQ_GPADC,
+> +		.flags = IORESOURCE_IRQ,
+> +	},
+> +};
+> +
+> +static struct resource axp288_charger_resources[] = {
+> +	{
+> +		.start = AXP288_IRQ_OV,
+> +		.end   = AXP288_IRQ_OV,
+> +		.flags = IORESOURCE_IRQ,
+> +	},
+> +	{
+> +		.start = AXP288_IRQ_DONE,
+> +		.end   = AXP288_IRQ_DONE,
+> +		.flags = IORESOURCE_IRQ,
+> +	},
+> +	{
+> +		.start = AXP288_IRQ_CHARGING,
+> +		.end   = AXP288_IRQ_CHARGING,
+> +		.flags = IORESOURCE_IRQ,
+> +	},
+> +	{
+> +		.start = AXP288_IRQ_SAFE_QUIT,
+> +		.end   = AXP288_IRQ_SAFE_QUIT,
+> +		.flags = IORESOURCE_IRQ,
+> +	},
+> +	{
+> +		.start = AXP288_IRQ_SAFE_ENTER,
+> +		.end   = AXP288_IRQ_SAFE_ENTER,
+> +		.flags = IORESOURCE_IRQ,
+> +	},
+> +	{
+> +		.start = AXP288_IRQ_QCBTU,
+> +		.end   = AXP288_IRQ_QCBTU,
+> +		.flags = IORESOURCE_IRQ,
+> +	},
+> +	{
+> +		.start = AXP288_IRQ_CBTU,
+> +		.end   = AXP288_IRQ_CBTU,
+> +		.flags = IORESOURCE_IRQ,
+> +	},
+> +	{
+> +		.start = AXP288_IRQ_QCBTO,
+> +		.end   = AXP288_IRQ_QCBTO,
+> +		.flags = IORESOURCE_IRQ,
+> +	},
+> +	{
+> +		.start = AXP288_IRQ_CBTO,
+> +		.end   = AXP288_IRQ_CBTO,
+> +		.flags = IORESOURCE_IRQ,
+> +	},
+> +};
+> +
+> +static struct mfd_cell axp288_cells[] = {
+> +	{
+> +		.name = "axp288_adc",
+> +		.num_resources = ARRAY_SIZE(axp288_adc_resources),
+> +		.resources = axp288_adc_resources,
+> +	},
+> +	{
+> +		.name = "axp288_charger",
+> +		.num_resources = ARRAY_SIZE(axp288_charger_resources),
+> +		.resources = axp288_charger_resources,
+> +	},
+> +	{
+> +		.name = "axp288_battery",
+> +		.num_resources = ARRAY_SIZE(axp288_battery_resources),
+> +		.resources = axp288_battery_resources,
+> +	},
+> +};
+> +
+>  static struct axp20x_dev *axp20x_pm_power_off;
+>  static void axp20x_power_off(void)
+>  {
+> +	if (axp20x_pm_power_off->variant == AXP288_ID)
+> +		return;
+>  	regmap_write(axp20x_pm_power_off->regmap, AXP20X_OFF_CTRL,
+>  		     AXP20X_OFF);
+>  }
+>
+> +static int axp20x_match_device(struct axp20x_dev *axp20x, struct device *dev)
+> +{
+> +	const struct acpi_device_id *acpi_id;
+> +	const struct of_device_id *of_id;
+> +
+> +	of_id = of_match_device(axp20x_of_match, dev);
+> +	if (of_id)
+> +		axp20x->variant = (long) of_id->data;
+> +	else {
+> +		acpi_id = acpi_match_device(dev->driver->acpi_match_table, dev);
+> +		if (!acpi_id || !acpi_id->driver_data) {
+> +			dev_err(dev, "Unable to determine ID\n");
+> +			return -ENODEV;
+> +		}
+> +		axp20x->variant = (long) acpi_id->driver_data;
+> +	}
+> +	switch (axp20x->variant) {
+> +	case AXP202_ID:
+> +	case AXP209_ID:
+> +		axp20x->nr_cells = ARRAY_SIZE(axp20x_cells);
+> +		axp20x->cells = axp20x_cells;
+> +		axp20x->regmap_cfg = &axp20x_regmap_config;
+> +		axp20x_regmap_irq_chip.num_regs	= 5;
+> +		axp20x_regmap_irq_chip.irqs = axp20x_regmap_irqs;
+> +		axp20x_regmap_irq_chip.num_irqs	=
+> +			ARRAY_SIZE(axp20x_regmap_irqs);
+You would be better off having two regmap_irq_chip structures and
+just picking the relevant one here.  Then they can remain const.
+
+> +		break;
+> +	case AXP288_ID:
+> +		axp20x->cells = axp288_cells;
+> +		axp20x->nr_cells = ARRAY_SIZE(axp288_cells);
+> +		axp20x->regmap_cfg = &axp288_regmap_config;
+> +		axp20x_regmap_irq_chip.irqs = axp288_regmap_irqs;
+> +		axp20x_regmap_irq_chip.num_irqs	=
+> +			ARRAY_SIZE(axp288_regmap_irqs);
+> +		axp20x_regmap_irq_chip.num_regs	= 6;
+> +		break;
+> +	default:
+> +		dev_err(dev, "unsupported AXP20X ID %lu\n", axp20x->variant);
+> +		return -ENODEV;
+> +	}
+> +	dev_info(dev, "AXP20x variant %s found\n",
+> +		axp20x_model_names[axp20x->variant]);
+> +
+> +	return 0;
+> +}
+> +
+...
