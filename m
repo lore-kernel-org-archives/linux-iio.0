@@ -1,83 +1,109 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mx07-00178001.pphosted.com ([62.209.51.94]:46883 "EHLO
-	mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1753529AbaIKIj0 convert rfc822-to-8bit
-	(ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Thu, 11 Sep 2014 04:39:26 -0400
-From: Denis CIOCCA <denis.ciocca@st.com>
-To: Pavel Machek <pavel@denx.de>
-Cc: Linus Walleij <linus.walleij@linaro.org>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Eric Piel <eric.piel@tremplin-utc.net>,
-	Yan Burman <burman.yan@gmail.com>,
-	Yan Burman <yanb@mellanox.com>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	Lee Jones <lee.jones@linaro.org>,
-	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>
-Date: Thu, 11 Sep 2014 10:38:59 +0200
-Subject: Re: [PATCH] iio: st-sensors: add support for lis3lv02d accelerometer
-Message-ID: <54115FA3.1040403@st.com>
-References: <1408815064-5763-1-git-send-email-linus.walleij@linaro.org>
- <53FB6205.5020704@kernel.org>
- <CACRpkdb5NXJiTvaHz9_nJiZcFsyVnjPYjaYZ1YH9meBgJhoTJA@mail.gmail.com>
- <54104B26.5080707@st.com> <20140910133607.GA13361@xo-6d-61-c0.localdomain>
-In-Reply-To: <20140910133607.GA13361@xo-6d-61-c0.localdomain>
-Content-Type: text/plain; charset="Windows-1252"
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:49048 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751009AbaIUM1C (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 21 Sep 2014 08:27:02 -0400
+Message-ID: <541EC414.5050505@kernel.org>
+Date: Sun, 21 Sep 2014 13:27:00 +0100
+From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
+To: Sanchayan Maity <maitysanchayan@gmail.com>
+CC: stefan@agner.ch, shawn.guo@freescale.com, B38611@freescale.com,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3] drivers/iio/adc/vf610-adc: Add temperature sensor
+ support
+References: <cover.1411128738.git.maitysanchayan@gmail.com> <0d7ce38f3f0550a485293d854832304463e215cf.1411128738.git.maitysanchayan@gmail.com>
+In-Reply-To: <0d7ce38f3f0550a485293d854832304463e215cf.1411128738.git.maitysanchayan@gmail.com>
+Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-When I have time yes for sure...:D
+On 19/09/14 13:58, Sanchayan Maity wrote:
+> Vybrid ADC peripheral includes a temperature sensor
+> which is connected to channel number 26. This patch
+> adds support for the sensor. The raw value is read
+> and the temperature calculated in milli degree Celsius,
+> which is returned using IIO_CHAN_INFO_PROCESSED option.
+> 
+> Signed-off-by: Sanchayan Maity <maitysanchayan@gmail.com>
+Applied to the togreg branch of iio.git initially pushed out as testing
+for the autobuilders to play.
 
-Denis
+Amended the patch title to fit with the style we have somehow
+ended up with for IIO patches.
 
-On 09/10/14 15:36, Pavel Machek wrote:
-> Hi!
->
->> I'm sorry but I was in business trip. I think that current lis3lv02d
->> supports more things, I want to support everything in the current IIO
->> drivers but always I have no time.
-> Ok then, can you add hwmon interfaces from the other driver to your one? That way,
-> we can deprecate one of them...
->
-> 									Pavel
->
->> BR,
->> Denis
->>
->>
->> On 08/27/14 15:38, Linus Walleij wrote:
->>> On Mon, Aug 25, 2014 at 6:19 PM, Jonathan Cameron <jic23@kernel.org> wrote:
->>>> On 23/08/14 18:31, Linus Walleij wrote:
->>>>> This adds support for the LIS3LV02 accelerometer found in the
->>>>> ST Microelectronics Nomadik board series.
->>>>>
->>>>> Cc: devicetree@vger.kernel.org
->>>>> Cc: Denis CIOCCA <denis.ciocca@st.com>
->>>>> Cc: Lee Jones <lee.jones@linaro.org>
->>>>> Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
->>>> This is a little 'interesting', given the part is already supported by
->>>> drivers/misc/lis3lv02d*.c and already has bindings under there.
->>>> Documentation/devicetree/bindings/misc/lis302.txt
->>>> (some of these are interesting).
->>> Grrr how come I missed this... It was originally merged as a
->>> hwmon driver.
->>>
->>>
->>>>> +/* CUSTOM VALUES FOR SENSOR 4 */
->>>>>
->>>> I wish now we'd nipped this naming convention in the bud and insisted
->>>> on naming after a relevant part. Oh well.
->>> Well we can always make an invasive patch fixing that. I can
->>> probably do it using sed or something.
->>>
->>>> Do we think this is the right way to handle the alternative support
->>>> here?
->>> Well this patch is a driver using the IIO framework and was written
->>> by ST, but the other driver support a few other interesting features
->>> and seems to be for the laptop usecase.
->>>
->>> Adding the other authors to the TO: line...
->>>
->>> Yours,
->>> Linus Walleij
+Thanks,
+
+Jonathan
+> ---
+>  drivers/iio/adc/vf610_adc.c |   28 ++++++++++++++++++++++++++--
+>  1 file changed, 26 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/iio/adc/vf610_adc.c b/drivers/iio/adc/vf610_adc.c
+> index 44799eb5..52af611 100644
+> --- a/drivers/iio/adc/vf610_adc.c
+> +++ b/drivers/iio/adc/vf610_adc.c
+> @@ -91,7 +91,7 @@
+>  #define VF610_ADC_CAL			0x80
+>  
+>  /* Other field define */
+> -#define VF610_ADC_ADCHC(x)		((x) & 0xF)
+> +#define VF610_ADC_ADCHC(x)		((x) & 0x1F)
+>  #define VF610_ADC_AIEN			(0x1 << 7)
+>  #define VF610_ADC_CONV_DISABLE		0x1F
+>  #define VF610_ADC_HS_COCO0		0x1
+> @@ -153,6 +153,12 @@ struct vf610_adc {
+>  				BIT(IIO_CHAN_INFO_SAMP_FREQ),	\
+>  }
+>  
+> +#define VF610_ADC_TEMPERATURE_CHAN(_idx, _chan_type) {	\
+> +	.type = (_chan_type),	\
+> +	.channel = (_idx),		\
+> +	.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED),	\
+> +}
+> +
+>  static const struct iio_chan_spec vf610_adc_iio_channels[] = {
+>  	VF610_ADC_CHAN(0, IIO_VOLTAGE),
+>  	VF610_ADC_CHAN(1, IIO_VOLTAGE),
+> @@ -170,6 +176,7 @@ static const struct iio_chan_spec vf610_adc_iio_channels[] = {
+>  	VF610_ADC_CHAN(13, IIO_VOLTAGE),
+>  	VF610_ADC_CHAN(14, IIO_VOLTAGE),
+>  	VF610_ADC_CHAN(15, IIO_VOLTAGE),
+> +	VF610_ADC_TEMPERATURE_CHAN(26, IIO_TEMP),
+>  	/* sentinel */
+>  };
+>  
+> @@ -451,6 +458,7 @@ static int vf610_read_raw(struct iio_dev *indio_dev,
+>  
+>  	switch (mask) {
+>  	case IIO_CHAN_INFO_RAW:
+> +	case IIO_CHAN_INFO_PROCESSED:
+>  		mutex_lock(&indio_dev->mlock);
+>  		reinit_completion(&info->completion);
+>  
+> @@ -468,7 +476,23 @@ static int vf610_read_raw(struct iio_dev *indio_dev,
+>  			return ret;
+>  		}
+>  
+> -		*val = info->value;
+> +		switch (chan->type) {
+> +		case IIO_VOLTAGE:
+> +			*val = info->value;
+> +			break;
+> +		case IIO_TEMP:
+> +			/*
+> +			* Calculate in degree Celsius times 1000
+> +			* Using sensor slope of 1.84 mV/°C and
+> +			* V at 25°C of 696 mV
+> +			*/
+> +			*val = 25000 - ((int)info->value - 864) * 1000000 / 1840;
+> +			break;
+> +		default:
+> +			mutex_unlock(&indio_dev->mlock);
+> +			return -EINVAL;
+> +		}
+> +
+>  		mutex_unlock(&indio_dev->mlock);
+>  		return IIO_VAL_INT;
+>  
+> 
