@@ -1,86 +1,222 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail1.bemta14.messagelabs.com ([193.109.254.117]:48245 "EHLO
-	mail1.bemta14.messagelabs.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1755693AbaIWKyv (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 23 Sep 2014 06:54:51 -0400
-Message-ID: <b578cdd53527bb71c271eefadd1ce1bac175b5a7.1411396719.git.Adam.Thomson.Opensource@diasemi.com>
-In-Reply-To: <cover.1411396718.git.Adam.Thomson.Opensource@diasemi.com>
-References: <cover.1411396718.git.Adam.Thomson.Opensource@diasemi.com>
-From: Adam Thomson <Adam.Thomson.Opensource@diasemi.com>
-Date: Tue, 23 Sep 2014 11:53:46 +0100
-Subject: [PATCH 8/8] iio: Add ABI documentation for input current readings
-To: Lee Jones <lee.jones@linaro.org>,
-	Samuel Ortiz <sameo@linux.intel.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	<linux-iio@vger.kernel.org>, Sebastian Reichel <sre@kernel.org>,
-	Dmitry Eremin-Solenikov <dbaryshkov@gmail.com>,
-	David Woodhouse <dwmw2@infradead.org>,
-	<linux-pm@vger.kernel.org>, Rob Herring <robh+dt@kernel.org>,
-	Pawel Moll <pawel.moll@arm.com>,
-	Mark Rutland <mark.rutland@arm.com>,
-	Ian Campbell <ijc+devicetree@hellion.org.uk>,
-	Kumar Gala <galak@codeaurora.org>,
-	Grant Likely <grant.likely@linaro.org>,
-	<devicetree@vger.kernel.org>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	Joe Perches <joe@perches.com>, <linux-api@vger.kernel.org>
-CC: <linux-kernel@vger.kernel.org>, <support.opensource@diasemi.com>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:49103 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751188AbaIUMkz (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 21 Sep 2014 08:40:55 -0400
+Message-ID: <541EC752.5010100@kernel.org>
+Date: Sun, 21 Sep 2014 13:40:50 +0100
+From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain
+To: Hartmut Knaack <knaack.h@gmx.de>,
+	=?windows-1252?Q?Heiko_St=FCbner?= <heiko@sntech.de>
+CC: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
+	linux-rockchip@lists.infradead.org, devicetree@vger.kernel.org
+Subject: Re: [PATCH v3] iio: adc: rockchip_saradc: add support for rk3066-tsadc
+ variant
+References: <2689686.WEM6GuFSAn@diego> <5418B4D4.2070806@gmx.de>
+In-Reply-To: <5418B4D4.2070806@gmx.de>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Add information on in_current related readings.
+On 16/09/14 23:08, Hartmut Knaack wrote:
+> Heiko Stübner schrieb, Am 15.09.2014 23:47:
+>> Older Rockchip SoCs, at least the rk3066, used a slightly modified saradc
+>> for temperature measurements. This so called tsadc does not contain any
+>> active parts like temperature interrupts and only supports polling the
+>> current temperature. The returned voltage can then be converted by a
+>> suitable thermal driver to and actual temperature and used for thermal
+>> handling.
+>>
+>> Signed-off-by: Heiko Stuebner <heiko@sntech.de>
+> Acked-by: Hartmut Knaack <knaack.h@gmx.de>
+Applied to the togreg branch of iio.git -initially pushed out as testing
+for the autobuilders to play.
 
-Signed-off-by: Adam Thomson <Adam.Thomson.Opensource@diasemi.com>
----
- Documentation/ABI/testing/sysfs-bus-iio | 17 +++++++++++++++++
- 1 file changed, 17 insertions(+)
+Thanks,
 
-diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
-index d760b02..37cd4d4 100644
---- a/Documentation/ABI/testing/sysfs-bus-iio
-+++ b/Documentation/ABI/testing/sysfs-bus-iio
-@@ -92,6 +92,18 @@ Description:
- 		is required is a consistent labeling.  Units after application
- 		of scale and offset are millivolts.
-
-+What:		/sys/bus/iio/devices/iio:deviceX/in_currentY_raw
-+What:		/sys/bus/iio/devices/iio:deviceX/in_currentY_supply_raw
-+KernelVersion:	3.17
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+		Raw (unscaled no bias removal etc.) current measurement from
-+		channel Y. In special cases where the channel does not
-+		correspond to externally available input one of the named
-+		versions may be used. The number must always be specified and
-+		unique to allow association with event codes. Units after
-+		application of scale and offset are milliamps.
-+
- What:		/sys/bus/iio/devices/iio:deviceX/in_capacitanceY_raw
- KernelVersion:	3.2
- Contact:	linux-iio@vger.kernel.org
-@@ -227,6 +239,8 @@ What:		/sys/bus/iio/devices/iio:deviceX/in_accel_y_offset
- What:		/sys/bus/iio/devices/iio:deviceX/in_accel_z_offset
- What:		/sys/bus/iio/devices/iio:deviceX/in_voltageY_offset
- What:		/sys/bus/iio/devices/iio:deviceX/in_voltage_offset
-+What:		/sys/bus/iio/devices/iio:deviceX/in_currentY_offset
-+What:		/sys/bus/iio/devices/iio:deviceX/in_current_offset
- What:		/sys/bus/iio/devices/iio:deviceX/in_tempY_offset
- What:		/sys/bus/iio/devices/iio:deviceX/in_temp_offset
- What:		/sys/bus/iio/devices/iio:deviceX/in_pressureY_offset
-@@ -249,8 +263,11 @@ Description:
- 		to the _raw output.
-
- What:		/sys/bus/iio/devices/iio:deviceX/in_voltageY_scale
-+What:		/sys/bus/iio/devices/iio:deviceX/in_currentY_scale
- What:		/sys/bus/iio/devices/iio:deviceX/in_voltageY_supply_scale
-+What:		/sys/bus/iio/devices/iio:deviceX/in_currentY_supply_scale
- What:		/sys/bus/iio/devices/iio:deviceX/in_voltage_scale
-+What:		/sys/bus/iio/devices/iio:deviceX/in_current_scale
- What:		/sys/bus/iio/devices/iio:deviceX/out_voltageY_scale
- What:		/sys/bus/iio/devices/iio:deviceX/out_altvoltageY_scale
- What:		/sys/bus/iio/devices/iio:deviceX/in_accel_scale
---
-1.9.3
-
+Jonathan
+>> ---
+>> changes since v2:
+>> - adapt message about the clk rate
+>> changes since v1:
+>> - use GENMASK instead of creating the mask manually
+>>   as suggested by Hartmut Knaack
+>>
+>>  .../bindings/iio/adc/rockchip-saradc.txt           |  2 +-
+>>  drivers/iio/adc/rockchip_saradc.c                  | 64 +++++++++++++++++-----
+>>  2 files changed, 51 insertions(+), 15 deletions(-)
+>>
+>> diff --git a/Documentation/devicetree/bindings/iio/adc/rockchip-saradc.txt b/Documentation/devicetree/bindings/iio/adc/rockchip-saradc.txt
+>> index 5d3ec1d..a9a5fe1 100644
+>> --- a/Documentation/devicetree/bindings/iio/adc/rockchip-saradc.txt
+>> +++ b/Documentation/devicetree/bindings/iio/adc/rockchip-saradc.txt
+>> @@ -1,7 +1,7 @@
+>>  Rockchip Successive Approximation Register (SAR) A/D Converter bindings
+>>  
+>>  Required properties:
+>> -- compatible: Should be "rockchip,saradc"
+>> +- compatible: Should be "rockchip,saradc" or "rockchip,rk3066-tsadc"
+>>  - reg: physical base address of the controller and length of memory mapped
+>>         region.
+>>  - interrupts: The interrupt number to the cpu. The interrupt specifier format
+>> diff --git a/drivers/iio/adc/rockchip_saradc.c b/drivers/iio/adc/rockchip_saradc.c
+>> index e074a0b..b546bc1 100644
+>> --- a/drivers/iio/adc/rockchip_saradc.c
+>> +++ b/drivers/iio/adc/rockchip_saradc.c
+>> @@ -18,13 +18,13 @@
+>>  #include <linux/interrupt.h>
+>>  #include <linux/io.h>
+>>  #include <linux/of.h>
+>> +#include <linux/of_device.h>
+>>  #include <linux/clk.h>
+>>  #include <linux/completion.h>
+>>  #include <linux/regulator/consumer.h>
+>>  #include <linux/iio/iio.h>
+>>  
+>>  #define SARADC_DATA			0x00
+>> -#define SARADC_DATA_MASK		0x3ff
+>>  
+>>  #define SARADC_STAS			0x04
+>>  #define SARADC_STAS_BUSY		BIT(0)
+>> @@ -38,15 +38,22 @@
+>>  #define SARADC_DLY_PU_SOC		0x0c
+>>  #define SARADC_DLY_PU_SOC_MASK		0x3f
+>>  
+>> -#define SARADC_BITS			10
+>>  #define SARADC_TIMEOUT			msecs_to_jiffies(100)
+>>  
+>> +struct rockchip_saradc_data {
+>> +	int				num_bits;
+>> +	const struct iio_chan_spec	*channels;
+>> +	int				num_channels;
+>> +	unsigned long			clk_rate;
+>> +};
+>> +
+>>  struct rockchip_saradc {
+>>  	void __iomem		*regs;
+>>  	struct clk		*pclk;
+>>  	struct clk		*clk;
+>>  	struct completion	completion;
+>>  	struct regulator	*vref;
+>> +	const struct rockchip_saradc_data *data;
+>>  	u16			last_val;
+>>  };
+>>  
+>> @@ -90,7 +97,7 @@ static int rockchip_saradc_read_raw(struct iio_dev *indio_dev,
+>>  		}
+>>  
+>>  		*val = ret / 1000;
+>> -		*val2 = SARADC_BITS;
+>> +		*val2 = info->data->num_bits;
+>>  		return IIO_VAL_FRACTIONAL_LOG2;
+>>  	default:
+>>  		return -EINVAL;
+>> @@ -103,7 +110,7 @@ static irqreturn_t rockchip_saradc_isr(int irq, void *dev_id)
+>>  
+>>  	/* Read value */
+>>  	info->last_val = readl_relaxed(info->regs + SARADC_DATA);
+>> -	info->last_val &= SARADC_DATA_MASK;
+>> +	info->last_val &= GENMASK(info->data->num_bits - 1, 0);
+>>  
+>>  	/* Clear irq & power down adc */
+>>  	writel_relaxed(0, info->regs + SARADC_CTRL);
+>> @@ -133,12 +140,44 @@ static const struct iio_chan_spec rockchip_saradc_iio_channels[] = {
+>>  	ADC_CHANNEL(2, "adc2"),
+>>  };
+>>  
+>> +static const struct rockchip_saradc_data saradc_data = {
+>> +	.num_bits = 10,
+>> +	.channels = rockchip_saradc_iio_channels,
+>> +	.num_channels = ARRAY_SIZE(rockchip_saradc_iio_channels),
+>> +	.clk_rate = 1000000,
+>> +};
+>> +
+>> +static const struct iio_chan_spec rockchip_rk3066_tsadc_iio_channels[] = {
+>> +	ADC_CHANNEL(0, "adc0"),
+>> +	ADC_CHANNEL(1, "adc1"),
+>> +};
+>> +
+>> +static const struct rockchip_saradc_data rk3066_tsadc_data = {
+>> +	.num_bits = 12,
+>> +	.channels = rockchip_rk3066_tsadc_iio_channels,
+>> +	.num_channels = ARRAY_SIZE(rockchip_rk3066_tsadc_iio_channels),
+>> +	.clk_rate = 50000,
+>> +};
+>> +
+>> +static const struct of_device_id rockchip_saradc_match[] = {
+>> +	{
+>> +		.compatible = "rockchip,saradc",
+>> +		.data = &saradc_data,
+>> +	}, {
+>> +		.compatible = "rockchip,rk3066-tsadc",
+>> +		.data = &rk3066_tsadc_data,
+>> +	},
+>> +	{},
+>> +};
+>> +MODULE_DEVICE_TABLE(of, rockchip_saradc_match);
+>> +
+>>  static int rockchip_saradc_probe(struct platform_device *pdev)
+>>  {
+>>  	struct rockchip_saradc *info = NULL;
+>>  	struct device_node *np = pdev->dev.of_node;
+>>  	struct iio_dev *indio_dev = NULL;
+>>  	struct resource	*mem;
+>> +	const struct of_device_id *match;
+>>  	int ret;
+>>  	int irq;
+>>  
+>> @@ -152,6 +191,9 @@ static int rockchip_saradc_probe(struct platform_device *pdev)
+>>  	}
+>>  	info = iio_priv(indio_dev);
+>>  
+>> +	match = of_match_device(rockchip_saradc_match, &pdev->dev);
+>> +	info->data = match->data;
+>> +
+>>  	mem = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+>>  	info->regs = devm_ioremap_resource(&pdev->dev, mem);
+>>  	if (IS_ERR(info->regs))
+>> @@ -192,10 +234,10 @@ static int rockchip_saradc_probe(struct platform_device *pdev)
+>>  	}
+>>  
+>>  	/*
+>> -	 * Use a default of 1MHz for the converter clock.
+>> +	 * Use a default value for the converter clock.
+>>  	 * This may become user-configurable in the future.
+>>  	 */
+>> -	ret = clk_set_rate(info->clk, 1000000);
+>> +	ret = clk_set_rate(info->clk, info->data->clk_rate);
+>>  	if (ret < 0) {
+>>  		dev_err(&pdev->dev, "failed to set adc clk rate, %d\n", ret);
+>>  		return ret;
+>> @@ -227,8 +269,8 @@ static int rockchip_saradc_probe(struct platform_device *pdev)
+>>  	indio_dev->info = &rockchip_saradc_iio_info;
+>>  	indio_dev->modes = INDIO_DIRECT_MODE;
+>>  
+>> -	indio_dev->channels = rockchip_saradc_iio_channels;
+>> -	indio_dev->num_channels = ARRAY_SIZE(rockchip_saradc_iio_channels);
+>> +	indio_dev->channels = info->data->channels;
+>> +	indio_dev->num_channels = info->data->num_channels;
+>>  
+>>  	ret = iio_device_register(indio_dev);
+>>  	if (ret)
+>> @@ -296,12 +338,6 @@ static int rockchip_saradc_resume(struct device *dev)
+>>  static SIMPLE_DEV_PM_OPS(rockchip_saradc_pm_ops,
+>>  			 rockchip_saradc_suspend, rockchip_saradc_resume);
+>>  
+>> -static const struct of_device_id rockchip_saradc_match[] = {
+>> -	{ .compatible = "rockchip,saradc" },
+>> -	{},
+>> -};
+>> -MODULE_DEVICE_TABLE(of, rockchip_saradc_match);
+>> -
+>>  static struct platform_driver rockchip_saradc_driver = {
+>>  	.probe		= rockchip_saradc_probe,
+>>  	.remove		= rockchip_saradc_remove,
+>>
+> 
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> 
