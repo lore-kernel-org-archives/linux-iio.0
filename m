@@ -1,99 +1,65 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ns.mm-sol.com ([37.157.136.199]:58337 "EHLO extserv.mm-sol.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751971AbaI2IiT (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Mon, 29 Sep 2014 04:38:19 -0400
-Message-ID: <1411979902.5395.2.camel@iivanov-dev>
-Subject: Re: [PATCH v2] iio: iadc: Qualcomm SPMI PMIC current ADC driver
-From: "Ivan T. Ivanov" <iivanov@mm-sol.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Mark Rutland <mark.rutland@arm.com>,
-	Rob Herring <robh+dt@kernel.org>,
-	Pawel Moll <Pawel.Moll@arm.com>,
-	Ian Campbell <ijc+devicetree@hellion.org.uk>,
-	Kumar Gala <galak@codeaurora.org>,
-	"grant.likely@linaro.org" <grant.likely@linaro.org>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Lee Jones <lee.jones@linaro.org>,
-	Philippe Reynes <tremyfr@yahoo.fr>,
-	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"linux-arm-msm@vger.kernel.org" <linux-arm-msm@vger.kernel.org>
-Date: Mon, 29 Sep 2014 11:38:22 +0300
-In-Reply-To: <5426886D.4050602@kernel.org>
-References: <1411567103-2380-1-git-send-email-iivanov@mm-sol.com>
-		 <20140924145527.GI5729@leverpostej>
-	 <1411574442.18580.95.camel@iivanov-dev>
-		 <20140924170522.GL5729@leverpostej>
-		 <1411638435.18580.126.camel@iivanov-dev>
-		 <20140925160215.GB6531@leverpostej> <1411672895.28648.3.camel@mm-sol.com>
-	 <5426886D.4050602@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Mime-Version: 1.0
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:48986 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751009AbaIUMRL (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 21 Sep 2014 08:17:11 -0400
+Message-ID: <541EC1C2.6090608@kernel.org>
+Date: Sun, 21 Sep 2014 13:17:06 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+MIME-Version: 1.0
+To: Naveen Krishna Chatradhi <ch.naveen@samsung.com>,
+	linux-iio@vger.kernel.org, linux-samsung-soc@vger.kernel.org,
+	devicetree@vger.kernel.org
+CC: linux-kernel@vger.kernel.org, cw00.choi@samsung.com,
+	gregkh@linuxfoundation.org, naveenkrishna.ch@gmail.com,
+	lars@metafoo.de, cpgs@samsung.com, grundler@chromium.org,
+	Kukjin Kim <kgene.kim@samsung.com>
+Subject: Re: [PATCH v2 0/3] iio: exynos-adc: use syscon instead of ioremap
+References: <1410857931-4980-1-git-send-email-ch.naveen@samsung.com>
+In-Reply-To: <1410857931-4980-1-git-send-email-ch.naveen@samsung.com>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Sat, 2014-09-27 at 10:50 +0100, Jonathan Cameron wrote:
-> On 25/09/14 20:21, Ivan T. Ivanov wrote:
-> > On Thu, 2014-09-25 at 17:02 +0100, Mark Rutland wrote:
-> >> On Thu, Sep 25, 2014 at 10:47:15AM +0100, Ivan T. Ivanov wrote:
+On 16/09/14 09:58, Naveen Krishna Chatradhi wrote:
+> Changes since v1:
+> 1. Rebased on top of togreg branch of IIO git.
+> 
+> This patch set does the following
+> 1. Use the syscon and Regmap API instead of ioremappaing the
+>    ADC_PHY register from PMU.
+> 2. Updates the Documentation in exynos-adc.txt with syscon phandle
+>    for the ADC nodes.
+> 3. Updates the Dts files for Exynos3250, Exynos4x12, Exynos5250,
+>    Exynos5420 with the syscon phandle.
+> 
+> Tested on Exynos5420 based Peach PIT and Exynos5800 based Peach PI
+> by verifying sysfs entries provided by HWMON based NTC thermistors.
+> 
+> Tested-By for Exynos3250, Exynos4x12 would be appreciated.
+Would definitely be good!
 
-<snip>
+The main issue I have with this series is that it breaks backward
+compatibility with old device trees and newer kernels.
 
-> >>
-> >>>>>>> +- interrupts:
-> >>>>>>> +    Usage: optional
-> >>>>>>> +    Value type: <prop-encoded-array>
-> >>>>>>> +    Definition: End of conversion interrupt number. If property is
-> >>>>>>> +            missing driver will use polling to detect end of conversion
-> >>>>>>> +            completion.
-> >>>>>>
-> >>>>>> Driver details shouldn't be in the binding. If the driver can poll,
-> >>>>>> that's good, but it should be dropped form this description.
-> >>>>>>
-> >>>>>
-> >>>>> Will remove driver details.
-> >>>>>
-> >>>>>> Is this the only interrupt?
-> >>>>>>
-> >>>>>
-> >>>>> Yes.
-> >>>>>
-> >>>>>> What do you mean be "End of conversion interrupt number"? Just describe
-> >>>>>> what the interrupt logically is from the PoV of the device -- interrupts
-> >>>>>> is a standard property so we don't need to be too explicit about the
-> >>>>>> type.
-> >>>>>
-> >>>>> Badly worded. Just, "End of conversion interrupt"?
-> >>>>
-> >>>> The part I didn't understand was what was meant by "End of conversion",
-> >>>> but dropping "number" is certainly better.
-> >>>
-> >>> It is clear now, right? End of ADC conversion.
-> >>
-> >> Sorry if I'm being thick here, but it's still somewhat confusing to me.
-> >> That's a consequence of me not being familiar with the HW more than
-> >> anything, I'm just missing simple details regarding the model of
-> >> operation, suchs as exactly what the "end of ADC conversion" entails.
-> >> There are a few things that could potentially mean depending on how the
-> >> HW was designed and intended to be used.
-> >>
-> >> Does the  device periodically sample, convert some number of values
-> >> (possibly just 1), and trigger an interrupt to state that a buffer is
-> >> full / values are available? Or is the interrupt triggered for some
-> >> other reason?
-> > 
-> > Interrupt is triggered after ADC convert analog signal to digital.
-> > Other details are irrelevant, I believe. 
-> Often called a data ready interrupt.  However, here it is per channel
-> so perhaps that description is confusing as well...
+Now I appreciate that sometimes there are reasons to do it but want this
+to have deeper consideration (and acks to show it) from the Exynos side
+of things and preferably from the device tree side of things as well.
 
-Not exactly. There is only one interrupt. Simultaneous conversions are 
-not possible.
+cc'd Kukjin Kim for the Exynos side of things as the listed Maintainer.
 
-Regards,
-Ivan 
-
-
+Otherwise, the series looks fine to me.
+> 
+> Naveen Krishna Chatradhi (3):
+>   iio: exyno-adc: use syscon for PMU register access
+>   Documentation: dt-bindings: update exynos-adc.txt with syscon handle
+>   ARM: dts: exynos: Add sysreg phandle to ADC node
+> 
+>  .../devicetree/bindings/arm/samsung/exynos-adc.txt |    9 ++++--
+>  arch/arm/boot/dts/exynos3250.dtsi                  |    3 +-
+>  arch/arm/boot/dts/exynos4x12.dtsi                  |    3 +-
+>  arch/arm/boot/dts/exynos5250.dtsi                  |    3 +-
+>  arch/arm/boot/dts/exynos5420.dtsi                  |    3 +-
+>  drivers/iio/adc/exynos_adc.c                       |   30 ++++++++++++++------
+>  6 files changed, 36 insertions(+), 15 deletions(-)
+> 
