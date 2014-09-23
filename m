@@ -1,14 +1,15 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail1.bemta5.messagelabs.com ([195.245.231.141]:47314 "EHLO
+Received: from mail1.bemta5.messagelabs.com ([195.245.231.142]:25143 "EHLO
 	mail1.bemta5.messagelabs.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1750747AbaIWKyD (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 23 Sep 2014 06:54:03 -0400
-Message-ID: <598abe01ba3c1cc6d208c1b15aa5d4a22971bdd5.1411396719.git.Adam.Thomson.Opensource@diasemi.com>
+	by vger.kernel.org with ESMTP id S1755524AbaIWKxt (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 23 Sep 2014 06:53:49 -0400
+Message-ID: <e4964cf961b70a6aabef35b23061e5009810c6e0.1411396719.git.Adam.Thomson.Opensource@diasemi.com>
 In-Reply-To: <cover.1411396718.git.Adam.Thomson.Opensource@diasemi.com>
 References: <cover.1411396718.git.Adam.Thomson.Opensource@diasemi.com>
 From: Adam Thomson <Adam.Thomson.Opensource@diasemi.com>
-Date: Tue, 23 Sep 2014 11:53:40 +0100
-Subject: [PATCH 6/8] power: da9150: Add DT binding documentation for charger
+Date: Tue, 23 Sep 2014 11:53:43 +0100
+Subject: [PATCH 7/8] MAINTAINERS: Include DA9150 files in Dialog Semiconductor
+ support list.
 To: Lee Jones <lee.jones@linaro.org>,
 	Samuel Ortiz <sameo@linux.intel.com>,
 	Jonathan Cameron <jic23@kernel.org>,
@@ -31,43 +32,39 @@ Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
 Signed-off-by: Adam Thomson <Adam.Thomson.Opensource@diasemi.com>
+Acked-by: Lee Jones <lee.jones@linaro.org>
 ---
- .../devicetree/bindings/power/da9150-charger.txt   | 26 ++++++++++++++++++++++
- 1 file changed, 26 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/power/da9150-charger.txt
+ MAINTAINERS | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/power/da9150-charger.txt b/Documentation/devicetree/bindings/power/da9150-charger.txt
-new file mode 100644
-index 0000000..f390666
---- /dev/null
-+++ b/Documentation/devicetree/bindings/power/da9150-charger.txt
-@@ -0,0 +1,26 @@
-+Dialog Semiconductor DA9150 Charger Power Supply bindings
-+
-+Required properties:
-+- compatible: "dlg,da9150-charger" for DA9150 Charger Power Supply
-+
-+Optional properties:
-+- io-channels: List of phandle and IIO specifier pairs
-+- io-channel-names: List of channel names used by charger
-+      ["CHAN_IBUS", "CHAN_VBUS", "CHAN_TJUNC", "CHAN_VBAT"]
-+  (See Documentation/devicetree/bindings/iio/iio-bindings.txt for further info)
-+
-+
-+Example:
-+
-+	da9150-charger {
-+		compatible = "dlg,da9150-charger";
-+
-+		io-channels = <&gpadc 0>,
-+			      <&gpadc 2>,
-+			      <&gpadc 8>,
-+			      <&gpadc 5>;
-+		io-channel-names = "CHAN_IBUS",
-+				   "CHAN_VBUS",
-+				   "CHAN_TJUNC",
-+				   "CHAN_VBAT";
-+	};
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 1ff06de..3c86b30 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -2890,12 +2890,15 @@ S:	Supported
+ F:	Documentation/hwmon/da90??
+ F:	drivers/gpio/gpio-da90??.c
+ F:	drivers/hwmon/da90??-hwmon.c
++F:	drivers/iio/adc/da91??-*.c
+ F:	drivers/input/misc/da90??_onkey.c
+ F:	drivers/input/touchscreen/da9052_tsi.c
+ F:	drivers/leds/leds-da90??.c
+ F:	drivers/mfd/da903x.c
+ F:	drivers/mfd/da90??-*.c
++F:	drivers/mfd/da91??-*.c
+ F:	drivers/power/da9052-battery.c
++F:	drivers/power/da91??-*.c
+ F:	drivers/regulator/da903x.c
+ F:	drivers/regulator/da9???-regulator.[ch]
+ F:	drivers/rtc/rtc-da90??.c
+@@ -2905,6 +2908,7 @@ F:	include/linux/mfd/da903x.h
+ F:	include/linux/mfd/da9052/
+ F:	include/linux/mfd/da9055/
+ F:	include/linux/mfd/da9063/
++F:	include/linux/mfd/da9150/
+ F:	include/sound/da[79]*.h
+ F:	sound/soc/codecs/da[79]*.[ch]
+
 --
 1.9.3
 
