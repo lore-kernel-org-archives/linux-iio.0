@@ -1,25 +1,63 @@
-Return-Path: <gregkh@linuxfoundation.org>
-Date: Fri, 19 Sep 2014 15:30:33 -0700
-From: Greg KH <gregkh@linuxfoundation.org>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Subject: Re: [PULL] First set of IIO fixes for the 3.17 cycle
-Message-ID: <20140919223033.GA29786@kroah.com>
-References: <5415FD4F.9000606@kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail1.bemta5.messagelabs.com ([195.245.231.152]:19177 "EHLO
+	mail1.bemta5.messagelabs.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1754070AbaIWKxr (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 23 Sep 2014 06:53:47 -0400
+Message-ID: <6697dbc9711c9c3551aede1b5e4f986caa0d1a44.1411396719.git.Adam.Thomson.Opensource@diasemi.com>
+In-Reply-To: <cover.1411396718.git.Adam.Thomson.Opensource@diasemi.com>
+References: <cover.1411396718.git.Adam.Thomson.Opensource@diasemi.com>
+From: Adam Thomson <Adam.Thomson.Opensource@diasemi.com>
+Date: Tue, 23 Sep 2014 11:53:35 +0100
+Subject: [PATCH 4/8] iio: da9150: Add DT binding documentation for GPADC
+To: Lee Jones <lee.jones@linaro.org>,
+	Samuel Ortiz <sameo@linux.intel.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	<linux-iio@vger.kernel.org>, "Sebastian Reichel" <sre@kernel.org>,
+	Dmitry Eremin-Solenikov <dbaryshkov@gmail.com>,
+	David Woodhouse <dwmw2@infradead.org>,
+	<linux-pm@vger.kernel.org>, "Rob Herring" <robh+dt@kernel.org>,
+	Pawel Moll <pawel.moll@arm.com>,
+	Mark Rutland <mark.rutland@arm.com>,
+	Ian Campbell <ijc+devicetree@hellion.org.uk>,
+	"Kumar Gala" <galak@codeaurora.org>,
+	Grant Likely <grant.likely@linaro.org>,
+	<devicetree@vger.kernel.org>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	"Joe Perches" <joe@perches.com>, <linux-api@vger.kernel.org>
+CC: <linux-kernel@vger.kernel.org>, <support.opensource@diasemi.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <5415FD4F.9000606@kernel.org>
-List-ID: <linux-iio@vger.kernel.org>
+Content-Type: text/plain
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Sun, Sep 14, 2014 at 09:40:47PM +0100, Jonathan Cameron wrote:
-> The following changes since commit eb29835fb3ae9f7a8c8a4ae92e192052c3473557:
-> 
->   staging: android: fix a possible memory leak (2014-08-17 07:15:10 -0700)
-> 
-> are available in the git repository at:
-> 
->   git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git tags/iio-fixes-3.17a
+Signed-off-by: Adam Thomson <Adam.Thomson.Opensource@diasemi.com>
+---
+ .../devicetree/bindings/iio/adc/da9150-gpadc.txt         | 16 ++++++++++++++++
+ 1 file changed, 16 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/adc/da9150-gpadc.txt
 
-Pulled and pushed out, thanks.
+diff --git a/Documentation/devicetree/bindings/iio/adc/da9150-gpadc.txt b/Documentation/devicetree/bindings/iio/adc/da9150-gpadc.txt
+new file mode 100644
+index 0000000..c07228d
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/adc/da9150-gpadc.txt
+@@ -0,0 +1,16 @@
++Dialog Semiconductor DA9150 IIO GPADC bindings
++
++Required properties:
++- compatible: "dlg,da9150-gpadc" for DA9150 IIO GPADC
++- #io-channel-cells: Should be set to <1>
++  (See Documentation/devicetree/bindings/iio/iio-bindings.txt for further info)
++
++For further information on GPADC channels, see device datasheet.
++
++
++Example:
++
++	gpadc: da9150-gpadc {
++		compatible = "dlg,da9150-gpadc";
++		#io-channel-cells = <1>;
++	};
+--
+1.9.3
 
-greg k-h
