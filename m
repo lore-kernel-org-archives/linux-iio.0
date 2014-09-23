@@ -1,98 +1,88 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga14.intel.com ([192.55.52.115]:35612 "EHLO mga14.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1753409AbaIXAUb (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Tue, 23 Sep 2014 20:20:31 -0400
-From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-To: IIO <linux-iio@vger.kernel.org>,
-	LKML <linux-kernel@vger.kernel.org>,
-	DEVICE TREE <devicetree@vger.kernel.org>,
-	Lee Jones <lee.jones@linaro.org>
-Cc: Carlo Caione <carlo@caione.org>,
-	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
-	Aaron Lu <aaron.lu@intel.com>, Alan Cox <alan@linux.intel.com>,
-	Jean Delvare <khali@linux-fr.org>,
+Received: from mail1.bemta5.messagelabs.com ([195.245.231.142]:30887 "EHLO
+	mail1.bemta5.messagelabs.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1755343AbaIWKxg (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 23 Sep 2014 06:53:36 -0400
+Message-ID: <b71815ff49a1cabe2c7907a96cc1be34f924648e.1411396719.git.Adam.Thomson.Opensource@diasemi.com>
+In-Reply-To: <cover.1411396718.git.Adam.Thomson.Opensource@diasemi.com>
+References: <cover.1411396718.git.Adam.Thomson.Opensource@diasemi.com>
+From: Adam Thomson <Adam.Thomson.Opensource@diasemi.com>
+Date: Tue, 23 Sep 2014 11:53:29 +0100
+Subject: [PATCH 2/8] mfd: da9150: Add DT binding documentation for core
+To: Lee Jones <lee.jones@linaro.org>,
 	Samuel Ortiz <sameo@linux.intel.com>,
-	Liam Girdwood <lgirdwood@gmail.com>,
-	Mark Brown <broonie@kernel.org>,
+	Jonathan Cameron <jic23@kernel.org>,
+	<linux-iio@vger.kernel.org>, Sebastian Reichel <sre@kernel.org>,
+	Dmitry Eremin-Solenikov <dbaryshkov@gmail.com>,
+	David Woodhouse <dwmw2@infradead.org>,
+	<linux-pm@vger.kernel.org>, Rob Herring <robh+dt@kernel.org>,
+	Pawel Moll <pawel.moll@arm.com>,
+	Mark Rutland <mark.rutland@arm.com>,
+	Ian Campbell <ijc+devicetree@hellion.org.uk>,
+	Kumar Gala <galak@codeaurora.org>,
 	Grant Likely <grant.likely@linaro.org>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Rob Herring <robh+dt@kernel.org>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Fugang Duan <B38611@freescale.com>,
-	Arnd Bergmann <arnd@arndb.de>,
-	Zubair Lutfullah <zubair.lutfullah@gmail.com>,
-	Sebastian Reichel <sre@debian.org>,
-	Johannes Thumshirn <johannes.thumshirn@men.de>,
-	Philippe Reynes <tremyfr@yahoo.fr>,
-	Angelo Compagnucci <angelo.compagnucci@gmail.com>,
-	Doug Anderson <dianders@chromium.org>,
-	Ramakrishna Pallala <ramakrishna.pallala@intel.com>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	Maxime Ripard <maxime.ripard@free-electrons.com>,
-	Rafael Wysocki <rafael.j.wysocki@intel.com>,
-	Jacob Pan <jacob.jun.pan@linux.intel.com>
-Subject: [PATCH v5 0/2] Initial support for XPowers AXP288 PMIC
-Date: Tue, 23 Sep 2014 17:20:25 -0700
-Message-Id: <1411518027-19907-1-git-send-email-jacob.jun.pan@linux.intel.com>
+	<devicetree@vger.kernel.org>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Joe Perches <joe@perches.com>, <linux-api@vger.kernel.org>
+CC: <linux-kernel@vger.kernel.org>, <support.opensource@diasemi.com>
+MIME-Version: 1.0
+Content-Type: text/plain
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-X-Powers AXP288 is a customized PMIC found on some Intel Baytrail-CR platforms.
-It comes with sub-functions such as USB charging, fuel gauge, ADC, and many LDO
-and BUCK channels.
+Signed-off-by: Adam Thomson <Adam.Thomson.Opensource@diasemi.com>
+---
+ Documentation/devicetree/bindings/mfd/da9150.txt | 41 ++++++++++++++++++++++++
+ 1 file changed, 41 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/mfd/da9150.txt
 
-By extending the existing AXP20x driver, this patchset adds basic support
-for AXP288 PMIC with ADC as one MFD cell device driver.
-
-Currently, the PMIC driver in this patchset does not support platform data
-enumeration. But when ACPI _DSD and unified device properties become available,
-cell devices with platform data will be added.
-
-This patch does not use intel_soc_pmic core for i2c and regmap handling in that
-axp288 shares similar programming interface with other X-Power PMICs supported in
-axp20x.c. Therefore, extending axp20x.c to include axp288 makes more sense.
-
-Changes
- v5:	- excluded iio documentation patch, already applied to iio.git
- 	- restructured axp288_adc read_raw code to make it more readable
-	- renamed adc_enable to adc_set_state and add comment about why adc
-	  has to be always on and there is no disable function.
-	- axp20x use const as needed for regmap structures
-
- v4:	- removed rename patch, use Kconfig description to list supported devices
- 	- misc clean up in ADC code, use regmap_bulk_read and improve error
-	  handling, etc.
-	- remove IIO ADC scale, treat raw data as processed since the unit is
-	  already in IIO expected milliamps.
-
- v3:	- put all file rename changes in 1/5
- 	- add iio documentation for in_current_raw/scale
-	- removed global variables in axp2xx
-	- removed pm callbacks from GPADC
-	- removed ACPI opregion cell device
-	- added scales to ADC current and voltage
-	- removed ADC thermal sensor from sysfs, kernel internal use only
-
- v2:
-	- use format -M for 1/4
-	- minor tweak based on Maxime's review
-
-
-Jacob Pan (2):
-  mfd/axp20x: extend axp20x to support axp288 pmic
-  iio/adc: add support for axp288 adc
-
- drivers/iio/adc/Kconfig      |   8 +
- drivers/iio/adc/Makefile     |   1 +
- drivers/iio/adc/axp288_adc.c | 253 ++++++++++++++++++++++++++++++
- drivers/mfd/Kconfig          |   3 +-
- drivers/mfd/axp20x.c         | 355 ++++++++++++++++++++++++++++++++++++-------
- include/linux/mfd/axp20x.h   |  59 +++++++
- 6 files changed, 623 insertions(+), 56 deletions(-)
- create mode 100644 drivers/iio/adc/axp288_adc.c
-
--- 
-1.9.1
+diff --git a/Documentation/devicetree/bindings/mfd/da9150.txt b/Documentation/devicetree/bindings/mfd/da9150.txt
+new file mode 100644
+index 0000000..d7de150
+--- /dev/null
++++ b/Documentation/devicetree/bindings/mfd/da9150.txt
+@@ -0,0 +1,41 @@
++Dialog Semiconductor DA9150 Combined Charger/Fuel-Gauge MFD bindings
++
++DA9150 consists of a group of sub-devices (I2C Only):
++
++Device			 Description
++------			 -----------
++da9150-gpadc		: IIO - GPADC
++da9150-charger		: Power Supply (Charger)
++
++======
++
++Required properties:
++- compatible : Should be "dlg,da9150"
++- reg: Specifies the I2C slave address
++- interrupt-parent: Specifies the phandle of the interrupt controller to which
++  the IRQs from da9150 are delivered to.
++- interrupts: IRQ line info for da9150 chip.
++- interrupt-controller: da9150 has internal IRQs (own IRQ domain).
++
++Sub-devices:
++- da9150-gpadc: See Documentation/devicetree/bindings/iio/adc/da9150-gpadc.txt
++- da9150-charger: See Documentation/devicetree/bindings/power/da9150-charger.txt
++
++
++Example:
++
++	charger_fg: da9150@58 {
++		compatible = "dlg,da9150";
++		reg = <0x58>;
++		interrupt-parent = <&gpio6>;
++		interrupts = <11 IRQ_TYPE_LEVEL_LOW>;
++		interrupt-controller;
++
++		gpadc: da9150-gpadc {
++			...
++		};
++
++		da9150-charger {
++			...
++		};
++	};
+--
+1.9.3
 
