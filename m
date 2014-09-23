@@ -1,76 +1,106 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp-out-066.synserver.de ([212.40.185.66]:1067 "EHLO
-	smtp-out-066.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755293AbaIWSEO (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 23 Sep 2014 14:04:14 -0400
-From: Lars-Peter Clausen <lars@metafoo.de>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Hartmut Knaack <knaack.h@gmx.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>, linux-iio@vger.kernel.org,
-	Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH 3/4] staging:iio:ad5933: Report temperature as raw value
-Date: Tue, 23 Sep 2014 20:04:07 +0200
-Message-Id: <1411495448-17941-3-git-send-email-lars@metafoo.de>
-In-Reply-To: <1411495448-17941-1-git-send-email-lars@metafoo.de>
-References: <1411495448-17941-1-git-send-email-lars@metafoo.de>
+Received: from mail-la0-f47.google.com ([209.85.215.47]:36765 "EHLO
+	mail-la0-f47.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755013AbaIWQBq (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 23 Sep 2014 12:01:46 -0400
+Received: by mail-la0-f47.google.com with SMTP id mc6so8823822lab.6
+        for <linux-iio@vger.kernel.org>; Tue, 23 Sep 2014 09:01:45 -0700 (PDT)
+MIME-Version: 1.0
+From: Branko Karaklajic <orpid.yu@gmail.com>
+Date: Tue, 23 Sep 2014 18:01:05 +0200
+Message-ID: <CAB=+8u0_aX3bhK-fz41+XG9oEkceuB-+=vkFb4w48au43wrk9g@mail.gmail.com>
+Subject: Trigger (drdy) on st-sensor lis331dlh - how to question
+To: linux-iio@vger.kernel.org
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-We shouldn't be doing the unit conversion in kernel space. Just report the
-raw value for the property and the scale. Userspace can do the conversion if
-necessary.
+Hi to everyone,
 
-Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
----
- drivers/staging/iio/impedance-analyzer/ad5933.c | 17 ++++++++---------
- 1 file changed, 8 insertions(+), 9 deletions(-)
+This question is a bit long, but please bear with me for a moment, as
+we need your help to understand if we are doing something wrong (first
+time IIO usage on our side).
 
-diff --git a/drivers/staging/iio/impedance-analyzer/ad5933.c b/drivers/staging/iio/impedance-analyzer/ad5933.c
-index b6bd609..ebff637 100644
---- a/drivers/staging/iio/impedance-analyzer/ad5933.c
-+++ b/drivers/staging/iio/impedance-analyzer/ad5933.c
-@@ -113,7 +113,8 @@ static const struct iio_chan_spec ad5933_channels[] = {
- 		.type = IIO_TEMP,
- 		.indexed = 1,
- 		.channel = 0,
--		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED),
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
-+			BIT(IIO_CHAN_INFO_SCALE),
- 		.address = AD5933_REG_TEMP_DATA,
- 		.scan_index = -1,
- 		.scan_type = {
-@@ -522,10 +523,9 @@ static int ad5933_read_raw(struct iio_dev *indio_dev,
- 	__be16 dat;
- 	int ret = -EINVAL;
- 
--	mutex_lock(&indio_dev->mlock);
- 	switch (m) {
- 	case IIO_CHAN_INFO_RAW:
--	case IIO_CHAN_INFO_PROCESSED:
-+		mutex_lock(&indio_dev->mlock);
- 		if (iio_buffer_enabled(indio_dev)) {
- 			ret = -EBUSY;
- 			goto out;
-@@ -543,14 +543,13 @@ static int ad5933_read_raw(struct iio_dev *indio_dev,
- 		if (ret < 0)
- 			goto out;
- 		mutex_unlock(&indio_dev->mlock);
--		ret = be16_to_cpu(dat);
--		/* Temp in Milli degrees Celsius */
--		if (ret < 8192)
--			*val = ret * 1000 / 32;
--		else
--			*val = (ret - 16384) * 1000 / 32;
-+		*val = sign_extend32(be16_to_cpu(dat), 13);
- 
- 		return IIO_VAL_INT;
-+	case IIO_CHAN_INFO_SCALE:
-+		*val = 1000;
-+		*val2 = 5;
-+		return IIO_VAL_FRACTIONAL_LOG2;
- 	}
- 
- out:
--- 
-1.8.0
+We are working on project with SAMA5D3 board and accelerometer
+(lis331dlh) sensor and linux 3.17-rc5. We successfully connected
+lis331dlh to board via SPI interface, and we are able to read sensor
+through spidev and also through IIO interface by reading raw values.
 
+But there is a problem with IIO buffer, as we are not able to get any
+data through buffer.
+Our understanding is that we should define interrupt which will be
+triggered outside (by sensor data-ready-int output), and this
+interrupt will trigger IIO to read data and store it to buffer.
+
+Sensor <data ready> output is connected to Port D, pin 21 of CPU, and
+device tree looks like:
+
+spi1: spi@f8008000 {
+  cs-gpios = <&pioC 25 0>;
+  status = "okay";
+
+  lis331dlh@0 {
+      compatible = "st,lis331dlh-accel";
+      spi-max-frequency = <10000000>;
+      reg = <0>;
+      interrupt-parent = <&pioD>;
+      interrupts = <21 IRQ_TYPE_LEVEL_HIGH>;
+      st,drdy-int-pin = <1>;
+    };
+};
+
+and on boot up we got these messages:
+
+st-accel-spi spi32765.0: st_sensors_of_spi_probe() - lis331dlh.
+iio iio:device0: st_sensors_check_device_support() - lis331dlh.
+iio iio:device0: st_sensors_init_sensor().
+iio iio:device0: st_sensors_set_drdy_int_pin() - drdy_int_pin=1.
+iio iio:device0: st_accel_allocate_ring()
+iio iio:device0: st_accel_common_probe() - irq: 172.
+iio iio:device0: registered accelerometer lis331dlh
+
+As you can see, accelerometer is succesfully registered, and we are
+able to read raw data with:
+
+    $ cat /sys/bus/iio/devices/iio:device0/in_accel_x_raw
+
+this is how our directory looks like:
+    $ ls -al /sys/bus/iio/devices/
+lrwxrwxrwx    1 root     root             0 Jan  1 00:17 iio:device0
+-> ../../../devices/ahb/ahb:apb/f8008000.spi/spi_master/spi32765/spi32765.0/iio:device0
+lrwxrwxrwx    1 root     root             0 Jan  1 00:17 trigger0 ->
+../../../devices/ahb/ahb:apb/f8008000.spi/spi_master/spi32765/spi32765.0/trigger0
+
+So trigger is also registred with name lis331dlh-trigger.
+
+dmsg line:
+...
+iio iio:device0: st_accel_common_probe() - irq: 172.
+...
+indicates that irq 172 (which is IRQ for Port D, pin 21) is registered
+(which is also checked in /proc/irq).
+
+So, with all this set, we are not successful to get data from buffer.
+Our first guess is to use generic_buffer.c, which we successfully
+tried on internal ADC, but there is no data in buffer.
+
+Steps we are using are:
+Enable channel in_accel_x_en in iio:device0/scan_elements
+Write <lis331dlh-trigger> in iio:device0/trigger/current_trigger
+Write length of 16 in iio:device0/buffer/length
+Write 1 in iio:device0/buffer/enable
+
+That should be enough to get data into buffer by driver and than to
+read it from buffer. Is that true? Did we missed something.
+
+>From HW point of view, we could see transition on interrupt pin when
+we enable buffer, but no reading of data.
+
+Our understanding is that function <irqreturn_t
+st_sensors_trigger_handler(int irq, void *p)> from file
+linux/drivers/iio/common/st_sensors/st_sensors_buffer.c should be
+called when interrupt is generated. Is this assumption correct? In our
+case it's never called.
+
+Thanks in advance
+Branko
