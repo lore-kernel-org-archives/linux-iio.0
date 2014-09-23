@@ -1,133 +1,76 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail1.bemta3.messagelabs.com ([195.245.230.162]:12650 "EHLO
-	mail1.bemta3.messagelabs.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1755259AbaIWKxf (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 23 Sep 2014 06:53:35 -0400
-Message-ID: <cover.1411396718.git.Adam.Thomson.Opensource@diasemi.com>
-From: Adam Thomson <Adam.Thomson.Opensource@diasemi.com>
-Date: Tue, 23 Sep 2014 11:53:17 +0100
-Subject: [PATCH v3 0/8] Add initial support for DA9150 Charger & Fuel-Gauge IC
-To: Lee Jones <lee.jones@linaro.org>,
-	Samuel Ortiz <sameo@linux.intel.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	<linux-iio@vger.kernel.org>, Sebastian Reichel <sre@kernel.org>,
-	Dmitry Eremin-Solenikov <dbaryshkov@gmail.com>,
-	David Woodhouse <dwmw2@infradead.org>,
-	<linux-pm@vger.kernel.org>, Rob Herring <robh+dt@kernel.org>,
-	Pawel Moll <pawel.moll@arm.com>,
-	Mark Rutland <mark.rutland@arm.com>,
-	Ian Campbell <ijc+devicetree@hellion.org.uk>,
-	Kumar Gala <galak@codeaurora.org>,
-	Grant Likely <grant.likely@linaro.org>,
-	<devicetree@vger.kernel.org>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	Joe Perches <joe@perches.com>, <linux-api@vger.kernel.org>
-CC: <linux-kernel@vger.kernel.org>, <support.opensource@diasemi.com>
-MIME-Version: 1.0
-Content-Type: text/plain
+Received: from smtp-out-066.synserver.de ([212.40.185.66]:1067 "EHLO
+	smtp-out-066.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755293AbaIWSEO (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 23 Sep 2014 14:04:14 -0400
+From: Lars-Peter Clausen <lars@metafoo.de>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Hartmut Knaack <knaack.h@gmx.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>, linux-iio@vger.kernel.org,
+	Lars-Peter Clausen <lars@metafoo.de>
+Subject: [PATCH 3/4] staging:iio:ad5933: Report temperature as raw value
+Date: Tue, 23 Sep 2014 20:04:07 +0200
+Message-Id: <1411495448-17941-3-git-send-email-lars@metafoo.de>
+In-Reply-To: <1411495448-17941-1-git-send-email-lars@metafoo.de>
+References: <1411495448-17941-1-git-send-email-lars@metafoo.de>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-This patch set adds initial support for the Dialog DA9150 Integrated Charger &
-Fuel-Gauge IC. The device also provides GPIO and GPADC functionality.
+We shouldn't be doing the unit conversion in kernel space. Just report the
+raw value for the property and the scale. Userspace can do the conversion if
+necessary.
 
-In this patch set the following is provided:
- - MFD Core support and DT bindings documentation.
- - IIO GPADC support and DT bindings documentation.
- - Power Supply Charger support and DT bindings documentation.
- - Update to MAINTAINERS file to add DA9150 files to Dialog support list.
- - Update to IIO ABI document to add info regarding input current readings.
+Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+---
+ drivers/staging/iio/impedance-analyzer/ad5933.c | 17 ++++++++---------
+ 1 file changed, 8 insertions(+), 9 deletions(-)
 
-To keep patch submission from being too large, support for GPIO and Fuel-Gauge
-will come after initial support patches are accepted.
-
-This patch set is baselined against the v3.17-rc6 kernel version.
-
-
-Changes in v3:
-- IRQ register and remove helper functions removed from MFD, deemed unnecessary.
-  Drivers using helper functions updated to use direct calls to relevant
-  kernel framework functions.
-- MFD I2C file removed and code folded into -core file as requested.
-- MFD core now buildable as driver module.
-- Platform data structure definition moved into core header, pdata.h removed.
-- Update functions in GPADC driver to be static, where appropriate.
-- Change units of GPADC readings to match ABI documentation. Updates to charger
-  driver also made to align with this modification.
-- Refactor GPADC temp calculations to use scale & offset method.
-- Scale values now returned as FRACTIONAL to allow for accurate conversion in
-  user-space.
-- Tidy up of GPADC scale, offset and raw functions to return from case statements
-  with correct return types.
-- Update GPADC channel macros naming to prefix with DA9150, prevent conflict.
-- GPADC GPIO voltage readings actually in 6V range, updated accordingly.
-- Addition to IIO ABI document to add details on input current readings.
-- Small style updates to address comments.
-
-Changes in v2:
- - Drop devicetree prefix patch as this is being dealt with separately.
- - IIO framework fix patch removed from set, has already been accepted/merged.
- - Use __ instead of _ for protecting #ifdefs in headers.
- - Moved private data & definitions to source files and remove unwanted headers.
- - Bug fix to EXPORT_SYMBOL for common functions in MFD core used by
-   sub-devices, so they can be correctly built as kernel modules.
- - Removed unnecessary channels from GPADC IIO driver to simplify code.
- - For GPADC IIO driver, VBAT reading now provides scale and offset values as it
-   is a linear scale.
- - GPADC read code refactored to make it tidier.
- - Remove use of flag to indicate GPADC availability. IIO framework should
-   indicate need to defer if it's not yet instantiated.
- - Unwanted comments removed.
- - Removed conditional shutdown of device (Charger/MFD) as this is not needed.
- - Removed AC type supply from charger as device cannot differentiate. Now just
-   uses USB supply type.
- - Removed use of invalid-tbat flag from platform data as it doesn't really add
-   anything to the driver except forcing battery present status.
- - Bug fix for checking of usb_phy validity in Charger probe() function.
- - Addition of common IRQ release function to allow sub-devices to explicitly
-   tidy up IRQs when devm clean up is too late.
- - Improved tidy up of resources in charger.
- - Fix location of IIO GPADC related devicetree binding document so it now
-   resides correctly under 'adc' directory.
- - Add update to MAINTAINERS file to include these files in Dialog support list.
-
-Adam Thomson (8):
-  mfd: Add support for DA9150 combined charger & fuel-gauge device
-  mfd: da9150: Add DT binding documentation for core
-  iio: Add support for DA9150 GPADC
-  iio: da9150: Add DT binding documentation for GPADC
-  power: Add support for DA9150 Charger
-  power: da9150: Add DT binding documentation for charger
-  MAINTAINERS: Include DA9150 files in Dialog Semiconductor support
-    list.
-  iio: Add ABI documentation for input current readings
-
- Documentation/ABI/testing/sysfs-bus-iio            |   17 +
- .../devicetree/bindings/iio/adc/da9150-gpadc.txt   |   16 +
- Documentation/devicetree/bindings/mfd/da9150.txt   |   41 +
- .../devicetree/bindings/power/da9150-charger.txt   |   26 +
- MAINTAINERS                                        |    4 +
- drivers/iio/adc/Kconfig                            |    9 +
- drivers/iio/adc/Makefile                           |    1 +
- drivers/iio/adc/da9150-gpadc.c                     |  406 +++++++
- drivers/mfd/Kconfig                                |   12 +
- drivers/mfd/Makefile                               |    2 +-
- drivers/mfd/da9150-core.c                          |  413 +++++++
- drivers/power/Kconfig                              |   12 +
- drivers/power/Makefile                             |    1 +
- drivers/power/da9150-charger.c                     |  740 +++++++++++++
- include/linux/mfd/da9150/core.h                    |   68 ++
- include/linux/mfd/da9150/registers.h               | 1155 ++++++++++++++++++++
- 16 files changed, 2922 insertions(+), 1 deletion(-)
- create mode 100644 Documentation/devicetree/bindings/iio/adc/da9150-gpadc.txt
- create mode 100644 Documentation/devicetree/bindings/mfd/da9150.txt
- create mode 100644 Documentation/devicetree/bindings/power/da9150-charger.txt
- create mode 100644 drivers/iio/adc/da9150-gpadc.c
- create mode 100644 drivers/mfd/da9150-core.c
- create mode 100644 drivers/power/da9150-charger.c
- create mode 100644 include/linux/mfd/da9150/core.h
- create mode 100644 include/linux/mfd/da9150/registers.h
-
---
-1.9.3
+diff --git a/drivers/staging/iio/impedance-analyzer/ad5933.c b/drivers/staging/iio/impedance-analyzer/ad5933.c
+index b6bd609..ebff637 100644
+--- a/drivers/staging/iio/impedance-analyzer/ad5933.c
++++ b/drivers/staging/iio/impedance-analyzer/ad5933.c
+@@ -113,7 +113,8 @@ static const struct iio_chan_spec ad5933_channels[] = {
+ 		.type = IIO_TEMP,
+ 		.indexed = 1,
+ 		.channel = 0,
+-		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED),
++		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
++			BIT(IIO_CHAN_INFO_SCALE),
+ 		.address = AD5933_REG_TEMP_DATA,
+ 		.scan_index = -1,
+ 		.scan_type = {
+@@ -522,10 +523,9 @@ static int ad5933_read_raw(struct iio_dev *indio_dev,
+ 	__be16 dat;
+ 	int ret = -EINVAL;
+ 
+-	mutex_lock(&indio_dev->mlock);
+ 	switch (m) {
+ 	case IIO_CHAN_INFO_RAW:
+-	case IIO_CHAN_INFO_PROCESSED:
++		mutex_lock(&indio_dev->mlock);
+ 		if (iio_buffer_enabled(indio_dev)) {
+ 			ret = -EBUSY;
+ 			goto out;
+@@ -543,14 +543,13 @@ static int ad5933_read_raw(struct iio_dev *indio_dev,
+ 		if (ret < 0)
+ 			goto out;
+ 		mutex_unlock(&indio_dev->mlock);
+-		ret = be16_to_cpu(dat);
+-		/* Temp in Milli degrees Celsius */
+-		if (ret < 8192)
+-			*val = ret * 1000 / 32;
+-		else
+-			*val = (ret - 16384) * 1000 / 32;
++		*val = sign_extend32(be16_to_cpu(dat), 13);
+ 
+ 		return IIO_VAL_INT;
++	case IIO_CHAN_INFO_SCALE:
++		*val = 1000;
++		*val2 = 5;
++		return IIO_VAL_FRACTIONAL_LOG2;
+ 	}
+ 
+ out:
+-- 
+1.8.0
 
