@@ -1,237 +1,336 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from relay05.mycloudmailbox.com ([199.244.76.201]:46479 "EHLO
-	relay05.mycloudmailbox.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1752875AbaIXPUd (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 24 Sep 2014 11:20:33 -0400
-Message-ID: <5422E13D.2000607@uplogix.com>
-Date: Wed, 24 Sep 2014 10:20:29 -0500
-From: David Barksdale <dbarksdale@uplogix.com>
+Received: from devils.ext.ti.com ([198.47.26.153]:41917 "EHLO
+	devils.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751920AbaIXOgU (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 24 Sep 2014 10:36:20 -0400
+Date: Wed, 24 Sep 2014 09:36:10 -0500
+From: Felipe Balbi <balbi@ti.com>
+To: Felipe Balbi <balbi@ti.com>
+CC: Jonathan Cameron <jic23@kernel.org>, <linux-iio@vger.kernel.org>,
+	<pmeerw@pmeerw.net>, Andrew Morton <akpm@linux-foundation.org>
+Subject: Re: [RESEND PATCH] iio: light: add support for TI's opt3001 light
+ sensor
+Message-ID: <20140924143610.GA17997@saruman>
+Reply-To: <balbi@ti.com>
+References: <1409671066-25747-1-git-send-email-balbi@ti.com>
+ <54147632.9090204@kernel.org>
+ <20140915052137.GA11866@saruman.home>
+ <20140916170316.GD19010@saruman.home>
+ <20140917150041.GA6903@saruman.home>
+ <20140918133631.GA24847@saruman.home>
+ <20140919162129.GE26946@saruman.home>
+ <20140922140914.GC25620@saruman>
+ <20140923140924.GA28592@saruman>
 MIME-Version: 1.0
-To: Daniel Baluta <daniel.baluta@intel.com>
-CC: Jonathan Cameron <jic23@kernel.org>,
-	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-	<linux-iio@vger.kernel.org>
-Subject: Re: [PATCH v3] IIO: add si7020 driver
-References: <1411570979-19473-1-git-send-email-dbarksdale@uplogix.com> <CAEnQRZBP5rjU0E8ptApw78v4SWZY28YDkpRz6fhBd_+jkZzvDA@mail.gmail.com>
-In-Reply-To: <CAEnQRZBP5rjU0E8ptApw78v4SWZY28YDkpRz6fhBd_+jkZzvDA@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="2oS5YaxWCcQjTEyO"
+In-Reply-To: <20140923140924.GA28592@saruman>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
+--2oS5YaxWCcQjTEyO
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+ping
+
+On Tue, Sep 23, 2014 at 09:09:24AM -0500, Felipe Balbi wrote:
+> ping
+>=20
+> On Mon, Sep 22, 2014 at 09:09:14AM -0500, Felipe Balbi wrote:
+> > ping
+> >=20
+> > On Fri, Sep 19, 2014 at 11:21:29AM -0500, Felipe Balbi wrote:
+> > > ping
+> > >=20
+> > > On Thu, Sep 18, 2014 at 08:36:31AM -0500, Felipe Balbi wrote:
+> > > > ping
+> > > >=20
+> > > > On Wed, Sep 17, 2014 at 10:00:41AM -0500, Felipe Balbi wrote:
+> > > > > ping
+> > > > >=20
+> > > > > On Tue, Sep 16, 2014 at 12:03:16PM -0500, Felipe Balbi wrote:
+> > > > > > ping
+> > > > > >=20
+> > > > > > On Mon, Sep 15, 2014 at 12:21:37AM -0500, Felipe Balbi wrote:
+> > > > > > > Hi,
+> > > > > > >=20
+> > > > > > > On Sat, Sep 13, 2014 at 05:52:02PM +0100, Jonathan Cameron wr=
+ote:
+> > > > > > > > On 02/09/14 16:17, Felipe Balbi wrote:
+> > > > > > > > > TI's opt3001 light sensor is a simple and yet powerful
+> > > > > > > > > little device. The device provides 99% IR rejection,
+> > > > > > > > > Automatic full-scale, very low power consumption and
+> > > > > > > > > measurements from 0.01 to 83k lux.
+> > > > > > > > >=20
+> > > > > > > > > This patch adds support for that device using the IIO
+> > > > > > > > > framework.
+> > > > > > > > >=20
+> > > > > > > > > Signed-off-by: Felipe Balbi <balbi@ti.com>
+> > > > > > > > > ---
+> > > > > > > > >=20
+> > > > > > > > > Resending as I saw no changes on the thread.
+> > > > > > > > Hi Felipe,
+> > > > > > > >=20
+> > > > > > > > Sorry for the delay on this, entirely my fault - been busy =
+and forgot
+> > > > > > > > I still had questions about what was going on in here (yup =
+its the
+> > > > > > > > hysteresis bit again!)
+> > > > > > >=20
+> > > > > > > right, this is starting to become way too much headache for s=
+uch a
+> > > > > > > simple device. Sorry will not help me getting this driver ups=
+tream. When
+> > > > > > > I first sent this (August 6), we didn't even have v3.17-rc1, =
+now we're
+> > > > > > > about to tag -rc5 and I'm worried this driver will not hit v3=
+=2E18 merge
+> > > > > > > window.
+> > > > > > >=20
+> > > > > > > > Anyhow, I'm afraid I am still a little confused about the m=
+eaning you
+> > > > > > > > have assigned to Hysteresis in this driver.
+> > > > > > > >=20
+> > > > > > > > Let me conjecture on what might be going on here (I may be =
+entirely
+> > > > > > > > wrong).
+> > > > > > > >=20
+> > > > > > > > Normally a hysteresis value in IIO is defined as the 'dista=
+nce' back
+> > > > > > > > from a threshold that a signal must go before it may retrip=
+ the
+> > > > > > > > threshold.
+> > > > > > > > This threshold value is separately controlled. Thus if we h=
+ave a
+> > > > > > > > rising threshold of 10 and an hysteresis of 2 - to get two =
+events the
+> > > > > > > > signal must first rise past 10, then drop back below 8 and =
+rise again
+> > > > > > > > past 10.
+> > > > > > > > If it drops below 10 but not 8 and rises again past 10 then=
+ we will
+> > > > > > > > not get an event.
+> > > > > > > >=20
+> > > > > > > > So having the same register for both the hysteresis and the=
+ threshold
+> > > > > > > > doesn't with this description make much sense.  It would me=
+an that you
+> > > > > > > > could only have a threshold of say 10 and a hysteresis of 1=
+0, thus in
+> > > > > > > > effect meaning the signal would always have to cross 0 befo=
+re the next
+> > > > > > > > event whatever the combined threshold / hysteresis value?
+> > > > > > > >=20
+> > > > > > > > Perhaps instead the device is automatically adjusting the t=
+hreshold
+> > > > > > > > when we cross it and the 'hysteresis' here is with respect =
+to a the
+> > > > > > > > previous threshold?
+> > > > > > > >=20
+> > > > > > > > Thus if we start with a value of 0 and hysteresis is set to=
+ 2 it will
+> > > > > > > > trigger an event at:
+> > > > > > > >=20
+> > > > > > > > 2, 4, 6, 8, 10 as we rise?
+> > > > > > > >=20
+> > > > > > > > This sort of auto adjustment of levels isn't uncommon in li=
+ght sensors
+> > > > > > > > (where the point of the interrupt is to notify the operatin=
+g system
+> > > > > > > > that a 'significant' change has occurred and things like sc=
+reen
+> > > > > > > > brightness may need adjusting.
+> > > > > > > >=20
+> > > > > > > > If so then the current hysteresis interface does not apply,=
+ nor does
+> > > > > > > > the Rate of Change (ROC) interface as this is dependent on =
+amount of
+> > > > > > > > change, not how fast it changed.  Hence we needs something =
+new to
+> > > > > > > > handle this cleanly. I would suggest a new event type.  Per=
+haps
+> > > > > > > > something with sysfs attr naming along the lines of
+> > > > > > > > What:		/sys/.../iio:deviceX/events/in_light_change_rising_en
+> > > > > > > > What:           /sys/.../iio:deviceX/events/in_light_change=
+_rising_value
+> > > > > > > >=20
+> > > > > > > > etc?
+> > > > > > >=20
+> > > > > > > will you just tell me what you want ? I really cannot give a =
+crap
+> > > > > > > anymore. This has already taken me over a month of my time fo=
+r such a
+> > > > > > > simple little device, not to mention your confusing and contr=
+adicting
+> > > > > > > change requests.
+> > > > > > >=20
+> > > > > > > (could you also trim your responses ? it's very annoying to s=
+croll so
+> > > > > > > much)
+> > > > > > >=20
+> > > > > > > > > +#define OPT3001_RESULT		0x00
+> > > > > > > > > +#define OPT3001_CONFIGURATION	0x01
+> > > > > > > > > +#define OPT3001_LOW_LIMIT	0x02
+> > > > > > > > > +#define OPT3001_HIGH_LIMIT	0x03
+> > > > > > > > > +#define OPT3001_MANUFACTURER_ID	0x7e
+> > > > > > > > > +#define OPT3001_DEVICE_ID	0x7f
+> > > > > > > > > +
+> > > > > > > > > +#define OPT3001_CONFIGURATION_RN_MASK (0xf << 12)
+> > > > > > > > > +#define OPT3001_CONFIGURATION_RN_AUTO (0xc << 12)
+> > > > > > > > > +
+> > > > > > > > > +#define OPT3001_CONFIGURATION_CT	BIT(11)
+> > > > > > > > > +
+> > > > > > > > > +#define OPT3001_CONFIGURATION_M_MASK	(3 << 9)
+> > > > > > > > > +#define OPT3001_CONFIGURATION_M_SHUTDOWN (0 << 9)
+> > > > > > > > > +#define OPT3001_CONFIGURATION_M_SINGLE (1 << 9)
+> > > > > > > > > +#define OPT3001_CONFIGURATION_M_CONTINUOUS (2 << 9) /* a=
+lso 3 << 9 */
+> > > > > > > > > +
+> > > > > > > >=20
+> > > > > > > > I guess this naming is straight off the datasheet, but it i=
+s rather
+> > > > > > > > more cryptic than perhaps it needs to be!  That's kind of a=
+n issue
+> > > > > > > > with the datasheet choices rather than what you have here h=
+owever!
+> > > > > > >=20
+> > > > > > > man, are you nit-picky!! These are named as such to make grep=
+ping on
+> > > > > > > documentation easier. It's better to have something that matc=
+hes
+> > > > > > > documentation, don't you think ? otherwise, future users/deve=
+lopers of
+> > > > > > > these driver will need either a shit ton of comments explaini=
+ng that A
+> > > > > > > maps to B in docs, or will need a fscking crystal ball to rea=
+d my mind.
+> > > > > > > Assuming I'll still remember what I meant.
+> > > > > > >=20
+> > > > > > > > > +static int opt3001_remove(struct i2c_client *client)
+> > > > > > > > > +{
+> > > > > > > > > +	struct iio_dev *iio =3D i2c_get_clientdata(client);
+> > > > > > > > > +	struct opt3001 *opt =3D iio_priv(iio);
+> > > > > > > > > +	int ret;
+> > > > > > > > > +	u16 reg;
+> > > > > > > > > +
+> > > > > > > > > +	free_irq(client->irq, iio);
+> > > > > > > > > +	iio_device_unregister(iio);
+> > > > > > > > > +
+> > > > > > > > > +	ret =3D i2c_smbus_read_word_swapped(opt->client, OPT300=
+1_CONFIGURATION);
+> > > > > > > > > +	if (ret < 0) {
+> > > > > > > > > +		dev_err(opt->dev, "failed to read register %02x\n",
+> > > > > > > > > +				OPT3001_CONFIGURATION);
+> > > > > > > > > +		return ret;
+> > > > > > > > > +	}
+> > > > > > > > > +
+> > > > > > > > > +	reg =3D ret;
+> > > > > > > > > +	opt3001_set_mode(opt, &reg, OPT3001_CONFIGURATION_M_SHU=
+TDOWN);
+> > > > > > > > > +
+> > > > > > > > > +	ret =3D i2c_smbus_write_word_swapped(opt->client, OPT30=
+01_CONFIGURATION,
+> > > > > > > > > +			reg);
+> > > > > > > > > +	if (ret < 0) {
+> > > > > > > > > +		dev_err(opt->dev, "failed to write register %02x\n",
+> > > > > > > > > +				OPT3001_CONFIGURATION);
+> > > > > > > > > +		return ret;
+> > > > > > > > > +	}
+> > > > > > > > > +
+> > > > > > > > > +	iio_device_free(iio);
+> > > > > > > >
+> > > > > > > > Use the devm_iio_device_alloc and you can drop the need to =
+free it.
+> > > > > > > > I don't really mind, but I'll almost guarantee that someone=
+ will post
+> > > > > > > > a follow up patch doing this if you don't.  As it will be e=
+ver so
+> > > > > > > > slightly cleaner, I'll probably take that patch.
+> > > > > > >=20
+> > > > > > > here's the original driver:
+> > > > > > >=20
+> > > > > > > http://www.spinics.net/lists/linux-iio/msg14331.html
+> > > > > > >=20
+> > > > > > > notice that it *WAS* *USING* devm_iio_device_alloc(), until:
+> > > > > > >=20
+> > > > > > > http://www.spinics.net/lists/linux-iio/msg14421.html
+> > > > > > >=20
+> > > > > > > you *SPECIFICALLY* asked for *NON* *DEVM* versions!!
+> > > > > > >=20
+> > > > > > > So figure out what you really want, let me know and I'll code=
+ it all up
+> > > > > > > quickly and hopefully still get this into v3.18 merge window.=
+ I sent
+> > > > > > > this driver *very* early to be doubly sure it would hit v3.18=
+ and there
+> > > > > > > was a long hiatus from yourself which is now jeopardizing wha=
+t I was
+> > > > > > > expecting. That, coupled with your contradicting requests, ha=
+s just put
+> > > > > > > me in a bad mood, even before Monday, hurray.
+> > > > > > >=20
+> > > > > > > cheers
+> > > > > > >=20
+> > > > > > > --=20
+> > > > > > > balbi
+> > > > > >=20
+> > > > > >=20
+> > > > > >=20
+> > > > > > --=20
+> > > > > > balbi
+> > > > >=20
+> > > > >=20
+> > > > >=20
+> > > > > --=20
+> > > > > balbi
+> > > >=20
+> > > >=20
+> > > >=20
+> > > > --=20
+> > > > balbi
+> > >=20
+> > >=20
+> > >=20
+> > > --=20
+> > > balbi
+> >=20
+> >=20
+> >=20
+> > --=20
+> > balbi
+>=20
+>=20
+>=20
+> --=20
+> balbi
 
 
-On 09/24/2014 10:15 AM, Daniel Baluta wrote:
-> On Wed, Sep 24, 2014 at 6:02 PM, David Barksdale <dbarksdale@uplogix.com> wrote:
->> This patch adds support to the Industrial IO subsystem
->> for the Silicon Labs Si7013/20/21 Relative Humidity and
->> Temperature Sensors.
->>
->> Website: http://www.silabs.com/products/sensors/humidity-sensors/Pages/si7013-20-21.aspx
->>
->> These are i2c devices which measure relative humidity
->> and temperature and all use the same protocol. The
->> Si7013 has an additional input with programmable
->> linearization which is not supported because that's
->> complicated and I didn't need it.
->>
->> Signed-off-by: David Barksdale <dbarksdale@uplogix.com>
->>
->> --
->> Changes since v1:
->> * Renamed to si7020 and replaced Si701x/2x with Si7013/20/21.
->> * Removed unneeded mutex.
->> * Pre-computed floating-point constant expressions.
->> * Removed address_list and I2C_CLASS_HWMON.
->>
->> Changes since v2:
->> * Return correct raw sensor values.
->> * Rename dev variable to indio_dev.
->> * Issue a software reset command during probe.
->> * Un-broke string literal.
->>
->> ---
->>   drivers/iio/humidity/Kconfig  |  10 +++
->>   drivers/iio/humidity/Makefile |   1 +
->>   drivers/iio/humidity/si7020.c | 165 ++++++++++++++++++++++++++++++++++++++++++
->>   3 files changed, 176 insertions(+)
->>
->> diff --git a/drivers/iio/humidity/Kconfig b/drivers/iio/humidity/Kconfig
->> index e116bd8..4813b79 100644
->> --- a/drivers/iio/humidity/Kconfig
->> +++ b/drivers/iio/humidity/Kconfig
->> @@ -22,4 +22,14 @@ config SI7005
->>            To compile this driver as a module, choose M here: the module
->>            will be called si7005.
->>
->> +config SI7020
->> +       tristate "Si7013/20/21 Relative Humidity and Temperature Sensors"
->> +       depends on I2C
->> +       help
->> +         Say yes here to build support for the Silicon Labs Si7013/20/21
->> +         Relative Humidity and Temperature Sensors.
->> +
->> +         To compile this driver as a module, choose M here: the module
->> +         will be called si7020.
->> +
->>   endmenu
->> diff --git a/drivers/iio/humidity/Makefile b/drivers/iio/humidity/Makefile
->> index e3f3d94..86e2d26 100644
->> --- a/drivers/iio/humidity/Makefile
->> +++ b/drivers/iio/humidity/Makefile
->> @@ -4,3 +4,4 @@
->>
->>   obj-$(CONFIG_DHT11) += dht11.o
->>   obj-$(CONFIG_SI7005) += si7005.o
->> +obj-$(CONFIG_SI7020) += si7020.o
->> diff --git a/drivers/iio/humidity/si7020.c b/drivers/iio/humidity/si7020.c
->> new file mode 100644
->> index 0000000..4aacb55
->> --- /dev/null
->> +++ b/drivers/iio/humidity/si7020.c
->> @@ -0,0 +1,165 @@
->> +/*
->> + * si7020.c - Silicon Labs Si7013/20/21 Relative Humidity and Temp Sensors
->> + * Copyright (c) 2013,2014  Uplogix, Inc.
->> + * David Barksdale <dbarksdale@uplogix.com>
->> + *
->> + * This program is free software; you can redistribute it and/or modify it
->> + * under the terms and conditions of the GNU General Public License,
->> + * version 2, as published by the Free Software Foundation.
->> + *
->> + * This program is distributed in the hope that it will be useful,
->> + * but WITHOUT ANY WARRANTY; without even the implied warranty of
->> + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
->> + * GNU General Public License for more details.
->> + */
->> +
->> +/*
->> + * The Silicon Labs Si7013/20/21 Relative Humidity and Temperature Sensors
->> + * are i2c devices which have an identical programming interface for
->> + * measuring relative humidity and temperature. The Si7013 has an additional
->> + * temperature input which this driver does not support.
->> + *
->> + * Data Sheets:
->> + *   Si7013: http://www.silabs.com/Support%20Documents/TechnicalDocs/Si7013.pdf
->> + *   Si7020: http://www.silabs.com/Support%20Documents/TechnicalDocs/Si7020.pdf
->> + *   Si7021: http://www.silabs.com/Support%20Documents/TechnicalDocs/Si7021.pdf
->> + */
->> +
->> +#include <linux/delay.h>
->> +#include <linux/i2c.h>
->> +#include <linux/module.h>
->> +#include <linux/slab.h>
->> +#include <linux/sysfs.h>
->> +
->> +#include <linux/iio/iio.h>
->> +#include <linux/iio/sysfs.h>
->> +
->> +enum {
->> +       /* Measure Relative Humidity, Hold Master Mode */
->> +       SI7020CMD_RH_HOLD       = 0xE5,
->> +       /* Measure Temperature, Hold Master Mode */
->> +       SI7020CMD_TEMP_HOLD     = 0xE3,
->> +       /* Software Reset */
->> +       SI7020CMD_RESET         = 0xFE,
->> +};
->> +
->> +static int si7020_read_raw(struct iio_dev *indio_dev,
->> +                          struct iio_chan_spec const *chan, int *val,
->> +                          int *val2, long mask)
->> +{
->> +       struct i2c_client **client = iio_priv(indio_dev);
->> +       int ret;
->> +
->> +       switch (mask) {
->> +       case IIO_CHAN_INFO_RAW:
->> +               ret = i2c_smbus_read_word_data(*client,
->> +                                              chan->type == IIO_TEMP ?
->> +                                              SI7020CMD_TEMP_HOLD :
->> +                                              SI7020CMD_RH_HOLD);
->> +               if (ret < 0)
->> +                       return ret;
->> +               if (chan->type == IIO_TEMP)
->> +                       *val = ret >> 2;
->> +               else
->> +                       *val = (ret & 0x3FFF) >> 2;
->> +               return IIO_VAL_INT;
->> +       case IIO_CHAN_INFO_SCALE:
->> +               if (chan->type == IIO_TEMP)
->> +                       *val = 175720; /* = 175.72 * 1000 */
->> +               else
->> +                       *val = 125 * 1000;
->> +               *val2 = 65536 >> 2;
->> +               return IIO_VAL_FRACTIONAL;
->> +       case IIO_CHAN_INFO_OFFSET:
->> +               /* Since iio_convert_raw_to_processed_unlocked assumes offset
->> +                * is an integer we have to round these values and lose
->> +                * accuracy.
->> +                * Relative humidity will be 0.0032959% too high and
->> +                * temperature will be 0.00277344 degrees too high.
->> +                * This is no big deal because it's within the accuracy of the
->> +                * sensor.
->> +                */
->> +               if (chan->type == IIO_TEMP)
->> +                       *val = -4368; /* = -46.85 * (65536 >> 2) / 175.72 */
->> +               else
->> +                       *val = -786; /* = -6 * (65536 >> 2) / 125 */
->> +               return IIO_VAL_INT;
->> +       default:
->> +               break;
->> +       }
->> +
->> +       return -EINVAL;
->> +}
->> +
->> +static const struct iio_chan_spec si7020_channels[] = {
->> +       {
->> +               .type = IIO_HUMIDITYRELATIVE,
->> +               .info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
->> +                       BIT(IIO_CHAN_INFO_SCALE) | BIT(IIO_CHAN_INFO_OFFSET),
->> +       },
->> +       {
->> +               .type = IIO_TEMP,
->> +               .info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
->> +                       BIT(IIO_CHAN_INFO_SCALE) | BIT(IIO_CHAN_INFO_OFFSET),
->> +       }
->> +};
->> +
->> +static const struct iio_info si7020_info = {
->> +       .read_raw = si7020_read_raw,
->> +       .driver_module = THIS_MODULE,
->> +};
->> +
->> +static int si7020_probe(struct i2c_client *client,
->> +                       const struct i2c_device_id *id)
->> +{
->> +       struct iio_dev *indio_dev;
->> +       struct i2c_client **data;
->> +       int ret;
->> +
->> +       if (!i2c_check_functionality(client->adapter,
->> +                                    I2C_FUNC_SMBUS_WRITE_BYTE |
->> +                                    I2C_FUNC_SMBUS_READ_WORD_DATA))
->> +               return -ENODEV;
->> +
->> +       /* Reset device, loads default settings. */
->> +       ret = i2c_smbus_write_byte(client, SI7020CMD_RESET);
->> +       if (ret < 0)
->> +               return ret;
->> +       /* Wait the maximum power-up time after software reset. */
->> +       msleep(15);
->
-> Nit: checkpatch.pl says:
->
-> WARNING: msleep < 20ms can sleep for up to 20ms; see
-> Documentation/timers/timers-howto.txt
-> #155: FILE: drivers/iio/humidity/si7020.c:129:
-> + msleep(15);
->
-> Sorry for spotting this so late in the review. I don't now if this is
-> a real problem.
->
-> thanks,
-> Daniel.
->
 
-I just added it a few minutes ago so you spotted it pretty quickly! It's 
-not a problem because we should sleep for at least 15 ms.
+--=20
+balbi
+
+--2oS5YaxWCcQjTEyO
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
+
+iQIcBAEBAgAGBQJUItbaAAoJEIaOsuA1yqRE3NEQAKAqTBnjYDhTncacwaoQX8EO
+i7aIeWKkHofK1qSrrqzPbzDxTeSK1IuXfZL0P2BNf9gXnD9eruJ9hjPKivBCcTJM
+OZ2V636aMe4RKJWmry4iX2GZeTforrr+rMetDbWv66gOuWvkT6agFKb7lgz245my
+PZnshQZy7Sgr7YHxTQpBF6HF8t4RlJ/0w9sy8Ms5iRmMVeUPniBpo9KTo5qqKh65
+tQjCL2WZYTVF0kKucAF8/fB0TxWYytqdRaqTI8RrnmOZnFmcYayY/qb5tp5e4q8s
+7oo7OFvpeufsWbTKGVvXjJKT0LlVbGsyyJmq6BkPyIbJ2kGmQp/CiznsV+H26BXj
+CFFJ+W8v0WMTOU9Wx9U0eXcYpGEAC5+gzlHRkItKgakhQV4uwmVAxH6vuXSxDHqE
+3uNblUBViDeD8S8CliowqXXeHGbNnagMLLFbZGx5dGY4BQPTZMOK31VXyZDeJNMq
+nQvGkeZfm+9JAOk/FhCAAAxUKkGzUAzfm3vSfiReGuOmA0Xdtcpp6WA54W7nNPIu
+qCb2Bw01S5hGdStjNp8s04YM4grV+nD7RNgMo+w+OeoLjx2Zvei2DIs3vjbIgLj5
+xDBTHLLOobXS0UqrxcacX4YUxA2eNEZn6ESoAv/32DMdUjSsU17txDlIv7wE7s6a
+dKkUv3STyxeiNUFMvHmD
+=uSne
+-----END PGP SIGNATURE-----
+
+--2oS5YaxWCcQjTEyO--
