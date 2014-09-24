@@ -1,181 +1,202 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-ie0-f170.google.com ([209.85.223.170]:61319 "EHLO
-	mail-ie0-f170.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752234AbaIXLCV (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 24 Sep 2014 07:02:21 -0400
-Received: by mail-ie0-f170.google.com with SMTP id x19so8391912ier.29
-        for <linux-iio@vger.kernel.org>; Wed, 24 Sep 2014 04:02:21 -0700 (PDT)
-Date: Wed, 24 Sep 2014 12:02:12 +0100
-From: Lee Jones <lee.jones@linaro.org>
-To: Jacob Pan <jacob.jun.pan@linux.intel.com>
-Cc: IIO <linux-iio@vger.kernel.org>,
-	LKML <linux-kernel@vger.kernel.org>,
-	DEVICE TREE <devicetree@vger.kernel.org>,
-	Carlo Caione <carlo@caione.org>,
-	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
-	Aaron Lu <aaron.lu@intel.com>, Alan Cox <alan@linux.intel.com>,
-	Jean Delvare <khali@linux-fr.org>,
-	Samuel Ortiz <sameo@linux.intel.com>,
-	Liam Girdwood <lgirdwood@gmail.com>,
-	Mark Brown <broonie@kernel.org>,
-	Grant Likely <grant.likely@linaro.org>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Rob Herring <robh+dt@kernel.org>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Fugang Duan <B38611@freescale.com>,
-	Arnd Bergmann <arnd@arndb.de>,
-	Zubair Lutfullah <zubair.lutfullah@gmail.com>,
-	Sebastian Reichel <sre@debian.org>,
-	Johannes Thumshirn <johannes.thumshirn@men.de>,
-	Philippe Reynes <tremyfr@yahoo.fr>,
-	Angelo Compagnucci <angelo.compagnucci@gmail.com>,
-	Doug Anderson <dianders@chromium.org>,
-	Ramakrishna Pallala <ramakrishna.pallala@intel.com>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	Maxime Ripard <maxime.ripard@free-electrons.com>,
-	Rafael Wysocki <rafael.j.wysocki@intel.com>
-Subject: Re: [PATCH v4 1/3] mfd/axp20x: extend axp20x to support axp288 pmic
-Message-ID: <20140924110212.GH19999@lee--X1>
-References: <1410912715-25903-1-git-send-email-jacob.jun.pan@linux.intel.com>
- <1410912715-25903-2-git-send-email-jacob.jun.pan@linux.intel.com>
- <20140918053926.GC8740@lee--X1>
- <20140918053252.34829684@ultegra>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-In-Reply-To: <20140918053252.34829684@ultegra>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <iivanov@mm-sol.com>
+Message-ID: <1411574442.18580.95.camel@iivanov-dev>
+Subject: Re: [PATCH v2] iio: iadc: Qualcomm SPMI PMIC current ADC driver
+From: "Ivan T. Ivanov" <iivanov@mm-sol.com>
+To: Mark Rutland <mark.rutland@arm.com>
+Cc: Rob Herring <robh+dt@kernel.org>, Pawel Moll <Pawel.Moll@arm.com>, Ian
+ Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala
+ <galak@codeaurora.org>, Jonathan Cameron <jic23@kernel.org>,
+ "grant.likely@linaro.org" <grant.likely@linaro.org>,  Lars-Peter Clausen
+ <lars@metafoo.de>, Hartmut Knaack <knaack.h@gmx.de>, Lee Jones
+ <lee.jones@linaro.org>, Philippe Reynes <tremyfr@yahoo.fr>,
+ "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+ "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+ "linux-arm-msm@vger.kernel.org" <linux-arm-msm@vger.kernel.org>
+Date: Wed, 24 Sep 2014 19:00:42 +0300
+In-Reply-To: <20140924145527.GI5729@leverpostej>
+References: <1411567103-2380-1-git-send-email-iivanov@mm-sol.com>
+	 <20140924145527.GI5729@leverpostej>
+Content-Type: text/plain; charset="UTF-8"
+Mime-Version: 1.0
+List-ID: <linux-iio@vger.kernel.org>
 
-On Thu, 18 Sep 2014, Jacob Pan wrote:
-> Lee Jones <lee.jones@linaro.org> wrote:
-> > On Tue, 16 Sep 2014, Jacob Pan wrote:
+On Wed, 2014-09-24 at 15:55 +0100, Mark Rutland wrote:
+> On Wed, Sep 24, 2014 at 02:58:23PM +0100, Ivan T. Ivanov wrote:
+> > The current ADC is peripheral of Qualcomm SPMI PMIC chips. It has
+> > 16 bits resolution and register space inside PMIC accessible across
+> > SPMI bus.
 > > 
-> > > X-Powers AXP288 is a customized PMIC for Intel Baytrail-CR
-> > > platforms. Similar to AXP202/209, AXP288 comes with USB charger,
-> > > more LDO and BUCK channels, and AD converters. It also provides
-> > > extended status and interrupt reporting capabilities than the
-> > > devices currently supported in axp20x.c.
-> > > 
-> > > In addition to feature extension, this patch also adds ACPI binding
-> > > for enumeration.
-> > > 
-> > > This consolidated driver should support more X-Powers' PMICs in
-> > > both device tree and ACPI enumerated platforms.
-> > > 
-> > > Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
-> > > ---
-> > >  drivers/mfd/Kconfig        |   3 +-
-> > >  drivers/mfd/axp20x.c       | 353
-> > > +++++++++++++++++++++++++++++++++++++--------
-> > > include/linux/mfd/axp20x.h |  58 ++++++++ 3 files changed, 354
-> > > insertions(+), 60 deletions(-)
-
-[...]
-
-> > > -static const struct regmap_irq_chip axp20x_regmap_irq_chip = {
-> > > +static struct acpi_device_id axp20x_acpi_match[] = {
-> > > +	{
-> > > +		.id = "INT33F4",
-> > > +		.driver_data = (kernel_ulong_t)AXP288_ID,
+> > The driver registers itself through IIO interface.
 > > 
-> > Why do you need to cast this?
+> > Signed-off-by: Ivan T. Ivanov <iivanov@mm-sol.com>
+> > ---
+> > Changes:
+> > - Fix Kconfig dependencies
+> > - Reword Kconfig help text
+> > - Replace IIO_CHAN_INFO_PROCESSED with IIO_CHAN_INFO_RAW and IIO_CHAN_INFO_SCALE,
+> >   This enable client drivers to use microampers precission, instead miliamps.
+> > - Use const array for iio_schan_spec-fiers.
+> > - Fix spelling errors and adress review comments.
 > > 
-> to make sure match driver_data which is different in acpi_device_id than
-> of_device_id.
-
-You don't need the cast.
-
-[...]
-
-> > > +static int axp20x_match_device(struct axp20x_dev *axp20x, struct
-> > > device *dev) +{
-> > > +	const struct acpi_device_id *acpi_id;
-> > > +	const struct of_device_id *of_id;
-> > > +
-> > > +	of_id = of_match_device(axp20x_of_match, dev);
-> > > +	if (of_id)
-> > > +		axp20x->variant = (long) of_id->data;
-> > > +	else {
-> > > +		acpi_id =
-> > > acpi_match_device(dev->driver->acpi_match_table, dev);
-> > > +		if (!acpi_id || !acpi_id->driver_data) {
-> > > +			dev_err(dev, "Unable to determine ID\n");
-> > > +			return -ENODEV;
-> > > +		}
-> > > +		axp20x->variant = (long) acpi_id->driver_data;
-> > > +	}
+> > Previous version:
+> > https://www.mail-archive.com/linux-kernel@vger.kernel.org/msg728360.html
 > > 
-> > We can do better error handling here and give the user a better sense
-> > of what happened if anything were to go wrong.  Do:
+> >  .../devicetree/bindings/iio/adc/qcom,spmi-iadc.txt |  61 ++
+> >  drivers/iio/adc/Kconfig                            |  11 +
+> >  drivers/iio/adc/Makefile                           |   1 +
+> >  drivers/iio/adc/qcom-spmi-iadc.c                   | 691 +++++++++++++++++++++
+> >  4 files changed, 764 insertions(+)
+> >  create mode 100644 Documentation/devicetree/bindings/iio/adc/qcom,spmi-iadc.txt
+> >  create mode 100644 drivers/iio/adc/qcom-spmi-iadc.c
 > > 
-> > if (dev->of_node)
-> >   of_id = of_match_device()
-> >   if (!of_id)
-> >     error()
-> this will give false error on ACPI based platforms, right? in reality
+> > diff --git a/Documentation/devicetree/bindings/iio/adc/qcom,spmi-iadc.txt b/Documentation/devicetree/bindings/iio/adc/qcom,spmi-iadc.txt
+> > new file mode 100644
+> > index 0000000..06e58b6
+> > --- /dev/null
+> > +++ b/Documentation/devicetree/bindings/iio/adc/qcom,spmi-iadc.txt
+> > @@ -0,0 +1,61 @@
+> > +Qualcomm's SPMI PMIC current ADC
+> > +
+> > +QPNP PMIC current ADC (IADC) provides interface to clients to read current.
+> > +A 16 bit ADC is used for current measurements.
+> > +
+> > +IADC node:
+> > +
+> > +- compatible:
+> > +    Usage: required
+> > +    Value type: <string>
+> > +    Definition: Should contain "qcom,spmi-iadc".
+> > +
+> > +- reg:
+> > +    Usage: required
+> > +    Value type: <prop-encoded-array>
+> > +    Definition: IADC base address and length in the SPMI PMIC register map.
+> > +                TRIM_CNST_RDS register address and length(1)
+> 
+> Are these two register regions? Please make the order explicit somehow
+> (either say first/second/third/etc, or use reg-names).
 
-Why would it?  dev->of_node should be NULL if running ACPI?
+Will make order explicit. 
 
-[...]
+> 
+> Are they both part of the IADC, or is one part of an external/shared
+> component?
 
-> > > +	switch (axp20x->variant) {
-> > > +	case AXP202_ID:
-> > > +	case AXP209_ID:
-> > > +		axp20x->nr_cells = ARRAY_SIZE(axp20x_cells);
-> > > +		axp20x->cells = axp20x_cells;
-> > > +		axp20x->regmap_cfg = &axp20x_regmap_config;
-> > > +		axp20x_regmap_irq_chip.num_regs	= 5;
-> > > +		axp20x_regmap_irq_chip.irqs = axp20x_regmap_irqs;
-> > > +		axp20x_regmap_irq_chip.num_irqs	=
-> > > +			ARRAY_SIZE(axp20x_regmap_irqs);
-> > > +		break;
-> > > +	case AXP288_ID:
-> > > +		axp20x->cells = axp288_cells;
-> > > +		axp20x->nr_cells = ARRAY_SIZE(axp288_cells);
-> > > +		axp20x->regmap_cfg = &axp288_regmap_config;
-> > > +		axp20x_regmap_irq_chip.irqs = axp288_regmap_irqs;
-> > > +		axp20x_regmap_irq_chip.num_irqs	=
-> > > +			ARRAY_SIZE(axp288_regmap_irqs);
-> > > +		axp20x_regmap_irq_chip.num_regs	= 6;
-> > > +		break;
-> > > +	default:
-> > > +		dev_err(dev, "unsupported AXP20X ID %lu\n",
-> > > axp20x->variant);
-> > > +		return -ENODEV;
-> > 
-> > -EINVAL might be better here.
-> I was considering the return value gets propagated to probe function
-> which is used to query the existence of a device per driver model. But
-> I have no strong preference.
+I think that this is shared component.
 
-I think -EINVAL would be better as the argument passed in
-axp20x->variant is invalid.
+> 
+> > +
+> > +- interrupts:
+> > +    Usage: optional
+> > +    Value type: <prop-encoded-array>
+> > +    Definition: End of conversion interrupt number. If property is
+> > +            missing driver will use polling to detect end of conversion
+> > +            completion.
+> 
+> Driver details shouldn't be in the binding. If the driver can poll,
+> that's good, but it should be dropped form this description.
+> 
 
-define EINVAL          22      /* Invalid argument */
+Will remove driver details.
 
-> > > +	}
-> > > +	dev_info(dev, "AXP20x variant %s found\n",
-> > > +		axp20x_model_names[axp20x->variant]);
-> > > +
-> > > +	return 0;
-> > > +}
-> > > +
-> > >  static int axp20x_i2c_probe(struct i2c_client *i2c,
-> > > -			 const struct i2c_device_id *id)
-> > > +			const struct i2c_device_id *id)
-> > 
-> > Sneaky. ;)
-> I should not fix the extra white spaces here, unrelated to this patch.
-> will remove.
+> Is this the only interrupt?
+> 
 
-It's okay.  I don't mind little things like this occasionally.  I find
-them more amusing than harmful.
+Yes.
 
-[...]
+> What do you mean be "End of conversion interrupt number"? Just describe
+> what the interrupt logically is from the PoV of the device -- interrupts
+> is a standard property so we don't need to be too explicit about the
+> type.
 
--- 
-Lee Jones
-Linaro STMicroelectronics Landing Team Lead
-Linaro.org │ Open source software for ARM SoCs
-Follow Linaro: Facebook | Twitter | Blog
+Badly worded. Just, "End of conversion interrupt"?
+
+> 
+> > +
+> > +- qcom,rsense:
+> > +    Usage: optional
+> > +    Value type: <u32>
+> > +    Definition: External sense register value in Ohm. Defining this
+> > +            propery will instruct ADC to use external ADC sense channel.
+> > +            If property is not defined ADC will use internal sense channel.
+> 
+> The latter two sentences sound like a driver description.
+> 
+> What exactly is the difference between the internal and external
+> channels, and what exactly is the value in the sense register used for?
+
+Internal - when using chip build-in resistor
+External - when using off-chip resistor
+
+> 
+> The binding should describe the logical properties of the device rather
+> than the specific programming model details.
+> 
+> > +
+> > +- qcom,rds-trim:
+> > +    Usage: optional
+> > +    Value type: <u32>
+> > +    Definition: Calculate internal sense resistor value based TRIM_CNST_RDS,
+> > +            IADC RDS and manufacturer.
+> > +            0: Read the IADC and SMBB trim register and apply the default
+> > +               RSENSE if conditions are met.
+> > +            1: Read the IADC, SMBB trim register and manufacturer type and
+> > +               apply the default RSENSE if conditions are met.
+> > +            2: Read the IADC, SMBB trim register and apply the default RSENSE
+> > +               if conditions are met.
+> > +            If property is not defined driver will use qcom,rsense value if
+> > +            defined or internal sense resistor value trimmed into register.
+> 
+> Having read this a few times, I still don't understand which I would use
+> and when.
+> 
+> Which conditions need to be met in each of these cases?
+> 
+> When does the manufacturer need to be taken into account and what does
+> it even mean for that to be the case? That sounds very much like a
+> driver detail rather than a HW property.
+> 
+> Cases 0 and 2 seem to be the same, just with s/, / and /. I cannot
+> figure out the intended difference between the two.
+> 
+> The last sentence is very much a driver description.
+
+Sorry. I have tried to make it better. Now looking again DT files
+in codeaurora tree I see that 0 is used in pm8941, 1 is used in
+pm8110 and 2 is used for pm8226. So I will remove this property
+and handle this inside driver based on chip version.
+
+> 
+> > +
+> > +Example:
+> > +       /* IADC node */
+> > +       pmic_iadc: iadc@3600 {
+> > +               compatible = "qcom,spmi-iadc";
+> > +               reg = <0x3600 0x100>,
+> > +                         <0x12f1 0x1>;
+> > +               interrupts = <0x0 0x36 0x0 IRQ_TYPE_EDGE_RISING>;
+> > +               qcom,rds-trim = <0>;
+> > +       };
+> > +
+> > +       /* IIO client node */
+> > +       bat {
+> > +               io-channels = <&pmic_iadc 0>;
+> > +               io-channel-names = "iadc";
+> > +       };
+> 
+> Surely you need #iio-cells on the IADC node?
+
+Yes, I need to add it.
+
+> 
+> Given the client seems to pass a specifier value, does this have
+> multiple channels, or only a single channel?
+
+Driver register only one IIO channel, so #io-channel-cells 
+should be <0>.
+
+Thank you for the comments.
+
+Regards,
+Ivan
