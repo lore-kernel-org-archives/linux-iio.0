@@ -1,369 +1,230 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:36068 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751894AbaI0KUl (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 27 Sep 2014 06:20:41 -0400
-Message-ID: <54268F75.6050707@kernel.org>
-Date: Sat, 27 Sep 2014 11:20:37 +0100
-From: Jonathan Cameron <jic23@kernel.org>
+Received: from mail-we0-f172.google.com ([74.125.82.172]:51837 "EHLO
+	mail-we0-f172.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753737AbaIXPPb (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 24 Sep 2014 11:15:31 -0400
 MIME-Version: 1.0
-To: Jacob Pan <jacob.jun.pan@linux.intel.com>,
-	IIO <linux-iio@vger.kernel.org>,
-	LKML <linux-kernel@vger.kernel.org>,
-	DEVICE TREE <devicetree@vger.kernel.org>,
-	Lee Jones <lee.jones@linaro.org>
-CC: Carlo Caione <carlo@caione.org>,
-	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
-	Aaron Lu <aaron.lu@intel.com>, Alan Cox <alan@linux.intel.com>,
-	Samuel Ortiz <sameo@linux.intel.com>,
-	Liam Girdwood <lgirdwood@gmail.com>,
-	Mark Brown <broonie@kernel.org>,
-	Grant Likely <grant.likely@linaro.org>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Rob Herring <robh+dt@kernel.org>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Fugang Duan <B38611@freescale.com>,
-	Arnd Bergmann <arnd@arndb.de>,
-	Zubair Lutfullah <zubair.lutfullah@gmail.com>,
-	Sebastian Reichel <sre@debian.org>,
-	Johannes Thumshirn <johannes.thumshirn@men.de>,
-	Philippe Reynes <tremyfr@yahoo.fr>,
-	Angelo Compagnucci <angelo.compagnucci@gmail.com>,
-	Doug Anderson <dianders@chromium.org>,
-	Ramakrishna Pallala <ramakrishna.pallala@intel.com>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	Maxime Ripard <maxime.ripard@free-electrons.com>,
-	Rafael Wysocki <rafael.j.wysocki@intel.com>
-Subject: Re: [PATCH v6 2/2] iio/adc: add support for axp288 adc
-References: <1411644072-21326-1-git-send-email-jacob.jun.pan@linux.intel.com>
-In-Reply-To: <1411644072-21326-1-git-send-email-jacob.jun.pan@linux.intel.com>
-Content-Type: text/plain; charset=windows-1252
+In-Reply-To: <1411570979-19473-1-git-send-email-dbarksdale@uplogix.com>
+References: <1411570979-19473-1-git-send-email-dbarksdale@uplogix.com>
+Date: Wed, 24 Sep 2014 18:15:28 +0300
+Message-ID: <CAEnQRZBP5rjU0E8ptApw78v4SWZY28YDkpRz6fhBd_+jkZzvDA@mail.gmail.com>
+Subject: Re: [PATCH v3] IIO: add si7020 driver
+From: Daniel Baluta <daniel.baluta@intel.com>
+To: David Barksdale <dbarksdale@uplogix.com>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+	linux-iio@vger.kernel.org
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 25/09/14 12:21, Jacob Pan wrote:
-> Platform driver for X-Powers AXP288 ADC, which is a sub-device of the
-> customized AXP288 PMIC for Intel Baytrail-CR platforms. GPADC device
-> enumerates as one of the MFD cell devices. It uses IIO infrastructure
-> to communicate with userspace and consumer drivers.
+On Wed, Sep 24, 2014 at 6:02 PM, David Barksdale <dbarksdale@uplogix.com> wrote:
+> This patch adds support to the Industrial IO subsystem
+> for the Silicon Labs Si7013/20/21 Relative Humidity and
+> Temperature Sensors.
 >
-> Usages of ADC channels include battery charging and thermal sensors.
+> Website: http://www.silabs.com/products/sensors/humidity-sensors/Pages/si7013-20-21.aspx
 >
-> Based on initial work by:
-> Ramakrishna Pallala <ramakrishna.pallala@intel.com>
+> These are i2c devices which measure relative humidity
+> and temperature and all use the same protocol. The
+> Si7013 has an additional input with programmable
+> linearization which is not supported because that's
+> complicated and I didn't need it.
 >
-> Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
-One utterly trivial comment syntax comment inline.
-That and an observation that we should probably have a
-devm_iio_map_array_register given that is the only reason you can't
-drop the remove and use devm throughout.  One for another day.
-
-Acked-by: Jonathan Cameron <jic23@kernel.org>
-
-
+> Signed-off-by: David Barksdale <dbarksdale@uplogix.com>
+>
+> --
+> Changes since v1:
+> * Renamed to si7020 and replaced Si701x/2x with Si7013/20/21.
+> * Removed unneeded mutex.
+> * Pre-computed floating-point constant expressions.
+> * Removed address_list and I2C_CLASS_HWMON.
+>
+> Changes since v2:
+> * Return correct raw sensor values.
+> * Rename dev variable to indio_dev.
+> * Issue a software reset command during probe.
+> * Un-broke string literal.
+>
 > ---
->  drivers/iio/adc/Kconfig      |   8 ++
->  drivers/iio/adc/Makefile     |   1 +
->  drivers/iio/adc/axp288_adc.c | 253 +++++++++++++++++++++++++++++++++++++++++++
->  3 files changed, 262 insertions(+)
->  create mode 100644 drivers/iio/adc/axp288_adc.c
+>  drivers/iio/humidity/Kconfig  |  10 +++
+>  drivers/iio/humidity/Makefile |   1 +
+>  drivers/iio/humidity/si7020.c | 165 ++++++++++++++++++++++++++++++++++++++++++
+>  3 files changed, 176 insertions(+)
 >
-> diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
-> index 11b048a..db2681b 100644
-> --- a/drivers/iio/adc/Kconfig
-> +++ b/drivers/iio/adc/Kconfig
-> @@ -127,6 +127,14 @@ config AT91_ADC
->  	help
->  	  Say yes here to build support for Atmel AT91 ADC.
+> diff --git a/drivers/iio/humidity/Kconfig b/drivers/iio/humidity/Kconfig
+> index e116bd8..4813b79 100644
+> --- a/drivers/iio/humidity/Kconfig
+> +++ b/drivers/iio/humidity/Kconfig
+> @@ -22,4 +22,14 @@ config SI7005
+>           To compile this driver as a module, choose M here: the module
+>           will be called si7005.
 >
-> +config AXP288_ADC
-> +	tristate "X-Powers AXP288 ADC driver"
-> +	depends on MFD_AXP20X
-> +	help
-> +	  Say yes here to have support for X-Powers power management IC (PMIC) ADC
-> +	  device. Depending on platform configuration, this general purpose ADC can
-> +	  be used for sampling sensors such as thermal resistors.
+> +config SI7020
+> +       tristate "Si7013/20/21 Relative Humidity and Temperature Sensors"
+> +       depends on I2C
+> +       help
+> +         Say yes here to build support for the Silicon Labs Si7013/20/21
+> +         Relative Humidity and Temperature Sensors.
 > +
->  config EXYNOS_ADC
->  	tristate "Exynos ADC driver support"
->  	depends on ARCH_EXYNOS || (OF && COMPILE_TEST)
-> diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
-> index ad81b51..19640f9 100644
-> --- a/drivers/iio/adc/Makefile
-> +++ b/drivers/iio/adc/Makefile
-> @@ -14,6 +14,7 @@ obj-$(CONFIG_AD7793) += ad7793.o
->  obj-$(CONFIG_AD7887) += ad7887.o
->  obj-$(CONFIG_AD799X) += ad799x.o
->  obj-$(CONFIG_AT91_ADC) += at91_adc.o
-> +obj-$(CONFIG_AXP288_ADC) += axp288_adc.o
->  obj-$(CONFIG_EXYNOS_ADC) += exynos_adc.o
->  obj-$(CONFIG_LP8788_ADC) += lp8788_adc.o
->  obj-$(CONFIG_MAX1027) += max1027.o
-> diff --git a/drivers/iio/adc/axp288_adc.c b/drivers/iio/adc/axp288_adc.c
+> +         To compile this driver as a module, choose M here: the module
+> +         will be called si7020.
+> +
+>  endmenu
+> diff --git a/drivers/iio/humidity/Makefile b/drivers/iio/humidity/Makefile
+> index e3f3d94..86e2d26 100644
+> --- a/drivers/iio/humidity/Makefile
+> +++ b/drivers/iio/humidity/Makefile
+> @@ -4,3 +4,4 @@
+>
+>  obj-$(CONFIG_DHT11) += dht11.o
+>  obj-$(CONFIG_SI7005) += si7005.o
+> +obj-$(CONFIG_SI7020) += si7020.o
+> diff --git a/drivers/iio/humidity/si7020.c b/drivers/iio/humidity/si7020.c
 > new file mode 100644
-> index 0000000..664d18f
+> index 0000000..4aacb55
 > --- /dev/null
-> +++ b/drivers/iio/adc/axp288_adc.c
-> @@ -0,0 +1,253 @@
+> +++ b/drivers/iio/humidity/si7020.c
+> @@ -0,0 +1,165 @@
 > +/*
-> + * axp288_adc.c - X-Powers AXP288 PMIC ADC Driver
+> + * si7020.c - Silicon Labs Si7013/20/21 Relative Humidity and Temp Sensors
+> + * Copyright (c) 2013,2014  Uplogix, Inc.
+> + * David Barksdale <dbarksdale@uplogix.com>
 > + *
-> + * Copyright (C) 2014 Intel Corporation
+> + * This program is free software; you can redistribute it and/or modify it
+> + * under the terms and conditions of the GNU General Public License,
+> + * version 2, as published by the Free Software Foundation.
 > + *
-> + * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-> + *
-> + * This program is free software; you can redistribute it and/or modify
-> + * it under the terms of the GNU General Public License as published by
-> + * the Free Software Foundation; version 2 of the License.
-> + *
-> + * This program is distributed in the hope that it will be useful, but
-> + * WITHOUT ANY WARRANTY; without even the implied warranty of
-> + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	See the GNU
-> + * General Public License for more details.
-> + *
+> + * This program is distributed in the hope that it will be useful,
+> + * but WITHOUT ANY WARRANTY; without even the implied warranty of
+> + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+> + * GNU General Public License for more details.
 > + */
 > +
+> +/*
+> + * The Silicon Labs Si7013/20/21 Relative Humidity and Temperature Sensors
+> + * are i2c devices which have an identical programming interface for
+> + * measuring relative humidity and temperature. The Si7013 has an additional
+> + * temperature input which this driver does not support.
+> + *
+> + * Data Sheets:
+> + *   Si7013: http://www.silabs.com/Support%20Documents/TechnicalDocs/Si7013.pdf
+> + *   Si7020: http://www.silabs.com/Support%20Documents/TechnicalDocs/Si7020.pdf
+> + *   Si7021: http://www.silabs.com/Support%20Documents/TechnicalDocs/Si7021.pdf
+> + */
+> +
+> +#include <linux/delay.h>
+> +#include <linux/i2c.h>
 > +#include <linux/module.h>
-> +#include <linux/kernel.h>
-> +#include <linux/device.h>
-> +#include <linux/regmap.h>
-> +#include <linux/mfd/axp20x.h>
-> +#include <linux/platform_device.h>
+> +#include <linux/slab.h>
+> +#include <linux/sysfs.h>
 > +
 > +#include <linux/iio/iio.h>
-> +#include <linux/iio/machine.h>
-> +#include <linux/iio/driver.h>
+> +#include <linux/iio/sysfs.h>
 > +
-> +#define AXP288_ADC_EN_MASK		0xF1
-> +#define AXP288_ADC_TS_PIN_GPADC		0xF2
-> +#define AXP288_ADC_TS_PIN_ON		0xF3
-> +
-> +enum axp288_adc_id {
-> +	AXP288_ADC_TS,
-> +	AXP288_ADC_PMIC,
-> +	AXP288_ADC_GP,
-> +	AXP288_ADC_BATT_CHRG_I,
-> +	AXP288_ADC_BATT_DISCHRG_I,
-> +	AXP288_ADC_BATT_V,
-> +	AXP288_ADC_NR_CHAN,
+> +enum {
+> +       /* Measure Relative Humidity, Hold Master Mode */
+> +       SI7020CMD_RH_HOLD       = 0xE5,
+> +       /* Measure Temperature, Hold Master Mode */
+> +       SI7020CMD_TEMP_HOLD     = 0xE3,
+> +       /* Software Reset */
+> +       SI7020CMD_RESET         = 0xFE,
 > +};
 > +
-> +struct axp288_adc_info {
-> +	int irq;
-> +	struct regmap *regmap;
+> +static int si7020_read_raw(struct iio_dev *indio_dev,
+> +                          struct iio_chan_spec const *chan, int *val,
+> +                          int *val2, long mask)
+> +{
+> +       struct i2c_client **client = iio_priv(indio_dev);
+> +       int ret;
+> +
+> +       switch (mask) {
+> +       case IIO_CHAN_INFO_RAW:
+> +               ret = i2c_smbus_read_word_data(*client,
+> +                                              chan->type == IIO_TEMP ?
+> +                                              SI7020CMD_TEMP_HOLD :
+> +                                              SI7020CMD_RH_HOLD);
+> +               if (ret < 0)
+> +                       return ret;
+> +               if (chan->type == IIO_TEMP)
+> +                       *val = ret >> 2;
+> +               else
+> +                       *val = (ret & 0x3FFF) >> 2;
+> +               return IIO_VAL_INT;
+> +       case IIO_CHAN_INFO_SCALE:
+> +               if (chan->type == IIO_TEMP)
+> +                       *val = 175720; /* = 175.72 * 1000 */
+> +               else
+> +                       *val = 125 * 1000;
+> +               *val2 = 65536 >> 2;
+> +               return IIO_VAL_FRACTIONAL;
+> +       case IIO_CHAN_INFO_OFFSET:
+> +               /* Since iio_convert_raw_to_processed_unlocked assumes offset
+> +                * is an integer we have to round these values and lose
+> +                * accuracy.
+> +                * Relative humidity will be 0.0032959% too high and
+> +                * temperature will be 0.00277344 degrees too high.
+> +                * This is no big deal because it's within the accuracy of the
+> +                * sensor.
+> +                */
+> +               if (chan->type == IIO_TEMP)
+> +                       *val = -4368; /* = -46.85 * (65536 >> 2) / 175.72 */
+> +               else
+> +                       *val = -786; /* = -6 * (65536 >> 2) / 125 */
+> +               return IIO_VAL_INT;
+> +       default:
+> +               break;
+> +       }
+> +
+> +       return -EINVAL;
+> +}
+> +
+> +static const struct iio_chan_spec si7020_channels[] = {
+> +       {
+> +               .type = IIO_HUMIDITYRELATIVE,
+> +               .info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
+> +                       BIT(IIO_CHAN_INFO_SCALE) | BIT(IIO_CHAN_INFO_OFFSET),
+> +       },
+> +       {
+> +               .type = IIO_TEMP,
+> +               .info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
+> +                       BIT(IIO_CHAN_INFO_SCALE) | BIT(IIO_CHAN_INFO_OFFSET),
+> +       }
 > +};
 > +
-> +static const struct iio_chan_spec const axp288_adc_channels[] = {
-> +	{
-> +		.indexed = 1,
-> +		.type = IIO_TEMP,
-> +		.channel = 0,
-> +		.address = AXP288_TS_ADC_H,
-> +		.datasheet_name = "CH0",
-> +	}, {
-> +		.indexed = 1,
-> +		.type = IIO_TEMP,
-> +		.channel = 1,
-> +		.address = AXP288_PMIC_ADC_H,
-> +		.datasheet_name = "CH1",
-> +	}, {
-> +		.indexed = 1,
-> +		.type = IIO_TEMP,
-> +		.channel = 2,
-> +		.address = AXP288_GP_ADC_H,
-> +		.datasheet_name = "CH2",
-> +	}, {
-> +		.indexed = 1,
-> +		.type = IIO_CURRENT,
-> +		.channel = 3,
-> +		.address = AXP20X_BATT_CHRG_I_H,
-> +		.datasheet_name = "CH3",
-> +		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED),
-> +	}, {
-> +		.indexed = 1,
-> +		.type = IIO_CURRENT,
-> +		.channel = 4,
-> +		.address = AXP20X_BATT_DISCHRG_I_H,
-> +		.datasheet_name = "CH4",
-> +		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED),
-> +	}, {
-> +		.indexed = 1,
-> +		.type = IIO_VOLTAGE,
-> +		.channel = 5,
-> +		.address = AXP20X_BATT_V_H,
-> +		.datasheet_name = "CH5",
-Original datasheet naming ;)
-> +		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED),
-> +	},
+> +static const struct iio_info si7020_info = {
+> +       .read_raw = si7020_read_raw,
+> +       .driver_module = THIS_MODULE,
 > +};
 > +
-> +#define AXP288_ADC_MAP(_adc_channel_label, _consumer_dev_name,	\
-> +		_consumer_channel)				\
-> +	{							\
-> +		.adc_channel_label = _adc_channel_label,	\
-> +		.consumer_dev_name = _consumer_dev_name,	\
-> +		.consumer_channel = _consumer_channel,		\
-> +	}
-> +
-> +/* for consumer drivers */
-> +static struct iio_map axp288_adc_default_maps[] = {
-> +	AXP288_ADC_MAP("TS_PIN", "axp288-batt", "axp288-batt-temp"),
-> +	AXP288_ADC_MAP("PMIC_TEMP", "axp288-pmic", "axp288-pmic-temp"),
-> +	AXP288_ADC_MAP("GPADC", "axp288-gpadc", "axp288-system-temp"),
-> +	AXP288_ADC_MAP("BATT_CHG_I", "axp288-chrg", "axp288-chrg-curr"),
-> +	AXP288_ADC_MAP("BATT_DISCHRG_I", "axp288-chrg", "axp288-chrg-d-curr"),
-> +	AXP288_ADC_MAP("BATT_V", "axp288-batt", "axp288-batt-volt"),
-> +	{},
-> +};
-> +
-> +static int axp288_adc_read_channel(int *val, unsigned long address,
-> +				struct regmap *regmap)
+> +static int si7020_probe(struct i2c_client *client,
+> +                       const struct i2c_device_id *id)
 > +{
-> +	u8 buf[2];
+> +       struct iio_dev *indio_dev;
+> +       struct i2c_client **data;
+> +       int ret;
 > +
-> +	if (regmap_bulk_read(regmap, address, buf, 2))
-> +		return -EIO;
-> +	*val = (buf[0] << 4) + ((buf[1] >> 4) & 0x0F);
+> +       if (!i2c_check_functionality(client->adapter,
+> +                                    I2C_FUNC_SMBUS_WRITE_BYTE |
+> +                                    I2C_FUNC_SMBUS_READ_WORD_DATA))
+> +               return -ENODEV;
 > +
-> +	return IIO_VAL_INT;
-> +}
-> +
-> +static int axp288_adc_set_ts(struct regmap *regmap, unsigned int mode,
-> +				unsigned long address)
-> +{
-> +	/* channels other than GPADC do not need to switch TS pin */
-> +	if (address != AXP288_GP_ADC_H)
-> +		return 0;
-> +
-> +	return regmap_write(regmap, AXP288_ADC_TS_PIN_CTRL, mode);
-> +}
-> +
-> +static int axp288_adc_read_raw(struct iio_dev *indio_dev,
-> +			struct iio_chan_spec const *chan,
-> +			int *val, int *val2, long mask)
-> +{
-> +	int ret;
-> +	struct axp288_adc_info *info = iio_priv(indio_dev);
-> +
-> +	mutex_lock(&indio_dev->mlock);
-> +	switch (mask) {
-> +	case IIO_CHAN_INFO_RAW:
-> +		if (axp288_adc_set_ts(info->regmap, AXP288_ADC_TS_PIN_GPADC,
-> +					chan->address)) {
-> +			dev_err(&indio_dev->dev, "GPADC mode\n");
-> +			ret = -EINVAL;
-> +			break;
-> +		}
-> +		ret = axp288_adc_read_channel(val, chan->address, info->regmap);
-> +		if (axp288_adc_set_ts(info->regmap, AXP288_ADC_TS_PIN_ON,
-> +						chan->address))
-> +			dev_err(&indio_dev->dev, "TS pin restore\n");
-> +		break;
-> +	case IIO_CHAN_INFO_PROCESSED:
-> +		ret = axp288_adc_read_channel(val, chan->address, info->regmap);
-> +		break;
-> +	default:
-> +		ret = -EINVAL;
-> +	}
-> +	mutex_unlock(&indio_dev->mlock);
-> +
-> +	return ret;
-> +}
-> +
-> +static int axp288_adc_set_state(struct regmap *regmap)
-> +{
-> +	/* ADC should be always enabled for internal FG to function */
-> +	if (regmap_write(regmap, AXP288_ADC_TS_PIN_CTRL, AXP288_ADC_TS_PIN_ON))
-> +		return -EIO;
-> +
-> +	return regmap_write(regmap, AXP20X_ADC_EN1, AXP288_ADC_EN_MASK);
-> +}
-> +
-> +static const struct iio_info axp288_adc_iio_info = {
-> +	.read_raw = &axp288_adc_read_raw,
-> +	.driver_module = THIS_MODULE,
-> +};
-> +
-> +static int axp288_adc_probe(struct platform_device *pdev)
-> +{
-> +	int ret;
-> +	struct axp288_adc_info *info;
-> +	struct iio_dev *indio_dev;
-> +	struct axp20x_dev *axp20x = dev_get_drvdata(pdev->dev.parent);
-> +
-> +	indio_dev = devm_iio_device_alloc(&pdev->dev, sizeof(*info));
-> +	if (!indio_dev)
-> +		return -ENOMEM;
-> +
-> +	info = iio_priv(indio_dev);
-> +	info->irq = platform_get_irq(pdev, 0);
-> +	if (info->irq < 0) {
-> +		dev_err(&pdev->dev, "no irq resource?\n");
-> +		return info->irq;
-> +	}
-> +	platform_set_drvdata(pdev, indio_dev);
-> +	info->regmap = axp20x->regmap;
-Comment syntax (run checkpatch and it should moan about this.
-/*
- * Set ADC etc
- */	
-> +	/* set ADC to enabled state at all time, including system suspend.
-> +	 * otherwise internal fuel gauge functionality may be affected.
-> +	 */
-> +	ret = axp288_adc_set_state(axp20x->regmap);
-> +	if (ret) {
-> +		dev_err(&pdev->dev, "unable to enable ADC device\n");
-> +		return ret;
-> +	}
-> +
-> +	indio_dev->dev.parent = &pdev->dev;
-> +	indio_dev->name = pdev->name;
-> +	indio_dev->channels = axp288_adc_channels;
-> +	indio_dev->num_channels = ARRAY_SIZE(axp288_adc_channels);
-> +	indio_dev->info = &axp288_adc_iio_info;
-> +	indio_dev->modes = INDIO_DIRECT_MODE;
-> +	ret = iio_map_array_register(indio_dev, axp288_adc_default_maps);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	ret = iio_device_register(indio_dev);
-> +	if (ret < 0) {
-> +		dev_err(&pdev->dev, "unable to register iio device\n");
-> +		goto err_array_unregister;
-> +	}
-> +	return 0;
-> +
-> +err_array_unregister:
-> +	iio_map_array_unregister(indio_dev);
-> +
-> +	return ret;
-> +}
-> +
-> +static int axp288_adc_remove(struct platform_device *pdev)
-> +{
-> +	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
-> +
-> +	iio_device_unregister(indio_dev);
-> +	iio_map_array_unregister(indio_dev);
-Hmm we should probably have a devm version of iio_map_array_register.
-Not that common a call though so not that important!
-> +
-> +	return 0;
-> +}
-> +
-> +static struct platform_driver axp288_adc_driver = {
-> +	.probe = axp288_adc_probe,
-> +	.remove = axp288_adc_remove,
-> +	.driver = {
-> +		.name = "axp288_adc",
-> +		.owner = THIS_MODULE,
-> +	},
-> +};
-> +
-> +module_platform_driver(axp288_adc_driver);
-> +
-> +MODULE_AUTHOR("Jacob Pan <jacob.jun.pan@linux.intel.com>");
-> +MODULE_DESCRIPTION("X-Powers AXP288 ADC Driver");
-> +MODULE_LICENSE("GPL");
->
+> +       /* Reset device, loads default settings. */
+> +       ret = i2c_smbus_write_byte(client, SI7020CMD_RESET);
+> +       if (ret < 0)
+> +               return ret;
+> +       /* Wait the maximum power-up time after software reset. */
+> +       msleep(15);
+
+Nit: checkpatch.pl says:
+
+WARNING: msleep < 20ms can sleep for up to 20ms; see
+Documentation/timers/timers-howto.txt
+#155: FILE: drivers/iio/humidity/si7020.c:129:
++ msleep(15);
+
+Sorry for spotting this so late in the review. I don't now if this is
+a real problem.
+
+thanks,
+Daniel.
