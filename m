@@ -1,69 +1,74 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp-out-085.synserver.de ([212.40.185.85]:1070 "EHLO
-	smtp-out-085.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753035AbaIYO1R (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 25 Sep 2014 10:27:17 -0400
-From: Lars-Peter Clausen <lars@metafoo.de>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Hartmut Knaack <knaack.h@gmx.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	Daniel Baluta <daniel.baluta@intel.com>,
-	linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH v2 4/4] staging:iio:ad5933: Remove platform data from state struct
-Date: Thu, 25 Sep 2014 16:27:15 +0200
-Message-Id: <1411655235-7635-4-git-send-email-lars@metafoo.de>
-In-Reply-To: <1411655235-7635-1-git-send-email-lars@metafoo.de>
-References: <1411655235-7635-1-git-send-email-lars@metafoo.de>
+Received: from ns.mm-sol.com ([37.157.136.199]:49680 "EHLO extserv.mm-sol.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1750725AbaIXM5T (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Wed, 24 Sep 2014 08:57:19 -0400
+From: Stanimir Varbanov <svarbanov@mm-sol.com>
+To: Ian Campbell <ijc+devicetree@hellion.org.uk>,
+	Pawel Moll <pawel.moll@arm.com>,
+	Rob Herring <robh+dt@kernel.org>,
+	Kumar Gala <galak@codeaurora.org>,
+	Mark Rutland <mark.rutland@arm.com>,
+	Grant Likely <grant.likely@linaro.org>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Arnd Bergmann <arnd@arndb.de>
+Cc: linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Angelo Compagnucci <angelo.compagnucci@gmail.com>,
+	Doug Anderson <dianders@chromium.org>,
+	Fugang Duan <B38611@freescale.com>,
+	Johannes Thumshirn <johannes.thumshirn@men.de>,
+	Jean Delvare <jdelvare@suse.de>,
+	Philippe Reynes <tremyfr@yahoo.fr>,
+	Lee Jones <lee.jones@linaro.org>,
+	Josh Cartwright <joshc@codeaurora.org>,
+	Stephen Boyd <sboyd@codeaurora.org>,
+	David Collins <collinsd@codeaurora.org>,
+	Stanimir Varbanov <svarbanov@mm-sol.com>
+Subject: [PATCH v3 0/2] Intial support for voltage ADC
+Date: Wed, 24 Sep 2014 15:56:53 +0300
+Message-Id: <1411563415-11933-1-git-send-email-svarbanov@mm-sol.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-The platform data is only used in the probe function. No need to keep it
-around.
+Changes since v2:
 
-Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
----
-No changes since v1
----
- drivers/staging/iio/impedance-analyzer/ad5933.c | 11 ++++-------
- 1 file changed, 4 insertions(+), 7 deletions(-)
+ - fixes per comments from Hartmut Knaack and Jonathan Cameron.
+ - now register through IIO core only ADC channels described in DT.
+ - register TEMP_DIE channel as IIO_TEMP type and as processed return value.
+ - implement INFO_RAW and INFO_SCALE masks support in order to avoid losing 
+   ADC precision.
+ - various cleanups.
 
-diff --git a/drivers/staging/iio/impedance-analyzer/ad5933.c b/drivers/staging/iio/impedance-analyzer/ad5933.c
-index 95b17c5..3c5d917 100644
---- a/drivers/staging/iio/impedance-analyzer/ad5933.c
-+++ b/drivers/staging/iio/impedance-analyzer/ad5933.c
-@@ -89,7 +89,6 @@
- struct ad5933_state {
- 	struct i2c_client		*client;
- 	struct regulator		*reg;
--	struct ad5933_platform_data	*pdata;
- 	struct delayed_work		work;
- 	unsigned long			mclk_hz;
- 	unsigned char			ctrl_hb;
-@@ -712,9 +711,7 @@ static int ad5933_probe(struct i2c_client *client,
- 	st->client = client;
- 
- 	if (!pdata)
--		st->pdata = &ad5933_default_pdata;
--	else
--		st->pdata = pdata;
-+		pdata = &ad5933_default_pdata;
- 
- 	st->reg = devm_regulator_get(&client->dev, "vcc");
- 	if (!IS_ERR(st->reg)) {
-@@ -727,10 +724,10 @@ static int ad5933_probe(struct i2c_client *client,
- 	if (voltage_uv)
- 		st->vref_mv = voltage_uv / 1000;
- 	else
--		st->vref_mv = st->pdata->vref_mv;
-+		st->vref_mv = pdata->vref_mv;
- 
--	if (st->pdata->ext_clk_Hz) {
--		st->mclk_hz = st->pdata->ext_clk_Hz;
-+	if (pdata->ext_clk_Hz) {
-+		st->mclk_hz = pdata->ext_clk_Hz;
- 		st->ctrl_lb = AD5933_CTRL_EXT_SYSCLK;
- 	} else {
- 		st->mclk_hz = AD5933_INT_OSC_FREQ_Hz;
--- 
-1.8.0
+-------------------------------------------------------------------------------
+Changes since v1:
+
+ - the review comments from Peter Meerwald and Hartmut Knaack are taken into
+   account
+ - the driver private sysfs attributes are dropped out.
+ - dt binding document is changed in the section of adc channel nodes - now the
+   adc channel number is represented by "reg" property.
+ - various cleanups found during preparation of version 2.
+
+-------------------------------------------------------------------------------
+Introduce inital support for VADC inside Qualcomm SPMI PMICs.
+The vadc driver is reworked version of the same downstream
+driver but now it is implemented through Industrial IO core.
+
+Stanimir Varbanov (2):
+  iio: vadc: Qualcomm SPMI PMIC voltage ADC driver
+  DT: iio: vadc: document dt binding
+
+ .../devicetree/bindings/iio/adc/qcom,spmi-vadc.txt |  130 +++
+ drivers/iio/adc/Kconfig                            |   10 +
+ drivers/iio/adc/Makefile                           |    1 +
+ drivers/iio/adc/qcom-spmi-vadc.c                   | 1029 ++++++++++++++++++++
+ include/dt-bindings/iio/qcom,spmi-pmic-vadc.h      |  119 +++
+ 5 files changed, 1289 insertions(+), 0 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/iio/adc/qcom,spmi-vadc.txt
+ create mode 100644 drivers/iio/adc/qcom-spmi-vadc.c
+ create mode 100644 include/dt-bindings/iio/qcom,spmi-pmic-vadc.h
 
