@@ -1,73 +1,123 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mx07-00178001.pphosted.com ([62.209.51.94]:57945 "EHLO
-	mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S932411AbaIWQNA (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 23 Sep 2014 12:13:00 -0400
-From: Denis CIOCCA <denis.ciocca@st.com>
-To: Branko Karaklajic <orpid.yu@gmail.com>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Date: Tue, 23 Sep 2014 18:12:53 +0200
-Subject: Re: Trigger (drdy) on st-sensor lis331dlh - how to question
-Message-ID: <54219C05.704@st.com>
-References: <CAB=+8u0_aX3bhK-fz41+XG9oEkceuB-+=vkFb4w48au43wrk9g@mail.gmail.com>
-In-Reply-To: <CAB=+8u0_aX3bhK-fz41+XG9oEkceuB-+=vkFb4w48au43wrk9g@mail.gmail.com>
-Content-Type: text/plain; charset="utf-8"
-MIME-Version: 1.0
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <lars@metafoo.de>
+From: Lars-Peter Clausen <lars@metafoo.de>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Hartmut Knaack <knaack.h@gmx.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Daniel Baluta <daniel.baluta@intel.com>,
+	linux-iio@vger.kernel.org,
+	Lars-Peter Clausen <lars@metafoo.de>
+Subject: [PATCH v2 1/4] staging:iio:ad5933: Fix NULL pointer deref when enabling buffer
+Date: Thu, 25 Sep 2014 16:27:12 +0200
+Message-Id: <1411655235-7635-1-git-send-email-lars@metafoo.de>
+List-ID: <linux-iio@vger.kernel.org>
 
-SGkgQnJhbmtvLA0KDQpJdCBzZWVtcyB0aGUgcHJvYmxlbSBpcyByZWxhdGVkIHRvIHRoZSBncGlv
-IGNvbmZpZ3VyYXRpb24uDQoNCj4gU2Vuc29yIDxkYXRhIHJlYWR5PiBvdXRwdXQgaXMgY29ubmVj
-dGVkIHRvIFBvcnQgRCwgcGluIDIxIG9mIENQVSwgYW5kDQo+IGRldmljZSB0cmVlIGxvb2tzIGxp
-a2U6DQo+DQo+IHNwaTE6IHNwaUBmODAwODAwMCB7DQo+ICAgIGNzLWdwaW9zID0gPCZwaW9DIDI1
-IDA+Ow0KPiAgICBzdGF0dXMgPSAib2theSI7DQo+DQo+ICAgIGxpczMzMWRsaEAwIHsNCj4gICAg
-ICAgIGNvbXBhdGlibGUgPSAic3QsbGlzMzMxZGxoLWFjY2VsIjsNCj4gICAgICAgIHNwaS1tYXgt
-ZnJlcXVlbmN5ID0gPDEwMDAwMDAwPjsNCj4gICAgICAgIHJlZyA9IDwwPjsNCj4gICAgICAgIGlu
-dGVycnVwdC1wYXJlbnQgPSA8JnBpb0Q+Ow0KPiAgICAgICAgaW50ZXJydXB0cyA9IDwyMSBJUlFf
-VFlQRV9MRVZFTF9ISUdIPjsNCmludGVycnVwdHMgPSA8MjEgMHgwPjsNCg0KVGhlIElSUSBpcyB1
-c2VkIGluIFJJU0lORy4NCj4gICAgICAgIHN0LGRyZHktaW50LXBpbiA9IDwxPjsNCj4gICAgICB9
-Ow0KPiB9Ow0KDQpCUiwNCkRlbmlzDQoNCg0KDQo+IGFuZCBvbiBib290IHVwIHdlIGdvdCB0aGVz
-ZSBtZXNzYWdlczoNCj4NCj4gc3QtYWNjZWwtc3BpIHNwaTMyNzY1LjA6IHN0X3NlbnNvcnNfb2Zf
-c3BpX3Byb2JlKCkgLSBsaXMzMzFkbGguDQo+IGlpbyBpaW86ZGV2aWNlMDogc3Rfc2Vuc29yc19j
-aGVja19kZXZpY2Vfc3VwcG9ydCgpIC0gbGlzMzMxZGxoLg0KPiBpaW8gaWlvOmRldmljZTA6IHN0
-X3NlbnNvcnNfaW5pdF9zZW5zb3IoKS4NCj4gaWlvIGlpbzpkZXZpY2UwOiBzdF9zZW5zb3JzX3Nl
-dF9kcmR5X2ludF9waW4oKSAtIGRyZHlfaW50X3Bpbj0xLg0KPiBpaW8gaWlvOmRldmljZTA6IHN0
-X2FjY2VsX2FsbG9jYXRlX3JpbmcoKQ0KPiBpaW8gaWlvOmRldmljZTA6IHN0X2FjY2VsX2NvbW1v
-bl9wcm9iZSgpIC0gaXJxOiAxNzIuDQo+IGlpbyBpaW86ZGV2aWNlMDogcmVnaXN0ZXJlZCBhY2Nl
-bGVyb21ldGVyIGxpczMzMWRsaA0KPg0KPiBBcyB5b3UgY2FuIHNlZSwgYWNjZWxlcm9tZXRlciBp
-cyBzdWNjZXNmdWxseSByZWdpc3RlcmVkLCBhbmQgd2UgYXJlDQo+IGFibGUgdG8gcmVhZCByYXcg
-ZGF0YSB3aXRoOg0KPg0KPiAgICAgICQgY2F0IC9zeXMvYnVzL2lpby9kZXZpY2VzL2lpbzpkZXZp
-Y2UwL2luX2FjY2VsX3hfcmF3DQo+DQo+IHRoaXMgaXMgaG93IG91ciBkaXJlY3RvcnkgbG9va3Mg
-bGlrZToNCj4gICAgICAkIGxzIC1hbCAvc3lzL2J1cy9paW8vZGV2aWNlcy8NCj4gbHJ3eHJ3eHJ3
-eCAgICAxIHJvb3QgICAgIHJvb3QgICAgICAgICAgICAgMCBKYW4gIDEgMDA6MTcgaWlvOmRldmlj
-ZTANCj4gLT4gLi4vLi4vLi4vZGV2aWNlcy9haGIvYWhiOmFwYi9mODAwODAwMC5zcGkvc3BpX21h
-c3Rlci9zcGkzMjc2NS9zcGkzMjc2NS4wL2lpbzpkZXZpY2UwDQo+IGxyd3hyd3hyd3ggICAgMSBy
-b290ICAgICByb290ICAgICAgICAgICAgIDAgSmFuICAxIDAwOjE3IHRyaWdnZXIwIC0+DQo+IC4u
-Ly4uLy4uL2RldmljZXMvYWhiL2FoYjphcGIvZjgwMDgwMDAuc3BpL3NwaV9tYXN0ZXIvc3BpMzI3
-NjUvc3BpMzI3NjUuMC90cmlnZ2VyMA0KPg0KPiBTbyB0cmlnZ2VyIGlzIGFsc28gcmVnaXN0cmVk
-IHdpdGggbmFtZSBsaXMzMzFkbGgtdHJpZ2dlci4NCj4NCj4gZG1zZyBsaW5lOg0KPiAuLi4NCj4g
-aWlvIGlpbzpkZXZpY2UwOiBzdF9hY2NlbF9jb21tb25fcHJvYmUoKSAtIGlycTogMTcyLg0KPiAu
-Li4NCj4gaW5kaWNhdGVzIHRoYXQgaXJxIDE3MiAod2hpY2ggaXMgSVJRIGZvciBQb3J0IEQsIHBp
-biAyMSkgaXMgcmVnaXN0ZXJlZA0KPiAod2hpY2ggaXMgYWxzbyBjaGVja2VkIGluIC9wcm9jL2ly
-cSkuDQo+DQo+IFNvLCB3aXRoIGFsbCB0aGlzIHNldCwgd2UgYXJlIG5vdCBzdWNjZXNzZnVsIHRv
-IGdldCBkYXRhIGZyb20gYnVmZmVyLg0KPiBPdXIgZmlyc3QgZ3Vlc3MgaXMgdG8gdXNlIGdlbmVy
-aWNfYnVmZmVyLmMsIHdoaWNoIHdlIHN1Y2Nlc3NmdWxseQ0KPiB0cmllZCBvbiBpbnRlcm5hbCBB
-REMsIGJ1dCB0aGVyZSBpcyBubyBkYXRhIGluIGJ1ZmZlci4NCj4NCj4gU3RlcHMgd2UgYXJlIHVz
-aW5nIGFyZToNCj4gRW5hYmxlIGNoYW5uZWwgaW5fYWNjZWxfeF9lbiBpbiBpaW86ZGV2aWNlMC9z
-Y2FuX2VsZW1lbnRzDQo+IFdyaXRlIDxsaXMzMzFkbGgtdHJpZ2dlcj4gaW4gaWlvOmRldmljZTAv
-dHJpZ2dlci9jdXJyZW50X3RyaWdnZXINCj4gV3JpdGUgbGVuZ3RoIG9mIDE2IGluIGlpbzpkZXZp
-Y2UwL2J1ZmZlci9sZW5ndGgNCj4gV3JpdGUgMSBpbiBpaW86ZGV2aWNlMC9idWZmZXIvZW5hYmxl
-DQo+DQo+IFRoYXQgc2hvdWxkIGJlIGVub3VnaCB0byBnZXQgZGF0YSBpbnRvIGJ1ZmZlciBieSBk
-cml2ZXIgYW5kIHRoYW4gdG8NCj4gcmVhZCBpdCBmcm9tIGJ1ZmZlci4gSXMgdGhhdCB0cnVlPyBE
-aWQgd2UgbWlzc2VkIHNvbWV0aGluZy4NCj4NCj4gIEZyb20gSFcgcG9pbnQgb2Ygdmlldywgd2Ug
-Y291bGQgc2VlIHRyYW5zaXRpb24gb24gaW50ZXJydXB0IHBpbiB3aGVuDQo+IHdlIGVuYWJsZSBi
-dWZmZXIsIGJ1dCBubyByZWFkaW5nIG9mIGRhdGEuDQo+DQo+IE91ciB1bmRlcnN0YW5kaW5nIGlz
-IHRoYXQgZnVuY3Rpb24gPGlycXJldHVybl90DQo+IHN0X3NlbnNvcnNfdHJpZ2dlcl9oYW5kbGVy
-KGludCBpcnEsIHZvaWQgKnApPiBmcm9tIGZpbGUNCj4gbGludXgvZHJpdmVycy9paW8vY29tbW9u
-L3N0X3NlbnNvcnMvc3Rfc2Vuc29yc19idWZmZXIuYyBzaG91bGQgYmUNCj4gY2FsbGVkIHdoZW4g
-aW50ZXJydXB0IGlzIGdlbmVyYXRlZC4gSXMgdGhpcyBhc3N1bXB0aW9uIGNvcnJlY3Q/IEluIG91
-cg0KPiBjYXNlIGl0J3MgbmV2ZXIgY2FsbGVkLg0KPg0KPiBUaGFua3MgaW4gYWR2YW5jZQ0KPiBC
-cmFua28NCj4gLS0NCj4gVG8gdW5zdWJzY3JpYmUgZnJvbSB0aGlzIGxpc3Q6IHNlbmQgdGhlIGxp
-bmUgInVuc3Vic2NyaWJlIGxpbnV4LWlpbyIgaW4NCj4gdGhlIGJvZHkgb2YgYSBtZXNzYWdlIHRv
-IG1ham9yZG9tb0B2Z2VyLmtlcm5lbC5vcmcNCj4gTW9yZSBtYWpvcmRvbW8gaW5mbyBhdCAgaHR0
-cDovL3ZnZXIua2VybmVsLm9yZy9tYWpvcmRvbW8taW5mby5odG1sDQo=
+In older versions of the IIO framework it was possible to pass a
+completely different set of channels to iio_buffer_register() as the one
+that is assigned to the IIO device. Commit 959d2952d124 ("staging:iio: make
+iio_sw_buffer_preenable much more general.") introduced a restriction that
+requires that the set of channels that is passed to iio_buffer_register() is
+a subset of the channels assigned to the IIO device as the IIO core will use
+the list of channels that is assigned to the device to lookup a channel by
+scan index in iio_compute_scan_bytes(). If it can not find the channel the
+function will crash. This patch fixes the issue by making sure that the same
+set of channels is assigned to the IIO device and passed to
+iio_buffer_register().
+
+Fixes the follow NULL pointer derefernce kernel crash:
+	Unable to handle kernel NULL pointer dereference at virtual address 00000016
+	pgd = d53d0000
+	[00000016] *pgd=1534e831, *pte=00000000, *ppte=00000000
+	Internal error: Oops: 17 [#1] PREEMPT SMP ARM
+	Modules linked in:
+	CPU: 1 PID: 1626 Comm: bash Not tainted 3.15.0-19969-g2a180eb-dirty #9545
+	task: d6c124c0 ti: d539a000 task.ti: d539a000
+	PC is at iio_compute_scan_bytes+0x34/0xa8
+	LR is at iio_compute_scan_bytes+0x34/0xa8
+	pc : [<c03052e4>]    lr : [<c03052e4>]    psr: 60070013
+	sp : d539beb8  ip : 00000001  fp : 00000000
+	r10: 00000002  r9 : 00000000  r8 : 00000001
+	r7 : 00000000  r6 : d6dc8800  r5 : d7571000  r4 : 00000002
+	r3 : d7571000  r2 : 00000044  r1 : 00000001  r0 : 00000000
+	Flags: nZCv  IRQs on  FIQs on  Mode SVC_32  ISA ARM  Segment user
+	Control: 18c5387d  Table: 153d004a  DAC: 00000015
+	Process bash (pid: 1626, stack limit = 0xd539a240)
+	Stack: (0xd539beb8 to 0xd539c000)
+	bea0:                                                       c02fc0e4 d7571000
+	bec0: d76c1640 d6dc8800 d757117c 00000000 d757112c c0305b04 d76c1690 d76c1640
+	bee0: d7571188 00000002 00000000 d7571000 d539a000 00000000 000dd1c8 c0305d54
+	bf00: d7571010 0160b868 00000002 c69d3900 d7573278 d7573308 c69d3900 c01ece90
+	bf20: 00000002 c0103fac c0103f6c d539bf88 00000002 c69d3b00 c69d3b0c c0103468
+	bf40: 00000000 00000000 d7694a00 00000002 000af408 d539bf88 c000dd84 c00b2f94
+	bf60: d7694a00 000af408 00000002 d7694a00 d7694a00 00000002 000af408 c000dd84
+	bf80: 00000000 c00b32d0 00000000 00000000 00000002 b6f1aa78 00000002 000af408
+	bfa0: 00000004 c000dc00 b6f1aa78 00000002 00000001 000af408 00000002 00000000
+	bfc0: b6f1aa78 00000002 000af408 00000004 be806a4c 000a6094 00000000 000dd1c8
+	bfe0: 00000000 be8069cc b6e8ab77 b6ec125c 40070010 00000001 22940489 154a5007
+	[<c03052e4>] (iio_compute_scan_bytes) from [<c0305b04>] (__iio_update_buffers+0x248/0x438)
+	[<c0305b04>] (__iio_update_buffers) from [<c0305d54>] (iio_buffer_store_enable+0x60/0x7c)
+	[<c0305d54>] (iio_buffer_store_enable) from [<c01ece90>] (dev_attr_store+0x18/0x24)
+	[<c01ece90>] (dev_attr_store) from [<c0103fac>] (sysfs_kf_write+0x40/0x4c)
+	[<c0103fac>] (sysfs_kf_write) from [<c0103468>] (kernfs_fop_write+0x110/0x154)
+	[<c0103468>] (kernfs_fop_write) from [<c00b2f94>] (vfs_write+0xd0/0x160)
+	[<c00b2f94>] (vfs_write) from [<c00b32d0>] (SyS_write+0x40/0x78)
+	[<c00b32d0>] (SyS_write) from [<c000dc00>] (ret_fast_syscall+0x0/0x30)
+	Code: ea00000e e1a01008 e1a00005 ebfff6fc (e5d0a016)
+
+Fixes: 959d2952d124 ("staging:iio: make iio_sw_buffer_preenable much more general.")
+Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+---
+No changes since v1
+---
+ drivers/staging/iio/impedance-analyzer/ad5933.c | 11 ++++-------
+ 1 file changed, 4 insertions(+), 7 deletions(-)
+
+diff --git a/drivers/staging/iio/impedance-analyzer/ad5933.c b/drivers/staging/iio/impedance-analyzer/ad5933.c
+index d0c89d0..9a6665d 100644
+--- a/drivers/staging/iio/impedance-analyzer/ad5933.c
++++ b/drivers/staging/iio/impedance-analyzer/ad5933.c
+@@ -115,6 +115,7 @@ static const struct iio_chan_spec ad5933_channels[] = {
+ 		.channel = 0,
+ 		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED),
+ 		.address = AD5933_REG_TEMP_DATA,
++		.scan_index = -1,
+ 		.scan_type = {
+ 			.sign = 's',
+ 			.realbits = 14,
+@@ -125,8 +126,6 @@ static const struct iio_chan_spec ad5933_channels[] = {
+ 		.indexed = 1,
+ 		.channel = 0,
+ 		.extend_name = "real_raw",
+-		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
+-		BIT(IIO_CHAN_INFO_SCALE),
+ 		.address = AD5933_REG_REAL_DATA,
+ 		.scan_index = 0,
+ 		.scan_type = {
+@@ -139,8 +138,6 @@ static const struct iio_chan_spec ad5933_channels[] = {
+ 		.indexed = 1,
+ 		.channel = 0,
+ 		.extend_name = "imag_raw",
+-		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
+-		BIT(IIO_CHAN_INFO_SCALE),
+ 		.address = AD5933_REG_IMAG_DATA,
+ 		.scan_index = 1,
+ 		.scan_type = {
+@@ -749,14 +746,14 @@ static int ad5933_probe(struct i2c_client *client,
+ 	indio_dev->name = id->name;
+ 	indio_dev->modes = INDIO_DIRECT_MODE;
+ 	indio_dev->channels = ad5933_channels;
+-	indio_dev->num_channels = 1; /* only register temp0_input */
++	indio_dev->num_channels = ARRAY_SIZE(ad5933_channels);
+ 
+ 	ret = ad5933_register_ring_funcs_and_init(indio_dev);
+ 	if (ret)
+ 		goto error_disable_reg;
+ 
+-	/* skip temp0_input, register in0_(real|imag)_raw */
+-	ret = iio_buffer_register(indio_dev, &ad5933_channels[1], 2);
++	ret = iio_buffer_register(indio_dev, ad5933_channels,
++		ARRAY_SIZE(ad5933_channels));
+ 	if (ret)
+ 		goto error_unreg_ring;
+ 
+-- 
+1.8.0
