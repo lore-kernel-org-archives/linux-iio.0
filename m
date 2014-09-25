@@ -1,79 +1,69 @@
-Return-Path: <iivanov@mm-sol.com>
-Message-ID: <1411649225.18580.134.camel@iivanov-dev>
-Subject: Re: [PATCH v3 1/2] iio: vadc: Qualcomm SPMI PMIC voltage ADC driver
-From: "Ivan T. Ivanov" <iivanov@mm-sol.com>
-To: Stanimir Varbanov <svarbanov@mm-sol.com>
-Cc: Ian Campbell <ijc+devicetree@hellion.org.uk>, Pawel Moll
- <pawel.moll@arm.com>, Rob Herring <robh+dt@kernel.org>, Kumar Gala
- <galak@codeaurora.org>, Mark Rutland <mark.rutland@arm.com>, Grant Likely
- <grant.likely@linaro.org>, Jonathan Cameron <jic23@kernel.org>, Arnd
- Bergmann <arnd@arndb.de>, linux-arm-msm@vger.kernel.org,
- linux-kernel@vger.kernel.org,  linux-iio@vger.kernel.org,
- devicetree@vger.kernel.org, Greg Kroah-Hartman
- <gregkh@linuxfoundation.org>, Lars-Peter Clausen <lars@metafoo.de>, Hartmut
- Knaack <knaack.h@gmx.de>, Angelo Compagnucci
- <angelo.compagnucci@gmail.com>, Doug Anderson <dianders@chromium.org>,
- Fugang Duan <B38611@freescale.com>, Johannes Thumshirn
- <johannes.thumshirn@men.de>, Jean Delvare <jdelvare@suse.de>, Philippe
- Reynes <tremyfr@yahoo.fr>, Lee Jones <lee.jones@linaro.org>, Josh
- Cartwright <joshc@codeaurora.org>, Stephen Boyd <sboyd@codeaurora.org>,
- David Collins <collinsd@codeaurora.org>
-Date: Thu, 25 Sep 2014 15:47:05 +0300
-In-Reply-To: <1411563415-11933-2-git-send-email-svarbanov@mm-sol.com>
-References: <1411563415-11933-1-git-send-email-svarbanov@mm-sol.com>
-	 <1411563415-11933-2-git-send-email-svarbanov@mm-sol.com>
-Content-Type: text/plain; charset="UTF-8"
-Mime-Version: 1.0
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from smtp-out-085.synserver.de ([212.40.185.85]:1070 "EHLO
+	smtp-out-085.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753035AbaIYO1R (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 25 Sep 2014 10:27:17 -0400
+From: Lars-Peter Clausen <lars@metafoo.de>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Hartmut Knaack <knaack.h@gmx.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Daniel Baluta <daniel.baluta@intel.com>,
+	linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>
+Subject: [PATCH v2 4/4] staging:iio:ad5933: Remove platform data from state struct
+Date: Thu, 25 Sep 2014 16:27:15 +0200
+Message-Id: <1411655235-7635-4-git-send-email-lars@metafoo.de>
+In-Reply-To: <1411655235-7635-1-git-send-email-lars@metafoo.de>
+References: <1411655235-7635-1-git-send-email-lars@metafoo.de>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
+The platform data is only used in the probe function. No need to keep it
+around.
 
-Hi Stan, few comment bellow.
+Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+---
+No changes since v1
+---
+ drivers/staging/iio/impedance-analyzer/ad5933.c | 11 ++++-------
+ 1 file changed, 4 insertions(+), 7 deletions(-)
 
-On Wed, 2014-09-24 at 15:56 +0300, Stanimir Varbanov wrote:
-> The voltage ADC is peripheral of Qualcomm SPMI PMIC chips. It has
-> 15bits resolution and register space inside PMIC accessible across
-> SPMI bus.
-> 
-> The vadc driver registers itself through IIO interface.
-> 
-> Signed-off-by: Stanimir Varbanov <svarbanov@mm-sol.com>
-> Signed-off-by: Ivan T. Ivanov <iivanov@mm-sol.com>
-> ---
->  drivers/iio/adc/Kconfig                       |   10 +
->  drivers/iio/adc/Makefile                      |    1 +
->  drivers/iio/adc/qcom-spmi-vadc.c              | 1029 +++++++++++++++++++++++++
->  include/dt-bindings/iio/qcom,spmi-pmic-vadc.h |  119 +++
->  4 files changed, 1159 insertions(+), 0 deletions(-)
->  create mode 100644 drivers/iio/adc/qcom-spmi-vadc.c
->  create mode 100644 include/dt-bindings/iio/qcom,spmi-pmic-vadc.h
-> 
-> diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
-> index 11b048a..ec48360 100644
-> --- a/drivers/iio/adc/Kconfig
-> +++ b/drivers/iio/adc/Kconfig
-> @@ -206,6 +206,16 @@ config NAU7802
->  	  To compile this driver as a module, choose M here: the
->  	  module will be called nau7802.
->  
-> +config QCOM_SPMI_VADC
-> +	tristate "Qualcomm SPMI PMIC voltage ADC"
-> +	depends on SPMI
+diff --git a/drivers/staging/iio/impedance-analyzer/ad5933.c b/drivers/staging/iio/impedance-analyzer/ad5933.c
+index 95b17c5..3c5d917 100644
+--- a/drivers/staging/iio/impedance-analyzer/ad5933.c
++++ b/drivers/staging/iio/impedance-analyzer/ad5933.c
+@@ -89,7 +89,6 @@
+ struct ad5933_state {
+ 	struct i2c_client		*client;
+ 	struct regulator		*reg;
+-	struct ad5933_platform_data	*pdata;
+ 	struct delayed_work		work;
+ 	unsigned long			mclk_hz;
+ 	unsigned char			ctrl_hb;
+@@ -712,9 +711,7 @@ static int ad5933_probe(struct i2c_client *client,
+ 	st->client = client;
+ 
+ 	if (!pdata)
+-		st->pdata = &ad5933_default_pdata;
+-	else
+-		st->pdata = pdata;
++		pdata = &ad5933_default_pdata;
+ 
+ 	st->reg = devm_regulator_get(&client->dev, "vcc");
+ 	if (!IS_ERR(st->reg)) {
+@@ -727,10 +724,10 @@ static int ad5933_probe(struct i2c_client *client,
+ 	if (voltage_uv)
+ 		st->vref_mv = voltage_uv / 1000;
+ 	else
+-		st->vref_mv = st->pdata->vref_mv;
++		st->vref_mv = pdata->vref_mv;
+ 
+-	if (st->pdata->ext_clk_Hz) {
+-		st->mclk_hz = st->pdata->ext_clk_Hz;
++	if (pdata->ext_clk_Hz) {
++		st->mclk_hz = pdata->ext_clk_Hz;
+ 		st->ctrl_lb = AD5933_CTRL_EXT_SYSCLK;
+ 	} else {
+ 		st->mclk_hz = AD5933_INT_OSC_FREQ_Hz;
+-- 
+1.8.0
 
-+ select REGMAP_SPMI
-
-<snip>
-
-> +
-> +static int vadc_read(struct vadc_priv *vadc, u16 offset, u8 *data)
-> +{
-> +	return regmap_bulk_read(vadc->regmap, vadc->base + offset, data, 1);
-
-just regmap_read() ?
-
-> +}
-> +
-
-General comment, most of the dev_dbg looks like legitimate dev_err's to me.
-
-Regards,
-Ivan 
