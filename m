@@ -1,19 +1,23 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ns.mm-sol.com ([37.157.136.199]:49680 "EHLO extserv.mm-sol.com"
+Received: from ns.mm-sol.com ([37.157.136.199]:50202 "EHLO extserv.mm-sol.com"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1750725AbaIXM5T (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Wed, 24 Sep 2014 08:57:19 -0400
+	id S1753028AbaIYPbI (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Thu, 25 Sep 2014 11:31:08 -0400
+Message-ID: <54243533.7080809@mm-sol.com>
+Date: Thu, 25 Sep 2014 18:30:59 +0300
 From: Stanimir Varbanov <svarbanov@mm-sol.com>
-To: Ian Campbell <ijc+devicetree@hellion.org.uk>,
+MIME-Version: 1.0
+To: "Ivan T. Ivanov" <iivanov@mm-sol.com>
+CC: Ian Campbell <ijc+devicetree@hellion.org.uk>,
 	Pawel Moll <pawel.moll@arm.com>,
 	Rob Herring <robh+dt@kernel.org>,
 	Kumar Gala <galak@codeaurora.org>,
 	Mark Rutland <mark.rutland@arm.com>,
 	Grant Likely <grant.likely@linaro.org>,
 	Jonathan Cameron <jic23@kernel.org>,
-	Arnd Bergmann <arnd@arndb.de>
-Cc: linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+	Arnd Bergmann <arnd@arndb.de>, linux-arm-msm@vger.kernel.org,
+	linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org,
 	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 	Lars-Peter Clausen <lars@metafoo.de>,
 	Hartmut Knaack <knaack.h@gmx.de>,
@@ -26,49 +30,78 @@ Cc: linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
 	Lee Jones <lee.jones@linaro.org>,
 	Josh Cartwright <joshc@codeaurora.org>,
 	Stephen Boyd <sboyd@codeaurora.org>,
-	David Collins <collinsd@codeaurora.org>,
-	Stanimir Varbanov <svarbanov@mm-sol.com>
-Subject: [PATCH v3 0/2] Intial support for voltage ADC
-Date: Wed, 24 Sep 2014 15:56:53 +0300
-Message-Id: <1411563415-11933-1-git-send-email-svarbanov@mm-sol.com>
+	David Collins <collinsd@codeaurora.org>
+Subject: Re: [PATCH v3 1/2] iio: vadc: Qualcomm SPMI PMIC voltage ADC driver
+References: <1411563415-11933-1-git-send-email-svarbanov@mm-sol.com>  <1411563415-11933-2-git-send-email-svarbanov@mm-sol.com> <1411649225.18580.134.camel@iivanov-dev>
+In-Reply-To: <1411649225.18580.134.camel@iivanov-dev>
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Changes since v2:
+Hi Ivan,
 
- - fixes per comments from Hartmut Knaack and Jonathan Cameron.
- - now register through IIO core only ADC channels described in DT.
- - register TEMP_DIE channel as IIO_TEMP type and as processed return value.
- - implement INFO_RAW and INFO_SCALE masks support in order to avoid losing 
-   ADC precision.
- - various cleanups.
+On 09/25/2014 03:47 PM, Ivan T. Ivanov wrote:
+> 
+> Hi Stan, few comment bellow.
+> 
+> On Wed, 2014-09-24 at 15:56 +0300, Stanimir Varbanov wrote:
+>> The voltage ADC is peripheral of Qualcomm SPMI PMIC chips. It has
+>> 15bits resolution and register space inside PMIC accessible across
+>> SPMI bus.
+>>
+>> The vadc driver registers itself through IIO interface.
+>>
+>> Signed-off-by: Stanimir Varbanov <svarbanov@mm-sol.com>
+>> Signed-off-by: Ivan T. Ivanov <iivanov@mm-sol.com>
+>> ---
+>>  drivers/iio/adc/Kconfig                       |   10 +
+>>  drivers/iio/adc/Makefile                      |    1 +
+>>  drivers/iio/adc/qcom-spmi-vadc.c              | 1029 +++++++++++++++++++++++++
+>>  include/dt-bindings/iio/qcom,spmi-pmic-vadc.h |  119 +++
+>>  4 files changed, 1159 insertions(+), 0 deletions(-)
+>>  create mode 100644 drivers/iio/adc/qcom-spmi-vadc.c
+>>  create mode 100644 include/dt-bindings/iio/qcom,spmi-pmic-vadc.h
+>>
+>> diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+>> index 11b048a..ec48360 100644
+>> --- a/drivers/iio/adc/Kconfig
+>> +++ b/drivers/iio/adc/Kconfig
+>> @@ -206,6 +206,16 @@ config NAU7802
+>>  	  To compile this driver as a module, choose M here: the
+>>  	  module will be called nau7802.
+>>  
+>> +config QCOM_SPMI_VADC
+>> +	tristate "Qualcomm SPMI PMIC voltage ADC"
+>> +	depends on SPMI
+> 
+> + select REGMAP_SPMI
 
--------------------------------------------------------------------------------
-Changes since v1:
+I'd suggest MFD_SPMI_PMIC symbol of the parent driver instead? The
+parent MFD PMIC driver already selects REGMAP_SPMI and depends on SPMI.
 
- - the review comments from Peter Meerwald and Hartmut Knaack are taken into
-   account
- - the driver private sysfs attributes are dropped out.
- - dt binding document is changed in the section of adc channel nodes - now the
-   adc channel number is represented by "reg" property.
- - various cleanups found during preparation of version 2.
+> 
+> <snip>
+> 
+>> +
+>> +static int vadc_read(struct vadc_priv *vadc, u16 offset, u8 *data)
+>> +{
+>> +	return regmap_bulk_read(vadc->regmap, vadc->base + offset, data, 1);
+> 
+> just regmap_read() ?
 
--------------------------------------------------------------------------------
-Introduce inital support for VADC inside Qualcomm SPMI PMICs.
-The vadc driver is reworked version of the same downstream
-driver but now it is implemented through Industrial IO core.
+No, regmap_read() expects unsigned int *val as an argument hence I will
+need temporary variable. I had a comment to rework this on the first
+version of the patchset.
 
-Stanimir Varbanov (2):
-  iio: vadc: Qualcomm SPMI PMIC voltage ADC driver
-  DT: iio: vadc: document dt binding
+> 
+>> +}
+>> +
+> 
+> General comment, most of the dev_dbg looks like legitimate dev_err's to me.
 
- .../devicetree/bindings/iio/adc/qcom,spmi-vadc.txt |  130 +++
- drivers/iio/adc/Kconfig                            |   10 +
- drivers/iio/adc/Makefile                           |    1 +
- drivers/iio/adc/qcom-spmi-vadc.c                   | 1029 ++++++++++++++++++++
- include/dt-bindings/iio/qcom,spmi-pmic-vadc.h      |  119 +++
- 5 files changed, 1289 insertions(+), 0 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/iio/adc/qcom,spmi-vadc.txt
- create mode 100644 drivers/iio/adc/qcom-spmi-vadc.c
- create mode 100644 include/dt-bindings/iio/qcom,spmi-pmic-vadc.h
+I've decided to not flood console with messages. If someone wants to
+debug why the driver doesn't probed he can define DEBUG.
 
+-- 
+regards,
+Stan
