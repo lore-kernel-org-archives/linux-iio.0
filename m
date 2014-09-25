@@ -1,99 +1,87 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:36090 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751894AbaI0KXI (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 27 Sep 2014 06:23:08 -0400
-Message-ID: <54269007.9000709@kernel.org>
-Date: Sat, 27 Sep 2014 11:23:03 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-MIME-Version: 1.0
-To: Adam Thomson <Adam.Thomson.Opensource@diasemi.com>,
-	Lee Jones <lee.jones@linaro.org>,
-	Samuel Ortiz <sameo@linux.intel.com>,
-	linux-iio@vger.kernel.org, Sebastian Reichel <sre@kernel.org>,
-	Dmitry Eremin-Solenikov <dbaryshkov@gmail.com>,
-	David Woodhouse <dwmw2@infradead.org>,
-	linux-pm@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
-	Pawel Moll <pawel.moll@arm.com>,
-	Mark Rutland <mark.rutland@arm.com>,
-	Ian Campbell <ijc+devicetree@hellion.org.uk>,
-	Kumar Gala <galak@codeaurora.org>,
-	Grant Likely <grant.likely@linaro.org>,
-	devicetree@vger.kernel.org,
-	Andrew Morton <akpm@linux-foundation.org>,
-	Joe Perches <joe@perches.com>, linux-api@vger.kernel.org
-CC: linux-kernel@vger.kernel.org, support.opensource@diasemi.com
-Subject: Re: [PATCH 8/8] iio: Add ABI documentation for input current readings
-References: <cover.1411396718.git.Adam.Thomson.Opensource@diasemi.com> <b578cdd53527bb71c271eefadd1ce1bac175b5a7.1411396719.git.Adam.Thomson.Opensource@diasemi.com>
-In-Reply-To: <b578cdd53527bb71c271eefadd1ce1bac175b5a7.1411396719.git.Adam.Thomson.Opensource@diasemi.com>
-Content-Type: text/plain; charset=windows-1252
+Received: from smtp-out-085.synserver.de ([212.40.185.85]:1064 "EHLO
+	smtp-out-085.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753035AbaIYO1P (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 25 Sep 2014 10:27:15 -0400
+From: Lars-Peter Clausen <lars@metafoo.de>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Hartmut Knaack <knaack.h@gmx.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Daniel Baluta <daniel.baluta@intel.com>,
+	linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>
+Subject: [PATCH v2 3/4] staging:iio:ad5933: Report temperature as raw value
+Date: Thu, 25 Sep 2014 16:27:14 +0200
+Message-Id: <1411655235-7635-3-git-send-email-lars@metafoo.de>
+In-Reply-To: <1411655235-7635-1-git-send-email-lars@metafoo.de>
+References: <1411655235-7635-1-git-send-email-lars@metafoo.de>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 23/09/14 11:53, Adam Thomson wrote:
-> Add information on in_current related readings.
-> 
-> Signed-off-by: Adam Thomson <Adam.Thomson.Opensource@diasemi.com>
-This crossed with a similar patch also adding some docs for current channels.
-That just missed this cycle anyway so I'll probably just merge this in as
-an extension of that patch when we are happy with the rest of the series.
-That patch covers the raw attribute but doesn't add the other entries..
-(in the togreg branch of iio.git)
+We shouldn't be doing the unit conversion in kernel space. Just report the
+raw value for the property and the scale. Userspace can do the conversion if
+necessary.
 
-Jonathan
-> ---
->  Documentation/ABI/testing/sysfs-bus-iio | 17 +++++++++++++++++
->  1 file changed, 17 insertions(+)
-> 
-> diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
-> index d760b02..37cd4d4 100644
-> --- a/Documentation/ABI/testing/sysfs-bus-iio
-> +++ b/Documentation/ABI/testing/sysfs-bus-iio
-> @@ -92,6 +92,18 @@ Description:
->  		is required is a consistent labeling.  Units after application
->  		of scale and offset are millivolts.
-> 
-> +What:		/sys/bus/iio/devices/iio:deviceX/in_currentY_raw
-> +What:		/sys/bus/iio/devices/iio:deviceX/in_currentY_supply_raw
-> +KernelVersion:	3.17
-> +Contact:	linux-iio@vger.kernel.org
-> +Description:
-> +		Raw (unscaled no bias removal etc.) current measurement from
-> +		channel Y. In special cases where the channel does not
-> +		correspond to externally available input one of the named
-> +		versions may be used. The number must always be specified and
-> +		unique to allow association with event codes. Units after
-> +		application of scale and offset are milliamps.
-> +
->  What:		/sys/bus/iio/devices/iio:deviceX/in_capacitanceY_raw
->  KernelVersion:	3.2
->  Contact:	linux-iio@vger.kernel.org
-> @@ -227,6 +239,8 @@ What:		/sys/bus/iio/devices/iio:deviceX/in_accel_y_offset
->  What:		/sys/bus/iio/devices/iio:deviceX/in_accel_z_offset
->  What:		/sys/bus/iio/devices/iio:deviceX/in_voltageY_offset
->  What:		/sys/bus/iio/devices/iio:deviceX/in_voltage_offset
-> +What:		/sys/bus/iio/devices/iio:deviceX/in_currentY_offset
-> +What:		/sys/bus/iio/devices/iio:deviceX/in_current_offset
->  What:		/sys/bus/iio/devices/iio:deviceX/in_tempY_offset
->  What:		/sys/bus/iio/devices/iio:deviceX/in_temp_offset
->  What:		/sys/bus/iio/devices/iio:deviceX/in_pressureY_offset
-> @@ -249,8 +263,11 @@ Description:
->  		to the _raw output.
-> 
->  What:		/sys/bus/iio/devices/iio:deviceX/in_voltageY_scale
-> +What:		/sys/bus/iio/devices/iio:deviceX/in_currentY_scale
->  What:		/sys/bus/iio/devices/iio:deviceX/in_voltageY_supply_scale
-> +What:		/sys/bus/iio/devices/iio:deviceX/in_currentY_supply_scale
->  What:		/sys/bus/iio/devices/iio:deviceX/in_voltage_scale
-> +What:		/sys/bus/iio/devices/iio:deviceX/in_current_scale
->  What:		/sys/bus/iio/devices/iio:deviceX/out_voltageY_scale
->  What:		/sys/bus/iio/devices/iio:deviceX/out_altvoltageY_scale
->  What:		/sys/bus/iio/devices/iio:deviceX/in_accel_scale
-> --
-> 1.9.3
-> 
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> 
+Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+---
+Changes from v1:
+	* Slightly restructured error path to make it clear that the mutex is
+	  only unlocked when it was locked before.
+---
+ drivers/staging/iio/impedance-analyzer/ad5933.c | 20 ++++++++++----------
+ 1 file changed, 10 insertions(+), 10 deletions(-)
+
+diff --git a/drivers/staging/iio/impedance-analyzer/ad5933.c b/drivers/staging/iio/impedance-analyzer/ad5933.c
+index b6bd609..95b17c5 100644
+--- a/drivers/staging/iio/impedance-analyzer/ad5933.c
++++ b/drivers/staging/iio/impedance-analyzer/ad5933.c
+@@ -113,7 +113,8 @@ static const struct iio_chan_spec ad5933_channels[] = {
+ 		.type = IIO_TEMP,
+ 		.indexed = 1,
+ 		.channel = 0,
+-		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED),
++		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
++			BIT(IIO_CHAN_INFO_SCALE),
+ 		.address = AD5933_REG_TEMP_DATA,
+ 		.scan_index = -1,
+ 		.scan_type = {
+@@ -520,12 +521,11 @@ static int ad5933_read_raw(struct iio_dev *indio_dev,
+ {
+ 	struct ad5933_state *st = iio_priv(indio_dev);
+ 	__be16 dat;
+-	int ret = -EINVAL;
++	int ret;
+ 
+-	mutex_lock(&indio_dev->mlock);
+ 	switch (m) {
+ 	case IIO_CHAN_INFO_RAW:
+-	case IIO_CHAN_INFO_PROCESSED:
++		mutex_lock(&indio_dev->mlock);
+ 		if (iio_buffer_enabled(indio_dev)) {
+ 			ret = -EBUSY;
+ 			goto out;
+@@ -543,16 +543,16 @@ static int ad5933_read_raw(struct iio_dev *indio_dev,
+ 		if (ret < 0)
+ 			goto out;
+ 		mutex_unlock(&indio_dev->mlock);
+-		ret = be16_to_cpu(dat);
+-		/* Temp in Milli degrees Celsius */
+-		if (ret < 8192)
+-			*val = ret * 1000 / 32;
+-		else
+-			*val = (ret - 16384) * 1000 / 32;
++		*val = sign_extend32(be16_to_cpu(dat), 13);
+ 
+ 		return IIO_VAL_INT;
++	case IIO_CHAN_INFO_SCALE:
++		*val = 1000;
++		*val2 = 5;
++		return IIO_VAL_FRACTIONAL_LOG2;
+ 	}
+ 
++	return -EINVAL;
+ out:
+ 	mutex_unlock(&indio_dev->mlock);
+ 	return ret;
+-- 
+1.8.0
+
