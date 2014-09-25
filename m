@@ -1,123 +1,79 @@
-Return-Path: <lars@metafoo.de>
-From: Lars-Peter Clausen <lars@metafoo.de>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Hartmut Knaack <knaack.h@gmx.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	Daniel Baluta <daniel.baluta@intel.com>,
-	linux-iio@vger.kernel.org,
-	Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH v2 1/4] staging:iio:ad5933: Fix NULL pointer deref when enabling buffer
-Date: Thu, 25 Sep 2014 16:27:12 +0200
-Message-Id: <1411655235-7635-1-git-send-email-lars@metafoo.de>
+Return-Path: <iivanov@mm-sol.com>
+Message-ID: <1411649225.18580.134.camel@iivanov-dev>
+Subject: Re: [PATCH v3 1/2] iio: vadc: Qualcomm SPMI PMIC voltage ADC driver
+From: "Ivan T. Ivanov" <iivanov@mm-sol.com>
+To: Stanimir Varbanov <svarbanov@mm-sol.com>
+Cc: Ian Campbell <ijc+devicetree@hellion.org.uk>, Pawel Moll
+ <pawel.moll@arm.com>, Rob Herring <robh+dt@kernel.org>, Kumar Gala
+ <galak@codeaurora.org>, Mark Rutland <mark.rutland@arm.com>, Grant Likely
+ <grant.likely@linaro.org>, Jonathan Cameron <jic23@kernel.org>, Arnd
+ Bergmann <arnd@arndb.de>, linux-arm-msm@vger.kernel.org,
+ linux-kernel@vger.kernel.org,  linux-iio@vger.kernel.org,
+ devicetree@vger.kernel.org, Greg Kroah-Hartman
+ <gregkh@linuxfoundation.org>, Lars-Peter Clausen <lars@metafoo.de>, Hartmut
+ Knaack <knaack.h@gmx.de>, Angelo Compagnucci
+ <angelo.compagnucci@gmail.com>, Doug Anderson <dianders@chromium.org>,
+ Fugang Duan <B38611@freescale.com>, Johannes Thumshirn
+ <johannes.thumshirn@men.de>, Jean Delvare <jdelvare@suse.de>, Philippe
+ Reynes <tremyfr@yahoo.fr>, Lee Jones <lee.jones@linaro.org>, Josh
+ Cartwright <joshc@codeaurora.org>, Stephen Boyd <sboyd@codeaurora.org>,
+ David Collins <collinsd@codeaurora.org>
+Date: Thu, 25 Sep 2014 15:47:05 +0300
+In-Reply-To: <1411563415-11933-2-git-send-email-svarbanov@mm-sol.com>
+References: <1411563415-11933-1-git-send-email-svarbanov@mm-sol.com>
+	 <1411563415-11933-2-git-send-email-svarbanov@mm-sol.com>
+Content-Type: text/plain; charset="UTF-8"
+Mime-Version: 1.0
 List-ID: <linux-iio@vger.kernel.org>
 
-In older versions of the IIO framework it was possible to pass a
-completely different set of channels to iio_buffer_register() as the one
-that is assigned to the IIO device. Commit 959d2952d124 ("staging:iio: make
-iio_sw_buffer_preenable much more general.") introduced a restriction that
-requires that the set of channels that is passed to iio_buffer_register() is
-a subset of the channels assigned to the IIO device as the IIO core will use
-the list of channels that is assigned to the device to lookup a channel by
-scan index in iio_compute_scan_bytes(). If it can not find the channel the
-function will crash. This patch fixes the issue by making sure that the same
-set of channels is assigned to the IIO device and passed to
-iio_buffer_register().
 
-Fixes the follow NULL pointer derefernce kernel crash:
-	Unable to handle kernel NULL pointer dereference at virtual address 00000016
-	pgd = d53d0000
-	[00000016] *pgd=1534e831, *pte=00000000, *ppte=00000000
-	Internal error: Oops: 17 [#1] PREEMPT SMP ARM
-	Modules linked in:
-	CPU: 1 PID: 1626 Comm: bash Not tainted 3.15.0-19969-g2a180eb-dirty #9545
-	task: d6c124c0 ti: d539a000 task.ti: d539a000
-	PC is at iio_compute_scan_bytes+0x34/0xa8
-	LR is at iio_compute_scan_bytes+0x34/0xa8
-	pc : [<c03052e4>]    lr : [<c03052e4>]    psr: 60070013
-	sp : d539beb8  ip : 00000001  fp : 00000000
-	r10: 00000002  r9 : 00000000  r8 : 00000001
-	r7 : 00000000  r6 : d6dc8800  r5 : d7571000  r4 : 00000002
-	r3 : d7571000  r2 : 00000044  r1 : 00000001  r0 : 00000000
-	Flags: nZCv  IRQs on  FIQs on  Mode SVC_32  ISA ARM  Segment user
-	Control: 18c5387d  Table: 153d004a  DAC: 00000015
-	Process bash (pid: 1626, stack limit = 0xd539a240)
-	Stack: (0xd539beb8 to 0xd539c000)
-	bea0:                                                       c02fc0e4 d7571000
-	bec0: d76c1640 d6dc8800 d757117c 00000000 d757112c c0305b04 d76c1690 d76c1640
-	bee0: d7571188 00000002 00000000 d7571000 d539a000 00000000 000dd1c8 c0305d54
-	bf00: d7571010 0160b868 00000002 c69d3900 d7573278 d7573308 c69d3900 c01ece90
-	bf20: 00000002 c0103fac c0103f6c d539bf88 00000002 c69d3b00 c69d3b0c c0103468
-	bf40: 00000000 00000000 d7694a00 00000002 000af408 d539bf88 c000dd84 c00b2f94
-	bf60: d7694a00 000af408 00000002 d7694a00 d7694a00 00000002 000af408 c000dd84
-	bf80: 00000000 c00b32d0 00000000 00000000 00000002 b6f1aa78 00000002 000af408
-	bfa0: 00000004 c000dc00 b6f1aa78 00000002 00000001 000af408 00000002 00000000
-	bfc0: b6f1aa78 00000002 000af408 00000004 be806a4c 000a6094 00000000 000dd1c8
-	bfe0: 00000000 be8069cc b6e8ab77 b6ec125c 40070010 00000001 22940489 154a5007
-	[<c03052e4>] (iio_compute_scan_bytes) from [<c0305b04>] (__iio_update_buffers+0x248/0x438)
-	[<c0305b04>] (__iio_update_buffers) from [<c0305d54>] (iio_buffer_store_enable+0x60/0x7c)
-	[<c0305d54>] (iio_buffer_store_enable) from [<c01ece90>] (dev_attr_store+0x18/0x24)
-	[<c01ece90>] (dev_attr_store) from [<c0103fac>] (sysfs_kf_write+0x40/0x4c)
-	[<c0103fac>] (sysfs_kf_write) from [<c0103468>] (kernfs_fop_write+0x110/0x154)
-	[<c0103468>] (kernfs_fop_write) from [<c00b2f94>] (vfs_write+0xd0/0x160)
-	[<c00b2f94>] (vfs_write) from [<c00b32d0>] (SyS_write+0x40/0x78)
-	[<c00b32d0>] (SyS_write) from [<c000dc00>] (ret_fast_syscall+0x0/0x30)
-	Code: ea00000e e1a01008 e1a00005 ebfff6fc (e5d0a016)
+Hi Stan, few comment bellow.
 
-Fixes: 959d2952d124 ("staging:iio: make iio_sw_buffer_preenable much more general.")
-Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
----
-No changes since v1
----
- drivers/staging/iio/impedance-analyzer/ad5933.c | 11 ++++-------
- 1 file changed, 4 insertions(+), 7 deletions(-)
+On Wed, 2014-09-24 at 15:56 +0300, Stanimir Varbanov wrote:
+> The voltage ADC is peripheral of Qualcomm SPMI PMIC chips. It has
+> 15bits resolution and register space inside PMIC accessible across
+> SPMI bus.
+> 
+> The vadc driver registers itself through IIO interface.
+> 
+> Signed-off-by: Stanimir Varbanov <svarbanov@mm-sol.com>
+> Signed-off-by: Ivan T. Ivanov <iivanov@mm-sol.com>
+> ---
+>  drivers/iio/adc/Kconfig                       |   10 +
+>  drivers/iio/adc/Makefile                      |    1 +
+>  drivers/iio/adc/qcom-spmi-vadc.c              | 1029 +++++++++++++++++++++++++
+>  include/dt-bindings/iio/qcom,spmi-pmic-vadc.h |  119 +++
+>  4 files changed, 1159 insertions(+), 0 deletions(-)
+>  create mode 100644 drivers/iio/adc/qcom-spmi-vadc.c
+>  create mode 100644 include/dt-bindings/iio/qcom,spmi-pmic-vadc.h
+> 
+> diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+> index 11b048a..ec48360 100644
+> --- a/drivers/iio/adc/Kconfig
+> +++ b/drivers/iio/adc/Kconfig
+> @@ -206,6 +206,16 @@ config NAU7802
+>  	  To compile this driver as a module, choose M here: the
+>  	  module will be called nau7802.
+>  
+> +config QCOM_SPMI_VADC
+> +	tristate "Qualcomm SPMI PMIC voltage ADC"
+> +	depends on SPMI
 
-diff --git a/drivers/staging/iio/impedance-analyzer/ad5933.c b/drivers/staging/iio/impedance-analyzer/ad5933.c
-index d0c89d0..9a6665d 100644
---- a/drivers/staging/iio/impedance-analyzer/ad5933.c
-+++ b/drivers/staging/iio/impedance-analyzer/ad5933.c
-@@ -115,6 +115,7 @@ static const struct iio_chan_spec ad5933_channels[] = {
- 		.channel = 0,
- 		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED),
- 		.address = AD5933_REG_TEMP_DATA,
-+		.scan_index = -1,
- 		.scan_type = {
- 			.sign = 's',
- 			.realbits = 14,
-@@ -125,8 +126,6 @@ static const struct iio_chan_spec ad5933_channels[] = {
- 		.indexed = 1,
- 		.channel = 0,
- 		.extend_name = "real_raw",
--		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
--		BIT(IIO_CHAN_INFO_SCALE),
- 		.address = AD5933_REG_REAL_DATA,
- 		.scan_index = 0,
- 		.scan_type = {
-@@ -139,8 +138,6 @@ static const struct iio_chan_spec ad5933_channels[] = {
- 		.indexed = 1,
- 		.channel = 0,
- 		.extend_name = "imag_raw",
--		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
--		BIT(IIO_CHAN_INFO_SCALE),
- 		.address = AD5933_REG_IMAG_DATA,
- 		.scan_index = 1,
- 		.scan_type = {
-@@ -749,14 +746,14 @@ static int ad5933_probe(struct i2c_client *client,
- 	indio_dev->name = id->name;
- 	indio_dev->modes = INDIO_DIRECT_MODE;
- 	indio_dev->channels = ad5933_channels;
--	indio_dev->num_channels = 1; /* only register temp0_input */
-+	indio_dev->num_channels = ARRAY_SIZE(ad5933_channels);
- 
- 	ret = ad5933_register_ring_funcs_and_init(indio_dev);
- 	if (ret)
- 		goto error_disable_reg;
- 
--	/* skip temp0_input, register in0_(real|imag)_raw */
--	ret = iio_buffer_register(indio_dev, &ad5933_channels[1], 2);
-+	ret = iio_buffer_register(indio_dev, ad5933_channels,
-+		ARRAY_SIZE(ad5933_channels));
- 	if (ret)
- 		goto error_unreg_ring;
- 
--- 
-1.8.0
++ select REGMAP_SPMI
+
+<snip>
+
+> +
+> +static int vadc_read(struct vadc_priv *vadc, u16 offset, u8 *data)
+> +{
+> +	return regmap_bulk_read(vadc->regmap, vadc->base + offset, data, 1);
+
+just regmap_read() ?
+
+> +}
+> +
+
+General comment, most of the dev_dbg looks like legitimate dev_err's to me.
+
+Regards,
+Ivan 
