@@ -1,85 +1,129 @@
-Return-Path: <bruce.bushby@gmail.com>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-ie0-f176.google.com ([209.85.223.176]:33886 "EHLO
+	mail-ie0-f176.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754037AbaIZHRr (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 26 Sep 2014 03:17:47 -0400
+Received: by mail-ie0-f176.google.com with SMTP id ar1so15203869iec.21
+        for <linux-iio@vger.kernel.org>; Fri, 26 Sep 2014 00:17:46 -0700 (PDT)
+Date: Fri, 26 Sep 2014 08:17:38 +0100
+From: Lee Jones <lee.jones@linaro.org>
+To: Jacob Pan <jacob.jun.pan@linux.intel.com>
+Cc: IIO <linux-iio@vger.kernel.org>,
+	LKML <linux-kernel@vger.kernel.org>,
+	DEVICE TREE <devicetree@vger.kernel.org>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Carlo Caione <carlo@caione.org>,
+	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+	Aaron Lu <aaron.lu@intel.com>, Alan Cox <alan@linux.intel.com>,
+	Jean Delvare <khali@linux-fr.org>,
+	Samuel Ortiz <sameo@linux.intel.com>,
+	Liam Girdwood <lgirdwood@gmail.com>,
+	Mark Brown <broonie@kernel.org>,
+	Grant Likely <grant.likely@linaro.org>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Rob Herring <robh+dt@kernel.org>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Fugang Duan <B38611@freescale.com>,
+	Arnd Bergmann <arnd@arndb.de>,
+	Zubair Lutfullah <zubair.lutfullah@gmail.com>,
+	Sebastian Reichel <sre@debian.org>,
+	Johannes Thumshirn <johannes.thumshirn@men.de>,
+	Philippe Reynes <tremyfr@yahoo.fr>,
+	Angelo Compagnucci <angelo.compagnucci@gmail.com>,
+	Doug Anderson <dianders@chromium.org>,
+	Ramakrishna Pallala <ramakrishna.pallala@intel.com>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Maxime Ripard <maxime.ripard@free-electrons.com>,
+	Rafael Wysocki <rafael.j.wysocki@intel.com>
+Subject: Re: [PATCH v6 0/2] Initial support for XPowers AXP288 PMIC
+Message-ID: <20140926071738.GD31272@lee--X1>
+References: <1411643739-21205-1-git-send-email-jacob.jun.pan@linux.intel.com>
+ <20140925113004.582367d1@jacob-VirtualBox>
 MIME-Version: 1.0
-In-Reply-To: <alpine.DEB.2.01.1409142241110.15094@pmeerw.net>
-References: <CAHvj1qauaxANPHaZo_WoeF7pSmXDzJ0YynOoW-Wvz6AvMEF-Jw@mail.gmail.com>
-	<25e65d5c-2bfc-449c-93c4-111c3c766922@email.android.com>
-	<alpine.DEB.2.01.1409142241110.15094@pmeerw.net>
-Date: Wed, 24 Sep 2014 16:16:37 +0100
-Message-ID: <CAHvj1qayzOJuWUFpzOebJz=NzJmkp2NTh2uSzGuTP=oprbqHTw@mail.gmail.com>
-Subject: Re: Need some help porting IIO based driver from 3.4 to 3.16 kernel
-From: bruce bushby <bruce.bushby@gmail.com>
-To: Peter Meerwald <pmeerw@pmeerw.net>
-Cc: Jonathan Cameron <jic23@kernel.org>, linux-iio <linux-iio@vger.kernel.org>
-Content-Type: text/plain; charset=UTF-8
-List-ID: <linux-iio@vger.kernel.org>
+Content-Type: text/plain; charset=utf-8
+In-Reply-To: <20140925113004.582367d1@jacob-VirtualBox>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Hi
+> Can you consider taking this for 3.18 if there are no other issues?
 
-Quick thank you to Peter and Jonathan for the pointers, worked like a charm.
+I'm afraid not.  Linus is opening the v3.18 merge-window early this
+cycle, so I have stopped applying patches.  This will be re-considered
+for v3.19.
 
-A special thanks to Daniel Baluta for his help.
+> On Thu, 25 Sep 2014 04:15:39 -0700
+> Jacob Pan <jacob.jun.pan@linux.intel.com> wrote:
+> 
+> > X-Powers AXP288 is a customized PMIC found on some Intel Baytrail-CR
+> > platforms. It comes with sub-functions such as USB charging, fuel
+> > gauge, ADC, and many LDO and BUCK channels.
+> > 
+> > By extending the existing AXP20x driver, this patchset adds basic
+> > support for AXP288 PMIC with ADC as one MFD cell device driver.
+> > 
+> > Currently, the PMIC driver in this patchset does not support platform
+> > data enumeration. But when ACPI _DSD and unified device properties
+> > become available, cell devices with platform data will be added.
+> > 
+> > This patch does not use intel_soc_pmic core for i2c and regmap
+> > handling in that axp288 shares similar programming interface with
+> > other X-Power PMICs supported in axp20x.c. Therefore, extending
+> > axp20x.c to include axp288 makes more sense.
+> > 
+> > Changes
+> >  v6:	- change axp20x_match_device() flow to give more specific
+> > error messages.
+> > 	- remove unnecessary cast
+> > 
+> >  v5:	- excluded iio documentation patch, already applied to
+> > iio.git
+> >  	- restructured axp288_adc read_raw code to make it more
+> > readable
+> > 	- renamed adc_enable to adc_set_state and add comment about
+> > why adc has to be always on and there is no disable function.
+> > 	- axp20x use const as needed for regmap structures
+> > 
+> >  v4:	- removed rename patch, use Kconfig description to list
+> > supported devices
+> >  	- misc clean up in ADC code, use regmap_bulk_read and
+> > improve error handling, etc.
+> > 	- remove IIO ADC scale, treat raw data as processed since the
+> > unit is already in IIO expected milliamps.
+> > 
+> >  v3:	- put all file rename changes in 1/5
+> >  	- add iio documentation for in_current_raw/scale
+> > 	- removed global variables in axp2xx
+> > 	- removed pm callbacks from GPADC
+> > 	- removed ACPI opregion cell device
+> > 	- added scales to ADC current and voltage
+> > 	- removed ADC thermal sensor from sysfs, kernel internal use
+> > only
+> > 
+> >  v2:
+> > 	- use format -M for 1/4
+> > 	- minor tweak based on Maxime's review
+> > 
+> > 
+> > Jacob Pan (2):
+> >   mfd/axp20x: extend axp20x to support axp288 pmic
+> >   iio/adc: add support for axp288 adc
+> > 
+> >  drivers/iio/adc/Kconfig      |   8 +
+> >  drivers/iio/adc/Makefile     |   1 +
+> >  drivers/iio/adc/axp288_adc.c | 253 ++++++++++++++++++++++++++++++
+> >  drivers/mfd/Kconfig          |   3 +-
+> >  drivers/mfd/axp20x.c         | 361
+> > ++++++++++++++++++++++++++++++++++++-------
+> > include/linux/mfd/axp20x.h   |  59 +++++++ 6 files changed, 629
+> > insertions(+), 56 deletions(-) create mode 100644
+> > drivers/iio/adc/axp288_adc.c
+> > 
+> 
+> [Jacob Pan]
 
-
-Bruce
-
-
-
-
-On Sun, Sep 14, 2014 at 9:43 PM, Peter Meerwald <pmeerw@pmeerw.net> wrote:
-> Hello,
->
->> >I wanted to ask for some advice/pointers for porting this IIO based
->> >"imu" driver:
->> >https://android.googlesource.com/kernel/msm/+/android-msm-hammerhead-3.4-kk-fr2/drivers/staging/iio/imu/inv_mpu
->> >
->> >to a 3.16 kernel.
->> >
->> >I'm struggling to make sense of the header files in that the header
->> >names appear to have changed and the definitions are completely
->> >different.
->> >
->> >My compiles bombs with this message:
->> >
->> >  CC [M]  drivers/iio/imu/inv_mpu/inv_mpu_core.o
->> >In file included from drivers/iio/imu/inv_mpu/inv_mpu_core.c:31:0:
->> >drivers/iio/imu/inv_mpu/inv_mpu_iio.h:23:17: fatal error: iio.h: No
->> >such file or directory
->> > #include "iio.h"
->
-> iio moved out of staging after 3.4
->
-> try #include <linux/iio/iio.h>
->
->> >But my kernel has this "iio" header file:
->> >[bruce@build iio]$ pwd
->> >/home/bruce/buildroot/output/build/linux-3.16.2/drivers/iio
->> >[bruce@build iio]$ ls -l iio_core.h
->> >-rw-rw-r--. 1 bruce bruce 2155 Sep  6 00:37 iio_core.h
->> >[bruce@build iio]$
->> >
->> >
->> >So I'm guessing "iio.h" has evolved and is now "iio_core.h"? ....but
->> >they seem so different?
->> iio.h is now in include/linux/iio with a lot of the other headers...
->>
->>
->>
->>
->> >
->> >
->> >Any help/pointers much appreciated!!!
->> >
->> >
->> >Thanks
->> >Bruce
->> >--
->> >To unsubscribe from this list: send the line "unsubscribe linux-iio" in
->> >the body of a message to majordomo@vger.kernel.org
->> >More majordomo info at  http://vger.kernel.org/majordomo-info.html
->>
->>
->
-> --
->
-> Peter Meerwald
-> +43-664-2444418 (mobile)
+-- 
+Lee Jones
+Linaro STMicroelectronics Landing Team Lead
+Linaro.org │ Open source software for ARM SoCs
+Follow Linaro: Facebook | Twitter | Blog
