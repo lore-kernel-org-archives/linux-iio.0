@@ -1,348 +1,331 @@
-Return-Path: <jacob.jun.pan@linux.intel.com>
-From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-To: IIO <linux-iio@vger.kernel.org>,
-	LKML <linux-kernel@vger.kernel.org>,
-	DEVICE TREE <devicetree@vger.kernel.org>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Lee Jones <lee.jones@linaro.org>
-Cc: Carlo Caione <carlo@caione.org>,
-	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
-	Aaron Lu <aaron.lu@intel.com>,
-	Alan Cox <alan@linux.intel.com>,
-	Jean Delvare <khali@linux-fr.org>,
-	Samuel Ortiz <sameo@linux.intel.com>,
-	Liam Girdwood <lgirdwood@gmail.com>,
-	Mark Brown <broonie@kernel.org>,
-	Grant Likely <grant.likely@linaro.org>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Rob Herring <robh+dt@kernel.org>,
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:35878 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751755AbaI0Jun (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 27 Sep 2014 05:50:43 -0400
+Message-ID: <5426886D.4050602@kernel.org>
+Date: Sat, 27 Sep 2014 10:50:37 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+MIME-Version: 1.0
+To: "Ivan T. Ivanov" <iivanov@mm-sol.com>,
+	Mark Rutland <mark.rutland@arm.com>
+CC: Rob Herring <robh+dt@kernel.org>, Pawel Moll <Pawel.Moll@arm.com>,
+	Ian Campbell <ijc+devicetree@hellion.org.uk>,
+	Kumar Gala <galak@codeaurora.org>,
+	"grant.likely@linaro.org" <grant.likely@linaro.org>,
 	Lars-Peter Clausen <lars@metafoo.de>,
 	Hartmut Knaack <knaack.h@gmx.de>,
-	Fugang Duan <B38611@freescale.com>,
-	Arnd Bergmann <arnd@arndb.de>,
-	Zubair Lutfullah <zubair.lutfullah@gmail.com>,
-	Sebastian Reichel <sre@debian.org>,
-	Johannes Thumshirn <johannes.thumshirn@men.de>,
+	Lee Jones <lee.jones@linaro.org>,
 	Philippe Reynes <tremyfr@yahoo.fr>,
-	Angelo Compagnucci <angelo.compagnucci@gmail.com>,
-	Doug Anderson <dianders@chromium.org>,
-	Ramakrishna Pallala <ramakrishna.pallala@intel.com>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	Maxime Ripard <maxime.ripard@free-electrons.com>,
-	Rafael Wysocki <rafael.j.wysocki@intel.com>,
-	Jacob Pan <jacob.jun.pan@linux.intel.com>
-Subject: [PATCH v6 2/2] iio/adc: add support for axp288 adc
-Date: Thu, 25 Sep 2014 04:21:12 -0700
-Message-Id: <1411644072-21326-1-git-send-email-jacob.jun.pan@linux.intel.com>
-List-ID: <linux-iio@vger.kernel.org>
+	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	"linux-arm-msm@vger.kernel.org" <linux-arm-msm@vger.kernel.org>
+Subject: Re: [PATCH v2] iio: iadc: Qualcomm SPMI PMIC current ADC driver
+References: <1411567103-2380-1-git-send-email-iivanov@mm-sol.com>	 <20140924145527.GI5729@leverpostej> <1411574442.18580.95.camel@iivanov-dev>	 <20140924170522.GL5729@leverpostej>	 <1411638435.18580.126.camel@iivanov-dev>	 <20140925160215.GB6531@leverpostej> <1411672895.28648.3.camel@mm-sol.com>
+In-Reply-To: <1411672895.28648.3.camel@mm-sol.com>
+Content-Type: text/plain; charset=utf-8
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Platform driver for X-Powers AXP288 ADC, which is a sub-device of the
-customized AXP288 PMIC for Intel Baytrail-CR platforms. GPADC device
-enumerates as one of the MFD cell devices. It uses IIO infrastructure
-to communicate with userspace and consumer drivers.
-
-Usages of ADC channels include battery charging and thermal sensors.
-
-Based on initial work by:
-Ramakrishna Pallala <ramakrishna.pallala@intel.com>
-
-Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
----
- drivers/iio/adc/Kconfig      |   8 ++
- drivers/iio/adc/Makefile     |   1 +
- drivers/iio/adc/axp288_adc.c | 253 +++++++++++++++++++++++++++++++++++++++++++
- 3 files changed, 262 insertions(+)
- create mode 100644 drivers/iio/adc/axp288_adc.c
-
-diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
-index 11b048a..db2681b 100644
---- a/drivers/iio/adc/Kconfig
-+++ b/drivers/iio/adc/Kconfig
-@@ -127,6 +127,14 @@ config AT91_ADC
- 	help
- 	  Say yes here to build support for Atmel AT91 ADC.
- 
-+config AXP288_ADC
-+	tristate "X-Powers AXP288 ADC driver"
-+	depends on MFD_AXP20X
-+	help
-+	  Say yes here to have support for X-Powers power management IC (PMIC) ADC
-+	  device. Depending on platform configuration, this general purpose ADC can
-+	  be used for sampling sensors such as thermal resistors.
-+
- config EXYNOS_ADC
- 	tristate "Exynos ADC driver support"
- 	depends on ARCH_EXYNOS || (OF && COMPILE_TEST)
-diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
-index ad81b51..19640f9 100644
---- a/drivers/iio/adc/Makefile
-+++ b/drivers/iio/adc/Makefile
-@@ -14,6 +14,7 @@ obj-$(CONFIG_AD7793) += ad7793.o
- obj-$(CONFIG_AD7887) += ad7887.o
- obj-$(CONFIG_AD799X) += ad799x.o
- obj-$(CONFIG_AT91_ADC) += at91_adc.o
-+obj-$(CONFIG_AXP288_ADC) += axp288_adc.o
- obj-$(CONFIG_EXYNOS_ADC) += exynos_adc.o
- obj-$(CONFIG_LP8788_ADC) += lp8788_adc.o
- obj-$(CONFIG_MAX1027) += max1027.o
-diff --git a/drivers/iio/adc/axp288_adc.c b/drivers/iio/adc/axp288_adc.c
-new file mode 100644
-index 0000000..664d18f
---- /dev/null
-+++ b/drivers/iio/adc/axp288_adc.c
-@@ -0,0 +1,253 @@
-+/*
-+ * axp288_adc.c - X-Powers AXP288 PMIC ADC Driver
-+ *
-+ * Copyright (C) 2014 Intel Corporation
-+ *
-+ * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-+ *
-+ * This program is free software; you can redistribute it and/or modify
-+ * it under the terms of the GNU General Public License as published by
-+ * the Free Software Foundation; version 2 of the License.
-+ *
-+ * This program is distributed in the hope that it will be useful, but
-+ * WITHOUT ANY WARRANTY; without even the implied warranty of
-+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	See the GNU
-+ * General Public License for more details.
-+ *
-+ */
-+
-+#include <linux/module.h>
-+#include <linux/kernel.h>
-+#include <linux/device.h>
-+#include <linux/regmap.h>
-+#include <linux/mfd/axp20x.h>
-+#include <linux/platform_device.h>
-+
-+#include <linux/iio/iio.h>
-+#include <linux/iio/machine.h>
-+#include <linux/iio/driver.h>
-+
-+#define AXP288_ADC_EN_MASK		0xF1
-+#define AXP288_ADC_TS_PIN_GPADC		0xF2
-+#define AXP288_ADC_TS_PIN_ON		0xF3
-+
-+enum axp288_adc_id {
-+	AXP288_ADC_TS,
-+	AXP288_ADC_PMIC,
-+	AXP288_ADC_GP,
-+	AXP288_ADC_BATT_CHRG_I,
-+	AXP288_ADC_BATT_DISCHRG_I,
-+	AXP288_ADC_BATT_V,
-+	AXP288_ADC_NR_CHAN,
-+};
-+
-+struct axp288_adc_info {
-+	int irq;
-+	struct regmap *regmap;
-+};
-+
-+static const struct iio_chan_spec const axp288_adc_channels[] = {
-+	{
-+		.indexed = 1,
-+		.type = IIO_TEMP,
-+		.channel = 0,
-+		.address = AXP288_TS_ADC_H,
-+		.datasheet_name = "CH0",
-+	}, {
-+		.indexed = 1,
-+		.type = IIO_TEMP,
-+		.channel = 1,
-+		.address = AXP288_PMIC_ADC_H,
-+		.datasheet_name = "CH1",
-+	}, {
-+		.indexed = 1,
-+		.type = IIO_TEMP,
-+		.channel = 2,
-+		.address = AXP288_GP_ADC_H,
-+		.datasheet_name = "CH2",
-+	}, {
-+		.indexed = 1,
-+		.type = IIO_CURRENT,
-+		.channel = 3,
-+		.address = AXP20X_BATT_CHRG_I_H,
-+		.datasheet_name = "CH3",
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED),
-+	}, {
-+		.indexed = 1,
-+		.type = IIO_CURRENT,
-+		.channel = 4,
-+		.address = AXP20X_BATT_DISCHRG_I_H,
-+		.datasheet_name = "CH4",
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED),
-+	}, {
-+		.indexed = 1,
-+		.type = IIO_VOLTAGE,
-+		.channel = 5,
-+		.address = AXP20X_BATT_V_H,
-+		.datasheet_name = "CH5",
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED),
-+	},
-+};
-+
-+#define AXP288_ADC_MAP(_adc_channel_label, _consumer_dev_name,	\
-+		_consumer_channel)				\
-+	{							\
-+		.adc_channel_label = _adc_channel_label,	\
-+		.consumer_dev_name = _consumer_dev_name,	\
-+		.consumer_channel = _consumer_channel,		\
-+	}
-+
-+/* for consumer drivers */
-+static struct iio_map axp288_adc_default_maps[] = {
-+	AXP288_ADC_MAP("TS_PIN", "axp288-batt", "axp288-batt-temp"),
-+	AXP288_ADC_MAP("PMIC_TEMP", "axp288-pmic", "axp288-pmic-temp"),
-+	AXP288_ADC_MAP("GPADC", "axp288-gpadc", "axp288-system-temp"),
-+	AXP288_ADC_MAP("BATT_CHG_I", "axp288-chrg", "axp288-chrg-curr"),
-+	AXP288_ADC_MAP("BATT_DISCHRG_I", "axp288-chrg", "axp288-chrg-d-curr"),
-+	AXP288_ADC_MAP("BATT_V", "axp288-batt", "axp288-batt-volt"),
-+	{},
-+};
-+
-+static int axp288_adc_read_channel(int *val, unsigned long address,
-+				struct regmap *regmap)
-+{
-+	u8 buf[2];
-+
-+	if (regmap_bulk_read(regmap, address, buf, 2))
-+		return -EIO;
-+	*val = (buf[0] << 4) + ((buf[1] >> 4) & 0x0F);
-+
-+	return IIO_VAL_INT;
-+}
-+
-+static int axp288_adc_set_ts(struct regmap *regmap, unsigned int mode,
-+				unsigned long address)
-+{
-+	/* channels other than GPADC do not need to switch TS pin */
-+	if (address != AXP288_GP_ADC_H)
-+		return 0;
-+
-+	return regmap_write(regmap, AXP288_ADC_TS_PIN_CTRL, mode);
-+}
-+
-+static int axp288_adc_read_raw(struct iio_dev *indio_dev,
-+			struct iio_chan_spec const *chan,
-+			int *val, int *val2, long mask)
-+{
-+	int ret;
-+	struct axp288_adc_info *info = iio_priv(indio_dev);
-+
-+	mutex_lock(&indio_dev->mlock);
-+	switch (mask) {
-+	case IIO_CHAN_INFO_RAW:
-+		if (axp288_adc_set_ts(info->regmap, AXP288_ADC_TS_PIN_GPADC,
-+					chan->address)) {
-+			dev_err(&indio_dev->dev, "GPADC mode\n");
-+			ret = -EINVAL;
-+			break;
-+		}
-+		ret = axp288_adc_read_channel(val, chan->address, info->regmap);
-+		if (axp288_adc_set_ts(info->regmap, AXP288_ADC_TS_PIN_ON,
-+						chan->address))
-+			dev_err(&indio_dev->dev, "TS pin restore\n");
-+		break;
-+	case IIO_CHAN_INFO_PROCESSED:
-+		ret = axp288_adc_read_channel(val, chan->address, info->regmap);
-+		break;
-+	default:
-+		ret = -EINVAL;
-+	}
-+	mutex_unlock(&indio_dev->mlock);
-+
-+	return ret;
-+}
-+
-+static int axp288_adc_set_state(struct regmap *regmap)
-+{
-+	/* ADC should be always enabled for internal FG to function */
-+	if (regmap_write(regmap, AXP288_ADC_TS_PIN_CTRL, AXP288_ADC_TS_PIN_ON))
-+		return -EIO;
-+
-+	return regmap_write(regmap, AXP20X_ADC_EN1, AXP288_ADC_EN_MASK);
-+}
-+
-+static const struct iio_info axp288_adc_iio_info = {
-+	.read_raw = &axp288_adc_read_raw,
-+	.driver_module = THIS_MODULE,
-+};
-+
-+static int axp288_adc_probe(struct platform_device *pdev)
-+{
-+	int ret;
-+	struct axp288_adc_info *info;
-+	struct iio_dev *indio_dev;
-+	struct axp20x_dev *axp20x = dev_get_drvdata(pdev->dev.parent);
-+
-+	indio_dev = devm_iio_device_alloc(&pdev->dev, sizeof(*info));
-+	if (!indio_dev)
-+		return -ENOMEM;
-+
-+	info = iio_priv(indio_dev);
-+	info->irq = platform_get_irq(pdev, 0);
-+	if (info->irq < 0) {
-+		dev_err(&pdev->dev, "no irq resource?\n");
-+		return info->irq;
-+	}
-+	platform_set_drvdata(pdev, indio_dev);
-+	info->regmap = axp20x->regmap;
-+	/* set ADC to enabled state at all time, including system suspend.
-+	 * otherwise internal fuel gauge functionality may be affected.
-+	 */
-+	ret = axp288_adc_set_state(axp20x->regmap);
-+	if (ret) {
-+		dev_err(&pdev->dev, "unable to enable ADC device\n");
-+		return ret;
-+	}
-+
-+	indio_dev->dev.parent = &pdev->dev;
-+	indio_dev->name = pdev->name;
-+	indio_dev->channels = axp288_adc_channels;
-+	indio_dev->num_channels = ARRAY_SIZE(axp288_adc_channels);
-+	indio_dev->info = &axp288_adc_iio_info;
-+	indio_dev->modes = INDIO_DIRECT_MODE;
-+	ret = iio_map_array_register(indio_dev, axp288_adc_default_maps);
-+	if (ret < 0)
-+		return ret;
-+
-+	ret = iio_device_register(indio_dev);
-+	if (ret < 0) {
-+		dev_err(&pdev->dev, "unable to register iio device\n");
-+		goto err_array_unregister;
-+	}
-+	return 0;
-+
-+err_array_unregister:
-+	iio_map_array_unregister(indio_dev);
-+
-+	return ret;
-+}
-+
-+static int axp288_adc_remove(struct platform_device *pdev)
-+{
-+	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
-+
-+	iio_device_unregister(indio_dev);
-+	iio_map_array_unregister(indio_dev);
-+
-+	return 0;
-+}
-+
-+static struct platform_driver axp288_adc_driver = {
-+	.probe = axp288_adc_probe,
-+	.remove = axp288_adc_remove,
-+	.driver = {
-+		.name = "axp288_adc",
-+		.owner = THIS_MODULE,
-+	},
-+};
-+
-+module_platform_driver(axp288_adc_driver);
-+
-+MODULE_AUTHOR("Jacob Pan <jacob.jun.pan@linux.intel.com>");
-+MODULE_DESCRIPTION("X-Powers AXP288 ADC Driver");
-+MODULE_LICENSE("GPL");
--- 
-1.9.1
+On 25/09/14 20:21, Ivan T. Ivanov wrote:
+> On Thu, 2014-09-25 at 17:02 +0100, Mark Rutland wrote:
+>> On Thu, Sep 25, 2014 at 10:47:15AM +0100, Ivan T. Ivanov wrote:
+>>> Hi Mark,
+>>>
+>>> On Wed, 2014-09-24 at 18:05 +0100, Mark Rutland wrote:
+>>>> On Wed, Sep 24, 2014 at 05:00:42PM +0100, Ivan T. Ivanov wrote:
+>>>>> On Wed, 2014-09-24 at 15:55 +0100, Mark Rutland wrote:
+>>>>>> On Wed, Sep 24, 2014 at 02:58:23PM +0100, Ivan T. Ivanov wrote:
+>>>>>>> The current ADC is peripheral of Qualcomm SPMI PMIC chips. It has
+>>>>>>> 16 bits resolution and register space inside PMIC accessible across
+>>>>>>> SPMI bus.
+>>>>>>>
+>>>>>>> The driver registers itself through IIO interface.
+>>>>>>>
+>>>>>>> Signed-off-by: Ivan T. Ivanov <iivanov@mm-sol.com>
+>>>>>>> ---
+>>>>>>> Changes:
+>>>>>>> - Fix Kconfig dependencies
+>>>>>>> - Reword Kconfig help text
+>>>>>>> - Replace IIO_CHAN_INFO_PROCESSED with IIO_CHAN_INFO_RAW and IIO_CHAN_INFO_SCALE,
+>>>>>>>   This enable client drivers to use microampers precission, instead miliamps.
+>>>>>>> - Use const array for iio_schan_spec-fiers.
+>>>>>>> - Fix spelling errors and adress review comments.
+>>>>>>>
+>>>>>>> Previous version:
+>>>>>>> https://www.mail-archive.com/linux-kernel@vger.kernel.org/msg728360.html
+>>>>>>>
+>>>>>>>  .../devicetree/bindings/iio/adc/qcom,spmi-iadc.txt |  61 ++
+>>>>>>>  drivers/iio/adc/Kconfig                            |  11 +
+>>>>>>>  drivers/iio/adc/Makefile                           |   1 +
+>>>>>>>  drivers/iio/adc/qcom-spmi-iadc.c                   | 691 +++++++++++++++++++++
+>>>>>>>  4 files changed, 764 insertions(+)
+>>>>>>>  create mode 100644 Documentation/devicetree/bindings/iio/adc/qcom,spmi-iadc.txt
+>>>>>>>  create mode 100644 drivers/iio/adc/qcom-spmi-iadc.c
+>>>>>>>
+>>>>>>> diff --git a/Documentation/devicetree/bindings/iio/adc/qcom,spmi-iadc.txt b/Documentation/devicetree/bindings/iio/adc/qcom,spmi-iadc.txt
+>>>>>>> new file mode 100644
+>>>>>>> index 0000000..06e58b6
+>>>>>>> --- /dev/null
+>>>>>>> +++ b/Documentation/devicetree/bindings/iio/adc/qcom,spmi-iadc.txt
+>>>>>>> @@ -0,0 +1,61 @@
+>>>>>>> +Qualcomm's SPMI PMIC current ADC
+>>>>>>> +
+>>>>>>> +QPNP PMIC current ADC (IADC) provides interface to clients to read current.
+>>>>>>> +A 16 bit ADC is used for current measurements.
+>>>>>>> +
+>>>>>>> +IADC node:
+>>>>>>> +
+>>>>>>> +- compatible:
+>>>>>>> +    Usage: required
+>>>>>>> +    Value type: <string>
+>>>>>>> +    Definition: Should contain "qcom,spmi-iadc".
+>>>>>>> +
+>>>>>>> +- reg:
+>>>>>>> +    Usage: required
+>>>>>>> +    Value type: <prop-encoded-array>
+>>>>>>> +    Definition: IADC base address and length in the SPMI PMIC register map.
+>>>>>>> +                TRIM_CNST_RDS register address and length(1)
+>>>>>>
+>>>>>> Are these two register regions? Please make the order explicit somehow
+>>>>>> (either say first/second/third/etc, or use reg-names).
+>>>>>
+>>>>> Will make order explicit. 
+>>>>>
+>>>>>>
+>>>>>> Are they both part of the IADC, or is one part of an external/shared
+>>>>>> component?
+>>>>>
+>>>>> I think that this is shared component.
+>>>>
+>>>> If it's not a portion of the ADC itself, then that should probably be
+>>>> described as a separate unit, and referred to by phandle. What else is
+>>>> that unit, and what else is said unit used by?
+>>>
+>>> Please read below.
+>>
+>> From my reading of the below, it's not clear we even need the TRIM
+>> register values. If we do, and that's in a separate peripheral, that
+>> register region should not be described directly in the IADC node. We
+>> should have a reference to the other peripheral.
+> 
+> Yes, we need them. Just to clarify, they are two TRIM registers. One
+> is part of the IADC and the other is part of the BMS. If the one in
+> IADC can not accumulate internal resistor deviation we have to read
+> also one in BMS.
+> 
+> Do we have any standard way for such kind inter-device register
+> readings? Just note these devices are sub-functions of the PMIC,
+> which are accessed from SoC over SPMI bus. Address ranges are
+> not ioremmed or claimed by device drivers.
+> 
+>>
+>>>>>>> +- interrupts:
+>>>>>>> +    Usage: optional
+>>>>>>> +    Value type: <prop-encoded-array>
+>>>>>>> +    Definition: End of conversion interrupt number. If property is
+>>>>>>> +            missing driver will use polling to detect end of conversion
+>>>>>>> +            completion.
+>>>>>>
+>>>>>> Driver details shouldn't be in the binding. If the driver can poll,
+>>>>>> that's good, but it should be dropped form this description.
+>>>>>>
+>>>>>
+>>>>> Will remove driver details.
+>>>>>
+>>>>>> Is this the only interrupt?
+>>>>>>
+>>>>>
+>>>>> Yes.
+>>>>>
+>>>>>> What do you mean be "End of conversion interrupt number"? Just describe
+>>>>>> what the interrupt logically is from the PoV of the device -- interrupts
+>>>>>> is a standard property so we don't need to be too explicit about the
+>>>>>> type.
+>>>>>
+>>>>> Badly worded. Just, "End of conversion interrupt"?
+>>>>
+>>>> The part I didn't understand was what was meant by "End of conversion",
+>>>> but dropping "number" is certainly better.
+>>>
+>>> It is clear now, right? End of ADC conversion.
+>>
+>> Sorry if I'm being thick here, but it's still somewhat confusing to me.
+>> That's a consequence of me not being familiar with the HW more than
+>> anything, I'm just missing simple details regarding the model of
+>> operation, suchs as exactly what the "end of ADC conversion" entails.
+>> There are a few things that could potentially mean depending on how the
+>> HW was designed and intended to be used.
+>>
+>> Does the  device periodically sample, convert some number of values
+>> (possibly just 1), and trigger an interrupt to state that a buffer is
+>> full / values are available? Or is the interrupt triggered for some
+>> other reason?
+> 
+> Interrupt is triggered after ADC convert analog signal to digital.
+> Other details are irrelevant, I believe. 
+Often called a data ready interrupt.  However, here it is per channel
+so perhaps that description is confusing as well...
+> 
+>>
+>>>>>>> +- qcom,rsense:
+>>>>>>> +    Usage: optional
+>>>>>>> +    Value type: <u32>
+>>>>>>> +    Definition: External sense register value in Ohm. Defining this
+>>>>>>> +            propery will instruct ADC to use external ADC sense channel.
+>>>>>>> +            If property is not defined ADC will use internal sense channel.
+>>>>>>
+>>>>>> The latter two sentences sound like a driver description.
+>>>>>>
+>>>>>> What exactly is the difference between the internal and external
+>>>>>> channels, and what exactly is the value in the sense register used for?
+>>>>>
+>>>>> Internal - when using chip build-in resistor
+>>>>> External - when using off-chip resistor
+>>>>
+>>>> Would it be possible to use the internal channel when you have an
+>>>> external resistor?
+>>>>
+>>>> If so, does the device have a channel per resistor, or can either
+>>>> resistor be selected and applied to the single channel the device has?
+>>>>
+>>>
+>>> They are two dedicated channels. Channel zero can only measure current
+>>> over internal resistor (MOSFET). Channel two can only measure current
+>>> over external resistor. This ADC is part of Battery Monitor System
+>>> (BMS), i.e. it is not general purpose ADC. Based on DT files in
+>>> codeaurora repository, only one of the channels is used, probably
+>>> chosen at schematics design time. In practice, on the systems that
+>>> use battery, there is always two resistors, and they are connected
+>>> in sequence, just one of them should be zero. External resistor 
+>>> could be with higher quality, I suppose.
+>>
+>> I see. So there are two channels, but in all instances so far only one
+>> is wired up to anything?
+> 
+> I will say, Yes :-).
+> 
+>>
+>>>> This might be better worded as "external-registor-ohms".
+>>>
+>>> Ok.
+>>>
+>>>>
+>>>>>
+>>>>>>
+>>>>>> The binding should describe the logical properties of the device rather
+>>>>>> than the specific programming model details.
+>>>>>>
+>>>>>>> +
+>>>>>>> +- qcom,rds-trim:
+>>>>>>> +    Usage: optional
+>>>>>>> +    Value type: <u32>
+>>>>>>> +    Definition: Calculate internal sense resistor value based TRIM_CNST_RDS,
+>>>>>>> +            IADC RDS and manufacturer.
+>>>>>>> +            0: Read the IADC and SMBB trim register and apply the default
+>>>>>>> +               RSENSE if conditions are met.
+>>>>>>> +            1: Read the IADC, SMBB trim register and manufacturer type and
+>>>>>>> +               apply the default RSENSE if conditions are met.
+>>>>>>> +            2: Read the IADC, SMBB trim register and apply the default RSENSE
+>>>>>>> +               if conditions are met.
+>>>>>>> +            If property is not defined driver will use qcom,rsense value if
+>>>>>>> +            defined or internal sense resistor value trimmed into register.
+>>>>>>
+>>>>>> Having read this a few times, I still don't understand which I would use
+>>>>>> and when.
+>>>>>>
+>>>>>> Which conditions need to be met in each of these cases?
+>>>>>>
+>>>>>> When does the manufacturer need to be taken into account and what does
+>>>>>> it even mean for that to be the case? That sounds very much like a
+>>>>>> driver detail rather than a HW property.
+>>>>>>
+>>>>>> Cases 0 and 2 seem to be the same, just with s/, / and /. I cannot
+>>>>>> figure out the intended difference between the two.
+>>>>>>
+>>>>>> The last sentence is very much a driver description.
+>>>>>
+>>>>> Sorry. I have tried to make it better. Now looking again DT files
+>>>>> in codeaurora tree I see that 0 is used in pm8941, 1 is used in
+>>>>> pm8110 and 2 is used for pm8226. So I will remove this property
+>>>>> and handle this inside driver based on chip version.
+>>>>
+>>>> Is this only to determine the value of the internal resistor?
+>>>
+>>> No. Ideal value for internal resistor is supposed to be 10Mohms.
+>>> One register(8 bits) hold production time trimmed value, which represent
+>>> difference against ideal value. It looks like some times real resistor
+>>> values is too far from ideal and register can't hold the difference, so 
+>>> some additional hints are needed. In this case value trimmed to
+>>> register into BMS peripheral.
+>>
+>> Ok. So from my PoV, the answer to my question is 'yes'. All that
+>> information is used to determine the actual (rather than ideal) value of
+>> the internal resistor.
+>>
+>> How variable is this value? Does it vary per board, only per SoC
+>> version? Would the suggested "internal-resistor-ohms" property be
+>> sufficient, or is the value too variable for that to work?
+> 
+> It vary, per chip. Note this is PMIC chip accessed from SoC
+> over SPMI bus.
+> 
+>>
+>>>> If that isn't probable in a standard way across all variations, would an
+>>>> "internal-resistor-ohms" property be sufficient?
+>>>>
+>>>>>
+>>>>>>
+>>>>>>> +
+>>>>>>> +Example:
+>>>>>>> +       /* IADC node */
+>>>>>>> +       pmic_iadc: iadc@3600 {
+>>>>>>> +               compatible = "qcom,spmi-iadc";
+>>>>>>> +               reg = <0x3600 0x100>,
+>>>>>>> +                         <0x12f1 0x1>;
+>>>>>>> +               interrupts = <0x0 0x36 0x0 IRQ_TYPE_EDGE_RISING>;
+>>>>>>> +               qcom,rds-trim = <0>;
+>>>>>>> +       };
+>>>>>>> +
+>>>>>>> +       /* IIO client node */
+>>>>>>> +       bat {
+>>>>>>> +               io-channels = <&pmic_iadc 0>;
+>>>>>>> +               io-channel-names = "iadc";
+>>>>>>> +       };
+>>>>>>
+>>>>>> Surely you need #iio-cells on the IADC node?
+>>>>>
+>>>>> Yes, I need to add it.
+>>>>>
+>>>>>>
+>>>>>> Given the client seems to pass a specifier value, does this have
+>>>>>> multiple channels, or only a single channel?
+>>>>>
+>>>>> Driver register only one IIO channel, so #io-channel-cells 
+>>>>> should be <0>.
+>>>>
+>>>> Ok. Regardless of what the driver does, does the hardware have
+>>>> multi-channel capability?
+>>>
+>>> Strictly speaking, yes. But I don't see how both of them could
+>>> used at the same time in practice.
+>>
+>> Even if that is the case, sure we can support #iio-cells = <1> and refer
+>> to the channels as you numbered them above (zero for internal, one for
+>> external)?
+> 
+> Ok, will rework it.
+> 
+> Thank you,
+> Ivan
+> 
+>>
+>> Mark.
+> 
+> 
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> 
