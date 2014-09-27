@@ -1,251 +1,512 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from relay05.mycloudmailbox.com ([199.244.76.204]:49191 "EHLO
-	relay05.mycloudmailbox.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1754287AbaIXPDO (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 24 Sep 2014 11:03:14 -0400
-From: David Barksdale <dbarksdale@uplogix.com>
-To: Jonathan Cameron <jic23@kernel.org>
-CC: David Barksdale <dbarksdale@uplogix.com>,
-	<linux-kernel@vger.kernel.org>, <linux-iio@vger.kernel.org>
-Subject: [PATCH v3] IIO: add si7020 driver
-Date: Wed, 24 Sep 2014 10:02:59 -0500
-Message-ID: <1411570979-19473-1-git-send-email-dbarksdale@uplogix.com>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:36253 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752031AbaI0Ktz (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 27 Sep 2014 06:49:55 -0400
+Message-ID: <5426964A.3050407@kernel.org>
+Date: Sat, 27 Sep 2014 11:49:46 +0100
+From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain
+To: Adam Thomson <Adam.Thomson.Opensource@diasemi.com>,
+	Lee Jones <lee.jones@linaro.org>,
+	Samuel Ortiz <sameo@linux.intel.com>,
+	linux-iio@vger.kernel.org, Sebastian Reichel <sre@kernel.org>,
+	Dmitry Eremin-Solenikov <dbaryshkov@gmail.com>,
+	David Woodhouse <dwmw2@infradead.org>,
+	linux-pm@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
+	Pawel Moll <pawel.moll@arm.com>,
+	Mark Rutland <mark.rutland@arm.com>,
+	Ian Campbell <ijc+devicetree@hellion.org.uk>,
+	Kumar Gala <galak@codeaurora.org>,
+	Grant Likely <grant.likely@linaro.org>,
+	devicetree@vger.kernel.org,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Joe Perches <joe@perches.com>, linux-api@vger.kernel.org
+CC: linux-kernel@vger.kernel.org, support.opensource@diasemi.com
+Subject: Re: [PATCH 3/8] iio: Add support for DA9150 GPADC
+References: <cover.1411396718.git.Adam.Thomson.Opensource@diasemi.com> <ee4c56931f326d8ee9c1313c44456bce2dec8b8c.1411396719.git.Adam.Thomson.Opensource@diasemi.com>
+In-Reply-To: <ee4c56931f326d8ee9c1313c44456bce2dec8b8c.1411396719.git.Adam.Thomson.Opensource@diasemi.com>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-This patch adds support to the Industrial IO subsystem
-for the Silicon Labs Si7013/20/21 Relative Humidity and
-Temperature Sensors.
+On 23/09/14 11:53, Adam Thomson wrote:
+> This patch adds support for DA9150 Charger & Fuel-Gauge IC GPADC.
+>
+> Signed-off-by: Adam Thomson <Adam.Thomson.Opensource@diasemi.com>
+Very nearly there although I still would prefer all channels to use
+(raw + offset) * scale and let userspace or in kernel conversion functions
+handle it.
 
-Website: http://www.silabs.com/products/sensors/humidity-sensors/Pages/si7013-20-21.aspx
+> ---
+>  drivers/iio/adc/Kconfig        |   9 +
+>  drivers/iio/adc/Makefile       |   1 +
+>  drivers/iio/adc/da9150-gpadc.c | 406 +++++++++++++++++++++++++++++++++++++++++
+>  3 files changed, 416 insertions(+)
+>  create mode 100644 drivers/iio/adc/da9150-gpadc.c
+>
+> diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+> index 11b048a..8041347 100644
+> --- a/drivers/iio/adc/Kconfig
+> +++ b/drivers/iio/adc/Kconfig
+> @@ -127,6 +127,15 @@ config AT91_ADC
+>  	help
+>  	  Say yes here to build support for Atmel AT91 ADC.
+>
+> +config DA9150_GPADC
+> +	tristate "Dialog DA9150 GPADC driver support"
+> +	depends on MFD_DA9150
+> +	help
+> +	  Say yes here to build support for Dialog DA9150 GPADC.
+> +
+> +	  This driver can also be built as a module. If chosen, the module name
+> +	  will be da9150-gpadc.
+> +
+>  config EXYNOS_ADC
+>  	tristate "Exynos ADC driver support"
+>  	depends on ARCH_EXYNOS || (OF && COMPILE_TEST)
+> diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
+> index ad81b51..48413d2 100644
+> --- a/drivers/iio/adc/Makefile
+> +++ b/drivers/iio/adc/Makefile
+> @@ -14,6 +14,7 @@ obj-$(CONFIG_AD7793) += ad7793.o
+>  obj-$(CONFIG_AD7887) += ad7887.o
+>  obj-$(CONFIG_AD799X) += ad799x.o
+>  obj-$(CONFIG_AT91_ADC) += at91_adc.o
+> +obj-$(CONFIG_DA9150_GPADC) += da9150-gpadc.o
+>  obj-$(CONFIG_EXYNOS_ADC) += exynos_adc.o
+>  obj-$(CONFIG_LP8788_ADC) += lp8788_adc.o
+>  obj-$(CONFIG_MAX1027) += max1027.o
+> diff --git a/drivers/iio/adc/da9150-gpadc.c b/drivers/iio/adc/da9150-gpadc.c
+> new file mode 100644
+> index 0000000..2b83ee0
+> --- /dev/null
+> +++ b/drivers/iio/adc/da9150-gpadc.c
+> @@ -0,0 +1,406 @@
+> +/*
+> + * DA9150 GPADC Driver
+> + *
+> + * Copyright (c) 2014 Dialog Semiconductor
+> + *
+> + * Author: Adam Thomson <Adam.Thomson.Opensource@diasemi.com>
+> + *
+> + * This program is free software; you can redistribute  it and/or modify it
+> + * under  the terms of  the GNU General  Public License as published by the
+> + * Free Software Foundation;  either version 2 of the  License, or (at your
+> + * option) any later version.
+> + */
+> +
+> +#include <linux/kernel.h>
+> +#include <linux/slab.h>
+> +#include <linux/module.h>
+> +#include <linux/platform_device.h>
+> +#include <linux/interrupt.h>
+> +#include <linux/mutex.h>
+> +#include <linux/completion.h>
+> +#include <linux/iio/iio.h>
+> +#include <linux/iio/machine.h>
+> +#include <linux/iio/driver.h>
+> +#include <linux/mfd/da9150/core.h>
+> +#include <linux/mfd/da9150/registers.h>
+> +
+> +/* Channels */
+> +enum da9150_gpadc_hw_channel {
+> +	DA9150_GPADC_HW_CHAN_GPIOA_2V = 0,
+> +	DA9150_GPADC_HW_CHAN_GPIOA_2V_,
+> +	DA9150_GPADC_HW_CHAN_GPIOB_2V,
+> +	DA9150_GPADC_HW_CHAN_GPIOB_2V_,
+> +	DA9150_GPADC_HW_CHAN_GPIOC_2V,
+> +	DA9150_GPADC_HW_CHAN_GPIOC_2V_,
+> +	DA9150_GPADC_HW_CHAN_GPIOD_2V,
+> +	DA9150_GPADC_HW_CHAN_GPIOD_2V_,
+> +	DA9150_GPADC_HW_CHAN_IBUS_SENSE,
+> +	DA9150_GPADC_HW_CHAN_IBUS_SENSE_,
+> +	DA9150_GPADC_HW_CHAN_VBUS_DIV,
+> +	DA9150_GPADC_HW_CHAN_VBUS_DIV_,
+> +	DA9150_GPADC_HW_CHAN_ID,
+> +	DA9150_GPADC_HW_CHAN_ID_,
+> +	DA9150_GPADC_HW_CHAN_VSYS,
+> +	DA9150_GPADC_HW_CHAN_VSYS_,
+> +	DA9150_GPADC_HW_CHAN_GPIOA_6V,
+> +	DA9150_GPADC_HW_CHAN_GPIOA_6V_,
+> +	DA9150_GPADC_HW_CHAN_GPIOB_6V,
+> +	DA9150_GPADC_HW_CHAN_GPIOB_6V_,
+> +	DA9150_GPADC_HW_CHAN_GPIOC_6V,
+> +	DA9150_GPADC_HW_CHAN_GPIOC_6V_,
+> +	DA9150_GPADC_HW_CHAN_GPIOD_6V,
+> +	DA9150_GPADC_HW_CHAN_GPIOD_6V_,
+> +	DA9150_GPADC_HW_CHAN_VBAT,
+> +	DA9150_GPADC_HW_CHAN_VBAT_,
+> +	DA9150_GPADC_HW_CHAN_TBAT,
+> +	DA9150_GPADC_HW_CHAN_TBAT_,
+> +	DA9150_GPADC_HW_CHAN_TJUNC_CORE,
+> +	DA9150_GPADC_HW_CHAN_TJUNC_CORE_,
+> +	DA9150_GPADC_HW_CHAN_TJUNC_OVP,
+> +	DA9150_GPADC_HW_CHAN_TJUNC_OVP_,
+> +};
+> +
+> +enum da9150_gpadc_channel {
+> +	DA9150_GPADC_CHAN_GPIOA = 0,
+> +	DA9150_GPADC_CHAN_GPIOB,
+> +	DA9150_GPADC_CHAN_GPIOC,
+> +	DA9150_GPADC_CHAN_GPIOD,
+> +	DA9150_GPADC_CHAN_IBUS,
+> +	DA9150_GPADC_CHAN_VBUS,
+> +	DA9150_GPADC_CHAN_ID,
+> +	DA9150_GPADC_CHAN_VSYS,
+> +	DA9150_GPADC_CHAN_VBAT,
+> +	DA9150_GPADC_CHAN_TBAT,
+> +	DA9150_GPADC_CHAN_TJUNC_CORE,
+> +	DA9150_GPADC_CHAN_TJUNC_OVP,
+> +};
+> +
+> +/* Private data */
+> +struct da9150_gpadc {
+> +	struct da9150 *da9150;
+> +	struct device *dev;
+> +
+> +	struct mutex lock;
+> +	struct completion complete;
+> +};
+> +
+> +
+> +static irqreturn_t da9150_gpadc_irq(int irq, void *data)
+> +{
+> +
+> +	struct da9150_gpadc *gpadc = data;
+> +
+> +	complete(&gpadc->complete);
+> +
+> +	return IRQ_HANDLED;
+> +}
+> +
+> +static int da9150_gpadc_read_adc(struct da9150_gpadc *gpadc, int hw_chan)
+> +{
+> +	u8 result_regs[2];
+> +	int result;
+> +
+> +	mutex_lock(&gpadc->lock);
+> +
+> +	/* Set channel & enable measurement */
+> +	da9150_reg_write(gpadc->da9150, DA9150_GPADC_MAN,
+> +			 (DA9150_GPADC_EN_MASK |
+> +			  hw_chan << DA9150_GPADC_MUX_SHIFT));
+> +
+> +	/* Consume left-over completion from a previous timeout */
+> +	try_wait_for_completion(&gpadc->complete);
+> +
+> +	/* Check for actual completion */
+> +	wait_for_completion_timeout(&gpadc->complete, msecs_to_jiffies(5));
+> +
+> +	/* Read result and status from device */
+> +	da9150_bulk_read(gpadc->da9150, DA9150_GPADC_RES_A, 2, result_regs);
+> +
+> +	mutex_unlock(&gpadc->lock);
+> +
+> +	/* Check to make sure device really has completed reading */
+> +	if (result_regs[1] & DA9150_GPADC_RUN_MASK) {
+> +		dev_err(gpadc->dev, "Timeout on channel %d of GPADC\n",
+> +			hw_chan);
+> +		return -ETIMEDOUT;
+> +	}
+> +
+> +	/* LSBs - 2 bits */
+> +	result = (result_regs[1] & DA9150_GPADC_RES_L_MASK) >>
+> +		 DA9150_GPADC_RES_L_SHIFT;
+> +	/* MSBs - 8 bits */
+> +	result |= result_regs[0] << DA9150_GPADC_RES_L_BITS;
+> +
+> +	return result;
+> +}
+> +
+> +static inline int da9150_gpadc_gpio_6v_voltage_now(int raw_val)
+> +{
+> +	/* Convert to mV */
+> +	return (6 * ((raw_val * 1000) + 500)) / 1024;
+These could all be expressed as raw values with offsets
+and scales (and that would be preferred).
+E.g. This one has offset 500000 and scale 6000/1024 or even
+better use IIO_VAL_FRACTIONAL_LOG2 for scale with val1 = 6000
+and val2 = (log_2 1024) = 10.
 
-These are i2c devices which measure relative humidity
-and temperature and all use the same protocol. The
-Si7013 has an additional input with programmable
-linearization which is not supported because that's
-complicated and I didn't need it.
+> +}
+> +
+> +static inline int da9150_gpadc_ibus_current_avg(int raw_val)
+> +{
+> +	/* Convert to mA */
+> +	return (4 * ((raw_val * 1000) + 500)) / 2048;
+> +}
+> +
+> +static inline int da9150_gpadc_vbus_21v_voltage_now(int raw_val)
+> +{
+> +	/* Convert to mV */
+> +	return (21 * ((raw_val * 1000) + 500)) / 1024;
+> +}
+> +
+> +static inline int da9150_gpadc_vsys_6v_voltage_now(int raw_val)
+> +{
+> +	/* Convert to mV */
+> +	return (3 * ((raw_val * 1000) + 500)) / 512;
+> +}
+> +
+> +static int da9150_gpadc_read_processed(struct da9150_gpadc *gpadc, int channel,
+> +				       int hw_chan, int *val)
+> +{
+> +	int raw_val;
+> +
+> +	raw_val = da9150_gpadc_read_adc(gpadc, hw_chan);
+> +	if (raw_val < 0)
+> +		return raw_val;
+> +
+> +	switch (channel) {
+> +	case DA9150_GPADC_CHAN_GPIOA:
+> +	case DA9150_GPADC_CHAN_GPIOB:
+> +	case DA9150_GPADC_CHAN_GPIOC:
+> +	case DA9150_GPADC_CHAN_GPIOD:
+> +		*val = da9150_gpadc_gpio_6v_voltage_now(raw_val);
+> +		break;
+> +	case DA9150_GPADC_CHAN_IBUS:
+> +		*val = da9150_gpadc_ibus_current_avg(raw_val);
+> +		break;
+> +	case DA9150_GPADC_CHAN_VBUS:
+> +		*val = da9150_gpadc_vbus_21v_voltage_now(raw_val);
+> +		break;
+> +	case DA9150_GPADC_CHAN_VSYS:
+> +		*val = da9150_gpadc_vsys_6v_voltage_now(raw_val);
+> +		break;
+> +	default:
+> +		/* No processing for other channels so return raw value */
+> +		*val = raw_val;
+> +		break;
+> +	}
+> +
+> +	return IIO_VAL_INT;
+> +}
+> +
+> +static int da9150_gpadc_read_scale(int channel, int *val, int *val2)
+> +{
+> +	switch (channel) {
+> +	case DA9150_GPADC_CHAN_VBAT:
+> +		*val = 2932;
+> +		*val2 = 1000;
+> +		return IIO_VAL_FRACTIONAL;
+> +	case DA9150_GPADC_CHAN_TJUNC_CORE:
+> +	case DA9150_GPADC_CHAN_TJUNC_OVP:
+> +		*val = 1000000;
+> +		*val2 = 4420;
+> +		return IIO_VAL_FRACTIONAL;
+> +	default:
+> +		return -EINVAL;
+> +	}
+> +}
+> +
+> +static int da9150_gpadc_read_offset(int channel, int *val)
+> +{
+> +	switch (channel) {
+> +	case DA9150_GPADC_CHAN_VBAT:
+> +		*val = 1500000 / 2932;
+> +		return IIO_VAL_INT;
+> +	case DA9150_GPADC_CHAN_TJUNC_CORE:
+> +	case DA9150_GPADC_CHAN_TJUNC_OVP:
+> +		*val = -144;
+> +		return IIO_VAL_INT;
+> +	default:
+> +		return -EINVAL;
+> +	}
+> +}
+> +
+> +static int da9150_gpadc_read_raw(struct iio_dev *indio_dev,
+> +				 struct iio_chan_spec const *chan,
+> +				 int *val, int *val2, long mask)
+> +{
+> +	struct da9150_gpadc *gpadc = iio_priv(indio_dev);
+> +
+> +	if ((chan->channel < DA9150_GPADC_CHAN_GPIOA) ||
+> +	    (chan->channel > DA9150_GPADC_CHAN_TJUNC_OVP))
+> +		return -EINVAL;
+> +
+> +	switch (mask) {
+> +	case IIO_CHAN_INFO_RAW:
+> +	case IIO_CHAN_INFO_PROCESSED:
+> +		return da9150_gpadc_read_processed(gpadc, chan->channel,
+> +						   chan->address, val);
+> +	case IIO_CHAN_INFO_SCALE:
+> +		return da9150_gpadc_read_scale(chan->channel, val, val2);
+> +	case IIO_CHAN_INFO_OFFSET:
+> +		return da9150_gpadc_read_offset(chan->channel, val);
+> +	default:
+> +		return -EINVAL;
+> +	}
+> +}
+> +
+> +static const struct iio_info da9150_gpadc_info = {
+> +	.read_raw = &da9150_gpadc_read_raw,
+> +	.driver_module = THIS_MODULE,
+> +};
+> +
+> +#define DA9150_GPADC_CHANNEL(_id, _hw_id, _type, chan_info,	\
+> +			     _ext_name) {			\
+> +	.type = _type,						\
+> +	.indexed = 1,						\
+> +	.channel = DA9150_GPADC_CHAN_##_id,			\
+> +	.address = DA9150_GPADC_HW_CHAN_##_hw_id,		\
+> +	.info_mask_separate = chan_info,			\
+> +	.extend_name = _ext_name,				\
+> +	.datasheet_name = #_id,					\
+> +}
+> +
+> +#define DA9150_GPADC_CHANNEL_RAW(_id, _hw_id, _type, _ext_name)	\
+> +	DA9150_GPADC_CHANNEL(_id, _hw_id, _type,		\
+> +			     BIT(IIO_CHAN_INFO_RAW), _ext_name)
+> +
+> +#define DA9150_GPADC_CHANNEL_SCALED(_id, _hw_id, _type, _ext_name)	\
+> +	DA9150_GPADC_CHANNEL(_id, _hw_id, _type,			\
+> +			     BIT(IIO_CHAN_INFO_RAW) |			\
+> +			     BIT(IIO_CHAN_INFO_SCALE) |			\
+> +			     BIT(IIO_CHAN_INFO_OFFSET),			\
+> +			     _ext_name)
+> +
+> +#define DA9150_GPADC_CHANNEL_PROCESSED(_id, _hw_id, _type, _ext_name)	\
+> +	DA9150_GPADC_CHANNEL(_id, _hw_id, _type,			\
+> +			     BIT(IIO_CHAN_INFO_PROCESSED), _ext_name)
+> +
+> +/* Supported channels */
+> +static const struct iio_chan_spec da9150_gpadc_channels[] = {
+> +	DA9150_GPADC_CHANNEL_PROCESSED(GPIOA, GPIOA_6V, IIO_VOLTAGE, "GPIOA"),
+> +	DA9150_GPADC_CHANNEL_PROCESSED(GPIOB, GPIOB_6V, IIO_VOLTAGE, "GPIOB"),
+> +	DA9150_GPADC_CHANNEL_PROCESSED(GPIOC, GPIOC_6V, IIO_VOLTAGE, "GPIOC"),
+> +	DA9150_GPADC_CHANNEL_PROCESSED(GPIOD, GPIOD_6V, IIO_VOLTAGE, "GPIOD"),
+> +	DA9150_GPADC_CHANNEL_PROCESSED(IBUS, IBUS_SENSE, IIO_CURRENT, "IBUS"),
+> +	DA9150_GPADC_CHANNEL_PROCESSED(VBUS, VBUS_DIV_, IIO_VOLTAGE, "VBUS"),
+> +	DA9150_GPADC_CHANNEL_RAW(ID, ID, IIO_VOLTAGE, "ID"),
+> +	DA9150_GPADC_CHANNEL_PROCESSED(VSYS, VSYS, IIO_VOLTAGE, "VSYS"),
+> +	DA9150_GPADC_CHANNEL_SCALED(VBAT, VBAT, IIO_VOLTAGE, "VBAT"),
+> +	DA9150_GPADC_CHANNEL_RAW(TBAT, TBAT, IIO_VOLTAGE, "TBAT"),
+> +	DA9150_GPADC_CHANNEL_SCALED(TJUNC_CORE, TJUNC_CORE, IIO_TEMP,
+> +				    "TJUNC_CORE"),
+> +	DA9150_GPADC_CHANNEL_SCALED(TJUNC_OVP, TJUNC_OVP, IIO_TEMP,
+> +				    "TJUNC_OVP"),
+> +};
+> +
+> +/* Default maps used by da9150-charger */
+> +static struct iio_map da9150_gpadc_default_maps[] = {
+> +	{
+> +		.consumer_dev_name = "da9150-charger",
+> +		.consumer_channel = "CHAN_IBUS",
+> +		.adc_channel_label = "IBUS",
+> +	},
+> +	{
+> +		.consumer_dev_name = "da9150-charger",
+> +		.consumer_channel = "CHAN_VBUS",
+> +		.adc_channel_label = "VBUS",
+> +	},
+> +	{
+> +		.consumer_dev_name = "da9150-charger",
+> +		.consumer_channel = "CHAN_TJUNC",
+> +		.adc_channel_label = "TJUNC_CORE",
+> +	},
+> +	{
+> +		.consumer_dev_name = "da9150-charger",
+> +		.consumer_channel = "CHAN_VBAT",
+> +		.adc_channel_label = "VBAT",
+> +	},
+> +	{},
+> +};
+> +
+> +static int da9150_gpadc_probe(struct platform_device *pdev)
+> +{
+> +	struct device *dev = &pdev->dev;
+> +	struct da9150 *da9150 = dev_get_drvdata(dev->parent);
+> +	struct da9150_gpadc *gpadc;
+> +	struct iio_dev *indio_dev;
+> +	int irq, ret;
+> +
+> +	indio_dev = devm_iio_device_alloc(&pdev->dev,
+> +					  sizeof(struct da9150_gpadc));
+> +	if (!indio_dev) {
+> +		dev_err(&pdev->dev, "Failed to allocate IIO device\n");
+> +		return -ENOMEM;
+> +	}
+> +	gpadc = iio_priv(indio_dev);
+> +
+> +	platform_set_drvdata(pdev, indio_dev);
+> +	gpadc->da9150 = da9150;
+> +	gpadc->dev = dev;
+> +
+> +	ret = iio_map_array_register(indio_dev, da9150_gpadc_default_maps);
+> +	if (ret) {
+> +		dev_err(dev, "Failed to register IIO maps: %d\n", ret);
+> +		return ret;
+> +	}
+I'd suggest doing the devm_request_thread_irq before the iio_map_array
+stuff.  This is purely to avoid the order during remove not being
+obviously correct as it isn't the reverse of during probe.
 
-Signed-off-by: David Barksdale <dbarksdale@uplogix.com>
+> +
+> +	mutex_init(&gpadc->lock);
+> +	init_completion(&gpadc->complete);
+> +
+> +	irq = platform_get_irq_byname(pdev, "GPADC");
+> +	ret = devm_request_threaded_irq(dev, irq, NULL, da9150_gpadc_irq,
+> +					IRQF_ONESHOT, "GPADC", gpadc);
+> +	if (ret) {
+> +		dev_err(dev, "Failed to request IRQ %d: %d\n", irq, ret);
+> +		goto iio_map_unreg;
+> +	}
+> +
+> +	indio_dev->name = dev_name(dev);
+> +	indio_dev->dev.parent = dev;
+> +	indio_dev->dev.of_node = pdev->dev.of_node;
+> +	indio_dev->info = &da9150_gpadc_info;
+> +	indio_dev->modes = INDIO_DIRECT_MODE;
+> +	indio_dev->channels = da9150_gpadc_channels;
+> +	indio_dev->num_channels = ARRAY_SIZE(da9150_gpadc_channels);
+> +
+> +	ret = iio_device_register(indio_dev);
+> +	if (ret) {
+> +		dev_err(dev, "Failed to register IIO device: %d\n", ret);
+> +		goto iio_map_unreg;
+> +	}
+> +
+> +	return 0;
+> +
+> +iio_map_unreg:
+> +	iio_map_array_unregister(indio_dev);
+> +
+> +	return ret;
+> +}
+> +
+> +static int da9150_gpadc_remove(struct platform_device *pdev)
+> +{
+> +	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
+> +
+> +	iio_map_array_unregister(indio_dev);
+Twice in one day.  I'm definitely thinking we should add a
+devm version of iio_map_array_register...
 
---
-Changes since v1:
-* Renamed to si7020 and replaced Si701x/2x with Si7013/20/21.
-* Removed unneeded mutex.
-* Pre-computed floating-point constant expressions.
-* Removed address_list and I2C_CLASS_HWMON.
-
-Changes since v2:
-* Return correct raw sensor values.
-* Rename dev variable to indio_dev.
-* Issue a software reset command during probe.
-* Un-broke string literal.
-
----
- drivers/iio/humidity/Kconfig  |  10 +++
- drivers/iio/humidity/Makefile |   1 +
- drivers/iio/humidity/si7020.c | 165 ++++++++++++++++++++++++++++++++++++++++++
- 3 files changed, 176 insertions(+)
-
-diff --git a/drivers/iio/humidity/Kconfig b/drivers/iio/humidity/Kconfig
-index e116bd8..4813b79 100644
---- a/drivers/iio/humidity/Kconfig
-+++ b/drivers/iio/humidity/Kconfig
-@@ -22,4 +22,14 @@ config SI7005
- 	  To compile this driver as a module, choose M here: the module
- 	  will be called si7005.
- 
-+config SI7020
-+	tristate "Si7013/20/21 Relative Humidity and Temperature Sensors"
-+	depends on I2C
-+	help
-+	  Say yes here to build support for the Silicon Labs Si7013/20/21
-+	  Relative Humidity and Temperature Sensors.
-+
-+	  To compile this driver as a module, choose M here: the module
-+	  will be called si7020.
-+
- endmenu
-diff --git a/drivers/iio/humidity/Makefile b/drivers/iio/humidity/Makefile
-index e3f3d94..86e2d26 100644
---- a/drivers/iio/humidity/Makefile
-+++ b/drivers/iio/humidity/Makefile
-@@ -4,3 +4,4 @@
- 
- obj-$(CONFIG_DHT11) += dht11.o
- obj-$(CONFIG_SI7005) += si7005.o
-+obj-$(CONFIG_SI7020) += si7020.o
-diff --git a/drivers/iio/humidity/si7020.c b/drivers/iio/humidity/si7020.c
-new file mode 100644
-index 0000000..4aacb55
---- /dev/null
-+++ b/drivers/iio/humidity/si7020.c
-@@ -0,0 +1,165 @@
-+/*
-+ * si7020.c - Silicon Labs Si7013/20/21 Relative Humidity and Temp Sensors
-+ * Copyright (c) 2013,2014  Uplogix, Inc.
-+ * David Barksdale <dbarksdale@uplogix.com>
-+ *
-+ * This program is free software; you can redistribute it and/or modify it
-+ * under the terms and conditions of the GNU General Public License,
-+ * version 2, as published by the Free Software Foundation.
-+ *
-+ * This program is distributed in the hope that it will be useful,
-+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
-+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-+ * GNU General Public License for more details.
-+ */
-+
-+/*
-+ * The Silicon Labs Si7013/20/21 Relative Humidity and Temperature Sensors
-+ * are i2c devices which have an identical programming interface for
-+ * measuring relative humidity and temperature. The Si7013 has an additional
-+ * temperature input which this driver does not support.
-+ *
-+ * Data Sheets:
-+ *   Si7013: http://www.silabs.com/Support%20Documents/TechnicalDocs/Si7013.pdf
-+ *   Si7020: http://www.silabs.com/Support%20Documents/TechnicalDocs/Si7020.pdf
-+ *   Si7021: http://www.silabs.com/Support%20Documents/TechnicalDocs/Si7021.pdf
-+ */
-+
-+#include <linux/delay.h>
-+#include <linux/i2c.h>
-+#include <linux/module.h>
-+#include <linux/slab.h>
-+#include <linux/sysfs.h>
-+
-+#include <linux/iio/iio.h>
-+#include <linux/iio/sysfs.h>
-+
-+enum {
-+	/* Measure Relative Humidity, Hold Master Mode */
-+	SI7020CMD_RH_HOLD	= 0xE5,
-+	/* Measure Temperature, Hold Master Mode */
-+	SI7020CMD_TEMP_HOLD	= 0xE3,
-+	/* Software Reset */
-+	SI7020CMD_RESET		= 0xFE,
-+};
-+
-+static int si7020_read_raw(struct iio_dev *indio_dev,
-+			   struct iio_chan_spec const *chan, int *val,
-+			   int *val2, long mask)
-+{
-+	struct i2c_client **client = iio_priv(indio_dev);
-+	int ret;
-+
-+	switch (mask) {
-+	case IIO_CHAN_INFO_RAW:
-+		ret = i2c_smbus_read_word_data(*client,
-+					       chan->type == IIO_TEMP ?
-+					       SI7020CMD_TEMP_HOLD :
-+					       SI7020CMD_RH_HOLD);
-+		if (ret < 0)
-+			return ret;
-+		if (chan->type == IIO_TEMP)
-+			*val = ret >> 2;
-+		else
-+			*val = (ret & 0x3FFF) >> 2;
-+		return IIO_VAL_INT;
-+	case IIO_CHAN_INFO_SCALE:
-+		if (chan->type == IIO_TEMP)
-+			*val = 175720; /* = 175.72 * 1000 */
-+		else
-+			*val = 125 * 1000;
-+		*val2 = 65536 >> 2;
-+		return IIO_VAL_FRACTIONAL;
-+	case IIO_CHAN_INFO_OFFSET:
-+		/* Since iio_convert_raw_to_processed_unlocked assumes offset
-+		 * is an integer we have to round these values and lose
-+		 * accuracy.
-+		 * Relative humidity will be 0.0032959% too high and
-+		 * temperature will be 0.00277344 degrees too high.
-+		 * This is no big deal because it's within the accuracy of the
-+		 * sensor.
-+		 */
-+		if (chan->type == IIO_TEMP)
-+			*val = -4368; /* = -46.85 * (65536 >> 2) / 175.72 */
-+		else
-+			*val = -786; /* = -6 * (65536 >> 2) / 125 */
-+		return IIO_VAL_INT;
-+	default:
-+		break;
-+	}
-+
-+	return -EINVAL;
-+}
-+
-+static const struct iio_chan_spec si7020_channels[] = {
-+	{
-+		.type = IIO_HUMIDITYRELATIVE,
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
-+			BIT(IIO_CHAN_INFO_SCALE) | BIT(IIO_CHAN_INFO_OFFSET),
-+	},
-+	{
-+		.type = IIO_TEMP,
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
-+			BIT(IIO_CHAN_INFO_SCALE) | BIT(IIO_CHAN_INFO_OFFSET),
-+	}
-+};
-+
-+static const struct iio_info si7020_info = {
-+	.read_raw = si7020_read_raw,
-+	.driver_module = THIS_MODULE,
-+};
-+
-+static int si7020_probe(struct i2c_client *client,
-+			const struct i2c_device_id *id)
-+{
-+	struct iio_dev *indio_dev;
-+	struct i2c_client **data;
-+	int ret;
-+
-+	if (!i2c_check_functionality(client->adapter,
-+				     I2C_FUNC_SMBUS_WRITE_BYTE |
-+				     I2C_FUNC_SMBUS_READ_WORD_DATA))
-+		return -ENODEV;
-+
-+	/* Reset device, loads default settings. */
-+	ret = i2c_smbus_write_byte(client, SI7020CMD_RESET);
-+	if (ret < 0)
-+		return ret;
-+	/* Wait the maximum power-up time after software reset. */
-+	msleep(15);
-+
-+	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*client));
-+	if (!indio_dev)
-+		return -ENOMEM;
-+
-+	data = iio_priv(indio_dev);
-+	*data = client;
-+	i2c_set_clientdata(client, indio_dev);
-+
-+	indio_dev->dev.parent = &client->dev;
-+	indio_dev->name = dev_name(&client->dev);
-+	indio_dev->modes = INDIO_DIRECT_MODE;
-+	indio_dev->info = &si7020_info;
-+	indio_dev->channels = si7020_channels;
-+	indio_dev->num_channels = ARRAY_SIZE(si7020_channels);
-+
-+	return devm_iio_device_register(&client->dev, indio_dev);
-+}
-+
-+static const struct i2c_device_id si7020_id[] = {
-+	{ "si7020", 0 },
-+	{ }
-+};
-+MODULE_DEVICE_TABLE(i2c, si7020_id);
-+
-+static struct i2c_driver si7020_driver = {
-+	.driver.name	= "si7020",
-+	.probe		= si7020_probe,
-+	.id_table	= si7020_id,
-+};
-+
-+module_i2c_driver(si7020_driver);
-+MODULE_DESCRIPTION("Silicon Labs Si7013/20/21 Relative Humidity and Temperature Sensors");
-+MODULE_AUTHOR("David Barksdale <dbarksdale@uplogix.com>");
-+MODULE_LICENSE("GPL");
-+
--- 
-tg: (0f33be0..) upstream/si7020 (depends on: upstream/master)
+> +	iio_device_unregister(indio_dev);
+> +
+> +	return 0;
+> +}
+> +
+> +static struct platform_driver da9150_gpadc_driver = {
+> +	.driver = {
+> +		.name = "da9150-gpadc",
+> +	},
+> +	.probe = da9150_gpadc_probe,
+> +	.remove = da9150_gpadc_remove,
+> +};
+> +
+> +module_platform_driver(da9150_gpadc_driver);
+> +
+> +MODULE_DESCRIPTION("GPADC Driver for DA9150");
+> +MODULE_AUTHOR("Adam Thomson <Adam.Thomson.Opensource@diasemi.com");
+> +MODULE_LICENSE("GPL");
+> --
+> 1.9.3
+>
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+>
