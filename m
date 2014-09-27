@@ -1,141 +1,369 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:35761 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:36068 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751698AbaI0Jf1 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 27 Sep 2014 05:35:27 -0400
-Message-ID: <542684D9.3010703@kernel.org>
-Date: Sat, 27 Sep 2014 10:35:21 +0100
+	with ESMTP id S1751894AbaI0KUl (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 27 Sep 2014 06:20:41 -0400
+Message-ID: <54268F75.6050707@kernel.org>
+Date: Sat, 27 Sep 2014 11:20:37 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Lars-Peter Clausen <lars@metafoo.de>
-CC: Hartmut Knaack <knaack.h@gmx.de>,
+To: Jacob Pan <jacob.jun.pan@linux.intel.com>,
+	IIO <linux-iio@vger.kernel.org>,
+	LKML <linux-kernel@vger.kernel.org>,
+	DEVICE TREE <devicetree@vger.kernel.org>,
+	Lee Jones <lee.jones@linaro.org>
+CC: Carlo Caione <carlo@caione.org>,
+	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+	Aaron Lu <aaron.lu@intel.com>, Alan Cox <alan@linux.intel.com>,
+	Samuel Ortiz <sameo@linux.intel.com>,
+	Liam Girdwood <lgirdwood@gmail.com>,
+	Mark Brown <broonie@kernel.org>,
+	Grant Likely <grant.likely@linaro.org>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Rob Herring <robh+dt@kernel.org>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Fugang Duan <B38611@freescale.com>,
+	Arnd Bergmann <arnd@arndb.de>,
+	Zubair Lutfullah <zubair.lutfullah@gmail.com>,
+	Sebastian Reichel <sre@debian.org>,
+	Johannes Thumshirn <johannes.thumshirn@men.de>,
+	Philippe Reynes <tremyfr@yahoo.fr>,
+	Angelo Compagnucci <angelo.compagnucci@gmail.com>,
+	Doug Anderson <dianders@chromium.org>,
+	Ramakrishna Pallala <ramakrishna.pallala@intel.com>,
 	Peter Meerwald <pmeerw@pmeerw.net>,
-	Daniel Baluta <daniel.baluta@intel.com>,
-	linux-iio@vger.kernel.org
-Subject: Re: [PATCH v2 1/4] staging:iio:ad5933: Fix NULL pointer deref when
- enabling buffer
-References: <1411655235-7635-1-git-send-email-lars@metafoo.de>
-In-Reply-To: <1411655235-7635-1-git-send-email-lars@metafoo.de>
+	Maxime Ripard <maxime.ripard@free-electrons.com>,
+	Rafael Wysocki <rafael.j.wysocki@intel.com>
+Subject: Re: [PATCH v6 2/2] iio/adc: add support for axp288 adc
+References: <1411644072-21326-1-git-send-email-jacob.jun.pan@linux.intel.com>
+In-Reply-To: <1411644072-21326-1-git-send-email-jacob.jun.pan@linux.intel.com>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 25/09/14 15:27, Lars-Peter Clausen wrote:
-> In older versions of the IIO framework it was possible to pass a
-> completely different set of channels to iio_buffer_register() as the one
-> that is assigned to the IIO device. Commit 959d2952d124 ("staging:iio: make
-> iio_sw_buffer_preenable much more general.") introduced a restriction that
-> requires that the set of channels that is passed to iio_buffer_register() is
-> a subset of the channels assigned to the IIO device as the IIO core will use
-> the list of channels that is assigned to the device to lookup a channel by
-> scan index in iio_compute_scan_bytes(). If it can not find the channel the
-> function will crash. This patch fixes the issue by making sure that the same
-> set of channels is assigned to the IIO device and passed to
-> iio_buffer_register().
-> 
-> Fixes the follow NULL pointer derefernce kernel crash:
-> 	Unable to handle kernel NULL pointer dereference at virtual address 00000016
-> 	pgd = d53d0000
-> 	[00000016] *pgd=1534e831, *pte=00000000, *ppte=00000000
-> 	Internal error: Oops: 17 [#1] PREEMPT SMP ARM
-> 	Modules linked in:
-> 	CPU: 1 PID: 1626 Comm: bash Not tainted 3.15.0-19969-g2a180eb-dirty #9545
-> 	task: d6c124c0 ti: d539a000 task.ti: d539a000
-> 	PC is at iio_compute_scan_bytes+0x34/0xa8
-> 	LR is at iio_compute_scan_bytes+0x34/0xa8
-> 	pc : [<c03052e4>]    lr : [<c03052e4>]    psr: 60070013
-> 	sp : d539beb8  ip : 00000001  fp : 00000000
-> 	r10: 00000002  r9 : 00000000  r8 : 00000001
-> 	r7 : 00000000  r6 : d6dc8800  r5 : d7571000  r4 : 00000002
-> 	r3 : d7571000  r2 : 00000044  r1 : 00000001  r0 : 00000000
-> 	Flags: nZCv  IRQs on  FIQs on  Mode SVC_32  ISA ARM  Segment user
-> 	Control: 18c5387d  Table: 153d004a  DAC: 00000015
-> 	Process bash (pid: 1626, stack limit = 0xd539a240)
-> 	Stack: (0xd539beb8 to 0xd539c000)
-> 	bea0:                                                       c02fc0e4 d7571000
-> 	bec0: d76c1640 d6dc8800 d757117c 00000000 d757112c c0305b04 d76c1690 d76c1640
-> 	bee0: d7571188 00000002 00000000 d7571000 d539a000 00000000 000dd1c8 c0305d54
-> 	bf00: d7571010 0160b868 00000002 c69d3900 d7573278 d7573308 c69d3900 c01ece90
-> 	bf20: 00000002 c0103fac c0103f6c d539bf88 00000002 c69d3b00 c69d3b0c c0103468
-> 	bf40: 00000000 00000000 d7694a00 00000002 000af408 d539bf88 c000dd84 c00b2f94
-> 	bf60: d7694a00 000af408 00000002 d7694a00 d7694a00 00000002 000af408 c000dd84
-> 	bf80: 00000000 c00b32d0 00000000 00000000 00000002 b6f1aa78 00000002 000af408
-> 	bfa0: 00000004 c000dc00 b6f1aa78 00000002 00000001 000af408 00000002 00000000
-> 	bfc0: b6f1aa78 00000002 000af408 00000004 be806a4c 000a6094 00000000 000dd1c8
-> 	bfe0: 00000000 be8069cc b6e8ab77 b6ec125c 40070010 00000001 22940489 154a5007
-> 	[<c03052e4>] (iio_compute_scan_bytes) from [<c0305b04>] (__iio_update_buffers+0x248/0x438)
-> 	[<c0305b04>] (__iio_update_buffers) from [<c0305d54>] (iio_buffer_store_enable+0x60/0x7c)
-> 	[<c0305d54>] (iio_buffer_store_enable) from [<c01ece90>] (dev_attr_store+0x18/0x24)
-> 	[<c01ece90>] (dev_attr_store) from [<c0103fac>] (sysfs_kf_write+0x40/0x4c)
-> 	[<c0103fac>] (sysfs_kf_write) from [<c0103468>] (kernfs_fop_write+0x110/0x154)
-> 	[<c0103468>] (kernfs_fop_write) from [<c00b2f94>] (vfs_write+0xd0/0x160)
-> 	[<c00b2f94>] (vfs_write) from [<c00b32d0>] (SyS_write+0x40/0x78)
-> 	[<c00b32d0>] (SyS_write) from [<c000dc00>] (ret_fast_syscall+0x0/0x30)
-> 	Code: ea00000e e1a01008 e1a00005 ebfff6fc (e5d0a016)
-> 
-> Fixes: 959d2952d124 ("staging:iio: make iio_sw_buffer_preenable much more general.")
-> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
-Yikes, that was some time ago.  Anyhow, applied to the fixes-togreg branch of
-iio.git
-though given timing it won't go in until after the merge window.
-Also marked for stable.
+On 25/09/14 12:21, Jacob Pan wrote:
+> Platform driver for X-Powers AXP288 ADC, which is a sub-device of the
+> customized AXP288 PMIC for Intel Baytrail-CR platforms. GPADC device
+> enumerates as one of the MFD cell devices. It uses IIO infrastructure
+> to communicate with userspace and consumer drivers.
+>
+> Usages of ADC channels include battery charging and thermal sensors.
+>
+> Based on initial work by:
+> Ramakrishna Pallala <ramakrishna.pallala@intel.com>
+>
+> Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
+One utterly trivial comment syntax comment inline.
+That and an observation that we should probably have a
+devm_iio_map_array_register given that is the only reason you can't
+drop the remove and use devm throughout.  One for another day.
 
-I'm not 100% sure how one marks a patch as for only onwards from a particular tree.
-There is syntax for saying cherry pick.  Hopefully the fixes tag will do the job.
+Acked-by: Jonathan Cameron <jic23@kernel.org>
 
-J
+
 > ---
-> No changes since v1
-> ---
->  drivers/staging/iio/impedance-analyzer/ad5933.c | 11 ++++-------
->  1 file changed, 4 insertions(+), 7 deletions(-)
-> 
-> diff --git a/drivers/staging/iio/impedance-analyzer/ad5933.c b/drivers/staging/iio/impedance-analyzer/ad5933.c
-> index d0c89d0..9a6665d 100644
-> --- a/drivers/staging/iio/impedance-analyzer/ad5933.c
-> +++ b/drivers/staging/iio/impedance-analyzer/ad5933.c
-> @@ -115,6 +115,7 @@ static const struct iio_chan_spec ad5933_channels[] = {
->  		.channel = 0,
->  		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED),
->  		.address = AD5933_REG_TEMP_DATA,
-> +		.scan_index = -1,
->  		.scan_type = {
->  			.sign = 's',
->  			.realbits = 14,
-> @@ -125,8 +126,6 @@ static const struct iio_chan_spec ad5933_channels[] = {
->  		.indexed = 1,
->  		.channel = 0,
->  		.extend_name = "real_raw",
-> -		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
-> -		BIT(IIO_CHAN_INFO_SCALE),
->  		.address = AD5933_REG_REAL_DATA,
->  		.scan_index = 0,
->  		.scan_type = {
-> @@ -139,8 +138,6 @@ static const struct iio_chan_spec ad5933_channels[] = {
->  		.indexed = 1,
->  		.channel = 0,
->  		.extend_name = "imag_raw",
-> -		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
-> -		BIT(IIO_CHAN_INFO_SCALE),
->  		.address = AD5933_REG_IMAG_DATA,
->  		.scan_index = 1,
->  		.scan_type = {
-> @@ -749,14 +746,14 @@ static int ad5933_probe(struct i2c_client *client,
->  	indio_dev->name = id->name;
->  	indio_dev->modes = INDIO_DIRECT_MODE;
->  	indio_dev->channels = ad5933_channels;
-> -	indio_dev->num_channels = 1; /* only register temp0_input */
-> +	indio_dev->num_channels = ARRAY_SIZE(ad5933_channels);
->  
->  	ret = ad5933_register_ring_funcs_and_init(indio_dev);
->  	if (ret)
->  		goto error_disable_reg;
->  
-> -	/* skip temp0_input, register in0_(real|imag)_raw */
-> -	ret = iio_buffer_register(indio_dev, &ad5933_channels[1], 2);
-> +	ret = iio_buffer_register(indio_dev, ad5933_channels,
-> +		ARRAY_SIZE(ad5933_channels));
->  	if (ret)
->  		goto error_unreg_ring;
->  
-> 
+>  drivers/iio/adc/Kconfig      |   8 ++
+>  drivers/iio/adc/Makefile     |   1 +
+>  drivers/iio/adc/axp288_adc.c | 253 +++++++++++++++++++++++++++++++++++++++++++
+>  3 files changed, 262 insertions(+)
+>  create mode 100644 drivers/iio/adc/axp288_adc.c
+>
+> diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+> index 11b048a..db2681b 100644
+> --- a/drivers/iio/adc/Kconfig
+> +++ b/drivers/iio/adc/Kconfig
+> @@ -127,6 +127,14 @@ config AT91_ADC
+>  	help
+>  	  Say yes here to build support for Atmel AT91 ADC.
+>
+> +config AXP288_ADC
+> +	tristate "X-Powers AXP288 ADC driver"
+> +	depends on MFD_AXP20X
+> +	help
+> +	  Say yes here to have support for X-Powers power management IC (PMIC) ADC
+> +	  device. Depending on platform configuration, this general purpose ADC can
+> +	  be used for sampling sensors such as thermal resistors.
+> +
+>  config EXYNOS_ADC
+>  	tristate "Exynos ADC driver support"
+>  	depends on ARCH_EXYNOS || (OF && COMPILE_TEST)
+> diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
+> index ad81b51..19640f9 100644
+> --- a/drivers/iio/adc/Makefile
+> +++ b/drivers/iio/adc/Makefile
+> @@ -14,6 +14,7 @@ obj-$(CONFIG_AD7793) += ad7793.o
+>  obj-$(CONFIG_AD7887) += ad7887.o
+>  obj-$(CONFIG_AD799X) += ad799x.o
+>  obj-$(CONFIG_AT91_ADC) += at91_adc.o
+> +obj-$(CONFIG_AXP288_ADC) += axp288_adc.o
+>  obj-$(CONFIG_EXYNOS_ADC) += exynos_adc.o
+>  obj-$(CONFIG_LP8788_ADC) += lp8788_adc.o
+>  obj-$(CONFIG_MAX1027) += max1027.o
+> diff --git a/drivers/iio/adc/axp288_adc.c b/drivers/iio/adc/axp288_adc.c
+> new file mode 100644
+> index 0000000..664d18f
+> --- /dev/null
+> +++ b/drivers/iio/adc/axp288_adc.c
+> @@ -0,0 +1,253 @@
+> +/*
+> + * axp288_adc.c - X-Powers AXP288 PMIC ADC Driver
+> + *
+> + * Copyright (C) 2014 Intel Corporation
+> + *
+> + * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> + *
+> + * This program is free software; you can redistribute it and/or modify
+> + * it under the terms of the GNU General Public License as published by
+> + * the Free Software Foundation; version 2 of the License.
+> + *
+> + * This program is distributed in the hope that it will be useful, but
+> + * WITHOUT ANY WARRANTY; without even the implied warranty of
+> + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	See the GNU
+> + * General Public License for more details.
+> + *
+> + */
+> +
+> +#include <linux/module.h>
+> +#include <linux/kernel.h>
+> +#include <linux/device.h>
+> +#include <linux/regmap.h>
+> +#include <linux/mfd/axp20x.h>
+> +#include <linux/platform_device.h>
+> +
+> +#include <linux/iio/iio.h>
+> +#include <linux/iio/machine.h>
+> +#include <linux/iio/driver.h>
+> +
+> +#define AXP288_ADC_EN_MASK		0xF1
+> +#define AXP288_ADC_TS_PIN_GPADC		0xF2
+> +#define AXP288_ADC_TS_PIN_ON		0xF3
+> +
+> +enum axp288_adc_id {
+> +	AXP288_ADC_TS,
+> +	AXP288_ADC_PMIC,
+> +	AXP288_ADC_GP,
+> +	AXP288_ADC_BATT_CHRG_I,
+> +	AXP288_ADC_BATT_DISCHRG_I,
+> +	AXP288_ADC_BATT_V,
+> +	AXP288_ADC_NR_CHAN,
+> +};
+> +
+> +struct axp288_adc_info {
+> +	int irq;
+> +	struct regmap *regmap;
+> +};
+> +
+> +static const struct iio_chan_spec const axp288_adc_channels[] = {
+> +	{
+> +		.indexed = 1,
+> +		.type = IIO_TEMP,
+> +		.channel = 0,
+> +		.address = AXP288_TS_ADC_H,
+> +		.datasheet_name = "CH0",
+> +	}, {
+> +		.indexed = 1,
+> +		.type = IIO_TEMP,
+> +		.channel = 1,
+> +		.address = AXP288_PMIC_ADC_H,
+> +		.datasheet_name = "CH1",
+> +	}, {
+> +		.indexed = 1,
+> +		.type = IIO_TEMP,
+> +		.channel = 2,
+> +		.address = AXP288_GP_ADC_H,
+> +		.datasheet_name = "CH2",
+> +	}, {
+> +		.indexed = 1,
+> +		.type = IIO_CURRENT,
+> +		.channel = 3,
+> +		.address = AXP20X_BATT_CHRG_I_H,
+> +		.datasheet_name = "CH3",
+> +		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED),
+> +	}, {
+> +		.indexed = 1,
+> +		.type = IIO_CURRENT,
+> +		.channel = 4,
+> +		.address = AXP20X_BATT_DISCHRG_I_H,
+> +		.datasheet_name = "CH4",
+> +		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED),
+> +	}, {
+> +		.indexed = 1,
+> +		.type = IIO_VOLTAGE,
+> +		.channel = 5,
+> +		.address = AXP20X_BATT_V_H,
+> +		.datasheet_name = "CH5",
+Original datasheet naming ;)
+> +		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED),
+> +	},
+> +};
+> +
+> +#define AXP288_ADC_MAP(_adc_channel_label, _consumer_dev_name,	\
+> +		_consumer_channel)				\
+> +	{							\
+> +		.adc_channel_label = _adc_channel_label,	\
+> +		.consumer_dev_name = _consumer_dev_name,	\
+> +		.consumer_channel = _consumer_channel,		\
+> +	}
+> +
+> +/* for consumer drivers */
+> +static struct iio_map axp288_adc_default_maps[] = {
+> +	AXP288_ADC_MAP("TS_PIN", "axp288-batt", "axp288-batt-temp"),
+> +	AXP288_ADC_MAP("PMIC_TEMP", "axp288-pmic", "axp288-pmic-temp"),
+> +	AXP288_ADC_MAP("GPADC", "axp288-gpadc", "axp288-system-temp"),
+> +	AXP288_ADC_MAP("BATT_CHG_I", "axp288-chrg", "axp288-chrg-curr"),
+> +	AXP288_ADC_MAP("BATT_DISCHRG_I", "axp288-chrg", "axp288-chrg-d-curr"),
+> +	AXP288_ADC_MAP("BATT_V", "axp288-batt", "axp288-batt-volt"),
+> +	{},
+> +};
+> +
+> +static int axp288_adc_read_channel(int *val, unsigned long address,
+> +				struct regmap *regmap)
+> +{
+> +	u8 buf[2];
+> +
+> +	if (regmap_bulk_read(regmap, address, buf, 2))
+> +		return -EIO;
+> +	*val = (buf[0] << 4) + ((buf[1] >> 4) & 0x0F);
+> +
+> +	return IIO_VAL_INT;
+> +}
+> +
+> +static int axp288_adc_set_ts(struct regmap *regmap, unsigned int mode,
+> +				unsigned long address)
+> +{
+> +	/* channels other than GPADC do not need to switch TS pin */
+> +	if (address != AXP288_GP_ADC_H)
+> +		return 0;
+> +
+> +	return regmap_write(regmap, AXP288_ADC_TS_PIN_CTRL, mode);
+> +}
+> +
+> +static int axp288_adc_read_raw(struct iio_dev *indio_dev,
+> +			struct iio_chan_spec const *chan,
+> +			int *val, int *val2, long mask)
+> +{
+> +	int ret;
+> +	struct axp288_adc_info *info = iio_priv(indio_dev);
+> +
+> +	mutex_lock(&indio_dev->mlock);
+> +	switch (mask) {
+> +	case IIO_CHAN_INFO_RAW:
+> +		if (axp288_adc_set_ts(info->regmap, AXP288_ADC_TS_PIN_GPADC,
+> +					chan->address)) {
+> +			dev_err(&indio_dev->dev, "GPADC mode\n");
+> +			ret = -EINVAL;
+> +			break;
+> +		}
+> +		ret = axp288_adc_read_channel(val, chan->address, info->regmap);
+> +		if (axp288_adc_set_ts(info->regmap, AXP288_ADC_TS_PIN_ON,
+> +						chan->address))
+> +			dev_err(&indio_dev->dev, "TS pin restore\n");
+> +		break;
+> +	case IIO_CHAN_INFO_PROCESSED:
+> +		ret = axp288_adc_read_channel(val, chan->address, info->regmap);
+> +		break;
+> +	default:
+> +		ret = -EINVAL;
+> +	}
+> +	mutex_unlock(&indio_dev->mlock);
+> +
+> +	return ret;
+> +}
+> +
+> +static int axp288_adc_set_state(struct regmap *regmap)
+> +{
+> +	/* ADC should be always enabled for internal FG to function */
+> +	if (regmap_write(regmap, AXP288_ADC_TS_PIN_CTRL, AXP288_ADC_TS_PIN_ON))
+> +		return -EIO;
+> +
+> +	return regmap_write(regmap, AXP20X_ADC_EN1, AXP288_ADC_EN_MASK);
+> +}
+> +
+> +static const struct iio_info axp288_adc_iio_info = {
+> +	.read_raw = &axp288_adc_read_raw,
+> +	.driver_module = THIS_MODULE,
+> +};
+> +
+> +static int axp288_adc_probe(struct platform_device *pdev)
+> +{
+> +	int ret;
+> +	struct axp288_adc_info *info;
+> +	struct iio_dev *indio_dev;
+> +	struct axp20x_dev *axp20x = dev_get_drvdata(pdev->dev.parent);
+> +
+> +	indio_dev = devm_iio_device_alloc(&pdev->dev, sizeof(*info));
+> +	if (!indio_dev)
+> +		return -ENOMEM;
+> +
+> +	info = iio_priv(indio_dev);
+> +	info->irq = platform_get_irq(pdev, 0);
+> +	if (info->irq < 0) {
+> +		dev_err(&pdev->dev, "no irq resource?\n");
+> +		return info->irq;
+> +	}
+> +	platform_set_drvdata(pdev, indio_dev);
+> +	info->regmap = axp20x->regmap;
+Comment syntax (run checkpatch and it should moan about this.
+/*
+ * Set ADC etc
+ */	
+> +	/* set ADC to enabled state at all time, including system suspend.
+> +	 * otherwise internal fuel gauge functionality may be affected.
+> +	 */
+> +	ret = axp288_adc_set_state(axp20x->regmap);
+> +	if (ret) {
+> +		dev_err(&pdev->dev, "unable to enable ADC device\n");
+> +		return ret;
+> +	}
+> +
+> +	indio_dev->dev.parent = &pdev->dev;
+> +	indio_dev->name = pdev->name;
+> +	indio_dev->channels = axp288_adc_channels;
+> +	indio_dev->num_channels = ARRAY_SIZE(axp288_adc_channels);
+> +	indio_dev->info = &axp288_adc_iio_info;
+> +	indio_dev->modes = INDIO_DIRECT_MODE;
+> +	ret = iio_map_array_register(indio_dev, axp288_adc_default_maps);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	ret = iio_device_register(indio_dev);
+> +	if (ret < 0) {
+> +		dev_err(&pdev->dev, "unable to register iio device\n");
+> +		goto err_array_unregister;
+> +	}
+> +	return 0;
+> +
+> +err_array_unregister:
+> +	iio_map_array_unregister(indio_dev);
+> +
+> +	return ret;
+> +}
+> +
+> +static int axp288_adc_remove(struct platform_device *pdev)
+> +{
+> +	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
+> +
+> +	iio_device_unregister(indio_dev);
+> +	iio_map_array_unregister(indio_dev);
+Hmm we should probably have a devm version of iio_map_array_register.
+Not that common a call though so not that important!
+> +
+> +	return 0;
+> +}
+> +
+> +static struct platform_driver axp288_adc_driver = {
+> +	.probe = axp288_adc_probe,
+> +	.remove = axp288_adc_remove,
+> +	.driver = {
+> +		.name = "axp288_adc",
+> +		.owner = THIS_MODULE,
+> +	},
+> +};
+> +
+> +module_platform_driver(axp288_adc_driver);
+> +
+> +MODULE_AUTHOR("Jacob Pan <jacob.jun.pan@linux.intel.com>");
+> +MODULE_DESCRIPTION("X-Powers AXP288 ADC Driver");
+> +MODULE_LICENSE("GPL");
+>
