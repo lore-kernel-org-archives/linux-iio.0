@@ -1,97 +1,141 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from comal.ext.ti.com ([198.47.26.152]:41706 "EHLO comal.ext.ti.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1753878AbaI2Sxn (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Mon, 29 Sep 2014 14:53:43 -0400
-Date: Mon, 29 Sep 2014 13:53:25 -0500
-From: Felipe Balbi <balbi@ti.com>
-To: Michael Welling <mwelling@ieee.org>
-CC: Felipe Balbi <balbi@ti.com>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	Jonathan Cameron <jic23@kernel.org>,
-	<linux-iio@vger.kernel.org>, <pmeerw@pmeerw.net>,
-	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Subject: Re: [RESEND PATCH] iio: light: add support for TI's opt3001 light
- sensor
-Message-ID: <20140929185325.GA1939@saruman>
-Reply-To: <balbi@ti.com>
-References: <20140917150041.GA6903@saruman.home>
- <20140918133631.GA24847@saruman.home>
- <20140919162129.GE26946@saruman.home>
- <20140922140914.GC25620@saruman>
- <20140923140924.GA28592@saruman>
- <20140924143610.GA17997@saruman>
- <20140925221619.GA10644@saruman>
- <20140927041959.GA28445@saruman>
- <20140929140227.GD32403@saruman>
- <20140929183856.GA11871@sysresccd>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:35761 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751698AbaI0Jf1 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 27 Sep 2014 05:35:27 -0400
+Message-ID: <542684D9.3010703@kernel.org>
+Date: Sat, 27 Sep 2014 10:35:21 +0100
+From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="ZGiS0Q5IWpPtfppv"
-In-Reply-To: <20140929183856.GA11871@sysresccd>
+To: Lars-Peter Clausen <lars@metafoo.de>
+CC: Hartmut Knaack <knaack.h@gmx.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Daniel Baluta <daniel.baluta@intel.com>,
+	linux-iio@vger.kernel.org
+Subject: Re: [PATCH v2 1/4] staging:iio:ad5933: Fix NULL pointer deref when
+ enabling buffer
+References: <1411655235-7635-1-git-send-email-lars@metafoo.de>
+In-Reply-To: <1411655235-7635-1-git-send-email-lars@metafoo.de>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
---ZGiS0Q5IWpPtfppv
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+On 25/09/14 15:27, Lars-Peter Clausen wrote:
+> In older versions of the IIO framework it was possible to pass a
+> completely different set of channels to iio_buffer_register() as the one
+> that is assigned to the IIO device. Commit 959d2952d124 ("staging:iio: make
+> iio_sw_buffer_preenable much more general.") introduced a restriction that
+> requires that the set of channels that is passed to iio_buffer_register() is
+> a subset of the channels assigned to the IIO device as the IIO core will use
+> the list of channels that is assigned to the device to lookup a channel by
+> scan index in iio_compute_scan_bytes(). If it can not find the channel the
+> function will crash. This patch fixes the issue by making sure that the same
+> set of channels is assigned to the IIO device and passed to
+> iio_buffer_register().
+> 
+> Fixes the follow NULL pointer derefernce kernel crash:
+> 	Unable to handle kernel NULL pointer dereference at virtual address 00000016
+> 	pgd = d53d0000
+> 	[00000016] *pgd=1534e831, *pte=00000000, *ppte=00000000
+> 	Internal error: Oops: 17 [#1] PREEMPT SMP ARM
+> 	Modules linked in:
+> 	CPU: 1 PID: 1626 Comm: bash Not tainted 3.15.0-19969-g2a180eb-dirty #9545
+> 	task: d6c124c0 ti: d539a000 task.ti: d539a000
+> 	PC is at iio_compute_scan_bytes+0x34/0xa8
+> 	LR is at iio_compute_scan_bytes+0x34/0xa8
+> 	pc : [<c03052e4>]    lr : [<c03052e4>]    psr: 60070013
+> 	sp : d539beb8  ip : 00000001  fp : 00000000
+> 	r10: 00000002  r9 : 00000000  r8 : 00000001
+> 	r7 : 00000000  r6 : d6dc8800  r5 : d7571000  r4 : 00000002
+> 	r3 : d7571000  r2 : 00000044  r1 : 00000001  r0 : 00000000
+> 	Flags: nZCv  IRQs on  FIQs on  Mode SVC_32  ISA ARM  Segment user
+> 	Control: 18c5387d  Table: 153d004a  DAC: 00000015
+> 	Process bash (pid: 1626, stack limit = 0xd539a240)
+> 	Stack: (0xd539beb8 to 0xd539c000)
+> 	bea0:                                                       c02fc0e4 d7571000
+> 	bec0: d76c1640 d6dc8800 d757117c 00000000 d757112c c0305b04 d76c1690 d76c1640
+> 	bee0: d7571188 00000002 00000000 d7571000 d539a000 00000000 000dd1c8 c0305d54
+> 	bf00: d7571010 0160b868 00000002 c69d3900 d7573278 d7573308 c69d3900 c01ece90
+> 	bf20: 00000002 c0103fac c0103f6c d539bf88 00000002 c69d3b00 c69d3b0c c0103468
+> 	bf40: 00000000 00000000 d7694a00 00000002 000af408 d539bf88 c000dd84 c00b2f94
+> 	bf60: d7694a00 000af408 00000002 d7694a00 d7694a00 00000002 000af408 c000dd84
+> 	bf80: 00000000 c00b32d0 00000000 00000000 00000002 b6f1aa78 00000002 000af408
+> 	bfa0: 00000004 c000dc00 b6f1aa78 00000002 00000001 000af408 00000002 00000000
+> 	bfc0: b6f1aa78 00000002 000af408 00000004 be806a4c 000a6094 00000000 000dd1c8
+> 	bfe0: 00000000 be8069cc b6e8ab77 b6ec125c 40070010 00000001 22940489 154a5007
+> 	[<c03052e4>] (iio_compute_scan_bytes) from [<c0305b04>] (__iio_update_buffers+0x248/0x438)
+> 	[<c0305b04>] (__iio_update_buffers) from [<c0305d54>] (iio_buffer_store_enable+0x60/0x7c)
+> 	[<c0305d54>] (iio_buffer_store_enable) from [<c01ece90>] (dev_attr_store+0x18/0x24)
+> 	[<c01ece90>] (dev_attr_store) from [<c0103fac>] (sysfs_kf_write+0x40/0x4c)
+> 	[<c0103fac>] (sysfs_kf_write) from [<c0103468>] (kernfs_fop_write+0x110/0x154)
+> 	[<c0103468>] (kernfs_fop_write) from [<c00b2f94>] (vfs_write+0xd0/0x160)
+> 	[<c00b2f94>] (vfs_write) from [<c00b32d0>] (SyS_write+0x40/0x78)
+> 	[<c00b32d0>] (SyS_write) from [<c000dc00>] (ret_fast_syscall+0x0/0x30)
+> 	Code: ea00000e e1a01008 e1a00005 ebfff6fc (e5d0a016)
+> 
+> Fixes: 959d2952d124 ("staging:iio: make iio_sw_buffer_preenable much more general.")
+> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+Yikes, that was some time ago.  Anyhow, applied to the fixes-togreg branch of
+iio.git
+though given timing it won't go in until after the merge window.
+Also marked for stable.
 
-Hi,
+I'm not 100% sure how one marks a patch as for only onwards from a particular tree.
+There is syntax for saying cherry pick.  Hopefully the fixes tag will do the job.
 
-On Mon, Sep 29, 2014 at 01:38:56PM -0500, Michael Welling wrote:
-> On Mon, Sep 29, 2014 at 09:02:27AM -0500, Felipe Balbi wrote:
-> > Alright, this is already ridiculous. Andrew, if I resend the patch can
-> > you apply it since maintainer has been ignoring this thread anyway ?
-> >=20
->=20
-> Do you reall think this is the best way to approach this?
-
-when maintainer doesn't respond for weeks, yeah! Sure it is.
-
-> Perhaps it would be better to explain what each field of the
-> configuration register does and then we can move on.
-
-perhaps Jonathan could tell me exactly what he wants because I can't
-handle back-and-forth anymore. Specially when he complains about stuff
-he asked me to modify himself.
-
-> In particular the OPT3001_CONFIGURATION_L field needs to be explained
-> such that the ABI can be properly applied.
->=20
-> Looking at the docs for the Windows demo program the field is associated
-> with a latch configuration. What does this bit field actually do?
->=20
-> Either have TI release the documentation or add comments to each of the
-> fields of each of the registers such that we can understand what exactly
-> they are doing.
-
-TI will release the documentation when that's all cleared up with Legal.
-You can't expect it to be any earlier than that.
-
---=20
-balbi
-
---ZGiS0Q5IWpPtfppv
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
-
-iQIcBAEBAgAGBQJUKaqlAAoJEIaOsuA1yqRE4CsQAJnSxZF5t7C+HHXrBXxgr255
-tttHUW7Uy7PBQ7zmeWt5NuPDUFLXi+xhbW/sqgYL3gdCAazpjbONkn4vdvYBQpBL
-yO81xxmRhjwuPhlDpir+VZmWOrmUbaoNFxY7T96yyu6rq53UHKXMGwhShlrspkAZ
-YBeBz9gKt6qtgfLa7vwGV/kMI8+2KAdwHnUXGFdNk6sAY5CpimLRoalew040yR7o
-02RUw8FioSXvACPHheo27Hpk1pk8v+WqgOD4gWa7Lc9Wa938d3b/JtDYnE9OqIpX
-KeG9WSZIEKd1PTpUWBBgBN3lP7HiVrmgbTb9bmheFy2h5FnRuudebrlUbqMfdbGl
-4K1GdwG/ejnbPl/nO1mEieizaEYRrYFIqtRH5fa7eHfrRo14stZAoonX1bYgkKuZ
-Y1J90C1Od+2Mt38p66SWU9a4NssCae8T1Wp+Ddl2NtFVSVHONQFxQLvy/AqTP+jv
-oE/7EJO4pDBrMozCrEI0Iu59S/4RFj+HWysBAp9kc8Vq8NoZ5uBB79WfooNd0z20
-Wolvk8fvljFXi0TgWL5hUw3uymhCSNlgtlUabIui1pCQAclW/xnYr2CqAncbQQAz
-xby9MEimCQN9Oa3J9eOZMGxd+fuj/tuxKTe3X6kiPR5/UaboLF0GdMfycu/f1MdH
-Itw5vGw/XbYofA1h1QCH
-=GFlW
------END PGP SIGNATURE-----
-
---ZGiS0Q5IWpPtfppv--
+J
+> ---
+> No changes since v1
+> ---
+>  drivers/staging/iio/impedance-analyzer/ad5933.c | 11 ++++-------
+>  1 file changed, 4 insertions(+), 7 deletions(-)
+> 
+> diff --git a/drivers/staging/iio/impedance-analyzer/ad5933.c b/drivers/staging/iio/impedance-analyzer/ad5933.c
+> index d0c89d0..9a6665d 100644
+> --- a/drivers/staging/iio/impedance-analyzer/ad5933.c
+> +++ b/drivers/staging/iio/impedance-analyzer/ad5933.c
+> @@ -115,6 +115,7 @@ static const struct iio_chan_spec ad5933_channels[] = {
+>  		.channel = 0,
+>  		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED),
+>  		.address = AD5933_REG_TEMP_DATA,
+> +		.scan_index = -1,
+>  		.scan_type = {
+>  			.sign = 's',
+>  			.realbits = 14,
+> @@ -125,8 +126,6 @@ static const struct iio_chan_spec ad5933_channels[] = {
+>  		.indexed = 1,
+>  		.channel = 0,
+>  		.extend_name = "real_raw",
+> -		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
+> -		BIT(IIO_CHAN_INFO_SCALE),
+>  		.address = AD5933_REG_REAL_DATA,
+>  		.scan_index = 0,
+>  		.scan_type = {
+> @@ -139,8 +138,6 @@ static const struct iio_chan_spec ad5933_channels[] = {
+>  		.indexed = 1,
+>  		.channel = 0,
+>  		.extend_name = "imag_raw",
+> -		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
+> -		BIT(IIO_CHAN_INFO_SCALE),
+>  		.address = AD5933_REG_IMAG_DATA,
+>  		.scan_index = 1,
+>  		.scan_type = {
+> @@ -749,14 +746,14 @@ static int ad5933_probe(struct i2c_client *client,
+>  	indio_dev->name = id->name;
+>  	indio_dev->modes = INDIO_DIRECT_MODE;
+>  	indio_dev->channels = ad5933_channels;
+> -	indio_dev->num_channels = 1; /* only register temp0_input */
+> +	indio_dev->num_channels = ARRAY_SIZE(ad5933_channels);
+>  
+>  	ret = ad5933_register_ring_funcs_and_init(indio_dev);
+>  	if (ret)
+>  		goto error_disable_reg;
+>  
+> -	/* skip temp0_input, register in0_(real|imag)_raw */
+> -	ret = iio_buffer_register(indio_dev, &ad5933_channels[1], 2);
+> +	ret = iio_buffer_register(indio_dev, ad5933_channels,
+> +		ARRAY_SIZE(ad5933_channels));
+>  	if (ret)
+>  		goto error_unreg_ring;
+>  
+> 
