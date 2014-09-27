@@ -1,73 +1,124 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:56593 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752766AbaINTyy (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 14 Sep 2014 15:54:54 -0400
-Message-ID: <5415F286.6050405@kernel.org>
-Date: Sun, 14 Sep 2014 20:54:46 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-MIME-Version: 1.0
-To: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
-	Peter Meerwald <pmeerw@pmeerw.net>
-CC: linux-iio@vger.kernel.org
-Subject: Re: [PATCH 1/3] iio:kxcjk-1013: Correct error messages
-References: <1405370318-19699-1-git-send-email-pmeerw@pmeerw.net> <1405370318-19699-2-git-send-email-pmeerw@pmeerw.net> <53C46095.9020002@linux.intel.com> <53CBF3A1.6030508@kernel.org>
-In-Reply-To: <53CBF3A1.6030508@kernel.org>
-Content-Type: text/plain; charset=windows-1252
+Received: from mail-pd0-f182.google.com ([209.85.192.182]:56369 "EHLO
+	mail-pd0-f182.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753015AbaI0PuA (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 27 Sep 2014 11:50:00 -0400
+Received: by mail-pd0-f182.google.com with SMTP id y10so2857760pdj.13
+        for <linux-iio@vger.kernel.org>; Sat, 27 Sep 2014 08:49:59 -0700 (PDT)
+From: Guenter Roeck <linux@roeck-us.net>
+To: lm-sensors <lm-sensors@lm-sensors.org>
+Cc: linux-iio@vger.kernel.org, Jean Delvare <jdelvare@suse.de>,
+	Guenter Roeck <linux@roeck-us.net>,
+	Jonathan Cameron <jic23@kernel.org>
+Subject: [PATCH] hwmon: (iio_hwmon) Add support for humidity and power sensors
+Date: Sat, 27 Sep 2014 08:49:45 -0700
+Message-Id: <1411832985-12619-1-git-send-email-linux@roeck-us.net>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 20/07/14 17:51, Jonathan Cameron wrote:
-> On 14/07/14 23:58, Srinivas Pandruvada wrote:
->> On 07/14/2014 01:38 PM, Peter Meerwald wrote:
->>> Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
->>> Cc: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-> This one doesn't apply cleanly on top of Srinivas' patches that I took
-> earlier today.  I'll hold it for now as it's not as urgent as the next
-> one and sort it out after Srinivas' series is all in place.
-> 
-No longer relevant as far as I can see so dropped.
-> J
->>> ---
->>>   drivers/iio/accel/kxcjk-1013.c | 6 +++---
->>>   1 file changed, 3 insertions(+), 3 deletions(-)
->>>
->>> diff --git a/drivers/iio/accel/kxcjk-1013.c b/drivers/iio/accel/kxcjk-1013.c
->>> index 72a6dbb..a11588c 100644
->>> --- a/drivers/iio/accel/kxcjk-1013.c
->>> +++ b/drivers/iio/accel/kxcjk-1013.c
->>> @@ -144,7 +144,7 @@ static int kxcjk1013_chip_ack_intr(struct kxcjk1013_data *data)
->>>
->>>       ret = i2c_smbus_read_byte_data(data->client, KXCJK1013_REG_INT_REL);
->>>       if (ret < 0) {
->>> -        dev_err(&data->client->dev, "Error writing reg_int_rel\n");
->>> +        dev_err(&data->client->dev, "Error reading reg_int_rel\n");
->>>           return ret;
->>>       }
->>>
->>> @@ -183,7 +183,7 @@ static int kxcjk1013_chip_init(struct kxcjk1013_data *data)
->>>       ret = i2c_smbus_write_byte_data(data->client, KXCJK1013_REG_CTRL1,
->>>                       ret);
->>>       if (ret < 0) {
->>> -        dev_err(&data->client->dev, "Error reading reg_ctrl\n");
->>> +        dev_err(&data->client->dev, "Error writing reg_ctrl1\n");
->>>           return ret;
->>>       }
->>>
->>> @@ -337,7 +337,7 @@ static int kxcjk1013_get_acc_reg(struct kxcjk1013_data *data, int axis)
->>>       ret = i2c_smbus_read_word_data(data->client, reg);
->>>       if (ret < 0) {
->>>           dev_err(&data->client->dev,
->>> -            "failed to read accel_%c registers\n", 'x' + axis);
->>> +            "failed to read accel_%c register\n", 'x' + axis);
->>>           return ret;
->>>       }
->>>
->>>
->> Reviewed-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
->>
-> 
-> -- 
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+The iio subsystem supports power and humidity sensors, so it makes sense
+to support those sensor types in the iio-hwmon bridge as well.
+
+Cc: Jonathan Cameron <jic23@kernel.org>
+Signed-off-by: Guenter Roeck <linux@roeck-us.net>
+---
+Compile tested only.
+
+Question is if I got the scale conversion correct for power measurements.
+I _assume_ that iio always reports processed values in milli-units,
+but I am not entirely sure.
+
+ drivers/hwmon/iio_hwmon.c | 30 +++++++++++++++++++++++++++---
+ 1 file changed, 27 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/hwmon/iio_hwmon.c b/drivers/hwmon/iio_hwmon.c
+index 14c82da..efc55a9 100644
+--- a/drivers/hwmon/iio_hwmon.c
++++ b/drivers/hwmon/iio_hwmon.c
+@@ -21,6 +21,8 @@
+ /**
+  * struct iio_hwmon_state - device instance state
+  * @channels:		filled with array of channels from iio
++ * @scale:		array of multipliers to convert from iio to hwmon
++ *			resolution
+  * @num_channels:	number of channels in channels (saves counting twice)
+  * @hwmon_dev:		associated hwmon device
+  * @attr_group:	the group of attributes
+@@ -28,6 +30,7 @@
+  */
+ struct iio_hwmon_state {
+ 	struct iio_channel *channels;
++	int *scale;
+ 	int num_channels;
+ 	struct device *hwmon_dev;
+ 	struct attribute_group attr_group;
+@@ -48,13 +51,16 @@ static ssize_t iio_hwmon_read_val(struct device *dev,
+ 	int ret;
+ 	struct sensor_device_attribute *sattr = to_sensor_dev_attr(attr);
+ 	struct iio_hwmon_state *state = dev_get_drvdata(dev);
++	s64 result_64;
+ 
+ 	ret = iio_read_channel_processed(&state->channels[sattr->index],
+-					&result);
++					 &result);
+ 	if (ret < 0)
+ 		return ret;
+ 
+-	return sprintf(buf, "%d\n", result);
++	result_64 = (s64)result * state->scale[sattr->index];
++
++	return sprintf(buf, "%lld\n", result_64);
+ }
+ 
+ static int iio_hwmon_probe(struct platform_device *pdev)
+@@ -63,7 +69,7 @@ static int iio_hwmon_probe(struct platform_device *pdev)
+ 	struct iio_hwmon_state *st;
+ 	struct sensor_device_attribute *a;
+ 	int ret, i;
+-	int in_i = 1, temp_i = 1, curr_i = 1;
++	int in_i = 1, temp_i = 1, curr_i = 1, power_i = 1, humidity_i = 1;
+ 	enum iio_chan_type type;
+ 	struct iio_channel *channels;
+ 	const char *name = "iio_hwmon";
+@@ -94,6 +100,12 @@ static int iio_hwmon_probe(struct platform_device *pdev)
+ 		ret = -ENOMEM;
+ 		goto error_release_channels;
+ 	}
++	st->scale = devm_kzalloc(dev, sizeof(*st->scale) * st->num_channels,
++				 GFP_KERNEL);
++	if (st->scale == NULL) {
++		ret = -ENOMEM;
++		goto error_release_channels;
++	}
+ 
+ 	for (i = 0; i < st->num_channels; i++) {
+ 		a = devm_kzalloc(dev, sizeof(*a), GFP_KERNEL);
+@@ -107,6 +119,7 @@ static int iio_hwmon_probe(struct platform_device *pdev)
+ 		if (ret < 0)
+ 			goto error_release_channels;
+ 
++		st->scale[i] = 1;
+ 		switch (type) {
+ 		case IIO_VOLTAGE:
+ 			a->dev_attr.attr.name = kasprintf(GFP_KERNEL,
+@@ -123,6 +136,17 @@ static int iio_hwmon_probe(struct platform_device *pdev)
+ 							  "curr%d_input",
+ 							  curr_i++);
+ 			break;
++		case IIO_POWER:
++			st->scale[i] = 1000;
++			a->dev_attr.attr.name = kasprintf(GFP_KERNEL,
++							  "power%d_input",
++							  power_i++);
++			break;
++		case IIO_HUMIDITYRELATIVE:
++			a->dev_attr.attr.name = kasprintf(GFP_KERNEL,
++							  "humidity%d_input",
++							  humidity_i++);
++			break;
+ 		default:
+ 			ret = -EINVAL;
+ 			goto error_release_channels;
+-- 
+1.9.1
+
