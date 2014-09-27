@@ -1,54 +1,99 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp-out-085.synserver.de ([212.40.185.85]:1062 "EHLO
-	smtp-out-085.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753141AbaIYO1O (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 25 Sep 2014 10:27:14 -0400
-From: Lars-Peter Clausen <lars@metafoo.de>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Hartmut Knaack <knaack.h@gmx.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	Daniel Baluta <daniel.baluta@intel.com>,
-	linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH v2 2/4] staging:iio:ad5933: Drop "raw" from channel names
-Date: Thu, 25 Sep 2014 16:27:13 +0200
-Message-Id: <1411655235-7635-2-git-send-email-lars@metafoo.de>
-In-Reply-To: <1411655235-7635-1-git-send-email-lars@metafoo.de>
-References: <1411655235-7635-1-git-send-email-lars@metafoo.de>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:36090 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751894AbaI0KXI (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 27 Sep 2014 06:23:08 -0400
+Message-ID: <54269007.9000709@kernel.org>
+Date: Sat, 27 Sep 2014 11:23:03 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+MIME-Version: 1.0
+To: Adam Thomson <Adam.Thomson.Opensource@diasemi.com>,
+	Lee Jones <lee.jones@linaro.org>,
+	Samuel Ortiz <sameo@linux.intel.com>,
+	linux-iio@vger.kernel.org, Sebastian Reichel <sre@kernel.org>,
+	Dmitry Eremin-Solenikov <dbaryshkov@gmail.com>,
+	David Woodhouse <dwmw2@infradead.org>,
+	linux-pm@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
+	Pawel Moll <pawel.moll@arm.com>,
+	Mark Rutland <mark.rutland@arm.com>,
+	Ian Campbell <ijc+devicetree@hellion.org.uk>,
+	Kumar Gala <galak@codeaurora.org>,
+	Grant Likely <grant.likely@linaro.org>,
+	devicetree@vger.kernel.org,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Joe Perches <joe@perches.com>, linux-api@vger.kernel.org
+CC: linux-kernel@vger.kernel.org, support.opensource@diasemi.com
+Subject: Re: [PATCH 8/8] iio: Add ABI documentation for input current readings
+References: <cover.1411396718.git.Adam.Thomson.Opensource@diasemi.com> <b578cdd53527bb71c271eefadd1ce1bac175b5a7.1411396719.git.Adam.Thomson.Opensource@diasemi.com>
+In-Reply-To: <b578cdd53527bb71c271eefadd1ce1bac175b5a7.1411396719.git.Adam.Thomson.Opensource@diasemi.com>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-"raw" is the name of a channel property, but should not be part of the
-channel name itself.
+On 23/09/14 11:53, Adam Thomson wrote:
+> Add information on in_current related readings.
+> 
+> Signed-off-by: Adam Thomson <Adam.Thomson.Opensource@diasemi.com>
+This crossed with a similar patch also adding some docs for current channels.
+That just missed this cycle anyway so I'll probably just merge this in as
+an extension of that patch when we are happy with the rest of the series.
+That patch covers the raw attribute but doesn't add the other entries..
+(in the togreg branch of iio.git)
 
-Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
----
-No changes since v1
----
- drivers/staging/iio/impedance-analyzer/ad5933.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/staging/iio/impedance-analyzer/ad5933.c b/drivers/staging/iio/impedance-analyzer/ad5933.c
-index 9a6665d..b6bd609 100644
---- a/drivers/staging/iio/impedance-analyzer/ad5933.c
-+++ b/drivers/staging/iio/impedance-analyzer/ad5933.c
-@@ -125,7 +125,7 @@ static const struct iio_chan_spec ad5933_channels[] = {
- 		.type = IIO_VOLTAGE,
- 		.indexed = 1,
- 		.channel = 0,
--		.extend_name = "real_raw",
-+		.extend_name = "real",
- 		.address = AD5933_REG_REAL_DATA,
- 		.scan_index = 0,
- 		.scan_type = {
-@@ -137,7 +137,7 @@ static const struct iio_chan_spec ad5933_channels[] = {
- 		.type = IIO_VOLTAGE,
- 		.indexed = 1,
- 		.channel = 0,
--		.extend_name = "imag_raw",
-+		.extend_name = "imag",
- 		.address = AD5933_REG_IMAG_DATA,
- 		.scan_index = 1,
- 		.scan_type = {
--- 
-1.8.0
-
+Jonathan
+> ---
+>  Documentation/ABI/testing/sysfs-bus-iio | 17 +++++++++++++++++
+>  1 file changed, 17 insertions(+)
+> 
+> diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
+> index d760b02..37cd4d4 100644
+> --- a/Documentation/ABI/testing/sysfs-bus-iio
+> +++ b/Documentation/ABI/testing/sysfs-bus-iio
+> @@ -92,6 +92,18 @@ Description:
+>  		is required is a consistent labeling.  Units after application
+>  		of scale and offset are millivolts.
+> 
+> +What:		/sys/bus/iio/devices/iio:deviceX/in_currentY_raw
+> +What:		/sys/bus/iio/devices/iio:deviceX/in_currentY_supply_raw
+> +KernelVersion:	3.17
+> +Contact:	linux-iio@vger.kernel.org
+> +Description:
+> +		Raw (unscaled no bias removal etc.) current measurement from
+> +		channel Y. In special cases where the channel does not
+> +		correspond to externally available input one of the named
+> +		versions may be used. The number must always be specified and
+> +		unique to allow association with event codes. Units after
+> +		application of scale and offset are milliamps.
+> +
+>  What:		/sys/bus/iio/devices/iio:deviceX/in_capacitanceY_raw
+>  KernelVersion:	3.2
+>  Contact:	linux-iio@vger.kernel.org
+> @@ -227,6 +239,8 @@ What:		/sys/bus/iio/devices/iio:deviceX/in_accel_y_offset
+>  What:		/sys/bus/iio/devices/iio:deviceX/in_accel_z_offset
+>  What:		/sys/bus/iio/devices/iio:deviceX/in_voltageY_offset
+>  What:		/sys/bus/iio/devices/iio:deviceX/in_voltage_offset
+> +What:		/sys/bus/iio/devices/iio:deviceX/in_currentY_offset
+> +What:		/sys/bus/iio/devices/iio:deviceX/in_current_offset
+>  What:		/sys/bus/iio/devices/iio:deviceX/in_tempY_offset
+>  What:		/sys/bus/iio/devices/iio:deviceX/in_temp_offset
+>  What:		/sys/bus/iio/devices/iio:deviceX/in_pressureY_offset
+> @@ -249,8 +263,11 @@ Description:
+>  		to the _raw output.
+> 
+>  What:		/sys/bus/iio/devices/iio:deviceX/in_voltageY_scale
+> +What:		/sys/bus/iio/devices/iio:deviceX/in_currentY_scale
+>  What:		/sys/bus/iio/devices/iio:deviceX/in_voltageY_supply_scale
+> +What:		/sys/bus/iio/devices/iio:deviceX/in_currentY_supply_scale
+>  What:		/sys/bus/iio/devices/iio:deviceX/in_voltage_scale
+> +What:		/sys/bus/iio/devices/iio:deviceX/in_current_scale
+>  What:		/sys/bus/iio/devices/iio:deviceX/out_voltageY_scale
+>  What:		/sys/bus/iio/devices/iio:deviceX/out_altvoltageY_scale
+>  What:		/sys/bus/iio/devices/iio:deviceX/in_accel_scale
+> --
+> 1.9.3
+> 
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> 
