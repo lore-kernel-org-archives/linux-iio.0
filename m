@@ -1,45 +1,31 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pa0-f50.google.com ([209.85.220.50]:43274 "EHLO
-	mail-pa0-f50.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750791AbaI3MAT (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 30 Sep 2014 08:00:19 -0400
-Received: by mail-pa0-f50.google.com with SMTP id kx10so5394063pab.9
-        for <linux-iio@vger.kernel.org>; Tue, 30 Sep 2014 05:00:19 -0700 (PDT)
-From: Darshana Padmadas <darshanapadmadas@gmail.com>
-To: opw-kernel@googlegroups.com
-Cc: jic23@kernel.org, linux-iio@vger.kernel.org,
-	devel@driverdev.osuosl.org,
-	Darshana Padmadas <darshanapadmadas@gmail.com>
-Subject: [PATCH v3 1/4] Documentation: devicetree: bindings: Document correct and deprecated vendor-prefix with device isl29028
-Date: Tue, 30 Sep 2014 17:29:05 +0530
-Message-Id: <1412078348-7646-2-git-send-email-darshanapadmadas@gmail.com>
-In-Reply-To: <1412078348-7646-1-git-send-email-darshanapadmadas@gmail.com>
-References: <1412078348-7646-1-git-send-email-darshanapadmadas@gmail.com>
-Content-Type: text/plain; charset="utf-8"
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <lars@metafoo.de>
+Message-ID: <54271FA1.7050902@metafoo.de>
+Date: Sat, 27 Sep 2014 22:35:45 +0200
+From: Lars-Peter Clausen <lars@metafoo.de>
+MIME-Version: 1.0
+To: Jonathan Cameron <jic23@kernel.org>
+CC: Hartmut Knaack <knaack.h@gmx.de>, Peter Meerwald <pmeerw@pmeerw.net>,
+ Daniel Baluta <daniel.baluta@intel.com>,
+ linux-iio@vger.kernel.org
+Subject: Re: [PATCH v2 1/4] staging:iio:ad5933: Fix NULL pointer deref when
+ enabling buffer
+References: <1411655235-7635-1-git-send-email-lars@metafoo.de> <542684D9.3010703@kernel.org>
+In-Reply-To: <542684D9.3010703@kernel.org>
+Content-Type: text/plain; charset=windows-1252; format=flowed
+List-ID: <linux-iio@vger.kernel.org>
 
-This patch documents the device isl29028 with its vendor-prefix. Undocumented deprecated vendor-prefix
-found by checkpatch also documented for compatibility reasons.
+On 09/27/2014 11:35 AM, Jonathan Cameron wrote:
+>> Fixes: 959d2952d124 ("staging:iio: make iio_sw_buffer_preenable much more general.")
+>> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+> Yikes, that was some time ago.  Anyhow, applied to the fixes-togreg branch of
+> iio.git
+> though given timing it won't go in until after the merge window.
+> Also marked for stable.
 
-Signed-off-by: Darshana Padmadas <darshanapadmadas@gmail.com>
----
- Documentation/devicetree/bindings/i2c/trivial-devices.txt | 2 ++
- 1 file changed, 2 insertions(+)
+Thanks.
 
-diff --git a/Documentation/devicetree/bindings/i2c/trivial-devices.txt b/Documentation/devicetree/bindings/i2c/trivial-devices.txt
-index 6af570e..d024613 100644
---- a/Documentation/devicetree/bindings/i2c/trivial-devices.txt
-+++ b/Documentation/devicetree/bindings/i2c/trivial-devices.txt
-@@ -57,6 +57,8 @@ gmt,g751		G751: Digital Temperature Sensor and Thermal Watchdog with Two-Wire In
- infineon,slb9635tt	Infineon SLB9635 (Soft-) I2C TPM (old protocol, max 100khz)
- infineon,slb9645tt	Infineon SLB9645 I2C TPM (new protocol, max 400khz)
- isl,isl12057		Intersil ISL12057 I2C RTC Chip
-+isil,isl29028           Deprecated name, use isl,isl29028 instead
-+isl,isl29028            Intersil ISL29028 Ambient Light and Proximity Sensor
- maxim,ds1050		5 Bit Programmable, Pulse-Width Modulator
- maxim,max1237		Low-Power, 4-/12-Channel, 2-Wire Serial, 12-Bit ADCs
- maxim,max6625		9-Bit/12-Bit Temperature Sensors with I²C-Compatible Serial Interface
--- 
-1.9.1
+>
+> I'm not 100% sure how one marks a patch as for only onwards from a particular tree.
+> There is syntax for saying cherry pick.  Hopefully the fixes tag will do the job.
 
+Yes, the fixes tag usually does the right thing.
