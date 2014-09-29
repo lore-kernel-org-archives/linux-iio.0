@@ -1,70 +1,145 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga14.intel.com ([192.55.52.115]:28808 "EHLO mga14.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1754118AbaIQAMP (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Tue, 16 Sep 2014 20:12:15 -0400
-From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-To: IIO <linux-iio@vger.kernel.org>,
-	LKML <linux-kernel@vger.kernel.org>,
-	DEVICE TREE <devicetree@vger.kernel.org>,
-	Lee Jones <lee.jones@linaro.org>
-Cc: Carlo Caione <carlo@caione.org>,
-	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
-	Aaron Lu <aaron.lu@intel.com>, Alan Cox <alan@linux.intel.com>,
-	Jean Delvare <khali@linux-fr.org>,
-	Samuel Ortiz <sameo@linux.intel.com>,
-	Liam Girdwood <lgirdwood@gmail.com>,
-	Mark Brown <broonie@kernel.org>,
-	Grant Likely <grant.likely@linaro.org>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Rob Herring <robh+dt@kernel.org>,
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:52514 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752591AbaI2RgT (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 29 Sep 2014 13:36:19 -0400
+Message-ID: <5429988D.9060504@kernel.org>
+Date: Mon, 29 Sep 2014 18:36:13 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+MIME-Version: 1.0
+To: Guenter Roeck <linux@roeck-us.net>,
+	lm-sensors <lm-sensors@lm-sensors.org>
+CC: linux-iio@vger.kernel.org, Jean Delvare <jdelvare@suse.de>,
 	Lars-Peter Clausen <lars@metafoo.de>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Fugang Duan <B38611@freescale.com>,
-	Arnd Bergmann <arnd@arndb.de>,
-	Zubair Lutfullah <zubair.lutfullah@gmail.com>,
-	Sebastian Reichel <sre@debian.org>,
-	Johannes Thumshirn <johannes.thumshirn@men.de>,
-	Philippe Reynes <tremyfr@yahoo.fr>,
-	Angelo Compagnucci <angelo.compagnucci@gmail.com>,
-	Doug Anderson <dianders@chromium.org>,
-	Ramakrishna Pallala <ramakrishna.pallala@intel.com>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	Maxime Ripard <maxime.ripard@free-electrons.com>,
-	Rafael Wysocki <rafael.j.wysocki@intel.com>,
-	Jacob Pan <jacob.jun.pan@linux.intel.com>
-Subject: [PATCH v4 3/3] iio: add documentation for current attribute
-Date: Tue, 16 Sep 2014 17:11:55 -0700
-Message-Id: <1410912715-25903-4-git-send-email-jacob.jun.pan@linux.intel.com>
-In-Reply-To: <1410912715-25903-1-git-send-email-jacob.jun.pan@linux.intel.com>
-References: <1410912715-25903-1-git-send-email-jacob.jun.pan@linux.intel.com>
+	"Hennerich, Michael" <Michael.Hennerich@analog.com>
+Subject: Re: [PATCH] hwmon: (iio_hwmon) Add support for humidity and power
+ sensors
+References: <1411832985-12619-1-git-send-email-linux@roeck-us.net>
+In-Reply-To: <1411832985-12619-1-git-send-email-linux@roeck-us.net>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Add documentation for input current raw sysfs attribute.
+On 27/09/14 16:49, Guenter Roeck wrote:
+> The iio subsystem supports power and humidity sensors, so it makes sense
+> to support those sensor types in the iio-hwmon bridge as well.
+> 
+> Cc: Jonathan Cameron <jic23@kernel.org>
+> Signed-off-by: Guenter Roeck <linux@roeck-us.net>
+Looks good.
+> ---
+> Compile tested only.
+> 
+> Question is if I got the scale conversion correct for power measurements.
+> I _assume_ that iio always reports processed values in milli-units,
+> but I am not entirely sure.
 
-Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
----
- Documentation/ABI/testing/sysfs-bus-iio | 9 +++++++++
- 1 file changed, 9 insertions(+)
+IIO actually only keeps to milli units where we were copying from hwmom
+back when originally working this stuff out.  Given we have the double
+int32 representation and IIO_TYPE_* we try to keep to the base SI units
+everywhere else. (If we were doing it again today, I'd be advocating
+using base units everywhere for consistency reasons)
 
-diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
-index d760b02..1ac9ac2 100644
---- a/Documentation/ABI/testing/sysfs-bus-iio
-+++ b/Documentation/ABI/testing/sysfs-bus-iio
-@@ -1028,3 +1028,12 @@ Contact:	linux-iio@vger.kernel.org
- Description:
- 		Raw value of rotation from true/magnetic north measured with
- 		or without compensation from tilt sensors.
-+
-+What:		/sys/bus/iio/devices/iio:deviceX/in_currentX_raw
-+KernelVersion:	3.18
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+		Raw current measurement from channel X. Units are in milliamps
-+		after application of scale and offset. If no offset or scale is
-+		present, output should be considered as processed with the
-+		unit in milliamps.
--- 
-1.9.1
+The only user of IIO_POWER right now is the ade7758 driver in staging.
+I note that hwmon uses micro watts so would imagine that driver
+does as well.  However given the timescale it's probably a driver from the
+big dump from Analog's tree before we'd pinned down a lot of the ABIs
+Lars, don't suppose you'd care to take a look?  The types got added
+by Michael when cleaning the driver up somewhat...
 
+Also we should really add the relevant ABI docs (once we've agreed the unit!)
+
+Jonathan
+> 
+>  drivers/hwmon/iio_hwmon.c | 30 +++++++++++++++++++++++++++---
+>  1 file changed, 27 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/hwmon/iio_hwmon.c b/drivers/hwmon/iio_hwmon.c
+> index 14c82da..efc55a9 100644
+> --- a/drivers/hwmon/iio_hwmon.c
+> +++ b/drivers/hwmon/iio_hwmon.c
+> @@ -21,6 +21,8 @@
+>  /**
+>   * struct iio_hwmon_state - device instance state
+>   * @channels:		filled with array of channels from iio
+> + * @scale:		array of multipliers to convert from iio to hwmon
+> + *			resolution
+>   * @num_channels:	number of channels in channels (saves counting twice)
+>   * @hwmon_dev:		associated hwmon device
+>   * @attr_group:	the group of attributes
+> @@ -28,6 +30,7 @@
+>   */
+>  struct iio_hwmon_state {
+>  	struct iio_channel *channels;
+> +	int *scale;
+>  	int num_channels;
+>  	struct device *hwmon_dev;
+>  	struct attribute_group attr_group;
+> @@ -48,13 +51,16 @@ static ssize_t iio_hwmon_read_val(struct device *dev,
+>  	int ret;
+>  	struct sensor_device_attribute *sattr = to_sensor_dev_attr(attr);
+>  	struct iio_hwmon_state *state = dev_get_drvdata(dev);
+> +	s64 result_64;
+>  
+>  	ret = iio_read_channel_processed(&state->channels[sattr->index],
+> -					&result);
+> +					 &result);
+>  	if (ret < 0)
+>  		return ret;
+>  
+> -	return sprintf(buf, "%d\n", result);
+> +	result_64 = (s64)result * state->scale[sattr->index];
+> +
+> +	return sprintf(buf, "%lld\n", result_64);
+>  }
+>  
+>  static int iio_hwmon_probe(struct platform_device *pdev)
+> @@ -63,7 +69,7 @@ static int iio_hwmon_probe(struct platform_device *pdev)
+>  	struct iio_hwmon_state *st;
+>  	struct sensor_device_attribute *a;
+>  	int ret, i;
+> -	int in_i = 1, temp_i = 1, curr_i = 1;
+> +	int in_i = 1, temp_i = 1, curr_i = 1, power_i = 1, humidity_i = 1;
+>  	enum iio_chan_type type;
+>  	struct iio_channel *channels;
+>  	const char *name = "iio_hwmon";
+> @@ -94,6 +100,12 @@ static int iio_hwmon_probe(struct platform_device *pdev)
+>  		ret = -ENOMEM;
+>  		goto error_release_channels;
+>  	}
+> +	st->scale = devm_kzalloc(dev, sizeof(*st->scale) * st->num_channels,
+> +				 GFP_KERNEL);
+> +	if (st->scale == NULL) {
+> +		ret = -ENOMEM;
+> +		goto error_release_channels;
+> +	}
+>  
+>  	for (i = 0; i < st->num_channels; i++) {
+>  		a = devm_kzalloc(dev, sizeof(*a), GFP_KERNEL);
+> @@ -107,6 +119,7 @@ static int iio_hwmon_probe(struct platform_device *pdev)
+>  		if (ret < 0)
+>  			goto error_release_channels;
+>  
+> +		st->scale[i] = 1;
+>  		switch (type) {
+>  		case IIO_VOLTAGE:
+>  			a->dev_attr.attr.name = kasprintf(GFP_KERNEL,
+> @@ -123,6 +136,17 @@ static int iio_hwmon_probe(struct platform_device *pdev)
+>  							  "curr%d_input",
+>  							  curr_i++);
+>  			break;
+> +		case IIO_POWER:
+> +			st->scale[i] = 1000;
+> +			a->dev_attr.attr.name = kasprintf(GFP_KERNEL,
+> +							  "power%d_input",
+> +							  power_i++);
+> +			break;
+> +		case IIO_HUMIDITYRELATIVE:
+> +			a->dev_attr.attr.name = kasprintf(GFP_KERNEL,
+> +							  "humidity%d_input",
+> +							  humidity_i++);
+> +			break;
+>  		default:
+>  			ret = -EINVAL;
+>  			goto error_release_channels;
+> 
