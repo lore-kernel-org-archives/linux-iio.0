@@ -1,73 +1,32 @@
-Return-Path: <mwelling79@gmail.com>
-Sender: Michael Welling <mwelling79@gmail.com>
-Date: Mon, 29 Sep 2014 17:38:33 -0500
-From: Michael Welling <mwelling@ieee.org>
-To: Felipe Balbi <balbi@ti.com>
-Cc: Andrew Morton <akpm@linux-foundation.org>,
-	Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
-	pmeerw@pmeerw.net,
-	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Subject: Re: [RESEND PATCH] iio: light: add support for TI's opt3001 light
- sensor
-Message-ID: <20140929223833.GA13111@sysresccd>
-References: <20140918133631.GA24847@saruman.home>
- <20140919162129.GE26946@saruman.home>
- <20140922140914.GC25620@saruman>
- <20140923140924.GA28592@saruman>
- <20140924143610.GA17997@saruman>
- <20140925221619.GA10644@saruman>
- <20140927041959.GA28445@saruman>
- <20140929140227.GD32403@saruman>
- <20140929183856.GA11871@sysresccd>
- <20140929185325.GA1939@saruman>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <20140929185325.GA1939@saruman>
+Return-Path: <robin@protonic.nl>
+From: Robin van der Gracht <robin@protonic.nl>
+To: jic23@kernel.org
+Cc: denis.ciocca@st.com, linux-iio@vger.kernel.org,
+	Robin van der Gracht <robin@protonic.nl>
+Subject: [PATCH] iio: st_sensors: Fix buffer copy
+Date: Mon, 29 Sep 2014 15:00:07 +0200
+Message-Id: <1411995607-22198-1-git-send-email-robin@protonic.nl>
 List-ID: <linux-iio@vger.kernel.org>
 
-On Mon, Sep 29, 2014 at 01:53:25PM -0500, Felipe Balbi wrote:
-> Hi,
-> 
-> On Mon, Sep 29, 2014 at 01:38:56PM -0500, Michael Welling wrote:
-> > On Mon, Sep 29, 2014 at 09:02:27AM -0500, Felipe Balbi wrote:
-> > > Alright, this is already ridiculous. Andrew, if I resend the patch can
-> > > you apply it since maintainer has been ignoring this thread anyway ?
-> > > 
-> > 
-> > Do you reall think this is the best way to approach this?
-> 
-> when maintainer doesn't respond for weeks, yeah! Sure it is.
-> 
-> > Perhaps it would be better to explain what each field of the
-> > configuration register does and then we can move on.
-> 
-> perhaps Jonathan could tell me exactly what he wants because I can't
-> handle back-and-forth anymore. Specially when he complains about stuff
-> he asked me to modify himself.
->
-> > In particular the OPT3001_CONFIGURATION_L field needs to be explained
-> > such that the ABI can be properly applied.
-> > 
-> > Looking at the docs for the Windows demo program the field is associated
-> > with a latch configuration. What does this bit field actually do?
+Use byte_for_channel as iterator to properly initialize the buffer.
 
-Still no technical information. Without all the facts how can you expect
-him to tell you what he wants?
+Signed-off-by: Robin van der Gracht <robin@protonic.nl>
+---
+ drivers/iio/common/st_sensors/st_sensors_buffer.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-> > 
-> > Either have TI release the documentation or add comments to each of the
-> > fields of each of the registers such that we can understand what exactly
-> > they are doing.
-> 
-> TI will release the documentation when that's all cleared up with Legal.
-> You can't expect it to be any earlier than that.
-
-I am a little fuzzy on how the source code can be released when an NDA
-is required to access the datasheet.
-
-Isn't the source code going to be breaking the NDA by releasing information
-that is in the datasheet?
-
-> 
-> -- 
-> balbi
+diff --git a/drivers/iio/common/st_sensors/st_sensors_buffer.c b/drivers/iio/common/st_sensors/st_sensors_buffer.c
+index 1665c8e..e18bc67 100644
+--- a/drivers/iio/common/st_sensors/st_sensors_buffer.c
++++ b/drivers/iio/common/st_sensors/st_sensors_buffer.c
+@@ -71,7 +71,7 @@ int st_sensors_get_buffer_element(struct iio_dev *indio_dev, u8 *buf)
+ 				goto st_sensors_free_memory;
+ 			}
+ 
+-			for (i = 0; i < n * num_data_channels; i++) {
++			for (i = 0; i < n * byte_for_channel; i++) {
+ 				if (i < n)
+ 					buf[i] = rx_array[i];
+ 				else
+-- 
+1.9.1
