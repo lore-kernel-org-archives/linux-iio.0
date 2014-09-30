@@ -1,106 +1,50 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from devils.ext.ti.com ([198.47.26.153]:45134 "EHLO
-	devils.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750939AbaI3VWG (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 30 Sep 2014 17:22:06 -0400
-Date: Tue, 30 Sep 2014 16:22:04 -0500
-From: Felipe Balbi <balbi@ti.com>
-To: Michael Welling <mwelling@ieee.org>
-CC: Felipe Balbi <balbi@ti.com>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	Jonathan Cameron <jic23@kernel.org>,
-	<linux-iio@vger.kernel.org>, <pmeerw@pmeerw.net>,
-	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Subject: Re: [RESEND PATCH] iio: light: add support for TI's opt3001 light
- sensor
-Message-ID: <20140930212204.GC13806@saruman>
-Reply-To: <balbi@ti.com>
-References: <20140923140924.GA28592@saruman>
- <20140924143610.GA17997@saruman>
- <20140925221619.GA10644@saruman>
- <20140927041959.GA28445@saruman>
- <20140929140227.GD32403@saruman>
- <20140929183856.GA11871@sysresccd>
- <20140929185325.GA1939@saruman>
- <20140929223833.GA13111@sysresccd>
- <20140929224638.GA21681@saruman>
- <20140929234159.GB13111@sysresccd>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="S1BNGpv0yoYahz37"
-In-Reply-To: <20140929234159.GB13111@sysresccd>
+Received: from mail-pa0-f52.google.com ([209.85.220.52]:47213 "EHLO
+	mail-pa0-f52.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750791AbaI3MAO (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 30 Sep 2014 08:00:14 -0400
+Received: by mail-pa0-f52.google.com with SMTP id fb1so7475308pad.25
+        for <linux-iio@vger.kernel.org>; Tue, 30 Sep 2014 05:00:13 -0700 (PDT)
+From: Darshana Padmadas <darshanapadmadas@gmail.com>
+To: opw-kernel@googlegroups.com
+Cc: jic23@kernel.org, linux-iio@vger.kernel.org,
+	devel@driverdev.osuosl.org,
+	Darshana Padmadas <darshanapadmadas@gmail.com>
+Subject: [PATCH v3 0/4] Correct vendor-prefix and document device isl29028
+Date: Tue, 30 Sep 2014 17:29:04 +0530
+Message-Id: <1412078348-7646-1-git-send-email-darshanapadmadas@gmail.com>
+Content-Type: text/plain; charset="utf-8"
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
---S1BNGpv0yoYahz37
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Patchset documents correct and the deprecated vendor-prefix found by checkpatch 
+warning and also documents information of device isl29028 for compatibility. 
+Patchset also includes corrected vendor-prefix and device name in compatible 
+property for files with checkpatch warning of undocumented string "isil,isl29028".
 
-On Mon, Sep 29, 2014 at 06:41:59PM -0500, Michael Welling wrote:
-> On Mon, Sep 29, 2014 at 05:46:38PM -0500, Felipe Balbi wrote:
-> > Hi,
-> >=20
-> > On Mon, Sep 29, 2014 at 05:38:33PM -0500, Michael Welling wrote:
-> > > > > > Alright, this is already ridiculous. Andrew, if I resend the pa=
-tch can
-> > > > > > you apply it since maintainer has been ignoring this thread any=
-way ?
-> > > > > >=20
-> > > > >=20
-> > > > > Do you reall think this is the best way to approach this?
-> > > >=20
-> > > > when maintainer doesn't respond for weeks, yeah! Sure it is.
-> > > >=20
-> > > > > Perhaps it would be better to explain what each field of the
-> > > > > configuration register does and then we can move on.
-> > > >=20
-> > > > perhaps Jonathan could tell me exactly what he wants because I can't
-> > > > handle back-and-forth anymore. Specially when he complains about st=
-uff
-> > > > he asked me to modify himself.
-> > > >
-> > > > > In particular the OPT3001_CONFIGURATION_L field needs to be expla=
-ined
-> > > > > such that the ABI can be properly applied.
-> > > > >=20
-> > > > > Looking at the docs for the Windows demo program the field is ass=
-ociated
-> > > > > with a latch configuration. What does this bit field actually do?
-> > >=20
-> > > Still no technical information. Without all the facts how can you exp=
-ect
-> > > him to tell you what he wants?
-> >=20
-> > yeah, because clearly he doesn't know himself, right ?
->=20
-> Could you explain how it works to me then?
+Darshana Padmadas (4):
+  Documentation: devicetree: bindings: Document correct and deprecated
+    vendor-prefix with device isl29028
+  Documentation: devicetree: bindings: Document deprecated device vendor
+    name to fix related warning
+  Staging: iio: light: Added correct vendor-prefix for device isl29028
+  arch: arm: boot: dts: Added correct vendor-prefix with device name to
+    compatible property
+  
+Changes in v3:
+    - In PATCH 1/4 corrected alphabetical order of vendor-prefix and device name.
+    - In PATCH 2/4 inserted deprecated vendor-prefix in list in alphabetical order
+      and edited vendor/chip string.
+    - In PATCH 4/4 dropped deprecated string "isil,isl29028" and included correct 
+      vendor-prefix isl with isl29028 to give "isl,isl29028" for device's compatible
+      property.
 
-checking how much of the docs I can expose now, gimme a couple days.
+ Documentation/devicetree/bindings/i2c/trivial-devices.txt | 2 ++
+ Documentation/devicetree/bindings/vendor-prefixes.txt     | 1 +
+ drivers/staging/iio/light/isl29028.c                      | 3 ++-
+ arch/arm/boot/dts/tegra30-cardhu.dtsi                     | 2 +-
+ 4 files changed, 6 insertions(+), 2 deletions(-)
 
---=20
-balbi
+-- 
+1.9.1
 
---S1BNGpv0yoYahz37
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
-
-iQIcBAEBAgAGBQJUKx78AAoJEIaOsuA1yqRE17MQAI2TscC+5VNFaR724sxvKChx
-3/Zsegh5m/+ZgHe+S9XkQl+OqxTiNgpRByITfioryWKv/EFZSlNKzx2FMotEzbvE
-+o+GROToIJ/YokVfzcHUTS0S2y1+wdeGFG93dEaDbSA+EyJBQ+lmtsuyT0PGfgUq
-zS7PYbt4zzSiwMKi/YJN8iLVuW4KKV/jIR7D4Btctw/T5AQobfjsoxzAUT9PGT9Z
-HuJyZZce8kfDYoQgG4oRlY9S30AQsB8xTgST7f6mn3vPclFWkc7IB/dvKHhKCr3Y
-ib6FsvIaYjzR/sYsnuFdvoVOnRi/suP10iRXNVxPgf18WwTw46Dq3SSd7stVsNhs
-GohwrzdhnPySXRPrj31zGOhPgRouzvw54b3mNlR+B6vuERNb5/YQJUQ/EdhUrfhV
-tjlSLdkGrV7MagR0715UB7gi30qmJsevt/xYS00vXIpttJkB8gnDWY+bn4Cz9IxC
-FJtf1LWSLj6uX2dN8FQvhR5jCG9pmcW0Ka5+px+Z5GDLMWrCv8qBZS2ggg2ZMNua
-CCukJUcXv+dNG70EGqWPsMK2X6hsNhQpF4PN2M+1FWiZuZVT6axgPJ3ujibi+Tcz
-zBWNzSuvgs3BlCPpmzWWAUpYpmb0U6LFw9K8rnOV8lP1H0NcYEOfaTffrA2NtI4U
-diKSXe+SHVXFmYs6VXNL
-=hlyP
------END PGP SIGNATURE-----
-
---S1BNGpv0yoYahz37--
