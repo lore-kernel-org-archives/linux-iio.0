@@ -1,55 +1,43 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga02.intel.com ([134.134.136.20]:13717 "EHLO mga02.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1750899AbaIKWm6 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Thu, 11 Sep 2014 18:42:58 -0400
-From: Kuppuswamy Sathyanarayanan
-	<sathyanarayanan.kuppuswamy@linux.intel.com>
-To: jic23@kernel.org
-Cc: linux-iio@vger.kernel.org, srinivas.pandruvada@linux.intel.com,
-	sathyanarayanan.kuppuswamy@linux.intel.com
-Subject: [PATCH v5 0/1] iio: jsa1212: Add JSA1212 proximity/ALS sensor
-Date: Thu, 11 Sep 2014 15:38:37 -0700
-Message-Id: <cover.1410474814.git.sathyanarayanan.kuppuswamy@linux.intel.com>
+Received: from mail-pa0-f50.google.com ([209.85.220.50]:64405 "EHLO
+	mail-pa0-f50.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750791AbaI3MA0 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 30 Sep 2014 08:00:26 -0400
+Received: by mail-pa0-f50.google.com with SMTP id kx10so5394264pab.9
+        for <linux-iio@vger.kernel.org>; Tue, 30 Sep 2014 05:00:25 -0700 (PDT)
+From: Darshana Padmadas <darshanapadmadas@gmail.com>
+To: opw-kernel@googlegroups.com
+Cc: jic23@kernel.org, linux-iio@vger.kernel.org,
+	devel@driverdev.osuosl.org,
+	Darshana Padmadas <darshanapadmadas@gmail.com>
+Subject: [PATCH v3 2/4] Documentation: devicetree: bindings: Document deprecated device vendor name to fix related warning
+Date: Tue, 30 Sep 2014 17:29:06 +0530
+Message-Id: <1412078348-7646-3-git-send-email-darshanapadmadas@gmail.com>
+In-Reply-To: <1412078348-7646-1-git-send-email-darshanapadmadas@gmail.com>
+References: <1412078348-7646-1-git-send-email-darshanapadmadas@gmail.com>
+Content-Type: text/plain; charset="utf-8"
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Please let me know your review comments.
+This patch documents deprecated vendor name of device isl29028 for compatibility with older kernels.
 
-PATCH v5 changes:
+Signed-off-by: Darshana Padmadas <darshanapadmadas@gmail.com>
+---
+ Documentation/devicetree/bindings/vendor-prefixes.txt | 1 +
+ 1 file changed, 1 insertion(+)
 
-1. Removed irq.h and interrupt.h.
-2. Disabled the device under error condition when reading data.
-3. Added TODO and slave address info in file header.
-
-PATCH v4 changes:
-
-1. Removed unused register defines
-2. Used standard endian conversion function instead of custom one.
-3. Replaced register default value constants with appropriate bit value macros.
-4. Removed iio user interfaces before powering off the device in remove function.
-
-PATCH v3 changes:
-
-1. Replaced status flags with bool values.
-2. Added regmap suppport to avoid adding custom i2c register update routine.
-3. Also addressed some minor comments from Jonathan Cameron
-
-PATCH v2 changes:
-
-1. Combined ALS/PXS enable/disable functions into a single routine.
-2. Removed extra debug messages.
-3. Also addressed review comments from Peter Meerwald
-
-Kuppuswamy Sathyanarayanan (1):
-  iio: jsa1212: Add JSA1212 proximity/ALS sensor
-
- drivers/iio/light/Kconfig   |  10 +
- drivers/iio/light/Makefile  |   1 +
- drivers/iio/light/jsa1212.c | 488 ++++++++++++++++++++++++++++++++++++++++++++
- 3 files changed, 499 insertions(+)
- create mode 100644 drivers/iio/light/jsa1212.c
-
+diff --git a/Documentation/devicetree/bindings/vendor-prefixes.txt b/Documentation/devicetree/bindings/vendor-prefixes.txt
+index ac7269f..e2503b8 100644
+--- a/Documentation/devicetree/bindings/vendor-prefixes.txt
++++ b/Documentation/devicetree/bindings/vendor-prefixes.txt
+@@ -68,6 +68,7 @@ img	Imagination Technologies Ltd.
+ intel	Intel Corporation
+ intercontrol	Inter Control Group
+ isee	ISEE 2007 S.L.
++isil 	Intersil (deprecated, use isl)
+ isl	Intersil
+ karo	Ka-Ro electronics GmbH
+ keymile	Keymile GmbH
 -- 
 1.9.1
 
