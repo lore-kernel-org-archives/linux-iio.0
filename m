@@ -1,167 +1,127 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:56904 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751676AbaJDJoG (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 4 Oct 2014 05:44:06 -0400
-Message-ID: <542FC15D.3070503@kernel.org>
-Date: Sat, 04 Oct 2014 10:43:57 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-MIME-Version: 1.0
-To: Michael Welling <mwelling@ieee.org>, Felipe Balbi <balbi@ti.com>
-CC: Andrew Morton <akpm@linux-foundation.org>,
-	linux-iio@vger.kernel.org, pmeerw@pmeerw.net,
-	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Subject: Re: [RESEND PATCH] iio: light: add support for TI's opt3001 light
- sensor
-References: <20140925221619.GA10644@saruman> <20140927041959.GA28445@saruman> <20140929140227.GD32403@saruman> <20140929183856.GA11871@sysresccd> <20140929185325.GA1939@saruman> <20140929223833.GA13111@sysresccd> <20140929224638.GA21681@saruman> <20140929234159.GB13111@sysresccd> <20140930212204.GC13806@saruman> <20141002180553.GI7933@saruman> <20141004031721.GA2846@deathray>
-In-Reply-To: <20141004031721.GA2846@deathray>
-Content-Type: text/plain; charset=windows-1252
+Received: from ns.mm-sol.com ([37.157.136.199]:47242 "EHLO extserv.mm-sol.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1752396AbaJBMcG (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Thu, 2 Oct 2014 08:32:06 -0400
+From: "Ivan T. Ivanov" <iivanov@mm-sol.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: "Ivan T. Ivanov" <iivanov@mm-sol.com>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Sachin Kamat <sachin.kamat@linaro.org>,
+	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+	John Stultz <john.stultz@linaro.org>,
+	linux-iio@vger.kernel.org, svarbanov@mm-sol.com,
+	linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org
+Subject: [PATCH] iio: inkern: Add of_xlate function to struct iio_dev
+Date: Thu,  2 Oct 2014 15:32:08 +0300
+Message-Id: <1412253128-32165-1-git-send-email-iivanov@mm-sol.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 04/10/14 04:17, Michael Welling wrote:
-> On Thu, Oct 02, 2014 at 01:05:53PM -0500, Felipe Balbi wrote:
->> Hi,
->>
->> On Tue, Sep 30, 2014 at 04:22:04PM -0500, Felipe Balbi wrote:
->>> On Mon, Sep 29, 2014 at 06:41:59PM -0500, Michael Welling wrote:
->>>> On Mon, Sep 29, 2014 at 05:46:38PM -0500, Felipe Balbi wrote:
->>>>> Hi,
->>>>>
->>>>> On Mon, Sep 29, 2014 at 05:38:33PM -0500, Michael Welling wrote:
->>>>>>>>> Alright, this is already ridiculous. Andrew, if I resend the patch can
->>>>>>>>> you apply it since maintainer has been ignoring this thread anyway ?
->>>>>>>>>
->>>>>>>>
->>>>>>>> Do you reall think this is the best way to approach this?
->>>>>>>
->>>>>>> when maintainer doesn't respond for weeks, yeah! Sure it is.
->>>>>>>
->>>>>>>> Perhaps it would be better to explain what each field of the
->>>>>>>> configuration register does and then we can move on.
->>>>>>>
->>>>>>> perhaps Jonathan could tell me exactly what he wants because I can't
->>>>>>> handle back-and-forth anymore. Specially when he complains about stuff
->>>>>>> he asked me to modify himself.
->>>>>>>
->>>>>>>> In particular the OPT3001_CONFIGURATION_L field needs to be explained
->>>>>>>> such that the ABI can be properly applied.
->>>>>>>>
->>>>>>>> Looking at the docs for the Windows demo program the field is associated
->>>>>>>> with a latch configuration. What does this bit field actually do?
->>>>>>
->>>>>> Still no technical information. Without all the facts how can you expect
->>>>>> him to tell you what he wants?
->>>>>
->>>>> yeah, because clearly he doesn't know himself, right ?
->>>>
->>>> Could you explain how it works to me then?
->>>
->>> checking how much of the docs I can expose now, gimme a couple days.
->>
->> alright, here's a snippet of what's on preliminary docs:
->>
-Firstly, thanks Felipe for going through the process to get permission
-to release the snippets.  I know this can be a real pain to do.
-> 
-> Firstly, there is logical error in the latest code.
-> The hysteresis setting is 0 not 1.
-> 
-> +       if (opt->hysteresis)
-> +               reg |= OPT3001_CONFIGURATION_L;
-> +       else
-> +               reg &= ~OPT3001_CONFIGURATION_L;
-> 
-> 
->> Latch field (read or write).
->> The latch field controls the functionality of the interrupt reporting
->> mechanisms: the INT pin, the flag high field (FH), and flag low field (FL).
->> This bit selects the reporting style between a latched window-style comparison
->> and a transparent hysteresis-style comparison.
->>
->> 0 = The device functions in transparent hysteresis-style comparison operation,
->> where the three interrupt reporting mechanisms directly reflect the comparison
->> of the result register with the high- and low-limit registers with no
->> user-controlled clearing event. See the Interrupt Operation, INT Pin, and
->> Interrupt Reporting Mechanisms section for further details.
->>
->> 1 = The device functions in latched window-style comparison operation, latching
->> the interrupt reporting mechanisms until a user-controlled clearing event.
->>
-> 
-> How is the interrupt cleared in mode 1 in the latest version of your
-> code?
-> 
->> [...]
->>
->> 7.4.2.2 Transparent Hysteresis-Style Comparison Mode
->> The transparent hysteresis-style comparison mode is typically used when a
->> single digital signal is desired that indicates whether the input light is
->> higher than or lower than a light level of interest. If the result register is
->> higher than the high-limit register for a consecutive number of events set by
->> the fault count field, the INT line is set to active, the flag high field is
->> set to 1, and the flag low field is set to 0. If the result register is lower
->> than the lowlimit register for a consecutive number of events set by the fault
->> count field, the INT line is set to inactive, the flag low field is set to 1,
->> and the flag high field is set to 0. The INT pin and flag high and flag low
->> fields do not change state with configuration reads and writes. The INT pin and
->> flag fields continually report the appropriate comparison of the light to the
->> low-limit and high-limit registers. The device does not respond to the SMBus
->> alert response protocol while in either of the two transparent comparison modes
->> (configuration register, latch field = 0).
->>
-> 
-> The ABI confusion starts here.
-> 
-> You are dealing with a mode enable and IIO_EV_INFO_HYSTERESIS is associated
-> with a the hysteresis level of a threshold event.
-> 
-> http://lxr.free-electrons.com/source/Documentation/ABI/testing/sysfs-bus-iio#L605
-> 
-> You are going to have abstract the register access to conform to the ABI or add
-> to the ABI as Jonathan suggests.
+When #iio-cells is greater than '0', the driver could provide
+a custom of_xlate function that reads the *args* and returns
+the appropriate index in registered IIO channels array.
 
-Hysteresis in IIO is the equivalent of the action of a Schmitt trigger
-Clearly there are other more complex forms of hysteresis, though a
-purely temporal one is an unusual use of the term.
+Add simple translation function, suitable for the most 1:1
+mapped channels in IIO chips, and use it when driver did not
+provide custom implementation.
 
-As I read this description what we have here corresponds to
-*_period though that ABI requires the units to be seconds rather
-than samples hence a conversion will be necessary.
+Signed-off-by: Ivan T. Ivanov <iivanov@mm-sol.com>
+---
+ drivers/iio/inkern.c    | 32 +++++++++++++++++++++++++++-----
+ include/linux/iio/iio.h |  8 ++++++++
+ 2 files changed, 35 insertions(+), 5 deletions(-)
 
-I guess that the OPT3001_CONFIGURATION_FC_MASK relates to this
-fault count? Hence your *_period controls IIO_EV_INFO_PERIOD
-will presumably write that.
+diff --git a/drivers/iio/inkern.c b/drivers/iio/inkern.c
+index f084610..6c3e478 100644
+--- a/drivers/iio/inkern.c
++++ b/drivers/iio/inkern.c
+@@ -100,6 +100,28 @@ static int iio_dev_node_match(struct device *dev, void *data)
+ 	return dev->of_node == data && dev->type == &iio_device_type;
+ }
+ 
++/**
++ * __of_iio_simple_xlate - translate iiospec to the IIO channel index
++ * @indio_dev:	pointer to the iio_dev structure
++ * @iiospec:	IIO specifier as found in the device tree
++ *
++ * This is simple translation function, suitable for the most 1:1 mapped
++ * channels in IIO chips. This function performs only one sanity check:
++ * whether IIO index is less than num_channels (that is specified in the
++ * iio_dev).
++ */
++static int __of_iio_simple_xlate(struct iio_dev *indio_dev,
++				const struct of_phandle_args *iiospec)
++{
++	if (!iiospec->args_count)
++		return 0;
++
++	if (iiospec->args[0] >= indio_dev->num_channels)
++		return -EINVAL;
++
++	return iiospec->args[0];
++}
++
+ static int __of_iio_channel_get(struct iio_channel *channel,
+ 				struct device_node *np, int index)
+ {
+@@ -122,18 +144,18 @@ static int __of_iio_channel_get(struct iio_channel *channel,
+ 
+ 	indio_dev = dev_to_iio_dev(idev);
+ 	channel->indio_dev = indio_dev;
+-	index = iiospec.args_count ? iiospec.args[0] : 0;
+-	if (index >= indio_dev->num_channels) {
+-		err = -EINVAL;
++	if (!indio_dev->of_xlate)
++		indio_dev->of_xlate = __of_iio_simple_xlate;
++	index = indio_dev->of_xlate(indio_dev, &iiospec);
++	if (index < 0)
+ 		goto err_put;
+-	}
+ 	channel->channel = &indio_dev->channels[index];
+ 
+ 	return 0;
+ 
+ err_put:
+ 	iio_device_put(indio_dev);
+-	return err;
++	return index;
+ }
+ 
+ static struct iio_channel *of_iio_channel_get(struct device_node *np, int index)
+diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
+index 15dc6bc..d5bb219 100644
+--- a/include/linux/iio/iio.h
++++ b/include/linux/iio/iio.h
+@@ -13,6 +13,7 @@
+ #include <linux/device.h>
+ #include <linux/cdev.h>
+ #include <linux/iio/types.h>
++#include <linux/of.h>
+ /* IIO TODO LIST */
+ /*
+  * Provide means of adjusting timer accuracy.
+@@ -413,6 +414,11 @@ struct iio_buffer_setup_ops {
+  * @currentmode:	[DRIVER] current operating mode
+  * @dev:		[DRIVER] device structure, should be assigned a parent
+  *			and owner
++ * @of_xlate:		[DRIVER] function pointer to obtain channel specifier
++ *			index. When #iio-cells is greater than '0', the driver
++ *			could provide a custom of_xlate function that reads
++ *			the *args* and returns the appropriate index in
++ *			registered IIO channels array.
+  * @event_interface:	[INTERN] event chrdevs associated with interrupt lines
+  * @buffer:		[DRIVER] any buffer present
+  * @buffer_list:	[INTERN] list of all buffers currently attached
+@@ -451,6 +457,8 @@ struct iio_dev {
+ 	int				currentmode;
+ 	struct device			dev;
+ 
++	int (*of_xlate)(struct iio_dev *indio_dev,
++			const struct of_phandle_args *iiospec);
+ 	struct iio_event_interface	*event_interface;
+ 
+ 	struct iio_buffer		*buffer;
+-- 
+1.9.1
 
-Michael has noted the other complexity above.  In non hysteresis
-mode we have a conventional interrupt that can be cleared one
-the driver has dealt with it. That simple interrupt corresponds
-to a period of 0 (though that might also be a valid value for your
-fault count field).
-
-For these others cases that 'interrupt' line has become a simple
-indicator of state. What state is it in if the value is between the
-two thresholds?
-
-Anyhow, you handle this by triggering on either rising or falling edge,
-thus catching any change of state but not causing an interrupt storm.
-This works in most cases but would it not miss a change of state from
-initially between the thresholds to then being outside of them?
-Perhaps I'm missing something here.
-
-Thanks,
-
-Jonathan
-
-
-
-> 
->> -- 
->> balbi
-> 
-> 
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> 
