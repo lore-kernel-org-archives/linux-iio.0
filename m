@@ -1,38 +1,60 @@
-Return-Path: <srinivas.pandruvada@linux.intel.com>
-From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-To: jic23@kernel.org
-Cc: linux-iio@vger.kernel.org,
-	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-Subject: [PATCH v1 4/4] iio: accel: bmc150: Fix iio_event_spec direction
-Date: Fri, 10 Oct 2014 20:35:34 -0700
-Message-Id: <1412998534-31971-5-git-send-email-srinivas.pandruvada@linux.intel.com>
-In-Reply-To: <1412998534-31971-1-git-send-email-srinivas.pandruvada@linux.intel.com>
-References: <1412998534-31971-1-git-send-email-srinivas.pandruvada@linux.intel.com>
+Return-Path: <daniel.baluta@intel.com>
+From: Daniel Baluta <daniel.baluta@intel.com>
+To: jic23@kernel.org,
+	linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Cc: daniel.baluta@intel.com,
+	irina.tirdea@intel.com
+Subject: [RFC PATCH 2/8] iio: core: Introduce IIO_ACTIVITY channel
+Date: Thu,  2 Oct 2014 16:43:53 +0300
+Message-Id: <1412257439-15683-3-git-send-email-daniel.baluta@intel.com>
+In-Reply-To: <1412257439-15683-1-git-send-email-daniel.baluta@intel.com>
+References: <1412257439-15683-1-git-send-email-daniel.baluta@intel.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-Change event spec direction from
-IIO_EV_DIR_RISING | IIO_EV_DIR_FALLING
-to
-IIO_EV_DIR_EITHER
+This channel will be used for exposing information about
+some activity composite sensors including:
+	* motion (running, jogging, walking, still).
+	* step counter
+	* step detector
 
-Suggested-by: Daniel Baluta <daniel.baluta@intel.com>
-Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+This will offer an interface for Android composite sensors
+defined here:
+http://source.android.com/devices/sensors/composite_sensors.html
+
+This sensors are supported by Freescale's MMA9553 device.
+http://freescale.com/files/sensors/doc/ref_manual/MMA9553LSWRM.pdf
+
+Signed-off-by: Daniel Baluta <daniel.baluta@intel.com>
+Signed-off-by: Irina Tirdea <irina.tirdea@intel.com>
 ---
- drivers/iio/accel/bmc150-accel.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/iio/industrialio-core.c | 1 +
+ include/linux/iio/types.h       | 1 +
+ 2 files changed, 2 insertions(+)
 
-diff --git a/drivers/iio/accel/bmc150-accel.c b/drivers/iio/accel/bmc150-accel.c
-index 969cb21..513bd6d 100644
---- a/drivers/iio/accel/bmc150-accel.c
-+++ b/drivers/iio/accel/bmc150-accel.c
-@@ -853,7 +853,7 @@ static const struct attribute_group bmc150_accel_attrs_group = {
+diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+index af3e76d..67e8561 100644
+--- a/drivers/iio/industrialio-core.c
++++ b/drivers/iio/industrialio-core.c
+@@ -70,6 +70,7 @@ static const char * const iio_chan_type_name_spec[] = {
+ 	[IIO_CCT] = "cct",
+ 	[IIO_PRESSURE] = "pressure",
+ 	[IIO_HUMIDITYRELATIVE] = "humidityrelative",
++	[IIO_ACTIVITY] = "activity",
+ };
  
- static const struct iio_event_spec bmc150_accel_event = {
- 		.type = IIO_EV_TYPE_ROC,
--		.dir = IIO_EV_DIR_RISING | IIO_EV_DIR_FALLING,
-+		.dir = IIO_EV_DIR_EITHER,
- 		.mask_separate = BIT(IIO_EV_INFO_VALUE) |
- 				 BIT(IIO_EV_INFO_ENABLE) |
- 				 BIT(IIO_EV_INFO_PERIOD)
+ static const char * const iio_modifier_names[] = {
+diff --git a/include/linux/iio/types.h b/include/linux/iio/types.h
+index 4a2af8a..d58769a 100644
+--- a/include/linux/iio/types.h
++++ b/include/linux/iio/types.h
+@@ -30,6 +30,7 @@ enum iio_chan_type {
+ 	IIO_CCT,
+ 	IIO_PRESSURE,
+ 	IIO_HUMIDITYRELATIVE,
++	IIO_ACTIVITY,
+ };
+ 
+ enum iio_modifier {
 -- 
 1.9.1
