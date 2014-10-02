@@ -1,102 +1,82 @@
-Return-Path: <iivanov@mm-sol.com>
-Message-ID: <1412251686.1027.15.camel@iivanov-dev>
-Subject: Re: [PATCH v3 1/2] iio: vadc: Qualcomm SPMI PMIC voltage ADC driver
-From: "Ivan T. Ivanov" <iivanov@mm-sol.com>
-To: Stanimir Varbanov <svarbanov@mm-sol.com>
-Cc: jic23@kernel.org, lars <lars@metafoo.de>, sachin.kamat@linaro.org,
-	srinivas.pandruvada@linux.intel.com, linux-iio@vger.kernel.org,
-	linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
-	devicetree@vger.kernel.org
-Date: Thu, 02 Oct 2014 15:08:06 +0300
-In-Reply-To: <542D1B11.8070600@mm-sol.com>
-References: <1411563415-11933-1-git-send-email-svarbanov@mm-sol.com>
-	 <1411563415-11933-2-git-send-email-svarbanov@mm-sol.com>
-	 <542D1B11.8070600@mm-sol.com>
-Content-Type: text/plain; charset="UTF-8"
-Mime-Version: 1.0
+Return-Path: <daniel.baluta@intel.com>
+From: Daniel Baluta <daniel.baluta@intel.com>
+To: jic23@kernel.org,
+	linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Cc: daniel.baluta@intel.com,
+	irina.tirdea@intel.com
+Subject: [RFC PATCH 5/8] iio: core: Introduce ENABLE channel info mask
+Date: Thu,  2 Oct 2014 16:43:56 +0300
+Message-Id: <1412257439-15683-6-git-send-email-daniel.baluta@intel.com>
+In-Reply-To: <1412257439-15683-1-git-send-email-daniel.baluta@intel.com>
+References: <1412257439-15683-1-git-send-email-daniel.baluta@intel.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-+iio maintainers
+From: Irina Tirdea <irina.tirdea@intel.com>
 
-On Thu, 2014-10-02 at 12:29 +0300, Ivan T. Ivanov wrote:
-> Hi Stan,
-> 
-> On 09/24/2014 03:56 PM, Stanimir Varbanov wrote:
-> 
-> <snip>
-> 
-> > +static int vadc_get_dt_data(struct vadc_priv *vadc, struct device_node *node)
-> > +{
-> > +	struct iio_chan_spec *iio_chan = vadc->iio_chans;
-> > +	const struct vadc_channels *vadc_chan;
-> > +	struct vadc_channel_prop prop;
-> > +	struct device_node *child;
-> > +	int ret, index = 0;
-> > +
-> > +	for_each_available_child_of_node(node, child) {
-> > +		ret = vadc_get_dt_channel_data(vadc->dev, &prop, child);
-> > +		if (ret)
-> > +			return ret;
-> > +
-> > +		vadc->chan_props[index] = prop;
-> > +
-> > +		vadc_chan = &vadc_chans[prop.channel];
-> > +
-> > +		iio_chan->channel = prop.channel;
-> > +		iio_chan->datasheet_name = vadc_chan->datasheet_name;
-> > +		iio_chan->info_mask_separate = vadc_chan->info_mask;
-> > +		iio_chan->type = vadc_chan->type;
-> > +		iio_chan->indexed = 1;
-> > +		iio_chan->scan_type.sign = 's';
-> > +		iio_chan->scan_type.realbits = 15;
-> > +		iio_chan->scan_type.storagebits = 16;
-> > +		iio_chan->address = index++;
-> > +
-> > +		iio_chan++;
-> > +	}
-> > +
-> > +	return 0;
-> > +}
-> > +
-> 
-> <snip>
-> 
-> > +static int vadc_probe(struct platform_device *pdev)
-> > +{
-> 
-> <snip>
-> 
-> > +
-> > +	indio_dev->dev.parent = dev;
-> > +	indio_dev->dev.of_node = node;
-> > +	indio_dev->name = pdev->name;
-> > +	indio_dev->modes = INDIO_DIRECT_MODE;
-> > +	indio_dev->info = &vadc_info;
-> > +	indio_dev->channels = vadc->iio_chans;
-> > +	indio_dev->num_channels = vadc->nchannels;
-> 
-> This will not work as we thought. Registration will be fine and entries
-> in sysfs are created as expected, but this is breaking numbering scheme
-> for client drivers. For us the problem is that iio framework expect channels
-> numbering to be linear and channel number should not be greater than
-> channel count. For example even if die temperature channel is always 8, if
-> I describe only 5 channels in DTS files (4 for reference points measurement)
-> and 1 for die temperature, clients could not get OF reference to 
-> temperature
-> channel using io-channels = <&pm8941_vadc 8>;
-> 
-> Jonathan, please, could you advise us.
-> 
-> Regards,
-> Ivan
-> 
-> > +
-> > +	return devm_iio_device_register(dev, indio_dev);
-> > +}
-> > +
-> >
-> 
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-arm-msm" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+This change is needed for the step counter functionality of a pedometer.
+The step counter needs to be enabled and then it will count the steps
+in its hardware register. Whenever the applications need to check
+the step count, they will read the step counter register.
+
+Since the pedometer needs to be enabled once so that the hardware
+can count and store the steps, we need a specific enable attribute.
+
+For more information on the pedometer requirements for Android see
+http://source.android.com/devices/sensors/composite_sensors.html#counter.
+
+A device that has the pedometer functionality this interface needs to
+support is Freescale's MMA9553L:
+http://www.freescale.com/files/sensors/doc/ref_manual/MMA9553LSWRM.pdf
+
+Signed-off-by: Irina Tirdea <irina.tirdea@intel.com>
+---
+ Documentation/ABI/testing/sysfs-bus-iio | 7 +++++++
+ drivers/iio/industrialio-core.c         | 1 +
+ include/linux/iio/iio.h                 | 1 +
+ 3 files changed, 9 insertions(+)
+
+diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
+index feacb45..c02785d 100644
+--- a/Documentation/ABI/testing/sysfs-bus-iio
++++ b/Documentation/ABI/testing/sysfs-bus-iio
+@@ -949,6 +949,13 @@ Description:
+ 		and the relevant _type attributes to establish the data storage
+ 		format.
+ 
++What:		/sys/.../iio:deviceX/in_activity_enable
++KernelVersion:	3.17
++Contact:	linux-iio@vger.kernel.org
++Description:
++		Activates the step counter and all dependent features
++		(e.g.: walked distance, activity detection like running, walking, etc.).
++
+ What:		/sys/.../iio:deviceX/in_activity_steps_raw
+ KernelVersion:	3.17
+ Contact:	linux-iio@vger.kernel.org
+diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+index 935a8a1..936df49 100644
+--- a/drivers/iio/industrialio-core.c
++++ b/drivers/iio/industrialio-core.c
+@@ -119,6 +119,7 @@ static const char * const iio_chan_info_postfix[] = {
+ 	[IIO_CHAN_INFO_HARDWAREGAIN] = "hardwaregain",
+ 	[IIO_CHAN_INFO_HYSTERESIS] = "hysteresis",
+ 	[IIO_CHAN_INFO_INT_TIME] = "integration_time",
++	[IIO_CHAN_INFO_ENABLE] = "enable",
+ };
+ 
+ /**
+diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
+index 15dc6bc..3d3f06f 100644
+--- a/include/linux/iio/iio.h
++++ b/include/linux/iio/iio.h
+@@ -37,6 +37,7 @@ enum iio_chan_info_enum {
+ 	IIO_CHAN_INFO_HARDWAREGAIN,
+ 	IIO_CHAN_INFO_HYSTERESIS,
+ 	IIO_CHAN_INFO_INT_TIME,
++	IIO_CHAN_INFO_ENABLE,
+ };
+ 
+ enum iio_shared_by {
+-- 
+1.9.1
