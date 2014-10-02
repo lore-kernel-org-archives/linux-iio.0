@@ -1,82 +1,36 @@
-Return-Path: <daniel.baluta@intel.com>
-From: Daniel Baluta <daniel.baluta@intel.com>
-To: jic23@kernel.org,
-	linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Cc: daniel.baluta@intel.com,
-	irina.tirdea@intel.com
-Subject: [RFC PATCH 5/8] iio: core: Introduce ENABLE channel info mask
-Date: Thu,  2 Oct 2014 16:43:56 +0300
-Message-Id: <1412257439-15683-6-git-send-email-daniel.baluta@intel.com>
-In-Reply-To: <1412257439-15683-1-git-send-email-daniel.baluta@intel.com>
-References: <1412257439-15683-1-git-send-email-daniel.baluta@intel.com>
+Return-Path: <iivanov@mm-sol.com>
+Message-ID: <1412257785.1027.40.camel@iivanov-dev>
+Subject: Re: [PATCH] iio: inkern: Add of_xlate function to struct iio_dev
+From: "Ivan T. Ivanov" <iivanov@mm-sol.com>
+To: Lars-Peter Clausen <lars@metafoo.de>
+Cc: Jonathan Cameron <jic23@kernel.org>, Sachin Kamat
+ <sachin.kamat@linaro.org>,  Srinivas Pandruvada
+ <srinivas.pandruvada@linux.intel.com>, John Stultz
+ <john.stultz@linaro.org>,  linux-iio@vger.kernel.org, svarbanov@mm-sol.com,
+ linux-kernel@vger.kernel.org,  linux-arm-msm@vger.kernel.org
+Date: Thu, 02 Oct 2014 16:49:45 +0300
+In-Reply-To: <542D5377.90201@metafoo.de>
+References: <1412253128-32165-1-git-send-email-iivanov@mm-sol.com>
+	 <542D5377.90201@metafoo.de>
+Content-Type: text/plain; charset="UTF-8"
+Mime-Version: 1.0
 List-ID: <linux-iio@vger.kernel.org>
 
-From: Irina Tirdea <irina.tirdea@intel.com>
+On Thu, 2014-10-02 at 15:30 +0200, Lars-Peter Clausen wrote:
+> On 10/02/2014 02:32 PM, Ivan T. Ivanov wrote:
+> > When #iio-cells is greater than '0', the driver could provide
+> > a custom of_xlate function that reads the *args* and returns
+> > the appropriate index in registered IIO channels array.
+> 
+> Do you have an example of a device that doesn't want to use the default 
+> mapping? If yes please include it in the commit message, otherwise it is 
+> fairly hard to say whether this makes sense or not.
 
-This change is needed for the step counter functionality of a pedometer.
-The step counter needs to be enabled and then it will count the steps
-in its hardware register. Whenever the applications need to check
-the step count, they will read the step counter register.
+Still not mainlined. You can find more detailed description of the 
+issue here[1] and driver here[2].
 
-Since the pedometer needs to be enabled once so that the hardware
-can count and store the steps, we need a specific enable attribute.
+Regards,
+Ivan
 
-For more information on the pedometer requirements for Android see
-http://source.android.com/devices/sensors/composite_sensors.html#counter.
-
-A device that has the pedometer functionality this interface needs to
-support is Freescale's MMA9553L:
-http://www.freescale.com/files/sensors/doc/ref_manual/MMA9553LSWRM.pdf
-
-Signed-off-by: Irina Tirdea <irina.tirdea@intel.com>
----
- Documentation/ABI/testing/sysfs-bus-iio | 7 +++++++
- drivers/iio/industrialio-core.c         | 1 +
- include/linux/iio/iio.h                 | 1 +
- 3 files changed, 9 insertions(+)
-
-diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
-index feacb45..c02785d 100644
---- a/Documentation/ABI/testing/sysfs-bus-iio
-+++ b/Documentation/ABI/testing/sysfs-bus-iio
-@@ -949,6 +949,13 @@ Description:
- 		and the relevant _type attributes to establish the data storage
- 		format.
- 
-+What:		/sys/.../iio:deviceX/in_activity_enable
-+KernelVersion:	3.17
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+		Activates the step counter and all dependent features
-+		(e.g.: walked distance, activity detection like running, walking, etc.).
-+
- What:		/sys/.../iio:deviceX/in_activity_steps_raw
- KernelVersion:	3.17
- Contact:	linux-iio@vger.kernel.org
-diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
-index 935a8a1..936df49 100644
---- a/drivers/iio/industrialio-core.c
-+++ b/drivers/iio/industrialio-core.c
-@@ -119,6 +119,7 @@ static const char * const iio_chan_info_postfix[] = {
- 	[IIO_CHAN_INFO_HARDWAREGAIN] = "hardwaregain",
- 	[IIO_CHAN_INFO_HYSTERESIS] = "hysteresis",
- 	[IIO_CHAN_INFO_INT_TIME] = "integration_time",
-+	[IIO_CHAN_INFO_ENABLE] = "enable",
- };
- 
- /**
-diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
-index 15dc6bc..3d3f06f 100644
---- a/include/linux/iio/iio.h
-+++ b/include/linux/iio/iio.h
-@@ -37,6 +37,7 @@ enum iio_chan_info_enum {
- 	IIO_CHAN_INFO_HARDWAREGAIN,
- 	IIO_CHAN_INFO_HYSTERESIS,
- 	IIO_CHAN_INFO_INT_TIME,
-+	IIO_CHAN_INFO_ENABLE,
- };
- 
- enum iio_shared_by {
--- 
-1.9.1
+[1] https://lkml.org/lkml/2014/10/2/123
+[2] http://www.spinics.net/lists/devicetree/msg50717.html
