@@ -1,297 +1,498 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from devils.ext.ti.com ([198.47.26.153]:54758 "EHLO
-	devils.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750758AbaJORha (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 15 Oct 2014 13:37:30 -0400
-Message-ID: <543EB0D6.9060406@ti.com>
-Date: Wed, 15 Oct 2014 12:37:26 -0500
-From: Dan Murphy <dmurphy@ti.com>
-MIME-Version: 1.0
-To: Daniel Baluta <daniel.baluta@intel.com>,
-	<linux-iio@vger.kernel.org>
-CC: <jic23@kernel.org>
-Subject: Re: [RFC Patch 3/3] iio: heart_monitor: Add TI afe4403 heart monitor
-References: <1413314032-923-1-git-send-email-dmurphy@ti.com> <1413314032-923-4-git-send-email-dmurphy@ti.com> <543E23B4.6080206@intel.com>
-In-Reply-To: <543E23B4.6080206@intel.com>
-Content-Type: text/plain; charset="windows-1252"
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <vlad.dogaru@intel.com>
+From: Vlad Dogaru <vlad.dogaru@intel.com>
+To: linux-iio@vger.kernel.org,
+	jic23@kernel.org
+Cc: Vlad Dogaru <vlad.dogaru@intel.com>
+Subject: [PATCH] iio: add bmp280 pressure and temperature driver
+Date: Thu,  2 Oct 2014 22:40:23 +0300
+Message-Id: <1412278823-10870-1-git-send-email-vlad.dogaru@intel.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-Daniel
+Minimal implementation, can read temperature and data using direct mode.
 
-Thanks for the review
+Datasheet available at
+<http://ae-bst.resource.bosch.com/media/products/dokumente/bmp280/BST-BMP280-DS001-09.pdf>
 
-On 10/15/2014 02:35 AM, Daniel Baluta wrote:
->
->
-> On 10/14/2014 10:13 PM, Dan Murphy wrote:
->> Add the TI afe4403 heart rate monitor.
->> This device detects reflected LED
->> wave length fluctuations and presents an ADC
->> value to the user space to be converted to a
->> heart rate.
->>
->> Data sheet located here:
->> http://www.ti.com/product/AFE4403/datasheet
->
-> <snip>
->
->> +obj-y += heart_monitors/
-> s/heart_monitors/heart_monitor
+Signed-off-by: Vlad Dogaru <vlad.dogaru@intel.com>
+---
+ drivers/iio/pressure/Kconfig  |  11 ++
+ drivers/iio/pressure/Makefile |   1 +
+ drivers/iio/pressure/bmp280.c | 433 ++++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 445 insertions(+)
+ create mode 100644 drivers/iio/pressure/bmp280.c
 
-Yeah that aligns with the rest of the directories in iio.  Singular not plural
-
->
->>   obj-y += humidity/
->>   obj-y += imu/
->>   obj-y += light/
->> diff --git a/drivers/iio/heart_monitors/Kconfig b/drivers/iio/heart_monitors/Kconfig
->> new file mode 100644
->> index 0000000..7060694
->> --- /dev/null
->> +++ b/drivers/iio/heart_monitors/Kconfig
->> @@ -0,0 +1,16 @@
->> +#
->> +# Heart Rate Monitor drivers
->> +#
->> +# When adding new entries keep the list in alphabetical order
->> +
->> +menu "Heart Rate Monitors"
->> +
->> +config AFE4403
->> +    tristate "TI AFE4403 Heart Rate Monitor"
->> +    depends on SPI
->> +    select IIO_BUFFER
->> +    select IIO_TRIGGERED_BUFFER
->> +    select SYSFS
->> +    help
->
-> Final version should contain a real help here.
-
-It will this was just a place holder for RFC
-
->
->> +
->> +endmenu
->> diff --git a/drivers/iio/heart_monitors/Makefile b/drivers/iio/heart_monitors/Makefile
->> new file mode 100644
->> index 0000000..77cc5c5
->> --- /dev/null
->> +++ b/drivers/iio/heart_monitors/Makefile
->> @@ -0,0 +1,6 @@
->> +#
->> +# Makefile for IIO Heart Rate Monitor drivers
->> +#
->> +
->> +# When adding new entries keep the list in alphabetical order
->> +obj-$(CONFIG_AFE4403) += afe4403.o
->> diff --git a/drivers/iio/heart_monitors/afe4403.c b/drivers/iio/heart_monitors/afe4403.c
->> new file mode 100644
->> index 0000000..d285769
->> --- /dev/null
->> +++ b/drivers/iio/heart_monitors/afe4403.c
->> @@ -0,0 +1,610 @@
->> +/*
->> + * AFE4403 Heart Rate Monitors and Low-Cost Pulse Oximeters
->> + *
->> + * Author: Dan Murphy <dmurphy@ti.com>
->> + *
->> + * Copyright: (C) 2014 Texas Instruments, Inc.
->> + *
->> + * This program is free software; you can redistribute it and/or modify
->> + * it under the terms of the GNU General Public License version 2 as
->> + * published by the Free Software Foundation.
->> + *
->> + * This program is distributed in the hope that it will be useful, but
->> + * WITHOUT ANY WARRANTY; without even the implied warranty of
->> + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
->> + * General Public License for more details.
->> + */
->> +
->> +#include <linux/device.h>
->> +#include <linux/delay.h>
->> +#include <linux/err.h>
->> +#include <linux/interrupt.h>
->> +#include <linux/kernel.h>
->> +#include <linux/module.h>
->> +#include <linux/of_gpio.h>
->> +#include <linux/spi/spi.h>
->> +#include <linux/slab.h>
->> +#include <linux/sysfs.h>
->> +#include <linux/regulator/consumer.h>
->> +
->> +#include <linux/iio/iio.h>
->> +#include <linux/iio/buffer.h>
->> +#include <linux/iio/driver.h>
->> +#include <linux/iio/machine.h>
->> +#include <linux/iio/events.h>
->> +#include <linux/iio/kfifo_buf.h>
->> +
->> +#define AFE4403_CONTROL0        0x00
->> +#define AFE4403_LED2STC            0x01
->> +#define AFE4403_LED2ENDC        0x02
->> +#define AFE4403_LED2LEDSTC        0x03
->> +#define AFE4403_LED2LEDENDC        0x04
->> +#define AFE4403_ALED2STC        0x05
->> +#define AFE4403_ALED2ENDC        0x06
->> +#define AFE4403_LED1STC            0x07
->> +#define AFE4403_LED1ENDC        0x08
->> +#define AFE4403_LED1LEDSTC        0x09
->> +#define AFE4403_LED1LEDENDC        0x0a
->> +#define AFE4403_ALED1STC        0x0b
->> +#define AFE4403_ALED1ENDC        0x0c
->> +#define AFE4403_LED2CONVST        0x0d
->> +#define AFE4403_LED2CONVEND        0x0e
->> +#define AFE4403_ALED2CONVST        0x0f
->> +#define AFE4403_ALED2CONVEND    0x10
->> +#define AFE4403_LED1CONVST        0x11
->> +#define AFE4403_LED1CONVEND        0x12
->> +#define AFE4403_ALED1CONVST        0x13
->> +#define AFE4403_ALED1CONVEND    0x14
->> +#define AFE4403_ADCRSTSTCT0        0x15
->> +#define AFE4403_ADCRSTENDCT0    0x16
->> +#define AFE4403_ADCRSTSTCT1        0x17
->> +#define AFE4403_ADCRSTENDCT1    0x18
->> +#define AFE4403_ADCRSTSTCT2        0x19
->> +#define AFE4403_ADCRSTENDCT2    0x1a
->> +#define AFE4403_ADCRSTSTCT3     0x1b
->> +#define AFE4403_ADCRSTENDCT3     0x1c
->> +#define AFE4403_PRPCOUNT         0x1d
->> +#define AFE4403_CONTROL1         0x1e
->> +#define AFE4403_SPARE1             0x1f
->> +#define AFE4403_TIAGAIN         0x20
->> +#define AFE4403_TIA_AMB_GAIN     0x21
->> +#define AFE4403_LEDCNTRL         0x22
->> +#define AFE4403_CONTROL2         0x23
->> +#define AFE4403_SPARE2             0x24
->> +#define AFE4403_SPARE3             0x25
->> +#define AFE4403_SPARE4             0x26
->> +#define AFE4403_ALARM             0x29
->> +#define AFE4403_LED2VAL         0x2A
->> +#define AFE4403_ALED2VAL         0x2B
->> +#define AFE4403_LED1VAL         0x2C
->> +#define AFE4403_ALED1VAL         0x2D
->> +#define AFE4403_LED2_ALED2VAL     0x2E
->> +#define AFE4403_LED1_ALED1VAL     0x2F
->> +#define AFE4403_DIAG             0x30
->> +#define AFE4403_CONTROL3         0x31
->> +#define AFE4403_PDNCYCLESTC     0x32
->> +#define AFE4403_PDNCYCLEENDC     0x33
->> +
->> +#define AFE4403_SPI_READ        (1 << 0)
->> +#define AFE4403_SW_RESET        (1 << 3)
->> +#define AFE4403_PWR_DWN            (1 << 0)
->
-> Could use BIT(x) macro here.
-
-OK
-
->
->> +
->> +/**
->> + * struct afe4403_data -
->> + * @work - Work item used to off load the enable/disable of the vibration
->> + * @indio_dev -
->> + * @map -
->> + * @spi -
->> + * @regulator - Pointer to the regulator for the IC
->> + * @ste_gpio -
->> + * @data_gpio -
->> + * @reset_gpio -
->> + * @data_buffer -
->> + * @irq - AFE4403 interrupt number
->> +**/
->
-> :), i assume this will be documented in the final version.
-
-Yes this is a little out of date.
-
->
->> +struct afe4403_data {
->> +    struct work_struct work;
->> +    struct iio_dev *indio_dev;
->> +    struct iio_map *map;
->> +    struct spi_device *spi;
->> +    struct regulator *regulator;
->> +    struct gpio_desc *ste_gpio;
->> +    struct gpio_desc *data_gpio;
->> +    struct gpio_desc *reset_gpio;
->> +    int data_buffer[5];
->> +    int irq;
->> +};
->> +
->
-> <snip>
->
->> +static void afe4403_toggle_ste(struct afe4403_data *afe4403)
->> +{
->> +    gpiod_set_value(afe4403->ste_gpio, 1);
->> +    udelay(800);
->
-> This hardcoded value should be documented.
-
-I will have some documentation or at the very least an explanation.
-This may change as well.
-
->
->> +    gpiod_set_value(afe4403->ste_gpio, 0);
->> +}
->> +
->
-> <snip>
->
->> +static int afe4403_write_event(struct iio_dev *indio_dev,
->> +                     const struct iio_chan_spec *chan,
->> +                     enum iio_event_type type,
->> +                     enum iio_event_direction dir,
->> +                     int state)
->> +{
->> +    struct afe4403_data *afe4403 = iio_priv(indio_dev);
->> +    int ret;
->> +    int control_val;
->> +   
->> +    ret = afe4403_read(afe4403, AFE4403_CONTROL2, &control_val);
->> +    if (ret)
->> +        return ret;
->> +
->
-> Use dev_dbg instead of printks.
-
-Yeah accidentally left these in when debugging these will be removed with official submission
-
->
->> +    printk("***state 0x%X control 0x%X 0x%X\n", state, control_val, ~AFE4403_PWR_DWN);
->> +    if (state)
->> +        control_val &= ~AFE4403_PWR_DWN;
->> +    else
->> +        control_val |= AFE4403_PWR_DWN;
->> +
->> +    printk("***after control 0x%X\n", control_val);
->> +
->> +    ret = afe4403_write(afe4403, AFE4403_CONTROL2, control_val);
->> +    if (ret)
->> +        return ret;
->> +
->> +    ret = afe4403_read(afe4403, AFE4403_CONTROL2, &control_val);
->> +    if (ret)
->> +        return ret;
->> +
->> +    printk("***control 0x%X\n", control_val);
->> +
->> +    return 0;
->> +}
->
-> Also, run checkpatch.pl over your patches. There are small whitespace issues.
-
-Sorry for the low quality patch I was not thinking when I submitted this low quality series
-of patches
-
->
-> thanks,
-> Daniel.
-
-
+diff --git a/drivers/iio/pressure/Kconfig b/drivers/iio/pressure/Kconfig
+index 15afbc9..27ab27e 100644
+--- a/drivers/iio/pressure/Kconfig
++++ b/drivers/iio/pressure/Kconfig
+@@ -5,6 +5,17 @@
+ 
+ menu "Pressure sensors"
+ 
++config BMP280
++	tristate "Bosch Sensortec BMP280 pressure sensor driver"
++	depends on I2C
++	select REGMAP_I2C
++	help
++	 Say yes here to build support for Bosch Sensortec BMP28
++	 pressure and temperature sensor.
++
++	 To compile this driver as a module, choose M here: the module
++	 will be called bmp280.
++
+ config HID_SENSOR_PRESS
+ 	depends on HID_SENSOR_HUB
+ 	select IIO_BUFFER
+diff --git a/drivers/iio/pressure/Makefile b/drivers/iio/pressure/Makefile
+index 90a37e8..88011f2 100644
+--- a/drivers/iio/pressure/Makefile
++++ b/drivers/iio/pressure/Makefile
+@@ -3,6 +3,7 @@
+ #
+ 
+ # When adding new entries keep the list in alphabetical order
++obj-$(CONFIG_BMP280) += bmp280.o
+ obj-$(CONFIG_HID_SENSOR_PRESS)   += hid-sensor-press.o
+ obj-$(CONFIG_MPL115) += mpl115.o
+ obj-$(CONFIG_MPL3115) += mpl3115.o
+diff --git a/drivers/iio/pressure/bmp280.c b/drivers/iio/pressure/bmp280.c
+new file mode 100644
+index 0000000..f5764ee
+--- /dev/null
++++ b/drivers/iio/pressure/bmp280.c
+@@ -0,0 +1,433 @@
++/*
++ * Copyright (c) 2014 Intel Corporation
++ *
++ * Driver for Bosch Sensortec BMP280 digital pressure sensor.
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License version 2 as
++ * published by the Free Software Foundation.
++ *
++ */
++
++#define pr_fmt(fmt) "bmp280: " fmt
++
++#include <linux/module.h>
++#include <linux/i2c.h>
++#include <linux/acpi.h>
++#include <linux/regmap.h>
++#include <linux/iio/iio.h>
++#include <linux/iio/sysfs.h>
++
++#define BMP280_REG_TEMP_XLSB		0xFC
++#define BMP280_REG_TEMP_LSB		0xFB
++#define BMP280_REG_TEMP_MSB		0xFA
++#define BMP280_REG_PRESS_XLSB		0xF9
++#define BMP280_REG_PRESS_LSB		0xF8
++#define BMP280_REG_PRESS_MSB		0xF7
++
++#define BMP280_REG_CONFIG		0xF5
++#define BMP280_REG_CTRL_MEAS		0xF4
++#define BMP280_REG_STATUS		0xF3
++#define BMP280_REG_RESET		0xE0
++#define BMP280_REG_ID			0xD0
++
++#define BMP280_REG_COMP_START		0x88
++#define BMP280_COMP_REG_COUNT		24
++
++#define BMP280_FILTER_MASK		(BIT(4) | BIT(3) | BIT(2))
++#define BMP280_FILTER_OFF		0
++#define BMP280_FILTER_2X		BIT(2)
++#define BMP280_FILTER_4X		BIT(3)
++#define BMP280_FILTER_8X		(BIT(3) | BIT(2))
++#define BMP280_FILTER_16X		BIT(4)
++
++#define BMP280_OSRS_TEMP_MASK		(BIT(7) | BIT(6) | BIT(5))
++#define BMP280_OSRS_TEMP_SKIP		0
++#define BMP280_OSRS_TEMP_1X		BIT(5)
++#define BMP280_OSRS_TEMP_2X		BIT(6)
++#define BMP280_OSRS_TEMP_4X		(BIT(6) | BIT(5))
++#define BMP280_OSRS_TEMP_8X		BIT(7)
++#define BMP280_OSRS_TEMP_16X		(BIT(7) | BIT(5))
++
++#define BMP280_OSRS_PRESS_MASK		(BIT(4) | BIT(3) | BIT(2))
++#define BMP280_OSRS_PRESS_SKIP		0
++#define BMP280_OSRS_PRESS_1X		BIT(2)
++#define BMP280_OSRS_PRESS_2X		BIT(3)
++#define BMP280_OSRS_PRESS_4X		(BIT(3) | BIT(2))
++#define BMP280_OSRS_PRESS_8X		BIT(4)
++#define BMP280_OSRS_PRESS_16X		(BIT(4) | BIT(2))
++
++#define BMP280_MODE_MASK		(BIT(1) | BIT(0))
++#define BMP280_MODE_SLEEP		0
++#define BMP280_MODE_FORCED		BIT(0)
++#define BMP280_MODE_NORMAL		(BIT(1) | BIT(0))
++
++#define BMP280_CHIP_ID			0x58
++#define BMP280_SOFT_RESET_VAL		0xB6
++
++struct bmp280_data {
++	struct i2c_client *client;
++	struct mutex lock;
++	struct regmap *regmap;
++
++	/*
++	 * Carryover value from temperature conversion, used in pressure
++	 * calculation.
++	 */
++	s32 t_fine;
++
++	/* Compensation parameters. */
++	u16 dig_t1;
++	s16 dig_t2, dig_t3;
++	u16 dig_p1;
++	s16 dig_p2, dig_p3, dig_p4, dig_p5, dig_p6, dig_p7, dig_p8, dig_p9;
++};
++
++static const struct iio_chan_spec bmp280_channels[] = {
++	{
++		.type = IIO_PRESSURE,
++		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
++			BIT(IIO_CHAN_INFO_SCALE),
++	},
++	{
++		.type = IIO_TEMP,
++		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
++			BIT(IIO_CHAN_INFO_SCALE),
++	},
++};
++
++static bool bmp280_is_writeable_reg(struct device *dev, unsigned int reg)
++{
++	switch (reg) {
++	case BMP280_REG_CONFIG:
++	case BMP280_REG_CTRL_MEAS:
++	case BMP280_REG_RESET:
++		return true;
++	default:
++		return false;
++	};
++}
++
++static bool bmp280_is_volatile_reg(struct device *dev, unsigned int reg)
++{
++	switch (reg) {
++	case BMP280_REG_TEMP_XLSB:
++	case BMP280_REG_TEMP_LSB:
++	case BMP280_REG_TEMP_MSB:
++	case BMP280_REG_PRESS_XLSB:
++	case BMP280_REG_PRESS_LSB:
++	case BMP280_REG_PRESS_MSB:
++	case BMP280_REG_STATUS:
++		return true;
++	default:
++		return false;
++	}
++}
++
++static const struct regmap_config bmp280_regmap_config = {
++	.reg_bits = 8,
++	.val_bits = 8,
++
++	.max_register = BMP280_REG_TEMP_XLSB,
++	.cache_type = REGCACHE_RBTREE,
++
++	.writeable_reg = bmp280_is_writeable_reg,
++	.volatile_reg = bmp280_is_volatile_reg,
++};
++
++/*
++ * Returns temperature in DegC, resolution is 0.01 DegC.  Output value of
++ * "5123" equals 51.23 DegC.  t_fine carries fine temperature as global
++ * value.
++ *
++ * Taken from datasheet, Section 3.11.3, "Compensation formula".
++ */
++static s32 bmp280_compensate_temp(struct bmp280_data *data,
++				  s32 adc_temp)
++{
++	s32 var1, var2, T;
++
++	var1 = (((adc_temp >> 3) - ((s32) data->dig_t1 << 1)) *
++		((s32) data->dig_t2)) >> 11;
++	var2 = (((((adc_temp >> 4) - ((s32) data->dig_t1)) *
++		  ((adc_temp >> 4) - ((s32) data->dig_t1))) >> 12) *
++		((s32) data->dig_t3)) >> 14;
++
++	data->t_fine = var1 + var2;
++	T = (data->t_fine * 5 + 128) >> 8;
++
++	return T;
++}
++
++/*
++ * Returns pressure in Pa as unsigned 32 bit integer in Q24.8 format (24
++ * integer bits and 8 fractional bits).  Output value of "24674867"
++ * represents 24674867/256 = 96386.2 Pa = 963.862 hPa
++ *
++ * Taken from datasheet, Section 3.11.3, "Compensation formula".
++ */
++static u32 bmp280_compensate_press(struct bmp280_data *data,
++				   s32 adc_press)
++{
++	s64 var1, var2, p;
++
++	var1 = ((s64) data->t_fine) - 128000;
++	var2 = var1 * var1 * (s64) data->dig_p6;
++	var2 = var2 + ((var1 * (s64) data->dig_p5) << 17);
++	var2 = var2 + (((s64) data->dig_p4) << 35);
++	var1 = ((var1 * var1 * (s64) data->dig_p3) >> 8) +
++		((var1 * (s64) data->dig_p2) << 12);
++	var1 = (((((s64) 1) << 47) + var1)) * ((s64) data->dig_p1) >> 33;
++
++	if (var1 == 0)
++		return 0;
++
++	p = 1048576 - adc_press;
++	p = (((p << 31) - var2) * 3125) / var1;
++	var1 = (((s64) data->dig_p9) * (p >> 13) * (p >> 13)) >> 25;
++	var2 = (((s64) data->dig_p8) * p) >> 19;
++	p = ((p + var1 + var2) >> 8) + (((s64) data->dig_p7) << 4);
++
++	return (u32) p;
++}
++
++static int bmp280_read_temp(struct bmp280_data *data,
++			    int *val, int *val2)
++{
++	int ret;
++	__be32 tmp;
++	s32 adc_temp, comp_temp;
++
++	ret = regmap_bulk_read(data->regmap, BMP280_REG_TEMP_MSB,
++			       (u8 *) &tmp, 3);
++	if (ret < 0) {
++		dev_err(&data->client->dev, "failed to read temperature\n");
++		return ret;
++	}
++
++	adc_temp = be32_to_cpu(tmp) >> 12;
++	comp_temp = bmp280_compensate_temp(data, adc_temp);
++
++	/*
++	 * val might be NULL if we're called by the read_press routine,
++	 * who only cares about the carry over t_fine value.
++	 */
++	if (val) {
++		*val = comp_temp;
++		return IIO_VAL_INT;
++	}
++
++	return 0;
++}
++
++static int bmp280_read_press(struct bmp280_data *data,
++			     int *val, int *val2)
++{
++	int ret;
++	__be32 tmp;
++	s32 adc_press;
++	u32 comp_press;
++
++	/* Read and compensate temperature so we get a reading of t_fine. */
++	ret = bmp280_read_temp(data, NULL, NULL);
++	if (ret < 0)
++		return ret;
++
++	ret = regmap_bulk_read(data->regmap, BMP280_REG_PRESS_MSB,
++			       (u8 *) &tmp, 3);
++	if (ret < 0) {
++		dev_err(&data->client->dev, "failed to read pressure\n");
++		return ret;
++	}
++
++	adc_press = be32_to_cpu(tmp) >> 12;
++	comp_press = bmp280_compensate_press(data, adc_press);
++	*val = comp_press;
++
++	return IIO_VAL_INT;
++}
++
++static int bmp280_read_raw(struct iio_dev *indio_dev,
++			   struct iio_chan_spec const *chan,
++			   int *val, int *val2, long mask)
++{
++	int ret;
++	struct bmp280_data *data = iio_priv(indio_dev);
++
++	mutex_lock(&data->lock);
++
++	switch (mask) {
++	case IIO_CHAN_INFO_RAW:
++		switch (chan->type) {
++		case IIO_PRESSURE:
++			ret = bmp280_read_press(data, val, val2);
++			break;
++		case IIO_TEMP:
++			ret = bmp280_read_temp(data, val, val2);
++			break;
++		default:
++			ret = -EINVAL;
++			break;
++		}
++		break;
++	case IIO_CHAN_INFO_SCALE:
++		switch (chan->type) {
++		case IIO_PRESSURE:
++			/* Each LSB is 1/256 Pa.  We need kPa. */
++			*val = 1;
++			*val2 = 256000;
++			ret = IIO_VAL_FRACTIONAL;
++			break;
++		case IIO_TEMP:
++			/* Each LSB is 0.01 degC.  We need milli degC. */
++			*val = 10;
++			ret = IIO_VAL_INT;
++			break;
++		default:
++			ret = -EINVAL;
++			break;
++		}
++		break;
++	default:
++		ret = -EINVAL;
++		break;
++	}
++
++	mutex_unlock(&data->lock);
++
++	return ret;
++}
++
++static const struct iio_info bmp280_info = {
++	.driver_module = THIS_MODULE,
++	.read_raw = &bmp280_read_raw,
++};
++
++static int bmp280_read_calibration_regs(struct iio_dev *indio_dev)
++{
++	struct bmp280_data *data = iio_priv(indio_dev);
++	int ret;
++	u8 buf[BMP280_COMP_REG_COUNT];
++	__le16 *buf16;
++
++	ret = regmap_bulk_read(data->regmap, BMP280_REG_COMP_START, buf,
++			       BMP280_COMP_REG_COUNT);
++	if (ret < 0) {
++		dev_err(&data->client->dev,
++			"failed to read calibration parameters\n");
++		return ret;
++	}
++
++	buf16 = (__le16 *) buf;
++
++	data->dig_t1 = (u16) le16_to_cpu(buf16[0]);
++	data->dig_t2 = (s16) le16_to_cpu(buf16[1]);
++	data->dig_t3 = (s16) le16_to_cpu(buf16[2]);
++
++	data->dig_p1 = (s16) le16_to_cpu(buf16[3]);
++	data->dig_p2 = (u16) le16_to_cpu(buf16[4]);
++	data->dig_p3 = (u16) le16_to_cpu(buf16[5]);
++	data->dig_p4 = (u16) le16_to_cpu(buf16[6]);
++	data->dig_p5 = (u16) le16_to_cpu(buf16[7]);
++	data->dig_p6 = (u16) le16_to_cpu(buf16[8]);
++	data->dig_p7 = (u16) le16_to_cpu(buf16[9]);
++	data->dig_p8 = (u16) le16_to_cpu(buf16[10]);
++	data->dig_p9 = (u16) le16_to_cpu(buf16[11]);
++
++	return 0;
++}
++
++static int bmp280_chip_init(struct bmp280_data *data)
++{
++	int ret;
++
++	ret = regmap_update_bits(data->regmap, BMP280_REG_CTRL_MEAS,
++				 BMP280_OSRS_TEMP_MASK |
++				 BMP280_OSRS_PRESS_MASK |
++				 BMP280_MODE_MASK,
++				 BMP280_OSRS_TEMP_2X |
++				 BMP280_OSRS_PRESS_16X |
++				 BMP280_MODE_NORMAL);
++	if (ret < 0) {
++		dev_err(&data->client->dev,
++			"failed to write config register\n");
++		return ret;
++	}
++
++	ret = regmap_update_bits(data->regmap, BMP280_REG_CONFIG,
++				 BMP280_FILTER_MASK,
++				 BMP280_FILTER_4X);
++	if (ret < 0) {
++		dev_err(&data->client->dev,
++			"failed to write config register\n");
++		return ret;
++	}
++
++	return ret;
++}
++
++static int bmp280_probe(struct i2c_client *client,
++			const struct i2c_device_id *id)
++{
++	int ret;
++	struct iio_dev *indio_dev;
++	struct bmp280_data *data;
++
++	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
++	if (!indio_dev)
++		return -ENOMEM;
++
++	i2c_set_clientdata(client, indio_dev);
++	data = iio_priv(indio_dev);
++	mutex_init(&data->lock);
++	data->client = client;
++
++	indio_dev->dev.parent = &client->dev;
++	indio_dev->name = id->name;
++	indio_dev->channels = bmp280_channels;
++	indio_dev->num_channels = ARRAY_SIZE(bmp280_channels);
++	indio_dev->info = &bmp280_info;
++	indio_dev->modes = INDIO_DIRECT_MODE;
++
++	data->regmap = devm_regmap_init_i2c(client, &bmp280_regmap_config);
++	if (IS_ERR(data->regmap)) {
++		dev_err(&client->dev, "failed to allocate register map\n");
++		return PTR_ERR(data->regmap);
++	}
++
++	ret = bmp280_read_calibration_regs(indio_dev);
++	if (ret < 0)
++		return ret;
++
++	ret = bmp280_chip_init(data);
++	if (ret < 0)
++		return ret;
++
++	return devm_iio_device_register(&client->dev, indio_dev);
++}
++
++static const struct acpi_device_id bmp280_acpi_match[] = {
++	{"BMP0280", 0},
++	{ },
++};
++MODULE_DEVICE_TABLE(acpi, bmp280_acpi_match);
++
++static const struct i2c_device_id bmp280_id[] = {
++	{"bmp280", 0},
++	{ },
++};
++MODULE_DEVICE_TABLE(i2c, bmp280_id);
++
++static struct i2c_driver bmp280_driver = {
++	.driver = {
++		.name	= "bmp280",
++		.acpi_match_table = ACPI_PTR(bmp280_acpi_match),
++	},
++	.probe		= bmp280_probe,
++	.id_table	= bmp280_id,
++};
++module_i2c_driver(bmp280_driver);
++
++MODULE_AUTHOR("Vlad Dogaru <vlad.dogaru@intel.com>");
++MODULE_DESCRIPTION("Driver for Bosch Sensortec BMP280 pressure and temperature sensor");
++MODULE_LICENSE("GPL v2");
 -- 
-------------------
-Dan Murphy
-
+1.9.1
