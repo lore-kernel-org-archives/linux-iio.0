@@ -1,60 +1,102 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga14.intel.com ([192.55.52.115]:3775 "EHLO mga14.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1752424AbaJBNiG (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Thu, 2 Oct 2014 09:38:06 -0400
-From: Daniel Baluta <daniel.baluta@intel.com>
-To: jic23@kernel.org, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Cc: daniel.baluta@intel.com, irina.tirdea@intel.com
-Subject: [RFC PATCH]  iio: Introduce activity channel
-Date: Thu,  2 Oct 2014 16:43:51 +0300
-Message-Id: <1412257439-15683-1-git-send-email-daniel.baluta@intel.com>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <iivanov@mm-sol.com>
+Message-ID: <1412251686.1027.15.camel@iivanov-dev>
+Subject: Re: [PATCH v3 1/2] iio: vadc: Qualcomm SPMI PMIC voltage ADC driver
+From: "Ivan T. Ivanov" <iivanov@mm-sol.com>
+To: Stanimir Varbanov <svarbanov@mm-sol.com>
+Cc: jic23@kernel.org, lars <lars@metafoo.de>, sachin.kamat@linaro.org,
+	srinivas.pandruvada@linux.intel.com, linux-iio@vger.kernel.org,
+	linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
+	devicetree@vger.kernel.org
+Date: Thu, 02 Oct 2014 15:08:06 +0300
+In-Reply-To: <542D1B11.8070600@mm-sol.com>
+References: <1411563415-11933-1-git-send-email-svarbanov@mm-sol.com>
+	 <1411563415-11933-2-git-send-email-svarbanov@mm-sol.com>
+	 <542D1B11.8070600@mm-sol.com>
+Content-Type: text/plain; charset="UTF-8"
+Mime-Version: 1.0
+List-ID: <linux-iio@vger.kernel.org>
 
-This patchset introduces a new interface for supporting some of the composite
-sensors in Android [1]. First supported sensors are motion and pedometer.
++iio maintainers
 
-This is a follow up of the discussion about adding new channels to IIO
-initiated some time ago on IIO list [2].
-
-A device that has the motion/pedometer functionality is Freescale's MMA9553L ([3]).
-
-Because we don't have yet the hardware, to demonstrate this new channel we 
-update iio_dummy kernel module and iio_event_monitor test program. We want
-to get an early feedback about extending the IIO interface in the correct
-direction.
-
-[1] http://source.android.com/devices/sensors/composite_sensors.html
-[2] http://marc.info/?l=linux-iio&m=138374342831057&w=2
-[3] http://www.freescale.com/files/sensors/doc/ref_manual/MMA9553LSWRM.pdf
-
-Daniel Baluta (5):
-  iio: dummy: Introduce virtual registers for dummy device
-  iio: core: Introduce IIO_ACTIVITY channel
-  iio: core: Introduce new MOTION event
-  iio: dummy: Demonstrate the usage of activity channel
-  iio: event_monitor: Add support for activity channel
-
-Irina Tirdea (3):
-  iio: core: Introduce pedometer STEP counter modifier
-  iio: core: Introduce ENABLE channel info mask
-  iio: core: Introduce new STEP_DETECT event
-
- Documentation/ABI/testing/sysfs-bus-iio            | 28 +++++++
- drivers/iio/industrialio-core.c                    |  7 ++
- drivers/iio/industrialio-event.c                   |  2 +
- .../staging/iio/Documentation/iio_event_monitor.c  | 16 ++++
- drivers/staging/iio/iio_dummy_evgen.c              | 16 ++++
- drivers/staging/iio/iio_dummy_evgen.h              |  7 ++
- drivers/staging/iio/iio_simple_dummy.c             | 87 ++++++++++++++++++++--
- drivers/staging/iio/iio_simple_dummy.h             |  4 +
- drivers/staging/iio/iio_simple_dummy_events.c      | 37 +++++++--
- include/linux/iio/iio.h                            |  1 +
- include/linux/iio/types.h                          | 10 ++-
- 11 files changed, 201 insertions(+), 14 deletions(-)
-
--- 
-1.9.1
-
+On Thu, 2014-10-02 at 12:29 +0300, Ivan T. Ivanov wrote:
+> Hi Stan,
+> 
+> On 09/24/2014 03:56 PM, Stanimir Varbanov wrote:
+> 
+> <snip>
+> 
+> > +static int vadc_get_dt_data(struct vadc_priv *vadc, struct device_node *node)
+> > +{
+> > +	struct iio_chan_spec *iio_chan = vadc->iio_chans;
+> > +	const struct vadc_channels *vadc_chan;
+> > +	struct vadc_channel_prop prop;
+> > +	struct device_node *child;
+> > +	int ret, index = 0;
+> > +
+> > +	for_each_available_child_of_node(node, child) {
+> > +		ret = vadc_get_dt_channel_data(vadc->dev, &prop, child);
+> > +		if (ret)
+> > +			return ret;
+> > +
+> > +		vadc->chan_props[index] = prop;
+> > +
+> > +		vadc_chan = &vadc_chans[prop.channel];
+> > +
+> > +		iio_chan->channel = prop.channel;
+> > +		iio_chan->datasheet_name = vadc_chan->datasheet_name;
+> > +		iio_chan->info_mask_separate = vadc_chan->info_mask;
+> > +		iio_chan->type = vadc_chan->type;
+> > +		iio_chan->indexed = 1;
+> > +		iio_chan->scan_type.sign = 's';
+> > +		iio_chan->scan_type.realbits = 15;
+> > +		iio_chan->scan_type.storagebits = 16;
+> > +		iio_chan->address = index++;
+> > +
+> > +		iio_chan++;
+> > +	}
+> > +
+> > +	return 0;
+> > +}
+> > +
+> 
+> <snip>
+> 
+> > +static int vadc_probe(struct platform_device *pdev)
+> > +{
+> 
+> <snip>
+> 
+> > +
+> > +	indio_dev->dev.parent = dev;
+> > +	indio_dev->dev.of_node = node;
+> > +	indio_dev->name = pdev->name;
+> > +	indio_dev->modes = INDIO_DIRECT_MODE;
+> > +	indio_dev->info = &vadc_info;
+> > +	indio_dev->channels = vadc->iio_chans;
+> > +	indio_dev->num_channels = vadc->nchannels;
+> 
+> This will not work as we thought. Registration will be fine and entries
+> in sysfs are created as expected, but this is breaking numbering scheme
+> for client drivers. For us the problem is that iio framework expect channels
+> numbering to be linear and channel number should not be greater than
+> channel count. For example even if die temperature channel is always 8, if
+> I describe only 5 channels in DTS files (4 for reference points measurement)
+> and 1 for die temperature, clients could not get OF reference to 
+> temperature
+> channel using io-channels = <&pm8941_vadc 8>;
+> 
+> Jonathan, please, could you advise us.
+> 
+> Regards,
+> Ivan
+> 
+> > +
+> > +	return devm_iio_device_register(dev, indio_dev);
+> > +}
+> > +
+> >
+> 
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-arm-msm" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
