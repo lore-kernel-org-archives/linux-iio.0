@@ -1,96 +1,60 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:57396 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750756AbaJDKZR (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 4 Oct 2014 06:25:17 -0400
-Message-ID: <542FCB0B.3080602@kernel.org>
-Date: Sat, 04 Oct 2014 11:25:15 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-MIME-Version: 1.0
-To: Denis CIOCCA <denis.ciocca@st.com>
-CC: linux-iio@vger.kernel.org
-Subject: Re: [PATCH 3/7] iio:gyro: Removed unnecessary parameter on common_probe
- function
-References: <1412350541-29431-1-git-send-email-denis.ciocca@st.com> <1412350541-29431-3-git-send-email-denis.ciocca@st.com>
-In-Reply-To: <1412350541-29431-3-git-send-email-denis.ciocca@st.com>
-Content-Type: text/plain; charset=windows-1252
+Received: from mga14.intel.com ([192.55.52.115]:3775 "EHLO mga14.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1752424AbaJBNiG (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Thu, 2 Oct 2014 09:38:06 -0400
+From: Daniel Baluta <daniel.baluta@intel.com>
+To: jic23@kernel.org, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Cc: daniel.baluta@intel.com, irina.tirdea@intel.com
+Subject: [RFC PATCH]  iio: Introduce activity channel
+Date: Thu,  2 Oct 2014 16:43:51 +0300
+Message-Id: <1412257439-15683-1-git-send-email-daniel.baluta@intel.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 03/10/14 16:35, Denis CIOCCA wrote:
-> Signed-off-by: Denis Ciocca <denis.ciocca@st.com>
-Applied.
-> ---
->  drivers/iio/gyro/st_gyro.h      | 3 +--
->  drivers/iio/gyro/st_gyro_core.c | 6 +++---
->  drivers/iio/gyro/st_gyro_i2c.c  | 3 +--
->  drivers/iio/gyro/st_gyro_spi.c  | 3 +--
->  4 files changed, 6 insertions(+), 9 deletions(-)
-> 
-> diff --git a/drivers/iio/gyro/st_gyro.h b/drivers/iio/gyro/st_gyro.h
-> index c197360..5353d63 100644
-> --- a/drivers/iio/gyro/st_gyro.h
-> +++ b/drivers/iio/gyro/st_gyro.h
-> @@ -30,8 +30,7 @@ static const struct st_sensors_platform_data gyro_pdata = {
->  	.drdy_int_pin = 2,
->  };
->  
-> -int st_gyro_common_probe(struct iio_dev *indio_dev,
-> -					struct st_sensors_platform_data *pdata);
-> +int st_gyro_common_probe(struct iio_dev *indio_dev);
->  void st_gyro_common_remove(struct iio_dev *indio_dev);
->  
->  #ifdef CONFIG_IIO_BUFFER
-> diff --git a/drivers/iio/gyro/st_gyro_core.c b/drivers/iio/gyro/st_gyro_core.c
-> index 9d41b68..f07a233 100644
-> --- a/drivers/iio/gyro/st_gyro_core.c
-> +++ b/drivers/iio/gyro/st_gyro_core.c
-> @@ -309,8 +309,7 @@ static const struct iio_trigger_ops st_gyro_trigger_ops = {
->  #define ST_GYRO_TRIGGER_OPS NULL
->  #endif
->  
-> -int st_gyro_common_probe(struct iio_dev *indio_dev,
-> -					struct st_sensors_platform_data *pdata)
-> +int st_gyro_common_probe(struct iio_dev *indio_dev)
->  {
->  	struct st_sensor_data *gdata = iio_priv(indio_dev);
->  	int irq = gdata->get_irq_data_ready(indio_dev);
-> @@ -336,7 +335,8 @@ int st_gyro_common_probe(struct iio_dev *indio_dev,
->  					&gdata->sensor_settings->fs.fs_avl[0];
->  	gdata->odr = gdata->sensor_settings->odr.odr_avl[0].hz;
->  
-> -	err = st_sensors_init_sensor(indio_dev, pdata);
-> +	err = st_sensors_init_sensor(indio_dev,
-> +				(struct st_sensors_platform_data *)&gyro_pdata);
->  	if (err < 0)
->  		return err;
->  
-> diff --git a/drivers/iio/gyro/st_gyro_i2c.c b/drivers/iio/gyro/st_gyro_i2c.c
-> index 8fa0ad2..94d01fb 100644
-> --- a/drivers/iio/gyro/st_gyro_i2c.c
-> +++ b/drivers/iio/gyro/st_gyro_i2c.c
-> @@ -72,8 +72,7 @@ static int st_gyro_i2c_probe(struct i2c_client *client,
->  
->  	st_sensors_i2c_configure(indio_dev, client, gdata);
->  
-> -	err = st_gyro_common_probe(indio_dev,
-> -				(struct st_sensors_platform_data *)&gyro_pdata);
-> +	err = st_gyro_common_probe(indio_dev);
->  	if (err < 0)
->  		return err;
->  
-> diff --git a/drivers/iio/gyro/st_gyro_spi.c b/drivers/iio/gyro/st_gyro_spi.c
-> index b4ad3be..3e7a01a 100644
-> --- a/drivers/iio/gyro/st_gyro_spi.c
-> +++ b/drivers/iio/gyro/st_gyro_spi.c
-> @@ -33,8 +33,7 @@ static int st_gyro_spi_probe(struct spi_device *spi)
->  
->  	st_sensors_spi_configure(indio_dev, spi, gdata);
->  
-> -	err = st_gyro_common_probe(indio_dev,
-> -				(struct st_sensors_platform_data *)&gyro_pdata);
-> +	err = st_gyro_common_probe(indio_dev);
->  	if (err < 0)
->  		return err;
->  
-> 
+This patchset introduces a new interface for supporting some of the composite
+sensors in Android [1]. First supported sensors are motion and pedometer.
+
+This is a follow up of the discussion about adding new channels to IIO
+initiated some time ago on IIO list [2].
+
+A device that has the motion/pedometer functionality is Freescale's MMA9553L ([3]).
+
+Because we don't have yet the hardware, to demonstrate this new channel we 
+update iio_dummy kernel module and iio_event_monitor test program. We want
+to get an early feedback about extending the IIO interface in the correct
+direction.
+
+[1] http://source.android.com/devices/sensors/composite_sensors.html
+[2] http://marc.info/?l=linux-iio&m=138374342831057&w=2
+[3] http://www.freescale.com/files/sensors/doc/ref_manual/MMA9553LSWRM.pdf
+
+Daniel Baluta (5):
+  iio: dummy: Introduce virtual registers for dummy device
+  iio: core: Introduce IIO_ACTIVITY channel
+  iio: core: Introduce new MOTION event
+  iio: dummy: Demonstrate the usage of activity channel
+  iio: event_monitor: Add support for activity channel
+
+Irina Tirdea (3):
+  iio: core: Introduce pedometer STEP counter modifier
+  iio: core: Introduce ENABLE channel info mask
+  iio: core: Introduce new STEP_DETECT event
+
+ Documentation/ABI/testing/sysfs-bus-iio            | 28 +++++++
+ drivers/iio/industrialio-core.c                    |  7 ++
+ drivers/iio/industrialio-event.c                   |  2 +
+ .../staging/iio/Documentation/iio_event_monitor.c  | 16 ++++
+ drivers/staging/iio/iio_dummy_evgen.c              | 16 ++++
+ drivers/staging/iio/iio_dummy_evgen.h              |  7 ++
+ drivers/staging/iio/iio_simple_dummy.c             | 87 ++++++++++++++++++++--
+ drivers/staging/iio/iio_simple_dummy.h             |  4 +
+ drivers/staging/iio/iio_simple_dummy_events.c      | 37 +++++++--
+ include/linux/iio/iio.h                            |  1 +
+ include/linux/iio/types.h                          | 10 ++-
+ 11 files changed, 201 insertions(+), 14 deletions(-)
+
+-- 
+1.9.1
+
