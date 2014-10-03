@@ -1,14 +1,14 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mx08-00178001.pphosted.com ([91.207.212.93]:35882 "EHLO
+Received: from mx08-00178001.pphosted.com ([91.207.212.93]:45241 "EHLO
 	mx08-00178001.pphosted.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1752721AbaJCPgJ (ORCPT
+	by vger.kernel.org with ESMTP id S1752489AbaJCPgJ (ORCPT
 	<rfc822;linux-iio@vger.kernel.org>); Fri, 3 Oct 2014 11:36:09 -0400
 From: Denis CIOCCA <denis.ciocca@st.com>
 To: jic23@kernel.org
 Cc: linux-iio@vger.kernel.org, Denis Ciocca <denis.ciocca@st.com>
-Subject: [PATCH 4/7] iio:magnetometer: Removed unnecessary parameter on common_probe function
-Date: Fri,  3 Oct 2014 17:35:38 +0200
-Message-Id: <1412350541-29431-4-git-send-email-denis.ciocca@st.com>
+Subject: [PATCH 5/7] iio:pressure: Removed unnecessary parameter on common_probe function
+Date: Fri,  3 Oct 2014 17:35:39 +0200
+Message-Id: <1412350541-29431-5-git-send-email-denis.ciocca@st.com>
 In-Reply-To: <1412350541-29431-1-git-send-email-denis.ciocca@st.com>
 References: <1412350541-29431-1-git-send-email-denis.ciocca@st.com>
 Sender: linux-iio-owner@vger.kernel.org
@@ -16,72 +16,78 @@ List-Id: linux-iio@vger.kernel.org
 
 Signed-off-by: Denis Ciocca <denis.ciocca@st.com>
 ---
- drivers/iio/magnetometer/st_magn.h      | 3 +--
- drivers/iio/magnetometer/st_magn_core.c | 5 ++---
- drivers/iio/magnetometer/st_magn_i2c.c  | 2 +-
- drivers/iio/magnetometer/st_magn_spi.c  | 2 +-
- 4 files changed, 5 insertions(+), 7 deletions(-)
+ drivers/iio/pressure/st_pressure.h      | 3 +--
+ drivers/iio/pressure/st_pressure_core.c | 9 ++++-----
+ drivers/iio/pressure/st_pressure_i2c.c  | 2 +-
+ drivers/iio/pressure/st_pressure_spi.c  | 2 +-
+ 4 files changed, 7 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/iio/magnetometer/st_magn.h b/drivers/iio/magnetometer/st_magn.h
-index 694e33e..7e81d00 100644
---- a/drivers/iio/magnetometer/st_magn.h
-+++ b/drivers/iio/magnetometer/st_magn.h
-@@ -18,8 +18,7 @@
- #define LSM303DLM_MAGN_DEV_NAME		"lsm303dlm_magn"
- #define LIS3MDL_MAGN_DEV_NAME		"lis3mdl"
- 
--int st_magn_common_probe(struct iio_dev *indio_dev,
--					struct st_sensors_platform_data *pdata);
-+int st_magn_common_probe(struct iio_dev *indio_dev);
- void st_magn_common_remove(struct iio_dev *indio_dev);
- 
- #ifdef CONFIG_IIO_BUFFER
-diff --git a/drivers/iio/magnetometer/st_magn_core.c b/drivers/iio/magnetometer/st_magn_core.c
-index b422620..8ade473 100644
---- a/drivers/iio/magnetometer/st_magn_core.c
-+++ b/drivers/iio/magnetometer/st_magn_core.c
-@@ -361,8 +361,7 @@ static const struct iio_info magn_info = {
- 	.write_raw = &st_magn_write_raw,
+diff --git a/drivers/iio/pressure/st_pressure.h b/drivers/iio/pressure/st_pressure.h
+index 242943c..f5f4149 100644
+--- a/drivers/iio/pressure/st_pressure.h
++++ b/drivers/iio/pressure/st_pressure.h
+@@ -26,8 +26,7 @@ static const struct st_sensors_platform_data default_press_pdata = {
+ 	.drdy_int_pin = 1,
  };
  
--int st_magn_common_probe(struct iio_dev *indio_dev,
--					struct st_sensors_platform_data *pdata)
-+int st_magn_common_probe(struct iio_dev *indio_dev)
+-int st_press_common_probe(struct iio_dev *indio_dev,
+-					struct st_sensors_platform_data *pdata);
++int st_press_common_probe(struct iio_dev *indio_dev);
+ void st_press_common_remove(struct iio_dev *indio_dev);
+ 
+ #ifdef CONFIG_IIO_BUFFER
+diff --git a/drivers/iio/pressure/st_pressure_core.c b/drivers/iio/pressure/st_pressure_core.c
+index 9563118..ee2ef7d 100644
+--- a/drivers/iio/pressure/st_pressure_core.c
++++ b/drivers/iio/pressure/st_pressure_core.c
+@@ -409,8 +409,7 @@ static const struct iio_trigger_ops st_press_trigger_ops = {
+ #define ST_PRESS_TRIGGER_OPS NULL
+ #endif
+ 
+-int st_press_common_probe(struct iio_dev *indio_dev,
+-				struct st_sensors_platform_data *plat_data)
++int st_press_common_probe(struct iio_dev *indio_dev)
  {
- 	struct st_sensor_data *mdata = iio_priv(indio_dev);
- 	int irq = mdata->get_irq_data_ready(indio_dev);
-@@ -388,7 +387,7 @@ int st_magn_common_probe(struct iio_dev *indio_dev,
- 					&mdata->sensor_settings->fs.fs_avl[0];
- 	mdata->odr = mdata->sensor_settings->odr.odr_avl[0].hz;
+ 	struct st_sensor_data *pdata = iio_priv(indio_dev);
+ 	int irq = pdata->get_irq_data_ready(indio_dev);
+@@ -439,11 +438,11 @@ int st_press_common_probe(struct iio_dev *indio_dev,
+ 	pdata->odr = pdata->sensor_settings->odr.odr_avl[0].hz;
  
--	err = st_sensors_init_sensor(indio_dev, pdata);
-+	err = st_sensors_init_sensor(indio_dev, NULL);
+ 	/* Some devices don't support a data ready pin. */
+-	if (!plat_data && pdata->sensor_settings->drdy_irq.addr)
+-		plat_data =
++	if (!pdata->dev->platform_data && pdata->sensor_settings->drdy_irq.addr)
++		pdata->dev->platform_data =
+ 			(struct st_sensors_platform_data *)&default_press_pdata;
+ 
+-	err = st_sensors_init_sensor(indio_dev, plat_data);
++	err = st_sensors_init_sensor(indio_dev, pdata->dev->platform_data);
  	if (err < 0)
  		return err;
  
-diff --git a/drivers/iio/magnetometer/st_magn_i2c.c b/drivers/iio/magnetometer/st_magn_i2c.c
-index 6892500..f8a6823 100644
---- a/drivers/iio/magnetometer/st_magn_i2c.c
-+++ b/drivers/iio/magnetometer/st_magn_i2c.c
-@@ -56,7 +56,7 @@ static int st_magn_i2c_probe(struct i2c_client *client,
+diff --git a/drivers/iio/pressure/st_pressure_i2c.c b/drivers/iio/pressure/st_pressure_i2c.c
+index acaf165..dd73351 100644
+--- a/drivers/iio/pressure/st_pressure_i2c.c
++++ b/drivers/iio/pressure/st_pressure_i2c.c
+@@ -56,7 +56,7 @@ static int st_press_i2c_probe(struct i2c_client *client,
  
- 	st_sensors_i2c_configure(indio_dev, client, mdata);
+ 	st_sensors_i2c_configure(indio_dev, client, pdata);
  
--	err = st_magn_common_probe(indio_dev, NULL);
-+	err = st_magn_common_probe(indio_dev);
+-	err = st_press_common_probe(indio_dev, client->dev.platform_data);
++	err = st_press_common_probe(indio_dev);
  	if (err < 0)
  		return err;
  
-diff --git a/drivers/iio/magnetometer/st_magn_spi.c b/drivers/iio/magnetometer/st_magn_spi.c
-index a6143ea..f642142 100644
---- a/drivers/iio/magnetometer/st_magn_spi.c
-+++ b/drivers/iio/magnetometer/st_magn_spi.c
-@@ -33,7 +33,7 @@ static int st_magn_spi_probe(struct spi_device *spi)
+diff --git a/drivers/iio/pressure/st_pressure_spi.c b/drivers/iio/pressure/st_pressure_spi.c
+index f45d430..98c3e8e 100644
+--- a/drivers/iio/pressure/st_pressure_spi.c
++++ b/drivers/iio/pressure/st_pressure_spi.c
+@@ -33,7 +33,7 @@ static int st_press_spi_probe(struct spi_device *spi)
  
- 	st_sensors_spi_configure(indio_dev, spi, mdata);
+ 	st_sensors_spi_configure(indio_dev, spi, pdata);
  
--	err = st_magn_common_probe(indio_dev, NULL);
-+	err = st_magn_common_probe(indio_dev);
+-	err = st_press_common_probe(indio_dev, spi->dev.platform_data);
++	err = st_press_common_probe(indio_dev);
  	if (err < 0)
  		return err;
  
