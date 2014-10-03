@@ -1,60 +1,53 @@
-Return-Path: <vlad.dogaru@intel.com>
-Date: Fri, 3 Oct 2014 13:16:19 +0300
-From: Vlad Dogaru <vlad.dogaru@intel.com>
-To: Peter Meerwald <pmeerw@pmeerw.net>
-Cc: linux-iio@vger.kernel.org, jic23@kernel.org
-Subject: Re: [PATCH] iio: add bmp280 pressure and temperature driver
-Message-ID: <20141003101619.GA17511@vdogaru>
-References: <1412278823-10870-1-git-send-email-vlad.dogaru@intel.com>
- <alpine.DEB.2.01.1410022146100.8592@pmeerw.net>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <alpine.DEB.2.01.1410022146100.8592@pmeerw.net>
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mga14.intel.com ([192.55.52.115]:47274 "EHLO mga14.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1752498AbaJCOc1 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Fri, 3 Oct 2014 10:32:27 -0400
+Message-ID: <1412346717.2987.5.camel@spandruv-hsb-test>
+Subject: Re: [PATCH] iio: inkern: Add of_xlate function to struct iio_dev
+From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+To: "Ivan T. Ivanov" <iivanov@mm-sol.com>
+Cc: Lars-Peter Clausen <lars@metafoo.de>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Sachin Kamat <sachin.kamat@linaro.org>,
+	John Stultz <john.stultz@linaro.org>,
+	linux-iio@vger.kernel.org, svarbanov@mm-sol.com,
+	linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org
+Date: Fri, 03 Oct 2014 07:31:57 -0700
+In-Reply-To: <1412257785.1027.40.camel@iivanov-dev>
+References: <1412253128-32165-1-git-send-email-iivanov@mm-sol.com>
+	 <542D5377.90201@metafoo.de> <1412257785.1027.40.camel@iivanov-dev>
+Content-Type: text/plain; charset="UTF-8"
+Mime-Version: 1.0
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Thu, Oct 02, 2014 at 10:04:45PM +0200, Peter Meerwald wrote:
-<snip>
-> > +/*
-> > + * Returns temperature in DegC, resolution is 0.01 DegC.  Output value of
-> > + * "5123" equals 51.23 DegC.  t_fine carries fine temperature as global
-> > + * value.
-> > + *
-> > + * Taken from datasheet, Section 3.11.3, "Compensation formula".
-> > + */
-> > +static s32 bmp280_compensate_temp(struct bmp280_data *data,
-> > +				  s32 adc_temp)
-> > +{
-> > +	s32 var1, var2, T;
+On Thu, 2014-10-02 at 16:49 +0300, Ivan T. Ivanov wrote:
+> On Thu, 2014-10-02 at 15:30 +0200, Lars-Peter Clausen wrote:
+> > On 10/02/2014 02:32 PM, Ivan T. Ivanov wrote:
+> > > When #iio-cells is greater than '0', the driver could provide
+> > > a custom of_xlate function that reads the *args* and returns
+> > > the appropriate index in registered IIO channels array.
+> > 
+> > Do you have an example of a device that doesn't want to use the default 
+> > mapping? If yes please include it in the commit message, otherwise it is 
+> > fairly hard to say whether this makes sense or not.
 > 
-> use lowercase t?
+> Still not mainlined. You can find more detailed description of the 
+> issue here[1] and driver here[2].
+I see your need. I wonder this mapping be done in individual client
+driver instead of creating another callback.
 
-I snatched this from the datasheet, which used capital T.  I'll use
-lowercase in v2.
+Thanks,
+Srinivas
 
-<snip>
-
-> > +static int bmp280_read_raw(struct iio_dev *indio_dev,
-> > +			   struct iio_chan_spec const *chan,
-> > +			   int *val, int *val2, long mask)
-> > +{
-> > +	int ret;
-> > +	struct bmp280_data *data = iio_priv(indio_dev);
-> > +
-> > +	mutex_lock(&data->lock);
 > 
-> locking is only needed for _RAW
+> Regards,
+> Ivan
 > 
-> > +
-> > +	switch (mask) {
-> > +	case IIO_CHAN_INFO_RAW:
+> [1] https://lkml.org/lkml/2014/10/2/123
+> [2] http://www.spinics.net/lists/devicetree/msg50717.html
 > 
-> I think this should be _PROCESSED, not _RAW;
-> there is calibration and all kind of scaling done internally
+> 
 
-Just to make sure here:  If I use _PROCESSED, I need to apply scale in
-kernel space and remove _SCALE, correct?
 
-I will address the rest of your observations in v2, once I get a chance
-to test using the device on Monday.
-
-Thank you for the review.
