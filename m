@@ -1,79 +1,228 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga02.intel.com ([134.134.136.20]:50627 "EHLO mga02.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1752040AbaJFR2v (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Mon, 6 Oct 2014 13:28:51 -0400
-Date: Mon, 6 Oct 2014 10:17:19 -0700
-From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-To: Lee Jones <lee.jones@linaro.org>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	IIO <linux-iio@vger.kernel.org>,
-	LKML <linux-kernel@vger.kernel.org>,
-	DEVICE TREE <devicetree@vger.kernel.org>,
-	Carlo Caione <carlo@caione.org>,
-	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
-	Aaron Lu <aaron.lu@intel.com>, Alan Cox <alan@linux.intel.com>,
-	Samuel Ortiz <sameo@linux.intel.com>,
-	Liam Girdwood <lgirdwood@gmail.com>,
-	Mark Brown <broonie@kernel.org>,
-	Grant Likely <grant.likely@linaro.org>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Rob Herring <robh+dt@kernel.org>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Fugang Duan <B38611@freescale.com>,
-	Arnd Bergmann <arnd@arndb.de>,
-	Zubair Lutfullah <zubair.lutfullah@gmail.com>,
-	Sebastian Reichel <sre@debian.org>,
-	Johannes Thumshirn <johannes.thumshirn@men.de>,
-	Philippe Reynes <tremyfr@yahoo.fr>,
-	Angelo Compagnucci <angelo.compagnucci@gmail.com>,
-	Doug Anderson <dianders@chromium.org>,
-	Ramakrishna Pallala <ramakrishna.pallala@intel.com>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	Maxime Ripard <maxime.ripard@free-electrons.com>,
-	Rafael Wysocki <rafael.j.wysocki@intel.com>
-Subject: Re: [PATCH v6 1/2] mfd/axp20x: extend axp20x to support axp288 pmic
-Message-ID: <20141006101719.7efb62e8@icelake>
-In-Reply-To: <20141006165209.GC3848@lee--X1>
-References: <1411644045-21281-1-git-send-email-jacob.jun.pan@linux.intel.com>
-	<54268DC0.40406@kernel.org>
-	<20141006165209.GC3848@lee--X1>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Received: from mx07-00178001.pphosted.com ([62.209.51.94]:45268 "EHLO
+	mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1752922AbaJCPgQ (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 3 Oct 2014 11:36:16 -0400
+From: Denis CIOCCA <denis.ciocca@st.com>
+To: jic23@kernel.org
+Cc: linux-iio@vger.kernel.org, Denis Ciocca <denis.ciocca@st.com>
+Subject: [PATCH 6/7] iio:pressure: Changed pressure data variable name to press_data
+Date: Fri,  3 Oct 2014 17:35:40 +0200
+Message-Id: <1412350541-29431-6-git-send-email-denis.ciocca@st.com>
+In-Reply-To: <1412350541-29431-1-git-send-email-denis.ciocca@st.com>
+References: <1412350541-29431-1-git-send-email-denis.ciocca@st.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Mon, 6 Oct 2014 17:52:09 +0100
-Lee Jones <lee.jones@linaro.org> wrote:
+This patch fix pressure data variable name. Usually pdata name
+it is used for platform data.
 
-> Date: Mon, 6 Oct 2014 17:52:09 +0100
-> User-Agent: Mutt/1.5.21 (2010-09-15)
-> 
-> On Sat, 27 Sep 2014, Jonathan Cameron wrote:
-> 
-> > On 25/09/14 12:20, Jacob Pan wrote:  
-> > > X-Powers AXP288 is a customized PMIC for Intel Baytrail-CR
-> > > platforms. Similar to AXP202/209, AXP288 comes with USB charger,
-> > > more LDO and BUCK channels, and AD converters. It also provides
-> > > extended status and interrupt reporting capabilities than the
-> > > devices currently supported in axp20x.c.
-> > >
-> > > In addition to feature extension, this patch also adds ACPI
-> > > binding for enumeration.
-> > >
-> > > This consolidated driver should support more X-Powers' PMICs in
-> > > both device tree and ACPI enumerated platforms.
-> > >
-> > > Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
-> > > Reviewed-by: Maxime Ripard <maxime.ripard@free-electrons.com>  
-> > Reviewed-by: Jonathan Cameron <jic23@kernel.org>
-> > 
-> > (I'm assuming Lee will take the whole series when he is happy with
-> > it).  
-> 
-> I only see patch 1?
-Hi Lee,
-here is #2. will also send you a copy directly.
+Signed-off-by: Denis Ciocca <denis.ciocca@st.com>
+---
+ drivers/iio/pressure/st_pressure_buffer.c | 12 +++++-----
+ drivers/iio/pressure/st_pressure_core.c   | 40 ++++++++++++++++---------------
+ drivers/iio/pressure/st_pressure_i2c.c    | 10 ++++----
+ drivers/iio/pressure/st_pressure_spi.c    | 10 ++++----
+ 4 files changed, 37 insertions(+), 35 deletions(-)
 
-https://lkml.org/lkml/2014/9/25/538
+diff --git a/drivers/iio/pressure/st_pressure_buffer.c b/drivers/iio/pressure/st_pressure_buffer.c
+index b37b1c9..2ff53f2 100644
+--- a/drivers/iio/pressure/st_pressure_buffer.c
++++ b/drivers/iio/pressure/st_pressure_buffer.c
+@@ -38,10 +38,10 @@ static int st_press_buffer_preenable(struct iio_dev *indio_dev)
+ static int st_press_buffer_postenable(struct iio_dev *indio_dev)
+ {
+ 	int err;
+-	struct st_sensor_data *pdata = iio_priv(indio_dev);
++	struct st_sensor_data *press_data = iio_priv(indio_dev);
+ 
+-	pdata->buffer_data = kmalloc(indio_dev->scan_bytes, GFP_KERNEL);
+-	if (pdata->buffer_data == NULL) {
++	press_data->buffer_data = kmalloc(indio_dev->scan_bytes, GFP_KERNEL);
++	if (press_data->buffer_data == NULL) {
+ 		err = -ENOMEM;
+ 		goto allocate_memory_error;
+ 	}
+@@ -53,7 +53,7 @@ static int st_press_buffer_postenable(struct iio_dev *indio_dev)
+ 	return err;
+ 
+ st_press_buffer_postenable_error:
+-	kfree(pdata->buffer_data);
++	kfree(press_data->buffer_data);
+ allocate_memory_error:
+ 	return err;
+ }
+@@ -61,7 +61,7 @@ allocate_memory_error:
+ static int st_press_buffer_predisable(struct iio_dev *indio_dev)
+ {
+ 	int err;
+-	struct st_sensor_data *pdata = iio_priv(indio_dev);
++	struct st_sensor_data *press_data = iio_priv(indio_dev);
+ 
+ 	err = iio_triggered_buffer_predisable(indio_dev);
+ 	if (err < 0)
+@@ -70,7 +70,7 @@ static int st_press_buffer_predisable(struct iio_dev *indio_dev)
+ 	err = st_sensors_set_enable(indio_dev, false);
+ 
+ st_press_buffer_predisable_error:
+-	kfree(pdata->buffer_data);
++	kfree(press_data->buffer_data);
+ 	return err;
+ }
+ 
+diff --git a/drivers/iio/pressure/st_pressure_core.c b/drivers/iio/pressure/st_pressure_core.c
+index ee2ef7d..97baf40d 100644
+--- a/drivers/iio/pressure/st_pressure_core.c
++++ b/drivers/iio/pressure/st_pressure_core.c
+@@ -333,7 +333,7 @@ static int st_press_read_raw(struct iio_dev *indio_dev,
+ 							int *val2, long mask)
+ {
+ 	int err;
+-	struct st_sensor_data *pdata = iio_priv(indio_dev);
++	struct st_sensor_data *press_data = iio_priv(indio_dev);
+ 
+ 	switch (mask) {
+ 	case IIO_CHAN_INFO_RAW:
+@@ -347,10 +347,10 @@ static int st_press_read_raw(struct iio_dev *indio_dev,
+ 
+ 		switch (ch->type) {
+ 		case IIO_PRESSURE:
+-			*val2 = pdata->current_fullscale->gain;
++			*val2 = press_data->current_fullscale->gain;
+ 			break;
+ 		case IIO_TEMP:
+-			*val2 = pdata->current_fullscale->gain2;
++			*val2 = press_data->current_fullscale->gain2;
+ 			break;
+ 		default:
+ 			err = -EINVAL;
+@@ -371,7 +371,7 @@ static int st_press_read_raw(struct iio_dev *indio_dev,
+ 
+ 		return IIO_VAL_FRACTIONAL;
+ 	case IIO_CHAN_INFO_SAMP_FREQ:
+-		*val = pdata->odr;
++		*val = press_data->odr;
+ 		return IIO_VAL_INT;
+ 	default:
+ 		return -EINVAL;
+@@ -411,8 +411,8 @@ static const struct iio_trigger_ops st_press_trigger_ops = {
+ 
+ int st_press_common_probe(struct iio_dev *indio_dev)
+ {
+-	struct st_sensor_data *pdata = iio_priv(indio_dev);
+-	int irq = pdata->get_irq_data_ready(indio_dev);
++	struct st_sensor_data *press_data = iio_priv(indio_dev);
++	int irq = press_data->get_irq_data_ready(indio_dev);
+ 	int err;
+ 
+ 	indio_dev->modes = INDIO_DIRECT_MODE;
+@@ -426,23 +426,25 @@ int st_press_common_probe(struct iio_dev *indio_dev)
+ 	if (err < 0)
+ 		return err;
+ 
+-	pdata->num_data_channels = ST_PRESS_NUMBER_DATA_CHANNELS;
+-	pdata->multiread_bit = pdata->sensor_settings->multi_read_bit;
+-	indio_dev->channels = pdata->sensor_settings->ch;
+-	indio_dev->num_channels = pdata->sensor_settings->num_ch;
++	press_data->num_data_channels = ST_PRESS_NUMBER_DATA_CHANNELS;
++	press_data->multiread_bit = press_data->sensor_settings->multi_read_bit;
++	indio_dev->channels = press_data->sensor_settings->ch;
++	indio_dev->num_channels = press_data->sensor_settings->num_ch;
+ 
+-	if (pdata->sensor_settings->fs.addr != 0)
+-		pdata->current_fullscale = (struct st_sensor_fullscale_avl *)
+-			&pdata->sensor_settings->fs.fs_avl[0];
++	if (press_data->sensor_settings->fs.addr != 0)
++		press_data->current_fullscale =
++			(struct st_sensor_fullscale_avl *)
++				&press_data->sensor_settings->fs.fs_avl[0];
+ 
+-	pdata->odr = pdata->sensor_settings->odr.odr_avl[0].hz;
++	press_data->odr = press_data->sensor_settings->odr.odr_avl[0].hz;
+ 
+ 	/* Some devices don't support a data ready pin. */
+-	if (!pdata->dev->platform_data && pdata->sensor_settings->drdy_irq.addr)
+-		pdata->dev->platform_data =
++	if (!press_data->dev->platform_data &&
++				press_data->sensor_settings->drdy_irq.addr)
++		press_data->dev->platform_data =
+ 			(struct st_sensors_platform_data *)&default_press_pdata;
+ 
+-	err = st_sensors_init_sensor(indio_dev, pdata->dev->platform_data);
++	err = st_sensors_init_sensor(indio_dev, press_data->dev->platform_data);
+ 	if (err < 0)
+ 		return err;
+ 
+@@ -478,12 +480,12 @@ EXPORT_SYMBOL(st_press_common_probe);
+ 
+ void st_press_common_remove(struct iio_dev *indio_dev)
+ {
+-	struct st_sensor_data *pdata = iio_priv(indio_dev);
++	struct st_sensor_data *press_data = iio_priv(indio_dev);
+ 
+ 	st_sensors_power_disable(indio_dev);
+ 
+ 	iio_device_unregister(indio_dev);
+-	if (pdata->get_irq_data_ready(indio_dev) > 0)
++	if (press_data->get_irq_data_ready(indio_dev) > 0)
+ 		st_sensors_deallocate_trigger(indio_dev);
+ 
+ 	st_press_deallocate_ring(indio_dev);
+diff --git a/drivers/iio/pressure/st_pressure_i2c.c b/drivers/iio/pressure/st_pressure_i2c.c
+index dd73351..8859e93 100644
+--- a/drivers/iio/pressure/st_pressure_i2c.c
++++ b/drivers/iio/pressure/st_pressure_i2c.c
+@@ -43,18 +43,18 @@ static int st_press_i2c_probe(struct i2c_client *client,
+ 						const struct i2c_device_id *id)
+ {
+ 	struct iio_dev *indio_dev;
+-	struct st_sensor_data *pdata;
++	struct st_sensor_data *press_data;
+ 	int err;
+ 
+-	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*pdata));
++	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*press_data));
+ 	if (!indio_dev)
+ 		return -ENOMEM;
+ 
+-	pdata = iio_priv(indio_dev);
+-	pdata->dev = &client->dev;
++	press_data = iio_priv(indio_dev);
++	press_data->dev = &client->dev;
+ 	st_sensors_of_i2c_probe(client, st_press_of_match);
+ 
+-	st_sensors_i2c_configure(indio_dev, client, pdata);
++	st_sensors_i2c_configure(indio_dev, client, press_data);
+ 
+ 	err = st_press_common_probe(indio_dev);
+ 	if (err < 0)
+diff --git a/drivers/iio/pressure/st_pressure_spi.c b/drivers/iio/pressure/st_pressure_spi.c
+index 98c3e8e..10c9624 100644
+--- a/drivers/iio/pressure/st_pressure_spi.c
++++ b/drivers/iio/pressure/st_pressure_spi.c
+@@ -21,17 +21,17 @@
+ static int st_press_spi_probe(struct spi_device *spi)
+ {
+ 	struct iio_dev *indio_dev;
+-	struct st_sensor_data *pdata;
++	struct st_sensor_data *press_data;
+ 	int err;
+ 
+-	indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*pdata));
++	indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*press_data));
+ 	if (indio_dev == NULL)
+ 		return -ENOMEM;
+ 
+-	pdata = iio_priv(indio_dev);
+-	pdata->dev = &spi->dev;
++	press_data = iio_priv(indio_dev);
++	press_data->dev = &spi->dev;
+ 
+-	st_sensors_spi_configure(indio_dev, spi, pdata);
++	st_sensors_spi_configure(indio_dev, spi, press_data);
+ 
+ 	err = st_press_common_probe(indio_dev);
+ 	if (err < 0)
+-- 
+1.9.1
+
