@@ -1,48 +1,93 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ns.mm-sol.com ([37.157.136.199]:41818 "EHLO extserv.mm-sol.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1752489AbaJCPIS (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Fri, 3 Oct 2014 11:08:18 -0400
-Message-ID: <1412348902.1027.48.camel@iivanov-dev>
-Subject: Re: [PATCH] iio: inkern: Add of_xlate function to struct iio_dev
-From: "Ivan T. Ivanov" <iivanov@mm-sol.com>
-To: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-Cc: Lars-Peter Clausen <lars@metafoo.de>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Sachin Kamat <sachin.kamat@linaro.org>,
-	John Stultz <john.stultz@linaro.org>,
-	linux-iio@vger.kernel.org, svarbanov@mm-sol.com,
-	linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org
-Date: Fri, 03 Oct 2014 18:08:22 +0300
-In-Reply-To: <1412346717.2987.5.camel@spandruv-hsb-test>
-References: <1412253128-32165-1-git-send-email-iivanov@mm-sol.com>
-	 <542D5377.90201@metafoo.de> <1412257785.1027.40.camel@iivanov-dev>
-	 <1412346717.2987.5.camel@spandruv-hsb-test>
-Content-Type: text/plain; charset="UTF-8"
-Mime-Version: 1.0
+Received: from mx07-00178001.pphosted.com ([62.209.51.94]:45263 "EHLO
+	mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1752800AbaJCPgK (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 3 Oct 2014 11:36:10 -0400
+From: Denis CIOCCA <denis.ciocca@st.com>
+To: jic23@kernel.org
+Cc: linux-iio@vger.kernel.org, Denis Ciocca <denis.ciocca@st.com>
+Subject: [PATCH 3/7] iio:gyro: Removed unnecessary parameter on common_probe function
+Date: Fri,  3 Oct 2014 17:35:37 +0200
+Message-Id: <1412350541-29431-3-git-send-email-denis.ciocca@st.com>
+In-Reply-To: <1412350541-29431-1-git-send-email-denis.ciocca@st.com>
+References: <1412350541-29431-1-git-send-email-denis.ciocca@st.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Fri, 2014-10-03 at 07:31 -0700, Srinivas Pandruvada wrote:
-> On Thu, 2014-10-02 at 16:49 +0300, Ivan T. Ivanov wrote:
-> > On Thu, 2014-10-02 at 15:30 +0200, Lars-Peter Clausen wrote:
-> > > On 10/02/2014 02:32 PM, Ivan T. Ivanov wrote:
-> > > > When #iio-cells is greater than '0', the driver could provide
-> > > > a custom of_xlate function that reads the *args* and returns
-> > > > the appropriate index in registered IIO channels array.
-> > > 
-> > > Do you have an example of a device that doesn't want to use the default 
-> > > mapping? If yes please include it in the commit message, otherwise it is 
-> > > fairly hard to say whether this makes sense or not.
-> > 
-> > Still not mainlined. You can find more detailed description of the 
-> > issue here[1] and driver here[2].
-> I see your need. I wonder this mapping be done in individual client
-> driver instead of creating another callback.
+Signed-off-by: Denis Ciocca <denis.ciocca@st.com>
+---
+ drivers/iio/gyro/st_gyro.h      | 3 +--
+ drivers/iio/gyro/st_gyro_core.c | 6 +++---
+ drivers/iio/gyro/st_gyro_i2c.c  | 3 +--
+ drivers/iio/gyro/st_gyro_spi.c  | 3 +--
+ 4 files changed, 6 insertions(+), 9 deletions(-)
 
-I am not sure I got you question. The idea is to provide default
-1:1 mapping in core, which can be overwritten by client callback.
-
-Regards,
-Ivan
+diff --git a/drivers/iio/gyro/st_gyro.h b/drivers/iio/gyro/st_gyro.h
+index c197360..5353d63 100644
+--- a/drivers/iio/gyro/st_gyro.h
++++ b/drivers/iio/gyro/st_gyro.h
+@@ -30,8 +30,7 @@ static const struct st_sensors_platform_data gyro_pdata = {
+ 	.drdy_int_pin = 2,
+ };
+ 
+-int st_gyro_common_probe(struct iio_dev *indio_dev,
+-					struct st_sensors_platform_data *pdata);
++int st_gyro_common_probe(struct iio_dev *indio_dev);
+ void st_gyro_common_remove(struct iio_dev *indio_dev);
+ 
+ #ifdef CONFIG_IIO_BUFFER
+diff --git a/drivers/iio/gyro/st_gyro_core.c b/drivers/iio/gyro/st_gyro_core.c
+index 9d41b68..f07a233 100644
+--- a/drivers/iio/gyro/st_gyro_core.c
++++ b/drivers/iio/gyro/st_gyro_core.c
+@@ -309,8 +309,7 @@ static const struct iio_trigger_ops st_gyro_trigger_ops = {
+ #define ST_GYRO_TRIGGER_OPS NULL
+ #endif
+ 
+-int st_gyro_common_probe(struct iio_dev *indio_dev,
+-					struct st_sensors_platform_data *pdata)
++int st_gyro_common_probe(struct iio_dev *indio_dev)
+ {
+ 	struct st_sensor_data *gdata = iio_priv(indio_dev);
+ 	int irq = gdata->get_irq_data_ready(indio_dev);
+@@ -336,7 +335,8 @@ int st_gyro_common_probe(struct iio_dev *indio_dev,
+ 					&gdata->sensor_settings->fs.fs_avl[0];
+ 	gdata->odr = gdata->sensor_settings->odr.odr_avl[0].hz;
+ 
+-	err = st_sensors_init_sensor(indio_dev, pdata);
++	err = st_sensors_init_sensor(indio_dev,
++				(struct st_sensors_platform_data *)&gyro_pdata);
+ 	if (err < 0)
+ 		return err;
+ 
+diff --git a/drivers/iio/gyro/st_gyro_i2c.c b/drivers/iio/gyro/st_gyro_i2c.c
+index 8fa0ad2..94d01fb 100644
+--- a/drivers/iio/gyro/st_gyro_i2c.c
++++ b/drivers/iio/gyro/st_gyro_i2c.c
+@@ -72,8 +72,7 @@ static int st_gyro_i2c_probe(struct i2c_client *client,
+ 
+ 	st_sensors_i2c_configure(indio_dev, client, gdata);
+ 
+-	err = st_gyro_common_probe(indio_dev,
+-				(struct st_sensors_platform_data *)&gyro_pdata);
++	err = st_gyro_common_probe(indio_dev);
+ 	if (err < 0)
+ 		return err;
+ 
+diff --git a/drivers/iio/gyro/st_gyro_spi.c b/drivers/iio/gyro/st_gyro_spi.c
+index b4ad3be..3e7a01a 100644
+--- a/drivers/iio/gyro/st_gyro_spi.c
++++ b/drivers/iio/gyro/st_gyro_spi.c
+@@ -33,8 +33,7 @@ static int st_gyro_spi_probe(struct spi_device *spi)
+ 
+ 	st_sensors_spi_configure(indio_dev, spi, gdata);
+ 
+-	err = st_gyro_common_probe(indio_dev,
+-				(struct st_sensors_platform_data *)&gyro_pdata);
++	err = st_gyro_common_probe(indio_dev);
+ 	if (err < 0)
+ 		return err;
+ 
+-- 
+1.9.1
 
