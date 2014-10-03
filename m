@@ -1,64 +1,47 @@
-Return-Path: <irina.tirdea@intel.com>
-From: "Tirdea, Irina" <irina.tirdea@intel.com>
-To: Jonathan Cameron <jic23@kernel.org>
-CC: "Baluta, Daniel" <daniel.baluta@intel.com>, "linux-iio@vger.kernel.org"
-	<linux-iio@vger.kernel.org>, "linux-kernel@vger.kernel.org"
-	<linux-kernel@vger.kernel.org>
-Subject: RE: [RFC PATCH 4/8] iio: core: Introduce pedometer STEP counter
- modifier
-Date: Tue, 7 Oct 2014 13:54:21 +0000
-Message-ID: <1F3AC3675D538145B1661F571FE1805F199ADF59@IRSMSX105.ger.corp.intel.com>
-References: <1412257439-15683-1-git-send-email-daniel.baluta@intel.com>
- <1412257439-15683-5-git-send-email-daniel.baluta@intel.com>
- <542FEDB7.3050302@kernel.org>
- <1F3AC3675D538145B1661F571FE1805F199AD91D@IRSMSX105.ger.corp.intel.com>
- <888C517D-6823-4FB5-870E-484DADAF5230@kernel.org>
-In-Reply-To: <888C517D-6823-4FB5-870E-484DADAF5230@kernel.org>
-Content-Type: text/plain; charset="utf-8"
-MIME-Version: 1.0
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-qa0-f52.google.com ([209.85.216.52]:45525 "EHLO
+	mail-qa0-f52.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751493AbaJCB0o (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 2 Oct 2014 21:26:44 -0400
+Received: by mail-qa0-f52.google.com with SMTP id dc16so235188qab.11
+        for <linux-iio@vger.kernel.org>; Thu, 02 Oct 2014 18:26:43 -0700 (PDT)
+From: Fabio Estevam <festevam@gmail.com>
+To: jic23@kernel.org
+Cc: B38611@freescale.com, linux-iio@vger.kernel.org,
+	Fabio Estevam <fabio.estevam@freescale.com>
+Subject: [PATCH 2/5] iio: adc: vf610: Return the error code directly
+Date: Thu,  2 Oct 2014 22:25:23 -0300
+Message-Id: <1412299526-1331-2-git-send-email-festevam@gmail.com>
+In-Reply-To: <1412299526-1331-1-git-send-email-festevam@gmail.com>
+References: <1412299526-1331-1-git-send-email-festevam@gmail.com>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogbGludXgtaWlvLW93bmVy
-QHZnZXIua2VybmVsLm9yZyBbbWFpbHRvOmxpbnV4LWlpby1vd25lckB2Z2VyLmtlcm5lbC5vcmdd
-IE9uIEJlaGFsZiBPZiBKb25hdGhhbiBDYW1lcm9uDQo+IE9uIE9jdG9iZXIgNiwgMjAxNCAyOjUw
-OjEzIFBNIEdNVCswMTowMCwgIlRpcmRlYSwgSXJpbmEiIDxpcmluYS50aXJkZWFAaW50ZWwuY29t
-PiB3cm90ZToNCj4gPj4gRnJvbTogSm9uYXRoYW4gQ2FtZXJvbiBbbWFpbHRvOmppYzIzQGtlcm5l
-bC5vcmddDQo+ID4+IE9uIDAyLzEwLzE0IDE0OjQzLCBEYW5pZWwgQmFsdXRhIHdyb3RlOg0KPiA+
-PiA+IEZyb206IElyaW5hIFRpcmRlYSA8aXJpbmEudGlyZGVhQGludGVsLmNvbT4NCj4gPj4gPg0K
-PiA+PiA+IE9uZSBvZiB0aGUgZnVuY3Rpb25hbGl0aWVzIG9mIGEgcGVkb21ldGVyIGlzIGEgc3Rl
-cCBjb3VudGVyLg0KPiA+PiA+IFRoZSBzdGVwIGNvdW50ZXIgbmVlZHMgdG8gYmUgZW5hYmxlZCBh
-bmQgdGhlbiBpdCB3aWxsIGNvdW50IHRoZQ0KPiA+c3RlcHMNCj4gPj4gPiBpbiBpdHMgaGFyZHdh
-cmUgcmVnaXN0ZXIuIFdoZW5ldmVyIHRoZSBhcHBsaWNhdGlvbnMgbmVlZCB0byBjaGVjaw0KPiA+
-PiA+IHRoZSBzdGVwIGNvdW50LCB0aGV5IHdpbGwgcmVhZCB0aGUgc3RlcCBjb3VudGVyIHJlZ2lz
-dGVyLg0KPiA+PiA+DQo+ID4+ID4gVG8gc3VwcG9ydCB0aGlzIGZ1bmN0aW9uYWxpdHkgd2UgbmVl
-ZCBhIHN0ZXBzIGF0dHJpYnV0ZSB0aGF0DQo+ID4+ID4gd2lsbCBleHBvcnQgdGhlIG51bWJlciBv
-ZiBzdGVwcy4NCj4gPj4gPg0KPiA+PiBJJ20gbm90IGtlZW4gb24gbXVsdGlwbGV4aW5nIGRpZmZl
-cmVudCB0eXBlcyBvZiBkYXRhIG9udG8gYSBzaW5nbGUNCj4gPmFjdGl2aXR5IHR5cGUuDQo+ID4+
-IFN0ZXBzIGlzIHdlbGwgZW5vdWdoIGRlZmluZWQgb24gaXQncyBvd24gdG8gaGF2ZSBpdCdzIG93
-biBjaGFubmVsDQo+ID50eXBlLg0KPiA+Pg0KPiA+PiBpbl9zdGVwc19pbnB1dCB3b3VsZCBiZSBm
-aW5lIGJ5IG1lLiAgSSBzdXBwb3NlIHN0ZXBzIG1pZ2h0IG1lYW4NCj4gPnNvbWV0aGluZyBlbHNl
-DQo+ID4+IHRob3VnaC4uLg0KPiA+Pg0KPiA+DQo+ID5IaSBKb25hdGhhbiwNCj4gPg0KPiA+VGhh
-bmtzIGZvciB0aGUgcmV2aWV3Lg0KPiA+DQo+ID5Nb3ZpbmcgdGhlIHBlZG9tZXRlciBwYXJ0IHRv
-IGEgbmV3IHR5cGUgc291bmRzIGdvb2QgdG8gbWUuDQo+ID5Ib3dldmVyLCBJIHdvdWxkIHByZWZl
-ciB0byBhZGQgYSBuZXcgdHlwZSBjYWxsZWQgcGVkb21ldGVyIGFuZCBrZWVwDQo+ID5zdGVwcyBh
-cyBhIG1vZGlmaWVyLCBnZW5lcmF0aW5nIG5hbWVzIGxpa2UgaW5fcGVkX3N0ZXBzX2lucHV0IGZv
-ciB0aGUNCj4gPmF0dHJpYnV0ZSBhbmQgaW5fcGVkX3N0ZXBzX2luc3RhbmNlX2VuIGZvciB0aGUg
-ZXZlbnQuDQo+ID5UaGUgcmVhc29uIGZvciB0aGlzIGlzIHRoYXQgZm9yIHN1cHBvcnRpbmcgRnJl
-ZXNjYWxlJ3MgTU1BOTU1M0wgd2Ugd2lsbA0KPiA+bmVlZCBhZGRpdGlvbmFsIGF0dHJpYnV0ZXMg
-KGRpc3RhbmNlLCBzcGVlZCwgY2Fsb3JpZXMsIGhlaWdodCwgd2VpZ2h0KQ0KPiA+dGhhdCB3ZSBj
-YW4gYWRkIGFzIG1vZGlmaWVycyB0byB0aGlzIHBlZG9tZXRlciB0eXBlLiBUbyBrZWVwIHRoaW5n
-cw0KPiA+c2ltcGxlLCBJIGRpZCBub3QgYWRkIHRoZXNlIGFkZGl0aW9uYWwgYXR0cmlidXRlcyB0
-byB0aGUgUkZDIHNlcmllcywNCj4gPmJ1dCBJIGNvdWxkIGRvIHRoYXQgaWYgeW91IHRoaW5rIGl0
-IHdvdWxkIGJlIHVzZWZ1bC4gRm9yIHRoaXMgZGV2aWNlLA0KPiA+dGhlIG1vdGlvbiBldmVudHMg
-KHdhbGtpbmcsIHJ1bm5pbmcsIGpvZ2dpbmcsIHN0aWxsKSBhbHNvIGRlcGVuZCBvbiB0aGUNCj4g
-PmhlaWdodCBhdHRyaWJ1dGUgYmVpbmcgc2V0LCBidXQgd2UgaW50ZW5kIHRvIGRlYWwgd2l0aCB0
-aGlzIGRlcGVuZGVuY3kNCj4gPmluIHRoZSBkcml2ZXIgKHVzaW5nIHRoZSBwZWRvbWV0ZXIncyBo
-ZWlnaHQgYXR0cmlidXRlKS4NCj4gPg0KPiA+V2hhdCBkbyB5b3UgdGhpbms/DQo+IEkgdGhpbmsg
-SSB3b3VsZCByYXRoZXIgZWFjaCBvZiB0aGVzZSB3YXMgaW5jbHVkZWQgYXMgYSB0eXBlIHJhdGhl
-ciB0aGFuIGEgbW9kaWZpZXIuDQo+IFRoZXJlIGFyZSBsb3RzIG9mIG90aGVyIHdheXMgdG8gbWVh
-c3VyZSBzcGVlZCBmb3Igc3RhcnRlcnMgYW5kIG9mdGVuIHVzZXIgc3BhY2UNCj4gd29uJ3QgY2Fy
-ZSB3aGVyZSBpdCBjb21lcyBmcm9tLi4uDQo+IA0KPiBJbl9zcGVlZF9yYXcgZXRjLi4uDQo+IA0K
-PiBUcmljayB3aGVyZSBwb3NzaWJsZSBpcyB0byB0aGluayBhYm91dCB3aGF0IGlzIG1lYXN1cmVk
-IHJhdGhlciB0aGFuIGhvdy4gVGVuZHMgdG8gZ2l2ZQ0KPiAgbW9yZSBjb25zaXN0ZW50IGludGVy
-ZmFjZXMuDQoNClRoYXQgbWFrZXMgc2Vuc2UuIFdpbGwgZG8gdGhlIGNoYW5nZXMgYW5kIGFsc28g
-YWRkIG9uZSBvZiB0aGVzZSBvdGhlciB0eXBlcyBpbiB2Mi4NCg0KVGhhbmtzLA0KSXJpbmENCg0K
+From: Fabio Estevam <fabio.estevam@freescale.com>
+
+There is no need to pass the error clock code to the variable 'ret'.
+
+Just return the error directly.
+
+Signed-off-by: Fabio Estevam <fabio.estevam@freescale.com>
+---
+ drivers/iio/adc/vf610_adc.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
+
+diff --git a/drivers/iio/adc/vf610_adc.c b/drivers/iio/adc/vf610_adc.c
+index c259901..a9c41ec 100644
+--- a/drivers/iio/adc/vf610_adc.c
++++ b/drivers/iio/adc/vf610_adc.c
+@@ -586,8 +586,7 @@ static int vf610_adc_probe(struct platform_device *pdev)
+ 	if (IS_ERR(info->clk)) {
+ 		dev_err(&pdev->dev, "failed getting clock, err = %ld\n",
+ 						PTR_ERR(info->clk));
+-		ret = PTR_ERR(info->clk);
+-		return ret;
++		return PTR_ERR(info->clk);
+ 	}
+ 
+ 	info->vref = devm_regulator_get(&pdev->dev, "vref");
+-- 
+1.9.1
+
