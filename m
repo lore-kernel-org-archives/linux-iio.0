@@ -1,106 +1,48 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mout.gmx.net ([212.227.17.22]:61453 "EHLO mout.gmx.net"
+Received: from ns.mm-sol.com ([37.157.136.199]:41818 "EHLO extserv.mm-sol.com"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S933503AbaJUWwN (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Tue, 21 Oct 2014 18:52:13 -0400
-Message-ID: <5446E398.8050403@gmx.de>
-Date: Wed, 22 Oct 2014 00:52:08 +0200
-From: Hartmut Knaack <knaack.h@gmx.de>
-MIME-Version: 1.0
-To: Roberta Dobrescu <roberta.dobrescu@gmail.com>,
-	opw-kernel@googlegroups.com
-CC: jic23@kernel.org, linux-iio@vger.kernel.org
-Subject: Re: [PATCH v2] staging: iio: iio_event_monitor: Add support
- for missing IIO modifiers
-References: <1413927662-31463-1-git-send-email-roberta.dobrescu@gmail.com>
-In-Reply-To: <1413927662-31463-1-git-send-email-roberta.dobrescu@gmail.com>
-Content-Type: text/plain; charset=ISO-8859-15
+	id S1752489AbaJCPIS (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Fri, 3 Oct 2014 11:08:18 -0400
+Message-ID: <1412348902.1027.48.camel@iivanov-dev>
+Subject: Re: [PATCH] iio: inkern: Add of_xlate function to struct iio_dev
+From: "Ivan T. Ivanov" <iivanov@mm-sol.com>
+To: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Cc: Lars-Peter Clausen <lars@metafoo.de>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Sachin Kamat <sachin.kamat@linaro.org>,
+	John Stultz <john.stultz@linaro.org>,
+	linux-iio@vger.kernel.org, svarbanov@mm-sol.com,
+	linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org
+Date: Fri, 03 Oct 2014 18:08:22 +0300
+In-Reply-To: <1412346717.2987.5.camel@spandruv-hsb-test>
+References: <1412253128-32165-1-git-send-email-iivanov@mm-sol.com>
+	 <542D5377.90201@metafoo.de> <1412257785.1027.40.camel@iivanov-dev>
+	 <1412346717.2987.5.camel@spandruv-hsb-test>
+Content-Type: text/plain; charset="UTF-8"
+Mime-Version: 1.0
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Roberta Dobrescu schrieb am 21.10.2014 23:41:
-> This patch adds the missing IIO modifiers in event_is_known function
-> and iio_modifier_names vector.
-> 
-> Additionally, it removes duplicate name entries of IIO_MOD_LIGHT_BOTH
-> and IIO_MOD_LIGHT_IR in iio_modifier_names.
-> 
-Spotted one typo.
-> Signed-off-by: Roberta Dobrescu <roberta.dobrescu@gmail.com>
-> ---
-> Changes since v1:
-> 	- Add iio_event_monitor in subject
-> 	- Modify commit message in order to be more clear
-> 	- Add missing comma
->  
->  .../staging/iio/Documentation/iio_event_monitor.c  | 32 ++++++++++++++++++++--
->  1 file changed, 30 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/staging/iio/Documentation/iio_event_monitor.c b/drivers/staging/iio/Documentation/iio_event_monitor.c
-> index 569d6f8..0300900 100644
-> --- a/drivers/staging/iio/Documentation/iio_event_monitor.c
-> +++ b/drivers/staging/iio/Documentation/iio_event_monitor.c
-> @@ -69,16 +69,29 @@ static const char * const iio_modifier_names[] = {
->  	[IIO_MOD_X] = "x",
->  	[IIO_MOD_Y] = "y",
->  	[IIO_MOD_Z] = "z",
-> +	[IIO_MOD_X_AND_Y] = "x&y",
-> +	[IIO_MOD_X_AND_Z] = "x&z",
-> +	[IIO_MOD_Y_AND_Z] = "y&z",
-> +	[IIO_MOD_X_AND_Y_AND_Z] = "x&y&z",
-> +	[IIO_MOD_X_OR_Y] = "x|y",
-> +	[IIO_MOD_X_OR_Z] = "x|z",
-> +	[IIO_MOD_Y_OR_Z] = "y|z",
-> +	[IIO_MOD_X_OR_Y_OR_Z] = "x|y|z",
->  	[IIO_MOD_LIGHT_BOTH] = "both",
->  	[IIO_MOD_LIGHT_IR] = "ir",
->  	[IIO_MOD_ROOT_SUM_SQUARED_X_Y] = "sqrt(x^2+y^2)",
->  	[IIO_MOD_SUM_SQUARED_X_Y_Z] = "x^2+y^2+z^2",
-> -	[IIO_MOD_LIGHT_BOTH] = "both",
-> -	[IIO_MOD_LIGHT_IR] = "ir",
->  	[IIO_MOD_LIGHT_CLEAR] = "clear",
->  	[IIO_MOD_LIGHT_RED] = "red",
->  	[IIO_MOD_LIGHT_GREEN] = "green",
->  	[IIO_MOD_LIGHT_BLUE] = "blue",
-> +	[IIO_MOD_QUATERNION] = "quternion",
-"quaternion"
-> +	[IIO_MOD_TEMP_AMBIENT] = "ambient",
-> +	[IIO_MOD_TEMP_OBJECT] = "object",
-> +	[IIO_MOD_NORTH_MAGN] = "from_north_magnetic",
-> +	[IIO_MOD_NORTH_TRUE] = "from_north_true",
-> +	[IIO_MOD_NORTH_MAGN_TILT_COMP] = "from_north_magnetic_tilt_comp",
-> +	[IIO_MOD_NORTH_TRUE_TILT_COMP] = "from_north_true_tilt_comp",
->  };
->  
->  static bool event_is_known(struct iio_event_data *event)
-> @@ -118,6 +131,14 @@ static bool event_is_known(struct iio_event_data *event)
->  	case IIO_MOD_X:
->  	case IIO_MOD_Y:
->  	case IIO_MOD_Z:
-> +	case IIO_MOD_X_AND_Y:
-> +	case IIO_MOD_X_AND_Z:
-> +	case IIO_MOD_Y_AND_Z:
-> +	case IIO_MOD_X_AND_Y_AND_Z:
-> +	case IIO_MOD_X_OR_Y:
-> +	case IIO_MOD_X_OR_Z:
-> +	case IIO_MOD_Y_OR_Z:
-> +	case IIO_MOD_X_OR_Y_OR_Z:
->  	case IIO_MOD_LIGHT_BOTH:
->  	case IIO_MOD_LIGHT_IR:
->  	case IIO_MOD_ROOT_SUM_SQUARED_X_Y:
-> @@ -126,6 +147,13 @@ static bool event_is_known(struct iio_event_data *event)
->  	case IIO_MOD_LIGHT_RED:
->  	case IIO_MOD_LIGHT_GREEN:
->  	case IIO_MOD_LIGHT_BLUE:
-> +	case IIO_MOD_QUATERNION:
-> +	case IIO_MOD_TEMP_AMBIENT:
-> +	case IIO_MOD_TEMP_OBJECT:
-> +	case IIO_MOD_NORTH_MAGN:
-> +	case IIO_MOD_NORTH_TRUE:
-> +	case IIO_MOD_NORTH_MAGN_TILT_COMP:
-> +	case IIO_MOD_NORTH_TRUE_TILT_COMP:
->  		break;
->  	default:
->  		return false;
-> 
+On Fri, 2014-10-03 at 07:31 -0700, Srinivas Pandruvada wrote:
+> On Thu, 2014-10-02 at 16:49 +0300, Ivan T. Ivanov wrote:
+> > On Thu, 2014-10-02 at 15:30 +0200, Lars-Peter Clausen wrote:
+> > > On 10/02/2014 02:32 PM, Ivan T. Ivanov wrote:
+> > > > When #iio-cells is greater than '0', the driver could provide
+> > > > a custom of_xlate function that reads the *args* and returns
+> > > > the appropriate index in registered IIO channels array.
+> > > 
+> > > Do you have an example of a device that doesn't want to use the default 
+> > > mapping? If yes please include it in the commit message, otherwise it is 
+> > > fairly hard to say whether this makes sense or not.
+> > 
+> > Still not mainlined. You can find more detailed description of the 
+> > issue here[1] and driver here[2].
+> I see your need. I wonder this mapping be done in individual client
+> driver instead of creating another callback.
+
+I am not sure I got you question. The idea is to provide default
+1:1 mapping in core, which can be overwritten by client callback.
+
+Regards,
+Ivan
 
