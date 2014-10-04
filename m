@@ -1,68 +1,53 @@
-Return-Path: <Adam.Thomson.Opensource@diasemi.com>
-From: "Opensource [Adam Thomson]" <Adam.Thomson.Opensource@diasemi.com>
-To: Jonathan Cameron <jic23@kernel.org>, "Opensource [Adam Thomson]"
-	<Adam.Thomson.Opensource@diasemi.com>, Lee Jones <lee.jones@linaro.org>,
-	Samuel Ortiz <sameo@linux.intel.com>, "linux-iio@vger.kernel.org"
-	<linux-iio@vger.kernel.org>, Sebastian Reichel <sre@kernel.org>, "Dmitry
- Eremin-Solenikov" <dbaryshkov@gmail.com>, David Woodhouse
-	<dwmw2@infradead.org>, "linux-pm@vger.kernel.org" <linux-pm@vger.kernel.org>,
-	Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, "Mark
- Rutland" <mark.rutland@arm.com>, Ian Campbell
-	<ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, Grant
- Likely <grant.likely@linaro.org>, "devicetree@vger.kernel.org"
-	<devicetree@vger.kernel.org>, Andrew Morton <akpm@linux-foundation.org>, Joe
- Perches <joe@perches.com>, "linux-api@vger.kernel.org"
-	<linux-api@vger.kernel.org>
-CC: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "Support
- Opensource" <Support.Opensource@diasemi.com>
-Subject: RE: [PATCH 3/8] iio: Add support for DA9150 GPADC
-Date: Tue, 7 Oct 2014 14:55:55 +0000
-Message-ID: <2E89032DDAA8B9408CB92943514A0337AB518D23@SW-EX-MBX01.diasemi.com>
-References: <cover.1411396718.git.Adam.Thomson.Opensource@diasemi.com>
- <ee4c56931f326d8ee9c1313c44456bce2dec8b8c.1411396719.git.Adam.Thomson.Opensource@diasemi.com>
- <5426964A.3050407@kernel.org>
-In-Reply-To: <5426964A.3050407@kernel.org>
-Content-Type: text/plain; charset="utf-8"
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:57799 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750921AbaJDLtr (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 4 Oct 2014 07:49:47 -0400
+Message-ID: <542FDED8.50000@kernel.org>
+Date: Sat, 04 Oct 2014 12:49:44 +0100
+From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-List-ID: <linux-iio@vger.kernel.org>
+To: Darshana Padmadas <darshanapadmadas@gmail.com>,
+	opw-kernel@googlegroups.com
+CC: linux-iio@vger.kernel.org, devel@driverdev.osuosl.org
+Subject: Re: [PATCH v3 0/4] Correct vendor-prefix and document device isl29028
+References: <1412078348-7646-1-git-send-email-darshanapadmadas@gmail.com>
+In-Reply-To: <1412078348-7646-1-git-send-email-darshanapadmadas@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-T24gU2VwdGVtYmVyIDI3LCAyMDE0IDExOjUwLCBKb25hdGhhbiBDYW1lcm9uIHdyb3RlOg0KDQo+
-IE9uIDIzLzA5LzE0IDExOjUzLCBBZGFtIFRob21zb24gd3JvdGU6DQo+ID4gVGhpcyBwYXRjaCBh
-ZGRzIHN1cHBvcnQgZm9yIERBOTE1MCBDaGFyZ2VyICYgRnVlbC1HYXVnZSBJQyBHUEFEQy4NCg0K
-PiA+ICsNCj4gPiArc3RhdGljIGlubGluZSBpbnQgZGE5MTUwX2dwYWRjX2dwaW9fNnZfdm9sdGFn
-ZV9ub3coaW50IHJhd192YWwpDQo+ID4gK3sNCj4gPiArCS8qIENvbnZlcnQgdG8gbVYgKi8NCj4g
-PiArCXJldHVybiAoNiAqICgocmF3X3ZhbCAqIDEwMDApICsgNTAwKSkgLyAxMDI0Ow0KPiBUaGVz
-ZSBjb3VsZCBhbGwgYmUgZXhwcmVzc2VkIGFzIHJhdyB2YWx1ZXMgd2l0aCBvZmZzZXRzDQo+IGFu
-ZCBzY2FsZXMgKGFuZCB0aGF0IHdvdWxkIGJlIHByZWZlcnJlZCkuDQo+IEUuZy4gVGhpcyBvbmUg
-aGFzIG9mZnNldCA1MDAwMDAgYW5kIHNjYWxlIDYwMDAvMTAyNCBvciBldmVuDQo+IGJldHRlciB1
-c2UgSUlPX1ZBTF9GUkFDVElPTkFMX0xPRzIgZm9yIHNjYWxlIHdpdGggdmFsMSA9IDYwMDANCj4g
-YW5kIHZhbDIgPSAobG9nXzIgMTAyNCkgPSAxMC4NCj4gDQoNCldoYXQgeW91J3ZlIHN1Z2dlc3Rl
-ZCBpc24ndCBjb3JyZWN0LiBUaGUgcHJvYmxlbSBoZXJlIGlzIHRoYXQgdGhlIG9mZnNldCBpcw0K
-YWRkZWQgZmlyc3QgdG8gdGhlIHJhdyBBREMgcmVhZGluZywgd2l0aG91dCBmYWN0b3JpbmcgdGhl
-IEFEQyB2YWx1ZSBhY2NvcmRpbmdseQ0KdG8gbWF0Y2ggdGhlIGZhY3RvciBvZiB0aGUgb2Zmc2V0
-LiBJZiB3ZSB0YWtlIHRoZSBvcmlnaW5hbCBlcXVhdGlvbiBwcm92aWRlZCBmb3INCnRoaXMgY2hh
-bm5lbCBvZiB0aGUgQURDLCB0aGUgb2Zmc2V0IGlzIGFjdHVhbGx5IDAuNSB3aGljaCBzaG91bGQg
-YmUgYWRkZWQgdG8gdGhlDQpyYXcgQURDIHZhbHVlLiBUaGlzIGRvZXNuJ3QgZml0IGludG8gdGhl
-IGltcGxlbWVudGF0aW9uIGluIHRoZSBrZXJuZWwgYXMgd2UNCmNhbid0IHVzZSBmbG9hdGluZyBw
-b2ludC4gSWYgd2UgbXVsdGlwbHkgdGhlIG9mZnNldCBidXQgbm90IHRoZSByYXcgQURDIHZhbHVl
-LA0KdGhlbiBhZGQgdGhlbSBiZWZvcmUgYXBwbHlpbmcgdGhlIHNjYWxlIGZhY3RvciwgdGhlbiB0
-aGUgcmVzdWx0IGlzIHdyb25nIGF0IHRoZQ0KZW5kLiBCYXNpY2FsbHkgeW91IG5lZWQgYSBzY2Fs
-ZSBmb3IgdGhlIHJhdyBBREMgdmFsdWUgdG8gbWF0Y2ggdGhlIG9mZnNldCBzY2FsZQ0Kc28geW91
-IGNhbiBhY2hpZXZlIHRoZSBjb3JyZWN0IHJlc3VsdHMsIHdoaWNoIGlzIHdoYXQgbXkgY2FsY3Vs
-YXRpb24gZG9lcy4NCkJ1dCB0aGF0IHNlZW1zIGltcG9zc2libGUgd2l0aCB0aGUgY3VycmVudCBy
-YXd8b2Zmc2V0fHNjYWxlIG1ldGhvZC4NCg0KPiA+ICsJcmV0ID0gaWlvX21hcF9hcnJheV9yZWdp
-c3RlcihpbmRpb19kZXYsIGRhOTE1MF9ncGFkY19kZWZhdWx0X21hcHMpOw0KPiA+ICsJaWYgKHJl
-dCkgew0KPiA+ICsJCWRldl9lcnIoZGV2LCAiRmFpbGVkIHRvIHJlZ2lzdGVyIElJTyBtYXBzOiAl
-ZFxuIiwgcmV0KTsNCj4gPiArCQlyZXR1cm4gcmV0Ow0KPiA+ICsJfQ0KPiBJJ2Qgc3VnZ2VzdCBk
-b2luZyB0aGUgZGV2bV9yZXF1ZXN0X3RocmVhZF9pcnEgYmVmb3JlIHRoZSBpaW9fbWFwX2FycmF5
-DQo+IHN0dWZmLiAgVGhpcyBpcyBwdXJlbHkgdG8gYXZvaWQgdGhlIG9yZGVyIGR1cmluZyByZW1v
-dmUgbm90IGJlaW5nDQo+IG9idmlvdXNseSBjb3JyZWN0IGFzIGl0IGlzbid0IHRoZSByZXZlcnNl
-IG9mIGR1cmluZyBwcm9iZS4NCg0KT2ssIHNob3VsZCBzdGlsbCB3b3JrIG9rIHRoYXQgd2F5IHNv
-IGNhbiB1cGRhdGUuDQoNCj4gPiArc3RhdGljIGludCBkYTkxNTBfZ3BhZGNfcmVtb3ZlKHN0cnVj
-dCBwbGF0Zm9ybV9kZXZpY2UgKnBkZXYpDQo+ID4gK3sNCj4gPiArCXN0cnVjdCBpaW9fZGV2ICpp
-bmRpb19kZXYgPSBwbGF0Zm9ybV9nZXRfZHJ2ZGF0YShwZGV2KTsNCj4gPiArDQo+ID4gKwlpaW9f
-bWFwX2FycmF5X3VucmVnaXN0ZXIoaW5kaW9fZGV2KTsNCj4gVHdpY2UgaW4gb25lIGRheS4gIEkn
-bSBkZWZpbml0ZWx5IHRoaW5raW5nIHdlIHNob3VsZCBhZGQgYQ0KPiBkZXZtIHZlcnNpb24gb2Yg
-aWlvX21hcF9hcnJheV9yZWdpc3Rlci4uLg0KDQpJIGFzc3VtZSB5b3UgbWVhbiBoZXJlIHRoYXQg
-aWlvX2RldmljZV91bnJlZ2lzdGVyKCkgc2hvdWxkIGNvbWUgZmlyc3Q/IFdpbGwNCnVwZGF0ZS4N
-Cg==
+Please repost this series with the device tree list and maintainers cc'd.
+What you have looks fine to me, but as it is effecting bindings they must
+have the opportunity to comment. Rules are either an Ack from them or
+a least 3 weeks on their list then I can make up my own mind :)
+
+On 30/09/14 12:59, Darshana Padmadas wrote:
+> Patchset documents correct and the deprecated vendor-prefix found by checkpatch 
+> warning and also documents information of device isl29028 for compatibility. 
+> Patchset also includes corrected vendor-prefix and device name in compatible 
+> property for files with checkpatch warning of undocumented string "isil,isl29028".
+> 
+> Darshana Padmadas (4):
+>   Documentation: devicetree: bindings: Document correct and deprecated
+>     vendor-prefix with device isl29028
+>   Documentation: devicetree: bindings: Document deprecated device vendor
+>     name to fix related warning
+>   Staging: iio: light: Added correct vendor-prefix for device isl29028
+>   arch: arm: boot: dts: Added correct vendor-prefix with device name to
+>     compatible property
+>   
+> Changes in v3:
+>     - In PATCH 1/4 corrected alphabetical order of vendor-prefix and device name.
+>     - In PATCH 2/4 inserted deprecated vendor-prefix in list in alphabetical order
+>       and edited vendor/chip string.
+>     - In PATCH 4/4 dropped deprecated string "isil,isl29028" and included correct 
+>       vendor-prefix isl with isl29028 to give "isl,isl29028" for device's compatible
+>       property.
+> 
+>  Documentation/devicetree/bindings/i2c/trivial-devices.txt | 2 ++
+>  Documentation/devicetree/bindings/vendor-prefixes.txt     | 1 +
+>  drivers/staging/iio/light/isl29028.c                      | 3 ++-
+>  arch/arm/boot/dts/tegra30-cardhu.dtsi                     | 2 +-
+>  4 files changed, 6 insertions(+), 2 deletions(-)
+> 
