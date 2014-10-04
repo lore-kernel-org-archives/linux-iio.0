@@ -1,105 +1,72 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:43739 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:58189 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751660AbaJFQbb (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 6 Oct 2014 12:31:31 -0400
-In-Reply-To: <1F3AC3675D538145B1661F571FE1805F199AD91D@IRSMSX105.ger.corp.intel.com>
-References: <1412257439-15683-1-git-send-email-daniel.baluta@intel.com> <1412257439-15683-5-git-send-email-daniel.baluta@intel.com> <542FEDB7.3050302@kernel.org> <1F3AC3675D538145B1661F571FE1805F199AD91D@IRSMSX105.ger.corp.intel.com>
-MIME-Version: 1.0
-Content-Type: text/plain;
- charset=UTF-8
-Subject: RE: [RFC PATCH 4/8] iio: core: Introduce pedometer STEP counter modifier
+	with ESMTP id S1750921AbaJDNAj (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 4 Oct 2014 09:00:39 -0400
+Message-ID: <542FEF75.9010707@kernel.org>
+Date: Sat, 04 Oct 2014 14:00:37 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-Date: Mon, 06 Oct 2014 17:31:21 +0100
-To: "Tirdea, Irina" <irina.tirdea@intel.com>
-CC: "Baluta, Daniel" <daniel.baluta@intel.com>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Message-ID: <888C517D-6823-4FB5-870E-484DADAF5230@kernel.org>
+MIME-Version: 1.0
+To: Daniel Baluta <daniel.baluta@intel.com>, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+CC: irina.tirdea@intel.com
+Subject: Re: [RFC PATCH 2/8] iio: core: Introduce IIO_ACTIVITY channel
+References: <1412257439-15683-1-git-send-email-daniel.baluta@intel.com> <1412257439-15683-3-git-send-email-daniel.baluta@intel.com>
+In-Reply-To: <1412257439-15683-3-git-send-email-daniel.baluta@intel.com>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
+On 02/10/14 14:43, Daniel Baluta wrote:
+> This channel will be used for exposing information about
+> some activity composite sensors including:
+> 	* motion (running, jogging, walking, still).
+> 	* step counter
+> 	* step detector
+> 
+> This will offer an interface for Android composite sensors
+> defined here:
+> http://source.android.com/devices/sensors/composite_sensors.html
+> 
+> This sensors are supported by Freescale's MMA9553 device.
+> http://freescale.com/files/sensors/doc/ref_manual/MMA9553LSWRM.pdf
+> 
+> Signed-off-by: Daniel Baluta <daniel.baluta@intel.com>
+> Signed-off-by: Irina Tirdea <irina.tirdea@intel.com>
+This interface is interesting.... As I state on later patches,
+get the less fuzzy stuff (step counting) out of here into
+it's own type.
 
+I'd also merge this at least with the next patch as it has little meaning
+without that...
 
-On October 6, 2014 2:50:13 PM GMT+01:00, "Tirdea, Irina" <irina.tirdea@intel.com> wrote:
->> From: Jonathan Cameron [mailto:jic23@kernel.org]
->> On 02/10/14 14:43, Daniel Baluta wrote:
->> > From: Irina Tirdea <irina.tirdea@intel.com>
->> >
->> > One of the functionalities of a pedometer is a step counter.
->> > The step counter needs to be enabled and then it will count the
->steps
->> > in its hardware register. Whenever the applications need to check
->> > the step count, they will read the step counter register.
->> >
->> > To support this functionality we need a steps attribute that
->> > will export the number of steps.
->> >
->> I'm not keen on multiplexing different types of data onto a single
->activity type.
->> Steps is well enough defined on it's own to have it's own channel
->type.
->> 
->> in_steps_input would be fine by me.  I suppose steps might mean
->something else
->> though...
->> 
->
->Hi Jonathan,
->
->Thanks for the review.
->
->Moving the pedometer part to a new type sounds good to me.
->However, I would prefer to add a new type called pedometer and keep
->steps as a modifier, generating names like in_ped_steps_input for the
->attribute and in_ped_steps_instance_en for the event.
->The reason for this is that for supporting Freescale's MMA9553L we will
->need additional attributes (distance, speed, calories, height, weight)
->that we can add as modifiers to this pedometer type. To keep things
->simple, I did not add these additional attributes to the RFC series,
->but I could do that if you think it would be useful. For this device,
->the motion events (walking, running, jogging, still) also depend on the
->height attribute being set, but we intend to deal with this dependency
->in the driver (using the pedometer's height attribute).
->
->What do you think?
-I think I would rather each of these was included as a type rather than a modifier.
-There are lots of other ways to measure speed for starters and often user space
-won't care where it comes from...
-
-In_speed_raw etc...
-
-Trick where possible is to think about what is measured rather than how. Tends to give
- more consistent interfaces.
->
->Thanks,
->Irina
->
->
->> > --- a/drivers/iio/industrialio-core.c
->> > +++ b/drivers/iio/industrialio-core.c
->> > @@ -96,6 +96,7 @@ static const char * const iio_modifier_names[] =
->{
->> >  	[IIO_MOD_JOGGING] = "jogging",
->> >  	[IIO_MOD_WALKING] = "walking",
->> >  	[IIO_MOD_STILL] = "still",
->> > +	[IIO_MOD_PED_STEPS] = "steps",
->> >  };
->> >
->> >  /* relies on pairs of these shared then separate */
->> > diff --git a/include/linux/iio/types.h b/include/linux/iio/types.h
->> > index 003638d..ae51780 100644
->> > --- a/include/linux/iio/types.h
->> > +++ b/include/linux/iio/types.h
->> > @@ -65,6 +65,7 @@ enum iio_modifier {
->> >  	IIO_MOD_JOGGING,
->> >  	IIO_MOD_WALKING,
->> >  	IIO_MOD_STILL,
->> > +	IIO_MOD_PED_STEPS,
->> >  };
->> >
->> >  enum iio_event_type {
->> >
-
--- 
-Sent from my Android phone with K-9 Mail. Please excuse my brevity.
+> ---
+>  drivers/iio/industrialio-core.c | 1 +
+>  include/linux/iio/types.h       | 1 +
+>  2 files changed, 2 insertions(+)
+> 
+> diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+> index af3e76d..67e8561 100644
+> --- a/drivers/iio/industrialio-core.c
+> +++ b/drivers/iio/industrialio-core.c
+> @@ -70,6 +70,7 @@ static const char * const iio_chan_type_name_spec[] = {
+>  	[IIO_CCT] = "cct",
+>  	[IIO_PRESSURE] = "pressure",
+>  	[IIO_HUMIDITYRELATIVE] = "humidityrelative",
+> +	[IIO_ACTIVITY] = "activity",
+>  };
+>  
+>  static const char * const iio_modifier_names[] = {
+> diff --git a/include/linux/iio/types.h b/include/linux/iio/types.h
+> index 4a2af8a..d58769a 100644
+> --- a/include/linux/iio/types.h
+> +++ b/include/linux/iio/types.h
+> @@ -30,6 +30,7 @@ enum iio_chan_type {
+>  	IIO_CCT,
+>  	IIO_PRESSURE,
+>  	IIO_HUMIDITYRELATIVE,
+> +	IIO_ACTIVITY,
+>  };
+>  
+>  enum iio_modifier {
+> 
