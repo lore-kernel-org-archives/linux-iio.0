@@ -1,113 +1,94 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:57812 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:58132 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751128AbaJDLvb (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 4 Oct 2014 07:51:31 -0400
-Message-ID: <542FDF41.2040106@kernel.org>
-Date: Sat, 04 Oct 2014 12:51:29 +0100
+	with ESMTP id S1750959AbaJDMxN (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 4 Oct 2014 08:53:13 -0400
+Message-ID: <542FEDB7.3050302@kernel.org>
+Date: Sat, 04 Oct 2014 13:53:11 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: "Ivan T. Ivanov" <iivanov@mm-sol.com>,
-	Stanimir Varbanov <svarbanov@mm-sol.com>
-CC: lars <lars@metafoo.de>, sachin.kamat@linaro.org,
-	srinivas.pandruvada@linux.intel.com, linux-iio@vger.kernel.org,
-	linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
-	devicetree@vger.kernel.org
-Subject: Re: [PATCH v3 1/2] iio: vadc: Qualcomm SPMI PMIC voltage ADC driver
-References: <1411563415-11933-1-git-send-email-svarbanov@mm-sol.com>	 <1411563415-11933-2-git-send-email-svarbanov@mm-sol.com>	 <542D1B11.8070600@mm-sol.com> <1412251686.1027.15.camel@iivanov-dev>
-In-Reply-To: <1412251686.1027.15.camel@iivanov-dev>
-Content-Type: text/plain; charset=utf-8
+To: Daniel Baluta <daniel.baluta@intel.com>, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+CC: irina.tirdea@intel.com
+Subject: Re: [RFC PATCH 4/8] iio: core: Introduce pedometer STEP counter modifier
+References: <1412257439-15683-1-git-send-email-daniel.baluta@intel.com> <1412257439-15683-5-git-send-email-daniel.baluta@intel.com>
+In-Reply-To: <1412257439-15683-5-git-send-email-daniel.baluta@intel.com>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 02/10/14 13:08, Ivan T. Ivanov wrote:
-> +iio maintainers
+On 02/10/14 14:43, Daniel Baluta wrote:
+> From: Irina Tirdea <irina.tirdea@intel.com>
 > 
-> On Thu, 2014-10-02 at 12:29 +0300, Ivan T. Ivanov wrote:
->> Hi Stan,
->>
->> On 09/24/2014 03:56 PM, Stanimir Varbanov wrote:
->>
->> <snip>
->>
->>> +static int vadc_get_dt_data(struct vadc_priv *vadc, struct device_node *node)
->>> +{
->>> +	struct iio_chan_spec *iio_chan = vadc->iio_chans;
->>> +	const struct vadc_channels *vadc_chan;
->>> +	struct vadc_channel_prop prop;
->>> +	struct device_node *child;
->>> +	int ret, index = 0;
->>> +
->>> +	for_each_available_child_of_node(node, child) {
->>> +		ret = vadc_get_dt_channel_data(vadc->dev, &prop, child);
->>> +		if (ret)
->>> +			return ret;
->>> +
->>> +		vadc->chan_props[index] = prop;
->>> +
->>> +		vadc_chan = &vadc_chans[prop.channel];
->>> +
->>> +		iio_chan->channel = prop.channel;
->>> +		iio_chan->datasheet_name = vadc_chan->datasheet_name;
->>> +		iio_chan->info_mask_separate = vadc_chan->info_mask;
->>> +		iio_chan->type = vadc_chan->type;
->>> +		iio_chan->indexed = 1;
->>> +		iio_chan->scan_type.sign = 's';
->>> +		iio_chan->scan_type.realbits = 15;
->>> +		iio_chan->scan_type.storagebits = 16;
->>> +		iio_chan->address = index++;
->>> +
->>> +		iio_chan++;
->>> +	}
->>> +
->>> +	return 0;
->>> +}
->>> +
->>
->> <snip>
->>
->>> +static int vadc_probe(struct platform_device *pdev)
->>> +{
->>
->> <snip>
->>
->>> +
->>> +	indio_dev->dev.parent = dev;
->>> +	indio_dev->dev.of_node = node;
->>> +	indio_dev->name = pdev->name;
->>> +	indio_dev->modes = INDIO_DIRECT_MODE;
->>> +	indio_dev->info = &vadc_info;
->>> +	indio_dev->channels = vadc->iio_chans;
->>> +	indio_dev->num_channels = vadc->nchannels;
->>
->> This will not work as we thought. Registration will be fine and entries
->> in sysfs are created as expected, but this is breaking numbering scheme
->> for client drivers. For us the problem is that iio framework expect channels
->> numbering to be linear and channel number should not be greater than
->> channel count. For example even if die temperature channel is always 8, if
->> I describe only 5 channels in DTS files (4 for reference points measurement)
->> and 1 for die temperature, clients could not get OF reference to 
->> temperature
->> channel using io-channels = <&pm8941_vadc 8>;
->>
->> Jonathan, please, could you advise us.
-I'd like to let the solution you proposed sit on the list a little longer.
-It seems fairly sensible, but lets see what others suggest.
+> One of the functionalities of a pedometer is a step counter.
+> The step counter needs to be enabled and then it will count the steps
+> in its hardware register. Whenever the applications need to check
+> the step count, they will read the step counter register.
+> 
+> To support this functionality we need a steps attribute that
+> will export the number of steps.
+> 
+> For more information on the pedometer requirements for Android see
+> http://source.android.com/devices/sensors/composite_sensors.html#counter.
+> 
+> A device that has the pedometer functionality this interface needs to
+> support is Freescale's MMA9553L:
+> http://www.freescale.com/files/sensors/doc/ref_manual/MMA9553LSWRM.pdf
+> 
+> Signed-off-by: Irina Tirdea <irina.tirdea@intel.com>
+> Signed-off-by: Daniel Baluta <daniel.baluta@intel.com>
+I'm not keen on multiplexing different types of data onto a single activity type.
+Steps is well enough defined on it's own to have it's own channel type.
 
-Jonathan
->>
->> Regards,
->> Ivan
->>
->>> +
->>> +	return devm_iio_device_register(dev, indio_dev);
->>> +}
->>> +
->>>
->>
->> --
->> To unsubscribe from this list: send the line "unsubscribe linux-arm-msm" in
->> the body of a message to majordomo@vger.kernel.org
->> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+in_steps_input would be fine by me.  I suppose steps might mean something else
+though...
+
+> ---
+>  Documentation/ABI/testing/sysfs-bus-iio | 7 +++++++
+>  drivers/iio/industrialio-core.c         | 1 +
+>  include/linux/iio/types.h               | 1 +
+>  3 files changed, 9 insertions(+)
 > 
+> diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
+> index 070346d..feacb45 100644
+> --- a/Documentation/ABI/testing/sysfs-bus-iio
+> +++ b/Documentation/ABI/testing/sysfs-bus-iio
+> @@ -949,6 +949,13 @@ Description:
+>  		and the relevant _type attributes to establish the data storage
+>  		format.
+>  
+> +What:		/sys/.../iio:deviceX/in_activity_steps_raw
+> +KernelVersion:	3.17
+> +Contact:	linux-iio@vger.kernel.org
+> +Description:
+> +		This attribute is used to read the number of steps taken by the user
+> +		since the last reboot while activated.
+> +
+>  What:		/sys/.../iio:deviceX/in_anglvel_z_quadrature_correction_raw
+>  KernelVersion:	2.6.38
+>  Contact:	linux-iio@vger.kernel.org
+> diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+> index e453ef9..935a8a1 100644
+> --- a/drivers/iio/industrialio-core.c
+> +++ b/drivers/iio/industrialio-core.c
+> @@ -96,6 +96,7 @@ static const char * const iio_modifier_names[] = {
+>  	[IIO_MOD_JOGGING] = "jogging",
+>  	[IIO_MOD_WALKING] = "walking",
+>  	[IIO_MOD_STILL] = "still",
+> +	[IIO_MOD_PED_STEPS] = "steps",
+>  };
+>  
+>  /* relies on pairs of these shared then separate */
+> diff --git a/include/linux/iio/types.h b/include/linux/iio/types.h
+> index 003638d..ae51780 100644
+> --- a/include/linux/iio/types.h
+> +++ b/include/linux/iio/types.h
+> @@ -65,6 +65,7 @@ enum iio_modifier {
+>  	IIO_MOD_JOGGING,
+>  	IIO_MOD_WALKING,
+>  	IIO_MOD_STILL,
+> +	IIO_MOD_PED_STEPS,
+>  };
+>  
+>  enum iio_event_type {
 > 
