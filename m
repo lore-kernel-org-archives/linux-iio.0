@@ -1,231 +1,156 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:57403 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:57405 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750756AbaJDK0R (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 4 Oct 2014 06:26:17 -0400
-Message-ID: <542FCB47.8040500@kernel.org>
-Date: Sat, 04 Oct 2014 11:26:15 +0100
+	with ESMTP id S1750756AbaJDK0j (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 4 Oct 2014 06:26:39 -0400
+Message-ID: <542FCB5D.60101@kernel.org>
+Date: Sat, 04 Oct 2014 11:26:37 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
 To: Denis CIOCCA <denis.ciocca@st.com>
 CC: linux-iio@vger.kernel.org
-Subject: Re: [PATCH 6/7] iio:pressure: Changed pressure data variable name
- to press_data
-References: <1412350541-29431-1-git-send-email-denis.ciocca@st.com> <1412350541-29431-6-git-send-email-denis.ciocca@st.com>
-In-Reply-To: <1412350541-29431-6-git-send-email-denis.ciocca@st.com>
+Subject: Re: [PATCH 7/7] iio:common: Set the device pointer into ST common
+ sensors library
+References: <1412350541-29431-1-git-send-email-denis.ciocca@st.com> <1412350541-29431-7-git-send-email-denis.ciocca@st.com>
+In-Reply-To: <1412350541-29431-7-git-send-email-denis.ciocca@st.com>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
 On 03/10/14 16:35, Denis CIOCCA wrote:
-> This patch fix pressure data variable name. Usually pdata name
-> it is used for platform data.
-> 
 > Signed-off-by: Denis Ciocca <denis.ciocca@st.com>
-Applied
+Applied.
 > ---
->  drivers/iio/pressure/st_pressure_buffer.c | 12 +++++-----
->  drivers/iio/pressure/st_pressure_core.c   | 40 ++++++++++++++++---------------
->  drivers/iio/pressure/st_pressure_i2c.c    | 10 ++++----
->  drivers/iio/pressure/st_pressure_spi.c    | 10 ++++----
->  4 files changed, 37 insertions(+), 35 deletions(-)
+>  drivers/iio/accel/st_accel_i2c.c               | 1 -
+>  drivers/iio/accel/st_accel_spi.c               | 1 -
+>  drivers/iio/common/st_sensors/st_sensors_i2c.c | 1 +
+>  drivers/iio/common/st_sensors/st_sensors_spi.c | 1 +
+>  drivers/iio/gyro/st_gyro_i2c.c                 | 1 -
+>  drivers/iio/gyro/st_gyro_spi.c                 | 1 -
+>  drivers/iio/magnetometer/st_magn_i2c.c         | 1 -
+>  drivers/iio/magnetometer/st_magn_spi.c         | 1 -
+>  drivers/iio/pressure/st_pressure_i2c.c         | 1 -
+>  drivers/iio/pressure/st_pressure_spi.c         | 1 -
+>  10 files changed, 2 insertions(+), 8 deletions(-)
 > 
-> diff --git a/drivers/iio/pressure/st_pressure_buffer.c b/drivers/iio/pressure/st_pressure_buffer.c
-> index b37b1c9..2ff53f2 100644
-> --- a/drivers/iio/pressure/st_pressure_buffer.c
-> +++ b/drivers/iio/pressure/st_pressure_buffer.c
-> @@ -38,10 +38,10 @@ static int st_press_buffer_preenable(struct iio_dev *indio_dev)
->  static int st_press_buffer_postenable(struct iio_dev *indio_dev)
->  {
->  	int err;
-> -	struct st_sensor_data *pdata = iio_priv(indio_dev);
-> +	struct st_sensor_data *press_data = iio_priv(indio_dev);
+> diff --git a/drivers/iio/accel/st_accel_i2c.c b/drivers/iio/accel/st_accel_i2c.c
+> index 40adc7e..c7246bd 100644
+> --- a/drivers/iio/accel/st_accel_i2c.c
+> +++ b/drivers/iio/accel/st_accel_i2c.c
+> @@ -79,7 +79,6 @@ static int st_accel_i2c_probe(struct i2c_client *client,
+>  		return -ENOMEM;
 >  
-> -	pdata->buffer_data = kmalloc(indio_dev->scan_bytes, GFP_KERNEL);
-> -	if (pdata->buffer_data == NULL) {
-> +	press_data->buffer_data = kmalloc(indio_dev->scan_bytes, GFP_KERNEL);
-> +	if (press_data->buffer_data == NULL) {
->  		err = -ENOMEM;
->  		goto allocate_memory_error;
->  	}
-> @@ -53,7 +53,7 @@ static int st_press_buffer_postenable(struct iio_dev *indio_dev)
->  	return err;
+>  	adata = iio_priv(indio_dev);
+> -	adata->dev = &client->dev;
+>  	st_sensors_of_i2c_probe(client, st_accel_of_match);
 >  
->  st_press_buffer_postenable_error:
-> -	kfree(pdata->buffer_data);
-> +	kfree(press_data->buffer_data);
->  allocate_memory_error:
->  	return err;
+>  	st_sensors_i2c_configure(indio_dev, client, adata);
+> diff --git a/drivers/iio/accel/st_accel_spi.c b/drivers/iio/accel/st_accel_spi.c
+> index 2090d80..12ec293 100644
+> --- a/drivers/iio/accel/st_accel_spi.c
+> +++ b/drivers/iio/accel/st_accel_spi.c
+> @@ -29,7 +29,6 @@ static int st_accel_spi_probe(struct spi_device *spi)
+>  		return -ENOMEM;
+>  
+>  	adata = iio_priv(indio_dev);
+> -	adata->dev = &spi->dev;
+>  
+>  	st_sensors_spi_configure(indio_dev, spi, adata);
+>  
+> diff --git a/drivers/iio/common/st_sensors/st_sensors_i2c.c b/drivers/iio/common/st_sensors/st_sensors_i2c.c
+> index bb6f308..98cfee29 100644
+> --- a/drivers/iio/common/st_sensors/st_sensors_i2c.c
+> +++ b/drivers/iio/common/st_sensors/st_sensors_i2c.c
+> @@ -72,6 +72,7 @@ void st_sensors_i2c_configure(struct iio_dev *indio_dev,
+>  	indio_dev->dev.parent = &client->dev;
+>  	indio_dev->name = client->name;
+>  
+> +	sdata->dev = &client->dev;
+>  	sdata->tf = &st_sensors_tf_i2c;
+>  	sdata->get_irq_data_ready = st_sensors_i2c_get_irq;
 >  }
-> @@ -61,7 +61,7 @@ allocate_memory_error:
->  static int st_press_buffer_predisable(struct iio_dev *indio_dev)
->  {
->  	int err;
-> -	struct st_sensor_data *pdata = iio_priv(indio_dev);
-> +	struct st_sensor_data *press_data = iio_priv(indio_dev);
+> diff --git a/drivers/iio/common/st_sensors/st_sensors_spi.c b/drivers/iio/common/st_sensors/st_sensors_spi.c
+> index 251baf6..78a6a1a 100644
+> --- a/drivers/iio/common/st_sensors/st_sensors_spi.c
+> +++ b/drivers/iio/common/st_sensors/st_sensors_spi.c
+> @@ -111,6 +111,7 @@ void st_sensors_spi_configure(struct iio_dev *indio_dev,
+>  	indio_dev->dev.parent = &spi->dev;
+>  	indio_dev->name = spi->modalias;
 >  
->  	err = iio_triggered_buffer_predisable(indio_dev);
->  	if (err < 0)
-> @@ -70,7 +70,7 @@ static int st_press_buffer_predisable(struct iio_dev *indio_dev)
->  	err = st_sensors_set_enable(indio_dev, false);
->  
->  st_press_buffer_predisable_error:
-> -	kfree(pdata->buffer_data);
-> +	kfree(press_data->buffer_data);
->  	return err;
+> +	sdata->dev = &spi->dev;
+>  	sdata->tf = &st_sensors_tf_spi;
+>  	sdata->get_irq_data_ready = st_sensors_spi_get_irq;
 >  }
+> diff --git a/drivers/iio/gyro/st_gyro_i2c.c b/drivers/iio/gyro/st_gyro_i2c.c
+> index 94d01fb..64480b1 100644
+> --- a/drivers/iio/gyro/st_gyro_i2c.c
+> +++ b/drivers/iio/gyro/st_gyro_i2c.c
+> @@ -67,7 +67,6 @@ static int st_gyro_i2c_probe(struct i2c_client *client,
+>  		return -ENOMEM;
 >  
-> diff --git a/drivers/iio/pressure/st_pressure_core.c b/drivers/iio/pressure/st_pressure_core.c
-> index ee2ef7d..97baf40d 100644
-> --- a/drivers/iio/pressure/st_pressure_core.c
-> +++ b/drivers/iio/pressure/st_pressure_core.c
-> @@ -333,7 +333,7 @@ static int st_press_read_raw(struct iio_dev *indio_dev,
->  							int *val2, long mask)
->  {
->  	int err;
-> -	struct st_sensor_data *pdata = iio_priv(indio_dev);
-> +	struct st_sensor_data *press_data = iio_priv(indio_dev);
+>  	gdata = iio_priv(indio_dev);
+> -	gdata->dev = &client->dev;
+>  	st_sensors_of_i2c_probe(client, st_gyro_of_match);
 >  
->  	switch (mask) {
->  	case IIO_CHAN_INFO_RAW:
-> @@ -347,10 +347,10 @@ static int st_press_read_raw(struct iio_dev *indio_dev,
+>  	st_sensors_i2c_configure(indio_dev, client, gdata);
+> diff --git a/drivers/iio/gyro/st_gyro_spi.c b/drivers/iio/gyro/st_gyro_spi.c
+> index 3e7a01a..e59bead 100644
+> --- a/drivers/iio/gyro/st_gyro_spi.c
+> +++ b/drivers/iio/gyro/st_gyro_spi.c
+> @@ -29,7 +29,6 @@ static int st_gyro_spi_probe(struct spi_device *spi)
+>  		return -ENOMEM;
 >  
->  		switch (ch->type) {
->  		case IIO_PRESSURE:
-> -			*val2 = pdata->current_fullscale->gain;
-> +			*val2 = press_data->current_fullscale->gain;
->  			break;
->  		case IIO_TEMP:
-> -			*val2 = pdata->current_fullscale->gain2;
-> +			*val2 = press_data->current_fullscale->gain2;
->  			break;
->  		default:
->  			err = -EINVAL;
-> @@ -371,7 +371,7 @@ static int st_press_read_raw(struct iio_dev *indio_dev,
+>  	gdata = iio_priv(indio_dev);
+> -	gdata->dev = &spi->dev;
 >  
->  		return IIO_VAL_FRACTIONAL;
->  	case IIO_CHAN_INFO_SAMP_FREQ:
-> -		*val = pdata->odr;
-> +		*val = press_data->odr;
->  		return IIO_VAL_INT;
->  	default:
->  		return -EINVAL;
-> @@ -411,8 +411,8 @@ static const struct iio_trigger_ops st_press_trigger_ops = {
+>  	st_sensors_spi_configure(indio_dev, spi, gdata);
 >  
->  int st_press_common_probe(struct iio_dev *indio_dev)
->  {
-> -	struct st_sensor_data *pdata = iio_priv(indio_dev);
-> -	int irq = pdata->get_irq_data_ready(indio_dev);
-> +	struct st_sensor_data *press_data = iio_priv(indio_dev);
-> +	int irq = press_data->get_irq_data_ready(indio_dev);
->  	int err;
+> diff --git a/drivers/iio/magnetometer/st_magn_i2c.c b/drivers/iio/magnetometer/st_magn_i2c.c
+> index f8a6823..92e5c15 100644
+> --- a/drivers/iio/magnetometer/st_magn_i2c.c
+> +++ b/drivers/iio/magnetometer/st_magn_i2c.c
+> @@ -51,7 +51,6 @@ static int st_magn_i2c_probe(struct i2c_client *client,
+>  		return -ENOMEM;
 >  
->  	indio_dev->modes = INDIO_DIRECT_MODE;
-> @@ -426,23 +426,25 @@ int st_press_common_probe(struct iio_dev *indio_dev)
->  	if (err < 0)
->  		return err;
+>  	mdata = iio_priv(indio_dev);
+> -	mdata->dev = &client->dev;
+>  	st_sensors_of_i2c_probe(client, st_magn_of_match);
 >  
-> -	pdata->num_data_channels = ST_PRESS_NUMBER_DATA_CHANNELS;
-> -	pdata->multiread_bit = pdata->sensor_settings->multi_read_bit;
-> -	indio_dev->channels = pdata->sensor_settings->ch;
-> -	indio_dev->num_channels = pdata->sensor_settings->num_ch;
-> +	press_data->num_data_channels = ST_PRESS_NUMBER_DATA_CHANNELS;
-> +	press_data->multiread_bit = press_data->sensor_settings->multi_read_bit;
-> +	indio_dev->channels = press_data->sensor_settings->ch;
-> +	indio_dev->num_channels = press_data->sensor_settings->num_ch;
+>  	st_sensors_i2c_configure(indio_dev, client, mdata);
+> diff --git a/drivers/iio/magnetometer/st_magn_spi.c b/drivers/iio/magnetometer/st_magn_spi.c
+> index f642142..7adacf1 100644
+> --- a/drivers/iio/magnetometer/st_magn_spi.c
+> +++ b/drivers/iio/magnetometer/st_magn_spi.c
+> @@ -29,7 +29,6 @@ static int st_magn_spi_probe(struct spi_device *spi)
+>  		return -ENOMEM;
 >  
-> -	if (pdata->sensor_settings->fs.addr != 0)
-> -		pdata->current_fullscale = (struct st_sensor_fullscale_avl *)
-> -			&pdata->sensor_settings->fs.fs_avl[0];
-> +	if (press_data->sensor_settings->fs.addr != 0)
-> +		press_data->current_fullscale =
-> +			(struct st_sensor_fullscale_avl *)
-> +				&press_data->sensor_settings->fs.fs_avl[0];
+>  	mdata = iio_priv(indio_dev);
+> -	mdata->dev = &spi->dev;
 >  
-> -	pdata->odr = pdata->sensor_settings->odr.odr_avl[0].hz;
-> +	press_data->odr = press_data->sensor_settings->odr.odr_avl[0].hz;
+>  	st_sensors_spi_configure(indio_dev, spi, mdata);
 >  
->  	/* Some devices don't support a data ready pin. */
-> -	if (!pdata->dev->platform_data && pdata->sensor_settings->drdy_irq.addr)
-> -		pdata->dev->platform_data =
-> +	if (!press_data->dev->platform_data &&
-> +				press_data->sensor_settings->drdy_irq.addr)
-> +		press_data->dev->platform_data =
->  			(struct st_sensors_platform_data *)&default_press_pdata;
->  
-> -	err = st_sensors_init_sensor(indio_dev, pdata->dev->platform_data);
-> +	err = st_sensors_init_sensor(indio_dev, press_data->dev->platform_data);
->  	if (err < 0)
->  		return err;
->  
-> @@ -478,12 +480,12 @@ EXPORT_SYMBOL(st_press_common_probe);
->  
->  void st_press_common_remove(struct iio_dev *indio_dev)
->  {
-> -	struct st_sensor_data *pdata = iio_priv(indio_dev);
-> +	struct st_sensor_data *press_data = iio_priv(indio_dev);
->  
->  	st_sensors_power_disable(indio_dev);
->  
->  	iio_device_unregister(indio_dev);
-> -	if (pdata->get_irq_data_ready(indio_dev) > 0)
-> +	if (press_data->get_irq_data_ready(indio_dev) > 0)
->  		st_sensors_deallocate_trigger(indio_dev);
->  
->  	st_press_deallocate_ring(indio_dev);
 > diff --git a/drivers/iio/pressure/st_pressure_i2c.c b/drivers/iio/pressure/st_pressure_i2c.c
-> index dd73351..8859e93 100644
+> index 8859e93..137788b 100644
 > --- a/drivers/iio/pressure/st_pressure_i2c.c
 > +++ b/drivers/iio/pressure/st_pressure_i2c.c
-> @@ -43,18 +43,18 @@ static int st_press_i2c_probe(struct i2c_client *client,
->  						const struct i2c_device_id *id)
->  {
->  	struct iio_dev *indio_dev;
-> -	struct st_sensor_data *pdata;
-> +	struct st_sensor_data *press_data;
->  	int err;
->  
-> -	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*pdata));
-> +	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*press_data));
->  	if (!indio_dev)
+> @@ -51,7 +51,6 @@ static int st_press_i2c_probe(struct i2c_client *client,
 >  		return -ENOMEM;
 >  
-> -	pdata = iio_priv(indio_dev);
-> -	pdata->dev = &client->dev;
-> +	press_data = iio_priv(indio_dev);
-> +	press_data->dev = &client->dev;
+>  	press_data = iio_priv(indio_dev);
+> -	press_data->dev = &client->dev;
 >  	st_sensors_of_i2c_probe(client, st_press_of_match);
 >  
-> -	st_sensors_i2c_configure(indio_dev, client, pdata);
-> +	st_sensors_i2c_configure(indio_dev, client, press_data);
->  
->  	err = st_press_common_probe(indio_dev);
->  	if (err < 0)
+>  	st_sensors_i2c_configure(indio_dev, client, press_data);
 > diff --git a/drivers/iio/pressure/st_pressure_spi.c b/drivers/iio/pressure/st_pressure_spi.c
-> index 98c3e8e..10c9624 100644
+> index 10c9624..1ffa6d4 100644
 > --- a/drivers/iio/pressure/st_pressure_spi.c
 > +++ b/drivers/iio/pressure/st_pressure_spi.c
-> @@ -21,17 +21,17 @@
->  static int st_press_spi_probe(struct spi_device *spi)
->  {
->  	struct iio_dev *indio_dev;
-> -	struct st_sensor_data *pdata;
-> +	struct st_sensor_data *press_data;
->  	int err;
->  
-> -	indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*pdata));
-> +	indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*press_data));
->  	if (indio_dev == NULL)
+> @@ -29,7 +29,6 @@ static int st_press_spi_probe(struct spi_device *spi)
 >  		return -ENOMEM;
 >  
-> -	pdata = iio_priv(indio_dev);
-> -	pdata->dev = &spi->dev;
-> +	press_data = iio_priv(indio_dev);
-> +	press_data->dev = &spi->dev;
+>  	press_data = iio_priv(indio_dev);
+> -	press_data->dev = &spi->dev;
 >  
-> -	st_sensors_spi_configure(indio_dev, spi, pdata);
-> +	st_sensors_spi_configure(indio_dev, spi, press_data);
+>  	st_sensors_spi_configure(indio_dev, spi, press_data);
 >  
->  	err = st_press_common_probe(indio_dev);
->  	if (err < 0)
 > 
