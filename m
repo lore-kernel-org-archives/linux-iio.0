@@ -1,68 +1,60 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:57738 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:57428 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750959AbaJDLes (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 4 Oct 2014 07:34:48 -0400
-Message-ID: <542FDB57.9020308@kernel.org>
-Date: Sat, 04 Oct 2014 12:34:47 +0100
+	with ESMTP id S1750756AbaJDKaf (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 4 Oct 2014 06:30:35 -0400
+Message-ID: <542FCC46.1050700@kernel.org>
+Date: Sat, 04 Oct 2014 11:30:30 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Fabio Estevam <festevam@gmail.com>
-CC: B38611@freescale.com, linux-iio@vger.kernel.org,
-	Fabio Estevam <fabio.estevam@freescale.com>
-Subject: Re: [PATCH 5/5] iio: adc: vf610: Remove CONFIG_PM_SLEEP ifdef's
-References: <1412299526-1331-1-git-send-email-festevam@gmail.com> <1412299526-1331-5-git-send-email-festevam@gmail.com>
-In-Reply-To: <1412299526-1331-5-git-send-email-festevam@gmail.com>
+To: Peter Meerwald <pmeerw@pmeerw.net>,
+	Vlad Dogaru <vlad.dogaru@intel.com>
+CC: linux-iio@vger.kernel.org
+Subject: Re: [PATCH] iio: add bmp280 pressure and temperature driver
+References: <1412278823-10870-1-git-send-email-vlad.dogaru@intel.com> <alpine.DEB.2.01.1410022146100.8592@pmeerw.net> <20141003101619.GA17511@vdogaru> <alpine.DEB.2.01.1410031641190.17977@pmeerw.net>
+In-Reply-To: <alpine.DEB.2.01.1410031641190.17977@pmeerw.net>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 03/10/14 02:25, Fabio Estevam wrote:
-> From: Fabio Estevam <fabio.estevam@freescale.com>
+On 03/10/14 15:44, Peter Meerwald wrote:
 > 
-> Mark the suspend/resume functions as '__maybe_unused' so that we can get rid
-> of the CONFIG_PM_SLEEP ifdef.
+>>>> +static int bmp280_read_raw(struct iio_dev *indio_dev,
+>>>> +			   struct iio_chan_spec const *chan,
+>>>> +			   int *val, int *val2, long mask)
+>>>> +{
+>>>> +	int ret;
+>>>> +	struct bmp280_data *data = iio_priv(indio_dev);
+>>>> +
+>>>> +	mutex_lock(&data->lock);
+>>>
+>>> locking is only needed for _RAW
+>>>
+>>>> +
+>>>> +	switch (mask) {
+>>>> +	case IIO_CHAN_INFO_RAW:
+>>>
+>>> I think this should be _PROCESSED, not _RAW;
+>>> there is calibration and all kind of scaling done internally
+>>
+>> Just to make sure here:  If I use _PROCESSED, I need to apply scale in
+>> kernel space and remove _SCALE, correct?
 > 
-> Signed-off-by: Fabio Estevam <fabio.estevam@freescale.com>
-This is always debatable.  Personally my view is that it's actually
-slightly clearer what is going on with the ifdef than the maybe_unused
-so my gut feeling is to leave it alone.  Now if we get strong sentiments
-the other way I might change my mind!
-
-
-> ---
->  drivers/iio/adc/vf610_adc.c | 6 ++----
->  1 file changed, 2 insertions(+), 4 deletions(-)
+> yes
 > 
-> diff --git a/drivers/iio/adc/vf610_adc.c b/drivers/iio/adc/vf610_adc.c
-> index 6164558..bae9638 100644
-> --- a/drivers/iio/adc/vf610_adc.c
-> +++ b/drivers/iio/adc/vf610_adc.c
-> @@ -650,8 +650,7 @@ static int vf610_adc_remove(struct platform_device *pdev)
->  	return 0;
->  }
->  
-> -#ifdef CONFIG_PM_SLEEP
-> -static int vf610_adc_suspend(struct device *dev)
-> +static int __maybe_unused vf610_adc_suspend(struct device *dev)
->  {
->  	struct iio_dev *indio_dev = dev_get_drvdata(dev);
->  	struct vf610_adc *info = iio_priv(indio_dev);
-> @@ -668,7 +667,7 @@ static int vf610_adc_suspend(struct device *dev)
->  	return 0;
->  }
->  
-> -static int vf610_adc_resume(struct device *dev)
-> +static int __maybe_unused vf610_adc_resume(struct device *dev)
->  {
->  	struct iio_dev *indio_dev = dev_get_drvdata(dev);
->  	struct vf610_adc *info = iio_priv(indio_dev);
-> @@ -690,7 +689,6 @@ disable_reg:
->  	regulator_disable(info->vref);
->  	return ret;
->  }
-> -#endif
->  
->  static SIMPLE_DEV_PM_OPS(vf610_adc_pm_ops, vf610_adc_suspend, vf610_adc_resume);
->  
+> since pressure is using a temperature read and calibration data, it hardly 
+> qualifies as 'raw'
+I'd typically be happy with this if there was a significant advantage in
+leaving the application of the final scale to userspace.  This would either
+be in terms of time, accuracy or simplicity (as floating point math would
+be available in userspace).  Hence the channel doesn't have to be completely
+'raw'.  Having said that, looks like here it makes sense to just do the *10 in
+kernel space ;)
+> 
+>> I will address the rest of your observations in v2, once I get a chance
+>> to test using the device on Monday.
+>>
+>> Thank you for the review.
+> 
+> p.
 > 
