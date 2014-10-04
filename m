@@ -1,98 +1,49 @@
-Return-Path: <daniel.baluta@intel.com>
-From: Daniel Baluta <daniel.baluta@intel.com>
-To: jic23@kernel.org,
-	linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Cc: daniel.baluta@intel.com,
-	irina.tirdea@intel.com
-Subject: [RFC PATCH 8/8] iio: event_monitor: Add support for activity channel
-Date: Thu,  2 Oct 2014 16:43:59 +0300
-Message-Id: <1412257439-15683-9-git-send-email-daniel.baluta@intel.com>
-In-Reply-To: <1412257439-15683-1-git-send-email-daniel.baluta@intel.com>
-References: <1412257439-15683-1-git-send-email-daniel.baluta@intel.com>
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:57693 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750973AbaJDL2V (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 4 Oct 2014 07:28:21 -0400
+Message-ID: <542FD9D3.6040909@kernel.org>
+Date: Sat, 04 Oct 2014 12:28:19 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+MIME-Version: 1.0
+To: Fabio Estevam <festevam@gmail.com>
+CC: B38611@freescale.com, linux-iio@vger.kernel.org,
+	Fabio Estevam <fabio.estevam@freescale.com>
+Subject: Re: [PATCH 2/5] iio: adc: vf610: Return the error code directly
+References: <1412299526-1331-1-git-send-email-festevam@gmail.com> <1412299526-1331-2-git-send-email-festevam@gmail.com>
+In-Reply-To: <1412299526-1331-2-git-send-email-festevam@gmail.com>
+Content-Type: text/plain; charset=windows-1252
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-We have the following testing scenario:
+On 03/10/14 02:25, Fabio Estevam wrote:
+> From: Fabio Estevam <fabio.estevam@freescale.com>
+> 
+> There is no need to pass the error clock code to the variable 'ret'.
+> 
+> Just return the error directly.
+> 
+> Signed-off-by: Fabio Estevam <fabio.estevam@freescale.com>
+Applied to the togreg branch of iio.git.
 
-$ insmod iio_dummy_evgen.ko
-$ insmod iio_dummy.ko
-
-$ ./iio_event_monitor /dev/iio:device0
-Event: time: 1412254756207353948, type: voltage, channel: 0, evtype: thresh, direction: rising
-Event: time: 1412254762455172908, type: activity(running), channel: 0, evtype: motion, direction: rising
-Event: time: 1412254770823830774, type: activity, channel: 0, evtype: step_detect, direction: rising
-
-$ echo 0 > /sys/bus/iio/devices/iio_evgen/poke_ev0
-$ echo 1 > /sys/bus/iio/devices/iio_evgen/poke_ev0
-$ echo 2 > /sys/bus/iio/devices/iio_evgen/poke_ev0
-
-Signed-off-by: Irina Tirdea <irina.tirdea@intel.com>
-Signed-off-by: Daniel Baluta <daniel.baluta@intel.com>
----
- drivers/staging/iio/Documentation/iio_event_monitor.c | 16 ++++++++++++++++
- 1 file changed, 16 insertions(+)
-
-diff --git a/drivers/staging/iio/Documentation/iio_event_monitor.c b/drivers/staging/iio/Documentation/iio_event_monitor.c
-index 569d6f8..5df7662 100644
---- a/drivers/staging/iio/Documentation/iio_event_monitor.c
-+++ b/drivers/staging/iio/Documentation/iio_event_monitor.c
-@@ -49,6 +49,7 @@ static const char * const iio_chan_type_name_spec[] = {
- 	[IIO_CCT] = "cct",
- 	[IIO_PRESSURE] = "pressure",
- 	[IIO_HUMIDITYRELATIVE] = "humidityrelative",
-+	[IIO_ACTIVITY] = "activity",
- };
- 
- static const char * const iio_ev_type_text[] = {
-@@ -57,6 +58,8 @@ static const char * const iio_ev_type_text[] = {
- 	[IIO_EV_TYPE_ROC] = "roc",
- 	[IIO_EV_TYPE_THRESH_ADAPTIVE] = "thresh_adaptive",
- 	[IIO_EV_TYPE_MAG_ADAPTIVE] = "mag_adaptive",
-+	[IIO_EV_TYPE_MOTION] = "motion",
-+	[IIO_EV_TYPE_STEP_DETECT] = "step_detect",
- };
- 
- static const char * const iio_ev_dir_text[] = {
-@@ -79,6 +82,11 @@ static const char * const iio_modifier_names[] = {
- 	[IIO_MOD_LIGHT_RED] = "red",
- 	[IIO_MOD_LIGHT_GREEN] = "green",
- 	[IIO_MOD_LIGHT_BLUE] = "blue",
-+	[IIO_MOD_RUNNING] = "running",
-+	[IIO_MOD_JOGGING] = "jogging",
-+	[IIO_MOD_WALKING] = "walking",
-+	[IIO_MOD_STILL] = "still",
-+	[IIO_MOD_PED_STEPS] = "steps",
- };
- 
- static bool event_is_known(struct iio_event_data *event)
-@@ -108,6 +116,7 @@ static bool event_is_known(struct iio_event_data *event)
- 	case IIO_CCT:
- 	case IIO_PRESSURE:
- 	case IIO_HUMIDITYRELATIVE:
-+	case IIO_ACTIVITY:
- 		break;
- 	default:
- 		return false;
-@@ -126,6 +135,11 @@ static bool event_is_known(struct iio_event_data *event)
- 	case IIO_MOD_LIGHT_RED:
- 	case IIO_MOD_LIGHT_GREEN:
- 	case IIO_MOD_LIGHT_BLUE:
-+	case IIO_MOD_RUNNING:
-+	case IIO_MOD_JOGGING:
-+	case IIO_MOD_WALKING:
-+	case IIO_MOD_STILL:
-+	case IIO_MOD_PED_STEPS:
- 		break;
- 	default:
- 		return false;
-@@ -137,6 +151,8 @@ static bool event_is_known(struct iio_event_data *event)
- 	case IIO_EV_TYPE_ROC:
- 	case IIO_EV_TYPE_THRESH_ADAPTIVE:
- 	case IIO_EV_TYPE_MAG_ADAPTIVE:
-+	case IIO_EV_TYPE_MOTION:
-+	case IIO_EV_TYPE_STEP_DETECT:
- 		break;
- 	default:
- 		return false;
--- 
-1.9.1
+Thanks,
+> ---
+>  drivers/iio/adc/vf610_adc.c | 3 +--
+>  1 file changed, 1 insertion(+), 2 deletions(-)
+> 
+> diff --git a/drivers/iio/adc/vf610_adc.c b/drivers/iio/adc/vf610_adc.c
+> index c259901..a9c41ec 100644
+> --- a/drivers/iio/adc/vf610_adc.c
+> +++ b/drivers/iio/adc/vf610_adc.c
+> @@ -586,8 +586,7 @@ static int vf610_adc_probe(struct platform_device *pdev)
+>  	if (IS_ERR(info->clk)) {
+>  		dev_err(&pdev->dev, "failed getting clock, err = %ld\n",
+>  						PTR_ERR(info->clk));
+> -		ret = PTR_ERR(info->clk);
+> -		return ret;
+> +		return PTR_ERR(info->clk);
+>  	}
+>  
+>  	info->vref = devm_regulator_get(&pdev->dev, "vref");
+> 
