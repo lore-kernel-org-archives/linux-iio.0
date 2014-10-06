@@ -1,498 +1,122 @@
-Return-Path: <vlad.dogaru@intel.com>
-From: Vlad Dogaru <vlad.dogaru@intel.com>
-To: linux-iio@vger.kernel.org,
-	jic23@kernel.org
-Cc: Vlad Dogaru <vlad.dogaru@intel.com>
-Subject: [PATCH] iio: add bmp280 pressure and temperature driver
-Date: Thu,  2 Oct 2014 22:40:23 +0300
-Message-Id: <1412278823-10870-1-git-send-email-vlad.dogaru@intel.com>
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from arroyo.ext.ti.com ([192.94.94.40]:51803 "EHLO arroyo.ext.ti.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751731AbaJFTyg (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Mon, 6 Oct 2014 15:54:36 -0400
+Date: Mon, 6 Oct 2014 14:54:31 -0500
+From: Felipe Balbi <balbi@ti.com>
+To: Jonathan Cameron <jic23@kernel.org>
+CC: Michael Welling <mwelling@ieee.org>, Felipe Balbi <balbi@ti.com>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	<linux-iio@vger.kernel.org>, <pmeerw@pmeerw.net>,
+	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Subject: Re: [RESEND PATCH] iio: light: add support for TI's opt3001 light
+ sensor
+Message-ID: <20141006195431.GD17445@saruman>
+Reply-To: <balbi@ti.com>
+References: <20140929140227.GD32403@saruman>
+ <20140929183856.GA11871@sysresccd>
+ <20140929185325.GA1939@saruman>
+ <20140929223833.GA13111@sysresccd>
+ <20140929224638.GA21681@saruman>
+ <20140929234159.GB13111@sysresccd>
+ <20140930212204.GC13806@saruman>
+ <20141002180553.GI7933@saruman>
+ <20141004031721.GA2846@deathray>
+ <542FC15D.3070503@kernel.org>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="J5MfuwkIyy7RmF4Q"
+In-Reply-To: <542FC15D.3070503@kernel.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Minimal implementation, can read temperature and data using direct mode.
+--J5MfuwkIyy7RmF4Q
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Datasheet available at
-<http://ae-bst.resource.bosch.com/media/products/dokumente/bmp280/BST-BMP280-DS001-09.pdf>
+On Sat, Oct 04, 2014 at 10:43:57AM +0100, Jonathan Cameron wrote:
+> On 04/10/14 04:17, Michael Welling wrote:
+> > On Thu, Oct 02, 2014 at 01:05:53PM -0500, Felipe Balbi wrote:
+> >> Hi,
+> >>
+> >> On Tue, Sep 30, 2014 at 04:22:04PM -0500, Felipe Balbi wrote:
+> >>> On Mon, Sep 29, 2014 at 06:41:59PM -0500, Michael Welling wrote:
+> >>>> On Mon, Sep 29, 2014 at 05:46:38PM -0500, Felipe Balbi wrote:
+> >>>>> Hi,
+> >>>>>
+> >>>>> On Mon, Sep 29, 2014 at 05:38:33PM -0500, Michael Welling wrote:
+> >>>>>>>>> Alright, this is already ridiculous. Andrew, if I resend the pa=
+tch can
+> >>>>>>>>> you apply it since maintainer has been ignoring this thread any=
+way ?
+> >>>>>>>>>
+> >>>>>>>>
+> >>>>>>>> Do you reall think this is the best way to approach this?
+> >>>>>>>
+> >>>>>>> when maintainer doesn't respond for weeks, yeah! Sure it is.
+> >>>>>>>
+> >>>>>>>> Perhaps it would be better to explain what each field of the
+> >>>>>>>> configuration register does and then we can move on.
+> >>>>>>>
+> >>>>>>> perhaps Jonathan could tell me exactly what he wants because I ca=
+n't
+> >>>>>>> handle back-and-forth anymore. Specially when he complains about =
+stuff
+> >>>>>>> he asked me to modify himself.
+> >>>>>>>
+> >>>>>>>> In particular the OPT3001_CONFIGURATION_L field needs to be expl=
+ained
+> >>>>>>>> such that the ABI can be properly applied.
+> >>>>>>>>
+> >>>>>>>> Looking at the docs for the Windows demo program the field is as=
+sociated
+> >>>>>>>> with a latch configuration. What does this bit field actually do?
+> >>>>>>
+> >>>>>> Still no technical information. Without all the facts how can you =
+expect
+> >>>>>> him to tell you what he wants?
+> >>>>>
+> >>>>> yeah, because clearly he doesn't know himself, right ?
+> >>>>
+> >>>> Could you explain how it works to me then?
+> >>>
+> >>> checking how much of the docs I can expose now, gimme a couple days.
+> >>
+> >> alright, here's a snippet of what's on preliminary docs:
+> >>
+> Firstly, thanks Felipe for going through the process to get permission
+> to release the snippets.  I know this can be a real pain to do.
 
-Signed-off-by: Vlad Dogaru <vlad.dogaru@intel.com>
----
- drivers/iio/pressure/Kconfig  |  11 ++
- drivers/iio/pressure/Makefile |   1 +
- drivers/iio/pressure/bmp280.c | 433 ++++++++++++++++++++++++++++++++++++++++++
- 3 files changed, 445 insertions(+)
- create mode 100644 drivers/iio/pressure/bmp280.c
+alright, np. Device will be launched soonish, so full datasheet should
+be in TI's website in the coming weeks or so.
 
-diff --git a/drivers/iio/pressure/Kconfig b/drivers/iio/pressure/Kconfig
-index 15afbc9..27ab27e 100644
---- a/drivers/iio/pressure/Kconfig
-+++ b/drivers/iio/pressure/Kconfig
-@@ -5,6 +5,17 @@
- 
- menu "Pressure sensors"
- 
-+config BMP280
-+	tristate "Bosch Sensortec BMP280 pressure sensor driver"
-+	depends on I2C
-+	select REGMAP_I2C
-+	help
-+	 Say yes here to build support for Bosch Sensortec BMP28
-+	 pressure and temperature sensor.
-+
-+	 To compile this driver as a module, choose M here: the module
-+	 will be called bmp280.
-+
- config HID_SENSOR_PRESS
- 	depends on HID_SENSOR_HUB
- 	select IIO_BUFFER
-diff --git a/drivers/iio/pressure/Makefile b/drivers/iio/pressure/Makefile
-index 90a37e8..88011f2 100644
---- a/drivers/iio/pressure/Makefile
-+++ b/drivers/iio/pressure/Makefile
-@@ -3,6 +3,7 @@
- #
- 
- # When adding new entries keep the list in alphabetical order
-+obj-$(CONFIG_BMP280) += bmp280.o
- obj-$(CONFIG_HID_SENSOR_PRESS)   += hid-sensor-press.o
- obj-$(CONFIG_MPL115) += mpl115.o
- obj-$(CONFIG_MPL3115) += mpl3115.o
-diff --git a/drivers/iio/pressure/bmp280.c b/drivers/iio/pressure/bmp280.c
-new file mode 100644
-index 0000000..f5764ee
---- /dev/null
-+++ b/drivers/iio/pressure/bmp280.c
-@@ -0,0 +1,433 @@
-+/*
-+ * Copyright (c) 2014 Intel Corporation
-+ *
-+ * Driver for Bosch Sensortec BMP280 digital pressure sensor.
-+ *
-+ * This program is free software; you can redistribute it and/or modify
-+ * it under the terms of the GNU General Public License version 2 as
-+ * published by the Free Software Foundation.
-+ *
-+ */
-+
-+#define pr_fmt(fmt) "bmp280: " fmt
-+
-+#include <linux/module.h>
-+#include <linux/i2c.h>
-+#include <linux/acpi.h>
-+#include <linux/regmap.h>
-+#include <linux/iio/iio.h>
-+#include <linux/iio/sysfs.h>
-+
-+#define BMP280_REG_TEMP_XLSB		0xFC
-+#define BMP280_REG_TEMP_LSB		0xFB
-+#define BMP280_REG_TEMP_MSB		0xFA
-+#define BMP280_REG_PRESS_XLSB		0xF9
-+#define BMP280_REG_PRESS_LSB		0xF8
-+#define BMP280_REG_PRESS_MSB		0xF7
-+
-+#define BMP280_REG_CONFIG		0xF5
-+#define BMP280_REG_CTRL_MEAS		0xF4
-+#define BMP280_REG_STATUS		0xF3
-+#define BMP280_REG_RESET		0xE0
-+#define BMP280_REG_ID			0xD0
-+
-+#define BMP280_REG_COMP_START		0x88
-+#define BMP280_COMP_REG_COUNT		24
-+
-+#define BMP280_FILTER_MASK		(BIT(4) | BIT(3) | BIT(2))
-+#define BMP280_FILTER_OFF		0
-+#define BMP280_FILTER_2X		BIT(2)
-+#define BMP280_FILTER_4X		BIT(3)
-+#define BMP280_FILTER_8X		(BIT(3) | BIT(2))
-+#define BMP280_FILTER_16X		BIT(4)
-+
-+#define BMP280_OSRS_TEMP_MASK		(BIT(7) | BIT(6) | BIT(5))
-+#define BMP280_OSRS_TEMP_SKIP		0
-+#define BMP280_OSRS_TEMP_1X		BIT(5)
-+#define BMP280_OSRS_TEMP_2X		BIT(6)
-+#define BMP280_OSRS_TEMP_4X		(BIT(6) | BIT(5))
-+#define BMP280_OSRS_TEMP_8X		BIT(7)
-+#define BMP280_OSRS_TEMP_16X		(BIT(7) | BIT(5))
-+
-+#define BMP280_OSRS_PRESS_MASK		(BIT(4) | BIT(3) | BIT(2))
-+#define BMP280_OSRS_PRESS_SKIP		0
-+#define BMP280_OSRS_PRESS_1X		BIT(2)
-+#define BMP280_OSRS_PRESS_2X		BIT(3)
-+#define BMP280_OSRS_PRESS_4X		(BIT(3) | BIT(2))
-+#define BMP280_OSRS_PRESS_8X		BIT(4)
-+#define BMP280_OSRS_PRESS_16X		(BIT(4) | BIT(2))
-+
-+#define BMP280_MODE_MASK		(BIT(1) | BIT(0))
-+#define BMP280_MODE_SLEEP		0
-+#define BMP280_MODE_FORCED		BIT(0)
-+#define BMP280_MODE_NORMAL		(BIT(1) | BIT(0))
-+
-+#define BMP280_CHIP_ID			0x58
-+#define BMP280_SOFT_RESET_VAL		0xB6
-+
-+struct bmp280_data {
-+	struct i2c_client *client;
-+	struct mutex lock;
-+	struct regmap *regmap;
-+
-+	/*
-+	 * Carryover value from temperature conversion, used in pressure
-+	 * calculation.
-+	 */
-+	s32 t_fine;
-+
-+	/* Compensation parameters. */
-+	u16 dig_t1;
-+	s16 dig_t2, dig_t3;
-+	u16 dig_p1;
-+	s16 dig_p2, dig_p3, dig_p4, dig_p5, dig_p6, dig_p7, dig_p8, dig_p9;
-+};
-+
-+static const struct iio_chan_spec bmp280_channels[] = {
-+	{
-+		.type = IIO_PRESSURE,
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
-+			BIT(IIO_CHAN_INFO_SCALE),
-+	},
-+	{
-+		.type = IIO_TEMP,
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
-+			BIT(IIO_CHAN_INFO_SCALE),
-+	},
-+};
-+
-+static bool bmp280_is_writeable_reg(struct device *dev, unsigned int reg)
-+{
-+	switch (reg) {
-+	case BMP280_REG_CONFIG:
-+	case BMP280_REG_CTRL_MEAS:
-+	case BMP280_REG_RESET:
-+		return true;
-+	default:
-+		return false;
-+	};
-+}
-+
-+static bool bmp280_is_volatile_reg(struct device *dev, unsigned int reg)
-+{
-+	switch (reg) {
-+	case BMP280_REG_TEMP_XLSB:
-+	case BMP280_REG_TEMP_LSB:
-+	case BMP280_REG_TEMP_MSB:
-+	case BMP280_REG_PRESS_XLSB:
-+	case BMP280_REG_PRESS_LSB:
-+	case BMP280_REG_PRESS_MSB:
-+	case BMP280_REG_STATUS:
-+		return true;
-+	default:
-+		return false;
-+	}
-+}
-+
-+static const struct regmap_config bmp280_regmap_config = {
-+	.reg_bits = 8,
-+	.val_bits = 8,
-+
-+	.max_register = BMP280_REG_TEMP_XLSB,
-+	.cache_type = REGCACHE_RBTREE,
-+
-+	.writeable_reg = bmp280_is_writeable_reg,
-+	.volatile_reg = bmp280_is_volatile_reg,
-+};
-+
-+/*
-+ * Returns temperature in DegC, resolution is 0.01 DegC.  Output value of
-+ * "5123" equals 51.23 DegC.  t_fine carries fine temperature as global
-+ * value.
-+ *
-+ * Taken from datasheet, Section 3.11.3, "Compensation formula".
-+ */
-+static s32 bmp280_compensate_temp(struct bmp280_data *data,
-+				  s32 adc_temp)
-+{
-+	s32 var1, var2, T;
-+
-+	var1 = (((adc_temp >> 3) - ((s32) data->dig_t1 << 1)) *
-+		((s32) data->dig_t2)) >> 11;
-+	var2 = (((((adc_temp >> 4) - ((s32) data->dig_t1)) *
-+		  ((adc_temp >> 4) - ((s32) data->dig_t1))) >> 12) *
-+		((s32) data->dig_t3)) >> 14;
-+
-+	data->t_fine = var1 + var2;
-+	T = (data->t_fine * 5 + 128) >> 8;
-+
-+	return T;
-+}
-+
-+/*
-+ * Returns pressure in Pa as unsigned 32 bit integer in Q24.8 format (24
-+ * integer bits and 8 fractional bits).  Output value of "24674867"
-+ * represents 24674867/256 = 96386.2 Pa = 963.862 hPa
-+ *
-+ * Taken from datasheet, Section 3.11.3, "Compensation formula".
-+ */
-+static u32 bmp280_compensate_press(struct bmp280_data *data,
-+				   s32 adc_press)
-+{
-+	s64 var1, var2, p;
-+
-+	var1 = ((s64) data->t_fine) - 128000;
-+	var2 = var1 * var1 * (s64) data->dig_p6;
-+	var2 = var2 + ((var1 * (s64) data->dig_p5) << 17);
-+	var2 = var2 + (((s64) data->dig_p4) << 35);
-+	var1 = ((var1 * var1 * (s64) data->dig_p3) >> 8) +
-+		((var1 * (s64) data->dig_p2) << 12);
-+	var1 = (((((s64) 1) << 47) + var1)) * ((s64) data->dig_p1) >> 33;
-+
-+	if (var1 == 0)
-+		return 0;
-+
-+	p = 1048576 - adc_press;
-+	p = (((p << 31) - var2) * 3125) / var1;
-+	var1 = (((s64) data->dig_p9) * (p >> 13) * (p >> 13)) >> 25;
-+	var2 = (((s64) data->dig_p8) * p) >> 19;
-+	p = ((p + var1 + var2) >> 8) + (((s64) data->dig_p7) << 4);
-+
-+	return (u32) p;
-+}
-+
-+static int bmp280_read_temp(struct bmp280_data *data,
-+			    int *val, int *val2)
-+{
-+	int ret;
-+	__be32 tmp;
-+	s32 adc_temp, comp_temp;
-+
-+	ret = regmap_bulk_read(data->regmap, BMP280_REG_TEMP_MSB,
-+			       (u8 *) &tmp, 3);
-+	if (ret < 0) {
-+		dev_err(&data->client->dev, "failed to read temperature\n");
-+		return ret;
-+	}
-+
-+	adc_temp = be32_to_cpu(tmp) >> 12;
-+	comp_temp = bmp280_compensate_temp(data, adc_temp);
-+
-+	/*
-+	 * val might be NULL if we're called by the read_press routine,
-+	 * who only cares about the carry over t_fine value.
-+	 */
-+	if (val) {
-+		*val = comp_temp;
-+		return IIO_VAL_INT;
-+	}
-+
-+	return 0;
-+}
-+
-+static int bmp280_read_press(struct bmp280_data *data,
-+			     int *val, int *val2)
-+{
-+	int ret;
-+	__be32 tmp;
-+	s32 adc_press;
-+	u32 comp_press;
-+
-+	/* Read and compensate temperature so we get a reading of t_fine. */
-+	ret = bmp280_read_temp(data, NULL, NULL);
-+	if (ret < 0)
-+		return ret;
-+
-+	ret = regmap_bulk_read(data->regmap, BMP280_REG_PRESS_MSB,
-+			       (u8 *) &tmp, 3);
-+	if (ret < 0) {
-+		dev_err(&data->client->dev, "failed to read pressure\n");
-+		return ret;
-+	}
-+
-+	adc_press = be32_to_cpu(tmp) >> 12;
-+	comp_press = bmp280_compensate_press(data, adc_press);
-+	*val = comp_press;
-+
-+	return IIO_VAL_INT;
-+}
-+
-+static int bmp280_read_raw(struct iio_dev *indio_dev,
-+			   struct iio_chan_spec const *chan,
-+			   int *val, int *val2, long mask)
-+{
-+	int ret;
-+	struct bmp280_data *data = iio_priv(indio_dev);
-+
-+	mutex_lock(&data->lock);
-+
-+	switch (mask) {
-+	case IIO_CHAN_INFO_RAW:
-+		switch (chan->type) {
-+		case IIO_PRESSURE:
-+			ret = bmp280_read_press(data, val, val2);
-+			break;
-+		case IIO_TEMP:
-+			ret = bmp280_read_temp(data, val, val2);
-+			break;
-+		default:
-+			ret = -EINVAL;
-+			break;
-+		}
-+		break;
-+	case IIO_CHAN_INFO_SCALE:
-+		switch (chan->type) {
-+		case IIO_PRESSURE:
-+			/* Each LSB is 1/256 Pa.  We need kPa. */
-+			*val = 1;
-+			*val2 = 256000;
-+			ret = IIO_VAL_FRACTIONAL;
-+			break;
-+		case IIO_TEMP:
-+			/* Each LSB is 0.01 degC.  We need milli degC. */
-+			*val = 10;
-+			ret = IIO_VAL_INT;
-+			break;
-+		default:
-+			ret = -EINVAL;
-+			break;
-+		}
-+		break;
-+	default:
-+		ret = -EINVAL;
-+		break;
-+	}
-+
-+	mutex_unlock(&data->lock);
-+
-+	return ret;
-+}
-+
-+static const struct iio_info bmp280_info = {
-+	.driver_module = THIS_MODULE,
-+	.read_raw = &bmp280_read_raw,
-+};
-+
-+static int bmp280_read_calibration_regs(struct iio_dev *indio_dev)
-+{
-+	struct bmp280_data *data = iio_priv(indio_dev);
-+	int ret;
-+	u8 buf[BMP280_COMP_REG_COUNT];
-+	__le16 *buf16;
-+
-+	ret = regmap_bulk_read(data->regmap, BMP280_REG_COMP_START, buf,
-+			       BMP280_COMP_REG_COUNT);
-+	if (ret < 0) {
-+		dev_err(&data->client->dev,
-+			"failed to read calibration parameters\n");
-+		return ret;
-+	}
-+
-+	buf16 = (__le16 *) buf;
-+
-+	data->dig_t1 = (u16) le16_to_cpu(buf16[0]);
-+	data->dig_t2 = (s16) le16_to_cpu(buf16[1]);
-+	data->dig_t3 = (s16) le16_to_cpu(buf16[2]);
-+
-+	data->dig_p1 = (s16) le16_to_cpu(buf16[3]);
-+	data->dig_p2 = (u16) le16_to_cpu(buf16[4]);
-+	data->dig_p3 = (u16) le16_to_cpu(buf16[5]);
-+	data->dig_p4 = (u16) le16_to_cpu(buf16[6]);
-+	data->dig_p5 = (u16) le16_to_cpu(buf16[7]);
-+	data->dig_p6 = (u16) le16_to_cpu(buf16[8]);
-+	data->dig_p7 = (u16) le16_to_cpu(buf16[9]);
-+	data->dig_p8 = (u16) le16_to_cpu(buf16[10]);
-+	data->dig_p9 = (u16) le16_to_cpu(buf16[11]);
-+
-+	return 0;
-+}
-+
-+static int bmp280_chip_init(struct bmp280_data *data)
-+{
-+	int ret;
-+
-+	ret = regmap_update_bits(data->regmap, BMP280_REG_CTRL_MEAS,
-+				 BMP280_OSRS_TEMP_MASK |
-+				 BMP280_OSRS_PRESS_MASK |
-+				 BMP280_MODE_MASK,
-+				 BMP280_OSRS_TEMP_2X |
-+				 BMP280_OSRS_PRESS_16X |
-+				 BMP280_MODE_NORMAL);
-+	if (ret < 0) {
-+		dev_err(&data->client->dev,
-+			"failed to write config register\n");
-+		return ret;
-+	}
-+
-+	ret = regmap_update_bits(data->regmap, BMP280_REG_CONFIG,
-+				 BMP280_FILTER_MASK,
-+				 BMP280_FILTER_4X);
-+	if (ret < 0) {
-+		dev_err(&data->client->dev,
-+			"failed to write config register\n");
-+		return ret;
-+	}
-+
-+	return ret;
-+}
-+
-+static int bmp280_probe(struct i2c_client *client,
-+			const struct i2c_device_id *id)
-+{
-+	int ret;
-+	struct iio_dev *indio_dev;
-+	struct bmp280_data *data;
-+
-+	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
-+	if (!indio_dev)
-+		return -ENOMEM;
-+
-+	i2c_set_clientdata(client, indio_dev);
-+	data = iio_priv(indio_dev);
-+	mutex_init(&data->lock);
-+	data->client = client;
-+
-+	indio_dev->dev.parent = &client->dev;
-+	indio_dev->name = id->name;
-+	indio_dev->channels = bmp280_channels;
-+	indio_dev->num_channels = ARRAY_SIZE(bmp280_channels);
-+	indio_dev->info = &bmp280_info;
-+	indio_dev->modes = INDIO_DIRECT_MODE;
-+
-+	data->regmap = devm_regmap_init_i2c(client, &bmp280_regmap_config);
-+	if (IS_ERR(data->regmap)) {
-+		dev_err(&client->dev, "failed to allocate register map\n");
-+		return PTR_ERR(data->regmap);
-+	}
-+
-+	ret = bmp280_read_calibration_regs(indio_dev);
-+	if (ret < 0)
-+		return ret;
-+
-+	ret = bmp280_chip_init(data);
-+	if (ret < 0)
-+		return ret;
-+
-+	return devm_iio_device_register(&client->dev, indio_dev);
-+}
-+
-+static const struct acpi_device_id bmp280_acpi_match[] = {
-+	{"BMP0280", 0},
-+	{ },
-+};
-+MODULE_DEVICE_TABLE(acpi, bmp280_acpi_match);
-+
-+static const struct i2c_device_id bmp280_id[] = {
-+	{"bmp280", 0},
-+	{ },
-+};
-+MODULE_DEVICE_TABLE(i2c, bmp280_id);
-+
-+static struct i2c_driver bmp280_driver = {
-+	.driver = {
-+		.name	= "bmp280",
-+		.acpi_match_table = ACPI_PTR(bmp280_acpi_match),
-+	},
-+	.probe		= bmp280_probe,
-+	.id_table	= bmp280_id,
-+};
-+module_i2c_driver(bmp280_driver);
-+
-+MODULE_AUTHOR("Vlad Dogaru <vlad.dogaru@intel.com>");
-+MODULE_DESCRIPTION("Driver for Bosch Sensortec BMP280 pressure and temperature sensor");
-+MODULE_LICENSE("GPL v2");
--- 
-1.9.1
+I'll wait until v3.18-rc1 is tagged before working on this again.
+
+--=20
+balbi
+
+--J5MfuwkIyy7RmF4Q
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
+
+iQIcBAEBAgAGBQJUMvN3AAoJEIaOsuA1yqRE7aMP/0XtX3i9+S17a8igX3coArpz
+dXi7VlWG2FPw5yfg83I5CO6DaIvvUjVvlN4h3wCHDTzAdTmHw4c01o4qQhQtW5cN
+9m2RoU0/YTr+CSEqR+wmfqf7+NF94H2Qu6qGig4fxw2Le1/Yxn6DTm3x8GAK3hJF
+S+nXCXbhRm/rz4S1GTQJOOR4tCvU64N23gTjUrsxsdbfA4ierhQ7Lsq06UbWWsog
+bWJTbYo7BCVyBjSiWBCQg/pJmeRBUufvDvfqGqQKCBCNzcKNFV3WKqaNDxSQQA6V
+P/YPi/bc9Sb8VZMhltF4xDsiBYGystCT3oS27e8J9FQWkNVVNJs6CprwvM7ukYjE
+Hybx0rBg8WOhptpne7w38VhMIJoyH8Po+Vo13cG5ztQuEVC4UbjBMYtbya46e/Ep
+kfvdLFx61gZMevLIEyebn6Ld0hbisNUIMcOAW1c6Exg3KWmQINH6WqSdnDMt+YLs
+17MsD4OkJrj3Ch7F2d+M8hbfICK+FzcaTPkMLck2ahnl7THrdFJv6sz0gkwsB6CZ
+UzS4gtMnC9OBZsxUU/Zxv5G11YF6vSBBucLzlLIR1VgHu3qKBiWgz351GKGQI3Ue
+PycKsjgdQzOZkqMl5ZWAyYSOuG+ezsYTkJX29ihp0AtquV2esUt2gnHw/pubkddZ
+FgQLEJ4fzt4oNWPmviYC
+=ja9T
+-----END PGP SIGNATURE-----
+
+--J5MfuwkIyy7RmF4Q--
