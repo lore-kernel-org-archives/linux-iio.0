@@ -1,66 +1,44 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from bh-25.webhostbox.net ([208.91.199.152]:41815 "EHLO
-	bh-25.webhostbox.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750850AbaJDNe3 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 4 Oct 2014 09:34:29 -0400
-Received: from mailnull by bh-25.webhostbox.net with sa-checked (Exim 4.82)
-	(envelope-from <linux@roeck-us.net>)
-	id 1XaPTg-003znc-B2
-	for linux-iio@vger.kernel.org; Sat, 04 Oct 2014 13:34:28 +0000
-Message-ID: <542FF757.5020204@roeck-us.net>
-Date: Sat, 04 Oct 2014 06:34:15 -0700
-From: Guenter Roeck <linux@roeck-us.net>
-MIME-Version: 1.0
-To: Jonathan Cameron <jic23@kernel.org>
-CC: lm-sensors <lm-sensors@lm-sensors.org>, linux-iio@vger.kernel.org,
-	Jean Delvare <jdelvare@suse.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	"Hennerich, Michael" <Michael.Hennerich@analog.com>
-Subject: Re: [PATCH] hwmon: (iio_hwmon) Add support for humidity and power
- sensors
-References: <1411832985-12619-1-git-send-email-linux@roeck-us.net> <5429988D.9060504@kernel.org> <20140929191343.GC20189@roeck-us.net> <542FDC0A.3070904@kernel.org>
-In-Reply-To: <542FDC0A.3070904@kernel.org>
-Content-Type: text/plain; charset=windows-1252; format=flowed
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <darshanapadmadas@gmail.com>
+From: Darshana Padmadas <darshanapadmadas@gmail.com>
+To: opw-kernel@googlegroups.com
+Cc: grant.likely@linaro.org,
+	robh+dt@kernel.org,
+	pawel.moll@arm.com,
+	linux-arm-kernel@lists.infradead.org,
+	jic23@kernel.org,
+	linux-iio@vger.kernel.org,
+	devel@driverdev.osuosl.org,
+	linux-kernel@vger.kernel.org,
+	Darshana Padmadas <darshanapadmadas@gmail.com>
+Subject: [PATCH v4 0/4] Correct vendor-prefix and document device isl29028
+Date: Tue,  7 Oct 2014 20:49:25 +0530
+Message-Id: <1412695169-22815-1-git-send-email-darshanapadmadas@gmail.com>
+Content-Type: text/plain; charset="utf-8"
+List-ID: <linux-iio@vger.kernel.org>
 
-On 10/04/2014 04:37 AM, Jonathan Cameron wrote:
-> On 29/09/14 20:13, Guenter Roeck wrote:
->> On Mon, Sep 29, 2014 at 06:36:13PM +0100, Jonathan Cameron wrote:
->>> On 27/09/14 16:49, Guenter Roeck wrote:
->>>> The iio subsystem supports power and humidity sensors, so it makes sense
->>>> to support those sensor types in the iio-hwmon bridge as well.
->>>>
->>>> Cc: Jonathan Cameron <jic23@kernel.org>
->>>> Signed-off-by: Guenter Roeck <linux@roeck-us.net>
->>> Looks good.
->>>> ---
->>>> Compile tested only.
->>>>
->>>> Question is if I got the scale conversion correct for power measurements.
->>>> I _assume_ that iio always reports processed values in milli-units,
->>>> but I am not entirely sure.
->>>
->>> IIO actually only keeps to milli units where we were copying from hwmom
->>> back when originally working this stuff out.  Given we have the double
->>> int32 representation and IIO_TYPE_* we try to keep to the base SI units
->>> everywhere else. (If we were doing it again today, I'd be advocating
->>> using base units everywhere for consistency reasons)
->>>
->> What does that mean for the iio-hwmon bridge ? Should I get the base
->> units (or scaling factors) on a per-sensor basis, or does the above apply
->> on a per-type basis ? I checked the humidity ABI (which is documented),
->> and it says that humidity is reported in milli-units.
-> It's per type unfortunately.  Humidity is indeed in milli-units
-> but power is probably in micro-units (as per hwmon).
-> Right now it is undocumented and we only have one user so pretty much
-> need to go with whatever that does (unless it's really silly).
->
-> I haven't had a chance to go datasheet diving to work out what it is
-> using as yet.
+Patchset documents correct and the deprecated vendor-prefix found by checkpatch
+warning and also documents information of device isl29028 for compatibility.
+Patchset also includes corrected vendor-prefix and device name in compatible
+property for files with checkpatch warning of undocumented string "isil,isl29028".
 
-No problem. I'll simplify the patch and only add support for humidity for now.
+Darshana Padmadas (4):
+  Documentation: devicetree: bindings: Document correct and deprecated
+    vendor-prefix with device isl29028
+  Documentation: devicetree: bindings: Document deprecated device vendor
+    name to fix related warning
+  Staging: iio: light: Added correct vendor-prefix for device isl29028
+  arch: arm: boot: dts: Added correct vendor-prefix with device name to
+    compatible property
 
-Thanks,
-Guenter
+Changes in v4:
+    - In PATCH 1/4 gave appropriate description for string describing vendor/chip 
+      for deprecated vendor-prefix and device.
 
+ Documentation/devicetree/bindings/i2c/trivial-devices.txt | 2 ++
+ Documentation/devicetree/bindings/vendor-prefixes.txt     | 1 +
+ arch/arm/boot/dts/tegra30-cardhu.dtsi                     | 2 +-
+ drivers/staging/iio/light/isl29028.c                      | 3 ++-
+ 4 files changed, 6 insertions(+), 2 deletions(-)
+
+-- 
+1.9.1
