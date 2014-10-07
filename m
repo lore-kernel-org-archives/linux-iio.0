@@ -1,105 +1,64 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ns.mm-sol.com ([37.157.136.199]:40353 "EHLO extserv.mm-sol.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751334AbaJGL5X (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Tue, 7 Oct 2014 07:57:23 -0400
-Message-ID: <1412683049.1027.60.camel@iivanov-dev>
-Subject: Re: [PATCH v3 1/2] iio: vadc: Qualcomm SPMI PMIC voltage ADC driver
-From: "Ivan T. Ivanov" <iivanov@mm-sol.com>
+Return-Path: <irina.tirdea@intel.com>
+From: "Tirdea, Irina" <irina.tirdea@intel.com>
 To: Jonathan Cameron <jic23@kernel.org>
-Cc: Stanimir Varbanov <svarbanov@mm-sol.com>, lars <lars@metafoo.de>,
-	sachin.kamat@linaro.org, srinivas.pandruvada@linux.intel.com,
-	linux-iio@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-	linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
-Date: Tue, 07 Oct 2014 14:57:29 +0300
-In-Reply-To: <542FDF41.2040106@kernel.org>
-References: <1411563415-11933-1-git-send-email-svarbanov@mm-sol.com>
-		 <1411563415-11933-2-git-send-email-svarbanov@mm-sol.com>
-		 <542D1B11.8070600@mm-sol.com> <1412251686.1027.15.camel@iivanov-dev>
-	 <542FDF41.2040106@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Mime-Version: 1.0
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+CC: "Baluta, Daniel" <daniel.baluta@intel.com>, "linux-iio@vger.kernel.org"
+	<linux-iio@vger.kernel.org>, "linux-kernel@vger.kernel.org"
+	<linux-kernel@vger.kernel.org>
+Subject: RE: [RFC PATCH 4/8] iio: core: Introduce pedometer STEP counter
+ modifier
+Date: Tue, 7 Oct 2014 13:54:21 +0000
+Message-ID: <1F3AC3675D538145B1661F571FE1805F199ADF59@IRSMSX105.ger.corp.intel.com>
+References: <1412257439-15683-1-git-send-email-daniel.baluta@intel.com>
+ <1412257439-15683-5-git-send-email-daniel.baluta@intel.com>
+ <542FEDB7.3050302@kernel.org>
+ <1F3AC3675D538145B1661F571FE1805F199AD91D@IRSMSX105.ger.corp.intel.com>
+ <888C517D-6823-4FB5-870E-484DADAF5230@kernel.org>
+In-Reply-To: <888C517D-6823-4FB5-870E-484DADAF5230@kernel.org>
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+List-ID: <linux-iio@vger.kernel.org>
 
-On Sat, 2014-10-04 at 12:51 +0100, Jonathan Cameron wrote:
-> On 02/10/14 13:08, Ivan T. Ivanov wrote:
-> > +iio maintainers
-> > 
-> > On Thu, 2014-10-02 at 12:29 +0300, Ivan T. Ivanov wrote:
-> >> Hi Stan,
-> >>
-> >> On 09/24/2014 03:56 PM, Stanimir Varbanov wrote:
-> >>
-> >> <snip>
-> >>
-> >>> +static int vadc_get_dt_data(struct vadc_priv *vadc, struct device_node *node)
-> >>> +{
-> >>> +	struct iio_chan_spec *iio_chan = vadc->iio_chans;
-> >>> +	const struct vadc_channels *vadc_chan;
-> >>> +	struct vadc_channel_prop prop;
-> >>> +	struct device_node *child;
-> >>> +	int ret, index = 0;
-> >>> +
-> >>> +	for_each_available_child_of_node(node, child) {
-> >>> +		ret = vadc_get_dt_channel_data(vadc->dev, &prop, child);
-> >>> +		if (ret)
-> >>> +			return ret;
-> >>> +
-> >>> +		vadc->chan_props[index] = prop;
-> >>> +
-> >>> +		vadc_chan = &vadc_chans[prop.channel];
-> >>> +
-> >>> +		iio_chan->channel = prop.channel;
-> >>> +		iio_chan->datasheet_name = vadc_chan->datasheet_name;
-> >>> +		iio_chan->info_mask_separate = vadc_chan->info_mask;
-> >>> +		iio_chan->type = vadc_chan->type;
-> >>> +		iio_chan->indexed = 1;
-> >>> +		iio_chan->scan_type.sign = 's';
-> >>> +		iio_chan->scan_type.realbits = 15;
-> >>> +		iio_chan->scan_type.storagebits = 16;
-> >>> +		iio_chan->address = index++;
-> >>> +
-> >>> +		iio_chan++;
-> >>> +	}
-> >>> +
-> >>> +	return 0;
-> >>> +}
-> >>> +
-> >>
-> >> <snip>
-> >>
-> >>> +static int vadc_probe(struct platform_device *pdev)
-> >>> +{
-> >>
-> >> <snip>
-> >>
-> >>> +
-> >>> +	indio_dev->dev.parent = dev;
-> >>> +	indio_dev->dev.of_node = node;
-> >>> +	indio_dev->name = pdev->name;
-> >>> +	indio_dev->modes = INDIO_DIRECT_MODE;
-> >>> +	indio_dev->info = &vadc_info;
-> >>> +	indio_dev->channels = vadc->iio_chans;
-> >>> +	indio_dev->num_channels = vadc->nchannels;
-> >>
-> >> This will not work as we thought. Registration will be fine and entries
-> >> in sysfs are created as expected, but this is breaking numbering scheme
-> >> for client drivers. For us the problem is that iio framework expect channels
-> >> numbering to be linear and channel number should not be greater than
-> >> channel count. For example even if die temperature channel is always 8, if
-> >> I describe only 5 channels in DTS files (4 for reference points measurement)
-> >> and 1 for die temperature, clients could not get OF reference to 
-> >> temperature
-> >> channel using io-channels = <&pm8941_vadc 8>;
-> >>
-> >> Jonathan, please, could you advise us.
-> I'd like to let the solution you proposed sit on the list a little longer.
-> It seems fairly sensible, but lets see what others suggest.
-
-Sure. 
-
-Thank you.
-Ivan
-
-
+DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogbGludXgtaWlvLW93bmVy
+QHZnZXIua2VybmVsLm9yZyBbbWFpbHRvOmxpbnV4LWlpby1vd25lckB2Z2VyLmtlcm5lbC5vcmdd
+IE9uIEJlaGFsZiBPZiBKb25hdGhhbiBDYW1lcm9uDQo+IE9uIE9jdG9iZXIgNiwgMjAxNCAyOjUw
+OjEzIFBNIEdNVCswMTowMCwgIlRpcmRlYSwgSXJpbmEiIDxpcmluYS50aXJkZWFAaW50ZWwuY29t
+PiB3cm90ZToNCj4gPj4gRnJvbTogSm9uYXRoYW4gQ2FtZXJvbiBbbWFpbHRvOmppYzIzQGtlcm5l
+bC5vcmddDQo+ID4+IE9uIDAyLzEwLzE0IDE0OjQzLCBEYW5pZWwgQmFsdXRhIHdyb3RlOg0KPiA+
+PiA+IEZyb206IElyaW5hIFRpcmRlYSA8aXJpbmEudGlyZGVhQGludGVsLmNvbT4NCj4gPj4gPg0K
+PiA+PiA+IE9uZSBvZiB0aGUgZnVuY3Rpb25hbGl0aWVzIG9mIGEgcGVkb21ldGVyIGlzIGEgc3Rl
+cCBjb3VudGVyLg0KPiA+PiA+IFRoZSBzdGVwIGNvdW50ZXIgbmVlZHMgdG8gYmUgZW5hYmxlZCBh
+bmQgdGhlbiBpdCB3aWxsIGNvdW50IHRoZQ0KPiA+c3RlcHMNCj4gPj4gPiBpbiBpdHMgaGFyZHdh
+cmUgcmVnaXN0ZXIuIFdoZW5ldmVyIHRoZSBhcHBsaWNhdGlvbnMgbmVlZCB0byBjaGVjaw0KPiA+
+PiA+IHRoZSBzdGVwIGNvdW50LCB0aGV5IHdpbGwgcmVhZCB0aGUgc3RlcCBjb3VudGVyIHJlZ2lz
+dGVyLg0KPiA+PiA+DQo+ID4+ID4gVG8gc3VwcG9ydCB0aGlzIGZ1bmN0aW9uYWxpdHkgd2UgbmVl
+ZCBhIHN0ZXBzIGF0dHJpYnV0ZSB0aGF0DQo+ID4+ID4gd2lsbCBleHBvcnQgdGhlIG51bWJlciBv
+ZiBzdGVwcy4NCj4gPj4gPg0KPiA+PiBJJ20gbm90IGtlZW4gb24gbXVsdGlwbGV4aW5nIGRpZmZl
+cmVudCB0eXBlcyBvZiBkYXRhIG9udG8gYSBzaW5nbGUNCj4gPmFjdGl2aXR5IHR5cGUuDQo+ID4+
+IFN0ZXBzIGlzIHdlbGwgZW5vdWdoIGRlZmluZWQgb24gaXQncyBvd24gdG8gaGF2ZSBpdCdzIG93
+biBjaGFubmVsDQo+ID50eXBlLg0KPiA+Pg0KPiA+PiBpbl9zdGVwc19pbnB1dCB3b3VsZCBiZSBm
+aW5lIGJ5IG1lLiAgSSBzdXBwb3NlIHN0ZXBzIG1pZ2h0IG1lYW4NCj4gPnNvbWV0aGluZyBlbHNl
+DQo+ID4+IHRob3VnaC4uLg0KPiA+Pg0KPiA+DQo+ID5IaSBKb25hdGhhbiwNCj4gPg0KPiA+VGhh
+bmtzIGZvciB0aGUgcmV2aWV3Lg0KPiA+DQo+ID5Nb3ZpbmcgdGhlIHBlZG9tZXRlciBwYXJ0IHRv
+IGEgbmV3IHR5cGUgc291bmRzIGdvb2QgdG8gbWUuDQo+ID5Ib3dldmVyLCBJIHdvdWxkIHByZWZl
+ciB0byBhZGQgYSBuZXcgdHlwZSBjYWxsZWQgcGVkb21ldGVyIGFuZCBrZWVwDQo+ID5zdGVwcyBh
+cyBhIG1vZGlmaWVyLCBnZW5lcmF0aW5nIG5hbWVzIGxpa2UgaW5fcGVkX3N0ZXBzX2lucHV0IGZv
+ciB0aGUNCj4gPmF0dHJpYnV0ZSBhbmQgaW5fcGVkX3N0ZXBzX2luc3RhbmNlX2VuIGZvciB0aGUg
+ZXZlbnQuDQo+ID5UaGUgcmVhc29uIGZvciB0aGlzIGlzIHRoYXQgZm9yIHN1cHBvcnRpbmcgRnJl
+ZXNjYWxlJ3MgTU1BOTU1M0wgd2Ugd2lsbA0KPiA+bmVlZCBhZGRpdGlvbmFsIGF0dHJpYnV0ZXMg
+KGRpc3RhbmNlLCBzcGVlZCwgY2Fsb3JpZXMsIGhlaWdodCwgd2VpZ2h0KQ0KPiA+dGhhdCB3ZSBj
+YW4gYWRkIGFzIG1vZGlmaWVycyB0byB0aGlzIHBlZG9tZXRlciB0eXBlLiBUbyBrZWVwIHRoaW5n
+cw0KPiA+c2ltcGxlLCBJIGRpZCBub3QgYWRkIHRoZXNlIGFkZGl0aW9uYWwgYXR0cmlidXRlcyB0
+byB0aGUgUkZDIHNlcmllcywNCj4gPmJ1dCBJIGNvdWxkIGRvIHRoYXQgaWYgeW91IHRoaW5rIGl0
+IHdvdWxkIGJlIHVzZWZ1bC4gRm9yIHRoaXMgZGV2aWNlLA0KPiA+dGhlIG1vdGlvbiBldmVudHMg
+KHdhbGtpbmcsIHJ1bm5pbmcsIGpvZ2dpbmcsIHN0aWxsKSBhbHNvIGRlcGVuZCBvbiB0aGUNCj4g
+PmhlaWdodCBhdHRyaWJ1dGUgYmVpbmcgc2V0LCBidXQgd2UgaW50ZW5kIHRvIGRlYWwgd2l0aCB0
+aGlzIGRlcGVuZGVuY3kNCj4gPmluIHRoZSBkcml2ZXIgKHVzaW5nIHRoZSBwZWRvbWV0ZXIncyBo
+ZWlnaHQgYXR0cmlidXRlKS4NCj4gPg0KPiA+V2hhdCBkbyB5b3UgdGhpbms/DQo+IEkgdGhpbmsg
+SSB3b3VsZCByYXRoZXIgZWFjaCBvZiB0aGVzZSB3YXMgaW5jbHVkZWQgYXMgYSB0eXBlIHJhdGhl
+ciB0aGFuIGEgbW9kaWZpZXIuDQo+IFRoZXJlIGFyZSBsb3RzIG9mIG90aGVyIHdheXMgdG8gbWVh
+c3VyZSBzcGVlZCBmb3Igc3RhcnRlcnMgYW5kIG9mdGVuIHVzZXIgc3BhY2UNCj4gd29uJ3QgY2Fy
+ZSB3aGVyZSBpdCBjb21lcyBmcm9tLi4uDQo+IA0KPiBJbl9zcGVlZF9yYXcgZXRjLi4uDQo+IA0K
+PiBUcmljayB3aGVyZSBwb3NzaWJsZSBpcyB0byB0aGluayBhYm91dCB3aGF0IGlzIG1lYXN1cmVk
+IHJhdGhlciB0aGFuIGhvdy4gVGVuZHMgdG8gZ2l2ZQ0KPiAgbW9yZSBjb25zaXN0ZW50IGludGVy
+ZmFjZXMuDQoNClRoYXQgbWFrZXMgc2Vuc2UuIFdpbGwgZG8gdGhlIGNoYW5nZXMgYW5kIGFsc28g
+YWRkIG9uZSBvZiB0aGVzZSBvdGhlciB0eXBlcyBpbiB2Mi4NCg0KVGhhbmtzLA0KSXJpbmENCg0K
