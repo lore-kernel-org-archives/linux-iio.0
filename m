@@ -1,108 +1,76 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from plane.gmane.org ([80.91.229.3]:51062 "EHLO plane.gmane.org"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1750954AbaJBJuF (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Thu, 2 Oct 2014 05:50:05 -0400
-Received: from list by plane.gmane.org with local (Exim 4.69)
-	(envelope-from <glki-linux-iio@m.gmane.org>)
-	id 1XZd1P-0006F4-Ew
-	for linux-iio@vger.kernel.org; Thu, 02 Oct 2014 11:50:03 +0200
-Received: from 37.157.136.206 ([37.157.136.206])
-        by main.gmane.org with esmtp (Gmexim 0.1 (Debian))
-        id 1AlnuQ-0007hv-00
-        for <linux-iio@vger.kernel.org>; Thu, 02 Oct 2014 11:50:03 +0200
-Received: from iivanov by 37.157.136.206 with local (Gmexim 0.1 (Debian))
-        id 1AlnuQ-0007hv-00
-        for <linux-iio@vger.kernel.org>; Thu, 02 Oct 2014 11:50:03 +0200
-To: linux-iio@vger.kernel.org
-From: "Ivan T. Ivanov" <iivanov@mm-sol.com>
-Subject: Re: [PATCH v3 1/2] iio: vadc: Qualcomm SPMI PMIC voltage ADC driver
-Date: Thu, 02 Oct 2014 12:29:53 +0300
-Message-ID: <542D1B11.8070600@mm-sol.com>
-References: <1411563415-11933-1-git-send-email-svarbanov@mm-sol.com> <1411563415-11933-2-git-send-email-svarbanov@mm-sol.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252; format=flowed
-In-Reply-To: <1411563415-11933-2-git-send-email-svarbanov@mm-sol.com>
-Cc: linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
-	devicetree@vger.kernel.org
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <Adam.Thomson.Opensource@diasemi.com>
+From: "Opensource [Adam Thomson]" <Adam.Thomson.Opensource@diasemi.com>
+To: Jonathan Cameron <jic23@kernel.org>, "Opensource [Adam Thomson]"
+	<Adam.Thomson.Opensource@diasemi.com>, Lee Jones <lee.jones@linaro.org>,
+	Samuel Ortiz <sameo@linux.intel.com>, "linux-iio@vger.kernel.org"
+	<linux-iio@vger.kernel.org>, Sebastian Reichel <sre@kernel.org>, "Dmitry
+ Eremin-Solenikov" <dbaryshkov@gmail.com>, David Woodhouse
+	<dwmw2@infradead.org>, "linux-pm@vger.kernel.org" <linux-pm@vger.kernel.org>,
+	Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, "Mark
+ Rutland" <mark.rutland@arm.com>, Ian Campbell
+	<ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, Grant
+ Likely <grant.likely@linaro.org>, "devicetree@vger.kernel.org"
+	<devicetree@vger.kernel.org>, Andrew Morton <akpm@linux-foundation.org>, Joe
+ Perches <joe@perches.com>, "linux-api@vger.kernel.org"
+	<linux-api@vger.kernel.org>
+CC: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "Support
+ Opensource" <Support.Opensource@diasemi.com>
+Subject: RE: [PATCH 2/8] mfd: da9150: Add DT binding documentation for core
+Date: Tue, 7 Oct 2014 13:47:01 +0000
+Message-ID: <2E89032DDAA8B9408CB92943514A0337AB518CFE@SW-EX-MBX01.diasemi.com>
+References: <cover.1411396718.git.Adam.Thomson.Opensource@diasemi.com>
+ <b71815ff49a1cabe2c7907a96cc1be34f924648e.1411396719.git.Adam.Thomson.Opensource@diasemi.com>
+ <5426932E.7060609@kernel.org>
+In-Reply-To: <5426932E.7060609@kernel.org>
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+List-ID: <linux-iio@vger.kernel.org>
 
-
-Hi Stan,
-
-On 09/24/2014 03:56 PM, Stanimir Varbanov wrote:
-
-<snip>
-
-> +static int vadc_get_dt_data(struct vadc_priv *vadc, struct device_node *node)
-> +{
-> +	struct iio_chan_spec *iio_chan = vadc->iio_chans;
-> +	const struct vadc_channels *vadc_chan;
-> +	struct vadc_channel_prop prop;
-> +	struct device_node *child;
-> +	int ret, index = 0;
-> +
-> +	for_each_available_child_of_node(node, child) {
-> +		ret = vadc_get_dt_channel_data(vadc->dev, &prop, child);
-> +		if (ret)
-> +			return ret;
-> +
-> +		vadc->chan_props[index] = prop;
-> +
-> +		vadc_chan = &vadc_chans[prop.channel];
-> +
-> +		iio_chan->channel = prop.channel;
-> +		iio_chan->datasheet_name = vadc_chan->datasheet_name;
-> +		iio_chan->info_mask_separate = vadc_chan->info_mask;
-> +		iio_chan->type = vadc_chan->type;
-> +		iio_chan->indexed = 1;
-> +		iio_chan->scan_type.sign = 's';
-> +		iio_chan->scan_type.realbits = 15;
-> +		iio_chan->scan_type.storagebits = 16;
-> +		iio_chan->address = index++;
-> +
-> +		iio_chan++;
-> +	}
-> +
-> +	return 0;
-> +}
-> +
-
-<snip>
-
-> +static int vadc_probe(struct platform_device *pdev)
-> +{
-
-<snip>
-
-> +
-> +	indio_dev->dev.parent = dev;
-> +	indio_dev->dev.of_node = node;
-> +	indio_dev->name = pdev->name;
-> +	indio_dev->modes = INDIO_DIRECT_MODE;
-> +	indio_dev->info = &vadc_info;
-> +	indio_dev->channels = vadc->iio_chans;
-> +	indio_dev->num_channels = vadc->nchannels;
-
-This will not work as we thought. Registration will be fine and entries
-in sysfs are created as expected, but this is breaking numbering scheme
-for client drivers. For us the problem is that iio framework expect channels
-numbering to be linear and channel number should not be greater than
-channel count. For example even if die temperature channel is always 8, if
-I describe only 5 channels in DTS files (4 for reference points measurement)
-and 1 for die temperature, clients could not get OF reference to 
-temperature
-channel using io-channels = <&pm8941_vadc 8>;
-
-Jonathan, please, could you advise us.
-
-Regards,
-Ivan
-
-> +
-> +	return devm_iio_device_register(dev, indio_dev);
-> +}
-> +
->
-
+T24gU2VwdGVtYmVyIDI3LCAyMDE0IDExOjM3LCBKb25hdGhhbiBDYW1lcm9uIHdyb3RlOg0KDQo+
+IE9uIDIzLzA5LzE0IDExOjUzLCBBZGFtIFRob21zb24gd3JvdGU6DQo+ID4gU2lnbmVkLW9mZi1i
+eTogQWRhbSBUaG9tc29uIDxBZGFtLlRob21zb24uT3BlbnNvdXJjZUBkaWFzZW1pLmNvbT4NCj4g
+T2J2aW91c2x5IHRoaXMgcmVhbGx5IHdhbnRzIGEgcmV2aWV3IGZyb20gb25lIG9mIHRoZSBkZXZp
+Y2UgdHJlZSBndXlzLCBidXQgSQ0KPiBoYXZlIGEgZmV3DQo+IGJpdHMgYmFzZWQgb24gd2hhdCBN
+YXJrIGhhcyByZWNlbnRseSBzYWlkIGluIG90aGVyIHJldmlld3MgOykNCj4gPiAtLS0NCj4gPiAg
+RG9jdW1lbnRhdGlvbi9kZXZpY2V0cmVlL2JpbmRpbmdzL21mZC9kYTkxNTAudHh0IHwgNDENCj4g
+KysrKysrKysrKysrKysrKysrKysrKysrDQo+ID4gIDEgZmlsZSBjaGFuZ2VkLCA0MSBpbnNlcnRp
+b25zKCspDQo+ID4gIGNyZWF0ZSBtb2RlIDEwMDY0NCBEb2N1bWVudGF0aW9uL2RldmljZXRyZWUv
+YmluZGluZ3MvbWZkL2RhOTE1MC50eHQNCj4gPg0KPiA+IGRpZmYgLS1naXQgYS9Eb2N1bWVudGF0
+aW9uL2RldmljZXRyZWUvYmluZGluZ3MvbWZkL2RhOTE1MC50eHQNCj4gYi9Eb2N1bWVudGF0aW9u
+L2RldmljZXRyZWUvYmluZGluZ3MvbWZkL2RhOTE1MC50eHQNCj4gPiBuZXcgZmlsZSBtb2RlIDEw
+MDY0NA0KPiA+IGluZGV4IDAwMDAwMDAuLmQ3ZGUxNTANCj4gPiAtLS0gL2Rldi9udWxsDQo+ID4g
+KysrIGIvRG9jdW1lbnRhdGlvbi9kZXZpY2V0cmVlL2JpbmRpbmdzL21mZC9kYTkxNTAudHh0DQo+
+ID4gQEAgLTAsMCArMSw0MSBAQA0KPiA+ICtEaWFsb2cgU2VtaWNvbmR1Y3RvciBEQTkxNTAgQ29t
+YmluZWQgQ2hhcmdlci9GdWVsLUdhdWdlIE1GRCBiaW5kaW5ncw0KPiA+ICsNCj4gPiArREE5MTUw
+IGNvbnNpc3RzIG9mIGEgZ3JvdXAgb2Ygc3ViLWRldmljZXMgKEkyQyBPbmx5KToNCj4gV2hhdCBk
+b2VzIEkyQyBvbmx5IGFkZCB0byB0aGUgZGVzY3JpcHRpb24/DQoNCk5vdGhpbmcgcmVhbGx5LiBX
+aWxsIHJlbW92ZS4NCg0KPiA+ICsNCj4gPiArRGV2aWNlCQkJIERlc2NyaXB0aW9uDQo+ID4gKy0t
+LS0tLQkJCSAtLS0tLS0tLS0tLQ0KPiA+ICtkYTkxNTAtZ3BhZGMJCTogSUlPIC0gR1BBREMNCj4g
+R2l2ZW4gdXN1YWwgYXZlcnNpb24gdG8gYW55dGhpbmcgZHJpdmVyIHNwZWNpZmljIGluIHRoZSBk
+ZXZpY2UgdHJlZSBkZXNjcmlwdGlvbg0KPiB5b3UgcHJvYmFibHkNCj4ganVzdCB3YW50IHRvIGRl
+c2NyaWJlIHdoYXQgdGhleSBkbyByYXRoZXIgdGhhbiB3aGF0IHN1YnN5c3RlbSBwcm92aWRlcyB0
+aGUgZHJpdmVyLg0KDQpPaywgY2FuIHVwZGF0ZSBhY2NvcmRpbmdseS4NCg0KPiANCj4gPiArZGE5
+MTUwLWNoYXJnZXIJCTogUG93ZXIgU3VwcGx5IChDaGFyZ2VyKQ0KPiA+ICsNCj4gPiArPT09PT09
+DQo+ID4gKw0KPiA+ICtSZXF1aXJlZCBwcm9wZXJ0aWVzOg0KPiA+ICstIGNvbXBhdGlibGUgOiBT
+aG91bGQgYmUgImRsZyxkYTkxNTAiDQo+ID4gKy0gcmVnOiBTcGVjaWZpZXMgdGhlIEkyQyBzbGF2
+ZSBhZGRyZXNzDQo+ID4gKy0gaW50ZXJydXB0LXBhcmVudDogU3BlY2lmaWVzIHRoZSBwaGFuZGxl
+IG9mIHRoZSBpbnRlcnJ1cHQgY29udHJvbGxlciB0byB3aGljaA0KPiA+ICsgIHRoZSBJUlFzIGZy
+b20gZGE5MTUwIGFyZSBkZWxpdmVyZWQgdG8uDQo+ID4gKy0gaW50ZXJydXB0czogSVJRIGxpbmUg
+aW5mbyBmb3IgZGE5MTUwIGNoaXAuDQo+IENyb3NzIHJlZmVyIHRvIHRoZSBzdGFuZGFyZCBpbnRl
+cnJ1cHRzIGRvYyBmb3IgdGhlc2UuLi4NCj4gDQoNCk9rLCBjYW4gZG8gdGhhdC4NCg0KPiA+ICst
+IGludGVycnVwdC1jb250cm9sbGVyOiBkYTkxNTAgaGFzIGludGVybmFsIElSUXMgKG93biBJUlEg
+ZG9tYWluKS4NCj4gPiArDQo+ID4gK1N1Yi1kZXZpY2VzOg0KPiA+ICstIGRhOTE1MC1ncGFkYzog
+U2VlIERvY3VtZW50YXRpb24vZGV2aWNldHJlZS9iaW5kaW5ncy9paW8vYWRjL2RhOTE1MC0NCj4g
+Z3BhZGMudHh0DQo+ID4gKy0gZGE5MTUwLWNoYXJnZXI6IFNlZSBEb2N1bWVudGF0aW9uL2Rldmlj
+ZXRyZWUvYmluZGluZ3MvcG93ZXIvZGE5MTUwLQ0KPiBjaGFyZ2VyLnR4dA0KPiA+ICsNCj4gPiAr
+DQo+ID4gK0V4YW1wbGU6DQo+ID4gKw0KPiA+ICsJY2hhcmdlcl9mZzogZGE5MTUwQDU4IHsNCj4g
+PiArCQljb21wYXRpYmxlID0gImRsZyxkYTkxNTAiOw0KPiA+ICsJCXJlZyA9IDwweDU4PjsNCj4g
+PiArCQlpbnRlcnJ1cHQtcGFyZW50ID0gPCZncGlvNj47DQo+ID4gKwkJaW50ZXJydXB0cyA9IDwx
+MSBJUlFfVFlQRV9MRVZFTF9MT1c+Ow0KPiA+ICsJCWludGVycnVwdC1jb250cm9sbGVyOw0KPiA+
+ICsNCj4gPiArCQlncGFkYzogZGE5MTUwLWdwYWRjIHsNCj4gPiArCQkJLi4uDQo+ID4gKwkJfTsN
+Cj4gPiArDQo+ID4gKwkJZGE5MTUwLWNoYXJnZXIgew0KPiA+ICsJCQkuLi4NCj4gPiArCQl9Ow0K
+PiA+ICsJfTsNCj4gPiAtLQ0KPiA+IDEuOS4zDQo+ID4NCj4gPiAtLQ0KPiA+IFRvIHVuc3Vic2Ny
+aWJlIGZyb20gdGhpcyBsaXN0OiBzZW5kIHRoZSBsaW5lICJ1bnN1YnNjcmliZSBsaW51eC1paW8i
+IGluDQo+ID4gdGhlIGJvZHkgb2YgYSBtZXNzYWdlIHRvIG1ham9yZG9tb0B2Z2VyLmtlcm5lbC5v
+cmcNCj4gPiBNb3JlIG1ham9yZG9tbyBpbmZvIGF0ICBodHRwOi8vdmdlci5rZXJuZWwub3JnL21h
+am9yZG9tby1pbmZvLmh0bWwNCj4gPg0K
