@@ -1,8 +1,8 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pd0-f175.google.com ([209.85.192.175]:36410 "EHLO
-	mail-pd0-f175.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754451AbaJGPTr (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 7 Oct 2014 11:19:47 -0400
+Received: from mail-pa0-f44.google.com ([209.85.220.44]:42035 "EHLO
+	mail-pa0-f44.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754427AbaJGPTm (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 7 Oct 2014 11:19:42 -0400
 From: Darshana Padmadas <darshanapadmadas@gmail.com>
 To: opw-kernel@googlegroups.com
 Cc: grant.likely@linaro.org, robh+dt@kernel.org, pawel.moll@arm.com,
@@ -10,34 +10,36 @@ Cc: grant.likely@linaro.org, robh+dt@kernel.org, pawel.moll@arm.com,
 	linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
 	linux-kernel@vger.kernel.org,
 	Darshana Padmadas <darshanapadmadas@gmail.com>
-Subject: [PATCH v4 2/4] Documentation: devicetree: bindings: Document deprecated device vendor name to fix related warning
-Date: Tue,  7 Oct 2014 20:49:27 +0530
-Message-Id: <1412695169-22815-3-git-send-email-darshanapadmadas@gmail.com>
+Subject: [PATCH v4 1/4] Documentation: devicetree: bindings: Document correct and deprecated vendor-prefix with device isl29028
+Date: Tue,  7 Oct 2014 20:49:26 +0530
+Message-Id: <1412695169-22815-2-git-send-email-darshanapadmadas@gmail.com>
 In-Reply-To: <1412695169-22815-1-git-send-email-darshanapadmadas@gmail.com>
 References: <1412695169-22815-1-git-send-email-darshanapadmadas@gmail.com>
 Content-Type: text/plain; charset="utf-8"
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-This patch documents deprecated vendor name of device isl29028 for compatibility with older kernels.
+This patch documents the device isl29028 with its vendor-prefix. Undocumented deprecated vendor-prefix
+found by checkpatch also documented for compatibility reasons.
 
 Signed-off-by: Darshana Padmadas <darshanapadmadas@gmail.com>
 ---
- Documentation/devicetree/bindings/vendor-prefixes.txt | 1 +
- 1 file changed, 1 insertion(+)
+ Documentation/devicetree/bindings/i2c/trivial-devices.txt | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/vendor-prefixes.txt b/Documentation/devicetree/bindings/vendor-prefixes.txt
-index ac7269f..ab97459 100644
---- a/Documentation/devicetree/bindings/vendor-prefixes.txt
-+++ b/Documentation/devicetree/bindings/vendor-prefixes.txt
-@@ -68,6 +68,7 @@ img	Imagination Technologies Ltd.
- intel	Intel Corporation
- intercontrol	Inter Control Group
- isee	ISEE 2007 S.L.
-+isil    Intersil (deprecated, use isl)
- isl	Intersil
- karo	Ka-Ro electronics GmbH
- keymile	Keymile GmbH
+diff --git a/Documentation/devicetree/bindings/i2c/trivial-devices.txt b/Documentation/devicetree/bindings/i2c/trivial-devices.txt
+index 6af570e..32edf0b 100644
+--- a/Documentation/devicetree/bindings/i2c/trivial-devices.txt
++++ b/Documentation/devicetree/bindings/i2c/trivial-devices.txt
+@@ -57,6 +57,8 @@ gmt,g751		G751: Digital Temperature Sensor and Thermal Watchdog with Two-Wire In
+ infineon,slb9635tt	Infineon SLB9635 (Soft-) I2C TPM (old protocol, max 100khz)
+ infineon,slb9645tt	Infineon SLB9645 I2C TPM (new protocol, max 400khz)
+ isl,isl12057		Intersil ISL12057 I2C RTC Chip
++isil,isl29028           (deprecated, use isl)
++isl,isl29028            Intersil ISL29028 Ambient Light and Proximity Sensor
+ maxim,ds1050		5 Bit Programmable, Pulse-Width Modulator
+ maxim,max1237		Low-Power, 4-/12-Channel, 2-Wire Serial, 12-Bit ADCs
+ maxim,max6625		9-Bit/12-Bit Temperature Sensors with I²C-Compatible Serial Interface
 -- 
 1.9.1
 
