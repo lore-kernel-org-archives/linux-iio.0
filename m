@@ -1,61 +1,49 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-la0-f45.google.com ([209.85.215.45]:41503 "EHLO
-	mail-la0-f45.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753459AbaJGQ3G (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 7 Oct 2014 12:29:06 -0400
+Return-Path: <robherring2@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <1412695169-22815-5-git-send-email-darshanapadmadas@gmail.com>
-References: <1412695169-22815-1-git-send-email-darshanapadmadas@gmail.com> <1412695169-22815-5-git-send-email-darshanapadmadas@gmail.com>
+In-Reply-To: <1412695169-22815-3-git-send-email-darshanapadmadas@gmail.com>
+References: <1412695169-22815-1-git-send-email-darshanapadmadas@gmail.com> <1412695169-22815-3-git-send-email-darshanapadmadas@gmail.com>
 From: Rob Herring <robherring2@gmail.com>
-Date: Tue, 7 Oct 2014 11:28:42 -0500
-Message-ID: <CAL_Jsq+BFFfh8AHc=mhm5hapHCN++5F4fHZG+KJFBGLYaOyagg@mail.gmail.com>
-Subject: Re: [PATCH v4 4/4] arch: arm: boot: dts: Added correct vendor-prefix
- with device name to compatible property
+Date: Tue, 7 Oct 2014 11:33:46 -0500
+Message-ID: <CAL_JsqKBmwgYF1iQQ_0SzkR9MJZyFj214Je148ONxUh02ZftVg@mail.gmail.com>
+Subject: Re: [PATCH v4 2/4] Documentation: devicetree: bindings: Document
+ deprecated device vendor name to fix related warning
 To: Darshana Padmadas <darshanapadmadas@gmail.com>
-Cc: opw-kernel@googlegroups.com,
-	Grant Likely <grant.likely@linaro.org>,
-	Rob Herring <robh+dt@kernel.org>,
-	Pawel Moll <pawel.moll@arm.com>,
-	"linux-arm-kernel@lists.infradead.org"
-	<linux-arm-kernel@lists.infradead.org>,
-	Jonathan Cameron <jic23@kernel.org>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	devel@driverdev.osuosl.org,
+Cc: opw-kernel@googlegroups.com, Grant Likely <grant.likely@linaro.org>,
+	Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>,
+	"linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, Jonathan Cameron <jic23@kernel.org>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>, devel@driverdev.osuosl.org,
 	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset=UTF-8
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+List-ID: <linux-iio@vger.kernel.org>
 
 On Tue, Oct 7, 2014 at 10:19 AM, Darshana Padmadas
 <darshanapadmadas@gmail.com> wrote:
-> This patch adds the correct vendor-prefix listed in Documentation/devicetree/bindings/vendor-prefixes.txt
-> with the device name to compatible property.
+> This patch documents deprecated vendor name of device isl29028 for compatibility with older kernels.
 
-It would be nice if the subject and msg gave some clue as to which
-binding and platform you are changing. Look at prior commits and
-follow their pattern for subject.
+Fix your line wrapping to 72 chars.
+
+You can shorten the subject "Documentation: devicetree: bindings:" to
+"dt-bindings:". We're horribly inconsistent there...
 
 Rob
 
->
 > Signed-off-by: Darshana Padmadas <darshanapadmadas@gmail.com>
 > ---
->  arch/arm/boot/dts/tegra30-cardhu.dtsi | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+>  Documentation/devicetree/bindings/vendor-prefixes.txt | 1 +
+>  1 file changed, 1 insertion(+)
 >
-> diff --git a/arch/arm/boot/dts/tegra30-cardhu.dtsi b/arch/arm/boot/dts/tegra30-cardhu.dtsi
-> index 2063795..dcc6c75 100644
-> --- a/arch/arm/boot/dts/tegra30-cardhu.dtsi
-> +++ b/arch/arm/boot/dts/tegra30-cardhu.dtsi
-> @@ -187,7 +187,7 @@
->
->                 /* ALS and Proximity sensor */
->                 isl29028@44 {
-> -                       compatible = "isil,isl29028";
-> +                       compatible = "isl,isl29028";
->                         reg = <0x44>;
->                         interrupt-parent = <&gpio>;
->                         interrupts = <TEGRA_GPIO(L, 0) IRQ_TYPE_LEVEL_HIGH>;
+> diff --git a/Documentation/devicetree/bindings/vendor-prefixes.txt b/Documentation/devicetree/bindings/vendor-prefixes.txt
+> index ac7269f..ab97459 100644
+> --- a/Documentation/devicetree/bindings/vendor-prefixes.txt
+> +++ b/Documentation/devicetree/bindings/vendor-prefixes.txt
+> @@ -68,6 +68,7 @@ img   Imagination Technologies Ltd.
+>  intel  Intel Corporation
+>  intercontrol   Inter Control Group
+>  isee   ISEE 2007 S.L.
+> +isil    Intersil (deprecated, use isl)
+>  isl    Intersil
+>  karo   Ka-Ro electronics GmbH
+>  keymile        Keymile GmbH
 > --
 > 1.9.1
 >
