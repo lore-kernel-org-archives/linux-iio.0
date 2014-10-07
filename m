@@ -1,122 +1,105 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from arroyo.ext.ti.com ([192.94.94.40]:51803 "EHLO arroyo.ext.ti.com"
+Received: from ns.mm-sol.com ([37.157.136.199]:40353 "EHLO extserv.mm-sol.com"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751731AbaJFTyg (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Mon, 6 Oct 2014 15:54:36 -0400
-Date: Mon, 6 Oct 2014 14:54:31 -0500
-From: Felipe Balbi <balbi@ti.com>
+	id S1751334AbaJGL5X (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Tue, 7 Oct 2014 07:57:23 -0400
+Message-ID: <1412683049.1027.60.camel@iivanov-dev>
+Subject: Re: [PATCH v3 1/2] iio: vadc: Qualcomm SPMI PMIC voltage ADC driver
+From: "Ivan T. Ivanov" <iivanov@mm-sol.com>
 To: Jonathan Cameron <jic23@kernel.org>
-CC: Michael Welling <mwelling@ieee.org>, Felipe Balbi <balbi@ti.com>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	<linux-iio@vger.kernel.org>, <pmeerw@pmeerw.net>,
-	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Subject: Re: [RESEND PATCH] iio: light: add support for TI's opt3001 light
- sensor
-Message-ID: <20141006195431.GD17445@saruman>
-Reply-To: <balbi@ti.com>
-References: <20140929140227.GD32403@saruman>
- <20140929183856.GA11871@sysresccd>
- <20140929185325.GA1939@saruman>
- <20140929223833.GA13111@sysresccd>
- <20140929224638.GA21681@saruman>
- <20140929234159.GB13111@sysresccd>
- <20140930212204.GC13806@saruman>
- <20141002180553.GI7933@saruman>
- <20141004031721.GA2846@deathray>
- <542FC15D.3070503@kernel.org>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="J5MfuwkIyy7RmF4Q"
-In-Reply-To: <542FC15D.3070503@kernel.org>
+Cc: Stanimir Varbanov <svarbanov@mm-sol.com>, lars <lars@metafoo.de>,
+	sachin.kamat@linaro.org, srinivas.pandruvada@linux.intel.com,
+	linux-iio@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+	linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
+Date: Tue, 07 Oct 2014 14:57:29 +0300
+In-Reply-To: <542FDF41.2040106@kernel.org>
+References: <1411563415-11933-1-git-send-email-svarbanov@mm-sol.com>
+		 <1411563415-11933-2-git-send-email-svarbanov@mm-sol.com>
+		 <542D1B11.8070600@mm-sol.com> <1412251686.1027.15.camel@iivanov-dev>
+	 <542FDF41.2040106@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Mime-Version: 1.0
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
---J5MfuwkIyy7RmF4Q
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-On Sat, Oct 04, 2014 at 10:43:57AM +0100, Jonathan Cameron wrote:
-> On 04/10/14 04:17, Michael Welling wrote:
-> > On Thu, Oct 02, 2014 at 01:05:53PM -0500, Felipe Balbi wrote:
-> >> Hi,
+On Sat, 2014-10-04 at 12:51 +0100, Jonathan Cameron wrote:
+> On 02/10/14 13:08, Ivan T. Ivanov wrote:
+> > +iio maintainers
+> > 
+> > On Thu, 2014-10-02 at 12:29 +0300, Ivan T. Ivanov wrote:
+> >> Hi Stan,
 > >>
-> >> On Tue, Sep 30, 2014 at 04:22:04PM -0500, Felipe Balbi wrote:
-> >>> On Mon, Sep 29, 2014 at 06:41:59PM -0500, Michael Welling wrote:
-> >>>> On Mon, Sep 29, 2014 at 05:46:38PM -0500, Felipe Balbi wrote:
-> >>>>> Hi,
-> >>>>>
-> >>>>> On Mon, Sep 29, 2014 at 05:38:33PM -0500, Michael Welling wrote:
-> >>>>>>>>> Alright, this is already ridiculous. Andrew, if I resend the pa=
-tch can
-> >>>>>>>>> you apply it since maintainer has been ignoring this thread any=
-way ?
-> >>>>>>>>>
-> >>>>>>>>
-> >>>>>>>> Do you reall think this is the best way to approach this?
-> >>>>>>>
-> >>>>>>> when maintainer doesn't respond for weeks, yeah! Sure it is.
-> >>>>>>>
-> >>>>>>>> Perhaps it would be better to explain what each field of the
-> >>>>>>>> configuration register does and then we can move on.
-> >>>>>>>
-> >>>>>>> perhaps Jonathan could tell me exactly what he wants because I ca=
-n't
-> >>>>>>> handle back-and-forth anymore. Specially when he complains about =
-stuff
-> >>>>>>> he asked me to modify himself.
-> >>>>>>>
-> >>>>>>>> In particular the OPT3001_CONFIGURATION_L field needs to be expl=
-ained
-> >>>>>>>> such that the ABI can be properly applied.
-> >>>>>>>>
-> >>>>>>>> Looking at the docs for the Windows demo program the field is as=
-sociated
-> >>>>>>>> with a latch configuration. What does this bit field actually do?
-> >>>>>>
-> >>>>>> Still no technical information. Without all the facts how can you =
-expect
-> >>>>>> him to tell you what he wants?
-> >>>>>
-> >>>>> yeah, because clearly he doesn't know himself, right ?
-> >>>>
-> >>>> Could you explain how it works to me then?
-> >>>
-> >>> checking how much of the docs I can expose now, gimme a couple days.
+> >> On 09/24/2014 03:56 PM, Stanimir Varbanov wrote:
 > >>
-> >> alright, here's a snippet of what's on preliminary docs:
+> >> <snip>
 > >>
-> Firstly, thanks Felipe for going through the process to get permission
-> to release the snippets.  I know this can be a real pain to do.
+> >>> +static int vadc_get_dt_data(struct vadc_priv *vadc, struct device_node *node)
+> >>> +{
+> >>> +	struct iio_chan_spec *iio_chan = vadc->iio_chans;
+> >>> +	const struct vadc_channels *vadc_chan;
+> >>> +	struct vadc_channel_prop prop;
+> >>> +	struct device_node *child;
+> >>> +	int ret, index = 0;
+> >>> +
+> >>> +	for_each_available_child_of_node(node, child) {
+> >>> +		ret = vadc_get_dt_channel_data(vadc->dev, &prop, child);
+> >>> +		if (ret)
+> >>> +			return ret;
+> >>> +
+> >>> +		vadc->chan_props[index] = prop;
+> >>> +
+> >>> +		vadc_chan = &vadc_chans[prop.channel];
+> >>> +
+> >>> +		iio_chan->channel = prop.channel;
+> >>> +		iio_chan->datasheet_name = vadc_chan->datasheet_name;
+> >>> +		iio_chan->info_mask_separate = vadc_chan->info_mask;
+> >>> +		iio_chan->type = vadc_chan->type;
+> >>> +		iio_chan->indexed = 1;
+> >>> +		iio_chan->scan_type.sign = 's';
+> >>> +		iio_chan->scan_type.realbits = 15;
+> >>> +		iio_chan->scan_type.storagebits = 16;
+> >>> +		iio_chan->address = index++;
+> >>> +
+> >>> +		iio_chan++;
+> >>> +	}
+> >>> +
+> >>> +	return 0;
+> >>> +}
+> >>> +
+> >>
+> >> <snip>
+> >>
+> >>> +static int vadc_probe(struct platform_device *pdev)
+> >>> +{
+> >>
+> >> <snip>
+> >>
+> >>> +
+> >>> +	indio_dev->dev.parent = dev;
+> >>> +	indio_dev->dev.of_node = node;
+> >>> +	indio_dev->name = pdev->name;
+> >>> +	indio_dev->modes = INDIO_DIRECT_MODE;
+> >>> +	indio_dev->info = &vadc_info;
+> >>> +	indio_dev->channels = vadc->iio_chans;
+> >>> +	indio_dev->num_channels = vadc->nchannels;
+> >>
+> >> This will not work as we thought. Registration will be fine and entries
+> >> in sysfs are created as expected, but this is breaking numbering scheme
+> >> for client drivers. For us the problem is that iio framework expect channels
+> >> numbering to be linear and channel number should not be greater than
+> >> channel count. For example even if die temperature channel is always 8, if
+> >> I describe only 5 channels in DTS files (4 for reference points measurement)
+> >> and 1 for die temperature, clients could not get OF reference to 
+> >> temperature
+> >> channel using io-channels = <&pm8941_vadc 8>;
+> >>
+> >> Jonathan, please, could you advise us.
+> I'd like to let the solution you proposed sit on the list a little longer.
+> It seems fairly sensible, but lets see what others suggest.
 
-alright, np. Device will be launched soonish, so full datasheet should
-be in TI's website in the coming weeks or so.
+Sure. 
 
-I'll wait until v3.18-rc1 is tagged before working on this again.
+Thank you.
+Ivan
 
---=20
-balbi
 
---J5MfuwkIyy7RmF4Q
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
-
-iQIcBAEBAgAGBQJUMvN3AAoJEIaOsuA1yqRE7aMP/0XtX3i9+S17a8igX3coArpz
-dXi7VlWG2FPw5yfg83I5CO6DaIvvUjVvlN4h3wCHDTzAdTmHw4c01o4qQhQtW5cN
-9m2RoU0/YTr+CSEqR+wmfqf7+NF94H2Qu6qGig4fxw2Le1/Yxn6DTm3x8GAK3hJF
-S+nXCXbhRm/rz4S1GTQJOOR4tCvU64N23gTjUrsxsdbfA4ierhQ7Lsq06UbWWsog
-bWJTbYo7BCVyBjSiWBCQg/pJmeRBUufvDvfqGqQKCBCNzcKNFV3WKqaNDxSQQA6V
-P/YPi/bc9Sb8VZMhltF4xDsiBYGystCT3oS27e8J9FQWkNVVNJs6CprwvM7ukYjE
-Hybx0rBg8WOhptpne7w38VhMIJoyH8Po+Vo13cG5ztQuEVC4UbjBMYtbya46e/Ep
-kfvdLFx61gZMevLIEyebn6Ld0hbisNUIMcOAW1c6Exg3KWmQINH6WqSdnDMt+YLs
-17MsD4OkJrj3Ch7F2d+M8hbfICK+FzcaTPkMLck2ahnl7THrdFJv6sz0gkwsB6CZ
-UzS4gtMnC9OBZsxUU/Zxv5G11YF6vSBBucLzlLIR1VgHu3qKBiWgz351GKGQI3Ue
-PycKsjgdQzOZkqMl5ZWAyYSOuG+ezsYTkJX29ihp0AtquV2esUt2gnHw/pubkddZ
-FgQLEJ4fzt4oNWPmviYC
-=ja9T
------END PGP SIGNATURE-----
-
---J5MfuwkIyy7RmF4Q--
