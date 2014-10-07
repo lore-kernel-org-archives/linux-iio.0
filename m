@@ -1,70 +1,61 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga02.intel.com ([134.134.136.20]:25275 "EHLO mga02.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751385AbaJIMdf (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Thu, 9 Oct 2014 08:33:35 -0400
-From: Daniel Baluta <daniel.baluta@intel.com>
-To: jic23@kernel.org
-Cc: irina.tirdea@intel.com, daniel.baluta@intel.com,
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [RFC PATCH v2 0/7] Introduce IIO interface for Android advanced features
-Date: Thu,  9 Oct 2014 15:39:38 +0300
-Message-Id: <1412858385-11954-1-git-send-email-daniel.baluta@intel.com>
+Received: from mail-la0-f45.google.com ([209.85.215.45]:41503 "EHLO
+	mail-la0-f45.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753459AbaJGQ3G (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 7 Oct 2014 12:29:06 -0400
+MIME-Version: 1.0
+In-Reply-To: <1412695169-22815-5-git-send-email-darshanapadmadas@gmail.com>
+References: <1412695169-22815-1-git-send-email-darshanapadmadas@gmail.com> <1412695169-22815-5-git-send-email-darshanapadmadas@gmail.com>
+From: Rob Herring <robherring2@gmail.com>
+Date: Tue, 7 Oct 2014 11:28:42 -0500
+Message-ID: <CAL_Jsq+BFFfh8AHc=mhm5hapHCN++5F4fHZG+KJFBGLYaOyagg@mail.gmail.com>
+Subject: Re: [PATCH v4 4/4] arch: arm: boot: dts: Added correct vendor-prefix
+ with device name to compatible property
+To: Darshana Padmadas <darshanapadmadas@gmail.com>
+Cc: opw-kernel@googlegroups.com,
+	Grant Likely <grant.likely@linaro.org>,
+	Rob Herring <robh+dt@kernel.org>,
+	Pawel Moll <pawel.moll@arm.com>,
+	"linux-arm-kernel@lists.infradead.org"
+	<linux-arm-kernel@lists.infradead.org>,
+	Jonathan Cameron <jic23@kernel.org>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	devel@driverdev.osuosl.org,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-This patchset introduces a new interface for supporting some of the composite
-sensors in Android [1]. First supported sensors are activity and pedometer.
+On Tue, Oct 7, 2014 at 10:19 AM, Darshana Padmadas
+<darshanapadmadas@gmail.com> wrote:
+> This patch adds the correct vendor-prefix listed in Documentation/devicetree/bindings/vendor-prefixes.txt
+> with the device name to compatible property.
 
-This is a follow up of the discussion about adding new channels to IIO
-initiated some time ago on IIO list [2].
+It would be nice if the subject and msg gave some clue as to which
+binding and platform you are changing. Look at prior commits and
+follow their pattern for subject.
 
-A device that has the activity/pedometer functionality is Freescale's MMA9553L ([3]).
+Rob
 
-Because we don't have yet the hardware, to demonstrate these new channels we 
-update iio_dummy kernel module and iio_event_monitor test program. We want
-to get an early feedback about extending the IIO interface in the correct
-direction.
-
-[1] http://source.android.com/devices/sensors/composite_sensors.html
-[2] http://marc.info/?l=linux-iio&m=138374342831057&w=2
-[3] http://www.freescale.com/files/sensors/doc/ref_manual/MMA9553LSWRM.pdf
-
-Changes since v1 (mostly based on comments from Jonathan)
-
-	* introduce TRANSITION event instead of MOTION to better
-	represent multilevel state change
-	* remove pedometer channel type and steps modifier and replace it 
-	with steps channel type
-	* squashed together patches introducing channels and associated events
-	* introduced IIO_EV_DIR_NONE
-	* changed cover letter subject to reflect the changes
-
-Daniel Baluta (4):
-  iio: dummy: Add virtual registers for dummy device
-  iio: core: Introduce IIO_ACTIVITY channel and TRANSITION event
-  iio: dummy: Demonstrate the usage of new channel types
-  iio: event_monitor: Add support for new channel types
-
-Irina Tirdea (3):
-  iio: core: Introduce IIO_EV_DIR_NONE
-  iio: core: Introduce STEPS channel type, ENABLE mask and INSTANCE
-    event
-  iio: core: Introduce HEIGHT channel type
-
- Documentation/ABI/testing/sysfs-bus-iio            |  75 ++++++++
- drivers/iio/industrialio-core.c                    |   8 +
- drivers/iio/industrialio-event.c                   |  14 +-
- .../staging/iio/Documentation/iio_event_monitor.c  |  25 ++-
- drivers/staging/iio/iio_dummy_evgen.c              |  16 ++
- drivers/staging/iio/iio_dummy_evgen.h              |   6 +
- drivers/staging/iio/iio_simple_dummy.c             | 199 +++++++++++++++++++--
- drivers/staging/iio/iio_simple_dummy.h             |   7 +
- drivers/staging/iio/iio_simple_dummy_events.c      |  61 ++++++-
- include/linux/iio/iio.h                            |   1 +
- include/linux/iio/types.h                          |  12 +-
- 11 files changed, 393 insertions(+), 31 deletions(-)
-
--- 
-1.9.1
-
+>
+> Signed-off-by: Darshana Padmadas <darshanapadmadas@gmail.com>
+> ---
+>  arch/arm/boot/dts/tegra30-cardhu.dtsi | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/arch/arm/boot/dts/tegra30-cardhu.dtsi b/arch/arm/boot/dts/tegra30-cardhu.dtsi
+> index 2063795..dcc6c75 100644
+> --- a/arch/arm/boot/dts/tegra30-cardhu.dtsi
+> +++ b/arch/arm/boot/dts/tegra30-cardhu.dtsi
+> @@ -187,7 +187,7 @@
+>
+>                 /* ALS and Proximity sensor */
+>                 isl29028@44 {
+> -                       compatible = "isil,isl29028";
+> +                       compatible = "isl,isl29028";
+>                         reg = <0x44>;
+>                         interrupt-parent = <&gpio>;
+>                         interrupts = <TEGRA_GPIO(L, 0) IRQ_TYPE_LEVEL_HIGH>;
+> --
+> 1.9.1
+>
