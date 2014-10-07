@@ -1,536 +1,357 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga09.intel.com ([134.134.136.24]:11414 "EHLO mga09.intel.com"
+Received: from mga02.intel.com ([134.134.136.20]:64460 "EHLO mga02.intel.com"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751387AbaJFLXY (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Mon, 6 Oct 2014 07:23:24 -0400
-From: Vlad Dogaru <vlad.dogaru@intel.com>
-To: linux-iio@vger.kernel.org, jic23@kernel.org, pmeerw@pmeerw.net
-Cc: Vlad Dogaru <vlad.dogaru@intel.com>
-Subject: [PATCH v2] iio: add bmp280 pressure and temperature driver
-Date: Mon,  6 Oct 2014 14:22:58 +0300
-Message-Id: <1412594578-12765-1-git-send-email-vlad.dogaru@intel.com>
+	id S1752681AbaJGERh (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Tue, 7 Oct 2014 00:17:37 -0400
+From: Jacob Pan <jacob.jun.pan@linux.intel.com>
+To: IIO <linux-iio@vger.kernel.org>,
+	LKML <linux-kernel@vger.kernel.org>,
+	DEVICE TREE <devicetree@vger.kernel.org>,
+	Lee Jones <lee.jones@linaro.org>
+Cc: Carlo Caione <carlo@caione.org>,
+	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+	Aaron Lu <aaron.lu@intel.com>, Alan Cox <alan@linux.intel.com>,
+	Jean Delvare <khali@linux-fr.org>,
+	Samuel Ortiz <sameo@linux.intel.com>,
+	Liam Girdwood <lgirdwood@gmail.com>,
+	Mark Brown <broonie@kernel.org>,
+	Grant Likely <grant.likely@linaro.org>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Rob Herring <robh+dt@kernel.org>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Fugang Duan <B38611@freescale.com>,
+	Arnd Bergmann <arnd@arndb.de>,
+	Zubair Lutfullah <zubair.lutfullah@gmail.com>,
+	Sebastian Reichel <sre@debian.org>,
+	Johannes Thumshirn <johannes.thumshirn@men.de>,
+	Philippe Reynes <tremyfr@yahoo.fr>,
+	Angelo Compagnucci <angelo.compagnucci@gmail.com>,
+	Doug Anderson <dianders@chromium.org>,
+	Ramakrishna Pallala <ramakrishna.pallala@intel.com>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Maxime Ripard <maxime.ripard@free-electrons.com>,
+	Rafael Wysocki <rafael.j.wysocki@intel.com>,
+	Todd Brandt <todd.e.brandt@linux.intel.com>,
+	Jacob Pan <jacob.jun.pan@linux.intel.com>
+Subject: [PATCH v7 2/2] iio/adc: add support for axp288 adc
+Date: Mon,  6 Oct 2014 21:17:15 -0700
+Message-Id: <1412655435-31284-3-git-send-email-jacob.jun.pan@linux.intel.com>
+In-Reply-To: <1412655435-31284-1-git-send-email-jacob.jun.pan@linux.intel.com>
+References: <1412655435-31284-1-git-send-email-jacob.jun.pan@linux.intel.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Minimal implementation, can read temperature and data using direct mode.
+Platform driver for X-Powers AXP288 ADC, which is a sub-device of the
+customized AXP288 PMIC for Intel Baytrail-CR platforms. GPADC device
+enumerates as one of the MFD cell devices. It uses IIO infrastructure
+to communicate with userspace and consumer drivers.
 
-Datasheet available at
-<http://ae-bst.resource.bosch.com/media/products/dokumente/bmp280/BST-BMP280-DS001-09.pdf>
+Usages of ADC channels include battery charging and thermal sensors.
 
-Signed-off-by: Vlad Dogaru <vlad.dogaru@intel.com>
+Based on initial work by:
+Ramakrishna Pallala <ramakrishna.pallala@intel.com>
+
+Acked-by: Jonathan Cameron <jic23@kernel.org>
+Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
 ---
+ drivers/iio/adc/Kconfig      |   8 ++
+ drivers/iio/adc/Makefile     |   1 +
+ drivers/iio/adc/axp288_adc.c | 254 +++++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 263 insertions(+)
+ create mode 100644 drivers/iio/adc/axp288_adc.c
 
-Changes since v1:
- * report processed values instead of raw ones;
- * use regmap cache for calibration registers;
- * check chip id register on probe;
- * minor style fixes.
-
-I couldn't find an entry for in_pressure_input in the ABI specification, so I
-assume the units for kilopascal, just as for the raw value.  If needed, I can
-send a patch to add in_pressure_input to the ABI.
-
- drivers/iio/pressure/Kconfig  |  11 +
- drivers/iio/pressure/Makefile |   1 +
- drivers/iio/pressure/bmp280.c | 455 ++++++++++++++++++++++++++++++++++++++++++
- 3 files changed, 467 insertions(+)
- create mode 100644 drivers/iio/pressure/bmp280.c
-
-diff --git a/drivers/iio/pressure/Kconfig b/drivers/iio/pressure/Kconfig
-index 15afbc9..a3be537 100644
---- a/drivers/iio/pressure/Kconfig
-+++ b/drivers/iio/pressure/Kconfig
-@@ -5,6 +5,17 @@
+diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+index 11b048a..db2681b 100644
+--- a/drivers/iio/adc/Kconfig
++++ b/drivers/iio/adc/Kconfig
+@@ -127,6 +127,14 @@ config AT91_ADC
+ 	help
+ 	  Say yes here to build support for Atmel AT91 ADC.
  
- menu "Pressure sensors"
- 
-+config BMP280
-+	tristate "Bosch Sensortec BMP280 pressure sensor driver"
-+	depends on I2C
-+	select REGMAP_I2C
++config AXP288_ADC
++	tristate "X-Powers AXP288 ADC driver"
++	depends on MFD_AXP20X
 +	help
-+	 Say yes here to build support for Bosch Sensortec BMP280
-+	 pressure and temperature sensor.
++	  Say yes here to have support for X-Powers power management IC (PMIC) ADC
++	  device. Depending on platform configuration, this general purpose ADC can
++	  be used for sampling sensors such as thermal resistors.
 +
-+	 To compile this driver as a module, choose M here: the module
-+	 will be called bmp280.
-+
- config HID_SENSOR_PRESS
- 	depends on HID_SENSOR_HUB
- 	select IIO_BUFFER
-diff --git a/drivers/iio/pressure/Makefile b/drivers/iio/pressure/Makefile
-index 90a37e8..88011f2 100644
---- a/drivers/iio/pressure/Makefile
-+++ b/drivers/iio/pressure/Makefile
-@@ -3,6 +3,7 @@
- #
- 
- # When adding new entries keep the list in alphabetical order
-+obj-$(CONFIG_BMP280) += bmp280.o
- obj-$(CONFIG_HID_SENSOR_PRESS)   += hid-sensor-press.o
- obj-$(CONFIG_MPL115) += mpl115.o
- obj-$(CONFIG_MPL3115) += mpl3115.o
-diff --git a/drivers/iio/pressure/bmp280.c b/drivers/iio/pressure/bmp280.c
+ config EXYNOS_ADC
+ 	tristate "Exynos ADC driver support"
+ 	depends on ARCH_EXYNOS || (OF && COMPILE_TEST)
+diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
+index ad81b51..19640f9 100644
+--- a/drivers/iio/adc/Makefile
++++ b/drivers/iio/adc/Makefile
+@@ -14,6 +14,7 @@ obj-$(CONFIG_AD7793) += ad7793.o
+ obj-$(CONFIG_AD7887) += ad7887.o
+ obj-$(CONFIG_AD799X) += ad799x.o
+ obj-$(CONFIG_AT91_ADC) += at91_adc.o
++obj-$(CONFIG_AXP288_ADC) += axp288_adc.o
+ obj-$(CONFIG_EXYNOS_ADC) += exynos_adc.o
+ obj-$(CONFIG_LP8788_ADC) += lp8788_adc.o
+ obj-$(CONFIG_MAX1027) += max1027.o
+diff --git a/drivers/iio/adc/axp288_adc.c b/drivers/iio/adc/axp288_adc.c
 new file mode 100644
-index 0000000..bef0987
+index 0000000..4800286
 --- /dev/null
-+++ b/drivers/iio/pressure/bmp280.c
-@@ -0,0 +1,455 @@
++++ b/drivers/iio/adc/axp288_adc.c
+@@ -0,0 +1,254 @@
 +/*
-+ * Copyright (c) 2014 Intel Corporation
++ * axp288_adc.c - X-Powers AXP288 PMIC ADC Driver
 + *
-+ * Driver for Bosch Sensortec BMP280 digital pressure sensor.
++ * Copyright (C) 2014 Intel Corporation
++ *
++ * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 + *
 + * This program is free software; you can redistribute it and/or modify
-+ * it under the terms of the GNU General Public License version 2 as
-+ * published by the Free Software Foundation.
++ * it under the terms of the GNU General Public License as published by
++ * the Free Software Foundation; version 2 of the License.
++ *
++ * This program is distributed in the hope that it will be useful, but
++ * WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	See the GNU
++ * General Public License for more details.
 + *
 + */
-+
-+#define pr_fmt(fmt) "bmp280: " fmt
 +
 +#include <linux/module.h>
-+#include <linux/i2c.h>
-+#include <linux/acpi.h>
++#include <linux/kernel.h>
++#include <linux/device.h>
 +#include <linux/regmap.h>
++#include <linux/mfd/axp20x.h>
++#include <linux/platform_device.h>
++
 +#include <linux/iio/iio.h>
-+#include <linux/iio/sysfs.h>
++#include <linux/iio/machine.h>
++#include <linux/iio/driver.h>
 +
-+#define BMP280_REG_TEMP_XLSB		0xFC
-+#define BMP280_REG_TEMP_LSB		0xFB
-+#define BMP280_REG_TEMP_MSB		0xFA
-+#define BMP280_REG_PRESS_XLSB		0xF9
-+#define BMP280_REG_PRESS_LSB		0xF8
-+#define BMP280_REG_PRESS_MSB		0xF7
++#define AXP288_ADC_EN_MASK		0xF1
++#define AXP288_ADC_TS_PIN_GPADC		0xF2
++#define AXP288_ADC_TS_PIN_ON		0xF3
 +
-+#define BMP280_REG_CONFIG		0xF5
-+#define BMP280_REG_CTRL_MEAS		0xF4
-+#define BMP280_REG_STATUS		0xF3
-+#define BMP280_REG_RESET		0xE0
-+#define BMP280_REG_ID			0xD0
++enum axp288_adc_id {
++	AXP288_ADC_TS,
++	AXP288_ADC_PMIC,
++	AXP288_ADC_GP,
++	AXP288_ADC_BATT_CHRG_I,
++	AXP288_ADC_BATT_DISCHRG_I,
++	AXP288_ADC_BATT_V,
++	AXP288_ADC_NR_CHAN,
++};
 +
-+#define BMP280_REG_COMP_TEMP_START	0x88
-+#define BMP280_COMP_TEMP_REG_COUNT	6
-+
-+#define BMP280_REG_COMP_PRESS_START	0x8E
-+#define BMP280_COMP_PRESS_REG_COUNT	18
-+
-+#define BMP280_FILTER_MASK		(BIT(4) | BIT(3) | BIT(2))
-+#define BMP280_FILTER_OFF		0
-+#define BMP280_FILTER_2X		BIT(2)
-+#define BMP280_FILTER_4X		BIT(3)
-+#define BMP280_FILTER_8X		(BIT(3) | BIT(2))
-+#define BMP280_FILTER_16X		BIT(4)
-+
-+#define BMP280_OSRS_TEMP_MASK		(BIT(7) | BIT(6) | BIT(5))
-+#define BMP280_OSRS_TEMP_SKIP		0
-+#define BMP280_OSRS_TEMP_1X		BIT(5)
-+#define BMP280_OSRS_TEMP_2X		BIT(6)
-+#define BMP280_OSRS_TEMP_4X		(BIT(6) | BIT(5))
-+#define BMP280_OSRS_TEMP_8X		BIT(7)
-+#define BMP280_OSRS_TEMP_16X		(BIT(7) | BIT(5))
-+
-+#define BMP280_OSRS_PRESS_MASK		(BIT(4) | BIT(3) | BIT(2))
-+#define BMP280_OSRS_PRESS_SKIP		0
-+#define BMP280_OSRS_PRESS_1X		BIT(2)
-+#define BMP280_OSRS_PRESS_2X		BIT(3)
-+#define BMP280_OSRS_PRESS_4X		(BIT(3) | BIT(2))
-+#define BMP280_OSRS_PRESS_8X		BIT(4)
-+#define BMP280_OSRS_PRESS_16X		(BIT(4) | BIT(2))
-+
-+#define BMP280_MODE_MASK		(BIT(1) | BIT(0))
-+#define BMP280_MODE_SLEEP		0
-+#define BMP280_MODE_FORCED		BIT(0)
-+#define BMP280_MODE_NORMAL		(BIT(1) | BIT(0))
-+
-+#define BMP280_CHIP_ID			0x58
-+#define BMP280_SOFT_RESET_VAL		0xB6
-+
-+struct bmp280_data {
-+	struct i2c_client *client;
-+	struct mutex lock;
++struct axp288_adc_info {
++	int irq;
 +	struct regmap *regmap;
-+
-+	/*
-+	 * Carryover value from temperature conversion, used in pressure
-+	 * calculation.
-+	 */
-+	s32 t_fine;
 +};
 +
-+/* Compensation parameters. */
-+struct bmp280_comp_temp {
-+	u16 dig_t1;
-+	s16 dig_t2, dig_t3;
-+};
-+
-+struct bmp280_comp_press {
-+	u16 dig_p1;
-+	s16 dig_p2, dig_p3, dig_p4, dig_p5, dig_p6, dig_p7, dig_p8, dig_p9;
-+};
-+
-+static const struct iio_chan_spec bmp280_channels[] = {
++static const struct iio_chan_spec const axp288_adc_channels[] = {
 +	{
-+		.type = IIO_PRESSURE,
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED),
-+	},
-+	{
++		.indexed = 1,
 +		.type = IIO_TEMP,
++		.channel = 0,
++		.address = AXP288_TS_ADC_H,
++		.datasheet_name = "TS_PIN",
++	}, {
++		.indexed = 1,
++		.type = IIO_TEMP,
++		.channel = 1,
++		.address = AXP288_PMIC_ADC_H,
++		.datasheet_name = "PMIC_TEMP",
++	}, {
++		.indexed = 1,
++		.type = IIO_TEMP,
++		.channel = 2,
++		.address = AXP288_GP_ADC_H,
++		.datasheet_name = "GPADC",
++	}, {
++		.indexed = 1,
++		.type = IIO_CURRENT,
++		.channel = 3,
++		.address = AXP20X_BATT_CHRG_I_H,
++		.datasheet_name = "BATT_CHG_I",
++		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED),
++	}, {
++		.indexed = 1,
++		.type = IIO_CURRENT,
++		.channel = 4,
++		.address = AXP20X_BATT_DISCHRG_I_H,
++		.datasheet_name = "BATT_DISCHRG_I",
++		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED),
++	}, {
++		.indexed = 1,
++		.type = IIO_VOLTAGE,
++		.channel = 5,
++		.address = AXP20X_BATT_V_H,
++		.datasheet_name = "BATT_V",
 +		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED),
 +	},
 +};
 +
-+static bool bmp280_is_writeable_reg(struct device *dev, unsigned int reg)
-+{
-+	switch (reg) {
-+	case BMP280_REG_CONFIG:
-+	case BMP280_REG_CTRL_MEAS:
-+	case BMP280_REG_RESET:
-+		return true;
-+	default:
-+		return false;
-+	};
-+}
-+
-+static bool bmp280_is_volatile_reg(struct device *dev, unsigned int reg)
-+{
-+	switch (reg) {
-+	case BMP280_REG_TEMP_XLSB:
-+	case BMP280_REG_TEMP_LSB:
-+	case BMP280_REG_TEMP_MSB:
-+	case BMP280_REG_PRESS_XLSB:
-+	case BMP280_REG_PRESS_LSB:
-+	case BMP280_REG_PRESS_MSB:
-+	case BMP280_REG_STATUS:
-+		return true;
-+	default:
-+		return false;
++#define AXP288_ADC_MAP(_adc_channel_label, _consumer_dev_name,	\
++		_consumer_channel)				\
++	{							\
++		.adc_channel_label = _adc_channel_label,	\
++		.consumer_dev_name = _consumer_dev_name,	\
++		.consumer_channel = _consumer_channel,		\
 +	}
-+}
 +
-+static const struct regmap_config bmp280_regmap_config = {
-+	.reg_bits = 8,
-+	.val_bits = 8,
-+
-+	.max_register = BMP280_REG_TEMP_XLSB,
-+	.cache_type = REGCACHE_RBTREE,
-+
-+	.writeable_reg = bmp280_is_writeable_reg,
-+	.volatile_reg = bmp280_is_volatile_reg,
++/* for consumer drivers */
++static struct iio_map axp288_adc_default_maps[] = {
++	AXP288_ADC_MAP("TS_PIN", "axp288-batt", "axp288-batt-temp"),
++	AXP288_ADC_MAP("PMIC_TEMP", "axp288-pmic", "axp288-pmic-temp"),
++	AXP288_ADC_MAP("GPADC", "axp288-gpadc", "axp288-system-temp"),
++	AXP288_ADC_MAP("BATT_CHG_I", "axp288-chrg", "axp288-chrg-curr"),
++	AXP288_ADC_MAP("BATT_DISCHRG_I", "axp288-chrg", "axp288-chrg-d-curr"),
++	AXP288_ADC_MAP("BATT_V", "axp288-batt", "axp288-batt-volt"),
++	{},
 +};
 +
-+static int bmp280_read_compensation_temp(struct bmp280_data *data,
-+					 struct bmp280_comp_temp *comp)
++static int axp288_adc_read_channel(int *val, unsigned long address,
++				struct regmap *regmap)
 +{
-+	int ret;
-+	__le16 buf[BMP280_COMP_TEMP_REG_COUNT / 2];
++	u8 buf[2];
 +
-+	ret = regmap_bulk_read(data->regmap, BMP280_REG_COMP_TEMP_START,
-+			       buf, BMP280_COMP_TEMP_REG_COUNT);
-+	if (ret < 0) {
-+		dev_err(&data->client->dev,
-+			"failed to read temperature calibration parameters\n");
-+		return ret;
-+	}
++	if (regmap_bulk_read(regmap, address, buf, 2))
++		return -EIO;
++	*val = (buf[0] << 4) + ((buf[1] >> 4) & 0x0F);
 +
-+	comp->dig_t1 = (u16) le16_to_cpu(buf[0]);
-+	comp->dig_t2 = (s16) le16_to_cpu(buf[1]);
-+	comp->dig_t3 = (s16) le16_to_cpu(buf[2]);
-+
-+	return 0;
++	return IIO_VAL_INT;
 +}
 +
-+static int bmp280_read_compensation_press(struct bmp280_data *data,
-+					  struct bmp280_comp_press *comp)
++static int axp288_adc_set_ts(struct regmap *regmap, unsigned int mode,
++				unsigned long address)
 +{
-+	int ret;
-+	__le16 buf[BMP280_COMP_PRESS_REG_COUNT / 2];
-+
-+	ret = regmap_bulk_read(data->regmap, BMP280_REG_COMP_PRESS_START,
-+			       buf, BMP280_COMP_PRESS_REG_COUNT);
-+	if (ret < 0) {
-+		dev_err(&data->client->dev,
-+			"failed to read pressure calibration parameters\n");
-+		return ret;
-+	}
-+
-+	comp->dig_p1 = (s16) le16_to_cpu(buf[0]);
-+	comp->dig_p2 = (u16) le16_to_cpu(buf[1]);
-+	comp->dig_p3 = (u16) le16_to_cpu(buf[2]);
-+	comp->dig_p4 = (u16) le16_to_cpu(buf[3]);
-+	comp->dig_p5 = (u16) le16_to_cpu(buf[4]);
-+	comp->dig_p6 = (u16) le16_to_cpu(buf[5]);
-+	comp->dig_p7 = (u16) le16_to_cpu(buf[6]);
-+	comp->dig_p8 = (u16) le16_to_cpu(buf[7]);
-+	comp->dig_p9 = (u16) le16_to_cpu(buf[8]);
-+
-+	return 0;
-+}
-+
-+/*
-+ * Returns temperature in DegC, resolution is 0.01 DegC.  Output value of
-+ * "5123" equals 51.23 DegC.  t_fine carries fine temperature as global
-+ * value.
-+ *
-+ * Taken from datasheet, Section 3.11.3, "Compensation formula".
-+ */
-+static s32 bmp280_compensate_temp(struct bmp280_data *data,
-+				  struct bmp280_comp_temp *comp,
-+				  s32 adc_temp)
-+{
-+	s32 var1, var2, t;
-+
-+	var1 = (((adc_temp >> 3) - ((s32) comp->dig_t1 << 1)) *
-+		((s32) comp->dig_t2)) >> 11;
-+	var2 = (((((adc_temp >> 4) - ((s32) comp->dig_t1)) *
-+		  ((adc_temp >> 4) - ((s32) comp->dig_t1))) >> 12) *
-+		((s32) comp->dig_t3)) >> 14;
-+
-+	data->t_fine = var1 + var2;
-+	t = (data->t_fine * 5 + 128) >> 8;
-+
-+	return t;
-+}
-+
-+/*
-+ * Returns pressure in Pa as unsigned 32 bit integer in Q24.8 format (24
-+ * integer bits and 8 fractional bits).  Output value of "24674867"
-+ * represents 24674867/256 = 96386.2 Pa = 963.862 hPa
-+ *
-+ * Taken from datasheet, Section 3.11.3, "Compensation formula".
-+ */
-+static u32 bmp280_compensate_press(struct bmp280_data *data,
-+				   struct bmp280_comp_press *comp,
-+				   s32 adc_press)
-+{
-+	s64 var1, var2, p;
-+
-+	var1 = ((s64) data->t_fine) - 128000;
-+	var2 = var1 * var1 * (s64) comp->dig_p6;
-+	var2 = var2 + ((var1 * (s64) comp->dig_p5) << 17);
-+	var2 = var2 + (((s64) comp->dig_p4) << 35);
-+	var1 = ((var1 * var1 * (s64) comp->dig_p3) >> 8) +
-+		((var1 * (s64) comp->dig_p2) << 12);
-+	var1 = (((((s64) 1) << 47) + var1)) * ((s64) comp->dig_p1) >> 33;
-+
-+	if (var1 == 0)
++	/* channels other than GPADC do not need to switch TS pin */
++	if (address != AXP288_GP_ADC_H)
 +		return 0;
 +
-+	p = 1048576 - adc_press;
-+	p = (((p << 31) - var2) * 3125) / var1;
-+	var1 = (((s64) comp->dig_p9) * (p >> 13) * (p >> 13)) >> 25;
-+	var2 = (((s64) comp->dig_p8) * p) >> 19;
-+	p = ((p + var1 + var2) >> 8) + (((s64) comp->dig_p7) << 4);
-+
-+	return (u32) p;
++	return regmap_write(regmap, AXP288_ADC_TS_PIN_CTRL, mode);
 +}
 +
-+static int bmp280_read_temp(struct bmp280_data *data,
-+			    int *val)
++static int axp288_adc_read_raw(struct iio_dev *indio_dev,
++			struct iio_chan_spec const *chan,
++			int *val, int *val2, long mask)
 +{
 +	int ret;
-+	__be32 tmp = 0;
-+	s32 adc_temp, comp_temp;
-+	struct bmp280_comp_temp comp;
++	struct axp288_adc_info *info = iio_priv(indio_dev);
 +
-+	ret = bmp280_read_compensation_temp(data, &comp);
-+	if (ret < 0)
-+		return ret;
-+
-+	ret = regmap_bulk_read(data->regmap, BMP280_REG_TEMP_MSB,
-+			       (u8 *) &tmp, 3);
-+	if (ret < 0) {
-+		dev_err(&data->client->dev, "failed to read temperature\n");
-+		return ret;
-+	}
-+
-+	adc_temp = be32_to_cpu(tmp) >> 12;
-+	comp_temp = bmp280_compensate_temp(data, &comp, adc_temp);
-+
-+	/*
-+	 * val might be NULL if we're called by the read_press routine,
-+	 * who only cares about the carry over t_fine value.
-+	 */
-+	if (val) {
-+		*val = comp_temp * 10;
-+		return IIO_VAL_INT;
-+	}
-+
-+	return 0;
-+}
-+
-+static int bmp280_read_press(struct bmp280_data *data,
-+			     int *val, int *val2)
-+{
-+	int ret;
-+	__be32 tmp = 0;
-+	s32 adc_press;
-+	u32 comp_press;
-+	struct bmp280_comp_press comp;
-+
-+	ret = bmp280_read_compensation_press(data, &comp);
-+	if (ret < 0)
-+		return ret;
-+
-+	/* Read and compensate temperature so we get a reading of t_fine. */
-+	ret = bmp280_read_temp(data, NULL);
-+	if (ret < 0)
-+		return ret;
-+
-+	ret = regmap_bulk_read(data->regmap, BMP280_REG_PRESS_MSB,
-+			       (u8 *) &tmp, 3);
-+	if (ret < 0) {
-+		dev_err(&data->client->dev, "failed to read pressure\n");
-+		return ret;
-+	}
-+
-+	adc_press = be32_to_cpu(tmp) >> 12;
-+	comp_press = bmp280_compensate_press(data, &comp, adc_press);
-+
-+	*val = comp_press / 256000;
-+	*val2 = comp_press * 1000000 / 256000;
-+
-+	return IIO_VAL_INT_PLUS_MICRO;
-+}
-+
-+static int bmp280_read_raw(struct iio_dev *indio_dev,
-+			   struct iio_chan_spec const *chan,
-+			   int *val, int *val2, long mask)
-+{
-+	int ret;
-+	struct bmp280_data *data = iio_priv(indio_dev);
-+
-+	mutex_lock(&data->lock);
-+
++	mutex_lock(&indio_dev->mlock);
 +	switch (mask) {
-+	case IIO_CHAN_INFO_PROCESSED:
-+		switch (chan->type) {
-+		case IIO_PRESSURE:
-+			ret = bmp280_read_press(data, val, val2);
-+			break;
-+		case IIO_TEMP:
-+			ret = bmp280_read_temp(data, val);
-+			break;
-+		default:
++	case IIO_CHAN_INFO_RAW:
++		if (axp288_adc_set_ts(info->regmap, AXP288_ADC_TS_PIN_GPADC,
++					chan->address)) {
++			dev_err(&indio_dev->dev, "GPADC mode\n");
 +			ret = -EINVAL;
 +			break;
 +		}
++		ret = axp288_adc_read_channel(val, chan->address, info->regmap);
++		if (axp288_adc_set_ts(info->regmap, AXP288_ADC_TS_PIN_ON,
++						chan->address))
++			dev_err(&indio_dev->dev, "TS pin restore\n");
++		break;
++	case IIO_CHAN_INFO_PROCESSED:
++		ret = axp288_adc_read_channel(val, chan->address, info->regmap);
 +		break;
 +	default:
 +		ret = -EINVAL;
-+		break;
 +	}
-+
-+	mutex_unlock(&data->lock);
++	mutex_unlock(&indio_dev->mlock);
 +
 +	return ret;
 +}
 +
-+static const struct iio_info bmp280_info = {
++static int axp288_adc_set_state(struct regmap *regmap)
++{
++	/* ADC should be always enabled for internal FG to function */
++	if (regmap_write(regmap, AXP288_ADC_TS_PIN_CTRL, AXP288_ADC_TS_PIN_ON))
++		return -EIO;
++
++	return regmap_write(regmap, AXP20X_ADC_EN1, AXP288_ADC_EN_MASK);
++}
++
++static const struct iio_info axp288_adc_iio_info = {
++	.read_raw = &axp288_adc_read_raw,
 +	.driver_module = THIS_MODULE,
-+	.read_raw = &bmp280_read_raw,
 +};
 +
-+static int bmp280_chip_init(struct bmp280_data *data)
++static int axp288_adc_probe(struct platform_device *pdev)
 +{
 +	int ret;
-+
-+	ret = regmap_update_bits(data->regmap, BMP280_REG_CTRL_MEAS,
-+				 BMP280_OSRS_TEMP_MASK |
-+				 BMP280_OSRS_PRESS_MASK |
-+				 BMP280_MODE_MASK,
-+				 BMP280_OSRS_TEMP_2X |
-+				 BMP280_OSRS_PRESS_16X |
-+				 BMP280_MODE_NORMAL);
-+	if (ret < 0) {
-+		dev_err(&data->client->dev,
-+			"failed to write config register\n");
-+		return ret;
-+	}
-+
-+	ret = regmap_update_bits(data->regmap, BMP280_REG_CONFIG,
-+				 BMP280_FILTER_MASK,
-+				 BMP280_FILTER_4X);
-+	if (ret < 0) {
-+		dev_err(&data->client->dev,
-+			"failed to write config register\n");
-+		return ret;
-+	}
-+
-+	return ret;
-+}
-+
-+static int bmp280_probe(struct i2c_client *client,
-+			const struct i2c_device_id *id)
-+{
-+	int ret;
++	struct axp288_adc_info *info;
 +	struct iio_dev *indio_dev;
-+	struct bmp280_data *data;
-+	unsigned int chip_id;
++	struct axp20x_dev *axp20x = dev_get_drvdata(pdev->dev.parent);
 +
-+	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
++	indio_dev = devm_iio_device_alloc(&pdev->dev, sizeof(*info));
 +	if (!indio_dev)
 +		return -ENOMEM;
 +
-+	i2c_set_clientdata(client, indio_dev);
-+	data = iio_priv(indio_dev);
-+	mutex_init(&data->lock);
-+	data->client = client;
++	info = iio_priv(indio_dev);
++	info->irq = platform_get_irq(pdev, 0);
++	if (info->irq < 0) {
++		dev_err(&pdev->dev, "no irq resource?\n");
++		return info->irq;
++	}
++	platform_set_drvdata(pdev, indio_dev);
++	info->regmap = axp20x->regmap;
++	/*
++	 * Set ADC to enabled state at all time, including system suspend.
++	 * otherwise internal fuel gauge functionality may be affected.
++	 */
++	ret = axp288_adc_set_state(axp20x->regmap);
++	if (ret) {
++		dev_err(&pdev->dev, "unable to enable ADC device\n");
++		return ret;
++	}
 +
-+	indio_dev->dev.parent = &client->dev;
-+	indio_dev->name = id->name;
-+	indio_dev->channels = bmp280_channels;
-+	indio_dev->num_channels = ARRAY_SIZE(bmp280_channels);
-+	indio_dev->info = &bmp280_info;
++	indio_dev->dev.parent = &pdev->dev;
++	indio_dev->name = pdev->name;
++	indio_dev->channels = axp288_adc_channels;
++	indio_dev->num_channels = ARRAY_SIZE(axp288_adc_channels);
++	indio_dev->info = &axp288_adc_iio_info;
 +	indio_dev->modes = INDIO_DIRECT_MODE;
-+
-+	data->regmap = devm_regmap_init_i2c(client, &bmp280_regmap_config);
-+	if (IS_ERR(data->regmap)) {
-+		dev_err(&client->dev, "failed to allocate register map\n");
-+		return PTR_ERR(data->regmap);
-+	}
-+
-+	ret = regmap_read(data->regmap, BMP280_REG_ID, &chip_id);
-+	if (ret < 0)
-+		return ret;
-+	if (chip_id != BMP280_CHIP_ID) {
-+		dev_err(&client->dev, "bad chip id.  expected %x got %x\n",
-+			BMP280_CHIP_ID, chip_id);
-+		return -EINVAL;
-+	}
-+
-+	ret = bmp280_chip_init(data);
++	ret = iio_map_array_register(indio_dev, axp288_adc_default_maps);
 +	if (ret < 0)
 +		return ret;
 +
-+	return devm_iio_device_register(&client->dev, indio_dev);
++	ret = iio_device_register(indio_dev);
++	if (ret < 0) {
++		dev_err(&pdev->dev, "unable to register iio device\n");
++		goto err_array_unregister;
++	}
++	return 0;
++
++err_array_unregister:
++	iio_map_array_unregister(indio_dev);
++
++	return ret;
 +}
 +
-+static const struct acpi_device_id bmp280_acpi_match[] = {
-+	{"BMP0280", 0},
-+	{ },
-+};
-+MODULE_DEVICE_TABLE(acpi, bmp280_acpi_match);
++static int axp288_adc_remove(struct platform_device *pdev)
++{
++	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
 +
-+static const struct i2c_device_id bmp280_id[] = {
-+	{"bmp280", 0},
-+	{ },
-+};
-+MODULE_DEVICE_TABLE(i2c, bmp280_id);
++	iio_device_unregister(indio_dev);
++	iio_map_array_unregister(indio_dev);
 +
-+static struct i2c_driver bmp280_driver = {
++	return 0;
++}
++
++static struct platform_driver axp288_adc_driver = {
++	.probe = axp288_adc_probe,
++	.remove = axp288_adc_remove,
 +	.driver = {
-+		.name	= "bmp280",
-+		.acpi_match_table = ACPI_PTR(bmp280_acpi_match),
++		.name = "axp288_adc",
++		.owner = THIS_MODULE,
 +	},
-+	.probe		= bmp280_probe,
-+	.id_table	= bmp280_id,
 +};
-+module_i2c_driver(bmp280_driver);
 +
-+MODULE_AUTHOR("Vlad Dogaru <vlad.dogaru@intel.com>");
-+MODULE_DESCRIPTION("Driver for Bosch Sensortec BMP280 pressure and temperature sensor");
-+MODULE_LICENSE("GPL v2");
++module_platform_driver(axp288_adc_driver);
++
++MODULE_AUTHOR("Jacob Pan <jacob.jun.pan@linux.intel.com>");
++MODULE_DESCRIPTION("X-Powers AXP288 ADC Driver");
++MODULE_LICENSE("GPL");
 -- 
 1.9.1
 
