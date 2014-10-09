@@ -1,71 +1,54 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:50167 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:50161 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752073AbaJJXqy (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 10 Oct 2014 19:46:54 -0400
-Message-ID: <5436EA85.90900@kernel.org>
-Date: Thu, 09 Oct 2014 21:05:25 +0100
+	with ESMTP id S1752050AbaJJXqv (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 10 Oct 2014 19:46:51 -0400
+Message-ID: <5436E892.4010800@kernel.org>
+Date: Thu, 09 Oct 2014 20:57:06 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Naveen Krishna Chatradhi <ch.naveen@samsung.com>,
-	linux-iio@vger.kernel.org, linux-samsung-soc@vger.kernel.org,
-	devicetree@vger.kernel.org
-CC: linux-kernel@vger.kernel.org, cw00.choi@samsung.com,
-	gregkh@linuxfoundation.org, naveenkrishna.ch@gmail.com,
-	lars@metafoo.de, cpgs@samsung.com, grundler@chromium.org,
-	Kukjin Kim <kgene.kim@samsung.com>
-Subject: Re: [PATCH v2 0/3] iio: exynos-adc: use syscon instead of ioremap
-References: <1410857931-4980-1-git-send-email-ch.naveen@samsung.com> <541EC1C2.6090608@kernel.org>
-In-Reply-To: <541EC1C2.6090608@kernel.org>
-Content-Type: text/plain; charset=windows-1252
+To: Fabio Estevam <festevam@gmail.com>
+CC: Duan Fugang-B38611 <B38611@freescale.com>,
+	linux-iio@vger.kernel.org,
+	Fabio Estevam <fabio.estevam@freescale.com>
+Subject: Re: [PATCH 1/5] iio: adc: vf610: Propagate the real error when platform_get_irq()
+ fails
+References: <1412299526-1331-1-git-send-email-festevam@gmail.com>	<542FD980.5050607@kernel.org> <CAOMZO5B3_axOM6egCr4dni2mZX3nufBE=-hywFxj-C=jV1uVFg@mail.gmail.com>
+In-Reply-To: <CAOMZO5B3_axOM6egCr4dni2mZX3nufBE=-hywFxj-C=jV1uVFg@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 21/09/14 13:17, Jonathan Cameron wrote:
-> On 16/09/14 09:58, Naveen Krishna Chatradhi wrote:
->> Changes since v1:
->> 1. Rebased on top of togreg branch of IIO git.
->>
->> This patch set does the following
->> 1. Use the syscon and Regmap API instead of ioremappaing the
->>    ADC_PHY register from PMU.
->> 2. Updates the Documentation in exynos-adc.txt with syscon phandle
->>    for the ADC nodes.
->> 3. Updates the Dts files for Exynos3250, Exynos4x12, Exynos5250,
->>    Exynos5420 with the syscon phandle.
->>
->> Tested on Exynos5420 based Peach PIT and Exynos5800 based Peach PI
->> by verifying sysfs entries provided by HWMON based NTC thermistors.
->>
->> Tested-By for Exynos3250, Exynos4x12 would be appreciated.
-> Would definitely be good!
+On 04/10/14 19:46, Fabio Estevam wrote:
+> On Sat, Oct 4, 2014 at 8:26 AM, Jonathan Cameron <jic23@kernel.org> wrote:
+>> On 03/10/14 02:25, Fabio Estevam wrote:
+>>> From: Fabio Estevam <fabio.estevam@freescale.com>
+>>>
+>>> There is no need to pass a 'fake' return value when platform_get_irq() fails.
+>>>
+>>> Propagate the real error instead.
+>>>
+>>> While at it, only consider negative numbers returned by platform_get_irq()
+>>> as error.
+>> Returning an irq of 0 is still invalid isn't it?
+>> (there was a lot of 'fun' making this true for Arm a few years back).
+>> Doesn't it effectively mean no irq is present?
 > 
-> The main issue I have with this series is that it breaks backward
-> compatibility with old device trees and newer kernels.
+> In practice I cannot see how platform_get_irq() could return 0. Only
+> if the dtsi was providing 0 as the irq number for the vf610-adc
+> driver, which would mean a very broken dtsi.
 > 
-> Now I appreciate that sometimes there are reasons to do it but want this
-> to have deeper consideration (and acks to show it) from the Exynos side
-> of things and preferably from the device tree side of things as well.
+> This driver is used only by vf610 and imx6sx and their dtsi provide
+> the correct values for the adc irq.
 > 
-> cc'd Kukjin Kim for the Exynos side of things as the listed Maintainer.
+> This type of check:
 > 
-> Otherwise, the series looks fine to me.
-Kukjin? Sorry to pester, but this has been sat in my waiting queue for a
-while now.
->>
->> Naveen Krishna Chatradhi (3):
->>   iio: exyno-adc: use syscon for PMU register access
->>   Documentation: dt-bindings: update exynos-adc.txt with syscon handle
->>   ARM: dts: exynos: Add sysreg phandle to ADC node
->>
->>  .../devicetree/bindings/arm/samsung/exynos-adc.txt |    9 ++++--
->>  arch/arm/boot/dts/exynos3250.dtsi                  |    3 +-
->>  arch/arm/boot/dts/exynos4x12.dtsi                  |    3 +-
->>  arch/arm/boot/dts/exynos5250.dtsi                  |    3 +-
->>  arch/arm/boot/dts/exynos5420.dtsi                  |    3 +-
->>  drivers/iio/adc/exynos_adc.c                       |   30 ++++++++++++++------
->>  6 files changed, 36 insertions(+), 15 deletions(-)
->>
+>        if (irq < 0)
+>                return irq;
+> 
+> is commonly used on the imx drivers and I was not aware of any
+> problems in this regard.
+Fair enough.
 > --
 > To unsubscribe from this list: send the line "unsubscribe linux-iio" in
 > the body of a message to majordomo@vger.kernel.org
