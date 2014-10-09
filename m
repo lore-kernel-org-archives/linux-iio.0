@@ -1,49 +1,128 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga14.intel.com ([192.55.52.115]:15342 "EHLO mga14.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1752017AbaJJOrx (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Fri, 10 Oct 2014 10:47:53 -0400
-From: Daniel Baluta <daniel.baluta@intel.com>
-To: jic23@kernel.org
-Cc: daniel.baluta@intel.com, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org, srinivas.pandruvada@linux.intel.com
-Subject: [PATCH] io: accel: kxcjk-1013: Fix iio_event_spec direction
-Date: Fri, 10 Oct 2014 17:53:32 +0300
-Message-Id: <1412952812-974-1-git-send-email-daniel.baluta@intel.com>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:50145 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751758AbaJJXqp (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 10 Oct 2014 19:46:45 -0400
+Message-ID: <5436E27D.8080600@kernel.org>
+Date: Thu, 09 Oct 2014 20:31:09 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+MIME-Version: 1.0
+To: Daniel Baluta <daniel.baluta@intel.com>
+CC: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+	irina.tirdea@intel.com
+Subject: Re: [RFC PATCH 3/8] iio: core: Introduce new MOTION event
+References: <1412257439-15683-1-git-send-email-daniel.baluta@intel.com> <1412257439-15683-4-git-send-email-daniel.baluta@intel.com> <542FF252.1020206@kernel.org> <5432A474.7000700@intel.com>
+In-Reply-To: <5432A474.7000700@intel.com>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Because IIO_EV_DIR_* are not bitmasks but enums,
-IIO_EV_DIR_RISING | IIO_EV_DIR_FALLING is not equal
-with IIO_EV_DIR_EITHER.
-
-This could lead to potential misformatted sysfs attributes
-like:
-	* in_accel_x_thresh_(null)_en
-	* in_accel_x_thresh_(null)_period
-	* in_accel_x_thresh_(null)_value
-
-or even memory corruption.
-
-Fixes: b4b491c083 (iio: accel: kxcjk-1013: Support threshold)
-Signed-off-by: Daniel Baluta <daniel.baluta@intel.com>
----
- drivers/iio/accel/kxcjk-1013.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/iio/accel/kxcjk-1013.c b/drivers/iio/accel/kxcjk-1013.c
-index 98909a9..a23e58c 100644
---- a/drivers/iio/accel/kxcjk-1013.c
-+++ b/drivers/iio/accel/kxcjk-1013.c
-@@ -894,7 +894,7 @@ static const struct attribute_group kxcjk1013_attrs_group = {
- 
- static const struct iio_event_spec kxcjk1013_event = {
- 		.type = IIO_EV_TYPE_THRESH,
--		.dir = IIO_EV_DIR_RISING | IIO_EV_DIR_FALLING,
-+		.dir = IIO_EV_DIR_EITHER,
- 		.mask_separate = BIT(IIO_EV_INFO_VALUE) |
- 				 BIT(IIO_EV_INFO_ENABLE) |
- 				 BIT(IIO_EV_INFO_PERIOD)
--- 
-1.9.1
-
+On 06/10/14 15:17, Daniel Baluta wrote:
+> 
+> 
+> On 10/04/2014 04:12 PM, Jonathan Cameron wrote:
+>> On 02/10/14 14:43, Daniel Baluta wrote:
+>>> This is to be used by drivers to signal detection of motion. We also
+>>> add some possible values for motion as IIO events modifiers:
+>>>     * running
+>>>     * jogging
+>>>     * walking
+>>>     * still
+>>>
+>>> These values are supported by Frescale's MMA9553 sensor:
+>>>
+>>> http://freescale.com/files/sensors/doc/ref_manual/MMA9553LSWRM.pdf
+>>>
+>>> Signed-off-by: Daniel Baluta <daniel.baluta@intel.com>
+>>> Signed-off-by: Irina Tirdea <irina.tirdea@intel.com>
+>> Hmm.. This is the interesting one.
+>> Not immediately obvious how best to represent this stuff.
+>>> ---
+>>>   Documentation/ABI/testing/sysfs-bus-iio | 7 +++++++
+>>>   drivers/iio/industrialio-core.c         | 4 ++++
+>>>   drivers/iio/industrialio-event.c        | 1 +
+>>>   include/linux/iio/types.h               | 7 ++++++-
+>>>   4 files changed, 18 insertions(+), 1 deletion(-)
+>>>
+>>> diff --git a/Documentation/ABI/testing/sysfs-bus-iio
+>>> b/Documentation/ABI/testing/sysfs-bus-iio
+>>> index d760b02..070346d 100644
+>>> --- a/Documentation/ABI/testing/sysfs-bus-iio
+>>> +++ b/Documentation/ABI/testing/sysfs-bus-iio
+>>> @@ -808,6 +808,13 @@ Description:
+>>>           number or direction is not specified, applies to all channels of
+>>>           this type.
+>>>
+>>> +What:        /sys/.../events/in_activity_motion_either_en
+>>> +KernelVersion:    3.17
+>>> +Contact:    linux-iio@vger.kernel.org
+>>> +Description:
+>>> +        Enables or disables motion detection. Each time motion is detected an
+>>> +        event of this type will be generated.
+>>> +
+>> The either bit seems a bit random but I can see there is no particularly obvious
+>> alternative.
+> 
+> I wonder if introducing a new IIO_EV_DIR_NONE event direction type would make
+> sense. In this case the sysfs attribute will drop event direction text from its
+> name (e.g /sys/.../events/in_activity_motion_en)
+> 
+>>
+>> We really need a clean way of representing a multilevel 'state change' like this.
+>>
+>> Looking at the event code, I almost wonder if we would be better using the
+>> direction element for running, walking etc rather than a modifier.
+> 
+> When pushing events code to userspace the modifier seemed to be the only option.
+> 
+>>
+>> Having said that we will probably also get devices where this is polled rather
+>> than
+>> event.  'What activity is currently going on?'
+> 
+> Adding IIO_EV_INFO_VALUE bit, would create an attribute
+> /sys/.../events/in_activity_motion_either_value that could expose the current
+> activity going on.
+> 
+>> If we take that view modifiers make sense as it becomes
+>> 'Is the user running?'  Perhaps even offering a confidence interval, e.g units as
+>> percentage
+>> in_activity_running_input 0..100
+>> in_activity_walking_input 0..100
+>> etc
+>>
+>> Then our event becomes a state change event (yup we'll need to add that)
+>>
+>> /events/in_activity_walking_rising_en  will then cause events when the percentage
+>> confidence on a state rises above the provided threshold or goes above it
+>> (default of 50% perhaps on devices which only report one state).
+>>
+>> /events/in_activity_walking_falling_en will do the leaving case.
+> 
+> This is a very nice idea and it will also offer more flexibility. I am not sure
+> about the use case of confidence interval but using 0 and 100 will do the trick
+> for us.
+Sure, feel free to propose something else.  We could define a confidence interval
+that counts as 'we think it is this'.  Basically just use values of 0 or 100 when
+there is no explicit indication of the confidence available.  Not sure what
+you do get ;)
+> 
+> We will use this interface for implementation of significant motion in Android's
+> HAL. [1]
+> 
+> I will experiment more with how IIO attributes work and I will send a v2
+> using direction instead of modifier for activity type (running, walking etc).
+> 
+> 
+>>
+>> Note these are just some quick initial thoughts on alternative methods.
+>> I'll want to think on this more and get responses from more interested
+>> parties!
+> 
+> Thanks a lot for your time!
+You are welcome.  Funnily enough I rather enjoy trying to think of ways to
+handle new 'weird' hardware in a consistent fashion :)
+> 
+> Daniel.
+> 
+> [1] https://source.android.com/devices/sensors/composite_sensors.html
