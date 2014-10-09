@@ -1,107 +1,155 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:52453 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752915AbaJGTgs (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 7 Oct 2014 15:36:48 -0400
-In-Reply-To: <2E89032DDAA8B9408CB92943514A0337AB518D23@SW-EX-MBX01.diasemi.com>
-References: <cover.1411396718.git.Adam.Thomson.Opensource@diasemi.com> <ee4c56931f326d8ee9c1313c44456bce2dec8b8c.1411396719.git.Adam.Thomson.Opensource@diasemi.com> <5426964A.3050407@kernel.org> <2E89032DDAA8B9408CB92943514A0337AB518D23@SW-EX-MBX01.diasemi.com>
-MIME-Version: 1.0
-Content-Type: text/plain;
- charset=UTF-8
-Subject: RE: [PATCH 3/8] iio: Add support for DA9150 GPADC
-From: Jonathan Cameron <jic23@kernel.org>
-Date: Tue, 07 Oct 2014 20:36:36 +0100
-To: "Opensource [Adam Thomson]" <Adam.Thomson.Opensource@diasemi.com>,
-	Lee Jones <lee.jones@linaro.org>,
-	Samuel Ortiz <sameo@linux.intel.com>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	Sebastian Reichel <sre@kernel.org>,
-	Dmitry Eremin-Solenikov <dbaryshkov@gmail.com>,
-	David Woodhouse <dwmw2@infradead.org>,
-	"linux-pm@vger.kernel.org" <linux-pm@vger.kernel.org>,
-	Rob Herring <robh+dt@kernel.org>,
-	Pawel Moll <pawel.moll@arm.com>,
-	Mark Rutland <mark.rutland@arm.com>,
-	Ian Campbell <ijc+devicetree@hellion.org.uk>,
-	Kumar Gala <galak@codeaurora.org>,
-	Grant Likely <grant.likely@linaro.org>,
-	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	Joe Perches <joe@perches.com>,
-	"linux-api@vger.kernel.org" <linux-api@vger.kernel.org>
-CC: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	Support Opensource <Support.Opensource@diasemi.com>
-Message-ID: <3B049606-083E-4220-ADBF-71D74C0A9D9F@kernel.org>
+Received: from mga02.intel.com ([134.134.136.20]:25284 "EHLO mga02.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1755962AbaJIMdl (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Thu, 9 Oct 2014 08:33:41 -0400
+From: Daniel Baluta <daniel.baluta@intel.com>
+To: jic23@kernel.org
+Cc: irina.tirdea@intel.com, daniel.baluta@intel.com,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [RFC PATCH v2 4/7] iio: core: Introduce STEPS channel type, ENABLE mask and INSTANCE event
+Date: Thu,  9 Oct 2014 15:39:42 +0300
+Message-Id: <1412858385-11954-5-git-send-email-daniel.baluta@intel.com>
+In-Reply-To: <1412858385-11954-1-git-send-email-daniel.baluta@intel.com>
+References: <1412858385-11954-1-git-send-email-daniel.baluta@intel.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
+From: Irina Tirdea <irina.tirdea@intel.com>
 
+These changes are needed to support the functionality of a pedometer.
+A pedometer has two basic functionalities: step counter and step detector.
 
-On October 7, 2014 3:55:55 PM GMT+01:00, "Opensource [Adam Thomson]" <Adam.Thomson.Opensource@diasemi.com> wrote:
->On September 27, 2014 11:50, Jonathan Cameron wrote:
->
->> On 23/09/14 11:53, Adam Thomson wrote:
->> > This patch adds support for DA9150 Charger & Fuel-Gauge IC GPADC.
->
->> > +
->> > +static inline int da9150_gpadc_gpio_6v_voltage_now(int raw_val)
->> > +{
->> > +	/* Convert to mV */
->> > +	return (6 * ((raw_val * 1000) + 500)) / 1024;
->> These could all be expressed as raw values with offsets
->> and scales (and that would be preferred).
->> E.g. This one has offset 500000 and scale 6000/1024 or even
->> better use IIO_VAL_FRACTIONAL_LOG2 for scale with val1 = 6000
->> and val2 = (log_2 1024) = 10.
->> 
->
->What you've suggested isn't correct. The problem here is that the
->offset is
->added first to the raw ADC reading, without factoring the ADC value
->accordingly
->to match the factor of the offset. If we take the original equation
->provided for
->this channel of the ADC, the offset is actually 0.5 which should be
->added to the
->raw ADC value. This doesn't fit into the implementation in the kernel
->as we
->can't use floating point. If we multiply the offset but not the raw ADC
->value,
->then add them before applying the scale factor, then the result is
->wrong at the
->end. Basically you need a scale for the raw ADC value to match the
->offset scale
->so you can achieve the correct results, which is what my calculation
->does.
->But that seems impossible with the current raw|offset|scale method.
-Oops got that wrong.  The fixed point maths to fix the in kernel interface isn't exactly
- difficult but indeed it does not handle this currently.
->
->> > +	ret = iio_map_array_register(indio_dev,
->da9150_gpadc_default_maps);
->> > +	if (ret) {
->> > +		dev_err(dev, "Failed to register IIO maps: %d\n", ret);
->> > +		return ret;
->> > +	}
->> I'd suggest doing the devm_request_thread_irq before the
->iio_map_array
->> stuff.  This is purely to avoid the order during remove not being
->> obviously correct as it isn't the reverse of during probe.
->
->Ok, should still work ok that way so can update.
->
->> > +static int da9150_gpadc_remove(struct platform_device *pdev)
->> > +{
->> > +	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
->> > +
->> > +	iio_map_array_unregister(indio_dev);
->> Twice in one day.  I'm definitely thinking we should add a
->> devm version of iio_map_array_register...
->
->I assume you mean here that iio_device_unregister() should come first?
->Will
->update.
-Nope just that such a new function might be useful.
+The step counter needs to be enabled and then it will count the steps
+in its hardware register. Whenever the application needs to check
+the step count, it will read the step counter register. To support the
+step counter a new channel type STEPS is added. Since the pedometer needs
+to be enabled first so that the hardware can count and store the steps,
+we need a specific ENABLE channel info mask.
 
+The step detector will generate an interrupt each time a step is detected.
+To support this functionality we add a new event type INSTANCE.
+
+For more information on the Android requirements for step counter and step
+detector see:
+http://source.android.com/devices/sensors/composite_sensors.html#counter
+and http://source.android.com/devices/sensors/composite_sensors.html#detector.
+
+A device that has the pedometer functionality this interface needs to
+support is Freescale's MMA9553L:
+http://www.freescale.com/files/sensors/doc/ref_manual/MMA9553LSWRM.pdf
+
+Signed-off-by: Irina Tirdea <irina.tirdea@intel.com>
+Signed-off-by: Daniel Baluta <daniel.baluta@intel.com>
+---
+ Documentation/ABI/testing/sysfs-bus-iio | 22 ++++++++++++++++++++++
+ drivers/iio/industrialio-core.c         |  2 ++
+ drivers/iio/industrialio-event.c        |  1 +
+ include/linux/iio/iio.h                 |  1 +
+ include/linux/iio/types.h               |  2 ++
+ 5 files changed, 28 insertions(+)
+
+diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
+index 12d0385..3557a69 100644
+--- a/Documentation/ABI/testing/sysfs-bus-iio
++++ b/Documentation/ABI/testing/sysfs-bus-iio
+@@ -842,6 +842,13 @@ Description:
+ 		number or direction is not specified, applies to all channels of
+ 		this type.
+ 
++What:		/sys/.../events/in_steps_instance_en
++KernelVersion:	3.19
++Contact:	linux-iio@vger.kernel.org
++Description:
++		Enables or disables step detection. Each time the user takes a step an
++		event of this type will be generated.
++
+ What:		/sys/bus/iio/devices/iio:deviceX/trigger/current_trigger
+ KernelVersion:	2.6.35
+ Contact:	linux-iio@vger.kernel.org
+@@ -1072,3 +1079,18 @@ Contact:	linux-iio@vger.kernel.org
+ Description:
+ 		Raw value of rotation from true/magnetic north measured with
+ 		or without compensation from tilt sensors.
++
++What:		/sys/.../iio:deviceX/in_steps_enable
++KernelVersion:	3.19
++Contact:	linux-iio@vger.kernel.org
++Description:
++		Activates the step counter. After activation, the number of steps
++		taken by the user will be counted in hardware and exported through
++		in_steps_input.
++
++What:		/sys/.../iio:deviceX/in_steps_input
++KernelVersion:	3.19
++Contact:	linux-iio@vger.kernel.org
++Description:
++		This attribute is used to read the number of steps taken by the user
++		since the last reboot while activated.
+diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+index e453ef9..1e060f3 100644
+--- a/drivers/iio/industrialio-core.c
++++ b/drivers/iio/industrialio-core.c
+@@ -71,6 +71,7 @@ static const char * const iio_chan_type_name_spec[] = {
+ 	[IIO_PRESSURE] = "pressure",
+ 	[IIO_HUMIDITYRELATIVE] = "humidityrelative",
+ 	[IIO_ACTIVITY] = "activity",
++	[IIO_STEPS] = "steps",
+ };
+ 
+ static const char * const iio_modifier_names[] = {
+@@ -118,6 +119,7 @@ static const char * const iio_chan_info_postfix[] = {
+ 	[IIO_CHAN_INFO_HARDWAREGAIN] = "hardwaregain",
+ 	[IIO_CHAN_INFO_HYSTERESIS] = "hysteresis",
+ 	[IIO_CHAN_INFO_INT_TIME] = "integration_time",
++	[IIO_CHAN_INFO_ENABLE] = "en",
+ };
+ 
+ /**
+diff --git a/drivers/iio/industrialio-event.c b/drivers/iio/industrialio-event.c
+index a9c9f34..db63d29 100644
+--- a/drivers/iio/industrialio-event.c
++++ b/drivers/iio/industrialio-event.c
+@@ -198,6 +198,7 @@ static const char * const iio_ev_type_text[] = {
+ 	[IIO_EV_TYPE_THRESH_ADAPTIVE] = "thresh_adaptive",
+ 	[IIO_EV_TYPE_MAG_ADAPTIVE] = "mag_adaptive",
+ 	[IIO_EV_TYPE_TRANSITION] = "transition",
++	[IIO_EV_TYPE_INSTANCE] = "instance",
+ };
+ 
+ static const char * const iio_ev_dir_text[] = {
+diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
+index 15dc6bc..3d3f06f 100644
+--- a/include/linux/iio/iio.h
++++ b/include/linux/iio/iio.h
+@@ -37,6 +37,7 @@ enum iio_chan_info_enum {
+ 	IIO_CHAN_INFO_HARDWAREGAIN,
+ 	IIO_CHAN_INFO_HYSTERESIS,
+ 	IIO_CHAN_INFO_INT_TIME,
++	IIO_CHAN_INFO_ENABLE,
+ };
+ 
+ enum iio_shared_by {
+diff --git a/include/linux/iio/types.h b/include/linux/iio/types.h
+index 9a1cc01..af0b6e0 100644
+--- a/include/linux/iio/types.h
++++ b/include/linux/iio/types.h
+@@ -31,6 +31,7 @@ enum iio_chan_type {
+ 	IIO_PRESSURE,
+ 	IIO_HUMIDITYRELATIVE,
+ 	IIO_ACTIVITY,
++	IIO_STEPS,
+ };
+ 
+ enum iio_modifier {
+@@ -74,6 +75,7 @@ enum iio_event_type {
+ 	IIO_EV_TYPE_THRESH_ADAPTIVE,
+ 	IIO_EV_TYPE_MAG_ADAPTIVE,
+ 	IIO_EV_TYPE_TRANSITION,
++	IIO_EV_TYPE_INSTANCE,
+ };
+ 
+ enum iio_event_info {
 -- 
-Sent from my Android phone with K-9 Mail. Please excuse my brevity.
+1.9.1
+
