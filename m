@@ -1,10 +1,10 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:50161 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:50163 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752050AbaJJXqv (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 10 Oct 2014 19:46:51 -0400
-Message-ID: <5436E892.4010800@kernel.org>
-Date: Thu, 09 Oct 2014 20:57:06 +0100
+	with ESMTP id S1752051AbaJJXqw (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 10 Oct 2014 19:46:52 -0400
+Message-ID: <5436E91D.4020301@kernel.org>
+Date: Thu, 09 Oct 2014 20:59:25 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
 To: Fabio Estevam <festevam@gmail.com>
@@ -48,7 +48,11 @@ On 04/10/14 19:46, Fabio Estevam wrote:
 > 
 > is commonly used on the imx drivers and I was not aware of any
 > problems in this regard.
-Fair enough.
+
+Applied to the togreg branch of iio.git.  Will get pushed out as testing
+for the autobuilders to play when I'm not hanging out in a clean room
+(not that clean as my laptop is in it ;) with no network connection
+and a delightful hair net.
 > --
 > To unsubscribe from this list: send the line "unsubscribe linux-iio" in
 > the body of a message to majordomo@vger.kernel.org
