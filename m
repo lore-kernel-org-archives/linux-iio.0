@@ -1,47 +1,73 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pa0-f48.google.com ([209.85.220.48]:39477 "EHLO
-	mail-pa0-f48.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753910AbaJGPTx (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 7 Oct 2014 11:19:53 -0400
-From: Darshana Padmadas <darshanapadmadas@gmail.com>
-To: opw-kernel@googlegroups.com
-Cc: grant.likely@linaro.org, robh+dt@kernel.org, pawel.moll@arm.com,
-	linux-arm-kernel@lists.infradead.org, jic23@kernel.org,
-	linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
-	linux-kernel@vger.kernel.org,
-	Darshana Padmadas <darshanapadmadas@gmail.com>
-Subject: [PATCH v4 3/4] Staging: iio: light: Added correct vendor-prefix for device isl29028
-Date: Tue,  7 Oct 2014 20:49:28 +0530
-Message-Id: <1412695169-22815-4-git-send-email-darshanapadmadas@gmail.com>
-In-Reply-To: <1412695169-22815-1-git-send-email-darshanapadmadas@gmail.com>
-References: <1412695169-22815-1-git-send-email-darshanapadmadas@gmail.com>
-Content-Type: text/plain; charset="utf-8"
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:50167 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752073AbaJJXqy (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 10 Oct 2014 19:46:54 -0400
+Message-ID: <5436EA85.90900@kernel.org>
+Date: Thu, 09 Oct 2014 21:05:25 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+MIME-Version: 1.0
+To: Naveen Krishna Chatradhi <ch.naveen@samsung.com>,
+	linux-iio@vger.kernel.org, linux-samsung-soc@vger.kernel.org,
+	devicetree@vger.kernel.org
+CC: linux-kernel@vger.kernel.org, cw00.choi@samsung.com,
+	gregkh@linuxfoundation.org, naveenkrishna.ch@gmail.com,
+	lars@metafoo.de, cpgs@samsung.com, grundler@chromium.org,
+	Kukjin Kim <kgene.kim@samsung.com>
+Subject: Re: [PATCH v2 0/3] iio: exynos-adc: use syscon instead of ioremap
+References: <1410857931-4980-1-git-send-email-ch.naveen@samsung.com> <541EC1C2.6090608@kernel.org>
+In-Reply-To: <541EC1C2.6090608@kernel.org>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-This patch adds the correct vendor-prefix for device isl29028 and
-maintains deprecated vendor-prefix found by checkpatch warning
-for older kernel releases.
-
-Signed-off-by: Darshana Padmadas <darshanapadmadas@gmail.com>
----
- drivers/staging/iio/light/isl29028.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/staging/iio/light/isl29028.c b/drivers/staging/iio/light/isl29028.c
-index 6014625..e969107 100644
---- a/drivers/staging/iio/light/isl29028.c
-+++ b/drivers/staging/iio/light/isl29028.c
-@@ -537,7 +537,8 @@ static const struct i2c_device_id isl29028_id[] = {
- MODULE_DEVICE_TABLE(i2c, isl29028_id);
- 
- static const struct of_device_id isl29028_of_match[] = {
--	{ .compatible = "isil,isl29028", },
-+	{ .compatible = "isl,isl29028", },
-+	{ .compatible = "isil,isl29028", },/* deprecated, don't use */
- 	{ },
- };
- MODULE_DEVICE_TABLE(of, isl29028_of_match);
--- 
-1.9.1
-
+On 21/09/14 13:17, Jonathan Cameron wrote:
+> On 16/09/14 09:58, Naveen Krishna Chatradhi wrote:
+>> Changes since v1:
+>> 1. Rebased on top of togreg branch of IIO git.
+>>
+>> This patch set does the following
+>> 1. Use the syscon and Regmap API instead of ioremappaing the
+>>    ADC_PHY register from PMU.
+>> 2. Updates the Documentation in exynos-adc.txt with syscon phandle
+>>    for the ADC nodes.
+>> 3. Updates the Dts files for Exynos3250, Exynos4x12, Exynos5250,
+>>    Exynos5420 with the syscon phandle.
+>>
+>> Tested on Exynos5420 based Peach PIT and Exynos5800 based Peach PI
+>> by verifying sysfs entries provided by HWMON based NTC thermistors.
+>>
+>> Tested-By for Exynos3250, Exynos4x12 would be appreciated.
+> Would definitely be good!
+> 
+> The main issue I have with this series is that it breaks backward
+> compatibility with old device trees and newer kernels.
+> 
+> Now I appreciate that sometimes there are reasons to do it but want this
+> to have deeper consideration (and acks to show it) from the Exynos side
+> of things and preferably from the device tree side of things as well.
+> 
+> cc'd Kukjin Kim for the Exynos side of things as the listed Maintainer.
+> 
+> Otherwise, the series looks fine to me.
+Kukjin? Sorry to pester, but this has been sat in my waiting queue for a
+while now.
+>>
+>> Naveen Krishna Chatradhi (3):
+>>   iio: exyno-adc: use syscon for PMU register access
+>>   Documentation: dt-bindings: update exynos-adc.txt with syscon handle
+>>   ARM: dts: exynos: Add sysreg phandle to ADC node
+>>
+>>  .../devicetree/bindings/arm/samsung/exynos-adc.txt |    9 ++++--
+>>  arch/arm/boot/dts/exynos3250.dtsi                  |    3 +-
+>>  arch/arm/boot/dts/exynos4x12.dtsi                  |    3 +-
+>>  arch/arm/boot/dts/exynos5250.dtsi                  |    3 +-
+>>  arch/arm/boot/dts/exynos5420.dtsi                  |    3 +-
+>>  drivers/iio/adc/exynos_adc.c                       |   30 ++++++++++++++------
+>>  6 files changed, 36 insertions(+), 15 deletions(-)
+>>
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> 
