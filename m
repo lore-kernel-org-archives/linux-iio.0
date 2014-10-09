@@ -1,53 +1,69 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:50151 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751795AbaJJXqu (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 10 Oct 2014 19:46:50 -0400
-Message-ID: <5436E567.6070403@kernel.org>
-Date: Thu, 09 Oct 2014 20:43:35 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-MIME-Version: 1.0
-To: Darshana Padmadas <darshanapadmadas@gmail.com>,
-	opw-kernel@googlegroups.com
-CC: grant.likely@linaro.org, robh+dt@kernel.org, pawel.moll@arm.com,
-	linux-arm-kernel@lists.infradead.org, linux-iio@vger.kernel.org,
-	devel@driverdev.osuosl.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v4 3/4] Staging: iio: light: Added correct vendor-prefix
- for device isl29028
-References: <1412695169-22815-1-git-send-email-darshanapadmadas@gmail.com> <1412695169-22815-4-git-send-email-darshanapadmadas@gmail.com>
-In-Reply-To: <1412695169-22815-4-git-send-email-darshanapadmadas@gmail.com>
-Content-Type: text/plain; charset=utf-8
+Received: from mga02.intel.com ([134.134.136.20]:25287 "EHLO mga02.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1755945AbaJIMdk (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Thu, 9 Oct 2014 08:33:40 -0400
+From: Daniel Baluta <daniel.baluta@intel.com>
+To: jic23@kernel.org
+Cc: irina.tirdea@intel.com, daniel.baluta@intel.com,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [RFC PATCH v2 3/7] iio: core: Introduce IIO_EV_DIR_NONE
+Date: Thu,  9 Oct 2014 15:39:41 +0300
+Message-Id: <1412858385-11954-4-git-send-email-daniel.baluta@intel.com>
+In-Reply-To: <1412858385-11954-1-git-send-email-daniel.baluta@intel.com>
+References: <1412858385-11954-1-git-send-email-daniel.baluta@intel.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 07/10/14 16:19, Darshana Padmadas wrote:
-> This patch adds the correct vendor-prefix for device isl29028 and
-> maintains deprecated vendor-prefix found by checkpatch warning
-> for older kernel releases.
-> 
-> Signed-off-by: Darshana Padmadas <darshanapadmadas@gmail.com>
-Acked-by: Jonathan Cameron <jic23@kernel.org>
+From: Irina Tirdea <irina.tirdea@intel.com>
 
-Which tree does this series want to go through?
-(I'm happy to take it via IIO once the outstanding issues are cleaned up
-if no one else wants it).
+For some events (e.g.: step detector) a direction does not make sense.
 
-> ---
->  drivers/staging/iio/light/isl29028.c | 3 ++-
->  1 file changed, 2 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/staging/iio/light/isl29028.c b/drivers/staging/iio/light/isl29028.c
-> index 6014625..e969107 100644
-> --- a/drivers/staging/iio/light/isl29028.c
-> +++ b/drivers/staging/iio/light/isl29028.c
-> @@ -537,7 +537,8 @@ static const struct i2c_device_id isl29028_id[] = {
->  MODULE_DEVICE_TABLE(i2c, isl29028_id);
->  
->  static const struct of_device_id isl29028_of_match[] = {
-> -	{ .compatible = "isil,isl29028", },
-> +	{ .compatible = "isl,isl29028", },
-> +	{ .compatible = "isil,isl29028", },/* deprecated, don't use */
->  	{ },
->  };
->  MODULE_DEVICE_TABLE(of, isl29028_of_match);
-> 
+Add IIO_EV_DIR_NONE to be used with such events and generate sysfs event
+attributes that do not contain direction.
+
+Signed-off-by: Irina Tirdea <irina.tirdea@intel.com>
+Signed-off-by: Daniel Baluta <daniel.baluta@intel.com>
+---
+ drivers/iio/industrialio-event.c | 12 +++++++++---
+ include/linux/iio/types.h        |  1 +
+ 2 files changed, 10 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/iio/industrialio-event.c b/drivers/iio/industrialio-event.c
+index afcf154..a9c9f34 100644
+--- a/drivers/iio/industrialio-event.c
++++ b/drivers/iio/industrialio-event.c
+@@ -328,9 +328,15 @@ static int iio_device_add_event(struct iio_dev *indio_dev,
+ 	for_each_set_bit(i, mask, sizeof(*mask)*8) {
+ 		if (i >= ARRAY_SIZE(iio_ev_info_text))
+ 			return -EINVAL;
+-		postfix = kasprintf(GFP_KERNEL, "%s_%s_%s",
+-				iio_ev_type_text[type], iio_ev_dir_text[dir],
+-				iio_ev_info_text[i]);
++		if (dir != IIO_EV_DIR_NONE)
++			postfix = kasprintf(GFP_KERNEL, "%s_%s_%s",
++					iio_ev_type_text[type],
++					iio_ev_dir_text[dir],
++					iio_ev_info_text[i]);
++		else
++			postfix = kasprintf(GFP_KERNEL, "%s_%s",
++					iio_ev_type_text[type],
++					iio_ev_info_text[i]);
+ 		if (postfix == NULL)
+ 			return -ENOMEM;
+ 
+diff --git a/include/linux/iio/types.h b/include/linux/iio/types.h
+index a08ee6c..9a1cc01 100644
+--- a/include/linux/iio/types.h
++++ b/include/linux/iio/types.h
+@@ -87,6 +87,7 @@ enum iio_event_direction {
+ 	IIO_EV_DIR_EITHER,
+ 	IIO_EV_DIR_RISING,
+ 	IIO_EV_DIR_FALLING,
++	IIO_EV_DIR_NONE,
+ };
+ 
+ #define IIO_VAL_INT 1
+-- 
+1.9.1
+
