@@ -1,57 +1,85 @@
-Return-Path: <k.wrona@samsung.com>
-From: Karol Wrona <k.wrona@samsung.com>
-To: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
- Arnd Bergmann <arnd@arndb.de>, linux-kernel@vger.kernel.org
-Cc: Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
- Kyungmin Park <kyungmin.park@samsung.com>, Karol Wrona <k.wrona@samsung.com>
-Subject: [PATCH v2 0/1] misc: st32boot: Add stm32 upgrade protocol handling
-Date: Fri, 10 Oct 2014 13:54:42 +0200
-Message-id: <1412942083-28231-1-git-send-email-k.wrona@samsung.com>
+Return-Path: <daniel.baluta@intel.com>
+From: Daniel Baluta <daniel.baluta@intel.com>
+To: jic23@kernel.org
+Cc: irina.tirdea@intel.com,
+	daniel.baluta@intel.com,
+	linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: [RFC PATCH v2 5/7] iio: core: Introduce HEIGHT channel type
+Date: Thu,  9 Oct 2014 15:39:43 +0300
+Message-Id: <1412858385-11954-6-git-send-email-daniel.baluta@intel.com>
+In-Reply-To: <1412858385-11954-1-git-send-email-daniel.baluta@intel.com>
+References: <1412858385-11954-1-git-send-email-daniel.baluta@intel.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-Hello,
+From: Irina Tirdea <irina.tirdea@intel.com>
 
-This patch is needed by the sensorhub driver which uses STM32F4xx and Jonathan
-suggested to factor out these sources (mentioned in: 
-[RFC/PATCH 2/6] misc: sensorhub: Add sensorhub).
+Some devices need the height of the user to compute various
+parameters. One of this devices is Freescale's MMA9553L
+(http://www.freescale.com/files/sensors/doc/ref_manual/MMA9553LSWRM.pdf)
+that needs the height of the user to compute the stride length which
+is used further to determine distance, speed and activity type.
 
-I feel a bit ashamed because I know a bit STM32F4 controllers but I did not
-realize that it is generic ST protocol. It helped us a lot because this 
-code really needed some refactoring.
+Introduce a new channel type HEIGHT to export these values.
 
-So this patch contains SPI protocol used in the STM32 bootloader and is based
-on AN4286. Generally it can be used to implement handling of other interfaces
-like UART or I2C because the flow is quite similar and maybe adding proper
-hw access callbacks will do all work.
+Signed-off-by: Irina Tirdea <irina.tirdea@intel.com>
+Signed-off-by: Daniel Baluta <daniel.baluta@intel.com>
+---
+ Documentation/ABI/testing/sysfs-bus-iio | 9 +++++++++
+ drivers/iio/industrialio-core.c         | 1 +
+ include/linux/iio/types.h               | 1 +
+ 3 files changed, 11 insertions(+)
 
-It supports:
-  - get info frame
-  - get version
-  - firmware write (write, read, write address, erase)
-
->From v1: some typos fixes
-
-
-Karol
-
-Karol Wrona (1):
-  misc: st32boot: Add stm32 upgrade protocol handling
-
- drivers/misc/Kconfig                |    1 +
- drivers/misc/Makefile               |    1 +
- drivers/misc/stm32boot/Kconfig      |    6 +
- drivers/misc/stm32boot/Makefile     |    3 +
- drivers/misc/stm32boot/stm32_core.c |  412 +++++++++++++++++++++++++++++++++++
- drivers/misc/stm32boot/stm32_core.h |   81 +++++++
- drivers/misc/stm32boot/stm32_spi.c  |  108 +++++++++
- include/linux/stm32fwu.h            |   47 ++++
- 8 files changed, 659 insertions(+)
- create mode 100644 drivers/misc/stm32boot/Kconfig
- create mode 100644 drivers/misc/stm32boot/Makefile
- create mode 100644 drivers/misc/stm32boot/stm32_core.c
- create mode 100644 drivers/misc/stm32boot/stm32_core.h
- create mode 100644 drivers/misc/stm32boot/stm32_spi.c
- create mode 100644 include/linux/stm32fwu.h
-
+diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
+index 3557a69..fc027cb 100644
+--- a/Documentation/ABI/testing/sysfs-bus-iio
++++ b/Documentation/ABI/testing/sysfs-bus-iio
+@@ -256,6 +256,7 @@ What:		/sys/bus/iio/devices/iio:deviceX/out_altvoltageY_scale
+ What:		/sys/bus/iio/devices/iio:deviceX/in_accel_scale
+ What:		/sys/bus/iio/devices/iio:deviceX/in_accel_peak_scale
+ What:		/sys/bus/iio/devices/iio:deviceX/in_anglvel_scale
++What:		/sys/bus/iio/devices/iio:deviceX/in_height_scale
+ What:		/sys/bus/iio/devices/iio:deviceX/in_magn_scale
+ What:		/sys/bus/iio/devices/iio:deviceX/in_magn_x_scale
+ What:		/sys/bus/iio/devices/iio:deviceX/in_magn_y_scale
+@@ -1010,6 +1011,14 @@ Description:
+ 		For a list of available output power modes read
+ 		in_accel_power_mode_available.
+ 
++What:		/sys/.../iio:deviceX/in_height_input
++What:		/sys/.../iio:deviceX/in_height_raw
++KernelVersion:	3.17
++Contact:	linux-iio@vger.kernel.org
++Description:
++		This attribute is used to set and read the user's height.
++		Units after application of scale are centimeters.
++
+ What:		/sys/bus/iio/devices/iio:deviceX/store_eeprom
+ KernelVersion:	3.4.0
+ Contact:	linux-iio@vger.kernel.org
+diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+index 1e060f3..f08b278 100644
+--- a/drivers/iio/industrialio-core.c
++++ b/drivers/iio/industrialio-core.c
+@@ -72,6 +72,7 @@ static const char * const iio_chan_type_name_spec[] = {
+ 	[IIO_HUMIDITYRELATIVE] = "humidityrelative",
+ 	[IIO_ACTIVITY] = "activity",
+ 	[IIO_STEPS] = "steps",
++	[IIO_HEIGHT] = "height",
+ };
+ 
+ static const char * const iio_modifier_names[] = {
+diff --git a/include/linux/iio/types.h b/include/linux/iio/types.h
+index af0b6e0..a23b2e7 100644
+--- a/include/linux/iio/types.h
++++ b/include/linux/iio/types.h
+@@ -32,6 +32,7 @@ enum iio_chan_type {
+ 	IIO_HUMIDITYRELATIVE,
+ 	IIO_ACTIVITY,
+ 	IIO_STEPS,
++	IIO_HEIGHT,
+ };
+ 
+ enum iio_modifier {
 -- 
-1.7.9.5
+1.9.1
