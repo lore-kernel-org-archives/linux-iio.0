@@ -1,85 +1,38 @@
-Return-Path: <daniel.baluta@intel.com>
-From: Daniel Baluta <daniel.baluta@intel.com>
+Return-Path: <srinivas.pandruvada@linux.intel.com>
+From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
 To: jic23@kernel.org
-Cc: irina.tirdea@intel.com,
-	daniel.baluta@intel.com,
-	linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: [RFC PATCH v2 5/7] iio: core: Introduce HEIGHT channel type
-Date: Thu,  9 Oct 2014 15:39:43 +0300
-Message-Id: <1412858385-11954-6-git-send-email-daniel.baluta@intel.com>
-In-Reply-To: <1412858385-11954-1-git-send-email-daniel.baluta@intel.com>
-References: <1412858385-11954-1-git-send-email-daniel.baluta@intel.com>
+Cc: linux-iio@vger.kernel.org,
+	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Subject: [PATCH 3/3] iio: accel: bmc150: set low default thresholds
+Date: Fri, 10 Oct 2014 09:30:28 -0700
+Message-Id: <1412958629-30776-3-git-send-email-srinivas.pandruvada@linux.intel.com>
+In-Reply-To: <1412958629-30776-1-git-send-email-srinivas.pandruvada@linux.intel.com>
+References: <1412958629-30776-1-git-send-email-srinivas.pandruvada@linux.intel.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-From: Irina Tirdea <irina.tirdea@intel.com>
+Set the threshold to low by default. With this thresholds any movement
+on the device with this sensor will generate event.
 
-Some devices need the height of the user to compute various
-parameters. One of this devices is Freescale's MMA9553L
-(http://www.freescale.com/files/sensors/doc/ref_manual/MMA9553LSWRM.pdf)
-that needs the height of the user to compute the stride length which
-is used further to determine distance, speed and activity type.
-
-Introduce a new channel type HEIGHT to export these values.
-
-Signed-off-by: Irina Tirdea <irina.tirdea@intel.com>
-Signed-off-by: Daniel Baluta <daniel.baluta@intel.com>
+Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
 ---
- Documentation/ABI/testing/sysfs-bus-iio | 9 +++++++++
- drivers/iio/industrialio-core.c         | 1 +
- include/linux/iio/types.h               | 1 +
- 3 files changed, 11 insertions(+)
+ drivers/iio/accel/bmc150-accel.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
-index 3557a69..fc027cb 100644
---- a/Documentation/ABI/testing/sysfs-bus-iio
-+++ b/Documentation/ABI/testing/sysfs-bus-iio
-@@ -256,6 +256,7 @@ What:		/sys/bus/iio/devices/iio:deviceX/out_altvoltageY_scale
- What:		/sys/bus/iio/devices/iio:deviceX/in_accel_scale
- What:		/sys/bus/iio/devices/iio:deviceX/in_accel_peak_scale
- What:		/sys/bus/iio/devices/iio:deviceX/in_anglvel_scale
-+What:		/sys/bus/iio/devices/iio:deviceX/in_height_scale
- What:		/sys/bus/iio/devices/iio:deviceX/in_magn_scale
- What:		/sys/bus/iio/devices/iio:deviceX/in_magn_x_scale
- What:		/sys/bus/iio/devices/iio:deviceX/in_magn_y_scale
-@@ -1010,6 +1011,14 @@ Description:
- 		For a list of available output power modes read
- 		in_accel_power_mode_available.
+diff --git a/drivers/iio/accel/bmc150-accel.c b/drivers/iio/accel/bmc150-accel.c
+index 352d959..513bd6d 100644
+--- a/drivers/iio/accel/bmc150-accel.c
++++ b/drivers/iio/accel/bmc150-accel.c
+@@ -95,9 +95,9 @@
+ #define BMC150_ACCEL_SLOPE_THRES_MASK		0xFF
  
-+What:		/sys/.../iio:deviceX/in_height_input
-+What:		/sys/.../iio:deviceX/in_height_raw
-+KernelVersion:	3.17
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+		This attribute is used to set and read the user's height.
-+		Units after application of scale are centimeters.
-+
- What:		/sys/bus/iio/devices/iio:deviceX/store_eeprom
- KernelVersion:	3.4.0
- Contact:	linux-iio@vger.kernel.org
-diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
-index 1e060f3..f08b278 100644
---- a/drivers/iio/industrialio-core.c
-+++ b/drivers/iio/industrialio-core.c
-@@ -72,6 +72,7 @@ static const char * const iio_chan_type_name_spec[] = {
- 	[IIO_HUMIDITYRELATIVE] = "humidityrelative",
- 	[IIO_ACTIVITY] = "activity",
- 	[IIO_STEPS] = "steps",
-+	[IIO_HEIGHT] = "height",
- };
+ /* Slope duration in terms of number of samples */
+-#define BMC150_ACCEL_DEF_SLOPE_DURATION	2
++#define BMC150_ACCEL_DEF_SLOPE_DURATION		1
+ /* in terms of multiples of g's/LSB, based on range */
+-#define BMC150_ACCEL_DEF_SLOPE_THRESHOLD	5
++#define BMC150_ACCEL_DEF_SLOPE_THRESHOLD	1
  
- static const char * const iio_modifier_names[] = {
-diff --git a/include/linux/iio/types.h b/include/linux/iio/types.h
-index af0b6e0..a23b2e7 100644
---- a/include/linux/iio/types.h
-+++ b/include/linux/iio/types.h
-@@ -32,6 +32,7 @@ enum iio_chan_type {
- 	IIO_HUMIDITYRELATIVE,
- 	IIO_ACTIVITY,
- 	IIO_STEPS,
-+	IIO_HEIGHT,
- };
+ #define BMC150_ACCEL_REG_XOUT_L		0x02
  
- enum iio_modifier {
 -- 
-1.9.1
+1.9.3
