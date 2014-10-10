@@ -1,45 +1,72 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pa0-f44.google.com ([209.85.220.44]:42035 "EHLO
-	mail-pa0-f44.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754427AbaJGPTm (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 7 Oct 2014 11:19:42 -0400
-From: Darshana Padmadas <darshanapadmadas@gmail.com>
-To: opw-kernel@googlegroups.com
-Cc: grant.likely@linaro.org, robh+dt@kernel.org, pawel.moll@arm.com,
-	linux-arm-kernel@lists.infradead.org, jic23@kernel.org,
-	linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
-	linux-kernel@vger.kernel.org,
-	Darshana Padmadas <darshanapadmadas@gmail.com>
-Subject: [PATCH v4 1/4] Documentation: devicetree: bindings: Document correct and deprecated vendor-prefix with device isl29028
-Date: Tue,  7 Oct 2014 20:49:26 +0530
-Message-Id: <1412695169-22815-2-git-send-email-darshanapadmadas@gmail.com>
-In-Reply-To: <1412695169-22815-1-git-send-email-darshanapadmadas@gmail.com>
-References: <1412695169-22815-1-git-send-email-darshanapadmadas@gmail.com>
-Content-Type: text/plain; charset="utf-8"
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <srinivas.pandruvada@linux.intel.com>
+From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+To: jic23@kernel.org
+Cc: linux-iio@vger.kernel.org,
+	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Subject: [PATCH 3/3] iio: gyro: bmg160: Send x, y and z motion separately
+Date: Fri, 10 Oct 2014 09:30:56 -0700
+Message-Id: <1412958656-30834-3-git-send-email-srinivas.pandruvada@linux.intel.com>
+In-Reply-To: <1412958656-30834-1-git-send-email-srinivas.pandruvada@linux.intel.com>
+References: <1412958656-30834-1-git-send-email-srinivas.pandruvada@linux.intel.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-This patch documents the device isl29028 with its vendor-prefix. Undocumented deprecated vendor-prefix
-found by checkpatch also documented for compatibility reasons.
+This chip is capable to identify motion across x, y and z axes. So
+send different events.
 
-Signed-off-by: Darshana Padmadas <darshanapadmadas@gmail.com>
+Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
 ---
- Documentation/devicetree/bindings/i2c/trivial-devices.txt | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/iio/gyro/bmg160.c | 23 ++++++++++++++++++++---
+ 1 file changed, 20 insertions(+), 3 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/i2c/trivial-devices.txt b/Documentation/devicetree/bindings/i2c/trivial-devices.txt
-index 6af570e..32edf0b 100644
---- a/Documentation/devicetree/bindings/i2c/trivial-devices.txt
-+++ b/Documentation/devicetree/bindings/i2c/trivial-devices.txt
-@@ -57,6 +57,8 @@ gmt,g751		G751: Digital Temperature Sensor and Thermal Watchdog with Two-Wire In
- infineon,slb9635tt	Infineon SLB9635 (Soft-) I2C TPM (old protocol, max 100khz)
- infineon,slb9645tt	Infineon SLB9645 I2C TPM (new protocol, max 400khz)
- isl,isl12057		Intersil ISL12057 I2C RTC Chip
-+isil,isl29028           (deprecated, use isl)
-+isl,isl29028            Intersil ISL29028 Ambient Light and Proximity Sensor
- maxim,ds1050		5 Bit Programmable, Pulse-Width Modulator
- maxim,max1237		Low-Power, 4-/12-Channel, 2-Wire Serial, 12-Bit ADCs
- maxim,max6625		9-Bit/12-Bit Temperature Sensors with I²C-Compatible Serial Interface
+diff --git a/drivers/iio/gyro/bmg160.c b/drivers/iio/gyro/bmg160.c
+index 0b9e813..1c79f2f 100644
+--- a/drivers/iio/gyro/bmg160.c
++++ b/drivers/iio/gyro/bmg160.c
+@@ -85,6 +85,9 @@
+ 
+ #define BMG160_REG_INT_STATUS_2	0x0B
+ #define BMG160_ANY_MOTION_MASK		0x07
++#define BMG160_ANY_MOTION_BIT_X		BIT(0)
++#define BMG160_ANY_MOTION_BIT_Y		BIT(1)
++#define BMG160_ANY_MOTION_BIT_Z		BIT(2)
+ 
+ #define BMG160_REG_TEMP		0x08
+ #define BMG160_TEMP_CENTER_VAL		23
+@@ -763,7 +766,7 @@ static const struct attribute_group bmg160_attrs_group = {
+ 
+ static const struct iio_event_spec bmg160_event = {
+ 		.type = IIO_EV_TYPE_ROC,
+-		.dir = IIO_EV_DIR_RISING | IIO_EV_DIR_FALLING,
++		.dir = IIO_EV_DIR_EITHER,
+ 		.mask_shared_by_type = BIT(IIO_EV_INFO_VALUE) |
+ 				       BIT(IIO_EV_INFO_ENABLE)
+ };
+@@ -929,10 +932,24 @@ static irqreturn_t bmg160_event_handler(int irq, void *private)
+ 	else
+ 		dir = IIO_EV_DIR_FALLING;
+ 
+-	if (ret & BMG160_ANY_MOTION_MASK)
++	if (ret & BMG160_ANY_MOTION_BIT_X)
+ 		iio_push_event(indio_dev, IIO_MOD_EVENT_CODE(IIO_ANGL_VEL,
+ 							0,
+-							IIO_MOD_X_OR_Y_OR_Z,
++							IIO_MOD_X,
++							IIO_EV_TYPE_ROC,
++							dir),
++							data->timestamp);
++	if (ret & BMG160_ANY_MOTION_BIT_Y)
++		iio_push_event(indio_dev, IIO_MOD_EVENT_CODE(IIO_ANGL_VEL,
++							0,
++							IIO_MOD_Y,
++							IIO_EV_TYPE_ROC,
++							dir),
++							data->timestamp);
++	if (ret & BMG160_ANY_MOTION_BIT_Z)
++		iio_push_event(indio_dev, IIO_MOD_EVENT_CODE(IIO_ANGL_VEL,
++							0,
++							IIO_MOD_Z,
+ 							IIO_EV_TYPE_ROC,
+ 							dir),
+ 							data->timestamp);
 -- 
-1.9.1
-
+1.9.3
