@@ -1,82 +1,85 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from cam-admin0.cambridge.arm.com ([217.140.96.50]:58358 "EHLO
-	cam-admin0.cambridge.arm.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1754187AbaJGPhG (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 7 Oct 2014 11:37:06 -0400
-Date: Tue, 7 Oct 2014 16:36:29 +0100
-From: Mark Rutland <mark.rutland@arm.com>
-To: Darshana Padmadas <darshanapadmadas@gmail.com>
-Cc: "opw-kernel@googlegroups.com" <opw-kernel@googlegroups.com>,
-	"devel@driverdev.osuosl.org" <devel@driverdev.osuosl.org>,
-	Pawel Moll <Pawel.Moll@arm.com>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"robh+dt@kernel.org" <robh+dt@kernel.org>,
-	"linux-arm-kernel@lists.infradead.org"
-	<linux-arm-kernel@lists.infradead.org>,
-	"grant.likely@linaro.org" <grant.likely@linaro.org>,
-	"jic23@kernel.org" <jic23@kernel.org>
-Subject: Re: [PATCH v4 1/4] Documentation: devicetree: bindings: Document
- correct and deprecated vendor-prefix with device isl29028
-Message-ID: <20141007153629.GC27216@leverpostej>
-References: <1412695169-22815-1-git-send-email-darshanapadmadas@gmail.com>
- <1412695169-22815-2-git-send-email-darshanapadmadas@gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-In-Reply-To: <1412695169-22815-2-git-send-email-darshanapadmadas@gmail.com>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <srinivas.pandruvada@linux.intel.com>
+From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+To: jic23@kernel.org
+Cc: linux-iio@vger.kernel.org,
+	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Subject: [PATCH 1/3] iio: gyro: bmg160: Error handling when mode set fails
+Date: Fri, 10 Oct 2014 09:30:54 -0700
+Message-Id: <1412958656-30834-1-git-send-email-srinivas.pandruvada@linux.intel.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-Hi Darshana,
+When mode set fails due to some transient failures, it will atleast
+reset the state of runtime usage count and also let the runtime
+suspend retry from the driver framework.
 
-On Tue, Oct 07, 2014 at 04:19:26PM +0100, Darshana Padmadas wrote:
-> This patch documents the device isl29028 with its vendor-prefix. Undocumented deprecated vendor-prefix
-> found by checkpatch also documented for compatibility reasons.
-> 
-> Signed-off-by: Darshana Padmadas <darshanapadmadas@gmail.com>
+Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+---
+ drivers/iio/gyro/bmg160.c | 17 ++++++++++++++++-
+ 1 file changed, 16 insertions(+), 1 deletion(-)
 
-In future, when you receive an Acked-by (or Reviewed-by, Tested-by,
-etc), please add them here for subsequent postings, unless there have
-been substantial changes that mean said tags are not representative. For
-example, this patch you should have:
-
-Signed-off-by: Darshana Padmadas <darshanapadmadas@gmail.com>
-Acked-by: Arnd Bergmann <arnd@arndb.de>
-Acked-by: Mark Rutland <mark.rutland@arm.com>
-
-That makes it obvious that others have looked at your patches, and will
-help maintainers when deciding whether to pick them up. Additionally,
-for those who have reviewed or tested patches, it gains them some
-recognition for that effort.
-
-Additionally, it's generally a good idea to wait for at least a day or
-so between postings so as to give others time to inspect patches.
-
-Thanks,
-Mark.
-
-> ---
->  Documentation/devicetree/bindings/i2c/trivial-devices.txt | 2 ++
->  1 file changed, 2 insertions(+)
-> 
-> diff --git a/Documentation/devicetree/bindings/i2c/trivial-devices.txt b/Documentation/devicetree/bindings/i2c/trivial-devices.txt
-> index 6af570e..32edf0b 100644
-> --- a/Documentation/devicetree/bindings/i2c/trivial-devices.txt
-> +++ b/Documentation/devicetree/bindings/i2c/trivial-devices.txt
-> @@ -57,6 +57,8 @@ gmt,g751		G751: Digital Temperature Sensor and Thermal Watchdog with Two-Wire In
->  infineon,slb9635tt	Infineon SLB9635 (Soft-) I2C TPM (old protocol, max 100khz)
->  infineon,slb9645tt	Infineon SLB9645 I2C TPM (new protocol, max 400khz)
->  isl,isl12057		Intersil ISL12057 I2C RTC Chip
-> +isil,isl29028           (deprecated, use isl)
-> +isl,isl29028            Intersil ISL29028 Ambient Light and Proximity Sensor
->  maxim,ds1050		5 Bit Programmable, Pulse-Width Modulator
->  maxim,max1237		Low-Power, 4-/12-Channel, 2-Wire Serial, 12-Bit ADCs
->  maxim,max6625		9-Bit/12-Bit Temperature Sensors with I²C-Compatible Serial Interface
-> -- 
-> 1.9.1
-> 
-> 
-> _______________________________________________
-> linux-arm-kernel mailing list
-> linux-arm-kernel@lists.infradead.org
-> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
+diff --git a/drivers/iio/gyro/bmg160.c b/drivers/iio/gyro/bmg160.c
+index 1f967e0d..3476133 100644
+--- a/drivers/iio/gyro/bmg160.c
++++ b/drivers/iio/gyro/bmg160.c
+@@ -250,6 +250,9 @@ static int bmg160_set_power_state(struct bmg160_data *data, bool on)
+ 	if (ret < 0) {
+ 		dev_err(&data->client->dev,
+ 			"Failed: bmg160_set_power_state for %d\n", on);
++		if (on)
++			pm_runtime_put_noidle(&data->client->dev);
++
+ 		return ret;
+ 	}
+ #endif
+@@ -705,6 +708,7 @@ static int bmg160_write_event_config(struct iio_dev *indio_dev,
+ 
+ 	ret =  bmg160_setup_any_motion_interrupt(data, state);
+ 	if (ret < 0) {
++		bmg160_set_power_state(data, false);
+ 		mutex_unlock(&data->mutex);
+ 		return ret;
+ 	}
+@@ -871,6 +875,7 @@ static int bmg160_data_rdy_trigger_set_state(struct iio_trigger *trig,
+ 	else
+ 		ret = bmg160_setup_new_data_interrupt(data, state);
+ 	if (ret < 0) {
++		bmg160_set_power_state(data, false);
+ 		mutex_unlock(&data->mutex);
+ 		return ret;
+ 	}
+@@ -1142,6 +1147,7 @@ static int bmg160_suspend(struct device *dev)
+ 	struct iio_dev *indio_dev = i2c_get_clientdata(to_i2c_client(dev));
+ 	struct bmg160_data *data = iio_priv(indio_dev);
+ 
++	dev_dbg(&data->client->dev, __func__);
+ 	mutex_lock(&data->mutex);
+ 	bmg160_set_mode(data, BMG160_MODE_SUSPEND);
+ 	mutex_unlock(&data->mutex);
+@@ -1169,8 +1175,16 @@ static int bmg160_runtime_suspend(struct device *dev)
+ {
+ 	struct iio_dev *indio_dev = i2c_get_clientdata(to_i2c_client(dev));
+ 	struct bmg160_data *data = iio_priv(indio_dev);
++	int ret;
+ 
+-	return bmg160_set_mode(data, BMG160_MODE_SUSPEND);
++	dev_dbg(&data->client->dev, __func__);
++	ret = bmg160_set_mode(data, BMG160_MODE_SUSPEND);
++	if (ret < 0) {
++		dev_err(&data->client->dev, "set mode failed\n");
++		return -EAGAIN;
++	}
++
++	return 0;
+ }
+ 
+ static int bmg160_runtime_resume(struct device *dev)
+@@ -1179,6 +1193,7 @@ static int bmg160_runtime_resume(struct device *dev)
+ 	struct bmg160_data *data = iio_priv(indio_dev);
+ 	int ret;
+ 
++	dev_dbg(&data->client->dev, __func__);
+ 	ret = bmg160_set_mode(data, BMG160_MODE_NORMAL);
+ 	if (ret < 0)
+ 		return ret;
+-- 
+1.9.3
