@@ -1,62 +1,56 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mailout4.w1.samsung.com ([210.118.77.14]:63307 "EHLO
-	mailout4.w1.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750886AbaJISjm (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 9 Oct 2014 14:39:42 -0400
-From: Karol Wrona <k.wrona@samsung.com>
-To: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
-	Arnd Bergmann <arnd@arndb.de>, linux-kernel@vger.kernel.org
-Cc: Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
-	Kyungmin Park <kyungmin.park@samsung.com>,
-	Karol Wrona <k.wrona@samsung.com>
-Subject: [PATCH 0/1] misc: st32boot: Add stm32 upgrade protocol handling
-Date: Thu, 09 Oct 2014 20:35:42 +0200
-Message-id: <1412879743-19928-1-git-send-email-k.wrona@samsung.com>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <srinivas.pandruvada@linux.intel.com>
+From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+To: jic23@kernel.org
+Cc: linux-iio@vger.kernel.org,
+	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Subject: [PATCH 2/3] iio: gyro: bmg160: Don't let interrupt mode to be open drain
+Date: Fri, 10 Oct 2014 09:30:55 -0700
+Message-Id: <1412958656-30834-2-git-send-email-srinivas.pandruvada@linux.intel.com>
+In-Reply-To: <1412958656-30834-1-git-send-email-srinivas.pandruvada@linux.intel.com>
+References: <1412958656-30834-1-git-send-email-srinivas.pandruvada@linux.intel.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-Hello,
+Change the mode to push/pull type instead of open drain as some
+platforms fails to drive the GPIO pin with open drain.
 
-This patch is needed by the sensorhub driver which uses STM32F4xx and Jonathan
-suggested to factor out these sources (mentioned in: 
-[RFC/PATCH 2/6] misc: sensorhub: Add sensorhub).
+Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+---
+ drivers/iio/gyro/bmg160.c | 16 ++++++++++++++++
+ 1 file changed, 16 insertions(+)
 
-I feel a bit ashamed because I know a bit STM32F4 controllers but I do not
-realized that it is generic ST protocol. It helped us a lot because this 
-code really needed some refactoring.
-
-So this patch contains SPI protocol used in the STM32 bootloader and is based
-on AN4286. Generally it can be used to implement handling of other interfaces
-like UART or I2C because the flow is quite similar and maybe adding proper
-hw access callbacks will do all work.
-
-It supports:
-  - get info frame
-  - get version
-  - firmware write
-
-
-Karol
-
-Karol Wrona (1):
-  misc: st32boot: Add stm32 upgrade protocol handling
-
- drivers/misc/Kconfig                |    1 +
- drivers/misc/Makefile               |    1 +
- drivers/misc/stm32boot/Kconfig      |    6 +
- drivers/misc/stm32boot/Makefile     |    3 +
- drivers/misc/stm32boot/stm32_core.c |  412 +++++++++++++++++++++++++++++++++++
- drivers/misc/stm32boot/stm32_core.h |   81 +++++++
- drivers/misc/stm32boot/stm32_spi.c  |  108 +++++++++
- include/linux/stm32fwu.h            |   47 ++++
- 8 files changed, 659 insertions(+)
- create mode 100644 drivers/misc/stm32boot/Kconfig
- create mode 100644 drivers/misc/stm32boot/Makefile
- create mode 100644 drivers/misc/stm32boot/stm32_core.c
- create mode 100644 drivers/misc/stm32boot/stm32_core.h
- create mode 100644 drivers/misc/stm32boot/stm32_spi.c
- create mode 100644 include/linux/stm32fwu.h
-
+diff --git a/drivers/iio/gyro/bmg160.c b/drivers/iio/gyro/bmg160.c
+index 3476133..0b9e813 100644
+--- a/drivers/iio/gyro/bmg160.c
++++ b/drivers/iio/gyro/bmg160.c
+@@ -67,6 +67,9 @@
+ #define BMG160_REG_INT_EN_0		0x15
+ #define BMG160_DATA_ENABLE_INT		BIT(7)
+ 
++#define BMG160_REG_INT_EN_1		0x16
++#define BMG160_INT1_BIT_OD		BIT(1)
++
+ #define BMG160_REG_XOUT_L		0x02
+ #define BMG160_AXIS_TO_REG(axis)	(BMG160_REG_XOUT_L + (axis * 2))
+ 
+@@ -222,6 +225,19 @@ static int bmg160_chip_init(struct bmg160_data *data)
+ 	data->slope_thres = ret;
+ 
+ 	/* Set default interrupt mode */
++	ret = i2c_smbus_read_byte_data(data->client, BMG160_REG_INT_EN_1);
++	if (ret < 0) {
++		dev_err(&data->client->dev, "Error reading reg_int_en_1\n");
++		return ret;
++	}
++	ret &= ~BMG160_INT1_BIT_OD;
++	ret = i2c_smbus_write_byte_data(data->client,
++					BMG160_REG_INT_EN_1, ret);
++	if (ret < 0) {
++		dev_err(&data->client->dev, "Error writing reg_int_en_1\n");
++		return ret;
++	}
++
+ 	ret = i2c_smbus_write_byte_data(data->client,
+ 					BMG160_REG_INT_RST_LATCH,
+ 					BMG160_INT_MODE_LATCH_INT |
 -- 
-1.7.9.5
-
+1.9.3
