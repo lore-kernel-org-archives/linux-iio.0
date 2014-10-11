@@ -1,139 +1,504 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mailout2.w1.samsung.com ([210.118.77.12]:29024 "EHLO
-	mailout2.w1.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753547AbaJMJqt (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 13 Oct 2014 05:46:49 -0400
-Message-id: <543B9F85.9020704@samsung.com>
-Date: Mon, 13 Oct 2014 11:46:45 +0200
-From: Karol Wrona <k.wrona@samsung.com>
-MIME-version: 1.0
-To: Daniel Baluta <daniel.baluta@intel.com>,
-	Jonathan Cameron <jic23@kernel.org>
-Cc: linux-iio@vger.kernel.org,
-	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-	irina.tirdea@intel.com
-Subject: Re: [RFC PATCH 3/8] iio: core: Introduce new MOTION event
-References: <1412257439-15683-1-git-send-email-daniel.baluta@intel.com>
- <1412257439-15683-4-git-send-email-daniel.baluta@intel.com>
- <542FF252.1020206@kernel.org> <5432A474.7000700@intel.com>
- <5436E27D.8080600@kernel.org>
- <CAEnQRZAsHmYYqHAB3EeoGbTp4kHZNjfW5sx4fK=uCE_NCKaXfA@mail.gmail.com>
-In-reply-to: <CAEnQRZAsHmYYqHAB3EeoGbTp4kHZNjfW5sx4fK=uCE_NCKaXfA@mail.gmail.com>
-Content-type: text/plain; charset=utf-8; format=flowed
+Received: from mout.gmx.net ([212.227.15.19]:58580 "EHLO mout.gmx.net"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751224AbaJKWst (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Sat, 11 Oct 2014 18:48:49 -0400
+Message-ID: <5439B397.8060207@gmx.de>
+Date: Sun, 12 Oct 2014 00:47:51 +0200
+From: Hartmut Knaack <knaack.h@gmx.de>
+MIME-Version: 1.0
+To: Adam Thomson <Adam.Thomson.Opensource@diasemi.com>,
+	Lee Jones <lee.jones@linaro.org>,
+	Samuel Ortiz <sameo@linux.intel.com>,
+	Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
+	Sebastian Reichel <sre@kernel.org>,
+	Dmitry Eremin-Solenikov <dbaryshkov@gmail.com>,
+	David Woodhouse <dwmw2@infradead.org>,
+	linux-pm@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
+	Pawel Moll <pawel.moll@arm.com>,
+	Mark Rutland <mark.rutland@arm.com>,
+	Ian Campbell <ijc+devicetree@hellion.org.uk>,
+	Kumar Gala <galak@codeaurora.org>,
+	Grant Likely <grant.likely@linaro.org>,
+	devicetree@vger.kernel.org,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Joe Perches <joe@perches.com>, linux-api@vger.kernel.org
+CC: linux-kernel@vger.kernel.org, support.opensource@diasemi.com
+Subject: Re: [PATCH 3/8] iio: Add support for DA9150 GPADC
+References: <cover.1411396718.git.Adam.Thomson.Opensource@diasemi.com> <ee4c56931f326d8ee9c1313c44456bce2dec8b8c.1411396719.git.Adam.Thomson.Opensource@diasemi.com>
+In-Reply-To: <ee4c56931f326d8ee9c1313c44456bce2dec8b8c.1411396719.git.Adam.Thomson.Opensource@diasemi.com>
+Content-Type: text/plain; charset=ISO-8859-15
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 10/11/2014 11:47 AM, Daniel Baluta wrote:
-> On Thu, Oct 9, 2014 at 10:31 PM, Jonathan Cameron <jic23@kernel.org> wrote:
->> On 06/10/14 15:17, Daniel Baluta wrote:
->>>
->>> On 10/04/2014 04:12 PM, Jonathan Cameron wrote:
->>>> On 02/10/14 14:43, Daniel Baluta wrote:
->>>>> This is to be used by drivers to signal detection of motion. We also
->>>>> add some possible values for motion as IIO events modifiers:
->>>>>      * running
->>>>>      * jogging
->>>>>      * walking
->>>>>      * still
->>>>>
->>>>> These values are supported by Frescale's MMA9553 sensor:
->>>>>
->>>>> http://freescale.com/files/sensors/doc/ref_manual/MMA9553LSWRM.pdf
->>>>>
->>>>> Signed-off-by: Daniel Baluta <daniel.baluta@intel.com>
->>>>> Signed-off-by: Irina Tirdea <irina.tirdea@intel.com>
->>>> Hmm.. This is the interesting one.
->>>> Not immediately obvious how best to represent this stuff.
->>>>> ---
->>>>>    Documentation/ABI/testing/sysfs-bus-iio | 7 +++++++
->>>>>    drivers/iio/industrialio-core.c         | 4 ++++
->>>>>    drivers/iio/industrialio-event.c        | 1 +
->>>>>    include/linux/iio/types.h               | 7 ++++++-
->>>>>    4 files changed, 18 insertions(+), 1 deletion(-)
->>>>>
->>>>> diff --git a/Documentation/ABI/testing/sysfs-bus-iio
->>>>> b/Documentation/ABI/testing/sysfs-bus-iio
->>>>> index d760b02..070346d 100644
->>>>> --- a/Documentation/ABI/testing/sysfs-bus-iio
->>>>> +++ b/Documentation/ABI/testing/sysfs-bus-iio
->>>>> @@ -808,6 +808,13 @@ Description:
->>>>>            number or direction is not specified, applies to all channels of
->>>>>            this type.
->>>>>
->>>>> +What:        /sys/.../events/in_activity_motion_either_en
->>>>> +KernelVersion:    3.17
->>>>> +Contact:    linux-iio@vger.kernel.org
->>>>> +Description:
->>>>> +        Enables or disables motion detection. Each time motion is detected an
->>>>> +        event of this type will be generated.
->>>>> +
->>>> The either bit seems a bit random but I can see there is no particularly obvious
->>>> alternative.
->>> I wonder if introducing a new IIO_EV_DIR_NONE event direction type would make
->>> sense. In this case the sysfs attribute will drop event direction text from its
->>> name (e.g /sys/.../events/in_activity_motion_en)
->>>
->>>> We really need a clean way of representing a multilevel 'state change' like this.
->>>>
->>>> Looking at the event code, I almost wonder if we would be better using the
->>>> direction element for running, walking etc rather than a modifier.
->>> When pushing events code to userspace the modifier seemed to be the only option.
->>>
->>>> Having said that we will probably also get devices where this is polled rather
->>>> than
->>>> event.  'What activity is currently going on?'
->>> Adding IIO_EV_INFO_VALUE bit, would create an attribute
->>> /sys/.../events/in_activity_motion_either_value that could expose the current
->>> activity going on.
->>>
->>>> If we take that view modifiers make sense as it becomes
->>>> 'Is the user running?'  Perhaps even offering a confidence interval, e.g units as
->>>> percentage
->>>> in_activity_running_input 0..100
->>>> in_activity_walking_input 0..100
->>>> etc
->>>>
->>>> Then our event becomes a state change event (yup we'll need to add that)
->>>>
->>>> /events/in_activity_walking_rising_en  will then cause events when the percentage
->>>> confidence on a state rises above the provided threshold or goes above it
->>>> (default of 50% perhaps on devices which only report one state).
->>>>
->>>> /events/in_activity_walking_falling_en will do the leaving case.
->>> This is a very nice idea and it will also offer more flexibility. I am not sure
->>> about the use case of confidence interval but using 0 and 100 will do the trick
->>> for us.
->> Sure, feel free to propose something else.  We could define a confidence interval
->> that counts as 'we think it is this'.  Basically just use values of 0 or 100 when
->> there is no explicit indication of the confidence available.  Not sure what
->> you do get ;)
->>> We will use this interface for implementation of significant motion in Android's
->>> HAL. [1]
->>>
->>> I will experiment more with how IIO attributes work and I will send a v2
->>> using direction instead of modifier for activity type (running, walking etc).
->>>
->>>
->>>> Note these are just some quick initial thoughts on alternative methods.
->>>> I'll want to think on this more and get responses from more interested
->>>> parties!
->>> Thanks a lot for your time!
->> You are welcome.  Funnily enough I rather enjoy trying to think of ways to
->> handle new 'weird' hardware in a consistent fashion :)
-> We have already sent a second proposal :).
->
-> http://marc.info/?l=linux-iio&m=141285801717857&w=2
->
-> We are also hoping to get more opinions from other parties.
-> CC'ing Karol from Samsung :).
->
-> Daniel.
->
-Thanks for the info.
-In my case I have to figure out what is really needed between hw and 
-driver first.
-The existing android driver has given a data blob to user space as 
-concerns new
-sensor classes. Please, give a few days.
+Hi,
+I have put a few comments inline.
 
-Karol
+Adam Thomson schrieb am 23.09.2014 12:53:
+> This patch adds support for DA9150 Charger & Fuel-Gauge IC GPADC.
+> 
+> Signed-off-by: Adam Thomson <Adam.Thomson.Opensource@diasemi.com>
+> ---
+>  drivers/iio/adc/Kconfig        |   9 +
+>  drivers/iio/adc/Makefile       |   1 +
+>  drivers/iio/adc/da9150-gpadc.c | 406 +++++++++++++++++++++++++++++++++++++++++
+>  3 files changed, 416 insertions(+)
+>  create mode 100644 drivers/iio/adc/da9150-gpadc.c
+> 
+> diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+> index 11b048a..8041347 100644
+> --- a/drivers/iio/adc/Kconfig
+> +++ b/drivers/iio/adc/Kconfig
+> @@ -127,6 +127,15 @@ config AT91_ADC
+>  	help
+>  	  Say yes here to build support for Atmel AT91 ADC.
+> 
+> +config DA9150_GPADC
+> +	tristate "Dialog DA9150 GPADC driver support"
+> +	depends on MFD_DA9150
+> +	help
+> +	  Say yes here to build support for Dialog DA9150 GPADC.
+> +
+> +	  This driver can also be built as a module. If chosen, the module name
+> +	  will be da9150-gpadc.
+> +
+>  config EXYNOS_ADC
+>  	tristate "Exynos ADC driver support"
+>  	depends on ARCH_EXYNOS || (OF && COMPILE_TEST)
+> diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
+> index ad81b51..48413d2 100644
+> --- a/drivers/iio/adc/Makefile
+> +++ b/drivers/iio/adc/Makefile
+> @@ -14,6 +14,7 @@ obj-$(CONFIG_AD7793) += ad7793.o
+>  obj-$(CONFIG_AD7887) += ad7887.o
+>  obj-$(CONFIG_AD799X) += ad799x.o
+>  obj-$(CONFIG_AT91_ADC) += at91_adc.o
+> +obj-$(CONFIG_DA9150_GPADC) += da9150-gpadc.o
+>  obj-$(CONFIG_EXYNOS_ADC) += exynos_adc.o
+>  obj-$(CONFIG_LP8788_ADC) += lp8788_adc.o
+>  obj-$(CONFIG_MAX1027) += max1027.o
+> diff --git a/drivers/iio/adc/da9150-gpadc.c b/drivers/iio/adc/da9150-gpadc.c
+> new file mode 100644
+> index 0000000..2b83ee0
+> --- /dev/null
+> +++ b/drivers/iio/adc/da9150-gpadc.c
+> @@ -0,0 +1,406 @@
+> +/*
+> + * DA9150 GPADC Driver
+> + *
+> + * Copyright (c) 2014 Dialog Semiconductor
+> + *
+> + * Author: Adam Thomson <Adam.Thomson.Opensource@diasemi.com>
+> + *
+> + * This program is free software; you can redistribute  it and/or modify it
+> + * under  the terms of  the GNU General  Public License as published by the
+> + * Free Software Foundation;  either version 2 of the  License, or (at your
+> + * option) any later version.
+> + */
+> +
+> +#include <linux/kernel.h>
+> +#include <linux/slab.h>
+> +#include <linux/module.h>
+> +#include <linux/platform_device.h>
+> +#include <linux/interrupt.h>
+> +#include <linux/mutex.h>
+> +#include <linux/completion.h>
+> +#include <linux/iio/iio.h>
+> +#include <linux/iio/machine.h>
+> +#include <linux/iio/driver.h>
+> +#include <linux/mfd/da9150/core.h>
+> +#include <linux/mfd/da9150/registers.h>
+> +
+> +/* Channels */
+> +enum da9150_gpadc_hw_channel {
+> +	DA9150_GPADC_HW_CHAN_GPIOA_2V = 0,
+> +	DA9150_GPADC_HW_CHAN_GPIOA_2V_,
+> +	DA9150_GPADC_HW_CHAN_GPIOB_2V,
+> +	DA9150_GPADC_HW_CHAN_GPIOB_2V_,
+> +	DA9150_GPADC_HW_CHAN_GPIOC_2V,
+> +	DA9150_GPADC_HW_CHAN_GPIOC_2V_,
+> +	DA9150_GPADC_HW_CHAN_GPIOD_2V,
+> +	DA9150_GPADC_HW_CHAN_GPIOD_2V_,
+> +	DA9150_GPADC_HW_CHAN_IBUS_SENSE,
+> +	DA9150_GPADC_HW_CHAN_IBUS_SENSE_,
+> +	DA9150_GPADC_HW_CHAN_VBUS_DIV,
+> +	DA9150_GPADC_HW_CHAN_VBUS_DIV_,
+> +	DA9150_GPADC_HW_CHAN_ID,
+> +	DA9150_GPADC_HW_CHAN_ID_,
+> +	DA9150_GPADC_HW_CHAN_VSYS,
+> +	DA9150_GPADC_HW_CHAN_VSYS_,
+> +	DA9150_GPADC_HW_CHAN_GPIOA_6V,
+> +	DA9150_GPADC_HW_CHAN_GPIOA_6V_,
+> +	DA9150_GPADC_HW_CHAN_GPIOB_6V,
+> +	DA9150_GPADC_HW_CHAN_GPIOB_6V_,
+> +	DA9150_GPADC_HW_CHAN_GPIOC_6V,
+> +	DA9150_GPADC_HW_CHAN_GPIOC_6V_,
+> +	DA9150_GPADC_HW_CHAN_GPIOD_6V,
+> +	DA9150_GPADC_HW_CHAN_GPIOD_6V_,
+> +	DA9150_GPADC_HW_CHAN_VBAT,
+> +	DA9150_GPADC_HW_CHAN_VBAT_,
+> +	DA9150_GPADC_HW_CHAN_TBAT,
+> +	DA9150_GPADC_HW_CHAN_TBAT_,
+> +	DA9150_GPADC_HW_CHAN_TJUNC_CORE,
+> +	DA9150_GPADC_HW_CHAN_TJUNC_CORE_,
+> +	DA9150_GPADC_HW_CHAN_TJUNC_OVP,
+> +	DA9150_GPADC_HW_CHAN_TJUNC_OVP_,
+> +};
+> +
+> +enum da9150_gpadc_channel {
+> +	DA9150_GPADC_CHAN_GPIOA = 0,
+> +	DA9150_GPADC_CHAN_GPIOB,
+> +	DA9150_GPADC_CHAN_GPIOC,
+> +	DA9150_GPADC_CHAN_GPIOD,
+> +	DA9150_GPADC_CHAN_IBUS,
+> +	DA9150_GPADC_CHAN_VBUS,
+> +	DA9150_GPADC_CHAN_ID,
+> +	DA9150_GPADC_CHAN_VSYS,
+> +	DA9150_GPADC_CHAN_VBAT,
+> +	DA9150_GPADC_CHAN_TBAT,
+> +	DA9150_GPADC_CHAN_TJUNC_CORE,
+> +	DA9150_GPADC_CHAN_TJUNC_OVP,
+> +};
+> +
+> +/* Private data */
+> +struct da9150_gpadc {
+> +	struct da9150 *da9150;
+> +	struct device *dev;
+> +
+> +	struct mutex lock;
+> +	struct completion complete;
+> +};
+> +
+> +
+> +static irqreturn_t da9150_gpadc_irq(int irq, void *data)
+> +{
+> +
+> +	struct da9150_gpadc *gpadc = data;
+> +
+> +	complete(&gpadc->complete);
+> +
+> +	return IRQ_HANDLED;
+> +}
+> +
+> +static int da9150_gpadc_read_adc(struct da9150_gpadc *gpadc, int hw_chan)
+> +{
+> +	u8 result_regs[2];
+> +	int result;
+> +
+> +	mutex_lock(&gpadc->lock);
+> +
+> +	/* Set channel & enable measurement */
+> +	da9150_reg_write(gpadc->da9150, DA9150_GPADC_MAN,
+> +			 (DA9150_GPADC_EN_MASK |
+> +			  hw_chan << DA9150_GPADC_MUX_SHIFT));
+> +
+> +	/* Consume left-over completion from a previous timeout */
+> +	try_wait_for_completion(&gpadc->complete);
+> +
+> +	/* Check for actual completion */
+> +	wait_for_completion_timeout(&gpadc->complete, msecs_to_jiffies(5));
+> +
+> +	/* Read result and status from device */
+> +	da9150_bulk_read(gpadc->da9150, DA9150_GPADC_RES_A, 2, result_regs);
+> +
+> +	mutex_unlock(&gpadc->lock);
+> +
+> +	/* Check to make sure device really has completed reading */
+> +	if (result_regs[1] & DA9150_GPADC_RUN_MASK) {
+> +		dev_err(gpadc->dev, "Timeout on channel %d of GPADC\n",
+> +			hw_chan);
+> +		return -ETIMEDOUT;
+> +	}
+> +
+> +	/* LSBs - 2 bits */
+> +	result = (result_regs[1] & DA9150_GPADC_RES_L_MASK) >>
+> +		 DA9150_GPADC_RES_L_SHIFT;
+> +	/* MSBs - 8 bits */
+> +	result |= result_regs[0] << DA9150_GPADC_RES_L_BITS;
+> +
+> +	return result;
+> +}
+> +
+> +static inline int da9150_gpadc_gpio_6v_voltage_now(int raw_val)
+> +{
+> +	/* Convert to mV */
+> +	return (6 * ((raw_val * 1000) + 500)) / 1024;
+> +}
+> +
+> +static inline int da9150_gpadc_ibus_current_avg(int raw_val)
+> +{
+> +	/* Convert to mA */
+> +	return (4 * ((raw_val * 1000) + 500)) / 2048;
+> +}
+> +
+> +static inline int da9150_gpadc_vbus_21v_voltage_now(int raw_val)
+> +{
+> +	/* Convert to mV */
+> +	return (21 * ((raw_val * 1000) + 500)) / 1024;
+> +}
+> +
+> +static inline int da9150_gpadc_vsys_6v_voltage_now(int raw_val)
+> +{
+> +	/* Convert to mV */
+> +	return (3 * ((raw_val * 1000) + 500)) / 512;
+> +}
+> +
+> +static int da9150_gpadc_read_processed(struct da9150_gpadc *gpadc, int channel,
+> +				       int hw_chan, int *val)
+> +{
+> +	int raw_val;
+> +
+> +	raw_val = da9150_gpadc_read_adc(gpadc, hw_chan);
+> +	if (raw_val < 0)
+> +		return raw_val;
+> +
+> +	switch (channel) {
+> +	case DA9150_GPADC_CHAN_GPIOA:
+> +	case DA9150_GPADC_CHAN_GPIOB:
+> +	case DA9150_GPADC_CHAN_GPIOC:
+> +	case DA9150_GPADC_CHAN_GPIOD:
+> +		*val = da9150_gpadc_gpio_6v_voltage_now(raw_val);
+> +		break;
+> +	case DA9150_GPADC_CHAN_IBUS:
+> +		*val = da9150_gpadc_ibus_current_avg(raw_val);
+> +		break;
+> +	case DA9150_GPADC_CHAN_VBUS:
+> +		*val = da9150_gpadc_vbus_21v_voltage_now(raw_val);
+> +		break;
+> +	case DA9150_GPADC_CHAN_VSYS:
+> +		*val = da9150_gpadc_vsys_6v_voltage_now(raw_val);
+> +		break;
+> +	default:
+> +		/* No processing for other channels so return raw value */
+> +		*val = raw_val;
+> +		break;
+> +	}
+> +
+> +	return IIO_VAL_INT;
+> +}
+> +
+> +static int da9150_gpadc_read_scale(int channel, int *val, int *val2)
+> +{
+> +	switch (channel) {
+> +	case DA9150_GPADC_CHAN_VBAT:
+> +		*val = 2932;
+> +		*val2 = 1000;
+> +		return IIO_VAL_FRACTIONAL;
+> +	case DA9150_GPADC_CHAN_TJUNC_CORE:
+> +	case DA9150_GPADC_CHAN_TJUNC_OVP:
+> +		*val = 1000000;
+> +		*val2 = 4420;
+> +		return IIO_VAL_FRACTIONAL;
+> +	default:
+> +		return -EINVAL;
+> +	}
+> +}
+> +
+> +static int da9150_gpadc_read_offset(int channel, int *val)
+> +{
+> +	switch (channel) {
+> +	case DA9150_GPADC_CHAN_VBAT:
+> +		*val = 1500000 / 2932;
+> +		return IIO_VAL_INT;
+> +	case DA9150_GPADC_CHAN_TJUNC_CORE:
+> +	case DA9150_GPADC_CHAN_TJUNC_OVP:
+> +		*val = -144;
+> +		return IIO_VAL_INT;
+> +	default:
+> +		return -EINVAL;
+> +	}
+> +}
+> +
+> +static int da9150_gpadc_read_raw(struct iio_dev *indio_dev,
+> +				 struct iio_chan_spec const *chan,
+> +				 int *val, int *val2, long mask)
+> +{
+> +	struct da9150_gpadc *gpadc = iio_priv(indio_dev);
+> +
+> +	if ((chan->channel < DA9150_GPADC_CHAN_GPIOA) ||
+> +	    (chan->channel > DA9150_GPADC_CHAN_TJUNC_OVP))
+> +		return -EINVAL;
+> +
+> +	switch (mask) {
+> +	case IIO_CHAN_INFO_RAW:
+> +	case IIO_CHAN_INFO_PROCESSED:
+> +		return da9150_gpadc_read_processed(gpadc, chan->channel,
+> +						   chan->address, val);
+> +	case IIO_CHAN_INFO_SCALE:
+> +		return da9150_gpadc_read_scale(chan->channel, val, val2);
+> +	case IIO_CHAN_INFO_OFFSET:
+> +		return da9150_gpadc_read_offset(chan->channel, val);
+> +	default:
+> +		return -EINVAL;
+> +	}
+> +}
+> +
+> +static const struct iio_info da9150_gpadc_info = {
+> +	.read_raw = &da9150_gpadc_read_raw,
+> +	.driver_module = THIS_MODULE,
+> +};
+> +
+> +#define DA9150_GPADC_CHANNEL(_id, _hw_id, _type, chan_info,	\
+> +			     _ext_name) {			\
+> +	.type = _type,						\
+> +	.indexed = 1,						\
+> +	.channel = DA9150_GPADC_CHAN_##_id,			\
+> +	.address = DA9150_GPADC_HW_CHAN_##_hw_id,		\
+> +	.info_mask_separate = chan_info,			\
+> +	.extend_name = _ext_name,				\
+> +	.datasheet_name = #_id,					\
+> +}
+> +
+> +#define DA9150_GPADC_CHANNEL_RAW(_id, _hw_id, _type, _ext_name)	\
+> +	DA9150_GPADC_CHANNEL(_id, _hw_id, _type,		\
+> +			     BIT(IIO_CHAN_INFO_RAW), _ext_name)
+> +
+> +#define DA9150_GPADC_CHANNEL_SCALED(_id, _hw_id, _type, _ext_name)	\
+> +	DA9150_GPADC_CHANNEL(_id, _hw_id, _type,			\
+> +			     BIT(IIO_CHAN_INFO_RAW) |			\
+> +			     BIT(IIO_CHAN_INFO_SCALE) |			\
+> +			     BIT(IIO_CHAN_INFO_OFFSET),			\
+> +			     _ext_name)
+> +
+> +#define DA9150_GPADC_CHANNEL_PROCESSED(_id, _hw_id, _type, _ext_name)	\
+> +	DA9150_GPADC_CHANNEL(_id, _hw_id, _type,			\
+> +			     BIT(IIO_CHAN_INFO_PROCESSED), _ext_name)
+> +
+> +/* Supported channels */
+> +static const struct iio_chan_spec da9150_gpadc_channels[] = {
+> +	DA9150_GPADC_CHANNEL_PROCESSED(GPIOA, GPIOA_6V, IIO_VOLTAGE, "GPIOA"),
+> +	DA9150_GPADC_CHANNEL_PROCESSED(GPIOB, GPIOB_6V, IIO_VOLTAGE, "GPIOB"),
+> +	DA9150_GPADC_CHANNEL_PROCESSED(GPIOC, GPIOC_6V, IIO_VOLTAGE, "GPIOC"),
+> +	DA9150_GPADC_CHANNEL_PROCESSED(GPIOD, GPIOD_6V, IIO_VOLTAGE, "GPIOD"),
+> +	DA9150_GPADC_CHANNEL_PROCESSED(IBUS, IBUS_SENSE, IIO_CURRENT, "IBUS"),
+> +	DA9150_GPADC_CHANNEL_PROCESSED(VBUS, VBUS_DIV_, IIO_VOLTAGE, "VBUS"),
+> +	DA9150_GPADC_CHANNEL_RAW(ID, ID, IIO_VOLTAGE, "ID"),
+> +	DA9150_GPADC_CHANNEL_PROCESSED(VSYS, VSYS, IIO_VOLTAGE, "VSYS"),
+> +	DA9150_GPADC_CHANNEL_SCALED(VBAT, VBAT, IIO_VOLTAGE, "VBAT"),
+> +	DA9150_GPADC_CHANNEL_RAW(TBAT, TBAT, IIO_VOLTAGE, "TBAT"),
+> +	DA9150_GPADC_CHANNEL_SCALED(TJUNC_CORE, TJUNC_CORE, IIO_TEMP,
+> +				    "TJUNC_CORE"),
+> +	DA9150_GPADC_CHANNEL_SCALED(TJUNC_OVP, TJUNC_OVP, IIO_TEMP,
+> +				    "TJUNC_OVP"),
+> +};
+> +
+> +/* Default maps used by da9150-charger */
+> +static struct iio_map da9150_gpadc_default_maps[] = {
+> +	{
+> +		.consumer_dev_name = "da9150-charger",
+> +		.consumer_channel = "CHAN_IBUS",
+> +		.adc_channel_label = "IBUS",
+> +	},
+> +	{
+> +		.consumer_dev_name = "da9150-charger",
+> +		.consumer_channel = "CHAN_VBUS",
+> +		.adc_channel_label = "VBUS",
+> +	},
+> +	{
+> +		.consumer_dev_name = "da9150-charger",
+> +		.consumer_channel = "CHAN_TJUNC",
+> +		.adc_channel_label = "TJUNC_CORE",
+> +	},
+> +	{
+> +		.consumer_dev_name = "da9150-charger",
+> +		.consumer_channel = "CHAN_VBAT",
+> +		.adc_channel_label = "VBAT",
+> +	},
+> +	{},
+> +};
+> +
+> +static int da9150_gpadc_probe(struct platform_device *pdev)
+> +{
+> +	struct device *dev = &pdev->dev;
+> +	struct da9150 *da9150 = dev_get_drvdata(dev->parent);
+Maybe you could find a slightly different name for the instance of this da9150 than its type name.
+> +	struct da9150_gpadc *gpadc;
+> +	struct iio_dev *indio_dev;
+> +	int irq, ret;
+> +
+> +	indio_dev = devm_iio_device_alloc(&pdev->dev,
+> +					  sizeof(struct da9150_gpadc));
+> +	if (!indio_dev) {
+> +		dev_err(&pdev->dev, "Failed to allocate IIO device\n");
+> +		return -ENOMEM;
+> +	}
+> +	gpadc = iio_priv(indio_dev);
+> +
+> +	platform_set_drvdata(pdev, indio_dev);
+> +	gpadc->da9150 = da9150;
+> +	gpadc->dev = dev;
+> +
+> +	ret = iio_map_array_register(indio_dev, da9150_gpadc_default_maps);
+> +	if (ret) {
+> +		dev_err(dev, "Failed to register IIO maps: %d\n", ret);
+> +		return ret;
+> +	}
+> +
+> +	mutex_init(&gpadc->lock);
+> +	init_completion(&gpadc->complete);
+> +
+> +	irq = platform_get_irq_byname(pdev, "GPADC");
+Shouldn't you check irq for possible error codes? devm_request_threaded_irq() expects irq to be unsigned.
+> +	ret = devm_request_threaded_irq(dev, irq, NULL, da9150_gpadc_irq,
+> +					IRQF_ONESHOT, "GPADC", gpadc);
+> +	if (ret) {
+> +		dev_err(dev, "Failed to request IRQ %d: %d\n", irq, ret);
+> +		goto iio_map_unreg;
+> +	}
+> +
+> +	indio_dev->name = dev_name(dev);
+> +	indio_dev->dev.parent = dev;
+> +	indio_dev->dev.of_node = pdev->dev.of_node;
+> +	indio_dev->info = &da9150_gpadc_info;
+> +	indio_dev->modes = INDIO_DIRECT_MODE;
+> +	indio_dev->channels = da9150_gpadc_channels;
+> +	indio_dev->num_channels = ARRAY_SIZE(da9150_gpadc_channels);
+> +
+> +	ret = iio_device_register(indio_dev);
+> +	if (ret) {
+> +		dev_err(dev, "Failed to register IIO device: %d\n", ret);
+> +		goto iio_map_unreg;
+> +	}
+> +
+> +	return 0;
+> +
+> +iio_map_unreg:
+> +	iio_map_array_unregister(indio_dev);
+> +
+> +	return ret;
+> +}
+> +
+> +static int da9150_gpadc_remove(struct platform_device *pdev)
+> +{
+> +	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
+> +
+> +	iio_map_array_unregister(indio_dev);
+> +	iio_device_unregister(indio_dev);
+Not sure if that was the intention of Jonathans comment, but these unregister calls should be switched to be in proper reverse order.
+> +
+> +	return 0;
+> +}
+> +
+> +static struct platform_driver da9150_gpadc_driver = {
+> +	.driver = {
+> +		.name = "da9150-gpadc",
+> +	},
+> +	.probe = da9150_gpadc_probe,
+> +	.remove = da9150_gpadc_remove,
+> +};
+> +
+> +module_platform_driver(da9150_gpadc_driver);
+> +
+> +MODULE_DESCRIPTION("GPADC Driver for DA9150");
+> +MODULE_AUTHOR("Adam Thomson <Adam.Thomson.Opensource@diasemi.com");
+You are missing a > at the end of your email-address.
+> +MODULE_LICENSE("GPL");
+> --
+> 1.9.3
+> 
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> 
+
