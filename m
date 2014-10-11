@@ -1,51 +1,38 @@
-Return-Path: <pmeerw@pmeerw.net>
-Date: Fri, 3 Oct 2014 16:44:17 +0200 (CEST)
-From: Peter Meerwald <pmeerw@pmeerw.net>
-To: Vlad Dogaru <vlad.dogaru@intel.com>
-cc: linux-iio@vger.kernel.org, jic23@kernel.org
-Subject: Re: [PATCH] iio: add bmp280 pressure and temperature driver
-In-Reply-To: <20141003101619.GA17511@vdogaru>
-Message-ID: <alpine.DEB.2.01.1410031641190.17977@pmeerw.net>
-References: <1412278823-10870-1-git-send-email-vlad.dogaru@intel.com> <alpine.DEB.2.01.1410022146100.8592@pmeerw.net> <20141003101619.GA17511@vdogaru>
-MIME-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
+Return-Path: <srinivas.pandruvada@linux.intel.com>
+From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+To: jic23@kernel.org
+Cc: linux-iio@vger.kernel.org,
+	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Subject: [PATCH v1 4/4] iio: accel: bmc150: Fix iio_event_spec direction
+Date: Fri, 10 Oct 2014 20:35:34 -0700
+Message-Id: <1412998534-31971-5-git-send-email-srinivas.pandruvada@linux.intel.com>
+In-Reply-To: <1412998534-31971-1-git-send-email-srinivas.pandruvada@linux.intel.com>
+References: <1412998534-31971-1-git-send-email-srinivas.pandruvada@linux.intel.com>
 List-ID: <linux-iio@vger.kernel.org>
 
+Change event spec direction from
+IIO_EV_DIR_RISING | IIO_EV_DIR_FALLING
+to
+IIO_EV_DIR_EITHER
 
-> > > +static int bmp280_read_raw(struct iio_dev *indio_dev,
-> > > +			   struct iio_chan_spec const *chan,
-> > > +			   int *val, int *val2, long mask)
-> > > +{
-> > > +	int ret;
-> > > +	struct bmp280_data *data = iio_priv(indio_dev);
-> > > +
-> > > +	mutex_lock(&data->lock);
-> > 
-> > locking is only needed for _RAW
-> > 
-> > > +
-> > > +	switch (mask) {
-> > > +	case IIO_CHAN_INFO_RAW:
-> > 
-> > I think this should be _PROCESSED, not _RAW;
-> > there is calibration and all kind of scaling done internally
-> 
-> Just to make sure here:  If I use _PROCESSED, I need to apply scale in
-> kernel space and remove _SCALE, correct?
+Suggested-by: Daniel Baluta <daniel.baluta@intel.com>
+Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+---
+ drivers/iio/accel/bmc150-accel.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-yes
-
-since pressure is using a temperature read and calibration data, it hardly 
-qualifies as 'raw'
-
-> I will address the rest of your observations in v2, once I get a chance
-> to test using the device on Monday.
-> 
-> Thank you for the review.
-
-p.
-
+diff --git a/drivers/iio/accel/bmc150-accel.c b/drivers/iio/accel/bmc150-accel.c
+index 969cb21..513bd6d 100644
+--- a/drivers/iio/accel/bmc150-accel.c
++++ b/drivers/iio/accel/bmc150-accel.c
+@@ -853,7 +853,7 @@ static const struct attribute_group bmc150_accel_attrs_group = {
+ 
+ static const struct iio_event_spec bmc150_accel_event = {
+ 		.type = IIO_EV_TYPE_ROC,
+-		.dir = IIO_EV_DIR_RISING | IIO_EV_DIR_FALLING,
++		.dir = IIO_EV_DIR_EITHER,
+ 		.mask_separate = BIT(IIO_EV_INFO_VALUE) |
+ 				 BIT(IIO_EV_INFO_ENABLE) |
+ 				 BIT(IIO_EV_INFO_PERIOD)
 -- 
-
-Peter Meerwald
-+43-664-2444418 (mobile)
+1.9.1
