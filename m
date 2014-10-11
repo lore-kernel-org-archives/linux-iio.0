@@ -1,28 +1,69 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga11.intel.com ([192.55.52.93]:57666 "EHLO mga11.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1753793AbaJMNTW (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Mon, 13 Oct 2014 09:19:22 -0400
-Date: Mon, 13 Oct 2014 16:19:42 +0300
-From: Vlad Dogaru <vlad.dogaru@intel.com>
-To: jic23@kernel.org, linux-iio@vger.kernel.org
-Subject: Re: [PATCH] iio: add ABI documentation for scaled pressure
-Message-ID: <20141013131941.GA10217@vdogaru>
-References: <1413205751-11205-1-git-send-email-vlad.dogaru@intel.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <1413205751-11205-1-git-send-email-vlad.dogaru@intel.com>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <srinivas.pandruvada@linux.intel.com>
+From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+To: jic23@kernel.org
+Cc: linux-iio@vger.kernel.org,
+	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Subject: [PATCH v1 1/4] iio: accel: bmc150: Error handling when mode set fails
+Date: Fri, 10 Oct 2014 20:35:31 -0700
+Message-Id: <1412998534-31971-2-git-send-email-srinivas.pandruvada@linux.intel.com>
+In-Reply-To: <1412998534-31971-1-git-send-email-srinivas.pandruvada@linux.intel.com>
+References: <1412998534-31971-1-git-send-email-srinivas.pandruvada@linux.intel.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-On Mon, Oct 13, 2014 at 04:09:11PM +0300, Vlad Dogaru wrote:
-> Signed-off-by: Vlad Dogaru <vlad.dogaru@intel.com>
-> ---
-> 
-> There's at least one user of in_pressure_input, the bmg280 driver I submitted
-> earlier.
+When mode set fails due to some transient failures, it will atleast
+reset the state of runtime usage count and also let the runtime
+suspend retry from the driver framework.
 
-Sorry, I meant bmp280, the temperature and pressure chip.
+Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+---
+ drivers/iio/accel/bmc150-accel.c | 11 ++++++++++-
+ 1 file changed, 10 insertions(+), 1 deletion(-)
 
-Thanks,
-Vlad
+diff --git a/drivers/iio/accel/bmc150-accel.c b/drivers/iio/accel/bmc150-accel.c
+index 22c096c..fdb101c 100644
+--- a/drivers/iio/accel/bmc150-accel.c
++++ b/drivers/iio/accel/bmc150-accel.c
+@@ -536,6 +536,9 @@ static int bmc150_accel_set_power_state(struct bmc150_accel_data *data, bool on)
+ 	if (ret < 0) {
+ 		dev_err(&data->client->dev,
+ 			"Failed: bmc150_accel_set_power_state for %d\n", on);
++		if (on)
++			pm_runtime_put_noidle(&data->client->dev);
++
+ 		return ret;
+ 	}
+ 
+@@ -811,6 +814,7 @@ static int bmc150_accel_write_event_config(struct iio_dev *indio_dev,
+ 
+ 	ret =  bmc150_accel_setup_any_motion_interrupt(data, state);
+ 	if (ret < 0) {
++		bmc150_accel_set_power_state(data, false);
+ 		mutex_unlock(&data->mutex);
+ 		return ret;
+ 	}
+@@ -1054,6 +1058,7 @@ static int bmc150_accel_data_rdy_trigger_set_state(struct iio_trigger *trig,
+ 	else
+ 		ret = bmc150_accel_setup_new_data_interrupt(data, state);
+ 	if (ret < 0) {
++		bmc150_accel_set_power_state(data, false);
+ 		mutex_unlock(&data->mutex);
+ 		return ret;
+ 	}
+@@ -1354,10 +1359,14 @@ static int bmc150_accel_runtime_suspend(struct device *dev)
+ {
+ 	struct iio_dev *indio_dev = i2c_get_clientdata(to_i2c_client(dev));
+ 	struct bmc150_accel_data *data = iio_priv(indio_dev);
++	int ret;
+ 
+ 	dev_dbg(&data->client->dev,  __func__);
++	ret = bmc150_accel_set_mode(data, BMC150_ACCEL_SLEEP_MODE_SUSPEND, 0);
++	if (ret < 0)
++		return -EAGAIN;
+ 
+-	return bmc150_accel_set_mode(data, BMC150_ACCEL_SLEEP_MODE_SUSPEND, 0);
++	return 0;
+ }
+ 
+ static int bmc150_accel_runtime_resume(struct device *dev)
+-- 
+1.9.1
