@@ -1,66 +1,44 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:50908 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753601AbaJNTAw (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 14 Oct 2014 15:00:52 -0400
-Received: from [192.168.0.44] (cpc4-cmbg6-0-0-cust321.5-4.cable.virginm.net [81.107.37.66])
-	by saturn.retrosnub.co.uk (Postfix; Retrosnub mail submission) with ESMTPSA id 593A940426
-	for <linux-iio@vger.kernel.org>; Tue, 14 Oct 2014 20:00:51 +0100 (BST)
-Message-ID: <543D72E2.3060306@kernel.org>
-Date: Tue, 14 Oct 2014 20:00:50 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-MIME-Version: 1.0
-To: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Subject: Re: [PULL] IIO fixes for 3.18 set 1
-References: <543D61AF.30405@kernel.org>
-In-Reply-To: <543D61AF.30405@kernel.org>
-Content-Type: text/plain; charset=utf-8
+Received: from mga11.intel.com ([192.55.52.93]:58064 "EHLO mga11.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1753793AbaJMNJF (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Mon, 13 Oct 2014 09:09:05 -0400
+From: Vlad Dogaru <vlad.dogaru@intel.com>
+To: jic23@kernel.org, linux-iio@vger.kernel.org
+Cc: Vlad Dogaru <vlad.dogaru@intel.com>
+Subject: [PATCH] iio: add ABI documentation for scaled pressure
+Date: Mon, 13 Oct 2014 16:09:11 +0300
+Message-Id: <1413205751-11205-1-git-send-email-vlad.dogaru@intel.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-oops, wrong Greg.  Now resent to right one.
+Signed-off-by: Vlad Dogaru <vlad.dogaru@intel.com>
+---
 
-J
-On 14/10/14 18:47, Jonathan Cameron wrote:
-> The following changes since commit 0f33be009b89d2268e94194dc4fd01a7851b6d51:
-> 
->   Linux 3.17-rc6 (2014-09-21 15:43:02 -0700)
-> 
-> are available in the git repository at:
-> 
->   git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git
-> tags/iio-fixes-for-3.18a
-> 
-> for you to fetch changes up to 75d7ed3b9e7cb79a3b0e1f417fb674d54b4fc668:
-> 
->   iio: adc: mxs-lradc: Disable the clock on probe failure (2014-10-09 21:02:51
-> +0100)
-> 
-> ----------------------------------------------------------------
-> First round of IIO fixes for the 3.18 cycle.
-> 
-> * ad5933 - fix a null pointer dereference due to an old change that prevents
->   different channels being registered for the buffer and used for sysfs
->   interfaces.
-> * ad5933 - Drop a bonus _raw from attribute names.
-> * st-sensors - Makes sure the correct number of elements are copied when
->   filling a local buffer copy.
-> * mxs-lradc - Disable clocks in a failure path during probe so they aren't
->   left running.
-> 
-> ----------------------------------------------------------------
-> Fabio Estevam (1):
->       iio: adc: mxs-lradc: Disable the clock on probe failure
-> 
-> Lars-Peter Clausen (2):
->       staging:iio:ad5933: Fix NULL pointer deref when enabling buffer
->       staging:iio:ad5933: Drop "raw" from channel names
-> 
-> Robin van der Gracht (1):
->       iio: st_sensors: Fix buffer copy
-> 
->  drivers/iio/common/st_sensors/st_sensors_buffer.c |  2 +-
->  drivers/staging/iio/adc/mxs-lradc.c               | 12 ++++++++----
->  drivers/staging/iio/impedance-analyzer/ad5933.c   | 15 ++++++---------
->  3 files changed, 15 insertions(+), 14 deletions(-)
-> 
+There's at least one user of in_pressure_input, the bmg280 driver I submitted
+earlier.
+
+ Documentation/ABI/testing/sysfs-bus-iio | 7 +++++++
+ 1 file changed, 7 insertions(+)
+
+diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
+index d760b02..0b771f8 100644
+--- a/Documentation/ABI/testing/sysfs-bus-iio
++++ b/Documentation/ABI/testing/sysfs-bus-iio
+@@ -200,6 +200,13 @@ Description:
+ 		Raw pressure measurement from channel Y. Units after
+ 		application of scale and offset are kilopascal.
+ 
++What:		/sys/bus/iio/devices/iio:deviceX/in_pressureY_input
++What:		/sys/bus/iio/devices/iio:deviceX/in_pressure_input
++KernelVersion:	3.8
++Contact:	linux-iio@vger.kernel.org
++Description:
++		Scaled pressure measurement in kilopascal.
++
+ What:		/sys/bus/iio/devices/iio:deviceX/in_humidityrelative_raw
+ KernelVersion:	3.14
+ Contact:	linux-iio@vger.kernel.org
+-- 
+1.9.1
+
