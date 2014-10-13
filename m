@@ -1,10 +1,10 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mailout1.w1.samsung.com ([210.118.77.11]:27921 "EHLO
-	mailout1.w1.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751574AbaJMOzp (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 13 Oct 2014 10:55:45 -0400
-Message-id: <543BE7EC.2030602@samsung.com>
-Date: Mon, 13 Oct 2014 16:55:40 +0200
+Received: from mailout3.w1.samsung.com ([210.118.77.13]:10368 "EHLO
+	mailout3.w1.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753254AbaJMLeL (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 13 Oct 2014 07:34:11 -0400
+Message-id: <543BB8AF.5040301@samsung.com>
+Date: Mon, 13 Oct 2014 13:34:07 +0200
 From: Karol Wrona <k.wrona@samsung.com>
 MIME-version: 1.0
 To: Antonio Borneo <borneo.antonio@gmail.com>
@@ -40,8 +40,25 @@ On 10/13/2014 12:08 PM, Antonio Borneo wrote:
 > publishing the whole.
 > My plan is for a more generic STM32 support, while your driver is
 > quite specific for device STM32F401.
+
+Generally it is based on ST notes so it should work (or work after some 
+mods) on all STM32F4 controllers and some STM32L05xxx. Maybe some 
+timeouts need modifications. I do not know how it is done in STM32F3 etc.
+So if:
+"* AN4286: SPI protocol used in the STM32 bootloader
+ 
+http://www.st.com/web/en/resource/technical/document/application_note/DM00081379.pdf
+"
+was used (or intended to be use) in st32flash we can think about the 
+same thing.
+
+I noticed that the difference between protocol in bootcode version 1.0 
+and 1.1 is poorly documented (or I just have not found good description).
+
 > Anyway, I believe I can adapt my driver on top of your work.
->
+My abstraction layer is very simple but I think it is possible merge the 
+efforts without any problems.
+
 > While writing the kernel driver for I2C, I have enhanced the userspace
 > tool stm32flash [1] (originally for UART only) to supports I2C.
 > With stm32flash it's easy to verify the protocol of STM32 bootloader
@@ -55,6 +72,12 @@ On 10/13/2014 12:08 PM, Antonio Borneo wrote:
 > Also, I cannot easily run the code in this patch; I miss the proper HW
 > and this patch cannot run stand-alone since intended as "library" for
 > your sensor hub driver.
+
+The hardware is only the problem. For lib usage only spi device probe 
+has to be done and proper bus clk rate should be set. I tested it on 
+Galaxy Gear 2 watch but I can do some "wire" work with STM32F4Discovery
+board (if stm32 boot loader supports all spi's on pcb).
+
 >
 >>
 >> Change-Id: I5e5b441310c897ff822e65041531d80ea0e7426c
@@ -243,8 +266,6 @@ On 10/13/2014 12:08 PM, Antonio Borneo wrote:
 >
 > I will cross check with ST.
 > Did you tried to write in chunks of 2 bytes?
-
-No but I can use multiple of 4 bytes - just in case.
 >
 >> +       if (len  < STM32FWU_MAX_TRANSFER_SIZE) {
 >
@@ -259,10 +280,6 @@ No but I can use multiple of 4 bytes - just in case.
 > mandatory if len is not multiple of two.
 > Since you need to guarantee the buffer is long enough, the check
 > "len<STM32FWU_MAX_TRANSFER_SIZE" could be skipped.
-It is for last chunk of data which can be less than 256. I will check if
-firmware class aligns data in some way or has such option. Maybe this can be
-done at the beginning.
-
 >
 >> +
 >> +       sbuf[0] = len - 1;
@@ -352,16 +369,6 @@ done at the beginning.
 > system; I cannot ask you to implement what you cannot test. Further
 > patches should extend the picture.
 >
-I thought about that but I would like to do it at the end - now my firmware 
-return version 0x79 - I investigating it but I would rather expect 0x10.
-Other values are ok.
-
-Now I understand what you meant.
-
-I think I would ralize all commands as function pointers and give them
-another value than NULL if command exists or give generaic WARN function
-for unsupported commands (?).
-
 >> + *
 >> + * Return:     read byte count or error code.
 >> + */
@@ -693,7 +700,6 @@ for unsupported commands (?).
 > sector erase. It would requires more code in kernel, but uses shorter
 > timeout for each operation. At least I can track what's happening
 > halfway.
-Ok
 >
 >> +#define STM32FWU_CMD_COUNT             30
 >> +#define STM32FWU_COMMON_COUNT          20
@@ -932,6 +938,4 @@ Ok
 >> the body of a message to majordomo@vger.kernel.org
 >> More majordomo info at  http://vger.kernel.org/majordomo-info.html
 >
-
-Thanks for the review.
 
