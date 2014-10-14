@@ -1,14 +1,14 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:50499 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:50905 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755369AbaJNRr3 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 14 Oct 2014 13:47:29 -0400
-Message-ID: <543D61AF.30405@kernel.org>
-Date: Tue, 14 Oct 2014 18:47:27 +0100
+	with ESMTP id S1754166AbaJNTA3 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 14 Oct 2014 15:00:29 -0400
+Message-ID: <543D72C6.8090604@kernel.org>
+Date: Tue, 14 Oct 2014 20:00:22 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Greg Fedorenko <gregfed243@gmail.com>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+To: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	Greg KH <gregkh@linuxfoundation.org>
 Subject: [PULL] IIO fixes for 3.18 set 1
 Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
