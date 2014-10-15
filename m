@@ -1,38 +1,63 @@
-Return-Path: <srinivas.pandruvada@linux.intel.com>
-From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-To: jic23@kernel.org
-Cc: linux-iio@vger.kernel.org,
-	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-Subject: [PATCH v1 3/4] iio: accel: bmc150: set low default thresholds
-Date: Fri, 10 Oct 2014 20:35:33 -0700
-Message-Id: <1412998534-31971-4-git-send-email-srinivas.pandruvada@linux.intel.com>
-In-Reply-To: <1412998534-31971-1-git-send-email-srinivas.pandruvada@linux.intel.com>
-References: <1412998534-31971-1-git-send-email-srinivas.pandruvada@linux.intel.com>
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from bear.ext.ti.com ([192.94.94.41]:47785 "EHLO bear.ext.ti.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751301AbaJOOhF (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Wed, 15 Oct 2014 10:37:05 -0400
+Message-ID: <543E868C.4000204@ti.com>
+Date: Wed, 15 Oct 2014 09:37:00 -0500
+From: Dan Murphy <dmurphy@ti.com>
+MIME-Version: 1.0
+To: Daniel Baluta <daniel.baluta@intel.com>,
+	<linux-iio@vger.kernel.org>
+CC: <jic23@kernel.org>, <laurentiu.palcu@intel.com>
+Subject: Re: RFC Introducing Heart Monitors for IIO
+References: <1413314032-923-1-git-send-email-dmurphy@ti.com> <543E2435.8090704@intel.com>
+In-Reply-To: <543E2435.8090704@intel.com>
+Content-Type: text/plain; charset="windows-1252"
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Set the threshold to low by default. With this thresholds any movement
-on the device with this sensor will generate event.
+Daniel
 
-Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
----
- drivers/iio/accel/bmc150-accel.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+On 10/15/2014 02:37 AM, Daniel Baluta wrote:
+>
+>
+> On 10/14/2014 10:13 PM, Dan Murphy wrote:
+>> All
+>>
+>> I am introducing a new sensor category for IIO.  This is for
+>> heart rate monitors.
+>>
+>> Putting this out as a RFC to see if anyone else is developing the
+>> same and we can build upon each others patches.
+>>
+>> I have another sensor to follow up on this series but don't want
+>> to start that driver until I understand if there is anyone else
+>> doing the same.
+>>
+>> The first patch introduces the heart rate monitoring into the IIO
+>> sub-systems
+>>
+>> The second patch introduces the DT documentation heart_monitors directory
+>> along with the documentation for the TI AFE4403 part.
+>>
+>> The final patch introduces the heart_monitors directory along with the source
+>> for the TI AFE4403 device
+>
+> We are happy to see this! What is your second sensor?
+>
 
-diff --git a/drivers/iio/accel/bmc150-accel.c b/drivers/iio/accel/bmc150-accel.c
-index c6df8ee..969cb21 100644
---- a/drivers/iio/accel/bmc150-accel.c
-+++ b/drivers/iio/accel/bmc150-accel.c
-@@ -95,9 +95,9 @@
- #define BMC150_ACCEL_SLOPE_THRES_MASK		0xFF
- 
- /* Slope duration in terms of number of samples */
--#define BMC150_ACCEL_DEF_SLOPE_DURATION	2
-+#define BMC150_ACCEL_DEF_SLOPE_DURATION		1
- /* in terms of multiples of g's/LSB, based on range */
--#define BMC150_ACCEL_DEF_SLOPE_THRESHOLD	5
-+#define BMC150_ACCEL_DEF_SLOPE_THRESHOLD	1
- 
- #define BMC150_ACCEL_REG_XOUT_L		0x02
- 
+Well right now I cannot give the details as it has not been released but it part of this family
+with an I2C interface.
+
+Dan
+
+> Daniel.
+>
+>
+
+
 -- 
-1.9.1
+------------------
+Dan Murphy
+
