@@ -1,60 +1,107 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from bear.ext.ti.com ([192.94.94.41]:40336 "EHLO bear.ext.ti.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1755381AbaJNTOA (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Tue, 14 Oct 2014 15:14:00 -0400
-From: Dan Murphy <dmurphy@ti.com>
-To: <linux-iio@vger.kernel.org>
-CC: <jic23@kernel.org>, Dan Murphy <dmurphy@ti.com>
-Subject: [RFC Patch 2/3] iio: bindings: Add TI afe4403 heart monitor documentation
-Date: Tue, 14 Oct 2014 14:13:51 -0500
-Message-ID: <1413314032-923-3-git-send-email-dmurphy@ti.com>
-In-Reply-To: <1413314032-923-1-git-send-email-dmurphy@ti.com>
-References: <1413314032-923-1-git-send-email-dmurphy@ti.com>
+Return-Path: <jic23@jic23.retrosnub.co.uk>
+Message-ID: <543ECC6E.708@jic23.retrosnub.co.uk>
+Date: Wed, 15 Oct 2014 20:35:10 +0100
+From: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
 MIME-Version: 1.0
-Content-Type: text/plain
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+To: Dan Murphy <dmurphy@ti.com>, linux-iio@vger.kernel.org
+CC: jic23@kernel.org
+Subject: Re: [RFC Patch 1/3] iio: heart_monitors: Add support for heart rate
+ monitors
+References: <1413314032-923-1-git-send-email-dmurphy@ti.com> <1413314032-923-2-git-send-email-dmurphy@ti.com>
+In-Reply-To: <1413314032-923-2-git-send-email-dmurphy@ti.com>
+Content-Type: text/plain; charset=windows-1252
+List-ID: <linux-iio@vger.kernel.org>
 
-Add the TI afe4403 heart monitor device tree
-binding documentation.  heart_monitors directory
-created under iio.
+On 14/10/14 20:13, Dan Murphy wrote:
+> Add a type for heart rate monitors
+> Add the modifier name in beats per minute.
+The heart rate type is probably fine.  The modifier is unnecessary as
+we simply define heartrate to be in beats per minute.  Modifiers
+are used to distinguish things like direction or colour, not to
+specify units.
 
-Signed-off-by: Dan Murphy <dmurphy@ti.com>
----
- .../bindings/iio/heart_monitors/ti_afe4403.txt     |   23 ++++++++++++++++++++
- 1 file changed, 23 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/iio/heart_monitors/ti_afe4403.txt
+Beats per minute is a little clunky from a general units point of
+view, but I can see that beats per second seems a little silly here.
 
-diff --git a/Documentation/devicetree/bindings/iio/heart_monitors/ti_afe4403.txt b/Documentation/devicetree/bindings/iio/heart_monitors/ti_afe4403.txt
-new file mode 100644
-index 0000000..d612dd6
---- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/heart_monitors/ti_afe4403.txt
-@@ -0,0 +1,23 @@
-+* Texas Instruments - AFE4403 Heart rate and Pulse Oximeter
-+
-+The device consists of a low-noise receiver channel
-+with an integrated analog-to-digital converter (ADC),
-+an LED transmit section, and diagnostics for sensor and LED fault detection.
-+
-+Required properties:
-+  - compatible: Must contain "ti,afe4403".
-+  - ste-gpio: GPIO for the spi control line
-+  - data-ready-gpio: GPIO interrupt when the afe4403 has data
-+  - led-supply: Chip supply to the device
-+  - 
-+Optional properties:
-+  - reset-gpio: GPIO used to reset the device via HW
-+
-+Example:
-+
-+&heart_rate {
-+	compatible = "ti,afe4403";
-+	ste-gpio = <&gpio1 29 GPIO_ACTIVE_HIGH>;
-+	data-ready-gpio = <&gpio1 28 GPIO_ACTIVE_HIGH>;
-+	led-supply = <&vbat>;
-+};
--- 
-1.7.9.5
+The issue is generality as there are plenty of other sources of
+rate signals.  Clearly we would like equivalent base units for all
+of them to avoid confusion.  To that end I wonder if it is
+worth the slightly unusual option of beats per second here on
+the basis any userspace util can easily multiply by 60.
 
+Also, when introducing a new type - updating
+Documentation/ABI/testing/sysfs-bus-iio is both useful in explaining
+the use of the ABI and as documentation going forward.
+
+Jonathan
+> 
+> Signed-off-by: Dan Murphy <dmurphy@ti.com>
+> ---
+>  drivers/iio/industrialio-core.c                    |    2 ++
+>  .../staging/iio/Documentation/iio_event_monitor.c  |    2 ++
+>  include/linux/iio/types.h                          |    4 +++-
+>  3 files changed, 7 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+> index af3e76d..d87ca35 100644
+> --- a/drivers/iio/industrialio-core.c
+> +++ b/drivers/iio/industrialio-core.c
+> @@ -70,6 +70,7 @@ static const char * const iio_chan_type_name_spec[] = {
+>  	[IIO_CCT] = "cct",
+>  	[IIO_PRESSURE] = "pressure",
+>  	[IIO_HUMIDITYRELATIVE] = "humidityrelative",
+> +	[IIO_HEARTRATE] = "heartrate",
+>  };
+>  
+>  static const char * const iio_modifier_names[] = {
+> @@ -91,6 +92,7 @@ static const char * const iio_modifier_names[] = {
+>  	[IIO_MOD_NORTH_TRUE] = "from_north_true",
+>  	[IIO_MOD_NORTH_MAGN_TILT_COMP] = "from_north_magnetic_tilt_comp",
+>  	[IIO_MOD_NORTH_TRUE_TILT_COMP] = "from_north_true_tilt_comp",
+> +	[IIO_MOD_HEART_BPM] = "heartrate_beats_per_minute",
+>  };
+>  
+>  /* relies on pairs of these shared then separate */
+> diff --git a/drivers/staging/iio/Documentation/iio_event_monitor.c b/drivers/staging/iio/Documentation/iio_event_monitor.c
+> index 569d6f8..b06dab7 100644
+> --- a/drivers/staging/iio/Documentation/iio_event_monitor.c
+> +++ b/drivers/staging/iio/Documentation/iio_event_monitor.c
+> @@ -49,6 +49,7 @@ static const char * const iio_chan_type_name_spec[] = {
+>  	[IIO_CCT] = "cct",
+>  	[IIO_PRESSURE] = "pressure",
+>  	[IIO_HUMIDITYRELATIVE] = "humidityrelative",
+> +	[IIO_HEARTRATE] = "heartrate"
+>  };
+>  
+>  static const char * const iio_ev_type_text[] = {
+> @@ -108,6 +109,7 @@ static bool event_is_known(struct iio_event_data *event)
+>  	case IIO_CCT:
+>  	case IIO_PRESSURE:
+>  	case IIO_HUMIDITYRELATIVE:
+> +	case IIO_MOD_HEART_BPM:
+>  		break;
+>  	default:
+>  		return false;
+> diff --git a/include/linux/iio/types.h b/include/linux/iio/types.h
+> index 4a2af8a..50b1456 100644
+> --- a/include/linux/iio/types.h
+> +++ b/include/linux/iio/types.h
+> @@ -30,6 +30,7 @@ enum iio_chan_type {
+>  	IIO_CCT,
+>  	IIO_PRESSURE,
+>  	IIO_HUMIDITYRELATIVE,
+> +	IIO_HEARTRATE
+>  };
+>  
+>  enum iio_modifier {
+> @@ -59,7 +60,8 @@ enum iio_modifier {
+>  	IIO_MOD_NORTH_MAGN,
+>  	IIO_MOD_NORTH_TRUE,
+>  	IIO_MOD_NORTH_MAGN_TILT_COMP,
+> -	IIO_MOD_NORTH_TRUE_TILT_COMP
+> +	IIO_MOD_NORTH_TRUE_TILT_COMP,
+> +	IIO_MOD_HEART_BPM
+>  };
+>  
+>  enum iio_event_type {
+> 
