@@ -1,69 +1,56 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ns.pmeerw.net ([84.19.176.92]:45470 "EHLO mail.pmeerw.net"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1752226AbaJOKDe (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Wed, 15 Oct 2014 06:03:34 -0400
-Date: Wed, 15 Oct 2014 11:52:56 +0200 (CEST)
-From: Peter Meerwald <pmeerw@pmeerw.net>
-To: Dan Murphy <dmurphy@ti.com>
-cc: linux-iio@vger.kernel.org, jic23@kernel.org
-Subject: Re: [RFC Patch 2/3] iio: bindings: Add TI afe4403 heart monitor
- documentation
-In-Reply-To: <1413314032-923-3-git-send-email-dmurphy@ti.com>
-Message-ID: <alpine.DEB.2.02.1410151057340.2173@pmeerw.net>
-References: <1413314032-923-1-git-send-email-dmurphy@ti.com> <1413314032-923-3-git-send-email-dmurphy@ti.com>
+Received: from smtp-out-118.synserver.de ([212.40.185.118]:1028 "EHLO
+	smtp-out-118.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751028AbaJRLuR (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 18 Oct 2014 07:50:17 -0400
+Message-ID: <544253F3.9060002@metafoo.de>
+Date: Sat, 18 Oct 2014 13:50:11 +0200
+From: Lars-Peter Clausen <lars@metafoo.de>
 MIME-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
+To: Jonathan Cameron <jic23@kernel.org>,
+	"Ivan T. Ivanov" <iivanov@mm-sol.com>
+CC: Sachin Kamat <sachin.kamat@linaro.org>,
+	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+	John Stultz <john.stultz@linaro.org>,
+	linux-iio@vger.kernel.org, svarbanov@mm-sol.com,
+	linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org
+Subject: Re: [PATCH] iio: inkern: Add of_xlate function to struct iio_dev
+References: <1412253128-32165-1-git-send-email-iivanov@mm-sol.com> <5442522D.40203@kernel.org>
+In-Reply-To: <5442522D.40203@kernel.org>
+Content-Type: text/plain; charset=windows-1252; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
+On 10/18/2014 01:42 PM, Jonathan Cameron wrote:
+> On 02/10/14 13:32, Ivan T. Ivanov wrote:
+>> When #iio-cells is greater than '0', the driver could provide
+>> a custom of_xlate function that reads the *args* and returns
+>> the appropriate index in registered IIO channels array.
+>>
+>> Add simple translation function, suitable for the most 1:1
+>> mapped channels in IIO chips, and use it when driver did not
+>> provide custom implementation.
+>>
+>> Signed-off-by: Ivan T. Ivanov <iivanov@mm-sol.com>
+> Any more comments on this?  Been sat a while and the discussions seems
+> to have died out.
+>
+> As Ivan has pointed out, very similar approaches are used
+> elsewhere (gpio for example).
 
-> Add the TI afe4403 heart monitor device tree
-> binding documentation.  heart_monitors directory
-> created under iio.
+Looks good to me:
 
+Reviewed-by: Lars-Peter Clausen <lars@metafoo.de>
 
-> Signed-off-by: Dan Murphy <dmurphy@ti.com>
-> ---
->  .../bindings/iio/heart_monitors/ti_afe4403.txt     |   23 ++++++++++++++++++++
->  1 file changed, 23 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/iio/heart_monitors/ti_afe4403.txt
-> 
-> diff --git a/Documentation/devicetree/bindings/iio/heart_monitors/ti_afe4403.txt b/Documentation/devicetree/bindings/iio/heart_monitors/ti_afe4403.txt
-> new file mode 100644
-> index 0000000..d612dd6
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/iio/heart_monitors/ti_afe4403.txt
-> @@ -0,0 +1,23 @@
-> +* Texas Instruments - AFE4403 Heart rate and Pulse Oximeter
-> +
-> +The device consists of a low-noise receiver channel
-> +with an integrated analog-to-digital converter (ADC),
-> +an LED transmit section, and diagnostics for sensor and LED fault detection.
-> +
-> +Required properties:
-> +  - compatible: Must contain "ti,afe4403".
-> +  - ste-gpio: GPIO for the spi control line
-> +  - data-ready-gpio: GPIO interrupt when the afe4403 has data
-> +  - led-supply: Chip supply to the device
-> +  - 
+When we initially added the DT support to IIO I was hoping that we can get 
+away with just using the simple and generic xlate function for all devices. 
+But it looks as if some more complex devices need to overwrite it. We should 
+be careful about adding new driver specific xlate implementations and make 
+sure that it is actually needed.
 
-extra -
+One thing we might want to consider though is instead of adding the xlate 
+callback to the iio_dev struct add it to the iio_info struct since it should 
+be the same for different device instances of the same driver. And this is 
+also where all the other callbacks are.
 
-> +Optional properties:
-> +  - reset-gpio: GPIO used to reset the device via HW
-> +
-> +Example:
-> +
-> +&heart_rate {
-> +	compatible = "ti,afe4403";
-> +	ste-gpio = <&gpio1 29 GPIO_ACTIVE_HIGH>;
-> +	data-ready-gpio = <&gpio1 28 GPIO_ACTIVE_HIGH>;
-> +	led-supply = <&vbat>;
-> +};
-> 
-
--- 
-
-Peter Meerwald
-+43-664-2444418 (mobile)
+- Lars
