@@ -1,104 +1,93 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-wi0-f171.google.com ([209.85.212.171]:38536 "EHLO
-	mail-wi0-f171.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750932AbaJVNu3 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 22 Oct 2014 09:50:29 -0400
-Received: by mail-wi0-f171.google.com with SMTP id em10so1430786wid.16
-        for <linux-iio@vger.kernel.org>; Wed, 22 Oct 2014 06:50:28 -0700 (PDT)
-From: Roberta Dobrescu <roberta.dobrescu@gmail.com>
-To: opw-kernel@googlegroups.com
-Cc: jic23@kernel.org, linux-iio@vger.kernel.org,
-	Roberta Dobrescu <roberta.dobrescu@gmail.com>
-Subject: [PATCH v3] staging: iio: iio_event_monitor: Add support for missing IIO modifiers
-Date: Wed, 22 Oct 2014 16:50:17 +0300
-Message-Id: <1413985817-10867-1-git-send-email-roberta.dobrescu@gmail.com>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:51228 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750915AbaJRMLf (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 18 Oct 2014 08:11:35 -0400
+Message-ID: <544258F2.5000405@kernel.org>
+Date: Sat, 18 Oct 2014 13:11:30 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+MIME-Version: 1.0
+To: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+CC: linux-iio@vger.kernel.org
+Subject: Re: [PATCH 2/3] iio: accel: bmc150: Send x, y and z motion separately
+References: <1412958629-30776-1-git-send-email-srinivas.pandruvada@linux.intel.com> <1412958629-30776-2-git-send-email-srinivas.pandruvada@linux.intel.com>
+In-Reply-To: <1412958629-30776-2-git-send-email-srinivas.pandruvada@linux.intel.com>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-This patch adds the missing IIO modifiers in event_is_known function
-and iio_modifier_names vector.
+On 10/10/14 17:30, Srinivas Pandruvada wrote:
+> This chip is capable to identify motion across x, y and z axes. So
+> send different events.
+> 
+> Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+This is an odd mix of a true fix and change of functionality.  It probably wants
+to be broken up into clearer sections.   We 'could' take this through
+the fixes branch... I'm just not entirely sure if we want to.
 
-Additionally, it removes duplicate name entries of IIO_MOD_LIGHT_BOTH
-and IIO_MOD_LIGHT_IR in iio_modifier_names.
+I suppose it probably makes sense as it is an abi change and the driver
+is just working it's way towards a mainline release.
 
-Signed-off-by: Roberta Dobrescu <roberta.dobrescu@gmail.com>
----
-Changes since v1:
-	- Add iio_event_monitor in subject
-	- Modify commit message in order to be more clear
-	- Add missing comma
+Can't take it just yet via that route due to backlogged pull request.
 
-Changes since v2:
-	- Fix spotted typo
- 
- .../staging/iio/Documentation/iio_event_monitor.c  | 32 ++++++++++++++++++++--
- 1 file changed, 30 insertions(+), 2 deletions(-)
+J
 
-diff --git a/drivers/staging/iio/Documentation/iio_event_monitor.c b/drivers/staging/iio/Documentation/iio_event_monitor.c
-index 569d6f8..0300900 100644
---- a/drivers/staging/iio/Documentation/iio_event_monitor.c
-+++ b/drivers/staging/iio/Documentation/iio_event_monitor.c
-@@ -69,16 +69,29 @@ static const char * const iio_modifier_names[] = {
- 	[IIO_MOD_X] = "x",
- 	[IIO_MOD_Y] = "y",
- 	[IIO_MOD_Z] = "z",
-+	[IIO_MOD_X_AND_Y] = "x&y",
-+	[IIO_MOD_X_AND_Z] = "x&z",
-+	[IIO_MOD_Y_AND_Z] = "y&z",
-+	[IIO_MOD_X_AND_Y_AND_Z] = "x&y&z",
-+	[IIO_MOD_X_OR_Y] = "x|y",
-+	[IIO_MOD_X_OR_Z] = "x|z",
-+	[IIO_MOD_Y_OR_Z] = "y|z",
-+	[IIO_MOD_X_OR_Y_OR_Z] = "x|y|z",
- 	[IIO_MOD_LIGHT_BOTH] = "both",
- 	[IIO_MOD_LIGHT_IR] = "ir",
- 	[IIO_MOD_ROOT_SUM_SQUARED_X_Y] = "sqrt(x^2+y^2)",
- 	[IIO_MOD_SUM_SQUARED_X_Y_Z] = "x^2+y^2+z^2",
--	[IIO_MOD_LIGHT_BOTH] = "both",
--	[IIO_MOD_LIGHT_IR] = "ir",
- 	[IIO_MOD_LIGHT_CLEAR] = "clear",
- 	[IIO_MOD_LIGHT_RED] = "red",
- 	[IIO_MOD_LIGHT_GREEN] = "green",
- 	[IIO_MOD_LIGHT_BLUE] = "blue",
-+	[IIO_MOD_QUATERNION] = "quaternion",
-+	[IIO_MOD_TEMP_AMBIENT] = "ambient",
-+	[IIO_MOD_TEMP_OBJECT] = "object",
-+	[IIO_MOD_NORTH_MAGN] = "from_north_magnetic",
-+	[IIO_MOD_NORTH_TRUE] = "from_north_true",
-+	[IIO_MOD_NORTH_MAGN_TILT_COMP] = "from_north_magnetic_tilt_comp",
-+	[IIO_MOD_NORTH_TRUE_TILT_COMP] = "from_north_true_tilt_comp",
- };
- 
- static bool event_is_known(struct iio_event_data *event)
-@@ -118,6 +131,14 @@ static bool event_is_known(struct iio_event_data *event)
- 	case IIO_MOD_X:
- 	case IIO_MOD_Y:
- 	case IIO_MOD_Z:
-+	case IIO_MOD_X_AND_Y:
-+	case IIO_MOD_X_AND_Z:
-+	case IIO_MOD_Y_AND_Z:
-+	case IIO_MOD_X_AND_Y_AND_Z:
-+	case IIO_MOD_X_OR_Y:
-+	case IIO_MOD_X_OR_Z:
-+	case IIO_MOD_Y_OR_Z:
-+	case IIO_MOD_X_OR_Y_OR_Z:
- 	case IIO_MOD_LIGHT_BOTH:
- 	case IIO_MOD_LIGHT_IR:
- 	case IIO_MOD_ROOT_SUM_SQUARED_X_Y:
-@@ -126,6 +147,13 @@ static bool event_is_known(struct iio_event_data *event)
- 	case IIO_MOD_LIGHT_RED:
- 	case IIO_MOD_LIGHT_GREEN:
- 	case IIO_MOD_LIGHT_BLUE:
-+	case IIO_MOD_QUATERNION:
-+	case IIO_MOD_TEMP_AMBIENT:
-+	case IIO_MOD_TEMP_OBJECT:
-+	case IIO_MOD_NORTH_MAGN:
-+	case IIO_MOD_NORTH_TRUE:
-+	case IIO_MOD_NORTH_MAGN_TILT_COMP:
-+	case IIO_MOD_NORTH_TRUE_TILT_COMP:
- 		break;
- 	default:
- 		return false;
--- 
-1.9.1
-
+> ---
+>  drivers/iio/accel/bmc150-accel.c | 25 +++++++++++++++++++++----
+>  1 file changed, 21 insertions(+), 4 deletions(-)
+> 
+> diff --git a/drivers/iio/accel/bmc150-accel.c b/drivers/iio/accel/bmc150-accel.c
+> index fdb101c..352d959 100644
+> --- a/drivers/iio/accel/bmc150-accel.c
+> +++ b/drivers/iio/accel/bmc150-accel.c
+> @@ -44,6 +44,9 @@
+>  
+>  #define BMC150_ACCEL_REG_INT_STATUS_2		0x0B
+>  #define BMC150_ACCEL_ANY_MOTION_MASK		0x07
+> +#define BMC150_ACCEL_ANY_MOTION_BIT_X		BIT(0)
+> +#define BMC150_ACCEL_ANY_MOTION_BIT_Y		BIT(1)
+> +#define BMC150_ACCEL_ANY_MOTION_BIT_Z		BIT(2)
+>  #define BMC150_ACCEL_ANY_MOTION_BIT_SIGN	BIT(3)
+>  
+>  #define BMC150_ACCEL_REG_PMU_LPW		0x11
+> @@ -850,7 +853,7 @@ static const struct attribute_group bmc150_accel_attrs_group = {
+>  
+>  static const struct iio_event_spec bmc150_accel_event = {
+>  		.type = IIO_EV_TYPE_ROC,
+> -		.dir = IIO_EV_DIR_RISING | IIO_EV_DIR_FALLING,
+> +		.dir = IIO_EV_DIR_EITHER,
+T
+>  		.mask_separate = BIT(IIO_EV_INFO_VALUE) |
+>  				 BIT(IIO_EV_INFO_ENABLE) |
+>  				 BIT(IIO_EV_INFO_PERIOD)
+> @@ -1097,12 +1100,26 @@ static irqreturn_t bmc150_accel_event_handler(int irq, void *private)
+>  	else
+>  		dir = IIO_EV_DIR_RISING;
+>  
+> -	if (ret & BMC150_ACCEL_ANY_MOTION_MASK)
+> +	if (ret & BMC150_ACCEL_ANY_MOTION_BIT_X)
+>  		iio_push_event(indio_dev, IIO_MOD_EVENT_CODE(IIO_ACCEL,
+>  							0,
+> -							IIO_MOD_X_OR_Y_OR_Z,
+> +							IIO_MOD_X,
+>  							IIO_EV_TYPE_ROC,
+> -							IIO_EV_DIR_EITHER),
+> +							dir),
+> +							data->timestamp);
+> +	if (ret & BMC150_ACCEL_ANY_MOTION_BIT_Y)
+> +		iio_push_event(indio_dev, IIO_MOD_EVENT_CODE(IIO_ACCEL,
+> +							0,
+> +							IIO_MOD_Y,
+> +							IIO_EV_TYPE_ROC,
+> +							dir),
+> +							data->timestamp);
+> +	if (ret & BMC150_ACCEL_ANY_MOTION_BIT_Z)
+> +		iio_push_event(indio_dev, IIO_MOD_EVENT_CODE(IIO_ACCEL,
+> +							0,
+> +							IIO_MOD_Z,
+> +							IIO_EV_TYPE_ROC,
+> +							dir),
+>  							data->timestamp);
+>  ack_intr_status:
+>  	if (!data->dready_trigger_on)
+> 
