@@ -1,35 +1,61 @@
-Return-Path: <daniel.baluta@gmail.com>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mout.gmx.net ([212.227.17.21]:61598 "EHLO mout.gmx.net"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751394AbaJRTqp (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Sat, 18 Oct 2014 15:46:45 -0400
+Message-ID: <5442C3A0.7080501@gmx.de>
+Date: Sat, 18 Oct 2014 21:46:40 +0200
+From: Hartmut Knaack <knaack.h@gmx.de>
 MIME-Version: 1.0
-Sender: daniel.baluta@gmail.com
-In-Reply-To: <8eb45695460b1131ed1abf72700667aa98e6b5b6.1413858979.git.bvandre@gmail.com>
-References: <cover.1413858979.git.bvandre@gmail.com>
-	<8eb45695460b1131ed1abf72700667aa98e6b5b6.1413858979.git.bvandre@gmail.com>
-Date: Thu, 23 Oct 2014 13:39:11 +0300
-Message-ID: <CAEnQRZAcKhMbHg7B5ExnNG2zgixYV5jEPsKPZuCZS-Z+jKfxeg@mail.gmail.com>
-Subject: Re: [PATCH 1/2] Staging: iio: adc: fix line over 80 characters
-From: Daniel Baluta <daniel.baluta@intel.com>
-To: Brian Vandre <bvandre@gmail.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jonathan Cameron <jic23@kernel.org>,
-	alexandre.belloni@free-electrons.com, linux-iio@vger.kernel.org,
-	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset=UTF-8
-List-ID: <linux-iio@vger.kernel.org>
+To: IIO <linux-iio@vger.kernel.org>
+CC: David Barksdale <dbarksdale@uplogix.com>
+Subject: [PATCH]iio:humidity:si7020: cleanup read_raw and probe
+Content-Type: text/plain; charset=ISO-8859-15
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Tue, Oct 21, 2014 at 5:48 AM, Brian Vandre <bvandre@gmail.com> wrote:
-> This fixes the checkpatch.pl warning:
-> WARNING: line over 80 characters
->
-> Signed-off-by: Brian Vandre <bvandre@gmail.com>
+In si7020_read_raw() the pointer to the i2c client was obtained as second level pointer, although a simple pointer would be sufficient. Cleaned this.
+When reading temperature or humidity values, a right-shift of two bits needs to be applied, and only for the humidity channel a mask of the lower 12 bits needs to be applied. This reduces code repetition.
+During probe, i2c_set_clientdata() was used, although its counterpart was not, so drop it.
 
-As a part of OPW [1] IIO cleanup project [2] we analyzed all checkpatch.pl
-warnings / errors and we decided not to fix some of them as there is no
-obvious improvement.
-
-This "line over 80 characters" warning was one of them. In my opinion
-it doesn't make code easier to read.
-
-thanks,
-Daniel.
-
-[1] http://kernelnewbies.org/OPWIntro
-[2] http://kernelnewbies.org/IIO_cleanup
+Signed-off-by: Hartmut Knaack <knaack.h@gmx.de>
+---
+diff --git a/drivers/iio/humidity/si7020.c b/drivers/iio/humidity/si7020.c
+index e336af7..b541646 100644
+--- a/drivers/iio/humidity/si7020.c
++++ b/drivers/iio/humidity/si7020.c
+@@ -45,21 +45,20 @@ static int si7020_read_raw(struct iio_dev *indio_dev,
+ 			   struct iio_chan_spec const *chan, int *val,
+ 			   int *val2, long mask)
+ {
+-	struct i2c_client **client = iio_priv(indio_dev);
++	struct i2c_client *client = iio_priv(indio_dev);
+ 	int ret;
+ 
+ 	switch (mask) {
+ 	case IIO_CHAN_INFO_RAW:
+-		ret = i2c_smbus_read_word_data(*client,
++		ret = i2c_smbus_read_word_data(client,
+ 					       chan->type == IIO_TEMP ?
+ 					       SI7020CMD_TEMP_HOLD :
+ 					       SI7020CMD_RH_HOLD);
+ 		if (ret < 0)
+ 			return ret;
+-		if (chan->type == IIO_TEMP)
+-			*val = ret >> 2;
+-		else
+-			*val = (ret & 0x3FFF) >> 2;
++		*val = ret >> 2;
++		if (chan->type == IIO_HUMIDITYRELATIVE)
++			*val &= GENMASK(11, 0);
+ 		return IIO_VAL_INT;
+ 	case IIO_CHAN_INFO_SCALE:
+ 		if (chan->type == IIO_TEMP)
+@@ -133,7 +132,6 @@ static int si7020_probe(struct i2c_client *client,
+ 
+ 	data = iio_priv(indio_dev);
+ 	*data = client;
+-	i2c_set_clientdata(client, indio_dev);
+ 
+ 	indio_dev->dev.parent = &client->dev;
+ 	indio_dev->name = dev_name(&client->dev);
