@@ -1,89 +1,58 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:39425 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:51159 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751561AbaJTQJq (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 20 Oct 2014 12:09:46 -0400
-In-Reply-To: <20141020142742.GB6362@vdogaru>
-References: <1412594578-12765-1-git-send-email-vlad.dogaru@intel.com> <20141020142742.GB6362@vdogaru>
-MIME-Version: 1.0
-Content-Type: text/plain;
- charset=UTF-8
-Subject: Re: [PATCH v2] iio: add bmp280 pressure and temperature driver
+	with ESMTP id S1751287AbaJRL5V (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 18 Oct 2014 07:57:21 -0400
+Message-ID: <5442559C.9080800@kernel.org>
+Date: Sat, 18 Oct 2014 12:57:16 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-Date: Mon, 20 Oct 2014 17:09:26 +0100
-To: Vlad Dogaru <vlad.dogaru@intel.com>, linux-iio@vger.kernel.org,
-	pmeerw@pmeerw.net
-Message-ID: <F49E4D69-FD5C-4578-9A0F-FF87C2D4C9E9@kernel.org>
+MIME-Version: 1.0
+To: Daniel Baluta <daniel.baluta@intel.com>
+CC: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+	srinivas.pandruvada@linux.intel.com
+Subject: Re: [PATCH] io: accel: kxcjk-1013: Fix iio_event_spec direction
+References: <1412952812-974-1-git-send-email-daniel.baluta@intel.com>
+In-Reply-To: <1412952812-974-1-git-send-email-daniel.baluta@intel.com>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
+On 10/10/14 15:53, Daniel Baluta wrote:
+> Because IIO_EV_DIR_* are not bitmasks but enums,
+> IIO_EV_DIR_RISING | IIO_EV_DIR_FALLING is not equal
+> with IIO_EV_DIR_EITHER.
+> 
+> This could lead to potential misformatted sysfs attributes
+> like:
+> 	* in_accel_x_thresh_(null)_en
+> 	* in_accel_x_thresh_(null)_period
+> 	* in_accel_x_thresh_(null)_value
+> 
+> or even memory corruption.
+> 
+> Fixes: b4b491c083 (iio: accel: kxcjk-1013: Support threshold)
+> Signed-off-by: Daniel Baluta <daniel.baluta@intel.com>
+
+Good catch.  I'll have to hold this for a little until Greg takes
+my last pull request and I can bring the fixes branch up past the
+merge window.
 
 
-On October 20, 2014 3:27:42 PM GMT+01:00, Vlad Dogaru <vlad.dogaru@intel.com> wrote:
->On Mon, Oct 06, 2014 at 02:22:58PM +0300, Vlad Dogaru wrote:
->> Minimal implementation, can read temperature and data using direct
->mode.
->> 
->> Datasheet available at
->>
-><http://ae-bst.resource.bosch.com/media/products/dokumente/bmp280/BST-BMP280-DS001-09.pdf>
->> 
->> Signed-off-by: Vlad Dogaru <vlad.dogaru@intel.com>
->> ---
->> 
->> Changes since v1:
->>  * report processed values instead of raw ones;
->>  * use regmap cache for calibration registers;
->>  * check chip id register on probe;
->>  * minor style fixes.
->> 
->> I couldn't find an entry for in_pressure_input in the ABI
->specification, so I
->> assume the units for kilopascal, just as for the raw value.  If
->needed, I can
->> send a patch to add in_pressure_input to the ABI.
->> 
->>  drivers/iio/pressure/Kconfig  |  11 +
->>  drivers/iio/pressure/Makefile |   1 +
->>  drivers/iio/pressure/bmp280.c | 455
->++++++++++++++++++++++++++++++++++++++++++
->>  3 files changed, 467 insertions(+)
->>  create mode 100644 drivers/iio/pressure/bmp280.c
->
->[...]
->
->> +static u32 bmp280_compensate_press(struct bmp280_data *data,
->> +				   struct bmp280_comp_press *comp,
->> +				   s32 adc_press)
->> +{
->> +	s64 var1, var2, p;
->> +
->> +	var1 = ((s64) data->t_fine) - 128000;
->> +	var2 = var1 * var1 * (s64) comp->dig_p6;
->> +	var2 = var2 + ((var1 * (s64) comp->dig_p5) << 17);
->> +	var2 = var2 + (((s64) comp->dig_p4) << 35);
->> +	var1 = ((var1 * var1 * (s64) comp->dig_p3) >> 8) +
->> +		((var1 * (s64) comp->dig_p2) << 12);
->> +	var1 = (((((s64) 1) << 47) + var1)) * ((s64) comp->dig_p1) >> 33;
->> +
->> +	if (var1 == 0)
->> +		return 0;
->> +
->> +	p = 1048576 - adc_press;
->> +	p = (((p << 31) - var2) * 3125) / var1;
->
->This 64bit division causes trouble on x86.  Considering the patch made
->it to the testing branch, but not to 'togreg', would you prefer I
->submit
->a v3 or an incremental fix?
-V3.  Thanks
->
->Thanks,
->Vlad
->--
->To unsubscribe from this list: send the line "unsubscribe linux-iio" in
->the body of a message to majordomo@vger.kernel.org
->More majordomo info at  http://vger.kernel.org/majordomo-info.html
-
--- 
-Sent from my Android phone with K-9 Mail. Please excuse my brevity.
+> ---
+>  drivers/iio/accel/kxcjk-1013.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/iio/accel/kxcjk-1013.c b/drivers/iio/accel/kxcjk-1013.c
+> index 98909a9..a23e58c 100644
+> --- a/drivers/iio/accel/kxcjk-1013.c
+> +++ b/drivers/iio/accel/kxcjk-1013.c
+> @@ -894,7 +894,7 @@ static const struct attribute_group kxcjk1013_attrs_group = {
+>  
+>  static const struct iio_event_spec kxcjk1013_event = {
+>  		.type = IIO_EV_TYPE_THRESH,
+> -		.dir = IIO_EV_DIR_RISING | IIO_EV_DIR_FALLING,
+> +		.dir = IIO_EV_DIR_EITHER,
+>  		.mask_separate = BIT(IIO_EV_INFO_VALUE) |
+>  				 BIT(IIO_EV_INFO_ENABLE) |
+>  				 BIT(IIO_EV_INFO_PERIOD)
+> 
