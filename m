@@ -1,94 +1,79 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mout.gmx.net ([212.227.15.15]:61414 "EHLO mout.gmx.net"
+Received: from ns.mm-sol.com ([37.157.136.199]:53096 "EHLO extserv.mm-sol.com"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1755522AbaJaSnO (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Fri, 31 Oct 2014 14:43:14 -0400
-Message-ID: <5453D83D.3060405@gmx.de>
-Date: Fri, 31 Oct 2014 19:43:09 +0100
-From: Hartmut Knaack <knaack.h@gmx.de>
-MIME-Version: 1.0
-To: Vlad Dogaru <vlad.dogaru@intel.com>
-CC: IIO <linux-iio@vger.kernel.org>
-Subject: Re: [PATCH 2/3]iio:pressure:bmp280: cleanup
-References: <5452E495.2020705@gmx.de> <20141031114416.GB24473@vdogaru>
-In-Reply-To: <20141031114416.GB24473@vdogaru>
-Content-Type: text/plain; charset=ISO-8859-1
+	id S1753065AbaJTLW1 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Mon, 20 Oct 2014 07:22:27 -0400
+Message-ID: <1413804158.13490.6.camel@mm-sol.com>
+Subject: Re: [PATCH] iio: inkern: Add of_xlate function to struct iio_dev
+From: "Ivan T. Ivanov" <iivanov@mm-sol.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Lars-Peter Clausen <lars@metafoo.de>,
+	Sachin Kamat <sachin.kamat@linaro.org>,
+	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+	John Stultz <john.stultz@linaro.org>,
+	linux-iio@vger.kernel.org, svarbanov@mm-sol.com,
+	linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org
+Date: Mon, 20 Oct 2014 14:22:38 +0300
+In-Reply-To: <54425998.7060808@kernel.org>
+References: <1412253128-32165-1-git-send-email-iivanov@mm-sol.com>
+	 <5442522D.40203@kernel.org> <544253F3.9060002@metafoo.de>
+	 <54425998.7060808@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Mime-Version: 1.0
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Vlad Dogaru schrieb am 31.10.2014 12:44:
-> On Fri, Oct 31, 2014 at 02:23:33AM +0100, Hartmut Knaack wrote:
->> The calculations for temperature and pressure compensation were already slightly
->> optimized in comparison to the data sheet. So, it makes sense to optimize even a
->> bit more, making proper use of C operators:
->>   - variable t in bmp280_compensate_temp() can be eliminated by directly
->>     returning the result of the relevant equation.
->>   - make use of the += operator, eliminate an unnecessary parenthesis level and
->>     directly return the result of the last equation in
->>     bmp280_compensate_press().
->> When the initialization of the ctrl_meas register fails, the error message will
->> now mention the right register name.
->> During probe, i2c_set_clientdata() is called, although it is not necessary. Drop
->> it.
->>
->> Signed-off-by: Hartmut Knaack <knaack.h@gmx.de>
->> ---
->> diff --git a/drivers/iio/pressure/bmp280.c b/drivers/iio/pressure/bmp280.c
->> index 75038da..4f6ae4d 100644
->> --- a/drivers/iio/pressure/bmp280.c
->> +++ b/drivers/iio/pressure/bmp280.c
->> @@ -200,7 +200,7 @@ static s32 bmp280_compensate_temp(struct bmp280_data *data,
->>  				  struct bmp280_comp_temp *comp,
->>  				  s32 adc_temp)
->>  {
->> -	s32 var1, var2, t;
->> +	s32 var1, var2;
->>  
->>  	var1 = (((adc_temp >> 3) - ((s32) comp->dig_t1 << 1)) *
->>  		((s32) comp->dig_t2)) >> 11;
->> @@ -209,9 +209,7 @@ static s32 bmp280_compensate_temp(struct bmp280_data *data,
->>  		((s32) comp->dig_t3)) >> 14;
->>  
->>  	data->t_fine = var1 + var2;
->> -	t = (data->t_fine * 5 + 128) >> 8;
->> -
->> -	return t;
->> +	return (data->t_fine * 5 + 128) >> 8;
-> 
-> Shouldn't the compiler take care of this?
-That would be preferable. I just don't see the real benefit in having the extra step of storing the result (and taking care of an extra variable) before returning it. And I am aware, that this calculation is derived from the one in the data sheet (which looks a bit questionable to me with its unnecessary parenthesis and variable). But since you already started optimizing, it seemed legitimate to consolidate it even a bit more.
-> 
->>  }
->>  
->>  /*
->> @@ -229,11 +227,11 @@ static u32 bmp280_compensate_press(struct bmp280_data *data,
->>  
->>  	var1 = ((s64) data->t_fine) - 128000;
->>  	var2 = var1 * var1 * (s64) comp->dig_p6;
->> -	var2 = var2 + ((var1 * (s64) comp->dig_p5) << 17);
->> -	var2 = var2 + (((s64) comp->dig_p4) << 35);
->> +	var2 += ((var1 * (s64) comp->dig_p5) << 17);
->> +	var2 += (((s64) comp->dig_p4) << 35);
->>  	var1 = ((var1 * var1 * (s64) comp->dig_p3) >> 8) +
->>  		((var1 * (s64) comp->dig_p2) << 12);
->> -	var1 = (((((s64) 1) << 47) + var1)) * ((s64) comp->dig_p1) >> 33;
->> +	var1 = ((((s64) 1) << 47) + var1) * ((s64) comp->dig_p1) >> 33;
->>  
->>  	if (var1 == 0)
->>  		return 0;
->> @@ -242,9 +240,7 @@ static u32 bmp280_compensate_press(struct bmp280_data *data,
->>  	p = div64_s64(p, var1);
->>  	var1 = (((s64) comp->dig_p9) * (p >> 13) * (p >> 13)) >> 25;
->>  	var2 = (((s64) comp->dig_p8) * p) >> 19;
->> -	p = ((p + var1 + var2) >> 8) + (((s64) comp->dig_p7) << 4);
->> -
->> -	return (u32) p;
->> +	return (u32)((p + var1 + var2) >> 8) + (((s64) comp->dig_p7) << 4);
-> 
-> And this?
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> 
 
+On Sat, 2014-10-18 at 13:14 +0100, Jonathan Cameron wrote:
+> On 18/10/14 12:50, Lars-Peter Clausen wrote:
+> >  On 10/18/2014 01:42 PM, Jonathan Cameron wrote:
+> > >  On 02/10/14 13:32, Ivan T. Ivanov wrote:
+> > > >  When #iio-cells is greater than '0', the driver could provide
+> > > >  a custom of_xlate function that reads the *args* and returns
+> > > >  the appropriate index in registered IIO channels array.
+> > > > >
+> > > >  Add simple translation function, suitable for the most 1:1
+> > > >  mapped channels in IIO chips, and use it when driver did not
+> > > >  provide custom implementation.
+> > > > >
+> > > >  Signed-off-by: Ivan T. Ivanov <iivanov@mm-sol.com>
+> > >  Any more comments on this?  Been sat a while and the 
+> > > discussions seems
+> > >  to have died out.
+> > > >
+> > >  As Ivan has pointed out, very similar approaches are used
+> > >  elsewhere (gpio for example).
+> > 
+> >  Looks good to me:
+> > 
+> >  Reviewed-by: Lars-Peter Clausen <lars@metafoo.de>
+> > 
+> >  When we initially added the DT support to IIO I was hoping that 
+> > we can get away
+> >  with just using the simple and generic xlate function for all 
+> > devices. But it
+> >  looks as if some more complex devices need to overwrite it. We 
+> > should be careful
+> >  about adding new driver specific xlate implementations and make 
+> > sure that it is
+> >  actually needed.
+> > 
+> >  One thing we might want to consider though is instead of adding 
+> > the xlate
+> >  callback to the iio_dev struct add it to the iio_info struct 
+> > since it should be
+> >  the same for different device instances of the same driver. And 
+> > this is also
+> >  where all the other callbacks are.
+> Good point - would definitely prefer that.
+
+Thank you. Will rework it as suggested.
+
+Regards,
+Ivan
+
+> 
+> J
+> > 
+> >  - Lars
+> 
