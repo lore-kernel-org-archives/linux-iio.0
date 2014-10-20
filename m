@@ -1,33 +1,57 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-ig0-f179.google.com ([209.85.213.179]:60262 "EHLO
-	mail-ig0-f179.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S932757AbaJWMxW (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 23 Oct 2014 08:53:22 -0400
-Date: Thu, 23 Oct 2014 07:53:36 -0500
-From: Brian Vandre <bvandre@gmail.com>
-To: gregkh@linuxfoundation.org, jic23@kernel.org,
-	alexandre.belloni@free-electrons.com, linux-iio@vger.kernel.org,
-	marex@denx.de
-Cc: linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] Staging: iio: adc: fix line over 80 characters
-Message-ID: <20141023125336.GB10433@brian-U>
-References: <cover.1413858979.git.bvandre@gmail.com>
- <cover.1413931615.git.bvandre@gmail.com>
- <ec4b497827f6c7615f6b5eef5669144f8c68d034.1413931615.git.bvandre@gmail.com>
+Received: from comal.ext.ti.com ([198.47.26.152]:56541 "EHLO comal.ext.ti.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1752081AbaJTTwL (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Mon, 20 Oct 2014 15:52:11 -0400
+From: Dan Murphy <dmurphy@ti.com>
+To: <jic23@kernel.org>, <pmeerw@pmeerw.net>
+CC: <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+	Dan Murphy <dmurphy@ti.com>
+Subject: [PATCH] iio: tsl4531: Fix compiler error when CONFIG_PM_OPS is not defined
+Date: Mon, 20 Oct 2014 14:52:02 -0500
+Message-ID: <1413834722-7500-1-git-send-email-dmurphy@ti.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <ec4b497827f6c7615f6b5eef5669144f8c68d034.1413931615.git.bvandre@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-With all the replies I have gotten it seems like there might not be a good path forward
-with this patch.  I am starting to agree with what Daniel Baluta said above that this doesn't
-make the code easier to read.  All the other suggestions don't quite fit the same style
-as the rest of the file so it might just be better to leave it.
+Fix the compiler error when the CONFIG_PM_OPS flag is not set.
 
-This being my first try I thank you all for your input.  It has helped me learn quite a bit.
+drivers/iio/light/tsl4531.c:235:8: error: ‘tsl4531_suspend’ undeclared here (not in a function)
+drivers/iio/light/tsl4531.c:235:8: error: ‘tsl4531_resume’ undeclared here (not in a function)
 
-Hopefully on the next patch I can fix something a little more meaningful!
+Signed-off-by: Dan Murphy <dmurphy@ti.com>
+---
+ drivers/iio/light/tsl4531.c |    7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
-Thanks,
-Brian Vandre
+diff --git a/drivers/iio/light/tsl4531.c b/drivers/iio/light/tsl4531.c
+index a15006e..0763b86 100644
+--- a/drivers/iio/light/tsl4531.c
++++ b/drivers/iio/light/tsl4531.c
+@@ -230,9 +230,12 @@ static int tsl4531_resume(struct device *dev)
+ 	return i2c_smbus_write_byte_data(to_i2c_client(dev), TSL4531_CONTROL,
+ 		TSL4531_MODE_NORMAL);
+ }
+-#endif
+ 
+ static SIMPLE_DEV_PM_OPS(tsl4531_pm_ops, tsl4531_suspend, tsl4531_resume);
++#define TSL4531_PM_OPS (&tsl4531_pm_ops)
++#else
++#define TSL4531_PM_OPS NULL
++#endif
+ 
+ static const struct i2c_device_id tsl4531_id[] = {
+ 	{ "tsl4531", 0 },
+@@ -243,7 +246,7 @@ MODULE_DEVICE_TABLE(i2c, tsl4531_id);
+ static struct i2c_driver tsl4531_driver = {
+ 	.driver = {
+ 		.name   = TSL4531_DRV_NAME,
+-		.pm	= &tsl4531_pm_ops,
++		.pm	= TSL4531_PM_OPS,
+ 		.owner  = THIS_MODULE,
+ 	},
+ 	.probe  = tsl4531_probe,
+-- 
+1.7.9.5
+
