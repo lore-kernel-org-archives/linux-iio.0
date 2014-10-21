@@ -1,96 +1,536 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from comal.ext.ti.com ([198.47.26.152]:57614 "EHLO comal.ext.ti.com"
+Received: from mga02.intel.com ([134.134.136.20]:12728 "EHLO mga02.intel.com"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751891AbaJ0LK1 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Mon, 27 Oct 2014 07:10:27 -0400
-From: Vignesh R <vigneshr@ti.com>
-To: Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>,
-	Mark Rutland <mark.rutland@arm.com>,
-	Ian Campbell <ijc+devicetree@hellion.org.uk>,
-	Kumar Gala <galak@codeaurora.org>,
-	Benoit Cousson <bcousson@baylibre.com>,
-	Tony Lindgren <tony@atomide.com>,
-	Russell King <linux@arm.linux.org.uk>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Dmitry Torokhov <dmitry.torokhov@gmail.com>
-CC: Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	Samuel Ortiz <sameo@linux.intel.com>,
-	Lee Jones <lee.jones@linaro.org>, Felipe Balbi <balbi@ti.com>,
-	Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-	Jan Kardell <jan.kardell@telliq.com>,
-	Paul Gortmaker <paul.gortmaker@windriver.com>,
-	Brad Griffis <bgriffis@ti.com>, <devicetree@vger.kernel.org>,
-	<linux-kernel@vger.kernel.org>, <linux-omap@vger.kernel.org>,
-	<linux-arm-kernel@lists.infradead.org>,
-	<linux-iio@vger.kernel.org>, <linux-input@vger.kernel.org>,
-	Vignesh R <vigneshr@ti.com>
-Subject: [PATCH 3/4] arm: boot: dts: am335x-evm: Make charge delay a DT parameter for tsc
-Date: Mon, 27 Oct 2014 16:38:30 +0530
-Message-ID: <1414408111-2631-4-git-send-email-vigneshr@ti.com>
-In-Reply-To: <1414408111-2631-1-git-send-email-vigneshr@ti.com>
-References: <1414408111-2631-1-git-send-email-vigneshr@ti.com>
-MIME-Version: 1.0
-Content-Type: text/plain
+	id S1754460AbaJUIJf (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Tue, 21 Oct 2014 04:09:35 -0400
+From: Vlad Dogaru <vlad.dogaru@intel.com>
+To: linux-iio@vger.kernel.org, jic23@kernel.org
+Cc: Vlad Dogaru <vlad.dogaru@intel.com>
+Subject: [PATCH v3] iio: add bmp280 pressure and temperature driver
+Date: Tue, 21 Oct 2014 11:09:58 +0300
+Message-Id: <1413878998-27019-1-git-send-email-vlad.dogaru@intel.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-The charge delay value is by default 0xB000. But it can be set to lower
-values on some boards as long as false pen-ups are avoided. Lowering the
-value increases the sampling rate (though current sampling rate is
-sufficient for tsc operation). Hence charge delay has been made a DT
-parameter.
+Minimal implementation, can read temperature and data using direct mode.
 
-Signed-off-by: Vignesh R <vigneshr@ti.com>
+Datasheet available at
+<http://ae-bst.resource.bosch.com/media/products/dokumente/bmp280/BST-BMP280-DS001-09.pdf>
+
+Signed-off-by: Vlad Dogaru <vlad.dogaru@intel.com>
 ---
- .../devicetree/bindings/input/touchscreen/ti-tsc-adc.txt    | 13 +++++++++++++
- arch/arm/boot/dts/am335x-evm.dts                            |  1 +
- 2 files changed, 14 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/input/touchscreen/ti-tsc-adc.txt b/Documentation/devicetree/bindings/input/touchscreen/ti-tsc-adc.txt
-index 878549ba814d..ac62769e70e4 100644
---- a/Documentation/devicetree/bindings/input/touchscreen/ti-tsc-adc.txt
-+++ b/Documentation/devicetree/bindings/input/touchscreen/ti-tsc-adc.txt
-@@ -28,6 +28,18 @@ Required properties:
- 	ti,adc-channels: List of analog inputs available for ADC.
- 			 AIN0 = 0, AIN1 = 1 and so on till AIN7 = 7.
+Changes since v2:
+ * use do_div() instead of the division operator for dividing 64-bit values in
+   bmp280_compensate_press().
+
+Changes since v1:
+ * report processed values instead of raw ones;
+ * use regmap cache for calibration registers;
+ * check chip id register on probe;
+ * minor style fixes.
+
+ drivers/iio/pressure/Kconfig  |  11 +
+ drivers/iio/pressure/Makefile |   1 +
+ drivers/iio/pressure/bmp280.c | 455 ++++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 467 insertions(+)
+ create mode 100644 drivers/iio/pressure/bmp280.c
+
+diff --git a/drivers/iio/pressure/Kconfig b/drivers/iio/pressure/Kconfig
+index 15afbc9..a3be537 100644
+--- a/drivers/iio/pressure/Kconfig
++++ b/drivers/iio/pressure/Kconfig
+@@ -5,6 +5,17 @@
  
-+Optional properties:
-+- child "tsc"
-+	ti,charge-delay: Length of touch screen charge delay step in terms of
-+			 ADC clock cycles. Charge delay value should be large in order
-+			 to avoid false pen-up events. This value affects the overall
-+			 sampling speed hence need to be kept as low as possible while
-+			 avoiding false pen-up event. Start from a lower value say 0x400
-+			 and increase value until false pen-up events are avoided. The
-+			 pen-up detection happens immediately after the charge step
-+			 so this does in fact function as a hardware knob for adjusting
-+			 the amount of "settling time".
+ menu "Pressure sensors"
+ 
++config BMP280
++	tristate "Bosch Sensortec BMP280 pressure sensor driver"
++	depends on I2C
++	select REGMAP_I2C
++	help
++	 Say yes here to build support for Bosch Sensortec BMP280
++	 pressure and temperature sensor.
 +
- Example:
- 	tscadc: tscadc@44e0d000 {
- 		compatible = "ti,am3359-tscadc";
-@@ -36,6 +48,7 @@ Example:
- 			ti,x-plate-resistance = <200>;
- 			ti,coordiante-readouts = <5>;
- 			ti,wire-config = <0x00 0x11 0x22 0x33>;
-+			ti,charge-delay = <0xB000>;
- 		};
++	 To compile this driver as a module, choose M here: the module
++	 will be called bmp280.
++
+ config HID_SENSOR_PRESS
+ 	depends on HID_SENSOR_HUB
+ 	select IIO_BUFFER
+diff --git a/drivers/iio/pressure/Makefile b/drivers/iio/pressure/Makefile
+index 90a37e8..88011f2 100644
+--- a/drivers/iio/pressure/Makefile
++++ b/drivers/iio/pressure/Makefile
+@@ -3,6 +3,7 @@
+ #
  
- 		adc {
-diff --git a/arch/arm/boot/dts/am335x-evm.dts b/arch/arm/boot/dts/am335x-evm.dts
-index e2156a583de7..80be0462298b 100644
---- a/arch/arm/boot/dts/am335x-evm.dts
-+++ b/arch/arm/boot/dts/am335x-evm.dts
-@@ -641,6 +641,7 @@
- 		ti,x-plate-resistance = <200>;
- 		ti,coordinate-readouts = <5>;
- 		ti,wire-config = <0x00 0x11 0x22 0x33>;
-+		ti,charge-delay = <0xB000>;
- 	};
- 
- 	adc {
+ # When adding new entries keep the list in alphabetical order
++obj-$(CONFIG_BMP280) += bmp280.o
+ obj-$(CONFIG_HID_SENSOR_PRESS)   += hid-sensor-press.o
+ obj-$(CONFIG_MPL115) += mpl115.o
+ obj-$(CONFIG_MPL3115) += mpl3115.o
+diff --git a/drivers/iio/pressure/bmp280.c b/drivers/iio/pressure/bmp280.c
+new file mode 100644
+index 0000000..fb91cb3
+--- /dev/null
++++ b/drivers/iio/pressure/bmp280.c
+@@ -0,0 +1,455 @@
++/*
++ * Copyright (c) 2014 Intel Corporation
++ *
++ * Driver for Bosch Sensortec BMP280 digital pressure sensor.
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License version 2 as
++ * published by the Free Software Foundation.
++ *
++ */
++
++#define pr_fmt(fmt) "bmp280: " fmt
++
++#include <linux/module.h>
++#include <linux/i2c.h>
++#include <linux/acpi.h>
++#include <linux/regmap.h>
++#include <linux/iio/iio.h>
++#include <linux/iio/sysfs.h>
++
++#define BMP280_REG_TEMP_XLSB		0xFC
++#define BMP280_REG_TEMP_LSB		0xFB
++#define BMP280_REG_TEMP_MSB		0xFA
++#define BMP280_REG_PRESS_XLSB		0xF9
++#define BMP280_REG_PRESS_LSB		0xF8
++#define BMP280_REG_PRESS_MSB		0xF7
++
++#define BMP280_REG_CONFIG		0xF5
++#define BMP280_REG_CTRL_MEAS		0xF4
++#define BMP280_REG_STATUS		0xF3
++#define BMP280_REG_RESET		0xE0
++#define BMP280_REG_ID			0xD0
++
++#define BMP280_REG_COMP_TEMP_START	0x88
++#define BMP280_COMP_TEMP_REG_COUNT	6
++
++#define BMP280_REG_COMP_PRESS_START	0x8E
++#define BMP280_COMP_PRESS_REG_COUNT	18
++
++#define BMP280_FILTER_MASK		(BIT(4) | BIT(3) | BIT(2))
++#define BMP280_FILTER_OFF		0
++#define BMP280_FILTER_2X		BIT(2)
++#define BMP280_FILTER_4X		BIT(3)
++#define BMP280_FILTER_8X		(BIT(3) | BIT(2))
++#define BMP280_FILTER_16X		BIT(4)
++
++#define BMP280_OSRS_TEMP_MASK		(BIT(7) | BIT(6) | BIT(5))
++#define BMP280_OSRS_TEMP_SKIP		0
++#define BMP280_OSRS_TEMP_1X		BIT(5)
++#define BMP280_OSRS_TEMP_2X		BIT(6)
++#define BMP280_OSRS_TEMP_4X		(BIT(6) | BIT(5))
++#define BMP280_OSRS_TEMP_8X		BIT(7)
++#define BMP280_OSRS_TEMP_16X		(BIT(7) | BIT(5))
++
++#define BMP280_OSRS_PRESS_MASK		(BIT(4) | BIT(3) | BIT(2))
++#define BMP280_OSRS_PRESS_SKIP		0
++#define BMP280_OSRS_PRESS_1X		BIT(2)
++#define BMP280_OSRS_PRESS_2X		BIT(3)
++#define BMP280_OSRS_PRESS_4X		(BIT(3) | BIT(2))
++#define BMP280_OSRS_PRESS_8X		BIT(4)
++#define BMP280_OSRS_PRESS_16X		(BIT(4) | BIT(2))
++
++#define BMP280_MODE_MASK		(BIT(1) | BIT(0))
++#define BMP280_MODE_SLEEP		0
++#define BMP280_MODE_FORCED		BIT(0)
++#define BMP280_MODE_NORMAL		(BIT(1) | BIT(0))
++
++#define BMP280_CHIP_ID			0x58
++#define BMP280_SOFT_RESET_VAL		0xB6
++
++struct bmp280_data {
++	struct i2c_client *client;
++	struct mutex lock;
++	struct regmap *regmap;
++
++	/*
++	 * Carryover value from temperature conversion, used in pressure
++	 * calculation.
++	 */
++	s32 t_fine;
++};
++
++/* Compensation parameters. */
++struct bmp280_comp_temp {
++	u16 dig_t1;
++	s16 dig_t2, dig_t3;
++};
++
++struct bmp280_comp_press {
++	u16 dig_p1;
++	s16 dig_p2, dig_p3, dig_p4, dig_p5, dig_p6, dig_p7, dig_p8, dig_p9;
++};
++
++static const struct iio_chan_spec bmp280_channels[] = {
++	{
++		.type = IIO_PRESSURE,
++		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED),
++	},
++	{
++		.type = IIO_TEMP,
++		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED),
++	},
++};
++
++static bool bmp280_is_writeable_reg(struct device *dev, unsigned int reg)
++{
++	switch (reg) {
++	case BMP280_REG_CONFIG:
++	case BMP280_REG_CTRL_MEAS:
++	case BMP280_REG_RESET:
++		return true;
++	default:
++		return false;
++	};
++}
++
++static bool bmp280_is_volatile_reg(struct device *dev, unsigned int reg)
++{
++	switch (reg) {
++	case BMP280_REG_TEMP_XLSB:
++	case BMP280_REG_TEMP_LSB:
++	case BMP280_REG_TEMP_MSB:
++	case BMP280_REG_PRESS_XLSB:
++	case BMP280_REG_PRESS_LSB:
++	case BMP280_REG_PRESS_MSB:
++	case BMP280_REG_STATUS:
++		return true;
++	default:
++		return false;
++	}
++}
++
++static const struct regmap_config bmp280_regmap_config = {
++	.reg_bits = 8,
++	.val_bits = 8,
++
++	.max_register = BMP280_REG_TEMP_XLSB,
++	.cache_type = REGCACHE_RBTREE,
++
++	.writeable_reg = bmp280_is_writeable_reg,
++	.volatile_reg = bmp280_is_volatile_reg,
++};
++
++static int bmp280_read_compensation_temp(struct bmp280_data *data,
++					 struct bmp280_comp_temp *comp)
++{
++	int ret;
++	__le16 buf[BMP280_COMP_TEMP_REG_COUNT / 2];
++
++	ret = regmap_bulk_read(data->regmap, BMP280_REG_COMP_TEMP_START,
++			       buf, BMP280_COMP_TEMP_REG_COUNT);
++	if (ret < 0) {
++		dev_err(&data->client->dev,
++			"failed to read temperature calibration parameters\n");
++		return ret;
++	}
++
++	comp->dig_t1 = (u16) le16_to_cpu(buf[0]);
++	comp->dig_t2 = (s16) le16_to_cpu(buf[1]);
++	comp->dig_t3 = (s16) le16_to_cpu(buf[2]);
++
++	return 0;
++}
++
++static int bmp280_read_compensation_press(struct bmp280_data *data,
++					  struct bmp280_comp_press *comp)
++{
++	int ret;
++	__le16 buf[BMP280_COMP_PRESS_REG_COUNT / 2];
++
++	ret = regmap_bulk_read(data->regmap, BMP280_REG_COMP_PRESS_START,
++			       buf, BMP280_COMP_PRESS_REG_COUNT);
++	if (ret < 0) {
++		dev_err(&data->client->dev,
++			"failed to read pressure calibration parameters\n");
++		return ret;
++	}
++
++	comp->dig_p1 = (s16) le16_to_cpu(buf[0]);
++	comp->dig_p2 = (u16) le16_to_cpu(buf[1]);
++	comp->dig_p3 = (u16) le16_to_cpu(buf[2]);
++	comp->dig_p4 = (u16) le16_to_cpu(buf[3]);
++	comp->dig_p5 = (u16) le16_to_cpu(buf[4]);
++	comp->dig_p6 = (u16) le16_to_cpu(buf[5]);
++	comp->dig_p7 = (u16) le16_to_cpu(buf[6]);
++	comp->dig_p8 = (u16) le16_to_cpu(buf[7]);
++	comp->dig_p9 = (u16) le16_to_cpu(buf[8]);
++
++	return 0;
++}
++
++/*
++ * Returns temperature in DegC, resolution is 0.01 DegC.  Output value of
++ * "5123" equals 51.23 DegC.  t_fine carries fine temperature as global
++ * value.
++ *
++ * Taken from datasheet, Section 3.11.3, "Compensation formula".
++ */
++static s32 bmp280_compensate_temp(struct bmp280_data *data,
++				  struct bmp280_comp_temp *comp,
++				  s32 adc_temp)
++{
++	s32 var1, var2, t;
++
++	var1 = (((adc_temp >> 3) - ((s32) comp->dig_t1 << 1)) *
++		((s32) comp->dig_t2)) >> 11;
++	var2 = (((((adc_temp >> 4) - ((s32) comp->dig_t1)) *
++		  ((adc_temp >> 4) - ((s32) comp->dig_t1))) >> 12) *
++		((s32) comp->dig_t3)) >> 14;
++
++	data->t_fine = var1 + var2;
++	t = (data->t_fine * 5 + 128) >> 8;
++
++	return t;
++}
++
++/*
++ * Returns pressure in Pa as unsigned 32 bit integer in Q24.8 format (24
++ * integer bits and 8 fractional bits).  Output value of "24674867"
++ * represents 24674867/256 = 96386.2 Pa = 963.862 hPa
++ *
++ * Taken from datasheet, Section 3.11.3, "Compensation formula".
++ */
++static u32 bmp280_compensate_press(struct bmp280_data *data,
++				   struct bmp280_comp_press *comp,
++				   s32 adc_press)
++{
++	s64 var1, var2, p;
++
++	var1 = ((s64) data->t_fine) - 128000;
++	var2 = var1 * var1 * (s64) comp->dig_p6;
++	var2 = var2 + ((var1 * (s64) comp->dig_p5) << 17);
++	var2 = var2 + (((s64) comp->dig_p4) << 35);
++	var1 = ((var1 * var1 * (s64) comp->dig_p3) >> 8) +
++		((var1 * (s64) comp->dig_p2) << 12);
++	var1 = (((((s64) 1) << 47) + var1)) * ((s64) comp->dig_p1) >> 33;
++
++	if (var1 == 0)
++		return 0;
++
++	p = ((((s64) 1048576 - adc_press) << 31) - var2) * 3125;
++	do_div(p, var1);
++	var1 = (((s64) comp->dig_p9) * (p >> 13) * (p >> 13)) >> 25;
++	var2 = (((s64) comp->dig_p8) * p) >> 19;
++	p = ((p + var1 + var2) >> 8) + (((s64) comp->dig_p7) << 4);
++
++	return (u32) p;
++}
++
++static int bmp280_read_temp(struct bmp280_data *data,
++			    int *val)
++{
++	int ret;
++	__be32 tmp = 0;
++	s32 adc_temp, comp_temp;
++	struct bmp280_comp_temp comp;
++
++	ret = bmp280_read_compensation_temp(data, &comp);
++	if (ret < 0)
++		return ret;
++
++	ret = regmap_bulk_read(data->regmap, BMP280_REG_TEMP_MSB,
++			       (u8 *) &tmp, 3);
++	if (ret < 0) {
++		dev_err(&data->client->dev, "failed to read temperature\n");
++		return ret;
++	}
++
++	adc_temp = be32_to_cpu(tmp) >> 12;
++	comp_temp = bmp280_compensate_temp(data, &comp, adc_temp);
++
++	/*
++	 * val might be NULL if we're called by the read_press routine,
++	 * who only cares about the carry over t_fine value.
++	 */
++	if (val) {
++		*val = comp_temp * 10;
++		return IIO_VAL_INT;
++	}
++
++	return 0;
++}
++
++static int bmp280_read_press(struct bmp280_data *data,
++			     int *val, int *val2)
++{
++	int ret;
++	__be32 tmp = 0;
++	s32 adc_press;
++	u32 comp_press;
++	struct bmp280_comp_press comp;
++
++	ret = bmp280_read_compensation_press(data, &comp);
++	if (ret < 0)
++		return ret;
++
++	/* Read and compensate temperature so we get a reading of t_fine. */
++	ret = bmp280_read_temp(data, NULL);
++	if (ret < 0)
++		return ret;
++
++	ret = regmap_bulk_read(data->regmap, BMP280_REG_PRESS_MSB,
++			       (u8 *) &tmp, 3);
++	if (ret < 0) {
++		dev_err(&data->client->dev, "failed to read pressure\n");
++		return ret;
++	}
++
++	adc_press = be32_to_cpu(tmp) >> 12;
++	comp_press = bmp280_compensate_press(data, &comp, adc_press);
++
++	*val = comp_press / 256000;
++	*val2 = comp_press * 1000000 / 256000;
++
++	return IIO_VAL_INT_PLUS_MICRO;
++}
++
++static int bmp280_read_raw(struct iio_dev *indio_dev,
++			   struct iio_chan_spec const *chan,
++			   int *val, int *val2, long mask)
++{
++	int ret;
++	struct bmp280_data *data = iio_priv(indio_dev);
++
++	mutex_lock(&data->lock);
++
++	switch (mask) {
++	case IIO_CHAN_INFO_PROCESSED:
++		switch (chan->type) {
++		case IIO_PRESSURE:
++			ret = bmp280_read_press(data, val, val2);
++			break;
++		case IIO_TEMP:
++			ret = bmp280_read_temp(data, val);
++			break;
++		default:
++			ret = -EINVAL;
++			break;
++		}
++		break;
++	default:
++		ret = -EINVAL;
++		break;
++	}
++
++	mutex_unlock(&data->lock);
++
++	return ret;
++}
++
++static const struct iio_info bmp280_info = {
++	.driver_module = THIS_MODULE,
++	.read_raw = &bmp280_read_raw,
++};
++
++static int bmp280_chip_init(struct bmp280_data *data)
++{
++	int ret;
++
++	ret = regmap_update_bits(data->regmap, BMP280_REG_CTRL_MEAS,
++				 BMP280_OSRS_TEMP_MASK |
++				 BMP280_OSRS_PRESS_MASK |
++				 BMP280_MODE_MASK,
++				 BMP280_OSRS_TEMP_2X |
++				 BMP280_OSRS_PRESS_16X |
++				 BMP280_MODE_NORMAL);
++	if (ret < 0) {
++		dev_err(&data->client->dev,
++			"failed to write config register\n");
++		return ret;
++	}
++
++	ret = regmap_update_bits(data->regmap, BMP280_REG_CONFIG,
++				 BMP280_FILTER_MASK,
++				 BMP280_FILTER_4X);
++	if (ret < 0) {
++		dev_err(&data->client->dev,
++			"failed to write config register\n");
++		return ret;
++	}
++
++	return ret;
++}
++
++static int bmp280_probe(struct i2c_client *client,
++			const struct i2c_device_id *id)
++{
++	int ret;
++	struct iio_dev *indio_dev;
++	struct bmp280_data *data;
++	unsigned int chip_id;
++
++	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
++	if (!indio_dev)
++		return -ENOMEM;
++
++	i2c_set_clientdata(client, indio_dev);
++	data = iio_priv(indio_dev);
++	mutex_init(&data->lock);
++	data->client = client;
++
++	indio_dev->dev.parent = &client->dev;
++	indio_dev->name = id->name;
++	indio_dev->channels = bmp280_channels;
++	indio_dev->num_channels = ARRAY_SIZE(bmp280_channels);
++	indio_dev->info = &bmp280_info;
++	indio_dev->modes = INDIO_DIRECT_MODE;
++
++	data->regmap = devm_regmap_init_i2c(client, &bmp280_regmap_config);
++	if (IS_ERR(data->regmap)) {
++		dev_err(&client->dev, "failed to allocate register map\n");
++		return PTR_ERR(data->regmap);
++	}
++
++	ret = regmap_read(data->regmap, BMP280_REG_ID, &chip_id);
++	if (ret < 0)
++		return ret;
++	if (chip_id != BMP280_CHIP_ID) {
++		dev_err(&client->dev, "bad chip id.  expected %x got %x\n",
++			BMP280_CHIP_ID, chip_id);
++		return -EINVAL;
++	}
++
++	ret = bmp280_chip_init(data);
++	if (ret < 0)
++		return ret;
++
++	return devm_iio_device_register(&client->dev, indio_dev);
++}
++
++static const struct acpi_device_id bmp280_acpi_match[] = {
++	{"BMP0280", 0},
++	{ },
++};
++MODULE_DEVICE_TABLE(acpi, bmp280_acpi_match);
++
++static const struct i2c_device_id bmp280_id[] = {
++	{"bmp280", 0},
++	{ },
++};
++MODULE_DEVICE_TABLE(i2c, bmp280_id);
++
++static struct i2c_driver bmp280_driver = {
++	.driver = {
++		.name	= "bmp280",
++		.acpi_match_table = ACPI_PTR(bmp280_acpi_match),
++	},
++	.probe		= bmp280_probe,
++	.id_table	= bmp280_id,
++};
++module_i2c_driver(bmp280_driver);
++
++MODULE_AUTHOR("Vlad Dogaru <vlad.dogaru@intel.com>");
++MODULE_DESCRIPTION("Driver for Bosch Sensortec BMP280 pressure and temperature sensor");
++MODULE_LICENSE("GPL v2");
 -- 
 1.9.1
 
