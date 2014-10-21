@@ -1,134 +1,106 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-ie0-f170.google.com ([209.85.223.170]:40088 "EHLO
-	mail-ie0-f170.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755089AbaJDDRY (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 3 Oct 2014 23:17:24 -0400
-Date: Fri, 3 Oct 2014 22:17:21 -0500
-From: Michael Welling <mwelling@ieee.org>
-To: Felipe Balbi <balbi@ti.com>
-Cc: Andrew Morton <akpm@linux-foundation.org>,
-	Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
-	pmeerw@pmeerw.net,
-	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Subject: Re: [RESEND PATCH] iio: light: add support for TI's opt3001 light
- sensor
-Message-ID: <20141004031721.GA2846@deathray>
-References: <20140925221619.GA10644@saruman>
- <20140927041959.GA28445@saruman>
- <20140929140227.GD32403@saruman>
- <20140929183856.GA11871@sysresccd>
- <20140929185325.GA1939@saruman>
- <20140929223833.GA13111@sysresccd>
- <20140929224638.GA21681@saruman>
- <20140929234159.GB13111@sysresccd>
- <20140930212204.GC13806@saruman>
- <20141002180553.GI7933@saruman>
+Received: from mout.gmx.net ([212.227.17.22]:61453 "EHLO mout.gmx.net"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S933503AbaJUWwN (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Tue, 21 Oct 2014 18:52:13 -0400
+Message-ID: <5446E398.8050403@gmx.de>
+Date: Wed, 22 Oct 2014 00:52:08 +0200
+From: Hartmut Knaack <knaack.h@gmx.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <20141002180553.GI7933@saruman>
+To: Roberta Dobrescu <roberta.dobrescu@gmail.com>,
+	opw-kernel@googlegroups.com
+CC: jic23@kernel.org, linux-iio@vger.kernel.org
+Subject: Re: [PATCH v2] staging: iio: iio_event_monitor: Add support
+ for missing IIO modifiers
+References: <1413927662-31463-1-git-send-email-roberta.dobrescu@gmail.com>
+In-Reply-To: <1413927662-31463-1-git-send-email-roberta.dobrescu@gmail.com>
+Content-Type: text/plain; charset=ISO-8859-15
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Thu, Oct 02, 2014 at 01:05:53PM -0500, Felipe Balbi wrote:
-> Hi,
+Roberta Dobrescu schrieb am 21.10.2014 23:41:
+> This patch adds the missing IIO modifiers in event_is_known function
+> and iio_modifier_names vector.
 > 
-> On Tue, Sep 30, 2014 at 04:22:04PM -0500, Felipe Balbi wrote:
-> > On Mon, Sep 29, 2014 at 06:41:59PM -0500, Michael Welling wrote:
-> > > On Mon, Sep 29, 2014 at 05:46:38PM -0500, Felipe Balbi wrote:
-> > > > Hi,
-> > > > 
-> > > > On Mon, Sep 29, 2014 at 05:38:33PM -0500, Michael Welling wrote:
-> > > > > > > > Alright, this is already ridiculous. Andrew, if I resend the patch can
-> > > > > > > > you apply it since maintainer has been ignoring this thread anyway ?
-> > > > > > > > 
-> > > > > > > 
-> > > > > > > Do you reall think this is the best way to approach this?
-> > > > > > 
-> > > > > > when maintainer doesn't respond for weeks, yeah! Sure it is.
-> > > > > > 
-> > > > > > > Perhaps it would be better to explain what each field of the
-> > > > > > > configuration register does and then we can move on.
-> > > > > > 
-> > > > > > perhaps Jonathan could tell me exactly what he wants because I can't
-> > > > > > handle back-and-forth anymore. Specially when he complains about stuff
-> > > > > > he asked me to modify himself.
-> > > > > >
-> > > > > > > In particular the OPT3001_CONFIGURATION_L field needs to be explained
-> > > > > > > such that the ABI can be properly applied.
-> > > > > > > 
-> > > > > > > Looking at the docs for the Windows demo program the field is associated
-> > > > > > > with a latch configuration. What does this bit field actually do?
-> > > > > 
-> > > > > Still no technical information. Without all the facts how can you expect
-> > > > > him to tell you what he wants?
-> > > > 
-> > > > yeah, because clearly he doesn't know himself, right ?
-> > > 
-> > > Could you explain how it works to me then?
-> > 
-> > checking how much of the docs I can expose now, gimme a couple days.
+> Additionally, it removes duplicate name entries of IIO_MOD_LIGHT_BOTH
+> and IIO_MOD_LIGHT_IR in iio_modifier_names.
 > 
-> alright, here's a snippet of what's on preliminary docs:
+Spotted one typo.
+> Signed-off-by: Roberta Dobrescu <roberta.dobrescu@gmail.com>
+> ---
+> Changes since v1:
+> 	- Add iio_event_monitor in subject
+> 	- Modify commit message in order to be more clear
+> 	- Add missing comma
+>  
+>  .../staging/iio/Documentation/iio_event_monitor.c  | 32 ++++++++++++++++++++--
+>  1 file changed, 30 insertions(+), 2 deletions(-)
 > 
-
-Firstly, there is logical error in the latest code.
-The hysteresis setting is 0 not 1.
-
-+       if (opt->hysteresis)
-+               reg |= OPT3001_CONFIGURATION_L;
-+       else
-+               reg &= ~OPT3001_CONFIGURATION_L;
-
-
-> Latch field (read or write).
-> The latch field controls the functionality of the interrupt reporting
-> mechanisms: the INT pin, the flag high field (FH), and flag low field (FL).
-> This bit selects the reporting style between a latched window-style comparison
-> and a transparent hysteresis-style comparison.
+> diff --git a/drivers/staging/iio/Documentation/iio_event_monitor.c b/drivers/staging/iio/Documentation/iio_event_monitor.c
+> index 569d6f8..0300900 100644
+> --- a/drivers/staging/iio/Documentation/iio_event_monitor.c
+> +++ b/drivers/staging/iio/Documentation/iio_event_monitor.c
+> @@ -69,16 +69,29 @@ static const char * const iio_modifier_names[] = {
+>  	[IIO_MOD_X] = "x",
+>  	[IIO_MOD_Y] = "y",
+>  	[IIO_MOD_Z] = "z",
+> +	[IIO_MOD_X_AND_Y] = "x&y",
+> +	[IIO_MOD_X_AND_Z] = "x&z",
+> +	[IIO_MOD_Y_AND_Z] = "y&z",
+> +	[IIO_MOD_X_AND_Y_AND_Z] = "x&y&z",
+> +	[IIO_MOD_X_OR_Y] = "x|y",
+> +	[IIO_MOD_X_OR_Z] = "x|z",
+> +	[IIO_MOD_Y_OR_Z] = "y|z",
+> +	[IIO_MOD_X_OR_Y_OR_Z] = "x|y|z",
+>  	[IIO_MOD_LIGHT_BOTH] = "both",
+>  	[IIO_MOD_LIGHT_IR] = "ir",
+>  	[IIO_MOD_ROOT_SUM_SQUARED_X_Y] = "sqrt(x^2+y^2)",
+>  	[IIO_MOD_SUM_SQUARED_X_Y_Z] = "x^2+y^2+z^2",
+> -	[IIO_MOD_LIGHT_BOTH] = "both",
+> -	[IIO_MOD_LIGHT_IR] = "ir",
+>  	[IIO_MOD_LIGHT_CLEAR] = "clear",
+>  	[IIO_MOD_LIGHT_RED] = "red",
+>  	[IIO_MOD_LIGHT_GREEN] = "green",
+>  	[IIO_MOD_LIGHT_BLUE] = "blue",
+> +	[IIO_MOD_QUATERNION] = "quternion",
+"quaternion"
+> +	[IIO_MOD_TEMP_AMBIENT] = "ambient",
+> +	[IIO_MOD_TEMP_OBJECT] = "object",
+> +	[IIO_MOD_NORTH_MAGN] = "from_north_magnetic",
+> +	[IIO_MOD_NORTH_TRUE] = "from_north_true",
+> +	[IIO_MOD_NORTH_MAGN_TILT_COMP] = "from_north_magnetic_tilt_comp",
+> +	[IIO_MOD_NORTH_TRUE_TILT_COMP] = "from_north_true_tilt_comp",
+>  };
+>  
+>  static bool event_is_known(struct iio_event_data *event)
+> @@ -118,6 +131,14 @@ static bool event_is_known(struct iio_event_data *event)
+>  	case IIO_MOD_X:
+>  	case IIO_MOD_Y:
+>  	case IIO_MOD_Z:
+> +	case IIO_MOD_X_AND_Y:
+> +	case IIO_MOD_X_AND_Z:
+> +	case IIO_MOD_Y_AND_Z:
+> +	case IIO_MOD_X_AND_Y_AND_Z:
+> +	case IIO_MOD_X_OR_Y:
+> +	case IIO_MOD_X_OR_Z:
+> +	case IIO_MOD_Y_OR_Z:
+> +	case IIO_MOD_X_OR_Y_OR_Z:
+>  	case IIO_MOD_LIGHT_BOTH:
+>  	case IIO_MOD_LIGHT_IR:
+>  	case IIO_MOD_ROOT_SUM_SQUARED_X_Y:
+> @@ -126,6 +147,13 @@ static bool event_is_known(struct iio_event_data *event)
+>  	case IIO_MOD_LIGHT_RED:
+>  	case IIO_MOD_LIGHT_GREEN:
+>  	case IIO_MOD_LIGHT_BLUE:
+> +	case IIO_MOD_QUATERNION:
+> +	case IIO_MOD_TEMP_AMBIENT:
+> +	case IIO_MOD_TEMP_OBJECT:
+> +	case IIO_MOD_NORTH_MAGN:
+> +	case IIO_MOD_NORTH_TRUE:
+> +	case IIO_MOD_NORTH_MAGN_TILT_COMP:
+> +	case IIO_MOD_NORTH_TRUE_TILT_COMP:
+>  		break;
+>  	default:
+>  		return false;
 > 
-> 0 = The device functions in transparent hysteresis-style comparison operation,
-> where the three interrupt reporting mechanisms directly reflect the comparison
-> of the result register with the high- and low-limit registers with no
-> user-controlled clearing event. See the Interrupt Operation, INT Pin, and
-> Interrupt Reporting Mechanisms section for further details.
-> 
-> 1 = The device functions in latched window-style comparison operation, latching
-> the interrupt reporting mechanisms until a user-controlled clearing event.
-> 
-
-How is the interrupt cleared in mode 1 in the latest version of your
-code?
-
-> [...]
-> 
-> 7.4.2.2 Transparent Hysteresis-Style Comparison Mode
-> The transparent hysteresis-style comparison mode is typically used when a
-> single digital signal is desired that indicates whether the input light is
-> higher than or lower than a light level of interest. If the result register is
-> higher than the high-limit register for a consecutive number of events set by
-> the fault count field, the INT line is set to active, the flag high field is
-> set to 1, and the flag low field is set to 0. If the result register is lower
-> than the lowlimit register for a consecutive number of events set by the fault
-> count field, the INT line is set to inactive, the flag low field is set to 1,
-> and the flag high field is set to 0. The INT pin and flag high and flag low
-> fields do not change state with configuration reads and writes. The INT pin and
-> flag fields continually report the appropriate comparison of the light to the
-> low-limit and high-limit registers. The device does not respond to the SMBus
-> alert response protocol while in either of the two transparent comparison modes
-> (configuration register, latch field = 0).
-> 
-
-The ABI confusion starts here.
-
-You are dealing with a mode enable and IIO_EV_INFO_HYSTERESIS is associated
-with a the hysteresis level of a threshold event.
-
-http://lxr.free-electrons.com/source/Documentation/ABI/testing/sysfs-bus-iio#L605
-
-You are going to have abstract the register access to conform to the ABI or add
-to the ABI as Jonathan suggests.
-
-> -- 
-> balbi
-
 
