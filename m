@@ -1,30 +1,38 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga02.intel.com ([134.134.136.20]:51793 "EHLO mga02.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1759081AbaJaLmq (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Fri, 31 Oct 2014 07:42:46 -0400
-Date: Fri, 31 Oct 2014 13:43:11 +0200
-From: Vlad Dogaru <vlad.dogaru@intel.com>
-To: Hartmut Knaack <knaack.h@gmx.de>
-Cc: IIO <linux-iio@vger.kernel.org>
-Subject: Re: [PATCH 1/3]iio:pressure:bmp280: fix pressure calculation
-Message-ID: <20141031114311.GA24473@vdogaru>
-References: <5452E454.8040607@gmx.de>
+Return-Path: <alexandre.belloni@free-electrons.com>
+Date: Tue, 21 Oct 2014 09:29:20 +0200
+From: Alexandre Belloni <alexandre.belloni@free-electrons.com>
+To: Brian Vandre <bvandre@gmail.com>
+Cc: gregkh@linuxfoundation.org, jic23@kernel.org, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 0/2] Staging: iio: adc: Checkpatch.pl warning cleanups
+Message-ID: <20141021072919.GH10616@piout.net>
+References: <cover.1413858979.git.bvandre@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <5452E454.8040607@gmx.de>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+In-Reply-To: <cover.1413858979.git.bvandre@gmail.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-On Fri, Oct 31, 2014 at 02:22:28AM +0100, Hartmut Knaack wrote:
-> According to the datasheet and as defined in struct bmp280_comp_press, dig_p1 is
-> of type u16, while dig_p2 to dig_p9 are of type s16. In
-> bmp280_read_compensation_press(), values read from the device were treated as
-> the wrong type.
-> In bmp280_read_press() the fractional part of the measured pressure is
-> calculated wrong. A better way is to use *val for the raw pressure and *val2 for
-> the quotient and let the core do the proper conversion using IIO_VAL_FRACTIONAL.
+Hi,
+
+These are two patches with the same commit log, in the same file. You
+can probably squash them.
+
+On 20/10/2014 at 21:48:47 -0500, Brian Vandre wrote :
+> This patch-set fixes 2 checkpatch.pl warnings
+> dealing with lines over 80 characters.
 > 
-> Signed-off-by: Hartmut Knaack <knaack.h@gmx.de>
+> Brian Vandre (2):
+>   Staging: iio: adc: fix line over 80 characters
+>   Staging: iio: adc: fix line over 80 characters
+> 
+>  drivers/staging/iio/adc/mxs-lradc.c | 6 ++++--
+>  1 file changed, 4 insertions(+), 2 deletions(-)
+> 
+> -- 
+> 1.9.1
+> 
 
-Acked-by: Vlad Dogaru <vlad.dogaru@intel.com>
+-- 
+Alexandre Belloni, Free Electrons
+Embedded Linux, Kernel and Android engineering
+http://free-electrons.com
