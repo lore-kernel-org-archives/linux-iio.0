@@ -1,40 +1,27 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp-out-086.synserver.de ([212.40.185.86]:1194 "EHLO
-	smtp-out-085.synserver.de" rhost-flags-OK-OK-OK-FAIL)
-	by vger.kernel.org with ESMTP id S1754244AbaJVPcU (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 22 Oct 2014 11:32:20 -0400
-Message-ID: <5447CDFA.5030407@metafoo.de>
-Date: Wed, 22 Oct 2014 17:32:10 +0200
-From: Lars-Peter Clausen <lars@metafoo.de>
+Return-Path: <daniel.baluta@gmail.com>
 MIME-Version: 1.0
-To: "Ivan T. Ivanov" <iivanov@mm-sol.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>
-CC: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
-	Sachin Kamat <sachin.kamat@linaro.org>,
-	Thomas Gleixner <tglx@linutronix.de>,
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-arm-msm@vger.kernel.org
-Subject: Re: [PATCH v2] iio: inkern: Add of_xlate function to struct iio_info
-References: <1413991783-24562-1-git-send-email-iivanov@mm-sol.com>
-In-Reply-To: <1413991783-24562-1-git-send-email-iivanov@mm-sol.com>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Sender: daniel.baluta@gmail.com
+In-Reply-To: <1413985817-10867-1-git-send-email-roberta.dobrescu@gmail.com>
+References: <1413985817-10867-1-git-send-email-roberta.dobrescu@gmail.com>
+Date: Wed, 22 Oct 2014 17:12:48 +0300
+Message-ID: <CAEnQRZC2=1NaCfFjA6=TVU936LUzApobOgi5wPEOw6S4q3T29Q@mail.gmail.com>
+Subject: Re: [OPW kernel] [PATCH v3] staging: iio: iio_event_monitor: Add
+ support for missing IIO modifiers
+From: Daniel Baluta <daniel.baluta@intel.com>
+To: Roberta Dobrescu <roberta.dobrescu@gmail.com>
+Cc: opw-kernel <opw-kernel@googlegroups.com>, Jonathan Cameron <jic23@kernel.org>,
+	linux-iio@vger.kernel.org
+Content-Type: text/plain; charset=UTF-8
+List-ID: <linux-iio@vger.kernel.org>
 
-On 10/22/2014 05:29 PM, Ivan T. Ivanov wrote:
-> When #iio-cells is greater than '0', the driver could provide
-> a custom of_xlate function that reads the *args* and returns
-> the appropriate index in registered IIO channels array.
+On Wed, Oct 22, 2014 at 4:50 PM, Roberta Dobrescu
+<roberta.dobrescu@gmail.com> wrote:
+> This patch adds the missing IIO modifiers in event_is_known function
+> and iio_modifier_names vector.
 >
-> Add simple translation function, suitable for the most 1:1
-> mapped channels in IIO chips, and use it when driver did not
-> provide custom implementation.
+> Additionally, it removes duplicate name entries of IIO_MOD_LIGHT_BOTH
+> and IIO_MOD_LIGHT_IR in iio_modifier_names.
 >
-> Signed-off-by: Ivan T. Ivanov <iivanov@mm-sol.com>
+> Signed-off-by: Roberta Dobrescu <roberta.dobrescu@gmail.com>
 
-Reviewed-by: Lars-Peter Clausen <lars@metafoo.de>
-
-Thanks.
-
+Reviewed-by: Daniel Baluta <daniel.baluta@intel.com>
