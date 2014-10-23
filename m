@@ -1,32 +1,40 @@
-Return-Path: <vlad.dogaru@intel.com>
-From: Vlad Dogaru <vlad.dogaru@intel.com>
-To: jic23@kernel.org,
-	linux-iio@vger.kernel.org
-Cc: Vlad Dogaru <vlad.dogaru@intel.com>
-Subject: [PATCH] bmp280: use correct routine for division
-Date: Thu, 23 Oct 2014 16:08:16 +0300
-Message-Id: <1414069696-15439-1-git-send-email-vlad.dogaru@intel.com>
+Return-Path: <alexandre.belloni@free-electrons.com>
+Date: Thu, 23 Oct 2014 15:27:34 +0200
+From: Alexandre Belloni <alexandre.belloni@free-electrons.com>
+To: Brian Vandre <bvandre@gmail.com>
+Cc: gregkh@linuxfoundation.org, jic23@kernel.org, linux-iio@vger.kernel.org,
+	marex@denx.de, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] Staging: iio: adc: fix line over 80 characters
+Message-ID: <20141023132733.GB10477@piout.net>
+References: <cover.1413858979.git.bvandre@gmail.com>
+ <cover.1413931615.git.bvandre@gmail.com>
+ <ec4b497827f6c7615f6b5eef5669144f8c68d034.1413931615.git.bvandre@gmail.com>
+ <20141023125336.GB10433@brian-U>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <20141023125336.GB10433@brian-U>
 List-ID: <linux-iio@vger.kernel.org>
 
-The proper way to divide two signed 64-bit values is to use div4_s64.
+Hi,
 
-Signed-off-by: Vlad Dogaru <vlad.dogaru@intel.com>
----
- drivers/iio/pressure/bmp280.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+On 23/10/2014 at 07:53:36 -0500, Brian Vandre wrote :
+> With all the replies I have gotten it seems like there might not be a good path forward
+> with this patch.  I am starting to agree with what Daniel Baluta said above that this doesn't
+> make the code easier to read.  All the other suggestions don't quite fit the same style
+> as the rest of the file so it might just be better to leave it.
+> 
+> This being my first try I thank you all for your input.  It has helped me learn quite a bit.
+> 
+> Hopefully on the next patch I can fix something a little more meaningful!
+> 
 
-diff --git a/drivers/iio/pressure/bmp280.c b/drivers/iio/pressure/bmp280.c
-index fb91cb3..ce29ff9 100644
---- a/drivers/iio/pressure/bmp280.c
-+++ b/drivers/iio/pressure/bmp280.c
-@@ -239,7 +239,7 @@ static u32 bmp280_compensate_press(struct bmp280_data *data,
- 		return 0;
- 
- 	p = ((((s64) 1048576 - adc_press) << 31) - var2) * 3125;
--	do_div(p, var1);
-+	p = div64_s64(p, var1);
- 	var1 = (((s64) comp->dig_p9) * (p >> 13) * (p >> 13)) >> 25;
- 	var2 = (((s64) comp->dig_p8) * p) >> 19;
- 	p = ((p + var1 + var2) >> 8) + (((s64) comp->dig_p7) << 4);
+Thank you for your effort anyway. My last comment would be that you
+don't need a cover letter when sending only one patch.
+
+There are plenty of things to fix in the kernel, maybe we can help you
+find something.
+
 -- 
-1.9.1
+Alexandre Belloni, Free Electrons
+Embedded Linux, Kernel and Android engineering
+http://free-electrons.com
