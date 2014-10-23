@@ -1,42 +1,40 @@
-Return-Path: <roberta.dobrescu@gmail.com>
-From: Roberta Dobrescu <roberta.dobrescu@gmail.com>
-To: opw-kernel@googlegroups.com
-Cc: jic23@kernel.org,
-	linux-iio@vger.kernel.org,
-	Roberta Dobrescu <roberta.dobrescu@gmail.com>
-Subject: [PATCH] iio: Add ABI documentation for offset and scaled humidity
-Date: Thu, 23 Oct 2014 14:44:21 +0300
-Message-Id: <1414064661-4645-1-git-send-email-roberta.dobrescu@gmail.com>
+Return-Path: <bvandre@gmail.com>
+Date: Thu, 23 Oct 2014 07:42:43 -0500
+From: Brian Vandre <bvandre@gmail.com>
+To: Lars-Peter Clausen <lars@metafoo.de>
+Cc: Sudip Mukherjee <sudipm.mukherjee@gmail.com>,
+	gregkh@linuxfoundation.org, jic23@kernel.org,
+	alexandre.belloni@free-electrons.com, linux-iio@vger.kernel.org,
+	marex@denx.de, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] Staging: iio: adc: fix line over 80 characters
+Message-ID: <20141023124243.GA10433@brian-U>
+References: <cover.1413858979.git.bvandre@gmail.com>
+ <cover.1413931615.git.bvandre@gmail.com>
+ <ec4b497827f6c7615f6b5eef5669144f8c68d034.1413931615.git.bvandre@gmail.com>
+ <20141022042115.GA2530@sudip-PC>
+ <5448DD58.7030705@metafoo.de>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <5448DD58.7030705@metafoo.de>
 List-ID: <linux-iio@vger.kernel.org>
 
-This patch adds ABI documentation entries for in_humidityrelative_offset
-and in_humidityrelative_scale, since there is at least one user for these,
-Si7005 humidity and temperature sensor driver.
+On Thu, Oct 23, 2014 at 12:50:00PM +0200, Lars-Peter Clausen wrote:
+> On 10/22/2014 06:21 AM, Sudip Mukherjee wrote:
+> >On Tue, Oct 21, 2014 at 05:56:47PM -0500, Brian Vandre wrote:
+> >>This fixes the 2 checkpatch.pl warnings:
+> >>WARNING: line over 80 characters
+> >>
+> >please check your patch with --strict option of checkpatch.pl , and you will get :
+> >"Alignment should match open parenthesis" .
+> 
+> Those checkpatch warnings are suggestions, not hard requirements.
+> The idea is to improve code legibility, but if the change has the
+> adverse effect the warning can and should be ignored. Also when
+> making a change you should keep the existing indention style of a
+> file.
+> 
+> - Lars
 
-Signed-off-by: Roberta Dobrescu <roberta.dobrescu@gmail.com>
----
- Documentation/ABI/testing/sysfs-bus-iio | 2 ++
- 1 file changed, 2 insertions(+)
-
-diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
-index d760b02..ffcadca 100644
---- a/Documentation/ABI/testing/sysfs-bus-iio
-+++ b/Documentation/ABI/testing/sysfs-bus-iio
-@@ -231,6 +231,7 @@ What:		/sys/bus/iio/devices/iio:deviceX/in_tempY_offset
- What:		/sys/bus/iio/devices/iio:deviceX/in_temp_offset
- What:		/sys/bus/iio/devices/iio:deviceX/in_pressureY_offset
- What:		/sys/bus/iio/devices/iio:deviceX/in_pressure_offset
-+What:		/sys/bus/iio/devices/iio:deviceX/in_humidityrelative_offset
- KernelVersion:	2.6.35
- Contact:	linux-iio@vger.kernel.org
- Description:
-@@ -266,6 +267,7 @@ What:		/sys/bus/iio/devices/iio:deviceX/in_rot_from_north_magnetic_tilt_comp_sca
- What:		/sys/bus/iio/devices/iio:deviceX/in_rot_from_north_true_tilt_comp_scale
- What:		/sys/bus/iio/devices/iio:deviceX/in_pressureY_scale
- What:		/sys/bus/iio/devices/iio:deviceX/in_pressure_scale
-+What:		/sys/bus/iio/devices/iio:deviceX/in_humidityrelative_scale
- KernelVersion:	2.6.35
- Contact:	linux-iio@vger.kernel.org
- Description:
--- 
-1.9.1
+I think my patch does follow the style of the original file.  If you run checkpatch.pl --strict
+on the whole file you will get many open parenthesis warnings. I believe it does make it slightly
+more legibile.
