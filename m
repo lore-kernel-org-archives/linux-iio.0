@@ -1,61 +1,41 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mout.gmx.net ([212.227.17.21]:61598 "EHLO mout.gmx.net"
+Received: from mga14.intel.com ([192.55.52.115]:27507 "EHLO mga14.intel.com"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751394AbaJRTqp (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Sat, 18 Oct 2014 15:46:45 -0400
-Message-ID: <5442C3A0.7080501@gmx.de>
-Date: Sat, 18 Oct 2014 21:46:40 +0200
-From: Hartmut Knaack <knaack.h@gmx.de>
-MIME-Version: 1.0
-To: IIO <linux-iio@vger.kernel.org>
-CC: David Barksdale <dbarksdale@uplogix.com>
-Subject: [PATCH]iio:humidity:si7020: cleanup read_raw and probe
-Content-Type: text/plain; charset=ISO-8859-15
+	id S1756052AbaJWOxd (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Thu, 23 Oct 2014 10:53:33 -0400
+From: Vlad Dogaru <vlad.dogaru@intel.com>
+To: jic23@kernel.org, linux-iio@vger.kernel.org
+Cc: Vlad Dogaru <vlad.dogaru@intel.com>
+Subject: [PATCH v2] bmp280: use correct routine for division
+Date: Thu, 23 Oct 2014 17:52:59 +0300
+Message-Id: <1414075979-5831-1-git-send-email-vlad.dogaru@intel.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-In si7020_read_raw() the pointer to the i2c client was obtained as second level pointer, although a simple pointer would be sufficient. Cleaned this.
-When reading temperature or humidity values, a right-shift of two bits needs to be applied, and only for the humidity channel a mask of the lower 12 bits needs to be applied. This reduces code repetition.
-During probe, i2c_set_clientdata() was used, although its counterpart was not, so drop it.
+The proper way to divide two signed 64-bit values is to use div64_s64.
 
-Signed-off-by: Hartmut Knaack <knaack.h@gmx.de>
+Signed-off-by: Vlad Dogaru <vlad.dogaru@intel.com>
+Reported-by: kbuild test robot <fengguang.wu@intel.com>
 ---
-diff --git a/drivers/iio/humidity/si7020.c b/drivers/iio/humidity/si7020.c
-index e336af7..b541646 100644
---- a/drivers/iio/humidity/si7020.c
-+++ b/drivers/iio/humidity/si7020.c
-@@ -45,21 +45,20 @@ static int si7020_read_raw(struct iio_dev *indio_dev,
- 			   struct iio_chan_spec const *chan, int *val,
- 			   int *val2, long mask)
- {
--	struct i2c_client **client = iio_priv(indio_dev);
-+	struct i2c_client *client = iio_priv(indio_dev);
- 	int ret;
+
+Since v1: fix typo in commit message.
+
+ drivers/iio/pressure/bmp280.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/iio/pressure/bmp280.c b/drivers/iio/pressure/bmp280.c
+index fb91cb3..ce29ff9 100644
+--- a/drivers/iio/pressure/bmp280.c
++++ b/drivers/iio/pressure/bmp280.c
+@@ -239,7 +239,7 @@ static u32 bmp280_compensate_press(struct bmp280_data *data,
+ 		return 0;
  
- 	switch (mask) {
- 	case IIO_CHAN_INFO_RAW:
--		ret = i2c_smbus_read_word_data(*client,
-+		ret = i2c_smbus_read_word_data(client,
- 					       chan->type == IIO_TEMP ?
- 					       SI7020CMD_TEMP_HOLD :
- 					       SI7020CMD_RH_HOLD);
- 		if (ret < 0)
- 			return ret;
--		if (chan->type == IIO_TEMP)
--			*val = ret >> 2;
--		else
--			*val = (ret & 0x3FFF) >> 2;
-+		*val = ret >> 2;
-+		if (chan->type == IIO_HUMIDITYRELATIVE)
-+			*val &= GENMASK(11, 0);
- 		return IIO_VAL_INT;
- 	case IIO_CHAN_INFO_SCALE:
- 		if (chan->type == IIO_TEMP)
-@@ -133,7 +132,6 @@ static int si7020_probe(struct i2c_client *client,
- 
- 	data = iio_priv(indio_dev);
- 	*data = client;
--	i2c_set_clientdata(client, indio_dev);
- 
- 	indio_dev->dev.parent = &client->dev;
- 	indio_dev->name = dev_name(&client->dev);
+ 	p = ((((s64) 1048576 - adc_press) << 31) - var2) * 3125;
+-	do_div(p, var1);
++	p = div64_s64(p, var1);
+ 	var1 = (((s64) comp->dig_p9) * (p >> 13) * (p >> 13)) >> 25;
+ 	var2 = (((s64) comp->dig_p8) * p) >> 19;
+ 	p = ((p + var1 + var2) >> 8) + (((s64) comp->dig_p7) << 4);
+-- 
+1.9.1
+
