@@ -1,77 +1,45 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:49647 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:49646 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751116AbaJYSVC (ORCPT
+	with ESMTP id S1751102AbaJYSVC (ORCPT
 	<rfc822;linux-iio@vger.kernel.org>); Sat, 25 Oct 2014 14:21:02 -0400
-Message-ID: <544B753B.40207@kernel.org>
-Date: Sat, 25 Oct 2014 11:02:35 +0100
+Message-ID: <544B75B8.1010505@kernel.org>
+Date: Sat, 25 Oct 2014 11:04:40 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Hartmut Knaack <knaack.h@gmx.de>, IIO <linux-iio@vger.kernel.org>
-CC: David Barksdale <dbarksdale@uplogix.com>
-Subject: Re: [PATCH]iio:humidity:si7020: cleanup read_raw and probe
-References: <5442C3A0.7080501@gmx.de>
-In-Reply-To: <5442C3A0.7080501@gmx.de>
-Content-Type: text/plain; charset=iso-8859-15
+To: Lars-Peter Clausen <lars@metafoo.de>,
+	"Ivan T. Ivanov" <iivanov@mm-sol.com>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>
+CC: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+	Sachin Kamat <sachin.kamat@linaro.org>,
+	Thomas Gleixner <tglx@linutronix.de>,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-arm-msm@vger.kernel.org
+Subject: Re: [PATCH v2] iio: inkern: Add of_xlate function to struct iio_info
+References: <1413991783-24562-1-git-send-email-iivanov@mm-sol.com> <5447CDFA.5030407@metafoo.de>
+In-Reply-To: <5447CDFA.5030407@metafoo.de>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 18/10/14 20:46, Hartmut Knaack wrote:
-> In si7020_read_raw() the pointer to the i2c client was obtained as second level pointer, although a simple pointer would be sufficient. Cleaned this.
-> When reading temperature or humidity values, a right-shift of two bits needs to be applied, and only for the humidity channel a mask of the lower 12 bits needs to be applied. This reduces code repetition.
-> During probe, i2c_set_clientdata() was used, although its counterpart was not, so drop it.
->
-> Signed-off-by: Hartmut Knaack <knaack.h@gmx.de>
-I think the incorrect pointer is a bug (rather than simply unnecessary).
-The other stuff is a cleanup (sensible but not stable material).
-
-Please split the patch into two.
+On 22/10/14 16:32, Lars-Peter Clausen wrote:
+> On 10/22/2014 05:29 PM, Ivan T. Ivanov wrote:
+>> When #iio-cells is greater than '0', the driver could provide
+>> a custom of_xlate function that reads the *args* and returns
+>> the appropriate index in registered IIO channels array.
+>>
+>> Add simple translation function, suitable for the most 1:1
+>> mapped channels in IIO chips, and use it when driver did not
+>> provide custom implementation.
+>>
+>> Signed-off-by: Ivan T. Ivanov <iivanov@mm-sol.com>
+> 
+> Reviewed-by: Lars-Peter Clausen <lars@metafoo.de>
+> 
+Applied to the togreg branch of iio.git - initially pushed out as testing
+for the autobuilders to play with it.
 
 Thanks,
 
 Jonathan
-> ---
-> diff --git a/drivers/iio/humidity/si7020.c b/drivers/iio/humidity/si7020.c
-> index e336af7..b541646 100644
-> --- a/drivers/iio/humidity/si7020.c
-> +++ b/drivers/iio/humidity/si7020.c
-> @@ -45,21 +45,20 @@ static int si7020_read_raw(struct iio_dev *indio_dev,
->  			   struct iio_chan_spec const *chan, int *val,
->  			   int *val2, long mask)
->  {
-> -	struct i2c_client **client = iio_priv(indio_dev);
-> +	struct i2c_client *client = iio_priv(indio_dev);
->  	int ret;
->
->  	switch (mask) {
->  	case IIO_CHAN_INFO_RAW:
-> -		ret = i2c_smbus_read_word_data(*client,
-> +		ret = i2c_smbus_read_word_data(client,
->  					       chan->type == IIO_TEMP ?
->  					       SI7020CMD_TEMP_HOLD :
->  					       SI7020CMD_RH_HOLD);
->  		if (ret < 0)
->  			return ret;
-> -		if (chan->type == IIO_TEMP)
-> -			*val = ret >> 2;
-> -		else
-> -			*val = (ret & 0x3FFF) >> 2;
-> +		*val = ret >> 2;
-> +		if (chan->type == IIO_HUMIDITYRELATIVE)
-> +			*val &= GENMASK(11, 0);
->  		return IIO_VAL_INT;
->  	case IIO_CHAN_INFO_SCALE:
->  		if (chan->type == IIO_TEMP)
-> @@ -133,7 +132,6 @@ static int si7020_probe(struct i2c_client *client,
->
->  	data = iio_priv(indio_dev);
->  	*data = client;
-> -	i2c_set_clientdata(client, indio_dev);
->
->  	indio_dev->dev.parent = &client->dev;
->  	indio_dev->name = dev_name(&client->dev);
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
->
