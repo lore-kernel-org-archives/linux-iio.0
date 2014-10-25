@@ -1,55 +1,47 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga02.intel.com ([134.134.136.20]:56230 "EHLO mga02.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1755925AbaJXIfH (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Fri, 24 Oct 2014 04:35:07 -0400
-Message-ID: <544A0F47.5070605@intel.com>
-Date: Fri, 24 Oct 2014 11:35:19 +0300
-From: Daniel Baluta <daniel.baluta@intel.com>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:49878 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751832AbaJYTLF (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 25 Oct 2014 15:11:05 -0400
+Message-ID: <544B7130.4000506@kernel.org>
+Date: Sat, 25 Oct 2014 10:45:20 +0100
+From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Roberta Dobrescu <roberta.dobrescu@gmail.com>,
-	opw-kernel@googlegroups.com
-CC: jic23@kernel.org, linux-iio@vger.kernel.org
-Subject: Re: [PATCH] iio: Add ABI documentation for offset and scaled humidity
-References: <1414064661-4645-1-git-send-email-roberta.dobrescu@gmail.com>
-In-Reply-To: <1414064661-4645-1-git-send-email-roberta.dobrescu@gmail.com>
-Content-Type: text/plain; charset=windows-1252; format=flowed
+To: Vlad Dogaru <vlad.dogaru@intel.com>, linux-iio@vger.kernel.org
+Subject: Re: [PATCH v2] bmp280: use correct routine for division
+References: <1414075979-5831-1-git-send-email-vlad.dogaru@intel.com>
+In-Reply-To: <1414075979-5831-1-git-send-email-vlad.dogaru@intel.com>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
+On 23/10/14 15:52, Vlad Dogaru wrote:
+> The proper way to divide two signed 64-bit values is to use div64_s64.
+> 
+> Signed-off-by: Vlad Dogaru <vlad.dogaru@intel.com>
+> Reported-by: kbuild test robot <fengguang.wu@intel.com>
+Applied to the togreg branch of iio.git - initially pushed out as testing.
+Thanks,.
 
-
-On 10/23/2014 02:44 PM, Roberta Dobrescu wrote:
-> This patch adds ABI documentation entries for in_humidityrelative_offset
-> and in_humidityrelative_scale, since there is at least one user for these,
-> Si7005 humidity and temperature sensor driver.
->
-> Signed-off-by: Roberta Dobrescu <roberta.dobrescu@gmail.com>
-
-Reviewed-by: Daniel Baluta <daniel.baluta@intel.com>
-
+Jonathan
 > ---
->   Documentation/ABI/testing/sysfs-bus-iio | 2 ++
->   1 file changed, 2 insertions(+)
->
-> diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
-> index d760b02..ffcadca 100644
-> --- a/Documentation/ABI/testing/sysfs-bus-iio
-> +++ b/Documentation/ABI/testing/sysfs-bus-iio
-> @@ -231,6 +231,7 @@ What:		/sys/bus/iio/devices/iio:deviceX/in_tempY_offset
->   What:		/sys/bus/iio/devices/iio:deviceX/in_temp_offset
->   What:		/sys/bus/iio/devices/iio:deviceX/in_pressureY_offset
->   What:		/sys/bus/iio/devices/iio:deviceX/in_pressure_offset
-> +What:		/sys/bus/iio/devices/iio:deviceX/in_humidityrelative_offset
->   KernelVersion:	2.6.35
->   Contact:	linux-iio@vger.kernel.org
->   Description:
-> @@ -266,6 +267,7 @@ What:		/sys/bus/iio/devices/iio:deviceX/in_rot_from_north_magnetic_tilt_comp_sca
->   What:		/sys/bus/iio/devices/iio:deviceX/in_rot_from_north_true_tilt_comp_scale
->   What:		/sys/bus/iio/devices/iio:deviceX/in_pressureY_scale
->   What:		/sys/bus/iio/devices/iio:deviceX/in_pressure_scale
-> +What:		/sys/bus/iio/devices/iio:deviceX/in_humidityrelative_scale
->   KernelVersion:	2.6.35
->   Contact:	linux-iio@vger.kernel.org
->   Description:
->
+> 
+> Since v1: fix typo in commit message.
+> 
+>  drivers/iio/pressure/bmp280.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/iio/pressure/bmp280.c b/drivers/iio/pressure/bmp280.c
+> index fb91cb3..ce29ff9 100644
+> --- a/drivers/iio/pressure/bmp280.c
+> +++ b/drivers/iio/pressure/bmp280.c
+> @@ -239,7 +239,7 @@ static u32 bmp280_compensate_press(struct bmp280_data *data,
+>  		return 0;
+>  
+>  	p = ((((s64) 1048576 - adc_press) << 31) - var2) * 3125;
+> -	do_div(p, var1);
+> +	p = div64_s64(p, var1);
+>  	var1 = (((s64) comp->dig_p9) * (p >> 13) * (p >> 13)) >> 25;
+>  	var2 = (((s64) comp->dig_p8) * p) >> 19;
+>  	p = ((p + var1 + var2) >> 8) + (((s64) comp->dig_p7) << 4);
+> 
