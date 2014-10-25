@@ -1,92 +1,63 @@
-Return-Path: <knaack.h@gmx.de>
-Message-ID: <5453FA8E.3080204@gmx.de>
-Date: Fri, 31 Oct 2014 22:09:34 +0100
-From: Hartmut Knaack <knaack.h@gmx.de>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:50043 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751573AbaJYTlD (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 25 Oct 2014 15:41:03 -0400
+Message-ID: <544BFCCE.7000308@kernel.org>
+Date: Sat, 25 Oct 2014 20:41:02 +0100
+From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Vignesh R <vigneshr@ti.com>, Rob Herring <robh+dt@kernel.org>,
- Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>,
- Ian Campbell <ijc+devicetree@hellion.org.uk>,
- Kumar Gala <galak@codeaurora.org>,
- Benoit Cousson <bcousson@baylibre.com>,
- Tony Lindgren <tony@atomide.com>, Russell King
- <linux@arm.linux.org.uk>, Jonathan Cameron <jic23@kernel.org>,
- Dmitry Torokhov <dmitry.torokhov@gmail.com>
-CC: Lars-Peter Clausen <lars@metafoo.de>,
- Peter Meerwald <pmeerw@pmeerw.net>,
- Samuel Ortiz <sameo@linux.intel.com>, Lee Jones
- <lee.jones@linaro.org>, Felipe Balbi <balbi@ti.com>,
- Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
- Jan Kardell <jan.kardell@telliq.com>,
- Paul Gortmaker <paul.gortmaker@windriver.com>,
- Brad Griffis <bgriffis@ti.com>, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org, linux-iio@vger.kernel.org,
- linux-input@vger.kernel.org
-Subject: Re: [PATCH 3/4] arm: boot: dts: am335x-evm: Make charge delay
- a DT parameter for tsc
-References: <1414408111-2631-1-git-send-email-vigneshr@ti.com> <1414408111-2631-4-git-send-email-vigneshr@ti.com>
-In-Reply-To: <1414408111-2631-4-git-send-email-vigneshr@ti.com>
-Content-Type: text/plain; charset=ISO-8859-15
-List-ID: <linux-iio@vger.kernel.org>
+To: Hartmut Knaack <knaack.h@gmx.de>, IIO <linux-iio@vger.kernel.org>
+CC: David Barksdale <dbarksdale@uplogix.com>
+Subject: Re: [PATCH]iio:humidity:si7020: cleanup read_raw and probe
+References: <544BE747.80403@gmx.de>
+In-Reply-To: <544BE747.80403@gmx.de>
+Content-Type: text/plain; charset=iso-8859-15
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Vignesh R schrieb am 27.10.2014 12:08:
-> The charge delay value is by default 0xB000. But it can be set to lower
-> values on some boards as long as false pen-ups are avoided. Lowering the
-> value increases the sampling rate (though current sampling rate is
-> sufficient for tsc operation). Hence charge delay has been made a DT
-> parameter.
+On 25/10/14 19:09, Hartmut Knaack wrote:
+> When reading temperature or humidity values, a shift of two bits to the right
+> needs to be applied, and only for the humidity channel a mask of the lower
+> 12 bits needs to be applied. This reduces code repetition.
+> During probe, i2c_set_clientdata() was used, although its counterpart was not,
+> so drop it.
 > 
-I would recommend to use a few colons to separate some thoughts. Also, limit to 80 chars per line would be beneficial. See inline.
-> Signed-off-by: Vignesh R <vigneshr@ti.com>
+> Signed-off-by: Hartmut Knaack <knaack.h@gmx.de>
+Applied to the togreg branch of iio.git, initially pushed out as testing.
+Thanks for the cleanup.
+
+J
 > ---
->  .../devicetree/bindings/input/touchscreen/ti-tsc-adc.txt    | 13 +++++++++++++
->  arch/arm/boot/dts/am335x-evm.dts                            |  1 +
->  2 files changed, 14 insertions(+)
+> diff --git a/drivers/iio/humidity/si7020.c b/drivers/iio/humidity/si7020.c
+> index 62d74d3..b541646 100644
+> --- a/drivers/iio/humidity/si7020.c
+> +++ b/drivers/iio/humidity/si7020.c
+> @@ -56,10 +56,9 @@ static int si7020_read_raw(struct iio_dev *indio_dev,
+>  					       SI7020CMD_RH_HOLD);
+>  		if (ret < 0)
+>  			return ret;
+> -		if (chan->type == IIO_TEMP)
+> -			*val = ret >> 2;
+> -		else
+> -			*val = (ret & 0x3FFF) >> 2;
+> +		*val = ret >> 2;
+> +		if (chan->type == IIO_HUMIDITYRELATIVE)
+> +			*val &= GENMASK(11, 0);
+>  		return IIO_VAL_INT;
+>  	case IIO_CHAN_INFO_SCALE:
+>  		if (chan->type == IIO_TEMP)
+> @@ -133,7 +132,6 @@ static int si7020_probe(struct i2c_client *client,
+>  
+>  	data = iio_priv(indio_dev);
+>  	*data = client;
+> -	i2c_set_clientdata(client, indio_dev);
+>  
+>  	indio_dev->dev.parent = &client->dev;
+>  	indio_dev->name = dev_name(&client->dev);
 > 
-> diff --git a/Documentation/devicetree/bindings/input/touchscreen/ti-tsc-adc.txt b/Documentation/devicetree/bindings/input/touchscreen/ti-tsc-adc.txt
-> index 878549ba814d..ac62769e70e4 100644
-> --- a/Documentation/devicetree/bindings/input/touchscreen/ti-tsc-adc.txt
-> +++ b/Documentation/devicetree/bindings/input/touchscreen/ti-tsc-adc.txt
-> @@ -28,6 +28,18 @@ Required properties:
->  	ti,adc-channels: List of analog inputs available for ADC.
->  			 AIN0 = 0, AIN1 = 1 and so on till AIN7 = 7.
->  
-> +Optional properties:
-> +- child "tsc"
-> +	ti,charge-delay: Length of touch screen charge delay step in terms of
-> +			 ADC clock cycles. Charge delay value should be large in order
-> +			 to avoid false pen-up events. This value affects the overall
-> +			 sampling speed hence need to be kept as low as possible while
-<...> speed, hence needs to be <...>
-> +			 avoiding false pen-up event. Start from a lower value say 0x400
-<...> pen-up events. Start from a lower value, like 0x400, and increase <...>
-> +			 and increase value until false pen-up events are avoided. The
-> +			 pen-up detection happens immediately after the charge step
-<...> charge step, so this <...>
-> +			 so this does in fact function as a hardware knob for adjusting
-> +			 the amount of "settling time".
-> +
->  Example:
->  	tscadc: tscadc@44e0d000 {
->  		compatible = "ti,am3359-tscadc";
-> @@ -36,6 +48,7 @@ Example:
->  			ti,x-plate-resistance = <200>;
->  			ti,coordiante-readouts = <5>;
->  			ti,wire-config = <0x00 0x11 0x22 0x33>;
-> +			ti,charge-delay = <0xB000>;
->  		};
->  
->  		adc {
-> diff --git a/arch/arm/boot/dts/am335x-evm.dts b/arch/arm/boot/dts/am335x-evm.dts
-> index e2156a583de7..80be0462298b 100644
-> --- a/arch/arm/boot/dts/am335x-evm.dts
-> +++ b/arch/arm/boot/dts/am335x-evm.dts
-> @@ -641,6 +641,7 @@
->  		ti,x-plate-resistance = <200>;
->  		ti,coordinate-readouts = <5>;
->  		ti,wire-config = <0x00 0x11 0x22 0x33>;
-> +		ti,charge-delay = <0xB000>;
->  	};
->  
->  	adc {
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
 > 
