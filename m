@@ -1,107 +1,37 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:49945 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:49956 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751526AbaJYTYj (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 25 Oct 2014 15:24:39 -0400
-Message-ID: <544BF8F4.1020406@kernel.org>
-Date: Sat, 25 Oct 2014 20:24:36 +0100
+	with ESMTP id S1752404AbaJYT0C (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 25 Oct 2014 15:26:02 -0400
+Message-ID: <544B73DD.2060802@kernel.org>
+Date: Sat, 25 Oct 2014 10:56:45 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Daniel Baluta <daniel.baluta@intel.com>
-CC: irina.tirdea@intel.com, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [RFC PATCH v2 5/7] iio: core: Introduce HEIGHT channel type
-References: <1412858385-11954-1-git-send-email-daniel.baluta@intel.com> <1412858385-11954-6-git-send-email-daniel.baluta@intel.com>
-In-Reply-To: <1412858385-11954-6-git-send-email-daniel.baluta@intel.com>
-Content-Type: text/plain; charset=windows-1252
+To: Daniel Baluta <daniel.baluta@intel.com>,
+	Roberta Dobrescu <roberta.dobrescu@gmail.com>
+CC: opw-kernel <opw-kernel@googlegroups.com>, linux-iio@vger.kernel.org
+Subject: Re: [OPW kernel] [PATCH v3] staging: iio: iio_event_monitor: Add
+ support for missing IIO modifiers
+References: <1413985817-10867-1-git-send-email-roberta.dobrescu@gmail.com> <CAEnQRZC2=1NaCfFjA6=TVU936LUzApobOgi5wPEOw6S4q3T29Q@mail.gmail.com>
+In-Reply-To: <CAEnQRZC2=1NaCfFjA6=TVU936LUzApobOgi5wPEOw6S4q3T29Q@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 09/10/14 13:39, Daniel Baluta wrote:
-> From: Irina Tirdea <irina.tirdea@intel.com>
+On 22/10/14 15:12, Daniel Baluta wrote:
+> On Wed, Oct 22, 2014 at 4:50 PM, Roberta Dobrescu
+> <roberta.dobrescu@gmail.com> wrote:
+>> This patch adds the missing IIO modifiers in event_is_known function
+>> and iio_modifier_names vector.
+>>
+>> Additionally, it removes duplicate name entries of IIO_MOD_LIGHT_BOTH
+>> and IIO_MOD_LIGHT_IR in iio_modifier_names.
+>>
+>> Signed-off-by: Roberta Dobrescu <roberta.dobrescu@gmail.com>
 > 
-> Some devices need the height of the user to compute various
-> parameters. One of this devices is Freescale's MMA9553L
-> (http://www.freescale.com/files/sensors/doc/ref_manual/MMA9553LSWRM.pdf)
-> that needs the height of the user to compute the stride length which
-> is used further to determine distance, speed and activity type.
+> Reviewed-by: Daniel Baluta <daniel.baluta@intel.com>
 > 
-> Introduce a new channel type HEIGHT to export these values.
+Applied to the togreg branch of iio.git - initially pushed out as
+testing for the autobuilders to play.
 
-Now I'd love to make this generic as
-in_distance_z_input etc but I guess that's pretty confusing for users ;)
-Sadly altitude is going to be even more confusing.
-
-I wonder if we should make this more explicit and have it as
-in_steps_calibheight (repeated for all the channels whose computation
-it effects).  It's really a parameter of those channels rather than on
-its own.
-
-It should be out_height_input etc given you are setting it (like a trim
-DAC on some ADC setup)
-
-The there is an implication as that you are changing the users height
-which, whilst it would be 'interesting', is probably the wrong impression!
-
-*laughs* Maybe you were right to keep this an RFC for now ;)
-> 
-> Signed-off-by: Irina Tirdea <irina.tirdea@intel.com>
-> Signed-off-by: Daniel Baluta <daniel.baluta@intel.com>
-> ---
->  Documentation/ABI/testing/sysfs-bus-iio | 9 +++++++++
->  drivers/iio/industrialio-core.c         | 1 +
->  include/linux/iio/types.h               | 1 +
->  3 files changed, 11 insertions(+)
-> 
-> diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
-> index 3557a69..fc027cb 100644
-> --- a/Documentation/ABI/testing/sysfs-bus-iio
-> +++ b/Documentation/ABI/testing/sysfs-bus-iio
-> @@ -256,6 +256,7 @@ What:		/sys/bus/iio/devices/iio:deviceX/out_altvoltageY_scale
->  What:		/sys/bus/iio/devices/iio:deviceX/in_accel_scale
->  What:		/sys/bus/iio/devices/iio:deviceX/in_accel_peak_scale
->  What:		/sys/bus/iio/devices/iio:deviceX/in_anglvel_scale
-> +What:		/sys/bus/iio/devices/iio:deviceX/in_height_scale
->  What:		/sys/bus/iio/devices/iio:deviceX/in_magn_scale
->  What:		/sys/bus/iio/devices/iio:deviceX/in_magn_x_scale
->  What:		/sys/bus/iio/devices/iio:deviceX/in_magn_y_scale
-> @@ -1010,6 +1011,14 @@ Description:
->  		For a list of available output power modes read
->  		in_accel_power_mode_available.
->  
-> +What:		/sys/.../iio:deviceX/in_height_input
-> +What:		/sys/.../iio:deviceX/in_height_raw
-> +KernelVersion:	3.17
-> +Contact:	linux-iio@vger.kernel.org
-> +Description:
-> +		This attribute is used to set and read the user's height.
-> +		Units after application of scale are centimeters.
-> +
->  What:		/sys/bus/iio/devices/iio:deviceX/store_eeprom
->  KernelVersion:	3.4.0
->  Contact:	linux-iio@vger.kernel.org
-> diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
-> index 1e060f3..f08b278 100644
-> --- a/drivers/iio/industrialio-core.c
-> +++ b/drivers/iio/industrialio-core.c
-> @@ -72,6 +72,7 @@ static const char * const iio_chan_type_name_spec[] = {
->  	[IIO_HUMIDITYRELATIVE] = "humidityrelative",
->  	[IIO_ACTIVITY] = "activity",
->  	[IIO_STEPS] = "steps",
-> +	[IIO_HEIGHT] = "height",
->  };
->  
->  static const char * const iio_modifier_names[] = {
-> diff --git a/include/linux/iio/types.h b/include/linux/iio/types.h
-> index af0b6e0..a23b2e7 100644
-> --- a/include/linux/iio/types.h
-> +++ b/include/linux/iio/types.h
-> @@ -32,6 +32,7 @@ enum iio_chan_type {
->  	IIO_HUMIDITYRELATIVE,
->  	IIO_ACTIVITY,
->  	IIO_STEPS,
-> +	IIO_HEIGHT,
->  };
->  
->  enum iio_modifier {
-> 
+Jonathan
