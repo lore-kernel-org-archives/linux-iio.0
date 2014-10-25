@@ -1,41 +1,856 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mout.gmx.net ([212.227.15.18]:63523 "EHLO mout.gmx.net"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751300AbaJYSWL (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Sat, 25 Oct 2014 14:22:11 -0400
-Message-ID: <544BE742.8030004@gmx.de>
-Date: Sat, 25 Oct 2014 20:09:06 +0200
-From: Hartmut Knaack <knaack.h@gmx.de>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:49692 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751258AbaJYSbD (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 25 Oct 2014 14:31:03 -0400
+Message-ID: <544B77B1.7070306@kernel.org>
+Date: Sat, 25 Oct 2014 11:13:05 +0100
+From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: IIO <linux-iio@vger.kernel.org>
-CC: David Barksdale <dbarksdale@uplogix.com>
-Subject: [PATCH]iio:humidity:si7020: fix pointer to i2c client
-Content-Type: text/plain; charset=ISO-8859-15
+To: Dan Murphy <dmurphy@ti.com>, Peter Meerwald <pmeerw@pmeerw.net>
+CC: linux-iio@vger.kernel.org
+Subject: Re: [RFC Patch 3/3] iio: heart_monitor: Add TI afe4403 heart monitor
+References: <1413314032-923-1-git-send-email-dmurphy@ti.com> <1413314032-923-4-git-send-email-dmurphy@ti.com> <alpine.DEB.2.02.1410151058080.2173@pmeerw.net> <5447CEFC.204@ti.com>
+In-Reply-To: <5447CEFC.204@ti.com>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-In si7020_read_raw() the pointer to the i2c client was obtained as second level
-pointer, although a simple pointer is appropriate.
+On 22/10/14 16:36, Dan Murphy wrote:
+> Peter
+> Sorry for the delayed reply I was working on the code and comments
+>
+> On 10/15/2014 04:52 AM, Peter Meerwald wrote:
+>>> Add the TI afe4403 heart rate monitor.
+>>> This device detects reflected LED
+>>> wave length fluctuations and presents an ADC
+>>> value to the user space to be converted to a
+>>> heart rate.
+>>> Data sheet located here:
+>>> http://www.ti.com/product/AFE4403/datasheet
+>> s/heart_monitor/heart_monitors
+>>
+>> you need to update Documentation/ABI/testing/sysfs-bus-iio
+>>
+>> more minor comments below
+>
+> Will update
+>
+>>
+>>> Signed-off-by: Dan Murphy <dmurphy@ti.com>
+>>> ---
+>>>  drivers/iio/Kconfig                  |    1 +
+>>>  drivers/iio/Makefile                 |    1 +
+>>>  drivers/iio/heart_monitors/Kconfig   |   16 +
+>>>  drivers/iio/heart_monitors/Makefile  |    6 +
+>>>  drivers/iio/heart_monitors/afe4403.c |  610 ++++++++++++++++++++++++++++++++++
+>>>  5 files changed, 634 insertions(+)
+>>>  create mode 100644 drivers/iio/heart_monitors/Kconfig
+>>>  create mode 100644 drivers/iio/heart_monitors/Makefile
+>>>  create mode 100644 drivers/iio/heart_monitors/afe4403.c
+>>>
+>>> diff --git a/drivers/iio/Kconfig b/drivers/iio/Kconfig
+>>> index 345395e..e3a7945 100644
+>>> --- a/drivers/iio/Kconfig
+>>> +++ b/drivers/iio/Kconfig
+>>> @@ -66,6 +66,7 @@ source "drivers/iio/common/Kconfig"
+>>>  source "drivers/iio/dac/Kconfig"
+>>>  source "drivers/iio/frequency/Kconfig"
+>>>  source "drivers/iio/gyro/Kconfig"
+>>> +source "drivers/iio/heart_monitors/Kconfig"
+>> heartrate would be my preference to name the category
+>> (feel free to ignore)
+>>
+>> and use heartrate / HEARTRATE consistently, not HEART_, not HEARTBEAT_
+>
+> Noted but not changed unless there are are other objections
+My only thought here is that we might at somepoint get more sophisticated
+heart monitoring devices (uneven pulses or some such) but honestly
+I'm not that fussed either way (both are clear to my mind).
 
-Signed-off-by: Hartmut Knaack <knaack.h@gmx.de>
----
-diff --git a/drivers/iio/humidity/si7020.c b/drivers/iio/humidity/si7020.c
-index e336af7..62d74d3 100644
---- a/drivers/iio/humidity/si7020.c
-+++ b/drivers/iio/humidity/si7020.c
-@@ -45,12 +45,12 @@ static int si7020_read_raw(struct iio_dev *indio_dev,
- 			   struct iio_chan_spec const *chan, int *val,
- 			   int *val2, long mask)
- {
--	struct i2c_client **client = iio_priv(indio_dev);
-+	struct i2c_client *client = iio_priv(indio_dev);
- 	int ret;
- 
- 	switch (mask) {
- 	case IIO_CHAN_INFO_RAW:
--		ret = i2c_smbus_read_word_data(*client,
-+		ret = i2c_smbus_read_word_data(client,
- 					       chan->type == IIO_TEMP ?
- 					       SI7020CMD_TEMP_HOLD :
- 					       SI7020CMD_RH_HOLD);
+The type needs to be heartrate but the directory etc can be more general.
 
+>
+>>
+>>>  source "drivers/iio/humidity/Kconfig"
+>>>  source "drivers/iio/imu/Kconfig"
+>>>  source "drivers/iio/light/Kconfig"
+>>> diff --git a/drivers/iio/Makefile b/drivers/iio/Makefile
+>>> index 698afc2..46c0960 100644
+>>> --- a/drivers/iio/Makefile
+>>> +++ b/drivers/iio/Makefile
+>>> @@ -18,6 +18,7 @@ obj-y += common/
+>>>  obj-y += dac/
+>>>  obj-y += gyro/
+>>>  obj-y += frequency/
+>>> +obj-y += heart_monitors/
+>>>  obj-y += humidity/
+>>>  obj-y += imu/
+>>>  obj-y += light/
+>>> diff --git a/drivers/iio/heart_monitors/Kconfig b/drivers/iio/heart_monitors/Kconfig
+>>> new file mode 100644
+>>> index 0000000..7060694
+>>> --- /dev/null
+>>> +++ b/drivers/iio/heart_monitors/Kconfig
+>>> @@ -0,0 +1,16 @@
+>>> +#
+>>> +# Heart Rate Monitor drivers
+>>> +#
+>>> +# When adding new entries keep the list in alphabetical order
+>>> +
+>>> +menu "Heart Rate Monitors"
+>>> +
+>>> +config AFE4403
+>>> +	tristate "TI AFE4403 Heart Rate Monitor"
+>>> +	depends on SPI
+>>> +	select IIO_BUFFER
+>>> +	select IIO_TRIGGERED_BUFFER
+>>> +	select SYSFS
+>> other drivers 'depend' on SYSFS rather than 'select', and use SPI_MASTER
+>
+> Fixed
+>
+>>
+>>> +	help
+>>> +
+>>> +endmenu
+>>> diff --git a/drivers/iio/heart_monitors/Makefile b/drivers/iio/heart_monitors/Makefile
+>>> new file mode 100644
+>>> index 0000000..77cc5c5
+>>> --- /dev/null
+>>> +++ b/drivers/iio/heart_monitors/Makefile
+>>> @@ -0,0 +1,6 @@
+>>> +#
+>>> +# Makefile for IIO Heart Rate Monitor drivers
+>>> +#
+>>> +
+>>> +# When adding new entries keep the list in alphabetical order
+>>> +obj-$(CONFIG_AFE4403) += afe4403.o
+>>> diff --git a/drivers/iio/heart_monitors/afe4403.c b/drivers/iio/heart_monitors/afe4403.c
+>>> new file mode 100644
+>>> index 0000000..d285769
+>>> --- /dev/null
+>>> +++ b/drivers/iio/heart_monitors/afe4403.c
+>>> @@ -0,0 +1,610 @@
+>>> +/*
+>>> + * AFE4403 Heart Rate Monitors and Low-Cost Pulse Oximeters
+>>> + *
+>>> + * Author: Dan Murphy <dmurphy@ti.com>
+>>> + *
+>>> + * Copyright: (C) 2014 Texas Instruments, Inc.
+>>> + *
+>>> + * This program is free software; you can redistribute it and/or modify
+>>> + * it under the terms of the GNU General Public License version 2 as
+>>> + * published by the Free Software Foundation.
+>>> + *
+>>> + * This program is distributed in the hope that it will be useful, but
+>>> + * WITHOUT ANY WARRANTY; without even the implied warranty of
+>>> + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+>>> + * General Public License for more details.
+>>> + */
+>>> +
+>>> +#include <linux/device.h>
+>>> +#include <linux/delay.h>
+>>> +#include <linux/err.h>
+>>> +#include <linux/interrupt.h>
+>>> +#include <linux/kernel.h>
+>>> +#include <linux/module.h>
+>>> +#include <linux/of_gpio.h>
+>>> +#include <linux/spi/spi.h>
+>>> +#include <linux/slab.h>
+>>> +#include <linux/sysfs.h>
+>>> +#include <linux/regulator/consumer.h>
+>>> +
+>>> +#include <linux/iio/iio.h>
+>>> +#include <linux/iio/buffer.h>
+>>> +#include <linux/iio/driver.h>
+>>> +#include <linux/iio/machine.h>
+>>> +#include <linux/iio/events.h>
+>>> +#include <linux/iio/kfifo_buf.h>
+>>> +
+>>> +#define AFE4403_CONTROL0		0x00
+>>> +#define AFE4403_LED2STC			0x01
+>>> +#define AFE4403_LED2ENDC		0x02
+>>> +#define AFE4403_LED2LEDSTC		0x03
+>>> +#define AFE4403_LED2LEDENDC		0x04
+>>> +#define AFE4403_ALED2STC		0x05
+>>> +#define AFE4403_ALED2ENDC		0x06
+>>> +#define AFE4403_LED1STC			0x07
+>>> +#define AFE4403_LED1ENDC		0x08
+>>> +#define AFE4403_LED1LEDSTC		0x09
+>>> +#define AFE4403_LED1LEDENDC		0x0a
+>>> +#define AFE4403_ALED1STC		0x0b
+>>> +#define AFE4403_ALED1ENDC		0x0c
+>>> +#define AFE4403_LED2CONVST		0x0d
+>>> +#define AFE4403_LED2CONVEND		0x0e
+>>> +#define AFE4403_ALED2CONVST		0x0f
+>>> +#define AFE4403_ALED2CONVEND	0x10
+>>> +#define AFE4403_LED1CONVST		0x11
+>>> +#define AFE4403_LED1CONVEND		0x12
+>>> +#define AFE4403_ALED1CONVST		0x13
+>>> +#define AFE4403_ALED1CONVEND	0x14
+>>> +#define AFE4403_ADCRSTSTCT0		0x15
+>>> +#define AFE4403_ADCRSTENDCT0	0x16
+>>> +#define AFE4403_ADCRSTSTCT1		0x17
+>>> +#define AFE4403_ADCRSTENDCT1	0x18
+>>> +#define AFE4403_ADCRSTSTCT2		0x19
+>>> +#define AFE4403_ADCRSTENDCT2	0x1a
+>>> +#define AFE4403_ADCRSTSTCT3 	0x1b
+>>> +#define AFE4403_ADCRSTENDCT3 	0x1c
+>>> +#define AFE4403_PRPCOUNT 		0x1d
+>>> +#define AFE4403_CONTROL1 		0x1e
+>>> +#define AFE4403_SPARE1 			0x1f
+>>> +#define AFE4403_TIAGAIN 		0x20
+>>> +#define AFE4403_TIA_AMB_GAIN 	0x21
+>>> +#define AFE4403_LEDCNTRL 		0x22
+>>> +#define AFE4403_CONTROL2 		0x23
+>>> +#define AFE4403_SPARE2 			0x24
+>>> +#define AFE4403_SPARE3 			0x25
+>>> +#define AFE4403_SPARE4 			0x26
+>>> +#define AFE4403_ALARM 			0x29
+>>> +#define AFE4403_LED2VAL 		0x2A
+>>> +#define AFE4403_ALED2VAL 		0x2B
+>>> +#define AFE4403_LED1VAL 		0x2C
+>>> +#define AFE4403_ALED1VAL 		0x2D
+>>> +#define AFE4403_LED2_ALED2VAL 	0x2E
+>>> +#define AFE4403_LED1_ALED1VAL 	0x2F
+>>> +#define AFE4403_DIAG 			0x30
+>>> +#define AFE4403_CONTROL3 		0x31
+>>> +#define AFE4403_PDNCYCLESTC 	0x32
+>>> +#define AFE4403_PDNCYCLEENDC 	0x33
+>>> +
+>>> +#define AFE4403_SPI_READ		(1 << 0)
+>>> +#define AFE4403_SW_RESET		(1 << 3)
+>>> +#define AFE4403_PWR_DWN			(1 << 0)
+>> can use BIT()
+>
+> Fixed.  I need to update these defines per the data sheet to get rid of the
+> magic numbers below.
+>
+> I am wondering if a header file may be in order thoughts?
+Not unless you are ending up with multiple c files.  Kernel
+style is definitely moving towards as few headers as possible!
+
+
+>
+>>
+>>> +
+>>> +/**
+>>> + * struct afe4403_data -
+>>> + * @work - Work item used to off load the enable/disable of the vibration
+>>> + * @indio_dev -
+>>> + * @map -
+>>> + * @spi -
+>>> + * @regulator - Pointer to the regulator for the IC
+>>> + * @ste_gpio -
+>>> + * @data_gpio -
+>>> + * @reset_gpio -
+>>> + * @data_buffer -
+>>> + * @irq - AFE4403 interrupt number
+>>> +**/
+>>> +struct afe4403_data {
+>>> +	struct work_struct work;
+>>> +	struct iio_dev *indio_dev;
+>>> +	struct iio_map *map;
+>>> +	struct spi_device *spi;
+>>> +	struct regulator *regulator;
+>>> +	struct gpio_desc *ste_gpio;
+>>> +	struct gpio_desc *data_gpio;
+>>> +	struct gpio_desc *reset_gpio;
+>>> +	int data_buffer[5];
+>> magic 5
+>
+> I can #define this but this is the number of registers we read and report from the IC
+>
+>>
+>>> +	int irq;
+>>> +};
+>>> +
+>>> +enum afe4403_reg_id {
+>>> +	LED1VAL,
+>>> +	ALED1VAL,
+>>> +	LED2VAL,
+>>> +	ALED2VAL,
+>>> +	DIAG,
+>>> +	TIAGAIN,
+>>> +	TIA_AMB_GAIN,
+>>> +	LEDCNTRL,
+>>> +	CONTROL3,
+>>> +};
+>>> +
+>>> +static const struct iio_event_spec afe4403_events[] = {
+>>> +	{
+>>> +		.type = IIO_EV_TYPE_MAG,
+>>> +		.dir = IIO_EV_DIR_EITHER,
+>>> +		.mask_separate = BIT(IIO_EV_INFO_VALUE) |
+>>> +			BIT(IIO_EV_INFO_ENABLE),
+>>> +	},
+>>> +};
+>>> +
+>>> +#define AFE4403_COMMON_CHAN(index, name)						\
+>>> +	{								\
+>>> +		.type = IIO_HEARTRATE,					\
+>>> +		.indexed = 1,						\
+>>> +		.channel = index,					\
+>>> +		.datasheet_name = name, \
+>>> +		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED), \
+>>> +		.scan_index = index + 1,				\
+>> could do (index), but doesn't matter
+>> why +1?
+>
+> Fixed
+>
+>>
+>>> +		.scan_type = {						\
+>>> +			.sign = 'u',					\
+>>> +			.realbits = 24,					\
+>> top 2 bits are ignored
+>
+> Not sure what you mean here.  How are the top two bits ignored?
+>
+>>
+>>> +			.storagebits = 24,				\
+>> .endianness = IIO_BE
+>
+> Fixed
+>
+>>
+>>> +		},							\
+>>> +		.event_spec = afe4403_events,					\
+>>> +		.num_event_specs = ARRAY_SIZE(afe4403_events),			\
+>>> +	}
+>>> +
+>>> +static const struct iio_chan_spec afe4403_channels[] = {
+>>> +	/* Read only values from the IC */
+>>> +	[LED1VAL] = AFE4403_COMMON_CHAN(0, "LED1VAL"),
+>>> +	[ALED1VAL] = AFE4403_COMMON_CHAN(1, "ALED1VAL"),
+>>> +	[LED2VAL] = AFE4403_COMMON_CHAN(2, "LED2VAL"),
+>>> +	[ALED1VAL] = AFE4403_COMMON_CHAN(3, "ALED2VAL"),
+>>> +	[DIAG] = AFE4403_COMMON_CHAN(4, "DIAG"),
+>>> +
+>>> +	/* Required writing for calibration */
+>>> +	[TIAGAIN] = AFE4403_COMMON_CHAN(5, "TIAGAIN"),
+>>> +	[TIA_AMB_GAIN] = AFE4403_COMMON_CHAN(6, "TIA_AMB_GAIN"),
+>>> +	[LEDCNTRL] = AFE4403_COMMON_CHAN(7, "LEDCNTRL"),
+>>> +	[CONTROL3] = AFE4403_COMMON_CHAN(8, "CONTROL3"),
+>>> +};
+>>> +
+>>> +static struct iio_map afe4403_default_iio_maps[] = {
+>>> +	{
+>>> +		.consumer_dev_name = "afe4403_heartrate",
+>>> +		.consumer_channel = "afe4403_led1value",
+>>> +		.adc_channel_label = "LED1VAL",
+>>> +	},
+>>> +	{
+>>> +		.consumer_dev_name = "afe4403_heartrate",
+>>> +		.consumer_channel = "afe4403_aled1value",
+>>> +		.adc_channel_label = "ALED1VAL",
+>>> +	},
+>>> +	{
+>>> +		.consumer_dev_name = "afe4403_heartrate",
+>>> +		.consumer_channel = "afe4403_led2value",
+>>> +		.adc_channel_label = "LED2VAL",
+>>> +	},
+>>> +	{
+>>> +		.consumer_dev_name = "afe4403_heartrate",
+>>> +		.consumer_channel = "afe4403_aled2value",
+>>> +		.adc_channel_label = "ALED2VAL",
+>>> +	},
+>>> +	{
+>>> +		.consumer_dev_name = "afe4403_heartrate",
+>>> +		.consumer_channel = "afe4403_diagnostics",
+>>> +		.adc_channel_label = "DIAG",
+>>> +	},
+>>> +};
+>>> +
+>>> +static void afe4403_toggle_ste(struct afe4403_data *afe4403)
+>>> +{
+>>> +	gpiod_set_value(afe4403->ste_gpio, 1);
+>>> +	udelay(800);
+>>> +	gpiod_set_value(afe4403->ste_gpio, 0);
+>>> +}
+>>> +
+>>> +static int afe4403_read(struct afe4403_data *afe4403, u8 reg,
+>>> +		unsigned int *data)
+>>> +{
+>>> +	int ret;
+>>> +
+>>> +	ret = spi_write_then_read(afe4403->spi, (u8 *)&reg, 1, (u8 *)data, 3);
+>>> +	if (ret)
+>>> +		return -EIO;
+>>> +
+>>> +	afe4403_toggle_ste(afe4403);
+>>> +
+>>> +	return ret;
+>>> +};
+>>> +
+>>> +static int afe4403_write(struct afe4403_data *afe4403, u8 reg,
+>>> +		unsigned int data)
+>>> +{
+>>> +	int ret;
+>>> +	u8 tx[4] = {0x0, 0x0, 0x0, 0x0};
+>>> +
+>>> +	/* Enable write to the device */
+>>> +
+>>> +	tx[0] = AFE4403_CONTROL0;
+>>> +	tx[3] = 0x0;
+>>> +	ret = spi_write(afe4403->spi, (u8 *)tx, 4);
+>>> +	if (ret)
+>>> +		return -EIO;
+>>> +
+>>> +	afe4403_toggle_ste(afe4403);
+>>> +
+>>> +	tx[0] = reg;
+>>> +	tx[1] = (data & 0x0f0000) >> 16;
+>>> +	tx[2] = (data & 0x00ff00) >> 8;
+>>> +	tx[3] = data & 0xff;
+>>> +	ret = spi_write(afe4403->spi, (u8 *)tx, 4);
+>>> +	if (ret)
+>>> +		return -EIO;
+>>> +
+>>> +	afe4403_toggle_ste(afe4403);
+>>> +
+>>> +	/* Re-Enable reading from the device */
+>>> +	tx[0] = AFE4403_CONTROL0;
+>>> +	tx[1] = 0x0;
+>>> +	tx[2] = 0x0;
+>>> +	tx[3] = AFE4403_SPI_READ;
+>>> +	ret = spi_write(afe4403->spi, (u8 *)tx, 4);
+>>> +	if (ret)
+>>> +		return -EIO;
+>>> +
+>>> +	afe4403_toggle_ste(afe4403);
+>>> +
+>>> +	return ret;
+>>> +};
+>>> +
+>>> +static int afe4403_write_raw(struct iio_dev *indio_dev,
+>>> +			     struct iio_chan_spec const *chan,
+>>> +			     int val, int val2, long mask)
+>>> +{
+>>> +	struct afe4403_data *data = iio_priv(indio_dev);
+>>> +	u8 reg;
+>>> +
+>>> +	if (chan->channel > ARRAY_SIZE(afe4403_channels))
+>>> +		return -EINVAL;
+>>> +
+>> check for channel < 5?
+>> check for val2 == 0
+>>
+>> this is not how to control iio channels
+>> can't _SCALE be used?
+>
+> I will need to investigate this.  The device needs to be calibrated and
+> these are the registers we need to write.
+>
+> I did struggle a little with understanding how these things are put together.
+Basically have scale if it is applied post driver (e.g. apply to the output
+of the driver to get real world units) and calibscale if applied internally
+(e.g. is a trim control on the hardware or perhaps a trim in the driver -
+ though the in driver option is normally only done for channels with complex
+ conversions from the raw reading to real world units)
+>
+>>
+>>> +	if (chan->channel == 5)
+>>> +		reg = AFE4403_TIAGAIN;
+>>> +	else if (chan->channel == 6)
+>>> +		reg = AFE4403_TIA_AMB_GAIN;
+>>> +	else if (chan->channel == 7)
+>>> +		reg = AFE4403_LEDCNTRL;
+>>> +	else if (chan->channel == 8)
+>>> +		reg = AFE4403_CONTROL2;
+>>> +	else
+>>> +		return -EINVAL;
+>>> +
+>>> +	return afe4403_write(data, reg, val);
+>>> +}
+>>> +
+>>> +static int afe4403_read_raw(struct iio_dev *indio_dev,
+>>> +			    struct iio_chan_spec const *chan,
+>>> +			    int *val, int *val2, long mask)
+>>> +{
+>>> +	struct afe4403_data *data = iio_priv(indio_dev);
+>>> +
+>>> +	if (iio_buffer_enabled(indio_dev))
+>>> +			return -EBUSY;
+>>> +
+>>> +	if (chan->channel > ARRAY_SIZE(afe4403_channels))
+>>> =
+>> and it is data_buffer[5]; 5 is smaller than ARRAY_SIZE(afe4003_channels)
+>
+> It is meant to be smaller we only read and report 5 registers to the user space.
+> The other registers are written to during calibration.
+>
+>>
+>>> +		return -EINVAL;
+>>> +
+>>> +	switch (mask) {
+>>> +	case IIO_CHAN_INFO_PROCESSED:
+>>> +		*val = data->data_buffer[chan->channel];
+>>> +		return IIO_VAL_INT;
+>>> +	default:
+>>> +		return -EINVAL;
+>>> +	}
+>>> +}
+>>> +
+>>> +static int afe4403_write_event(struct iio_dev *indio_dev,
+>>> +				     const struct iio_chan_spec *chan,
+>>> +				     enum iio_event_type type,
+>>> +				     enum iio_event_direction dir,
+>>> +				     int state)
+>>> +{
+>>> +	struct afe4403_data *afe4403 = iio_priv(indio_dev);
+>>> +	int ret;
+>>> +	int control_val;
+>>> +	
+>>> +	ret = afe4403_read(afe4403, AFE4403_CONTROL2, &control_val);
+>> _read() only read 3 bytes, leaving the remaining bytes of control_val
+>> uninitialized; control_val should be unsigned int
+>>
+>> wondering about endianness...
+>
+> Fixed
+>
+>>
+>>> +	if (ret)
+>>> +		return ret;
+>>> +
+>>> +	printk("***state 0x%X control 0x%X 0x%X\n", state, control_val, ~AFE4403_PWR_DWN);
+>> no printk()s please
+>
+> My bad.  This was an artifact from debugging.
+>
+>>
+>>> +	if (state)
+>>> +		control_val &= ~AFE4403_PWR_DWN;
+>>> +	else
+>>> +		control_val |= AFE4403_PWR_DWN;
+>>> +
+>>> +	printk("***after control 0x%X\n", control_val);
+>>> +
+>>> +	ret = afe4403_write(afe4403, AFE4403_CONTROL2, control_val);
+>>> +	if (ret)
+>>> +		return ret;
+>>> +
+>>> +	ret = afe4403_read(afe4403, AFE4403_CONTROL2, &control_val);
+>>> +	if (ret)
+>>> +		return ret;
+>>> +
+>>> +	printk("***control 0x%X\n", control_val);
+>>> +
+>>> +	return 0;
+>>> +}
+>>> +
+>>> +static const struct iio_info afe4403_iio_info = {
+>>> +	.read_raw = &afe4403_read_raw,
+>>> +	.write_raw = &afe4403_write_raw,
+>>> +	.write_event_config = &afe4403_write_event,
+>>> +	.driver_module = THIS_MODULE,
+>>> +};
+>>> +
+>>> +static irqreturn_t afe4403_event_handler(int irq, void *data)
+>>> +{
+>>> +	struct iio_dev *indio_dev = data;
+>>> +	struct afe4403_data *afe4403 = iio_priv(indio_dev);
+>>> +	int ret;
+>>> +
+>>> +	ret = afe4403_read(afe4403, AFE4403_LED1VAL, &afe4403->data_buffer[0]);
+>>> +	if (ret)
+>>> +		goto done;
+>> can't this be done all in one go?
+>
+> I was thinking this I just need to adjust the read api in the code to take an argument
+> for the number of registers to read.
+>
+>>
+>>> +
+>>> +	ret = afe4403_read(afe4403, AFE4403_ALED1VAL, &afe4403->data_buffer[1]);
+>>> +	if (ret)
+>>> +		goto done;
+>>> +
+>>> +	ret = afe4403_read(afe4403, AFE4403_LED2VAL, &afe4403->data_buffer[2]);
+>>> +	if (ret)
+>>> +		goto done;
+>>> +
+>>> +	ret = afe4403_read(afe4403, AFE4403_ALED2VAL, &afe4403->data_buffer[3]);
+>>> +	if (ret)
+>>> +		goto done;
+>>> +
+>>> +	ret = afe4403_read(afe4403, AFE4403_DIAG, &afe4403->data_buffer[4]);
+>>> +	if (ret)
+>>> +		goto done;
+>>> +
+>>> +	iio_push_to_buffers_with_timestamp(indio_dev, &afe4403->data_buffer,
+>>> +		iio_get_time_ns());
+>>> +done:
+>>> +	return IRQ_HANDLED;
+>>> +}
+>>> +
+>>> +struct afe4403_reg {
+>>> +	uint8_t reg;
+>>> +	u32 value;
+>>> +} afe4403_init_regs[] = {
+>>> +	{ AFE4403_LED2STC,  0x0820},
+>>> +	{ AFE4403_LED2ENDC, 0x0f9e },
+>>> +	{ AFE4403_LED2LEDSTC, 0x07d0 },
+>>> +	{ AFE4403_LED2LEDENDC, 0x0f9f },
+>>> +	{ AFE4403_ALED2STC, 0x0050 },
+>>> +	{ AFE4403_ALED2ENDC, 0x07ce },
+>>> +	{ AFE4403_LED1STC, 0xc350 },
+>>> +	{ AFE4403_LED1ENDC, 0xc350 },
+>>> +	{ AFE4403_LED1LEDSTC, 0xc350 },
+>>> +	{ AFE4403_LED1LEDENDC, 0xc350 },
+>>> +	{ AFE4403_ALED1STC, 0x0ff0 },
+>>> +	{ AFE4403_ALED1ENDC, 0x176e },
+>>> +	{ AFE4403_LED2CONVST, 0x1775 },
+>>> +	{ AFE4403_LED2CONVEND, 0x1f3f },
+>>> +	{ AFE4403_ALED2CONVST, 0x1f45 },
+>>> +	{ AFE4403_ALED2CONVEND, 0x270f },
+>>> +	{ AFE4403_LED1CONVST, 0x2715 },
+>>> +	{ AFE4403_LED1CONVEND, 0x2edf },
+>>> +	{ AFE4403_ALED1CONVST, 0x2ee5 },
+>>> +	{ AFE4403_ALED1CONVEND, 0x36af },
+>>> +	{ AFE4403_ADCRSTSTCT0, 0x1770 },
+>>> +	{ AFE4403_ADCRSTENDCT0, 0x1774 },
+>>> +	{ AFE4403_ADCRSTSTCT1, 0x1f40 },
+>>> +	{ AFE4403_ADCRSTENDCT1, 0x1f44 },
+>>> +	{ AFE4403_ADCRSTSTCT2, 0x2710 },
+>>> +	{ AFE4403_ADCRSTENDCT2, 0x2714 },
+>>> +	{ AFE4403_ADCRSTSTCT3, 0x2ee0 },
+>>> +	{ AFE4403_ADCRSTENDCT3, 0x2ee4 },
+>>> +	{ AFE4403_PRPCOUNT, 0x09c3f },
+>>> +	{ AFE4403_CONTROL1, 0x0107 },
+>>> +	{ AFE4403_TIAGAIN, 0x8006 },
+>>> +	{ AFE4403_TIA_AMB_GAIN, 0x06 },
+>>> +	{ AFE4403_LEDCNTRL, 0x11414 },
+>>> +	{ AFE4403_CONTROL2, 0x20000 },
+>>> +};
+>>> +
+>>> +static int afe4403_init(struct afe4403_data *afe4403)
+>>> +{
+>>> +	int ret, i, reg_count;
+>>> +
+>>> +	/* Hard reset the device */
+>>> +	if (afe4403->reset_gpio) {
+>>> +		gpiod_set_value(afe4403->reset_gpio, 0);
+>>> +		udelay(800);
+>>> +		gpiod_set_value(afe4403->reset_gpio, 1);
+>>> +	} else {
+>>> +		/* Soft reset the device */
+>>> +		ret = afe4403_write(afe4403, AFE4403_CONTROL0, AFE4403_SW_RESET);
+>>> +		if (ret)
+>>> +			return ret;
+>>> +	}
+>>> +
+>>> +	udelay(800);
+>>> +
+>>> +	reg_count = sizeof(afe4403_init_regs) / sizeof(afe4403_init_regs[0]);
+>> ARRAY_SIZE()
+>
+> Fixed
+>
+>>
+>>> +	for (i = 0; i < reg_count; i++) {
+>>> +		ret = afe4403_write(afe4403, afe4403_init_regs[i].reg,
+>>> +					afe4403_init_regs[i].value);
+>>> +		if (ret)
+>>> +			return ret;
+>>> +	}
+>>> +
+>>> +	return ret;
+>>> +};
+>>> +
+>>> +static int afe4403_iio_buffered_hardware_setup(struct iio_dev *indio_dev)
+>>> +{
+>>> +	struct iio_buffer *buffer;
+>>> +	int ret;
+>>> +
+>>> +	buffer = iio_kfifo_allocate(indio_dev);
+>>> +	if (!buffer)
+>>> +		return -ENOMEM;
+>>> +
+>>> +	iio_device_attach_buffer(indio_dev, buffer);
+>>> +
+>>> +	ret = iio_buffer_register(indio_dev,
+>>> +				  indio_dev->channels,
+>>> +				  indio_dev->num_channels);
+>>> +	if (ret)
+>>> +		goto error_kfifo_free;
+>>> +
+>>> +	return 0;
+>>> +
+>>> +error_kfifo_free:
+>>> +	iio_kfifo_free(indio_dev->buffer);
+>>> +	return ret;
+>>> +}
+>>> +
+>>> +static int afe4403_spi_probe(struct spi_device *spi)
+>>> +{
+>>> +	struct afe4403_data *afe4403;
+>>> +	struct iio_dev *indio_dev;
+>>> +	int ret;
+>>> +
+>>> +	indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*afe4403));
+>>> +	if (indio_dev == NULL) {
+>>> +		dev_err(&spi->dev, "Failed to allocate iio device\n");
+>>> +		return -ENOMEM;
+>>> +	}
+>>> +
+>>> +	spi_set_drvdata(spi, indio_dev);
+>>> +
+>>> +	afe4403 = iio_priv(indio_dev);
+>>> +	afe4403->spi = spi;
+>>> +
+>>> +	ret = iio_map_array_register(indio_dev, afe4403_default_iio_maps);
+>>> +	if (ret) {
+>>> +		dev_err(&indio_dev->dev, "iio map err: %d\n", ret);
+>>> +		return ret;
+>>> +	}
+>>> +	afe4403->map = afe4403_default_iio_maps;
+>>> +
+>>> +	indio_dev->dev.parent = &spi->dev;
+>>> +	indio_dev->name = "afe4403";
+>>> +	indio_dev->info = &afe4403_iio_info;
+>>> +	indio_dev->modes = INDIO_DIRECT_MODE | INDIO_BUFFER_HARDWARE;
+>>> +	indio_dev->channels = afe4403_channels;
+>>> +	indio_dev->num_channels = ARRAY_SIZE(afe4403_channels);
+>>> +
+>>> +	afe4403->ste_gpio = devm_gpiod_get(&spi->dev, "ste");
+>>> +	if (IS_ERR(afe4403->ste_gpio)) {
+>>> +		ret = PTR_ERR(afe4403->ste_gpio);
+>>> +		if (ret != -ENOENT && ret != -ENOSYS) {
+>>> +			dev_err(&spi->dev, "Failed to allocate spi gpio\n");
+>>> +			return ret;
+>>> +		}
+>>> +		afe4403->ste_gpio = NULL;
+>>> +	} else {
+>>> +		gpiod_direction_output(afe4403->ste_gpio, 0);
+>>> +	}
+>>> +
+>>> +	afe4403->data_gpio = devm_gpiod_get(&spi->dev, "data-ready");
+>>> +	if (IS_ERR(afe4403->data_gpio)) {
+>>> +		ret = PTR_ERR(afe4403->data_gpio);
+>>> +		if (ret != -ENOENT && ret != -ENOSYS) {
+>>> +			dev_err(&spi->dev, "Failed to allocate data_ready gpio\n");
+>>> +			return ret;
+>>> +		}
+>>> +		afe4403->data_gpio = NULL;
+>>> +	} else {
+>>> +		gpiod_direction_input(afe4403->data_gpio);
+>>> +		afe4403->irq = gpiod_to_irq(afe4403->data_gpio);
+>>> +	}
+>>> +
+>>> +	afe4403->reset_gpio = devm_gpiod_get(&spi->dev, "reset");
+>>> +	if (IS_ERR(afe4403->reset_gpio)) {
+>>> +		ret = PTR_ERR(afe4403->reset_gpio);
+>>> +		if (ret != -ENOENT && ret != -ENOSYS) {
+>>> +			dev_err(&spi->dev, "Failed to allocate reset gpio\n");
+>>> +			return ret;
+>>> +		}
+>>> +		afe4403->reset_gpio = NULL;
+>>> +	} else {
+>>> +		gpiod_direction_output(afe4403->reset_gpio, 1);
+>>> +	}
+>>> +
+>>> +	ret = afe4403_iio_buffered_hardware_setup(indio_dev);
+>>> +	if (ret) {
+>>> +		dev_err(&spi->dev, "Failed to allocate iio buffers %i\n", ret);
+>>> +		return ret;
+>>> +	}
+>>> +
+>>> +	ret = devm_request_threaded_irq(&spi->dev, afe4403->irq,
+>>> +				   NULL,
+>>> +				   afe4403_event_handler,
+>>> +				   IRQF_TRIGGER_FALLING | IRQF_ONESHOT,
+>>> +				   "afe4403 int",
+>>> +				   indio_dev);
+>>> +	if (ret) {
+>>> +		dev_err(&spi->dev, "Failed to allocate thread %i\n", ret);
+>> threaded irq?
+>
+> Yes.  What is the objection?  Would there be a preference that I read the data
+> from the IC in an IRQ context?
+Comment is on the error message - not that you used a threaded_irq
+(which is probably correct!)
+>
+>>
+>>> +		return ret;
+>>> +	}
+>>> +
+>>> +	ret = devm_iio_device_register(&spi->dev, indio_dev);
+>>> +	if (ret < 0)
+>>> +		return ret;
+>>> +
+>>> +	ret = afe4403_init(afe4403);
+>>> +	if (ret) {
+>>> +		dev_err(&spi->dev, "Failed to init device\n");
+>> and now what? no cleanup?
+>
+> What is it that needs cleanup?  I was careful to use devm calls which should self clean up on
+> probe failure.
+>
+> Since the init is all spi writes should the spi write fail then the probe fails and all
+> subsequent devm calls self cleanup.
+>
+> The only call made that is not devm is
+>
+> iio_map_array_register
+Then that needs unwinding ;)
+>
+>
+>>
+>>> +		return ret;
+>>> +	}
+>>> +
+>>> +	return 0;
+>>> +
+>>> +}
+>>> +
+>>> +static int afe4403_spi_remove(struct spi_device *spi)
+>>> +{
+>>> +	struct afe4403_data *afe4403 = dev_get_drvdata(&spi->dev);
+>>> +
+>>> +	iio_kfifo_free(afe4403->indio_dev->buffer);
+>>> +	iio_buffer_unregister(afe4403->indio_dev);
+>>> +
+>>> +	if (!IS_ERR(afe4403->regulator))
+>>> +		regulator_disable(afe4403->regulator);
+>> regulator never enabled?
+>
+> Fixed
+>
+>>
+>>> +
+>>> +	return 0;
+>>> +}
+>>> +
+>>> +#if IS_ENABLED(CONFIG_OF)
+>>> +static const struct of_device_id afe4403_of_match[] = {
+>>> +	{ .compatible = "ti,afe4403", },
+>>> +	{}
+>>> +};
+>>> +MODULE_DEVICE_TABLE(of, afe4403_of_match);
+>>> +#endif
+>>> +
+>>> +static struct spi_driver afe4403_spi_driver = {
+>>> +	.driver = {
+>>> +		.name = "afe4403",
+>>> +		.owner = THIS_MODULE,
+>>> +		.of_match_table = of_match_ptr(afe4403_of_match),
+>>> +	},
+>>> +	.probe = afe4403_spi_probe,
+>>> +	.remove = afe4403_spi_remove,
+>>> +};
+>>> +
+>>> +static int __init afe4403_spi_init(void)
+>>> +{
+>>> +	return spi_register_driver(&afe4403_spi_driver);
+>>> +}
+>>> +module_init(afe4403_spi_init);
+>>> +
+>>> +MODULE_AUTHOR("Dan Murphy <dmurphy@ti.com>");
+>>> +MODULE_DESCRIPTION("TI AFE4403 Heart Rate and Pulse Oximeter");
+>>> +MODULE_LICENSE("GPL");
+>>>
+>
+>
