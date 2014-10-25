@@ -1,196 +1,94 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mout.gmx.net ([212.227.15.19]:54313 "EHLO mout.gmx.net"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1755548AbaJaTQd (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Fri, 31 Oct 2014 15:16:33 -0400
-Message-ID: <5453E00B.7080703@gmx.de>
-Date: Fri, 31 Oct 2014 20:16:27 +0100
-From: Hartmut Knaack <knaack.h@gmx.de>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:50004 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751792AbaJYTey (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 25 Oct 2014 15:34:54 -0400
+Message-ID: <544BFB5B.3070301@kernel.org>
+Date: Sat, 25 Oct 2014 20:34:51 +0100
+From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Vlad Dogaru <vlad.dogaru@intel.com>
-CC: IIO <linux-iio@vger.kernel.org>
-Subject: Re: [PATCH 3/3]iio:pressure:bmp280: read compensation data only at init
-References: <5452E502.6060609@gmx.de> <20141031114709.GC24473@vdogaru>
-In-Reply-To: <20141031114709.GC24473@vdogaru>
-Content-Type: text/plain; charset=ISO-8859-1
+To: Hartmut Knaack <knaack.h@gmx.de>, IIO <linux-iio@vger.kernel.org>
+CC: David Barksdale <dbarksdale@uplogix.com>
+Subject: Re: [PATCH]iio:humidity:si7020: cleanup read_raw and probe
+References: <5442C3A0.7080501@gmx.de> <544B753B.40207@kernel.org> <544BDF26.2020607@gmx.de>
+In-Reply-To: <544BDF26.2020607@gmx.de>
+Content-Type: text/plain; charset=US-ASCII
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Vlad Dogaru schrieb am 31.10.2014 12:47:
-> On Fri, Oct 31, 2014 at 02:25:22AM +0100, Hartmut Knaack wrote:
->> Compensation data is hard coded into the sensors, so it is sufficient to just
->> read it once during device initialization. Therefor struct bmp280_comp should be
->> part of bmp280_data (since the elements of bmp280_comp_temp and
->> bmp280_comp_press have distinct names, they could be merged into bmp280_comp).
-> 
-> My first version of the patch did this, but Jonathan suggested [1] that,
-> since we're using regmap, we can rely on it for caching the calibration
-> parameters.  I have no preference for either approach.
-> 
-Indeed, I missed to have a closer look at that version, as I discarded it when your second or third version came out.
-So, one question remaining is, if your implementation was, what Jonathan had in mind when he gave the hint about using the regmap cache. I mainly see the disadvantage of copying to the buffer and from there to the variables (and depending on endianness even a conversion) for every single measurement.
-> [1] http://www.spinics.net/lists/linux-iio/msg15099.html
-> 
->> Signed-off-by: Hartmut Knaack <knaack.h@gmx.de>
->> ---
->> diff --git a/drivers/iio/pressure/bmp280.c b/drivers/iio/pressure/bmp280.c
->> index 4f6ae4d..36e425c 100644
->> --- a/drivers/iio/pressure/bmp280.c
->> +++ b/drivers/iio/pressure/bmp280.c
->> @@ -68,10 +68,19 @@
->>  #define BMP280_CHIP_ID			0x58
->>  #define BMP280_SOFT_RESET_VAL		0xB6
->>  
->> +/* Compensation parameters. */
->> +struct bmp280_comp {
->> +	u16 dig_p1;
->> +	s16 dig_p2, dig_p3, dig_p4, dig_p5, dig_p6, dig_p7, dig_p8, dig_p9;
->> +	u16 dig_t1;
->> +	s16 dig_t2, dig_t3;
->> +};
->> +
->>  struct bmp280_data {
->>  	struct i2c_client *client;
->>  	struct mutex lock;
->>  	struct regmap *regmap;
->> +	struct bmp280_comp comp;
->>  
->>  	/*
->>  	 * Carryover value from temperature conversion, used in pressure
->> @@ -80,17 +89,6 @@ struct bmp280_data {
->>  	s32 t_fine;
->>  };
->>  
->> -/* Compensation parameters. */
->> -struct bmp280_comp_temp {
->> -	u16 dig_t1;
->> -	s16 dig_t2, dig_t3;
->> -};
->> -
->> -struct bmp280_comp_press {
->> -	u16 dig_p1;
->> -	s16 dig_p2, dig_p3, dig_p4, dig_p5, dig_p6, dig_p7, dig_p8, dig_p9;
->> -};
->> -
->>  static const struct iio_chan_spec bmp280_channels[] = {
->>  	{
->>  		.type = IIO_PRESSURE,
->> @@ -141,11 +139,11 @@ static const struct regmap_config bmp280_regmap_config = {
->>  	.volatile_reg = bmp280_is_volatile_reg,
->>  };
->>  
->> -static int bmp280_read_compensation_temp(struct bmp280_data *data,
->> -					 struct bmp280_comp_temp *comp)
->> +static int bmp280_read_compensation_temp(struct bmp280_data *data)
->>  {
->>  	int ret;
->>  	__le16 buf[BMP280_COMP_TEMP_REG_COUNT / 2];
->> +	struct bmp280_comp *comp = &data->comp;
->>  
->>  	ret = regmap_bulk_read(data->regmap, BMP280_REG_COMP_TEMP_START,
->>  			       buf, BMP280_COMP_TEMP_REG_COUNT);
->> @@ -162,11 +160,11 @@ static int bmp280_read_compensation_temp(struct bmp280_data *data,
->>  	return 0;
->>  }
->>  
->> -static int bmp280_read_compensation_press(struct bmp280_data *data,
->> -					  struct bmp280_comp_press *comp)
->> +static int bmp280_read_compensation_press(struct bmp280_data *data)
->>  {
->>  	int ret;
->>  	__le16 buf[BMP280_COMP_PRESS_REG_COUNT / 2];
->> +	struct bmp280_comp *comp = &data->comp;
->>  
->>  	ret = regmap_bulk_read(data->regmap, BMP280_REG_COMP_PRESS_START,
->>  			       buf, BMP280_COMP_PRESS_REG_COUNT);
->> @@ -196,11 +194,10 @@ static int bmp280_read_compensation_press(struct bmp280_data *data,
->>   *
->>   * Taken from datasheet, Section 3.11.3, "Compensation formula".
->>   */
->> -static s32 bmp280_compensate_temp(struct bmp280_data *data,
->> -				  struct bmp280_comp_temp *comp,
->> -				  s32 adc_temp)
->> +static s32 bmp280_compensate_temp(struct bmp280_data *data, s32 adc_temp)
->>  {
->>  	s32 var1, var2;
->> +	struct bmp280_comp *comp = &data->comp;
->>  
->>  	var1 = (((adc_temp >> 3) - ((s32) comp->dig_t1 << 1)) *
->>  		((s32) comp->dig_t2)) >> 11;
->> @@ -219,11 +216,10 @@ static s32 bmp280_compensate_temp(struct bmp280_data *data,
->>   *
->>   * Taken from datasheet, Section 3.11.3, "Compensation formula".
->>   */
->> -static u32 bmp280_compensate_press(struct bmp280_data *data,
->> -				   struct bmp280_comp_press *comp,
->> -				   s32 adc_press)
->> +static u32 bmp280_compensate_press(struct bmp280_data *data, s32 adc_press)
->>  {
->>  	s64 var1, var2, p;
->> +	struct bmp280_comp *comp = &data->comp;
->>  
->>  	var1 = ((s64) data->t_fine) - 128000;
->>  	var2 = var1 * var1 * (s64) comp->dig_p6;
->> @@ -249,11 +245,6 @@ static int bmp280_read_temp(struct bmp280_data *data,
->>  	int ret;
->>  	__be32 tmp = 0;
->>  	s32 adc_temp, comp_temp;
->> -	struct bmp280_comp_temp comp;
->> -
->> -	ret = bmp280_read_compensation_temp(data, &comp);
->> -	if (ret < 0)
->> -		return ret;
->>  
->>  	ret = regmap_bulk_read(data->regmap, BMP280_REG_TEMP_MSB,
->>  			       (u8 *) &tmp, 3);
->> @@ -263,7 +254,7 @@ static int bmp280_read_temp(struct bmp280_data *data,
->>  	}
->>  
->>  	adc_temp = be32_to_cpu(tmp) >> 12;
->> -	comp_temp = bmp280_compensate_temp(data, &comp, adc_temp);
->> +	comp_temp = bmp280_compensate_temp(data, adc_temp);
->>  
->>  	/*
->>  	 * val might be NULL if we're called by the read_press routine,
->> @@ -284,11 +275,6 @@ static int bmp280_read_press(struct bmp280_data *data,
->>  	__be32 tmp = 0;
->>  	s32 adc_press;
->>  	u32 comp_press;
->> -	struct bmp280_comp_press comp;
->> -
->> -	ret = bmp280_read_compensation_press(data, &comp);
->> -	if (ret < 0)
->> -		return ret;
->>  
->>  	/* Read and compensate temperature so we get a reading of t_fine. */
->>  	ret = bmp280_read_temp(data, NULL);
->> @@ -303,7 +289,7 @@ static int bmp280_read_press(struct bmp280_data *data,
->>  	}
->>  
->>  	adc_press = be32_to_cpu(tmp) >> 12;
->> -	comp_press = bmp280_compensate_press(data, &comp, adc_press);
->> +	comp_press = bmp280_compensate_press(data, adc_press);
->>  
->>  	*val = comp_press;
->>  	*val2 = 256000;
->> @@ -375,6 +361,14 @@ static int bmp280_chip_init(struct bmp280_data *data)
->>  		return ret;
->>  	}
->>  
->> +	ret = bmp280_read_compensation_temp(data);
->> +	if (ret < 0)
->> +		return ret;
->> +
->> +	ret = bmp280_read_compensation_press(data);
->> +	if (ret < 0)
->> +		return ret;
->> +
->>  	return ret;
->>  }
->>  
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> 
+On 25/10/14 18:34, Hartmut Knaack wrote:
+> Jonathan Cameron schrieb am 25.10.2014 12:02:
+>> On 18/10/14 20:46, Hartmut Knaack wrote:
+>>> In si7020_read_raw() the pointer to the i2c client was obtained as second level pointer, although a simple pointer would be sufficient. Cleaned this.
+>>> When reading temperature or humidity values, a right-shift of two bits needs to be applied, and only for the humidity channel a mask of the lower 12 bits needs to be applied. This reduces code repetition.
+>>> During probe, i2c_set_clientdata() was used, although its counterpart was not, so drop it.
+>>>
+>>> Signed-off-by: Hartmut Knaack <knaack.h@gmx.de>
+>> I think the incorrect pointer is a bug (rather than simply unnecessary).
+> Could you give me some infos, why you assess this issue as a bug?
+Fair point.  It's a bug with no effect whatsoever.
+I didn't really follow that through other than going
+"Gah it has the wrong type, we'll dereference it once too many and it will
+eat babies!"
 
+Clearly it just gets passed on wards thus two bugs cancel each other out.
+
+>> The other stuff is a cleanup (sensible but not stable material).
+>>
+>> Please split the patch into two.
+> No problem at all.
+I'll probably just take them both through togreg anyway so would have
+been fine in the first place.  Sorry about that.
+
+J
+>>
+>> Thanks,
+>>
+>> Jonathan
+>>> ---
+>>> diff --git a/drivers/iio/humidity/si7020.c b/drivers/iio/humidity/si7020.c
+>>> index e336af7..b541646 100644
+>>> --- a/drivers/iio/humidity/si7020.c
+>>> +++ b/drivers/iio/humidity/si7020.c
+>>> @@ -45,21 +45,20 @@ static int si7020_read_raw(struct iio_dev *indio_dev,
+>>>  			   struct iio_chan_spec const *chan, int *val,
+>>>  			   int *val2, long mask)
+>>>  {
+>>> -	struct i2c_client **client = iio_priv(indio_dev);
+>>> +	struct i2c_client *client = iio_priv(indio_dev);
+>>>  	int ret;
+>>>
+>>>  	switch (mask) {
+>>>  	case IIO_CHAN_INFO_RAW:
+>>> -		ret = i2c_smbus_read_word_data(*client,
+>>> +		ret = i2c_smbus_read_word_data(client,
+>>>  					       chan->type == IIO_TEMP ?
+>>>  					       SI7020CMD_TEMP_HOLD :
+>>>  					       SI7020CMD_RH_HOLD);
+>>>  		if (ret < 0)
+>>>  			return ret;
+>>> -		if (chan->type == IIO_TEMP)
+>>> -			*val = ret >> 2;
+>>> -		else
+>>> -			*val = (ret & 0x3FFF) >> 2;
+>>> +		*val = ret >> 2;
+>>> +		if (chan->type == IIO_HUMIDITYRELATIVE)
+>>> +			*val &= GENMASK(11, 0);
+>>>  		return IIO_VAL_INT;
+>>>  	case IIO_CHAN_INFO_SCALE:
+>>>  		if (chan->type == IIO_TEMP)
+>>> @@ -133,7 +132,6 @@ static int si7020_probe(struct i2c_client *client,
+>>>
+>>>  	data = iio_priv(indio_dev);
+>>>  	*data = client;
+>>> -	i2c_set_clientdata(client, indio_dev);
+>>>
+>>>  	indio_dev->dev.parent = &client->dev;
+>>>  	indio_dev->name = dev_name(&client->dev);
+>>> --
+>>> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+>>> the body of a message to majordomo@vger.kernel.org
+>>> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+>>>
+>>
+> 
