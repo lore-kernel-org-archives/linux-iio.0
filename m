@@ -1,178 +1,218 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mout.gmx.net ([212.227.17.21]:58263 "EHLO mout.gmx.net"
+Received: from comal.ext.ti.com ([198.47.26.152]:57615 "EHLO comal.ext.ti.com"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1161570AbaJaB0W (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Thu, 30 Oct 2014 21:26:22 -0400
-Message-ID: <5452E502.6060609@gmx.de>
-Date: Fri, 31 Oct 2014 02:25:22 +0100
-From: Hartmut Knaack <knaack.h@gmx.de>
+	id S1752497AbaJ0LK1 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Mon, 27 Oct 2014 07:10:27 -0400
+From: Vignesh R <vigneshr@ti.com>
+To: Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>,
+	Mark Rutland <mark.rutland@arm.com>,
+	Ian Campbell <ijc+devicetree@hellion.org.uk>,
+	Kumar Gala <galak@codeaurora.org>,
+	Benoit Cousson <bcousson@baylibre.com>,
+	Tony Lindgren <tony@atomide.com>,
+	Russell King <linux@arm.linux.org.uk>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Dmitry Torokhov <dmitry.torokhov@gmail.com>
+CC: Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Samuel Ortiz <sameo@linux.intel.com>,
+	Lee Jones <lee.jones@linaro.org>, Felipe Balbi <balbi@ti.com>,
+	Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+	Jan Kardell <jan.kardell@telliq.com>,
+	Paul Gortmaker <paul.gortmaker@windriver.com>,
+	Brad Griffis <bgriffis@ti.com>, <devicetree@vger.kernel.org>,
+	<linux-kernel@vger.kernel.org>, <linux-omap@vger.kernel.org>,
+	<linux-arm-kernel@lists.infradead.org>,
+	<linux-iio@vger.kernel.org>, <linux-input@vger.kernel.org>,
+	Vignesh R <vigneshr@ti.com>
+Subject: [PATCH 2/4] input: touchscreen: ti_am335x_tsc: Remove udelay in interrupt handler
+Date: Mon, 27 Oct 2014 16:38:29 +0530
+Message-ID: <1414408111-2631-3-git-send-email-vigneshr@ti.com>
+In-Reply-To: <1414408111-2631-1-git-send-email-vigneshr@ti.com>
+References: <1414408111-2631-1-git-send-email-vigneshr@ti.com>
 MIME-Version: 1.0
-To: IIO <linux-iio@vger.kernel.org>
-CC: vlad.dogaru@intel.com
-Subject: [PATCH 3/3]iio:pressure:bmp280: read compensation data only at init
-Content-Type: text/plain; charset=ISO-8859-15
+Content-Type: text/plain
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Compensation data is hard coded into the sensors, so it is sufficient to just
-read it once during device initialization. Therefor struct bmp280_comp should be
-part of bmp280_data (since the elements of bmp280_comp_temp and
-bmp280_comp_press have distinct names, they could be merged into bmp280_comp).
+From: Brad Griffis <bgriffis@ti.com>
 
-Signed-off-by: Hartmut Knaack <knaack.h@gmx.de>
+TSC interrupt handler had udelay to avoid reporting of false pen-up
+interrupt to user space. This patch implements workaround suggesting in
+Advisory 1.0.31 of silicon errata for am335x, thus eliminating udelay
+and touchscreen lag. This also improves performance of touchscreen and
+eliminates sudden jump of cursor at touch release.
+
+IDLECONFIG and CHARGECONFIG registers are to be configured
+with same values in order to eliminate false pen-up events. This
+workaround may result in false pen-down to be detected, hence considerable
+charge step delay needs to be added. The charge delay is set to 0xB000
+(in terms of ADC clock cycles) by default.
+
+TSC steps are disabled at the end of every sampling cycle and EOS bit is
+set. Once the EOS bit is set, the TSC steps need to be re-enabled to begin
+next sampling cycle.
+
+In one shot mode, sequencer automatically disables all enabled steps at
+the end of each cycle. (both ADC steps and TSC steps) Hence these steps
+need not be saved in reg_se_cache for clearing these steps at a later
+stage.
+
+Signed-off-by: Brad Griffis <bgriffis@ti.com>
+[vigneshr@ti.com: Ported patch from v3.12 to v3.18rc2]
+Signed-off-by: Vignesh R <vigneshr@ti.com>
 ---
-diff --git a/drivers/iio/pressure/bmp280.c b/drivers/iio/pressure/bmp280.c
-index 4f6ae4d..36e425c 100644
---- a/drivers/iio/pressure/bmp280.c
-+++ b/drivers/iio/pressure/bmp280.c
-@@ -68,10 +68,19 @@
- #define BMP280_CHIP_ID			0x58
- #define BMP280_SOFT_RESET_VAL		0xB6
+ drivers/input/touchscreen/ti_am335x_tsc.c | 56 ++++++++++++-------------------
+ drivers/mfd/ti_am335x_tscadc.c            |  7 ++--
+ include/linux/mfd/ti_am335x_tscadc.h      |  4 ++-
+ 3 files changed, 30 insertions(+), 37 deletions(-)
+
+diff --git a/drivers/input/touchscreen/ti_am335x_tsc.c b/drivers/input/touchscreen/ti_am335x_tsc.c
+index 1aeac9675fe7..483fd97c0e0c 100644
+--- a/drivers/input/touchscreen/ti_am335x_tsc.c
++++ b/drivers/input/touchscreen/ti_am335x_tsc.c
+@@ -173,11 +173,9 @@ static void titsc_step_config(struct titsc *ts_dev)
+ 		titsc_writel(ts_dev, REG_STEPDELAY(i), STEPCONFIG_OPENDLY);
+ 	}
  
-+/* Compensation parameters. */
-+struct bmp280_comp {
-+	u16 dig_p1;
-+	s16 dig_p2, dig_p3, dig_p4, dig_p5, dig_p6, dig_p7, dig_p8, dig_p9;
-+	u16 dig_t1;
-+	s16 dig_t2, dig_t3;
-+};
+-	/* Charge step configuration */
+-	config = ts_dev->bit_xp | ts_dev->bit_yn |
+-			STEPCHARGE_RFP_XPUL | STEPCHARGE_RFM_XNUR |
+-			STEPCHARGE_INM_AN1 | STEPCHARGE_INP(ts_dev->inp_yp);
++	/* Make CHARGECONFIG same as IDLECONFIG */
+ 
++	config = titsc_readl(ts_dev, REG_IDLECONFIG);
+ 	titsc_writel(ts_dev, REG_CHARGECONFIG, config);
+ 	titsc_writel(ts_dev, REG_CHARGEDELAY, CHARGEDLY_OPENDLY);
+ 
+@@ -264,9 +262,26 @@ static irqreturn_t titsc_irq(int irq, void *dev)
+ 	unsigned int status, irqclr = 0;
+ 	unsigned int x = 0, y = 0;
+ 	unsigned int z1, z2, z;
+-	unsigned int fsm;
+ 
+-	status = titsc_readl(ts_dev, REG_IRQSTATUS);
++	status = titsc_readl(ts_dev, REG_RAWIRQSTATUS);
++	if (status & IRQENB_HW_PEN) {
++		ts_dev->pen_down = true;
++		titsc_writel(ts_dev, REG_IRQWAKEUP, 0x00);
++		titsc_writel(ts_dev, REG_IRQCLR, IRQENB_HW_PEN);
++		irqclr |= IRQENB_HW_PEN;
++	}
 +
- struct bmp280_data {
- 	struct i2c_client *client;
- 	struct mutex lock;
- 	struct regmap *regmap;
-+	struct bmp280_comp comp;
- 
++	if (status & IRQENB_PENUP) {
++		ts_dev->pen_down = false;
++		input_report_key(input_dev, BTN_TOUCH, 0);
++		input_report_abs(input_dev, ABS_PRESSURE, 0);
++		input_sync(input_dev);
++		irqclr |= IRQENB_PENUP;
++	}
++
++	if (status & IRQENB_EOS)
++		irqclr |= IRQENB_EOS;
++
  	/*
- 	 * Carryover value from temperature conversion, used in pressure
-@@ -80,17 +89,6 @@ struct bmp280_data {
- 	s32 t_fine;
- };
- 
--/* Compensation parameters. */
--struct bmp280_comp_temp {
--	u16 dig_t1;
--	s16 dig_t2, dig_t3;
--};
+ 	 * ADC and touchscreen share the IRQ line.
+ 	 * FIFO1 interrupts are used by ADC. Handle FIFO0 IRQs here only
+@@ -297,34 +312,6 @@ static irqreturn_t titsc_irq(int irq, void *dev)
+ 		}
+ 		irqclr |= IRQENB_FIFO0THRES;
+ 	}
 -
--struct bmp280_comp_press {
--	u16 dig_p1;
--	s16 dig_p2, dig_p3, dig_p4, dig_p5, dig_p6, dig_p7, dig_p8, dig_p9;
--};
+-	/*
+-	 * Time for sequencer to settle, to read
+-	 * correct state of the sequencer.
+-	 */
+-	udelay(SEQ_SETTLE);
 -
- static const struct iio_chan_spec bmp280_channels[] = {
- 	{
- 		.type = IIO_PRESSURE,
-@@ -141,11 +139,11 @@ static const struct regmap_config bmp280_regmap_config = {
- 	.volatile_reg = bmp280_is_volatile_reg,
- };
- 
--static int bmp280_read_compensation_temp(struct bmp280_data *data,
--					 struct bmp280_comp_temp *comp)
-+static int bmp280_read_compensation_temp(struct bmp280_data *data)
- {
- 	int ret;
- 	__le16 buf[BMP280_COMP_TEMP_REG_COUNT / 2];
-+	struct bmp280_comp *comp = &data->comp;
- 
- 	ret = regmap_bulk_read(data->regmap, BMP280_REG_COMP_TEMP_START,
- 			       buf, BMP280_COMP_TEMP_REG_COUNT);
-@@ -162,11 +160,11 @@ static int bmp280_read_compensation_temp(struct bmp280_data *data,
- 	return 0;
- }
- 
--static int bmp280_read_compensation_press(struct bmp280_data *data,
--					  struct bmp280_comp_press *comp)
-+static int bmp280_read_compensation_press(struct bmp280_data *data)
- {
- 	int ret;
- 	__le16 buf[BMP280_COMP_PRESS_REG_COUNT / 2];
-+	struct bmp280_comp *comp = &data->comp;
- 
- 	ret = regmap_bulk_read(data->regmap, BMP280_REG_COMP_PRESS_START,
- 			       buf, BMP280_COMP_PRESS_REG_COUNT);
-@@ -196,11 +194,10 @@ static int bmp280_read_compensation_press(struct bmp280_data *data,
-  *
-  * Taken from datasheet, Section 3.11.3, "Compensation formula".
-  */
--static s32 bmp280_compensate_temp(struct bmp280_data *data,
--				  struct bmp280_comp_temp *comp,
--				  s32 adc_temp)
-+static s32 bmp280_compensate_temp(struct bmp280_data *data, s32 adc_temp)
- {
- 	s32 var1, var2;
-+	struct bmp280_comp *comp = &data->comp;
- 
- 	var1 = (((adc_temp >> 3) - ((s32) comp->dig_t1 << 1)) *
- 		((s32) comp->dig_t2)) >> 11;
-@@ -219,11 +216,10 @@ static s32 bmp280_compensate_temp(struct bmp280_data *data,
-  *
-  * Taken from datasheet, Section 3.11.3, "Compensation formula".
-  */
--static u32 bmp280_compensate_press(struct bmp280_data *data,
--				   struct bmp280_comp_press *comp,
--				   s32 adc_press)
-+static u32 bmp280_compensate_press(struct bmp280_data *data, s32 adc_press)
- {
- 	s64 var1, var2, p;
-+	struct bmp280_comp *comp = &data->comp;
- 
- 	var1 = ((s64) data->t_fine) - 128000;
- 	var2 = var1 * var1 * (s64) comp->dig_p6;
-@@ -249,11 +245,6 @@ static int bmp280_read_temp(struct bmp280_data *data,
- 	int ret;
- 	__be32 tmp = 0;
- 	s32 adc_temp, comp_temp;
--	struct bmp280_comp_temp comp;
+-	status = titsc_readl(ts_dev, REG_RAWIRQSTATUS);
+-	if (status & IRQENB_PENUP) {
+-		/* Pen up event */
+-		fsm = titsc_readl(ts_dev, REG_ADCFSM);
+-		if (fsm == ADCFSM_STEPID) {
+-			ts_dev->pen_down = false;
+-			input_report_key(input_dev, BTN_TOUCH, 0);
+-			input_report_abs(input_dev, ABS_PRESSURE, 0);
+-			input_sync(input_dev);
+-		} else {
+-			ts_dev->pen_down = true;
+-		}
+-		irqclr |= IRQENB_PENUP;
+-	}
 -
--	ret = bmp280_read_compensation_temp(data, &comp);
--	if (ret < 0)
--		return ret;
- 
- 	ret = regmap_bulk_read(data->regmap, BMP280_REG_TEMP_MSB,
- 			       (u8 *) &tmp, 3);
-@@ -263,7 +254,7 @@ static int bmp280_read_temp(struct bmp280_data *data,
+-	if (status & IRQENB_HW_PEN) {
+-
+-		titsc_writel(ts_dev, REG_IRQWAKEUP, 0x00);
+-		titsc_writel(ts_dev, REG_IRQCLR, IRQENB_HW_PEN);
+-	}
+-
+ 	if (irqclr) {
+ 		titsc_writel(ts_dev, REG_IRQSTATUS, irqclr);
+ 		am335x_tsc_se_set_cache(ts_dev->mfd_tscadc, ts_dev->step_mask);
+@@ -417,6 +404,7 @@ static int titsc_probe(struct platform_device *pdev)
  	}
  
- 	adc_temp = be32_to_cpu(tmp) >> 12;
--	comp_temp = bmp280_compensate_temp(data, &comp, adc_temp);
-+	comp_temp = bmp280_compensate_temp(data, adc_temp);
+ 	titsc_writel(ts_dev, REG_IRQENABLE, IRQENB_FIFO0THRES);
++	titsc_writel(ts_dev, REG_IRQENABLE, IRQENB_EOS);
+ 	err = titsc_config_wires(ts_dev);
+ 	if (err) {
+ 		dev_err(&pdev->dev, "wrong i/p wire configuration\n");
+diff --git a/drivers/mfd/ti_am335x_tscadc.c b/drivers/mfd/ti_am335x_tscadc.c
+index d877e777cce6..94ef8992f46b 100644
+--- a/drivers/mfd/ti_am335x_tscadc.c
++++ b/drivers/mfd/ti_am335x_tscadc.c
+@@ -86,8 +86,12 @@ static void am335x_tscadc_need_adc(struct ti_tscadc_dev *tsadc)
+ 		spin_lock_irq(&tsadc->reg_lock);
+ 		finish_wait(&tsadc->reg_se_wait, &wait);
  
- 	/*
- 	 * val might be NULL if we're called by the read_press routine,
-@@ -284,11 +275,6 @@ static int bmp280_read_press(struct bmp280_data *data,
- 	__be32 tmp = 0;
- 	s32 adc_press;
- 	u32 comp_press;
--	struct bmp280_comp_press comp;
--
--	ret = bmp280_read_compensation_press(data, &comp);
--	if (ret < 0)
--		return ret;
- 
- 	/* Read and compensate temperature so we get a reading of t_fine. */
- 	ret = bmp280_read_temp(data, NULL);
-@@ -303,7 +289,7 @@ static int bmp280_read_press(struct bmp280_data *data,
++		/*
++		 * Sequencer should either be idle or
++		 * busy applying the charge step.
++		 */
+ 		reg = tscadc_readl(tsadc, REG_ADCFSM);
+-		WARN_ON(reg & SEQ_STATUS);
++		WARN_ON(reg & SEQ_STATUS & (!CHARGE_STEP));
+ 		tsadc->adc_waiting = false;
  	}
+ 	tsadc->adc_in_use = true;
+@@ -96,7 +100,6 @@ static void am335x_tscadc_need_adc(struct ti_tscadc_dev *tsadc)
+ void am335x_tsc_se_set_once(struct ti_tscadc_dev *tsadc, u32 val)
+ {
+ 	spin_lock_irq(&tsadc->reg_lock);
+-	tsadc->reg_se_cache |= val;
+ 	am335x_tscadc_need_adc(tsadc);
  
- 	adc_press = be32_to_cpu(tmp) >> 12;
--	comp_press = bmp280_compensate_press(data, &comp, adc_press);
-+	comp_press = bmp280_compensate_press(data, adc_press);
+ 	tscadc_writel(tsadc, REG_SE, val);
+diff --git a/include/linux/mfd/ti_am335x_tscadc.h b/include/linux/mfd/ti_am335x_tscadc.h
+index e2e70053470e..fcce182e4a35 100644
+--- a/include/linux/mfd/ti_am335x_tscadc.h
++++ b/include/linux/mfd/ti_am335x_tscadc.h
+@@ -52,6 +52,7 @@
  
- 	*val = comp_press;
- 	*val2 = 256000;
-@@ -375,6 +361,14 @@ static int bmp280_chip_init(struct bmp280_data *data)
- 		return ret;
- 	}
+ /* IRQ enable */
+ #define IRQENB_HW_PEN		BIT(0)
++#define IRQENB_EOS		BIT(1)
+ #define IRQENB_FIFO0THRES	BIT(2)
+ #define IRQENB_FIFO0OVRRUN	BIT(3)
+ #define IRQENB_FIFO0UNDRFLW	BIT(4)
+@@ -107,7 +108,7 @@
+ /* Charge delay */
+ #define CHARGEDLY_OPEN_MASK	(0x3FFFF << 0)
+ #define CHARGEDLY_OPEN(val)	((val) << 0)
+-#define CHARGEDLY_OPENDLY	CHARGEDLY_OPEN(1)
++#define CHARGEDLY_OPENDLY	CHARGEDLY_OPEN(0xB000)
  
-+	ret = bmp280_read_compensation_temp(data);
-+	if (ret < 0)
-+		return ret;
-+
-+	ret = bmp280_read_compensation_press(data);
-+	if (ret < 0)
-+		return ret;
-+
- 	return ret;
- }
+ /* Control register */
+ #define CNTRLREG_TSCSSENB	BIT(0)
+@@ -127,6 +128,7 @@
  
+ /* Sequencer Status */
+ #define SEQ_STATUS BIT(5)
++#define CHARGE_STEP		0x11
+ 
+ #define ADC_CLK			3000000
+ #define TOTAL_STEPS		16
+-- 
+1.9.1
+
