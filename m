@@ -1,33 +1,68 @@
-Return-Path: <srinivas.pandruvada@linux.intel.com>
-Message-ID: <1414768889.3254.4.camel@spandruv-hsb-test>
-Subject: Re: [PATCH 0/1] iio: ak8975: Add AKM0991x support.
-From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-To: Gwendal Grignou <gwendal@chromium.org>
-Cc: jic23@kernel.org, linux-iio@vger.kernel.org
-Date: Fri, 31 Oct 2014 08:21:29 -0700
-In-Reply-To: <1414620097-6787-1-git-send-email-gwendal@chromium.org>
-References: <1414620097-6787-1-git-send-email-gwendal@chromium.org>
-Content-Type: text/plain; charset="UTF-8"
-Mime-Version: 1.0
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mga11.intel.com ([192.55.52.93]:60184 "EHLO mga11.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751338AbaJ1KTa (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Tue, 28 Oct 2014 06:19:30 -0400
+From: Daniel Baluta <daniel.baluta@intel.com>
+To: jic23@kernel.org, linux-iio@vger.kernel.org
+Cc: daniel.baluta@intel.com, knaack.h@gmx.de,
+	linux-kernel@vger.kernel.org, irina.tirdea@intel.com
+Subject: [PATCH v3 0/7] Introduce IIO interface for Android advanced features
+Date: Tue, 28 Oct 2014 12:19:24 +0200
+Message-Id: <1414491571-11672-1-git-send-email-daniel.baluta@intel.com>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Wed, 2014-10-29 at 15:01 -0700, Gwendal Grignou wrote:
-> AK09912 is an accelerometer with the same register set as AK09911, but
-> same behavior as AK8973, so I was not sure where to add the support.
-> I decided to merge all AKM magnetometer support in the same file while
-> being as clean as I could.
-> 
-AK09911 is implemented as a separate driver to have a clean. 
-- Register map is different and have different indexes
-- AK09911 is a very compact interface with no DRDY pin. So no support
-     of interrupt or GPIO poll
-- Even for polled mode no mention on ST2 register, which is required in
-    ak8975 driver
-- mode values are different for fuse access
+This patchset introduces a new interface for supporting some of the composite
+sensors in Android [1]. First supported sensors are activity and pedometer.
 
-I didn't get chance to check your merged driver, IMO simple standalone
-driver is better if there are two many difference like above, difference
-between AK09911 and AK8973.
+This is a follow up of the discussion about adding new channels to IIO
+initiated some time ago on IIO list [2].
 
-Thanks,
-Srinivas
+A device that has the activity/pedometer functionality is Freescale's MMA9553L ([3]).
+
+Because we don't have yet the hardware, to demonstrate these new channels we
+update iio_dummy kernel module and iio_event_monitor test program. We want
+to get an early feedback about extending the IIO interface in the correct
+direction.
+
+[1] http://source.android.com/devices/sensors/composite_sensors.html
+[2] http://marc.info/?l=linux-iio&m=138374342831057&w=2
+[3] http://www.freescale.com/files/sensors/doc/ref_manual/MMA9553LSWRM.pdf
+
+Changes since v2: (comments from Jonathan and Hartmut)
+	* dropped the RFC tag
+	* use int instead of unsigned long for ret in iio_evgen_poke
+	* remove TRANSITION event and use THRESHOLD instead
+	* remove IIO_HEIGHT channel and use CALIBHEIGHT mask instead
+	* adapt iio_dummy modules and iio_event_monitor to reflect IIO
+	  interface changes.
+
+Daniel Baluta (4):
+  iio: dummy: Add virtual registers for dummy device
+  iio: core: Introduce IIO_ACTIVITY channel
+  iio: dummy: Demonstrate the usage of new channel types
+  iio: event_monitor: Add support for new channel types
+
+Irina Tirdea (3):
+  iio: core: Introduce IIO_EV_DIR_NONE
+  iio: core: Introduce STEPS channel type, ENABLE mask and INSTANCE
+    event
+  iio: core: Introduce IIO_CHAN_INFO_CALIBHEIGHT
+
+ Documentation/ABI/testing/sysfs-bus-iio            |  74 ++++++++
+ drivers/iio/industrialio-core.c                    |   8 +
+ drivers/iio/industrialio-event.c                   |  13 +-
+ .../staging/iio/Documentation/iio_event_monitor.c  |  23 ++-
+ drivers/staging/iio/iio_dummy_evgen.c              |  17 ++
+ drivers/staging/iio/iio_dummy_evgen.h              |   6 +
+ drivers/staging/iio/iio_simple_dummy.c             | 199 +++++++++++++++++++--
+ drivers/staging/iio/iio_simple_dummy.h             |   7 +
+ drivers/staging/iio/iio_simple_dummy_events.c      |  66 ++++++-
+ include/linux/iio/iio.h                            |   2 +
+ include/linux/iio/types.h                          |  10 +-
+ 11 files changed, 395 insertions(+), 30 deletions(-)
+
+-- 
+1.9.1
+
