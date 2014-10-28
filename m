@@ -1,51 +1,59 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-ie0-f176.google.com ([209.85.223.176]:62756 "EHLO
-	mail-ie0-f176.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1759739AbaJaUxm (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 31 Oct 2014 16:53:42 -0400
-Received: by mail-ie0-f176.google.com with SMTP id rd18so2015060iec.7
-        for <linux-iio@vger.kernel.org>; Fri, 31 Oct 2014 13:53:41 -0700 (PDT)
+Received: from mail.linuxfoundation.org ([140.211.169.12]:57009 "EHLO
+	mail.linuxfoundation.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751505AbaJ1OYY (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 28 Oct 2014 10:24:24 -0400
+Date: Tue, 28 Oct 2014 22:23:11 +0800
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To: Daniel Baluta <daniel.baluta@intel.com>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	Roberta Dobrescu <roberta.dobrescu@gmail.com>,
+	opw-kernel <opw-kernel@googlegroups.com>,
+	linux-iio@vger.kernel.org
+Subject: Re: [OPW kernel] [PATCH v3] staging: iio: iio_event_monitor: Add
+ support for missing IIO modifiers
+Message-ID: <20141028142311.GA18837@kroah.com>
+References: <1413985817-10867-1-git-send-email-roberta.dobrescu@gmail.com>
+ <CAEnQRZC2=1NaCfFjA6=TVU936LUzApobOgi5wPEOw6S4q3T29Q@mail.gmail.com>
+ <544B73DD.2060802@kernel.org>
+ <CAEnQRZABCT=+X1-gqZmyBBNECmA_cwUY0whZvf1Orob_8tnfEg@mail.gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <c422075c-f86a-415b-a19b-d4c11fd5e0fd@email.android.com>
-References: <1408815064-5763-1-git-send-email-linus.walleij@linaro.org>
-	<53FB6205.5020704@kernel.org>
-	<CACRpkdZuSsePVjPpmLV5bs5VOcbnH2_gK4-kOfbpBM1-7Q=zgQ@mail.gmail.com>
-	<c422075c-f86a-415b-a19b-d4c11fd5e0fd@email.android.com>
-Date: Fri, 31 Oct 2014 21:53:41 +0100
-Message-ID: <CACRpkdZQk+5bemmLQsiP-eLiAhrS8-cJriP=8LBaBDu+Jiustw@mail.gmail.com>
-Subject: Re: [PATCH] iio: st-sensors: add support for lis3lv02d accelerometer
-From: Linus Walleij <linus.walleij@linaro.org>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	Denis CIOCCA <denis.ciocca@st.com>,
-	Lee Jones <lee.jones@linaro.org>,
-	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <CAEnQRZABCT=+X1-gqZmyBBNECmA_cwUY0whZvf1Orob_8tnfEg@mail.gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Thu, Sep 11, 2014 at 6:39 PM, Jonathan Cameron <jic23@kernel.org> wrote:
-> On September 11, 2014 10:13:24 AM GMT+01:00, Linus Walleij <linus.walleij@linaro.org> wrote:
+On Tue, Oct 28, 2014 at 02:40:21PM +0200, Daniel Baluta wrote:
+> On Sat, Oct 25, 2014 at 12:56 PM, Jonathan Cameron <jic23@kernel.org> wrote:
+> > On 22/10/14 15:12, Daniel Baluta wrote:
+> >> On Wed, Oct 22, 2014 at 4:50 PM, Roberta Dobrescu
+> >> <roberta.dobrescu@gmail.com> wrote:
+> >>> This patch adds the missing IIO modifiers in event_is_known function
+> >>> and iio_modifier_names vector.
+> >>>
+> >>> Additionally, it removes duplicate name entries of IIO_MOD_LIGHT_BOTH
+> >>> and IIO_MOD_LIGHT_IR in iio_modifier_names.
+> >>>
+> >>> Signed-off-by: Roberta Dobrescu <roberta.dobrescu@gmail.com>
+> >>
+> >> Reviewed-by: Daniel Baluta <daniel.baluta@intel.com>
+> >>
+> > Applied to the togreg branch of iio.git - initially pushed out as
+> > testing for the autobuilders to play.
+> 
+> Hi,
+> 
+> FYI:
+> 
+> Please note that this patch is both in Greg's staging-testing [1]
+> and Jonathan's testing [2] tree.
+> 
+> thanks,
+> Daniel.
+> 
+> [1] https://git.kernel.org/cgit/linux/kernel/git/gregkh/staging.git/commit/?h=staging-testing&id=0a6e2170dfcd2b17ae32ad91993edf2b77014137
+> [2] https://git.kernel.org/cgit/linux/kernel/git/jic23/iio.git/commit/?h=testing&id=a9bef750135cc261bfceff6840a30a3f357df8da
 
->>Apart from that it has a custom sysfs interface to read the
->>accelerometer, similar to the IIO interface. It seems to *only* support
->>raw values AFAICT  though, not sensitivity adjustment, so my patch
->>gives the ability to have better sensor handling in the kernel from an
->>IIO point of view.
->>
-> I likewise looked at this long ago (came out roughly concurrently
-> with the similar lis3l02dq driver) came to roughly the same conclusion.
+That's ok, git handles that just fine when we merge together.
 
-So Jonathan what do you say, should we simply merge this patch?
-
-It will be two drivers in the kernel for the same hardware but one
-of them is modern and uses IIO.
-
-The misc driver maintainers doesn't seem to be moving anywhere
-near IIO on its own whereas this patch establishes a base for
-moving features over to generic IIO whenever someone finds the
-time.
-
-Yours,
-Linus Walleij
+greg k-h
