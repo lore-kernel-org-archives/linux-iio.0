@@ -1,62 +1,181 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp-out-207.synserver.de ([212.40.185.207]:1037 "EHLO
-	smtp-out-207.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750712AbaJ2RjY (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 29 Oct 2014 13:39:24 -0400
-Message-ID: <54512640.3040505@metafoo.de>
-Date: Wed, 29 Oct 2014 18:39:12 +0100
-From: Lars-Peter Clausen <lars@metafoo.de>
+Received: from mail-qg0-f46.google.com ([209.85.192.46]:32845 "EHLO
+	mail-qg0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751406AbaJ1Mbi (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 28 Oct 2014 08:31:38 -0400
 MIME-Version: 1.0
-To: Bastien Nocera <hadess@hadess.net>
-CC: linux-iio@vger.kernel.org
-Subject: Re: Kernel wishlist item: Better IIO API
-References: <1414593052.2406.37.camel@hadess.net>	 <5451221D.6000301@metafoo.de> <1414604035.2406.41.camel@hadess.net>
-In-Reply-To: <1414604035.2406.41.camel@hadess.net>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+In-Reply-To: <1410857931-4980-2-git-send-email-ch.naveen@samsung.com>
+References: <1410857931-4980-1-git-send-email-ch.naveen@samsung.com>
+	<1410857931-4980-2-git-send-email-ch.naveen@samsung.com>
+Date: Tue, 28 Oct 2014 18:01:36 +0530
+Message-ID: <CAFp+6iH77ToXfOG1bXpCi60JpuzhhxOqaz99=9v4_9DppkSCNw@mail.gmail.com>
+Subject: Re: [PATCH v2 1/3] iio: exyno-adc: use syscon for PMU register access
+From: Vivek Gautam <gautam.vivek@samsung.com>
+To: linux-iio@vger.kernel.org
+Cc: "linux-samsung-soc@vger.kernel.org"
+	<linux-samsung-soc@vger.kernel.org>,
+	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	cw00.choi@samsung.com, Greg KH <gregkh@linuxfoundation.org>,
+	naveenkrishna.ch@gmail.com, lars@metafoo.de,
+	CPGS <cpgs@samsung.com>, grundler@chromium.org, jic23@kernel.org
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 10/29/2014 06:33 PM, Bastien Nocera wrote:
-> On Wed, 2014-10-29 at 18:21 +0100, Lars-Peter Clausen wrote:
->> On 10/29/2014 03:30 PM, Bastien Nocera wrote:
->>> Hey,
->>>
->>> I've posted this a couple of days ago:
->>> http://www.hadess.net/2014/10/a-gnome-kernel-wishlist.html
->>> along with a mail to LKML:
->>> http://thread.gmane.org/gmane.linux.kernel/1810083
->>>
->>> I've recently added to my list an item about IIO:
->>> https://wiki.gnome.org/BastienNocera/KernelWishlist
->>>
->>> Are there any plans for a better API for the IIO subsystem? The API
->>> might be good enough to drive from shell scripts, or helpers that only
->>> need to work with one variant of a device, but my attempts at trying to
->>> use the IIO subsystem to provide an accelerometer to do automatic
->>> display rotation[1] showed that the API is really cumbersome.
->>>
->>> The code I wrote spends most of its time creating sysfs paths, reading
->>> values in different formats, and mangling filenames[2].
->>>
->>> Is an ioctl-based API planned? Something where I could get/set
->>> structures to gather metadata about the device, and set it up easily, so
->>> reading data from it is easier?
->>
->> No, unfortunately not and I'm not sure if such a ABI would be accepted if
->> proposed.
->
-> Why not?
+Hi all,
 
-Because it means there will be ambiguity in the API on how to do things. 
-Which is typically not a desired property.
+
+CC'ing Naveen's gmail id, since the Samsung id is invalid now.
+
+
+On Tue, Sep 16, 2014 at 2:28 PM, Naveen Krishna Chatradhi
+<ch.naveen@samsung.com> wrote:
+> This patch updates the IIO based ADC driver to use syscon and regmap
+> APIs to access and use PMU registers instead of remapping the PMU
+> registers in the driver.
+>
+> Signed-off-by: Naveen Krishna Chatradhi <ch.naveen@samsung.com>
+> To: linux-iio@vger.kernel.org
+> ---
+> Changes since v1:
+> Rebased on top of togreg branch of IIO git
+
+If the changes look good, then first two patches of this series can be
+picked up ?
+The last dt patch then belongs to samsung tree.
 
 >
->> But checkout libiio[1][2], it hides the details of the sysfs file manipulation.
+>  drivers/iio/adc/exynos_adc.c |   30 +++++++++++++++++++++---------
+>  1 file changed, 21 insertions(+), 9 deletions(-)
 >
-> I'm not sure that's any better unfortunately. I've certainly tried to do
-> that already in my code, but that doesn't change that the user-space API
-> is barely usable.
+> diff --git a/drivers/iio/adc/exynos_adc.c b/drivers/iio/adc/exynos_adc.c
+> index 43620fd..fe03177 100644
+> --- a/drivers/iio/adc/exynos_adc.c
+> +++ b/drivers/iio/adc/exynos_adc.c
+> @@ -39,6 +39,8 @@
+>  #include <linux/iio/iio.h>
+>  #include <linux/iio/machine.h>
+>  #include <linux/iio/driver.h>
+> +#include <linux/mfd/syscon.h>
+> +#include <linux/regmap.h>
+>
+>  /* S3C/EXYNOS4412/5250 ADC_V1 registers definitions */
+>  #define ADC_V1_CON(x)          ((x) + 0x00)
+> @@ -90,11 +92,14 @@
+>
+>  #define EXYNOS_ADC_TIMEOUT     (msecs_to_jiffies(100))
+>
+> +#define EXYNOS_ADCV1_PHY_OFFSET        0x0718
+> +#define EXYNOS_ADCV2_PHY_OFFSET        0x0720
+> +
+>  struct exynos_adc {
+>         struct exynos_adc_data  *data;
+>         struct device           *dev;
+>         void __iomem            *regs;
+> -       void __iomem            *enable_reg;
+> +       struct regmap           *pmu_map;
+>         struct clk              *clk;
+>         struct clk              *sclk;
+>         unsigned int            irq;
+> @@ -110,6 +115,7 @@ struct exynos_adc_data {
+>         int num_channels;
+>         bool needs_sclk;
+>         bool needs_adc_phy;
+> +       int phy_offset;
+>         u32 mask;
+>
+>         void (*init_hw)(struct exynos_adc *info);
+> @@ -183,7 +189,7 @@ static void exynos_adc_v1_init_hw(struct exynos_adc *info)
+>         u32 con1;
+>
+>         if (info->data->needs_adc_phy)
+> -               writel(1, info->enable_reg);
+> +               regmap_write(info->pmu_map, info->data->phy_offset, 1);
+>
+>         /* set default prescaler values and Enable prescaler */
+>         con1 =  ADC_V1_CON_PRSCLV(49) | ADC_V1_CON_PRSCEN;
+> @@ -198,7 +204,7 @@ static void exynos_adc_v1_exit_hw(struct exynos_adc *info)
+>         u32 con;
+>
+>         if (info->data->needs_adc_phy)
+> -               writel(0, info->enable_reg);
+> +               regmap_write(info->pmu_map, info->data->phy_offset, 0);
+>
+>         con = readl(ADC_V1_CON(info->regs));
+>         con |= ADC_V1_CON_STANDBY;
+> @@ -225,6 +231,7 @@ static const struct exynos_adc_data exynos_adc_v1_data = {
+>         .num_channels   = MAX_ADC_V1_CHANNELS,
+>         .mask           = ADC_DATX_MASK,        /* 12 bit ADC resolution */
+>         .needs_adc_phy  = true,
+> +       .phy_offset     = EXYNOS_ADCV1_PHY_OFFSET,
+>
+>         .init_hw        = exynos_adc_v1_init_hw,
+>         .exit_hw        = exynos_adc_v1_exit_hw,
+> @@ -314,7 +321,7 @@ static void exynos_adc_v2_init_hw(struct exynos_adc *info)
+>         u32 con1, con2;
+>
+>         if (info->data->needs_adc_phy)
+> -               writel(1, info->enable_reg);
+> +               regmap_write(info->pmu_map, info->data->phy_offset, 1);
+>
+>         con1 = ADC_V2_CON1_SOFT_RESET;
+>         writel(con1, ADC_V2_CON1(info->regs));
+> @@ -332,7 +339,7 @@ static void exynos_adc_v2_exit_hw(struct exynos_adc *info)
+>         u32 con;
+>
+>         if (info->data->needs_adc_phy)
+> -               writel(0, info->enable_reg);
+> +               regmap_write(info->pmu_map, info->data->phy_offset, 0);
+>
+>         con = readl(ADC_V2_CON1(info->regs));
+>         con &= ~ADC_CON_EN_START;
+> @@ -362,6 +369,7 @@ static const struct exynos_adc_data exynos_adc_v2_data = {
+>         .num_channels   = MAX_ADC_V2_CHANNELS,
+>         .mask           = ADC_DATX_MASK, /* 12 bit ADC resolution */
+>         .needs_adc_phy  = true,
+> +       .phy_offset     = EXYNOS_ADCV2_PHY_OFFSET,
+>
+>         .init_hw        = exynos_adc_v2_init_hw,
+>         .exit_hw        = exynos_adc_v2_exit_hw,
+> @@ -374,6 +382,7 @@ static const struct exynos_adc_data exynos3250_adc_data = {
+>         .mask           = ADC_DATX_MASK, /* 12 bit ADC resolution */
+>         .needs_sclk     = true,
+>         .needs_adc_phy  = true,
+> +       .phy_offset     = EXYNOS_ADCV1_PHY_OFFSET,
+>
+>         .init_hw        = exynos_adc_v2_init_hw,
+>         .exit_hw        = exynos_adc_v2_exit_hw,
+> @@ -558,10 +567,13 @@ static int exynos_adc_probe(struct platform_device *pdev)
+>
+>
+>         if (info->data->needs_adc_phy) {
+> -               mem = platform_get_resource(pdev, IORESOURCE_MEM, 1);
+> -               info->enable_reg = devm_ioremap_resource(&pdev->dev, mem);
+> -               if (IS_ERR(info->enable_reg))
+> -                       return PTR_ERR(info->enable_reg);
+> +               info->pmu_map = syscon_regmap_lookup_by_phandle(
+> +                                       pdev->dev.of_node,
+> +                                       "samsung,syscon-phandle");
+> +               if (IS_ERR(info->pmu_map)) {
+> +                       dev_err(&pdev->dev, "syscon regmap lookup failed.\n");
+> +                       return PTR_ERR(info->pmu_map);
+> +               }
+>         }
+>
+>         irq = platform_get_irq(pdev, 0);
+> --
+> 1.7.9.5
+>
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-samsung-soc" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
 
-It's not completely unusable ;)
 
-- Lars
+
+-- 
+Best Regards
+Vivek Gautam
+Samsung R&D Institute, Bangalore
+India
