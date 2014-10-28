@@ -1,43 +1,125 @@
-Return-Path: <iivanov@mm-sol.com>
-Message-ID: <1412682870.1027.58.camel@iivanov-dev>
-Subject: Re: [PATCH v3] iio: iadc: Qualcomm SPMI PMIC current ADC driver
-From: "Ivan T. Ivanov" <iivanov@mm-sol.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark
- Rutland <mark.rutland@arm.com>, Ian Campbell
- <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, Grant
- Likely <grant.likely@linaro.org>, Lars-Peter Clausen <lars@metafoo.de>,
- Hartmut Knaack <knaack.h@gmx.de>, Fugang Duan <B38611@freescale.com>,  Lee
- Jones <lee.jones@linaro.org>, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org,  linux-iio@vger.kernel.org,
- linux-arm-msm@vger.kernel.org
-Date: Tue, 07 Oct 2014 14:54:30 +0300
-In-Reply-To: <542FE207.2080508@kernel.org>
-References: <1412180088-24683-1-git-send-email-iivanov@mm-sol.com>
-	 <542FE207.2080508@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Mime-Version: 1.0
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mga11.intel.com ([192.55.52.93]:45530 "EHLO mga11.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1754160AbaJ1KTd (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Tue, 28 Oct 2014 06:19:33 -0400
+From: Daniel Baluta <daniel.baluta@intel.com>
+To: jic23@kernel.org, linux-iio@vger.kernel.org
+Cc: daniel.baluta@intel.com, knaack.h@gmx.de,
+	linux-kernel@vger.kernel.org, irina.tirdea@intel.com
+Subject: [PATCH v3 7/7] iio: event_monitor: Add support for new channel types
+Date: Tue, 28 Oct 2014 12:19:31 +0200
+Message-Id: <1414491571-11672-8-git-send-email-daniel.baluta@intel.com>
+In-Reply-To: <1414491571-11672-1-git-send-email-daniel.baluta@intel.com>
+References: <1414491571-11672-1-git-send-email-daniel.baluta@intel.com>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Sat, 2014-10-04 at 13:03 +0100, Jonathan Cameron wrote:
-> On 01/10/14 17:14, Ivan T. Ivanov wrote:
-> > The current ADC is peripheral of Qualcomm SPMI PMIC chips. It has
-> > 16 bits resolution and register space inside PMIC accessible across
-> > SPMI bus.
-> >
-> > The driver registers itself through IIO interface.
-> >
-> > Signed-off-by: Ivan T. Ivanov <iivanov@mm-sol.com>
-> Looks good to me.  I would however like to wait for Mark Rutland to
-> say whether he is happy with the bindings (and the rest if he
-> feels like it ;)
-> 
-> Given the merge window will open shortly and hence the IIO merge
-> window is long closed, we aren't in a particular rush at the moment.
+We have the following testing scenario:
 
-Sure. Thank you.
-Ivan
+$ insmod iio_dummy_evgen.ko
+$ insmod iio_dummy.ko
 
-> 
-> 
-> Jonathan
+./iio_event_monitor /dev/iio:device0
+Event: time: 1412786467971335337, type: activity(running), channel: 0,
+evtype: thresh, direction: rising
+Event: time: 1412786530792974091, type: activity(walking), channel: 0,
+evtype: thresh, direction: falling
+Event: time: 1412764319184761765, type: steps, channel: 0, evtype: instance
+
+$ echo 1 > /sys/bus/iio/devices/iio_evgen/poke_ev0
+$ echo 2 > /sys/bus/iio/devices/iio_evgen/poke_ev0
+$ echo 3 > /sys/bus/iio/devices/iio_evgen/poke_ev0
+
+Signed-off-by: Irina Tirdea <irina.tirdea@intel.com>
+Signed-off-by: Daniel Baluta <daniel.baluta@intel.com>
+---
+ .../staging/iio/Documentation/iio_event_monitor.c  | 23 +++++++++++++++++++---
+ 1 file changed, 20 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/staging/iio/Documentation/iio_event_monitor.c b/drivers/staging/iio/Documentation/iio_event_monitor.c
+index 569d6f8..aee9b13 100644
+--- a/drivers/staging/iio/Documentation/iio_event_monitor.c
++++ b/drivers/staging/iio/Documentation/iio_event_monitor.c
+@@ -49,6 +49,8 @@ static const char * const iio_chan_type_name_spec[] = {
+ 	[IIO_CCT] = "cct",
+ 	[IIO_PRESSURE] = "pressure",
+ 	[IIO_HUMIDITYRELATIVE] = "humidityrelative",
++	[IIO_ACTIVITY] = "activity",
++	[IIO_STEPS] = "steps",
+ };
+ 
+ static const char * const iio_ev_type_text[] = {
+@@ -57,6 +59,7 @@ static const char * const iio_ev_type_text[] = {
+ 	[IIO_EV_TYPE_ROC] = "roc",
+ 	[IIO_EV_TYPE_THRESH_ADAPTIVE] = "thresh_adaptive",
+ 	[IIO_EV_TYPE_MAG_ADAPTIVE] = "mag_adaptive",
++	[IIO_EV_TYPE_INSTANCE] = "instance",
+ };
+ 
+ static const char * const iio_ev_dir_text[] = {
+@@ -79,6 +82,10 @@ static const char * const iio_modifier_names[] = {
+ 	[IIO_MOD_LIGHT_RED] = "red",
+ 	[IIO_MOD_LIGHT_GREEN] = "green",
+ 	[IIO_MOD_LIGHT_BLUE] = "blue",
++	[IIO_MOD_RUNNING] = "running",
++	[IIO_MOD_JOGGING] = "jogging",
++	[IIO_MOD_WALKING] = "walking",
++	[IIO_MOD_STILL] = "still",
+ };
+ 
+ static bool event_is_known(struct iio_event_data *event)
+@@ -108,6 +115,8 @@ static bool event_is_known(struct iio_event_data *event)
+ 	case IIO_CCT:
+ 	case IIO_PRESSURE:
+ 	case IIO_HUMIDITYRELATIVE:
++	case IIO_ACTIVITY:
++	case IIO_STEPS:
+ 		break;
+ 	default:
+ 		return false;
+@@ -126,6 +135,10 @@ static bool event_is_known(struct iio_event_data *event)
+ 	case IIO_MOD_LIGHT_RED:
+ 	case IIO_MOD_LIGHT_GREEN:
+ 	case IIO_MOD_LIGHT_BLUE:
++	case IIO_MOD_RUNNING:
++	case IIO_MOD_JOGGING:
++	case IIO_MOD_WALKING:
++	case IIO_MOD_STILL:
+ 		break;
+ 	default:
+ 		return false;
+@@ -137,6 +150,7 @@ static bool event_is_known(struct iio_event_data *event)
+ 	case IIO_EV_TYPE_ROC:
+ 	case IIO_EV_TYPE_THRESH_ADAPTIVE:
+ 	case IIO_EV_TYPE_MAG_ADAPTIVE:
++	case IIO_EV_TYPE_INSTANCE:
+ 		break;
+ 	default:
+ 		return false;
+@@ -146,6 +160,7 @@ static bool event_is_known(struct iio_event_data *event)
+ 	case IIO_EV_DIR_EITHER:
+ 	case IIO_EV_DIR_RISING:
+ 	case IIO_EV_DIR_FALLING:
++	case IIO_EV_DIR_NONE:
+ 		break;
+ 	default:
+ 		return false;
+@@ -186,9 +201,11 @@ static void print_event(struct iio_event_data *event)
+ 	else if (chan >= 0)
+ 		printf("channel: %d, ", chan);
+ 
+-	printf("evtype: %s, direction: %s\n",
+-		iio_ev_type_text[ev_type],
+-		iio_ev_dir_text[dir]);
++	printf("evtype: %s", iio_ev_type_text[ev_type]);
++
++	if (dir != IIO_EV_DIR_NONE)
++		printf(", direction: %s", iio_ev_dir_text[dir]);
++	printf("\n");
+ }
+ 
+ int main(int argc, char **argv)
+-- 
+1.9.1
+
