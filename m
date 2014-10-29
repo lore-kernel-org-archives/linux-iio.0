@@ -1,125 +1,21 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga11.intel.com ([192.55.52.93]:45530 "EHLO mga11.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1754160AbaJ1KTd (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Tue, 28 Oct 2014 06:19:33 -0400
-From: Daniel Baluta <daniel.baluta@intel.com>
-To: jic23@kernel.org, linux-iio@vger.kernel.org
-Cc: daniel.baluta@intel.com, knaack.h@gmx.de,
-	linux-kernel@vger.kernel.org, irina.tirdea@intel.com
-Subject: [PATCH v3 7/7] iio: event_monitor: Add support for new channel types
-Date: Tue, 28 Oct 2014 12:19:31 +0200
-Message-Id: <1414491571-11672-8-git-send-email-daniel.baluta@intel.com>
-In-Reply-To: <1414491571-11672-1-git-send-email-daniel.baluta@intel.com>
-References: <1414491571-11672-1-git-send-email-daniel.baluta@intel.com>
+Received: from mail-pd0-f201.google.com ([209.85.192.201]:44830 "EHLO
+	mail-pd0-f201.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1756039AbaJ2WBv (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 29 Oct 2014 18:01:51 -0400
+Received: by mail-pd0-f201.google.com with SMTP id r10so710553pdi.4
+        for <linux-iio@vger.kernel.org>; Wed, 29 Oct 2014 15:01:50 -0700 (PDT)
+From: Gwendal Grignou <gwendal@chromium.org>
+To: srinivas.pandruvada@linux.intel.com, jic23@kernel.org
+Cc: linux-iio@vger.kernel.org
+Subject: [PATCH 0/1] iio: ak8975: Add AKM0991x support.
+Date: Wed, 29 Oct 2014 15:01:36 -0700
+Message-Id: <1414620097-6787-1-git-send-email-gwendal@chromium.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-We have the following testing scenario:
-
-$ insmod iio_dummy_evgen.ko
-$ insmod iio_dummy.ko
-
-./iio_event_monitor /dev/iio:device0
-Event: time: 1412786467971335337, type: activity(running), channel: 0,
-evtype: thresh, direction: rising
-Event: time: 1412786530792974091, type: activity(walking), channel: 0,
-evtype: thresh, direction: falling
-Event: time: 1412764319184761765, type: steps, channel: 0, evtype: instance
-
-$ echo 1 > /sys/bus/iio/devices/iio_evgen/poke_ev0
-$ echo 2 > /sys/bus/iio/devices/iio_evgen/poke_ev0
-$ echo 3 > /sys/bus/iio/devices/iio_evgen/poke_ev0
-
-Signed-off-by: Irina Tirdea <irina.tirdea@intel.com>
-Signed-off-by: Daniel Baluta <daniel.baluta@intel.com>
----
- .../staging/iio/Documentation/iio_event_monitor.c  | 23 +++++++++++++++++++---
- 1 file changed, 20 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/staging/iio/Documentation/iio_event_monitor.c b/drivers/staging/iio/Documentation/iio_event_monitor.c
-index 569d6f8..aee9b13 100644
---- a/drivers/staging/iio/Documentation/iio_event_monitor.c
-+++ b/drivers/staging/iio/Documentation/iio_event_monitor.c
-@@ -49,6 +49,8 @@ static const char * const iio_chan_type_name_spec[] = {
- 	[IIO_CCT] = "cct",
- 	[IIO_PRESSURE] = "pressure",
- 	[IIO_HUMIDITYRELATIVE] = "humidityrelative",
-+	[IIO_ACTIVITY] = "activity",
-+	[IIO_STEPS] = "steps",
- };
- 
- static const char * const iio_ev_type_text[] = {
-@@ -57,6 +59,7 @@ static const char * const iio_ev_type_text[] = {
- 	[IIO_EV_TYPE_ROC] = "roc",
- 	[IIO_EV_TYPE_THRESH_ADAPTIVE] = "thresh_adaptive",
- 	[IIO_EV_TYPE_MAG_ADAPTIVE] = "mag_adaptive",
-+	[IIO_EV_TYPE_INSTANCE] = "instance",
- };
- 
- static const char * const iio_ev_dir_text[] = {
-@@ -79,6 +82,10 @@ static const char * const iio_modifier_names[] = {
- 	[IIO_MOD_LIGHT_RED] = "red",
- 	[IIO_MOD_LIGHT_GREEN] = "green",
- 	[IIO_MOD_LIGHT_BLUE] = "blue",
-+	[IIO_MOD_RUNNING] = "running",
-+	[IIO_MOD_JOGGING] = "jogging",
-+	[IIO_MOD_WALKING] = "walking",
-+	[IIO_MOD_STILL] = "still",
- };
- 
- static bool event_is_known(struct iio_event_data *event)
-@@ -108,6 +115,8 @@ static bool event_is_known(struct iio_event_data *event)
- 	case IIO_CCT:
- 	case IIO_PRESSURE:
- 	case IIO_HUMIDITYRELATIVE:
-+	case IIO_ACTIVITY:
-+	case IIO_STEPS:
- 		break;
- 	default:
- 		return false;
-@@ -126,6 +135,10 @@ static bool event_is_known(struct iio_event_data *event)
- 	case IIO_MOD_LIGHT_RED:
- 	case IIO_MOD_LIGHT_GREEN:
- 	case IIO_MOD_LIGHT_BLUE:
-+	case IIO_MOD_RUNNING:
-+	case IIO_MOD_JOGGING:
-+	case IIO_MOD_WALKING:
-+	case IIO_MOD_STILL:
- 		break;
- 	default:
- 		return false;
-@@ -137,6 +150,7 @@ static bool event_is_known(struct iio_event_data *event)
- 	case IIO_EV_TYPE_ROC:
- 	case IIO_EV_TYPE_THRESH_ADAPTIVE:
- 	case IIO_EV_TYPE_MAG_ADAPTIVE:
-+	case IIO_EV_TYPE_INSTANCE:
- 		break;
- 	default:
- 		return false;
-@@ -146,6 +160,7 @@ static bool event_is_known(struct iio_event_data *event)
- 	case IIO_EV_DIR_EITHER:
- 	case IIO_EV_DIR_RISING:
- 	case IIO_EV_DIR_FALLING:
-+	case IIO_EV_DIR_NONE:
- 		break;
- 	default:
- 		return false;
-@@ -186,9 +201,11 @@ static void print_event(struct iio_event_data *event)
- 	else if (chan >= 0)
- 		printf("channel: %d, ", chan);
- 
--	printf("evtype: %s, direction: %s\n",
--		iio_ev_type_text[ev_type],
--		iio_ev_dir_text[dir]);
-+	printf("evtype: %s", iio_ev_type_text[ev_type]);
-+
-+	if (dir != IIO_EV_DIR_NONE)
-+		printf(", direction: %s", iio_ev_dir_text[dir]);
-+	printf("\n");
- }
- 
- int main(int argc, char **argv)
--- 
-1.9.1
+AK09912 is an accelerometer with the same register set as AK09911, but
+same behavior as AK8973, so I was not sure where to add the support.
+I decided to merge all AKM magnetometer support in the same file while
+being as clean as I could.
 
