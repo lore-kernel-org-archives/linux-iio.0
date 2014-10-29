@@ -1,69 +1,50 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pd0-f181.google.com ([209.85.192.181]:51735 "EHLO
-	mail-pd0-f181.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750813AbaJVEV0 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 22 Oct 2014 00:21:26 -0400
-Date: Wed, 22 Oct 2014 09:51:15 +0530
-From: Sudip Mukherjee <sudipm.mukherjee@gmail.com>
-To: Brian Vandre <bvandre@gmail.com>
-Cc: gregkh@linuxfoundation.org, jic23@kernel.org,
-	alexandre.belloni@free-electrons.com, linux-iio@vger.kernel.org,
-	marex@denx.de, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] Staging: iio: adc: fix line over 80 characters
-Message-ID: <20141022042115.GA2530@sudip-PC>
-References: <cover.1413858979.git.bvandre@gmail.com>
- <cover.1413931615.git.bvandre@gmail.com>
- <ec4b497827f6c7615f6b5eef5669144f8c68d034.1413931615.git.bvandre@gmail.com>
+Received: from smtp-out-207.synserver.de ([212.40.185.207]:1354 "EHLO
+	smtp-out-206.synserver.de" rhost-flags-OK-OK-OK-FAIL)
+	by vger.kernel.org with ESMTP id S933943AbaJ2RVq (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 29 Oct 2014 13:21:46 -0400
+Message-ID: <5451221D.6000301@metafoo.de>
+Date: Wed, 29 Oct 2014 18:21:33 +0100
+From: Lars-Peter Clausen <lars@metafoo.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <ec4b497827f6c7615f6b5eef5669144f8c68d034.1413931615.git.bvandre@gmail.com>
+To: Bastien Nocera <hadess@hadess.net>, linux-iio@vger.kernel.org
+Subject: Re: Kernel wishlist item: Better IIO API
+References: <1414593052.2406.37.camel@hadess.net>
+In-Reply-To: <1414593052.2406.37.camel@hadess.net>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Tue, Oct 21, 2014 at 05:56:47PM -0500, Brian Vandre wrote:
-> This fixes the 2 checkpatch.pl warnings:
-> WARNING: line over 80 characters
-> 
-please check your patch with --strict option of checkpatch.pl , and you will get :
-"Alignment should match open parenthesis" .
+On 10/29/2014 03:30 PM, Bastien Nocera wrote:
+> Hey,
+>
+> I've posted this a couple of days ago:
+> http://www.hadess.net/2014/10/a-gnome-kernel-wishlist.html
+> along with a mail to LKML:
+> http://thread.gmane.org/gmane.linux.kernel/1810083
+>
+> I've recently added to my list an item about IIO:
+> https://wiki.gnome.org/BastienNocera/KernelWishlist
+>
+> Are there any plans for a better API for the IIO subsystem? The API
+> might be good enough to drive from shell scripts, or helpers that only
+> need to work with one variant of a device, but my attempts at trying to
+> use the IIO subsystem to provide an accelerometer to do automatic
+> display rotation[1] showed that the API is really cumbersome.
+>
+> The code I wrote spends most of its time creating sysfs paths, reading
+> values in different formats, and mangling filenames[2].
+>
+> Is an ioctl-based API planned? Something where I could get/set
+> structures to gather metadata about the device, and set it up easily, so
+> reading data from it is easier?
 
-thanks
-sudip
+No, unfortunately not and I'm not sure if such a ABI would be accepted if 
+proposed.
 
-> Signed-off-by: Brian Vandre <bvandre@gmail.com>
-> ---
->  drivers/staging/iio/adc/mxs-lradc.c | 6 ++++--
->  1 file changed, 4 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/staging/iio/adc/mxs-lradc.c b/drivers/staging/iio/adc/mxs-lradc.c
-> index 32a1926..62449a6 100644
-> --- a/drivers/staging/iio/adc/mxs-lradc.c
-> +++ b/drivers/staging/iio/adc/mxs-lradc.c
-> @@ -455,7 +455,8 @@ static void mxs_lradc_setup_ts_channel(struct mxs_lradc *lradc, unsigned ch)
->  	 * SoC's delay unit and start the conversion later
->  	 * and automatically.
->  	 */
-> -	mxs_lradc_reg_wrt(lradc, LRADC_DELAY_TRIGGER(0) | /* don't trigger ADC */
-> +	mxs_lradc_reg_wrt(lradc,
-> +		LRADC_DELAY_TRIGGER(0) | /* don't trigger ADC */
->  		LRADC_DELAY_TRIGGER_DELAYS(1 << 3) | /* trigger DELAY unit#3 */
->  		LRADC_DELAY_KICK |
->  		LRADC_DELAY_DELAY(lradc->settling_delay),
-> @@ -513,7 +514,8 @@ static void mxs_lradc_setup_ts_pressure(struct mxs_lradc *lradc, unsigned ch1,
->  	 * SoC's delay unit and start the conversion later
->  	 * and automatically.
->  	 */
-> -	mxs_lradc_reg_wrt(lradc, LRADC_DELAY_TRIGGER(0) | /* don't trigger ADC */
-> +	mxs_lradc_reg_wrt(lradc,
-> +		LRADC_DELAY_TRIGGER(0) | /* don't trigger ADC */
->  		LRADC_DELAY_TRIGGER_DELAYS(1 << 3) | /* trigger DELAY unit#3 */
->  		LRADC_DELAY_KICK |
->  		LRADC_DELAY_DELAY(lradc->settling_delay), LRADC_DELAY(2));
-> -- 
-> 1.9.1
-> 
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-kernel" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> Please read the FAQ at  http://www.tux.org/lkml/
+But checkout libiio[1][2], it hides the details of the sysfs file manipulation.
+
+- Lars
+
+[1] https://github.com/analogdevicesinc/libiio
+[2] http://analogdevicesinc.github.io/libiio/
