@@ -1,63 +1,38 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:50043 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751573AbaJYTlD (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 25 Oct 2014 15:41:03 -0400
-Message-ID: <544BFCCE.7000308@kernel.org>
-Date: Sat, 25 Oct 2014 20:41:02 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-MIME-Version: 1.0
-To: Hartmut Knaack <knaack.h@gmx.de>, IIO <linux-iio@vger.kernel.org>
-CC: David Barksdale <dbarksdale@uplogix.com>
-Subject: Re: [PATCH]iio:humidity:si7020: cleanup read_raw and probe
-References: <544BE747.80403@gmx.de>
-In-Reply-To: <544BE747.80403@gmx.de>
-Content-Type: text/plain; charset=iso-8859-15
+Received: from mail-ob0-f182.google.com ([209.85.214.182]:60541 "EHLO
+	mail-ob0-f182.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S932508AbaJaPot (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 31 Oct 2014 11:44:49 -0400
+Received: by mail-ob0-f182.google.com with SMTP id nt9so6701389obb.41
+        for <linux-iio@vger.kernel.org>; Fri, 31 Oct 2014 08:44:48 -0700 (PDT)
+From: George McCollister <george.mccollister@gmail.com>
+To: mranostay@gmail.com
+Cc: linux-iio@vger.kernel.org,
+	George McCollister <george.mccollister@gmail.com>
+Subject: [PATCH 1/2] iio: as3935: allocate correct iio_device size
+Date: Fri, 31 Oct 2014 10:44:22 -0500
+Message-Id: <1414770263-13146-1-git-send-email-george.mccollister@gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 25/10/14 19:09, Hartmut Knaack wrote:
-> When reading temperature or humidity values, a shift of two bits to the right
-> needs to be applied, and only for the humidity channel a mask of the lower
-> 12 bits needs to be applied. This reduces code repetition.
-> During probe, i2c_set_clientdata() was used, although its counterpart was not,
-> so drop it.
-> 
-> Signed-off-by: Hartmut Knaack <knaack.h@gmx.de>
-Applied to the togreg branch of iio.git, initially pushed out as testing.
-Thanks for the cleanup.
+Signed-off-by: George McCollister <george.mccollister@gmail.com>
+---
+ drivers/iio/proximity/as3935.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-J
-> ---
-> diff --git a/drivers/iio/humidity/si7020.c b/drivers/iio/humidity/si7020.c
-> index 62d74d3..b541646 100644
-> --- a/drivers/iio/humidity/si7020.c
-> +++ b/drivers/iio/humidity/si7020.c
-> @@ -56,10 +56,9 @@ static int si7020_read_raw(struct iio_dev *indio_dev,
->  					       SI7020CMD_RH_HOLD);
->  		if (ret < 0)
->  			return ret;
-> -		if (chan->type == IIO_TEMP)
-> -			*val = ret >> 2;
-> -		else
-> -			*val = (ret & 0x3FFF) >> 2;
-> +		*val = ret >> 2;
-> +		if (chan->type == IIO_HUMIDITYRELATIVE)
-> +			*val &= GENMASK(11, 0);
->  		return IIO_VAL_INT;
->  	case IIO_CHAN_INFO_SCALE:
->  		if (chan->type == IIO_TEMP)
-> @@ -133,7 +132,6 @@ static int si7020_probe(struct i2c_client *client,
->  
->  	data = iio_priv(indio_dev);
->  	*data = client;
-> -	i2c_set_clientdata(client, indio_dev);
->  
->  	indio_dev->dev.parent = &client->dev;
->  	indio_dev->name = dev_name(&client->dev);
-> 
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> 
+diff --git a/drivers/iio/proximity/as3935.c b/drivers/iio/proximity/as3935.c
+index 5e780ef..8349cc0 100644
+--- a/drivers/iio/proximity/as3935.c
++++ b/drivers/iio/proximity/as3935.c
+@@ -330,7 +330,7 @@ static int as3935_probe(struct spi_device *spi)
+ 		return -EINVAL;
+ 	}
+ 
+-	indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(st));
++	indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*st));
+ 	if (!indio_dev)
+ 		return -ENOMEM;
+ 
+-- 
+2.0.4
+
