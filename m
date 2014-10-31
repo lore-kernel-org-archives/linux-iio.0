@@ -1,171 +1,92 @@
 Return-Path: <knaack.h@gmx.de>
-Message-ID: <545404B3.7000304@gmx.de>
-Date: Fri, 31 Oct 2014 22:52:51 +0100
+Message-ID: <5453FA8E.3080204@gmx.de>
+Date: Fri, 31 Oct 2014 22:09:34 +0100
 From: Hartmut Knaack <knaack.h@gmx.de>
 MIME-Version: 1.0
-To: Daniel Baluta <daniel.baluta@intel.com>, jic23@kernel.org,
- linux-iio@vger.kernel.org
-CC: linux-kernel@vger.kernel.org, irina.tirdea@intel.com
-Subject: Re: [PATCH v3 2/7] iio: core: Introduce IIO_ACTIVITY channel
-References: <1414491571-11672-1-git-send-email-daniel.baluta@intel.com> <1414491571-11672-3-git-send-email-daniel.baluta@intel.com>
-In-Reply-To: <1414491571-11672-3-git-send-email-daniel.baluta@intel.com>
+To: Vignesh R <vigneshr@ti.com>, Rob Herring <robh+dt@kernel.org>,
+ Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>,
+ Ian Campbell <ijc+devicetree@hellion.org.uk>,
+ Kumar Gala <galak@codeaurora.org>,
+ Benoit Cousson <bcousson@baylibre.com>,
+ Tony Lindgren <tony@atomide.com>, Russell King
+ <linux@arm.linux.org.uk>, Jonathan Cameron <jic23@kernel.org>,
+ Dmitry Torokhov <dmitry.torokhov@gmail.com>
+CC: Lars-Peter Clausen <lars@metafoo.de>,
+ Peter Meerwald <pmeerw@pmeerw.net>,
+ Samuel Ortiz <sameo@linux.intel.com>, Lee Jones
+ <lee.jones@linaro.org>, Felipe Balbi <balbi@ti.com>,
+ Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+ Jan Kardell <jan.kardell@telliq.com>,
+ Paul Gortmaker <paul.gortmaker@windriver.com>,
+ Brad Griffis <bgriffis@ti.com>, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org, linux-iio@vger.kernel.org,
+ linux-input@vger.kernel.org
+Subject: Re: [PATCH 3/4] arm: boot: dts: am335x-evm: Make charge delay
+ a DT parameter for tsc
+References: <1414408111-2631-1-git-send-email-vigneshr@ti.com> <1414408111-2631-4-git-send-email-vigneshr@ti.com>
+In-Reply-To: <1414408111-2631-4-git-send-email-vigneshr@ti.com>
 Content-Type: text/plain; charset=ISO-8859-15
 List-ID: <linux-iio@vger.kernel.org>
 
-Just some typos left, maybe Jonathan can take care of them, if there are no issues for having a V4.
-Daniel Baluta schrieb am 28.10.2014 11:19:
-> This channel will be used for exposing information about
-> activity composite sensors. Activities supported so far:
-> 	* running
-> 	* jogging
-> 	* walking
-> 	* still
+Vignesh R schrieb am 27.10.2014 12:08:
+> The charge delay value is by default 0xB000. But it can be set to lower
+> values on some boards as long as false pen-ups are avoided. Lowering the
+> value increases the sampling rate (though current sampling rate is
+> sufficient for tsc operation). Hence charge delay has been made a DT
+> parameter.
 > 
-> THRESHOLD event is used to signal a change in the activity
-> state.
-> 
-> We associate a confidence interval for each activity expressed
-> as a percentage from 0 to 100.
->   * 0, means the sensor IS NOT reporting that activity.
->   * 100, means the sensor IS reporting that activity.
-> 
-> Users of this interface have two possibile means to gather
-Typo: possible
-> information about the ongoing activities.
-> 
-> 1. Event based, via event file descriptor
->   * sensor may report an event when ENTERING an activity or LEAVING
->     an activity based on a threshold value.
->   * drivers will wake up applications waiting data on the event fd
-> 
-> 2. Polling, by reading the sysfs associated attribute files:
->   * /sys/bus/iio/devices/iio:device0/in_activity_running_input
-> expressed as percentage confidence value from 0 to 100.
-> 
-> This will offer an interface for Android significant motion
-> composite sensor defined here:
-> http://source.android.com/devices/sensors/composite_sensors.html
-> 
-> Activities listed above are supported by Freescale's MMA9553 sensor:
-> http://freescale.com/files/sensors/doc/ref_manual/MMA9553LSWRM.pdf
-> 
-> Signed-off-by: Irina Tirdea <irina.tirdea@intel.com>
-> Signed-off-by: Daniel Baluta <daniel.baluta@intel.com>
+I would recommend to use a few colons to separate some thoughts. Also, limit to 80 chars per line would be beneficial. See inline.
+> Signed-off-by: Vignesh R <vigneshr@ti.com>
 > ---
->  Documentation/ABI/testing/sysfs-bus-iio | 44 +++++++++++++++++++++++++++++++++
->  drivers/iio/industrialio-core.c         |  5 ++++
->  include/linux/iio/types.h               |  7 +++++-
->  3 files changed, 55 insertions(+), 1 deletion(-)
+>  .../devicetree/bindings/input/touchscreen/ti-tsc-adc.txt    | 13 +++++++++++++
+>  arch/arm/boot/dts/am335x-evm.dts                            |  1 +
+>  2 files changed, 14 insertions(+)
 > 
-> diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
-> index 5a7fc66..c3a1fd3 100644
-> --- a/Documentation/ABI/testing/sysfs-bus-iio
-> +++ b/Documentation/ABI/testing/sysfs-bus-iio
-> @@ -783,6 +783,40 @@ Description:
->  		met before an event is generated. If direction is not
->  		specified then this period applies to both directions.
+> diff --git a/Documentation/devicetree/bindings/input/touchscreen/ti-tsc-adc.txt b/Documentation/devicetree/bindings/input/touchscreen/ti-tsc-adc.txt
+> index 878549ba814d..ac62769e70e4 100644
+> --- a/Documentation/devicetree/bindings/input/touchscreen/ti-tsc-adc.txt
+> +++ b/Documentation/devicetree/bindings/input/touchscreen/ti-tsc-adc.txt
+> @@ -28,6 +28,18 @@ Required properties:
+>  	ti,adc-channels: List of analog inputs available for ADC.
+>  			 AIN0 = 0, AIN1 = 1 and so on till AIN7 = 7.
 >  
-> +What:		/sys/.../events/in_activity_still_thresh_rising_en
-> +What:		/sys/.../events/in_activity_still_thresh_falling_en
-> +What:		/sys/.../events/in_activity_walking_thresh_rising_en
-> +What:		/sys/.../events/in_activity_walking_thresh_falling_en
-> +What:		/sys/.../events/in_activity_jogging_thresh_rising_en
-> +What:		/sys/.../events/in_activity_jogging_thresh_falling_en
-> +What:		/sys/.../events/in_activity_running_thresh_rising_en
-> +What:		/sys/.../events/in_activity_running_thresh_falling_en
-> +KernelVersion:	3.19
-> +Contact:	linux-iio@vger.kernel.org
-> +Description:
-> +		Enables or disables activitity events. Depending on direction
-> +		an event is generated when sensor ENTERS or LEAVES a given state.
+> +Optional properties:
+> +- child "tsc"
+> +	ti,charge-delay: Length of touch screen charge delay step in terms of
+> +			 ADC clock cycles. Charge delay value should be large in order
+> +			 to avoid false pen-up events. This value affects the overall
+> +			 sampling speed hence need to be kept as low as possible while
+<...> speed, hence needs to be <...>
+> +			 avoiding false pen-up event. Start from a lower value say 0x400
+<...> pen-up events. Start from a lower value, like 0x400, and increase <...>
+> +			 and increase value until false pen-up events are avoided. The
+> +			 pen-up detection happens immediately after the charge step
+<...> charge step, so this <...>
+> +			 so this does in fact function as a hardware knob for adjusting
+> +			 the amount of "settling time".
 > +
-> +What:		/sys/.../events/in_activity_still_thresh_rising_value
-> +What:		/sys/.../events/in_activity_still_thresh_falling_value
-> +What:		/sys/.../events/in_activity_walking_thresh_rising_value
-> +What:		/sys/.../events/in_activity_walking_thresh_falling_value
-> +What:		/sys/.../events/in_activity_jogging_thresh_rising_value
-> +What:		/sys/.../events/in_activity_jogging_thresh_falling_value
-> +What:		/sys/.../events/in_activity_running_thresh_rising_value
-> +What:		/sys/.../events/in_activity_running_thresh_falling_value
-> +KernelVersion:	3.19
-> +Contact:	linux-iio@vger.kernel.org
-> +Description:
-> +		Confidence value (in units as percentage) to be used
-> +		for deciding when an event should be generated. E.g for
-> +		running: If the confidence value reported by the sensor
-> +		is greater then in_activity_running_thresh_rising_value
-Typo: greater than
-> +		then the sensor ENTERS running state. Conversely, if the
-> +		confidence value reported by the sensor is lower than
-> +		in_activity_running_thresh_falling_value then the sensor
-> +		is LEAVING running state.
-> +
->  What:		/sys/.../iio:deviceX/events/in_accel_mag_en
->  What:		/sys/.../iio:deviceX/events/in_accel_mag_rising_en
->  What:		/sys/.../iio:deviceX/events/in_accel_mag_falling_en
-> @@ -949,6 +983,16 @@ Description:
->  		and the relevant _type attributes to establish the data storage
->  		format.
+>  Example:
+>  	tscadc: tscadc@44e0d000 {
+>  		compatible = "ti,am3359-tscadc";
+> @@ -36,6 +48,7 @@ Example:
+>  			ti,x-plate-resistance = <200>;
+>  			ti,coordiante-readouts = <5>;
+>  			ti,wire-config = <0x00 0x11 0x22 0x33>;
+> +			ti,charge-delay = <0xB000>;
+>  		};
 >  
-> +What:		/sys/.../iio:deviceX/in_activity_still_input
-> +What:		/sys/.../iio:deviceX/in_activity_walking_input
-> +What:		/sys/.../iio:deviceX/in_activity_jogging_input
-> +What:		/sys/.../iio:deviceX/in_activity_running_input
-> +KernelVersion:	3.19
-> +Contact:	linux-iio@vger.kernel.org
-> +Description:
-> +		This attribute is used to read the confidence for an activity
-> +		expressed in units as percentage.
-> +
->  What:		/sys/.../iio:deviceX/in_anglvel_z_quadrature_correction_raw
->  KernelVersion:	2.6.38
->  Contact:	linux-iio@vger.kernel.org
-> diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
-> index af3e76d..e453ef9 100644
-> --- a/drivers/iio/industrialio-core.c
-> +++ b/drivers/iio/industrialio-core.c
-> @@ -70,6 +70,7 @@ static const char * const iio_chan_type_name_spec[] = {
->  	[IIO_CCT] = "cct",
->  	[IIO_PRESSURE] = "pressure",
->  	[IIO_HUMIDITYRELATIVE] = "humidityrelative",
-> +	[IIO_ACTIVITY] = "activity",
->  };
+>  		adc {
+> diff --git a/arch/arm/boot/dts/am335x-evm.dts b/arch/arm/boot/dts/am335x-evm.dts
+> index e2156a583de7..80be0462298b 100644
+> --- a/arch/arm/boot/dts/am335x-evm.dts
+> +++ b/arch/arm/boot/dts/am335x-evm.dts
+> @@ -641,6 +641,7 @@
+>  		ti,x-plate-resistance = <200>;
+>  		ti,coordinate-readouts = <5>;
+>  		ti,wire-config = <0x00 0x11 0x22 0x33>;
+> +		ti,charge-delay = <0xB000>;
+>  	};
 >  
->  static const char * const iio_modifier_names[] = {
-> @@ -91,6 +92,10 @@ static const char * const iio_modifier_names[] = {
->  	[IIO_MOD_NORTH_TRUE] = "from_north_true",
->  	[IIO_MOD_NORTH_MAGN_TILT_COMP] = "from_north_magnetic_tilt_comp",
->  	[IIO_MOD_NORTH_TRUE_TILT_COMP] = "from_north_true_tilt_comp",
-> +	[IIO_MOD_RUNNING] = "running",
-> +	[IIO_MOD_JOGGING] = "jogging",
-> +	[IIO_MOD_WALKING] = "walking",
-> +	[IIO_MOD_STILL] = "still",
->  };
->  
->  /* relies on pairs of these shared then separate */
-> diff --git a/include/linux/iio/types.h b/include/linux/iio/types.h
-> index 4a2af8a..b3a241d 100644
-> --- a/include/linux/iio/types.h
-> +++ b/include/linux/iio/types.h
-> @@ -30,6 +30,7 @@ enum iio_chan_type {
->  	IIO_CCT,
->  	IIO_PRESSURE,
->  	IIO_HUMIDITYRELATIVE,
-> +	IIO_ACTIVITY,
->  };
->  
->  enum iio_modifier {
-> @@ -59,7 +60,11 @@ enum iio_modifier {
->  	IIO_MOD_NORTH_MAGN,
->  	IIO_MOD_NORTH_TRUE,
->  	IIO_MOD_NORTH_MAGN_TILT_COMP,
-> -	IIO_MOD_NORTH_TRUE_TILT_COMP
-> +	IIO_MOD_NORTH_TRUE_TILT_COMP,
-> +	IIO_MOD_RUNNING,
-> +	IIO_MOD_JOGGING,
-> +	IIO_MOD_WALKING,
-> +	IIO_MOD_STILL,
->  };
->  
->  enum iio_event_type {
+>  	adc {
 > 
