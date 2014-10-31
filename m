@@ -1,59 +1,47 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.linuxfoundation.org ([140.211.169.12]:57009 "EHLO
-	mail.linuxfoundation.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751505AbaJ1OYY (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 28 Oct 2014 10:24:24 -0400
-Date: Tue, 28 Oct 2014 22:23:11 +0800
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To: Daniel Baluta <daniel.baluta@intel.com>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	Roberta Dobrescu <roberta.dobrescu@gmail.com>,
-	opw-kernel <opw-kernel@googlegroups.com>,
-	linux-iio@vger.kernel.org
-Subject: Re: [OPW kernel] [PATCH v3] staging: iio: iio_event_monitor: Add
- support for missing IIO modifiers
-Message-ID: <20141028142311.GA18837@kroah.com>
-References: <1413985817-10867-1-git-send-email-roberta.dobrescu@gmail.com>
- <CAEnQRZC2=1NaCfFjA6=TVU936LUzApobOgi5wPEOw6S4q3T29Q@mail.gmail.com>
- <544B73DD.2060802@kernel.org>
- <CAEnQRZABCT=+X1-gqZmyBBNECmA_cwUY0whZvf1Orob_8tnfEg@mail.gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <CAEnQRZABCT=+X1-gqZmyBBNECmA_cwUY0whZvf1Orob_8tnfEg@mail.gmail.com>
+Received: from mga14.intel.com ([192.55.52.115]:17515 "EHLO mga14.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1759551AbaJaGI2 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Fri, 31 Oct 2014 02:08:28 -0400
+From: Aaron Lu <aaron.lu@intel.com>
+To: "Rafael J. Wysocki" <rjw@rjwysocki.net>,
+	Lee Jones <lee.jones@linaro.org>
+Cc: linux-acpi@vger.kernel.org, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Jacob Pan <jacob.jun.pan@linux.intel.com>
+Subject: [PATCH 0/3] Support PMIC operation region for CrystalCove and XPower
+Date: Fri, 31 Oct 2014 14:08:22 +0800
+Message-Id: <1414735705-18366-1-git-send-email-aaron.lu@intel.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Tue, Oct 28, 2014 at 02:40:21PM +0200, Daniel Baluta wrote:
-> On Sat, Oct 25, 2014 at 12:56 PM, Jonathan Cameron <jic23@kernel.org> wrote:
-> > On 22/10/14 15:12, Daniel Baluta wrote:
-> >> On Wed, Oct 22, 2014 at 4:50 PM, Roberta Dobrescu
-> >> <roberta.dobrescu@gmail.com> wrote:
-> >>> This patch adds the missing IIO modifiers in event_is_known function
-> >>> and iio_modifier_names vector.
-> >>>
-> >>> Additionally, it removes duplicate name entries of IIO_MOD_LIGHT_BOTH
-> >>> and IIO_MOD_LIGHT_IR in iio_modifier_names.
-> >>>
-> >>> Signed-off-by: Roberta Dobrescu <roberta.dobrescu@gmail.com>
-> >>
-> >> Reviewed-by: Daniel Baluta <daniel.baluta@intel.com>
-> >>
-> > Applied to the togreg branch of iio.git - initially pushed out as
-> > testing for the autobuilders to play.
-> 
-> Hi,
-> 
-> FYI:
-> 
-> Please note that this patch is both in Greg's staging-testing [1]
-> and Jonathan's testing [2] tree.
-> 
-> thanks,
-> Daniel.
-> 
-> [1] https://git.kernel.org/cgit/linux/kernel/git/gregkh/staging.git/commit/?h=staging-testing&id=0a6e2170dfcd2b17ae32ad91993edf2b77014137
-> [2] https://git.kernel.org/cgit/linux/kernel/git/jic23/iio.git/commit/?h=testing&id=a9bef750135cc261bfceff6840a30a3f357df8da
+On Intel Baytrail-T and Baytrail-T-CR platforms, there are two customized
+ACPI operation regions defined for the Power Management Integrated Circuit
+device, one is for power resource handling and one is for thermal: sensor
+temperature reporting, trip point setting, etc. There are different PMIC
+chips used on those platforms and though each has the same two operation
+regions and functionality, their implementation is different so every PMIC
+will need a driver. But since their functionality is similar, some common
+code is abstracted into the intel_soc_pmic_opregion.c.
 
-That's ok, git handles that just fine when we merge together.
+The last version is posted here:
+https://lkml.org/lkml/2014/9/8/801
 
-greg k-h
+Changes since then:
+1 Move to drivers/acpi as discussed on the above thread;
+2 Added support for XPower AXP288 PMIC operation region support;
+3 Since operation region handler can not be removed(at the moment at least),
+  use bool for the two operation region driver configs instead of tristate;
+  Another reason to do this is that, with Mika's MFD ACPI support patch, all
+  those MFD cell devices created will have the same modalias as their parent's
+  so it doesn't make much sense to compile these drivers into modules.
+
+Patch 1 applies on top of Rafael's pm-next branch, and then patch 2 and
+patch 3 needs merge of Lee's mfd/ib-mfd-iio-3.19 branch where the PMIC
+driver XPower AXP288 and iio driver axp288_adc is located.
+
+Aaron Lu (3):
+  ACPI / pmic_opregion: support PMIC operation region for CrystalCove
+  ACPI / pmic_opregion: support PMIC operation region for XPower AXP288
+  ACPI / pmic_opregion: AXP288: support virtual GPIO in ACPI table
+
