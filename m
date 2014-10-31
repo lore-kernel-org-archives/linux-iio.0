@@ -1,68 +1,69 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga11.intel.com ([192.55.52.93]:60184 "EHLO mga11.intel.com"
+Received: from mout.gmx.net ([212.227.17.21]:54118 "EHLO mout.gmx.net"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751338AbaJ1KTa (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Tue, 28 Oct 2014 06:19:30 -0400
-From: Daniel Baluta <daniel.baluta@intel.com>
-To: jic23@kernel.org, linux-iio@vger.kernel.org
-Cc: daniel.baluta@intel.com, knaack.h@gmx.de,
-	linux-kernel@vger.kernel.org, irina.tirdea@intel.com
-Subject: [PATCH v3 0/7] Introduce IIO interface for Android advanced features
-Date: Tue, 28 Oct 2014 12:19:24 +0200
-Message-Id: <1414491571-11672-1-git-send-email-daniel.baluta@intel.com>
+	id S1422714AbaJaB0T (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Thu, 30 Oct 2014 21:26:19 -0400
+Message-ID: <5452E454.8040607@gmx.de>
+Date: Fri, 31 Oct 2014 02:22:28 +0100
+From: Hartmut Knaack <knaack.h@gmx.de>
+MIME-Version: 1.0
+To: IIO <linux-iio@vger.kernel.org>
+CC: vlad.dogaru@intel.com
+Subject: [PATCH 1/3]iio:pressure:bmp280: fix pressure calculation
+Content-Type: text/plain; charset=ISO-8859-15
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-This patchset introduces a new interface for supporting some of the composite
-sensors in Android [1]. First supported sensors are activity and pedometer.
+According to the datasheet and as defined in struct bmp280_comp_press, dig_p1 is
+of type u16, while dig_p2 to dig_p9 are of type s16. In
+bmp280_read_compensation_press(), values read from the device were treated as
+the wrong type.
+In bmp280_read_press() the fractional part of the measured pressure is
+calculated wrong. A better way is to use *val for the raw pressure and *val2 for
+the quotient and let the core do the proper conversion using IIO_VAL_FRACTIONAL.
 
-This is a follow up of the discussion about adding new channels to IIO
-initiated some time ago on IIO list [2].
-
-A device that has the activity/pedometer functionality is Freescale's MMA9553L ([3]).
-
-Because we don't have yet the hardware, to demonstrate these new channels we
-update iio_dummy kernel module and iio_event_monitor test program. We want
-to get an early feedback about extending the IIO interface in the correct
-direction.
-
-[1] http://source.android.com/devices/sensors/composite_sensors.html
-[2] http://marc.info/?l=linux-iio&m=138374342831057&w=2
-[3] http://www.freescale.com/files/sensors/doc/ref_manual/MMA9553LSWRM.pdf
-
-Changes since v2: (comments from Jonathan and Hartmut)
-	* dropped the RFC tag
-	* use int instead of unsigned long for ret in iio_evgen_poke
-	* remove TRANSITION event and use THRESHOLD instead
-	* remove IIO_HEIGHT channel and use CALIBHEIGHT mask instead
-	* adapt iio_dummy modules and iio_event_monitor to reflect IIO
-	  interface changes.
-
-Daniel Baluta (4):
-  iio: dummy: Add virtual registers for dummy device
-  iio: core: Introduce IIO_ACTIVITY channel
-  iio: dummy: Demonstrate the usage of new channel types
-  iio: event_monitor: Add support for new channel types
-
-Irina Tirdea (3):
-  iio: core: Introduce IIO_EV_DIR_NONE
-  iio: core: Introduce STEPS channel type, ENABLE mask and INSTANCE
-    event
-  iio: core: Introduce IIO_CHAN_INFO_CALIBHEIGHT
-
- Documentation/ABI/testing/sysfs-bus-iio            |  74 ++++++++
- drivers/iio/industrialio-core.c                    |   8 +
- drivers/iio/industrialio-event.c                   |  13 +-
- .../staging/iio/Documentation/iio_event_monitor.c  |  23 ++-
- drivers/staging/iio/iio_dummy_evgen.c              |  17 ++
- drivers/staging/iio/iio_dummy_evgen.h              |   6 +
- drivers/staging/iio/iio_simple_dummy.c             | 199 +++++++++++++++++++--
- drivers/staging/iio/iio_simple_dummy.h             |   7 +
- drivers/staging/iio/iio_simple_dummy_events.c      |  66 ++++++-
- include/linux/iio/iio.h                            |   2 +
- include/linux/iio/types.h                          |  10 +-
- 11 files changed, 395 insertions(+), 30 deletions(-)
-
--- 
-1.9.1
-
+Signed-off-by: Hartmut Knaack <knaack.h@gmx.de>
+---
+diff --git a/drivers/iio/pressure/bmp280.c b/drivers/iio/pressure/bmp280.c
+index ce29ff9..75038da 100644
+--- a/drivers/iio/pressure/bmp280.c
++++ b/drivers/iio/pressure/bmp280.c
+@@ -176,15 +176,15 @@ static int bmp280_read_compensation_press(struct bmp280_data *data,
+ 		return ret;
+ 	}
+ 
+-	comp->dig_p1 = (s16) le16_to_cpu(buf[0]);
+-	comp->dig_p2 = (u16) le16_to_cpu(buf[1]);
+-	comp->dig_p3 = (u16) le16_to_cpu(buf[2]);
+-	comp->dig_p4 = (u16) le16_to_cpu(buf[3]);
+-	comp->dig_p5 = (u16) le16_to_cpu(buf[4]);
+-	comp->dig_p6 = (u16) le16_to_cpu(buf[5]);
+-	comp->dig_p7 = (u16) le16_to_cpu(buf[6]);
+-	comp->dig_p8 = (u16) le16_to_cpu(buf[7]);
+-	comp->dig_p9 = (u16) le16_to_cpu(buf[8]);
++	comp->dig_p1 = (u16) le16_to_cpu(buf[0]);
++	comp->dig_p2 = (s16) le16_to_cpu(buf[1]);
++	comp->dig_p3 = (s16) le16_to_cpu(buf[2]);
++	comp->dig_p4 = (s16) le16_to_cpu(buf[3]);
++	comp->dig_p5 = (s16) le16_to_cpu(buf[4]);
++	comp->dig_p6 = (s16) le16_to_cpu(buf[5]);
++	comp->dig_p7 = (s16) le16_to_cpu(buf[6]);
++	comp->dig_p8 = (s16) le16_to_cpu(buf[7]);
++	comp->dig_p9 = (s16) le16_to_cpu(buf[8]);
+ 
+ 	return 0;
+ }
+@@ -309,10 +309,10 @@ static int bmp280_read_press(struct bmp280_data *data,
+ 	adc_press = be32_to_cpu(tmp) >> 12;
+ 	comp_press = bmp280_compensate_press(data, &comp, adc_press);
+ 
+-	*val = comp_press / 256000;
+-	*val2 = comp_press * 1000000 / 256000;
++	*val = comp_press;
++	*val2 = 256000;
+ 
+-	return IIO_VAL_INT_PLUS_MICRO;
++	return IIO_VAL_FRACTIONAL;
+ }
+ 
+ static int bmp280_read_raw(struct iio_dev *indio_dev,
