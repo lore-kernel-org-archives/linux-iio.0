@@ -1,77 +1,98 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga14.intel.com ([192.55.52.115]:22931 "EHLO mga14.intel.com"
+Received: from mout.gmx.net ([212.227.17.21]:52220 "EHLO mout.gmx.net"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1760964AbaJaGIc (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Fri, 31 Oct 2014 02:08:32 -0400
-From: Aaron Lu <aaron.lu@intel.com>
-To: "Rafael J. Wysocki" <rjw@rjwysocki.net>,
-	Lee Jones <lee.jones@linaro.org>
-Cc: linux-acpi@vger.kernel.org, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Jacob Pan <jacob.jun.pan@linux.intel.com>
-Subject: [PATCH 3/3] ACPI / pmic_opregion: AXP288: support virtual GPIO in ACPI table
-Date: Fri, 31 Oct 2014 14:08:25 +0800
-Message-Id: <1414735705-18366-4-git-send-email-aaron.lu@intel.com>
-In-Reply-To: <1414735705-18366-1-git-send-email-aaron.lu@intel.com>
-References: <1414735705-18366-1-git-send-email-aaron.lu@intel.com>
+	id S1422778AbaJaB0U (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Thu, 30 Oct 2014 21:26:20 -0400
+Message-ID: <5452E495.2020705@gmx.de>
+Date: Fri, 31 Oct 2014 02:23:33 +0100
+From: Hartmut Knaack <knaack.h@gmx.de>
+MIME-Version: 1.0
+To: IIO <linux-iio@vger.kernel.org>
+CC: vlad.dogaru@intel.com
+Subject: [PATCH 2/3]iio:pressure:bmp280: cleanup
+Content-Type: text/plain; charset=ISO-8859-15
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-The same virtual GPIO strategy is also used for the AXP288 PMIC in that
-various control methods that are used to do power rail handling and
-sensor reading/setting will touch GPIO fields defined under the PMIC
-device. The GPIO fileds are only defined by the ACPI code while the
-actual hardware doesn't really have a GPIO controller, but to make those
-control method execution succeed, we have to install a GPIO handler for
-the PMIC device handle. Since we do not need the virtual GPIO strategy,
-we can simply do nothing in that handler.
+The calculations for temperature and pressure compensation were already slightly
+optimized in comparison to the data sheet. So, it makes sense to optimize even a
+bit more, making proper use of C operators:
+  - variable t in bmp280_compensate_temp() can be eliminated by directly
+    returning the result of the relevant equation.
+  - make use of the += operator, eliminate an unnecessary parenthesis level and
+    directly return the result of the last equation in
+    bmp280_compensate_press().
+When the initialization of the ctrl_meas register fails, the error message will
+now mention the right register name.
+During probe, i2c_set_clientdata() is called, although it is not necessary. Drop
+it.
 
-Signed-off-by: Aaron Lu <aaron.lu@intel.com>
+Signed-off-by: Hartmut Knaack <knaack.h@gmx.de>
 ---
- .../pmic_opregion/intel_soc_pmic_xpower_opregion.c | 27 ++++++++++++++++++----
- 1 file changed, 23 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/acpi/pmic_opregion/intel_soc_pmic_xpower_opregion.c b/drivers/acpi/pmic_opregion/intel_soc_pmic_xpower_opregion.c
-index ab462708aecf..e25c83da90a5 100644
---- a/drivers/acpi/pmic_opregion/intel_soc_pmic_xpower_opregion.c
-+++ b/drivers/acpi/pmic_opregion/intel_soc_pmic_xpower_opregion.c
-@@ -251,13 +251,32 @@ static struct intel_soc_pmic_opregion_data intel_xpower_pmic_opregion_data = {
- 	.dptf_table_count = ARRAY_SIZE(dptf_table),
- };
- 
-+static acpi_status intel_xpower_pmic_gpio_handler(u32 function,
-+		acpi_physical_address address, u32 bit_width, u64 *value,
-+		void *handler_context, void *region_context)
-+{
-+	return AE_OK;
-+}
- 
- static int intel_xpower_pmic_opregion_probe(struct platform_device *pdev)
+diff --git a/drivers/iio/pressure/bmp280.c b/drivers/iio/pressure/bmp280.c
+index 75038da..4f6ae4d 100644
+--- a/drivers/iio/pressure/bmp280.c
++++ b/drivers/iio/pressure/bmp280.c
+@@ -200,7 +200,7 @@ static s32 bmp280_compensate_temp(struct bmp280_data *data,
+ 				  struct bmp280_comp_temp *comp,
+ 				  s32 adc_temp)
  {
--	struct axp20x_dev *axp20x = dev_get_drvdata(pdev->dev.parent);
--	return intel_soc_pmic_install_opregion_handler(&pdev->dev,
--			ACPI_HANDLE(pdev->dev.parent), axp20x->regmap,
--			&intel_xpower_pmic_opregion_data);
-+	struct device *parent = pdev->dev.parent;
-+	struct axp20x_dev *axp20x = dev_get_drvdata(parent);
-+	acpi_status status;
-+	int result;
-+
-+	result = intel_soc_pmic_install_opregion_handler(&pdev->dev,
-+					ACPI_HANDLE(parent), axp20x->regmap,
-+					&intel_xpower_pmic_opregion_data);
-+	if (!result) {
-+		status = acpi_install_address_space_handler(
-+				ACPI_HANDLE(parent), ACPI_ADR_SPACE_GPIO,
-+				intel_xpower_pmic_gpio_handler, NULL, NULL);
-+		if (ACPI_FAILURE(status))
-+			result = -ENODEV;
-+	}
-+
-+	return result;
+-	s32 var1, var2, t;
++	s32 var1, var2;
+ 
+ 	var1 = (((adc_temp >> 3) - ((s32) comp->dig_t1 << 1)) *
+ 		((s32) comp->dig_t2)) >> 11;
+@@ -209,9 +209,7 @@ static s32 bmp280_compensate_temp(struct bmp280_data *data,
+ 		((s32) comp->dig_t3)) >> 14;
+ 
+ 	data->t_fine = var1 + var2;
+-	t = (data->t_fine * 5 + 128) >> 8;
+-
+-	return t;
++	return (data->t_fine * 5 + 128) >> 8;
  }
  
- static struct platform_driver intel_xpower_pmic_opregion_driver = {
--- 
-1.9.3
-
+ /*
+@@ -229,11 +227,11 @@ static u32 bmp280_compensate_press(struct bmp280_data *data,
+ 
+ 	var1 = ((s64) data->t_fine) - 128000;
+ 	var2 = var1 * var1 * (s64) comp->dig_p6;
+-	var2 = var2 + ((var1 * (s64) comp->dig_p5) << 17);
+-	var2 = var2 + (((s64) comp->dig_p4) << 35);
++	var2 += ((var1 * (s64) comp->dig_p5) << 17);
++	var2 += (((s64) comp->dig_p4) << 35);
+ 	var1 = ((var1 * var1 * (s64) comp->dig_p3) >> 8) +
+ 		((var1 * (s64) comp->dig_p2) << 12);
+-	var1 = (((((s64) 1) << 47) + var1)) * ((s64) comp->dig_p1) >> 33;
++	var1 = ((((s64) 1) << 47) + var1) * ((s64) comp->dig_p1) >> 33;
+ 
+ 	if (var1 == 0)
+ 		return 0;
+@@ -242,9 +240,7 @@ static u32 bmp280_compensate_press(struct bmp280_data *data,
+ 	p = div64_s64(p, var1);
+ 	var1 = (((s64) comp->dig_p9) * (p >> 13) * (p >> 13)) >> 25;
+ 	var2 = (((s64) comp->dig_p8) * p) >> 19;
+-	p = ((p + var1 + var2) >> 8) + (((s64) comp->dig_p7) << 4);
+-
+-	return (u32) p;
++	return (u32)((p + var1 + var2) >> 8) + (((s64) comp->dig_p7) << 4);
+ }
+ 
+ static int bmp280_read_temp(struct bmp280_data *data,
+@@ -366,7 +362,7 @@ static int bmp280_chip_init(struct bmp280_data *data)
+ 				 BMP280_MODE_NORMAL);
+ 	if (ret < 0) {
+ 		dev_err(&data->client->dev,
+-			"failed to write config register\n");
++			"failed to write ctrl_meas register\n");
+ 		return ret;
+ 	}
+ 
+@@ -394,7 +390,6 @@ static int bmp280_probe(struct i2c_client *client,
+ 	if (!indio_dev)
+ 		return -ENOMEM;
+ 
+-	i2c_set_clientdata(client, indio_dev);
+ 	data = iio_priv(indio_dev);
+ 	mutex_init(&data->lock);
+ 	data->client = client;
