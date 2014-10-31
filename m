@@ -1,68 +1,51 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-wi0-f178.google.com ([209.85.212.178]:53008 "EHLO
-	mail-wi0-f178.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752449AbaJ1KWS (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 28 Oct 2014 06:22:18 -0400
+Received: from mail-ie0-f176.google.com ([209.85.223.176]:62756 "EHLO
+	mail-ie0-f176.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1759739AbaJaUxm (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 31 Oct 2014 16:53:42 -0400
+Received: by mail-ie0-f176.google.com with SMTP id rd18so2015060iec.7
+        for <linux-iio@vger.kernel.org>; Fri, 31 Oct 2014 13:53:41 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <544BF76E.8010500@kernel.org>
-References: <1412858385-11954-1-git-send-email-daniel.baluta@intel.com>
-	<1412858385-11954-5-git-send-email-daniel.baluta@intel.com>
-	<544AD34A.9070005@gmx.de>
-	<544BF76E.8010500@kernel.org>
-Date: Tue, 28 Oct 2014 12:22:16 +0200
-Message-ID: <CAEnQRZBUi=m55dP5=B8ahHFgb6o2JA2cWTh0aZf8RNtWid1yEw@mail.gmail.com>
-Subject: Re: [RFC PATCH v2 4/7] iio: core: Introduce STEPS channel type,
- ENABLE mask and INSTANCE event
-From: Daniel Baluta <daniel.baluta@intel.com>
+In-Reply-To: <c422075c-f86a-415b-a19b-d4c11fd5e0fd@email.android.com>
+References: <1408815064-5763-1-git-send-email-linus.walleij@linaro.org>
+	<53FB6205.5020704@kernel.org>
+	<CACRpkdZuSsePVjPpmLV5bs5VOcbnH2_gK4-kOfbpBM1-7Q=zgQ@mail.gmail.com>
+	<c422075c-f86a-415b-a19b-d4c11fd5e0fd@email.android.com>
+Date: Fri, 31 Oct 2014 21:53:41 +0100
+Message-ID: <CACRpkdZQk+5bemmLQsiP-eLiAhrS8-cJriP=8LBaBDu+Jiustw@mail.gmail.com>
+Subject: Re: [PATCH] iio: st-sensors: add support for lis3lv02d accelerometer
+From: Linus Walleij <linus.walleij@linaro.org>
 To: Jonathan Cameron <jic23@kernel.org>
-Cc: Hartmut Knaack <knaack.h@gmx.de>,
-	Daniel Baluta <daniel.baluta@intel.com>,
-	irina.tirdea@intel.com, linux-iio@vger.kernel.org,
-	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>
+Cc: Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	Denis CIOCCA <denis.ciocca@st.com>,
+	Lee Jones <lee.jones@linaro.org>,
+	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>
 Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Sat, Oct 25, 2014 at 10:18 PM, Jonathan Cameron <jic23@kernel.org> wrote:
-> On 24/10/14 23:31, Hartmut Knaack wrote:
->> Daniel Baluta schrieb am 09.10.2014 14:39:
->>> From: Irina Tirdea <irina.tirdea@intel.com>
->>>
->>> These changes are needed to support the functionality of a pedometer.
->>> A pedometer has two basic functionalities: step counter and step detector.
->>>
->>> The step counter needs to be enabled and then it will count the steps
->>> in its hardware register. Whenever the application needs to check
->>> the step count, it will read the step counter register. To support the
->>> step counter a new channel type STEPS is added. Since the pedometer needs
->>> to be enabled first so that the hardware can count and store the steps,
->>> we need a specific ENABLE channel info mask.
->>>
->>> The step detector will generate an interrupt each time a step is detected.
->>> To support this functionality we add a new event type INSTANCE.
->>>
->> Hi,
->> I was wondering, if it would be better to name this channel somehow more generic. What you are actually counting are some pulses, and only the implementation of the hardware leads to the interpretation of these pulses as for example steps.
->> Other devices for this category would be pulse counters - either stand alone, or as part of SoCs. Some use cases I could think of are: liquid/gas flow measurements, engine rotation/RPM counts, object counts, ...
->> Any opinions?
->
-> I agree there might be potential here for a broader interface...    RPM however
-> would be a rotational speed measurement and hence in radians / second or
-> radians if just a count of pulses off an encoder.
->
-> We have just recently had a human pulse counter as well which is another count.
->
-> The question to my mind is do we gain anything by making it more generic?
-> Does it help userspace?  Chances of having many applications that don't care
-> about the difference between steps and other pulse counts is probably low
-> so right now I'm (slightly) falling on the side of have these more specific
-> counts.
->
-> So what does everyone else think?
+On Thu, Sep 11, 2014 at 6:39 PM, Jonathan Cameron <jic23@kernel.org> wrote:
+> On September 11, 2014 10:13:24 AM GMT+01:00, Linus Walleij <linus.walleij@linaro.org> wrote:
 
-I think making this more generic might confuse the users. Having this
-more specific makes the interface very clear about who should use it.
+>>Apart from that it has a custom sysfs interface to read the
+>>accelerometer, similar to the IIO interface. It seems to *only* support
+>>raw values AFAICT  though, not sensitivity adjustment, so my patch
+>>gives the ability to have better sensor handling in the kernel from an
+>>IIO point of view.
+>>
+> I likewise looked at this long ago (came out roughly concurrently
+> with the similar lis3l02dq driver) came to roughly the same conclusion.
 
-Daniel.
+So Jonathan what do you say, should we simply merge this patch?
+
+It will be two drivers in the kernel for the same hardware but one
+of them is modern and uses IIO.
+
+The misc driver maintainers doesn't seem to be moving anywhere
+near IIO on its own whereas this patch establishes a base for
+moving features over to generic IIO whenever someone finds the
+time.
+
+Yours,
+Linus Walleij
