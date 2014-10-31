@@ -1,79 +1,33 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from bear.ext.ti.com ([192.94.94.41]:59405 "EHLO bear.ext.ti.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751180AbaJ0LKK (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Mon, 27 Oct 2014 07:10:10 -0400
-From: Vignesh R <vigneshr@ti.com>
-To: Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>,
-	Mark Rutland <mark.rutland@arm.com>,
-	Ian Campbell <ijc+devicetree@hellion.org.uk>,
-	Kumar Gala <galak@codeaurora.org>,
-	Benoit Cousson <bcousson@baylibre.com>,
-	Tony Lindgren <tony@atomide.com>,
-	Russell King <linux@arm.linux.org.uk>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Dmitry Torokhov <dmitry.torokhov@gmail.com>
-CC: Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	Samuel Ortiz <sameo@linux.intel.com>,
-	Lee Jones <lee.jones@linaro.org>, Felipe Balbi <balbi@ti.com>,
-	Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-	Jan Kardell <jan.kardell@telliq.com>,
-	Paul Gortmaker <paul.gortmaker@windriver.com>,
-	Brad Griffis <bgriffis@ti.com>, <devicetree@vger.kernel.org>,
-	<linux-kernel@vger.kernel.org>, <linux-omap@vger.kernel.org>,
-	<linux-arm-kernel@lists.infradead.org>,
-	<linux-iio@vger.kernel.org>, <linux-input@vger.kernel.org>,
-	Vignesh R <vigneshr@ti.com>
-Subject: [PATCH 0/4] Touchscreen performance related fixes
-Date: Mon, 27 Oct 2014 16:38:27 +0530
-Message-ID: <1414408111-2631-1-git-send-email-vigneshr@ti.com>
-MIME-Version: 1.0
-Content-Type: text/plain
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <srinivas.pandruvada@linux.intel.com>
+Message-ID: <1414768889.3254.4.camel@spandruv-hsb-test>
+Subject: Re: [PATCH 0/1] iio: ak8975: Add AKM0991x support.
+From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+To: Gwendal Grignou <gwendal@chromium.org>
+Cc: jic23@kernel.org, linux-iio@vger.kernel.org
+Date: Fri, 31 Oct 2014 08:21:29 -0700
+In-Reply-To: <1414620097-6787-1-git-send-email-gwendal@chromium.org>
+References: <1414620097-6787-1-git-send-email-gwendal@chromium.org>
+Content-Type: text/plain; charset="UTF-8"
+Mime-Version: 1.0
+List-ID: <linux-iio@vger.kernel.org>
 
-This series of patches fix TSC defects related to lag in touchscreen
-performance and cursor jump at touch release. The lag was result of
-udelay in TSC interrupt handler. Cursor jump due to false pen-up event.
-The patches implement Advisory 1.0.31 in silicon errata of am335x-evm
-to avoid false pen-up events and remove udelay. The advisory says to use
-steps 1 to 4 for ADC and 5 to 16 for TSC (assuming 4 wire TSC and 4 channel
-ADC). Further the X co-ordinate must be the last one to be sampled just
-before charge step. The first two patches implement the required changes. 
+On Wed, 2014-10-29 at 15:01 -0700, Gwendal Grignou wrote:
+> AK09912 is an accelerometer with the same register set as AK09911, but
+> same behavior as AK8973, so I was not sure where to add the support.
+> I decided to merge all AKM magnetometer support in the same file while
+> being as clean as I could.
+> 
+AK09911 is implemented as a separate driver to have a clean. 
+- Register map is different and have different indexes
+- AK09911 is a very compact interface with no DRDY pin. So no support
+     of interrupt or GPIO poll
+- Even for polled mode no mention on ST2 register, which is required in
+    ak8975 driver
+- mode values are different for fuse access
 
-A DT parameter to configure the duration of tsc charge step. It represents
-number of ADC clock cycles to wait between applying the step configuration
-registers and going back to the IDLE state. The charge delay value can vary
-across boards. Configuring correct value of charge delay is important to avoid
-false pen-up events. Hence it is necessary to expose charge-delay value as
-DT parameter. The pen-up detection happens immediately after the charge step
-so this does in fact function as a hardware knob for adjusting the amount of
-settling time.
+I didn't get chance to check your merged driver, IMO simple standalone
+driver is better if there are two many difference like above, difference
+between AK09911 and AK8973.
 
-After applying these changes false pen-up events have not be observed and
-smooth circles can be drawn on touch screen. The performance is much better
-in recognizing quick movement across the screen. No lag or cursor jump is
-observed.
-
-Brad Griffis (2):
-  input: touchscreen: ti_am335x_tsc Interchange touchscreen and ADC
-    steps
-  input: touchscreen: ti_am335x_tsc: Remove udelay in interrupt handler
-
-Vignesh R (2):
-  arm: boot: dts: am335x-evm: Make charge delay a DT parameter for tsc
-  input: touchscreen: ti_am335x_tsc: Use charge delay DT parameter
-
- .../bindings/input/touchscreen/ti-tsc-adc.txt      |  13 +++
- arch/arm/boot/dts/am335x-evm.dts                   |   1 +
- drivers/iio/adc/ti_am335x_adc.c                    |   2 +-
- drivers/input/touchscreen/ti_am335x_tsc.c          | 106 ++++++++++-----------
- drivers/mfd/ti_am335x_tscadc.c                     |   7 +-
- include/linux/mfd/ti_am335x_tscadc.h               |   4 +-
- 6 files changed, 76 insertions(+), 57 deletions(-)
-
--- 
-1.9.1
-
+Thanks,
+Srinivas
