@@ -1,188 +1,176 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga02.intel.com ([134.134.136.20]:63860 "EHLO mga02.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1758246AbaJaLqe (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Fri, 31 Oct 2014 07:46:34 -0400
-Date: Fri, 31 Oct 2014 13:47:09 +0200
-From: Vlad Dogaru <vlad.dogaru@intel.com>
-To: Hartmut Knaack <knaack.h@gmx.de>
-Cc: IIO <linux-iio@vger.kernel.org>
-Subject: Re: [PATCH 3/3]iio:pressure:bmp280: read compensation data only at
- init
-Message-ID: <20141031114709.GC24473@vdogaru>
-References: <5452E502.6060609@gmx.de>
+Return-Path: <lars@metafoo.de>
+Message-ID: <5453C494.4030906@metafoo.de>
+Date: Fri, 31 Oct 2014 18:19:16 +0100
+From: Lars-Peter Clausen <lars@metafoo.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <5452E502.6060609@gmx.de>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+To: Ezequiel Garcia <ezequiel.garcia@imgtec.com>,
+ linux-iio@vger.kernel.org, jic23@kernel.org, Naidu.Tellapati@imgtec.com,
+ james.hartley@imgtec.com, abrestic@chromium.org
+CC: Phani Movva <Phani.Movva@imgtec.com>
+Subject: Re: [PATCH 1/2] iio: adc: Cosmic Circuits 10001 ADC driver
+References: <1414615531-26172-1-git-send-email-ezequiel.garcia@imgtec.com> <1414615531-26172-2-git-send-email-ezequiel.garcia@imgtec.com>
+In-Reply-To: <1414615531-26172-2-git-send-email-ezequiel.garcia@imgtec.com>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+List-ID: <linux-iio@vger.kernel.org>
 
-On Fri, Oct 31, 2014 at 02:25:22AM +0100, Hartmut Knaack wrote:
-> Compensation data is hard coded into the sensors, so it is sufficient to just
-> read it once during device initialization. Therefor struct bmp280_comp should be
-> part of bmp280_data (since the elements of bmp280_comp_temp and
-> bmp280_comp_press have distinct names, they could be merged into bmp280_comp).
+On 10/29/2014 09:45 PM, Ezequiel Garcia wrote:
+> From: Phani Movva <Phani.Movva@imgtec.com>
+>
+> This commit adds support for Cosmic Circuits 10001 10-bit ADC device.
+>
+> Signed-off-by: Phani Movva <Phani.Movva@imgtec.com>
+> Signed-off-by: Naidu Tellapati <Naidu.Tellapati@imgtec.com>
+> [Ezequiel: code style cleaning]
+> Signed-off-by: Ezequiel Garcia <ezequiel.garcia@imgtec.com>
 
-My first version of the patch did this, but Jonathan suggested [1] that,
-since we're using regmap, we can rely on it for caching the calibration
-parameters.  I have no preference for either approach.
+Looks very good. Just a few very minor issues.
 
-[1] http://www.spinics.net/lists/linux-iio/msg15099.html
+[...]
+> +static int cc_adc_poll_done(struct iio_dev *dev, int channel,
+> +			    unsigned int delay)
+> +{
+> +	struct cc_10001_adc_device *adc_dev = iio_priv(dev);
+> +	int val = INVALID_SAMPLED_OUTPUT;
 
-> Signed-off-by: Hartmut Knaack <knaack.h@gmx.de>
-> ---
-> diff --git a/drivers/iio/pressure/bmp280.c b/drivers/iio/pressure/bmp280.c
-> index 4f6ae4d..36e425c 100644
-> --- a/drivers/iio/pressure/bmp280.c
-> +++ b/drivers/iio/pressure/bmp280.c
-> @@ -68,10 +68,19 @@
->  #define BMP280_CHIP_ID			0x58
->  #define BMP280_SOFT_RESET_VAL		0xB6
->  
-> +/* Compensation parameters. */
-> +struct bmp280_comp {
-> +	u16 dig_p1;
-> +	s16 dig_p2, dig_p3, dig_p4, dig_p5, dig_p6, dig_p7, dig_p8, dig_p9;
-> +	u16 dig_t1;
-> +	s16 dig_t2, dig_t3;
-> +};
+I'm not so sure that returning a fake sample is such a good idea. When 
+reading from sysfs we should definitely return an error if there is one. For 
+buffer reading dropping the sample is probably not such a good idea, but we 
+should agree on and document a standard representation of invalid samples.
+
+> +	int poll_count = 0;
 > +
->  struct bmp280_data {
->  	struct i2c_client *client;
->  	struct mutex lock;
->  	struct regmap *regmap;
-> +	struct bmp280_comp comp;
->  
->  	/*
->  	 * Carryover value from temperature conversion, used in pressure
-> @@ -80,17 +89,6 @@ struct bmp280_data {
->  	s32 t_fine;
->  };
->  
-> -/* Compensation parameters. */
-> -struct bmp280_comp_temp {
-> -	u16 dig_t1;
-> -	s16 dig_t2, dig_t3;
-> -};
-> -
-> -struct bmp280_comp_press {
-> -	u16 dig_p1;
-> -	s16 dig_p2, dig_p3, dig_p4, dig_p5, dig_p6, dig_p7, dig_p8, dig_p9;
-> -};
-> -
->  static const struct iio_chan_spec bmp280_channels[] = {
->  	{
->  		.type = IIO_PRESSURE,
-> @@ -141,11 +139,11 @@ static const struct regmap_config bmp280_regmap_config = {
->  	.volatile_reg = bmp280_is_volatile_reg,
->  };
->  
-> -static int bmp280_read_compensation_temp(struct bmp280_data *data,
-> -					 struct bmp280_comp_temp *comp)
-> +static int bmp280_read_compensation_temp(struct bmp280_data *data)
->  {
->  	int ret;
->  	__le16 buf[BMP280_COMP_TEMP_REG_COUNT / 2];
-> +	struct bmp280_comp *comp = &data->comp;
->  
->  	ret = regmap_bulk_read(data->regmap, BMP280_REG_COMP_TEMP_START,
->  			       buf, BMP280_COMP_TEMP_REG_COUNT);
-> @@ -162,11 +160,11 @@ static int bmp280_read_compensation_temp(struct bmp280_data *data,
->  	return 0;
->  }
->  
-> -static int bmp280_read_compensation_press(struct bmp280_data *data,
-> -					  struct bmp280_comp_press *comp)
-> +static int bmp280_read_compensation_press(struct bmp280_data *data)
->  {
->  	int ret;
->  	__le16 buf[BMP280_COMP_PRESS_REG_COUNT / 2];
-> +	struct bmp280_comp *comp = &data->comp;
->  
->  	ret = regmap_bulk_read(data->regmap, BMP280_REG_COMP_PRESS_START,
->  			       buf, BMP280_COMP_PRESS_REG_COUNT);
-> @@ -196,11 +194,10 @@ static int bmp280_read_compensation_press(struct bmp280_data *data,
->   *
->   * Taken from datasheet, Section 3.11.3, "Compensation formula".
->   */
-> -static s32 bmp280_compensate_temp(struct bmp280_data *data,
-> -				  struct bmp280_comp_temp *comp,
-> -				  s32 adc_temp)
-> +static s32 bmp280_compensate_temp(struct bmp280_data *data, s32 adc_temp)
->  {
->  	s32 var1, var2;
-> +	struct bmp280_comp *comp = &data->comp;
->  
->  	var1 = (((adc_temp >> 3) - ((s32) comp->dig_t1 << 1)) *
->  		((s32) comp->dig_t2)) >> 11;
-> @@ -219,11 +216,10 @@ static s32 bmp280_compensate_temp(struct bmp280_data *data,
->   *
->   * Taken from datasheet, Section 3.11.3, "Compensation formula".
->   */
-> -static u32 bmp280_compensate_press(struct bmp280_data *data,
-> -				   struct bmp280_comp_press *comp,
-> -				   s32 adc_press)
-> +static u32 bmp280_compensate_press(struct bmp280_data *data, s32 adc_press)
->  {
->  	s64 var1, var2, p;
-> +	struct bmp280_comp *comp = &data->comp;
->  
->  	var1 = ((s64) data->t_fine) - 128000;
->  	var2 = var1 * var1 * (s64) comp->dig_p6;
-> @@ -249,11 +245,6 @@ static int bmp280_read_temp(struct bmp280_data *data,
->  	int ret;
->  	__be32 tmp = 0;
->  	s32 adc_temp, comp_temp;
-> -	struct bmp280_comp_temp comp;
-> -
-> -	ret = bmp280_read_compensation_temp(data, &comp);
-> -	if (ret < 0)
-> -		return ret;
->  
->  	ret = regmap_bulk_read(data->regmap, BMP280_REG_TEMP_MSB,
->  			       (u8 *) &tmp, 3);
-> @@ -263,7 +254,7 @@ static int bmp280_read_temp(struct bmp280_data *data,
->  	}
->  
->  	adc_temp = be32_to_cpu(tmp) >> 12;
-> -	comp_temp = bmp280_compensate_temp(data, &comp, adc_temp);
-> +	comp_temp = bmp280_compensate_temp(data, adc_temp);
->  
->  	/*
->  	 * val might be NULL if we're called by the read_press routine,
-> @@ -284,11 +275,6 @@ static int bmp280_read_press(struct bmp280_data *data,
->  	__be32 tmp = 0;
->  	s32 adc_press;
->  	u32 comp_press;
-> -	struct bmp280_comp_press comp;
-> -
-> -	ret = bmp280_read_compensation_press(data, &comp);
-> -	if (ret < 0)
-> -		return ret;
->  
->  	/* Read and compensate temperature so we get a reading of t_fine. */
->  	ret = bmp280_read_temp(data, NULL);
-> @@ -303,7 +289,7 @@ static int bmp280_read_press(struct bmp280_data *data,
->  	}
->  
->  	adc_press = be32_to_cpu(tmp) >> 12;
-> -	comp_press = bmp280_compensate_press(data, &comp, adc_press);
-> +	comp_press = bmp280_compensate_press(data, adc_press);
->  
->  	*val = comp_press;
->  	*val2 = 256000;
-> @@ -375,6 +361,14 @@ static int bmp280_chip_init(struct bmp280_data *data)
->  		return ret;
->  	}
->  
-> +	ret = bmp280_read_compensation_temp(data);
+> +	while (!(cc_adc_read_reg(adc_dev, CC_10001_ADC_EOC) &
+> +			CC_10001_ADC_EOC_SET)) {
+> +
+> +		ndelay(delay);
+> +		if (poll_count++ == MAX_POLL_COUNT)
+> +			return val;
+> +	}
+> +
+> +	poll_count = 0;
+> +	while ((cc_adc_read_reg(adc_dev, CC_10001_ADC_CHSEL_SAMPLED) &
+> +			CC_10001_ADC_CH_MASK) != channel) {
+> +
+> +		ndelay(delay);
+> +		if (poll_count++ == MAX_POLL_COUNT)
+> +			return val;
+> +	}
+> +
+> +	/* Read the 10 bit output register */
+> +	return cc_adc_read_reg(adc_dev, CC_10001_ADC_DDATA_OUT);
+> +}
+> +
+> +static irqreturn_t cc_10001_adc_trigger_h(int irq, void *p)
+> +{
+> +	u16 *data;
+> +	u16 val = 0;
+> +	unsigned int delay_ns = 0;
+> +	struct iio_dev *dev;
+> +	struct iio_poll_func *pf = p;
+> +	struct cc_10001_adc_device *adc_dev;
+> +
+> +	dev = pf->indio_dev;
+> +	adc_dev = iio_priv(dev);
+> +
+> +	data = kmalloc(dev->scan_bytes, GFP_KERNEL);
+> +	if (!data)
+> +		goto done;
+
+If you want to avoid having to run malloc/free for each captured sample you 
+can allocate the buffer in the update_scan_mode() callback.
+
+> +
+> +	mutex_lock(&adc_dev->lock);
+> +
+> +	/* Power-up ADC */
+> +	cc_adc_write_reg(adc_dev, CC_10001_ADC_POWER_DOWN, 1);
+> +
+> +	/* Wait for 8 (6+2) clock cycles before activating START */
+> +	ndelay(adc_dev->start_delay_ns);
+> +
+> +	/* Calculate delay step for eoc and sampled data */
+> +	delay_ns = (adc_dev->eoc_delay_ns / MAX_POLL_COUNT);
+> +
+> +	if (!bitmap_empty(dev->active_scan_mask, dev->masklength)) {
+> +		int i, j;
+> +		for (i = 0, j = 0;
+> +		     i < bitmap_weight(dev->active_scan_mask, dev->masklength);
+> +		     i++, j++) {
+> +
+
+This looks like a open-coded for_each_set_bit()
+
+> +			j = find_next_bit(dev->active_scan_mask,
+> +					  dev->masklength, j);
+> +
+> +			cc_adc_start(adc_dev, j);
+> +			val = cc_adc_poll_done(dev, j, delay_ns);
+> +			data[i] = val & CC_10001_ADC_DATA_MASK;
+> +		}
+> +	}
+> +
+> +	/* Power-down ADC */
+> +	cc_adc_write_reg(adc_dev, CC_10001_ADC_POWER_DOWN, 0);
+> +
+> +	mutex_unlock(&adc_dev->lock);
+> +
+> +	iio_push_to_buffers_with_timestamp(dev, data, iio_get_time_ns());
+> +
+> +	kfree(data);
+> +done:
+> +	/*
+> +	 * Tell the core we are done with this trigger and ready for the
+> +	 * next one.
+> +	 */
+> +	iio_trigger_notify_done(dev->trig);
+> +	return IRQ_HANDLED;
+> +}
+> +
+[...]
+> +static int cc_10001_adc_probe(struct platform_device *pdev)
+> +{
+> +	struct device_node *node = pdev->dev.of_node;
+> +	struct cc_10001_adc_device *adc_dev;
+> +	unsigned long adc_clk_rate;
+> +	struct resource *res;
+> +	struct iio_dev *dev;
+> +	int ret;
+> +
+> +	dev = devm_iio_device_alloc(&pdev->dev, sizeof(*adc_dev));
+> +	if (dev == NULL)
+> +		return -ENOMEM;
+> +
+> +	adc_dev = iio_priv(dev);
+> +
+> +	if (of_property_read_u32(node, "cosmic,adc-available-channels", &ret)) {
+
+So, what does available channels in this case mean. Channels that are connected?
+
+> +		dev_err(&dev->dev, "Missing adc-available-channels property\n");
+> +		return -EINVAL;
+> +	}
+[...]
+> +
+> +	ret = iio_triggered_buffer_setup(dev, NULL,
+> +					&cc_10001_adc_trigger_h, NULL);
+
+ret is not checked.
+
+> +
+> +	ret = iio_device_register(dev);
 > +	if (ret < 0)
-> +		return ret;
+> +		goto err_cleanup_buffer;
 > +
-> +	ret = bmp280_read_compensation_press(data);
-> +	if (ret < 0)
-> +		return ret;
+> +	platform_set_drvdata(pdev, dev);
 > +
->  	return ret;
->  }
->  
+> +	return 0;
+> +
+> +err_disable_reg:
+> +	regulator_disable(adc_dev->reg);
+> +err_disable_clk:
+> +	clk_disable_unprepare(adc_dev->adc_clk);
+> +err_cleanup_buffer:
+> +	iio_triggered_buffer_cleanup(dev);
+> +	return 0;
+> +}
+[...]
