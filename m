@@ -1,63 +1,94 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:49929 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751355AbaJYTVD (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 25 Oct 2014 15:21:03 -0400
-Message-ID: <544B7290.1030102@kernel.org>
-Date: Sat, 25 Oct 2014 10:51:12 +0100
-From: Jonathan Cameron <jic23@kernel.org>
+Received: from mout.gmx.net ([212.227.15.15]:61414 "EHLO mout.gmx.net"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1755522AbaJaSnO (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Fri, 31 Oct 2014 14:43:14 -0400
+Message-ID: <5453D83D.3060405@gmx.de>
+Date: Fri, 31 Oct 2014 19:43:09 +0100
+From: Hartmut Knaack <knaack.h@gmx.de>
 MIME-Version: 1.0
-To: Dan Murphy <dmurphy@ti.com>, pmeerw@pmeerw.net
-CC: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iio: tsl4531: Fix compiler error when CONFIG_PM_OPS is
- not defined
-References: <1413834722-7500-1-git-send-email-dmurphy@ti.com>
-In-Reply-To: <1413834722-7500-1-git-send-email-dmurphy@ti.com>
-Content-Type: text/plain; charset=utf-8
+To: Vlad Dogaru <vlad.dogaru@intel.com>
+CC: IIO <linux-iio@vger.kernel.org>
+Subject: Re: [PATCH 2/3]iio:pressure:bmp280: cleanup
+References: <5452E495.2020705@gmx.de> <20141031114416.GB24473@vdogaru>
+In-Reply-To: <20141031114416.GB24473@vdogaru>
+Content-Type: text/plain; charset=ISO-8859-1
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 20/10/14 20:52, Dan Murphy wrote:
-> Fix the compiler error when the CONFIG_PM_OPS flag is not set.
+Vlad Dogaru schrieb am 31.10.2014 12:44:
+> On Fri, Oct 31, 2014 at 02:23:33AM +0100, Hartmut Knaack wrote:
+>> The calculations for temperature and pressure compensation were already slightly
+>> optimized in comparison to the data sheet. So, it makes sense to optimize even a
+>> bit more, making proper use of C operators:
+>>   - variable t in bmp280_compensate_temp() can be eliminated by directly
+>>     returning the result of the relevant equation.
+>>   - make use of the += operator, eliminate an unnecessary parenthesis level and
+>>     directly return the result of the last equation in
+>>     bmp280_compensate_press().
+>> When the initialization of the ctrl_meas register fails, the error message will
+>> now mention the right register name.
+>> During probe, i2c_set_clientdata() is called, although it is not necessary. Drop
+>> it.
+>>
+>> Signed-off-by: Hartmut Knaack <knaack.h@gmx.de>
+>> ---
+>> diff --git a/drivers/iio/pressure/bmp280.c b/drivers/iio/pressure/bmp280.c
+>> index 75038da..4f6ae4d 100644
+>> --- a/drivers/iio/pressure/bmp280.c
+>> +++ b/drivers/iio/pressure/bmp280.c
+>> @@ -200,7 +200,7 @@ static s32 bmp280_compensate_temp(struct bmp280_data *data,
+>>  				  struct bmp280_comp_temp *comp,
+>>  				  s32 adc_temp)
+>>  {
+>> -	s32 var1, var2, t;
+>> +	s32 var1, var2;
+>>  
+>>  	var1 = (((adc_temp >> 3) - ((s32) comp->dig_t1 << 1)) *
+>>  		((s32) comp->dig_t2)) >> 11;
+>> @@ -209,9 +209,7 @@ static s32 bmp280_compensate_temp(struct bmp280_data *data,
+>>  		((s32) comp->dig_t3)) >> 14;
+>>  
+>>  	data->t_fine = var1 + var2;
+>> -	t = (data->t_fine * 5 + 128) >> 8;
+>> -
+>> -	return t;
+>> +	return (data->t_fine * 5 + 128) >> 8;
 > 
-> drivers/iio/light/tsl4531.c:235:8: error: ‘tsl4531_suspend’ undeclared here (not in a function)
-> drivers/iio/light/tsl4531.c:235:8: error: ‘tsl4531_resume’ undeclared here (not in a function)
+> Shouldn't the compiler take care of this?
+That would be preferable. I just don't see the real benefit in having the extra step of storing the result (and taking care of an extra variable) before returning it. And I am aware, that this calculation is derived from the one in the data sheet (which looks a bit questionable to me with its unnecessary parenthesis and variable). But since you already started optimizing, it seemed legitimate to consolidate it even a bit more.
 > 
-> Signed-off-by: Dan Murphy <dmurphy@ti.com>
-Applied to the fixes-togreg branch of iio.git
+>>  }
+>>  
+>>  /*
+>> @@ -229,11 +227,11 @@ static u32 bmp280_compensate_press(struct bmp280_data *data,
+>>  
+>>  	var1 = ((s64) data->t_fine) - 128000;
+>>  	var2 = var1 * var1 * (s64) comp->dig_p6;
+>> -	var2 = var2 + ((var1 * (s64) comp->dig_p5) << 17);
+>> -	var2 = var2 + (((s64) comp->dig_p4) << 35);
+>> +	var2 += ((var1 * (s64) comp->dig_p5) << 17);
+>> +	var2 += (((s64) comp->dig_p4) << 35);
+>>  	var1 = ((var1 * var1 * (s64) comp->dig_p3) >> 8) +
+>>  		((var1 * (s64) comp->dig_p2) << 12);
+>> -	var1 = (((((s64) 1) << 47) + var1)) * ((s64) comp->dig_p1) >> 33;
+>> +	var1 = ((((s64) 1) << 47) + var1) * ((s64) comp->dig_p1) >> 33;
+>>  
+>>  	if (var1 == 0)
+>>  		return 0;
+>> @@ -242,9 +240,7 @@ static u32 bmp280_compensate_press(struct bmp280_data *data,
+>>  	p = div64_s64(p, var1);
+>>  	var1 = (((s64) comp->dig_p9) * (p >> 13) * (p >> 13)) >> 25;
+>>  	var2 = (((s64) comp->dig_p8) * p) >> 19;
+>> -	p = ((p + var1 + var2) >> 8) + (((s64) comp->dig_p7) << 4);
+>> -
+>> -	return (u32) p;
+>> +	return (u32)((p + var1 + var2) >> 8) + (((s64) comp->dig_p7) << 4);
+> 
+> And this?
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> 
 
-Thanks,
-
-Jonathan
-> ---
->  drivers/iio/light/tsl4531.c |    7 +++++--
->  1 file changed, 5 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/iio/light/tsl4531.c b/drivers/iio/light/tsl4531.c
-> index a15006e..0763b86 100644
-> --- a/drivers/iio/light/tsl4531.c
-> +++ b/drivers/iio/light/tsl4531.c
-> @@ -230,9 +230,12 @@ static int tsl4531_resume(struct device *dev)
->  	return i2c_smbus_write_byte_data(to_i2c_client(dev), TSL4531_CONTROL,
->  		TSL4531_MODE_NORMAL);
->  }
-> -#endif
->  
->  static SIMPLE_DEV_PM_OPS(tsl4531_pm_ops, tsl4531_suspend, tsl4531_resume);
-> +#define TSL4531_PM_OPS (&tsl4531_pm_ops)
-> +#else
-> +#define TSL4531_PM_OPS NULL
-> +#endif
->  
->  static const struct i2c_device_id tsl4531_id[] = {
->  	{ "tsl4531", 0 },
-> @@ -243,7 +246,7 @@ MODULE_DEVICE_TABLE(i2c, tsl4531_id);
->  static struct i2c_driver tsl4531_driver = {
->  	.driver = {
->  		.name   = TSL4531_DRV_NAME,
-> -		.pm	= &tsl4531_pm_ops,
-> +		.pm	= TSL4531_PM_OPS,
->  		.owner  = THIS_MODULE,
->  	},
->  	.probe  = tsl4531_probe,
-> 
