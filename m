@@ -1,33 +1,54 @@
-Return-Path: <lars@metafoo.de>
-Message-ID: <5453E697.7050107@metafoo.de>
-Date: Fri, 31 Oct 2014 20:44:23 +0100
-From: Lars-Peter Clausen <lars@metafoo.de>
-MIME-Version: 1.0
-To: Ezequiel Garcia <ezequiel.garcia@imgtec.com>,
- linux-iio@vger.kernel.org, jic23@kernel.org, Naidu.Tellapati@imgtec.com,
- james.hartley@imgtec.com, abrestic@chromium.org
-CC: Phani Movva <Phani.Movva@imgtec.com>
-Subject: Re: [PATCH 1/2] iio: adc: Cosmic Circuits 10001 ADC driver
-References: <1414615531-26172-1-git-send-email-ezequiel.garcia@imgtec.com> <1414615531-26172-2-git-send-email-ezequiel.garcia@imgtec.com> <5453C494.4030906@metafoo.de>
-In-Reply-To: <5453C494.4030906@metafoo.de>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from plane.gmane.org ([80.91.229.3]:60324 "EHLO plane.gmane.org"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1759301AbaJaOkl (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Fri, 31 Oct 2014 10:40:41 -0400
+Received: from list by plane.gmane.org with local (Exim 4.69)
+	(envelope-from <glki-linux-iio@m.gmane.org>)
+	id 1XkDNO-0007Ku-W1
+	for linux-iio@vger.kernel.org; Fri, 31 Oct 2014 15:40:31 +0100
+Received: from 37.157.136.206 ([37.157.136.206])
+        by main.gmane.org with esmtp (Gmexim 0.1 (Debian))
+        id 1AlnuQ-0007hv-00
+        for <linux-iio@vger.kernel.org>; Fri, 31 Oct 2014 15:40:30 +0100
+Received: from iivanov by 37.157.136.206 with local (Gmexim 0.1 (Debian))
+        id 1AlnuQ-0007hv-00
+        for <linux-iio@vger.kernel.org>; Fri, 31 Oct 2014 15:40:30 +0100
+To: linux-iio@vger.kernel.org
+From: "Ivan T. Ivanov" <iivanov@mm-sol.com>
+Subject: Re: [PATCH v3 2/2] DT: iio: vadc: document dt binding
+Date: Fri, 31 Oct 2014 16:40:28 +0200
+Message-ID: <54539F5C.50308@mm-sol.com>
+References: <1411563415-11933-1-git-send-email-svarbanov@mm-sol.com> <1411563415-11933-3-git-send-email-svarbanov@mm-sol.com> <20141013150039.GB16598@leverpostej> <543CEC7F.50208@mm-sol.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=windows-1252; format=flowed
+In-Reply-To: <543CEC7F.50208@mm-sol.com>
+Cc: linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
+	devicetree@vger.kernel.org
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On 10/31/2014 06:19 PM, Lars-Peter Clausen wrote:
-> On 10/29/2014 09:45 PM, Ezequiel Garcia wrote:
->> From: Phani Movva <Phani.Movva@imgtec.com>
+
+Hi,
+
+> On 10/13/2014 06:00 PM, Mark Rutland wrote:
+>> On Wed, Sep 24, 2014 at 01:56:55PM +0100, Stanimir Varbanov wrote:
+
+>>> +- qcom,ratiometric:
+>>> +    Usage: optional
+>>> +    Value type: <empty>
+>>> +    Definition: Channel calibration type. If this property is specified
+>>> +            VADC will use the VDD reference(1.8V) and GND for channel
+>>> +            calibration. If property is not found, channel will be
+>>> +            calibrated with 625mV and 1.25V reference channels.
+>>> +            Otherwise the absolute calibration will be used.
 >>
->> This commit adds support for Cosmic Circuits 10001 10-bit ADC device.
->>
->> Signed-off-by: Phani Movva <Phani.Movva@imgtec.com>
->> Signed-off-by: Naidu Tellapati <Naidu.Tellapati@imgtec.com>
->> [Ezequiel: code style cleaning]
->> Signed-off-by: Ezequiel Garcia <ezequiel.garcia@imgtec.com>
+>> Surely this should be part of the specifier?
 >
-> Looks very good. Just a few very minor issues.
 
-One thing I forgot to mention. We use indio_dev for the name of the struct 
-iio_dev variable. Please use this in this driver as well, makes it easier to 
-follow and review the code.
+This is per channel type of configuration. Clients didn't and
+shouldn't care how calibration is done.
 
-- Lars
+Regards,
+Ivan
+
