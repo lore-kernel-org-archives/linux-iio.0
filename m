@@ -1,142 +1,103 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga11.intel.com ([192.55.52.93]:5868 "EHLO mga11.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751268AbaJRRNY (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Sat, 18 Oct 2014 13:13:24 -0400
-Message-ID: <1413652382.2899.0.camel@spandruv-hsb-test>
-Subject: Re: [PATCH] iio: inkern: Add of_xlate function to struct iio_dev
-From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: "Ivan T. Ivanov" <iivanov@mm-sol.com>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Sachin Kamat <sachin.kamat@linaro.org>,
-	John Stultz <john.stultz@linaro.org>,
-	linux-iio@vger.kernel.org, svarbanov@mm-sol.com,
-	linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org
-Date: Sat, 18 Oct 2014 10:13:02 -0700
-In-Reply-To: <5442522D.40203@kernel.org>
-References: <1412253128-32165-1-git-send-email-iivanov@mm-sol.com>
-	 <5442522D.40203@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Mime-Version: 1.0
+Received: from mail-ob0-f179.google.com ([209.85.214.179]:62428 "EHLO
+	mail-ob0-f179.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S932508AbaJaPo6 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 31 Oct 2014 11:44:58 -0400
+Received: by mail-ob0-f179.google.com with SMTP id m8so6095344obr.38
+        for <linux-iio@vger.kernel.org>; Fri, 31 Oct 2014 08:44:57 -0700 (PDT)
+From: George McCollister <george.mccollister@gmail.com>
+To: mranostay@gmail.com
+Cc: linux-iio@vger.kernel.org,
+	George McCollister <george.mccollister@gmail.com>
+Subject: [PATCH 2/2] iio: as3935: Remove unnecessary semicolons
+Date: Fri, 31 Oct 2014 10:44:23 -0500
+Message-Id: <1414770263-13146-2-git-send-email-george.mccollister@gmail.com>
+In-Reply-To: <1414770263-13146-1-git-send-email-george.mccollister@gmail.com>
+References: <1414770263-13146-1-git-send-email-george.mccollister@gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Sat, 2014-10-18 at 12:42 +0100, Jonathan Cameron wrote:
-> On 02/10/14 13:32, Ivan T. Ivanov wrote:
-> > When #iio-cells is greater than '0', the driver could provide
-> > a custom of_xlate function that reads the *args* and returns
-> > the appropriate index in registered IIO channels array.
-> > 
-> > Add simple translation function, suitable for the most 1:1
-> > mapped channels in IIO chips, and use it when driver did not
-> > provide custom implementation.
-> > 
-> > Signed-off-by: Ivan T. Ivanov <iivanov@mm-sol.com>
-> Any more comments on this?  Been sat a while and the discussions seems
-> to have died out.
-> 
-> As Ivan has pointed out, very similar approaches are used
-> elsewhere (gpio for example).
-Looks useful to me.
-Thanks,
-Srinivas
-> 
-> > ---
-> >  drivers/iio/inkern.c    | 32 +++++++++++++++++++++++++++-----
-> >  include/linux/iio/iio.h |  8 ++++++++
-> >  2 files changed, 35 insertions(+), 5 deletions(-)
-> > 
-> > diff --git a/drivers/iio/inkern.c b/drivers/iio/inkern.c
-> > index f084610..6c3e478 100644
-> > --- a/drivers/iio/inkern.c
-> > +++ b/drivers/iio/inkern.c
-> > @@ -100,6 +100,28 @@ static int iio_dev_node_match(struct device *dev, void *data)
-> >  	return dev->of_node == data && dev->type == &iio_device_type;
-> >  }
-> >  
-> > +/**
-> > + * __of_iio_simple_xlate - translate iiospec to the IIO channel index
-> > + * @indio_dev:	pointer to the iio_dev structure
-> > + * @iiospec:	IIO specifier as found in the device tree
-> > + *
-> > + * This is simple translation function, suitable for the most 1:1 mapped
-> > + * channels in IIO chips. This function performs only one sanity check:
-> > + * whether IIO index is less than num_channels (that is specified in the
-> > + * iio_dev).
-> > + */
-> > +static int __of_iio_simple_xlate(struct iio_dev *indio_dev,
-> > +				const struct of_phandle_args *iiospec)
-> > +{
-> > +	if (!iiospec->args_count)
-> > +		return 0;
-> > +
-> > +	if (iiospec->args[0] >= indio_dev->num_channels)
-> > +		return -EINVAL;
-> > +
-> > +	return iiospec->args[0];
-> > +}
-> > +
-> >  static int __of_iio_channel_get(struct iio_channel *channel,
-> >  				struct device_node *np, int index)
-> >  {
-> > @@ -122,18 +144,18 @@ static int __of_iio_channel_get(struct iio_channel *channel,
-> >  
-> >  	indio_dev = dev_to_iio_dev(idev);
-> >  	channel->indio_dev = indio_dev;
-> > -	index = iiospec.args_count ? iiospec.args[0] : 0;
-> > -	if (index >= indio_dev->num_channels) {
-> > -		err = -EINVAL;
-> > +	if (!indio_dev->of_xlate)
-> > +		indio_dev->of_xlate = __of_iio_simple_xlate;
-> > +	index = indio_dev->of_xlate(indio_dev, &iiospec);
-> > +	if (index < 0)
-> >  		goto err_put;
-> > -	}
-> >  	channel->channel = &indio_dev->channels[index];
-> >  
-> >  	return 0;
-> >  
-> >  err_put:
-> >  	iio_device_put(indio_dev);
-> > -	return err;
-> > +	return index;
-> >  }
-> >  
-> >  static struct iio_channel *of_iio_channel_get(struct device_node *np, int index)
-> > diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
-> > index 15dc6bc..d5bb219 100644
-> > --- a/include/linux/iio/iio.h
-> > +++ b/include/linux/iio/iio.h
-> > @@ -13,6 +13,7 @@
-> >  #include <linux/device.h>
-> >  #include <linux/cdev.h>
-> >  #include <linux/iio/types.h>
-> > +#include <linux/of.h>
-> >  /* IIO TODO LIST */
-> >  /*
-> >   * Provide means of adjusting timer accuracy.
-> > @@ -413,6 +414,11 @@ struct iio_buffer_setup_ops {
-> >   * @currentmode:	[DRIVER] current operating mode
-> >   * @dev:		[DRIVER] device structure, should be assigned a parent
-> >   *			and owner
-> > + * @of_xlate:		[DRIVER] function pointer to obtain channel specifier
-> > + *			index. When #iio-cells is greater than '0', the driver
-> > + *			could provide a custom of_xlate function that reads
-> > + *			the *args* and returns the appropriate index in
-> > + *			registered IIO channels array.
-> >   * @event_interface:	[INTERN] event chrdevs associated with interrupt lines
-> >   * @buffer:		[DRIVER] any buffer present
-> >   * @buffer_list:	[INTERN] list of all buffers currently attached
-> > @@ -451,6 +457,8 @@ struct iio_dev {
-> >  	int				currentmode;
-> >  	struct device			dev;
-> >  
-> > +	int (*of_xlate)(struct iio_dev *indio_dev,
-> > +			const struct of_phandle_args *iiospec);
-> >  	struct iio_event_interface	*event_interface;
-> >  
-> >  	struct iio_buffer		*buffer;
-> > 
+Signed-off-by: George McCollister <george.mccollister@gmail.com>
+---
+ drivers/iio/proximity/as3935.c | 16 ++++++++--------
+ 1 file changed, 8 insertions(+), 8 deletions(-)
 
+diff --git a/drivers/iio/proximity/as3935.c b/drivers/iio/proximity/as3935.c
+index 8349cc0..466aa43 100644
+--- a/drivers/iio/proximity/as3935.c
++++ b/drivers/iio/proximity/as3935.c
+@@ -95,7 +95,7 @@ static int as3935_read(struct as3935_state *st, unsigned int reg, int *val)
+ 	*val = ret;
+ 
+ 	return 0;
+-};
++}
+ 
+ static int as3935_write(struct as3935_state *st,
+ 				unsigned int reg,
+@@ -107,7 +107,7 @@ static int as3935_write(struct as3935_state *st,
+ 	buf[1] = val;
+ 
+ 	return spi_write(st->spi, buf, 2);
+-};
++}
+ 
+ static ssize_t as3935_sensor_sensitivity_show(struct device *dev,
+ 					struct device_attribute *attr,
+@@ -122,7 +122,7 @@ static ssize_t as3935_sensor_sensitivity_show(struct device *dev,
+ 	val = (val & AS3935_AFE_MASK) >> 1;
+ 
+ 	return sprintf(buf, "%d\n", val);
+-};
++}
+ 
+ static ssize_t as3935_sensor_sensitivity_store(struct device *dev,
+ 					struct device_attribute *attr,
+@@ -142,7 +142,7 @@ static ssize_t as3935_sensor_sensitivity_store(struct device *dev,
+ 	as3935_write(st, AS3935_AFE_GAIN, val << 1);
+ 
+ 	return len;
+-};
++}
+ 
+ static IIO_DEVICE_ATTR(sensor_sensitivity, S_IRUGO | S_IWUSR,
+ 	as3935_sensor_sensitivity_show, as3935_sensor_sensitivity_store, 0);
+@@ -214,7 +214,7 @@ err_read:
+ 	iio_trigger_notify_done(indio_dev->trig);
+ 
+ 	return IRQ_HANDLED;
+-};
++}
+ 
+ static const struct iio_trigger_ops iio_interrupt_trigger_ops = {
+ 	.owner = THIS_MODULE,
+@@ -238,7 +238,7 @@ static void as3935_event_work(struct work_struct *work)
+ 		dev_warn(&st->spi->dev, "noise level is too high");
+ 		break;
+ 	}
+-};
++}
+ 
+ static irqreturn_t as3935_interrupt_handler(int irq, void *private)
+ {
+@@ -417,7 +417,7 @@ unregister_trigger:
+ 	iio_trigger_unregister(st->trig);
+ 
+ 	return ret;
+-};
++}
+ 
+ static int as3935_remove(struct spi_device *spi)
+ {
+@@ -429,7 +429,7 @@ static int as3935_remove(struct spi_device *spi)
+ 	iio_trigger_unregister(st->trig);
+ 
+ 	return 0;
+-};
++}
+ 
+ static const struct spi_device_id as3935_id[] = {
+ 	{"as3935", 0},
+-- 
+2.0.4
 
