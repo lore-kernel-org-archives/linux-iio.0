@@ -1,56 +1,185 @@
-Return-Path: <gwendal@google.com>
+Return-Path: <kesavan.abhilash@gmail.com>
 MIME-Version: 1.0
-Sender: gwendal@google.com
-In-Reply-To: <1414768889.3254.4.camel@spandruv-hsb-test>
-References: <1414620097-6787-1-git-send-email-gwendal@chromium.org> <1414768889.3254.4.camel@spandruv-hsb-test>
-From: Gwendal Grignou <gwendal@chromium.org>
-Date: Sat, 1 Nov 2014 14:03:48 -0700
-Message-ID: <CAMHSBOUzGXUJHtBLabTQW-_r8gUAVYjLQuk_rEkfrOD-=Gk2cQ@mail.gmail.com>
-Subject: Re: [PATCH 0/1] iio: ak8975: Add AKM0991x support.
-To: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>, jic23@kernel.org
-Cc: Gwendal Grignou <gwendal@chromium.org>, linux-iio@vger.kernel.org
+In-Reply-To: <CAGTfZH1kK3z0NL1F0WFQ4Qad0z3xin6Qdrh4ymCgPY9Rz+7zaA@mail.gmail.com>
+References: <1414759083-4555-1-git-send-email-a.kesavan@samsung.com>
+	<545384D3.5050000@samsung.com>
+	<CAM4voamJhveLN-=wS2vF+x9e3kWMSR_2X1QsHLpB3w4DwgkgyQ@mail.gmail.com>
+	<CAGTfZH2fpv3tR3Ah6sHCWAUGS6PhNiQkKEz_ab22ux55-KdRPQ@mail.gmail.com>
+	<CAM4voamU-kd_GXHSfg87pT2cGoNVwnqeOEFcyLN1Of00LfeHWQ@mail.gmail.com>
+	<CAGTfZH1kK3z0NL1F0WFQ4Qad0z3xin6Qdrh4ymCgPY9Rz+7zaA@mail.gmail.com>
+Date: Sat, 1 Nov 2014 13:04:42 +0530
+Message-ID: <CAM4voa=a+TyVmT91WgvxG1p-FeOv3qB=-VZsKY45KYcXktsGcA@mail.gmail.com>
+Subject: Re: [PATCH] iio: adc: exynos_adc: Add support for ADCv3 on exynos7
+From: Abhilash Kesavan <kesavan.abhilash@gmail.com>
+To: =?UTF-8?B?7LWc7LCs7Jqw?= <cw00.choi@samsung.com>
+Cc: linux-iio@vger.kernel.org, jic23@kernel.org,
+	Naveen Krishna <naveenkrishna.ch@gmail.com>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset=UTF-8
 List-ID: <linux-iio@vger.kernel.org>
 
-On Fri, Oct 31, 2014 at 8:21 AM, Srinivas Pandruvada
-<srinivas.pandruvada@linux.intel.com> wrote:
-> On Wed, 2014-10-29 at 15:01 -0700, Gwendal Grignou wrote:
->> AK09912 is an accelerometer with the same register set as AK09911, but
->> same behavior as AK8973, so I was not sure where to add the support.
->> I decided to merge all AKM magnetometer support in the same file while
->> being as clean as I could.
+Hi Chanwoo,
+
+On Sat, Nov 1, 2014 at 11:57 AM, Chanwoo Choi <cwchoi00@gmail.com> wrote:
+> Hi Abhilash,
+>
+> On Sat, Nov 1, 2014 at 1:00 PM, Abhilash Kesavan
+> <kesavan.abhilash@gmail.com> wrote:
+>> Hi Chanwoo,
 >>
-> AK09911 is implemented as a separate driver to have a clean.
-> - Register map is different and have different indexes
-Please take a look at the code, I separated the registers definition
-from the code itself.
+>> On Fri, Oct 31, 2014 at 9:44 PM, Chanwoo Choi <cwchoi00@gmail.com> wrote:
+>>> Hi Abhilash,
+>>>
+>>> On Fri, Oct 31, 2014 at 11:01 PM, Abhilash Kesavan
+>>> <kesavan.abhilash@gmail.com> wrote:
+>>>> Hi Chanwoo,
+>>>>
+>>>> Thanks for the quick response.
+>>>>
+>>>> On Fri, Oct 31, 2014 at 6:17 PM, Chanwoo Choi <cw00.choi@samsung.com> wrote:
+>>>>> Hi Abhilash,
+>>>>>
+>>>>> On 10/31/2014 09:38 PM, Abhilash Kesavan wrote:
+>>>>>> The ADC on exynos7 is quite similar to ADCv2. The differences are as
+>>>>>> follows:
+>>>>>>       - v3 has 8 input channels (10 in v2).
+>>>>>>       - v3 does not include an ADC PHY control register.
+>>>>>>       - Some ADC_CON2 register bits being used in v2 are listed as
+>>>>>>         reserved in v3. This results in a different init_hw function
+>>>>>>         for v3.
+>>>>>>
+>>>>>> Signed-off-by: Abhilash Kesavan <a.kesavan@samsung.com>
+>>>>>> ---
+>>>>>> - Based on Naveen's "iio: exynos-adc: use syscon instead of ioremap" patchset
+>>>>>> http://comments.gmane.org/gmane.linux.kernel.iio/13943
+>>>>>>
+>>>>>>  .../devicetree/bindings/arm/samsung/exynos-adc.txt |    2 ++
+>>>>>>  drivers/iio/adc/exynos_adc.c                       |   32 ++++++++++++++++++++
+>>>>>>  2 files changed, 34 insertions(+)
+>>>>>>
+>>>>>> diff --git a/Documentation/devicetree/bindings/arm/samsung/exynos-adc.txt b/Documentation/devicetree/bindings/arm/samsung/exynos-adc.txt
+>>>>>> index c368210..a11e32c 100644
+>>>>>> --- a/Documentation/devicetree/bindings/arm/samsung/exynos-adc.txt
+>>>>>> +++ b/Documentation/devicetree/bindings/arm/samsung/exynos-adc.txt
+>>>>>> @@ -14,6 +14,8 @@ Required properties:
+>>>>>>                               for exynos4412/5250 and s5pv210 controllers.
+>>>>>>                       Must be "samsung,exynos-adc-v2" for
+>>>>>>                               future controllers.
+>>>>>> +                     Must be "samsung,exynos-adc-v3" for
+>>>>>> +                             the ADC in Exynos7 and compatibles
+>>>>>
+>>>>> I prefer to use 'exynos7-adc' instead of 'exynos-adc-v3'.
+>>>>> Exynos7 has little different from existing ADCv2.
+>>>>
+>>>> Sure, I'll change it. The reason for my choosing v3 was that reading
+>>>> the version register (0x20 offset) showed a value of 0x80000009 in
+>>>> Exynos7 as against 0x80000008 in both 5420 and 3250.
+>>>>>
+>>>>> Also, If you want to use 'exynos-adc-v3' compatible,
+>>>>> Exynos7's TRM have to include the correct version(v3) infromation.
+>>>>
+>>>> I could not see any mention of the ADC controller version in the
+>>>> Exynos7 UM other than the version register. Does that mean it is v2 ?
+>>>
+>>> So am I. I don't see any version number of ADC in Exynos TRM.
+>> OK, considering the small differences between ADCv2 and this
+>> controller, I will change the compatible to exynos7-adc.
+>> Patch will be posted in a bit.
+>>>
+>>> Additionally,
+>>> I have a question about Exynos7. If you possible,
+>>> did you tell me about full name of Exynos7 SoC (e.g., Exynos5433, Exynos52..)?
+>> The soc name is Exynos7 and it has 4 A57 cores.
+>
+> I wondered what is Exynos7. Thanks for your reply.
 
-> - AK09911 is a very compact interface with no DRDY pin. So no support
->      of interrupt or GPIO poll
-Other AK can work the same way, use DRDY and interrupt is optional.
-> - Even for polled mode no mention on ST2 register, which is required in
->     ak8975 driver
-Not true: after polling the measurement, you have to look at ST2
-register to ensure you don't have an overflow (HOFL bit).
-> - mode values are different for fuse access
-Taken care of.
->
-> I didn't get chance to check your merged driver, IMO simple standalone
-> driver is better if there are two many difference like above, difference
-> between AK09911 and AK8973.
-The problem I have is AK09912 has almost the same register set than
-AK09911 but the same behavior as AK8973 (DRDY pin and interrupt).
-So if we want to support it, we end up adding either the interrupt
-code in ak09911.c or adding AK09912 register map into ak8973.c:
-in the former case, we will end up with 2 very similar drivers, in the
-later, ak8973.c driver would handle ak0911 without difficulty. That's
-the latter approach I chose.
+Exynos7 is a System-On-Chip that is based on 64-bit ARMv8 RISC
+processor. As mentioned earlier, it has a Cortex-A57 quad core
+configuration targeted towards high-performance applications.
 
-Gwendal.
+I have posted v2 with your suggested modifications
+(https://lkml.org/lkml/2014/11/1/2), kindly review.
+
+Regards,
+Abhilash
 
 >
-> Thanks,
-> Srinivas
+> Best Regards,
+> Chanwoo Choi
 >
->
->
+>>>
+>>> Best Regards,
+>>> Chanwoo Choi
+>>>
+>>>>
+>>>> Regards,
+>>>> Abhilash
+>>>>>
+>>>>> Thanks,
+>>>>> Chanwoo Choi
+>>>>>
+>>>>>
+>>>>>
+>>>>>>                       Must be "samsung,exynos3250-adc" for
+>>>>>>                               controllers compatible with ADC of Exynos3250.
+>>>>>>                       Must be "samsung,s3c2410-adc" for
+>>>>>> diff --git a/drivers/iio/adc/exynos_adc.c b/drivers/iio/adc/exynos_adc.c
+>>>>>> index fe03177..74d0a9d 100644
+>>>>>> --- a/drivers/iio/adc/exynos_adc.c
+>>>>>> +++ b/drivers/iio/adc/exynos_adc.c
+>>>>>> @@ -390,6 +390,35 @@ static const struct exynos_adc_data exynos3250_adc_data = {
+>>>>>>       .start_conv     = exynos_adc_v2_start_conv,
+>>>>>>  };
+>>>>>>
+>>>>>> +static void exynos_adc_v3_init_hw(struct exynos_adc *info)
+>>>>>> +{
+>>>>>> +     u32 con1, con2;
+>>>>>> +
+>>>>>> +     if (info->data->needs_adc_phy)
+>>>>>> +             regmap_write(info->pmu_map, info->data->phy_offset, 1);
+>>>>>> +
+>>>>>> +     con1 = ADC_V2_CON1_SOFT_RESET;
+>>>>>> +     writel(con1, ADC_V2_CON1(info->regs));
+>>>>>> +
+>>>>>> +     con2 = readl(ADC_V2_CON2(info->regs));
+>>>>>> +     con2 &= ~ADC_V2_CON2_C_TIME(7);
+>>>>>> +     con2 |= ADC_V2_CON2_C_TIME(0);
+>>>>>> +     writel(con2, ADC_V2_CON2(info->regs));
+>>>>>> +
+>>>>>> +     /* Enable interrupts */
+>>>>>> +     writel(1, ADC_V2_INT_EN(info->regs));
+>>>>>> +}
+>>>>>> +
+>>>>>> +static const struct exynos_adc_data exynos_adc_v3_data = {
+>>>>>> +     .num_channels   = MAX_ADC_V1_CHANNELS,
+>>>>>> +     .mask           = ADC_DATX_MASK, /* 12 bit ADC resolution */
+>>>>>> +
+>>>>>> +     .init_hw        = exynos_adc_v3_init_hw,
+>>>>>> +     .exit_hw        = exynos_adc_v2_exit_hw,
+>>>>>> +     .clear_irq      = exynos_adc_v2_clear_irq,
+>>>>>> +     .start_conv     = exynos_adc_v2_start_conv,
+>>>>>> +};
+>>>>>> +
+>>>>>>  static const struct of_device_id exynos_adc_match[] = {
+>>>>>>       {
+>>>>>>               .compatible = "samsung,s3c2410-adc",
+>>>>>> @@ -413,6 +442,9 @@ static const struct of_device_id exynos_adc_match[] = {
+>>>>>>               .compatible = "samsung,exynos-adc-v2",
+>>>>>>               .data = &exynos_adc_v2_data,
+>>>>>>       }, {
+>>>>>> +             .compatible = "samsung,exynos-adc-v3",
+>>>>>> +             .data = &exynos_adc_v3_data,
+>>>>>> +     }, {
+>>>>>>               .compatible = "samsung,exynos3250-adc",
+>>>>>>               .data = &exynos3250_adc_data,
+>>>>>>       },
+>>>>>>
+>>>>>
+>>>> --
+>>>> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+>>>> the body of a message to majordomo@vger.kernel.org
+>>>> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+>> --
+>> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+>> the body of a message to majordomo@vger.kernel.org
+>> More majordomo info at  http://vger.kernel.org/majordomo-info.html
