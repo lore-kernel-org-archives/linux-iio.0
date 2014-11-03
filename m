@@ -1,85 +1,70 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from bear.ext.ti.com ([192.94.94.41]:54303 "EHLO bear.ext.ti.com"
+Received: from ns.mm-sol.com ([37.157.136.199]:60258 "EHLO extserv.mm-sol.com"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1754313AbaKNFla (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Fri, 14 Nov 2014 00:41:30 -0500
-From: Vignesh R <vigneshr@ti.com>
-To: Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>,
-	Mark Rutland <mark.rutland@arm.com>,
-	Ian Campbell <ijc+devicetree@hellion.org.uk>,
-	Kumar Gala <galak@codeaurora.org>,
-	Benoit Cousson <bcousson@baylibre.com>,
-	Tony Lindgren <tony@atomide.com>,
-	Russell King <linux@arm.linux.org.uk>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>, <richardcochran@gmail.com>,
-	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-	Lee Jones <lee.jones@linaro.org>,
-	Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-CC: Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	Samuel Ortiz <sameo@linux.intel.com>,
-	Felipe Balbi <balbi@ti.com>, Vignesh R <vigneshr@ti.com>,
-	Brad Griffis <bgriffis@ti.com>,
-	Sanjeev Sharma <sanjeev_sharma@mentor.com>,
-	Paul Gortmaker <paul.gortmaker@windriver.com>,
-	Jan Kardell <jan.kardell@telliq.com>,
-	<devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-	<linux-omap@vger.kernel.org>,
-	<linux-arm-kernel@lists.infradead.org>,
-	<linux-iio@vger.kernel.org>, <linux-input@vger.kernel.org>
-Subject: [PATCH v4 5/6] input: touchscreen: ti_am335x_tsc: Use charge delay DT parameter
-Date: Fri, 14 Nov 2014 10:37:30 +0530
-Message-ID: <1415941651-28962-6-git-send-email-vigneshr@ti.com>
-In-Reply-To: <1415941651-28962-1-git-send-email-vigneshr@ti.com>
-References: <1415941651-28962-1-git-send-email-vigneshr@ti.com>
-MIME-Version: 1.0
-Content-Type: text/plain
+	id S1752036AbaKCPYP (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Mon, 3 Nov 2014 10:24:15 -0500
+From: "Ivan T. Ivanov" <iivanov@mm-sol.com>
+To: Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>
+Cc: "Ivan T. Ivanov" <iivanov@mm-sol.com>,
+	Angelo Compagnucci <angelo.compagnucci@gmail.com>,
+	Arnd Bergmann <arnd@arndb.de>,
+	Grant Likely <grant.likely@linaro.org>,
+	Rob Herring <robh+dt@kernel.org>, linux-kernel@vger.kernel.org,
+	linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+	linux-arm-msm@vger.kernel.org
+Subject: [PATCH v4 0/2] Initial support for voltage ADC
+Date: Mon,  3 Nov 2014 17:24:28 +0200
+Message-Id: <1415028270-25860-1-git-send-email-iivanov@mm-sol.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-This patch reads charge delay from tsc DT node and writes to
-REG_CHARGEDELAY register. If the charge delay is not specified in DT
-then default value of 0x400(CHARGEDLY_OPENDLY) is used.
+Hi, 
 
-Signed-off-by: Vignesh R <vigneshr@ti.com>
----
- drivers/input/touchscreen/ti_am335x_tsc.c | 8 +++++++-
- 1 file changed, 7 insertions(+), 1 deletion(-)
+This is the forth version of this driver. V3 could be found here [1].
 
-diff --git a/drivers/input/touchscreen/ti_am335x_tsc.c b/drivers/input/touchscreen/ti_am335x_tsc.c
-index b94719fc8849..e64055a8cd48 100644
---- a/drivers/input/touchscreen/ti_am335x_tsc.c
-+++ b/drivers/input/touchscreen/ti_am335x_tsc.c
-@@ -52,6 +52,7 @@ struct titsc {
- 	u32			bit_xp, bit_xn, bit_yp, bit_yn;
- 	u32			inp_xp, inp_xn, inp_yp, inp_yn;
- 	u32			step_mask;
-+	u32			charge_delay;
- };
- 
- static unsigned int titsc_readl(struct titsc *ts, unsigned int reg)
-@@ -177,7 +178,7 @@ static void titsc_step_config(struct titsc *ts_dev)
- 
- 	config = titsc_readl(ts_dev, REG_IDLECONFIG);
- 	titsc_writel(ts_dev, REG_CHARGECONFIG, config);
--	titsc_writel(ts_dev, REG_CHARGEDELAY, CHARGEDLY_OPENDLY);
-+	titsc_writel(ts_dev, REG_CHARGEDELAY, ts_dev->charge_delay);
- 
- 	/* coordinate_readouts + 1 ... coordinate_readouts + 2 is for Z */
- 	config = STEPCONFIG_MODE_HWSYNC |
-@@ -366,6 +367,11 @@ static int titsc_parse_dt(struct platform_device *pdev,
- 	if (err < 0)
- 		return err;
- 
-+	err = of_property_read_u32(node, "ti,charge-delay",
-+				   &ts_dev->charge_delay);
-+	if (err < 0)
-+		ts_dev->charge_delay = CHARGEDLY_OPENDLY;
-+
- 	return of_property_read_u32_array(node, "ti,wire-config",
- 			ts_dev->config_inp, ARRAY_SIZE(ts_dev->config_inp));
- }
+Changes since v3.
+
+- Addressed review comments from Hartmut Knaack and Mark Rutland:
+  Better description of 'reg' property.
+  Add # to address-cells and size-cells DT document.
+  Dropped interrupt-names property, it was not actually used by driver.
+  DT header file, which contain channels names definitions, is part of 
+  documentation patch now.
+  Clarified 'qcom,decimation' property. Hopefully it make sense now.
+  Make more explicit that all reference channels configuration nodes have
+  to be defined in DT.
+- Promote dev_dbg to dev_err in error paths. Stan, I hope you are ok with this :-)
+- Use 32 bit calculations in calibration routine.
+- Read ADC result with one regmap call.
+- Show status and state registers if ADC conversin fails. Errors should not
+  normally happen, so I will like to see content of this registers in such cases.
+- Use new struct iio_info::of_xlate for channel number translation.
+- Removed device wakeup initialization code, which didn't make sense to me
+  for such kind of device.
+
+Patches depend on "iio: inkern: Add of_xlate function to struct iio_info" patch,
+which is included in IIO testing branch [2].
+
+[1] http://comments.gmane.org/gmane.linux.ports.arm.msm/9741
+[2] http://git.kernel.org/cgit/linux/kernel/git/jic23/iio.git/log/?h=testing
+
+Stanimir Varbanov (2):
+  DT: iio: vadc: document dt binding
+  iio: vadc: Qualcomm SPMI PMIC voltage ADC driver
+
+ .../devicetree/bindings/iio/adc/qcom,spmi-vadc.txt |  129 +++
+ drivers/iio/adc/Kconfig                            |   14 +
+ drivers/iio/adc/Makefile                           |    1 +
+ drivers/iio/adc/qcom-spmi-vadc.c                   | 1015 ++++++++++++++++++++
+ include/dt-bindings/iio/qcom,spmi-vadc.h           |  119 +++
+ 5 files changed, 1278 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/adc/qcom,spmi-vadc.txt
+ create mode 100644 drivers/iio/adc/qcom-spmi-vadc.c
+ create mode 100644 include/dt-bindings/iio/qcom,spmi-vadc.h
+
 -- 
 1.9.1
 
