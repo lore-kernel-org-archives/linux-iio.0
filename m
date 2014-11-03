@@ -1,60 +1,51 @@
-Return-Path: <bigeasy@linutronix.de>
-Message-ID: <54577258.9080508@linutronix.de>
-Date: Mon, 03 Nov 2014 13:17:28 +0100
-From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-MIME-Version: 1.0
-To: "Griffis, Brad" <bgriffis@ti.com>, "R, Vignesh" <vigneshr@ti.com>,
- Rob Herring <robh+dt@kernel.org>,
- Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>,
- Ian Campbell <ijc+devicetree@hellion.org.uk>,
- Kumar Gala <galak@codeaurora.org>,
- Benoit Cousson <bcousson@baylibre.com>,
- Tony Lindgren <tony@atomide.com>, Russell King <linux@arm.linux.org.uk>,
- Jonathan Cameron <jic23@kernel.org>,
- Dmitry Torokhov <dmitry.torokhov@gmail.com>
-CC: Hartmut Knaack <knaack.h@gmx.de>,
- Lars-Peter Clausen <lars@metafoo.de>,
- Peter Meerwald <pmeerw@pmeerw.net>, Samuel Ortiz <sameo@linux.intel.com>,
- Lee Jones <lee.jones@linaro.org>,
- "Balbi, Felipe" <balbi@ti.com>, Jan Kardell <jan.kardell@telliq.com>,
- Paul Gortmaker <paul.gortmaker@windriver.com>,
- "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
- "linux-omap@vger.kernel.org" <linux-omap@vger.kernel.org>,
- "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>,
- "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
- "linux-input@vger.kernel.org" <linux-input@vger.kernel.org>
-Subject: Re: [PATCH 0/4] Touchscreen performance related fixes
-References: <1414408111-2631-1-git-send-email-vigneshr@ti.com> <544E821D.5040004@linutronix.de> <912A29987EAE174BA6CF187D7CDFA9CE26F46B2B@DLEE08.ent.ti.com>
-In-Reply-To: <912A29987EAE174BA6CF187D7CDFA9CE26F46B2B@DLEE08.ent.ti.com>
-Content-Type: text/plain; charset=windows-1252
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from ns.mm-sol.com ([37.157.136.199]:58413 "EHLO extserv.mm-sol.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751006AbaKCKGr (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Mon, 3 Nov 2014 05:06:47 -0500
+Message-ID: <1415009224.407.13.camel@mm-sol.com>
+Subject: Re: [PATCH v2] iio: inkern: Add of_xlate function to struct iio_info
+From: "Ivan T. Ivanov" <iivanov@mm-sol.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Lars-Peter Clausen <lars@metafoo.de>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+	Sachin Kamat <sachin.kamat@linaro.org>,
+	Thomas Gleixner <tglx@linutronix.de>,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-arm-msm@vger.kernel.org
+Date: Mon, 03 Nov 2014 12:07:04 +0200
+In-Reply-To: <544B75B8.1010505@kernel.org>
+References: <1413991783-24562-1-git-send-email-iivanov@mm-sol.com>
+	 <5447CDFA.5030407@metafoo.de> <544B75B8.1010505@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Mime-Version: 1.0
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On 10/27/2014 08:02 PM, Griffis, Brad wrote:
-> On 10/27/2014 12:34 PM, Sebastian Andrzej Siewior wrote:
->> Do we really need #3 (and then #4)? Given the complexity we have already, is there any benefit by decreasing this value? 
-> 
-> I specifically requested we add ti,charge-delay to the device tree because it is THE critical value to tune for a given design.  Although I think the current value of 0xB000 will be suitable for a great many designs, I expect that many users will need to adjust this value for their hardware.  Details such as which touchscreen vendor is being used and how the touchscreen is connected (header vs cable) have an effect on what's appropriate here.
 
-Oh. That is one knob I hoped we could avoid since I haven't seen it
-before on other TSCs. But okay. Please make sure that there is a
-message printed if the default value is used. And lets hope the user
-will do something about his.
+On Sat, 2014-10-25 at 11:04 +0100, Jonathan Cameron wrote:
+> On 22/10/14 16:32, Lars-Peter Clausen wrote:
+> > On 10/22/2014 05:29 PM, Ivan T. Ivanov wrote:
+> > > When #iio-cells is greater than '0', the driver could provide
+> > > a custom of_xlate function that reads the *args* and returns
+> > > the appropriate index in registered IIO channels array.
+> > > 
+> > > Add simple translation function, suitable for the most 1:1
+> > > mapped channels in IIO chips, and use it when driver did not
+> > > provide custom implementation.
+> > > 
+> > > Signed-off-by: Ivan T. Ivanov <iivanov@mm-sol.com>
+> > 
+> > Reviewed-by: Lars-Peter Clausen <lars@metafoo.de>
+> > 
+> Applied to the togreg branch of iio.git - initially pushed out as testing
+> for the autobuilders to play with it.
 
->> Would  someone want to increase it? Can we safely determine a value which works for everyone?
-> 
-> This value represents a hardware delay before checking for the pen-up event.  So in the scenario where someone is seeing excessive false pen-up events they will want to increase this parameter.  The downsize of making this larger is that it decreases the overall sampling speed of both the touchscreen as well as the standalone ADC samples.  At one point I tried making it huge, but that made the touchscreen overly sluggish because the sampling became too slow.  So there is a definite trade-off that if you make it too large the touchscreen becomes sluggish, and if you make it too small then you may see false pen-up events.  The optimal value will need to be tuned for a given design.
+Thank you. Probably my git skills failed me, but I can not
+find it in aforementioned branches. Is it publicly pushed?
 
-I applied the patches from this series and did the following test on my
-am335x-evm: A mug on the touchscreen (to make sure the events are
-coming), evtest on the event node to see that the events and loop of
+Regards,
+Ivan
 
-	cat /sys/bus/iio/devices/iio\:device0/in_voltage4_raw
-
-In the past I was able lock up the TSC/ADC HW that way (see commit
-7ca6740cd1 ("mfd: input: iio: ti_amm335x: Rework TSC/ADC
-synchronization")) for details.
-With this patches applied I don't seen any TSC events once the IIO
-interface is (heavily) used. Can this be fixed?
-
-Sebastian
