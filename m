@@ -1,71 +1,52 @@
-Return-Path: <lee.jones@linaro.org>
-Date: Tue, 18 Nov 2014 15:26:07 +0000
-From: Lee Jones <lee.jones@linaro.org>
-To: Jacob Pan <jacob.jun.pan@linux.intel.com>
-Cc: LKML <linux-kernel@vger.kernel.org>, IIO <linux-iio@vger.kernel.org>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Carlo Caione <carlo@caione.org>,
-	Samuel Ortiz <sameo@linux.intel.com>,
-	Ramakrishna Pallala <ramakrishna.pallala@intel.com>,
-	Todd Brandt <todd.e.brandt@linux.intel.com>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	Rafael Wysocki <rafael.j.wysocki@intel.com>,
-	Hartmut Knaack <knaack.h@gmx.de>, Aaron Lu <aaron.lu@intel.com>
-Subject: Re: [PATCH 1/3] iio: adc: Add module device table for autoloading
-Message-ID: <20141118152607.GC13792@x1>
-References: <1415734210-5657-1-git-send-email-jacob.jun.pan@linux.intel.com>
- <1415734210-5657-2-git-send-email-jacob.jun.pan@linux.intel.com>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from smtp-out-246.synserver.de ([212.40.185.246]:1051 "EHLO
+	smtp-out-246.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751541AbaKCKbn (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 3 Nov 2014 05:31:43 -0500
+Message-ID: <5457598B.1050408@metafoo.de>
+Date: Mon, 03 Nov 2014 11:31:39 +0100
+From: Lars-Peter Clausen <lars@metafoo.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-In-Reply-To: <1415734210-5657-2-git-send-email-jacob.jun.pan@linux.intel.com>
-List-ID: <linux-iio@vger.kernel.org>
+To: "Ivan T. Ivanov" <iivanov@mm-sol.com>,
+	Jonathan Cameron <jic23@kernel.org>
+CC: Hartmut Knaack <knaack.h@gmx.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+	Sachin Kamat <sachin.kamat@linaro.org>,
+	Thomas Gleixner <tglx@linutronix.de>,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-arm-msm@vger.kernel.org
+Subject: Re: [PATCH v2] iio: inkern: Add of_xlate function to struct iio_info
+References: <1413991783-24562-1-git-send-email-iivanov@mm-sol.com>	 <5447CDFA.5030407@metafoo.de> <544B75B8.1010505@kernel.org> <1415009224.407.13.camel@mm-sol.com>
+In-Reply-To: <1415009224.407.13.camel@mm-sol.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Tue, 11 Nov 2014, Jacob Pan wrote:
+On 11/03/2014 11:07 AM, Ivan T. Ivanov wrote:
+>
+> On Sat, 2014-10-25 at 11:04 +0100, Jonathan Cameron wrote:
+>> On 22/10/14 16:32, Lars-Peter Clausen wrote:
+>>> On 10/22/2014 05:29 PM, Ivan T. Ivanov wrote:
+>>>> When #iio-cells is greater than '0', the driver could provide
+>>>> a custom of_xlate function that reads the *args* and returns
+>>>> the appropriate index in registered IIO channels array.
+>>>>
+>>>> Add simple translation function, suitable for the most 1:1
+>>>> mapped channels in IIO chips, and use it when driver did not
+>>>> provide custom implementation.
+>>>>
+>>>> Signed-off-by: Ivan T. Ivanov <iivanov@mm-sol.com>
+>>>
+>>> Reviewed-by: Lars-Peter Clausen <lars@metafoo.de>
+>>>
+>> Applied to the togreg branch of iio.git - initially pushed out as testing
+>> for the autobuilders to play with it.
+>
+> Thank you. Probably my git skills failed me, but I can not
+> find it in aforementioned branches. Is it publicly pushed?
 
-> From: Aaron Lu <aaron.lu@intel.com>
-> 
-> Add the module device id table so that the driver can be automatically
-> loaded once the platform device is created.
-> 
-> Signed-off-by: Aaron Lu <aaron.lu@intel.com>
-> Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
-> ---
->  drivers/iio/adc/axp288_adc.c | 8 ++++++++
->  1 file changed, 8 insertions(+)
+It's in the testing branch.
 
-Applied, thanks.
+http://git.kernel.org/cgit/linux/kernel/git/jic23/iio.git/log/?h=testing
 
-> diff --git a/drivers/iio/adc/axp288_adc.c b/drivers/iio/adc/axp288_adc.c
-> index 4800286..4a6cf43 100644
-> --- a/drivers/iio/adc/axp288_adc.c
-> +++ b/drivers/iio/adc/axp288_adc.c
-> @@ -238,15 +238,23 @@ static int axp288_adc_remove(struct platform_device *pdev)
->  	return 0;
->  }
->  
-> +static struct platform_device_id axp288_adc_id_table[] = {
-> +	{ .name = "axp288_adc" },
-> +	{},
-> +};
-> +
->  static struct platform_driver axp288_adc_driver = {
->  	.probe = axp288_adc_probe,
->  	.remove = axp288_adc_remove,
-> +	.id_table = axp288_adc_id_table,
->  	.driver = {
->  		.name = "axp288_adc",
->  		.owner = THIS_MODULE,
->  	},
->  };
->  
-> +MODULE_DEVICE_TABLE(platform, axp288_adc_id_table);
-> +
->  module_platform_driver(axp288_adc_driver);
->  
->  MODULE_AUTHOR("Jacob Pan <jacob.jun.pan@linux.intel.com>");
-
--- 
-Lee Jones
-Linaro STMicroelectronics Landing Team Lead
-Linaro.org │ Open source software for ARM SoCs
-Follow Linaro: Facebook | Twitter | Blog
