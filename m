@@ -1,171 +1,165 @@
-Return-Path: <cwchoi00@gmail.com>
-MIME-Version: 1.0
-Reply-To: cw00.choi@samsung.com
-In-Reply-To: <CAM4voamU-kd_GXHSfg87pT2cGoNVwnqeOEFcyLN1Of00LfeHWQ@mail.gmail.com>
-References: <1414759083-4555-1-git-send-email-a.kesavan@samsung.com>
-	<545384D3.5050000@samsung.com>
-	<CAM4voamJhveLN-=wS2vF+x9e3kWMSR_2X1QsHLpB3w4DwgkgyQ@mail.gmail.com>
-	<CAGTfZH2fpv3tR3Ah6sHCWAUGS6PhNiQkKEz_ab22ux55-KdRPQ@mail.gmail.com>
-	<CAM4voamU-kd_GXHSfg87pT2cGoNVwnqeOEFcyLN1Of00LfeHWQ@mail.gmail.com>
-Date: Sat, 1 Nov 2014 15:27:57 +0900
-Message-ID: <CAGTfZH1kK3z0NL1F0WFQ4Qad0z3xin6Qdrh4ymCgPY9Rz+7zaA@mail.gmail.com>
-Subject: Re: [PATCH] iio: adc: exynos_adc: Add support for ADCv3 on exynos7
-From: Chanwoo Choi <cwchoi00@gmail.com>
-To: Abhilash Kesavan <kesavan.abhilash@gmail.com>
-Cc: linux-iio@vger.kernel.org, jic23@kernel.org,
-	Naveen Krishna <naveenkrishna.ch@gmail.com>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset=UTF-8
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from relay4-d.mail.gandi.net ([217.70.183.196]:33131 "EHLO
+	relay4-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751428AbaKCXC3 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 3 Nov 2014 18:02:29 -0500
+Message-ID: <1415055709.4506.19.camel@hadess.net>
+Subject: Re: Kernel wishlist item: Better IIO API
+From: Bastien Nocera <hadess@hadess.net>
+To: Lars-Peter Clausen <lars@metafoo.de>
+Cc: linux-iio@vger.kernel.org
+Date: Tue, 04 Nov 2014 00:01:49 +0100
+In-Reply-To: <54513238.6050903@metafoo.de>
+References: <1414593052.2406.37.camel@hadess.net>
+			 <5451221D.6000301@metafoo.de> <1414604035.2406.41.camel@hadess.net>
+		 <54512640.3040505@metafoo.de> <1414604840.2406.43.camel@hadess.net>
+	 <54513238.6050903@metafoo.de>
+Content-Type: text/plain; charset="UTF-8"
+Mime-Version: 1.0
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Hi Abhilash,
+On Wed, 2014-10-29 at 19:30 +0100, Lars-Peter Clausen wrote:
+> On 10/29/2014 06:47 PM, Bastien Nocera wrote:
+> > On Wed, 2014-10-29 at 18:39 +0100, Lars-Peter Clausen wrote:
+> >> On 10/29/2014 06:33 PM, Bastien Nocera wrote:
+> >>> On Wed, 2014-10-29 at 18:21 +0100, Lars-Peter Clausen wrote:
+> >>>> On 10/29/2014 03:30 PM, Bastien Nocera wrote:
+> >>>>> Hey,
+> >>>>>
+> >>>>> I've posted this a couple of days ago:
+> >>>>> http://www.hadess.net/2014/10/a-gnome-kernel-wishlist.html
+> >>>>> along with a mail to LKML:
+> >>>>> http://thread.gmane.org/gmane.linux.kernel/1810083
+> >>>>>
+> >>>>> I've recently added to my list an item about IIO:
+> >>>>> https://wiki.gnome.org/BastienNocera/KernelWishlist
+> >>>>>
+> >>>>> Are there any plans for a better API for the IIO subsystem? The API
+> >>>>> might be good enough to drive from shell scripts, or helpers that only
+> >>>>> need to work with one variant of a device, but my attempts at trying to
+> >>>>> use the IIO subsystem to provide an accelerometer to do automatic
+> >>>>> display rotation[1] showed that the API is really cumbersome.
+> >>>>>
+> >>>>> The code I wrote spends most of its time creating sysfs paths, reading
+> >>>>> values in different formats, and mangling filenames[2].
+> >>>>>
+> >>>>> Is an ioctl-based API planned? Something where I could get/set
+> >>>>> structures to gather metadata about the device, and set it up easily, so
+> >>>>> reading data from it is easier?
+> >>>>
+> >>>> No, unfortunately not and I'm not sure if such a ABI would be accepted if
+> >>>> proposed.
+> >>>
+> >>> Why not?
+> >>
+> >> Because it means there will be ambiguity in the API on how to do things.
+> >> Which is typically not a desired property.
+> >>
+> >>>
+> >>>> But checkout libiio[1][2], it hides the details of the sysfs file manipulation.
+> >>>
+> >>> I'm not sure that's any better unfortunately. I've certainly tried to do
+> >>> that already in my code, but that doesn't change that the user-space API
+> >>> is barely usable.
+> >>
+> >> It's not completely unusable ;)
+> >
+> > In the end, you prefer the "self-documenting" of using sysfs files,
+> > rather than an API which you can document in a header file?
+> 
+> If it was for me we'd be using a state-full IOCTL ABI rather than a 
+> stateless sysfs ABI. I'm definitely not happy with the current interface, 
+> but it's the interface we have. But the problem with userspace ABI (in 
+> comparison to in-kernel API) is that we can just change things at random, 
+> but we have to stick with the existing interface.
+> 
+> The sysfs ABI is not meant to be self documenting and it is not 
+> undocumented. The documentation for the different attributes can be found in 
+> Documentation/ABI/testing/sysfs-bus-iio[1].
 
-On Sat, Nov 1, 2014 at 1:00 PM, Abhilash Kesavan
-<kesavan.abhilash@gmail.com> wrote:
-> Hi Chanwoo,
->
-> On Fri, Oct 31, 2014 at 9:44 PM, Chanwoo Choi <cwchoi00@gmail.com> wrote:
->> Hi Abhilash,
->>
->> On Fri, Oct 31, 2014 at 11:01 PM, Abhilash Kesavan
->> <kesavan.abhilash@gmail.com> wrote:
->>> Hi Chanwoo,
->>>
->>> Thanks for the quick response.
->>>
->>> On Fri, Oct 31, 2014 at 6:17 PM, Chanwoo Choi <cw00.choi@samsung.com> wrote:
->>>> Hi Abhilash,
->>>>
->>>> On 10/31/2014 09:38 PM, Abhilash Kesavan wrote:
->>>>> The ADC on exynos7 is quite similar to ADCv2. The differences are as
->>>>> follows:
->>>>>       - v3 has 8 input channels (10 in v2).
->>>>>       - v3 does not include an ADC PHY control register.
->>>>>       - Some ADC_CON2 register bits being used in v2 are listed as
->>>>>         reserved in v3. This results in a different init_hw function
->>>>>         for v3.
->>>>>
->>>>> Signed-off-by: Abhilash Kesavan <a.kesavan@samsung.com>
->>>>> ---
->>>>> - Based on Naveen's "iio: exynos-adc: use syscon instead of ioremap" patchset
->>>>> http://comments.gmane.org/gmane.linux.kernel.iio/13943
->>>>>
->>>>>  .../devicetree/bindings/arm/samsung/exynos-adc.txt |    2 ++
->>>>>  drivers/iio/adc/exynos_adc.c                       |   32 ++++++++++++++++++++
->>>>>  2 files changed, 34 insertions(+)
->>>>>
->>>>> diff --git a/Documentation/devicetree/bindings/arm/samsung/exynos-adc.txt b/Documentation/devicetree/bindings/arm/samsung/exynos-adc.txt
->>>>> index c368210..a11e32c 100644
->>>>> --- a/Documentation/devicetree/bindings/arm/samsung/exynos-adc.txt
->>>>> +++ b/Documentation/devicetree/bindings/arm/samsung/exynos-adc.txt
->>>>> @@ -14,6 +14,8 @@ Required properties:
->>>>>                               for exynos4412/5250 and s5pv210 controllers.
->>>>>                       Must be "samsung,exynos-adc-v2" for
->>>>>                               future controllers.
->>>>> +                     Must be "samsung,exynos-adc-v3" for
->>>>> +                             the ADC in Exynos7 and compatibles
->>>>
->>>> I prefer to use 'exynos7-adc' instead of 'exynos-adc-v3'.
->>>> Exynos7 has little different from existing ADCv2.
->>>
->>> Sure, I'll change it. The reason for my choosing v3 was that reading
->>> the version register (0x20 offset) showed a value of 0x80000009 in
->>> Exynos7 as against 0x80000008 in both 5420 and 3250.
->>>>
->>>> Also, If you want to use 'exynos-adc-v3' compatible,
->>>> Exynos7's TRM have to include the correct version(v3) infromation.
->>>
->>> I could not see any mention of the ADC controller version in the
->>> Exynos7 UM other than the version register. Does that mean it is v2 ?
->>
->> So am I. I don't see any version number of ADC in Exynos TRM.
-> OK, considering the small differences between ADCv2 and this
-> controller, I will change the compatible to exynos7-adc.
-> Patch will be posted in a bit.
->>
->> Additionally,
->> I have a question about Exynos7. If you possible,
->> did you tell me about full name of Exynos7 SoC (e.g., Exynos5433, Exynos52..)?
-> The soc name is Exynos7 and it has 4 A57 cores.
+That's useful if a bit terse. Thanks though.
 
-I wondered what is Exynos7. Thanks for your reply.
+> > I don't understand that. My questions on this very mailing-list, and
+> > comments that were made to users of my code[1] clearly show that the
+> > existing API is anything but "not ambiguous".
+> 
+> That bug report sounds like bugs in the driver.
 
-Best Regards,
-Chanwoo Choi
+Not really. Some drivers need the "in_accel_hysteresis" set, some don't
+have that sysfs file, for example.
 
->>
->> Best Regards,
->> Chanwoo Choi
->>
->>>
->>> Regards,
->>> Abhilash
->>>>
->>>> Thanks,
->>>> Chanwoo Choi
->>>>
->>>>
->>>>
->>>>>                       Must be "samsung,exynos3250-adc" for
->>>>>                               controllers compatible with ADC of Exynos3250.
->>>>>                       Must be "samsung,s3c2410-adc" for
->>>>> diff --git a/drivers/iio/adc/exynos_adc.c b/drivers/iio/adc/exynos_adc.c
->>>>> index fe03177..74d0a9d 100644
->>>>> --- a/drivers/iio/adc/exynos_adc.c
->>>>> +++ b/drivers/iio/adc/exynos_adc.c
->>>>> @@ -390,6 +390,35 @@ static const struct exynos_adc_data exynos3250_adc_data = {
->>>>>       .start_conv     = exynos_adc_v2_start_conv,
->>>>>  };
->>>>>
->>>>> +static void exynos_adc_v3_init_hw(struct exynos_adc *info)
->>>>> +{
->>>>> +     u32 con1, con2;
->>>>> +
->>>>> +     if (info->data->needs_adc_phy)
->>>>> +             regmap_write(info->pmu_map, info->data->phy_offset, 1);
->>>>> +
->>>>> +     con1 = ADC_V2_CON1_SOFT_RESET;
->>>>> +     writel(con1, ADC_V2_CON1(info->regs));
->>>>> +
->>>>> +     con2 = readl(ADC_V2_CON2(info->regs));
->>>>> +     con2 &= ~ADC_V2_CON2_C_TIME(7);
->>>>> +     con2 |= ADC_V2_CON2_C_TIME(0);
->>>>> +     writel(con2, ADC_V2_CON2(info->regs));
->>>>> +
->>>>> +     /* Enable interrupts */
->>>>> +     writel(1, ADC_V2_INT_EN(info->regs));
->>>>> +}
->>>>> +
->>>>> +static const struct exynos_adc_data exynos_adc_v3_data = {
->>>>> +     .num_channels   = MAX_ADC_V1_CHANNELS,
->>>>> +     .mask           = ADC_DATX_MASK, /* 12 bit ADC resolution */
->>>>> +
->>>>> +     .init_hw        = exynos_adc_v3_init_hw,
->>>>> +     .exit_hw        = exynos_adc_v2_exit_hw,
->>>>> +     .clear_irq      = exynos_adc_v2_clear_irq,
->>>>> +     .start_conv     = exynos_adc_v2_start_conv,
->>>>> +};
->>>>> +
->>>>>  static const struct of_device_id exynos_adc_match[] = {
->>>>>       {
->>>>>               .compatible = "samsung,s3c2410-adc",
->>>>> @@ -413,6 +442,9 @@ static const struct of_device_id exynos_adc_match[] = {
->>>>>               .compatible = "samsung,exynos-adc-v2",
->>>>>               .data = &exynos_adc_v2_data,
->>>>>       }, {
->>>>> +             .compatible = "samsung,exynos-adc-v3",
->>>>> +             .data = &exynos_adc_v3_data,
->>>>> +     }, {
->>>>>               .compatible = "samsung,exynos3250-adc",
->>>>>               .data = &exynos3250_adc_data,
->>>>>       },
->>>>>
->>>>
->>> --
->>> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
->>> the body of a message to majordomo@vger.kernel.org
->>> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> > I've used the Bluetooth, input, rfkill, and inotify APIs as provided
+> > directly by the Linux kernel (not through a layer) and they're of better
+> > quality than the IIO one.
+> >
+> > I just don't see how one could support a class of IIO sensors with the
+> > existing API.
+> 
+> I can understand your frustration. A API that is not usable in a generic way 
+> is not really useful. So we should try to fix that, but we are bound by the 
+> framework itself and can't just throw everything away.
+> 
+> So lets start by trying to identify what is missing. Which information do 
+> you think could be provided by using a IOCTL interface which you need or 
+> want which is not provided by the current sysfs interface or can not be 
+> provided by the current sysfs interface.
+
+(pseudo code ahead)
+
+First, being able to cut down on the string manipulation would be great.
+So instead of doing:
+accel_x_path = build_filename (sysfs_path, "in_accel_x_raw");
+accel_y_path = build_filename (sysfs_path, "in_accel_y_raw");
+accel_z_path = build_filename (sysfs_path, "in_accel_z_raw");
+if (exists(accel_x_path) && exists(accel_y_path) && exists(accel_z_path)) {
+  // We have an accelerometer
+  do_something();
+}
+free(..x);
+free(..y);
+free(..z);
+free(sysfs_path);
+
+I could query for the device's capabilities:
+fd = open ("/dev/iio0");
+ioctl(fd, IIO_GET_CAPS, &caps);
+if (caps.channels & (IIO_CAP_ACCEL_X | IIO_CAP_ACCEL_Y | IIO_CAP_ACCEL_Z)) {
+  // We have an accelerometer
+  do_something();
+}
+
+Note that, from the data given, I don't know how to make out whether
+something is an accelerometer, or a quartenion sensor, or which one we
+should prefer on specific machines.
+
+This would also be stateful, so that 1) enabling the various channels,
+2) changing the hysteresis would be reset when the fd is closed. That
+would cut down on the power consumption when unused, or when the service
+that uses that data crashes.
+
+Finally, there's some documentation, and it's not quite finished, or
+there's something fishy on this device:
+$ ls /sys//devices/platform/80860F41:04/i2c-12/i2c-SMO8500:00/iio:device0/events
+in_accel_x_thresh_thresh_en      in_accel_x_thresh_thresh_value
+in_accel_y_thresh_thresh_period  in_accel_z_thresh_thresh_en
+in_accel_z_thresh_thresh_value
+in_accel_x_thresh_thresh_period  in_accel_y_thresh_thresh_en
+in_accel_y_thresh_thresh_value   in_accel_z_thresh_thresh_period
+
+Reading this is like singing Kool & the Gang with a lisp.
+
+It's also very unclear to me when to use triggers, if there are any,
+when there a scan_elements sub-directory, and when not, when there is an
+events sub-directory, and when not, and whether properties (the various
+sysfs files) are readable, writable or both.
+
+I've had the experience of 2 accelerometer devices, one in the Yoga 13,
+using the hid-sensor* family of accelerometers, and one in the Onda
+v975w with the kxcj9 1013 variant. The first has triggers, and
+scan_elements. The second has events with "super-thresh" filenames.
+
+So I'm really a bit lost.
+
+Cheers
+
