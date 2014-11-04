@@ -1,44 +1,61 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mailapp01.imgtec.com ([195.59.15.196]:49598 "EHLO
+Received: from mailapp01.imgtec.com ([195.59.15.196]:4878 "EHLO
 	mailapp01.imgtec.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751999AbaKEV7D (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 5 Nov 2014 16:59:03 -0500
+	with ESMTP id S1751977AbaKDXba (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 4 Nov 2014 18:31:30 -0500
+Message-ID: <54596172.9090908@imgtec.com>
+Date: Tue, 4 Nov 2014 20:29:54 -0300
 From: Ezequiel Garcia <ezequiel.garcia@imgtec.com>
-To: Jonathan Cameron <jic23@kernel.org>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Andrew Bresticker <abrestic@chromium.org>,
-	James Hartley <james.hartley@imgtec.com>,
-	Phani Movva <phani.movva@imgtec.com>
-CC: <linux-iio@vger.kernel.org>, <pmeerw@pmeerw.net>,
-	<knaack.h@gmx.de>, <devicetree@vger.kernel.org>,
-	Ezequiel Garcia <ezequiel.garcia@imgtec.com>
-Subject: [PATCH v2 3/3] DT: Add a vendor prefix for Cosmic Circuits
-Date: Wed, 5 Nov 2014 18:56:51 -0300
-Message-ID: <1415224611-22096-4-git-send-email-ezequiel.garcia@imgtec.com>
-In-Reply-To: <1415224611-22096-1-git-send-email-ezequiel.garcia@imgtec.com>
-References: <1415224611-22096-1-git-send-email-ezequiel.garcia@imgtec.com>
 MIME-Version: 1.0
-Content-Type: text/plain
+To: Lars-Peter Clausen <lars@metafoo.de>, <pmeerw@pmeerw.net>,
+	<knaack.h@gmx.de>
+CC: <linux-iio@vger.kernel.org>, <jic23@kernel.org>,
+	<james.hartley@imgtec.com>, <abrestic@chromium.org>,
+	Phani Movva <Phani.Movva@imgtec.com>
+Subject: Re: [PATCH 1/2] iio: adc: Cosmic Circuits 10001 ADC driver
+References: <1414615531-26172-1-git-send-email-ezequiel.garcia@imgtec.com> <1414615531-26172-2-git-send-email-ezequiel.garcia@imgtec.com> <5453C494.4030906@metafoo.de>
+In-Reply-To: <5453C494.4030906@metafoo.de>
+Content-Type: text/plain; charset="windows-1252"
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Signed-off-by: Ezequiel Garcia <ezequiel.garcia@imgtec.com>
----
- Documentation/devicetree/bindings/vendor-prefixes.txt | 1 +
- 1 file changed, 1 insertion(+)
+Hi everyone,
 
-diff --git a/Documentation/devicetree/bindings/vendor-prefixes.txt b/Documentation/devicetree/bindings/vendor-prefixes.txt
-index 723999d..1bfa13a 100644
---- a/Documentation/devicetree/bindings/vendor-prefixes.txt
-+++ b/Documentation/devicetree/bindings/vendor-prefixes.txt
-@@ -35,6 +35,7 @@ chrp	Common Hardware Reference Platform
- chunghwa	Chunghwa Picture Tubes Ltd.
- cirrus	Cirrus Logic, Inc.
- cortina	Cortina Systems, Inc.
-+cosmic	Cosmic Circuits
- crystalfontz	Crystalfontz America, Inc.
- dallas	Maxim Integrated Products (formerly Dallas Semiconductor)
- davicom	DAVICOM Semiconductor, Inc.
+Thanks for the review. I've fixed most of the comments except for the
+invalid sample representation issue.
+
+On 10/31/2014 02:19 PM, Lars-Peter Clausen wrote:
+> On 10/29/2014 09:45 PM, Ezequiel Garcia wrote:
+>> From: Phani Movva <Phani.Movva@imgtec.com>
+>>
+>> This commit adds support for Cosmic Circuits 10001 10-bit ADC device.
+>>
+>> Signed-off-by: Phani Movva <Phani.Movva@imgtec.com>
+>> Signed-off-by: Naidu Tellapati <Naidu.Tellapati@imgtec.com>
+>> [Ezequiel: code style cleaning]
+>> Signed-off-by: Ezequiel Garcia <ezequiel.garcia@imgtec.com>
+> 
+> Looks very good. Just a few very minor issues.
+> 
+> [...]
+>> +static int cc_adc_poll_done(struct iio_dev *dev, int channel,
+>> +                unsigned int delay)
+>> +{
+>> +    struct cc_10001_adc_device *adc_dev = iio_priv(dev);
+>> +    int val = INVALID_SAMPLED_OUTPUT;
+> 
+> I'm not so sure that returning a fake sample is such a good idea. When
+> reading from sysfs we should definitely return an error if there is one.
+
+Right.
+
+> For buffer reading dropping the sample is probably not such a good idea,
+> but we should agree on and document a standard representation of invalid
+> samples.
+> 
+
+Hm, sure. What do you suggest? I can't see other drivers doing anything
+like this.
+
 -- 
-2.1.0
-
+Ezequiel
