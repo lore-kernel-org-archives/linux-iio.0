@@ -1,162 +1,93 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp-out-075.synserver.de ([212.40.185.75]:1053 "EHLO
-	smtp-out-048.synserver.de" rhost-flags-OK-OK-OK-FAIL)
-	by vger.kernel.org with ESMTP id S1751292AbaKDRDV (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 4 Nov 2014 12:03:21 -0500
-From: Lars-Peter Clausen <lars@metafoo.de>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Hartmut Knaack <knaack.h@gmx.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>, linux-iio@vger.kernel.org,
-	Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH 3/3] staging:iio:ade7758: Remove "raw" from channel name
-Date: Tue,  4 Nov 2014 18:03:16 +0100
-Message-Id: <1415120596-21704-3-git-send-email-lars@metafoo.de>
-In-Reply-To: <1415120596-21704-1-git-send-email-lars@metafoo.de>
-References: <1415120596-21704-1-git-send-email-lars@metafoo.de>
+Received: from devils.ext.ti.com ([198.47.26.153]:49222 "EHLO
+	devils.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751368AbaKDLpU (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 4 Nov 2014 06:45:20 -0500
+Message-ID: <5458BC0B.1040803@ti.com>
+Date: Tue, 4 Nov 2014 17:14:11 +0530
+From: Vignesh R <vigneshr@ti.com>
+MIME-Version: 1.0
+To: Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+	"Griffis, Brad" <bgriffis@ti.com>,
+	Rob Herring <robh+dt@kernel.org>,
+	Pawel Moll <pawel.moll@arm.com>,
+	Mark Rutland <mark.rutland@arm.com>,
+	Ian Campbell <ijc+devicetree@hellion.org.uk>,
+	Kumar Gala <galak@codeaurora.org>,
+	Benoit Cousson <bcousson@baylibre.com>,
+	Tony Lindgren <tony@atomide.com>,
+	Russell King <linux@arm.linux.org.uk>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Dmitry Torokhov <dmitry.torokhov@gmail.com>
+CC: Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Samuel Ortiz <sameo@linux.intel.com>,
+	Lee Jones <lee.jones@linaro.org>,
+	"Balbi, Felipe" <balbi@ti.com>,
+	Jan Kardell <jan.kardell@telliq.com>,
+	Paul Gortmaker <paul.gortmaker@windriver.com>,
+	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"linux-omap@vger.kernel.org" <linux-omap@vger.kernel.org>,
+	"linux-arm-kernel@lists.infradead.org"
+	<linux-arm-kernel@lists.infradead.org>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	"linux-input@vger.kernel.org" <linux-input@vger.kernel.org>
+Subject: Re: [PATCH 0/4] Touchscreen performance related fixes
+References: <1414408111-2631-1-git-send-email-vigneshr@ti.com> <544E821D.5040004@linutronix.de> <912A29987EAE174BA6CF187D7CDFA9CE26F46B2B@DLEE08.ent.ti.com> <54577258.9080508@linutronix.de>
+In-Reply-To: <54577258.9080508@linutronix.de>
+Content-Type: text/plain; charset="windows-1252"
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-"raw" is a property of a channel, but should not be part of the name of
-channel.
 
-Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
----
- drivers/staging/iio/meter/ade7758_core.c | 24 +++++++++---------------
- 1 file changed, 9 insertions(+), 15 deletions(-)
 
-diff --git a/drivers/staging/iio/meter/ade7758_core.c b/drivers/staging/iio/meter/ade7758_core.c
-index 214b03e..94d9914 100644
---- a/drivers/staging/iio/meter/ade7758_core.c
-+++ b/drivers/staging/iio/meter/ade7758_core.c
-@@ -630,7 +630,6 @@ static const struct iio_chan_spec ade7758_channels[] = {
- 		.type = IIO_VOLTAGE,
- 		.indexed = 1,
- 		.channel = 0,
--		.extend_name = "raw",
- 		.address = AD7758_WT(AD7758_PHASE_A, AD7758_VOLTAGE),
- 		.scan_index = 0,
- 		.scan_type = {
-@@ -642,7 +641,6 @@ static const struct iio_chan_spec ade7758_channels[] = {
- 		.type = IIO_CURRENT,
- 		.indexed = 1,
- 		.channel = 0,
--		.extend_name = "raw",
- 		.address = AD7758_WT(AD7758_PHASE_A, AD7758_CURRENT),
- 		.scan_index = 1,
- 		.scan_type = {
-@@ -654,7 +652,7 @@ static const struct iio_chan_spec ade7758_channels[] = {
- 		.type = IIO_POWER,
- 		.indexed = 1,
- 		.channel = 0,
--		.extend_name = "apparent_raw",
-+		.extend_name = "apparent",
- 		.address = AD7758_WT(AD7758_PHASE_A, AD7758_APP_PWR),
- 		.scan_index = 2,
- 		.scan_type = {
-@@ -666,7 +664,7 @@ static const struct iio_chan_spec ade7758_channels[] = {
- 		.type = IIO_POWER,
- 		.indexed = 1,
- 		.channel = 0,
--		.extend_name = "active_raw",
-+		.extend_name = "active",
- 		.address = AD7758_WT(AD7758_PHASE_A, AD7758_ACT_PWR),
- 		.scan_index = 3,
- 		.scan_type = {
-@@ -678,7 +676,7 @@ static const struct iio_chan_spec ade7758_channels[] = {
- 		.type = IIO_POWER,
- 		.indexed = 1,
- 		.channel = 0,
--		.extend_name = "reactive_raw",
-+		.extend_name = "reactive",
- 		.address = AD7758_WT(AD7758_PHASE_A, AD7758_REACT_PWR),
- 		.scan_index = 4,
- 		.scan_type = {
-@@ -690,7 +688,6 @@ static const struct iio_chan_spec ade7758_channels[] = {
- 		.type = IIO_VOLTAGE,
- 		.indexed = 1,
- 		.channel = 1,
--		.extend_name = "raw",
- 		.address = AD7758_WT(AD7758_PHASE_B, AD7758_VOLTAGE),
- 		.scan_index = 5,
- 		.scan_type = {
-@@ -702,7 +699,6 @@ static const struct iio_chan_spec ade7758_channels[] = {
- 		.type = IIO_CURRENT,
- 		.indexed = 1,
- 		.channel = 1,
--		.extend_name = "raw",
- 		.address = AD7758_WT(AD7758_PHASE_B, AD7758_CURRENT),
- 		.scan_index = 6,
- 		.scan_type = {
-@@ -714,7 +710,7 @@ static const struct iio_chan_spec ade7758_channels[] = {
- 		.type = IIO_POWER,
- 		.indexed = 1,
- 		.channel = 1,
--		.extend_name = "apparent_raw",
-+		.extend_name = "apparent",
- 		.address = AD7758_WT(AD7758_PHASE_B, AD7758_APP_PWR),
- 		.scan_index = 7,
- 		.scan_type = {
-@@ -726,7 +722,7 @@ static const struct iio_chan_spec ade7758_channels[] = {
- 		.type = IIO_POWER,
- 		.indexed = 1,
- 		.channel = 1,
--		.extend_name = "active_raw",
-+		.extend_name = "active",
- 		.address = AD7758_WT(AD7758_PHASE_B, AD7758_ACT_PWR),
- 		.scan_index = 8,
- 		.scan_type = {
-@@ -738,7 +734,7 @@ static const struct iio_chan_spec ade7758_channels[] = {
- 		.type = IIO_POWER,
- 		.indexed = 1,
- 		.channel = 1,
--		.extend_name = "reactive_raw",
-+		.extend_name = "reactive",
- 		.address = AD7758_WT(AD7758_PHASE_B, AD7758_REACT_PWR),
- 		.scan_index = 9,
- 		.scan_type = {
-@@ -750,7 +746,6 @@ static const struct iio_chan_spec ade7758_channels[] = {
- 		.type = IIO_VOLTAGE,
- 		.indexed = 1,
- 		.channel = 2,
--		.extend_name = "raw",
- 		.address = AD7758_WT(AD7758_PHASE_C, AD7758_VOLTAGE),
- 		.scan_index = 10,
- 		.scan_type = {
-@@ -762,7 +757,6 @@ static const struct iio_chan_spec ade7758_channels[] = {
- 		.type = IIO_CURRENT,
- 		.indexed = 1,
- 		.channel = 2,
--		.extend_name = "raw",
- 		.address = AD7758_WT(AD7758_PHASE_C, AD7758_CURRENT),
- 		.scan_index = 11,
- 		.scan_type = {
-@@ -774,7 +768,7 @@ static const struct iio_chan_spec ade7758_channels[] = {
- 		.type = IIO_POWER,
- 		.indexed = 1,
- 		.channel = 2,
--		.extend_name = "apparent_raw",
-+		.extend_name = "apparent",
- 		.address = AD7758_WT(AD7758_PHASE_C, AD7758_APP_PWR),
- 		.scan_index = 12,
- 		.scan_type = {
-@@ -786,7 +780,7 @@ static const struct iio_chan_spec ade7758_channels[] = {
- 		.type = IIO_POWER,
- 		.indexed = 1,
- 		.channel = 2,
--		.extend_name = "active_raw",
-+		.extend_name = "active",
- 		.address = AD7758_WT(AD7758_PHASE_C, AD7758_ACT_PWR),
- 		.scan_index = 13,
- 		.scan_type = {
-@@ -798,7 +792,7 @@ static const struct iio_chan_spec ade7758_channels[] = {
- 		.type = IIO_POWER,
- 		.indexed = 1,
- 		.channel = 2,
--		.extend_name = "reactive_raw",
-+		.extend_name = "reactive",
- 		.address = AD7758_WT(AD7758_PHASE_C, AD7758_REACT_PWR),
- 		.scan_index = 14,
- 		.scan_type = {
--- 
-1.8.0
+On Monday 03 November 2014 05:47 PM, Sebastian Andrzej Siewior wrote:
+> On 10/27/2014 08:02 PM, Griffis, Brad wrote:
+>> On 10/27/2014 12:34 PM, Sebastian Andrzej Siewior wrote:
+>>> Do we really need #3 (and then #4)? Given the complexity we have already, is there any benefit by decreasing this value? 
+>>
+>> I specifically requested we add ti,charge-delay to the device tree because it is THE critical value to tune for a given design.  Although I think the current value of 0xB000 will be suitable for a great many designs, I expect that many users will need to adjust this value for their hardware.  Details such as which touchscreen vendor is being used and how the touchscreen is connected (header vs cable) have an effect on what's appropriate here.
+> 
+> Oh. That is one knob I hoped we could avoid since I haven't seen it
+> before on other TSCs. But okay. Please make sure that there is a
+> message printed if the default value is used. And lets hope the user
+> will do something about his.
+> 
+>>> Would  someone want to increase it? Can we safely determine a value which works for everyone?
+>>
+>> This value represents a hardware delay before checking for the pen-up event.  So in the scenario where someone is seeing excessive false pen-up events they will want to increase this parameter.  The downsize of making this larger is that it decreases the overall sampling speed of both the touchscreen as well as the standalone ADC samples.  At one point I tried making it huge, but that made the touchscreen overly sluggish because the sampling became too slow.  So there is a definite trade-off that if you make it too large the touchscreen becomes sluggish, and if you make it too small then you may see false pen-up events.  The optimal value will need to be tuned for a given design.
+> 
+> I applied the patches from this series and did the following test on my
+> am335x-evm: A mug on the touchscreen (to make sure the events are
+> coming), evtest on the event node to see that the events and loop of
+> 
+> 	cat /sys/bus/iio/devices/iio\:device0/in_voltage4_raw
+> 
+> In the past I was able lock up the TSC/ADC HW that way (see commit
+> 7ca6740cd1 ("mfd: input: iio: ti_amm335x: Rework TSC/ADC
+> synchronization")) for details.
+> With this patches applied I don't seen any TSC events once the IIO
+> interface is (heavily) used. Can this be fixed?
 
+I ran following commands
+$ evtest /dev/input/touchscreen0 &
+(with heavy item on touchscreen)
+ and
+$ cat /sys/bus/iio/devices/iio\:device0/scan_elements/in_voltage4_en
+(in a busy loop)
+I tried above experiment on my board but I didn't hit any problem even
+after running for close to 30 minutes. I was unable to reproduce failure
+
+The problem may be in configuring correct charge-delay value. Please run:
+$ ts_test > /dev/null
+and let me know if pen events are being detected properly.
+
+> 
+> Sebastian
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-omap" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> 
