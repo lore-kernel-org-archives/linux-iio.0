@@ -1,157 +1,175 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mailout3.w1.samsung.com ([210.118.77.13]:52070 "EHLO
-	mailout3.w1.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753293AbaKDO3w (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 4 Nov 2014 09:29:52 -0500
-Received: from eucpsbgm1.samsung.com (unknown [203.254.199.244])
- by mailout3.w1.samsung.com
- (Oracle Communications Messaging Server 7u4-24.01(7.0.4.24.0) 64bit (built Nov
- 17 2011)) with ESMTP id <0NEI00C8OR2HBX10@mailout3.w1.samsung.com> for
- linux-iio@vger.kernel.org; Tue, 04 Nov 2014 14:32:41 +0000 (GMT)
-From: Karol Wrona <k.wrona@samsung.com>
-To: Jonathan Cameron <jic23@kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>, linux-iio@vger.kernel.org
-Cc: Kyungmin Park <kyungmin.park@samsung.com>,
-	Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
-	Karol Wrona <k.wrona@samsung.com>
-Subject: [PATCH 1/1] staging: iio: Add notrigger mode for generic_buffer
-Date: Tue, 04 Nov 2014 15:29:39 +0100
-Message-id: <1415111379-23951-2-git-send-email-k.wrona@samsung.com>
-In-reply-to: <1415111379-23951-1-git-send-email-k.wrona@samsung.com>
-References: <1415111379-23951-1-git-send-email-k.wrona@samsung.com>
+Received: from relay6-d.mail.gandi.net ([217.70.183.198]:52670 "EHLO
+	relay6-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752708AbaKDIqN (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 4 Nov 2014 03:46:13 -0500
+Message-ID: <1415090732.4506.28.camel@hadess.net>
+Subject: Re: Kernel wishlist item: Better IIO API
+From: Bastien Nocera <hadess@hadess.net>
+To: Daniel Baluta <daniel.baluta@gmail.com>
+Cc: Lars-Peter Clausen <lars@metafoo.de>, linux-iio@vger.kernel.org
+Date: Tue, 04 Nov 2014 09:45:32 +0100
+In-Reply-To: <CAEnQRZBoTbQMCC1+qwewUefk1u616pLrhUD+i5WhoZ0Se+2fWQ@mail.gmail.com>
+References: <1414593052.2406.37.camel@hadess.net>
+	 <5451221D.6000301@metafoo.de> <1414604035.2406.41.camel@hadess.net>
+	 <54512640.3040505@metafoo.de> <1414604840.2406.43.camel@hadess.net>
+	 <54513238.6050903@metafoo.de> <1415055709.4506.19.camel@hadess.net>
+	 <CAEnQRZAA7bN999XUmj3kaH2U3dPET0NRXDcFNprxZLAZS=ARzg@mail.gmail.com>
+	 <1415089663.4506.26.camel@hadess.net>
+	 <CAEnQRZBoTbQMCC1+qwewUefk1u616pLrhUD+i5WhoZ0Se+2fWQ@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Mime-Version: 1.0
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Some IIO devices do not use the triggers. This patch makes trigger setting
-conditional so generic_buffer can be used when triggers are disabled.
+On Tue, 2014-11-04 at 10:37 +0200, Daniel Baluta wrote:
+> On Tue, Nov 4, 2014 at 10:27 AM, Bastien Nocera <hadess@hadess.net> wrote:
+> > On Tue, 2014-11-04 at 10:18 +0200, Daniel Baluta wrote:
+> >> On Tue, Nov 4, 2014 at 1:01 AM, Bastien Nocera <hadess@hadess.net> wrote:
+> >> > On Wed, 2014-10-29 at 19:30 +0100, Lars-Peter Clausen wrote:
+> >> >> On 10/29/2014 06:47 PM, Bastien Nocera wrote:
+> >> >> > On Wed, 2014-10-29 at 18:39 +0100, Lars-Peter Clausen wrote:
+> >> >> >> On 10/29/2014 06:33 PM, Bastien Nocera wrote:
+> >> >> >>> On Wed, 2014-10-29 at 18:21 +0100, Lars-Peter Clausen wrote:
+> >> >> >>>> On 10/29/2014 03:30 PM, Bastien Nocera wrote:
+> >> >> >>>>> Hey,
+> >> >> >>>>>
+> >> >> >>>>> I've posted this a couple of days ago:
+> >> >> >>>>> http://www.hadess.net/2014/10/a-gnome-kernel-wishlist.html
+> >> >> >>>>> along with a mail to LKML:
+> >> >> >>>>> http://thread.gmane.org/gmane.linux.kernel/1810083
+> >> >> >>>>>
+> >> >> >>>>> I've recently added to my list an item about IIO:
+> >> >> >>>>> https://wiki.gnome.org/BastienNocera/KernelWishlist
+> >> >> >>>>>
+> >> >> >>>>> Are there any plans for a better API for the IIO subsystem? The API
+> >> >> >>>>> might be good enough to drive from shell scripts, or helpers that only
+> >> >> >>>>> need to work with one variant of a device, but my attempts at trying to
+> >> >> >>>>> use the IIO subsystem to provide an accelerometer to do automatic
+> >> >> >>>>> display rotation[1] showed that the API is really cumbersome.
+> >> >> >>>>>
+> >> >> >>>>> The code I wrote spends most of its time creating sysfs paths, reading
+> >> >> >>>>> values in different formats, and mangling filenames[2].
+> >> >> >>>>>
+> >> >> >>>>> Is an ioctl-based API planned? Something where I could get/set
+> >> >> >>>>> structures to gather metadata about the device, and set it up easily, so
+> >> >> >>>>> reading data from it is easier?
+> >> >> >>>>
+> >> >> >>>> No, unfortunately not and I'm not sure if such a ABI would be accepted if
+> >> >> >>>> proposed.
+> >> >> >>>
+> >> >> >>> Why not?
+> >> >> >>
+> >> >> >> Because it means there will be ambiguity in the API on how to do things.
+> >> >> >> Which is typically not a desired property.
+> >> >> >>
+> >> >> >>>
+> >> >> >>>> But checkout libiio[1][2], it hides the details of the sysfs file manipulation.
+> >> >> >>>
+> >> >> >>> I'm not sure that's any better unfortunately. I've certainly tried to do
+> >> >> >>> that already in my code, but that doesn't change that the user-space API
+> >> >> >>> is barely usable.
+> >> >> >>
+> >> >> >> It's not completely unusable ;)
+> >> >> >
+> >> >> > In the end, you prefer the "self-documenting" of using sysfs files,
+> >> >> > rather than an API which you can document in a header file?
+> >> >>
+> >> >> If it was for me we'd be using a state-full IOCTL ABI rather than a
+> >> >> stateless sysfs ABI. I'm definitely not happy with the current interface,
+> >> >> but it's the interface we have. But the problem with userspace ABI (in
+> >> >> comparison to in-kernel API) is that we can just change things at random,
+> >> >> but we have to stick with the existing interface.
+> >> >>
+> >> >> The sysfs ABI is not meant to be self documenting and it is not
+> >> >> undocumented. The documentation for the different attributes can be found in
+> >> >> Documentation/ABI/testing/sysfs-bus-iio[1].
+> >> >
+> >> > That's useful if a bit terse. Thanks though.
+> >> >
+> >> >> > I don't understand that. My questions on this very mailing-list, and
+> >> >> > comments that were made to users of my code[1] clearly show that the
+> >> >> > existing API is anything but "not ambiguous".
+> >> >>
+> >> >> That bug report sounds like bugs in the driver.
+> >> >
+> >> > Not really. Some drivers need the "in_accel_hysteresis" set, some don't
+> >> > have that sysfs file, for example.
+> >> >
+> >> >> > I've used the Bluetooth, input, rfkill, and inotify APIs as provided
+> >> >> > directly by the Linux kernel (not through a layer) and they're of better
+> >> >> > quality than the IIO one.
+> >> >> >
+> >> >> > I just don't see how one could support a class of IIO sensors with the
+> >> >> > existing API.
+> >> >>
+> >> >> I can understand your frustration. A API that is not usable in a generic way
+> >> >> is not really useful. So we should try to fix that, but we are bound by the
+> >> >> framework itself and can't just throw everything away.
+> >> >>
+> >> >> So lets start by trying to identify what is missing. Which information do
+> >> >> you think could be provided by using a IOCTL interface which you need or
+> >> >> want which is not provided by the current sysfs interface or can not be
+> >> >> provided by the current sysfs interface.
+> >> >
+> >> > (pseudo code ahead)
+> >> >
+> >> > First, being able to cut down on the string manipulation would be great.
+> >> > So instead of doing:
+> >> > accel_x_path = build_filename (sysfs_path, "in_accel_x_raw");
+> >> > accel_y_path = build_filename (sysfs_path, "in_accel_y_raw");
+> >> > accel_z_path = build_filename (sysfs_path, "in_accel_z_raw");
+> >> > if (exists(accel_x_path) && exists(accel_y_path) && exists(accel_z_path)) {
+> >> >   // We have an accelerometer
+> >> >   do_something();
+> >> > }
+> >> > free(..x);
+> >> > free(..y);
+> >> > free(..z);
+> >> > free(sysfs_path);
+> >> >
+> >> > I could query for the device's capabilities:
+> >> > fd = open ("/dev/iio0");
+> >> > ioctl(fd, IIO_GET_CAPS, &caps);
+> >> > if (caps.channels & (IIO_CAP_ACCEL_X | IIO_CAP_ACCEL_Y | IIO_CAP_ACCEL_Z)) {
+> >> >   // We have an accelerometer
+> >> >   do_something();
+> >> > }
+> >> >
+> >> > Note that, from the data given, I don't know how to make out whether
+> >> > something is an accelerometer, or a quartenion sensor, or which one we
+> >> > should prefer on specific machines.
+> >> >
+> >> > This would also be stateful, so that 1) enabling the various channels,
+> >> > 2) changing the hysteresis would be reset when the fd is closed. That
+> >> > would cut down on the power consumption when unused, or when the service
+> >> > that uses that data crashes.
+> >> >
+> >> > Finally, there's some documentation, and it's not quite finished, or
+> >> > there's something fishy on this device:
+> >> > $ ls /sys//devices/platform/80860F41:04/i2c-12/i2c-SMO8500:00/iio:device0/events
+> >> > in_accel_x_thresh_thresh_en      in_accel_x_thresh_thresh_value
+> >> > in_accel_y_thresh_thresh_period  in_accel_z_thresh_thresh_en
+> >> > in_accel_z_thresh_thresh_value
+> >> > in_accel_x_thresh_thresh_period  in_accel_y_thresh_thresh_en
+> >> > in_accel_y_thresh_thresh_value   in_accel_z_thresh_thresh_period
+> >>
+> >> Could you paste here the initialization part of iio_chan_spec + iio_event_spec?
+> >
+> > How would I do that?
+> 
+> Just look into the code and search for iio_chan_spec and
+> iio_event_spec declaration.
 
-Signed-off-by: Karol Wrona <k.wrona@samsung.com>
----
- drivers/staging/iio/Documentation/generic_buffer.c |   77 ++++++++++++--------
- 1 file changed, 45 insertions(+), 32 deletions(-)
+Oh, the code. Well, you've already sent a patch for it, so you should
+know ;)
 
-diff --git a/drivers/staging/iio/Documentation/generic_buffer.c b/drivers/staging/iio/Documentation/generic_buffer.c
-index 31dfb21..de4647e 100644
---- a/drivers/staging/iio/Documentation/generic_buffer.c
-+++ b/drivers/staging/iio/Documentation/generic_buffer.c
-@@ -162,11 +162,12 @@ int main(int argc, char **argv)
- 	char *buffer_access;
- 	int scan_size;
- 	int noevents = 0;
-+	int notrigger = 0;
- 	char *dummy;
- 
- 	struct iio_channel_info *channels;
- 
--	while ((c = getopt(argc, argv, "l:w:c:et:n:")) != -1) {
-+	while ((c = getopt(argc, argv, "l:w:c:et:n:g")) != -1) {
- 		switch (c) {
- 		case 'n':
- 			device_name = optarg;
-@@ -187,6 +188,9 @@ int main(int argc, char **argv)
- 		case 'l':
- 			buf_len = strtoul(optarg, &dummy, 10);
- 			break;
-+		case 'g':
-+			notrigger = 1;
-+			break;
- 		case '?':
- 			return -1;
- 		}
-@@ -205,28 +209,32 @@ int main(int argc, char **argv)
- 	printf("iio device number being used is %d\n", dev_num);
- 
- 	asprintf(&dev_dir_name, "%siio:device%d", iio_dir, dev_num);
--	if (trigger_name == NULL) {
--		/*
--		 * Build the trigger name. If it is device associated its
--		 * name is <device_name>_dev[n] where n matches the device
--		 * number found above
--		 */
--		ret = asprintf(&trigger_name,
--			       "%s-dev%d", device_name, dev_num);
--		if (ret < 0) {
--			ret = -ENOMEM;
--			goto error_ret;
-+
-+	if (!notrigger) {
-+		if (trigger_name == NULL) {
-+			/*
-+			 * Build the trigger name. If it is device associated
-+			 * its name is <device_name>_dev[n] where n matches
-+			 * the device number found above.
-+			 */
-+			ret = asprintf(&trigger_name,
-+				       "%s-dev%d", device_name, dev_num);
-+			if (ret < 0) {
-+				ret = -ENOMEM;
-+				goto error_ret;
-+			}
- 		}
--	}
- 
--	/* Verify the trigger exists */
--	trig_num = find_type_by_name(trigger_name, "trigger");
--	if (trig_num < 0) {
--		printf("Failed to find the trigger %s\n", trigger_name);
--		ret = -ENODEV;
--		goto error_free_triggername;
--	}
--	printf("iio trigger number being used is %d\n", trig_num);
-+		/* Verify the trigger exists */
-+		trig_num = find_type_by_name(trigger_name, "trigger");
-+		if (trig_num < 0) {
-+			printf("Failed to find the trigger %s\n", trigger_name);
-+			ret = -ENODEV;
-+			goto error_free_triggername;
-+		}
-+		printf("iio trigger number being used is %d\n", trig_num);
-+	} else
-+		printf("trigger-less mode selected\n");
- 
- 	/*
- 	 * Parse the files in scan_elements to identify what channels are
-@@ -250,14 +258,18 @@ int main(int argc, char **argv)
- 		ret = -ENOMEM;
- 		goto error_free_triggername;
- 	}
--	printf("%s %s\n", dev_dir_name, trigger_name);
--	/* Set the device trigger to be the data ready trigger found above */
--	ret = write_sysfs_string_and_verify("trigger/current_trigger",
--					dev_dir_name,
--					trigger_name);
--	if (ret < 0) {
--		printf("Failed to write current_trigger file\n");
--		goto error_free_buf_dir_name;
-+
-+	if (!notrigger) {
-+		printf("%s %s\n", dev_dir_name, trigger_name);
-+		/* Set the device trigger to be the data ready trigger found
-+		 * above */
-+		ret = write_sysfs_string_and_verify("trigger/current_trigger",
-+						    dev_dir_name,
-+						    trigger_name);
-+		if (ret < 0) {
-+			printf("Failed to write current_trigger file\n");
-+			goto error_free_buf_dir_name;
-+		}
- 	}
- 
- 	/* Setup ring buffer parameters */
-@@ -327,9 +339,10 @@ int main(int argc, char **argv)
- 	if (ret < 0)
- 		goto error_close_buffer_access;
- 
--	/* Disconnect the trigger - just write a dummy name. */
--	write_sysfs_string("trigger/current_trigger",
--			dev_dir_name, "NULL");
-+	if (!notrigger)
-+		/* Disconnect the trigger - just write a dummy name. */
-+		write_sysfs_string("trigger/current_trigger",
-+				   dev_dir_name, "NULL");
- 
- error_close_buffer_access:
- 	close(fp);
--- 
-1.7.9.5
+I've sent the patch adding support for the accelerometer in my device
+yesterday:
+http://thread.gmane.org/gmane.linux.kernel.iio/14487
+
+I'll test your patch in a little while once I've had the chance to play
+with the Bluetooth support code.
+
+Cheers
 
