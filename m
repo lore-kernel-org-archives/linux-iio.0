@@ -1,57 +1,40 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ns.mm-sol.com ([37.157.136.199]:34148 "EHLO extserv.mm-sol.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751134AbaKCKvm (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Mon, 3 Nov 2014 05:51:42 -0500
-Message-ID: <1415011919.407.15.camel@mm-sol.com>
-Subject: Re: [PATCH v2] iio: inkern: Add of_xlate function to struct iio_info
-From: "Ivan T. Ivanov" <iivanov@mm-sol.com>
-To: Lars-Peter Clausen <lars@metafoo.de>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
-	Sachin Kamat <sachin.kamat@linaro.org>,
-	Thomas Gleixner <tglx@linutronix.de>,
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-arm-msm@vger.kernel.org
-Date: Mon, 03 Nov 2014 12:51:59 +0200
-In-Reply-To: <5457598B.1050408@metafoo.de>
-References: <1413991783-24562-1-git-send-email-iivanov@mm-sol.com>
-		 <5447CDFA.5030407@metafoo.de> <544B75B8.1010505@kernel.org>
-	 <1415009224.407.13.camel@mm-sol.com> <5457598B.1050408@metafoo.de>
-Content-Type: text/plain; charset="UTF-8"
-Mime-Version: 1.0
+Received: from mailout1.w1.samsung.com ([210.118.77.11]:55220 "EHLO
+	mailout1.w1.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751228AbaKDO3r (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 4 Nov 2014 09:29:47 -0500
+Received: from eucpsbgm1.samsung.com (unknown [203.254.199.244])
+ by mailout1.w1.samsung.com
+ (Oracle Communications Messaging Server 7u4-24.01(7.0.4.24.0) 64bit (built Nov
+ 17 2011)) with ESMTP id <0NEI00E6GR2EAC10@mailout1.w1.samsung.com> for
+ linux-iio@vger.kernel.org; Tue, 04 Nov 2014 14:32:38 +0000 (GMT)
+From: Karol Wrona <k.wrona@samsung.com>
+To: Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>, linux-iio@vger.kernel.org
+Cc: Kyungmin Park <kyungmin.park@samsung.com>,
+	Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
+	Karol Wrona <k.wrona@samsung.com>
+Subject: [PATCH 0/1] staging: iio: Add notrigger mode for generic_buffer
+Date: Tue, 04 Nov 2014 15:29:38 +0100
+Message-id: <1415111379-23951-1-git-send-email-k.wrona@samsung.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
+Hello,
 
-On Mon, 2014-11-03 at 11:31 +0100, Lars-Peter Clausen wrote:
-> On 11/03/2014 11:07 AM, Ivan T. Ivanov wrote:
-> > On Sat, 2014-10-25 at 11:04 +0100, Jonathan Cameron wrote:
-> > > On 22/10/14 16:32, Lars-Peter Clausen wrote:
-> > > > On 10/22/2014 05:29 PM, Ivan T. Ivanov wrote:
-> > > > > When #iio-cells is greater than '0', the driver could provide
-> > > > > a custom of_xlate function that reads the *args* and returns
-> > > > > the appropriate index in registered IIO channels array.
-> > > > > 
-> > > > > Add simple translation function, suitable for the most 1:1
-> > > > > mapped channels in IIO chips, and use it when driver did not
-> > > > > provide custom implementation.
-> > > > > 
-> > > > > Signed-off-by: Ivan T. Ivanov <iivanov@mm-sol.com>
-> > > > 
-> > > > Reviewed-by: Lars-Peter Clausen <lars@metafoo.de>
-> > > > 
-> > > Applied to the togreg branch of iio.git - initially pushed out as testing
-> > > for the autobuilders to play with it.
-> > 
-> > Thank you. Probably my git skills failed me, but I can not
-> > find it in aforementioned branches. Is it publicly pushed?
-> 
-> It's in the testing branch.
-> 
-> http://git.kernel.org/cgit/linux/kernel/git/jic23/iio.git/log/?h=testing
-> 
+Sometimes it is hard to test IIO device with no triggers at all.
+This patch adds "-g" option which allows to use generic_buffer app
+without bothering about triggers.
 
-Thank you. Ivan
+Thanks,
+Karol
+
+Karol Wrona (1):
+  staging: iio: Add notrigger mode for generic_buffer
+
+ drivers/staging/iio/Documentation/generic_buffer.c |   77 ++++++++++++--------
+ 1 file changed, 45 insertions(+), 32 deletions(-)
+
+-- 
+1.7.9.5
+
