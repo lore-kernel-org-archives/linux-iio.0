@@ -1,63 +1,50 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mailout4.samsung.com ([203.254.224.34]:51504 "EHLO
-	mailout4.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750738AbaKLHGK (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 12 Nov 2014 02:06:10 -0500
-From: Jingoo Han <jg1.han@samsung.com>
-To: 'Daniel Baluta' <daniel.baluta@intel.com>
-Cc: 'Andrew Morton' <akpm@linux-foundation.org>,
-	'Greg Kroah-Hartman' <gregkh@linuxfoundation.org>,
-	'Joe Perches' <joe@perches.com>,
-	'Jonathan Cameron' <jic23@kernel.org>,
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-	"'David S. Miller'" <davem@davemloft.net>,
-	'Mauro Carvalho Chehab' <mchehab@osg.samsung.com>,
-	'Antti Palosaari' <crope@iki.fi>,
-	'Hartmut Knaack' <knaack.h@gmx.de>,
-	'Lars-Peter Clausen' <lars@metafoo.de>,
-	'Peter Meerwald' <pmeerw@pmeerw.net>,
-	'Jingoo Han' <jg1.han@samsung.com>
-References: <1415716594-18145-1-git-send-email-daniel.baluta@intel.com>
-In-reply-to: <1415716594-18145-1-git-send-email-daniel.baluta@intel.com>
-Subject: Re: [PATCH] MAINTAINERS: Add IIO include files
-Date: Wed, 12 Nov 2014 16:06:52 +0900
-Message-id: <000801cffe47$3c87f570$b597e050$%han@samsung.com>
-MIME-version: 1.0
-Content-type: text/plain; charset=us-ascii
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:43543 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755033AbaKEQBO (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 5 Nov 2014 11:01:14 -0500
+Message-ID: <545A49C7.9030704@kernel.org>
+Date: Wed, 05 Nov 2014 16:01:11 +0000
+From: Jonathan Cameron <jic23@kernel.org>
+MIME-Version: 1.0
+To: Daniel Baluta <daniel.baluta@gmail.com>,
+	Darshana Padmadas <darshanapadmadas@gmail.com>
+CC: opw-kernel <opw-kernel@googlegroups.com>, linux-iio@vger.kernel.org
+Subject: Re: [OPW kernel] [PATCH] iio: Add ABI documentation for scaled voltage
+References: <1414261101-15590-1-git-send-email-darshanapadmadas@gmail.com> <CAEnQRZDicaPjxx-_VOXAWzgkoD1qTBUOpyapdkR3eKUcz0BKzg@mail.gmail.com>
+In-Reply-To: <CAEnQRZDicaPjxx-_VOXAWzgkoD1qTBUOpyapdkR3eKUcz0BKzg@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Tuesday, November 11, 2014 11:37 PM, Daniel Baluta wrote:
+On 28/10/14 14:56, Daniel Baluta wrote:
+> On Sat, Oct 25, 2014 at 9:18 PM, Darshana Padmadas
+> <darshanapadmadas@gmail.com> wrote:
+>> This patch adds an entry in ABI documentation for in_voltage-voltage_scale.
+>> It has at least one user driver, adis16220, in accel driver.
+>>
+>> Signed-off-by: Darshana Padmadas <darshanapadmadas@gmail.com>
+>> ---
+>>  Documentation/ABI/testing/sysfs-bus-iio | 1 +
+>>  1 file changed, 1 insertion(+)
+>>
+>> diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
+>> index d760b02..0640118 100644
+>> --- a/Documentation/ABI/testing/sysfs-bus-iio
+>> +++ b/Documentation/ABI/testing/sysfs-bus-iio
+>> @@ -251,6 +251,7 @@ Description:
+>>  What:          /sys/bus/iio/devices/iio:deviceX/in_voltageY_scale
+>>  What:          /sys/bus/iio/devices/iio:deviceX/in_voltageY_supply_scale
+>>  What:          /sys/bus/iio/devices/iio:deviceX/in_voltage_scale
+>> +What:          /sys/bus/iio/devices/iio:deviceX/in_voltage-voltage_scale
+>>  What:          /sys/bus/iio/devices/iio:deviceX/out_voltageY_scale
+>>  What:          /sys/bus/iio/devices/iio:deviceX/out_altvoltageY_scale
+>>  What:          /sys/bus/iio/devices/iio:deviceX/in_accel_scale
+>> --
 > 
-> Files under include/linux/iio were not reported as part
-> of the IIO subsystem.
-> 
-> Reported-by: Cristina Ciocan <cristina.ciocan@intel.com>
-> Signed-off-by: Daniel Baluta <daniel.baluta@intel.com>
+> Looks good to me. Adding Jonathan and linux-iio for comments.
+Looks good - can I get a direct copy for easy applying please?
 
-(+cc Hartmut Knaack, Lars-Peter Clausen, Peter Meerwald)
+Thanks,
 
-Reviewed-by: Jingoo Han <jg1.han@samsung.com>
-
-Best regards,
-Jingoo Han
-
-> ---
->  MAINTAINERS | 1 +
->  1 file changed, 1 insertion(+)
-> 
-> diff --git a/MAINTAINERS b/MAINTAINERS
-> index b2f927b..ebb9c38 100644
-> --- a/MAINTAINERS
-> +++ b/MAINTAINERS
-> @@ -4631,6 +4631,7 @@ L:	linux-iio@vger.kernel.org
->  S:	Maintained
->  F:	drivers/iio/
->  F:	drivers/staging/iio/
-> +F:	include/linux/iio/
-> 
->  IKANOS/ADI EAGLE ADSL USB DRIVER
->  M:	Matthieu Castet <castet.matthieu@free.fr>
-> --
-> 1.9.1
-
+Jonathan
