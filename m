@@ -1,143 +1,93 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from bear.ext.ti.com ([192.94.94.41]:60581 "EHLO bear.ext.ti.com"
+Received: from ns.mm-sol.com ([37.157.136.199]:56789 "EHLO extserv.mm-sol.com"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751661AbaKGFtd (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Fri, 7 Nov 2014 00:49:33 -0500
-Message-ID: <545C5D2D.9050406@ti.com>
-Date: Fri, 7 Nov 2014 11:18:29 +0530
-From: Vignesh R <vigneshr@ti.com>
-MIME-Version: 1.0
-To: Lee Jones <lee.jones@linaro.org>
-CC: Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>,
-	Mark Rutland <mark.rutland@arm.com>,
-	Ian Campbell <ijc+devicetree@hellion.org.uk>,
-	Kumar Gala <galak@codeaurora.org>,
-	Benoit Cousson <bcousson@baylibre.com>,
-	Tony Lindgren <tony@atomide.com>,
-	Russell King <linux@arm.linux.org.uk>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-	Hartmut Knaack <knaack.h@gmx.de>,
+	id S1753898AbaKEN5S (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Wed, 5 Nov 2014 08:57:18 -0500
+Message-ID: <1415195855.3660.4.camel@mm-sol.com>
+Subject: Re: [PATCH v4 2/2] iio: vadc: Qualcomm SPMI PMIC voltage ADC driver
+From: "Ivan T. Ivanov" <iivanov@mm-sol.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Hartmut Knaack <knaack.h@gmx.de>,
 	Lars-Peter Clausen <lars@metafoo.de>,
 	Peter Meerwald <pmeerw@pmeerw.net>,
-	Samuel Ortiz <sameo@linux.intel.com>,
-	Felipe Balbi <balbi@ti.com>,
-	Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-	Jan Kardell <jan.kardell@telliq.com>,
-	Paul Gortmaker <paul.gortmaker@windriver.com>,
-	Brad Griffis <bgriffis@ti.com>, <devicetree@vger.kernel.org>,
-	<linux-kernel@vger.kernel.org>, <linux-omap@vger.kernel.org>,
-	<linux-arm-kernel@lists.infradead.org>,
-	<linux-iio@vger.kernel.org>, <linux-input@vger.kernel.org>
-Subject: Re: [PATCH 2/4] input: touchscreen: ti_am335x_tsc: Remove udelay
- in interrupt handler
-References: <1414408111-2631-1-git-send-email-vigneshr@ti.com> <1414408111-2631-3-git-send-email-vigneshr@ti.com> <20141103150526.GI4538@x1>
-In-Reply-To: <20141103150526.GI4538@x1>
-Content-Type: text/plain; charset="utf-8"
+	Stanimir Varbanov <svarbanov@mm-sol.com>,
+	Angelo Compagnucci <angelo.compagnucci@gmail.com>,
+	Grant Likely <grant.likely@linaro.org>,
+	linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org, linux-arm-msm@vger.kernel.org
+Date: Wed, 05 Nov 2014 15:57:35 +0200
+In-Reply-To: <545A218F.5060301@kernel.org>
+References: <1415028270-25860-1-git-send-email-iivanov@mm-sol.com>
+	 <1415028270-25860-3-git-send-email-iivanov@mm-sol.com>
+	 <545A218F.5060301@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Mime-Version: 1.0
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
 
+On Wed, 2014-11-05 at 13:09 +0000, Jonathan Cameron wrote:
+> On 03/11/14 15:24, Ivan T. Ivanov wrote:
+> > From: Stanimir Varbanov <svarbanov@mm-sol.com>
+> > 
+> > The voltage ADC is peripheral of Qualcomm SPMI PMIC chips. It has
+> > 15 bits resolution and register space inside PMIC accessible across
+> > SPMI bus.
+> > 
+> > The vadc driver registers itself through IIO interface.
+> > 
+> > Signed-off-by: Stanimir Varbanov <svarbanov@mm-sol.com>
+> > Signed-off-by: Ivan T. Ivanov <iivanov@mm-sol.com>
+> Hi Ivan,
+> 
+> Couple of utterly tiny bits inline.  The biggest one is that
+> you store some info about the calibration that you never actually
+> use... Left over from some debugging perhaps?
+> 
+> Jonathan
 
-On Monday 03 November 2014 08:35 PM, Lee Jones wrote:
-> On Mon, 27 Oct 2014, Vignesh R wrote:
->> From: Brad Griffis <bgriffis@ti.com>
->>
->> TSC interrupt handler had udelay to avoid reporting of false pen-up
->> interrupt to user space. This patch implements workaround suggesting in
->> Advisory 1.0.31 of silicon errata for am335x, thus eliminating udelay
->> and touchscreen lag. This also improves performance of touchscreen and
->> eliminates sudden jump of cursor at touch release.
->>
->> IDLECONFIG and CHARGECONFIG registers are to be configured
->> with same values in order to eliminate false pen-up events. This
->> workaround may result in false pen-down to be detected, hence considerable
->> charge step delay needs to be added. The charge delay is set to 0xB000
->> (in terms of ADC clock cycles) by default.
->>
->> TSC steps are disabled at the end of every sampling cycle and EOS bit is
->> set. Once the EOS bit is set, the TSC steps need to be re-enabled to begin
->> next sampling cycle.
->>
->> In one shot mode, sequencer automatically disables all enabled steps at
->> the end of each cycle. (both ADC steps and TSC steps) Hence these steps
->> need not be saved in reg_se_cache for clearing these steps at a later
->> stage.
->>
->> Signed-off-by: Brad Griffis <bgriffis@ti.com>
->> [vigneshr@ti.com: Ported patch from v3.12 to v3.18rc2]
->> Signed-off-by: Vignesh R <vigneshr@ti.com>
->> ---
->>  drivers/input/touchscreen/ti_am335x_tsc.c | 56 ++++++++++++-------------------
->>  drivers/mfd/ti_am335x_tscadc.c            |  7 ++--
->>  include/linux/mfd/ti_am335x_tscadc.h      |  4 ++-
->>  3 files changed, 30 insertions(+), 37 deletions(-)
-> 
-> [...]
-> 
->> diff --git a/drivers/mfd/ti_am335x_tscadc.c b/drivers/mfd/ti_am335x_tscadc.c
->> index d877e777cce6..94ef8992f46b 100644
->> --- a/drivers/mfd/ti_am335x_tscadc.c
->> +++ b/drivers/mfd/ti_am335x_tscadc.c
->> @@ -86,8 +86,12 @@ static void am335x_tscadc_need_adc(struct ti_tscadc_dev *tsadc)
->>  		spin_lock_irq(&tsadc->reg_lock);
->>  		finish_wait(&tsadc->reg_se_wait, &wait);
->>  
->> +		/*
->> +		 * Sequencer should either be idle or
->> +		 * busy applying the charge step.
->> +		 */
->>  		reg = tscadc_readl(tsadc, REG_ADCFSM);
->> -		WARN_ON(reg & SEQ_STATUS);
->> +		WARN_ON(reg & SEQ_STATUS & (!CHARGE_STEP));
->>  		tsadc->adc_waiting = false;
->>  	}
->>  	tsadc->adc_in_use = true;
->> @@ -96,7 +100,6 @@ static void am335x_tscadc_need_adc(struct ti_tscadc_dev *tsadc)
->>  void am335x_tsc_se_set_once(struct ti_tscadc_dev *tsadc, u32 val)
->>  {
->>  	spin_lock_irq(&tsadc->reg_lock);
->> -	tsadc->reg_se_cache |= val;
->>  	am335x_tscadc_need_adc(tsadc);
->>  
->>  	tscadc_writel(tsadc, REG_SE, val);
-> 
-> I believe all of these changes can, and therefor should live in a
-> separate patch.
+<snip>
 
-I will split this patch accordingly.
+> > +
+> > +/*
+> > + * VADC_CALIB_ABSOLUTE: uses the 625mV and 1.25V as reference channels.
+> > + * VADC_CALIB_RATIOMETRIC: uses the reference voltage (1.8V) and GND for
+> > + * calibration.
+> > + */
+> > +enum vadc_calibration {
+> > +       VADC_CALIB_ABSOLUTE = 0,
+> > +       VADC_CALIB_RATIOMETRIC
+> > +};
+> > +
+> > +/**
+> > + * struct vadc_linear_graph - Represent ADC characteristics.
+> > + * @dy: numerator slope to calculate the gain.
+> As dy is always equal to vref-gnd you could drop it and use those
+> directly...
+> 
+> Conversly you store vref or grnd and never use them...
+
+I am not sure I am following you. Please take a look in 
+vadc_measure_ref_points() and vadc_calibrate().
 
 > 
->> diff --git a/include/linux/mfd/ti_am335x_tscadc.h b/include/linux/mfd/ti_am335x_tscadc.h
->> index e2e70053470e..fcce182e4a35 100644
->> --- a/include/linux/mfd/ti_am335x_tscadc.h
->> +++ b/include/linux/mfd/ti_am335x_tscadc.h
->> @@ -52,6 +52,7 @@
->>  
->>  /* IRQ enable */
->>  #define IRQENB_HW_PEN		BIT(0)
->> +#define IRQENB_EOS		BIT(1)
->>  #define IRQENB_FIFO0THRES	BIT(2)
->>  #define IRQENB_FIFO0OVRRUN	BIT(3)
->>  #define IRQENB_FIFO0UNDRFLW	BIT(4)
->> @@ -107,7 +108,7 @@
->>  /* Charge delay */
->>  #define CHARGEDLY_OPEN_MASK	(0x3FFFF << 0)
->>  #define CHARGEDLY_OPEN(val)	((val) << 0)
->> -#define CHARGEDLY_OPENDLY	CHARGEDLY_OPEN(1)
->> +#define CHARGEDLY_OPENDLY	CHARGEDLY_OPEN(0xB000)
->>  
->>  /* Control register */
->>  #define CNTRLREG_TSCSSENB	BIT(0)
->> @@ -127,6 +128,7 @@
->>  
->>  /* Sequencer Status */
->>  #define SEQ_STATUS BIT(5)
->> +#define CHARGE_STEP		0x11
->>  
->>  #define ADC_CLK			3000000
->>  #define TOTAL_STEPS		16
-> 
-> The header changes should be split between the two Input and MFD
-> patches.
-> 
+> > + * @dx: denominator slope to calculate the gain.
+> > + * @vref: A/D word of the voltage reference used for the channel.
+> > + * @gnd: A/D word of the ground reference used for the channel.
+> > + *
+> > + * Each ADC device has different offset and gain parameters which are
+> > + * computed to calibrate the device.
+> > + */
+> > +struct vadc_linear_graph {
+> > +       s32 dy;
+> > +       s32 dx;
+> > +       s32 vref;
+> > +       s32 gnd;
+> > +};
+> > +
+> > 
+
+Will address blank line comment.
+
+Regards,
+Ivan
