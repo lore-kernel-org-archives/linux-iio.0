@@ -1,69 +1,49 @@
-Return-Path: <k.wrona@samsung.com>
-From: Karol Wrona <k.wrona@samsung.com>
-To: Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
- linux-iio@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>,
- linux-kernel@vger.kernel.org
-Cc: Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
- Kyungmin Park <kyungmin.park@samsung.com>,
- Antonio Borneo <borneo.antonio@gmail.com>, Karol Wrona <k.wrona@samsung.com>
-Subject: [PATCH v5 0/1] misc: st32fwu: Add stm32 upgrade protocol handling
-Date: Fri, 21 Nov 2014 19:17:27 +0100
-Message-id: <1416593848-19676-1-git-send-email-k.wrona@samsung.com>
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from relay4-d.mail.gandi.net ([217.70.183.196]:51894 "EHLO
+	relay4-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754771AbaKEPsA (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 5 Nov 2014 10:48:00 -0500
+Message-ID: <1415202439.7630.13.camel@hadess.net>
+Subject: Re: [PATCH v3] iio:kxcjk-1013: Add support for SMO8500 device
+From: Bastien Nocera <hadess@hadess.net>
+To: Daniel Baluta <daniel.baluta@intel.com>
+Cc: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
+	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Date: Wed, 05 Nov 2014 16:47:19 +0100
+In-Reply-To: <CAEnQRZDD40S7ScRsKmAHR_XsA-moAzyvYUqEyiT9ME6dDM9zfA@mail.gmail.com>
+References: <1415056822.4506.24.camel@hadess.net>
+	 <545A3671.2010102@kernel.org>
+	 <CAEnQRZDD40S7ScRsKmAHR_XsA-moAzyvYUqEyiT9ME6dDM9zfA@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Mime-Version: 1.0
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
+On Wed, 2014-11-05 at 17:22 +0200, Daniel Baluta wrote:
+> >> @@ -1397,6 +1404,7 @@ static const struct acpi_device_id
+> kx_acpi_match[] = {
+> >>       {"KXCJ1013", KXCJK1013},
+> >>       {"KXCJ1008", KXCJ91008},
+> >>       {"KXTJ1009", KXTJ21009},
+> >> +     {"SMO8500",  KXCJK1013},
+> 
+> Commit message says that your accel is KXCJ9, but here you use the
+> index
+> for KXCJK1013. Which one is true?
+> 
+> >>       { },
+> >>  };
+> >>  MODULE_DEVICE_TABLE(acpi, kx_acpi_match);
+> >> @@ -1405,6 +1413,7 @@ static const struct i2c_device_id
+> kxcjk1013_id[] = {
+> >>       {"kxcjk1013", KXCJK1013},
+> >>       {"kxcj91008", KXCJ91008},
+> >>       {"kxtj21009", KXTJ21009},
+> >> +     {"SMO8500",   KXCJK1013},
+> 
+> Ditto.
 
-Hello,
+Missed this. Will respin a patch after testing, though the differences
+in code between the 2 devices are very minimal it seems (only some PM
+functionality).
 
-This patch is needed by the sensorhub driver which uses STM32F4xx and Jonathan
-suggested to factor out these sources (mentioned in: 
-[RFC/PATCH 2/6] misc: sensorhub: Add sensorhub).
-
-I feel a bit ashamed because I know a bit STM32F4 controllers but I did not
-realize that it is generic ST protocol. It helped us a lot because this
-code really needed some refactoring.
-
-So this patch contains SPI protocol used in the STM32 bootloader and is based
-on AN4286. Generally it can be used to implement handling of other interfaces
-like UART or I2C because the flow is quite similar and maybe adding proper
-hw access callbacks will do all work.
-
-It supports:
-  - get info frame
-  - get version
-  - firmware write (write, read, write address, erase)
-
->From v4:
-  After some Antonio Borneo comments:
-    - ack is specific for Samsung (or ST bootcode v1.0)
-    - fixed read method
-    - spi sync function was renamed as it is SPI specific
-    - removed ACK2 define
-    - add iface fiels to stm32fwu_fw struct to maintain different protocol
-    versions
-
-TODO:
-  - erase command with sector mode
-  - command checking and disabling unimplemented ones
-  - spi wait for ack compatible with ST bootcode v1.1
-
-Karol Wrona (1):
-  misc: st32fwu: Add stm32 upgrade protocol handling
-
- drivers/misc/Kconfig               |    1 +
- drivers/misc/Makefile              |    1 +
- drivers/misc/stm32fwu/Kconfig      |    6 +
- drivers/misc/stm32fwu/Makefile     |    1 +
- drivers/misc/stm32fwu/stm32_core.c |  408 ++++++++++++++++++++++++++++++++++++
- drivers/misc/stm32fwu/stm32_core.h |   81 +++++++
- drivers/misc/stm32fwu/stm32_spi.c  |  117 +++++++++++
- include/linux/stm32fwu.h           |   53 +++++
- 8 files changed, 668 insertions(+)
- create mode 100644 drivers/misc/stm32fwu/Kconfig
- create mode 100644 drivers/misc/stm32fwu/Makefile
- create mode 100644 drivers/misc/stm32fwu/stm32_core.c
- create mode 100644 drivers/misc/stm32fwu/stm32_core.h
- create mode 100644 drivers/misc/stm32fwu/stm32_spi.c
- create mode 100644 include/linux/stm32fwu.h
-
--- 
-1.7.9.5
