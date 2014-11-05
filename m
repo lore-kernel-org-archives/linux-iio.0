@@ -1,93 +1,99 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:37372 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:42812 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753521AbaKHMQC (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 8 Nov 2014 07:16:02 -0500
-Message-ID: <545E0980.2080201@kernel.org>
-Date: Sat, 08 Nov 2014 12:16:00 +0000
+	with ESMTP id S1754743AbaKEOGW (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 5 Nov 2014 09:06:22 -0500
+Message-ID: <545A2EDB.5040801@kernel.org>
+Date: Wed, 05 Nov 2014 14:06:19 +0000
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
-	Gwendal Grignou <gwendal@chromium.org>
-CC: knaack.h@gmx.de, linux-iio@vger.kernel.org
-Subject: Re: [PATCH 3/3] iio: ak8975: add ak09911 and ak09912 support
-References: <CAMHSBOWmmCdd=5HXJN-vz9saaPrq3n0p-LjCNvnX3Q3ZieZdRQ@mail.gmail.com>	 <1415225452-21957-1-git-send-email-gwendal@chromium.org>	 <1415225452-21957-4-git-send-email-gwendal@chromium.org> <1415286329.7340.16.camel@spandruv-hsb-test>
-In-Reply-To: <1415286329.7340.16.camel@spandruv-hsb-test>
+To: "Ivan T. Ivanov" <iivanov@mm-sol.com>
+CC: Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Stanimir Varbanov <svarbanov@mm-sol.com>,
+	Angelo Compagnucci <angelo.compagnucci@gmail.com>,
+	Grant Likely <grant.likely@linaro.org>,
+	linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org, linux-arm-msm@vger.kernel.org
+Subject: Re: [PATCH v4 2/2] iio: vadc: Qualcomm SPMI PMIC voltage ADC driver
+References: <1415028270-25860-1-git-send-email-iivanov@mm-sol.com>	 <1415028270-25860-3-git-send-email-iivanov@mm-sol.com>	 <545A218F.5060301@kernel.org> <1415195855.3660.4.camel@mm-sol.com>
+In-Reply-To: <1415195855.3660.4.camel@mm-sol.com>
 Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 06/11/14 15:05, Srinivas Pandruvada wrote:
-> On Wed, 2014-11-05 at 14:10 -0800, Gwendal Grignou wrote:
->> Add 2 new definition entries to support ak0991x compass.
->> Add a more advanced function to check we are dealy with the
->> expected device.
-> This commit message doesn't state that you are removing ak09911 driver.
-> Although you added in cover letter, but that will not be present in the
-> history.
+On 05/11/14 13:57, Ivan T. Ivanov wrote:
 > 
+> On Wed, 2014-11-05 at 13:09 +0000, Jonathan Cameron wrote:
+>> On 03/11/14 15:24, Ivan T. Ivanov wrote:
+>>> From: Stanimir Varbanov <svarbanov@mm-sol.com>
+>>>
+>>> The voltage ADC is peripheral of Qualcomm SPMI PMIC chips. It has
+>>> 15 bits resolution and register space inside PMIC accessible across
+>>> SPMI bus.
+>>>
+>>> The vadc driver registers itself through IIO interface.
+>>>
+>>> Signed-off-by: Stanimir Varbanov <svarbanov@mm-sol.com>
+>>> Signed-off-by: Ivan T. Ivanov <iivanov@mm-sol.com>
+>> Hi Ivan,
 >>
->> Signed-off-by: Gwendal Grignou <gwendal@chromium.org>
->> ---
->>  drivers/iio/magnetometer/Kconfig   |  17 +-
->>  drivers/iio/magnetometer/Makefile  |   1 -
->>  drivers/iio/magnetometer/ak09911.c | 326 -------------------------------------
->>  drivers/iio/magnetometer/ak8975.c  | 197 ++++++++++++++++++++--
->>  4 files changed, 184 insertions(+), 357 deletions(-)
->>  delete mode 100644 drivers/iio/magnetometer/ak09911.c
+>> Couple of utterly tiny bits inline.  The biggest one is that
+>> you store some info about the calibration that you never actually
+>> use... Left over from some debugging perhaps?
 >>
->> diff --git a/drivers/iio/magnetometer/Kconfig b/drivers/iio/magnetometer/Kconfig
->> index b2dba9e..cd8750b 100644
->> --- a/drivers/iio/magnetometer/Kconfig
->> +++ b/drivers/iio/magnetometer/Kconfig
->> @@ -6,27 +6,16 @@
->>  menu "Magnetometer sensors"
->>  
->>  config AK8975
->> -	tristate "Asahi Kasei AK8975 3-Axis Magnetometer"
->> +	tristate "Asahi Kasei AK 3-Axis Magnetometer"
->>  	depends on I2C
->>  	depends on GPIOLIB
->>  	help
->> -	  Say yes here to build support for Asahi Kasei AK8975 3-Axis
->> -	  Magnetometer. This driver can also support AK8963, if i2c
->> -	  device name is identified as ak8963.
->> +	  Say yes here to build support for Asahi Kasei AK8975, AK8963,
->> +	  AK09911 or AK09912 3-Axis Magnetometer.
->>  
->>  	  To compile this driver as a module, choose M here: the module
->>  	  will be called ak8975.
->>  
->> -config AK09911
-> Instead
-> config AK09911
-> 	select AK8975
+>> Jonathan
 > 
-> I stated my reason below.
-Agreed.  This will reduce breakage and is common when merging drivers.
-
->> -	tristate "Asahi Kasei AK09911 3-axis Compass"
->> -	depends on I2C
->> -	help
->> -	  Say yes here to build support for Asahi Kasei AK09911 3-Axis
->> -	  Magnetometer.
->> -
->> -	  To compile this driver as a module, choose M here: the module
->> -	  will be called ak09911.
->> -
+> <snip>
+> 
+>>> +
+>>> +/*
+>>> + * VADC_CALIB_ABSOLUTE: uses the 625mV and 1.25V as reference channels.
+>>> + * VADC_CALIB_RATIOMETRIC: uses the reference voltage (1.8V) and GND for
+>>> + * calibration.
+>>> + */
+>>> +enum vadc_calibration {
+>>> +       VADC_CALIB_ABSOLUTE = 0,
+>>> +       VADC_CALIB_RATIOMETRIC
+>>> +};
+>>> +
+>>> +/**
+>>> + * struct vadc_linear_graph - Represent ADC characteristics.
+>>> + * @dy: numerator slope to calculate the gain.
+>> As dy is always equal to vref-gnd you could drop it and use those
+>> directly...
+>>
+>> Conversly you store vref or grnd and never use them...
+> 
+> I am not sure I am following you. Please take a look in 
+> vadc_measure_ref_points() and vadc_calibrate().
+Good point on grnd, but vref is set but never read anywhere that I can find..
 
 > 
-> I need to test this driver.
-> Jonathan,
-> If possible, wait for Tested by tag from me or someone else.
-Will do.
+>>
+>>> + * @dx: denominator slope to calculate the gain.
+>>> + * @vref: A/D word of the voltage reference used for the channel.
+>>> + * @gnd: A/D word of the ground reference used for the channel.
+>>> + *
+>>> + * Each ADC device has different offset and gain parameters which are
+>>> + * computed to calibrate the device.
+>>> + */
+>>> +struct vadc_linear_graph {
+>>> +       s32 dy;
+>>> +       s32 dx;
+>>> +       s32 vref;
+>>> +       s32 gnd;
+>>> +};
+>>> +
+>>>
 > 
-> Thanks,
-> Srinivas
+> Will address blank line comment.
 > 
+> Regards,
+> Ivan
 > --
 > To unsubscribe from this list: send the line "unsubscribe linux-iio" in
 > the body of a message to majordomo@vger.kernel.org
 > More majordomo info at  http://vger.kernel.org/majordomo-info.html
 > 
-
