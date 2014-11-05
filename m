@@ -1,47 +1,159 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pd0-f171.google.com ([209.85.192.171]:37891 "EHLO
-	mail-pd0-f171.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753395AbaKHRZw (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 8 Nov 2014 12:25:52 -0500
-From: Darshana Padmadas <darshanapadmadas@gmail.com>
-To: devicetree@vger.kernel.org
-Cc: devel@driverdev.osuosl.org, linux-arm-kernel@lists.infradead.org,
-	linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-	opw-kernel@googlegroups.com,
-	Darshana Padmadas <darshanapadmadas@gmail.com>
-Subject: [PATCH v5 2/4] dt-bindings: Document deprecated device vendor name to fix related warning
-Date: Sat,  8 Nov 2014 22:52:06 +0530
-Message-Id: <1415467328-9745-3-git-send-email-darshanapadmadas@gmail.com>
-In-Reply-To: <1415467328-9745-1-git-send-email-darshanapadmadas@gmail.com>
-References: <1415467328-9745-1-git-send-email-darshanapadmadas@gmail.com>
-Content-Type: text/plain; charset="utf-8"
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:43032 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751198AbaKEOos (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 5 Nov 2014 09:44:48 -0500
+Message-ID: <545A37DD.6070601@kernel.org>
+Date: Wed, 05 Nov 2014 14:44:45 +0000
+From: Jonathan Cameron <jic23@kernel.org>
+MIME-Version: 1.0
+To: Karol Wrona <k.wrona@samsung.com>,
+	Hartmut Knaack <knaack.h@gmx.de>, linux-iio@vger.kernel.org
+CC: Kyungmin Park <kyungmin.park@samsung.com>,
+	Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>
+Subject: Re: [PATCH 1/1] staging: iio: Add notrigger mode for generic_buffer
+References: <1415111379-23951-1-git-send-email-k.wrona@samsung.com> <1415111379-23951-2-git-send-email-k.wrona@samsung.com>
+In-Reply-To: <1415111379-23951-2-git-send-email-k.wrona@samsung.com>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-This patch documents deprecated vendor name "isil" to fix warning of
-undocumented string for device isl29028 as reported while running checkpatch.pl
-on drivers/staging/iio/light/isl29028.c. This is done to maintain compatibility
-with older kernels.
+On 04/11/14 14:29, Karol Wrona wrote:
+> Some IIO devices do not use the triggers. This patch makes trigger setting
+> conditional so generic_buffer can be used when triggers are disabled.
+>
+> Signed-off-by: Karol Wrona <k.wrona@samsung.com>
+Been meaning to add this for a while!  Thanks for doing it.
 
-Signed-off-by: Darshana Padmadas <darshanapadmadas@gmail.com>
-Acked-by: Arnd Bergmann <arnd@arndb.de>
-Acked-by: Mark Rutland <mark.rutland@arm.com>
----
- Documentation/devicetree/bindings/vendor-prefixes.txt | 1 +
- 1 file changed, 1 insertion(+)
+Applied to the togreg branch of iio.git - initially pushed out as testing.
 
-diff --git a/Documentation/devicetree/bindings/vendor-prefixes.txt b/Documentation/devicetree/bindings/vendor-prefixes.txt
-index ac7269f..ab97459 100644
---- a/Documentation/devicetree/bindings/vendor-prefixes.txt
-+++ b/Documentation/devicetree/bindings/vendor-prefixes.txt
-@@ -68,6 +68,7 @@ img	Imagination Technologies Ltd.
- intel	Intel Corporation
- intercontrol	Inter Control Group
- isee	ISEE 2007 S.L.
-+isil    Intersil (deprecated, use isl)
- isl	Intersil
- karo	Ka-Ro electronics GmbH
- keymile	Keymile GmbH
--- 
-1.9.1
+Thanks
 
+Jonathan
+> ---
+>  drivers/staging/iio/Documentation/generic_buffer.c |   77 ++++++++++++--------
+>  1 file changed, 45 insertions(+), 32 deletions(-)
+>
+> diff --git a/drivers/staging/iio/Documentation/generic_buffer.c b/drivers/staging/iio/Documentation/generic_buffer.c
+> index 31dfb21..de4647e 100644
+> --- a/drivers/staging/iio/Documentation/generic_buffer.c
+> +++ b/drivers/staging/iio/Documentation/generic_buffer.c
+> @@ -162,11 +162,12 @@ int main(int argc, char **argv)
+>  	char *buffer_access;
+>  	int scan_size;
+>  	int noevents = 0;
+> +	int notrigger = 0;
+>  	char *dummy;
+>
+>  	struct iio_channel_info *channels;
+>
+> -	while ((c = getopt(argc, argv, "l:w:c:et:n:")) != -1) {
+> +	while ((c = getopt(argc, argv, "l:w:c:et:n:g")) != -1) {
+>  		switch (c) {
+>  		case 'n':
+>  			device_name = optarg;
+> @@ -187,6 +188,9 @@ int main(int argc, char **argv)
+>  		case 'l':
+>  			buf_len = strtoul(optarg, &dummy, 10);
+>  			break;
+> +		case 'g':
+> +			notrigger = 1;
+> +			break;
+>  		case '?':
+>  			return -1;
+>  		}
+> @@ -205,28 +209,32 @@ int main(int argc, char **argv)
+>  	printf("iio device number being used is %d\n", dev_num);
+>
+>  	asprintf(&dev_dir_name, "%siio:device%d", iio_dir, dev_num);
+> -	if (trigger_name == NULL) {
+> -		/*
+> -		 * Build the trigger name. If it is device associated its
+> -		 * name is <device_name>_dev[n] where n matches the device
+> -		 * number found above
+> -		 */
+> -		ret = asprintf(&trigger_name,
+> -			       "%s-dev%d", device_name, dev_num);
+> -		if (ret < 0) {
+> -			ret = -ENOMEM;
+> -			goto error_ret;
+> +
+> +	if (!notrigger) {
+> +		if (trigger_name == NULL) {
+> +			/*
+> +			 * Build the trigger name. If it is device associated
+> +			 * its name is <device_name>_dev[n] where n matches
+> +			 * the device number found above.
+> +			 */
+> +			ret = asprintf(&trigger_name,
+> +				       "%s-dev%d", device_name, dev_num);
+> +			if (ret < 0) {
+> +				ret = -ENOMEM;
+> +				goto error_ret;
+> +			}
+>  		}
+> -	}
+>
+> -	/* Verify the trigger exists */
+> -	trig_num = find_type_by_name(trigger_name, "trigger");
+> -	if (trig_num < 0) {
+> -		printf("Failed to find the trigger %s\n", trigger_name);
+> -		ret = -ENODEV;
+> -		goto error_free_triggername;
+> -	}
+> -	printf("iio trigger number being used is %d\n", trig_num);
+> +		/* Verify the trigger exists */
+> +		trig_num = find_type_by_name(trigger_name, "trigger");
+> +		if (trig_num < 0) {
+> +			printf("Failed to find the trigger %s\n", trigger_name);
+> +			ret = -ENODEV;
+> +			goto error_free_triggername;
+> +		}
+> +		printf("iio trigger number being used is %d\n", trig_num);
+> +	} else
+> +		printf("trigger-less mode selected\n");
+>
+>  	/*
+>  	 * Parse the files in scan_elements to identify what channels are
+> @@ -250,14 +258,18 @@ int main(int argc, char **argv)
+>  		ret = -ENOMEM;
+>  		goto error_free_triggername;
+>  	}
+> -	printf("%s %s\n", dev_dir_name, trigger_name);
+> -	/* Set the device trigger to be the data ready trigger found above */
+> -	ret = write_sysfs_string_and_verify("trigger/current_trigger",
+> -					dev_dir_name,
+> -					trigger_name);
+> -	if (ret < 0) {
+> -		printf("Failed to write current_trigger file\n");
+> -		goto error_free_buf_dir_name;
+> +
+> +	if (!notrigger) {
+> +		printf("%s %s\n", dev_dir_name, trigger_name);
+> +		/* Set the device trigger to be the data ready trigger found
+> +		 * above */
+> +		ret = write_sysfs_string_and_verify("trigger/current_trigger",
+> +						    dev_dir_name,
+> +						    trigger_name);
+> +		if (ret < 0) {
+> +			printf("Failed to write current_trigger file\n");
+> +			goto error_free_buf_dir_name;
+> +		}
+>  	}
+>
+>  	/* Setup ring buffer parameters */
+> @@ -327,9 +339,10 @@ int main(int argc, char **argv)
+>  	if (ret < 0)
+>  		goto error_close_buffer_access;
+>
+> -	/* Disconnect the trigger - just write a dummy name. */
+> -	write_sysfs_string("trigger/current_trigger",
+> -			dev_dir_name, "NULL");
+> +	if (!notrigger)
+> +		/* Disconnect the trigger - just write a dummy name. */
+> +		write_sysfs_string("trigger/current_trigger",
+> +				   dev_dir_name, "NULL");
+>
+>  error_close_buffer_access:
+>  	close(fp);
+>
