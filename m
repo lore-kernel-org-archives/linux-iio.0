@@ -1,100 +1,119 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from devils.ext.ti.com ([198.47.26.153]:54627 "EHLO
-	devils.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752021AbaKGFvS (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 7 Nov 2014 00:51:18 -0500
-From: Vignesh R <vigneshr@ti.com>
-To: Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>,
-	Mark Rutland <mark.rutland@arm.com>,
-	Ian Campbell <ijc+devicetree@hellion.org.uk>,
-	Kumar Gala <galak@codeaurora.org>,
-	Benoit Cousson <bcousson@baylibre.com>,
-	Tony Lindgren <tony@atomide.com>,
-	Russell King <linux@arm.linux.org.uk>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-	Lee Jones <lee.jones@linaro.org>,
-	Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-CC: Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	Samuel Ortiz <sameo@linux.intel.com>,
-	Felipe Balbi <balbi@ti.com>, Vignesh R <vigneshr@ti.com>,
-	Brad Griffis <bgriffis@ti.com>,
-	Sanjeev Sharma <sanjeev_sharma@mentor.com>,
-	Paul Gortmaker <paul.gortmaker@windriver.com>,
-	Jan Kardell <jan.kardell@telliq.com>,
-	<devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-	<linux-omap@vger.kernel.org>,
-	<linux-arm-kernel@lists.infradead.org>,
-	<linux-iio@vger.kernel.org>, <linux-input@vger.kernel.org>
-Subject: [PATCH 4/5] ARM: dts: AM335x: Make charge delay a DT parameter for tsc
-Date: Fri, 7 Nov 2014 11:19:09 +0530
-Message-ID: <1415339350-17679-5-git-send-email-vigneshr@ti.com>
-In-Reply-To: <1415339350-17679-1-git-send-email-vigneshr@ti.com>
-References: <1415339350-17679-1-git-send-email-vigneshr@ti.com>
-MIME-Version: 1.0
-Content-Type: text/plain
+Received: from mail-qc0-f201.google.com ([209.85.216.201]:46042 "EHLO
+	mail-qc0-f201.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752083AbaKEWK6 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 5 Nov 2014 17:10:58 -0500
+Received: by mail-qc0-f201.google.com with SMTP id l6so132591qcy.2
+        for <linux-iio@vger.kernel.org>; Wed, 05 Nov 2014 14:10:58 -0800 (PST)
+From: Gwendal Grignou <gwendal@chromium.org>
+To: srinivas.pandruvada@linux.intel.com, jic23@kernel.org,
+	knaack.h@gmx.de
+Cc: linux-iio@vger.kernel.org, Gwendal Grignou <gwendal@chromium.org>
+Subject: [PATCH 1/3] iio: ak8975: minor fixes
+Date: Wed,  5 Nov 2014 14:10:50 -0800
+Message-Id: <1415225452-21957-2-git-send-email-gwendal@chromium.org>
+In-Reply-To: <1415225452-21957-1-git-send-email-gwendal@chromium.org>
+References: <CAMHSBOWmmCdd=5HXJN-vz9saaPrq3n0p-LjCNvnX3Q3ZieZdRQ@mail.gmail.com>
+ <1415225452-21957-1-git-send-email-gwendal@chromium.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-The charge delay value is by default 0xB000. But it can be set to lower
-values on some boards as long as false pen-ups are avoided. Lowering the
-value increases the sampling rate (though current sampling rate is
-sufficient for tsc operation). Hence charge delay has been made a DT
-parameter.
+Fixes code duplication, return of function.
 
-Signed-off-by: Vignesh R <vigneshr@ti.com>
+Signed-off-by: Gwendal Grignou <gwendal@chromium.org>
 ---
- .../devicetree/bindings/input/touchscreen/ti-tsc-adc.txt  | 15 +++++++++++++++
- arch/arm/boot/dts/am335x-evm.dts                          |  1 +
- 2 files changed, 16 insertions(+)
+ drivers/iio/magnetometer/ak8975.c | 33 +++++++++++++--------------------
+ 1 file changed, 13 insertions(+), 20 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/input/touchscreen/ti-tsc-adc.txt b/Documentation/devicetree/bindings/input/touchscreen/ti-tsc-adc.txt
-index 878549ba814d..b87574bae009 100644
---- a/Documentation/devicetree/bindings/input/touchscreen/ti-tsc-adc.txt
-+++ b/Documentation/devicetree/bindings/input/touchscreen/ti-tsc-adc.txt
-@@ -28,6 +28,20 @@ Required properties:
- 	ti,adc-channels: List of analog inputs available for ADC.
- 			 AIN0 = 0, AIN1 = 1 and so on till AIN7 = 7.
+diff --git a/drivers/iio/magnetometer/ak8975.c b/drivers/iio/magnetometer/ak8975.c
+index bf5ef07..12f0b00 100644
+--- a/drivers/iio/magnetometer/ak8975.c
++++ b/drivers/iio/magnetometer/ak8975.c
+@@ -64,10 +64,10 @@
+ #define AK8975_REG_CNTL			0x0A
+ #define AK8975_REG_CNTL_MODE_SHIFT	0
+ #define AK8975_REG_CNTL_MODE_MASK	(0xF << AK8975_REG_CNTL_MODE_SHIFT)
+-#define AK8975_REG_CNTL_MODE_POWER_DOWN	0
+-#define AK8975_REG_CNTL_MODE_ONCE	1
+-#define AK8975_REG_CNTL_MODE_SELF_TEST	8
+-#define AK8975_REG_CNTL_MODE_FUSE_ROM	0xF
++#define AK8975_REG_CNTL_MODE_POWER_DOWN	0x00
++#define AK8975_REG_CNTL_MODE_ONCE	0x01
++#define AK8975_REG_CNTL_MODE_SELF_TEST	0x08
++#define AK8975_REG_CNTL_MODE_FUSE_ROM	0x0F
  
-+Optional properties:
-+- child "tsc"
-+	ti,charge-delay: Length of touch screen charge delay step in terms of
-+			 ADC clock cycles. Charge delay value should be large
-+			 in order to avoid false pen-up events. This value
-+			 affects the overall sampling speed, hence need to be
-+			 kept as low as possible, while avoiding false pen-up
-+			 event. Start from a lower value, say 0x400, and
-+			 increase value until false pen-up events are avoided.
-+			 The pen-up detection happens immediately after the
-+			 charge step, so this does in fact function as a
-+			 hardware knob for adjusting the amount of "settling
-+			 time".
-+
- Example:
- 	tscadc: tscadc@44e0d000 {
- 		compatible = "ti,am3359-tscadc";
-@@ -36,6 +50,7 @@ Example:
- 			ti,x-plate-resistance = <200>;
- 			ti,coordiante-readouts = <5>;
- 			ti,wire-config = <0x00 0x11 0x22 0x33>;
-+			ti,charge-delay = <0xB000>;
- 		};
+ #define AK8975_REG_RSVC			0x0B
+ #define AK8975_REG_ASTC			0x0C
+@@ -166,8 +166,8 @@ static int ak8975_setup_irq(struct ak8975_data *data)
+ 		irq = gpio_to_irq(data->eoc_gpio);
  
- 		adc {
-diff --git a/arch/arm/boot/dts/am335x-evm.dts b/arch/arm/boot/dts/am335x-evm.dts
-index e2156a583de7..80be0462298b 100644
---- a/arch/arm/boot/dts/am335x-evm.dts
-+++ b/arch/arm/boot/dts/am335x-evm.dts
-@@ -641,6 +641,7 @@
- 		ti,x-plate-resistance = <200>;
- 		ti,coordinate-readouts = <5>;
- 		ti,wire-config = <0x00 0x11 0x22 0x33>;
-+		ti,charge-delay = <0xB000>;
- 	};
+ 	rc = devm_request_irq(&client->dev, irq, ak8975_irq_handler,
+-			 IRQF_TRIGGER_RISING | IRQF_ONESHOT,
+-			 dev_name(&client->dev), data);
++			      IRQF_TRIGGER_RISING | IRQF_ONESHOT,
++			      dev_name(&client->dev), data);
+ 	if (rc < 0) {
+ 		dev_err(&client->dev,
+ 			"irq %d request failed, (gpio %d): %d\n",
+@@ -231,6 +231,10 @@ static int ak8975_setup(struct i2c_client *client)
+ 				AK8975_REG_CNTL_MODE_POWER_DOWN,
+ 				AK8975_REG_CNTL_MODE_MASK,
+ 				AK8975_REG_CNTL_MODE_SHIFT);
++	if (ret < 0) {
++		dev_err(&client->dev, "Error in setting power-down mode\n");
++		return ret;
++	}
  
- 	adc {
+ 	if (data->eoc_gpio > 0 || client->irq) {
+ 		ret = ak8975_setup_irq(data);
+@@ -241,11 +245,6 @@ static int ak8975_setup(struct i2c_client *client)
+ 		}
+ 	}
+ 
+-	if (ret < 0) {
+-		dev_err(&client->dev, "Error in setting power-down mode\n");
+-		return ret;
+-	}
+-
+ /*
+  * Precalculate scale factor (in Gauss units) for each axis and
+  * store in the device data.
+@@ -550,24 +549,18 @@ static int ak8975_probe(struct i2c_client *client,
+ 	/* Perform some basic start-of-day setup of the device. */
+ 	err = ak8975_setup(client);
+ 	if (err < 0) {
+-		dev_err(&client->dev, "AK8975 initialization fails\n");
++		dev_err(&client->dev, "%s initialization fails\n", name);
+ 		return err;
+ 	}
+ 
+-	data->client = client;
+ 	mutex_init(&data->lock);
+-	data->eoc_gpio = eoc_gpio;
+ 	indio_dev->dev.parent = &client->dev;
+ 	indio_dev->channels = ak8975_channels;
+ 	indio_dev->num_channels = ARRAY_SIZE(ak8975_channels);
+ 	indio_dev->info = &ak8975_info;
+ 	indio_dev->modes = INDIO_DIRECT_MODE;
+ 	indio_dev->name = name;
+-	err = devm_iio_device_register(&client->dev, indio_dev);
+-	if (err < 0)
+-		return err;
+-
+-	return 0;
++	return devm_iio_device_register(&client->dev, indio_dev);
+ }
+ 
+ static const struct i2c_device_id ak8975_id[] = {
+@@ -588,7 +581,7 @@ MODULE_DEVICE_TABLE(of, ak8975_of_match);
+ static struct i2c_driver ak8975_driver = {
+ 	.driver = {
+ 		.name	= "ak8975",
+-		.of_match_table = ak8975_of_match,
++		.of_match_table = of_match_ptr(ak8975_of_match),
+ 		.acpi_match_table = ACPI_PTR(ak_acpi_match),
+ 	},
+ 	.probe		= ak8975_probe,
 -- 
-1.9.1
+2.1.0.rc2.206.gedb03e5
 
