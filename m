@@ -1,41 +1,131 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mout.gmx.net ([212.227.15.19]:58144 "EHLO mout.gmx.net"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751858AbaKDVm1 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Tue, 4 Nov 2014 16:42:27 -0500
-Message-ID: <54594840.3050302@gmx.de>
-Date: Tue, 04 Nov 2014 22:42:24 +0100
-From: Hartmut Knaack <knaack.h@gmx.de>
+Return-Path: <vigneshr@ti.com>
+Message-ID: <545A1343.4060002@ti.com>
+Date: Wed, 5 Nov 2014 17:38:35 +0530
+From: Vignesh R <vigneshr@ti.com>
 MIME-Version: 1.0
-To: George McCollister <george.mccollister@gmail.com>,
-	mranostay@gmail.com
-CC: linux-iio@vger.kernel.org
-Subject: Re: [PATCH 1/2] iio: as3935: allocate correct iio_device size
-References: <1414770263-13146-1-git-send-email-george.mccollister@gmail.com>
-In-Reply-To: <1414770263-13146-1-git-send-email-george.mccollister@gmail.com>
-Content-Type: text/plain; charset=ISO-8859-15
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+To: Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        "Griffis, Brad"
+	<bgriffis@ti.com>, Rob Herring <robh+dt@kernel.org>,
+        Pawel Moll
+	<pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>,
+        Ian Campbell
+	<ijc+devicetree@hellion.org.uk>,
+        Kumar Gala <galak@codeaurora.org>,
+        Benoit
+ Cousson <bcousson@baylibre.com>,
+        Tony Lindgren <tony@atomide.com>,
+        Russell
+ King <linux@arm.linux.org.uk>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Dmitry
+ Torokhov <dmitry.torokhov@gmail.com>
+CC: Hartmut Knaack <knaack.h@gmx.de>, Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald <pmeerw@pmeerw.net>,
+        Samuel Ortiz <sameo@linux.intel.com>,
+        Lee
+ Jones <lee.jones@linaro.org>, "Balbi, Felipe" <balbi@ti.com>,
+        Jan Kardell
+	<jan.kardell@telliq.com>,
+        Paul Gortmaker <paul.gortmaker@windriver.com>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-omap@vger.kernel.org" <linux-omap@vger.kernel.org>,
+        "linux-arm-kernel@lists.infradead.org"
+	<linux-arm-kernel@lists.infradead.org>,
+        "linux-iio@vger.kernel.org"
+	<linux-iio@vger.kernel.org>,
+        "linux-input@vger.kernel.org"
+	<linux-input@vger.kernel.org>
+Subject: Re: [PATCH 0/4] Touchscreen performance related fixes
+References: <1414408111-2631-1-git-send-email-vigneshr@ti.com> <544E821D.5040004@linutronix.de> <912A29987EAE174BA6CF187D7CDFA9CE26F46B2B@DLEE08.ent.ti.com> <54577258.9080508@linutronix.de> <5458BC0B.1040803@ti.com> <5458C87F.80409@linutronix.de>
+In-Reply-To: <5458C87F.80409@linutronix.de>
+Content-Type: text/plain; charset="windows-1252"
+List-ID: <linux-iio@vger.kernel.org>
 
-George McCollister schrieb am 31.10.2014 16:44:
-> Signed-off-by: George McCollister <george.mccollister@gmail.com>
-Acked-by: Hartmut Knaack <knaack.h@gmx.de>
-> ---
->  drivers/iio/proximity/as3935.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+
+
+On Tuesday 04 November 2014 06:07 PM, Sebastian Andrzej Siewior wrote:
+> On 11/04/2014 12:44 PM, Vignesh R wrote:
 > 
-> diff --git a/drivers/iio/proximity/as3935.c b/drivers/iio/proximity/as3935.c
-> index 5e780ef..8349cc0 100644
-> --- a/drivers/iio/proximity/as3935.c
-> +++ b/drivers/iio/proximity/as3935.c
-> @@ -330,7 +330,7 @@ static int as3935_probe(struct spi_device *spi)
->  		return -EINVAL;
->  	}
->  
-> -	indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(st));
-> +	indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*st));
->  	if (!indio_dev)
->  		return -ENOMEM;
->  
+>> I ran following commands
+>> $ evtest /dev/input/touchscreen0 &
+>> (with heavy item on touchscreen)
+>>  and
+>> $ cat /sys/bus/iio/devices/iio\:device0/scan_elements/in_voltage4_en
+>> (in a busy loop)
+>> I tried above experiment on my board but I didn't hit any problem even
+>> after running for close to 30 minutes. I was unable to reproduce failure
+> 
+> Just to make sure: You had the touchscreen and iio command running in
+> parallel and you saw evtest output while there was iio operation?
 > 
 
+Yeah.. I see both evtest and IIO outputs. Touch events are received
+consistently (decent samples per second) and atleast one IIO output per
+second.
+Here is a part from console log
+---------------------------
+928
+Event: time 1413204484.240114, type 3 (Absolute), code 0 (X), value 1746
+Event: time 1413204484.240114, type 3 (Absolute), code 1 (Y), value 1720
+Event: time 1413204484.240114, type 3 (Absolute), code 24 (Pressure),
+value 99
+Event: time 1413204484.240114, -------------- Report Sync ------------
+Event: time 1413204484.255318, type 1 (Key), code 330 (Touch), value 0
+Event: time 1413204484.255318, type 3 (Absolute), code 24 (Pressure),
+value 0
+Event: time 1413204484.255318, -------------- Report Sync ------------
+933
+Event: time 1413204484.273599, type 3 (Absolute), code 1 (Y), value 1718
+Event: time 1413204484.273599, type 3 (Absolute), code 24 (Pressure),
+value 99
+Event: time 1413204484.273599, type 1 (Key), code 330 (Touch), value 1
+Event: time 1413204484.273599, -------------- Report Sync ------------
+Event: time 1413204484.290195, type 3 (Absolute), code 24 (Pressure),
+value 98
+Event: time 1413204484.290195, -------------- Report Sync ------------
+Event: time 1413204484.306783, type 3 (Absolute), code 1 (Y), value 1719
+Event: time 1413204484.306783, -------------- Report Sync ------------
+946
+Event: time 1413204484.322164, type 1 (Key), code 330 (Touch), value 0
+Event: time 1413204484.322164, type 3 (Absolute), code 24 (Pressure),
+value 0
+Event: time 1413204484.322164, -------------- Report Sync ------------
+Event: time 1413204484.340435, type 3 (Absolute), code 1 (Y), value 1721
+Event: time 1413204484.340435, type 3 (Absolute), code 24 (Pressure),
+value 98
+Event: time 1413204484.340435, type 1 (Key), code 330 (Touch), value 1
+Event: time 1413204484.340435, -------------- Report Sync ------------
+Event: time 1413204484.357025, type 3 (Absolute), code 0 (X), value 1745
+Event: time 1413204484.357025, type 3 (Absolute), code 24 (Pressure),
+value 97
+Event: time 1413204484.357025, -------------- Report Sync ------------
+Event: time 1413204484.373621, type 3 (Absolute), code 0 (X), value 1746
+Event: time 1413204484.373621, type 3 (Absolute), code 1 (Y), value 1720
+Event: time 1413204484.373621, -------------- Report Sync ------------
+942
+
+---------------------------
+The numbers 928, 933 etc are from oneshot ADC read. The above output is
+pretty consistent over time.
+
+>> The problem may be in configuring correct charge-delay value. Please run:
+>> $ ts_test > /dev/null
+>> and let me know if pen events are being detected properly.
+> 
+> Well I get the touch events but not while busy loop on iio interface is
+> running (I get maybe one event every 5 seconds or so).
+> After all, it is the same HW you have.
+
+Yeah.. I believe HW is same. I am using rev 1.5B with
+omap2plus_defconfig (+ TSC/ADC enabled)
+
+Regards
+Vignesh
+> 
+> Sebastian
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-omap" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> 
