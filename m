@@ -1,46 +1,30 @@
-Return-Path: <jpl@haddock.xiphos.ca>
-From: Joshua Lamorie <joshua.lamorie@xiphos.com>
-To: jic23@kernel.org
-Cc: michal.simek@xilinx.com, lars@metafoo.de, linux-iio@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        soren.brinkmann@xilinx.com, Joshua Lamorie <joshua.lamorie@xiphos.com>
-Subject: [PATCH] iio:xilinx-xadc:xadc_read_raw INFO_OFFSET
-Date: Fri,  7 Nov 2014 14:11:56 -0500
-Message-Id: <1415387516-15051-1-git-send-email-joshua.lamorie@xiphos.com>
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail.linuxfoundation.org ([140.211.169.12]:34442 "EHLO
+	mail.linuxfoundation.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751340AbaKETjV (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 5 Nov 2014 14:39:21 -0500
+Date: Wed, 5 Nov 2014 11:39:21 -0800
+From: Greg KH <gregkh@linuxfoundation.org>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Subject: Re: [PULL] IIO fixes for 3.18 set 2 (resend)
+Message-ID: <20141105193921.GA6948@kroah.com>
+References: <545A717C.1070207@kernel.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <545A717C.1070207@kernel.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Added a condition for a read of IIO_CHAN_INFO_OFFSET to
-ensure that an offset is only provided for requests for XADC temperature. The
-previous assumption was that only requests for temperature would include a
-read of CHAN_INFO_OFFSET. However there is no way to restrict this in calling
-functions, such as iio_convert_raw_to_processed_unlocked() which is called when
-using the XADC as a device for iio_hwmon.
+On Wed, Nov 05, 2014 at 06:50:36PM +0000, Jonathan Cameron wrote:
+> The following changes since commit 4748119f1889b4ce96c84831ad0581598081b46f:
+> 
+>   iio: adc: mxs-lradc: Disable the clock on probe failure (2014-11-05 18:33:44 +0000)
+> 
+> are available in the git repository at:
+> 
+>   git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git tags/iio-fixes-for-3.18b
 
-Signed-off-by: Joshua Lamorie <joshua.lamorie@xiphos.com>
----
- drivers/iio/adc/xilinx-xadc-core.c | 10 +++++++---
- 1 file changed, 7 insertions(+), 3 deletions(-)
+Pulled and pushed out, thanks.
 
-diff --git a/drivers/iio/adc/xilinx-xadc-core.c b/drivers/iio/adc/xilinx-xadc-core.c
-index 23c152e..2c549ab 100644
---- a/drivers/iio/adc/xilinx-xadc-core.c
-+++ b/drivers/iio/adc/xilinx-xadc-core.c
-@@ -877,9 +877,13 @@ static int xadc_read_raw(struct iio_dev *indio_dev,
- 			return -EINVAL;
- 		}
- 	case IIO_CHAN_INFO_OFFSET:
--		/* Only the temperature channel has an offset */
--		*val = -((273150 << 12) / 503975);
--		return IIO_VAL_INT;
-+		if (chan->type == IIO_TEMP) {
-+			/* Only the temperature channel has an offset */
-+			*val = -((273150 << 12) / 503975);
-+			return IIO_VAL_INT;
-+		} else {
-+			return -EINVAL;
-+		}
- 	case IIO_CHAN_INFO_SAMP_FREQ:
- 		ret = xadc_read_adc_reg(xadc, XADC_REG_CONF2, &val16);
- 		if (ret)
--- 
-1.8.3.1
+greg k-h
