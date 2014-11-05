@@ -1,508 +1,658 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mailapp01.imgtec.com ([195.59.15.196]:55924 "EHLO
-	mailapp01.imgtec.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751999AbaKEV6t (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 5 Nov 2014 16:58:49 -0500
-From: Ezequiel Garcia <ezequiel.garcia@imgtec.com>
-To: Jonathan Cameron <jic23@kernel.org>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Andrew Bresticker <abrestic@chromium.org>,
-	James Hartley <james.hartley@imgtec.com>,
-	Phani Movva <phani.movva@imgtec.com>
-CC: <linux-iio@vger.kernel.org>, <pmeerw@pmeerw.net>,
-	<knaack.h@gmx.de>, <devicetree@vger.kernel.org>,
-	Phani Movva <Phani.Movva@imgtec.com>,
-	"Naidu Tellapati" <Naidu.Tellapati@imgtec.com>,
-	Ezequiel Garcia <ezequiel.garcia@imgtec.com>
-Subject: [PATCH v2 1/3] iio: adc: Cosmic Circuits 10001 ADC driver
-Date: Wed, 5 Nov 2014 18:56:49 -0300
-Message-ID: <1415224611-22096-2-git-send-email-ezequiel.garcia@imgtec.com>
-In-Reply-To: <1415224611-22096-1-git-send-email-ezequiel.garcia@imgtec.com>
-References: <1415224611-22096-1-git-send-email-ezequiel.garcia@imgtec.com>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:43603 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755127AbaKEQLI (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 5 Nov 2014 11:11:08 -0500
+Message-ID: <545A4C14.4010807@kernel.org>
+Date: Wed, 05 Nov 2014 16:11:00 +0000
+From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain
+To: sathyanarayanan.kuppuswamy@linux.intel.com,
+	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+CC: Hartmut Knaack <knaack.h@gmx.de>, pmeerw@pmeerw.net,
+	linux-iio@vger.kernel.org
+Subject: Re: [PATCH v7 1/1] iio: jsa1212: Add JSA1212 proximity/ALS sensor
+References: <cover.1410839445.git.sathyanarayanan.kuppuswamy@linux.intel.com>	 <57863472cd3b76c4b36ca99404e34ba03af4857d.1410839445.git.sathyanarayanan.kuppuswamy@linux.intel.com>	 <5419F3B5.50803@gmx.de> <5419F614.6040805@linux.intel.com>	 <541EC9F3.6080505@kernel.org> <5429D687.6020001@linux.intel.com>	 <5434486D.2070607@linux.intel.com> <5436E15B.3030402@kernel.org> <1413039420.3745.10.camel@spandruv-hsb-test> <543D5188.7070409@linux.intel.com> <543D5FA8.5070807@kernel.org>
+In-Reply-To: <543D5FA8.5070807@kernel.org>
+Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-From: Phani Movva <Phani.Movva@imgtec.com>
+Hi all,
 
-This commit adds support for Cosmic Circuits 10001 10-bit ADC device.
+I'm a bit embarrassed.
 
-Signed-off-by: Phani Movva <Phani.Movva@imgtec.com>
-Signed-off-by: Naidu Tellapati <Naidu.Tellapati@imgtec.com>
-[Ezequiel: code style cleaning]
-Signed-off-by: Ezequiel Garcia <ezequiel.garcia@imgtec.com>
----
- drivers/iio/adc/Kconfig        |  10 +
- drivers/iio/adc/Makefile       |   1 +
- drivers/iio/adc/cc_10001_adc.c | 425 +++++++++++++++++++++++++++++++++++++++++
- 3 files changed, 436 insertions(+)
- create mode 100644 drivers/iio/adc/cc_10001_adc.c
+I can't remember at all where we were with this driver!
+Is everyone happy with it in it's current form or do
+people feel there are changes outstanding?
 
-diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
-index 88bdc8f..b1f3ecc 100644
---- a/drivers/iio/adc/Kconfig
-+++ b/drivers/iio/adc/Kconfig
-@@ -127,6 +127,16 @@ config AT91_ADC
- 	help
- 	  Say yes here to build support for Atmel AT91 ADC.
- 
-+config CC_10001_ADC
-+	tristate "Cosmic Circuits 10001 ADC driver"
-+	select IIO_BUFFER
-+	select IIO_TRIGGERED_BUFFER
-+	help
-+	  Say yes here to build support for Cosmic Circuits 10001 ADC.
-+
-+	  This driver can also be built as a module. If so, the module will be
-+	  called cc_10001_adc.
-+
- config EXYNOS_ADC
- 	tristate "Exynos ADC driver support"
- 	depends on ARCH_EXYNOS || ARCH_S3C24XX || ARCH_S3C64XX || (OF && COMPILE_TEST)
-diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
-index cb88a6a..f4d522d 100644
---- a/drivers/iio/adc/Makefile
-+++ b/drivers/iio/adc/Makefile
-@@ -14,6 +14,7 @@ obj-$(CONFIG_AD7793) += ad7793.o
- obj-$(CONFIG_AD7887) += ad7887.o
- obj-$(CONFIG_AD799X) += ad799x.o
- obj-$(CONFIG_AT91_ADC) += at91_adc.o
-+obj-$(CONFIG_CC_10001_ADC) += cc_10001_adc.o
- obj-$(CONFIG_EXYNOS_ADC) += exynos_adc.o
- obj-$(CONFIG_LP8788_ADC) += lp8788_adc.o
- obj-$(CONFIG_MAX1027) += max1027.o
-diff --git a/drivers/iio/adc/cc_10001_adc.c b/drivers/iio/adc/cc_10001_adc.c
-new file mode 100644
-index 0000000..1720a62
---- /dev/null
-+++ b/drivers/iio/adc/cc_10001_adc.c
-@@ -0,0 +1,425 @@
-+/*
-+ * Copyright (c) 2014 Imagination Technologies Ltd.
-+ *
-+ * This program is free software; you can redistribute it and/or modify it
-+ * under the terms of the GNU General Public License version 2 as published by
-+ * the Free Software Foundation.
-+ *
-+ */
-+
-+#include <linux/clk.h>
-+#include <linux/delay.h>
-+#include <linux/err.h>
-+#include <linux/kernel.h>
-+#include <linux/module.h>
-+#include <linux/of.h>
-+#include <linux/of_device.h>
-+#include <linux/platform_device.h>
-+#include <linux/regulator/consumer.h>
-+#include <linux/slab.h>
-+
-+#include <linux/iio/buffer.h>
-+#include <linux/iio/iio.h>
-+#include <linux/iio/sysfs.h>
-+#include <linux/iio/trigger.h>
-+#include <linux/iio/trigger_consumer.h>
-+#include <linux/iio/triggered_buffer.h>
-+
-+/* Registers */
-+#define CC10001_ADC_CONFIG		0x00
-+#define CC10001_ADC_START_CONV		BIT(4)
-+#define CC10001_ADC_MODE_SINGLE_CONV	BIT(5)
-+
-+#define CC10001_ADC_DDATA_OUT		0x04
-+#define CC10001_ADC_EOC			0x08
-+#define CC10001_ADC_EOC_SET		BIT(0)
-+
-+#define CC10001_ADC_CHSEL_SAMPLED	0x0c
-+#define CC10001_ADC_POWER_UP		0x10
-+#define CC10001_ADC_POWER_UP_SET	BIT(0)
-+#define CC10001_ADC_DEBUG		0x14
-+#define CC10001_ADC_DATA_COUNT		0x20
-+
-+#define CC10001_ADC_DATA_MASK		GENMASK(9, 0)
-+#define CC10001_ADC_NUM_CHANNELS	8
-+#define CC10001_ADC_CH_MASK		(CC10001_ADC_NUM_CHANNELS - 1)
-+
-+#define CC10001_INVALID_SAMPLED_OUTPUT	0xFFFF
-+#define CC10001_MAX_POLL_COUNT		20
-+
-+/*
-+ * As per device specification, wait six clock cycles after power-up to
-+ * activate START. Since adding two more clock cycles delay does not
-+ * impact the performance too much, we are adding two additional cycles delay
-+ * intentionally here.
-+ */
-+#define	CC10001_WAIT_CYCLES		8
-+
-+struct cc10001_adc_device {
-+	void __iomem *reg_base;
-+	struct iio_dev *indio_dev;
-+	struct clk *adc_clk;
-+	struct regulator *reg;
-+	u16 *buf;
-+
-+	struct mutex lock;
-+	unsigned long channel_map;
-+	unsigned int start_delay_ns;
-+	unsigned int eoc_delay_ns;
-+};
-+
-+static inline void cc_adc_write_reg(struct cc10001_adc_device *adc_dev,
-+				    u32 reg, u32 val)
-+{
-+	writel(val, adc_dev->reg_base + reg);
-+}
-+
-+static inline u32 cc_adc_read_reg(struct cc10001_adc_device *adc_dev,
-+				  u32 reg)
-+{
-+	return readl(adc_dev->reg_base + reg);
-+}
-+
-+static void cc_adc_start(struct cc10001_adc_device *adc_dev,
-+			 unsigned int channel)
-+{
-+	u32 val;
-+
-+	/* Channel selection and mode of operation */
-+	val = (channel & CC10001_ADC_CH_MASK) | CC10001_ADC_MODE_SINGLE_CONV;
-+	cc_adc_write_reg(adc_dev, CC10001_ADC_CONFIG, val);
-+
-+	val = cc_adc_read_reg(adc_dev, CC10001_ADC_CONFIG);
-+	val = val | CC10001_ADC_START_CONV;
-+	cc_adc_write_reg(adc_dev, CC10001_ADC_CONFIG, val);
-+}
-+
-+static u16 cc_adc_poll_done(struct iio_dev *indio_dev, unsigned int channel,
-+			    unsigned int delay)
-+{
-+	struct cc10001_adc_device *adc_dev = iio_priv(indio_dev);
-+	unsigned int poll_count = 0;
-+
-+	while (!(cc_adc_read_reg(adc_dev, CC10001_ADC_EOC) &
-+			CC10001_ADC_EOC_SET)) {
-+
-+		ndelay(delay);
-+		if (poll_count++ == CC10001_MAX_POLL_COUNT)
-+			return CC10001_INVALID_SAMPLED_OUTPUT;
-+	}
-+
-+	poll_count = 0;
-+	while ((cc_adc_read_reg(adc_dev, CC10001_ADC_CHSEL_SAMPLED) &
-+			CC10001_ADC_CH_MASK) != channel) {
-+
-+		ndelay(delay);
-+		if (poll_count++ == CC10001_MAX_POLL_COUNT)
-+			return CC10001_INVALID_SAMPLED_OUTPUT;
-+	}
-+
-+	/* Read the 10 bit output register */
-+	return cc_adc_read_reg(adc_dev, CC10001_ADC_DDATA_OUT) &
-+			       CC10001_ADC_DATA_MASK;
-+}
-+
-+static irqreturn_t cc10001_adc_trigger_h(int irq, void *p)
-+{
-+	struct cc10001_adc_device *adc_dev;
-+	struct iio_poll_func *pf = p;
-+	struct iio_dev *indio_dev;
-+	unsigned int delay_ns;
-+	unsigned int channel;
-+	bool sample_invalid;
-+	u16 *data;
-+	int i;
-+
-+	indio_dev = pf->indio_dev;
-+	adc_dev = iio_priv(indio_dev);
-+	data = adc_dev->buf;
-+
-+	mutex_lock(&adc_dev->lock);
-+
-+	cc_adc_write_reg(adc_dev, CC10001_ADC_POWER_UP,
-+			 CC10001_ADC_POWER_UP_SET);
-+
-+	/* Wait for 8 (6+2) clock cycles before activating START */
-+	ndelay(adc_dev->start_delay_ns);
-+
-+	/* Calculate delay step for eoc and sampled data */
-+	delay_ns = adc_dev->eoc_delay_ns / CC10001_MAX_POLL_COUNT;
-+
-+	i = 0;
-+	sample_invalid = false;
-+	for_each_set_bit(channel, indio_dev->active_scan_mask,
-+				  indio_dev->masklength) {
-+
-+		cc_adc_start(adc_dev, channel);
-+
-+		data[i] = cc_adc_poll_done(indio_dev, channel, delay_ns);
-+		if (data[i] == CC10001_INVALID_SAMPLED_OUTPUT) {
-+			dev_warn(&indio_dev->dev,
-+				 "invalid sample on channel %d\n", channel);
-+			sample_invalid = true;
-+			goto done;
-+		}
-+		i++;
-+	}
-+
-+done:
-+	cc_adc_write_reg(adc_dev, CC10001_ADC_POWER_UP, 0);
-+
-+	mutex_unlock(&adc_dev->lock);
-+
-+	if (!sample_invalid)
-+		iio_push_to_buffers_with_timestamp(indio_dev, data,
-+						   iio_get_time_ns());
-+	iio_trigger_notify_done(indio_dev->trig);
-+	return IRQ_HANDLED;
-+}
-+
-+static u16 cc10001_adc_read_raw_voltage(struct iio_dev *indio_dev,
-+					 struct iio_chan_spec const *chan)
-+{
-+	struct cc10001_adc_device *adc_dev = iio_priv(indio_dev);
-+	unsigned int delay_ns;
-+	u16 val;
-+
-+	cc_adc_write_reg(adc_dev, CC10001_ADC_POWER_UP,
-+			 CC10001_ADC_POWER_UP_SET);
-+
-+	/* Wait for 8 (6+2) clock cycles before activating START */
-+	ndelay(adc_dev->start_delay_ns);
-+
-+	/* Calculate delay step for eoc and sampled data */
-+	delay_ns = adc_dev->eoc_delay_ns / CC10001_MAX_POLL_COUNT;
-+
-+	cc_adc_start(adc_dev, chan->channel);
-+
-+	val = cc_adc_poll_done(indio_dev, chan->channel, delay_ns);
-+
-+	cc_adc_write_reg(adc_dev, CC10001_ADC_POWER_UP, 0);
-+
-+	return val;
-+}
-+
-+static int cc10001_adc_read_raw(struct iio_dev *indio_dev,
-+				 struct iio_chan_spec const *chan,
-+				 int *val, int *val2, long mask)
-+{
-+	struct cc10001_adc_device *adc_dev = iio_priv(indio_dev);
-+	int ret;
-+
-+	switch (mask) {
-+	case IIO_CHAN_INFO_RAW:
-+		if (iio_buffer_enabled(indio_dev))
-+			return -EBUSY;
-+		mutex_lock(&adc_dev->lock);
-+		*val = cc10001_adc_read_raw_voltage(indio_dev, chan);
-+		mutex_unlock(&adc_dev->lock);
-+
-+		if (*val == CC10001_INVALID_SAMPLED_OUTPUT)
-+			return -EIO;
-+		return IIO_VAL_INT;
-+
-+	case IIO_CHAN_INFO_SCALE:
-+		ret = regulator_get_voltage(adc_dev->reg);
-+		if (ret)
-+			return ret;
-+
-+		*val = ret / 1000;
-+		*val2 = chan->scan_type.realbits;
-+		return IIO_VAL_FRACTIONAL_LOG2;
-+
-+	default:
-+		return -EINVAL;
-+	}
-+}
-+
-+static int cc10001_update_scan_mode(struct iio_dev *indio_dev,
-+				     const unsigned long *scan_mask)
-+{
-+	struct cc10001_adc_device *adc_dev = iio_priv(indio_dev);
-+
-+	kfree(adc_dev->buf);
-+	adc_dev->buf = kmalloc(indio_dev->scan_bytes, GFP_KERNEL);
-+	if (!adc_dev->buf)
-+		return -ENOMEM;
-+
-+	return 0;
-+}
-+
-+static const struct iio_info cc10001_adc_info = {
-+	.driver_module = THIS_MODULE,
-+	.read_raw = &cc10001_adc_read_raw,
-+	.update_scan_mode = &cc10001_update_scan_mode,
-+};
-+
-+static int cc10001_adc_channel_init(struct iio_dev *indio_dev)
-+{
-+	struct cc10001_adc_device *adc_dev = iio_priv(indio_dev);
-+	struct iio_chan_spec *chan_array, *timestamp;
-+	unsigned int bit, idx = 0;
-+
-+	indio_dev->num_channels = bitmap_weight(&adc_dev->channel_map,
-+						CC10001_ADC_NUM_CHANNELS);
-+
-+	chan_array = devm_kcalloc(&indio_dev->dev, indio_dev->num_channels + 1,
-+				  sizeof(struct iio_chan_spec),
-+				  GFP_KERNEL);
-+	if (!chan_array)
-+		return -ENOMEM;
-+
-+	for_each_set_bit(bit, &adc_dev->channel_map,
-+			 CC10001_ADC_NUM_CHANNELS) {
-+		struct iio_chan_spec *chan = &chan_array[idx];
-+
-+		chan->type = IIO_VOLTAGE;
-+		chan->indexed = 1;
-+		chan->channel = bit;
-+		chan->scan_index = idx;
-+		chan->scan_type.sign = 'u';
-+		chan->scan_type.realbits = 10;
-+		chan->scan_type.storagebits = 16;
-+		chan->info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE);
-+		chan->info_mask_separate = BIT(IIO_CHAN_INFO_RAW);
-+		idx++;
-+	}
-+
-+	timestamp = &chan_array[idx];
-+	timestamp->type = IIO_TIMESTAMP;
-+	timestamp->channel = -1;
-+	timestamp->scan_index = idx;
-+	timestamp->scan_type.sign = 's';
-+	timestamp->scan_type.realbits = 64;
-+	timestamp->scan_type.storagebits = 64;
-+
-+	indio_dev->channels = chan_array;
-+
-+	return 0;
-+}
-+
-+static int cc10001_adc_probe(struct platform_device *pdev)
-+{
-+	struct device_node *node = pdev->dev.of_node;
-+	struct cc10001_adc_device *adc_dev;
-+	unsigned long adc_clk_rate;
-+	struct resource *res;
-+	struct iio_dev *indio_dev;
-+	int ret;
-+
-+	indio_dev = devm_iio_device_alloc(&pdev->dev, sizeof(*adc_dev));
-+	if (indio_dev == NULL)
-+		return -ENOMEM;
-+
-+	adc_dev = iio_priv(indio_dev);
-+
-+	if (of_property_read_u32(node, "cosmic,adc-available-channels", &ret)) {
-+		dev_err(&indio_dev->dev, "Missing adc-available-channels property\n");
-+		return -EINVAL;
-+	}
-+	adc_dev->channel_map = ret;
-+
-+	adc_dev->reg = devm_regulator_get(&pdev->dev, "vref");
-+	if (IS_ERR_OR_NULL(adc_dev->reg))
-+		return -EINVAL;
-+
-+	ret = regulator_enable(adc_dev->reg);
-+	if (ret)
-+		return ret;
-+
-+	indio_dev->dev.parent = &pdev->dev;
-+	indio_dev->name = dev_name(&pdev->dev);
-+	indio_dev->info = &cc10001_adc_info;
-+	indio_dev->modes = INDIO_DIRECT_MODE;
-+
-+	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-+	adc_dev->reg_base = devm_ioremap_resource(&pdev->dev, res);
-+	if (IS_ERR(adc_dev->reg_base))
-+		goto err_disable_reg;
-+
-+	adc_dev->adc_clk = devm_clk_get(&pdev->dev, "adc");
-+	if (IS_ERR(adc_dev->adc_clk)) {
-+		dev_err(&pdev->dev, "Failed to get the clock\n");
-+		goto err_disable_reg;
-+	}
-+
-+	ret = clk_prepare_enable(adc_dev->adc_clk);
-+	if (ret) {
-+		dev_err(&pdev->dev, "Failed to enable the clock\n");
-+		goto err_disable_reg;
-+	}
-+
-+	adc_clk_rate = clk_get_rate(adc_dev->adc_clk);
-+	if (!adc_clk_rate) {
-+		ret = -EINVAL;
-+		dev_err(&pdev->dev, "null clock rate!\n");
-+		goto err_disable_clk;
-+	}
-+
-+	adc_dev->eoc_delay_ns = NSEC_PER_SEC / adc_clk_rate;
-+	adc_dev->start_delay_ns = adc_dev->eoc_delay_ns * CC10001_WAIT_CYCLES;
-+
-+	/* Setup the ADC channels available on the device */
-+	ret = cc10001_adc_channel_init(indio_dev);
-+	if (ret < 0) {
-+		dev_err(&pdev->dev, "Could not initialize the channels.\n");
-+		goto err_disable_clk;
-+	}
-+
-+	mutex_init(&adc_dev->lock);
-+
-+	ret = iio_triggered_buffer_setup(indio_dev, NULL,
-+					 &cc10001_adc_trigger_h, NULL);
-+	if (ret < 0)
-+		goto err_disable_clk;
-+
-+	ret = iio_device_register(indio_dev);
-+	if (ret < 0)
-+		goto err_cleanup_buffer;
-+
-+	platform_set_drvdata(pdev, indio_dev);
-+
-+	return 0;
-+
-+err_cleanup_buffer:
-+	iio_triggered_buffer_cleanup(indio_dev);
-+err_disable_clk:
-+	clk_disable_unprepare(adc_dev->adc_clk);
-+err_disable_reg:
-+	regulator_disable(adc_dev->reg);
-+	return ret;
-+}
-+
-+static int cc10001_adc_remove(struct platform_device *pdev)
-+{
-+	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
-+	struct cc10001_adc_device *adc_dev = iio_priv(indio_dev);
-+
-+	iio_device_unregister(indio_dev);
-+	iio_triggered_buffer_cleanup(indio_dev);
-+	clk_disable_unprepare(adc_dev->adc_clk);
-+	regulator_disable(adc_dev->reg);
-+
-+	return 0;
-+}
-+
-+static const struct of_device_id cc10001_adc_dt_ids[] = {
-+	{ .compatible = "cosmic,10001-adc", },
-+	{ }
-+};
-+MODULE_DEVICE_TABLE(of, cc10001_adc_dt_ids);
-+
-+static struct platform_driver cc10001_adc_driver = {
-+	.driver = {
-+		.name   = "cc-10001-adc",
-+		.owner	= THIS_MODULE,
-+		.of_match_table = cc10001_adc_dt_ids,
-+	},
-+	.probe	= cc10001_adc_probe,
-+	.remove	= cc10001_adc_remove,
-+};
-+module_platform_driver(cc10001_adc_driver);
-+
-+MODULE_AUTHOR("Phani Movva <Phani.Movva@imgtec.com>");
-+MODULE_DESCRIPTION("Cosmic Circuits ADC driver");
-+MODULE_LICENSE("GPL v2");
--- 
-2.1.0
+Jonathan
 
+On 14/10/14 18:38, Jonathan Cameron wrote:
+> On 14/10/14 17:38, sathyanarayanan kuppuswamy wrote:
+>> Thanks for your comments Srinivas.
+>>
+>> Jonathan,
+>>
+>> If you agree with Srinivas comment. I think we don't need to remove the suspend
+>> call backs from the driver.
+> Yes.
+>>
+>>
+>> On 10/11/2014 07:57 AM, Srinivas Pandruvada wrote:
+>>> On Thu, 2014-10-09 at 20:26 +0100, Jonathan Cameron wrote:
+>>>> On 07/10/14 21:09, sathyanarayanan kuppuswamy wrote:
+>>>>> Hi Jonathan,
+>>>>>
+>>>>> On 09/29/2014 03:00 PM, sathyanarayanan kuppuswamy wrote:
+>>>>>> Hi Jonathan,
+>>>>>>
+>>>>>> On 09/21/2014 05:52 AM, Jonathan Cameron wrote:
+>>>>>>> On 17/09/14 21:59, sathyanarayanan kuppuswamy wrote:
+>>>>>>>> Hi Hartmut,
+>>>>>>>>
+>>>>>>>> On 09/17/2014 01:48 PM, Hartmut Knaack wrote:
+>>>>>>>>> Kuppuswamy Sathyanarayanan schrieb, Am 16.09.2014 05:54:
+>>>>>>>>>> This patch adds a new driver for solteam opto JSA1212 proximity and
+>>>>>>>>>> ambient light sensor.
+>>>>>>>>>>
+>>>>>>>>>> Basic details of the chip can be found here.
+>>>>>>>>>>
+>>>>>>>>>> http://www.solteamopto.com.tw/detail.php?ms=3&po_unit=2&pt_unit=29&p_unit=120
+>>>>>>>>>>
+>>>>>>>>> Hi,
+>>>>>>>>> after your explanation of the power states, I now wonder, why you would
+>>>>>>>>> need
+>>>>>>>>> to power-down the device in jsa1212_suspend() and check, which parts
+>>>>>>>>> need to
+>>>>>>>>> be powered-up in jsa1212_resume(). The way I understand it, you only access
+>>>>>>>>> the device to read data, after initialization. Therefor you power up the
+>>>>>>>>> device, wait, read data and power down. All secured by a mutex. So, as
+>>>>>>>>> long as
+>>>>>>>>> no data is read, the device will always remain in low-power state.
+>>>>>>>> Yes, What you mentioned is true for current use case. But once we implement
+>>>>>>>> interrupt & IIO event support, We will have scenarios where the device is on
+>>>>>>>> when suspend is triggered. I have just added the power management code with
+>>>>>>>> that
+>>>>>>>> scenario in mind.
+>>>>>>> Please drop this for now and reintroduce it as and when it becomes relevant.
+>>>>>>>
+>>>>>>> If this had been part of a series that added support needing it in a later
+>>>>>>> patch then it probably wouldn't have mattered (although it would still have
+>>>>>>> been more correct in the patch that needed it).  Right now it adds complexity
+>>>>>>> for no obvious gain.
+>>>>>>>
+>>>>>>> Also, once you have interrupt support etc you'll probably need to make
+>>>>>>> changes
+>>>>>>> to the current locations where you power up and down the chip anyway so it
+>>>>>>> will
+>>>>>>> fit in well then.
+>>>>>>>
+>>>>>>> Otherwise, a nice little driver.
+>>>>>> When I answered Hartmut, I missed to consider the scenario where suspend to
+>>>>>> ram gets triggered in the middle
+>>>>>> of the read_raw() function.  When it happens our device might be "on" and
+>>>>>> system might be trying to suspend.
+>>>>>> So I think we still need the suspend/resume call to cover these cases.
+>>>>> Do you agree with above comment ? If yes, I think there is no need to change
+>>>>> this driver any more. Let me know.
+>>>> Sorry, misread that as you'd identified an issue (which I hadn't noticed!)
+>>>> and were going to fix and repost.
+>>>>
+>>>> Hmm. I'm not sure what the semantics of a suspend are.  I'd like to think it
+>>>> would
+>>>> require no other function calls to be in flight, but not certain.
+>>>>
+>>>> Anyone else happen to know?
+>>>>
+>>> Suspend can happen asynchronously, so if it can happen before read raw
+>>> can complete. There are OSs where suspend is automatically triggered, if
+>>> no one blocks it using special locks, without even user process
+>>> triggering suspend. Some users also define CONFIG_PREEMPT_VOLUNTARY.
+>>> So Sathya do need to make sure that it power down in suspend callback or
+>>> atleast prevent suspend to finish before read raw finishes the power
+>>> down by using some mutexes.
+>>>
+>>> Thanks,
+>>> Srinivas
+>>>
+>>>>>>> Thanks,
+>>>>>>>
+>>>>>>> Jonathan
+>>>>>>>
+>>>>>>>>>> Signed-off-by: Kuppuswamy Sathyanarayanan
+>>>>>>>>>> <sathyanarayanan.kuppuswamy@linux.intel.com>
+>>>>>>>>>> Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+>>>>>>>>>> ---
+>>>>>>>>>>     drivers/iio/light/Kconfig   |  10 +
+>>>>>>>>>>     drivers/iio/light/Makefile  |   1 +
+>>>>>>>>>>     drivers/iio/light/jsa1212.c | 471
+>>>>>>>>>> ++++++++++++++++++++++++++++++++++++++++++++
+>>>>>>>>>>     3 files changed, 482 insertions(+)
+>>>>>>>>>>     create mode 100644 drivers/iio/light/jsa1212.c
+>>>>>>>>>>
+>>>>>>>>>> diff --git a/drivers/iio/light/Kconfig b/drivers/iio/light/Kconfig
+>>>>>>>>>> index bf05ca5..b81d8a3 100644
+>>>>>>>>>> --- a/drivers/iio/light/Kconfig
+>>>>>>>>>> +++ b/drivers/iio/light/Kconfig
+>>>>>>>>>> @@ -99,6 +99,16 @@ config HID_SENSOR_PROX
+>>>>>>>>>>           To compile this driver as a module, choose M here: the
+>>>>>>>>>>           module will be called hid-sensor-prox.
+>>>>>>>>>>     +config JSA1212
+>>>>>>>>>> +    tristate "JSA1212 ALS and proximity sensor driver"
+>>>>>>>>>> +    depends on I2C
+>>>>>>>>>> +    help
+>>>>>>>>>> +     Say Y here if you want to build a IIO driver for JSA1212
+>>>>>>>>>> +     proximity & ALS sensor device.
+>>>>>>>>>> +
+>>>>>>>>>> +     To compile this driver as a module, choose M here:
+>>>>>>>>>> +     the module will be called jsa1212.
+>>>>>>>>>> +
+>>>>>>>>>>     config SENSORS_LM3533
+>>>>>>>>>>         tristate "LM3533 ambient light sensor"
+>>>>>>>>>>         depends on MFD_LM3533
+>>>>>>>>>> diff --git a/drivers/iio/light/Makefile b/drivers/iio/light/Makefile
+>>>>>>>>>> index 8b8c09f..23c6aa9 100644
+>>>>>>>>>> --- a/drivers/iio/light/Makefile
+>>>>>>>>>> +++ b/drivers/iio/light/Makefile
+>>>>>>>>>> @@ -11,6 +11,7 @@ obj-$(CONFIG_GP2AP020A00F)    += gp2ap020a00f.o
+>>>>>>>>>>     obj-$(CONFIG_HID_SENSOR_ALS)    += hid-sensor-als.o
+>>>>>>>>>>     obj-$(CONFIG_HID_SENSOR_PROX)    += hid-sensor-prox.o
+>>>>>>>>>>     obj-$(CONFIG_ISL29125)        += isl29125.o
+>>>>>>>>>> +obj-$(CONFIG_JSA1212)        += jsa1212.o
+>>>>>>>>>>     obj-$(CONFIG_SENSORS_LM3533)    += lm3533-als.o
+>>>>>>>>>>     obj-$(CONFIG_LTR501)        += ltr501.o
+>>>>>>>>>>     obj-$(CONFIG_SENSORS_TSL2563)    += tsl2563.o
+>>>>>>>>>> diff --git a/drivers/iio/light/jsa1212.c b/drivers/iio/light/jsa1212.c
+>>>>>>>>>> new file mode 100644
+>>>>>>>>>> index 0000000..29de7e7
+>>>>>>>>>> --- /dev/null
+>>>>>>>>>> +++ b/drivers/iio/light/jsa1212.c
+>>>>>>>>>> @@ -0,0 +1,471 @@
+>>>>>>>>>> +/*
+>>>>>>>>>> + * JSA1212 Ambient Light & Proximity Sensor Driver
+>>>>>>>>>> + *
+>>>>>>>>>> + * Copyright (c) 2014, Intel Corporation.
+>>>>>>>>>> + *
+>>>>>>>>>> + * This program is free software; you can redistribute it and/or
+>>>>>>>>>> modify it
+>>>>>>>>>> + * under the terms and conditions of the GNU General Public License,
+>>>>>>>>>> + * version 2, as published by the Free Software Foundation.
+>>>>>>>>>> + *
+>>>>>>>>>> + * This program is distributed in the hope it will be useful, but WITHOUT
+>>>>>>>>>> + * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+>>>>>>>>>> + * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public
+>>>>>>>>>> License for
+>>>>>>>>>> + * more details.
+>>>>>>>>>> + *
+>>>>>>>>>> + * JSA1212 I2C slave address: 0x44(ADDR tied to GND), 0x45(ADDR tied
+>>>>>>>>>> to VDD)
+>>>>>>>>>> + *
+>>>>>>>>>> + * TODO: Interrupt support, thresholds, range support.
+>>>>>>>>>> + */
+>>>>>>>>>> +
+>>>>>>>>>> +#include <linux/kernel.h>
+>>>>>>>>>> +#include <linux/slab.h>
+>>>>>>>>>> +#include <linux/module.h>
+>>>>>>>>>> +#include <linux/delay.h>
+>>>>>>>>>> +#include <linux/i2c.h>
+>>>>>>>>>> +#include <linux/mutex.h>
+>>>>>>>>>> +#include <linux/acpi.h>
+>>>>>>>>>> +#include <linux/regmap.h>
+>>>>>>>>>> +#include <linux/iio/iio.h>
+>>>>>>>>>> +#include <linux/iio/sysfs.h>
+>>>>>>>>>> +
+>>>>>>>>>> +/* JSA1212 reg address */
+>>>>>>>>>> +#define JSA1212_CONF_REG        0x01
+>>>>>>>>>> +#define JSA1212_INT_REG            0x02
+>>>>>>>>>> +#define JSA1212_PXS_LT_REG        0x03
+>>>>>>>>>> +#define JSA1212_PXS_HT_REG        0x04
+>>>>>>>>>> +#define JSA1212_ALS_TH1_REG        0x05
+>>>>>>>>>> +#define JSA1212_ALS_TH2_REG        0x06
+>>>>>>>>>> +#define JSA1212_ALS_TH3_REG        0x07
+>>>>>>>>>> +#define JSA1212_PXS_DATA_REG        0x08
+>>>>>>>>>> +#define JSA1212_ALS_DT1_REG        0x09
+>>>>>>>>>> +#define JSA1212_ALS_DT2_REG        0x0A
+>>>>>>>>>> +#define JSA1212_ALS_RNG_REG        0x0B
+>>>>>>>>>> +#define JSA1212_MAX_REG            0x0C
+>>>>>>>>>> +
+>>>>>>>>>> +/* JSA1212 reg masks */
+>>>>>>>>>> +#define JSA1212_CONF_MASK        0xFF
+>>>>>>>>>> +#define JSA1212_INT_MASK        0xFF
+>>>>>>>>>> +#define JSA1212_PXS_LT_MASK        0xFF
+>>>>>>>>>> +#define JSA1212_PXS_HT_MASK        0xFF
+>>>>>>>>>> +#define JSA1212_ALS_TH1_MASK        0xFF
+>>>>>>>>>> +#define JSA1212_ALS_TH2_LT_MASK        0x0F
+>>>>>>>>>> +#define JSA1212_ALS_TH2_HT_MASK        0xF0
+>>>>>>>>>> +#define JSA1212_ALS_TH3_MASK        0xFF
+>>>>>>>>>> +#define JSA1212_PXS_DATA_MASK        0xFF
+>>>>>>>>>> +#define JSA1212_ALS_DATA_MASK        0x0FFF
+>>>>>>>>>> +#define JSA1212_ALS_DT1_MASK        0xFF
+>>>>>>>>>> +#define JSA1212_ALS_DT2_MASK        0x0F
+>>>>>>>>>> +#define JSA1212_ALS_RNG_MASK        0x07
+>>>>>>>>>> +
+>>>>>>>>>> +/* JSA1212 CONF REG bits */
+>>>>>>>>>> +#define JSA1212_CONF_PXS_MASK        0x80
+>>>>>>>>>> +#define JSA1212_CONF_PXS_ENABLE        0x80
+>>>>>>>>>> +#define JSA1212_CONF_PXS_DISABLE    0x00
+>>>>>>>>>> +#define JSA1212_CONF_ALS_MASK        0x04
+>>>>>>>>>> +#define JSA1212_CONF_ALS_ENABLE        0x04
+>>>>>>>>>> +#define JSA1212_CONF_ALS_DISABLE    0x00
+>>>>>>>>>> +#define JSA1212_CONF_IRDR_MASK        0x08
+>>>>>>>>>> +/* Proxmity sensing IRDR current sink settings */
+>>>>>>>>>> +#define JSA1212_CONF_IRDR_200MA        0x08
+>>>>>>>>>> +#define JSA1212_CONF_IRDR_100MA        0x00
+>>>>>>>>>> +#define JSA1212_CONF_PXS_SLP_MASK    0x70
+>>>>>>>>>> +#define JSA1212_CONF_PXS_SLP_0MS    0x70
+>>>>>>>>>> +#define JSA1212_CONF_PXS_SLP_12MS    0x60
+>>>>>>>>>> +#define JSA1212_CONF_PXS_SLP_50MS    0x50
+>>>>>>>>>> +#define JSA1212_CONF_PXS_SLP_75MS    0x40
+>>>>>>>>>> +#define JSA1212_CONF_PXS_SLP_100MS    0x30
+>>>>>>>>>> +#define JSA1212_CONF_PXS_SLP_200MS    0x20
+>>>>>>>>>> +#define JSA1212_CONF_PXS_SLP_400MS    0x10
+>>>>>>>>>> +#define JSA1212_CONF_PXS_SLP_800MS    0x00
+>>>>>>>>>> +
+>>>>>>>>>> +/* JSA1212 INT REG bits */
+>>>>>>>>>> +#define JSA1212_INT_CTRL_MASK        0x01
+>>>>>>>>>> +#define JSA1212_INT_CTRL_EITHER        0x00
+>>>>>>>>>> +#define JSA1212_INT_CTRL_BOTH        0x01
+>>>>>>>>>> +#define JSA1212_INT_ALS_PRST_MASK    0x06
+>>>>>>>>>> +#define JSA1212_INT_ALS_PRST_1CONV    0x00
+>>>>>>>>>> +#define JSA1212_INT_ALS_PRST_4CONV    0x02
+>>>>>>>>>> +#define JSA1212_INT_ALS_PRST_8CONV    0x04
+>>>>>>>>>> +#define JSA1212_INT_ALS_PRST_16CONV    0x06
+>>>>>>>>>> +#define JSA1212_INT_ALS_FLAG_MASK    0x08
+>>>>>>>>>> +#define JSA1212_INT_ALS_FLAG_CLR    0x00
+>>>>>>>>>> +#define JSA1212_INT_PXS_PRST_MASK    0x60
+>>>>>>>>>> +#define JSA1212_INT_PXS_PRST_1CONV    0x00
+>>>>>>>>>> +#define JSA1212_INT_PXS_PRST_4CONV    0x20
+>>>>>>>>>> +#define JSA1212_INT_PXS_PRST_8CONV    0x40
+>>>>>>>>>> +#define JSA1212_INT_PXS_PRST_16CONV    0x60
+>>>>>>>>>> +#define JSA1212_INT_PXS_FLAG_MASK    0x80
+>>>>>>>>>> +#define JSA1212_INT_PXS_FLAG_CLR    0x00
+>>>>>>>>>> +
+>>>>>>>>>> +/* JSA1212 ALS RNG REG bits */
+>>>>>>>>>> +#define JSA1212_ALS_RNG_0_2048        0x00
+>>>>>>>>>> +#define JSA1212_ALS_RNG_0_1024        0x01
+>>>>>>>>>> +#define JSA1212_ALS_RNG_0_512        0x02
+>>>>>>>>>> +#define JSA1212_ALS_RNG_0_256        0x03
+>>>>>>>>>> +#define JSA1212_ALS_RNG_0_128        0x04
+>>>>>>>>>> +
+>>>>>>>>>> +/* JSA1212 INT threshold range */
+>>>>>>>>>> +#define JSA1212_ALS_TH_MIN    0x0000
+>>>>>>>>>> +#define JSA1212_ALS_TH_MAX    0x0FFF
+>>>>>>>>>> +#define JSA1212_PXS_TH_MIN    0x00
+>>>>>>>>>> +#define JSA1212_PXS_TH_MAX    0xFF
+>>>>>>>>>> +
+>>>>>>>>>> +#define JSA1212_ALS_DELAY_MS    200
+>>>>>>>>>> +#define JSA1212_PXS_DELAY_MS    100
+>>>>>>>>>> +
+>>>>>>>>>> +#define JSA1212_DRIVER_NAME    "jsa1212"
+>>>>>>>>>> +#define JSA1212_REGMAP_NAME    "jsa1212_regmap"
+>>>>>>>>>> +
+>>>>>>>>>> +enum jsa1212_op_mode {
+>>>>>>>>>> +    JSA1212_OPMODE_ALS_EN,
+>>>>>>>>>> +    JSA1212_OPMODE_PXS_EN,
+>>>>>>>>>> +};
+>>>>>>>>>> +
+>>>>>>>>>> +struct jsa1212_data {
+>>>>>>>>>> +    struct i2c_client *client;
+>>>>>>>>>> +    struct mutex lock;
+>>>>>>>>>> +    u8 als_rng_idx;
+>>>>>>>>>> +    bool als_en; /* ALS enable status */
+>>>>>>>>>> +    bool pxs_en; /* proximity enable status */
+>>>>>>>>>> +    struct regmap *regmap;
+>>>>>>>>>> +};
+>>>>>>>>>> +
+>>>>>>>>>> +/* ALS range idx to val mapping */
+>>>>>>>>>> +static const int jsa1212_als_range_val[] = {2048, 1024, 512, 256, 128,
+>>>>>>>>>> +                        128, 128, 128};
+>>>>>>>>>> +
+>>>>>>>>>> +/* Enables or disables ALS function based on status */
+>>>>>>>>>> +static int jsa1212_als_enable(struct jsa1212_data *data, u8 status)
+>>>>>>>>>> +{
+>>>>>>>>>> +    int ret;
+>>>>>>>>>> +
+>>>>>>>>>> +    ret = regmap_update_bits(data->regmap, JSA1212_CONF_REG,
+>>>>>>>>>> +                JSA1212_CONF_ALS_MASK,
+>>>>>>>>>> +                status);
+>>>>>>>>>> +    if (ret < 0)
+>>>>>>>>>> +        return ret;
+>>>>>>>>>> +
+>>>>>>>>>> +    data->als_en = !!status;
+>>>>>>>>>> +
+>>>>>>>>>> +    return 0;
+>>>>>>>>>> +}
+>>>>>>>>>> +
+>>>>>>>>>> +/* Enables or disables PXS function based on status */
+>>>>>>>>>> +static int jsa1212_pxs_enable(struct jsa1212_data *data, u8 status)
+>>>>>>>>>> +{
+>>>>>>>>>> +    int ret;
+>>>>>>>>>> +
+>>>>>>>>>> +    ret = regmap_update_bits(data->regmap, JSA1212_CONF_REG,
+>>>>>>>>>> +                JSA1212_CONF_PXS_MASK,
+>>>>>>>>>> +                status);
+>>>>>>>>>> +    if (ret < 0)
+>>>>>>>>>> +        return ret;
+>>>>>>>>>> +
+>>>>>>>>>> +    data->pxs_en = !!status;
+>>>>>>>>>> +
+>>>>>>>>>> +    return 0;
+>>>>>>>>>> +}
+>>>>>>>>>> +
+>>>>>>>>>> +static int jsa1212_read_als_data(struct jsa1212_data *data,
+>>>>>>>>>> +                unsigned int *val)
+>>>>>>>>>> +{
+>>>>>>>>>> +    int ret;
+>>>>>>>>>> +    __le16 als_data;
+>>>>>>>>>> +
+>>>>>>>>>> +    ret = jsa1212_als_enable(data, JSA1212_CONF_ALS_ENABLE);
+>>>>>>>>>> +    if (ret < 0)
+>>>>>>>>>> +        return ret;
+>>>>>>>>>> +
+>>>>>>>>>> +    /* Delay for data output */
+>>>>>>>>>> +    msleep(JSA1212_ALS_DELAY_MS);
+>>>>>>>>>> +
+>>>>>>>>>> +    /* Read 12 bit data */
+>>>>>>>>>> +    ret = regmap_bulk_read(data->regmap, JSA1212_ALS_DT1_REG,
+>>>>>>>>>> &als_data, 2);
+>>>>>>>>>> +    if (ret < 0) {
+>>>>>>>>>> +        dev_err(&data->client->dev, "als data read err\n");
+>>>>>>>>>> +        goto als_data_read_err;
+>>>>>>>>>> +    }
+>>>>>>>>>> +
+>>>>>>>>>> +    *val = le16_to_cpu(als_data);
+>>>>>>>>>> +
+>>>>>>>>>> +als_data_read_err:
+>>>>>>>>>> +    return jsa1212_als_enable(data, JSA1212_CONF_ALS_DISABLE);
+>>>>>>>>>> +}
+>>>>>>>>>> +
+>>>>>>>>>> +static int jsa1212_read_pxs_data(struct jsa1212_data *data,
+>>>>>>>>>> +                unsigned int *val)
+>>>>>>>>>> +{
+>>>>>>>>>> +    int ret;
+>>>>>>>>>> +    unsigned int pxs_data;
+>>>>>>>>>> +
+>>>>>>>>>> +    ret = jsa1212_pxs_enable(data, JSA1212_CONF_PXS_ENABLE);
+>>>>>>>>>> +    if (ret < 0)
+>>>>>>>>>> +        return ret;
+>>>>>>>>>> +
+>>>>>>>>>> +    /* Delay for data output */
+>>>>>>>>>> +    msleep(JSA1212_PXS_DELAY_MS);
+>>>>>>>>>> +
+>>>>>>>>>> +    /* Read out all data */
+>>>>>>>>>> +    ret = regmap_read(data->regmap, JSA1212_PXS_DATA_REG, &pxs_data);
+>>>>>>>>>> +    if (ret < 0) {
+>>>>>>>>>> +        dev_err(&data->client->dev, "pxs data read err\n");
+>>>>>>>>>> +        goto pxs_data_read_err;
+>>>>>>>>>> +    }
+>>>>>>>>>> +
+>>>>>>>>>> +    *val = pxs_data & JSA1212_PXS_DATA_MASK;
+>>>>>>>>>> +
+>>>>>>>>>> +pxs_data_read_err:
+>>>>>>>>>> +    return jsa1212_pxs_enable(data, JSA1212_CONF_PXS_DISABLE);
+>>>>>>>>>> +}
+>>>>>>>>>> +
+>>>>>>>>>> +static int jsa1212_read_raw(struct iio_dev *indio_dev,
+>>>>>>>>>> +                struct iio_chan_spec const *chan,
+>>>>>>>>>> +                int *val, int *val2, long mask)
+>>>>>>>>>> +{
+>>>>>>>>>> +    int ret;
+>>>>>>>>>> +    struct jsa1212_data *data = iio_priv(indio_dev);
+>>>>>>>>>> +
+>>>>>>>>>> +    switch (mask) {
+>>>>>>>>>> +    case IIO_CHAN_INFO_RAW:
+>>>>>>>>>> +        mutex_lock(&data->lock);
+>>>>>>>>>> +        switch (chan->type) {
+>>>>>>>>>> +        case IIO_LIGHT:
+>>>>>>>>>> +            ret = jsa1212_read_als_data(data, val);
+>>>>>>>>>> +            break;
+>>>>>>>>>> +        case IIO_PROXIMITY:
+>>>>>>>>>> +            ret = jsa1212_read_pxs_data(data, val);
+>>>>>>>>>> +            break;
+>>>>>>>>>> +        default:
+>>>>>>>>>> +            ret = -EINVAL;
+>>>>>>>>>> +            break;
+>>>>>>>>>> +        }
+>>>>>>>>>> +        mutex_unlock(&data->lock);
+>>>>>>>>>> +        return ret < 0 ? ret : IIO_VAL_INT;
+>>>>>>>>>> +    case IIO_CHAN_INFO_SCALE:
+>>>>>>>>>> +        switch (chan->type) {
+>>>>>>>>>> +        case IIO_LIGHT:
+>>>>>>>>>> +            *val = jsa1212_als_range_val[data->als_rng_idx];
+>>>>>>>>>> +            *val2 = BIT(12); /* Max 12 bit value */
+>>>>>>>>>> +            return IIO_VAL_FRACTIONAL;
+>>>>>>>>>> +        default:
+>>>>>>>>>> +            break;
+>>>>>>>>>> +        }
+>>>>>>>>>> +        break;
+>>>>>>>>>> +    default:
+>>>>>>>>>> +        break;
+>>>>>>>>>> +    }
+>>>>>>>>>> +
+>>>>>>>>>> +    return -EINVAL;
+>>>>>>>>>> +}
+>>>>>>>>>> +
+>>>>>>>>>> +static const struct iio_chan_spec jsa1212_channels[] = {
+>>>>>>>>>> +    {
+>>>>>>>>>> +        .type = IIO_LIGHT,
+>>>>>>>>>> +        .info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
+>>>>>>>>>> +            BIT(IIO_CHAN_INFO_SCALE),
+>>>>>>>>>> +    },
+>>>>>>>>>> +    {
+>>>>>>>>>> +        .type = IIO_PROXIMITY,
+>>>>>>>>>> +        .info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
+>>>>>>>>>> +    }
+>>>>>>>>>> +};
+>>>>>>>>>> +
+>>>>>>>>>> +static const struct iio_info jsa1212_info = {
+>>>>>>>>>> +    .driver_module        = THIS_MODULE,
+>>>>>>>>>> +    .read_raw        = &jsa1212_read_raw,
+>>>>>>>>>> +};
+>>>>>>>>>> +
+>>>>>>>>>> +static int jsa1212_chip_init(struct jsa1212_data *data)
+>>>>>>>>>> +{
+>>>>>>>>>> +    int ret;
+>>>>>>>>>> +
+>>>>>>>>>> +    ret = regmap_write(data->regmap, JSA1212_CONF_REG,
+>>>>>>>>>> +                (JSA1212_CONF_PXS_SLP_50MS |
+>>>>>>>>>> +                JSA1212_CONF_IRDR_200MA));
+>>>>>>>>>> +    if (ret < 0)
+>>>>>>>>>> +        return ret;
+>>>>>>>>>> +
+>>>>>>>>>> +    ret = regmap_write(data->regmap, JSA1212_INT_REG,
+>>>>>>>>>> +                JSA1212_INT_ALS_PRST_4CONV);
+>>>>>>>>>> +    if (ret < 0)
+>>>>>>>>>> +        return ret;
+>>>>>>>>>> +
+>>>>>>>>>> +    data->als_rng_idx = JSA1212_ALS_RNG_0_2048;
+>>>>>>>>>> +
+>>>>>>>>>> +    return 0;
+>>>>>>>>>> +}
+>>>>>>>>>> +
+>>>>>>>>>> +static bool jsa1212_is_volatile_reg(struct device *dev, unsigned int reg)
+>>>>>>>>>> +{
+>>>>>>>>>> +    switch (reg) {
+>>>>>>>>>> +    case JSA1212_PXS_DATA_REG:
+>>>>>>>>>> +    case JSA1212_ALS_DT1_REG:
+>>>>>>>>>> +    case JSA1212_ALS_DT2_REG:
+>>>>>>>>>> +    case JSA1212_INT_REG:
+>>>>>>>>>> +        return true;
+>>>>>>>>>> +    default:
+>>>>>>>>>> +        return false;
+>>>>>>>>>> +    }
+>>>>>>>>>> +}
+>>>>>>>>>> +
+>>>>>>>>>> +static struct regmap_config jsa1212_regmap_config = {
+>>>>>>>>>> +    .name =  JSA1212_REGMAP_NAME,
+>>>>>>>>>> +    .reg_bits = 8,
+>>>>>>>>>> +    .val_bits = 8,
+>>>>>>>>>> +    .max_register = JSA1212_MAX_REG,
+>>>>>>>>>> +    .cache_type = REGCACHE_RBTREE,
+>>>>>>>>>> +    .volatile_reg = jsa1212_is_volatile_reg,
+>>>>>>>>>> +};
+>>>>>>>>>> +
+>>>>>>>>>> +static int jsa1212_probe(struct i2c_client *client,
+>>>>>>>>>> +             const struct i2c_device_id *id)
+>>>>>>>>>> +{
+>>>>>>>>>> +    struct jsa1212_data *data;
+>>>>>>>>>> +    struct iio_dev *indio_dev;
+>>>>>>>>>> +    struct regmap *regmap;
+>>>>>>>>>> +    int ret;
+>>>>>>>>>> +
+>>>>>>>>>> +    if (!i2c_check_functionality(client->adapter,
+>>>>>>>>>> I2C_FUNC_SMBUS_BYTE_DATA))
+>>>>>>>>>> +        return -ENODEV;
+>>>>>>>>>> +
+>>>>>>>>>> +    indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
+>>>>>>>>>> +    if (!indio_dev)
+>>>>>>>>>> +        return -ENOMEM;
+>>>>>>>>>> +
+>>>>>>>>>> +    regmap = devm_regmap_init_i2c(client, &jsa1212_regmap_config);
+>>>>>>>>>> +    if (IS_ERR(regmap)) {
+>>>>>>>>>> +        dev_err(&client->dev, "Regmap initialization failed.\n");
+>>>>>>>>>> +        return PTR_ERR(regmap);
+>>>>>>>>>> +    }
+>>>>>>>>>> +
+>>>>>>>>>> +    data = iio_priv(indio_dev);
+>>>>>>>>>> +
+>>>>>>>>>> +    i2c_set_clientdata(client, indio_dev);
+>>>>>>>>>> +    data->client = client;
+>>>>>>>>>> +    data->regmap = regmap;
+>>>>>>>>>> +
+>>>>>>>>>> +    mutex_init(&data->lock);
+>>>>>>>>>> +
+>>>>>>>>>> +    ret = jsa1212_chip_init(data);
+>>>>>>>>>> +    if (ret < 0)
+>>>>>>>>>> +        return ret;
+>>>>>>>>>> +
+>>>>>>>>>> +    indio_dev->dev.parent = &client->dev;
+>>>>>>>>>> +    indio_dev->channels = jsa1212_channels;
+>>>>>>>>>> +    indio_dev->num_channels = ARRAY_SIZE(jsa1212_channels);
+>>>>>>>>>> +    indio_dev->name = JSA1212_DRIVER_NAME;
+>>>>>>>>>> +    indio_dev->modes = INDIO_DIRECT_MODE;
+>>>>>>>>>> +
+>>>>>>>>>> +    indio_dev->info = &jsa1212_info;
+>>>>>>>>>> +
+>>>>>>>>>> +    ret = iio_device_register(indio_dev);
+>>>>>>>>>> +    if (ret < 0)
+>>>>>>>>>> +        dev_err(&client->dev, "%s: register device failed\n", __func__);
+>>>>>>>>>> +
+>>>>>>>>>> +    return ret;
+>>>>>>>>>> +}
+>>>>>>>>>> +
+>>>>>>>>>> + /* power off the device */
+>>>>>>>>>> +static int jsa1212_power_off(struct jsa1212_data *data)
+>>>>>>>>>> +{
+>>>>>>>>>> +    int ret;
+>>>>>>>>>> +
+>>>>>>>>>> +    mutex_lock(&data->lock);
+>>>>>>>>>> +
+>>>>>>>>>> +    ret = regmap_update_bits(data->regmap, JSA1212_CONF_REG,
+>>>>>>>>>> +                JSA1212_CONF_ALS_MASK |
+>>>>>>>>>> +                JSA1212_CONF_PXS_MASK,
+>>>>>>>>>> +                JSA1212_CONF_ALS_DISABLE |
+>>>>>>>>>> +                JSA1212_CONF_PXS_DISABLE);
+>>>>>>>>>> +
+>>>>>>>>>> +    if (ret < 0)
+>>>>>>>>>> +        dev_err(&data->client->dev, "power off cmd failed\n");
+>>>>>>>>>> +
+>>>>>>>>>> +    mutex_unlock(&data->lock);
+>>>>>>>>>> +
+>>>>>>>>>> +    return ret;
+>>>>>>>>>> +}
+>>>>>>>>>> +
+>>>>>>>>>> +static int jsa1212_remove(struct i2c_client *client)
+>>>>>>>>>> +{
+>>>>>>>>>> +    struct iio_dev *indio_dev = i2c_get_clientdata(client);
+>>>>>>>>>> +    struct jsa1212_data *data = iio_priv(indio_dev);
+>>>>>>>>>> +
+>>>>>>>>>> +    iio_device_unregister(indio_dev);
+>>>>>>>>>> +
+>>>>>>>>>> +    return jsa1212_power_off(data);
+>>>>>>>>>> +}
+>>>>>>>>>> +
+>>>>>>>>>> +#ifdef CONFIG_PM_SLEEP
+>>>>>>>>>> +static int jsa1212_suspend(struct device *dev)
+>>>>>>>>>> +{
+>>>>>>>>>> +    struct jsa1212_data *data;
+>>>>>>>>>> +
+>>>>>>>>>> +    data = iio_priv(i2c_get_clientdata(to_i2c_client(dev)));
+>>>>>>>>>> +
+>>>>>>>>>> +    return jsa1212_power_off(data);
+>>>>>>>>>> +}
+>>>>>>>>>> +
+>>>>>>>>>> +static int jsa1212_resume(struct device *dev)
+>>>>>>>>>> +{
+>>>>>>>>>> +    int ret = 0;
+>>>>>>>>>> +    struct jsa1212_data *data;
+>>>>>>>>>> +
+>>>>>>>>>> +    data = iio_priv(i2c_get_clientdata(to_i2c_client(dev)));
+>>>>>>>>>> +
+>>>>>>>>>> +    mutex_lock(&data->lock);
+>>>>>>>>>> +
+>>>>>>>>>> +    if (data->als_en) {
+>>>>>>>>>> +        ret = jsa1212_als_enable(data, JSA1212_CONF_ALS_ENABLE);
+>>>>>>>>>> +        if (ret < 0) {
+>>>>>>>>>> +            dev_err(dev, "als resume failed\n");
+>>>>>>>>>> +            goto unlock_and_ret;
+>>>>>>>>>> +        }
+>>>>>>>>>> +    }
+>>>>>>>>>> +
+>>>>>>>>>> +    if (data->pxs_en) {
+>>>>>>>>>> +        ret = jsa1212_pxs_enable(data, JSA1212_CONF_PXS_ENABLE);
+>>>>>>>>>> +        if (ret < 0)
+>>>>>>>>>> +            dev_err(dev, "pxs resume failed\n");
+>>>>>>>>>> +    }
+>>>>>>>>>> +
+>>>>>>>>>> +unlock_and_ret:
+>>>>>>>>>> +    mutex_unlock(&data->lock);
+>>>>>>>>>> +    return ret;
+>>>>>>>>>> +}
+>>>>>>>>>> +
+>>>>>>>>>> +static SIMPLE_DEV_PM_OPS(jsa1212_pm_ops, jsa1212_suspend,
+>>>>>>>>>> jsa1212_resume);
+>>>>>>>>>> +
+>>>>>>>>>> +#define JSA1212_PM_OPS (&jsa1212_pm_ops)
+>>>>>>>>>> +#else
+>>>>>>>>>> +#define JSA1212_PM_OPS NULL
+>>>>>>>>>> +#endif
+>>>>>>>>>> +
+>>>>>>>>>> +static const struct acpi_device_id jsa1212_acpi_match[] = {
+>>>>>>>>>> +    {"JSA1212", 0},
+>>>>>>>>>> +    { },
+>>>>>>>>>> +};
+>>>>>>>>>> +MODULE_DEVICE_TABLE(acpi, jsa1212_acpi_match);
+>>>>>>>>>> +
+>>>>>>>>>> +static const struct i2c_device_id jsa1212_id[] = {
+>>>>>>>>>> +    { JSA1212_DRIVER_NAME, 0 },
+>>>>>>>>>> +    { }
+>>>>>>>>>> +};
+>>>>>>>>>> +MODULE_DEVICE_TABLE(i2c, jsa1212_id);
+>>>>>>>>>> +
+>>>>>>>>>> +static struct i2c_driver jsa1212_driver = {
+>>>>>>>>>> +    .driver = {
+>>>>>>>>>> +        .name    = JSA1212_DRIVER_NAME,
+>>>>>>>>>> +        .pm    = JSA1212_PM_OPS,
+>>>>>>>>>> +        .owner    = THIS_MODULE,
+>>>>>>>>>> +        .acpi_match_table = ACPI_PTR(jsa1212_acpi_match),
+>>>>>>>>>> +    },
+>>>>>>>>>> +    .probe        = jsa1212_probe,
+>>>>>>>>>> +    .remove        = jsa1212_remove,
+>>>>>>>>>> +    .id_table    = jsa1212_id,
+>>>>>>>>>> +};
+>>>>>>>>>> +module_i2c_driver(jsa1212_driver);
+>>>>>>>>>> +
+>>>>>>>>>> +MODULE_AUTHOR("Sathya Kuppuswamy
+>>>>>>>>>> <sathyanarayanan.kuppuswamy@linux.intel.com>");
+>>>>>>>>>> +MODULE_DESCRIPTION("JSA1212 proximity/ambient light sensor driver");
+>>>>>>>>>> +MODULE_LICENSE("GPL v2");
+>>>>>>>>>>
+>>>
+>>>
+>>
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> 
