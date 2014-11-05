@@ -1,72 +1,113 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mailapp01.imgtec.com ([195.59.15.196]:52004 "EHLO
-	mailapp01.imgtec.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751129AbaKDXsh (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 4 Nov 2014 18:48:37 -0500
-Message-ID: <54596575.4080509@imgtec.com>
-Date: Tue, 4 Nov 2014 20:47:01 -0300
-From: Ezequiel Garcia <ezequiel.garcia@imgtec.com>
-MIME-Version: 1.0
-To: Peter Meerwald <pmeerw@pmeerw.net>
-CC: <linux-iio@vger.kernel.org>, <lars@metafoo.de>, <jic23@kernel.org>,
-	<Naidu.Tellapati@imgtec.com>, <james.hartley@imgtec.com>,
-	<abrestic@chromium.org>, Phani Movva <Phani.Movva@imgtec.com>
-Subject: Re: [PATCH 1/2] iio: adc: Cosmic Circuits 10001 ADC driver
-References: <1414615531-26172-1-git-send-email-ezequiel.garcia@imgtec.com> <1414615531-26172-2-git-send-email-ezequiel.garcia@imgtec.com> <alpine.DEB.2.02.1410312054310.18476@pmeerw.net>
-In-Reply-To: <alpine.DEB.2.02.1410312054310.18476@pmeerw.net>
-Content-Type: text/plain; charset="windows-1252"
+Received: from relay5-d.mail.gandi.net ([217.70.183.197]:40757 "EHLO
+	relay5-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750951AbaKEWJw (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 5 Nov 2014 17:09:52 -0500
+Message-ID: <1415225352.7630.23.camel@hadess.net>
+Subject: [PATCH v4] iio:kxcjk-1013: Add support for SMO8500 device
+From: Bastien Nocera <hadess@hadess.net>
+To: linux-iio@vger.kernel.org
+Cc: jic23@kernel.org,
+	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+	Daniel Baluta <daniel.baluta@intel.com>
+Date: Wed, 05 Nov 2014 23:09:12 +0100
+Content-Type: text/plain; charset="UTF-8"
+Mime-Version: 1.0
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
+The Onda v975w tablet contains an accelerometer that's advertised over
+ACPI as SMO8500. This device is however a KXCJ9 accelerometer as
+can be seen in the Windows driver's INF file, and from the etching on
+the chipset ("KXCJ9 41566 0414").
 
+This patch also removes the attempt to get the IRQ for the "data ready"
+signal, as it does not seem to be supported by this device on this
+platform.
 
-On 10/31/2014 05:26 PM, Peter Meerwald wrote:
-> Hi,
-> 
->> This commit adds support for Cosmic Circuits 10001 10-bit ADC device.
-> 
-> some more comments & nitpicking...
-> 
-> datasheet URL available?
-> 
+Signed-off-by: Bastien Nocera <hadess@hadess.net>
+---
 
-Not right now, but I'm working on it. I'll try to push one if I get the
-permission.
+Changes from v1:
+- Rebase after driver changes
+- Stop checking for IRQ when not supported
 
->> Signed-off-by: Phani Movva <Phani.Movva@imgtec.com>
->> Signed-off-by: Naidu Tellapati <Naidu.Tellapati@imgtec.com>
->> [Ezequiel: code style cleaning]
->> Signed-off-by: Ezequiel Garcia <ezequiel.garcia@imgtec.com>
->> ---
->>  drivers/iio/adc/Kconfig        |   7 +
->>  drivers/iio/adc/Makefile       |   1 +
->>  drivers/iio/adc/cc_10001_adc.c | 421 +++++++++++++++++++++++++++++++++++++++++
->>  3 files changed, 429 insertions(+)
->>  create mode 100644 drivers/iio/adc/cc_10001_adc.c
->>
->> diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
->> index 88bdc8f..be86c99 100644
->> --- a/drivers/iio/adc/Kconfig
->> +++ b/drivers/iio/adc/Kconfig
->> @@ -127,6 +127,13 @@ config AT91_ADC
->>  	help
->>  	  Say yes here to build support for Atmel AT91 ADC.
->>  
->> +config CC_10001_ADC
->> +	tristate "Cosmic Circuits 10001 ADC driver"
->> +	select IIO_BUFFER
->> +	select IIO_TRIGGERED_BUFFER
-> 
-> would there be a meaningful 'depends on'?
-> 
+Changes from v2:
+- Fixed the space before the opening bracket
+- Added Sob line
+- Add version to the patch subject line ;)
 
-This ADC will be available in a MIPS SoC from Imagination Technologies,
-called "Pistachio", so we would put a "depends on MACH_PISTACHIO", once
-the support for the SoC hits mainline (which should happen anytime soon).
+Changes from v3:
+- SMO8500 is a KXCJ9, so define it as such
 
-For the time being, we are pushing some of the peripherals so we can put
-the pieces progressively.
+ drivers/iio/accel/kxcjk-1013.c | 13 +++++++++++--
+ 1 file changed, 11 insertions(+), 2 deletions(-)
 
-I've fixed the driver as per all your comments, thanks a lot for the review!
+diff --git a/drivers/iio/accel/kxcjk-1013.c b/drivers/iio/accel/kxcjk-1013.c
+index a23e58c..570a237 100644
+--- a/drivers/iio/accel/kxcjk-1013.c
++++ b/drivers/iio/accel/kxcjk-1013.c
+@@ -108,6 +108,7 @@ struct kxcjk1013_data {
+ 	bool motion_trigger_on;
+ 	int64_t timestamp;
+ 	enum kx_chipset chipset;
++	bool is_smo8500_device;
+ };
+ 
+ enum kxcjk1013_axis {
+@@ -1129,12 +1130,15 @@ static irqreturn_t kxcjk1013_data_rdy_trig_poll(int irq, void *private)
+ }
+ 
+ static const char *kxcjk1013_match_acpi_device(struct device *dev,
+-					       enum kx_chipset *chipset)
++					       enum kx_chipset *chipset,
++					       bool *is_smo8500_device)
+ {
+ 	const struct acpi_device_id *id;
+ 	id = acpi_match_device(dev->driver->acpi_match_table, dev);
+ 	if (!id)
+ 		return NULL;
++	if (strcmp(id->id, "SMO8500") == 0)
++		*is_smo8500_device = true;
+ 	*chipset = (enum kx_chipset)id->driver_data;
+ 
+ 	return dev_name(dev);
+@@ -1149,6 +1153,8 @@ static int kxcjk1013_gpio_probe(struct i2c_client *client,
+ 
+ 	if (!client)
+ 		return -EINVAL;
++	if (data->is_smo8500_device)
++		return -ENOTSUPP;
+ 
+ 	dev = &client->dev;
+ 
+@@ -1198,7 +1204,8 @@ static int kxcjk1013_probe(struct i2c_client *client,
+ 		name = id->name;
+ 	} else if (ACPI_HANDLE(&client->dev)) {
+ 		name = kxcjk1013_match_acpi_device(&client->dev,
+-						   &data->chipset);
++						   &data->chipset,
++						   &data->is_smo8500_device);
+ 	} else
+ 		return -ENODEV;
+ 
+@@ -1397,6 +1404,7 @@ static const struct acpi_device_id kx_acpi_match[] = {
+ 	{"KXCJ1013", KXCJK1013},
+ 	{"KXCJ1008", KXCJ91008},
+ 	{"KXTJ1009", KXTJ21009},
++	{"SMO8500",  KXCJ91008},
+ 	{ },
+ };
+ MODULE_DEVICE_TABLE(acpi, kx_acpi_match);
+@@ -1405,6 +1413,7 @@ static const struct i2c_device_id kxcjk1013_id[] = {
+ 	{"kxcjk1013", KXCJK1013},
+ 	{"kxcj91008", KXCJ91008},
+ 	{"kxtj21009", KXTJ21009},
++	{"SMO8500",   KXCJ91008},
+ 	{}
+ };
+ 
 -- 
-Ezequiel
+2.1.0
+
+
