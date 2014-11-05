@@ -1,123 +1,115 @@
-Return-Path: <bgriffis@ti.com>
-From: "Griffis, Brad" <bgriffis@ti.com>
-To: Richard Cochran <richardcochran@gmail.com>,
-        Johannes Pointner
-	<johannes.pointner@gmail.com>
-CC: "Nori, Sekhar" <nsekhar@ti.com>, "R, Vignesh" <vigneshr@ti.com>,
-        "Dmitry
- Torokhov" <dmitry.torokhov@gmail.com>,
-        Lee Jones <lee.jones@linaro.org>, "Rob Herring" <robh+dt@kernel.org>,
-        Pawel Moll <pawel.moll@arm.com>, Mark
- Rutland <mark.rutland@arm.com>,
-        Ian Campbell <ijc+devicetree@hellion.org.uk>,
-        "Kumar Gala" <galak@codeaurora.org>,
-        Benoit Cousson <bcousson@baylibre.com>,
-        "Tony Lindgren" <tony@atomide.com>,
-        Russell King <linux@arm.linux.org.uk>,
-        "Jonathan Cameron" <jic23@kernel.org>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        "Sebastian Andrzej Siewior" <bigeasy@linutronix.de>,
-        Lars-Peter Clausen
-	<lars@metafoo.de>,
-        Peter Meerwald <pmeerw@pmeerw.net>,
-        Samuel Ortiz
-	<sameo@linux.intel.com>, "Balbi, Felipe" <balbi@ti.com>,
-        Sanjeev Sharma
-	<sanjeev_sharma@mentor.com>,
-        Paul Gortmaker <paul.gortmaker@windriver.com>,
-        Jan Kardell <jan.kardell@telliq.com>,
-        "devicetree@vger.kernel.org"
-	<devicetree@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org"
-	<linux-kernel@vger.kernel.org>,
-        "linux-omap@vger.kernel.org"
-	<linux-omap@vger.kernel.org>,
-        "linux-arm-kernel@lists.infradead.org"
-	<linux-arm-kernel@lists.infradead.org>,
-        linux-iio
-	<linux-iio@vger.kernel.org>,
-        "linux-input@vger.kernel.org"
-	<linux-input@vger.kernel.org>,
-        Robert Nelson <robertcnelson@gmail.com>
-Subject: RE: [PATCH v4 3/6] mfd: ti_am335x_tscadc: Remove unwanted
- reg_se_cache save
-Date: Fri, 21 Nov 2014 22:25:50 +0000
-Message-ID: <912A29987EAE174BA6CF187D7CDFA9CE26F6D664@DLEE08.ent.ti.com>
-References: <1415941651-28962-4-git-send-email-vigneshr@ti.com>
- <20141118143005.GF24004@x1> <20141118171240.GB3003@dtor-ws>
- <546DF2F0.9080405@ti.com> <20141120144028.GB5809@localhost.localdomain>
- <546F2BA4.4000808@ti.com> <20141121131036.GA18931@localhost.localdomain>
- <CAJKbBDDVTA+=priRu7sCD=vHrC8AUg4DM3kycuGrqbpF-5FGAA@mail.gmail.com>
- <546F5C27.7040004@ti.com>
- <CAJKbBDD=eYmU=LuViwLPNV=kYCziDQgKjL07bT7og4vsj0Ee7A@mail.gmail.com>
- <20141121214005.GA4020@localhost.localdomain>
-In-Reply-To: <20141121214005.GA4020@localhost.localdomain>
-Content-Type: text/plain; charset="us-ascii"
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:42657 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753993AbaKENse (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 5 Nov 2014 08:48:34 -0500
+Message-ID: <545A2AAE.2080304@kernel.org>
+Date: Wed, 05 Nov 2014 13:48:30 +0000
+From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-List-ID: <linux-iio@vger.kernel.org>
+To: Hartmut Knaack <knaack.h@gmx.de>,
+	George McCollister <george.mccollister@gmail.com>,
+	mranostay@gmail.com
+CC: linux-iio@vger.kernel.org
+Subject: Re: [PATCH 2/2] iio: as3935: Remove unnecessary semicolons
+References: <1414770263-13146-1-git-send-email-george.mccollister@gmail.com> <1414770263-13146-2-git-send-email-george.mccollister@gmail.com> <54594854.5000808@gmx.de>
+In-Reply-To: <54594854.5000808@gmx.de>
+Content-Type: text/plain; charset=iso-8859-15
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
+On 04/11/14 21:42, Hartmut Knaack wrote:
+> George McCollister schrieb am 31.10.2014 16:44:
+>> Signed-off-by: George McCollister <george.mccollister@gmail.com>
+> Acked-by: Hartmut Knaack <knaack.h@gmx.de>
+Applied to the togreg branch of iio.git - initially pushed out as testing
+for the autobuilders to play.
 
-> -----Original Message-----
-> From: Richard Cochran [mailto:richardcochran@gmail.com]
->=20
-> On Fri, Nov 21, 2014 at 07:17:18PM +0100, Johannes Pointner wrote:
-> > Before the patches were also jumps but I thought it is something
-> > Vignesh should know. Maybe there is some fix for that too?
-
-I believe I've seen the "jumping" behavior pop up at a couple random times =
-in my testing.  I think it relates to the hardware not properly registering=
- a pen-up interrupt.  When that's happening can you try running ts_calibrat=
-e?  If you're not registering a pen-up event then you won't be able to adva=
-nce through those touch points.  Is this behavior related to capturing ADC =
-samples, or do you see this behavior even without capturing ADC samples?
-
-> > As Richard also noted, it would be nice if ti could let us know how to
-> > get the delay values right. By trial and error is IMHO not the best
-> > way.
->=20
-> That is not only an opinion, it is a matter of fact. TI really dropped th=
-e ball on
-> this one. I thought the patch series was a sign they finally were going t=
-o
-> properly address this issue. Wrong again.
-
-These patches originate from work I did on TI's SDK 7.00 (3.12 kernel).  Th=
-e touchscreen is working beautifully in that environment and we are putting=
- forth significant effort to bring those improvements to the community.=20
-
-Things do not seem to be working as well with the current mainline kernel. =
- I've been reviewing various patches between 3.12 and the mainline to under=
-stand why it's different.  I believe I have figured this out, and I have di=
-scussions going separately with individuals that contributed those patches =
-in order to come up with the best possible solution, i.e. we likely need a =
-few additional changes to this patch set.
-
-The CHARGECONFIG delay serves precisely the same purpose as the udelay in t=
-he original code base.  How did you determine the udelay value in the first=
- place?  I went through the effort of figuring out a way to make the delay =
-into a HARDWARE delay instead of a software delay so that it could be remov=
-ed from the ISR.  That delay time relates to "settling time" and so it's go=
-ing to be dependent on your PCB.  You could hook up an oscilloscope and att=
-empt to capture this parameter from the signals themselves.  Personally I t=
-hink that's a lot more difficult than just doing a few iterations of testin=
-g.
-
-> The data sheet for the TI part used to have a reference to an app-note fo=
-r
-> the touch controller.
->=20
->       spruh73f page 1154
->=20
->       The Pen IRQ can only occur if the correct Pen Ctrl bits are high
->       (AFE Pen Ctrl bits 6:5 in the TSC_ADC control register) and if
->       the correct ground transistor biasing is set in the StepConfig
->       [N] Register. Refer to the application notes for the correct
->       settings.
->=20
-> I searched high and low for this application note. Then, the data sheet g=
-ot
-> revised.
-
-Such an application note does not exist, which explains why you didn't find=
- it and why we have removed that reference from the TRM.  Sorry for your tr=
-ouble.  We always strive for accurate documentation.
+Jonathan
+>> ---
+>>  drivers/iio/proximity/as3935.c | 16 ++++++++--------
+>>  1 file changed, 8 insertions(+), 8 deletions(-)
+>>
+>> diff --git a/drivers/iio/proximity/as3935.c b/drivers/iio/proximity/as3935.c
+>> index 8349cc0..466aa43 100644
+>> --- a/drivers/iio/proximity/as3935.c
+>> +++ b/drivers/iio/proximity/as3935.c
+>> @@ -95,7 +95,7 @@ static int as3935_read(struct as3935_state *st, unsigned int reg, int *val)
+>>  	*val = ret;
+>>  
+>>  	return 0;
+>> -};
+>> +}
+>>  
+>>  static int as3935_write(struct as3935_state *st,
+>>  				unsigned int reg,
+>> @@ -107,7 +107,7 @@ static int as3935_write(struct as3935_state *st,
+>>  	buf[1] = val;
+>>  
+>>  	return spi_write(st->spi, buf, 2);
+>> -};
+>> +}
+>>  
+>>  static ssize_t as3935_sensor_sensitivity_show(struct device *dev,
+>>  					struct device_attribute *attr,
+>> @@ -122,7 +122,7 @@ static ssize_t as3935_sensor_sensitivity_show(struct device *dev,
+>>  	val = (val & AS3935_AFE_MASK) >> 1;
+>>  
+>>  	return sprintf(buf, "%d\n", val);
+>> -};
+>> +}
+>>  
+>>  static ssize_t as3935_sensor_sensitivity_store(struct device *dev,
+>>  					struct device_attribute *attr,
+>> @@ -142,7 +142,7 @@ static ssize_t as3935_sensor_sensitivity_store(struct device *dev,
+>>  	as3935_write(st, AS3935_AFE_GAIN, val << 1);
+>>  
+>>  	return len;
+>> -};
+>> +}
+>>  
+>>  static IIO_DEVICE_ATTR(sensor_sensitivity, S_IRUGO | S_IWUSR,
+>>  	as3935_sensor_sensitivity_show, as3935_sensor_sensitivity_store, 0);
+>> @@ -214,7 +214,7 @@ err_read:
+>>  	iio_trigger_notify_done(indio_dev->trig);
+>>  
+>>  	return IRQ_HANDLED;
+>> -};
+>> +}
+>>  
+>>  static const struct iio_trigger_ops iio_interrupt_trigger_ops = {
+>>  	.owner = THIS_MODULE,
+>> @@ -238,7 +238,7 @@ static void as3935_event_work(struct work_struct *work)
+>>  		dev_warn(&st->spi->dev, "noise level is too high");
+>>  		break;
+>>  	}
+>> -};
+>> +}
+>>  
+>>  static irqreturn_t as3935_interrupt_handler(int irq, void *private)
+>>  {
+>> @@ -417,7 +417,7 @@ unregister_trigger:
+>>  	iio_trigger_unregister(st->trig);
+>>  
+>>  	return ret;
+>> -};
+>> +}
+>>  
+>>  static int as3935_remove(struct spi_device *spi)
+>>  {
+>> @@ -429,7 +429,7 @@ static int as3935_remove(struct spi_device *spi)
+>>  	iio_trigger_unregister(st->trig);
+>>  
+>>  	return 0;
+>> -};
+>> +}
+>>  
+>>  static const struct spi_device_id as3935_id[] = {
+>>  	{"as3935", 0},
+>>
+> 
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> 
