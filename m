@@ -1,46 +1,156 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pa0-f43.google.com ([209.85.220.43]:40725 "EHLO
-	mail-pa0-f43.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753395AbaKHRZF (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 8 Nov 2014 12:25:05 -0500
-From: Darshana Padmadas <darshanapadmadas@gmail.com>
-To: devicetree@vger.kernel.org
-Cc: devel@driverdev.osuosl.org, linux-arm-kernel@lists.infradead.org,
-	linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-	opw-kernel@googlegroups.com,
-	Darshana Padmadas <darshanapadmadas@gmail.com>
-Subject: [PATCH v5 1/4] dt-bindings: Document correct and deprecated vendor-prefix with device isl29028
-Date: Sat,  8 Nov 2014 22:52:05 +0530
-Message-Id: <1415467328-9745-2-git-send-email-darshanapadmadas@gmail.com>
-In-Reply-To: <1415467328-9745-1-git-send-email-darshanapadmadas@gmail.com>
-References: <1415467328-9745-1-git-send-email-darshanapadmadas@gmail.com>
-Content-Type: text/plain; charset="utf-8"
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:43348 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755266AbaKEP3G (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 5 Nov 2014 10:29:06 -0500
+Message-ID: <545A423F.1040709@kernel.org>
+Date: Wed, 05 Nov 2014 15:29:03 +0000
+From: Jonathan Cameron <jic23@kernel.org>
+MIME-Version: 1.0
+To: Naveen Krishna Chatradhi <ch.naveen@samsung.com>,
+	linux-iio@vger.kernel.org, linux-samsung-soc@vger.kernel.org,
+	devicetree@vger.kernel.org
+CC: linux-kernel@vger.kernel.org, cw00.choi@samsung.com,
+	gregkh@linuxfoundation.org, naveenkrishna.ch@gmail.com,
+	lars@metafoo.de, cpgs@samsung.com, grundler@chromium.org
+Subject: Re: [PATCH v2 1/3] iio: exyno-adc: use syscon for PMU register access
+References: <1410857931-4980-1-git-send-email-ch.naveen@samsung.com> <1410857931-4980-2-git-send-email-ch.naveen@samsung.com>
+In-Reply-To: <1410857931-4980-2-git-send-email-ch.naveen@samsung.com>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-This patch documents the device isl29028 with its vendor-prefix. Undocumented deprecated vendor-prefix
-found by checkpatch also documented for compatibility reasons.
+On 16/09/14 09:58, Naveen Krishna Chatradhi wrote:
+> This patch updates the IIO based ADC driver to use syscon and regmap
+> APIs to access and use PMU registers instead of remapping the PMU
+> registers in the driver.
+> 
+> Signed-off-by: Naveen Krishna Chatradhi <ch.naveen@samsung.com>
+> To: linux-iio@vger.kernel.org
+Applied to the togreg branch of iio.git - initially pushed out as testing
+for the autobuilders to play.
 
-Signed-off-by: Darshana Padmadas <darshanapadmadas@gmail.com>
-Acked-by: Arnd Bergmann <arnd@arndb.de>
-Acked-by: Mark Rutland <mark.rutland@arm.com>
----
- Documentation/devicetree/bindings/i2c/trivial-devices.txt | 2 ++
- 1 file changed, 2 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/i2c/trivial-devices.txt b/Documentation/devicetree/bindings/i2c/trivial-devices.txt
-index 6af570e..32edf0b 100644
---- a/Documentation/devicetree/bindings/i2c/trivial-devices.txt
-+++ b/Documentation/devicetree/bindings/i2c/trivial-devices.txt
-@@ -57,6 +57,8 @@ gmt,g751		G751: Digital Temperature Sensor and Thermal Watchdog with Two-Wire In
- infineon,slb9635tt	Infineon SLB9635 (Soft-) I2C TPM (old protocol, max 100khz)
- infineon,slb9645tt	Infineon SLB9645 I2C TPM (new protocol, max 400khz)
- isl,isl12057		Intersil ISL12057 I2C RTC Chip
-+isil,isl29028           (deprecated, use isl)
-+isl,isl29028            Intersil ISL29028 Ambient Light and Proximity Sensor
- maxim,ds1050		5 Bit Programmable, Pulse-Width Modulator
- maxim,max1237		Low-Power, 4-/12-Channel, 2-Wire Serial, 12-Bit ADCs
- maxim,max6625		9-Bit/12-Bit Temperature Sensors with I²C-Compatible Serial Interface
--- 
-1.9.1
-
+> ---
+> Changes since v1:
+> Rebased on top of togreg branch of IIO git
+> 
+>  drivers/iio/adc/exynos_adc.c |   30 +++++++++++++++++++++---------
+>  1 file changed, 21 insertions(+), 9 deletions(-)
+> 
+> diff --git a/drivers/iio/adc/exynos_adc.c b/drivers/iio/adc/exynos_adc.c
+> index 43620fd..fe03177 100644
+> --- a/drivers/iio/adc/exynos_adc.c
+> +++ b/drivers/iio/adc/exynos_adc.c
+> @@ -39,6 +39,8 @@
+>  #include <linux/iio/iio.h>
+>  #include <linux/iio/machine.h>
+>  #include <linux/iio/driver.h>
+> +#include <linux/mfd/syscon.h>
+> +#include <linux/regmap.h>
+>  
+>  /* S3C/EXYNOS4412/5250 ADC_V1 registers definitions */
+>  #define ADC_V1_CON(x)		((x) + 0x00)
+> @@ -90,11 +92,14 @@
+>  
+>  #define EXYNOS_ADC_TIMEOUT	(msecs_to_jiffies(100))
+>  
+> +#define EXYNOS_ADCV1_PHY_OFFSET	0x0718
+> +#define EXYNOS_ADCV2_PHY_OFFSET	0x0720
+> +
+>  struct exynos_adc {
+>  	struct exynos_adc_data	*data;
+>  	struct device		*dev;
+>  	void __iomem		*regs;
+> -	void __iomem		*enable_reg;
+> +	struct regmap		*pmu_map;
+>  	struct clk		*clk;
+>  	struct clk		*sclk;
+>  	unsigned int		irq;
+> @@ -110,6 +115,7 @@ struct exynos_adc_data {
+>  	int num_channels;
+>  	bool needs_sclk;
+>  	bool needs_adc_phy;
+> +	int phy_offset;
+>  	u32 mask;
+>  
+>  	void (*init_hw)(struct exynos_adc *info);
+> @@ -183,7 +189,7 @@ static void exynos_adc_v1_init_hw(struct exynos_adc *info)
+>  	u32 con1;
+>  
+>  	if (info->data->needs_adc_phy)
+> -		writel(1, info->enable_reg);
+> +		regmap_write(info->pmu_map, info->data->phy_offset, 1);
+>  
+>  	/* set default prescaler values and Enable prescaler */
+>  	con1 =  ADC_V1_CON_PRSCLV(49) | ADC_V1_CON_PRSCEN;
+> @@ -198,7 +204,7 @@ static void exynos_adc_v1_exit_hw(struct exynos_adc *info)
+>  	u32 con;
+>  
+>  	if (info->data->needs_adc_phy)
+> -		writel(0, info->enable_reg);
+> +		regmap_write(info->pmu_map, info->data->phy_offset, 0);
+>  
+>  	con = readl(ADC_V1_CON(info->regs));
+>  	con |= ADC_V1_CON_STANDBY;
+> @@ -225,6 +231,7 @@ static const struct exynos_adc_data exynos_adc_v1_data = {
+>  	.num_channels	= MAX_ADC_V1_CHANNELS,
+>  	.mask		= ADC_DATX_MASK,	/* 12 bit ADC resolution */
+>  	.needs_adc_phy	= true,
+> +	.phy_offset	= EXYNOS_ADCV1_PHY_OFFSET,
+>  
+>  	.init_hw	= exynos_adc_v1_init_hw,
+>  	.exit_hw	= exynos_adc_v1_exit_hw,
+> @@ -314,7 +321,7 @@ static void exynos_adc_v2_init_hw(struct exynos_adc *info)
+>  	u32 con1, con2;
+>  
+>  	if (info->data->needs_adc_phy)
+> -		writel(1, info->enable_reg);
+> +		regmap_write(info->pmu_map, info->data->phy_offset, 1);
+>  
+>  	con1 = ADC_V2_CON1_SOFT_RESET;
+>  	writel(con1, ADC_V2_CON1(info->regs));
+> @@ -332,7 +339,7 @@ static void exynos_adc_v2_exit_hw(struct exynos_adc *info)
+>  	u32 con;
+>  
+>  	if (info->data->needs_adc_phy)
+> -		writel(0, info->enable_reg);
+> +		regmap_write(info->pmu_map, info->data->phy_offset, 0);
+>  
+>  	con = readl(ADC_V2_CON1(info->regs));
+>  	con &= ~ADC_CON_EN_START;
+> @@ -362,6 +369,7 @@ static const struct exynos_adc_data exynos_adc_v2_data = {
+>  	.num_channels	= MAX_ADC_V2_CHANNELS,
+>  	.mask		= ADC_DATX_MASK, /* 12 bit ADC resolution */
+>  	.needs_adc_phy	= true,
+> +	.phy_offset	= EXYNOS_ADCV2_PHY_OFFSET,
+>  
+>  	.init_hw	= exynos_adc_v2_init_hw,
+>  	.exit_hw	= exynos_adc_v2_exit_hw,
+> @@ -374,6 +382,7 @@ static const struct exynos_adc_data exynos3250_adc_data = {
+>  	.mask		= ADC_DATX_MASK, /* 12 bit ADC resolution */
+>  	.needs_sclk	= true,
+>  	.needs_adc_phy	= true,
+> +	.phy_offset	= EXYNOS_ADCV1_PHY_OFFSET,
+>  
+>  	.init_hw	= exynos_adc_v2_init_hw,
+>  	.exit_hw	= exynos_adc_v2_exit_hw,
+> @@ -558,10 +567,13 @@ static int exynos_adc_probe(struct platform_device *pdev)
+>  
+>  
+>  	if (info->data->needs_adc_phy) {
+> -		mem = platform_get_resource(pdev, IORESOURCE_MEM, 1);
+> -		info->enable_reg = devm_ioremap_resource(&pdev->dev, mem);
+> -		if (IS_ERR(info->enable_reg))
+> -			return PTR_ERR(info->enable_reg);
+> +		info->pmu_map = syscon_regmap_lookup_by_phandle(
+> +					pdev->dev.of_node,
+> +					"samsung,syscon-phandle");
+> +		if (IS_ERR(info->pmu_map)) {
+> +			dev_err(&pdev->dev, "syscon regmap lookup failed.\n");
+> +			return PTR_ERR(info->pmu_map);
+> +		}
+>  	}
+>  
+>  	irq = platform_get_irq(pdev, 0);
+> 
