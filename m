@@ -1,41 +1,66 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-yh0-f74.google.com ([209.85.213.74]:43843 "EHLO
-	mail-yh0-f74.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751345AbaKEWK4 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 5 Nov 2014 17:10:56 -0500
-Received: by mail-yh0-f74.google.com with SMTP id a41so132349yho.5
-        for <linux-iio@vger.kernel.org>; Wed, 05 Nov 2014 14:10:55 -0800 (PST)
-From: Gwendal Grignou <gwendal@chromium.org>
-To: srinivas.pandruvada@linux.intel.com, jic23@kernel.org,
-	knaack.h@gmx.de
-Cc: linux-iio@vger.kernel.org, Gwendal Grignou <gwendal@chromium.org>
-Subject: [PATCH 0/3] Support all AKM compass in a single driver
-Date: Wed,  5 Nov 2014 14:10:49 -0800
-Message-Id: <1415225452-21957-1-git-send-email-gwendal@chromium.org>
-In-Reply-To: <CAMHSBOWmmCdd=5HXJN-vz9saaPrq3n0p-LjCNvnX3Q3ZieZdRQ@mail.gmail.com>
-References: <CAMHSBOWmmCdd=5HXJN-vz9saaPrq3n0p-LjCNvnX3Q3ZieZdRQ@mail.gmail.com>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:44813 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750891AbaKESul (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 5 Nov 2014 13:50:41 -0500
+Message-ID: <545A717C.1070207@kernel.org>
+Date: Wed, 05 Nov 2014 18:50:36 +0000
+From: Jonathan Cameron <jic23@kernel.org>
+MIME-Version: 1.0
+To: Greg KH <gregkh@linuxfoundation.org>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Subject: [PULL] IIO fixes for 3.18 set 2 (resend)
+Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Currently, 2 drivers are used for supporting AKM compasses:
-- ak8975 and ak8963 in ak875.c: these compasses support DRDY line and interrupt.
-- ak09911 in ak0911.c: this compass has a new register map and does not support DRDY line.
+The following changes since commit 4748119f1889b4ce96c84831ad0581598081b46f:
 
-A newer compass, ak09912 has the same register map as ak09911 but the same functionality as
-ak8975. By adding support to ak09912 into ak8975, we can remove the driver specific to ak09911.
+  iio: adc: mxs-lradc: Disable the clock on probe failure (2014-11-05 18:33:44 +0000)
 
-Gwendal Grignou (3):
-  iio: ak8975: minor fixes
-  iio: ak8975: add definition structure per compass type
-  iio: ak8975: add ak09911 and ak09912 support
+are available in the git repository at:
 
- drivers/iio/magnetometer/Kconfig   |  17 +-
- drivers/iio/magnetometer/Makefile  |   1 -
- drivers/iio/magnetometer/ak09911.c | 326 ------------------------
- drivers/iio/magnetometer/ak8975.c  | 501 +++++++++++++++++++++++++++----------
- 4 files changed, 377 insertions(+), 468 deletions(-)
- delete mode 100644 drivers/iio/magnetometer/ak09911.c
+  git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git tags/iio-fixes-for-3.18b
 
--- 
-2.1.0.rc2.206.gedb03e5
+for you to fetch changes up to b598aacc29331e7e638cd509108600e916c6331b:
 
+  staging:iio:ade7758: Remove "raw" from channel name (2014-11-05 18:33:48 +0000)
+
+----------------------------------------------------------------
+Second round of IIO fixes for the 3.18 cycle.
+
+* tsl4531 - fix a compile error when CONFIG_PM_OPS not set.
+* kxcjk-1013 - event spec direction was invalid - leading to 'interesting'
+  attrribute names.
+* as3935 - sizeof(st) used instead of sizeof(*st) leading to allocation of
+  space for a pointer rather than the structure desired.
+* ade7758 - Another null pointer deref fix due to different channels
+  being provided to the the buffer register than used for the sysfs
+  side of things.
+* ade7758 - Check there is a channel enabled in preenable for the buffer
+  before doing anything.
+* ade7758 - Drop a stray raw from the channel name that leads to _raw_raw
+  postfix.
+
+----------------------------------------------------------------
+Dan Murphy (1):
+      iio: tsl4531: Fix compiler error when CONFIG_PM_OPS is not defined
+
+Daniel Baluta (1):
+      io: accel: kxcjk-1013: Fix iio_event_spec direction
+
+George McCollister (1):
+      iio: as3935: allocate correct iio_device size
+
+Lars-Peter Clausen (3):
+      staging:iio:ade7758: Fix NULL pointer deref when enabling buffer
+      staging:iio:ade7758: Fix check if channels are enabled in prenable
+      staging:iio:ade7758: Remove "raw" from channel name
+
+ drivers/iio/accel/kxcjk-1013.c           |  2 +-
+ drivers/iio/light/tsl4531.c              |  7 ++--
+ drivers/iio/proximity/as3935.c           |  2 +-
+ drivers/staging/iio/meter/ade7758.h      |  1 -
+ drivers/staging/iio/meter/ade7758_core.c | 57 ++++++--------------------------
+ drivers/staging/iio/meter/ade7758_ring.c |  5 ++-
+ 6 files changed, 20 insertions(+), 54 deletions(-)
