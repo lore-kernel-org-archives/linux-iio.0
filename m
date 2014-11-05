@@ -1,54 +1,33 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:40276 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751366AbaKVLtb (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 22 Nov 2014 06:49:31 -0500
-Message-ID: <5470784A.9020505@kernel.org>
-Date: Sat, 22 Nov 2014 11:49:30 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-MIME-Version: 1.0
-To: Daniel Baluta <daniel.baluta@intel.com>
-CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 0/2] kmx61: Small cleanups
-References: <1416230316-14511-1-git-send-email-daniel.baluta@intel.com>	<F244A294-8B78-4A9C-BB0B-268AFCC3EC5C@kernel.org> <CAEnQRZCa07iOt5baDHaH4-wNNYsP7rOf5Sixs+yndNo5-OP4kQ@mail.gmail.com>
-In-Reply-To: <CAEnQRZCa07iOt5baDHaH4-wNNYsP7rOf5Sixs+yndNo5-OP4kQ@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
+Received: from ns.mm-sol.com ([37.157.136.199]:57866 "EHLO extserv.mm-sol.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751198AbaKEOHh (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Wed, 5 Nov 2014 09:07:37 -0500
+Message-ID: <1415196474.3660.6.camel@mm-sol.com>
+Subject: Re: [PATCH v4 1/2] DT: iio: vadc: document dt binding
+From: "Ivan T. Ivanov" <iivanov@mm-sol.com>
+To: Hartmut Knaack <knaack.h@gmx.de>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	Ian Campbell <ijc+devicetree@hellion.org.uk>,
+	Rob Herring <robh+dt@kernel.org>,
+	Pawel Moll <pawel.moll@arm.com>,
+	Mark Rutland <mark.rutland@arm.com>,
+	Kumar Gala <galak@codeaurora.org>,
+	Stanimir Varbanov <svarbanov@mm-sol.com>,
+	linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org
+Date: Wed, 05 Nov 2014 16:07:54 +0200
+In-Reply-To: <545968F5.7070605@gmx.de>
+References: <1415028270-25860-1-git-send-email-iivanov@mm-sol.com>
+	 <1415028270-25860-2-git-send-email-iivanov@mm-sol.com>
+	 <545968F5.7070605@gmx.de>
+Content-Type: text/plain
+Mime-Version: 1.0
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 17/11/14 15:09, Daniel Baluta wrote:
-> On Mon, Nov 17, 2014 at 4:59 PM, Jonathan Cameron <jic23@kernel.org> wrote:
->>
->>
->> On November 17, 2014 1:18:34 PM GMT+00:00, Daniel Baluta <daniel.baluta@intel.com> wrote:
->>> This is a small cleanup patchset, that:
->>>       * makes it clear that kmx61 uses only the micro part of scale
->>>       * use macro instead of hardcoded value for driver name
->>>
->>> Jonathan, if you think it's worth it, these could be squased together
->>> with
->>> the initial patch submitted in testing:
->>>       61ef04a496 (iio: imu: Add support for Kionix KMX61 sensor)
->>>
->>
->> Given the additional bits from Peter, I don't mind pulling the original and applying an updated patch.
-> 
-> I prefer this :). I will send an updated patch with fixes reported by Peter.
-> 
->>
->> Additional changes like this are fine as well if you prefer.
-> 
-> I am almost done with adding support for runtime PM. Let me know
-> if you want this as a separate patch or just one big updated patch.
-Oops. I moaned about the unified patch, but didn't actually get around
-to replying to you.  Was fine either way really.
 
-Note to anyone reading this patch series - the unified patch for
-adding the driver with all these changes in place has now been applied.
+Thank you, will fix typos pointed by you and Jonathan.
 
-Jonathan
-> 
-> Daniel.
-> 
-
+Regards,
+Ivan
