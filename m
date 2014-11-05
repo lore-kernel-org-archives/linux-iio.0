@@ -1,114 +1,88 @@
-Return-Path: <lars@metafoo.de>
-From: Lars-Peter Clausen <lars@metafoo.de>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Hartmut Knaack <knaack.h@gmx.de>,
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:43374 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754822AbaKEPcN (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 5 Nov 2014 10:32:13 -0500
+Message-ID: <545A42FA.7090501@kernel.org>
+Date: Wed, 05 Nov 2014 15:32:10 +0000
+From: Jonathan Cameron <jic23@kernel.org>
+MIME-Version: 1.0
+To: "Ivan T. Ivanov" <iivanov@mm-sol.com>
+CC: Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
 	Peter Meerwald <pmeerw@pmeerw.net>,
-	linux-iio@vger.kernel.org,
-	Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH 07/11] iio: Remove get_bytes_per_datum() from iio_buffer_access_funcs
-Date: Wed, 26 Nov 2014 18:55:13 +0100
-Message-Id: <1417024517-7564-8-git-send-email-lars@metafoo.de>
-In-Reply-To: <1417024517-7564-1-git-send-email-lars@metafoo.de>
-References: <1417024517-7564-1-git-send-email-lars@metafoo.de>
-List-ID: <linux-iio@vger.kernel.org>
+	Stanimir Varbanov <svarbanov@mm-sol.com>,
+	Angelo Compagnucci <angelo.compagnucci@gmail.com>,
+	Grant Likely <grant.likely@linaro.org>,
+	linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org, linux-arm-msm@vger.kernel.org
+Subject: Re: [PATCH v4 2/2] iio: vadc: Qualcomm SPMI PMIC voltage ADC driver
+References: <1415028270-25860-1-git-send-email-iivanov@mm-sol.com>		 <1415028270-25860-3-git-send-email-iivanov@mm-sol.com>		 <545A218F.5060301@kernel.org> <1415195855.3660.4.camel@mm-sol.com>	 <545A2EDB.5040801@kernel.org> <1415199681.3660.8.camel@mm-sol.com>
+In-Reply-To: <1415199681.3660.8.camel@mm-sol.com>
+Content-Type: text/plain; charset=utf-8
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-There haven't been any users of the get_bytes_per_datum() callback for a
-while. The core assumes that the number of bytes per datum can be calculated
-based on the enabled channels and the storage size of the channel and
-iio_compute_scan_bytes() is used to compute this number. So remove the
-callback.
+On 05/11/14 15:01, Ivan T. Ivanov wrote:
+> 
+> On Wed, 2014-11-05 at 14:06 +0000, Jonathan Cameron wrote:
+>> On 05/11/14 13:57, Ivan T. Ivanov wrote:
+>>> On Wed, 2014-11-05 at 13:09 +0000, Jonathan Cameron wrote:
+>>>> On 03/11/14 15:24, Ivan T. Ivanov wrote:
+>>>>> From: Stanimir Varbanov <svarbanov@mm-sol.com>
+>>>>>
+>>>>> The voltage ADC is peripheral of Qualcomm SPMI PMIC chips. It has
+>>>>> 15 bits resolution and register space inside PMIC accessible across
+>>>>> SPMI bus.
+>>>>>
+>>>>> The vadc driver registers itself through IIO interface.
+>>>>>
+>>>>> Signed-off-by: Stanimir Varbanov <svarbanov@mm-sol.com>
+>>>>> Signed-off-by: Ivan T. Ivanov <iivanov@mm-sol.com>
+>>>> Hi Ivan,
+>>>>
+>>>> Couple of utterly tiny bits inline.  The biggest one is that
+>>>> you store some info about the calibration that you never actually
+>>>> use... Left over from some debugging perhaps?
+>>>>
+>>>> Jonathan
+>>>
+>>> <snip>
+>>>
+>>>>> +
+>>>>> +/*
+>>>>> + * VADC_CALIB_ABSOLUTE: uses the 625mV and 1.25V as reference channels.
+>>>>> + * VADC_CALIB_RATIOMETRIC: uses the reference voltage (1.8V) and GND for
+>>>>> + * calibration.
+>>>>> + */
+>>>>> +enum vadc_calibration {
+>>>>> +       VADC_CALIB_ABSOLUTE = 0,
+>>>>> +       VADC_CALIB_RATIOMETRIC
+>>>>> +};
+>>>>> +
+>>>>> +/**
+>>>>> + * struct vadc_linear_graph - Represent ADC characteristics.
+>>>>> + * @dy: numerator slope to calculate the gain.
+>>>> As dy is always equal to vref-gnd you could drop it and use those
+>>>> directly...
+>>>>
+>>>> Conversly you store vref or grnd and never use them...
+>>>
+>>> I am not sure I am following you. Please take a look in
+>>> vadc_measure_ref_points() and vadc_calibrate().
+>> Good point on grnd, but vref is set but never read anywhere that I can find..
+>>
+> 
+> Right. At this point it is not used. Driver right now provide basic per
+> channel voltage measurements. The plan is to add temperature compensation for the
+> measurements and additional scaling functions which are specific per channel.
+> 
+> I could drop this field from initial driver version if you like.
+Probably best as otherwise some compiler in a clever mood will give
+a warning and I'll get an irritating patch to remove it!
 
-Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
----
- drivers/iio/kfifo_buf.c                    | 6 ------
- drivers/staging/iio/Documentation/ring.txt | 4 ++--
- drivers/staging/iio/accel/sca3000_ring.c   | 7 -------
- include/linux/iio/buffer.h                 | 2 --
- 4 files changed, 2 insertions(+), 17 deletions(-)
-
-diff --git a/drivers/iio/kfifo_buf.c b/drivers/iio/kfifo_buf.c
-index 7134e8a..1258b4e 100644
---- a/drivers/iio/kfifo_buf.c
-+++ b/drivers/iio/kfifo_buf.c
-@@ -66,11 +66,6 @@ static struct attribute_group iio_kfifo_attribute_group = {
- 	.name = "buffer",
- };
- 
--static int iio_get_bytes_per_datum_kfifo(struct iio_buffer *r)
--{
--	return r->bytes_per_datum;
--}
--
- static int iio_mark_update_needed_kfifo(struct iio_buffer *r)
- {
- 	struct iio_kfifo *kf = iio_to_kfifo(r);
-@@ -159,7 +154,6 @@ static const struct iio_buffer_access_funcs kfifo_access_funcs = {
- 	.read_first_n = &iio_read_first_n_kfifo,
- 	.data_available = iio_kfifo_buf_data_available,
- 	.request_update = &iio_request_update_kfifo,
--	.get_bytes_per_datum = &iio_get_bytes_per_datum_kfifo,
- 	.set_bytes_per_datum = &iio_set_bytes_per_datum_kfifo,
- 	.get_length = &iio_get_length_kfifo,
- 	.set_length = &iio_set_length_kfifo,
-diff --git a/drivers/staging/iio/Documentation/ring.txt b/drivers/staging/iio/Documentation/ring.txt
-index e1da433..434d63a 100644
---- a/drivers/staging/iio/Documentation/ring.txt
-+++ b/drivers/staging/iio/Documentation/ring.txt
-@@ -39,8 +39,8 @@ request_update
-   If parameters have changed that require reinitialization or configuration of
-   the buffer this will trigger it.
- 
--get_bytes_per_datum, set_bytes_per_datum
--  Get/set the number of bytes for a complete scan. (All samples + timestamp)
-+set_bytes_per_datum
-+  Set the number of bytes for a complete scan. (All samples + timestamp)
- 
- get_length / set_length
-   Get/set the number of complete scans that may be held by the buffer.
-diff --git a/drivers/staging/iio/accel/sca3000_ring.c b/drivers/staging/iio/accel/sca3000_ring.c
-index 1578276..aa0e5d8 100644
---- a/drivers/staging/iio/accel/sca3000_ring.c
-+++ b/drivers/staging/iio/accel/sca3000_ring.c
-@@ -135,12 +135,6 @@ static int sca3000_ring_get_length(struct iio_buffer *r)
- 	return 64;
- }
- 
--/* only valid if resolution is kept at 11bits */
--static int sca3000_ring_get_bytes_per_datum(struct iio_buffer *r)
--{
--	return 6;
--}
--
- static bool sca3000_ring_buf_data_available(struct iio_buffer *r)
- {
- 	return r->stufftoread;
-@@ -278,7 +272,6 @@ static void sca3000_ring_release(struct iio_buffer *r)
- static const struct iio_buffer_access_funcs sca3000_ring_access_funcs = {
- 	.read_first_n = &sca3000_read_first_n_hw_rb,
- 	.get_length = &sca3000_ring_get_length,
--	.get_bytes_per_datum = &sca3000_ring_get_bytes_per_datum,
- 	.data_available = sca3000_ring_buf_data_available,
- 	.release = sca3000_ring_release,
- };
-diff --git a/include/linux/iio/buffer.h b/include/linux/iio/buffer.h
-index b0e006c..79cdb3d 100644
---- a/include/linux/iio/buffer.h
-+++ b/include/linux/iio/buffer.h
-@@ -25,7 +25,6 @@ struct iio_buffer;
-  *			available.
-  * @request_update:	if a parameter change has been marked, update underlying
-  *			storage.
-- * @get_bytes_per_datum:get current bytes per datum
-  * @set_bytes_per_datum:set number of bytes per datum
-  * @get_length:		get number of datums in buffer
-  * @set_length:		set number of datums in buffer
-@@ -49,7 +48,6 @@ struct iio_buffer_access_funcs {
- 
- 	int (*request_update)(struct iio_buffer *buffer);
- 
--	int (*get_bytes_per_datum)(struct iio_buffer *buffer);
- 	int (*set_bytes_per_datum)(struct iio_buffer *buffer, size_t bpd);
- 	int (*get_length)(struct iio_buffer *buffer);
- 	int (*set_length)(struct iio_buffer *buffer, int length);
--- 
-1.8.0
+J
+> 
+> Regards,
+> Ivan
+> 
