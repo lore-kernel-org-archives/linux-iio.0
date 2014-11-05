@@ -1,131 +1,298 @@
-Return-Path: <vigneshr@ti.com>
-Message-ID: <545A1343.4060002@ti.com>
-Date: Wed, 5 Nov 2014 17:38:35 +0530
-From: Vignesh R <vigneshr@ti.com>
+Return-Path: <knaack.h@gmx.de>
+Message-ID: <545968F5.7070605@gmx.de>
+Date: Wed, 05 Nov 2014 01:01:57 +0100
+From: Hartmut Knaack <knaack.h@gmx.de>
 MIME-Version: 1.0
-To: Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        "Griffis, Brad"
-	<bgriffis@ti.com>, Rob Herring <robh+dt@kernel.org>,
-        Pawel Moll
-	<pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>,
-        Ian Campbell
-	<ijc+devicetree@hellion.org.uk>,
-        Kumar Gala <galak@codeaurora.org>,
-        Benoit
- Cousson <bcousson@baylibre.com>,
-        Tony Lindgren <tony@atomide.com>,
-        Russell
- King <linux@arm.linux.org.uk>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Dmitry
- Torokhov <dmitry.torokhov@gmail.com>
-CC: Hartmut Knaack <knaack.h@gmx.de>, Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald <pmeerw@pmeerw.net>,
-        Samuel Ortiz <sameo@linux.intel.com>,
-        Lee
- Jones <lee.jones@linaro.org>, "Balbi, Felipe" <balbi@ti.com>,
-        Jan Kardell
-	<jan.kardell@telliq.com>,
-        Paul Gortmaker <paul.gortmaker@windriver.com>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-omap@vger.kernel.org" <linux-omap@vger.kernel.org>,
-        "linux-arm-kernel@lists.infradead.org"
-	<linux-arm-kernel@lists.infradead.org>,
-        "linux-iio@vger.kernel.org"
-	<linux-iio@vger.kernel.org>,
-        "linux-input@vger.kernel.org"
-	<linux-input@vger.kernel.org>
-Subject: Re: [PATCH 0/4] Touchscreen performance related fixes
-References: <1414408111-2631-1-git-send-email-vigneshr@ti.com> <544E821D.5040004@linutronix.de> <912A29987EAE174BA6CF187D7CDFA9CE26F46B2B@DLEE08.ent.ti.com> <54577258.9080508@linutronix.de> <5458BC0B.1040803@ti.com> <5458C87F.80409@linutronix.de>
-In-Reply-To: <5458C87F.80409@linutronix.de>
-Content-Type: text/plain; charset="windows-1252"
+To: "Ivan T. Ivanov" <iivanov@mm-sol.com>,
+ Jonathan Cameron <jic23@kernel.org>,
+ Ian Campbell <ijc+devicetree@hellion.org.uk>,
+ Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>,
+ Mark Rutland <mark.rutland@arm.com>, Kumar Gala <galak@codeaurora.org>
+CC: Stanimir Varbanov <svarbanov@mm-sol.com>,
+ linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org
+Subject: Re: [PATCH v4 1/2] DT: iio: vadc: document dt binding
+References: <1415028270-25860-1-git-send-email-iivanov@mm-sol.com> <1415028270-25860-2-git-send-email-iivanov@mm-sol.com>
+In-Reply-To: <1415028270-25860-2-git-send-email-iivanov@mm-sol.com>
+Content-Type: text/plain; charset=ISO-8859-15
 List-ID: <linux-iio@vger.kernel.org>
 
-
-
-On Tuesday 04 November 2014 06:07 PM, Sebastian Andrzej Siewior wrote:
-> On 11/04/2014 12:44 PM, Vignesh R wrote:
+Ivan T. Ivanov schrieb am 03.11.2014 16:24:
+> From: Stanimir Varbanov <svarbanov@mm-sol.com>
 > 
->> I ran following commands
->> $ evtest /dev/input/touchscreen0 &
->> (with heavy item on touchscreen)
->>  and
->> $ cat /sys/bus/iio/devices/iio\:device0/scan_elements/in_voltage4_en
->> (in a busy loop)
->> I tried above experiment on my board but I didn't hit any problem even
->> after running for close to 30 minutes. I was unable to reproduce failure
+> Document DT binding for Qualcomm SPMI PMIC voltage ADC
+> driver.
 > 
-> Just to make sure: You had the touchscreen and iio command running in
-> parallel and you saw evtest output while there was iio operation?
+> Signed-off-by: Stanimir Varbanov <svarbanov@mm-sol.com>
+> Signed-off-by: Ivan T. Ivanov <iivanov@mm-sol.com>
+> ---
+>  .../devicetree/bindings/iio/adc/qcom,spmi-vadc.txt | 129 +++++++++++++++++++++
+>  include/dt-bindings/iio/qcom,spmi-vadc.h           | 119 +++++++++++++++++++
+>  2 files changed, 248 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/iio/adc/qcom,spmi-vadc.txt
+>  create mode 100644 include/dt-bindings/iio/qcom,spmi-vadc.h
 > 
-
-Yeah.. I see both evtest and IIO outputs. Touch events are received
-consistently (decent samples per second) and atleast one IIO output per
-second.
-Here is a part from console log
----------------------------
-928
-Event: time 1413204484.240114, type 3 (Absolute), code 0 (X), value 1746
-Event: time 1413204484.240114, type 3 (Absolute), code 1 (Y), value 1720
-Event: time 1413204484.240114, type 3 (Absolute), code 24 (Pressure),
-value 99
-Event: time 1413204484.240114, -------------- Report Sync ------------
-Event: time 1413204484.255318, type 1 (Key), code 330 (Touch), value 0
-Event: time 1413204484.255318, type 3 (Absolute), code 24 (Pressure),
-value 0
-Event: time 1413204484.255318, -------------- Report Sync ------------
-933
-Event: time 1413204484.273599, type 3 (Absolute), code 1 (Y), value 1718
-Event: time 1413204484.273599, type 3 (Absolute), code 24 (Pressure),
-value 99
-Event: time 1413204484.273599, type 1 (Key), code 330 (Touch), value 1
-Event: time 1413204484.273599, -------------- Report Sync ------------
-Event: time 1413204484.290195, type 3 (Absolute), code 24 (Pressure),
-value 98
-Event: time 1413204484.290195, -------------- Report Sync ------------
-Event: time 1413204484.306783, type 3 (Absolute), code 1 (Y), value 1719
-Event: time 1413204484.306783, -------------- Report Sync ------------
-946
-Event: time 1413204484.322164, type 1 (Key), code 330 (Touch), value 0
-Event: time 1413204484.322164, type 3 (Absolute), code 24 (Pressure),
-value 0
-Event: time 1413204484.322164, -------------- Report Sync ------------
-Event: time 1413204484.340435, type 3 (Absolute), code 1 (Y), value 1721
-Event: time 1413204484.340435, type 3 (Absolute), code 24 (Pressure),
-value 98
-Event: time 1413204484.340435, type 1 (Key), code 330 (Touch), value 1
-Event: time 1413204484.340435, -------------- Report Sync ------------
-Event: time 1413204484.357025, type 3 (Absolute), code 0 (X), value 1745
-Event: time 1413204484.357025, type 3 (Absolute), code 24 (Pressure),
-value 97
-Event: time 1413204484.357025, -------------- Report Sync ------------
-Event: time 1413204484.373621, type 3 (Absolute), code 0 (X), value 1746
-Event: time 1413204484.373621, type 3 (Absolute), code 1 (Y), value 1720
-Event: time 1413204484.373621, -------------- Report Sync ------------
-942
-
----------------------------
-The numbers 928, 933 etc are from oneshot ADC read. The above output is
-pretty consistent over time.
-
->> The problem may be in configuring correct charge-delay value. Please run:
->> $ ts_test > /dev/null
->> and let me know if pen events are being detected properly.
-> 
-> Well I get the touch events but not while busy loop on iio interface is
-> running (I get maybe one event every 5 seconds or so).
-> After all, it is the same HW you have.
-
-Yeah.. I believe HW is same. I am using rev 1.5B with
-omap2plus_defconfig (+ TSC/ADC enabled)
-
-Regards
-Vignesh
-> 
-> Sebastian
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-omap" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> diff --git a/Documentation/devicetree/bindings/iio/adc/qcom,spmi-vadc.txt b/Documentation/devicetree/bindings/iio/adc/qcom,spmi-vadc.txt
+> new file mode 100644
+> index 0000000..2253813
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/iio/adc/qcom,spmi-vadc.txt
+> @@ -0,0 +1,129 @@
+> +Qualcomm's SPMI PMIC voltage ADC
+> +
+> +SPMI PMIC voltage ADC (VADC) provides interface to clients to read
+> +voltage. The VADC is a 15-bit sigma-delta ADC.
+> +
+> +VADC node:
+> +
+> +- compatible:
+> +    Usage: required
+> +    Value type: <string>
+> +    Definition: Should contain "qcom,spmi-vadc".
+> +
+> +- reg:
+> +    Usage: required
+> +    Value type: <prop-encoded-array>
+> +    Definition: VADC base address and length in the SPMI PMIC register map.
+> +
+> +- #address-cells:
+> +    Usage: required
+> +    Value type: <u32>
+> +    Definition: Must be one. Child node 'reg' property should define ADC
+> +            channel number.
+> +
+> +- #size-cells:
+> +    Usage: required
+> +    Value type: <u32>
+> +    Definition: Must be zero.
+> +
+> +- #io-channel-cells:
+> +    Usage: required
+> +    Value type: <u32>
+> +    Definition: Must be one. For details about IIO bindings see:
+> +            Documentation/devicetree/bindings/iio/iio-bindings.txt
+> +
+> +- interrupts:
+> +    Usage: optional
+> +    Value type: <prop-encoded-array>
+> +    Definition: End of conversion interrupt.
+> +
+> +Channel node properties:
+> +
+> +- reg:
+> +    Usage: required
+> +    Value type: <u32>
+> +    Definition: ADC channel number.
+> +            See include/dt-bindings/iio/qcom,spmi-vadc.h
+> +
+> +- qcom,decimation:
+> +    Usage: optional
+> +    Value type: <u32>
+> +    Definition: This parameters is used to decrease ADC sampling rate.
+Typo: This parameter (singular)
+> +            Quicker measurements can be made by reducing decimation ratio.
+> +            Valid values are 512, 1024, 2048, 4096.
+> +            If property is not found, default value of 512 will be used.
+> +
+> +- qcom,pre-scaling:
+> +    Usage: optional
+> +    Value type: <u32 array>
+> +    Definition: Used for scaling the channel input signal before the signal is
+> +            fed to VADC. The configuration for this node is to know the
+> +            pre-determined ratio and use it for post scaling. Select one from
+> +            the following options.
+> +            <1 1>, <1 3>, <1 4>, <1 6>, <1 20>, <1 8>, <10 81>, <1 10>
+> +            If property is not found default value depending of chip will be used.
+> +
+> +- qcom,ratiometric:
+> +    Usage: optional
+> +    Value type: <empty>
+> +    Definition: Channel calibration type. If this property is specified
+> +            VADC will use the VDD reference (1.8V) and GND for channel
+> +            calibration. If property is not found, channel will be
+> +            calibrated with 0.625V and 1.25V reference channels, also
+> +            known as absolute calibration.
+> +
+> +- qcom,hw-settle-time:
+> +    Usage: optional
+> +    Value type: <u32>
+> +    Definition: Time between AMUX getting configured and the ADC starting
+> +            conversion. Delay = 100us * (value) for value < 11, and
+> +            2ms * (value - 10) otherwise.
+> +            Valid values are: 0, 100, 200, 300, 400, 500, 600, 700, 800,
+> +            900 us and 1, 2, 4, 6, 8, 10 ms
+> +            If property is not found, channel will use 0us.
+> +
+> +- qcom,avg-samples:
+> +    Usage: optional
+> +    Value type: <u32>
+> +    Definition: Number of samples to be used for measurement.
+> +            Averaging provides the option to obtain a single measurement
+> +            from the ADC that is an average of multiple samples. The value
+> +            selected is 2^(value).
+> +            Valid values are: 1, 2, 4, 8, 16, 32, 64, 128, 256, 512
+> +            If property is not found, 1 sample will be used.
+> +
+> +NOTE:
+> +
+> +Following channels, also know as reference points channels, are used for
+Typos: <...> also known as reference point channels <...>
+> +result calibration and their channel configuration nodes should be defined:
+> +VADC_REF_625MV and/or VADC_SPARE1, based on PMIC version, VADC_REF_1250MV,
+Better put the "based on PMIC version" into parenthesis.
+> +VADC_GND_REF and VADC_VDD_VADC.
+> +
+> +Example:
+> +
+> +	/* VADC node */
+> +	pmic_vadc: vadc@3100 {
+> +		compatible = "qcom,spmi-vadc";
+> +		reg = <0x3100 0x100>;
+> +		interrupts = <0x0 0x31 0x0 IRQ_TYPE_EDGE_RISING>;
+> +		#address-cells = <1>;
+> +		#size-cells = <0>;
+> +		#io-channel-cells = <1>;
+> +		io-channel-ranges;
+> +
+> +		/* Channel node */
+> +		usb_id_nopull {
+> +			reg = <VADC_LR_MUX10_USB_ID>;
+> +			qcom,decimation = <512>;
+> +			qcom,ratiometric;
+> +			qcom,hw-settle-time = <200>;
+> +			qcom,avg-samples = <1>;
+> +			qcom,pre-scaling = <1 3>;
+> +		};
+> +	};
+> +
+> +	/* IIO client node */
+> +	usb {
+> +		io-channels = <&pmic_vadc VADC_LR_MUX10_USB_ID>;
+> +		io-channel-names = "vadc";
+> +	};
+> diff --git a/include/dt-bindings/iio/qcom,spmi-vadc.h b/include/dt-bindings/iio/qcom,spmi-vadc.h
+> new file mode 100644
+> index 0000000..42121fa
+> --- /dev/null
+> +++ b/include/dt-bindings/iio/qcom,spmi-vadc.h
+> @@ -0,0 +1,119 @@
+> +/*
+> + * Copyright (c) 2012-2014, The Linux Foundation. All rights reserved.
+> + *
+> + * This program is free software; you can redistribute it and/or modify
+> + * it under the terms of the GNU General Public License version 2 and
+> + * only version 2 as published by the Free Software Foundation.
+> + *
+> + * This program is distributed in the hope that it will be useful
+> + * but WITHOUT ANY WARRANTY; without even the implied warranty of
+> + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+> + * GNU General Public License for more details.
+> + */
+> +
+> +#ifndef _DT_BINDINGS_QCOM_SPMI_VADC_H
+> +#define _DT_BINDINGS_QCOM_SPMI_VADC_H
+> +
+> +/* Voltage ADC channels */
+> +#define VADC_USBIN				0x00
+> +#define VADC_DCIN				0x01
+> +#define VADC_VCHG_SNS				0x02
+> +#define VADC_SPARE1_03				0x03
+> +#define VADC_USB_ID_MV				0x04
+> +#define VADC_VCOIN				0x05
+> +#define VADC_VBAT_SNS				0x06
+> +#define VADC_VSYS				0x07
+> +#define VADC_DIE_TEMP				0x08
+> +#define VADC_REF_625MV				0x09
+> +#define VADC_REF_1250MV				0x0a
+> +#define VADC_CHG_TEMP				0x0b
+> +#define VADC_SPARE1				0x0c
+> +#define VADC_SPARE2				0x0d
+> +#define VADC_GND_REF				0x0e
+> +#define VADC_VDD_VADC				0x0f
+> +
+> +#define VADC_P_MUX1_1_1				0x10
+> +#define VADC_P_MUX2_1_1				0x11
+> +#define VADC_P_MUX3_1_1				0x12
+> +#define VADC_P_MUX4_1_1				0x13
+> +#define VADC_P_MUX5_1_1				0x14
+> +#define VADC_P_MUX6_1_1				0x15
+> +#define VADC_P_MUX7_1_1				0x16
+> +#define VADC_P_MUX8_1_1				0x17
+> +#define VADC_P_MUX9_1_1				0x18
+> +#define VADC_P_MUX10_1_1			0x19
+> +#define VADC_P_MUX11_1_1			0x1a
+> +#define VADC_P_MUX12_1_1			0x1b
+> +#define VADC_P_MUX13_1_1			0x1c
+> +#define VADC_P_MUX14_1_1			0x1d
+> +#define VADC_P_MUX15_1_1			0x1e
+> +#define VADC_P_MUX16_1_1			0x1f
+> +
+> +#define VADC_P_MUX1_1_3				0x20
+> +#define VADC_P_MUX2_1_3				0x21
+> +#define VADC_P_MUX3_1_3				0x22
+> +#define VADC_P_MUX4_1_3				0x23
+> +#define VADC_P_MUX5_1_3				0x24
+> +#define VADC_P_MUX6_1_3				0x25
+> +#define VADC_P_MUX7_1_3				0x26
+> +#define VADC_P_MUX8_1_3				0x27
+> +#define VADC_P_MUX9_1_3				0x28
+> +#define VADC_P_MUX10_1_3			0x29
+> +#define VADC_P_MUX11_1_3			0x2a
+> +#define VADC_P_MUX12_1_3			0x2b
+> +#define VADC_P_MUX13_1_3			0x2c
+> +#define VADC_P_MUX14_1_3			0x2d
+> +#define VADC_P_MUX15_1_3			0x2e
+> +#define VADC_P_MUX16_1_3			0x2f
+> +
+> +#define VADC_LR_MUX1_BAT_THERM			0x30
+> +#define VADC_LR_MUX2_BAT_ID			0x31
+> +#define VADC_LR_MUX3_XO_THERM			0x32
+> +#define VADC_LR_MUX4_AMUX_THM1			0x33
+> +#define VADC_LR_MUX5_AMUX_THM2			0x34
+> +#define VADC_LR_MUX6_AMUX_THM3			0x35
+> +#define VADC_LR_MUX7_HW_ID			0x36
+> +#define VADC_LR_MUX8_AMUX_THM4			0x37
+> +#define VADC_LR_MUX9_AMUX_THM5			0x38
+> +#define VADC_LR_MUX10_USB_ID			0x39
+> +#define VADC_AMUX_PU1				0x3a
+> +#define VADC_AMUX_PU2				0x3b
+> +#define VADC_LR_MUX3_BUF_XO_THERM		0x3c
+> +
+> +#define VADC_LR_MUX1_PU1_BAT_THERM		0x70
+> +#define VADC_LR_MUX2_PU1_BAT_ID			0x71
+> +#define VADC_LR_MUX3_PU1_XO_THERM		0x72
+> +#define VADC_LR_MUX4_PU1_AMUX_THM1		0x73
+> +#define VADC_LR_MUX5_PU1_AMUX_THM2		0x74
+> +#define VADC_LR_MUX6_PU1_AMUX_THM3		0x75
+> +#define VADC_LR_MUX7_PU1_AMUX_HW_ID		0x76
+> +#define VADC_LR_MUX8_PU1_AMUX_THM4		0x77
+> +#define VADC_LR_MUX9_PU1_AMUX_THM5		0x78
+> +#define VADC_LR_MUX10_PU1_AMUX_USB_ID		0x79
+> +#define VADC_LR_MUX3_BUF_PU1_XO_THERM		0x7c
+> +
+> +#define VADC_LR_MUX1_PU2_BAT_THERM		0xb0
+> +#define VADC_LR_MUX2_PU2_BAT_ID			0xb1
+> +#define VADC_LR_MUX3_PU2_XO_THERM		0xb2
+> +#define VADC_LR_MUX4_PU2_AMUX_THM1		0xb3
+> +#define VADC_LR_MUX5_PU2_AMUX_THM2		0xb4
+> +#define VADC_LR_MUX6_PU2_AMUX_THM3		0xb5
+> +#define VADC_LR_MUX7_PU2_AMUX_HW_ID		0xb6
+> +#define VADC_LR_MUX8_PU2_AMUX_THM4		0xb7
+> +#define VADC_LR_MUX9_PU2_AMUX_THM5		0xb8
+> +#define VADC_LR_MUX10_PU2_AMUX_USB_ID		0xb9
+> +#define VADC_LR_MUX3_BUF_PU2_XO_THERM		0xbc
+> +
+> +#define VADC_LR_MUX1_PU1_PU2_BAT_THERM		0xf0
+> +#define VADC_LR_MUX2_PU1_PU2_BAT_ID		0xf1
+> +#define VADC_LR_MUX3_PU1_PU2_XO_THERM		0xf2
+> +#define VADC_LR_MUX4_PU1_PU2_AMUX_THM1		0xf3
+> +#define VADC_LR_MUX5_PU1_PU2_AMUX_THM2		0xf4
+> +#define VADC_LR_MUX6_PU1_PU2_AMUX_THM3		0xf5
+> +#define VADC_LR_MUX7_PU1_PU2_AMUX_HW_ID		0xf6
+> +#define VADC_LR_MUX8_PU1_PU2_AMUX_THM4		0xf7
+> +#define VADC_LR_MUX9_PU1_PU2_AMUX_THM5		0xf8
+> +#define VADC_LR_MUX10_PU1_PU2_AMUX_USB_ID	0xf9
+> +#define VADC_LR_MUX3_BUF_PU1_PU2_XO_THERM	0xfc
+> +
+> +#endif /* _DT_BINDINGS_QCOM_SPMI_VADC_H */
 > 
