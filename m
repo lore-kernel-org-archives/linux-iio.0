@@ -1,261 +1,128 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mailout2.w1.samsung.com ([210.118.77.12]:58085 "EHLO
-	mailout2.w1.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753803AbaKHON4 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 8 Nov 2014 09:13:56 -0500
-From: Karol Wrona <k.wrona@samsung.com>
-To: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
-	Arnd Bergmann <arnd@arndb.de>, linux-kernel@vger.kernel.org
-Cc: Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
-	Kyungmin Park <kyungmin.park@samsung.com>,
+Received: from mail-wg0-f42.google.com ([74.125.82.42]:36189 "EHLO
+	mail-wg0-f42.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751262AbaKFQEM (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 6 Nov 2014 11:04:12 -0500
+Received: by mail-wg0-f42.google.com with SMTP id k14so1564987wgh.29
+        for <linux-iio@vger.kernel.org>; Thu, 06 Nov 2014 08:04:11 -0800 (PST)
+MIME-Version: 1.0
+In-Reply-To: <1415287106-13491-1-git-send-email-dmurphy@ti.com>
+References: <1415287106-13491-1-git-send-email-dmurphy@ti.com>
+Date: Thu, 6 Nov 2014 18:04:11 +0200
+Message-ID: <CAEnQRZBRASQZVtG2FYxy54k7LOeECnwoLARdGmLLjE5+PkYO-w@mail.gmail.com>
+Subject: Re: [RFC v2 1/3] iio: heart_monitors: Add support for heart rate monitors
+From: Daniel Baluta <daniel.baluta@intel.com>
+To: Dan Murphy <dmurphy@ti.com>
+Cc: linux-iio@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Daniel Baluta <daniel.baluta@intel.com>,
 	Karol Wrona <k.wrona@samsung.com>
-Subject: [PATCH 4/5] iio: sensorhub: Add sensorhub accelerometer sensor
-Date: Sat, 08 Nov 2014 15:13:15 +0100
-Message-id: <1415455996-20871-5-git-send-email-k.wrona@samsung.com>
-In-reply-to: <1415455996-20871-1-git-send-email-k.wrona@samsung.com>
-References: <1415455996-20871-1-git-send-email-k.wrona@samsung.com>
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-This patch adds accelerometer iio driver which uses sensorhub as data
-provider.
+Hi Dan,
 
-Change-Id: I4686741b7401ec5cbf4b5d0f2a5cc146fbe24d53
-Signed-off-by: Karol Wrona <k.wrona@samsung.com>
-Acked-by: Kyungmin Park <kyungmin.park@samsung.com>
----
- drivers/iio/accel/Makefile           |    2 +
- drivers/iio/accel/ssp_accel_sensor.c |  211 ++++++++++++++++++++++++++++++++++
- 2 files changed, 213 insertions(+)
- create mode 100644 drivers/iio/accel/ssp_accel_sensor.c
+Use iio: heart_monitor instead of iio: heart_monitors in subject.
 
-diff --git a/drivers/iio/accel/Makefile b/drivers/iio/accel/Makefile
-index a593996..2ab1ca6 100644
---- a/drivers/iio/accel/Makefile
-+++ b/drivers/iio/accel/Makefile
-@@ -16,3 +16,5 @@ st_accel-$(CONFIG_IIO_BUFFER) += st_accel_buffer.o
- 
- obj-$(CONFIG_IIO_ST_ACCEL_I2C_3AXIS) += st_accel_i2c.o
- obj-$(CONFIG_IIO_ST_ACCEL_SPI_3AXIS) += st_accel_spi.o
-+
-+obj-$(CONFIG_SSP_SENSOR_IIO) += ssp_accel_sensor.o
-diff --git a/drivers/iio/accel/ssp_accel_sensor.c b/drivers/iio/accel/ssp_accel_sensor.c
-new file mode 100644
-index 0000000..1293010
---- /dev/null
-+++ b/drivers/iio/accel/ssp_accel_sensor.c
-@@ -0,0 +1,211 @@
-+/*
-+ *  Copyright (C) 2014, Samsung Electronics Co. Ltd. All Rights Reserved.
-+ *
-+ *  This program is free software; you can redistribute it and/or modify
-+ *  it under the terms of the GNU General Public License as published by
-+ *  the Free Software Foundation; either version 2 of the License, or
-+ *  (at your option) any later version.
-+ *
-+ *  This program is distributed in the hope that it will be useful,
-+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
-+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-+ *  GNU General Public License for more details.
-+ *
-+ */
-+
-+#include <linux/iio/common/ssp_sensors.h>
-+#include <linux/iio/iio.h>
-+#include <linux/iio/kfifo_buf.h>
-+#include <linux/module.h>
-+#include <linux/platform_device.h>
-+#include "../common/ssp_sensors/ssp_iio_sensor.h"
-+
-+#define CHANNEL_COUNT 3
-+
-+#define SSP_ACCEL_NAME "ssp-accelrometer"
-+static const char ssp_accel_device_name[] = SSP_ACCEL_NAME;
-+
-+enum accel_3d_channel {
-+	CHANNEL_SCAN_INDEX_X,
-+	CHANNEL_SCAN_INDEX_Y,
-+	CHANNEL_SCAN_INDEX_Z,
-+	CHANNEL_SCAN_INDEX_TIME,
-+	ACCEL_3D_CHANNEL_MAX,
-+};
-+
-+static int accel_read_raw(struct iio_dev *indio_dev,
-+			  struct iio_chan_spec const *chan,
-+			  int *val,
-+			  int *val2,
-+			  long mask)
-+{
-+	int ret;
-+	u32 t;
-+	struct ssp_data *data = dev_get_drvdata(indio_dev->dev.parent->parent);
-+
-+	switch (mask) {
-+	case IIO_CHAN_INFO_SAMP_FREQ:
-+		t = ssp_get_sensor_delay(data, SSP_ACCELEROMETER_SENSOR);
-+		ssp_convert_to_freq(t, val, val2);
-+		ret = IIO_VAL_INT_PLUS_MICRO;
-+		break;
-+	default:
-+		ret = -EINVAL;
-+		break;
-+	}
-+
-+	return ret;
-+}
-+
-+static int accel_write_raw(struct iio_dev *indio_dev,
-+			   struct iio_chan_spec const *chan,
-+			   int val,
-+			   int val2,
-+			   long mask)
-+{
-+	int ret, value;
-+	struct ssp_data *data = dev_get_drvdata(indio_dev->dev.parent->parent);
-+
-+	switch (mask) {
-+	case IIO_CHAN_INFO_SAMP_FREQ:
-+		value = ssp_convert_to_time(val, val2);
-+		ret = ssp_change_delay(data, SSP_ACCELEROMETER_SENSOR, value);
-+		if (ret < 0) {
-+			dev_err(&indio_dev->dev, "accel sensor enable fail\n");
-+			ret = -EINVAL;
-+		}
-+		break;
-+	default:
-+		ret = -EINVAL;
-+		break;
-+	}
-+
-+	return ret;
-+}
-+
-+static struct iio_info ssp_accel_iio_info = {
-+	.read_raw = &accel_read_raw,
-+	.write_raw = &accel_write_raw,
-+};
-+
-+static const struct iio_chan_spec acc_channels[] = {
-+	SSP_CHANNEL_AG(IIO_ACCEL, IIO_MOD_X, CHANNEL_SCAN_INDEX_X),
-+	SSP_CHANNEL_AG(IIO_ACCEL, IIO_MOD_Y, CHANNEL_SCAN_INDEX_Y),
-+	SSP_CHANNEL_AG(IIO_ACCEL, IIO_MOD_Z, CHANNEL_SCAN_INDEX_Z),
-+	IIO_CHAN_SOFT_TIMESTAMP(CHANNEL_SCAN_INDEX_TIME),
-+};
-+
-+static int process_accel_data(struct iio_dev *indio_dev, void *buf,
-+			      int64_t timestamp)
-+{
-+	__le32 time = 0;
-+	const int len = SSP_ACCELEROMETER_SIZE;
-+	int64_t calculated_time;
-+
-+	if (indio_dev->scan_bytes == 0)
-+		return indio_dev->scan_bytes;
-+
-+	if (indio_dev->scan_timestamp) {
-+		memcpy(&time, &((char *)buf)[len], SSP_TIME_SIZE);
-+		calculated_time =
-+			timestamp + (int64_t)le32_to_cpu(time) * 1000000;
-+	}
-+
-+	iio_push_to_buffers_with_timestamp(indio_dev, buf, calculated_time);
-+
-+	return indio_dev->scan_bytes;
-+}
-+
-+static int ssp_accel_remove(struct platform_device *pdev)
-+{
-+	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
-+
-+	iio_buffer_unregister(indio_dev);
-+	iio_kfifo_free(indio_dev->buffer);
-+	iio_device_unregister(indio_dev);
-+	iio_device_free(indio_dev);
-+
-+	return 0;
-+}
-+
-+static const struct iio_buffer_setup_ops accel_buffer_ops = {
-+	.postenable = &ssp_common_buffer_postenable,
-+	.predisable = &ssp_common_buffer_predisable,
-+};
-+
-+static int ssp_accel_probe(struct platform_device *pdev)
-+{
-+	int ret = 0;
-+	struct iio_dev *indio_dev;
-+	struct ssp_sensor_data  *spd;
-+
-+	indio_dev = iio_device_alloc(sizeof(*spd));
-+	if (IS_ERR(indio_dev)) {
-+		dev_err(&pdev->dev, "device alloc fail\n");
-+		return PTR_ERR(indio_dev);
-+	}
-+
-+	spd = iio_priv(indio_dev);
-+
-+	spd->process_data = process_accel_data;
-+	spd->type = SSP_ACCELEROMETER_SENSOR;
-+
-+	indio_dev->name = ssp_accel_device_name;
-+	indio_dev->dev.parent = &pdev->dev;
-+	indio_dev->dev.of_node = pdev->dev.of_node;
-+	indio_dev->info = &ssp_accel_iio_info;
-+
-+	if (indio_dev->info == NULL)
-+		goto err_iio_alloc;
-+
-+	indio_dev->modes = INDIO_BUFFER_HARDWARE;
-+	indio_dev->channels = acc_channels;
-+	indio_dev->num_channels = ARRAY_SIZE(acc_channels);
-+
-+	ret = ssp_common_setup_buffer(indio_dev, &accel_buffer_ops);
-+	if (ret < 0) {
-+		dev_err(&pdev->dev, "Buffer setup fail\n");
-+		goto err_iio_alloc;
-+	}
-+
-+	ret = iio_device_register(indio_dev);
-+	if (ret < 0)
-+		goto err_iio_buffer;
-+
-+	platform_set_drvdata(pdev, indio_dev);
-+
-+	ssp_register_consumer(indio_dev, SSP_ACCELEROMETER_SENSOR);
-+
-+	return 0;
-+
-+err_iio_buffer:
-+	iio_buffer_unregister(indio_dev);
-+	iio_kfifo_free(indio_dev->buffer);
-+err_iio_alloc:
-+	iio_device_free(indio_dev);
-+
-+	return ret;
-+}
-+
-+static const struct of_device_id ssp_accel_id_table[] = {
-+	{
-+		.compatible = "samsung,mpu6500-accel",
-+	},
-+	{},
-+};
-+
-+static struct platform_driver ssp_accel_driver = {
-+	.driver = {
-+		.owner = THIS_MODULE,
-+		.name = SSP_ACCEL_NAME,
-+		.of_match_table = ssp_accel_id_table,
-+	},
-+	.probe = ssp_accel_probe,
-+	.remove =  ssp_accel_remove,
-+};
-+
-+module_platform_driver(ssp_accel_driver);
-+
-+MODULE_AUTHOR("Karol Wrona <k.wrona@samsung.com>");
-+MODULE_DESCRIPTION("Samsung sensorhub accelerometers driver");
-+MODULE_LICENSE("GPL");
--- 
-1.7.9.5
+On Thu, Nov 6, 2014 at 5:18 PM, Dan Murphy <dmurphy@ti.com> wrote:
+> Add a type for heart rate monitors
+> Add the modifier name in beats per minute.
+>
+> Signed-off-by: Dan Murphy <dmurphy@ti.com>
+> ---
+>
+> v2 - Updated per v1 comments - http://marc.info/?l=linux-iio&m=141331404232216&w=2
+>
+>  Documentation/ABI/testing/sysfs-bus-iio               | 7 +++++++
+>  drivers/iio/industrialio-core.c                       | 1 +
+>  drivers/staging/iio/Documentation/iio_event_monitor.c | 2 ++
+>  include/linux/iio/types.h                             | 3 ++-
+>  4 files changed, 12 insertions(+), 1 deletion(-)
+>
+> diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
+> index d760b02..bf95808 100644
+> --- a/Documentation/ABI/testing/sysfs-bus-iio
+> +++ b/Documentation/ABI/testing/sysfs-bus-iio
+> @@ -1028,3 +1028,10 @@ Contact: linux-iio@vger.kernel.org
+>  Description:
+>                 Raw value of rotation from true/magnetic north measured with
+>                 or without compensation from tilt sensors.
+> +
+> +What:          /sys/bus/iio/devices/iio:deviceX/in_rot_from_north_magnetic_tilt_comp_raw
+> +KernelVersion: 3.19
+> +Contact:       linux-iio@vger.kernel.org
+> +Description:
+> +               Raw value of rotation from true/magnetic north measured with
+> +               or without compensation from tilt sensors.
 
+Something went wrong here. This should be about
+heart rate monitor not  rotation from true/magnetic north.
+
+> diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+> index af3e76d..e332a18 100644
+> --- a/drivers/iio/industrialio-core.c
+> +++ b/drivers/iio/industrialio-core.c
+> @@ -70,6 +70,7 @@ static const char * const iio_chan_type_name_spec[] = {
+>         [IIO_CCT] = "cct",
+>         [IIO_PRESSURE] = "pressure",
+>         [IIO_HUMIDITYRELATIVE] = "humidityrelative",
+> +       [IIO_HEARTRATE] = "heartrate",
+>  };
+>
+>  static const char * const iio_modifier_names[] = {
+> diff --git a/drivers/staging/iio/Documentation/iio_event_monitor.c b/drivers/staging/iio/Documentation/iio_event_monitor.c
+> index 569d6f8..90a655d 100644
+> --- a/drivers/staging/iio/Documentation/iio_event_monitor.c
+> +++ b/drivers/staging/iio/Documentation/iio_event_monitor.c
+> @@ -49,6 +49,7 @@ static const char * const iio_chan_type_name_spec[] = {
+>         [IIO_CCT] = "cct",
+>         [IIO_PRESSURE] = "pressure",
+>         [IIO_HUMIDITYRELATIVE] = "humidityrelative",
+> +       [IIO_HEARTRATE] = "heartrate"
+>  };
+
+Please, don't forget the comma after "heartrate".
+
+>
+>  static const char * const iio_ev_type_text[] = {
+> @@ -108,6 +109,7 @@ static bool event_is_known(struct iio_event_data *event)
+>         case IIO_CCT:
+>         case IIO_PRESSURE:
+>         case IIO_HUMIDITYRELATIVE:
+> +       case IIO_HEARTRATE:
+>                 break;
+>         default:
+>                 return false;
+> diff --git a/include/linux/iio/types.h b/include/linux/iio/types.h
+> index 4a2af8a..f22b9d6 100644
+> --- a/include/linux/iio/types.h
+> +++ b/include/linux/iio/types.h
+> @@ -30,6 +30,7 @@ enum iio_chan_type {
+>         IIO_CCT,
+>         IIO_PRESSURE,
+>         IIO_HUMIDITYRELATIVE,
+> +       IIO_HEARTRATE,
+>  };
+>
+>  enum iio_modifier {
+> @@ -59,7 +60,7 @@ enum iio_modifier {
+>         IIO_MOD_NORTH_MAGN,
+>         IIO_MOD_NORTH_TRUE,
+>         IIO_MOD_NORTH_MAGN_TILT_COMP,
+> -       IIO_MOD_NORTH_TRUE_TILT_COMP
+> +       IIO_MOD_NORTH_TRUE_TILT_COMP,
+
+You shouldn't care about this now. Hopefully, the comma will be fixed
+by the next person that adds an iio_modifier.
+
+>  };
+>
+>  enum iio_event_type {
+> --
+> 1.9.1
+>
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
