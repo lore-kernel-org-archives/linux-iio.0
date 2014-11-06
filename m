@@ -1,350 +1,102 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mout.gmx.net ([212.227.17.20]:49257 "EHLO mout.gmx.net"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1752124AbaKWWCf (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Sun, 23 Nov 2014 17:02:35 -0500
-Message-ID: <54725972.7090104@gmx.de>
-Date: Sun, 23 Nov 2014 23:02:26 +0100
-From: Hartmut Knaack <knaack.h@gmx.de>
+Received: from smtp-out-027.synserver.de ([212.40.185.27]:1113 "EHLO
+	smtp-out-027.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750970AbaKFQZk (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 6 Nov 2014 11:25:40 -0500
+Message-ID: <545BA105.70105@metafoo.de>
+Date: Thu, 06 Nov 2014 17:25:41 +0100
+From: Lars-Peter Clausen <lars@metafoo.de>
 MIME-Version: 1.0
-To: Octavian Purdila <octavian.purdila@intel.com>,
-	linux-iio@vger.kernel.org
-CC: srinivas.pandruvada@intel.com
-Subject: Re: [RFC 3/8] iio: bmc150: refactor interrupt enabling
-References: <1416246966-3083-1-git-send-email-octavian.purdila@intel.com> <1416246966-3083-4-git-send-email-octavian.purdila@intel.com>
-In-Reply-To: <1416246966-3083-4-git-send-email-octavian.purdila@intel.com>
-Content-Type: text/plain; charset=ISO-8859-15
+To: Fabien Proriol <Fabien.Proriol@jdsu.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Michal Simek <michal.simek@xilinx.com>
+CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Subject: Re: [PATCH] 0001-xilinx-xadc-core-Fix-voltage-offset.patch
+References: <545B9479.5030700@jdsu.com> <545B976D.4080303@metafoo.de> <545B9EF1.8000606@jdsu.com>
+In-Reply-To: <545B9EF1.8000606@jdsu.com>
+Content-Type: text/plain; charset=windows-1252; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Octavian Purdila schrieb am 17.11.2014 18:56:
-> This patch combines the any motion and new data interrupts function
-> into a single, generic, interrupt enable function. On top of this, we
-> can later refactor triggers to make it easier to add new triggers.
-> 
-> Signed-off-by: Octavian Purdila <octavian.purdila@intel.com>
+On 11/06/2014 05:18 PM, Fabien Proriol wrote:
+> On 06/11/2014 16:44, Lars-Peter Clausen wrote:
+>> On 11/06/2014 04:33 PM, Fabien Proriol wrote:
+>>>    From 3f57e39e3c69476513c00cd5ec45703f58334972 Mon Sep 17 00:00:00 2001
+>>> From: Fabien Proriol <fabien.proriol@jdsu.com>
+>>> Date: Tue, 4 Nov 2014 17:05:59 +0100
+>>> Subject: [PATCH] xilinx-xadc-core: Fix voltage offset
+>>>
+>>> When xilinx-xadc is used with hwmon driver to read voltage, offset used
+>>> for temperature is always apply.
+>>> This patch change the return for IIO_CHAN_INFO_OFFSET to -EINVAL except
+>>> for temperature to avoid offset.
+>>
+>> I think we should rather fix iio_channel_read() to check if the
+>> channel supports the property that we try to read. Other drivers are
+>> likely to suffer from the same issue and fixing it in a central place
+>> fixes them all.
+>>
+>> - Lars
+>>
+>>
+>
+> Ok, I can propose this following patch.
+> With my xilinx-xadc driver, it fix also the same problem...
+>
+
+Yep, that looks better, thanks. It looks like your mail client screwed up 
+the indenting and line wrapping in the patch. Can you try to re-send so it 
+can be applied properly? One minor comment about the patch itself inline.
+
+- Lars
+
+> Fabien
+>
+>
+>   From d605db8de19687b7271e722aa1fa6028f1472a7b Mon Sep 17 00:00:00 2001
+> From: Fabien Proriol <fabien.proriol@jdsu.com>
+> Date: Thu, 6 Nov 2014 17:12:27 +0100
+> Subject: [PATCH] iio: Fix iio_channel_read return if channel havn't info
+>
+> iio_channel_read must return an error to avoid offset for channel
+> without IIO_CHAN_INFO_OFFSET property
+>
+> Signed-off-by: Fabien Proriol <fabien.proriol@jdsu.com>
 > ---
->  drivers/iio/accel/bmc150-accel.c | 271 +++++++++++++++++----------------------
->  1 file changed, 115 insertions(+), 156 deletions(-)
-> 
-> diff --git a/drivers/iio/accel/bmc150-accel.c b/drivers/iio/accel/bmc150-accel.c
-> index 5bfb09d..ee4afc4 100644
-> --- a/drivers/iio/accel/bmc150-accel.c
-> +++ b/drivers/iio/accel/bmc150-accel.c
-> @@ -144,6 +144,13 @@ struct bmc150_accel_chip_info {
->  	const struct bmc150_scale_info scale_table[4];
->  };
->  
-> +struct bmc150_accel_interrupt_info {
-> +	u8 map_reg;
-> +	u8 map_bitmask;
-> +	u8 en_reg;
-> +	u8 en_bitmask;
-> +};
+>    drivers/iio/inkern.c | 10 +++++++++-
+>    1 file changed, 9 insertions(+), 1 deletion(-)
+>
+> diff --git a/drivers/iio/inkern.c b/drivers/iio/inkern.c
+> index 1e8e94d..04cb23f 100644
+> --- a/drivers/iio/inkern.c
+> +++ b/drivers/iio/inkern.c
+> @@ -419,12 +419,20 @@ static int iio_channel_read(struct iio_channel
+> *chan, int *val, int *val2,
+>           enum iio_chan_info_enum info)
+>    {
+>           int unused;
+> +       int ret;
+>
+>           if (val2 == NULL)
+>                   val2 = &unused;
+>
+> -       return chan->indio_dev->info->read_raw(chan->indio_dev,
+> chan->channel,
+> +       if (!iio_channel_has_info(chan->channel, info)) {
+
+Just return -EINVAL, no need for the goto.
+
+> +               ret = -EINVAL;
+> +               goto err;
+> +       }
 > +
->  struct bmc150_accel_data {
->  	struct i2c_client *client;
->  	struct iio_trigger *dready_trig;
-> @@ -374,137 +381,6 @@ static int bmc150_accel_chip_init(struct bmc150_accel_data *data)
->  	return 0;
->  }
->  
-> -static int bmc150_accel_setup_any_motion_interrupt(
-> -					struct bmc150_accel_data *data,
-> -					bool status)
-> -{
-> -	int ret;
-> -
-> -	/* Enable/Disable INT1 mapping */
-> -	ret = i2c_smbus_read_byte_data(data->client,
-> -				       BMC150_ACCEL_REG_INT_MAP_0);
-> -	if (ret < 0) {
-> -		dev_err(&data->client->dev, "Error reading reg_int_map_0\n");
-> -		return ret;
-> -	}
-> -	if (status)
-> -		ret |= BMC150_ACCEL_INT_MAP_0_BIT_SLOPE;
-> -	else
-> -		ret &= ~BMC150_ACCEL_INT_MAP_0_BIT_SLOPE;
-> -
-> -	ret = i2c_smbus_write_byte_data(data->client,
-> -					BMC150_ACCEL_REG_INT_MAP_0,
-> -					ret);
-> -	if (ret < 0) {
-> -		dev_err(&data->client->dev, "Error writing reg_int_map_0\n");
-> -		return ret;
-> -	}
-> -
-> -	if (status) {
-> -		/*
-> -		 * New data interrupt is always non-latched,
-> -		 * which will have higher priority, so no need
-> -		 * to set latched mode, we will be flooded anyway with INTR
-> -		 */
-> -		if (!data->dready_trigger_on) {
-> -			ret = i2c_smbus_write_byte_data(data->client,
-> -					BMC150_ACCEL_REG_INT_RST_LATCH,
-> -					BMC150_ACCEL_INT_MODE_LATCH_INT |
-> -					BMC150_ACCEL_INT_MODE_LATCH_RESET);
-> -			if (ret < 0) {
-> -				dev_err(&data->client->dev,
-> -					"Error writing reg_int_rst_latch\n");
-> -				return ret;
-> -			}
-> -		}
-> -
-> -		ret = i2c_smbus_write_byte_data(data->client,
-> -						BMC150_ACCEL_REG_INT_EN_0,
-> -						BMC150_ACCEL_INT_EN_BIT_SLP_X |
-> -						BMC150_ACCEL_INT_EN_BIT_SLP_Y |
-> -						BMC150_ACCEL_INT_EN_BIT_SLP_Z);
-> -	} else
-> -		ret = i2c_smbus_write_byte_data(data->client,
-> -						BMC150_ACCEL_REG_INT_EN_0,
-> -						0);
-> -
-> -	if (ret < 0) {
-> -		dev_err(&data->client->dev, "Error writing reg_int_en_0\n");
-> -		return ret;
-> -	}
-> -
-> -	return 0;
-> -}
-> -
-> -static int bmc150_accel_setup_new_data_interrupt(struct bmc150_accel_data *data,
-> -					   bool status)
-> -{
-> -	int ret;
-> -
-> -	/* Enable/Disable INT1 mapping */
-> -	ret = i2c_smbus_read_byte_data(data->client,
-> -				       BMC150_ACCEL_REG_INT_MAP_1);
-> -	if (ret < 0) {
-> -		dev_err(&data->client->dev, "Error reading reg_int_map_1\n");
-> -		return ret;
-> -	}
-> -	if (status)
-> -		ret |= BMC150_ACCEL_INT_MAP_1_BIT_DATA;
-> -	else
-> -		ret &= ~BMC150_ACCEL_INT_MAP_1_BIT_DATA;
-> -
-> -	ret = i2c_smbus_write_byte_data(data->client,
-> -					BMC150_ACCEL_REG_INT_MAP_1,
-> -					ret);
-> -	if (ret < 0) {
-> -		dev_err(&data->client->dev, "Error writing reg_int_map_1\n");
-> -		return ret;
-> -	}
-> -
-> -	if (status) {
-> -		/*
-> -		 * Set non latched mode interrupt and clear any latched
-> -		 * interrupt
-> -		 */
-> -		ret = i2c_smbus_write_byte_data(data->client,
-> -					BMC150_ACCEL_REG_INT_RST_LATCH,
-> -					BMC150_ACCEL_INT_MODE_NON_LATCH_INT |
-> -					BMC150_ACCEL_INT_MODE_LATCH_RESET);
-> -		if (ret < 0) {
-> -			dev_err(&data->client->dev,
-> -				"Error writing reg_int_rst_latch\n");
-> -			return ret;
-> -		}
-> -
-> -		ret = i2c_smbus_write_byte_data(data->client,
-> -					BMC150_ACCEL_REG_INT_EN_1,
-> -					BMC150_ACCEL_INT_EN_BIT_DATA_EN);
-> -
-> -	} else {
-> -		/* Restore default interrupt mode */
-> -		ret = i2c_smbus_write_byte_data(data->client,
-> -					BMC150_ACCEL_REG_INT_RST_LATCH,
-> -					BMC150_ACCEL_INT_MODE_LATCH_INT |
-> -					BMC150_ACCEL_INT_MODE_LATCH_RESET);
-> -		if (ret < 0) {
-> -			dev_err(&data->client->dev,
-> -				"Error writing reg_int_rst_latch\n");
-> -			return ret;
-> -		}
-> -
-> -		ret = i2c_smbus_write_byte_data(data->client,
-> -						BMC150_ACCEL_REG_INT_EN_1,
-> -						0);
-> -	}
-> -
-> -	if (ret < 0) {
-> -		dev_err(&data->client->dev, "Error writing reg_int_en_1\n");
-> -		return ret;
-> -	}
-> -
-> -	return 0;
-> -}
-> -
->  static int bmc150_accel_get_bw(struct bmc150_accel_data *data, int *val,
->  			       int *val2)
->  {
-> @@ -559,6 +435,99 @@ static int bmc150_accel_set_power_state(struct bmc150_accel_data *data, bool on)
->  }
->  #endif
->  
-> +static struct bmc150_accel_interrupt_info bmc150_accel_interrupts[] = {
-> +	{ /* data ready interrupt */
-> +		.map_reg = BMC150_ACCEL_REG_INT_MAP_1,
-> +		.map_bitmask = BMC150_ACCEL_INT_MAP_1_BIT_DATA,
-> +		.en_reg = BMC150_ACCEL_REG_INT_EN_1,
-> +		.en_bitmask = BMC150_ACCEL_INT_EN_BIT_DATA_EN,
-> +	},
-> +	{  /* motion interrupt */
-> +		.map_reg = BMC150_ACCEL_REG_INT_MAP_0,
-> +		.map_bitmask = BMC150_ACCEL_INT_MAP_0_BIT_SLOPE,
-> +		.en_reg = BMC150_ACCEL_REG_INT_EN_0,
-> +		.en_bitmask =  BMC150_ACCEL_INT_EN_BIT_SLP_X |
-> +			BMC150_ACCEL_INT_EN_BIT_SLP_Y |
-> +			BMC150_ACCEL_INT_EN_BIT_SLP_Z
-> +	},
-> +};
-> +
-> +static int bmc150_accel_set_interrupt(struct bmc150_accel_data *data,
-> +				      struct bmc150_accel_interrupt_info *info,
-> +				      bool state)
-> +{
-> +	int ret;
-> +
-> +	/*
-> +	 * We will expect the enable and disable to do operation in
-> +	 * in reverse order. This will happen here anyway as our
-> +	 * resume operation uses sync mode runtime pm calls, the
-> +	 * suspend operation will be delayed by autosuspend delay
-> +	 * So the disable operation will still happen in reverse of
-> +	 * enable operation. When runtime pm is disabled the mode
-> +	 * is always on so sequence doesn't matter
-> +	 */
-> +	ret = bmc150_accel_set_power_state(data, state);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +
-> +	/* map the interrupt to the appropriate pins */
-> +	if (info->map_reg) {
-So, info->map_reg might be set, but info->en_reg will always be set? 
-> +		ret = i2c_smbus_read_byte_data(data->client, info->map_reg);
-> +		if (ret < 0) {
-> +			dev_err(&data->client->dev, "Error reading reg_int_map\n");
-> +			return ret;
-> +		}
-> +		if (state)
-> +			ret |= info->map_bitmask;
-> +		else
-> +			ret &= ~info->map_bitmask;
-> +
-> +		ret = i2c_smbus_write_byte_data(data->client, info->map_reg,
-> +						ret);
-> +		if (ret < 0) {
-> +			dev_err(&data->client->dev, "Error writing reg_int_map\n");
-> +			return ret;
-> +		}
-> +	}
-> +
-> +	/* enable/disable the interrupt */
-> +	ret = i2c_smbus_read_byte_data(data->client, info->en_reg);
-> +	if (ret < 0) {
-> +		dev_err(&data->client->dev, "Error reading reg_int_en\n");
-> +		return ret;
-> +	}
-> +
-> +	if (state)
-> +		ret |= info->en_bitmask;
-> +	else
-> +		ret &= ~info->en_bitmask;
-> +
-> +	ret = i2c_smbus_write_byte_data(data->client, info->en_reg, ret);
-> +	if (ret < 0) {
-> +		dev_err(&data->client->dev, "Error writing reg_int_en\n");
-> +		return ret;
-> +	}
-> +
-> +	return 0;
-> +}
-> +
-> +static int bmc150_accel_setup_any_motion_interrupt(
-> +					struct bmc150_accel_data *data,
-> +					bool status)
-> +{
-> +	return bmc150_accel_set_interrupt(data, &bmc150_accel_interrupts[1],
-> +					  status);
-> +}
-> +
-> +static int bmc150_accel_setup_new_data_interrupt(struct bmc150_accel_data *data,
-> +					   bool status)
-> +{
-> +	return bmc150_accel_set_interrupt(data, &bmc150_accel_interrupts[0],
-> +					  status);
-> +}
-> +
-I don't think these wrappers really provide a benefit.
->  static int bmc150_accel_set_scale(struct bmc150_accel_data *data, int val)
->  {
->  	int ret, i;
-> @@ -808,22 +777,6 @@ static int bmc150_accel_write_event_config(struct iio_dev *indio_dev,
->  		return 0;
->  	}
->  
-> -	/*
-> -	 * We will expect the enable and disable to do operation in
-> -	 * in reverse order. This will happen here anyway as our
-> -	 * resume operation uses sync mode runtime pm calls, the
-> -	 * suspend operation will be delayed by autosuspend delay
-> -	 * So the disable operation will still happen in reverse of
-> -	 * enable operation. When runtime pm is disabled the mode
-> -	 * is always on so sequence doesn't matter
-> -	 */
-> -
-> -	ret = bmc150_accel_set_power_state(data, state);
-> -	if (ret < 0) {
-> -		mutex_unlock(&data->mutex);
-> -		return ret;
-> -	}
-> -
->  	ret =  bmc150_accel_setup_any_motion_interrupt(data, state);
->  	if (ret < 0) {
->  		mutex_unlock(&data->mutex);
-> @@ -1055,15 +1008,6 @@ static int bmc150_accel_data_rdy_trigger_set_state(struct iio_trigger *trig,
->  		return 0;
->  	}
->  
-> -	/*
-> -	 * Refer to comment in bmc150_accel_write_event_config for
-> -	 * enable/disable operation order
-> -	 */
-> -	ret = bmc150_accel_set_power_state(data, state);
-> -	if (ret < 0) {
-> -		mutex_unlock(&data->mutex);
-> -		return ret;
-> -	}
->  	if (data->motion_trig == trig)
->  		ret =  bmc150_accel_setup_any_motion_interrupt(data, state);
->  	else
-> @@ -1240,6 +1184,21 @@ static int bmc150_accel_probe(struct i2c_client *client,
->  		if (ret)
->  			return ret;
->  
-> +		/*
-> +		 * Set latched mode interrupt. While certain interrupts are
-> +		 * non-latched regardless of this settings (e.g. new data) we
-> +		 * want to use latch mode when we can to prevent interrupt
-> +		 * flooding.
-> +		 */
-> +		ret = i2c_smbus_write_byte_data(data->client,
-> +						BMC150_ACCEL_REG_INT_RST_LATCH,
-> +					     BMC150_ACCEL_INT_MODE_LATCH_RESET);
-> +		if (ret < 0) {
-> +			dev_err(&data->client->dev, "Error writing reg_int_rst_latch\n");
-> +			return ret;
-> +		}
-> +
-> +
->  		data->dready_trig = devm_iio_trigger_alloc(&client->dev,
->  							   "%s-dev%d",
->  							   indio_dev->name,
-> 
+> +       ret = chan->indio_dev->info->read_raw(chan->indio_dev,
+> chan->channel,
+>                                                   val, val2, info);
+> +err:
+> +       return ret;
+>    }
+>
+>    int iio_read_channel_raw(struct iio_channel *chan, int *val)
+>
 
