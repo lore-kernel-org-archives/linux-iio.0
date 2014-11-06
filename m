@@ -1,119 +1,55 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-qc0-f201.google.com ([209.85.216.201]:46042 "EHLO
-	mail-qc0-f201.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752083AbaKEWK6 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 5 Nov 2014 17:10:58 -0500
-Received: by mail-qc0-f201.google.com with SMTP id l6so132591qcy.2
-        for <linux-iio@vger.kernel.org>; Wed, 05 Nov 2014 14:10:58 -0800 (PST)
-From: Gwendal Grignou <gwendal@chromium.org>
-To: srinivas.pandruvada@linux.intel.com, jic23@kernel.org,
-	knaack.h@gmx.de
-Cc: linux-iio@vger.kernel.org, Gwendal Grignou <gwendal@chromium.org>
-Subject: [PATCH 1/3] iio: ak8975: minor fixes
-Date: Wed,  5 Nov 2014 14:10:50 -0800
-Message-Id: <1415225452-21957-2-git-send-email-gwendal@chromium.org>
-In-Reply-To: <1415225452-21957-1-git-send-email-gwendal@chromium.org>
-References: <CAMHSBOWmmCdd=5HXJN-vz9saaPrq3n0p-LjCNvnX3Q3ZieZdRQ@mail.gmail.com>
- <1415225452-21957-1-git-send-email-gwendal@chromium.org>
+Received: from relay4-d.mail.gandi.net ([217.70.183.196]:50815 "EHLO
+	relay4-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751219AbaKFOzw (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 6 Nov 2014 09:55:52 -0500
+Message-ID: <1415285707.7630.36.camel@hadess.net>
+Subject: Re: Kernel wishlist item: Better IIO API
+From: Bastien Nocera <hadess@hadess.net>
+To: Daniel Baluta <daniel.baluta@gmail.com>
+Cc: Lars-Peter Clausen <lars@metafoo.de>, linux-iio@vger.kernel.org
+Date: Thu, 06 Nov 2014 15:55:07 +0100
+In-Reply-To: <CAEnQRZArfFXnyRkRfM7bSO8o=hpQx1i3FhJy7SCmaZpBzgmGXQ@mail.gmail.com>
+References: <1414593052.2406.37.camel@hadess.net>
+	 <5451221D.6000301@metafoo.de> <1414604035.2406.41.camel@hadess.net>
+	 <54512640.3040505@metafoo.de> <1414604840.2406.43.camel@hadess.net>
+	 <54513238.6050903@metafoo.de> <1415055709.4506.19.camel@hadess.net>
+	 <CAEnQRZAA7bN999XUmj3kaH2U3dPET0NRXDcFNprxZLAZS=ARzg@mail.gmail.com>
+	 <1415089663.4506.26.camel@hadess.net>
+	 <CAEnQRZBoTbQMCC1+qwewUefk1u616pLrhUD+i5WhoZ0Se+2fWQ@mail.gmail.com>
+	 <1415090732.4506.28.camel@hadess.net>
+	 <CAEnQRZArfFXnyRkRfM7bSO8o=hpQx1i3FhJy7SCmaZpBzgmGXQ@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Mime-Version: 1.0
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Fixes code duplication, return of function.
+On Tue, 2014-11-04 at 10:56 +0200, Daniel Baluta wrote:
+> On Tue, Nov 4, 2014 at 10:45 AM, Bastien Nocera <hadess@hadess.net> wrote:
+> > On Tue, 2014-11-04 at 10:37 +0200, Daniel Baluta wrote:
+> >> On Tue, Nov 4, 2014 at 10:27 AM, Bastien Nocera <hadess@hadess.net> wrote:
+> >> > On Tue, 2014-11-04 at 10:18 +0200, Daniel Baluta wrote:
+> >> >> On Tue, Nov 4, 2014 at 1:01 AM, Bastien Nocera <hadess@hadess.net> wrote:
+<snip>
+> >> >> > Finally, there's some documentation, and it's not quite finished, or
+> >> >> > there's something fishy on this device:
+> >> >> > $ ls /sys//devices/platform/80860F41:04/i2c-12/i2c-SMO8500:00/iio:device0/events
+> >> >> > in_accel_x_thresh_thresh_en      in_accel_x_thresh_thresh_value
+> >> >> > in_accel_y_thresh_thresh_period  in_accel_z_thresh_thresh_en
+> >> >> > in_accel_z_thresh_thresh_value
+> >> >> > in_accel_x_thresh_thresh_period  in_accel_y_thresh_thresh_en
+> >> >> > in_accel_y_thresh_thresh_value   in_accel_z_thresh_thresh_period
+<snip>
+> I forgot that SMO8500 is KXCJ9.
+> 
+> Should work with https://lkml.org/lkml/2014/10/10/249 :).
 
-Signed-off-by: Gwendal Grignou <gwendal@chromium.org>
----
- drivers/iio/magnetometer/ak8975.c | 33 +++++++++++++--------------------
- 1 file changed, 13 insertions(+), 20 deletions(-)
+$ ls events/
+in_accel_x_thresh_either_en      in_accel_x_thresh_either_value
+in_accel_y_thresh_either_period  in_accel_z_thresh_either_en
+in_accel_z_thresh_either_value
+in_accel_x_thresh_either_period  in_accel_y_thresh_either_en
+in_accel_y_thresh_either_value   in_accel_z_thresh_either_period
 
-diff --git a/drivers/iio/magnetometer/ak8975.c b/drivers/iio/magnetometer/ak8975.c
-index bf5ef07..12f0b00 100644
---- a/drivers/iio/magnetometer/ak8975.c
-+++ b/drivers/iio/magnetometer/ak8975.c
-@@ -64,10 +64,10 @@
- #define AK8975_REG_CNTL			0x0A
- #define AK8975_REG_CNTL_MODE_SHIFT	0
- #define AK8975_REG_CNTL_MODE_MASK	(0xF << AK8975_REG_CNTL_MODE_SHIFT)
--#define AK8975_REG_CNTL_MODE_POWER_DOWN	0
--#define AK8975_REG_CNTL_MODE_ONCE	1
--#define AK8975_REG_CNTL_MODE_SELF_TEST	8
--#define AK8975_REG_CNTL_MODE_FUSE_ROM	0xF
-+#define AK8975_REG_CNTL_MODE_POWER_DOWN	0x00
-+#define AK8975_REG_CNTL_MODE_ONCE	0x01
-+#define AK8975_REG_CNTL_MODE_SELF_TEST	0x08
-+#define AK8975_REG_CNTL_MODE_FUSE_ROM	0x0F
- 
- #define AK8975_REG_RSVC			0x0B
- #define AK8975_REG_ASTC			0x0C
-@@ -166,8 +166,8 @@ static int ak8975_setup_irq(struct ak8975_data *data)
- 		irq = gpio_to_irq(data->eoc_gpio);
- 
- 	rc = devm_request_irq(&client->dev, irq, ak8975_irq_handler,
--			 IRQF_TRIGGER_RISING | IRQF_ONESHOT,
--			 dev_name(&client->dev), data);
-+			      IRQF_TRIGGER_RISING | IRQF_ONESHOT,
-+			      dev_name(&client->dev), data);
- 	if (rc < 0) {
- 		dev_err(&client->dev,
- 			"irq %d request failed, (gpio %d): %d\n",
-@@ -231,6 +231,10 @@ static int ak8975_setup(struct i2c_client *client)
- 				AK8975_REG_CNTL_MODE_POWER_DOWN,
- 				AK8975_REG_CNTL_MODE_MASK,
- 				AK8975_REG_CNTL_MODE_SHIFT);
-+	if (ret < 0) {
-+		dev_err(&client->dev, "Error in setting power-down mode\n");
-+		return ret;
-+	}
- 
- 	if (data->eoc_gpio > 0 || client->irq) {
- 		ret = ak8975_setup_irq(data);
-@@ -241,11 +245,6 @@ static int ak8975_setup(struct i2c_client *client)
- 		}
- 	}
- 
--	if (ret < 0) {
--		dev_err(&client->dev, "Error in setting power-down mode\n");
--		return ret;
--	}
--
- /*
-  * Precalculate scale factor (in Gauss units) for each axis and
-  * store in the device data.
-@@ -550,24 +549,18 @@ static int ak8975_probe(struct i2c_client *client,
- 	/* Perform some basic start-of-day setup of the device. */
- 	err = ak8975_setup(client);
- 	if (err < 0) {
--		dev_err(&client->dev, "AK8975 initialization fails\n");
-+		dev_err(&client->dev, "%s initialization fails\n", name);
- 		return err;
- 	}
- 
--	data->client = client;
- 	mutex_init(&data->lock);
--	data->eoc_gpio = eoc_gpio;
- 	indio_dev->dev.parent = &client->dev;
- 	indio_dev->channels = ak8975_channels;
- 	indio_dev->num_channels = ARRAY_SIZE(ak8975_channels);
- 	indio_dev->info = &ak8975_info;
- 	indio_dev->modes = INDIO_DIRECT_MODE;
- 	indio_dev->name = name;
--	err = devm_iio_device_register(&client->dev, indio_dev);
--	if (err < 0)
--		return err;
--
--	return 0;
-+	return devm_iio_device_register(&client->dev, indio_dev);
- }
- 
- static const struct i2c_device_id ak8975_id[] = {
-@@ -588,7 +581,7 @@ MODULE_DEVICE_TABLE(of, ak8975_of_match);
- static struct i2c_driver ak8975_driver = {
- 	.driver = {
- 		.name	= "ak8975",
--		.of_match_table = ak8975_of_match,
-+		.of_match_table = of_match_ptr(ak8975_of_match),
- 		.acpi_match_table = ACPI_PTR(ak_acpi_match),
- 	},
- 	.probe		= ak8975_probe,
--- 
-2.1.0.rc2.206.gedb03e5
+Yeah, better.
 
