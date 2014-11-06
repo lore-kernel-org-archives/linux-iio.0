@@ -1,85 +1,127 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from bear.ext.ti.com ([192.94.94.41]:60721 "EHLO bear.ext.ti.com"
+Received: from mga11.intel.com ([192.55.52.93]:57789 "EHLO mga11.intel.com"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751348AbaKGFvT (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Fri, 7 Nov 2014 00:51:19 -0500
-From: Vignesh R <vigneshr@ti.com>
-To: Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>,
-	Mark Rutland <mark.rutland@arm.com>,
-	Ian Campbell <ijc+devicetree@hellion.org.uk>,
-	Kumar Gala <galak@codeaurora.org>,
-	Benoit Cousson <bcousson@baylibre.com>,
-	Tony Lindgren <tony@atomide.com>,
-	Russell King <linux@arm.linux.org.uk>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-	Lee Jones <lee.jones@linaro.org>,
-	Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-CC: Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	Samuel Ortiz <sameo@linux.intel.com>,
-	Felipe Balbi <balbi@ti.com>, Vignesh R <vigneshr@ti.com>,
-	Brad Griffis <bgriffis@ti.com>,
-	Sanjeev Sharma <sanjeev_sharma@mentor.com>,
-	Paul Gortmaker <paul.gortmaker@windriver.com>,
-	Jan Kardell <jan.kardell@telliq.com>,
-	<devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-	<linux-omap@vger.kernel.org>,
-	<linux-arm-kernel@lists.infradead.org>,
-	<linux-iio@vger.kernel.org>, <linux-input@vger.kernel.org>
-Subject: [PATCH 5/5] input: touchscreen: ti_am335x_tsc: Use charge delay DT parameter
-Date: Fri, 7 Nov 2014 11:19:10 +0530
-Message-ID: <1415339350-17679-6-git-send-email-vigneshr@ti.com>
-In-Reply-To: <1415339350-17679-1-git-send-email-vigneshr@ti.com>
-References: <1415339350-17679-1-git-send-email-vigneshr@ti.com>
+	id S1750926AbaKFNDA (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Thu, 6 Nov 2014 08:03:00 -0500
+Date: Thu, 6 Nov 2014 15:02:54 +0200
+From: Vlad Dogaru <vlad.dogaru@intel.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Hartmut Knaack <knaack.h@gmx.de>, IIO <linux-iio@vger.kernel.org>
+Subject: Re: [PATCH 3/3]iio:pressure:bmp280: read compensation data only at
+ init
+Message-ID: <20141106130253.GD24473@vdogaru>
+References: <5452E502.6060609@gmx.de>
+ <20141031114709.GC24473@vdogaru>
+ <5453E00B.7080703@gmx.de>
+ <545A47F0.8040808@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <545A47F0.8040808@kernel.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-This patch reads charge delay from tsc DT node and writes to
-REG_CHARGEDELAY register. If the charge delay is not specified in DT
-then default value of 0xB000(CHARGEDLY_OPENDLY) is used.
+On Wed, Nov 05, 2014 at 03:53:20PM +0000, Jonathan Cameron wrote:
+> On 31/10/14 19:16, Hartmut Knaack wrote:
+> > Vlad Dogaru schrieb am 31.10.2014 12:47:
+> >> On Fri, Oct 31, 2014 at 02:25:22AM +0100, Hartmut Knaack wrote:
+> >>> Compensation data is hard coded into the sensors, so it is sufficient to just
+> >>> read it once during device initialization. Therefor struct bmp280_comp should be
+> >>> part of bmp280_data (since the elements of bmp280_comp_temp and
+> >>> bmp280_comp_press have distinct names, they could be merged into bmp280_comp).
+> >>
+> >> My first version of the patch did this, but Jonathan suggested [1] that,
+> >> since we're using regmap, we can rely on it for caching the calibration
+> >> parameters.  I have no preference for either approach.
+> >>
+> > Indeed, I missed to have a closer look at that version, as I discarded it when your second or third version came out.
+> > So, one question remaining is, if your implementation was, what Jonathan had in mind when he gave the hint about using the regmap cache. I mainly see the disadvantage of copying to the buffer and from there to the variables (and depending on endianness even a conversion) for every single measurement.
+> Gah.  Now I have to remember what I was thinking!
+> 
+> Anyhow, I just didn't much like the double cache of these values.
+> The little endian conversions are pretty trivial...
+> The code only ended up a little involved because of the
+> structures to pass this data around.  Why not just have an enum saying what
+> data is where and pass the buffer.  Then do the little endian on demand and
+> let the compiler filter out the repeats?
+> 
+> So combine bmp280_read_compensation_press and bmp280_compensate_press
+> to something like...
+> enum {
+> 	P1,
+> 	P2,
+> 	P3,
+> 	P4,
+> 	P5,
+> 	P6,
+> 	P7,
+> 	P8,
+> 	P9
+> }; // a rare occasion where maybe all on one line would be good ;)
+> 
+> int bmp280_compensate_press(struct bmp280_data *data)
+> {
+> 	__le16 buf[BMP280_COMP_PRESS_REG_COUNT / 2];
+> 	s64 var1, var2, p;
+> 
+> 	ret = regmap_bulk_read(data->regmap, BMP280_REG_COMP_PRESS_START,
+> 			       buf, BMP280_COMP_PRESS_REG_COUNT);
+> 	if (ret < 0) {
+> 		dev_err(&data->client->dev,
+> 			"failed to read pressure calibration parameters\n");
+> 		return ret;
+> 	}
+> 
+> 	var1 = ((s64) data->t_fine) - 128000;
+> 	var2 = var1 * var1 * (s64) le16_to_cpu(buf[P6]);
+> 	var2 = var2 + ((var1 * (s64) le16_to_cpu(buf[P5])) << 17);
+> 	var2 = var2 + (((s64) le16_to_cpu(buf[P4])) << 35);
+> 	var1 = ((var1 * var1 * (s64) le16_to_cpu(buf[P3])) >> 8) +
+> 		((var1 * (s64) le16_to_cpu(buf[P2])) << 12);
+> 	var1 = (((((s64) 1) << 47) + var1)) * ((s64) le16_to_cpu(buf[P1])) >> 33;
+> 
+> 	if (var1 == 0)
+> 		return 0;
+> 
+> 	p = ((((s64) 1048576 - adc_press) << 31) - var2) * 3125;
+> 	p = div64_s64(p, var1);
+> 	var1 = (((s64) le16_to_cpu(buf[P9]) * (p >> 13) * (p >> 13)) >> 25;
+> 	var2 = (((s64) le16_to_cpu[buf[P8]) * p) >> 19;
+> 	p = ((p + var1 + var2) >> 8) + (((s64) le16_to_cpu(buf[P7])) << 4);
+> 
+> 	return (u32) p;
+> }
+> 
+> Just a thought.  I was never terribly fussed about this other than disliking
+> data duplication!
+> >> [1] http://www.spinics.net/lists/linux-iio/msg15099.html
 
-Signed-off-by: Vignesh R <vigneshr@ti.com>
----
- drivers/input/touchscreen/ti_am335x_tsc.c | 8 +++++++-
- 1 file changed, 7 insertions(+), 1 deletion(-)
+I don't think the enum helps readability too much here.  At least it
+doesn't help me :)
 
-diff --git a/drivers/input/touchscreen/ti_am335x_tsc.c b/drivers/input/touchscreen/ti_am335x_tsc.c
-index 483fd97c0e0c..20ce76b1b6e7 100644
---- a/drivers/input/touchscreen/ti_am335x_tsc.c
-+++ b/drivers/input/touchscreen/ti_am335x_tsc.c
-@@ -52,6 +52,7 @@ struct titsc {
- 	u32			bit_xp, bit_xn, bit_yp, bit_yn;
- 	u32			inp_xp, inp_xn, inp_yp, inp_yn;
- 	u32			step_mask;
-+	u32			charge_delay;
- };
- 
- static unsigned int titsc_readl(struct titsc *ts, unsigned int reg)
-@@ -177,7 +178,7 @@ static void titsc_step_config(struct titsc *ts_dev)
- 
- 	config = titsc_readl(ts_dev, REG_IDLECONFIG);
- 	titsc_writel(ts_dev, REG_CHARGECONFIG, config);
--	titsc_writel(ts_dev, REG_CHARGEDELAY, CHARGEDLY_OPENDLY);
-+	titsc_writel(ts_dev, REG_CHARGEDELAY, ts_dev->charge_delay);
- 
- 	/* coordinate_readouts + 1 ... coordinate_readouts + 2 is for Z */
- 	config = STEPCONFIG_MODE_HWSYNC |
-@@ -361,6 +362,11 @@ static int titsc_parse_dt(struct platform_device *pdev,
- 	if (err < 0)
- 		return err;
- 
-+	err = of_property_read_u32(node, "ti,charge-delay",
-+				   &ts_dev->charge_delay);
-+	if (err < 0)
-+		ts_dev->charge_delay = CHARGEDLY_OPENDLY;
-+
- 	return of_property_read_u32_array(node, "ti,wire-config",
- 			ts_dev->config_inp, ARRAY_SIZE(ts_dev->config_inp));
- }
--- 
-1.9.1
+How about reading data straight to the (packed) calibration struct and
+doing the endinanness conversions inline?  Something like this:
 
+int bmp280_compensate_press(struct bmp280_data *data)
+{
+	struct bmp280_comp_press comp;
+	s64 var1, var2, p;
+
+	ret = regmap_bulk_read(data->regmap, BMP280_REG_COMP_PRESS_START,
+			       &comp, sizeof (comp));
+	if (ret < 0) {
+		dev_err(&data->client->dev,
+			"failed to read pressure calibration parameters\n");
+		return ret;
+	}
+
+	var1 = ((s64) data->t_fine) - 128000;
+	var2 = var1 * var1 * (s64) le16_to_cpu(comp.dig_p6);
+	var2 = var2 + ((var1 * (s64) le16_to_cpu(comp.dig_p5)) << 17);
+
+	/* etc */
+
+This saves us the extra copying of parameters from buffer to structure,
+and is a bit more clear than indexing the buffer with enum members, IMO.
+
+Thanks,
+Vlad
