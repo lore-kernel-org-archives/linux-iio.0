@@ -1,37 +1,40 @@
-Return-Path: <vigneshr@ti.com>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from arroyo.ext.ti.com ([192.94.94.40]:34697 "EHLO arroyo.ext.ti.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751194AbaKGFul (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Fri, 7 Nov 2014 00:50:41 -0500
 From: Vignesh R <vigneshr@ti.com>
 To: Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>,
-        Mark
- Rutland <mark.rutland@arm.com>,
-        Ian Campbell <ijc+devicetree@hellion.org.uk>,
-        Kumar Gala <galak@codeaurora.org>,
-        Benoit Cousson <bcousson@baylibre.com>,
-        Tony Lindgren <tony@atomide.com>,
-        Russell King <linux@arm.linux.org.uk>,
-        Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
-        <richardcochran@gmail.com>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Lee
- Jones <lee.jones@linaro.org>,
-        Sebastian Andrzej Siewior
-	<bigeasy@linutronix.de>
-CC: Lars-Peter Clausen <lars@metafoo.de>, Peter Meerwald <pmeerw@pmeerw.net>,
-        Samuel Ortiz <sameo@linux.intel.com>, Felipe Balbi <balbi@ti.com>,
-        Vignesh R
-	<vigneshr@ti.com>, Brad Griffis <bgriffis@ti.com>,
-        Sanjeev Sharma
-	<sanjeev_sharma@mentor.com>,
-        Paul Gortmaker <paul.gortmaker@windriver.com>,
-        Jan Kardell <jan.kardell@telliq.com>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <linux-omap@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>, <linux-iio@vger.kernel.org>,
-        <linux-input@vger.kernel.org>
-Subject: [PATCH v3 0/6] Touchscreen performance related fixes
-Date: Tue, 11 Nov 2014 14:03:58 +0530
-Message-ID: <1415694844-11230-1-git-send-email-vigneshr@ti.com>
+	Mark Rutland <mark.rutland@arm.com>,
+	Ian Campbell <ijc+devicetree@hellion.org.uk>,
+	Kumar Gala <galak@codeaurora.org>,
+	Benoit Cousson <bcousson@baylibre.com>,
+	Tony Lindgren <tony@atomide.com>,
+	Russell King <linux@arm.linux.org.uk>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+	Lee Jones <lee.jones@linaro.org>,
+	Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+CC: Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Samuel Ortiz <sameo@linux.intel.com>,
+	Felipe Balbi <balbi@ti.com>, Vignesh R <vigneshr@ti.com>,
+	Brad Griffis <bgriffis@ti.com>,
+	Sanjeev Sharma <sanjeev_sharma@mentor.com>,
+	Paul Gortmaker <paul.gortmaker@windriver.com>,
+	Jan Kardell <jan.kardell@telliq.com>,
+	<devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+	<linux-omap@vger.kernel.org>,
+	<linux-arm-kernel@lists.infradead.org>,
+	<linux-iio@vger.kernel.org>, <linux-input@vger.kernel.org>
+Subject: [PATCH v2 0/5] Touchscreen performance related fixes
+Date: Fri, 7 Nov 2014 11:19:05 +0530
+Message-ID: <1415339350-17679-1-git-send-email-vigneshr@ti.com>
 MIME-Version: 1.0
 Content-Type: text/plain
-List-ID: <linux-iio@vger.kernel.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
 This series of patches fix TSC defects related to lag in touchscreen
 performance and cursor jump at touch release. The lag was result of
@@ -58,11 +61,6 @@ observed.
 
 Change log:
 
-v3:
- - Replace delta filtering logic in TSC driver with median filtering
-   as suggested by Richard.
- - Addressed Lee Jones comments.
-
 v2:
  - Addressed comments by Hartmut Knaack
  - patch 2 was split into two as per Lee Jones comment
@@ -72,20 +70,19 @@ Brad Griffis (2):
     steps
   input: touchscreen: ti_am335x_tsc: Remove udelay in interrupt handler
 
-Vignesh R (4):
+Vignesh R (3):
   mfd: ti_am335x_tscadc: Remove unwanted reg_se_cache save
   ARM: dts: AM335x: Make charge delay a DT parameter for tsc
   input: touchscreen: ti_am335x_tsc: Use charge delay DT parameter
-  input: touchscreen: ti_am335x_tsc: Replace delta filtering with median
-    filtering
 
- .../bindings/input/touchscreen/ti-tsc-adc.txt      |  15 ++
+ .../bindings/input/touchscreen/ti-tsc-adc.txt      |  15 +++
  arch/arm/boot/dts/am335x-evm.dts                   |   1 +
  drivers/iio/adc/ti_am335x_adc.c                    |   5 +-
- drivers/input/touchscreen/ti_am335x_tsc.c          | 179 +++++++++++----------
+ drivers/input/touchscreen/ti_am335x_tsc.c          | 106 ++++++++++-----------
  drivers/mfd/ti_am335x_tscadc.c                     |   7 +-
  include/linux/mfd/ti_am335x_tscadc.h               |   4 +-
- 6 files changed, 121 insertions(+), 90 deletions(-)
+ 6 files changed, 79 insertions(+), 59 deletions(-)
 
 -- 
 1.9.1
+
