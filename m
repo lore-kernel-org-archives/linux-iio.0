@@ -1,129 +1,181 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:37389 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753521AbaKHMRc (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 8 Nov 2014 07:17:32 -0500
-Message-ID: <545E09DA.3040501@kernel.org>
-Date: Sat, 08 Nov 2014 12:17:30 +0000
-From: Jonathan Cameron <jic23@kernel.org>
+Received: from arroyo.ext.ti.com ([192.94.94.40]:34719 "EHLO arroyo.ext.ti.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751981AbaKGFu4 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Fri, 7 Nov 2014 00:50:56 -0500
+From: Vignesh R <vigneshr@ti.com>
+To: Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>,
+	Mark Rutland <mark.rutland@arm.com>,
+	Ian Campbell <ijc+devicetree@hellion.org.uk>,
+	Kumar Gala <galak@codeaurora.org>,
+	Benoit Cousson <bcousson@baylibre.com>,
+	Tony Lindgren <tony@atomide.com>,
+	Russell King <linux@arm.linux.org.uk>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+	Lee Jones <lee.jones@linaro.org>,
+	Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+CC: Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Samuel Ortiz <sameo@linux.intel.com>,
+	Felipe Balbi <balbi@ti.com>, Vignesh R <vigneshr@ti.com>,
+	Brad Griffis <bgriffis@ti.com>,
+	Sanjeev Sharma <sanjeev_sharma@mentor.com>,
+	Paul Gortmaker <paul.gortmaker@windriver.com>,
+	Jan Kardell <jan.kardell@telliq.com>,
+	<devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+	<linux-omap@vger.kernel.org>,
+	<linux-arm-kernel@lists.infradead.org>,
+	<linux-iio@vger.kernel.org>, <linux-input@vger.kernel.org>
+Subject: [PATCH 2/5] input: touchscreen: ti_am335x_tsc: Remove udelay in interrupt handler
+Date: Fri, 7 Nov 2014 11:19:07 +0530
+Message-ID: <1415339350-17679-3-git-send-email-vigneshr@ti.com>
+In-Reply-To: <1415339350-17679-1-git-send-email-vigneshr@ti.com>
+References: <1415339350-17679-1-git-send-email-vigneshr@ti.com>
 MIME-Version: 1.0
-To: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
-	Gwendal Grignou <gwendal@google.com>
-CC: Gwendal Grignou <gwendal@chromium.org>, knaack.h@gmx.de,
-	linux-iio@vger.kernel.org
-Subject: Re: [PATCHv2] iio: ak8975: Add AKM0991x support.
-References: <5458003C.90107@gmx.de>	 <1415130097-25080-1-git-send-email-gwendal@chromium.org>	 <545A34AC.9040606@kernel.org>	 <CAMHSBOWmmCdd=5HXJN-vz9saaPrq3n0p-LjCNvnX3Q3ZieZdRQ@mail.gmail.com> <1415284340.7340.9.camel@spandruv-hsb-test>
-In-Reply-To: <1415284340.7340.9.camel@spandruv-hsb-test>
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 06/11/14 14:32, Srinivas Pandruvada wrote:
-> On Wed, 2014-11-05 at 13:19 -0800, Gwendal Grignou wrote:
->> On Wed, Nov 5, 2014 at 6:31 AM, Jonathan Cameron <jic23@kernel.org> wrote:
->>> On 04/11/14 19:41, Gwendal Grignou wrote:
->>>> File and config id remains the same, but driver is now named akxxxx.
->>>
->>> Don't do that.  Please name the driver after one supported part rather
->>> than a general wild card.  Leaving it as ak8975 would be sensible.
->>> Wild cards seem like a good idea until along comes a part that fits
->>> in the naming scheme but is otherwise totally different.
->>>
->>> Much cleaner to just pick a part to use in naming the driver and
->>> make it clear what parts are supported in kconfig (see iio/adc/max1363 for
->>> example).
->> Will do. It is cleaner indeed.
->>>
->>> I would have prefered this as a two patch series.  The first combining
->>> the existing drivers, and the second (small one) adding the new part
->>> support.
->> I will submit 3 patches soon:
->> - minor fixes in the driver first,
->> - one that refactor the current driver to introduce a definition data structure
->> - the next one that remove ak9911.c and add support for ak09911 and
->> ak9912 into ak8975.c
->>>
->>> Would have broken it up into logical steps thus making it a little
->>> easier to check for feature parity etc.
->>>
->>> Once you've dropped the name change, this patch will contain less noise.
->>> Also, there are a couple of sensible refactorings in there.  I would
->>> have prefered these to be in precursor patches that made much smaller
->>> changes.
->> The re-factoring became obvious after I introduce the definition data structure.
->>>
->>> This sort of merging of drivers is one of the hardest types of code to
->>> review, so making it as easy as possible for reviewers by packaging
->>> it up as baby steps is the way to go.
->>>
->>> There is still some work to be done in convincing people that merging
->>> the drivers is sensible (I'm pretty much convinced having waded through
->>> this) but that is an easier job with a well split up series of steps!
->>>
->>> Jonathan
->>>
->>>> Move AKM09911 support in the same file.
->>>>
->>>> Signed-off-by: Gwendal Grignou <gwendal@chromium.org>
->>>> ---
->>>>
->>>> Addressed all comments from Hartmut.
->>>>
->>>>  drivers/iio/magnetometer/Kconfig   |  19 +-
->>>>  drivers/iio/magnetometer/Makefile  |   1 -
->>>>  drivers/iio/magnetometer/ak09911.c | 326 -------------------
->>>>  drivers/iio/magnetometer/ak8975.c  | 629 ++++++++++++++++++++++++++-----------
->>>>  4 files changed, 444 insertions(+), 531 deletions(-)
->>>>  delete mode 100644 drivers/iio/magnetometer/ak09911.c
->>>>
->>>> diff --git a/drivers/iio/magnetometer/Kconfig b/drivers/iio/magnetometer/Kconfig
->>>> index b2dba9e..67f005d 100644
->>>> --- a/drivers/iio/magnetometer/Kconfig
->>>> +++ b/drivers/iio/magnetometer/Kconfig
->>>> @@ -6,26 +6,15 @@
->>>>  menu "Magnetometer sensors"
->>>>
->>>>  config AK8975
->>>> -     tristate "Asahi Kasei AK8975 3-Axis Magnetometer"
->>>> +     tristate "Asahi Kasei AK 3-Axis Magnetometer"
->>>>       depends on I2C
->>>>       depends on GPIOLIB
->>>>       help
->>>> -       Say yes here to build support for Asahi Kasei AK8975 3-Axis
->>>> -       Magnetometer. This driver can also support AK8963, if i2c
->>>> -       device name is identified as ak8963.
->>>> +       Say yes here to build support for Asahi Kasei AK8975, AK8963,
->>>> +       AK09911 or AK09912 3-Axis Magnetometer.
->>>>
->>>>         To compile this driver as a module, choose M here: the module
->>>> -       will be called ak8975.
->>>> -
->>>> -config AK09911
->>>> -     tristate "Asahi Kasei AK09911 3-axis Compass"
->>>> -     depends on I2C
->>>> -     help
->>>> -       Say yes here to build support for Asahi Kasei AK09911 3-Axis
->>>> -       Magnetometer.
->>>> -
->>>> -       To compile this driver as a module, choose M here: the module
->>>> -       will be called ak09911.
->>>> +       will be called akxxxx.
->>>>
-> We already have released products with CONFIG_AK09911, so will next
-> kernel upgrade will break them. Customers don't allow config changes.
-> So we can't remove this config.
-> Merging of drivers is fine. At the least we should keep the config and
-> select the AK8975 when defined in the config if we remove AK09911.
-> 
-> Jonathan,
-> What do you think? This driver is part of a commercial released product.
-> As you know customers are very sensitive about .config changes.
-Absolutely.  When merging drivers putting in some config magic
-to select the new driver is a common solution.
+From: Brad Griffis <bgriffis@ti.com>
 
-> 
-> Thanks,
-> Srinivas
-> 
+TSC interrupt handler had udelay to avoid reporting of false pen-up
+interrupt to user space. This patch implements workaround suggesting in
+Advisory 1.0.31 of silicon errata for am335x, thus eliminating udelay
+and touchscreen lag. This also improves performance of touchscreen and
+eliminates sudden jump of cursor at touch release.
 
+IDLECONFIG and CHARGECONFIG registers are to be configured
+with same values in order to eliminate false pen-up events. This
+workaround may result in false pen-down to be detected, hence considerable
+charge step delay needs to be added. The charge delay is set to 0xB000
+(in terms of ADC clock cycles) by default.
+
+TSC steps are disabled at the end of every sampling cycle and EOS bit is
+set. Once the EOS bit is set, the TSC steps need to be re-enabled to begin
+next sampling cycle.
+
+Signed-off-by: Brad Griffis <bgriffis@ti.com>
+[vigneshr@ti.com: Ported the patch from v3.12 to v3.18rc2]
+
+Signed-off-by: Vignesh R <vigneshr@ti.com>
+---
+ drivers/input/touchscreen/ti_am335x_tsc.c | 56 ++++++++++++-------------------
+ include/linux/mfd/ti_am335x_tscadc.h      |  3 +-
+ 2 files changed, 24 insertions(+), 35 deletions(-)
+
+diff --git a/drivers/input/touchscreen/ti_am335x_tsc.c b/drivers/input/touchscreen/ti_am335x_tsc.c
+index 1aeac9675fe7..483fd97c0e0c 100644
+--- a/drivers/input/touchscreen/ti_am335x_tsc.c
++++ b/drivers/input/touchscreen/ti_am335x_tsc.c
+@@ -173,11 +173,9 @@ static void titsc_step_config(struct titsc *ts_dev)
+ 		titsc_writel(ts_dev, REG_STEPDELAY(i), STEPCONFIG_OPENDLY);
+ 	}
+ 
+-	/* Charge step configuration */
+-	config = ts_dev->bit_xp | ts_dev->bit_yn |
+-			STEPCHARGE_RFP_XPUL | STEPCHARGE_RFM_XNUR |
+-			STEPCHARGE_INM_AN1 | STEPCHARGE_INP(ts_dev->inp_yp);
++	/* Make CHARGECONFIG same as IDLECONFIG */
+ 
++	config = titsc_readl(ts_dev, REG_IDLECONFIG);
+ 	titsc_writel(ts_dev, REG_CHARGECONFIG, config);
+ 	titsc_writel(ts_dev, REG_CHARGEDELAY, CHARGEDLY_OPENDLY);
+ 
+@@ -264,9 +262,26 @@ static irqreturn_t titsc_irq(int irq, void *dev)
+ 	unsigned int status, irqclr = 0;
+ 	unsigned int x = 0, y = 0;
+ 	unsigned int z1, z2, z;
+-	unsigned int fsm;
+ 
+-	status = titsc_readl(ts_dev, REG_IRQSTATUS);
++	status = titsc_readl(ts_dev, REG_RAWIRQSTATUS);
++	if (status & IRQENB_HW_PEN) {
++		ts_dev->pen_down = true;
++		titsc_writel(ts_dev, REG_IRQWAKEUP, 0x00);
++		titsc_writel(ts_dev, REG_IRQCLR, IRQENB_HW_PEN);
++		irqclr |= IRQENB_HW_PEN;
++	}
++
++	if (status & IRQENB_PENUP) {
++		ts_dev->pen_down = false;
++		input_report_key(input_dev, BTN_TOUCH, 0);
++		input_report_abs(input_dev, ABS_PRESSURE, 0);
++		input_sync(input_dev);
++		irqclr |= IRQENB_PENUP;
++	}
++
++	if (status & IRQENB_EOS)
++		irqclr |= IRQENB_EOS;
++
+ 	/*
+ 	 * ADC and touchscreen share the IRQ line.
+ 	 * FIFO1 interrupts are used by ADC. Handle FIFO0 IRQs here only
+@@ -297,34 +312,6 @@ static irqreturn_t titsc_irq(int irq, void *dev)
+ 		}
+ 		irqclr |= IRQENB_FIFO0THRES;
+ 	}
+-
+-	/*
+-	 * Time for sequencer to settle, to read
+-	 * correct state of the sequencer.
+-	 */
+-	udelay(SEQ_SETTLE);
+-
+-	status = titsc_readl(ts_dev, REG_RAWIRQSTATUS);
+-	if (status & IRQENB_PENUP) {
+-		/* Pen up event */
+-		fsm = titsc_readl(ts_dev, REG_ADCFSM);
+-		if (fsm == ADCFSM_STEPID) {
+-			ts_dev->pen_down = false;
+-			input_report_key(input_dev, BTN_TOUCH, 0);
+-			input_report_abs(input_dev, ABS_PRESSURE, 0);
+-			input_sync(input_dev);
+-		} else {
+-			ts_dev->pen_down = true;
+-		}
+-		irqclr |= IRQENB_PENUP;
+-	}
+-
+-	if (status & IRQENB_HW_PEN) {
+-
+-		titsc_writel(ts_dev, REG_IRQWAKEUP, 0x00);
+-		titsc_writel(ts_dev, REG_IRQCLR, IRQENB_HW_PEN);
+-	}
+-
+ 	if (irqclr) {
+ 		titsc_writel(ts_dev, REG_IRQSTATUS, irqclr);
+ 		am335x_tsc_se_set_cache(ts_dev->mfd_tscadc, ts_dev->step_mask);
+@@ -417,6 +404,7 @@ static int titsc_probe(struct platform_device *pdev)
+ 	}
+ 
+ 	titsc_writel(ts_dev, REG_IRQENABLE, IRQENB_FIFO0THRES);
++	titsc_writel(ts_dev, REG_IRQENABLE, IRQENB_EOS);
+ 	err = titsc_config_wires(ts_dev);
+ 	if (err) {
+ 		dev_err(&pdev->dev, "wrong i/p wire configuration\n");
+diff --git a/include/linux/mfd/ti_am335x_tscadc.h b/include/linux/mfd/ti_am335x_tscadc.h
+index e2e70053470e..c99be5dc0f5c 100644
+--- a/include/linux/mfd/ti_am335x_tscadc.h
++++ b/include/linux/mfd/ti_am335x_tscadc.h
+@@ -52,6 +52,7 @@
+ 
+ /* IRQ enable */
+ #define IRQENB_HW_PEN		BIT(0)
++#define IRQENB_EOS		BIT(1)
+ #define IRQENB_FIFO0THRES	BIT(2)
+ #define IRQENB_FIFO0OVRRUN	BIT(3)
+ #define IRQENB_FIFO0UNDRFLW	BIT(4)
+@@ -107,7 +108,7 @@
+ /* Charge delay */
+ #define CHARGEDLY_OPEN_MASK	(0x3FFFF << 0)
+ #define CHARGEDLY_OPEN(val)	((val) << 0)
+-#define CHARGEDLY_OPENDLY	CHARGEDLY_OPEN(1)
++#define CHARGEDLY_OPENDLY	CHARGEDLY_OPEN(0xB000)
+ 
+ /* Control register */
+ #define CNTRLREG_TSCSSENB	BIT(0)
+-- 
+1.9.1
 
