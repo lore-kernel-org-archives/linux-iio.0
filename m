@@ -1,588 +1,85 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from par-mail.meas-spec.com ([198.190.228.178]:56057 "EHLO
-	PAR-MAIL.MEAS-SPEC.COM" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752005AbaKFJz5 convert rfc822-to-8bit (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 6 Nov 2014 04:55:57 -0500
-From: "Markezana, William" <William.Markezana@meas-spec.com>
-To: "jic23@kernel.org" <jic23@kernel.org>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-CC: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: [PATCH] iio: (ms5637) Add Measurement Specialties MS5637 support
-Date: Thu, 6 Nov 2014 09:46:08 +0000
-Message-ID: <8B5E2C57A478A447A3ECC506FBF26C030E1E2E@TLSE-SVR-MAIL01.europe.msiusa.com>
-Content-Type: text/plain; charset="iso-8859-1"
+Received: from bear.ext.ti.com ([192.94.94.41]:60721 "EHLO bear.ext.ti.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751348AbaKGFvT (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Fri, 7 Nov 2014 00:51:19 -0500
+From: Vignesh R <vigneshr@ti.com>
+To: Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>,
+	Mark Rutland <mark.rutland@arm.com>,
+	Ian Campbell <ijc+devicetree@hellion.org.uk>,
+	Kumar Gala <galak@codeaurora.org>,
+	Benoit Cousson <bcousson@baylibre.com>,
+	Tony Lindgren <tony@atomide.com>,
+	Russell King <linux@arm.linux.org.uk>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+	Lee Jones <lee.jones@linaro.org>,
+	Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+CC: Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Samuel Ortiz <sameo@linux.intel.com>,
+	Felipe Balbi <balbi@ti.com>, Vignesh R <vigneshr@ti.com>,
+	Brad Griffis <bgriffis@ti.com>,
+	Sanjeev Sharma <sanjeev_sharma@mentor.com>,
+	Paul Gortmaker <paul.gortmaker@windriver.com>,
+	Jan Kardell <jan.kardell@telliq.com>,
+	<devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+	<linux-omap@vger.kernel.org>,
+	<linux-arm-kernel@lists.infradead.org>,
+	<linux-iio@vger.kernel.org>, <linux-input@vger.kernel.org>
+Subject: [PATCH 5/5] input: touchscreen: ti_am335x_tsc: Use charge delay DT parameter
+Date: Fri, 7 Nov 2014 11:19:10 +0530
+Message-ID: <1415339350-17679-6-git-send-email-vigneshr@ti.com>
+In-Reply-To: <1415339350-17679-1-git-send-email-vigneshr@ti.com>
+References: <1415339350-17679-1-git-send-email-vigneshr@ti.com>
 MIME-Version: 1.0
+Content-Type: text/plain
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Signed-off-by: Ludovic <ludovic.tancerel@maplehightech.com>
----
- drivers/iio/pressure/Kconfig                      |   10 +
- drivers/iio/pressure/Makefile                     |    1 +
- drivers/iio/pressure/ms5637.c                     |  488 +++++++++++++++++++++
- drivers/staging/iio/Documentation/pressure/ms5637 |   25 ++
- 4 files changed, 524 insertions(+)
- create mode 100644 drivers/iio/pressure/ms5637.c
- create mode 100644 drivers/staging/iio/Documentation/pressure/ms5637
+This patch reads charge delay from tsc DT node and writes to
+REG_CHARGEDELAY register. If the charge delay is not specified in DT
+then default value of 0xB000(CHARGEDLY_OPENDLY) is used.
 
-diff --git a/drivers/iio/pressure/Kconfig b/drivers/iio/pressure/Kconfig
-index ffac8ac..4ba9bd5 100644
---- a/drivers/iio/pressure/Kconfig
-+++ b/drivers/iio/pressure/Kconfig
-@@ -41,6 +41,16 @@ config MPL3115
-           To compile this driver as a module, choose M here: the module
-           will be called mpl3115.
+Signed-off-by: Vignesh R <vigneshr@ti.com>
+---
+ drivers/input/touchscreen/ti_am335x_tsc.c | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/input/touchscreen/ti_am335x_tsc.c b/drivers/input/touchscreen/ti_am335x_tsc.c
+index 483fd97c0e0c..20ce76b1b6e7 100644
+--- a/drivers/input/touchscreen/ti_am335x_tsc.c
++++ b/drivers/input/touchscreen/ti_am335x_tsc.c
+@@ -52,6 +52,7 @@ struct titsc {
+ 	u32			bit_xp, bit_xn, bit_yp, bit_yn;
+ 	u32			inp_xp, inp_xn, inp_yp, inp_yn;
+ 	u32			step_mask;
++	u32			charge_delay;
+ };
  
-+config MS5637
-+        tristate "MS5637 pressure & temperature sensor"
-+        depends on I2C
-+        help
-+          If you say yes here you get support for the Measurement Specialties
-+          MS5637 pressure and temperature sensor.
-+
-+          This driver can also be built as a module. If so, the module will
-+          be called ms5637.
-+
- config IIO_ST_PRESS
- 	tristate "STMicroelectronics pressure sensor Driver"
- 	depends on (I2C || SPI_MASTER) && SYSFS
-diff --git a/drivers/iio/pressure/Makefile b/drivers/iio/pressure/Makefile
-index c53d250..50fe66e 100644
---- a/drivers/iio/pressure/Makefile
-+++ b/drivers/iio/pressure/Makefile
-@@ -6,6 +6,7 @@
- obj-$(CONFIG_HID_SENSOR_PRESS)   += hid-sensor-press.o
- obj-$(CONFIG_MPL115) += mpl115.o
- obj-$(CONFIG_MPL3115) += mpl3115.o
-+obj-$(CONFIG_MS5637) += ms5637.o
- obj-$(CONFIG_IIO_ST_PRESS) += st_pressure.o
- st_pressure-y := st_pressure_core.o
- st_pressure-$(CONFIG_IIO_BUFFER) += st_pressure_buffer.o
-diff --git a/drivers/iio/pressure/ms5637.c b/drivers/iio/pressure/ms5637.c
-new file mode 100644
-index 0000000..ea74636
---- /dev/null
-+++ b/drivers/iio/pressure/ms5637.c
-@@ -0,0 +1,488 @@
-+/*
-+ * ms5637.c - Support for Measurement Specialties MS5637 temperature sensor
-+ *
-+ * Copyright (c) 2014 Measurement Specialties
-+ *
-+ * Licensed under the GPL-2.
-+ *
-+ * (7-bit I2C slave address 0x77)
-+ *
-+ */
-+
-+#include <linux/init.h>
-+#include <linux/device.h>
-+#include <linux/kernel.h>
-+#include <linux/stat.h>
-+#include <linux/module.h>
-+#include <linux/i2c.h>
-+#include <linux/iio/iio.h>
-+#include <linux/iio/sysfs.h>
-+#include <linux/jiffies.h>
-+#include <linux/delay.h>
-+#include <linux/mutex.h>
-+
-+/* MS5637 Commands */
-+#define MS5637_RESET				(0x1E)
-+#define MS5637_TEMPERATURE_CONVERSION_START	(0x50)
-+#define MS5637_PRESSURE_CONVERSION_START	(0x40)
-+#define MS5637_ADC_READ				(0x00)
-+#define MS5637_PROM_READ			(0xA0)
-+#define MS5637_PROM_ELEMENTS_NB                 (7)
-+
-+#define ATTR_RESET				0
-+#define ATTR_RESOLUTION				1
-+
-+static const u16 conversion_time[] = { 1000, 2000, 3000, 5000, 9000, 17000 };
-+
-+struct ms5637_dev {
-+	struct i2c_client *client;
-+	struct mutex lock; /* mutex protecting this data structure */
-+	u16 calibration_coeffs[MS5637_PROM_ELEMENTS_NB];
-+	bool got_calibration_words;
-+	unsigned long last_update;
-+	bool valid;
-+	int temperature;
-+	unsigned int pressure;
-+	u8 resolution_index;
-+};
-+
-+static int ms5637_get_calibration_coeffs(struct ms5637_dev *dev_data,
-+					 unsigned char index, u16 *word)
-+{
-+	int ret = 0;
-+
-+	ret = i2c_smbus_read_word_swapped(dev_data->client,
-+					  MS5637_PROM_READ + (index << 1));
-+	if (ret < 0)
-+		return ret;
-+	*word = (u16) ret & 0xFFFF;
-+	return 0;
-+}
-+
-+static bool ms5637_crc_check(u16 *n_prom, u8 crc)
-+{
-+	u8 cnt, n_bit;
-+	u16 n_rem, crc_read;
-+
-+	n_rem = 0x00;
-+	crc_read = n_prom[0];
-+	n_prom[MS5637_PROM_ELEMENTS_NB] = 0;
-+	n_prom[0] = (0x0FFF & (n_prom[0]));	/* Clear the CRC byte */
-+
-+	for (cnt = 0; cnt < (MS5637_PROM_ELEMENTS_NB + 1) * 2; cnt++) {
-+		if (cnt % 2 == 1)
-+			n_rem ^= n_prom[cnt >> 1] & 0x00FF;
-+		else
-+			n_rem ^= n_prom[cnt >> 1] >> 8;
-+
-+		for (n_bit = 8; n_bit > 0; n_bit--) {
-+			if (n_rem & 0x8000)
-+				n_rem = (n_rem << 1) ^ 0x3000;
-+			else
-+				n_rem <<= 1;
-+		}
-+	}
-+	n_rem >>= 12;
-+	n_prom[0] = crc_read;
-+	return (n_rem == crc);
-+}
-+
-+static int ms5637_fill_calibration_coeffs(struct ms5637_dev *dev_data)
-+{
-+	int i, ret = 0;
-+
-+	for (i = 0; i < MS5637_PROM_ELEMENTS_NB; i++) {
-+		ret = ms5637_get_calibration_coeffs(dev_data, i,
-+				&dev_data->calibration_coeffs
-+				[i]);
-+
-+		dev_dbg(&dev_data->client->dev, "Coeff %d : %d", i,
-+			dev_data->calibration_coeffs[i]);
-+
-+		if (ret < 0) {
-+			dev_err(&dev_data->client->dev,
-+				"unable to get calibration coefficients at address %d\n",
-+				i + 1);
-+			return ret;
-+		}
-+	}
-+
-+	if (!ms5637_crc_check(dev_data->calibration_coeffs,
-+			      (dev_data->
-+			       calibration_coeffs[0] & 0xF000) >> 12)) {
-+		dev_err(&dev_data->client->dev,
-+			"Calibration coefficients crc check error\n");
-+		return -1;
-+	}
-+
-+	return 0;
-+}
-+
-+static int ms5637_read_adc_value(struct ms5637_dev *dev_data, u32 *adc_value)
-+{
-+	int ret = 0;
-+	u8 buf[3];
-+
-+	ret =
-+	    i2c_smbus_read_i2c_block_data(dev_data->client, MS5637_ADC_READ, 3,
-+					  buf);
-+	if (ret < 0)
-+		return ret;
-+	dev_dbg(&dev_data->client->dev, "ADC raw value : %x %x %x\n", buf[0],
-+		buf[1], buf[2]);
-+	*adc_value = (buf[0] << 16) + (buf[1] << 8) + buf[0];
-+	return 0;
-+}
-+
-+static int ms5637_conversion_and_read_adc(struct ms5637_dev *dev_data,
-+					  u32 *t_adc, u32 *p_adc)
-+{
-+	int ret;
-+
-+	/* Trigger Temperature conversion */
-+	ret = i2c_smbus_write_byte(dev_data->client,
-+				   MS5637_TEMPERATURE_CONVERSION_START
-+				   + dev_data->resolution_index * 2);
-+	if (ret < 0)
-+		return ret;
-+	usleep_range(conversion_time[dev_data->resolution_index],
-+		     conversion_time[dev_data->resolution_index]+3000);
-+	/* Retrieve ADC value */
-+	ret = ms5637_read_adc_value(dev_data, t_adc);
-+
-+	/* Trigger Pressure conversion */
-+	ret = i2c_smbus_write_byte(dev_data->client,
-+				   MS5637_PRESSURE_CONVERSION_START
-+				   + dev_data->resolution_index * 2);
-+	if (ret < 0)
-+		return ret;
-+	usleep_range(conversion_time[dev_data->resolution_index],
-+		     conversion_time[dev_data->resolution_index]+3000);
-+	/* Retrieve ADC value */
-+	ret = ms5637_read_adc_value(dev_data, p_adc);
-+
-+	if (ret < 0)
-+		return ret;
-+	return 0;
-+}
-+
-+static int ms5637_read_temperature_and_pressure(struct ms5637_dev *dev_data)
-+{
-+	int ret = 0;
-+	u32 t_adc, p_adc;
-+	s32 dt, temp;
-+	s64 off, sens, t2, off2, sens2;
-+
-+	mutex_lock(&dev_data->lock);
-+
-+	if (time_after(jiffies, dev_data->last_update + HZ / 2) ||
-+	    !dev_data->valid) {
-+		if (!dev_data->got_calibration_words) {
-+			ret = ms5637_fill_calibration_coeffs(dev_data);
-+			if (ret < 0)
-+				goto out;
-+
-+			dev_data->got_calibration_words = true;
-+		}
-+
-+		ret = ms5637_conversion_and_read_adc(dev_data, &t_adc, &p_adc);
-+
-+		if (ret < 0) {
-+			dev_data->got_calibration_words = false;
-+			dev_err(&dev_data->client->dev,
-+				"unable to make sensor adc conversion\n");
-+			goto out;
-+		}
-+
-+		dt = (s32) t_adc - (dev_data->calibration_coeffs[5] << 8);
-+
-+		/* Actual temperature = 2000 + dT * TEMPSENS */
-+		temp =
-+		    2000 + (((s64) dt * dev_data->calibration_coeffs[6]) >> 23);
-+
-+		/* Second order temperature compensation */
-+		if (temp < 2000) {
-+			s64 tmp = (s64) temp - 2000;
-+
-+			t2 = (3 * ((s64) dt * (s64) dt)) >> 33;
-+			off2 = (61 * tmp * tmp) >> 4;
-+			sens2 = (29 * tmp * tmp) >> 4;
-+
-+			if (temp < -1500) {
-+				s64 tmp = (s64) temp + 1500;
-+
-+				off2 += 17 * tmp * tmp;
-+				sens2 += 9 * tmp * tmp;
-+			}
-+		} else {
-+			t2 = (5 * ((s64) dt * (s64) dt)) >> 38;
-+			off2 = 0;
-+			sens2 = 0;
-+		}
-+
-+		/* OFF = OFF_T1 + TCO * dT */
-+		off = (((s64) dev_data->calibration_coeffs[2]) << 17)
-+		    +
-+		    ((((s64) dev_data->calibration_coeffs[4]) * (s64) dt) >> 6);
-+		off -= off2;
-+
-+		/* Sensitivity at actual temperature = SENS_T1 + TCS * dT */
-+		sens = (((s64) dev_data->calibration_coeffs[1]) << 16)
-+		    + (((s64) dev_data->calibration_coeffs[3] * dt) >> 7);
-+		sens -= sens2;
-+
-+		/* Temperature compensated pressure = D1 * SENS - OFF */
-+		dev_data->temperature = (temp - t2) * 10;
-+		dev_data->pressure = (u32) (((((s64) p_adc * sens) >> 21)
-+					     - off) >> 15) / 100;
-+
-+		dev_data->last_update = jiffies;
-+		dev_data->valid = true;
-+	}
-+ out:
-+	mutex_unlock(&dev_data->lock);
-+
-+	return ret >= 0 ? 0 : ret;
-+}
-+
-+static int ms5637_read_raw(struct iio_dev *indio_dev,
-+			   struct iio_chan_spec const *channel, int *val,
-+			   int *val2, long mask)
-+{
-+	int ret;
-+	struct ms5637_dev *dev_data = iio_priv(indio_dev);
-+
-+	switch (mask) {
-+	case IIO_CHAN_INFO_PROCESSED:
-+		switch (channel->type) {
-+		case IIO_TEMP:	/* in 0.001 °C */
-+			ret = ms5637_read_temperature_and_pressure(dev_data);
-+			if (ret)
-+				goto t_err;
-+			*val = dev_data->temperature;
-+			break;
-+		case IIO_PRESSURE:	/* in mB */
-+			ret = ms5637_read_temperature_and_pressure(dev_data);
-+			if (ret)
-+				goto p_err;
-+			*val = dev_data->pressure;
-+			break;
-+		default:
-+			return -EINVAL;
-+		}
-+		ret = IIO_VAL_INT;
-+		break;
-+	default:
-+		return -EINVAL;
-+	}
-+
-+	return ret;
-+ t_err:
-+	dev_err(&indio_dev->dev, "Temperature read error\n");
-+	return ret;
-+ p_err:
-+	dev_err(&indio_dev->dev, "Pressure read error\n");
-+	return ret;
-+}
-+
-+static const struct iio_chan_spec ms5637_channels[] = {
-+	{
-+	 .type = IIO_TEMP,
-+	 .output = 1,
-+	 .info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED),
-+	 .scan_index = 0,
-+	 },
-+	{
-+	 .type = IIO_PRESSURE,
-+	 .output = 1,
-+	 .info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED),
-+	 .scan_index = 0,
-+	 }
-+};
-+
-+static ssize_t ms5637_read_attr(struct device *dev,
-+				struct device_attribute *attr, char *buf)
-+{
-+	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
-+	struct ms5637_dev *dev_data = iio_priv(indio_dev);
-+	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
-+	int ret = 0;
-+
-+	switch (this_attr->address) {
-+	case ATTR_RESET:
-+		ret = sprintf(buf, "0\n");
-+		break;
-+	case ATTR_RESOLUTION:
-+		ret = sprintf(buf, "%d\n", dev_data->resolution_index + 8);
-+		break;
-+	default:
-+		return -EINVAL;
-+	}
-+
-+	return ret;
-+}
-+
-+static ssize_t ms5637_write_attr(struct device *dev,
-+				 struct device_attribute *attr,
-+				 const char *buf, size_t len)
-+{
-+	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
-+	struct ms5637_dev *dev_data = iio_priv(indio_dev);
-+	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
-+	u8 val;
-+	int ret;
-+
-+	ret = kstrtou8(buf, 10, &val);
-+	if (ret)
-+		return ret;
-+
-+	mutex_lock(&dev_data->lock);
-+	switch (this_attr->address) {
-+	case ATTR_RESET:
-+		if (val != 1)
-+			goto einval;
-+
-+		ret = i2c_smbus_write_byte(dev_data->client, MS5637_RESET);
-+		if (ret < 0)
-+			goto out;
-+		usleep_range(3000, 6000);
-+
-+		break;
-+	case ATTR_RESOLUTION:
-+		if ((val < 8) || (val > 13))
-+			goto einval;
-+		dev_data->resolution_index = val - 8;
-+		break;
-+	default:
-+		goto einval;
-+	}
-+
-+	dev_data->valid = false;
-+	goto out;
-+ einval:
-+	ret = -EINVAL;
-+ out:
-+	mutex_unlock(&dev_data->lock);
-+
-+	return ret ? ret : len;
-+}
-+
-+static IIO_DEVICE_ATTR(in_reset,
-+		       S_IRUGO | S_IWUSR,
-+		       ms5637_read_attr, ms5637_write_attr, ATTR_RESET);
-+static IIO_DEVICE_ATTR(in_resolution,
-+		       S_IRUGO | S_IWUSR,
-+		       ms5637_read_attr, ms5637_write_attr, ATTR_RESOLUTION);
-+static IIO_CONST_ATTR(resolution_available, "8 9 10 11 12 13");
-+
-+static struct attribute *ms5637_attributes[] = {
-+	&iio_dev_attr_in_reset.dev_attr.attr,
-+	&iio_dev_attr_in_resolution.dev_attr.attr,
-+	&iio_const_attr_resolution_available.dev_attr.attr,
-+	NULL,
-+};
-+
-+static const struct attribute_group ms5637_attribute_group = {
-+	.attrs = ms5637_attributes,
-+};
-+
-+static const struct iio_info ms5637_info = {
-+	.read_raw = ms5637_read_raw,
-+	.attrs = &ms5637_attribute_group,
-+	.driver_module = THIS_MODULE,
-+};
-+
-+static int ms5637_probe(struct i2c_client *client,
-+			const struct i2c_device_id *id)
-+{
-+	struct ms5637_dev *dev_data;
-+	struct iio_dev *indio_dev;
-+	int ret;
-+
-+	if (!i2c_check_functionality(client->adapter,
-+				     I2C_FUNC_SMBUS_READ_WORD_DATA)) {
-+		dev_err(&client->dev,
-+			"adapter does not support SMBus read word transactions\n");
-+		return -ENODEV;
-+	}
-+
-+	if (!i2c_check_functionality(client->adapter,
-+				     I2C_FUNC_SMBUS_WRITE_BYTE)) {
-+		dev_err(&client->dev,
-+			"adapter does not support SMBus write byte transactions\n");
-+		return -ENODEV;
-+	}
-+
-+	if (!i2c_check_functionality(client->adapter,
-+				     I2C_FUNC_SMBUS_READ_I2C_BLOCK)) {
-+		dev_err(&client->dev,
-+			"adapter does not support SMBus read block transactions\n");
-+		return -ENODEV;
-+	}
-+
-+	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*dev_data));
-+	if (!indio_dev)
-+		return -ENOMEM;
-+
-+	dev_data = iio_priv(indio_dev);
-+	dev_data->client = client;
-+	mutex_init(&dev_data->lock);
-+
-+	indio_dev->info = &ms5637_info;
-+	indio_dev->name = id->name;
-+	indio_dev->dev.parent = &client->dev;
-+	indio_dev->modes = INDIO_DIRECT_MODE;
-+	indio_dev->channels = ms5637_channels;
-+	indio_dev->num_channels = ARRAY_SIZE(ms5637_channels);
-+
-+	i2c_set_clientdata(client, indio_dev);
-+	ret = iio_device_register(indio_dev);
-+	if (ret < 0)
-+		return ret;
-+
-+	ret = i2c_smbus_write_byte(client, MS5637_RESET);
-+	if (ret < 0)
-+		return ret;
-+	usleep_range(3000, 6000);
-+
-+	ret = ms5637_fill_calibration_coeffs(dev_data);
-+	if (ret == 0)
-+		dev_data->got_calibration_words = true;
-+
-+	if (ret < 0)
-+		return ret;
-+
-+	dev_dbg(&client->dev, "Driver initialization done");
-+	return 0;
-+}
-+
-+static int ms5637_remove(struct i2c_client *client)
-+{
-+	struct iio_dev *indio_dev = i2c_get_clientdata(client);
-+
-+	iio_device_unregister(indio_dev);
-+
-+	return 0;
-+}
-+
-+static const struct i2c_device_id ms5637_id[] = {
-+	{"ms5637", 0},
-+	{}
-+};
-+
-+static struct i2c_driver ms5637_driver = {
-+	.probe = ms5637_probe,
-+	.remove = ms5637_remove,
-+	.id_table = ms5637_id,
-+	.driver = {
-+		   .name = "ms5637",
-+		   .owner = THIS_MODULE,
-+		   },
-+};
-+
-+module_i2c_driver(ms5637_driver);
-+
-+MODULE_LICENSE("GPL");
-+MODULE_DESCRIPTION("Measurement Specialties MS5637 temperature driver");
-+MODULE_AUTHOR("William Markezana <william.markezana@meas-spec.com>");
-+MODULE_AUTHOR("Ludovic Tancerel <ludovic.tancerel@maplehightech.com>");
-diff --git a/drivers/staging/iio/Documentation/pressure/ms5637 b/drivers/staging/iio/Documentation/pressure/ms5637
-new file mode 100644
-index 0000000..d0d64f3
---- /dev/null
-+++ b/drivers/staging/iio/Documentation/pressure/ms5637
-@@ -0,0 +1,25 @@
-+Kernel driver ms5637
-+====================
-+
-+Supported chips:
-+  * Measurement Specialties MS5637
-+    Prefix: 'ms5637'
-+    Addresses scanned: I2C 0x76
-+    Datasheet: Available for download on meas-spec.com
-+
-+Authors:
-+    William Markezana (Meas-Spec) <william.markezana@meas-spec.com>
-+    Ludovic Tancerel <ludovic.tancerel@maplehightech.com>
-+
-+Description
-+-----------
-+
-+The MS5637 is a single chip pressure & temperature sensor.
-+The driver returns a milli-bar pressure value and a milli-degre celius value using the iio framework
-+
-+Via the iio sysfs interface, there are several attributes available.
-+in_reset - Reset ms5637 device by writing a 1 in it.
-+in_resolution - Set the number of bits for ADC resolution.
-+out_pressure_input - Current pressure from ms5637 sensor (milli-bar)
-+out_temp_input - Current temperature from htu21 sensor (milli-°C value)
-+resolution_available - List of resolutions supported
+ static unsigned int titsc_readl(struct titsc *ts, unsigned int reg)
+@@ -177,7 +178,7 @@ static void titsc_step_config(struct titsc *ts_dev)
+ 
+ 	config = titsc_readl(ts_dev, REG_IDLECONFIG);
+ 	titsc_writel(ts_dev, REG_CHARGECONFIG, config);
+-	titsc_writel(ts_dev, REG_CHARGEDELAY, CHARGEDLY_OPENDLY);
++	titsc_writel(ts_dev, REG_CHARGEDELAY, ts_dev->charge_delay);
+ 
+ 	/* coordinate_readouts + 1 ... coordinate_readouts + 2 is for Z */
+ 	config = STEPCONFIG_MODE_HWSYNC |
+@@ -361,6 +362,11 @@ static int titsc_parse_dt(struct platform_device *pdev,
+ 	if (err < 0)
+ 		return err;
+ 
++	err = of_property_read_u32(node, "ti,charge-delay",
++				   &ts_dev->charge_delay);
++	if (err < 0)
++		ts_dev->charge_delay = CHARGEDLY_OPENDLY;
++
+ 	return of_property_read_u32_array(node, "ti,wire-config",
+ 			ts_dev->config_inp, ARRAY_SIZE(ts_dev->config_inp));
+ }
 -- 
-1.7.9.5
+1.9.1
 
