@@ -1,106 +1,56 @@
-Return-Path: <vigneshr@ti.com>
-Message-ID: <545C5D20.5010006@ti.com>
-Date: Fri, 7 Nov 2014 11:18:16 +0530
-From: Vignesh R <vigneshr@ti.com>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-wi0-f170.google.com ([209.85.212.170]:36806 "EHLO
+	mail-wi0-f170.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751141AbaKGKRc (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 7 Nov 2014 05:17:32 -0500
+Date: Fri, 7 Nov 2014 11:17:14 +0100
+From: Richard Cochran <richardcochran@gmail.com>
+To: Vignesh R <vigneshr@ti.com>
+Cc: Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>,
+	Mark Rutland <mark.rutland@arm.com>,
+	Ian Campbell <ijc+devicetree@hellion.org.uk>,
+	Kumar Gala <galak@codeaurora.org>,
+	Benoit Cousson <bcousson@baylibre.com>,
+	Tony Lindgren <tony@atomide.com>,
+	Russell King <linux@arm.linux.org.uk>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+	devicetree@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>,
+	Samuel Ortiz <sameo@linux.intel.com>,
+	Jan Kardell <jan.kardell@telliq.com>,
+	linux-iio@vger.kernel.org,
+	Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+	linux-input@vger.kernel.org, linux-kernel@vger.kernel.org,
+	Felipe Balbi <balbi@ti.com>,
+	Paul Gortmaker <paul.gortmaker@windriver.com>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Hartmut Knaack <knaack.h@gmx.de>, linux-omap@vger.kernel.org,
+	Lee Jones <lee.jones@linaro.org>,
+	linux-arm-kernel@lists.infradead.org,
+	Brad Griffis <bgriffis@ti.com>
+Subject: Re: [PATCH 1/4] input: touchscreen: ti_am335x_tsc Interchange
+ touchscreen and ADC steps
+Message-ID: <20141107101714.GA23102@netboy>
+References: <1414408111-2631-1-git-send-email-vigneshr@ti.com>
+ <1414408111-2631-2-git-send-email-vigneshr@ti.com>
+ <20141106141916.GA17151@netboy>
+ <545C59CD.3070707@ti.com>
 MIME-Version: 1.0
-To: Hartmut Knaack <knaack.h@gmx.de>, Rob Herring <robh+dt@kernel.org>,
-        Pawel
- Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>,
-        Ian Campbell
-	<ijc+devicetree@hellion.org.uk>,
-        Kumar Gala <galak@codeaurora.org>,
-        Benoit
- Cousson <bcousson@baylibre.com>,
-        Tony Lindgren <tony@atomide.com>,
-        Russell
- King <linux@arm.linux.org.uk>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Dmitry
- Torokhov <dmitry.torokhov@gmail.com>
-CC: Lars-Peter Clausen <lars@metafoo.de>, Peter Meerwald <pmeerw@pmeerw.net>,
-        Samuel Ortiz <sameo@linux.intel.com>, Lee Jones <lee.jones@linaro.org>,
-        Felipe Balbi <balbi@ti.com>,
-        Sebastian Andrzej Siewior
-	<bigeasy@linutronix.de>,
-        Jan Kardell <jan.kardell@telliq.com>,
-        Paul Gortmaker
-	<paul.gortmaker@windriver.com>,
-        Brad Griffis <bgriffis@ti.com>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <linux-omap@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>, <linux-iio@vger.kernel.org>,
-        <linux-input@vger.kernel.org>
-Subject: Re: [PATCH 3/4] arm: boot: dts: am335x-evm: Make charge delay a DT
- parameter for tsc
-References: <1414408111-2631-1-git-send-email-vigneshr@ti.com> <1414408111-2631-4-git-send-email-vigneshr@ti.com> <5453FA8E.3080204@gmx.de>
-In-Reply-To: <5453FA8E.3080204@gmx.de>
-Content-Type: text/plain; charset="iso-8859-15"
-List-ID: <linux-iio@vger.kernel.org>
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <545C59CD.3070707@ti.com>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
+On Fri, Nov 07, 2014 at 11:04:05AM +0530, Vignesh R wrote:
+> Currently, there is too much noise in the TSC hardware that is being
+> removed by delta filtering. I tested TSC unit by removing filtering
+> logic, the performance was not at all satisfactory. The cursor jumps
+> wayward and smooth circles cannot be drawn. Looks like delta filtering
+> cannot be removed as of now. May be I will try and address it in future.
 
+FWIW, on the boards that I tested, I printed the measured values out,
+and I found that with 5 repetitions, I got the same value 5 times,
+plus or minus a very small delta.
 
-On Saturday 01 November 2014 02:39 AM, Hartmut Knaack wrote:
-> Vignesh R schrieb am 27.10.2014 12:08:
->> The charge delay value is by default 0xB000. But it can be set to lower
->> values on some boards as long as false pen-ups are avoided. Lowering the
->> value increases the sampling rate (though current sampling rate is
->> sufficient for tsc operation). Hence charge delay has been made a DT
->> parameter.
->>
-> I would recommend to use a few colons to separate some thoughts. Also, limit to 80 chars per line would be beneficial. See inline.
-
-I will address this in v2
-
->> Signed-off-by: Vignesh R <vigneshr@ti.com>
->> ---
->>  .../devicetree/bindings/input/touchscreen/ti-tsc-adc.txt    | 13 +++++++++++++
->>  arch/arm/boot/dts/am335x-evm.dts                            |  1 +
->>  2 files changed, 14 insertions(+)
->>
->> diff --git a/Documentation/devicetree/bindings/input/touchscreen/ti-tsc-adc.txt b/Documentation/devicetree/bindings/input/touchscreen/ti-tsc-adc.txt
->> index 878549ba814d..ac62769e70e4 100644
->> --- a/Documentation/devicetree/bindings/input/touchscreen/ti-tsc-adc.txt
->> +++ b/Documentation/devicetree/bindings/input/touchscreen/ti-tsc-adc.txt
->> @@ -28,6 +28,18 @@ Required properties:
->>  	ti,adc-channels: List of analog inputs available for ADC.
->>  			 AIN0 = 0, AIN1 = 1 and so on till AIN7 = 7.
->>  
->> +Optional properties:
->> +- child "tsc"
->> +	ti,charge-delay: Length of touch screen charge delay step in terms of
->> +			 ADC clock cycles. Charge delay value should be large in order
->> +			 to avoid false pen-up events. This value affects the overall
->> +			 sampling speed hence need to be kept as low as possible while
-> <...> speed, hence needs to be <...>
->> +			 avoiding false pen-up event. Start from a lower value say 0x400
-> <...> pen-up events. Start from a lower value, like 0x400, and increase <...>
->> +			 and increase value until false pen-up events are avoided. The
->> +			 pen-up detection happens immediately after the charge step
-> <...> charge step, so this <...>
->> +			 so this does in fact function as a hardware knob for adjusting
->> +			 the amount of "settling time".
->> +
->>  Example:
->>  	tscadc: tscadc@44e0d000 {
->>  		compatible = "ti,am3359-tscadc";
->> @@ -36,6 +48,7 @@ Example:
->>  			ti,x-plate-resistance = <200>;
->>  			ti,coordiante-readouts = <5>;
->>  			ti,wire-config = <0x00 0x11 0x22 0x33>;
->> +			ti,charge-delay = <0xB000>;
->>  		};
->>  
->>  		adc {
->> diff --git a/arch/arm/boot/dts/am335x-evm.dts b/arch/arm/boot/dts/am335x-evm.dts
->> index e2156a583de7..80be0462298b 100644
->> --- a/arch/arm/boot/dts/am335x-evm.dts
->> +++ b/arch/arm/boot/dts/am335x-evm.dts
->> @@ -641,6 +641,7 @@
->>  		ti,x-plate-resistance = <200>;
->>  		ti,coordinate-readouts = <5>;
->>  		ti,wire-config = <0x00 0x11 0x22 0x33>;
->> +		ti,charge-delay = <0xB000>;
->>  	};
->>  
->>  	adc {
->>
-> 
+Thanks,
+Richard
