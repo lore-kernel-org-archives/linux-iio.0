@@ -1,66 +1,72 @@
-Return-Path: <lars@metafoo.de>
-Message-ID: <546B8084.6080400@metafoo.de>
-Date: Tue, 18 Nov 2014 18:23:16 +0100
-From: Lars-Peter Clausen <lars@metafoo.de>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:37656 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753716AbaKHM7D (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 8 Nov 2014 07:59:03 -0500
+Message-ID: <545E1395.6040606@kernel.org>
+Date: Sat, 08 Nov 2014 12:59:01 +0000
+From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Octavian Purdila <octavian.purdila@intel.com>
-CC: jic23@kernel.org, linux-iio@vger.kernel.org,
- Srinivas Pandruvada <srinivas.pandruvada@intel.com>
-Subject: Re: [RFC 0/8] iio: add support for hardware fifo
-References: <1416246966-3083-1-git-send-email-octavian.purdila@intel.com>	<20141118132405.EF30A40277@saturn.retrosnub.co.uk>	<CAE1zotJny3-Zcd81HUYNpNZJHkt=t6e2TANzVQ=-FU239MLarw@mail.gmail.com>	<546B776F.1080800@metafoo.de> <CAE1zotJik56OsM8-6Hg9rGqJT_VdRL0VvXv4kjEhBX6W0ijYLQ@mail.gmail.com>
-In-Reply-To: <CAE1zotJik56OsM8-6Hg9rGqJT_VdRL0VvXv4kjEhBX6W0ijYLQ@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-List-ID: <linux-iio@vger.kernel.org>
+To: Ezequiel Garcia <ezequiel.garcia@imgtec.com>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Andrew Bresticker <abrestic@chromium.org>,
+	James Hartley <james.hartley@imgtec.com>,
+	Phani Movva <phani.movva@imgtec.com>
+CC: linux-iio@vger.kernel.org, pmeerw@pmeerw.net, knaack.h@gmx.de,
+	devicetree@vger.kernel.org,
+	Naidu Tellapati <Naidu.Tellapati@imgtec.com>,
+	Rob Herring <robh+dt@kernel.org>,
+	Pawel Moll <Pawel.Moll@arm.com>,
+	Mark Rutland <Mark.Rutland@arm.com>,
+	Ian Campbell <ijc+devicetree@hellion.org.uk>,
+	Kumar Gala <galak@codeaurora.org>
+Subject: Re: [PATCH v2 2/3] DT: iio: adc: Add CC_10001 binding documentation
+References: <1415224611-22096-1-git-send-email-ezequiel.garcia@imgtec.com> <1415224611-22096-3-git-send-email-ezequiel.garcia@imgtec.com>
+In-Reply-To: <1415224611-22096-3-git-send-email-ezequiel.garcia@imgtec.com>
+Content-Type: text/plain; charset=windows-1252
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On 11/18/2014 06:04 PM, Octavian Purdila wrote:
-> On Tue, Nov 18, 2014 at 6:44 PM, Lars-Peter Clausen <lars@metafoo.de> wrote:
->> On 11/18/2014 04:03 PM, Octavian Purdila wrote:
->>>
->>> On Tue, Nov 18, 2014 at 3:24 PM, <jic23@kernel.org> wrote:
->>
->> [...]
->>>>
->>>> Hence we started with something that at least superficially (I haven't
->>>> had a chance to go through the implementation in detail yet)
->>>> looks similar to what you have but ended up changing the method of
->>>> signalling to and from userspace.
->>>> Hardware buffer -> Software buffer -> user space.
->>>> Userspace watershed control -> Software buffer watershed control
->>>> -> Hardware buffer watershed control.
->>>> If userspace sets the watershed to say 16 then, as well as setting
->>>> that level in the software buffer it should be passed on to the
->>>> device driver allowing the watershed there to be set appropriately.
->>>> Now things get interesting if userspace sets the watershed to a value
->>>> that makes no sense for the hardware (say 17 on a device that does
->>>> power of 2 values only) as then it will have to fall back to
->>>> grabbing every one (Watershed of 1).  Perhaps we can provide 'hints'
->>>> for this?
->>>
->>>
->>> As far as I understood, the proposed watermark implementation only
->>> affects the device buffer and as I mentioned above that will not help
->>> with reducing the interrupt rate.
->>
->>
->> By setting the watershed level the userspace application tells you that it
->> is OK with getting data with a higher latency than one sample. This allows
->> the driver to configure the FIFO level and hence reduce the interrupt rate.
->>
->
-> Hi Lars,
->
-> The implementation (as proposed in the patch by Josselin and Yannick)
-> does not inform the driver of changes to watermark, that is only
-> visible to core iio / buffer logic.
+On 05/11/14 21:56, Ezequiel Garcia wrote:
+> From: Phani Movva <Phani.Movva@imgtec.com>
+> 
+> Add the devicetree binding document for Cosmic Circuits 10001 ADC device.
+> 
+> Signed-off-by: Phani Movva <Phani.Movva@imgtec.com>
+> Signed-off-by: Naidu Tellapati <Naidu.Tellapati@imgtec.com>
+> [Ezequiel: minor style cleaning]
+> Signed-off-by: Ezequiel Garcia <ezequiel.garcia@imgtec.com>
+I'm unobservant.  You did cc'd the list for device tree - convention is to
+also cc the listed maintainers.. (done on this reply).
+> ---
+>  .../devicetree/bindings/iio/adc/cc_10001_adc.txt      | 19 +++++++++++++++++++
+>  1 file changed, 19 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/iio/adc/cc_10001_adc.txt
+> 
+> diff --git a/Documentation/devicetree/bindings/iio/adc/cc_10001_adc.txt b/Documentation/devicetree/bindings/iio/adc/cc_10001_adc.txt
+> new file mode 100644
+> index 0000000..6491839
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/iio/adc/cc_10001_adc.txt
+> @@ -0,0 +1,19 @@
+> +* Cosmic Circuits - Analog to Digital Converter (CC-10001-ADC)
+> +
+> +Required properties:
+> +  - compatible: Should be "cosmic,10001-adc"
+> +  - reg: Should contain adc registers location and length.
+> +  - cosmic,adc-available-channels: Bitmask of the channels currently enabled.
+> +  - clock-names: Should contain "adc".
+> +  - clocks: phandles to input clocks.
+> +  - vref-supply: The regulator supply ADC reference voltage.
+> +
+> +Example:
+> +adc: adc@18101600 {
+> +	compatible = "cosmic,10001-adc";
+> +	reg = <0x18101600 0x24>;
+> +	cosmic,adc-available-channels = <0xa>;
+> +	clocks = <&adc_clk>;
+> +	clock-names = "adc";
+> +	vref-supply = <&reg_1v8>;
+> +};
+> 
 
-That should be trivial to add though.
-
->
-> Also, the watermark alone is not enough to properly support hardware
-> fifos: the fifo can operate in multiple modes, we need to read data
-> from the hardware fifo even when the watermark interrupt is not issued
-> (the flush operation in the current patch set).
-
-What kind of modes are there?
-
-- Lars
