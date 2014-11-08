@@ -1,92 +1,240 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mout.gmx.net ([212.227.15.15]:63045 "EHLO mout.gmx.net"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1752055AbaKKWjm (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Tue, 11 Nov 2014 17:39:42 -0500
-Message-ID: <54629026.3080002@gmx.de>
-Date: Tue, 11 Nov 2014 23:39:34 +0100
-From: Hartmut Knaack <knaack.h@gmx.de>
-MIME-Version: 1.0
-To: "Ivan T. Ivanov" <iivanov@mm-sol.com>
-CC: Jonathan Cameron <jic23@kernel.org>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	Stanimir Varbanov <svarbanov@mm-sol.com>,
-	Angelo Compagnucci <angelo.compagnucci@gmail.com>,
-	Grant Likely <grant.likely@linaro.org>,
-	linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-	devicetree@vger.kernel.org, linux-arm-msm@vger.kernel.org
-Subject: Re: [PATCH v4 2/2] iio: vadc: Qualcomm SPMI PMIC voltage ADC driver
-References: <1415028270-25860-1-git-send-email-iivanov@mm-sol.com>	 <1415028270-25860-3-git-send-email-iivanov@mm-sol.com>	 <54612A0D.7020308@gmx.de> <1415694109.22935.13.camel@mm-sol.com>
-In-Reply-To: <1415694109.22935.13.camel@mm-sol.com>
-Content-Type: text/plain; charset=UTF-8
+Received: from mailout4.w1.samsung.com ([210.118.77.14]:19186 "EHLO
+	mailout4.w1.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753831AbaKHON6 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 8 Nov 2014 09:13:58 -0500
+From: Karol Wrona <k.wrona@samsung.com>
+To: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
+	Arnd Bergmann <arnd@arndb.de>, linux-kernel@vger.kernel.org
+Cc: Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
+	Kyungmin Park <kyungmin.park@samsung.com>,
+	Karol Wrona <k.wrona@samsung.com>
+Subject: [PATCH 3/5] iio: sensorhub: Add sensorhub iio commons
+Date: Sat, 08 Nov 2014 15:13:14 +0100
+Message-id: <1415455996-20871-4-git-send-email-k.wrona@samsung.com>
+In-reply-to: <1415455996-20871-1-git-send-email-k.wrona@samsung.com>
+References: <1415455996-20871-1-git-send-email-k.wrona@samsung.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Ivan T. Ivanov schrieb am 11.11.2014 09:21:
-> Hi Hartmut,
-> 
-> On Mon, 2014-11-10 at 22:11 +0100, Hartmut Knaack wrote:
->> Ivan T. Ivanov schrieb am 03.11.2014 16:24:
->>> From: Stanimir Varbanov <svarbanov@mm-sol.com>
->>>
->>> The voltage ADC is peripheral of Qualcomm SPMI PMIC chips. It has
->>> 15 bits resolution and register space inside PMIC accessible across
->>> SPMI bus.
->>>
->>> The vadc driver registers itself through IIO interface.
->> Reviewing again, I got the feeling that due to the complexity of adc reads (writing to register 
->> to start conversion, waiting a decent time for the conversion to complete, reading the result), 
->> it would be beneficial to use a mutex in vadc_read_raw or its depending functions.
-> 
-> Hm, yes, but there is such a nice info_exist_lock :-) in core functions,
-> which in practice serve the same purpose.
-I seem to miss that. Please point me in the right direction.
-> 
->> Also, I would want to double-check that the CPU in this type of chips is little endian.
-> 
-> Yes, it is.
-> 
->> Besides that, a few minor issues inline.
-> 
->>> +static int vadc_probe(struct platform_device *pdev)
->>> +{
->>> +       struct device_node *node = pdev->dev.of_node;
->>> +       struct device *dev = &pdev->dev;
->>> +       struct iio_dev *indio_dev;
->>> +       struct vadc_priv *vadc;
->>> +       struct regmap *regmap;
->>> +       int ret, irq_eoc;
->>> +       u32 res;
->> Since vadc->base is u16, shouldn't res be u16 as well? Also think about naming it reg, as this is 
->> the property name in DT.
-> 
-> Yes, but #address-cells for the node is 1, so I would like to keep it 32 bits.
-> 
->>> +
->>> +       regmap = dev_get_regmap(dev->parent, NULL);
->>> +       if (!regmap)
->>> +       return -ENODEV;
->>> +
->>> +       ret = of_property_read_u32(node, "reg", &res);
->> For u16, there would be of_property_read_u16().
->>> +       if (ret < 0)
->>> +       return -ENODEV;
->> Just return ret here?
-> 
-> I am usually trying to follow these recommendations[1]. In practice driver
-> core cares only for EPROBE_DEFER, ENODEV and ENXIO, while of_property_read_u32()
-> can return ENODATA and EOVERFLOW, which did't not make sense for the core.
-Please point me in the right direction on this one, too. It is pretty common to pass error codes up, as it is also mentioned in [1].
-Yet, this thread in [1] seems more like a draft to me, as Greg K-H wrote in the end: "Fair enough, care to respin this and send it out to me for review?"
-> 
-> Thank you,
-> Ivan
-> 
-> [1] http://www.gossamer-threads.com/lists/linux/kernel/1010603
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> 
+This patch adds common library for sensorhub iio drivers.
+
+Change-Id: I1038cb31c051f7e8ffde696a4121518daa5af081
+Signed-off-by: Karol Wrona <k.wrona@samsung.com>
+Acked-by: Kyungmin Park <kyungmin.park@samsung.com>
+---
+ drivers/iio/common/Kconfig                      |    1 +
+ drivers/iio/common/Makefile                     |    1 +
+ drivers/iio/common/ssp_sensors/Kconfig          |   13 ++++
+ drivers/iio/common/ssp_sensors/Makefile         |    5 ++
+ drivers/iio/common/ssp_sensors/ssp_iio.c        |   81 +++++++++++++++++++++++
+ drivers/iio/common/ssp_sensors/ssp_iio_sensor.h |   59 +++++++++++++++++
+ 6 files changed, 160 insertions(+)
+ create mode 100644 drivers/iio/common/ssp_sensors/Kconfig
+ create mode 100644 drivers/iio/common/ssp_sensors/Makefile
+ create mode 100644 drivers/iio/common/ssp_sensors/ssp_iio.c
+ create mode 100644 drivers/iio/common/ssp_sensors/ssp_iio_sensor.h
+
+diff --git a/drivers/iio/common/Kconfig b/drivers/iio/common/Kconfig
+index 0b6e97d..630f9d8 100644
+--- a/drivers/iio/common/Kconfig
++++ b/drivers/iio/common/Kconfig
+@@ -4,3 +4,4 @@
+ 
+ source "drivers/iio/common/hid-sensors/Kconfig"
+ source "drivers/iio/common/st_sensors/Kconfig"
++source "drivers/iio/common/ssp_sensors/Kconfig"
+diff --git a/drivers/iio/common/Makefile b/drivers/iio/common/Makefile
+index 3112df0..5119642 100644
+--- a/drivers/iio/common/Makefile
++++ b/drivers/iio/common/Makefile
+@@ -9,3 +9,4 @@
+ # When adding new entries keep the list in alphabetical order
+ obj-y += hid-sensors/
+ obj-y += st_sensors/
++obj-y += ssp_sensors/
+diff --git a/drivers/iio/common/ssp_sensors/Kconfig b/drivers/iio/common/ssp_sensors/Kconfig
+new file mode 100644
+index 0000000..3c10f6f
+--- /dev/null
++++ b/drivers/iio/common/ssp_sensors/Kconfig
+@@ -0,0 +1,13 @@
++#
++# SSP Sensor common modules
++#
++menu "SSP Sensor IIO Common"
++
++config SSP_SENSOR_IIO
++	tristate "Commons for all SSP Sensor IIO drivers"
++	depends on SENSORS_SAMSUNG_SSP
++	select IIO_BUFFER
++	help
++	  Say yes here to build commons for SSP sensors.
++
++endmenu
+diff --git a/drivers/iio/common/ssp_sensors/Makefile b/drivers/iio/common/ssp_sensors/Makefile
+new file mode 100644
+index 0000000..f39f109
+--- /dev/null
++++ b/drivers/iio/common/ssp_sensors/Makefile
+@@ -0,0 +1,5 @@
++#
++# Makefile for the SSP sensor common modules.
++#
++
++obj-$(CONFIG_SSP_SENSOR_IIO) += ssp_iio.o
+diff --git a/drivers/iio/common/ssp_sensors/ssp_iio.c b/drivers/iio/common/ssp_sensors/ssp_iio.c
+new file mode 100644
+index 0000000..bbe9e5e
+--- /dev/null
++++ b/drivers/iio/common/ssp_sensors/ssp_iio.c
+@@ -0,0 +1,81 @@
++/*
++ *  Copyright (C) 2014, Samsung Electronics Co. Ltd. All Rights Reserved.
++ *
++ *  This program is free software; you can redistribute it and/or modify
++ *  it under the terms of the GNU General Public License as published by
++ *  the Free Software Foundation; either version 2 of the License, or
++ *  (at your option) any later version.
++ *
++ *  This program is distributed in the hope that it will be useful,
++ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
++ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ *  GNU General Public License for more details.
++ *
++ */
++
++#include <linux/iio/common/ssp_sensors.h>
++#include <linux/iio/kfifo_buf.h>
++#include "ssp_iio_sensor.h"
++
++/**
++ * ssp_common_buffer_postenable() - generic postenable callback for ssp buffer
++ *
++ * @indio_dev:		iio device
++ *
++ * Returns 0 or negative value in case of error
++ */
++int ssp_common_buffer_postenable(struct iio_dev *indio_dev)
++{
++	struct ssp_sensor_data *c = iio_priv(indio_dev);
++	struct ssp_data *data = dev_get_drvdata(indio_dev->dev.parent->parent);
++
++	return ssp_enable_sensor(data, c->type,
++				ssp_get_sensor_delay(data, c->type));
++}
++EXPORT_SYMBOL(ssp_common_buffer_postenable);
++
++/**
++ * ssp_common_buffer_predisable() - generic predisable callback for ssp buffer
++ *
++ * @indio_dev:		iio device
++ *
++ * Returns 0 or negative value in case of error
++ */
++int ssp_common_buffer_predisable(struct iio_dev *indio_dev)
++{
++	struct ssp_sensor_data *c = iio_priv(indio_dev);
++	struct ssp_data *data = dev_get_drvdata(indio_dev->dev.parent->parent);
++
++	return ssp_disable_sensor(data, c->type);
++}
++EXPORT_SYMBOL(ssp_common_buffer_predisable);
++
++/**
++ * ssp_common_setup_buffer() - creates iio kfifo and registers the buffer for device
++ *
++ * @indio_dev:		iio device
++ *
++ * Returns 0 or negative value in case of error
++ */
++int ssp_common_setup_buffer(struct iio_dev *indio_dev,
++			    const struct iio_buffer_setup_ops *ops)
++{
++	int ret;
++	struct iio_buffer *buffer;
++
++	buffer = iio_kfifo_allocate(indio_dev);
++	if (!buffer)
++		return -ENOMEM;
++
++	iio_device_attach_buffer(indio_dev, buffer);
++
++	indio_dev->setup_ops = ops;
++
++	ret = iio_buffer_register(indio_dev, indio_dev->channels,
++				  indio_dev->num_channels);
++	if (ret)
++		iio_kfifo_free(buffer);
++
++	return ret;
++}
++EXPORT_SYMBOL(ssp_common_setup_buffer);
+diff --git a/drivers/iio/common/ssp_sensors/ssp_iio_sensor.h b/drivers/iio/common/ssp_sensors/ssp_iio_sensor.h
+new file mode 100644
+index 0000000..bf4a6ad
+--- /dev/null
++++ b/drivers/iio/common/ssp_sensors/ssp_iio_sensor.h
+@@ -0,0 +1,59 @@
++#ifndef __SSP_IIO_SENSOR_H__
++#define __SSP_IIO_SENSOR_H__
++
++#define SSP_CHANNEL_AG(_type, _mod, _index) \
++{ \
++		.type = _type,\
++		.modified = 1,\
++		.channel2 = _mod,\
++		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SAMP_FREQ),\
++		.scan_index = _index,\
++		.scan_type = {\
++			.sign = 's',\
++			.realbits = 16,\
++			.storagebits = 16,\
++			.shift = 0,\
++			.endianness = IIO_LE,\
++		},\
++}
++
++#define SSP_DIVISOR	1000000ULL
++#define SSP_MS_PER_S	1000
++#define SSP_DIVIDEND	(SSP_DIVISOR * SSP_MS_PER_S)
++
++int ssp_common_buffer_postenable(struct iio_dev *indio_dev);
++
++int ssp_common_buffer_predisable(struct iio_dev *indio_dev);
++
++int ssp_common_setup_buffer(struct iio_dev *indio_dev,
++			    const struct iio_buffer_setup_ops *ops);
++
++/* Converts time in ms to frequency */
++static inline void ssp_convert_to_freq(u32 time, int *integer_part,
++				       int *fractional)
++{
++	unsigned int value;
++
++	if (time == 0) {
++		*fractional = 0;
++		*integer_part = 0;
++		return;
++	}
++
++	value = SSP_DIVIDEND / time;
++	*fractional = value % SSP_DIVISOR;
++	*integer_part = value / SSP_DIVISOR;
++}
++
++/* Converts frequency to time in ms*/
++static inline int ssp_convert_to_time(int integer_part, int fractional)
++{
++	u64 value;
++
++	value = integer_part * SSP_DIVISOR + fractional;
++	if (value == 0)
++		return 0;
++
++	return  div_u64(SSP_DIVIDEND, value);
++}
++#endif /* __SSP_IIO_SENSOR_H__ */
+-- 
+1.7.9.5
 
