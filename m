@@ -1,91 +1,78 @@
-Return-Path: <Ezequiel.Garcia@imgtec.com>
-Message-ID: <54623978.60005@imgtec.com>
-Date: Tue, 11 Nov 2014 13:29:44 -0300
-From: Ezequiel Garcia <ezequiel.garcia@imgtec.com>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:37223 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753519AbaKHLsp (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 8 Nov 2014 06:48:45 -0500
+Message-ID: <545E031A.7050302@kernel.org>
+Date: Sat, 08 Nov 2014 11:48:42 +0000
+From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Andrew Bresticker <abrestic@chromium.org>
-CC: Jonathan Cameron <jic23@kernel.org>, Lars-Peter Clausen <lars@metafoo.de>,
-	James Hartley <james.hartley@imgtec.com>, Phani Movva
-	<phani.movva@imgtec.com>, <linux-iio@vger.kernel.org>, <pmeerw@pmeerw.net>,
-	<knaack.h@gmx.de>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-	Naidu Tellapati <Naidu.Tellapati@imgtec.com>, Rob Herring
-	<robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland
-	<mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, "Kumar
- Gala" <galak@codeaurora.org>
-Subject: Re: [PATCH v2 2/3] DT: iio: adc: Add CC_10001 binding documentation
-References: <1415224611-22096-1-git-send-email-ezequiel.garcia@imgtec.com>	<1415224611-22096-3-git-send-email-ezequiel.garcia@imgtec.com>	<545E1333.9010904@kernel.org>	<5461170B.7070505@imgtec.com>	<54611934.6050701@imgtec.com> <CAL1qeaHzp==jmTB8dJ1M3NuocwuSqsfbVSU4nuM50vrOyfJ3qA@mail.gmail.com>
-In-Reply-To: <CAL1qeaHzp==jmTB8dJ1M3NuocwuSqsfbVSU4nuM50vrOyfJ3qA@mail.gmail.com>
-Content-Type: text/plain; charset="utf-8"
-List-ID: <linux-iio@vger.kernel.org>
+To: Dan Murphy <dmurphy@ti.com>, linux-iio@vger.kernel.org
+CC: pmeerw@pmeerw.net, daniel.baluta@intel.com, k.wrona@samsung.com,
+	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+	Rob Herring <robh+dt@kernel.org>,
+	Pawel Moll <Pawel.Moll@arm.com>,
+	Mark Rutland <Mark.Rutland@arm.com>,
+	Ian Campbell <ijc+devicetree@hellion.org.uk>,
+	Kumar Gala <galak@codeaurora.org>
+Subject: Re: [RFC v2 2/3] iio: bindings: Add TI afe4403 heart monitor documentation
+References: <1415287106-13491-1-git-send-email-dmurphy@ti.com> <1415287106-13491-2-git-send-email-dmurphy@ti.com>
+In-Reply-To: <1415287106-13491-2-git-send-email-dmurphy@ti.com>
+Content-Type: text/plain; charset=windows-1252
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
+On 06/11/14 15:18, Dan Murphy wrote:
+> Add the TI afe4403 heart monitor device tree
+> binding documentation.  heart_monitors directory
+> created under iio.
+> 
+> Signed-off-by: Dan Murphy <dmurphy@ti.com>
+As a device tree binding this MUST go to the device tree list
+and maintainers.  Cc'd.
 
+I suspect from my review of the driver that there will be a
+whole load more stuff to go in here...
 
-On 11/10/2014 06:28 PM, Andrew Bresticker wrote:
-> Ezequiel,
+> ---
 > 
-> On Mon, Nov 10, 2014 at 11:59 AM, Ezequiel Garcia
-> <ezequiel.garcia@imgtec.com> wrote:
->> On 11/10/2014 04:50 PM, Ezequiel Garcia wrote:
->>> On 11/08/2014 09:57 AM, Jonathan Cameron wrote:
->>>> On 05/11/14 21:56, Ezequiel Garcia wrote:
->>>>>
->>>>> diff --git a/Documentation/devicetree/bindings/iio/adc/cc_10001_adc.txt b/Documentation/devicetree/bindings/iio/adc/cc_10001_adc.txt
->>>>> new file mode 100644
->>>>> index 0000000..6491839
->>>>> --- /dev/null
->>>>> +++ b/Documentation/devicetree/bindings/iio/adc/cc_10001_adc.txt
->>>>> @@ -0,0 +1,19 @@
->>>>> +* Cosmic Circuits - Analog to Digital Converter (CC-10001-ADC)
->>>>> +
->>>>> +Required properties:
->>>>> +  - compatible: Should be "cosmic,10001-adc"
->>>>> +  - reg: Should contain adc registers location and length.
->>>>> +  - cosmic,adc-available-channels: Bitmask of the channels currently enabled.
->>>> I suspect there may be other preferred ways of doing this (child nodes perhaps
->>>> for each enabled channel?)
->>>
->>> Hm, I'm not sure about this. As far I can recall, if a node has children
->>> then it *must* be a bus, which is not the case. Of course, you'll find
->>> examples doing this wrong.
->>>
->>
->> On a second thought... I guess you meant something like this?
->>
->> adc: adc@18101600 {
->>         compatible = "cosmic,10001-adc";
->>         reg = <0x18101600 0x24>;
->>         clocks = <&adc_clk>;
->>         clock-names = "adc";
->>         vref-supply = <&reg_1v8>;
->>         cosmic,channels {
->>                 #address-cells = <1>;
->>                 #size-cells = <0>;
->>                 channel@0 {
->>                         reg = <0>;
->>                 };
->>                 channel@1 {
->>                         reg = <1>;
->>                 };
->>         };
->> };
->>
->> Might be better, but I don't have a strong opinion on it.
+> v2 - Updated per v1 comments - http://marc.info/?l=linux-iio&m=141331404132215&w=2
 > 
-> I actually don't think this is any better.  The point of the property
-> is to indicate which channels are available for use by the main CPU,
-> i.e. channels not used by the RPU co-processor.  The property is not
-> used to indicate the presence of certain channels in hardware, in
-> which case maybe a bus would be appropriate.
+>  .../bindings/iio/heart_monitor/ti_afe4403.txt      | 23 ++++++++++++++++++++++
+>  1 file changed, 23 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/iio/heart_monitor/ti_afe4403.txt
 > 
-> Also, perhaps it would be better to reverse the sense of the property
-> (maybe, "cosmic,reserved-adc-channels") and make it optional?  I did
-> something similar for the MIPS GIC binding:
-> http://patchwork.linux-mips.org/patch/8268/.
+> diff --git a/Documentation/devicetree/bindings/iio/heart_monitor/ti_afe4403.txt b/Documentation/devicetree/bindings/iio/heart_monitor/ti_afe4403.txt
+> new file mode 100644
+> index 0000000..cf75b5a
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/iio/heart_monitor/ti_afe4403.txt
+> @@ -0,0 +1,23 @@
+> +* Texas Instruments - AFE4403 Heart rate and Pulse Oximeter
+> +
+> +The device consists of a low-noise receiver channel
+> +with an integrated analog-to-digital converter (ADC),
+> +an LED transmit section, and diagnostics for sensor and LED fault detection.
+> +
+> +Required properties:
+> +  - compatible: Must contain "ti,afe4403".
+> +  - ste-gpio: GPIO for the spi control line
+> +  - data-ready-gpio: GPIO interrupt when the afe4403 has data
+Does this actually need to be a gpio?  Doesn't look like it from the driver.
+As such should be handled as a generic interrupt both here and in the driver.
+
+> +  - led-supply: Chip supply to the device
+> +
+> +Optional properties:
+> +  - reset-gpio: GPIO used to reset the device via HW
+> +
+> +Example:
+> +
+> +&heart_rate {
+> +	compatible = "ti,afe4403";
+> +	ste-gpio = <&gpio1 29 GPIO_ACTIVE_HIGH>;
+> +	data-ready-gpio = <&gpio1 28 GPIO_ACTIVE_HIGH>;
+> +	led-supply = <&vbat>;
+> +};
 > 
 
-I'm fine with that. If Jonathan agrees with it (or better, if we can
-have an ack from a devicetree binding maintainer) I can spin a v3.
-
-Thanks!
--- 
-Ezequiel
