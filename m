@@ -1,78 +1,84 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:37223 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753519AbaKHLsp (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 8 Nov 2014 06:48:45 -0500
-Message-ID: <545E031A.7050302@kernel.org>
-Date: Sat, 08 Nov 2014 11:48:42 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-MIME-Version: 1.0
-To: Dan Murphy <dmurphy@ti.com>, linux-iio@vger.kernel.org
-CC: pmeerw@pmeerw.net, daniel.baluta@intel.com, k.wrona@samsung.com,
-	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-	Rob Herring <robh+dt@kernel.org>,
-	Pawel Moll <Pawel.Moll@arm.com>,
-	Mark Rutland <Mark.Rutland@arm.com>,
-	Ian Campbell <ijc+devicetree@hellion.org.uk>,
-	Kumar Gala <galak@codeaurora.org>
-Subject: Re: [RFC v2 2/3] iio: bindings: Add TI afe4403 heart monitor documentation
-References: <1415287106-13491-1-git-send-email-dmurphy@ti.com> <1415287106-13491-2-git-send-email-dmurphy@ti.com>
-In-Reply-To: <1415287106-13491-2-git-send-email-dmurphy@ti.com>
-Content-Type: text/plain; charset=windows-1252
+Received: from mailout2.w1.samsung.com ([210.118.77.12]:58085 "EHLO
+	mailout2.w1.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753783AbaKHONz (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 8 Nov 2014 09:13:55 -0500
+From: Karol Wrona <k.wrona@samsung.com>
+To: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
+	Arnd Bergmann <arnd@arndb.de>, linux-kernel@vger.kernel.org
+Cc: Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
+	Kyungmin Park <kyungmin.park@samsung.com>,
+	Karol Wrona <k.wrona@samsung.com>
+Subject: [PATCH 2/5] sensorhub: Add sensorhub bindings
+Date: Sat, 08 Nov 2014 15:13:13 +0100
+Message-id: <1415455996-20871-3-git-send-email-k.wrona@samsung.com>
+In-reply-to: <1415455996-20871-1-git-send-email-k.wrona@samsung.com>
+References: <1415455996-20871-1-git-send-email-k.wrona@samsung.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 06/11/14 15:18, Dan Murphy wrote:
-> Add the TI afe4403 heart monitor device tree
-> binding documentation.  heart_monitors directory
-> created under iio.
-> 
-> Signed-off-by: Dan Murphy <dmurphy@ti.com>
-As a device tree binding this MUST go to the device tree list
-and maintainers.  Cc'd.
+Add sensorhub bindings for sensorhub on Galaxy Gear 2.
 
-I suspect from my review of the driver that there will be a
-whole load more stuff to go in here...
+Change-Id: I4ee25aef33c21a4662de230841de9a8684f2c26b
+Signed-off-by: Karol Wrona <k.wrona@samsung.com>
+Acked-by: Kyungmin Park <kyungmin.park@samsung.com>
+---
+ .../devicetree/bindings/misc/sensorhub.txt         |   46 ++++++++++++++++++++
+ 1 file changed, 46 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/misc/sensorhub.txt
 
-> ---
-> 
-> v2 - Updated per v1 comments - http://marc.info/?l=linux-iio&m=141331404132215&w=2
-> 
->  .../bindings/iio/heart_monitor/ti_afe4403.txt      | 23 ++++++++++++++++++++++
->  1 file changed, 23 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/iio/heart_monitor/ti_afe4403.txt
-> 
-> diff --git a/Documentation/devicetree/bindings/iio/heart_monitor/ti_afe4403.txt b/Documentation/devicetree/bindings/iio/heart_monitor/ti_afe4403.txt
-> new file mode 100644
-> index 0000000..cf75b5a
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/iio/heart_monitor/ti_afe4403.txt
-> @@ -0,0 +1,23 @@
-> +* Texas Instruments - AFE4403 Heart rate and Pulse Oximeter
-> +
-> +The device consists of a low-noise receiver channel
-> +with an integrated analog-to-digital converter (ADC),
-> +an LED transmit section, and diagnostics for sensor and LED fault detection.
-> +
-> +Required properties:
-> +  - compatible: Must contain "ti,afe4403".
-> +  - ste-gpio: GPIO for the spi control line
-> +  - data-ready-gpio: GPIO interrupt when the afe4403 has data
-Does this actually need to be a gpio?  Doesn't look like it from the driver.
-As such should be handled as a generic interrupt both here and in the driver.
-
-> +  - led-supply: Chip supply to the device
-> +
-> +Optional properties:
-> +  - reset-gpio: GPIO used to reset the device via HW
-> +
-> +Example:
-> +
-> +&heart_rate {
-> +	compatible = "ti,afe4403";
-> +	ste-gpio = <&gpio1 29 GPIO_ACTIVE_HIGH>;
-> +	data-ready-gpio = <&gpio1 28 GPIO_ACTIVE_HIGH>;
-> +	led-supply = <&vbat>;
-> +};
-> 
+diff --git a/Documentation/devicetree/bindings/misc/sensorhub.txt b/Documentation/devicetree/bindings/misc/sensorhub.txt
+new file mode 100644
+index 0000000..088bf32
+--- /dev/null
++++ b/Documentation/devicetree/bindings/misc/sensorhub.txt
+@@ -0,0 +1,46 @@
++Samsung Sensorhub driver
++
++Sensorhub is MCU which manages several sensors and also play the role
++of virtual sensor device.
++
++Required properties:
++- compatible: "samsung,sensorhub-rinato" or "samsung,sensorhub-thermostat"
++- spi-max-frequency: max SPI clock frequency
++- interrupt-parent
++- interrupts: communication interrupt
++- ap-mcu-gpio: [out] ap to sensorhub line - used during communication
++- mcu-ap-gpio: [in] sensorhub to ap - used during communication
++- mcu-reset: [out] sensorhub reset
++
++Optional properties:
++- sensor's nodes:
++  compatible = "samsung,mpu6500-accel"
++  compatible = "samsung,mpu6500-gyro"
++  compatible = "samsung,adpd142"
++
++Sensor compatibles are used to match proper sensor driver to real sensor on
++the board. The firmware does not give such information, so it helps to specify
++some sensors properties. Sensors have "samsung" prefixes because frequently
++they will not have much in common with sensors used without sensorhub because
++it can do some data processing.
++
++Example:
++
++	shub_spi: shub {
++		compatible = "samsung,sensorhub-rinato";
++		spi-max-frequency = <5000000>;
++		interrupt-parent = <&gpx0>;
++		interrupts = <2 0>;
++		ap-mcu-gpio = <&gpx0 0 0>;
++		mcu-ap-gpio = <&gpx0 4 0>;
++		mcu-reset = <&gpx0 5 0>;
++		sensor@0 {
++			compatible = "samsung,mpu6500-accel";
++		};
++		sensor@1 {
++			compatible = "samsung,mpu6500-gyro";
++		};
++		sensor@2 {
++			compatible = "samsung,adpd142";
++		};
++	};
+-- 
+1.7.9.5
 
