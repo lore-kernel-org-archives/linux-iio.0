@@ -1,758 +1,519 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mout.gmx.net ([212.227.15.15]:62500 "EHLO mout.gmx.net"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1755100AbaKSXGC (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Wed, 19 Nov 2014 18:06:02 -0500
-Message-ID: <546D224E.6090609@gmx.de>
-Date: Thu, 20 Nov 2014 00:05:50 +0100
-From: Hartmut Knaack <knaack.h@gmx.de>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:37634 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753084AbaKHMz7 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 8 Nov 2014 07:55:59 -0500
+Message-ID: <545E12DA.2040107@kernel.org>
+Date: Sat, 08 Nov 2014 12:55:54 +0000
+From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Karol Wrona <k.wrona@samsung.com>,
-	Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
-	Arnd Bergmann <arnd@arndb.de>, linux-kernel@vger.kernel.org
-CC: Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
-	Kyungmin Park <kyungmin.park@samsung.com>,
-	Antonio Borneo <borneo.antonio@gmail.com>
-Subject: Re: [PATCH v4 1/1] misc: st32fwu: Add stm32 upgrade protocol handling
-References: <1415453352-14842-1-git-send-email-k.wrona@samsung.com> <1415453352-14842-2-git-send-email-k.wrona@samsung.com>
-In-Reply-To: <1415453352-14842-2-git-send-email-k.wrona@samsung.com>
-Content-Type: text/plain; charset=ISO-8859-15
+To: Ezequiel Garcia <ezequiel.garcia@imgtec.com>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Andrew Bresticker <abrestic@chromium.org>,
+	James Hartley <james.hartley@imgtec.com>,
+	Phani Movva <phani.movva@imgtec.com>
+CC: linux-iio@vger.kernel.org, pmeerw@pmeerw.net, knaack.h@gmx.de,
+	devicetree@vger.kernel.org,
+	Naidu Tellapati <Naidu.Tellapati@imgtec.com>
+Subject: Re: [PATCH v2 1/3] iio: adc: Cosmic Circuits 10001 ADC driver
+References: <1415224611-22096-1-git-send-email-ezequiel.garcia@imgtec.com> <1415224611-22096-2-git-send-email-ezequiel.garcia@imgtec.com>
+In-Reply-To: <1415224611-22096-2-git-send-email-ezequiel.garcia@imgtec.com>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Karol Wrona schrieb am 08.11.2014 14:29:
-> Adds stm32 bootloader protocol handling.
+On 05/11/14 21:56, Ezequiel Garcia wrote:
+> From: Phani Movva <Phani.Movva@imgtec.com>
 > 
-> SPI transfers are done using DMA safe buffer which is allocated once per
-> spi upgrade life cycle. Now it supports only SPI bus but it looks that UART
-> or I2C are quite similar and it can be used as start platform for implementing
-> their handling.
+> This commit adds support for Cosmic Circuits 10001 10-bit ADC device.
 > 
-> It was tested on STM32F401 MCU.
-> 
-Looks good to me.
-> Change-Id: I5e5b441310c897ff822e65041531d80ea0e7426c
-> Signed-off-by: Karol Wrona <k.wrona@samsung.com>
-> Acked-by: Kyungmin Park <kyungmin.park@samsung.com>
+> Signed-off-by: Phani Movva <Phani.Movva@imgtec.com>
+> Signed-off-by: Naidu Tellapati <Naidu.Tellapati@imgtec.com>
+> [Ezequiel: code style cleaning]
+> Signed-off-by: Ezequiel Garcia <ezequiel.garcia@imgtec.com>
+Looks good to me.  Some utter nitpicks.  I'd have let them go
+but would like this to sit on the list to give others time for
+a second review.
+
+Jonathan
 > ---
->  drivers/misc/Kconfig               |    1 +
->  drivers/misc/Makefile              |    1 +
->  drivers/misc/stm32fwu/Kconfig      |    6 +
->  drivers/misc/stm32fwu/Makefile     |    1 +
->  drivers/misc/stm32fwu/stm32_core.c |  403 ++++++++++++++++++++++++++++++++++++
->  drivers/misc/stm32fwu/stm32_core.h |   81 ++++++++
->  drivers/misc/stm32fwu/stm32_spi.c  |  108 ++++++++++
->  include/linux/stm32fwu.h           |   49 +++++
->  8 files changed, 650 insertions(+)
->  create mode 100644 drivers/misc/stm32fwu/Kconfig
->  create mode 100644 drivers/misc/stm32fwu/Makefile
->  create mode 100644 drivers/misc/stm32fwu/stm32_core.c
->  create mode 100644 drivers/misc/stm32fwu/stm32_core.h
->  create mode 100644 drivers/misc/stm32fwu/stm32_spi.c
->  create mode 100644 include/linux/stm32fwu.h
+>  drivers/iio/adc/Kconfig        |  10 +
+>  drivers/iio/adc/Makefile       |   1 +
+>  drivers/iio/adc/cc_10001_adc.c | 425 +++++++++++++++++++++++++++++++++++++++++
+>  3 files changed, 436 insertions(+)
+>  create mode 100644 drivers/iio/adc/cc_10001_adc.c
 > 
-> diff --git a/drivers/misc/Kconfig b/drivers/misc/Kconfig
-> index bbeb451..b2e68c1 100644
-> --- a/drivers/misc/Kconfig
-> +++ b/drivers/misc/Kconfig
-> @@ -528,4 +528,5 @@ source "drivers/misc/mic/Kconfig"
->  source "drivers/misc/genwqe/Kconfig"
->  source "drivers/misc/echo/Kconfig"
->  source "drivers/misc/cxl/Kconfig"
-> +source "drivers/misc/stm32fwu/Kconfig"
->  endmenu
-> diff --git a/drivers/misc/Makefile b/drivers/misc/Makefile
-> index 7d5c4cd..88c8999 100644
-> --- a/drivers/misc/Makefile
-> +++ b/drivers/misc/Makefile
-> @@ -56,3 +56,4 @@ obj-$(CONFIG_GENWQE)		+= genwqe/
->  obj-$(CONFIG_ECHO)		+= echo/
->  obj-$(CONFIG_VEXPRESS_SYSCFG)	+= vexpress-syscfg.o
->  obj-$(CONFIG_CXL_BASE)		+= cxl/
-> +obj-$(CONFIG_STM32_UPGRADE_PROTOCOL)	+= stm32fwu/
-> diff --git a/drivers/misc/stm32fwu/Kconfig b/drivers/misc/stm32fwu/Kconfig
-> new file mode 100644
-> index 0000000..1484441
-> --- /dev/null
-> +++ b/drivers/misc/stm32fwu/Kconfig
-> @@ -0,0 +1,6 @@
-> +config STM32_UPGRADE_PROTOCOL
-> +	tristate "STM32 upgrade protocol support"
-> +	depends on SPI
+> diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+> index 88bdc8f..b1f3ecc 100644
+> --- a/drivers/iio/adc/Kconfig
+> +++ b/drivers/iio/adc/Kconfig
+> @@ -127,6 +127,16 @@ config AT91_ADC
+>  	help
+>  	  Say yes here to build support for Atmel AT91 ADC.
+>  
+> +config CC_10001_ADC
+hmm. how fixed are you on th CC_ it is 'unusual' compared to normal
+part naming in kernel.  However, I understand if you have
+existing code out there using this convention and don't care that
+much!
+> +	tristate "Cosmic Circuits 10001 ADC driver"
+> +	select IIO_BUFFER
+> +	select IIO_TRIGGERED_BUFFER
 > +	help
-> +	  STM32 microcontroller bootloader upgrade protocol.
-> +	  Say Y if you want to use it.
-> diff --git a/drivers/misc/stm32fwu/Makefile b/drivers/misc/stm32fwu/Makefile
+> +	  Say yes here to build support for Cosmic Circuits 10001 ADC.
+> +
+> +	  This driver can also be built as a module. If so, the module will be
+> +	  called cc_10001_adc.
+> +
+>  config EXYNOS_ADC
+>  	tristate "Exynos ADC driver support"
+>  	depends on ARCH_EXYNOS || ARCH_S3C24XX || ARCH_S3C64XX || (OF && COMPILE_TEST)
+> diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
+> index cb88a6a..f4d522d 100644
+> --- a/drivers/iio/adc/Makefile
+> +++ b/drivers/iio/adc/Makefile
+> @@ -14,6 +14,7 @@ obj-$(CONFIG_AD7793) += ad7793.o
+>  obj-$(CONFIG_AD7887) += ad7887.o
+>  obj-$(CONFIG_AD799X) += ad799x.o
+>  obj-$(CONFIG_AT91_ADC) += at91_adc.o
+> +obj-$(CONFIG_CC_10001_ADC) += cc_10001_adc.o
+>  obj-$(CONFIG_EXYNOS_ADC) += exynos_adc.o
+>  obj-$(CONFIG_LP8788_ADC) += lp8788_adc.o
+>  obj-$(CONFIG_MAX1027) += max1027.o
+> diff --git a/drivers/iio/adc/cc_10001_adc.c b/drivers/iio/adc/cc_10001_adc.c
 > new file mode 100644
-> index 0000000..1617530
+> index 0000000..1720a62
 > --- /dev/null
-> +++ b/drivers/misc/stm32fwu/Makefile
-> @@ -0,0 +1 @@
-> +obj-$(CONFIG_STM32_UPGRADE_PROTOCOL) += stm32_core.o stm32_spi.o
-> diff --git a/drivers/misc/stm32fwu/stm32_core.c b/drivers/misc/stm32fwu/stm32_core.c
-> new file mode 100644
-> index 0000000..4c48cd8
-> --- /dev/null
-> +++ b/drivers/misc/stm32fwu/stm32_core.c
-> @@ -0,0 +1,403 @@
+> +++ b/drivers/iio/adc/cc_10001_adc.c
+> @@ -0,0 +1,425 @@
 > +/*
-> + *  Copyright (C) 2014, Samsung Electronics Co. Ltd. All Rights Reserved.
+> + * Copyright (c) 2014 Imagination Technologies Ltd.
 > + *
-> + *  This program is free software; you can redistribute it and/or modify
-> + *  it under the terms of the GNU General Public License as published by
-> + *  the Free Software Foundation; either version 2 of the License, or
-> + *  (at your option) any later version.
-> + *
-> + *  This program is distributed in the hope that it will be useful,
-> + *  but WITHOUT ANY WARRANTY; without even the implied warranty of
-> + *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-> + *  GNU General Public License for more details.
+> + * This program is free software; you can redistribute it and/or modify it
+> + * under the terms of the GNU General Public License version 2 as published by
+> + * the Free Software Foundation.
 > + *
 > + */
 > +
+> +#include <linux/clk.h>
 > +#include <linux/delay.h>
-> +#include <linux/device.h>
+> +#include <linux/err.h>
+> +#include <linux/kernel.h>
 > +#include <linux/module.h>
+> +#include <linux/of.h>
+> +#include <linux/of_device.h>
+> +#include <linux/platform_device.h>
+> +#include <linux/regulator/consumer.h>
 > +#include <linux/slab.h>
-> +#include <linux/stm32fwu.h>
-> +#include "stm32_core.h"
 > +
-> +static inline int stm32fwu_wait_for_ack(struct stm32fwu_fw *fw, u32 retries)
-> +{
-> +	return fw->wait_for_ack(fw, retries);
-> +}
+> +#include <linux/iio/buffer.h>
+> +#include <linux/iio/iio.h>
+> +#include <linux/iio/sysfs.h>
+> +#include <linux/iio/trigger.h>
+> +#include <linux/iio/trigger_consumer.h>
+> +#include <linux/iio/triggered_buffer.h>
 > +
-> +static inline int stm32fwu_send_cmd(struct stm32fwu_fw *fw, u8 cmd,
-> +				    u32 timeout)
-> +{
-> +	struct stm32fwu_cmd cm = {
-> +		.cmd = cmd,
-> +		.neg_cmd = ~cmd,
-> +		.timeout  = timeout,
-> +	};
+> +/* Registers */
+> +#define CC10001_ADC_CONFIG		0x00
+> +#define CC10001_ADC_START_CONV		BIT(4)
+> +#define CC10001_ADC_MODE_SINGLE_CONV	BIT(5)
 > +
-> +	return fw->send_cmd(fw, &cm);
-> +}
+> +#define CC10001_ADC_DDATA_OUT		0x04
+> +#define CC10001_ADC_EOC			0x08
+> +#define CC10001_ADC_EOC_SET		BIT(0)
 > +
-> +static inline int stm32fwu_write(struct stm32fwu_fw *fw, const u8 *buf,
-> +				 u32 len)
-> +{
-> +	return fw->write(fw, buf, len);
-> +}
+> +#define CC10001_ADC_CHSEL_SAMPLED	0x0c
+> +#define CC10001_ADC_POWER_UP		0x10
+> +#define CC10001_ADC_POWER_UP_SET	BIT(0)
+> +#define CC10001_ADC_DEBUG		0x14
+> +#define CC10001_ADC_DATA_COUNT		0x20
 > +
-> +static inline int stm32fwu_read(struct stm32fwu_fw *fw, u8 *buf, u32 len)
-> +{
-> +	return fw->read(fw, buf, len);
-> +}
+> +#define CC10001_ADC_DATA_MASK		GENMASK(9, 0)
+> +#define CC10001_ADC_NUM_CHANNELS	8
+> +#define CC10001_ADC_CH_MASK		(CC10001_ADC_NUM_CHANNELS - 1)
 > +
-> +static int send_addr(struct stm32fwu_fw *fw, u32 addr)
-> +{
-> +	int ret;
-> +	u8 *buffer = fw->buffer;
+> +#define CC10001_INVALID_SAMPLED_OUTPUT	0xFFFF
+> +#define CC10001_MAX_POLL_COUNT		20
 > +
-> +	buffer[0] = addr >> 24;
-> +	buffer[1] = addr >> 16;
-> +	buffer[2] = addr >> 8;
-> +	buffer[3] = addr;
-> +	buffer[4] = buffer[0] ^ buffer[1] ^ buffer[2] ^ buffer[3];
-> +
-> +	ret = stm32fwu_write(fw, buffer, STM32FWU_ADDR_LEN);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	return stm32fwu_wait_for_ack(fw, STM32FWU_COMMON_COUNT);
-> +}
-> +
-> +static int fwu_write(struct stm32fwu_fw *fw, u32 addr, const u8 *buffer,
-> +		     u32 len)
-> +{
-> +	u8 *sbuf = fw->buffer;
-> +	u8 xor = 0;
-> +	int ret;
-> +	u32 i, aligned_len = len;
-> +
-> +	if (len > STM32FWU_MAX_TRANSFER_SIZE) {
-> +		dev_err(fw->dev, "More than 256 bytes per transfer\n");
-> +		return -EINVAL;
-> +	}
-> +
-> +	ret = stm32fwu_send_cmd(fw, STM32FWU_WRITE_MEM_CMD,
-> +				STM32FWU_CMD_COUNT);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	ret = send_addr(fw, addr);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	/*
-> +	 * the same buffer is used for commands and data so the order really
-> +	 * matters here
-> +	 */
-> +	memcpy(&sbuf[1], buffer, len);
-> +
-> +	/*
-> +	 * Just in case - check if chunk is a multiple of 4
-> +	 * generally the most of writes will be 256 bytes long.
-> +	 * I wonder if bootcode should worry about alignment.
-> +	 * According AN4286 it should be a multiple of 2 but other notes
-> +	 * say that it should be 4
-> +	 */
-> +	if (!IS_ALIGNED(len, 4)) {
-> +		aligned_len = ALIGN(len, 4);
-> +		for (i = aligned_len; i > len; --i)
-> +			sbuf[i] = 0xff;
-> +	}
-> +
-> +	/*
-> +	 * according AN4286 here is sent 0 < N < 255, it looks like max index,
-> +	 * not size
-> +	 */
-> +	sbuf[0] = aligned_len - 1;
-> +
-> +	/* compute checksum */
-> +	for (i = 0; i < aligned_len + 1; ++i)
-> +		xor ^= sbuf[i];
-> +	sbuf[aligned_len + 1] = xor;
-> +
-> +	/* NOTE AN4286: in some conditions the master has to wait 1 ms here */
-> +	usleep_range(1000, 1100);
-> +
-> +	ret = stm32fwu_write(fw, sbuf, aligned_len + 2);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	return stm32fwu_wait_for_ack(fw, STM32FWU_COMMON_COUNT);
-> +}
-> +
-> +static int fwu_erase(struct stm32fwu_fw *fw)
-> +{
-> +	int ret;
-> +	u8 *sbuf = fw->buffer;
-> +
-> +	ret = stm32fwu_send_cmd(fw, STM32FWU_ERASE_CMD, STM32FWU_CMD_COUNT);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	/* global erase */
-> +	sbuf[0] = 0xff;
-> +	sbuf[1] = 0xff;
-> +	sbuf[2] = 0x00;
-> +
-> +	ret = stm32fwu_write(fw, sbuf, STM32FWU_ERASE_CMD_LEN);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	return stm32fwu_wait_for_ack(fw, STM32FWU_ERASE_COUNT);
-> +}
-> +
-> +/**
-> + * stm32fwu_get() - gets bootloader information frame
-> + * @fw:		fw object.
-> + *
-> + * Read bootloader information:
-> + *
-> + * Byte  1 bootloader version (0 < version < 255), example: 0x10 = version 1.0.
-> + *
-> + * Byte  2 0x00 (Get command)
-> + *
-> + * Byte  3 0x01 (Get Version)
-> + *
-> + * Byte  4 0x02 (Get ID)
-> + *
-> + * Byte  5 0x11 (Read Memory command)
-> + *
-> + * Byte  6 0x21 (Go command)
-> + *
-> + * Byte  7 0x31 (Write Memory command)
-> + *
-> + * Byte  8 0x44 (Erase command)
-> + *
-> + * Byte  9 0x63 (Write Protect command)
-> + *
-> + * Byte 10 0x73 (Write Unprotect command)
-> + *
-> + * Byte 11 0x82 (Readout Protect command)
-> + *
-> + * Byte 12 0x92 (Readout Unprotect command)
-> + *
-> + * Return:	read byte count or error code.
-> + */
-> +int stm32fwu_get(struct stm32fwu_fw *fw)
-> +{
-> +	int ret, count;
-> +
-> +	ret = stm32fwu_send_cmd(fw, STM32FWU_GET_CMD, STM32FWU_CMD_COUNT);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	ret = stm32fwu_read(fw, &fw->buffer[STM32FWU_MAX_BUFFER_SIZE], 1);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	count = fw->buffer[STM32FWU_MAX_BUFFER_SIZE];
-> +	if (count >= STM32FWU_MAX_TRANSFER_SIZE)
-> +		return -EINVAL;
-> +
-> +	ret = stm32fwu_read(fw, &fw->buffer[STM32FWU_MAX_BUFFER_SIZE], count);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	ret = stm32fwu_wait_for_ack(fw, STM32FWU_COMMON_COUNT);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	return count;
-> +}
-> +EXPORT_SYMBOL(stm32fwu_get);
-> +
-> +/**
-> + * stm32fwu_get_version() - gets bootloader information frame
-> + * @fw:		fw object.
-> + *
-> + * Return: < 0 - error code, any positive value means success.
-> + */
-> +int stm32fwu_get_version(struct stm32fwu_fw *fw)
-> +{
-> +	int ret;
-> +
-> +	ret = stm32fwu_send_cmd(fw, STM32FWU_GET_CMD, STM32FWU_CMD_COUNT);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	ret = stm32fwu_read(fw, &fw->buffer[STM32FWU_MAX_BUFFER_SIZE], 1);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	ret = stm32fwu_wait_for_ack(fw, STM32FWU_COMMON_COUNT);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	return fw->buffer[STM32FWU_MAX_BUFFER_SIZE];
-> +}
-> +EXPORT_SYMBOL(stm32fwu_get_version);
-> +
-> +/**
-> + * stm32fwu_send_sync() - sends bootloader synchronization frame
-> + * @fw:	fw object.
-> + *
-> + * It is used during SPI upgrade.
-> + *
-> + * Return:	if succeed the number of ack waiting cycles or error code.
-> + */
-> +int stm32fwu_send_sync(struct stm32fwu_fw *fw)
-> +{
-> +	int ret;
-> +
-> +	dev_info(fw->dev, "send sync byte for upgrade\n");
-> +
-> +	fw->buffer[0] = STM32FWU_SPI_SOF;
-> +
-> +	ret = stm32fwu_write(fw, fw->buffer, 1);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	return  stm32fwu_wait_for_ack(fw, STM32FWU_CMD_COUNT);
-> +}
-> +EXPORT_SYMBOL(stm32fwu_send_sync);
-> +
-> +/**
-> + * stm32fwu_update() - runs all firmware update work
-> + * @fw:		fw object.
-> + *
-> + * Return:	status code < 0 if error.
-> + */
-> +int stm32fwu_update(struct stm32fwu_fw *fw)
-> +{
-> +	int ret = 0;
-> +	u32 pos = 0;
-> +	u32 fw_addr = STM32FWU_APP_ADDR;
-> +	u32 block = STM32FWU_MAX_TRANSFER_SIZE;
-> +	u32 count = 0, err_count = 0, retry_count = 0, remaining = fw->fw_len;
-> +
-> +	dev_info(fw->dev, "%s start\n", __func__);
-> +
-> +	ret = fwu_erase(fw);
-> +	if (ret < 0) {
-> +		dev_err(fw->dev, "%s, fw_erase_stm failed %d\n", __func__,
-> +			ret);
-> +		return ret;
-> +	}
-> +
-> +	while (remaining > 0) {
-> +		if (block > remaining)
-> +			block = remaining;
-> +
-> +		while (retry_count < 3) {
-> +			ret = fwu_write(fw, fw_addr, fw->fw_data + pos, block);
-> +			if (ret < 0) {
-> +				dev_err(fw->dev,
-> +					"Err %d writing to addr 0x%08X\n", ret,
-> +					fw_addr);
-> +				retry_count++;
-> +				err_count++;
-> +				continue;
-> +			}
-> +			retry_count = 0;
-> +			break;
-> +		}
-> +
-> +		if (ret < 0) {
-> +			dev_err(fw->dev,
-> +				"Writing MEM failed: %d, retry count: %d\n",
-> +				ret, err_count);
-> +			return ret;
-> +		}
-> +
-> +		remaining -= block;
-> +		pos += block;
-> +		fw_addr += block;
-> +		if (count++ == 20) {
-> +			dev_info(fw->dev, "Updated %u bytes / %u bytes\n",
-> +				 pos, fw->fw_len);
-> +			count = 0;
-> +		}
-> +	}
-> +
-> +	dev_info(fw->dev,
-> +		 "Firmware download success.(%d bytes, retry %d)\n", pos,
-> +		 err_count);
-> +
-> +	ret = stm32fwu_send_cmd(fw, STM32FWU_GO_ADDR_CMD, STM32FWU_CMD_COUNT);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	return send_addr(fw, STM32FWU_APP_ADDR);
-> +}
-> +EXPORT_SYMBOL(stm32fwu_update);
-> +
-> +/**
-> + * stm32fwu_init() - creates firmware upgrade instance
-> + * @dev:	Pointer to device.
-> + * @iface:	Interface type.
-> + * @data:	Pointer to firmware data.
-> + * @len:	Length of firmware data in bytes.
-> + *
-> + * It allocates the place for fwu structure and transfer buffer so it should
-> + * be deinitialized by stm32fw_destroy(). Firmware upgrade is simple operation
-> + * and it was assumed that it will be called from one context so there is no
-> + * locking for fwu functions.
-> + *
-> + * Return:	Pointer to firmware upgrade structure.
-> + */
-> +struct stm32fwu_fw *stm32fwu_init(struct device *dev,
-> +				  enum stm32fwu_iface iface, const u8 *data,
-> +				  u32 len)
-> +{
-> +	struct stm32fwu_fw *fw;
-> +
-> +	if (iface >= STM32_MAX || iface < 0) {
-> +		dev_err(dev, "wrong iface type\n");
-> +		return NULL;
-> +	}
-> +
-> +	fw = devm_kzalloc(dev, sizeof(*fw), GFP_KERNEL);
-> +	if (fw == NULL)
-> +		return NULL;
-> +
-> +	/* 2 times for tx and rx buffer */
-> +	fw->buffer = devm_kzalloc(dev, 2 * STM32FWU_MAX_BUFFER_SIZE,
-> +			     GFP_KERNEL | GFP_DMA);
-> +	if (fw->buffer == NULL) {
-> +		devm_kfree(dev, fw);
-> +		return NULL;
-> +	}
-> +
-> +	fw->dev = dev;
-> +	fw->fw_len = len;
-> +	fw->fw_data = data;
-> +
-> +	switch (iface) {
-> +	case STM32_SPI:
-> +		stm32fwu_spi_init(fw);
-> +		break;
-> +	default:
-> +		pr_err("wrong interface\n");
-> +		goto _err;
-> +	}
-> +
-> +	return fw;
-> +_err:
-> +	devm_kfree(dev, fw->buffer);
-> +	devm_kfree(dev, fw);
-> +	return NULL;
-> +}
-> +EXPORT_SYMBOL(stm32fwu_init);
-> +
-> +/**
-> + * stm32fwu_destroy() - cleans up fwu structure and buffer.
-> + * @fw:		Pointer to fwu structure.
-> + */
-> +void stm32fwu_destroy(struct stm32fwu_fw *fw)
-> +{
-> +	devm_kfree(fw->dev, fw->buffer);
-> +	devm_kfree(fw->dev, fw);
-> +}
-> +EXPORT_SYMBOL(stm32fwu_destroy);
-> +
-> +MODULE_AUTHOR("Karol Wrona <k.wrona@samsung.com>");
-> +MODULE_DESCRIPTION("STM32 upgrade protocol");
-> +MODULE_LICENSE("GPL");
-> diff --git a/drivers/misc/stm32fwu/stm32_core.h b/drivers/misc/stm32fwu/stm32_core.h
-> new file mode 100644
-> index 0000000..9624327
-> --- /dev/null
-> +++ b/drivers/misc/stm32fwu/stm32_core.h
-> @@ -0,0 +1,81 @@
 > +/*
-> + *  Copyright (C) 2014, Samsung Electronics Co. Ltd. All Rights Reserved.
-> + *
-> + *  This program is free software; you can redistribute it and/or modify
-> + *  it under the terms of the GNU General Public License as published by
-> + *  the Free Software Foundation; either version 2 of the License, or
-> + *  (at your option) any later version.
-> + *
-> + *  This program is distributed in the hope that it will be useful,
-> + *  but WITHOUT ANY WARRANTY; without even the implied warranty of
-> + *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-> + *  GNU General Public License for more details.
-> + *
+> + * As per device specification, wait six clock cycles after power-up to
+> + * activate START. Since adding two more clock cycles delay does not
+> + * impact the performance too much, we are adding two additional cycles delay
+> + * intentionally here.
 > + */
+> +#define	CC10001_WAIT_CYCLES		8
 > +
-> +#ifndef _STM32_CORE_H_
-> +#define _STM32_CORE_H_
+> +struct cc10001_adc_device {
+> +	void __iomem *reg_base;
+> +	struct iio_dev *indio_dev;
+> +	struct clk *adc_clk;
+> +	struct regulator *reg;
+> +	u16 *buf;
 > +
-> +#define STM32FWU_ADDR_LEN		5
-> +#define STM32FWU_ERASE_CMD_LEN		3
-> +
-> +/* Protocol */
-> +#define STM32FWU_SPI_SOF		0x5a
-> +#define STM32FWU_ACK			0x79
-> +#define STM32FWU_ACK2			0xf9
-> +#define STM32FWU_NACK			0x1f
-> +
-> +#define STM32FWU_MAX_TRANSFER_SIZE	256
-> +#define STM32FWU_MAX_BUFFER_SIZE	260
-> +
-> +#define STM32FWU_APP_ADDR		0x08000000
-> +
-> +/* Retries counts */
-> +#define STM32FWU_ERASE_COUNT		18000
-> +#define STM32FWU_CMD_COUNT		30
-> +#define STM32FWU_COMMON_COUNT		20
-> +
-> +/* Commands */
-> +#define STM32FWU_WRITE_MEM_CMD		0x31
-> +#define STM32FWU_GO_ADDR_CMD		0x21
-> +#define STM32FWU_ERASE_CMD		0x44
-> +#define STM32FWU_GET_CMD		0x00
-> +#define STM32FWU_GET_VERSION_CMD	0x01
-> +
-> +/**
-> + * struct stm32fwu_cmd - Upgrade command
-> + * @cmd:	Fwu command.
-> + * @neg_cmd:	Bit negation of Fwu command used xor'ed in STM.
-> + * @timeout:	Number of retries.
-> + */
-> +struct stm32fwu_cmd {
-> +	u8 cmd;
-> +	u8 neg_cmd;
-> +	u32 timeout;
+> +	struct mutex lock;
+> +	unsigned long channel_map;
+> +	unsigned int start_delay_ns;
+> +	unsigned int eoc_delay_ns;
 > +};
 > +
-> +/**
-> + * struct stm32fwu_fw - Generic representation for STM32 fw upgrade
-> + * @dev:		Pointer to device.
-> + * @wait_for_ack:	ACK callback.
-> + * @send_cmd:		Command callback.
-> + * @write:		Write callback.
-> + * @read:		Read callback.
-> + * @fw_data:		Pointer to firmware binary.
-> + * @fw_len:		The length of fw bin.
-> + * @buffer:		Pointer to SPI buffer: should be DMA safe
-> + */
-> +struct stm32fwu_fw {
-> +	int (*wait_for_ack)(struct stm32fwu_fw *fw, u32 retries);
-> +	int (*send_cmd)(struct stm32fwu_fw *fw, struct stm32fwu_cmd *cmd);
-> +	int (*write)(struct stm32fwu_fw *fw, const u8 *buf, u32 len);
-> +	int (*read)(struct stm32fwu_fw *fw, u8 *buf, u32 len);
-> +	const u8 *fw_data;
-> +	u32 fw_len;
-> +	u8 *buffer;
-> +	struct device *dev;
-> +};
-> +
-> +void stm32fwu_spi_init(struct stm32fwu_fw *fw);
-> +
-> +#endif /*_STM32_CORE_H_ */
-> diff --git a/drivers/misc/stm32fwu/stm32_spi.c b/drivers/misc/stm32fwu/stm32_spi.c
-> new file mode 100644
-> index 0000000..7905baf
-> --- /dev/null
-> +++ b/drivers/misc/stm32fwu/stm32_spi.c
-> @@ -0,0 +1,108 @@
-> +/*
-> + *  Copyright (C) 2014, Samsung Electronics Co. Ltd. All Rights Reserved.
-> + *
-> + *  This program is free software; you can redistribute it and/or modify
-> + *  it under the terms of the GNU General Public License as published by
-> + *  the Free Software Foundation; either version 2 of the License, or
-> + *  (at your option) any later version.
-> + *
-> + *  This program is distributed in the hope that it will be useful,
-> + *  but WITHOUT ANY WARRANTY; without even the implied warranty of
-> + *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-> + *  GNU General Public License for more details.
-> + *
-> + */
-> +
-> +#include <linux/delay.h>
-> +#include <linux/module.h>
-> +#include <linux/spi/spi.h>
-> +#include <linux/stm32fwu.h>
-> +#include "stm32_core.h"
-> +
-> +static int stm32fwu_spi_write(struct stm32fwu_fw *fw, const u8 *buf, u32 len)
+> +static inline void cc_adc_write_reg(struct cc10001_adc_device *adc_dev,
+> +				    u32 reg, u32 val)
 > +{
-> +	struct spi_device *sdev = to_spi_device(fw->dev);
-> +
-> +	struct spi_message m;
-> +	struct spi_transfer t = {
-> +		.len = len,
-> +		.tx_buf = buf,
-> +		.bits_per_word = 8,
-> +	};
-> +
-> +	spi_message_init(&m);
-> +	spi_message_add_tail(&t, &m);
-> +	return spi_sync(sdev, &m);
+> +	writel(val, adc_dev->reg_base + reg);
 > +}
 > +
-> +static int stm32fwu_spi_read(struct stm32fwu_fw *fw, u8 *buf, u32 len)
+> +static inline u32 cc_adc_read_reg(struct cc10001_adc_device *adc_dev,
+> +				  u32 reg)
 > +{
-> +	struct spi_device *sdev = to_spi_device(fw->dev);
-> +
-> +	struct spi_message m;
-> +	struct spi_transfer t = {
-> +		.len = len,
-> +		.rx_buf = buf,
-> +		.bits_per_word = 8,
-> +	};
-> +
-> +	spi_message_init(&m);
-> +	spi_message_add_tail(&t, &m);
-> +	return spi_sync(sdev, &m);
+> +	return readl(adc_dev->reg_base + reg);
 > +}
 > +
-> +static int stm32fwu_spi_wait_for_ack(struct stm32fwu_fw *fw, u32 retries)
+> +static void cc_adc_start(struct cc10001_adc_device *adc_dev,
+> +			 unsigned int channel)
 > +{
-> +	int ret, i = 0;
-> +	u8 *buf = &fw->buffer[STM32FWU_MAX_BUFFER_SIZE];
+> +	u32 val;
 > +
-> +	while (i < retries) {
-> +		ret = stm32fwu_spi_read(fw, buf, 1);
-> +		if (ret < 0) {
-> +			dev_err(fw->dev,
-> +				"firmware upgrade wait for ack fail\n");
-> +			return ret;
+> +	/* Channel selection and mode of operation */
+> +	val = (channel & CC10001_ADC_CH_MASK) | CC10001_ADC_MODE_SINGLE_CONV;
+> +	cc_adc_write_reg(adc_dev, CC10001_ADC_CONFIG, val);
+> +
+> +	val = cc_adc_read_reg(adc_dev, CC10001_ADC_CONFIG);
+> +	val = val | CC10001_ADC_START_CONV;
+> +	cc_adc_write_reg(adc_dev, CC10001_ADC_CONFIG, val);
+> +}
+> +
+cc10001_adc_poll etc.  Consistency is good with funciton prefixing...
+
+> +static u16 cc_adc_poll_done(struct iio_dev *indio_dev, unsigned int channel,
+> +			    unsigned int delay)
+> +{
+> +	struct cc10001_adc_device *adc_dev = iio_priv(indio_dev);
+> +	unsigned int poll_count = 0;
+> +
+> +	while (!(cc_adc_read_reg(adc_dev, CC10001_ADC_EOC) &
+> +			CC10001_ADC_EOC_SET)) {
+> +
+> +		ndelay(delay);
+> +		if (poll_count++ == CC10001_MAX_POLL_COUNT)
+> +			return CC10001_INVALID_SAMPLED_OUTPUT;
+> +	}
+> +
+> +	poll_count = 0;
+> +	while ((cc_adc_read_reg(adc_dev, CC10001_ADC_CHSEL_SAMPLED) &
+> +			CC10001_ADC_CH_MASK) != channel) {
+> +
+> +		ndelay(delay);
+> +		if (poll_count++ == CC10001_MAX_POLL_COUNT)
+> +			return CC10001_INVALID_SAMPLED_OUTPUT;
+> +	}
+> +
+> +	/* Read the 10 bit output register */
+> +	return cc_adc_read_reg(adc_dev, CC10001_ADC_DDATA_OUT) &
+> +			       CC10001_ADC_DATA_MASK;
+> +}
+> +
+> +static irqreturn_t cc10001_adc_trigger_h(int irq, void *p)
+> +{
+> +	struct cc10001_adc_device *adc_dev;
+> +	struct iio_poll_func *pf = p;
+> +	struct iio_dev *indio_dev;
+> +	unsigned int delay_ns;
+> +	unsigned int channel;
+> +	bool sample_invalid;
+> +	u16 *data;
+> +	int i;
+> +
+> +	indio_dev = pf->indio_dev;
+> +	adc_dev = iio_priv(indio_dev);
+> +	data = adc_dev->buf;
+> +
+> +	mutex_lock(&adc_dev->lock);
+> +
+> +	cc_adc_write_reg(adc_dev, CC10001_ADC_POWER_UP,
+> +			 CC10001_ADC_POWER_UP_SET);
+> +
+> +	/* Wait for 8 (6+2) clock cycles before activating START */
+> +	ndelay(adc_dev->start_delay_ns);
+> +
+> +	/* Calculate delay step for eoc and sampled data */
+> +	delay_ns = adc_dev->eoc_delay_ns / CC10001_MAX_POLL_COUNT;
+> +
+> +	i = 0;
+> +	sample_invalid = false;
+> +	for_each_set_bit(channel, indio_dev->active_scan_mask,
+> +				  indio_dev->masklength) {
+> +
+> +		cc_adc_start(adc_dev, channel);
+> +
+> +		data[i] = cc_adc_poll_done(indio_dev, channel, delay_ns);
+> +		if (data[i] == CC10001_INVALID_SAMPLED_OUTPUT) {
+> +			dev_warn(&indio_dev->dev,
+> +				 "invalid sample on channel %d\n", channel);
+> +			sample_invalid = true;
+> +			goto done;
 > +		}
-> +
-> +		if (fw->buffer[STM32FWU_MAX_BUFFER_SIZE] == STM32FWU_ACK ||
-> +		    fw->buffer[STM32FWU_MAX_BUFFER_SIZE] == STM32FWU_ACK2) {
-> +			return i;
-> +		}
-> +
-> +		if (fw->buffer[STM32FWU_MAX_BUFFER_SIZE] == STM32FWU_NACK)
-> +			return -EPROTO;
-> +
-> +		usleep_range(1000, 1100);
 > +		i++;
 > +	}
 > +
-> +	dev_err(fw->dev, "fw ack timeout\n");
+> +done:
+> +	cc_adc_write_reg(adc_dev, CC10001_ADC_POWER_UP, 0);
 > +
-> +	return -ETIMEDOUT;
+> +	mutex_unlock(&adc_dev->lock);
+> +
+> +	if (!sample_invalid)
+> +		iio_push_to_buffers_with_timestamp(indio_dev, data,
+> +						   iio_get_time_ns());
+> +	iio_trigger_notify_done(indio_dev->trig);
+blank line here.
+> +	return IRQ_HANDLED;
 > +}
 > +
-> +static int stm32fwu_spi_send_cmd(struct stm32fwu_fw *fw,
-> +				 struct stm32fwu_cmd *cmd)
+> +static u16 cc10001_adc_read_raw_voltage(struct iio_dev *indio_dev,
+> +					 struct iio_chan_spec const *chan)
 > +{
+> +	struct cc10001_adc_device *adc_dev = iio_priv(indio_dev);
+> +	unsigned int delay_ns;
+> +	u16 val;
+> +
+> +	cc_adc_write_reg(adc_dev, CC10001_ADC_POWER_UP,
+> +			 CC10001_ADC_POWER_UP_SET);
+> +
+> +	/* Wait for 8 (6+2) clock cycles before activating START */
+> +	ndelay(adc_dev->start_delay_ns);
+> +
+> +	/* Calculate delay step for eoc and sampled data */
+> +	delay_ns = adc_dev->eoc_delay_ns / CC10001_MAX_POLL_COUNT;
+> +
+> +	cc_adc_start(adc_dev, chan->channel);
+> +
+> +	val = cc_adc_poll_done(indio_dev, chan->channel, delay_ns);
+> +
+> +	cc_adc_write_reg(adc_dev, CC10001_ADC_POWER_UP, 0);
+> +
+> +	return val;
+> +}
+> +
+> +static int cc10001_adc_read_raw(struct iio_dev *indio_dev,
+> +				 struct iio_chan_spec const *chan,
+> +				 int *val, int *val2, long mask)
+> +{
+> +	struct cc10001_adc_device *adc_dev = iio_priv(indio_dev);
 > +	int ret;
 > +
-> +	fw->buffer[0] = STM32FWU_SPI_SOF;
-> +	fw->buffer[1] = cmd->cmd;
-> +	fw->buffer[2] = cmd->neg_cmd;
+> +	switch (mask) {
+> +	case IIO_CHAN_INFO_RAW:
+> +		if (iio_buffer_enabled(indio_dev))
+> +			return -EBUSY;
+> +		mutex_lock(&adc_dev->lock);
+> +		*val = cc10001_adc_read_raw_voltage(indio_dev, chan);
+> +		mutex_unlock(&adc_dev->lock);
 > +
-> +	ret = stm32fwu_spi_write(fw, fw->buffer, 3);
-> +	if (ret < 0) {
-> +		dev_err(fw->dev, "fw cmd write fail\n");
-> +		return ret;
+> +		if (*val == CC10001_INVALID_SAMPLED_OUTPUT)
+> +			return -EIO;
+> +		return IIO_VAL_INT;
+> +
+> +	case IIO_CHAN_INFO_SCALE:
+> +		ret = regulator_get_voltage(adc_dev->reg);
+> +		if (ret)
+> +			return ret;
+> +
+> +		*val = ret / 1000;
+> +		*val2 = chan->scan_type.realbits;
+> +		return IIO_VAL_FRACTIONAL_LOG2;
+> +
+> +	default:
+> +		return -EINVAL;
 > +	}
-> +
-> +	return stm32fwu_spi_wait_for_ack(fw, cmd->timeout);
 > +}
 > +
-> +void stm32fwu_spi_init(struct stm32fwu_fw *fw)
+> +static int cc10001_update_scan_mode(struct iio_dev *indio_dev,
+> +				     const unsigned long *scan_mask)
 > +{
-> +	fw->write = stm32fwu_spi_write;
-> +	fw->read = stm32fwu_spi_read;
-> +	fw->wait_for_ack = stm32fwu_spi_wait_for_ack;
-> +	fw->send_cmd = stm32fwu_spi_send_cmd;
+> +	struct cc10001_adc_device *adc_dev = iio_priv(indio_dev);
+> +
+> +	kfree(adc_dev->buf);
+> +	adc_dev->buf = kmalloc(indio_dev->scan_bytes, GFP_KERNEL);
+> +	if (!adc_dev->buf)
+> +		return -ENOMEM;
+> +
+> +	return 0;
 > +}
-> diff --git a/include/linux/stm32fwu.h b/include/linux/stm32fwu.h
-> new file mode 100644
-> index 0000000..3084ffd
-> --- /dev/null
-> +++ b/include/linux/stm32fwu.h
-> @@ -0,0 +1,49 @@
-> +/*
-> + *  Copyright (C) 2014, Samsung Electronics Co. Ltd. All Rights Reserved.
-> + *
-> + *  This program is free software; you can redistribute it and/or modify
-> + *  it under the terms of the GNU General Public License as published by
-> + *  the Free Software Foundation; either version 2 of the License, or
-> + *  (at your option) any later version.
-> + *
-> + *  This program is distributed in the hope that it will be useful,
-> + *  but WITHOUT ANY WARRANTY; without even the implied warranty of
-> + *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-> + *  GNU General Public License for more details.
-> + *
-> + */
 > +
-> +#ifndef _STM32FWU_H_
-> +#define _STM32FWU_H_
-> +
-> +/**
-> + * enum stm32fwu_iface - upgrade interfaces for STM32 MCU's
-> + * @STM32_SPI:		SPI interface.
-> + * @STM32_MAX:		terminator.
-> + */
-> +enum stm32fwu_iface {
-> +	STM32_SPI,
-> +	/*
-> +	 * Generally for future use, i.e. UART upgrade algorithm looks pretty
-> +	 * similar.
-> +	 */
-> +	STM32_MAX
+> +static const struct iio_info cc10001_adc_info = {
+> +	.driver_module = THIS_MODULE,
+> +	.read_raw = &cc10001_adc_read_raw,
+> +	.update_scan_mode = &cc10001_update_scan_mode,
 > +};
 > +
-> +struct stm32fwu_fw;
+> +static int cc10001_adc_channel_init(struct iio_dev *indio_dev)
+> +{
+> +	struct cc10001_adc_device *adc_dev = iio_priv(indio_dev);
+> +	struct iio_chan_spec *chan_array, *timestamp;
+> +	unsigned int bit, idx = 0;
 > +
-> +struct stm32fwu_fw *stm32fwu_init(struct device *dev,
-> +				  enum stm32fwu_iface iface, const u8 *data,
-> +				  u32 len);
+> +	indio_dev->num_channels = bitmap_weight(&adc_dev->channel_map,
+> +						CC10001_ADC_NUM_CHANNELS);
 > +
-> +void stm32fwu_destroy(struct stm32fwu_fw *fw);
+> +	chan_array = devm_kcalloc(&indio_dev->dev, indio_dev->num_channels + 1,
+> +				  sizeof(struct iio_chan_spec),
+> +				  GFP_KERNEL);
+> +	if (!chan_array)
+> +		return -ENOMEM;
 > +
-> +int stm32fwu_send_sync(struct stm32fwu_fw *fw);
+> +	for_each_set_bit(bit, &adc_dev->channel_map,
+> +			 CC10001_ADC_NUM_CHANNELS) {
+> +		struct iio_chan_spec *chan = &chan_array[idx];
 > +
-> +int stm32fwu_update(struct stm32fwu_fw *fw);
+> +		chan->type = IIO_VOLTAGE;
+> +		chan->indexed = 1;
+> +		chan->channel = bit;
+> +		chan->scan_index = idx;
+> +		chan->scan_type.sign = 'u';
+> +		chan->scan_type.realbits = 10;
+> +		chan->scan_type.storagebits = 16;
+> +		chan->info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE);
+> +		chan->info_mask_separate = BIT(IIO_CHAN_INFO_RAW);
+> +		idx++;
+> +	}
 > +
-> +int stm32fwu_get(struct stm32fwu_fw *fw);
+> +	timestamp = &chan_array[idx];
+> +	timestamp->type = IIO_TIMESTAMP;
+> +	timestamp->channel = -1;
+> +	timestamp->scan_index = idx;
+> +	timestamp->scan_type.sign = 's';
+> +	timestamp->scan_type.realbits = 64;
+> +	timestamp->scan_type.storagebits = 64;
 > +
-> +int stm32fwu_get_version(struct stm32fwu_fw *fw);
+> +	indio_dev->channels = chan_array;
 > +
-> +#endif /* _STM32FWU_H_ */
+> +	return 0;
+> +}
+> +
+> +static int cc10001_adc_probe(struct platform_device *pdev)
+> +{
+> +	struct device_node *node = pdev->dev.of_node;
+> +	struct cc10001_adc_device *adc_dev;
+> +	unsigned long adc_clk_rate;
+> +	struct resource *res;
+> +	struct iio_dev *indio_dev;
+> +	int ret;
+> +
+> +	indio_dev = devm_iio_device_alloc(&pdev->dev, sizeof(*adc_dev));
+> +	if (indio_dev == NULL)
+> +		return -ENOMEM;
+> +
+> +	adc_dev = iio_priv(indio_dev);
+> +
+> +	if (of_property_read_u32(node, "cosmic,adc-available-channels", &ret)) {
+> +		dev_err(&indio_dev->dev, "Missing adc-available-channels property\n");
+> +		return -EINVAL;
+> +	}
+> +	adc_dev->channel_map = ret;
+> +
+> +	adc_dev->reg = devm_regulator_get(&pdev->dev, "vref");
+> +	if (IS_ERR_OR_NULL(adc_dev->reg))
+> +		return -EINVAL;
+> +
+> +	ret = regulator_enable(adc_dev->reg);
+> +	if (ret)
+> +		return ret;
+> +
+> +	indio_dev->dev.parent = &pdev->dev;
+> +	indio_dev->name = dev_name(&pdev->dev);
+> +	indio_dev->info = &cc10001_adc_info;
+> +	indio_dev->modes = INDIO_DIRECT_MODE;
+> +
+> +	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+> +	adc_dev->reg_base = devm_ioremap_resource(&pdev->dev, res);
+> +	if (IS_ERR(adc_dev->reg_base))
+> +		goto err_disable_reg;
+> +
+> +	adc_dev->adc_clk = devm_clk_get(&pdev->dev, "adc");
+> +	if (IS_ERR(adc_dev->adc_clk)) {
+> +		dev_err(&pdev->dev, "Failed to get the clock\n");
+> +		goto err_disable_reg;
+> +	}
+> +
+> +	ret = clk_prepare_enable(adc_dev->adc_clk);
+> +	if (ret) {
+> +		dev_err(&pdev->dev, "Failed to enable the clock\n");
+> +		goto err_disable_reg;
+> +	}
+> +
+> +	adc_clk_rate = clk_get_rate(adc_dev->adc_clk);
+> +	if (!adc_clk_rate) {
+> +		ret = -EINVAL;
+> +		dev_err(&pdev->dev, "null clock rate!\n");
+> +		goto err_disable_clk;
+> +	}
+> +
+> +	adc_dev->eoc_delay_ns = NSEC_PER_SEC / adc_clk_rate;
+> +	adc_dev->start_delay_ns = adc_dev->eoc_delay_ns * CC10001_WAIT_CYCLES;
+> +
+> +	/* Setup the ADC channels available on the device */
+> +	ret = cc10001_adc_channel_init(indio_dev);
+> +	if (ret < 0) {
+> +		dev_err(&pdev->dev, "Could not initialize the channels.\n");
+> +		goto err_disable_clk;
+> +	}
+> +
+> +	mutex_init(&adc_dev->lock);
+> +
+> +	ret = iio_triggered_buffer_setup(indio_dev, NULL,
+> +					 &cc10001_adc_trigger_h, NULL);
+> +	if (ret < 0)
+> +		goto err_disable_clk;
+> +
+> +	ret = iio_device_register(indio_dev);
+> +	if (ret < 0)
+> +		goto err_cleanup_buffer;
+> +
+> +	platform_set_drvdata(pdev, indio_dev);
+> +
+> +	return 0;
+> +
+> +err_cleanup_buffer:
+> +	iio_triggered_buffer_cleanup(indio_dev);
+> +err_disable_clk:
+> +	clk_disable_unprepare(adc_dev->adc_clk);
+> +err_disable_reg:
+> +	regulator_disable(adc_dev->reg);
+> +	return ret;
+> +}
+> +
+> +static int cc10001_adc_remove(struct platform_device *pdev)
+> +{
+> +	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
+> +	struct cc10001_adc_device *adc_dev = iio_priv(indio_dev);
+> +
+> +	iio_device_unregister(indio_dev);
+> +	iio_triggered_buffer_cleanup(indio_dev);
+> +	clk_disable_unprepare(adc_dev->adc_clk);
+> +	regulator_disable(adc_dev->reg);
+> +
+> +	return 0;
+> +}
+> +
+> +static const struct of_device_id cc10001_adc_dt_ids[] = {
+> +	{ .compatible = "cosmic,10001-adc", },
+> +	{ }
+> +};
+> +MODULE_DEVICE_TABLE(of, cc10001_adc_dt_ids);
+> +
+> +static struct platform_driver cc10001_adc_driver = {
+> +	.driver = {
+> +		.name   = "cc-10001-adc",
+cc10001-adc?
+> +		.owner	= THIS_MODULE,
+> +		.of_match_table = cc10001_adc_dt_ids,
+> +	},
+> +	.probe	= cc10001_adc_probe,
+> +	.remove	= cc10001_adc_remove,
+> +};
+> +module_platform_driver(cc10001_adc_driver);
+> +
+> +MODULE_AUTHOR("Phani Movva <Phani.Movva@imgtec.com>");
+> +MODULE_DESCRIPTION("Cosmic Circuits ADC driver");
+> +MODULE_LICENSE("GPL v2");
 > 
 
