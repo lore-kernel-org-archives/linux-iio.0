@@ -1,116 +1,129 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from cantor2.suse.de ([195.135.220.15]:59995 "EHLO mx2.suse.de"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1752699AbaKHASm (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Fri, 7 Nov 2014 19:18:42 -0500
-Date: Sat, 8 Nov 2014 11:18:33 +1100
-From: NeilBrown <neilb@suse.de>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-	GTA04 owners <gta04-owner@goldelico.com>
-Subject: [PATCH] iio: gyro: itg3200: add suspend/resume support.
-Message-ID: <20141108111833.3829480c@notabene.brown>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:37389 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753521AbaKHMRc (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 8 Nov 2014 07:17:32 -0500
+Message-ID: <545E09DA.3040501@kernel.org>
+Date: Sat, 08 Nov 2014 12:17:30 +0000
+From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- boundary="Sig_/YftDn7tZGhJa=b3B4A8.X3c"; protocol="application/pgp-signature"
+To: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+	Gwendal Grignou <gwendal@google.com>
+CC: Gwendal Grignou <gwendal@chromium.org>, knaack.h@gmx.de,
+	linux-iio@vger.kernel.org
+Subject: Re: [PATCHv2] iio: ak8975: Add AKM0991x support.
+References: <5458003C.90107@gmx.de>	 <1415130097-25080-1-git-send-email-gwendal@chromium.org>	 <545A34AC.9040606@kernel.org>	 <CAMHSBOWmmCdd=5HXJN-vz9saaPrq3n0p-LjCNvnX3Q3ZieZdRQ@mail.gmail.com> <1415284340.7340.9.camel@spandruv-hsb-test>
+In-Reply-To: <1415284340.7340.9.camel@spandruv-hsb-test>
+Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
---Sig_/YftDn7tZGhJa=b3B4A8.X3c
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+On 06/11/14 14:32, Srinivas Pandruvada wrote:
+> On Wed, 2014-11-05 at 13:19 -0800, Gwendal Grignou wrote:
+>> On Wed, Nov 5, 2014 at 6:31 AM, Jonathan Cameron <jic23@kernel.org> wrote:
+>>> On 04/11/14 19:41, Gwendal Grignou wrote:
+>>>> File and config id remains the same, but driver is now named akxxxx.
+>>>
+>>> Don't do that.  Please name the driver after one supported part rather
+>>> than a general wild card.  Leaving it as ak8975 would be sensible.
+>>> Wild cards seem like a good idea until along comes a part that fits
+>>> in the naming scheme but is otherwise totally different.
+>>>
+>>> Much cleaner to just pick a part to use in naming the driver and
+>>> make it clear what parts are supported in kconfig (see iio/adc/max1363 for
+>>> example).
+>> Will do. It is cleaner indeed.
+>>>
+>>> I would have prefered this as a two patch series.  The first combining
+>>> the existing drivers, and the second (small one) adding the new part
+>>> support.
+>> I will submit 3 patches soon:
+>> - minor fixes in the driver first,
+>> - one that refactor the current driver to introduce a definition data structure
+>> - the next one that remove ak9911.c and add support for ak09911 and
+>> ak9912 into ak8975.c
+>>>
+>>> Would have broken it up into logical steps thus making it a little
+>>> easier to check for feature parity etc.
+>>>
+>>> Once you've dropped the name change, this patch will contain less noise.
+>>> Also, there are a couple of sensible refactorings in there.  I would
+>>> have prefered these to be in precursor patches that made much smaller
+>>> changes.
+>> The re-factoring became obvious after I introduce the definition data structure.
+>>>
+>>> This sort of merging of drivers is one of the hardest types of code to
+>>> review, so making it as easy as possible for reviewers by packaging
+>>> it up as baby steps is the way to go.
+>>>
+>>> There is still some work to be done in convincing people that merging
+>>> the drivers is sensible (I'm pretty much convinced having waded through
+>>> this) but that is an easier job with a well split up series of steps!
+>>>
+>>> Jonathan
+>>>
+>>>> Move AKM09911 support in the same file.
+>>>>
+>>>> Signed-off-by: Gwendal Grignou <gwendal@chromium.org>
+>>>> ---
+>>>>
+>>>> Addressed all comments from Hartmut.
+>>>>
+>>>>  drivers/iio/magnetometer/Kconfig   |  19 +-
+>>>>  drivers/iio/magnetometer/Makefile  |   1 -
+>>>>  drivers/iio/magnetometer/ak09911.c | 326 -------------------
+>>>>  drivers/iio/magnetometer/ak8975.c  | 629 ++++++++++++++++++++++++++-----------
+>>>>  4 files changed, 444 insertions(+), 531 deletions(-)
+>>>>  delete mode 100644 drivers/iio/magnetometer/ak09911.c
+>>>>
+>>>> diff --git a/drivers/iio/magnetometer/Kconfig b/drivers/iio/magnetometer/Kconfig
+>>>> index b2dba9e..67f005d 100644
+>>>> --- a/drivers/iio/magnetometer/Kconfig
+>>>> +++ b/drivers/iio/magnetometer/Kconfig
+>>>> @@ -6,26 +6,15 @@
+>>>>  menu "Magnetometer sensors"
+>>>>
+>>>>  config AK8975
+>>>> -     tristate "Asahi Kasei AK8975 3-Axis Magnetometer"
+>>>> +     tristate "Asahi Kasei AK 3-Axis Magnetometer"
+>>>>       depends on I2C
+>>>>       depends on GPIOLIB
+>>>>       help
+>>>> -       Say yes here to build support for Asahi Kasei AK8975 3-Axis
+>>>> -       Magnetometer. This driver can also support AK8963, if i2c
+>>>> -       device name is identified as ak8963.
+>>>> +       Say yes here to build support for Asahi Kasei AK8975, AK8963,
+>>>> +       AK09911 or AK09912 3-Axis Magnetometer.
+>>>>
+>>>>         To compile this driver as a module, choose M here: the module
+>>>> -       will be called ak8975.
+>>>> -
+>>>> -config AK09911
+>>>> -     tristate "Asahi Kasei AK09911 3-axis Compass"
+>>>> -     depends on I2C
+>>>> -     help
+>>>> -       Say yes here to build support for Asahi Kasei AK09911 3-Axis
+>>>> -       Magnetometer.
+>>>> -
+>>>> -       To compile this driver as a module, choose M here: the module
+>>>> -       will be called ak09911.
+>>>> +       will be called akxxxx.
+>>>>
+> We already have released products with CONFIG_AK09911, so will next
+> kernel upgrade will break them. Customers don't allow config changes.
+> So we can't remove this config.
+> Merging of drivers is fine. At the least we should keep the config and
+> select the AK8975 when defined in the config if we remove AK09911.
+> 
+> Jonathan,
+> What do you think? This driver is part of a commercial released product.
+> As you know customers are very sensitive about .config changes.
+Absolutely.  When merging drivers putting in some config magic
+to select the new driver is a common solution.
+
+> 
+> Thanks,
+> Srinivas
+> 
 
 
-
-Unless we put the device to sleep when not it use, it wastes
-6mA.
-
-If the device is asleep on probe, the 'id' register
-sometimes mis-reads - so reset first.  If the device responds
-at all a command sent to the address, it is almost certainly
-the correct device already.
-
-Signed-off-by: NeilBrown <neil@brown.name>
-
-diff --git a/drivers/iio/gyro/itg3200_core.c b/drivers/iio/gyro/itg3200_cor=
-e.c
-index 6a8020d48140..394667fb23f9 100644
---- a/drivers/iio/gyro/itg3200_core.c
-+++ b/drivers/iio/gyro/itg3200_core.c
-@@ -223,6 +223,7 @@ static int itg3200_initial_setup(struct iio_dev *indio_=
-dev)
- 	int ret;
- 	u8 val;
-=20
-+	ret =3D itg3200_reset(indio_dev);
- 	ret =3D itg3200_read_reg_8(indio_dev, ITG3200_REG_ADDRESS, &val);
- 	if (ret)
- 		goto err_ret;
-@@ -351,6 +352,35 @@ static int itg3200_remove(struct i2c_client *client)
- 	return 0;
- }
-=20
-+#ifdef CONFIG_PM_SLEEP
-+static int itg3200_suspend(struct device *dev)
-+{
-+	struct iio_dev *indio_dev =3D dev_get_drvdata(dev);
-+	struct itg3200 *st =3D iio_priv(indio_dev);
-+	int ret;
-+
-+	dev_dbg(&st->i2c->dev, "suspend device");
-+
-+	ret =3D itg3200_write_reg_8(indio_dev,
-+			ITG3200_REG_POWER_MANAGEMENT,
-+			ITG3200_SLEEP);
-+	return ret;
-+}
-+
-+static int itg3200_resume(struct device *dev)
-+{
-+	struct iio_dev *indio_dev =3D dev_get_drvdata(dev);
-+
-+	itg3200_reset(indio_dev);
-+	return 0;
-+}
-+
-+static SIMPLE_DEV_PM_OPS(itg3200_pm_ops, itg3200_suspend, itg3200_resume);
-+#define ITG3200_PM_OPS (&itg3200_pm_ops)
-+#else
-+#define ITG3200_PM_OPS NULL
-+#endif
-+
- static const struct i2c_device_id itg3200_id[] =3D {
- 	{ "itg3200", 0 },
- 	{ }
-@@ -361,6 +391,7 @@ static struct i2c_driver itg3200_driver =3D {
- 	.driver =3D {
- 		.owner  =3D THIS_MODULE,
- 		.name	=3D "itg3200",
-+		.pm	=3D ITG3200_PM_OPS,
- 	},
- 	.id_table	=3D itg3200_id,
- 	.probe		=3D itg3200_probe,
-
---Sig_/YftDn7tZGhJa=b3B4A8.X3c
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2
-
-iQIVAwUBVF1hWTnsnt1WYoG5AQLddw//YvZVpSn1k9U6CCvGV60RycJ+0C8N5SnW
-4AFhuXgBcMQ3U5gynX/xeOmbBFvH0g7yDxd18VUQ0ckZ2j+SzzCSW70rlZoug6mI
-41O4bIe36PkF4FvKVJFvf07OKvY+Ec591Sm/yzxQ/ZDw2X+DpH5qH1XyPBgssn0Q
-7OnI7JcwhSfGibviEur14/kJJ4soYkkbKYujhFwidD0D0XUIazmbeDUq50R2cCd0
-UQ+n+rcJ9nMjJzbeZWVr1fkq6oNNVxzjaLJgE93cNdkU3YaUrZyci5CEKeKBX0mb
-Q6o6+XbV2rJcFZELIRhESP3oxFJbpEvRAM1wHeFgeHiDeUjuClyMheiWIqtCsEKy
-15J9i4qylu8JI9j028NhxS5qSfKOOY7XKv7ZkZtR7UBfJQqqKhG3A1WI+C8sJj8K
-TBSFsrxZTdMsMj5Dlp3rHVU5pwQ8wC6Vk8VHOt94Wl1udGWlLE/ytECn5MNZUIJ0
-qO52JbqPk6+ifVsV4ppqoJpQIgT0WBcD4hxTCLFwVBZm5G6BLnPqq7M57jahN6pi
-dbiJSyihI+ipnKULi9LjzBcokPuvtf6kFARXtPvHHdbOm348n+1FCWj+fvOVeTD6
-zbC9DDHdjGOJ9OV3Eywaac2diZjanV35NQEOBdS1NJQMdlQebl9+t5Pst8yN6Dpi
-Rr9MfJSMxoQ=
-=nj0w
------END PGP SIGNATURE-----
-
---Sig_/YftDn7tZGhJa=b3B4A8.X3c--
