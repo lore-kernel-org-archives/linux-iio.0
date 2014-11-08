@@ -1,66 +1,81 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-wg0-f51.google.com ([74.125.82.51]:47833 "EHLO
-	mail-wg0-f51.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751164AbaKGIAp (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 7 Nov 2014 03:00:45 -0500
-Date: Fri, 7 Nov 2014 09:00:34 +0100
-From: Richard Cochran <richardcochran@gmail.com>
-To: Vignesh R <vigneshr@ti.com>
-Cc: Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>,
-	Mark Rutland <mark.rutland@arm.com>,
-	Ian Campbell <ijc+devicetree@hellion.org.uk>,
-	Kumar Gala <galak@codeaurora.org>,
-	Benoit Cousson <bcousson@baylibre.com>,
-	Tony Lindgren <tony@atomide.com>,
-	Russell King <linux@arm.linux.org.uk>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-	devicetree@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>,
-	Samuel Ortiz <sameo@linux.intel.com>,
-	Jan Kardell <jan.kardell@telliq.com>,
-	linux-iio@vger.kernel.org,
-	Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-	linux-input@vger.kernel.org, linux-kernel@vger.kernel.org,
-	Felipe Balbi <balbi@ti.com>,
-	Paul Gortmaker <paul.gortmaker@windriver.com>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	Hartmut Knaack <knaack.h@gmx.de>, linux-omap@vger.kernel.org,
-	Lee Jones <lee.jones@linaro.org>,
-	linux-arm-kernel@lists.infradead.org,
-	Brad Griffis <bgriffis@ti.com>
-Subject: Re: [PATCH 1/4] input: touchscreen: ti_am335x_tsc Interchange
- touchscreen and ADC steps
-Message-ID: <20141107080033.GA6455@netboy>
-References: <1414408111-2631-1-git-send-email-vigneshr@ti.com>
- <1414408111-2631-2-git-send-email-vigneshr@ti.com>
- <20141106141916.GA17151@netboy>
- <545C59CD.3070707@ti.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <545C59CD.3070707@ti.com>
+Received: from mailout1.w1.samsung.com ([210.118.77.11]:40131 "EHLO
+	mailout1.w1.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753716AbaKHONy (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 8 Nov 2014 09:13:54 -0500
+From: Karol Wrona <k.wrona@samsung.com>
+To: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
+	Arnd Bergmann <arnd@arndb.de>, linux-kernel@vger.kernel.org
+Cc: Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
+	Kyungmin Park <kyungmin.park@samsung.com>,
+	Karol Wrona <k.wrona@samsung.com>
+Subject: [PATCH 0/5] iio: Add sensorhub driver
+Date: Sat, 08 Nov 2014 15:13:11 +0100
+Message-id: <1415455996-20871-1-git-send-email-k.wrona@samsung.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Fri, Nov 07, 2014 at 11:04:05AM +0530, Vignesh R wrote:
-> 
-> Currently, there is too much noise in the TSC hardware that is being
-> removed by delta filtering.
+This patchset adds support for sensorhub. It is an external mcu which
+manages and collects data from several sensors i.e. on Galaxy Gear 2 watch.
 
-The so called "filter" was only programmed because the fifo entries
-were being mixed up. Sebastian fixed that.
+It contains:
+- spi driver for sensorhub device
+- DT binding for the device
+- IIO common utils for ssp sensors (iio kfifo setup helpers, pre/post callbacks)
+- IIO accelerometer driver
+- IIO gyroscope driver
 
-> I tested TSC unit by removing filtering
-> logic, the performance was not at all satisfactory. The cursor jumps
-> wayward and smooth circles cannot be drawn. Looks like delta filtering
-> cannot be removed as of now. May be I will try and address it in future.
+For now the driver supports "traditional" sensors but new ones types are
+intended to be used.
 
-The "filter" code is nonsensical. It picks the two values in seqeunce
-that are closest to one and another. How is that supposed to work?
+It depends on:
+[PATCH v4 1/1] misc: st32fwu: Add stm32 upgrade protocol handling
+which is used to firmware upgrade.
 
-Did you look at the "noise"? What kind of properties did you see?
+>From RFC:
+  Fixes after Jonathan rewiev
 
-A median filter makes more sense. Or sort, remove outliers, and
-average. But choosing the two closest in series is silly.
+Karol Wrona (5):
+  misc: sensorhub: Add sensorhub driver
+  sensorhub: Add sensorhub bindings
+  iio: sensorhub: Add sensorhub iio commons
+  iio: sensorhub: Add sensorhub accelerometer sensor
+  iio: sensorhub: Add sensorhub gyroscope sensor
 
-Thanks,
-Richard
+ .../devicetree/bindings/misc/sensorhub.txt         |   46 ++
+ drivers/iio/accel/Makefile                         |    2 +
+ drivers/iio/accel/ssp_accel_sensor.c               |  211 +++++
+ drivers/iio/common/Kconfig                         |    1 +
+ drivers/iio/common/Makefile                        |    1 +
+ drivers/iio/common/ssp_sensors/Kconfig             |   13 +
+ drivers/iio/common/ssp_sensors/Makefile            |    5 +
+ drivers/iio/common/ssp_sensors/ssp_iio.c           |   81 ++
+ drivers/iio/common/ssp_sensors/ssp_iio_sensor.h    |   59 ++
+ drivers/iio/gyro/Makefile                          |    2 +
+ drivers/iio/gyro/ssp_gyro_sensor.c                 |  209 +++++
+ drivers/misc/Kconfig                               |    1 +
+ drivers/misc/Makefile                              |    1 +
+ drivers/misc/sensorhub/Kconfig                     |   13 +
+ drivers/misc/sensorhub/Makefile                    |    6 +
+ drivers/misc/sensorhub/ssp.h                       |  279 +++++++
+ drivers/misc/sensorhub/ssp_dev.c                   |  825 ++++++++++++++++++++
+ drivers/misc/sensorhub/ssp_spi.c                   |  639 +++++++++++++++
+ include/linux/iio/common/ssp_sensors.h             |   80 ++
+ 19 files changed, 2474 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/misc/sensorhub.txt
+ create mode 100644 drivers/iio/accel/ssp_accel_sensor.c
+ create mode 100644 drivers/iio/common/ssp_sensors/Kconfig
+ create mode 100644 drivers/iio/common/ssp_sensors/Makefile
+ create mode 100644 drivers/iio/common/ssp_sensors/ssp_iio.c
+ create mode 100644 drivers/iio/common/ssp_sensors/ssp_iio_sensor.h
+ create mode 100644 drivers/iio/gyro/ssp_gyro_sensor.c
+ create mode 100644 drivers/misc/sensorhub/Kconfig
+ create mode 100644 drivers/misc/sensorhub/Makefile
+ create mode 100644 drivers/misc/sensorhub/ssp.h
+ create mode 100644 drivers/misc/sensorhub/ssp_dev.c
+ create mode 100644 drivers/misc/sensorhub/ssp_spi.c
+ create mode 100644 include/linux/iio/common/ssp_sensors.h
+
+-- 
+1.7.9.5
+
