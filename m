@@ -1,70 +1,128 @@
-Return-Path: <Ezequiel.Garcia@imgtec.com>
-Message-ID: <54611934.6050701@imgtec.com>
-Date: Mon, 10 Nov 2014 16:59:48 -0300
-From: Ezequiel Garcia <ezequiel.garcia@imgtec.com>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-ig0-f182.google.com ([209.85.213.182]:62629 "EHLO
+	mail-ig0-f182.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752325AbaKJJ0x (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 10 Nov 2014 04:26:53 -0500
+Received: by mail-ig0-f182.google.com with SMTP id hn18so8781045igb.3
+        for <linux-iio@vger.kernel.org>; Mon, 10 Nov 2014 01:26:53 -0800 (PST)
+Date: Mon, 10 Nov 2014 09:26:45 +0000
+From: Lee Jones <lee.jones@linaro.org>
+To: Vignesh R <vigneshr@ti.com>
+Cc: Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>,
+	Mark Rutland <mark.rutland@arm.com>,
+	Ian Campbell <ijc+devicetree@hellion.org.uk>,
+	Kumar Gala <galak@codeaurora.org>,
+	Benoit Cousson <bcousson@baylibre.com>,
+	Tony Lindgren <tony@atomide.com>,
+	Russell King <linux@arm.linux.org.uk>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+	Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Samuel Ortiz <sameo@linux.intel.com>,
+	Felipe Balbi <balbi@ti.com>, Brad Griffis <bgriffis@ti.com>,
+	Sanjeev Sharma <sanjeev_sharma@mentor.com>,
+	Paul Gortmaker <paul.gortmaker@windriver.com>,
+	Jan Kardell <jan.kardell@telliq.com>,
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	linux-iio@vger.kernel.org, linux-input@vger.kernel.org
+Subject: Re: [PATCH 3/5] mfd: ti_am335x_tscadc: Remove unwanted reg_se_cache
+ save
+Message-ID: <20141110092645.GE21424@x1>
+References: <1415339350-17679-1-git-send-email-vigneshr@ti.com>
+ <1415339350-17679-4-git-send-email-vigneshr@ti.com>
+ <20141110091527.GD21424@x1>
 MIME-Version: 1.0
-To: Jonathan Cameron <jic23@kernel.org>, Lars-Peter Clausen <lars@metafoo.de>,
-	Andrew Bresticker <abrestic@chromium.org>, James Hartley
-	<james.hartley@imgtec.com>, Phani Movva <phani.movva@imgtec.com>
-CC: <linux-iio@vger.kernel.org>, <pmeerw@pmeerw.net>, <knaack.h@gmx.de>,
-	<devicetree@vger.kernel.org>, Naidu Tellapati <Naidu.Tellapati@imgtec.com>,
-	Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, "Mark
- Rutland" <mark.rutland@arm.com>, Ian Campbell
-	<ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>
-Subject: Re: [PATCH v2 2/3] DT: iio: adc: Add CC_10001 binding documentation
-References: <1415224611-22096-1-git-send-email-ezequiel.garcia@imgtec.com> <1415224611-22096-3-git-send-email-ezequiel.garcia@imgtec.com> <545E1333.9010904@kernel.org> <5461170B.7070505@imgtec.com>
-In-Reply-To: <5461170B.7070505@imgtec.com>
-Content-Type: text/plain; charset="windows-1252"
-List-ID: <linux-iio@vger.kernel.org>
+Content-Type: text/plain; charset=utf-8
+In-Reply-To: <20141110091527.GD21424@x1>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
+On Mon, 10 Nov 2014, Lee Jones wrote:
 
-
-On 11/10/2014 04:50 PM, Ezequiel Garcia wrote:
-> On 11/08/2014 09:57 AM, Jonathan Cameron wrote:
->> On 05/11/14 21:56, Ezequiel Garcia wrote:
-
->>>
->>> diff --git a/Documentation/devicetree/bindings/iio/adc/cc_10001_adc.txt b/Documentation/devicetree/bindings/iio/adc/cc_10001_adc.txt
->>> new file mode 100644
->>> index 0000000..6491839
->>> --- /dev/null
->>> +++ b/Documentation/devicetree/bindings/iio/adc/cc_10001_adc.txt
->>> @@ -0,0 +1,19 @@
->>> +* Cosmic Circuits - Analog to Digital Converter (CC-10001-ADC)
->>> +
->>> +Required properties:
->>> +  - compatible: Should be "cosmic,10001-adc"
->>> +  - reg: Should contain adc registers location and length.
->>> +  - cosmic,adc-available-channels: Bitmask of the channels currently enabled.
->> I suspect there may be other preferred ways of doing this (child nodes perhaps
->> for each enabled channel?)
+> On Fri, 07 Nov 2014, Vignesh R wrote:
 > 
-> Hm, I'm not sure about this. As far I can recall, if a node has children
-> then it *must* be a bus, which is not the case. Of course, you'll find
-> examples doing this wrong.
+> > In one shot mode, sequencer automatically disables all enabled steps at
+> > the end of each cycle. (both ADC steps and TSC steps) Hence these steps
+> > need not be saved in reg_se_cache for clearing these steps at a later
+> > stage.
+> > Also, when ADC wakes up Sequencer should not be busy executing any of the
+> > config steps except for the charge step. Previously charge step was 1 ADC
+> > clock cycle and hence it was ignored.
+> > 
+> > Signed-off-by: Vignesh R <vigneshr@ti.com>
+> > ---
+> >  drivers/mfd/ti_am335x_tscadc.c       | 7 +++++--
+> >  include/linux/mfd/ti_am335x_tscadc.h | 1 +
+> >  2 files changed, 6 insertions(+), 2 deletions(-)
+> > 
+> > diff --git a/drivers/mfd/ti_am335x_tscadc.c b/drivers/mfd/ti_am335x_tscadc.c
+> > index d877e777cce6..94ef8992f46b 100644
+> > --- a/drivers/mfd/ti_am335x_tscadc.c
+> > +++ b/drivers/mfd/ti_am335x_tscadc.c
+> > @@ -86,8 +86,12 @@ static void am335x_tscadc_need_adc(struct ti_tscadc_dev *tsadc)
+> >  		spin_lock_irq(&tsadc->reg_lock);
+> >  		finish_wait(&tsadc->reg_se_wait, &wait);
+> >  
+> > +		/*
+> > +		 * Sequencer should either be idle or
+> > +		 * busy applying the charge step.
+> > +		 */
+> >  		reg = tscadc_readl(tsadc, REG_ADCFSM);
+> > -		WARN_ON(reg & SEQ_STATUS);
+> > +		WARN_ON(reg & SEQ_STATUS & (!CHARGE_STEP));
 > 
+> This is almost certainly not correct.
+> 
+> Please take another look at the logic.
+> 
+> I'm _assuming_ you mean (reg & SEQ_STATUS && !CHARGE_STEP).
 
-On a second thought... I guess you meant something like this?
+So I just saw that CHARGE_STEP is actually the new macro below.
 
-adc: adc@18101600 {
-        compatible = "cosmic,10001-adc";
-        reg = <0x18101600 0x24>;
-        clocks = <&adc_clk>;
-        clock-names = "adc";
-        vref-supply = <&reg_1v8>;
-        cosmic,channels {
-                #address-cells = <1>;
-                #size-cells = <0>;
-                channel@0 {
-                        reg = <0>;
-                };
-                channel@1 {
-                        reg = <1>;
-                };
-        };
-};
+So you're currently ANDing these together.
 
-Might be better, but I don't have a strong opinion on it.
+xxxxxxxx xxxxxxxx xxxxxxxx xxxxxxxx  reg
+00000000 00000000 00000000 00100000  #define SEQ_STATUS   BIT(5)
+00000000 00000000 00000000 00010001  #define CHARGE_STEP  0x11
+
+... which will always equate to 0.
+
+> >  		tsadc->adc_waiting = false;
+> >  	}
+> >  	tsadc->adc_in_use = true;
+> > @@ -96,7 +100,6 @@ static void am335x_tscadc_need_adc(struct ti_tscadc_dev *tsadc)
+> >  void am335x_tsc_se_set_once(struct ti_tscadc_dev *tsadc, u32 val)
+> >  {
+> >  	spin_lock_irq(&tsadc->reg_lock);
+> > -	tsadc->reg_se_cache |= val;
+
+Didn't you add this line a little over 1 month ago?
+
+Why the change of heart?
+
+> >  	am335x_tscadc_need_adc(tsadc);
+> >  
+> >  	tscadc_writel(tsadc, REG_SE, val);
+> > diff --git a/include/linux/mfd/ti_am335x_tscadc.h b/include/linux/mfd/ti_am335x_tscadc.h
+> > index c99be5dc0f5c..fcce182e4a35 100644
+> > --- a/include/linux/mfd/ti_am335x_tscadc.h
+> > +++ b/include/linux/mfd/ti_am335x_tscadc.h
+> > @@ -128,6 +128,7 @@
+> >  
+> >  /* Sequencer Status */
+> >  #define SEQ_STATUS BIT(5)
+> > +#define CHARGE_STEP		0x11
+> >  
+> >  #define ADC_CLK			3000000
+> >  #define TOTAL_STEPS		16
+> 
 
 -- 
-Ezequiel
+Lee Jones
+Linaro STMicroelectronics Landing Team Lead
+Linaro.org │ Open source software for ARM SoCs
+Follow Linaro: Facebook | Twitter | Blog
