@@ -1,77 +1,70 @@
-Return-Path: <iivanov@mm-sol.com>
-Message-ID: <1415694109.22935.13.camel@mm-sol.com>
-Subject: Re: [PATCH v4 2/2] iio: vadc: Qualcomm SPMI PMIC voltage ADC driver
-From: "Ivan T. Ivanov" <iivanov@mm-sol.com>
-To: Hartmut Knaack <knaack.h@gmx.de>
-Cc: Jonathan Cameron <jic23@kernel.org>, Lars-Peter Clausen
- <lars@metafoo.de>,  Peter Meerwald <pmeerw@pmeerw.net>, Stanimir Varbanov
- <svarbanov@mm-sol.com>, Angelo Compagnucci <angelo.compagnucci@gmail.com>,
- Grant Likely <grant.likely@linaro.org>,  linux-kernel@vger.kernel.org,
- linux-iio@vger.kernel.org,  devicetree@vger.kernel.org,
- linux-arm-msm@vger.kernel.org
-Date: Tue, 11 Nov 2014 10:21:49 +0200
-In-Reply-To: <54612A0D.7020308@gmx.de>
-References: <1415028270-25860-1-git-send-email-iivanov@mm-sol.com>
-	 <1415028270-25860-3-git-send-email-iivanov@mm-sol.com>
-	 <54612A0D.7020308@gmx.de>
-Content-Type: text/plain; charset="UTF-8"
-Mime-Version: 1.0
+Return-Path: <Ezequiel.Garcia@imgtec.com>
+Message-ID: <54611934.6050701@imgtec.com>
+Date: Mon, 10 Nov 2014 16:59:48 -0300
+From: Ezequiel Garcia <ezequiel.garcia@imgtec.com>
+MIME-Version: 1.0
+To: Jonathan Cameron <jic23@kernel.org>, Lars-Peter Clausen <lars@metafoo.de>,
+	Andrew Bresticker <abrestic@chromium.org>, James Hartley
+	<james.hartley@imgtec.com>, Phani Movva <phani.movva@imgtec.com>
+CC: <linux-iio@vger.kernel.org>, <pmeerw@pmeerw.net>, <knaack.h@gmx.de>,
+	<devicetree@vger.kernel.org>, Naidu Tellapati <Naidu.Tellapati@imgtec.com>,
+	Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, "Mark
+ Rutland" <mark.rutland@arm.com>, Ian Campbell
+	<ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>
+Subject: Re: [PATCH v2 2/3] DT: iio: adc: Add CC_10001 binding documentation
+References: <1415224611-22096-1-git-send-email-ezequiel.garcia@imgtec.com> <1415224611-22096-3-git-send-email-ezequiel.garcia@imgtec.com> <545E1333.9010904@kernel.org> <5461170B.7070505@imgtec.com>
+In-Reply-To: <5461170B.7070505@imgtec.com>
+Content-Type: text/plain; charset="windows-1252"
 List-ID: <linux-iio@vger.kernel.org>
 
-Hi Hartmut,
 
-On Mon, 2014-11-10 at 22:11 +0100, Hartmut Knaack wrote:
-> Ivan T. Ivanov schrieb am 03.11.2014 16:24:
-> > From: Stanimir Varbanov <svarbanov@mm-sol.com>
-> > 
-> > The voltage ADC is peripheral of Qualcomm SPMI PMIC chips. It has
-> > 15 bits resolution and register space inside PMIC accessible across
-> > SPMI bus.
-> > 
-> > The vadc driver registers itself through IIO interface.
-> Reviewing again, I got the feeling that due to the complexity of adc reads (writing to register 
-> to start conversion, waiting a decent time for the conversion to complete, reading the result), 
-> it would be beneficial to use a mutex in vadc_read_raw or its depending functions.
 
-Hm, yes, but there is such a nice info_exist_lock :-) in core functions,
-which in practice serve the same purpose.
+On 11/10/2014 04:50 PM, Ezequiel Garcia wrote:
+> On 11/08/2014 09:57 AM, Jonathan Cameron wrote:
+>> On 05/11/14 21:56, Ezequiel Garcia wrote:
 
-> Also, I would want to double-check that the CPU in this type of chips is little endian.
+>>>
+>>> diff --git a/Documentation/devicetree/bindings/iio/adc/cc_10001_adc.txt b/Documentation/devicetree/bindings/iio/adc/cc_10001_adc.txt
+>>> new file mode 100644
+>>> index 0000000..6491839
+>>> --- /dev/null
+>>> +++ b/Documentation/devicetree/bindings/iio/adc/cc_10001_adc.txt
+>>> @@ -0,0 +1,19 @@
+>>> +* Cosmic Circuits - Analog to Digital Converter (CC-10001-ADC)
+>>> +
+>>> +Required properties:
+>>> +  - compatible: Should be "cosmic,10001-adc"
+>>> +  - reg: Should contain adc registers location and length.
+>>> +  - cosmic,adc-available-channels: Bitmask of the channels currently enabled.
+>> I suspect there may be other preferred ways of doing this (child nodes perhaps
+>> for each enabled channel?)
+> 
+> Hm, I'm not sure about this. As far I can recall, if a node has children
+> then it *must* be a bus, which is not the case. Of course, you'll find
+> examples doing this wrong.
+> 
 
-Yes, it is.
+On a second thought... I guess you meant something like this?
 
-> Besides that, a few minor issues inline.
+adc: adc@18101600 {
+        compatible = "cosmic,10001-adc";
+        reg = <0x18101600 0x24>;
+        clocks = <&adc_clk>;
+        clock-names = "adc";
+        vref-supply = <&reg_1v8>;
+        cosmic,channels {
+                #address-cells = <1>;
+                #size-cells = <0>;
+                channel@0 {
+                        reg = <0>;
+                };
+                channel@1 {
+                        reg = <1>;
+                };
+        };
+};
 
-> > +static int vadc_probe(struct platform_device *pdev)
-> > +{
-> > +       struct device_node *node = pdev->dev.of_node;
-> > +       struct device *dev = &pdev->dev;
-> > +       struct iio_dev *indio_dev;
-> > +       struct vadc_priv *vadc;
-> > +       struct regmap *regmap;
-> > +       int ret, irq_eoc;
-> > +       u32 res;
-> Since vadc->base is u16, shouldn't res be u16 as well? Also think about naming it reg, as this is 
-> the property name in DT.
+Might be better, but I don't have a strong opinion on it.
 
-Yes, but #address-cells for the node is 1, so I would like to keep it 32 bits.
-
-> > +
-> > +       regmap = dev_get_regmap(dev->parent, NULL);
-> > +       if (!regmap)
-> > +       return -ENODEV;
-> > +
-> > +       ret = of_property_read_u32(node, "reg", &res);
-> For u16, there would be of_property_read_u16().
-> > +       if (ret < 0)
-> > +       return -ENODEV;
-> Just return ret here?
-
-I am usually trying to follow these recommendations[1]. In practice driver
-core cares only for EPROBE_DEFER, ENODEV and ENXIO, while of_property_read_u32()
-can return ENODATA and EOVERFLOW, which did't not make sense for the core.
-
-Thank you,
-Ivan
-
-[1] http://www.gossamer-threads.com/lists/linux/kernel/1010603
+-- 
+Ezequiel
