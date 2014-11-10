@@ -1,14 +1,14 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-ig0-f182.google.com ([209.85.213.182]:62629 "EHLO
-	mail-ig0-f182.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752325AbaKJJ0x (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 10 Nov 2014 04:26:53 -0500
-Received: by mail-ig0-f182.google.com with SMTP id hn18so8781045igb.3
-        for <linux-iio@vger.kernel.org>; Mon, 10 Nov 2014 01:26:53 -0800 (PST)
-Date: Mon, 10 Nov 2014 09:26:45 +0000
-From: Lee Jones <lee.jones@linaro.org>
-To: Vignesh R <vigneshr@ti.com>
-Cc: Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>,
+Received: from comal.ext.ti.com ([198.47.26.152]:40321 "EHLO comal.ext.ti.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1752374AbaKJKrq (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Mon, 10 Nov 2014 05:47:46 -0500
+Message-ID: <5460977E.9060604@ti.com>
+Date: Mon, 10 Nov 2014 16:16:22 +0530
+From: Vignesh R <vigneshr@ti.com>
+MIME-Version: 1.0
+To: Richard Cochran <richardcochran@gmail.com>
+CC: Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>,
 	Mark Rutland <mark.rutland@arm.com>,
 	Ian Campbell <ijc+devicetree@hellion.org.uk>,
 	Kumar Gala <galak@codeaurora.org>,
@@ -16,113 +16,59 @@ Cc: Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>,
 	Tony Lindgren <tony@atomide.com>,
 	Russell King <linux@arm.linux.org.uk>,
 	Jonathan Cameron <jic23@kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>,
 	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-	Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
+	<devicetree@vger.kernel.org>, Lars-Peter Clausen <lars@metafoo.de>,
 	Samuel Ortiz <sameo@linux.intel.com>,
-	Felipe Balbi <balbi@ti.com>, Brad Griffis <bgriffis@ti.com>,
-	Sanjeev Sharma <sanjeev_sharma@mentor.com>,
-	Paul Gortmaker <paul.gortmaker@windriver.com>,
 	Jan Kardell <jan.kardell@telliq.com>,
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-	linux-iio@vger.kernel.org, linux-input@vger.kernel.org
-Subject: Re: [PATCH 3/5] mfd: ti_am335x_tscadc: Remove unwanted reg_se_cache
- save
-Message-ID: <20141110092645.GE21424@x1>
-References: <1415339350-17679-1-git-send-email-vigneshr@ti.com>
- <1415339350-17679-4-git-send-email-vigneshr@ti.com>
- <20141110091527.GD21424@x1>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-In-Reply-To: <20141110091527.GD21424@x1>
+	<linux-iio@vger.kernel.org>,
+	Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+	<linux-input@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+	Felipe Balbi <balbi@ti.com>,
+	Paul Gortmaker <paul.gortmaker@windriver.com>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Hartmut Knaack <knaack.h@gmx.de>, <linux-omap@vger.kernel.org>,
+	Lee Jones <lee.jones@linaro.org>,
+	<linux-arm-kernel@lists.infradead.org>,
+	Brad Griffis <bgriffis@ti.com>
+Subject: Re: [PATCH 1/4] input: touchscreen: ti_am335x_tsc Interchange touchscreen
+ and ADC steps
+References: <1414408111-2631-1-git-send-email-vigneshr@ti.com> <1414408111-2631-2-git-send-email-vigneshr@ti.com> <20141106141916.GA17151@netboy> <545C59CD.3070707@ti.com> <20141107080033.GA6455@netboy>
+In-Reply-To: <20141107080033.GA6455@netboy>
+Content-Type: text/plain; charset="windows-1252"
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Mon, 10 Nov 2014, Lee Jones wrote:
 
-> On Fri, 07 Nov 2014, Vignesh R wrote:
+
+On Friday 07 November 2014 01:30 PM, Richard Cochran wrote:
+> On Fri, Nov 07, 2014 at 11:04:05AM +0530, Vignesh R wrote:
+>>
+>> Currently, there is too much noise in the TSC hardware that is being
+>> removed by delta filtering.
 > 
-> > In one shot mode, sequencer automatically disables all enabled steps at
-> > the end of each cycle. (both ADC steps and TSC steps) Hence these steps
-> > need not be saved in reg_se_cache for clearing these steps at a later
-> > stage.
-> > Also, when ADC wakes up Sequencer should not be busy executing any of the
-> > config steps except for the charge step. Previously charge step was 1 ADC
-> > clock cycle and hence it was ignored.
-> > 
-> > Signed-off-by: Vignesh R <vigneshr@ti.com>
-> > ---
-> >  drivers/mfd/ti_am335x_tscadc.c       | 7 +++++--
-> >  include/linux/mfd/ti_am335x_tscadc.h | 1 +
-> >  2 files changed, 6 insertions(+), 2 deletions(-)
-> > 
-> > diff --git a/drivers/mfd/ti_am335x_tscadc.c b/drivers/mfd/ti_am335x_tscadc.c
-> > index d877e777cce6..94ef8992f46b 100644
-> > --- a/drivers/mfd/ti_am335x_tscadc.c
-> > +++ b/drivers/mfd/ti_am335x_tscadc.c
-> > @@ -86,8 +86,12 @@ static void am335x_tscadc_need_adc(struct ti_tscadc_dev *tsadc)
-> >  		spin_lock_irq(&tsadc->reg_lock);
-> >  		finish_wait(&tsadc->reg_se_wait, &wait);
-> >  
-> > +		/*
-> > +		 * Sequencer should either be idle or
-> > +		 * busy applying the charge step.
-> > +		 */
-> >  		reg = tscadc_readl(tsadc, REG_ADCFSM);
-> > -		WARN_ON(reg & SEQ_STATUS);
-> > +		WARN_ON(reg & SEQ_STATUS & (!CHARGE_STEP));
+> The so called "filter" was only programmed because the fifo entries
+> were being mixed up. Sebastian fixed that.
 > 
-> This is almost certainly not correct.
+>> I tested TSC unit by removing filtering
+>> logic, the performance was not at all satisfactory. The cursor jumps
+>> wayward and smooth circles cannot be drawn. Looks like delta filtering
+>> cannot be removed as of now. May be I will try and address it in future.
 > 
-> Please take another look at the logic.
+> The "filter" code is nonsensical. It picks the two values in seqeunce
+> that are closest to one and another. How is that supposed to work?
 > 
-> I'm _assuming_ you mean (reg & SEQ_STATUS && !CHARGE_STEP).
-
-So I just saw that CHARGE_STEP is actually the new macro below.
-
-So you're currently ANDing these together.
-
-xxxxxxxx xxxxxxxx xxxxxxxx xxxxxxxx  reg
-00000000 00000000 00000000 00100000  #define SEQ_STATUS   BIT(5)
-00000000 00000000 00000000 00010001  #define CHARGE_STEP  0x11
-
-... which will always equate to 0.
-
-> >  		tsadc->adc_waiting = false;
-> >  	}
-> >  	tsadc->adc_in_use = true;
-> > @@ -96,7 +100,6 @@ static void am335x_tscadc_need_adc(struct ti_tscadc_dev *tsadc)
-> >  void am335x_tsc_se_set_once(struct ti_tscadc_dev *tsadc, u32 val)
-> >  {
-> >  	spin_lock_irq(&tsadc->reg_lock);
-> > -	tsadc->reg_se_cache |= val;
-
-Didn't you add this line a little over 1 month ago?
-
-Why the change of heart?
-
-> >  	am335x_tscadc_need_adc(tsadc);
-> >  
-> >  	tscadc_writel(tsadc, REG_SE, val);
-> > diff --git a/include/linux/mfd/ti_am335x_tscadc.h b/include/linux/mfd/ti_am335x_tscadc.h
-> > index c99be5dc0f5c..fcce182e4a35 100644
-> > --- a/include/linux/mfd/ti_am335x_tscadc.h
-> > +++ b/include/linux/mfd/ti_am335x_tscadc.h
-> > @@ -128,6 +128,7 @@
-> >  
-> >  /* Sequencer Status */
-> >  #define SEQ_STATUS BIT(5)
-> > +#define CHARGE_STEP		0x11
-> >  
-> >  #define ADC_CLK			3000000
-> >  #define TOTAL_STEPS		16
+> Did you look at the "noise"? What kind of properties did you see?
 > 
+> A median filter makes more sense. Or sort, remove outliers, and
+> average. But choosing the two closest in series is silly.
 
--- 
-Lee Jones
-Linaro STMicroelectronics Landing Team Lead
-Linaro.org │ Open source software for ARM SoCs
-Follow Linaro: Facebook | Twitter | Blog
+I was able to implement median filter as you described and achieve
+reliable performance. I will append that to this series of patches in v3.
+
+Regards
+Vignesh
+
+> 
+> Thanks,
+> Richard
+> 
