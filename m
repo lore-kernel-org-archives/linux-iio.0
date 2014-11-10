@@ -1,58 +1,69 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ns.mm-sol.com ([37.157.136.199]:34024 "EHLO extserv.mm-sol.com"
+Received: from mga09.intel.com ([134.134.136.24]:10698 "EHLO mga09.intel.com"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1750994AbaKCKu1 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Mon, 3 Nov 2014 05:50:27 -0500
-Message-ID: <1415011844.407.14.camel@mm-sol.com>
-Subject: Re: [PATCH v2] iio: inkern: Add of_xlate function to struct iio_info
-From: "Ivan T. Ivanov" <iivanov@mm-sol.com>
-To: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	Sachin Kamat <sachin.kamat@linaro.org>,
-	Thomas Gleixner <tglx@linutronix.de>,
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-arm-msm@vger.kernel.org
-Date: Mon, 03 Nov 2014 12:50:44 +0200
-In-Reply-To: <1415010975.3828.21.camel@spandruv-hsb-test>
-References: <1413991783-24562-1-git-send-email-iivanov@mm-sol.com>
-	 <5447CDFA.5030407@metafoo.de> <544B75B8.1010505@kernel.org>
-	 <1415009224.407.13.camel@mm-sol.com>
-	 <1415010975.3828.21.camel@spandruv-hsb-test>
-Content-Type: text/plain; charset="UTF-8"
-Mime-Version: 1.0
+	id S1752316AbaKJMo1 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Mon, 10 Nov 2014 07:44:27 -0500
+From: Daniel Baluta <daniel.baluta@intel.com>
+To: jic23@kernel.org, knaack.h@gmx.de
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+	irina.tirdea@intel.com, daniel.baluta@inte.com
+Subject: [PATCH v4 3/7] iio: core: Introduce IIO_EV_DIR_NONE
+Date: Mon, 10 Nov 2014 14:45:31 +0200
+Message-Id: <1415623535-24337-4-git-send-email-daniel.baluta@intel.com>
+In-Reply-To: <1415623535-24337-1-git-send-email-daniel.baluta@intel.com>
+References: <1415623535-24337-1-git-send-email-daniel.baluta@intel.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
+From: Irina Tirdea <irina.tirdea@intel.com>
 
-On Mon, 2014-11-03 at 02:36 -0800, Srinivas Pandruvada wrote:
-> On Mon, 2014-11-03 at 12:07 +0200, Ivan T. Ivanov wrote:
-> > On Sat, 2014-10-25 at 11:04 +0100, Jonathan Cameron wrote:
-> > > On 22/10/14 16:32, Lars-Peter Clausen wrote:
-> > > > On 10/22/2014 05:29 PM, Ivan T. Ivanov wrote:
-> > > > > When #iio-cells is greater than '0', the driver could provide
-> > > > > a custom of_xlate function that reads the *args* and returns
-> > > > > the appropriate index in registered IIO channels array.
-> > > > > 
-> > > > > Add simple translation function, suitable for the most 1:1
-> > > > > mapped channels in IIO chips, and use it when driver did not
-> > > > > provide custom implementation.
-> > > > > 
-> > > > > Signed-off-by: Ivan T. Ivanov <iivanov@mm-sol.com>
-> > > > 
-> > > > Reviewed-by: Lars-Peter Clausen <lars@metafoo.de>
-> > > > 
-> > > Applied to the togreg branch of iio.git - initially pushed out as testing
-> > > for the autobuilders to play with it.
-> > 
-> > Thank you. Probably my git skills failed me, but I can not
-> > find it in aforementioned branches. Is it publicly pushed?
-> > 
-> check here
-> https://www.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git
-> checkout branch: remotes/origin/testing
+For some events (e.g.: step detector) a direction does not make sense.
 
-Thank you.
-Ivan
+Add IIO_EV_DIR_NONE to be used with such events and generate sysfs event
+attributes that do not contain direction.
+
+Signed-off-by: Irina Tirdea <irina.tirdea@intel.com>
+Signed-off-by: Daniel Baluta <daniel.baluta@intel.com>
+---
+ drivers/iio/industrialio-event.c | 12 +++++++++---
+ include/linux/iio/types.h        |  1 +
+ 2 files changed, 10 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/iio/industrialio-event.c b/drivers/iio/industrialio-event.c
+index 0c1e37e..1290290 100644
+--- a/drivers/iio/industrialio-event.c
++++ b/drivers/iio/industrialio-event.c
+@@ -327,9 +327,15 @@ static int iio_device_add_event(struct iio_dev *indio_dev,
+ 	for_each_set_bit(i, mask, sizeof(*mask)*8) {
+ 		if (i >= ARRAY_SIZE(iio_ev_info_text))
+ 			return -EINVAL;
+-		postfix = kasprintf(GFP_KERNEL, "%s_%s_%s",
+-				iio_ev_type_text[type], iio_ev_dir_text[dir],
+-				iio_ev_info_text[i]);
++		if (dir != IIO_EV_DIR_NONE)
++			postfix = kasprintf(GFP_KERNEL, "%s_%s_%s",
++					iio_ev_type_text[type],
++					iio_ev_dir_text[dir],
++					iio_ev_info_text[i]);
++		else
++			postfix = kasprintf(GFP_KERNEL, "%s_%s",
++					iio_ev_type_text[type],
++					iio_ev_info_text[i]);
+ 		if (postfix == NULL)
+ 			return -ENOMEM;
+ 
+diff --git a/include/linux/iio/types.h b/include/linux/iio/types.h
+index b3a241d..52cb532 100644
+--- a/include/linux/iio/types.h
++++ b/include/linux/iio/types.h
+@@ -86,6 +86,7 @@ enum iio_event_direction {
+ 	IIO_EV_DIR_EITHER,
+ 	IIO_EV_DIR_RISING,
+ 	IIO_EV_DIR_FALLING,
++	IIO_EV_DIR_NONE,
+ };
+ 
+ #define IIO_VAL_INT 1
+-- 
+1.9.1
+
