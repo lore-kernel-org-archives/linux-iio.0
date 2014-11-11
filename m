@@ -1,145 +1,73 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-ig0-f175.google.com ([209.85.213.175]:47169 "EHLO
-	mail-ig0-f175.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751922AbaKCPFe (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 3 Nov 2014 10:05:34 -0500
-Received: by mail-ig0-f175.google.com with SMTP id h3so4778838igd.14
-        for <linux-iio@vger.kernel.org>; Mon, 03 Nov 2014 07:05:34 -0800 (PST)
-Date: Mon, 3 Nov 2014 15:05:26 +0000
-From: Lee Jones <lee.jones@linaro.org>
-To: Vignesh R <vigneshr@ti.com>
-Cc: Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>,
-	Mark Rutland <mark.rutland@arm.com>,
-	Ian Campbell <ijc+devicetree@hellion.org.uk>,
-	Kumar Gala <galak@codeaurora.org>,
-	Benoit Cousson <bcousson@baylibre.com>,
-	Tony Lindgren <tony@atomide.com>,
-	Russell King <linux@arm.linux.org.uk>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	Samuel Ortiz <sameo@linux.intel.com>,
-	Felipe Balbi <balbi@ti.com>,
-	Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-	Jan Kardell <jan.kardell@telliq.com>,
-	Paul Gortmaker <paul.gortmaker@windriver.com>,
-	Brad Griffis <bgriffis@ti.com>, devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org, linux-iio@vger.kernel.org,
-	linux-input@vger.kernel.org
-Subject: Re: [PATCH 2/4] input: touchscreen: ti_am335x_tsc: Remove udelay in
- interrupt handler
-Message-ID: <20141103150526.GI4538@x1>
-References: <1414408111-2631-1-git-send-email-vigneshr@ti.com>
- <1414408111-2631-3-git-send-email-vigneshr@ti.com>
+Received: from mga09.intel.com ([134.134.136.24]:43203 "EHLO mga09.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1750993AbaKKCEr (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Mon, 10 Nov 2014 21:04:47 -0500
+Message-ID: <54616E55.80204@intel.com>
+Date: Tue, 11 Nov 2014 10:03:01 +0800
+From: Aaron Lu <aaron.lu@intel.com>
 MIME-Version: 1.0
+To: "Rafael J. Wysocki" <rjw@rjwysocki.net>,
+	Lee Jones <lee.jones@linaro.org>
+CC: linux-acpi@vger.kernel.org, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Jacob Pan <jacob.jun.pan@linux.intel.com>
+Subject: Re: [PATCH 0/3] Support PMIC operation region for CrystalCove and
+ XPower
+References: <1414735705-18366-1-git-send-email-aaron.lu@intel.com>
+In-Reply-To: <1414735705-18366-1-git-send-email-aaron.lu@intel.com>
 Content-Type: text/plain; charset=utf-8
-In-Reply-To: <1414408111-2631-3-git-send-email-vigneshr@ti.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Mon, 27 Oct 2014, Vignesh R wrote:
-> From: Brad Griffis <bgriffis@ti.com>
+On 10/31/2014 02:08 PM, Aaron Lu wrote:
+> On Intel Baytrail-T and Baytrail-T-CR platforms, there are two customized
+> ACPI operation regions defined for the Power Management Integrated Circuit
+> device, one is for power resource handling and one is for thermal: sensor
+> temperature reporting, trip point setting, etc. There are different PMIC
+> chips used on those platforms and though each has the same two operation
+> regions and functionality, their implementation is different so every PMIC
+> will need a driver. But since their functionality is similar, some common
+> code is abstracted into the intel_soc_pmic_opregion.c.
 > 
-> TSC interrupt handler had udelay to avoid reporting of false pen-up
-> interrupt to user space. This patch implements workaround suggesting in
-> Advisory 1.0.31 of silicon errata for am335x, thus eliminating udelay
-> and touchscreen lag. This also improves performance of touchscreen and
-> eliminates sudden jump of cursor at touch release.
+> The last version is posted here:
+> https://lkml.org/lkml/2014/9/8/801
 > 
-> IDLECONFIG and CHARGECONFIG registers are to be configured
-> with same values in order to eliminate false pen-up events. This
-> workaround may result in false pen-down to be detected, hence considerable
-> charge step delay needs to be added. The charge delay is set to 0xB000
-> (in terms of ADC clock cycles) by default.
+> Changes since then:
+> 1 Move to drivers/acpi as discussed on the above thread;
+> 2 Added support for XPower AXP288 PMIC operation region support;
+> 3 Since operation region handler can not be removed(at the moment at least),
+>   use bool for the two operation region driver configs instead of tristate;
+>   Another reason to do this is that, with Mika's MFD ACPI support patch, all
+>   those MFD cell devices created will have the same modalias as their parent's
+>   so it doesn't make much sense to compile these drivers into modules.
 > 
-> TSC steps are disabled at the end of every sampling cycle and EOS bit is
-> set. Once the EOS bit is set, the TSC steps need to be re-enabled to begin
-> next sampling cycle.
+> Patch 1 applies on top of Rafael's pm-next branch, and then patch 2 and
+> patch 3 needs merge of Lee's mfd/ib-mfd-iio-3.19 branch where the PMIC
+> driver XPower AXP288 and iio driver axp288_adc is located.
+
+Since patch 2-3 are based on top of the mfd/ib-mfd-iio-3.19 branch, it
+would be easy to go through the mfd/ib-mfd-iio-3.19 branch.
+
+Rafael,
+Can I get your ACK for the three patches?
+
+Lee,
+Can you please take the series if Rafael gives it ack?
+
+Thanks,
+Aaron
+
 > 
-> In one shot mode, sequencer automatically disables all enabled steps at
-> the end of each cycle. (both ADC steps and TSC steps) Hence these steps
-> need not be saved in reg_se_cache for clearing these steps at a later
-> stage.
+> Aaron Lu (3):
+>   ACPI / pmic_opregion: support PMIC operation region for CrystalCove
+>   ACPI / pmic_opregion: support PMIC operation region for XPower AXP288
+>   ACPI / pmic_opregion: AXP288: support virtual GPIO in ACPI table
 > 
-> Signed-off-by: Brad Griffis <bgriffis@ti.com>
-> [vigneshr@ti.com: Ported patch from v3.12 to v3.18rc2]
-> Signed-off-by: Vignesh R <vigneshr@ti.com>
-> ---
->  drivers/input/touchscreen/ti_am335x_tsc.c | 56 ++++++++++++-------------------
->  drivers/mfd/ti_am335x_tscadc.c            |  7 ++--
->  include/linux/mfd/ti_am335x_tscadc.h      |  4 ++-
->  3 files changed, 30 insertions(+), 37 deletions(-)
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-kernel" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> Please read the FAQ at  http://www.tux.org/lkml/
+> 
 
-[...]
-
-> diff --git a/drivers/mfd/ti_am335x_tscadc.c b/drivers/mfd/ti_am335x_tscadc.c
-> index d877e777cce6..94ef8992f46b 100644
-> --- a/drivers/mfd/ti_am335x_tscadc.c
-> +++ b/drivers/mfd/ti_am335x_tscadc.c
-> @@ -86,8 +86,12 @@ static void am335x_tscadc_need_adc(struct ti_tscadc_dev *tsadc)
->  		spin_lock_irq(&tsadc->reg_lock);
->  		finish_wait(&tsadc->reg_se_wait, &wait);
->  
-> +		/*
-> +		 * Sequencer should either be idle or
-> +		 * busy applying the charge step.
-> +		 */
->  		reg = tscadc_readl(tsadc, REG_ADCFSM);
-> -		WARN_ON(reg & SEQ_STATUS);
-> +		WARN_ON(reg & SEQ_STATUS & (!CHARGE_STEP));
->  		tsadc->adc_waiting = false;
->  	}
->  	tsadc->adc_in_use = true;
-> @@ -96,7 +100,6 @@ static void am335x_tscadc_need_adc(struct ti_tscadc_dev *tsadc)
->  void am335x_tsc_se_set_once(struct ti_tscadc_dev *tsadc, u32 val)
->  {
->  	spin_lock_irq(&tsadc->reg_lock);
-> -	tsadc->reg_se_cache |= val;
->  	am335x_tscadc_need_adc(tsadc);
->  
->  	tscadc_writel(tsadc, REG_SE, val);
-
-I believe all of these changes can, and therefor should live in a
-separate patch.
-
-> diff --git a/include/linux/mfd/ti_am335x_tscadc.h b/include/linux/mfd/ti_am335x_tscadc.h
-> index e2e70053470e..fcce182e4a35 100644
-> --- a/include/linux/mfd/ti_am335x_tscadc.h
-> +++ b/include/linux/mfd/ti_am335x_tscadc.h
-> @@ -52,6 +52,7 @@
->  
->  /* IRQ enable */
->  #define IRQENB_HW_PEN		BIT(0)
-> +#define IRQENB_EOS		BIT(1)
->  #define IRQENB_FIFO0THRES	BIT(2)
->  #define IRQENB_FIFO0OVRRUN	BIT(3)
->  #define IRQENB_FIFO0UNDRFLW	BIT(4)
-> @@ -107,7 +108,7 @@
->  /* Charge delay */
->  #define CHARGEDLY_OPEN_MASK	(0x3FFFF << 0)
->  #define CHARGEDLY_OPEN(val)	((val) << 0)
-> -#define CHARGEDLY_OPENDLY	CHARGEDLY_OPEN(1)
-> +#define CHARGEDLY_OPENDLY	CHARGEDLY_OPEN(0xB000)
->  
->  /* Control register */
->  #define CNTRLREG_TSCSSENB	BIT(0)
-> @@ -127,6 +128,7 @@
->  
->  /* Sequencer Status */
->  #define SEQ_STATUS BIT(5)
-> +#define CHARGE_STEP		0x11
->  
->  #define ADC_CLK			3000000
->  #define TOTAL_STEPS		16
-
-The header changes should be split between the two Input and MFD
-patches.
-
--- 
-Lee Jones
-Linaro STMicroelectronics Landing Team Lead
-Linaro.org │ Open source software for ARM SoCs
-Follow Linaro: Facebook | Twitter | Blog
