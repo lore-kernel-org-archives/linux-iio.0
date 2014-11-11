@@ -1,91 +1,77 @@
-Return-Path: <vigneshr@ti.com>
-From: Vignesh R <vigneshr@ti.com>
-To: Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>,
-        Mark
- Rutland <mark.rutland@arm.com>,
-        Ian Campbell <ijc+devicetree@hellion.org.uk>,
-        Kumar Gala <galak@codeaurora.org>,
-        Benoit Cousson <bcousson@baylibre.com>,
-        Tony Lindgren <tony@atomide.com>,
-        Russell King <linux@arm.linux.org.uk>,
-        Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
-        <richardcochran@gmail.com>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Lee
- Jones <lee.jones@linaro.org>,
-        Sebastian Andrzej Siewior
-	<bigeasy@linutronix.de>
-CC: Lars-Peter Clausen <lars@metafoo.de>, Peter Meerwald <pmeerw@pmeerw.net>,
-        Samuel Ortiz <sameo@linux.intel.com>, Felipe Balbi <balbi@ti.com>,
-        Vignesh R
-	<vigneshr@ti.com>, Brad Griffis <bgriffis@ti.com>,
-        Sanjeev Sharma
-	<sanjeev_sharma@mentor.com>,
-        Paul Gortmaker <paul.gortmaker@windriver.com>,
-        Jan Kardell <jan.kardell@telliq.com>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <linux-omap@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>, <linux-iio@vger.kernel.org>,
-        <linux-input@vger.kernel.org>
-Subject: [PATCH v3 3/6] mfd: ti_am335x_tscadc: Remove unwanted reg_se_cache save
-Date: Tue, 11 Nov 2014 14:04:01 +0530
-Message-ID: <1415694844-11230-4-git-send-email-vigneshr@ti.com>
-In-Reply-To: <1415694844-11230-1-git-send-email-vigneshr@ti.com>
-References: <1415694844-11230-1-git-send-email-vigneshr@ti.com>
-MIME-Version: 1.0
-Content-Type: text/plain
+Return-Path: <iivanov@mm-sol.com>
+Message-ID: <1415694109.22935.13.camel@mm-sol.com>
+Subject: Re: [PATCH v4 2/2] iio: vadc: Qualcomm SPMI PMIC voltage ADC driver
+From: "Ivan T. Ivanov" <iivanov@mm-sol.com>
+To: Hartmut Knaack <knaack.h@gmx.de>
+Cc: Jonathan Cameron <jic23@kernel.org>, Lars-Peter Clausen
+ <lars@metafoo.de>,  Peter Meerwald <pmeerw@pmeerw.net>, Stanimir Varbanov
+ <svarbanov@mm-sol.com>, Angelo Compagnucci <angelo.compagnucci@gmail.com>,
+ Grant Likely <grant.likely@linaro.org>,  linux-kernel@vger.kernel.org,
+ linux-iio@vger.kernel.org,  devicetree@vger.kernel.org,
+ linux-arm-msm@vger.kernel.org
+Date: Tue, 11 Nov 2014 10:21:49 +0200
+In-Reply-To: <54612A0D.7020308@gmx.de>
+References: <1415028270-25860-1-git-send-email-iivanov@mm-sol.com>
+	 <1415028270-25860-3-git-send-email-iivanov@mm-sol.com>
+	 <54612A0D.7020308@gmx.de>
+Content-Type: text/plain; charset="UTF-8"
+Mime-Version: 1.0
 List-ID: <linux-iio@vger.kernel.org>
 
-In one shot mode, sequencer automatically disables all enabled steps at
-the end of each cycle. (both ADC steps and TSC steps) Hence these steps
-need not be saved in reg_se_cache for clearing these steps at a later
-stage.
-Also, when ADC wakes up Sequencer should not be busy executing any of the
-config steps except for the charge step. Previously charge step was 1 ADC
-clock cycle and hence it was ignored.
+Hi Hartmut,
 
-Signed-off-by: Vignesh R <vigneshr@ti.com>
----
- drivers/mfd/ti_am335x_tscadc.c       | 7 +++++--
- include/linux/mfd/ti_am335x_tscadc.h | 1 +
- 2 files changed, 6 insertions(+), 2 deletions(-)
+On Mon, 2014-11-10 at 22:11 +0100, Hartmut Knaack wrote:
+> Ivan T. Ivanov schrieb am 03.11.2014 16:24:
+> > From: Stanimir Varbanov <svarbanov@mm-sol.com>
+> > 
+> > The voltage ADC is peripheral of Qualcomm SPMI PMIC chips. It has
+> > 15 bits resolution and register space inside PMIC accessible across
+> > SPMI bus.
+> > 
+> > The vadc driver registers itself through IIO interface.
+> Reviewing again, I got the feeling that due to the complexity of adc reads (writing to register 
+> to start conversion, waiting a decent time for the conversion to complete, reading the result), 
+> it would be beneficial to use a mutex in vadc_read_raw or its depending functions.
 
-diff --git a/drivers/mfd/ti_am335x_tscadc.c b/drivers/mfd/ti_am335x_tscadc.c
-index d877e777cce6..110038859a8d 100644
---- a/drivers/mfd/ti_am335x_tscadc.c
-+++ b/drivers/mfd/ti_am335x_tscadc.c
-@@ -86,8 +86,12 @@ static void am335x_tscadc_need_adc(struct ti_tscadc_dev *tsadc)
- 		spin_lock_irq(&tsadc->reg_lock);
- 		finish_wait(&tsadc->reg_se_wait, &wait);
- 
-+		/*
-+		 * Sequencer should either be idle or
-+		 * busy applying the charge step.
-+		 */
- 		reg = tscadc_readl(tsadc, REG_ADCFSM);
--		WARN_ON(reg & SEQ_STATUS);
-+		WARN_ON((reg & SEQ_STATUS) && !(reg & CHARGE_STEP));
- 		tsadc->adc_waiting = false;
- 	}
- 	tsadc->adc_in_use = true;
-@@ -96,7 +100,6 @@ static void am335x_tscadc_need_adc(struct ti_tscadc_dev *tsadc)
- void am335x_tsc_se_set_once(struct ti_tscadc_dev *tsadc, u32 val)
- {
- 	spin_lock_irq(&tsadc->reg_lock);
--	tsadc->reg_se_cache |= val;
- 	am335x_tscadc_need_adc(tsadc);
- 
- 	tscadc_writel(tsadc, REG_SE, val);
-diff --git a/include/linux/mfd/ti_am335x_tscadc.h b/include/linux/mfd/ti_am335x_tscadc.h
-index c99be5dc0f5c..fcce182e4a35 100644
---- a/include/linux/mfd/ti_am335x_tscadc.h
-+++ b/include/linux/mfd/ti_am335x_tscadc.h
-@@ -128,6 +128,7 @@
- 
- /* Sequencer Status */
- #define SEQ_STATUS BIT(5)
-+#define CHARGE_STEP		0x11
- 
- #define ADC_CLK			3000000
- #define TOTAL_STEPS		16
--- 
-1.9.1
+Hm, yes, but there is such a nice info_exist_lock :-) in core functions,
+which in practice serve the same purpose.
+
+> Also, I would want to double-check that the CPU in this type of chips is little endian.
+
+Yes, it is.
+
+> Besides that, a few minor issues inline.
+
+> > +static int vadc_probe(struct platform_device *pdev)
+> > +{
+> > +       struct device_node *node = pdev->dev.of_node;
+> > +       struct device *dev = &pdev->dev;
+> > +       struct iio_dev *indio_dev;
+> > +       struct vadc_priv *vadc;
+> > +       struct regmap *regmap;
+> > +       int ret, irq_eoc;
+> > +       u32 res;
+> Since vadc->base is u16, shouldn't res be u16 as well? Also think about naming it reg, as this is 
+> the property name in DT.
+
+Yes, but #address-cells for the node is 1, so I would like to keep it 32 bits.
+
+> > +
+> > +       regmap = dev_get_regmap(dev->parent, NULL);
+> > +       if (!regmap)
+> > +       return -ENODEV;
+> > +
+> > +       ret = of_property_read_u32(node, "reg", &res);
+> For u16, there would be of_property_read_u16().
+> > +       if (ret < 0)
+> > +       return -ENODEV;
+> Just return ret here?
+
+I am usually trying to follow these recommendations[1]. In practice driver
+core cares only for EPROBE_DEFER, ENODEV and ENXIO, while of_property_read_u32()
+can return ENODATA and EOVERFLOW, which did't not make sense for the core.
+
+Thank you,
+Ivan
+
+[1] http://www.gossamer-threads.com/lists/linux/kernel/1010603
