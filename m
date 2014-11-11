@@ -1,84 +1,66 @@
-Return-Path: <abrestic@google.com>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from v094114.home.net.pl ([79.96.170.134]:64584 "HELO
+	v094114.home.net.pl" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with SMTP id S1752311AbaKKXOI (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 11 Nov 2014 18:14:08 -0500
+From: "Rafael J. Wysocki" <rjw@rjwysocki.net>
+To: Lee Jones <lee.jones@linaro.org>
+Cc: Aaron Lu <aaron.lu@intel.com>, linux-acpi@vger.kernel.org,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+	Jacob Pan <jacob.jun.pan@linux.intel.com>
+Subject: Re: [PATCH 0/3] Support PMIC operation region for CrystalCove and XPower
+Date: Wed, 12 Nov 2014 00:35:01 +0100
+Message-ID: <3052882.EdcZmghHR3@vostro.rjw.lan>
+In-Reply-To: <20141111111152.GX24004@x1>
+References: <1414735705-18366-1-git-send-email-aaron.lu@intel.com> <54616E55.80204@intel.com> <20141111111152.GX24004@x1>
 MIME-Version: 1.0
-Sender: abrestic@google.com
-In-Reply-To: <54611934.6050701@imgtec.com>
-References: <1415224611-22096-1-git-send-email-ezequiel.garcia@imgtec.com>
-	<1415224611-22096-3-git-send-email-ezequiel.garcia@imgtec.com>
-	<545E1333.9010904@kernel.org>
-	<5461170B.7070505@imgtec.com>
-	<54611934.6050701@imgtec.com>
-Date: Mon, 10 Nov 2014 13:28:33 -0800
-Message-ID: <CAL1qeaHzp==jmTB8dJ1M3NuocwuSqsfbVSU4nuM50vrOyfJ3qA@mail.gmail.com>
-Subject: Re: [PATCH v2 2/3] DT: iio: adc: Add CC_10001 binding documentation
-From: Andrew Bresticker <abrestic@chromium.org>
-To: Ezequiel Garcia <ezequiel.garcia@imgtec.com>
-Cc: Jonathan Cameron <jic23@kernel.org>, Lars-Peter Clausen <lars@metafoo.de>,
-	James Hartley <james.hartley@imgtec.com>, Phani Movva <phani.movva@imgtec.com>,
-	linux-iio@vger.kernel.org, pmeerw@pmeerw.net, knaack.h@gmx.de,
-	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, Naidu Tellapati <Naidu.Tellapati@imgtec.com>,
-	Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>,
-	Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>,
-	Kumar Gala <galak@codeaurora.org>
-Content-Type: text/plain; charset=UTF-8
-List-ID: <linux-iio@vger.kernel.org>
+Content-Type: text/plain; charset="utf-8"
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Ezequiel,
+On Tuesday, November 11, 2014 11:11:52 AM Lee Jones wrote:
+> On Tue, 11 Nov 2014, Aaron Lu wrote:
+> 
+> > On 10/31/2014 02:08 PM, Aaron Lu wrote:
+> > > On Intel Baytrail-T and Baytrail-T-CR platforms, there are two customized
+> > > ACPI operation regions defined for the Power Management Integrated Circuit
+> > > device, one is for power resource handling and one is for thermal: sensor
+> > > temperature reporting, trip point setting, etc. There are different PMIC
+> > > chips used on those platforms and though each has the same two operation
+> > > regions and functionality, their implementation is different so every PMIC
+> > > will need a driver. But since their functionality is similar, some common
+> > > code is abstracted into the intel_soc_pmic_opregion.c.
+> > > 
+> > > The last version is posted here:
+> > > https://lkml.org/lkml/2014/9/8/801
+> > > 
+> > > Changes since then:
+> > > 1 Move to drivers/acpi as discussed on the above thread;
+> > > 2 Added support for XPower AXP288 PMIC operation region support;
+> > > 3 Since operation region handler can not be removed(at the moment at least),
+> > >   use bool for the two operation region driver configs instead of tristate;
+> > >   Another reason to do this is that, with Mika's MFD ACPI support patch, all
+> > >   those MFD cell devices created will have the same modalias as their parent's
+> > >   so it doesn't make much sense to compile these drivers into modules.
+> > > 
+> > > Patch 1 applies on top of Rafael's pm-next branch, and then patch 2 and
+> > > patch 3 needs merge of Lee's mfd/ib-mfd-iio-3.19 branch where the PMIC
+> > > driver XPower AXP288 and iio driver axp288_adc is located.
+> > 
+> > Since patch 2-3 are based on top of the mfd/ib-mfd-iio-3.19 branch, it
+> > would be easy to go through the mfd/ib-mfd-iio-3.19 branch.
+> > 
+> > Rafael,
+> > Can I get your ACK for the three patches?
+> > 
+> > Lee,
+> > Can you please take the series if Rafael gives it ack?
+> 
+> Yes, no problem.
 
-On Mon, Nov 10, 2014 at 11:59 AM, Ezequiel Garcia
-<ezequiel.garcia@imgtec.com> wrote:
-> On 11/10/2014 04:50 PM, Ezequiel Garcia wrote:
->> On 11/08/2014 09:57 AM, Jonathan Cameron wrote:
->>> On 05/11/14 21:56, Ezequiel Garcia wrote:
->>>>
->>>> diff --git a/Documentation/devicetree/bindings/iio/adc/cc_10001_adc.txt b/Documentation/devicetree/bindings/iio/adc/cc_10001_adc.txt
->>>> new file mode 100644
->>>> index 0000000..6491839
->>>> --- /dev/null
->>>> +++ b/Documentation/devicetree/bindings/iio/adc/cc_10001_adc.txt
->>>> @@ -0,0 +1,19 @@
->>>> +* Cosmic Circuits - Analog to Digital Converter (CC-10001-ADC)
->>>> +
->>>> +Required properties:
->>>> +  - compatible: Should be "cosmic,10001-adc"
->>>> +  - reg: Should contain adc registers location and length.
->>>> +  - cosmic,adc-available-channels: Bitmask of the channels currently enabled.
->>> I suspect there may be other preferred ways of doing this (child nodes perhaps
->>> for each enabled channel?)
->>
->> Hm, I'm not sure about this. As far I can recall, if a node has children
->> then it *must* be a bus, which is not the case. Of course, you'll find
->> examples doing this wrong.
->>
->
-> On a second thought... I guess you meant something like this?
->
-> adc: adc@18101600 {
->         compatible = "cosmic,10001-adc";
->         reg = <0x18101600 0x24>;
->         clocks = <&adc_clk>;
->         clock-names = "adc";
->         vref-supply = <&reg_1v8>;
->         cosmic,channels {
->                 #address-cells = <1>;
->                 #size-cells = <0>;
->                 channel@0 {
->                         reg = <0>;
->                 };
->                 channel@1 {
->                         reg = <1>;
->                 };
->         };
-> };
->
-> Might be better, but I don't have a strong opinion on it.
+Well, since the code is going to reside mostly in drivers/acpi, I think I should
+be applying the patches and from your response it looks like you are fine with
+them.  Is that correct?
 
-I actually don't think this is any better.  The point of the property
-is to indicate which channels are available for use by the main CPU,
-i.e. channels not used by the RPU co-processor.  The property is not
-used to indicate the presence of certain channels in hardware, in
-which case maybe a bus would be appropriate.
+Rafael
 
-Also, perhaps it would be better to reverse the sense of the property
-(maybe, "cosmic,reserved-adc-channels") and make it optional?  I did
-something similar for the MIPS GIC binding:
-http://patchwork.linux-mips.org/patch/8268/.
