@@ -1,142 +1,92 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga14.intel.com ([192.55.52.115]:58555 "EHLO mga14.intel.com"
+Received: from mout.gmx.net ([212.227.15.15]:63045 "EHLO mout.gmx.net"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1754107AbaKRPfM (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Tue, 18 Nov 2014 10:35:12 -0500
-From: "Pandruvada, Srinivas" <srinivas.pandruvada@intel.com>
-To: "jic23@kernel.org" <jic23@kernel.org>
-CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"Purdila, Octavian" <octavian.purdila@intel.com>
-Subject: Re: [RFC 0/8] iio: add support for hardware fifo
-Date: Tue, 18 Nov 2014 15:35:08 +0000
-Message-ID: <1416324907.2776.3.camel@spandruv-hsb-test>
-References: <1416246966-3083-1-git-send-email-octavian.purdila@intel.com>
-	 <20141118132405.EF30A40277@saturn.retrosnub.co.uk>
-In-Reply-To: <20141118132405.EF30A40277@saturn.retrosnub.co.uk>
-Content-Type: text/plain; charset="utf-8"
+	id S1752055AbaKKWjm (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Tue, 11 Nov 2014 17:39:42 -0500
+Message-ID: <54629026.3080002@gmx.de>
+Date: Tue, 11 Nov 2014 23:39:34 +0100
+From: Hartmut Knaack <knaack.h@gmx.de>
 MIME-Version: 1.0
+To: "Ivan T. Ivanov" <iivanov@mm-sol.com>
+CC: Jonathan Cameron <jic23@kernel.org>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Stanimir Varbanov <svarbanov@mm-sol.com>,
+	Angelo Compagnucci <angelo.compagnucci@gmail.com>,
+	Grant Likely <grant.likely@linaro.org>,
+	linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org, linux-arm-msm@vger.kernel.org
+Subject: Re: [PATCH v4 2/2] iio: vadc: Qualcomm SPMI PMIC voltage ADC driver
+References: <1415028270-25860-1-git-send-email-iivanov@mm-sol.com>	 <1415028270-25860-3-git-send-email-iivanov@mm-sol.com>	 <54612A0D.7020308@gmx.de> <1415694109.22935.13.camel@mm-sol.com>
+In-Reply-To: <1415694109.22935.13.camel@mm-sol.com>
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-T24gVHVlLCAyMDE0LTExLTE4IGF0IDEzOjI0ICswMDAwLCBqaWMyM0BrZXJuZWwub3JnIHdyb3Rl
-Og0KPiBPY3RhdmlhbiBQdXJkaWxhIHdyaXRlczogDQo+IA0KPiA+IEhpIGV2ZXJ5Ym9keSwNCj4g
-SGkgT2N0YXZpYW4uDQo+ID4gDQo+ID4gSSBob3BlIHRoaXMgUkZDIGlzIGEgZ29vZCBzdGFydGlu
-ZyBwb2ludCB0byBkaXNjdXNzIHN1cHBvcnQgZm9yDQo+ID4gaGFyZHdhcmUgZmlmbyBpbiBJSU8u
-IFRoZSBtYWluIHJlYXNvbiB0byBzdXBwb3J0IGl0IGlzIHRvIHJlZHVjZSB0aGUNCj4gPiBwb3dl
-ciBjb25zdW10aW9uLCBieSBhbGxvd2luZyB0aGUgQ1BVIHRvIGVudGVyIGRlZXAgc2xlZXAgc3Rh
-dGVzIGZvcg0KPiA+IGxvbmdlciBwZXJpb2RzIG9mIHRpbWUuDQo+IEEgd29ydGh3aGlsZSBhaW0g
-aW5kZWVkLg0KPiA+IA0KPiA+IERvbid0IGdldCBkaXNjb3VyYWdlIGJ5IHRoZSBsYXJnZSBudW1i
-ZXIgb2YgcGF0Y2hlcyBtb3N0IG9mIHRoZW0gYXJlDQo+ID4gcmVmYWN0b3JzIGluIHRoZSBibWMx
-NTAgZHJpdmVyLCB0byBtYWtlIGl0IGVhc2llciB0byBhZGQgc3VwcG9ydCBmb3INCj4gPiB0aGUg
-aGFyZHdhcmUgZmlmbyAoYmFzaWNhbGx5IHRvIG1ha2UgYWRkaW5nIGludGVycnVwdHMgYW5kDQo+
-ID4gZXZlbnRzL3RyaWdnZXJzIGVhc2llcikuIA0KPiA+IA0KPiA+IEZvciBkaXNjdXNzaW5nIHRo
-ZSBoYXJkd2FyZSBmaWZvIHN0dWZmLCBvbmx5IHRoZSBmaXJzdCBhbmQgbGFzdA0KPiA+IHBhdGNo
-ZXMgYXJlIGltcG9ydGFudDogdGhlIGZpcnN0IGFkZHMgbmV3IElJTyBhdHRyaWJ1dGVzIHNvIHRo
-YXQgd2UNCj4gPiBjYW4gZXhwb3NlIHRoZSBoYXJkd2FyZSBmaWZvIGFuZCB0aGUgbGFzdCBpbXBs
-ZW1lbnRzIGhhZHdhcmUgZmlmbyBmb3INCj4gPiBJSU8gKGFzIGFuIGV4YW1wbGUgb2YgaG93IHdv
-dWxkIGEgZGV2aWNlIHVzZSB0aGUgZXhwb3NlZCBhdHRyaWJ1dGVzKS4gDQo+ID4gDQo+ID4gTm90
-ZSB0aGF0IHRoZSBhdHRyaWJ1dGVzIGNhbiBiZSBleHBvc2VkIG9uIGEgcGVyIGRldmljZSBvciBw
-ZXIgY2hhbm5lbA0KPiA+IGJhc2lzLCBzaW5jZSBpdCBzZWVtcyBib3RoIHR5cGVzIG9mIGhhcmR3
-YXJlIGZpZm9zIGV4aXN0czogdGhvc2UgdGhhdA0KPiA+IHN0b3JlIGFsbCBkYXRhIGluIGEgc2lu
-Z2xlIGZpZm8gKHRlbXBlcmF0dXJlLCBhY2NlbGVyb21ldGVyLA0KPiA+IG1hZ25ldG9tZXRlciwg
-ZXRjLikgYW5kIHRob3NlIHRoYXQgaGF2ZSBzZXBhcmF0ZSBmaWZvcyBmb3INCj4gPiBhY2NlbGVy
-b21ldGVyLCBneXJvc2NvcGUsIGV0Yy4gVGhhbmtmdWxseSwgYXQgdGhlIGRyaXZlciBsZXZlbCB3
-ZSBqdXN0DQo+ID4gbmVlZCB0byB1c2UgdGhlIGFwcHJvcHJpYXRlIHNoYXJpbmcgbGV2ZWwgdG8g
-c3VwcG9ydCBvbmUgbW9kZSBvciB0aGUNCj4gPiBvdGhlci4NCj4gSWYgdGhpcyBpcyB0aGUgY2Fz
-ZSwgdGhlbiB0aGUgYnVmZmVyZWQgb3V0cHV0cyB3aWxsIGhhdmUgdG8gYmUgc2VwYXJhdGUNCj4g
-c28gd2Uga25vdyB3aGF0IGlzIGNvbWluZy4gIEUuZy4gaXQgd2lsbCBoYXZlIHRvIGJlIGVmZmVj
-dGl2ZWx5IHRyZWF0ZWQNCj4gYXMgc2VwYXJhdGUgaWlvX2J1ZmZlcnMuICBOb3cgd2UgaGF2ZSBk
-ZXZpY2VzIHRoYXQgYWxyZWFkeSBkbyAoc2VlIHNvbWUNCj4gb2YgdGhlIG1vcmUgaW50ZXJlc3Rp
-bmcgU09DIEFEQ3MpIA0KPiANCj4gSXMgdGhpcyBhY3R1YWxseSB0aGUgY2FzZSBmb3IgdGhlIGJt
-YzE1MD8gSWYgeW91IGNvdWxkIHBvaW50IGF0DQo+IGRldmljZXMgd2hlcmUgaXQgaXMgdGhlbiBp
-dCB3b3VsZCBiZSBncmVhdCAoYXMgbWVudGlvbmVkIGFib3ZlIG9uZQ0KPiBvciB0d28gU09DIEFE
-Q3MgaGF2ZSBhIGJvbmtlcnMgbGV2ZWwgb2YgZmxleGliaWxpdHkpLg0KPiBNeSByZWFkaW5nIG9m
-IHRoZSBkYXRhc2hlZXQgaXMgdGhhdCB0aGUgZGF0YSBpcyBpbnRlcmxlYXZlZCBpbiB0aGUNCj4g
-YnVmZmVyIGZvciBhbnkgY2hhbm5lbHMgZW5hYmxlLiANCj4gDQo+ID4gDQo+ID4gQWxzbyBub3Rl
-IHRoYXQgdGhpcyBwYXRjaCBpcyBvcnRob2dvbmFsIHRvIHRoZSBzb2Z0d2FyZSB3YXRlcm1hcmsg
-Lw0KPiA+IGJhdGNoaW5nIHBhdGNoIHNlbmQgb24gdGhlIGxpc3QgYSB3aGlsZSBiYWNrLg0KPiAN
-CkkgdGhpbmsgbGFzdCB3YXRlcnNoZWQgcGF0Y2ggd2FzIHJldmlld2VkIGFuZCBhZ3JlZWQgdXBv
-biwgYnV0IGxvb2tzDQpsaWtlIG5ldmVyIG1lcmdlZC4gSSB0aGluayB0aGUgYXV0aG9yIGRyb3Bw
-ZWQgdGhlIGFwcHJvYWNoLiBJIHRoaW5rIGFzIGENCnN0YXJ0IHdlIHNob3VsZCBtZXJnZSB0aGlz
-IHBhdGNoLiBJbiBhZGRpdGlvbiB0aG9zZSB3YXRlcnNoZWRzIHNob3VsZCBiZQ0KZXhwb3NlZCB0
-byBJSU8gZHJpdmVycywgc28gdGhhdCBpbmRpdmlkdWFsIGRyaXZlcnMgY2FuIGVzdGltYXRlIEZJ
-Rk8NCnNpemUgaW4gY29tYmluYXRpb24gd2l0aCBzYW1wbGluZyBmcmVxdWVuY3kuIA0KPiBJJ20g
-bm90IHNvIHN1cmUgdGhpcyBpcyBvcnRob2dvbmFsIGF0IGFsbC4gICBUaGF0IHByb3Bvc2FsIHdh
-cyBhY3R1YWxseQ0KPiBhYm91dCBoYXJkd2FyZSBzdXBwb3J0LiAgSSBwdXNoZWQgYmFjayB0aGF0
-IEkgd2FudGVkIGFueSBuZXcgaW50ZXJmYWNlDQo+IHRvIHdvcmsgd2hldGhlciBvciBub3QgdGhl
-cmUgd2FzIGhhcmR3YXJlIHN1cHBvcnQuICBJbiBhIHNlbnNlIHRoYXQgaXMNCj4gYSBtb3JlIGNv
-bXBsZXggcHJvYmxlbSAtIGhlbmNlIHRoZSBkaXNjdXNzaW9uIGJlY2FtZSBhIGxpdHRsZSBiaXQg
-Zm9jdXNlZA0KPiBvbiB0aGF0IGNhc2UuIA0KPiANCj4gVGhlIGludGVudCB0aGVyZSB3YXMgdG8g
-aGlkZSB0aGUgaW1wbGVtZW50YXRpb24gZGV0YWlscyBvZiBleGFjdGx5IHRoaXMNCj4gc29ydCBv
-ZiBoYXJkd2FyZS9zb2Z0d2FyZSBidWZmZXIgaW50ZXJhY3Rpb24uIA0KPiANCj4gUGVyaGFwcyBz
-b21lIGhpc3RvcnkgaXMgaW4gb3JkZXIuIA0KPiANCj4gV2UgaGFkIGV4YWN0bHkgd2hhdCB5b3Ug
-cHJvcG9zZSBoZXJlIGEgbG9uZyB0aW1lIGJhY2sgd2l0aCB0aGUgc2NhMzAwMA0KPiBhY2NlbGVy
-b21ldGVyICh3aGljaCBpcyB3aHkgdGhlcmUgaXMgc3RpbGwgY29yZSBzdXBwb3J0IGZvciBoYXJk
-d2FyZQ0KPiBidWZmZXJzKS4gIFRoZSBpbnRlcmZhY2Ugd2FzIHByZWNpc2VseSB0aGUgd2F0ZXJz
-aGVkIHR5cGUgeW91IGhhdmUNCj4gaGVyZS4gDQo+IA0KPiBBIHJldmlldyBieSBBcm5kIEJlcmdt
-YW4gcG9pbnRlZCBvdXQgdGhhdCB0aGlzIHdhcyBzZXJpb3VzbHkgY2x1bmt5LiANCj4gDQo+IEl0
-IHB1dHMgZGF0YSByZWxhdGVkIHRvIHRoZSBpbi1iYW5kIGRhdGEgZmxvdyBpbnRvIG91ciBvdXQt
-b2YtYmFuZCBjaGFubmVsLg0KPiBIaXMgc3VnZ2VzdGlvbiB3YXMgdG8gYWxsb3cgZm9yIHdhdGVy
-c2hlZCBpbnRlcnJ1cHRzIHVzaW5nIG9uZSBvZiB0aGUNCj4gbW9yZSBpbnRlcmVzdGluZyBQT0xM
-IHR5cGVzIGxlYXZpbmcgdGhlIG1haW4gcG9sbCBmb3IgdGhlIGRhdGEgZmxvdy4NCj4gQXJuZCBh
-bHNvIHN1Z2dlc3RlZCB0aGUgYml0cyBhYm91dCB1c2luZyBhbm9ueW1vdXMgY2hhcmRldnMgZm9y
-IHRoZSBldmVudA0KPiByZXBvcnRpbmcgZXRjLiAgVGhlIHVudXN1YWwgZm9ybSBvZiBwb2xsIGJp
-dCBuZXZlciBnb3QgaW1wbGVtZW50ZWQsDQo+IGJ1dCBpbiB0aGUgaW50ZXJlc3RzIG9mIG1vdmlu
-ZyBmb3J3YXJkIHdpdGggdGhlIGNvbW1vbiBjYXNlIGFuZCBiZWNhdXNlDQo+IHRoZXkgd2VyZSBv
-biB0aGVyZSB3YXkgb3V0IGFueXdheSB0aGUgd2F0ZXJzaGVkIGludGVycnVwdHMgd2VyZSBkcm9w
-cGVkLiANCj4gDQo+IFRoZSBtb3JlIHJlY2VudCBkaXNjdXNzaW9uIGNhbWUgdG8gdGhlIGNvbmNs
-dXNpb24gdGhhdCB0aGVyZSB3YXMgbm8gbmVlZA0KPiB0byB1c2UgdGhlIHdlaXJkIGZvcm1zIG9m
-IHBvbGwuICBXZSBjb3VsZCBzaW1wbHkgaGF2ZSBhbiBhdHRyaWJ1dGUgdG8NCj4gY29udHJvbCB3
-aGVuIHBvbGwgd2FzIGZpcmVkLiAgVGhlIG9ubHkgYml0IHRoYXQgY2F1c2VkIGZyaWN0aW9uIHdh
-cyB3aGV0aGVyDQo+IHRoZXJlIHNob3VsZCBiZSBhIHRpbWVvdXQgb3Igbm90LiANCj4gDQo+IE5v
-dywgd2hlbiB0aGVuIHRpX2FtMzV4eCBkcml2ZXIgY2FtZSBhbG9uZyBpdCBiZWNhbWUgY2xlYXIg
-dGhhdCBpdCB3YXNuJ3QNCj4gYWN0dWFsbHkgdGVycmlibHkgdXNlZnVsIGV4cG9zaW5nIHRoZSBo
-YXJkd2FyZSBidWZmZXJzIGRpcmVjdGx5IHRvDQo+IHVzZXIgc3BhY2UuICBUaGUgYnVmZmVycyB0
-ZW5kIG5vdCB0byBiZSB0ZXJyaWJseSBsb25nIChpbiB5b3VyIGJtYTE2MCkgSQ0KPiBzZWUgdGhl
-eSBhcmUgb25seSAzMiBlbGVtZW50cy4gIEFzIHN1Y2ggdGhlIGNvbmNsdXNpb24gd2FzIHRoYXQg
-aXQgbWFrZXMNCj4gbW9yZSBzZW5zZSB0byB1c2UgdGhlIGJ1ZmZlcnMgYXMgdGVtcG9yYXJ5IHN0
-b3JhZ2UgdG8gc21vb3RoIG91dCB0aGUNCj4gZGF0YSBmbG93LiAgVGh1cyB0aGF0IGRyaXZlciBm
-aWxscyBhIHNvZnR3YXJlIGJ1ZmZlciBmcm9tIGEgaGFyZHdhcmUNCj4gYnVmZmVyLiAgVGhpcyBz
-ZWVtcyB0aGUgbWV0aG9kIHRoYXQgaXMgbW9zdCBsaWtlbHkgdG8gd29yayBsb25nIHRlcm0uDQo+
-IEkgbm90ZSB0aGlzIGlzIGVmZmVjdGl2ZWx5IHdoYXQgeW91IGhhdmUgaGVyZSwgdGhvdWdoIEkn
-bSBub3Qgc3VyZSBvZg0KPiB0aGUgYWR2YW50YWdlIG9mIHRoZSBleHBsaWNpdCBzb2Z0d2FyZSBm
-bHVzaCBvdmVyIGp1c3QgcmVhZGluZyB0aGUgZGF0YQ0KPiB3aGVuZXZlciB0aGUgaW50ZXJydXB0
-IGZpcmVzLiANCj4gDQo+IEhlbmNlIHdlIHN0YXJ0ZWQgd2l0aCBzb21ldGhpbmcgdGhhdCBhdCBs
-ZWFzdCBzdXBlcmZpY2lhbGx5IChJIGhhdmVuJ3QNCj4gaGFkIGEgY2hhbmNlIHRvIGdvIHRocm91
-Z2ggdGhlIGltcGxlbWVudGF0aW9uIGluIGRldGFpbCB5ZXQpDQo+IGxvb2tzIHNpbWlsYXIgdG8g
-d2hhdCB5b3UgaGF2ZSBidXQgZW5kZWQgdXAgY2hhbmdpbmcgdGhlIG1ldGhvZCBvZg0KPiBzaWdu
-YWxsaW5nIHRvIGFuZCBmcm9tIHVzZXJzcGFjZS4gDQo+IA0KPiBIYXJkd2FyZSBidWZmZXIgLT4g
-U29mdHdhcmUgYnVmZmVyIC0+IHVzZXIgc3BhY2UuIA0KPiANCj4gVXNlcnNwYWNlIHdhdGVyc2hl
-ZCBjb250cm9sIC0+IFNvZnR3YXJlIGJ1ZmZlciB3YXRlcnNoZWQgY29udHJvbA0KPiAgLT4gSGFy
-ZHdhcmUgYnVmZmVyIHdhdGVyc2hlZCBjb250cm9sLiANCj4gDQo+IElmIHVzZXJzcGFjZSBzZXRz
-IHRoZSB3YXRlcnNoZWQgdG8gc2F5IDE2IHRoZW4sIGFzIHdlbGwgYXMgc2V0dGluZw0KPiB0aGF0
-IGxldmVsIGluIHRoZSBzb2Z0d2FyZSBidWZmZXIgaXQgc2hvdWxkIGJlIHBhc3NlZCBvbiB0byB0
-aGUNCj4gZGV2aWNlIGRyaXZlciBhbGxvd2luZyB0aGUgd2F0ZXJzaGVkIHRoZXJlIHRvIGJlIHNl
-dCBhcHByb3ByaWF0ZWx5Lg0KPiBOb3cgdGhpbmdzIGdldCBpbnRlcmVzdGluZyBpZiB1c2Vyc3Bh
-Y2Ugc2V0cyB0aGUgd2F0ZXJzaGVkIHRvIGEgdmFsdWUNCj4gdGhhdCBtYWtlcyBubyBzZW5zZSBm
-b3IgdGhlIGhhcmR3YXJlIChzYXkgMTcgb24gYSBkZXZpY2UgdGhhdCBkb2VzDQo+IHBvd2VyIG9m
-IDIgdmFsdWVzIG9ubHkpIGFzIHRoZW4gaXQgd2lsbCBoYXZlIHRvIGZhbGwgYmFjayB0bw0KPiBn
-cmFiYmluZyBldmVyeSBvbmUgKFdhdGVyc2hlZCBvZiAxKS4gIFBlcmhhcHMgd2UgY2FuIHByb3Zp
-ZGUgJ2hpbnRzJw0KPiBmb3IgdGhpcz8gDQo+IA0KPiBBbnlob3csIGhhdmluZyBnaXZlbiB0aGlz
-IGdlbmVyYWwgY29tbWVudCwgSSdsbCBnaXZlIHNvbWUgZmVlZGJhY2sgb24NCj4gdGhlIGltcGxl
-bWVudGF0aW9uIGRldGFpbHMuIA0KPiANCj4gSm9uYXRoYW4gDQo+IA0KPiA+IA0KPiA+IE9jdGF2
-aWFuIFB1cmRpbGEgKDgpOg0KPiA+ICAgaWlvOiBhZGQgc3VwcG9ydCBmb3IgaGFyZHdhcmUgZmlm
-bw0KPiA+ICAgaWlvOiBibWMxNTA6IHJlZmFjdG9yIHNsb3BlIGR1cmF0aW9uIGFuZCB0aHJlc2hv
-bGQgdXBkYXRlDQo+ID4gICBpaW86IGJtYzE1MDogcmVmYWN0b3IgaW50ZXJydXB0IGVuYWJsaW5n
-DQo+ID4gICBpaW86IGJtYzE1MDogZXhpdCBlYXJseSBpZiBldmVudCAvIHRyaWdnZXIgc3RhdGUg
-aXMgbm90IGNoYW5nZWQNCj4gPiAgIGlpbzogYm1jMTUwOiBpbnRyb2R1Y2UgYm1jMTUwX2FjY2Vs
-X2ludGVycnVwdA0KPiA+ICAgaWlvOiBibWMxNTA6IGludHJvZHVjZSBibWMxNTBfYWNjZWxfdHJp
-Z2dlcg0KPiA+ICAgaWlvOiBibWMxNTA6IGludHJvZHVjZSBibWMxNTBfYWNjZWxfZXZlbnQNCj4g
-PiAgIGlpbzogYm1jMTUwOiBhZGQgc3VwcG9ydCBmb3IgaGFyZHdhcmUgZmlmbyANCj4gPiANCj4g
-PiAgRG9jdW1lbnRhdGlvbi9BQkkvdGVzdGluZy9zeXNmcy1idXMtaWlvIHwgIDUxICsrDQo+ID4g
-IGRyaXZlcnMvaWlvL2FjY2VsL2JtYzE1MC1hY2NlbC5jICAgICAgICB8IDk3NiArKysrKysrKysr
-KysrKysrKysrKysrLS0tLS0tLS0tLQ0KPiA+ICBkcml2ZXJzL2lpby9pbmR1c3RyaWFsaW8tY29y
-ZS5jICAgICAgICAgfCAgIDIgKw0KPiA+ICBkcml2ZXJzL2lpby9pbmR1c3RyaWFsaW8tZXZlbnQu
-YyAgICAgICAgfCAgIDIgKw0KPiA+ICBpbmNsdWRlL2xpbnV4L2lpby9paW8uaCAgICAgICAgICAg
-ICAgICAgfCAgMTcgKw0KPiA+ICBpbmNsdWRlL2xpbnV4L2lpby90eXBlcy5oICAgICAgICAgICAg
-ICAgfCAgIDIgKw0KPiA+ICA2IGZpbGVzIGNoYW5nZWQsIDczOSBpbnNlcnRpb25zKCspLCAzMTEg
-ZGVsZXRpb25zKC0pIA0KPiA+IA0KPiA+IC0tIA0KPiA+IDEuOS4xIA0KPiA+IA0KPiA+IC0tDQo+
-ID4gVG8gdW5zdWJzY3JpYmUgZnJvbSB0aGlzIGxpc3Q6IHNlbmQgdGhlIGxpbmUgInVuc3Vic2Ny
-aWJlIGxpbnV4LWlpbyIgaW4NCj4gPiB0aGUgYm9keSBvZiBhIG1lc3NhZ2UgdG8gbWFqb3Jkb21v
-QHZnZXIua2VybmVsLm9yZw0KPiA+IE1vcmUgbWFqb3Jkb21vIGluZm8gYXQgIGh0dHA6Ly92Z2Vy
-Lmtlcm5lbC5vcmcvbWFqb3Jkb21vLWluZm8uaHRtbA0KDQo=
+Ivan T. Ivanov schrieb am 11.11.2014 09:21:
+> Hi Hartmut,
+> 
+> On Mon, 2014-11-10 at 22:11 +0100, Hartmut Knaack wrote:
+>> Ivan T. Ivanov schrieb am 03.11.2014 16:24:
+>>> From: Stanimir Varbanov <svarbanov@mm-sol.com>
+>>>
+>>> The voltage ADC is peripheral of Qualcomm SPMI PMIC chips. It has
+>>> 15 bits resolution and register space inside PMIC accessible across
+>>> SPMI bus.
+>>>
+>>> The vadc driver registers itself through IIO interface.
+>> Reviewing again, I got the feeling that due to the complexity of adc reads (writing to register 
+>> to start conversion, waiting a decent time for the conversion to complete, reading the result), 
+>> it would be beneficial to use a mutex in vadc_read_raw or its depending functions.
+> 
+> Hm, yes, but there is such a nice info_exist_lock :-) in core functions,
+> which in practice serve the same purpose.
+I seem to miss that. Please point me in the right direction.
+> 
+>> Also, I would want to double-check that the CPU in this type of chips is little endian.
+> 
+> Yes, it is.
+> 
+>> Besides that, a few minor issues inline.
+> 
+>>> +static int vadc_probe(struct platform_device *pdev)
+>>> +{
+>>> +       struct device_node *node = pdev->dev.of_node;
+>>> +       struct device *dev = &pdev->dev;
+>>> +       struct iio_dev *indio_dev;
+>>> +       struct vadc_priv *vadc;
+>>> +       struct regmap *regmap;
+>>> +       int ret, irq_eoc;
+>>> +       u32 res;
+>> Since vadc->base is u16, shouldn't res be u16 as well? Also think about naming it reg, as this is 
+>> the property name in DT.
+> 
+> Yes, but #address-cells for the node is 1, so I would like to keep it 32 bits.
+> 
+>>> +
+>>> +       regmap = dev_get_regmap(dev->parent, NULL);
+>>> +       if (!regmap)
+>>> +       return -ENODEV;
+>>> +
+>>> +       ret = of_property_read_u32(node, "reg", &res);
+>> For u16, there would be of_property_read_u16().
+>>> +       if (ret < 0)
+>>> +       return -ENODEV;
+>> Just return ret here?
+> 
+> I am usually trying to follow these recommendations[1]. In practice driver
+> core cares only for EPROBE_DEFER, ENODEV and ENXIO, while of_property_read_u32()
+> can return ENODATA and EOVERFLOW, which did't not make sense for the core.
+Please point me in the right direction on this one, too. It is pretty common to pass error codes up, as it is also mentioned in [1].
+Yet, this thread in [1] seems more like a draft to me, as Greg K-H wrote in the end: "Fair enough, care to respin this and send it out to me for review?"
+> 
+> Thank you,
+> Ivan
+> 
+> [1] http://www.gossamer-threads.com/lists/linux/kernel/1010603
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> 
+
