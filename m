@@ -1,71 +1,42 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga09.intel.com ([134.134.136.24]:10698 "EHLO mga09.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751268AbaKJMoV (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Mon, 10 Nov 2014 07:44:21 -0500
-From: Daniel Baluta <daniel.baluta@intel.com>
-To: jic23@kernel.org, knaack.h@gmx.de
-Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-	irina.tirdea@intel.com, daniel.baluta@inte.com
-Subject: [PATCH v4 0/7] Introduce IIO interface for Android advanced features
-Date: Mon, 10 Nov 2014 14:45:28 +0200
-Message-Id: <1415623535-24337-1-git-send-email-daniel.baluta@intel.com>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <jacob.jun.pan@linux.intel.com>
+From: Jacob Pan <jacob.jun.pan@linux.intel.com>
+To: LKML <linux-kernel@vger.kernel.org>,
+	IIO <linux-iio@vger.kernel.org>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Lee Jones <lee.jones@linaro.org>
+Cc: Carlo Caione <carlo@caione.org>,
+	Samuel Ortiz <sameo@linux.intel.com>,
+	Ramakrishna Pallala <ramakrishna.pallala@intel.com>,
+	Todd Brandt <todd.e.brandt@linux.intel.com>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Rafael Wysocki <rafael.j.wysocki@intel.com>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Jacob Pan <jacob.jun.pan@linux.intel.com>
+Subject: [PATCH 3/3] iio/axp288_adc: remove THIS_MODULE owner
+Date: Tue, 11 Nov 2014 11:30:10 -0800
+Message-Id: <1415734210-5657-4-git-send-email-jacob.jun.pan@linux.intel.com>
+In-Reply-To: <1415734210-5657-1-git-send-email-jacob.jun.pan@linux.intel.com>
+References: <1415734210-5657-1-git-send-email-jacob.jun.pan@linux.intel.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-This patchset introduces a new interface for supporting some of the composite
-sensors in Android [1]. First supported sensors are activity and pedometer.
+This is no longer needed in that platform driver_register will do it.
 
-This is a follow up of the discussion about adding new channels to IIO
-initiated some time ago on IIO list [2].
+Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
+---
+ drivers/iio/adc/axp288_adc.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-A device that has the activity/pedometer functionality is Freescale's MMA9553L ([3]).
-
-Because we don't have yet the hardware, to demonstrate these new channels we
-update iio_dummy kernel module and iio_event_monitor test program. We want
-to get an early feedback about extending the IIO interface in the correct
-direction.
-
-[1] http://source.android.com/devices/sensors/composite_sensors.html
-[2] http://marc.info/?l=linux-iio&m=138374342831057&w=2
-[3] http://www.freescale.com/files/sensors/doc/ref_manual/MMA9553LSWRM.pdf
-
-Changes since v3:
-	* rebased on latest togreg branch (head at 5e62863aea)
-	* fix typos reported by Hartmut
-
-Changes since v2: (comments from Jonathan and Hartmut)
-	* dropped the RFC tag
-	* use int instead of unsigned long for ret in iio_evgen_poke
-	* remove TRANSITION event and use THRESHOLD instead
-	* remove IIO_HEIGHT channel and use CALIBHEIGHT mask instead
-	* adapt iio_dummy modules and iio_event_monitor to reflect IIO
-	  interface changes.
-
-Daniel Baluta (4):
-  iio: dummy: Add virtual registers for dummy device
-  iio: core: Introduce IIO_ACTIVITY channel
-  iio: dummy: Demonstrate the usage of new channel types
-  iio: event_monitor: Add support for new channel types
-
-Irina Tirdea (3):
-  iio: core: Introduce IIO_EV_DIR_NONE
-  iio: core: Introduce STEPS channel, ENABLE mask and INSTANCE event
-  iio: core: Introduce IIO_CHAN_INFO_CALIBHEIGHT
-
- Documentation/ABI/testing/sysfs-bus-iio            |  74 ++++++++
- drivers/iio/industrialio-core.c                    |   8 +
- drivers/iio/industrialio-event.c                   |  13 +-
- .../staging/iio/Documentation/iio_event_monitor.c  |  23 ++-
- drivers/staging/iio/iio_dummy_evgen.c              |  17 ++
- drivers/staging/iio/iio_dummy_evgen.h              |   6 +
- drivers/staging/iio/iio_simple_dummy.c             | 199 +++++++++++++++++++--
- drivers/staging/iio/iio_simple_dummy.h             |   7 +
- drivers/staging/iio/iio_simple_dummy_events.c      |  66 ++++++-
- include/linux/iio/iio.h                            |   2 +
- include/linux/iio/types.h                          |  10 +-
- 11 files changed, 395 insertions(+), 30 deletions(-)
-
+diff --git a/drivers/iio/adc/axp288_adc.c b/drivers/iio/adc/axp288_adc.c
+index 4a6cf43..08bcfb0 100644
+--- a/drivers/iio/adc/axp288_adc.c
++++ b/drivers/iio/adc/axp288_adc.c
+@@ -249,7 +249,6 @@ static struct platform_driver axp288_adc_driver = {
+ 	.id_table = axp288_adc_id_table,
+ 	.driver = {
+ 		.name = "axp288_adc",
+-		.owner = THIS_MODULE,
+ 	},
+ };
+ 
 -- 
 1.9.1
-
