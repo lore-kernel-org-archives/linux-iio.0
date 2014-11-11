@@ -1,81 +1,91 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mailout1.w1.samsung.com ([210.118.77.11]:40131 "EHLO
-	mailout1.w1.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753716AbaKHONy (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 8 Nov 2014 09:13:54 -0500
-From: Karol Wrona <k.wrona@samsung.com>
-To: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
-	Arnd Bergmann <arnd@arndb.de>, linux-kernel@vger.kernel.org
-Cc: Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
-	Kyungmin Park <kyungmin.park@samsung.com>,
-	Karol Wrona <k.wrona@samsung.com>
-Subject: [PATCH 0/5] iio: Add sensorhub driver
-Date: Sat, 08 Nov 2014 15:13:11 +0100
-Message-id: <1415455996-20871-1-git-send-email-k.wrona@samsung.com>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <Ezequiel.Garcia@imgtec.com>
+Message-ID: <54623978.60005@imgtec.com>
+Date: Tue, 11 Nov 2014 13:29:44 -0300
+From: Ezequiel Garcia <ezequiel.garcia@imgtec.com>
+MIME-Version: 1.0
+To: Andrew Bresticker <abrestic@chromium.org>
+CC: Jonathan Cameron <jic23@kernel.org>, Lars-Peter Clausen <lars@metafoo.de>,
+	James Hartley <james.hartley@imgtec.com>, Phani Movva
+	<phani.movva@imgtec.com>, <linux-iio@vger.kernel.org>, <pmeerw@pmeerw.net>,
+	<knaack.h@gmx.de>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+	Naidu Tellapati <Naidu.Tellapati@imgtec.com>, Rob Herring
+	<robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland
+	<mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, "Kumar
+ Gala" <galak@codeaurora.org>
+Subject: Re: [PATCH v2 2/3] DT: iio: adc: Add CC_10001 binding documentation
+References: <1415224611-22096-1-git-send-email-ezequiel.garcia@imgtec.com>	<1415224611-22096-3-git-send-email-ezequiel.garcia@imgtec.com>	<545E1333.9010904@kernel.org>	<5461170B.7070505@imgtec.com>	<54611934.6050701@imgtec.com> <CAL1qeaHzp==jmTB8dJ1M3NuocwuSqsfbVSU4nuM50vrOyfJ3qA@mail.gmail.com>
+In-Reply-To: <CAL1qeaHzp==jmTB8dJ1M3NuocwuSqsfbVSU4nuM50vrOyfJ3qA@mail.gmail.com>
+Content-Type: text/plain; charset="utf-8"
+List-ID: <linux-iio@vger.kernel.org>
 
-This patchset adds support for sensorhub. It is an external mcu which
-manages and collects data from several sensors i.e. on Galaxy Gear 2 watch.
 
-It contains:
-- spi driver for sensorhub device
-- DT binding for the device
-- IIO common utils for ssp sensors (iio kfifo setup helpers, pre/post callbacks)
-- IIO accelerometer driver
-- IIO gyroscope driver
 
-For now the driver supports "traditional" sensors but new ones types are
-intended to be used.
+On 11/10/2014 06:28 PM, Andrew Bresticker wrote:
+> Ezequiel,
+> 
+> On Mon, Nov 10, 2014 at 11:59 AM, Ezequiel Garcia
+> <ezequiel.garcia@imgtec.com> wrote:
+>> On 11/10/2014 04:50 PM, Ezequiel Garcia wrote:
+>>> On 11/08/2014 09:57 AM, Jonathan Cameron wrote:
+>>>> On 05/11/14 21:56, Ezequiel Garcia wrote:
+>>>>>
+>>>>> diff --git a/Documentation/devicetree/bindings/iio/adc/cc_10001_adc.txt b/Documentation/devicetree/bindings/iio/adc/cc_10001_adc.txt
+>>>>> new file mode 100644
+>>>>> index 0000000..6491839
+>>>>> --- /dev/null
+>>>>> +++ b/Documentation/devicetree/bindings/iio/adc/cc_10001_adc.txt
+>>>>> @@ -0,0 +1,19 @@
+>>>>> +* Cosmic Circuits - Analog to Digital Converter (CC-10001-ADC)
+>>>>> +
+>>>>> +Required properties:
+>>>>> +  - compatible: Should be "cosmic,10001-adc"
+>>>>> +  - reg: Should contain adc registers location and length.
+>>>>> +  - cosmic,adc-available-channels: Bitmask of the channels currently enabled.
+>>>> I suspect there may be other preferred ways of doing this (child nodes perhaps
+>>>> for each enabled channel?)
+>>>
+>>> Hm, I'm not sure about this. As far I can recall, if a node has children
+>>> then it *must* be a bus, which is not the case. Of course, you'll find
+>>> examples doing this wrong.
+>>>
+>>
+>> On a second thought... I guess you meant something like this?
+>>
+>> adc: adc@18101600 {
+>>         compatible = "cosmic,10001-adc";
+>>         reg = <0x18101600 0x24>;
+>>         clocks = <&adc_clk>;
+>>         clock-names = "adc";
+>>         vref-supply = <&reg_1v8>;
+>>         cosmic,channels {
+>>                 #address-cells = <1>;
+>>                 #size-cells = <0>;
+>>                 channel@0 {
+>>                         reg = <0>;
+>>                 };
+>>                 channel@1 {
+>>                         reg = <1>;
+>>                 };
+>>         };
+>> };
+>>
+>> Might be better, but I don't have a strong opinion on it.
+> 
+> I actually don't think this is any better.  The point of the property
+> is to indicate which channels are available for use by the main CPU,
+> i.e. channels not used by the RPU co-processor.  The property is not
+> used to indicate the presence of certain channels in hardware, in
+> which case maybe a bus would be appropriate.
+> 
+> Also, perhaps it would be better to reverse the sense of the property
+> (maybe, "cosmic,reserved-adc-channels") and make it optional?  I did
+> something similar for the MIPS GIC binding:
+> http://patchwork.linux-mips.org/patch/8268/.
+> 
 
-It depends on:
-[PATCH v4 1/1] misc: st32fwu: Add stm32 upgrade protocol handling
-which is used to firmware upgrade.
+I'm fine with that. If Jonathan agrees with it (or better, if we can
+have an ack from a devicetree binding maintainer) I can spin a v3.
 
->From RFC:
-  Fixes after Jonathan rewiev
-
-Karol Wrona (5):
-  misc: sensorhub: Add sensorhub driver
-  sensorhub: Add sensorhub bindings
-  iio: sensorhub: Add sensorhub iio commons
-  iio: sensorhub: Add sensorhub accelerometer sensor
-  iio: sensorhub: Add sensorhub gyroscope sensor
-
- .../devicetree/bindings/misc/sensorhub.txt         |   46 ++
- drivers/iio/accel/Makefile                         |    2 +
- drivers/iio/accel/ssp_accel_sensor.c               |  211 +++++
- drivers/iio/common/Kconfig                         |    1 +
- drivers/iio/common/Makefile                        |    1 +
- drivers/iio/common/ssp_sensors/Kconfig             |   13 +
- drivers/iio/common/ssp_sensors/Makefile            |    5 +
- drivers/iio/common/ssp_sensors/ssp_iio.c           |   81 ++
- drivers/iio/common/ssp_sensors/ssp_iio_sensor.h    |   59 ++
- drivers/iio/gyro/Makefile                          |    2 +
- drivers/iio/gyro/ssp_gyro_sensor.c                 |  209 +++++
- drivers/misc/Kconfig                               |    1 +
- drivers/misc/Makefile                              |    1 +
- drivers/misc/sensorhub/Kconfig                     |   13 +
- drivers/misc/sensorhub/Makefile                    |    6 +
- drivers/misc/sensorhub/ssp.h                       |  279 +++++++
- drivers/misc/sensorhub/ssp_dev.c                   |  825 ++++++++++++++++++++
- drivers/misc/sensorhub/ssp_spi.c                   |  639 +++++++++++++++
- include/linux/iio/common/ssp_sensors.h             |   80 ++
- 19 files changed, 2474 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/misc/sensorhub.txt
- create mode 100644 drivers/iio/accel/ssp_accel_sensor.c
- create mode 100644 drivers/iio/common/ssp_sensors/Kconfig
- create mode 100644 drivers/iio/common/ssp_sensors/Makefile
- create mode 100644 drivers/iio/common/ssp_sensors/ssp_iio.c
- create mode 100644 drivers/iio/common/ssp_sensors/ssp_iio_sensor.h
- create mode 100644 drivers/iio/gyro/ssp_gyro_sensor.c
- create mode 100644 drivers/misc/sensorhub/Kconfig
- create mode 100644 drivers/misc/sensorhub/Makefile
- create mode 100644 drivers/misc/sensorhub/ssp.h
- create mode 100644 drivers/misc/sensorhub/ssp_dev.c
- create mode 100644 drivers/misc/sensorhub/ssp_spi.c
- create mode 100644 include/linux/iio/common/ssp_sensors.h
-
+Thanks!
 -- 
-1.7.9.5
-
+Ezequiel
