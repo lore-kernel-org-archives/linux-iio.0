@@ -1,70 +1,105 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ns.mm-sol.com ([37.157.136.199]:60258 "EHLO extserv.mm-sol.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1752036AbaKCPYP (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Mon, 3 Nov 2014 10:24:15 -0500
-From: "Ivan T. Ivanov" <iivanov@mm-sol.com>
-To: Jonathan Cameron <jic23@kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>
-Cc: "Ivan T. Ivanov" <iivanov@mm-sol.com>,
-	Angelo Compagnucci <angelo.compagnucci@gmail.com>,
-	Arnd Bergmann <arnd@arndb.de>,
-	Grant Likely <grant.likely@linaro.org>,
-	Rob Herring <robh+dt@kernel.org>, linux-kernel@vger.kernel.org,
-	linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-arm-msm@vger.kernel.org
-Subject: [PATCH v4 0/2] Initial support for voltage ADC
-Date: Mon,  3 Nov 2014 17:24:28 +0200
-Message-Id: <1415028270-25860-1-git-send-email-iivanov@mm-sol.com>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <vigneshr@ti.com>
+From: "R, Vignesh" <vigneshr@ti.com>
+To: Lee Jones <lee.jones@linaro.org>
+CC: Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>,
+        "Mark
+ Rutland" <mark.rutland@arm.com>,
+        Ian Campbell
+	<ijc+devicetree@hellion.org.uk>,
+        Kumar Gala <galak@codeaurora.org>,
+        Benoit
+ Cousson <bcousson@baylibre.com>,
+        Tony Lindgren <tony@atomide.com>,
+        Russell
+ King <linux@arm.linux.org.uk>,
+        Jonathan Cameron <jic23@kernel.org>, Hartmut
+ Knaack <knaack.h@gmx.de>,
+        "richardcochran@gmail.com"
+	<richardcochran@gmail.com>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Lars-Peter Clausen
+	<lars@metafoo.de>,
+        Peter Meerwald <pmeerw@pmeerw.net>,
+        Samuel Ortiz
+	<sameo@linux.intel.com>, "Balbi, Felipe" <balbi@ti.com>,
+        "Griffis, Brad"
+	<bgriffis@ti.com>,
+        Sanjeev Sharma <sanjeev_sharma@mentor.com>,
+        Paul Gortmaker
+	<paul.gortmaker@windriver.com>,
+        Jan Kardell <jan.kardell@telliq.com>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-omap@vger.kernel.org" <linux-omap@vger.kernel.org>,
+        "linux-arm-kernel@lists.infradead.org"
+	<linux-arm-kernel@lists.infradead.org>,
+        "linux-iio@vger.kernel.org"
+	<linux-iio@vger.kernel.org>,
+        "linux-input@vger.kernel.org"
+	<linux-input@vger.kernel.org>
+Subject: RE: [PATCH v3 3/6] mfd: ti_am335x_tscadc: Remove unwanted
+ reg_se_cache save
+Date: Tue, 11 Nov 2014 15:26:19 +0000
+Message-ID: <71C24A547111EA4E84AE759B748D9EAE4B976C@DBDE04.ent.ti.com>
+References: <1415694844-11230-1-git-send-email-vigneshr@ti.com>
+ <1415694844-11230-4-git-send-email-vigneshr@ti.com>
+ <20141111122623.GA24004@x1>
+In-Reply-To: <20141111122623.GA24004@x1>
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+List-ID: <linux-iio@vger.kernel.org>
 
-Hi, 
-
-This is the forth version of this driver. V3 could be found here [1].
-
-Changes since v3.
-
-- Addressed review comments from Hartmut Knaack and Mark Rutland:
-  Better description of 'reg' property.
-  Add # to address-cells and size-cells DT document.
-  Dropped interrupt-names property, it was not actually used by driver.
-  DT header file, which contain channels names definitions, is part of 
-  documentation patch now.
-  Clarified 'qcom,decimation' property. Hopefully it make sense now.
-  Make more explicit that all reference channels configuration nodes have
-  to be defined in DT.
-- Promote dev_dbg to dev_err in error paths. Stan, I hope you are ok with this :-)
-- Use 32 bit calculations in calibration routine.
-- Read ADC result with one regmap call.
-- Show status and state registers if ADC conversin fails. Errors should not
-  normally happen, so I will like to see content of this registers in such cases.
-- Use new struct iio_info::of_xlate for channel number translation.
-- Removed device wakeup initialization code, which didn't make sense to me
-  for such kind of device.
-
-Patches depend on "iio: inkern: Add of_xlate function to struct iio_info" patch,
-which is included in IIO testing branch [2].
-
-[1] http://comments.gmane.org/gmane.linux.ports.arm.msm/9741
-[2] http://git.kernel.org/cgit/linux/kernel/git/jic23/iio.git/log/?h=testing
-
-Stanimir Varbanov (2):
-  DT: iio: vadc: document dt binding
-  iio: vadc: Qualcomm SPMI PMIC voltage ADC driver
-
- .../devicetree/bindings/iio/adc/qcom,spmi-vadc.txt |  129 +++
- drivers/iio/adc/Kconfig                            |   14 +
- drivers/iio/adc/Makefile                           |    1 +
- drivers/iio/adc/qcom-spmi-vadc.c                   | 1015 ++++++++++++++++++++
- include/dt-bindings/iio/qcom,spmi-vadc.h           |  119 +++
- 5 files changed, 1278 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/iio/adc/qcom,spmi-vadc.txt
- create mode 100644 drivers/iio/adc/qcom-spmi-vadc.c
- create mode 100644 include/dt-bindings/iio/qcom,spmi-vadc.h
-
--- 
-1.9.1
-
+DQpPbiBUdWUsIDExIE5vdiAyMDE0LCBWaWduZXNoIFIgd3JvdGU6DQoNCj4gSW4gb25lIHNob3Qg
+bW9kZSwgc2VxdWVuY2VyIGF1dG9tYXRpY2FsbHkgZGlzYWJsZXMgYWxsIGVuYWJsZWQgc3RlcHMg
+DQo+IGF0IHRoZSBlbmQgb2YgZWFjaCBjeWNsZS4gKGJvdGggQURDIHN0ZXBzIGFuZCBUU0Mgc3Rl
+cHMpIEhlbmNlIHRoZXNlIA0KPiBzdGVwcyBuZWVkIG5vdCBiZSBzYXZlZCBpbiByZWdfc2VfY2Fj
+aGUgZm9yIGNsZWFyaW5nIHRoZXNlIHN0ZXBzIGF0IGEgDQo+IGxhdGVyIHN0YWdlLg0KPiBBbHNv
+LCB3aGVuIEFEQyB3YWtlcyB1cCBTZXF1ZW5jZXIgc2hvdWxkIG5vdCBiZSBidXN5IGV4ZWN1dGlu
+ZyBhbnkgb2YgDQo+IHRoZSBjb25maWcgc3RlcHMgZXhjZXB0IGZvciB0aGUgY2hhcmdlIHN0ZXAu
+IFByZXZpb3VzbHkgY2hhcmdlIHN0ZXAgDQo+IHdhcyAxIEFEQyBjbG9jayBjeWNsZSBhbmQgaGVu
+Y2UgaXQgd2FzIGlnbm9yZWQuDQo+IA0KPiBTaWduZWQtb2ZmLWJ5OiBWaWduZXNoIFIgPHZpZ25l
+c2hyQHRpLmNvbT4NCj4gLS0tDQoNCllvdSBuZWVkIHRvIHByb3ZpZGUgYSBjaGFuZ2Vsb2cgaGVy
+ZSB3aGVuIHN1Ym1pdHRpbmcgbmV3IHZlcnNpb25zLg0KDQpJIGhhdmUgaW5jbHVkZWQgY2hhbmdl
+bG9nIGluIHRoZSBjb3ZlciBwYWdlLiBXaWxsIGluY2x1ZGUgdGhlbSBpbiANCmluZGl2aWR1YWwg
+cGF0Y2hlcyBuZXh0IHRpbWUuDQoNCj4gIGRyaXZlcnMvbWZkL3RpX2FtMzM1eF90c2NhZGMuYyAg
+ICAgICB8IDcgKysrKystLQ0KPiAgaW5jbHVkZS9saW51eC9tZmQvdGlfYW0zMzV4X3RzY2FkYy5o
+IHwgMSArDQo+ICAyIGZpbGVzIGNoYW5nZWQsIDYgaW5zZXJ0aW9ucygrKSwgMiBkZWxldGlvbnMo
+LSkNCj4gDQo+IGRpZmYgLS1naXQgYS9kcml2ZXJzL21mZC90aV9hbTMzNXhfdHNjYWRjLmMgDQo+
+IGIvZHJpdmVycy9tZmQvdGlfYW0zMzV4X3RzY2FkYy5jIGluZGV4IGQ4NzdlNzc3Y2NlNi4uMTEw
+MDM4ODU5YThkIA0KPiAxMDA2NDQNCj4gLS0tIGEvZHJpdmVycy9tZmQvdGlfYW0zMzV4X3RzY2Fk
+Yy5jDQo+ICsrKyBiL2RyaXZlcnMvbWZkL3RpX2FtMzM1eF90c2NhZGMuYw0KPiBAQCAtODYsOCAr
+ODYsMTIgQEAgc3RhdGljIHZvaWQgYW0zMzV4X3RzY2FkY19uZWVkX2FkYyhzdHJ1Y3QgdGlfdHNj
+YWRjX2RldiAqdHNhZGMpDQo+ICAJCXNwaW5fbG9ja19pcnEoJnRzYWRjLT5yZWdfbG9jayk7DQo+
+ICAJCWZpbmlzaF93YWl0KCZ0c2FkYy0+cmVnX3NlX3dhaXQsICZ3YWl0KTsNCj4gIA0KPiArCQkv
+Kg0KPiArCQkgKiBTZXF1ZW5jZXIgc2hvdWxkIGVpdGhlciBiZSBpZGxlIG9yDQo+ICsJCSAqIGJ1
+c3kgYXBwbHlpbmcgdGhlIGNoYXJnZSBzdGVwLg0KPiArCQkgKi8NCj4gIAkJcmVnID0gdHNjYWRj
+X3JlYWRsKHRzYWRjLCBSRUdfQURDRlNNKTsNCj4gLQkJV0FSTl9PTihyZWcgJiBTRVFfU1RBVFVT
+KTsNCj4gKwkJV0FSTl9PTigocmVnICYgU0VRX1NUQVRVUykgJiYgIShyZWcgJiBDSEFSR0VfU1RF
+UCkpOw0KPiAgCQl0c2FkYy0+YWRjX3dhaXRpbmcgPSBmYWxzZTsNCj4gIAl9DQo+ICAJdHNhZGMt
+PmFkY19pbl91c2UgPSB0cnVlOw0KPiBAQCAtOTYsNyArMTAwLDYgQEAgc3RhdGljIHZvaWQgYW0z
+MzV4X3RzY2FkY19uZWVkX2FkYyhzdHJ1Y3QgDQo+IHRpX3RzY2FkY19kZXYgKnRzYWRjKSAgdm9p
+ZCBhbTMzNXhfdHNjX3NlX3NldF9vbmNlKHN0cnVjdCANCj4gdGlfdHNjYWRjX2RldiAqdHNhZGMs
+IHUzMiB2YWwpICB7DQo+ICAJc3Bpbl9sb2NrX2lycSgmdHNhZGMtPnJlZ19sb2NrKTsNCj4gLQl0
+c2FkYy0+cmVnX3NlX2NhY2hlIHw9IHZhbDsNCg0KWW91IGRpZG4ndCBhbnN3ZXIgbXkgcXVlc3Rp
+b24gYWJvdXQgdGhpcz8NCkkgZGlkIHJlcGx5IHRvIHRoZSBxdWVzdGlvbiBpbiB0aGUgcHJldmlv
+dXMgdGhyZWFkLiAgDQoNClByZXZpb3VzbHksIFRTQyBkaWQgbm90IHJlbGlhYmx5IHJlLWVuYWJs
+ZSBpdHMgc3RlcHMgYXMgdGhlIFRTQyBpcnEgaGFuZGxlciByZWNlaXZlZCANCmZhbHNlIHBlbiB1
+cCBldmVudHMuIEhlbmNlLCBpbiBvcmRlciB0byB1c2UgVFNDIGFmdGVyIEFEQyBvcGVyYXRpb24s
+IGl0IHdhcyBuZWNlc3NhcnkgdG8NCiBzYXZlIGFuZCByZS1lbmFibGUgVFNDIHN0ZXBzIChiYXNp
+Y2FsbHksIHRvIGtlZXAgVFNDIHN0ZXBzIGVuYWJsZWQgYWx3YXlzKS4NClRoZSBjaGFuZ2Ugd2Fz
+IG1vcmUgb2YgYSB3b3JrYXJvdW5kIHRvIG92ZXJjb21lIGxpbWl0YXRpb24gb2YgVFNDIGlycSBo
+YW5kbGVyLiBXaXRoIA0KdGhpcyBzZXJpZXMgb2YgcGF0Y2hlcywgVFNDIGlycSBoYW5kbGVyIGlz
+IHZlcnkgcmVsaWFibGUgYW5kIHRoZSB3b3JrYXJvdW5kIGlzIG5vIGxvbmdlciByZXF1aXJlZC4N
+Cg0KPiAgCWFtMzM1eF90c2NhZGNfbmVlZF9hZGModHNhZGMpOw0KPiAgDQo+ICAJdHNjYWRjX3dy
+aXRlbCh0c2FkYywgUkVHX1NFLCB2YWwpOw0KPiBkaWZmIC0tZ2l0IGEvaW5jbHVkZS9saW51eC9t
+ZmQvdGlfYW0zMzV4X3RzY2FkYy5oIA0KPiBiL2luY2x1ZGUvbGludXgvbWZkL3RpX2FtMzM1eF90
+c2NhZGMuaA0KPiBpbmRleCBjOTliZTVkYzBmNWMuLmZjY2UxODJlNGEzNSAxMDA2NDQNCj4gLS0t
+IGEvaW5jbHVkZS9saW51eC9tZmQvdGlfYW0zMzV4X3RzY2FkYy5oDQo+ICsrKyBiL2luY2x1ZGUv
+bGludXgvbWZkL3RpX2FtMzM1eF90c2NhZGMuaA0KPiBAQCAtMTI4LDYgKzEyOCw3IEBADQo+ICAN
+Cj4gIC8qIFNlcXVlbmNlciBTdGF0dXMgKi8NCj4gICNkZWZpbmUgU0VRX1NUQVRVUyBCSVQoNSkN
+Cj4gKyNkZWZpbmUgQ0hBUkdFX1NURVAJCTB4MTENCj4gIA0KPiAgI2RlZmluZSBBRENfQ0xLCQkJ
+MzAwMDAwMA0KPiAgI2RlZmluZSBUT1RBTF9TVEVQUwkJMTYNCg0KLS0NCkxlZSBKb25lcw0KTGlu
+YXJvIFNUTWljcm9lbGVjdHJvbmljcyBMYW5kaW5nIFRlYW0gTGVhZCBMaW5hcm8ub3JnIOKUgiBP
+cGVuIHNvdXJjZSBzb2Z0d2FyZSBmb3IgQVJNIFNvQ3MgRm9sbG93IExpbmFybzogRmFjZWJvb2sg
+fCBUd2l0dGVyIHwgQmxvZw0K
