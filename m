@@ -1,43 +1,73 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ns.mm-sol.com ([37.157.136.199]:51836 "EHLO extserv.mm-sol.com"
+Received: from mga01.intel.com ([192.55.52.88]:10087 "EHLO mga01.intel.com"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1750959AbaKCIoq (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Mon, 3 Nov 2014 03:44:46 -0500
-Message-ID: <1415004303.407.11.camel@mm-sol.com>
-Subject: Re: [PATCH v4] iio: iadc: Qualcomm SPMI PMIC current ADC driver
-From: "Ivan T. Ivanov" <iivanov@mm-sol.com>
-To: Peter Meerwald <pmeerw@pmeerw.net>
-Cc: Hartmut Knaack <knaack.h@gmx.de>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-arm-msm@vger.kernel.org
-Date: Mon, 03 Nov 2014 10:45:03 +0200
-In-Reply-To: <alpine.DEB.2.02.1410312128100.18476@pmeerw.net>
-References: <1413987213-22218-1-git-send-email-iivanov@mm-sol.com>
-	 <5453ED55.2000003@gmx.de> <alpine.DEB.2.02.1410312128100.18476@pmeerw.net>
-Content-Type: text/plain; charset="UTF-8"
-Mime-Version: 1.0
+	id S935056AbaKLBsN (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Tue, 11 Nov 2014 20:48:13 -0500
+Message-ID: <5462BC5A.7070407@intel.com>
+Date: Wed, 12 Nov 2014 09:48:10 +0800
+From: Aaron Lu <aaron.lu@intel.com>
+MIME-Version: 1.0
+To: "Rafael J. Wysocki" <rjw@rjwysocki.net>,
+	Lee Jones <lee.jones@linaro.org>
+CC: linux-acpi@vger.kernel.org, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Jacob Pan <jacob.jun.pan@linux.intel.com>
+Subject: Re: [PATCH 0/3] Support PMIC operation region for CrystalCove and
+ XPower
+References: <1414735705-18366-1-git-send-email-aaron.lu@intel.com> <54616E55.80204@intel.com> <20141111111152.GX24004@x1> <3052882.EdcZmghHR3@vostro.rjw.lan>
+In-Reply-To: <3052882.EdcZmghHR3@vostro.rjw.lan>
+Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-
-On Fri, 2014-10-31 at 21:48 +0100, Peter Meerwald wrote:
-> > Ivan T. Ivanov schrieb am 22.10.2014 16:13:
-> > > The current ADC is peripheral of Qualcomm SPMI PMIC chips. It has
-> > > 16 bits resolution and register space inside PMIC accessible across
-> > > SPMI bus.
-> > >
-> > > The driver registers itself through IIO interface.
-> > Pretty much there, just one question I would like to double-check: The CPU of these chips is 
-> Little Endian, right?
-> > Annoyingly, you introduced a small typo in this revision, but that alone doesn't qualify for a 
-> new revision. A separate patch fixing it would probably be best. See inline.
+On 11/12/2014 07:35 AM, Rafael J. Wysocki wrote:
+> On Tuesday, November 11, 2014 11:11:52 AM Lee Jones wrote:
+>> On Tue, 11 Nov 2014, Aaron Lu wrote:
+>>
+>>> On 10/31/2014 02:08 PM, Aaron Lu wrote:
+>>>> On Intel Baytrail-T and Baytrail-T-CR platforms, there are two customized
+>>>> ACPI operation regions defined for the Power Management Integrated Circuit
+>>>> device, one is for power resource handling and one is for thermal: sensor
+>>>> temperature reporting, trip point setting, etc. There are different PMIC
+>>>> chips used on those platforms and though each has the same two operation
+>>>> regions and functionality, their implementation is different so every PMIC
+>>>> will need a driver. But since their functionality is similar, some common
+>>>> code is abstracted into the intel_soc_pmic_opregion.c.
+>>>>
+>>>> The last version is posted here:
+>>>> https://lkml.org/lkml/2014/9/8/801
+>>>>
+>>>> Changes since then:
+>>>> 1 Move to drivers/acpi as discussed on the above thread;
+>>>> 2 Added support for XPower AXP288 PMIC operation region support;
+>>>> 3 Since operation region handler can not be removed(at the moment at least),
+>>>>   use bool for the two operation region driver configs instead of tristate;
+>>>>   Another reason to do this is that, with Mika's MFD ACPI support patch, all
+>>>>   those MFD cell devices created will have the same modalias as their parent's
+>>>>   so it doesn't make much sense to compile these drivers into modules.
+>>>>
+>>>> Patch 1 applies on top of Rafael's pm-next branch, and then patch 2 and
+>>>> patch 3 needs merge of Lee's mfd/ib-mfd-iio-3.19 branch where the PMIC
+>>>> driver XPower AXP288 and iio driver axp288_adc is located.
+>>>
+>>> Since patch 2-3 are based on top of the mfd/ib-mfd-iio-3.19 branch, it
+>>> would be easy to go through the mfd/ib-mfd-iio-3.19 branch.
+>>>
+>>> Rafael,
+>>> Can I get your ACK for the three patches?
+>>>
+>>> Lee,
+>>> Can you please take the series if Rafael gives it ack?
+>>
+>> Yes, no problem.
 > 
-> some minor comments below
+> Well, since the code is going to reside mostly in drivers/acpi, I think I should
+> be applying the patches and from your response it looks like you are fine with
+> them.  Is that correct?
 
-Thanks, will fix them. IIO maintainers, what do you
-prefer, new version or fallow-up patch?
+Oh I thought you may not want to merge another branch into your next
+branch so I asked this question. If you can handle the whole thing in your
+tree, that's of course not a problem :-)
 
-Regards,
-Ivan
+Thanks,
+Aaron
