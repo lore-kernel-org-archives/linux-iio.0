@@ -1,73 +1,81 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga09.intel.com ([134.134.136.24]:43203 "EHLO mga09.intel.com"
+Received: from ns.mm-sol.com ([37.157.136.199]:42863 "EHLO extserv.mm-sol.com"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1750993AbaKKCEr (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Mon, 10 Nov 2014 21:04:47 -0500
-Message-ID: <54616E55.80204@intel.com>
-Date: Tue, 11 Nov 2014 10:03:01 +0800
-From: Aaron Lu <aaron.lu@intel.com>
-MIME-Version: 1.0
-To: "Rafael J. Wysocki" <rjw@rjwysocki.net>,
-	Lee Jones <lee.jones@linaro.org>
-CC: linux-acpi@vger.kernel.org, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Jacob Pan <jacob.jun.pan@linux.intel.com>
-Subject: Re: [PATCH 0/3] Support PMIC operation region for CrystalCove and
- XPower
-References: <1414735705-18366-1-git-send-email-aaron.lu@intel.com>
-In-Reply-To: <1414735705-18366-1-git-send-email-aaron.lu@intel.com>
-Content-Type: text/plain; charset=utf-8
+	id S1751249AbaKLIyy (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Wed, 12 Nov 2014 03:54:54 -0500
+Message-ID: <1415782511.4820.2.camel@mm-sol.com>
+Subject: Re: [PATCH v4 2/2] iio: vadc: Qualcomm SPMI PMIC voltage ADC driver
+From: "Ivan T. Ivanov" <iivanov@mm-sol.com>
+To: Hartmut Knaack <knaack.h@gmx.de>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Stanimir Varbanov <svarbanov@mm-sol.com>,
+	Angelo Compagnucci <angelo.compagnucci@gmail.com>,
+	Grant Likely <grant.likely@linaro.org>,
+	linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org, linux-arm-msm@vger.kernel.org
+Date: Wed, 12 Nov 2014 10:55:11 +0200
+In-Reply-To: <54629026.3080002@gmx.de>
+References: <1415028270-25860-1-git-send-email-iivanov@mm-sol.com>
+		 <1415028270-25860-3-git-send-email-iivanov@mm-sol.com>
+		 <54612A0D.7020308@gmx.de> <1415694109.22935.13.camel@mm-sol.com>
+	 <54629026.3080002@gmx.de>
+Content-Type: text/plain; charset="UTF-8"
+Mime-Version: 1.0
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 10/31/2014 02:08 PM, Aaron Lu wrote:
-> On Intel Baytrail-T and Baytrail-T-CR platforms, there are two customized
-> ACPI operation regions defined for the Power Management Integrated Circuit
-> device, one is for power resource handling and one is for thermal: sensor
-> temperature reporting, trip point setting, etc. There are different PMIC
-> chips used on those platforms and though each has the same two operation
-> regions and functionality, their implementation is different so every PMIC
-> will need a driver. But since their functionality is similar, some common
-> code is abstracted into the intel_soc_pmic_opregion.c.
-> 
-> The last version is posted here:
-> https://lkml.org/lkml/2014/9/8/801
-> 
-> Changes since then:
-> 1 Move to drivers/acpi as discussed on the above thread;
-> 2 Added support for XPower AXP288 PMIC operation region support;
-> 3 Since operation region handler can not be removed(at the moment at least),
->   use bool for the two operation region driver configs instead of tristate;
->   Another reason to do this is that, with Mika's MFD ACPI support patch, all
->   those MFD cell devices created will have the same modalias as their parent's
->   so it doesn't make much sense to compile these drivers into modules.
-> 
-> Patch 1 applies on top of Rafael's pm-next branch, and then patch 2 and
-> patch 3 needs merge of Lee's mfd/ib-mfd-iio-3.19 branch where the PMIC
-> driver XPower AXP288 and iio driver axp288_adc is located.
 
-Since patch 2-3 are based on top of the mfd/ib-mfd-iio-3.19 branch, it
-would be easy to go through the mfd/ib-mfd-iio-3.19 branch.
+On Tue, 2014-11-11 at 23:39 +0100, Hartmut Knaack wrote:
+> Ivan T. Ivanov schrieb am 11.11.2014 09:21:
+> > Hi Hartmut,
+> > 
+> > On Mon, 2014-11-10 at 22:11 +0100, Hartmut Knaack wrote:
+> > > Ivan T. Ivanov schrieb am 03.11.2014 16:24:
+> > > > From: Stanimir Varbanov <svarbanov@mm-sol.com>
+> > > > 
+> > > > The voltage ADC is peripheral of Qualcomm SPMI PMIC chips. It has
+> > > > 15 bits resolution and register space inside PMIC accessible across
+> > > > SPMI bus.
+> > > > 
+> > > > The vadc driver registers itself through IIO interface.
+> > > Reviewing again, I got the feeling that due to the complexity of adc reads (writing to 
+> > > register
+> > > to start conversion, waiting a decent time for the conversion to complete, reading the 
+> > > result),
+> > > it would be beneficial to use a mutex in vadc_read_raw or its depending functions.
+> > 
+> > Hm, yes, but there is such a nice info_exist_lock :-) in core functions,
+> > which in practice serve the same purpose.
+> I seem to miss that. Please point me in the right direction.
 
-Rafael,
-Can I get your ACK for the three patches?
+I am referring to info_exist_lock mutex part of struct iio_dev. 
+It protects all operations inkern.c, no?
 
-Lee,
-Can you please take the series if Rafael gives it ack?
+> > > 
+> > > > +
+> > > > +       ret = of_property_read_u32(node, "reg", &res);
+> > > For u16, there would be of_property_read_u16().
+> > > > +       if (ret < 0)
+> > > > +       return -ENODEV;
+> > > Just return ret here?
+> > 
+> > I am usually trying to follow these recommendations[1]. In practice driver
+> > core cares only for EPROBE_DEFER, ENODEV and ENXIO, while of_property_read_u32()
+> > can return ENODATA and EOVERFLOW, which did't not make sense for the core.
+> Please point me in the right direction on this one, too. It is pretty common to pass error codes 
+> up, as it is also mentioned in [1].
 
-Thanks,
-Aaron
+Yes, I know that is common to just pass error codes up, but in this case it did't 
+make too much sense, I think. Also take a look at realy_probe() and line 343.
 
-> 
-> Aaron Lu (3):
->   ACPI / pmic_opregion: support PMIC operation region for CrystalCove
->   ACPI / pmic_opregion: support PMIC operation region for XPower AXP288
->   ACPI / pmic_opregion: AXP288: support virtual GPIO in ACPI table
-> 
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-kernel" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> Please read the FAQ at  http://www.tux.org/lkml/
-> 
+> Yet, this thread in [1] seems more like a draft to me, as Greg K-H wrote in the end: "Fair 
+> enough, care to respin this and send it out to me for review?"
 
+
+
+Yes, but it make sense to me.
+
+Regards,
+Ivan
