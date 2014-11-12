@@ -1,45 +1,63 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mailapp01.imgtec.com ([195.59.15.196]:60140 "EHLO
-	mailapp01.imgtec.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S932910AbaKMOQN (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 13 Nov 2014 09:16:13 -0500
-From: Ezequiel Garcia <ezequiel.garcia@imgtec.com>
-To: Andrew Bresticker <abrestic@chromium.org>,
-	James Hartley <james.hartley@imgtec.com>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	"Jonathan Cameron" <jic23@kernel.org>
-CC: <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
-	<robh+dt@kernel.org>, <Pawel.Moll@arm.com>, <Mark.Rutland@arm.com>,
-	<ijc+devicetree@hellion.org.uk>, <galak@codeaurora.org>,
-	<Naidu.Tellapati@imgtec.com>,
-	Ezequiel Garcia <ezequiel.garcia@imgtec.com>
-Subject: [PATCH v3 3/3] DT: Add a vendor prefix for Cosmic Circuits
-Date: Thu, 13 Nov 2014 11:14:00 -0300
-Message-ID: <1415888044-16635-4-git-send-email-ezequiel.garcia@imgtec.com>
-In-Reply-To: <1415888044-16635-1-git-send-email-ezequiel.garcia@imgtec.com>
-References: <1415888044-16635-1-git-send-email-ezequiel.garcia@imgtec.com>
-MIME-Version: 1.0
-Content-Type: text/plain
+Received: from mailout4.samsung.com ([203.254.224.34]:51504 "EHLO
+	mailout4.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750738AbaKLHGK (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 12 Nov 2014 02:06:10 -0500
+From: Jingoo Han <jg1.han@samsung.com>
+To: 'Daniel Baluta' <daniel.baluta@intel.com>
+Cc: 'Andrew Morton' <akpm@linux-foundation.org>,
+	'Greg Kroah-Hartman' <gregkh@linuxfoundation.org>,
+	'Joe Perches' <joe@perches.com>,
+	'Jonathan Cameron' <jic23@kernel.org>,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+	"'David S. Miller'" <davem@davemloft.net>,
+	'Mauro Carvalho Chehab' <mchehab@osg.samsung.com>,
+	'Antti Palosaari' <crope@iki.fi>,
+	'Hartmut Knaack' <knaack.h@gmx.de>,
+	'Lars-Peter Clausen' <lars@metafoo.de>,
+	'Peter Meerwald' <pmeerw@pmeerw.net>,
+	'Jingoo Han' <jg1.han@samsung.com>
+References: <1415716594-18145-1-git-send-email-daniel.baluta@intel.com>
+In-reply-to: <1415716594-18145-1-git-send-email-daniel.baluta@intel.com>
+Subject: Re: [PATCH] MAINTAINERS: Add IIO include files
+Date: Wed, 12 Nov 2014 16:06:52 +0900
+Message-id: <000801cffe47$3c87f570$b597e050$%han@samsung.com>
+MIME-version: 1.0
+Content-type: text/plain; charset=us-ascii
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Signed-off-by: Ezequiel Garcia <ezequiel.garcia@imgtec.com>
----
- Documentation/devicetree/bindings/vendor-prefixes.txt | 1 +
- 1 file changed, 1 insertion(+)
+On Tuesday, November 11, 2014 11:37 PM, Daniel Baluta wrote:
+> 
+> Files under include/linux/iio were not reported as part
+> of the IIO subsystem.
+> 
+> Reported-by: Cristina Ciocan <cristina.ciocan@intel.com>
+> Signed-off-by: Daniel Baluta <daniel.baluta@intel.com>
 
-diff --git a/Documentation/devicetree/bindings/vendor-prefixes.txt b/Documentation/devicetree/bindings/vendor-prefixes.txt
-index 723999d..1bfa13a 100644
---- a/Documentation/devicetree/bindings/vendor-prefixes.txt
-+++ b/Documentation/devicetree/bindings/vendor-prefixes.txt
-@@ -35,6 +35,7 @@ chrp	Common Hardware Reference Platform
- chunghwa	Chunghwa Picture Tubes Ltd.
- cirrus	Cirrus Logic, Inc.
- cortina	Cortina Systems, Inc.
-+cosmic	Cosmic Circuits
- crystalfontz	Crystalfontz America, Inc.
- dallas	Maxim Integrated Products (formerly Dallas Semiconductor)
- davicom	DAVICOM Semiconductor, Inc.
--- 
-2.1.0
+(+cc Hartmut Knaack, Lars-Peter Clausen, Peter Meerwald)
+
+Reviewed-by: Jingoo Han <jg1.han@samsung.com>
+
+Best regards,
+Jingoo Han
+
+> ---
+>  MAINTAINERS | 1 +
+>  1 file changed, 1 insertion(+)
+> 
+> diff --git a/MAINTAINERS b/MAINTAINERS
+> index b2f927b..ebb9c38 100644
+> --- a/MAINTAINERS
+> +++ b/MAINTAINERS
+> @@ -4631,6 +4631,7 @@ L:	linux-iio@vger.kernel.org
+>  S:	Maintained
+>  F:	drivers/iio/
+>  F:	drivers/staging/iio/
+> +F:	include/linux/iio/
+> 
+>  IKANOS/ADI EAGLE ADSL USB DRIVER
+>  M:	Matthieu Castet <castet.matthieu@free.fr>
+> --
+> 1.9.1
 
