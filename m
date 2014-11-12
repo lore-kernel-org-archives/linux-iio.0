@@ -1,63 +1,81 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from relay3-d.mail.gandi.net ([217.70.183.195]:38056 "EHLO
-	relay3-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752516AbaKPWml convert rfc822-to-8bit (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 16 Nov 2014 17:42:41 -0500
-References: <1414593052.2406.37.camel@hadess.net> <5451221D.6000301@metafoo.de> <1414604035.2406.41.camel@hadess.net> <54512640.3040505@metafoo.de> <1414604840.2406.43.camel@hadess.net> <54513238.6050903@metafoo.de> <1415909105.30887.3.camel@hadess.net> <5469214A.9000203@kernel.org>
-Mime-Version: 1.0 (1.0)
-In-Reply-To: <5469214A.9000203@kernel.org>
-Content-Type: text/plain;
-	charset=us-ascii
-Message-Id: <1851AC2B-97B9-4D5F-BC1E-3BD7C265A2E2@hadess.net>
-Cc: Lars-Peter Clausen <lars@metafoo.de>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	Lennart Poettering <lennart@poettering.net>,
-	Cosimo Cecchi <cosimoc@gnome.org>
-From: Bastien Nocera <hadess@hadess.net>
-Subject: Re: Kernel wishlist item: Better IIO API
-Date: Sun, 16 Nov 2014 23:42:36 +0100
-To: Jonathan Cameron <jic23@kernel.org>
+Received: from mail-ie0-f173.google.com ([209.85.223.173]:46748 "EHLO
+	mail-ie0-f173.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751848AbaKLJoZ (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 12 Nov 2014 04:44:25 -0500
+Received: by mail-ie0-f173.google.com with SMTP id tr6so13077291ieb.4
+        for <linux-iio@vger.kernel.org>; Wed, 12 Nov 2014 01:44:25 -0800 (PST)
+Date: Wed, 12 Nov 2014 09:44:19 +0000
+From: Lee Jones <lee.jones@linaro.org>
+To: "Rafael J. Wysocki" <rjw@rjwysocki.net>
+Cc: Aaron Lu <aaron.lu@intel.com>, linux-acpi@vger.kernel.org,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+	Jacob Pan <jacob.jun.pan@linux.intel.com>
+Subject: Re: [PATCH 0/3] Support PMIC operation region for CrystalCove and
+ XPower
+Message-ID: <20141112094419.GC24004@x1>
+References: <1414735705-18366-1-git-send-email-aaron.lu@intel.com>
+ <54616E55.80204@intel.com>
+ <20141111111152.GX24004@x1>
+ <3052882.EdcZmghHR3@vostro.rjw.lan>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+In-Reply-To: <3052882.EdcZmghHR3@vostro.rjw.lan>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
+On Wed, 12 Nov 2014, Rafael J. Wysocki wrote:
 
-> On 16 Nov 2014, at 23:12, Jonathan Cameron <jic23@kernel.org> wrote:
+> On Tuesday, November 11, 2014 11:11:52 AM Lee Jones wrote:
+> > On Tue, 11 Nov 2014, Aaron Lu wrote:
+> > 
+> > > On 10/31/2014 02:08 PM, Aaron Lu wrote:
+> > > > On Intel Baytrail-T and Baytrail-T-CR platforms, there are two customized
+> > > > ACPI operation regions defined for the Power Management Integrated Circuit
+> > > > device, one is for power resource handling and one is for thermal: sensor
+> > > > temperature reporting, trip point setting, etc. There are different PMIC
+> > > > chips used on those platforms and though each has the same two operation
+> > > > regions and functionality, their implementation is different so every PMIC
+> > > > will need a driver. But since their functionality is similar, some common
+> > > > code is abstracted into the intel_soc_pmic_opregion.c.
+> > > > 
+> > > > The last version is posted here:
+> > > > https://lkml.org/lkml/2014/9/8/801
+> > > > 
+> > > > Changes since then:
+> > > > 1 Move to drivers/acpi as discussed on the above thread;
+> > > > 2 Added support for XPower AXP288 PMIC operation region support;
+> > > > 3 Since operation region handler can not be removed(at the moment at least),
+> > > >   use bool for the two operation region driver configs instead of tristate;
+> > > >   Another reason to do this is that, with Mika's MFD ACPI support patch, all
+> > > >   those MFD cell devices created will have the same modalias as their parent's
+> > > >   so it doesn't make much sense to compile these drivers into modules.
+> > > > 
+> > > > Patch 1 applies on top of Rafael's pm-next branch, and then patch 2 and
+> > > > patch 3 needs merge of Lee's mfd/ib-mfd-iio-3.19 branch where the PMIC
+> > > > driver XPower AXP288 and iio driver axp288_adc is located.
+> > > 
+> > > Since patch 2-3 are based on top of the mfd/ib-mfd-iio-3.19 branch, it
+> > > would be easy to go through the mfd/ib-mfd-iio-3.19 branch.
+> > > 
+> > > Rafael,
+> > > Can I get your ACK for the three patches?
+> > > 
+> > > Lee,
+> > > Can you please take the series if Rafael gives it ack?
+> > 
+> > Yes, no problem.
 > 
->> The driver used in the Onda tablet I have is far less featureful.
->> - find the accelerometer iio device (this time called "i2c-SMO8500:00")
->> - build the channel array (?? I haven't found how)
->> - read the scale of each axis
->> - read directly from the sysfs files for each axis (?? surely not) on a
->> regular basis, scale the values, and we have the 3 dimensions
-> On this second one, the driver has trigger and buffer support
-> (not all drivers have as it's optional - doesn't make any sense for very
-> slow devices and adds some complexity).
-> 
-> However, looking at that driver - the interrupt is optional. If
-> it's not there (i.e. either the pin isn't connected, or the relevant
-> information isn't supplied to the driver to tell it which interrupt
-> is in use) then the driver does indeed only enable the polled mode.
-> That is, it doesn't set up either the trigger or the buffer.
-> 
-> So the question is whether the tablet really doesn't route that pin
-> or whether there is an issue in the driver identifying it.
-> 
-> Looking briefly back at the patch that added support for the SM08500
-> it was clear then that we didn't have the interrupt.
-> Hence we are into the realms of polling at some level...
+> Well, since the code is going to reside mostly in drivers/acpi, I think I should
+> be applying the patches and from your response it looks like you are fine with
+> them.  Is that correct?
 
-I'll try to ask somebody with Windows on that tablet whether there is an interrupt associated with the device or not. It could very well be a problem with the ACPI support on that tablet (I'm still chasing battery reporting...)
+I read that this set has dependencies on patches which are already in
+the MFD tree.  If that's not the case please go ahead and apply them
+with my Ack for the MFD components.
 
-> It would be fine to add support to the driver for a trigger that
-> instead of using the interrupt simply polls the device - ugly but
-> about all we can do here.  Looks like reading the int_source1 register
-> will tell us whether new data is available...
-> 
-> So in conclusion - the issue here is that a rather nasty work around
-> is needed for either a bad configuration or non optimal hardware design.
-> 
-> Still I guess there isn't much we can do about it...
-
-But without the scan_elements subdir, I can't know what the device would spit out, so I need to use sysfs directly, not the dev node. Is that correct?
-
-Cheers
+-- 
+Lee Jones
+Linaro STMicroelectronics Landing Team Lead
+Linaro.org │ Open source software for ARM SoCs
+Follow Linaro: Facebook | Twitter | Blog
