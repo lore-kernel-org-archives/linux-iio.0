@@ -1,44 +1,45 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pa0-f52.google.com ([209.85.220.52]:34012 "EHLO
-	mail-pa0-f52.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753395AbaKHRXJ (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 8 Nov 2014 12:23:09 -0500
-From: Darshana Padmadas <darshanapadmadas@gmail.com>
-To: devicetree@vger.kernel.org
-Cc: devel@driverdev.osuosl.org, linux-arm-kernel@lists.infradead.org,
-	linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-	opw-kernel@googlegroups.com,
-	Darshana Padmadas <darshanapadmadas@gmail.com>
-Subject: [PATCH v5 0/4] Correct vendor-prefix and document device isl29028
-Date: Sat,  8 Nov 2014 22:52:04 +0530
-Message-Id: <1415467328-9745-1-git-send-email-darshanapadmadas@gmail.com>
-Content-Type: text/plain; charset="utf-8"
+Received: from mailapp01.imgtec.com ([195.59.15.196]:60140 "EHLO
+	mailapp01.imgtec.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S932910AbaKMOQN (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 13 Nov 2014 09:16:13 -0500
+From: Ezequiel Garcia <ezequiel.garcia@imgtec.com>
+To: Andrew Bresticker <abrestic@chromium.org>,
+	James Hartley <james.hartley@imgtec.com>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	"Jonathan Cameron" <jic23@kernel.org>
+CC: <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
+	<robh+dt@kernel.org>, <Pawel.Moll@arm.com>, <Mark.Rutland@arm.com>,
+	<ijc+devicetree@hellion.org.uk>, <galak@codeaurora.org>,
+	<Naidu.Tellapati@imgtec.com>,
+	Ezequiel Garcia <ezequiel.garcia@imgtec.com>
+Subject: [PATCH v3 3/3] DT: Add a vendor prefix for Cosmic Circuits
+Date: Thu, 13 Nov 2014 11:14:00 -0300
+Message-ID: <1415888044-16635-4-git-send-email-ezequiel.garcia@imgtec.com>
+In-Reply-To: <1415888044-16635-1-git-send-email-ezequiel.garcia@imgtec.com>
+References: <1415888044-16635-1-git-send-email-ezequiel.garcia@imgtec.com>
+MIME-Version: 1.0
+Content-Type: text/plain
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Patchset documents correct and the deprecated vendor-prefix found by checkpatch
-warning and also documents information of device isl29028 for compatibility.
-Patchset also includes corrected vendor-prefix and device name in compatible
-property for files with checkpatch warning of undocumented string "isil,isl29028".
+Signed-off-by: Ezequiel Garcia <ezequiel.garcia@imgtec.com>
+---
+ Documentation/devicetree/bindings/vendor-prefixes.txt | 1 +
+ 1 file changed, 1 insertion(+)
 
-Darshana Padmadas (4):
-  dt-bindings: Document correct and deprecated vendor-prefix with device
-    isl29028
-  dt-bindings: Document deprecated device vendor name to fix related
-    warning
-  Staging: iio: light: Added correct vendor-prefix for device isl29028
-  arch: arm: boot: dts: Correct vendor-prefix for iio device isl29028 in
-    compatible property
-
-Changes in v5:
-    - Shortened subject in PATCH 1/4 and PATCH 2/4.
-
- Documentation/devicetree/bindings/i2c/trivial-devices.txt | 2 ++
- Documentation/devicetree/bindings/vendor-prefixes.txt     | 1 +
- drivers/staging/iio/light/isl29028.c                      | 3 ++-
- arch/arm/boot/dts/tegra30-cardhu.dtsi                     | 2 +-
- 4 files changed, 6 insertions(+), 2 deletions(-)
-
+diff --git a/Documentation/devicetree/bindings/vendor-prefixes.txt b/Documentation/devicetree/bindings/vendor-prefixes.txt
+index 723999d..1bfa13a 100644
+--- a/Documentation/devicetree/bindings/vendor-prefixes.txt
++++ b/Documentation/devicetree/bindings/vendor-prefixes.txt
+@@ -35,6 +35,7 @@ chrp	Common Hardware Reference Platform
+ chunghwa	Chunghwa Picture Tubes Ltd.
+ cirrus	Cirrus Logic, Inc.
+ cortina	Cortina Systems, Inc.
++cosmic	Cosmic Circuits
+ crystalfontz	Crystalfontz America, Inc.
+ dallas	Maxim Integrated Products (formerly Dallas Semiconductor)
+ davicom	DAVICOM Semiconductor, Inc.
 -- 
-1.9.1
+2.1.0
 
