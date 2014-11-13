@@ -1,83 +1,77 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from v094114.home.net.pl ([79.96.170.134]:51536 "HELO
+Received: from v094114.home.net.pl ([79.96.170.134]:53826 "HELO
 	v094114.home.net.pl" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with SMTP id S1752513AbaKMAab (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 12 Nov 2014 19:30:31 -0500
+	with SMTP id S1752462AbaKMAc2 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 12 Nov 2014 19:32:28 -0500
 From: "Rafael J. Wysocki" <rjw@rjwysocki.net>
-To: Aaron Lu <aaron.lu@intel.com>
-Cc: Lee Jones <lee.jones@linaro.org>, linux-acpi@vger.kernel.org,
+To: Lee Jones <lee.jones@linaro.org>
+Cc: Aaron Lu <aaron.lu@intel.com>, linux-acpi@vger.kernel.org,
 	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
 	Jacob Pan <jacob.jun.pan@linux.intel.com>
 Subject: Re: [PATCH 0/3] Support PMIC operation region for CrystalCove and XPower
-Date: Thu, 13 Nov 2014 01:51:26 +0100
-Message-ID: <1834078.D8VLOj1LAI@vostro.rjw.lan>
-In-Reply-To: <5462BC5A.7070407@intel.com>
-References: <1414735705-18366-1-git-send-email-aaron.lu@intel.com> <3052882.EdcZmghHR3@vostro.rjw.lan> <5462BC5A.7070407@intel.com>
+Date: Thu, 13 Nov 2014 01:53:23 +0100
+Message-ID: <1668657.Fqph6NyFNz@vostro.rjw.lan>
+In-Reply-To: <20141112094419.GC24004@x1>
+References: <1414735705-18366-1-git-send-email-aaron.lu@intel.com> <3052882.EdcZmghHR3@vostro.rjw.lan> <20141112094419.GC24004@x1>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Wednesday, November 12, 2014 09:48:10 AM Aaron Lu wrote:
-> On 11/12/2014 07:35 AM, Rafael J. Wysocki wrote:
+On Wednesday, November 12, 2014 09:44:19 AM Lee Jones wrote:
+> On Wed, 12 Nov 2014, Rafael J. Wysocki wrote:
+> 
 > > On Tuesday, November 11, 2014 11:11:52 AM Lee Jones wrote:
-> >> On Tue, 11 Nov 2014, Aaron Lu wrote:
-> >>
-> >>> On 10/31/2014 02:08 PM, Aaron Lu wrote:
-> >>>> On Intel Baytrail-T and Baytrail-T-CR platforms, there are two customized
-> >>>> ACPI operation regions defined for the Power Management Integrated Circuit
-> >>>> device, one is for power resource handling and one is for thermal: sensor
-> >>>> temperature reporting, trip point setting, etc. There are different PMIC
-> >>>> chips used on those platforms and though each has the same two operation
-> >>>> regions and functionality, their implementation is different so every PMIC
-> >>>> will need a driver. But since their functionality is similar, some common
-> >>>> code is abstracted into the intel_soc_pmic_opregion.c.
-> >>>>
-> >>>> The last version is posted here:
-> >>>> https://lkml.org/lkml/2014/9/8/801
-> >>>>
-> >>>> Changes since then:
-> >>>> 1 Move to drivers/acpi as discussed on the above thread;
-> >>>> 2 Added support for XPower AXP288 PMIC operation region support;
-> >>>> 3 Since operation region handler can not be removed(at the moment at least),
-> >>>>   use bool for the two operation region driver configs instead of tristate;
-> >>>>   Another reason to do this is that, with Mika's MFD ACPI support patch, all
-> >>>>   those MFD cell devices created will have the same modalias as their parent's
-> >>>>   so it doesn't make much sense to compile these drivers into modules.
-> >>>>
-> >>>> Patch 1 applies on top of Rafael's pm-next branch, and then patch 2 and
-> >>>> patch 3 needs merge of Lee's mfd/ib-mfd-iio-3.19 branch where the PMIC
-> >>>> driver XPower AXP288 and iio driver axp288_adc is located.
-> >>>
-> >>> Since patch 2-3 are based on top of the mfd/ib-mfd-iio-3.19 branch, it
-> >>> would be easy to go through the mfd/ib-mfd-iio-3.19 branch.
-> >>>
-> >>> Rafael,
-> >>> Can I get your ACK for the three patches?
-> >>>
-> >>> Lee,
-> >>> Can you please take the series if Rafael gives it ack?
-> >>
-> >> Yes, no problem.
+> > > On Tue, 11 Nov 2014, Aaron Lu wrote:
+> > > 
+> > > > On 10/31/2014 02:08 PM, Aaron Lu wrote:
+> > > > > On Intel Baytrail-T and Baytrail-T-CR platforms, there are two customized
+> > > > > ACPI operation regions defined for the Power Management Integrated Circuit
+> > > > > device, one is for power resource handling and one is for thermal: sensor
+> > > > > temperature reporting, trip point setting, etc. There are different PMIC
+> > > > > chips used on those platforms and though each has the same two operation
+> > > > > regions and functionality, their implementation is different so every PMIC
+> > > > > will need a driver. But since their functionality is similar, some common
+> > > > > code is abstracted into the intel_soc_pmic_opregion.c.
+> > > > > 
+> > > > > The last version is posted here:
+> > > > > https://lkml.org/lkml/2014/9/8/801
+> > > > > 
+> > > > > Changes since then:
+> > > > > 1 Move to drivers/acpi as discussed on the above thread;
+> > > > > 2 Added support for XPower AXP288 PMIC operation region support;
+> > > > > 3 Since operation region handler can not be removed(at the moment at least),
+> > > > >   use bool for the two operation region driver configs instead of tristate;
+> > > > >   Another reason to do this is that, with Mika's MFD ACPI support patch, all
+> > > > >   those MFD cell devices created will have the same modalias as their parent's
+> > > > >   so it doesn't make much sense to compile these drivers into modules.
+> > > > > 
+> > > > > Patch 1 applies on top of Rafael's pm-next branch, and then patch 2 and
+> > > > > patch 3 needs merge of Lee's mfd/ib-mfd-iio-3.19 branch where the PMIC
+> > > > > driver XPower AXP288 and iio driver axp288_adc is located.
+> > > > 
+> > > > Since patch 2-3 are based on top of the mfd/ib-mfd-iio-3.19 branch, it
+> > > > would be easy to go through the mfd/ib-mfd-iio-3.19 branch.
+> > > > 
+> > > > Rafael,
+> > > > Can I get your ACK for the three patches?
+> > > > 
+> > > > Lee,
+> > > > Can you please take the series if Rafael gives it ack?
+> > > 
+> > > Yes, no problem.
 > > 
 > > Well, since the code is going to reside mostly in drivers/acpi, I think I should
 > > be applying the patches and from your response it looks like you are fine with
 > > them.  Is that correct?
 > 
-> Oh I thought you may not want to merge another branch into your next
-> branch so I asked this question. If you can handle the whole thing in your
-> tree, that's of course not a problem :-)
+> I read that this set has dependencies on patches which are already in
+> the MFD tree.  If that's not the case please go ahead and apply them
+> with my Ack for the MFD components.
 
-Merging one more branch wouldn't be a problem, but we'll take care of that
-later.
+I thought you had a branch that I could pull into my tree and apply the patches
+on top of it.  At least that was my understanding of the Aaron's message, so
+please let me know if that's not the case.
 
-For now, would it be possible to rename the subdir to "pmic" instead of
-"pmic_opregion"?  The "_opregion" part doesn't seem to add much value here.
+Rafael
 
-And can the names of the files be somewhat shorter too?  Like "intel_pmic.[h][c]"
-and "intel_pmic_crc.c"?
-
-
--- 
-I speak only for myself.
-Rafael J. Wysocki, Intel Open Source Technology Center.
