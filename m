@@ -1,63 +1,71 @@
-Return-Path: <jacob.jun.pan@linux.intel.com>
-From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-To: LKML <linux-kernel@vger.kernel.org>,
-	IIO <linux-iio@vger.kernel.org>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Lee Jones <lee.jones@linaro.org>
-Cc: Carlo Caione <carlo@caione.org>,
-	Samuel Ortiz <sameo@linux.intel.com>,
-	Ramakrishna Pallala <ramakrishna.pallala@intel.com>,
-	Todd Brandt <todd.e.brandt@linux.intel.com>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	Rafael Wysocki <rafael.j.wysocki@intel.com>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Aaron Lu <aaron.lu@intel.com>,
-	Jacob Pan <jacob.jun.pan@linux.intel.com>
-Subject: [PATCH 1/3] iio: adc: Add module device table for autoloading
-Date: Tue, 11 Nov 2014 11:30:08 -0800
-Message-Id: <1415734210-5657-2-git-send-email-jacob.jun.pan@linux.intel.com>
-In-Reply-To: <1415734210-5657-1-git-send-email-jacob.jun.pan@linux.intel.com>
-References: <1415734210-5657-1-git-send-email-jacob.jun.pan@linux.intel.com>
+Return-Path: <abrestic@google.com>
+MIME-Version: 1.0
+Sender: abrestic@google.com
+In-Reply-To: <1415888044-16635-5-git-send-email-ezequiel.garcia@imgtec.com>
+References: <1415888044-16635-1-git-send-email-ezequiel.garcia@imgtec.com>
+	<1415888044-16635-5-git-send-email-ezequiel.garcia@imgtec.com>
+Date: Thu, 13 Nov 2014 11:10:51 -0800
+Message-ID: <CAL1qeaF0LfbeTE4LxL05mHDBeV775AaW2F9+NsHnOMiVdZHNdw@mail.gmail.com>
+Subject: Re: [PATCH v3 0/3] iio: Add Cosmic Circuits ADC support
+From: Andrew Bresticker <abrestic@chromium.org>
+To: Ezequiel Garcia <ezequiel.garcia@imgtec.com>
+Cc: James Hartley <james.hartley@imgtec.com>, Lars-Peter Clausen <lars@metafoo.de>,
+	Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
+	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, Rob Herring <robh+dt@kernel.org>,
+	Pawel Moll <Pawel.Moll@arm.com>, Mark Rutland <Mark.Rutland@arm.com>,
+	Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>,
+	Naidu Tellapati <Naidu.Tellapati@imgtec.com>
+Content-Type: text/plain; charset=UTF-8
 List-ID: <linux-iio@vger.kernel.org>
 
-From: Aaron Lu <aaron.lu@intel.com>
+Ezequiel,
 
-Add the module device id table so that the driver can be automatically
-loaded once the platform device is created.
+On Thu, Nov 13, 2014 at 6:14 AM, Ezequiel Garcia
+<ezequiel.garcia@imgtec.com> wrote:
+> Here goes the third round of this series. You can find the previous patchset
+> and its discussion here: http://thread.gmane.org/gmane.linux.kernel.iio/14553.
+>
+> Changes from v2:
+>
+>   * Changed a devicetree property from adc-available-channels to
+>     adc-reserved-channels, so it can be made optional.
+>
+>   * Renamed the driver from cc_10001_xxx to cc10001_xxx so it's consistent
+>     with the rest of the kernel style.
+>
+>   * Some more minor cosmetic fixes.
+>
+> Changes from v1:
+>
+>   * Removed unneeded header includes.
+>
+>   * Changed all the names and macros prefix: s/CC_10001_/CC10001_.
+>
+>   * Used .update_scan_mode callback to preallocate the buffer.
+>
+>   * Used indio_dev for the struct iio_dev.
+>
+>   * Only read the regulator voltage when needed.
+>
+>   * Fixed probe() error handling.
+>
+>   * Used for_each_set_bit() instead of open-coding it.
+>
+>   * Name the power-down register as _POWER_UP, to make the code
+>     less silly.
+>
+>   * Error out when no valid sample can be read (i.e. when end-of-conversion
+>     poll times out).
+>
+>   * ... plus some assorted code cleaning based on the feedback.
+>
+> Ezequiel Garcia (1):
+>   DT: Add a vendor prefix for Cosmic Circuits
+>
+> Phani Movva (2):
+>   iio: adc: Cosmic Circuits 10001 ADC driver
+>   DT: iio: adc: Add CC_10001 binding documentation
 
-Signed-off-by: Aaron Lu <aaron.lu@intel.com>
-Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
----
- drivers/iio/adc/axp288_adc.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
+This series (with v4 of patch 2/3):
 
-diff --git a/drivers/iio/adc/axp288_adc.c b/drivers/iio/adc/axp288_adc.c
-index 4800286..4a6cf43 100644
---- a/drivers/iio/adc/axp288_adc.c
-+++ b/drivers/iio/adc/axp288_adc.c
-@@ -238,15 +238,23 @@ static int axp288_adc_remove(struct platform_device *pdev)
- 	return 0;
- }
- 
-+static struct platform_device_id axp288_adc_id_table[] = {
-+	{ .name = "axp288_adc" },
-+	{},
-+};
-+
- static struct platform_driver axp288_adc_driver = {
- 	.probe = axp288_adc_probe,
- 	.remove = axp288_adc_remove,
-+	.id_table = axp288_adc_id_table,
- 	.driver = {
- 		.name = "axp288_adc",
- 		.owner = THIS_MODULE,
- 	},
- };
- 
-+MODULE_DEVICE_TABLE(platform, axp288_adc_id_table);
-+
- module_platform_driver(axp288_adc_driver);
- 
- MODULE_AUTHOR("Jacob Pan <jacob.jun.pan@linux.intel.com>");
--- 
-1.9.1
+Reviewed-by: Andrew Bresticker <abrestic@chromium.org>
