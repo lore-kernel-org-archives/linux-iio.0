@@ -1,361 +1,142 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga11.intel.com ([192.55.52.93]:28100 "EHLO mga11.intel.com"
+Received: from comal.ext.ti.com ([198.47.26.152]:33060 "EHLO comal.ext.ti.com"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S932289AbaKMJFX (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Thu, 13 Nov 2014 04:05:23 -0500
-From: Aaron Lu <aaron.lu@intel.com>
-To: "Rafael J. Wysocki" <rjw@rjwysocki.net>
-Cc: Lee Jones <lee.jones@linaro.org>,
-	Jacob Pan <jacob.jun.pan@linux.intel.com>,
-	Yegnesh Iyer <yegnesh.s.iyer@intel.com>,
-	linux-acpi@vger.kernel.org, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH v2 2/3] ACPI / pmic_opregion: support PMIC operation region for XPower AXP288
-Date: Thu, 13 Nov 2014 17:04:35 +0800
-Message-Id: <1415869476-24329-3-git-send-email-aaron.lu@intel.com>
-In-Reply-To: <1415869476-24329-1-git-send-email-aaron.lu@intel.com>
-References: <1415869476-24329-1-git-send-email-aaron.lu@intel.com>
+	id S932573AbaKMMnL (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Thu, 13 Nov 2014 07:43:11 -0500
+Message-ID: <5464A759.4090608@ti.com>
+Date: Thu, 13 Nov 2014 06:43:05 -0600
+From: Dan Murphy <dmurphy@ti.com>
+MIME-Version: 1.0
+To: Daniel Baluta <daniel.baluta@intel.com>
+CC: <linux-iio@vger.kernel.org>, Jonathan Cameron <jic23@kernel.org>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Karol Wrona <k.wrona@samsung.com>
+Subject: Re: [RFC v2 1/3] iio: heart_monitors: Add support for heart rate
+ monitors
+References: <1415287106-13491-1-git-send-email-dmurphy@ti.com> <CAEnQRZBRASQZVtG2FYxy54k7LOeECnwoLARdGmLLjE5+PkYO-w@mail.gmail.com>
+In-Reply-To: <CAEnQRZBRASQZVtG2FYxy54k7LOeECnwoLARdGmLLjE5+PkYO-w@mail.gmail.com>
+Content-Type: text/plain; charset="utf-8"
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-The Baytrail-T-CR platform firmware has defined two customized operation
-regions for PMIC chip Dollar Cove XPower - one is for power resource
-handling and one is for thermal just like the CrystalCove one. This patch
-adds support for them on top of the common PMIC opregion region code.
+Daniel
 
-Signed-off-by: Aaron Lu <aaron.lu@intel.com>
-Acked-by: Lee Jones <lee.jones@linaro.org> for the MFD part
----
- drivers/acpi/Kconfig                  |   6 +
- drivers/acpi/Makefile                 |   1 +
- drivers/acpi/pmic/intel_pmic_xpower.c | 277 ++++++++++++++++++++++++++++++++++
- drivers/mfd/axp20x.c                  |   3 +
- 4 files changed, 287 insertions(+)
- create mode 100644 drivers/acpi/pmic/intel_pmic_xpower.c
+On 11/06/2014 10:04 AM, Daniel Baluta wrote:
+> Hi Dan,
+>
+> Use iio: heart_monitor instead of iio: heart_monitors in subject.
+>
+> On Thu, Nov 6, 2014 at 5:18 PM, Dan Murphy <dmurphy@ti.com> wrote:
+>> Add a type for heart rate monitors
+>> Add the modifier name in beats per minute.
+>>
+>> Signed-off-by: Dan Murphy <dmurphy@ti.com>
+>> ---
+>>
+>> v2 - Updated per v1 comments - http://marc.info/?l=linux-iio&m=141331404232216&w=2
+>>
+>>  Documentation/ABI/testing/sysfs-bus-iio               | 7 +++++++
+>>  drivers/iio/industrialio-core.c                       | 1 +
+>>  drivers/staging/iio/Documentation/iio_event_monitor.c | 2 ++
+>>  include/linux/iio/types.h                             | 3 ++-
+>>  4 files changed, 12 insertions(+), 1 deletion(-)
+>>
+>> diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
+>> index d760b02..bf95808 100644
+>> --- a/Documentation/ABI/testing/sysfs-bus-iio
+>> +++ b/Documentation/ABI/testing/sysfs-bus-iio
+>> @@ -1028,3 +1028,10 @@ Contact: linux-iio@vger.kernel.org
+>>  Description:
+>>                 Raw value of rotation from true/magnetic north measured with
+>>                 or without compensation from tilt sensors.
+>> +
+>> +What:          /sys/bus/iio/devices/iio:deviceX/in_rot_from_north_magnetic_tilt_comp_raw
+>> +KernelVersion: 3.19
+>> +Contact:       linux-iio@vger.kernel.org
+>> +Description:
+>> +               Raw value of rotation from true/magnetic north measured with
+>> +               or without compensation from tilt sensors.
+> Something went wrong here. This should be about
+> heart rate monitor not  rotation from true/magnetic north.
 
-diff --git a/drivers/acpi/Kconfig b/drivers/acpi/Kconfig
-index df816456dc06..1b7b753cadcc 100644
---- a/drivers/acpi/Kconfig
-+++ b/drivers/acpi/Kconfig
-@@ -409,6 +409,12 @@ config CRC_PMIC_OPREGION
- 	help
- 	  This config adds ACPI operation region support for CrystalCove PMIC.
- 
-+config XPOWER_PMIC_OPREGION
-+	bool "ACPI operation region support for XPower AXP288 PMIC"
-+	depends on AXP288_ADC
-+	help
-+	  This config adds ACPI operation region support for XPower AXP288 PMIC.
-+
- endif
- 
- endif	# ACPI
-diff --git a/drivers/acpi/Makefile b/drivers/acpi/Makefile
-index f5938399ac14..f74317cc1ca9 100644
---- a/drivers/acpi/Makefile
-+++ b/drivers/acpi/Makefile
-@@ -91,3 +91,4 @@ obj-$(CONFIG_ACPI_EXTLOG)	+= acpi_extlog.o
- 
- obj-$(CONFIG_PMIC_OPREGION)	+= pmic/intel_pmic.o
- obj-$(CONFIG_CRC_PMIC_OPREGION) += pmic/intel_pmic_crc.o
-+obj-$(CONFIG_XPOWER_PMIC_OPREGION) += pmic/intel_pmic_xpower.o
-diff --git a/drivers/acpi/pmic/intel_pmic_xpower.c b/drivers/acpi/pmic/intel_pmic_xpower.c
-new file mode 100644
-index 000000000000..c24bf1a6e48a
---- /dev/null
-+++ b/drivers/acpi/pmic/intel_pmic_xpower.c
-@@ -0,0 +1,277 @@
-+/*
-+ * intel_pmic_xpower.c - XPower AXP288 PMIC operation region Driver
-+ *
-+ * Copyright (C) 2014 Intel Corporation. All rights reserved.
-+ *
-+ * This program is free software; you can redistribute it and/or
-+ * modify it under the terms of the GNU General Public License version
-+ * 2 as published by the Free Software Foundation.
-+ *
-+ * This program is distributed in the hope that it will be useful,
-+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
-+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-+ * GNU General Public License for more details.
-+ */
-+
-+#include <linux/module.h>
-+#include <linux/acpi.h>
-+#include <linux/mfd/axp20x.h>
-+#include <linux/regmap.h>
-+#include <linux/platform_device.h>
-+#include <linux/iio/consumer.h>
-+#include "intel_pmic.h"
-+
-+#define XPOWER_GPADC_LOW	0x5b
-+
-+static struct pmic_pwr_table pwr_table[] = {
-+	{
-+		.address = 0x00,
-+		.pwr_reg = {
-+			.reg = 0x13,
-+			.bit = 0x05,
-+		}
-+	}, /* ALD1, 0x13, bit5 */
-+	{
-+		.address = 0x04,
-+		.pwr_reg = {
-+			.reg = 0x13,
-+			.bit = 0x06,
-+		}
-+	}, /* ALD2, 0x13, bit6 */
-+	{
-+		.address = 0x08,
-+		.pwr_reg = {
-+			.reg = 0x13,
-+			.bit = 0x07,
-+		}
-+	}, /* ALD3, 0x13, bit7 */
-+	{
-+		.address = 0x0c,
-+		.pwr_reg = {
-+			.reg = 0x12,
-+			.bit = 0x03,
-+		}
-+	}, /* DLD1, 0x12, bit3 */
-+	{
-+		.address = 0x10,
-+		.pwr_reg = {
-+			.reg = 0x12,
-+			.bit = 0x04,
-+		}
-+	}, /* DLD2, 0x12, bit4 */
-+	{
-+		.address = 0x14,
-+		.pwr_reg = {
-+			.reg = 0x12,
-+			.bit = 0x05,
-+		}
-+	}, /* DLD3, 0x12, bit5 */
-+	{
-+		.address = 0x18,
-+		.pwr_reg = {
-+			.reg = 0x12,
-+			.bit = 0x06,
-+		}
-+	}, /* DLD4, 0x12, bit6 */
-+	{
-+		.address = 0x1c,
-+		.pwr_reg = {
-+			.reg = 0x12,
-+			.bit = 0x00,
-+		}
-+	}, /* ELD1, 0x12, bit0 */
-+	{
-+		.address = 0x20,
-+		.pwr_reg = {
-+			.reg = 0x12,
-+			.bit = 0x01,
-+		}
-+	}, /* ELD2, 0x12, bit1 */
-+	{
-+		.address = 0x24,
-+		.pwr_reg = {
-+			.reg = 0x12,
-+			.bit = 0x02,
-+		}
-+	}, /* ELD3, 0x12, bit2 */
-+	{
-+		.address = 0x28,
-+		.pwr_reg = {
-+			.reg = 0x13,
-+			.bit = 0x02,
-+		}
-+	}, /* FLD1, 0x13, bit2 */
-+	{
-+		.address = 0x2c,
-+		.pwr_reg = {
-+			.reg = 0x13,
-+			.bit = 0x03,
-+		}
-+	}, /* FLD2, 0x13, bit3 */
-+	{
-+		.address = 0x30,
-+		.pwr_reg = {
-+			.reg = 0x13,
-+			.bit = 0x04,
-+		}
-+	}, /* FLD3, 0x13, bit4 */
-+	{
-+		.address = 0x38,
-+		.pwr_reg = {
-+			.reg = 0x10,
-+			.bit = 0x03,
-+		}
-+	}, /* BUC1, 0x10, bit3 */
-+	{
-+		.address = 0x3c,
-+		.pwr_reg = {
-+			.reg = 0x10,
-+			.bit = 0x06,
-+		}
-+	}, /* BUC2, 0x10, bit6 */
-+	{
-+		.address = 0x40,
-+		.pwr_reg = {
-+			.reg = 0x10,
-+			.bit = 0x05,
-+		}
-+	}, /* BUC3, 0x10, bit5 */
-+	{
-+		.address = 0x44,
-+		.pwr_reg = {
-+			.reg = 0x10,
-+			.bit = 0x04,
-+		}
-+	}, /* BUC4, 0x10, bit4 */
-+	{
-+		.address = 0x48,
-+		.pwr_reg = {
-+			.reg = 0x10,
-+			.bit = 0x01,
-+		}
-+	}, /* BUC5, 0x10, bit1 */
-+	{
-+		.address = 0x4c,
-+		.pwr_reg = {
-+			.reg = 0x10,
-+			.bit = 0x00
-+		}
-+	}, /* BUC6, 0x10, bit0 */
-+};
-+
-+/* TMP0 - TMP5 are the same, all from GPADC */
-+static struct pmic_dptf_table dptf_table[] = {
-+	{
-+		.address = 0x00,
-+		.reg = XPOWER_GPADC_LOW
-+	},
-+	{
-+		.address = 0x0c,
-+		.reg = XPOWER_GPADC_LOW
-+	},
-+	{
-+		.address = 0x18,
-+		.reg = XPOWER_GPADC_LOW
-+	},
-+	{
-+		.address = 0x24,
-+		.reg = XPOWER_GPADC_LOW
-+	},
-+	{
-+		.address = 0x30,
-+		.reg = XPOWER_GPADC_LOW
-+	},
-+	{
-+		.address = 0x3c,
-+		.reg = XPOWER_GPADC_LOW
-+	},
-+};
-+
-+static int intel_xpower_pmic_get_power(struct regmap *regmap,
-+				       struct pmic_pwr_reg *preg, u64 *value)
-+{
-+	int data;
-+
-+	if (regmap_read(regmap, preg->reg, &data))
-+		return -EIO;
-+
-+	*value = (data & BIT(preg->bit)) ? 1 : 0;
-+	return 0;
-+}
-+
-+static int intel_xpower_pmic_update_power(struct regmap *regmap,
-+					  struct pmic_pwr_reg *preg, bool on)
-+{
-+	int data;
-+
-+	if (regmap_read(regmap, preg->reg, &data))
-+		return -EIO;
-+
-+	if (on)
-+		data |= BIT(preg->bit);
-+	else
-+		data &= ~BIT(preg->bit);
-+
-+	if (regmap_write(regmap, preg->reg, data))
-+		return -EIO;
-+
-+	return 0;
-+}
-+
-+/*
-+ * We could get the sensor value by manipulating the HW regs here, but since
-+ * the axp288 IIO driver may also access the same regs at the same time, the
-+ * APIs provided by IIO subsystem are used here instead to avoid problems. As
-+ * a result, the two passed in params are of no actual use.
-+ */
-+static int intel_xpower_pmic_get_raw_temp(struct regmap *regmap, int reg)
-+{
-+	struct iio_channel *gpadc_chan;
-+	int ret, val;
-+
-+	gpadc_chan = iio_channel_get(NULL, "axp288-system-temp");
-+	if (IS_ERR_OR_NULL(gpadc_chan))
-+		return -EACCES;
-+
-+	ret = iio_read_channel_raw(gpadc_chan, &val);
-+	if (ret < 0)
-+		val = ret;
-+
-+	iio_channel_release(gpadc_chan);
-+	return val;
-+}
-+
-+static struct intel_soc_pmic_opregion_data intel_xpower_pmic_opregion_data = {
-+	.get_power = intel_xpower_pmic_get_power,
-+	.update_power = intel_xpower_pmic_update_power,
-+	.get_raw_temp = intel_xpower_pmic_get_raw_temp,
-+	.pwr_table = pwr_table,
-+	.pwr_table_count = ARRAY_SIZE(pwr_table),
-+	.dptf_table = dptf_table,
-+	.dptf_table_count = ARRAY_SIZE(dptf_table),
-+};
-+
-+
-+static int intel_xpower_pmic_opregion_probe(struct platform_device *pdev)
-+{
-+	struct axp20x_dev *axp20x = dev_get_drvdata(pdev->dev.parent);
-+	return intel_soc_pmic_install_opregion_handler(&pdev->dev,
-+			ACPI_HANDLE(pdev->dev.parent), axp20x->regmap,
-+			&intel_xpower_pmic_opregion_data);
-+}
-+
-+static struct platform_driver intel_xpower_pmic_opregion_driver = {
-+	.probe = intel_xpower_pmic_opregion_probe,
-+	.driver = {
-+		.name = "axp288_opregion",
-+	},
-+};
-+
-+static int __init intel_xpower_pmic_opregion_driver_init(void)
-+{
-+	return platform_driver_register(&intel_xpower_pmic_opregion_driver);
-+}
-+module_init(intel_xpower_pmic_opregion_driver_init);
-+
-+MODULE_DESCRIPTION("XPower AXP288 ACPI operation region driver");
-+MODULE_LICENSE("GPL");
-diff --git a/drivers/mfd/axp20x.c b/drivers/mfd/axp20x.c
-index acbb4c3bf98c..daf3c8d33b4d 100644
---- a/drivers/mfd/axp20x.c
-+++ b/drivers/mfd/axp20x.c
-@@ -354,6 +354,9 @@ static struct mfd_cell axp288_cells[] = {
- 		.num_resources = ARRAY_SIZE(axp288_battery_resources),
- 		.resources = axp288_battery_resources,
- 	},
-+	{
-+		.name = "axp288_opregion",
-+	},
- };
- 
- static struct axp20x_dev *axp20x_pm_power_off;
+Yes it was PEBKAC here.  I had filled this in for the heart rate but must have removed my work
+when I was making the changes
+
+I will fix in v3.
+
+>
+>> diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+>> index af3e76d..e332a18 100644
+>> --- a/drivers/iio/industrialio-core.c
+>> +++ b/drivers/iio/industrialio-core.c
+>> @@ -70,6 +70,7 @@ static const char * const iio_chan_type_name_spec[] = {
+>>         [IIO_CCT] = "cct",
+>>         [IIO_PRESSURE] = "pressure",
+>>         [IIO_HUMIDITYRELATIVE] = "humidityrelative",
+>> +       [IIO_HEARTRATE] = "heartrate",
+>>  };
+>>
+>>  static const char * const iio_modifier_names[] = {
+>> diff --git a/drivers/staging/iio/Documentation/iio_event_monitor.c b/drivers/staging/iio/Documentation/iio_event_monitor.c
+>> index 569d6f8..90a655d 100644
+>> --- a/drivers/staging/iio/Documentation/iio_event_monitor.c
+>> +++ b/drivers/staging/iio/Documentation/iio_event_monitor.c
+>> @@ -49,6 +49,7 @@ static const char * const iio_chan_type_name_spec[] = {
+>>         [IIO_CCT] = "cct",
+>>         [IIO_PRESSURE] = "pressure",
+>>         [IIO_HUMIDITYRELATIVE] = "humidityrelative",
+>> +       [IIO_HEARTRATE] = "heartrate"
+>>  };
+> Please, don't forget the comma after "heartrate".
+>
+>>  static const char * const iio_ev_type_text[] = {
+>> @@ -108,6 +109,7 @@ static bool event_is_known(struct iio_event_data *event)
+>>         case IIO_CCT:
+>>         case IIO_PRESSURE:
+>>         case IIO_HUMIDITYRELATIVE:
+>> +       case IIO_HEARTRATE:
+>>                 break;
+>>         default:
+>>                 return false;
+>> diff --git a/include/linux/iio/types.h b/include/linux/iio/types.h
+>> index 4a2af8a..f22b9d6 100644
+>> --- a/include/linux/iio/types.h
+>> +++ b/include/linux/iio/types.h
+>> @@ -30,6 +30,7 @@ enum iio_chan_type {
+>>         IIO_CCT,
+>>         IIO_PRESSURE,
+>>         IIO_HUMIDITYRELATIVE,
+>> +       IIO_HEARTRATE,
+>>  };
+>>
+>>  enum iio_modifier {
+>> @@ -59,7 +60,7 @@ enum iio_modifier {
+>>         IIO_MOD_NORTH_MAGN,
+>>         IIO_MOD_NORTH_TRUE,
+>>         IIO_MOD_NORTH_MAGN_TILT_COMP,
+>> -       IIO_MOD_NORTH_TRUE_TILT_COMP
+>> +       IIO_MOD_NORTH_TRUE_TILT_COMP,
+> You shouldn't care about this now. Hopefully, the comma will be fixed
+> by the next person that adds an iio_modifier.
+
+OK just thought I would clean some code.
+But I will remove it
+
+>
+>>  };
+>>
+>>  enum iio_event_type {
+>> --
+>> 1.9.1
+>>
+>> --
+>> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+>> the body of a message to majordomo@vger.kernel.org
+>> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+
+Dan
+
 -- 
-1.9.3
+------------------
+Dan Murphy
 
