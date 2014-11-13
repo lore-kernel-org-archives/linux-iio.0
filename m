@@ -1,64 +1,81 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga11.intel.com ([192.55.52.93]:23632 "EHLO mga11.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1750983AbaKQSFI (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Mon, 17 Nov 2014 13:05:08 -0500
-From: Octavian Purdila <octavian.purdila@intel.com>
-To: linux-iio@vger.kernel.org
-Cc: srinivas.pandruvada@intel.com,
-	Octavian Purdila <octavian.purdila@intel.com>
-Subject: [RFC 0/8] iio: add support for hardware fifo
-Date: Mon, 17 Nov 2014 19:55:58 +0200
-Message-Id: <1416246966-3083-1-git-send-email-octavian.purdila@intel.com>
+Received: from mailapp01.imgtec.com ([195.59.15.196]:18219 "EHLO
+	mailapp01.imgtec.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S932910AbaKMOQV (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 13 Nov 2014 09:16:21 -0500
+From: Ezequiel Garcia <ezequiel.garcia@imgtec.com>
+To: Andrew Bresticker <abrestic@chromium.org>,
+	James Hartley <james.hartley@imgtec.com>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	"Jonathan Cameron" <jic23@kernel.org>
+CC: <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
+	<robh+dt@kernel.org>, <Pawel.Moll@arm.com>, <Mark.Rutland@arm.com>,
+	<ijc+devicetree@hellion.org.uk>, <galak@codeaurora.org>,
+	<Naidu.Tellapati@imgtec.com>,
+	Ezequiel Garcia <ezequiel.garcia@imgtec.com>
+Subject: [PATCH v3 0/3] iio: Add Cosmic Circuits ADC support
+Date: Thu, 13 Nov 2014 11:14:01 -0300
+Message-ID: <1415888044-16635-5-git-send-email-ezequiel.garcia@imgtec.com>
+In-Reply-To: <1415888044-16635-1-git-send-email-ezequiel.garcia@imgtec.com>
+References: <1415888044-16635-1-git-send-email-ezequiel.garcia@imgtec.com>
+MIME-Version: 1.0
+Content-Type: text/plain
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Hi everybody,
+Here goes the third round of this series. You can find the previous patchset
+and its discussion here: http://thread.gmane.org/gmane.linux.kernel.iio/14553.
 
-I hope this RFC is a good starting point to discuss support for
-hardware fifo in IIO. The main reason to support it is to reduce the
-power consumtion, by allowing the CPU to enter deep sleep states for
-longer periods of time.
+Changes from v2:
 
-Don't get discourage by the large number of patches most of them are
-refactors in the bmc150 driver, to make it easier to add support for
-the hardware fifo (basically to make adding interrupts and
-events/triggers easier).
+  * Changed a devicetree property from adc-available-channels to
+    adc-reserved-channels, so it can be made optional.
 
-For discussing the hardware fifo stuff, only the first and last
-patches are important: the first adds new IIO attributes so that we
-can expose the hardware fifo and the last implements hadware fifo for
-IIO (as an example of how would a device use the exposed attributes).
+  * Renamed the driver from cc_10001_xxx to cc10001_xxx so it's consistent
+    with the rest of the kernel style.
 
-Note that the attributes can be exposed on a per device or per channel
-basis, since it seems both types of hardware fifos exists: those that
-store all data in a single fifo (temperature, accelerometer,
-magnetometer, etc.) and those that have separate fifos for
-accelerometer, gyroscope, etc. Thankfully, at the driver level we just
-need to use the appropriate sharing level to support one mode or the
-other.
+  * Some more minor cosmetic fixes.
 
-Also note that this patch is orthogonal to the software watermark /
-batching patch send on the list a while back.
+Changes from v1:
 
-Octavian Purdila (8):
-  iio: add support for hardware fifo
-  iio: bmc150: refactor slope duration and threshold update
-  iio: bmc150: refactor interrupt enabling
-  iio: bmc150: exit early if event / trigger state is not changed
-  iio: bmc150: introduce bmc150_accel_interrupt
-  iio: bmc150: introduce bmc150_accel_trigger
-  iio: bmc150: introduce bmc150_accel_event
-  iio: bmc150: add support for hardware fifo
+  * Removed unneeded header includes.
 
- Documentation/ABI/testing/sysfs-bus-iio |  51 ++
- drivers/iio/accel/bmc150-accel.c        | 976 ++++++++++++++++++++++----------
- drivers/iio/industrialio-core.c         |   2 +
- drivers/iio/industrialio-event.c        |   2 +
- include/linux/iio/iio.h                 |  17 +
- include/linux/iio/types.h               |   2 +
- 6 files changed, 739 insertions(+), 311 deletions(-)
+  * Changed all the names and macros prefix: s/CC_10001_/CC10001_.
+
+  * Used .update_scan_mode callback to preallocate the buffer.
+
+  * Used indio_dev for the struct iio_dev.
+
+  * Only read the regulator voltage when needed.
+
+  * Fixed probe() error handling.
+
+  * Used for_each_set_bit() instead of open-coding it.
+
+  * Name the power-down register as _POWER_UP, to make the code
+    less silly.
+
+  * Error out when no valid sample can be read (i.e. when end-of-conversion
+    poll times out).
+
+  * ... plus some assorted code cleaning based on the feedback.
+
+Ezequiel Garcia (1):
+  DT: Add a vendor prefix for Cosmic Circuits
+
+Phani Movva (2):
+  iio: adc: Cosmic Circuits 10001 ADC driver
+  DT: iio: adc: Add CC_10001 binding documentation
+
+ .../devicetree/bindings/iio/adc/cc10001_adc.txt    |  22 ++
+ .../devicetree/bindings/vendor-prefixes.txt        |   1 +
+ drivers/iio/adc/Kconfig                            |  11 +
+ drivers/iio/adc/Makefile                           |   1 +
+ drivers/iio/adc/cc10001_adc.c                      | 425 +++++++++++++++++++++
+ 5 files changed, 460 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/adc/cc10001_adc.txt
+ create mode 100644 drivers/iio/adc/cc10001_adc.c
 
 -- 
-1.9.1
+2.1.0
 
