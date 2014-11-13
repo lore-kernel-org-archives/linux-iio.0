@@ -1,106 +1,96 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from bear.ext.ti.com ([192.94.94.41]:54299 "EHLO bear.ext.ti.com"
+Received: from comal.ext.ti.com ([198.47.26.152]:33001 "EHLO comal.ext.ti.com"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1752343AbaKNFl1 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Fri, 14 Nov 2014 00:41:27 -0500
-From: Vignesh R <vigneshr@ti.com>
-To: Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>,
-	Mark Rutland <mark.rutland@arm.com>,
-	Ian Campbell <ijc+devicetree@hellion.org.uk>,
-	Kumar Gala <galak@codeaurora.org>,
-	Benoit Cousson <bcousson@baylibre.com>,
-	Tony Lindgren <tony@atomide.com>,
-	Russell King <linux@arm.linux.org.uk>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>, <richardcochran@gmail.com>,
-	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-	Lee Jones <lee.jones@linaro.org>,
-	Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-CC: Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	Samuel Ortiz <sameo@linux.intel.com>,
-	Felipe Balbi <balbi@ti.com>, Vignesh R <vigneshr@ti.com>,
-	Brad Griffis <bgriffis@ti.com>,
-	Sanjeev Sharma <sanjeev_sharma@mentor.com>,
-	Paul Gortmaker <paul.gortmaker@windriver.com>,
-	Jan Kardell <jan.kardell@telliq.com>,
-	<devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-	<linux-omap@vger.kernel.org>,
-	<linux-arm-kernel@lists.infradead.org>,
-	<linux-iio@vger.kernel.org>, <linux-input@vger.kernel.org>
-Subject: [PATCH v4 4/6] ARM: dts: AM335x: Make charge delay a DT parameter for TSC
-Date: Fri, 14 Nov 2014 10:37:29 +0530
-Message-ID: <1415941651-28962-5-git-send-email-vigneshr@ti.com>
-In-Reply-To: <1415941651-28962-1-git-send-email-vigneshr@ti.com>
-References: <1415941651-28962-1-git-send-email-vigneshr@ti.com>
+	id S932562AbaKMMlU (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Thu, 13 Nov 2014 07:41:20 -0500
+Message-ID: <5464A6DB.3060203@ti.com>
+Date: Thu, 13 Nov 2014 06:40:59 -0600
+From: Dan Murphy <dmurphy@ti.com>
 MIME-Version: 1.0
-Content-Type: text/plain
+To: Jonathan Cameron <jic23@kernel.org>, <linux-iio@vger.kernel.org>
+CC: <pmeerw@pmeerw.net>, <daniel.baluta@intel.com>,
+	<k.wrona@samsung.com>,
+	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+	Rob Herring <robh+dt@kernel.org>,
+	Pawel Moll <Pawel.Moll@arm.com>,
+	Mark Rutland <Mark.Rutland@arm.com>,
+	Ian Campbell <ijc+devicetree@hellion.org.uk>,
+	Kumar Gala <galak@codeaurora.org>
+Subject: Re: [RFC v2 2/3] iio: bindings: Add TI afe4403 heart monitor documentation
+References: <1415287106-13491-1-git-send-email-dmurphy@ti.com> <1415287106-13491-2-git-send-email-dmurphy@ti.com> <545E031A.7050302@kernel.org>
+In-Reply-To: <545E031A.7050302@kernel.org>
+Content-Type: text/plain; charset="windows-1252"
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-The charge delay value is by default 0x400. But it can be set to lower
-values on some boards, as long as false pen-ups are avoided. Lowering the
-value increases the sampling rate (though current sampling rate is
-sufficient for TSC operation). In some boards, the value has to be
-increased to avoid false pen-up events. Hence, charge delay has been
-made a DT parameter.
+Jonathan
 
-Signed-off-by: Vignesh R <vigneshr@ti.com>
----
+On 11/08/2014 05:48 AM, Jonathan Cameron wrote:
+> On 06/11/14 15:18, Dan Murphy wrote:
+>> Add the TI afe4403 heart monitor device tree
+>> binding documentation.  heart_monitors directory
+>> created under iio.
+>>
+>> Signed-off-by: Dan Murphy <dmurphy@ti.com>
+> As a device tree binding this MUST go to the device tree list
+> and maintainers.  Cc'd.
 
-v4:
- - Set charge delay to 0x400 as default. Most devices function normally
-   at this value
+Yeah forgot to add the list
 
- .../devicetree/bindings/input/touchscreen/ti-tsc-adc.txt  | 15 +++++++++++++++
- arch/arm/boot/dts/am335x-evm.dts                          |  1 +
- 2 files changed, 16 insertions(+)
+>
+> I suspect from my review of the driver that there will be a
+> whole load more stuff to go in here...
+>
+>> ---
+>>
+>> v2 - Updated per v1 comments - http://marc.info/?l=linux-iio&m=141331404132215&w=2
+>>
+>>  .../bindings/iio/heart_monitor/ti_afe4403.txt      | 23 ++++++++++++++++++++++
+>>  1 file changed, 23 insertions(+)
+>>  create mode 100644 Documentation/devicetree/bindings/iio/heart_monitor/ti_afe4403.txt
+>>
+>> diff --git a/Documentation/devicetree/bindings/iio/heart_monitor/ti_afe4403.txt b/Documentation/devicetree/bindings/iio/heart_monitor/ti_afe4403.txt
+>> new file mode 100644
+>> index 0000000..cf75b5a
+>> --- /dev/null
+>> +++ b/Documentation/devicetree/bindings/iio/heart_monitor/ti_afe4403.txt
+>> @@ -0,0 +1,23 @@
+>> +* Texas Instruments - AFE4403 Heart rate and Pulse Oximeter
+>> +
+>> +The device consists of a low-noise receiver channel
+>> +with an integrated analog-to-digital converter (ADC),
+>> +an LED transmit section, and diagnostics for sensor and LED fault detection.
+>> +
+>> +Required properties:
+>> +  - compatible: Must contain "ti,afe4403".
+>> +  - ste-gpio: GPIO for the spi control line
+>> +  - data-ready-gpio: GPIO interrupt when the afe4403 has data
+> Does this actually need to be a gpio?  Doesn't look like it from the driver.
+> As such should be handled as a generic interrupt both here and in the driver.
 
-diff --git a/Documentation/devicetree/bindings/input/touchscreen/ti-tsc-adc.txt b/Documentation/devicetree/bindings/input/touchscreen/ti-tsc-adc.txt
-index 878549ba814d..6df5028a4ad3 100644
---- a/Documentation/devicetree/bindings/input/touchscreen/ti-tsc-adc.txt
-+++ b/Documentation/devicetree/bindings/input/touchscreen/ti-tsc-adc.txt
-@@ -28,6 +28,20 @@ Required properties:
- 	ti,adc-channels: List of analog inputs available for ADC.
- 			 AIN0 = 0, AIN1 = 1 and so on till AIN7 = 7.
- 
-+Optional properties:
-+- child "tsc"
-+	ti,charge-delay: Length of touch screen charge delay step in terms of
-+			 ADC clock cycles. Charge delay value should be large
-+			 in order to avoid false pen-up events. This value
-+			 affects the overall sampling speed, hence need to be
-+			 kept as low as possible, while avoiding false pen-up
-+			 event. Start from a lower value, say 0x400, and
-+			 increase value until false pen-up events are avoided.
-+			 The pen-up detection happens immediately after the
-+			 charge step, so this does in fact function as a
-+			 hardware knob for adjusting the amount of "settling
-+			 time".
-+
- Example:
- 	tscadc: tscadc@44e0d000 {
- 		compatible = "ti,am3359-tscadc";
-@@ -36,6 +50,7 @@ Example:
- 			ti,x-plate-resistance = <200>;
- 			ti,coordiante-readouts = <5>;
- 			ti,wire-config = <0x00 0x11 0x22 0x33>;
-+			ti,charge-delay = <0x400>;
- 		};
- 
- 		adc {
-diff --git a/arch/arm/boot/dts/am335x-evm.dts b/arch/arm/boot/dts/am335x-evm.dts
-index e2156a583de7..ce12f6ef1e28 100644
---- a/arch/arm/boot/dts/am335x-evm.dts
-+++ b/arch/arm/boot/dts/am335x-evm.dts
-@@ -641,6 +641,7 @@
- 		ti,x-plate-resistance = <200>;
- 		ti,coordinate-readouts = <5>;
- 		ti,wire-config = <0x00 0x11 0x22 0x33>;
-+		ti,charge-delay = <0x400>;
- 	};
- 
- 	adc {
+Well in my setup I connected the data-ready output of the device to a GPIO
+and I need to tell the driver which GPIO to use.
+
+Not sure how else to route the signal from the device to a SoC.
+
+>
+>> +  - led-supply: Chip supply to the device
+>> +
+>> +Optional properties:
+>> +  - reset-gpio: GPIO used to reset the device via HW
+>> +
+>> +Example:
+>> +
+>> +&heart_rate {
+>> +	compatible = "ti,afe4403";
+>> +	ste-gpio = <&gpio1 29 GPIO_ACTIVE_HIGH>;
+>> +	data-ready-gpio = <&gpio1 28 GPIO_ACTIVE_HIGH>;
+>> +	led-supply = <&vbat>;
+>> +};
+>>
+
+
 -- 
-1.9.1
+------------------
+Dan Murphy
 
