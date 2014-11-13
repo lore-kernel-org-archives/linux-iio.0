@@ -1,710 +1,1055 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga11.intel.com ([192.55.52.93]:28100 "EHLO mga11.intel.com"
+Received: from mga02.intel.com ([134.134.136.20]:17568 "EHLO mga02.intel.com"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S932128AbaKMJFU (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Thu, 13 Nov 2014 04:05:20 -0500
-From: Aaron Lu <aaron.lu@intel.com>
-To: "Rafael J. Wysocki" <rjw@rjwysocki.net>
-Cc: Lee Jones <lee.jones@linaro.org>,
-	Jacob Pan <jacob.jun.pan@linux.intel.com>,
-	Yegnesh Iyer <yegnesh.s.iyer@intel.com>,
-	linux-acpi@vger.kernel.org, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH v2 1/3] ACPI / pmic_opregion: support PMIC operation region for CrystalCove
-Date: Thu, 13 Nov 2014 17:04:34 +0800
-Message-Id: <1415869476-24329-2-git-send-email-aaron.lu@intel.com>
-In-Reply-To: <1415869476-24329-1-git-send-email-aaron.lu@intel.com>
-References: <1415869476-24329-1-git-send-email-aaron.lu@intel.com>
+	id S932187AbaKMJLT (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Thu, 13 Nov 2014 04:11:19 -0500
+From: Vlad Dogaru <vlad.dogaru@intel.com>
+To: linux-iio@vger.kernel.org, jic23@kernel.org
+Cc: Vlad Dogaru <vlad.dogaru@intel.com>,
+	Irina Tirdea <irina.tirdea@intel.com>
+Subject: [PATCH] iio: add driver for Freescale MMA9551L
+Date: Thu, 13 Nov 2014 11:11:55 +0200
+Message-Id: <1415869915-14950-1-git-send-email-vlad.dogaru@intel.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-The Baytrail-T platform firmware has defined two customized operation
-regions for PMIC chip Crystal Cove - one is for power resource handling
-and one is for thermal: sensor temperature reporting, trip point setting,
-etc. This patch adds support for them on top of the existing Crystal Cove
-PMIC driver.
+Add support for Freescale MMA9551L Intelligent Motion-Sensing Platform.
+The driver supports raw reads for acceleration and inclination, as well
+as configuring an inclination rate-of-change event for a single axis.
+This event can be used similarly to an Android sensor Tilt event.
 
-The reason to split code into a separate file intel_soc_pmic_opregion.c
-is that there are more PMIC driver with ACPI operation region support
-coming and we can re-use those code. The intel_soc_pmic_opregion_data
-structure is created also for this purpose: when we need to support a
-new PMIC's operation region, we just need to fill those callbacks and
-the two register mapping tables.
+We restrict the inclination rate-of-change event to a single axis
+because of the chip's inability to aggregate multiple event bits on the
+same GPIO line.  Thus, if we were to let the user configure tilt events
+for all axes, we would use 3 of the 4 available GPIO pins.  We don't
+want to do that because we plan to introduce support for additional
+chips and features which would in turn need GPIO pins.
 
-Signed-off-by: Aaron Lu <aaron.lu@intel.com>
-Acked-by: Lee Jones <lee.jones@linaro.org> for the MFD part
+The specifications can be downloaded from:
+http://www.freescale.com/files/sensors/doc/ref_manual/MMA955xLSWRM.pdf
+
+Signed-off-by: Irina Tirdea <irina.tirdea@intel.com>
+Signed-off-by: Vlad Dogaru <vlad.dogaru@intel.com>
 ---
- drivers/acpi/Kconfig               |  17 ++
- drivers/acpi/Makefile              |   3 +
- drivers/acpi/pmic/intel_pmic.c     | 341 +++++++++++++++++++++++++++++++++++++
- drivers/acpi/pmic/intel_pmic.h     |  34 ++++
- drivers/acpi/pmic/intel_pmic_crc.c | 216 +++++++++++++++++++++++
- drivers/mfd/intel_soc_pmic_crc.c   |   3 +
- 6 files changed, 614 insertions(+)
- create mode 100644 drivers/acpi/pmic/intel_pmic.c
- create mode 100644 drivers/acpi/pmic/intel_pmic.h
- create mode 100644 drivers/acpi/pmic/intel_pmic_crc.c
+ drivers/iio/accel/Kconfig   |  10 +
+ drivers/iio/accel/Makefile  |   1 +
+ drivers/iio/accel/mma9551.c | 976 ++++++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 987 insertions(+)
+ create mode 100644 drivers/iio/accel/mma9551.c
 
-diff --git a/drivers/acpi/Kconfig b/drivers/acpi/Kconfig
-index b23fe37f67c0..df816456dc06 100644
---- a/drivers/acpi/Kconfig
-+++ b/drivers/acpi/Kconfig
-@@ -394,4 +394,21 @@ config ACPI_EXTLOG
- 	  driver adds support for that functionality with corresponding
- 	  tracepoint which carries that information to userspace.
+diff --git a/drivers/iio/accel/Kconfig b/drivers/iio/accel/Kconfig
+index 9b9be87..d80616d 100644
+--- a/drivers/iio/accel/Kconfig
++++ b/drivers/iio/accel/Kconfig
+@@ -105,4 +105,14 @@ config KXCJK1013
+ 	  To compile this driver as a module, choose M here: the module will
+ 	  be called kxcjk-1013.
  
-+menuconfig PMIC_OPREGION
-+	bool "PMIC (Power Management Integrated Circuit) operation region support"
++config MMA9551
++	tristate "Freescale MMA9551L Intelligent Motion-Sensing Platform Driver"
++	depends on I2C
 +	help
-+	  Select this option to enable support for ACPI operation
-+	  region of the PMIC chip. The operation region can be used
-+	  to control power rails and sensor reading/writing on the
-+	  PMIC chip.
++	  Say yes here to build support for the Freescale MMA9551L
++	  Intelligent Motion-Sensing Platform Driver.
 +
-+if PMIC_OPREGION
-+config CRC_PMIC_OPREGION
-+	bool "ACPI operation region support for CrystalCove PMIC"
-+	depends on INTEL_SOC_PMIC
-+	help
-+	  This config adds ACPI operation region support for CrystalCove PMIC.
++	  To compile this driver as a module, choose M here: the module
++	  will be called mma9551.
 +
-+endif
-+
- endif	# ACPI
-diff --git a/drivers/acpi/Makefile b/drivers/acpi/Makefile
-index 6d11522f0e48..f5938399ac14 100644
---- a/drivers/acpi/Makefile
-+++ b/drivers/acpi/Makefile
-@@ -88,3 +88,6 @@ obj-$(CONFIG_ACPI_PROCESSOR_AGGREGATOR) += acpi_pad.o
- obj-$(CONFIG_ACPI_APEI)		+= apei/
+ endmenu
+diff --git a/drivers/iio/accel/Makefile b/drivers/iio/accel/Makefile
+index a593996..de5b9cb 100644
+--- a/drivers/iio/accel/Makefile
++++ b/drivers/iio/accel/Makefile
+@@ -9,6 +9,7 @@ obj-$(CONFIG_HID_SENSOR_ACCEL_3D) += hid-sensor-accel-3d.o
+ obj-$(CONFIG_KXCJK1013) += kxcjk-1013.o
+ obj-$(CONFIG_KXSD9)	+= kxsd9.o
+ obj-$(CONFIG_MMA8452)	+= mma8452.o
++obj-$(CONFIG_MMA9551)	+= mma9551.o
  
- obj-$(CONFIG_ACPI_EXTLOG)	+= acpi_extlog.o
-+
-+obj-$(CONFIG_PMIC_OPREGION)	+= pmic/intel_pmic.o
-+obj-$(CONFIG_CRC_PMIC_OPREGION) += pmic/intel_pmic_crc.o
-diff --git a/drivers/acpi/pmic/intel_pmic.c b/drivers/acpi/pmic/intel_pmic.c
+ obj-$(CONFIG_IIO_ST_ACCEL_3AXIS) += st_accel.o
+ st_accel-y := st_accel_core.o
+diff --git a/drivers/iio/accel/mma9551.c b/drivers/iio/accel/mma9551.c
 new file mode 100644
-index 000000000000..b5e7fc05dab4
+index 0000000..11d290a
 --- /dev/null
-+++ b/drivers/acpi/pmic/intel_pmic.c
-@@ -0,0 +1,341 @@
++++ b/drivers/iio/accel/mma9551.c
+@@ -0,0 +1,976 @@
 +/*
-+ * intel_pmic.c - Intel SoC PMIC operation region Driver
++ * Freescale MMA9551L Intelligent Motion-Sensing Platform driver
++ * Copyright (c) 2014, Intel Corporation.
 + *
-+ * Copyright (C) 2014 Intel Corporation. All rights reserved.
++ * This program is free software; you can redistribute it and/or modify it
++ * under the terms and conditions of the GNU General Public License,
++ * version 2, as published by the Free Software Foundation.
 + *
-+ * This program is free software; you can redistribute it and/or
-+ * modify it under the terms of the GNU General Public License version
-+ * 2 as published by the Free Software Foundation.
-+ *
-+ * This program is distributed in the hope that it will be useful,
-+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
-+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-+ * GNU General Public License for more details.
++ * This program is distributed in the hope it will be useful, but WITHOUT
++ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
++ * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
++ * more details.
 + */
-+
 +#include <linux/module.h>
++#include <linux/i2c.h>
++#include <linux/interrupt.h>
++#include <linux/slab.h>
 +#include <linux/acpi.h>
-+#include <linux/regmap.h>
-+#include "intel_pmic.h"
++#include <linux/delay.h>
++#include <linux/gpio/consumer.h>
++#include <linux/iio/iio.h>
++#include <linux/iio/sysfs.h>
++#include <linux/iio/events.h>
 +
-+#define PMIC_PMOP_OPREGION_ID	0x8d
-+#define PMIC_DPTF_OPREGION_ID	0x8c
++#define MMA9551_DRV_NAME		"mma9551"
++#define MMA9551_IRQ_NAME		"mma9551_event"
++#define MMA9551_GPIO_NAME		"mma9551_int"
++#define MMA9551_GPIO_COUNT		4
 +
-+struct acpi_lpat {
-+	int temp;
-+	int raw;
++/* Applications IDs */
++#define MMA9551_APPID_VERSION		0x00
++#define MMA9551_APPID_GPIO		0x03
++#define MMA9551_APPID_AFE		0x06
++#define MMA9551_APPID_TILT		0x0B
++#define MMA9551_APPID_SLEEP_WAKE	0x12
++#define MMA9551_APPID_RESET		0x17
++#define MMA9551_APPID_NONE		0xff
++
++/* Command masks for Mailbox write command */
++#define MMA9551_CMD_READ_VERSION_INFO	0x00
++#define MMA9551_CMD_READ_CONFIG		0x10
++#define MMA9551_CMD_WRITE_CONFIG	0x20
++#define MMA9551_CMD_READ_STATUS		0x30
++
++enum mma9551_gpio_pin {
++	mma9551_gpio6 = 0,
++	mma9551_gpio7,
++	mma9551_gpio8,
++	mma9551_gpio9,
++	mma9551_gpio_max = mma9551_gpio9,
 +};
 +
-+struct intel_soc_pmic_opregion {
-+	struct mutex lock;
-+	struct acpi_lpat *lpat;
-+	int lpat_count;
-+	struct regmap *regmap;
-+	struct intel_soc_pmic_opregion_data *data;
++/* Mailbox read command */
++#define MMA9551_RESPONSE_COCO		BIT(7)
++
++/* Error-Status codes returned in mailbox read command */
++#define MMA9551_MCI_ERROR_NONE			0x00
++#define MMA9551_MCI_ERROR_PARAM			0x04
++#define MMA9551_MCI_INVALID_COUNT		0x19
++#define MMA9551_MCI_ERROR_COMMAND		0x1C
++#define MMA9551_MCI_ERROR_INVALID_LENGTH	0x21
++#define MMA9551_MCI_ERROR_FIFO_BUSY		0x22
++#define MMA9551_MCI_ERROR_FIFO_ALLOCATED	0x23
++#define MMA9551_MCI_ERROR_FIFO_OVERSIZE		0x24
++
++/* GPIO Application  */
++#define MMA9551_GPIO_POL_MSB		0x08
++#define MMA9551_GPIO_POL_LSB		0x09
++
++/* Sleep/Wake application  */
++#define MMA9551_SLEEP_CFG		0x06
++#define MMA9551_SLEEP_CFG_SNCEN		BIT(0)
++#define MMA9551_SLEEP_CFG_SCHEN		BIT(2)
++
++/* AFE application */
++#define MMA9551_AFE_X_ACCEL_REG		0x00
++#define MMA9551_AFE_Y_ACCEL_REG		0x02
++#define MMA9551_AFE_Z_ACCEL_REG		0x04
++
++/* Tilt application (inclination in IIO terms). */
++#define MMA9551_TILT_XZ_ANG_REG		0x00
++#define MMA9551_TILT_YZ_ANG_REG		0x01
++#define MMA9551_TILT_XY_ANG_REG		0x02
++#define MMA9551_TILT_XY_QUAD_SHIFT	0
++#define MMA9551_TILT_YZ_QUAD_SHIFT	2
++#define MMA9551_TILT_XZ_QUAD_SHIFT	4
++#define MMA9551_TILT_ANGFLG		BIT(7)
++#define MMA9551_TILT_QUAD_REG		0x03
++#define MMA9551_TILT_CFG_REG		0x01
++#define MMA9551_TILT_ANG_THRESH_MASK	0x0f
++
++/* Tilt events are always mapped to this pin. */
++#define MMA9551_TILT_GPIO_PIN		mma9551_gpio9
++
++/* A response is composed of:
++ * - control registers: MB0-3
++ * - data registers: MB4-31
++ *
++ * A request is composed of:
++ * - mbox to write to (always 0)
++ * - control registers: MB1-4
++ * - data registers: MB5-31
++ */
++#define MMA9551_MAILBOX_CTRL_REGS	4
++#define MMA9551_MAX_MAILBOX_DATA_REGS	28
++#define MMA9551_MAILBOX_REGS		32
++
++#define MMA9551_I2C_READ_RETRIES	5
++#define MMA9551_I2C_READ_DELAY	50	/* us */
++
++struct mma9551_mbox_request {
++	u8 start_mbox;		/* Always 0. */
++	u8 app_id;
++	/*
++	 * See page 57 of the MMA955 Software Reference Manual.
++	 *
++	 * Bit 7: reserved, always 0
++	 * Bits 6-4: command
++	 * Bits 3-0: upper bits of register offset
++	 */
++	u8 cmd_off;
++	u8 lower_off;
++	u8 nbytes;
++	u8 buf[MMA9551_MAX_MAILBOX_DATA_REGS - 1];
++} __packed;
++
++struct mma9551_mbox_response {
++	u8 app_id;
++	/*
++	 * See page 60 of the MMA955 Software Reference Manual.
++	 *
++	 * Bit 7: COCO
++	 * Bits 6-0: Error code.
++	 */
++	u8 coco_err;
++	u8 nbytes;
++	u8 req_bytes;
++	u8 buf[MMA9551_MAX_MAILBOX_DATA_REGS];
++} __packed;
++
++struct mma9551_version_info {
++	__be32 device_id;
++	u8 rom_version[2];
++	u8 fw_version[2];
++	u8 hw_version[2];
++	u8 fw_build[2];
 +};
 +
-+static struct pmic_pwr_reg *
-+pmic_get_pwr_reg(int address, struct pmic_pwr_table *table, int count)
-+{
-+	int i;
++struct mma9551_data {
++	struct i2c_client *client;
++	struct mutex mutex;
++	/*
++	 * At most one inclination ROC event may be active at a given
++	 * time.  We add this restriction because each such event would
++	 * take up a GPIO line.  The MMA955 has 4 GPIO lines, but using
++	 * 3 of them for inclination detection is not very useful.
++	 *
++	 * If none of the inclination ROC events are active, this
++	 * variable has a value of IIO_NO_MOD.
++	 */
++	enum iio_modifier active_incli_event;
++};
 +
-+	for (i = 0; i < count; i++) {
-+		if (table[i].address == address)
-+			return &table[i].pwr_reg;
++static int mma9551_transfer(struct i2c_client *client,
++			    u8 app_id, u8 command, u16 offset,
++			    u8 *inbytes, int num_inbytes,
++			    u8 *outbytes, int num_outbytes)
++{
++	struct mma9551_mbox_request req;
++	struct mma9551_mbox_response rsp;
++	struct i2c_msg in, out;
++	u8 req_len, err_code;
++	int ret;
++	int retries;
++
++	if (offset >= 1 << 12) {
++		dev_err(&client->dev, "register offset too large\n");
++		return -EINVAL;
 +	}
-+	return NULL;
-+}
 +
-+static int
-+pmic_get_dptf_reg(int address, struct pmic_dptf_table *table, int count)
-+{
-+	int i;
++	req_len = 1 + MMA9551_MAILBOX_CTRL_REGS + num_inbytes;
++	req.start_mbox = 0;
++	req.app_id = app_id;
++	req.cmd_off = command | (offset >> 8);
++	req.lower_off = offset;
 +
-+	for (i = 0; i < count; i++) {
-+		if (table[i].address == address)
-+			return table[i].reg;
++	if (command == MMA9551_CMD_WRITE_CONFIG)
++		req.nbytes = num_inbytes;
++	else
++		req.nbytes = num_outbytes;
++	if (num_inbytes)
++		memcpy(req.buf, inbytes, num_inbytes);
++
++	out.addr = client->addr;
++	out.flags = 0;
++	out.len = req_len;
++	out.buf = (u8 *)&req;
++
++	ret = i2c_transfer(client->adapter, &out, 1);
++	if (ret < 0) {
++		dev_err(&client->dev, "i2c write failed\n");
++		return ret;
 +	}
-+	return -ENOENT;
-+}
 +
-+/* Return temperature from raw value through LPAT table */
-+static int raw_to_temp(struct acpi_lpat *lpat, int count, int raw)
-+{
-+	int i, delta_temp, delta_raw, temp;
++	retries = MMA9551_I2C_READ_RETRIES;
++	do {
++		udelay(MMA9551_I2C_READ_DELAY);
 +
-+	for (i = 0; i < count - 1; i++) {
-+		if ((raw >= lpat[i].raw && raw <= lpat[i+1].raw) ||
-+		    (raw <= lpat[i].raw && raw >= lpat[i+1].raw))
++		in.addr = client->addr;
++		in.flags = I2C_M_RD;
++		in.len = sizeof(rsp);
++		in.buf = (u8 *)&rsp;
++
++		ret = i2c_transfer(client->adapter, &in, 1);
++		if (ret < 0) {
++			dev_err(&client->dev, "i2c read failed\n");
++			return ret;
++		}
++
++		if (rsp.coco_err & MMA9551_RESPONSE_COCO)
 +			break;
++	} while (--retries > 0);
++
++	if (retries == 0) {
++		dev_err(&client->dev,
++			"timed out while waiting for command response\n");
++		return -ETIMEDOUT;
 +	}
 +
-+	if (i == count - 1)
-+		return -ENOENT;
++	if (rsp.app_id != app_id) {
++		dev_err(&client->dev,
++			"app_id mismatch in response got %02x expected %02x\n",
++			rsp.app_id, app_id);
++		return -EINVAL;
++	}
 +
-+	delta_temp = lpat[i+1].temp - lpat[i].temp;
-+	delta_raw = lpat[i+1].raw - lpat[i].raw;
-+	temp = lpat[i].temp + (raw - lpat[i].raw) * delta_temp / delta_raw;
++	err_code = rsp.coco_err & ~MMA9551_RESPONSE_COCO;
++	if (err_code != MMA9551_MCI_ERROR_NONE) {
++		dev_err(&client->dev, "read returned error %x\n", err_code);
++		return -EINVAL;
++	}
 +
-+	return temp;
++	if (rsp.nbytes != rsp.req_bytes) {
++		dev_err(&client->dev,
++			"output length mismatch got %d expected %d\n",
++			rsp.nbytes, num_outbytes);
++		return -EINVAL;
++	}
++
++	if (num_outbytes)
++		memcpy(outbytes, rsp.buf, num_outbytes);
++
++	return 0;
 +}
 +
-+/* Return raw value from temperature through LPAT table */
-+static int temp_to_raw(struct acpi_lpat *lpat, int count, int temp)
++static int mma9551_read_config_byte(struct i2c_client *client, u8 app_id,
++				    u16 reg, u8 *val)
 +{
-+	int i, delta_temp, delta_raw, raw;
++	return mma9551_transfer(client, app_id, MMA9551_CMD_READ_CONFIG,
++				reg, NULL, 0, val, 1);
++}
 +
-+	for (i = 0; i < count - 1; i++) {
-+		if (temp >= lpat[i].temp && temp <= lpat[i+1].temp)
++static int mma9551_write_config_byte(struct i2c_client *client, u8 app_id,
++				     u16 reg, u8 val)
++{
++	return mma9551_transfer(client, app_id, MMA9551_CMD_WRITE_CONFIG, reg,
++				&val, 1, NULL, 0);
++}
++
++static int mma9551_read_status_byte(struct i2c_client *client, u8 app_id,
++				    u16 reg, u8 *val)
++{
++	return mma9551_transfer(client, app_id, MMA9551_CMD_READ_STATUS,
++				reg, NULL, 0, val, 1);
++}
++
++static int mma9551_read_status_word(struct i2c_client *client, u8 app_id,
++				    u16 reg, u16 *val)
++{
++	int ret;
++	__be16 v;
++
++	ret = mma9551_transfer(client, app_id, MMA9551_CMD_READ_STATUS,
++			       reg, NULL, 0, (u8 *)&v, 2);
++	*val = be16_to_cpu(v);
++
++	return ret;
++}
++
++static int mma9551_update_config_bits(struct i2c_client *client, u8 app_id,
++				      u8 reg, u8 mask, u8 val)
++{
++	int ret;
++	u8 tmp, orig;
++
++	ret = mma9551_read_config_byte(client, app_id, reg, &orig);
++	if (ret < 0)
++		return ret;
++
++	tmp = orig & ~mask;
++	tmp |= val & mask;
++
++	if (tmp == orig)
++		return 0;
++
++	return mma9551_write_config_byte(client, app_id, reg, tmp);
++}
++
++/*
++ * The polarity parameter is described in section 6.2.2, page 66, of the
++ * Software Reference Manual.  Basically, polarity=0 means the interrupt
++ * line has the same value as the selected bit, while polarity=1 means
++ * the line is inverted.
++ */
++static int mma9551_gpio_config(struct i2c_client *client,
++			       enum mma9551_gpio_pin pin,
++			       u8 app_id, u8 bitnum, int polarity)
++{
++	u8 reg, pol_mask, pol_val;
++	int ret;
++
++	if (pin > mma9551_gpio_max) {
++		dev_err(&client->dev, "bad GPIO pin\n");
++		return -EINVAL;
++	}
++
++	/*
++	 * Pin 6 is configured by regs 0x00 and 0x01, pin 7 by 0x02 and
++	 * 0x03, and so on.
++	 */
++	reg = pin * 2;
++
++	ret = mma9551_write_config_byte(client, MMA9551_APPID_GPIO,
++					reg, app_id);
++	if (ret < 0) {
++		dev_err(&client->dev, "error setting GPIO app_id\n");
++		return ret;
++	}
++
++	ret = mma9551_write_config_byte(client, MMA9551_APPID_GPIO,
++					reg + 1, bitnum);
++	if (ret < 0) {
++		dev_err(&client->dev, "error setting GPIO bit number\n");
++		return ret;
++	}
++
++	switch (pin) {
++	case mma9551_gpio6:
++		reg = MMA9551_GPIO_POL_LSB;
++		pol_mask = 1 << 6;
++		break;
++	case mma9551_gpio7:
++		reg = MMA9551_GPIO_POL_LSB;
++		pol_mask = 1 << 7;
++		break;
++	case mma9551_gpio8:
++		reg = MMA9551_GPIO_POL_MSB;
++		pol_mask = 1 << 0;
++		break;
++	case mma9551_gpio9:
++		reg = MMA9551_GPIO_POL_MSB;
++		pol_mask = 1 << 1;
++		break;
++	}
++	pol_val = polarity ? pol_mask : 0;
++
++	ret = mma9551_update_config_bits(client, MMA9551_APPID_GPIO, reg,
++					 pol_mask, pol_val);
++	if (ret < 0)
++		dev_err(&client->dev, "error setting GPIO polarity\n");
++
++	return ret;
++}
++
++static int mma9551_read_version(struct i2c_client *client)
++{
++	struct mma9551_version_info info;
++	int ret;
++
++	ret = mma9551_transfer(client, MMA9551_APPID_VERSION, 0x00, 0x00,
++			       NULL, 0, (u8 *)&info, sizeof(info));
++	if (ret < 0)
++		return ret;
++
++	dev_info(&client->dev, "Device ID 0x%x, firmware version %02x.%02x\n",
++		 be32_to_cpu(info.device_id), info.fw_version[0],
++		 info.fw_version[1]);
++
++	return 0;
++}
++
++/*
++ * Use 'false' as the second parameter to cause the device to enter
++ * sleep.
++ */
++static int mma9551_set_device_state(struct i2c_client *client,
++				    bool enable)
++{
++	return mma9551_update_config_bits(client, MMA9551_APPID_SLEEP_WAKE,
++			  MMA9551_SLEEP_CFG,
++			  MMA9551_SLEEP_CFG_SNCEN,
++			  enable ? MMA9551_SLEEP_CFG_SNCEN : 0);
++}
++
++static int mma9551_read_incli_chan(struct i2c_client *client,
++				   const struct iio_chan_spec *chan,
++				   int *val)
++{
++	u8 quad_shift, quad_mask, angle, quadrant;
++	u16 reg_addr;
++	int ret;
++
++	switch (chan->channel2) {
++	case IIO_MOD_X:
++		reg_addr = MMA9551_TILT_YZ_ANG_REG;
++		quad_shift = MMA9551_TILT_YZ_QUAD_SHIFT;
++		break;
++	case IIO_MOD_Y:
++		reg_addr = MMA9551_TILT_XZ_ANG_REG;
++		quad_shift = MMA9551_TILT_XZ_QUAD_SHIFT;
++		break;
++	case IIO_MOD_Z:
++		reg_addr = MMA9551_TILT_XY_ANG_REG;
++		quad_shift = MMA9551_TILT_XY_QUAD_SHIFT;
++		break;
++	default:
++		return -EINVAL;
++	}
++
++	ret = mma9551_read_status_byte(client, MMA9551_APPID_TILT,
++				       reg_addr, &angle);
++	if (ret < 0)
++		return ret;
++
++	ret = mma9551_read_status_byte(client, MMA9551_APPID_TILT,
++				       MMA9551_TILT_QUAD_REG, &quadrant);
++	if (ret < 0)
++		return ret;
++
++	angle &= ~MMA9551_TILT_ANGFLG;
++	quad_mask = 0x03 << quad_shift;
++	quadrant = (quadrant & quad_mask) >> quad_shift;
++
++	if (quadrant == 1 || quadrant == 3)
++		*val = 90 * (quadrant + 1) - angle;
++	else
++		*val = angle + 90 * quadrant;
++
++	return IIO_VAL_INT;
++}
++
++static int mma9551_read_accel_chan(struct i2c_client *client,
++				   const struct iio_chan_spec *chan,
++				   int *val, int *val2)
++{
++	u16 reg_addr;
++	s16 raw_accel;
++	int ret;
++
++	switch (chan->channel2) {
++	case IIO_MOD_X:
++		reg_addr = MMA9551_AFE_X_ACCEL_REG;
++		break;
++	case IIO_MOD_Y:
++		reg_addr = MMA9551_AFE_Y_ACCEL_REG;
++		break;
++	case IIO_MOD_Z:
++		reg_addr = MMA9551_AFE_Z_ACCEL_REG;
++		break;
++	default:
++		return -EINVAL;
++	}
++
++	ret = mma9551_read_status_word(client, MMA9551_APPID_AFE,
++				       reg_addr, &raw_accel);
++	if (ret < 0)
++		return ret;
++
++	*val = raw_accel;
++
++	return IIO_VAL_INT;
++}
++
++static int mma9551_read_raw(struct iio_dev *indio_dev,
++			    struct iio_chan_spec const *chan,
++			    int *val, int *val2, long mask)
++{
++	struct mma9551_data *data = iio_priv(indio_dev);
++	int ret;
++
++	switch (mask) {
++	case IIO_CHAN_INFO_PROCESSED:
++		switch (chan->type) {
++		case IIO_INCLI:
++			mutex_lock(&data->mutex);
++			ret = mma9551_read_incli_chan(data->client,
++						      chan, val);
++			mutex_unlock(&data->mutex);
++			return ret;
++		default:
++			return -EINVAL;
++		}
++	case IIO_CHAN_INFO_RAW:
++		switch (chan->type) {
++		case IIO_ACCEL:
++			mutex_lock(&data->mutex);
++			ret = mma9551_read_accel_chan(data->client,
++						      chan, val, val2);
++			mutex_unlock(&data->mutex);
++			return ret;
++		default:
++			return -EINVAL;
++		}
++	case IIO_CHAN_INFO_SCALE:
++		switch (chan->type) {
++		case IIO_ACCEL:
++			*val = 0;
++			*val2 = 2440;
++			return IIO_VAL_INT_PLUS_MICRO;
++		default:
++			return -EINVAL;
++		}
++	default:
++		return -EINVAL;
++	}
++}
++
++static int mma9551_read_event_config(struct iio_dev *indio_dev,
++				     const struct iio_chan_spec *chan,
++				     enum iio_event_type type,
++				     enum iio_event_direction dir)
++{
++	struct mma9551_data *data = iio_priv(indio_dev);
++
++	switch (chan->type) {
++	case IIO_INCLI:
++		return data->active_incli_event == chan->channel2;
++	default:
++		return -EINVAL;
++	}
++}
++
++static int mma9551_config_incli_event(struct iio_dev *indio_dev,
++				      enum iio_modifier axis,
++				      int state)
++{
++	struct mma9551_data *data = iio_priv(indio_dev);
++	int ret;
++
++	if (state == 1 && data->active_incli_event == axis)
++		return 0;
++	if (state == 0 && data->active_incli_event != axis)
++		return 0;
++
++	if (state == 1 && data->active_incli_event != IIO_NO_MOD) {
++		dev_err(&data->client->dev,
++			"only one inclination rate-of-change event may be active at any moment\n");
++		return -EBUSY;
++	}
++
++	/*
++	 * Right now we are sure that the requested operation can be
++	 * completed without conflict, i.e. either an event can be
++	 * safely activated, or the active one will be deactivated.
++	 */
++	if (state == 0) {
++		data->active_incli_event = IIO_NO_MOD;
++
++		ret = mma9551_gpio_config(data->client, MMA9551_TILT_GPIO_PIN,
++					  MMA9551_APPID_NONE, 0, 0);
++		if (ret < 0)
++			return ret;
++	} else {
++		int bitnum;
++
++		/* Bit 7 of each angle register holds the angle flag. */
++		switch (axis) {
++		case IIO_MOD_X:
++			bitnum = 7 + 8 * MMA9551_TILT_YZ_ANG_REG;
 +			break;
++		case IIO_MOD_Y:
++			bitnum = 7 + 8 * MMA9551_TILT_XZ_ANG_REG;
++			break;
++		case IIO_MOD_Z:
++			bitnum = 7 + 8 * MMA9551_TILT_XY_ANG_REG;
++			break;
++		default:
++			return -EINVAL;
++		}
++
++		ret = mma9551_gpio_config(data->client, MMA9551_TILT_GPIO_PIN,
++					  MMA9551_APPID_TILT, bitnum, 0);
++		if (ret < 0)
++			return ret;
++
++		data->active_incli_event = axis;
 +	}
 +
-+	if (i == count - 1)
-+		return -ENOENT;
-+
-+	delta_temp = lpat[i+1].temp - lpat[i].temp;
-+	delta_raw = lpat[i+1].raw - lpat[i].raw;
-+	raw = lpat[i].raw + (temp - lpat[i].temp) * delta_raw / delta_temp;
-+
-+	return raw;
++	return ret;
 +}
 +
-+static void
-+pmic_dptf_lpat(struct intel_soc_pmic_opregion *opregion, acpi_handle handle,
-+	       struct device *dev)
++static int mma9551_write_event_config(struct iio_dev *indio_dev,
++				      const struct iio_chan_spec *chan,
++				      enum iio_event_type type,
++				      enum iio_event_direction dir,
++				      int state)
 +{
-+	struct acpi_buffer buffer = { ACPI_ALLOCATE_BUFFER, NULL };
-+	union acpi_object *obj_p, *obj_e;
-+	int *lpat, i;
-+	acpi_status status;
++	struct mma9551_data *data = iio_priv(indio_dev);
++	int ret;
 +
-+	status = acpi_evaluate_object(handle, "LPAT", NULL, &buffer);
-+	if (ACPI_FAILURE(status))
-+		return;
++	switch (chan->type) {
++	case IIO_INCLI:
++		mutex_lock(&data->mutex);
++		ret = mma9551_config_incli_event(indio_dev,
++						 chan->channel2, state);
++		mutex_unlock(&data->mutex);
++		return ret;
++	default:
++		return -EINVAL;
++	}
++}
 +
-+	obj_p = (union acpi_object *)buffer.pointer;
-+	if (!obj_p || (obj_p->type != ACPI_TYPE_PACKAGE) ||
-+	    (obj_p->package.count % 2) || (obj_p->package.count < 4))
++static int mma9551_write_event_value(struct iio_dev *indio_dev,
++				     const struct iio_chan_spec *chan,
++				     enum iio_event_type type,
++				     enum iio_event_direction dir,
++				     enum iio_event_info info,
++				     int val, int val2)
++{
++	struct mma9551_data *data = iio_priv(indio_dev);
++	int ret;
++
++	switch (chan->type) {
++	case IIO_INCLI:
++		if (val2 != 0 || val < 1 || val > 10)
++			return -EINVAL;
++		mutex_lock(&data->mutex);
++		ret = mma9551_update_config_bits(data->client,
++						 MMA9551_APPID_TILT,
++						 MMA9551_TILT_CFG_REG,
++						 MMA9551_TILT_ANG_THRESH_MASK,
++						 val);
++		mutex_unlock(&data->mutex);
++		return ret;
++	default:
++		return -EINVAL;
++	}
++}
++
++static int mma9551_read_event_value(struct iio_dev *indio_dev,
++				    const struct iio_chan_spec *chan,
++				    enum iio_event_type type,
++				    enum iio_event_direction dir,
++				    enum iio_event_info info,
++				    int *val, int *val2)
++{
++	struct mma9551_data *data = iio_priv(indio_dev);
++	int ret;
++	u8 tmp;
++
++	switch (chan->type) {
++	case IIO_INCLI:
++		mutex_lock(&data->mutex);
++		ret = mma9551_read_config_byte(data->client,
++					       MMA9551_APPID_TILT,
++					       MMA9551_TILT_CFG_REG, &tmp);
++		mutex_unlock(&data->mutex);
++		if (ret < 0)
++			return ret;
++		*val = tmp & MMA9551_TILT_ANG_THRESH_MASK;
++		*val2 = 0;
++		return IIO_VAL_INT;
++	default:
++		return -EINVAL;
++	}
++}
++
++static const struct iio_event_spec mma9551_incli_event = {
++	.type = IIO_EV_TYPE_ROC,
++	.dir = IIO_EV_DIR_RISING,
++	.mask_separate = BIT(IIO_EV_INFO_ENABLE),
++	.mask_shared_by_type = BIT(IIO_EV_INFO_VALUE),
++};
++
++#define MMA9551_ACCEL_CHANNEL(axis) {				\
++	.type = IIO_ACCEL,					\
++	.modified = 1,						\
++	.channel2 = axis,					\
++	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),		\
++	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),	\
++	.scan_index = -1,					\
++}
++
++#define MMA9551_INCLI_CHANNEL(axis) {				\
++	.type = IIO_INCLI,					\
++	.modified = 1,						\
++	.channel2 = axis,					\
++	.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED),	\
++	.scan_index = -1,					\
++	.event_spec = &mma9551_incli_event,			\
++	.num_event_specs = 1,					\
++}
++
++static const struct iio_chan_spec mma9551_channels[] = {
++	MMA9551_ACCEL_CHANNEL(IIO_MOD_X),
++	MMA9551_ACCEL_CHANNEL(IIO_MOD_Y),
++	MMA9551_ACCEL_CHANNEL(IIO_MOD_Z),
++
++	MMA9551_INCLI_CHANNEL(IIO_MOD_X),
++	MMA9551_INCLI_CHANNEL(IIO_MOD_Y),
++	MMA9551_INCLI_CHANNEL(IIO_MOD_Z),
++};
++
++static const struct iio_info mma9551_info = {
++	.driver_module = THIS_MODULE,
++	.read_raw = mma9551_read_raw,
++	.read_event_config = mma9551_read_event_config,
++	.write_event_config = mma9551_write_event_config,
++	.read_event_value = mma9551_read_event_value,
++	.write_event_value = mma9551_write_event_value,
++};
++
++static irqreturn_t mma9551_event_handler(int irq, void *private)
++{
++	struct iio_dev *indio_dev = private;
++	struct mma9551_data *data = iio_priv(indio_dev);
++	int ret;
++	u16 reg;
++	u8 val;
++
++	mutex_lock(&data->mutex);
++
++	switch (data->active_incli_event) {
++	case IIO_MOD_X:
++		reg = MMA9551_TILT_YZ_ANG_REG;
++		break;
++	case IIO_MOD_Y:
++		reg = MMA9551_TILT_XZ_ANG_REG;
++		break;
++	case IIO_MOD_Z:
++		reg = MMA9551_TILT_XY_ANG_REG;
++		break;
++	default:
++		dev_err(&data->client->dev,
++			"got interrupt, but no active inclination event configured\n");
 +		goto out;
-+
-+	lpat = devm_kmalloc(dev, sizeof(*lpat) * obj_p->package.count,
-+			    GFP_KERNEL);
-+	if (!lpat)
-+		goto out;
-+
-+	for (i = 0; i < obj_p->package.count; i++) {
-+		obj_e = &obj_p->package.elements[i];
-+		if (obj_e->type != ACPI_TYPE_INTEGER)
-+			goto out;
-+		lpat[i] = obj_e->integer.value;
 +	}
 +
-+	opregion->lpat = (struct acpi_lpat *)lpat;
-+	opregion->lpat_count = obj_p->package.count / 2;
++	/*
++	 * Read the angle even though we don't use it, otherwise we
++	 * won't get any further interrupts.
++	 */
++	ret = mma9551_read_status_byte(data->client, MMA9551_APPID_TILT,
++				       reg, &val);
++	if (ret < 0) {
++		dev_err(&data->client->dev,
++			"error %d reading tilt register in IRQ\n", ret);
++		goto out;
++	}
++
++	iio_push_event(indio_dev,
++		       IIO_MOD_EVENT_CODE(IIO_INCLI, 0,
++					  data->active_incli_event,
++					  IIO_EV_TYPE_ROC,
++					  IIO_EV_DIR_RISING),
++		       iio_get_time_ns());
 +
 +out:
-+	kfree(buffer.pointer);
++	mutex_unlock(&data->mutex);
++
++	return IRQ_HANDLED;
 +}
 +
-+static acpi_status
-+intel_soc_pmic_pmop_handler(u32 function, acpi_physical_address address,
-+			    u32 bits, u64 *value64,
-+			    void *handler_context, void *region_context)
++static int mma9551_init(struct mma9551_data *data)
 +{
-+	struct intel_soc_pmic_opregion *opregion = region_context;
-+	struct regmap *regmap = opregion->regmap;
-+	struct intel_soc_pmic_opregion_data *d = opregion->data;
-+	struct pmic_pwr_reg *preg;
-+	int result;
++	int ret;
 +
-+	if (bits != 32 || !value64)
-+		return AE_BAD_PARAMETER;
++	ret = mma9551_read_version(data->client);
++	if (ret)
++		return ret;
 +
-+	if (function == ACPI_WRITE && !(*value64 == 0 || *value64 == 1))
-+		return AE_BAD_PARAMETER;
++	/* Power on chip and enable doze mode. */
++	ret = mma9551_update_config_bits(data->client,
++			 MMA9551_APPID_SLEEP_WAKE,
++			 MMA9551_SLEEP_CFG,
++			 MMA9551_SLEEP_CFG_SCHEN | MMA9551_SLEEP_CFG_SNCEN,
++			 MMA9551_SLEEP_CFG_SCHEN);
++	if (ret < 0)
++		return ret;
 +
-+	preg = pmic_get_pwr_reg(address, d->pwr_table, d->pwr_table_count);
-+	if (!preg)
-+		return AE_BAD_PARAMETER;
-+
-+	mutex_lock(&opregion->lock);
-+
-+	if (function == ACPI_READ)
-+		result = d->get_power(regmap, preg, value64);
-+	else
-+		result = d->update_power(regmap, preg, *value64 == 1);
-+
-+	mutex_unlock(&opregion->lock);
-+
-+	return result ? AE_ERROR : AE_OK;
++	return 0;
 +}
 +
-+static acpi_status pmic_read_temp(struct intel_soc_pmic_opregion *opregion,
-+				  int reg, u64 *value)
++static int mma9551_gpio_probe(struct iio_dev *indio_dev)
 +{
-+	int raw_temp, temp;
++	struct gpio_desc *gpio;
++	int i, ret, irq;
++	struct mma9551_data *data = iio_priv(indio_dev);
++	struct device *dev = &data->client->dev;
 +
-+	if (!opregion->data->get_raw_temp)
-+		return AE_BAD_PARAMETER;
++	for (i = 0; i < MMA9551_GPIO_COUNT; i++) {
++		gpio = devm_gpiod_get_index(dev, MMA9551_GPIO_NAME, i);
++		if (IS_ERR(gpio)) {
++			dev_err(dev, "acpi gpio get index failed\n");
++			return PTR_ERR(gpio);
++		}
 +
-+	raw_temp = opregion->data->get_raw_temp(opregion->regmap, reg);
-+	if (raw_temp < 0)
-+		return AE_ERROR;
++		ret = gpiod_direction_input(gpio);
++		if (ret)
++			return ret;
 +
-+	if (!opregion->lpat) {
-+		*value = raw_temp;
-+		return AE_OK;
++		irq = gpiod_to_irq(gpio);
++		ret = devm_request_threaded_irq(dev, irq, NULL,
++				mma9551_event_handler,
++				IRQF_TRIGGER_RISING | IRQF_ONESHOT,
++				MMA9551_IRQ_NAME, indio_dev);
++		if (ret < 0) {
++			dev_err(dev, "request irq %d failed\n", irq);
++			return ret;
++		}
++
++		dev_dbg(dev, "gpio resource, no:%d irq:%d\n",
++			desc_to_gpio(gpio), irq);
 +	}
 +
-+	temp = raw_to_temp(opregion->lpat, opregion->lpat_count, raw_temp);
-+	if (temp < 0)
-+		return AE_ERROR;
-+
-+	*value = temp;
-+	return AE_OK;
++	return 0;
 +}
 +
-+static acpi_status pmic_dptf_temp(struct intel_soc_pmic_opregion *opregion,
-+				  int reg, u32 function, u64 *value)
++static const char *mma9551_match_acpi_device(struct device *dev)
 +{
-+	if (function != ACPI_READ)
-+		return AE_BAD_PARAMETER;
++	const struct acpi_device_id *id;
 +
-+	return pmic_read_temp(opregion, reg, value);
++	id = acpi_match_device(dev->driver->acpi_match_table, dev);
++	if (!id)
++		return NULL;
++
++	return dev_name(dev);
 +}
 +
-+static acpi_status pmic_dptf_aux(struct intel_soc_pmic_opregion *opregion,
-+				 int reg, u32 function, u64 *value)
++static int mma9551_probe(struct i2c_client *client,
++			 const struct i2c_device_id *id)
 +{
-+	int raw_temp;
++	struct mma9551_data *data;
++	struct iio_dev *indio_dev;
++	const char *name = NULL;
++	int ret;
 +
-+	if (function == ACPI_READ)
-+		return pmic_read_temp(opregion, reg, value);
-+
-+	if (!opregion->data->update_aux)
-+		return AE_BAD_PARAMETER;
-+
-+	if (opregion->lpat) {
-+		raw_temp = temp_to_raw(opregion->lpat, opregion->lpat_count,
-+					 *value);
-+		if (raw_temp < 0)
-+			return AE_ERROR;
-+	} else {
-+		raw_temp = *value;
-+	}
-+
-+	return opregion->data->update_aux(opregion->regmap, reg, raw_temp) ?
-+		AE_ERROR : AE_OK;
-+}
-+
-+static acpi_status pmic_dptf_pen(struct intel_soc_pmic_opregion *opregion,
-+				 int reg, u32 function, u64 *value)
-+{
-+	struct intel_soc_pmic_opregion_data *d = opregion->data;
-+	struct regmap *regmap = opregion->regmap;
-+
-+	if (!d->get_policy || !d->update_policy)
-+		return AE_BAD_PARAMETER;
-+
-+	if (function == ACPI_READ)
-+		return d->get_policy(regmap, reg, value) ? AE_ERROR : AE_OK;
-+
-+	if (*value != 0 || *value != 1)
-+		return AE_BAD_PARAMETER;
-+
-+	return d->update_policy(regmap, reg, *value) ? AE_ERROR : AE_OK;
-+}
-+
-+static bool pmic_dptf_is_temp(int address)
-+{
-+	return (address <= 0x3c) && !(address % 12);
-+}
-+
-+static bool pmic_dptf_is_aux(int address)
-+{
-+	return (address >= 4 && address <= 0x40 && !((address - 4) % 12)) ||
-+	       (address >= 8 && address <= 0x44 && !((address - 8) % 12));
-+}
-+
-+static bool pmic_dptf_is_pen(int address)
-+{
-+	return address >= 0x48 && address <= 0x5c;
-+}
-+
-+static acpi_status
-+intel_soc_pmic_dptf_handler(u32 function, acpi_physical_address address,
-+			    u32 bits, u64 *value64,
-+			    void *handler_context, void *region_context)
-+{
-+	struct intel_soc_pmic_opregion *opregion = region_context;
-+	int reg;
-+	int result;
-+
-+	if (bits != 32 || !value64)
-+		return AE_BAD_PARAMETER;
-+
-+	reg = pmic_get_dptf_reg(address, opregion->data->dptf_table,
-+				opregion->data->dptf_table_count);
-+	if (!reg)
-+		return AE_BAD_PARAMETER;
-+
-+	mutex_lock(&opregion->lock);
-+
-+	result = AE_BAD_PARAMETER;
-+	if (pmic_dptf_is_temp(address))
-+		result = pmic_dptf_temp(opregion, reg, function, value64);
-+	else if (pmic_dptf_is_aux(address))
-+		result = pmic_dptf_aux(opregion, reg, function, value64);
-+	else if (pmic_dptf_is_pen(address))
-+		result = pmic_dptf_pen(opregion, reg, function, value64);
-+
-+	mutex_unlock(&opregion->lock);
-+
-+	return result;
-+}
-+
-+int
-+intel_soc_pmic_install_opregion_handler(struct device *dev,
-+					acpi_handle handle,
-+					struct regmap *regmap,
-+					struct intel_soc_pmic_opregion_data *d)
-+{
-+	acpi_status status;
-+	struct intel_soc_pmic_opregion *opregion;
-+
-+	if (!dev || !regmap || !d)
-+		return -EINVAL;
-+
-+	if (!handle)
-+		return -ENODEV;
-+
-+	opregion = devm_kzalloc(dev, sizeof(*opregion), GFP_KERNEL);
-+	if (!opregion)
++	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
++	if (!indio_dev)
 +		return -ENOMEM;
 +
-+	mutex_init(&opregion->lock);
-+	opregion->regmap = regmap;
-+	pmic_dptf_lpat(opregion, handle, dev);
++	data = iio_priv(indio_dev);
++	i2c_set_clientdata(client, indio_dev);
++	data->client = client;
 +
-+	status = acpi_install_address_space_handler(handle,
-+						    PMIC_PMOP_OPREGION_ID,
-+						    intel_soc_pmic_pmop_handler,
-+						    NULL, opregion);
-+	if (ACPI_FAILURE(status))
-+		return -ENODEV;
++	if (id)
++		name = id->name;
++	else if (ACPI_HANDLE(&client->dev))
++		name = mma9551_match_acpi_device(&client->dev);
 +
-+	status = acpi_install_address_space_handler(handle,
-+						    PMIC_DPTF_OPREGION_ID,
-+						    intel_soc_pmic_dptf_handler,
-+						    NULL, opregion);
-+	if (ACPI_FAILURE(status)) {
-+		acpi_remove_address_space_handler(handle, PMIC_PMOP_OPREGION_ID,
-+						  intel_soc_pmic_pmop_handler);
-+		return -ENODEV;
-+	}
++	if (!name)
++		name = MMA9551_DRV_NAME;
 +
-+	opregion->data = d;
-+	return 0;
-+}
-+EXPORT_SYMBOL_GPL(intel_soc_pmic_install_opregion_handler);
++	ret = mma9551_init(data);
++	if (ret < 0)
++		return ret;
 +
-+MODULE_LICENSE("GPL");
-diff --git a/drivers/acpi/pmic/intel_pmic.h b/drivers/acpi/pmic/intel_pmic.h
-new file mode 100644
-index 000000000000..4a2f680d5cb4
---- /dev/null
-+++ b/drivers/acpi/pmic/intel_pmic.h
-@@ -0,0 +1,34 @@
-+#ifndef __INTEL_PMIC_H
-+#define __INTEL_PMIC_H
++	mutex_init(&data->mutex);
++	data->active_incli_event = IIO_NO_MOD;
 +
-+struct pmic_pwr_reg {
-+	int reg;	/* corresponding PMIC register */
-+	int bit;	/* control bit for power */
-+};
++	indio_dev->dev.parent = &client->dev;
++	indio_dev->channels = mma9551_channels;
++	indio_dev->num_channels = ARRAY_SIZE(mma9551_channels);
++	indio_dev->name = name;
++	indio_dev->modes = INDIO_DIRECT_MODE;
++	indio_dev->info = &mma9551_info;
 +
-+struct pmic_pwr_table {
-+	int address;	/* operation region address */
-+	struct pmic_pwr_reg pwr_reg;
-+};
-+
-+struct pmic_dptf_table {
-+	int address;	/* operation region address */
-+	int reg;	/* corresponding thermal register */
-+};
-+
-+struct intel_soc_pmic_opregion_data {
-+	int (*get_power)(struct regmap *r, struct pmic_pwr_reg *preg, u64 *value);
-+	int (*update_power)(struct regmap *r, struct pmic_pwr_reg *preg, bool on);
-+	int (*get_raw_temp)(struct regmap *r, int reg);
-+	int (*update_aux)(struct regmap *r, int reg, int raw_temp);
-+	int (*get_policy)(struct regmap *r, int reg, u64 *value);
-+	int (*update_policy)(struct regmap *r, int reg, int enable);
-+	struct pmic_pwr_table *pwr_table;
-+	int pwr_table_count;
-+	struct pmic_dptf_table *dptf_table;
-+	int dptf_table_count;
-+};
-+
-+int intel_soc_pmic_install_opregion_handler(struct device *dev, acpi_handle handle, struct regmap *regmap, struct intel_soc_pmic_opregion_data *d);
-+
-+#endif
-diff --git a/drivers/acpi/pmic/intel_pmic_crc.c b/drivers/acpi/pmic/intel_pmic_crc.c
-new file mode 100644
-index 000000000000..4811a7f023c0
---- /dev/null
-+++ b/drivers/acpi/pmic/intel_pmic_crc.c
-@@ -0,0 +1,216 @@
-+/*
-+ * intel_pmic_crc.c - Intel CrystalCove PMIC operation region Driver
-+ *
-+ * Copyright (C) 2014 Intel Corporation. All rights reserved.
-+ *
-+ * This program is free software; you can redistribute it and/or
-+ * modify it under the terms of the GNU General Public License version
-+ * 2 as published by the Free Software Foundation.
-+ *
-+ * This program is distributed in the hope that it will be useful,
-+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
-+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-+ * GNU General Public License for more details.
-+ */
-+
-+#include <linux/module.h>
-+#include <linux/acpi.h>
-+#include <linux/mfd/intel_soc_pmic.h>
-+#include <linux/regmap.h>
-+#include <linux/platform_device.h>
-+#include "intel_pmic.h"
-+
-+#define PWR_SOURCE_SELECT	BIT(1)
-+
-+#define PMIC_A0LOCK_REG		0xc5
-+
-+static struct pmic_pwr_table pwr_table[] = {
-+	{
-+		.address = 0x24,
-+		.pwr_reg = {
-+			.reg = 0x66,
-+			.bit = 0x00,
-+		},
-+	},	/* X285 -> V2P85SX, camara */
-+	{
-+		.address = 0x48,
-+		.pwr_reg = {
-+			.reg = 0x5d,
-+			.bit = 0x00,
-+		},
-+	},	/* V18X -> V1P8SX, eMMC/camara/audio */
-+};
-+
-+static struct pmic_dptf_table dptf_table[] = {
-+	{
-+		.address = 0x00,
-+		.reg = 0x75
-+	},	/* TMP0 -> SYS0_THRM_RSLT_L */
-+	{
-+		.address = 0x04,
-+		.reg = 0x95
-+	},	/* AX00 -> SYS0_THRMALRT0_L */
-+	{
-+		.address = 0x08,
-+		.reg = 0x97
-+	},	/* AX01 -> SYS0_THRMALRT1_L */
-+	{
-+		.address = 0x0c,
-+		.reg = 0x77
-+	},	/* TMP1 -> SYS1_THRM_RSLT_L */
-+	{
-+		.address = 0x10,
-+		.reg = 0x9a
-+	},	/* AX10 -> SYS1_THRMALRT0_L */
-+	{
-+		.address = 0x14,
-+		.reg = 0x9c
-+	},	/* AX11 -> SYS1_THRMALRT1_L */
-+	{
-+		.address = 0x18,
-+		.reg = 0x79
-+	},	/* TMP2 -> SYS2_THRM_RSLT_L */
-+	{
-+		.address = 0x1c,
-+		.reg = 0x9f
-+	},	/* AX20 -> SYS2_THRMALRT0_L */
-+	{
-+		.address = 0x20,
-+		.reg = 0xa1
-+	},	/* AX21 -> SYS2_THRMALRT1_L */
-+	{
-+		.address = 0x48,
-+		.reg = 0x94
-+	},	/* PEN0 -> SYS0_THRMALRT0_H */
-+	{
-+		.address = 0x4c,
-+		.reg = 0x99
-+	},	/* PEN1 -> SYS1_THRMALRT1_H */
-+	{
-+		.address = 0x50,
-+		.reg = 0x9e
-+	},	/* PEN2 -> SYS2_THRMALRT2_H */
-+};
-+
-+static int intel_crc_pmic_get_power(struct regmap *regmap,
-+				    struct pmic_pwr_reg *preg, u64 *value)
-+{
-+	int data;
-+
-+	if (regmap_read(regmap, preg->reg, &data))
-+		return -EIO;
-+
-+	*value = (data & PWR_SOURCE_SELECT) && (data & BIT(preg->bit)) ? 1 : 0;
-+	return 0;
-+}
-+
-+static int intel_crc_pmic_update_power(struct regmap *regmap,
-+				       struct pmic_pwr_reg *preg, bool on)
-+{
-+	int data;
-+
-+	if (regmap_read(regmap, preg->reg, &data))
-+		return -EIO;
-+
-+	if (on) {
-+		data |= PWR_SOURCE_SELECT | BIT(preg->bit);
++	if (client->irq < 0) {
++		ret = mma9551_gpio_probe(indio_dev);
++		if (ret < 0)
++			return ret;
 +	} else {
-+		data &= ~BIT(preg->bit);
-+		data |= PWR_SOURCE_SELECT;
++		ret = devm_request_threaded_irq(&client->dev, client->irq,
++				NULL, mma9551_event_handler,
++				IRQF_TRIGGER_RISING | IRQF_ONESHOT,
++				MMA9551_IRQ_NAME, indio_dev);
++		if (ret < 0) {
++			dev_err(&client->dev,
++				"request irq %d failed\n", client->irq);
++			return ret;
++		}
 +	}
 +
-+	if (regmap_write(regmap, preg->reg, data))
-+		return -EIO;
-+	return 0;
-+}
-+
-+/* Raw temperature value is 10bits: 8bits in reg and 2bits in reg-1 bit0,1 */
-+static int intel_crc_pmic_get_raw_temp(struct regmap *regmap, int reg)
-+{
-+	int temp_l, temp_h;
-+
-+	if (regmap_read(regmap, reg, &temp_l) ||
-+	    regmap_read(regmap, reg - 1, &temp_h))
-+		return -EIO;
-+
-+	return (temp_l | ((temp_h & 0x3) << 8));
-+}
-+
-+static int
-+intel_crc_pmic_update_aux(struct regmap *regmap, int reg, int raw)
-+{
-+	if (regmap_write(regmap, reg, raw) ||
-+	    regmap_update_bits(regmap, reg - 1, 0x3, raw >> 8))
-+		return -EIO;
++	ret = iio_device_register(indio_dev);
++	if (ret < 0) {
++		dev_err(&client->dev, "unable to register iio device\n");
++		return ret;
++	}
 +
 +	return 0;
 +}
 +
-+static int
-+intel_crc_pmic_get_policy(struct regmap *regmap, int reg, u64 *value)
++static int mma9551_remove(struct i2c_client *client)
 +{
-+	int pen;
++	struct iio_dev *indio_dev = i2c_get_clientdata(client);
++	struct mma9551_data *data = iio_priv(indio_dev);
 +
-+	if (regmap_read(regmap, reg, &pen))
-+		return -EIO;
-+	*value = pen >> 7;
++	iio_device_unregister(indio_dev);
++	mutex_lock(&data->mutex);
++	mma9551_set_device_state(data->client, false);
++	mutex_unlock(&data->mutex);
 +	return 0;
 +}
 +
-+static int intel_crc_pmic_update_policy(struct regmap *regmap,
-+					int reg, int enable)
++#ifdef CONFIG_PM_SLEEP
++static int mma9551_suspend(struct device *dev)
 +{
-+	int alert0;
++	struct iio_dev *indio_dev = i2c_get_clientdata(to_i2c_client(dev));
++	struct mma9551_data *data = iio_priv(indio_dev);
 +
-+	/* Update to policy enable bit requires unlocking a0lock */
-+	if (regmap_read(regmap, PMIC_A0LOCK_REG, &alert0))
-+		return -EIO;
-+	if (regmap_update_bits(regmap, PMIC_A0LOCK_REG, 0x01, 0))
-+		return -EIO;
-+
-+	if (regmap_update_bits(regmap, reg, 0x80, enable << 7))
-+		return -EIO;
-+
-+	/* restore alert0 */
-+	if (regmap_write(regmap, PMIC_A0LOCK_REG, alert0))
-+		return -EIO;
-+
++	mutex_lock(&data->mutex);
++	mma9551_set_device_state(data->client, false);
++	mutex_unlock(&data->mutex);
 +	return 0;
 +}
 +
-+static struct intel_soc_pmic_opregion_data intel_crc_pmic_opregion_data = {
-+	.get_power	= intel_crc_pmic_get_power,
-+	.update_power	= intel_crc_pmic_update_power,
-+	.get_raw_temp	= intel_crc_pmic_get_raw_temp,
-+	.update_aux	= intel_crc_pmic_update_aux,
-+	.get_policy	= intel_crc_pmic_get_policy,
-+	.update_policy	= intel_crc_pmic_update_policy,
-+	.pwr_table	= pwr_table,
-+	.pwr_table_count= ARRAY_SIZE(pwr_table),
-+	.dptf_table	= dptf_table,
-+	.dptf_table_count = ARRAY_SIZE(dptf_table),
++static int mma9551_resume(struct device *dev)
++{
++	struct iio_dev *indio_dev = i2c_get_clientdata(to_i2c_client(dev));
++	struct mma9551_data *data = iio_priv(indio_dev);
++
++	mutex_lock(&data->mutex);
++	mma9551_set_device_state(data->client, true);
++	mutex_unlock(&data->mutex);
++	return 0;
++}
++#else
++#define mma9551_suspend NULL
++#define mma9551_resume NULL
++#endif
++
++static const struct dev_pm_ops mma9551_pm_ops = {
++	SET_SYSTEM_SLEEP_PM_OPS(mma9551_suspend, mma9551_resume)
 +};
 +
-+static int intel_crc_pmic_opregion_probe(struct platform_device *pdev)
-+{
-+	struct intel_soc_pmic *pmic = dev_get_drvdata(pdev->dev.parent);
-+	return intel_soc_pmic_install_opregion_handler(&pdev->dev,
-+			ACPI_HANDLE(pdev->dev.parent), pmic->regmap,
-+			&intel_crc_pmic_opregion_data);
-+}
++static const struct acpi_device_id mma9551_acpi_match[] = {
++	{"MMA9551", 0},
++	{},
++};
 +
-+static struct platform_driver intel_crc_pmic_opregion_driver = {
-+	.probe = intel_crc_pmic_opregion_probe,
++MODULE_DEVICE_TABLE(acpi, mma9551_acpi_match);
++
++static const struct i2c_device_id mma9551_id[] = {
++	{"mma9551", 0},
++	{}
++};
++
++MODULE_DEVICE_TABLE(i2c, mma9551_id);
++
++static struct i2c_driver mma9551_driver = {
 +	.driver = {
-+		.name = "crystal_cove_region",
-+	},
++		   .name = MMA9551_DRV_NAME,
++		   .acpi_match_table = ACPI_PTR(mma9551_acpi_match),
++		   .pm = &mma9551_pm_ops,
++		   },
++	.probe = mma9551_probe,
++	.remove = mma9551_remove,
++	.id_table = mma9551_id,
 +};
 +
-+static int __init intel_crc_pmic_opregion_driver_init(void)
-+{
-+	return platform_driver_register(&intel_crc_pmic_opregion_driver);
-+}
-+module_init(intel_crc_pmic_opregion_driver_init);
++module_i2c_driver(mma9551_driver);
 +
-+MODULE_DESCRIPTION("CrystalCove ACPI opration region driver");
-+MODULE_LICENSE("GPL");
-diff --git a/drivers/mfd/intel_soc_pmic_crc.c b/drivers/mfd/intel_soc_pmic_crc.c
-index 7107cab832e6..48845d636bba 100644
---- a/drivers/mfd/intel_soc_pmic_crc.c
-+++ b/drivers/mfd/intel_soc_pmic_crc.c
-@@ -106,6 +106,9 @@ static struct mfd_cell crystal_cove_dev[] = {
- 		.num_resources = ARRAY_SIZE(gpio_resources),
- 		.resources = gpio_resources,
- 	},
-+	{
-+		.name = "crystal_cove_region",
-+	},
- };
- 
- static struct regmap_config crystal_cove_regmap_config = {
++MODULE_AUTHOR("Irina Tirdea <irina.tirdea@intel.com>");
++MODULE_AUTHOR("Vlad Dogaru <vlad.dogaru@intel.com>");
++MODULE_LICENSE("GPL v2");
++MODULE_DESCRIPTION("MMA955xL motion-sensing platform driver");
 -- 
-1.9.3
+1.9.1
 
