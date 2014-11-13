@@ -1,128 +1,69 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from comal.ext.ti.com ([198.47.26.152]:60618 "EHLO comal.ext.ti.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S932416AbaKMMYm (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Thu, 13 Nov 2014 07:24:42 -0500
-Message-ID: <5464A2B5.3020207@ti.com>
-Date: Thu, 13 Nov 2014 17:53:17 +0530
-From: Vignesh R <vigneshr@ti.com>
+Received: from mailapp01.imgtec.com ([195.59.15.196]:58312 "EHLO
+	mailapp01.imgtec.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S932910AbaKMOQG (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 13 Nov 2014 09:16:06 -0500
+From: Ezequiel Garcia <ezequiel.garcia@imgtec.com>
+To: Andrew Bresticker <abrestic@chromium.org>,
+	James Hartley <james.hartley@imgtec.com>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	"Jonathan Cameron" <jic23@kernel.org>
+CC: <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
+	<robh+dt@kernel.org>, <Pawel.Moll@arm.com>, <Mark.Rutland@arm.com>,
+	<ijc+devicetree@hellion.org.uk>, <galak@codeaurora.org>,
+	<Naidu.Tellapati@imgtec.com>, Phani Movva <Phani.Movva@imgtec.com>,
+	"Ezequiel Garcia" <ezequiel.garcia@imgtec.com>
+Subject: [PATCH v3 2/3] DT: iio: adc: Add CC_10001 binding documentation
+Date: Thu, 13 Nov 2014 11:13:59 -0300
+Message-ID: <1415888044-16635-3-git-send-email-ezequiel.garcia@imgtec.com>
+In-Reply-To: <1415888044-16635-1-git-send-email-ezequiel.garcia@imgtec.com>
+References: <1415888044-16635-1-git-send-email-ezequiel.garcia@imgtec.com>
 MIME-Version: 1.0
-To: Johannes Pointner <johannes.pointner@gmail.com>
-CC: Richard Cochran <richardcochran@gmail.com>,
-	Rob Herring <robh+dt@kernel.org>,
-	Pawel Moll <pawel.moll@arm.com>,
-	Mark Rutland <mark.rutland@arm.com>,
-	Ian Campbell <ijc+devicetree@hellion.org.uk>,
-	Kumar Gala <galak@codeaurora.org>,
-	Benoit Cousson <bcousson@baylibre.com>,
-	Tony Lindgren <tony@atomide.com>,
-	Russell King <linux@arm.linux.org.uk>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-	<devicetree@vger.kernel.org>, Lars-Peter Clausen <lars@metafoo.de>,
-	Samuel Ortiz <sameo@linux.intel.com>,
-	Jan Kardell <jan.kardell@telliq.com>,
-	linux-iio <linux-iio@vger.kernel.org>,
-	Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-	<linux-input@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-	Felipe Balbi <balbi@ti.com>,
-	Paul Gortmaker <paul.gortmaker@windriver.com>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	Hartmut Knaack <knaack.h@gmx.de>, <linux-omap@vger.kernel.org>,
-	Lee Jones <lee.jones@linaro.org>,
-	<linux-arm-kernel@lists.infradead.org>,
-	Brad Griffis <bgriffis@ti.com>
-Subject: Re: [PATCH 0/4] Touchscreen performance related fixes
-References: <1414408111-2631-1-git-send-email-vigneshr@ti.com>	<20141103180920.GA20779@localhost.localdomain>	<545B2651.4090905@ti.com> <CAJKbBDDyShaJkzzfdFs07EK5gDUfwqWiv39Qi4FVSvRrfc6_fA@mail.gmail.com>
-In-Reply-To: <CAJKbBDDyShaJkzzfdFs07EK5gDUfwqWiv39Qi4FVSvRrfc6_fA@mail.gmail.com>
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Hi,
+From: Phani Movva <Phani.Movva@imgtec.com>
 
-On Wednesday 12 November 2014 06:30 PM, Johannes Pointner wrote:
-> Hello Vignesh,
-> 
-> I tried your patch version 3 on a customized board and had some
-> behavior I couldn't explain.
-> If I only use the touchscreen it works fine but if I also read values
-> from the ADCs then I get a lot of pen_up events even if I am still
-> touching the screen.
-> For the test I read via
-> # cat /sys/bus/iio/devices/iio\:device0/in_voltage5_raw
-> values from the ADC in an busy loop as you explained in an email
-> before. Did you also experience such behavior or do you know what
-> causes it?
+Add the devicetree binding document for Cosmic Circuits 10001 ADC device.
 
-Thanks for testing. I was able to fix this issue. Will post version 4
-shortly.
+Signed-off-by: Phani Movva <Phani.Movva@imgtec.com>
+Signed-off-by: Naidu Tellapati <Naidu.Tellapati@imgtec.com>
+[Ezequiel: minor style cleaning]
+Signed-off-by: Ezequiel Garcia <ezequiel.garcia@imgtec.com>
+---
+ .../devicetree/bindings/iio/adc/cc10001_adc.txt    | 22 ++++++++++++++++++++++
+ 1 file changed, 22 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/adc/cc10001_adc.txt
 
-Regards
-Vignesh
+diff --git a/Documentation/devicetree/bindings/iio/adc/cc10001_adc.txt b/Documentation/devicetree/bindings/iio/adc/cc10001_adc.txt
+new file mode 100644
+index 0000000..1533c19
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/adc/cc10001_adc.txt
+@@ -0,0 +1,22 @@
++* Cosmic Circuits - Analog to Digital Converter (CC-10001-ADC)
++
++Required properties:
++  - compatible: Should be "cosmic,10001-adc"
++  - reg: Should contain adc registers location and length.
++  - clock-names: Should contain "adc".
++  - clocks: phandles to input clocks.
++  - vref-supply: The regulator supply ADC reference voltage.
++
++Optional properties:
++  - cosmic,adc-reserved-channels: Bitmask of reserved channels,
++    i.e. channels that cannot be used by the OS.
++
++Example:
++adc: adc@18101600 {
++	compatible = "cosmic,10001-adc";
++	reg = <0x18101600 0x24>;
++	cosmic,adc-reserved-channels = <0x2>;
++	clocks = <&adc_clk>;
++	clock-names = "adc";
++	vref-supply = <&reg_1v8>;
++};
+-- 
+2.1.0
 
-> 
-> Without the patches the touchscreen works fine during the iio test.
-> 
-> Thanks,
-> Hannes
-> 
-> 2014-11-06 8:42 GMT+01:00 Vignesh R <vigneshr@ti.com>:
->>
->>
->> On Monday 03 November 2014 11:39 PM, Richard Cochran wrote:
->>> On Mon, Oct 27, 2014 at 04:38:27PM +0530, Vignesh R wrote:
->>>> This series of patches fix TSC defects related to lag in touchscreen
->>>> performance and cursor jump at touch release. The lag was result of
->>>> udelay in TSC interrupt handler. Cursor jump due to false pen-up event.
->>>> The patches implement Advisory 1.0.31 in silicon errata of am335x-evm
->>>> to avoid false pen-up events and remove udelay.
->>>
->>> That advisory has two workarounds. You have chosen the second one?
->>
->> Work around one. Hence 5 wire design is not broken.
->>
->>>
->>> The text of the second workaround says it only works on 4 wire setups,
->>> so I wonder how 5 wire designs will be affected.
->>>
->>>> The advisory says to use
->>>> steps 1 to 4 for ADC and 5 to 16 for TSC (assuming 4 wire TSC and 4 channel
->>>> ADC).
->>>
->>> No, it doesn't say that. (sprz360f.pdf)
->>
->> The pen up event detection happens immediately after charge step. Hence,
->> interchanging ADC and TSC steps makes sure that sampling of touch
->> co-ordinates and pen events are done one after the other. This
->> workaround was suggested by internal hardware folks. Earlier ADC steps
->> intervened between sampling of co-ordinates and pen event detection
->> which is not desirable.
->>
->>>
->>>> Further the X co-ordinate must be the last one to be sampled just
->>>> before charge step. The first two patches implement the required changes.
->>>
->>> FWIW, I implemented the first workaround and removed the udelay not
->>> too long ago. Like Sebastian, I saw the TSC unit hang after about
->>> 50000 interrupts when running with the workaround.
->>>
->>> Did you test you patch for very long?
->>
->> Yes, I tested for about 200000 interrupts and I didn't see any hang.
->> This patch series does not just implement workaround but also does some
->> minor changes, such as interchanging ADC and TSC steps etc, which makes
->> TSC driver more robust. Let me know if you encounter any issues with my
->> patch series.
->>
->> Regards
->> Vignesh
->>
->>>
->>> Thanks,
->>> Richard
->>>
->> --
->> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
->> the body of a message to majordomo@vger.kernel.org
->> More majordomo info at  http://vger.kernel.org/majordomo-info.html
