@@ -1,71 +1,85 @@
-Return-Path: <abrestic@google.com>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from bear.ext.ti.com ([192.94.94.41]:54303 "EHLO bear.ext.ti.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1754313AbaKNFla (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Fri, 14 Nov 2014 00:41:30 -0500
+From: Vignesh R <vigneshr@ti.com>
+To: Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>,
+	Mark Rutland <mark.rutland@arm.com>,
+	Ian Campbell <ijc+devicetree@hellion.org.uk>,
+	Kumar Gala <galak@codeaurora.org>,
+	Benoit Cousson <bcousson@baylibre.com>,
+	Tony Lindgren <tony@atomide.com>,
+	Russell King <linux@arm.linux.org.uk>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>, <richardcochran@gmail.com>,
+	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+	Lee Jones <lee.jones@linaro.org>,
+	Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+CC: Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Samuel Ortiz <sameo@linux.intel.com>,
+	Felipe Balbi <balbi@ti.com>, Vignesh R <vigneshr@ti.com>,
+	Brad Griffis <bgriffis@ti.com>,
+	Sanjeev Sharma <sanjeev_sharma@mentor.com>,
+	Paul Gortmaker <paul.gortmaker@windriver.com>,
+	Jan Kardell <jan.kardell@telliq.com>,
+	<devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+	<linux-omap@vger.kernel.org>,
+	<linux-arm-kernel@lists.infradead.org>,
+	<linux-iio@vger.kernel.org>, <linux-input@vger.kernel.org>
+Subject: [PATCH v4 5/6] input: touchscreen: ti_am335x_tsc: Use charge delay DT parameter
+Date: Fri, 14 Nov 2014 10:37:30 +0530
+Message-ID: <1415941651-28962-6-git-send-email-vigneshr@ti.com>
+In-Reply-To: <1415941651-28962-1-git-send-email-vigneshr@ti.com>
+References: <1415941651-28962-1-git-send-email-vigneshr@ti.com>
 MIME-Version: 1.0
-Sender: abrestic@google.com
-In-Reply-To: <1415888044-16635-5-git-send-email-ezequiel.garcia@imgtec.com>
-References: <1415888044-16635-1-git-send-email-ezequiel.garcia@imgtec.com>
-	<1415888044-16635-5-git-send-email-ezequiel.garcia@imgtec.com>
-Date: Thu, 13 Nov 2014 11:10:51 -0800
-Message-ID: <CAL1qeaF0LfbeTE4LxL05mHDBeV775AaW2F9+NsHnOMiVdZHNdw@mail.gmail.com>
-Subject: Re: [PATCH v3 0/3] iio: Add Cosmic Circuits ADC support
-From: Andrew Bresticker <abrestic@chromium.org>
-To: Ezequiel Garcia <ezequiel.garcia@imgtec.com>
-Cc: James Hartley <james.hartley@imgtec.com>, Lars-Peter Clausen <lars@metafoo.de>,
-	Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
-	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, Rob Herring <robh+dt@kernel.org>,
-	Pawel Moll <Pawel.Moll@arm.com>, Mark Rutland <Mark.Rutland@arm.com>,
-	Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>,
-	Naidu Tellapati <Naidu.Tellapati@imgtec.com>
-Content-Type: text/plain; charset=UTF-8
-List-ID: <linux-iio@vger.kernel.org>
+Content-Type: text/plain
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Ezequiel,
+This patch reads charge delay from tsc DT node and writes to
+REG_CHARGEDELAY register. If the charge delay is not specified in DT
+then default value of 0x400(CHARGEDLY_OPENDLY) is used.
 
-On Thu, Nov 13, 2014 at 6:14 AM, Ezequiel Garcia
-<ezequiel.garcia@imgtec.com> wrote:
-> Here goes the third round of this series. You can find the previous patchset
-> and its discussion here: http://thread.gmane.org/gmane.linux.kernel.iio/14553.
->
-> Changes from v2:
->
->   * Changed a devicetree property from adc-available-channels to
->     adc-reserved-channels, so it can be made optional.
->
->   * Renamed the driver from cc_10001_xxx to cc10001_xxx so it's consistent
->     with the rest of the kernel style.
->
->   * Some more minor cosmetic fixes.
->
-> Changes from v1:
->
->   * Removed unneeded header includes.
->
->   * Changed all the names and macros prefix: s/CC_10001_/CC10001_.
->
->   * Used .update_scan_mode callback to preallocate the buffer.
->
->   * Used indio_dev for the struct iio_dev.
->
->   * Only read the regulator voltage when needed.
->
->   * Fixed probe() error handling.
->
->   * Used for_each_set_bit() instead of open-coding it.
->
->   * Name the power-down register as _POWER_UP, to make the code
->     less silly.
->
->   * Error out when no valid sample can be read (i.e. when end-of-conversion
->     poll times out).
->
->   * ... plus some assorted code cleaning based on the feedback.
->
-> Ezequiel Garcia (1):
->   DT: Add a vendor prefix for Cosmic Circuits
->
-> Phani Movva (2):
->   iio: adc: Cosmic Circuits 10001 ADC driver
->   DT: iio: adc: Add CC_10001 binding documentation
+Signed-off-by: Vignesh R <vigneshr@ti.com>
+---
+ drivers/input/touchscreen/ti_am335x_tsc.c | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
 
-This series (with v4 of patch 2/3):
+diff --git a/drivers/input/touchscreen/ti_am335x_tsc.c b/drivers/input/touchscreen/ti_am335x_tsc.c
+index b94719fc8849..e64055a8cd48 100644
+--- a/drivers/input/touchscreen/ti_am335x_tsc.c
++++ b/drivers/input/touchscreen/ti_am335x_tsc.c
+@@ -52,6 +52,7 @@ struct titsc {
+ 	u32			bit_xp, bit_xn, bit_yp, bit_yn;
+ 	u32			inp_xp, inp_xn, inp_yp, inp_yn;
+ 	u32			step_mask;
++	u32			charge_delay;
+ };
+ 
+ static unsigned int titsc_readl(struct titsc *ts, unsigned int reg)
+@@ -177,7 +178,7 @@ static void titsc_step_config(struct titsc *ts_dev)
+ 
+ 	config = titsc_readl(ts_dev, REG_IDLECONFIG);
+ 	titsc_writel(ts_dev, REG_CHARGECONFIG, config);
+-	titsc_writel(ts_dev, REG_CHARGEDELAY, CHARGEDLY_OPENDLY);
++	titsc_writel(ts_dev, REG_CHARGEDELAY, ts_dev->charge_delay);
+ 
+ 	/* coordinate_readouts + 1 ... coordinate_readouts + 2 is for Z */
+ 	config = STEPCONFIG_MODE_HWSYNC |
+@@ -366,6 +367,11 @@ static int titsc_parse_dt(struct platform_device *pdev,
+ 	if (err < 0)
+ 		return err;
+ 
++	err = of_property_read_u32(node, "ti,charge-delay",
++				   &ts_dev->charge_delay);
++	if (err < 0)
++		ts_dev->charge_delay = CHARGEDLY_OPENDLY;
++
+ 	return of_property_read_u32_array(node, "ti,wire-config",
+ 			ts_dev->config_inp, ARRAY_SIZE(ts_dev->config_inp));
+ }
+-- 
+1.9.1
 
-Reviewed-by: Andrew Bresticker <abrestic@chromium.org>
