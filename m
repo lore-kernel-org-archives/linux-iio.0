@@ -1,198 +1,182 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga11.intel.com ([192.55.52.93]:23632 "EHLO mga11.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751618AbaKQSFJ (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Mon, 17 Nov 2014 13:05:09 -0500
-From: Octavian Purdila <octavian.purdila@intel.com>
-To: linux-iio@vger.kernel.org
-Cc: srinivas.pandruvada@intel.com,
-	Octavian Purdila <octavian.purdila@intel.com>
-Subject: [RFC 1/8] iio: add support for hardware fifo
-Date: Mon, 17 Nov 2014 19:55:59 +0200
-Message-Id: <1416246966-3083-2-git-send-email-octavian.purdila@intel.com>
-In-Reply-To: <1416246966-3083-1-git-send-email-octavian.purdila@intel.com>
-References: <1416246966-3083-1-git-send-email-octavian.purdila@intel.com>
+Received: from devils.ext.ti.com ([198.47.26.153]:58756 "EHLO
+	devils.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754388AbaKNFls (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 14 Nov 2014 00:41:48 -0500
+From: Vignesh R <vigneshr@ti.com>
+To: Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>,
+	Mark Rutland <mark.rutland@arm.com>,
+	Ian Campbell <ijc+devicetree@hellion.org.uk>,
+	Kumar Gala <galak@codeaurora.org>,
+	Benoit Cousson <bcousson@baylibre.com>,
+	Tony Lindgren <tony@atomide.com>,
+	Russell King <linux@arm.linux.org.uk>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>, <richardcochran@gmail.com>,
+	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+	Lee Jones <lee.jones@linaro.org>,
+	Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+CC: Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Samuel Ortiz <sameo@linux.intel.com>,
+	Felipe Balbi <balbi@ti.com>, Vignesh R <vigneshr@ti.com>,
+	Brad Griffis <bgriffis@ti.com>,
+	Sanjeev Sharma <sanjeev_sharma@mentor.com>,
+	Paul Gortmaker <paul.gortmaker@windriver.com>,
+	Jan Kardell <jan.kardell@telliq.com>,
+	<devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+	<linux-omap@vger.kernel.org>,
+	<linux-arm-kernel@lists.infradead.org>,
+	<linux-iio@vger.kernel.org>, <linux-input@vger.kernel.org>
+Subject: [PATCH v4 6/6] input: touchscreen: ti_am335x_tsc: Replace delta filtering with median filtering
+Date: Fri, 14 Nov 2014 10:37:31 +0530
+Message-ID: <1415941651-28962-7-git-send-email-vigneshr@ti.com>
+In-Reply-To: <1415941651-28962-1-git-send-email-vigneshr@ti.com>
+References: <1415941651-28962-1-git-send-email-vigneshr@ti.com>
+MIME-Version: 1.0
+Content-Type: text/plain
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Some devices have hardware buffers that can store a number of samples
-for later consumption. Hardware usually provides interrupts to notify
-the processor when the fifo is full or when it has reached a certain
-threshold.
+Previously, delta filtering was applied TSC co-ordinate readouts before
+reporting a single value to user space. This patch replaces delta filtering
+with median filtering. Median filtering sorts co-ordinate readouts, drops min
+and max values, and reports the average of remaining values. This method is
+more sensible than delta filering. Median filtering is applied only if number
+of readouts is greater than 3 else just average of co-ordinate readouts is
+reported.
 
-Some devices also offer flexibility in what they do when the hardware
-fifo is full: either discard future samples, or overwrite older
-samples with newer ones.
-
-The hardware fifo is useful for reducing the number of interrupts to
-the host processor and thus it helps decreasing the power consumption.
-
-This patch adds four new IIO attributes to expose the hardware fifo
-and it's configuration to userspace:
-
- * _fifo_length - the number of samples that the hardware can store;
-   it is usefull to expose it to userspace, so that applications can
-   increase the device buffer size appropriately
-
- * _fifo_mode - the mode the hardware fifo operates
-
- * _fifo_mode_available - the available hardware fifo modes
-
- * _fifo_flush - this attribute can be used by userspace to trigger a
-   fifo flush operation, where all data stored in the fifo will be
-   made available to the device buffer
-
-Since the last two attributes work with strings, they are using the
-iio_chan_spec_ext_info infrastructure. To simplify the setup for a
-hardware fifo the IIO_FIFO_EXT_INFO marcro can be used to initialize
-them.
-
-This patch also add two new events: IIO_EV_TYPE_FIFO_FULL and
-IIO_EV_TYPE_FIFO_WATERMAK. If enabled they must be issued by the
-device when the fifo level reaches full or, respectively, the
-watermark level. The watermark level can be set by configuring the
-event value.
-
-Signed-off-by: Octavian Purdila <octavian.purdila@intel.com>
+Signed-off-by: Vignesh R <vigneshr@ti.com>
 ---
- Documentation/ABI/testing/sysfs-bus-iio | 51 +++++++++++++++++++++++++++++++++
- drivers/iio/industrialio-core.c         |  2 ++
- drivers/iio/industrialio-event.c        |  2 ++
- include/linux/iio/iio.h                 | 17 +++++++++++
- include/linux/iio/types.h               |  2 ++
- 5 files changed, 74 insertions(+)
+ drivers/input/touchscreen/ti_am335x_tsc.c | 91 +++++++++++++++++--------------
+ 1 file changed, 51 insertions(+), 40 deletions(-)
 
-diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
-index ea7e7ab..f326de1 100644
---- a/Documentation/ABI/testing/sysfs-bus-iio
-+++ b/Documentation/ABI/testing/sysfs-bus-iio
-@@ -1050,3 +1050,54 @@ Description:
- 		after application of scale and offset. If no offset or scale is
- 		present, output should be considered as processed with the
- 		unit in milliamps.
-+
-+What:		/sys/bus/iio/devices/iio:deviceX/in_fifo_length
-+What:		/sys/bus/iio/devices/iio:deviceX/in_accel_fifo_length
-+What:		/sys/bus/iio/devices/iio:deviceX/in_magn_fifo_length
-+What:		/sys/bus/iio/devices/iio:deviceX/in_anglvel_fifo_length
-+KernelVersion:	3.19
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+		The maximum number of samples that the hardware fifo can
-+		store.
-+
-+What:		/sys/bus/iio/devices/iio:deviceX/in_fifo_mode
-+What:		/sys/bus/iio/devices/iio:deviceX/in_accel_fifo_mode
-+What:		/sys/bus/iio/devices/iio:deviceX/in_magn_fifo_mode
-+What:		/sys/bus/iio/devices/iio:deviceX/in_anglvel_fifo_mode
-+KernelVersion:	3.19
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+		The mode in which the hardware fifo currently operates. The
-+		supported values are "disabled", "fifo" and "stream".
-+		In disabled mode the hardware fifo is not operational.
-+		In fifo mode the samples are stored until the fifo is full at
-+		which point all subsequent samples are discarded.
-+		In stream mode, when the fifo is full new samples start to
-+		overrride old samples.
-+		If the hardware supports it, IIO_EVENT_TYPE_FIFO_FULL and
-+		IIO_EVENT_TYPE_FIFO_WATERMARK events will be generated when they
-+		are enabled by the application and the fifo is full and,
-+		respectively, when the fifo level reaches the watermark
-+		level.
-+		The watermark level can be set by the application by configuring
-+		the IIO_EVENT_TYPE_FIFO_WATERMARK value (IIO_EV_INFO_VALUE).
-+
-+What:		/sys/bus/iio/devices/iio:deviceX/in_fifo_mode_available
-+What:		/sys/bus/iio/devices/iio:deviceX/in_accel_fifo_mode_available
-+What:		/sys/bus/iio/devices/iio:deviceX/in_magn_fifo_mode_available
-+What:		/sys/bus/iio/devices/iio:deviceX/in_anglvel_fifo_mode_available
-+KernelVersion:	3.19
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+		The modes that the hardware fifo supports.
-+
-+What:		/sys/bus/iio/devices/iio:deviceX/in_fifo_flush
-+What:		/sys/bus/iio/devices/iio:deviceX/in_accel_fifo_flush
-+What:		/sys/bus/iio/devices/iio:deviceX/in_magn_fifo_flush
-+What:		/sys/bus/iio/devices/iio:deviceX/in_anglvel_fifo_flush
-+KernelVersion:	3.19
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+		Writting to this entry will cause the device to flush the data
-+		from the hardware fifo into the device buffer.
-diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
-index af3e76d..17e84c3 100644
---- a/drivers/iio/industrialio-core.c
-+++ b/drivers/iio/industrialio-core.c
-@@ -113,6 +113,8 @@ static const char * const iio_chan_info_postfix[] = {
- 	[IIO_CHAN_INFO_HARDWAREGAIN] = "hardwaregain",
- 	[IIO_CHAN_INFO_HYSTERESIS] = "hysteresis",
- 	[IIO_CHAN_INFO_INT_TIME] = "integration_time",
-+	[IIO_CHAN_INFO_FIFO_LENGTH] = "fifo_length",
-+	[IIO_CHAN_INFO_FIFO_FLUSH] = "fifo_flush",
- };
+diff --git a/drivers/input/touchscreen/ti_am335x_tsc.c b/drivers/input/touchscreen/ti_am335x_tsc.c
+index e64055a8cd48..b84493fc8a78 100644
+--- a/drivers/input/touchscreen/ti_am335x_tsc.c
++++ b/drivers/input/touchscreen/ti_am335x_tsc.c
+@@ -26,6 +26,7 @@
+ #include <linux/delay.h>
+ #include <linux/of.h>
+ #include <linux/of_device.h>
++#include <linux/sort.h>
  
- /**
-diff --git a/drivers/iio/industrialio-event.c b/drivers/iio/industrialio-event.c
-index 0c1e37e..3d73fd0 100644
---- a/drivers/iio/industrialio-event.c
-+++ b/drivers/iio/industrialio-event.c
-@@ -197,6 +197,8 @@ static const char * const iio_ev_type_text[] = {
- 	[IIO_EV_TYPE_ROC] = "roc",
- 	[IIO_EV_TYPE_THRESH_ADAPTIVE] = "thresh_adaptive",
- 	[IIO_EV_TYPE_MAG_ADAPTIVE] = "mag_adaptive",
-+	[IIO_EV_TYPE_FIFO_FULL] = "fifo_full",
-+	[IIO_EV_TYPE_FIFO_WATERMARK] = "fifo_watermak",
- };
+ #include <linux/mfd/ti_am335x_tscadc.h>
  
- static const char * const iio_ev_dir_text[] = {
-diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
-index 3642ce7..ad100a1 100644
---- a/include/linux/iio/iio.h
-+++ b/include/linux/iio/iio.h
-@@ -38,6 +38,8 @@ enum iio_chan_info_enum {
- 	IIO_CHAN_INFO_HARDWAREGAIN,
- 	IIO_CHAN_INFO_HYSTERESIS,
- 	IIO_CHAN_INFO_INT_TIME,
-+	IIO_CHAN_INFO_FIFO_LENGTH,
-+	IIO_CHAN_INFO_FIFO_FLUSH,
- };
+@@ -204,56 +205,61 @@ static void titsc_step_config(struct titsc *ts_dev)
+ 	am335x_tsc_se_set_cache(ts_dev->mfd_tscadc, ts_dev->step_mask);
+ }
  
- enum iio_shared_by {
-@@ -629,4 +631,19 @@ int iio_str_to_fixpoint(const char *str, int fract_mult, int *integer,
-  */
- #define IIO_G_TO_M_S_2(g) ((g) * 980665ULL / 100000ULL)
- 
-+/**
-+ * IIO_FIFO_EXT_INFO() - define a hardware fifo associated with a channel/device
-+ *
-+ * @_fifo_mode_enum - a pointer to a struct iio_enum that defines the available
-+ * modes for this hardware fifo (see Documentation/ABI/testing/sysfs-bus-iio for
-+ * supported modes)
-+ * @_shared - type of sharing; can be IIO_SEPARATE if we have fifo(s) per
-+ * modifier (e.g. x, y, z), IIO_SHARED_BY_TYPE if we have fifo(s) per channel or
-+ * IIO_SHARED_BY_ALL if we have a single fifo for all channels
-+ *
-+ */
-+#define IIO_FIFO_EXT_INFO(_fifo_mode_enum, _shared)			\
-+	IIO_ENUM("fifo_mode", _shared, _fifo_mode_enum),		\
-+	IIO_ENUM_AVAILABLE("fifo_mode", _fifo_mode_enum)
++static int titsc_cmp_coord(const void *a, const void *b)
++{
++	return *(int *)a - *(int *)b;
++}
 +
- #endif /* _INDUSTRIAL_IO_H_ */
-diff --git a/include/linux/iio/types.h b/include/linux/iio/types.h
-index 4a2af8a..8ee5a21 100644
---- a/include/linux/iio/types.h
-+++ b/include/linux/iio/types.h
-@@ -68,6 +68,8 @@ enum iio_event_type {
- 	IIO_EV_TYPE_ROC,
- 	IIO_EV_TYPE_THRESH_ADAPTIVE,
- 	IIO_EV_TYPE_MAG_ADAPTIVE,
-+	IIO_EV_TYPE_FIFO_FULL,
-+	IIO_EV_TYPE_FIFO_WATERMARK,
- };
+ static void titsc_read_coordinates(struct titsc *ts_dev,
+ 		u32 *x, u32 *y, u32 *z1, u32 *z2)
+ {
+-	unsigned int fifocount = titsc_readl(ts_dev, REG_FIFO0CNT);
+-	unsigned int prev_val_x = ~0, prev_val_y = ~0;
+-	unsigned int prev_diff_x = ~0, prev_diff_y = ~0;
+-	unsigned int read, diff;
+-	unsigned int i, channel;
++	unsigned int yvals[7], xvals[7];
++	unsigned int i, xsum = 0, ysum = 0;
+ 	unsigned int creads = ts_dev->coordinate_readouts;
+-	unsigned int first_step = TOTAL_STEPS - (creads * 2 + 2);
  
- enum iio_event_info {
+-	*z1 = *z2 = 0;
+-	if (fifocount % (creads * 2 + 2))
+-		fifocount -= fifocount % (creads * 2 + 2);
+-	/*
+-	 * Delta filter is used to remove large variations in sampled
+-	 * values from ADC. The filter tries to predict where the next
+-	 * coordinate could be. This is done by taking a previous
+-	 * coordinate and subtracting it form current one. Further the
+-	 * algorithm compares the difference with that of a present value,
+-	 * if true the value is reported to the sub system.
+-	 */
+-	for (i = 0; i < fifocount; i++) {
+-		read = titsc_readl(ts_dev, REG_FIFO0);
+-
+-		channel = (read & 0xf0000) >> 16;
+-		read &= 0xfff;
+-		if (channel > first_step + creads + 2) {
+-			diff = abs(read - prev_val_x);
+-			if (diff < prev_diff_x) {
+-				prev_diff_x = diff;
+-				*x = read;
+-			}
+-			prev_val_x = read;
++	for (i = 0; i < creads; i++) {
++		yvals[i] = titsc_readl(ts_dev, REG_FIFO0);
++		yvals[i] &= 0xfff;
++	}
+ 
+-		} else if (channel == first_step + creads + 1) {
+-			*z1 = read;
++	*z1 = titsc_readl(ts_dev, REG_FIFO0);
++	*z1 &= 0xfff;
++	*z2 = titsc_readl(ts_dev, REG_FIFO0);
++	*z2 &= 0xfff;
+ 
+-		} else if (channel == first_step + creads + 2) {
+-			*z2 = read;
++	for (i = 0; i < creads; i++) {
++		xvals[i] = titsc_readl(ts_dev, REG_FIFO0);
++		xvals[i] &= 0xfff;
++	}
+ 
+-		} else if (channel > first_step) {
+-			diff = abs(read - prev_val_y);
+-			if (diff < prev_diff_y) {
+-				prev_diff_y = diff;
+-				*y = read;
+-			}
+-			prev_val_y = read;
++	/*
++	 * If co-ordinates readouts is less than 4 then
++	 * report the average. In case of 4 or more
++	 * readouts, sort the co-ordinate samples, drop
++	 * min and max values and report the average of
++	 * remaining values.
++	 */
++	if (creads <=  3) {
++		for (i = 0; i < creads; i++) {
++			ysum += yvals[i];
++			xsum += xvals[i];
+ 		}
++		ysum /= creads;
++		xsum /= creads;
++	} else {
++		sort(yvals, creads, sizeof(unsigned int),
++		     titsc_cmp_coord, NULL);
++		sort(xvals, creads, sizeof(unsigned int),
++		     titsc_cmp_coord, NULL);
++		for (i = 1; i < creads - 1; i++) {
++			ysum += yvals[i];
++			xsum += xvals[i];
++		}
++		ysum /= creads - 2;
++		xsum /= creads - 2;
+ 	}
++	*y = ysum;
++	*x = xsum;
+ }
+ 
+ static irqreturn_t titsc_irq(int irq, void *dev)
+@@ -367,6 +373,11 @@ static int titsc_parse_dt(struct platform_device *pdev,
+ 	if (err < 0)
+ 		return err;
+ 
++	if (ts_dev->coordinate_readouts <= 0) {
++		dev_warn(&pdev->dev, "invalid co-ordinate readouts, resetting it to 5\n");
++		ts_dev->coordinate_readouts = 5;
++	}
++
+ 	err = of_property_read_u32(node, "ti,charge-delay",
+ 				   &ts_dev->charge_delay);
+ 	if (err < 0)
 -- 
 1.9.1
 
