@@ -1,42 +1,69 @@
-Return-Path: <daniel.baluta@gmail.com>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:42771 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754207AbaKOQAW (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 15 Nov 2014 11:00:22 -0500
+Message-ID: <54677893.9070707@kernel.org>
+Date: Sat, 15 Nov 2014 16:00:19 +0000
+From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-Sender: daniel.baluta@gmail.com
-In-Reply-To: <F244A294-8B78-4A9C-BB0B-268AFCC3EC5C@kernel.org>
-References: <1416230316-14511-1-git-send-email-daniel.baluta@intel.com>
-	<F244A294-8B78-4A9C-BB0B-268AFCC3EC5C@kernel.org>
-Date: Mon, 17 Nov 2014 17:09:16 +0200
-Message-ID: <CAEnQRZCa07iOt5baDHaH4-wNNYsP7rOf5Sixs+yndNo5-OP4kQ@mail.gmail.com>
-Subject: Re: [PATCH 0/2] kmx61: Small cleanups
-From: Daniel Baluta <daniel.baluta@intel.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Daniel Baluta <daniel.baluta@intel.com>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset=UTF-8
-List-ID: <linux-iio@vger.kernel.org>
+To: Jacob Pan <jacob.jun.pan@linux.intel.com>,
+	LKML <linux-kernel@vger.kernel.org>,
+	IIO <linux-iio@vger.kernel.org>, Lee Jones <lee.jones@linaro.org>
+CC: Carlo Caione <carlo@caione.org>,
+	Samuel Ortiz <sameo@linux.intel.com>,
+	Ramakrishna Pallala <ramakrishna.pallala@intel.com>,
+	Todd Brandt <todd.e.brandt@linux.intel.com>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Rafael Wysocki <rafael.j.wysocki@intel.com>,
+	Hartmut Knaack <knaack.h@gmx.de>, Aaron Lu <aaron.lu@intel.com>
+Subject: Re: [PATCH 1/3] iio: adc: Add module device table for autoloading
+References: <1415734210-5657-1-git-send-email-jacob.jun.pan@linux.intel.com> <1415734210-5657-2-git-send-email-jacob.jun.pan@linux.intel.com>
+In-Reply-To: <1415734210-5657-2-git-send-email-jacob.jun.pan@linux.intel.com>
+Content-Type: text/plain; charset=windows-1252
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Mon, Nov 17, 2014 at 4:59 PM, Jonathan Cameron <jic23@kernel.org> wrote:
->
->
-> On November 17, 2014 1:18:34 PM GMT+00:00, Daniel Baluta <daniel.baluta@intel.com> wrote:
->>This is a small cleanup patchset, that:
->>       * makes it clear that kmx61 uses only the micro part of scale
->>       * use macro instead of hardcoded value for driver name
->>
->>Jonathan, if you think it's worth it, these could be squased together
->>with
->>the initial patch submitted in testing:
->>       61ef04a496 (iio: imu: Add support for Kionix KMX61 sensor)
->>
->
-> Given the additional bits from Peter, I don't mind pulling the original and applying an updated patch.
+On 11/11/14 19:30, Jacob Pan wrote:
+> From: Aaron Lu <aaron.lu@intel.com>
+> 
+> Add the module device id table so that the driver can be automatically
+> loaded once the platform device is created.
+> 
+> Signed-off-by: Aaron Lu <aaron.lu@intel.com>
+> Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
+Acked-by: Jonathan Cameron <jic23@kernel.org>
+> ---
+>  drivers/iio/adc/axp288_adc.c | 8 ++++++++
+>  1 file changed, 8 insertions(+)
+> 
+> diff --git a/drivers/iio/adc/axp288_adc.c b/drivers/iio/adc/axp288_adc.c
+> index 4800286..4a6cf43 100644
+> --- a/drivers/iio/adc/axp288_adc.c
+> +++ b/drivers/iio/adc/axp288_adc.c
+> @@ -238,15 +238,23 @@ static int axp288_adc_remove(struct platform_device *pdev)
+>  	return 0;
+>  }
+>  
+> +static struct platform_device_id axp288_adc_id_table[] = {
+> +	{ .name = "axp288_adc" },
+> +	{},
+> +};
+> +
+>  static struct platform_driver axp288_adc_driver = {
+>  	.probe = axp288_adc_probe,
+>  	.remove = axp288_adc_remove,
+> +	.id_table = axp288_adc_id_table,
+>  	.driver = {
+>  		.name = "axp288_adc",
+>  		.owner = THIS_MODULE,
+>  	},
+>  };
+>  
+> +MODULE_DEVICE_TABLE(platform, axp288_adc_id_table);
+> +
+>  module_platform_driver(axp288_adc_driver);
+>  
+>  MODULE_AUTHOR("Jacob Pan <jacob.jun.pan@linux.intel.com>");
+> 
 
-I prefer this :). I will send an updated patch with fixes reported by Peter.
-
->
-> Additional changes like this are fine as well if you prefer.
-
-I am almost done with adding support for runtime PM. Let me know
-if you want this as a separate patch or just one big updated patch.
-
-Daniel.
