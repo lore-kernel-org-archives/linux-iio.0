@@ -1,143 +1,76 @@
-Return-Path: <vigneshr@ti.com>
-Message-ID: <5469DE81.9030009@ti.com>
-Date: Mon, 17 Nov 2014 17:09:45 +0530
-From: Vignesh R <vigneshr@ti.com>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:52081 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750716AbaKPUVH (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 16 Nov 2014 15:21:07 -0500
+Message-ID: <54690730.5070502@kernel.org>
+Date: Sun, 16 Nov 2014 20:21:04 +0000
+From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Johannes Pointner <johannes.pointner@gmail.com>
-CC: Richard Cochran <richardcochran@gmail.com>,
-        Rob Herring
-	<robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>,
-        Mark Rutland
-	<mark.rutland@arm.com>,
-        Ian Campbell <ijc+devicetree@hellion.org.uk>,
-        Kumar
- Gala <galak@codeaurora.org>,
-        Benoit Cousson <bcousson@baylibre.com>,
-        Tony
- Lindgren <tony@atomide.com>,
-        Russell King <linux@arm.linux.org.uk>,
-        Jonathan
- Cameron <jic23@kernel.org>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        <devicetree@vger.kernel.org>, Lars-Peter Clausen <lars@metafoo.de>,
-        Samuel
- Ortiz <sameo@linux.intel.com>,
-        Jan Kardell <jan.kardell@telliq.com>,
-        linux-iio <linux-iio@vger.kernel.org>,
-        Sebastian Andrzej Siewior
-	<bigeasy@linutronix.de>,
-        <linux-input@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        Felipe Balbi <balbi@ti.com>,
-        Paul Gortmaker
-	<paul.gortmaker@windriver.com>,
-        Peter Meerwald <pmeerw@pmeerw.net>, Hartmut
- Knaack <knaack.h@gmx.de>,
-        <linux-omap@vger.kernel.org>, Lee Jones
-	<lee.jones@linaro.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        Brad Griffis
-	<bgriffis@ti.com>
-Subject: Re: [PATCH 0/4] Touchscreen performance related fixes
-References: <1414408111-2631-1-git-send-email-vigneshr@ti.com>	<20141103180920.GA20779@localhost.localdomain>	<545B2651.4090905@ti.com> <CAJKbBDDyShaJkzzfdFs07EK5gDUfwqWiv39Qi4FVSvRrfc6_fA@mail.gmail.com> <5464A2B5.3020207@ti.com>
-In-Reply-To: <5464A2B5.3020207@ti.com>
-Content-Type: text/plain; charset="utf-8"
-List-ID: <linux-iio@vger.kernel.org>
+To: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+CC: linux-iio@vger.kernel.org
+Subject: Re: [PATCH v1 3/4] iio: gyro: bmg160: Send x, y and z motion separately
+References: <1412998408-31870-1-git-send-email-srinivas.pandruvada@linux.intel.com> <1412998408-31870-4-git-send-email-srinivas.pandruvada@linux.intel.com>
+In-Reply-To: <1412998408-31870-4-git-send-email-srinivas.pandruvada@linux.intel.com>
+Content-Type: text/plain; charset=windows-1252
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Hi,
+On 11/10/14 04:33, Srinivas Pandruvada wrote:
+> This chip is capable to identify motion across x, y and z axes. So
+> send different events.
+> 
+> Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Taking the view this is an ABI 'fix' and applying it to the fixes-togreg branch
+of iio.git
 
-On Thursday 13 November 2014 05:53 PM, Vignesh R wrote:
-> Hi,
+Thanks
+
+Jonathan
+> ---
+>  drivers/iio/gyro/bmg160.c | 21 +++++++++++++++++++--
+>  1 file changed, 19 insertions(+), 2 deletions(-)
 > 
-> On Wednesday 12 November 2014 06:30 PM, Johannes Pointner wrote:
->> Hello Vignesh,
->>
->> I tried your patch version 3 on a customized board and had some
->> behavior I couldn't explain.
->> If I only use the touchscreen it works fine but if I also read values
->> from the ADCs then I get a lot of pen_up events even if I am still
->> touching the screen.
->> For the test I read via
->> # cat /sys/bus/iio/devices/iio\:device0/in_voltage5_raw
->> values from the ADC in an busy loop as you explained in an email
->> before. Did you also experience such behavior or do you know what
->> causes it?
-> 
-> Thanks for testing. I was able to fix this issue. Will post version 4
-> shortly.
+> diff --git a/drivers/iio/gyro/bmg160.c b/drivers/iio/gyro/bmg160.c
+> index fa2e376..9f751d6 100644
+> --- a/drivers/iio/gyro/bmg160.c
+> +++ b/drivers/iio/gyro/bmg160.c
+> @@ -85,6 +85,9 @@
+>  
+>  #define BMG160_REG_INT_STATUS_2	0x0B
+>  #define BMG160_ANY_MOTION_MASK		0x07
+> +#define BMG160_ANY_MOTION_BIT_X		BIT(0)
+> +#define BMG160_ANY_MOTION_BIT_Y		BIT(1)
+> +#define BMG160_ANY_MOTION_BIT_Z		BIT(2)
+>  
+>  #define BMG160_REG_TEMP		0x08
+>  #define BMG160_TEMP_CENTER_VAL		23
+> @@ -929,10 +932,24 @@ static irqreturn_t bmg160_event_handler(int irq, void *private)
+>  	else
+>  		dir = IIO_EV_DIR_FALLING;
+>  
+> -	if (ret & BMG160_ANY_MOTION_MASK)
+> +	if (ret & BMG160_ANY_MOTION_BIT_X)
+>  		iio_push_event(indio_dev, IIO_MOD_EVENT_CODE(IIO_ANGL_VEL,
+>  							0,
+> -							IIO_MOD_X_OR_Y_OR_Z,
+> +							IIO_MOD_X,
+> +							IIO_EV_TYPE_ROC,
+> +							dir),
+> +							data->timestamp);
+> +	if (ret & BMG160_ANY_MOTION_BIT_Y)
+> +		iio_push_event(indio_dev, IIO_MOD_EVENT_CODE(IIO_ANGL_VEL,
+> +							0,
+> +							IIO_MOD_Y,
+> +							IIO_EV_TYPE_ROC,
+> +							dir),
+> +							data->timestamp);
+> +	if (ret & BMG160_ANY_MOTION_BIT_Z)
+> +		iio_push_event(indio_dev, IIO_MOD_EVENT_CODE(IIO_ANGL_VEL,
+> +							0,
+> +							IIO_MOD_Z,
+>  							IIO_EV_TYPE_ROC,
+>  							dir),
+>  							data->timestamp);
 > 
 
-Were you able to test the v4 patch series on your board? Is the issue fixed?
-
-> Regards
-> Vignesh
-> 
->>
->> Without the patches the touchscreen works fine during the iio test.
->>
->> Thanks,
->> Hannes
->>
->> 2014-11-06 8:42 GMT+01:00 Vignesh R <vigneshr@ti.com>:
->>>
->>>
->>> On Monday 03 November 2014 11:39 PM, Richard Cochran wrote:
->>>> On Mon, Oct 27, 2014 at 04:38:27PM +0530, Vignesh R wrote:
->>>>> This series of patches fix TSC defects related to lag in touchscreen
->>>>> performance and cursor jump at touch release. The lag was result of
->>>>> udelay in TSC interrupt handler. Cursor jump due to false pen-up event.
->>>>> The patches implement Advisory 1.0.31 in silicon errata of am335x-evm
->>>>> to avoid false pen-up events and remove udelay.
->>>>
->>>> That advisory has two workarounds. You have chosen the second one?
->>>
->>> Work around one. Hence 5 wire design is not broken.
->>>
->>>>
->>>> The text of the second workaround says it only works on 4 wire setups,
->>>> so I wonder how 5 wire designs will be affected.
->>>>
->>>>> The advisory says to use
->>>>> steps 1 to 4 for ADC and 5 to 16 for TSC (assuming 4 wire TSC and 4 channel
->>>>> ADC).
->>>>
->>>> No, it doesn't say that. (sprz360f.pdf)
->>>
->>> The pen up event detection happens immediately after charge step. Hence,
->>> interchanging ADC and TSC steps makes sure that sampling of touch
->>> co-ordinates and pen events are done one after the other. This
->>> workaround was suggested by internal hardware folks. Earlier ADC steps
->>> intervened between sampling of co-ordinates and pen event detection
->>> which is not desirable.
->>>
->>>>
->>>>> Further the X co-ordinate must be the last one to be sampled just
->>>>> before charge step. The first two patches implement the required changes.
->>>>
->>>> FWIW, I implemented the first workaround and removed the udelay not
->>>> too long ago. Like Sebastian, I saw the TSC unit hang after about
->>>> 50000 interrupts when running with the workaround.
->>>>
->>>> Did you test you patch for very long?
->>>
->>> Yes, I tested for about 200000 interrupts and I didn't see any hang.
->>> This patch series does not just implement workaround but also does some
->>> minor changes, such as interchanging ADC and TSC steps etc, which makes
->>> TSC driver more robust. Let me know if you encounter any issues with my
->>> patch series.
->>>
->>> Regards
->>> Vignesh
->>>
->>>>
->>>> Thanks,
->>>> Richard
->>>>
->>> --
->>> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
->>> the body of a message to majordomo@vger.kernel.org
->>> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-omap" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> 
