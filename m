@@ -1,103 +1,82 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-ig0-f171.google.com ([209.85.213.171]:63531 "EHLO
-	mail-ig0-f171.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S932183AbaKMKZv (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 13 Nov 2014 05:25:51 -0500
-Received: by mail-ig0-f171.google.com with SMTP id hl2so4691792igb.4
-        for <linux-iio@vger.kernel.org>; Thu, 13 Nov 2014 02:25:50 -0800 (PST)
-Date: Thu, 13 Nov 2014 10:25:40 +0000
-From: Lee Jones <lee.jones@linaro.org>
-To: "R, Vignesh" <vigneshr@ti.com>
-Cc: Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>,
-	Mark Rutland <mark.rutland@arm.com>,
-	Ian Campbell <ijc+devicetree@hellion.org.uk>,
-	Kumar Gala <galak@codeaurora.org>,
-	Benoit Cousson <bcousson@baylibre.com>,
-	Tony Lindgren <tony@atomide.com>,
-	Russell King <linux@arm.linux.org.uk>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	"richardcochran@gmail.com" <richardcochran@gmail.com>,
-	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-	Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	Samuel Ortiz <sameo@linux.intel.com>,
-	"Balbi, Felipe" <balbi@ti.com>, "Griffis, Brad" <bgriffis@ti.com>,
-	Sanjeev Sharma <sanjeev_sharma@mentor.com>,
-	Paul Gortmaker <paul.gortmaker@windriver.com>,
-	Jan Kardell <jan.kardell@telliq.com>,
-	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"linux-omap@vger.kernel.org" <linux-omap@vger.kernel.org>,
-	"linux-arm-kernel@lists.infradead.org"
-	<linux-arm-kernel@lists.infradead.org>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"linux-input@vger.kernel.org" <linux-input@vger.kernel.org>
-Subject: Re: [PATCH v3 3/6] mfd: ti_am335x_tscadc: Remove unwanted
- reg_se_cache save
-Message-ID: <20141113102540.GJ24004@x1>
-References: <1415694844-11230-1-git-send-email-vigneshr@ti.com>
- <1415694844-11230-4-git-send-email-vigneshr@ti.com>
- <20141111122623.GA24004@x1>
- <71C24A547111EA4E84AE759B748D9EAE4B976C@DBDE04.ent.ti.com>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:52109 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750716AbaKPUXL (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 16 Nov 2014 15:23:11 -0500
+Message-ID: <546907AC.8050802@kernel.org>
+Date: Sun, 16 Nov 2014 20:23:08 +0000
+From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-In-Reply-To: <71C24A547111EA4E84AE759B748D9EAE4B976C@DBDE04.ent.ti.com>
+To: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+CC: linux-iio@vger.kernel.org
+Subject: Re: [PATCH v1 1/4] iio: accel: bmc150: Error handling when mode set
+ fails
+References: <1412998534-31971-1-git-send-email-srinivas.pandruvada@linux.intel.com> <1412998534-31971-2-git-send-email-srinivas.pandruvada@linux.intel.com>
+In-Reply-To: <1412998534-31971-2-git-send-email-srinivas.pandruvada@linux.intel.com>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Tue, 11 Nov 2014, R, Vignesh wrote:
-> On Tue, 11 Nov 2014, Vignesh R wrote:
-> > In one shot mode, sequencer automatically disables all enabled steps 
-> > at the end of each cycle. (both ADC steps and TSC steps) Hence these 
-> > steps need not be saved in reg_se_cache for clearing these steps at a 
-> > later stage.
-> > Also, when ADC wakes up Sequencer should not be busy executing any of 
-> > the config steps except for the charge step. Previously charge step 
-> > was 1 ADC clock cycle and hence it was ignored.
-> > 
-> > Signed-off-by: Vignesh R <vigneshr@ti.com>
-> > ---
-
-[...]
-
-> > -	tsadc->reg_se_cache |= val;
+On 11/10/14 04:35, Srinivas Pandruvada wrote:
+> When mode set fails due to some transient failures, it will atleast
+> reset the state of runtime usage count and also let the runtime
+> suspend retry from the driver framework.
 > 
-> You didn't answer my question about this?
-> I did reply to the question in the previous thread.  
+> Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Applied to the fixes-togreg branch of iio.git
+
+Thanks,
+
+Jonathan
+> ---
+>  drivers/iio/accel/bmc150-accel.c | 11 ++++++++++-
+>  1 file changed, 10 insertions(+), 1 deletion(-)
 > 
-> Previously, TSC did not reliably re-enable its steps as the TSC irq handler received 
-> false pen up events. Hence, in order to use TSC after ADC operation, it was necessary to
->  save and re-enable TSC steps (basically, to keep TSC steps enabled always).
-> The change was more of a workaround to overcome limitation of TSC irq handler. With 
-> this series of patches, TSC irq handler is very reliable and the workaround is no longer required.
-
-Okay, thanks for the explanation.
-
-By the way, your mailer doesn't appear to quote previous messages.  Is
-there any way to fix that?
-
-> >  	am335x_tscadc_need_adc(tsadc);
-> >  
-> >  	tscadc_writel(tsadc, REG_SE, val);
-> > diff --git a/include/linux/mfd/ti_am335x_tscadc.h 
-> > b/include/linux/mfd/ti_am335x_tscadc.h
-> > index c99be5dc0f5c..fcce182e4a35 100644
-> > --- a/include/linux/mfd/ti_am335x_tscadc.h
-> > +++ b/include/linux/mfd/ti_am335x_tscadc.h
-> > @@ -128,6 +128,7 @@
-> >  
-> >  /* Sequencer Status */
-> >  #define SEQ_STATUS BIT(5)
-> > +#define CHARGE_STEP		0x11
-> >  
-> >  #define ADC_CLK			3000000
-> >  #define TOTAL_STEPS		16
+> diff --git a/drivers/iio/accel/bmc150-accel.c b/drivers/iio/accel/bmc150-accel.c
+> index 22c096c..fdb101c 100644
+> --- a/drivers/iio/accel/bmc150-accel.c
+> +++ b/drivers/iio/accel/bmc150-accel.c
+> @@ -536,6 +536,9 @@ static int bmc150_accel_set_power_state(struct bmc150_accel_data *data, bool on)
+>  	if (ret < 0) {
+>  		dev_err(&data->client->dev,
+>  			"Failed: bmc150_accel_set_power_state for %d\n", on);
+> +		if (on)
+> +			pm_runtime_put_noidle(&data->client->dev);
+> +
+>  		return ret;
+>  	}
+>  
+> @@ -811,6 +814,7 @@ static int bmc150_accel_write_event_config(struct iio_dev *indio_dev,
+>  
+>  	ret =  bmc150_accel_setup_any_motion_interrupt(data, state);
+>  	if (ret < 0) {
+> +		bmc150_accel_set_power_state(data, false);
+>  		mutex_unlock(&data->mutex);
+>  		return ret;
+>  	}
+> @@ -1054,6 +1058,7 @@ static int bmc150_accel_data_rdy_trigger_set_state(struct iio_trigger *trig,
+>  	else
+>  		ret = bmc150_accel_setup_new_data_interrupt(data, state);
+>  	if (ret < 0) {
+> +		bmc150_accel_set_power_state(data, false);
+>  		mutex_unlock(&data->mutex);
+>  		return ret;
+>  	}
+> @@ -1354,10 +1359,14 @@ static int bmc150_accel_runtime_suspend(struct device *dev)
+>  {
+>  	struct iio_dev *indio_dev = i2c_get_clientdata(to_i2c_client(dev));
+>  	struct bmc150_accel_data *data = iio_priv(indio_dev);
+> +	int ret;
+>  
+>  	dev_dbg(&data->client->dev,  __func__);
+> +	ret = bmc150_accel_set_mode(data, BMC150_ACCEL_SLEEP_MODE_SUSPEND, 0);
+> +	if (ret < 0)
+> +		return -EAGAIN;
+>  
+> -	return bmc150_accel_set_mode(data, BMC150_ACCEL_SLEEP_MODE_SUSPEND, 0);
+> +	return 0;
+>  }
+>  
+>  static int bmc150_accel_runtime_resume(struct device *dev)
 > 
 
--- 
-Lee Jones
-Linaro STMicroelectronics Landing Team Lead
-Linaro.org │ Open source software for ARM SoCs
-Follow Linaro: Facebook | Twitter | Blog
