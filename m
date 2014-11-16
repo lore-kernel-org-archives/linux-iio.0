@@ -1,81 +1,50 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:42549 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:52087 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753644AbaKENfn (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 5 Nov 2014 08:35:43 -0500
-Message-ID: <545A27AB.3060606@kernel.org>
-Date: Wed, 05 Nov 2014 13:35:39 +0000
+	with ESMTP id S1750716AbaKPUV0 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 16 Nov 2014 15:21:26 -0500
+Message-ID: <54690745.7070805@kernel.org>
+Date: Sun, 16 Nov 2014 20:21:25 +0000
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Ezequiel Garcia <ezequiel.garcia@imgtec.com>,
-	Lars-Peter Clausen <lars@metafoo.de>, pmeerw@pmeerw.net,
-	knaack.h@gmx.de
-CC: linux-iio@vger.kernel.org, james.hartley@imgtec.com,
-	abrestic@chromium.org, Phani Movva <Phani.Movva@imgtec.com>
-Subject: Re: [PATCH 1/2] iio: adc: Cosmic Circuits 10001 ADC driver
-References: <1414615531-26172-1-git-send-email-ezequiel.garcia@imgtec.com> <1414615531-26172-2-git-send-email-ezequiel.garcia@imgtec.com> <5453C494.4030906@metafoo.de> <54596172.9090908@imgtec.com>
-In-Reply-To: <54596172.9090908@imgtec.com>
+To: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+CC: linux-iio@vger.kernel.org
+Subject: Re: [PATCH v1 4/4] iio: gyro: bmg160: Fix iio_event_spec direction
+References: <1412998408-31870-1-git-send-email-srinivas.pandruvada@linux.intel.com> <1412998408-31870-5-git-send-email-srinivas.pandruvada@linux.intel.com>
+In-Reply-To: <1412998408-31870-5-git-send-email-srinivas.pandruvada@linux.intel.com>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 04/11/14 23:29, Ezequiel Garcia wrote:
-> Hi everyone,
+On 11/10/14 04:33, Srinivas Pandruvada wrote:
+> Change event spec direction from
+> IIO_EV_DIR_RISING | IIO_EV_DIR_FALLING
+> to
+> IIO_EV_DIR_EITHER
 > 
-> Thanks for the review. I've fixed most of the comments except for the
-> invalid sample representation issue.
-> 
-> On 10/31/2014 02:19 PM, Lars-Peter Clausen wrote:
->> On 10/29/2014 09:45 PM, Ezequiel Garcia wrote:
->>> From: Phani Movva <Phani.Movva@imgtec.com>
->>>
->>> This commit adds support for Cosmic Circuits 10001 10-bit ADC device.
->>>
->>> Signed-off-by: Phani Movva <Phani.Movva@imgtec.com>
->>> Signed-off-by: Naidu Tellapati <Naidu.Tellapati@imgtec.com>
->>> [Ezequiel: code style cleaning]
->>> Signed-off-by: Ezequiel Garcia <ezequiel.garcia@imgtec.com>
->>
->> Looks very good. Just a few very minor issues.
->>
->> [...]
->>> +static int cc_adc_poll_done(struct iio_dev *dev, int channel,
->>> +                unsigned int delay)
->>> +{
->>> +    struct cc_10001_adc_device *adc_dev = iio_priv(dev);
->>> +    int val = INVALID_SAMPLED_OUTPUT;
->>
->> I'm not so sure that returning a fake sample is such a good idea. When
->> reading from sysfs we should definitely return an error if there is one.
-> 
-> Right.
-> 
->> For buffer reading dropping the sample is probably not such a good idea,
->> but we should agree on and document a standard representation of invalid
->> samples.
->>
-> 
-> Hm, sure. What do you suggest? I can't see other drivers doing anything
-> like this.
-> 
-It's ancient, but I vaguely recall one driver (can't find it right now
-- may no longer exist) in which the try to reenable on the trigger
-could detect that it had missed a sample (as the interrupt had
-not fallen) and so would fire off the trigger again...
-In that particular case we set the timestamp to 0 to indicate that we
-new there was a sample but didn't know when it was captured.
+> Suggested-by: Daniel Baluta <daniel.baluta@intel.com>
+> Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Applied to the fixes-togreg branch of iio.git.
 
-Not really the same, but there are nasty to handle corner cases we ought
-to include in any discussion of invalid data...
+Thanks,
 
-Is this a real issue - or are we talking, in event of hardware failure or
-bug?  If so I'd spit a warning out to the logs and probably push nothing
-at all into the buffer.
+Jonathan
+> ---
+>  drivers/iio/gyro/bmg160.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/iio/gyro/bmg160.c b/drivers/iio/gyro/bmg160.c
+> index 9f751d6..d2fa526 100644
+> --- a/drivers/iio/gyro/bmg160.c
+> +++ b/drivers/iio/gyro/bmg160.c
+> @@ -766,7 +766,7 @@ static const struct attribute_group bmg160_attrs_group = {
+>  
+>  static const struct iio_event_spec bmg160_event = {
+>  		.type = IIO_EV_TYPE_ROC,
+> -		.dir = IIO_EV_DIR_RISING | IIO_EV_DIR_FALLING,
+> +		.dir = IIO_EV_DIR_EITHER,
+>  		.mask_shared_by_type = BIT(IIO_EV_INFO_VALUE) |
+>  				       BIT(IIO_EV_INFO_ENABLE)
+>  };
+> 
 
-A magic flag on the buffer would be nice, but in general there is nowhere
-to put it without in some cases greatly increasing the buffer element size.
-I suppose we could have an error flag for the buffer to say, 'something
-missed' though...
-
-Alternatively we 'could' have drivers expose their own 'INVALID' flag via
-a sysfs attribute...
