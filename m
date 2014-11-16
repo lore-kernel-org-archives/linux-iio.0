@@ -1,142 +1,78 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from comal.ext.ti.com ([198.47.26.152]:33060 "EHLO comal.ext.ti.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S932573AbaKMMnL (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Thu, 13 Nov 2014 07:43:11 -0500
-Message-ID: <5464A759.4090608@ti.com>
-Date: Thu, 13 Nov 2014 06:43:05 -0600
-From: Dan Murphy <dmurphy@ti.com>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:52114 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750716AbaKPUXi (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 16 Nov 2014 15:23:38 -0500
+Message-ID: <546907C8.8050206@kernel.org>
+Date: Sun, 16 Nov 2014 20:23:36 +0000
+From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Daniel Baluta <daniel.baluta@intel.com>
-CC: <linux-iio@vger.kernel.org>, Jonathan Cameron <jic23@kernel.org>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	Karol Wrona <k.wrona@samsung.com>
-Subject: Re: [RFC v2 1/3] iio: heart_monitors: Add support for heart rate
- monitors
-References: <1415287106-13491-1-git-send-email-dmurphy@ti.com> <CAEnQRZBRASQZVtG2FYxy54k7LOeECnwoLARdGmLLjE5+PkYO-w@mail.gmail.com>
-In-Reply-To: <CAEnQRZBRASQZVtG2FYxy54k7LOeECnwoLARdGmLLjE5+PkYO-w@mail.gmail.com>
-Content-Type: text/plain; charset="utf-8"
+To: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+CC: linux-iio@vger.kernel.org
+Subject: Re: [PATCH v1 2/4] iio: accel: bmc150: Send x, y and z motion separately
+References: <1412998534-31971-1-git-send-email-srinivas.pandruvada@linux.intel.com> <1412998534-31971-3-git-send-email-srinivas.pandruvada@linux.intel.com>
+In-Reply-To: <1412998534-31971-3-git-send-email-srinivas.pandruvada@linux.intel.com>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Daniel
+On 11/10/14 04:35, Srinivas Pandruvada wrote:
+> This chip is capable to identify motion across x, y and z axes. So
+> send different events.
+> 
+> Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Considered as an ABI 'fix' so applied to the fixes-togreg branch of iio.git
 
-On 11/06/2014 10:04 AM, Daniel Baluta wrote:
-> Hi Dan,
->
-> Use iio: heart_monitor instead of iio: heart_monitors in subject.
->
-> On Thu, Nov 6, 2014 at 5:18 PM, Dan Murphy <dmurphy@ti.com> wrote:
->> Add a type for heart rate monitors
->> Add the modifier name in beats per minute.
->>
->> Signed-off-by: Dan Murphy <dmurphy@ti.com>
->> ---
->>
->> v2 - Updated per v1 comments - http://marc.info/?l=linux-iio&m=141331404232216&w=2
->>
->>  Documentation/ABI/testing/sysfs-bus-iio               | 7 +++++++
->>  drivers/iio/industrialio-core.c                       | 1 +
->>  drivers/staging/iio/Documentation/iio_event_monitor.c | 2 ++
->>  include/linux/iio/types.h                             | 3 ++-
->>  4 files changed, 12 insertions(+), 1 deletion(-)
->>
->> diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
->> index d760b02..bf95808 100644
->> --- a/Documentation/ABI/testing/sysfs-bus-iio
->> +++ b/Documentation/ABI/testing/sysfs-bus-iio
->> @@ -1028,3 +1028,10 @@ Contact: linux-iio@vger.kernel.org
->>  Description:
->>                 Raw value of rotation from true/magnetic north measured with
->>                 or without compensation from tilt sensors.
->> +
->> +What:          /sys/bus/iio/devices/iio:deviceX/in_rot_from_north_magnetic_tilt_comp_raw
->> +KernelVersion: 3.19
->> +Contact:       linux-iio@vger.kernel.org
->> +Description:
->> +               Raw value of rotation from true/magnetic north measured with
->> +               or without compensation from tilt sensors.
-> Something went wrong here. This should be about
-> heart rate monitor not  rotation from true/magnetic north.
+Thanks,
 
-Yes it was PEBKAC here.  I had filled this in for the heart rate but must have removed my work
-when I was making the changes
-
-I will fix in v3.
-
->
->> diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
->> index af3e76d..e332a18 100644
->> --- a/drivers/iio/industrialio-core.c
->> +++ b/drivers/iio/industrialio-core.c
->> @@ -70,6 +70,7 @@ static const char * const iio_chan_type_name_spec[] = {
->>         [IIO_CCT] = "cct",
->>         [IIO_PRESSURE] = "pressure",
->>         [IIO_HUMIDITYRELATIVE] = "humidityrelative",
->> +       [IIO_HEARTRATE] = "heartrate",
->>  };
->>
->>  static const char * const iio_modifier_names[] = {
->> diff --git a/drivers/staging/iio/Documentation/iio_event_monitor.c b/drivers/staging/iio/Documentation/iio_event_monitor.c
->> index 569d6f8..90a655d 100644
->> --- a/drivers/staging/iio/Documentation/iio_event_monitor.c
->> +++ b/drivers/staging/iio/Documentation/iio_event_monitor.c
->> @@ -49,6 +49,7 @@ static const char * const iio_chan_type_name_spec[] = {
->>         [IIO_CCT] = "cct",
->>         [IIO_PRESSURE] = "pressure",
->>         [IIO_HUMIDITYRELATIVE] = "humidityrelative",
->> +       [IIO_HEARTRATE] = "heartrate"
->>  };
-> Please, don't forget the comma after "heartrate".
->
->>  static const char * const iio_ev_type_text[] = {
->> @@ -108,6 +109,7 @@ static bool event_is_known(struct iio_event_data *event)
->>         case IIO_CCT:
->>         case IIO_PRESSURE:
->>         case IIO_HUMIDITYRELATIVE:
->> +       case IIO_HEARTRATE:
->>                 break;
->>         default:
->>                 return false;
->> diff --git a/include/linux/iio/types.h b/include/linux/iio/types.h
->> index 4a2af8a..f22b9d6 100644
->> --- a/include/linux/iio/types.h
->> +++ b/include/linux/iio/types.h
->> @@ -30,6 +30,7 @@ enum iio_chan_type {
->>         IIO_CCT,
->>         IIO_PRESSURE,
->>         IIO_HUMIDITYRELATIVE,
->> +       IIO_HEARTRATE,
->>  };
->>
->>  enum iio_modifier {
->> @@ -59,7 +60,7 @@ enum iio_modifier {
->>         IIO_MOD_NORTH_MAGN,
->>         IIO_MOD_NORTH_TRUE,
->>         IIO_MOD_NORTH_MAGN_TILT_COMP,
->> -       IIO_MOD_NORTH_TRUE_TILT_COMP
->> +       IIO_MOD_NORTH_TRUE_TILT_COMP,
-> You shouldn't care about this now. Hopefully, the comma will be fixed
-> by the next person that adds an iio_modifier.
-
-OK just thought I would clean some code.
-But I will remove it
-
->
->>  };
->>
->>  enum iio_event_type {
->> --
->> 1.9.1
->>
->> --
->> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
->> the body of a message to majordomo@vger.kernel.org
->> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-
-Dan
-
--- 
-------------------
-Dan Murphy
+Jonathan
+> ---
+>  drivers/iio/accel/bmc150-accel.c | 23 ++++++++++++++++++++---
+>  1 file changed, 20 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/iio/accel/bmc150-accel.c b/drivers/iio/accel/bmc150-accel.c
+> index fdb101c..c6df8ee 100644
+> --- a/drivers/iio/accel/bmc150-accel.c
+> +++ b/drivers/iio/accel/bmc150-accel.c
+> @@ -44,6 +44,9 @@
+>  
+>  #define BMC150_ACCEL_REG_INT_STATUS_2		0x0B
+>  #define BMC150_ACCEL_ANY_MOTION_MASK		0x07
+> +#define BMC150_ACCEL_ANY_MOTION_BIT_X		BIT(0)
+> +#define BMC150_ACCEL_ANY_MOTION_BIT_Y		BIT(1)
+> +#define BMC150_ACCEL_ANY_MOTION_BIT_Z		BIT(2)
+>  #define BMC150_ACCEL_ANY_MOTION_BIT_SIGN	BIT(3)
+>  
+>  #define BMC150_ACCEL_REG_PMU_LPW		0x11
+> @@ -1097,12 +1100,26 @@ static irqreturn_t bmc150_accel_event_handler(int irq, void *private)
+>  	else
+>  		dir = IIO_EV_DIR_RISING;
+>  
+> -	if (ret & BMC150_ACCEL_ANY_MOTION_MASK)
+> +	if (ret & BMC150_ACCEL_ANY_MOTION_BIT_X)
+>  		iio_push_event(indio_dev, IIO_MOD_EVENT_CODE(IIO_ACCEL,
+>  							0,
+> -							IIO_MOD_X_OR_Y_OR_Z,
+> +							IIO_MOD_X,
+>  							IIO_EV_TYPE_ROC,
+> -							IIO_EV_DIR_EITHER),
+> +							dir),
+> +							data->timestamp);
+> +	if (ret & BMC150_ACCEL_ANY_MOTION_BIT_Y)
+> +		iio_push_event(indio_dev, IIO_MOD_EVENT_CODE(IIO_ACCEL,
+> +							0,
+> +							IIO_MOD_Y,
+> +							IIO_EV_TYPE_ROC,
+> +							dir),
+> +							data->timestamp);
+> +	if (ret & BMC150_ACCEL_ANY_MOTION_BIT_Z)
+> +		iio_push_event(indio_dev, IIO_MOD_EVENT_CODE(IIO_ACCEL,
+> +							0,
+> +							IIO_MOD_Z,
+> +							IIO_EV_TYPE_ROC,
+> +							dir),
+>  							data->timestamp);
+>  ack_intr_status:
+>  	if (!data->dready_trigger_on)
+> 
 
