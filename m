@@ -1,59 +1,49 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mx0a-00158d01.pphosted.com ([208.84.65.189]:63387 "EHLO
-	mx0a-00158d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1750998AbaKFP6R convert rfc822-to-8bit
-	(ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Thu, 6 Nov 2014 10:58:17 -0500
-From: Fabien Proriol <Fabien.Proriol@jdsu.com>
-To: Jonathan Cameron <jic23@kernel.org>,
-	Michal Simek <michal.simek@xilinx.com>
-CC: Lars-Peter Clausen <lars@metafoo.de>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Subject: [PATCH] 0001-xilinx-xadc-core-Fix-voltage-offset.patch
-Date: Thu, 6 Nov 2014 15:33:45 +0000
-Message-ID: <545B9479.5030700@jdsu.com>
-Content-Type: text/plain; charset=US-ASCII
+Return-Path: <lars@metafoo.de>
+Message-ID: <5469B7FF.6050500@metafoo.de>
+Date: Mon, 17 Nov 2014 09:55:27 +0100
+From: Lars-Peter Clausen <lars@metafoo.de>
 MIME-Version: 1.0
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+To: Fabien Proriol <Fabien.Proriol@jdsu.com>,
+ Jonathan Cameron <jic23@kernel.org>,
+ Michal Simek <michal.simek@xilinx.com>,
+ "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Subject: Re: [PATCH] 0001-xilinx-xadc-core-Fix-voltage-offset.patch
+References: <545B9479.5030700@jdsu.com> <545B976D.4080303@metafoo.de> <545B9EF1.8000606@jdsu.com> <545BA105.70105@metafoo.de> <545BA802.5090206@jdsu.com> <54690AE5.4050900@metafoo.de> <5469B725.8080908@jdsu.com>
+In-Reply-To: <5469B725.8080908@jdsu.com>
+Content-Type: text/plain; charset=windows-1252; format=flowed
+List-ID: <linux-iio@vger.kernel.org>
 
- From 3f57e39e3c69476513c00cd5ec45703f58334972 Mon Sep 17 00:00:00 2001
-From: Fabien Proriol <fabien.proriol@jdsu.com>
-Date: Tue, 4 Nov 2014 17:05:59 +0100
-Subject: [PATCH] xilinx-xadc-core: Fix voltage offset
+On 11/17/2014 09:53 AM, Fabien Proriol wrote:
+>  From bdeab2d72a00587eac15eb91ec0820ff6d11bfe8 Mon Sep 17 00:00:00 2001
+> From: Fabien Proriol <fabien.proriol@jdsu.com>
+> Date: Mon, 17 Nov 2014 09:46:02 +0100
+> Subject: [PATCH] iio: Fix iio_channel_read return if channel havn't info
+>
+> iio_channel_read must return an error to avoid offset for channel
+> without IIO_CHAN_INFO_OFFSET property
+>
+> Signed-off-by: Fabien Proriol <fabien.proriol@jdsu.com>
 
-When xilinx-xadc is used with hwmon driver to read voltage, offset used 
-for temperature is always apply.
-This patch change the return for IIO_CHAN_INFO_OFFSET to -EINVAL except 
-for temperature to avoid offset.
+Reviewed-by: Lars-Peter Clausen <lars@metafoo.de>
 
-Signed-off-by: Fabien Proriol <fabien.proriol@jdsu.com>
----
-  drivers/iio/adc/xilinx-xadc-core.c | 11 ++++++++---
-  1 file changed, 8 insertions(+), 3 deletions(-)
+Thanks.
 
-diff --git a/drivers/iio/adc/xilinx-xadc-core.c 
-b/drivers/iio/adc/xilinx-xadc-core.c
-index 41d3a5e..6064d26 100644
---- a/drivers/iio/adc/xilinx-xadc-core.c
-+++ b/drivers/iio/adc/xilinx-xadc-core.c
-@@ -877,9 +877,14 @@ static int xadc_read_raw(struct iio_dev *indio_dev,
-                         return -EINVAL;
-                 }
-         case IIO_CHAN_INFO_OFFSET:
--               /* Only the temperature channel has an offset */
--               *val = -((273150 << 12) / 503975);
--               return IIO_VAL_INT;
-+               switch (chan->type) {
-+               case IIO_TEMP:
-+                       /* Only the temperature channel has an offset */
-+                       *val = -((273150 << 12) / 503975);
-+                       return IIO_VAL_INT;
-+               default:
-+                       return -EINVAL;
-+               }
-         case IIO_CHAN_INFO_SAMP_FREQ:
-                 ret = xadc_read_adc_reg(xadc, XADC_REG_CONF2, &val16);
-                 if (ret)
--- 
-2.0.4
+> ---
+>   drivers/iio/inkern.c | 3 +++
+>   1 file changed, 3 insertions(+)
+>
+> diff --git a/drivers/iio/inkern.c b/drivers/iio/inkern.c
+> index 1e8e94d..917eb00 100644
+> --- a/drivers/iio/inkern.c
+> +++ b/drivers/iio/inkern.c
+> @@ -423,6 +423,9 @@ static int iio_channel_read(struct iio_channel *chan, int *val, int *val2,
+>   	if (val2 == NULL)
+>   		val2 = &unused;
+>
+> +	if(!iio_channel_has_info(chan->channel, info))
+> +		return -EINVAL;
+> +
+>   	return chan->indio_dev->info->read_raw(chan->indio_dev, chan->channel,
+>   						val, val2, info);
+>   }
+>
