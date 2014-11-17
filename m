@@ -1,122 +1,402 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:52709 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752740AbaKPWMc (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 16 Nov 2014 17:12:32 -0500
-Message-ID: <5469214A.9000203@kernel.org>
-Date: Sun, 16 Nov 2014 22:12:26 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-MIME-Version: 1.0
-To: Bastien Nocera <hadess@hadess.net>,
-	Lars-Peter Clausen <lars@metafoo.de>
-CC: linux-iio@vger.kernel.org,
-	Lennart Poettering <lennart@poettering.net>,
-	Cosimo Cecchi <cosimoc@gnome.org>
-Subject: Re: Kernel wishlist item: Better IIO API
-References: <1414593052.2406.37.camel@hadess.net>			 <5451221D.6000301@metafoo.de> <1414604035.2406.41.camel@hadess.net>		 <54512640.3040505@metafoo.de> <1414604840.2406.43.camel@hadess.net>	 <54513238.6050903@metafoo.de> <1415909105.30887.3.camel@hadess.net>
-In-Reply-To: <1415909105.30887.3.camel@hadess.net>
-Content-Type: text/plain; charset=utf-8
+Received: from mga01.intel.com ([192.55.52.88]:54577 "EHLO mga01.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751520AbaKQSGV (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Mon, 17 Nov 2014 13:06:21 -0500
+From: Octavian Purdila <octavian.purdila@intel.com>
+To: linux-iio@vger.kernel.org
+Cc: srinivas.pandruvada@intel.com,
+	Octavian Purdila <octavian.purdila@intel.com>
+Subject: [RFC 8/8] iio: bmc150: add support for hardware fifo
+Date: Mon, 17 Nov 2014 19:56:06 +0200
+Message-Id: <1416246966-3083-9-git-send-email-octavian.purdila@intel.com>
+In-Reply-To: <1416246966-3083-1-git-send-email-octavian.purdila@intel.com>
+References: <1416246966-3083-1-git-send-email-octavian.purdila@intel.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 13/11/14 20:05, Bastien Nocera wrote:
-> On Wed, 2014-10-29 at 19:30 +0100, Lars-Peter Clausen wrote:
-> <snip>
->> The sysfs ABI is not meant to be self documenting and it is not 
->> undocumented. The documentation for the different attributes can be found in 
->> Documentation/ABI/testing/sysfs-bus-iio[1].
-> <snip>
->> I can understand your frustration. A API that is not usable in a generic way 
->> is not really useful. So we should try to fix that, but we are bound by the 
->> framework itself and can't just throw everything away.
-> 
-> I'll go back to this e-mail, and start again with very concrete examples
-> of my problems. I'm looking for shorter term gains here, while you can
-> look at my questions as inspiration for what needs fixing longer term :)
-Sorry for my lack of proper reply.  Been a busy few weeks and long term
-discussions always seem to get queued up behind patch reviews that need doing,
-> 
-> My goal is to move iio-sensor-proxy[1] into systemd's codebase, probably
-> in logind. I know of two different "types" of sensors that I'd like to
-> support, and 2 very different types of drivers.
-cool
-> 
-> The driver used in the Lenovo Yoga Pros (hid-sensor-accel-3d), which I
-> used to write the iio-sensor-proxy, requires the following procedure to
-> be used:
-> - find the accelerometer iio device (with the "accel_3d" name)
-> - find the associated trigger
-> - enable the sensors by writing to some files in scan_elements/
-> - enable the ring buffer by writing to buffer/enable
-> - enable the trigger found above by writing to trigger/current_trigger
-You'll need to set the trigger before enabling the buffer...
-> - parse the files in scan_elements/ to find the channel array
-> - find the scale of each axis
-> - on some variants, tweak the hysteresis [2] to trigger changes
-interesting one. - Note I personally don't mind fixes for firmware bugs
-in kernel - if there is a simple way of identifying parts with the problem.
-> - and then read from the ring buffer on a regular basis, parse those
-> buffers, scale them, and we finally have the 3 dimensions we needed
-Hmm.. We did have a handy watermark patch set back in August that got
-stuck up on details and would make this slightly nicer.  I'll chase
-that one up when I get a chance.
-> 
-> The driver used in the Onda tablet I have is far less featureful.
-> - find the accelerometer iio device (this time called "i2c-SMO8500:00")
-> - build the channel array (?? I haven't found how)
-> - read the scale of each axis
-> - read directly from the sysfs files for each axis (?? surely not) on a
-> regular basis, scale the values, and we have the 3 dimensions
-On this second one, the driver has trigger and buffer support
-(not all drivers have as it's optional - doesn't make any sense for very
- slow devices and adds some complexity).
+This patch adds support for hardware fifo. Fifo and stream mode are
+supported as well as fifo-full and fifo-watermark events.
 
-However, looking at that driver - the interrupt is optional. If
-it's not there (i.e. either the pin isn't connected, or the relevant
-information isn't supplied to the driver to tell it which interrupt
-is in use) then the driver does indeed only enable the polled mode.
-That is, it doesn't set up either the trigger or the buffer.
+Signed-off-by: Octavian Purdila <octavian.purdila@intel.com>
+---
+ drivers/iio/accel/bmc150-accel.c | 249 ++++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 243 insertions(+), 6 deletions(-)
 
-So the question is whether the tablet really doesn't route that pin
-or whether there is an issue in the driver identifying it.
-
-Looking briefly back at the patch that added support for the SM08500
-it was clear then that we didn't have the interrupt.
-Hence we are into the realms of polling at some level...
-
-It would be fine to add support to the driver for a trigger that
-instead of using the interrupt simply polls the device - ugly but
-about all we can do here.  Looks like reading the int_source1 register
-will tell us whether new data is available...
-
-So in conclusion - the issue here is that a rather nasty work around
-is needed for either a bad configuration or non optimal hardware design.
-
-Still I guess there isn't much we can do about it...
-> 
-> Is this at all correct? Is there documentation (the sysfs-bus-iio
-> doesn't tell me how to use this "API")
-True enough, the docs are rather more in the form of the example
-program (drivers/staging/iio/Documentation) than explicit docs.
-The docs that do exist tend to lag behind the code unfortunately
-and since things have gotten rather more stable no one has had
-the time to write a full set.
-
-> that's available somewhere else,
-> or is there a more turn-key user-space library available?
-> 
-> Cheers
-> 
-> (I've been told that the Yoga should probably use the quaternion sensor
-> instead, it's planned, and so is writing user-space front-ends for the
-> compass in some devices).
-> 
-> [1]: https://github.com/hadess/iio-sensor-proxy
-> [2]: https://github.com/hadess/iio-sensor-proxy/issues/1#issuecomment-54536393
-> 
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> 
+diff --git a/drivers/iio/accel/bmc150-accel.c b/drivers/iio/accel/bmc150-accel.c
+index 72d2dca..404cfec 100644
+--- a/drivers/iio/accel/bmc150-accel.c
++++ b/drivers/iio/accel/bmc150-accel.c
+@@ -67,7 +67,9 @@
+ #define BMC150_ACCEL_INT_MAP_0_BIT_SLOPE	BIT(2)
+ 
+ #define BMC150_ACCEL_REG_INT_MAP_1		0x1A
+-#define BMC150_ACCEL_INT_MAP_1_BIT_DATA	BIT(0)
++#define BMC150_ACCEL_INT_MAP_1_BIT_DATA		BIT(0)
++#define BMC150_ACCEL_INT_MAP_1_BIT_FWM		BIT(1)
++#define BMC150_ACCEL_INT_MAP_1_BIT_FFULL	BIT(2)
+ 
+ #define BMC150_ACCEL_REG_INT_RST_LATCH		0x21
+ #define BMC150_ACCEL_INT_MODE_LATCH_RESET	0x80
+@@ -80,7 +82,9 @@
+ #define BMC150_ACCEL_INT_EN_BIT_SLP_Z		BIT(2)
+ 
+ #define BMC150_ACCEL_REG_INT_EN_1		0x17
+-#define BMC150_ACCEL_INT_EN_BIT_DATA_EN	BIT(4)
++#define BMC150_ACCEL_INT_EN_BIT_DATA_EN		BIT(4)
++#define BMC150_ACCEL_INT_EN_BIT_FFULL_EN	BIT(5)
++#define BMC150_ACCEL_INT_EN_BIT_FWM_EN		BIT(6)
+ 
+ #define BMC150_ACCEL_REG_INT_OUT_CTRL		0x20
+ #define BMC150_ACCEL_INT_OUT_CTRL_INT1_LVL	BIT(0)
+@@ -119,6 +123,13 @@
+ #define BMC150_ACCEL_AXIS_TO_REG(axis)	(BMC150_ACCEL_REG_XOUT_L + (axis * 2))
+ #define BMC150_AUTO_SUSPEND_DELAY_MS		2000
+ 
++#define BMC150_ACCEL_REG_FIFO_STATUS		0x0E
++#define BMC150_ACCEL_REG_FIFO_CONFIG0		0x30
++#define BMC150_ACCEL_REG_FIFO_CONFIG1		0x3E
++#define BMC150_ACCEL_REG_FIFO_DATA		0x3F
++#define BMC150_ACCEL_REG_FIFO_
++#define BMC150_ACCEL_FIFO_LENGTH		32
++
+ enum bmc150_accel_axis {
+ 	AXIS_X,
+ 	AXIS_Y,
+@@ -177,12 +188,13 @@ struct bmc150_accel_event {
+ 			u32 duration;
+ 			u32 threshold;
+ 		} slope;
++		u8 watermark;
+ 	};
+ };
+ 
+-#define BMC150_ACCEL_INTERRUPTS		2
++#define BMC150_ACCEL_INTERRUPTS		4
+ #define BMC150_ACCEL_TRIGGERS		2
+-#define BMC150_ACCEL_EVENTS		1
++#define BMC150_ACCEL_EVENTS		3
+ 
+ struct bmc150_accel_data {
+ 	struct i2c_client *client;
+@@ -191,6 +203,7 @@ struct bmc150_accel_data {
+ 	struct bmc150_accel_trigger triggers[BMC150_ACCEL_TRIGGERS];
+ 	struct bmc150_accel_event events[BMC150_ACCEL_EVENTS];
+ 	struct mutex mutex;
++	int fifo_mode;
+ 	s16 buffer[8];
+ 	u8 bw_bits;
+ 	u32 range;
+@@ -483,6 +496,18 @@ bmc150_accel_interrupts[BMC150_ACCEL_INTERRUPTS] = {
+ 			BMC150_ACCEL_INT_EN_BIT_SLP_Y |
+ 			BMC150_ACCEL_INT_EN_BIT_SLP_Z
+ 	},
++	{ /* fifo full interrupt */
++		.map_reg = BMC150_ACCEL_REG_INT_MAP_1,
++		.map_bitmask = BMC150_ACCEL_INT_MAP_1_BIT_FFULL,
++		.en_reg = BMC150_ACCEL_REG_INT_EN_1,
++		.en_bitmask = BMC150_ACCEL_INT_EN_BIT_FFULL_EN,
++	},
++	{ /* fifo watermark interrupt */
++		.map_reg = BMC150_ACCEL_REG_INT_MAP_1,
++		.map_bitmask = BMC150_ACCEL_INT_MAP_1_BIT_FWM,
++		.en_reg = BMC150_ACCEL_REG_INT_EN_1,
++		.en_bitmask = BMC150_ACCEL_INT_EN_BIT_FWM_EN,
++	},
+ };
+ 
+ static void bmc150_accel_interrupts_setup(struct iio_dev *indio_dev,
+@@ -699,11 +724,85 @@ static int bmc150_accel_read_raw(struct iio_dev *indio_dev,
+ 		ret = bmc150_accel_get_bw(data, val, val2);
+ 		mutex_unlock(&data->mutex);
+ 		return ret;
++	case IIO_CHAN_INFO_FIFO_LENGTH:
++		*val2 = 0;
++		*val = BMC150_ACCEL_FIFO_LENGTH;
++		return IIO_VAL_INT;
+ 	default:
+ 		return -EINVAL;
+ 	}
+ }
+ 
++static int bmc150_accel_fifo_flush(struct iio_dev *indio_dev)
++{
++	struct bmc150_accel_data *data = iio_priv(indio_dev);
++	int ret, i;
++	u8 count;
++	u16 buffer[BMC150_ACCEL_FIFO_LENGTH * 3];
++	u8 reg_fifo_data = BMC150_ACCEL_REG_FIFO_DATA;
++	struct i2c_msg msg[2];
++	int64_t tstamp;
++	int sample_freq = 0, sec, ms;
++
++	ret = bmc150_accel_get_bw(data, &sec, &ms);
++	if (ret == 0)
++		sample_freq = sec * 1000000000 + ms * 1000;
++
++	ret = i2c_smbus_read_byte_data(data->client,
++				       BMC150_ACCEL_REG_FIFO_STATUS);
++	if (ret < 0) {
++		dev_err(&indio_dev->dev, "Error reading reg_fifo_status\n");
++		return ret;
++	}
++
++	count = ret & 0x7F;
++
++	i = i2c_smbus_read_byte_data(data->client,
++				     BMC150_ACCEL_REG_FIFO_CONFIG1);
++	if (!count)
++		return 0;
++
++	msg[0].addr = data->client->addr;
++	msg[0].flags = 0;
++	msg[0].buf = &reg_fifo_data;
++	msg[0].len = sizeof(reg_fifo_data);
++
++	msg[1].addr = data->client->addr;
++	msg[1].flags = I2C_M_RD;
++	msg[1].buf = (u8 *)buffer;
++	msg[1].len = count * 3 * 2;
++
++	ret = i2c_transfer(data->client->adapter, msg, 2);
++	if (ret != 2) {
++		dev_err(&indio_dev->dev, "Error reading reg_fifo_data\n");
++		return ret;
++	}
++
++	if (!data->timestamp)
++		data->timestamp = iio_get_time_ns();
++
++	tstamp = data->timestamp - count * sample_freq;
++
++	for (i = 0; i < count; i++) {
++		u16 sample[8];
++		int j, bit;
++
++		j = 0;
++		for_each_set_bit(bit, indio_dev->buffer->scan_mask,
++				 indio_dev->masklength) {
++			memcpy(&sample[j++], &buffer[i * 3 + bit], 2);
++		}
++
++		iio_push_to_buffers_with_timestamp(indio_dev, sample, tstamp);
++
++		tstamp += sample_freq;
++	}
++
++	data->timestamp = 0;
++
++	return 0;
++}
++
+ static int bmc150_accel_write_raw(struct iio_dev *indio_dev,
+ 				  struct iio_chan_spec const *chan,
+ 				  int val, int val2, long mask)
+@@ -725,6 +824,8 @@ static int bmc150_accel_write_raw(struct iio_dev *indio_dev,
+ 		ret = bmc150_accel_set_scale(data, val2);
+ 		mutex_unlock(&data->mutex);
+ 		return ret;
++	case IIO_CHAN_INFO_FIFO_FLUSH:
++		return bmc150_accel_fifo_flush(indio_dev);
+ 	default:
+ 		ret = -EINVAL;
+ 	}
+@@ -764,6 +865,22 @@ static int bmc150_accel_event_roc_read(struct bmc150_accel_event *event,
+ 	return IIO_VAL_INT;
+ }
+ 
++static int bmc150_accel_event_watermark_read(struct bmc150_accel_event *event,
++					     enum iio_event_info info,
++					     int *val, int *val2)
++{
++	*val2 = 0;
++	switch (info) {
++	case IIO_EV_INFO_VALUE:
++		*val = event->watermark;
++		break;
++	default:
++		return -EINVAL;
++	}
++
++	return IIO_VAL_INT;
++}
++
+ static int bmc150_accel_read_event(struct iio_dev *indio_dev,
+ 				   const struct iio_chan_spec *chan,
+ 				   enum iio_event_type type,
+@@ -807,6 +924,38 @@ static int bmc150_accel_event_roc_write(struct bmc150_accel_event *event,
+ 	return ret;
+ }
+ 
++static int bmc150_accel_event_watermark_write(struct bmc150_accel_event *event,
++					      enum iio_event_info info,
++					      int val, int val2)
++{
++	struct bmc150_accel_data *data = event->data;
++	int ret;
++
++
++	switch (info) {
++	case IIO_EV_INFO_VALUE:
++		if (val > BMC150_ACCEL_FIFO_LENGTH) {
++			ret = -EINVAL;
++			break;
++		}
++		mutex_lock(&data->mutex);
++		ret = i2c_smbus_write_byte_data(data->client,
++						BMC150_ACCEL_REG_FIFO_CONFIG0,
++						val);
++		if (ret < 0) {
++			dev_err(&data->client->dev, "Error writing reg_fifo_config0\n");
++			break;
++		}
++		event->watermark = val;
++		mutex_unlock(&data->mutex);
++		break;
++	default:
++		ret = -EINVAL;
++	}
++
++	return ret;
++}
++
+ static int bmc150_accel_write_event(struct iio_dev *indio_dev,
+ 				    const struct iio_chan_spec *chan,
+ 				    enum iio_event_type type,
+@@ -900,6 +1049,76 @@ static const struct iio_event_spec bmc150_accel_events[BMC150_ACCEL_EVENTS] = {
+ 				 BIT(IIO_EV_INFO_ENABLE) |
+ 				 BIT(IIO_EV_INFO_PERIOD)
+ 	},
++	{
++		.type = IIO_EV_TYPE_FIFO_FULL,
++		.dir = IIO_EV_DIR_RISING,
++		.mask_separate = BIT(IIO_EV_INFO_ENABLE)
++	},
++	{
++		.type = IIO_EV_TYPE_FIFO_WATERMARK,
++		.dir = IIO_EV_DIR_RISING,
++		.mask_separate = BIT(IIO_EV_INFO_ENABLE) |
++				 BIT(IIO_EV_INFO_VALUE)
++	},
++};
++
++
++static const char * const bmc150_accel_fifo_modes[] = {
++	"disabled",
++	"fifo",
++	"stream"
++};
++
++static int bmc150_accel_fifo_mode_set(struct iio_dev *indio_dev,
++				      const struct iio_chan_spec *chan,
++				      unsigned int mode)
++{
++	struct bmc150_accel_data *data = iio_priv(indio_dev);
++	int ret;
++	u8 val;
++
++	switch (mode) {
++	case 0:
++		val = 0;
++		break;
++	case 1:
++		val = 0x40;
++		break;
++	case 2:
++		val = 0x80;
++		break;
++	default:
++		return -EINVAL;
++	}
++
++	ret = i2c_smbus_write_byte_data(data->client,
++					BMC150_ACCEL_REG_FIFO_CONFIG1, val);
++	if (ret < 0)
++		dev_err(&indio_dev->dev, "Error writing reg_fifo_config1\n");
++
++	data->fifo_mode  = mode;
++
++	return ret;
++}
++
++static int bmc150_accel_fifo_mode_get(struct iio_dev *indio_dev,
++				      const struct iio_chan_spec *chan)
++{
++	struct bmc150_accel_data *data = iio_priv(indio_dev);
++
++	return data->fifo_mode;
++}
++
++static const struct iio_enum bmc150_accel_fifo_mode_enum = {
++	.items = bmc150_accel_fifo_modes,
++	.num_items = ARRAY_SIZE(bmc150_accel_fifo_modes),
++	.set = bmc150_accel_fifo_mode_set,
++	.get = bmc150_accel_fifo_mode_get,
++};
++
++static const struct iio_chan_spec_ext_info bmc150_accel_ext_info[] = {
++	IIO_FIFO_EXT_INFO(&bmc150_accel_fifo_mode_enum, IIO_SHARED_BY_TYPE),
++	{},
+ };
+ 
+ #define BMC150_ACCEL_CHANNEL(_axis, bits) {				\
+@@ -908,7 +1127,9 @@ static const struct iio_event_spec bmc150_accel_events[BMC150_ACCEL_EVENTS] = {
+ 	.channel2 = IIO_MOD_##_axis,					\
+ 	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),			\
+ 	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE) |		\
+-				BIT(IIO_CHAN_INFO_SAMP_FREQ),		\
++				BIT(IIO_CHAN_INFO_SAMP_FREQ) |		\
++				BIT(IIO_CHAN_INFO_FIFO_LENGTH) |	\
++				BIT(IIO_CHAN_INFO_FIFO_FLUSH),		\
+ 	.scan_index = AXIS_##_axis,					\
+ 	.scan_type = {							\
+ 		.sign = 's',						\
+@@ -917,7 +1138,8 @@ static const struct iio_event_spec bmc150_accel_events[BMC150_ACCEL_EVENTS] = {
+ 		.shift = 16 - (bits),					\
+ 	},								\
+ 	.event_spec = bmc150_accel_events,				\
+-	.num_event_specs = ARRAY_SIZE(bmc150_accel_events)		\
++	.num_event_specs = ARRAY_SIZE(bmc150_accel_events),		\
++	.ext_info = bmc150_accel_ext_info,				\
+ }
+ 
+ #define BMC150_ACCEL_CHANNELS(bits) {					\
+@@ -1286,6 +1508,17 @@ static struct {
+ 		.read = bmc150_accel_event_roc_read,
+ 		.write = bmc150_accel_event_roc_write,
+ 	},
++	{
++		.intr = 2,
++		.type = IIO_EV_TYPE_FIFO_FULL,
++	},
++	{
++		.intr = 3,
++		.type = IIO_EV_TYPE_FIFO_WATERMARK,
++		.read = bmc150_accel_event_watermark_read,
++		.write = bmc150_accel_event_watermark_write,
++	},
++
+ };
+ 
+ static void bmc150_accel_events_setup(struct iio_dev *indio_dev,
+@@ -1460,6 +1693,7 @@ static int bmc150_accel_resume(struct device *dev)
+ 	mutex_lock(&data->mutex);
+ 	if (atomic_read(&data->active_intr))
+ 		bmc150_accel_set_mode(data, BMC150_ACCEL_SLEEP_MODE_NORMAL, 0);
++	bmc150_accel_fifo_mode_set(indio_dev, NULL, data->fifo_mode);
+ 	mutex_unlock(&data->mutex);
+ 
+ 	return 0;
+@@ -1489,6 +1723,9 @@ static int bmc150_accel_runtime_resume(struct device *dev)
+ 	ret = bmc150_accel_set_mode(data, BMC150_ACCEL_SLEEP_MODE_NORMAL, 0);
+ 	if (ret < 0)
+ 		return ret;
++	ret = bmc150_accel_fifo_mode_set(indio_dev, NULL, data->fifo_mode);
++	if (ret < 0)
++		return ret;
+ 
+ 	sleep_val = bmc150_accel_get_startup_times(data);
+ 	if (sleep_val < 20)
+-- 
+1.9.1
 
