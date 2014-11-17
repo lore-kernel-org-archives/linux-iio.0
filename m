@@ -1,62 +1,32 @@
-Return-Path: <Ezequiel.Garcia@imgtec.com>
-From: Ezequiel Garcia <ezequiel.garcia@imgtec.com>
-To: Andrew Bresticker <abrestic@chromium.org>, James Hartley
-	<james.hartley@imgtec.com>, Lars-Peter Clausen <lars@metafoo.de>, "Jonathan
- Cameron" <jic23@kernel.org>
-CC: <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
-	<robh+dt@kernel.org>, <Pawel.Moll@arm.com>, <Mark.Rutland@arm.com>,
-	<ijc+devicetree@hellion.org.uk>, <galak@codeaurora.org>,
-	<Naidu.Tellapati@imgtec.com>, Phani Movva <Phani.Movva@imgtec.com>,
-	"Ezequiel Garcia" <ezequiel.garcia@imgtec.com>
-Subject: [PATCH v4 2/3] DT: iio: adc: Add CC_10001 binding documentation
-Date: Thu, 13 Nov 2014 15:19:32 -0300
-Message-ID: <1415902772-20407-1-git-send-email-ezequiel.garcia@imgtec.com>
-In-Reply-To: <1415888044-16635-3-git-send-email-ezequiel.garcia@imgtec.com>
-References: <1415888044-16635-3-git-send-email-ezequiel.garcia@imgtec.com>
-MIME-Version: 1.0
-Content-Type: text/plain
+Return-Path: <daniel.baluta@intel.com>
+From: Daniel Baluta <daniel.baluta@intel.com>
+To: jic23@kernel.org
+Cc: linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH 2/2] kmx61: Use KMX61_DRV_NAME instead of hardcoded value
+Date: Mon, 17 Nov 2014 15:18:36 +0200
+Message-Id: <1416230316-14511-3-git-send-email-daniel.baluta@intel.com>
+In-Reply-To: <1416230316-14511-1-git-send-email-daniel.baluta@intel.com>
+References: <1416230316-14511-1-git-send-email-daniel.baluta@intel.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-From: Phani Movva <Phani.Movva@imgtec.com>
-
-Add the devicetree binding document for Cosmic Circuits 10001 ADC device.
-
-Signed-off-by: Phani Movva <Phani.Movva@imgtec.com>
-Signed-off-by: Naidu Tellapati <Naidu.Tellapati@imgtec.com>
-[Ezequiel: minor style cleaning]
-Signed-off-by: Ezequiel Garcia <ezequiel.garcia@imgtec.com>
+Signed-off-by: Daniel Baluta <daniel.baluta@intel.com>
 ---
- .../devicetree/bindings/iio/adc/cc10001_adc.txt    | 22 ++++++++++++++++++++++
- 1 file changed, 22 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/iio/adc/cc10001_adc.txt
+ drivers/iio/imu/kmx61.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/Documentation/devicetree/bindings/iio/adc/cc10001_adc.txt b/Documentation/devicetree/bindings/iio/adc/cc10001_adc.txt
-new file mode 100644
-index 0000000..b7ba558
---- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/adc/cc10001_adc.txt
-@@ -0,0 +1,22 @@
-+* Cosmic Circuits - Analog to Digital Converter (CC-10001-ADC)
-+
-+Required properties:
-+  - compatible: Should be "cosmic,10001-adc"
-+  - reg: Should contain adc registers location and length.
-+  - clock-names: Should contain "adc".
-+  - clocks: Should contain a clock specifier for each entry in clock-names
-+  - vref-supply: The regulator supply ADC reference voltage.
-+
-+Optional properties:
-+  - cosmic,adc-reserved-channels: Bitmask of reserved channels,
-+    i.e. channels that cannot be used by the OS.
-+
-+Example:
-+adc: adc@18101600 {
-+	compatible = "cosmic,10001-adc";
-+	reg = <0x18101600 0x24>;
-+	cosmic,adc-reserved-channels = <0x2>;
-+	clocks = <&adc_clk>;
-+	clock-names = "adc";
-+	vref-supply = <&reg_1v8>;
-+};
+diff --git a/drivers/iio/imu/kmx61.c b/drivers/iio/imu/kmx61.c
+index e49b1cc..8c4b365 100644
+--- a/drivers/iio/imu/kmx61.c
++++ b/drivers/iio/imu/kmx61.c
+@@ -578,7 +578,7 @@ MODULE_DEVICE_TABLE(i2c, kmx61_id);
+ 
+ static struct i2c_driver kmx61_driver = {
+ 	.driver = {
+-		.name = "kmx61",
++		.name = KMX61_DRV_NAME,
+ 	},
+ 	.probe		= kmx61_probe,
+ 	.remove		= kmx61_remove,
 -- 
-2.1.0
+1.9.1
