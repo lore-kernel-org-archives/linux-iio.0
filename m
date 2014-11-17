@@ -1,508 +1,195 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mailapp01.imgtec.com ([195.59.15.196]:27146 "EHLO
-	mailapp01.imgtec.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S932910AbaKMOP7 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 13 Nov 2014 09:15:59 -0500
-From: Ezequiel Garcia <ezequiel.garcia@imgtec.com>
-To: Andrew Bresticker <abrestic@chromium.org>,
-	James Hartley <james.hartley@imgtec.com>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	"Jonathan Cameron" <jic23@kernel.org>
-CC: <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
-	<robh+dt@kernel.org>, <Pawel.Moll@arm.com>, <Mark.Rutland@arm.com>,
-	<ijc+devicetree@hellion.org.uk>, <galak@codeaurora.org>,
-	<Naidu.Tellapati@imgtec.com>, Phani Movva <Phani.Movva@imgtec.com>,
-	Ezequiel Garcia <ezequiel.garcia@imgtec.com>
-Subject: [PATCH v3 1/3] iio: adc: Cosmic Circuits 10001 ADC driver
-Date: Thu, 13 Nov 2014 11:13:58 -0300
-Message-ID: <1415888044-16635-2-git-send-email-ezequiel.garcia@imgtec.com>
-In-Reply-To: <1415888044-16635-1-git-send-email-ezequiel.garcia@imgtec.com>
-References: <1415888044-16635-1-git-send-email-ezequiel.garcia@imgtec.com>
-MIME-Version: 1.0
-Content-Type: text/plain
+Received: from mga11.intel.com ([192.55.52.93]:23632 "EHLO mga11.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751489AbaKQSFJ (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Mon, 17 Nov 2014 13:05:09 -0500
+From: Octavian Purdila <octavian.purdila@intel.com>
+To: linux-iio@vger.kernel.org
+Cc: srinivas.pandruvada@intel.com,
+	Octavian Purdila <octavian.purdila@intel.com>
+Subject: [RFC 2/8] iio: bmc150: refactor slope duration and threshold update
+Date: Mon, 17 Nov 2014 19:56:00 +0200
+Message-Id: <1416246966-3083-3-git-send-email-octavian.purdila@intel.com>
+In-Reply-To: <1416246966-3083-1-git-send-email-octavian.purdila@intel.com>
+References: <1416246966-3083-1-git-send-email-octavian.purdila@intel.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-From: Phani Movva <Phani.Movva@imgtec.com>
+Move the slope duration and threshold update in separate functions
+to reduce code duplicate between chip init and motion interrupt setup.
 
-This commit adds support for Cosmic Circuits 10001 10-bit ADC device.
+The patch also moves the update from the motion interrupt setup
+function to the write event function so that we can later refactor the
+interrupt code.
 
-Signed-off-by: Phani Movva <Phani.Movva@imgtec.com>
-Signed-off-by: Naidu Tellapati <Naidu.Tellapati@imgtec.com>
-[Ezequiel: code style cleaning]
-Signed-off-by: Ezequiel Garcia <ezequiel.garcia@imgtec.com>
+Signed-off-by: Octavian Purdila <octavian.purdila@intel.com>
 ---
- drivers/iio/adc/Kconfig       |  11 ++
- drivers/iio/adc/Makefile      |   1 +
- drivers/iio/adc/cc10001_adc.c | 425 ++++++++++++++++++++++++++++++++++++++++++
- 3 files changed, 437 insertions(+)
- create mode 100644 drivers/iio/adc/cc10001_adc.c
+ drivers/iio/accel/bmc150-accel.c | 109 ++++++++++++++++++++++-----------------
+ 1 file changed, 62 insertions(+), 47 deletions(-)
 
-diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
-index 88bdc8f..09e2975 100644
---- a/drivers/iio/adc/Kconfig
-+++ b/drivers/iio/adc/Kconfig
-@@ -127,6 +127,17 @@ config AT91_ADC
- 	help
- 	  Say yes here to build support for Atmel AT91 ADC.
+diff --git a/drivers/iio/accel/bmc150-accel.c b/drivers/iio/accel/bmc150-accel.c
+index 22c096c..5bfb09d 100644
+--- a/drivers/iio/accel/bmc150-accel.c
++++ b/drivers/iio/accel/bmc150-accel.c
+@@ -266,6 +266,51 @@ static int bmc150_accel_set_bw(struct bmc150_accel_data *data, int val,
+ 	return -EINVAL;
+ }
  
-+config CC10001_ADC
-+	tristate "Cosmic Circuits 10001 ADC driver"
-+	depends on HAS_IOMEM
-+	select IIO_BUFFER
-+	select IIO_TRIGGERED_BUFFER
-+	help
-+	  Say yes here to build support for Cosmic Circuits 10001 ADC.
-+
-+	  This driver can also be built as a module. If so, the module will be
-+	  called cc10001_adc.
-+
- config EXYNOS_ADC
- 	tristate "Exynos ADC driver support"
- 	depends on ARCH_EXYNOS || ARCH_S3C24XX || ARCH_S3C64XX || (OF && COMPILE_TEST)
-diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
-index cb88a6a..9286c59 100644
---- a/drivers/iio/adc/Makefile
-+++ b/drivers/iio/adc/Makefile
-@@ -14,6 +14,7 @@ obj-$(CONFIG_AD7793) += ad7793.o
- obj-$(CONFIG_AD7887) += ad7887.o
- obj-$(CONFIG_AD799X) += ad799x.o
- obj-$(CONFIG_AT91_ADC) += at91_adc.o
-+obj-$(CONFIG_CC10001_ADC) += cc10001_adc.o
- obj-$(CONFIG_EXYNOS_ADC) += exynos_adc.o
- obj-$(CONFIG_LP8788_ADC) += lp8788_adc.o
- obj-$(CONFIG_MAX1027) += max1027.o
-diff --git a/drivers/iio/adc/cc10001_adc.c b/drivers/iio/adc/cc10001_adc.c
-new file mode 100644
-index 0000000..0b74838
---- /dev/null
-+++ b/drivers/iio/adc/cc10001_adc.c
-@@ -0,0 +1,425 @@
-+/*
-+ * Copyright (c) 2014 Imagination Technologies Ltd.
-+ *
-+ * This program is free software; you can redistribute it and/or modify it
-+ * under the terms of the GNU General Public License version 2 as published by
-+ * the Free Software Foundation.
-+ *
-+ */
-+
-+#include <linux/clk.h>
-+#include <linux/delay.h>
-+#include <linux/err.h>
-+#include <linux/kernel.h>
-+#include <linux/module.h>
-+#include <linux/of.h>
-+#include <linux/of_device.h>
-+#include <linux/platform_device.h>
-+#include <linux/regulator/consumer.h>
-+#include <linux/slab.h>
-+
-+#include <linux/iio/buffer.h>
-+#include <linux/iio/iio.h>
-+#include <linux/iio/sysfs.h>
-+#include <linux/iio/trigger.h>
-+#include <linux/iio/trigger_consumer.h>
-+#include <linux/iio/triggered_buffer.h>
-+
-+/* Registers */
-+#define CC10001_ADC_CONFIG		0x00
-+#define CC10001_ADC_START_CONV		BIT(4)
-+#define CC10001_ADC_MODE_SINGLE_CONV	BIT(5)
-+
-+#define CC10001_ADC_DDATA_OUT		0x04
-+#define CC10001_ADC_EOC			0x08
-+#define CC10001_ADC_EOC_SET		BIT(0)
-+
-+#define CC10001_ADC_CHSEL_SAMPLED	0x0c
-+#define CC10001_ADC_POWER_UP		0x10
-+#define CC10001_ADC_POWER_UP_SET	BIT(0)
-+#define CC10001_ADC_DEBUG		0x14
-+#define CC10001_ADC_DATA_COUNT		0x20
-+
-+#define CC10001_ADC_DATA_MASK		GENMASK(9, 0)
-+#define CC10001_ADC_NUM_CHANNELS	8
-+#define CC10001_ADC_CH_MASK		(CC10001_ADC_NUM_CHANNELS - 1)
-+
-+#define CC10001_INVALID_SAMPLED_OUTPUT	0xFFFF
-+#define CC10001_MAX_POLL_COUNT		20
-+
-+/*
-+ * As per device specification, wait six clock cycles after power-up to
-+ * activate START. Since adding two more clock cycles delay does not
-+ * impact the performance too much, we are adding two additional cycles delay
-+ * intentionally here.
-+ */
-+#define	CC10001_WAIT_CYCLES		8
-+
-+struct cc10001_adc_device {
-+	void __iomem *reg_base;
-+	struct iio_dev *indio_dev;
-+	struct clk *adc_clk;
-+	struct regulator *reg;
-+	u16 *buf;
-+
-+	struct mutex lock;
-+	unsigned long channel_map;
-+	unsigned int start_delay_ns;
-+	unsigned int eoc_delay_ns;
-+};
-+
-+static inline void cc10001_adc_write_reg(struct cc10001_adc_device *adc_dev,
-+					 u32 reg, u32 val)
++static int bmc150_accel_update_slope_threshold(struct bmc150_accel_data *data,
++					       int val)
 +{
-+	writel(val, adc_dev->reg_base + reg);
-+}
++	int ret = 0;
 +
-+static inline u32 cc10001_adc_read_reg(struct cc10001_adc_device *adc_dev,
-+				       u32 reg)
-+{
-+	return readl(adc_dev->reg_base + reg);
-+}
++	val &= 0xFF;
 +
-+static void cc10001_adc_start(struct cc10001_adc_device *adc_dev,
-+			      unsigned int channel)
-+{
-+	u32 val;
-+
-+	/* Channel selection and mode of operation */
-+	val = (channel & CC10001_ADC_CH_MASK) | CC10001_ADC_MODE_SINGLE_CONV;
-+	cc10001_adc_write_reg(adc_dev, CC10001_ADC_CONFIG, val);
-+
-+	val = cc10001_adc_read_reg(adc_dev, CC10001_ADC_CONFIG);
-+	val = val | CC10001_ADC_START_CONV;
-+	cc10001_adc_write_reg(adc_dev, CC10001_ADC_CONFIG, val);
-+}
-+
-+static u16 cc10001_adc_poll_done(struct iio_dev *indio_dev,
-+				 unsigned int channel,
-+				 unsigned int delay)
-+{
-+	struct cc10001_adc_device *adc_dev = iio_priv(indio_dev);
-+	unsigned int poll_count = 0;
-+
-+	while (!(cc10001_adc_read_reg(adc_dev, CC10001_ADC_EOC) &
-+			CC10001_ADC_EOC_SET)) {
-+
-+		ndelay(delay);
-+		if (poll_count++ == CC10001_MAX_POLL_COUNT)
-+			return CC10001_INVALID_SAMPLED_OUTPUT;
-+	}
-+
-+	poll_count = 0;
-+	while ((cc10001_adc_read_reg(adc_dev, CC10001_ADC_CHSEL_SAMPLED) &
-+			CC10001_ADC_CH_MASK) != channel) {
-+
-+		ndelay(delay);
-+		if (poll_count++ == CC10001_MAX_POLL_COUNT)
-+			return CC10001_INVALID_SAMPLED_OUTPUT;
-+	}
-+
-+	/* Read the 10 bit output register */
-+	return cc10001_adc_read_reg(adc_dev, CC10001_ADC_DDATA_OUT) &
-+			       CC10001_ADC_DATA_MASK;
-+}
-+
-+static irqreturn_t cc10001_adc_trigger_h(int irq, void *p)
-+{
-+	struct cc10001_adc_device *adc_dev;
-+	struct iio_poll_func *pf = p;
-+	struct iio_dev *indio_dev;
-+	unsigned int delay_ns;
-+	unsigned int channel;
-+	bool sample_invalid;
-+	u16 *data;
-+	int i;
-+
-+	indio_dev = pf->indio_dev;
-+	adc_dev = iio_priv(indio_dev);
-+	data = adc_dev->buf;
-+
-+	mutex_lock(&adc_dev->lock);
-+
-+	cc10001_adc_write_reg(adc_dev, CC10001_ADC_POWER_UP,
-+			      CC10001_ADC_POWER_UP_SET);
-+
-+	/* Wait for 8 (6+2) clock cycles before activating START */
-+	ndelay(adc_dev->start_delay_ns);
-+
-+	/* Calculate delay step for eoc and sampled data */
-+	delay_ns = adc_dev->eoc_delay_ns / CC10001_MAX_POLL_COUNT;
-+
-+	i = 0;
-+	sample_invalid = false;
-+	for_each_set_bit(channel, indio_dev->active_scan_mask,
-+				  indio_dev->masklength) {
-+
-+		cc10001_adc_start(adc_dev, channel);
-+
-+		data[i] = cc10001_adc_poll_done(indio_dev, channel, delay_ns);
-+		if (data[i] == CC10001_INVALID_SAMPLED_OUTPUT) {
-+			dev_warn(&indio_dev->dev,
-+				 "invalid sample on channel %d\n", channel);
-+			sample_invalid = true;
-+			goto done;
-+		}
-+		i++;
-+	}
-+
-+done:
-+	cc10001_adc_write_reg(adc_dev, CC10001_ADC_POWER_UP, 0);
-+
-+	mutex_unlock(&adc_dev->lock);
-+
-+	if (!sample_invalid)
-+		iio_push_to_buffers_with_timestamp(indio_dev, data,
-+						   iio_get_time_ns());
-+	iio_trigger_notify_done(indio_dev->trig);
-+
-+	return IRQ_HANDLED;
-+}
-+
-+static u16 cc10001_adc_read_raw_voltage(struct iio_dev *indio_dev,
-+					struct iio_chan_spec const *chan)
-+{
-+	struct cc10001_adc_device *adc_dev = iio_priv(indio_dev);
-+	unsigned int delay_ns;
-+	u16 val;
-+
-+	cc10001_adc_write_reg(adc_dev, CC10001_ADC_POWER_UP,
-+			      CC10001_ADC_POWER_UP_SET);
-+
-+	/* Wait for 8 (6+2) clock cycles before activating START */
-+	ndelay(adc_dev->start_delay_ns);
-+
-+	/* Calculate delay step for eoc and sampled data */
-+	delay_ns = adc_dev->eoc_delay_ns / CC10001_MAX_POLL_COUNT;
-+
-+	cc10001_adc_start(adc_dev, chan->channel);
-+
-+	val = cc10001_adc_poll_done(indio_dev, chan->channel, delay_ns);
-+
-+	cc10001_adc_write_reg(adc_dev, CC10001_ADC_POWER_UP, 0);
-+
-+	return val;
-+}
-+
-+static int cc10001_adc_read_raw(struct iio_dev *indio_dev,
-+				 struct iio_chan_spec const *chan,
-+				 int *val, int *val2, long mask)
-+{
-+	struct cc10001_adc_device *adc_dev = iio_priv(indio_dev);
-+	int ret;
-+
-+	switch (mask) {
-+	case IIO_CHAN_INFO_RAW:
-+		if (iio_buffer_enabled(indio_dev))
-+			return -EBUSY;
-+		mutex_lock(&adc_dev->lock);
-+		*val = cc10001_adc_read_raw_voltage(indio_dev, chan);
-+		mutex_unlock(&adc_dev->lock);
-+
-+		if (*val == CC10001_INVALID_SAMPLED_OUTPUT)
-+			return -EIO;
-+		return IIO_VAL_INT;
-+
-+	case IIO_CHAN_INFO_SCALE:
-+		ret = regulator_get_voltage(adc_dev->reg);
-+		if (ret)
-+			return ret;
-+
-+		*val = ret / 1000;
-+		*val2 = chan->scan_type.realbits;
-+		return IIO_VAL_FRACTIONAL_LOG2;
-+
-+	default:
-+		return -EINVAL;
-+	}
-+}
-+
-+static int cc10001_update_scan_mode(struct iio_dev *indio_dev,
-+				     const unsigned long *scan_mask)
-+{
-+	struct cc10001_adc_device *adc_dev = iio_priv(indio_dev);
-+
-+	kfree(adc_dev->buf);
-+	adc_dev->buf = kmalloc(indio_dev->scan_bytes, GFP_KERNEL);
-+	if (!adc_dev->buf)
-+		return -ENOMEM;
-+
-+	return 0;
-+}
-+
-+static const struct iio_info cc10001_adc_info = {
-+	.driver_module = THIS_MODULE,
-+	.read_raw = &cc10001_adc_read_raw,
-+	.update_scan_mode = &cc10001_update_scan_mode,
-+};
-+
-+static int cc10001_adc_channel_init(struct iio_dev *indio_dev)
-+{
-+	struct cc10001_adc_device *adc_dev = iio_priv(indio_dev);
-+	struct iio_chan_spec *chan_array, *timestamp;
-+	unsigned int bit, idx = 0;
-+
-+	indio_dev->num_channels = bitmap_weight(&adc_dev->channel_map,
-+						CC10001_ADC_NUM_CHANNELS);
-+
-+	chan_array = devm_kcalloc(&indio_dev->dev, indio_dev->num_channels + 1,
-+				  sizeof(struct iio_chan_spec),
-+				  GFP_KERNEL);
-+	if (!chan_array)
-+		return -ENOMEM;
-+
-+	for_each_set_bit(bit, &adc_dev->channel_map,
-+			 CC10001_ADC_NUM_CHANNELS) {
-+		struct iio_chan_spec *chan = &chan_array[idx];
-+
-+		chan->type = IIO_VOLTAGE;
-+		chan->indexed = 1;
-+		chan->channel = bit;
-+		chan->scan_index = idx;
-+		chan->scan_type.sign = 'u';
-+		chan->scan_type.realbits = 10;
-+		chan->scan_type.storagebits = 16;
-+		chan->info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE);
-+		chan->info_mask_separate = BIT(IIO_CHAN_INFO_RAW);
-+		idx++;
-+	}
-+
-+	timestamp = &chan_array[idx];
-+	timestamp->type = IIO_TIMESTAMP;
-+	timestamp->channel = -1;
-+	timestamp->scan_index = idx;
-+	timestamp->scan_type.sign = 's';
-+	timestamp->scan_type.realbits = 64;
-+	timestamp->scan_type.storagebits = 64;
-+
-+	indio_dev->channels = chan_array;
-+
-+	return 0;
-+}
-+
-+static int cc10001_adc_probe(struct platform_device *pdev)
-+{
-+	struct device_node *node = pdev->dev.of_node;
-+	struct cc10001_adc_device *adc_dev;
-+	unsigned long adc_clk_rate;
-+	struct resource *res;
-+	struct iio_dev *indio_dev;
-+	int ret;
-+
-+	indio_dev = devm_iio_device_alloc(&pdev->dev, sizeof(*adc_dev));
-+	if (indio_dev == NULL)
-+		return -ENOMEM;
-+
-+	adc_dev = iio_priv(indio_dev);
-+
-+	adc_dev->channel_map = CC10001_ADC_CH_MASK;
-+	if (!of_property_read_u32(node, "cosmic,reserved-adc-channels", &ret))
-+		adc_dev->channel_map ^= ret;
-+
-+	adc_dev->reg = devm_regulator_get(&pdev->dev, "vref");
-+	if (IS_ERR_OR_NULL(adc_dev->reg))
-+		return -EINVAL;
-+
-+	ret = regulator_enable(adc_dev->reg);
-+	if (ret)
-+		return ret;
-+
-+	indio_dev->dev.parent = &pdev->dev;
-+	indio_dev->name = dev_name(&pdev->dev);
-+	indio_dev->info = &cc10001_adc_info;
-+	indio_dev->modes = INDIO_DIRECT_MODE;
-+
-+	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-+	adc_dev->reg_base = devm_ioremap_resource(&pdev->dev, res);
-+	if (IS_ERR(adc_dev->reg_base))
-+		goto err_disable_reg;
-+
-+	adc_dev->adc_clk = devm_clk_get(&pdev->dev, "adc");
-+	if (IS_ERR(adc_dev->adc_clk)) {
-+		dev_err(&pdev->dev, "Failed to get the clock\n");
-+		goto err_disable_reg;
-+	}
-+
-+	ret = clk_prepare_enable(adc_dev->adc_clk);
-+	if (ret) {
-+		dev_err(&pdev->dev, "Failed to enable the clock\n");
-+		goto err_disable_reg;
-+	}
-+
-+	adc_clk_rate = clk_get_rate(adc_dev->adc_clk);
-+	if (!adc_clk_rate) {
-+		ret = -EINVAL;
-+		dev_err(&pdev->dev, "null clock rate!\n");
-+		goto err_disable_clk;
-+	}
-+
-+	adc_dev->eoc_delay_ns = NSEC_PER_SEC / adc_clk_rate;
-+	adc_dev->start_delay_ns = adc_dev->eoc_delay_ns * CC10001_WAIT_CYCLES;
-+
-+	/* Setup the ADC channels available on the device */
-+	ret = cc10001_adc_channel_init(indio_dev);
++	ret = i2c_smbus_write_byte_data(data->client, BMC150_ACCEL_REG_INT_6,
++					val);
 +	if (ret < 0) {
-+		dev_err(&pdev->dev, "Could not initialize the channels.\n");
-+		goto err_disable_clk;
++		dev_err(&data->client->dev, "Error writing reg_int_6\n");
++		return ret;
 +	}
++	data->slope_thres = val;
 +
-+	mutex_init(&adc_dev->lock);
++	dev_dbg(&data->client->dev, "%s: %x\n", __func__, val);
 +
-+	ret = iio_triggered_buffer_setup(indio_dev, NULL,
-+					 &cc10001_adc_trigger_h, NULL);
-+	if (ret < 0)
-+		goto err_disable_clk;
-+
-+	ret = iio_device_register(indio_dev);
-+	if (ret < 0)
-+		goto err_cleanup_buffer;
-+
-+	platform_set_drvdata(pdev, indio_dev);
-+
-+	return 0;
-+
-+err_cleanup_buffer:
-+	iio_triggered_buffer_cleanup(indio_dev);
-+err_disable_clk:
-+	clk_disable_unprepare(adc_dev->adc_clk);
-+err_disable_reg:
-+	regulator_disable(adc_dev->reg);
 +	return ret;
 +}
 +
-+static int cc10001_adc_remove(struct platform_device *pdev)
++static int bmc150_accel_update_slope_duration(struct bmc150_accel_data *data,
++					      int val)
 +{
-+	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
-+	struct cc10001_adc_device *adc_dev = iio_priv(indio_dev);
++	int ret;
 +
-+	iio_device_unregister(indio_dev);
-+	iio_triggered_buffer_cleanup(indio_dev);
-+	clk_disable_unprepare(adc_dev->adc_clk);
-+	regulator_disable(adc_dev->reg);
++	val &= BMC150_ACCEL_SLOPE_DUR_MASK;
 +
-+	return 0;
++	ret = i2c_smbus_read_byte_data(data->client, BMC150_ACCEL_REG_INT_5);
++	if (ret < 0) {
++		dev_err(&data->client->dev, "Error reading reg_int_5\n");
++		return ret;
++	}
++	ret = i2c_smbus_write_byte_data(data->client, BMC150_ACCEL_REG_INT_5,
++					val | ret);
++	if (ret < 0) {
++		dev_err(&data->client->dev, "Error write reg_int_5\n");
++		return ret;
++	}
++	data->slope_dur = val;
++
++	dev_dbg(&data->client->dev, "%s: %x\n", __func__, val);
++
++	return ret;
 +}
 +
-+static const struct of_device_id cc10001_adc_dt_ids[] = {
-+	{ .compatible = "cosmic,10001-adc", },
-+	{ }
-+};
-+MODULE_DEVICE_TABLE(of, cc10001_adc_dt_ids);
-+
-+static struct platform_driver cc10001_adc_driver = {
-+	.driver = {
-+		.name   = "cc10001-adc",
-+		.owner	= THIS_MODULE,
-+		.of_match_table = cc10001_adc_dt_ids,
-+	},
-+	.probe	= cc10001_adc_probe,
-+	.remove	= cc10001_adc_remove,
-+};
-+module_platform_driver(cc10001_adc_driver);
-+
-+MODULE_AUTHOR("Phani Movva <Phani.Movva@imgtec.com>");
-+MODULE_DESCRIPTION("Cosmic Circuits ADC driver");
-+MODULE_LICENSE("GPL v2");
+ static int bmc150_accel_chip_init(struct bmc150_accel_data *data)
+ {
+ 	int ret;
+@@ -304,32 +349,16 @@ static int bmc150_accel_chip_init(struct bmc150_accel_data *data)
+ 
+ 	data->range = BMC150_ACCEL_DEF_RANGE_4G;
+ 
+-	/* Set default slope duration */
+-	ret = i2c_smbus_read_byte_data(data->client, BMC150_ACCEL_REG_INT_5);
+-	if (ret < 0) {
+-		dev_err(&data->client->dev, "Error reading reg_int_5\n");
+-		return ret;
+-	}
+-	data->slope_dur |= BMC150_ACCEL_DEF_SLOPE_DURATION;
+-	ret = i2c_smbus_write_byte_data(data->client,
+-					BMC150_ACCEL_REG_INT_5,
+-					data->slope_dur);
+-	if (ret < 0) {
+-		dev_err(&data->client->dev, "Error writing reg_int_5\n");
++	/* Set default slope duration and thresholds */
++	ret = bmc150_accel_update_slope_duration(data,
++					 BMC150_ACCEL_DEF_SLOPE_DURATION);
++	if (ret < 0)
+ 		return ret;
+-	}
+-	dev_dbg(&data->client->dev, "slope_dur %x\n", data->slope_dur);
+ 
+-	/* Set default slope thresholds */
+-	ret = i2c_smbus_write_byte_data(data->client,
+-					BMC150_ACCEL_REG_INT_6,
+-					BMC150_ACCEL_DEF_SLOPE_THRESHOLD);
+-	if (ret < 0) {
+-		dev_err(&data->client->dev, "Error writing reg_int_6\n");
++	ret = bmc150_accel_update_slope_threshold(data,
++					  BMC150_ACCEL_DEF_SLOPE_THRESHOLD);
++	if (ret < 0)
+ 		return ret;
+-	}
+-	data->slope_thres = BMC150_ACCEL_DEF_SLOPE_THRESHOLD;
+-	dev_dbg(&data->client->dev, "slope_thres %x\n", data->slope_thres);
+ 
+ 	/* Set default as latched interrupts */
+ 	ret = i2c_smbus_write_byte_data(data->client,
+@@ -372,24 +401,6 @@ static int bmc150_accel_setup_any_motion_interrupt(
+ 	}
+ 
+ 	if (status) {
+-		/* Set slope duration (no of samples) */
+-		ret = i2c_smbus_write_byte_data(data->client,
+-						BMC150_ACCEL_REG_INT_5,
+-						data->slope_dur);
+-		if (ret < 0) {
+-			dev_err(&data->client->dev, "Error write reg_int_5\n");
+-			return ret;
+-		}
+-
+-		/* Set slope thresholds */
+-		ret = i2c_smbus_write_byte_data(data->client,
+-						BMC150_ACCEL_REG_INT_6,
+-						data->slope_thres);
+-		if (ret < 0) {
+-			dev_err(&data->client->dev, "Error write reg_int_6\n");
+-			return ret;
+-		}
+-
+ 		/*
+ 		 * New data interrupt is always non-latched,
+ 		 * which will have higher priority, so no need
+@@ -726,7 +737,7 @@ static int bmc150_accel_read_event(struct iio_dev *indio_dev,
+ 		*val = data->slope_thres;
+ 		break;
+ 	case IIO_EV_INFO_PERIOD:
+-		*val = data->slope_dur & BMC150_ACCEL_SLOPE_DUR_MASK;
++		*val = data->slope_dur;
+ 		break;
+ 	default:
+ 		return -EINVAL;
+@@ -743,23 +754,27 @@ static int bmc150_accel_write_event(struct iio_dev *indio_dev,
+ 				    int val, int val2)
+ {
+ 	struct bmc150_accel_data *data = iio_priv(indio_dev);
++	int ret;
+ 
+ 	if (data->ev_enable_state)
+ 		return -EBUSY;
+ 
+ 	switch (info) {
+ 	case IIO_EV_INFO_VALUE:
+-		data->slope_thres = val;
++		mutex_lock(&data->mutex);
++		ret = bmc150_accel_update_slope_threshold(data, val);
++		mutex_unlock(&data->mutex);
+ 		break;
+ 	case IIO_EV_INFO_PERIOD:
+-		data->slope_dur &= ~BMC150_ACCEL_SLOPE_DUR_MASK;
+-		data->slope_dur |= val & BMC150_ACCEL_SLOPE_DUR_MASK;
++		mutex_lock(&data->mutex);
++		ret = bmc150_accel_update_slope_duration(data, val);
++		mutex_unlock(&data->mutex);
+ 		break;
+ 	default:
+-		return -EINVAL;
++		ret = -EINVAL;
+ 	}
+ 
+-	return 0;
++	return ret;
+ }
+ 
+ static int bmc150_accel_read_event_config(struct iio_dev *indio_dev,
 -- 
-2.1.0
+1.9.1
 
