@@ -1,76 +1,89 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:52081 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:58689 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750716AbaKPUVH (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 16 Nov 2014 15:21:07 -0500
-Message-ID: <54690730.5070502@kernel.org>
-Date: Sun, 16 Nov 2014 20:21:04 +0000
-From: Jonathan Cameron <jic23@kernel.org>
+	with ESMTP id S1752211AbaKQNeP (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 17 Nov 2014 08:34:15 -0500
+In-Reply-To: <1851AC2B-97B9-4D5F-BC1E-3BD7C265A2E2@hadess.net>
+References: <1414593052.2406.37.camel@hadess.net> <5451221D.6000301@metafoo.de> <1414604035.2406.41.camel@hadess.net> <54512640.3040505@metafoo.de> <1414604840.2406.43.camel@hadess.net> <54513238.6050903@metafoo.de> <1415909105.30887.3.camel@hadess.net> <5469214A.9000203@kernel.org> <1851AC2B-97B9-4D5F-BC1E-3BD7C265A2E2@hadess.net>
 MIME-Version: 1.0
-To: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-CC: linux-iio@vger.kernel.org
-Subject: Re: [PATCH v1 3/4] iio: gyro: bmg160: Send x, y and z motion separately
-References: <1412998408-31870-1-git-send-email-srinivas.pandruvada@linux.intel.com> <1412998408-31870-4-git-send-email-srinivas.pandruvada@linux.intel.com>
-In-Reply-To: <1412998408-31870-4-git-send-email-srinivas.pandruvada@linux.intel.com>
-Content-Type: text/plain; charset=windows-1252
+Content-Type: text/plain;
+ charset=UTF-8
+Subject: Re: Kernel wishlist item: Better IIO API
+From: Jonathan Cameron <jic23@kernel.org>
+Date: Mon, 17 Nov 2014 13:34:11 +0000
+To: Bastien Nocera <hadess@hadess.net>
+CC: Lars-Peter Clausen <lars@metafoo.de>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	Lennart Poettering <lennart@poettering.net>,
+	Cosimo Cecchi <cosimoc@gnome.org>
+Message-ID: <BC7D2451-F89A-431C-AC68-6FB8B21BB546@kernel.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 11/10/14 04:33, Srinivas Pandruvada wrote:
-> This chip is capable to identify motion across x, y and z axes. So
-> send different events.
-> 
-> Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-Taking the view this is an ABI 'fix' and applying it to the fixes-togreg branch
-of iio.git
+Frankie
 
-Thanks
+On November 16, 2014 10:42:36 PM GMT+00:00, Bastien Nocera <hadess@hadess.net> wrote:
+>
+>> On 16 Nov 2014, at 23:12, Jonathan Cameron <jic23@kernel.org> wrote:
+>> 
+>>> The driver used in the Onda tablet I have is far less featureful.
+>>> - find the accelerometer iio device (this time called
+>"i2c-SMO8500:00")
+>>> - build the channel array (?? I haven't found how)
+>>> - read the scale of each axis
+>>> - read directly from the sysfs files for each axis (?? surely not)
+>on a
+>>> regular basis, scale the values, and we have the 3 dimensions
+>> On this second one, the driver has trigger and buffer support
+>> (not all drivers have as it's optional - doesn't make any sense for
+>very
+>> slow devices and adds some complexity).
+>> 
+>> However, looking at that driver - the interrupt is optional. If
+>> it's not there (i.e. either the pin isn't connected, or the relevant
+>> information isn't supplied to the driver to tell it which interrupt
+>> is in use) then the driver does indeed only enable the polled mode.
+>> That is, it doesn't set up either the trigger or the buffer.
+>> 
+>> So the question is whether the tablet really doesn't route that pin
+>> or whether there is an issue in the driver identifying it.
+>> 
+>> Looking briefly back at the patch that added support for the SM08500
+>> it was clear then that we didn't have the interrupt.
+>> Hence we are into the realms of polling at some level...
+>
+>I'll try to ask somebody with Windows on that tablet whether there is
+>an interrupt associated with the device or not. It could very well be a
+>problem with the ACPI support on that tablet (I'm still chasing battery
+>reporting...)
+>
+>> It would be fine to add support to the driver for a trigger that
+>> instead of using the interrupt simply polls the device - ugly but
+>> about all we can do here.  Looks like reading the int_source1
+>register
+>> will tell us whether new data is available...
+>> 
+>> So in conclusion - the issue here is that a rather nasty work around
+>> is needed for either a bad configuration or non optimal hardware
+>design.
+>> 
+>> Still I guess there isn't much we can do about it...
+>
+>But without the scan_elements subdir, I can't know what the device
+>would spit out, so I need to use sysfs directly, not the dev node. Is
+>that correct?
 
-Jonathan
-> ---
->  drivers/iio/gyro/bmg160.c | 21 +++++++++++++++++++--
->  1 file changed, 19 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/iio/gyro/bmg160.c b/drivers/iio/gyro/bmg160.c
-> index fa2e376..9f751d6 100644
-> --- a/drivers/iio/gyro/bmg160.c
-> +++ b/drivers/iio/gyro/bmg160.c
-> @@ -85,6 +85,9 @@
->  
->  #define BMG160_REG_INT_STATUS_2	0x0B
->  #define BMG160_ANY_MOTION_MASK		0x07
-> +#define BMG160_ANY_MOTION_BIT_X		BIT(0)
-> +#define BMG160_ANY_MOTION_BIT_Y		BIT(1)
-> +#define BMG160_ANY_MOTION_BIT_Z		BIT(2)
->  
->  #define BMG160_REG_TEMP		0x08
->  #define BMG160_TEMP_CENTER_VAL		23
-> @@ -929,10 +932,24 @@ static irqreturn_t bmg160_event_handler(int irq, void *private)
->  	else
->  		dir = IIO_EV_DIR_FALLING;
->  
-> -	if (ret & BMG160_ANY_MOTION_MASK)
-> +	if (ret & BMG160_ANY_MOTION_BIT_X)
->  		iio_push_event(indio_dev, IIO_MOD_EVENT_CODE(IIO_ANGL_VEL,
->  							0,
-> -							IIO_MOD_X_OR_Y_OR_Z,
-> +							IIO_MOD_X,
-> +							IIO_EV_TYPE_ROC,
-> +							dir),
-> +							data->timestamp);
-> +	if (ret & BMG160_ANY_MOTION_BIT_Y)
-> +		iio_push_event(indio_dev, IIO_MOD_EVENT_CODE(IIO_ANGL_VEL,
-> +							0,
-> +							IIO_MOD_Y,
-> +							IIO_EV_TYPE_ROC,
-> +							dir),
-> +							data->timestamp);
-> +	if (ret & BMG160_ANY_MOTION_BIT_Z)
-> +		iio_push_event(indio_dev, IIO_MOD_EVENT_CODE(IIO_ANGL_VEL,
-> +							0,
-> +							IIO_MOD_Z,
->  							IIO_EV_TYPE_ROC,
->  							dir),
->  							data->timestamp);
-> 
+Support could be added to the driver for polling of the register (effectively faking interrupt support).
 
+Then it would work as if the interrupt was present.
+
+
+>
+>Cheers
+>--
+>To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+>the body of a message to majordomo@vger.kernel.org
+>More majordomo info at  http://vger.kernel.org/majordomo-info.html
+
+-- 
+Sent from my Android phone with K-9 Mail. Please excuse my brevity.
