@@ -1,402 +1,366 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
 Received: from mga01.intel.com ([192.55.52.88]:54577 "EHLO mga01.intel.com"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751520AbaKQSGV (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	id S1751297AbaKQSGV (ORCPT <rfc822;linux-iio@vger.kernel.org>);
 	Mon, 17 Nov 2014 13:06:21 -0500
 From: Octavian Purdila <octavian.purdila@intel.com>
 To: linux-iio@vger.kernel.org
 Cc: srinivas.pandruvada@intel.com,
 	Octavian Purdila <octavian.purdila@intel.com>
-Subject: [RFC 8/8] iio: bmc150: add support for hardware fifo
-Date: Mon, 17 Nov 2014 19:56:06 +0200
-Message-Id: <1416246966-3083-9-git-send-email-octavian.purdila@intel.com>
+Subject: [RFC 7/8] iio: bmc150: introduce bmc150_accel_event
+Date: Mon, 17 Nov 2014 19:56:05 +0200
+Message-Id: <1416246966-3083-8-git-send-email-octavian.purdila@intel.com>
 In-Reply-To: <1416246966-3083-1-git-send-email-octavian.purdila@intel.com>
 References: <1416246966-3083-1-git-send-email-octavian.purdila@intel.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-This patch adds support for hardware fifo. Fifo and stream mode are
-supported as well as fifo-full and fifo-watermark events.
+Add a separate structure for events and add the infrastructure to
+support an arbitrary number of events. Each event is associated
+with an interrupt and has an enabled/disabled state.
 
 Signed-off-by: Octavian Purdila <octavian.purdila@intel.com>
 ---
- drivers/iio/accel/bmc150-accel.c | 249 ++++++++++++++++++++++++++++++++++++++-
- 1 file changed, 243 insertions(+), 6 deletions(-)
+ drivers/iio/accel/bmc150-accel.c | 177 ++++++++++++++++++++++++++++++---------
+ 1 file changed, 139 insertions(+), 38 deletions(-)
 
 diff --git a/drivers/iio/accel/bmc150-accel.c b/drivers/iio/accel/bmc150-accel.c
-index 72d2dca..404cfec 100644
+index ed02ced..72d2dca 100644
 --- a/drivers/iio/accel/bmc150-accel.c
 +++ b/drivers/iio/accel/bmc150-accel.c
-@@ -67,7 +67,9 @@
- #define BMC150_ACCEL_INT_MAP_0_BIT_SLOPE	BIT(2)
- 
- #define BMC150_ACCEL_REG_INT_MAP_1		0x1A
--#define BMC150_ACCEL_INT_MAP_1_BIT_DATA	BIT(0)
-+#define BMC150_ACCEL_INT_MAP_1_BIT_DATA		BIT(0)
-+#define BMC150_ACCEL_INT_MAP_1_BIT_FWM		BIT(1)
-+#define BMC150_ACCEL_INT_MAP_1_BIT_FFULL	BIT(2)
- 
- #define BMC150_ACCEL_REG_INT_RST_LATCH		0x21
- #define BMC150_ACCEL_INT_MODE_LATCH_RESET	0x80
-@@ -80,7 +82,9 @@
- #define BMC150_ACCEL_INT_EN_BIT_SLP_Z		BIT(2)
- 
- #define BMC150_ACCEL_REG_INT_EN_1		0x17
--#define BMC150_ACCEL_INT_EN_BIT_DATA_EN	BIT(4)
-+#define BMC150_ACCEL_INT_EN_BIT_DATA_EN		BIT(4)
-+#define BMC150_ACCEL_INT_EN_BIT_FFULL_EN	BIT(5)
-+#define BMC150_ACCEL_INT_EN_BIT_FWM_EN		BIT(6)
- 
- #define BMC150_ACCEL_REG_INT_OUT_CTRL		0x20
- #define BMC150_ACCEL_INT_OUT_CTRL_INT1_LVL	BIT(0)
-@@ -119,6 +123,13 @@
- #define BMC150_ACCEL_AXIS_TO_REG(axis)	(BMC150_ACCEL_REG_XOUT_L + (axis * 2))
- #define BMC150_AUTO_SUSPEND_DELAY_MS		2000
- 
-+#define BMC150_ACCEL_REG_FIFO_STATUS		0x0E
-+#define BMC150_ACCEL_REG_FIFO_CONFIG0		0x30
-+#define BMC150_ACCEL_REG_FIFO_CONFIG1		0x3E
-+#define BMC150_ACCEL_REG_FIFO_DATA		0x3F
-+#define BMC150_ACCEL_REG_FIFO_
-+#define BMC150_ACCEL_FIFO_LENGTH		32
-+
- enum bmc150_accel_axis {
- 	AXIS_X,
- 	AXIS_Y,
-@@ -177,12 +188,13 @@ struct bmc150_accel_event {
- 			u32 duration;
- 			u32 threshold;
- 		} slope;
-+		u8 watermark;
- 	};
+@@ -163,21 +163,37 @@ struct bmc150_accel_trigger {
+ 	bool enabled;
  };
  
--#define BMC150_ACCEL_INTERRUPTS		2
-+#define BMC150_ACCEL_INTERRUPTS		4
++struct bmc150_accel_event {
++	struct bmc150_accel_interrupt *intr;
++	struct bmc150_accel_data *data;
++	enum iio_event_type type;
++	bool enabled;
++	int (*read)(struct bmc150_accel_event *event, enum iio_event_info info,
++		    int *val, int *val2);
++	int (*write)(struct bmc150_accel_event *event, enum iio_event_info info,
++		     int val, int val2);
++	union {
++		struct {
++			u32 duration;
++			u32 threshold;
++		} slope;
++	};
++};
++
+ #define BMC150_ACCEL_INTERRUPTS		2
  #define BMC150_ACCEL_TRIGGERS		2
--#define BMC150_ACCEL_EVENTS		1
-+#define BMC150_ACCEL_EVENTS		3
++#define BMC150_ACCEL_EVENTS		1
  
  struct bmc150_accel_data {
  	struct i2c_client *client;
-@@ -191,6 +203,7 @@ struct bmc150_accel_data {
+ 	struct bmc150_accel_interrupt interrupts[BMC150_ACCEL_INTERRUPTS];
+ 	atomic_t active_intr;
  	struct bmc150_accel_trigger triggers[BMC150_ACCEL_TRIGGERS];
- 	struct bmc150_accel_event events[BMC150_ACCEL_EVENTS];
++	struct bmc150_accel_event events[BMC150_ACCEL_EVENTS];
  	struct mutex mutex;
-+	int fifo_mode;
  	s16 buffer[8];
  	u8 bw_bits;
+-	u32 slope_dur;
+-	u32 slope_thres;
  	u32 range;
-@@ -483,6 +496,18 @@ bmc150_accel_interrupts[BMC150_ACCEL_INTERRUPTS] = {
- 			BMC150_ACCEL_INT_EN_BIT_SLP_Y |
- 			BMC150_ACCEL_INT_EN_BIT_SLP_Z
- 	},
-+	{ /* fifo full interrupt */
-+		.map_reg = BMC150_ACCEL_REG_INT_MAP_1,
-+		.map_bitmask = BMC150_ACCEL_INT_MAP_1_BIT_FFULL,
-+		.en_reg = BMC150_ACCEL_REG_INT_EN_1,
-+		.en_bitmask = BMC150_ACCEL_INT_EN_BIT_FFULL_EN,
-+	},
-+	{ /* fifo watermark interrupt */
-+		.map_reg = BMC150_ACCEL_REG_INT_MAP_1,
-+		.map_bitmask = BMC150_ACCEL_INT_MAP_1_BIT_FWM,
-+		.en_reg = BMC150_ACCEL_REG_INT_EN_1,
-+		.en_bitmask = BMC150_ACCEL_INT_EN_BIT_FWM_EN,
-+	},
+-	int ev_enable_state;
+ 	int64_t timestamp;
+ 	const struct bmc150_accel_chip_info *chip_info;
  };
- 
- static void bmc150_accel_interrupts_setup(struct iio_dev *indio_dev,
-@@ -699,11 +724,85 @@ static int bmc150_accel_read_raw(struct iio_dev *indio_dev,
- 		ret = bmc150_accel_get_bw(data, val, val2);
- 		mutex_unlock(&data->mutex);
- 		return ret;
-+	case IIO_CHAN_INFO_FIFO_LENGTH:
-+		*val2 = 0;
-+		*val = BMC150_ACCEL_FIFO_LENGTH;
-+		return IIO_VAL_INT;
- 	default:
- 		return -EINVAL;
- 	}
+@@ -287,7 +303,8 @@ static int bmc150_accel_set_bw(struct bmc150_accel_data *data, int val,
+ 	return -EINVAL;
  }
  
-+static int bmc150_accel_fifo_flush(struct iio_dev *indio_dev)
-+{
-+	struct bmc150_accel_data *data = iio_priv(indio_dev);
-+	int ret, i;
-+	u8 count;
-+	u16 buffer[BMC150_ACCEL_FIFO_LENGTH * 3];
-+	u8 reg_fifo_data = BMC150_ACCEL_REG_FIFO_DATA;
-+	struct i2c_msg msg[2];
-+	int64_t tstamp;
-+	int sample_freq = 0, sec, ms;
-+
-+	ret = bmc150_accel_get_bw(data, &sec, &ms);
-+	if (ret == 0)
-+		sample_freq = sec * 1000000000 + ms * 1000;
-+
-+	ret = i2c_smbus_read_byte_data(data->client,
-+				       BMC150_ACCEL_REG_FIFO_STATUS);
-+	if (ret < 0) {
-+		dev_err(&indio_dev->dev, "Error reading reg_fifo_status\n");
-+		return ret;
-+	}
-+
-+	count = ret & 0x7F;
-+
-+	i = i2c_smbus_read_byte_data(data->client,
-+				     BMC150_ACCEL_REG_FIFO_CONFIG1);
-+	if (!count)
-+		return 0;
-+
-+	msg[0].addr = data->client->addr;
-+	msg[0].flags = 0;
-+	msg[0].buf = &reg_fifo_data;
-+	msg[0].len = sizeof(reg_fifo_data);
-+
-+	msg[1].addr = data->client->addr;
-+	msg[1].flags = I2C_M_RD;
-+	msg[1].buf = (u8 *)buffer;
-+	msg[1].len = count * 3 * 2;
-+
-+	ret = i2c_transfer(data->client->adapter, msg, 2);
-+	if (ret != 2) {
-+		dev_err(&indio_dev->dev, "Error reading reg_fifo_data\n");
-+		return ret;
-+	}
-+
-+	if (!data->timestamp)
-+		data->timestamp = iio_get_time_ns();
-+
-+	tstamp = data->timestamp - count * sample_freq;
-+
-+	for (i = 0; i < count; i++) {
-+		u16 sample[8];
-+		int j, bit;
-+
-+		j = 0;
-+		for_each_set_bit(bit, indio_dev->buffer->scan_mask,
-+				 indio_dev->masklength) {
-+			memcpy(&sample[j++], &buffer[i * 3 + bit], 2);
-+		}
-+
-+		iio_push_to_buffers_with_timestamp(indio_dev, sample, tstamp);
-+
-+		tstamp += sample_freq;
-+	}
-+
-+	data->timestamp = 0;
-+
-+	return 0;
-+}
-+
- static int bmc150_accel_write_raw(struct iio_dev *indio_dev,
- 				  struct iio_chan_spec const *chan,
- 				  int val, int val2, long mask)
-@@ -725,6 +824,8 @@ static int bmc150_accel_write_raw(struct iio_dev *indio_dev,
- 		ret = bmc150_accel_set_scale(data, val2);
- 		mutex_unlock(&data->mutex);
+-static int bmc150_accel_update_slope_threshold(struct bmc150_accel_data *data,
++static int bmc150_accel_update_slope_threshold(struct bmc150_accel_event *event,
++					       struct bmc150_accel_data *data,
+ 					       int val)
+ {
+ 	int ret = 0;
+@@ -300,14 +317,15 @@ static int bmc150_accel_update_slope_threshold(struct bmc150_accel_data *data,
+ 		dev_err(&data->client->dev, "Error writing reg_int_6\n");
  		return ret;
-+	case IIO_CHAN_INFO_FIFO_FLUSH:
-+		return bmc150_accel_fifo_flush(indio_dev);
- 	default:
- 		ret = -EINVAL;
  	}
-@@ -764,6 +865,22 @@ static int bmc150_accel_event_roc_read(struct bmc150_accel_event *event,
- 	return IIO_VAL_INT;
- }
+-	data->slope_thres = val;
++	event->slope.threshold = val;
  
-+static int bmc150_accel_event_watermark_read(struct bmc150_accel_event *event,
-+					     enum iio_event_info info,
-+					     int *val, int *val2)
-+{
-+	*val2 = 0;
-+	switch (info) {
-+	case IIO_EV_INFO_VALUE:
-+		*val = event->watermark;
-+		break;
-+	default:
-+		return -EINVAL;
-+	}
-+
-+	return IIO_VAL_INT;
-+}
-+
- static int bmc150_accel_read_event(struct iio_dev *indio_dev,
- 				   const struct iio_chan_spec *chan,
- 				   enum iio_event_type type,
-@@ -807,6 +924,38 @@ static int bmc150_accel_event_roc_write(struct bmc150_accel_event *event,
+ 	dev_dbg(&data->client->dev, "%s: %x\n", __func__, val);
+ 
  	return ret;
  }
  
-+static int bmc150_accel_event_watermark_write(struct bmc150_accel_event *event,
-+					      enum iio_event_info info,
-+					      int val, int val2)
+-static int bmc150_accel_update_slope_duration(struct bmc150_accel_data *data,
++static int bmc150_accel_update_slope_duration(struct bmc150_accel_event *event,
++					      struct bmc150_accel_data *data,
+ 					      int val)
+ {
+ 	int ret;
+@@ -325,7 +343,7 @@ static int bmc150_accel_update_slope_duration(struct bmc150_accel_data *data,
+ 		dev_err(&data->client->dev, "Error write reg_int_5\n");
+ 		return ret;
+ 	}
+-	data->slope_dur = val;
++	event->slope.duration = val;
+ 
+ 	dev_dbg(&data->client->dev, "%s: %x\n", __func__, val);
+ 
+@@ -371,12 +389,12 @@ static int bmc150_accel_chip_init(struct bmc150_accel_data *data)
+ 	data->range = BMC150_ACCEL_DEF_RANGE_4G;
+ 
+ 	/* Set default slope duration and thresholds */
+-	ret = bmc150_accel_update_slope_duration(data,
++	ret = bmc150_accel_update_slope_duration(&data->events[0], data,
+ 					 BMC150_ACCEL_DEF_SLOPE_DURATION);
+ 	if (ret < 0)
+ 		return ret;
+ 
+-	ret = bmc150_accel_update_slope_threshold(data,
++	ret = bmc150_accel_update_slope_threshold(&data->events[0], data,
+ 					  BMC150_ACCEL_DEF_SLOPE_THRESHOLD);
+ 	if (ret < 0)
+ 		return ret;
+@@ -714,22 +732,30 @@ static int bmc150_accel_write_raw(struct iio_dev *indio_dev,
+ 	return ret;
+ }
+ 
+-static int bmc150_accel_read_event(struct iio_dev *indio_dev,
+-				   const struct iio_chan_spec *chan,
+-				   enum iio_event_type type,
+-				   enum iio_event_direction dir,
+-				   enum iio_event_info info,
+-				   int *val, int *val2)
++static struct bmc150_accel_event*
++bmc150_accel_get_event(struct iio_dev *indio_dev, enum iio_event_type type)
+ {
+ 	struct bmc150_accel_data *data = iio_priv(indio_dev);
++	int i;
++
++	for (i = 0; i < BMC150_ACCEL_EVENTS; i++)
++		if (data->events[i].type == type)
++			return &data->events[i];
++
++	return NULL;
++}
+ 
++static int bmc150_accel_event_roc_read(struct bmc150_accel_event *event,
++				       enum iio_event_info info,
++				       int *val, int *val2)
++{
+ 	*val2 = 0;
+ 	switch (info) {
+ 	case IIO_EV_INFO_VALUE:
+-		*val = data->slope_thres;
++		*val = event->slope.threshold;
+ 		break;
+ 	case IIO_EV_INFO_PERIOD:
+-		*val = data->slope_dur;
++		*val = event->slope.duration;
+ 		break;
+ 	default:
+ 		return -EINVAL;
+@@ -738,28 +764,40 @@ static int bmc150_accel_read_event(struct iio_dev *indio_dev,
+ 	return IIO_VAL_INT;
+ }
+ 
+-static int bmc150_accel_write_event(struct iio_dev *indio_dev,
+-				    const struct iio_chan_spec *chan,
+-				    enum iio_event_type type,
+-				    enum iio_event_direction dir,
+-				    enum iio_event_info info,
+-				    int val, int val2)
++static int bmc150_accel_read_event(struct iio_dev *indio_dev,
++				   const struct iio_chan_spec *chan,
++				   enum iio_event_type type,
++				   enum iio_event_direction dir,
++				   enum iio_event_info info,
++				   int *val, int *val2)
+ {
+-	struct bmc150_accel_data *data = iio_priv(indio_dev);
+-	int ret;
++	struct bmc150_accel_event *event;
+ 
+-	if (data->ev_enable_state)
+-		return -EBUSY;
++	event = bmc150_accel_get_event(indio_dev, type);
++	if (!event || !event->read)
++		return -EINVAL;
++
++	return event->read(event, info, val, val2);
++}
++
++static int bmc150_accel_event_roc_write(struct bmc150_accel_event *event,
++					enum iio_event_info info,
++					int val, int val2)
 +{
 +	struct bmc150_accel_data *data = event->data;
 +	int ret;
+ 
+ 	switch (info) {
+ 	case IIO_EV_INFO_VALUE:
+ 		mutex_lock(&data->mutex);
+-		ret = bmc150_accel_update_slope_threshold(data, val);
++		ret = bmc150_accel_update_slope_threshold(event, event->data,
++							  val);
+ 		mutex_unlock(&data->mutex);
+ 		break;
+ 	case IIO_EV_INFO_PERIOD:
+ 		mutex_lock(&data->mutex);
+-		ret = bmc150_accel_update_slope_duration(data, val);
++		ret = bmc150_accel_update_slope_duration(event, event->data,
++							 val);
+ 		mutex_unlock(&data->mutex);
+ 		break;
+ 	default:
+@@ -769,15 +807,37 @@ static int bmc150_accel_write_event(struct iio_dev *indio_dev,
+ 	return ret;
+ }
+ 
++static int bmc150_accel_write_event(struct iio_dev *indio_dev,
++				    const struct iio_chan_spec *chan,
++				    enum iio_event_type type,
++				    enum iio_event_direction dir,
++				    enum iio_event_info info,
++				    int val, int val2)
++{
++	struct bmc150_accel_event *event;
 +
++	event = bmc150_accel_get_event(indio_dev, type);
++	if (!event || !event->write)
++		return -EINVAL;
 +
-+	switch (info) {
-+	case IIO_EV_INFO_VALUE:
-+		if (val > BMC150_ACCEL_FIFO_LENGTH) {
-+			ret = -EINVAL;
-+			break;
-+		}
-+		mutex_lock(&data->mutex);
-+		ret = i2c_smbus_write_byte_data(data->client,
-+						BMC150_ACCEL_REG_FIFO_CONFIG0,
-+						val);
-+		if (ret < 0) {
-+			dev_err(&data->client->dev, "Error writing reg_fifo_config0\n");
-+			break;
-+		}
-+		event->watermark = val;
-+		mutex_unlock(&data->mutex);
-+		break;
-+	default:
-+		ret = -EINVAL;
-+	}
++	if (event->enabled)
++		return -EBUSY;
 +
-+	return ret;
++	return event->write(event, info, val, val2);
 +}
 +
- static int bmc150_accel_write_event(struct iio_dev *indio_dev,
- 				    const struct iio_chan_spec *chan,
- 				    enum iio_event_type type,
-@@ -900,6 +1049,76 @@ static const struct iio_event_spec bmc150_accel_events[BMC150_ACCEL_EVENTS] = {
+ static int bmc150_accel_read_event_config(struct iio_dev *indio_dev,
+ 					  const struct iio_chan_spec *chan,
+ 					  enum iio_event_type type,
+ 					  enum iio_event_direction dir)
+ {
++	struct bmc150_accel_event *event;
+ 
+-	struct bmc150_accel_data *data = iio_priv(indio_dev);
++	event = bmc150_accel_get_event(indio_dev, type);
++	if (!event)
++		return -EINVAL;
+ 
+-	return data->ev_enable_state;
++	return event->enabled;
+ }
+ 
+ static int bmc150_accel_write_event_config(struct iio_dev *indio_dev,
+@@ -787,15 +847,20 @@ static int bmc150_accel_write_event_config(struct iio_dev *indio_dev,
+ 					   int state)
+ {
+ 	struct bmc150_accel_data *data = iio_priv(indio_dev);
++	struct bmc150_accel_event *event;
+ 	int ret;
+ 
+-	if (state == data->ev_enable_state)
++	event = bmc150_accel_get_event(indio_dev, type);
++	if (!event)
++		return -EINVAL;
++
++	if (state == event->enabled)
+ 		return 0;
+ 
+ 	mutex_lock(&data->mutex);
+-	ret = bmc150_accel_set_interrupt(data, &data->interrupts[1], state);
++	ret = bmc150_accel_set_interrupt(data, event->intr, state);
+ 	if (!ret)
+-		data->ev_enable_state = state;
++		event->enabled = state;
+ 	mutex_unlock(&data->mutex);
+ 
+ 	return ret;
+@@ -827,12 +892,14 @@ static const struct attribute_group bmc150_accel_attrs_group = {
+ 	.attrs = bmc150_accel_attributes,
+ };
+ 
+-static const struct iio_event_spec bmc150_accel_event = {
++static const struct iio_event_spec bmc150_accel_events[BMC150_ACCEL_EVENTS] = {
++	{
+ 		.type = IIO_EV_TYPE_ROC,
+ 		.dir = IIO_EV_DIR_RISING | IIO_EV_DIR_FALLING,
+ 		.mask_separate = BIT(IIO_EV_INFO_VALUE) |
  				 BIT(IIO_EV_INFO_ENABLE) |
  				 BIT(IIO_EV_INFO_PERIOD)
- 	},
-+	{
-+		.type = IIO_EV_TYPE_FIFO_FULL,
-+		.dir = IIO_EV_DIR_RISING,
-+		.mask_separate = BIT(IIO_EV_INFO_ENABLE)
 +	},
-+	{
-+		.type = IIO_EV_TYPE_FIFO_WATERMARK,
-+		.dir = IIO_EV_DIR_RISING,
-+		.mask_separate = BIT(IIO_EV_INFO_ENABLE) |
-+				 BIT(IIO_EV_INFO_VALUE)
-+	},
-+};
-+
-+
-+static const char * const bmc150_accel_fifo_modes[] = {
-+	"disabled",
-+	"fifo",
-+	"stream"
-+};
-+
-+static int bmc150_accel_fifo_mode_set(struct iio_dev *indio_dev,
-+				      const struct iio_chan_spec *chan,
-+				      unsigned int mode)
-+{
-+	struct bmc150_accel_data *data = iio_priv(indio_dev);
-+	int ret;
-+	u8 val;
-+
-+	switch (mode) {
-+	case 0:
-+		val = 0;
-+		break;
-+	case 1:
-+		val = 0x40;
-+		break;
-+	case 2:
-+		val = 0x80;
-+		break;
-+	default:
-+		return -EINVAL;
-+	}
-+
-+	ret = i2c_smbus_write_byte_data(data->client,
-+					BMC150_ACCEL_REG_FIFO_CONFIG1, val);
-+	if (ret < 0)
-+		dev_err(&indio_dev->dev, "Error writing reg_fifo_config1\n");
-+
-+	data->fifo_mode  = mode;
-+
-+	return ret;
-+}
-+
-+static int bmc150_accel_fifo_mode_get(struct iio_dev *indio_dev,
-+				      const struct iio_chan_spec *chan)
-+{
-+	struct bmc150_accel_data *data = iio_priv(indio_dev);
-+
-+	return data->fifo_mode;
-+}
-+
-+static const struct iio_enum bmc150_accel_fifo_mode_enum = {
-+	.items = bmc150_accel_fifo_modes,
-+	.num_items = ARRAY_SIZE(bmc150_accel_fifo_modes),
-+	.set = bmc150_accel_fifo_mode_set,
-+	.get = bmc150_accel_fifo_mode_get,
-+};
-+
-+static const struct iio_chan_spec_ext_info bmc150_accel_ext_info[] = {
-+	IIO_FIFO_EXT_INFO(&bmc150_accel_fifo_mode_enum, IIO_SHARED_BY_TYPE),
-+	{},
  };
  
  #define BMC150_ACCEL_CHANNEL(_axis, bits) {				\
-@@ -908,7 +1127,9 @@ static const struct iio_event_spec bmc150_accel_events[BMC150_ACCEL_EVENTS] = {
- 	.channel2 = IIO_MOD_##_axis,					\
- 	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),			\
- 	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE) |		\
--				BIT(IIO_CHAN_INFO_SAMP_FREQ),		\
-+				BIT(IIO_CHAN_INFO_SAMP_FREQ) |		\
-+				BIT(IIO_CHAN_INFO_FIFO_LENGTH) |	\
-+				BIT(IIO_CHAN_INFO_FIFO_FLUSH),		\
- 	.scan_index = AXIS_##_axis,					\
- 	.scan_type = {							\
- 		.sign = 's',						\
-@@ -917,7 +1138,8 @@ static const struct iio_event_spec bmc150_accel_events[BMC150_ACCEL_EVENTS] = {
+@@ -849,8 +916,8 @@ static const struct iio_event_spec bmc150_accel_event = {
+ 		.storagebits = 16,					\
  		.shift = 16 - (bits),					\
  	},								\
- 	.event_spec = bmc150_accel_events,				\
--	.num_event_specs = ARRAY_SIZE(bmc150_accel_events)		\
-+	.num_event_specs = ARRAY_SIZE(bmc150_accel_events),		\
-+	.ext_info = bmc150_accel_ext_info,				\
+-	.event_spec = &bmc150_accel_event,				\
+-	.num_event_specs = 1						\
++	.event_spec = bmc150_accel_events,				\
++	.num_event_specs = ARRAY_SIZE(bmc150_accel_events)		\
  }
  
  #define BMC150_ACCEL_CHANNELS(bits) {					\
-@@ -1286,6 +1508,17 @@ static struct {
- 		.read = bmc150_accel_event_roc_read,
- 		.write = bmc150_accel_event_roc_write,
- 	},
+@@ -1092,7 +1159,7 @@ static irqreturn_t bmc150_accel_data_rdy_trig_poll(int irq, void *private)
+ 		}
+ 	}
+ 
+-	if (data->ev_enable_state)
++	if (data->events[0].enabled)
+ 		return IRQ_WAKE_THREAD;
+ 	else
+ 		return IRQ_HANDLED;
+@@ -1205,6 +1272,38 @@ static int bmc150_accel_triggers_setup(struct iio_dev *indio_dev,
+ 	return ret;
+ }
+ 
++static struct {
++	int intr;
++	enum iio_event_type type;
++	int (*read)(struct bmc150_accel_event *event, enum iio_event_info info,
++		    int *val, int *val2);
++	int (*write)(struct bmc150_accel_event *event, enum iio_event_info info,
++		     int val, int val2);
++} bmc150_accel_events_info[BMC150_ACCEL_EVENTS] = {
 +	{
-+		.intr = 2,
-+		.type = IIO_EV_TYPE_FIFO_FULL,
++		.intr = 1,
++		.type = IIO_EV_TYPE_ROC,
++		.read = bmc150_accel_event_roc_read,
++		.write = bmc150_accel_event_roc_write,
 +	},
-+	{
-+		.intr = 3,
-+		.type = IIO_EV_TYPE_FIFO_WATERMARK,
-+		.read = bmc150_accel_event_watermark_read,
-+		.write = bmc150_accel_event_watermark_write,
-+	},
++};
 +
- };
++static void bmc150_accel_events_setup(struct iio_dev *indio_dev,
++				      struct bmc150_accel_data *data)
++{
++	int i;
++
++	for (i = 0; i < BMC150_ACCEL_EVENTS; i++) {
++		int intr = bmc150_accel_events_info[i].intr;
++
++		data->events[i].intr = &data->interrupts[intr];
++		data->events[i].data = data;
++		data->events[i].type = bmc150_accel_events_info[i].type;
++		data->events[i].read = bmc150_accel_events_info[i].read;
++		data->events[i].write = bmc150_accel_events_info[i].write;
++	}
++}
++
+ static int bmc150_accel_probe(struct i2c_client *client,
+ 			      const struct i2c_device_id *id)
+ {
+@@ -1279,6 +1378,8 @@ static int bmc150_accel_probe(struct i2c_client *client,
+ 		if (ret)
+ 			return ret;
  
- static void bmc150_accel_events_setup(struct iio_dev *indio_dev,
-@@ -1460,6 +1693,7 @@ static int bmc150_accel_resume(struct device *dev)
- 	mutex_lock(&data->mutex);
- 	if (atomic_read(&data->active_intr))
- 		bmc150_accel_set_mode(data, BMC150_ACCEL_SLEEP_MODE_NORMAL, 0);
-+	bmc150_accel_fifo_mode_set(indio_dev, NULL, data->fifo_mode);
- 	mutex_unlock(&data->mutex);
- 
- 	return 0;
-@@ -1489,6 +1723,9 @@ static int bmc150_accel_runtime_resume(struct device *dev)
- 	ret = bmc150_accel_set_mode(data, BMC150_ACCEL_SLEEP_MODE_NORMAL, 0);
- 	if (ret < 0)
- 		return ret;
-+	ret = bmc150_accel_fifo_mode_set(indio_dev, NULL, data->fifo_mode);
-+	if (ret < 0)
-+		return ret;
- 
- 	sleep_val = bmc150_accel_get_startup_times(data);
- 	if (sleep_val < 20)
++		bmc150_accel_events_setup(indio_dev, data);
++
+ 		ret = iio_triggered_buffer_setup(indio_dev,
+ 						 &iio_pollfunc_store_time,
+ 						 bmc150_accel_trigger_handler,
 -- 
 1.9.1
 
