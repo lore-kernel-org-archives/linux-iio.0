@@ -1,143 +1,47 @@
-Return-Path: <vlad.dogaru@intel.com>
-Date: Mon, 17 Nov 2014 17:16:21 +0200
-From: Vlad Dogaru <vlad.dogaru@intel.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Hartmut Knaack <knaack.h@gmx.de>, IIO <linux-iio@vger.kernel.org>
-Subject: Re: [PATCH 3/3]iio:pressure:bmp280: read compensation data only at
- init
-Message-ID: <20141117151621.GF6904@vdogaru>
-References: <5452E502.6060609@gmx.de>
- <20141031114709.GC24473@vdogaru>
- <5453E00B.7080703@gmx.de>
- <545A47F0.8040808@kernel.org>
- <20141106130253.GD24473@vdogaru>
- <5461462F.5040500@gmx.de>
- <54677A0D.2090604@kernel.org>
+Return-Path: <Fabien.Proriol@jdsu.com>
+From: Fabien Proriol <Fabien.Proriol@jdsu.com>
+To: Lars-Peter Clausen <lars@metafoo.de>, Jonathan Cameron <jic23@kernel.org>,
+        Michal Simek <michal.simek@xilinx.com>,
+        "linux-iio@vger.kernel.org"
+	<linux-iio@vger.kernel.org>
+Subject: Re: [PATCH] 0001-xilinx-xadc-core-Fix-voltage-offset.patch
+Date: Mon, 17 Nov 2014 08:53:30 +0000
+Message-ID: <5469B725.8080908@jdsu.com>
+References: <545B9479.5030700@jdsu.com> <545B976D.4080303@metafoo.de>
+ <545B9EF1.8000606@jdsu.com> <545BA105.70105@metafoo.de>
+ <545BA802.5090206@jdsu.com> <54690AE5.4050900@metafoo.de>
+In-Reply-To: <54690AE5.4050900@metafoo.de>
+Content-Type: text/plain; charset="Windows-1252"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <54677A0D.2090604@kernel.org>
 List-ID: <linux-iio@vger.kernel.org>
 
-On Sat, Nov 15, 2014 at 04:06:37PM +0000, Jonathan Cameron wrote:
-> On 10/11/14 23:11, Hartmut Knaack wrote:
-> > Vlad Dogaru schrieb am 06.11.2014 14:02:
-> >> On Wed, Nov 05, 2014 at 03:53:20PM +0000, Jonathan Cameron wrote:
-> >>> On 31/10/14 19:16, Hartmut Knaack wrote:
-> >>>> Vlad Dogaru schrieb am 31.10.2014 12:47:
-> >>>>> On Fri, Oct 31, 2014 at 02:25:22AM +0100, Hartmut Knaack wrote:
-> >>>>>> Compensation data is hard coded into the sensors, so it is sufficient to just
-> >>>>>> read it once during device initialization. Therefor struct bmp280_comp should be
-> >>>>>> part of bmp280_data (since the elements of bmp280_comp_temp and
-> >>>>>> bmp280_comp_press have distinct names, they could be merged into bmp280_comp).
-> >>>>>
-> >>>>> My first version of the patch did this, but Jonathan suggested [1] that,
-> >>>>> since we're using regmap, we can rely on it for caching the calibration
-> >>>>> parameters.  I have no preference for either approach.
-> >>>>>
-> >>>> Indeed, I missed to have a closer look at that version, as I discarded it when your second or third version came out.
-> >>>> So, one question remaining is, if your implementation was, what Jonathan had in mind when he gave the hint about using the regmap cache. I mainly see the disadvantage of copying to the buffer and from there to the variables (and depending on endianness even a conversion) for every single measurement.
-> >>> Gah.  Now I have to remember what I was thinking!
-> >>>
-> >>> Anyhow, I just didn't much like the double cache of these values.
-> >>> The little endian conversions are pretty trivial...
-> >>> The code only ended up a little involved because of the
-> >>> structures to pass this data around.  Why not just have an enum saying what
-> >>> data is where and pass the buffer.  Then do the little endian on demand and
-> >>> let the compiler filter out the repeats?
-> >>>
-> >>> So combine bmp280_read_compensation_press and bmp280_compensate_press
-> >>> to something like...
-> >>> enum {
-> >>> 	P1,
-> >>> 	P2,
-> >>> 	P3,
-> >>> 	P4,
-> >>> 	P5,
-> >>> 	P6,
-> >>> 	P7,
-> >>> 	P8,
-> >>> 	P9
-> >>> }; // a rare occasion where maybe all on one line would be good ;)
-> >>>
-> >>> int bmp280_compensate_press(struct bmp280_data *data)
-> >>> {
-> >>> 	__le16 buf[BMP280_COMP_PRESS_REG_COUNT / 2];
-> >>> 	s64 var1, var2, p;
-> >>>
-> >>> 	ret = regmap_bulk_read(data->regmap, BMP280_REG_COMP_PRESS_START,
-> >>> 			       buf, BMP280_COMP_PRESS_REG_COUNT);
-> >>> 	if (ret < 0) {
-> >>> 		dev_err(&data->client->dev,
-> >>> 			"failed to read pressure calibration parameters\n");
-> >>> 		return ret;
-> >>> 	}
-> >>>
-> >>> 	var1 = ((s64) data->t_fine) - 128000;
-> >>> 	var2 = var1 * var1 * (s64) le16_to_cpu(buf[P6]);
-> >>> 	var2 = var2 + ((var1 * (s64) le16_to_cpu(buf[P5])) << 17);
-> >>> 	var2 = var2 + (((s64) le16_to_cpu(buf[P4])) << 35);
-> >>> 	var1 = ((var1 * var1 * (s64) le16_to_cpu(buf[P3])) >> 8) +
-> >>> 		((var1 * (s64) le16_to_cpu(buf[P2])) << 12);
-> >>> 	var1 = (((((s64) 1) << 47) + var1)) * ((s64) le16_to_cpu(buf[P1])) >> 33;
-> >>>
-> >>> 	if (var1 == 0)
-> >>> 		return 0;
-> >>>
-> >>> 	p = ((((s64) 1048576 - adc_press) << 31) - var2) * 3125;
-> >>> 	p = div64_s64(p, var1);
-> >>> 	var1 = (((s64) le16_to_cpu(buf[P9]) * (p >> 13) * (p >> 13)) >> 25;
-> >>> 	var2 = (((s64) le16_to_cpu[buf[P8]) * p) >> 19;
-> >>> 	p = ((p + var1 + var2) >> 8) + (((s64) le16_to_cpu(buf[P7])) << 4);
-> >>>
-> >>> 	return (u32) p;
-> >>> }
-> >>>
-> >>> Just a thought.  I was never terribly fussed about this other than disliking
-> >>> data duplication!
-> >>>>> [1] http://www.spinics.net/lists/linux-iio/msg15099.html
-> >>
-> >> I don't think the enum helps readability too much here.  At least it
-> >> doesn't help me :)
-> >>
-> >> How about reading data straight to the (packed) calibration struct and
-> >> doing the endinanness conversions inline?  Something like this:
-> >>
-> >> int bmp280_compensate_press(struct bmp280_data *data)
-> >> {
-> >> 	struct bmp280_comp_press comp;
-> >> 	s64 var1, var2, p;
-> >>
-> >> 	ret = regmap_bulk_read(data->regmap, BMP280_REG_COMP_PRESS_START,
-> >> 			       &comp, sizeof (comp));
-> >> 	if (ret < 0) {
-> >> 		dev_err(&data->client->dev,
-> >> 			"failed to read pressure calibration parameters\n");
-> >> 		return ret;
-> >> 	}
-> >>
-> >> 	var1 = ((s64) data->t_fine) - 128000;
-> >> 	var2 = var1 * var1 * (s64) le16_to_cpu(comp.dig_p6);
-> >> 	var2 = var2 + ((var1 * (s64) le16_to_cpu(comp.dig_p5)) << 17);
-> >>
-> >> 	/* etc */
-> >>
-> >> This saves us the extra copying of parameters from buffer to structure,
-> >> and is a bit more clear than indexing the buffer with enum members, IMO.
-> >>
-> >> Thanks,
-> >> Vlad
-> > I compile tested several solutions, and Jonathans' resulted in the lowest module size. Downside of course are the increased complexity of the equations introduced by the endianness conversion and that copying from regmap cache to buf costs some resources.
-> > But I think that memory footprint has a higher importance, so I slightly favor Jonathans solution.
+>From bdeab2d72a00587eac15eb91ec0820ff6d11bfe8 Mon Sep 17 00:00:00 2001
+From: Fabien Proriol <fabien.proriol@jdsu.com>
+Date: Mon, 17 Nov 2014 09:46:02 +0100
+Subject: [PATCH] iio: Fix iio_channel_read return if channel havn't info
 
-Sounds good, thanks for the input.
+iio_channel_read must return an error to avoid offset for channel
+without IIO_CHAN_INFO_OFFSET property
 
-> > Jonathan, do you like to send a patch with your solution?
-> Err. not really :) Bit snowed under so whilst I'll probably get to it one
-> day it might not be anytime soon.
-> 
-> Anyone else who happens to want to do it then feel free ;)
+Signed-off-by: Fabien Proriol <fabien.proriol@jdsu.com>
+---
+ drivers/iio/inkern.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-I'll send a patch within a day or two if no one beats me to it :)
-
-Thanks,
-Vlad
+diff --git a/drivers/iio/inkern.c b/drivers/iio/inkern.c
+index 1e8e94d..917eb00 100644
+--- a/drivers/iio/inkern.c
++++ b/drivers/iio/inkern.c
+@@ -423,6 +423,9 @@ static int iio_channel_read(struct iio_channel *chan, i=
+nt *val, int *val2,
+ 	if (val2 =3D=3D NULL)
+ 		val2 =3D &unused;
+=20
++	if(!iio_channel_has_info(chan->channel, info))
++		return -EINVAL;
++
+ 	return chan->indio_dev->info->read_raw(chan->indio_dev, chan->channel,
+ 						val, val2, info);
+ }
+--=20
+2.0.4
