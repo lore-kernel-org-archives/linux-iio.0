@@ -1,66 +1,121 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from v094114.home.net.pl ([79.96.170.134]:64584 "HELO
-	v094114.home.net.pl" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with SMTP id S1752311AbaKKXOI (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 11 Nov 2014 18:14:08 -0500
-From: "Rafael J. Wysocki" <rjw@rjwysocki.net>
-To: Lee Jones <lee.jones@linaro.org>
-Cc: Aaron Lu <aaron.lu@intel.com>, linux-acpi@vger.kernel.org,
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-	Jacob Pan <jacob.jun.pan@linux.intel.com>
-Subject: Re: [PATCH 0/3] Support PMIC operation region for CrystalCove and XPower
-Date: Wed, 12 Nov 2014 00:35:01 +0100
-Message-ID: <3052882.EdcZmghHR3@vostro.rjw.lan>
-In-Reply-To: <20141111111152.GX24004@x1>
-References: <1414735705-18366-1-git-send-email-aaron.lu@intel.com> <54616E55.80204@intel.com> <20141111111152.GX24004@x1>
+Return-Path: <richardcochran@gmail.com>
+Date: Mon, 17 Nov 2014 09:23:37 +0100
+From: Richard Cochran <richardcochran@gmail.com>
+To: Vignesh R <vigneshr@ti.com>
+Cc: Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>,
+	Mark Rutland <mark.rutland@arm.com>,
+	Ian Campbell <ijc+devicetree@hellion.org.uk>,
+	Kumar Gala <galak@codeaurora.org>,
+	Benoit Cousson <bcousson@baylibre.com>,
+	Tony Lindgren <tony@atomide.com>,
+	Russell King <linux@arm.linux.org.uk>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+	Lee Jones <lee.jones@linaro.org>,
+	Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Samuel Ortiz <sameo@linux.intel.com>, Felipe Balbi <balbi@ti.com>,
+	Brad Griffis <bgriffis@ti.com>,
+	Sanjeev Sharma <sanjeev_sharma@mentor.com>,
+	Paul Gortmaker <paul.gortmaker@windriver.com>,
+	Jan Kardell <jan.kardell@telliq.com>, devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org, linux-iio@vger.kernel.org,
+	linux-input@vger.kernel.org
+Subject: Re: [PATCH v4 2/6] input: touchscreen: ti_am335x_tsc: Remove udelay
+ in interrupt handler
+Message-ID: <20141117082337.GA3946@localhost.localdomain>
+References: <1415941651-28962-1-git-send-email-vigneshr@ti.com>
+ <1415941651-28962-3-git-send-email-vigneshr@ti.com>
+ <20141115192739.GA18766@localhost.localdomain>
+ <54697919.5030302@ti.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <54697919.5030302@ti.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-On Tuesday, November 11, 2014 11:11:52 AM Lee Jones wrote:
-> On Tue, 11 Nov 2014, Aaron Lu wrote:
-> 
-> > On 10/31/2014 02:08 PM, Aaron Lu wrote:
-> > > On Intel Baytrail-T and Baytrail-T-CR platforms, there are two customized
-> > > ACPI operation regions defined for the Power Management Integrated Circuit
-> > > device, one is for power resource handling and one is for thermal: sensor
-> > > temperature reporting, trip point setting, etc. There are different PMIC
-> > > chips used on those platforms and though each has the same two operation
-> > > regions and functionality, their implementation is different so every PMIC
-> > > will need a driver. But since their functionality is similar, some common
-> > > code is abstracted into the intel_soc_pmic_opregion.c.
-> > > 
-> > > The last version is posted here:
-> > > https://lkml.org/lkml/2014/9/8/801
-> > > 
-> > > Changes since then:
-> > > 1 Move to drivers/acpi as discussed on the above thread;
-> > > 2 Added support for XPower AXP288 PMIC operation region support;
-> > > 3 Since operation region handler can not be removed(at the moment at least),
-> > >   use bool for the two operation region driver configs instead of tristate;
-> > >   Another reason to do this is that, with Mika's MFD ACPI support patch, all
-> > >   those MFD cell devices created will have the same modalias as their parent's
-> > >   so it doesn't make much sense to compile these drivers into modules.
-> > > 
-> > > Patch 1 applies on top of Rafael's pm-next branch, and then patch 2 and
-> > > patch 3 needs merge of Lee's mfd/ib-mfd-iio-3.19 branch where the PMIC
-> > > driver XPower AXP288 and iio driver axp288_adc is located.
-> > 
-> > Since patch 2-3 are based on top of the mfd/ib-mfd-iio-3.19 branch, it
-> > would be easy to go through the mfd/ib-mfd-iio-3.19 branch.
-> > 
-> > Rafael,
-> > Can I get your ACK for the three patches?
-> > 
-> > Lee,
-> > Can you please take the series if Rafael gives it ack?
-> 
-> Yes, no problem.
+On Mon, Nov 17, 2014 at 09:57:05AM +0530, Vignesh R wrote:
+> My patches are based on v3.18rc2. I tested my patches on am335x-evm
+> using tslib.
 
-Well, since the code is going to reside mostly in drivers/acpi, I think I should
-be applying the patches and from your response it looks like you are fine with
-them.  Is that correct?
+No beaglebone + cape testing?
 
-Rafael
+> Please explain "touch is broken"? What is the behaviour of TSC?
 
+With plain v3.17 plus your series, the cursor is almost never near the
+pen. Mostly it jitters around the right hand edge.
+
+My customer had already changed the step delay (I think by trial and
+error, not sure) in order to get the cursor near the pen. I ported
+this change onto your series (see patch, below), but still the pen up
+event causes a huge cursor jump.
+
+(Again, I did solve the pen up issue, but in a totally different
+way. I never posted the fix, because I could not be sure that it would
+work on a wide variety of boards.)
+
+> Which ADC channels are being used for TSC?
+
+&tscadc {
+	status = "okay";
+	tsc {
+		ti,wires = <4>;
+		ti,x-plate-resistance = <300>;
+		ti,coordinate-readouts = <5>;
+		ti,wire-config = <0x00 0x11 0x23 0x32>;
+	};
+
+	adc {
+		ti,adc-channels = <5 6 7>;
+	};
+};
+
+So for this particular design, your series really does not help, not
+even a little. You did not test the series on many boards. I am
+concerned that this series only works on the one board you did test,
+and that it may break functionality on other people's boards.
+
+Thanks,
+Richard
+
+---
+diff --git a/drivers/input/touchscreen/ti_am335x_tsc.c b/drivers/input/touchscreen/ti_am335x_tsc.c
+index b84493f..77a4883 100644
+--- a/drivers/input/touchscreen/ti_am335x_tsc.c
++++ b/drivers/input/touchscreen/ti_am335x_tsc.c
+@@ -148,7 +148,7 @@ static void titsc_step_config(struct titsc *ts_dev)
+ 	end_step = first_step + tsc_steps;
+ 	for (i = end_step - ts_dev->coordinate_readouts; i < end_step; i++) {
+ 		titsc_writel(ts_dev, REG_STEPCONFIG(i), config);
+-		titsc_writel(ts_dev, REG_STEPDELAY(i), STEPCONFIG_OPENDLY);
++		titsc_writel(ts_dev, REG_STEPDELAY(i), STEPCONFIG_OPENDLY | STEPDELAY_SAMPLE(20));
+ 	}
+ 
+ 	config = 0;
+@@ -172,7 +172,7 @@ static void titsc_step_config(struct titsc *ts_dev)
+ 	end_step = first_step + ts_dev->coordinate_readouts;
+ 	for (i = first_step; i < end_step; i++) {
+ 		titsc_writel(ts_dev, REG_STEPCONFIG(i), config);
+-		titsc_writel(ts_dev, REG_STEPDELAY(i), STEPCONFIG_OPENDLY);
++		titsc_writel(ts_dev, REG_STEPDELAY(i), STEPCONFIG_OPENDLY | STEPDELAY_SAMPLE(20));
+ 	}
+ 
+ 	/* Make CHARGECONFIG same as IDLECONFIG */
+@@ -188,13 +188,13 @@ static void titsc_step_config(struct titsc *ts_dev)
+ 			STEPCONFIG_INP(ts_dev->inp_xp);
+ 	titsc_writel(ts_dev, REG_STEPCONFIG(end_step), config);
+ 	titsc_writel(ts_dev, REG_STEPDELAY(end_step),
+-			STEPCONFIG_OPENDLY);
++			STEPCONFIG_OPENDLY | STEPDELAY_SAMPLE(20));
+ 
+ 	end_step++;
+ 	config |= STEPCONFIG_INP(ts_dev->inp_yn);
+ 	titsc_writel(ts_dev, REG_STEPCONFIG(end_step), config);
+ 	titsc_writel(ts_dev, REG_STEPDELAY(end_step),
+-			STEPCONFIG_OPENDLY);
++			STEPCONFIG_OPENDLY | STEPDELAY_SAMPLE(20));
+ 
+ 	/* The steps end ... end - readouts * 2 + 2 and bit 0 for TS_Charge */
+ 	stepenable = 1;
