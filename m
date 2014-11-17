@@ -1,83 +1,60 @@
-Return-Path: <vigneshr@ti.com>
-Message-ID: <54697919.5030302@ti.com>
-Date: Mon, 17 Nov 2014 09:57:05 +0530
-From: Vignesh R <vigneshr@ti.com>
-MIME-Version: 1.0
-To: Richard Cochran <richardcochran@gmail.com>
-CC: Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>,
-        Mark
- Rutland <mark.rutland@arm.com>,
-        Ian Campbell <ijc+devicetree@hellion.org.uk>,
-        Kumar Gala <galak@codeaurora.org>,
-        Benoit Cousson <bcousson@baylibre.com>,
-        Tony Lindgren <tony@atomide.com>,
-        Russell King <linux@arm.linux.org.uk>,
-        Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
-        Dmitry
- Torokhov <dmitry.torokhov@gmail.com>,
-        Lee Jones <lee.jones@linaro.org>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Lars-Peter Clausen
-	<lars@metafoo.de>,
-        Peter Meerwald <pmeerw@pmeerw.net>,
-        Samuel Ortiz
-	<sameo@linux.intel.com>, Felipe Balbi <balbi@ti.com>,
-        Brad Griffis
-	<bgriffis@ti.com>,
-        Sanjeev Sharma <sanjeev_sharma@mentor.com>,
-        Paul Gortmaker
-	<paul.gortmaker@windriver.com>,
-        Jan Kardell <jan.kardell@telliq.com>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <linux-omap@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>, <linux-iio@vger.kernel.org>,
-        <linux-input@vger.kernel.org>
-Subject: Re: [PATCH v4 2/6] input: touchscreen: ti_am335x_tsc: Remove udelay
- in interrupt handler
-References: <1415941651-28962-1-git-send-email-vigneshr@ti.com> <1415941651-28962-3-git-send-email-vigneshr@ti.com> <20141115192739.GA18766@localhost.localdomain>
-In-Reply-To: <20141115192739.GA18766@localhost.localdomain>
-Content-Type: text/plain; charset="windows-1252"
+Return-Path: <daniel.baluta@intel.com>
+From: Daniel Baluta <daniel.baluta@intel.com>
+To: jic23@kernel.org
+Cc: linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH 1/2] kmx61: Use uscale instead of scale
+Date: Mon, 17 Nov 2014 15:18:35 +0200
+Message-Id: <1416230316-14511-2-git-send-email-daniel.baluta@intel.com>
+In-Reply-To: <1416230316-14511-1-git-send-email-daniel.baluta@intel.com>
+References: <1416230316-14511-1-git-send-email-daniel.baluta@intel.com>
 List-ID: <linux-iio@vger.kernel.org>
 
+This makes it easier to notice that we only use
+the micro part for scale.
 
+Signed-off-by: Daniel Baluta <daniel.baluta@intel.com>
+---
+ drivers/iio/imu/kmx61.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-On Sunday 16 November 2014 12:57 AM, Richard Cochran wrote:
-> On Fri, Nov 14, 2014 at 10:37:27AM +0530, Vignesh R wrote:
->> From: Brad Griffis <bgriffis@ti.com>
->>
->> TSC interrupt handler had udelay to avoid reporting of false pen-up
->> interrupt to user space. This patch implements workaround suggesting in
->> Advisory 1.0.31 of silicon errata for am335x, thus eliminating udelay
->> and touchscreen lag. This also improves performance of touchscreen and
->> eliminates sudden jump of cursor at touch release.
-> 
-> I back ported this series onto v3.15.1 in order to try this out on a
-> custom, beaglebone-like board. With this series, the touch is really
-> broken. (I had fixed the pen up problem in a totally different way for
-> a customer, and so I wanted to try out your solution.)
-> 
-> I will try to port the board code to a more recent kernel to try your
-> series again. With which kernel version did you test your patches?
-> 
-> And which board?
-> 
-Thanks for testing these patches.
-
-My patches are based on v3.18rc2. I tested my patches on am335x-evm
-using tslib.
-If you are encountering false pen-ups, charge-delay parameter needs to
-be tuned to your board. In some custom setups charge-delay of 0xB000
-provided better performance.
-If you are using ts_test (from tslib) for testing try
-# ts_test > /dev/null
-for better performance.
-
-Please explain "touch is broken"? What is the behaviour of TSC?
-Which ADC channels are being used for TSC?
-
-Regards
-Vignesh
-
-> Thanks,
-> Richard
-> 
-> 
+diff --git a/drivers/iio/imu/kmx61.c b/drivers/iio/imu/kmx61.c
+index 2bd77dd..e49b1cc 100644
+--- a/drivers/iio/imu/kmx61.c
++++ b/drivers/iio/imu/kmx61.c
+@@ -90,7 +90,7 @@ enum kmx61_scan {
+ };
+ 
+ static const struct {
+-	u16 scale;
++	u16 uscale;
+ 	u8 gsel0;
+ 	u8 gsel1;
+ } kmx61_scale_table[] = {
+@@ -337,13 +337,13 @@ static int kmx61_set_range(struct kmx61_data *data, int range)
+ 	return 0;
+ }
+ 
+-static int kmx61_set_scale(struct kmx61_data *data, int val)
++static int kmx61_set_scale(struct kmx61_data *data, int uscale)
+ {
+ 	int ret, i;
+ 	u8  mode;
+ 
+ 	for (i = 0; i < ARRAY_SIZE(kmx61_scale_table); i++) {
+-		if (kmx61_scale_table[i].scale == val) {
++		if (kmx61_scale_table[i].uscale == uscale) {
+ 			ret = kmx61_get_mode(data, &mode,
+ 					     KMX61_ACC | KMX61_MAG);
+ 			if (ret < 0)
+@@ -441,7 +441,7 @@ static int kmx61_read_raw(struct iio_dev *indio_dev,
+ 		switch (chan->type) {
+ 		case IIO_ACCEL:
+ 			*val = 0;
+-			*val2 = kmx61_scale_table[data->range].scale;
++			*val2 = kmx61_scale_table[data->range].uscale;
+ 			return IIO_VAL_INT_PLUS_MICRO;
+ 		case IIO_MAGN:
+ 			/* 14 bits res, 1465 microGauss per magn count */
+-- 
+1.9.1
