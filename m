@@ -1,1054 +1,818 @@
-Return-Path: <vlad.dogaru@intel.com>
-Date: Mon, 17 Nov 2014 14:27:19 +0200
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mga11.intel.com ([192.55.52.93]:26722 "EHLO mga11.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1752602AbaKQPNF (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Mon, 17 Nov 2014 10:13:05 -0500
 From: Vlad Dogaru <vlad.dogaru@intel.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: linux-iio@vger.kernel.org, pmeerw@pmeerw.net,
-	Irina Tirdea <irina.tirdea@intel.com>
-Subject: Re: [PATCH v2] iio: add driver for Freescale MMA9551L
-Message-ID: <20141117122719.GE6904@vdogaru>
-References: <1415882924-8707-1-git-send-email-vlad.dogaru@intel.com>
- <546776B3.8020703@kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <546776B3.8020703@kernel.org>
-List-ID: <linux-iio@vger.kernel.org>
+To: linux-iio@vger.kernel.org, jic23@kernel.org, mranostay@gmail.com
+Cc: Vlad Dogaru <vlad.dogaru@intel.com>
+Subject: [PATCH 2/2] iio: driver for Semtech SX9500 proximity solution
+Date: Mon, 17 Nov 2014 17:12:49 +0200
+Message-Id: <1416237169-10707-3-git-send-email-vlad.dogaru@intel.com>
+In-Reply-To: <1416237169-10707-1-git-send-email-vlad.dogaru@intel.com>
+References: <1416237169-10707-1-git-send-email-vlad.dogaru@intel.com>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Sat, Nov 15, 2014 at 03:52:19PM +0000, Jonathan Cameron wrote:
-> On 13/11/14 12:48, Vlad Dogaru wrote:
-> > Add support for Freescale MMA9551L Intelligent Motion-Sensing Platform.
-> > The driver supports raw reads for acceleration and inclination, as well
-> > as configuring an inclination rate-of-change event for a single axis.
-> > This event can be used similarly to an Android sensor Tilt event.
-> > 
-> > We restrict the inclination rate-of-change event to a single axis
-> > because of the chip's inability to aggregate multiple event bits on the
-> > same GPIO line.  Thus, if we were to let the user configure tilt events
-> > for all axes, we would use 3 of the 4 available GPIO pins.  We don't
-> > want to do that because we plan to introduce support for additional
-> > chips and features which would in turn need GPIO pins.
-> > 
-> > The specifications can be downloaded from:
-> > http://www.freescale.com/files/sensors/doc/ref_manual/MMA955xLSWRM.pdf
-> Interesting (and complex) part.
-> > 
-> > Signed-off-by: Irina Tirdea <irina.tirdea@intel.com>
-> > Signed-off-by: Vlad Dogaru <vlad.dogaru@intel.com>
-> A few comments inline.
-> 
-> As I understand the first bit of the manual, this device can be heavily
-> reprogrammed to do many things.  I think that should be made a little more
-> specific in this driver.  Chances are others will have different firmwares.
+Supports buffering, IIO events and changing sampling frequency.
 
-The datasheet says the device can be programmed with user
-'applications', as it calls them.  But these only add functionality,
-they cannot replace any preprogrammed functions.  That is made clear in
-Section 4.15, Figure 11 of the document which describes the entire
-series [1].
+Datasheet available at:
+http://www.semtech.com/images/datasheet/sx9500_ag.pdf
 
-[1] http://cache.freescale.com/files/sensors/doc/data_sheet/MMA955xL.pdf
+Signed-off-by: Vlad Dogaru <vlad.dogaru@intel.com>
+---
+ drivers/iio/proximity/Kconfig  |  10 +
+ drivers/iio/proximity/Makefile |   1 +
+ drivers/iio/proximity/sx9500.c | 752 +++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 763 insertions(+)
+ create mode 100644 drivers/iio/proximity/sx9500.c
 
-So I think it is reasonable to assume that a device identified as
-MMA9551L has the motion sensing capabilities which we expose.
+diff --git a/drivers/iio/proximity/Kconfig b/drivers/iio/proximity/Kconfig
+index a131ead..3e9bbe2 100644
+--- a/drivers/iio/proximity/Kconfig
++++ b/drivers/iio/proximity/Kconfig
+@@ -16,4 +16,14 @@ config AS3935
+ 	  To compile this driver as a module, choose M here: the
+ 	  module will be called as3935
+ 
++config SX9500
++	tristate "SX9500 Semtech proximity sensor"
++	select IIO_BUFFER
++	select IIO_TRIGGERED_BUFFER
++	select REGMAP_I2C
++	depends on I2C
++	help
++	  Say Y here to build a driver for Semtech's SX9500 capacitive
++	  proximity/button sensor.
++
+ endmenu
+diff --git a/drivers/iio/proximity/Makefile b/drivers/iio/proximity/Makefile
+index 743adee..9818dc5 100644
+--- a/drivers/iio/proximity/Makefile
++++ b/drivers/iio/proximity/Makefile
+@@ -4,3 +4,4 @@
+ 
+ # When adding new entries keep the list in alphabetical order
+ obj-$(CONFIG_AS3935)		+= as3935.o
++obj-$(CONFIG_SX9500)		+= sx9500.o
+diff --git a/drivers/iio/proximity/sx9500.c b/drivers/iio/proximity/sx9500.c
+new file mode 100644
+index 0000000..b20ba3e
+--- /dev/null
++++ b/drivers/iio/proximity/sx9500.c
+@@ -0,0 +1,752 @@
++/*
++ * Copyright (c) 2014 Intel Corporation
++ *
++ * Driver for Semtech's SX9500 capacitive proximity/button solution.
++ * Datasheet available at
++ * <http://www.semtech.com/images/datasheet/sx9500.pdf>.
++ *
++ * This program is free software; you can redistribute it and/or modify it
++ * under the terms of the GNU General Public License version 2 as published by
++ * the Free Software Foundation.
++ */
++
++#include <linux/kernel.h>
++#include <linux/slab.h>
++#include <linux/module.h>
++#include <linux/i2c.h>
++#include <linux/irq.h>
++#include <linux/acpi.h>
++#include <linux/gpio/consumer.h>
++#include <linux/regmap.h>
++
++#include <linux/iio/iio.h>
++#include <linux/iio/buffer.h>
++#include <linux/iio/sysfs.h>
++#include <linux/iio/events.h>
++#include <linux/iio/trigger.h>
++#include <linux/iio/triggered_buffer.h>
++#include <linux/iio/trigger_consumer.h>
++
++#define SX9500_DRIVER_NAME		"sx9500"
++#define SX9500_IRQ_NAME			"sx9500_event"
++#define SX9500_GPIO_NAME		"sx9500_gpio"
++
++/* Register definitions. */
++#define SX9500_REG_IRQ_SRC		0x00
++#define SX9500_REG_STAT			0x01
++#define SX9500_REG_IRQ_MSK		0x03
++
++#define SX9500_REG_PROX_CTRL0		0x06
++#define SX9500_REG_PROX_CTRL1		0x07
++#define SX9500_REG_PROX_CTRL2		0x08
++#define SX9500_REG_PROX_CTRL3		0x09
++#define SX9500_REG_PROX_CTRL4		0x0a
++#define SX9500_REG_PROX_CTRL5		0x0b
++#define SX9500_REG_PROX_CTRL6		0x0c
++#define SX9500_REG_PROX_CTRL7		0x0d
++#define SX9500_REG_PROX_CTRL8		0x0e
++
++#define SX9500_REG_SENSOR_SEL		0x20
++#define SX9500_REG_USE_MSB		0x21
++#define SX9500_REG_USE_LSB		0x22
++#define SX9500_REG_AVG_MSB		0x23
++#define SX9500_REG_AVG_LSB		0x24
++#define SX9500_REG_DIFF_MSB		0x25
++#define SX9500_REG_DIFF_LSB		0x26
++#define SX9500_REG_OFFSET_MSB		0x27
++#define SX9500_REG_OFFSET_LSB		0x28
++
++#define SX9500_REG_RESET		0x7f
++
++/* Write this to REG_RESET to do a soft reset. */
++#define SX9500_SOFT_RESET		0xde
++
++#define SX9500_SCAN_PERIOD_MASK		0x70
++
++/*
++ * These serve for identifying IRQ source in the IRQ_SRC register, and
++ * also for masking the IRQs in the IRQ_MSK register.
++ */
++#define SX9500_CLOSE_IRQ		BIT(6)
++#define SX9500_FAR_IRQ			BIT(5)
++#define SX9500_CONVDONE_IRQ		BIT(3)
++
++#define SX9500_PROXSTAT_SHIFT		4
++
++#define SX9500_NUM_CHANNELS		4
++
++struct sx9500_data {
++	struct mutex mutex;
++	struct i2c_client *client;
++	struct iio_trigger *trig;
++	struct regmap *regmap;
++	/*
++	 * Last reading of the proximity status for each channel.  We
++	 * only send an event to user space when this changes.
++	 */
++	u8 prox_stat[SX9500_NUM_CHANNELS];
++	bool event_enabled[SX9500_NUM_CHANNELS];
++	bool trigger_enabled;
++};
++
++static const struct iio_event_spec sx9500_events[] = {
++	{
++		.type = IIO_EV_TYPE_THRESH,
++		.dir = IIO_EV_DIR_EITHER,
++		.mask_separate = BIT(IIO_EV_INFO_ENABLE),
++	},
++};
++
++#define SX9500_CHANNEL(idx)					\
++	{							\
++		.type = IIO_PROXIMITY,				\
++		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),	\
++		.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_SAMP_FREQ), \
++		.indexed = 1,					\
++		.channel = idx,					\
++		.event_spec = sx9500_events,			\
++		.num_event_specs = 1,				\
++		.scan_index = idx,				\
++		.scan_type = {					\
++			.sign = 'u',				\
++			.realbits = 1,				\
++			.storagebits = 8,			\
++			.shift = 7,				\
++		},						\
++	}
++
++static const struct iio_chan_spec sx9500_channels[] = {
++	SX9500_CHANNEL(0),
++	SX9500_CHANNEL(1),
++	SX9500_CHANNEL(2),
++	SX9500_CHANNEL(3),
++	IIO_CHAN_SOFT_TIMESTAMP(4),
++};
++
++static const struct {
++	int val;
++	int val2;
++	unsigned int bits;
++} sx9500_samp_freq_table[] = {
++	{2, 500000, 0x70},
++	{3, 333333, 0x60},
++	{5, 0, 0x50},
++	{6, 666666, 0x40},
++	{8, 333333, 0x30},
++	{11, 111111, 0x20},
++	{16, 666666, 0x10},
++	{33, 333333, 0x00},
++};
++
++static const struct regmap_range sx9500_writable_reg_ranges[] = {
++	regmap_reg_range(SX9500_REG_IRQ_MSK, SX9500_REG_IRQ_MSK),
++	regmap_reg_range(SX9500_REG_PROX_CTRL0, SX9500_REG_PROX_CTRL8),
++	regmap_reg_range(SX9500_REG_SENSOR_SEL, SX9500_REG_SENSOR_SEL),
++	regmap_reg_range(SX9500_REG_OFFSET_MSB, SX9500_REG_OFFSET_LSB),
++	regmap_reg_range(SX9500_REG_RESET, SX9500_REG_RESET),
++};
++
++static const struct regmap_access_table sx9500_writeable_regs = {
++	.yes_ranges = sx9500_writable_reg_ranges,
++	.n_yes_ranges = ARRAY_SIZE(sx9500_writable_reg_ranges),
++};
++
++/*
++ * All allocated registers are readable, so we just list unallocated
++ * ones.
++ */
++static const struct regmap_range sx9500_non_readable_reg_ranges[] = {
++	regmap_reg_range(SX9500_REG_STAT + 1, SX9500_REG_STAT + 1),
++	regmap_reg_range(SX9500_REG_IRQ_MSK + 1, SX9500_REG_PROX_CTRL0 - 1),
++	regmap_reg_range(SX9500_REG_PROX_CTRL8 + 1, SX9500_REG_SENSOR_SEL - 1),
++	regmap_reg_range(SX9500_REG_OFFSET_LSB + 1, SX9500_REG_RESET - 1),
++};
++
++static const struct regmap_access_table sx9500_readable_regs = {
++	.no_ranges = sx9500_non_readable_reg_ranges,
++	.n_no_ranges = ARRAY_SIZE(sx9500_non_readable_reg_ranges),
++};
++
++static const struct regmap_range sx9500_volatile_reg_ranges[] = {
++	regmap_reg_range(SX9500_REG_IRQ_SRC, SX9500_REG_STAT),
++	regmap_reg_range(SX9500_REG_USE_MSB, SX9500_REG_OFFSET_LSB),
++	regmap_reg_range(SX9500_REG_RESET, SX9500_REG_RESET),
++};
++
++static const struct regmap_access_table sx9500_volatile_regs = {
++	.yes_ranges = sx9500_volatile_reg_ranges,
++	.n_yes_ranges = ARRAY_SIZE(sx9500_volatile_reg_ranges),
++};
++
++static const struct regmap_config sx9500_regmap_config = {
++	.reg_bits = 8,
++	.val_bits = 8,
++
++	.max_register = SX9500_REG_RESET,
++	.cache_type = REGCACHE_RBTREE,
++
++	.wr_table = &sx9500_writeable_regs,
++	.rd_table = &sx9500_readable_regs,
++	.volatile_table = &sx9500_volatile_regs,
++};
++
++static int sx9500_read_proximity(struct sx9500_data *data,
++				 const struct iio_chan_spec *chan,
++				 int *val)
++{
++	int ret;
++	unsigned int regval;
++
++	mutex_lock(&data->mutex);
++
++	ret = regmap_read(data->regmap, SX9500_REG_STAT, &regval);
++	if (ret < 0)
++		goto out;
++
++	/*
++	 * If bit is set, something is close to the sensor, so we report
++	 * 0 distance.
++	 */
++	*val = !(regval & (1 << (SX9500_PROXSTAT_SHIFT + chan->channel)));
++	ret = IIO_VAL_INT;
++
++out:
++	mutex_unlock(&data->mutex);
++
++	return ret;
++}
++
++static int sx9500_read_samp_freq(struct sx9500_data *data,
++				 int *val, int *val2)
++{
++	int i, ret;
++	unsigned int regval;
++
++	mutex_lock(&data->mutex);
++
++	ret = regmap_read(data->regmap, SX9500_REG_PROX_CTRL0, &regval);
++	if (ret < 0)
++		goto out;
++
++	ret = -EINVAL;
++	for (i = 0; i < ARRAY_SIZE(sx9500_samp_freq_table); i++)
++		if (sx9500_samp_freq_table[i].bits ==
++		    (regval & SX9500_SCAN_PERIOD_MASK)) {
++			*val = sx9500_samp_freq_table[i].val;
++			*val2 = sx9500_samp_freq_table[i].val2;
++			ret = IIO_VAL_INT_PLUS_MICRO;
++			break;
++		}
++
++out:
++	mutex_unlock(&data->mutex);
++
++	return ret;
++}
++
++static int sx9500_read_raw(struct iio_dev *indio_dev,
++			   const struct iio_chan_spec *chan,
++			   int *val, int *val2, long mask)
++{
++	struct sx9500_data *data = iio_priv(indio_dev);
++
++	switch (chan->type) {
++	case IIO_PROXIMITY:
++		switch (mask) {
++		case IIO_CHAN_INFO_RAW:
++			if (iio_buffer_enabled(indio_dev))
++				return -EBUSY;
++			return sx9500_read_proximity(data, chan, val);
++		case IIO_CHAN_INFO_SAMP_FREQ:
++			return sx9500_read_samp_freq(data, val, val2);
++		default:
++			return -EINVAL;
++		}
++	default:
++		return -EINVAL;
++	}
++}
++
++static int sx9500_set_samp_freq(struct sx9500_data *data,
++				int val, int val2)
++{
++	int i, ret, idx;
++
++	idx = -1;
++	for (i = 0; i < ARRAY_SIZE(sx9500_samp_freq_table); i++)
++		if (val == sx9500_samp_freq_table[i].val &&
++		    val2 == sx9500_samp_freq_table[i].val2) {
++			idx = i;
++			break;
++		}
++
++	if (idx == -1)
++		return -EINVAL;
++
++	mutex_lock(&data->mutex);
++
++	ret = regmap_update_bits(data->regmap, SX9500_REG_PROX_CTRL0,
++				 SX9500_SCAN_PERIOD_MASK,
++				 sx9500_samp_freq_table[idx].bits);
++
++	mutex_unlock(&data->mutex);
++
++	return ret;
++}
++
++static int sx9500_write_raw(struct iio_dev *indio_dev,
++			    const struct iio_chan_spec *chan,
++			    int val, int val2, long mask)
++{
++	struct sx9500_data *data = iio_priv(indio_dev);
++
++	switch (chan->type) {
++	case IIO_PROXIMITY:
++		switch (mask) {
++		case IIO_CHAN_INFO_SAMP_FREQ:
++			return sx9500_set_samp_freq(data, val, val2);
++		default:
++			return -EINVAL;
++		}
++	default:
++		return -EINVAL;
++	}
++}
++
++static irqreturn_t sx9500_irq_handler(int irq, void *private)
++{
++	struct iio_dev *indio_dev = private;
++	struct sx9500_data *data = iio_priv(indio_dev);
++
++	if (data->trigger_enabled)
++		iio_trigger_poll(data->trig);
++
++	/*
++	 * Even if no event is enabled, we need to wake the thread to
++	 * clear the interrupt state by reading SX9500_REG_IRQ_SRC.  It
++	 * is not possible to do that here because regmap_read takes a
++	 * mutex.
++	 */
++	return IRQ_WAKE_THREAD;
++}
++
++static irqreturn_t sx9500_irq_thread_handler(int irq, void *private)
++{
++	struct iio_dev *indio_dev = private;
++	struct sx9500_data *data = iio_priv(indio_dev);
++	int ret, chan;
++	unsigned int val;
++
++	mutex_lock(&data->mutex);
++
++	ret = regmap_read(data->regmap, SX9500_REG_IRQ_SRC, &val);
++	if (ret < 0) {
++		dev_err(&data->client->dev, "i2c transfer error in irq\n");
++		goto out;
++	}
++
++	if (!(val & (SX9500_CLOSE_IRQ | SX9500_FAR_IRQ)))
++		goto out;
++
++	ret = regmap_read(data->regmap, SX9500_REG_STAT, &val);
++	if (ret < 0) {
++		dev_err(&data->client->dev, "i2c transfer error in irq\n");
++		goto out;
++	}
++
++	val >>= SX9500_PROXSTAT_SHIFT;
++	for (chan = 0; chan < SX9500_NUM_CHANNELS; chan++) {
++		int dir;
++		u64 ev;
++		u8 new_prox = !(val & (1 << chan));
++
++		if (!data->event_enabled[chan])
++			continue;
++		if (new_prox == data->prox_stat[chan])
++			/* No change on this channel. */
++			continue;
++
++		dir = new_prox ? IIO_EV_DIR_RISING :
++			IIO_EV_DIR_FALLING;
++		ev = IIO_UNMOD_EVENT_CODE(IIO_PROXIMITY,
++					  chan,
++					  IIO_EV_TYPE_THRESH,
++					  dir);
++		iio_push_event(indio_dev, ev, iio_get_time_ns());
++		data->prox_stat[chan] = new_prox;
++	}
++
++out:
++	mutex_unlock(&data->mutex);
++
++	return IRQ_HANDLED;
++}
++
++static int sx9500_read_event_config(struct iio_dev *indio_dev,
++				    const struct iio_chan_spec *chan,
++				    enum iio_event_type type,
++				    enum iio_event_direction dir)
++{
++	struct sx9500_data *data = iio_priv(indio_dev);
++
++	if (chan->type != IIO_PROXIMITY)
++		return -EINVAL;
++	if (type != IIO_EV_TYPE_THRESH)
++		return -EINVAL;
++	if (dir != IIO_EV_DIR_EITHER)
++		return -EINVAL;
++
++	return data->event_enabled[chan->channel];
++}
++
++static int sx9500_write_event_config(struct iio_dev *indio_dev,
++				     const struct iio_chan_spec *chan,
++				     enum iio_event_type type,
++				     enum iio_event_direction dir,
++				     int state)
++{
++	struct sx9500_data *data = iio_priv(indio_dev);
++	int ret;
++	int i;
++	bool any_active;
++	unsigned int irqmask;
++
++	if (chan->type != IIO_PROXIMITY)
++		return -EINVAL;
++	if (type != IIO_EV_TYPE_THRESH)
++		return -EINVAL;
++	if (dir != IIO_EV_DIR_EITHER)
++		return -EINVAL;
++
++	mutex_lock(&data->mutex);
++
++	data->event_enabled[chan->channel] = state;
++
++	any_active = 0;
++	for (i = 0; i < SX9500_NUM_CHANNELS; i++)
++		if (data->event_enabled[chan->channel]) {
++			any_active = true;
++			break;
++		}
++
++	irqmask = SX9500_CLOSE_IRQ | SX9500_FAR_IRQ;
++	ret = regmap_update_bits(data->regmap, SX9500_REG_IRQ_MSK,
++				 irqmask, any_active ? irqmask : 0);
++
++	mutex_unlock(&data->mutex);
++
++	return ret;
++}
++
++static IIO_CONST_ATTR_SAMP_FREQ_AVAIL(
++	"2.500000 3.333333 5 6.666666 8.333333 11.111111 16.666666 33.333333");
++
++static struct attribute *sx9500_attributes[] = {
++	&iio_const_attr_sampling_frequency_available.dev_attr.attr,
++	NULL,
++};
++
++static const struct attribute_group sx9500_attribute_group = {
++	.attrs = sx9500_attributes,
++};
++
++static const struct iio_info sx9500_info = {
++	.driver_module = THIS_MODULE,
++	.attrs = &sx9500_attribute_group,
++	.read_raw = &sx9500_read_raw,
++	.write_raw = &sx9500_write_raw,
++	.read_event_config = &sx9500_read_event_config,
++	.write_event_config = &sx9500_write_event_config,
++};
++
++static int sx9500_set_trigger_state(struct iio_trigger *trig,
++				    bool state)
++{
++	struct iio_dev *indio_dev = iio_trigger_get_drvdata(trig);
++	struct sx9500_data *data = iio_priv(indio_dev);
++	int ret;
++
++	mutex_lock(&data->mutex);
++
++	ret = regmap_update_bits(data->regmap, SX9500_REG_IRQ_MSK,
++				 SX9500_CONVDONE_IRQ,
++				 state ? SX9500_CONVDONE_IRQ : 0);
++	data->trigger_enabled = state;
++
++	mutex_unlock(&data->mutex);
++
++	return ret;
++}
++
++static const struct iio_trigger_ops sx9500_trigger_ops = {
++	.set_trigger_state = sx9500_set_trigger_state,
++	.owner = THIS_MODULE,
++};
++
++static irqreturn_t sx9500_trigger_handler(int irq, void *private)
++{
++	struct iio_poll_func *pf = private;
++	struct iio_dev *indio_dev = pf->indio_dev;
++	struct sx9500_data *data = iio_priv(indio_dev);
++	u8 buf[SX9500_NUM_CHANNELS];
++	int bit, ret, i;
++	unsigned int val;
++
++	mutex_lock(&data->mutex);
++
++	ret = regmap_read(data->regmap, SX9500_REG_STAT, &val);
++	if (ret < 0)
++		goto out;
++
++	val >>= SX9500_PROXSTAT_SHIFT;
++	i = 0;
++
++	for_each_set_bit(bit, indio_dev->buffer->scan_mask,
++			 indio_dev->masklength)
++		buf[i++] = !(val & (1 << bit));
++
++	iio_push_to_buffers_with_timestamp(indio_dev, buf,
++					   iio_get_time_ns());
++
++out:
++	mutex_unlock(&data->mutex);
++
++	iio_trigger_notify_done(indio_dev->trig);
++
++	return IRQ_HANDLED;
++}
++
++struct sx9500_reg_default {
++	u8 reg;
++	u8 def;
++};
++
++static const struct sx9500_reg_default sx9500_default_regs[] = {
++	{
++		.reg = SX9500_REG_PROX_CTRL1,
++		/* Shield enabled, small range. */
++		.def = 0x43,
++	},
++	{
++		.reg = SX9500_REG_PROX_CTRL2,
++		/* x8 gain, 167kHz frequency, finest resolution. */
++		.def = 0x77,
++	},
++	{
++		.reg = SX9500_REG_PROX_CTRL3,
++		/* Doze enabled, 2x scan period doze, no raw filter. */
++		.def = 0x40,
++	},
++	{
++		.reg = SX9500_REG_PROX_CTRL4,
++		/* Average threshold. */
++		.def = 0x30,
++	},
++	{
++		.reg = SX9500_REG_PROX_CTRL5,
++		/*
++		 * Debouncer off, lowest average negative filter,
++		 * highest average postive filter.
++		 */
++		.def = 0x0f,
++	},
++	{
++		.reg = SX9500_REG_PROX_CTRL6,
++		/* Proximity detection threshold: 400 */
++		.def = 0x0e,
++	},
++	{
++		.reg = SX9500_REG_PROX_CTRL7,
++		/*
++		 * No automatic compensation, compensate each pin
++		 * independently, proximity hysteresis: 32, close
++		 * debouncer off, far debouncer off.
++		 */
++		.def = 0x00,
++	},
++	{
++		.reg = SX9500_REG_PROX_CTRL8,
++		/* No stuck timeout, no periodic compensation. */
++		.def = 0x00,
++	},
++	{
++		.reg = SX9500_REG_PROX_CTRL0,
++		/* Scan period: 30ms, all sensors enabled. */
++		.def = 0x0f,
++	},
++};
++
++static int sx9500_init_device(struct iio_dev *indio_dev)
++{
++	struct sx9500_data *data = iio_priv(indio_dev);
++	int ret, i, num_defaults;
++	unsigned int val;
++
++	ret = regmap_write(data->regmap, SX9500_REG_IRQ_MSK, 0);
++	if (ret < 0)
++		return ret;
++
++	ret = regmap_write(data->regmap, SX9500_REG_RESET,
++			   SX9500_SOFT_RESET);
++	if (ret < 0)
++		return ret;
++
++	ret = regmap_read(data->regmap, SX9500_REG_IRQ_SRC, &val);
++	if (ret < 0)
++		return ret;
++
++	num_defaults = ARRAY_SIZE(sx9500_default_regs);
++	for (i = 0; i < num_defaults; i++) {
++		ret = regmap_write(data->regmap,
++				   sx9500_default_regs[i].reg,
++				   sx9500_default_regs[i].def);
++		if (ret < 0)
++			return ret;
++	}
++
++	return 0;
++}
++
++static int sx9500_gpio_probe(struct i2c_client *client,
++			     struct sx9500_data *data)
++{
++	struct device *dev;
++	struct gpio_desc *gpio;
++	int ret;
++
++	if (!client)
++		return -EINVAL;
++
++	dev = &client->dev;
++
++	/* data ready gpio interrupt pin */
++	gpio = devm_gpiod_get_index(dev, SX9500_GPIO_NAME, 0);
++	if (IS_ERR(gpio)) {
++		dev_err(dev, "acpi gpio get index failed\n");
++		return PTR_ERR(gpio);
++	}
++
++	ret = gpiod_direction_input(gpio);
++	if (ret)
++		return ret;
++
++	ret = gpiod_to_irq(gpio);
++
++	dev_dbg(dev, "GPIO resource, no:%d irq:%d\n", desc_to_gpio(gpio), ret);
++
++	return ret;
++}
++
++static int sx9500_probe(struct i2c_client *client,
++			const struct i2c_device_id *id)
++{
++	int ret;
++	struct iio_dev *indio_dev;
++	struct sx9500_data *data;
++
++	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
++	if (indio_dev == NULL)
++		return -ENOMEM;
++
++	data = iio_priv(indio_dev);
++	data->client = client;
++	mutex_init(&data->mutex);
++	memset(data->prox_stat, 0, sizeof(data->prox_stat));
++	memset(data->event_enabled, 0, sizeof(data->event_enabled));
++	data->trigger_enabled = false;
++
++	data->regmap = devm_regmap_init_i2c(client, &sx9500_regmap_config);
++	if (IS_ERR(data->regmap))
++		return PTR_ERR(data->regmap);
++
++	sx9500_init_device(indio_dev);
++
++	indio_dev->dev.parent = &client->dev;
++	indio_dev->name = id->name;
++	indio_dev->channels = sx9500_channels;
++	indio_dev->num_channels = ARRAY_SIZE(sx9500_channels);
++	indio_dev->info = &sx9500_info;
++	indio_dev->modes = INDIO_DIRECT_MODE;
++
++	if (client->irq <= 0)
++		client->irq = sx9500_gpio_probe(client, data);
++
++	if (client->irq > 0) {
++		ret = devm_request_threaded_irq(&client->dev, client->irq,
++				sx9500_irq_handler, sx9500_irq_thread_handler,
++				IRQF_TRIGGER_FALLING | IRQF_ONESHOT,
++				SX9500_IRQ_NAME, indio_dev);
++		if (ret < 0)
++			return ret;
++
++		data->trig = devm_iio_trigger_alloc(&client->dev,
++				"%s-dev%d", indio_dev->name, indio_dev->id);
++		if (!data->trig)
++			return -ENOMEM;
++
++		data->trig->dev.parent = &client->dev;
++		data->trig->ops = &sx9500_trigger_ops;
++		iio_trigger_set_drvdata(data->trig, indio_dev);
++
++		ret = iio_trigger_register(data->trig);
++		if (ret)
++			return ret;
++	}
++
++	ret = iio_triggered_buffer_setup(indio_dev, NULL,
++					 sx9500_trigger_handler, NULL);
++	if (ret < 0)
++		goto out_trigger_unregister;
++
++	ret = iio_device_register(indio_dev);
++	if (ret < 0)
++		goto out_buffer_cleanup;
++
++	return 0;
++
++out_buffer_cleanup:
++	iio_triggered_buffer_cleanup(indio_dev);
++out_trigger_unregister:
++	iio_trigger_unregister(data->trig);
++
++	return ret;
++}
++
++static int sx9500_remove(struct i2c_client *client)
++{
++	struct iio_dev *indio_dev = i2c_get_clientdata(client);
++	struct sx9500_data *data = iio_priv(indio_dev);
++
++	iio_device_unregister(indio_dev);
++	iio_triggered_buffer_cleanup(indio_dev);
++	iio_trigger_unregister(data->trig);
++
++	return 0;
++}
++
++static const struct acpi_device_id sx9500_acpi_match[] = {
++	{"SSX9500", 0}, /* TODO is there a better ACPI handle? */
++	{ },
++};
++MODULE_DEVICE_TABLE(acpi, sx9500_acpi_match);
++
++static const struct i2c_device_id sx9500_id[] = {
++	{"sx9500", 0},
++	{}
++};
++MODULE_DEVICE_TABLE(i2c, sx9500_id);
++
++static struct i2c_driver sx9500_driver = {
++	.driver = {
++		.name	= SX9500_DRIVER_NAME,
++		.acpi_match_table = ACPI_PTR(sx9500_acpi_match),
++	},
++	.probe		= sx9500_probe,
++	.remove		= sx9500_remove,
++	.id_table	= sx9500_id,
++};
++module_i2c_driver(sx9500_driver);
++
++MODULE_AUTHOR("Vlad Dogaru <vlad.dogaru@intel.com>");
++MODULE_DESCRIPTION("Driver for Semtech SX9500 proximity sensor");
++MODULE_LICENSE("GPL v2");
+-- 
+1.9.1
 
-> Mind you I'm not sure how we make this clear!
-> 
-> > ---
-> > Changes since v1:
-> >  - invert logic in mma9551_set_device_state().  Setting the sleep bit to 1 puts
-> >    the device into sleep.
-> >  - do not use scan_index for channels, since we don't support buffering.
-> >  - style fixes as suggested by Peter.
-> > 
-> >  drivers/iio/accel/Kconfig   |  10 +
-> >  drivers/iio/accel/Makefile  |   1 +
-> >  drivers/iio/accel/mma9551.c | 976 ++++++++++++++++++++++++++++++++++++++++++++
-> >  3 files changed, 987 insertions(+)
-> >  create mode 100644 drivers/iio/accel/mma9551.c
-> > 
-> > diff --git a/drivers/iio/accel/Kconfig b/drivers/iio/accel/Kconfig
-> > index 9b9be87..d80616d 100644
-> > --- a/drivers/iio/accel/Kconfig
-> > +++ b/drivers/iio/accel/Kconfig
-> > @@ -105,4 +105,14 @@ config KXCJK1013
-> >  	  To compile this driver as a module, choose M here: the module will
-> >  	  be called kxcjk-1013.
-> >  
-> > +config MMA9551
-> > +	tristate "Freescale MMA9551L Intelligent Motion-Sensing Platform Driver"
-> > +	depends on I2C
-> > +	help
-> > +	  Say yes here to build support for the Freescale MMA9551L
-> > +	  Intelligent Motion-Sensing Platform Driver.
-> > +
-> > +	  To compile this driver as a module, choose M here: the module
-> > +	  will be called mma9551.
-> > +
-> >  endmenu
-> > diff --git a/drivers/iio/accel/Makefile b/drivers/iio/accel/Makefile
-> > index a593996..de5b9cb 100644
-> > --- a/drivers/iio/accel/Makefile
-> > +++ b/drivers/iio/accel/Makefile
-> > @@ -9,6 +9,7 @@ obj-$(CONFIG_HID_SENSOR_ACCEL_3D) += hid-sensor-accel-3d.o
-> >  obj-$(CONFIG_KXCJK1013) += kxcjk-1013.o
-> >  obj-$(CONFIG_KXSD9)	+= kxsd9.o
-> >  obj-$(CONFIG_MMA8452)	+= mma8452.o
-> > +obj-$(CONFIG_MMA9551)	+= mma9551.o
-> >  
-> >  obj-$(CONFIG_IIO_ST_ACCEL_3AXIS) += st_accel.o
-> >  st_accel-y := st_accel_core.o
-> > diff --git a/drivers/iio/accel/mma9551.c b/drivers/iio/accel/mma9551.c
-> > new file mode 100644
-> > index 0000000..24512f2
-> > --- /dev/null
-> > +++ b/drivers/iio/accel/mma9551.c
-> > @@ -0,0 +1,976 @@
-> > +/*
-> > + * Freescale MMA9551L Intelligent Motion-Sensing Platform driver
-> > + * Copyright (c) 2014, Intel Corporation.
-> > + *
-> > + * This program is free software; you can redistribute it and/or modify it
-> > + * under the terms and conditions of the GNU General Public License,
-> > + * version 2, as published by the Free Software Foundation.
-> > + *
-> > + * This program is distributed in the hope it will be useful, but WITHOUT
-> > + * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-> > + * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
-> > + * more details.
-> > + */
-> > +
-> > +#include <linux/module.h>
-> > +#include <linux/i2c.h>
-> > +#include <linux/interrupt.h>
-> > +#include <linux/slab.h>
-> > +#include <linux/acpi.h>
-> > +#include <linux/delay.h>
-> > +#include <linux/gpio/consumer.h>
-> > +#include <linux/iio/iio.h>
-> > +#include <linux/iio/sysfs.h>
-> > +#include <linux/iio/events.h>
-> > +
-> > +#define MMA9551_DRV_NAME		"mma9551"
-> > +#define MMA9551_IRQ_NAME		"mma9551_event"
-> > +#define MMA9551_GPIO_NAME		"mma9551_int"
-> > +#define MMA9551_GPIO_COUNT		4
-> > +
-> > +/* Applications IDs */
-> > +#define MMA9551_APPID_VERSION		0x00
-> > +#define MMA9551_APPID_GPIO		0x03
-> > +#define MMA9551_APPID_AFE		0x06
-> > +#define MMA9551_APPID_TILT		0x0B
-> > +#define MMA9551_APPID_SLEEP_WAKE	0x12
-> > +#define MMA9551_APPID_RESET		0x17
-> > +#define MMA9551_APPID_NONE		0xff
-> > +
-> > +/* Command masks for mailbox write command */
-> > +#define MMA9551_CMD_READ_VERSION_INFO	0x00
-> > +#define MMA9551_CMD_READ_CONFIG		0x10
-> > +#define MMA9551_CMD_WRITE_CONFIG	0x20
-> > +#define MMA9551_CMD_READ_STATUS		0x30
-> > +
-> > +enum mma9551_gpio_pin {
-> > +	mma9551_gpio6 = 0,
-> > +	mma9551_gpio7,
-> > +	mma9551_gpio8,
-> > +	mma9551_gpio9,
-> > +	mma9551_gpio_max = mma9551_gpio9,
-> > +};
-> > +
-> > +/* Mailbox read command */
-> > +#define MMA9551_RESPONSE_COCO		BIT(7)
-> > +
-> > +/* Error-Status codes returned in mailbox read command */
-> > +#define MMA9551_MCI_ERROR_NONE			0x00
-> > +#define MMA9551_MCI_ERROR_PARAM			0x04
-> > +#define MMA9551_MCI_INVALID_COUNT		0x19
-> > +#define MMA9551_MCI_ERROR_COMMAND		0x1C
-> > +#define MMA9551_MCI_ERROR_INVALID_LENGTH	0x21
-> > +#define MMA9551_MCI_ERROR_FIFO_BUSY		0x22
-> > +#define MMA9551_MCI_ERROR_FIFO_ALLOCATED	0x23
-> > +#define MMA9551_MCI_ERROR_FIFO_OVERSIZE		0x24
-> > +
-> > +/* GPIO Application */
-> > +#define MMA9551_GPIO_POL_MSB		0x08
-> > +#define MMA9551_GPIO_POL_LSB		0x09
-> > +
-> > +/* Sleep/Wake application */
-> > +#define MMA9551_SLEEP_CFG		0x06
-> > +#define MMA9551_SLEEP_CFG_SNCEN		BIT(0)
-> > +#define MMA9551_SLEEP_CFG_SCHEN		BIT(2)
-> > +
-> > +/* AFE application */
-> > +#define MMA9551_AFE_X_ACCEL_REG		0x00
-> > +#define MMA9551_AFE_Y_ACCEL_REG		0x02
-> > +#define MMA9551_AFE_Z_ACCEL_REG		0x04
-> > +
-> > +/* Tilt application (inclination in IIO terms). */
-> > +#define MMA9551_TILT_XZ_ANG_REG		0x00
-> > +#define MMA9551_TILT_YZ_ANG_REG		0x01
-> > +#define MMA9551_TILT_XY_ANG_REG		0x02
-> > +#define MMA9551_TILT_XY_QUAD_SHIFT	0
-> > +#define MMA9551_TILT_YZ_QUAD_SHIFT	2
-> > +#define MMA9551_TILT_XZ_QUAD_SHIFT	4
-> > +#define MMA9551_TILT_ANGFLG		BIT(7)
-> > +#define MMA9551_TILT_QUAD_REG		0x03
-> > +#define MMA9551_TILT_CFG_REG		0x01
-> > +#define MMA9551_TILT_ANG_THRESH_MASK	0x0f
-> > +
-> > +/* Tilt events are always mapped to this pin. */
-> > +#define MMA9551_TILT_GPIO_PIN		mma9551_gpio9
-> > +
-> > +/*
-> > + * A response is composed of:
-> > + * - control registers: MB0-3
-> > + * - data registers: MB4-31
-> > + *
-> > + * A request is composed of:
-> > + * - mbox to write to (always 0)
-> > + * - control registers: MB1-4
-> > + * - data registers: MB5-31
-> > + */
-> > +#define MMA9551_MAILBOX_CTRL_REGS	4
-> > +#define MMA9551_MAX_MAILBOX_DATA_REGS	28
-> > +#define MMA9551_MAILBOX_REGS		32
-> > +
-> > +#define MMA9551_I2C_READ_RETRIES	5
-> > +#define MMA9551_I2C_READ_DELAY	50	/* us */
-> > +
-> > +struct mma9551_mbox_request {
-> > +	u8 start_mbox;		/* Always 0. */
-> > +	u8 app_id;
-> > +	/*
-> > +	 * See Section 5.3.1 of the MMA955xL Software Reference Manual.
-> > +	 *
-> > +	 * Bit 7: reserved, always 0
-> > +	 * Bits 6-4: command
-> > +	 * Bits 3-0: upper bits of register offset
-> > +	 */
-> > +	u8 cmd_off;
-> > +	u8 lower_off;
-> > +	u8 nbytes;
-> > +	u8 buf[MMA9551_MAX_MAILBOX_DATA_REGS - 1];
-> > +} __packed;
-> > +
-> > +struct mma9551_mbox_response {
-> > +	u8 app_id;
-> > +	/*
-> > +	 * See Section 5.3.3 of the MMA955xL Software Reference Manual.
-> > +	 *
-> > +	 * Bit 7: COCO
-> > +	 * Bits 6-0: Error code.
-> > +	 */
-> > +	u8 coco_err;
-> > +	u8 nbytes;
-> > +	u8 req_bytes;
-> > +	u8 buf[MMA9551_MAX_MAILBOX_DATA_REGS];
-> > +} __packed;
-> > +
-> > +struct mma9551_version_info {
-> > +	__be32 device_id;
-> > +	u8 rom_version[2];
-> > +	u8 fw_version[2];
-> > +	u8 hw_version[2];
-> > +	u8 fw_build[2];
-> > +};
-> > +
-> > +struct mma9551_data {
-> > +	struct i2c_client *client;
-> > +	struct mutex mutex;
-> > +	/*
-> > +	 * At most one inclination ROC event may be active at a given
-> > +	 * time.  We add this restriction because each such event would
-> > +	 * take up a GPIO line.  The MMA955 has 4 GPIO lines, but using
-> > +	 * 3 of them for inclination detection is not very useful.
-> We do have the OR modifiers for exactly this type of usage.  A bit fiddly
-> here where where any combinations can be enabled, but you could have
-> the 3 enables then create events with the modifiers
-> IIO_MOD_X_OR_Y, IIO_MOD_X_OR_Z, IIO_MOD_Y_OR_Z, IIO_MOD_X_OR_Y_OR_Z as
-> appropriate...  Requires userspace to correctly handle this slightly
-> odd case however!
-> 
-> Ah. I've just reread your intro.  It won't agregate events on a line.
-> With care you could still handle a larger set of possible events
-> than actually used as long as you can on the fly reallocate what a
-> pin is being used for.  We did this at one time for Analog's adis
-> parts where they allow 2 events out of a whole set of options. 
-> Trick was to have a least recently set approach which would use
-> up the available events then drop off the oldest one if another was
-> requested.  Would that work here?
-
-We have read the data sheet for the series again [1] and it turns out
-the pedometer device does not have any gesture sensing capabilities.  So
-it will not be possible to do both step and tilt detection with a 9553L.
-Bearing that in mind, we can now use three GPIO lines of the 9551L for
-tilt sensing.  No tricks needed :)
-
-[1] http://cache.freescale.com/files/sensors/doc/data_sheet/MMA955xL.pdf
-
-> > +	 *
-> > +	 * If none of the inclination ROC events are active, this
-> > +	 * variable has a value of IIO_NO_MOD.
-> > +	 */
-> > +	enum iio_modifier active_incli_event;
-> > +};
-> > +
-> > +static int mma9551_transfer(struct i2c_client *client,
-> > +			    u8 app_id, u8 command, u16 offset,
-> > +			    u8 *inbytes, int num_inbytes,
-> > +			    u8 *outbytes, int num_outbytes)
-> > +{
-> > +	struct mma9551_mbox_request req;
-> > +	struct mma9551_mbox_response rsp;
-> > +	struct i2c_msg in, out;
-> > +	u8 req_len, err_code;
-> > +	int ret;
-> > +	int retries;
-> > +
-> > +	if (offset >= 1 << 12) {
-> > +		dev_err(&client->dev, "register offset too large\n");
-> > +		return -EINVAL;
-> > +	}
-> > +
-> > +	req_len = 1 + MMA9551_MAILBOX_CTRL_REGS + num_inbytes;
-> > +	req.start_mbox = 0;
-> > +	req.app_id = app_id;
-> > +	req.cmd_off = command | (offset >> 8);
-> > +	req.lower_off = offset;
-> > +
-> > +	if (command == MMA9551_CMD_WRITE_CONFIG)
-> > +		req.nbytes = num_inbytes;
-> > +	else
-> > +		req.nbytes = num_outbytes;
-> > +	if (num_inbytes)
-> > +		memcpy(req.buf, inbytes, num_inbytes);
-> > +
-> > +	out.addr = client->addr;
-> > +	out.flags = 0;
-> > +	out.len = req_len;
-> > +	out.buf = (u8 *)&req;
-> > +
-> > +	ret = i2c_transfer(client->adapter, &out, 1);
-> > +	if (ret < 0) {
-> > +		dev_err(&client->dev, "i2c write failed\n");
-> > +		return ret;
-> > +	}
-> > +
-> > +	retries = MMA9551_I2C_READ_RETRIES;
-> > +	do {
-> > +		udelay(MMA9551_I2C_READ_DELAY);
-> > +
-> > +		in.addr = client->addr;
-> > +		in.flags = I2C_M_RD;
-> > +		in.len = sizeof(rsp);
-> > +		in.buf = (u8 *)&rsp;
-> > +
-> > +		ret = i2c_transfer(client->adapter, &in, 1);
-> > +		if (ret < 0) {
-> > +			dev_err(&client->dev, "i2c read failed\n");
-> > +			return ret;
-> > +		}
-> > +
-> > +		if (rsp.coco_err & MMA9551_RESPONSE_COCO)
-> > +			break;
-> > +	} while (--retries > 0);
-> > +
-> > +	if (retries == 0) {
-> > +		dev_err(&client->dev,
-> > +			"timed out while waiting for command response\n");
-> > +		return -ETIMEDOUT;
-> > +	}
-> > +
-> > +	if (rsp.app_id != app_id) {
-> > +		dev_err(&client->dev,
-> > +			"app_id mismatch in response got %02x expected %02x\n",
-> > +			rsp.app_id, app_id);
-> > +		return -EINVAL;
-> > +	}
-> > +
-> > +	err_code = rsp.coco_err & ~MMA9551_RESPONSE_COCO;
-> > +	if (err_code != MMA9551_MCI_ERROR_NONE) {
-> > +		dev_err(&client->dev, "read returned error %x\n", err_code);
-> > +		return -EINVAL;
-> > +	}
-> > +
-> > +	if (rsp.nbytes != rsp.req_bytes) {
-> > +		dev_err(&client->dev,
-> > +			"output length mismatch got %d expected %d\n",
-> > +			rsp.nbytes, num_outbytes);
-> > +		return -EINVAL;
-> > +	}
-> > +
-> > +	if (num_outbytes)
-> > +		memcpy(outbytes, rsp.buf, num_outbytes);
-> > +
-> > +	return 0;
-> > +}
-> > +
-> > +static int mma9551_read_config_byte(struct i2c_client *client, u8 app_id,
-> > +				    u16 reg, u8 *val)
-> > +{
-> > +	return mma9551_transfer(client, app_id, MMA9551_CMD_READ_CONFIG,
-> > +				reg, NULL, 0, val, 1);
-> > +}
-> > +
-> > +static int mma9551_write_config_byte(struct i2c_client *client, u8 app_id,
-> > +				     u16 reg, u8 val)
-> > +{
-> > +	return mma9551_transfer(client, app_id, MMA9551_CMD_WRITE_CONFIG, reg,
-> > +				&val, 1, NULL, 0);
-> > +}
-> > +
-> > +static int mma9551_read_status_byte(struct i2c_client *client, u8 app_id,
-> > +				    u16 reg, u8 *val)
-> > +{
-> > +	return mma9551_transfer(client, app_id, MMA9551_CMD_READ_STATUS,
-> > +				reg, NULL, 0, val, 1);
-> > +}
-> > +
-> > +static int mma9551_read_status_word(struct i2c_client *client, u8 app_id,
-> > +				    u16 reg, u16 *val)
-> > +{
-> > +	int ret;
-> > +	__be16 v;
-> > +
-> > +	ret = mma9551_transfer(client, app_id, MMA9551_CMD_READ_STATUS,
-> > +			       reg, NULL, 0, (u8 *)&v, 2);
-> > +	*val = be16_to_cpu(v);
-> > +
-> > +	return ret;
-> > +}
-> > +
-> > +static int mma9551_update_config_bits(struct i2c_client *client, u8 app_id,
-> > +				      u8 reg, u8 mask, u8 val)
-> > +{
-> > +	int ret;
-> > +	u8 tmp, orig;
-> > +
-> > +	ret = mma9551_read_config_byte(client, app_id, reg, &orig);
-> > +	if (ret < 0)
-> > +		return ret;
-> > +
-> > +	tmp = orig & ~mask;
-> > +	tmp |= val & mask;
-> > +
-> > +	if (tmp == orig)
-> > +		return 0;
-> > +
-> > +	return mma9551_write_config_byte(client, app_id, reg, tmp);
-> > +}
-> > +
-> > +/*
-> > + * The polarity parameter is described in section 6.2.2, page 66, of the
-> > + * Software Reference Manual.  Basically, polarity=0 means the interrupt
-> > + * line has the same value as the selected bit, while polarity=1 means
-> > + * the line is inverted.
-> > + */
-> > +static int mma9551_gpio_config(struct i2c_client *client,
-> > +			       enum mma9551_gpio_pin pin,
-> > +			       u8 app_id, u8 bitnum, int polarity)
-> > +{
-> > +	u8 reg, pol_mask, pol_val;
-> > +	int ret;
-> > +
-> > +	if (pin > mma9551_gpio_max) {
-> > +		dev_err(&client->dev, "bad GPIO pin\n");
-> > +		return -EINVAL;
-> > +	}
-> > +
-> > +	/*
-> > +	 * Pin 6 is configured by regs 0x00 and 0x01, pin 7 by 0x02 and
-> > +	 * 0x03, and so on.
-> > +	 */
-> > +	reg = pin * 2;
-> > +
-> > +	ret = mma9551_write_config_byte(client, MMA9551_APPID_GPIO,
-> > +					reg, app_id);
-> > +	if (ret < 0) {
-> > +		dev_err(&client->dev, "error setting GPIO app_id\n");
-> > +		return ret;
-> > +	}
-> > +
-> > +	ret = mma9551_write_config_byte(client, MMA9551_APPID_GPIO,
-> > +					reg + 1, bitnum);
-> > +	if (ret < 0) {
-> > +		dev_err(&client->dev, "error setting GPIO bit number\n");
-> > +		return ret;
-> > +	}
-> > +
-> > +	switch (pin) {
-> > +	case mma9551_gpio6:
-> > +		reg = MMA9551_GPIO_POL_LSB;
-> > +		pol_mask = 1 << 6;
-> > +		break;
-> > +	case mma9551_gpio7:
-> > +		reg = MMA9551_GPIO_POL_LSB;
-> > +		pol_mask = 1 << 7;
-> > +		break;
-> > +	case mma9551_gpio8:
-> > +		reg = MMA9551_GPIO_POL_MSB;
-> > +		pol_mask = 1 << 0;
-> > +		break;
-> > +	case mma9551_gpio9:
-> > +		reg = MMA9551_GPIO_POL_MSB;
-> > +		pol_mask = 1 << 1;
-> > +		break;
-> > +	}
-> > +	pol_val = polarity ? pol_mask : 0;
-> > +
-> > +	ret = mma9551_update_config_bits(client, MMA9551_APPID_GPIO, reg,
-> > +					 pol_mask, pol_val);
-> > +	if (ret < 0)
-> > +		dev_err(&client->dev, "error setting GPIO polarity\n");
-> > +
-> > +	return ret;
-> > +}
-> > +
-> > +static int mma9551_read_version(struct i2c_client *client)
-> > +{
-> > +	struct mma9551_version_info info;
-> > +	int ret;
-> > +
-> > +	ret = mma9551_transfer(client, MMA9551_APPID_VERSION, 0x00, 0x00,
-> > +			       NULL, 0, (u8 *)&info, sizeof(info));
-> > +	if (ret < 0)
-> > +		return ret;
-> > +
-> > +	dev_info(&client->dev, "Device ID 0x%x, firmware version %02x.%02x\n",
-> > +		 be32_to_cpu(info.device_id), info.fw_version[0],
-> > +		 info.fw_version[1]);
-> > +
-> > +	return 0;
-> > +}
-> > +
-> > +/*
-> > + * Use 'false' as the second parameter to cause the device to enter
-> > + * sleep.
-> > + */
-> > +static int mma9551_set_device_state(struct i2c_client *client,
-> > +				    bool enable)
-> > +{
-> > +	return mma9551_update_config_bits(client, MMA9551_APPID_SLEEP_WAKE,
-> > +			  MMA9551_SLEEP_CFG,
-> > +			  MMA9551_SLEEP_CFG_SNCEN,
-> > +			  enable ? 0 : MMA9551_SLEEP_CFG_SNCEN);
-> > +}
-> > +
-> > +static int mma9551_read_incli_chan(struct i2c_client *client,
-> > +				   const struct iio_chan_spec *chan,
-> > +				   int *val)
-> > +{
-> > +	u8 quad_shift, quad_mask, angle, quadrant;
-> > +	u16 reg_addr;
-> > +	int ret;
-> > +
-> > +	switch (chan->channel2) {
-> > +	case IIO_MOD_X:
-> > +		reg_addr = MMA9551_TILT_YZ_ANG_REG;
-> > +		quad_shift = MMA9551_TILT_YZ_QUAD_SHIFT;
-> > +		break;
-> > +	case IIO_MOD_Y:
-> > +		reg_addr = MMA9551_TILT_XZ_ANG_REG;
-> > +		quad_shift = MMA9551_TILT_XZ_QUAD_SHIFT;
-> > +		break;
-> > +	case IIO_MOD_Z:
-> > +		reg_addr = MMA9551_TILT_XY_ANG_REG;
-> > +		quad_shift = MMA9551_TILT_XY_QUAD_SHIFT;
-> > +		break;
-> > +	default:
-> > +		return -EINVAL;
-> > +	}
-> > +
-> > +	ret = mma9551_read_status_byte(client, MMA9551_APPID_TILT,
-> > +				       reg_addr, &angle);
-> > +	if (ret < 0)
-> > +		return ret;
-> > +
-> > +	ret = mma9551_read_status_byte(client, MMA9551_APPID_TILT,
-> > +				       MMA9551_TILT_QUAD_REG, &quadrant);
-> > +	if (ret < 0)
-> > +		return ret;
-> > +
-> > +	angle &= ~MMA9551_TILT_ANGFLG;
-> > +	quad_mask = 0x03 << quad_shift;
-> > +	quadrant = (quadrant & quad_mask) >> quad_shift;
-> > +
-> > +	if (quadrant == 1 || quadrant == 3)
-> > +		*val = 90 * (quadrant + 1) - angle;
-> > +	else
-> > +		*val = angle + 90 * quadrant;
-> > +
-> > +	return IIO_VAL_INT;
-> > +}
-> > +
-> > +static int mma9551_read_accel_chan(struct i2c_client *client,
-> > +				   const struct iio_chan_spec *chan,
-> > +				   int *val, int *val2)
-> > +{
-> > +	u16 reg_addr;
-> > +	s16 raw_accel;
-> > +	int ret;
-> > +
-> > +	switch (chan->channel2) {
-> > +	case IIO_MOD_X:
-> > +		reg_addr = MMA9551_AFE_X_ACCEL_REG;
-> > +		break;
-> > +	case IIO_MOD_Y:
-> > +		reg_addr = MMA9551_AFE_Y_ACCEL_REG;
-> > +		break;
-> > +	case IIO_MOD_Z:
-> > +		reg_addr = MMA9551_AFE_Z_ACCEL_REG;
-> > +		break;
-> > +	default:
-> > +		return -EINVAL;
-> > +	}
-> > +
-> > +	ret = mma9551_read_status_word(client, MMA9551_APPID_AFE,
-> > +				       reg_addr, &raw_accel);
-> > +	if (ret < 0)
-> > +		return ret;
-> > +
-> > +	*val = raw_accel;
-> > +
-> > +	return IIO_VAL_INT;
-> > +}
-> > +
-> > +static int mma9551_read_raw(struct iio_dev *indio_dev,
-> > +			    struct iio_chan_spec const *chan,
-> > +			    int *val, int *val2, long mask)
-> > +{
-> > +	struct mma9551_data *data = iio_priv(indio_dev);
-> > +	int ret;
-> > +
-> > +	switch (mask) {
-> > +	case IIO_CHAN_INFO_PROCESSED:
-> > +		switch (chan->type) {
-> > +		case IIO_INCLI:
-> > +			mutex_lock(&data->mutex);
-> > +			ret = mma9551_read_incli_chan(data->client,
-> > +						      chan, val);
-> > +			mutex_unlock(&data->mutex);
-> > +			return ret;
-> > +		default:
-> > +			return -EINVAL;
-> > +		}
-> > +	case IIO_CHAN_INFO_RAW:
-> > +		switch (chan->type) {
-> > +		case IIO_ACCEL:
-> > +			mutex_lock(&data->mutex);
-> > +			ret = mma9551_read_accel_chan(data->client,
-> > +						      chan, val, val2);
-> > +			mutex_unlock(&data->mutex);
-> > +			return ret;
-> > +		default:
-> > +			return -EINVAL;
-> > +		}
-> > +	case IIO_CHAN_INFO_SCALE:
-> > +		switch (chan->type) {
-> > +		case IIO_ACCEL:
-> > +			*val = 0;
-> > +			*val2 = 2440;
-> > +			return IIO_VAL_INT_PLUS_MICRO;
-> > +		default:
-> > +			return -EINVAL;
-> > +		}
-> > +	default:
-> > +		return -EINVAL;
-> > +	}
-> > +}
-> > +
-> > +static int mma9551_read_event_config(struct iio_dev *indio_dev,
-> > +				     const struct iio_chan_spec *chan,
-> > +				     enum iio_event_type type,
-> > +				     enum iio_event_direction dir)
-> > +{
-> > +	struct mma9551_data *data = iio_priv(indio_dev);
-> > +
-> > +	switch (chan->type) {
-> > +	case IIO_INCLI:
-> > +		return data->active_incli_event == chan->channel2;
-> > +	default:
-> > +		return -EINVAL;
-> > +	}
-> > +}
-> > +
-> > +static int mma9551_config_incli_event(struct iio_dev *indio_dev,
-> > +				      enum iio_modifier axis,
-> > +				      int state)
-> > +{
-> > +	struct mma9551_data *data = iio_priv(indio_dev);
-> > +	int ret;
-> > +
-> > +	if (state == 1 && data->active_incli_event == axis)
-> > +		return 0;
-> > +	if (state == 0 && data->active_incli_event != axis)
-> > +		return 0;
-> > +
-> > +	if (state == 1 && data->active_incli_event != IIO_NO_MOD) {
-> > +		dev_err(&data->client->dev,
-> > +			"only one inclination rate-of-change event may be active at any moment\n");
-> > +		return -EBUSY;
-> > +	}
-> > +
-> > +	/*
-> > +	 * Right now we are sure that the requested operation can be
-> > +	 * completed without conflict, i.e. either an event can be
-> > +	 * safely activated, or the active one will be deactivated.
-> > +	 */
-> > +	if (state == 0) {
-> > +		data->active_incli_event = IIO_NO_MOD;
-> > +
-> > +		ret = mma9551_gpio_config(data->client, MMA9551_TILT_GPIO_PIN,
-> > +					  MMA9551_APPID_NONE, 0, 0);
-> > +		if (ret < 0)
-> > +			return ret;
-> > +	} else {
-> > +		int bitnum;
-> > +
-> > +		/* Bit 7 of each angle register holds the angle flag. */
-> > +		switch (axis) {
-> > +		case IIO_MOD_X:
-> > +			bitnum = 7 + 8 * MMA9551_TILT_YZ_ANG_REG;
-> > +			break;
-> > +		case IIO_MOD_Y:
-> > +			bitnum = 7 + 8 * MMA9551_TILT_XZ_ANG_REG;
-> > +			break;
-> > +		case IIO_MOD_Z:
-> > +			bitnum = 7 + 8 * MMA9551_TILT_XY_ANG_REG;
-> > +			break;
-> > +		default:
-> > +			return -EINVAL;
-> > +		}
-> > +
-> > +		ret = mma9551_gpio_config(data->client, MMA9551_TILT_GPIO_PIN,
-> > +					  MMA9551_APPID_TILT, bitnum, 0);
-> > +		if (ret < 0)
-> > +			return ret;
-> > +
-> > +		data->active_incli_event = axis;
-> > +	}
-> > +
-> > +	return ret;
-> > +}
-> > +
-> > +static int mma9551_write_event_config(struct iio_dev *indio_dev,
-> > +				      const struct iio_chan_spec *chan,
-> > +				      enum iio_event_type type,
-> > +				      enum iio_event_direction dir,
-> > +				      int state)
-> > +{
-> > +	struct mma9551_data *data = iio_priv(indio_dev);
-> > +	int ret;
-> > +
-> > +	switch (chan->type) {
-> > +	case IIO_INCLI:
-> > +		mutex_lock(&data->mutex);
-> > +		ret = mma9551_config_incli_event(indio_dev,
-> > +						 chan->channel2, state);
-> > +		mutex_unlock(&data->mutex);
-> > +		return ret;
-> > +	default:
-> > +		return -EINVAL;
-> > +	}
-> > +}
-> > +
-> > +static int mma9551_write_event_value(struct iio_dev *indio_dev,
-> > +				     const struct iio_chan_spec *chan,
-> > +				     enum iio_event_type type,
-> > +				     enum iio_event_direction dir,
-> > +				     enum iio_event_info info,
-> > +				     int val, int val2)
-> > +{
-> > +	struct mma9551_data *data = iio_priv(indio_dev);
-> > +	int ret;
-> > +
-> > +	switch (chan->type) {
-> > +	case IIO_INCLI:
-> > +		if (val2 != 0 || val < 1 || val > 10)
-> > +			return -EINVAL;
-> > +		mutex_lock(&data->mutex);
-> > +		ret = mma9551_update_config_bits(data->client,
-> > +						 MMA9551_APPID_TILT,
-> > +						 MMA9551_TILT_CFG_REG,
-> > +						 MMA9551_TILT_ANG_THRESH_MASK,
-> > +						 val);
-> > +		mutex_unlock(&data->mutex);
-> > +		return ret;
-> > +	default:
-> > +		return -EINVAL;
-> > +	}
-> > +}
-> > +
-> > +static int mma9551_read_event_value(struct iio_dev *indio_dev,
-> > +				    const struct iio_chan_spec *chan,
-> > +				    enum iio_event_type type,
-> > +				    enum iio_event_direction dir,
-> > +				    enum iio_event_info info,
-> > +				    int *val, int *val2)
-> > +{
-> > +	struct mma9551_data *data = iio_priv(indio_dev);
-> > +	int ret;
-> > +	u8 tmp;
-> > +
-> > +	switch (chan->type) {
-> > +	case IIO_INCLI:
-> > +		mutex_lock(&data->mutex);
-> > +		ret = mma9551_read_config_byte(data->client,
-> > +					       MMA9551_APPID_TILT,
-> > +					       MMA9551_TILT_CFG_REG, &tmp);
-> > +		mutex_unlock(&data->mutex);
-> > +		if (ret < 0)
-> > +			return ret;
-> > +		*val = tmp & MMA9551_TILT_ANG_THRESH_MASK;
-> > +		*val2 = 0;
-> > +		return IIO_VAL_INT;
-> Do the units of this match those of the processed inclination channels
-> below?
-
-ABI documents inclination channels as showing degrees.  This agrees with
-the device datasheet, which exposes a degree value in the range 0..90
-and a quadrant 0..3.
-
-> > +	default:
-> > +		return -EINVAL;
-> > +	}
-> > +}
-> > +
-> > +static const struct iio_event_spec mma9551_incli_event = {
-> > +	.type = IIO_EV_TYPE_ROC,
-> > +	.dir = IIO_EV_DIR_RISING,
-> > +	.mask_separate = BIT(IIO_EV_INFO_ENABLE),
-> > +	.mask_shared_by_type = BIT(IIO_EV_INFO_VALUE),
-> > +};
-> > +
-> > +#define MMA9551_ACCEL_CHANNEL(axis) {				\
-> > +	.type = IIO_ACCEL,					\
-> > +	.modified = 1,						\
-> > +	.channel2 = axis,					\
-> > +	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),		\
-> > +	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),	\
-> > +}
-> > +
-> > +#define MMA9551_INCLI_CHANNEL(axis) {				\
-> > +	.type = IIO_INCLI,					\
-> > +	.modified = 1,						\
-> > +	.channel2 = axis,					\
-> > +	.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED),	\
-> > +	.event_spec = &mma9551_incli_event,			\
-> > +	.num_event_specs = 1,					\
-> > +}
-> > +
-> > +static const struct iio_chan_spec mma9551_channels[] = {
-> > +	MMA9551_ACCEL_CHANNEL(IIO_MOD_X),
-> > +	MMA9551_ACCEL_CHANNEL(IIO_MOD_Y),
-> > +	MMA9551_ACCEL_CHANNEL(IIO_MOD_Z),
-> > +
-> > +	MMA9551_INCLI_CHANNEL(IIO_MOD_X),
-> > +	MMA9551_INCLI_CHANNEL(IIO_MOD_Y),
-> > +	MMA9551_INCLI_CHANNEL(IIO_MOD_Z),
-> > +};
-> > +
-> > +static const struct iio_info mma9551_info = {
-> > +	.driver_module = THIS_MODULE,
-> > +	.read_raw = mma9551_read_raw,
-> > +	.read_event_config = mma9551_read_event_config,
-> > +	.write_event_config = mma9551_write_event_config,
-> > +	.read_event_value = mma9551_read_event_value,
-> > +	.write_event_value = mma9551_write_event_value,
-> > +};
-> > +
-> > +static irqreturn_t mma9551_event_handler(int irq, void *private)
-> > +{
-> > +	struct iio_dev *indio_dev = private;
-> > +	struct mma9551_data *data = iio_priv(indio_dev);
-> > +	int ret;
-> > +	u16 reg;
-> > +	u8 val;
-> > +
-> > +	mutex_lock(&data->mutex);
-> > +
-> > +	switch (data->active_incli_event) {
-> > +	case IIO_MOD_X:
-> > +		reg = MMA9551_TILT_YZ_ANG_REG;
-> > +		break;
-> > +	case IIO_MOD_Y:
-> > +		reg = MMA9551_TILT_XZ_ANG_REG;
-> > +		break;
-> > +	case IIO_MOD_Z:
-> > +		reg = MMA9551_TILT_XY_ANG_REG;
-> > +		break;
-> > +	default:
-> > +		dev_err(&data->client->dev,
-> > +			"got interrupt, but no active inclination event configured\n");
-> > +		goto out;
-> > +	}
-> > +
-> > +	/*
-> > +	 * Read the angle even though we don't use it, otherwise we
-> > +	 * won't get any further interrupts.
-> > +	 */
-> > +	ret = mma9551_read_status_byte(data->client, MMA9551_APPID_TILT,
-> > +				       reg, &val);
-> > +	if (ret < 0) {
-> > +		dev_err(&data->client->dev,
-> > +			"error %d reading tilt register in IRQ\n", ret);
-> > +		goto out;
-> > +	}
-> > +
-> > +	iio_push_event(indio_dev,
-> > +		       IIO_MOD_EVENT_CODE(IIO_INCLI, 0,
-> > +					  data->active_incli_event,
-> > +					  IIO_EV_TYPE_ROC,
-> > +					  IIO_EV_DIR_RISING),
-> > +		       iio_get_time_ns());
-> > +
-> > +out:
-> > +	mutex_unlock(&data->mutex);
-> > +
-> > +	return IRQ_HANDLED;
-> > +}
-> > +
-> > +static int mma9551_init(struct mma9551_data *data)
-> > +{
-> > +	int ret;
-> > +
-> > +	ret = mma9551_read_version(data->client);
-> > +	if (ret)
-> > +		return ret;
-> > +
-> > +	/* Power on chip and enable doze mode. */
-> > +	ret = mma9551_update_config_bits(data->client,
-> > +			 MMA9551_APPID_SLEEP_WAKE,
-> > +			 MMA9551_SLEEP_CFG,
-> > +			 MMA9551_SLEEP_CFG_SCHEN | MMA9551_SLEEP_CFG_SNCEN,
-> > +			 MMA9551_SLEEP_CFG_SCHEN);
-> > +	if (ret < 0)
-> > +		return ret;
-> > +
-> > +	return 0;
-> > +}
-> > +
-> > +static int mma9551_gpio_probe(struct iio_dev *indio_dev)
-> > +{
-> > +	struct gpio_desc *gpio;
-> > +	int i, ret, irq;
-> > +	struct mma9551_data *data = iio_priv(indio_dev);
-> > +	struct device *dev = &data->client->dev;
-> > +
-> > +	for (i = 0; i < MMA9551_GPIO_COUNT; i++) {
-> > +		gpio = devm_gpiod_get_index(dev, MMA9551_GPIO_NAME, i);
-> > +		if (IS_ERR(gpio)) {
-> > +			dev_err(dev, "acpi gpio get index failed\n");
-> > +			return PTR_ERR(gpio);
-> > +		}
-> 
-> So there are four irqs?  Do any of them actually need to be GPIOs?
-> If not then they should be handled as 4 irqs and let the gpio drivers
-> sort out the direction stuff etc when the interrupt is requested.
-
-The data sheet mentions GPIO pins, but we only use them as IRQ lines.
-
-> > +
-> > +		ret = gpiod_direction_input(gpio);
-> > +		if (ret)
-> > +			return ret;
-> > +
-> > +		irq = gpiod_to_irq(gpio);
-> > +		ret = devm_request_threaded_irq(dev, irq, NULL,
-> > +				mma9551_event_handler,
-> > +				IRQF_TRIGGER_RISING | IRQF_ONESHOT,
-> > +				MMA9551_IRQ_NAME, indio_dev);
-> > +		if (ret < 0) {
-> > +			dev_err(dev, "request irq %d failed\n", irq);
-> > +			return ret;
-> > +		}
-> > +
-> > +		dev_dbg(dev, "gpio resource, no:%d irq:%d\n",
-> > +			desc_to_gpio(gpio), irq);
-> > +	}
-> > +
-> > +	return 0;
-> > +}
-> > +
-> > +static const char *mma9551_match_acpi_device(struct device *dev)
-> > +{
-> > +	const struct acpi_device_id *id;
-> > +
-> > +	id = acpi_match_device(dev->driver->acpi_match_table, dev);
-> > +	if (!id)
-> > +		return NULL;
-> > +
-> > +	return dev_name(dev);
-> > +}
-> > +
-> > +static int mma9551_probe(struct i2c_client *client,
-> > +			 const struct i2c_device_id *id)
-> > +{
-> > +	struct mma9551_data *data;
-> > +	struct iio_dev *indio_dev;
-> > +	const char *name = NULL;
-> > +	int ret;
-> > +
-> > +	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
-> > +	if (!indio_dev)
-> > +		return -ENOMEM;
-> > +
-> > +	data = iio_priv(indio_dev);
-> > +	i2c_set_clientdata(client, indio_dev);
-> > +	data->client = client;
-> > +
-> > +	if (id)
-> > +		name = id->name;
-> > +	else if (ACPI_HANDLE(&client->dev))
-> > +		name = mma9551_match_acpi_device(&client->dev);
-> > +
-> > +	if (!name)
-> 
-> How did we get here with neither of the above giving us a name?
-> I think you'd be better off giving an error than mudling on.
-
-Will do in v3.
-
-> > +		name = MMA9551_DRV_NAME;
-> > +
-> > +	ret = mma9551_init(data);
-> > +	if (ret < 0)
-> > +		return ret;
-> > +
-> > +	mutex_init(&data->mutex);
-> > +	data->active_incli_event = IIO_NO_MOD;
-> > +
-> > +	indio_dev->dev.parent = &client->dev;
-> > +	indio_dev->channels = mma9551_channels;
-> > +	indio_dev->num_channels = ARRAY_SIZE(mma9551_channels);
-> > +	indio_dev->name = name;
-> > +	indio_dev->modes = INDIO_DIRECT_MODE;
-> > +	indio_dev->info = &mma9551_info;
-> > +
-> > +	if (client->irq < 0) {
-> Hmm.  this is odd.  Either we have one irq and it's correctly provided
-> or we have 4 seperate gpio based irqs?
-
-I tried to mimic the behaviour of other drivers, although I admit I do
-not understand very well what happens :)
-
-Particularly, I've only ever tested one branch of the if, the one
-directly below, where we use the 4 GPIO pins.  Would it be acceptable if
-I removed the test entirely and just did mma9551_gpio_probe?  I will
-send a v3 that does this, along with other changes you have suggested.
-
-> > +		ret = mma9551_gpio_probe(indio_dev);
-> > +		if (ret < 0)
-> > +			return ret;
-> > +	} else {
-> > +		ret = devm_request_threaded_irq(&client->dev, client->irq,
-> > +				NULL, mma9551_event_handler,
-> > +				IRQF_TRIGGER_RISING | IRQF_ONESHOT,
-> > +				MMA9551_IRQ_NAME, indio_dev);
-> > +		if (ret < 0) {
-> > +			dev_err(&client->dev,
-> > +				"request irq %d failed\n", client->irq);
-> > +			return ret;
-> > +		}
-> > +	}
-
-Thanks for the review,
-Vlad
