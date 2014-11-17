@@ -1,36 +1,38 @@
-Return-Path: <fabf@skynet.be>
-From: Fabian Frederick <fabf@skynet.be>
-To: linux-kernel@vger.kernel.org
-Cc: Fabian Frederick <fabf@skynet.be>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	linux-iio@vger.kernel.org
-Subject: [PATCH 1/1 linux-next] iio: common: remove unnecessary sizeof(u8)
-Date: Sun, 16 Nov 2014 13:33:24 +0100
-Message-Id: <1416141204-19989-1-git-send-email-fabf@skynet.be>
+Return-Path: <vlad.dogaru@intel.com>
+From: Vlad Dogaru <vlad.dogaru@intel.com>
+To: linux-iio@vger.kernel.org,
+	jic23@kernel.org,
+	mranostay@gmail.com
+Cc: Vlad Dogaru <vlad.dogaru@intel.com>
+Subject: [PATCH 1/2] iio: rename proximity sensors in kernel config
+Date: Mon, 17 Nov 2014 17:12:48 +0200
+Message-Id: <1416237169-10707-2-git-send-email-vlad.dogaru@intel.com>
+In-Reply-To: <1416237169-10707-1-git-send-email-vlad.dogaru@intel.com>
+References: <1416237169-10707-1-git-send-email-vlad.dogaru@intel.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-sizeof(u8) is always 1.
+Up till now, there was only a single sensor in the drivers/iio/proximity
+directory, and the config subsection was called 'Lightning sensors'.
+This will no longer be true once we introduce a general-purpose
+proximity sensor.
 
-Signed-off-by: Fabian Frederick <fabf@skynet.be>
+Signed-off-by: Vlad Dogaru <vlad.dogaru@intel.com>
 ---
- drivers/iio/common/st_sensors/st_sensors_spi.c | 2 +-
+ drivers/iio/proximity/Kconfig | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/iio/common/st_sensors/st_sensors_spi.c b/drivers/iio/common/st_sensors/st_sensors_spi.c
-index 78a6a1a..5b37737 100644
---- a/drivers/iio/common/st_sensors/st_sensors_spi.c
-+++ b/drivers/iio/common/st_sensors/st_sensors_spi.c
-@@ -54,7 +54,7 @@ static int st_sensors_spi_read(struct st_sensor_transfer_buffer *tb,
- 	if (err)
- 		goto acc_spi_read_error;
+diff --git a/drivers/iio/proximity/Kconfig b/drivers/iio/proximity/Kconfig
+index 0c8cdf5..a131ead 100644
+--- a/drivers/iio/proximity/Kconfig
++++ b/drivers/iio/proximity/Kconfig
+@@ -2,7 +2,7 @@
+ # Proximity sensors
+ #
  
--	memcpy(data, tb->rx_buf, len*sizeof(u8));
-+	memcpy(data, tb->rx_buf, len);
- 	mutex_unlock(&tb->buf_lock);
- 	return len;
+-menu "Lightning sensors"
++menu "Proximity sensors"
  
+ config AS3935
+ 	tristate "AS3935 Franklin lightning sensor"
 -- 
-1.9.3
+1.9.1
