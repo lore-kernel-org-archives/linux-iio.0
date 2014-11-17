@@ -1,28 +1,87 @@
-Return-Path: <pmeerw@pmeerw.net>
-Date: Mon, 17 Nov 2014 16:25:42 +0100 (CET)
-From: Peter Meerwald <pmeerw@pmeerw.net>
-To: Vlad Dogaru <vlad.dogaru@intel.com>
-cc: linux-iio@vger.kernel.org, jic23@kernel.org, mranostay@gmail.com
-Subject: Re: [PATCH 0/2] iio: driver for Semtech SX9500
-In-Reply-To: <1416237169-10707-1-git-send-email-vlad.dogaru@intel.com>
-Message-ID: <alpine.DEB.2.02.1411171622140.3424@pmeerw.net>
-References: <1416237169-10707-1-git-send-email-vlad.dogaru@intel.com>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mout.gmx.net ([212.227.17.20]:62527 "EHLO mout.gmx.net"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1752283AbaKQWM6 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Mon, 17 Nov 2014 17:12:58 -0500
+Message-ID: <546A72E2.9060401@gmx.de>
+Date: Mon, 17 Nov 2014 23:12:50 +0100
+From: Hartmut Knaack <knaack.h@gmx.de>
 MIME-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
-List-ID: <linux-iio@vger.kernel.org>
+To: "Ivan T. Ivanov" <iivanov@mm-sol.com>
+CC: Jonathan Cameron <jic23@kernel.org>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Stanimir Varbanov <svarbanov@mm-sol.com>,
+	Angelo Compagnucci <angelo.compagnucci@gmail.com>,
+	Grant Likely <grant.likely@linaro.org>,
+	linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org, linux-arm-msm@vger.kernel.org
+Subject: Re: [PATCH v4 2/2] iio: vadc: Qualcomm SPMI PMIC voltage ADC driver
+References: <1415028270-25860-1-git-send-email-iivanov@mm-sol.com>		 <1415028270-25860-3-git-send-email-iivanov@mm-sol.com>		 <54612A0D.7020308@gmx.de> <1415694109.22935.13.camel@mm-sol.com>	 <54629026.3080002@gmx.de> <1415782511.4820.2.camel@mm-sol.com>
+In-Reply-To: <1415782511.4820.2.camel@mm-sol.com>
+Content-Type: text/plain; charset=UTF-8
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
+Ivan T. Ivanov schrieb am 12.11.2014 09:55:
+> 
+> On Tue, 2014-11-11 at 23:39 +0100, Hartmut Knaack wrote:
+>> Ivan T. Ivanov schrieb am 11.11.2014 09:21:
+>>> Hi Hartmut,
+>>>
+>>> On Mon, 2014-11-10 at 22:11 +0100, Hartmut Knaack wrote:
+>>>> Ivan T. Ivanov schrieb am 03.11.2014 16:24:
+>>>>> From: Stanimir Varbanov <svarbanov@mm-sol.com>
+>>>>>
+>>>>> The voltage ADC is peripheral of Qualcomm SPMI PMIC chips. It has
+>>>>> 15 bits resolution and register space inside PMIC accessible across
+>>>>> SPMI bus.
+>>>>>
+>>>>> The vadc driver registers itself through IIO interface.
+>>>> Reviewing again, I got the feeling that due to the complexity of adc reads (writing to 
+>>>> register
+>>>> to start conversion, waiting a decent time for the conversion to complete, reading the 
+>>>> result),
+>>>> it would be beneficial to use a mutex in vadc_read_raw or its depending functions.
+>>>
+>>> Hm, yes, but there is such a nice info_exist_lock :-) in core functions,
+>>> which in practice serve the same purpose.
+>> I seem to miss that. Please point me in the right direction.
+> 
+> I am referring to info_exist_lock mutex part of struct iio_dev. 
+> It protects all operations inkern.c, no?
+> 
+Good point, thanks for helping me there.
+>>>>
+>>>>> +
+>>>>> +       ret = of_property_read_u32(node, "reg", &res);
+>>>> For u16, there would be of_property_read_u16().
+>>>>> +       if (ret < 0)
+>>>>> +       return -ENODEV;
+>>>> Just return ret here?
+>>>
+>>> I am usually trying to follow these recommendations[1]. In practice driver
+>>> core cares only for EPROBE_DEFER, ENODEV and ENXIO, while of_property_read_u32()
+>>> can return ENODATA and EOVERFLOW, which did't not make sense for the core.
+>> Please point me in the right direction on this one, too. It is pretty common to pass error codes 
+>> up, as it is also mentioned in [1].
+> 
+> Yes, I know that is common to just pass error codes up, but in this case it did't 
+> make too much sense, I think. Also take a look at realy_probe() and line 343.
+This doesn't convince me. Actually, within the probe_failed part, it just doesn't care about ENODEV and ENXIO as long as debug messages are disabled (which apart from some developers, is default for the vast majority of devices). For all other error codes, it will at least print an info or warning about what's going wrong (and that can be a lot of help for debugging).
+> 
+>> Yet, this thread in [1] seems more like a draft to me, as Greg K-H wrote in the end: "Fair 
+>> enough, care to respin this and send it out to me for review?"
+> 
+> 
+> 
+> Yes, but it make sense to me.
+> 
+> Regards,
+> Ivan
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> 
 
-> The device does not estimate distance, it only outputs a single bit which
-> indicates proximity.  We use 0 to mean that an object is close and 1 otherwise,
-> sort of an uncalibrated distance.  From what I understand in the ABI
-> specification, this is allowed.
-
-perhaps the input subsystem would be a better fit for this driver/device?
-what is it typically used for?
-
-regards, p.
-
--- 
-
-Peter Meerwald
-+43-664-2444418 (mobile)
