@@ -1,97 +1,61 @@
-Return-Path: <lee.jones@linaro.org>
-Date: Tue, 18 Nov 2014 15:24:43 +0000
-From: Lee Jones <lee.jones@linaro.org>
-To: Jacob Pan <jacob.jun.pan@linux.intel.com>
-Cc: LKML <linux-kernel@vger.kernel.org>, IIO <linux-iio@vger.kernel.org>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Carlo Caione <carlo@caione.org>,
-	Samuel Ortiz <sameo@linux.intel.com>,
-	Ramakrishna Pallala <ramakrishna.pallala@intel.com>,
-	Todd Brandt <todd.e.brandt@linux.intel.com>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	Rafael Wysocki <rafael.j.wysocki@intel.com>,
-	Hartmut Knaack <knaack.h@gmx.de>
-Subject: Re: [PATCH 2/3] mfd/axp20x: avoid irq numbering collision
-Message-ID: <20141118152443.GA13792@x1>
-References: <1415734210-5657-1-git-send-email-jacob.jun.pan@linux.intel.com>
- <1415734210-5657-3-git-send-email-jacob.jun.pan@linux.intel.com>
+Return-Path: <octavian.purdila@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-In-Reply-To: <1415734210-5657-3-git-send-email-jacob.jun.pan@linux.intel.com>
+In-Reply-To: <20141118134907.B4DF940375@saturn.retrosnub.co.uk>
+References: <1416246966-3083-1-git-send-email-octavian.purdila@intel.com>
+	<1416246966-3083-9-git-send-email-octavian.purdila@intel.com>
+	<20141118134907.B4DF940375@saturn.retrosnub.co.uk>
+Date: Tue, 18 Nov 2014 17:31:09 +0200
+Message-ID: <CAE1zotK0nwjJkhXCx27Q8wn8RrGyLKx-BtZc7eHr=EGz2mKb5A@mail.gmail.com>
+Subject: Re: [RFC 8/8] iio: bmc150: add support for hardware fifo
+From: Octavian Purdila <octavian.purdila@intel.com>
+To: jic23@kernel.org
+Cc: linux-iio@vger.kernel.org,
+	Srinivas Pandruvada <srinivas.pandruvada@intel.com>
+Content-Type: text/plain; charset=UTF-8
 List-ID: <linux-iio@vger.kernel.org>
 
-On Tue, 11 Nov 2014, Jacob Pan wrote:
+On Tue, Nov 18, 2014 at 3:49 PM,  <jic23@kernel.org> wrote:
+> Octavian Purdila writes:
+>>
+>> This patch adds support for hardware fifo. Fifo and stream mode are
+>> supported as well as fifo-full and fifo-watermark events.
+>> Signed-off-by: Octavian Purdila <octavian.purdila@intel.com>
+>
+> A few minor bits inline.  The implementation seems fine, I am just
+> unconvinced that the user interface is the best way to go.
+>
 
-> IRQ numbers in axp20x devices are defined with high-order bit first
-> in each IRQ enable/status registers. On Intel platforms it is more
-> common to number IRQs with least significant bit first. Therefore,
-> sharing IRQ# between the two is very difficult. Since AXP288 is a
-> customized PMIC for Intel platform and the amount of shared IRQs are
-> very small, we use separate IRQ numbering. This also fixes collision
-> and a duplicate in WBTO interrupt.
-> 
-> e.g. For the 16 interrupts controlled in IRQ enabled registers 1 & 2,
-> on axp20x for ARM, the PMIC local IRQ numbers and register bits are
-> mapped as:
-> IRQ#:  0  1  2  3  4  5  6  7      8  9 10 11 12 13 14 15
-> ---------------------------------------------------------
-> ARM:   7  6  5  4  3  2  1  0      7  6  5  4  3  2  1  0
-> Intel: 0  1  2  3  4  5  6  7      0  1  2  3  4  5  6  7
-> 
-> Signed-off-by: Todd Brandt <todd.e.brandt@linux.intel.com>
-> Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
-> ---
->  drivers/mfd/axp20x.c | 18 +++++++++---------
->  1 file changed, 9 insertions(+), 9 deletions(-)
+Of course, I didn't expect to get the right interface :) This was
+suppose to be just code support for discussing it (the interface).
 
-Applied, thanks.
+>> +
+>> +       if (!data->timestamp)
+>> +               data->timestamp = iio_get_time_ns();
+>> +
+>> +       tstamp = data->timestamp - count * sample_freq;
+>
+>
+> Hmm... These are likely to be less than accurate...
+>
 
-> diff --git a/drivers/mfd/axp20x.c b/drivers/mfd/axp20x.c
-> index daf3c8d..0a8fcd9 100644
-> --- a/drivers/mfd/axp20x.c
-> +++ b/drivers/mfd/axp20x.c
-> @@ -183,21 +183,21 @@ static const struct regmap_irq axp20x_regmap_irqs[] = {
->  
->  /* some IRQs are compatible with axp20x models */
->  static const struct regmap_irq axp288_regmap_irqs[] = {
-> -	INIT_REGMAP_IRQ(AXP20X, VBUS_REMOVAL,           0, 2),
-> -	INIT_REGMAP_IRQ(AXP20X, VBUS_PLUGIN,            0, 3),
-> -	INIT_REGMAP_IRQ(AXP20X, VBUS_OVER_V,            0, 4),
-> +	INIT_REGMAP_IRQ(AXP288, VBUS_FALL,              0, 2),
-> +	INIT_REGMAP_IRQ(AXP288, VBUS_RISE,              0, 3),
-> +	INIT_REGMAP_IRQ(AXP288, OV,                     0, 4),
->  
-> -	INIT_REGMAP_IRQ(AXP20X, CHARG_DONE,             1, 2),
-> -	INIT_REGMAP_IRQ(AXP20X, CHARG,                  1, 3),
-> +	INIT_REGMAP_IRQ(AXP288, DONE,                   1, 2),
-> +	INIT_REGMAP_IRQ(AXP288, CHARGING,               1, 3),
->  	INIT_REGMAP_IRQ(AXP288, SAFE_QUIT,              1, 4),
->  	INIT_REGMAP_IRQ(AXP288, SAFE_ENTER,             1, 5),
-> -	INIT_REGMAP_IRQ(AXP20X, BATT_REMOVAL,           1, 6),
-> -	INIT_REGMAP_IRQ(AXP20X, BATT_PLUGIN,            1, 7),
-> +	INIT_REGMAP_IRQ(AXP288, ABSENT,                 1, 6),
-> +	INIT_REGMAP_IRQ(AXP288, APPEND,                 1, 7),
->  
->  	INIT_REGMAP_IRQ(AXP288, QWBTU,                  2, 0),
->  	INIT_REGMAP_IRQ(AXP288, WBTU,                   2, 1),
->  	INIT_REGMAP_IRQ(AXP288, QWBTO,                  2, 2),
-> -	INIT_REGMAP_IRQ(AXP288, WBTU,                   2, 3),
-> +	INIT_REGMAP_IRQ(AXP288, WBTO,                   2, 3),
->  	INIT_REGMAP_IRQ(AXP288, QCBTU,                  2, 4),
->  	INIT_REGMAP_IRQ(AXP288, CBTU,                   2, 5),
->  	INIT_REGMAP_IRQ(AXP288, QCBTO,                  2, 6),
-> @@ -215,7 +215,7 @@ static const struct regmap_irq axp288_regmap_irqs[] = {
->  	INIT_REGMAP_IRQ(AXP288, POKS,                   4, 4),
->  	INIT_REGMAP_IRQ(AXP288, POKN,                   4, 5),
->  	INIT_REGMAP_IRQ(AXP288, POKP,                   4, 6),
-> -	INIT_REGMAP_IRQ(AXP20X, TIMER,                  4, 7),
-> +	INIT_REGMAP_IRQ(AXP288, TIMER,                  4, 7),
->  
->  	INIT_REGMAP_IRQ(AXP288, MV_CHNG,                5, 0),
->  	INIT_REGMAP_IRQ(AXP288, BC_USB_CHNG,            5, 1),
+Yes, especially for fifo mode (for stream should be close).
+Unfortunately the hardware doesn't store any sort of timestamp in the
+buffer, so any ideas of how can we improve this?
 
--- 
-Lee Jones
-Linaro STMicroelectronics Landing Team Lead
-Linaro.org │ Open source software for ARM SoCs
-Follow Linaro: Facebook | Twitter | Blog
+>> +static int bmc150_accel_fifo_mode_set(struct iio_dev *indio_dev,
+>> +                                     const struct iio_chan_spec *chan,
+>> +                                     unsigned int mode)
+>> +{
+>> +       struct bmc150_accel_data *data = iio_priv(indio_dev);
+>> +       int ret;
+>> +       u8 val;
+>> +
+>> +       switch (mode) {
+>> +       case 0:
+>
+> Some defines and a local enum should get rid of the magic numbers here.
+
+You're right, I'll update that.
+
+Thanks for taking the time to look at these patches Jonathan, I know
+that you are very busy.
