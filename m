@@ -1,36 +1,31 @@
-Return-Path: <daniel.baluta@gmail.com>
-MIME-Version: 1.0
-Sender: daniel.baluta@gmail.com
-In-Reply-To: <545E0E92.4080503@kernel.org>
-References: <1415276952-19712-1-git-send-email-daniel.baluta@intel.com>
-	<545E0E92.4080503@kernel.org>
-Date: Sat, 8 Nov 2014 16:16:44 +0200
-Message-ID: <CAEnQRZBwPUWZnu6xBGxfu2sSSbZJG+5VciC1W80=yFoHeTtZvw@mail.gmail.com>
-Subject: Re: [PATCH] iio: imu: Add support for Kionix KMX61 sensor
-From: Daniel Baluta <daniel.baluta@intel.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Daniel Baluta <daniel.baluta@intel.com>,
-	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+Return-Path: <srinivas.pandruvada@linux.intel.com>
+From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+To: knaack.h@gmx.de,
+	jic23@kernel.org
+Cc: linux-iio@vger.kernel.org,
 	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-Content-Type: text/plain; charset=UTF-8
+Subject: [PATCH v1 0/2] iio: imu: inv_mpu6050: Add i2c mux for by pass
+Date: Tue, 18 Nov 2014 09:53:02 -0800
+Message-Id: <1416333184-1367-1-git-send-email-srinivas.pandruvada@linux.intel.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-On Sat, Nov 8, 2014 at 2:37 PM, Jonathan Cameron <jic23@kernel.org> wrote:
-> On 06/11/14 12:29, Daniel Baluta wrote:
->> Minimal implementation for KMX61 6-axis accelerometer/magnetometer. It exports
->> raw accel/magn readings together with scale and sampling frequency.
->>
->> Datasheet will be available at:
->> http://www.kionix.com/6-axis-accelerometer-magnetometer/kmx61
->>
->> Signed-off-by: Daniel Baluta <daniel.baluta@intel.com>
-> Very nice.  Only one comment inline.
->
-> There are some possible race conditions (I think) based on functions
-> doing read, modify, write.  Ideally they may want protecting with
-> a mutex.
+v1
+Some minor formatting fix mostly suggested by Hartmut
+fail probe if mux create fails
+function parameter type matching i2c struct
 
-You are right. I will analyze all possible race conditions and send v2.
+v0
+base version
 
-Thanks.
+Srinivas Pandruvada (2):
+  iio: imu: inv_mpu6050: Add i2c mux for by pass
+  iio: magnetometer: ak8975: remove INVN6500 enumeration
+
+ drivers/iio/imu/inv_mpu6050/Kconfig        |   1 +
+ drivers/iio/imu/inv_mpu6050/inv_mpu_core.c | 168 +++++++++++++++++++++++++++--
+ drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h  |   9 ++
+ drivers/iio/magnetometer/ak8975.c          |   1 -
+ 4 files changed, 172 insertions(+), 7 deletions(-)
+
+-- 
+1.9.3
