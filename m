@@ -1,73 +1,98 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-qg0-f44.google.com ([209.85.192.44]:39965 "EHLO
-	mail-qg0-f44.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754565AbaKKLL6 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 11 Nov 2014 06:11:58 -0500
-Received: by mail-qg0-f44.google.com with SMTP id q107so6971181qgd.3
-        for <linux-iio@vger.kernel.org>; Tue, 11 Nov 2014 03:11:57 -0800 (PST)
-Date: Tue, 11 Nov 2014 11:11:52 +0000
+Return-Path: <lee.jones@linaro.org>
+Date: Tue, 18 Nov 2014 14:30:05 +0000
 From: Lee Jones <lee.jones@linaro.org>
-To: Aaron Lu <aaron.lu@intel.com>
-Cc: "Rafael J. Wysocki" <rjw@rjwysocki.net>,
-	linux-acpi@vger.kernel.org, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Jacob Pan <jacob.jun.pan@linux.intel.com>
-Subject: Re: [PATCH 0/3] Support PMIC operation region for CrystalCove and
- XPower
-Message-ID: <20141111111152.GX24004@x1>
-References: <1414735705-18366-1-git-send-email-aaron.lu@intel.com>
- <54616E55.80204@intel.com>
+To: Vignesh R <vigneshr@ti.com>
+Cc: Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>,
+	Mark Rutland <mark.rutland@arm.com>,
+	Ian Campbell <ijc+devicetree@hellion.org.uk>,
+	Kumar Gala <galak@codeaurora.org>,
+	Benoit Cousson <bcousson@baylibre.com>,
+	Tony Lindgren <tony@atomide.com>,
+	Russell King <linux@arm.linux.org.uk>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>, richardcochran@gmail.com,
+	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+	Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Samuel Ortiz <sameo@linux.intel.com>, Felipe Balbi <balbi@ti.com>,
+	Brad Griffis <bgriffis@ti.com>,
+	Sanjeev Sharma <sanjeev_sharma@mentor.com>,
+	Paul Gortmaker <paul.gortmaker@windriver.com>,
+	Jan Kardell <jan.kardell@telliq.com>, devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org, linux-iio@vger.kernel.org,
+	linux-input@vger.kernel.org
+Subject: Re: [PATCH v4 3/6] mfd: ti_am335x_tscadc: Remove unwanted
+ reg_se_cache save
+Message-ID: <20141118143005.GF24004@x1>
+References: <1415941651-28962-1-git-send-email-vigneshr@ti.com>
+ <1415941651-28962-4-git-send-email-vigneshr@ti.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
-In-Reply-To: <54616E55.80204@intel.com>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+In-Reply-To: <1415941651-28962-4-git-send-email-vigneshr@ti.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-On Tue, 11 Nov 2014, Aaron Lu wrote:
+On Fri, 14 Nov 2014, Vignesh R wrote:
 
-> On 10/31/2014 02:08 PM, Aaron Lu wrote:
-> > On Intel Baytrail-T and Baytrail-T-CR platforms, there are two customized
-> > ACPI operation regions defined for the Power Management Integrated Circuit
-> > device, one is for power resource handling and one is for thermal: sensor
-> > temperature reporting, trip point setting, etc. There are different PMIC
-> > chips used on those platforms and though each has the same two operation
-> > regions and functionality, their implementation is different so every PMIC
-> > will need a driver. But since their functionality is similar, some common
-> > code is abstracted into the intel_soc_pmic_opregion.c.
-> > 
-> > The last version is posted here:
-> > https://lkml.org/lkml/2014/9/8/801
-> > 
-> > Changes since then:
-> > 1 Move to drivers/acpi as discussed on the above thread;
-> > 2 Added support for XPower AXP288 PMIC operation region support;
-> > 3 Since operation region handler can not be removed(at the moment at least),
-> >   use bool for the two operation region driver configs instead of tristate;
-> >   Another reason to do this is that, with Mika's MFD ACPI support patch, all
-> >   those MFD cell devices created will have the same modalias as their parent's
-> >   so it doesn't make much sense to compile these drivers into modules.
-> > 
-> > Patch 1 applies on top of Rafael's pm-next branch, and then patch 2 and
-> > patch 3 needs merge of Lee's mfd/ib-mfd-iio-3.19 branch where the PMIC
-> > driver XPower AXP288 and iio driver axp288_adc is located.
+> In one shot mode, sequencer automatically disables all enabled steps at
+> the end of each cycle. (both ADC steps and TSC steps) Hence these steps
+> need not be saved in reg_se_cache for clearing these steps at a later
+> stage.
+> Also, when ADC wakes up Sequencer should not be busy executing any of the
+> config steps except for the charge step. Previously charge step was 1 ADC
+> clock cycle and hence it was ignored.
 > 
-> Since patch 2-3 are based on top of the mfd/ib-mfd-iio-3.19 branch, it
-> would be easy to go through the mfd/ib-mfd-iio-3.19 branch.
-> 
-> Rafael,
-> Can I get your ACK for the three patches?
-> 
-> Lee,
-> Can you please take the series if Rafael gives it ack?
+> Signed-off-by: Vignesh R <vigneshr@ti.com>
+> ---
+>  drivers/mfd/ti_am335x_tscadc.c       | 7 +++++--
+>  include/linux/mfd/ti_am335x_tscadc.h | 1 +
+>  2 files changed, 6 insertions(+), 2 deletions(-)
 
-Yes, no problem.
+Code looks better now.
 
-> > Aaron Lu (3):
-> >   ACPI / pmic_opregion: support PMIC operation region for CrystalCove
-> >   ACPI / pmic_opregion: support PMIC operation region for XPower AXP288
-> >   ACPI / pmic_opregion: AXP288: support virtual GPIO in ACPI table
-> > 
-> 
+Acked-by: Lee Jones <lee.jones@linaro.org>
+
+What's the plan for this series?
+
+> diff --git a/drivers/mfd/ti_am335x_tscadc.c b/drivers/mfd/ti_am335x_tscadc.c
+> index d877e777cce6..110038859a8d 100644
+> --- a/drivers/mfd/ti_am335x_tscadc.c
+> +++ b/drivers/mfd/ti_am335x_tscadc.c
+> @@ -86,8 +86,12 @@ static void am335x_tscadc_need_adc(struct ti_tscadc_dev *tsadc)
+>  		spin_lock_irq(&tsadc->reg_lock);
+>  		finish_wait(&tsadc->reg_se_wait, &wait);
+>  
+> +		/*
+> +		 * Sequencer should either be idle or
+> +		 * busy applying the charge step.
+> +		 */
+>  		reg = tscadc_readl(tsadc, REG_ADCFSM);
+> -		WARN_ON(reg & SEQ_STATUS);
+> +		WARN_ON((reg & SEQ_STATUS) && !(reg & CHARGE_STEP));
+>  		tsadc->adc_waiting = false;
+>  	}
+>  	tsadc->adc_in_use = true;
+> @@ -96,7 +100,6 @@ static void am335x_tscadc_need_adc(struct ti_tscadc_dev *tsadc)
+>  void am335x_tsc_se_set_once(struct ti_tscadc_dev *tsadc, u32 val)
+>  {
+>  	spin_lock_irq(&tsadc->reg_lock);
+> -	tsadc->reg_se_cache |= val;
+>  	am335x_tscadc_need_adc(tsadc);
+>  
+>  	tscadc_writel(tsadc, REG_SE, val);
+> diff --git a/include/linux/mfd/ti_am335x_tscadc.h b/include/linux/mfd/ti_am335x_tscadc.h
+> index 3f4e994ace2b..1fd50dcfe47c 100644
+> --- a/include/linux/mfd/ti_am335x_tscadc.h
+> +++ b/include/linux/mfd/ti_am335x_tscadc.h
+> @@ -128,6 +128,7 @@
+>  
+>  /* Sequencer Status */
+>  #define SEQ_STATUS BIT(5)
+> +#define CHARGE_STEP		0x11
+>  
+>  #define ADC_CLK			3000000
+>  #define TOTAL_STEPS		16
 
 -- 
 Lee Jones
