@@ -1,734 +1,234 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-vc0-f171.google.com ([209.85.220.171]:37546 "EHLO
-	mail-vc0-f171.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751778AbaKQUPl (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 17 Nov 2014 15:15:41 -0500
-Received: by mail-vc0-f171.google.com with SMTP id id10so7631102vcb.30
-        for <linux-iio@vger.kernel.org>; Mon, 17 Nov 2014 12:15:40 -0800 (PST)
-MIME-Version: 1.0
-In-Reply-To: <1416247328.2043.105.camel@spandruv-desktop.jf.intel.com>
-References: <1415286329.7340.16.camel@spandruv-hsb-test> <1415309107-7332-1-git-send-email-gwendal@chromium.org>
- <1416247328.2043.105.camel@spandruv-desktop.jf.intel.com>
-From: Gwendal Grignou <gwendal@chromium.org>
-Date: Mon, 17 Nov 2014 12:15:19 -0800
-Message-ID: <CAMHSBOV_3pVPERyqSMuG1jCgsPjnqfQdWAmV25zP4m=YmCVZNA@mail.gmail.com>
-Subject: Re: [PATCH 3/3] iio: ak8975: add ak09911 and ak09912 support
-To: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-Cc: Gwendal Grignou <gwendal@chromium.org>, jic23@kernel.org,
-	knaack.h@gmx.de, linux-iio@vger.kernel.org
-Content-Type: text/plain; charset=UTF-8
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:40661 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753660AbaKRNh1 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 18 Nov 2014 08:37:27 -0500
+References: <1416246966-3083-1-git-send-email-octavian.purdila@intel.com>
+            <1416246966-3083-2-git-send-email-octavian.purdila@intel.com>
+In-Reply-To: <1416246966-3083-2-git-send-email-octavian.purdila@intel.com>
+From: jic23@kernel.org
+To: Octavian Purdila <octavian.purdila@intel.com>
+Cc: linux-iio@vger.kernel.org, srinivas.pandruvada@intel.com
+Subject: Re: [RFC 1/8] iio: add support for hardware fifo
+Date: Tue, 18 Nov 2014 13:37:25 +0000
+Mime-Version: 1.0
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Message-Id: <20141118133725.DEB5D4029E@saturn.retrosnub.co.uk>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Thanks Srinivas. I fixed the issue in the first patch, called "[PATCH
-v2 1/3] iio: ak8975: minor fixes".
+Octavian Purdila writes: 
 
-Gwendal.
+> Some devices have hardware buffers that can store a number of samples
+> for later consumption. Hardware usually provides interrupts to notify
+> the processor when the fifo is full or when it has reached a certain
+> threshold. 
+> 
+> Some devices also offer flexibility in what they do when the hardware
+> fifo is full: either discard future samples, or overwrite older
+> samples with newer ones. 
+> 
+> The hardware fifo is useful for reducing the number of interrupts to
+> the host processor and thus it helps decreasing the power consumption. 
+> 
+> This patch adds four new IIO attributes to expose the hardware fifo
+> and it's configuration to userspace: 
+> 
+>  * _fifo_length - the number of samples that the hardware can store;
+>    it is usefull to expose it to userspace, so that applications can
+>    increase the device buffer size appropriately
 
-On Mon, Nov 17, 2014 at 10:02 AM, Srinivas Pandruvada
-<srinivas.pandruvada@linux.intel.com> wrote:
-> On Thu, 2014-11-06 at 13:25 -0800, Gwendal Grignou wrote:
->> Add 2 new definition entries to support ak0991x compass.
->> Add a more advanced function to check we are dealing with the
->> expected device.
->> Remove standalone driver for ak09911.
->>
->
-> Since there is no interrupt for AK09911, the client->irq is initialized
-> to -1 by acpi-i2c.
-> static int ak8975_setup(struct i2c_client *client)
-> {
-> ..
-> if (data->eoc_gpio > 0 || client->irq) {
->
-> change to
->
-> if (data->eoc_gpio > 0 || client->irq > 0) {
->
-> If you do this change, the modified driver works fine.
->
-> Thanks,
-> Srinivas
->
->
->
->> Signed-off-by: Gwendal Grignou <gwendal@chromium.org>
->> ---
->>  Readded CONFIG_AK09911 to ease transition from standalone driver.
->>
->>  drivers/iio/magnetometer/Kconfig   |  15 +-
->>  drivers/iio/magnetometer/Makefile  |   1 -
->>  drivers/iio/magnetometer/ak09911.c | 326 -------------------------------------
->>  drivers/iio/magnetometer/ak8975.c  | 197 ++++++++++++++++++++--
->>  4 files changed, 186 insertions(+), 353 deletions(-)
->>  delete mode 100644 drivers/iio/magnetometer/ak09911.c
->>
->> diff --git a/drivers/iio/magnetometer/Kconfig b/drivers/iio/magnetometer/Kconfig
->> index b2dba9e..4c7a4c5 100644
->> --- a/drivers/iio/magnetometer/Kconfig
->> +++ b/drivers/iio/magnetometer/Kconfig
->> @@ -6,26 +6,21 @@
->>  menu "Magnetometer sensors"
->>
->>  config AK8975
->> -     tristate "Asahi Kasei AK8975 3-Axis Magnetometer"
->> +     tristate "Asahi Kasei AK 3-Axis Magnetometer"
->>       depends on I2C
->>       depends on GPIOLIB
->>       help
->> -       Say yes here to build support for Asahi Kasei AK8975 3-Axis
->> -       Magnetometer. This driver can also support AK8963, if i2c
->> -       device name is identified as ak8963.
->> +       Say yes here to build support for Asahi Kasei AK8975, AK8963,
->> +       AK09911 or AK09912 3-Axis Magnetometer.
->>
->>         To compile this driver as a module, choose M here: the module
->>         will be called ak8975.
->>
->>  config AK09911
->>       tristate "Asahi Kasei AK09911 3-axis Compass"
->> -     depends on I2C
->> +     select AK8975
->>       help
->> -       Say yes here to build support for Asahi Kasei AK09911 3-Axis
->> -       Magnetometer.
->> -
->> -       To compile this driver as a module, choose M here: the module
->> -       will be called ak09911.
->> +       Deprecated: AK09911 is now supported by AK8975 driver.
->>
->>  config MAG3110
->>       tristate "Freescale MAG3110 3-Axis Magnetometer"
->> diff --git a/drivers/iio/magnetometer/Makefile b/drivers/iio/magnetometer/Makefile
->> index b91315e..0f5d3c9 100644
->> --- a/drivers/iio/magnetometer/Makefile
->> +++ b/drivers/iio/magnetometer/Makefile
->> @@ -3,7 +3,6 @@
->>  #
->>
->>  # When adding new entries keep the list in alphabetical order
->> -obj-$(CONFIG_AK09911)        += ak09911.o
->>  obj-$(CONFIG_AK8975) += ak8975.o
->>  obj-$(CONFIG_MAG3110)        += mag3110.o
->>  obj-$(CONFIG_HID_SENSOR_MAGNETOMETER_3D) += hid-sensor-magn-3d.o
->> diff --git a/drivers/iio/magnetometer/ak09911.c b/drivers/iio/magnetometer/ak09911.c
->> deleted file mode 100644
->> index b2bc942..0000000
->> --- a/drivers/iio/magnetometer/ak09911.c
->> +++ /dev/null
->> @@ -1,326 +0,0 @@
->> -/*
->> - * AK09911 3-axis compass driver
->> - * Copyright (c) 2014, Intel Corporation.
->> - *
->> - * This program is free software; you can redistribute it and/or modify it
->> - * under the terms and conditions of the GNU General Public License,
->> - * version 2, as published by the Free Software Foundation.
->> - *
->> - * This program is distributed in the hope it will be useful, but WITHOUT
->> - * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
->> - * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
->> - * more details.
->> - */
->> -
->> -#include <linux/kernel.h>
->> -#include <linux/module.h>
->> -#include <linux/init.h>
->> -#include <linux/types.h>
->> -#include <linux/slab.h>
->> -#include <linux/delay.h>
->> -#include <linux/i2c.h>
->> -#include <linux/acpi.h>
->> -#include <linux/iio/iio.h>
->> -
->> -#define AK09911_REG_WIA1             0x00
->> -#define AK09911_REG_WIA2             0x01
->> -#define AK09911_WIA1_VALUE           0x48
->> -#define AK09911_WIA2_VALUE           0x05
->> -
->> -#define AK09911_REG_ST1                      0x10
->> -#define AK09911_REG_HXL                      0x11
->> -#define AK09911_REG_HXH                      0x12
->> -#define AK09911_REG_HYL                      0x13
->> -#define AK09911_REG_HYH                      0x14
->> -#define AK09911_REG_HZL                      0x15
->> -#define AK09911_REG_HZH                      0x16
->> -
->> -#define AK09911_REG_ASAX             0x60
->> -#define AK09911_REG_ASAY             0x61
->> -#define AK09911_REG_ASAZ             0x62
->> -
->> -#define AK09911_REG_CNTL1            0x30
->> -#define AK09911_REG_CNTL2            0x31
->> -#define AK09911_REG_CNTL3            0x32
->> -
->> -#define AK09911_MODE_SNG_MEASURE     0x01
->> -#define AK09911_MODE_SELF_TEST               0x10
->> -#define AK09911_MODE_FUSE_ACCESS     0x1F
->> -#define AK09911_MODE_POWERDOWN               0x00
->> -#define AK09911_RESET_DATA           0x01
->> -
->> -#define AK09911_REG_CNTL1            0x30
->> -#define AK09911_REG_CNTL2            0x31
->> -#define AK09911_REG_CNTL3            0x32
->> -
->> -#define AK09911_RAW_TO_GAUSS(asa)    ((((asa) + 128) * 6000) / 256)
->> -
->> -#define AK09911_MAX_CONVERSION_TIMEOUT_MS    500
->> -#define AK09911_CONVERSION_DONE_POLL_TIME_MS 10
->> -
->> -struct ak09911_data {
->> -     struct i2c_client       *client;
->> -     struct mutex            lock;
->> -     u8                      asa[3];
->> -     long                    raw_to_gauss[3];
->> -};
->> -
->> -static const int ak09911_index_to_reg[] = {
->> -     AK09911_REG_HXL, AK09911_REG_HYL, AK09911_REG_HZL,
->> -};
->> -
->> -static int ak09911_set_mode(struct i2c_client *client, u8 mode)
->> -{
->> -     int ret;
->> -
->> -     switch (mode) {
->> -     case AK09911_MODE_SNG_MEASURE:
->> -     case AK09911_MODE_SELF_TEST:
->> -     case AK09911_MODE_FUSE_ACCESS:
->> -     case AK09911_MODE_POWERDOWN:
->> -             ret = i2c_smbus_write_byte_data(client,
->> -                                             AK09911_REG_CNTL2, mode);
->> -             if (ret < 0) {
->> -                     dev_err(&client->dev, "set_mode error\n");
->> -                     return ret;
->> -             }
->> -             /* After mode change wait atleast 100us */
->> -             usleep_range(100, 500);
->> -             break;
->> -     default:
->> -             dev_err(&client->dev,
->> -                     "%s: Unknown mode(%d).", __func__, mode);
->> -             return -EINVAL;
->> -     }
->> -
->> -     return ret;
->> -}
->> -
->> -/* Get Sensitivity Adjustment value */
->> -static int ak09911_get_asa(struct i2c_client *client)
->> -{
->> -     struct iio_dev *indio_dev = i2c_get_clientdata(client);
->> -     struct ak09911_data *data = iio_priv(indio_dev);
->> -     int ret;
->> -
->> -     ret = ak09911_set_mode(client, AK09911_MODE_FUSE_ACCESS);
->> -     if (ret < 0)
->> -             return ret;
->> -
->> -     /* Get asa data and store in the device data. */
->> -     ret = i2c_smbus_read_i2c_block_data(client, AK09911_REG_ASAX,
->> -                                         3, data->asa);
->> -     if (ret < 0) {
->> -             dev_err(&client->dev, "Not able to read asa data\n");
->> -             return ret;
->> -     }
->> -
->> -     ret = ak09911_set_mode(client,  AK09911_MODE_POWERDOWN);
->> -     if (ret < 0)
->> -             return ret;
->> -
->> -     data->raw_to_gauss[0] = AK09911_RAW_TO_GAUSS(data->asa[0]);
->> -     data->raw_to_gauss[1] = AK09911_RAW_TO_GAUSS(data->asa[1]);
->> -     data->raw_to_gauss[2] = AK09911_RAW_TO_GAUSS(data->asa[2]);
->> -
->> -     return 0;
->> -}
->> -
->> -static int ak09911_verify_chip_id(struct i2c_client *client)
->> -{
->> -     u8 wia_val[2];
->> -     int ret;
->> -
->> -     ret = i2c_smbus_read_i2c_block_data(client, AK09911_REG_WIA1,
->> -                                         2, wia_val);
->> -     if (ret < 0) {
->> -             dev_err(&client->dev, "Error reading WIA\n");
->> -             return ret;
->> -     }
->> -
->> -     dev_dbg(&client->dev, "WIA %02x %02x\n", wia_val[0], wia_val[1]);
->> -
->> -     if (wia_val[0] != AK09911_WIA1_VALUE ||
->> -             wia_val[1] != AK09911_WIA2_VALUE) {
->> -             dev_err(&client->dev, "Device ak09911 not found\n");
->> -             return -ENODEV;
->> -     }
->> -
->> -     return 0;
->> -}
->> -
->> -static int wait_conversion_complete_polled(struct ak09911_data *data)
->> -{
->> -     struct i2c_client *client = data->client;
->> -     u8 read_status;
->> -     u32 timeout_ms = AK09911_MAX_CONVERSION_TIMEOUT_MS;
->> -     int ret;
->> -
->> -     /* Wait for the conversion to complete. */
->> -     while (timeout_ms) {
->> -             msleep_interruptible(AK09911_CONVERSION_DONE_POLL_TIME_MS);
->> -             ret = i2c_smbus_read_byte_data(client, AK09911_REG_ST1);
->> -             if (ret < 0) {
->> -                     dev_err(&client->dev, "Error in reading ST1\n");
->> -                     return ret;
->> -             }
->> -             read_status = ret & 0x01;
->> -             if (read_status)
->> -                     break;
->> -             timeout_ms -= AK09911_CONVERSION_DONE_POLL_TIME_MS;
->> -     }
->> -     if (!timeout_ms) {
->> -             dev_err(&client->dev, "Conversion timeout happened\n");
->> -             return -EIO;
->> -     }
->> -
->> -     return read_status;
->> -}
->> -
->> -static int ak09911_read_axis(struct iio_dev *indio_dev, int index, int *val)
->> -{
->> -     struct ak09911_data *data = iio_priv(indio_dev);
->> -     struct i2c_client *client = data->client;
->> -     int ret;
->> -
->> -     mutex_lock(&data->lock);
->> -
->> -     ret = ak09911_set_mode(client, AK09911_MODE_SNG_MEASURE);
->> -     if (ret < 0)
->> -             goto fn_exit;
->> -
->> -     ret = wait_conversion_complete_polled(data);
->> -     if (ret < 0)
->> -             goto fn_exit;
->> -
->> -     /* Read data */
->> -     ret = i2c_smbus_read_word_data(client, ak09911_index_to_reg[index]);
->> -     if (ret < 0) {
->> -             dev_err(&client->dev, "Read axis data fails\n");
->> -             goto fn_exit;
->> -     }
->> -
->> -     mutex_unlock(&data->lock);
->> -
->> -     /* Clamp to valid range. */
->> -     *val = sign_extend32(clamp_t(s16, ret, -8192, 8191), 13);
->> -
->> -     return IIO_VAL_INT;
->> -
->> -fn_exit:
->> -     mutex_unlock(&data->lock);
->> -
->> -     return ret;
->> -}
->> -
->> -static int ak09911_read_raw(struct iio_dev *indio_dev,
->> -                         struct iio_chan_spec const *chan,
->> -                         int *val, int *val2,
->> -                         long mask)
->> -{
->> -     struct ak09911_data *data = iio_priv(indio_dev);
->> -
->> -     switch (mask) {
->> -     case IIO_CHAN_INFO_RAW:
->> -             return ak09911_read_axis(indio_dev, chan->address, val);
->> -     case IIO_CHAN_INFO_SCALE:
->> -             *val = 0;
->> -             *val2 = data->raw_to_gauss[chan->address];
->> -             return IIO_VAL_INT_PLUS_MICRO;
->> -     }
->> -
->> -     return -EINVAL;
->> -}
->> -
->> -#define AK09911_CHANNEL(axis, index)                                 \
->> -     {                                                               \
->> -             .type = IIO_MAGN,                                       \
->> -             .modified = 1,                                          \
->> -             .channel2 = IIO_MOD_##axis,                             \
->> -             .info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |          \
->> -                          BIT(IIO_CHAN_INFO_SCALE),                  \
->> -             .address = index,                                       \
->> -     }
->> -
->> -static const struct iio_chan_spec ak09911_channels[] = {
->> -     AK09911_CHANNEL(X, 0), AK09911_CHANNEL(Y, 1), AK09911_CHANNEL(Z, 2),
->> -};
->> -
->> -static const struct iio_info ak09911_info = {
->> -     .read_raw = &ak09911_read_raw,
->> -     .driver_module = THIS_MODULE,
->> -};
->> -
->> -static const struct acpi_device_id ak_acpi_match[] = {
->> -     {"AK009911", 0},
->> -     { },
->> -};
->> -MODULE_DEVICE_TABLE(acpi, ak_acpi_match);
->> -
->> -static int ak09911_probe(struct i2c_client *client,
->> -                      const struct i2c_device_id *id)
->> -{
->> -     struct iio_dev *indio_dev;
->> -     struct ak09911_data *data;
->> -     const char *name;
->> -     int ret;
->> -
->> -     ret = ak09911_verify_chip_id(client);
->> -     if (ret) {
->> -             dev_err(&client->dev, "AK00911 not detected\n");
->> -             return -ENODEV;
->> -     }
->> -
->> -     indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
->> -     if (indio_dev == NULL)
->> -             return -ENOMEM;
->> -
->> -     data = iio_priv(indio_dev);
->> -     i2c_set_clientdata(client, indio_dev);
->> -
->> -     data->client = client;
->> -     mutex_init(&data->lock);
->> -
->> -     ret = ak09911_get_asa(client);
->> -     if (ret)
->> -             return ret;
->> -
->> -     if (id)
->> -             name = id->name;
->> -     else if (ACPI_HANDLE(&client->dev))
->> -             name = dev_name(&client->dev);
->> -     else
->> -             return -ENODEV;
->> -
->> -     dev_dbg(&client->dev, "Asahi compass chip %s\n", name);
->> -
->> -     indio_dev->dev.parent = &client->dev;
->> -     indio_dev->channels = ak09911_channels;
->> -     indio_dev->num_channels = ARRAY_SIZE(ak09911_channels);
->> -     indio_dev->info = &ak09911_info;
->> -     indio_dev->modes = INDIO_DIRECT_MODE;
->> -     indio_dev->name = name;
->> -
->> -     return devm_iio_device_register(&client->dev, indio_dev);
->> -}
->> -
->> -static const struct i2c_device_id ak09911_id[] = {
->> -     {"ak09911", 0},
->> -     {}
->> -};
->> -
->> -MODULE_DEVICE_TABLE(i2c, ak09911_id);
->> -
->> -static struct i2c_driver ak09911_driver = {
->> -     .driver = {
->> -             .name   = "ak09911",
->> -             .acpi_match_table = ACPI_PTR(ak_acpi_match),
->> -     },
->> -     .probe          = ak09911_probe,
->> -     .id_table       = ak09911_id,
->> -};
->> -module_i2c_driver(ak09911_driver);
->> -
->> -MODULE_AUTHOR("Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>");
->> -MODULE_LICENSE("GPL v2");
->> -MODULE_DESCRIPTION("AK09911 Compass driver");
->> diff --git a/drivers/iio/magnetometer/ak8975.c b/drivers/iio/magnetometer/ak8975.c
->> index b170654..f8c7046 100644
->> --- a/drivers/iio/magnetometer/ak8975.c
->> +++ b/drivers/iio/magnetometer/ak8975.c
->> @@ -81,6 +81,58 @@
->>  #define AK8975_MAX_REGS                      AK8975_REG_ASAZ
->>
->>  /*
->> + * AK09912 Register definitions
->> + */
->> +#define AK09912_REG_WIA1             0x00
->> +#define AK09912_REG_WIA2             0x01
->> +#define AK09912_DEVICE_ID            0x04
->> +#define AK09911_DEVICE_ID            0x05
->> +
->> +#define AK09911_REG_INFO1            0x02
->> +#define AK09911_REG_INFO2            0x03
->> +
->> +#define AK09912_REG_ST1                      0x10
->> +
->> +#define AK09912_REG_ST1_DRDY_SHIFT   0
->> +#define AK09912_REG_ST1_DRDY_MASK    (1 << AK09912_REG_ST1_DRDY_SHIFT)
->> +
->> +#define AK09912_REG_HXL                      0x11
->> +#define AK09912_REG_HXH                      0x12
->> +#define AK09912_REG_HYL                      0x13
->> +#define AK09912_REG_HYH                      0x14
->> +#define AK09912_REG_HZL                      0x15
->> +#define AK09912_REG_HZH                      0x16
->> +#define AK09912_REG_TMPS             0x17
->> +
->> +#define AK09912_REG_ST2                      0x18
->> +#define AK09912_REG_ST2_HOFL_SHIFT   3
->> +#define AK09912_REG_ST2_HOFL_MASK    (1 << AK09912_REG_ST2_HOFL_SHIFT)
->> +
->> +#define AK09912_REG_CNTL1            0x30
->> +
->> +#define AK09912_REG_CNTL2            0x31
->> +#define AK09912_REG_CNTL_MODE_POWER_DOWN     0x00
->> +#define AK09912_REG_CNTL_MODE_ONCE   0x01
->> +#define AK09912_REG_CNTL_MODE_SELF_TEST      0x10
->> +#define AK09912_REG_CNTL_MODE_FUSE_ROM       0x1F
->> +#define AK09912_REG_CNTL2_MODE_SHIFT 0
->> +#define AK09912_REG_CNTL2_MODE_MASK  (0x1F << AK09912_REG_CNTL2_MODE_SHIFT)
->> +
->> +#define AK09912_REG_CNTL3            0x32
->> +
->> +#define AK09912_REG_TS1                      0x33
->> +#define AK09912_REG_TS2                      0x34
->> +#define AK09912_REG_TS3                      0x35
->> +#define AK09912_REG_I2CDIS           0x36
->> +#define AK09912_REG_TS4                      0x37
->> +
->> +#define AK09912_REG_ASAX             0x60
->> +#define AK09912_REG_ASAY             0x61
->> +#define AK09912_REG_ASAZ             0x62
->> +
->> +#define AK09912_MAX_REGS             AK09912_REG_ASAZ
->> +
->> +/*
->>   * Miscellaneous values.
->>   */
->>  #define AK8975_MAX_CONVERSION_TIMEOUT        500
->> @@ -130,22 +182,37 @@ long ak8975_raw_to_gauss(u16 data)
->>  }
->>
->>  /*
->> - * For AK8963, same calculation, but the device is less sensitive:
->> + * For AK8963 and AK09911, same calculation, but the device is less sensitive:
->>   *
->>   * H is in the range of +-8190.  The magnetometer has a range of
->>   * +-4912uT.  To go from the raw value to uT is:
->>   *
->>   * HuT = H * 4912/8190, or roughly, 6/10, instead of 3/10.
->>   */
->> -long ak8963_raw_to_gauss(u16 data)
->> +long ak8963_09911_raw_to_gauss(u16 data)
->>  {
->>       return (((long)data + 128) * 6000) / 256;
->>  }
->>
->> +/*
->> + * For AK09912, same calculation, except the device is more sensitive:
->> + *
->> + * H is in the range of -32752 to 32752.  The magnetometer has a range of
->> + * +-4912uT.  To go from the raw value to uT is:
->> + *
->> + * HuT = H * 4912/32752, or roughly, 3/20, instead of 3/10.
->> + */
->> +long ak09912_raw_to_gauss(u16 data)
->> +{
->> +     return (((long)data + 128) * 1500) / 256;
->> +}
->> +
->>  /* Compatible Asahi Kasei Compass parts */
->>  enum asahi_compass_chipset {
->>       AK8975,
->>       AK8963,
->> +     AK09911,
->> +     AK09912,
->>       AK_MAX_TYPE
->>  };
->>
->> @@ -210,7 +277,7 @@ struct ak_def {
->>  },
->>  {
->>       .type = AK8963,
->> -     .raw_to_gauss = ak8963_raw_to_gauss,
->> +     .raw_to_gauss = ak8963_09911_raw_to_gauss,
->>       .range = 8190,
->>       .ctrl_regs = {
->>               AK8975_REG_ST1,
->> @@ -233,6 +300,56 @@ struct ak_def {
->>               AK8975_REG_HYL,
->>               AK8975_REG_HZL},
->>  },
->> +{
->> +     .type = AK09911,
->> +     .raw_to_gauss = ak8963_09911_raw_to_gauss,
->> +     .range = 8192,
->> +     .ctrl_regs = {
->> +             AK09912_REG_ST1,
->> +             AK09912_REG_ST2,
->> +             AK09912_REG_CNTL2,
->> +             AK09912_REG_ASAX,
->> +             AK09912_MAX_REGS},
->> +     .ctrl_masks = {
->> +             AK09912_REG_ST1_DRDY_MASK,
->> +             AK09912_REG_ST2_HOFL_MASK,
->> +             0,
->> +             AK09912_REG_CNTL2_MODE_MASK},
->> +     .ctrl_modes = {
->> +             AK09912_REG_CNTL_MODE_POWER_DOWN,
->> +             AK09912_REG_CNTL_MODE_ONCE,
->> +             AK09912_REG_CNTL_MODE_SELF_TEST,
->> +             AK09912_REG_CNTL_MODE_FUSE_ROM},
->> +     .data_regs = {
->> +             AK09912_REG_HXL,
->> +             AK09912_REG_HYL,
->> +             AK09912_REG_HZL},
->> +},
->> +{
->> +     .type = AK09912,
->> +     .raw_to_gauss = ak09912_raw_to_gauss,
->> +     .range = 32752,
->> +     .ctrl_regs = {
->> +             AK09912_REG_ST1,
->> +             AK09912_REG_ST2,
->> +             AK09912_REG_CNTL2,
->> +             AK09912_REG_ASAX,
->> +             AK09912_MAX_REGS},
->> +     .ctrl_masks = {
->> +             AK09912_REG_ST1_DRDY_MASK,
->> +             AK09912_REG_ST2_HOFL_MASK,
->> +             0,
->> +             AK09912_REG_CNTL2_MODE_MASK},
->> +     .ctrl_modes = {
->> +             AK09912_REG_CNTL_MODE_POWER_DOWN,
->> +             AK09912_REG_CNTL_MODE_ONCE,
->> +             AK09912_REG_CNTL_MODE_SELF_TEST,
->> +             AK09912_REG_CNTL_MODE_FUSE_ROM},
->> +     .data_regs = {
->> +             AK09912_REG_HXL,
->> +             AK09912_REG_HYL,
->> +             AK09912_REG_HZL},
->> +}
->>  };
->>
->>  /*
->> @@ -253,6 +370,55 @@ struct ak8975_data {
->>  };
->>
->>  /*
->> + * Return 0 if the i2c device is the one we expect.
->> + * return a negative error number otherwise
->> + */
->> +static int ak8975_who_i_am(struct i2c_client *client,
->> +                        enum asahi_compass_chipset type)
->> +{
->> +     u8 wia_val[2];
->> +     int ret;
->> +
->> +     /*
->> +      * Signature for each device:
->> +      * Device   |  WIA1      |  WIA2
->> +      * AK09912  |  DEVICE_ID |  AK09912_DEVICE_ID
->> +      * AK09911  |  DEVICE_ID |  AK09911_DEVICE_ID
->> +      * AK8975   |  DEVICE_ID |  NA
->> +      * AK8963   |  DEVICE_ID |  NA
->> +      */
->> +     ret = i2c_smbus_read_i2c_block_data(client, AK09912_REG_WIA1,
->> +                                         2, wia_val);
->> +     if (ret < 0) {
->> +             dev_err(&client->dev, "Error reading WIA\n");
->> +             return ret;
->> +     }
->> +
->> +     ret = -ENODEV;
->> +
->> +     if (wia_val[0] != AK8975_DEVICE_ID)
->> +             return ret;
->> +
->> +     switch (type) {
->> +     case AK8975:
->> +     case AK8963:
->> +             ret = 0;
->> +             break;
->> +     case AK09911:
->> +             if (wia_val[1] == AK09911_DEVICE_ID)
->> +                     ret = 0;
->> +             break;
->> +     case AK09912:
->> +             if (wia_val[1] == AK09912_DEVICE_ID)
->> +                     ret = 0;
->> +             break;
->> +     default:
->> +             dev_err(&client->dev, "Type %d unknown\n", type);
->> +     }
->> +     return ret;
->> +}
->> +
->> +/*
->>   * Helper function to write to CNTL register.
->>   */
->>  static int ak8975_set_mode(struct ak8975_data *data, enum ak_ctrl_mode mode)
->> @@ -327,21 +493,8 @@ static int ak8975_setup(struct i2c_client *client)
->>  {
->>       struct iio_dev *indio_dev = i2c_get_clientdata(client);
->>       struct ak8975_data *data = iio_priv(indio_dev);
->> -     u8 device_id;
->>       int ret;
->>
->> -     /* Confirm that the device we're talking to is really an AK8975. */
->> -     ret = i2c_smbus_read_byte_data(client, AK8975_REG_WIA);
->> -     if (ret < 0) {
->> -             dev_err(&client->dev, "Error reading WIA\n");
->> -             return ret;
->> -     }
->> -     device_id = ret;
->> -     if (device_id != AK8975_DEVICE_ID) {
->> -             dev_err(&client->dev, "Device ak8975 not found\n");
->> -             return -ENODEV;
->> -     }
->> -
->>       /* Write the fused rom access mode. */
->>       ret = ak8975_set_mode(data, FUSE_ROM);
->>       if (ret < 0) {
->> @@ -552,6 +705,8 @@ static const struct acpi_device_id ak_acpi_match[] = {
->>       {"AK8975", AK8975},
->>       {"AK8963", AK8963},
->>       {"INVN6500", AK8963},
->> +     {"AK09911", AK09911},
->> +     {"AK09912", AK09912},
->>       { },
->>  };
->>  MODULE_DEVICE_TABLE(acpi, ak_acpi_match);
->> @@ -631,6 +786,10 @@ static int ak8975_probe(struct i2c_client *client,
->>       }
->>
->>       data->def = &ak_def_array[chipset];
->> +     if (ak8975_who_i_am(client, data->def->type) < 0) {
->> +             dev_err(&client->dev, "Unexpected device\n");
->> +             return -ENODEV;
->> +     }
->>       dev_dbg(&client->dev, "Asahi compass chip %s\n", name);
->>
->>       /* Perform some basic start-of-day setup of the device. */
->> @@ -653,6 +812,8 @@ static int ak8975_probe(struct i2c_client *client,
->>  static const struct i2c_device_id ak8975_id[] = {
->>       {"ak8975", AK8975},
->>       {"ak8963", AK8963},
->> +     {"ak09911", AK09911},
->> +     {"ak09912", AK09912},
->>       {}
->>  };
->>
->> @@ -663,6 +824,10 @@ static const struct of_device_id ak8975_of_match[] = {
->>       { .compatible = "ak8975", },
->>       { .compatible = "asahi-kasei,ak8963", },
->>       { .compatible = "ak8963", },
->> +     { .compatible = "asahi-kasei,ak09911", },
->> +     { .compatible = "ak09911", },
->> +     { .compatible = "asahi-kasei,ak09912", },
->> +     { .compatible = "ak09912", },
->>       {}
->>  };
->>  MODULE_DEVICE_TABLE(of, ak8975_of_match);
->
->
+> 
+>  * _fifo_mode - the mode the hardware fifo operates 
+> 
+>  * _fifo_mode_available - the available hardware fifo modes 
+> 
+>  * _fifo_flush - this attribute can be used by userspace to trigger a
+>    fifo flush operation, where all data stored in the fifo will be
+>    made available to the device buffer 
+> 
+> Since the last two attributes work with strings, they are using the
+> iio_chan_spec_ext_info infrastructure. To simplify the setup for a
+> hardware fifo the IIO_FIFO_EXT_INFO marcro can be used to initialize
+> them. 
+> 
+> This patch also add two new events: IIO_EV_TYPE_FIFO_FULL and
+> IIO_EV_TYPE_FIFO_WATERMAK. If enabled they must be issued by the
+> device when the fifo level reaches full or, respectively, the
+> watermark level. The watermark level can be set by configuring the
+> event value. 
+> 
+> Signed-off-by: Octavian Purdila <octavian.purdila@intel.com>
+> ---
+>  Documentation/ABI/testing/sysfs-bus-iio | 51 +++++++++++++++++++++++++++++++++
+>  drivers/iio/industrialio-core.c         |  2 ++
+>  drivers/iio/industrialio-event.c        |  2 ++
+>  include/linux/iio/iio.h                 | 17 +++++++++++
+>  include/linux/iio/types.h               |  2 ++
+>  5 files changed, 74 insertions(+) 
+> 
+> diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
+> index ea7e7ab..f326de1 100644
+> --- a/Documentation/ABI/testing/sysfs-bus-iio
+> +++ b/Documentation/ABI/testing/sysfs-bus-iio
+> @@ -1050,3 +1050,54 @@ Description:
+>  		after application of scale and offset. If no offset or scale is
+>  		present, output should be considered as processed with the
+>  		unit in milliamps.
+> +
+> +What:		/sys/bus/iio/devices/iio:deviceX/in_fifo_length
+> +What:		/sys/bus/iio/devices/iio:deviceX/in_accel_fifo_length
+> +What:		/sys/bus/iio/devices/iio:deviceX/in_magn_fifo_length
+> +What:		/sys/bus/iio/devices/iio:deviceX/in_anglvel_fifo_length
+> +KernelVersion:	3.19
+> +Contact:	linux-iio@vger.kernel.org
+> +Description:
+> +		The maximum number of samples that the hardware fifo can
+> +		store.
+This provides information useful in debugging, but userspace should not
+care other than in how this constrains the watershed point. 
+
+
+> +
+> +What:		/sys/bus/iio/devices/iio:deviceX/in_fifo_mode
+> +What:		/sys/bus/iio/devices/iio:deviceX/in_accel_fifo_mode
+> +What:		/sys/bus/iio/devices/iio:deviceX/in_magn_fifo_mode
+> +What:		/sys/bus/iio/devices/iio:deviceX/in_anglvel_fifo_mode
+> +KernelVersion:	3.19
+> +Contact:	linux-iio@vger.kernel.org
+> +Description:
+> +		The mode in which the hardware fifo currently operates. The
+> +		supported values are "disabled", "fifo" and "stream".
+> +		In disabled mode the hardware fifo is not operational.
+> +		In fifo mode the samples are stored until the fifo is full at
+> +		which point all subsequent samples are discarded.
+> +		In stream mode, when the fifo is full new samples start to
+> +		overrride old samples.
+In stream mode we end up with a nasty hybrid of a front end ring buffer
+pushing into a fifo.  I can see you want to support the hardware fully
+but for now am unconvinced that it ever makes sense to use stream mode. 
+
+If user space wants the latest data it is because it is time critical and
+hence it won't want to have a fifo in the way.  If it wants to not drop
+data then the fifo should be fine.  Ultimately if we are hitting the
+limit where this choice matters then we have a nasty problem... 
+
+> +		If the hardware supports it, IIO_EVENT_TYPE_FIFO_FULL and
+> +		IIO_EVENT_TYPE_FIFO_WATERMARK events will be generated when they
+> +		are enabled by the application and the fifo is full and,
+> +		respectively, when the fifo level reaches the watermark
+> +		level.
+In a sense fifo full is an error rather than a useful event.  Now error
+reporting is an area we don't have well covered.  Suggestions welcome! 
+
+> +		The watermark level can be set by the application by configuring
+> +		the IIO_EVENT_TYPE_FIFO_WATERMARK value (IIO_EV_INFO_VALUE).
+> +
+> +What:		/sys/bus/iio/devices/iio:deviceX/in_fifo_mode_available
+> +What:		/sys/bus/iio/devices/iio:deviceX/in_accel_fifo_mode_available
+> +What:		/sys/bus/iio/devices/iio:deviceX/in_magn_fifo_mode_available
+> +What:		/sys/bus/iio/devices/iio:deviceX/in_anglvel_fifo_mode_available
+> +KernelVersion:	3.19
+> +Contact:	linux-iio@vger.kernel.org
+> +Description:
+> +		The modes that the hardware fifo supports.
+> +
+> +What:		/sys/bus/iio/devices/iio:deviceX/in_fifo_flush
+> +What:		/sys/bus/iio/devices/iio:deviceX/in_accel_fifo_flush
+> +What:		/sys/bus/iio/devices/iio:deviceX/in_magn_fifo_flush
+> +What:		/sys/bus/iio/devices/iio:deviceX/in_anglvel_fifo_flush
+> +KernelVersion:	3.19
+> +Contact:	linux-iio@vger.kernel.org
+> +Description:
+> +		Writting to this entry will cause the device to flush the data
+> +		from the hardware fifo into the device buffer.
+This is an interesting concept.  Why would userspace want to have control
+of the rough time of the buffer read out?  If it is using the watershed
+event, then why not make it push the data to the software buffer when that
+occurs?  If not and we have no events on the buffer then I think we'd
+want to push this polling into the kernel as it would depend on the
+(hopefully known) sampling frequency and the size of the hardware buffer... 
+
+
+ 
+
+> diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+> index af3e76d..17e84c3 100644
+> --- a/drivers/iio/industrialio-core.c
+> +++ b/drivers/iio/industrialio-core.c
+> @@ -113,6 +113,8 @@ static const char * const iio_chan_info_postfix[] = {
+>  	[IIO_CHAN_INFO_HARDWAREGAIN] = "hardwaregain",
+>  	[IIO_CHAN_INFO_HYSTERESIS] = "hysteresis",
+>  	[IIO_CHAN_INFO_INT_TIME] = "integration_time",
+> +	[IIO_CHAN_INFO_FIFO_LENGTH] = "fifo_length",
+> +	[IIO_CHAN_INFO_FIFO_FLUSH] = "fifo_flush",
+Where is the watermark level set?
+>  };
+>  
+>  /**
+> diff --git a/drivers/iio/industrialio-event.c b/drivers/iio/industrialio-event.c
+> index 0c1e37e..3d73fd0 100644
+> --- a/drivers/iio/industrialio-event.c
+> +++ b/drivers/iio/industrialio-event.c
+> @@ -197,6 +197,8 @@ static const char * const iio_ev_type_text[] = {
+>  	[IIO_EV_TYPE_ROC] = "roc",
+>  	[IIO_EV_TYPE_THRESH_ADAPTIVE] = "thresh_adaptive",
+>  	[IIO_EV_TYPE_MAG_ADAPTIVE] = "mag_adaptive",
+> +	[IIO_EV_TYPE_FIFO_FULL] = "fifo_full",
+> +	[IIO_EV_TYPE_FIFO_WATERMARK] = "fifo_watermak",
+>  };
+>  
+>  static const char * const iio_ev_dir_text[] = {
+> diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
+> index 3642ce7..ad100a1 100644
+> --- a/include/linux/iio/iio.h
+> +++ b/include/linux/iio/iio.h
+> @@ -38,6 +38,8 @@ enum iio_chan_info_enum {
+>  	IIO_CHAN_INFO_HARDWAREGAIN,
+>  	IIO_CHAN_INFO_HYSTERESIS,
+>  	IIO_CHAN_INFO_INT_TIME,
+> +	IIO_CHAN_INFO_FIFO_LENGTH,
+> +	IIO_CHAN_INFO_FIFO_FLUSH,
+>  };
+>  
+>  enum iio_shared_by {
+> @@ -629,4 +631,19 @@ int iio_str_to_fixpoint(const char *str, int fract_mult, int *integer,
+>   */
+>  #define IIO_G_TO_M_S_2(g) ((g) * 980665ULL / 100000ULL)
+>  
+> +/**
+> + * IIO_FIFO_EXT_INFO() - define a hardware fifo associated with a channel/device
+> + *
+> + * @_fifo_mode_enum - a pointer to a struct iio_enum that defines the available
+> + * modes for this hardware fifo (see Documentation/ABI/testing/sysfs-bus-iio for
+> + * supported modes)
+> + * @_shared - type of sharing; can be IIO_SEPARATE if we have fifo(s) per
+> + * modifier (e.g. x, y, z), IIO_SHARED_BY_TYPE if we have fifo(s) per channel or
+> + * IIO_SHARED_BY_ALL if we have a single fifo for all channels
+> + *
+> + */
+> +#define IIO_FIFO_EXT_INFO(_fifo_mode_enum, _shared)			\
+> +	IIO_ENUM("fifo_mode", _shared, _fifo_mode_enum),		\
+> +	IIO_ENUM_AVAILABLE("fifo_mode", _fifo_mode_enum)
+> +
+>  #endif /* _INDUSTRIAL_IO_H_ */
+> diff --git a/include/linux/iio/types.h b/include/linux/iio/types.h
+> index 4a2af8a..8ee5a21 100644
+> --- a/include/linux/iio/types.h
+> +++ b/include/linux/iio/types.h
+> @@ -68,6 +68,8 @@ enum iio_event_type {
+>  	IIO_EV_TYPE_ROC,
+>  	IIO_EV_TYPE_THRESH_ADAPTIVE,
+>  	IIO_EV_TYPE_MAG_ADAPTIVE,
+> +	IIO_EV_TYPE_FIFO_FULL,
+> +	IIO_EV_TYPE_FIFO_WATERMARK,
+>  };
+>  
+>  enum iio_event_info {
+> -- 
+> 1.9.1 
+> 
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
