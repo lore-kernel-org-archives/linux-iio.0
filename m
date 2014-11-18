@@ -1,140 +1,89 @@
-Return-Path: <vigneshr@ti.com>
-Message-ID: <5469E793.80909@ti.com>
-Date: Mon, 17 Nov 2014 17:48:27 +0530
-From: Vignesh R <vigneshr@ti.com>
-MIME-Version: 1.0
-To: Richard Cochran <richardcochran@gmail.com>
-CC: Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>,
-        Mark
- Rutland <mark.rutland@arm.com>,
-        Ian Campbell <ijc+devicetree@hellion.org.uk>,
-        Kumar Gala <galak@codeaurora.org>,
-        Benoit Cousson <bcousson@baylibre.com>,
-        Tony Lindgren <tony@atomide.com>,
-        Russell King <linux@arm.linux.org.uk>,
-        Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
-        Dmitry
- Torokhov <dmitry.torokhov@gmail.com>,
-        Lee Jones <lee.jones@linaro.org>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Lars-Peter Clausen
-	<lars@metafoo.de>,
-        Peter Meerwald <pmeerw@pmeerw.net>,
-        Samuel Ortiz
-	<sameo@linux.intel.com>, Felipe Balbi <balbi@ti.com>,
-        Brad Griffis
-	<bgriffis@ti.com>,
-        Sanjeev Sharma <sanjeev_sharma@mentor.com>,
-        Paul Gortmaker
-	<paul.gortmaker@windriver.com>,
-        Jan Kardell <jan.kardell@telliq.com>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <linux-omap@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>, <linux-iio@vger.kernel.org>,
-        <linux-input@vger.kernel.org>
-Subject: Re: [PATCH v4 2/6] input: touchscreen: ti_am335x_tsc: Remove udelay
- in interrupt handler
-References: <1415941651-28962-1-git-send-email-vigneshr@ti.com> <1415941651-28962-3-git-send-email-vigneshr@ti.com> <20141115192739.GA18766@localhost.localdomain> <54697919.5030302@ti.com> <20141117082337.GA3946@localhost.localdomain>
-In-Reply-To: <20141117082337.GA3946@localhost.localdomain>
-Content-Type: text/plain; charset="windows-1252"
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from ns.mm-sol.com ([37.157.136.199]:55744 "EHLO extserv.mm-sol.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1753520AbaKRIXM (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Tue, 18 Nov 2014 03:23:12 -0500
+Message-ID: <1416299013.30131.4.camel@mm-sol.com>
+Subject: Re: [PATCH v4 2/2] iio: vadc: Qualcomm SPMI PMIC voltage ADC driver
+From: "Ivan T. Ivanov" <iivanov@mm-sol.com>
+To: Hartmut Knaack <knaack.h@gmx.de>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Stanimir Varbanov <svarbanov@mm-sol.com>,
+	Angelo Compagnucci <angelo.compagnucci@gmail.com>,
+	Grant Likely <grant.likely@linaro.org>,
+	linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org, linux-arm-msm@vger.kernel.org
+Date: Tue, 18 Nov 2014 10:23:33 +0200
+In-Reply-To: <546A72E2.9060401@gmx.de>
+References: <1415028270-25860-1-git-send-email-iivanov@mm-sol.com>
+			 <1415028270-25860-3-git-send-email-iivanov@mm-sol.com>
+			 <54612A0D.7020308@gmx.de> <1415694109.22935.13.camel@mm-sol.com>
+		 <54629026.3080002@gmx.de> <1415782511.4820.2.camel@mm-sol.com>
+	 <546A72E2.9060401@gmx.de>
+Content-Type: text/plain; charset="UTF-8"
+Mime-Version: 1.0
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
 
+On Mon, 2014-11-17 at 23:12 +0100, Hartmut Knaack wrote:
+> Ivan T. Ivanov schrieb am 12.11.2014 09:55:
+> > On Tue, 2014-11-11 at 23:39 +0100, Hartmut Knaack wrote:
+> > > Ivan T. Ivanov schrieb am 11.11.2014 09:21:
+> > > > Hi Hartmut,
+> > > > 
+> > > > On Mon, 2014-11-10 at 22:11 +0100, Hartmut Knaack wrote:
+> > > > > Ivan T. Ivanov schrieb am 03.11.2014 16:24:
+> > > > > > From: Stanimir Varbanov <svarbanov@mm-sol.com>
+> > > > > > 
+> > > > > > The voltage ADC is peripheral of Qualcomm SPMI PMIC chips. It has
+> > > > > > 15 bits resolution and register space inside PMIC accessible across
+> > > > > > SPMI bus.
+> > > > > > 
+> > > > > > The vadc driver registers itself through IIO interface.
+> > > > > Reviewing again, I got the feeling that due to the complexity of adc reads (writing to
+> > > > > register
+> > > > > to start conversion, waiting a decent time for the conversion to complete, reading the
+> > > > > result),
+> > > > > it would be beneficial to use a mutex in vadc_read_raw or its depending functions.
+> > > > 
+> > > > Hm, yes, but there is such a nice info_exist_lock :-) in core functions,
+> > > > which in practice serve the same purpose.
+> > > I seem to miss that. Please point me in the right direction.
+> > 
+> > I am referring to info_exist_lock mutex part of struct iio_dev.
+> > It protects all operations inkern.c, no?
+> > 
+> Good point, thanks for helping me there.
 
-On Monday 17 November 2014 01:53 PM, Richard Cochran wrote:
-> On Mon, Nov 17, 2014 at 09:57:05AM +0530, Vignesh R wrote:
->> My patches are based on v3.18rc2. I tested my patches on am335x-evm
->> using tslib.
-> 
-> No beaglebone + cape testing?
-> 
->> Please explain "touch is broken"? What is the behaviour of TSC?
-> 
-> With plain v3.17 plus your series, the cursor is almost never near the
-> pen. Mostly it jitters around the right hand edge.
-> 
-> My customer had already changed the step delay (I think by trial and
-> error, not sure) in order to get the cursor near the pen. I ported
-> this change onto your series (see patch, below), but still the pen up
-> event causes a huge cursor jump.
-> 
-> (Again, I did solve the pen up issue, but in a totally different
-> way. I never posted the fix, because I could not be sure that it would
-> work on a wide variety of boards.)
-> 
->> Which ADC channels are being used for TSC?
-> 
-> &tscadc {
-> 	status = "okay";
-> 	tsc {
-> 		ti,wires = <4>;
-> 		ti,x-plate-resistance = <300>;
-> 		ti,coordinate-readouts = <5>;
-> 		ti,wire-config = <0x00 0x11 0x23 0x32>;
-> 	};
+I was wondering, is there a plan to improve this part of the code? 
+I mean to remove per device lock and use something like try_module_get(),
+when clients are acquiring reference to iio channel? 
 
-What is the ti,charge-delay value you have tried?
-Try setting it to 0xB000 and experiment.
+> > > > > > +
+> > > > > > +       ret = of_property_read_u32(node, "reg", &res);
+> > > > > For u16, there would be of_property_read_u16().
+> > > > > > +       if (ret < 0)
+> > > > > > +       return -ENODEV;
+> > > > > Just return ret here?
+> > > > 
+> > > > I am usually trying to follow these recommendations[1]. In practice driver
+> > > > core cares only for EPROBE_DEFER, ENODEV and ENXIO, while of_property_read_u32()
+> > > > can return ENODATA and EOVERFLOW, which did't not make sense for the core.
+> > > Please point me in the right direction on this one, too. It is pretty common to pass error 
+> > > codes
+> > > up, as it is also mentioned in [1].
+> > 
+> > Yes, I know that is common to just pass error codes up, but in this case it did't
+> > make too much sense, I think. Also take a look at realy_probe() and line 343.
+> This doesn't convince me. Actually, within the probe_failed part, it just doesn't care about 
+> ENODEV and ENXIO as long as debug messages are disabled (which apart from some developers, is 
+> default for the vast majority of devices). For all other error codes, it will at least print an 
+> info or warning about what's going wrong (and that can be a lot of help for debugging).
 
-> 
-> 	adc {
-> 		ti,adc-channels = <5 6 7>;
-> 	};
-> };
-> 
-> So for this particular design, your series really does not help, not
-> even a little. You did not test the series on many boards. I am
-> concerned that this series only works on the one board you did test,
-> and that it may break functionality on other people's boards.
-> 
+Well, if you insist... will change it.
 
-I just have one am335x-evm available. I will search for a beaglebone
-cape and test the patches. Let Sebastian, Johannes come back with their
-results. If the series works on multiple boards then, I believe, this
-series can go in.
-
-Regards
-Vignesh
-
-> Thanks,
-> Richard
-> 
-> ---
-> diff --git a/drivers/input/touchscreen/ti_am335x_tsc.c b/drivers/input/touchscreen/ti_am335x_tsc.c
-> index b84493f..77a4883 100644
-> --- a/drivers/input/touchscreen/ti_am335x_tsc.c
-> +++ b/drivers/input/touchscreen/ti_am335x_tsc.c
-> @@ -148,7 +148,7 @@ static void titsc_step_config(struct titsc *ts_dev)
->  	end_step = first_step + tsc_steps;
->  	for (i = end_step - ts_dev->coordinate_readouts; i < end_step; i++) {
->  		titsc_writel(ts_dev, REG_STEPCONFIG(i), config);
-> -		titsc_writel(ts_dev, REG_STEPDELAY(i), STEPCONFIG_OPENDLY);
-> +		titsc_writel(ts_dev, REG_STEPDELAY(i), STEPCONFIG_OPENDLY | STEPDELAY_SAMPLE(20));
->  	}
->  
->  	config = 0;
-> @@ -172,7 +172,7 @@ static void titsc_step_config(struct titsc *ts_dev)
->  	end_step = first_step + ts_dev->coordinate_readouts;
->  	for (i = first_step; i < end_step; i++) {
->  		titsc_writel(ts_dev, REG_STEPCONFIG(i), config);
-> -		titsc_writel(ts_dev, REG_STEPDELAY(i), STEPCONFIG_OPENDLY);
-> +		titsc_writel(ts_dev, REG_STEPDELAY(i), STEPCONFIG_OPENDLY | STEPDELAY_SAMPLE(20));
->  	}
->  
->  	/* Make CHARGECONFIG same as IDLECONFIG */
-> @@ -188,13 +188,13 @@ static void titsc_step_config(struct titsc *ts_dev)
->  			STEPCONFIG_INP(ts_dev->inp_xp);
->  	titsc_writel(ts_dev, REG_STEPCONFIG(end_step), config);
->  	titsc_writel(ts_dev, REG_STEPDELAY(end_step),
-> -			STEPCONFIG_OPENDLY);
-> +			STEPCONFIG_OPENDLY | STEPDELAY_SAMPLE(20));
->  
->  	end_step++;
->  	config |= STEPCONFIG_INP(ts_dev->inp_yn);
->  	titsc_writel(ts_dev, REG_STEPCONFIG(end_step), config);
->  	titsc_writel(ts_dev, REG_STEPDELAY(end_step),
-> -			STEPCONFIG_OPENDLY);
-> +			STEPCONFIG_OPENDLY | STEPDELAY_SAMPLE(20));
->  
->  	/* The steps end ... end - readouts * 2 + 2 and bit 0 for TS_Charge */
->  	stepenable = 1;
-> 
+Thanks, 
+Ivan
