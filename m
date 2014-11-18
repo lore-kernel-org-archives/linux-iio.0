@@ -1,70 +1,68 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-ig0-f176.google.com ([209.85.213.176]:44760 "EHLO
-	mail-ig0-f176.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755197AbaKRRMq (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 18 Nov 2014 12:12:46 -0500
-Date: Tue, 18 Nov 2014 09:12:40 -0800
-From: Dmitry Torokhov <dmitry.torokhov@gmail.com>
-To: Lee Jones <lee.jones@linaro.org>
-Cc: Vignesh R <vigneshr@ti.com>, Rob Herring <robh+dt@kernel.org>,
-	Pawel Moll <pawel.moll@arm.com>,
-	Mark Rutland <mark.rutland@arm.com>,
-	Ian Campbell <ijc+devicetree@hellion.org.uk>,
-	Kumar Gala <galak@codeaurora.org>,
-	Benoit Cousson <bcousson@baylibre.com>,
-	Tony Lindgren <tony@atomide.com>,
-	Russell King <linux@arm.linux.org.uk>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>, richardcochran@gmail.com,
-	Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	Samuel Ortiz <sameo@linux.intel.com>,
-	Felipe Balbi <balbi@ti.com>, Brad Griffis <bgriffis@ti.com>,
-	Sanjeev Sharma <sanjeev_sharma@mentor.com>,
-	Paul Gortmaker <paul.gortmaker@windriver.com>,
-	Jan Kardell <jan.kardell@telliq.com>,
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-	linux-iio@vger.kernel.org, linux-input@vger.kernel.org
-Subject: Re: [PATCH v4 3/6] mfd: ti_am335x_tscadc: Remove unwanted
- reg_se_cache save
-Message-ID: <20141118171240.GB3003@dtor-ws>
-References: <1415941651-28962-1-git-send-email-vigneshr@ti.com>
- <1415941651-28962-4-git-send-email-vigneshr@ti.com>
- <20141118143005.GF24004@x1>
+Received: from mail-wi0-f173.google.com ([209.85.212.173]:48664 "EHLO
+	mail-wi0-f173.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754005AbaKRRE7 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 18 Nov 2014 12:04:59 -0500
+Received: by mail-wi0-f173.google.com with SMTP id r20so2578055wiv.12
+        for <linux-iio@vger.kernel.org>; Tue, 18 Nov 2014 09:04:58 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <20141118143005.GF24004@x1>
+In-Reply-To: <546B776F.1080800@metafoo.de>
+References: <1416246966-3083-1-git-send-email-octavian.purdila@intel.com>
+	<20141118132405.EF30A40277@saturn.retrosnub.co.uk>
+	<CAE1zotJny3-Zcd81HUYNpNZJHkt=t6e2TANzVQ=-FU239MLarw@mail.gmail.com>
+	<546B776F.1080800@metafoo.de>
+Date: Tue, 18 Nov 2014 19:04:57 +0200
+Message-ID: <CAE1zotJik56OsM8-6Hg9rGqJT_VdRL0VvXv4kjEhBX6W0ijYLQ@mail.gmail.com>
+Subject: Re: [RFC 0/8] iio: add support for hardware fifo
+From: Octavian Purdila <octavian.purdila@intel.com>
+To: Lars-Peter Clausen <lars@metafoo.de>
+Cc: jic23@kernel.org, linux-iio@vger.kernel.org,
+	Srinivas Pandruvada <srinivas.pandruvada@intel.com>
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Tue, Nov 18, 2014 at 02:30:05PM +0000, Lee Jones wrote:
-> On Fri, 14 Nov 2014, Vignesh R wrote:
-> 
-> > In one shot mode, sequencer automatically disables all enabled steps at
-> > the end of each cycle. (both ADC steps and TSC steps) Hence these steps
-> > need not be saved in reg_se_cache for clearing these steps at a later
-> > stage.
-> > Also, when ADC wakes up Sequencer should not be busy executing any of the
-> > config steps except for the charge step. Previously charge step was 1 ADC
-> > clock cycle and hence it was ignored.
-> > 
-> > Signed-off-by: Vignesh R <vigneshr@ti.com>
-> > ---
-> >  drivers/mfd/ti_am335x_tscadc.c       | 7 +++++--
-> >  include/linux/mfd/ti_am335x_tscadc.h | 1 +
-> >  2 files changed, 6 insertions(+), 2 deletions(-)
-> 
-> Code looks better now.
-> 
-> Acked-by: Lee Jones <lee.jones@linaro.org>
-> 
-> What's the plan for this series?
+On Tue, Nov 18, 2014 at 6:44 PM, Lars-Peter Clausen <lars@metafoo.de> wrote:
+> On 11/18/2014 04:03 PM, Octavian Purdila wrote:
+>>
+>> On Tue, Nov 18, 2014 at 3:24 PM, <jic23@kernel.org> wrote:
+>
+> [...]
+>>>
+>>> Hence we started with something that at least superficially (I haven't
+>>> had a chance to go through the implementation in detail yet)
+>>> looks similar to what you have but ended up changing the method of
+>>> signalling to and from userspace.
+>>> Hardware buffer -> Software buffer -> user space.
+>>> Userspace watershed control -> Software buffer watershed control
+>>> -> Hardware buffer watershed control.
+>>> If userspace sets the watershed to say 16 then, as well as setting
+>>> that level in the software buffer it should be passed on to the
+>>> device driver allowing the watershed there to be set appropriately.
+>>> Now things get interesting if userspace sets the watershed to a value
+>>> that makes no sense for the hardware (say 17 on a device that does
+>>> power of 2 values only) as then it will have to fall back to
+>>> grabbing every one (Watershed of 1).  Perhaps we can provide 'hints'
+>>> for this?
+>>
+>>
+>> As far as I understood, the proposed watermark implementation only
+>> affects the device buffer and as I mentioned above that will not help
+>> with reducing the interrupt rate.
+>
+>
+> By setting the watershed level the userspace application tells you that it
+> is OK with getting data with a higher latency than one sample. This allows
+> the driver to configure the FIFO level and hence reduce the interrupt rate.
+>
 
-I am waiting for the interested parties to provide more feedback. So far
-I have seen a few reports saying that they see issues with the series
-applied.
+Hi Lars,
 
--- 
-Dmitry
+The implementation (as proposed in the patch by Josselin and Yannick)
+does not inform the driver of changes to watermark, that is only
+visible to core iio / buffer logic.
+
+Also, the watermark alone is not enough to properly support hardware
+fifos: the fifo can operate in multiple modes, we need to read data
+from the hardware fifo even when the watermark interrupt is not issued
+(the flush operation in the current patch set).
