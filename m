@@ -1,115 +1,119 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:42657 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753993AbaKENse (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 5 Nov 2014 08:48:34 -0500
-Message-ID: <545A2AAE.2080304@kernel.org>
-Date: Wed, 05 Nov 2014 13:48:30 +0000
-From: Jonathan Cameron <jic23@kernel.org>
+Return-Path: <knaack.h@gmx.de>
+Message-ID: <546C7BF8.8010203@gmx.de>
+Date: Wed, 19 Nov 2014 12:16:08 +0100
+From: Hartmut Knaack <knaack.h@gmx.de>
 MIME-Version: 1.0
-To: Hartmut Knaack <knaack.h@gmx.de>,
-	George McCollister <george.mccollister@gmail.com>,
-	mranostay@gmail.com
+To: Gwendal Grignou <gwendal@chromium.org>,
+ srinivas.pandruvada@linux.intel.com, jic23@kernel.org
 CC: linux-iio@vger.kernel.org
-Subject: Re: [PATCH 2/2] iio: as3935: Remove unnecessary semicolons
-References: <1414770263-13146-1-git-send-email-george.mccollister@gmail.com> <1414770263-13146-2-git-send-email-george.mccollister@gmail.com> <54594854.5000808@gmx.de>
-In-Reply-To: <54594854.5000808@gmx.de>
-Content-Type: text/plain; charset=iso-8859-15
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Subject: Re: [PATCH v2 1/3] iio: ak8975: minor fixes
+References: <1415225452-21957-2-git-send-email-gwendal@chromium.org> <1416255221-18528-1-git-send-email-gwendal@chromium.org>
+In-Reply-To: <1416255221-18528-1-git-send-email-gwendal@chromium.org>
+Content-Type: text/plain; charset=ISO-8859-15
+List-ID: <linux-iio@vger.kernel.org>
 
-On 04/11/14 21:42, Hartmut Knaack wrote:
-> George McCollister schrieb am 31.10.2014 16:44:
->> Signed-off-by: George McCollister <george.mccollister@gmail.com>
-> Acked-by: Hartmut Knaack <knaack.h@gmx.de>
-Applied to the togreg branch of iio.git - initially pushed out as testing
-for the autobuilders to play.
-
-Jonathan
->> ---
->>  drivers/iio/proximity/as3935.c | 16 ++++++++--------
->>  1 file changed, 8 insertions(+), 8 deletions(-)
->>
->> diff --git a/drivers/iio/proximity/as3935.c b/drivers/iio/proximity/as3935.c
->> index 8349cc0..466aa43 100644
->> --- a/drivers/iio/proximity/as3935.c
->> +++ b/drivers/iio/proximity/as3935.c
->> @@ -95,7 +95,7 @@ static int as3935_read(struct as3935_state *st, unsigned int reg, int *val)
->>  	*val = ret;
->>  
->>  	return 0;
->> -};
->> +}
->>  
->>  static int as3935_write(struct as3935_state *st,
->>  				unsigned int reg,
->> @@ -107,7 +107,7 @@ static int as3935_write(struct as3935_state *st,
->>  	buf[1] = val;
->>  
->>  	return spi_write(st->spi, buf, 2);
->> -};
->> +}
->>  
->>  static ssize_t as3935_sensor_sensitivity_show(struct device *dev,
->>  					struct device_attribute *attr,
->> @@ -122,7 +122,7 @@ static ssize_t as3935_sensor_sensitivity_show(struct device *dev,
->>  	val = (val & AS3935_AFE_MASK) >> 1;
->>  
->>  	return sprintf(buf, "%d\n", val);
->> -};
->> +}
->>  
->>  static ssize_t as3935_sensor_sensitivity_store(struct device *dev,
->>  					struct device_attribute *attr,
->> @@ -142,7 +142,7 @@ static ssize_t as3935_sensor_sensitivity_store(struct device *dev,
->>  	as3935_write(st, AS3935_AFE_GAIN, val << 1);
->>  
->>  	return len;
->> -};
->> +}
->>  
->>  static IIO_DEVICE_ATTR(sensor_sensitivity, S_IRUGO | S_IWUSR,
->>  	as3935_sensor_sensitivity_show, as3935_sensor_sensitivity_store, 0);
->> @@ -214,7 +214,7 @@ err_read:
->>  	iio_trigger_notify_done(indio_dev->trig);
->>  
->>  	return IRQ_HANDLED;
->> -};
->> +}
->>  
->>  static const struct iio_trigger_ops iio_interrupt_trigger_ops = {
->>  	.owner = THIS_MODULE,
->> @@ -238,7 +238,7 @@ static void as3935_event_work(struct work_struct *work)
->>  		dev_warn(&st->spi->dev, "noise level is too high");
->>  		break;
->>  	}
->> -};
->> +}
->>  
->>  static irqreturn_t as3935_interrupt_handler(int irq, void *private)
->>  {
->> @@ -417,7 +417,7 @@ unregister_trigger:
->>  	iio_trigger_unregister(st->trig);
->>  
->>  	return ret;
->> -};
->> +}
->>  
->>  static int as3935_remove(struct spi_device *spi)
->>  {
->> @@ -429,7 +429,7 @@ static int as3935_remove(struct spi_device *spi)
->>  	iio_trigger_unregister(st->trig);
->>  
->>  	return 0;
->> -};
->> +}
->>  
->>  static const struct spi_device_id as3935_id[] = {
->>  	{"as3935", 0},
->>
+Gwendal Grignou schrieb am 17.11.2014 21:13:
+> Fixes code duplication, return of function.
+> Check client->irq properly when setting up optional irq handler.
 > 
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> Signed-off-by: Gwendal Grignou <gwendal@chromium.org>
+Reviewed-by: Hartmut Knaack <knaack.h@gmx.de>
+> ---
+>  Fix client->irq checking, Srinivas found it was not correct on ACPI based
+>  machine.
+>  drivers/iio/magnetometer/ak8975.c | 35 ++++++++++++++---------------------
+>  1 file changed, 14 insertions(+), 21 deletions(-)
+> 
+> diff --git a/drivers/iio/magnetometer/ak8975.c b/drivers/iio/magnetometer/ak8975.c
+> index bf5ef07..4e69480 100644
+> --- a/drivers/iio/magnetometer/ak8975.c
+> +++ b/drivers/iio/magnetometer/ak8975.c
+> @@ -64,10 +64,10 @@
+>  #define AK8975_REG_CNTL			0x0A
+>  #define AK8975_REG_CNTL_MODE_SHIFT	0
+>  #define AK8975_REG_CNTL_MODE_MASK	(0xF << AK8975_REG_CNTL_MODE_SHIFT)
+> -#define AK8975_REG_CNTL_MODE_POWER_DOWN	0
+> -#define AK8975_REG_CNTL_MODE_ONCE	1
+> -#define AK8975_REG_CNTL_MODE_SELF_TEST	8
+> -#define AK8975_REG_CNTL_MODE_FUSE_ROM	0xF
+> +#define AK8975_REG_CNTL_MODE_POWER_DOWN	0x00
+> +#define AK8975_REG_CNTL_MODE_ONCE	0x01
+> +#define AK8975_REG_CNTL_MODE_SELF_TEST	0x08
+> +#define AK8975_REG_CNTL_MODE_FUSE_ROM	0x0F
+>  
+>  #define AK8975_REG_RSVC			0x0B
+>  #define AK8975_REG_ASTC			0x0C
+> @@ -166,8 +166,8 @@ static int ak8975_setup_irq(struct ak8975_data *data)
+>  		irq = gpio_to_irq(data->eoc_gpio);
+>  
+>  	rc = devm_request_irq(&client->dev, irq, ak8975_irq_handler,
+> -			 IRQF_TRIGGER_RISING | IRQF_ONESHOT,
+> -			 dev_name(&client->dev), data);
+> +			      IRQF_TRIGGER_RISING | IRQF_ONESHOT,
+> +			      dev_name(&client->dev), data);
+>  	if (rc < 0) {
+>  		dev_err(&client->dev,
+>  			"irq %d request failed, (gpio %d): %d\n",
+> @@ -231,8 +231,12 @@ static int ak8975_setup(struct i2c_client *client)
+>  				AK8975_REG_CNTL_MODE_POWER_DOWN,
+>  				AK8975_REG_CNTL_MODE_MASK,
+>  				AK8975_REG_CNTL_MODE_SHIFT);
+> +	if (ret < 0) {
+> +		dev_err(&client->dev, "Error in setting power-down mode\n");
+> +		return ret;
+> +	}
+>  
+> -	if (data->eoc_gpio > 0 || client->irq) {
+> +	if (data->eoc_gpio > 0 || client->irq > 0) {
+>  		ret = ak8975_setup_irq(data);
+>  		if (ret < 0) {
+>  			dev_err(&client->dev,
+> @@ -241,11 +245,6 @@ static int ak8975_setup(struct i2c_client *client)
+>  		}
+>  	}
+>  
+> -	if (ret < 0) {
+> -		dev_err(&client->dev, "Error in setting power-down mode\n");
+> -		return ret;
+> -	}
+> -
+>  /*
+>   * Precalculate scale factor (in Gauss units) for each axis and
+>   * store in the device data.
+> @@ -550,24 +549,18 @@ static int ak8975_probe(struct i2c_client *client,
+>  	/* Perform some basic start-of-day setup of the device. */
+>  	err = ak8975_setup(client);
+>  	if (err < 0) {
+> -		dev_err(&client->dev, "AK8975 initialization fails\n");
+> +		dev_err(&client->dev, "%s initialization fails\n", name);
+>  		return err;
+>  	}
+>  
+> -	data->client = client;
+>  	mutex_init(&data->lock);
+> -	data->eoc_gpio = eoc_gpio;
+>  	indio_dev->dev.parent = &client->dev;
+>  	indio_dev->channels = ak8975_channels;
+>  	indio_dev->num_channels = ARRAY_SIZE(ak8975_channels);
+>  	indio_dev->info = &ak8975_info;
+>  	indio_dev->modes = INDIO_DIRECT_MODE;
+>  	indio_dev->name = name;
+> -	err = devm_iio_device_register(&client->dev, indio_dev);
+> -	if (err < 0)
+> -		return err;
+> -
+> -	return 0;
+> +	return devm_iio_device_register(&client->dev, indio_dev);
+>  }
+>  
+>  static const struct i2c_device_id ak8975_id[] = {
+> @@ -588,7 +581,7 @@ MODULE_DEVICE_TABLE(of, ak8975_of_match);
+>  static struct i2c_driver ak8975_driver = {
+>  	.driver = {
+>  		.name	= "ak8975",
+> -		.of_match_table = ak8975_of_match,
+> +		.of_match_table = of_match_ptr(ak8975_of_match),
+>  		.acpi_match_table = ACPI_PTR(ak_acpi_match),
+>  	},
+>  	.probe		= ak8975_probe,
 > 
