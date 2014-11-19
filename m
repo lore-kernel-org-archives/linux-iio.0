@@ -1,70 +1,96 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mout.kundenserver.de ([212.227.17.10]:52609 "EHLO
-	mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1757018AbaKSWUA (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 19 Nov 2014 17:20:00 -0500
-From: Stefan Wahren <stefan.wahren@i2se.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Fabio Estevam <festevam@gmail.com>,
-	=?UTF-8?q?Kristina=20Mart=C5=A1enko?=
-	<kristina.martsenko@gmail.com>, linux-iio@vger.kernel.org
-Subject: [PATCH] iio: mxs-lradc: check ranges of ts properties
-Date: Wed, 19 Nov 2014 22:19:50 +0000
-Message-Id: <1416435590-13999-1-git-send-email-stefan.wahren@i2se.com>
+Received: from mout.gmx.net ([212.227.17.21]:52507 "EHLO mout.gmx.net"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1757492AbaKSWhr (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Wed, 19 Nov 2014 17:37:47 -0500
+Message-ID: <546D1BB5.8010308@gmx.de>
+Date: Wed, 19 Nov 2014 23:37:41 +0100
+From: Hartmut Knaack <knaack.h@gmx.de>
+MIME-Version: 1.0
+To: NeilBrown <neilb@suse.de>, Jonathan Cameron <jic23@kernel.org>
+CC: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+	GTA04 owners <gta04-owner@goldelico.com>
+Subject: Re: [PATCH] iio: gyro: itg3200: add suspend/resume support.
+References: <20141108111833.3829480c@notabene.brown>
+In-Reply-To: <20141108111833.3829480c@notabene.brown>
+Content-Type: text/plain; charset=US-ASCII
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-The devicetree binding for mxs-lradc defines ranges for the
-touchscreen properties. In order to avoid unexpected behavior like
-division by zero, we better check these ranges during probe and
-abort in error case.
-
-Signed-off-by: Stefan Wahren <stefan.wahren@i2se.com>
----
- drivers/staging/iio/adc/mxs-lradc.c |   20 ++++++++++++++++++++
- 1 file changed, 20 insertions(+)
-
-diff --git a/drivers/staging/iio/adc/mxs-lradc.c b/drivers/staging/iio/adc/mxs-lradc.c
-index 6757f10..57c3cf6 100644
---- a/drivers/staging/iio/adc/mxs-lradc.c
-+++ b/drivers/staging/iio/adc/mxs-lradc.c
-@@ -1500,16 +1500,36 @@ static int mxs_lradc_probe_touchscreen(struct mxs_lradc *lradc,
- 	if (ret == 0)
- 		lradc->over_sample_cnt = adapt;
-
-+	if (!lradc->over_sample_cnt || lradc->over_sample_cnt > 0x1f) {
-+		dev_err(lradc->dev, "Invalid sample count (%u)\n",
-+				    lradc->over_sample_cnt);
-+		return -EINVAL;
-+	}
-+
- 	lradc->over_sample_delay = 2;
- 	ret = of_property_read_u32(lradc_node, "fsl,ave-delay", &adapt);
- 	if (ret == 0)
- 		lradc->over_sample_delay = adapt;
-
-+	if (!lradc->over_sample_delay ||
-+	    lradc->over_sample_delay > LRADC_DELAY_DELAY_MASK) {
-+		dev_err(lradc->dev, "Invalid sample delay (%u)\n",
-+				    lradc->over_sample_delay);
-+		return -EINVAL;
-+	}
-+
- 	lradc->settling_delay = 10;
- 	ret = of_property_read_u32(lradc_node, "fsl,settling", &adapt);
- 	if (ret == 0)
- 		lradc->settling_delay = adapt;
-
-+	if (!lradc->settling_delay ||
-+	    lradc->settling_delay > LRADC_DELAY_DELAY_MASK) {
-+		dev_err(lradc->dev, "Invalid settling delay (%u)\n",
-+				    lradc->settling_delay);
-+		return -EINVAL;
-+	}
-+
- 	return 0;
- }
-
---
-1.7.9.5
+NeilBrown schrieb am 08.11.2014 01:18:
+> 
+> 
+> Unless we put the device to sleep when not it use, it wastes
+> 6mA.
+> 
+> If the device is asleep on probe, the 'id' register
+> sometimes mis-reads - so reset first.  If the device responds
+> at all a command sent to the address, it is almost certainly
+> the correct device already.
+> 
+Hi Neil,
+I still have some question and issues, see inline.
+> Signed-off-by: NeilBrown <neil@brown.name>
+> 
+> diff --git a/drivers/iio/gyro/itg3200_core.c b/drivers/iio/gyro/itg3200_core.c
+> index 6a8020d48140..394667fb23f9 100644
+> --- a/drivers/iio/gyro/itg3200_core.c
+> +++ b/drivers/iio/gyro/itg3200_core.c
+> @@ -223,6 +223,7 @@ static int itg3200_initial_setup(struct iio_dev *indio_dev)
+>  	int ret;
+>  	u8 val;
+>  
+> +	ret = itg3200_reset(indio_dev);
+You should check possible error codes here. Also, there is still another reset issued some lines further down, although in between, there is only the register-read performed, which we see right below here - I would assume this wouldn't change anything in the device to require another reset. So, in conclusion, wouldn't it be sufficient to just move the reset part from further down up here?
+>  	ret = itg3200_read_reg_8(indio_dev, ITG3200_REG_ADDRESS, &val);
+>  	if (ret)
+>  		goto err_ret;
+> @@ -351,6 +352,35 @@ static int itg3200_remove(struct i2c_client *client)
+>  	return 0;
+>  }
+>  
+> +#ifdef CONFIG_PM_SLEEP
+> +static int itg3200_suspend(struct device *dev)
+> +{
+> +	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+> +	struct itg3200 *st = iio_priv(indio_dev);
+> +	int ret;
+> +
+> +	dev_dbg(&st->i2c->dev, "suspend device");
+> +
+> +	ret = itg3200_write_reg_8(indio_dev,
+> +			ITG3200_REG_POWER_MANAGEMENT,
+> +			ITG3200_SLEEP);
+> +	return ret;
+No need for ret, if you do it like this (fixing also some indentation issue):
+	return itg3200_write_reg_8(indio_dev, ITG3200_REG_POWER_MANAGEMENT,
+				   ITG3200_SLEEP);
+> +}
+> +
+> +static int itg3200_resume(struct device *dev)
+> +{
+> +	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+> +
+> +	itg3200_reset(indio_dev);
+> +	return 0;
+> +}
+> +
+> +static SIMPLE_DEV_PM_OPS(itg3200_pm_ops, itg3200_suspend, itg3200_resume);
+> +#define ITG3200_PM_OPS (&itg3200_pm_ops)
+> +#else
+> +#define ITG3200_PM_OPS NULL
+> +#endif
+> +
+>  static const struct i2c_device_id itg3200_id[] = {
+>  	{ "itg3200", 0 },
+>  	{ }
+> @@ -361,6 +391,7 @@ static struct i2c_driver itg3200_driver = {
+>  	.driver = {
+>  		.owner  = THIS_MODULE,
+>  		.name	= "itg3200",
+> +		.pm	= ITG3200_PM_OPS,
+>  	},
+>  	.id_table	= itg3200_id,
+>  	.probe		= itg3200_probe,
+> 
 
