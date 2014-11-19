@@ -1,361 +1,67 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga11.intel.com ([192.55.52.93]:38408 "EHLO mga11.intel.com"
+Received: from mout.gmx.net ([212.227.15.18]:60730 "EHLO mout.gmx.net"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751207AbaKUHL6 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Fri, 21 Nov 2014 02:11:58 -0500
-From: Aaron Lu <aaron.lu@intel.com>
-To: "Rafael J. Wysocki" <rjw@rjwysocki.net>
-Cc: Lee Jones <lee.jones@linaro.org>,
-	Jacob Pan <jacob.jun.pan@linux.intel.com>,
-	Yegnesh Iyer <yegnesh.s.iyer@intel.com>,
-	linux-acpi@vger.kernel.org, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH v3 2/3] ACPI / PMIC: support PMIC operation region for XPower AXP288
-Date: Fri, 21 Nov 2014 15:11:50 +0800
-Message-Id: <1416553911-22990-3-git-send-email-aaron.lu@intel.com>
-In-Reply-To: <1416553911-22990-1-git-send-email-aaron.lu@intel.com>
-References: <1416553911-22990-1-git-send-email-aaron.lu@intel.com>
+	id S932761AbaKSWDF (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Wed, 19 Nov 2014 17:03:05 -0500
+Message-ID: <546D1380.6040209@gmx.de>
+Date: Wed, 19 Nov 2014 23:02:40 +0100
+From: Hartmut Knaack <knaack.h@gmx.de>
+MIME-Version: 1.0
+To: Dan Murphy <dmurphy@ti.com>, linux-iio@vger.kernel.org,
+	jic23@kernel.org
+CC: pmeerw@pmeerw.net, daniel.baluta@intel.com, k.wrona@samsung.com
+Subject: Re: [RFC v2 2/3] iio: bindings: Add TI afe4403 heart monitor
+ documentation
+References: <1415287106-13491-1-git-send-email-dmurphy@ti.com> <1415287106-13491-2-git-send-email-dmurphy@ti.com>
+In-Reply-To: <1415287106-13491-2-git-send-email-dmurphy@ti.com>
+Content-Type: text/plain; charset=ISO-8859-15
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-The Baytrail-T-CR platform firmware has defined two customized operation
-regions for PMIC chip Dollar Cove XPower - one is for power resource
-handling and one is for thermal just like the CrystalCove one. This patch
-adds support for them on top of the common PMIC opregion region code.
-
-Signed-off-by: Aaron Lu <aaron.lu@intel.com>
-Acked-by: Lee Jones <lee.jones@linaro.org> for the MFD part
----
- drivers/acpi/Kconfig                  |   6 +
- drivers/acpi/Makefile                 |   1 +
- drivers/acpi/pmic/intel_pmic_xpower.c | 277 ++++++++++++++++++++++++++++++++++
- drivers/mfd/axp20x.c                  |   3 +
- 4 files changed, 287 insertions(+)
- create mode 100644 drivers/acpi/pmic/intel_pmic_xpower.c
-
-diff --git a/drivers/acpi/Kconfig b/drivers/acpi/Kconfig
-index 3e5f2056f946..227f0692cbff 100644
---- a/drivers/acpi/Kconfig
-+++ b/drivers/acpi/Kconfig
-@@ -408,6 +408,12 @@ config CRC_PMIC_OPREGION
- 	help
- 	  This config adds ACPI operation region support for CrystalCove PMIC.
- 
-+config XPOWER_PMIC_OPREGION
-+	bool "ACPI operation region support for XPower AXP288 PMIC"
-+	depends on AXP288_ADC
-+	help
-+	  This config adds ACPI operation region support for XPower AXP288 PMIC.
-+
- endif
- 
- endif	# ACPI
-diff --git a/drivers/acpi/Makefile b/drivers/acpi/Makefile
-index f5938399ac14..f74317cc1ca9 100644
---- a/drivers/acpi/Makefile
-+++ b/drivers/acpi/Makefile
-@@ -91,3 +91,4 @@ obj-$(CONFIG_ACPI_EXTLOG)	+= acpi_extlog.o
- 
- obj-$(CONFIG_PMIC_OPREGION)	+= pmic/intel_pmic.o
- obj-$(CONFIG_CRC_PMIC_OPREGION) += pmic/intel_pmic_crc.o
-+obj-$(CONFIG_XPOWER_PMIC_OPREGION) += pmic/intel_pmic_xpower.o
-diff --git a/drivers/acpi/pmic/intel_pmic_xpower.c b/drivers/acpi/pmic/intel_pmic_xpower.c
-new file mode 100644
-index 000000000000..6c4d6ce0cff1
---- /dev/null
-+++ b/drivers/acpi/pmic/intel_pmic_xpower.c
-@@ -0,0 +1,277 @@
-+/*
-+ * intel_pmic_xpower.c - XPower AXP288 PMIC operation region driver
-+ *
-+ * Copyright (C) 2014 Intel Corporation. All rights reserved.
-+ *
-+ * This program is free software; you can redistribute it and/or
-+ * modify it under the terms of the GNU General Public License version
-+ * 2 as published by the Free Software Foundation.
-+ *
-+ * This program is distributed in the hope that it will be useful,
-+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
-+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-+ * GNU General Public License for more details.
-+ */
-+
-+#include <linux/module.h>
-+#include <linux/acpi.h>
-+#include <linux/mfd/axp20x.h>
-+#include <linux/regmap.h>
-+#include <linux/platform_device.h>
-+#include <linux/iio/consumer.h>
-+#include "intel_pmic.h"
-+
-+#define XPOWER_GPADC_LOW	0x5b
-+
-+static struct pmic_pwr_table pwr_table[] = {
-+	{
-+		.address = 0x00,
-+		.pwr_reg = {
-+			.reg = 0x13,
-+			.bit = 0x05,
-+		}
-+	}, /* ALD1, 0x13, bit5 */
-+	{
-+		.address = 0x04,
-+		.pwr_reg = {
-+			.reg = 0x13,
-+			.bit = 0x06,
-+		}
-+	}, /* ALD2, 0x13, bit6 */
-+	{
-+		.address = 0x08,
-+		.pwr_reg = {
-+			.reg = 0x13,
-+			.bit = 0x07,
-+		}
-+	}, /* ALD3, 0x13, bit7 */
-+	{
-+		.address = 0x0c,
-+		.pwr_reg = {
-+			.reg = 0x12,
-+			.bit = 0x03,
-+		}
-+	}, /* DLD1, 0x12, bit3 */
-+	{
-+		.address = 0x10,
-+		.pwr_reg = {
-+			.reg = 0x12,
-+			.bit = 0x04,
-+		}
-+	}, /* DLD2, 0x12, bit4 */
-+	{
-+		.address = 0x14,
-+		.pwr_reg = {
-+			.reg = 0x12,
-+			.bit = 0x05,
-+		}
-+	}, /* DLD3, 0x12, bit5 */
-+	{
-+		.address = 0x18,
-+		.pwr_reg = {
-+			.reg = 0x12,
-+			.bit = 0x06,
-+		}
-+	}, /* DLD4, 0x12, bit6 */
-+	{
-+		.address = 0x1c,
-+		.pwr_reg = {
-+			.reg = 0x12,
-+			.bit = 0x00,
-+		}
-+	}, /* ELD1, 0x12, bit0 */
-+	{
-+		.address = 0x20,
-+		.pwr_reg = {
-+			.reg = 0x12,
-+			.bit = 0x01,
-+		}
-+	}, /* ELD2, 0x12, bit1 */
-+	{
-+		.address = 0x24,
-+		.pwr_reg = {
-+			.reg = 0x12,
-+			.bit = 0x02,
-+		}
-+	}, /* ELD3, 0x12, bit2 */
-+	{
-+		.address = 0x28,
-+		.pwr_reg = {
-+			.reg = 0x13,
-+			.bit = 0x02,
-+		}
-+	}, /* FLD1, 0x13, bit2 */
-+	{
-+		.address = 0x2c,
-+		.pwr_reg = {
-+			.reg = 0x13,
-+			.bit = 0x03,
-+		}
-+	}, /* FLD2, 0x13, bit3 */
-+	{
-+		.address = 0x30,
-+		.pwr_reg = {
-+			.reg = 0x13,
-+			.bit = 0x04,
-+		}
-+	}, /* FLD3, 0x13, bit4 */
-+	{
-+		.address = 0x38,
-+		.pwr_reg = {
-+			.reg = 0x10,
-+			.bit = 0x03,
-+		}
-+	}, /* BUC1, 0x10, bit3 */
-+	{
-+		.address = 0x3c,
-+		.pwr_reg = {
-+			.reg = 0x10,
-+			.bit = 0x06,
-+		}
-+	}, /* BUC2, 0x10, bit6 */
-+	{
-+		.address = 0x40,
-+		.pwr_reg = {
-+			.reg = 0x10,
-+			.bit = 0x05,
-+		}
-+	}, /* BUC3, 0x10, bit5 */
-+	{
-+		.address = 0x44,
-+		.pwr_reg = {
-+			.reg = 0x10,
-+			.bit = 0x04,
-+		}
-+	}, /* BUC4, 0x10, bit4 */
-+	{
-+		.address = 0x48,
-+		.pwr_reg = {
-+			.reg = 0x10,
-+			.bit = 0x01,
-+		}
-+	}, /* BUC5, 0x10, bit1 */
-+	{
-+		.address = 0x4c,
-+		.pwr_reg = {
-+			.reg = 0x10,
-+			.bit = 0x00
-+		}
-+	}, /* BUC6, 0x10, bit0 */
-+};
-+
-+/* TMP0 - TMP5 are the same, all from GPADC */
-+static struct pmic_thermal_table thermal_table[] = {
-+	{
-+		.address = 0x00,
-+		.reg = XPOWER_GPADC_LOW
-+	},
-+	{
-+		.address = 0x0c,
-+		.reg = XPOWER_GPADC_LOW
-+	},
-+	{
-+		.address = 0x18,
-+		.reg = XPOWER_GPADC_LOW
-+	},
-+	{
-+		.address = 0x24,
-+		.reg = XPOWER_GPADC_LOW
-+	},
-+	{
-+		.address = 0x30,
-+		.reg = XPOWER_GPADC_LOW
-+	},
-+	{
-+		.address = 0x3c,
-+		.reg = XPOWER_GPADC_LOW
-+	},
-+};
-+
-+static int intel_xpower_pmic_get_power(struct regmap *regmap,
-+				       struct pmic_pwr_reg *preg, u64 *value)
-+{
-+	int data;
-+
-+	if (regmap_read(regmap, preg->reg, &data))
-+		return -EIO;
-+
-+	*value = (data & BIT(preg->bit)) ? 1 : 0;
-+	return 0;
-+}
-+
-+static int intel_xpower_pmic_update_power(struct regmap *regmap,
-+					  struct pmic_pwr_reg *preg, bool on)
-+{
-+	int data;
-+
-+	if (regmap_read(regmap, preg->reg, &data))
-+		return -EIO;
-+
-+	if (on)
-+		data |= BIT(preg->bit);
-+	else
-+		data &= ~BIT(preg->bit);
-+
-+	if (regmap_write(regmap, preg->reg, data))
-+		return -EIO;
-+
-+	return 0;
-+}
-+
-+/*
-+ * We could get the sensor value by manipulating the HW regs here, but since
-+ * the axp288 IIO driver may also access the same regs at the same time, the
-+ * APIs provided by IIO subsystem are used here instead to avoid problems. As
-+ * a result, the two passed in params are of no actual use.
-+ */
-+static int intel_xpower_pmic_get_raw_temp(struct regmap *regmap, int reg)
-+{
-+	struct iio_channel *gpadc_chan;
-+	int ret, val;
-+
-+	gpadc_chan = iio_channel_get(NULL, "axp288-system-temp");
-+	if (IS_ERR_OR_NULL(gpadc_chan))
-+		return -EACCES;
-+
-+	ret = iio_read_channel_raw(gpadc_chan, &val);
-+	if (ret < 0)
-+		val = ret;
-+
-+	iio_channel_release(gpadc_chan);
-+	return val;
-+}
-+
-+static struct intel_pmic_opregion_data intel_xpower_pmic_opregion_data = {
-+	.get_power = intel_xpower_pmic_get_power,
-+	.update_power = intel_xpower_pmic_update_power,
-+	.get_raw_temp = intel_xpower_pmic_get_raw_temp,
-+	.pwr_table = pwr_table,
-+	.pwr_table_count = ARRAY_SIZE(pwr_table),
-+	.thermal_table = thermal_table,
-+	.thermal_table_count = ARRAY_SIZE(thermal_table),
-+};
-+
-+
-+static int intel_xpower_pmic_opregion_probe(struct platform_device *pdev)
-+{
-+	struct axp20x_dev *axp20x = dev_get_drvdata(pdev->dev.parent);
-+	return intel_pmic_install_opregion_handler(&pdev->dev,
-+			ACPI_HANDLE(pdev->dev.parent), axp20x->regmap,
-+			&intel_xpower_pmic_opregion_data);
-+}
-+
-+static struct platform_driver intel_xpower_pmic_opregion_driver = {
-+	.probe = intel_xpower_pmic_opregion_probe,
-+	.driver = {
-+		.name = "axp288_opregion",
-+	},
-+};
-+
-+static int __init intel_xpower_pmic_opregion_driver_init(void)
-+{
-+	return platform_driver_register(&intel_xpower_pmic_opregion_driver);
-+}
-+module_init(intel_xpower_pmic_opregion_driver_init);
-+
-+MODULE_DESCRIPTION("XPower AXP288 ACPI operation region driver");
-+MODULE_LICENSE("GPL");
-diff --git a/drivers/mfd/axp20x.c b/drivers/mfd/axp20x.c
-index acbb4c3bf98c..daf3c8d33b4d 100644
---- a/drivers/mfd/axp20x.c
-+++ b/drivers/mfd/axp20x.c
-@@ -354,6 +354,9 @@ static struct mfd_cell axp288_cells[] = {
- 		.num_resources = ARRAY_SIZE(axp288_battery_resources),
- 		.resources = axp288_battery_resources,
- 	},
-+	{
-+		.name = "axp288_opregion",
-+	},
- };
- 
- static struct axp20x_dev *axp20x_pm_power_off;
--- 
-1.9.3
+Dan Murphy schrieb am 06.11.2014 16:18:
+> Add the TI afe4403 heart monitor device tree
+> binding documentation.  heart_monitors directory
+> created under iio.
+> 
+I found a small typo in the comment.
+> Signed-off-by: Dan Murphy <dmurphy@ti.com>
+> ---
+> 
+> v2 - Updated per v1 comments - http://marc.info/?l=linux-iio&m=141331404132215&w=2
+> 
+>  .../bindings/iio/heart_monitor/ti_afe4403.txt      | 23 ++++++++++++++++++++++
+>  1 file changed, 23 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/iio/heart_monitor/ti_afe4403.txt
+> 
+> diff --git a/Documentation/devicetree/bindings/iio/heart_monitor/ti_afe4403.txt b/Documentation/devicetree/bindings/iio/heart_monitor/ti_afe4403.txt
+> new file mode 100644
+> index 0000000..cf75b5a
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/iio/heart_monitor/ti_afe4403.txt
+> @@ -0,0 +1,23 @@
+> +* Texas Instruments - AFE4403 Heart rate and Pulse Oximeter
+> +
+> +The device consists of a low-noise receiver channel
+> +with an integrated analog-to-digital converter (ADC),
+> +an LED transmit section, and diagnostics for sensor and LED fault detection.
+Typo: a LED ...
+> +
+> +Required properties:
+> +  - compatible: Must contain "ti,afe4403".
+> +  - ste-gpio: GPIO for the spi control line
+> +  - data-ready-gpio: GPIO interrupt when the afe4403 has data
+> +  - led-supply: Chip supply to the device
+> +
+> +Optional properties:
+> +  - reset-gpio: GPIO used to reset the device via HW
+> +
+> +Example:
+> +
+> +&heart_rate {
+> +	compatible = "ti,afe4403";
+> +	ste-gpio = <&gpio1 29 GPIO_ACTIVE_HIGH>;
+> +	data-ready-gpio = <&gpio1 28 GPIO_ACTIVE_HIGH>;
+> +	led-supply = <&vbat>;
+> +};
+> 
 
