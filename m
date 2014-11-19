@@ -1,264 +1,70 @@
-Return-Path: <k.wrona@samsung.com>
-From: Karol Wrona <k.wrona@samsung.com>
-To: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
- Arnd Bergmann <arnd@arndb.de>, linux-kernel@vger.kernel.org
-Cc: Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
- Kyungmin Park <kyungmin.park@samsung.com>, Karol Wrona <k.wrona@samsung.com>
-Subject: [PATCH v2 5/5] iio: sensorhub: Add sensorhub gyroscope sensor
-Date: Fri, 21 Nov 2014 19:19:17 +0100
-Message-id: <1416593957-19788-6-git-send-email-k.wrona@samsung.com>
-In-reply-to: <1416593957-19788-1-git-send-email-k.wrona@samsung.com>
-References: <1416593957-19788-1-git-send-email-k.wrona@samsung.com>
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mout.kundenserver.de ([212.227.17.10]:52609 "EHLO
+	mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1757018AbaKSWUA (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 19 Nov 2014 17:20:00 -0500
+From: Stefan Wahren <stefan.wahren@i2se.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Fabio Estevam <festevam@gmail.com>,
+	=?UTF-8?q?Kristina=20Mart=C5=A1enko?=
+	<kristina.martsenko@gmail.com>, linux-iio@vger.kernel.org
+Subject: [PATCH] iio: mxs-lradc: check ranges of ts properties
+Date: Wed, 19 Nov 2014 22:19:50 +0000
+Message-Id: <1416435590-13999-1-git-send-email-stefan.wahren@i2se.com>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-This patch adds gyroscope iio driver which uses sensorhub as data
-provider.
+The devicetree binding for mxs-lradc defines ranges for the
+touchscreen properties. In order to avoid unexpected behavior like
+division by zero, we better check these ranges during probe and
+abort in error case.
 
-Signed-off-by: Karol Wrona <k.wrona@samsung.com>
-Acked-by: Kyungmin Park <kyungmin.park@samsung.com>
+Signed-off-by: Stefan Wahren <stefan.wahren@i2se.com>
 ---
- drivers/iio/gyro/Makefile          |    2 +
- drivers/iio/gyro/ssp_gyro_sensor.c |  222 ++++++++++++++++++++++++++++++++++++
- 2 files changed, 224 insertions(+)
- create mode 100644 drivers/iio/gyro/ssp_gyro_sensor.c
+ drivers/staging/iio/adc/mxs-lradc.c |   20 ++++++++++++++++++++
+ 1 file changed, 20 insertions(+)
 
-diff --git a/drivers/iio/gyro/Makefile b/drivers/iio/gyro/Makefile
-index 36a3877..a50ff87 100644
---- a/drivers/iio/gyro/Makefile
-+++ b/drivers/iio/gyro/Makefile
-@@ -22,3 +22,5 @@ st_gyro-$(CONFIG_IIO_BUFFER) += st_gyro_buffer.o
- 
- obj-$(CONFIG_IIO_ST_GYRO_I2C_3AXIS) += st_gyro_i2c.o
- obj-$(CONFIG_IIO_ST_GYRO_SPI_3AXIS) += st_gyro_spi.o
-+
-+obj-$(CONFIG_SSP_SENSOR_IIO) += ssp_gyro_sensor.o
-diff --git a/drivers/iio/gyro/ssp_gyro_sensor.c b/drivers/iio/gyro/ssp_gyro_sensor.c
-new file mode 100644
-index 0000000..d4499db
---- /dev/null
-+++ b/drivers/iio/gyro/ssp_gyro_sensor.c
-@@ -0,0 +1,222 @@
-+/*
-+ *  Copyright (C) 2014, Samsung Electronics Co. Ltd. All Rights Reserved.
-+ *
-+ *  This program is free software; you can redistribute it and/or modify
-+ *  it under the terms of the GNU General Public License as published by
-+ *  the Free Software Foundation; either version 2 of the License, or
-+ *  (at your option) any later version.
-+ *
-+ *  This program is distributed in the hope that it will be useful,
-+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
-+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-+ *  GNU General Public License for more details.
-+ *
-+ */
-+
-+#include <linux/iio/common/ssp_sensors.h>
-+#include <linux/iio/iio.h>
-+#include <linux/iio/kfifo_buf.h>
-+#include <linux/module.h>
-+#include <linux/platform_device.h>
-+#include <linux/slab.h>
-+#include "../common/ssp_sensors/ssp_iio_sensor.h"
-+
-+#define CHANNEL_COUNT 3
-+
-+#define SSP_GYROSCOPE_NAME "ssp-gyroscope"
-+static const char ssp_gyro_name[] = SSP_GYROSCOPE_NAME;
-+
-+enum gyro_3d_channel {
-+	CHANNEL_SCAN_INDEX_X,
-+	CHANNEL_SCAN_INDEX_Y,
-+	CHANNEL_SCAN_INDEX_Z,
-+	CHANNEL_SCAN_INDEX_TIME,
-+	GYRO_3D_CHANNEL_MAX,
-+};
-+
-+static int gyro_read_raw(struct iio_dev *indio_dev,
-+			  struct iio_chan_spec const *chan,
-+			  int *val,
-+			  int *val2,
-+			  long mask)
-+{
-+	int ret;
-+	u32 t;
-+	struct ssp_data *data = dev_get_drvdata(indio_dev->dev.parent->parent);
-+
-+	switch (mask) {
-+	case IIO_CHAN_INFO_SAMP_FREQ:
-+		t = ssp_get_sensor_delay(data, SSP_GYROSCOPE_SENSOR);
-+		ssp_convert_to_freq(t, val, val2);
-+		ret = IIO_VAL_INT_PLUS_MICRO;
-+		break;
-+	default:
-+		ret = -EINVAL;
-+		break;
+diff --git a/drivers/staging/iio/adc/mxs-lradc.c b/drivers/staging/iio/adc/mxs-lradc.c
+index 6757f10..57c3cf6 100644
+--- a/drivers/staging/iio/adc/mxs-lradc.c
++++ b/drivers/staging/iio/adc/mxs-lradc.c
+@@ -1500,16 +1500,36 @@ static int mxs_lradc_probe_touchscreen(struct mxs_lradc *lradc,
+ 	if (ret == 0)
+ 		lradc->over_sample_cnt = adapt;
+
++	if (!lradc->over_sample_cnt || lradc->over_sample_cnt > 0x1f) {
++		dev_err(lradc->dev, "Invalid sample count (%u)\n",
++				    lradc->over_sample_cnt);
++		return -EINVAL;
 +	}
 +
-+	return ret;
-+}
-+
-+static int gyro_write_raw(struct iio_dev *indio_dev,
-+			   struct iio_chan_spec const *chan,
-+			   int val,
-+			   int val2,
-+			   long mask)
-+{
-+	int ret, value;
-+	struct ssp_data *data = dev_get_drvdata(indio_dev->dev.parent->parent);
-+
-+	switch (mask) {
-+	case IIO_CHAN_INFO_SAMP_FREQ:
-+		value = ssp_convert_to_time(val, val2);
-+		ret = ssp_change_delay(data, SSP_GYROSCOPE_SENSOR, value);
-+		if (ret < 0) {
-+			dev_err(&indio_dev->dev, "gyro sensor enable fail\n");
-+			ret = -EINVAL;
-+		}
-+		break;
-+	default:
-+		ret = -EINVAL;
-+		break;
+ 	lradc->over_sample_delay = 2;
+ 	ret = of_property_read_u32(lradc_node, "fsl,ave-delay", &adapt);
+ 	if (ret == 0)
+ 		lradc->over_sample_delay = adapt;
+
++	if (!lradc->over_sample_delay ||
++	    lradc->over_sample_delay > LRADC_DELAY_DELAY_MASK) {
++		dev_err(lradc->dev, "Invalid sample delay (%u)\n",
++				    lradc->over_sample_delay);
++		return -EINVAL;
 +	}
 +
-+	return ret;
-+}
-+
-+static struct iio_info ssp_gyro_iio_info = {
-+	.read_raw = &gyro_read_raw,
-+	.write_raw = &gyro_write_raw,
-+};
-+
-+static const struct iio_chan_spec gyro_channels[] = {
-+	SSP_CHANNEL_AG(IIO_ANGL_VEL, IIO_MOD_X, CHANNEL_SCAN_INDEX_X),
-+	SSP_CHANNEL_AG(IIO_ANGL_VEL, IIO_MOD_Y, CHANNEL_SCAN_INDEX_Y),
-+	SSP_CHANNEL_AG(IIO_ANGL_VEL, IIO_MOD_Z, CHANNEL_SCAN_INDEX_Z),
-+	IIO_CHAN_SOFT_TIMESTAMP(CHANNEL_SCAN_INDEX_TIME),
-+};
-+
-+static int process_gyro_data(struct iio_dev *indio_dev, void *buf,
-+			     int64_t timestamp)
-+{
-+	__le32 time = 0;
-+	const int len = SSP_GYROSCOPE_SIZE;
-+	int64_t calculated_time;
-+	char *data;
-+	int ret;
-+
-+	if (indio_dev->scan_bytes == 0)
-+		return 0;
-+
-+	data = kmalloc(indio_dev->scan_bytes, GFP_KERNEL);
-+	if (!data)
-+		return -ENOMEM;
-+
-+	memcpy(data, buf, len);
-+
-+	if (indio_dev->scan_timestamp) {
-+		memcpy(&time, &((char *)buf)[len], SSP_TIME_SIZE);
-+		calculated_time =
-+			timestamp + (int64_t)le32_to_cpu(time) * 1000000;
+ 	lradc->settling_delay = 10;
+ 	ret = of_property_read_u32(lradc_node, "fsl,settling", &adapt);
+ 	if (ret == 0)
+ 		lradc->settling_delay = adapt;
+
++	if (!lradc->settling_delay ||
++	    lradc->settling_delay > LRADC_DELAY_DELAY_MASK) {
++		dev_err(lradc->dev, "Invalid settling delay (%u)\n",
++				    lradc->settling_delay);
++		return -EINVAL;
 +	}
 +
-+	ret = iio_push_to_buffers_with_timestamp(indio_dev, data,
-+						  calculated_time);
-+
-+	kfree(data);
-+
-+	return ret;
-+}
-+
-+static int ssp_gyro_remove(struct platform_device *pdev)
-+{
-+	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
-+
-+	iio_buffer_unregister(indio_dev);
-+	iio_kfifo_free(indio_dev->buffer);
-+	iio_device_unregister(indio_dev);
-+	iio_device_free(indio_dev);
-+
-+	return 0;
-+}
-+
-+static const struct iio_buffer_setup_ops gyro_buffer_ops = {
-+	.postenable = &ssp_common_buffer_postenable,
-+	.predisable = &ssp_common_buffer_predisable,
-+};
-+
-+static int ssp_gyro_probe(struct platform_device *pdev)
-+{
-+	int ret = 0;
-+	struct iio_dev *indio_dev;
-+	struct ssp_sensor_data  *spd;
-+
-+	indio_dev = iio_device_alloc(sizeof(*spd));
-+	if (IS_ERR(indio_dev)) {
-+		dev_err(&pdev->dev, "device alloc fail\n");
-+		return PTR_ERR(indio_dev);
-+	}
-+
-+	spd = iio_priv(indio_dev);
-+
-+	spd->process_data = process_gyro_data;
-+	spd->type = SSP_GYROSCOPE_SENSOR;
-+
-+	indio_dev->name = ssp_gyro_name;
-+	indio_dev->dev.parent = &pdev->dev;
-+	indio_dev->info = &ssp_gyro_iio_info;
-+
-+	if (indio_dev->info == NULL)
-+		goto err_iio_alloc;
-+
-+	indio_dev->modes = INDIO_BUFFER_HARDWARE;
-+	indio_dev->channels = gyro_channels;
-+	indio_dev->num_channels = ARRAY_SIZE(gyro_channels);
-+
-+	ret = ssp_common_setup_buffer(indio_dev, &gyro_buffer_ops);
-+	if (ret < 0) {
-+		dev_err(&pdev->dev, "Buffer setup fail\n");
-+		goto err_iio_alloc;
-+	}
-+
-+	ret = iio_device_register(indio_dev);
-+	if (ret < 0)
-+		goto err_iio_buffer;
-+
-+	platform_set_drvdata(pdev, indio_dev);
-+
-+	ssp_register_consumer(indio_dev, SSP_GYROSCOPE_SENSOR);
-+
-+	return 0;
-+
-+err_iio_buffer:
-+	iio_buffer_unregister(indio_dev);
-+	iio_kfifo_free(indio_dev->buffer);
-+err_iio_alloc:
-+	iio_device_free(indio_dev);
-+
-+	return ret;
-+}
-+
-+static const struct of_device_id ssp_gyro_id_table[] = {
-+	{
-+		.compatible = "samsung,mpu6500-gyro",
-+	},
-+	{},
-+};
-+
-+static struct platform_driver ssp_gyro_driver = {
-+	.driver = {
-+		.owner = THIS_MODULE,
-+		.name = SSP_GYROSCOPE_NAME,
-+		.of_match_table = ssp_gyro_id_table,
-+	},
-+	.probe = ssp_gyro_probe,
-+	.remove =  ssp_gyro_remove,
-+};
-+
-+module_platform_driver(ssp_gyro_driver);
-+
-+MODULE_AUTHOR("Karol Wrona <k.wrona@samsung.com>");
-+MODULE_DESCRIPTION("Samsung sensorhub gyroscopes driver");
-+MODULE_LICENSE("GPL");
--- 
+ 	return 0;
+ }
+
+--
 1.7.9.5
+
