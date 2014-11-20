@@ -1,461 +1,847 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ns.pmeerw.net ([84.19.176.92]:42525 "EHLO pmeerw.net"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751406AbaKTSTi (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Thu, 20 Nov 2014 13:19:38 -0500
-Date: Thu, 20 Nov 2014 19:19:36 +0100 (CET)
-From: Peter Meerwald <pmeerw@pmeerw.net>
-To: Nikolaus Schulz <nikolaus.schulz@avionic-design.de>
-cc: Jonathan Cameron <jic23@kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	"open list:IIO SUBSYSTEM AND..." <linux-iio@vger.kernel.org>,
-	Alban Bedel <alban.bedel@avionic-design.de>
-Subject: Re: [PATCH 2/2] iio: add driver for the TI DAC8554
-In-Reply-To: <1416502461-13980-2-git-send-email-nikolaus.schulz@avionic-design.de>
-Message-ID: <alpine.DEB.2.02.1411201911001.13081@pmeerw.net>
-References: <1416502461-13980-1-git-send-email-nikolaus.schulz@avionic-design.de> <1416502461-13980-2-git-send-email-nikolaus.schulz@avionic-design.de>
-MIME-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
+Received: from mailout1.w1.samsung.com ([210.118.77.11]:17981 "EHLO
+	mailout1.w1.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750885AbaKTLcu (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 20 Nov 2014 06:32:50 -0500
+Message-id: <546DD158.8010200@samsung.com>
+Date: Thu, 20 Nov 2014 12:32:40 +0100
+From: Karol Wrona <k.wrona@samsung.com>
+MIME-version: 1.0
+To: Antonio Borneo <borneo.antonio@gmail.com>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>, linux-iio@vger.kernel.org,
+	Arnd Bergmann <arnd@arndb.de>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
+	Kyungmin Park <kyungmin.park@samsung.com>
+Subject: Re: [PATCH v4 1/1] misc: st32fwu: Add stm32 upgrade protocol handling
+References: <1415453352-14842-1-git-send-email-k.wrona@samsung.com>
+ <1415453352-14842-2-git-send-email-k.wrona@samsung.com>
+ <CAAj6DX2RjezJBdgkcY3+ewEXu0bN0LuXz4YQ2oQNaC=-9XmqOQ@mail.gmail.com>
+In-reply-to: <CAAj6DX2RjezJBdgkcY3+ewEXu0bN0LuXz4YQ2oQNaC=-9XmqOQ@mail.gmail.com>
+Content-type: text/plain; charset=utf-8; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
+On 11/20/2014 07:18 AM, Antonio Borneo wrote:
+> On Sat, Nov 8, 2014 at 9:29 PM, Karol Wrona <k.wrona@samsung.com> wrote:
+>> Adds stm32 bootloader protocol handling.
+>>
+>
+> Hi Karol,
+>
+> Sorry for not being able to reply earlier. I'm finally back after a
+> period off-line.
+>
+> I have implemented a first version of SPI flash upgrade in the
+> user-mode tool "stm32flash". I will submit it upstream after further
+> cleanup.
+> Anyway, now I have much clear idea about the SPI bootloader protocol
+> and differences with I2C and UART variants (already in "stm32flash").
+>
+> There are few details in your driver that don't match the bootloader
+> protocol over SPI described in AN4268.
+> Can you please check with the documents you have and with your HW?
+> I'm using the document Rev.2 available in ST website at
+> http://www.st.com/web/en/resource/technical/document/application_note/DM00081379.pdf
+> Cannot find a previous revision to compare them.
 
-> The TI DAC8554 is a quad-channel Digital-to-Analog Converter with an SPI
-> interface.
+Ok, I will fix them.
+>
+>> SPI transfers are done using DMA safe buffer which is allocated once per
+>> spi upgrade life cycle. Now it supports only SPI bus but it looks that UART
+>> or I2C are quite similar and it can be used as start platform for implementing
+>> their handling.
+>>
+>> It was tested on STM32F401 MCU.
+>>
+>> Change-Id: I5e5b441310c897ff822e65041531d80ea0e7426c
+>> Signed-off-by: Karol Wrona <k.wrona@samsung.com>
+>> Acked-by: Kyungmin Park <kyungmin.park@samsung.com>
+>> ---
+>>   drivers/misc/Kconfig               |    1 +
+>>   drivers/misc/Makefile              |    1 +
+>>   drivers/misc/stm32fwu/Kconfig      |    6 +
+>>   drivers/misc/stm32fwu/Makefile     |    1 +
+>>   drivers/misc/stm32fwu/stm32_core.c |  403 ++++++++++++++++++++++++++++++++++++
+>>   drivers/misc/stm32fwu/stm32_core.h |   81 ++++++++
+>>   drivers/misc/stm32fwu/stm32_spi.c  |  108 ++++++++++
+>>   include/linux/stm32fwu.h           |   49 +++++
+>>   8 files changed, 650 insertions(+)
+>>   create mode 100644 drivers/misc/stm32fwu/Kconfig
+>>   create mode 100644 drivers/misc/stm32fwu/Makefile
+>>   create mode 100644 drivers/misc/stm32fwu/stm32_core.c
+>>   create mode 100644 drivers/misc/stm32fwu/stm32_core.h
+>>   create mode 100644 drivers/misc/stm32fwu/stm32_spi.c
+>>   create mode 100644 include/linux/stm32fwu.h
+>>
+>> diff --git a/drivers/misc/Kconfig b/drivers/misc/Kconfig
+>> index bbeb451..b2e68c1 100644
+>> --- a/drivers/misc/Kconfig
+>> +++ b/drivers/misc/Kconfig
+>> @@ -528,4 +528,5 @@ source "drivers/misc/mic/Kconfig"
+>>   source "drivers/misc/genwqe/Kconfig"
+>>   source "drivers/misc/echo/Kconfig"
+>>   source "drivers/misc/cxl/Kconfig"
+>> +source "drivers/misc/stm32fwu/Kconfig"
+>>   endmenu
+>> diff --git a/drivers/misc/Makefile b/drivers/misc/Makefile
+>> index 7d5c4cd..88c8999 100644
+>> --- a/drivers/misc/Makefile
+>> +++ b/drivers/misc/Makefile
+>> @@ -56,3 +56,4 @@ obj-$(CONFIG_GENWQE)          += genwqe/
+>>   obj-$(CONFIG_ECHO)             += echo/
+>>   obj-$(CONFIG_VEXPRESS_SYSCFG)  += vexpress-syscfg.o
+>>   obj-$(CONFIG_CXL_BASE)         += cxl/
+>> +obj-$(CONFIG_STM32_UPGRADE_PROTOCOL)   += stm32fwu/
+>> diff --git a/drivers/misc/stm32fwu/Kconfig b/drivers/misc/stm32fwu/Kconfig
+>> new file mode 100644
+>> index 0000000..1484441
+>> --- /dev/null
+>> +++ b/drivers/misc/stm32fwu/Kconfig
+>> @@ -0,0 +1,6 @@
+>> +config STM32_UPGRADE_PROTOCOL
+>> +       tristate "STM32 upgrade protocol support"
+>> +       depends on SPI
+>> +       help
+>> +         STM32 microcontroller bootloader upgrade protocol.
+>> +         Say Y if you want to use it.
+>> diff --git a/drivers/misc/stm32fwu/Makefile b/drivers/misc/stm32fwu/Makefile
+>> new file mode 100644
+>> index 0000000..1617530
+>> --- /dev/null
+>> +++ b/drivers/misc/stm32fwu/Makefile
+>> @@ -0,0 +1 @@
+>> +obj-$(CONFIG_STM32_UPGRADE_PROTOCOL) += stm32_core.o stm32_spi.o
+>> diff --git a/drivers/misc/stm32fwu/stm32_core.c b/drivers/misc/stm32fwu/stm32_core.c
+>> new file mode 100644
+>> index 0000000..4c48cd8
+>> --- /dev/null
+>> +++ b/drivers/misc/stm32fwu/stm32_core.c
+>> @@ -0,0 +1,403 @@
+>> +/*
+>> + *  Copyright (C) 2014, Samsung Electronics Co. Ltd. All Rights Reserved.
+>> + *
+>> + *  This program is free software; you can redistribute it and/or modify
+>> + *  it under the terms of the GNU General Public License as published by
+>> + *  the Free Software Foundation; either version 2 of the License, or
+>> + *  (at your option) any later version.
+>> + *
+>> + *  This program is distributed in the hope that it will be useful,
+>> + *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+>> + *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+>> + *  GNU General Public License for more details.
+>> + *
+>> + */
+>> +
+>> +#include <linux/delay.h>
+>> +#include <linux/device.h>
+>> +#include <linux/module.h>
+>> +#include <linux/slab.h>
+>> +#include <linux/stm32fwu.h>
+>> +#include "stm32_core.h"
+>> +
+>> +static inline int stm32fwu_wait_for_ack(struct stm32fwu_fw *fw, u32 retries)
+>> +{
+>> +       return fw->wait_for_ack(fw, retries);
+>> +}
+>> +
+>> +static inline int stm32fwu_send_cmd(struct stm32fwu_fw *fw, u8 cmd,
+>> +                                   u32 timeout)
+>> +{
+>> +       struct stm32fwu_cmd cm = {
+>> +               .cmd = cmd,
+>> +               .neg_cmd = ~cmd,
+>> +               .timeout  = timeout,
+>> +       };
+>> +
+>> +       return fw->send_cmd(fw, &cm);
+>> +}
+>> +
+>> +static inline int stm32fwu_write(struct stm32fwu_fw *fw, const u8 *buf,
+>> +                                u32 len)
+>> +{
+>> +       return fw->write(fw, buf, len);
+>> +}
+>> +
+>> +static inline int stm32fwu_read(struct stm32fwu_fw *fw, u8 *buf, u32 len)
+>> +{
+>> +       return fw->read(fw, buf, len);
+>> +}
+>> +
+>> +static int send_addr(struct stm32fwu_fw *fw, u32 addr)
+>> +{
+>> +       int ret;
+>> +       u8 *buffer = fw->buffer;
+>> +
+>> +       buffer[0] = addr >> 24;
+>> +       buffer[1] = addr >> 16;
+>> +       buffer[2] = addr >> 8;
+>> +       buffer[3] = addr;
+>> +       buffer[4] = buffer[0] ^ buffer[1] ^ buffer[2] ^ buffer[3];
+>> +
+>> +       ret = stm32fwu_write(fw, buffer, STM32FWU_ADDR_LEN);
+>> +       if (ret < 0)
+>> +               return ret;
+>> +
+>> +       return stm32fwu_wait_for_ack(fw, STM32FWU_COMMON_COUNT);
+>> +}
+>> +
+>> +static int fwu_write(struct stm32fwu_fw *fw, u32 addr, const u8 *buffer,
+>> +                    u32 len)
+>> +{
+>> +       u8 *sbuf = fw->buffer;
+>> +       u8 xor = 0;
+>> +       int ret;
+>> +       u32 i, aligned_len = len;
+>> +
+>> +       if (len > STM32FWU_MAX_TRANSFER_SIZE) {
+>> +               dev_err(fw->dev, "More than 256 bytes per transfer\n");
+>> +               return -EINVAL;
+>> +       }
+>> +
+>> +       ret = stm32fwu_send_cmd(fw, STM32FWU_WRITE_MEM_CMD,
+>> +                               STM32FWU_CMD_COUNT);
+>> +       if (ret < 0)
+>> +               return ret;
+>> +
+>> +       ret = send_addr(fw, addr);
+>> +       if (ret < 0)
+>> +               return ret;
+>> +
+>> +       /*
+>> +        * the same buffer is used for commands and data so the order really
+>> +        * matters here
+>> +        */
+>> +       memcpy(&sbuf[1], buffer, len);
+>> +
+>> +       /*
+>> +        * Just in case - check if chunk is a multiple of 4
+>> +        * generally the most of writes will be 256 bytes long.
+>> +        * I wonder if bootcode should worry about alignment.
+>> +        * According AN4286 it should be a multiple of 2 but other notes
+>> +        * say that it should be 4
+>> +        */
+>> +       if (!IS_ALIGNED(len, 4)) {
+>> +               aligned_len = ALIGN(len, 4);
+>> +               for (i = aligned_len; i > len; --i)
+>> +                       sbuf[i] = 0xff;
+>> +       }
+>> +
+>> +       /*
+>> +        * according AN4286 here is sent 0 < N < 255, it looks like max index,
+>> +        * not size
+>> +        */
+>> +       sbuf[0] = aligned_len - 1;
+>> +
+>> +       /* compute checksum */
+>> +       for (i = 0; i < aligned_len + 1; ++i)
+>> +               xor ^= sbuf[i];
+>> +       sbuf[aligned_len + 1] = xor;
+>> +
+>> +       /* NOTE AN4286: in some conditions the master has to wait 1 ms here */
+>> +       usleep_range(1000, 1100);
+>
+> I cannot find this 1 ms delay in AN4286.
+> Is it really needed?
+> By the way, here we are in the core file. You claim that the delay is
+> required by SPI only (NOTE AN4286), so it should go in SPI files.
+>
+OK, I will be moved.
+>> +
+>> +       ret = stm32fwu_write(fw, sbuf, aligned_len + 2);
+>> +       if (ret < 0)
+>> +               return ret;
+>> +
+>> +       return stm32fwu_wait_for_ack(fw, STM32FWU_COMMON_COUNT);
+>> +}
+>> +
+>> +static int fwu_erase(struct stm32fwu_fw *fw)
+>> +{
+>> +       int ret;
+>> +       u8 *sbuf = fw->buffer;
+>> +
+>> +       ret = stm32fwu_send_cmd(fw, STM32FWU_ERASE_CMD, STM32FWU_CMD_COUNT);
+>> +       if (ret < 0)
+>> +               return ret;
+>> +
+>> +       /* global erase */
+>> +       sbuf[0] = 0xff;
+>> +       sbuf[1] = 0xff;
+>> +       sbuf[2] = 0x00;
+>> +
+>> +       ret = stm32fwu_write(fw, sbuf, STM32FWU_ERASE_CMD_LEN);
+>> +       if (ret < 0)
+>> +               return ret;
+>> +
+>> +       return stm32fwu_wait_for_ack(fw, STM32FWU_ERASE_COUNT);
+>> +}
+>> +
+>> +/**
+>> + * stm32fwu_get() - gets bootloader information frame
+>> + * @fw:                fw object.
+>> + *
+>> + * Read bootloader information:
+>> + *
+>> + * Byte  1 bootloader version (0 < version < 255), example: 0x10 = version 1.0.
+>> + *
+>> + * Byte  2 0x00 (Get command)
+>> + *
+>> + * Byte  3 0x01 (Get Version)
+>> + *
+>> + * Byte  4 0x02 (Get ID)
+>> + *
+>> + * Byte  5 0x11 (Read Memory command)
+>> + *
+>> + * Byte  6 0x21 (Go command)
+>> + *
+>> + * Byte  7 0x31 (Write Memory command)
+>> + *
+>> + * Byte  8 0x44 (Erase command)
+>> + *
+>> + * Byte  9 0x63 (Write Protect command)
+>> + *
+>> + * Byte 10 0x73 (Write Unprotect command)
+>> + *
+>> + * Byte 11 0x82 (Readout Protect command)
+>> + *
+>> + * Byte 12 0x92 (Readout Unprotect command)
+>> + *
+>> + * Return:     read byte count or error code.
+>> + */
+>> +int stm32fwu_get(struct stm32fwu_fw *fw)
+>> +{
+>> +       int ret, count;
+>> +
+>> +       ret = stm32fwu_send_cmd(fw, STM32FWU_GET_CMD, STM32FWU_CMD_COUNT);
+>> +       if (ret < 0)
+>> +               return ret;
+>> +
+>> +       ret = stm32fwu_read(fw, &fw->buffer[STM32FWU_MAX_BUFFER_SIZE], 1);
+>> +       if (ret < 0)
+>> +               return ret;
+>> +
+>> +       count = fw->buffer[STM32FWU_MAX_BUFFER_SIZE];
+>> +       if (count >= STM32FWU_MAX_TRANSFER_SIZE)
+>> +               return -EINVAL;
+>
+> AN4286 specifies that a dummy byte have to be read before reading data
+> (page 7, Figure 5).
+> With current code you would get the dummy byte as first byte in the buffer.
+> This dummy byte is specific for SPI so the byte skip should better be
+> in SPI files.
+OK
+>
+>> +
+>> +       ret = stm32fwu_read(fw, &fw->buffer[STM32FWU_MAX_BUFFER_SIZE], count);
+>> +       if (ret < 0)
+>> +               return ret;
+>> +
+>> +       ret = stm32fwu_wait_for_ack(fw, STM32FWU_COMMON_COUNT);
+>> +       if (ret < 0)
+>> +               return ret;
+>> +
+>> +       return count;
+>> +}
+>> +EXPORT_SYMBOL(stm32fwu_get);
+>> +
+>> +/**
+>> + * stm32fwu_get_version() - gets bootloader information frame
+>> + * @fw:                fw object.
+>> + *
+>> + * Return: < 0 - error code, any positive value means success.
+>> + */
+>> +int stm32fwu_get_version(struct stm32fwu_fw *fw)
+>> +{
+>> +       int ret;
+>> +
+>> +       ret = stm32fwu_send_cmd(fw, STM32FWU_GET_CMD, STM32FWU_CMD_COUNT);
+>> +       if (ret < 0)
+>> +               return ret;
+>
+> Also here, as for stm32fwu_get(), you need to skip one byte before
+> reading the data.
+>
+>> +
+>> +       ret = stm32fwu_read(fw, &fw->buffer[STM32FWU_MAX_BUFFER_SIZE], 1);
+>> +       if (ret < 0)
+>> +               return ret;
+>> +
+>> +       ret = stm32fwu_wait_for_ack(fw, STM32FWU_COMMON_COUNT);
+>> +       if (ret < 0)
+>> +               return ret;
+>> +
+>> +       return fw->buffer[STM32FWU_MAX_BUFFER_SIZE];
+>> +}
+>> +EXPORT_SYMBOL(stm32fwu_get_version);
+>> +
+>> +/**
+>> + * stm32fwu_send_sync() - sends bootloader synchronization frame
+>> + * @fw:        fw object.
+>> + *
+>> + * It is used during SPI upgrade.
+>> + *
+>> + * Return:     if succeed the number of ack waiting cycles or error code.
+>> + */
+>
+> This sync is specific for SPI. Should be in another file.
+>
+OK, I will be moved.
 
-some minor comments below, looks good
- 
-> Signed-off-by: Nikolaus Schulz <nikolaus.schulz@avionic-design.de>
-> ---
->  drivers/iio/dac/Kconfig      |  10 ++
->  drivers/iio/dac/Makefile     |   1 +
->  drivers/iio/dac/ti-dac8554.c | 365 +++++++++++++++++++++++++++++++++++++++++++
->  3 files changed, 376 insertions(+)
->  create mode 100644 drivers/iio/dac/ti-dac8554.c
-> 
-> diff --git a/drivers/iio/dac/Kconfig b/drivers/iio/dac/Kconfig
-> index 2236ea2..1689260 100644
-> --- a/drivers/iio/dac/Kconfig
-> +++ b/drivers/iio/dac/Kconfig
-> @@ -181,4 +181,14 @@ config MCP4922
->  	  To compile this driver as a module, choose M here: the module
->  	  will be called mcp4922.
->  
-> +config TI_DAC8554
-> +	tristate "TI DAC8554 driver"
-> +	depends on SPI
-> +	depends on OF
-> +	help
-> +	  Say yes here to build the driver for the TI DAC8554.
-> +
-> +	  To compile this driver as a module, choose M here: the module
-> +	  will be called ti-dac8554.
-> +
->  endmenu
-> diff --git a/drivers/iio/dac/Makefile b/drivers/iio/dac/Makefile
-> index 52be7e1..b98d79a 100644
-> --- a/drivers/iio/dac/Makefile
-> +++ b/drivers/iio/dac/Makefile
-> @@ -20,3 +20,4 @@ obj-$(CONFIG_MAX517) += max517.o
->  obj-$(CONFIG_MAX5821) += max5821.o
->  obj-$(CONFIG_MCP4725) += mcp4725.o
->  obj-$(CONFIG_MCP4922) += mcp4922.o
-> +obj-$(CONFIG_TI_DAC8554) += ti-dac8554.o
-> diff --git a/drivers/iio/dac/ti-dac8554.c b/drivers/iio/dac/ti-dac8554.c
-> new file mode 100644
-> index 0000000..9c135e1
-> --- /dev/null
-> +++ b/drivers/iio/dac/ti-dac8554.c
-> @@ -0,0 +1,365 @@
-> +/*
-> + * TI DAC8554 Digital to Analog Converter SPI driver
-> + *
-> + * Copyright (C) 2014 Avionic Design GmbH
-> + *
-> + * Based on ad5446r_spi.c
-> + * Copyright (C) 2010,2011 Analog Devices Inc.
-> + *
-> + * This program is free software; you can redistribute it and/or modify
-> + * it under the terms of the GNU General Public License version 2 as
-> + * published by the Free Software Foundation.
-> + */
-> +
-> +#include <linux/spi/spi.h>
-> +#include <linux/regulator/consumer.h>
-> +#include <linux/module.h>
-> +#include <linux/iio/iio.h>
-> +#include <linux/of.h>
-> +
-> +#define DAC8554_DRIVERNAME			"ti-dac8554"
-> +#define DAC8554_DAC_CHANNELS			4
-> +
-> +/* Load commands */
-> +#define DAC8554_CMD_STORE_DAC_N			0x0
-> +#define DAC8554_CMD_UPDATE_DAC_N		0x1
-> +#define DAC8554_CMD_STORE_DAC_N_UPDATE_ALL	0x2
-> +#define DAC8554_CMD_UPDATE_BROADCAST		0x3
-> +
-> +#define DAC8554_BROADCAST_USE_SRDATA		0x2
-> +/* Powerdown modes (ORed PD1|PD2 bits) */
-> +#define DAC8554_PWRDN_HIZ			0x0
-> +#define DAC8554_PWRDN_1K			0x1
-> +#define DAC8554_PWRDN_100K			0x2
-> +
-> +#define DAC8554_PWRDN_TO_SR(mode)		(BIT(16) | (mode) << 14)
-> +
-> +/**
-> + * struct dac8554_state - driver instance specific data
-> + * @spi:		spi_device
-> + * @reg:		supply regulator
-> + * @addr:		two-bit chip address
-> + * @vref_mv:		reference voltage in millivolt
-> + * @val			DAC/channel data
-> + * @powerdown		channel powerdown flag
-> + * @powerdown_mode	channel powerdown mode
-> + */
-> +struct dac8554_state {
-> +	struct spi_device		*spi;
-> +	struct regulator		*reg;
-> +	unsigned			addr;
-> +	unsigned			vref_mv;
-> +	u16				val[DAC8554_DAC_CHANNELS];
-> +	bool				powerdown[DAC8554_DAC_CHANNELS];
-> +	u8				powerdown_mode[DAC8554_DAC_CHANNELS];
-> +};
-> +
-> +static int dac8554_spi_write(struct spi_device *spi,
-> +			     unsigned chip_addr, unsigned cmd,
-> +			     unsigned chan_addr, unsigned val)
-> +{
-> +	u32 data;
-> +	u8 msg[3];
+>> +int stm32fwu_send_sync(struct stm32fwu_fw *fw)
+>> +{
+>> +       int ret;
+>> +
+>> +       dev_info(fw->dev, "send sync byte for upgrade\n");
+>> +
+>> +       fw->buffer[0] = STM32FWU_SPI_SOF;
+>> +
+>> +       ret = stm32fwu_write(fw, fw->buffer, 1);
+>> +       if (ret < 0)
+>> +               return ret;
+>> +
+>> +       return  stm32fwu_wait_for_ack(fw, STM32FWU_CMD_COUNT);
+>> +}
+>> +EXPORT_SYMBOL(stm32fwu_send_sync);
+>> +
+>> +/**
+>> + * stm32fwu_update() - runs all firmware update work
+>> + * @fw:                fw object.
+>> + *
+>> + * Return:     status code < 0 if error.
+>> + */
+>> +int stm32fwu_update(struct stm32fwu_fw *fw)
+>> +{
+>> +       int ret = 0;
+>> +       u32 pos = 0;
+>> +       u32 fw_addr = STM32FWU_APP_ADDR;
+>> +       u32 block = STM32FWU_MAX_TRANSFER_SIZE;
+>> +       u32 count = 0, err_count = 0, retry_count = 0, remaining = fw->fw_len;
+>> +
+>> +       dev_info(fw->dev, "%s start\n", __func__);
+>> +
+>> +       ret = fwu_erase(fw);
+>> +       if (ret < 0) {
+>> +               dev_err(fw->dev, "%s, fw_erase_stm failed %d\n", __func__,
+>> +                       ret);
+>> +               return ret;
+>> +       }
+>> +
+>> +       while (remaining > 0) {
+>> +               if (block > remaining)
+>> +                       block = remaining;
+>> +
+>> +               while (retry_count < 3) {
+>> +                       ret = fwu_write(fw, fw_addr, fw->fw_data + pos, block);
+>> +                       if (ret < 0) {
+>> +                               dev_err(fw->dev,
+>> +                                       "Err %d writing to addr 0x%08X\n", ret,
+>> +                                       fw_addr);
+>> +                               retry_count++;
+>> +                               err_count++;
+>> +                               continue;
+>> +                       }
+>> +                       retry_count = 0;
+>> +                       break;
+>> +               }
+>> +
+>> +               if (ret < 0) {
+>> +                       dev_err(fw->dev,
+>> +                               "Writing MEM failed: %d, retry count: %d\n",
+>> +                               ret, err_count);
+>> +                       return ret;
+>> +               }
+>> +
+>> +               remaining -= block;
+>> +               pos += block;
+>> +               fw_addr += block;
+>> +               if (count++ == 20) {
+>> +                       dev_info(fw->dev, "Updated %u bytes / %u bytes\n",
+>> +                                pos, fw->fw_len);
+>> +                       count = 0;
+>> +               }
+>> +       }
+>> +
+>> +       dev_info(fw->dev,
+>> +                "Firmware download success.(%d bytes, retry %d)\n", pos,
+>> +                err_count);
+>> +
+>> +       ret = stm32fwu_send_cmd(fw, STM32FWU_GO_ADDR_CMD, STM32FWU_CMD_COUNT);
+>> +       if (ret < 0)
+>> +               return ret;
+>> +
+>> +       return send_addr(fw, STM32FWU_APP_ADDR);
+>> +}
+>> +EXPORT_SYMBOL(stm32fwu_update);
+>> +
+>> +/**
+>> + * stm32fwu_init() - creates firmware upgrade instance
+>> + * @dev:       Pointer to device.
+>> + * @iface:     Interface type.
+>> + * @data:      Pointer to firmware data.
+>> + * @len:       Length of firmware data in bytes.
+>> + *
+>> + * It allocates the place for fwu structure and transfer buffer so it should
+>> + * be deinitialized by stm32fw_destroy(). Firmware upgrade is simple operation
+>> + * and it was assumed that it will be called from one context so there is no
+>> + * locking for fwu functions.
+>> + *
+>> + * Return:     Pointer to firmware upgrade structure.
+>> + */
+>> +struct stm32fwu_fw *stm32fwu_init(struct device *dev,
+>> +                                 enum stm32fwu_iface iface, const u8 *data,
+>> +                                 u32 len)
+>> +{
+>> +       struct stm32fwu_fw *fw;
+>> +
+>> +       if (iface >= STM32_MAX || iface < 0) {
+>> +               dev_err(dev, "wrong iface type\n");
+>> +               return NULL;
+>> +       }
+>> +
+>> +       fw = devm_kzalloc(dev, sizeof(*fw), GFP_KERNEL);
+>> +       if (fw == NULL)
+>> +               return NULL;
+>> +
+>> +       /* 2 times for tx and rx buffer */
+>> +       fw->buffer = devm_kzalloc(dev, 2 * STM32FWU_MAX_BUFFER_SIZE,
+>> +                            GFP_KERNEL | GFP_DMA);
+>> +       if (fw->buffer == NULL) {
+>> +               devm_kfree(dev, fw);
+>> +               return NULL;
+>> +       }
+>> +
+>> +       fw->dev = dev;
+>> +       fw->fw_len = len;
+>> +       fw->fw_data = data;
+>> +
+>> +       switch (iface) {
+>> +       case STM32_SPI:
+>> +               stm32fwu_spi_init(fw);
+>> +               break;
+>> +       default:
+>> +               pr_err("wrong interface\n");
+>> +               goto _err;
+>> +       }
+>> +
+>> +       return fw;
+>> +_err:
+>> +       devm_kfree(dev, fw->buffer);
+>> +       devm_kfree(dev, fw);
+>> +       return NULL;
+>> +}
+>> +EXPORT_SYMBOL(stm32fwu_init);
+>> +
+>> +/**
+>> + * stm32fwu_destroy() - cleans up fwu structure and buffer.
+>> + * @fw:                Pointer to fwu structure.
+>> + */
+>> +void stm32fwu_destroy(struct stm32fwu_fw *fw)
+>> +{
+>> +       devm_kfree(fw->dev, fw->buffer);
+>> +       devm_kfree(fw->dev, fw);
+>> +}
+>> +EXPORT_SYMBOL(stm32fwu_destroy);
+>> +
+>> +MODULE_AUTHOR("Karol Wrona <k.wrona@samsung.com>");
+>> +MODULE_DESCRIPTION("STM32 upgrade protocol");
+>> +MODULE_LICENSE("GPL");
+>> diff --git a/drivers/misc/stm32fwu/stm32_core.h b/drivers/misc/stm32fwu/stm32_core.h
+>> new file mode 100644
+>> index 0000000..9624327
+>> --- /dev/null
+>> +++ b/drivers/misc/stm32fwu/stm32_core.h
+>> @@ -0,0 +1,81 @@
+>> +/*
+>> + *  Copyright (C) 2014, Samsung Electronics Co. Ltd. All Rights Reserved.
+>> + *
+>> + *  This program is free software; you can redistribute it and/or modify
+>> + *  it under the terms of the GNU General Public License as published by
+>> + *  the Free Software Foundation; either version 2 of the License, or
+>> + *  (at your option) any later version.
+>> + *
+>> + *  This program is distributed in the hope that it will be useful,
+>> + *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+>> + *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+>> + *  GNU General Public License for more details.
+>> + *
+>> + */
+>> +
+>> +#ifndef _STM32_CORE_H_
+>> +#define _STM32_CORE_H_
+>> +
+>> +#define STM32FWU_ADDR_LEN              5
+>> +#define STM32FWU_ERASE_CMD_LEN         3
+>> +
+>> +/* Protocol */
+>> +#define STM32FWU_SPI_SOF               0x5a
+>> +#define STM32FWU_ACK                   0x79
+>> +#define STM32FWU_ACK2                  0xf9
+>
+> I cannot find any reference to this ACK2 0xf9 in any STM32 document.
+> Can you please point to the right document?
+>
+Tis is confusing. I left this because this was used in some company sources but 
+I think it can be removed. I will check it.
+>> +#define STM32FWU_NACK                  0x1f
+>> +
+>> +#define STM32FWU_MAX_TRANSFER_SIZE     256
+>> +#define STM32FWU_MAX_BUFFER_SIZE       260
+>> +
+>> +#define STM32FWU_APP_ADDR              0x08000000
+>> +
+>> +/* Retries counts */
+>> +#define STM32FWU_ERASE_COUNT           18000
+>> +#define STM32FWU_CMD_COUNT             30
+>> +#define STM32FWU_COMMON_COUNT          20
+>> +
+>> +/* Commands */
+>> +#define STM32FWU_WRITE_MEM_CMD         0x31
+>> +#define STM32FWU_GO_ADDR_CMD           0x21
+>> +#define STM32FWU_ERASE_CMD             0x44
+>> +#define STM32FWU_GET_CMD               0x00
+>> +#define STM32FWU_GET_VERSION_CMD       0x01
+>> +
+>> +/**
+>> + * struct stm32fwu_cmd - Upgrade command
+>> + * @cmd:       Fwu command.
+>> + * @neg_cmd:   Bit negation of Fwu command used xor'ed in STM.
+>> + * @timeout:   Number of retries.
+>> + */
+>> +struct stm32fwu_cmd {
+>> +       u8 cmd;
+>> +       u8 neg_cmd;
+>> +       u32 timeout;
+>> +};
+>> +
+>> +/**
+>> + * struct stm32fwu_fw - Generic representation for STM32 fw upgrade
+>> + * @dev:               Pointer to device.
+>> + * @wait_for_ack:      ACK callback.
+>> + * @send_cmd:          Command callback.
+>> + * @write:             Write callback.
+>> + * @read:              Read callback.
+>> + * @fw_data:           Pointer to firmware binary.
+>> + * @fw_len:            The length of fw bin.
+>> + * @buffer:            Pointer to SPI buffer: should be DMA safe
+>> + */
+>> +struct stm32fwu_fw {
+>> +       int (*wait_for_ack)(struct stm32fwu_fw *fw, u32 retries);
+>> +       int (*send_cmd)(struct stm32fwu_fw *fw, struct stm32fwu_cmd *cmd);
+>> +       int (*write)(struct stm32fwu_fw *fw, const u8 *buf, u32 len);
+>> +       int (*read)(struct stm32fwu_fw *fw, u8 *buf, u32 len);
+>> +       const u8 *fw_data;
+>> +       u32 fw_len;
+>> +       u8 *buffer;
+>> +       struct device *dev;
+>> +};
+>> +
+>> +void stm32fwu_spi_init(struct stm32fwu_fw *fw);
+>> +
+>> +#endif /*_STM32_CORE_H_ */
+>> diff --git a/drivers/misc/stm32fwu/stm32_spi.c b/drivers/misc/stm32fwu/stm32_spi.c
+>> new file mode 100644
+>> index 0000000..7905baf
+>> --- /dev/null
+>> +++ b/drivers/misc/stm32fwu/stm32_spi.c
+>> @@ -0,0 +1,108 @@
+>> +/*
+>> + *  Copyright (C) 2014, Samsung Electronics Co. Ltd. All Rights Reserved.
+>> + *
+>> + *  This program is free software; you can redistribute it and/or modify
+>> + *  it under the terms of the GNU General Public License as published by
+>> + *  the Free Software Foundation; either version 2 of the License, or
+>> + *  (at your option) any later version.
+>> + *
+>> + *  This program is distributed in the hope that it will be useful,
+>> + *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+>> + *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+>> + *  GNU General Public License for more details.
+>> + *
+>> + */
+>> +
+>> +#include <linux/delay.h>
+>> +#include <linux/module.h>
+>> +#include <linux/spi/spi.h>
+>> +#include <linux/stm32fwu.h>
+>> +#include "stm32_core.h"
+>> +
+>> +static int stm32fwu_spi_write(struct stm32fwu_fw *fw, const u8 *buf, u32 len)
+>> +{
+>> +       struct spi_device *sdev = to_spi_device(fw->dev);
+>> +
+>> +       struct spi_message m;
+>> +       struct spi_transfer t = {
+>> +               .len = len,
+>> +               .tx_buf = buf,
+>> +               .bits_per_word = 8,
+>> +       };
+>> +
+>> +       spi_message_init(&m);
+>> +       spi_message_add_tail(&t, &m);
+>> +       return spi_sync(sdev, &m);
+>> +}
+>> +
+>> +static int stm32fwu_spi_read(struct stm32fwu_fw *fw, u8 *buf, u32 len)
+>> +{
+>> +       struct spi_device *sdev = to_spi_device(fw->dev);
+>> +
+>> +       struct spi_message m;
+>> +       struct spi_transfer t = {
+>> +               .len = len,
+>> +               .rx_buf = buf,
+>> +               .bits_per_word = 8,
+>> +       };
+>> +
+>> +       spi_message_init(&m);
+>> +       spi_message_add_tail(&t, &m);
+>
+> This is the proper place in SPI specific file where you should skip
+> the first dummy byte before read data.
+> But then you cannot re-use this function to wait for the ACK; need
+> another read function for it.
+>
+>> +       return spi_sync(sdev, &m);
+>> +}
+>> +
+>> +static int stm32fwu_spi_wait_for_ack(struct stm32fwu_fw *fw, u32 retries)
+>> +{
+>> +       int ret, i = 0;
+>> +       u8 *buf = &fw->buffer[STM32FWU_MAX_BUFFER_SIZE];
+>> +
+>
+> According to AN4286, here you should first skip one dummy byte, then
+> read ACK (and then send back ACK).
+> In the loop below you skip everything that is not ACK (or ACK2), so
+> probably it works fine and skips the dummy byte too.
+> But AN4286 does not specify the value of the dummy byte to skip. What
+> if it is equal to ACK?
+>
+>> +       while (i < retries) {
+>> +               ret = stm32fwu_spi_read(fw, buf, 1);
+>> +               if (ret < 0) {
+>> +                       dev_err(fw->dev,
+>> +                               "firmware upgrade wait for ack fail\n");
+>> +                       return ret;
+>> +               }
+>> +
+>> +               if (fw->buffer[STM32FWU_MAX_BUFFER_SIZE] == STM32FWU_ACK ||
+>> +                   fw->buffer[STM32FWU_MAX_BUFFER_SIZE] == STM32FWU_ACK2) {
+>
+> Again, no evidence of ACK2 in documentation.
+>
+> Also, you cannot just return. AN4286 (figure 2) requires to send back
+> a byte ACK to the bootloader.
+>
+>> +                       return i;
+>> +               }
+>> +
+>> +               if (fw->buffer[STM32FWU_MAX_BUFFER_SIZE] == STM32FWU_NACK)
+>
+> Also here, send back a byte ACK to bootloader before return.
+>
+> Regards,
+> Antonio
+>
+>> +                       return -EPROTO;
+>> +
+>> +               usleep_range(1000, 1100);
+>> +               i++;
+>> +       }
+>> +
+>> +       dev_err(fw->dev, "fw ack timeout\n");
+>> +
+>> +       return -ETIMEDOUT;
+>> +}
+>> +
+>> +static int stm32fwu_spi_send_cmd(struct stm32fwu_fw *fw,
+>> +                                struct stm32fwu_cmd *cmd)
+>> +{
+>> +       int ret;
+>> +
+>> +       fw->buffer[0] = STM32FWU_SPI_SOF;
+>> +       fw->buffer[1] = cmd->cmd;
+>> +       fw->buffer[2] = cmd->neg_cmd;
+>> +
+>> +       ret = stm32fwu_spi_write(fw, fw->buffer, 3);
+>> +       if (ret < 0) {
+>> +               dev_err(fw->dev, "fw cmd write fail\n");
+>> +               return ret;
+>> +       }
+>> +
+>> +       return stm32fwu_spi_wait_for_ack(fw, cmd->timeout);
+>> +}
+>> +
+>> +void stm32fwu_spi_init(struct stm32fwu_fw *fw)
+>> +{
+>> +       fw->write = stm32fwu_spi_write;
+>> +       fw->read = stm32fwu_spi_read;
+>> +       fw->wait_for_ack = stm32fwu_spi_wait_for_ack;
+>> +       fw->send_cmd = stm32fwu_spi_send_cmd;
+>> +}
+>> diff --git a/include/linux/stm32fwu.h b/include/linux/stm32fwu.h
+>> new file mode 100644
+>> index 0000000..3084ffd
+>> --- /dev/null
+>> +++ b/include/linux/stm32fwu.h
+>> @@ -0,0 +1,49 @@
+>> +/*
+>> + *  Copyright (C) 2014, Samsung Electronics Co. Ltd. All Rights Reserved.
+>> + *
+>> + *  This program is free software; you can redistribute it and/or modify
+>> + *  it under the terms of the GNU General Public License as published by
+>> + *  the Free Software Foundation; either version 2 of the License, or
+>> + *  (at your option) any later version.
+>> + *
+>> + *  This program is distributed in the hope that it will be useful,
+>> + *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+>> + *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+>> + *  GNU General Public License for more details.
+>> + *
+>> + */
+>> +
+>> +#ifndef _STM32FWU_H_
+>> +#define _STM32FWU_H_
+>> +
+>> +/**
+>> + * enum stm32fwu_iface - upgrade interfaces for STM32 MCU's
+>> + * @STM32_SPI:         SPI interface.
+>> + * @STM32_MAX:         terminator.
+>> + */
+>> +enum stm32fwu_iface {
+>> +       STM32_SPI,
+>> +       /*
+>> +        * Generally for future use, i.e. UART upgrade algorithm looks pretty
+>> +        * similar.
+>> +        */
+>> +       STM32_MAX
+>> +};
+>> +
+>> +struct stm32fwu_fw;
+>> +
+>> +struct stm32fwu_fw *stm32fwu_init(struct device *dev,
+>> +                                 enum stm32fwu_iface iface, const u8 *data,
+>> +                                 u32 len);
+>> +
+>> +void stm32fwu_destroy(struct stm32fwu_fw *fw);
+>> +
+>> +int stm32fwu_send_sync(struct stm32fwu_fw *fw);
+>> +
+>> +int stm32fwu_update(struct stm32fwu_fw *fw);
+>> +
+>> +int stm32fwu_get(struct stm32fwu_fw *fw);
+>> +
+>> +int stm32fwu_get_version(struct stm32fwu_fw *fw);
+>> +
+>> +#endif /* _STM32FWU_H_ */
+>> --
+>> 1.7.9.5
+>>
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+>
 
-careful with SPI; data should be ____cacheline_aligned
-
-> +
-> +	/*
-> +	 * The input shift register is 24 bits wide. The 8 MSB are
-> +	 * control bits, followed by 16 data bits.
-> +	 * The first two bits A1 and A0 address a DAC8554 chip.
-> +	 * The next two are the command bits, LD1 and LD0.
-> +	 * After a don't-care-bit, the next two bits select the channel.
-> +	 * The final control bit PD0 is a flag signalling if the data
-> +	 * bits encode a powerdown mode. We merge PD0 with the adjacent
-> +	 * data bits.
-> +	 */
-> +
-> +	if (chip_addr > 3 || cmd > 3 || chan_addr > 3 ||
-> +			(val > 0xffff && (val & ~DAC8554_PWRDN_TO_SR(3))))
-> +		return -EINVAL;
-> +
-> +	data = (chip_addr << 22) | (cmd << 20) | (chan_addr << 17) | val;
-> +	msg[0] = data >> 16;
-> +	msg[1] = data >> 8;
-> +	msg[2] = data;
-> +
-> +	return spi_write(spi, msg, sizeof(msg));
-> +}
-> +
-> +static int dac8554_read_raw(struct iio_dev *indio_dev,
-> +			    struct iio_chan_spec const *chan,
-> +			    int *val,
-> +			    int *val2,
-> +			    long m)
-> +{
-> +	struct dac8554_state *st = iio_priv(indio_dev);
-> +
-> +	switch (m) {
-> +	case IIO_CHAN_INFO_RAW:
-> +		*val = st->val[chan->address];
-> +		return IIO_VAL_INT;
-> +	case IIO_CHAN_INFO_SCALE:
-> +		*val = st->vref_mv;
-> +		*val2 = 16;
-> +		return IIO_VAL_FRACTIONAL_LOG2;
-> +	}
-> +	return -EINVAL;
-> +}
-> +
-> +static int dac8554_write_raw(struct iio_dev *indio_dev,
-> +			     struct iio_chan_spec const *chan,
-> +			     int val,
-> +			     int val2,
-> +			     long mask)
-> +{
-> +	struct dac8554_state *st = iio_priv(indio_dev);
-> +	int err = 0;
-> +
-> +	switch (mask) {
-> +	case IIO_CHAN_INFO_RAW:
-> +		if (val > 0xffff || val < 0)
-> +			return -EINVAL;
-> +
-> +		err = dac8554_spi_write(st->spi, st->addr,
-> +				DAC8554_CMD_UPDATE_DAC_N,
-> +				chan->address, val);
-> +		if (err)
-> +			return err;
-> +
-> +		st->val[chan->address] = val;
-> +
-> +		/* By hw design, DAC updates automatically trigger powerup. */
-> +		st->powerdown[chan->address] = false;
-> +
-> +		return 0;
-> +
-> +	default:
-> +		return -EINVAL;
-> +	}
-> +}
-> +
-> +static int dac8554_get_powerdown_mode(struct iio_dev *indio_dev,
-> +				      const struct iio_chan_spec *chan)
-> +{
-> +	struct dac8554_state *st = iio_priv(indio_dev);
-> +
-> +	return st->powerdown_mode[chan->address];
-> +}
-> +
-> +static int dac8554_set_powerdown_mode(struct iio_dev *indio_dev,
-> +				      const struct iio_chan_spec *chan,
-> +				      unsigned int mode)
-> +{
-> +	struct dac8554_state *st = iio_priv(indio_dev);
-> +
-> +	st->powerdown_mode[chan->address] = mode;
-> +
-> +	return 0;
-> +}
-> +
-> +static ssize_t dac8554_read_dac_powerdown(struct iio_dev *indio_dev,
-> +					  uintptr_t private,
-> +					  const struct iio_chan_spec *chan,
-> +					  char *buf)
-> +{
-> +	struct dac8554_state *st = iio_priv(indio_dev);
-> +
-> +	return sprintf(buf, "%d\n", st->powerdown[chan->address]);
-> +}
-> +
-> +static ssize_t dac8554_write_dac_powerdown(struct iio_dev *indio_dev,
-> +					   uintptr_t private,
-> +					   const struct iio_chan_spec *chan,
-> +					   const char *buf,
-> +					   size_t len)
-> +{
-> +	bool powerdown;
-> +	int ret;
-> +	struct dac8554_state *st = iio_priv(indio_dev);
-> +	u8 powerdown_mode;
-> +
-> +	ret = strtobool(buf, &powerdown);
-> +	if (ret)
-> +		return ret;
-> +
-> +	st->powerdown[chan->address] = powerdown;
-> +
-> +	if (powerdown) {
-> +		powerdown_mode = st->powerdown_mode[chan->address];
-> +		ret = dac8554_spi_write(st->spi, st->addr,
-> +				DAC8554_CMD_UPDATE_DAC_N,
-> +				chan->address,
-> +				DAC8554_PWRDN_TO_SR(powerdown_mode));
-> +	} else {
-> +		/* Load DAC with cached value. This triggers a powerup. */
-> +		ret = dac8554_spi_write(st->spi, st->addr,
-> +				DAC8554_CMD_UPDATE_DAC_N,
-> +				chan->address,
-> +				st->val[chan->address]);
-> +	}
-> +
-> +	if (ret)
-> +		return ret;
-> +
-> +	return len;
-> +}
-> +
-> +static int dac8554_powerdown_broadcast(struct dac8554_state *st,
-> +				       u8 powerdown_mode)
-> +{
-> +	int ret;
-> +
-> +	ret = dac8554_spi_write(st->spi, 0,
-> +			DAC8554_CMD_UPDATE_BROADCAST,
-> +			DAC8554_BROADCAST_USE_SRDATA,
-> +			DAC8554_PWRDN_TO_SR(powerdown_mode));
-> +	if (ret)
-> +		return ret;
-> +
-> +	memset(st->powerdown_mode, powerdown_mode, sizeof(st->powerdown_mode));
-> +	memset(st->powerdown, true, sizeof(st->powerdown));
-> +
-> +	return 0;
-> +}
-> +
-> +static const struct iio_info dac8554_info = {
-> +	.write_raw = dac8554_write_raw,
-> +	.read_raw = dac8554_read_raw,
-> +	.driver_module = THIS_MODULE,
-> +};
-> +
-> +static const char * const dac8554_powerdown_modes[] = {
-> +	"hi-z",
-
-hi-z is (not yet) described in ABI/testing/sysfs-bus-iio, you should add 
-that
-
-> +	"1kohm_to_gnd",
-> +	"100kohm_to_gnd"
-> +};
-> +
-> +static const struct iio_enum dac8854_powerdown_mode_enum = {
-> +	.items = dac8554_powerdown_modes,
-> +	.num_items = ARRAY_SIZE(dac8554_powerdown_modes),
-> +	.get = dac8554_get_powerdown_mode,
-> +	.set = dac8554_set_powerdown_mode,
-> +};
-> +
-> +static const struct iio_chan_spec_ext_info dac8554_ext_info[] = {
-> +	{
-> +		.name = "powerdown",
-> +		.read = dac8554_read_dac_powerdown,
-> +		.write = dac8554_write_dac_powerdown,
-> +		.shared = IIO_SEPARATE,
-> +	},
-> +	IIO_ENUM("powerdown_mode", IIO_SEPARATE,
-> +		 &dac8854_powerdown_mode_enum),
-> +	IIO_ENUM_AVAILABLE("powerdown_mode", &dac8854_powerdown_mode_enum),
-> +	{ },
-> +};
-> +
-> +#define DAC8554_CHANNEL(chan) { \
-> +	.type = IIO_VOLTAGE, \
-> +	.indexed = 1, \
-> +	.output = 1, \
-> +	.channel = (chan), \
-> +	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW), \
-> +	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE), \
-> +	.address = (chan), \
-> +	.ext_info = dac8554_ext_info, \
-> +}
-> +const struct iio_chan_spec dac8554_channels[] = {
-> +	DAC8554_CHANNEL(0),
-> +	DAC8554_CHANNEL(1),
-> +	DAC8554_CHANNEL(2),
-> +	DAC8554_CHANNEL(3),
-> +};
-> +#undef DAC8554_CHANNEL
-
-nothing wrong, but this would be the first IIO driver to #undef its 
-channel macro
-
-> +
-> +static int dac8554_probe(struct spi_device *spi)
-> +{
-> +	struct dac8554_state *st;
-> +	struct iio_dev *indio_dev;
-> +	int ret, voltage_uv = 0;
-> +	u32 addr;
-> +
-> +	indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*st));
-> +	if (!indio_dev)
-> +		return -ENOMEM;
-> +
-> +	indio_dev->dev.parent = &spi->dev;
-> +	indio_dev->name = DAC8554_DRIVERNAME;
-> +	indio_dev->info = &dac8554_info;
-> +	indio_dev->modes = INDIO_DIRECT_MODE;
-> +	indio_dev->channels = dac8554_channels;
-> +	indio_dev->num_channels = ARRAY_SIZE(dac8554_channels);
-> +
-> +	spi_set_drvdata(spi, indio_dev);
-> +	ret = iio_device_register(indio_dev);
-
-iio_device_register() should probably be the last thing in _probe();
-_state should be fully set up so requests can be handled
-
-> +	if (ret)
-> +		return ret;
-> +
-> +	st = iio_priv(indio_dev);
-> +
-> +	if (!spi->dev.of_node) {
-> +		dev_err(&spi->dev, "missing OF node");
-> +		return -ENODEV;
-> +	}
-> +	ret = of_property_read_u32(spi->dev.of_node, "address", &addr);
-> +	if (ret || addr > 2) {
-
-addr < 0?
-
-> +		dev_err(&spi->dev, "no or invalid chip address");
-> +		return -ENODEV;
-> +	}
-> +
-> +	st->spi = spi;
-> +	st->addr = addr;
-> +
-> +	st->reg = devm_regulator_get(&spi->dev, "vref");
-> +	if (IS_ERR(st->reg))
-> +		return PTR_ERR(st->reg);
-> +
-> +	ret = regulator_enable(st->reg);
-> +	if (ret)
-> +		return ret;
-> +
-> +	voltage_uv = regulator_get_voltage(st->reg);
-> +	if (voltage_uv < 0)
-> +		goto error_disable_reg;
-> +	st->vref_mv = voltage_uv / 1000;
-> +
-> +	ret = dac8554_powerdown_broadcast(st, DAC8554_PWRDN_100K);
-> +	if (ret)
-> +		goto error_disable_reg;
-> +
-> +	return 0;
-> +
-> +error_disable_reg:
-> +	regulator_disable(st->reg);
-> +	return ret;
-> +}
-> +
-> +static int dac8554_remove(struct spi_device *spi)
-> +{
-> +	struct iio_dev *indio_dev = spi_get_drvdata(spi);
-> +	struct dac8554_state *st = iio_priv(indio_dev);
-> +
-> +	iio_device_unregister(indio_dev);
-
-probably a powerdown?
-
-> +	regulator_disable(st->reg);
-> +
-> +	return 0;
-> +}
-> +
-> +static const struct of_device_id dac8554_of_match[] = {
-> +	{ .compatible = "ti,dac8554" },
-> +	{ }
-> +};
-> +MODULE_DEVICE_TABLE(of, dac8554_of_match);
-> +
-> +static struct spi_driver dac8554_driver = {
-> +	.driver = {
-> +		.name = DAC8554_DRIVERNAME,
-> +		.owner = THIS_MODULE,
-> +		.of_match_table = dac8554_of_match,
-> +	 },
-> +	.probe = dac8554_probe,
-> +	.remove = dac8554_remove,
-> +};
-> +module_spi_driver(dac8554_driver);
-> +
-> +MODULE_AUTHOR("Nikolaus Schulz <nikolaus.schulz@avionic-design.de>");
-> +MODULE_DESCRIPTION("Texas Instruments DAC8554 SPI driver");
-> +MODULE_LICENSE("GPL v2");
-> 
-
--- 
-
-Peter Meerwald
-+43-664-2444418 (mobile)
+Thanks,
+Karol
