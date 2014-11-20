@@ -1,120 +1,64 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:43424 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755063AbaKEPhr (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 5 Nov 2014 10:37:47 -0500
-Message-ID: <545A4449.8020906@kernel.org>
-Date: Wed, 05 Nov 2014 15:37:45 +0000
-From: Jonathan Cameron <jic23@kernel.org>
+Received: from arroyo.ext.ti.com ([192.94.94.40]:42041 "EHLO arroyo.ext.ti.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751932AbaKTOYl convert rfc822-to-8bit (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 20 Nov 2014 09:24:41 -0500
+From: "Griffis, Brad" <bgriffis@ti.com>
+To: "Nori, Sekhar" <nsekhar@ti.com>,
+	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+	Lee Jones <lee.jones@linaro.org>
+CC: "R, Vignesh" <vigneshr@ti.com>, Rob Herring <robh+dt@kernel.org>,
+	"Pawel Moll" <pawel.moll@arm.com>,
+	Mark Rutland <mark.rutland@arm.com>,
+	Ian Campbell <ijc+devicetree@hellion.org.uk>,
+	Kumar Gala <galak@codeaurora.org>,
+	"Benoit Cousson" <bcousson@baylibre.com>,
+	Tony Lindgren <tony@atomide.com>,
+	"Russell King" <linux@arm.linux.org.uk>,
+	Jonathan Cameron <jic23@kernel.org>,
+	"Hartmut Knaack" <knaack.h@gmx.de>,
+	"richardcochran@gmail.com" <richardcochran@gmail.com>,
+	Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Samuel Ortiz <sameo@linux.intel.com>,
+	"Balbi, Felipe" <balbi@ti.com>,
+	Sanjeev Sharma <sanjeev_sharma@mentor.com>,
+	Paul Gortmaker <paul.gortmaker@windriver.com>,
+	Jan Kardell <jan.kardell@telliq.com>,
+	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"linux-omap@vger.kernel.org" <linux-omap@vger.kernel.org>,
+	"linux-arm-kernel@lists.infradead.org"
+	<linux-arm-kernel@lists.infradead.org>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	"linux-input@vger.kernel.org" <linux-input@vger.kernel.org>,
+	Robert Nelson <robertcnelson@gmail.com>
+Subject: RE: [PATCH v4 3/6] mfd: ti_am335x_tscadc: Remove unwanted
+ reg_se_cache save
+Date: Thu, 20 Nov 2014 14:23:30 +0000
+Message-ID: <912A29987EAE174BA6CF187D7CDFA9CE26F69163@DLEE08.ent.ti.com>
+References: <1415941651-28962-1-git-send-email-vigneshr@ti.com>
+ <1415941651-28962-4-git-send-email-vigneshr@ti.com>
+ <20141118143005.GF24004@x1> <20141118171240.GB3003@dtor-ws>
+ <546DF2F0.9080405@ti.com>
+In-Reply-To: <546DF2F0.9080405@ti.com>
+Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
-To: cw00.choi@samsung.com, Abhilash Kesavan <a.kesavan@samsung.com>
-CC: linux-iio@vger.kernel.org,
-	Naveen Krishna <naveenkrishna.ch@gmail.com>,
-	Abhilash Kesavan <kesavan.abhilash@gmail.com>,
-	linux-kernel <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v2] iio: adc: exynos_adc: Add support for exynos7
-References: <1414759083-4555-1-git-send-email-a.kesavan@samsung.com>	<1414814443-4695-1-git-send-email-a.kesavan@samsung.com> <CAGTfZH09UB7ipvZ+R_eKta-_rD-ggR9NaFMW6tds0E+yR_=yYA@mail.gmail.com>
-In-Reply-To: <CAGTfZH09UB7ipvZ+R_eKta-_rD-ggR9NaFMW6tds0E+yR_=yYA@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 01/11/14 08:25, Chanwoo Choi wrote:
-> Hi Abhilash,
-> 
-> On Sat, Nov 1, 2014 at 1:00 PM, Abhilash Kesavan <a.kesavan@samsung.com> wrote:
->> The ADC on exynos7 is quite similar to ADCv2. The differences are as
->> follows:
->>         - exynos7-adc has 8 input channels (as against 10 in ADCv2).
->>         - exynos7 does not include an ADC PHY control register.
->>         - Some ADC_CON2 register bits being used in ADCv2 are listed as
->>           reserved in exynos7-adc. This results in a different init_hw
->>           function for exynos7.
->>
->> Signed-off-by: Abhilash Kesavan <a.kesavan@samsung.com>
+> -----Original Message-----
+> From: Nori, Sekhar
+> Sent: Thursday, November 20, 2014 7:56 AM
+>
+> I also tested this series on AM335x EVM using the v3.18-rc5 kernel.
+> Again, no breakage but no improvement as well.
 
-Looks good.
+The primary goal was not necessarily to improve performance of the touchscreen itself.  It was to reduce unnecessary CPU overhead introduced by the 275us udelay in the ISR.  On a related note, that 275us udelay is not something that worked for all boards.  For example, see the following forum thread:
 
-Applied to the togreg branch of iio.git, initially pushed out as testing for the
-autobuilders to play.
+http://e2e.ti.com/support/arm/sitara_arm/f/791/p/217587/775152.aspx#775152
 
-Jonathan
->> ---
->> - Based on Naveen's "iio: exynos-adc: use syscon instead of ioremap" patchset
->> http://comments.gmane.org/gmane.linux.kernel.iio/13943
->>
->>  .../devicetree/bindings/arm/samsung/exynos-adc.txt |  2 ++
->>  drivers/iio/adc/exynos_adc.c                       | 32 ++++++++++++++++++++++
->>  2 files changed, 34 insertions(+)
->>
->> diff --git a/Documentation/devicetree/bindings/arm/samsung/exynos-adc.txt b/Documentation/devicetree/bindings/arm/samsung/exynos-adc.txt
->> index c368210..f46ca9a 100644
->> --- a/Documentation/devicetree/bindings/arm/samsung/exynos-adc.txt
->> +++ b/Documentation/devicetree/bindings/arm/samsung/exynos-adc.txt
->> @@ -16,6 +16,8 @@ Required properties:
->>                                 future controllers.
->>                         Must be "samsung,exynos3250-adc" for
->>                                 controllers compatible with ADC of Exynos3250.
->> +                       Must be "samsung,exynos7-adc" for
->> +                               the ADC in Exynos7 and compatibles
->>                         Must be "samsung,s3c2410-adc" for
->>                                 the ADC in s3c2410 and compatibles
->>                         Must be "samsung,s3c2416-adc" for
->> diff --git a/drivers/iio/adc/exynos_adc.c b/drivers/iio/adc/exynos_adc.c
->> index fe03177..3a2dbb3 100644
->> --- a/drivers/iio/adc/exynos_adc.c
->> +++ b/drivers/iio/adc/exynos_adc.c
->> @@ -390,6 +390,35 @@ static const struct exynos_adc_data exynos3250_adc_data = {
->>         .start_conv     = exynos_adc_v2_start_conv,
->>  };
->>
->> +static void exynos_adc_exynos7_init_hw(struct exynos_adc *info)
->> +{
->> +       u32 con1, con2;
->> +
->> +       if (info->data->needs_adc_phy)
->> +               regmap_write(info->pmu_map, info->data->phy_offset, 1);
->> +
->> +       con1 = ADC_V2_CON1_SOFT_RESET;
->> +       writel(con1, ADC_V2_CON1(info->regs));
->> +
->> +       con2 = readl(ADC_V2_CON2(info->regs));
->> +       con2 &= ~ADC_V2_CON2_C_TIME(7);
->> +       con2 |= ADC_V2_CON2_C_TIME(0);
->> +       writel(con2, ADC_V2_CON2(info->regs));
->> +
->> +       /* Enable interrupts */
->> +       writel(1, ADC_V2_INT_EN(info->regs));
->> +}
->> +
->> +static const struct exynos_adc_data exynos7_adc_data = {
->> +       .num_channels   = MAX_ADC_V1_CHANNELS,
->> +       .mask           = ADC_DATX_MASK, /* 12 bit ADC resolution */
->> +
->> +       .init_hw        = exynos_adc_exynos7_init_hw,
->> +       .exit_hw        = exynos_adc_v2_exit_hw,
->> +       .clear_irq      = exynos_adc_v2_clear_irq,
->> +       .start_conv     = exynos_adc_v2_start_conv,
->> +};
->> +
->>  static const struct of_device_id exynos_adc_match[] = {
->>         {
->>                 .compatible = "samsung,s3c2410-adc",
->> @@ -415,6 +444,9 @@ static const struct of_device_id exynos_adc_match[] = {
->>         }, {
->>                 .compatible = "samsung,exynos3250-adc",
->>                 .data = &exynos3250_adc_data,
->> +       }, {
->> +               .compatible = "samsung,exynos7-adc",
->> +               .data = &exynos7_adc_data,
->>         },
->>         {},
->>  };
-> 
-> Looks good to me.
-> 
-> Reviewed-by: Chanwoo Choi <cw00.choi@samsung.com>
-> 
-> Best Regards,
-> Chanwoo Choi
-> 
+In that thread the user was registering multiple press events for a single press.  By increasing the udelay to 1.5ms they were able to solve the problem.  Of course, having a 1.5ms delay in your ISR is a really bad thing to do...
+
+I have another customer that was experiencing the same issue of registering multiple press events, and sure enough the 1.5ms delay "fixed" their problem too.  The patches allowed them to remove that gigantic delay from the ISR because that software delay has now become a hardware delay via CHARGECONFIG.  That customer is the one that needed 0xB000 which is MUCH larger than the value of 0x400 that was working fine for me on the EVM.
