@@ -1,145 +1,67 @@
-Return-Path: <daniel.baluta@gmail.com>
-MIME-Version: 1.0
-Sender: daniel.baluta@gmail.com
-In-Reply-To: <545A3671.2010102@kernel.org>
-References: <1415056822.4506.24.camel@hadess.net>
-	<545A3671.2010102@kernel.org>
-Date: Wed, 5 Nov 2014 17:22:07 +0200
-Message-ID: <CAEnQRZDD40S7ScRsKmAHR_XsA-moAzyvYUqEyiT9ME6dDM9zfA@mail.gmail.com>
-Subject: Re: [PATCH v3] iio:kxcjk-1013: Add support for SMO8500 device
-From: Daniel Baluta <daniel.baluta@intel.com>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mga03.intel.com ([134.134.136.65]:37373 "EHLO mga03.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1757312AbaKTKGy (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Thu, 20 Nov 2014 05:06:54 -0500
+Date: Thu, 20 Nov 2014 12:07:47 +0200
+From: Vlad Dogaru <vlad.dogaru@intel.com>
 To: Jonathan Cameron <jic23@kernel.org>
-Cc: Bastien Nocera <hadess@hadess.net>, linux-iio@vger.kernel.org,
-	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
-	Daniel Baluta <daniel.baluta@intel.com>
-Content-Type: text/plain; charset=UTF-8
-List-ID: <linux-iio@vger.kernel.org>
+Cc: Peter Meerwald <pmeerw@pmeerw.net>, linux-iio@vger.kernel.org,
+	mranostay@gmail.com
+Subject: Re: [PATCH 0/2] iio: driver for Semtech SX9500
+Message-ID: <20141120100747.GJ6904@vdogaru>
+References: <1416237169-10707-1-git-send-email-vlad.dogaru@intel.com>
+ <alpine.DEB.2.02.1411171622140.3424@pmeerw.net>
+ <546BC201.10405@kernel.org>
+ <546BC450.7000000@kernel.org>
+ <20141119135738.GG6904@vdogaru>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <20141119135738.GG6904@vdogaru>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Wed, Nov 5, 2014 at 4:38 PM, Jonathan Cameron <jic23@kernel.org> wrote:
-> On 03/11/14 23:20, Bastien Nocera wrote:
->> The Onda v975w tablet contains an accelerometer that's advertised over
->> ACPI as SMO8500. This device is however a KXCJ9 accelerometer as
->> can be seen in the Windows driver's INF file, and from the etching on
->> the chipset ("KXCJ9 41566 0414").
->>
->> This patch also removes the attempt to get the IRQ for the "data ready"
->> signal, as it does not seem to be supported by this device on this
->> platform.
+On Wed, Nov 19, 2014 at 03:57:38PM +0200, Vlad Dogaru wrote:
+> On Tue, Nov 18, 2014 at 10:12:32PM +0000, Jonathan Cameron wrote:
+> > On 18/11/14 22:02, Jonathan Cameron wrote:
+> > > On 17/11/14 15:25, Peter Meerwald wrote:
+> > >>
+> > >>> The device does not estimate distance, it only outputs a single bit which
+> > >>> indicates proximity.  We use 0 to mean that an object is close and 1 otherwise,
+> > >>> sort of an uncalibrated distance.  From what I understand in the ABI
+> > >>> specification, this is allowed.
+> > >>
+> > >> perhaps the input subsystem would be a better fit for this driver/device?
+> > >> what is it typically used for?
+> 
+> We have this part listed under "proximity sensors", so I thought it
+> belongs in iio.  We don't have a device that actually uses the SX9500,
+> I'm using an evaluation board and an I2C bridge right now :)
+> 
+> > > Whilst it may be the case that this particular one might have a reasonable
+> > > home in input, these are often integrated with ambient light sensors
+> > > and as such we already have a quite a few proximity sensors in IIO...
+> > > 
+> > > Interestingly there is one obvious proximity sensor in input and that
+> > > is a dual ambient light/ proximity part though I can't see any way
+> > > of reading the light side of it.  Interesting...
+> > Note that, given it describes itself as a button trip I can entirely see
+> > your point with this one!  I wrote my reply before opening the datasheet.
+> > oops.
+> > 
+> > The device does seem to provide access to measurements related to
+> > the capacitance sensed so might be rather more flexible than just
+> > a button though.
+> 
+> I kept away from the measurements because they look like uncalibrated
+> information.  Then again, so is "0/1", as I mentioned initially.
 
-I don't understand exactly why you remove the attempt to get IRQ? If this is
-not supported on your device than kxcjk1013_gpio_probe should return
-a negative value. Then, all IRQ handling is done only if client->irq >= 0 and
-you should be safe.
+To add to this:  the device senses proximity, not just touch.  I figured
+it would be used in mobile devices, e.g. for shutting off the screen
+when talking on the phone.  Moreover, Android supports proximity sensors
+that only report "near/far" values.
 
->>
->> Signed-off-by: Bastien Nocera <hadess@hadess.net>
-> Looks fine to me, but I'd ideally like an ack / review from Srinivas as it's his
-> driver... (and/or Daniel)
->>
->> ---
-
-Do not add scissor line by hand.
-
->>
->> Changes from v1:
->> - Rebase after driver changes
->> - Stop checking for IRQ when not supported
->>
->> Changes from v2:
->> - Fixed the space before the opening bracket
->> - Added Sob line
->> - Add version to the patch subject line ;)
->>
->> ---
-
-Add change history here instead.
-
->>  drivers/iio/accel/kxcjk-1013.c | 13 +++++++++++--
->>  1 file changed, 11 insertions(+), 2 deletions(-)
->>
->> diff --git a/drivers/iio/accel/kxcjk-1013.c b/drivers/iio/accel/kxcjk-1013.c
->> index 98909a9..3e966c2 100644
->> --- a/drivers/iio/accel/kxcjk-1013.c
->> +++ b/drivers/iio/accel/kxcjk-1013.c
->> @@ -108,6 +108,7 @@ struct kxcjk1013_data {
->>       bool motion_trigger_on;
->>       int64_t timestamp;
->>       enum kx_chipset chipset;
->> +     bool is_smo8500_device;
->>  };
->>
->>  enum kxcjk1013_axis {
->> @@ -1129,12 +1130,15 @@ static irqreturn_t kxcjk1013_data_rdy_trig_poll(int irq, void *private)
->>  }
->>
->>  static const char *kxcjk1013_match_acpi_device(struct device *dev,
->> -                                            enum kx_chipset *chipset)
->> +                                            enum kx_chipset *chipset,
->> +                                            bool *is_smo8500_device)
->>  {
->>       const struct acpi_device_id *id;
->>       id = acpi_match_device(dev->driver->acpi_match_table, dev);
->>       if (!id)
->>               return NULL;
->> +     if (strcmp(id->id, "SMO8500") == 0)
->> +             *is_smo8500_device = true;
->>       *chipset = (enum kx_chipset)id->driver_data;
->>
->>       return dev_name(dev);
->> @@ -1149,6 +1153,8 @@ static int kxcjk1013_gpio_probe(struct i2c_client *client,
->>
->>       if (!client)
->>               return -EINVAL;
->> +     if (data->is_smo8500_device)
->> +             return -ENOTSUPP;
->>
->>       dev = &client->dev;
->>
->> @@ -1198,7 +1204,8 @@ static int kxcjk1013_probe(struct i2c_client *client,
->>               name = id->name;
->>       } else if (ACPI_HANDLE(&client->dev)) {
->>               name = kxcjk1013_match_acpi_device(&client->dev,
->> -                                                &data->chipset);
->> +                                                &data->chipset,
->> +                                                &data->is_smo8500_device);
->>       } else
->>               return -ENODEV;
->>
->> @@ -1397,6 +1404,7 @@ static const struct acpi_device_id kx_acpi_match[] = {
->>       {"KXCJ1013", KXCJK1013},
->>       {"KXCJ1008", KXCJ91008},
->>       {"KXTJ1009", KXTJ21009},
->> +     {"SMO8500",  KXCJK1013},
-
-Commit message says that your accel is KXCJ9, but here you use the index
-for KXCJK1013. Which one is true?
-
->>       { },
->>  };
->>  MODULE_DEVICE_TABLE(acpi, kx_acpi_match);
->> @@ -1405,6 +1413,7 @@ static const struct i2c_device_id kxcjk1013_id[] = {
->>       {"kxcjk1013", KXCJK1013},
->>       {"kxcj91008", KXCJ91008},
->>       {"kxtj21009", KXTJ21009},
->> +     {"SMO8500",   KXCJK1013},
-
-Ditto.
-
->>       {}
->>  };
-
-I have  recently set up an IRC channel for linux-iio,
-I am going to send an official  announce email
-as soon as possible (not sure if this channel is
-needed though :D).
-
-You can join it now at:
-* server: irc.oftc.net
-* channel: #linux-iio
-
-There is also an web interface available:
-
-http://webchat.oftc.net/
-
-thanks,
-Daniel.
+> Would you find it acceptable to expose the raw measures through
+> in_priximity0_raw, and keep the events as they are?  That way the raw
+> readings can give some basic indication of distance, while still being
+> able to use the events for near/far notification.
