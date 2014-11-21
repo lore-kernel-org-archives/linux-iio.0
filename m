@@ -1,717 +1,766 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga01.intel.com ([192.55.52.88]:2768 "EHLO mga01.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751160AbaKFPJc (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Thu, 6 Nov 2014 10:09:32 -0500
-Message-ID: <1415286329.7340.16.camel@spandruv-hsb-test>
-Subject: Re: [PATCH 3/3] iio: ak8975: add ak09911 and ak09912 support
-From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-To: Gwendal Grignou <gwendal@chromium.org>
-Cc: jic23@kernel.org, knaack.h@gmx.de, linux-iio@vger.kernel.org
-Date: Thu, 06 Nov 2014 07:05:29 -0800
-In-Reply-To: <1415225452-21957-4-git-send-email-gwendal@chromium.org>
-References: <CAMHSBOWmmCdd=5HXJN-vz9saaPrq3n0p-LjCNvnX3Q3ZieZdRQ@mail.gmail.com>
-	 <1415225452-21957-1-git-send-email-gwendal@chromium.org>
-	 <1415225452-21957-4-git-send-email-gwendal@chromium.org>
-Content-Type: text/plain; charset="UTF-8"
-Mime-Version: 1.0
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <k.wrona@samsung.com>
+From: Karol Wrona <k.wrona@samsung.com>
+To: Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
+ linux-iio@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>,
+ linux-kernel@vger.kernel.org
+Cc: Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
+ Kyungmin Park <kyungmin.park@samsung.com>,
+ Antonio Borneo <borneo.antonio@gmail.com>, Karol Wrona <k.wrona@samsung.com>
+Subject: [PATCH v5 1/1] misc: st32fwu: Add stm32 upgrade protocol handling
+Date: Fri, 21 Nov 2014 19:17:28 +0100
+Message-id: <1416593848-19676-2-git-send-email-k.wrona@samsung.com>
+In-reply-to: <1416593848-19676-1-git-send-email-k.wrona@samsung.com>
+References: <1416593848-19676-1-git-send-email-k.wrona@samsung.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-On Wed, 2014-11-05 at 14:10 -0800, Gwendal Grignou wrote:
-> Add 2 new definition entries to support ak0991x compass.
-> Add a more advanced function to check we are dealy with the
-> expected device.
-This commit message doesn't state that you are removing ak09911 driver.
-Although you added in cover letter, but that will not be present in the
-history.
+Adds stm32 bootloader protocol handling.
 
-> 
-> Signed-off-by: Gwendal Grignou <gwendal@chromium.org>
-> ---
->  drivers/iio/magnetometer/Kconfig   |  17 +-
->  drivers/iio/magnetometer/Makefile  |   1 -
->  drivers/iio/magnetometer/ak09911.c | 326 -------------------------------------
->  drivers/iio/magnetometer/ak8975.c  | 197 ++++++++++++++++++++--
->  4 files changed, 184 insertions(+), 357 deletions(-)
->  delete mode 100644 drivers/iio/magnetometer/ak09911.c
-> 
-> diff --git a/drivers/iio/magnetometer/Kconfig b/drivers/iio/magnetometer/Kconfig
-> index b2dba9e..cd8750b 100644
-> --- a/drivers/iio/magnetometer/Kconfig
-> +++ b/drivers/iio/magnetometer/Kconfig
-> @@ -6,27 +6,16 @@
->  menu "Magnetometer sensors"
->  
->  config AK8975
-> -	tristate "Asahi Kasei AK8975 3-Axis Magnetometer"
-> +	tristate "Asahi Kasei AK 3-Axis Magnetometer"
->  	depends on I2C
->  	depends on GPIOLIB
->  	help
-> -	  Say yes here to build support for Asahi Kasei AK8975 3-Axis
-> -	  Magnetometer. This driver can also support AK8963, if i2c
-> -	  device name is identified as ak8963.
-> +	  Say yes here to build support for Asahi Kasei AK8975, AK8963,
-> +	  AK09911 or AK09912 3-Axis Magnetometer.
->  
->  	  To compile this driver as a module, choose M here: the module
->  	  will be called ak8975.
->  
-> -config AK09911
-Instead
-config AK09911
-	select AK8975
+SPI transfers are done using DMA safe buffer which is allocated once per
+spi upgrade life cycle. Now it supports only SPI bus but it looks that UART
+or I2C are quite similar and it can be used as start platform for implementing
+their handling.
 
-I stated my reason below.
-> -	tristate "Asahi Kasei AK09911 3-axis Compass"
-> -	depends on I2C
-> -	help
-> -	  Say yes here to build support for Asahi Kasei AK09911 3-Axis
-> -	  Magnetometer.
-> -
-> -	  To compile this driver as a module, choose M here: the module
-> -	  will be called ak09911.
-> -
->  config MAG3110
->  	tristate "Freescale MAG3110 3-Axis Magnetometer"
->  	depends on I2C
-> diff --git a/drivers/iio/magnetometer/Makefile b/drivers/iio/magnetometer/Makefile
-> index b91315e..0f5d3c9 100644
-> --- a/drivers/iio/magnetometer/Makefile
-> +++ b/drivers/iio/magnetometer/Makefile
-> @@ -3,7 +3,6 @@
->  #
->  
->  # When adding new entries keep the list in alphabetical order
-> -obj-$(CONFIG_AK09911)	+= ak09911.o
->  obj-$(CONFIG_AK8975)	+= ak8975.o
->  obj-$(CONFIG_MAG3110)	+= mag3110.o
->  obj-$(CONFIG_HID_SENSOR_MAGNETOMETER_3D) += hid-sensor-magn-3d.o
-> diff --git a/drivers/iio/magnetometer/ak09911.c b/drivers/iio/magnetometer/ak09911.c
-> deleted file mode 100644
-> index b2bc942..0000000
-> --- a/drivers/iio/magnetometer/ak09911.c
-> +++ /dev/null
-> @@ -1,326 +0,0 @@
-> -/*
-> - * AK09911 3-axis compass driver
-> - * Copyright (c) 2014, Intel Corporation.
-> - *
-> - * This program is free software; you can redistribute it and/or modify it
-> - * under the terms and conditions of the GNU General Public License,
-> - * version 2, as published by the Free Software Foundation.
-> - *
-> - * This program is distributed in the hope it will be useful, but WITHOUT
-> - * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-> - * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
-> - * more details.
-> - */
-> -
-> -#include <linux/kernel.h>
-> -#include <linux/module.h>
-> -#include <linux/init.h>
-> -#include <linux/types.h>
-> -#include <linux/slab.h>
-> -#include <linux/delay.h>
-> -#include <linux/i2c.h>
-> -#include <linux/acpi.h>
-> -#include <linux/iio/iio.h>
-> -
-> -#define AK09911_REG_WIA1		0x00
-> -#define AK09911_REG_WIA2		0x01
-> -#define AK09911_WIA1_VALUE		0x48
-> -#define AK09911_WIA2_VALUE		0x05
-> -
-> -#define AK09911_REG_ST1			0x10
-> -#define AK09911_REG_HXL			0x11
-> -#define AK09911_REG_HXH			0x12
-> -#define AK09911_REG_HYL			0x13
-> -#define AK09911_REG_HYH			0x14
-> -#define AK09911_REG_HZL			0x15
-> -#define AK09911_REG_HZH			0x16
-> -
-> -#define AK09911_REG_ASAX		0x60
-> -#define AK09911_REG_ASAY		0x61
-> -#define AK09911_REG_ASAZ		0x62
-> -
-> -#define AK09911_REG_CNTL1		0x30
-> -#define AK09911_REG_CNTL2		0x31
-> -#define AK09911_REG_CNTL3		0x32
-> -
-> -#define AK09911_MODE_SNG_MEASURE	0x01
-> -#define AK09911_MODE_SELF_TEST		0x10
-> -#define AK09911_MODE_FUSE_ACCESS	0x1F
-> -#define AK09911_MODE_POWERDOWN		0x00
-> -#define AK09911_RESET_DATA		0x01
-> -
-> -#define AK09911_REG_CNTL1		0x30
-> -#define AK09911_REG_CNTL2		0x31
-> -#define AK09911_REG_CNTL3		0x32
-> -
-> -#define AK09911_RAW_TO_GAUSS(asa)	((((asa) + 128) * 6000) / 256)
-> -
-> -#define AK09911_MAX_CONVERSION_TIMEOUT_MS	500
-> -#define AK09911_CONVERSION_DONE_POLL_TIME_MS	10
-> -
-> -struct ak09911_data {
-> -	struct i2c_client	*client;
-> -	struct mutex		lock;
-> -	u8			asa[3];
-> -	long			raw_to_gauss[3];
-> -};
-> -
-> -static const int ak09911_index_to_reg[] = {
-> -	AK09911_REG_HXL, AK09911_REG_HYL, AK09911_REG_HZL,
-> -};
-> -
-> -static int ak09911_set_mode(struct i2c_client *client, u8 mode)
-> -{
-> -	int ret;
-> -
-> -	switch (mode) {
-> -	case AK09911_MODE_SNG_MEASURE:
-> -	case AK09911_MODE_SELF_TEST:
-> -	case AK09911_MODE_FUSE_ACCESS:
-> -	case AK09911_MODE_POWERDOWN:
-> -		ret = i2c_smbus_write_byte_data(client,
-> -						AK09911_REG_CNTL2, mode);
-> -		if (ret < 0) {
-> -			dev_err(&client->dev, "set_mode error\n");
-> -			return ret;
-> -		}
-> -		/* After mode change wait atleast 100us */
-> -		usleep_range(100, 500);
-> -		break;
-> -	default:
-> -		dev_err(&client->dev,
-> -			"%s: Unknown mode(%d).", __func__, mode);
-> -		return -EINVAL;
-> -	}
-> -
-> -	return ret;
-> -}
-> -
-> -/* Get Sensitivity Adjustment value */
-> -static int ak09911_get_asa(struct i2c_client *client)
-> -{
-> -	struct iio_dev *indio_dev = i2c_get_clientdata(client);
-> -	struct ak09911_data *data = iio_priv(indio_dev);
-> -	int ret;
-> -
-> -	ret = ak09911_set_mode(client, AK09911_MODE_FUSE_ACCESS);
-> -	if (ret < 0)
-> -		return ret;
-> -
-> -	/* Get asa data and store in the device data. */
-> -	ret = i2c_smbus_read_i2c_block_data(client, AK09911_REG_ASAX,
-> -					    3, data->asa);
-> -	if (ret < 0) {
-> -		dev_err(&client->dev, "Not able to read asa data\n");
-> -		return ret;
-> -	}
-> -
-> -	ret = ak09911_set_mode(client,  AK09911_MODE_POWERDOWN);
-> -	if (ret < 0)
-> -		return ret;
-> -
-> -	data->raw_to_gauss[0] = AK09911_RAW_TO_GAUSS(data->asa[0]);
-> -	data->raw_to_gauss[1] = AK09911_RAW_TO_GAUSS(data->asa[1]);
-> -	data->raw_to_gauss[2] = AK09911_RAW_TO_GAUSS(data->asa[2]);
-> -
-> -	return 0;
-> -}
-> -
-> -static int ak09911_verify_chip_id(struct i2c_client *client)
-> -{
-> -	u8 wia_val[2];
-> -	int ret;
-> -
-> -	ret = i2c_smbus_read_i2c_block_data(client, AK09911_REG_WIA1,
-> -					    2, wia_val);
-> -	if (ret < 0) {
-> -		dev_err(&client->dev, "Error reading WIA\n");
-> -		return ret;
-> -	}
-> -
-> -	dev_dbg(&client->dev, "WIA %02x %02x\n", wia_val[0], wia_val[1]);
-> -
-> -	if (wia_val[0] != AK09911_WIA1_VALUE ||
-> -		wia_val[1] != AK09911_WIA2_VALUE) {
-> -		dev_err(&client->dev, "Device ak09911 not found\n");
-> -		return -ENODEV;
-> -	}
-> -
-> -	return 0;
-> -}
-> -
-> -static int wait_conversion_complete_polled(struct ak09911_data *data)
-> -{
-> -	struct i2c_client *client = data->client;
-> -	u8 read_status;
-> -	u32 timeout_ms = AK09911_MAX_CONVERSION_TIMEOUT_MS;
-> -	int ret;
-> -
-> -	/* Wait for the conversion to complete. */
-> -	while (timeout_ms) {
-> -		msleep_interruptible(AK09911_CONVERSION_DONE_POLL_TIME_MS);
-> -		ret = i2c_smbus_read_byte_data(client, AK09911_REG_ST1);
-> -		if (ret < 0) {
-> -			dev_err(&client->dev, "Error in reading ST1\n");
-> -			return ret;
-> -		}
-> -		read_status = ret & 0x01;
-> -		if (read_status)
-> -			break;
-> -		timeout_ms -= AK09911_CONVERSION_DONE_POLL_TIME_MS;
-> -	}
-> -	if (!timeout_ms) {
-> -		dev_err(&client->dev, "Conversion timeout happened\n");
-> -		return -EIO;
-> -	}
-> -
-> -	return read_status;
-> -}
-> -
-> -static int ak09911_read_axis(struct iio_dev *indio_dev, int index, int *val)
-> -{
-> -	struct ak09911_data *data = iio_priv(indio_dev);
-> -	struct i2c_client *client = data->client;
-> -	int ret;
-> -
-> -	mutex_lock(&data->lock);
-> -
-> -	ret = ak09911_set_mode(client, AK09911_MODE_SNG_MEASURE);
-> -	if (ret < 0)
-> -		goto fn_exit;
-> -
-> -	ret = wait_conversion_complete_polled(data);
-> -	if (ret < 0)
-> -		goto fn_exit;
-> -
-> -	/* Read data */
-> -	ret = i2c_smbus_read_word_data(client, ak09911_index_to_reg[index]);
-> -	if (ret < 0) {
-> -		dev_err(&client->dev, "Read axis data fails\n");
-> -		goto fn_exit;
-> -	}
-> -
-> -	mutex_unlock(&data->lock);
-> -
-> -	/* Clamp to valid range. */
-> -	*val = sign_extend32(clamp_t(s16, ret, -8192, 8191), 13);
-> -
-> -	return IIO_VAL_INT;
-> -
-> -fn_exit:
-> -	mutex_unlock(&data->lock);
-> -
-> -	return ret;
-> -}
-> -
-> -static int ak09911_read_raw(struct iio_dev *indio_dev,
-> -			    struct iio_chan_spec const *chan,
-> -			    int *val, int *val2,
-> -			    long mask)
-> -{
-> -	struct ak09911_data *data = iio_priv(indio_dev);
-> -
-> -	switch (mask) {
-> -	case IIO_CHAN_INFO_RAW:
-> -		return ak09911_read_axis(indio_dev, chan->address, val);
-> -	case IIO_CHAN_INFO_SCALE:
-> -		*val = 0;
-> -		*val2 = data->raw_to_gauss[chan->address];
-> -		return IIO_VAL_INT_PLUS_MICRO;
-> -	}
-> -
-> -	return -EINVAL;
-> -}
-> -
-> -#define AK09911_CHANNEL(axis, index)					\
-> -	{								\
-> -		.type = IIO_MAGN,					\
-> -		.modified = 1,						\
-> -		.channel2 = IIO_MOD_##axis,				\
-> -		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |		\
-> -			     BIT(IIO_CHAN_INFO_SCALE),			\
-> -		.address = index,					\
-> -	}
-> -
-> -static const struct iio_chan_spec ak09911_channels[] = {
-> -	AK09911_CHANNEL(X, 0), AK09911_CHANNEL(Y, 1), AK09911_CHANNEL(Z, 2),
-> -};
-> -
-> -static const struct iio_info ak09911_info = {
-> -	.read_raw = &ak09911_read_raw,
-> -	.driver_module = THIS_MODULE,
-> -};
-> -
-> -static const struct acpi_device_id ak_acpi_match[] = {
-> -	{"AK009911", 0},
-> -	{ },
-> -};
-> -MODULE_DEVICE_TABLE(acpi, ak_acpi_match);
-> -
-> -static int ak09911_probe(struct i2c_client *client,
-> -			 const struct i2c_device_id *id)
-> -{
-> -	struct iio_dev *indio_dev;
-> -	struct ak09911_data *data;
-> -	const char *name;
-> -	int ret;
-> -
-> -	ret = ak09911_verify_chip_id(client);
-> -	if (ret) {
-> -		dev_err(&client->dev, "AK00911 not detected\n");
-> -		return -ENODEV;
-> -	}
-> -
-> -	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
-> -	if (indio_dev == NULL)
-> -		return -ENOMEM;
-> -
-> -	data = iio_priv(indio_dev);
-> -	i2c_set_clientdata(client, indio_dev);
-> -
-> -	data->client = client;
-> -	mutex_init(&data->lock);
-> -
-> -	ret = ak09911_get_asa(client);
-> -	if (ret)
-> -		return ret;
-> -
-> -	if (id)
-> -		name = id->name;
-> -	else if (ACPI_HANDLE(&client->dev))
-> -		name = dev_name(&client->dev);
-> -	else
-> -		return -ENODEV;
-> -
-> -	dev_dbg(&client->dev, "Asahi compass chip %s\n", name);
-> -
-> -	indio_dev->dev.parent = &client->dev;
-> -	indio_dev->channels = ak09911_channels;
-> -	indio_dev->num_channels = ARRAY_SIZE(ak09911_channels);
-> -	indio_dev->info = &ak09911_info;
-> -	indio_dev->modes = INDIO_DIRECT_MODE;
-> -	indio_dev->name = name;
-> -
-> -	return devm_iio_device_register(&client->dev, indio_dev);
-> -}
-> -
-> -static const struct i2c_device_id ak09911_id[] = {
-> -	{"ak09911", 0},
-> -	{}
-> -};
-> -
-> -MODULE_DEVICE_TABLE(i2c, ak09911_id);
-> -
-> -static struct i2c_driver ak09911_driver = {
-> -	.driver = {
-> -		.name	= "ak09911",
-> -		.acpi_match_table = ACPI_PTR(ak_acpi_match),
-> -	},
-> -	.probe		= ak09911_probe,
-> -	.id_table	= ak09911_id,
-> -};
-> -module_i2c_driver(ak09911_driver);
-> -
-> -MODULE_AUTHOR("Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>");
-> -MODULE_LICENSE("GPL v2");
-> -MODULE_DESCRIPTION("AK09911 Compass driver");
-> diff --git a/drivers/iio/magnetometer/ak8975.c b/drivers/iio/magnetometer/ak8975.c
-> index b170654..f8c7046 100644
-> --- a/drivers/iio/magnetometer/ak8975.c
-> +++ b/drivers/iio/magnetometer/ak8975.c
-> @@ -81,6 +81,58 @@
->  #define AK8975_MAX_REGS			AK8975_REG_ASAZ
->  
->  /*
-> + * AK09912 Register definitions
-> + */
-> +#define AK09912_REG_WIA1		0x00
-> +#define AK09912_REG_WIA2		0x01
-> +#define AK09912_DEVICE_ID		0x04
-> +#define AK09911_DEVICE_ID		0x05
-> +
-> +#define AK09911_REG_INFO1		0x02
-> +#define AK09911_REG_INFO2		0x03
-> +
-> +#define AK09912_REG_ST1			0x10
-> +
-> +#define AK09912_REG_ST1_DRDY_SHIFT	0
-> +#define AK09912_REG_ST1_DRDY_MASK	(1 << AK09912_REG_ST1_DRDY_SHIFT)
-> +
-> +#define AK09912_REG_HXL			0x11
-> +#define AK09912_REG_HXH			0x12
-> +#define AK09912_REG_HYL			0x13
-> +#define AK09912_REG_HYH			0x14
-> +#define AK09912_REG_HZL			0x15
-> +#define AK09912_REG_HZH			0x16
-> +#define AK09912_REG_TMPS		0x17
-> +
-> +#define AK09912_REG_ST2			0x18
-> +#define AK09912_REG_ST2_HOFL_SHIFT	3
-> +#define AK09912_REG_ST2_HOFL_MASK	(1 << AK09912_REG_ST2_HOFL_SHIFT)
-> +
-> +#define AK09912_REG_CNTL1		0x30
-> +
-> +#define AK09912_REG_CNTL2		0x31
-> +#define AK09912_REG_CNTL_MODE_POWER_DOWN	0x00
-> +#define AK09912_REG_CNTL_MODE_ONCE	0x01
-> +#define AK09912_REG_CNTL_MODE_SELF_TEST	0x10
-> +#define AK09912_REG_CNTL_MODE_FUSE_ROM	0x1F
-> +#define AK09912_REG_CNTL2_MODE_SHIFT	0
-> +#define AK09912_REG_CNTL2_MODE_MASK	(0x1F << AK09912_REG_CNTL2_MODE_SHIFT)
-> +
-> +#define AK09912_REG_CNTL3		0x32
-> +
-> +#define AK09912_REG_TS1			0x33
-> +#define AK09912_REG_TS2			0x34
-> +#define AK09912_REG_TS3			0x35
-> +#define AK09912_REG_I2CDIS		0x36
-> +#define AK09912_REG_TS4			0x37
-> +
-> +#define AK09912_REG_ASAX		0x60
-> +#define AK09912_REG_ASAY		0x61
-> +#define AK09912_REG_ASAZ		0x62
-> +
-> +#define AK09912_MAX_REGS		AK09912_REG_ASAZ
-> +
-> +/*
->   * Miscellaneous values.
->   */
->  #define AK8975_MAX_CONVERSION_TIMEOUT	500
-> @@ -130,22 +182,37 @@ long ak8975_raw_to_gauss(u16 data)
->  }
->  
->  /*
-> - * For AK8963, same calculation, but the device is less sensitive:
-> + * For AK8963 and AK09911, same calculation, but the device is less sensitive:
->   *
->   * H is in the range of +-8190.  The magnetometer has a range of
->   * +-4912uT.  To go from the raw value to uT is:
->   *
->   * HuT = H * 4912/8190, or roughly, 6/10, instead of 3/10.
->   */
-> -long ak8963_raw_to_gauss(u16 data)
-> +long ak8963_09911_raw_to_gauss(u16 data)
->  {
->  	return (((long)data + 128) * 6000) / 256;
->  }
->  
-> +/*
-> + * For AK09912, same calculation, except the device is more sensitive:
-> + *
-> + * H is in the range of -32752 to 32752.  The magnetometer has a range of
-> + * +-4912uT.  To go from the raw value to uT is:
-> + *
-> + * HuT = H * 4912/32752, or roughly, 3/20, instead of 3/10.
-> + */
-> +long ak09912_raw_to_gauss(u16 data)
-> +{
-> +	return (((long)data + 128) * 1500) / 256;
-> +}
-> +
->  /* Compatible Asahi Kasei Compass parts */
->  enum asahi_compass_chipset {
->  	AK8975,
->  	AK8963,
-> +	AK09911,
-> +	AK09912,
->  	AK_MAX_TYPE
->  };
->  
-> @@ -210,7 +277,7 @@ struct ak_def {
->  },
->  {
->  	.type = AK8963,
-> -	.raw_to_gauss = ak8963_raw_to_gauss,
-> +	.raw_to_gauss = ak8963_09911_raw_to_gauss,
->  	.range = 8190,
->  	.ctrl_regs = {
->  		AK8975_REG_ST1,
-> @@ -233,6 +300,56 @@ struct ak_def {
->  		AK8975_REG_HYL,
->  		AK8975_REG_HZL},
->  },
-> +{
-> +	.type = AK09911,
-> +	.raw_to_gauss = ak8963_09911_raw_to_gauss,
-> +	.range = 8192,
-> +	.ctrl_regs = {
-> +		AK09912_REG_ST1,
-> +		AK09912_REG_ST2,
-> +		AK09912_REG_CNTL2,
-> +		AK09912_REG_ASAX,
-> +		AK09912_MAX_REGS},
-> +	.ctrl_masks = {
-> +		AK09912_REG_ST1_DRDY_MASK,
-> +		AK09912_REG_ST2_HOFL_MASK,
-> +		0,
-> +		AK09912_REG_CNTL2_MODE_MASK},
-> +	.ctrl_modes = {
-> +		AK09912_REG_CNTL_MODE_POWER_DOWN,
-> +		AK09912_REG_CNTL_MODE_ONCE,
-> +		AK09912_REG_CNTL_MODE_SELF_TEST,
-> +		AK09912_REG_CNTL_MODE_FUSE_ROM},
-> +	.data_regs = {
-> +		AK09912_REG_HXL,
-> +		AK09912_REG_HYL,
-> +		AK09912_REG_HZL},
-> +},
-> +{
-> +	.type = AK09912,
-> +	.raw_to_gauss = ak09912_raw_to_gauss,
-> +	.range = 32752,
-> +	.ctrl_regs = {
-> +		AK09912_REG_ST1,
-> +		AK09912_REG_ST2,
-> +		AK09912_REG_CNTL2,
-> +		AK09912_REG_ASAX,
-> +		AK09912_MAX_REGS},
-> +	.ctrl_masks = {
-> +		AK09912_REG_ST1_DRDY_MASK,
-> +		AK09912_REG_ST2_HOFL_MASK,
-> +		0,
-> +		AK09912_REG_CNTL2_MODE_MASK},
-> +	.ctrl_modes = {
-> +		AK09912_REG_CNTL_MODE_POWER_DOWN,
-> +		AK09912_REG_CNTL_MODE_ONCE,
-> +		AK09912_REG_CNTL_MODE_SELF_TEST,
-> +		AK09912_REG_CNTL_MODE_FUSE_ROM},
-> +	.data_regs = {
-> +		AK09912_REG_HXL,
-> +		AK09912_REG_HYL,
-> +		AK09912_REG_HZL},
-> +}
->  };
->  
->  /*
-> @@ -253,6 +370,55 @@ struct ak8975_data {
->  };
->  
->  /*
-> + * Return 0 if the i2c device is the one we expect.
-> + * return a negative error number otherwise
-> + */
-> +static int ak8975_who_i_am(struct i2c_client *client,
-> +			   enum asahi_compass_chipset type)
-> +{
-> +	u8 wia_val[2];
-> +	int ret;
-> +
-> +	/*
-> +	 * Signature for each device:
-> +	 * Device   |  WIA1      |  WIA2
-> +	 * AK09912  |  DEVICE_ID |  AK09912_DEVICE_ID
-> +	 * AK09911  |  DEVICE_ID |  AK09911_DEVICE_ID
-> +	 * AK8975   |  DEVICE_ID |  NA
-> +	 * AK8963   |  DEVICE_ID |  NA
-> +	 */
-> +	ret = i2c_smbus_read_i2c_block_data(client, AK09912_REG_WIA1,
-> +					    2, wia_val);
-> +	if (ret < 0) {
-> +		dev_err(&client->dev, "Error reading WIA\n");
-> +		return ret;
-> +	}
-> +
-> +	ret = -ENODEV;
-> +
-> +	if (wia_val[0] != AK8975_DEVICE_ID)
-> +		return ret;
-> +
-> +	switch (type) {
-> +	case AK8975:
-> +	case AK8963:
-> +		ret = 0;
-> +		break;
-> +	case AK09911:
-> +		if (wia_val[1] == AK09911_DEVICE_ID)
-> +			ret = 0;
-> +		break;
-> +	case AK09912:
-> +		if (wia_val[1] == AK09912_DEVICE_ID)
-> +			ret = 0;
-> +		break;
-> +	default:
-> +		dev_err(&client->dev, "Type %d unknown\n", type);
-> +	}
-> +	return ret;
-> +}
-> +
-> +/*
->   * Helper function to write to CNTL register.
->   */
->  static int ak8975_set_mode(struct ak8975_data *data, enum ak_ctrl_mode mode)
-> @@ -327,21 +493,8 @@ static int ak8975_setup(struct i2c_client *client)
->  {
->  	struct iio_dev *indio_dev = i2c_get_clientdata(client);
->  	struct ak8975_data *data = iio_priv(indio_dev);
-> -	u8 device_id;
->  	int ret;
->  
-> -	/* Confirm that the device we're talking to is really an AK8975. */
-> -	ret = i2c_smbus_read_byte_data(client, AK8975_REG_WIA);
-> -	if (ret < 0) {
-> -		dev_err(&client->dev, "Error reading WIA\n");
-> -		return ret;
-> -	}
-> -	device_id = ret;
-> -	if (device_id != AK8975_DEVICE_ID) {
-> -		dev_err(&client->dev, "Device ak8975 not found\n");
-> -		return -ENODEV;
-> -	}
-> -
->  	/* Write the fused rom access mode. */
->  	ret = ak8975_set_mode(data, FUSE_ROM);
->  	if (ret < 0) {
-> @@ -552,6 +705,8 @@ static const struct acpi_device_id ak_acpi_match[] = {
->  	{"AK8975", AK8975},
->  	{"AK8963", AK8963},
->  	{"INVN6500", AK8963},
-> +	{"AK09911", AK09911},
-> +	{"AK09912", AK09912},
->  	{ },
->  };
->  MODULE_DEVICE_TABLE(acpi, ak_acpi_match);
-> @@ -631,6 +786,10 @@ static int ak8975_probe(struct i2c_client *client,
->  	}
->  
->  	data->def = &ak_def_array[chipset];
-> +	if (ak8975_who_i_am(client, data->def->type) < 0) {
-> +		dev_err(&client->dev, "Unexpected device\n");
-> +		return -ENODEV;
-> +	}
->  	dev_dbg(&client->dev, "Asahi compass chip %s\n", name);
->  
->  	/* Perform some basic start-of-day setup of the device. */
-> @@ -653,6 +812,8 @@ static int ak8975_probe(struct i2c_client *client,
->  static const struct i2c_device_id ak8975_id[] = {
->  	{"ak8975", AK8975},
->  	{"ak8963", AK8963},
-> +	{"ak09911", AK09911},
-> +	{"ak09912", AK09912},
->  	{}
->  };
->  
-> @@ -663,6 +824,10 @@ static const struct of_device_id ak8975_of_match[] = {
->  	{ .compatible = "ak8975", },
->  	{ .compatible = "asahi-kasei,ak8963", },
->  	{ .compatible = "ak8963", },
-> +	{ .compatible = "asahi-kasei,ak09911", },
-> +	{ .compatible = "ak09911", },
-> +	{ .compatible = "asahi-kasei,ak09912", },
-> +	{ .compatible = "ak09912", },
->  	{}
->  };
->  MODULE_DEVICE_TABLE(of, ak8975_of_match);
+It was tested on STM32F401 MCU.
 
-I need to test this driver.
-Jonathan,
-If possible, wait for Tested by tag from me or someone else.
+Signed-off-by: Karol Wrona <k.wrona@samsung.com>
+Acked-by: Kyungmin Park <kyungmin.park@samsung.com>
+---
+ drivers/misc/Kconfig               |    1 +
+ drivers/misc/Makefile              |    1 +
+ drivers/misc/stm32fwu/Kconfig      |    6 +
+ drivers/misc/stm32fwu/Makefile     |    1 +
+ drivers/misc/stm32fwu/stm32_core.c |  408 ++++++++++++++++++++++++++++++++++++
+ drivers/misc/stm32fwu/stm32_core.h |   81 +++++++
+ drivers/misc/stm32fwu/stm32_spi.c  |  117 +++++++++++
+ include/linux/stm32fwu.h           |   53 +++++
+ 8 files changed, 668 insertions(+)
+ create mode 100644 drivers/misc/stm32fwu/Kconfig
+ create mode 100644 drivers/misc/stm32fwu/Makefile
+ create mode 100644 drivers/misc/stm32fwu/stm32_core.c
+ create mode 100644 drivers/misc/stm32fwu/stm32_core.h
+ create mode 100644 drivers/misc/stm32fwu/stm32_spi.c
+ create mode 100644 include/linux/stm32fwu.h
 
-Thanks,
-Srinivas
-
+diff --git a/drivers/misc/Kconfig b/drivers/misc/Kconfig
+index bbeb451..b2e68c1 100644
+--- a/drivers/misc/Kconfig
++++ b/drivers/misc/Kconfig
+@@ -528,4 +528,5 @@ source "drivers/misc/mic/Kconfig"
+ source "drivers/misc/genwqe/Kconfig"
+ source "drivers/misc/echo/Kconfig"
+ source "drivers/misc/cxl/Kconfig"
++source "drivers/misc/stm32fwu/Kconfig"
+ endmenu
+diff --git a/drivers/misc/Makefile b/drivers/misc/Makefile
+index 7d5c4cd..88c8999 100644
+--- a/drivers/misc/Makefile
++++ b/drivers/misc/Makefile
+@@ -56,3 +56,4 @@ obj-$(CONFIG_GENWQE)		+= genwqe/
+ obj-$(CONFIG_ECHO)		+= echo/
+ obj-$(CONFIG_VEXPRESS_SYSCFG)	+= vexpress-syscfg.o
+ obj-$(CONFIG_CXL_BASE)		+= cxl/
++obj-$(CONFIG_STM32_UPGRADE_PROTOCOL)	+= stm32fwu/
+diff --git a/drivers/misc/stm32fwu/Kconfig b/drivers/misc/stm32fwu/Kconfig
+new file mode 100644
+index 0000000..1484441
+--- /dev/null
++++ b/drivers/misc/stm32fwu/Kconfig
+@@ -0,0 +1,6 @@
++config STM32_UPGRADE_PROTOCOL
++	tristate "STM32 upgrade protocol support"
++	depends on SPI
++	help
++	  STM32 microcontroller bootloader upgrade protocol.
++	  Say Y if you want to use it.
+diff --git a/drivers/misc/stm32fwu/Makefile b/drivers/misc/stm32fwu/Makefile
+new file mode 100644
+index 0000000..1617530
+--- /dev/null
++++ b/drivers/misc/stm32fwu/Makefile
+@@ -0,0 +1 @@
++obj-$(CONFIG_STM32_UPGRADE_PROTOCOL) += stm32_core.o stm32_spi.o
+diff --git a/drivers/misc/stm32fwu/stm32_core.c b/drivers/misc/stm32fwu/stm32_core.c
+new file mode 100644
+index 0000000..5d76120
+--- /dev/null
++++ b/drivers/misc/stm32fwu/stm32_core.c
+@@ -0,0 +1,408 @@
++/*
++ *  Copyright (C) 2014, Samsung Electronics Co. Ltd. All Rights Reserved.
++ *
++ *  This program is free software; you can redistribute it and/or modify
++ *  it under the terms of the GNU General Public License as published by
++ *  the Free Software Foundation; either version 2 of the License, or
++ *  (at your option) any later version.
++ *
++ *  This program is distributed in the hope that it will be useful,
++ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
++ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ *  GNU General Public License for more details.
++ *
++ */
++
++#include <linux/delay.h>
++#include <linux/device.h>
++#include <linux/module.h>
++#include <linux/slab.h>
++#include <linux/stm32fwu.h>
++#include "stm32_core.h"
++
++static inline int stm32fwu_wait_for_ack(struct stm32fwu_fw *fw, u32 retries)
++{
++	return fw->wait_for_ack(fw, retries);
++}
++
++static inline int stm32fwu_send_cmd(struct stm32fwu_fw *fw, u8 cmd,
++				    u32 timeout)
++{
++	struct stm32fwu_cmd cm = {
++		.cmd = cmd,
++		.neg_cmd = ~cmd,
++		.timeout  = timeout,
++	};
++
++	return fw->send_cmd(fw, &cm);
++}
++
++static inline int stm32fwu_write(struct stm32fwu_fw *fw, const u8 *buf,
++				 u32 len)
++{
++	return fw->write(fw, buf, len);
++}
++
++static inline int stm32fwu_read(struct stm32fwu_fw *fw, u8 *buf, u32 len)
++{
++	return fw->read(fw, buf, len);
++}
++
++static int send_addr(struct stm32fwu_fw *fw, u32 addr)
++{
++	int ret;
++	u8 *buffer = fw->buffer;
++
++	buffer[0] = addr >> 24;
++	buffer[1] = addr >> 16;
++	buffer[2] = addr >> 8;
++	buffer[3] = addr;
++	buffer[4] = buffer[0] ^ buffer[1] ^ buffer[2] ^ buffer[3];
++
++	ret = stm32fwu_write(fw, buffer, STM32FWU_ADDR_LEN);
++	if (ret < 0)
++		return ret;
++
++	return stm32fwu_wait_for_ack(fw, STM32FWU_COMMON_COUNT);
++}
++
++static int fwu_write(struct stm32fwu_fw *fw, u32 addr, const u8 *buffer,
++		     u32 len)
++{
++	u8 *sbuf = fw->buffer;
++	u8 xor = 0;
++	int ret;
++	u32 i, aligned_len = len;
++
++	if (len > STM32FWU_MAX_TRANSFER_SIZE) {
++		dev_err(fw->dev, "More than 256 bytes per transfer\n");
++		return -EINVAL;
++	}
++
++	ret = stm32fwu_send_cmd(fw, STM32FWU_WRITE_MEM_CMD,
++				STM32FWU_CMD_COUNT);
++	if (ret < 0)
++		return ret;
++
++	ret = send_addr(fw, addr);
++	if (ret < 0)
++		return ret;
++
++	/*
++	 * the same buffer is used for commands and data so the order really
++	 * matters here
++	 */
++	memcpy(&sbuf[1], buffer, len);
++
++	/*
++	 * Just in case - check if chunk is a multiple of 4
++	 * generally the most of writes will be 256 bytes long.
++	 * I wonder if bootcode should worry about alignment.
++	 * According AN4286 it should be a multiple of 2 but other notes
++	 * say that it should be 4
++	 */
++	if (!IS_ALIGNED(len, 4)) {
++		aligned_len = ALIGN(len, 4);
++		for (i = aligned_len; i > len; --i)
++			sbuf[i] = 0xff;
++	}
++
++	/*
++	 * according AN4286 here is sent 0 < N < 255, it looks like max index,
++	 * not size
++	 */
++	sbuf[0] = aligned_len - 1;
++
++	/* compute checksum */
++	for (i = 0; i < aligned_len + 1; ++i)
++		xor ^= sbuf[i];
++	sbuf[aligned_len + 1] = xor;
++
++	/*
++	 * NOTE AN4286: in some conditions the master has to wait 1 ms here (for
++	 * SPI only)
++	 */
++	if (fw->iface == STM32_SPI_SAMSUNG || fw->iface == STM32_SPI)
++		usleep_range(1000, 1100);
++
++	ret = stm32fwu_write(fw, sbuf, aligned_len + 2);
++	if (ret < 0)
++		return ret;
++
++	return stm32fwu_wait_for_ack(fw, STM32FWU_COMMON_COUNT);
++}
++
++static int fwu_erase(struct stm32fwu_fw *fw)
++{
++	int ret;
++	u8 *sbuf = fw->buffer;
++
++	ret = stm32fwu_send_cmd(fw, STM32FWU_ERASE_CMD, STM32FWU_CMD_COUNT);
++	if (ret < 0)
++		return ret;
++
++	/* global erase */
++	sbuf[0] = 0xff;
++	sbuf[1] = 0xff;
++	sbuf[2] = 0x00;
++
++	ret = stm32fwu_write(fw, sbuf, STM32FWU_ERASE_CMD_LEN);
++	if (ret < 0)
++		return ret;
++
++	return stm32fwu_wait_for_ack(fw, STM32FWU_ERASE_COUNT);
++}
++
++/**
++ * stm32fwu_get() - gets bootloader information frame
++ * @fw:		fw object.
++ *
++ * Read bootloader information:
++ *
++ * Byte  1 bootloader version (0 < version < 255), example: 0x10 = version 1.0.
++ *
++ * Byte  2 0x00 (Get command)
++ *
++ * Byte  3 0x01 (Get Version)
++ *
++ * Byte  4 0x02 (Get ID)
++ *
++ * Byte  5 0x11 (Read Memory command)
++ *
++ * Byte  6 0x21 (Go command)
++ *
++ * Byte  7 0x31 (Write Memory command)
++ *
++ * Byte  8 0x44 (Erase command)
++ *
++ * Byte  9 0x63 (Write Protect command)
++ *
++ * Byte 10 0x73 (Write Unprotect command)
++ *
++ * Byte 11 0x82 (Readout Protect command)
++ *
++ * Byte 12 0x92 (Readout Unprotect command)
++ *
++ * Return:	read byte count or error code.
++ */
++int stm32fwu_get(struct stm32fwu_fw *fw)
++{
++	int ret, count;
++
++	ret = stm32fwu_send_cmd(fw, STM32FWU_GET_CMD, STM32FWU_CMD_COUNT);
++	if (ret < 0)
++		return ret;
++
++	ret = stm32fwu_read(fw, &fw->buffer[STM32FWU_MAX_BUFFER_SIZE], 1);
++	if (ret < 0)
++		return ret;
++
++	count = fw->buffer[STM32FWU_MAX_BUFFER_SIZE];
++	if (count >= STM32FWU_MAX_TRANSFER_SIZE)
++		return -EINVAL;
++
++	ret = stm32fwu_read(fw, &fw->buffer[STM32FWU_MAX_BUFFER_SIZE], count);
++	if (ret < 0)
++		return ret;
++
++	ret = stm32fwu_wait_for_ack(fw, STM32FWU_COMMON_COUNT);
++	if (ret < 0)
++		return ret;
++
++	return count;
++}
++EXPORT_SYMBOL(stm32fwu_get);
++
++/**
++ * stm32fwu_get_version() - gets bootloader information frame
++ * @fw:		fw object.
++ *
++ * Return: < 0 - error code, any positive value means success.
++ */
++int stm32fwu_get_version(struct stm32fwu_fw *fw)
++{
++	int ret;
++
++	ret = stm32fwu_send_cmd(fw, STM32FWU_GET_CMD, STM32FWU_CMD_COUNT);
++	if (ret < 0)
++		return ret;
++
++	ret = stm32fwu_read(fw, &fw->buffer[STM32FWU_MAX_BUFFER_SIZE], 1);
++	if (ret < 0)
++		return ret;
++
++	ret = stm32fwu_wait_for_ack(fw, STM32FWU_COMMON_COUNT);
++	if (ret < 0)
++		return ret;
++
++	return fw->buffer[STM32FWU_MAX_BUFFER_SIZE];
++}
++EXPORT_SYMBOL(stm32fwu_get_version);
++
++/**
++ * stm32fwu_spi_send_sync() - sends bootloader synchronization frame
++ * @fw:	fw object.
++ *
++ * It is used during SPI upgrade. It is SPI specyfic.
++ *
++ * Return:	if succeed the number of ack waiting cycles or error code.
++ */
++int stm32fwu_spi_send_sync(struct stm32fwu_fw *fw)
++{
++	int ret;
++
++	dev_info(fw->dev, "send sync byte for upgrade\n");
++
++	fw->buffer[0] = STM32FWU_SPI_SOF;
++
++	ret = stm32fwu_write(fw, fw->buffer, 1);
++	if (ret < 0)
++		return ret;
++
++	return  stm32fwu_wait_for_ack(fw, STM32FWU_CMD_COUNT);
++}
++EXPORT_SYMBOL(stm32fwu_spi_send_sync);
++
++/**
++ * stm32fwu_update() - runs all firmware update work
++ * @fw:		fw object.
++ *
++ * Return:	status code < 0 if error.
++ */
++int stm32fwu_update(struct stm32fwu_fw *fw)
++{
++	int ret = 0;
++	u32 pos = 0;
++	u32 fw_addr = STM32FWU_APP_ADDR;
++	u32 block = STM32FWU_MAX_TRANSFER_SIZE;
++	u32 count = 0, err_count = 0, retry_count = 0, remaining = fw->fw_len;
++
++	dev_info(fw->dev, "%s start\n", __func__);
++
++	ret = fwu_erase(fw);
++	if (ret < 0) {
++		dev_err(fw->dev, "%s, fw_erase_stm failed %d\n", __func__,
++			ret);
++		return ret;
++	}
++
++	while (remaining > 0) {
++		if (block > remaining)
++			block = remaining;
++
++		while (retry_count < 3) {
++			ret = fwu_write(fw, fw_addr, fw->fw_data + pos, block);
++			if (ret < 0) {
++				dev_err(fw->dev,
++					"Err %d writing to addr 0x%08X\n", ret,
++					fw_addr);
++				retry_count++;
++				err_count++;
++				continue;
++			}
++			retry_count = 0;
++			break;
++		}
++
++		if (ret < 0) {
++			dev_err(fw->dev,
++				"Writing MEM failed: %d, retry count: %d\n",
++				ret, err_count);
++			return ret;
++		}
++
++		remaining -= block;
++		pos += block;
++		fw_addr += block;
++		if (count++ == 20) {
++			dev_info(fw->dev, "Updated %u bytes / %u bytes\n",
++				 pos, fw->fw_len);
++			count = 0;
++		}
++	}
++
++	dev_info(fw->dev,
++		 "Firmware download success.(%d bytes, retry %d)\n", pos,
++		 err_count);
++
++	ret = stm32fwu_send_cmd(fw, STM32FWU_GO_ADDR_CMD, STM32FWU_CMD_COUNT);
++	if (ret < 0)
++		return ret;
++
++	return send_addr(fw, STM32FWU_APP_ADDR);
++}
++EXPORT_SYMBOL(stm32fwu_update);
++
++/**
++ * stm32fwu_init() - creates firmware upgrade instance
++ * @dev:	Pointer to device.
++ * @iface:	Interface type.
++ * @data:	Pointer to firmware data.
++ * @len:	Length of firmware data in bytes.
++ *
++ * It allocates the place for fwu structure and transfer buffer so it should
++ * be deinitialized by stm32fw_destroy(). Firmware upgrade is simple operation
++ * and it was assumed that it will be called from one context so there is no
++ * locking for fwu functions.
++ *
++ * Return:	Pointer to firmware upgrade structure.
++ */
++struct stm32fwu_fw *stm32fwu_init(struct device *dev,
++				  enum stm32fwu_iface iface, const u8 *data,
++				  u32 len)
++{
++	struct stm32fwu_fw *fw;
++
++	if (iface >= STM32_MAX || iface < 0) {
++		dev_err(dev, "wrong iface type\n");
++		return NULL;
++	}
++
++	fw = devm_kzalloc(dev, sizeof(*fw), GFP_KERNEL);
++	if (fw == NULL)
++		return NULL;
++
++	/* 2 times for tx and rx buffer */
++	fw->buffer = devm_kzalloc(dev, 2 * STM32FWU_MAX_BUFFER_SIZE,
++			     GFP_KERNEL | GFP_DMA);
++	if (fw->buffer == NULL) {
++		devm_kfree(dev, fw);
++		return NULL;
++	}
++
++	fw->dev = dev;
++	fw->fw_len = len;
++	fw->fw_data = data;
++	fw->iface = iface;
++
++	switch (iface) {
++	case STM32_SPI_SAMSUNG:
++		stm32fwu_spi_init(fw);
++		break;
++	default:
++		pr_err("wrong interface\n");
++		goto _err;
++	}
++
++	return fw;
++_err:
++	devm_kfree(dev, fw->buffer);
++	devm_kfree(dev, fw);
++	return NULL;
++}
++EXPORT_SYMBOL(stm32fwu_init);
++
++/**
++ * stm32fwu_destroy() - cleans up fwu structure and buffer.
++ * @fw:		Pointer to fwu structure.
++ */
++void stm32fwu_destroy(struct stm32fwu_fw *fw)
++{
++	devm_kfree(fw->dev, fw->buffer);
++	devm_kfree(fw->dev, fw);
++}
++EXPORT_SYMBOL(stm32fwu_destroy);
++
++MODULE_AUTHOR("Karol Wrona <k.wrona@samsung.com>");
++MODULE_DESCRIPTION("STM32 upgrade protocol");
++MODULE_LICENSE("GPL");
+diff --git a/drivers/misc/stm32fwu/stm32_core.h b/drivers/misc/stm32fwu/stm32_core.h
+new file mode 100644
+index 0000000..3212901
+--- /dev/null
++++ b/drivers/misc/stm32fwu/stm32_core.h
+@@ -0,0 +1,81 @@
++/*
++ *  Copyright (C) 2014, Samsung Electronics Co. Ltd. All Rights Reserved.
++ *
++ *  This program is free software; you can redistribute it and/or modify
++ *  it under the terms of the GNU General Public License as published by
++ *  the Free Software Foundation; either version 2 of the License, or
++ *  (at your option) any later version.
++ *
++ *  This program is distributed in the hope that it will be useful,
++ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
++ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ *  GNU General Public License for more details.
++ *
++ */
++
++#ifndef _STM32_CORE_H_
++#define _STM32_CORE_H_
++
++#define STM32FWU_ADDR_LEN		5
++#define STM32FWU_ERASE_CMD_LEN		3
++
++/* Protocol */
++#define STM32FWU_SPI_SOF		0x5a
++#define STM32FWU_ACK			0x79
++#define STM32FWU_NACK			0x1f
++
++#define STM32FWU_MAX_TRANSFER_SIZE	256
++#define STM32FWU_MAX_BUFFER_SIZE	260
++
++#define STM32FWU_APP_ADDR		0x08000000
++
++/* Retries counts */
++#define STM32FWU_ERASE_COUNT		18000
++#define STM32FWU_CMD_COUNT		30
++#define STM32FWU_COMMON_COUNT		20
++
++/* Commands */
++#define STM32FWU_WRITE_MEM_CMD		0x31
++#define STM32FWU_GO_ADDR_CMD		0x21
++#define STM32FWU_ERASE_CMD		0x44
++#define STM32FWU_GET_CMD		0x00
++#define STM32FWU_GET_VERSION_CMD	0x01
++
++/**
++ * struct stm32fwu_cmd - Upgrade command
++ * @cmd:	Fwu command.
++ * @neg_cmd:	Bit negation of Fwu command used xor'ed in STM.
++ * @timeout:	Number of retries.
++ */
++struct stm32fwu_cmd {
++	u8 cmd;
++	u8 neg_cmd;
++	u32 timeout;
++};
++
++/**
++ * struct stm32fwu_fw - Generic representation for STM32 fw upgrade
++ * @dev:		Pointer to device.
++ * @wait_for_ack:	ACK callback.
++ * @send_cmd:		Command callback.
++ * @write:		Write callback.
++ * @read:		Read callback.
++ * @fw_data:		Pointer to firmware binary.
++ * @fw_len:		The length of fw bin.
++ * @buffer:		Pointer to SPI buffer: should be DMA safe
++ */
++struct stm32fwu_fw {
++	int (*wait_for_ack)(struct stm32fwu_fw *fw, u32 retries);
++	int (*send_cmd)(struct stm32fwu_fw *fw, struct stm32fwu_cmd *cmd);
++	int (*write)(struct stm32fwu_fw *fw, const u8 *buf, u32 len);
++	int (*read)(struct stm32fwu_fw *fw, u8 *buf, u32 len);
++	const u8 *fw_data;
++	u32 fw_len;
++	u8 *buffer;
++	enum stm32fwu_iface iface;
++	struct device *dev;
++};
++
++void stm32fwu_spi_init(struct stm32fwu_fw *fw);
++
++#endif /*_STM32_CORE_H_ */
+diff --git a/drivers/misc/stm32fwu/stm32_spi.c b/drivers/misc/stm32fwu/stm32_spi.c
+new file mode 100644
+index 0000000..e9f1427
+--- /dev/null
++++ b/drivers/misc/stm32fwu/stm32_spi.c
+@@ -0,0 +1,117 @@
++/*
++ *  Copyright (C) 2014, Samsung Electronics Co. Ltd. All Rights Reserved.
++ *
++ *  This program is free software; you can redistribute it and/or modify
++ *  it under the terms of the GNU General Public License as published by
++ *  the Free Software Foundation; either version 2 of the License, or
++ *  (at your option) any later version.
++ *
++ *  This program is distributed in the hope that it will be useful,
++ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
++ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ *  GNU General Public License for more details.
++ *
++ */
++
++#include <linux/delay.h>
++#include <linux/module.h>
++#include <linux/spi/spi.h>
++#include <linux/stm32fwu.h>
++#include "stm32_core.h"
++
++static int stm32fwu_spi_write(struct stm32fwu_fw *fw, const u8 *buf, u32 len)
++{
++	struct spi_device *sdev = to_spi_device(fw->dev);
++
++	struct spi_message m;
++	struct spi_transfer t = {
++		.len = len,
++		.tx_buf = buf,
++		.bits_per_word = 8,
++	};
++
++	spi_message_init(&m);
++	spi_message_add_tail(&t, &m);
++	return spi_sync(sdev, &m);
++}
++
++static int stm32fwu_spi_read(struct stm32fwu_fw *fw, u8 *buf, u32 len)
++{
++	struct spi_device *sdev = to_spi_device(fw->dev);
++
++	struct spi_transfer t[2] = {
++		{	.len = 1, /* dummy byte read */
++			.rx_buf = buf,
++			.bits_per_word = 8,
++		},
++		{	.len = len,
++			.rx_buf = buf,
++			.bits_per_word = 8,
++		},
++	};
++
++	return spi_sync_transfer(sdev, t, 2);
++}
++
++static int stm32fwu_spi_wait_for_ack(struct stm32fwu_fw *fw, u32 retries)
++{
++	int ret, i = 0;
++	u8 *rxbuf = fw->buffer;
++	struct spi_device *sdev = to_spi_device(fw->dev);
++	struct spi_message m;
++	struct spi_transfer t = {
++		.len = 1,
++		.rx_buf = rxbuf,
++		.bits_per_word = 8,
++	};
++
++	while (i < retries) {
++		spi_message_init(&m);
++		spi_message_add_tail(&t, &m);
++		ret = spi_sync(sdev, &m);
++		if (ret < 0) {
++			dev_err(fw->dev,
++				"firmware upgrade wait for ack fail\n");
++			return ret;
++		}
++
++		if (rxbuf[0] == STM32FWU_ACK)
++			return i;
++
++		if (rxbuf[0] == STM32FWU_NACK)
++			return -EPROTO;
++
++		usleep_range(1000, 1100);
++		i++;
++	}
++
++	dev_err(fw->dev, "fw ack timeout\n");
++
++	return -ETIMEDOUT;
++}
++
++static int stm32fwu_spi_send_cmd(struct stm32fwu_fw *fw,
++				 struct stm32fwu_cmd *cmd)
++{
++	int ret;
++
++	fw->buffer[0] = STM32FWU_SPI_SOF;
++	fw->buffer[1] = cmd->cmd;
++	fw->buffer[2] = cmd->neg_cmd;
++
++	ret = stm32fwu_spi_write(fw, fw->buffer, 3);
++	if (ret < 0) {
++		dev_err(fw->dev, "fw cmd write fail\n");
++		return ret;
++	}
++
++	return stm32fwu_spi_wait_for_ack(fw, cmd->timeout);
++}
++
++void stm32fwu_spi_init(struct stm32fwu_fw *fw)
++{
++	fw->write = stm32fwu_spi_write;
++	fw->read = stm32fwu_spi_read;
++	fw->wait_for_ack = stm32fwu_spi_wait_for_ack;
++	fw->send_cmd = stm32fwu_spi_send_cmd;
++}
+diff --git a/include/linux/stm32fwu.h b/include/linux/stm32fwu.h
+new file mode 100644
+index 0000000..aa81555
+--- /dev/null
++++ b/include/linux/stm32fwu.h
+@@ -0,0 +1,53 @@
++/*
++ *  Copyright (C) 2014, Samsung Electronics Co. Ltd. All Rights Reserved.
++ *
++ *  This program is free software; you can redistribute it and/or modify
++ *  it under the terms of the GNU General Public License as published by
++ *  the Free Software Foundation; either version 2 of the License, or
++ *  (at your option) any later version.
++ *
++ *  This program is distributed in the hope that it will be useful,
++ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
++ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ *  GNU General Public License for more details.
++ *
++ */
++
++#ifndef _STM32FWU_H_
++#define _STM32FWU_H_
++
++/**
++ * enum stm32fwu_iface - upgrade interfaces for STM32 MCU's
++ * @STM32_SPI:		SPI bootcode protocol v1.1.
++ * @STM32_SPI_SAMSUNG:	ACK customization for sensorhub driver.Probably it is
++ * SPI 1.0 protocol version.
++ * @STM32_SPI:		SPI interface.
++ * @STM32_MAX:		terminator.
++ */
++enum stm32fwu_iface {
++	STM32_SPI,
++	STM32_SPI_SAMSUNG,
++	/*
++	 * Generally for future use, i.e. UART upgrade algorithm looks pretty
++	 * similar.
++	 */
++	STM32_MAX
++};
++
++struct stm32fwu_fw;
++
++struct stm32fwu_fw *stm32fwu_init(struct device *dev,
++				  enum stm32fwu_iface iface, const u8 *data,
++				  u32 len);
++
++void stm32fwu_destroy(struct stm32fwu_fw *fw);
++
++int stm32fwu_spi_send_sync(struct stm32fwu_fw *fw);
++
++int stm32fwu_update(struct stm32fwu_fw *fw);
++
++int stm32fwu_get(struct stm32fwu_fw *fw);
++
++int stm32fwu_get_version(struct stm32fwu_fw *fw);
++
++#endif /* _STM32FWU_H_ */
+-- 
+1.7.9.5
