@@ -1,67 +1,80 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga11.intel.com ([192.55.52.93]:38408 "EHLO mga11.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751207AbaKUHLy (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Fri, 21 Nov 2014 02:11:54 -0500
-From: Aaron Lu <aaron.lu@intel.com>
-To: "Rafael J. Wysocki" <rjw@rjwysocki.net>
-Cc: Lee Jones <lee.jones@linaro.org>,
-	Jacob Pan <jacob.jun.pan@linux.intel.com>,
-	Yegnesh Iyer <yegnesh.s.iyer@intel.com>,
-	linux-acpi@vger.kernel.org, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH v3 0/3] Support PMIC operation region for CrystalCove and XPower
-Date: Fri, 21 Nov 2014 15:11:48 +0800
-Message-Id: <1416553911-22990-1-git-send-email-aaron.lu@intel.com>
+Received: from mail-wi0-f177.google.com ([209.85.212.177]:41960 "EHLO
+	mail-wi0-f177.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751738AbaKUVkO (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 21 Nov 2014 16:40:14 -0500
+Date: Fri, 21 Nov 2014 22:40:05 +0100
+From: Richard Cochran <richardcochran@gmail.com>
+To: Johannes Pointner <johannes.pointner@gmail.com>
+Cc: Sekhar Nori <nsekhar@ti.com>, Vignesh R <vigneshr@ti.com>,
+	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+	Lee Jones <lee.jones@linaro.org>,
+	Rob Herring <robh+dt@kernel.org>,
+	Pawel Moll <pawel.moll@arm.com>,
+	Mark Rutland <mark.rutland@arm.com>,
+	Ian Campbell <ijc+devicetree@hellion.org.uk>,
+	Kumar Gala <galak@codeaurora.org>,
+	Benoit Cousson <bcousson@baylibre.com>,
+	Tony Lindgren <tony@atomide.com>,
+	Russell King <linux@arm.linux.org.uk>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Samuel Ortiz <sameo@linux.intel.com>,
+	Felipe Balbi <balbi@ti.com>, Brad Griffis <bgriffis@ti.com>,
+	Sanjeev Sharma <sanjeev_sharma@mentor.com>,
+	Paul Gortmaker <paul.gortmaker@windriver.com>,
+	Jan Kardell <jan.kardell@telliq.com>,
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	linux-iio <linux-iio@vger.kernel.org>,
+	linux-input@vger.kernel.org,
+	Robert Nelson <robertcnelson@gmail.com>
+Subject: Re: [PATCH v4 3/6] mfd: ti_am335x_tscadc: Remove unwanted
+ reg_se_cache save
+Message-ID: <20141121214005.GA4020@localhost.localdomain>
+References: <1415941651-28962-4-git-send-email-vigneshr@ti.com>
+ <20141118143005.GF24004@x1>
+ <20141118171240.GB3003@dtor-ws>
+ <546DF2F0.9080405@ti.com>
+ <20141120144028.GB5809@localhost.localdomain>
+ <546F2BA4.4000808@ti.com>
+ <20141121131036.GA18931@localhost.localdomain>
+ <CAJKbBDDVTA+=priRu7sCD=vHrC8AUg4DM3kycuGrqbpF-5FGAA@mail.gmail.com>
+ <546F5C27.7040004@ti.com>
+ <CAJKbBDD=eYmU=LuViwLPNV=kYCziDQgKjL07bT7og4vsj0Ee7A@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <CAJKbBDD=eYmU=LuViwLPNV=kYCziDQgKjL07bT7og4vsj0Ee7A@mail.gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-v3:
-Only some function/variable name changes, no functiona changes:
-- Replace the dptf/DPTF word originate from the BIOS ACPI table with more
-  meaningful word thermal/THERMAL in all places;
-- Eliminate the soc part in various structure and function names to make
-  them shorter:
-  intel_soc_pmic_opregion -> intel_pmic_opregion
-  intel_soc_pmic_pmop_handler -> intel_pmic_pmop_handler
-  intel_soc_pmic_install_opregion_handler -> intel_pmic_install_opregion_handler
-  etc.
+On Fri, Nov 21, 2014 at 07:17:18PM +0100, Johannes Pointner wrote:
+> Before the patches were also jumps but I thought it is something
+> Vignesh should know. Maybe there is some fix for that too?
+> As Richard also noted, it would be nice if ti could let us know how to
+> get the delay values right. By trial and error is IMHO not the best
+> way.
 
+That is not only an opinion, it is a matter of fact. TI really dropped
+the ball on this one. I thought the patch series was a sign they
+finally were going to properly address this issue. Wrong again.
 
-v2:
-Place PMIC operation files under drivers/acpi/pmic instead of
-drivers/acpi/pmic_opregion as suggested by Rafael;
-Rename PMIC operation files to make them shorter as suggested by Rafael.
+The data sheet for the TI part used to have a reference to an app-note
+for the touch controller.
 
-v1:
-On Intel Baytrail-T and Baytrail-T-CR platforms, there are two customized
-ACPI operation regions defined for the Power Management Integrated Circuit
-device, one is for power resource handling and one is for thermal: sensor
-temperature reporting, trip point setting, etc. There are different PMIC
-chips used on those platforms and though each has the same two operation
-regions and functionality, their implementation is different so every PMIC
-will need a driver. But since their functionality is similar, some common
-code is abstracted into the intel_soc_pmic_opregion.c.
+      spruh73f page 1154
 
-The last version is posted here:
-https://lkml.org/lkml/2014/9/8/801
+      The Pen IRQ can only occur if the correct Pen Ctrl bits are high
+      (AFE Pen Ctrl bits 6:5 in the TSC_ADC control register) and if
+      the correct ground transistor biasing is set in the StepConfig
+      [N] Register. Refer to the application notes for the correct
+      settings.
 
-Changes since then:
-1 Move to drivers/acpi as discussed on the above thread;
-2 Added support for XPower AXP288 PMIC operation region support;
-3 Since operation region handler can not be removed(at the moment at least),
-  use bool for the two operation region driver configs instead of tristate;
-  Another reason to do this is that, with Mika's MFD ACPI support patch, all
-  those MFD cell devices created will have the same modalias as their parent's
-  so it doesn't make much sense to compile these drivers into modules.
+I searched high and low for this application note. Then, the data
+sheet got revised.
 
-Patch 1 applies on top of Rafael's pm-next branch, and then patch 2 and
-patch 3 needs merge of Lee's mfd/ib-mfd-iio-3.19 branch where the PMIC
-driver XPower AXP288 and iio driver axp288_adc is located.
-
-
-Aaron Lu (3):
-  ACPI / PMIC: support PMIC operation region for CrystalCove
-  ACPI / PMIC: support PMIC operation region for XPower AXP288
-  ACPI / PMIC: AXP288: support virtual GPIO in ACPI table
-
+Thanks,
+Richard
