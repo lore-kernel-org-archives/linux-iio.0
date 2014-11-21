@@ -1,97 +1,78 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from devils.ext.ti.com ([198.47.26.153]:40114 "EHLO
-	devils.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1756678AbaKTN51 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 20 Nov 2014 08:57:27 -0500
-Message-ID: <546DF2F0.9080405@ti.com>
-Date: Thu, 20 Nov 2014 19:26:00 +0530
-From: Sekhar Nori <nsekhar@ti.com>
-MIME-Version: 1.0
-To: Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-	Lee Jones <lee.jones@linaro.org>
-CC: Vignesh R <vigneshr@ti.com>, Rob Herring <robh+dt@kernel.org>,
-	Pawel Moll <pawel.moll@arm.com>,
-	Mark Rutland <mark.rutland@arm.com>,
-	Ian Campbell <ijc+devicetree@hellion.org.uk>,
-	Kumar Gala <galak@codeaurora.org>,
-	Benoit Cousson <bcousson@baylibre.com>,
-	Tony Lindgren <tony@atomide.com>,
-	Russell King <linux@arm.linux.org.uk>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>, <richardcochran@gmail.com>,
-	Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	Samuel Ortiz <sameo@linux.intel.com>,
-	Felipe Balbi <balbi@ti.com>, Brad Griffis <bgriffis@ti.com>,
-	Sanjeev Sharma <sanjeev_sharma@mentor.com>,
-	Paul Gortmaker <paul.gortmaker@windriver.com>,
-	Jan Kardell <jan.kardell@telliq.com>,
-	<devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-	<linux-omap@vger.kernel.org>,
-	<linux-arm-kernel@lists.infradead.org>,
-	<linux-iio@vger.kernel.org>, <linux-input@vger.kernel.org>,
-	Robert Nelson <robertcnelson@gmail.com>
-Subject: Re: [PATCH v4 3/6] mfd: ti_am335x_tscadc: Remove unwanted reg_se_cache
- save
-References: <1415941651-28962-1-git-send-email-vigneshr@ti.com> <1415941651-28962-4-git-send-email-vigneshr@ti.com> <20141118143005.GF24004@x1> <20141118171240.GB3003@dtor-ws>
-In-Reply-To: <20141118171240.GB3003@dtor-ws>
-Content-Type: text/plain; charset="windows-1252"
+Received: from mga11.intel.com ([192.55.52.93]:38408 "EHLO mga11.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751230AbaKUHL7 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Fri, 21 Nov 2014 02:11:59 -0500
+From: Aaron Lu <aaron.lu@intel.com>
+To: "Rafael J. Wysocki" <rjw@rjwysocki.net>
+Cc: Lee Jones <lee.jones@linaro.org>,
+	Jacob Pan <jacob.jun.pan@linux.intel.com>,
+	Yegnesh Iyer <yegnesh.s.iyer@intel.com>,
+	linux-acpi@vger.kernel.org, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH v3 3/3] ACPI / PMIC: AXP288: support virtual GPIO in ACPI table
+Date: Fri, 21 Nov 2014 15:11:51 +0800
+Message-Id: <1416553911-22990-4-git-send-email-aaron.lu@intel.com>
+In-Reply-To: <1416553911-22990-1-git-send-email-aaron.lu@intel.com>
+References: <1416553911-22990-1-git-send-email-aaron.lu@intel.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Tuesday 18 November 2014 10:42 PM, Dmitry Torokhov wrote:
-> On Tue, Nov 18, 2014 at 02:30:05PM +0000, Lee Jones wrote:
->> On Fri, 14 Nov 2014, Vignesh R wrote:
->>
->>> In one shot mode, sequencer automatically disables all enabled steps at
->>> the end of each cycle. (both ADC steps and TSC steps) Hence these steps
->>> need not be saved in reg_se_cache for clearing these steps at a later
->>> stage.
->>> Also, when ADC wakes up Sequencer should not be busy executing any of the
->>> config steps except for the charge step. Previously charge step was 1 ADC
->>> clock cycle and hence it was ignored.
->>>
->>> Signed-off-by: Vignesh R <vigneshr@ti.com>
->>> ---
->>>  drivers/mfd/ti_am335x_tscadc.c       | 7 +++++--
->>>  include/linux/mfd/ti_am335x_tscadc.h | 1 +
->>>  2 files changed, 6 insertions(+), 2 deletions(-)
->>
->> Code looks better now.
->>
->> Acked-by: Lee Jones <lee.jones@linaro.org>
->>
->> What's the plan for this series?
-> 
-> I am waiting for the interested parties to provide more feedback. So far
-> I have seen a few reports saying that they see issues with the series
-> applied.
+The same virtual GPIO strategy is also used for the AXP288 PMIC in that
+various control methods that are used to do power rail handling and
+sensor reading/setting will touch GPIO fields defined under the PMIC
+device. The GPIO fileds are only defined by the ACPI code while the
+actual hardware doesn't really have a GPIO controller, but to make those
+control method execution succeed, we have to install a GPIO handler for
+the PMIC device handle. Since we do not need the virtual GPIO strategy,
+we can simply do nothing in that handler.
 
-I tested this using lcd7 cape connected to beaglebone black. The latest
-kernel I could find on this board was a TI BSP based v3.14 kernel. So I
-had to port these patches to that kernel. Cc Robert Nelson to see if he
-knows about a more recent kernel supporting that cape.
+Signed-off-by: Aaron Lu <aaron.lu@intel.com>
+---
+ drivers/acpi/pmic/intel_pmic_xpower.c | 27 +++++++++++++++++++++++----
+ 1 file changed, 23 insertions(+), 4 deletions(-)
 
-I did not see any breakage with these patches applied although I did not
-see any noticeable performance improvement as well.
+diff --git a/drivers/acpi/pmic/intel_pmic_xpower.c b/drivers/acpi/pmic/intel_pmic_xpower.c
+index 6c4d6ce0cff1..480c41c36444 100644
+--- a/drivers/acpi/pmic/intel_pmic_xpower.c
++++ b/drivers/acpi/pmic/intel_pmic_xpower.c
+@@ -251,13 +251,32 @@ static struct intel_pmic_opregion_data intel_xpower_pmic_opregion_data = {
+ 	.thermal_table_count = ARRAY_SIZE(thermal_table),
+ };
+ 
++static acpi_status intel_xpower_pmic_gpio_handler(u32 function,
++		acpi_physical_address address, u32 bit_width, u64 *value,
++		void *handler_context, void *region_context)
++{
++	return AE_OK;
++}
+ 
+ static int intel_xpower_pmic_opregion_probe(struct platform_device *pdev)
+ {
+-	struct axp20x_dev *axp20x = dev_get_drvdata(pdev->dev.parent);
+-	return intel_pmic_install_opregion_handler(&pdev->dev,
+-			ACPI_HANDLE(pdev->dev.parent), axp20x->regmap,
+-			&intel_xpower_pmic_opregion_data);
++	struct device *parent = pdev->dev.parent;
++	struct axp20x_dev *axp20x = dev_get_drvdata(parent);
++	acpi_status status;
++	int result;
++
++	result = intel_pmic_install_opregion_handler(&pdev->dev,
++					ACPI_HANDLE(parent), axp20x->regmap,
++					&intel_xpower_pmic_opregion_data);
++	if (!result) {
++		status = acpi_install_address_space_handler(
++				ACPI_HANDLE(parent), ACPI_ADR_SPACE_GPIO,
++				intel_xpower_pmic_gpio_handler, NULL, NULL);
++		if (ACPI_FAILURE(status))
++			result = -ENODEV;
++	}
++
++	return result;
+ }
+ 
+ static struct platform_driver intel_xpower_pmic_opregion_driver = {
+-- 
+1.9.3
 
-I also tested along with continuous loop reading from
-/sys/bus/iio/devices/iio:device0/in_voltage5_raw
-
-I have pushed the kernel I used here in case anyone wants to take a look
-at my porting.
-
-http://git.ti.com/cgit/cgit.cgi/~nsekhar/ti-linux-kernel/nsekhar-ti-linux-kernel.git/log/?h=am335x-tsc-test
-
-I also tested this series on AM335x EVM using the v3.18-rc5 kernel.
-Again, no breakage but no improvement as well.
-
-All testing was done using ts_test
-
-FWIW, you can add:
-
-Tested-by: Sekhar Nori <nsekhar@ti.com>
-
-Thanks,
-Sekhar
