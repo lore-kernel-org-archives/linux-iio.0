@@ -1,47 +1,60 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mout.kundenserver.de ([212.227.17.24]:64311 "EHLO
-	mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750938AbaKUTia (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 21 Nov 2014 14:38:30 -0500
-From: Arnd Bergmann <arnd@arndb.de>
-To: Karol Wrona <k.wrona@samsung.com>
-Cc: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
-	Kyungmin Park <kyungmin.park@samsung.com>
-Subject: Re: [PATCH v2 1/5] misc: sensorhub: Add sensorhub driver
-Date: Fri, 21 Nov 2014 20:38:25 +0100
-Message-ID: <3489864.y2krC9T9rK@wuerfel>
-In-Reply-To: <1416593957-19788-2-git-send-email-k.wrona@samsung.com>
-References: <1416593957-19788-1-git-send-email-k.wrona@samsung.com> <1416593957-19788-2-git-send-email-k.wrona@samsung.com>
+Received: from mail-wg0-f47.google.com ([74.125.82.47]:36128 "EHLO
+	mail-wg0-f47.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755390AbaKUNKr (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 21 Nov 2014 08:10:47 -0500
+Date: Fri, 21 Nov 2014 14:10:36 +0100
+From: Richard Cochran <richardcochran@gmail.com>
+To: Sekhar Nori <nsekhar@ti.com>
+Cc: Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+	Lee Jones <lee.jones@linaro.org>, Vignesh R <vigneshr@ti.com>,
+	Rob Herring <robh+dt@kernel.org>,
+	Pawel Moll <pawel.moll@arm.com>,
+	Mark Rutland <mark.rutland@arm.com>,
+	Ian Campbell <ijc+devicetree@hellion.org.uk>,
+	Kumar Gala <galak@codeaurora.org>,
+	Benoit Cousson <bcousson@baylibre.com>,
+	Tony Lindgren <tony@atomide.com>,
+	Russell King <linux@arm.linux.org.uk>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Samuel Ortiz <sameo@linux.intel.com>,
+	Felipe Balbi <balbi@ti.com>, Brad Griffis <bgriffis@ti.com>,
+	Sanjeev Sharma <sanjeev_sharma@mentor.com>,
+	Paul Gortmaker <paul.gortmaker@windriver.com>,
+	Jan Kardell <jan.kardell@telliq.com>,
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	linux-iio@vger.kernel.org, linux-input@vger.kernel.org,
+	Robert Nelson <robertcnelson@gmail.com>
+Subject: Re: [PATCH v4 3/6] mfd: ti_am335x_tscadc: Remove unwanted
+ reg_se_cache save
+Message-ID: <20141121131036.GA18931@localhost.localdomain>
+References: <1415941651-28962-1-git-send-email-vigneshr@ti.com>
+ <1415941651-28962-4-git-send-email-vigneshr@ti.com>
+ <20141118143005.GF24004@x1>
+ <20141118171240.GB3003@dtor-ws>
+ <546DF2F0.9080405@ti.com>
+ <20141120144028.GB5809@localhost.localdomain>
+ <546F2BA4.4000808@ti.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <546F2BA4.4000808@ti.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Friday 21 November 2014 19:19:13 Karol Wrona wrote:
-> Sensorhub  is MCU dedicated to collect data and manage several sensors.
-> Sensorhub is a spi device which provides a layer for IIO devices. It provides
-> some data parsing and common mechanism for sensorhub sensors.
-> 
-> Adds common sensorhub library for sensorhub driver and iio drivers
-> which uses sensorhub MCU to communicate with sensors.
-> 
-> Signed-off-by: Karol Wrona <k.wrona@samsung.com>
-> Acked-by: Kyungmin Park <kyungmin.park@samsung.com>
-> ---
->  drivers/misc/Kconfig                   |    1 +
->  drivers/misc/Makefile                  |    1 +
->  drivers/misc/sensorhub/Kconfig         |   13 +
->  drivers/misc/sensorhub/Makefile        |    6 +
->  drivers/misc/sensorhub/ssp.h           |  279 +++++++++++
->  drivers/misc/sensorhub/ssp_dev.c       |  828 ++++++++++++++++++++++++++++++++
->  drivers/misc/sensorhub/ssp_spi.c       |  653 +++++++++++++++++++++++++
->  include/linux/iio/common/ssp_sensors.h |   79 +++
+On Fri, Nov 21, 2014 at 05:40:12PM +0530, Sekhar Nori wrote:
+> Not sure how to reproduce the jumping on pen-up.
 
-You seem to provide infrastructure for other drivers here, so I don't think
-drivers/misc is a good place. Have you considered making this a regular
-mfd driver? If that doesn't fit, is there possibly some place in the iio
-framework for this kind of driver?
+Does the cursor stay in exactly the same spot when you lift up the
+stylus? Then you don't have the issue.
 
-	Arnd
+On the BB white using the LCD4 cape and the shipped debian kernel, the
+cursor *does* jump away, but not as often or as far as on the custom
+design I was working with.
+
+Thanks,
+Richard
