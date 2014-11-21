@@ -1,64 +1,69 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from arroyo.ext.ti.com ([192.94.94.40]:42041 "EHLO arroyo.ext.ti.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751932AbaKTOYl convert rfc822-to-8bit (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 20 Nov 2014 09:24:41 -0500
-From: "Griffis, Brad" <bgriffis@ti.com>
-To: "Nori, Sekhar" <nsekhar@ti.com>,
-	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-	Lee Jones <lee.jones@linaro.org>
-CC: "R, Vignesh" <vigneshr@ti.com>, Rob Herring <robh+dt@kernel.org>,
-	"Pawel Moll" <pawel.moll@arm.com>,
-	Mark Rutland <mark.rutland@arm.com>,
-	Ian Campbell <ijc+devicetree@hellion.org.uk>,
-	Kumar Gala <galak@codeaurora.org>,
-	"Benoit Cousson" <bcousson@baylibre.com>,
-	Tony Lindgren <tony@atomide.com>,
-	"Russell King" <linux@arm.linux.org.uk>,
-	Jonathan Cameron <jic23@kernel.org>,
-	"Hartmut Knaack" <knaack.h@gmx.de>,
-	"richardcochran@gmail.com" <richardcochran@gmail.com>,
-	Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	Samuel Ortiz <sameo@linux.intel.com>,
-	"Balbi, Felipe" <balbi@ti.com>,
-	Sanjeev Sharma <sanjeev_sharma@mentor.com>,
-	Paul Gortmaker <paul.gortmaker@windriver.com>,
-	Jan Kardell <jan.kardell@telliq.com>,
-	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"linux-omap@vger.kernel.org" <linux-omap@vger.kernel.org>,
-	"linux-arm-kernel@lists.infradead.org"
-	<linux-arm-kernel@lists.infradead.org>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"linux-input@vger.kernel.org" <linux-input@vger.kernel.org>,
-	Robert Nelson <robertcnelson@gmail.com>
-Subject: RE: [PATCH v4 3/6] mfd: ti_am335x_tscadc: Remove unwanted
- reg_se_cache save
-Date: Thu, 20 Nov 2014 14:23:30 +0000
-Message-ID: <912A29987EAE174BA6CF187D7CDFA9CE26F69163@DLEE08.ent.ti.com>
-References: <1415941651-28962-1-git-send-email-vigneshr@ti.com>
- <1415941651-28962-4-git-send-email-vigneshr@ti.com>
- <20141118143005.GF24004@x1> <20141118171240.GB3003@dtor-ws>
- <546DF2F0.9080405@ti.com>
-In-Reply-To: <546DF2F0.9080405@ti.com>
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <k.wrona@samsung.com>
+From: Karol Wrona <k.wrona@samsung.com>
+To: Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
+ linux-iio@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>,
+ linux-kernel@vger.kernel.org
+Cc: Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
+ Kyungmin Park <kyungmin.park@samsung.com>,
+ Antonio Borneo <borneo.antonio@gmail.com>, Karol Wrona <k.wrona@samsung.com>
+Subject: [PATCH v5 0/1] misc: st32fwu: Add stm32 upgrade protocol handling
+Date: Fri, 21 Nov 2014 19:17:27 +0100
+Message-id: <1416593848-19676-1-git-send-email-k.wrona@samsung.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-> -----Original Message-----
-> From: Nori, Sekhar
-> Sent: Thursday, November 20, 2014 7:56 AM
->
-> I also tested this series on AM335x EVM using the v3.18-rc5 kernel.
-> Again, no breakage but no improvement as well.
 
-The primary goal was not necessarily to improve performance of the touchscreen itself.  It was to reduce unnecessary CPU overhead introduced by the 275us udelay in the ISR.  On a related note, that 275us udelay is not something that worked for all boards.  For example, see the following forum thread:
+Hello,
 
-http://e2e.ti.com/support/arm/sitara_arm/f/791/p/217587/775152.aspx#775152
+This patch is needed by the sensorhub driver which uses STM32F4xx and Jonathan
+suggested to factor out these sources (mentioned in: 
+[RFC/PATCH 2/6] misc: sensorhub: Add sensorhub).
 
-In that thread the user was registering multiple press events for a single press.  By increasing the udelay to 1.5ms they were able to solve the problem.  Of course, having a 1.5ms delay in your ISR is a really bad thing to do...
+I feel a bit ashamed because I know a bit STM32F4 controllers but I did not
+realize that it is generic ST protocol. It helped us a lot because this
+code really needed some refactoring.
 
-I have another customer that was experiencing the same issue of registering multiple press events, and sure enough the 1.5ms delay "fixed" their problem too.  The patches allowed them to remove that gigantic delay from the ISR because that software delay has now become a hardware delay via CHARGECONFIG.  That customer is the one that needed 0xB000 which is MUCH larger than the value of 0x400 that was working fine for me on the EVM.
+So this patch contains SPI protocol used in the STM32 bootloader and is based
+on AN4286. Generally it can be used to implement handling of other interfaces
+like UART or I2C because the flow is quite similar and maybe adding proper
+hw access callbacks will do all work.
+
+It supports:
+  - get info frame
+  - get version
+  - firmware write (write, read, write address, erase)
+
+>From v4:
+  After some Antonio Borneo comments:
+    - ack is specific for Samsung (or ST bootcode v1.0)
+    - fixed read method
+    - spi sync function was renamed as it is SPI specific
+    - removed ACK2 define
+    - add iface fiels to stm32fwu_fw struct to maintain different protocol
+    versions
+
+TODO:
+  - erase command with sector mode
+  - command checking and disabling unimplemented ones
+  - spi wait for ack compatible with ST bootcode v1.1
+
+Karol Wrona (1):
+  misc: st32fwu: Add stm32 upgrade protocol handling
+
+ drivers/misc/Kconfig               |    1 +
+ drivers/misc/Makefile              |    1 +
+ drivers/misc/stm32fwu/Kconfig      |    6 +
+ drivers/misc/stm32fwu/Makefile     |    1 +
+ drivers/misc/stm32fwu/stm32_core.c |  408 ++++++++++++++++++++++++++++++++++++
+ drivers/misc/stm32fwu/stm32_core.h |   81 +++++++
+ drivers/misc/stm32fwu/stm32_spi.c  |  117 +++++++++++
+ include/linux/stm32fwu.h           |   53 +++++
+ 8 files changed, 668 insertions(+)
+ create mode 100644 drivers/misc/stm32fwu/Kconfig
+ create mode 100644 drivers/misc/stm32fwu/Makefile
+ create mode 100644 drivers/misc/stm32fwu/stm32_core.c
+ create mode 100644 drivers/misc/stm32fwu/stm32_core.h
+ create mode 100644 drivers/misc/stm32fwu/stm32_spi.c
+ create mode 100644 include/linux/stm32fwu.h
+
+-- 
+1.7.9.5
