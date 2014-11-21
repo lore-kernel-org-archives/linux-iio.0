@@ -1,113 +1,74 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:42995 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754468AbaKEOin (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 5 Nov 2014 09:38:43 -0500
-Message-ID: <545A3671.2010102@kernel.org>
-Date: Wed, 05 Nov 2014 14:38:41 +0000
-From: Jonathan Cameron <jic23@kernel.org>
+Received: from mail-qa0-f48.google.com ([209.85.216.48]:60607 "EHLO
+	mail-qa0-f48.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750785AbaKUSRT (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 21 Nov 2014 13:17:19 -0500
 MIME-Version: 1.0
-To: Bastien Nocera <hadess@hadess.net>, linux-iio@vger.kernel.org,
-	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
-	Daniel Baluta <daniel.baluta@intel.com>
-Subject: Re: [PATCH v3] iio:kxcjk-1013: Add support for SMO8500 device
-References: <1415056822.4506.24.camel@hadess.net>
-In-Reply-To: <1415056822.4506.24.camel@hadess.net>
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <546F5C27.7040004@ti.com>
+References: <1415941651-28962-1-git-send-email-vigneshr@ti.com>
+	<1415941651-28962-4-git-send-email-vigneshr@ti.com>
+	<20141118143005.GF24004@x1>
+	<20141118171240.GB3003@dtor-ws>
+	<546DF2F0.9080405@ti.com>
+	<20141120144028.GB5809@localhost.localdomain>
+	<546F2BA4.4000808@ti.com>
+	<20141121131036.GA18931@localhost.localdomain>
+	<CAJKbBDDVTA+=priRu7sCD=vHrC8AUg4DM3kycuGrqbpF-5FGAA@mail.gmail.com>
+	<546F5C27.7040004@ti.com>
+Date: Fri, 21 Nov 2014 19:17:18 +0100
+Message-ID: <CAJKbBDD=eYmU=LuViwLPNV=kYCziDQgKjL07bT7og4vsj0Ee7A@mail.gmail.com>
+Subject: Re: [PATCH v4 3/6] mfd: ti_am335x_tscadc: Remove unwanted
+ reg_se_cache save
+From: Johannes Pointner <johannes.pointner@gmail.com>
+To: Sekhar Nori <nsekhar@ti.com>
+Cc: Vignesh R <vigneshr@ti.com>,
+	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+	Lee Jones <lee.jones@linaro.org>,
+	Rob Herring <robh+dt@kernel.org>,
+	Pawel Moll <pawel.moll@arm.com>,
+	Mark Rutland <mark.rutland@arm.com>,
+	Ian Campbell <ijc+devicetree@hellion.org.uk>,
+	Kumar Gala <galak@codeaurora.org>,
+	Benoit Cousson <bcousson@baylibre.com>,
+	Tony Lindgren <tony@atomide.com>,
+	Russell King <linux@arm.linux.org.uk>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Samuel Ortiz <sameo@linux.intel.com>,
+	Felipe Balbi <balbi@ti.com>, Brad Griffis <bgriffis@ti.com>,
+	Sanjeev Sharma <sanjeev_sharma@mentor.com>,
+	Paul Gortmaker <paul.gortmaker@windriver.com>,
+	Jan Kardell <jan.kardell@telliq.com>,
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	linux-iio <linux-iio@vger.kernel.org>,
+	linux-input@vger.kernel.org,
+	Robert Nelson <robertcnelson@gmail.com>,
+	Richard Cochran <richardcochran@gmail.com>
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 03/11/14 23:20, Bastien Nocera wrote:
-> The Onda v975w tablet contains an accelerometer that's advertised over
-> ACPI as SMO8500. This device is however a KXCJ9 accelerometer as
-> can be seen in the Windows driver's INF file, and from the etching on
-> the chipset ("KXCJ9 41566 0414").
-> 
-> This patch also removes the attempt to get the IRQ for the "data ready"
-> signal, as it does not seem to be supported by this device on this
-> platform.
-> 
-> Signed-off-by: Bastien Nocera <hadess@hadess.net>
-Looks fine to me, but I'd ideally like an ack / review from Srinivas as it's his
-driver... (and/or Daniel)
-> 
-> ---
-> 
-> Changes from v1:
-> - Rebase after driver changes
-> - Stop checking for IRQ when not supported
-> 
-> Changes from v2:
-> - Fixed the space before the opening bracket
-> - Added Sob line
-> - Add version to the patch subject line ;)
-> 
-> ---
->  drivers/iio/accel/kxcjk-1013.c | 13 +++++++++++--
->  1 file changed, 11 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/iio/accel/kxcjk-1013.c b/drivers/iio/accel/kxcjk-1013.c
-> index 98909a9..3e966c2 100644
-> --- a/drivers/iio/accel/kxcjk-1013.c
-> +++ b/drivers/iio/accel/kxcjk-1013.c
-> @@ -108,6 +108,7 @@ struct kxcjk1013_data {
->  	bool motion_trigger_on;
->  	int64_t timestamp;
->  	enum kx_chipset chipset;
-> +	bool is_smo8500_device;
->  };
->  
->  enum kxcjk1013_axis {
-> @@ -1129,12 +1130,15 @@ static irqreturn_t kxcjk1013_data_rdy_trig_poll(int irq, void *private)
->  }
->  
->  static const char *kxcjk1013_match_acpi_device(struct device *dev,
-> -					       enum kx_chipset *chipset)
-> +					       enum kx_chipset *chipset,
-> +					       bool *is_smo8500_device)
->  {
->  	const struct acpi_device_id *id;
->  	id = acpi_match_device(dev->driver->acpi_match_table, dev);
->  	if (!id)
->  		return NULL;
-> +	if (strcmp(id->id, "SMO8500") == 0)
-> +		*is_smo8500_device = true;
->  	*chipset = (enum kx_chipset)id->driver_data;
->  
->  	return dev_name(dev);
-> @@ -1149,6 +1153,8 @@ static int kxcjk1013_gpio_probe(struct i2c_client *client,
->  
->  	if (!client)
->  		return -EINVAL;
-> +	if (data->is_smo8500_device)
-> +		return -ENOTSUPP;
->  
->  	dev = &client->dev;
->  
-> @@ -1198,7 +1204,8 @@ static int kxcjk1013_probe(struct i2c_client *client,
->  		name = id->name;
->  	} else if (ACPI_HANDLE(&client->dev)) {
->  		name = kxcjk1013_match_acpi_device(&client->dev,
-> -						   &data->chipset);
-> +						   &data->chipset,
-> +						   &data->is_smo8500_device);
->  	} else
->  		return -ENODEV;
->  
-> @@ -1397,6 +1404,7 @@ static const struct acpi_device_id kx_acpi_match[] = {
->  	{"KXCJ1013", KXCJK1013},
->  	{"KXCJ1008", KXCJ91008},
->  	{"KXTJ1009", KXTJ21009},
-> +	{"SMO8500",  KXCJK1013},
->  	{ },
->  };
->  MODULE_DEVICE_TABLE(acpi, kx_acpi_match);
-> @@ -1405,6 +1413,7 @@ static const struct i2c_device_id kxcjk1013_id[] = {
->  	{"kxcjk1013", KXCJK1013},
->  	{"kxcj91008", KXCJ91008},
->  	{"kxtj21009", KXTJ21009},
-> +	{"SMO8500",   KXCJK1013},
->  	{}
->  };
->  
-> 
+Before the patches were also jumps but I thought it is something
+Vignesh should know. Maybe there is some fix for that too?
+As Richard also noted, it would be nice if ti could let us know how to
+get the delay values right. By trial and error is IMHO not the best
+way.
+For the testing I used 3.16.7.
+
+
+2014-11-21 16:37 GMT+01:00 Sekhar Nori <nsekhar@ti.com>:
+> On Friday 21 November 2014 08:41 PM, Johannes Pointner wrote:
+>> I tested version 4 of the patch series on a custom design and I saw
+>> also the jumps as described by Richard. I played a little with the
+>> sample delay and it got better but I couldn't completely remove the
+>> jumps.
+>
+> And before the patches were applied, there were no jumps at all? Which
+> kernel are you using for testing?
+>
+> Thanks,
+> Sekhar
