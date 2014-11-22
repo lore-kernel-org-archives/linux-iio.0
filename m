@@ -1,139 +1,95 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:40107 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:40315 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751366AbaKVLUp (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 22 Nov 2014 06:20:45 -0500
-Message-ID: <5470718B.90608@kernel.org>
-Date: Sat, 22 Nov 2014 11:20:43 +0000
+	with ESMTP id S1751314AbaKVLzX (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 22 Nov 2014 06:55:23 -0500
+Message-ID: <547079A7.2040502@kernel.org>
+Date: Sat, 22 Nov 2014 11:55:19 +0000
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Daniel Baluta <daniel.baluta@intel.com>, knaack.h@gmx.de
-CC: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-	irina.tirdea@intel.com, daniel.baluta@inte.com
-Subject: Re: [PATCH v4 7/7] iio: event_monitor: Add support for new channel
- types
-References: <1415623535-24337-1-git-send-email-daniel.baluta@intel.com> <1415623535-24337-8-git-send-email-daniel.baluta@intel.com>
-In-Reply-To: <1415623535-24337-8-git-send-email-daniel.baluta@intel.com>
-Content-Type: text/plain; charset=windows-1252
+To: "Ivan T. Ivanov" <iivanov@mm-sol.com>,
+	Hartmut Knaack <knaack.h@gmx.de>
+CC: Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Stanimir Varbanov <svarbanov@mm-sol.com>,
+	Angelo Compagnucci <angelo.compagnucci@gmail.com>,
+	Grant Likely <grant.likely@linaro.org>,
+	linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org, linux-arm-msm@vger.kernel.org
+Subject: Re: [PATCH v4 2/2] iio: vadc: Qualcomm SPMI PMIC voltage ADC driver
+References: <1415028270-25860-1-git-send-email-iivanov@mm-sol.com>			 <1415028270-25860-3-git-send-email-iivanov@mm-sol.com>			 <54612A0D.7020308@gmx.de> <1415694109.22935.13.camel@mm-sol.com>		 <54629026.3080002@gmx.de> <1415782511.4820.2.camel@mm-sol.com>	 <546A72E2.9060401@gmx.de> <1416299013.30131.4.camel@mm-sol.com>
+In-Reply-To: <1416299013.30131.4.camel@mm-sol.com>
+Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 10/11/14 12:45, Daniel Baluta wrote:
-> We have the following testing scenario:
+On 18/11/14 08:23, Ivan T. Ivanov wrote:
 > 
-> $ insmod iio_dummy_evgen.ko
-> $ insmod iio_dummy.ko
+> On Mon, 2014-11-17 at 23:12 +0100, Hartmut Knaack wrote:
+>> Ivan T. Ivanov schrieb am 12.11.2014 09:55:
+>>> On Tue, 2014-11-11 at 23:39 +0100, Hartmut Knaack wrote:
+>>>> Ivan T. Ivanov schrieb am 11.11.2014 09:21:
+>>>>> Hi Hartmut,
+>>>>>
+>>>>> On Mon, 2014-11-10 at 22:11 +0100, Hartmut Knaack wrote:
+>>>>>> Ivan T. Ivanov schrieb am 03.11.2014 16:24:
+>>>>>>> From: Stanimir Varbanov <svarbanov@mm-sol.com>
+>>>>>>>
+>>>>>>> The voltage ADC is peripheral of Qualcomm SPMI PMIC chips. It has
+>>>>>>> 15 bits resolution and register space inside PMIC accessible across
+>>>>>>> SPMI bus.
+>>>>>>>
+>>>>>>> The vadc driver registers itself through IIO interface.
+>>>>>> Reviewing again, I got the feeling that due to the complexity of adc reads (writing to
+>>>>>> register
+>>>>>> to start conversion, waiting a decent time for the conversion to complete, reading the
+>>>>>> result),
+>>>>>> it would be beneficial to use a mutex in vadc_read_raw or its depending functions.
+>>>>>
+>>>>> Hm, yes, but there is such a nice info_exist_lock :-) in core functions,
+>>>>> which in practice serve the same purpose.
+>>>> I seem to miss that. Please point me in the right direction.
+>>>
+>>> I am referring to info_exist_lock mutex part of struct iio_dev.
+>>> It protects all operations inkern.c, no?
+>>>
+>> Good point, thanks for helping me there.
 > 
-> ./iio_event_monitor /dev/iio:device0
-> Event: time: 1412786467971335337, type: activity(running), channel: 0,
-> evtype: thresh, direction: rising
-> Event: time: 1412786530792974091, type: activity(walking), channel: 0,
-> evtype: thresh, direction: falling
-> Event: time: 1412764319184761765, type: steps, channel: 0, evtype: instance
+> I was wondering, is there a plan to improve this part of the code? 
+No one is working on it that I know of.  All patches welcome!
+> I mean to remove per device lock and use something like try_module_get(),
+> when clients are acquiring reference to iio channel? 
+That might indeed provide a more elegant solution...
+(the things I don't know exist never fail to surprise me!)
 > 
-> $ echo 1 > /sys/bus/iio/devices/iio_evgen/poke_ev0
-> $ echo 2 > /sys/bus/iio/devices/iio_evgen/poke_ev0
-> $ echo 3 > /sys/bus/iio/devices/iio_evgen/poke_ev0
+>>>>>>> +
+>>>>>>> +       ret = of_property_read_u32(node, "reg", &res);
+>>>>>> For u16, there would be of_property_read_u16().
+>>>>>>> +       if (ret < 0)
+>>>>>>> +       return -ENODEV;
+>>>>>> Just return ret here?
+>>>>>
+>>>>> I am usually trying to follow these recommendations[1]. In practice driver
+>>>>> core cares only for EPROBE_DEFER, ENODEV and ENXIO, while of_property_read_u32()
+>>>>> can return ENODATA and EOVERFLOW, which did't not make sense for the core.
+>>>> Please point me in the right direction on this one, too. It is pretty common to pass error 
+>>>> codes
+>>>> up, as it is also mentioned in [1].
+>>>
+>>> Yes, I know that is common to just pass error codes up, but in this case it did't
+>>> make too much sense, I think. Also take a look at realy_probe() and line 343.
+>> This doesn't convince me. Actually, within the probe_failed part, it just doesn't care about 
+>> ENODEV and ENXIO as long as debug messages are disabled (which apart from some developers, is 
+>> default for the vast majority of devices). For all other error codes, it will at least print an 
+>> info or warning about what's going wrong (and that can be a lot of help for debugging).
 > 
-> Signed-off-by: Irina Tirdea <irina.tirdea@intel.com>
-> Signed-off-by: Daniel Baluta <daniel.baluta@intel.com>
-Good description and a good patch.  Nice series all in all - I like
-the approach of adding ABI with dummy driver and tool support before
-the hardware driver comes along.  Not quite the same from working out
-how things will be used in anger, but still a clean way to work.
-
-All applied to the togreg branch of iio.git - pushed out as testing - in
-this case for the autobuilders to completely ignore the patch...
-
-Thanks,
-
-Jonathan
-> ---
->  .../staging/iio/Documentation/iio_event_monitor.c  | 23 +++++++++++++++++++---
->  1 file changed, 20 insertions(+), 3 deletions(-)
+> Well, if you insist... will change it.
 > 
-> diff --git a/drivers/staging/iio/Documentation/iio_event_monitor.c b/drivers/staging/iio/Documentation/iio_event_monitor.c
-> index 940ed23..def236a 100644
-> --- a/drivers/staging/iio/Documentation/iio_event_monitor.c
-> +++ b/drivers/staging/iio/Documentation/iio_event_monitor.c
-> @@ -49,6 +49,8 @@ static const char * const iio_chan_type_name_spec[] = {
->  	[IIO_CCT] = "cct",
->  	[IIO_PRESSURE] = "pressure",
->  	[IIO_HUMIDITYRELATIVE] = "humidityrelative",
-> +	[IIO_ACTIVITY] = "activity",
-> +	[IIO_STEPS] = "steps",
->  };
->  
->  static const char * const iio_ev_type_text[] = {
-> @@ -57,6 +59,7 @@ static const char * const iio_ev_type_text[] = {
->  	[IIO_EV_TYPE_ROC] = "roc",
->  	[IIO_EV_TYPE_THRESH_ADAPTIVE] = "thresh_adaptive",
->  	[IIO_EV_TYPE_MAG_ADAPTIVE] = "mag_adaptive",
-> +	[IIO_EV_TYPE_INSTANCE] = "instance",
->  };
->  
->  static const char * const iio_ev_dir_text[] = {
-> @@ -92,6 +95,10 @@ static const char * const iio_modifier_names[] = {
->  	[IIO_MOD_NORTH_TRUE] = "from_north_true",
->  	[IIO_MOD_NORTH_MAGN_TILT_COMP] = "from_north_magnetic_tilt_comp",
->  	[IIO_MOD_NORTH_TRUE_TILT_COMP] = "from_north_true_tilt_comp",
-> +	[IIO_MOD_RUNNING] = "running",
-> +	[IIO_MOD_JOGGING] = "jogging",
-> +	[IIO_MOD_WALKING] = "walking",
-> +	[IIO_MOD_STILL] = "still",
->  };
->  
->  static bool event_is_known(struct iio_event_data *event)
-> @@ -121,6 +128,8 @@ static bool event_is_known(struct iio_event_data *event)
->  	case IIO_CCT:
->  	case IIO_PRESSURE:
->  	case IIO_HUMIDITYRELATIVE:
-> +	case IIO_ACTIVITY:
-> +	case IIO_STEPS:
->  		break;
->  	default:
->  		return false;
-> @@ -154,6 +163,10 @@ static bool event_is_known(struct iio_event_data *event)
->  	case IIO_MOD_NORTH_TRUE:
->  	case IIO_MOD_NORTH_MAGN_TILT_COMP:
->  	case IIO_MOD_NORTH_TRUE_TILT_COMP:
-> +	case IIO_MOD_RUNNING:
-> +	case IIO_MOD_JOGGING:
-> +	case IIO_MOD_WALKING:
-> +	case IIO_MOD_STILL:
->  		break;
->  	default:
->  		return false;
-> @@ -165,6 +178,7 @@ static bool event_is_known(struct iio_event_data *event)
->  	case IIO_EV_TYPE_ROC:
->  	case IIO_EV_TYPE_THRESH_ADAPTIVE:
->  	case IIO_EV_TYPE_MAG_ADAPTIVE:
-> +	case IIO_EV_TYPE_INSTANCE:
->  		break;
->  	default:
->  		return false;
-> @@ -174,6 +188,7 @@ static bool event_is_known(struct iio_event_data *event)
->  	case IIO_EV_DIR_EITHER:
->  	case IIO_EV_DIR_RISING:
->  	case IIO_EV_DIR_FALLING:
-> +	case IIO_EV_DIR_NONE:
->  		break;
->  	default:
->  		return false;
-> @@ -214,9 +229,11 @@ static void print_event(struct iio_event_data *event)
->  	else if (chan >= 0)
->  		printf("channel: %d, ", chan);
->  
-> -	printf("evtype: %s, direction: %s\n",
-> -		iio_ev_type_text[ev_type],
-> -		iio_ev_dir_text[dir]);
-> +	printf("evtype: %s", iio_ev_type_text[ev_type]);
-> +
-> +	if (dir != IIO_EV_DIR_NONE)
-> +		printf(", direction: %s", iio_ev_dir_text[dir]);
-> +	printf("\n");
->  }
->  
->  int main(int argc, char **argv)
+> Thanks, 
+> Ivan
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
 > 
 
