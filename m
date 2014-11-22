@@ -1,92 +1,86 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:40315 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:40360 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751314AbaKVLzX (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 22 Nov 2014 06:55:23 -0500
-Message-ID: <547079A7.2040502@kernel.org>
-Date: Sat, 22 Nov 2014 11:55:19 +0000
+	with ESMTP id S1751479AbaKVMCG (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 22 Nov 2014 07:02:06 -0500
+Message-ID: <54707B3D.6050806@kernel.org>
+Date: Sat, 22 Nov 2014 12:02:05 +0000
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: "Ivan T. Ivanov" <iivanov@mm-sol.com>,
-	Hartmut Knaack <knaack.h@gmx.de>
-CC: Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	Stanimir Varbanov <svarbanov@mm-sol.com>,
-	Angelo Compagnucci <angelo.compagnucci@gmail.com>,
-	Grant Likely <grant.likely@linaro.org>,
-	linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-	devicetree@vger.kernel.org, linux-arm-msm@vger.kernel.org
-Subject: Re: [PATCH v4 2/2] iio: vadc: Qualcomm SPMI PMIC voltage ADC driver
-References: <1415028270-25860-1-git-send-email-iivanov@mm-sol.com>			 <1415028270-25860-3-git-send-email-iivanov@mm-sol.com>			 <54612A0D.7020308@gmx.de> <1415694109.22935.13.camel@mm-sol.com>		 <54629026.3080002@gmx.de> <1415782511.4820.2.camel@mm-sol.com>	 <546A72E2.9060401@gmx.de> <1416299013.30131.4.camel@mm-sol.com>
-In-Reply-To: <1416299013.30131.4.camel@mm-sol.com>
+To: Fabio Estevam <festevam@gmail.com>,
+	Stefan Wahren <stefan.wahren@i2se.com>,
+	=?UTF-8?B?TWFyZWsgVmHFoXV0?= <marex@denx.de>
+CC: =?UTF-8?B?S3Jpc3RpbmEgTWFydMWhZW5rbw==?=
+	<kristina.martsenko@gmail.com>, linux-iio@vger.kernel.org
+Subject: Re: [PATCH] iio: mxs-lradc: check ranges of ts properties
+References: <1416435590-13999-1-git-send-email-stefan.wahren@i2se.com> <CAOMZO5DJ7yyd47BKgm6AOAg=GGFdeswrb2NxA2krj3ATnRWPVQ@mail.gmail.com>
+In-Reply-To: <CAOMZO5DJ7yyd47BKgm6AOAg=GGFdeswrb2NxA2krj3ATnRWPVQ@mail.gmail.com>
 Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 18/11/14 08:23, Ivan T. Ivanov wrote:
+On 19/11/14 22:42, Fabio Estevam wrote:
+> [Adding Marek]
+It will sit in my testing branch for a day or two if Marek still
+wants to take a look and comment...
 > 
-> On Mon, 2014-11-17 at 23:12 +0100, Hartmut Knaack wrote:
->> Ivan T. Ivanov schrieb am 12.11.2014 09:55:
->>> On Tue, 2014-11-11 at 23:39 +0100, Hartmut Knaack wrote:
->>>> Ivan T. Ivanov schrieb am 11.11.2014 09:21:
->>>>> Hi Hartmut,
->>>>>
->>>>> On Mon, 2014-11-10 at 22:11 +0100, Hartmut Knaack wrote:
->>>>>> Ivan T. Ivanov schrieb am 03.11.2014 16:24:
->>>>>>> From: Stanimir Varbanov <svarbanov@mm-sol.com>
->>>>>>>
->>>>>>> The voltage ADC is peripheral of Qualcomm SPMI PMIC chips. It has
->>>>>>> 15 bits resolution and register space inside PMIC accessible across
->>>>>>> SPMI bus.
->>>>>>>
->>>>>>> The vadc driver registers itself through IIO interface.
->>>>>> Reviewing again, I got the feeling that due to the complexity of adc reads (writing to
->>>>>> register
->>>>>> to start conversion, waiting a decent time for the conversion to complete, reading the
->>>>>> result),
->>>>>> it would be beneficial to use a mutex in vadc_read_raw or its depending functions.
->>>>>
->>>>> Hm, yes, but there is such a nice info_exist_lock :-) in core functions,
->>>>> which in practice serve the same purpose.
->>>> I seem to miss that. Please point me in the right direction.
->>>
->>> I am referring to info_exist_lock mutex part of struct iio_dev.
->>> It protects all operations inkern.c, no?
->>>
->> Good point, thanks for helping me there.
+> On Wed, Nov 19, 2014 at 8:19 PM, Stefan Wahren <stefan.wahren@i2se.com> wrote:
+>> The devicetree binding for mxs-lradc defines ranges for the
+>> touchscreen properties. In order to avoid unexpected behavior like
+>> division by zero, we better check these ranges during probe and
+>> abort in error case.
+>>
+>> Signed-off-by: Stefan Wahren <stefan.wahren@i2se.com>
+Applied to the togreg branch of iio.git - initially pushed out as testing for the
+autobuilders to play with it.
+
+Thanks,
+
+Jonathan
+>> ---
+>>  drivers/staging/iio/adc/mxs-lradc.c |   20 ++++++++++++++++++++
+>>  1 file changed, 20 insertions(+)
+>>
+>> diff --git a/drivers/staging/iio/adc/mxs-lradc.c b/drivers/staging/iio/adc/mxs-lradc.c
+>> index 6757f10..57c3cf6 100644
+>> --- a/drivers/staging/iio/adc/mxs-lradc.c
+>> +++ b/drivers/staging/iio/adc/mxs-lradc.c
+>> @@ -1500,16 +1500,36 @@ static int mxs_lradc_probe_touchscreen(struct mxs_lradc *lradc,
+>>         if (ret == 0)
+>>                 lradc->over_sample_cnt = adapt;
+>>
+>> +       if (!lradc->over_sample_cnt || lradc->over_sample_cnt > 0x1f) {
+>> +               dev_err(lradc->dev, "Invalid sample count (%u)\n",
+>> +                                   lradc->over_sample_cnt);
+>> +               return -EINVAL;
+>> +       }
+>> +
+>>         lradc->over_sample_delay = 2;
+>>         ret = of_property_read_u32(lradc_node, "fsl,ave-delay", &adapt);
+>>         if (ret == 0)
+>>                 lradc->over_sample_delay = adapt;
+>>
+>> +       if (!lradc->over_sample_delay ||
+>> +           lradc->over_sample_delay > LRADC_DELAY_DELAY_MASK) {
+>> +               dev_err(lradc->dev, "Invalid sample delay (%u)\n",
+>> +                                   lradc->over_sample_delay);
+>> +               return -EINVAL;
+>> +       }
+>> +
+>>         lradc->settling_delay = 10;
+>>         ret = of_property_read_u32(lradc_node, "fsl,settling", &adapt);
+>>         if (ret == 0)
+>>                 lradc->settling_delay = adapt;
+>>
+>> +       if (!lradc->settling_delay ||
+>> +           lradc->settling_delay > LRADC_DELAY_DELAY_MASK) {
+>> +               dev_err(lradc->dev, "Invalid settling delay (%u)\n",
+>> +                                   lradc->settling_delay);
+>> +               return -EINVAL;
+>> +       }
+>> +
 > 
-> I was wondering, is there a plan to improve this part of the code? 
-No one is working on it that I know of.  All patches welcome!
-> I mean to remove per device lock and use something like try_module_get(),
-> when clients are acquiring reference to iio channel? 
-That might indeed provide a more elegant solution...
-(the things I don't know exist never fail to surprise me!)
-> 
->>>>>>> +
->>>>>>> +       ret = of_property_read_u32(node, "reg", &res);
->>>>>> For u16, there would be of_property_read_u16().
->>>>>>> +       if (ret < 0)
->>>>>>> +       return -ENODEV;
->>>>>> Just return ret here?
->>>>>
->>>>> I am usually trying to follow these recommendations[1]. In practice driver
->>>>> core cares only for EPROBE_DEFER, ENODEV and ENXIO, while of_property_read_u32()
->>>>> can return ENODATA and EOVERFLOW, which did't not make sense for the core.
->>>> Please point me in the right direction on this one, too. It is pretty common to pass error 
->>>> codes
->>>> up, as it is also mentioned in [1].
->>>
->>> Yes, I know that is common to just pass error codes up, but in this case it did't
->>> make too much sense, I think. Also take a look at realy_probe() and line 343.
->> This doesn't convince me. Actually, within the probe_failed part, it just doesn't care about 
->> ENODEV and ENXIO as long as debug messages are disabled (which apart from some developers, is 
->> default for the vast majority of devices). For all other error codes, it will at least print an 
->> info or warning about what's going wrong (and that can be a lot of help for debugging).
-> 
-> Well, if you insist... will change it.
-> 
-> Thanks, 
-> Ivan
+> Reviewed-by: Fabio Estevam <fabio.estevam@freescale.com>
 > --
 > To unsubscribe from this list: send the line "unsubscribe linux-iio" in
 > the body of a message to majordomo@vger.kernel.org
