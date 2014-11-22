@@ -1,172 +1,139 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga09.intel.com ([134.134.136.24]:10698 "EHLO mga09.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1752776AbaKJMoY (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Mon, 10 Nov 2014 07:44:24 -0500
-From: Daniel Baluta <daniel.baluta@intel.com>
-To: jic23@kernel.org, knaack.h@gmx.de
-Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:40107 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751366AbaKVLUp (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 22 Nov 2014 06:20:45 -0500
+Message-ID: <5470718B.90608@kernel.org>
+Date: Sat, 22 Nov 2014 11:20:43 +0000
+From: Jonathan Cameron <jic23@kernel.org>
+MIME-Version: 1.0
+To: Daniel Baluta <daniel.baluta@intel.com>, knaack.h@gmx.de
+CC: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
 	irina.tirdea@intel.com, daniel.baluta@inte.com
-Subject: [PATCH v4 2/7] iio: core: Introduce IIO_ACTIVITY channel
-Date: Mon, 10 Nov 2014 14:45:30 +0200
-Message-Id: <1415623535-24337-3-git-send-email-daniel.baluta@intel.com>
-In-Reply-To: <1415623535-24337-1-git-send-email-daniel.baluta@intel.com>
-References: <1415623535-24337-1-git-send-email-daniel.baluta@intel.com>
+Subject: Re: [PATCH v4 7/7] iio: event_monitor: Add support for new channel
+ types
+References: <1415623535-24337-1-git-send-email-daniel.baluta@intel.com> <1415623535-24337-8-git-send-email-daniel.baluta@intel.com>
+In-Reply-To: <1415623535-24337-8-git-send-email-daniel.baluta@intel.com>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-This channel will be used for exposing information about
-activity composite sensors. Activities supported so far:
-	* running
-	* jogging
-	* walking
-	* still
+On 10/11/14 12:45, Daniel Baluta wrote:
+> We have the following testing scenario:
+> 
+> $ insmod iio_dummy_evgen.ko
+> $ insmod iio_dummy.ko
+> 
+> ./iio_event_monitor /dev/iio:device0
+> Event: time: 1412786467971335337, type: activity(running), channel: 0,
+> evtype: thresh, direction: rising
+> Event: time: 1412786530792974091, type: activity(walking), channel: 0,
+> evtype: thresh, direction: falling
+> Event: time: 1412764319184761765, type: steps, channel: 0, evtype: instance
+> 
+> $ echo 1 > /sys/bus/iio/devices/iio_evgen/poke_ev0
+> $ echo 2 > /sys/bus/iio/devices/iio_evgen/poke_ev0
+> $ echo 3 > /sys/bus/iio/devices/iio_evgen/poke_ev0
+> 
+> Signed-off-by: Irina Tirdea <irina.tirdea@intel.com>
+> Signed-off-by: Daniel Baluta <daniel.baluta@intel.com>
+Good description and a good patch.  Nice series all in all - I like
+the approach of adding ABI with dummy driver and tool support before
+the hardware driver comes along.  Not quite the same from working out
+how things will be used in anger, but still a clean way to work.
 
-THRESHOLD event is used to signal a change in the activity
-state.
+All applied to the togreg branch of iio.git - pushed out as testing - in
+this case for the autobuilders to completely ignore the patch...
 
-We associate a confidence interval for each activity expressed
-as a percentage from 0 to 100.
-  * 0, means the sensor IS NOT reporting that activity.
-  * 100, means the sensor IS reporting that activity.
+Thanks,
 
-Users of this interface have two possible means to gather
-information about the ongoing activities.
-
-1. Event based, via event file descriptor
-  * sensor may report an event when ENTERING an activity or LEAVING
-    an activity based on a threshold value.
-  * drivers will wake up applications waiting data on the event fd
-
-2. Polling, by reading the sysfs associated attribute files:
-  * /sys/bus/iio/devices/iio:device0/in_activity_running_input
-expressed as percentage confidence value from 0 to 100.
-
-This will offer an interface for Android significant motion
-composite sensor defined here:
-http://source.android.com/devices/sensors/composite_sensors.html
-
-Activities listed above are supported by Freescale's MMA9553 sensor:
-http://freescale.com/files/sensors/doc/ref_manual/MMA9553LSWRM.pdf
-
-Signed-off-by: Irina Tirdea <irina.tirdea@intel.com>
-Signed-off-by: Daniel Baluta <daniel.baluta@intel.com>
----
- Documentation/ABI/testing/sysfs-bus-iio | 44 +++++++++++++++++++++++++++++++++
- drivers/iio/industrialio-core.c         |  5 ++++
- include/linux/iio/types.h               |  7 +++++-
- 3 files changed, 55 insertions(+), 1 deletion(-)
-
-diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
-index 117521d..7bf49ad 100644
---- a/Documentation/ABI/testing/sysfs-bus-iio
-+++ b/Documentation/ABI/testing/sysfs-bus-iio
-@@ -790,6 +790,40 @@ Description:
- 		met before an event is generated. If direction is not
- 		specified then this period applies to both directions.
- 
-+What:		/sys/.../events/in_activity_still_thresh_rising_en
-+What:		/sys/.../events/in_activity_still_thresh_falling_en
-+What:		/sys/.../events/in_activity_walking_thresh_rising_en
-+What:		/sys/.../events/in_activity_walking_thresh_falling_en
-+What:		/sys/.../events/in_activity_jogging_thresh_rising_en
-+What:		/sys/.../events/in_activity_jogging_thresh_falling_en
-+What:		/sys/.../events/in_activity_running_thresh_rising_en
-+What:		/sys/.../events/in_activity_running_thresh_falling_en
-+KernelVersion:	3.19
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+		Enables or disables activitity events. Depending on direction
-+		an event is generated when sensor ENTERS or LEAVES a given state.
-+
-+What:		/sys/.../events/in_activity_still_thresh_rising_value
-+What:		/sys/.../events/in_activity_still_thresh_falling_value
-+What:		/sys/.../events/in_activity_walking_thresh_rising_value
-+What:		/sys/.../events/in_activity_walking_thresh_falling_value
-+What:		/sys/.../events/in_activity_jogging_thresh_rising_value
-+What:		/sys/.../events/in_activity_jogging_thresh_falling_value
-+What:		/sys/.../events/in_activity_running_thresh_rising_value
-+What:		/sys/.../events/in_activity_running_thresh_falling_value
-+KernelVersion:	3.19
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+		Confidence value (in units as percentage) to be used
-+		for deciding when an event should be generated. E.g for
-+		running: If the confidence value reported by the sensor
-+		is greater than in_activity_running_thresh_rising_value
-+		then the sensor ENTERS running state. Conversely, if the
-+		confidence value reported by the sensor is lower than
-+		in_activity_running_thresh_falling_value then the sensor
-+		is LEAVING running state.
-+
- What:		/sys/.../iio:deviceX/events/in_accel_mag_en
- What:		/sys/.../iio:deviceX/events/in_accel_mag_rising_en
- What:		/sys/.../iio:deviceX/events/in_accel_mag_falling_en
-@@ -956,6 +990,16 @@ Description:
- 		and the relevant _type attributes to establish the data storage
- 		format.
- 
-+What:		/sys/.../iio:deviceX/in_activity_still_input
-+What:		/sys/.../iio:deviceX/in_activity_walking_input
-+What:		/sys/.../iio:deviceX/in_activity_jogging_input
-+What:		/sys/.../iio:deviceX/in_activity_running_input
-+KernelVersion:	3.19
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+		This attribute is used to read the confidence for an activity
-+		expressed in units as percentage.
-+
- What:		/sys/.../iio:deviceX/in_anglvel_z_quadrature_correction_raw
- KernelVersion:	2.6.38
- Contact:	linux-iio@vger.kernel.org
-diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
-index af3e76d..e453ef9 100644
---- a/drivers/iio/industrialio-core.c
-+++ b/drivers/iio/industrialio-core.c
-@@ -70,6 +70,7 @@ static const char * const iio_chan_type_name_spec[] = {
- 	[IIO_CCT] = "cct",
- 	[IIO_PRESSURE] = "pressure",
- 	[IIO_HUMIDITYRELATIVE] = "humidityrelative",
-+	[IIO_ACTIVITY] = "activity",
- };
- 
- static const char * const iio_modifier_names[] = {
-@@ -91,6 +92,10 @@ static const char * const iio_modifier_names[] = {
- 	[IIO_MOD_NORTH_TRUE] = "from_north_true",
- 	[IIO_MOD_NORTH_MAGN_TILT_COMP] = "from_north_magnetic_tilt_comp",
- 	[IIO_MOD_NORTH_TRUE_TILT_COMP] = "from_north_true_tilt_comp",
-+	[IIO_MOD_RUNNING] = "running",
-+	[IIO_MOD_JOGGING] = "jogging",
-+	[IIO_MOD_WALKING] = "walking",
-+	[IIO_MOD_STILL] = "still",
- };
- 
- /* relies on pairs of these shared then separate */
-diff --git a/include/linux/iio/types.h b/include/linux/iio/types.h
-index 4a2af8a..b3a241d 100644
---- a/include/linux/iio/types.h
-+++ b/include/linux/iio/types.h
-@@ -30,6 +30,7 @@ enum iio_chan_type {
- 	IIO_CCT,
- 	IIO_PRESSURE,
- 	IIO_HUMIDITYRELATIVE,
-+	IIO_ACTIVITY,
- };
- 
- enum iio_modifier {
-@@ -59,7 +60,11 @@ enum iio_modifier {
- 	IIO_MOD_NORTH_MAGN,
- 	IIO_MOD_NORTH_TRUE,
- 	IIO_MOD_NORTH_MAGN_TILT_COMP,
--	IIO_MOD_NORTH_TRUE_TILT_COMP
-+	IIO_MOD_NORTH_TRUE_TILT_COMP,
-+	IIO_MOD_RUNNING,
-+	IIO_MOD_JOGGING,
-+	IIO_MOD_WALKING,
-+	IIO_MOD_STILL,
- };
- 
- enum iio_event_type {
--- 
-1.9.1
+Jonathan
+> ---
+>  .../staging/iio/Documentation/iio_event_monitor.c  | 23 +++++++++++++++++++---
+>  1 file changed, 20 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/staging/iio/Documentation/iio_event_monitor.c b/drivers/staging/iio/Documentation/iio_event_monitor.c
+> index 940ed23..def236a 100644
+> --- a/drivers/staging/iio/Documentation/iio_event_monitor.c
+> +++ b/drivers/staging/iio/Documentation/iio_event_monitor.c
+> @@ -49,6 +49,8 @@ static const char * const iio_chan_type_name_spec[] = {
+>  	[IIO_CCT] = "cct",
+>  	[IIO_PRESSURE] = "pressure",
+>  	[IIO_HUMIDITYRELATIVE] = "humidityrelative",
+> +	[IIO_ACTIVITY] = "activity",
+> +	[IIO_STEPS] = "steps",
+>  };
+>  
+>  static const char * const iio_ev_type_text[] = {
+> @@ -57,6 +59,7 @@ static const char * const iio_ev_type_text[] = {
+>  	[IIO_EV_TYPE_ROC] = "roc",
+>  	[IIO_EV_TYPE_THRESH_ADAPTIVE] = "thresh_adaptive",
+>  	[IIO_EV_TYPE_MAG_ADAPTIVE] = "mag_adaptive",
+> +	[IIO_EV_TYPE_INSTANCE] = "instance",
+>  };
+>  
+>  static const char * const iio_ev_dir_text[] = {
+> @@ -92,6 +95,10 @@ static const char * const iio_modifier_names[] = {
+>  	[IIO_MOD_NORTH_TRUE] = "from_north_true",
+>  	[IIO_MOD_NORTH_MAGN_TILT_COMP] = "from_north_magnetic_tilt_comp",
+>  	[IIO_MOD_NORTH_TRUE_TILT_COMP] = "from_north_true_tilt_comp",
+> +	[IIO_MOD_RUNNING] = "running",
+> +	[IIO_MOD_JOGGING] = "jogging",
+> +	[IIO_MOD_WALKING] = "walking",
+> +	[IIO_MOD_STILL] = "still",
+>  };
+>  
+>  static bool event_is_known(struct iio_event_data *event)
+> @@ -121,6 +128,8 @@ static bool event_is_known(struct iio_event_data *event)
+>  	case IIO_CCT:
+>  	case IIO_PRESSURE:
+>  	case IIO_HUMIDITYRELATIVE:
+> +	case IIO_ACTIVITY:
+> +	case IIO_STEPS:
+>  		break;
+>  	default:
+>  		return false;
+> @@ -154,6 +163,10 @@ static bool event_is_known(struct iio_event_data *event)
+>  	case IIO_MOD_NORTH_TRUE:
+>  	case IIO_MOD_NORTH_MAGN_TILT_COMP:
+>  	case IIO_MOD_NORTH_TRUE_TILT_COMP:
+> +	case IIO_MOD_RUNNING:
+> +	case IIO_MOD_JOGGING:
+> +	case IIO_MOD_WALKING:
+> +	case IIO_MOD_STILL:
+>  		break;
+>  	default:
+>  		return false;
+> @@ -165,6 +178,7 @@ static bool event_is_known(struct iio_event_data *event)
+>  	case IIO_EV_TYPE_ROC:
+>  	case IIO_EV_TYPE_THRESH_ADAPTIVE:
+>  	case IIO_EV_TYPE_MAG_ADAPTIVE:
+> +	case IIO_EV_TYPE_INSTANCE:
+>  		break;
+>  	default:
+>  		return false;
+> @@ -174,6 +188,7 @@ static bool event_is_known(struct iio_event_data *event)
+>  	case IIO_EV_DIR_EITHER:
+>  	case IIO_EV_DIR_RISING:
+>  	case IIO_EV_DIR_FALLING:
+> +	case IIO_EV_DIR_NONE:
+>  		break;
+>  	default:
+>  		return false;
+> @@ -214,9 +229,11 @@ static void print_event(struct iio_event_data *event)
+>  	else if (chan >= 0)
+>  		printf("channel: %d, ", chan);
+>  
+> -	printf("evtype: %s, direction: %s\n",
+> -		iio_ev_type_text[ev_type],
+> -		iio_ev_dir_text[dir]);
+> +	printf("evtype: %s", iio_ev_type_text[ev_type]);
+> +
+> +	if (dir != IIO_EV_DIR_NONE)
+> +		printf(", direction: %s", iio_ev_dir_text[dir]);
+> +	printf("\n");
+>  }
+>  
+>  int main(int argc, char **argv)
+> 
 
