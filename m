@@ -1,721 +1,249 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from par-mail.meas-spec.com ([198.190.228.178]:49675 "EHLO
-	PAR-MAIL.MEAS-SPEC.COM" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751046AbaKFRiW convert rfc822-to-8bit (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 6 Nov 2014 12:38:22 -0500
-From: "Markezana, William" <William.Markezana@meas-spec.com>
-To: Peter Meerwald <pmeerw@pmeerw.net>,
-	Daniel Baluta <daniel.baluta@intel.com>
-CC: "jic23@kernel.org" <jic23@kernel.org>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH] iio: (ms5637) Add Measurement Specialties MS5637 support
-Date: Thu, 6 Nov 2014 17:38:16 +0000
-Message-ID: <8B5E2C57A478A447A3ECC506FBF26C030E2756@TLSE-SVR-MAIL01.europe.msiusa.com>
-References: <8B5E2C57A478A447A3ECC506FBF26C030E1E2E@TLSE-SVR-MAIL01.europe.msiusa.com>
- <CAEnQRZCSQT-nOjPDjnL7hKn95y0--DzXxj3rihGA6e2cdFrwtA@mail.gmail.com>
- <alpine.DEB.2.02.1411061721010.20073@pmeerw.net>
-In-Reply-To: <alpine.DEB.2.02.1411061721010.20073@pmeerw.net>
-Content-Type: text/plain; charset="iso-8859-1"
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:40383 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750878AbaKVMF4 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 22 Nov 2014 07:05:56 -0500
+Message-ID: <54707C21.70400@kernel.org>
+Date: Sat, 22 Nov 2014 12:05:53 +0000
+From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
+To: Vlad Dogaru <vlad.dogaru@intel.com>, linux-iio@vger.kernel.org,
+	knaack.h@gmx.de
+Subject: Re: [PATCH] iio: bmp280: refactor compensation code
+References: <20141117151621.GF6904@vdogaru> <1416484848-21889-1-git-send-email-vlad.dogaru@intel.com>
+In-Reply-To: <1416484848-21889-1-git-send-email-vlad.dogaru@intel.com>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Hi all, 
-
-Thank you for your feedbacks, I will take all those remarks in account and come back to you soon.
-Just one question, is the kilopascals output mandatory for pressure sensors?
-The benefit of our sensor is its accuracy of 1 millibars which is 0.1 kilopascals. It does not makes sense to have such accuracy if the final output is ten times less accurate...
-
-William Markezana 
-+33 582 082 286
-william.markezana@meas-spec.com
-
-
------Message d'origine-----
-De : Peter Meerwald [mailto:pmeerw@pmeerw.net] 
-Envoyé : jeudi 6 novembre 2014 17:54
-À : Daniel Baluta; Markezana, William
-Cc : jic23@kernel.org; linux-iio@vger.kernel.org; linux-kernel@vger.kernel.org
-Objet : Re: [PATCH] iio: (ms5637) Add Measurement Specialties MS5637 support
-
-> Use  iio: ms5637: Add Measurement Specialties MS5637 support instead 
-> of
-> iio: (ms5637) Add Measurement Specialties MS5637 support for subject.
+On 20/11/14 12:00, Vlad Dogaru wrote:
+> This version of the code avoids extra memory copy operations and is
+> somewhat smaller in code size.
 > 
-> If available please add a link to the datasheet here.
+> Signed-off-by: Vlad Dogaru <vlad.dogaru@intel.com>
+Thanks for doing this - I'm happy with the result, but would like to 
+let Hartmut have a few days to take a look if he wants to so will
+let it sit on the list for now.
 
-some more comments below...
- 
-> On Thu, Nov 6, 2014 at 11:46 AM, Markezana, William 
-> <William.Markezana@meas-spec.com> wrote:
-> > Signed-off-by: Ludovic <ludovic.tancerel@maplehightech.com>
-> > ---
-> >  drivers/iio/pressure/Kconfig                      |   10 +
-> >  drivers/iio/pressure/Makefile                     |    1 +
-> >  drivers/iio/pressure/ms5637.c                     |  488 +++++++++++++++++++++
-> >  drivers/staging/iio/Documentation/pressure/ms5637 |   25 ++
+Thanks,
 
-don't add documentation to staging
-
-> >  4 files changed, 524 insertions(+)
-> >  create mode 100644 drivers/iio/pressure/ms5637.c  create mode 
-> > 100644 drivers/staging/iio/Documentation/pressure/ms5637
-> >
-> > diff --git a/drivers/iio/pressure/Kconfig 
-> > b/drivers/iio/pressure/Kconfig index ffac8ac..4ba9bd5 100644
-> > --- a/drivers/iio/pressure/Kconfig
-> > +++ b/drivers/iio/pressure/Kconfig
-> > @@ -41,6 +41,16 @@ config MPL3115
-> >            To compile this driver as a module, choose M here: the module
-> >            will be called mpl3115.
-> >
-> > +config MS5637
-> > +        tristate "MS5637 pressure & temperature sensor"
-> > +        depends on I2C
-> > +        help
-> > +          If you say yes here you get support for the Measurement Specialties
-> > +          MS5637 pressure and temperature sensor.
-> > +
-> > +          This driver can also be built as a module. If so, the module will
-> > +          be called ms5637.
-> > +
-> >  config IIO_ST_PRESS
-> >         tristate "STMicroelectronics pressure sensor Driver"
-> >         depends on (I2C || SPI_MASTER) && SYSFS diff --git 
-> > a/drivers/iio/pressure/Makefile b/drivers/iio/pressure/Makefile 
-> > index c53d250..50fe66e 100644
-> > --- a/drivers/iio/pressure/Makefile
-> > +++ b/drivers/iio/pressure/Makefile
-> > @@ -6,6 +6,7 @@
-> >  obj-$(CONFIG_HID_SENSOR_PRESS)   += hid-sensor-press.o
-> >  obj-$(CONFIG_MPL115) += mpl115.o
-> >  obj-$(CONFIG_MPL3115) += mpl3115.o
-> > +obj-$(CONFIG_MS5637) += ms5637.o
-> >  obj-$(CONFIG_IIO_ST_PRESS) += st_pressure.o  st_pressure-y := 
-> > st_pressure_core.o
-> >  st_pressure-$(CONFIG_IIO_BUFFER) += st_pressure_buffer.o diff --git 
-> > a/drivers/iio/pressure/ms5637.c b/drivers/iio/pressure/ms5637.c new 
-> > file mode 100644 index 0000000..ea74636
-> > --- /dev/null
-> > +++ b/drivers/iio/pressure/ms5637.c
-> > @@ -0,0 +1,488 @@
-> > +/*
-> > + * ms5637.c - Support for Measurement Specialties MS5637 
-> > +temperature sensor
-
-pressure & temperature
-
-> > + *
-> > + * Copyright (c) 2014 Measurement Specialties
-> > + *
-> > + * Licensed under the GPL-2.
-> > + *
-> > + * (7-bit I2C slave address 0x77)
-> > + *
-> > + */
-> > +
-> > +#include <linux/init.h>
-> > +#include <linux/device.h>
-> > +#include <linux/kernel.h>
-> > +#include <linux/stat.h>
-> > +#include <linux/module.h>
-> > +#include <linux/i2c.h>
-> > +#include <linux/iio/iio.h>
-> > +#include <linux/iio/sysfs.h>
-> > +#include <linux/jiffies.h>
-> > +#include <linux/delay.h>
-> > +#include <linux/mutex.h>
-> > +
-> > +/* MS5637 Commands */
-> > +#define MS5637_RESET                           (0x1E)
-> > +#define MS5637_TEMPERATURE_CONVERSION_START    (0x50)
-> > +#define MS5637_PRESSURE_CONVERSION_START       (0x40)
-> > +#define MS5637_ADC_READ                                (0x00)
-> > +#define MS5637_PROM_READ                       (0xA0)
-> > +#define MS5637_PROM_ELEMENTS_NB                 (7)
+Jonathan
+> ---
+>  drivers/iio/pressure/bmp280.c | 140 ++++++++++++++++--------------------------
+>  1 file changed, 52 insertions(+), 88 deletions(-)
 > 
-> I would prefer to remove "()" around hexa/decimal values.
-> 
-> > +
-> > +#define ATTR_RESET                             0
-> > +#define ATTR_RESOLUTION                                1
-
-MS5637_ prefix please
-
-> > +
-> > +static const u16 conversion_time[] = { 1000, 2000, 3000, 5000, 
-> > +9000, 17000 };
-
-ms5637_ prefix please
-
-> > +
-> > +struct ms5637_dev {
-> > +       struct i2c_client *client;
-> > +       struct mutex lock; /* mutex protecting this data structure */
-> > +       u16 calibration_coeffs[MS5637_PROM_ELEMENTS_NB];
-> > +       bool got_calibration_words;
-> > +       unsigned long last_update;
-> > +       bool valid;
-> > +       int temperature;
-> > +       unsigned int pressure;
-> > +       u8 resolution_index;
-> > +};
-> > +
-> > +static int ms5637_get_calibration_coeffs(struct ms5637_dev *dev_data,
-> > +                                        unsigned char index, u16 
-> > +*word) {
-> > +       int ret = 0;
-> > +
-> > +       ret = i2c_smbus_read_word_swapped(dev_data->client,
-> > +                                         MS5637_PROM_READ + (index << 1));
-> > +       if (ret < 0)
-> > +               return ret;
-> > +       *word = (u16) ret & 0xFFFF;
-> > +       return 0;
-> > +}
-> > +
-> > +static bool ms5637_crc_check(u16 *n_prom, u8 crc) {
-> > +       u8 cnt, n_bit;
-
-cnt should be unsigned int, it's just a counter should have the CPUs native size
-
-> > +       u16 n_rem, crc_read;
-> > +
-> > +       n_rem = 0x00;
-
-should be 0 or 0x0000 as n_rem is u16
-
-> > +       crc_read = n_prom[0];
-> > +       n_prom[MS5637_PROM_ELEMENTS_NB] = 0;
-> > +       n_prom[0] = (0x0FFF & (n_prom[0]));     /* Clear the CRC byte */
-
-remove extra parenthesis
-
-> > +
-> > +       for (cnt = 0; cnt < (MS5637_PROM_ELEMENTS_NB + 1) * 2; cnt++) {
-> > +               if (cnt % 2 == 1)
-> > +                       n_rem ^= n_prom[cnt >> 1] & 0x00FF;
-> > +               else
-> > +                       n_rem ^= n_prom[cnt >> 1] >> 8;
-> > +
-> > +               for (n_bit = 8; n_bit > 0; n_bit--) {
-> > +                       if (n_rem & 0x8000)
-> > +                               n_rem = (n_rem << 1) ^ 0x3000;
-> > +                       else
-> > +                               n_rem <<= 1;
-> > +               }
-> > +       }
-> > +       n_rem >>= 12;
-> > +       n_prom[0] = crc_read;
-> > +       return (n_rem == crc);
-> > +}
-> > +
-> > +static int ms5637_fill_calibration_coeffs(struct ms5637_dev 
-> > +*dev_data) {
-> > +       int i, ret = 0;
-> > +
-> > +       for (i = 0; i < MS5637_PROM_ELEMENTS_NB; i++) {
-> > +               ret = ms5637_get_calibration_coeffs(dev_data, i,
-> > +                               &dev_data->calibration_coeffs
-> > +                               [i]);
-
-linebreak looks weird before [i]
-
-> > +
-> > +               dev_dbg(&dev_data->client->dev, "Coeff %d : %d", i,
-> > +                       dev_data->calibration_coeffs[i]);
-
-debug output should be after validity check
-
-> > +
-> > +               if (ret < 0) {
-> > +                       dev_err(&dev_data->client->dev,
-> > +                               "unable to get calibration 
-> > + coefficients at address %d\n",
-
-Unable probably (uppercase all all other messages
-
-> > +                               i + 1);
-> > +                       return ret;
-> > +               }
-> > +       }
-> > +
-> > +       if (!ms5637_crc_check(dev_data->calibration_coeffs,
-> > +                             (dev_data->
-> > +                              calibration_coeffs[0] & 0xF000) >> 12)) {
-> > +               dev_err(&dev_data->client->dev,
-> > +                       "Calibration coefficients crc check error\n");
-> > +               return -1;
-> > +       }
-> > +
-> > +       return 0;
-> > +}
-> > +
-> > +static int ms5637_read_adc_value(struct ms5637_dev *dev_data, u32 
-> > +*adc_value) {
-> > +       int ret = 0;
-
-no need to initialize ret
-
-> > +       u8 buf[3];
-> > +
-> > +       ret =
-> > +           i2c_smbus_read_i2c_block_data(dev_data->client, MS5637_ADC_READ, 3,
-> > +                                         buf);
-> > +       if (ret < 0)
-> > +               return ret;
-> > +       dev_dbg(&dev_data->client->dev, "ADC raw value : %x %x %x\n", buf[0],
-> > +               buf[1], buf[2]);
-> > +       *adc_value = (buf[0] << 16) + (buf[1] << 8) + buf[0];
-> > +       return 0;
-> > +}
-> > +
-> > +static int ms5637_conversion_and_read_adc(struct ms5637_dev *dev_data,
-> > +                                         u32 *t_adc, u32 *p_adc) {
-> > +       int ret;
-> > +
-> > +       /* Trigger Temperature conversion */
-> > +       ret = i2c_smbus_write_byte(dev_data->client,
-> > +                                  MS5637_TEMPERATURE_CONVERSION_START
-> > +                                  + dev_data->resolution_index * 2);
-> > +       if (ret < 0)
-> > +               return ret;
-> > +       usleep_range(conversion_time[dev_data->resolution_index],
-> > +                    conversion_time[dev_data->resolution_index]+3000);
-> > +       /* Retrieve ADC value */
-> > +       ret = ms5637_read_adc_value(dev_data, t_adc);
-> > +
-> No check for ret here? If this is not needed then you can remove the 
-> above assignment.
-> 
-> > +       /* Trigger Pressure conversion */
-> > +       ret = i2c_smbus_write_byte(dev_data->client,
-> > +                                  MS5637_PRESSURE_CONVERSION_START
-> > +                                  + dev_data->resolution_index * 2);
-> > +       if (ret < 0)
-> > +               return ret;
-> > +       usleep_range(conversion_time[dev_data->resolution_index],
-> > +                    conversion_time[dev_data->resolution_index]+3000);
-> > +       /* Retrieve ADC value */
-> > +       ret = ms5637_read_adc_value(dev_data, p_adc);
-> > +
-> No new line here.
-> > +       if (ret < 0)
-> > +               return ret;
-> > +       return 0;
-> > +}
-> > +
-> > +static int ms5637_read_temperature_and_pressure(struct ms5637_dev 
-> > +*dev_data) {
-> > +       int ret = 0;
-> > +       u32 t_adc, p_adc;
-> > +       s32 dt, temp;
-> > +       s64 off, sens, t2, off2, sens2;
-> > +
-> > +       mutex_lock(&dev_data->lock);
-> > +
-> > +       if (time_after(jiffies, dev_data->last_update + HZ / 2) ||
-> > +           !dev_data->valid) {
-> > +               if (!dev_data->got_calibration_words) {
-> > +                       ret = ms5637_fill_calibration_coeffs(dev_data);
-> > +                       if (ret < 0)
-> > +                               goto out;
-> > +
-> > +                       dev_data->got_calibration_words = true;
-> > +               }
-> > +
-> > +               ret = ms5637_conversion_and_read_adc(dev_data, 
-> > + &t_adc, &p_adc);
-> > +
-remove blank line
-
-> > +               if (ret < 0) {
-> > +                       dev_data->got_calibration_words = false;
-> > +                       dev_err(&dev_data->client->dev,
-> > +                               "unable to make sensor adc conversion\n");
-> > +                       goto out;
-> > +               }
-> > +
-> > +               dt = (s32) t_adc - (dev_data->calibration_coeffs[5] 
-> > + << 8);
-> > +
-> > +               /* Actual temperature = 2000 + dT * TEMPSENS */
-> > +               temp =
-> > +                   2000 + (((s64) dt * 
-> > + dev_data->calibration_coeffs[6]) >> 23);
-> > +
-> > +               /* Second order temperature compensation */
-> > +               if (temp < 2000) {
-> > +                       s64 tmp = (s64) temp - 2000;
-> > +
-> > +                       t2 = (3 * ((s64) dt * (s64) dt)) >> 33;
-> > +                       off2 = (61 * tmp * tmp) >> 4;
-> > +                       sens2 = (29 * tmp * tmp) >> 4;
-> > +
-> > +                       if (temp < -1500) {
-> > +                               s64 tmp = (s64) temp + 1500;
-> > +
-> > +                               off2 += 17 * tmp * tmp;
-> > +                               sens2 += 9 * tmp * tmp;
-> > +                       }
-> > +               } else {
-> > +                       t2 = (5 * ((s64) dt * (s64) dt)) >> 38;
-> > +                       off2 = 0;
-> > +                       sens2 = 0;
-> > +               }
-> > +
-> > +               /* OFF = OFF_T1 + TCO * dT */
-> > +               off = (((s64) dev_data->calibration_coeffs[2]) << 17)
-> > +                   +
-> > +                   ((((s64) dev_data->calibration_coeffs[4]) * (s64) dt) >> 6);
-> > +               off -= off2;
-> > +
-> > +               /* Sensitivity at actual temperature = SENS_T1 + TCS * dT */
-> > +               sens = (((s64) dev_data->calibration_coeffs[1]) << 16)
-> > +                   + (((s64) dev_data->calibration_coeffs[3] * dt) >> 7);
-> > +               sens -= sens2;
-> > +
-> > +               /* Temperature compensated pressure = D1 * SENS - OFF */
-> > +               dev_data->temperature = (temp - t2) * 10;
-> > +               dev_data->pressure = (u32) (((((s64) p_adc * sens) >> 21)
-> > +                                            - off) >> 15) / 100;
-> > +
-> > +               dev_data->last_update = jiffies;
-> > +               dev_data->valid = true;
-> > +       }
-> > + out:
-> > +       mutex_unlock(&dev_data->lock);
-> > +
-> > +       return ret >= 0 ? 0 : ret;
-> > +}
-> > +
-> > +static int ms5637_read_raw(struct iio_dev *indio_dev,
-> > +                          struct iio_chan_spec const *channel, int *val,
-> > +                          int *val2, long mask) {
-> > +       int ret;
-> > +       struct ms5637_dev *dev_data = iio_priv(indio_dev);
-> > +
-> > +       switch (mask) {
-> > +       case IIO_CHAN_INFO_PROCESSED:
-> > +               switch (channel->type) {
-> > +               case IIO_TEMP:  /* in 0.001 °C */
-> > +                       ret = ms5637_read_temperature_and_pressure(dev_data);
-> > +                       if (ret)
-> > +                               goto t_err;
-> > +                       *val = dev_data->temperature;
-> > +                       break;
-> > +               case IIO_PRESSURE:      /* in mB */
-
-IIO wants kilopoascal
-
-> > +                       ret = ms5637_read_temperature_and_pressure(dev_data);
-> > +                       if (ret)
-> > +                               goto p_err;
-> > +                       *val = dev_data->pressure;
-> > +                       break;
-> > +               default:
-> > +                       return -EINVAL;
-> > +               }
-> > +               ret = IIO_VAL_INT;
-> > +               break;
-> > +       default:
-> > +               return -EINVAL;
-> > +       }
-> > +
-> > +       return ret;
-
-should simplify control flow a bit, just return instead of breaking, jumping
-
-is it really necesary to have two different error messages?
-could just code the call to ms5637_read_temperature_and_pressure() once
-
-> > + t_err:
-> > +       dev_err(&indio_dev->dev, "Temperature read error\n");
-> > +       return ret;
-> > + p_err:
-> > +       dev_err(&indio_dev->dev, "Pressure read error\n");
-> > +       return ret;
-> > +}
-> > +
-> > +static const struct iio_chan_spec ms5637_channels[] = {
-> > +       {
-> > +        .type = IIO_TEMP,
-> > +        .output = 1,
-> > +        .info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED),
-> > +        .scan_index = 0,
-> > +        },
-> > +       {
-> > +        .type = IIO_PRESSURE,
-> > +        .output = 1,
-
-output is for output channels, I guess the ms5637 cannot change the weather :)
-
-> > +        .info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED),
-> > +        .scan_index = 0,
-
-no need set the scan_index
-
-> > +        }
-> > +};
-> > +
-> > +static ssize_t ms5637_read_attr(struct device *dev,
-> > +                               struct device_attribute *attr, char 
-> > +*buf) {
-> > +       struct iio_dev *indio_dev = dev_to_iio_dev(dev);
-> > +       struct ms5637_dev *dev_data = iio_priv(indio_dev);
-> > +       struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
-> > +       int ret = 0;
-> > +
-> > +       switch (this_attr->address) {
-> > +       case ATTR_RESET:
-> > +               ret = sprintf(buf, "0\n");
-> > +               break;
-> > +       case ATTR_RESOLUTION:
-
-uhuh, private ABI
-maybe this could be modelled by IIO's integration time?
-
-> > +               ret = sprintf(buf, "%d\n", dev_data->resolution_index + 8);
-> > +               break;
-> > +       default:
-> > +               return -EINVAL;
-> > +       }
-> > +
-> > +       return ret;
-> > +}
-> > +
-> > +static ssize_t ms5637_write_attr(struct device *dev,
-> > +                                struct device_attribute *attr,
-> > +                                const char *buf, size_t len) {
-> > +       struct iio_dev *indio_dev = dev_to_iio_dev(dev);
-> > +       struct ms5637_dev *dev_data = iio_priv(indio_dev);
-> > +       struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
-> > +       u8 val;
-> > +       int ret;
-> > +
-> > +       ret = kstrtou8(buf, 10, &val);
-> > +       if (ret)
-> > +               return ret;
-> > +
-> > +       mutex_lock(&dev_data->lock);
-> > +       switch (this_attr->address) {
-> > +       case ATTR_RESET:
-> > +               if (val != 1)
-> > +                       goto einval;
-> > +
-> > +               ret = i2c_smbus_write_byte(dev_data->client, MS5637_RESET);
-> > +               if (ret < 0)
-> > +                       goto out;
-> > +               usleep_range(3000, 6000);
-> > +
-> > +               break;
-> > +       case ATTR_RESOLUTION:
-> > +               if ((val < 8) || (val > 13))
-> > +                       goto einval;
-> > +               dev_data->resolution_index = val - 8;
-> > +               break;
-> > +       default:
-> > +               goto einval;
-> > +       }
-> > +
-> > +       dev_data->valid = false;
-> > +       goto out;
-> > + einval:
-> > +       ret = -EINVAL;
-> > + out:
-> > +       mutex_unlock(&dev_data->lock);
-> > +
-> > +       return ret ? ret : len;
-> > +}
-> > +
-> > +static IIO_DEVICE_ATTR(in_reset,
-> > +                      S_IRUGO | S_IWUSR,
-> > +                      ms5637_read_attr, ms5637_write_attr, 
-> > +ATTR_RESET); static IIO_DEVICE_ATTR(in_resolution,
-> > +                      S_IRUGO | S_IWUSR,
-> > +                      ms5637_read_attr, ms5637_write_attr, 
-> > +ATTR_RESOLUTION); static IIO_CONST_ATTR(resolution_available, "8 9 
-> > +10 11 12 13");
-> > +
-> > +static struct attribute *ms5637_attributes[] = {
-> > +       &iio_dev_attr_in_reset.dev_attr.attr,
-> > +       &iio_dev_attr_in_resolution.dev_attr.attr,
-> > +       &iio_const_attr_resolution_available.dev_attr.attr,
-> > +       NULL,
-> > +};
-> > +
-> > +static const struct attribute_group ms5637_attribute_group = {
-> > +       .attrs = ms5637_attributes,
-> > +};
-> > +
-> > +static const struct iio_info ms5637_info = {
-> > +       .read_raw = ms5637_read_raw,
-> > +       .attrs = &ms5637_attribute_group,
-> > +       .driver_module = THIS_MODULE, };
-> > +
-> > +static int ms5637_probe(struct i2c_client *client,
-> > +                       const struct i2c_device_id *id) {
-> > +       struct ms5637_dev *dev_data;
-> > +       struct iio_dev *indio_dev;
-> > +       int ret;
-> > +
-> > +       if (!i2c_check_functionality(client->adapter,
-> > +                                    I2C_FUNC_SMBUS_READ_WORD_DATA)) {
-> > +               dev_err(&client->dev,
-> > +                       "adapter does not support SMBus read word transactions\n");
-> > +               return -ENODEV;
-> > +       }
-> > +
-> > +       if (!i2c_check_functionality(client->adapter,
-> > +                                    I2C_FUNC_SMBUS_WRITE_BYTE)) {
-> > +               dev_err(&client->dev,
-> > +                       "adapter does not support SMBus write byte transactions\n");
-> > +               return -ENODEV;
-> > +       }
-> > +
-> > +       if (!i2c_check_functionality(client->adapter,
-> > +                                    I2C_FUNC_SMBUS_READ_I2C_BLOCK)) {
-> > +               dev_err(&client->dev,
-> > +                       "adapter does not support SMBus read block transactions\n");
-> > +               return -ENODEV;
-> > +       }
-> > +
-> > +       indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*dev_data));
-> > +       if (!indio_dev)
-> > +               return -ENOMEM;
-> > +
-> > +       dev_data = iio_priv(indio_dev);
-> > +       dev_data->client = client;
-> > +       mutex_init(&dev_data->lock);
-> > +
-> > +       indio_dev->info = &ms5637_info;
-> > +       indio_dev->name = id->name;
-> > +       indio_dev->dev.parent = &client->dev;
-> > +       indio_dev->modes = INDIO_DIRECT_MODE;
-> > +       indio_dev->channels = ms5637_channels;
-> > +       indio_dev->num_channels = ARRAY_SIZE(ms5637_channels);
-> > +
-> > +       i2c_set_clientdata(client, indio_dev);
-> > +       ret = iio_device_register(indio_dev);
-> > +       if (ret < 0)
-> > +               return ret;
-> > +
-> > +       ret = i2c_smbus_write_byte(client, MS5637_RESET);
-
-I'd rather do this before iio_device_register() -- what happens when it fails? there is no unregister()
-
-> > +       if (ret < 0)
-> > +               return ret;
-> > +       usleep_range(3000, 6000);
-> > +
-> > +       ret = ms5637_fill_calibration_coeffs(dev_data);
-> > +       if (ret == 0)
-> > +               dev_data->got_calibration_words = true;
-> > +
-> > +       if (ret < 0)
-> > +               return ret;
-> > +
-> > +       dev_dbg(&client->dev, "Driver initialization done");
-> > +       return 0;
-> > +}
-> > +
-> > +static int ms5637_remove(struct i2c_client *client) {
-> > +       struct iio_dev *indio_dev = i2c_get_clientdata(client);
-> > +
-> > +       iio_device_unregister(indio_dev);
-> > +
-> > +       return 0;
-> > +}
-> > +
-> > +static const struct i2c_device_id ms5637_id[] = {
-> > +       {"ms5637", 0},
-> > +       {}
-> > +};
-> > +
-> > +static struct i2c_driver ms5637_driver = {
-> > +       .probe = ms5637_probe,
-> > +       .remove = ms5637_remove,
-> > +       .id_table = ms5637_id,
-> > +       .driver = {
-> > +                  .name = "ms5637",
-> > +                  .owner = THIS_MODULE,
-> > +                  },
-> > +};
-> > +
-> > +module_i2c_driver(ms5637_driver);
-> > +
-> > +MODULE_LICENSE("GPL");
-> > +MODULE_DESCRIPTION("Measurement Specialties MS5637 temperature 
-> > +driver"); MODULE_AUTHOR("William Markezana 
-> > +<william.markezana@meas-spec.com>");
-> > +MODULE_AUTHOR("Ludovic Tancerel 
-> > +<ludovic.tancerel@maplehightech.com>");
-> > diff --git a/drivers/staging/iio/Documentation/pressure/ms5637 
-> > b/drivers/staging/iio/Documentation/pressure/ms5637
-> > new file mode 100644
-> > index 0000000..d0d64f3
-> > --- /dev/null
-> > +++ b/drivers/staging/iio/Documentation/pressure/ms5637
-> > @@ -0,0 +1,25 @@
-> > +Kernel driver ms5637
-> > +====================
-> > +
-> > +Supported chips:
-> > +  * Measurement Specialties MS5637
-> > +    Prefix: 'ms5637'
-> > +    Addresses scanned: I2C 0x76
-
-0x77 is claimed at the top of ms5637.c
-
-> > +    Datasheet: Available for download on meas-spec.com
-> > +
-> > +Authors:
-> > +    William Markezana (Meas-Spec) <william.markezana@meas-spec.com>
-> > +    Ludovic Tancerel <ludovic.tancerel@maplehightech.com>
-> > +
-> > +Description
-> > +-----------
-> > +
-> > +The MS5637 is a single chip pressure & temperature sensor.
-> > +The driver returns a milli-bar pressure value and a milli-degre 
-> > +celius value using the iio framework
-
-degree; the information so far is redundant
-
-> > +
-> > +Via the iio sysfs interface, there are several attributes available.
-> > +in_reset - Reset ms5637 device by writing a 1 in it.
-> > +in_resolution - Set the number of bits for ADC resolution.
-> > +out_pressure_input - Current pressure from ms5637 sensor 
-> > +(milli-bar) out_temp_input - Current temperature from htu21 sensor 
-> > +(milli-°C value) resolution_available - List of resolutions 
-> > +supported
-
-in_, not out_
-
-regular IIO channels (integration time?) could/should be used
-
-I don't know about reset, needed?
-
-private ABI should go to documentation/ABI/testing/sysfs-bus-iio-*
-
-> > --
-> > 1.7.9.5
-> >
-> > --
-> > To unsubscribe from this list: send the line "unsubscribe 
-> > linux-kernel" in the body of a message to majordomo@vger.kernel.org 
-> > More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> > Please read the FAQ at  http://www.tux.org/lkml/
-> --
-> To unsubscribe from this list: send the line "unsubscribe 
-> linux-kernel" in the body of a message to majordomo@vger.kernel.org 
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> Please read the FAQ at  http://www.tux.org/lkml/
+> diff --git a/drivers/iio/pressure/bmp280.c b/drivers/iio/pressure/bmp280.c
+> index 75038da..47dfd34 100644
+> --- a/drivers/iio/pressure/bmp280.c
+> +++ b/drivers/iio/pressure/bmp280.c
+> @@ -80,16 +80,12 @@ struct bmp280_data {
+>  	s32 t_fine;
+>  };
+>  
+> -/* Compensation parameters. */
+> -struct bmp280_comp_temp {
+> -	u16 dig_t1;
+> -	s16 dig_t2, dig_t3;
+> -};
+> -
+> -struct bmp280_comp_press {
+> -	u16 dig_p1;
+> -	s16 dig_p2, dig_p3, dig_p4, dig_p5, dig_p6, dig_p7, dig_p8, dig_p9;
+> -};
+> +/*
+> + * These enums are used for indexing into the array of compensation
+> + * parameters.
+> + */
+> +enum { T1, T2, T3 };
+> +enum { P1, P2, P3, P4, P5, P6, P7, P8, P9 };
+>  
+>  static const struct iio_chan_spec bmp280_channels[] = {
+>  	{
+> @@ -141,54 +137,6 @@ static const struct regmap_config bmp280_regmap_config = {
+>  	.volatile_reg = bmp280_is_volatile_reg,
+>  };
+>  
+> -static int bmp280_read_compensation_temp(struct bmp280_data *data,
+> -					 struct bmp280_comp_temp *comp)
+> -{
+> -	int ret;
+> -	__le16 buf[BMP280_COMP_TEMP_REG_COUNT / 2];
+> -
+> -	ret = regmap_bulk_read(data->regmap, BMP280_REG_COMP_TEMP_START,
+> -			       buf, BMP280_COMP_TEMP_REG_COUNT);
+> -	if (ret < 0) {
+> -		dev_err(&data->client->dev,
+> -			"failed to read temperature calibration parameters\n");
+> -		return ret;
+> -	}
+> -
+> -	comp->dig_t1 = (u16) le16_to_cpu(buf[0]);
+> -	comp->dig_t2 = (s16) le16_to_cpu(buf[1]);
+> -	comp->dig_t3 = (s16) le16_to_cpu(buf[2]);
+> -
+> -	return 0;
+> -}
+> -
+> -static int bmp280_read_compensation_press(struct bmp280_data *data,
+> -					  struct bmp280_comp_press *comp)
+> -{
+> -	int ret;
+> -	__le16 buf[BMP280_COMP_PRESS_REG_COUNT / 2];
+> -
+> -	ret = regmap_bulk_read(data->regmap, BMP280_REG_COMP_PRESS_START,
+> -			       buf, BMP280_COMP_PRESS_REG_COUNT);
+> -	if (ret < 0) {
+> -		dev_err(&data->client->dev,
+> -			"failed to read pressure calibration parameters\n");
+> -		return ret;
+> -	}
+> -
+> -	comp->dig_p1 = (u16) le16_to_cpu(buf[0]);
+> -	comp->dig_p2 = (s16) le16_to_cpu(buf[1]);
+> -	comp->dig_p3 = (s16) le16_to_cpu(buf[2]);
+> -	comp->dig_p4 = (s16) le16_to_cpu(buf[3]);
+> -	comp->dig_p5 = (s16) le16_to_cpu(buf[4]);
+> -	comp->dig_p6 = (s16) le16_to_cpu(buf[5]);
+> -	comp->dig_p7 = (s16) le16_to_cpu(buf[6]);
+> -	comp->dig_p8 = (s16) le16_to_cpu(buf[7]);
+> -	comp->dig_p9 = (s16) le16_to_cpu(buf[8]);
+> -
+> -	return 0;
+> -}
+> -
+>  /*
+>   * Returns temperature in DegC, resolution is 0.01 DegC.  Output value of
+>   * "5123" equals 51.23 DegC.  t_fine carries fine temperature as global
+> @@ -197,16 +145,33 @@ static int bmp280_read_compensation_press(struct bmp280_data *data,
+>   * Taken from datasheet, Section 3.11.3, "Compensation formula".
+>   */
+>  static s32 bmp280_compensate_temp(struct bmp280_data *data,
+> -				  struct bmp280_comp_temp *comp,
+>  				  s32 adc_temp)
+>  {
+> +	int ret;
+>  	s32 var1, var2, t;
+> +	__le16 buf[BMP280_COMP_TEMP_REG_COUNT / 2];
+> +
+> +	ret = regmap_bulk_read(data->regmap, BMP280_REG_COMP_TEMP_START,
+> +			       buf, BMP280_COMP_TEMP_REG_COUNT);
+> +	if (ret < 0) {
+> +		dev_err(&data->client->dev,
+> +			"failed to read temperature calibration parameters\n");
+> +		return ret;
+> +	}
+>  
+> -	var1 = (((adc_temp >> 3) - ((s32) comp->dig_t1 << 1)) *
+> -		((s32) comp->dig_t2)) >> 11;
+> -	var2 = (((((adc_temp >> 4) - ((s32) comp->dig_t1)) *
+> -		  ((adc_temp >> 4) - ((s32) comp->dig_t1))) >> 12) *
+> -		((s32) comp->dig_t3)) >> 14;
+> +	/*
+> +	 * The double casts are necessary because le16_to_cpu returns an
+> +	 * unsigned 16-bit value.  Casting that value directly to a
+> +	 * signed 32-bit will not do proper sign extension.
+> +	 *
+> +	 * Conversely, T1 and P1 are unsigned values, so they can be
+> +	 * cast straight to the larger type.
+> +	 */
+> +	var1 = (((adc_temp >> 3) - ((s32)le16_to_cpu(buf[T1]) << 1)) *
+> +		((s32)(s16)le16_to_cpu(buf[T2]))) >> 11;
+> +	var2 = (((((adc_temp >> 4) - ((s32)le16_to_cpu(buf[T1]))) *
+> +		  ((adc_temp >> 4) - ((s32)le16_to_cpu(buf[T1])))) >> 12) *
+> +		((s32)(s16)le16_to_cpu(buf[T3]))) >> 14;
+>  
+>  	data->t_fine = var1 + var2;
+>  	t = (data->t_fine * 5 + 128) >> 8;
+> @@ -222,27 +187,36 @@ static s32 bmp280_compensate_temp(struct bmp280_data *data,
+>   * Taken from datasheet, Section 3.11.3, "Compensation formula".
+>   */
+>  static u32 bmp280_compensate_press(struct bmp280_data *data,
+> -				   struct bmp280_comp_press *comp,
+>  				   s32 adc_press)
+>  {
+> +	int ret;
+>  	s64 var1, var2, p;
+> +	__le16 buf[BMP280_COMP_PRESS_REG_COUNT / 2];
+> +
+> +	ret = regmap_bulk_read(data->regmap, BMP280_REG_COMP_PRESS_START,
+> +			       buf, BMP280_COMP_PRESS_REG_COUNT);
+> +	if (ret < 0) {
+> +		dev_err(&data->client->dev,
+> +			"failed to read pressure calibration parameters\n");
+> +		return ret;
+> +	}
+>  
+> -	var1 = ((s64) data->t_fine) - 128000;
+> -	var2 = var1 * var1 * (s64) comp->dig_p6;
+> -	var2 = var2 + ((var1 * (s64) comp->dig_p5) << 17);
+> -	var2 = var2 + (((s64) comp->dig_p4) << 35);
+> -	var1 = ((var1 * var1 * (s64) comp->dig_p3) >> 8) +
+> -		((var1 * (s64) comp->dig_p2) << 12);
+> -	var1 = (((((s64) 1) << 47) + var1)) * ((s64) comp->dig_p1) >> 33;
+> +	var1 = ((s64)data->t_fine) - 128000;
+> +	var2 = var1 * var1 * (s64)(s16)le16_to_cpu(buf[P6]);
+> +	var2 = var2 + ((var1 * (s64)(s16)le16_to_cpu(buf[P5])) << 17);
+> +	var2 = var2 + (((s64)(s16)le16_to_cpu(buf[P4])) << 35);
+> +	var1 = ((var1 * var1 * (s64)(s16)le16_to_cpu(buf[P3])) >> 8) +
+> +		((var1 * (s64)(s16)le16_to_cpu(buf[P2])) << 12);
+> +	var1 = ((((s64)1) << 47) + var1) * ((s64)le16_to_cpu(buf[P1])) >> 33;
+>  
+>  	if (var1 == 0)
+>  		return 0;
+>  
+> -	p = ((((s64) 1048576 - adc_press) << 31) - var2) * 3125;
+> +	p = ((((s64)1048576 - adc_press) << 31) - var2) * 3125;
+>  	p = div64_s64(p, var1);
+> -	var1 = (((s64) comp->dig_p9) * (p >> 13) * (p >> 13)) >> 25;
+> -	var2 = (((s64) comp->dig_p8) * p) >> 19;
+> -	p = ((p + var1 + var2) >> 8) + (((s64) comp->dig_p7) << 4);
+> +	var1 = (((s64)(s16)le16_to_cpu(buf[P9])) * (p >> 13) * (p >> 13)) >> 25;
+> +	var2 = (((s64)(s16)le16_to_cpu(buf[P8])) * p) >> 19;
+> +	p = ((p + var1 + var2) >> 8) + (((s64)(s16)le16_to_cpu(buf[P7])) << 4);
+>  
+>  	return (u32) p;
+>  }
+> @@ -253,11 +227,6 @@ static int bmp280_read_temp(struct bmp280_data *data,
+>  	int ret;
+>  	__be32 tmp = 0;
+>  	s32 adc_temp, comp_temp;
+> -	struct bmp280_comp_temp comp;
+> -
+> -	ret = bmp280_read_compensation_temp(data, &comp);
+> -	if (ret < 0)
+> -		return ret;
+>  
+>  	ret = regmap_bulk_read(data->regmap, BMP280_REG_TEMP_MSB,
+>  			       (u8 *) &tmp, 3);
+> @@ -267,7 +236,7 @@ static int bmp280_read_temp(struct bmp280_data *data,
+>  	}
+>  
+>  	adc_temp = be32_to_cpu(tmp) >> 12;
+> -	comp_temp = bmp280_compensate_temp(data, &comp, adc_temp);
+> +	comp_temp = bmp280_compensate_temp(data, adc_temp);
+>  
+>  	/*
+>  	 * val might be NULL if we're called by the read_press routine,
+> @@ -288,11 +257,6 @@ static int bmp280_read_press(struct bmp280_data *data,
+>  	__be32 tmp = 0;
+>  	s32 adc_press;
+>  	u32 comp_press;
+> -	struct bmp280_comp_press comp;
+> -
+> -	ret = bmp280_read_compensation_press(data, &comp);
+> -	if (ret < 0)
+> -		return ret;
+>  
+>  	/* Read and compensate temperature so we get a reading of t_fine. */
+>  	ret = bmp280_read_temp(data, NULL);
+> @@ -307,7 +271,7 @@ static int bmp280_read_press(struct bmp280_data *data,
+>  	}
+>  
+>  	adc_press = be32_to_cpu(tmp) >> 12;
+> -	comp_press = bmp280_compensate_press(data, &comp, adc_press);
+> +	comp_press = bmp280_compensate_press(data, adc_press);
+>  
+>  	*val = comp_press;
+>  	*val2 = 256000;
 > 
 
--- 
-
-Peter Meerwald
-+43-664-2444418 (mobile)
