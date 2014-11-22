@@ -1,129 +1,53 @@
-Return-Path: <knaack.h@gmx.de>
-Message-ID: <5461462F.5040500@gmx.de>
-Date: Tue, 11 Nov 2014 00:11:43 +0100
-From: Hartmut Knaack <knaack.h@gmx.de>
-MIME-Version: 1.0
-To: Vlad Dogaru <vlad.dogaru@intel.com>,
- Jonathan Cameron <jic23@kernel.org>
-CC: IIO <linux-iio@vger.kernel.org>
-Subject: Re: [PATCH 3/3]iio:pressure:bmp280: read compensation data only at init
-References: <5452E502.6060609@gmx.de> <20141031114709.GC24473@vdogaru> <5453E00B.7080703@gmx.de> <545A47F0.8040808@kernel.org> <20141106130253.GD24473@vdogaru>
-In-Reply-To: <20141106130253.GD24473@vdogaru>
-Content-Type: text/plain; charset=ISO-8859-1
+Return-Path: <conflatulence@gmail.com>
+From: Zachary Warren <conflatulence@gmail.com>
+To: jic23@kernel.org
+Cc: linux-iio@vger.kernel.org,
+	Zachary Warren <conflatulence@gmail.com>
+Subject: [PATCH] drivers:staging:iio: fix checkpatch complaint about space before comma
+Date: Sat, 22 Nov 2014 22:19:31 +1100
+Message-Id: <1416655171-10455-1-git-send-email-conflatulence@gmail.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-Vlad Dogaru schrieb am 06.11.2014 14:02:
-> On Wed, Nov 05, 2014 at 03:53:20PM +0000, Jonathan Cameron wrote:
->> On 31/10/14 19:16, Hartmut Knaack wrote:
->>> Vlad Dogaru schrieb am 31.10.2014 12:47:
->>>> On Fri, Oct 31, 2014 at 02:25:22AM +0100, Hartmut Knaack wrote:
->>>>> Compensation data is hard coded into the sensors, so it is sufficient to just
->>>>> read it once during device initialization. Therefor struct bmp280_comp should be
->>>>> part of bmp280_data (since the elements of bmp280_comp_temp and
->>>>> bmp280_comp_press have distinct names, they could be merged into bmp280_comp).
->>>>
->>>> My first version of the patch did this, but Jonathan suggested [1] that,
->>>> since we're using regmap, we can rely on it for caching the calibration
->>>> parameters.  I have no preference for either approach.
->>>>
->>> Indeed, I missed to have a closer look at that version, as I discarded it when your second or third version came out.
->>> So, one question remaining is, if your implementation was, what Jonathan had in mind when he gave the hint about using the regmap cache. I mainly see the disadvantage of copying to the buffer and from there to the variables (and depending on endianness even a conversion) for every single measurement.
->> Gah.  Now I have to remember what I was thinking!
->>
->> Anyhow, I just didn't much like the double cache of these values.
->> The little endian conversions are pretty trivial...
->> The code only ended up a little involved because of the
->> structures to pass this data around.  Why not just have an enum saying what
->> data is where and pass the buffer.  Then do the little endian on demand and
->> let the compiler filter out the repeats?
->>
->> So combine bmp280_read_compensation_press and bmp280_compensate_press
->> to something like...
->> enum {
->> 	P1,
->> 	P2,
->> 	P3,
->> 	P4,
->> 	P5,
->> 	P6,
->> 	P7,
->> 	P8,
->> 	P9
->> }; // a rare occasion where maybe all on one line would be good ;)
->>
->> int bmp280_compensate_press(struct bmp280_data *data)
->> {
->> 	__le16 buf[BMP280_COMP_PRESS_REG_COUNT / 2];
->> 	s64 var1, var2, p;
->>
->> 	ret = regmap_bulk_read(data->regmap, BMP280_REG_COMP_PRESS_START,
->> 			       buf, BMP280_COMP_PRESS_REG_COUNT);
->> 	if (ret < 0) {
->> 		dev_err(&data->client->dev,
->> 			"failed to read pressure calibration parameters\n");
->> 		return ret;
->> 	}
->>
->> 	var1 = ((s64) data->t_fine) - 128000;
->> 	var2 = var1 * var1 * (s64) le16_to_cpu(buf[P6]);
->> 	var2 = var2 + ((var1 * (s64) le16_to_cpu(buf[P5])) << 17);
->> 	var2 = var2 + (((s64) le16_to_cpu(buf[P4])) << 35);
->> 	var1 = ((var1 * var1 * (s64) le16_to_cpu(buf[P3])) >> 8) +
->> 		((var1 * (s64) le16_to_cpu(buf[P2])) << 12);
->> 	var1 = (((((s64) 1) << 47) + var1)) * ((s64) le16_to_cpu(buf[P1])) >> 33;
->>
->> 	if (var1 == 0)
->> 		return 0;
->>
->> 	p = ((((s64) 1048576 - adc_press) << 31) - var2) * 3125;
->> 	p = div64_s64(p, var1);
->> 	var1 = (((s64) le16_to_cpu(buf[P9]) * (p >> 13) * (p >> 13)) >> 25;
->> 	var2 = (((s64) le16_to_cpu[buf[P8]) * p) >> 19;
->> 	p = ((p + var1 + var2) >> 8) + (((s64) le16_to_cpu(buf[P7])) << 4);
->>
->> 	return (u32) p;
->> }
->>
->> Just a thought.  I was never terribly fussed about this other than disliking
->> data duplication!
->>>> [1] http://www.spinics.net/lists/linux-iio/msg15099.html
-> 
-> I don't think the enum helps readability too much here.  At least it
-> doesn't help me :)
-> 
-> How about reading data straight to the (packed) calibration struct and
-> doing the endinanness conversions inline?  Something like this:
-> 
-> int bmp280_compensate_press(struct bmp280_data *data)
-> {
-> 	struct bmp280_comp_press comp;
-> 	s64 var1, var2, p;
-> 
-> 	ret = regmap_bulk_read(data->regmap, BMP280_REG_COMP_PRESS_START,
-> 			       &comp, sizeof (comp));
-> 	if (ret < 0) {
-> 		dev_err(&data->client->dev,
-> 			"failed to read pressure calibration parameters\n");
-> 		return ret;
-> 	}
-> 
-> 	var1 = ((s64) data->t_fine) - 128000;
-> 	var2 = var1 * var1 * (s64) le16_to_cpu(comp.dig_p6);
-> 	var2 = var2 + ((var1 * (s64) le16_to_cpu(comp.dig_p5)) << 17);
-> 
-> 	/* etc */
-> 
-> This saves us the extra copying of parameters from buffer to structure,
-> and is a bit more clear than indexing the buffer with enum members, IMO.
-> 
-> Thanks,
-> Vlad
-I compile tested several solutions, and Jonathans' resulted in the lowest module size. Downside of course are the increased complexity of the equations introduced by the endianness conversion and that copying from regmap cache to buf costs some resources.
-But I think that memory footprint has a higher importance, so I slightly favor Jonathans solution.
+Fixes:
+drivers/staging/iio/adc/ad7192.c:615: ERROR: space prohibited before that ','
+drivers/staging/iio/meter/ade7759.c:119: ERROR: space prohibited before that ','
 
-Jonathan, do you like to send a patch with your solution?
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> 
+Signed-off-by: Zachary Warren <conflatulence@gmail.com>
+---
+
+This is for Eudyptula Challenge Task 10 which requires sending a checkpatch
+fix in linux-next drivers/staging to a maintainer and public mailing list.
+Apologies for mistakes and any inconvenience.
+
+ drivers/staging/iio/adc/ad7192.c    | 2 +-
+ drivers/staging/iio/meter/ade7759.c | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/staging/iio/adc/ad7192.c b/drivers/staging/iio/adc/ad7192.c
+index f6526aa..6f8ce6c 100644
+--- a/drivers/staging/iio/adc/ad7192.c
++++ b/drivers/staging/iio/adc/ad7192.c
+@@ -612,7 +612,7 @@ static int ad7192_probe(struct spi_device *spi)
+ 	const struct ad7192_platform_data *pdata = spi->dev.platform_data;
+ 	struct ad7192_state *st;
+ 	struct iio_dev *indio_dev;
+-	int ret , voltage_uv = 0;
++	int ret, voltage_uv = 0;
+ 
+ 	if (!pdata) {
+ 		dev_err(&spi->dev, "no platform data?\n");
+diff --git a/drivers/staging/iio/meter/ade7759.c b/drivers/staging/iio/meter/ade7759.c
+index 7d21743..b0c7dbc 100644
+--- a/drivers/staging/iio/meter/ade7759.c
++++ b/drivers/staging/iio/meter/ade7759.c
+@@ -116,7 +116,7 @@ static int ade7759_spi_read_reg_40(struct device *dev,
+ 
+ 	mutex_lock(&st->buf_lock);
+ 	st->tx[0] = ADE7759_READ_REG(reg_address);
+-	memset(&st->tx[1], 0 , 5);
++	memset(&st->tx[1], 0, 5);
+ 
+ 	ret = spi_sync_transfer(st->us, xfers, ARRAY_SIZE(xfers));
+ 	if (ret) {
+-- 
+2.1.0
