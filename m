@@ -1,35 +1,29 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mout.gmx.net ([212.227.15.15]:51247 "EHLO mout.gmx.net"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751575AbaKVUd4 convert rfc822-to-8bit (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 22 Nov 2014 15:33:56 -0500
-Message-ID: <5470F329.70007@gmx.de>
-Date: Sat, 22 Nov 2014 21:33:45 +0100
-From: Hartmut Knaack <knaack.h@gmx.de>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:42563 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750717AbaKVUnI (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 22 Nov 2014 15:43:08 -0500
+Message-ID: <5470F556.3030405@kernel.org>
+Date: Sat, 22 Nov 2014 20:43:02 +0000
+From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Jonathan Cameron <jic23@kernel.org>,
+To: Hartmut Knaack <knaack.h@gmx.de>,
 	Vlad Dogaru <vlad.dogaru@intel.com>, linux-iio@vger.kernel.org
 Subject: Re: [PATCH] iio: bmp280: refactor compensation code
-References: <20141117151621.GF6904@vdogaru> <1416484848-21889-1-git-send-email-vlad.dogaru@intel.com> <54707C21.70400@kernel.org>
-In-Reply-To: <54707C21.70400@kernel.org>
-Content-Type: text/plain; charset=windows-1252
+References: <20141117151621.GF6904@vdogaru> <1416484848-21889-1-git-send-email-vlad.dogaru@intel.com> <5470F1AA.5040802@gmx.de>
+In-Reply-To: <5470F1AA.5040802@gmx.de>
+Content-Type: text/plain; charset=iso-8859-15
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Jonathan Cameron schrieb am 22.11.2014 13:05:
-> On 20/11/14 12:00, Vlad Dogaru wrote:
+On 22/11/14 20:27, Hartmut Knaack wrote:
+> Vlad Dogaru schrieb am 20.11.2014 13:00:
 >> This version of the code avoids extra memory copy operations and is
 >> somewhat smaller in code size.
 >>
 >> Signed-off-by: Vlad Dogaru <vlad.dogaru@intel.com>
-> Thanks for doing this - I'm happy with the result, but would like to 
-> let Hartmut have a few days to take a look if he wants to so will
-> let it sit on the list for now.
-Good solution. So, as soon as this one gets applied, I will rebase and resend my cleanup patch.
->
-> Thanks,
->
-> Jonathan
+> Acked-by: Hartmut Knaack <knaack.h@gmx.de>
+Applied to the togreg branch of iio.git.
 >> ---
 >>  drivers/iio/pressure/bmp280.c | 140 ++++++++++++++++--------------------------
 >>  1 file changed, 52 insertions(+), 88 deletions(-)
@@ -248,10 +242,5 @@ Good solution. So, as soon as this one gets applied, I will rebase and resend my
 >>  	*val = comp_press;
 >>  	*val2 = 256000;
 >>
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
->
-
+> 
 
