@@ -1,49 +1,38 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pd0-f177.google.com ([209.85.192.177]:47072 "EHLO
-	mail-pd0-f177.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753858AbaKHR0Y (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 8 Nov 2014 12:26:24 -0500
-From: Darshana Padmadas <darshanapadmadas@gmail.com>
-To: devicetree@vger.kernel.org
-Cc: devel@driverdev.osuosl.org, linux-arm-kernel@lists.infradead.org,
-	linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-	opw-kernel@googlegroups.com,
-	Darshana Padmadas <darshanapadmadas@gmail.com>
-Subject: [PATCH v5 3/4] Staging: iio: light: Added correct vendor-prefix for device isl29028
-Date: Sat,  8 Nov 2014 22:52:07 +0530
-Message-Id: <1415467328-9745-4-git-send-email-darshanapadmadas@gmail.com>
-In-Reply-To: <1415467328-9745-1-git-send-email-darshanapadmadas@gmail.com>
-References: <1415467328-9745-1-git-send-email-darshanapadmadas@gmail.com>
-Content-Type: text/plain; charset="utf-8"
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <knaack.h@gmx.de>
+Message-ID: <546FE632.6020803@gmx.de>
+Date: Sat, 22 Nov 2014 02:26:10 +0100
+From: Hartmut Knaack <knaack.h@gmx.de>
+MIME-Version: 1.0
+To: Fabian Frederick <fabf@skynet.be>, linux-kernel@vger.kernel.org
+CC: Jonathan Cameron <jic23@kernel.org>,
+ Lars-Peter Clausen <lars@metafoo.de>,
+ Peter Meerwald <pmeerw@pmeerw.net>, linux-iio@vger.kernel.org
+Subject: Re: [PATCH 1/1 linux-next] iio: common: remove unnecessary sizeof(u8)
+References: <1416141204-19989-1-git-send-email-fabf@skynet.be>
+In-Reply-To: <1416141204-19989-1-git-send-email-fabf@skynet.be>
+Content-Type: text/plain; charset=ISO-8859-15
+List-ID: <linux-iio@vger.kernel.org>
 
-This patch adds the correct vendor-prefix for device isl29028 and
-maintains deprecated vendor-prefix found by checkpatch warning
-for older kernel releases.
-
-Signed-off-by: Darshana Padmadas <darshanapadmadas@gmail.com>
-Acked-by: Arnd Bergmann <arnd@arndb.de>
-Acked-by: Mark Rutland <mark.rutland@arm.com>
-Acked-by: Jonathan Cameron <jic23@kernel.org>
----
- drivers/staging/iio/light/isl29028.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/staging/iio/light/isl29028.c b/drivers/staging/iio/light/isl29028.c
-index 6014625..e969107 100644
---- a/drivers/staging/iio/light/isl29028.c
-+++ b/drivers/staging/iio/light/isl29028.c
-@@ -537,7 +537,8 @@ static const struct i2c_device_id isl29028_id[] = {
- MODULE_DEVICE_TABLE(i2c, isl29028_id);
- 
- static const struct of_device_id isl29028_of_match[] = {
--	{ .compatible = "isil,isl29028", },
-+	{ .compatible = "isl,isl29028", },
-+	{ .compatible = "isil,isl29028", },/* deprecated, don't use */
- 	{ },
- };
- MODULE_DEVICE_TABLE(of, isl29028_of_match);
--- 
-1.9.1
-
+Fabian Frederick schrieb am 16.11.2014 13:33:
+> sizeof(u8) is always 1.
+> 
+> Signed-off-by: Fabian Frederick <fabf@skynet.be>
+Acked-by: Hartmut Knaack <knaack.h@gmx.de>
+> ---
+>  drivers/iio/common/st_sensors/st_sensors_spi.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/iio/common/st_sensors/st_sensors_spi.c b/drivers/iio/common/st_sensors/st_sensors_spi.c
+> index 78a6a1a..5b37737 100644
+> --- a/drivers/iio/common/st_sensors/st_sensors_spi.c
+> +++ b/drivers/iio/common/st_sensors/st_sensors_spi.c
+> @@ -54,7 +54,7 @@ static int st_sensors_spi_read(struct st_sensor_transfer_buffer *tb,
+>  	if (err)
+>  		goto acc_spi_read_error;
+>  
+> -	memcpy(data, tb->rx_buf, len*sizeof(u8));
+> +	memcpy(data, tb->rx_buf, len);
+>  	mutex_unlock(&tb->buf_lock);
+>  	return len;
+>  
+> 
