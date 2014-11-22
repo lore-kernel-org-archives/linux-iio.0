@@ -1,53 +1,86 @@
-Return-Path: <conflatulence@gmail.com>
-From: Zachary Warren <conflatulence@gmail.com>
-To: jic23@kernel.org
-Cc: linux-iio@vger.kernel.org,
-	Zachary Warren <conflatulence@gmail.com>
-Subject: [PATCH] drivers:staging:iio: fix checkpatch complaint about space before comma
-Date: Sat, 22 Nov 2014 22:19:31 +1100
-Message-Id: <1416655171-10455-1-git-send-email-conflatulence@gmail.com>
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:40087 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751314AbaKVLRu (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 22 Nov 2014 06:17:50 -0500
+Message-ID: <547070DD.9050907@kernel.org>
+Date: Sat, 22 Nov 2014 11:17:49 +0000
+From: Jonathan Cameron <jic23@kernel.org>
+MIME-Version: 1.0
+To: Daniel Baluta <daniel.baluta@intel.com>, knaack.h@gmx.de
+CC: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+	irina.tirdea@intel.com, daniel.baluta@inte.com
+Subject: Re: [PATCH v4 5/7] iio: core: Introduce IIO_CHAN_INFO_CALIBHEIGHT
+References: <1415623535-24337-1-git-send-email-daniel.baluta@intel.com> <1415623535-24337-6-git-send-email-daniel.baluta@intel.com>
+In-Reply-To: <1415623535-24337-6-git-send-email-daniel.baluta@intel.com>
+Content-Type: text/plain; charset=windows-1252
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Fixes:
-drivers/staging/iio/adc/ad7192.c:615: ERROR: space prohibited before that ','
-drivers/staging/iio/meter/ade7759.c:119: ERROR: space prohibited before that ','
+On 10/11/14 12:45, Daniel Baluta wrote:
+> From: Irina Tirdea <irina.tirdea@intel.com>
+> 
+> Some devices need the height of the user to compute various
+> parameters. One of this devices is Freescale's MMA9553L
+> (http://www.freescale.com/files/sensors/doc/ref_manual/MMA9553LSWRM.pdf)
+> that needs the height of the user to compute the stride length which
+> is used further to determine distance, speed and activity type.
+> 
+> Signed-off-by: Irina Tirdea <irina.tirdea@intel.com>
+> Signed-off-by: Daniel Baluta <daniel.baluta@intel.com>
+Applied to the togreg branch of iio.git pushed out as testing.
 
-Signed-off-by: Zachary Warren <conflatulence@gmail.com>
----
+What fun ;)
 
-This is for Eudyptula Challenge Task 10 which requires sending a checkpatch
-fix in linux-next drivers/staging to a maintainer and public mailing list.
-Apologies for mistakes and any inconvenience.
+J
+> ---
+>  Documentation/ABI/testing/sysfs-bus-iio | 8 ++++++++
+>  drivers/iio/industrialio-core.c         | 1 +
+>  include/linux/iio/iio.h                 | 1 +
+>  3 files changed, 10 insertions(+)
+> 
+> diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
+> index c60b0a1..4a9e29a 100644
+> --- a/Documentation/ABI/testing/sysfs-bus-iio
+> +++ b/Documentation/ABI/testing/sysfs-bus-iio
+> @@ -323,6 +323,14 @@ Description:
+>  		production inaccuracies).  If shared across all channels,
+>  		<type>_calibscale is used.
+>  
+> +What:		/sys/bus/iio/devices/iio:deviceX/in_steps_calibheight
+> +KernelVersion:	3.19
+> +Contact:	linux-iio@vger.kernel.org
+> +Description:
+> +		Height of the user (in centimeters) used by some pedometers
+> +		to compute the stride length, distance, speed and activity
+> +		type.
+> +
+>  What:		/sys/bus/iio/devices/iio:deviceX/in_accel_scale_available
+>  What:		/sys/.../iio:deviceX/in_voltageX_scale_available
+>  What:		/sys/.../iio:deviceX/in_voltage-voltage_scale_available
+> diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+> index 1e060f3..45bb3a4 100644
+> --- a/drivers/iio/industrialio-core.c
+> +++ b/drivers/iio/industrialio-core.c
+> @@ -120,6 +120,7 @@ static const char * const iio_chan_info_postfix[] = {
+>  	[IIO_CHAN_INFO_HYSTERESIS] = "hysteresis",
+>  	[IIO_CHAN_INFO_INT_TIME] = "integration_time",
+>  	[IIO_CHAN_INFO_ENABLE] = "en",
+> +	[IIO_CHAN_INFO_CALIBHEIGHT] = "calibheight",
+>  };
+>  
+>  /**
+> diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
+> index f45a400..878d861 100644
+> --- a/include/linux/iio/iio.h
+> +++ b/include/linux/iio/iio.h
+> @@ -39,6 +39,7 @@ enum iio_chan_info_enum {
+>  	IIO_CHAN_INFO_HYSTERESIS,
+>  	IIO_CHAN_INFO_INT_TIME,
+>  	IIO_CHAN_INFO_ENABLE,
+> +	IIO_CHAN_INFO_CALIBHEIGHT,
+>  };
+>  
+>  enum iio_shared_by {
+> 
 
- drivers/staging/iio/adc/ad7192.c    | 2 +-
- drivers/staging/iio/meter/ade7759.c | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/staging/iio/adc/ad7192.c b/drivers/staging/iio/adc/ad7192.c
-index f6526aa..6f8ce6c 100644
---- a/drivers/staging/iio/adc/ad7192.c
-+++ b/drivers/staging/iio/adc/ad7192.c
-@@ -612,7 +612,7 @@ static int ad7192_probe(struct spi_device *spi)
- 	const struct ad7192_platform_data *pdata = spi->dev.platform_data;
- 	struct ad7192_state *st;
- 	struct iio_dev *indio_dev;
--	int ret , voltage_uv = 0;
-+	int ret, voltage_uv = 0;
- 
- 	if (!pdata) {
- 		dev_err(&spi->dev, "no platform data?\n");
-diff --git a/drivers/staging/iio/meter/ade7759.c b/drivers/staging/iio/meter/ade7759.c
-index 7d21743..b0c7dbc 100644
---- a/drivers/staging/iio/meter/ade7759.c
-+++ b/drivers/staging/iio/meter/ade7759.c
-@@ -116,7 +116,7 @@ static int ade7759_spi_read_reg_40(struct device *dev,
- 
- 	mutex_lock(&st->buf_lock);
- 	st->tx[0] = ADE7759_READ_REG(reg_address);
--	memset(&st->tx[1], 0 , 5);
-+	memset(&st->tx[1], 0, 5);
- 
- 	ret = spi_sync_transfer(st->us, xfers, ARRAY_SIZE(xfers));
- 	if (ret) {
--- 
-2.1.0
