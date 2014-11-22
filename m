@@ -1,99 +1,54 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:42812 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:40276 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754743AbaKEOGW (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 5 Nov 2014 09:06:22 -0500
-Message-ID: <545A2EDB.5040801@kernel.org>
-Date: Wed, 05 Nov 2014 14:06:19 +0000
+	with ESMTP id S1751366AbaKVLtb (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 22 Nov 2014 06:49:31 -0500
+Message-ID: <5470784A.9020505@kernel.org>
+Date: Sat, 22 Nov 2014 11:49:30 +0000
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: "Ivan T. Ivanov" <iivanov@mm-sol.com>
-CC: Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	Stanimir Varbanov <svarbanov@mm-sol.com>,
-	Angelo Compagnucci <angelo.compagnucci@gmail.com>,
-	Grant Likely <grant.likely@linaro.org>,
-	linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-	devicetree@vger.kernel.org, linux-arm-msm@vger.kernel.org
-Subject: Re: [PATCH v4 2/2] iio: vadc: Qualcomm SPMI PMIC voltage ADC driver
-References: <1415028270-25860-1-git-send-email-iivanov@mm-sol.com>	 <1415028270-25860-3-git-send-email-iivanov@mm-sol.com>	 <545A218F.5060301@kernel.org> <1415195855.3660.4.camel@mm-sol.com>
-In-Reply-To: <1415195855.3660.4.camel@mm-sol.com>
+To: Daniel Baluta <daniel.baluta@intel.com>
+CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 0/2] kmx61: Small cleanups
+References: <1416230316-14511-1-git-send-email-daniel.baluta@intel.com>	<F244A294-8B78-4A9C-BB0B-268AFCC3EC5C@kernel.org> <CAEnQRZCa07iOt5baDHaH4-wNNYsP7rOf5Sixs+yndNo5-OP4kQ@mail.gmail.com>
+In-Reply-To: <CAEnQRZCa07iOt5baDHaH4-wNNYsP7rOf5Sixs+yndNo5-OP4kQ@mail.gmail.com>
 Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 05/11/14 13:57, Ivan T. Ivanov wrote:
-> 
-> On Wed, 2014-11-05 at 13:09 +0000, Jonathan Cameron wrote:
->> On 03/11/14 15:24, Ivan T. Ivanov wrote:
->>> From: Stanimir Varbanov <svarbanov@mm-sol.com>
->>>
->>> The voltage ADC is peripheral of Qualcomm SPMI PMIC chips. It has
->>> 15 bits resolution and register space inside PMIC accessible across
->>> SPMI bus.
->>>
->>> The vadc driver registers itself through IIO interface.
->>>
->>> Signed-off-by: Stanimir Varbanov <svarbanov@mm-sol.com>
->>> Signed-off-by: Ivan T. Ivanov <iivanov@mm-sol.com>
->> Hi Ivan,
+On 17/11/14 15:09, Daniel Baluta wrote:
+> On Mon, Nov 17, 2014 at 4:59 PM, Jonathan Cameron <jic23@kernel.org> wrote:
 >>
->> Couple of utterly tiny bits inline.  The biggest one is that
->> you store some info about the calibration that you never actually
->> use... Left over from some debugging perhaps?
 >>
->> Jonathan
-> 
-> <snip>
-> 
->>> +
->>> +/*
->>> + * VADC_CALIB_ABSOLUTE: uses the 625mV and 1.25V as reference channels.
->>> + * VADC_CALIB_RATIOMETRIC: uses the reference voltage (1.8V) and GND for
->>> + * calibration.
->>> + */
->>> +enum vadc_calibration {
->>> +       VADC_CALIB_ABSOLUTE = 0,
->>> +       VADC_CALIB_RATIOMETRIC
->>> +};
->>> +
->>> +/**
->>> + * struct vadc_linear_graph - Represent ADC characteristics.
->>> + * @dy: numerator slope to calculate the gain.
->> As dy is always equal to vref-gnd you could drop it and use those
->> directly...
+>> On November 17, 2014 1:18:34 PM GMT+00:00, Daniel Baluta <daniel.baluta@intel.com> wrote:
+>>> This is a small cleanup patchset, that:
+>>>       * makes it clear that kmx61 uses only the micro part of scale
+>>>       * use macro instead of hardcoded value for driver name
+>>>
+>>> Jonathan, if you think it's worth it, these could be squased together
+>>> with
+>>> the initial patch submitted in testing:
+>>>       61ef04a496 (iio: imu: Add support for Kionix KMX61 sensor)
+>>>
 >>
->> Conversly you store vref or grnd and never use them...
+>> Given the additional bits from Peter, I don't mind pulling the original and applying an updated patch.
 > 
-> I am not sure I am following you. Please take a look in 
-> vadc_measure_ref_points() and vadc_calibrate().
-Good point on grnd, but vref is set but never read anywhere that I can find..
+> I prefer this :). I will send an updated patch with fixes reported by Peter.
+> 
+>>
+>> Additional changes like this are fine as well if you prefer.
+> 
+> I am almost done with adding support for runtime PM. Let me know
+> if you want this as a separate patch or just one big updated patch.
+Oops. I moaned about the unified patch, but didn't actually get around
+to replying to you.  Was fine either way really.
 
+Note to anyone reading this patch series - the unified patch for
+adding the driver with all these changes in place has now been applied.
+
+Jonathan
 > 
->>
->>> + * @dx: denominator slope to calculate the gain.
->>> + * @vref: A/D word of the voltage reference used for the channel.
->>> + * @gnd: A/D word of the ground reference used for the channel.
->>> + *
->>> + * Each ADC device has different offset and gain parameters which are
->>> + * computed to calibrate the device.
->>> + */
->>> +struct vadc_linear_graph {
->>> +       s32 dy;
->>> +       s32 dx;
->>> +       s32 vref;
->>> +       s32 gnd;
->>> +};
->>> +
->>>
+> Daniel.
 > 
-> Will address blank line comment.
-> 
-> Regards,
-> Ivan
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> 
+
