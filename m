@@ -1,88 +1,89 @@
-Return-Path: <jacob.jun.pan@linux.intel.com>
-From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-To: LKML <linux-kernel@vger.kernel.org>,
-	IIO <linux-iio@vger.kernel.org>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Lee Jones <lee.jones@linaro.org>
-Cc: Carlo Caione <carlo@caione.org>,
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mailout3.w1.samsung.com ([210.118.77.13]:26106 "EHLO
+	mailout3.w1.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751081AbaKXLjP (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 24 Nov 2014 06:39:15 -0500
+Message-id: <547318E0.8070407@samsung.com>
+Date: Mon, 24 Nov 2014 12:39:12 +0100
+From: Karol Wrona <k.wrona@samsung.com>
+MIME-version: 1.0
+To: Jonathan Cameron <jic23@kernel.org>, Arnd Bergmann <arnd@arndb.de>,
 	Samuel Ortiz <sameo@linux.intel.com>,
-	Ramakrishna Pallala <ramakrishna.pallala@intel.com>,
-	Todd Brandt <todd.e.brandt@linux.intel.com>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	Rafael Wysocki <rafael.j.wysocki@intel.com>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Jacob Pan <jacob.jun.pan@linux.intel.com>
-Subject: [PATCH 2/3] mfd/axp20x: avoid irq numbering collision
-Date: Tue, 11 Nov 2014 11:30:09 -0800
-Message-Id: <1415734210-5657-3-git-send-email-jacob.jun.pan@linux.intel.com>
-In-Reply-To: <1415734210-5657-1-git-send-email-jacob.jun.pan@linux.intel.com>
-References: <1415734210-5657-1-git-send-email-jacob.jun.pan@linux.intel.com>
-List-ID: <linux-iio@vger.kernel.org>
+	Lee Jones <lee.jones@linaro.org>
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+	Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
+	Kyungmin Park <kyungmin.park@samsung.com>
+Subject: Re: [PATCH v2 1/5] misc: sensorhub: Add sensorhub driver
+References: <1416593957-19788-1-git-send-email-k.wrona@samsung.com>
+ <1416593957-19788-2-git-send-email-k.wrona@samsung.com>
+ <3489864.y2krC9T9rK@wuerfel> <54707ECA.7090800@kernel.org>
+In-reply-to: <54707ECA.7090800@kernel.org>
+Content-type: text/plain; charset=windows-1252; format=flowed
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-IRQ numbers in axp20x devices are defined with high-order bit first
-in each IRQ enable/status registers. On Intel platforms it is more
-common to number IRQs with least significant bit first. Therefore,
-sharing IRQ# between the two is very difficult. Since AXP288 is a
-customized PMIC for Intel platform and the amount of shared IRQs are
-very small, we use separate IRQ numbering. This also fixes collision
-and a duplicate in WBTO interrupt.
+On 11/22/2014 01:17 PM, Jonathan Cameron wrote:
+> On 21/11/14 19:38, Arnd Bergmann wrote:
+>> On Friday 21 November 2014 19:19:13 Karol Wrona wrote:
+>>> Sensorhub  is MCU dedicated to collect data and manage several sensors.
+>>> Sensorhub is a spi device which provides a layer for IIO devices. It provides
+>>> some data parsing and common mechanism for sensorhub sensors.
+>>>
+>>> Adds common sensorhub library for sensorhub driver and iio drivers
+>>> which uses sensorhub MCU to communicate with sensors.
+>>>
+>>> Signed-off-by: Karol Wrona <k.wrona@samsung.com>
+>>> Acked-by: Kyungmin Park <kyungmin.park@samsung.com>
+>>> ---
+>>>   drivers/misc/Kconfig                   |    1 +
+>>>   drivers/misc/Makefile                  |    1 +
+>>>   drivers/misc/sensorhub/Kconfig         |   13 +
+>>>   drivers/misc/sensorhub/Makefile        |    6 +
+>>>   drivers/misc/sensorhub/ssp.h           |  279 +++++++++++
+>>>   drivers/misc/sensorhub/ssp_dev.c       |  828 ++++++++++++++++++++++++++++++++
+>>>   drivers/misc/sensorhub/ssp_spi.c       |  653 +++++++++++++++++++++++++
+>>>   include/linux/iio/common/ssp_sensors.h |   79 +++
+>>
+>> You seem to provide infrastructure for other drivers here, so I don't think
+>> drivers/misc is a good place. Have you considered making this a regular
+>> mfd driver? If that doesn't fit, is there possibly some place in the iio
+>> framework for this kind of driver?
+>
+> Looks like an MFD to me.  If all the children lie within
+> IIO (so far they do I think - though the thermostat firmware implies
+> perhaps not!) then you could put it in drivers/iio/common
+> (as you have with the library code) - or perhaps, given these sensor
+> hubs are becoming pretty common a sub directory under mfd/ is the
+> best plan. Some of them are sure to offer functionality more general
+> that IIO sooner or later.
+It is possible that it can serve as input device sth else. So you are
+right about MFD.
 
-e.g. For the 16 interrupts controlled in IRQ enabled registers 1 & 2,
-on axp20x for ARM, the PMIC local IRQ numbers and register bits are
-mapped as:
-IRQ#:  0  1  2  3  4  5  6  7      8  9 10 11 12 13 14 15
----------------------------------------------------------
-ARM:   7  6  5  4  3  2  1  0      7  6  5  4  3  2  1  0
-Intel: 0  1  2  3  4  5  6  7      0  1  2  3  4  5  6  7
+The structure of mfd directory is flat. I wonder what can be better:
+just putting these sources inside mfd dir or to some new category inside mfd.
+Generally sensorhub will not differ than others mfd devs but in the near future 
+it can be that we end up with different (sensor)hubs or in my case with one core 
+driver with several interfaces, mcu's modes - sth like ssp-i2c.c etc.
+These drivers can grow in size as these devices will appear in different boards.
 
-Signed-off-by: Todd Brandt <todd.e.brandt@linux.intel.com>
-Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
----
- drivers/mfd/axp20x.c | 18 +++++++++---------
- 1 file changed, 9 insertions(+), 9 deletions(-)
+Also there is a question where firmware loader (stm32fwu) should be placed as it 
+is a library?
 
-diff --git a/drivers/mfd/axp20x.c b/drivers/mfd/axp20x.c
-index daf3c8d..0a8fcd9 100644
---- a/drivers/mfd/axp20x.c
-+++ b/drivers/mfd/axp20x.c
-@@ -183,21 +183,21 @@ static const struct regmap_irq axp20x_regmap_irqs[] = {
- 
- /* some IRQs are compatible with axp20x models */
- static const struct regmap_irq axp288_regmap_irqs[] = {
--	INIT_REGMAP_IRQ(AXP20X, VBUS_REMOVAL,           0, 2),
--	INIT_REGMAP_IRQ(AXP20X, VBUS_PLUGIN,            0, 3),
--	INIT_REGMAP_IRQ(AXP20X, VBUS_OVER_V,            0, 4),
-+	INIT_REGMAP_IRQ(AXP288, VBUS_FALL,              0, 2),
-+	INIT_REGMAP_IRQ(AXP288, VBUS_RISE,              0, 3),
-+	INIT_REGMAP_IRQ(AXP288, OV,                     0, 4),
- 
--	INIT_REGMAP_IRQ(AXP20X, CHARG_DONE,             1, 2),
--	INIT_REGMAP_IRQ(AXP20X, CHARG,                  1, 3),
-+	INIT_REGMAP_IRQ(AXP288, DONE,                   1, 2),
-+	INIT_REGMAP_IRQ(AXP288, CHARGING,               1, 3),
- 	INIT_REGMAP_IRQ(AXP288, SAFE_QUIT,              1, 4),
- 	INIT_REGMAP_IRQ(AXP288, SAFE_ENTER,             1, 5),
--	INIT_REGMAP_IRQ(AXP20X, BATT_REMOVAL,           1, 6),
--	INIT_REGMAP_IRQ(AXP20X, BATT_PLUGIN,            1, 7),
-+	INIT_REGMAP_IRQ(AXP288, ABSENT,                 1, 6),
-+	INIT_REGMAP_IRQ(AXP288, APPEND,                 1, 7),
- 
- 	INIT_REGMAP_IRQ(AXP288, QWBTU,                  2, 0),
- 	INIT_REGMAP_IRQ(AXP288, WBTU,                   2, 1),
- 	INIT_REGMAP_IRQ(AXP288, QWBTO,                  2, 2),
--	INIT_REGMAP_IRQ(AXP288, WBTU,                   2, 3),
-+	INIT_REGMAP_IRQ(AXP288, WBTO,                   2, 3),
- 	INIT_REGMAP_IRQ(AXP288, QCBTU,                  2, 4),
- 	INIT_REGMAP_IRQ(AXP288, CBTU,                   2, 5),
- 	INIT_REGMAP_IRQ(AXP288, QCBTO,                  2, 6),
-@@ -215,7 +215,7 @@ static const struct regmap_irq axp288_regmap_irqs[] = {
- 	INIT_REGMAP_IRQ(AXP288, POKS,                   4, 4),
- 	INIT_REGMAP_IRQ(AXP288, POKN,                   4, 5),
- 	INIT_REGMAP_IRQ(AXP288, POKP,                   4, 6),
--	INIT_REGMAP_IRQ(AXP20X, TIMER,                  4, 7),
-+	INIT_REGMAP_IRQ(AXP288, TIMER,                  4, 7),
- 
- 	INIT_REGMAP_IRQ(AXP288, MV_CHNG,                5, 0),
- 	INIT_REGMAP_IRQ(AXP288, BC_USB_CHNG,            5, 1),
--- 
-1.9.1
+>
+>
+>
+>
+>>
+>> 	Arnd
+>> --
+>> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+>> the body of a message to majordomo@vger.kernel.org
+>> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+>>
+>
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+>
+
