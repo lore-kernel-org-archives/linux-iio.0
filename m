@@ -1,109 +1,88 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga14.intel.com ([192.55.52.115]:63838 "EHLO mga14.intel.com"
+Received: from mout.gmx.net ([212.227.15.18]:58076 "EHLO mout.gmx.net"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751038AbaKYBof (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Mon, 24 Nov 2014 20:44:35 -0500
-From: "Zheng, Lv" <lv.zheng@intel.com>
-To: "Rafael J. Wysocki" <rjw@rjwysocki.net>,
-	"Lu, Aaron" <aaron.lu@intel.com>
-CC: Lee Jones <lee.jones@linaro.org>,
-	Jacob Pan <jacob.jun.pan@linux.intel.com>,
-	"Iyer, Yegnesh S" <yegnesh.s.iyer@intel.com>,
-	"linux-acpi@vger.kernel.org" <linux-acpi@vger.kernel.org>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH v3 updated 3/3] ACPI / PMIC: AXP288: support virtual
- GPIO in ACPI table
-Date: Tue, 25 Nov 2014 01:44:28 +0000
-Message-ID: <1AE640813FDE7649BE1B193DEA596E88026A4A7C@SHSMSX101.ccr.corp.intel.com>
-References: <1416553911-22990-1-git-send-email-aaron.lu@intel.com>
- <1648486.coeVgHKNdn@vostro.rjw.lan> <5472FB31.8000408@intel.com>
- <2204417.orosXAozvY@vostro.rjw.lan>
-In-Reply-To: <2204417.orosXAozvY@vostro.rjw.lan>
-Content-Type: text/plain; charset="utf-8"
+	id S1750871AbaKXU0Q (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Mon, 24 Nov 2014 15:26:16 -0500
+Message-ID: <54739462.7060300@gmx.de>
+Date: Mon, 24 Nov 2014 21:26:10 +0100
+From: Hartmut Knaack <knaack.h@gmx.de>
 MIME-Version: 1.0
+To: Octavian Purdila <octavian.purdila@intel.com>
+CC: linux-iio@vger.kernel.org,
+	Srinivas Pandruvada <srinivas.pandruvada@intel.com>
+Subject: Re: [RFC 6/8] iio: bmc150: introduce bmc150_accel_trigger
+References: <1416246966-3083-1-git-send-email-octavian.purdila@intel.com>	<1416246966-3083-7-git-send-email-octavian.purdila@intel.com>	<5472688D.9010801@gmx.de> <CAE1zotKM30FQ1ScrEiPGW4SuLvjTUVpj4eg0wpCLY=UVU_UHxw@mail.gmail.com>
+In-Reply-To: <CAE1zotKM30FQ1ScrEiPGW4SuLvjTUVpj4eg0wpCLY=UVU_UHxw@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-SGksDQoNCj4gRnJvbTogUmFmYWVsIEouIFd5c29ja2kgW21haWx0bzpyandAcmp3eXNvY2tpLm5l
-dF0NCj4gU2VudDogTW9uZGF5LCBOb3ZlbWJlciAyNCwgMjAxNCAxMToyMCBQTQ0KPiBMdg0KPiBT
-dWJqZWN0OiBSZTogW1BBVENIIHYzIHVwZGF0ZWQgMy8zXSBBQ1BJIC8gUE1JQzogQVhQMjg4OiBz
-dXBwb3J0IHZpcnR1YWwgR1BJTyBpbiBBQ1BJIHRhYmxlDQo+IA0KPiBPbiBNb25kYXksIE5vdmVt
-YmVyIDI0LCAyMDE0IDA1OjMyOjMzIFBNIEFhcm9uIEx1IHdyb3RlOg0KPiA+IE9uIDExLzI0LzIw
-MTQgMDk6MDYgQU0sIFJhZmFlbCBKLiBXeXNvY2tpIHdyb3RlOg0KPiA+ID4gT24gRnJpZGF5LCBO
-b3ZlbWJlciAyMSwgMjAxNCAwMzoxMTo1MSBQTSBBYXJvbiBMdSB3cm90ZToNCj4gPiA+PiArCWlm
-ICghcmVzdWx0KSB7DQo+ID4gPj4gKwkJc3RhdHVzID0gYWNwaV9pbnN0YWxsX2FkZHJlc3Nfc3Bh
-Y2VfaGFuZGxlcigNCj4gPiA+PiArCQkJCUFDUElfSEFORExFKHBhcmVudCksIEFDUElfQURSX1NQ
-QUNFX0dQSU8sDQo+ID4gPj4gKwkJCQlpbnRlbF94cG93ZXJfcG1pY19ncGlvX2hhbmRsZXIsIE5V
-TEwsIE5VTEwpOw0KPiA+ID4NCj4gPiA+IFNvIGhlcmUgd2UgaGF2ZSBhIHByb2JsZW0sIGJlY2F1
-c2Ugd2UgY2FuJ3QgdW5yZWdpc3RlciB0aGUgb3ByZWdpb24gaGFuZGxlcg0KPiA+ID4gcmVnaXN0
-ZXJlZCBhYm92ZSBpZiB0aGlzIGZhaWxzLiAgTm90IG5pY2UuDQo+ID4NCj4gPiBJJ20gbm90IGNv
-cnJlY3QgaW4gdGhlIGNvdmVyIGxldHRlciwgdGhlIGFjdHVhbCBwcm9ibGVtIHdpdGggb3BlcmF0
-aW9uDQo+ID4gcmVnaW9uIHJlbW92ZSBpcyB3aXRoIG1vZHVsZSB1bmxvYWQsIGl0IGhhcHBlbnMg
-bGlrZSB0aGlzOg0KPiA+DQo+ID4gVGhlIGFjcGlfcmVtb3ZlX2FkZHJlc3Nfc3BhY2VfaGFuZGxl
-ciBkb2Vzbid0IHdhaXQgZm9yIHRoZSBjdXJyZW50DQo+ID4gcnVubmluZyBoYW5kbGVyIHRvIHJl
-dHVybiwgc28gaWYgd2UgY2FsbA0KPiA+IGFjcGlfcmVtb3ZlX2FkZHJlc3Nfc3BhY2VfaGFuZGxl
-ciBpbiBhIG1vZHVsZSdzIGV4aXQgZnVuY3Rpb24sIHRoZQ0KPiA+IGhhbmRsZXIncyBtZW1vcnkg
-d2lsbCBiZSBmcmVlZCBhbmQgdGhlIHJ1bm5pbmcgaGFuZGxlciB3aWxsIGFjY2VzcyB0bw0KPiA+
-IGEgbm8gbG9uZ2VyIHZhbGlkIG1lbW9yeSBwbGFjZS4NCj4gPg0KPiA+IFNvIGFzIGxvbmcgYXMg
-d2UgY2FuIG1ha2Ugc3VyZSB0aGUgaGFuZGxlciB3aWxsIG5vdCBnbyBhd2F5IGZyb20gdGhlDQo+
-ID4gbWVtb3J5LCB3ZSBhcmUgc2FmZS4NCj4gDQo+IFRoaXMgb25seSBtZWFucyB0aGF0IGFkZHJl
-c3Mgc3BhY2UgaGFuZGxlcnMgY2Fubm90IGJlIHJlbW92ZWQgZnJvbSBrZXJuZWwNCj4gbW9kdWxl
-cy4NCj4gDQo+IEx2IHdhcyB0cnlpbmcgdG8gYWRkIGEgd3JhcHBlciBmb3IgdGhhdCBzb21lIHRp
-bWUgYWdvLCBtYXliZSBpdCdzIGEgZ29vZA0KPiBpZGVhIHRvIHJldml2ZSB0aGF0Pw0KDQpJIG1h
-eSBmaXggdGhlIGlzc3VlIGluIEFDUElDQSwgYnV0IGl0IGxvb2tzIGxpa2UgdGhhdCBpdCB3aWxs
-IGNvc3QgdGltZSB0byBkaXNjdXNzLg0KU28gSSBhbHNvIHRoaW5rIGl0IGlzIGJldHRlciB0byB0
-YWtlIHRoZSB3cmFwcGVyIG5vdy4NCkknbGwgaGFuZCB0aGUgcGF0Y2ggdG8gQWFyb24gdG8gbGV0
-IGhpbSBkbyBhIHRlc3Qgb24gaXQgYmVmb3JlIHBvc3RpbmcgaXQgYWdhaW4uDQoNClRoYW5rcyBh
-bmQgYmVzdCByZWdhcmRzDQotTHYNCg0KPiA+IFdpdGggdGhpcyBzYWlkLCB0aGUgdXBkYXRlZCBw
-YXRjaCBpcyBoZXJlOg0KPiA+DQo+ID4gRnJvbTogQWFyb24gTHUgPGFhcm9uLmx1QGludGVsLmNv
-bT4NCj4gPiBEYXRlOiBNb24sIDIwIE9jdCAyMDE0IDE3OjA2OjIwICswODAwDQo+ID4gU3ViamVj
-dDogW1BBVENIIDMvM10gQUNQSSAvIFBNSUM6IEFYUDI4ODogc3VwcG9ydCB2aXJ0dWFsIEdQSU8g
-aW4gQUNQSSB0YWJsZQ0KPiA+DQo+ID4gVGhlIHNhbWUgdmlydHVhbCBHUElPIHN0cmF0ZWd5IGlz
-IGFsc28gdXNlZCBmb3IgdGhlIEFYUDI4OCBQTUlDIGluIHRoYXQNCj4gPiB2YXJpb3VzIGNvbnRy
-b2wgbWV0aG9kcyB0aGF0IGFyZSB1c2VkIHRvIGRvIHBvd2VyIHJhaWwgaGFuZGxpbmcgYW5kDQo+
-ID4gc2Vuc29yIHJlYWRpbmcvc2V0dGluZyB3aWxsIHRvdWNoIEdQSU8gZmllbGRzIGRlZmluZWQg
-dW5kZXIgdGhlIFBNSUMNCj4gPiBkZXZpY2UuIFRoZSBHUElPIGZpbGVkcyBhcmUgb25seSBkZWZp
-bmVkIGJ5IHRoZSBBQ1BJIGNvZGUgd2hpbGUgdGhlDQo+ID4gYWN0dWFsIGhhcmR3YXJlIGRvZXNu
-J3QgcmVhbGx5IGhhdmUgYSBHUElPIGNvbnRyb2xsZXIsIGJ1dCB0byBtYWtlIHRob3NlDQo+ID4g
-Y29udHJvbCBtZXRob2QgZXhlY3V0aW9uIHN1Y2NlZWQsIHdlIGhhdmUgdG8gaW5zdGFsbCBhIEdQ
-SU8gaGFuZGxlciBmb3INCj4gPiB0aGUgUE1JQyBkZXZpY2UgaGFuZGxlLiBTaW5jZSB3ZSBkbyBu
-b3QgbmVlZCB0aGUgdmlydHVhbCBHUElPIHN0cmF0ZWd5LA0KPiA+IHdlIGNhbiBzaW1wbHkgZG8g
-bm90aGluZyBpbiB0aGF0IGhhbmRsZXIuDQo+ID4NCj4gPiBTaWduZWQtb2ZmLWJ5OiBBYXJvbiBM
-dSA8YWFyb24ubHVAaW50ZWwuY29tPg0KPiA+IC0tLQ0KPiA+ICBkcml2ZXJzL2FjcGkvcG1pYy9p
-bnRlbF9wbWljX3hwb3dlci5jIHwgMzAgKysrKysrKysrKysrKysrKysrKysrKysrKystLS0tDQo+
-ID4gIDEgZmlsZSBjaGFuZ2VkLCAyNiBpbnNlcnRpb25zKCspLCA0IGRlbGV0aW9ucygtKQ0KPiA+
-DQo+ID4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvYWNwaS9wbWljL2ludGVsX3BtaWNfeHBvd2VyLmMg
-Yi9kcml2ZXJzL2FjcGkvcG1pYy9pbnRlbF9wbWljX3hwb3dlci5jDQo+ID4gaW5kZXggNzk1Y2Ew
-NzNkYjA4Li45ZWM1N2ViZDgxYzkgMTAwNjQ0DQo+ID4gLS0tIGEvZHJpdmVycy9hY3BpL3BtaWMv
-aW50ZWxfcG1pY194cG93ZXIuYw0KPiA+ICsrKyBiL2RyaXZlcnMvYWNwaS9wbWljL2ludGVsX3Bt
-aWNfeHBvd2VyLmMNCj4gPiBAQCAtMjIwLDEzICsyMjAsMzUgQEAgc3RhdGljIHN0cnVjdCBpbnRl
-bF9wbWljX29wcmVnaW9uX2RhdGEgaW50ZWxfeHBvd2VyX3BtaWNfb3ByZWdpb25fZGF0YSA9IHsN
-Cj4gPiAgCS50aGVybWFsX3RhYmxlX2NvdW50ID0gQVJSQVlfU0laRSh0aGVybWFsX3RhYmxlKSwN
-Cj4gPiAgfTsNCj4gPg0KPiA+ICtzdGF0aWMgYWNwaV9zdGF0dXMgaW50ZWxfeHBvd2VyX3BtaWNf
-Z3Bpb19oYW5kbGVyKHUzMiBmdW5jdGlvbiwNCj4gPiArCQlhY3BpX3BoeXNpY2FsX2FkZHJlc3Mg
-YWRkcmVzcywgdTMyIGJpdF93aWR0aCwgdTY0ICp2YWx1ZSwNCj4gPiArCQl2b2lkICpoYW5kbGVy
-X2NvbnRleHQsIHZvaWQgKnJlZ2lvbl9jb250ZXh0KQ0KPiA+ICt7DQo+ID4gKwlyZXR1cm4gQUVf
-T0s7DQo+ID4gK30NCj4gPg0KPiA+ICBzdGF0aWMgaW50IGludGVsX3hwb3dlcl9wbWljX29wcmVn
-aW9uX3Byb2JlKHN0cnVjdCBwbGF0Zm9ybV9kZXZpY2UgKnBkZXYpDQo+ID4gIHsNCj4gPiAtCXN0
-cnVjdCBheHAyMHhfZGV2ICpheHAyMHggPSBkZXZfZ2V0X2RydmRhdGEocGRldi0+ZGV2LnBhcmVu
-dCk7DQo+ID4gLQlyZXR1cm4gaW50ZWxfcG1pY19pbnN0YWxsX29wcmVnaW9uX2hhbmRsZXIoJnBk
-ZXYtPmRldiwNCj4gPiAtCQkJQUNQSV9IQU5ETEUocGRldi0+ZGV2LnBhcmVudCksIGF4cDIweC0+
-cmVnbWFwLA0KPiA+IC0JCQkmaW50ZWxfeHBvd2VyX3BtaWNfb3ByZWdpb25fZGF0YSk7DQo+ID4g
-KwlzdHJ1Y3QgZGV2aWNlICpwYXJlbnQgPSBwZGV2LT5kZXYucGFyZW50Ow0KPiA+ICsJc3RydWN0
-IGF4cDIweF9kZXYgKmF4cDIweCA9IGRldl9nZXRfZHJ2ZGF0YShwYXJlbnQpOw0KPiA+ICsJYWNw
-aV9zdGF0dXMgc3RhdHVzOw0KPiA+ICsJaW50IHJlc3VsdDsNCj4gPiArDQo+ID4gKwlzdGF0dXMg
-PSBhY3BpX2luc3RhbGxfYWRkcmVzc19zcGFjZV9oYW5kbGVyKEFDUElfSEFORExFKHBhcmVudCks
-DQo+ID4gKwkJCUFDUElfQURSX1NQQUNFX0dQSU8sIGludGVsX3hwb3dlcl9wbWljX2dwaW9faGFu
-ZGxlciwNCj4gPiArCQkJTlVMTCwgTlVMTCk7DQo+ID4gKwlpZiAoQUNQSV9GQUlMVVJFKHN0YXR1
-cykpDQo+ID4gKwkJcmV0dXJuIC1FTk9ERVY7DQo+ID4gKw0KPiA+ICsJcmVzdWx0ID0gaW50ZWxf
-cG1pY19pbnN0YWxsX29wcmVnaW9uX2hhbmRsZXIoJnBkZXYtPmRldiwNCj4gPiArCQkJCQlBQ1BJ
-X0hBTkRMRShwYXJlbnQpLCBheHAyMHgtPnJlZ21hcCwNCj4gPiArCQkJCQkmaW50ZWxfeHBvd2Vy
-X3BtaWNfb3ByZWdpb25fZGF0YSk7DQo+ID4gKwlpZiAocmVzdWx0KQ0KPiA+ICsJCWFjcGlfcmVt
-b3ZlX2FkZHJlc3Nfc3BhY2VfaGFuZGxlcihBQ1BJX0hBTkRMRShwYXJlbnQpLA0KPiA+ICsJCQkJ
-CQkgIEFDUElfQURSX1NQQUNFX0dQSU8sDQo+ID4gKwkJCQkJCSAgaW50ZWxfeHBvd2VyX3BtaWNf
-Z3Bpb19oYW5kbGVyKTsNCj4gPiArDQo+ID4gKwlyZXR1cm4gcmVzdWx0Ow0KPiA+ICB9DQo+ID4N
-Cj4gPiAgc3RhdGljIHN0cnVjdCBwbGF0Zm9ybV9kcml2ZXIgaW50ZWxfeHBvd2VyX3BtaWNfb3By
-ZWdpb25fZHJpdmVyID0gew0KPiA+DQo+IA0KPiAtLQ0KPiBJIHNwZWFrIG9ubHkgZm9yIG15c2Vs
-Zi4NCj4gUmFmYWVsIEouIFd5c29ja2ksIEludGVsIE9wZW4gU291cmNlIFRlY2hub2xvZ3kgQ2Vu
-dGVyLg0K
+Octavian Purdila schrieb am 24.11.2014 11:42:
+> On Mon, Nov 24, 2014 at 1:06 AM, Hartmut Knaack <knaack.h@gmx.de> wrote:
+>>> +
+>>> +static void bmc150_accel_unregister_triggers(struct bmc150_accel_data *data,
+>>> +                                          int from)
+>>> +{
+>>> +     int i;
+>>> +
+>>> +     for (i = from; i >= 0; i++) {
+>>> +             if (data->triggers[i].indio_trig) {
+>>> +                     iio_trigger_unregister(data->triggers[i].indio_trig);
+>>> +                     data->triggers[i].indio_trig = NULL;
+>> Better use devm_iio_trigger_free()?
+> 
+> Wouldn't that be called anyway a little bit later?
+I thought it would be cleaner/safer to release it using the opposite of devm_iio_trigger_alloc(), instead of changing its reference to NULL.
+> 
+>>> +             }
+>>> +             i--;
+>>> +     }
+>> i++ and i-- in the same loop looks like an infinite loop to me. Not to mention what happens on the second attempt to unregister the same trigger.
+> 
+> Oops.
+> 
+>>> +}
+>>> +
+>>> +static int bmc150_accel_triggers_setup(struct iio_dev *indio_dev,
+>>> +                                    struct bmc150_accel_data *data)
+>>> +{
+>>> +     int i, ret;
+>>> +
+>>> +     for (i = 0; i < BMC150_ACCEL_TRIGGERS; i++) {
+>>> +             struct bmc150_accel_trigger *t = &data->triggers[i];
+>>> +             const char *name = bmc150_accel_triggers[i].name;
+>>> +             int intr = bmc150_accel_triggers[i].intr;
+>>> +
+>>> +             t->indio_trig = devm_iio_trigger_alloc(&data->client->dev, name,
+>>> +                                                    indio_dev->name,
+>>> +                                                    indio_dev->id);
+>>> +             if (!t->indio_trig) {
+>>> +                     ret = -ENOMEM;
+>>> +                     break;
+>>> +             }
+>>> +
+>>> +             t->indio_trig->dev.parent = &data->client->dev;
+>>> +             t->indio_trig->ops = &bmc150_accel_trigger_ops;
+>>> +             t->intr = &data->interrupts[intr];
+>>> +             t->data = data;
+>>> +             iio_trigger_set_drvdata(t->indio_trig, t);
+>>> +
+>>> +             ret = iio_trigger_register(t->indio_trig);
+>>> +             if (ret)
+>>> +                     break;
+>>> +     }
+>>> +
+>>> +     if (ret)
+>>> +             bmc150_accel_unregister_triggers(data, i);
+>> I think this should be called with i - 1.
+> 
+> You're right.
+> 
+> Thanks for the reviews Hartmut, I will send a new version after we
+> decide on the hardware buffer approach.
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> 
+
