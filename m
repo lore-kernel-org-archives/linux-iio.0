@@ -1,89 +1,66 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mailout3.w1.samsung.com ([210.118.77.13]:26106 "EHLO
-	mailout3.w1.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751081AbaKXLjP (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 24 Nov 2014 06:39:15 -0500
-Message-id: <547318E0.8070407@samsung.com>
-Date: Mon, 24 Nov 2014 12:39:12 +0100
-From: Karol Wrona <k.wrona@samsung.com>
-MIME-version: 1.0
-To: Jonathan Cameron <jic23@kernel.org>, Arnd Bergmann <arnd@arndb.de>,
-	Samuel Ortiz <sameo@linux.intel.com>,
-	Lee Jones <lee.jones@linaro.org>
-Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-	Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
-	Kyungmin Park <kyungmin.park@samsung.com>
-Subject: Re: [PATCH v2 1/5] misc: sensorhub: Add sensorhub driver
-References: <1416593957-19788-1-git-send-email-k.wrona@samsung.com>
- <1416593957-19788-2-git-send-email-k.wrona@samsung.com>
- <3489864.y2krC9T9rK@wuerfel> <54707ECA.7090800@kernel.org>
-In-reply-to: <54707ECA.7090800@kernel.org>
-Content-type: text/plain; charset=windows-1252; format=flowed
+Received: from mail-wi0-f175.google.com ([209.85.212.175]:37056 "EHLO
+	mail-wi0-f175.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751500AbaKXMbI (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 24 Nov 2014 07:31:08 -0500
+MIME-Version: 1.0
+In-Reply-To: <5470711C.5080707@kernel.org>
+References: <1415623535-24337-1-git-send-email-daniel.baluta@intel.com>
+	<1415623535-24337-7-git-send-email-daniel.baluta@intel.com>
+	<54706DE7.7070107@kernel.org>
+	<5470711C.5080707@kernel.org>
+Date: Mon, 24 Nov 2014 14:31:06 +0200
+Message-ID: <CAEnQRZDLiAH9vSTamxKChMQQwGJ+z7W-f7VHMQcaha3w+woy0w@mail.gmail.com>
+Subject: Re: [PATCH v4 6/7] iio: dummy: Demonstrate the usage of new channel types
+From: Daniel Baluta <daniel.baluta@intel.com>
+To: Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>
+Cc: Daniel Baluta <daniel.baluta@intel.com>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+	irina.tirdea@intel.com
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 11/22/2014 01:17 PM, Jonathan Cameron wrote:
-> On 21/11/14 19:38, Arnd Bergmann wrote:
->> On Friday 21 November 2014 19:19:13 Karol Wrona wrote:
->>> Sensorhub  is MCU dedicated to collect data and manage several sensors.
->>> Sensorhub is a spi device which provides a layer for IIO devices. It provides
->>> some data parsing and common mechanism for sensorhub sensors.
+On Sat, Nov 22, 2014 at 1:18 PM, Jonathan Cameron <jic23@kernel.org> wrote:
+> On 22/11/14 11:05, Jonathan Cameron wrote:
+>> On 10/11/14 12:45, Daniel Baluta wrote:
+>>> Adds support for the new channel types in the dummy driver:
+>>>   * a new channel IIO_ACTIVITY
+>>>   * two state transition events (running and walking)
+>>>   * a new channel IIO_STEPS and support for reading and writing
+>>>     pedometer step counter
+>>>   * step detect event
+>>>   * a new IIO_CHAN_INFO_CALIBHEIGHT mask bit for reading and writing
+>>>     user's height.
 >>>
->>> Adds common sensorhub library for sensorhub driver and iio drivers
->>> which uses sensorhub MCU to communicate with sensors.
->>>
->>> Signed-off-by: Karol Wrona <k.wrona@samsung.com>
->>> Acked-by: Kyungmin Park <kyungmin.park@samsung.com>
->>> ---
->>>   drivers/misc/Kconfig                   |    1 +
->>>   drivers/misc/Makefile                  |    1 +
->>>   drivers/misc/sensorhub/Kconfig         |   13 +
->>>   drivers/misc/sensorhub/Makefile        |    6 +
->>>   drivers/misc/sensorhub/ssp.h           |  279 +++++++++++
->>>   drivers/misc/sensorhub/ssp_dev.c       |  828 ++++++++++++++++++++++++++++++++
->>>   drivers/misc/sensorhub/ssp_spi.c       |  653 +++++++++++++++++++++++++
->>>   include/linux/iio/common/ssp_sensors.h |   79 +++
+>>> Signed-off-by: Irina Tirdea <irina.tirdea@intel.com>
+>>> Signed-off-by: Daniel Baluta <daniel.baluta@intel.com>
+>> The only bit that makes me wonder in here is allowing writing to the steps
+>> and activity _input attributes.
 >>
->> You seem to provide infrastructure for other drivers here, so I don't think
->> drivers/misc is a good place. Have you considered making this a regular
->> mfd driver? If that doesn't fit, is there possibly some place in the iio
->> framework for this kind of driver?
->
-> Looks like an MFD to me.  If all the children lie within
-> IIO (so far they do I think - though the thermostat firmware implies
-> perhaps not!) then you could put it in drivers/iio/common
-> (as you have with the library code) - or perhaps, given these sensor
-> hubs are becoming pretty common a sub directory under mfd/ is the
-> best plan. Some of them are sure to offer functionality more general
-> that IIO sooner or later.
-It is possible that it can serve as input device sth else. So you are
-right about MFD.
-
-The structure of mfd directory is flat. I wonder what can be better:
-just putting these sources inside mfd dir or to some new category inside mfd.
-Generally sensorhub will not differ than others mfd devs but in the near future 
-it can be that we end up with different (sensor)hubs or in my case with one core 
-driver with several interfaces, mcu's modes - sth like ssp-i2c.c etc.
-These drivers can grow in size as these devices will appear in different boards.
-
-Also there is a question where firmware loader (stm32fwu) should be placed as it 
-is a library?
-
->
->
->
->
+>> Now I can see that it makes sense from the point of view of testing the
+>> interface and any userspace code, but the question here is whether the
+>> 'normal IIO intefaces' of this dummy driver should correspond to real sensors
+>> where writing to input channels isn't ever valid!.
 >>
->> 	Arnd
->> --
->> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
->> the body of a message to majordomo@vger.kernel.org
->> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+>> The alternative would be to create some deliberately not standard ABI for
+>> these with a suitably obvious, 'I don't normally exist' naming - which
+>> would then need documenting.  Perhaps what you have is the best option.
+>> Pitty there isn't an out_steps_* interface.  Human interface control :)
+>> Or even better out_activity_run_* which would be fun...
 >>
+>> Upshot is - leave this be.  It's our dummy driver afterall and we can
+>> change the ABI as much as we like without anyone having a valid argument
+>> that we broke their system ;)
 >
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> Applied to the togreg branch of iio.git - initially pushed out as testing.
 >
+> Nicely done with cc'ing a miss-spelt version of your own email address ;)
 
+:)), I noticed that when was already too late.
+
+Jonathan, Hartmut thanks for reviews!
+
+Daniel.
