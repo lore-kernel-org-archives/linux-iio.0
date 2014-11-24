@@ -1,42 +1,55 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ns.mm-sol.com ([37.157.136.199]:51575 "EHLO extserv.mm-sol.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751535AbaKCIlU (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Mon, 3 Nov 2014 03:41:20 -0500
-Message-ID: <1415004096.407.9.camel@mm-sol.com>
-Subject: Re: [PATCH v4] iio: iadc: Qualcomm SPMI PMIC current ADC driver
-From: "Ivan T. Ivanov" <iivanov@mm-sol.com>
-To: Hartmut Knaack <knaack.h@gmx.de>
+Received: from mailout2.w1.samsung.com ([210.118.77.12]:46429 "EHLO
+	mailout2.w1.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753283AbaKXNEw (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 24 Nov 2014 08:04:52 -0500
+Message-id: <54732CF0.6040404@samsung.com>
+Date: Mon, 24 Nov 2014 14:04:48 +0100
+From: Karol Wrona <k.wrona@samsung.com>
+MIME-version: 1.0
+To: Arnd Bergmann <arnd@arndb.de>
 Cc: Jonathan Cameron <jic23@kernel.org>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	Rob Herring <robh+dt@kernel.org>,
-	Pawel Moll <pawel.moll@arm.com>,
-	Mark Rutland <mark.rutland@arm.com>,
-	Ian Campbell <ijc+devicetree@hellion.org.uk>,
-	Kumar Gala <galak@codeaurora.org>,
-	Grant Likely <grant.likely@linaro.org>,
-	linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org
-Date: Mon, 03 Nov 2014 10:41:36 +0200
-In-Reply-To: <545538A2.7080403@gmx.de>
-References: <1413987213-22218-1-git-send-email-iivanov@mm-sol.com>
-		 <5453ED55.2000003@gmx.de> <1414859945.2207.1.camel@mm-sol.com>
-	 <545538A2.7080403@gmx.de>
-Content-Type: text/plain; charset="UTF-8"
-Mime-Version: 1.0
+	Samuel Ortiz <sameo@linux.intel.com>,
+	Lee Jones <lee.jones@linaro.org>, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
+	Kyungmin Park <kyungmin.park@samsung.com>
+Subject: Re: [PATCH v2 1/5] misc: sensorhub: Add sensorhub driver
+References: <1416593957-19788-1-git-send-email-k.wrona@samsung.com>
+ <54707ECA.7090800@kernel.org> <547318E0.8070407@samsung.com>
+ <5942877.97OQIAaJx7@wuerfel>
+In-reply-to: <5942877.97OQIAaJx7@wuerfel>
+Content-type: text/plain; charset=windows-1252; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
+On 11/24/2014 01:35 PM, Arnd Bergmann wrote:
+> On Monday 24 November 2014 12:39:12 Karol Wrona wrote:
+>> It is possible that it can serve as input device sth else. So you are
+>> right about MFD.
+>>
+>> The structure of mfd directory is flat. I wonder what can be better:
+>> just putting these sources inside mfd dir or to some new category inside mfd.
+>> Generally sensorhub will not differ than others mfd devs but in the near future
+>> it can be that we end up with different (sensor)hubs or in my case with one core
+>> driver with several interfaces, mcu's modes - sth like ssp-i2c.c etc.
+>> These drivers can grow in size as these devices will appear in different boards.
+>
+> You should be able to abstract the interface differences using regmap for the
+> most part, so there would only be a small stub that is i2c or spi specific,
+> and a lot of mfd drivers have that.
+>
+>> Also there is a question where firmware loader (stm32fwu) should be placed as it
+>> is a library?
+>
+> Can you describe what this library does? Is this for loading firmware into
+> device RAM or into flash? Does it always use USB?
+Generally it uploads firmware to STM32F4xx mcu using SPI. Now it writes to 
+flash. Its is a subset of STM32 boot code protocol (I suppose version 1.0 but it 
+is poorly documented, version 1.1 is available on ST site) so it always can be 
+improved to support full protocol or other interfaces.
 
-On Sat, 2014-11-01 at 20:46 +0100, Hartmut Knaack wrote:
-> 
-
-
-> > No it is not a typo. Calculation is really in nano Ohms.
-> Right, but the typo is, that you wrote "nono" instead of "nano".
-
-Oops. :-) Thanks.
-
-Ivan
+>
+> 	Arnd
+>
 
