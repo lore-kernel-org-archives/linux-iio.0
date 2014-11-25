@@ -1,67 +1,109 @@
-Return-Path: <octavian.purdila@intel.com>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mga14.intel.com ([192.55.52.115]:63838 "EHLO mga14.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751038AbaKYBof (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Mon, 24 Nov 2014 20:44:35 -0500
+From: "Zheng, Lv" <lv.zheng@intel.com>
+To: "Rafael J. Wysocki" <rjw@rjwysocki.net>,
+	"Lu, Aaron" <aaron.lu@intel.com>
+CC: Lee Jones <lee.jones@linaro.org>,
+	Jacob Pan <jacob.jun.pan@linux.intel.com>,
+	"Iyer, Yegnesh S" <yegnesh.s.iyer@intel.com>,
+	"linux-acpi@vger.kernel.org" <linux-acpi@vger.kernel.org>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: RE: [PATCH v3 updated 3/3] ACPI / PMIC: AXP288: support virtual
+ GPIO in ACPI table
+Date: Tue, 25 Nov 2014 01:44:28 +0000
+Message-ID: <1AE640813FDE7649BE1B193DEA596E88026A4A7C@SHSMSX101.ccr.corp.intel.com>
+References: <1416553911-22990-1-git-send-email-aaron.lu@intel.com>
+ <1648486.coeVgHKNdn@vostro.rjw.lan> <5472FB31.8000408@intel.com>
+ <2204417.orosXAozvY@vostro.rjw.lan>
+In-Reply-To: <2204417.orosXAozvY@vostro.rjw.lan>
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-In-Reply-To: <5D8E0479-F926-424A-B931-8A33BD99EC31@kernel.org>
-References: <1416919687-14271-1-git-send-email-vlad.dogaru@intel.com>
-	<5474B01D.8020701@metafoo.de>
-	<CAEnQRZC_ax0n2b+pTiTVLk=0m+AzX7JkRHdB=8a70d8hQ3eD-Q@mail.gmail.com>
-	<5474B59B.8000101@metafoo.de>
-	<5D8E0479-F926-424A-B931-8A33BD99EC31@kernel.org>
-Date: Tue, 25 Nov 2014 20:27:09 +0200
-Message-ID: <CAE1zotLW8NwvorYajRbuVhwps+wJ7c1ezvDNm-X1LkgECKbAcw@mail.gmail.com>
-Subject: Re: [PATCH 0/4] Add valid sample channel
-From: Octavian Purdila <octavian.purdila@intel.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Lars-Peter Clausen <lars@metafoo.de>, Daniel Baluta <daniel.baluta@intel.com>,
-	Vlad Dogaru <vlad.dogaru@intel.com>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Content-Type: text/plain; charset=UTF-8
-List-ID: <linux-iio@vger.kernel.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Tue, Nov 25, 2014 at 7:29 PM, Jonathan Cameron <jic23@kernel.org> wrote:
->
->
-> On November 25, 2014 5:00:11 PM GMT+00:00, Lars-Peter Clausen <lars@metafoo.de> wrote:
->>On 11/25/2014 05:55 PM, Daniel Baluta wrote:
->>> On Tue, Nov 25, 2014 at 6:36 PM, Lars-Peter Clausen <lars@metafoo.de>
->>wrote:
->>>> On 11/25/2014 01:48 PM, Vlad Dogaru wrote:
->>>>>
->>>>> This is an attempt to address the problem of buffering in devices
->>which
->>>>> have
->>>>> different scan frequencies for different channels.
->>>>
->>>>
->>>> Will these frequencies still be related or completely arbitrary?
->>>
->>> For Kionix KMX61 we have the same set of frequencies for
->>> accelerometer and magnetometer (12.5, 25, 50, 100 Hz, etc)
->>> but for example at some point accel can be configured with 100 Hz
->>> and magnetometer with 12.5Hz.
->>>
->>> Does this matter?
->>
->>I'm wondering if it makes more sense to register multiple buffers or
->>devices
->>if the frequencies are completely unrelated. E.g. in the KMX61 case it
->>looks
->>as if its simply two logical devices in the same physical package.
->>
->>- Lars
-> That is how we have handled this so far.
-> Sometimes we have separate iio_devices for
-> the logical functions e.g. hid-sensors and sometimes just multiple buffers.. I am
->  struggling to find it now but one of the ADC drivers had a insanely complex nest
->  sampling arrangement requiring 8 buffers. Final driver might have been simplified though...  We might still need a few tweaks
->  for multiple buffers not to having naming clashes....  Moving house so only have phone to hand!
->
-
-The main usage I see for a single device / buffer and multiple
-channels is to reduce the user/kernel context switch overhead in a
-sensor hub environment with lots of sensors (i.e. do a single read
-instead of one for each sensor). The improvements are going to be even
-bigger if the sensor hub supports a hardware buffer.
-
-Some people are quite vocal about that, although I didn't see data
-that can be used to draw a relevant conclusion yet. Time to do some
-experiments, I guess :)
+SGksDQoNCj4gRnJvbTogUmFmYWVsIEouIFd5c29ja2kgW21haWx0bzpyandAcmp3eXNvY2tpLm5l
+dF0NCj4gU2VudDogTW9uZGF5LCBOb3ZlbWJlciAyNCwgMjAxNCAxMToyMCBQTQ0KPiBMdg0KPiBT
+dWJqZWN0OiBSZTogW1BBVENIIHYzIHVwZGF0ZWQgMy8zXSBBQ1BJIC8gUE1JQzogQVhQMjg4OiBz
+dXBwb3J0IHZpcnR1YWwgR1BJTyBpbiBBQ1BJIHRhYmxlDQo+IA0KPiBPbiBNb25kYXksIE5vdmVt
+YmVyIDI0LCAyMDE0IDA1OjMyOjMzIFBNIEFhcm9uIEx1IHdyb3RlOg0KPiA+IE9uIDExLzI0LzIw
+MTQgMDk6MDYgQU0sIFJhZmFlbCBKLiBXeXNvY2tpIHdyb3RlOg0KPiA+ID4gT24gRnJpZGF5LCBO
+b3ZlbWJlciAyMSwgMjAxNCAwMzoxMTo1MSBQTSBBYXJvbiBMdSB3cm90ZToNCj4gPiA+PiArCWlm
+ICghcmVzdWx0KSB7DQo+ID4gPj4gKwkJc3RhdHVzID0gYWNwaV9pbnN0YWxsX2FkZHJlc3Nfc3Bh
+Y2VfaGFuZGxlcigNCj4gPiA+PiArCQkJCUFDUElfSEFORExFKHBhcmVudCksIEFDUElfQURSX1NQ
+QUNFX0dQSU8sDQo+ID4gPj4gKwkJCQlpbnRlbF94cG93ZXJfcG1pY19ncGlvX2hhbmRsZXIsIE5V
+TEwsIE5VTEwpOw0KPiA+ID4NCj4gPiA+IFNvIGhlcmUgd2UgaGF2ZSBhIHByb2JsZW0sIGJlY2F1
+c2Ugd2UgY2FuJ3QgdW5yZWdpc3RlciB0aGUgb3ByZWdpb24gaGFuZGxlcg0KPiA+ID4gcmVnaXN0
+ZXJlZCBhYm92ZSBpZiB0aGlzIGZhaWxzLiAgTm90IG5pY2UuDQo+ID4NCj4gPiBJJ20gbm90IGNv
+cnJlY3QgaW4gdGhlIGNvdmVyIGxldHRlciwgdGhlIGFjdHVhbCBwcm9ibGVtIHdpdGggb3BlcmF0
+aW9uDQo+ID4gcmVnaW9uIHJlbW92ZSBpcyB3aXRoIG1vZHVsZSB1bmxvYWQsIGl0IGhhcHBlbnMg
+bGlrZSB0aGlzOg0KPiA+DQo+ID4gVGhlIGFjcGlfcmVtb3ZlX2FkZHJlc3Nfc3BhY2VfaGFuZGxl
+ciBkb2Vzbid0IHdhaXQgZm9yIHRoZSBjdXJyZW50DQo+ID4gcnVubmluZyBoYW5kbGVyIHRvIHJl
+dHVybiwgc28gaWYgd2UgY2FsbA0KPiA+IGFjcGlfcmVtb3ZlX2FkZHJlc3Nfc3BhY2VfaGFuZGxl
+ciBpbiBhIG1vZHVsZSdzIGV4aXQgZnVuY3Rpb24sIHRoZQ0KPiA+IGhhbmRsZXIncyBtZW1vcnkg
+d2lsbCBiZSBmcmVlZCBhbmQgdGhlIHJ1bm5pbmcgaGFuZGxlciB3aWxsIGFjY2VzcyB0bw0KPiA+
+IGEgbm8gbG9uZ2VyIHZhbGlkIG1lbW9yeSBwbGFjZS4NCj4gPg0KPiA+IFNvIGFzIGxvbmcgYXMg
+d2UgY2FuIG1ha2Ugc3VyZSB0aGUgaGFuZGxlciB3aWxsIG5vdCBnbyBhd2F5IGZyb20gdGhlDQo+
+ID4gbWVtb3J5LCB3ZSBhcmUgc2FmZS4NCj4gDQo+IFRoaXMgb25seSBtZWFucyB0aGF0IGFkZHJl
+c3Mgc3BhY2UgaGFuZGxlcnMgY2Fubm90IGJlIHJlbW92ZWQgZnJvbSBrZXJuZWwNCj4gbW9kdWxl
+cy4NCj4gDQo+IEx2IHdhcyB0cnlpbmcgdG8gYWRkIGEgd3JhcHBlciBmb3IgdGhhdCBzb21lIHRp
+bWUgYWdvLCBtYXliZSBpdCdzIGEgZ29vZA0KPiBpZGVhIHRvIHJldml2ZSB0aGF0Pw0KDQpJIG1h
+eSBmaXggdGhlIGlzc3VlIGluIEFDUElDQSwgYnV0IGl0IGxvb2tzIGxpa2UgdGhhdCBpdCB3aWxs
+IGNvc3QgdGltZSB0byBkaXNjdXNzLg0KU28gSSBhbHNvIHRoaW5rIGl0IGlzIGJldHRlciB0byB0
+YWtlIHRoZSB3cmFwcGVyIG5vdy4NCkknbGwgaGFuZCB0aGUgcGF0Y2ggdG8gQWFyb24gdG8gbGV0
+IGhpbSBkbyBhIHRlc3Qgb24gaXQgYmVmb3JlIHBvc3RpbmcgaXQgYWdhaW4uDQoNClRoYW5rcyBh
+bmQgYmVzdCByZWdhcmRzDQotTHYNCg0KPiA+IFdpdGggdGhpcyBzYWlkLCB0aGUgdXBkYXRlZCBw
+YXRjaCBpcyBoZXJlOg0KPiA+DQo+ID4gRnJvbTogQWFyb24gTHUgPGFhcm9uLmx1QGludGVsLmNv
+bT4NCj4gPiBEYXRlOiBNb24sIDIwIE9jdCAyMDE0IDE3OjA2OjIwICswODAwDQo+ID4gU3ViamVj
+dDogW1BBVENIIDMvM10gQUNQSSAvIFBNSUM6IEFYUDI4ODogc3VwcG9ydCB2aXJ0dWFsIEdQSU8g
+aW4gQUNQSSB0YWJsZQ0KPiA+DQo+ID4gVGhlIHNhbWUgdmlydHVhbCBHUElPIHN0cmF0ZWd5IGlz
+IGFsc28gdXNlZCBmb3IgdGhlIEFYUDI4OCBQTUlDIGluIHRoYXQNCj4gPiB2YXJpb3VzIGNvbnRy
+b2wgbWV0aG9kcyB0aGF0IGFyZSB1c2VkIHRvIGRvIHBvd2VyIHJhaWwgaGFuZGxpbmcgYW5kDQo+
+ID4gc2Vuc29yIHJlYWRpbmcvc2V0dGluZyB3aWxsIHRvdWNoIEdQSU8gZmllbGRzIGRlZmluZWQg
+dW5kZXIgdGhlIFBNSUMNCj4gPiBkZXZpY2UuIFRoZSBHUElPIGZpbGVkcyBhcmUgb25seSBkZWZp
+bmVkIGJ5IHRoZSBBQ1BJIGNvZGUgd2hpbGUgdGhlDQo+ID4gYWN0dWFsIGhhcmR3YXJlIGRvZXNu
+J3QgcmVhbGx5IGhhdmUgYSBHUElPIGNvbnRyb2xsZXIsIGJ1dCB0byBtYWtlIHRob3NlDQo+ID4g
+Y29udHJvbCBtZXRob2QgZXhlY3V0aW9uIHN1Y2NlZWQsIHdlIGhhdmUgdG8gaW5zdGFsbCBhIEdQ
+SU8gaGFuZGxlciBmb3INCj4gPiB0aGUgUE1JQyBkZXZpY2UgaGFuZGxlLiBTaW5jZSB3ZSBkbyBu
+b3QgbmVlZCB0aGUgdmlydHVhbCBHUElPIHN0cmF0ZWd5LA0KPiA+IHdlIGNhbiBzaW1wbHkgZG8g
+bm90aGluZyBpbiB0aGF0IGhhbmRsZXIuDQo+ID4NCj4gPiBTaWduZWQtb2ZmLWJ5OiBBYXJvbiBM
+dSA8YWFyb24ubHVAaW50ZWwuY29tPg0KPiA+IC0tLQ0KPiA+ICBkcml2ZXJzL2FjcGkvcG1pYy9p
+bnRlbF9wbWljX3hwb3dlci5jIHwgMzAgKysrKysrKysrKysrKysrKysrKysrKysrKystLS0tDQo+
+ID4gIDEgZmlsZSBjaGFuZ2VkLCAyNiBpbnNlcnRpb25zKCspLCA0IGRlbGV0aW9ucygtKQ0KPiA+
+DQo+ID4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvYWNwaS9wbWljL2ludGVsX3BtaWNfeHBvd2VyLmMg
+Yi9kcml2ZXJzL2FjcGkvcG1pYy9pbnRlbF9wbWljX3hwb3dlci5jDQo+ID4gaW5kZXggNzk1Y2Ew
+NzNkYjA4Li45ZWM1N2ViZDgxYzkgMTAwNjQ0DQo+ID4gLS0tIGEvZHJpdmVycy9hY3BpL3BtaWMv
+aW50ZWxfcG1pY194cG93ZXIuYw0KPiA+ICsrKyBiL2RyaXZlcnMvYWNwaS9wbWljL2ludGVsX3Bt
+aWNfeHBvd2VyLmMNCj4gPiBAQCAtMjIwLDEzICsyMjAsMzUgQEAgc3RhdGljIHN0cnVjdCBpbnRl
+bF9wbWljX29wcmVnaW9uX2RhdGEgaW50ZWxfeHBvd2VyX3BtaWNfb3ByZWdpb25fZGF0YSA9IHsN
+Cj4gPiAgCS50aGVybWFsX3RhYmxlX2NvdW50ID0gQVJSQVlfU0laRSh0aGVybWFsX3RhYmxlKSwN
+Cj4gPiAgfTsNCj4gPg0KPiA+ICtzdGF0aWMgYWNwaV9zdGF0dXMgaW50ZWxfeHBvd2VyX3BtaWNf
+Z3Bpb19oYW5kbGVyKHUzMiBmdW5jdGlvbiwNCj4gPiArCQlhY3BpX3BoeXNpY2FsX2FkZHJlc3Mg
+YWRkcmVzcywgdTMyIGJpdF93aWR0aCwgdTY0ICp2YWx1ZSwNCj4gPiArCQl2b2lkICpoYW5kbGVy
+X2NvbnRleHQsIHZvaWQgKnJlZ2lvbl9jb250ZXh0KQ0KPiA+ICt7DQo+ID4gKwlyZXR1cm4gQUVf
+T0s7DQo+ID4gK30NCj4gPg0KPiA+ICBzdGF0aWMgaW50IGludGVsX3hwb3dlcl9wbWljX29wcmVn
+aW9uX3Byb2JlKHN0cnVjdCBwbGF0Zm9ybV9kZXZpY2UgKnBkZXYpDQo+ID4gIHsNCj4gPiAtCXN0
+cnVjdCBheHAyMHhfZGV2ICpheHAyMHggPSBkZXZfZ2V0X2RydmRhdGEocGRldi0+ZGV2LnBhcmVu
+dCk7DQo+ID4gLQlyZXR1cm4gaW50ZWxfcG1pY19pbnN0YWxsX29wcmVnaW9uX2hhbmRsZXIoJnBk
+ZXYtPmRldiwNCj4gPiAtCQkJQUNQSV9IQU5ETEUocGRldi0+ZGV2LnBhcmVudCksIGF4cDIweC0+
+cmVnbWFwLA0KPiA+IC0JCQkmaW50ZWxfeHBvd2VyX3BtaWNfb3ByZWdpb25fZGF0YSk7DQo+ID4g
+KwlzdHJ1Y3QgZGV2aWNlICpwYXJlbnQgPSBwZGV2LT5kZXYucGFyZW50Ow0KPiA+ICsJc3RydWN0
+IGF4cDIweF9kZXYgKmF4cDIweCA9IGRldl9nZXRfZHJ2ZGF0YShwYXJlbnQpOw0KPiA+ICsJYWNw
+aV9zdGF0dXMgc3RhdHVzOw0KPiA+ICsJaW50IHJlc3VsdDsNCj4gPiArDQo+ID4gKwlzdGF0dXMg
+PSBhY3BpX2luc3RhbGxfYWRkcmVzc19zcGFjZV9oYW5kbGVyKEFDUElfSEFORExFKHBhcmVudCks
+DQo+ID4gKwkJCUFDUElfQURSX1NQQUNFX0dQSU8sIGludGVsX3hwb3dlcl9wbWljX2dwaW9faGFu
+ZGxlciwNCj4gPiArCQkJTlVMTCwgTlVMTCk7DQo+ID4gKwlpZiAoQUNQSV9GQUlMVVJFKHN0YXR1
+cykpDQo+ID4gKwkJcmV0dXJuIC1FTk9ERVY7DQo+ID4gKw0KPiA+ICsJcmVzdWx0ID0gaW50ZWxf
+cG1pY19pbnN0YWxsX29wcmVnaW9uX2hhbmRsZXIoJnBkZXYtPmRldiwNCj4gPiArCQkJCQlBQ1BJ
+X0hBTkRMRShwYXJlbnQpLCBheHAyMHgtPnJlZ21hcCwNCj4gPiArCQkJCQkmaW50ZWxfeHBvd2Vy
+X3BtaWNfb3ByZWdpb25fZGF0YSk7DQo+ID4gKwlpZiAocmVzdWx0KQ0KPiA+ICsJCWFjcGlfcmVt
+b3ZlX2FkZHJlc3Nfc3BhY2VfaGFuZGxlcihBQ1BJX0hBTkRMRShwYXJlbnQpLA0KPiA+ICsJCQkJ
+CQkgIEFDUElfQURSX1NQQUNFX0dQSU8sDQo+ID4gKwkJCQkJCSAgaW50ZWxfeHBvd2VyX3BtaWNf
+Z3Bpb19oYW5kbGVyKTsNCj4gPiArDQo+ID4gKwlyZXR1cm4gcmVzdWx0Ow0KPiA+ICB9DQo+ID4N
+Cj4gPiAgc3RhdGljIHN0cnVjdCBwbGF0Zm9ybV9kcml2ZXIgaW50ZWxfeHBvd2VyX3BtaWNfb3By
+ZWdpb25fZHJpdmVyID0gew0KPiA+DQo+IA0KPiAtLQ0KPiBJIHNwZWFrIG9ubHkgZm9yIG15c2Vs
+Zi4NCj4gUmFmYWVsIEouIFd5c29ja2ksIEludGVsIE9wZW4gU291cmNlIFRlY2hub2xvZ3kgQ2Vu
+dGVyLg0K
