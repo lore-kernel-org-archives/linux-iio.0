@@ -1,92 +1,134 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mx0a-00158d01.pphosted.com ([208.84.65.189]:15318 "EHLO
-	mx0a-00158d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1750877AbaKFQWN convert rfc822-to-8bit
-	(ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Thu, 6 Nov 2014 11:22:13 -0500
-From: Fabien Proriol <Fabien.Proriol@jdsu.com>
-To: Lars-Peter Clausen <lars@metafoo.de>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Michal Simek <michal.simek@xilinx.com>
-CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Subject: Re: [PATCH] 0001-xilinx-xadc-core-Fix-voltage-offset.patch
-Date: Thu, 6 Nov 2014 16:18:24 +0000
-Message-ID: <545B9EF1.8000606@jdsu.com>
-References: <545B9479.5030700@jdsu.com> <545B976D.4080303@metafoo.de>
-In-Reply-To: <545B976D.4080303@metafoo.de>
-Content-Type: text/plain; charset="Windows-1252"
+Return-Path: <Ezequiel.Garcia@imgtec.com>
+Message-ID: <5474FCC8.8080906@imgtec.com>
+Date: Tue, 25 Nov 2014 19:03:52 -0300
+From: Ezequiel Garcia <ezequiel.garcia@imgtec.com>
 MIME-Version: 1.0
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+To: Hartmut Knaack <knaack.h@gmx.de>, Andrew Bresticker
+	<abrestic@chromium.org>, James Hartley <james.hartley@imgtec.com>,
+	"Lars-Peter Clausen" <lars@metafoo.de>, Jonathan Cameron <jic23@kernel.org>
+CC: <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
+	<robh+dt@kernel.org>, <Pawel.Moll@arm.com>, <Mark.Rutland@arm.com>,
+	<ijc+devicetree@hellion.org.uk>, <galak@codeaurora.org>,
+	<Naidu.Tellapati@imgtec.com>, Phani Movva <Phani.Movva@imgtec.com>
+Subject: Re: [PATCH v3 1/3] iio: adc: Cosmic Circuits 10001 ADC driver
+References: <1415888044-16635-1-git-send-email-ezequiel.garcia@imgtec.com> <1415888044-16635-2-git-send-email-ezequiel.garcia@imgtec.com> <546FE3A7.6040308@gmx.de> <5474C062.2020604@imgtec.com> <5474F7A5.6030008@gmx.de>
+In-Reply-To: <5474F7A5.6030008@gmx.de>
+Content-Type: text/plain; charset="iso-8859-15"
+List-ID: <linux-iio@vger.kernel.org>
 
-On 06/11/2014 16:44, Lars-Peter Clausen wrote:
-> On 11/06/2014 04:33 PM, Fabien Proriol wrote:
->>   From 3f57e39e3c69476513c00cd5ec45703f58334972 Mon Sep 17 00:00:00 2001
->> From: Fabien Proriol <fabien.proriol@jdsu.com>
->> Date: Tue, 4 Nov 2014 17:05:59 +0100
->> Subject: [PATCH] xilinx-xadc-core: Fix voltage offset
+
+
+On 11/25/2014 06:41 PM, Hartmut Knaack wrote:
 >>
->> When xilinx-xadc is used with hwmon driver to read voltage, offset used
->> for temperature is always apply.
->> This patch change the return for IIO_CHAN_INFO_OFFSET to -EINVAL except
->> for temperature to avoid offset.
->
-> I think we should rather fix iio_channel_read() to check if the 
-> channel supports the property that we try to read. Other drivers are 
-> likely to suffer from the same issue and fixing it in a central place 
-> fixes them all.
->
-> - Lars
->
->
+>> Unless I'm missing something, that's exactly what XOR does.
+>>
+>> Example:
+>>
+>> reserved_channels = 0x2;
+>> channel_map = 0x7 ^ reserved_channels -> 0x5
+>>
+> You miss to check ret for a valid range, which you don't need to do when masking out channels.
+> Example:
+> reserved_channels = 0x8;
+> channel_map = 0x7 ^ reserved_channels -> 0xf
+> And this is actually happening in the current revision (with the wrong channel_map assignment), that a reserved channel in DT would become usable.
 
-Ok, I can propose this following patch.
-With my xilinx-xadc driver, it fix also the same problem...
+Right, definitely a check is needed.
 
-Fabien
+>>>> +
+>>>> +	adc_dev->reg = devm_regulator_get(&pdev->dev, "vref");
+>>>> +	if (IS_ERR_OR_NULL(adc_dev->reg))
+>>>> +		return -EINVAL;
+>>> 	if (IS_ERR(adc_dev->reg))
+>>> 		return PTR_ERR(adc_dev->reg);
+>>
+>> Are you sure? What if devm_regulator_get() returns NULL?
+>>
+> I had a look at it, but couldn't figure out a condition in which it would return NULL. But I'd be happy to be informed of anything different.
 
+If CONFIG_REGULATOR=n you get NULL there (although I added a select REGULATOR
+on the v4 I just posted).
 
- From d605db8de19687b7271e722aa1fa6028f1472a7b Mon Sep 17 00:00:00 2001
-From: Fabien Proriol <fabien.proriol@jdsu.com>
-Date: Thu, 6 Nov 2014 17:12:27 +0100
-Subject: [PATCH] iio: Fix iio_channel_read return if channel havn't info
+>>>> +
+>>>> +	ret = regulator_enable(adc_dev->reg);
+>>>> +	if (ret)
+>>>> +		return ret;
+>>>> +
+>>>> +	indio_dev->dev.parent = &pdev->dev;
+>>>> +	indio_dev->name = dev_name(&pdev->dev);
+>>>> +	indio_dev->info = &cc10001_adc_info;
+>>>> +	indio_dev->modes = INDIO_DIRECT_MODE;
+>>>> +
+>>>> +	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+>>>> +	adc_dev->reg_base = devm_ioremap_resource(&pdev->dev, res);
+>>>> +	if (IS_ERR(adc_dev->reg_base))
+>>> Need to put error code into ret.
+>>
+>> Right.
+>>
+>>>> +		goto err_disable_reg;
+>>>> +
+>>>> +	adc_dev->adc_clk = devm_clk_get(&pdev->dev, "adc");
+>>>> +	if (IS_ERR(adc_dev->adc_clk)) {
+>>>> +		dev_err(&pdev->dev, "Failed to get the clock\n");
+>>> Need to put error code into ret.
+>>>> +		goto err_disable_reg;
+>>>> +	}
+>>>> +
+>>>> +	ret = clk_prepare_enable(adc_dev->adc_clk);
+>>>> +	if (ret) {
+>>>> +		dev_err(&pdev->dev, "Failed to enable the clock\n");
+>>>> +		goto err_disable_reg;
+>>>> +	}
+>>>> +
+>>>> +	adc_clk_rate = clk_get_rate(adc_dev->adc_clk);
+>>>> +	if (!adc_clk_rate) {
+>>>> +		ret = -EINVAL;
+>>>> +		dev_err(&pdev->dev, "null clock rate!\n");
+>>> Start message with upper case?
+>>
+>> Actually, I'd rather make the others start with lower case.
+> Fair enough, unless they are full sentences like here. My english grammar tells me they should start with capital letters.
 
-iio_channel_read must return an error to avoid offset for channel
-without IIO_CHAN_INFO_OFFSET property
+Yeah, but it's not the start of the message, as it's prefixed
+with the device stuff.
 
-Signed-off-by: Fabien Proriol <fabien.proriol@jdsu.com>
----
-  drivers/iio/inkern.c | 10 +++++++++-
-  1 file changed, 9 insertions(+), 1 deletion(-)
+>>
+>>>> +		goto err_disable_clk;
+>>>> +	}
+>>>> +
+>>>> +	adc_dev->eoc_delay_ns = NSEC_PER_SEC / adc_clk_rate;
+>>>> +	adc_dev->start_delay_ns = adc_dev->eoc_delay_ns * CC10001_WAIT_CYCLES;
+>>>> +
+>>>> +	/* Setup the ADC channels available on the device */
+>>>> +	ret = cc10001_adc_channel_init(indio_dev);
+>>>> +	if (ret < 0) {
+>>>> +		dev_err(&pdev->dev, "Could not initialize the channels.\n");
+>>>> +		goto err_disable_clk;
+>>>> +	}
+>>>> +
+>>>> +	mutex_init(&adc_dev->lock);
+>>>> +
+>>>> +	ret = iio_triggered_buffer_setup(indio_dev, NULL,
+>>>> +					 &cc10001_adc_trigger_h, NULL);
+>>>> +	if (ret < 0)
+>>>> +		goto err_disable_clk;
+>>>> +
+>>>> +	ret = iio_device_register(indio_dev);
+>>>> +	if (ret < 0)
+>>>> +		goto err_cleanup_buffer;
+>>>> +
+>>>> +	platform_set_drvdata(pdev, indio_dev);
+>>> Move this above iio_device_register.
+>>
+>> What for?
+> To make iio_device_register the last operation of the probe.
 
-diff --git a/drivers/iio/inkern.c b/drivers/iio/inkern.c
-index 1e8e94d..04cb23f 100644
---- a/drivers/iio/inkern.c
-+++ b/drivers/iio/inkern.c
-@@ -419,12 +419,20 @@ static int iio_channel_read(struct iio_channel 
-*chan, int *val, int *val2,
-         enum iio_chan_info_enum info)
-  {
-         int unused;
-+       int ret;
+I really don't think it matters, since platform_get_drvdata
+is only called in the remove.
 
-         if (val2 == NULL)
-                 val2 = &unused;
+I'll move it if you think it's worth it, though.
 
--       return chan->indio_dev->info->read_raw(chan->indio_dev, 
-chan->channel,
-+       if (!iio_channel_has_info(chan->channel, info)) {
-+               ret = -EINVAL;
-+               goto err;
-+       }
-+
-+       ret = chan->indio_dev->info->read_raw(chan->indio_dev, 
-chan->channel,
-                                                 val, val2, info);
-+err:
-+       return ret;
-  }
-
-  int iio_read_channel_raw(struct iio_channel *chan, int *val)
+Thanks for the review!
 -- 
-2.0.4
+Ezequiel
