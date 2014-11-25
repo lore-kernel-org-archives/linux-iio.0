@@ -1,10 +1,10 @@
 Return-Path: <Adam.Thomson.Opensource@diasemi.com>
-Message-ID: <0fc61953ef0d2d6a7d5c63dae201903570d07276.1416938054.git.Adam.Thomson.Opensource@diasemi.com>
+Message-ID: <4193f267961bd62ae3f1e35369edfbf191c660dd.1416938054.git.Adam.Thomson.Opensource@diasemi.com>
 In-Reply-To: <cover.1416938054.git.Adam.Thomson.Opensource@diasemi.com>
 References: <cover.1416938054.git.Adam.Thomson.Opensource@diasemi.com>
 From: Adam Thomson <Adam.Thomson.Opensource@diasemi.com>
-Date: Tue, 25 Nov 2014 18:25:25 +0000
-Subject: [PATCH v4 2/8] mfd: da9150: Add DT binding documentation for core
+Date: Tue, 25 Nov 2014 18:25:35 +0000
+Subject: [PATCH v4 6/8] power: da9150: Add DT binding documentation for charger
 To: Lee Jones <lee.jones@linaro.org>, Samuel Ortiz <sameo@linux.intel.com>,
 	Jonathan Cameron <jic23@kernel.org>, <linux-iio@vger.kernel.org>, Sebastian
  Reichel <sre@kernel.org>, Dmitry Eremin-Solenikov <dbaryshkov@gmail.com>,
@@ -21,58 +21,41 @@ List-ID: <linux-iio@vger.kernel.org>
 
 Signed-off-by: Adam Thomson <Adam.Thomson.Opensource@diasemi.com>
 ---
- Documentation/devicetree/bindings/mfd/da9150.txt | 43 ++++++++++++++++++++++++
- 1 file changed, 43 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/mfd/da9150.txt
+ .../devicetree/bindings/power/da9150-charger.txt   | 26 ++++++++++++++++++++++
+ 1 file changed, 26 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/power/da9150-charger.txt
 
-diff --git a/Documentation/devicetree/bindings/mfd/da9150.txt b/Documentation/devicetree/bindings/mfd/da9150.txt
+diff --git a/Documentation/devicetree/bindings/power/da9150-charger.txt b/Documentation/devicetree/bindings/power/da9150-charger.txt
 new file mode 100644
-index 0000000..d0588ea
+index 0000000..f390666
 --- /dev/null
-+++ b/Documentation/devicetree/bindings/mfd/da9150.txt
-@@ -0,0 +1,43 @@
-+Dialog Semiconductor DA9150 Combined Charger/Fuel-Gauge MFD bindings
-+
-+DA9150 consists of a group of sub-devices:
-+
-+Device			 Description
-+------			 -----------
-+da9150-gpadc		: General Purpose ADC
-+da9150-charger		: Battery Charger
-+
-+======
++++ b/Documentation/devicetree/bindings/power/da9150-charger.txt
+@@ -0,0 +1,26 @@
++Dialog Semiconductor DA9150 Charger Power Supply bindings
 +
 +Required properties:
-+- compatible : Should be "dlg,da9150"
-+- reg: Specifies the I2C slave address
-+- interrupt-parent: Specifies the phandle of the interrupt controller to which
-+  the IRQs from da9150 are delivered to.
-+- interrupts: IRQ line info for da9150 chip.
-+- interrupt-controller: da9150 has internal IRQs (own IRQ domain).
-+  (See Documentation/devicetree/bindings/interrupt-controller/interrupts.txt for
-+   further information relating to interrupt properties)
++- compatible: "dlg,da9150-charger" for DA9150 Charger Power Supply
 +
-+Sub-devices:
-+- da9150-gpadc: See Documentation/devicetree/bindings/iio/adc/da9150-gpadc.txt
-+- da9150-charger: See Documentation/devicetree/bindings/power/da9150-charger.txt
++Optional properties:
++- io-channels: List of phandle and IIO specifier pairs
++- io-channel-names: List of channel names used by charger
++      ["CHAN_IBUS", "CHAN_VBUS", "CHAN_TJUNC", "CHAN_VBAT"]
++  (See Documentation/devicetree/bindings/iio/iio-bindings.txt for further info)
 +
 +
 +Example:
 +
-+	charger_fg: da9150@58 {
-+		compatible = "dlg,da9150";
-+		reg = <0x58>;
-+		interrupt-parent = <&gpio6>;
-+		interrupts = <11 IRQ_TYPE_LEVEL_LOW>;
-+		interrupt-controller;
++	da9150-charger {
++		compatible = "dlg,da9150-charger";
 +
-+		gpadc: da9150-gpadc {
-+			...
-+		};
-+
-+		da9150-charger {
-+			...
-+		};
++		io-channels = <&gpadc 0>,
++			      <&gpadc 2>,
++			      <&gpadc 8>,
++			      <&gpadc 5>;
++		io-channel-names = "CHAN_IBUS",
++				   "CHAN_VBUS",
++				   "CHAN_TJUNC",
++				   "CHAN_VBAT";
 +	};
 --
 1.9.3
