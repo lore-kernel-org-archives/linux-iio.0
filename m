@@ -1,29 +1,22 @@
-Return-Path: <lars@metafoo.de>
-Message-ID: <54764F01.20005@metafoo.de>
-Date: Wed, 26 Nov 2014 23:06:57 +0100
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from smtp-out-207.synserver.de ([212.40.185.207]:1095 "EHLO
+	smtp-out-207.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751252AbaKYQgq (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 25 Nov 2014 11:36:46 -0500
+Message-ID: <5474B01D.8020701@metafoo.de>
+Date: Tue, 25 Nov 2014 17:36:45 +0100
 From: Lars-Peter Clausen <lars@metafoo.de>
 MIME-Version: 1.0
-To: George McCollister <george.mccollister@gmail.com>
-CC: Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
- Peter Meerwald <pmeerw@pmeerw.net>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
- Sebastian Reichel <sre@debian.org>, Harald Geyer <harald@ccbib.org>,
- Reyad Attiyat <reyad.attiyat@gmail.com>,
- Daniel Baluta <daniel.baluta@intel.com>,
- open list:ABI/API <linux-api@vger.kernel.org>,
- open list <linux-kernel@vger.kernel.org>,
- "open list:IIO SUBSYSTEM AND..." <linux-iio@vger.kernel.org>,
- open list:STAGING SUBSYSTEM <devel@driverdev.osuosl.org>
-Subject: Re: [PATCH 1/2] iio: Add support for waveform output
-References: <1417038344-3801-1-git-send-email-george.mccollister@gmail.com>
-In-Reply-To: <1417038344-3801-1-git-send-email-george.mccollister@gmail.com>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-List-ID: <linux-iio@vger.kernel.org>
+To: Vlad Dogaru <vlad.dogaru@intel.com>, linux-iio@vger.kernel.org
+Subject: Re: [PATCH 0/4] Add valid sample channel
+References: <1416919687-14271-1-git-send-email-vlad.dogaru@intel.com>
+In-Reply-To: <1416919687-14271-1-git-send-email-vlad.dogaru@intel.com>
+Content-Type: text/plain; charset=windows-1252; format=flowed
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On 11/26/2014 10:45 PM, George McCollister wrote:
-> Output can be held high or low for a specified period of time.
-> Support for waveform capture could be added in the future.
->
+On 11/25/2014 01:48 PM, Vlad Dogaru wrote:
+> This is an attempt to address the problem of buffering in devices which have
+> different scan frequencies for different channels.
 
-That's a PWM device?
+Will these frequencies still be related or completely arbitrary?
