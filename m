@@ -1,77 +1,72 @@
-Return-Path: <Ezequiel.Garcia@imgtec.com>
-From: Ezequiel Garcia <ezequiel.garcia@imgtec.com>
-To: Jonathan Cameron <jic23@kernel.org>, James Hartley
-	<james.hartley@imgtec.com>, Andrew Bresticker <abrestic@chromium.org>
-CC: <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
-	<robh+dt@kernel.org>, <Pawel.Moll@arm.com>, <Mark.Rutland@arm.com>,
-	<ijc+devicetree@hellion.org.uk>, <galak@codeaurora.org>, Ezequiel Garcia
-	<ezequiel.garcia@imgtec.com>
-Subject: [PATCH v4 0/3] iio: Add Cosmic Circuits ADC support
-Date: Tue, 25 Nov 2014 16:52:44 -0300
-Message-ID: <1416945167-28165-1-git-send-email-ezequiel.garcia@imgtec.com>
+Return-Path: <lars@metafoo.de>
+Message-ID: <5474D047.4040501@metafoo.de>
+Date: Tue, 25 Nov 2014 19:53:59 +0100
+From: Lars-Peter Clausen <lars@metafoo.de>
 MIME-Version: 1.0
-Content-Type: text/plain
+To: Octavian Purdila <octavian.purdila@intel.com>,
+ Jonathan Cameron <jic23@kernel.org>
+CC: Daniel Baluta <daniel.baluta@intel.com>,
+ Vlad Dogaru <vlad.dogaru@intel.com>,
+ "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Subject: Re: [PATCH 0/4] Add valid sample channel
+References: <1416919687-14271-1-git-send-email-vlad.dogaru@intel.com>	<5474B01D.8020701@metafoo.de>	<CAEnQRZC_ax0n2b+pTiTVLk=0m+AzX7JkRHdB=8a70d8hQ3eD-Q@mail.gmail.com>	<5474B59B.8000101@metafoo.de>	<5D8E0479-F926-424A-B931-8A33BD99EC31@kernel.org> <CAE1zotLW8NwvorYajRbuVhwps+wJ7c1ezvDNm-X1LkgECKbAcw@mail.gmail.com>
+In-Reply-To: <CAE1zotLW8NwvorYajRbuVhwps+wJ7c1ezvDNm-X1LkgECKbAcw@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
 List-ID: <linux-iio@vger.kernel.org>
 
-Fourth round of this series. Jonathan: If nobody has further comments,
-I'd like to get this merged for v3.19.
+On 11/25/2014 07:27 PM, Octavian Purdila wrote:
+> On Tue, Nov 25, 2014 at 7:29 PM, Jonathan Cameron <jic23@kernel.org> wrote:
+>>
+>>
+>> On November 25, 2014 5:00:11 PM GMT+00:00, Lars-Peter Clausen <lars@metafoo.de> wrote:
+>>> On 11/25/2014 05:55 PM, Daniel Baluta wrote:
+>>>> On Tue, Nov 25, 2014 at 6:36 PM, Lars-Peter Clausen <lars@metafoo.de>
+>>> wrote:
+>>>>> On 11/25/2014 01:48 PM, Vlad Dogaru wrote:
+>>>>>>
+>>>>>> This is an attempt to address the problem of buffering in devices
+>>> which
+>>>>>> have
+>>>>>> different scan frequencies for different channels.
+>>>>>
+>>>>>
+>>>>> Will these frequencies still be related or completely arbitrary?
+>>>>
+>>>> For Kionix KMX61 we have the same set of frequencies for
+>>>> accelerometer and magnetometer (12.5, 25, 50, 100 Hz, etc)
+>>>> but for example at some point accel can be configured with 100 Hz
+>>>> and magnetometer with 12.5Hz.
+>>>>
+>>>> Does this matter?
+>>>
+>>> I'm wondering if it makes more sense to register multiple buffers or
+>>> devices
+>>> if the frequencies are completely unrelated. E.g. in the KMX61 case it
+>>> looks
+>>> as if its simply two logical devices in the same physical package.
+>>>
+>>> - Lars
+>> That is how we have handled this so far.
+>> Sometimes we have separate iio_devices for
+>> the logical functions e.g. hid-sensors and sometimes just multiple buffers.. I am
+>>   struggling to find it now but one of the ADC drivers had a insanely complex nest
+>>   sampling arrangement requiring 8 buffers. Final driver might have been simplified though...  We might still need a few tweaks
+>>   for multiple buffers not to having naming clashes....  Moving house so only have phone to hand!
+>>
+>
+> The main usage I see for a single device / buffer and multiple
+> channels is to reduce the user/kernel context switch overhead in a
+> sensor hub environment with lots of sensors (i.e. do a single read
+> instead of one for each sensor). The improvements are going to be even
+> bigger if the sensor hub supports a hardware buffer.
 
-Changes from v3:
+If those sensors run asynchronously to each other you'll end up with a lot 
+of padding data which is quite likely going to negate any context switch 
+overhead reduction.
 
-  * Fixed a few style nitpicks as per Hartmut's feedback.
+>
+> Some people are quite vocal about that, although I didn't see data
+> that can be used to draw a relevant conclusion yet. Time to do some
+> experiments, I guess :)
 
-  * Used GENMASK() to build the channel mask, which fixes a very nasty
-    bug. Also found by Hartmut.
-
-Changes from v2:
-
-  * Changed a devicetree property from adc-available-channels to
-    adc-reserved-channels, so it can be made optional.
-
-  * Renamed the driver from cc_10001_xxx to cc10001_xxx so it's consistent
-    with the rest of the kernel style.
-
-  * Some more minor cosmetic fixes.
-
-Changes from v1:
-
-  * Removed unneeded header includes.
-
-  * Changed all the names and macros prefix: s/CC_10001_/CC10001_.
-
-  * Used .update_scan_mode callback to preallocate the buffer.
-
-  * Used indio_dev for the struct iio_dev.
-
-  * Only read the regulator voltage when needed.
-
-  * Fixed probe() error handling.
-
-  * Used for_each_set_bit() instead of open-coding it.
-
-  * Name the power-down register as _POWER_UP, to make the code
-    less silly.
-
-  * Error out when no valid sample can be read (i.e. when end-of-conversion
-    poll times out).
-
-  * ... plus some assorted code cleaning based on the feedback.
-
-Ezequiel Garcia (1):
-  DT: Add a vendor prefix for Cosmic Circuits
-
-Phani Movva (2):
-  iio: adc: Cosmic Circuits 10001 ADC driver
-  DT: iio: adc: Add CC_10001 binding documentation
-
- .../devicetree/bindings/iio/adc/cc10001_adc.txt    |  22 ++
- .../devicetree/bindings/vendor-prefixes.txt        |   1 +
- drivers/iio/adc/Kconfig                            |  12 +
- drivers/iio/adc/Makefile                           |   1 +
- drivers/iio/adc/cc10001_adc.c                      | 424 +++++++++++++++++++++
- 5 files changed, 460 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/iio/adc/cc10001_adc.txt
- create mode 100644 drivers/iio/adc/cc10001_adc.c
-
--- 
-2.1.0
+Yes...
