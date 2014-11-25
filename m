@@ -1,125 +1,58 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga09.intel.com ([134.134.136.24]:10698 "EHLO mga09.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1752776AbaKJMof (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Mon, 10 Nov 2014 07:44:35 -0500
-From: Daniel Baluta <daniel.baluta@intel.com>
-To: jic23@kernel.org, knaack.h@gmx.de
-Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-	irina.tirdea@intel.com, daniel.baluta@inte.com
-Subject: [PATCH v4 7/7] iio: event_monitor: Add support for new channel types
-Date: Mon, 10 Nov 2014 14:45:35 +0200
-Message-Id: <1415623535-24337-8-git-send-email-daniel.baluta@intel.com>
-In-Reply-To: <1415623535-24337-1-git-send-email-daniel.baluta@intel.com>
-References: <1415623535-24337-1-git-send-email-daniel.baluta@intel.com>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <Adam.Thomson.Opensource@diasemi.com>
+Message-ID: <4b02cb8422fee25f5bc7c456778b00c9cfd2158f.1416938054.git.Adam.Thomson.Opensource@diasemi.com>
+In-Reply-To: <cover.1416938054.git.Adam.Thomson.Opensource@diasemi.com>
+References: <cover.1416938054.git.Adam.Thomson.Opensource@diasemi.com>
+From: Adam Thomson <Adam.Thomson.Opensource@diasemi.com>
+Date: Tue, 25 Nov 2014 18:25:37 +0000
+Subject: [PATCH v4 7/8] MAINTAINERS: Include DA9150 files in Dialog Semiconductor
+ support list.
+To: Lee Jones <lee.jones@linaro.org>, Samuel Ortiz <sameo@linux.intel.com>,
+	Jonathan Cameron <jic23@kernel.org>, <linux-iio@vger.kernel.org>, Sebastian
+ Reichel <sre@kernel.org>, Dmitry Eremin-Solenikov <dbaryshkov@gmail.com>,
+	David Woodhouse <dwmw2@infradead.org>, <linux-pm@vger.kernel.org>, Rob
+ Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland
+	<mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar
+ Gala <galak@codeaurora.org>, Grant Likely <grant.likely@linaro.org>,
+	<devicetree@vger.kernel.org>, Andrew Morton <akpm@linux-foundation.org>, Joe
+ Perches <joe@perches.com>, <linux-api@vger.kernel.org>
+CC: <linux-kernel@vger.kernel.org>, <support.opensource@diasemi.com>
+MIME-Version: 1.0
+Content-Type: text/plain
+List-ID: <linux-iio@vger.kernel.org>
 
-We have the following testing scenario:
-
-$ insmod iio_dummy_evgen.ko
-$ insmod iio_dummy.ko
-
-./iio_event_monitor /dev/iio:device0
-Event: time: 1412786467971335337, type: activity(running), channel: 0,
-evtype: thresh, direction: rising
-Event: time: 1412786530792974091, type: activity(walking), channel: 0,
-evtype: thresh, direction: falling
-Event: time: 1412764319184761765, type: steps, channel: 0, evtype: instance
-
-$ echo 1 > /sys/bus/iio/devices/iio_evgen/poke_ev0
-$ echo 2 > /sys/bus/iio/devices/iio_evgen/poke_ev0
-$ echo 3 > /sys/bus/iio/devices/iio_evgen/poke_ev0
-
-Signed-off-by: Irina Tirdea <irina.tirdea@intel.com>
-Signed-off-by: Daniel Baluta <daniel.baluta@intel.com>
+Signed-off-by: Adam Thomson <Adam.Thomson.Opensource@diasemi.com>
+Acked-by: Lee Jones <lee.jones@linaro.org>
 ---
- .../staging/iio/Documentation/iio_event_monitor.c  | 23 +++++++++++++++++++---
- 1 file changed, 20 insertions(+), 3 deletions(-)
+ MAINTAINERS | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/drivers/staging/iio/Documentation/iio_event_monitor.c b/drivers/staging/iio/Documentation/iio_event_monitor.c
-index 940ed23..def236a 100644
---- a/drivers/staging/iio/Documentation/iio_event_monitor.c
-+++ b/drivers/staging/iio/Documentation/iio_event_monitor.c
-@@ -49,6 +49,8 @@ static const char * const iio_chan_type_name_spec[] = {
- 	[IIO_CCT] = "cct",
- 	[IIO_PRESSURE] = "pressure",
- 	[IIO_HUMIDITYRELATIVE] = "humidityrelative",
-+	[IIO_ACTIVITY] = "activity",
-+	[IIO_STEPS] = "steps",
- };
- 
- static const char * const iio_ev_type_text[] = {
-@@ -57,6 +59,7 @@ static const char * const iio_ev_type_text[] = {
- 	[IIO_EV_TYPE_ROC] = "roc",
- 	[IIO_EV_TYPE_THRESH_ADAPTIVE] = "thresh_adaptive",
- 	[IIO_EV_TYPE_MAG_ADAPTIVE] = "mag_adaptive",
-+	[IIO_EV_TYPE_INSTANCE] = "instance",
- };
- 
- static const char * const iio_ev_dir_text[] = {
-@@ -92,6 +95,10 @@ static const char * const iio_modifier_names[] = {
- 	[IIO_MOD_NORTH_TRUE] = "from_north_true",
- 	[IIO_MOD_NORTH_MAGN_TILT_COMP] = "from_north_magnetic_tilt_comp",
- 	[IIO_MOD_NORTH_TRUE_TILT_COMP] = "from_north_true_tilt_comp",
-+	[IIO_MOD_RUNNING] = "running",
-+	[IIO_MOD_JOGGING] = "jogging",
-+	[IIO_MOD_WALKING] = "walking",
-+	[IIO_MOD_STILL] = "still",
- };
- 
- static bool event_is_known(struct iio_event_data *event)
-@@ -121,6 +128,8 @@ static bool event_is_known(struct iio_event_data *event)
- 	case IIO_CCT:
- 	case IIO_PRESSURE:
- 	case IIO_HUMIDITYRELATIVE:
-+	case IIO_ACTIVITY:
-+	case IIO_STEPS:
- 		break;
- 	default:
- 		return false;
-@@ -154,6 +163,10 @@ static bool event_is_known(struct iio_event_data *event)
- 	case IIO_MOD_NORTH_TRUE:
- 	case IIO_MOD_NORTH_MAGN_TILT_COMP:
- 	case IIO_MOD_NORTH_TRUE_TILT_COMP:
-+	case IIO_MOD_RUNNING:
-+	case IIO_MOD_JOGGING:
-+	case IIO_MOD_WALKING:
-+	case IIO_MOD_STILL:
- 		break;
- 	default:
- 		return false;
-@@ -165,6 +178,7 @@ static bool event_is_known(struct iio_event_data *event)
- 	case IIO_EV_TYPE_ROC:
- 	case IIO_EV_TYPE_THRESH_ADAPTIVE:
- 	case IIO_EV_TYPE_MAG_ADAPTIVE:
-+	case IIO_EV_TYPE_INSTANCE:
- 		break;
- 	default:
- 		return false;
-@@ -174,6 +188,7 @@ static bool event_is_known(struct iio_event_data *event)
- 	case IIO_EV_DIR_EITHER:
- 	case IIO_EV_DIR_RISING:
- 	case IIO_EV_DIR_FALLING:
-+	case IIO_EV_DIR_NONE:
- 		break;
- 	default:
- 		return false;
-@@ -214,9 +229,11 @@ static void print_event(struct iio_event_data *event)
- 	else if (chan >= 0)
- 		printf("channel: %d, ", chan);
- 
--	printf("evtype: %s, direction: %s\n",
--		iio_ev_type_text[ev_type],
--		iio_ev_dir_text[dir]);
-+	printf("evtype: %s", iio_ev_type_text[ev_type]);
-+
-+	if (dir != IIO_EV_DIR_NONE)
-+		printf(", direction: %s", iio_ev_dir_text[dir]);
-+	printf("\n");
- }
- 
- int main(int argc, char **argv)
--- 
-1.9.1
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 0ff630d..4d2c39a 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -2990,12 +2990,15 @@ S:	Supported
+ F:	Documentation/hwmon/da90??
+ F:	drivers/gpio/gpio-da90??.c
+ F:	drivers/hwmon/da90??-hwmon.c
++F:	drivers/iio/adc/da91??-*.c
+ F:	drivers/input/misc/da90??_onkey.c
+ F:	drivers/input/touchscreen/da9052_tsi.c
+ F:	drivers/leds/leds-da90??.c
+ F:	drivers/mfd/da903x.c
+ F:	drivers/mfd/da90??-*.c
++F:	drivers/mfd/da91??-*.c
+ F:	drivers/power/da9052-battery.c
++F:	drivers/power/da91??-*.c
+ F:	drivers/regulator/da903x.c
+ F:	drivers/regulator/da9???-regulator.[ch]
+ F:	drivers/rtc/rtc-da90??.c
+@@ -3005,6 +3008,7 @@ F:	include/linux/mfd/da903x.h
+ F:	include/linux/mfd/da9052/
+ F:	include/linux/mfd/da9055/
+ F:	include/linux/mfd/da9063/
++F:	include/linux/mfd/da9150/
+ F:	include/sound/da[79]*.h
+ F:	sound/soc/codecs/da[79]*.[ch]
 
+--
+1.9.3
