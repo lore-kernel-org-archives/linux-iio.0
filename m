@@ -1,74 +1,67 @@
-Return-Path: <Adam.Thomson.Opensource@diasemi.com>
-Message-ID: <9d3c3451c2cac6035277fb36ffead1a1f8af453e.1416938054.git.Adam.Thomson.Opensource@diasemi.com>
-In-Reply-To: <cover.1416938054.git.Adam.Thomson.Opensource@diasemi.com>
-References: <cover.1416938054.git.Adam.Thomson.Opensource@diasemi.com>
-From: Adam Thomson <Adam.Thomson.Opensource@diasemi.com>
-Date: Tue, 25 Nov 2014 18:25:39 +0000
-Subject: [PATCH v4 8/8] iio: Add ABI documentation for input current readings
-To: Lee Jones <lee.jones@linaro.org>, Samuel Ortiz <sameo@linux.intel.com>,
-	Jonathan Cameron <jic23@kernel.org>, <linux-iio@vger.kernel.org>, Sebastian
- Reichel <sre@kernel.org>, Dmitry Eremin-Solenikov <dbaryshkov@gmail.com>,
-	David Woodhouse <dwmw2@infradead.org>, <linux-pm@vger.kernel.org>, Rob
- Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland
-	<mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar
- Gala <galak@codeaurora.org>, Grant Likely <grant.likely@linaro.org>,
-	<devicetree@vger.kernel.org>, Andrew Morton <akpm@linux-foundation.org>, Joe
- Perches <joe@perches.com>, <linux-api@vger.kernel.org>
-CC: <linux-kernel@vger.kernel.org>, <support.opensource@diasemi.com>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:36295 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751304AbaKYR3m (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 25 Nov 2014 12:29:42 -0500
+In-Reply-To: <5474B59B.8000101@metafoo.de>
+References: <1416919687-14271-1-git-send-email-vlad.dogaru@intel.com> <5474B01D.8020701@metafoo.de> <CAEnQRZC_ax0n2b+pTiTVLk=0m+AzX7JkRHdB=8a70d8hQ3eD-Q@mail.gmail.com> <5474B59B.8000101@metafoo.de>
 MIME-Version: 1.0
-Content-Type: text/plain
-List-ID: <linux-iio@vger.kernel.org>
+Content-Type: text/plain;
+ charset=UTF-8
+Subject: Re: [PATCH 0/4] Add valid sample channel
+From: Jonathan Cameron <jic23@kernel.org>
+Date: Tue, 25 Nov 2014 17:29:33 +0000
+To: Lars-Peter Clausen <lars@metafoo.de>,
+	Daniel Baluta <daniel.baluta@intel.com>
+CC: Vlad Dogaru <vlad.dogaru@intel.com>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Message-ID: <5D8E0479-F926-424A-B931-8A33BD99EC31@kernel.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Add information on in_current related readings.
 
-Signed-off-by: Adam Thomson <Adam.Thomson.Opensource@diasemi.com>
----
- Documentation/ABI/testing/sysfs-bus-iio | 17 +++++++++++++++++
- 1 file changed, 17 insertions(+)
 
-diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
-index d760b02..37cd4d4 100644
---- a/Documentation/ABI/testing/sysfs-bus-iio
-+++ b/Documentation/ABI/testing/sysfs-bus-iio
-@@ -92,6 +92,18 @@ Description:
- 		is required is a consistent labeling.  Units after application
- 		of scale and offset are millivolts.
+On November 25, 2014 5:00:11 PM GMT+00:00, Lars-Peter Clausen <lars@metafoo.de> wrote:
+>On 11/25/2014 05:55 PM, Daniel Baluta wrote:
+>> On Tue, Nov 25, 2014 at 6:36 PM, Lars-Peter Clausen <lars@metafoo.de>
+>wrote:
+>>> On 11/25/2014 01:48 PM, Vlad Dogaru wrote:
+>>>>
+>>>> This is an attempt to address the problem of buffering in devices
+>which
+>>>> have
+>>>> different scan frequencies for different channels.
+>>>
+>>>
+>>> Will these frequencies still be related or completely arbitrary?
+>>
+>> For Kionix KMX61 we have the same set of frequencies for
+>> accelerometer and magnetometer (12.5, 25, 50, 100 Hz, etc)
+>> but for example at some point accel can be configured with 100 Hz
+>> and magnetometer with 12.5Hz.
+>>
+>> Does this matter?
+>
+>I'm wondering if it makes more sense to register multiple buffers or
+>devices 
+>if the frequencies are completely unrelated. E.g. in the KMX61 case it
+>looks 
+>as if its simply two logical devices in the same physical package.
+>
+>- Lars
+That is how we have handled this so far.
+Sometimes we have separate iio_devices for
+the logical functions e.g. hid-sensors and sometimes just multiple buffers.. I am
+ struggling to find it now but one of the ADC drivers had a insanely complex nest
+ sampling arrangement requiring 8 buffers. Final driver might have been simplified though...  We might still need a few tweaks
+ for multiple buffers not to having naming clashes....  Moving house so only have phone to hand!
 
-+What:		/sys/bus/iio/devices/iio:deviceX/in_currentY_raw
-+What:		/sys/bus/iio/devices/iio:deviceX/in_currentY_supply_raw
-+KernelVersion:	3.17
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+		Raw (unscaled no bias removal etc.) current measurement from
-+		channel Y. In special cases where the channel does not
-+		correspond to externally available input one of the named
-+		versions may be used. The number must always be specified and
-+		unique to allow association with event codes. Units after
-+		application of scale and offset are milliamps.
-+
- What:		/sys/bus/iio/devices/iio:deviceX/in_capacitanceY_raw
- KernelVersion:	3.2
- Contact:	linux-iio@vger.kernel.org
-@@ -227,6 +239,8 @@ What:		/sys/bus/iio/devices/iio:deviceX/in_accel_y_offset
- What:		/sys/bus/iio/devices/iio:deviceX/in_accel_z_offset
- What:		/sys/bus/iio/devices/iio:deviceX/in_voltageY_offset
- What:		/sys/bus/iio/devices/iio:deviceX/in_voltage_offset
-+What:		/sys/bus/iio/devices/iio:deviceX/in_currentY_offset
-+What:		/sys/bus/iio/devices/iio:deviceX/in_current_offset
- What:		/sys/bus/iio/devices/iio:deviceX/in_tempY_offset
- What:		/sys/bus/iio/devices/iio:deviceX/in_temp_offset
- What:		/sys/bus/iio/devices/iio:deviceX/in_pressureY_offset
-@@ -249,8 +263,11 @@ Description:
- 		to the _raw output.
+Jonathan
+>
+>--
+>To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+>the body of a message to majordomo@vger.kernel.org
+>More majordomo info at  http://vger.kernel.org/majordomo-info.html
 
- What:		/sys/bus/iio/devices/iio:deviceX/in_voltageY_scale
-+What:		/sys/bus/iio/devices/iio:deviceX/in_currentY_scale
- What:		/sys/bus/iio/devices/iio:deviceX/in_voltageY_supply_scale
-+What:		/sys/bus/iio/devices/iio:deviceX/in_currentY_supply_scale
- What:		/sys/bus/iio/devices/iio:deviceX/in_voltage_scale
-+What:		/sys/bus/iio/devices/iio:deviceX/in_current_scale
- What:		/sys/bus/iio/devices/iio:deviceX/out_voltageY_scale
- What:		/sys/bus/iio/devices/iio:deviceX/out_altvoltageY_scale
- What:		/sys/bus/iio/devices/iio:deviceX/in_accel_scale
---
-1.9.3
+-- 
+Sent from my Android phone with K-9 Mail. Please excuse my brevity.
