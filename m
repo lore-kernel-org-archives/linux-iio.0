@@ -1,594 +1,340 @@
-Return-Path: <knaack.h@gmx.de>
-Message-ID: <5474F7A5.6030008@gmx.de>
-Date: Tue, 25 Nov 2014 22:41:57 +0100
-From: Hartmut Knaack <knaack.h@gmx.de>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from v094114.home.net.pl ([79.96.170.134]:57367 "HELO
+	v094114.home.net.pl" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with SMTP id S1751043AbaKYUND (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 25 Nov 2014 15:13:03 -0500
+From: "Rafael J. Wysocki" <rjw@rjwysocki.net>
+To: Aaron Lu <aaron.lu@intel.com>
+Cc: Lee Jones <lee.jones@linaro.org>,
+	Jacob Pan <jacob.jun.pan@linux.intel.com>,
+	Yegnesh Iyer <yegnesh.s.iyer@intel.com>,
+	linux-acpi@vger.kernel.org, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org, Lv Zheng <lv.zheng@intel.com>
+Subject: Re: [PATCH v3 updated 3/3] ACPI / PMIC: AXP288: support virtual GPIO in ACPI table
+Date: Tue, 25 Nov 2014 21:34:17 +0100
+Message-ID: <1873893.v9fHnNCXPp@vostro.rjw.lan>
+In-Reply-To: <54746FA2.9030408@intel.com>
+References: <1416553911-22990-1-git-send-email-aaron.lu@intel.com> <2204417.orosXAozvY@vostro.rjw.lan> <54746FA2.9030408@intel.com>
 MIME-Version: 1.0
-To: Ezequiel Garcia <ezequiel.garcia@imgtec.com>,
- Andrew Bresticker <abrestic@chromium.org>,
- James Hartley <james.hartley@imgtec.com>,
- Lars-Peter Clausen <lars@metafoo.de>,
- Jonathan Cameron <jic23@kernel.org>
-CC: linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
- robh+dt@kernel.org, Pawel.Moll@arm.com, Mark.Rutland@arm.com,
- ijc+devicetree@hellion.org.uk, galak@codeaurora.org,
- Naidu.Tellapati@imgtec.com, Phani Movva <Phani.Movva@imgtec.com>
-Subject: Re: [PATCH v3 1/3] iio: adc: Cosmic Circuits 10001 ADC driver
-References: <1415888044-16635-1-git-send-email-ezequiel.garcia@imgtec.com> <1415888044-16635-2-git-send-email-ezequiel.garcia@imgtec.com> <546FE3A7.6040308@gmx.de> <5474C062.2020604@imgtec.com>
-In-Reply-To: <5474C062.2020604@imgtec.com>
-Content-Type: text/plain; charset=ISO-8859-15
-List-ID: <linux-iio@vger.kernel.org>
+Content-Type: text/plain; charset="utf-8"
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Ezequiel Garcia schrieb am 25.11.2014 18:46:
+On Tuesday, November 25, 2014 08:01:38 PM Aaron Lu wrote:
+> On 11/24/2014 11:19 PM, Rafael J. Wysocki wrote:
+> > On Monday, November 24, 2014 05:32:33 PM Aaron Lu wrote:
+> >> On 11/24/2014 09:06 AM, Rafael J. Wysocki wrote:
+> >>> On Friday, November 21, 2014 03:11:51 PM Aaron Lu wrote:
+> >>>> +	if (!result) {
+> >>>> +		status = acpi_install_address_space_handler(
+> >>>> +				ACPI_HANDLE(parent), ACPI_ADR_SPACE_GPIO,
+> >>>> +				intel_xpower_pmic_gpio_handler, NULL, NULL);
+> >>>
+> >>> So here we have a problem, because we can't unregister the opregion handler
+> >>> registered above if this fails.  Not nice.
+> >>
+> >> I'm not correct in the cover letter, the actual problem with operation
+> >> region remove is with module unload, it happens like this:
+> >>
+> >> The acpi_remove_address_space_handler doesn't wait for the current
+> >> running handler to return, so if we call
+> >> acpi_remove_address_space_handler in a module's exit function, the
+> >> handler's memory will be freed and the running handler will access to
+> >> a no longer valid memory place.
+> >>
+> >> So as long as we can make sure the handler will not go away from the
+> >> memory, we are safe.
+> > 
+> > This only means that address space handlers cannot be removed from kernel
+> > modules.
 > 
+> If the module can not be unloaded(no module exit call), then we should
+> be safe.
 > 
-> On 11/21/2014 10:15 PM, Hartmut Knaack wrote:
->> Ezequiel Garcia schrieb am 13.11.2014 15:13:
->>> From: Phani Movva <Phani.Movva@imgtec.com>
->>>
->>> This commit adds support for Cosmic Circuits 10001 10-bit ADC device.
->> A few more issues - some got newly introduced, some have been overseen earlier (and some are just matter of taste ;-)
+> > 
+> > Lv was trying to add a wrapper for that some time ago, maybe it's a good
+> > idea to revive that?
 > 
-> OK, let's see then.
+> Is it this one? If it is, I'll test it and then add the unload
+> functionality to the PMIC drivers.
+
+Well, you need to wait for the patch below to be applied to upstream ACPICA
+and transfered to Linux from there.
+
+> From: Lv Zheng <lv.zheng@intel.com>
+> Date: Tue, 25 Nov 2014 15:42:44 +0800
+> Subject: [PATCH] ACPICA: Events: Add invocation protection for operation region callbacks.
 > 
->>>
->>> Signed-off-by: Phani Movva <Phani.Movva@imgtec.com>
->>> Signed-off-by: Naidu Tellapati <Naidu.Tellapati@imgtec.com>
->>> [Ezequiel: code style cleaning]
->>> Signed-off-by: Ezequiel Garcia <ezequiel.garcia@imgtec.com>
->>> ---
->>>  drivers/iio/adc/Kconfig       |  11 ++
->>>  drivers/iio/adc/Makefile      |   1 +
->>>  drivers/iio/adc/cc10001_adc.c | 425 ++++++++++++++++++++++++++++++++++++++++++
->>>  3 files changed, 437 insertions(+)
->>>  create mode 100644 drivers/iio/adc/cc10001_adc.c
->>>
->>> diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
->>> index 88bdc8f..09e2975 100644
->>> --- a/drivers/iio/adc/Kconfig
->>> +++ b/drivers/iio/adc/Kconfig
->>> @@ -127,6 +127,17 @@ config AT91_ADC
->>>  	help
->>>  	  Say yes here to build support for Atmel AT91 ADC.
->>>  
->>> +config CC10001_ADC
->>> +	tristate "Cosmic Circuits 10001 ADC driver"
->>> +	depends on HAS_IOMEM
->>> +	select IIO_BUFFER
->>> +	select IIO_TRIGGERED_BUFFER
->>> +	help
->>> +	  Say yes here to build support for Cosmic Circuits 10001 ADC.
->>> +
->>> +	  This driver can also be built as a module. If so, the module will be
->>> +	  called cc10001_adc.
->>> +
->>>  config EXYNOS_ADC
->>>  	tristate "Exynos ADC driver support"
->>>  	depends on ARCH_EXYNOS || ARCH_S3C24XX || ARCH_S3C64XX || (OF && COMPILE_TEST)
->>> diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
->>> index cb88a6a..9286c59 100644
->>> --- a/drivers/iio/adc/Makefile
->>> +++ b/drivers/iio/adc/Makefile
->>> @@ -14,6 +14,7 @@ obj-$(CONFIG_AD7793) += ad7793.o
->>>  obj-$(CONFIG_AD7887) += ad7887.o
->>>  obj-$(CONFIG_AD799X) += ad799x.o
->>>  obj-$(CONFIG_AT91_ADC) += at91_adc.o
->>> +obj-$(CONFIG_CC10001_ADC) += cc10001_adc.o
->>>  obj-$(CONFIG_EXYNOS_ADC) += exynos_adc.o
->>>  obj-$(CONFIG_LP8788_ADC) += lp8788_adc.o
->>>  obj-$(CONFIG_MAX1027) += max1027.o
->>> diff --git a/drivers/iio/adc/cc10001_adc.c b/drivers/iio/adc/cc10001_adc.c
->>> new file mode 100644
->>> index 0000000..0b74838
->>> --- /dev/null
->>> +++ b/drivers/iio/adc/cc10001_adc.c
->>> @@ -0,0 +1,425 @@
->>> +/*
->>> + * Copyright (c) 2014 Imagination Technologies Ltd.
->>> + *
->>> + * This program is free software; you can redistribute it and/or modify it
->>> + * under the terms of the GNU General Public License version 2 as published by
->>> + * the Free Software Foundation.
->>> + *
->>> + */
->>> +
->>> +#include <linux/clk.h>
->>> +#include <linux/delay.h>
->>> +#include <linux/err.h>
->>> +#include <linux/kernel.h>
->>> +#include <linux/module.h>
->>> +#include <linux/of.h>
->>> +#include <linux/of_device.h>
->>> +#include <linux/platform_device.h>
->>> +#include <linux/regulator/consumer.h>
->>> +#include <linux/slab.h>
->>> +
->>> +#include <linux/iio/buffer.h>
->>> +#include <linux/iio/iio.h>
->>> +#include <linux/iio/sysfs.h>
->>> +#include <linux/iio/trigger.h>
->>> +#include <linux/iio/trigger_consumer.h>
->>> +#include <linux/iio/triggered_buffer.h>
->>> +
->>> +/* Registers */
->>> +#define CC10001_ADC_CONFIG		0x00
->>> +#define CC10001_ADC_START_CONV		BIT(4)
->>> +#define CC10001_ADC_MODE_SINGLE_CONV	BIT(5)
->>> +
->>> +#define CC10001_ADC_DDATA_OUT		0x04
->>> +#define CC10001_ADC_EOC			0x08
->>> +#define CC10001_ADC_EOC_SET		BIT(0)
->>> +
->>> +#define CC10001_ADC_CHSEL_SAMPLED	0x0c
->>> +#define CC10001_ADC_POWER_UP		0x10
->>> +#define CC10001_ADC_POWER_UP_SET	BIT(0)
->>> +#define CC10001_ADC_DEBUG		0x14
->>> +#define CC10001_ADC_DATA_COUNT		0x20
->>> +
->>> +#define CC10001_ADC_DATA_MASK		GENMASK(9, 0)
->>> +#define CC10001_ADC_NUM_CHANNELS	8
->>> +#define CC10001_ADC_CH_MASK		(CC10001_ADC_NUM_CHANNELS - 1)
->> Don't define CC10001_ADC_CH_MASK this way, as it implies a simple relation to CC10001_ADC_NUM_CHANNELS, but it actually requires it to be base 2 (which it happens to be in this case). Preferably use GENMASK(2, 0).
+> This patch adds invocation protection around operation region callbacks to
+> offer a module safe environment for OSPM provided address space handlers.
 > 
-> Right.
+> It is likely that OSPM where ModuleDevice is supported will implement
+> specific address space handlers in the modules.  Thus the unloading of
+> the handlers' owner modules may lead to program crash around the invocation
+> if the handler callbacks are invoked without protection.  Since the
+> handler callbacks are invoked inside of ACPICA, it is better to implement
+> invocation protection inside of ACPICA.
+> As address space handlers are expected to be executed in parallel, it is
+> not a good choice to implement protection using locks.  This patch uses
+> reference counting based protection mechanism.  When OSPM calls
+> acpi_remove_address_space_handler(), the function waits until all invocations
+> exit to ensure no invocation can happen after the unloading of the modules.
 > 
->>> +
->>> +#define CC10001_INVALID_SAMPLED_OUTPUT	0xFFFF
->> After changing your hex values to lower case, this one is still left.
+> Note that this might be a workaround and not tested, better solution could
+> be implemented to tune the design of the namespace objects. Lv Zheng.
 > 
-> Right.
+> Signed-off-by: Lv Zheng <lv.zheng@intel.com>
+> ---
+>  drivers/acpi/acpica/acevents.h  |   9 ++++
+>  drivers/acpi/acpica/acobject.h  |   1 +
+>  drivers/acpi/acpica/evhandler.c | 117 ++++++++++++++++++++++++++++++++++++++++
+>  drivers/acpi/acpica/evregion.c  |  11 +++-
+>  drivers/acpi/acpica/evxfregn.c  |   9 ++++
+>  include/acpi/actypes.h          |   2 +
+>  6 files changed, 147 insertions(+), 2 deletions(-)
 > 
->>> +#define CC10001_MAX_POLL_COUNT		20
->>> +
->>> +/*
->>> + * As per device specification, wait six clock cycles after power-up to
->>> + * activate START. Since adding two more clock cycles delay does not
->>> + * impact the performance too much, we are adding two additional cycles delay
->>> + * intentionally here.
->>> + */
->>> +#define	CC10001_WAIT_CYCLES		8
->>> +
->>> +struct cc10001_adc_device {
->>> +	void __iomem *reg_base;
->>> +	struct iio_dev *indio_dev;
->> This element is never used.
+> diff --git a/drivers/acpi/acpica/acevents.h b/drivers/acpi/acpica/acevents.h
+> index 7a7811a9fc26..3020ac4ab7a8 100644
+> --- a/drivers/acpi/acpica/acevents.h
+> +++ b/drivers/acpi/acpica/acevents.h
+> @@ -175,6 +175,15 @@ acpi_ev_install_space_handler(struct acpi_namespace_node *node,
+>  			      acpi_adr_space_handler handler,
+>  			      acpi_adr_space_setup setup, void *context);
+>  
+> +acpi_status
+> +acpi_ev_get_space_handler(union acpi_operand_object *handler_desc);
+> +
+> +void acpi_ev_put_space_handler(union acpi_operand_object *handler_desc);
+> +
+> +void acpi_ev_flush_space_handler(union acpi_operand_object *handler_desc);
+> +
+> +s16 acpi_ev_space_handler_count(union acpi_operand_object *handler_desc);
+> +
+>  /*
+>   * evregion - Operation region support
+>   */
+> diff --git a/drivers/acpi/acpica/acobject.h b/drivers/acpi/acpica/acobject.h
+> index 8abb393dafab..a719d9733e6b 100644
+> --- a/drivers/acpi/acpica/acobject.h
+> +++ b/drivers/acpi/acpica/acobject.h
+> @@ -304,6 +304,7 @@ struct acpi_object_notify_handler {
+>  
+>  struct acpi_object_addr_handler {
+>  	ACPI_OBJECT_COMMON_HEADER u8 space_id;
+> +	s16 invocation_count;
+>  	u8 handler_flags;
+>  	acpi_adr_space_handler handler;
+>  	struct acpi_namespace_node *node;	/* Parent device */
+> diff --git a/drivers/acpi/acpica/evhandler.c b/drivers/acpi/acpica/evhandler.c
+> index 78ac29351c9e..b27cc8e0507f 100644
+> --- a/drivers/acpi/acpica/evhandler.c
+> +++ b/drivers/acpi/acpica/evhandler.c
+> @@ -499,6 +499,7 @@ acpi_ev_install_space_handler(struct acpi_namespace_node * node,
+>  	handler_obj->address_space.space_id = (u8)space_id;
+>  	handler_obj->address_space.handler_flags = flags;
+>  	handler_obj->address_space.region_list = NULL;
+> +	handler_obj->address_space.invocation_count = 0;
+>  	handler_obj->address_space.node = node;
+>  	handler_obj->address_space.handler = handler;
+>  	handler_obj->address_space.context = context;
+> @@ -534,3 +535,119 @@ acpi_ev_install_space_handler(struct acpi_namespace_node * node,
+>  unlock_and_exit:
+>  	return_ACPI_STATUS(status);
+>  }
+> +
+> +/*******************************************************************************
+> + *
+> + * FUNCTION:    acpi_ev_flush_space_handler
+> + *
+> + * PARAMETERS:  handler_desc     - Address space object
+> + *                                 (ACPI_TYPE_LOCAL_ADDRESS_HANDLER)
+> + *
+> + * RETURN:      None.
+> + *
+> + * DESCRIPTION: Flush the reference of the given address space handler object.
+> + *
+> + ******************************************************************************/
+> +
+> +void acpi_ev_flush_space_handler(union acpi_operand_object *handler_desc)
+> +{
+> +	acpi_cpu_flags lock_flags;
+> +
+> +	ACPI_FUNCTION_TRACE_PTR(acpi_ev_flush_space_handler, handler_desc);
+> +
+> +	if (handler_desc && handler_desc->address_space.invocation_count >= 0) {
+> +		lock_flags =
+> +		    acpi_os_acquire_lock(acpi_gbl_reference_count_lock);
+> +		handler_desc->address_space.invocation_count |= ACPI_INT16_MIN;
+> +		acpi_os_release_lock(acpi_gbl_reference_count_lock, lock_flags);
+> +	}
+> +
+> +	return_VOID;
+> +}
+> +
+> +/*******************************************************************************
+> + *
+> + * FUNCTION:    acpi_ev_get_space_handler
+> + *
+> + * PARAMETERS:  handler_desc     - Address space object
+> + *                                 (ACPI_TYPE_LOCAL_ADDRESS_HANDLER)
+> + *
+> + * RETURN:      Status.
+> + *
+> + * DESCRIPTION: Acquire an reference of the given address space handler object.
+> + *
+> + ******************************************************************************/
+> +
+> +acpi_status acpi_ev_get_space_handler(union acpi_operand_object *handler_desc)
+> +{
+> +	acpi_cpu_flags lock_flags;
+> +
+> +	ACPI_FUNCTION_TRACE_PTR(acpi_ev_get_space_handler, handler_desc);
+> +
+> +	if (handler_desc && handler_desc->address_space.invocation_count >= 0) {
+> +		lock_flags =
+> +		    acpi_os_acquire_lock(acpi_gbl_reference_count_lock);
+> +		handler_desc->address_space.invocation_count++;
+> +		acpi_os_release_lock(acpi_gbl_reference_count_lock, lock_flags);
+> +		return_ACPI_STATUS(AE_OK);
+> +	}
+> +
+> +	return_ACPI_STATUS(AE_ERROR);
+> +}
+> +
+> +/*******************************************************************************
+> + *
+> + * FUNCTION:    acpi_ev_put_space_handler
+> + *
+> + * PARAMETERS:  handler_desc     - Address space object
+> + *                                 (ACPI_TYPE_LOCAL_ADDRESS_HANDLER)
+> + *
+> + * RETURN:      None.
+> + *
+> + * DESCRIPTION: Release an reference of the given address space handler object.
+> + *
+> + ******************************************************************************/
+> +
+> +void acpi_ev_put_space_handler(union acpi_operand_object *handler_desc)
+> +{
+> +	acpi_cpu_flags lock_flags;
+> +
+> +	ACPI_FUNCTION_TRACE_PTR(acpi_ev_put_space_handler, handler_desc);
+> +
+> +	if (handler_desc) {
+> +		lock_flags =
+> +		    acpi_os_acquire_lock(acpi_gbl_reference_count_lock);
+> +		handler_desc->address_space.invocation_count--;
+> +		acpi_os_release_lock(acpi_gbl_reference_count_lock, lock_flags);
+> +	}
+> +
+> +	return_VOID;
+> +}
+> +
+> +/*******************************************************************************
+> + *
+> + * FUNCTION:    acpi_ev_space_handler_count
+> + *
+> + * PARAMETERS:  handler_desc     - Address space object
+> + *                                 (ACPI_TYPE_LOCAL_ADDRESS_HANDLER)
+> + *
+> + * RETURN:      Invocation count of the handler.
+> + *
+> + * DESCRIPTION: Get the reference of the given address space handler object.
+> + *
+> + ******************************************************************************/
+> +
+> +s16 acpi_ev_space_handler_count(union acpi_operand_object *handler_desc)
+> +{
+> +	s16 count = 0;
+> +	acpi_cpu_flags lock_flags;
+> +
+> +	if (handler_desc) {
+> +		lock_flags =
+> +		    acpi_os_acquire_lock(acpi_gbl_reference_count_lock);
+> +		count = handler_desc->address_space.invocation_count;
+> +		acpi_os_release_lock(acpi_gbl_reference_count_lock, lock_flags);
+> +	}
+> +
+> +	return (count);
+> +}
+> diff --git a/drivers/acpi/acpica/evregion.c b/drivers/acpi/acpica/evregion.c
+> index 8eb8575e8c16..dcdd779257d0 100644
+> --- a/drivers/acpi/acpica/evregion.c
+> +++ b/drivers/acpi/acpica/evregion.c
+> @@ -165,6 +165,10 @@ acpi_ev_address_space_dispatch(union acpi_operand_object *region_obj,
+>  		return_ACPI_STATUS(AE_NOT_EXIST);
+>  	}
+>  
+> +	status = acpi_ev_get_space_handler(handler_desc);
+> +	if (ACPI_FAILURE(status)) {
+> +		return_ACPI_STATUS(AE_NOT_EXIST);
+> +	}
+>  	context = handler_desc->address_space.context;
+>  
+>  	/*
+> @@ -185,7 +189,8 @@ acpi_ev_address_space_dispatch(union acpi_operand_object *region_obj,
+>  				    region_obj,
+>  				    acpi_ut_get_region_name(region_obj->region.
+>  							    space_id)));
+> -			return_ACPI_STATUS(AE_NOT_EXIST);
+> +			status = AE_NOT_EXIST;
+> +			goto error_exit;
+>  		}
+>  
+>  		/*
+> @@ -210,7 +215,7 @@ acpi_ev_address_space_dispatch(union acpi_operand_object *region_obj,
+>  					acpi_ut_get_region_name(region_obj->
+>  								region.
+>  								space_id)));
+> -			return_ACPI_STATUS(status);
+> +			goto error_exit;
+>  		}
+>  
+>  		/* Region initialization may have been completed by region_setup */
+> @@ -306,6 +311,8 @@ acpi_ev_address_space_dispatch(union acpi_operand_object *region_obj,
+>  		acpi_ex_enter_interpreter();
+>  	}
+>  
+> +error_exit:
+> +	acpi_ev_put_space_handler(handler_desc);
+>  	return_ACPI_STATUS(status);
+>  }
+>  
+> diff --git a/drivers/acpi/acpica/evxfregn.c b/drivers/acpi/acpica/evxfregn.c
+> index 2d6f187939c7..c8c8538aae40 100644
+> --- a/drivers/acpi/acpica/evxfregn.c
+> +++ b/drivers/acpi/acpica/evxfregn.c
+> @@ -266,6 +266,15 @@ acpi_remove_address_space_handler(acpi_handle device,
+>  
+>  			*last_obj_ptr = handler_obj->address_space.next;
+>  
+> +			/* Wait for handlers to exit */
+> +
+> +			acpi_ev_flush_space_handler(handler_obj);
+> +			while (acpi_ev_space_handler_count(handler_obj) != ACPI_INT16_MIN) {
+> +				(void)acpi_ut_release_mutex(ACPI_MTX_NAMESPACE);
+> +				acpi_os_sleep((u64)10);
+> +				(void)acpi_ut_acquire_mutex(ACPI_MTX_NAMESPACE);
+> +			}
+> +
+>  			/* Now we can delete the handler object */
+>  
+>  			acpi_ut_remove_reference(handler_obj);
+> diff --git a/include/acpi/actypes.h b/include/acpi/actypes.h
+> index 7000e66f768e..a341a9a8157f 100644
+> --- a/include/acpi/actypes.h
+> +++ b/include/acpi/actypes.h
+> @@ -65,6 +65,8 @@
+>  #define ACPI_UINT16_MAX                 (u16)(~((u16) 0))	/* 0xFFFF             */
+>  #define ACPI_UINT32_MAX                 (u32)(~((u32) 0))	/* 0xFFFFFFFF         */
+>  #define ACPI_UINT64_MAX                 (u64)(~((u64) 0))	/* 0xFFFFFFFFFFFFFFFF */
+> +#define ACPI_INT16_MAX                  ((s16)(ACPI_UINT16_MAX>>1))
+> +#define ACPI_INT16_MIN                  ((s16)(-ACPI_INT16_MAX - 1))
+>  #define ACPI_ASCII_MAX                  0x7F
+>  
+>  /*
 > 
-> Right.
-> 
->>> +	struct clk *adc_clk;
->>> +	struct regulator *reg;
->>> +	u16 *buf;
->>> +
->>> +	struct mutex lock;
->>> +	unsigned long channel_map;
->>> +	unsigned int start_delay_ns;
->>> +	unsigned int eoc_delay_ns;
->>> +};
->>> +
->>> +static inline void cc10001_adc_write_reg(struct cc10001_adc_device *adc_dev,
->>> +					 u32 reg, u32 val)
->>> +{
->>> +	writel(val, adc_dev->reg_base + reg);
->>> +}
->>> +
->>> +static inline u32 cc10001_adc_read_reg(struct cc10001_adc_device *adc_dev,
->>> +				       u32 reg)
->>> +{
->>> +	return readl(adc_dev->reg_base + reg);
->>> +}
->>> +
->>> +static void cc10001_adc_start(struct cc10001_adc_device *adc_dev,
->>> +			      unsigned int channel)
->>> +{
->>> +	u32 val;
->>> +
->>> +	/* Channel selection and mode of operation */
->>> +	val = (channel & CC10001_ADC_CH_MASK) | CC10001_ADC_MODE_SINGLE_CONV;
->>> +	cc10001_adc_write_reg(adc_dev, CC10001_ADC_CONFIG, val);
->>> +
->>> +	val = cc10001_adc_read_reg(adc_dev, CC10001_ADC_CONFIG);
->>> +	val = val | CC10001_ADC_START_CONV;
->>> +	cc10001_adc_write_reg(adc_dev, CC10001_ADC_CONFIG, val);
->>> +}
->>> +
->>> +static u16 cc10001_adc_poll_done(struct iio_dev *indio_dev,
->>> +				 unsigned int channel,
->>> +				 unsigned int delay)
->>> +{
->>> +	struct cc10001_adc_device *adc_dev = iio_priv(indio_dev);
->>> +	unsigned int poll_count = 0;
->>> +
->>> +	while (!(cc10001_adc_read_reg(adc_dev, CC10001_ADC_EOC) &
->>> +			CC10001_ADC_EOC_SET)) {
->> Matter of taste case here, and I understand that indenting it to align with cc10001_adc_read_reg would look like the indentation of the following subroutine. Then again, you left an empty line to show a certain distinction. Up to you, I just slightly prefer to align blocks with equal hierarchy levels.
->>> +
->>> +		ndelay(delay);
->>> +		if (poll_count++ == CC10001_MAX_POLL_COUNT)
->>> +			return CC10001_INVALID_SAMPLED_OUTPUT;
->>> +	}
->>> +
->>> +	poll_count = 0;
->>> +	while ((cc10001_adc_read_reg(adc_dev, CC10001_ADC_CHSEL_SAMPLED) &
->>> +			CC10001_ADC_CH_MASK) != channel) {
->> Same here.
->>> +
->>> +		ndelay(delay);
->>> +		if (poll_count++ == CC10001_MAX_POLL_COUNT)
->>> +			return CC10001_INVALID_SAMPLED_OUTPUT;
->>> +	}
->>> +
->>> +	/* Read the 10 bit output register */
->>> +	return cc10001_adc_read_reg(adc_dev, CC10001_ADC_DDATA_OUT) &
->>> +			       CC10001_ADC_DATA_MASK;
->> Here I feel stronger about alignment.
->>> +}
->>> +
->>> +static irqreturn_t cc10001_adc_trigger_h(int irq, void *p)
->>> +{
->>> +	struct cc10001_adc_device *adc_dev;
->>> +	struct iio_poll_func *pf = p;
->>> +	struct iio_dev *indio_dev;
->>> +	unsigned int delay_ns;
->>> +	unsigned int channel;
->>> +	bool sample_invalid;
->>> +	u16 *data;
->>> +	int i;
->>> +
->>> +	indio_dev = pf->indio_dev;
->>> +	adc_dev = iio_priv(indio_dev);
->>> +	data = adc_dev->buf;
->>> +
->>> +	mutex_lock(&adc_dev->lock);
->>> +
->>> +	cc10001_adc_write_reg(adc_dev, CC10001_ADC_POWER_UP,
->>> +			      CC10001_ADC_POWER_UP_SET);
->>> +
->>> +	/* Wait for 8 (6+2) clock cycles before activating START */
->>> +	ndelay(adc_dev->start_delay_ns);
->>> +
->>> +	/* Calculate delay step for eoc and sampled data */
->>> +	delay_ns = adc_dev->eoc_delay_ns / CC10001_MAX_POLL_COUNT;
->>> +
->>> +	i = 0;
->>> +	sample_invalid = false;
->> These definitions could be done already during declaration.
-> 
-> Yeah, I guess I felt it was more readable this way. But I don't care much.
-> 
->>> +	for_each_set_bit(channel, indio_dev->active_scan_mask,
->>> +				  indio_dev->masklength) {
->> Too much indentation, it should be aligned with channel.
-> 
-> Ditto.
-> 
->>> +
->>> +		cc10001_adc_start(adc_dev, channel);
->>> +
->>> +		data[i] = cc10001_adc_poll_done(indio_dev, channel, delay_ns);
->>> +		if (data[i] == CC10001_INVALID_SAMPLED_OUTPUT) {
->>> +			dev_warn(&indio_dev->dev,
->>> +				 "invalid sample on channel %d\n", channel);
->>> +			sample_invalid = true;
->>> +			goto done;
->>> +		}
->>> +		i++;
->>> +	}
->>> +
->>> +done:
->>> +	cc10001_adc_write_reg(adc_dev, CC10001_ADC_POWER_UP, 0);
->>> +
->>> +	mutex_unlock(&adc_dev->lock);
->>> +
->>> +	if (!sample_invalid)
->>> +		iio_push_to_buffers_with_timestamp(indio_dev, data,
->>> +						   iio_get_time_ns());
->>> +	iio_trigger_notify_done(indio_dev->trig);
->>> +
->>> +	return IRQ_HANDLED;
->>> +}
->>> +
->>> +static u16 cc10001_adc_read_raw_voltage(struct iio_dev *indio_dev,
->>> +					struct iio_chan_spec const *chan)
->>> +{
->>> +	struct cc10001_adc_device *adc_dev = iio_priv(indio_dev);
->>> +	unsigned int delay_ns;
->>> +	u16 val;
->>> +
->>> +	cc10001_adc_write_reg(adc_dev, CC10001_ADC_POWER_UP,
->>> +			      CC10001_ADC_POWER_UP_SET);
->>> +
->>> +	/* Wait for 8 (6+2) clock cycles before activating START */
->>> +	ndelay(adc_dev->start_delay_ns);
->>> +
->>> +	/* Calculate delay step for eoc and sampled data */
->>> +	delay_ns = adc_dev->eoc_delay_ns / CC10001_MAX_POLL_COUNT;
->>> +
->>> +	cc10001_adc_start(adc_dev, chan->channel);
->>> +
->>> +	val = cc10001_adc_poll_done(indio_dev, chan->channel, delay_ns);
->>> +
->>> +	cc10001_adc_write_reg(adc_dev, CC10001_ADC_POWER_UP, 0);
->>> +
->>> +	return val;
->>> +}
->>> +
->>> +static int cc10001_adc_read_raw(struct iio_dev *indio_dev,
->>> +				 struct iio_chan_spec const *chan,
->>> +				 int *val, int *val2, long mask)
->>> +{
->>> +	struct cc10001_adc_device *adc_dev = iio_priv(indio_dev);
->>> +	int ret;
->>> +
->>> +	switch (mask) {
->>> +	case IIO_CHAN_INFO_RAW:
->>> +		if (iio_buffer_enabled(indio_dev))
->>> +			return -EBUSY;
->>> +		mutex_lock(&adc_dev->lock);
->>> +		*val = cc10001_adc_read_raw_voltage(indio_dev, chan);
->>> +		mutex_unlock(&adc_dev->lock);
->>> +
->>> +		if (*val == CC10001_INVALID_SAMPLED_OUTPUT)
->>> +			return -EIO;
->>> +		return IIO_VAL_INT;
->> Since C offers it:
->> 		return (*val == CC10001_INVALID_SAMPLED_OUTPUT) ? -EIO : IIO_VAL_INT;
-> 
-> Hm, don't you find this a bit eyesore?
-Well, I've seen worse code in my life ;-)
-> 
->> It would fit in one line if CC10001_INVALID_SAMPLED_OUTPUT was called CC10001_INVALID_SAMPLE ;-)
-> 
-> Right, that's a better name indeed.
-> 
->>> +
->>> +	case IIO_CHAN_INFO_SCALE:
->>> +		ret = regulator_get_voltage(adc_dev->reg);
->>> +		if (ret)
->>> +			return ret;
->>> +
->>> +		*val = ret / 1000;
->>> +		*val2 = chan->scan_type.realbits;
->>> +		return IIO_VAL_FRACTIONAL_LOG2;
->>> +
->>> +	default:
->>> +		return -EINVAL;
->>> +	}
->>> +}
->>> +
->>> +static int cc10001_update_scan_mode(struct iio_dev *indio_dev,
->>> +				     const unsigned long *scan_mask)
->> Reduce indentation by one space.
->>> +{
->>> +	struct cc10001_adc_device *adc_dev = iio_priv(indio_dev);
->>> +
->>> +	kfree(adc_dev->buf);
->>> +	adc_dev->buf = kmalloc(indio_dev->scan_bytes, GFP_KERNEL);
->>> +	if (!adc_dev->buf)
->>> +		return -ENOMEM;
->>> +
->>> +	return 0;
->> Save some lines:
->> 	return (!adc_dev->buf) ? -ENOMEM : 0;
-> 
-> Hm... that's uglier to me. Lines are free, no need to save them :)
-Matter of taste, and up to you. I'm more into "short and simple".
-> 
->>> +}
->>> +
->>> +static const struct iio_info cc10001_adc_info = {
->>> +	.driver_module = THIS_MODULE,
->>> +	.read_raw = &cc10001_adc_read_raw,
->>> +	.update_scan_mode = &cc10001_update_scan_mode,
->>> +};
->>> +
->>> +static int cc10001_adc_channel_init(struct iio_dev *indio_dev)
->>> +{
->>> +	struct cc10001_adc_device *adc_dev = iio_priv(indio_dev);
->>> +	struct iio_chan_spec *chan_array, *timestamp;
->>> +	unsigned int bit, idx = 0;
->>> +
->>> +	indio_dev->num_channels = bitmap_weight(&adc_dev->channel_map,
->>> +						CC10001_ADC_NUM_CHANNELS);
->>> +
->>> +	chan_array = devm_kcalloc(&indio_dev->dev, indio_dev->num_channels + 1,
->>> +				  sizeof(struct iio_chan_spec),
->>> +				  GFP_KERNEL);
->>> +	if (!chan_array)
->>> +		return -ENOMEM;
->>> +
->>> +	for_each_set_bit(bit, &adc_dev->channel_map,
->>> +			 CC10001_ADC_NUM_CHANNELS) {
->> No need to wrap, this fits exactly 80 chars.
-> 
-> Right.
-> 
->>> +		struct iio_chan_spec *chan = &chan_array[idx];
->>> +
->>> +		chan->type = IIO_VOLTAGE;
->>> +		chan->indexed = 1;
->>> +		chan->channel = bit;
->>> +		chan->scan_index = idx;
->>> +		chan->scan_type.sign = 'u';
->>> +		chan->scan_type.realbits = 10;
->>> +		chan->scan_type.storagebits = 16;
->>> +		chan->info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE);
->>> +		chan->info_mask_separate = BIT(IIO_CHAN_INFO_RAW);
->>> +		idx++;
->>> +	}
->>> +
->>> +	timestamp = &chan_array[idx];
->>> +	timestamp->type = IIO_TIMESTAMP;
->>> +	timestamp->channel = -1;
->>> +	timestamp->scan_index = idx;
->>> +	timestamp->scan_type.sign = 's';
->>> +	timestamp->scan_type.realbits = 64;
->>> +	timestamp->scan_type.storagebits = 64;
->>> +
->>> +	indio_dev->channels = chan_array;
->>> +
->>> +	return 0;
->>> +}
->>> +
->>> +static int cc10001_adc_probe(struct platform_device *pdev)
->>> +{
->>> +	struct device_node *node = pdev->dev.of_node;
->>> +	struct cc10001_adc_device *adc_dev;
->>> +	unsigned long adc_clk_rate;
->>> +	struct resource *res;
->>> +	struct iio_dev *indio_dev;
->>> +	int ret;
->>> +
->>> +	indio_dev = devm_iio_device_alloc(&pdev->dev, sizeof(*adc_dev));
->>> +	if (indio_dev == NULL)
->>> +		return -ENOMEM;
->>> +
->>> +	adc_dev = iio_priv(indio_dev);
->>> +
->>> +	adc_dev->channel_map = CC10001_ADC_CH_MASK;
->> You certainly want adc_dev->channel_map to be something like GENMASK(CC10001_ADC_NUM_CHANNELS -1, 0).
->>> +	if (!of_property_read_u32(node, "cosmic,reserved-adc-channels", &ret))
->>> +		adc_dev->channel_map ^= ret;
->> Correct way is to mask out, not to XOR.
-> 
-> Unless I'm missing something, that's exactly what XOR does.
-> 
-> Example:
-> 
-> reserved_channels = 0x2;
-> channel_map = 0x7 ^ reserved_channels -> 0x5
-> 
-You miss to check ret for a valid range, which you don't need to do when masking out channels.
-Example:
-reserved_channels = 0x8;
-channel_map = 0x7 ^ reserved_channels -> 0xf
-And this is actually happening in the current revision (with the wrong channel_map assignment), that a reserved channel in DT would become usable.
->>> +
->>> +	adc_dev->reg = devm_regulator_get(&pdev->dev, "vref");
->>> +	if (IS_ERR_OR_NULL(adc_dev->reg))
->>> +		return -EINVAL;
->> 	if (IS_ERR(adc_dev->reg))
->> 		return PTR_ERR(adc_dev->reg);
-> 
-> Are you sure? What if devm_regulator_get() returns NULL?
-> 
-I had a look at it, but couldn't figure out a condition in which it would return NULL. But I'd be happy to be informed of anything different.
->>> +
->>> +	ret = regulator_enable(adc_dev->reg);
->>> +	if (ret)
->>> +		return ret;
->>> +
->>> +	indio_dev->dev.parent = &pdev->dev;
->>> +	indio_dev->name = dev_name(&pdev->dev);
->>> +	indio_dev->info = &cc10001_adc_info;
->>> +	indio_dev->modes = INDIO_DIRECT_MODE;
->>> +
->>> +	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
->>> +	adc_dev->reg_base = devm_ioremap_resource(&pdev->dev, res);
->>> +	if (IS_ERR(adc_dev->reg_base))
->> Need to put error code into ret.
-> 
-> Right.
-> 
->>> +		goto err_disable_reg;
->>> +
->>> +	adc_dev->adc_clk = devm_clk_get(&pdev->dev, "adc");
->>> +	if (IS_ERR(adc_dev->adc_clk)) {
->>> +		dev_err(&pdev->dev, "Failed to get the clock\n");
->> Need to put error code into ret.
->>> +		goto err_disable_reg;
->>> +	}
->>> +
->>> +	ret = clk_prepare_enable(adc_dev->adc_clk);
->>> +	if (ret) {
->>> +		dev_err(&pdev->dev, "Failed to enable the clock\n");
->>> +		goto err_disable_reg;
->>> +	}
->>> +
->>> +	adc_clk_rate = clk_get_rate(adc_dev->adc_clk);
->>> +	if (!adc_clk_rate) {
->>> +		ret = -EINVAL;
->>> +		dev_err(&pdev->dev, "null clock rate!\n");
->> Start message with upper case?
-> 
-> Actually, I'd rather make the others start with lower case.
-Fair enough, unless they are full sentences like here. My english grammar tells me they should start with capital letters.
-> 
->>> +		goto err_disable_clk;
->>> +	}
->>> +
->>> +	adc_dev->eoc_delay_ns = NSEC_PER_SEC / adc_clk_rate;
->>> +	adc_dev->start_delay_ns = adc_dev->eoc_delay_ns * CC10001_WAIT_CYCLES;
->>> +
->>> +	/* Setup the ADC channels available on the device */
->>> +	ret = cc10001_adc_channel_init(indio_dev);
->>> +	if (ret < 0) {
->>> +		dev_err(&pdev->dev, "Could not initialize the channels.\n");
->>> +		goto err_disable_clk;
->>> +	}
->>> +
->>> +	mutex_init(&adc_dev->lock);
->>> +
->>> +	ret = iio_triggered_buffer_setup(indio_dev, NULL,
->>> +					 &cc10001_adc_trigger_h, NULL);
->>> +	if (ret < 0)
->>> +		goto err_disable_clk;
->>> +
->>> +	ret = iio_device_register(indio_dev);
->>> +	if (ret < 0)
->>> +		goto err_cleanup_buffer;
->>> +
->>> +	platform_set_drvdata(pdev, indio_dev);
->> Move this above iio_device_register.
-> 
-> What for?
-To make iio_device_register the last operation of the probe.
-> 
->>> +
->>> +	return 0;
->>> +
->>> +err_cleanup_buffer:
->>> +	iio_triggered_buffer_cleanup(indio_dev);
->>> +err_disable_clk:
->>> +	clk_disable_unprepare(adc_dev->adc_clk);
->>> +err_disable_reg:
->>> +	regulator_disable(adc_dev->reg);
->>> +	return ret;
->>> +}
->>> +
->>> +static int cc10001_adc_remove(struct platform_device *pdev)
->>> +{
->>> +	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
->>> +	struct cc10001_adc_device *adc_dev = iio_priv(indio_dev);
->>> +
->>> +	iio_device_unregister(indio_dev);
->>> +	iio_triggered_buffer_cleanup(indio_dev);
->>> +	clk_disable_unprepare(adc_dev->adc_clk);
->>> +	regulator_disable(adc_dev->reg);
->>> +
->>> +	return 0;
->>> +}
->>> +
->>> +static const struct of_device_id cc10001_adc_dt_ids[] = {
->>> +	{ .compatible = "cosmic,10001-adc", },
->>> +	{ }
->>> +};
->>> +MODULE_DEVICE_TABLE(of, cc10001_adc_dt_ids);
->>> +
->>> +static struct platform_driver cc10001_adc_driver = {
->>> +	.driver = {
->>> +		.name   = "cc10001-adc",
->>> +		.owner	= THIS_MODULE,
->>> +		.of_match_table = cc10001_adc_dt_ids,
->>> +	},
->>> +	.probe	= cc10001_adc_probe,
->>> +	.remove	= cc10001_adc_remove,
->>> +};
->>> +module_platform_driver(cc10001_adc_driver);
->>> +
->>> +MODULE_AUTHOR("Phani Movva <Phani.Movva@imgtec.com>");
->>> +MODULE_DESCRIPTION("Cosmic Circuits ADC driver");
->>> +MODULE_LICENSE("GPL v2");
->>>
->>
-> 
-> Thanks for the review!
-> 
+
+-- 
+I speak only for myself.
+Rafael J. Wysocki, Intel Open Source Technology Center.
