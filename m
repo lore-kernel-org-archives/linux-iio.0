@@ -1,86 +1,38 @@
-Return-Path: <stefan.wahren@i2se.com>
-Date: Sat, 29 Nov 2014 12:06:49 +0100 (CET)
-From: Stefan Wahren <stefan.wahren@i2se.com>
-Reply-To: Stefan Wahren <stefan.wahren@i2se.com>
-To: Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>
-Cc: =?UTF-8?Q?=22Kristina_Mart=C5=A1enko=22?= <kristina.martsenko@gmail.com>,
-	Fabio Estevam <festevam@gmail.com>, linux-iio@vger.kernel.org,
-	marex@denx.de, jbe@pengutronix.de
-Message-ID: <2014173365.467082.1417259209904.JavaMail.open-xchange@oxbaltgw07.schlund.de>
-In-Reply-To: <5478FB6D.8000303@gmx.de>
-References: <1416435590-13999-1-git-send-email-stefan.wahren@i2se.com> <5478FB6D.8000303@gmx.de>
-Subject: Re: [PATCH] iio: mxs-lradc: check ranges of ts properties
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mga11.intel.com ([192.55.52.93]:8076 "EHLO mga11.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1752317AbaKYMrO (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Tue, 25 Nov 2014 07:47:14 -0500
+From: Vlad Dogaru <vlad.dogaru@intel.com>
+To: linux-iio@vger.kernel.org
+Cc: Vlad Dogaru <vlad.dogaru@intel.com>
+Subject: [PATCH 0/4] Add valid sample channel
+Date: Tue, 25 Nov 2014 14:48:03 +0200
+Message-Id: <1416919687-14271-1-git-send-email-vlad.dogaru@intel.com>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Hi Hartmut,
+This is an attempt to address the problem of buffering in devices which have
+different scan frequencies for different channels.
 
-thanks for your review. I added Marek and Juergen in CC.
+The first patch is a minor cleanup of the dummy code, the second one a
+safeguard against duplicate scan_index channels.
 
-> Hartmut Knaack <knaack.h@gmx.de> hat am 28. November 2014 um 23:47
-> geschrieben:
->
->
-> Stefan Wahren schrieb am 19.11.2014 um 23:19:
-> > The devicetree binding for mxs-lradc defines ranges for the
-> > touchscreen properties. In order to avoid unexpected behavior like
-> > division by zero, we better check these ranges during probe and
-> > abort in error case.
-> >
-> This patch is functional correct, but I see some style issues:
-> To make a review with the DT bindings easier, it would help to compare against
-> the values which got used there (which are not in hex). For sample count, the
-> range is defined as 1...31, so it would look easier like this: if (_cnt < 1 ||
-> _cnt > 31) =>error.
+The final two patches add a new channel and are RFC.
 
-I have concerns about that. The upper range is defined by the bitmask in the
-register and the lower range is defined the usage of lradc->over_sample_cnt as a
-divisor (mxs_lradc_read_raw_channel). Consequently i should use the "magic
-number" 2047 instead of LRADC_DELAY_DELAY_MASK for the other parameters?
+Vlad Dogaru (4):
+  iio: dummy: set scan_index for unbuffered channels
+  iio: ensure scan index is unique at buffer register
+  iio: add valid sample channel
+  iio: illustrate the use of a valid sample channel
 
-> Another thing to consider would be to do the boundary check on adapt, and only
-> assign it to over_sample_cnt (or the other elements) if it is valid. Thinking
-> this further, it would even make sense to assign a default value to
-> over_sample_count (and the other ones) only in case that no DT property is
-> set, instead of doing it in advance and overwriting it with the custom value.
+ drivers/iio/industrialio-buffer.c             | 28 ++++++++++++++++++++++++
+ drivers/iio/industrialio-core.c               |  1 +
+ drivers/staging/iio/iio_simple_dummy.c        | 21 +++++++++++++++---
+ drivers/staging/iio/iio_simple_dummy_buffer.c | 31 +++++++++++++++++++++++++--
+ include/linux/iio/types.h                     |  1 +
+ 5 files changed, 77 insertions(+), 5 deletions(-)
 
-Do you think of the following?
+-- 
+1.9.1
 
-	if (!of_property_read_u32(lradc_node, "fsl,ave-ctrl", &adapt)) {
-		if (adapt < 1 || adapt > 31) {
-			dev_err(lradc->dev, "Invalid sample count (%lu)\n",
-				adapt);
-			return -EINVAL;
-		}
-		lradc->over_sample_cnt = adapt;
-	} else
-		lradc->over_sample_cnt = 4;
-
-> A minor style nitpick inline.
-> > Signed-off-by: Stefan Wahren <stefan.wahren@i2se.com>
-> > ---
-> > drivers/staging/iio/adc/mxs-lradc.c | 20 ++++++++++++++++++++
-> > 1 file changed, 20 insertions(+)
-> >
-> > diff --git a/drivers/staging/iio/adc/mxs-lradc.c
-> > b/drivers/staging/iio/adc/mxs-lradc.c
-> > index 6757f10..57c3cf6 100644
-> > --- a/drivers/staging/iio/adc/mxs-lradc.c
-> > +++ b/drivers/staging/iio/adc/mxs-lradc.c
-> > @@ -1500,16 +1500,36 @@ static int mxs_lradc_probe_touchscreen(struct
-> > mxs_lradc *lradc,
-> > if (ret == 0)
-> > lradc->over_sample_cnt = adapt;
-> >
-> > + if (!lradc->over_sample_cnt || lradc->over_sample_cnt > 0x1f) {
-> > + dev_err(lradc->dev, "Invalid sample count (%u)\n",
-> > + lradc->over_sample_cnt);
-> The parameter should be indented with the opening parenthesis. Same for the
-> other instances below.
-
-Fixed in the example above ;-)
-
-I wonder why checkpatch doesn't complain about it.
-
-Stefan
