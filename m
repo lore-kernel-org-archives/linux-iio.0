@@ -1,74 +1,81 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga11.intel.com ([192.55.52.93]:8076 "EHLO mga11.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1752317AbaKYMrQ (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Tue, 25 Nov 2014 07:47:16 -0500
-From: Vlad Dogaru <vlad.dogaru@intel.com>
-To: linux-iio@vger.kernel.org
-Cc: Vlad Dogaru <vlad.dogaru@intel.com>
-Subject: [PATCH 2/4] iio: ensure scan index is unique at buffer register
-Date: Tue, 25 Nov 2014 14:48:05 +0200
-Message-Id: <1416919687-14271-3-git-send-email-vlad.dogaru@intel.com>
-In-Reply-To: <1416919687-14271-1-git-send-email-vlad.dogaru@intel.com>
-References: <1416919687-14271-1-git-send-email-vlad.dogaru@intel.com>
+Received: from v094114.home.net.pl ([79.96.170.134]:53143 "HELO
+	v094114.home.net.pl" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with SMTP id S1751195AbaKYB0F (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 24 Nov 2014 20:26:05 -0500
+From: "Rafael J. Wysocki" <rjw@rjwysocki.net>
+To: Aaron Lu <aaron.lu@intel.com>
+Cc: Lee Jones <lee.jones@linaro.org>,
+	Jacob Pan <jacob.jun.pan@linux.intel.com>,
+	Yegnesh Iyer <yegnesh.s.iyer@intel.com>,
+	linux-acpi@vger.kernel.org, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 0/3] Support PMIC operation region for CrystalCove and XPower
+Date: Tue, 25 Nov 2014 02:47:18 +0100
+Message-ID: <1987897.BgdIEqPdlH@vostro.rjw.lan>
+In-Reply-To: <1416553911-22990-1-git-send-email-aaron.lu@intel.com>
+References: <1416553911-22990-1-git-send-email-aaron.lu@intel.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Having two or more channels with the same positive scan_index field
-makes no sense.  Prevent this situation by failing to register a buffer
-if two scan indexes are identical.
+On Friday, November 21, 2014 03:11:48 PM Aaron Lu wrote:
+> v3:
+> Only some function/variable name changes, no functiona changes:
+> - Replace the dptf/DPTF word originate from the BIOS ACPI table with more
+>   meaningful word thermal/THERMAL in all places;
+> - Eliminate the soc part in various structure and function names to make
+>   them shorter:
+>   intel_soc_pmic_opregion -> intel_pmic_opregion
+>   intel_soc_pmic_pmop_handler -> intel_pmic_pmop_handler
+>   intel_soc_pmic_install_opregion_handler -> intel_pmic_install_opregion_handler
+>   etc.
+> 
+> 
+> v2:
+> Place PMIC operation files under drivers/acpi/pmic instead of
+> drivers/acpi/pmic_opregion as suggested by Rafael;
+> Rename PMIC operation files to make them shorter as suggested by Rafael.
+> 
+> v1:
+> On Intel Baytrail-T and Baytrail-T-CR platforms, there are two customized
+> ACPI operation regions defined for the Power Management Integrated Circuit
+> device, one is for power resource handling and one is for thermal: sensor
+> temperature reporting, trip point setting, etc. There are different PMIC
+> chips used on those platforms and though each has the same two operation
+> regions and functionality, their implementation is different so every PMIC
+> will need a driver. But since their functionality is similar, some common
+> code is abstracted into the intel_soc_pmic_opregion.c.
+> 
+> The last version is posted here:
+> https://lkml.org/lkml/2014/9/8/801
+> 
+> Changes since then:
+> 1 Move to drivers/acpi as discussed on the above thread;
+> 2 Added support for XPower AXP288 PMIC operation region support;
+> 3 Since operation region handler can not be removed(at the moment at least),
+>   use bool for the two operation region driver configs instead of tristate;
+>   Another reason to do this is that, with Mika's MFD ACPI support patch, all
+>   those MFD cell devices created will have the same modalias as their parent's
+>   so it doesn't make much sense to compile these drivers into modules.
+> 
+> Patch 1 applies on top of Rafael's pm-next branch, and then patch 2 and
+> patch 3 needs merge of Lee's mfd/ib-mfd-iio-3.19 branch where the PMIC
+> driver XPower AXP288 and iio driver axp288_adc is located.
+> 
+> 
+> Aaron Lu (3):
+>   ACPI / PMIC: support PMIC operation region for CrystalCove
+>   ACPI / PMIC: support PMIC operation region for XPower AXP288
+>   ACPI / PMIC: AXP288: support virtual GPIO in ACPI table
 
-Signed-off-by: Vlad Dogaru <vlad.dogaru@intel.com>
----
- drivers/iio/industrialio-buffer.c | 28 ++++++++++++++++++++++++++++
- 1 file changed, 28 insertions(+)
+OK
 
-diff --git a/drivers/iio/industrialio-buffer.c b/drivers/iio/industrialio-buffer.c
-index f971f79..422b29e 100644
---- a/drivers/iio/industrialio-buffer.c
-+++ b/drivers/iio/industrialio-buffer.c
-@@ -309,6 +309,30 @@ static int iio_buffer_add_channel_sysfs(struct iio_dev *indio_dev,
- 	return ret;
- }
- 
-+static int iio_check_unique_scan_index(struct iio_dev *indio_dev,
-+				       const struct iio_chan_spec *channels,
-+				       int num_channels)
-+{
-+	int i, j;
-+
-+	for (i = 0; i < num_channels - 1; i++) {
-+		if (channels[i].scan_index < 0)
-+			continue;
-+		for (j = i + 1; j < num_channels; j++) {
-+			if (channels[j].scan_index < 0)
-+				continue;
-+			if (channels[i].scan_index == channels[j].scan_index) {
-+				dev_err(&indio_dev->dev,
-+					"duplicate scan index %d\n",
-+					channels[i].scan_index);
-+				return -EINVAL;
-+			}
-+		}
-+	}
-+
-+	return 0;
-+}
-+
- static const char * const iio_scan_elements_group_name = "scan_elements";
- 
- int iio_buffer_register(struct iio_dev *indio_dev,
-@@ -320,6 +344,10 @@ int iio_buffer_register(struct iio_dev *indio_dev,
- 	struct iio_buffer *buffer = indio_dev->buffer;
- 	int ret, i, attrn, attrcount, attrcount_orig = 0;
- 
-+	ret = iio_check_unique_scan_index(indio_dev, channels, num_channels);
-+	if (ret < 0)
-+		return ret;
-+
- 	if (buffer->attrs)
- 		indio_dev->groups[indio_dev->groupcounter++] = buffer->attrs;
- 
+I've pulled the Lee's 'mfd/ib-mfd-iio-3.19' branch and applied your updated
+three on top of that.  Please check the bleeding-edge branch of linux-pm.git
+for the result.
+
 -- 
-1.9.1
-
+I speak only for myself.
+Rafael J. Wysocki, Intel Open Source Technology Center.
