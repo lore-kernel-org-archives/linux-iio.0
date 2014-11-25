@@ -1,234 +1,139 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga09.intel.com ([134.134.136.24]:55425 "EHLO mga09.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751132AbaKZCoi (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Tue, 25 Nov 2014 21:44:38 -0500
-Message-ID: <54753E92.2010609@intel.com>
-Date: Wed, 26 Nov 2014 10:44:34 +0800
-From: Aaron Lu <aaron.lu@intel.com>
+Return-Path: <knaack.h@gmx.de>
+Message-ID: <5475085E.8090806@gmx.de>
+Date: Tue, 25 Nov 2014 23:53:18 +0100
+From: Hartmut Knaack <knaack.h@gmx.de>
 MIME-Version: 1.0
-To: "Rafael J. Wysocki" <rjw@rjwysocki.net>
-CC: Lee Jones <lee.jones@linaro.org>,
-	Jacob Pan <jacob.jun.pan@linux.intel.com>,
-	Yegnesh Iyer <yegnesh.s.iyer@intel.com>,
-	linux-acpi@vger.kernel.org, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 0/3] Support PMIC operation region for CrystalCove
- and XPower
-References: <1416553911-22990-1-git-send-email-aaron.lu@intel.com> <1987897.BgdIEqPdlH@vostro.rjw.lan> <54746D7F.1020104@intel.com> <3232241.9QsNPyI1Av@vostro.rjw.lan> <54753C7E.8030503@intel.com>
-In-Reply-To: <54753C7E.8030503@intel.com>
-Content-Type: text/plain; charset=utf-8
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+To: Ezequiel Garcia <ezequiel.garcia@imgtec.com>,
+ Andrew Bresticker <abrestic@chromium.org>,
+ James Hartley <james.hartley@imgtec.com>,
+ Lars-Peter Clausen <lars@metafoo.de>,
+ Jonathan Cameron <jic23@kernel.org>
+CC: linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+ robh+dt@kernel.org, Pawel.Moll@arm.com, Mark.Rutland@arm.com,
+ ijc+devicetree@hellion.org.uk, galak@codeaurora.org,
+ Naidu.Tellapati@imgtec.com, Phani Movva <Phani.Movva@imgtec.com>
+Subject: Re: [PATCH v3 1/3] iio: adc: Cosmic Circuits 10001 ADC driver
+References: <1415888044-16635-1-git-send-email-ezequiel.garcia@imgtec.com> <1415888044-16635-2-git-send-email-ezequiel.garcia@imgtec.com> <546FE3A7.6040308@gmx.de> <5474C062.2020604@imgtec.com> <5474F7A5.6030008@gmx.de> <5474FCC8.8080906@imgtec.com>
+In-Reply-To: <5474FCC8.8080906@imgtec.com>
+Content-Type: text/plain; charset=ISO-8859-15
+List-ID: <linux-iio@vger.kernel.org>
 
-On 11/26/2014 10:35 AM, Aaron Lu wrote:
-> On 11/26/2014 04:41 AM, Rafael J. Wysocki wrote:
->> On Tuesday, November 25, 2014 07:52:31 PM Aaron Lu wrote:
->>> On 11/25/2014 09:47 AM, Rafael J. Wysocki wrote:
->>>> On Friday, November 21, 2014 03:11:48 PM Aaron Lu wrote:
->>>>> v3:
->>>>> Only some function/variable name changes, no functiona changes:
->>>>> - Replace the dptf/DPTF word originate from the BIOS ACPI table with more
->>>>>   meaningful word thermal/THERMAL in all places;
->>>>> - Eliminate the soc part in various structure and function names to make
->>>>>   them shorter:
->>>>>   intel_soc_pmic_opregion -> intel_pmic_opregion
->>>>>   intel_soc_pmic_pmop_handler -> intel_pmic_pmop_handler
->>>>>   intel_soc_pmic_install_opregion_handler -> intel_pmic_install_opregion_handler
->>>>>   etc.
->>>>>
->>>>>
->>>>> v2:
->>>>> Place PMIC operation files under drivers/acpi/pmic instead of
->>>>> drivers/acpi/pmic_opregion as suggested by Rafael;
->>>>> Rename PMIC operation files to make them shorter as suggested by Rafael.
->>>>>
->>>>> v1:
->>>>> On Intel Baytrail-T and Baytrail-T-CR platforms, there are two customized
->>>>> ACPI operation regions defined for the Power Management Integrated Circuit
->>>>> device, one is for power resource handling and one is for thermal: sensor
->>>>> temperature reporting, trip point setting, etc. There are different PMIC
->>>>> chips used on those platforms and though each has the same two operation
->>>>> regions and functionality, their implementation is different so every PMIC
->>>>> will need a driver. But since their functionality is similar, some common
->>>>> code is abstracted into the intel_soc_pmic_opregion.c.
->>>>>
->>>>> The last version is posted here:
->>>>> https://lkml.org/lkml/2014/9/8/801
->>>>>
->>>>> Changes since then:
->>>>> 1 Move to drivers/acpi as discussed on the above thread;
->>>>> 2 Added support for XPower AXP288 PMIC operation region support;
->>>>> 3 Since operation region handler can not be removed(at the moment at least),
->>>>>   use bool for the two operation region driver configs instead of tristate;
->>>>>   Another reason to do this is that, with Mika's MFD ACPI support patch, all
->>>>>   those MFD cell devices created will have the same modalias as their parent's
->>>>>   so it doesn't make much sense to compile these drivers into modules.
->>>>>
->>>>> Patch 1 applies on top of Rafael's pm-next branch, and then patch 2 and
->>>>> patch 3 needs merge of Lee's mfd/ib-mfd-iio-3.19 branch where the PMIC
->>>>> driver XPower AXP288 and iio driver axp288_adc is located.
->>>>>
->>>>>
->>>>> Aaron Lu (3):
->>>>>   ACPI / PMIC: support PMIC operation region for CrystalCove
->>>>>   ACPI / PMIC: support PMIC operation region for XPower AXP288
->>>>>   ACPI / PMIC: AXP288: support virtual GPIO in ACPI table
->>>>
->>>> OK
->>>>
->>>> I've pulled the Lee's 'mfd/ib-mfd-iio-3.19' branch and applied your updated
->>>> three on top of that.  Please check the bleeding-edge branch of linux-pm.git
->>>> for the result.
->>>
->>> Thanks, and a fix patch is here:
->>>
->>> From: Aaron Lu <aaron.lu@intel.com>
->>> Date: Tue, 25 Nov 2014 14:35:38 +0800
->>> Subject: [PATCH] ACPI / PMIC: Make it possible to build PMIC driver as a module
->>>
->>> This can solve a problem that when axp288_adc driver is built as a
->>> module and the PMIC driver is builtin, following error would ocur:
->>
->> I would prefer that to be sloved by requiring axp288_adc to be built in
->> if the PMIC stuff is selected.  Otherwise we may need to deal with some
->> nasty module load ordering dependencies.
+Ezequiel Garcia schrieb am 25.11.2014 23:03:
 > 
-> Good point, and I saw you have solved this problem in the bleeding-edge
-> branch, thanks!
 > 
->>
->>>  drivers/built-in.o: In function `intel_xpower_pmic_get_raw_temp':
->>>  intel_pmic_xpower.c:(.text+0xdfaa7): undefined reference to `iio_channel_get'
->>>  intel_pmic_xpower.c:(.text+0xdfb24): undefined reference to `iio_read_channel_raw'
->>>  intel_pmic_xpower.c:(.text+0xdfb4e): undefined reference to `iio_channel_release'
+> On 11/25/2014 06:41 PM, Hartmut Knaack wrote:
 >>>
->>> Also, with the fix commit: 52870786ff5d ("ACPI: Use ACPI companion to
->>> match only the first physical device"), the MFD cell device will have
->>> its own platform modalias instead of its parent's ACPI modalias, this
->>> made it possible for the module to be autoloaded.
+>>> Unless I'm missing something, that's exactly what XOR does.
 >>>
->>> Reported-by: kbuild test robot <fengguang.wu@intel.com>
->>> Signed-off-by: Aaron Lu <aaron.lu@intel.com>
->>> ---
->>>  drivers/acpi/Kconfig                  |  6 +++---
->>>  drivers/acpi/pmic/intel_pmic_crc.c    | 12 +++++++++++-
->>>  drivers/acpi/pmic/intel_pmic_xpower.c | 12 +++++++++++-
->>>  3 files changed, 25 insertions(+), 5 deletions(-)
+>>> Example:
 >>>
->>> diff --git a/drivers/acpi/Kconfig b/drivers/acpi/Kconfig
->>> index 227f0692cbff..f9459ba4ce59 100644
->>> --- a/drivers/acpi/Kconfig
->>> +++ b/drivers/acpi/Kconfig
->>> @@ -394,7 +394,7 @@ config ACPI_EXTLOG
->>>  	  tracepoint which carries that information to userspace.
->>>  
->>>  menuconfig PMIC_OPREGION
->>> -	bool "PMIC (Power Management Integrated Circuit) operation region support"
->>> +	tristate "PMIC (Power Management Integrated Circuit) operation region support"
->>>  	help
->>>  	  Select this option to enable support for ACPI operation
->>>  	  region of the PMIC chip. The operation region can be used
->>> @@ -403,13 +403,13 @@ menuconfig PMIC_OPREGION
->>>  
->>>  if PMIC_OPREGION
->>>  config CRC_PMIC_OPREGION
->>> -	bool "ACPI operation region support for CrystalCove PMIC"
->>> +	tristate "ACPI operation region support for CrystalCove PMIC"
->>>  	depends on INTEL_SOC_PMIC
->>>  	help
->>>  	  This config adds ACPI operation region support for CrystalCove PMIC.
->>>  
->>>  config XPOWER_PMIC_OPREGION
->>> -	bool "ACPI operation region support for XPower AXP288 PMIC"
->>> +	tristate "ACPI operation region support for XPower AXP288 PMIC"
->>>  	depends on AXP288_ADC
->>>  	help
->>>  	  This config adds ACPI operation region support for XPower AXP288 PMIC.
->>> diff --git a/drivers/acpi/pmic/intel_pmic_crc.c b/drivers/acpi/pmic/intel_pmic_crc.c
->>> index 8955e5b41195..8a193381b5ee 100644
->>> --- a/drivers/acpi/pmic/intel_pmic_crc.c
->>> +++ b/drivers/acpi/pmic/intel_pmic_crc.c
->>> @@ -194,13 +194,23 @@ static int intel_crc_pmic_opregion_probe(struct platform_device *pdev)
->>>  			&intel_crc_pmic_opregion_data);
->>>  }
->>>  
->>> +#define DRV_NAME "crystal_cove_region"
->>
->> This name is just horrible, BTW.
+>>> reserved_channels = 0x2;
+>>> channel_map = 0x7 ^ reserved_channels -> 0x5
+>>>
+>> You miss to check ret for a valid range, which you don't need to do when masking out channels.
+>> Example:
+>> reserved_channels = 0x8;
+>> channel_map = 0x7 ^ reserved_channels -> 0xf
+>> And this is actually happening in the current revision (with the wrong channel_map assignment), that a reserved channel in DT would become usable.
 > 
-> Heh. I tried to follow the pattern in CrystalCove's MFD driver, where
-> all its cell devices are named crystal_cove_XXX, and since the platform
-> bus' match is done by comparing the device's name and the name field of
-> the driver's id table entry, they have to be the same. The problem is,
-> the name field of the platform_device_id structure has a size limit of
-> 20, I can't even put the 'op' before the 'region' there. Perhaps time to
-> enlarge that size limit?
-
-Or we can simply use 'acpi' instead of 'region' or 'opregion' here, to
-mean that this cell device is for ACPI purpose. How does this sound?
-
-
-Thanks,
-Aaron
-
->>
->>> +
->>> +static struct platform_device_id crc_opregion_id_table[] = {
->>> +	{ .name = DRV_NAME },
->>> +	{},
->>> +};
->>> +
->>>  static struct platform_driver intel_crc_pmic_opregion_driver = {
->>>  	.probe = intel_crc_pmic_opregion_probe,
->>> +	.id_table = crc_opregion_id_table,
->>>  	.driver = {
->>> -		.name = "crystal_cove_region",
->>> +		.name = DRV_NAME,
->>>  	},
->>>  };
->>>  
->>> +MODULE_DEVICE_TABLE(platform, crc_opregion_id_table);
->>> +
->>>  static int __init intel_crc_pmic_opregion_driver_init(void)
->>>  {
->>>  	return platform_driver_register(&intel_crc_pmic_opregion_driver);
->>> diff --git a/drivers/acpi/pmic/intel_pmic_xpower.c b/drivers/acpi/pmic/intel_pmic_xpower.c
->>> index 9ec57ebd81c9..4debcbbd6285 100644
->>> --- a/drivers/acpi/pmic/intel_pmic_xpower.c
->>> +++ b/drivers/acpi/pmic/intel_pmic_xpower.c
->>> @@ -251,13 +251,23 @@ static int intel_xpower_pmic_opregion_probe(struct platform_device *pdev)
->>>  	return result;
->>>  }
->>>  
->>> +#define DRV_NAME "axp288_opregion"
->>
->> Same here.
->>
->> The vast majority of people who will see those names have no idea what an
->> "opregion" is and "region" alone is just meaningless.
->>
->>> +
->>> +static struct platform_device_id xpower_opregion_id_table[] = {
->>> +	{ .name = DRV_NAME },
->>> +	{},
->>> +};
->>> +
->>>  static struct platform_driver intel_xpower_pmic_opregion_driver = {
->>>  	.probe = intel_xpower_pmic_opregion_probe,
->>> +	.id_table = xpower_opregion_id_table,
->>>  	.driver = {
->>> -		.name = "axp288_opregion",
->>> +		.name = DRV_NAME,
->>>  	},
->>>  };
->>>  
->>> +MODULE_DEVICE_TABLE(platform, xpower_opregion_id_table);
->>> +
->>>  static int __init intel_xpower_pmic_opregion_driver_init(void)
->>>  {
->>>  	return platform_driver_register(&intel_xpower_pmic_opregion_driver);
->>>
->>
+> Right, definitely a check is needed.
+No, that's not needed when using AND, as it can not add bits in the channel map. The following will do the job:
+		adc_dev->channel_map &= ~ret;
 > 
-
+>>>>> +
+>>>>> +	adc_dev->reg = devm_regulator_get(&pdev->dev, "vref");
+>>>>> +	if (IS_ERR_OR_NULL(adc_dev->reg))
+>>>>> +		return -EINVAL;
+>>>> 	if (IS_ERR(adc_dev->reg))
+>>>> 		return PTR_ERR(adc_dev->reg);
+>>>
+>>> Are you sure? What if devm_regulator_get() returns NULL?
+>>>
+>> I had a look at it, but couldn't figure out a condition in which it would return NULL. But I'd be happy to be informed of anything different.
+> 
+> If CONFIG_REGULATOR=n you get NULL there (although I added a select REGULATOR
+> on the v4 I just posted).
+> 
+Indeed, thanks. Now I'm thinking if it would make sense to handle this special case in a special way (as it would be caused by an invalid kernel config). Well, I guess, I leave it up to you.
+>>>>> +
+>>>>> +	ret = regulator_enable(adc_dev->reg);
+>>>>> +	if (ret)
+>>>>> +		return ret;
+>>>>> +
+>>>>> +	indio_dev->dev.parent = &pdev->dev;
+>>>>> +	indio_dev->name = dev_name(&pdev->dev);
+>>>>> +	indio_dev->info = &cc10001_adc_info;
+>>>>> +	indio_dev->modes = INDIO_DIRECT_MODE;
+>>>>> +
+>>>>> +	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+>>>>> +	adc_dev->reg_base = devm_ioremap_resource(&pdev->dev, res);
+>>>>> +	if (IS_ERR(adc_dev->reg_base))
+>>>> Need to put error code into ret.
+>>>
+>>> Right.
+>>>
+>>>>> +		goto err_disable_reg;
+>>>>> +
+>>>>> +	adc_dev->adc_clk = devm_clk_get(&pdev->dev, "adc");
+>>>>> +	if (IS_ERR(adc_dev->adc_clk)) {
+>>>>> +		dev_err(&pdev->dev, "Failed to get the clock\n");
+>>>> Need to put error code into ret.
+>>>>> +		goto err_disable_reg;
+>>>>> +	}
+>>>>> +
+>>>>> +	ret = clk_prepare_enable(adc_dev->adc_clk);
+>>>>> +	if (ret) {
+>>>>> +		dev_err(&pdev->dev, "Failed to enable the clock\n");
+>>>>> +		goto err_disable_reg;
+>>>>> +	}
+>>>>> +
+>>>>> +	adc_clk_rate = clk_get_rate(adc_dev->adc_clk);
+>>>>> +	if (!adc_clk_rate) {
+>>>>> +		ret = -EINVAL;
+>>>>> +		dev_err(&pdev->dev, "null clock rate!\n");
+>>>> Start message with upper case?
+>>>
+>>> Actually, I'd rather make the others start with lower case.
+>> Fair enough, unless they are full sentences like here. My english grammar tells me they should start with capital letters.
+> 
+> Yeah, but it's not the start of the message, as it's prefixed
+> with the device stuff.
+> 
+>>>
+>>>>> +		goto err_disable_clk;
+>>>>> +	}
+>>>>> +
+>>>>> +	adc_dev->eoc_delay_ns = NSEC_PER_SEC / adc_clk_rate;
+>>>>> +	adc_dev->start_delay_ns = adc_dev->eoc_delay_ns * CC10001_WAIT_CYCLES;
+>>>>> +
+>>>>> +	/* Setup the ADC channels available on the device */
+>>>>> +	ret = cc10001_adc_channel_init(indio_dev);
+>>>>> +	if (ret < 0) {
+>>>>> +		dev_err(&pdev->dev, "Could not initialize the channels.\n");
+>>>>> +		goto err_disable_clk;
+>>>>> +	}
+>>>>> +
+>>>>> +	mutex_init(&adc_dev->lock);
+>>>>> +
+>>>>> +	ret = iio_triggered_buffer_setup(indio_dev, NULL,
+>>>>> +					 &cc10001_adc_trigger_h, NULL);
+>>>>> +	if (ret < 0)
+>>>>> +		goto err_disable_clk;
+>>>>> +
+>>>>> +	ret = iio_device_register(indio_dev);
+>>>>> +	if (ret < 0)
+>>>>> +		goto err_cleanup_buffer;
+>>>>> +
+>>>>> +	platform_set_drvdata(pdev, indio_dev);
+>>>> Move this above iio_device_register.
+>>>
+>>> What for?
+>> To make iio_device_register the last operation of the probe.
+> 
+> I really don't think it matters, since platform_get_drvdata
+> is only called in the remove.
+> 
+> I'll move it if you think it's worth it, though.
+> 
+> Thanks for the review!
+> 
