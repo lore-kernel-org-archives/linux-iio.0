@@ -1,75 +1,81 @@
-Return-Path: <vigneshr@ti.com>
-Message-ID: <5476A8AD.4010003@ti.com>
-Date: Thu, 27 Nov 2014 09:59:33 +0530
-From: Vignesh R <vigneshr@ti.com>
-MIME-Version: 1.0
-To: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-CC: Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>,
-        Mark
- Rutland <mark.rutland@arm.com>,
-        Ian Campbell <ijc+devicetree@hellion.org.uk>,
-        Kumar Gala <galak@codeaurora.org>,
-        Benoit Cousson <bcousson@baylibre.com>,
-        Tony Lindgren <tony@atomide.com>,
-        Russell King <linux@arm.linux.org.uk>,
-        Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
-        <richardcochran@gmail.com>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Lee
- Jones <lee.jones@linaro.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter
- Meerwald <pmeerw@pmeerw.net>,
-        Samuel Ortiz <sameo@linux.intel.com>, Felipe
- Balbi <balbi@ti.com>,
-        Brad Griffis <bgriffis@ti.com>,
-        Sanjeev Sharma
-	<sanjeev_sharma@mentor.com>,
-        Paul Gortmaker <paul.gortmaker@windriver.com>,
-        Jan Kardell <jan.kardell@telliq.com>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <linux-omap@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>, <linux-iio@vger.kernel.org>,
-        <linux-input@vger.kernel.org>
-Subject: Re: [PATCH v4 0/6] Touchscreen performance related fixes
-References: <1415941651-28962-1-git-send-email-vigneshr@ti.com> <20141124115116.GA14997@linutronix.de> <547321A2.6010207@ti.com> <547325FA.6020004@linutronix.de>
-In-Reply-To: <547325FA.6020004@linutronix.de>
-Content-Type: text/plain; charset="utf-8"
+Return-Path: <dbaryshkov@gmail.com>
+From: Dmitry Eremin-Solenikov <dbaryshkov@gmail.com>
+To: Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>
+Cc: linux-iio@vger.kernel.org
+Subject: [PATCH] iio: inkern: add iio_write_channel_raw
+Date: Thu, 27 Nov 2014 01:42:45 +0300
+Message-Id: <1417041765-12782-1-git-send-email-dbaryshkov@gmail.com>
 List-ID: <linux-iio@vger.kernel.org>
 
+Introduce API for easy in-kernel setting of DAC values.
 
+Signed-off-by: Dmitry Eremin-Solenikov <dbaryshkov@gmail.com>
+---
+ drivers/iio/inkern.c         | 29 +++++++++++++++++++++++++++++
+ include/linux/iio/consumer.h | 11 +++++++++++
+ 2 files changed, 40 insertions(+)
 
-On Monday 24 November 2014 06:05 PM, Sebastian Andrzej Siewior wrote:
-> On 11/24/2014 01:16 PM, Vignesh R wrote:
-> 
->> I have tried running both IIO and TSC at the same time. But I have never
->> seen WARN_ON() even after running for close to 30 min. Can you send me
->> the exact script, so that it will be easy to reproduce?
-> 
-> Sure thing.
-> - one shell
-> 	evtest /dev/input/event2
-> - second shell
-> 	./iio-test.sh
->   with:
-> 
-> |#!/bin/sh
-> |
-> |while [ 1 = 1 ]
-> |do
-> |        cat /sys/bus/iio/devices/iio\:device0/in_voltage4_raw
-> |done
-> 
-> 
-> the kernel config: https://breakpoint.cc/am335x-config
-> 
-
-I was able to reproduce this issue. When ADC hits WARN_ON(), the TSC
-steps should be disabled. But, in this case, TSC is sampling the first Y
-co-ordinate and all TSC steps are enabled.
-REG_SE: 0x1ffc1
-ADC_STAT: 0x24
-
-Any idea why this may be happening?
-
-Regards
-Vignesh
+diff --git a/drivers/iio/inkern.c b/drivers/iio/inkern.c
+index f084610..5b03e69 100644
+--- a/drivers/iio/inkern.c
++++ b/drivers/iio/inkern.c
+@@ -608,3 +608,32 @@ err_unlock:
+ 	return ret;
+ }
+ EXPORT_SYMBOL_GPL(iio_get_channel_type);
++
++static int iio_channel_write(struct iio_channel *chan, int val, int val2,
++	enum iio_chan_info_enum info)
++{
++	int ret;
++
++	ret = chan->indio_dev->info->write_raw(chan->indio_dev,
++			chan->channel, val, val2, info);
++
++	return ret;
++}
++
++int iio_write_channel_raw(struct iio_channel *chan, int val)
++{
++	int ret;
++
++	mutex_lock(&chan->indio_dev->info_exist_lock);
++	if (chan->indio_dev->info == NULL) {
++		ret = -ENODEV;
++		goto err_unlock;
++	}
++
++	ret = iio_channel_write(chan, val, 0, IIO_CHAN_INFO_RAW);
++err_unlock:
++	mutex_unlock(&chan->indio_dev->info_exist_lock);
++
++	return ret;
++}
++EXPORT_SYMBOL_GPL(iio_write_channel_raw);
+diff --git a/include/linux/iio/consumer.h b/include/linux/iio/consumer.h
+index 651f9a0..06f4688 100644
+--- a/include/linux/iio/consumer.h
++++ b/include/linux/iio/consumer.h
+@@ -151,6 +151,17 @@ int iio_read_channel_average_raw(struct iio_channel *chan, int *val);
+ int iio_read_channel_processed(struct iio_channel *chan, int *val);
+ 
+ /**
++ * iio_write_channel_raw() - write to a given channel
++ * @chan:		The channel being queried.
++ * @val:		Value being written.
++ *
++ * Note raw writes to iio channels are in dac counts and hence
++ * scale will need to be applied if standard units required.
++ */
++int iio_write_channel_raw(struct iio_channel *chan,
++			 int val);
++
++/**
+  * iio_get_channel_type() - get the type of a channel
+  * @channel:		The channel being queried.
+  * @type:		The type of the channel.
+-- 
+2.1.3
