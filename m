@@ -1,94 +1,827 @@
-Return-Path: <octavian.purdila@intel.com>
-MIME-Version: 1.0
-In-Reply-To: <CAE1zotKrXi0ML8X-S0GafwSTsLimCJjTB9=gF6-kuDGrRNR95A@mail.gmail.com>
-References: <1416246966-3083-1-git-send-email-octavian.purdila@intel.com>
-	<20141118132405.EF30A40277@saturn.retrosnub.co.uk>
-	<CAE1zotJny3-Zcd81HUYNpNZJHkt=t6e2TANzVQ=-FU239MLarw@mail.gmail.com>
-	<546B776F.1080800@metafoo.de>
-	<CAE1zotJik56OsM8-6Hg9rGqJT_VdRL0VvXv4kjEhBX6W0ijYLQ@mail.gmail.com>
-	<546B8084.6080400@metafoo.de>
-	<CAE1zotK9aR+Y7cEqZ+9rN_uiCH=kT06ZYvAdhWN_+x4b7JB4ag@mail.gmail.com>
-	<CAE1zotKrXi0ML8X-S0GafwSTsLimCJjTB9=gF6-kuDGrRNR95A@mail.gmail.com>
-Date: Wed, 26 Nov 2014 15:06:14 +0200
-Message-ID: <CAE1zot+dMLcuhsP1SA9akZWaPpuDqXTJw3WrZRP+n_=fxuUOaQ@mail.gmail.com>
-Subject: Re: [RFC 0/8] iio: add support for hardware fifo
-From: Octavian Purdila <octavian.purdila@intel.com>
-To: Lars-Peter Clausen <lars@metafoo.de>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	Srinivas Pandruvada <srinivas.pandruvada@intel.com>
-Content-Type: text/plain; charset=UTF-8
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mga02.intel.com ([134.134.136.20]:5656 "EHLO mga02.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1750782AbaKZMth (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Wed, 26 Nov 2014 07:49:37 -0500
+From: Vlad Dogaru <vlad.dogaru@intel.com>
+To: linux-iio@vger.kernel.org
+Cc: Vlad Dogaru <vlad.dogaru@intel.com>
+Subject: [PATCH v2] iio: driver for Semtech SX9500 proximity solution
+Date: Wed, 26 Nov 2014 14:50:31 +0200
+Message-Id: <1417006231-17952-1-git-send-email-vlad.dogaru@intel.com>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Wed, Nov 19, 2014 at 3:32 PM, Octavian Purdila
-<octavian.purdila@intel.com> wrote:
-> On Tue, Nov 18, 2014 at 9:35 PM, Octavian Purdila
-> <octavian.purdila@intel.com> wrote:
->> On Tue, Nov 18, 2014 at 7:23 PM, Lars-Peter Clausen <lars@metafoo.de> wrote:
->>
->>>>>> As far as I understood, the proposed watermark implementation only
->>>>>> affects the device buffer and as I mentioned above that will not help
->>>>>> with reducing the interrupt rate.
->>>>>
->>>>> By setting the watershed level the userspace application tells you that
->>>>> it
->>>>> is OK with getting data with a higher latency than one sample. This
->>>>> allows
->>>>> the driver to configure the FIFO level and hence reduce the interrupt
->>>>> rate.
->>>>
->>>> Hi Lars,
->>>>
->>>> The implementation (as proposed in the patch by Josselin and Yannick)
->>>> does not inform the driver of changes to watermark, that is only
->>>> visible to core iio / buffer logic.
->>>
->>> That should be trivial to add though.
->>
->> True. I've actually started by implementing hardware fifo support as a
->> new type of iio buffer, but I got scared by the buffer demux stuff. I
->> can take another stab at it, if that sounds better?
->>
-> OK, I remembered why I bailed on that approach: it would break the
-> callback buffer. It looks like the buffer cb infrastructure relies on
-> a push model and for a hardware fifo implemented as a iio buffer we
-> would need a pull model. While there is one driver that takes this
-> approach (sca3000_ring.c) it is in staging and the hardware buffer
-> part seems to be marked as RFC.
->
+Supports buffering, IIO events and changing sampling frequency.
 
-Hi again,
+Datasheet available at:
+http://www.semtech.com/images/datasheet/sx9500_ag.pdf
 
-I want to revive this thread to help us start moving in the right
-direction. Here is a summary of things discuss so far:
+Signed-off-by: Vlad Dogaru <vlad.dogaru@intel.com>
+---
+Changes since v1:
+ - report raw readings of the channels instead of just 0 or 1.
+ - add a new Kconfig section for proximity and leave the lightning sensor in its
+   own one.
 
-1. The watermark patch from Josselin and Yannick does not allow
-reducing the interrupt rate because watermark is not propagated to the
-driver level. It lacks setting the fifo mode (which is important for
-Android use-cases). Also, we either need the timeout parameter or an
-explicit flush trigger.
+ drivers/iio/proximity/Kconfig  |  14 +
+ drivers/iio/proximity/Makefile |   1 +
+ drivers/iio/proximity/sx9500.c | 755 +++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 770 insertions(+)
+ create mode 100644 drivers/iio/proximity/sx9500.c
 
-2. There are two approaches to implement hardware buffering:
+diff --git a/drivers/iio/proximity/Kconfig b/drivers/iio/proximity/Kconfig
+index 0c8cdf5..623fb03 100644
+--- a/drivers/iio/proximity/Kconfig
++++ b/drivers/iio/proximity/Kconfig
+@@ -17,3 +17,17 @@ config AS3935
+ 	  module will be called as3935
+ 
+ endmenu
++
++menu "Proximity sensors"
++
++config SX9500
++	tristate "SX9500 Semtech proximity sensor"
++	select IIO_BUFFER
++	select IIO_TRIGGERED_BUFFER
++	select REGMAP_I2C
++	depends on I2C
++	help
++	  Say Y here to build a driver for Semtech's SX9500 capacitive
++	  proximity/button sensor.
++
++endmenu
+diff --git a/drivers/iio/proximity/Makefile b/drivers/iio/proximity/Makefile
+index 743adee..9818dc5 100644
+--- a/drivers/iio/proximity/Makefile
++++ b/drivers/iio/proximity/Makefile
+@@ -4,3 +4,4 @@
+ 
+ # When adding new entries keep the list in alphabetical order
+ obj-$(CONFIG_AS3935)		+= as3935.o
++obj-$(CONFIG_SX9500)		+= sx9500.o
+diff --git a/drivers/iio/proximity/sx9500.c b/drivers/iio/proximity/sx9500.c
+new file mode 100644
+index 0000000..07f2a2e
+--- /dev/null
++++ b/drivers/iio/proximity/sx9500.c
+@@ -0,0 +1,755 @@
++/*
++ * Copyright (c) 2014 Intel Corporation
++ *
++ * Driver for Semtech's SX9500 capacitive proximity/button solution.
++ * Datasheet available at
++ * <http://www.semtech.com/images/datasheet/sx9500.pdf>.
++ *
++ * This program is free software; you can redistribute it and/or modify it
++ * under the terms of the GNU General Public License version 2 as published by
++ * the Free Software Foundation.
++ */
++
++#include <linux/kernel.h>
++#include <linux/slab.h>
++#include <linux/module.h>
++#include <linux/i2c.h>
++#include <linux/irq.h>
++#include <linux/acpi.h>
++#include <linux/gpio/consumer.h>
++#include <linux/regmap.h>
++
++#include <linux/iio/iio.h>
++#include <linux/iio/buffer.h>
++#include <linux/iio/sysfs.h>
++#include <linux/iio/events.h>
++#include <linux/iio/trigger.h>
++#include <linux/iio/triggered_buffer.h>
++#include <linux/iio/trigger_consumer.h>
++
++#define SX9500_DRIVER_NAME		"sx9500"
++#define SX9500_IRQ_NAME			"sx9500_event"
++#define SX9500_GPIO_NAME		"sx9500_gpio"
++
++/* Register definitions. */
++#define SX9500_REG_IRQ_SRC		0x00
++#define SX9500_REG_STAT			0x01
++#define SX9500_REG_IRQ_MSK		0x03
++
++#define SX9500_REG_PROX_CTRL0		0x06
++#define SX9500_REG_PROX_CTRL1		0x07
++#define SX9500_REG_PROX_CTRL2		0x08
++#define SX9500_REG_PROX_CTRL3		0x09
++#define SX9500_REG_PROX_CTRL4		0x0a
++#define SX9500_REG_PROX_CTRL5		0x0b
++#define SX9500_REG_PROX_CTRL6		0x0c
++#define SX9500_REG_PROX_CTRL7		0x0d
++#define SX9500_REG_PROX_CTRL8		0x0e
++
++#define SX9500_REG_SENSOR_SEL		0x20
++#define SX9500_REG_USE_MSB		0x21
++#define SX9500_REG_USE_LSB		0x22
++#define SX9500_REG_AVG_MSB		0x23
++#define SX9500_REG_AVG_LSB		0x24
++#define SX9500_REG_DIFF_MSB		0x25
++#define SX9500_REG_DIFF_LSB		0x26
++#define SX9500_REG_OFFSET_MSB		0x27
++#define SX9500_REG_OFFSET_LSB		0x28
++
++#define SX9500_REG_RESET		0x7f
++
++/* Write this to REG_RESET to do a soft reset. */
++#define SX9500_SOFT_RESET		0xde
++
++#define SX9500_SCAN_PERIOD_MASK		0x70
++
++/*
++ * These serve for identifying IRQ source in the IRQ_SRC register, and
++ * also for masking the IRQs in the IRQ_MSK register.
++ */
++#define SX9500_CLOSE_IRQ		BIT(6)
++#define SX9500_FAR_IRQ			BIT(5)
++#define SX9500_CONVDONE_IRQ		BIT(3)
++
++#define SX9500_PROXSTAT_SHIFT		4
++
++#define SX9500_NUM_CHANNELS		4
++
++struct sx9500_data {
++	struct mutex mutex;
++	struct i2c_client *client;
++	struct iio_trigger *trig;
++	struct regmap *regmap;
++	/*
++	 * Last reading of the proximity status for each channel.  We
++	 * only send an event to user space when this changes.
++	 */
++	u8 prox_stat[SX9500_NUM_CHANNELS];
++	bool event_enabled[SX9500_NUM_CHANNELS];
++	bool trigger_enabled;
++};
++
++static const struct iio_event_spec sx9500_events[] = {
++	{
++		.type = IIO_EV_TYPE_THRESH,
++		.dir = IIO_EV_DIR_EITHER,
++		.mask_separate = BIT(IIO_EV_INFO_ENABLE),
++	},
++};
++
++#define SX9500_CHANNEL(idx)					\
++	{							\
++		.type = IIO_PROXIMITY,				\
++		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),	\
++		.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_SAMP_FREQ), \
++		.indexed = 1,					\
++		.channel = idx,					\
++		.event_spec = sx9500_events,			\
++		.num_event_specs = 1,				\
++		.scan_index = idx,				\
++		.scan_type = {					\
++			.sign = 'u',				\
++			.realbits = 16,				\
++			.storagebits = 16,			\
++			.shift = 0,				\
++		},						\
++	}
++
++static const struct iio_chan_spec sx9500_channels[] = {
++	SX9500_CHANNEL(0),
++	SX9500_CHANNEL(1),
++	SX9500_CHANNEL(2),
++	SX9500_CHANNEL(3),
++	IIO_CHAN_SOFT_TIMESTAMP(4),
++};
++
++static const struct {
++	int val;
++	int val2;
++	unsigned int bits;
++} sx9500_samp_freq_table[] = {
++	{2, 500000, 0x70},
++	{3, 333333, 0x60},
++	{5, 0, 0x50},
++	{6, 666666, 0x40},
++	{8, 333333, 0x30},
++	{11, 111111, 0x20},
++	{16, 666666, 0x10},
++	{33, 333333, 0x00},
++};
++
++static const struct regmap_range sx9500_writable_reg_ranges[] = {
++	regmap_reg_range(SX9500_REG_IRQ_MSK, SX9500_REG_IRQ_MSK),
++	regmap_reg_range(SX9500_REG_PROX_CTRL0, SX9500_REG_PROX_CTRL8),
++	regmap_reg_range(SX9500_REG_SENSOR_SEL, SX9500_REG_SENSOR_SEL),
++	regmap_reg_range(SX9500_REG_OFFSET_MSB, SX9500_REG_OFFSET_LSB),
++	regmap_reg_range(SX9500_REG_RESET, SX9500_REG_RESET),
++};
++
++static const struct regmap_access_table sx9500_writeable_regs = {
++	.yes_ranges = sx9500_writable_reg_ranges,
++	.n_yes_ranges = ARRAY_SIZE(sx9500_writable_reg_ranges),
++};
++
++/*
++ * All allocated registers are readable, so we just list unallocated
++ * ones.
++ */
++static const struct regmap_range sx9500_non_readable_reg_ranges[] = {
++	regmap_reg_range(SX9500_REG_STAT + 1, SX9500_REG_STAT + 1),
++	regmap_reg_range(SX9500_REG_IRQ_MSK + 1, SX9500_REG_PROX_CTRL0 - 1),
++	regmap_reg_range(SX9500_REG_PROX_CTRL8 + 1, SX9500_REG_SENSOR_SEL - 1),
++	regmap_reg_range(SX9500_REG_OFFSET_LSB + 1, SX9500_REG_RESET - 1),
++};
++
++static const struct regmap_access_table sx9500_readable_regs = {
++	.no_ranges = sx9500_non_readable_reg_ranges,
++	.n_no_ranges = ARRAY_SIZE(sx9500_non_readable_reg_ranges),
++};
++
++static const struct regmap_range sx9500_volatile_reg_ranges[] = {
++	regmap_reg_range(SX9500_REG_IRQ_SRC, SX9500_REG_STAT),
++	regmap_reg_range(SX9500_REG_USE_MSB, SX9500_REG_OFFSET_LSB),
++	regmap_reg_range(SX9500_REG_RESET, SX9500_REG_RESET),
++};
++
++static const struct regmap_access_table sx9500_volatile_regs = {
++	.yes_ranges = sx9500_volatile_reg_ranges,
++	.n_yes_ranges = ARRAY_SIZE(sx9500_volatile_reg_ranges),
++};
++
++static const struct regmap_config sx9500_regmap_config = {
++	.reg_bits = 8,
++	.val_bits = 8,
++
++	.max_register = SX9500_REG_RESET,
++	.cache_type = REGCACHE_RBTREE,
++
++	.wr_table = &sx9500_writeable_regs,
++	.rd_table = &sx9500_readable_regs,
++	.volatile_table = &sx9500_volatile_regs,
++};
++
++static int sx9500_read_proximity(struct sx9500_data *data,
++				 const struct iio_chan_spec *chan,
++				 int *val)
++{
++	int ret;
++	__be16 regval;
++
++	ret = regmap_write(data->regmap, SX9500_REG_SENSOR_SEL, chan->channel);
++	if (ret < 0)
++		return ret;
++
++	ret = regmap_bulk_read(data->regmap, SX9500_REG_USE_MSB, &regval, 2);
++	if (ret < 0)
++		return ret;
++
++	*val = 32767 - (s16)be16_to_cpu(regval);
++
++	return IIO_VAL_INT;
++}
++
++static int sx9500_read_samp_freq(struct sx9500_data *data,
++				 int *val, int *val2)
++{
++	int i, ret;
++	unsigned int regval;
++
++	mutex_lock(&data->mutex);
++
++	ret = regmap_read(data->regmap, SX9500_REG_PROX_CTRL0, &regval);
++	if (ret < 0)
++		goto out;
++
++	ret = -EINVAL;
++	for (i = 0; i < ARRAY_SIZE(sx9500_samp_freq_table); i++)
++		if (sx9500_samp_freq_table[i].bits ==
++		    (regval & SX9500_SCAN_PERIOD_MASK)) {
++			*val = sx9500_samp_freq_table[i].val;
++			*val2 = sx9500_samp_freq_table[i].val2;
++			ret = IIO_VAL_INT_PLUS_MICRO;
++			break;
++		}
++
++out:
++	mutex_unlock(&data->mutex);
++
++	return ret;
++}
++
++static int sx9500_read_raw(struct iio_dev *indio_dev,
++			   const struct iio_chan_spec *chan,
++			   int *val, int *val2, long mask)
++{
++	struct sx9500_data *data = iio_priv(indio_dev);
++	int ret;
++
++	switch (chan->type) {
++	case IIO_PROXIMITY:
++		switch (mask) {
++		case IIO_CHAN_INFO_RAW:
++			if (iio_buffer_enabled(indio_dev))
++				return -EBUSY;
++			mutex_lock(&data->mutex);
++			ret = sx9500_read_proximity(data, chan, val);
++			mutex_unlock(&data->mutex);
++			return ret;
++		case IIO_CHAN_INFO_SAMP_FREQ:
++			return sx9500_read_samp_freq(data, val, val2);
++		default:
++			return -EINVAL;
++		}
++	default:
++		return -EINVAL;
++	}
++}
++
++static int sx9500_set_samp_freq(struct sx9500_data *data,
++				int val, int val2)
++{
++	int i, ret, idx;
++
++	idx = -1;
++	for (i = 0; i < ARRAY_SIZE(sx9500_samp_freq_table); i++)
++		if (val == sx9500_samp_freq_table[i].val &&
++		    val2 == sx9500_samp_freq_table[i].val2) {
++			idx = i;
++			break;
++		}
++
++	if (idx == -1)
++		return -EINVAL;
++
++	mutex_lock(&data->mutex);
++
++	ret = regmap_update_bits(data->regmap, SX9500_REG_PROX_CTRL0,
++				 SX9500_SCAN_PERIOD_MASK,
++				 sx9500_samp_freq_table[idx].bits);
++
++	mutex_unlock(&data->mutex);
++
++	return ret;
++}
++
++static int sx9500_write_raw(struct iio_dev *indio_dev,
++			    const struct iio_chan_spec *chan,
++			    int val, int val2, long mask)
++{
++	struct sx9500_data *data = iio_priv(indio_dev);
++
++	switch (chan->type) {
++	case IIO_PROXIMITY:
++		switch (mask) {
++		case IIO_CHAN_INFO_SAMP_FREQ:
++			return sx9500_set_samp_freq(data, val, val2);
++		default:
++			return -EINVAL;
++		}
++	default:
++		return -EINVAL;
++	}
++}
++
++static irqreturn_t sx9500_irq_handler(int irq, void *private)
++{
++	struct iio_dev *indio_dev = private;
++	struct sx9500_data *data = iio_priv(indio_dev);
++
++	if (data->trigger_enabled)
++		iio_trigger_poll(data->trig);
++
++	/*
++	 * Even if no event is enabled, we need to wake the thread to
++	 * clear the interrupt state by reading SX9500_REG_IRQ_SRC.  It
++	 * is not possible to do that here because regmap_read takes a
++	 * mutex.
++	 */
++	return IRQ_WAKE_THREAD;
++}
++
++static irqreturn_t sx9500_irq_thread_handler(int irq, void *private)
++{
++	struct iio_dev *indio_dev = private;
++	struct sx9500_data *data = iio_priv(indio_dev);
++	int ret, chan;
++	unsigned int val;
++
++	mutex_lock(&data->mutex);
++
++	ret = regmap_read(data->regmap, SX9500_REG_IRQ_SRC, &val);
++	if (ret < 0) {
++		dev_err(&data->client->dev, "i2c transfer error in irq\n");
++		goto out;
++	}
++
++	if (!(val & (SX9500_CLOSE_IRQ | SX9500_FAR_IRQ)))
++		goto out;
++
++	ret = regmap_read(data->regmap, SX9500_REG_STAT, &val);
++	if (ret < 0) {
++		dev_err(&data->client->dev, "i2c transfer error in irq\n");
++		goto out;
++	}
++
++	val >>= SX9500_PROXSTAT_SHIFT;
++	for (chan = 0; chan < SX9500_NUM_CHANNELS; chan++) {
++		int dir;
++		u64 ev;
++		u8 new_prox = !(val & (1 << chan));
++
++		if (!data->event_enabled[chan])
++			continue;
++		if (new_prox == data->prox_stat[chan])
++			/* No change on this channel. */
++			continue;
++
++		dir = new_prox ? IIO_EV_DIR_RISING :
++			IIO_EV_DIR_FALLING;
++		ev = IIO_UNMOD_EVENT_CODE(IIO_PROXIMITY,
++					  chan,
++					  IIO_EV_TYPE_THRESH,
++					  dir);
++		iio_push_event(indio_dev, ev, iio_get_time_ns());
++		data->prox_stat[chan] = new_prox;
++	}
++
++out:
++	mutex_unlock(&data->mutex);
++
++	return IRQ_HANDLED;
++}
++
++static int sx9500_read_event_config(struct iio_dev *indio_dev,
++				    const struct iio_chan_spec *chan,
++				    enum iio_event_type type,
++				    enum iio_event_direction dir)
++{
++	struct sx9500_data *data = iio_priv(indio_dev);
++
++	if (chan->type != IIO_PROXIMITY)
++		return -EINVAL;
++	if (type != IIO_EV_TYPE_THRESH)
++		return -EINVAL;
++	if (dir != IIO_EV_DIR_EITHER)
++		return -EINVAL;
++
++	return data->event_enabled[chan->channel];
++}
++
++static int sx9500_write_event_config(struct iio_dev *indio_dev,
++				     const struct iio_chan_spec *chan,
++				     enum iio_event_type type,
++				     enum iio_event_direction dir,
++				     int state)
++{
++	struct sx9500_data *data = iio_priv(indio_dev);
++	int ret;
++	int i;
++	bool any_active;
++	unsigned int irqmask;
++
++	if (chan->type != IIO_PROXIMITY)
++		return -EINVAL;
++	if (type != IIO_EV_TYPE_THRESH)
++		return -EINVAL;
++	if (dir != IIO_EV_DIR_EITHER)
++		return -EINVAL;
++
++	mutex_lock(&data->mutex);
++
++	data->event_enabled[chan->channel] = state;
++
++	any_active = 0;
++	for (i = 0; i < SX9500_NUM_CHANNELS; i++)
++		if (data->event_enabled[chan->channel]) {
++			any_active = true;
++			break;
++		}
++
++	irqmask = SX9500_CLOSE_IRQ | SX9500_FAR_IRQ;
++	ret = regmap_update_bits(data->regmap, SX9500_REG_IRQ_MSK,
++				 irqmask, any_active ? irqmask : 0);
++
++	mutex_unlock(&data->mutex);
++
++	return ret;
++}
++
++static IIO_CONST_ATTR_SAMP_FREQ_AVAIL(
++	"2.500000 3.333333 5 6.666666 8.333333 11.111111 16.666666 33.333333");
++
++static struct attribute *sx9500_attributes[] = {
++	&iio_const_attr_sampling_frequency_available.dev_attr.attr,
++	NULL,
++};
++
++static const struct attribute_group sx9500_attribute_group = {
++	.attrs = sx9500_attributes,
++};
++
++static const struct iio_info sx9500_info = {
++	.driver_module = THIS_MODULE,
++	.attrs = &sx9500_attribute_group,
++	.read_raw = &sx9500_read_raw,
++	.write_raw = &sx9500_write_raw,
++	.read_event_config = &sx9500_read_event_config,
++	.write_event_config = &sx9500_write_event_config,
++};
++
++static int sx9500_set_trigger_state(struct iio_trigger *trig,
++				    bool state)
++{
++	struct iio_dev *indio_dev = iio_trigger_get_drvdata(trig);
++	struct sx9500_data *data = iio_priv(indio_dev);
++	int ret;
++
++	mutex_lock(&data->mutex);
++
++	ret = regmap_update_bits(data->regmap, SX9500_REG_IRQ_MSK,
++				 SX9500_CONVDONE_IRQ,
++				 state ? SX9500_CONVDONE_IRQ : 0);
++	data->trigger_enabled = state;
++
++	mutex_unlock(&data->mutex);
++
++	return ret;
++}
++
++static const struct iio_trigger_ops sx9500_trigger_ops = {
++	.set_trigger_state = sx9500_set_trigger_state,
++	.owner = THIS_MODULE,
++};
++
++static irqreturn_t sx9500_trigger_handler(int irq, void *private)
++{
++	struct iio_poll_func *pf = private;
++	struct iio_dev *indio_dev = pf->indio_dev;
++	struct sx9500_data *data = iio_priv(indio_dev);
++	s16 *buf;
++	int val, bit, ret, i = 0;
++
++	buf = kmalloc(indio_dev->scan_bytes, GFP_KERNEL);
++	if (!buf) {
++		dev_err(&data->client->dev,
++			"failed to allocate memory in trigger handler\n");
++		return IRQ_HANDLED;
++	}
++
++	mutex_lock(&data->mutex);
++
++	for_each_set_bit(bit, indio_dev->buffer->scan_mask,
++			 indio_dev->masklength) {
++		ret = sx9500_read_proximity(data, &indio_dev->channels[bit],
++					    &val);
++		if (ret < 0)
++			goto out;
++
++		buf[i++] = (s16)val;
++	}
++
++	iio_push_to_buffers_with_timestamp(indio_dev, buf,
++					   iio_get_time_ns());
++
++out:
++	mutex_unlock(&data->mutex);
++
++	kfree(buf);
++
++	iio_trigger_notify_done(indio_dev->trig);
++
++	return IRQ_HANDLED;
++}
++
++struct sx9500_reg_default {
++	u8 reg;
++	u8 def;
++};
++
++static const struct sx9500_reg_default sx9500_default_regs[] = {
++	{
++		.reg = SX9500_REG_PROX_CTRL1,
++		/* Shield enabled, small range. */
++		.def = 0x43,
++	},
++	{
++		.reg = SX9500_REG_PROX_CTRL2,
++		/* x8 gain, 167kHz frequency, finest resolution. */
++		.def = 0x77,
++	},
++	{
++		.reg = SX9500_REG_PROX_CTRL3,
++		/* Doze enabled, 2x scan period doze, no raw filter. */
++		.def = 0x40,
++	},
++	{
++		.reg = SX9500_REG_PROX_CTRL4,
++		/* Average threshold. */
++		.def = 0x30,
++	},
++	{
++		.reg = SX9500_REG_PROX_CTRL5,
++		/*
++		 * Debouncer off, lowest average negative filter,
++		 * highest average postive filter.
++		 */
++		.def = 0x0f,
++	},
++	{
++		.reg = SX9500_REG_PROX_CTRL6,
++		/* Proximity detection threshold: 400 */
++		.def = 0x0e,
++	},
++	{
++		.reg = SX9500_REG_PROX_CTRL7,
++		/*
++		 * No automatic compensation, compensate each pin
++		 * independently, proximity hysteresis: 32, close
++		 * debouncer off, far debouncer off.
++		 */
++		.def = 0x00,
++	},
++	{
++		.reg = SX9500_REG_PROX_CTRL8,
++		/* No stuck timeout, no periodic compensation. */
++		.def = 0x00,
++	},
++	{
++		.reg = SX9500_REG_PROX_CTRL0,
++		/* Scan period: 30ms, all sensors enabled. */
++		.def = 0x0f,
++	},
++};
++
++static int sx9500_init_device(struct iio_dev *indio_dev)
++{
++	struct sx9500_data *data = iio_priv(indio_dev);
++	int ret, i, num_defaults;
++	unsigned int val;
++
++	ret = regmap_write(data->regmap, SX9500_REG_IRQ_MSK, 0);
++	if (ret < 0)
++		return ret;
++
++	ret = regmap_write(data->regmap, SX9500_REG_RESET,
++			   SX9500_SOFT_RESET);
++	if (ret < 0)
++		return ret;
++
++	ret = regmap_read(data->regmap, SX9500_REG_IRQ_SRC, &val);
++	if (ret < 0)
++		return ret;
++
++	num_defaults = ARRAY_SIZE(sx9500_default_regs);
++	for (i = 0; i < num_defaults; i++) {
++		ret = regmap_write(data->regmap,
++				   sx9500_default_regs[i].reg,
++				   sx9500_default_regs[i].def);
++		if (ret < 0)
++			return ret;
++	}
++
++	return 0;
++}
++
++static int sx9500_gpio_probe(struct i2c_client *client,
++			     struct sx9500_data *data)
++{
++	struct device *dev;
++	struct gpio_desc *gpio;
++	int ret;
++
++	if (!client)
++		return -EINVAL;
++
++	dev = &client->dev;
++
++	/* data ready gpio interrupt pin */
++	gpio = devm_gpiod_get_index(dev, SX9500_GPIO_NAME, 0);
++	if (IS_ERR(gpio)) {
++		dev_err(dev, "acpi gpio get index failed\n");
++		return PTR_ERR(gpio);
++	}
++
++	ret = gpiod_direction_input(gpio);
++	if (ret)
++		return ret;
++
++	ret = gpiod_to_irq(gpio);
++
++	dev_dbg(dev, "GPIO resource, no:%d irq:%d\n", desc_to_gpio(gpio), ret);
++
++	return ret;
++}
++
++static int sx9500_probe(struct i2c_client *client,
++			const struct i2c_device_id *id)
++{
++	int ret;
++	struct iio_dev *indio_dev;
++	struct sx9500_data *data;
++
++	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
++	if (indio_dev == NULL)
++		return -ENOMEM;
++
++	data = iio_priv(indio_dev);
++	data->client = client;
++	mutex_init(&data->mutex);
++	data->trigger_enabled = false;
++
++	data->regmap = devm_regmap_init_i2c(client, &sx9500_regmap_config);
++	if (IS_ERR(data->regmap))
++		return PTR_ERR(data->regmap);
++
++	sx9500_init_device(indio_dev);
++
++	indio_dev->dev.parent = &client->dev;
++	indio_dev->name = id->name;
++	indio_dev->channels = sx9500_channels;
++	indio_dev->num_channels = ARRAY_SIZE(sx9500_channels);
++	indio_dev->info = &sx9500_info;
++	indio_dev->modes = INDIO_DIRECT_MODE;
++
++	if (client->irq <= 0)
++		client->irq = sx9500_gpio_probe(client, data);
++
++	if (client->irq > 0) {
++		ret = devm_request_threaded_irq(&client->dev, client->irq,
++				sx9500_irq_handler, sx9500_irq_thread_handler,
++				IRQF_TRIGGER_FALLING | IRQF_ONESHOT,
++				SX9500_IRQ_NAME, indio_dev);
++		if (ret < 0)
++			return ret;
++
++		data->trig = devm_iio_trigger_alloc(&client->dev,
++				"%s-dev%d", indio_dev->name, indio_dev->id);
++		if (!data->trig)
++			return -ENOMEM;
++
++		data->trig->dev.parent = &client->dev;
++		data->trig->ops = &sx9500_trigger_ops;
++		iio_trigger_set_drvdata(data->trig, indio_dev);
++
++		ret = iio_trigger_register(data->trig);
++		if (ret)
++			return ret;
++	}
++
++	ret = iio_triggered_buffer_setup(indio_dev, NULL,
++					 sx9500_trigger_handler, NULL);
++	if (ret < 0)
++		goto out_trigger_unregister;
++
++	ret = iio_device_register(indio_dev);
++	if (ret < 0)
++		goto out_buffer_cleanup;
++
++	return 0;
++
++out_buffer_cleanup:
++	iio_triggered_buffer_cleanup(indio_dev);
++out_trigger_unregister:
++	iio_trigger_unregister(data->trig);
++
++	return ret;
++}
++
++static int sx9500_remove(struct i2c_client *client)
++{
++	struct iio_dev *indio_dev = i2c_get_clientdata(client);
++	struct sx9500_data *data = iio_priv(indio_dev);
++
++	iio_device_unregister(indio_dev);
++	iio_triggered_buffer_cleanup(indio_dev);
++	iio_trigger_unregister(data->trig);
++
++	return 0;
++}
++
++static const struct acpi_device_id sx9500_acpi_match[] = {
++	{"SSX9500", 0}, /* TODO is there a better ACPI handle? */
++	{ },
++};
++MODULE_DEVICE_TABLE(acpi, sx9500_acpi_match);
++
++static const struct i2c_device_id sx9500_id[] = {
++	{"sx9500", 0},
++	{}
++};
++MODULE_DEVICE_TABLE(i2c, sx9500_id);
++
++static struct i2c_driver sx9500_driver = {
++	.driver = {
++		.name	= SX9500_DRIVER_NAME,
++		.acpi_match_table = ACPI_PTR(sx9500_acpi_match),
++	},
++	.probe		= sx9500_probe,
++	.remove		= sx9500_remove,
++	.id_table	= sx9500_id,
++};
++module_i2c_driver(sx9500_driver);
++
++MODULE_AUTHOR("Vlad Dogaru <vlad.dogaru@intel.com>");
++MODULE_DESCRIPTION("Driver for Semtech SX9500 proximity sensor");
++MODULE_LICENSE("GPL v2");
+-- 
+1.9.1
 
-a) The one exemplified in the current patch set, where we have
-hardware buffers and based on interrupt or software trigger we push
-data to device buffers. I'm going to call this the push model.
-
-b) Implementing the hardware buffer as an iio buffer. That basically
-means having the driver implement the read_first_n to read data
-directly from the hardware buffer. I am going to call this the pull
-model.
-
-Although the pull model seems more natural it has some disadvantages:
-it breaks the callback buffers (which do not seem to be used though),
-it breaks in the case where we have a single hardware buffer but we
-server multiple iio devices (sensor hub).
-
-The push model has the disadvantage that we are using double buffering
-and that we need to match the software and hardware fifo policies.
-
-So, to move forward, I would like to build consensus on what is the
-preferred model: push or pull?
-
-Thanks,
-Tavi
