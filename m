@@ -1,81 +1,97 @@
-Return-Path: <daniel.baluta@gmail.com>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from smtp103.mer-nm.internl.net ([217.149.192.139]:51224 "EHLO
+	smtp103.mer-nm.internl.net" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1751826AbaKZLvO convert rfc822-to-8bit
+	(ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Wed, 26 Nov 2014 06:51:14 -0500
+Message-ID: <5475BEAB.3020700@topic.nl>
+Date: Wed, 26 Nov 2014 12:51:07 +0100
+From: Mike Looijmans <mike.looijmans@topic.nl>
 MIME-Version: 1.0
-Sender: daniel.baluta@gmail.com
-In-Reply-To: <5D8E0479-F926-424A-B931-8A33BD99EC31@kernel.org>
-References: <1416919687-14271-1-git-send-email-vlad.dogaru@intel.com>
-	<5474B01D.8020701@metafoo.de>
-	<CAEnQRZC_ax0n2b+pTiTVLk=0m+AzX7JkRHdB=8a70d8hQ3eD-Q@mail.gmail.com>
-	<5474B59B.8000101@metafoo.de>
-	<5D8E0479-F926-424A-B931-8A33BD99EC31@kernel.org>
-Date: Wed, 26 Nov 2014 14:58:38 +0200
-Message-ID: <CAEnQRZBURtX3=d9-sy1AvgipgqcYTiiL5TCjaSwMkeJd-XYh0w@mail.gmail.com>
-Subject: Re: [PATCH 0/4] Add valid sample channel
-From: Daniel Baluta <daniel.baluta@intel.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Lars-Peter Clausen <lars@metafoo.de>, Daniel Baluta <daniel.baluta@intel.com>,
-	Vlad Dogaru <vlad.dogaru@intel.com>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Content-Type: text/plain; charset=UTF-8
-List-ID: <linux-iio@vger.kernel.org>
+To: Lars-Peter Clausen <lars@metafoo.de>,
+	Jonathan Cameron <jic23@kernel.org>
+CC: Hartmut Knaack <knaack.h@gmx.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>, <linux-iio@vger.kernel.org>
+Subject: Re: [PATCH] iio: ad799x: Fix ad7991/ad7995/ad7999 config setup
+References: <1416998135-19931-1-git-send-email-lars@metafoo.de>
+In-Reply-To: <1416998135-19931-1-git-send-email-lars@metafoo.de>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Tue, Nov 25, 2014 at 7:29 PM, Jonathan Cameron <jic23@kernel.org> wrote:
+﻿Tested it on the Miami board, and this patch indeed fixes the issue. You can 
+add my tested-by if you like:
+
+Tested-by: Mike Looijmans <mike.looijmans@topic.nl>
+
+
+On 11/26/2014 11:35 AM, Lars-Peter Clausen wrote:
+> The ad7991/ad7995/ad7999 does not have a configuration register like the
+> other devices that can be written and read. The configuration is written as
+> part of the conversion sequence.
+>
+> Fixes: 0f7ddcc1bff1 ("iio:adc:ad799x: Write default config on probe and reset alert status on probe")
+> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+> ---
+>   drivers/iio/adc/ad799x.c | 15 +++++++++++++--
+>   1 file changed, 13 insertions(+), 2 deletions(-)
+>
+> diff --git a/drivers/iio/adc/ad799x.c b/drivers/iio/adc/ad799x.c
+> index e37412d..b99de00 100644
+> --- a/drivers/iio/adc/ad799x.c
+> +++ b/drivers/iio/adc/ad799x.c
+> @@ -143,9 +143,15 @@ static int ad799x_write_config(struct ad799x_state *st, u16 val)
+>   	case ad7998:
+>   		return i2c_smbus_write_word_swapped(st->client, AD7998_CONF_REG,
+>   			val);
+> -	default:
+> +	case ad7992:
+> +	case ad7993:
+> +	case ad7994:
+>   		return i2c_smbus_write_byte_data(st->client, AD7998_CONF_REG,
+>   			val);
+> +	default:
+> +		/* Will be written when doing a conversion */
+> +		st->config = val;
+> +		return 0;
+>   	}
+>   }
+>
+> @@ -155,8 +161,13 @@ static int ad799x_read_config(struct ad799x_state *st)
+>   	case ad7997:
+>   	case ad7998:
+>   		return i2c_smbus_read_word_swapped(st->client, AD7998_CONF_REG);
+> -	default:
+> +	case ad7992:
+> +	case ad7993:
+> +	case ad7994:
+>   		return i2c_smbus_read_byte_data(st->client, AD7998_CONF_REG);
+> +	default:
+> +		/* No readback support */
+> +		return st->config;
+>   	}
+>   }
 >
 >
-> On November 25, 2014 5:00:11 PM GMT+00:00, Lars-Peter Clausen <lars@metafoo.de> wrote:
->>On 11/25/2014 05:55 PM, Daniel Baluta wrote:
->>> On Tue, Nov 25, 2014 at 6:36 PM, Lars-Peter Clausen <lars@metafoo.de>
->>wrote:
->>>> On 11/25/2014 01:48 PM, Vlad Dogaru wrote:
->>>>>
->>>>> This is an attempt to address the problem of buffering in devices
->>which
->>>>> have
->>>>> different scan frequencies for different channels.
->>>>
->>>>
->>>> Will these frequencies still be related or completely arbitrary?
->>>
->>> For Kionix KMX61 we have the same set of frequencies for
->>> accelerometer and magnetometer (12.5, 25, 50, 100 Hz, etc)
->>> but for example at some point accel can be configured with 100 Hz
->>> and magnetometer with 12.5Hz.
->>>
->>> Does this matter?
->>
->>I'm wondering if it makes more sense to register multiple buffers or
->>devices
->>if the frequencies are completely unrelated. E.g. in the KMX61 case it
->>looks
->>as if its simply two logical devices in the same physical package.
 
-I think this makes a lot of sense for kmx61 and offers a cleaner
-interface to user space.
 
->>
->>- Lars
-> That is how we have handled this so far.
-> Sometimes we have separate iio_devices for
-> the logical functions e.g. hid-sensors and sometimes just multiple buffers.. I am
->  struggling to find it now but one of the ADC drivers had a insanely complex nest
->  sampling arrangement requiring 8 buffers. Final driver might have been simplified though...  We might still need a few tweaks
->  for multiple buffers not to having naming clashes....  Moving house so only have phone to hand!
 
-I looked into iio/adc/ and iio/imu/ but couldn't find any driver which
-has one IIO device  and multiple buffers. I don't see how this can
-work :).
+Met vriendelijke groet / kind regards,
 
-User space application will read /dev/iio:deviceX to get data
-samples. How would they know the source of the data samples?
+Mike Looijmans
+System Expert
 
-Let me know where is the source code for the 8 buffers ADC driver,
-I am very curious about the implementation :).
 
-Jonathan, please drop the KMX61 initial patch from togreg
-branch.
+TOPIC Embedded Systems
+Eindhovenseweg 32-C, NL-5683 KH Best
+Postbus 440, NL-5680 AK Best
+Telefoon: (+31) (0) 499 33 69 79
+Telefax:  (+31) (0) 499 33 69 70
+E-mail: mike.looijmans@topic.nl
+Website: www.topic.nl
 
-https://git.kernel.org/cgit/linux/kernel/git/jic23/iio.git/commit/?h=togreg&id=d7d787d29148cde12958c2e3765ad3a55dc55eaf
+Please consider the environment before printing this e-mail
 
-I will send a new version having two IIO devices, one per each sensor.
+Topic zoekt gedreven (embedded) software specialisten!
+http://topic.nl/vacatures/topic-zoekt-software-engineers/
 
-thanks,
-Daniel.
