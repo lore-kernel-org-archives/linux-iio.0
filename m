@@ -1,49 +1,25 @@
-Return-Path: <knaack.h@gmx.de>
-Message-ID: <54764997.5050708@gmx.de>
-Date: Wed, 26 Nov 2014 22:43:51 +0100
-From: Hartmut Knaack <knaack.h@gmx.de>
+Return-Path: <gregkh@linuxfoundation.org>
+Date: Wed, 26 Nov 2014 11:07:21 -0800
+From: Greg KH <gregkh@linuxfoundation.org>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Subject: Re: [PULL] IIO fixes for 3.18 set 3
+Message-ID: <20141126190721.GB15951@kroah.com>
+References: <54691234.4030309@kernel.org>
 MIME-Version: 1.0
-To: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
- jic23@kernel.org
-CC: linux-iio@vger.kernel.org
-Subject: Re: [PATCH v1 1/2] iio: imu: inv_mpu6050: Add i2c mux for by pass
-References: <1416333184-1367-1-git-send-email-srinivas.pandruvada@linux.intel.com> <1416333184-1367-2-git-send-email-srinivas.pandruvada@linux.intel.com>
-In-Reply-To: <1416333184-1367-2-git-send-email-srinivas.pandruvada@linux.intel.com>
-Content-Type: text/plain; charset=ISO-8859-15
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <54691234.4030309@kernel.org>
 List-ID: <linux-iio@vger.kernel.org>
 
-Srinivas Pandruvada schrieb am 18.11.2014 um 18:53:
-> This chip has a mode in which this chipset can be i2c master. But
-> the current upstream driver doesn't support such mode as there is
-> some limited support of clients, which can be connected.
+On Sun, Nov 16, 2014 at 09:08:04PM +0000, Jonathan Cameron wrote:
+> The following changes since commit b598aacc29331e7e638cd509108600e916c6331b:
 > 
-> To attach such clients to main i2c bus chip has to be set up in
-> bypass mode. Creates an i2c mux, which will enable/disable this mode.
-> This was discussed for a while in mailing list, this was the decision.
+>   staging:iio:ade7758: Remove "raw" from channel name (2014-11-05 18:33:48 +0000)
 > 
-> This change also provides an API, which allows clients to be created for
-> this mux adapter.
+> are available in the git repository at:
 > 
-> Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-> ---
-<...>
-> @@ -720,6 +871,10 @@ static int inv_mpu_probe(struct i2c_client *client,
->  		goto out_remove_trigger;
->  	}
->  
-> +	result = inv_mpu6050_create_mux(indio_dev);
-> +	if (result)
-> +		goto out_remove_trigger;
-At this point, iio_device_register(indio_dev) has successfully been called, so I think you should add an extra label and the entry iio_device_unregister(indio_dev) to the error path.
-> +
->  	return 0;
->  
->  out_remove_trigger:
-> @@ -734,6 +889,7 @@ static int inv_mpu_remove(struct i2c_client *client)
->  	struct iio_dev *indio_dev = i2c_get_clientdata(client);
->  	struct inv_mpu6050_state *st = iio_priv(indio_dev);
->  
-> +	inv_mpu6050_destroy_mux(indio_dev);
->  	iio_device_unregister(indio_dev);
->  	inv_mpu6050_remove_trigger(st);
->  	iio_triggered_buffer_cleanup(indio_dev);
+>   git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git tags/iio-fixes-for-3.18c
+
+Sorry for the delay, now pulled and pushed out.
+
+greg k-h
