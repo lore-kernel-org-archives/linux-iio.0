@@ -1,61 +1,49 @@
-Return-Path: <Ezequiel.Garcia@imgtec.com>
-From: Ezequiel Garcia <ezequiel.garcia@imgtec.com>
-To: Jonathan Cameron <jic23@kernel.org>, James Hartley
-	<james.hartley@imgtec.com>, Andrew Bresticker <abrestic@chromium.org>
-CC: <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
-	<robh+dt@kernel.org>, <Pawel.Moll@arm.com>, <Mark.Rutland@arm.com>,
-	<ijc+devicetree@hellion.org.uk>, <galak@codeaurora.org>, Phani Movva
-	<Phani.Movva@imgtec.com>, Naidu Tellapati <Naidu.Tellapati@imgtec.com>,
-	Ezequiel Garcia <ezequiel.garcia@imgtec.com>
-Subject: [PATCH v5 2/3] DT: iio: adc: Add CC_10001 binding documentation
-Date: Thu, 27 Nov 2014 12:39:21 -0300
-Message-ID: <1417102762-5123-3-git-send-email-ezequiel.garcia@imgtec.com>
-In-Reply-To: <1417102762-5123-1-git-send-email-ezequiel.garcia@imgtec.com>
-References: <1417102762-5123-1-git-send-email-ezequiel.garcia@imgtec.com>
+Return-Path: <knaack.h@gmx.de>
+Message-ID: <54764997.5050708@gmx.de>
+Date: Wed, 26 Nov 2014 22:43:51 +0100
+From: Hartmut Knaack <knaack.h@gmx.de>
 MIME-Version: 1.0
-Content-Type: text/plain
+To: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+ jic23@kernel.org
+CC: linux-iio@vger.kernel.org
+Subject: Re: [PATCH v1 1/2] iio: imu: inv_mpu6050: Add i2c mux for by pass
+References: <1416333184-1367-1-git-send-email-srinivas.pandruvada@linux.intel.com> <1416333184-1367-2-git-send-email-srinivas.pandruvada@linux.intel.com>
+In-Reply-To: <1416333184-1367-2-git-send-email-srinivas.pandruvada@linux.intel.com>
+Content-Type: text/plain; charset=ISO-8859-15
 List-ID: <linux-iio@vger.kernel.org>
 
-From: Phani Movva <Phani.Movva@imgtec.com>
-
-Add the devicetree binding document for Cosmic Circuits 10001 ADC device.
-
-Signed-off-by: Phani Movva <Phani.Movva@imgtec.com>
-Signed-off-by: Naidu Tellapati <Naidu.Tellapati@imgtec.com>
-[Ezequiel: minor style cleaning]
-Signed-off-by: Ezequiel Garcia <ezequiel.garcia@imgtec.com>
----
- .../devicetree/bindings/iio/adc/cc10001_adc.txt    | 22 ++++++++++++++++++++++
- 1 file changed, 22 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/iio/adc/cc10001_adc.txt
-
-diff --git a/Documentation/devicetree/bindings/iio/adc/cc10001_adc.txt b/Documentation/devicetree/bindings/iio/adc/cc10001_adc.txt
-new file mode 100644
-index 0000000..b7ba558
---- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/adc/cc10001_adc.txt
-@@ -0,0 +1,22 @@
-+* Cosmic Circuits - Analog to Digital Converter (CC-10001-ADC)
-+
-+Required properties:
-+  - compatible: Should be "cosmic,10001-adc"
-+  - reg: Should contain adc registers location and length.
-+  - clock-names: Should contain "adc".
-+  - clocks: Should contain a clock specifier for each entry in clock-names
-+  - vref-supply: The regulator supply ADC reference voltage.
-+
-+Optional properties:
-+  - cosmic,adc-reserved-channels: Bitmask of reserved channels,
-+    i.e. channels that cannot be used by the OS.
-+
-+Example:
-+adc: adc@18101600 {
-+	compatible = "cosmic,10001-adc";
-+	reg = <0x18101600 0x24>;
-+	cosmic,adc-reserved-channels = <0x2>;
-+	clocks = <&adc_clk>;
-+	clock-names = "adc";
-+	vref-supply = <&reg_1v8>;
-+};
--- 
-2.1.0
+Srinivas Pandruvada schrieb am 18.11.2014 um 18:53:
+> This chip has a mode in which this chipset can be i2c master. But
+> the current upstream driver doesn't support such mode as there is
+> some limited support of clients, which can be connected.
+> 
+> To attach such clients to main i2c bus chip has to be set up in
+> bypass mode. Creates an i2c mux, which will enable/disable this mode.
+> This was discussed for a while in mailing list, this was the decision.
+> 
+> This change also provides an API, which allows clients to be created for
+> this mux adapter.
+> 
+> Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+> ---
+<...>
+> @@ -720,6 +871,10 @@ static int inv_mpu_probe(struct i2c_client *client,
+>  		goto out_remove_trigger;
+>  	}
+>  
+> +	result = inv_mpu6050_create_mux(indio_dev);
+> +	if (result)
+> +		goto out_remove_trigger;
+At this point, iio_device_register(indio_dev) has successfully been called, so I think you should add an extra label and the entry iio_device_unregister(indio_dev) to the error path.
+> +
+>  	return 0;
+>  
+>  out_remove_trigger:
+> @@ -734,6 +889,7 @@ static int inv_mpu_remove(struct i2c_client *client)
+>  	struct iio_dev *indio_dev = i2c_get_clientdata(client);
+>  	struct inv_mpu6050_state *st = iio_priv(indio_dev);
+>  
+> +	inv_mpu6050_destroy_mux(indio_dev);
+>  	iio_device_unregister(indio_dev);
+>  	inv_mpu6050_remove_trigger(st);
+>  	iio_triggered_buffer_cleanup(indio_dev);
