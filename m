@@ -1,83 +1,152 @@
-Return-Path: <knaack.h@gmx.de>
-Message-ID: <547A14AA.6020405@gmx.de>
-Date: Sat, 29 Nov 2014 19:47:06 +0100
-From: Hartmut Knaack <knaack.h@gmx.de>
-MIME-Version: 1.0
-To: Stefan Wahren <stefan.wahren@i2se.com>,
- Fabio Estevam <festevam@gmail.com>, =?UTF-8?Q?Marek_Va=c5=a1ut?=
- <marex@denx.de>
-CC: =?UTF-8?Q?Kristina_Mart=c5=a1enko?=
- <kristina.martsenko@gmail.com>, Jonathan Cameron <jic23@kernel.org>,
- linux-iio@vger.kernel.org, jbe@pengutronix.de
-Subject: Re: [PATCH] iio: mxs-lradc: check ranges of ts properties
-References: <1416435590-13999-1-git-send-email-stefan.wahren@i2se.com> <CAOMZO5DJ7yyd47BKgm6AOAg=GGFdeswrb2NxA2krj3ATnRWPVQ@mail.gmail.com> <5479052B.2090308@gmx.de> <10217382.467571.1417260127187.JavaMail.open-xchange@oxbaltgw07.schlund.de>
-In-Reply-To: <10217382.467571.1417260127187.JavaMail.open-xchange@oxbaltgw07.schlund.de>
-Content-Type: text/plain; charset=UTF-8
+Return-Path: <lars@metafoo.de>
+From: Lars-Peter Clausen <lars@metafoo.de>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Hartmut Knaack <knaack.h@gmx.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	linux-iio@vger.kernel.org,
+	Lars-Peter Clausen <lars@metafoo.de>
+Subject: [PATCH 11/11] iio: buffer: Drop get_length callback
+Date: Wed, 26 Nov 2014 18:55:17 +0100
+Message-Id: <1417024517-7564-12-git-send-email-lars@metafoo.de>
+In-Reply-To: <1417024517-7564-1-git-send-email-lars@metafoo.de>
+References: <1417024517-7564-1-git-send-email-lars@metafoo.de>
 List-ID: <linux-iio@vger.kernel.org>
 
-Stefan Wahren schrieb am 29.11.2014 um 12:22:
-> Hi Hartmut,
-> 
->> Hartmut Knaack <knaack.h@gmx.de> hat am 29. November 2014 um 00:28
->> geschrieben:
->>
->>
->> Fabio Estevam schrieb am 19.11.2014 um 23:42:
->>> [Adding Marek]
->> Taking a closer look on how these values are used, I wondered what the real
->> value range of the registers actually are. So, anyone with access to the data
->> sheets, please confirm.
-> 
-> the reference manual is public:
-> 
-> http://cache.freescale.com/files/dsp/doc/ref_manual/MCIMX28RM.pdf
-Thanks.
-> 
->> Starting with over_sample_cnt, which according to the DT bindings has a range
->> of 1...31. In mxs_lradc_setup_ts_channel(), currently line 429, the value
->> decreased by one (0...30) gets written to register 0x50 (+ 0x10 for each
->> channel) to bits 24-29. Question: What is the right value range there, 0...30
->> or 0...31?
-> 
-> Yes, looks like an off-by-one issue. The register range is 0..31 so i would
-> assume the DT property range should be logically 1..32. But i don't have checked
-> the reference manual about that.
-It's NUM_SAMPLES with the description: "This bit field contains the number of conversion cycles to sum together before reporting operation
-complete interrupt status. Set this field to zero for a single conversion per interrupt."
-So, a range of 0...31 can be assumed.
-> 
->> In the same function, line 440, the value decreased by one (0...30) is written
->> to register 0x100 into bits 11-15. Same question here: What is the right value
->> range?
-It's LOOP_COUNT with the description: "This bit field specifies the number of times this delay counter will count down and then trigger its
-designated targets. This is particularly useful for scheduling multiple samples of an LRADC channel set. If
-this field is set to 0x0, then exactly one delay loop will be generated with exactly one event triggering the
-target LRADC and/or delay channels."
-So, the range is also 0...31.
->> The same behavior can be found in mxs_lradc_setup_ts_pressure() in lines 485
->> and 498.
->> For over_sample_delay, the DT bindings state a range of 1...2047. In
->> mxs_lradc_setup_ts_channel(), line 440, the value decreased by one (0...2046)
->> is written to register 0x100, bits 0-10. Question: which value range is valid
->> there? The same happens in line 498.
-It's DELAY with the description: "This 11-bit field counts down to zero. At zero it triggers either a set of LRADC channel conversions or
-another delay channel, or both. It can trigger up to all eight LRADCs and all four delay channels in a single
-event. This counter operates on a 2KHz clock derived from crystal clock."
-So, the range is 0...2047.
->> For settling_delay, the DT bindings state a range of 1...2047. In
->> mxs_lradc_setup_ts_channel(), line 458, that value is written to register
->> 0xf0, bits 0-10. Question: what value range is valid here, 1...2047 or
->> 0...2047? The same happens in line 517.
-This is the same as register 0x100, so 0...2047 is the valid range.
-Stefan, would you mind to change the DT documentation while you are on it?
->> Thanks,
->>
->> Hartmut
->>>
-> 
-> Stefan
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> 
+We already do have the length field in the struct iio_buffer which is
+expected to be in sync with the current size of the buffer. And currently
+all implementations of the get_length callback either return this field or a
+constant number.
+
+This patch removes the get_length callback and replaces all occurrences in
+the IIO core with directly accessing the length field of the buffer.
+
+Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+---
+ drivers/iio/industrialio-buffer.c          | 11 +++--------
+ drivers/iio/kfifo_buf.c                    |  6 ------
+ drivers/staging/iio/Documentation/ring.txt |  4 ++--
+ drivers/staging/iio/accel/sca3000_ring.c   |  8 +-------
+ include/linux/iio/buffer.h                 |  2 --
+ 5 files changed, 6 insertions(+), 25 deletions(-)
+
+diff --git a/drivers/iio/industrialio-buffer.c b/drivers/iio/industrialio-buffer.c
+index 3e0c3a9..6a97b38 100644
+--- a/drivers/iio/industrialio-buffer.c
++++ b/drivers/iio/industrialio-buffer.c
+@@ -389,11 +389,7 @@ static ssize_t iio_buffer_read_length(struct device *dev,
+ 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+ 	struct iio_buffer *buffer = indio_dev->buffer;
+ 
+-	if (buffer->access->get_length)
+-		return sprintf(buf, "%d\n",
+-			       buffer->access->get_length(buffer));
+-
+-	return 0;
++	return sprintf(buf, "%d\n", buffer->length);
+ }
+ 
+ static ssize_t iio_buffer_write_length(struct device *dev,
+@@ -408,9 +404,8 @@ static ssize_t iio_buffer_write_length(struct device *dev,
+ 	if (ret)
+ 		return ret;
+ 
+-	if (buffer->access->get_length)
+-		if (val == buffer->access->get_length(buffer))
+-			return len;
++	if (val == buffer->length)
++		return len;
+ 
+ 	mutex_lock(&indio_dev->mlock);
+ 	if (iio_buffer_is_active(indio_dev->buffer)) {
+diff --git a/drivers/iio/kfifo_buf.c b/drivers/iio/kfifo_buf.c
+index 3b0a3bc..b20a9cf 100644
+--- a/drivers/iio/kfifo_buf.c
++++ b/drivers/iio/kfifo_buf.c
+@@ -47,11 +47,6 @@ static int iio_request_update_kfifo(struct iio_buffer *r)
+ 	return ret;
+ }
+ 
+-static int iio_get_length_kfifo(struct iio_buffer *r)
+-{
+-	return r->length;
+-}
+-
+ static int iio_mark_update_needed_kfifo(struct iio_buffer *r)
+ {
+ 	struct iio_kfifo *kf = iio_to_kfifo(r);
+@@ -141,7 +136,6 @@ static const struct iio_buffer_access_funcs kfifo_access_funcs = {
+ 	.data_available = iio_kfifo_buf_data_available,
+ 	.request_update = &iio_request_update_kfifo,
+ 	.set_bytes_per_datum = &iio_set_bytes_per_datum_kfifo,
+-	.get_length = &iio_get_length_kfifo,
+ 	.set_length = &iio_set_length_kfifo,
+ 	.release = &iio_kfifo_buffer_release,
+ };
+diff --git a/drivers/staging/iio/Documentation/ring.txt b/drivers/staging/iio/Documentation/ring.txt
+index 434d63a..18718fc 100644
+--- a/drivers/staging/iio/Documentation/ring.txt
++++ b/drivers/staging/iio/Documentation/ring.txt
+@@ -42,6 +42,6 @@ request_update
+ set_bytes_per_datum
+   Set the number of bytes for a complete scan. (All samples + timestamp)
+ 
+-get_length / set_length
+-  Get/set the number of complete scans that may be held by the buffer.
++set_length
++  Set the number of complete scans that may be held by the buffer.
+ 
+diff --git a/drivers/staging/iio/accel/sca3000_ring.c b/drivers/staging/iio/accel/sca3000_ring.c
+index f2f260e..f76a268 100644
+--- a/drivers/staging/iio/accel/sca3000_ring.c
++++ b/drivers/staging/iio/accel/sca3000_ring.c
+@@ -129,12 +129,6 @@ error_ret:
+ 	return ret ? ret : num_read;
+ }
+ 
+-/* This is only valid with all 3 elements enabled */
+-static int sca3000_ring_get_length(struct iio_buffer *r)
+-{
+-	return 64;
+-}
+-
+ static bool sca3000_ring_buf_data_available(struct iio_buffer *r)
+ {
+ 	return r->stufftoread;
+@@ -248,6 +242,7 @@ static struct iio_buffer *sca3000_rb_allocate(struct iio_dev *indio_dev)
+ 	ring->private = indio_dev;
+ 	buf = &ring->buf;
+ 	buf->stufftoread = 0;
++	buf->length = 64;
+ 	buf->attrs = sca3000_ring_attributes;
+ 	iio_buffer_init(buf);
+ 
+@@ -261,7 +256,6 @@ static void sca3000_ring_release(struct iio_buffer *r)
+ 
+ static const struct iio_buffer_access_funcs sca3000_ring_access_funcs = {
+ 	.read_first_n = &sca3000_read_first_n_hw_rb,
+-	.get_length = &sca3000_ring_get_length,
+ 	.data_available = sca3000_ring_buf_data_available,
+ 	.release = sca3000_ring_release,
+ };
+diff --git a/include/linux/iio/buffer.h b/include/linux/iio/buffer.h
+index 16b7663..b65850a 100644
+--- a/include/linux/iio/buffer.h
++++ b/include/linux/iio/buffer.h
+@@ -26,7 +26,6 @@ struct iio_buffer;
+  * @request_update:	if a parameter change has been marked, update underlying
+  *			storage.
+  * @set_bytes_per_datum:set number of bytes per datum
+- * @get_length:		get number of datums in buffer
+  * @set_length:		set number of datums in buffer
+  * @release:		called when the last reference to the buffer is dropped,
+  *			should free all resources allocated by the buffer.
+@@ -49,7 +48,6 @@ struct iio_buffer_access_funcs {
+ 	int (*request_update)(struct iio_buffer *buffer);
+ 
+ 	int (*set_bytes_per_datum)(struct iio_buffer *buffer, size_t bpd);
+-	int (*get_length)(struct iio_buffer *buffer);
+ 	int (*set_length)(struct iio_buffer *buffer, int length);
+ 
+ 	void (*release)(struct iio_buffer *buffer);
+-- 
+1.8.0
