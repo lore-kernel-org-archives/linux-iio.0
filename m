@@ -1,115 +1,61 @@
-Return-Path: <george.mccollister@gmail.com>
-From: George McCollister <george.mccollister@gmail.com>
-To: 
-Cc: George McCollister <george.mccollister@gmail.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
-	Sebastian Reichel <sre@debian.org>,
-	Harald Geyer <harald@ccbib.org>,
-	Reyad Attiyat <reyad.attiyat@gmail.com>,
-	Daniel Baluta <daniel.baluta@intel.com>,
-	linux-api@vger.kernel.org (open list:ABI/API),
-	linux-kernel@vger.kernel.org (open list),
-	linux-iio@vger.kernel.org (open list:IIO SUBSYSTEM AND...),
-	devel@driverdev.osuosl.org (open list:STAGING SUBSYSTEM)
-Subject: [PATCH 1/2] iio: Add support for waveform output
-Date: Wed, 26 Nov 2014 15:45:40 -0600
-Message-Id: <1417038344-3801-1-git-send-email-george.mccollister@gmail.com>
+Return-Path: <Ezequiel.Garcia@imgtec.com>
+From: Ezequiel Garcia <ezequiel.garcia@imgtec.com>
+To: Jonathan Cameron <jic23@kernel.org>, James Hartley
+	<james.hartley@imgtec.com>, Andrew Bresticker <abrestic@chromium.org>
+CC: <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
+	<robh+dt@kernel.org>, <Pawel.Moll@arm.com>, <Mark.Rutland@arm.com>,
+	<ijc+devicetree@hellion.org.uk>, <galak@codeaurora.org>, Phani Movva
+	<Phani.Movva@imgtec.com>, Naidu Tellapati <Naidu.Tellapati@imgtec.com>,
+	Ezequiel Garcia <ezequiel.garcia@imgtec.com>
+Subject: [PATCH v5 2/3] DT: iio: adc: Add CC_10001 binding documentation
+Date: Thu, 27 Nov 2014 12:39:21 -0300
+Message-ID: <1417102762-5123-3-git-send-email-ezequiel.garcia@imgtec.com>
+In-Reply-To: <1417102762-5123-1-git-send-email-ezequiel.garcia@imgtec.com>
+References: <1417102762-5123-1-git-send-email-ezequiel.garcia@imgtec.com>
+MIME-Version: 1.0
+Content-Type: text/plain
 List-ID: <linux-iio@vger.kernel.org>
 
-Output can be held high or low for a specified period of time.
-Support for waveform capture could be added in the future.
+From: Phani Movva <Phani.Movva@imgtec.com>
 
-Signed-off-by: George McCollister <george.mccollister@gmail.com>
+Add the devicetree binding document for Cosmic Circuits 10001 ADC device.
+
+Signed-off-by: Phani Movva <Phani.Movva@imgtec.com>
+Signed-off-by: Naidu Tellapati <Naidu.Tellapati@imgtec.com>
+[Ezequiel: minor style cleaning]
+Signed-off-by: Ezequiel Garcia <ezequiel.garcia@imgtec.com>
 ---
- Documentation/ABI/testing/sysfs-bus-iio               | 7 +++++++
- drivers/iio/industrialio-core.c                       | 3 +++
- drivers/staging/iio/Documentation/iio_event_monitor.c | 2 ++
- include/linux/iio/types.h                             | 5 ++++-
- 4 files changed, 16 insertions(+), 1 deletion(-)
+ .../devicetree/bindings/iio/adc/cc10001_adc.txt    | 22 ++++++++++++++++++++++
+ 1 file changed, 22 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/adc/cc10001_adc.txt
 
-diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
-index d760b02..47df169 100644
---- a/Documentation/ABI/testing/sysfs-bus-iio
-+++ b/Documentation/ABI/testing/sysfs-bus-iio
-@@ -1028,3 +1028,10 @@ Contact:	linux-iio@vger.kernel.org
- Description:
- 		Raw value of rotation from true/magnetic north measured with
- 		or without compensation from tilt sensors.
+diff --git a/Documentation/devicetree/bindings/iio/adc/cc10001_adc.txt b/Documentation/devicetree/bindings/iio/adc/cc10001_adc.txt
+new file mode 100644
+index 0000000..b7ba558
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/adc/cc10001_adc.txt
+@@ -0,0 +1,22 @@
++* Cosmic Circuits - Analog to Digital Converter (CC-10001-ADC)
 +
-+What:		/sys/bus/iio/devices/iio:deviceX/out_waveformY_hightime_raw
-+What:		/sys/bus/iio/devices/iio:deviceX/out_waveformY_lowtime_raw
-+KernelVersion:	3.18
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+		Raw value of time for output to be held high or low.
-diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
-index af3e76d..343e784 100644
---- a/drivers/iio/industrialio-core.c
-+++ b/drivers/iio/industrialio-core.c
-@@ -70,6 +70,7 @@ static const char * const iio_chan_type_name_spec[] = {
- 	[IIO_CCT] = "cct",
- 	[IIO_PRESSURE] = "pressure",
- 	[IIO_HUMIDITYRELATIVE] = "humidityrelative",
-+	[IIO_WAVEFORM] = "waveform",
- };
- 
- static const char * const iio_modifier_names[] = {
-@@ -91,6 +92,8 @@ static const char * const iio_modifier_names[] = {
- 	[IIO_MOD_NORTH_TRUE] = "from_north_true",
- 	[IIO_MOD_NORTH_MAGN_TILT_COMP] = "from_north_magnetic_tilt_comp",
- 	[IIO_MOD_NORTH_TRUE_TILT_COMP] = "from_north_true_tilt_comp",
-+	[IIO_MOD_HIGHTIME] = "hightime",
-+	[IIO_MOD_LOWTIME] = "lowtime",
- };
- 
- /* relies on pairs of these shared then separate */
-diff --git a/drivers/staging/iio/Documentation/iio_event_monitor.c b/drivers/staging/iio/Documentation/iio_event_monitor.c
-index 569d6f8..690f261 100644
---- a/drivers/staging/iio/Documentation/iio_event_monitor.c
-+++ b/drivers/staging/iio/Documentation/iio_event_monitor.c
-@@ -49,6 +49,7 @@ static const char * const iio_chan_type_name_spec[] = {
- 	[IIO_CCT] = "cct",
- 	[IIO_PRESSURE] = "pressure",
- 	[IIO_HUMIDITYRELATIVE] = "humidityrelative",
-+	[IIO_WAVEFORM] = "waveform",
- };
- 
- static const char * const iio_ev_type_text[] = {
-@@ -108,6 +109,7 @@ static bool event_is_known(struct iio_event_data *event)
- 	case IIO_CCT:
- 	case IIO_PRESSURE:
- 	case IIO_HUMIDITYRELATIVE:
-+	case IIO_WAVEFORM:
- 		break;
- 	default:
- 		return false;
-diff --git a/include/linux/iio/types.h b/include/linux/iio/types.h
-index 4a2af8a..d3b0af1 100644
---- a/include/linux/iio/types.h
-+++ b/include/linux/iio/types.h
-@@ -30,6 +30,7 @@ enum iio_chan_type {
- 	IIO_CCT,
- 	IIO_PRESSURE,
- 	IIO_HUMIDITYRELATIVE,
-+	IIO_WAVEFORM,
- };
- 
- enum iio_modifier {
-@@ -59,7 +60,9 @@ enum iio_modifier {
- 	IIO_MOD_NORTH_MAGN,
- 	IIO_MOD_NORTH_TRUE,
- 	IIO_MOD_NORTH_MAGN_TILT_COMP,
--	IIO_MOD_NORTH_TRUE_TILT_COMP
-+	IIO_MOD_NORTH_TRUE_TILT_COMP,
-+	IIO_MOD_HIGHTIME,
-+	IIO_MOD_LOWTIME,
- };
- 
- enum iio_event_type {
++Required properties:
++  - compatible: Should be "cosmic,10001-adc"
++  - reg: Should contain adc registers location and length.
++  - clock-names: Should contain "adc".
++  - clocks: Should contain a clock specifier for each entry in clock-names
++  - vref-supply: The regulator supply ADC reference voltage.
++
++Optional properties:
++  - cosmic,adc-reserved-channels: Bitmask of reserved channels,
++    i.e. channels that cannot be used by the OS.
++
++Example:
++adc: adc@18101600 {
++	compatible = "cosmic,10001-adc";
++	reg = <0x18101600 0x24>;
++	cosmic,adc-reserved-channels = <0x2>;
++	clocks = <&adc_clk>;
++	clock-names = "adc";
++	vref-supply = <&reg_1v8>;
++};
 -- 
 2.1.0
