@@ -1,36 +1,59 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp-out-025.synserver.de ([212.40.185.25]:1046 "EHLO
-	smtp-out-023.synserver.de" rhost-flags-OK-OK-OK-FAIL)
-	by vger.kernel.org with ESMTP id S1751624AbaKFPoo (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 6 Nov 2014 10:44:44 -0500
-Message-ID: <545B976D.4080303@metafoo.de>
-Date: Thu, 06 Nov 2014 16:44:45 +0100
+Received: from smtp-out-064.synserver.de ([212.40.185.64]:1090 "EHLO
+	smtp-out-064.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753857AbaK0IH3 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 27 Nov 2014 03:07:29 -0500
+Message-ID: <5476DBC2.50309@metafoo.de>
+Date: Thu, 27 Nov 2014 09:07:30 +0100
 From: Lars-Peter Clausen <lars@metafoo.de>
 MIME-Version: 1.0
-To: Fabien Proriol <Fabien.Proriol@jdsu.com>,
+To: Dmitry Eremin-Solenikov <dbaryshkov@gmail.com>,
 	Jonathan Cameron <jic23@kernel.org>,
-	Michal Simek <michal.simek@xilinx.com>
-CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Subject: Re: [PATCH] 0001-xilinx-xadc-core-Fix-voltage-offset.patch
-References: <545B9479.5030700@jdsu.com>
-In-Reply-To: <545B9479.5030700@jdsu.com>
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>
+CC: linux-iio@vger.kernel.org
+Subject: Re: [PATCH] iio: inkern: add iio_write_channel_raw
+References: <1417041765-12782-1-git-send-email-dbaryshkov@gmail.com>
+In-Reply-To: <1417041765-12782-1-git-send-email-dbaryshkov@gmail.com>
 Content-Type: text/plain; charset=windows-1252; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 11/06/2014 04:33 PM, Fabien Proriol wrote:
->   From 3f57e39e3c69476513c00cd5ec45703f58334972 Mon Sep 17 00:00:00 2001
-> From: Fabien Proriol <fabien.proriol@jdsu.com>
-> Date: Tue, 4 Nov 2014 17:05:59 +0100
-> Subject: [PATCH] xilinx-xadc-core: Fix voltage offset
+On 11/26/2014 11:42 PM, Dmitry Eremin-Solenikov wrote:
+> Introduce API for easy in-kernel setting of DAC values.
 >
-> When xilinx-xadc is used with hwmon driver to read voltage, offset used
-> for temperature is always apply.
-> This patch change the return for IIO_CHAN_INFO_OFFSET to -EINVAL except
-> for temperature to avoid offset.
+> Signed-off-by: Dmitry Eremin-Solenikov <dbaryshkov@gmail.com>
 
-I think we should rather fix iio_channel_read() to check if the channel 
-supports the property that we try to read. Other drivers are likely to 
-suffer from the same issue and fixing it in a central place fixes them all.
+Looks good...
 
-- Lars
+> ---
+>   drivers/iio/inkern.c         | 29 +++++++++++++++++++++++++++++
+>   include/linux/iio/consumer.h | 11 +++++++++++
+>   2 files changed, 40 insertions(+)
+>
+> diff --git a/drivers/iio/inkern.c b/drivers/iio/inkern.c
+> index f084610..5b03e69 100644
+> --- a/drivers/iio/inkern.c
+> +++ b/drivers/iio/inkern.c
+> @@ -608,3 +608,32 @@ err_unlock:
+>   	return ret;
+>   }
+>   EXPORT_SYMBOL_GPL(iio_get_channel_type);
+> +
+> +static int iio_channel_write(struct iio_channel *chan, int val, int val2,
+> +	enum iio_chan_info_enum info)
+> +{
+> +	int ret;
+> +
+> +	ret = chan->indio_dev->info->write_raw(chan->indio_dev,
+> +			chan->channel, val, val2, info);
+> +
+> +	return ret;
+
+
+... but this is something the kbuild bot tester will complain about. There 
+is no need for the ret variable.
+
+> +}
+
+
