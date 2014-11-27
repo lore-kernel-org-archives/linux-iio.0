@@ -1,198 +1,89 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mout.gmx.net ([212.227.17.20]:49216 "EHLO mout.gmx.net"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1752089AbaKWV6Y (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Sun, 23 Nov 2014 16:58:24 -0500
-Message-ID: <54725879.6030602@gmx.de>
-Date: Sun, 23 Nov 2014 22:58:17 +0100
-From: Hartmut Knaack <knaack.h@gmx.de>
+Received: from mailapp01.imgtec.com ([195.59.15.196]:59815 "EHLO
+	mailapp01.imgtec.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750895AbaK0Pll (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 27 Nov 2014 10:41:41 -0500
+From: Ezequiel Garcia <ezequiel.garcia@imgtec.com>
+To: Jonathan Cameron <jic23@kernel.org>,
+	James Hartley <james.hartley@imgtec.com>,
+	Andrew Bresticker <abrestic@chromium.org>
+CC: <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
+	<robh+dt@kernel.org>, <Pawel.Moll@arm.com>, <Mark.Rutland@arm.com>,
+	<ijc+devicetree@hellion.org.uk>, <galak@codeaurora.org>,
+	Ezequiel Garcia <ezequiel.garcia@imgtec.com>
+Subject: [PATCH v5 0/3] iio: Add Cosmic Circuits ADC support
+Date: Thu, 27 Nov 2014 12:39:19 -0300
+Message-ID: <1417102762-5123-1-git-send-email-ezequiel.garcia@imgtec.com>
 MIME-Version: 1.0
-To: Octavian Purdila <octavian.purdila@intel.com>,
-	linux-iio@vger.kernel.org
-CC: srinivas.pandruvada@intel.com
-Subject: Re: [RFC 2/8] iio: bmc150: refactor slope duration and threshold update
-References: <1416246966-3083-1-git-send-email-octavian.purdila@intel.com> <1416246966-3083-3-git-send-email-octavian.purdila@intel.com>
-In-Reply-To: <1416246966-3083-3-git-send-email-octavian.purdila@intel.com>
-Content-Type: text/plain; charset=ISO-8859-15
+Content-Type: text/plain
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Octavian Purdila schrieb am 17.11.2014 18:56:
-> Move the slope duration and threshold update in separate functions
-> to reduce code duplicate between chip init and motion interrupt setup.
-> 
-> The patch also moves the update from the motion interrupt setup
-> function to the write event function so that we can later refactor the
-> interrupt code.
-> 
-> Signed-off-by: Octavian Purdila <octavian.purdila@intel.com>
-> ---
->  drivers/iio/accel/bmc150-accel.c | 109 ++++++++++++++++++++++-----------------
->  1 file changed, 62 insertions(+), 47 deletions(-)
-> 
-> diff --git a/drivers/iio/accel/bmc150-accel.c b/drivers/iio/accel/bmc150-accel.c
-> index 22c096c..5bfb09d 100644
-> --- a/drivers/iio/accel/bmc150-accel.c
-> +++ b/drivers/iio/accel/bmc150-accel.c
-> @@ -266,6 +266,51 @@ static int bmc150_accel_set_bw(struct bmc150_accel_data *data, int val,
->  	return -EINVAL;
->  }
->  
-> +static int bmc150_accel_update_slope_threshold(struct bmc150_accel_data *data,
-> +					       int val)
-> +{
-> +	int ret = 0;
-> +
-> +	val &= 0xFF;
-> +
-> +	ret = i2c_smbus_write_byte_data(data->client, BMC150_ACCEL_REG_INT_6,
-> +					val);
-> +	if (ret < 0) {
-> +		dev_err(&data->client->dev, "Error writing reg_int_6\n");
-> +		return ret;
-> +	}
-> +	data->slope_thres = val;
-> +
-> +	dev_dbg(&data->client->dev, "%s: %x\n", __func__, val);
-> +
-> +	return ret;
-> +}
-> +
-> +static int bmc150_accel_update_slope_duration(struct bmc150_accel_data *data,
-> +					      int val)
-> +{
-> +	int ret;
-> +
-> +	val &= BMC150_ACCEL_SLOPE_DUR_MASK;
-> +
-> +	ret = i2c_smbus_read_byte_data(data->client, BMC150_ACCEL_REG_INT_5);
-> +	if (ret < 0) {
-> +		dev_err(&data->client->dev, "Error reading reg_int_5\n");
-> +		return ret;
-> +	}
-> +	ret = i2c_smbus_write_byte_data(data->client, BMC150_ACCEL_REG_INT_5,
-> +					val | ret);
-You will have more joy if you clear the appropriate bits in ret before setting new ones.
-> +	if (ret < 0) {
-> +		dev_err(&data->client->dev, "Error write reg_int_5\n");
-> +		return ret;
-> +	}
-> +	data->slope_dur = val;
-> +
-> +	dev_dbg(&data->client->dev, "%s: %x\n", __func__, val);
-> +
-> +	return ret;
-> +}
-> +
->  static int bmc150_accel_chip_init(struct bmc150_accel_data *data)
->  {
->  	int ret;
-> @@ -304,32 +349,16 @@ static int bmc150_accel_chip_init(struct bmc150_accel_data *data)
->  
->  	data->range = BMC150_ACCEL_DEF_RANGE_4G;
->  
-> -	/* Set default slope duration */
-> -	ret = i2c_smbus_read_byte_data(data->client, BMC150_ACCEL_REG_INT_5);
-> -	if (ret < 0) {
-> -		dev_err(&data->client->dev, "Error reading reg_int_5\n");
-> -		return ret;
-> -	}
-> -	data->slope_dur |= BMC150_ACCEL_DEF_SLOPE_DURATION;
-> -	ret = i2c_smbus_write_byte_data(data->client,
-> -					BMC150_ACCEL_REG_INT_5,
-> -					data->slope_dur);
-> -	if (ret < 0) {
-> -		dev_err(&data->client->dev, "Error writing reg_int_5\n");
-> +	/* Set default slope duration and thresholds */
-> +	ret = bmc150_accel_update_slope_duration(data,
-> +					 BMC150_ACCEL_DEF_SLOPE_DURATION);
-> +	if (ret < 0)
->  		return ret;
-> -	}
-> -	dev_dbg(&data->client->dev, "slope_dur %x\n", data->slope_dur);
->  
-> -	/* Set default slope thresholds */
-> -	ret = i2c_smbus_write_byte_data(data->client,
-> -					BMC150_ACCEL_REG_INT_6,
-> -					BMC150_ACCEL_DEF_SLOPE_THRESHOLD);
-> -	if (ret < 0) {
-> -		dev_err(&data->client->dev, "Error writing reg_int_6\n");
-> +	ret = bmc150_accel_update_slope_threshold(data,
-> +					  BMC150_ACCEL_DEF_SLOPE_THRESHOLD);
-> +	if (ret < 0)
->  		return ret;
-> -	}
-> -	data->slope_thres = BMC150_ACCEL_DEF_SLOPE_THRESHOLD;
-> -	dev_dbg(&data->client->dev, "slope_thres %x\n", data->slope_thres);
->  
->  	/* Set default as latched interrupts */
->  	ret = i2c_smbus_write_byte_data(data->client,
-> @@ -372,24 +401,6 @@ static int bmc150_accel_setup_any_motion_interrupt(
->  	}
->  
->  	if (status) {
-> -		/* Set slope duration (no of samples) */
-> -		ret = i2c_smbus_write_byte_data(data->client,
-> -						BMC150_ACCEL_REG_INT_5,
-> -						data->slope_dur);
-> -		if (ret < 0) {
-> -			dev_err(&data->client->dev, "Error write reg_int_5\n");
-> -			return ret;
-> -		}
-> -
-> -		/* Set slope thresholds */
-> -		ret = i2c_smbus_write_byte_data(data->client,
-> -						BMC150_ACCEL_REG_INT_6,
-> -						data->slope_thres);
-> -		if (ret < 0) {
-> -			dev_err(&data->client->dev, "Error write reg_int_6\n");
-> -			return ret;
-> -		}
-> -
->  		/*
->  		 * New data interrupt is always non-latched,
->  		 * which will have higher priority, so no need
-> @@ -726,7 +737,7 @@ static int bmc150_accel_read_event(struct iio_dev *indio_dev,
->  		*val = data->slope_thres;
->  		break;
->  	case IIO_EV_INFO_PERIOD:
-> -		*val = data->slope_dur & BMC150_ACCEL_SLOPE_DUR_MASK;
-> +		*val = data->slope_dur;
->  		break;
->  	default:
->  		return -EINVAL;
-> @@ -743,23 +754,27 @@ static int bmc150_accel_write_event(struct iio_dev *indio_dev,
->  				    int val, int val2)
->  {
->  	struct bmc150_accel_data *data = iio_priv(indio_dev);
-> +	int ret;
->  
->  	if (data->ev_enable_state)
->  		return -EBUSY;
->  
->  	switch (info) {
->  	case IIO_EV_INFO_VALUE:
-> -		data->slope_thres = val;
-> +		mutex_lock(&data->mutex);
-> +		ret = bmc150_accel_update_slope_threshold(data, val);
-> +		mutex_unlock(&data->mutex);
->  		break;
->  	case IIO_EV_INFO_PERIOD:
-> -		data->slope_dur &= ~BMC150_ACCEL_SLOPE_DUR_MASK;
-> -		data->slope_dur |= val & BMC150_ACCEL_SLOPE_DUR_MASK;
-> +		mutex_lock(&data->mutex);
-> +		ret = bmc150_accel_update_slope_duration(data, val);
-> +		mutex_unlock(&data->mutex);
->  		break;
->  	default:
-> -		return -EINVAL;
-> +		ret = -EINVAL;
->  	}
->  
-> -	return 0;
-> +	return ret;
->  }
->  
->  static int bmc150_accel_read_event_config(struct iio_dev *indio_dev,
-> 
+Changes from v4:
+
+  * Added a compile-time dependency on REGULATOR and HAVE_CLK.
+
+  * Replaced the silly XOR operation for a proper mask out of the
+    available channels.
+
+Changes from v3:
+
+  * Fixed a few style nitpicks as per Hartmut's feedback.
+
+  * Used GENMASK() to build the channel mask, which fixes a very nasty
+    bug. Also found by Hartmut.
+
+Changes from v2:
+
+  * Changed a devicetree property from adc-available-channels to
+    adc-reserved-channels, so it can be made optional.
+
+  * Renamed the driver from cc_10001_xxx to cc10001_xxx so it's consistent
+    with the rest of the kernel style.
+
+  * Some more minor cosmetic fixes.
+
+Changes from v1:
+
+  * Removed unneeded header includes.
+
+  * Changed all the names and macros prefix: s/CC_10001_/CC10001_.
+
+  * Used .update_scan_mode callback to preallocate the buffer.
+
+  * Used indio_dev for the struct iio_dev.
+
+  * Only read the regulator voltage when needed.
+
+  * Fixed probe() error handling.
+
+  * Used for_each_set_bit() instead of open-coding it.
+
+  * Name the power-down register as _POWER_UP, to make the code
+    less silly.
+
+  * Error out when no valid sample can be read (i.e. when end-of-conversion
+    poll times out).
+
+  * ... plus some assorted code cleaning based on the feedback.
+
+
+Ezequiel Garcia (1):
+  DT: Add a vendor prefix for Cosmic Circuits
+
+Phani Movva (2):
+  iio: adc: Cosmic Circuits 10001 ADC driver
+  DT: iio: adc: Add CC_10001 binding documentation
+
+ .../devicetree/bindings/iio/adc/cc10001_adc.txt    |  22 ++
+ .../devicetree/bindings/vendor-prefixes.txt        |   1 +
+ drivers/iio/adc/Kconfig                            |  11 +
+ drivers/iio/adc/Makefile                           |   1 +
+ drivers/iio/adc/cc10001_adc.c                      | 424 +++++++++++++++++++++
+ 5 files changed, 459 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/adc/cc10001_adc.txt
+ create mode 100644 drivers/iio/adc/cc10001_adc.c
+
+-- 
+2.1.0
 
