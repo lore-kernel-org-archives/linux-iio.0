@@ -1,102 +1,53 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp-out-027.synserver.de ([212.40.185.27]:1113 "EHLO
-	smtp-out-027.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750970AbaKFQZk (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 6 Nov 2014 11:25:40 -0500
-Message-ID: <545BA105.70105@metafoo.de>
-Date: Thu, 06 Nov 2014 17:25:41 +0100
+Received: from smtp-out-072.synserver.de ([212.40.185.72]:1066 "EHLO
+	smtp-out-072.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750896AbaK0PQy (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 27 Nov 2014 10:16:54 -0500
+Message-ID: <5477406A.8020403@metafoo.de>
+Date: Thu, 27 Nov 2014 16:16:58 +0100
 From: Lars-Peter Clausen <lars@metafoo.de>
 MIME-Version: 1.0
-To: Fabien Proriol <Fabien.Proriol@jdsu.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Michal Simek <michal.simek@xilinx.com>
-CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Subject: Re: [PATCH] 0001-xilinx-xadc-core-Fix-voltage-offset.patch
-References: <545B9479.5030700@jdsu.com> <545B976D.4080303@metafoo.de> <545B9EF1.8000606@jdsu.com>
-In-Reply-To: <545B9EF1.8000606@jdsu.com>
-Content-Type: text/plain; charset=windows-1252; format=flowed
+To: Ezequiel Garcia <ezequiel.garcia@imgtec.com>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Andrew Bresticker <abrestic@chromium.org>,
+	James Hartley <james.hartley@imgtec.com>,
+	Jonathan Cameron <jic23@kernel.org>
+CC: linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+	robh+dt@kernel.org, Pawel.Moll@arm.com, Mark.Rutland@arm.com,
+	ijc+devicetree@hellion.org.uk, galak@codeaurora.org,
+	Naidu.Tellapati@imgtec.com, Phani Movva <Phani.Movva@imgtec.com>
+Subject: Re: [PATCH v3 1/3] iio: adc: Cosmic Circuits 10001 ADC driver
+References: <1415888044-16635-1-git-send-email-ezequiel.garcia@imgtec.com> <1415888044-16635-2-git-send-email-ezequiel.garcia@imgtec.com> <546FE3A7.6040308@gmx.de> <5474C062.2020604@imgtec.com> <5474F7A5.6030008@gmx.de> <5474FCC8.8080906@imgtec.com> <5475085E.8090806@gmx.de> <54773E63.4020300@imgtec.com>
+In-Reply-To: <54773E63.4020300@imgtec.com>
+Content-Type: text/plain; charset=iso-8859-15; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 11/06/2014 05:18 PM, Fabien Proriol wrote:
-> On 06/11/2014 16:44, Lars-Peter Clausen wrote:
->> On 11/06/2014 04:33 PM, Fabien Proriol wrote:
->>>    From 3f57e39e3c69476513c00cd5ec45703f58334972 Mon Sep 17 00:00:00 2001
->>> From: Fabien Proriol <fabien.proriol@jdsu.com>
->>> Date: Tue, 4 Nov 2014 17:05:59 +0100
->>> Subject: [PATCH] xilinx-xadc-core: Fix voltage offset
+[...]
 >>>
->>> When xilinx-xadc is used with hwmon driver to read voltage, offset used
->>> for temperature is always apply.
->>> This patch change the return for IIO_CHAN_INFO_OFFSET to -EINVAL except
->>> for temperature to avoid offset.
->>
->> I think we should rather fix iio_channel_read() to check if the
->> channel supports the property that we try to read. Other drivers are
->> likely to suffer from the same issue and fixing it in a central place
->> fixes them all.
->>
->> - Lars
->>
->>
+>>>>>>> +
+>>>>>>> +	adc_dev->reg = devm_regulator_get(&pdev->dev, "vref");
+>>>>>>> +	if (IS_ERR_OR_NULL(adc_dev->reg))
+>>>>>>> +		return -EINVAL;
+>>>>>> 	if (IS_ERR(adc_dev->reg))
+>>>>>> 		return PTR_ERR(adc_dev->reg);
+>>>>>
+>>>>> Are you sure? What if devm_regulator_get() returns NULL?
+>>>>>
+>>>> I had a look at it, but couldn't figure out a condition in which it would return NULL. But I'd be happy to be informed of anything different.
+>>>
+>>> If CONFIG_REGULATOR=n you get NULL there (although I added a select REGULATOR
+>>> on the v4 I just posted).
+>>>
+>> Indeed, thanks. Now I'm thinking if it would make sense to handle this special case in a special way (as it would be caused by an invalid kernel config). Well, I guess, I leave it up to you.
 >
-> Ok, I can propose this following patch.
-> With my xilinx-xadc driver, it fix also the same problem...
->
+> Well, adding the select REGULATOR that shouldn't happen, so let's better
+> drop the NULL check entirely.
 
-Yep, that looks better, thanks. It looks like your mail client screwed up 
-the indenting and line wrapping in the patch. Can you try to re-send so it 
-can be applied properly? One minor comment about the patch itself inline.
+Doing a 'select REGULATOR' can (and probably will sooner or later) create 
+nasty dependency loops. User selectable config items should not be selected 
+by another config item. If the driver really has a hard dependency on the 
+regulator framework then 'depends on REGULATOR' is the right thing to do.
 
 - Lars
-
-> Fabien
->
->
->   From d605db8de19687b7271e722aa1fa6028f1472a7b Mon Sep 17 00:00:00 2001
-> From: Fabien Proriol <fabien.proriol@jdsu.com>
-> Date: Thu, 6 Nov 2014 17:12:27 +0100
-> Subject: [PATCH] iio: Fix iio_channel_read return if channel havn't info
->
-> iio_channel_read must return an error to avoid offset for channel
-> without IIO_CHAN_INFO_OFFSET property
->
-> Signed-off-by: Fabien Proriol <fabien.proriol@jdsu.com>
-> ---
->    drivers/iio/inkern.c | 10 +++++++++-
->    1 file changed, 9 insertions(+), 1 deletion(-)
->
-> diff --git a/drivers/iio/inkern.c b/drivers/iio/inkern.c
-> index 1e8e94d..04cb23f 100644
-> --- a/drivers/iio/inkern.c
-> +++ b/drivers/iio/inkern.c
-> @@ -419,12 +419,20 @@ static int iio_channel_read(struct iio_channel
-> *chan, int *val, int *val2,
->           enum iio_chan_info_enum info)
->    {
->           int unused;
-> +       int ret;
->
->           if (val2 == NULL)
->                   val2 = &unused;
->
-> -       return chan->indio_dev->info->read_raw(chan->indio_dev,
-> chan->channel,
-> +       if (!iio_channel_has_info(chan->channel, info)) {
-
-Just return -EINVAL, no need for the goto.
-
-> +               ret = -EINVAL;
-> +               goto err;
-> +       }
-> +
-> +       ret = chan->indio_dev->info->read_raw(chan->indio_dev,
-> chan->channel,
->                                                   val, val2, info);
-> +err:
-> +       return ret;
->    }
->
->    int iio_read_channel_raw(struct iio_channel *chan, int *val)
->
 
