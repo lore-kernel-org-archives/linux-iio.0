@@ -1,67 +1,85 @@
-Return-Path: <kristina.martsenko@gmail.com>
-Message-ID: <547B094A.4000508@gmail.com>
-Date: Sun, 30 Nov 2014 14:10:50 +0200
-From: =?windows-1252?Q?Kristina_Mart=9Aenko?=
- <kristina.martsenko@gmail.com>
+Return-Path: <knaack.h@gmx.de>
+Message-ID: <5479052B.2090308@gmx.de>
+Date: Sat, 29 Nov 2014 00:28:43 +0100
+From: Hartmut Knaack <knaack.h@gmx.de>
 MIME-Version: 1.0
-To: Hartmut Knaack <knaack.h@gmx.de>,
- Stefan Wahren <stefan.wahren@i2se.com>
-CC: Fabio Estevam <festevam@gmail.com>, =?windows-1252?Q?Marek_Va=9Aut?=
- <marex@denx.de>, Jonathan Cameron <jic23@kernel.org>,
- linux-iio@vger.kernel.org, jbe@pengutronix.de
+To: Fabio Estevam <festevam@gmail.com>,
+ Stefan Wahren <stefan.wahren@i2se.com>, =?UTF-8?Q?Marek_Va=c5=a1ut?=
+ <marex@denx.de>
+CC: Jonathan Cameron <jic23@kernel.org>,
+ =?UTF-8?Q?Kristina_Mart=c5=a1enko?= <kristina.martsenko@gmail.com>,
+ linux-iio@vger.kernel.org
 Subject: Re: [PATCH] iio: mxs-lradc: check ranges of ts properties
-References: <1416435590-13999-1-git-send-email-stefan.wahren@i2se.com> <CAOMZO5DJ7yyd47BKgm6AOAg=GGFdeswrb2NxA2krj3ATnRWPVQ@mail.gmail.com> <5479052B.2090308@gmx.de> <10217382.467571.1417260127187.JavaMail.open-xchange@oxbaltgw07.schlund.de> <547A14AA.6020405@gmx.de>
-In-Reply-To: <547A14AA.6020405@gmx.de>
-Content-Type: text/plain; charset=windows-1252
+References: <1416435590-13999-1-git-send-email-stefan.wahren@i2se.com> <CAOMZO5DJ7yyd47BKgm6AOAg=GGFdeswrb2NxA2krj3ATnRWPVQ@mail.gmail.com>
+In-Reply-To: <CAOMZO5DJ7yyd47BKgm6AOAg=GGFdeswrb2NxA2krj3ATnRWPVQ@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
 List-ID: <linux-iio@vger.kernel.org>
 
-On 29/11/14 20:47, Hartmut Knaack wrote:
-> Stefan Wahren schrieb am 29.11.2014 um 12:22:
->>> Hartmut Knaack <knaack.h@gmx.de> hat am 29. November 2014 um 00:28
->>> geschrieben:
->>> Fabio Estevam schrieb am 19.11.2014 um 23:42:
->>>> [Adding Marek]
->>> Taking a closer look on how these values are used, I wondered what the real
->>> value range of the registers actually are. So, anyone with access to the data
->>> sheets, please confirm.
+Fabio Estevam schrieb am 19.11.2014 um 23:42:
+> [Adding Marek]
+Taking a closer look on how these values are used, I wondered what the real value range of the registers actually are. So, anyone with access to the data sheets, please confirm.
+Starting with over_sample_cnt, which according to the DT bindings has a range of 1...31. In mxs_lradc_setup_ts_channel(), currently line 429, the value decreased by one (0...30) gets written to register 0x50 (+ 0x10 for each channel) to bits 24-29. Question: What is the right value range there, 0...30 or 0...31?
+In the same function, line 440, the value decreased by one (0...30) is written to register 0x100 into bits 11-15. Same question here: What is the right value range?
+The same behavior can be found in mxs_lradc_setup_ts_pressure() in lines 485 and 498.
+For over_sample_delay, the DT bindings state a range of 1...2047. In mxs_lradc_setup_ts_channel(), line 440, the value decreased by one (0...2046) is written to register 0x100, bits 0-10. Question: which value range is valid there? The same happens in line 498.
+For settling_delay, the DT bindings state a range of 1...2047. In mxs_lradc_setup_ts_channel(), line 458, that value is written to register 0xf0, bits 0-10. Question: what value range is valid here, 1...2047 or 0...2047? The same happens in line 517.
+Thanks,
+
+Hartmut
+> 
+> On Wed, Nov 19, 2014 at 8:19 PM, Stefan Wahren <stefan.wahren@i2se.com> wrote:
+>> The devicetree binding for mxs-lradc defines ranges for the
+>> touchscreen properties. In order to avoid unexpected behavior like
+>> division by zero, we better check these ranges during probe and
+>> abort in error case.
 >>
->> the reference manual is public:
+>> Signed-off-by: Stefan Wahren <stefan.wahren@i2se.com>
+>> ---
+>>  drivers/staging/iio/adc/mxs-lradc.c |   20 ++++++++++++++++++++
+>>  1 file changed, 20 insertions(+)
 >>
->> http://cache.freescale.com/files/dsp/doc/ref_manual/MCIMX28RM.pdf
-
-[...]
-
->>> For over_sample_delay, the DT bindings state a range of 1...2047. In
->>> mxs_lradc_setup_ts_channel(), line 440, the value decreased by one (0...2046)
->>> is written to register 0x100, bits 0-10. Question: which value range is valid
->>> there? The same happens in line 498.
-> It's DELAY with the description: "This 11-bit field counts down to zero. At zero it triggers either a set of LRADC channel conversions or
-> another delay channel, or both. It can trigger up to all eight LRADCs and all four delay channels in a single
-> event. This counter operates on a 2KHz clock derived from crystal clock."
-> So, the range is 0...2047.
-
-There's also a "Note" on pages 2664-2665 of the reference manual:
-
-"The DELAY fields in HW_LRADC_DELAY0, HW_LRADC_DELAY1, HW_LRADC_DELAY2,
-and HW_LRADC_DELAY3 must be non-zero; otherwise, the LRADC will not
-trigger the delay group."
-
-So 0 isn't valid, leaving the actual range at 1..2047.
-
->>> For settling_delay, the DT bindings state a range of 1...2047. In
->>> mxs_lradc_setup_ts_channel(), line 458, that value is written to register
->>> 0xf0, bits 0-10. Question: what value range is valid here, 1...2047 or
->>> 0...2047? The same happens in line 517.
-> This is the same as register 0x100, so 0...2047 is the valid range.
-
-Yeah, 1..2047 again.
-
-Note that we subtract 1 from over_sample_delay before writing it to a
-register, so its DT range would be 2..2048. But we don't subtract
-anything from settling_delay, so its DT range would be 1..2047. Probably
-would be nicer to subtract 1 from neither (or both?), and have the DT
-ranges be the same.
-
-> Stefan, would you mind to change the DT documentation while you are on it?
-
-Kristina
+>> diff --git a/drivers/staging/iio/adc/mxs-lradc.c b/drivers/staging/iio/adc/mxs-lradc.c
+>> index 6757f10..57c3cf6 100644
+>> --- a/drivers/staging/iio/adc/mxs-lradc.c
+>> +++ b/drivers/staging/iio/adc/mxs-lradc.c
+>> @@ -1500,16 +1500,36 @@ static int mxs_lradc_probe_touchscreen(struct mxs_lradc *lradc,
+>>         if (ret == 0)
+>>                 lradc->over_sample_cnt = adapt;
+>>
+>> +       if (!lradc->over_sample_cnt || lradc->over_sample_cnt > 0x1f) {
+>> +               dev_err(lradc->dev, "Invalid sample count (%u)\n",
+>> +                                   lradc->over_sample_cnt);
+>> +               return -EINVAL;
+>> +       }
+>> +
+>>         lradc->over_sample_delay = 2;
+>>         ret = of_property_read_u32(lradc_node, "fsl,ave-delay", &adapt);
+>>         if (ret == 0)
+>>                 lradc->over_sample_delay = adapt;
+>>
+>> +       if (!lradc->over_sample_delay ||
+>> +           lradc->over_sample_delay > LRADC_DELAY_DELAY_MASK) {
+>> +               dev_err(lradc->dev, "Invalid sample delay (%u)\n",
+>> +                                   lradc->over_sample_delay);
+>> +               return -EINVAL;
+>> +       }
+>> +
+>>         lradc->settling_delay = 10;
+>>         ret = of_property_read_u32(lradc_node, "fsl,settling", &adapt);
+>>         if (ret == 0)
+>>                 lradc->settling_delay = adapt;
+>>
+>> +       if (!lradc->settling_delay ||
+>> +           lradc->settling_delay > LRADC_DELAY_DELAY_MASK) {
+>> +               dev_err(lradc->dev, "Invalid settling delay (%u)\n",
+>> +                                   lradc->settling_delay);
+>> +               return -EINVAL;
+>> +       }
+>> +
+> 
+> Reviewed-by: Fabio Estevam <fabio.estevam@freescale.com>
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> 
