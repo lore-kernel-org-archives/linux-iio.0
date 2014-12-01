@@ -1,69 +1,81 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga09.intel.com ([134.134.136.24]:10698 "EHLO mga09.intel.com"
+Received: from bear.ext.ti.com ([192.94.94.41]:57752 "EHLO bear.ext.ti.com"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1752316AbaKJMo1 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Mon, 10 Nov 2014 07:44:27 -0500
-From: Daniel Baluta <daniel.baluta@intel.com>
-To: jic23@kernel.org, knaack.h@gmx.de
-Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-	irina.tirdea@intel.com, daniel.baluta@inte.com
-Subject: [PATCH v4 3/7] iio: core: Introduce IIO_EV_DIR_NONE
-Date: Mon, 10 Nov 2014 14:45:31 +0200
-Message-Id: <1415623535-24337-4-git-send-email-daniel.baluta@intel.com>
-In-Reply-To: <1415623535-24337-1-git-send-email-daniel.baluta@intel.com>
-References: <1415623535-24337-1-git-send-email-daniel.baluta@intel.com>
+	id S1752680AbaLAJyr (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Mon, 1 Dec 2014 04:54:47 -0500
+Message-ID: <547C3A95.30605@ti.com>
+Date: Mon, 1 Dec 2014 15:23:25 +0530
+From: Vignesh R <vigneshr@ti.com>
+MIME-Version: 1.0
+To: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+CC: Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>,
+	Mark Rutland <mark.rutland@arm.com>,
+	Ian Campbell <ijc+devicetree@hellion.org.uk>,
+	Kumar Gala <galak@codeaurora.org>,
+	Benoit Cousson <bcousson@baylibre.com>,
+	Tony Lindgren <tony@atomide.com>,
+	Russell King <linux@arm.linux.org.uk>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>, <richardcochran@gmail.com>,
+	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+	Lee Jones <lee.jones@linaro.org>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Samuel Ortiz <sameo@linux.intel.com>,
+	Felipe Balbi <balbi@ti.com>, Brad Griffis <bgriffis@ti.com>,
+	Sanjeev Sharma <sanjeev_sharma@mentor.com>,
+	Paul Gortmaker <paul.gortmaker@windriver.com>,
+	Jan Kardell <jan.kardell@telliq.com>,
+	<devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+	<linux-omap@vger.kernel.org>,
+	<linux-arm-kernel@lists.infradead.org>,
+	<linux-iio@vger.kernel.org>, <linux-input@vger.kernel.org>
+Subject: Re: [PATCH v4 0/6] Touchscreen performance related fixes
+References: <1415941651-28962-1-git-send-email-vigneshr@ti.com> <20141124115116.GA14997@linutronix.de>
+In-Reply-To: <20141124115116.GA14997@linutronix.de>
+Content-Type: text/plain; charset="utf-8"
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-From: Irina Tirdea <irina.tirdea@intel.com>
+Hi Sebastian,
 
-For some events (e.g.: step detector) a direction does not make sense.
+On Monday 24 November 2014 05:21 PM, Sebastian Andrzej Siewior wrote:
+> * Vignesh R | 2014-11-14 10:37:25 [+0530]:
+> 
+>> This series of patches fix TSC defects related to lag in touchscreen
+>> performance and cursor jump at touch release. The lag was result of
+>> udelay in TSC interrupt handler. Cursor jump due to false pen-up event.
+>> The patches implement Advisory 1.0.31 in silicon errata of am335x-evm
+> am335x not -evm. The am335x-evm is a board (with its own advisory
+> document) built around the SoC.
+> 
+> Just testing the v4. I can use now IIO and touchscren at the same time.
+> back at v1 I reported that it does not work, this has been fixed now.
+> I had it running for a few minutes, now I see one of WARN_ON() beeing
+> triggered (I've cut a few numbers so don't wonder about PID 2 and so on):
+> 
 
-Add IIO_EV_DIR_NONE to be used with such events and generate sysfs event
-attributes that do not contain direction.
+I fixed the issue that was triggering the WARN_ON(). I think it would be
+better if you tested these patches, before I posted them on the
+mainline. I don't want to clutter the list with too main versions. Here
+is the link to the tree with latest changes:
 
-Signed-off-by: Irina Tirdea <irina.tirdea@intel.com>
-Signed-off-by: Daniel Baluta <daniel.baluta@intel.com>
----
- drivers/iio/industrialio-event.c | 12 +++++++++---
- include/linux/iio/types.h        |  1 +
- 2 files changed, 10 insertions(+), 3 deletions(-)
+git clone -b tsc-devel git://git.ti.com/kernel/tsc-adc.git
+(tsc-devel branch)
 
-diff --git a/drivers/iio/industrialio-event.c b/drivers/iio/industrialio-event.c
-index 0c1e37e..1290290 100644
---- a/drivers/iio/industrialio-event.c
-+++ b/drivers/iio/industrialio-event.c
-@@ -327,9 +327,15 @@ static int iio_device_add_event(struct iio_dev *indio_dev,
- 	for_each_set_bit(i, mask, sizeof(*mask)*8) {
- 		if (i >= ARRAY_SIZE(iio_ev_info_text))
- 			return -EINVAL;
--		postfix = kasprintf(GFP_KERNEL, "%s_%s_%s",
--				iio_ev_type_text[type], iio_ev_dir_text[dir],
--				iio_ev_info_text[i]);
-+		if (dir != IIO_EV_DIR_NONE)
-+			postfix = kasprintf(GFP_KERNEL, "%s_%s_%s",
-+					iio_ev_type_text[type],
-+					iio_ev_dir_text[dir],
-+					iio_ev_info_text[i]);
-+		else
-+			postfix = kasprintf(GFP_KERNEL, "%s_%s",
-+					iio_ev_type_text[type],
-+					iio_ev_info_text[i]);
- 		if (postfix == NULL)
- 			return -ENOMEM;
- 
-diff --git a/include/linux/iio/types.h b/include/linux/iio/types.h
-index b3a241d..52cb532 100644
---- a/include/linux/iio/types.h
-+++ b/include/linux/iio/types.h
-@@ -86,6 +86,7 @@ enum iio_event_direction {
- 	IIO_EV_DIR_EITHER,
- 	IIO_EV_DIR_RISING,
- 	IIO_EV_DIR_FALLING,
-+	IIO_EV_DIR_NONE,
- };
- 
- #define IIO_VAL_INT 1
--- 
-1.9.1
+Please test the above tree and let me know the results.
+I will post new version(v5) if there are no issues wrt IIO and TSC
+working at the same time.
 
+The cursor jump at touch release has been fixed. But I do see random
+cursor movement when dragging on the screen. This is not due to false
+pen-up events. My patches do not aim at fixing them. (the aim is to
+remove udelay in irq handler and fix false pen-ups).
+With these changes, false pen-ups have been eliminated and there is a
+significant improvement in the performance of TSC. I feel these patches
+can go in, if there are no other serious issues.
+
+I will work on random cursor jump in a separate patch series.
+
+Regards
+Vignesh
