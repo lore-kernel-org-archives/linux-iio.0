@@ -1,71 +1,51 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from comal.ext.ti.com ([198.47.26.152]:33395 "EHLO comal.ext.ti.com"
+Received: from h1.radempa.de ([176.9.142.194]:59051 "EHLO mail.cosmopool.net"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1752869AbaLAKa3 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Mon, 1 Dec 2014 05:30:29 -0500
-Message-ID: <547C42FF.5010700@ti.com>
-Date: Mon, 1 Dec 2014 15:59:19 +0530
-From: Vignesh R <vigneshr@ti.com>
+	id S1752758AbaLAK46 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Mon, 1 Dec 2014 05:56:58 -0500
+From: Harald Geyer <harald@ccbib.org>
+To: Richard Weinberger <richard@nod.at>
+cc: linus.walleij@linaro.org, linux-gpio@vger.kernel.org,
+	javier.martinez@collabora.co.uk, acourbot@nvidia.com,
+	swarren@nvidia.com, jic23@kernel.org, knaack.h@gmx.de,
+	lars@metafoo.de, pmeerw@pmeerw.net, linux-iio@vger.kernel.org,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	Harald Geyer <lambda@stardust.g4.wien.funkfeuer.at>
+Subject: Re: iio: dht11 broken
+In-reply-to: <547B4464.9090300@nod.at>
+References: <547B4464.9090300@nod.at>
 MIME-Version: 1.0
-To: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-CC: Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>,
-	Mark Rutland <mark.rutland@arm.com>,
-	Ian Campbell <ijc+devicetree@hellion.org.uk>,
-	Kumar Gala <galak@codeaurora.org>,
-	Benoit Cousson <bcousson@baylibre.com>,
-	Tony Lindgren <tony@atomide.com>,
-	Russell King <linux@arm.linux.org.uk>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>, <richardcochran@gmail.com>,
-	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-	Lee Jones <lee.jones@linaro.org>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	Samuel Ortiz <sameo@linux.intel.com>,
-	Felipe Balbi <balbi@ti.com>, Brad Griffis <bgriffis@ti.com>,
-	Sanjeev Sharma <sanjeev_sharma@mentor.com>,
-	Paul Gortmaker <paul.gortmaker@windriver.com>,
-	Jan Kardell <jan.kardell@telliq.com>,
-	<devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-	<linux-omap@vger.kernel.org>,
-	<linux-arm-kernel@lists.infradead.org>,
-	<linux-iio@vger.kernel.org>, <linux-input@vger.kernel.org>
-Subject: Re: [PATCH v4 0/6] Touchscreen performance related fixes
-References: <1415941651-28962-1-git-send-email-vigneshr@ti.com> <20141124115116.GA14997@linutronix.de> <547C3A95.30605@ti.com> <547C3C19.5090501@linutronix.de>
-In-Reply-To: <547C3C19.5090501@linutronix.de>
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset="us-ascii"
+Date: Mon, 01 Dec 2014 11:49:32 +0100
+Message-Id: <E1XvOXs-00014Z-6F@stardust.g4.wien.funkfeuer.at>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
+Hi Richard!
 
-Hi,
+Richard Weinberger writes:
+> Staring with 3.12 gpiolib refuses to set an GPIO used as IRQ into output mode.
+> see commit d468bf9e (gpio: add API to be strict about GPIO IRQ usage)
+> The dht driver does this and is therefore not functional.
+> As the dht11 driver got merged in 3.13 there is a high chance that it
+> never worked.
 
-On Monday 01 December 2014 03:29 PM, Sebastian Andrzej Siewior wrote:
-> On 12/01/2014 10:53 AM, Vignesh R wrote:
->> Hi Sebastian,
-> 
-> Hi Vignesh,
-> 
->> I fixed the issue that was triggering the WARN_ON(). I think it would be
->> better if you tested these patches, before I posted them on the
->> mainline. I don't want to clutter the list with too main versions. Here
->> is the link to the tree with latest changes:
-> 
-> awesome, thank you.
-> 
->>
->> git clone -b tsc-devel git://git.ti.com/kernel/tsc-adc.git
->> (tsc-devel branch)
-> 
-> I will and let you know.
-> 
->> Please test the above tree and let me know the results.
->> I will post new version(v5) if there are no issues wrt IIO and TSC
->> working at the same time.
-> 
-> Cool. Were you able to get in touch with someone who has a 5-wire touch?
+Well, I'm developing on mxs and there it works on 3.13 and 3.14 at least.
+(I have it in production using 3.14.18 ATM.)
+ 
+> Harald, are you aware of this issue?
 
-I have asked Jeff Lance to verify 5-wire touch.
+I got one report about this issue, but couldn't reproduce it yet and
+the reporter didn't agree to quoting his messages to kernel mailing lists,
+so this has been rather low priority on my todo list. Next plan is to
+see if I can reproduce the issue on sunxi (A10).
 
-Regards
-Vignesh
+However anybody able to reproduce this and willing to test patches, would
+of course push this up on my todo list.
+
+Any input from gpiolib people about what the proper fix would be in
+their opinion, of course is appreciated. I don't think the dht11 driver
+is doing anything unreasonable per se, so maybe they can clarify how
+the API is intended to be used?
+
+Harald
