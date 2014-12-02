@@ -9,63 +9,74 @@ Cc: harald@ccbib.org,
 	linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
 	Richard Weinberger <richard@nod.at>
-Subject: [PATCH 1/4] iio: dht11: Add locking
-Date: Wed,  3 Dec 2014 00:32:53 +0100
-Message-Id: <1417563176-31972-2-git-send-email-richard@nod.at>
+Subject: [PATCH 3/4] iio: dht11: Logging updates
+Date: Wed,  3 Dec 2014 00:32:55 +0100
+Message-Id: <1417563176-31972-4-git-send-email-richard@nod.at>
 In-Reply-To: <1417563176-31972-1-git-send-email-richard@nod.at>
 References: <1417563176-31972-1-git-send-email-richard@nod.at>
 List-ID: <linux-iio@vger.kernel.org>
 
-Make sure that the read function is not interrupted...
+Currently the driver uses pr_* and dev_* functions.
+Change all logging functions to dev_* style to be consistent
+and have the correct device prefix in all messages.
+This change set also adds new messages to diagnose issues.
 
 Signed-off-by: Richard Weinberger <richard@nod.at>
 ---
- drivers/iio/humidity/dht11.c | 5 +++++
- 1 file changed, 5 insertions(+)
+ drivers/iio/humidity/dht11.c | 16 ++++++++++------
+ 1 file changed, 10 insertions(+), 6 deletions(-)
 
 diff --git a/drivers/iio/humidity/dht11.c b/drivers/iio/humidity/dht11.c
-index d8771f5..168ebc4 100644
+index 0023699..fbcd7cb 100644
 --- a/drivers/iio/humidity/dht11.c
 +++ b/drivers/iio/humidity/dht11.c
-@@ -29,6 +29,7 @@
- #include <linux/wait.h>
- #include <linux/bitops.h>
- #include <linux/completion.h>
-+#include <linux/mutex.h>
- #include <linux/delay.h>
- #include <linux/gpio.h>
- #include <linux/of_gpio.h>
-@@ -57,6 +58,7 @@ struct dht11 {
- 	int				irq;
+@@ -96,20 +96,22 @@ static int dht11_decode(struct dht11 *dht11, int offset)
+ 			timeres = t;
+ 	}
+ 	if (2*timeres > DHT11_DATA_BIT_HIGH) {
+-		pr_err("dht11: timeresolution %d too bad for decoding\n",
++		dev_err(dht11->dev, "timeresolution %d too bad for decoding\n",
+ 			timeres);
+ 		return -EIO;
+ 	}
+ 	threshold = DHT11_DATA_BIT_HIGH / timeres;
+ 	if (DHT11_DATA_BIT_LOW/timeres + 1 >= threshold)
+-		pr_err("dht11: WARNING: decoding ambiguous\n");
++		dev_err(dht11->dev, "decoding ambiguous\n");
  
- 	struct completion		completion;
-+	struct mutex			lock;
+ 	/* scale down with timeres and check validity */
+ 	for (i = 0; i < DHT11_BITS_PER_READ; ++i) {
+ 		t = dht11->edges[offset + 2*i + 2].ts -
+ 			dht11->edges[offset + 2*i + 1].ts;
+-		if (!dht11->edges[offset + 2*i + 1].value)
+-			return -EIO;  /* lost synchronisation */
++		if (!dht11->edges[offset + 2*i + 1].value) {
++			dev_err(dht11->dev, "lost synchronisation\n");
++			return -EIO;
++		}
+ 		timing[i] = t / timeres;
+ 	}
  
- 	s64				timestamp;
- 	int				temperature;
-@@ -145,6 +147,7 @@ static int dht11_read_raw(struct iio_dev *iio_dev,
- 	struct dht11 *dht11 = iio_priv(iio_dev);
- 	int ret;
+@@ -119,8 +121,10 @@ static int dht11_decode(struct dht11 *dht11, int offset)
+ 	temp_dec = dht11_decode_byte(&timing[24], threshold);
+ 	checksum = dht11_decode_byte(&timing[32], threshold);
  
-+	mutex_lock(&dht11->lock);
- 	if (dht11->timestamp + DHT11_DATA_VALID_TIME < iio_get_time_ns()) {
- 		reinit_completion(&dht11->completion);
+-	if (((hum_int + hum_dec + temp_int + temp_dec) & 0xff) != checksum)
++	if (((hum_int + hum_dec + temp_int + temp_dec) & 0xff) != checksum) {
++		dev_err(dht11->dev, "invalid checksum\n");
+ 		return -EIO;
++	}
  
-@@ -185,6 +188,7 @@ static int dht11_read_raw(struct iio_dev *iio_dev,
- 		ret = -EINVAL;
- err:
- 	dht11->num_edges = -1;
-+	mutex_unlock(&dht11->lock);
- 	return ret;
- }
+ 	dht11->timestamp = iio_get_time_ns();
+ 	if (hum_int < 20) {  /* DHT22 */
+@@ -193,7 +197,7 @@ static int dht11_read_raw(struct iio_dev *iio_dev,
+ 		free_irq(dht11->irq, iio_dev);
  
-@@ -268,6 +272,7 @@ static int dht11_probe(struct platform_device *pdev)
- 	platform_set_drvdata(pdev, iio);
- 
- 	init_completion(&dht11->completion);
-+	mutex_init(&dht11->lock);
- 	iio->name = pdev->name;
- 	iio->dev.parent = &pdev->dev;
- 	iio->info = &dht11_iio_info;
+ 		if (ret == 0 && dht11->num_edges < DHT11_EDGES_PER_READ - 1) {
+-			dev_err(&iio_dev->dev,
++			dev_err(dht11->dev,
+ 					"Only %d signal edges detected\n",
+ 					dht11->num_edges);
+ 			ret = -ETIMEDOUT;
 -- 
 1.8.4.5
