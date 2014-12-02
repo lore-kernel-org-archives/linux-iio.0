@@ -1,90 +1,56 @@
 Return-Path: <richard@nod.at>
-Message-ID: <547E0109.8000106@nod.at>
-Date: Tue, 02 Dec 2014 19:12:25 +0100
+Message-ID: <547DFDD8.1010404@nod.at>
+Date: Tue, 02 Dec 2014 18:58:48 +0100
 From: Richard Weinberger <richard@nod.at>
 MIME-Version: 1.0
 To: Harald Geyer <harald@ccbib.org>
 CC: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
  pmeerw@pmeerw.net, sanjeev_sharma@mentor.com, linux-iio@vger.kernel.org,
  linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 2/2] iio: dht11: IRQ fixes
-References: <1417465651-16036-1-git-send-email-richard@nod.at> <1417465651-16036-2-git-send-email-richard@nod.at> <E1XvkYl-00013g-VO@stardust.g4.wien.funkfeuer.at> <547D9A6F.9010801@nod.at> <E1Xvn2b-0001CH-PM@stardust.g4.wien.funkfeuer.at>
-In-Reply-To: <E1Xvn2b-0001CH-PM@stardust.g4.wien.funkfeuer.at>
+Subject: Re: [PATCH 1/2] iio: dht11: Add locking
+References: <1417465651-16036-1-git-send-email-richard@nod.at> <E1XvkMu-000137-KP@stardust.g4.wien.funkfeuer.at> <547D99DE.6030309@nod.at> <E1XvmLC-0001BT-F3@stardust.g4.wien.funkfeuer.at>
+In-Reply-To: <E1XvmLC-0001BT-F3@stardust.g4.wien.funkfeuer.at>
 Content-Type: text/plain; charset=windows-1252
 List-ID: <linux-iio@vger.kernel.org>
 
 Harald,
 
-Am 02.12.2014 um 13:58 schrieb Harald Geyer:
-> Richard Weinberger writes:
->> Harald,
+Am 02.12.2014 um 13:14 schrieb Harald Geyer:
+>>> Move the locking out of the if statement.
 >>
->> Am 02.12.2014 um 11:19 schrieb Harald Geyer:
->>> Hi Richard,
->>>
->>> thanks for the patch.
->>>
->>> I think (haven't tried yet) that your patch changes the number of
->>> edges recorded per transmission. So probably the decoding function
->>> needs to be adapted too...
+>> Care to explain why?
+> 
+> The purpose of the if statement is to limit the number of data
+> transmissions if values are requested multiple times in short
+> succession. (Ie an application reading both sensor values.)
+> 
+> If we have concurrent reads, then the later one will wait in the
+> mutex_lock() while the former will update the timestamp. If the
+> later one resumes, it won't check the timestamp and cause an
+> unnecessary data transmission.
+
+Okay, makes sense.
+I'll update my patch!
+
+>  
+>> But I found another issue in my patch.
+>> The "dht11->num_edges = -1;" before "return ret" needs to go into the locked area.
+>> Will send an updated version soon.
 >>
->> Can you explain your thought?
->> I'll happily dig into that.
-> 
-> Part of the reason to have the IRQ enabled during output was to
-> get consistent timestamps (all timestamps would be taken via the
-> same codepath). While this isn't essential, the current code expects
-> that the start command we generate is in the list of edges. I think
-> your changes will cause that start command not to be in the list of
-> edges.
-
-Yeah, if the sensor starts transmitting data before we've setup
-the IRQ we'll lose edges.
-But AFAICT the DHT is much slower than we are with setting up the IRQ.
-The DHT is a rather stupid device so we cannot use proper interrupting.
-But I can think of adding also polling support to the driver.
-Such that one can select whether she wants to use IRQ or polling...
-
-> Note: There have been issues with some sensors (DHT11s?) not to
-> send proper start bits, so the driver tries to be liberal about
-> what it expects and you probably haven't seen any decoding errors
-> if your sample sensor works to specification. (Now that I come to
-> think about it: Undefined behaviour of IRQs on output lines could
-> have been involved too...)
-> 
-> This is a bit of a mess and I'd rather clean this up than add more
-> to it. Maybe I'm overly fussy about this, but it has bitten me in
-> the past.
-
-I can feel your pain. I've wasted some hours with half baked
-user space drivers for the DHT22.
-
-> Since it seems you have some interesst in working on these parts,
-> let me mention an unrelated issue: The DHT22 stops sending data
-> after a random time (think of days here) which AFAIK only can be
-> worked around by power-cycling the sensor. I mean to add something
-> for this to the driver but couln't make up my mind about what the
-> proper ABI for this would be, so right now I'm using some userspace
-> hack for this. (The issue was already discussed on the linux-iio
-> mailing list a few month ago, if you want to look into this.
-> Anyway: You have been warned ... ;)  
-
-Oh, that's a very valuable information!
-Currently I'm evaluating some sensors for a private project.
-You can recommend a better temp/humidity sensor?
-
->>> I won't be able to ACK this before testing on real HW. Of course
->>> confirmation that your changes work reliably on both DHT11 and DHT22
->>> will do as well. The debuging code present in the initial submission
->>> of the driver might be helpful to anybody trying to verify the
->>> timing.
+>>> BTW, it seems that there is already locking around read_raw() in the
+>>> in-kernel consumer interface but not in the sysfs interface. Is there
+>>> any reason for this difference?
 >>
->> I have only DHT22 sensors. Of course I've tested the driver with these.
+>> Dunno. :-)
 > 
-> Ok, so I'll test DHT11 first. It would still be nice to confirm how
-> many edges are recorded from DHT22 though.
+> If locking is actually necessary, then this would be a bug in the
+> current version of the driver, which wasn't caught by at least three
+> people doing reviews, so maybe let's find out if it really is necessary
+> or if I'm missing something ...
 
-Of course, I'll run some tests later.
+Maybe IIO folks can tell us more.
+What I see in other IIO drivers is that they all have locking in the read functions
+and so far I see no global serialization in IIO itself.
 
 Thanks,
 //richard
