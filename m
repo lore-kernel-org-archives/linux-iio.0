@@ -1,25 +1,115 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from a.ns.miles-group.at ([95.130.255.143]:65276 "EHLO radon.swed.at"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S932722AbaLBXfe (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Tue, 2 Dec 2014 18:35:34 -0500
-Message-ID: <547E4CC3.4050408@nod.at>
-Date: Wed, 03 Dec 2014 00:35:31 +0100
+Return-Path: <richard@nod.at>
 From: Richard Weinberger <richard@nod.at>
-MIME-Version: 1.0
 To: jic23@kernel.org
-CC: harald@ccbib.org, knaack.h@gmx.de, lars@metafoo.de,
-	pmeerw@pmeerw.net, sanjeev_sharma@mentor.com,
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 2/4] iio: dht11: IRQ fixes
-References: <1417563176-31972-1-git-send-email-richard@nod.at> <1417563176-31972-3-git-send-email-richard@nod.at>
-In-Reply-To: <1417563176-31972-3-git-send-email-richard@nod.at>
-Content-Type: text/plain; charset=iso-8859-15
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Cc: harald@ccbib.org,
+	knaack.h@gmx.de,
+	lars@metafoo.de,
+	pmeerw@pmeerw.net,
+	sanjeev_sharma@mentor.com,
+	linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Richard Weinberger <richard@nod.at>
+Subject: [PATCH 2/4] iio: dht11: IRQ fixes
+Date: Wed,  3 Dec 2014 00:32:54 +0100
+Message-Id: <1417563176-31972-3-git-send-email-richard@nod.at>
+In-Reply-To: <1417563176-31972-1-git-send-email-richard@nod.at>
+References: <1417563176-31972-1-git-send-email-richard@nod.at>
+List-ID: <linux-iio@vger.kernel.org>
 
-Am 03.12.2014 um 00:32 schrieb Richard Weinberger:
+Signed-off-by: Richard Weinberger <richard@nod.at>
+---
+ drivers/iio/humidity/dht11.c | 56 ++++++++++++++++++++++++--------------------
+ 1 file changed, 30 insertions(+), 26 deletions(-)
 
-<insert commit message here> :-\
-
-> Signed-off-by: Richard Weinberger <richard@nod.at>
+diff --git a/drivers/iio/humidity/dht11.c b/drivers/iio/humidity/dht11.c
+index 168ebc4..0023699 100644
+--- a/drivers/iio/humidity/dht11.c
++++ b/drivers/iio/humidity/dht11.c
+@@ -140,6 +140,27 @@ static int dht11_decode(struct dht11 *dht11, int offset)
+ 	return 0;
+ }
+ 
++/*
++ * IRQ handler called on GPIO edges
++ */
++static irqreturn_t dht11_handle_irq(int irq, void *data)
++{
++	struct iio_dev *iio = data;
++	struct dht11 *dht11 = iio_priv(iio);
++
++	/* TODO: Consider making the handler safe for IRQ sharing */
++	if (dht11->num_edges < DHT11_EDGES_PER_READ && dht11->num_edges >= 0) {
++		dht11->edges[dht11->num_edges].ts = iio_get_time_ns();
++		dht11->edges[dht11->num_edges++].value =
++						gpio_get_value(dht11->gpio);
++
++		if (dht11->num_edges >= DHT11_EDGES_PER_READ)
++			complete(&dht11->completion);
++	}
++
++	return IRQ_HANDLED;
++}
++
+ static int dht11_read_raw(struct iio_dev *iio_dev,
+ 			const struct iio_chan_spec *chan,
+ 			int *val, int *val2, long m)
+@@ -160,8 +181,17 @@ static int dht11_read_raw(struct iio_dev *iio_dev,
+ 		if (ret)
+ 			goto err;
+ 
++		ret = request_irq(dht11->irq, dht11_handle_irq,
++				  IRQF_TRIGGER_RISING | IRQF_TRIGGER_FALLING,
++				  iio_dev->name, iio_dev);
++		if (ret)
++			goto err;
++
+ 		ret = wait_for_completion_killable_timeout(&dht11->completion,
+ 								 HZ);
++
++		free_irq(dht11->irq, iio_dev);
++
+ 		if (ret == 0 && dht11->num_edges < DHT11_EDGES_PER_READ - 1) {
+ 			dev_err(&iio_dev->dev,
+ 					"Only %d signal edges detected\n",
+@@ -197,27 +227,6 @@ static const struct iio_info dht11_iio_info = {
+ 	.read_raw		= dht11_read_raw,
+ };
+ 
+-/*
+- * IRQ handler called on GPIO edges
+-*/
+-static irqreturn_t dht11_handle_irq(int irq, void *data)
+-{
+-	struct iio_dev *iio = data;
+-	struct dht11 *dht11 = iio_priv(iio);
+-
+-	/* TODO: Consider making the handler safe for IRQ sharing */
+-	if (dht11->num_edges < DHT11_EDGES_PER_READ && dht11->num_edges >= 0) {
+-		dht11->edges[dht11->num_edges].ts = iio_get_time_ns();
+-		dht11->edges[dht11->num_edges++].value =
+-						gpio_get_value(dht11->gpio);
+-
+-		if (dht11->num_edges >= DHT11_EDGES_PER_READ)
+-			complete(&dht11->completion);
+-	}
+-
+-	return IRQ_HANDLED;
+-}
+-
+ static const struct iio_chan_spec dht11_chan_spec[] = {
+ 	{ .type = IIO_TEMP,
+ 		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED), },
+@@ -260,11 +269,6 @@ static int dht11_probe(struct platform_device *pdev)
+ 		dev_err(dev, "GPIO %d has no interrupt\n", dht11->gpio);
+ 		return -EINVAL;
+ 	}
+-	ret = devm_request_irq(dev, dht11->irq, dht11_handle_irq,
+-				IRQF_TRIGGER_RISING | IRQF_TRIGGER_FALLING,
+-				pdev->name, iio);
+-	if (ret)
+-		return ret;
+ 
+ 	dht11->timestamp = iio_get_time_ns() - DHT11_DATA_VALID_TIME - 1;
+ 	dht11->num_edges = -1;
+-- 
+1.8.4.5
