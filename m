@@ -1,50 +1,86 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from a.ns.miles-group.at ([95.130.255.143]:65276 "EHLO radon.swed.at"
+Received: from h1.radempa.de ([176.9.142.194]:44378 "EHLO mail.cosmopool.net"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751523AbaLBKym (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Tue, 2 Dec 2014 05:54:42 -0500
-Message-ID: <547D9A6F.9010801@nod.at>
-Date: Tue, 02 Dec 2014 11:54:39 +0100
-From: Richard Weinberger <richard@nod.at>
-MIME-Version: 1.0
-To: Harald Geyer <harald@ccbib.org>
-CC: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
+	id S933149AbaLBMO0 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Tue, 2 Dec 2014 07:14:26 -0500
+From: Harald Geyer <harald@ccbib.org>
+To: Richard Weinberger <richard@nod.at>
+cc: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
 	pmeerw@pmeerw.net, sanjeev_sharma@mentor.com,
 	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 2/2] iio: dht11: IRQ fixes
-References: <1417465651-16036-1-git-send-email-richard@nod.at> <1417465651-16036-2-git-send-email-richard@nod.at> <E1XvkYl-00013g-VO@stardust.g4.wien.funkfeuer.at>
-In-Reply-To: <E1XvkYl-00013g-VO@stardust.g4.wien.funkfeuer.at>
-Content-Type: text/plain; charset=windows-1252
+Subject: Re: [PATCH 1/2] iio: dht11: Add locking
+In-reply-to: <547D99DE.6030309@nod.at>
+References: <1417465651-16036-1-git-send-email-richard@nod.at> <E1XvkMu-000137-KP@stardust.g4.wien.funkfeuer.at> <547D99DE.6030309@nod.at>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Date: Tue, 02 Dec 2014 13:14:02 +0100
+Message-Id: <E1XvmLC-0001BT-F3@stardust.g4.wien.funkfeuer.at>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Harald,
-
-Am 02.12.2014 um 11:19 schrieb Harald Geyer:
-> Hi Richard,
+Richard Weinberger writes:
+> Harald,
 > 
-> thanks for the patch.
+> Am 02.12.2014 um 11:07 schrieb Harald Geyer:
+> > Hi Richard,
+> > 
+> > thanks for the patch. Comments inline.
+> > 
+> > Richard Weinberger writes:
+> >> Protect the read function from concurrent reads.
+> >>
+> >> Signed-off-by: Richard Weinberger <richard@nod.at>
+> >> ---
+> >>  drivers/iio/humidity/dht11.c | 19 ++++++++++++++-----
+> >>  1 file changed, 14 insertions(+), 5 deletions(-)
+> >>
+> >> diff --git a/drivers/iio/humidity/dht11.c b/drivers/iio/humidity/dht11.c
+> >> index 623c145..7636e66 100644
+> >> --- a/drivers/iio/humidity/dht11.c
+> >> +++ b/drivers/iio/humidity/dht11.c
+> > 
+> > #include <linux/mutex.h>
+> > 
+> >> @@ -57,6 +57,7 @@ struct dht11 {
+> >>  	int				irq;
+> >>  
+> >>  	struct completion		completion;
+> >> +	struct mutex			lock;
+> >>  
+> >>  	s64				timestamp;
+> >>  	int				temperature;
+> >> @@ -146,16 +147,17 @@ static int dht11_read_raw(struct iio_dev *iio_dev,
+> >>  	int ret;
+> >>  
+> >>  	if (dht11->timestamp + DHT11_DATA_VALID_TIME < iio_get_time_ns()) {
+> >> +		mutex_lock(&dht11->lock);
+> > 
+> > Move the locking out of the if statement.
 > 
-> I think (haven't tried yet) that your patch changes the number of
-> edges recorded per transmission. So probably the decoding function
-> needs to be adapted too...
+> Care to explain why?
 
-Can you explain your thought?
-I'll happily dig into that.
+The purpose of the if statement is to limit the number of data
+transmissions if values are requested multiple times in short
+succession. (Ie an application reading both sensor values.)
 
-> I won't be able to ACK this before testing on real HW. Of course
-> confirmation that your changes work reliably on both DHT11 and DHT22
-> will do as well. The debuging code present in the initial submission
-> of the driver might be helpful to anybody trying to verify the
-> timing.
+If we have concurrent reads, then the later one will wait in the
+mutex_lock() while the former will update the timestamp. If the
+later one resumes, it won't check the timestamp and cause an
+unnecessary data transmission.
+ 
+> But I found another issue in my patch.
+> The "dht11->num_edges = -1;" before "return ret" needs to go into the locked area.
+> Will send an updated version soon.
+> 
+> > BTW, it seems that there is already locking around read_raw() in the
+> > in-kernel consumer interface but not in the sysfs interface. Is there
+> > any reason for this difference?
+> 
+> Dunno. :-)
 
-I have only DHT22 sensors. Of course I've tested the driver with these.
+If locking is actually necessary, then this would be a bug in the
+current version of the driver, which wasn't caught by at least three
+people doing reviews, so maybe let's find out if it really is necessary
+or if I'm missing something ...
 
-> I'm doing kernel work in my free time and am quite busy with my day job
-> right now, so it will take a few days before I can test your code myself.
-> Sorry about that.
-
-No need to worry!
-
-Thanks,
-//richard
+Harald
