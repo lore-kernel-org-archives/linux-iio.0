@@ -1,116 +1,81 @@
-Return-Path: <harald@ccbib.org>
-From: Harald Geyer <harald@ccbib.org>
-To: Richard Weinberger <richard@nod.at>
-cc: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
-    pmeerw@pmeerw.net, sanjeev_sharma@mentor.com,
-    linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 3/4] iio: dht11: Logging updates
-In-reply-to: <1417563176-31972-4-git-send-email-richard@nod.at>
-References: <1417563176-31972-1-git-send-email-richard@nod.at> <1417563176-31972-4-git-send-email-richard@nod.at>
+Return-Path: <richard@nod.at>
+Message-ID: <547F0CFE.4010107@nod.at>
+Date: Wed, 03 Dec 2014 14:15:42 +0100
+From: Richard Weinberger <richard@nod.at>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Date: Wed, 03 Dec 2014 13:58:52 +0100
-Message-Id: <E1Xw9W8-0001Db-9a@stardust.g4.wien.funkfeuer.at>
+To: Harald Geyer <harald@ccbib.org>
+CC: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
+ pmeerw@pmeerw.net, sanjeev_sharma@mentor.com, linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org
+Subject: Re: iio: dht11 Updates
+References: <1417563176-31972-1-git-send-email-richard@nod.at> <E1Xw8sp-0001B6-Ul@stardust.g4.wien.funkfeuer.at>
+In-Reply-To: <E1Xw8sp-0001B6-Ul@stardust.g4.wien.funkfeuer.at>
+Content-Type: text/plain; charset=windows-1252
 List-ID: <linux-iio@vger.kernel.org>
 
-Richard Weinberger writes:
-> Currently the driver uses pr_* and dev_* functions.
-> Change all logging functions to dev_* style to be consistent
-> and have the correct device prefix in all messages.
+Harald,
 
-Yes, actually this was on purpose:
-The dev_ messages are really about something wrong with the device.
-Ie if something goes wrong with one device but could perfectly work
-with some other device.
-The pr_ messages OTOH are about something wrong with clock resolution,
-etc that would affect any DHT11 sensor on the system. Ideally we would
-notice these things during probe() and just return with an error there.
-Right now we aren't as clever as that, so we just log an error message
-about the driver, when actually we are reading the device.
-
-That said, I don't have strong feelings about this. If you want to
-change this, I won't object. However if you really want to fix this,
-then the proper thing would be to check for this conditions in
-probe().
-
-> This change set also adds new messages to diagnose issues.
-
-Comment below.
-
-> Signed-off-by: Richard Weinberger <richard@nod.at>
-> ---
->  drivers/iio/humidity/dht11.c | 16 ++++++++++------
->  1 file changed, 10 insertions(+), 6 deletions(-)
+Am 03.12.2014 um 13:18 schrieb Harald Geyer:
+> Hi Richard,
 > 
-> diff --git a/drivers/iio/humidity/dht11.c b/drivers/iio/humidity/dht11.c
-> index 0023699..fbcd7cb 100644
-> --- a/drivers/iio/humidity/dht11.c
-> +++ b/drivers/iio/humidity/dht11.c
-> @@ -96,20 +96,22 @@ static int dht11_decode(struct dht11 *dht11, int offset)
->  			timeres = t;
->  	}
->  	if (2*timeres > DHT11_DATA_BIT_HIGH) {
-> -		pr_err("dht11: timeresolution %d too bad for decoding\n",
-> +		dev_err(dht11->dev, "timeresolution %d too bad for decoding\n",
->  			timeres);
->  		return -EIO;
->  	}
->  	threshold = DHT11_DATA_BIT_HIGH / timeres;
->  	if (DHT11_DATA_BIT_LOW/timeres + 1 >= threshold)
-> -		pr_err("dht11: WARNING: decoding ambiguous\n");
-> +		dev_err(dht11->dev, "decoding ambiguous\n");
->  
->  	/* scale down with timeres and check validity */
->  	for (i = 0; i < DHT11_BITS_PER_READ; ++i) {
->  		t = dht11->edges[offset + 2*i + 2].ts -
->  			dht11->edges[offset + 2*i + 1].ts;
-> -		if (!dht11->edges[offset + 2*i + 1].value)
-> -			return -EIO;  /* lost synchronisation */
-> +		if (!dht11->edges[offset + 2*i + 1].value) {
-> +			dev_err(dht11->dev, "lost synchronisation\n");
-> +			return -EIO;
-> +		}
-
-Are you sure this warrants a log message? I don't think this provides
-much information. The userspace application should just try reading
-the sensor again.
-
-We could do someting smart and try to recover from such errors, but
-ultimately userspace will need to deal with failed sensor communication
-anyway, so I don't see the point.
-
->  		timing[i] = t / timeres;
->  	}
->  
-> @@ -119,8 +121,10 @@ static int dht11_decode(struct dht11 *dht11, int offset)
->  	temp_dec = dht11_decode_byte(&timing[24], threshold);
->  	checksum = dht11_decode_byte(&timing[32], threshold);
->  
-> -	if (((hum_int + hum_dec + temp_int + temp_dec) & 0xff) != checksum)
-> +	if (((hum_int + hum_dec + temp_int + temp_dec) & 0xff) != checksum) {
-> +		dev_err(dht11->dev, "invalid checksum\n");
->  		return -EIO;
-> +	}
-
-Same thing here.
-
->  	dht11->timestamp = iio_get_time_ns();
->  	if (hum_int < 20) {  /* DHT22 */
-> @@ -193,7 +197,7 @@ static int dht11_read_raw(struct iio_dev *iio_dev,
->  		free_irq(dht11->irq, iio_dev);
->  
->  		if (ret == 0 && dht11->num_edges < DHT11_EDGES_PER_READ - 1) {
-> -			dev_err(&iio_dev->dev,
-> +			dev_err(dht11->dev,
-
-Ack.
-
-Thanks,
-Harald
-
->  					"Only %d signal edges detected\n",
->  					dht11->num_edges);
->  			ret = -ETIMEDOUT;
-> -- 
-> 1.8.4.5
+> thanks for all the work you put into this!
 > 
+> Richard Weinberger writes:
+>> Please see my current patches for your driver.
+>> As discussed in an earlier mail I'm testing with the DHT22 sensor only.
+>> With the IRQ changes I see 84 edges.
+> 
+> This still surprises me. With the IRQ changes I would expect the
+> preamble to be 2 edges only. I must be missing something. Can you
+> explain this to me?
+
+I'll try to find out!
+
+> I'll look into this as soon as I've time.
+> 
+>> I have also a question on your driver. Why you increment
+>> DHT11_DATA_BIT_LOW/timeres by one in the ambiguity check?
+>>
+>>         threshold = DHT11_DATA_BIT_HIGH / timeres;
+>>         if (DHT11_DATA_BIT_LOW/timeres + 1 >= threshold)
+>>                 pr_err("dht11: WARNING: decoding ambiguous\n");
+> 
+> This is to take ambiguity of when the bit started relativ to the
+> clock ticks into account. For example with common 32kHz clocks:
+> DHT11_DATA_BIT_LOW / timeres = 0
+> DHT11_DATA_BIT_HIGH / timeres = 2
+> but since the bit might not start at a clock tick the actual t of
+> a low bit can be either 0 or 1 while the actual t of a high bit
+> can be either 2 or 3.
+> 
+> This case is fine.
+> 
+> But if we had a 38kHz clock:
+> DHT11_DATA_BIT_LOW / timeres = 1    t can be 1 or 2
+> DHT11_DATA_BIT_HIGH / timeres = 2   t can be 2 or 3
+> so we have an ambiguity. The ambiguity could be removed by a smarter
+> decoder, that looks at the t of other bits, but I'm not going to do
+> that unless somebody is promising to test it on affected hardware.
+> 
+> Feel free to add some comment about this to the code.
+
+Will do, thanks a lot for the explanation.
+
+I was asking because I see the "dht11: WARNING: decoding ambiguous"
+very often. (with and without my patches)
+
+>> [PATCH 1/4] iio: dht11: Add locking
+>> [PATCH 2/4] iio: dht11: IRQ fixes
+>> [PATCH 3/4] iio: dht11: Logging updates
+>> [PATCH 4/4] iio: dht11: Fix out-of-bounds read
+> 
+> You can add my Acked-by or Reviewed-by to 1/4 and 4/4 if you want to.
+> Maybe Jonathan wants the patches reordered so that fixes come first, but
+> then 4/4 should not cause any problems in practice, so perhaps it doesn't
+> matter.
+> 
+> I really have to understand this preamble length thing on 2/4 and I will
+> reply to 3/4 separately.
+
+Thanks a lot!
+//richard
