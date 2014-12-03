@@ -1,102 +1,71 @@
-Return-Path: <rjw@rjwysocki.net>
-From: "Rafael J. Wysocki" <rjw@rjwysocki.net>
-To: linux-iio@vger.kernel.org
-Cc: Jonathan Cameron <jic23@kernel.org>, Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>, Lars-Peter Clausen <lars@metafoo.de>, Hartmut Knaack <knaack.h@gmx.de>, Linux PM list <linux-pm@vger.kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Subject: [PATCH] iio / PM: Replace CONFIG_PM_RUNTIME with CONFIG_PM
-Date: Wed, 03 Dec 2014 03:06:04 +0100
-Message-ID: <202529361.GBbZ7zGgn8@vostro.rjw.lan>
+Return-Path: <harald@ccbib.org>
+From: Harald Geyer <harald@ccbib.org>
+To: Richard Weinberger <richard@nod.at>
+cc: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
+    pmeerw@pmeerw.net, sanjeev_sharma@mentor.com,
+    linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: iio: dht11 Updates
+In-reply-to: <1417563176-31972-1-git-send-email-richard@nod.at>
+References: <1417563176-31972-1-git-send-email-richard@nod.at>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset="us-ascii"
+Date: Wed, 03 Dec 2014 13:18:15 +0100
+Message-Id: <E1Xw8sp-0001B6-Ul@stardust.g4.wien.funkfeuer.at>
 List-ID: <linux-iio@vger.kernel.org>
 
-From: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Hi Richard,
 
-After commit b2b49ccbdd54 (PM: Kconfig: Set PM_RUNTIME if PM_SLEEP is
-selected) PM_RUNTIME is always set if PM is set, so #ifdef blocks
-depending on CONFIG_PM_RUNTIME may now be changed to depend on
-CONFIG_PM.
+thanks for all the work you put into this!
 
-Replace CONFIG_PM_RUNTIME with CONFIG_PM everywhere under
-drivers/iio/.
+Richard Weinberger writes:
+> Please see my current patches for your driver.
+> As discussed in an earlier mail I'm testing with the DHT22 sensor only.
+> With the IRQ changes I see 84 edges.
 
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
----
+This still surprises me. With the IRQ changes I would expect the
+preamble to be 2 edges only. I must be missing something. Can you
+explain this to me?
 
-Note: This depends on commit b2b49ccbdd54 (PM: Kconfig: Set PM_RUNTIME if
-PM_SLEEP is selected) which is only in linux-next at the moment (via the
-linux-pm tree).
+I'll look into this as soon as I've time.
 
-Please let me know if it is OK to take this one into linux-pm.
+> I have also a question on your driver. Why you increment
+> DHT11_DATA_BIT_LOW/timeres by one in the ambiguity check?
+> 
+>         threshold = DHT11_DATA_BIT_HIGH / timeres;
+>         if (DHT11_DATA_BIT_LOW/timeres + 1 >= threshold)
+>                 pr_err("dht11: WARNING: decoding ambiguous\n");
 
----
- drivers/iio/accel/bmc150-accel.c |    4 ++--
- drivers/iio/accel/kxcjk-1013.c   |    4 ++--
- drivers/iio/gyro/bmg160.c        |    4 ++--
- 3 files changed, 6 insertions(+), 6 deletions(-)
+This is to take ambiguity of when the bit started relativ to the
+clock ticks into account. For example with common 32kHz clocks:
+DHT11_DATA_BIT_LOW / timeres = 0
+DHT11_DATA_BIT_HIGH / timeres = 2
+but since the bit might not start at a clock tick the actual t of
+a low bit can be either 0 or 1 while the actual t of a high bit
+can be either 2 or 3.
 
-Index: linux-pm/drivers/iio/accel/bmc150-accel.c
-===================================================================
---- linux-pm.orig/drivers/iio/accel/bmc150-accel.c
-+++ linux-pm/drivers/iio/accel/bmc150-accel.c
-@@ -510,7 +510,7 @@ static int bmc150_accel_get_bw(struct bm
- 	return -EINVAL;
- }
- 
--#ifdef CONFIG_PM_RUNTIME
-+#ifdef CONFIG_PM
- static int bmc150_accel_get_startup_times(struct bmc150_accel_data *data)
- {
- 	int i;
-@@ -1349,7 +1349,7 @@ static int bmc150_accel_resume(struct de
- }
- #endif
- 
--#ifdef CONFIG_PM_RUNTIME
-+#ifdef CONFIG_PM
- static int bmc150_accel_runtime_suspend(struct device *dev)
- {
- 	struct iio_dev *indio_dev = i2c_get_clientdata(to_i2c_client(dev));
-Index: linux-pm/drivers/iio/accel/kxcjk-1013.c
-===================================================================
---- linux-pm.orig/drivers/iio/accel/kxcjk-1013.c
-+++ linux-pm/drivers/iio/accel/kxcjk-1013.c
-@@ -358,7 +358,7 @@ static int kxcjk1013_chip_init(struct kx
- 	return 0;
- }
- 
--#ifdef CONFIG_PM_RUNTIME
-+#ifdef CONFIG_PM
- static int kxcjk1013_get_startup_times(struct kxcjk1013_data *data)
- {
- 	int i;
-@@ -1357,7 +1357,7 @@ static int kxcjk1013_resume(struct devic
- }
- #endif
- 
--#ifdef CONFIG_PM_RUNTIME
-+#ifdef CONFIG_PM
- static int kxcjk1013_runtime_suspend(struct device *dev)
- {
- 	struct iio_dev *indio_dev = i2c_get_clientdata(to_i2c_client(dev));
-Index: linux-pm/drivers/iio/gyro/bmg160.c
-===================================================================
---- linux-pm.orig/drivers/iio/gyro/bmg160.c
-+++ linux-pm/drivers/iio/gyro/bmg160.c
-@@ -237,7 +237,7 @@ static int bmg160_chip_init(struct bmg16
- 
- static int bmg160_set_power_state(struct bmg160_data *data, bool on)
- {
--#ifdef CONFIG_PM_RUNTIME
-+#ifdef CONFIG_PM
- 	int ret;
- 
- 	if (on)
-@@ -1164,7 +1164,7 @@ static int bmg160_resume(struct device *
- }
- #endif
- 
--#ifdef CONFIG_PM_RUNTIME
-+#ifdef CONFIG_PM
- static int bmg160_runtime_suspend(struct device *dev)
- {
- 	struct iio_dev *indio_dev = i2c_get_clientdata(to_i2c_client(dev));
+This case is fine.
+
+But if we had a 38kHz clock:
+DHT11_DATA_BIT_LOW / timeres = 1    t can be 1 or 2
+DHT11_DATA_BIT_HIGH / timeres = 2   t can be 2 or 3
+so we have an ambiguity. The ambiguity could be removed by a smarter
+decoder, that looks at the t of other bits, but I'm not going to do
+that unless somebody is promising to test it on affected hardware.
+
+Feel free to add some comment about this to the code.
+
+> [PATCH 1/4] iio: dht11: Add locking
+> [PATCH 2/4] iio: dht11: IRQ fixes
+> [PATCH 3/4] iio: dht11: Logging updates
+> [PATCH 4/4] iio: dht11: Fix out-of-bounds read
+
+You can add my Acked-by or Reviewed-by to 1/4 and 4/4 if you want to.
+Maybe Jonathan wants the patches reordered so that fixes come first, but
+then 4/4 should not cause any problems in practice, so perhaps it doesn't
+matter.
+
+I really have to understand this preamble length thing on 2/4 and I will
+reply to 3/4 separately.
+
+Thanks,
+Harald
