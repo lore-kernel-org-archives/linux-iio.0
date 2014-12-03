@@ -1,76 +1,71 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from h1.radempa.de ([176.9.142.194]:49627 "EHLO mail.cosmopool.net"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S932909AbaLBM7D (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Tue, 2 Dec 2014 07:59:03 -0500
-From: Harald Geyer <harald@ccbib.org>
-To: Richard Weinberger <richard@nod.at>
-cc: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
-	pmeerw@pmeerw.net, sanjeev_sharma@mentor.com,
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 2/2] iio: dht11: IRQ fixes
-In-reply-to: <547D9A6F.9010801@nod.at>
-References: <1417465651-16036-1-git-send-email-richard@nod.at> <1417465651-16036-2-git-send-email-richard@nod.at> <E1XvkYl-00013g-VO@stardust.g4.wien.funkfeuer.at> <547D9A6F.9010801@nod.at>
+Return-Path: <richard@nod.at>
+Message-ID: <547F1E46.9050607@nod.at>
+Date: Wed, 03 Dec 2014 15:29:26 +0100
+From: Richard Weinberger <richard@nod.at>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Date: Tue, 02 Dec 2014 13:58:53 +0100
-Message-Id: <E1Xvn2b-0001CH-PM@stardust.g4.wien.funkfeuer.at>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+To: Harald Geyer <harald@ccbib.org>
+CC: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
+ pmeerw@pmeerw.net, sanjeev_sharma@mentor.com, linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org
+Subject: Re: iio: dht11 Updates
+References: <1417563176-31972-1-git-send-email-richard@nod.at> <E1Xw8sp-0001B6-Ul@stardust.g4.wien.funkfeuer.at> <547F0CFE.4010107@nod.at> <E1XwAbX-0001Ht-Jg@stardust.g4.wien.funkfeuer.at>
+In-Reply-To: <E1XwAbX-0001Ht-Jg@stardust.g4.wien.funkfeuer.at>
+Content-Type: text/plain; charset=windows-1252
+List-ID: <linux-iio@vger.kernel.org>
 
-Richard Weinberger writes:
-> Harald,
+Am 03.12.2014 um 15:08 schrieb Harald Geyer:
+> Richard Weinberger writes:
+>> Harald,
+>>
+>> Am 03.12.2014 um 13:18 schrieb Harald Geyer:
+>>> Hi Richard,
+>>>
+>>> thanks for all the work you put into this!
+>>>
+>>> Richard Weinberger writes:
+>>>> I have also a question on your driver. Why you increment
+>>>> DHT11_DATA_BIT_LOW/timeres by one in the ambiguity check?
+>>>>
+>>>>         threshold = DHT11_DATA_BIT_HIGH / timeres;
+>>>>         if (DHT11_DATA_BIT_LOW/timeres + 1 >= threshold)
+>>>>                 pr_err("dht11: WARNING: decoding ambiguous\n");
+>>>
+>>> This is to take ambiguity of when the bit started relativ to the
+>>> clock ticks into account. For example with common 32kHz clocks:
+>>> DHT11_DATA_BIT_LOW / timeres = 0
+>>> DHT11_DATA_BIT_HIGH / timeres = 2
+>>> but since the bit might not start at a clock tick the actual t of
+>>> a low bit can be either 0 or 1 while the actual t of a high bit
+>>> can be either 2 or 3.
+>>>
+>>> This case is fine.
+>>>
+>>> But if we had a 38kHz clock:
+>>> DHT11_DATA_BIT_LOW / timeres = 1    t can be 1 or 2
+>>> DHT11_DATA_BIT_HIGH / timeres = 2   t can be 2 or 3
+>>> so we have an ambiguity. The ambiguity could be removed by a smarter
+>>> decoder, that looks at the t of other bits, but I'm not going to do
+>>> that unless somebody is promising to test it on affected hardware.
+>>>
+>>> Feel free to add some comment about this to the code.
+>>
+>> Will do, thanks a lot for the explanation.
+>>
+>> I was asking because I see the "dht11: WARNING: decoding ambiguous"
+>> very often. (with and without my patches)
 > 
-> Am 02.12.2014 um 11:19 schrieb Harald Geyer:
-> > Hi Richard,
-> > 
-> > thanks for the patch.
-> > 
-> > I think (haven't tried yet) that your patch changes the number of
-> > edges recorded per transmission. So probably the decoding function
-> > needs to be adapted too...
-> 
-> Can you explain your thought?
-> I'll happily dig into that.
+> Yes, your patches shouldn't have any effect on this.
+> "very often" in the sense of "not always"? This would be very surprising,
+> because this would involve variable length clock ticks, i think.
 
-Part of the reason to have the IRQ enabled during output was to
-get consistent timestamps (all timestamps would be taken via the
-same codepath). While this isn't essential, the current code expects
-that the start command we generate is in the list of edges. I think
-your changes will cause that start command not to be in the list of
-edges.
+It happens around 33% of all reads.
+BTW: I'm using the DHT22's on my Beaglebone Black.
+So the board should be "sane".
+But I'll test them on another board too, just to be sure...
 
-Note: There have been issues with some sensors (DHT11s?) not to
-send proper start bits, so the driver tries to be liberal about
-what it expects and you probably haven't seen any decoding errors
-if your sample sensor works to specification. (Now that I come to
-think about it: Undefined behaviour of IRQs on output lines could
-have been involved too...)
+> I guess we should include timeres into the warning message.
 
-This is a bit of a mess and I'd rather clean this up than add more
-to it. Maybe I'm overly fussy about this, but it has bitten me in
-the past.
-
-Since it seems you have some interesst in working on these parts,
-let me mention an unrelated issue: The DHT22 stops sending data
-after a random time (think of days here) which AFAIK only can be
-worked around by power-cycling the sensor. I mean to add something
-for this to the driver but couln't make up my mind about what the
-proper ABI for this would be, so right now I'm using some userspace
-hack for this. (The issue was already discussed on the linux-iio
-mailing list a few month ago, if you want to look into this.
-Anyway: You have been warned ... ;)  
- 
-> > I won't be able to ACK this before testing on real HW. Of course
-> > confirmation that your changes work reliably on both DHT11 and DHT22
-> > will do as well. The debuging code present in the initial submission
-> > of the driver might be helpful to anybody trying to verify the
-> > timing.
-> 
-> I have only DHT22 sensors. Of course I've tested the driver with these.
-
-Ok, so I'll test DHT11 first. It would still be nice to confirm how
-many edges are recorded from DHT22 though.
+I'll add some diagnose printk()s to find out.
 
 Thanks,
-Harald
+//richard
