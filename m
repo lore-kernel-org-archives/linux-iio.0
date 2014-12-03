@@ -1,56 +1,119 @@
-Return-Path: <richard@nod.at>
-Message-ID: <547DFDD8.1010404@nod.at>
-Date: Tue, 02 Dec 2014 18:58:48 +0100
-From: Richard Weinberger <richard@nod.at>
-MIME-Version: 1.0
-To: Harald Geyer <harald@ccbib.org>
-CC: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
- pmeerw@pmeerw.net, sanjeev_sharma@mentor.com, linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/2] iio: dht11: Add locking
-References: <1417465651-16036-1-git-send-email-richard@nod.at> <E1XvkMu-000137-KP@stardust.g4.wien.funkfeuer.at> <547D99DE.6030309@nod.at> <E1XvmLC-0001BT-F3@stardust.g4.wien.funkfeuer.at>
-In-Reply-To: <E1XvmLC-0001BT-F3@stardust.g4.wien.funkfeuer.at>
-Content-Type: text/plain; charset=windows-1252
+Return-Path: <srinivas.pandruvada@linux.intel.com>
+Message-ID: <1417623491.2043.320.camel@spandruv-desktop.jf.intel.com>
+Subject: Re: [PATCH] iio / PM: Replace CONFIG_PM_RUNTIME with CONFIG_PM
+From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+To: "Rafael J. Wysocki" <rjw@rjwysocki.net>
+Cc: linux-iio@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>,
+	Lars-Peter Clausen
+	 <lars@metafoo.de>, Hartmut Knaack <knaack.h@gmx.de>, Linux PM list
+	 <linux-pm@vger.kernel.org>, Linux Kernel Mailing List
+	 <linux-kernel@vger.kernel.org>
+Date: Wed, 03 Dec 2014 08:18:11 -0800
+In-Reply-To: <202529361.GBbZ7zGgn8@vostro.rjw.lan>
+References: <202529361.GBbZ7zGgn8@vostro.rjw.lan>
+Content-Type: text/plain; charset="UTF-8"
+Mime-Version: 1.0
 List-ID: <linux-iio@vger.kernel.org>
 
-Harald,
-
-Am 02.12.2014 um 13:14 schrieb Harald Geyer:
->>> Move the locking out of the if statement.
->>
->> Care to explain why?
+On Wed, 2014-12-03 at 03:06 +0100, Rafael J. Wysocki wrote: 
+> From: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 > 
-> The purpose of the if statement is to limit the number of data
-> transmissions if values are requested multiple times in short
-> succession. (Ie an application reading both sensor values.)
+> After commit b2b49ccbdd54 (PM: Kconfig: Set PM_RUNTIME if PM_SLEEP is
+> selected) PM_RUNTIME is always set if PM is set, so #ifdef blocks
+> depending on CONFIG_PM_RUNTIME may now be changed to depend on
+> CONFIG_PM.
 > 
-> If we have concurrent reads, then the later one will wait in the
-> mutex_lock() while the former will update the timestamp. If the
-> later one resumes, it won't check the timestamp and cause an
-> unnecessary data transmission.
-
-Okay, makes sense.
-I'll update my patch!
-
->  
->> But I found another issue in my patch.
->> The "dht11->num_edges = -1;" before "return ret" needs to go into the locked area.
->> Will send an updated version soon.
->>
->>> BTW, it seems that there is already locking around read_raw() in the
->>> in-kernel consumer interface but not in the sysfs interface. Is there
->>> any reason for this difference?
->>
->> Dunno. :-)
+> Replace CONFIG_PM_RUNTIME with CONFIG_PM everywhere under
+> drivers/iio/.
 > 
-> If locking is actually necessary, then this would be a bug in the
-> current version of the driver, which wasn't caught by at least three
-> people doing reviews, so maybe let's find out if it really is necessary
-> or if I'm missing something ...
+> Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Acked-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
 
-Maybe IIO folks can tell us more.
-What I see in other IIO drivers is that they all have locking in the read functions
-and so far I see no global serialization in IIO itself.
+> ---
+> 
+> Note: This depends on commit b2b49ccbdd54 (PM: Kconfig: Set PM_RUNTIME if
+> PM_SLEEP is selected) which is only in linux-next at the moment (via the
+> linux-pm tree).
+> 
+> Please let me know if it is OK to take this one into linux-pm.
+
+There are some other drivers using this define, we need to change all
+those.
 
 Thanks,
-//richard
+Srinivas
+
+> 
+> ---
+>  drivers/iio/accel/bmc150-accel.c |    4 ++--
+>  drivers/iio/accel/kxcjk-1013.c   |    4 ++--
+>  drivers/iio/gyro/bmg160.c        |    4 ++--
+>  3 files changed, 6 insertions(+), 6 deletions(-)
+> 
+> Index: linux-pm/drivers/iio/accel/bmc150-accel.c
+> ===================================================================
+> --- linux-pm.orig/drivers/iio/accel/bmc150-accel.c
+> +++ linux-pm/drivers/iio/accel/bmc150-accel.c
+> @@ -510,7 +510,7 @@ static int bmc150_accel_get_bw(struct bm
+>  	return -EINVAL;
+>  }
+>  
+> -#ifdef CONFIG_PM_RUNTIME
+> +#ifdef CONFIG_PM
+>  static int bmc150_accel_get_startup_times(struct bmc150_accel_data *data)
+>  {
+>  	int i;
+> @@ -1349,7 +1349,7 @@ static int bmc150_accel_resume(struct de
+>  }
+>  #endif
+>  
+> -#ifdef CONFIG_PM_RUNTIME
+> +#ifdef CONFIG_PM
+>  static int bmc150_accel_runtime_suspend(struct device *dev)
+>  {
+>  	struct iio_dev *indio_dev = i2c_get_clientdata(to_i2c_client(dev));
+> Index: linux-pm/drivers/iio/accel/kxcjk-1013.c
+> ===================================================================
+> --- linux-pm.orig/drivers/iio/accel/kxcjk-1013.c
+> +++ linux-pm/drivers/iio/accel/kxcjk-1013.c
+> @@ -358,7 +358,7 @@ static int kxcjk1013_chip_init(struct kx
+>  	return 0;
+>  }
+>  
+> -#ifdef CONFIG_PM_RUNTIME
+> +#ifdef CONFIG_PM
+>  static int kxcjk1013_get_startup_times(struct kxcjk1013_data *data)
+>  {
+>  	int i;
+> @@ -1357,7 +1357,7 @@ static int kxcjk1013_resume(struct devic
+>  }
+>  #endif
+>  
+> -#ifdef CONFIG_PM_RUNTIME
+> +#ifdef CONFIG_PM
+>  static int kxcjk1013_runtime_suspend(struct device *dev)
+>  {
+>  	struct iio_dev *indio_dev = i2c_get_clientdata(to_i2c_client(dev));
+> Index: linux-pm/drivers/iio/gyro/bmg160.c
+> ===================================================================
+> --- linux-pm.orig/drivers/iio/gyro/bmg160.c
+> +++ linux-pm/drivers/iio/gyro/bmg160.c
+> @@ -237,7 +237,7 @@ static int bmg160_chip_init(struct bmg16
+>  
+>  static int bmg160_set_power_state(struct bmg160_data *data, bool on)
+>  {
+> -#ifdef CONFIG_PM_RUNTIME
+> +#ifdef CONFIG_PM
+>  	int ret;
+>  
+>  	if (on)
+> @@ -1164,7 +1164,7 @@ static int bmg160_resume(struct device *
+>  }
+>  #endif
+>  
+> -#ifdef CONFIG_PM_RUNTIME
+> +#ifdef CONFIG_PM
+>  static int bmg160_runtime_suspend(struct device *dev)
+>  {
+>  	struct iio_dev *indio_dev = i2c_get_clientdata(to_i2c_client(dev));
+> 
