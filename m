@@ -1,71 +1,65 @@
-Return-Path: <richard@nod.at>
-Message-ID: <547F1E46.9050607@nod.at>
-Date: Wed, 03 Dec 2014 15:29:26 +0100
-From: Richard Weinberger <richard@nod.at>
-MIME-Version: 1.0
-To: Harald Geyer <harald@ccbib.org>
-CC: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
- pmeerw@pmeerw.net, sanjeev_sharma@mentor.com, linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org
+Return-Path: <harald@ccbib.org>
+From: Harald Geyer <harald@ccbib.org>
+To: Richard Weinberger <richard@nod.at>
+cc: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
+    pmeerw@pmeerw.net, sanjeev_sharma@mentor.com,
+    linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
 Subject: Re: iio: dht11 Updates
-References: <1417563176-31972-1-git-send-email-richard@nod.at> <E1Xw8sp-0001B6-Ul@stardust.g4.wien.funkfeuer.at> <547F0CFE.4010107@nod.at> <E1XwAbX-0001Ht-Jg@stardust.g4.wien.funkfeuer.at>
-In-Reply-To: <E1XwAbX-0001Ht-Jg@stardust.g4.wien.funkfeuer.at>
-Content-Type: text/plain; charset=windows-1252
+In-reply-to: <547F0CFE.4010107@nod.at>
+References: <1417563176-31972-1-git-send-email-richard@nod.at> <E1Xw8sp-0001B6-Ul@stardust.g4.wien.funkfeuer.at> <547F0CFE.4010107@nod.at>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Date: Wed, 03 Dec 2014 15:08:31 +0100
+Message-Id: <E1XwAbX-0001Ht-Jg@stardust.g4.wien.funkfeuer.at>
 List-ID: <linux-iio@vger.kernel.org>
 
-Am 03.12.2014 um 15:08 schrieb Harald Geyer:
-> Richard Weinberger writes:
->> Harald,
->>
->> Am 03.12.2014 um 13:18 schrieb Harald Geyer:
->>> Hi Richard,
->>>
->>> thanks for all the work you put into this!
->>>
->>> Richard Weinberger writes:
->>>> I have also a question on your driver. Why you increment
->>>> DHT11_DATA_BIT_LOW/timeres by one in the ambiguity check?
->>>>
->>>>         threshold = DHT11_DATA_BIT_HIGH / timeres;
->>>>         if (DHT11_DATA_BIT_LOW/timeres + 1 >= threshold)
->>>>                 pr_err("dht11: WARNING: decoding ambiguous\n");
->>>
->>> This is to take ambiguity of when the bit started relativ to the
->>> clock ticks into account. For example with common 32kHz clocks:
->>> DHT11_DATA_BIT_LOW / timeres = 0
->>> DHT11_DATA_BIT_HIGH / timeres = 2
->>> but since the bit might not start at a clock tick the actual t of
->>> a low bit can be either 0 or 1 while the actual t of a high bit
->>> can be either 2 or 3.
->>>
->>> This case is fine.
->>>
->>> But if we had a 38kHz clock:
->>> DHT11_DATA_BIT_LOW / timeres = 1    t can be 1 or 2
->>> DHT11_DATA_BIT_HIGH / timeres = 2   t can be 2 or 3
->>> so we have an ambiguity. The ambiguity could be removed by a smarter
->>> decoder, that looks at the t of other bits, but I'm not going to do
->>> that unless somebody is promising to test it on affected hardware.
->>>
->>> Feel free to add some comment about this to the code.
->>
->> Will do, thanks a lot for the explanation.
->>
->> I was asking because I see the "dht11: WARNING: decoding ambiguous"
->> very often. (with and without my patches)
+Richard Weinberger writes:
+> Harald,
 > 
-> Yes, your patches shouldn't have any effect on this.
-> "very often" in the sense of "not always"? This would be very surprising,
-> because this would involve variable length clock ticks, i think.
+> Am 03.12.2014 um 13:18 schrieb Harald Geyer:
+> > Hi Richard,
+> > 
+> > thanks for all the work you put into this!
+> > 
+> > Richard Weinberger writes:
+> >> I have also a question on your driver. Why you increment
+> >> DHT11_DATA_BIT_LOW/timeres by one in the ambiguity check?
+> >>
+> >>         threshold = DHT11_DATA_BIT_HIGH / timeres;
+> >>         if (DHT11_DATA_BIT_LOW/timeres + 1 >= threshold)
+> >>                 pr_err("dht11: WARNING: decoding ambiguous\n");
+> > 
+> > This is to take ambiguity of when the bit started relativ to the
+> > clock ticks into account. For example with common 32kHz clocks:
+> > DHT11_DATA_BIT_LOW / timeres = 0
+> > DHT11_DATA_BIT_HIGH / timeres = 2
+> > but since the bit might not start at a clock tick the actual t of
+> > a low bit can be either 0 or 1 while the actual t of a high bit
+> > can be either 2 or 3.
+> > 
+> > This case is fine.
+> > 
+> > But if we had a 38kHz clock:
+> > DHT11_DATA_BIT_LOW / timeres = 1    t can be 1 or 2
+> > DHT11_DATA_BIT_HIGH / timeres = 2   t can be 2 or 3
+> > so we have an ambiguity. The ambiguity could be removed by a smarter
+> > decoder, that looks at the t of other bits, but I'm not going to do
+> > that unless somebody is promising to test it on affected hardware.
+> > 
+> > Feel free to add some comment about this to the code.
+> 
+> Will do, thanks a lot for the explanation.
+> 
+> I was asking because I see the "dht11: WARNING: decoding ambiguous"
+> very often. (with and without my patches)
 
-It happens around 33% of all reads.
-BTW: I'm using the DHT22's on my Beaglebone Black.
-So the board should be "sane".
-But I'll test them on another board too, just to be sure...
+Yes, your patches shouldn't have any effect on this.
+"very often" in the sense of "not always"? This would be very surprising,
+because this would involve variable length clock ticks, i think.
 
-> I guess we should include timeres into the warning message.
+I guess we should include timeres into the warning message.
 
-I'll add some diagnose printk()s to find out.
+Also I guess now is the time to think about a smarter decoder.
 
-Thanks,
-//richard
+Thanks a lot for your effort.
+Harald
