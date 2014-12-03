@@ -1,118 +1,132 @@
-Return-Path: <richard@nod.at>
-Message-ID: <547F0BE5.2050808@nod.at>
-Date: Wed, 03 Dec 2014 14:11:01 +0100
-From: Richard Weinberger <richard@nod.at>
-MIME-Version: 1.0
-To: Harald Geyer <harald@ccbib.org>
-CC: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
- pmeerw@pmeerw.net, sanjeev_sharma@mentor.com, linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 3/4] iio: dht11: Logging updates
-References: <1417563176-31972-1-git-send-email-richard@nod.at> <1417563176-31972-4-git-send-email-richard@nod.at> <E1Xw9W8-0001Db-9a@stardust.g4.wien.funkfeuer.at>
-In-Reply-To: <E1Xw9W8-0001Db-9a@stardust.g4.wien.funkfeuer.at>
-Content-Type: text/plain; charset=windows-1252
+Return-Path: <daniel.baluta@intel.com>
+From: Daniel Baluta <daniel.baluta@intel.com>
+To: jic23@kernel.org,
+	pmeerw@pmeerw.net,
+	srinivas.pandruvada@linux.intel.com,
+	knaack.h@gmx.de
+Cc: linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	daniel.baluta@intel.com
+Subject: [PATCH v4 2/6] iio: imu: kmx61: Add acpi support
+Date: Wed,  3 Dec 2014 15:31:49 +0200
+Message-Id: <1417613513-28285-3-git-send-email-daniel.baluta@intel.com>
+In-Reply-To: <1417613513-28285-1-git-send-email-daniel.baluta@intel.com>
+References: <1417613513-28285-1-git-send-email-daniel.baluta@intel.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-Am 03.12.2014 um 13:58 schrieb Harald Geyer:
-> Richard Weinberger writes:
->> Currently the driver uses pr_* and dev_* functions.
->> Change all logging functions to dev_* style to be consistent
->> and have the correct device prefix in all messages.
-> 
-> Yes, actually this was on purpose:
-> The dev_ messages are really about something wrong with the device.
-> Ie if something goes wrong with one device but could perfectly work
-> with some other device.
-> The pr_ messages OTOH are about something wrong with clock resolution,
-> etc that would affect any DHT11 sensor on the system. Ideally we would
-> notice these things during probe() and just return with an error there.
-> Right now we aren't as clever as that, so we just log an error message
-> about the driver, when actually we are reading the device.
-> 
-> That said, I don't have strong feelings about this. If you want to
-> change this, I won't object. However if you really want to fix this,
-> then the proper thing would be to check for this conditions in
-> probe().
+Signed-off-by: Daniel Baluta <daniel.baluta@intel.com>
+---
+ drivers/iio/imu/kmx61.c | 59 +++++++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 59 insertions(+)
 
-Currently we get log messages of style:
-"iio iio:deviceX: foo bar"
-and:
-"dht11 <name in DT>: foo bar"
-
-I really favorite "dht11 <name in DT".
-In my device tree every senor has a sane name and log messages look like:
-"dht11 toiletten sensor: invalid checksum"
-
-
->> This change set also adds new messages to diagnose issues.
-> 
-> Comment below.
-> 
->> Signed-off-by: Richard Weinberger <richard@nod.at>
->> ---
->>  drivers/iio/humidity/dht11.c | 16 ++++++++++------
->>  1 file changed, 10 insertions(+), 6 deletions(-)
->>
->> diff --git a/drivers/iio/humidity/dht11.c b/drivers/iio/humidity/dht11.c
->> index 0023699..fbcd7cb 100644
->> --- a/drivers/iio/humidity/dht11.c
->> +++ b/drivers/iio/humidity/dht11.c
->> @@ -96,20 +96,22 @@ static int dht11_decode(struct dht11 *dht11, int offset)
->>  			timeres = t;
->>  	}
->>  	if (2*timeres > DHT11_DATA_BIT_HIGH) {
->> -		pr_err("dht11: timeresolution %d too bad for decoding\n",
->> +		dev_err(dht11->dev, "timeresolution %d too bad for decoding\n",
->>  			timeres);
->>  		return -EIO;
->>  	}
->>  	threshold = DHT11_DATA_BIT_HIGH / timeres;
->>  	if (DHT11_DATA_BIT_LOW/timeres + 1 >= threshold)
->> -		pr_err("dht11: WARNING: decoding ambiguous\n");
->> +		dev_err(dht11->dev, "decoding ambiguous\n");
->>  
->>  	/* scale down with timeres and check validity */
->>  	for (i = 0; i < DHT11_BITS_PER_READ; ++i) {
->>  		t = dht11->edges[offset + 2*i + 2].ts -
->>  			dht11->edges[offset + 2*i + 1].ts;
->> -		if (!dht11->edges[offset + 2*i + 1].value)
->> -			return -EIO;  /* lost synchronisation */
->> +		if (!dht11->edges[offset + 2*i + 1].value) {
->> +			dev_err(dht11->dev, "lost synchronisation\n");
->> +			return -EIO;
->> +		}
-> 
-> Are you sure this warrants a log message? I don't think this provides
-> much information. The userspace application should just try reading
-> the sensor again.
-> 
-> We could do someting smart and try to recover from such errors, but
-> ultimately userspace will need to deal with failed sensor communication
-> anyway, so I don't see the point.
-
-The sensors are rather flaky and if they go nuts the user/developer maybe wants
-to know why.
->From a plain EIO she has no chance to find out. He'll have to add printk()s by hand
-to find out.
-With a log message one can start digging into the issue.
-
->>  		timing[i] = t / timeres;
->>  	}
->>  
->> @@ -119,8 +121,10 @@ static int dht11_decode(struct dht11 *dht11, int offset)
->>  	temp_dec = dht11_decode_byte(&timing[24], threshold);
->>  	checksum = dht11_decode_byte(&timing[32], threshold);
->>  
->> -	if (((hum_int + hum_dec + temp_int + temp_dec) & 0xff) != checksum)
->> +	if (((hum_int + hum_dec + temp_int + temp_dec) & 0xff) != checksum) {
->> +		dev_err(dht11->dev, "invalid checksum\n");
->>  		return -EIO;
->> +	}
-> 
-> Same thing here.
-
-Same here.
-I had some wiring issues with my sensors and wanted to know from where the EIO comes.
-
-Thanks,
-//richard
+diff --git a/drivers/iio/imu/kmx61.c b/drivers/iio/imu/kmx61.c
+index 5b44371..893f7c8 100644
+--- a/drivers/iio/imu/kmx61.c
++++ b/drivers/iio/imu/kmx61.c
+@@ -13,10 +13,13 @@
+ 
+ #include <linux/module.h>
+ #include <linux/i2c.h>
++#include <linux/acpi.h>
++#include <linux/gpio/consumer.h>
+ #include <linux/iio/iio.h>
+ #include <linux/iio/sysfs.h>
+ 
+ #define KMX61_DRV_NAME "kmx61"
++#define KMX61_GPIO_NAME "kmx61_int"
+ 
+ #define KMX61_REG_WHO_AM_I	0x00
+ 
+@@ -573,6 +576,44 @@ static const struct iio_info kmx61_mag_info = {
+ 	.attrs			= &kmx61_mag_attribute_group,
+ };
+ 
++static const char *kmx61_match_acpi_device(struct device *dev)
++{
++	const struct acpi_device_id *id;
++
++	id = acpi_match_device(dev->driver->acpi_match_table, dev);
++	if (!id)
++		return NULL;
++	return dev_name(dev);
++}
++
++static int kmx61_gpio_probe(struct i2c_client *client, struct kmx61_data *data)
++{
++	struct device *dev;
++	struct gpio_desc *gpio;
++	int ret;
++
++	if (!client)
++		return -EINVAL;
++
++	dev = &client->dev;
++
++	/* data ready gpio interrupt pin */
++	gpio = devm_gpiod_get_index(dev, KMX61_GPIO_NAME, 0);
++	if (IS_ERR(gpio)) {
++		dev_err(dev, "acpi gpio get index failed\n");
++		return PTR_ERR(gpio);
++	}
++
++	ret = gpiod_direction_input(gpio);
++	if (ret)
++		return ret;
++
++	ret = gpiod_to_irq(gpio);
++
++	dev_dbg(dev, "GPIO resource, no:%d irq:%d\n", desc_to_gpio(gpio), ret);
++	return ret;
++}
++
+ static struct iio_dev *kmx61_indiodev_setup(struct kmx61_data *data,
+ 					    const struct iio_info *info,
+ 					    const struct iio_chan_spec *chan,
+@@ -613,6 +654,13 @@ static int kmx61_probe(struct i2c_client *client,
+ 
+ 	mutex_init(&data->lock);
+ 
++	if (id)
++		name = id->name;
++	else if (ACPI_HANDLE(&client->dev))
++		name = kmx61_match_acpi_device(&client->dev);
++	else
++		return -ENODEV;
++
+ 	data->acc_indio_dev =
+ 		kmx61_indiodev_setup(data, &kmx61_acc_info,
+ 				     kmx61_acc_channels,
+@@ -633,6 +681,9 @@ static int kmx61_probe(struct i2c_client *client,
+ 	if (ret < 0)
+ 		return ret;
+ 
++	if (client->irq < 0)
++		client->irq = kmx61_gpio_probe(client, data);
++
+ 	ret = iio_device_register(data->acc_indio_dev);
+ 	if (ret < 0) {
+ 		dev_err(&client->dev, "Failed to register acc iio device\n");
+@@ -668,6 +719,13 @@ static int kmx61_remove(struct i2c_client *client)
+ 	return 0;
+ }
+ 
++static const struct acpi_device_id kmx61_acpi_match[] = {
++	{"KMX61021", 0},
++	{}
++};
++
++MODULE_DEVICE_TABLE(acpi, kmx61_acpi_match);
++
+ static const struct i2c_device_id kmx61_id[] = {
+ 	{"kmx611021", 0},
+ 	{}
+@@ -678,6 +736,7 @@ MODULE_DEVICE_TABLE(i2c, kmx61_id);
+ static struct i2c_driver kmx61_driver = {
+ 	.driver = {
+ 		.name = KMX61_DRV_NAME,
++		.acpi_match_table = ACPI_PTR(kmx61_acpi_match),
+ 	},
+ 	.probe		= kmx61_probe,
+ 	.remove		= kmx61_remove,
+-- 
+1.9.1
