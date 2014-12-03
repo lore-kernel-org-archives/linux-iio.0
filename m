@@ -4,62 +4,162 @@ To: Richard Weinberger <richard@nod.at>
 cc: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
     pmeerw@pmeerw.net, sanjeev_sharma@mentor.com,
     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: iio: dht11 Updates
-In-reply-to: <547F0CFE.4010107@nod.at>
-References: <1417563176-31972-1-git-send-email-richard@nod.at> <E1Xw8sp-0001B6-Ul@stardust.g4.wien.funkfeuer.at> <547F0CFE.4010107@nod.at>
+Subject: Re: [PATCH 3/4] iio: dht11: Logging updates
+In-reply-to: <547F0BE5.2050808@nod.at>
+References: <1417563176-31972-1-git-send-email-richard@nod.at> <1417563176-31972-4-git-send-email-richard@nod.at> <E1Xw9W8-0001Db-9a@stardust.g4.wien.funkfeuer.at> <547F0BE5.2050808@nod.at>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
-Date: Wed, 03 Dec 2014 15:08:31 +0100
-Message-Id: <E1XwAbX-0001Ht-Jg@stardust.g4.wien.funkfeuer.at>
+Date: Wed, 03 Dec 2014 14:56:59 +0100
+Message-Id: <E1XwAQO-0001HP-9x@stardust.g4.wien.funkfeuer.at>
 List-ID: <linux-iio@vger.kernel.org>
 
 Richard Weinberger writes:
-> Harald,
-> 
-> Am 03.12.2014 um 13:18 schrieb Harald Geyer:
-> > Hi Richard,
-> > 
-> > thanks for all the work you put into this!
-> > 
+> Am 03.12.2014 um 13:58 schrieb Harald Geyer:
 > > Richard Weinberger writes:
-> >> I have also a question on your driver. Why you increment
-> >> DHT11_DATA_BIT_LOW/timeres by one in the ambiguity check?
+> >> Currently the driver uses pr_* and dev_* functions.
+> >> Change all logging functions to dev_* style to be consistent
+> >> and have the correct device prefix in all messages.
+> > 
+> > Yes, actually this was on purpose:
+> > The dev_ messages are really about something wrong with the device.
+> > Ie if something goes wrong with one device but could perfectly work
+> > with some other device.
+> > The pr_ messages OTOH are about something wrong with clock resolution,
+> > etc that would affect any DHT11 sensor on the system. Ideally we would
+> > notice these things during probe() and just return with an error there.
+> > Right now we aren't as clever as that, so we just log an error message
+> > about the driver, when actually we are reading the device.
+> > 
+> > That said, I don't have strong feelings about this. If you want to
+> > change this, I won't object. However if you really want to fix this,
+> > then the proper thing would be to check for this conditions in
+> > probe().
+> 
+> Currently we get log messages of style:
+> "iio iio:deviceX: foo bar"
+> and:
+> "dht11 <name in DT>: foo bar"
+> 
+> I really favorite "dht11 <name in DT".
+> In my device tree every senor has a sane name and log messages look like:
+> "dht11 toiletten sensor: invalid checksum"
+
+I think I ACKed the one with "iio iio:deviceX: foo bar"? 
+ 
+> >> This change set also adds new messages to diagnose issues.
+> > 
+> > Comment below.
+> > 
+> >> Signed-off-by: Richard Weinberger <richard@nod.at>
+> >> ---
+> >>  drivers/iio/humidity/dht11.c | 16 ++++++++++------
+> >>  1 file changed, 10 insertions(+), 6 deletions(-)
 > >>
-> >>         threshold = DHT11_DATA_BIT_HIGH / timeres;
-> >>         if (DHT11_DATA_BIT_LOW/timeres + 1 >= threshold)
-> >>                 pr_err("dht11: WARNING: decoding ambiguous\n");
+> >> diff --git a/drivers/iio/humidity/dht11.c b/drivers/iio/humidity/dht11.c
+> >> index 0023699..fbcd7cb 100644
+> >> --- a/drivers/iio/humidity/dht11.c
+> >> +++ b/drivers/iio/humidity/dht11.c
+> >> @@ -96,20 +96,22 @@ static int dht11_decode(struct dht11 *dht11, int offset)
+> >>  			timeres = t;
+> >>  	}
+> >>  	if (2*timeres > DHT11_DATA_BIT_HIGH) {
+> >> -		pr_err("dht11: timeresolution %d too bad for decoding\n",
+> >> +		dev_err(dht11->dev, "timeresolution %d too bad for decoding\n",
+> >>  			timeres);
+> >>  		return -EIO;
+> >>  	}
+> >>  	threshold = DHT11_DATA_BIT_HIGH / timeres;
+> >>  	if (DHT11_DATA_BIT_LOW/timeres + 1 >= threshold)
+> >> -		pr_err("dht11: WARNING: decoding ambiguous\n");
+> >> +		dev_err(dht11->dev, "decoding ambiguous\n");
+> >>  
+> >>  	/* scale down with timeres and check validity */
+> >>  	for (i = 0; i < DHT11_BITS_PER_READ; ++i) {
+> >>  		t = dht11->edges[offset + 2*i + 2].ts -
+> >>  			dht11->edges[offset + 2*i + 1].ts;
+> >> -		if (!dht11->edges[offset + 2*i + 1].value)
+> >> -			return -EIO;  /* lost synchronisation */
+> >> +		if (!dht11->edges[offset + 2*i + 1].value) {
+> >> +			dev_err(dht11->dev, "lost synchronisation\n");
+> >> +			return -EIO;
+> >> +		}
 > > 
-> > This is to take ambiguity of when the bit started relativ to the
-> > clock ticks into account. For example with common 32kHz clocks:
-> > DHT11_DATA_BIT_LOW / timeres = 0
-> > DHT11_DATA_BIT_HIGH / timeres = 2
-> > but since the bit might not start at a clock tick the actual t of
-> > a low bit can be either 0 or 1 while the actual t of a high bit
-> > can be either 2 or 3.
+> > Are you sure this warrants a log message? I don't think this provides
+> > much information. The userspace application should just try reading
+> > the sensor again.
 > > 
-> > This case is fine.
-> > 
-> > But if we had a 38kHz clock:
-> > DHT11_DATA_BIT_LOW / timeres = 1    t can be 1 or 2
-> > DHT11_DATA_BIT_HIGH / timeres = 2   t can be 2 or 3
-> > so we have an ambiguity. The ambiguity could be removed by a smarter
-> > decoder, that looks at the t of other bits, but I'm not going to do
-> > that unless somebody is promising to test it on affected hardware.
-> > 
-> > Feel free to add some comment about this to the code.
+> > We could do someting smart and try to recover from such errors, but
+> > ultimately userspace will need to deal with failed sensor communication
+> > anyway, so I don't see the point.
 > 
-> Will do, thanks a lot for the explanation.
-> 
-> I was asking because I see the "dht11: WARNING: decoding ambiguous"
-> very often. (with and without my patches)
+> The sensors are rather flaky and if they go nuts the user/developer
+> maybe wants to know why.
+> From a plain EIO she has no chance to find out. He'll have to add
+> printk()s by hand to find out.
+> With a log message one can start digging into the issue.
 
-Yes, your patches shouldn't have any effect on this.
-"very often" in the sense of "not always"? This would be very surprising,
-because this would involve variable length clock ticks, i think.
+I think any log messages that are caused by wiring problems are
+in place already. Also you should get an ETIMEDOUT not an EIO in
+these cases. In these cases the number of edges received is reported,
+which actually tells you a lot about the type of wiring problem.
 
-I guess we should include timeres into the warning message.
+BTW when I originally submitted the driver, it contained the following
+code that got rejected:
+/*
+ * dht11_edges_print: show the data as actually received by the
+ *                    driver.
+ * This is dead code, keeping it for now just in case somebody needs
+ * it for porting the driver to new sensor HW, etc.
+ *
+static void dht11_edges_print(struct dht11_gpio *dht11)
+{
+        int i;
 
-Also I guess now is the time to think about a smarter decoder.
+        pr_err("dht11: transfer timed out:\n");
+        for (i = 1; i < dht11->num_edges; ++i) {
+                pr_err("dht11: %d: %lld ns %s\n", i,
+                        dht11->edges[i].ts - dht11->edges[i-1].ts,
+                        dht11->edges[i-1].value ? "high" : "low");
+        }
+}
+*/
 
-Thanks a lot for your effort.
+which I used to call on errors to debug the decoder and the quirks
+necessary to support different sensors. Maybe someting like this would
+get accepted if it integrated properly with the debugging frameworks
+of the kernel instead of flooding the log?
+
+I think the EIO errors are all really of the type:
+"Some noise injection into the data line caused an hiccup, just try again."
+
+I wouldn't object to changing some of the EIOs to EAGAINs or something,
+but I doubt we get this through review.
+
+JFTR: I don't object strongly to additional logging. Just telling you
+1) This has been considered when writing the driver.
+2) I probably won't ACK it, so Jonathan will have to decide wether this
+is a valuable addition.
+
+Thanks,
 Harald
+
+> >>  		timing[i] = t / timeres;
+> >>  	}
+> >>  
+> >> @@ -119,8 +121,10 @@ static int dht11_decode(struct dht11 *dht11, int offset)
+> >>  	temp_dec = dht11_decode_byte(&timing[24], threshold);
+> >>  	checksum = dht11_decode_byte(&timing[32], threshold);
+> >>  
+> >> -	if (((hum_int + hum_dec + temp_int + temp_dec) & 0xff) != checksum)
+> >> +	if (((hum_int + hum_dec + temp_int + temp_dec) & 0xff) != checksum) {
+> >> +		dev_err(dht11->dev, "invalid checksum\n");
+> >>  		return -EIO;
+> >> +	}
+> > 
+> > Same thing here.
+> 
+> Same here.
+> I had some wiring issues with my sensors and wanted to know from where the EIO comes.
+> 
+> Thanks,
+> //richard
