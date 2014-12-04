@@ -1,84 +1,78 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from a.ns.miles-group.at ([95.130.255.143]:65276 "EHLO radon.swed.at"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1753908AbaLDOPu (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Thu, 4 Dec 2014 09:15:50 -0500
-Message-ID: <54806C8C.6020504@nod.at>
-Date: Thu, 04 Dec 2014 15:15:40 +0100
-From: Richard Weinberger <richard@nod.at>
+Received: from mail-wg0-f42.google.com ([74.125.82.42]:52044 "EHLO
+	mail-wg0-f42.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S932238AbaLDOXR (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 4 Dec 2014 09:23:17 -0500
+Received: by mail-wg0-f42.google.com with SMTP id z12so22786433wgg.1
+        for <linux-iio@vger.kernel.org>; Thu, 04 Dec 2014 06:23:16 -0800 (PST)
 MIME-Version: 1.0
-To: Harald Geyer <harald@ccbib.org>
-CC: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
-	pmeerw@pmeerw.net, sanjeev_sharma@mentor.com,
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: iio: dht11 Updates
-References: <1417563176-31972-1-git-send-email-richard@nod.at> <E1Xw8sp-0001B6-Ul@stardust.g4.wien.funkfeuer.at> <547F0CFE.4010107@nod.at> <E1XwAbX-0001Ht-Jg@stardust.g4.wien.funkfeuer.at> <547F8925.3050308@nod.at> <E1XwWiq-00013A-NC@stardust.g4.wien.funkfeuer.at>
-In-Reply-To: <E1XwWiq-00013A-NC@stardust.g4.wien.funkfeuer.at>
-Content-Type: text/plain; charset=windows-1252
+In-Reply-To: <1417024517-7564-7-git-send-email-lars@metafoo.de>
+References: <1417024517-7564-1-git-send-email-lars@metafoo.de>
+	<1417024517-7564-7-git-send-email-lars@metafoo.de>
+Date: Thu, 4 Dec 2014 16:23:16 +0200
+Message-ID: <CAEnQRZBX9XAhaD=DXj5QhBGAtFgdpsa6h_YyPWurPAUfjyJ-5A@mail.gmail.com>
+Subject: Re: [PATCH 06/11] iio: Move buffer registration to the core
+From: Daniel Baluta <daniel.baluta@intel.com>
+To: Lars-Peter Clausen <lars@metafoo.de>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Harald,
+On Wed, Nov 26, 2014 at 7:55 PM, Lars-Peter Clausen <lars@metafoo.de> wrote:
+> Originally device and buffer registration were kept as separate operations
+> in IIO to allow to register two distinct sets of channels for buffered and
+> non-buffered operations. This has since already been further restricted and
+> the channel set registered for the buffer needs to be a subset of the
+> channel set registered for the device. Additionally the possibility to not
+> have a raw (or processed) attribute for a channel which was registered for
+> the device was added a while ago. This means it is possible to not register
+> any device level attributes for a channel even if it is registered for the
+> device. Also if a channel's scan_index is set to -1 and the channel is
+> registered for the buffer it is ignored.
+>
+> So in summery it means it is possible to register the same channel array for
 
-Am 04.12.2014 um 14:45 schrieb Harald Geyer:
-> Richard Weinberger writes:
->> Am 03.12.2014 um 15:08 schrieb Harald Geyer:
->>>> I was asking because I see the "dht11: WARNING: decoding ambiguous"
->>>> very often. (with and without my patches)
->>>
->>> Yes, your patches shouldn't have any effect on this.
->>> "very often" in the sense of "not always"? This would be very surprising,
->>> because this would involve variable length clock ticks, i think.
->>>
->>> I guess we should include timeres into the warning message.
->>>
->>> Also I guess now is the time to think about a smarter decoder.
-> 
-> I was wrong.
->  
->> Another question. Your driver defines:
->> #define DHT11_DATA_BIT_LOW      27000
->> #define DHT11_DATA_BIT_HIGH     70000
->>
->> If I read the manual [0] correctly these constants are T_h0/1.
->> Why did you use 27000 for T_h0?
->>
->> [0] http://meteobox.tk/files/AM2302.pdf
-> 
-> It's a compromise between data sheets for various slightly different
-> sensors. In particular the data sheet for AM2303 specifies
-> 26-28us, so it's just in the middle. But note that DHT11_DATA_BIT_LOW
-> isn't used in the actual decoding. Just for printing the warning.
-> 
-> But looking at your data sheet I see the we currently use a start
-> command that's outside the specified range... I will have to look
-> up where the current 80ms value was suggested.
-> 
->> Setting it to 26000 (the typical value as stated by the manual),
->> I get the "decoding ambiguous" warning *always*. Setting it higher
->> makes the message go away.
-> 
-> If you misstyped "always" and "go away" then this is to be expected.
+s/summery/summary
 
-Nope, a lower value is bad and a higher makes the warning go away.
+> both the device and the buffer yet still end up with distinctive sets of
+> channels for both of them. This makes the argument for having to have to
+> manually register the channels for both the device and the buffer invalid.
+> Considering that the vast majority of all drivers want to register the same
+> set of channels for both the buffer and the device it makes sense to move
+> the buffer registration into the core to avoid some boiler-plate code in the
+> device driver setup path.
+>
+> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+> ---
 
-> Also I think I now understand what is going on:
-> Your board most probably has a clock much faster then 32kH and when
-> we calculate timeres, we don't actually calculate the timestamp
-> resolution but the length of the shortest pulse. The decoding
-> algorithm is robust in such cases, but it generates wrong warnings.
-> 
-> The proper fix is to drop messages about clock speed from the
-> decoding functin. If we want to keep such diagnostics, we should
-> have them at probe() time. - This will also resolve our disagreement
-> about proper formatting of log messages about clock issues. :)
+<snip>
 
-Sounds sane.
+> diff --git a/drivers/iio/industrialio-triggered-buffer.c b/drivers/iio/industrialio-triggered-buffer.c
+> index d6f54930..ac97685 100644
+> --- a/drivers/iio/industrialio-triggered-buffer.c
+> +++ b/drivers/iio/industrialio-triggered-buffer.c
+> @@ -78,16 +78,8 @@ int iio_triggered_buffer_setup(struct iio_dev *indio_dev,
 
-> Optionally we can drop the calculation of timeres and just use a
-> constant threshold.
+You should also update the comment for iio_triggered_buffer_setup. This function
+doesn't register the buffer with IIO core anymore.
 
-Same here.
 
-Thanks,
-//richard
+>         /* Flag that polled ring buffering is possible */
+>         indio_dev->modes |= INDIO_BUFFER_TRIGGERED;
+>
+> -       ret = iio_buffer_register(indio_dev,
+> -                                 indio_dev->channels,
+> -                                 indio_dev->num_channels);
+> -       if (ret)
+> -               goto error_dealloc_pollfunc;
+> -
+>         return 0;
+
+<snip>
+
+thanks,
+Daniel.
