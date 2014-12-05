@@ -7,68 +7,22 @@ Cc: Peter Meerwald <pmeerw@pmeerw.net>,
 	Daniel Baluta <daniel.baluta@intel.com>,
 	linux-kernel@vger.kernel.org,
 	Irina Tirdea <irina.tirdea@intel.com>
-Subject: [PATCH 3/4] iio: accel: kxcjk-1013: error handling when set mode fails
-Date: Sat,  6 Dec 2014 00:18:09 +0200
-Message-Id: <1417817890-10252-4-git-send-email-irina.tirdea@intel.com>
-In-Reply-To: <1417817890-10252-1-git-send-email-irina.tirdea@intel.com>
-References: <1417817890-10252-1-git-send-email-irina.tirdea@intel.com>
+Subject: [PATCH 0/4] PM fixes for kxcjk-1013
+Date: Sat,  6 Dec 2014 00:18:06 +0200
+Message-Id: <1417817890-10252-1-git-send-email-irina.tirdea@intel.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-If there is an error in set mode at runtime resume, reset the state of
-the runtime usage count.
+This is a small set of power manangement fixes for kxcjk-1013 accel driver,
+mostly related to error handling.
 
-If there is an error in set mode at runtime suspend, make sure the framework
-retries to suspend the device.
+Irina Tirdea (4):
+  iio: accel: kxcjk-1013: always power on device in resume
+  iio: accel: kxcjk-1013: only set power state if CONFIG_PM is defined
+  iio: accel: kxcjk-1013: error handling when set mode fails
+  iio: accel: kxcjk-1013: power off device if probe fails
 
-Signed-off-by: Irina Tirdea <irina.tirdea@intel.com>
----
- drivers/iio/accel/kxcjk-1013.c |   12 +++++++++++-
- 1 file changed, 11 insertions(+), 1 deletion(-)
+ drivers/iio/accel/kxcjk-1013.c |   37 ++++++++++++++++++++++++++-----------
+ 1 file changed, 26 insertions(+), 11 deletions(-)
 
-diff --git a/drivers/iio/accel/kxcjk-1013.c b/drivers/iio/accel/kxcjk-1013.c
-index 7b0a9da..74b196f 100644
---- a/drivers/iio/accel/kxcjk-1013.c
-+++ b/drivers/iio/accel/kxcjk-1013.c
-@@ -388,6 +388,8 @@ static int kxcjk1013_set_power_state(struct kxcjk1013_data *data, bool on)
- 	if (ret < 0) {
- 		dev_err(&data->client->dev,
- 			"Failed: kxcjk1013_set_power_state for %d\n", on);
-+		if (on)
-+			pm_runtime_put_noidle(&data->client->dev);
- 		return ret;
- 	}
- #endif
-@@ -859,6 +861,7 @@ static int kxcjk1013_write_event_config(struct iio_dev *indio_dev,
- 
- 	ret =  kxcjk1013_setup_any_motion_interrupt(data, state);
- 	if (ret < 0) {
-+		kxcjk1013_set_power_state(data, !state);
- 		mutex_unlock(&data->mutex);
- 		return ret;
- 	}
-@@ -1009,6 +1012,7 @@ static int kxcjk1013_data_rdy_trigger_set_state(struct iio_trigger *trig,
- 	else
- 		ret = kxcjk1013_setup_new_data_interrupt(data, state);
- 	if (ret < 0) {
-+		kxcjk1013_set_power_state(data, !state);
- 		mutex_unlock(&data->mutex);
- 		return ret;
- 	}
-@@ -1368,8 +1372,14 @@ static int kxcjk1013_runtime_suspend(struct device *dev)
- {
- 	struct iio_dev *indio_dev = i2c_get_clientdata(to_i2c_client(dev));
- 	struct kxcjk1013_data *data = iio_priv(indio_dev);
-+	int ret;
- 
--	return kxcjk1013_set_mode(data, STANDBY);
-+	ret = kxcjk1013_set_mode(data, STANDBY);
-+	if (ret < 0) {
-+		dev_err(&data->client->dev, "powering off device failed\n");
-+		return -EAGAIN;
-+	}
-+	return 0;
- }
- 
- static int kxcjk1013_runtime_resume(struct device *dev)
 -- 
 1.7.9.5
