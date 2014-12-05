@@ -1,60 +1,77 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from sauhun.de ([89.238.76.85]:43349 "EHLO pokefinder.org"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751081AbaLERtM (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Fri, 5 Dec 2014 12:49:12 -0500
-Date: Fri, 5 Dec 2014 18:49:07 +0100
-From: Wolfram Sang <wsa@the-dreams.de>
-To: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-Cc: jic23@kernel.org, linux-iio@vger.kernel.org,
-	linux-i2c@vger.kernel.org
-Subject: Re: [PATCH v2] iio: imu: inv_mpu6050: Add i2c mux for by pass
-Message-ID: <20141205174907.GA7025@katana>
-References: <1417734625-13739-1-git-send-email-srinivas.pandruvada@linux.intel.com>
- <1417734625-13739-2-git-send-email-srinivas.pandruvada@linux.intel.com>
- <20141205070313.GA1197@katana>
- <1417795398.1851.17.camel@spandruv-desktop.jf.intel.com>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="YiEDa0DAkWCtVeE4"
-In-Reply-To: <1417795398.1851.17.camel@spandruv-desktop.jf.intel.com>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <k.wrona@samsung.com>
+From: Karol Wrona <k.wrona@samsung.com>
+To: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
+ Hartmut Knaack <knaack.h@gmx.de>, linux-kernel@vger.kernel.org
+Cc: Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
+ Kyungmin Park <kyungmin.park@samsung.com>, Karol Wrona <wrona.vy@gmail.com>,
+ Karol Wrona <k.wrona@samsung.com>
+Subject: [PATCH v3 0/5] iio: common: ssp_sensors: Add sensorhub driver
+Date: Fri, 05 Dec 2014 20:54:45 +0100
+Message-id: <1417809290-9662-1-git-send-email-k.wrona@samsung.com>
+List-ID: <linux-iio@vger.kernel.org>
 
 
---YiEDa0DAkWCtVeE4
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+This patchset adds support for sensorhub. It is an external mcu which
+manages and collects data from several sensors i.e. on Galaxy Gear 2 watch.
+
+It contains:
+- spi driver for sensorhub device
+- DT binding for the device
+- IIO common utils for ssp sensors (iio kfifo setup helpers, pre/post callbacks)
+- IIO accelerometer driver
+- IIO gyroscope driver
+
+For now the driver supports "traditional" sensors but new ones types are
+intended to be used.
+
+>From v1:
+  - Adopted to new stm32fwu v5
+  - Fixed sensors' data process callbacks
+  - Fixed comments style
+
+>From v2:
+  - Fixes after Hartmut Knaack review
+  - Sensorhub driver was moved from misc to iio after the discussion with Arnd
+    and Jonathan
+  - Firmware upgrade is not supported in this patchset. I hope it will be
+    applied when it will find its own place in the tree.
 
 
-> > Since those two functions are only called once and don't encapsulate
-> > much, I'd rather put the commands directly into the calling functions.
-> Agree. I will move them to the caller and submit another version.
-> I hope, I can still use reviewed-by tag, after this change.
 
-If you only change my comments, then yes!
+Karol Wrona (5):
+  iio: common: ssp_sensors: Add sensorhub driver
+  iio: sensorhub: Add sensorhub bindings
+  iio: common: ssp_sensors: Add sensorhub iio commons
+  iio: common: ssp_sensors: Add sensorhub accelerometer sensor
+  iio: common: ssp_sensors: Add sensorhub gyroscope sensor
 
+ .../devicetree/bindings/iio/sensorhub.txt          |   46 ++
+ drivers/iio/accel/Makefile                         |    1 +
+ drivers/iio/accel/ssp_accel_sensor.c               |  203 ++++++
+ drivers/iio/common/Kconfig                         |    1 +
+ drivers/iio/common/Makefile                        |    1 +
+ drivers/iio/common/ssp_sensors/Kconfig             |   24 +
+ drivers/iio/common/ssp_sensors/Makefile            |    6 +
+ drivers/iio/common/ssp_sensors/ssp.h               |  254 +++++++
+ drivers/iio/common/ssp_sensors/ssp_dev.c           |  693 ++++++++++++++++++++
+ drivers/iio/common/ssp_sensors/ssp_iio.c           |   82 +++
+ drivers/iio/common/ssp_sensors/ssp_iio_sensor.h    |   56 ++
+ drivers/iio/common/ssp_sensors/ssp_spi.c           |  644 ++++++++++++++++++
+ drivers/iio/gyro/Makefile                          |    2 +
+ drivers/iio/gyro/ssp_gyro_sensor.c                 |  202 ++++++
+ include/linux/iio/common/ssp_sensors.h             |   80 +++
+ 15 files changed, 2295 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/sensorhub.txt
+ create mode 100644 drivers/iio/accel/ssp_accel_sensor.c
+ create mode 100644 drivers/iio/common/ssp_sensors/Kconfig
+ create mode 100644 drivers/iio/common/ssp_sensors/Makefile
+ create mode 100644 drivers/iio/common/ssp_sensors/ssp.h
+ create mode 100644 drivers/iio/common/ssp_sensors/ssp_dev.c
+ create mode 100644 drivers/iio/common/ssp_sensors/ssp_iio.c
+ create mode 100644 drivers/iio/common/ssp_sensors/ssp_iio_sensor.h
+ create mode 100644 drivers/iio/common/ssp_sensors/ssp_spi.c
+ create mode 100644 drivers/iio/gyro/ssp_gyro_sensor.c
+ create mode 100644 include/linux/iio/common/ssp_sensors.h
 
---YiEDa0DAkWCtVeE4
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
-
-iQIcBAEBAgAGBQJUgfASAAoJEBQN5MwUoCm2QgYP/1CUgRfIsxFnUlIaU5YgHmeI
-cyTGRNZrsRo0533qEldJguA3ddJwffJWbQkseBg/kXQWMDxrCuPrvK/7ovUkoEXk
-VifHEove9trq3uOGQNN5FTmaKpYTi4HDuDyOyAinMApzxkWQj6LqWXz4f7nHDtv/
-WY3Qh3ddU6arx1+U5s2AAkXZzu4Q8rjR7EktIUL3tczC1ymc6Zm0HIxDLHDmqK1p
-hj3v/XUQ9X6ELPqcNPXq51B0zVbL74NWPzoQCEXmTj204WL3akxdJyLYk2NevJJM
-69FmsQVajEWQVEhjPiQ7sl4y7n7mUCqLn2O89yk4bYElfFpp3IsJxfMSUP6rdjRX
-tPKMhiBdX0fYmkr+IXFsBAiMUdiYA2ukV9LF62OvuZSiytZDzMJKe/YEqqnKmMx7
-Jvzcr9nk5Lig1aUbwzmOxV64mC/Nec8QkPf+7C/mrcUZ2PasgpKVepTkKMbKXlIV
-8qRATGq2xtR354QMrXseT6L2DV8c6T7pzE+zjLzkkx1y2I0DiX+87+tuvUyCFE20
-Qg5vUG5z6e++IqS+HD3v+wpdrcGDCqwvKYo+e5vbZvSJCT50SE3A6VGKCa5DGcyo
-9WQ4EHggnLWI/JBkmnmNcKMArL2f0ROaSy0qbXuIDJs6l59TZ6Ee2G3mJGS6XR8c
-CE6+okyAe2lgQv1fSPy3
-=ztP7
------END PGP SIGNATURE-----
-
---YiEDa0DAkWCtVeE4--
+-- 
+1.7.9.5
