@@ -1,178 +1,119 @@
-Return-Path: <k.wrona@samsung.com>
-From: Karol Wrona <k.wrona@samsung.com>
-To: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
- Hartmut Knaack <knaack.h@gmx.de>, linux-kernel@vger.kernel.org
-Cc: Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
- Kyungmin Park <kyungmin.park@samsung.com>, Karol Wrona <wrona.vy@gmail.com>,
- Karol Wrona <k.wrona@samsung.com>
-Subject: [PATCH v3 3/5] iio: common: ssp_sensors: Add sensorhub iio commons
-Date: Fri, 05 Dec 2014 20:54:48 +0100
-Message-id: <1417809290-9662-4-git-send-email-k.wrona@samsung.com>
-In-reply-to: <1417809290-9662-1-git-send-email-k.wrona@samsung.com>
-References: <1417809290-9662-1-git-send-email-k.wrona@samsung.com>
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mailapp01.imgtec.com ([195.59.15.196]:6600 "EHLO
+	mailapp01.imgtec.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750896AbaLEOe5 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 5 Dec 2014 09:34:57 -0500
+Message-ID: <5481C221.2040900@imgtec.com>
+Date: Fri, 5 Dec 2014 11:33:05 -0300
+From: Ezequiel Garcia <ezequiel.garcia@imgtec.com>
+MIME-Version: 1.0
+To: Jonathan Cameron <jic23@kernel.org>,
+	James Hartley <james.hartley@imgtec.com>,
+	Andrew Bresticker <abrestic@chromium.org>
+CC: <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
+	<robh+dt@kernel.org>, <Pawel.Moll@arm.com>, <Mark.Rutland@arm.com>,
+	<ijc+devicetree@hellion.org.uk>, <galak@codeaurora.org>
+Subject: Re: [PATCH v5 0/3] iio: Add Cosmic Circuits ADC support
+References: <1417102762-5123-1-git-send-email-ezequiel.garcia@imgtec.com> <54819D3C.7000209@imgtec.com> <4C4CBD60-74E1-4A17-9D93-EDDE8AF33841@kernel.org> <5481B24B.4020507@kernel.org>
+In-Reply-To: <5481B24B.4020507@kernel.org>
+Content-Type: text/plain; charset="utf-8"
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-This patch adds common library for sensorhub iio drivers.
 
-Change-Id: I1038cb31c051f7e8ffde696a4121518daa5af081
-Signed-off-by: Karol Wrona <k.wrona@samsung.com>
-Acked-by: Kyungmin Park <kyungmin.park@samsung.com>
----
- drivers/iio/common/ssp_sensors/ssp_iio.c        |   82 +++++++++++++++++++++++
- drivers/iio/common/ssp_sensors/ssp_iio_sensor.h |   56 ++++++++++++++++
- 2 files changed, 138 insertions(+)
- create mode 100644 drivers/iio/common/ssp_sensors/ssp_iio.c
- create mode 100644 drivers/iio/common/ssp_sensors/ssp_iio_sensor.h
 
-diff --git a/drivers/iio/common/ssp_sensors/ssp_iio.c b/drivers/iio/common/ssp_sensors/ssp_iio.c
-new file mode 100644
-index 0000000..036be12
---- /dev/null
-+++ b/drivers/iio/common/ssp_sensors/ssp_iio.c
-@@ -0,0 +1,82 @@
-+/*
-+ *  Copyright (C) 2014, Samsung Electronics Co. Ltd. All Rights Reserved.
-+ *
-+ *  This program is free software; you can redistribute it and/or modify
-+ *  it under the terms of the GNU General Public License as published by
-+ *  the Free Software Foundation; either version 2 of the License, or
-+ *  (at your option) any later version.
-+ *
-+ *  This program is distributed in the hope that it will be useful,
-+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
-+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-+ *  GNU General Public License for more details.
-+ *
-+ */
-+
-+#include <linux/iio/common/ssp_sensors.h>
-+#include <linux/iio/kfifo_buf.h>
-+#include "ssp_iio_sensor.h"
-+
-+/**
-+ * ssp_common_buffer_postenable() - generic postenable callback for ssp buffer
-+ *
-+ * @indio_dev:		iio device
-+ *
-+ * Returns 0 or negative value in case of error
-+ */
-+int ssp_common_buffer_postenable(struct iio_dev *indio_dev)
-+{
-+	struct ssp_sensor_data *spd = iio_priv(indio_dev);
-+	struct ssp_data *data = dev_get_drvdata(indio_dev->dev.parent->parent);
-+
-+	return ssp_enable_sensor(data, spd->type,
-+				 ssp_get_sensor_delay(data, spd->type));
-+}
-+EXPORT_SYMBOL(ssp_common_buffer_postenable);
-+
-+/**
-+ * ssp_common_buffer_predisable() - generic predisable callback for ssp buffer
-+ *
-+ * @indio_dev:		iio device
-+ *
-+ * Returns 0 or negative value in case of error
-+ */
-+int ssp_common_buffer_predisable(struct iio_dev *indio_dev)
-+{
-+	struct ssp_sensor_data *spd = iio_priv(indio_dev);
-+	struct ssp_data *data = dev_get_drvdata(indio_dev->dev.parent->parent);
-+
-+	return ssp_disable_sensor(data, spd->type);
-+}
-+EXPORT_SYMBOL(ssp_common_buffer_predisable);
-+
-+/**
-+ * ssp_common_setup_buffer() - creates iio kfifo and registers the buffer
-+ *                             for device
-+ *
-+ * @indio_dev:		iio device
-+ *
-+ * Returns 0 or negative value in case of error
-+ */
-+int ssp_common_setup_buffer(struct iio_dev *indio_dev,
-+			    const struct iio_buffer_setup_ops *ops)
-+{
-+	int ret;
-+	struct iio_buffer *buffer;
-+
-+	buffer = iio_kfifo_allocate(indio_dev);
-+	if (!buffer)
-+		return -ENOMEM;
-+
-+	iio_device_attach_buffer(indio_dev, buffer);
-+
-+	indio_dev->setup_ops = ops;
-+
-+	ret = iio_buffer_register(indio_dev, indio_dev->channels,
-+				  indio_dev->num_channels);
-+	if (ret)
-+		iio_kfifo_free(buffer);
-+
-+	return ret;
-+}
-+EXPORT_SYMBOL(ssp_common_setup_buffer);
-diff --git a/drivers/iio/common/ssp_sensors/ssp_iio_sensor.h b/drivers/iio/common/ssp_sensors/ssp_iio_sensor.h
-new file mode 100644
-index 0000000..4b79be0
---- /dev/null
-+++ b/drivers/iio/common/ssp_sensors/ssp_iio_sensor.h
-@@ -0,0 +1,56 @@
-+#ifndef __SSP_IIO_SENSOR_H__
-+#define __SSP_IIO_SENSOR_H__
-+
-+#define SSP_CHANNEL_AG(_type, _mod, _index) \
-+{ \
-+		.type = _type,\
-+		.modified = 1,\
-+		.channel2 = _mod,\
-+		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SAMP_FREQ),\
-+		.scan_index = _index,\
-+		.scan_type = {\
-+			.sign = 's',\
-+			.realbits = 16,\
-+			.storagebits = 16,\
-+			.shift = 0,\
-+			.endianness = IIO_LE,\
-+		},\
-+}
-+
-+#define SSP_DIVISOR	1000000ULL
-+#define SSP_MS_PER_S	1000
-+#define SSP_DIVIDEND	(SSP_DIVISOR * SSP_MS_PER_S)
-+
-+int ssp_common_buffer_postenable(struct iio_dev *indio_dev);
-+
-+int ssp_common_buffer_predisable(struct iio_dev *indio_dev);
-+
-+int ssp_common_setup_buffer(struct iio_dev *indio_dev,
-+			    const struct iio_buffer_setup_ops *ops);
-+
-+/* Converts time in ms to frequency */
-+static inline void ssp_convert_to_freq(u32 time, int *integer_part,
-+				       int *fractional)
-+{
-+	if (time == 0) {
-+		*fractional = 0;
-+		*integer_part = 0;
-+		return;
-+	}
-+
-+	*integer_part = SSP_DIVIDEND / time;
-+	*fractional = do_div(*integer_part, SSP_DIVISOR);
-+}
-+
-+/* Converts frequency to time in ms*/
-+static inline int ssp_convert_to_time(int integer_part, int fractional)
-+{
-+	u64 value;
-+
-+	value = integer_part * SSP_DIVISOR + fractional;
-+	if (value == 0)
-+		return 0;
-+
-+	return div_u64(SSP_DIVIDEND, value);
-+}
-+#endif /* __SSP_IIO_SENSOR_H__ */
+On 12/05/2014 10:25 AM, Jonathan Cameron wrote:
+> On 05/12/14 13:12, Jonathan Cameron wrote:
+>>
+>>
+>> On December 5, 2014 11:55:40 AM GMT+00:00, Ezequiel Garcia <ezequiel.garcia@imgtec.com> wrote:
+>>> Hi Jonathan,
+>>>
+>>> On 11/27/2014 12:39 PM, Ezequiel Garcia wrote:
+>>>> Changes from v4:
+>>>>
+>>>>   * Added a compile-time dependency on REGULATOR and HAVE_CLK.
+>>>>
+>>>>   * Replaced the silly XOR operation for a proper mask out of the
+>>>>     available channels.
+>>>>
+>>>> Changes from v3:
+>>>>
+>>>>   * Fixed a few style nitpicks as per Hartmut's feedback.
+>>>>
+>>>>   * Used GENMASK() to build the channel mask, which fixes a very
+>>> nasty
+>>>>     bug. Also found by Hartmut.
+>>>>
+>>>> Changes from v2:
+>>>>
+>>>>   * Changed a devicetree property from adc-available-channels to
+>>>>     adc-reserved-channels, so it can be made optional.
+>>>>
+>>>>   * Renamed the driver from cc_10001_xxx to cc10001_xxx so it's
+>>> consistent
+>>>>     with the rest of the kernel style.
+>>>>
+>>>>   * Some more minor cosmetic fixes.
+>>>>
+>>>> Changes from v1:
+>>>>
+>>>>   * Removed unneeded header includes.
+>>>>
+>>>>   * Changed all the names and macros prefix: s/CC_10001_/CC10001_.
+>>>>
+>>>>   * Used .update_scan_mode callback to preallocate the buffer.
+>>>>
+>>>>   * Used indio_dev for the struct iio_dev.
+>>>>
+>>>>   * Only read the regulator voltage when needed.
+>>>>
+>>>>   * Fixed probe() error handling.
+>>>>
+>>>>   * Used for_each_set_bit() instead of open-coding it.
+>>>>
+>>>>   * Name the power-down register as _POWER_UP, to make the code
+>>>>     less silly.
+>>>>
+>>>>   * Error out when no valid sample can be read (i.e. when
+>>> end-of-conversion
+>>>>     poll times out).
+>>>>
+>>>>   * ... plus some assorted code cleaning based on the feedback.
+>>>>
+>>>>
+>>>> Ezequiel Garcia (1):
+>>>>   DT: Add a vendor prefix for Cosmic Circuits
+>>>>
+>>>> Phani Movva (2):
+>>>>   iio: adc: Cosmic Circuits 10001 ADC driver
+>>>>   DT: iio: adc: Add CC_10001 binding documentation
+>>>>
+>>>
+>>> Unless there are any outstanding issues with this series, it'd be great
+>>> to merge it for v3.19.
+>>>
+>>> Thanks!
+>> Sorry too late unfortunately. Merge window opens on Sunday and stuff needs to have
+>>  been in Greg KH's tree for a week before that. Going to be 3.20 now.
+>>
+
+Oh, shoot. I was hoping to be in time for the merge. Being a new driver
+there wasn't much harm in taking it earlier.
+
+> Also, the DT patch could really do with an Ack from Rob.  If Hartmut/Lars
+> want to give a reviewed-by that would be good given they done the legwork
+> on reviewing your driver.
+> 
+> Looks good to me btw.  Just taken a quick look, but little gets past those
+> guys anyway :)
+> 
+
+If at all possible, do you think you area able to pick the patches now
+(but you don't include them in your pull request to Linus) so they are
+linux-next? It'd be good to know they start getting build-test coverage
+soon.
+
+Thanks!
 -- 
-1.7.9.5
+Ezequiel
