@@ -1,46 +1,83 @@
-Return-Path: <srinivas.pandruvada@linux.intel.com>
-From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-To: jic23@kernel.org,
-	wsa@the-dreams.de
-Cc: linux-iio@vger.kernel.org,
-	linux-i2c@vger.kernel.org,
-	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-Subject: [PATCH v3] iio: imu: inv_mpu6050: Add i2c mux for by pass
-Date: Fri,  5 Dec 2014 14:52:08 -0800
-Message-Id: <1417819929-27730-1-git-send-email-srinivas.pandruvada@linux.intel.com>
+Return-Path: <irina.tirdea@intel.com>
+From: Irina Tirdea <irina.tirdea@intel.com>
+To: Jonathan Cameron <jic23@kernel.org>,
+	linux-iio@vger.kernel.org
+Cc: Peter Meerwald <pmeerw@pmeerw.net>,
+	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+	Daniel Baluta <daniel.baluta@intel.com>,
+	linux-kernel@vger.kernel.org,
+	Irina Tirdea <irina.tirdea@intel.com>
+Subject: [PATCH 4/4] iio: accel: kxcjk-1013: power off device if probe fails
+Date: Sat,  6 Dec 2014 00:18:10 +0200
+Message-Id: <1417817890-10252-5-git-send-email-irina.tirdea@intel.com>
+In-Reply-To: <1417817890-10252-1-git-send-email-irina.tirdea@intel.com>
+References: <1417817890-10252-1-git-send-email-irina.tirdea@intel.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-v3
-As suggested by Wolfram, removed
-inv_mpu6050_create_mux and inv_mpu6050_destroy_mux
-and moved the contents to their caller.
+When the device is initialized in probe, it is also powered on.
+If there is an error after the initialization, the device will
+remain powered on.
 
-v2
-Addressed comments from Wolfram
-- Added reference of discussion for adding this mode to commit message
- to explain the purpose
-- Removed static mux variable
-- Removed exported interface to add i2c client on the i2c mux
-comments by Hartmut
-- Unregister iio device if there is a failure
+Power off the device in case probe fails after device initialization.
 
-Removed ak8975 change from series still this patch is accepted.
+Signed-off-by: Irina Tirdea <irina.tirdea@intel.com>
+Suggested-by: Daniel Baluta <daniel.baluta@intel.com>
+---
+ drivers/iio/accel/kxcjk-1013.c |   18 ++++++++++++------
+ 1 file changed, 12 insertions(+), 6 deletions(-)
 
-v1
-Some minor formatting fix mostly suggested by Hartmut
-fail probe if mux create fails
-function parameter type matching i2c struct
-
-v0
-base version
-
-Srinivas Pandruvada (1):
-  iio: imu: inv_mpu6050: Add i2c mux for by pass
-
- drivers/iio/imu/inv_mpu6050/Kconfig        |   1 +
- drivers/iio/imu/inv_mpu6050/inv_mpu_core.c | 115 +++++++++++++++++++++++++++--
- drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h  |   6 ++
- 3 files changed, 116 insertions(+), 6 deletions(-)
-
+diff --git a/drivers/iio/accel/kxcjk-1013.c b/drivers/iio/accel/kxcjk-1013.c
+index 74b196f..bc04c2f 100644
+--- a/drivers/iio/accel/kxcjk-1013.c
++++ b/drivers/iio/accel/kxcjk-1013.c
+@@ -1239,21 +1239,25 @@ static int kxcjk1013_probe(struct i2c_client *client,
+ 						KXCJK1013_IRQ_NAME,
+ 						indio_dev);
+ 		if (ret)
+-			return ret;
++			goto err_poweroff;
+ 
+ 		data->dready_trig = devm_iio_trigger_alloc(&client->dev,
+ 							   "%s-dev%d",
+ 							   indio_dev->name,
+ 							   indio_dev->id);
+-		if (!data->dready_trig)
+-			return -ENOMEM;
++		if (!data->dready_trig) {
++			ret = -ENOMEM;
++			goto err_poweroff;
++		}
+ 
+ 		data->motion_trig = devm_iio_trigger_alloc(&client->dev,
+ 							  "%s-any-motion-dev%d",
+ 							  indio_dev->name,
+ 							  indio_dev->id);
+-		if (!data->motion_trig)
+-			return -ENOMEM;
++		if (!data->motion_trig) {
++			ret = -ENOMEM;
++			goto err_poweroff;
++		}
+ 
+ 		data->dready_trig->dev.parent = &client->dev;
+ 		data->dready_trig->ops = &kxcjk1013_trigger_ops;
+@@ -1262,7 +1266,7 @@ static int kxcjk1013_probe(struct i2c_client *client,
+ 		iio_trigger_get(indio_dev->trig);
+ 		ret = iio_trigger_register(data->dready_trig);
+ 		if (ret)
+-			return ret;
++			goto err_poweroff;
+ 
+ 		data->motion_trig->dev.parent = &client->dev;
+ 		data->motion_trig->ops = &kxcjk1013_trigger_ops;
+@@ -1311,6 +1315,8 @@ err_trigger_unregister:
+ 		iio_trigger_unregister(data->dready_trig);
+ 	if (data->motion_trig)
+ 		iio_trigger_unregister(data->motion_trig);
++err_poweroff:
++	kxcjk1013_set_mode(data, STANDBY);
+ 
+ 	return ret;
+ }
 -- 
-1.9.3
+1.7.9.5
