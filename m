@@ -1,60 +1,72 @@
-Return-Path: <harald@ccbib.org>
-From: Harald Geyer <harald@ccbib.org>
-To: Richard Weinberger <richard@nod.at>
-cc: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
-    pmeerw@pmeerw.net, sanjeev_sharma@mentor.com,
-    linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: iio: dht11 Updates
-In-reply-to: <547F7092.8080001@nod.at>
-References: <1417563176-31972-1-git-send-email-richard@nod.at> <E1Xw8sp-0001B6-Ul@stardust.g4.wien.funkfeuer.at> <547F7092.8080001@nod.at>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:50098 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S933123AbaLECP0 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 4 Dec 2014 21:15:26 -0500
+Message-ID: <5481153B.4070609@kernel.org>
+Date: Fri, 05 Dec 2014 02:15:23 +0000
+From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Date: Thu, 04 Dec 2014 17:08:02 +0100
-Message-Id: <E1XwYwk-00019x-LZ@stardust.g4.wien.funkfeuer.at>
-List-ID: <linux-iio@vger.kernel.org>
+To: Teodora Baluta <teodora.baluta@intel.com>,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [RFC PATCH 0/3] Introduce IIO interface for fingerprint sensors
+References: <1417698017-13835-1-git-send-email-teodora.baluta@intel.com>
+In-Reply-To: <1417698017-13835-1-git-send-email-teodora.baluta@intel.com>
+Content-Type: text/plain; charset=windows-1252
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Richard Weinberger writes:
-> Harald,
+
+On 04/12/14 13:00, Teodora Baluta wrote:
+> This patchset adds support for fingerprint sensors through the IIO interface.
+> This way userspace applications collect information in a uniform way. All
+> processing would be done in the upper layers as suggested in [0].
 > 
-> Am 03.12.2014 um 13:18 schrieb Harald Geyer:
-> > Hi Richard,
-> > 
-> > thanks for all the work you put into this!
-> > 
-> > Richard Weinberger writes:
-> >> Please see my current patches for your driver.
-> >> As discussed in an earlier mail I'm testing with the DHT22 sensor only.
-> >> With the IRQ changes I see 84 edges.
-> > 
-> > This still surprises me. With the IRQ changes I would expect the
-> > preamble to be 2 edges only. I must be missing something. Can you
-> > explain this to me?
+> In order to test out this proposal, a minimal implementation for UPEK's
+> TouchChip Fingerprint Sensor via USB is also available. Although there is an
+> existing implementation in userspace for USB fingerprint devices, including this
+> particular device, the driver represents a proof of concept of how fingerprint
+> sensors could be integrated in the IIO framework regardless of the used bus. For
+> lower power requirements, the SPI bus is preferred and a kernel driver
+> implementation makes more sense.
+
+So why not v4l?  These are effectively image sensors.. 
 > 
-> Did some more tests.
-> With my IRQ changes applied I get as stated 84 edges,
-> without I get 85. So we're only losing one edge.
+> A sysfs trigger is enabled and the device starts scanning. As soon as an image
+> is available it is written in the character device /dev/iio:deviceX.
+> 
+> Userspace applications will be able to calculate the expected image size using
+> the fingerprint attributes height, width and bit depth. Other attributes
+> introduced for the fingerprint channel in IIO represent information that aids in
+> the fingerprint image processing. Besides these, the proposed interface offers
+> userspace a way to read a feedback after a scan (like the swipe was too slow or
+> too fast) through a modified fingerprint_status channel.
+> 
+> [0] http://www.spinics.net/lists/linux-iio/msg11463.html
+> 
+> Teodora Baluta (3):
+>   iio: core: add support for fingerprint devices
+>   iio: core: change channel's storagebits/realbits to u32
+>   iio: fingerprint: add fingerprint sensor via USB
+> 
+>  Documentation/ABI/testing/sysfs-bus-iio |  51 +++
+>  drivers/iio/Kconfig                     |   1 +
+>  drivers/iio/Makefile                    |   1 +
+>  drivers/iio/fingerprint/Kconfig         |  15 +
+>  drivers/iio/fingerprint/Makefile        |   5 +
+>  drivers/iio/fingerprint/fp_tc.c         | 162 +++++++++
+>  drivers/iio/fingerprint/fp_tc.h         |  22 ++
+>  drivers/iio/fingerprint/fp_tc_usb.c     | 618 ++++++++++++++++++++++++++++++++
+>  drivers/iio/fingerprint/fp_tc_usb.h     | 144 ++++++++
+>  drivers/iio/industrialio-core.c         |   9 +
+>  include/linux/iio/iio.h                 |  11 +-
+>  include/linux/iio/types.h               |  10 +
+>  12 files changed, 1047 insertions(+), 2 deletions(-)
+>  create mode 100644 drivers/iio/fingerprint/Kconfig
+>  create mode 100644 drivers/iio/fingerprint/Makefile
+>  create mode 100644 drivers/iio/fingerprint/fp_tc.c
+>  create mode 100644 drivers/iio/fingerprint/fp_tc.h
+>  create mode 100644 drivers/iio/fingerprint/fp_tc_usb.c
+>  create mode 100644 drivers/iio/fingerprint/fp_tc_usb.h
+> 
 
-Ok, finally had time to look into this and it's a simple off-by-one
-issue (no bug) that confused me:
-Without your patch the full number of edges per data transmission
-is 86. But since the last edge is not significant, we only store
-85 edges. - There should be a comment about this in the source...
-
-With your patch the preamble is shortened by two edges as expected,
-but since there is a workaround for sensors where the preamble wasn't
-properly recorded, nobody notices unless they are looking closely at
-the number of edges recorded. The next thing to do is check on DHT11
-if the workaround is still needed.
-
-Note that the old behaviour was nice for debugging wiring problems:
-With my standard setup (3.3V, pin drive strenght 4 mA) I got the
-following:
-supply not connected: 0 edges (sensor always pulls the data line low)
-data not connected: 2 edges (we only see the signal we generate ourselves)
-gnd not connected: random amount of edges
-
-With the new behaviour we will get 0 edges in both of the first two
-cases. So we are really losing a tiny bit of functionality... :-(
-
-HTH,
-Harald
