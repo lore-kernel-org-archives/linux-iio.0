@@ -1,119 +1,82 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mailapp01.imgtec.com ([195.59.15.196]:6600 "EHLO
-	mailapp01.imgtec.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750896AbaLEOe5 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 5 Dec 2014 09:34:57 -0500
-Message-ID: <5481C221.2040900@imgtec.com>
-Date: Fri, 5 Dec 2014 11:33:05 -0300
-From: Ezequiel Garcia <ezequiel.garcia@imgtec.com>
-MIME-Version: 1.0
-To: Jonathan Cameron <jic23@kernel.org>,
-	James Hartley <james.hartley@imgtec.com>,
-	Andrew Bresticker <abrestic@chromium.org>
-CC: <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
-	<robh+dt@kernel.org>, <Pawel.Moll@arm.com>, <Mark.Rutland@arm.com>,
-	<ijc+devicetree@hellion.org.uk>, <galak@codeaurora.org>
-Subject: Re: [PATCH v5 0/3] iio: Add Cosmic Circuits ADC support
-References: <1417102762-5123-1-git-send-email-ezequiel.garcia@imgtec.com> <54819D3C.7000209@imgtec.com> <4C4CBD60-74E1-4A17-9D93-EDDE8AF33841@kernel.org> <5481B24B.4020507@kernel.org>
-In-Reply-To: <5481B24B.4020507@kernel.org>
-Content-Type: text/plain; charset="utf-8"
+Received: from mga09.intel.com ([134.134.136.24]:36532 "EHLO mga09.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1750963AbaLEQED (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Fri, 5 Dec 2014 11:04:03 -0500
+Message-ID: <1417795398.1851.17.camel@spandruv-desktop.jf.intel.com>
+Subject: Re: [PATCH v2] iio: imu: inv_mpu6050: Add i2c mux for by pass
+From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+To: Wolfram Sang <wsa@the-dreams.de>
+Cc: jic23@kernel.org, linux-iio@vger.kernel.org,
+	linux-i2c@vger.kernel.org
+Date: Fri, 05 Dec 2014 08:03:18 -0800
+In-Reply-To: <20141205070313.GA1197@katana>
+References: <1417734625-13739-1-git-send-email-srinivas.pandruvada@linux.intel.com>
+	 <1417734625-13739-2-git-send-email-srinivas.pandruvada@linux.intel.com>
+	 <20141205070313.GA1197@katana>
+Content-Type: text/plain; charset="UTF-8"
+Mime-Version: 1.0
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-
-
-On 12/05/2014 10:25 AM, Jonathan Cameron wrote:
-> On 05/12/14 13:12, Jonathan Cameron wrote:
->>
->>
->> On December 5, 2014 11:55:40 AM GMT+00:00, Ezequiel Garcia <ezequiel.garcia@imgtec.com> wrote:
->>> Hi Jonathan,
->>>
->>> On 11/27/2014 12:39 PM, Ezequiel Garcia wrote:
->>>> Changes from v4:
->>>>
->>>>   * Added a compile-time dependency on REGULATOR and HAVE_CLK.
->>>>
->>>>   * Replaced the silly XOR operation for a proper mask out of the
->>>>     available channels.
->>>>
->>>> Changes from v3:
->>>>
->>>>   * Fixed a few style nitpicks as per Hartmut's feedback.
->>>>
->>>>   * Used GENMASK() to build the channel mask, which fixes a very
->>> nasty
->>>>     bug. Also found by Hartmut.
->>>>
->>>> Changes from v2:
->>>>
->>>>   * Changed a devicetree property from adc-available-channels to
->>>>     adc-reserved-channels, so it can be made optional.
->>>>
->>>>   * Renamed the driver from cc_10001_xxx to cc10001_xxx so it's
->>> consistent
->>>>     with the rest of the kernel style.
->>>>
->>>>   * Some more minor cosmetic fixes.
->>>>
->>>> Changes from v1:
->>>>
->>>>   * Removed unneeded header includes.
->>>>
->>>>   * Changed all the names and macros prefix: s/CC_10001_/CC10001_.
->>>>
->>>>   * Used .update_scan_mode callback to preallocate the buffer.
->>>>
->>>>   * Used indio_dev for the struct iio_dev.
->>>>
->>>>   * Only read the regulator voltage when needed.
->>>>
->>>>   * Fixed probe() error handling.
->>>>
->>>>   * Used for_each_set_bit() instead of open-coding it.
->>>>
->>>>   * Name the power-down register as _POWER_UP, to make the code
->>>>     less silly.
->>>>
->>>>   * Error out when no valid sample can be read (i.e. when
->>> end-of-conversion
->>>>     poll times out).
->>>>
->>>>   * ... plus some assorted code cleaning based on the feedback.
->>>>
->>>>
->>>> Ezequiel Garcia (1):
->>>>   DT: Add a vendor prefix for Cosmic Circuits
->>>>
->>>> Phani Movva (2):
->>>>   iio: adc: Cosmic Circuits 10001 ADC driver
->>>>   DT: iio: adc: Add CC_10001 binding documentation
->>>>
->>>
->>> Unless there are any outstanding issues with this series, it'd be great
->>> to merge it for v3.19.
->>>
->>> Thanks!
->> Sorry too late unfortunately. Merge window opens on Sunday and stuff needs to have
->>  been in Greg KH's tree for a week before that. Going to be 3.20 now.
->>
-
-Oh, shoot. I was hoping to be in time for the merge. Being a new driver
-there wasn't much harm in taking it earlier.
-
-> Also, the DT patch could really do with an Ack from Rob.  If Hartmut/Lars
-> want to give a reviewed-by that would be good given they done the legwork
-> on reviewing your driver.
+On Fri, 2014-12-05 at 08:03 +0100, Wolfram Sang wrote: 
+> On Thu, Dec 04, 2014 at 03:10:25PM -0800, Srinivas Pandruvada wrote:
+> > This chip allows some limited number of sensors connected to it as
+> > slaves, which can be directly accessed by register interface of this
+> > driver.But the current upstream driver doesn't support such mode.
+> > To attach such slaves to main processor i2c bus, chip has to be set
+> > up in bypass mode. This change adds i2c mux, which will enable/disable
+> > this mode for transaction to/from such slave devices.
+> > This was discussed for a while in mailing list, this was the outcome:
+> > Reference:
+> > http://www.spinics.net/lists/linux-iio/msg12126.html
+> > http://comments.gmane.org/gmane.linux.kernel.iio/11470
+> > 
+> > Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
 > 
-> Looks good to me btw.  Just taken a quick look, but little gets past those
-> guys anyway :)
+> Only minor nits, in general:
+> 
+> Reviewed-by: Wolfram Sang <wsa@the-dreams.de>
+> 
+> > +static int inv_mpu6050_create_mux(struct iio_dev *indio_dev)
+> > +{
+> > +	struct inv_mpu6050_state *st = iio_priv(indio_dev);
+> > +	struct i2c_client *client = st->client;
+> > +
+> > +	st->mux_adapter = i2c_add_mux_adapter(client->adapter,
+> > +					      &client->dev,
+> > +					      indio_dev,
+> > +					      0, 0, 0,
+> > +					      inv_mpu6050_select_bypass,
+> > +					      inv_mpu6050_deselect_bypass);
+> > +	if (st->mux_adapter == NULL) {
+> > +		dev_err(&st->client->dev, "Mux create Failed\n");
+> 
+> i2c_add_mux_adapter prints error messages on its own, so this is not
+> needed.
+> 
+> > +		return -ENODEV;
+> > +	}
+> > +
+> > +	return 0;
+> > +}
+> > +
+> > +static void inv_mpu6050_destroy_mux(struct iio_dev *indio_dev)
+> > +{
+> > +	struct inv_mpu6050_state *mpu_st = iio_priv(indio_dev);
+> > +
+> > +	if (mpu_st->mux_adapter)
+> > +		i2c_del_mux_adapter(mpu_st->mux_adapter);
+> > +}
+> 
+> Since those two functions are only called once and don't encapsulate
+> much, I'd rather put the commands directly into the calling functions.
+Agree. I will move them to the caller and submit another version.
+I hope, I can still use reviewed-by tag, after this change.
+
+Thanks,
+Srinivas 
 > 
 
-If at all possible, do you think you area able to pick the patches now
-(but you don't include them in your pull request to Linus) so they are
-linux-next? It'd be good to know they start getting build-test coverage
-soon.
 
-Thanks!
--- 
-Ezequiel
+
