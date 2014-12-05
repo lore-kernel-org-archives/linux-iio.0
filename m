@@ -1,64 +1,60 @@
-Return-Path: <Fabien.Proriol@jdsu.com>
-From: Fabien Proriol <Fabien.Proriol@jdsu.com>
-To: Jonathan Cameron <jic23@kernel.org>, Lars-Peter Clausen <lars@metafoo.de>,
-        Michal Simek <michal.simek@xilinx.com>,
-        "linux-iio@vger.kernel.org"
-	<linux-iio@vger.kernel.org>
-Subject: Re: [PATCH] 0001-xilinx-xadc-core-Fix-voltage-offset.patch
-Date: Fri, 5 Dec 2014 16:12:13 +0000
-Message-ID: <5481D8F1.7040703@jdsu.com>
-References: <545B9479.5030700@jdsu.com> <545B976D.4080303@metafoo.de>
- <545B9EF1.8000606@jdsu.com> <545BA105.70105@metafoo.de>
- <545BA802.5090206@jdsu.com> <54690AE5.4050900@metafoo.de>
- <5469B725.8080908@jdsu.com> <5469B7FF.6050500@metafoo.de>
- <54707707.5040200@kernel.org>
-In-Reply-To: <54707707.5040200@kernel.org>
-Content-Type: text/plain; charset="Windows-1252"
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from sauhun.de ([89.238.76.85]:43349 "EHLO pokefinder.org"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751081AbaLERtM (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Fri, 5 Dec 2014 12:49:12 -0500
+Date: Fri, 5 Dec 2014 18:49:07 +0100
+From: Wolfram Sang <wsa@the-dreams.de>
+To: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Cc: jic23@kernel.org, linux-iio@vger.kernel.org,
+	linux-i2c@vger.kernel.org
+Subject: Re: [PATCH v2] iio: imu: inv_mpu6050: Add i2c mux for by pass
+Message-ID: <20141205174907.GA7025@katana>
+References: <1417734625-13739-1-git-send-email-srinivas.pandruvada@linux.intel.com>
+ <1417734625-13739-2-git-send-email-srinivas.pandruvada@linux.intel.com>
+ <20141205070313.GA1197@katana>
+ <1417795398.1851.17.camel@spandruv-desktop.jf.intel.com>
 MIME-Version: 1.0
-List-ID: <linux-iio@vger.kernel.org>
-
-On 22/11/2014 12:44, Jonathan Cameron wrote:
-> Hi
->
-> This patch appears to be against a relatively ancient kernel.
-> Would you mind rebasing it on linus' current tree?
->
-> Thanks,
->
-> Jonathan
-
-Ok, this is the patch rebase on Linus Trovald master
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="YiEDa0DAkWCtVeE4"
+In-Reply-To: <1417795398.1851.17.camel@spandruv-desktop.jf.intel.com>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
 
->From 8833373032c2c4a48569137e0d10804131b98f1d Mon Sep 17 00:00:00 2001
-From: Fabien Proriol <fabien.proriol@jdsu.com>
-Date: Mon, 17 Nov 2014 09:46:02 +0100
-Subject: [PATCH] iio: Fix iio_channel_read return if channel havn't info
+--YiEDa0DAkWCtVeE4
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-iio_channel_read must return an error to avoid offset for channel
-without IIO_CHAN_INFO_OFFSET property
 
-Signed-off-by: Fabien Proriol <fabien.proriol@jdsu.com>
----
- drivers/iio/inkern.c | 3 +++
- 1 file changed, 3 insertions(+)
+> > Since those two functions are only called once and don't encapsulate
+> > much, I'd rather put the commands directly into the calling functions.
+> Agree. I will move them to the caller and submit another version.
+> I hope, I can still use reviewed-by tag, after this change.
 
-diff --git a/drivers/iio/inkern.c b/drivers/iio/inkern.c
-index f084610..d33590e 100644
---- a/drivers/iio/inkern.c
-+++ b/drivers/iio/inkern.c
-@@ -426,6 +426,9 @@ static int iio_channel_read(struct iio_channel *chan, i=
-nt *val, int *val2,
-        if (val2 =3D=3D NULL)
-                val2 =3D &unused;
-=20
-+       if(!iio_channel_has_info(chan->channel, info))
-+               return -EINVAL;
-+
-        if (chan->indio_dev->info->read_raw_multi) {
-                ret =3D chan->indio_dev->info->read_raw_multi(chan->indio_d=
-ev,
-                                        chan->channel, INDIO_MAX_RAW_ELEMEN=
-TS,
---=20
-2.0.4
+If you only change my comments, then yes!
+
+
+--YiEDa0DAkWCtVeE4
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
+
+iQIcBAEBAgAGBQJUgfASAAoJEBQN5MwUoCm2QgYP/1CUgRfIsxFnUlIaU5YgHmeI
+cyTGRNZrsRo0533qEldJguA3ddJwffJWbQkseBg/kXQWMDxrCuPrvK/7ovUkoEXk
+VifHEove9trq3uOGQNN5FTmaKpYTi4HDuDyOyAinMApzxkWQj6LqWXz4f7nHDtv/
+WY3Qh3ddU6arx1+U5s2AAkXZzu4Q8rjR7EktIUL3tczC1ymc6Zm0HIxDLHDmqK1p
+hj3v/XUQ9X6ELPqcNPXq51B0zVbL74NWPzoQCEXmTj204WL3akxdJyLYk2NevJJM
+69FmsQVajEWQVEhjPiQ7sl4y7n7mUCqLn2O89yk4bYElfFpp3IsJxfMSUP6rdjRX
+tPKMhiBdX0fYmkr+IXFsBAiMUdiYA2ukV9LF62OvuZSiytZDzMJKe/YEqqnKmMx7
+Jvzcr9nk5Lig1aUbwzmOxV64mC/Nec8QkPf+7C/mrcUZ2PasgpKVepTkKMbKXlIV
+8qRATGq2xtR354QMrXseT6L2DV8c6T7pzE+zjLzkkx1y2I0DiX+87+tuvUyCFE20
+Qg5vUG5z6e++IqS+HD3v+wpdrcGDCqwvKYo+e5vbZvSJCT50SE3A6VGKCa5DGcyo
+9WQ4EHggnLWI/JBkmnmNcKMArL2f0ROaSy0qbXuIDJs6l59TZ6Ee2G3mJGS6XR8c
+CE6+okyAe2lgQv1fSPy3
+=ztP7
+-----END PGP SIGNATURE-----
+
+--YiEDa0DAkWCtVeE4--
