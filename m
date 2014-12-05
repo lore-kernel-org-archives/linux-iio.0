@@ -5,74 +5,174 @@ To: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
 Cc: Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
  Kyungmin Park <kyungmin.park@samsung.com>, Karol Wrona <wrona.vy@gmail.com>,
  Karol Wrona <k.wrona@samsung.com>
-Subject: [PATCH v3 2/5] iio: sensorhub: Add sensorhub bindings
-Date: Fri, 05 Dec 2014 20:54:47 +0100
-Message-id: <1417809290-9662-3-git-send-email-k.wrona@samsung.com>
+Subject: [PATCH v3 3/5] iio: common: ssp_sensors: Add sensorhub iio commons
+Date: Fri, 05 Dec 2014 20:54:48 +0100
+Message-id: <1417809290-9662-4-git-send-email-k.wrona@samsung.com>
 In-reply-to: <1417809290-9662-1-git-send-email-k.wrona@samsung.com>
 References: <1417809290-9662-1-git-send-email-k.wrona@samsung.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-Add sensorhub bindings for sensorhub on Galaxy Gear 2.
+This patch adds common library for sensorhub iio drivers.
 
-Change-Id: I4ee25aef33c21a4662de230841de9a8684f2c26b
+Change-Id: I1038cb31c051f7e8ffde696a4121518daa5af081
 Signed-off-by: Karol Wrona <k.wrona@samsung.com>
 Acked-by: Kyungmin Park <kyungmin.park@samsung.com>
 ---
- .../devicetree/bindings/iio/sensorhub.txt          |   46 ++++++++++++++++++++
- 1 file changed, 46 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/iio/sensorhub.txt
+ drivers/iio/common/ssp_sensors/ssp_iio.c        |   82 +++++++++++++++++++++++
+ drivers/iio/common/ssp_sensors/ssp_iio_sensor.h |   56 ++++++++++++++++
+ 2 files changed, 138 insertions(+)
+ create mode 100644 drivers/iio/common/ssp_sensors/ssp_iio.c
+ create mode 100644 drivers/iio/common/ssp_sensors/ssp_iio_sensor.h
 
-diff --git a/Documentation/devicetree/bindings/iio/sensorhub.txt b/Documentation/devicetree/bindings/iio/sensorhub.txt
+diff --git a/drivers/iio/common/ssp_sensors/ssp_iio.c b/drivers/iio/common/ssp_sensors/ssp_iio.c
 new file mode 100644
-index 0000000..2aca0c3
+index 0000000..036be12
 --- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/sensorhub.txt
-@@ -0,0 +1,46 @@
-+Samsung Sensorhub driver
++++ b/drivers/iio/common/ssp_sensors/ssp_iio.c
+@@ -0,0 +1,82 @@
++/*
++ *  Copyright (C) 2014, Samsung Electronics Co. Ltd. All Rights Reserved.
++ *
++ *  This program is free software; you can redistribute it and/or modify
++ *  it under the terms of the GNU General Public License as published by
++ *  the Free Software Foundation; either version 2 of the License, or
++ *  (at your option) any later version.
++ *
++ *  This program is distributed in the hope that it will be useful,
++ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
++ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ *  GNU General Public License for more details.
++ *
++ */
 +
-+Sensorhub is a MCU which manages several sensors and also plays the role
-+of a virtual sensor device.
++#include <linux/iio/common/ssp_sensors.h>
++#include <linux/iio/kfifo_buf.h>
++#include "ssp_iio_sensor.h"
 +
-+Required properties:
-+- compatible: "samsung,sensorhub-rinato" or "samsung,sensorhub-thermostat"
-+- spi-max-frequency: max SPI clock frequency
-+- interrupt-parent: interrupt parent
-+- interrupts: communication interrupt
-+- ap-mcu-gpio: [out] ap to sensorhub line - used during communication
-+- mcu-ap-gpio: [in] sensorhub to ap - used during communication
-+- mcu-reset: [out] sensorhub reset
++/**
++ * ssp_common_buffer_postenable() - generic postenable callback for ssp buffer
++ *
++ * @indio_dev:		iio device
++ *
++ * Returns 0 or negative value in case of error
++ */
++int ssp_common_buffer_postenable(struct iio_dev *indio_dev)
++{
++	struct ssp_sensor_data *spd = iio_priv(indio_dev);
++	struct ssp_data *data = dev_get_drvdata(indio_dev->dev.parent->parent);
 +
-+Optional properties:
-+- sensor's nodes:
-+  compatible = "samsung,mpu6500-accel"
-+  compatible = "samsung,mpu6500-gyro"
-+  compatible = "samsung,adpd142"
++	return ssp_enable_sensor(data, spd->type,
++				 ssp_get_sensor_delay(data, spd->type));
++}
++EXPORT_SYMBOL(ssp_common_buffer_postenable);
 +
-+Sensor compatibles are used to match proper sensor driver to real sensor on
-+the board. The firmware does not give such information, so it helps to specify
-+some sensors properties. Sensors have "samsung" prefixes because frequently
-+they will not have much in common with sensors used without sensorhub because
-+it can do some data processing.
++/**
++ * ssp_common_buffer_predisable() - generic predisable callback for ssp buffer
++ *
++ * @indio_dev:		iio device
++ *
++ * Returns 0 or negative value in case of error
++ */
++int ssp_common_buffer_predisable(struct iio_dev *indio_dev)
++{
++	struct ssp_sensor_data *spd = iio_priv(indio_dev);
++	struct ssp_data *data = dev_get_drvdata(indio_dev->dev.parent->parent);
 +
-+Example:
++	return ssp_disable_sensor(data, spd->type);
++}
++EXPORT_SYMBOL(ssp_common_buffer_predisable);
 +
-+	shub_spi: shub {
-+		compatible = "samsung,sensorhub-rinato";
-+		spi-max-frequency = <5000000>;
-+		interrupt-parent = <&gpx0>;
-+		interrupts = <2 0>;
-+		ap-mcu-gpio = <&gpx0 0 0>;
-+		mcu-ap-gpio = <&gpx0 4 0>;
-+		mcu-reset = <&gpx0 5 0>;
-+		sensor@0 {
-+			compatible = "samsung,mpu6500-accel";
-+		};
-+		sensor@1 {
-+			compatible = "samsung,mpu6500-gyro";
-+		};
-+		sensor@2 {
-+			compatible = "samsung,adpd142";
-+		};
-+	};
++/**
++ * ssp_common_setup_buffer() - creates iio kfifo and registers the buffer
++ *                             for device
++ *
++ * @indio_dev:		iio device
++ *
++ * Returns 0 or negative value in case of error
++ */
++int ssp_common_setup_buffer(struct iio_dev *indio_dev,
++			    const struct iio_buffer_setup_ops *ops)
++{
++	int ret;
++	struct iio_buffer *buffer;
++
++	buffer = iio_kfifo_allocate(indio_dev);
++	if (!buffer)
++		return -ENOMEM;
++
++	iio_device_attach_buffer(indio_dev, buffer);
++
++	indio_dev->setup_ops = ops;
++
++	ret = iio_buffer_register(indio_dev, indio_dev->channels,
++				  indio_dev->num_channels);
++	if (ret)
++		iio_kfifo_free(buffer);
++
++	return ret;
++}
++EXPORT_SYMBOL(ssp_common_setup_buffer);
+diff --git a/drivers/iio/common/ssp_sensors/ssp_iio_sensor.h b/drivers/iio/common/ssp_sensors/ssp_iio_sensor.h
+new file mode 100644
+index 0000000..4b79be0
+--- /dev/null
++++ b/drivers/iio/common/ssp_sensors/ssp_iio_sensor.h
+@@ -0,0 +1,56 @@
++#ifndef __SSP_IIO_SENSOR_H__
++#define __SSP_IIO_SENSOR_H__
++
++#define SSP_CHANNEL_AG(_type, _mod, _index) \
++{ \
++		.type = _type,\
++		.modified = 1,\
++		.channel2 = _mod,\
++		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SAMP_FREQ),\
++		.scan_index = _index,\
++		.scan_type = {\
++			.sign = 's',\
++			.realbits = 16,\
++			.storagebits = 16,\
++			.shift = 0,\
++			.endianness = IIO_LE,\
++		},\
++}
++
++#define SSP_DIVISOR	1000000ULL
++#define SSP_MS_PER_S	1000
++#define SSP_DIVIDEND	(SSP_DIVISOR * SSP_MS_PER_S)
++
++int ssp_common_buffer_postenable(struct iio_dev *indio_dev);
++
++int ssp_common_buffer_predisable(struct iio_dev *indio_dev);
++
++int ssp_common_setup_buffer(struct iio_dev *indio_dev,
++			    const struct iio_buffer_setup_ops *ops);
++
++/* Converts time in ms to frequency */
++static inline void ssp_convert_to_freq(u32 time, int *integer_part,
++				       int *fractional)
++{
++	if (time == 0) {
++		*fractional = 0;
++		*integer_part = 0;
++		return;
++	}
++
++	*integer_part = SSP_DIVIDEND / time;
++	*fractional = do_div(*integer_part, SSP_DIVISOR);
++}
++
++/* Converts frequency to time in ms*/
++static inline int ssp_convert_to_time(int integer_part, int fractional)
++{
++	u64 value;
++
++	value = integer_part * SSP_DIVISOR + fractional;
++	if (value == 0)
++		return 0;
++
++	return div_u64(SSP_DIVIDEND, value);
++}
++#endif /* __SSP_IIO_SENSOR_H__ */
 -- 
 1.7.9.5
