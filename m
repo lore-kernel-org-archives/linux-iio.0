@@ -1,106 +1,130 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:39863 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:39884 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751263AbaLGRnW (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 7 Dec 2014 12:43:22 -0500
-Message-ID: <548312D9.3070104@kernel.org>
-Date: Sat, 06 Dec 2014 14:29:45 +0000
+	with ESMTP id S1753228AbaLGRnb (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 7 Dec 2014 12:43:31 -0500
+Message-ID: <54831916.8060501@kernel.org>
+Date: Sat, 06 Dec 2014 14:56:22 +0000
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Karol Wrona <k.wrona@samsung.com>, linux-iio@vger.kernel.org,
-	Hartmut Knaack <knaack.h@gmx.de>, linux-kernel@vger.kernel.org
-CC: Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
-	Kyungmin Park <kyungmin.park@samsung.com>,
-	Karol Wrona <wrona.vy@gmail.com>,
-	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-	Rob Herring <robh+dt@kernel.org>,
-	Pawel Moll <pawel.moll@arm.com>,
-	Mark Rutland <mark.rutland@arm.com>,
-	Ian Campbell <ijc+devicetree@hellion.org.uk>,
-	Kumar Gala <galak@codeaurora.org>
-Subject: Re: [PATCH v3 2/5] iio: sensorhub: Add sensorhub bindings
-References: <1417809290-9662-1-git-send-email-k.wrona@samsung.com> <1417809290-9662-3-git-send-email-k.wrona@samsung.com>
-In-Reply-To: <1417809290-9662-3-git-send-email-k.wrona@samsung.com>
-Content-Type: text/plain; charset=windows-1252
+To: Ezequiel Garcia <ezequiel.garcia@imgtec.com>,
+	James Hartley <james.hartley@imgtec.com>,
+	Andrew Bresticker <abrestic@chromium.org>
+CC: linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+	robh+dt@kernel.org, Pawel.Moll@arm.com, Mark.Rutland@arm.com,
+	ijc+devicetree@hellion.org.uk, galak@codeaurora.org
+Subject: Re: [PATCH v5 0/3] iio: Add Cosmic Circuits ADC support
+References: <1417102762-5123-1-git-send-email-ezequiel.garcia@imgtec.com> <54819D3C.7000209@imgtec.com> <4C4CBD60-74E1-4A17-9D93-EDDE8AF33841@kernel.org> <5481B24B.4020507@kernel.org> <5481C221.2040900@imgtec.com>
+In-Reply-To: <5481C221.2040900@imgtec.com>
+Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 05/12/14 19:54, Karol Wrona wrote:
-> Add sensorhub bindings for sensorhub on Galaxy Gear 2.
+On 05/12/14 14:33, Ezequiel Garcia wrote:
 > 
-> Change-Id: I4ee25aef33c21a4662de230841de9a8684f2c26b
-> Signed-off-by: Karol Wrona <k.wrona@samsung.com>
-> Acked-by: Kyungmin Park <kyungmin.park@samsung.com>
-Looks good to me.  Comments inline.  Note I either need a device tree
-ack or a long delay before I can take this though.  Unlikely to get the
-device tree ack as you haven't cc'd the maintainers or list ;)
-
-I've added the cc's. Please make sure future versions have them or you'll
-just be slowing the process down (particularly if no one notices they 
-are missing!)
-
-> ---
->  .../devicetree/bindings/iio/sensorhub.txt          |   46 ++++++++++++++++++++
->  1 file changed, 46 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/iio/sensorhub.txt
 > 
-> diff --git a/Documentation/devicetree/bindings/iio/sensorhub.txt b/Documentation/devicetree/bindings/iio/sensorhub.txt
-> new file mode 100644
-> index 0000000..2aca0c3
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/iio/sensorhub.txt
-> @@ -0,0 +1,46 @@
-> +Samsung Sensorhub driver
-> +
-> +Sensorhub is a MCU which manages several sensors and also plays the role
-> +of a virtual sensor device.
-> +
-> +Required properties:
-> +- compatible: "samsung,sensorhub-rinato" or "samsung,sensorhub-thermostat"
-> +- spi-max-frequency: max SPI clock frequency
-> +- interrupt-parent: interrupt parent
-> +- interrupts: communication interrupt
-> +- ap-mcu-gpio: [out] ap to sensorhub line - used during communication
-> +- mcu-ap-gpio: [in] sensorhub to ap - used during communication
-> +- mcu-reset: [out] sensorhub reset
-as commented in previous patch, why do the first two have -gpio and the
-third not?
-> +
-> +Optional properties:
-> +- sensor's nodes:
-> +  compatible = "samsung,mpu6500-accel"
-> +  compatible = "samsung,mpu6500-gyro"
-> +  compatible = "samsung,adpd142"
-> +
-> +Sensor compatibles are used to match proper sensor driver to real sensor on
-> +the board. The firmware does not give such information, so it helps to specify
-> +some sensors properties. Sensors have "samsung" prefixes because frequently
-> +they will not have much in common with sensors used without sensorhub because
-> +it can do some data processing.
-We'll keep that under review.  Might make sense, sometimes, to unify the
-drivers.  The different compatible will probably still be needed, but if
-these devices proliferate I don't want two drivers for everything that
-gets stuck behind them.
-> +
-> +Example:
-> +
-> +	shub_spi: shub {
-> +		compatible = "samsung,sensorhub-rinato";
-> +		spi-max-frequency = <5000000>;
-> +		interrupt-parent = <&gpx0>;
-> +		interrupts = <2 0>;
-> +		ap-mcu-gpio = <&gpx0 0 0>;
-> +		mcu-ap-gpio = <&gpx0 4 0>;
-> +		mcu-reset = <&gpx0 5 0>;
-> +		sensor@0 {
-> +			compatible = "samsung,mpu6500-accel";
-> +		};
-> +		sensor@1 {
-> +			compatible = "samsung,mpu6500-gyro";
-> +		};
-> +		sensor@2 {
-> +			compatible = "samsung,adpd142";
-> +		};
-> +	};
+> On 12/05/2014 10:25 AM, Jonathan Cameron wrote:
+>> On 05/12/14 13:12, Jonathan Cameron wrote:
+>>>
+>>>
+>>> On December 5, 2014 11:55:40 AM GMT+00:00, Ezequiel Garcia <ezequiel.garcia@imgtec.com> wrote:
+>>>> Hi Jonathan,
+>>>>
+>>>> On 11/27/2014 12:39 PM, Ezequiel Garcia wrote:
+>>>>> Changes from v4:
+>>>>>
+>>>>>   * Added a compile-time dependency on REGULATOR and HAVE_CLK.
+>>>>>
+>>>>>   * Replaced the silly XOR operation for a proper mask out of the
+>>>>>     available channels.
+>>>>>
+>>>>> Changes from v3:
+>>>>>
+>>>>>   * Fixed a few style nitpicks as per Hartmut's feedback.
+>>>>>
+>>>>>   * Used GENMASK() to build the channel mask, which fixes a very
+>>>> nasty
+>>>>>     bug. Also found by Hartmut.
+>>>>>
+>>>>> Changes from v2:
+>>>>>
+>>>>>   * Changed a devicetree property from adc-available-channels to
+>>>>>     adc-reserved-channels, so it can be made optional.
+>>>>>
+>>>>>   * Renamed the driver from cc_10001_xxx to cc10001_xxx so it's
+>>>> consistent
+>>>>>     with the rest of the kernel style.
+>>>>>
+>>>>>   * Some more minor cosmetic fixes.
+>>>>>
+>>>>> Changes from v1:
+>>>>>
+>>>>>   * Removed unneeded header includes.
+>>>>>
+>>>>>   * Changed all the names and macros prefix: s/CC_10001_/CC10001_.
+>>>>>
+>>>>>   * Used .update_scan_mode callback to preallocate the buffer.
+>>>>>
+>>>>>   * Used indio_dev for the struct iio_dev.
+>>>>>
+>>>>>   * Only read the regulator voltage when needed.
+>>>>>
+>>>>>   * Fixed probe() error handling.
+>>>>>
+>>>>>   * Used for_each_set_bit() instead of open-coding it.
+>>>>>
+>>>>>   * Name the power-down register as _POWER_UP, to make the code
+>>>>>     less silly.
+>>>>>
+>>>>>   * Error out when no valid sample can be read (i.e. when
+>>>> end-of-conversion
+>>>>>     poll times out).
+>>>>>
+>>>>>   * ... plus some assorted code cleaning based on the feedback.
+>>>>>
+>>>>>
+>>>>> Ezequiel Garcia (1):
+>>>>>   DT: Add a vendor prefix for Cosmic Circuits
+>>>>>
+>>>>> Phani Movva (2):
+>>>>>   iio: adc: Cosmic Circuits 10001 ADC driver
+>>>>>   DT: iio: adc: Add CC_10001 binding documentation
+>>>>>
+>>>>
+>>>> Unless there are any outstanding issues with this series, it'd be great
+>>>> to merge it for v3.19.
+>>>>
+>>>> Thanks!
+>>> Sorry too late unfortunately. Merge window opens on Sunday and stuff needs to have
+>>>  been in Greg KH's tree for a week before that. Going to be 3.20 now.
+>>>
+> 
+> Oh, shoot. I was hoping to be in time for the merge. Being a new driver
+> there wasn't much harm in taking it earlier.
+> 
+>> Also, the DT patch could really do with an Ack from Rob.  If Hartmut/Lars
+>> want to give a reviewed-by that would be good given they done the legwork
+>> on reviewing your driver.
+>>
+>> Looks good to me btw.  Just taken a quick look, but little gets past those
+>> guys anyway :)
+>>
+> 
+> If at all possible, do you think you area able to pick the patches now
+> (but you don't include them in your pull request to Linus) so they are
+> linux-next? It'd be good to know they start getting build-test coverage
+> soon.
+Sorry no can do until 3 weeks have passed for the device tree bindings or
+a dt maintainer acks.  So might be about 2 more weeks I'm afraid.  Also
+it's heavily frowned upon to put stuff in linux next at this point in the
+cycle.  Best to wait until merge window closes.
+
+Note I only feed linux-next via Greg KH's tree anyway (stuff doesn't
+stay in mine normally for more than a week or so, hence little gain
+in a direct pull).
+
+Jonathan
+> 
+> Thanks!
 > 
 
