@@ -1,139 +1,79 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from h1.radempa.de ([176.9.142.194]:46728 "EHLO mail.cosmopool.net"
+Received: from mout.gmx.net ([212.227.17.20]:59481 "EHLO mout.gmx.net"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751124AbaLFRV2 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Sat, 6 Dec 2014 12:21:28 -0500
+	id S1751639AbaLFUTX (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Sat, 6 Dec 2014 15:19:23 -0500
+Message-ID: <548364C2.10401@gmx.de>
+Date: Sat, 06 Dec 2014 21:19:14 +0100
+From: Hartmut Knaack <knaack.h@gmx.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Date: Sat, 06 Dec 2014 18:21:18 +0100
-From: <harald@ccbib.org>
-To: Richard Weinberger <richard@nod.at>
-Cc: <jic23@kernel.org>, <knaack.h@gmx.de>, <lars@metafoo.de>,
-	<pmeerw@pmeerw.net>, <sanjeev_sharma@mentor.com>,
-	<linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 2/4] iio: dht11: IRQ fixes
-In-Reply-To: <1417563176-31972-3-git-send-email-richard@nod.at>
-References: <1417563176-31972-1-git-send-email-richard@nod.at> <1417563176-31972-3-git-send-email-richard@nod.at>
-Message-ID: <bc157395b51e63648d1d1970e16ad6e7@imap.cosmopool.net>
+To: Vlad Dogaru <vlad.dogaru@intel.com>, linux-iio@vger.kernel.org
+Subject: Re: [PATCH 2/4] iio: ensure scan index is unique at buffer register
+References: <1416919687-14271-1-git-send-email-vlad.dogaru@intel.com> <1416919687-14271-3-git-send-email-vlad.dogaru@intel.com>
+In-Reply-To: <1416919687-14271-3-git-send-email-vlad.dogaru@intel.com>
+Content-Type: text/plain; charset=ISO-8859-15
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Hi Richard,
-
-finally got around to test this patch on all HW I have.
-
-As expected the preamble needs to be shortend by two edges:
-With your patch in its current form, the driver stops to work
-reliably with DHT11. Also with DHT22 you get some delay when
-reading the data, because you always wait for the timeout to
-happen, before trying to decode the data.
-
-Since your patch title includes "fix", the commit message
-probably should mention that the patch as a side effect
-changes behaviour - even if it's just diagnostic messages.
-
-Thanks,
-Harald
-
-On Wed,  3 Dec 2014 00:32:54 +0100, Richard Weinberger <richard@nod.at>
-wrote:
-> Signed-off-by: Richard Weinberger <richard@nod.at>
-> ---
->  drivers/iio/humidity/dht11.c | 56
->  ++++++++++++++++++++++++--------------------
->  1 file changed, 30 insertions(+), 26 deletions(-)
+Vlad Dogaru wrote on 25.11.2014 13:48:
+> Having two or more channels with the same positive scan_index field
+> makes no sense.  Prevent this situation by failing to register a buffer
+> if two scan indexes are identical.
 > 
-> diff --git a/drivers/iio/humidity/dht11.c b/drivers/iio/humidity/dht11.c
-> index 168ebc4..0023699 100644
-> --- a/drivers/iio/humidity/dht11.c
-> +++ b/drivers/iio/humidity/dht11.c
-> @@ -140,6 +140,27 @@ static int dht11_decode(struct dht11 *dht11, int
-> offset)
->  	return 0;
+> Signed-off-by: Vlad Dogaru <vlad.dogaru@intel.com>
+> ---
+>  drivers/iio/industrialio-buffer.c | 28 ++++++++++++++++++++++++++++
+>  1 file changed, 28 insertions(+)
+> 
+> diff --git a/drivers/iio/industrialio-buffer.c b/drivers/iio/industrialio-buffer.c
+> index f971f79..422b29e 100644
+> --- a/drivers/iio/industrialio-buffer.c
+> +++ b/drivers/iio/industrialio-buffer.c
+> @@ -309,6 +309,30 @@ static int iio_buffer_add_channel_sysfs(struct iio_dev *indio_dev,
+>  	return ret;
 >  }
 >  
-> +/*
-> + * IRQ handler called on GPIO edges
-> + */
-> +static irqreturn_t dht11_handle_irq(int irq, void *data)
+> +static int iio_check_unique_scan_index(struct iio_dev *indio_dev,
+> +				       const struct iio_chan_spec *channels,
+> +				       int num_channels)
 > +{
-> +	struct iio_dev *iio = data;
-> +	struct dht11 *dht11 = iio_priv(iio);
+> +	int i, j;
 > +
-> +	/* TODO: Consider making the handler safe for IRQ sharing */
-> +	if (dht11->num_edges < DHT11_EDGES_PER_READ && dht11->num_edges >= 0)
-{
-> +		dht11->edges[dht11->num_edges].ts = iio_get_time_ns();
-> +		dht11->edges[dht11->num_edges++].value =
-> +						gpio_get_value(dht11->gpio);
-> +
-> +		if (dht11->num_edges >= DHT11_EDGES_PER_READ)
-> +			complete(&dht11->completion);
+> +	for (i = 0; i < num_channels - 1; i++) {
+> +		if (channels[i].scan_index < 0)
+> +			continue;
+> +		for (j = i + 1; j < num_channels; j++) {
+> +			if (channels[j].scan_index < 0)
+> +				continue;
+This check up here is unnecessary, since channels[i].scan_index is already equal or
+greater zero, so the check below results in a false for channels[j].scan_index smaller
+than zero and cause a new loop iteration anyway.
+
+> +			if (channels[i].scan_index == channels[j].scan_index) {
+> +				dev_err(&indio_dev->dev,
+> +					"duplicate scan index %d\n",
+> +					channels[i].scan_index);
+> +				return -EINVAL;
+> +			}
+> +		}
 > +	}
 > +
-> +	return IRQ_HANDLED;
+> +	return 0;
 > +}
 > +
->  static int dht11_read_raw(struct iio_dev *iio_dev,
->  			const struct iio_chan_spec *chan,
->  			int *val, int *val2, long m)
-> @@ -160,8 +181,17 @@ static int dht11_read_raw(struct iio_dev *iio_dev,
->  		if (ret)
->  			goto err;
+>  static const char * const iio_scan_elements_group_name = "scan_elements";
 >  
-> +		ret = request_irq(dht11->irq, dht11_handle_irq,
-> +				  IRQF_TRIGGER_RISING | IRQF_TRIGGER_FALLING,
-> +				  iio_dev->name, iio_dev);
-> +		if (ret)
-> +			goto err;
-> +
->  		ret = wait_for_completion_killable_timeout(&dht11->completion,
->  								 HZ);
-> +
-> +		free_irq(dht11->irq, iio_dev);
-> +
->  		if (ret == 0 && dht11->num_edges < DHT11_EDGES_PER_READ - 1) {
->  			dev_err(&iio_dev->dev,
->  					"Only %d signal edges detected\n",
-> @@ -197,27 +227,6 @@ static const struct iio_info dht11_iio_info = {
->  	.read_raw		= dht11_read_raw,
->  };
+>  int iio_buffer_register(struct iio_dev *indio_dev,
+> @@ -320,6 +344,10 @@ int iio_buffer_register(struct iio_dev *indio_dev,
+>  	struct iio_buffer *buffer = indio_dev->buffer;
+>  	int ret, i, attrn, attrcount, attrcount_orig = 0;
 >  
-> -/*
-> - * IRQ handler called on GPIO edges
-> -*/
-> -static irqreturn_t dht11_handle_irq(int irq, void *data)
-> -{
-> -	struct iio_dev *iio = data;
-> -	struct dht11 *dht11 = iio_priv(iio);
-> -
-> -	/* TODO: Consider making the handler safe for IRQ sharing */
-> -	if (dht11->num_edges < DHT11_EDGES_PER_READ && dht11->num_edges >= 0)
-{
-> -		dht11->edges[dht11->num_edges].ts = iio_get_time_ns();
-> -		dht11->edges[dht11->num_edges++].value =
-> -						gpio_get_value(dht11->gpio);
-> -
-> -		if (dht11->num_edges >= DHT11_EDGES_PER_READ)
-> -			complete(&dht11->completion);
-> -	}
-> -
-> -	return IRQ_HANDLED;
-> -}
-> -
->  static const struct iio_chan_spec dht11_chan_spec[] = {
->  	{ .type = IIO_TEMP,
->  		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED), },
-> @@ -260,11 +269,6 @@ static int dht11_probe(struct platform_device
-*pdev)
->  		dev_err(dev, "GPIO %d has no interrupt\n", dht11->gpio);
->  		return -EINVAL;
->  	}
-> -	ret = devm_request_irq(dev, dht11->irq, dht11_handle_irq,
-> -				IRQF_TRIGGER_RISING | IRQF_TRIGGER_FALLING,
-> -				pdev->name, iio);
-> -	if (ret)
-> -		return ret;
+> +	ret = iio_check_unique_scan_index(indio_dev, channels, num_channels);
+> +	if (ret < 0)
+> +		return ret;
+> +
+>  	if (buffer->attrs)
+>  		indio_dev->groups[indio_dev->groupcounter++] = buffer->attrs;
 >  
->  	dht11->timestamp = iio_get_time_ns() - DHT11_DATA_VALID_TIME - 1;
->  	dht11->num_edges = -1;
+> 
+
