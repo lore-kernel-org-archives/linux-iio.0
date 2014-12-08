@@ -1,294 +1,276 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mailout4.w1.samsung.com ([210.118.77.14]:14506 "EHLO
-	mailout4.w1.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753410AbaLHKlq (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 8 Dec 2014 05:41:46 -0500
-Message-id: <54858066.6080204@samsung.com>
-Date: Mon, 08 Dec 2014 11:41:42 +0100
-From: Karol Wrona <k.wrona@samsung.com>
-MIME-version: 1.0
-To: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
-	Hartmut Knaack <knaack.h@gmx.de>, linux-kernel@vger.kernel.org
-Cc: Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
-	Kyungmin Park <kyungmin.park@samsung.com>,
-	Karol Wrona <wrona.vy@gmail.com>
-Subject: Re: [PATCH v3 4/5] iio: common: ssp_sensors: Add sensorhub
- accelerometer sensor
-References: <1417809290-9662-1-git-send-email-k.wrona@samsung.com>
- <1417809290-9662-5-git-send-email-k.wrona@samsung.com>
- <54831837.4030604@kernel.org>
-In-reply-to: <54831837.4030604@kernel.org>
-Content-type: text/plain; charset=windows-1252; format=flowed
+Received: from mga11.intel.com ([192.55.52.93]:2806 "EHLO mga11.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1755146AbaLHLru (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Mon, 8 Dec 2014 06:47:50 -0500
+Date: Mon, 8 Dec 2014 13:48:59 +0200
+From: Vlad Dogaru <vlad.dogaru@intel.com>
+To: Hartmut Knaack <knaack.h@gmx.de>
+Cc: linux-iio@vger.kernel.org
+Subject: Re: [PATCH v2] iio: driver for Semtech SX9500 proximity solution
+Message-ID: <20141208114859.GA2066@vdogaru>
+References: <1417006231-17952-1-git-send-email-vlad.dogaru@intel.com>
+ <548444DD.1030003@gmx.de>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <548444DD.1030003@gmx.de>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 12/06/2014 03:52 PM, Jonathan Cameron wrote:
-> On 05/12/14 19:54, Karol Wrona wrote:
->> This patch adds accelerometer iio driver which uses sensorhub as data
->> provider.
->>
->> Change-Id: I4686741b7401ec5cbf4b5d0f2a5cc146fbe24d53
->> Signed-off-by: Karol Wrona <k.wrona@samsung.com>
->> Acked-by: Kyungmin Park <kyungmin.park@samsung.com>
->> ---
->>   drivers/iio/accel/Makefile           |    1 +
->>   drivers/iio/accel/ssp_accel_sensor.c |  203 ++++++++++++++++++++++++++++++++++
->>   2 files changed, 204 insertions(+)
->>   create mode 100644 drivers/iio/accel/ssp_accel_sensor.c
->>
->> diff --git a/drivers/iio/accel/Makefile b/drivers/iio/accel/Makefile
->> index a593996..df6a0b2 100644
->> --- a/drivers/iio/accel/Makefile
->> +++ b/drivers/iio/accel/Makefile
->> @@ -9,6 +9,7 @@ obj-$(CONFIG_HID_SENSOR_ACCEL_3D) += hid-sensor-accel-3d.o
->>   obj-$(CONFIG_KXCJK1013) += kxcjk-1013.o
->>   obj-$(CONFIG_KXSD9)	+= kxsd9.o
->>   obj-$(CONFIG_MMA8452)	+= mma8452.o
->> +obj-$(CONFIG_IIO_SSP_SENSOR) += ssp_accel_sensor.o
->>
->>   obj-$(CONFIG_IIO_ST_ACCEL_3AXIS) += st_accel.o
->>   st_accel-y := st_accel_core.o
->> diff --git a/drivers/iio/accel/ssp_accel_sensor.c b/drivers/iio/accel/ssp_accel_sensor.c
->> new file mode 100644
->> index 0000000..0a47c29
->> --- /dev/null
->> +++ b/drivers/iio/accel/ssp_accel_sensor.c
->> @@ -0,0 +1,203 @@
->> +/*
->> + *  Copyright (C) 2014, Samsung Electronics Co. Ltd. All Rights Reserved.
->> + *
->> + *  This program is free software; you can redistribute it and/or modify
->> + *  it under the terms of the GNU General Public License as published by
->> + *  the Free Software Foundation; either version 2 of the License, or
->> + *  (at your option) any later version.
->> + *
->> + *  This program is distributed in the hope that it will be useful,
->> + *  but WITHOUT ANY WARRANTY; without even the implied warranty of
->> + *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
->> + *  GNU General Public License for more details.
->> + *
->> + */
->> +
->> +#include <linux/iio/common/ssp_sensors.h>
->> +#include <linux/iio/iio.h>
->> +#include <linux/iio/kfifo_buf.h>
->> +#include <linux/module.h>
->> +#include <linux/platform_device.h>
->> +#include <linux/slab.h>
->> +#include "../common/ssp_sensors/ssp_iio_sensor.h"
->> +
->> +#define SSP_CHANNEL_COUNT 3
->> +
->> +#define SSP_ACCEL_NAME "ssp-accelerometer"
->> +static const char ssp_accel_device_name[] = SSP_ACCEL_NAME;
->> +
->> +enum ssp_accel_3d_channel {
->> +	SSP_CHANNEL_SCAN_INDEX_X,
->> +	SSP_CHANNEL_SCAN_INDEX_Y,
->> +	SSP_CHANNEL_SCAN_INDEX_Z,
->> +	SSP_CHANNEL_SCAN_INDEX_TIME,
->> +	SSP_ACCEL_3D_CHANNEL_MAX,
-> you don't actually use this max element so drop it.
->> +};
->> +
->> +static int ssp_accel_read_raw(struct iio_dev *indio_dev,
->> +			      struct iio_chan_spec const *chan,  int *val,
->> +			      int *val2, long mask)
->> +{
->> +	u32 t;
->> +	struct ssp_data *data = dev_get_drvdata(indio_dev->dev.parent->parent);
->> +
->> +	switch (mask) {
->> +	case IIO_CHAN_INFO_SAMP_FREQ:
->> +		t = ssp_get_sensor_delay(data, SSP_ACCELEROMETER_SENSOR);
->> +		ssp_convert_to_freq(t, val, val2);
->> +		return IIO_VAL_INT_PLUS_MICRO;
->> +	default:
->> +		break;
->> +	}
->> +
->> +	return -EINVAL;
->> +}
->> +
->> +static int ssp_accel_write_raw(struct iio_dev *indio_dev,
->> +			       struct iio_chan_spec const *chan, int val,
->> +			       int val2, long mask)
->> +{
->> +	int ret;
->> +	struct ssp_data *data = dev_get_drvdata(indio_dev->dev.parent->parent);
->> +
->> +	switch (mask) {
->> +	case IIO_CHAN_INFO_SAMP_FREQ:
->> +		ret = ssp_convert_to_time(val, val2);
->> +		ret = ssp_change_delay(data, SSP_ACCELEROMETER_SENSOR, ret);
->> +		if (ret < 0)
->> +			dev_err(&indio_dev->dev, "accel sensor enable fail\n");
->> +
->> +		return ret;
->> +	default:
->> +		break;
->> +	}
->> +
->> +	return -EINVAL;
->> +}
->> +
->> +static struct iio_info ssp_accel_iio_info = {
->> +	.read_raw = &ssp_accel_read_raw,
->> +	.write_raw = &ssp_accel_write_raw,
->> +};
->> +
->> +static const struct iio_chan_spec ssp_acc_channels[] = {
->> +	SSP_CHANNEL_AG(IIO_ACCEL, IIO_MOD_X, SSP_CHANNEL_SCAN_INDEX_X),
->> +	SSP_CHANNEL_AG(IIO_ACCEL, IIO_MOD_Y, SSP_CHANNEL_SCAN_INDEX_Y),
->> +	SSP_CHANNEL_AG(IIO_ACCEL, IIO_MOD_Z, SSP_CHANNEL_SCAN_INDEX_Z),
->> +	IIO_CHAN_SOFT_TIMESTAMP(SSP_CHANNEL_SCAN_INDEX_TIME),
-> hmm. Not actually a soft timestamp so I guess we should really rename that
-> macro.  Actually is your resulting timestamp 32 bit?  If so you could
-> specify the channel as such and include a scale to allow userspace to
-> convert it as it wishes.
-Ok, I will rethink that.  This timestamp is 64-bit and it is system time
-plus diff taken from sample but I would have relative time at all on 32-bit.
->> +};
->> +
->> +static int ssp_process_accel_data(struct iio_dev *indio_dev, void *buf,
->> +				  int64_t timestamp)
-> We could hang a set of triggers of the parent device and use the in
-> conjunction with some local buffering to fire off the children.
-> There would be the advantage that we could trigger other sensors off them
-> (to get roughly synchronized additional signals).  Probably not worth it
-> though but I thought I'd mention the option.
->> +{
->> +	__le32 time;
->> +	const int len = SSP_ACCELEROMETER_SIZE;
->> +	int64_t calculated_time;
->> +	char *data;
->> +	int ret;
->> +
->> +	if (indio_dev->scan_bytes == 0)
->> +		return 0;
->> +
->> +	data = kmalloc(indio_dev->scan_bytes, GFP_KERNEL);
->> +	if (!data)
->> +		return -ENOMEM;
-> I'd allocate this in your iio_priv structure and setup the length in preenable
-> etc.  Last thing we want in here is to waste time with a memory allocation and
-> free.
-You are right. Generally for commands in ssp_spi.c these allocation won't hurt 
-but here I created a pure waste..
->> +
->> +	memcpy(data, buf, len);
-> It's a little uggly but I think you can avoid the copy if the timestamp
-> isn't in use (as then we don't need the additional space).
->> +
->> +	if (indio_dev->scan_timestamp) {
->> +		memcpy(&time, &((char *)buf)[len], SSP_TIME_SIZE);
->> +		calculated_time =
->> +			timestamp + (int64_t)le32_to_cpu(time) * 1000000;
-> Cool - our first hardware supplied timestamp ;)
->> +	}
->> +
->> +	ret = iio_push_to_buffers_with_timestamp(indio_dev, data,
->> +						 calculated_time);
->> +
->> +	kfree(data);
->> +
->> +	return ret;
->> +}
->> +
->> +static const struct iio_buffer_setup_ops ssp_accel_buffer_ops = {
->> +	.postenable = &ssp_common_buffer_postenable,
->> +	.predisable = &ssp_common_buffer_predisable,
->> +};
->> +
->> +static int ssp_accel_probe(struct platform_device *pdev)
->> +{
->> +	int ret;
->> +	struct iio_dev *indio_dev;
->> +	struct ssp_sensor_data *spd;
->> +
->> +	indio_dev = devm_iio_device_alloc(&pdev->dev, sizeof(*spd));
->> +	if (!indio_dev)
->> +		return -ENOMEM;
->> +
->> +	spd = iio_priv(indio_dev);
->> +
->> +	spd->process_data = ssp_process_accel_data;
->> +	spd->type = SSP_ACCELEROMETER_SENSOR;
->> +
->> +	indio_dev->name = ssp_accel_device_name;
->> +	indio_dev->dev.parent = &pdev->dev;
->> +	indio_dev->dev.of_node = pdev->dev.of_node;
->> +	indio_dev->info = &ssp_accel_iio_info;
->> +	indio_dev->modes = INDIO_BUFFER_HARDWARE;
-> hmm. A rare beast with no polled access.  But is it actually a hardware
-> buffer?  Doesn't look that much like one.  I think we may need a more
-> refined set of options for the buffer type.
-Here I'm confused. Do you mean a new buffer type in IIO?
->
->> +	indio_dev->channels = ssp_acc_channels;
->> +	indio_dev->num_channels = ARRAY_SIZE(ssp_acc_channels);
->> +
->> +	ret = ssp_common_setup_buffer(indio_dev, &ssp_accel_buffer_ops);
->> +	if (ret < 0) {
->> +		dev_err(&pdev->dev, "Buffer setup fail\n");
->> +		return ret;
->> +	}
->> +
->> +	platform_set_drvdata(pdev, indio_dev);
->> +
->> +	ret = iio_device_register(indio_dev);
->> +	if (ret < 0) {
->> +		iio_buffer_unregister(indio_dev);
->> +		iio_kfifo_free(indio_dev->buffer);
->> +		return ret;
->> +	}
->> +
->> +	/* need to be really sure about success for this one */
-> err, what does the comment mean?
-this only adds ptr to the table so I wanted to assure that it should be done 
-after ii_device_register, maybe this is too obvious to comment.
->> +	ssp_register_consumer(indio_dev, SSP_ACCELEROMETER_SENSOR);
->> +
->> +	return 0;
->> +}
->> +
->> +static int ssp_accel_remove(struct platform_device *pdev)
->> +{
->> +	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
->> +
->> +	iio_device_unregister(indio_dev);
->> +	iio_buffer_unregister(indio_dev);
->> +	iio_kfifo_free(indio_dev->buffer);
-> Feels rather like we need a devm_iio_kfifo_alloc
-> Actually, as you are wrapping the allocation, I'd prefer you have
-> an obviously matched cleanup function to ssp_common_setup_buffer
->> +
->> +	return 0;
->> +}
->> +
->> +static const struct of_device_id ssp_accel_id_table[] = {
->> +	{
->> +		.compatible = "samsung,mpu6500-accel",
->> +	},
->> +	{},
->> +};
->> +
->> +static struct platform_driver ssp_accel_driver = {
->> +	.driver = {
->> +		.owner = THIS_MODULE,
->> +		.name = SSP_ACCEL_NAME,
->> +		.of_match_table = ssp_accel_id_table,
->> +	},
->> +	.probe = ssp_accel_probe,
->> +	.remove =  ssp_accel_remove,
->> +};
->> +
->> +module_platform_driver(ssp_accel_driver);
->> +
->> +MODULE_AUTHOR("Karol Wrona <k.wrona@samsung.com>");
->> +MODULE_DESCRIPTION("Samsung sensorhub accelerometers driver");
->> +MODULE_LICENSE("GPL");
->>
->
->
+On Sun, Dec 07, 2014 at 01:15:25PM +0100, Hartmut Knaack wrote:
+> Vlad Dogaru schrieb am 26.11.2014 um 13:50:
+> > Supports buffering, IIO events and changing sampling frequency.
+> > 
+> > Datasheet available at:
+> > http://www.semtech.com/images/datasheet/sx9500_ag.pdf
+> > 
+> Please find some issues and suggestions inline.
 
+Thanks for the review.  I'll answer some points inline and hold off the
+next version until I hear back from you.
+
+As for the points I didn't address, I will fix them in the next
+iteration.
+
+[snip]
+
+> > +#define SX9500_CHANNEL(idx)					\
+> > +	{							\
+> > +		.type = IIO_PROXIMITY,				\
+> > +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),	\
+> > +		.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_SAMP_FREQ), \
+> > +		.indexed = 1,					\
+> > +		.channel = idx,					\
+> > +		.event_spec = sx9500_events,			\
+> > +		.num_event_specs = 1,				\
+> = ARRAY_SIZE(sx9500_events)?
+> > +		.scan_index = idx,				\
+> > +		.scan_type = {					\
+> > +			.sign = 'u',				\
+> Datasheet says: Signed, 2's complement format.
+
+See my comment below.
+
+[snip]
+
+> > +static int sx9500_read_proximity(struct sx9500_data *data,
+> > +				 const struct iio_chan_spec *chan,
+> > +				 int *val)
+> > +{
+> > +	int ret;
+> > +	__be16 regval;
+> > +
+> > +	ret = regmap_write(data->regmap, SX9500_REG_SENSOR_SEL, chan->channel);
+> > +	if (ret < 0)
+> > +		return ret;
+> > +
+> > +	ret = regmap_bulk_read(data->regmap, SX9500_REG_USE_MSB, &regval, 2);
+> > +	if (ret < 0)
+> > +		return ret;
+> > +
+> > +	*val = 32767 - (s16)be16_to_cpu(regval);
+> Unless I'm missing something, it should be:
+> *val = (s16)be16_to_cpu(regval);
+
+I've chosen the formula so that when a finger is touching the sensor,
+the reported value is 0; as the distance grows, so does the value.
+Your version would report a large value when a finger is touching the
+sensor, with the value decreasing as distance grows.
+
+The ABI documentation of in_proximity_raw mentions that, where possible,
+the value after scaling should be meters.  In this case it is not
+possible to convert the readings to meters, but I think it would be
+beneficial to have a value that at least behaves like a distance.
+
+[snip]
+
+> > +static irqreturn_t sx9500_irq_handler(int irq, void *private)
+> > +{
+> > +	struct iio_dev *indio_dev = private;
+> > +	struct sx9500_data *data = iio_priv(indio_dev);
+> > +
+> > +	if (data->trigger_enabled)
+> > +		iio_trigger_poll(data->trig);
+> > +
+> > +	/*
+> > +	 * Even if no event is enabled, we need to wake the thread to
+> > +	 * clear the interrupt state by reading SX9500_REG_IRQ_SRC.  It
+> Double whitespace.
+
+I've consistently used double spaces after full stops in the comments
+(and in my emails).  AFAICT, this is an open discussion [1].  The kernel
+uses both standards, so as long as comments across a file are consistent
+I don't see a problem with using double spaces to separate sentences.
+
+[1] http://en.wikipedia.org/wiki/Sentence_spacing#Digital_age
+
+> > +	 * is not possible to do that here because regmap_read takes a
+> > +	 * mutex.
+> > +	 */
+> > +	return IRQ_WAKE_THREAD;
+> > +}
+> > +
+> > +static irqreturn_t sx9500_irq_thread_handler(int irq, void *private)
+> > +{
+> > +	struct iio_dev *indio_dev = private;
+> > +	struct sx9500_data *data = iio_priv(indio_dev);
+> > +	int ret, chan;
+> chan could be unsigned.
+> > +	unsigned int val;
+> > +
+> > +	mutex_lock(&data->mutex);
+> > +
+> > +	ret = regmap_read(data->regmap, SX9500_REG_IRQ_SRC, &val);
+> > +	if (ret < 0) {
+> > +		dev_err(&data->client->dev, "i2c transfer error in irq\n");
+> > +		goto out;
+> > +	}
+> > +
+> > +	if (!(val & (SX9500_CLOSE_IRQ | SX9500_FAR_IRQ)))
+> > +		goto out;
+> > +
+> > +	ret = regmap_read(data->regmap, SX9500_REG_STAT, &val);
+> > +	if (ret < 0) {
+> > +		dev_err(&data->client->dev, "i2c transfer error in irq\n");
+> > +		goto out;
+> > +	}
+> > +
+> > +	val >>= SX9500_PROXSTAT_SHIFT;
+> > +	for (chan = 0; chan < SX9500_NUM_CHANNELS; chan++) {
+> > +		int dir;
+> > +		u64 ev;
+> > +		u8 new_prox = !(val & (1 << chan));
+> new_prox should be bool. (1 << chan) could be expressed as BIT(chan).
+> Why the negation? If PROXSTATx gets set, doesn't this indicate, that an object
+> gets close to the sensor? Shouldn't such an event cause IIO_EV_DIR_RISING?
+
+Maybe I'm misreading the ABI, but if PROXSTATx is set, it means
+proximity is detected.  If it wasn't detected previously, this means
+that an object has moved closer to the sensor, thus the distance to the
+object has decreased and we should cause an IIO_EV_DIR_FALLING.
+
+[snip]
+
+> > +	any_active = 0;
+> true or false should be used for bools, but better initialize during declaration.
+> > +	for (i = 0; i < SX9500_NUM_CHANNELS; i++)
+> > +		if (data->event_enabled[chan->channel]) {
+> Don't you mean data->event_enabled[i]?
+
+I definitely do, that was silly of me :)
+
+> > +			any_active = true;
+> > +			break;
+> > +		}
+> > +
+> > +	irqmask = SX9500_CLOSE_IRQ | SX9500_FAR_IRQ;
+> > +	ret = regmap_update_bits(data->regmap, SX9500_REG_IRQ_MSK,
+> > +				 irqmask, any_active ? irqmask : 0);
+> > +
+> > +	mutex_unlock(&data->mutex);
+> > +
+> > +	return ret;
+> > +}
+> > +
+> > +static IIO_CONST_ATTR_SAMP_FREQ_AVAIL(
+> > +	"2.500000 3.333333 5 6.666666 8.333333 11.111111 16.666666 33.333333");
+> > +
+> > +static struct attribute *sx9500_attributes[] = {
+> > +	&iio_const_attr_sampling_frequency_available.dev_attr.attr,
+> > +	NULL,
+> > +};
+> > +
+> > +static const struct attribute_group sx9500_attribute_group = {
+> > +	.attrs = sx9500_attributes,
+> > +};
+> > +
+> > +static const struct iio_info sx9500_info = {
+> > +	.driver_module = THIS_MODULE,
+> > +	.attrs = &sx9500_attribute_group,
+> > +	.read_raw = &sx9500_read_raw,
+> > +	.write_raw = &sx9500_write_raw,
+> > +	.read_event_config = &sx9500_read_event_config,
+> > +	.write_event_config = &sx9500_write_event_config,
+> > +};
+> > +
+> > +static int sx9500_set_trigger_state(struct iio_trigger *trig,
+> > +				    bool state)
+> > +{
+> > +	struct iio_dev *indio_dev = iio_trigger_get_drvdata(trig);
+> > +	struct sx9500_data *data = iio_priv(indio_dev);
+> > +	int ret;
+> > +
+> > +	mutex_lock(&data->mutex);
+> > +
+> > +	ret = regmap_update_bits(data->regmap, SX9500_REG_IRQ_MSK,
+> > +				 SX9500_CONVDONE_IRQ,
+> > +				 state ? SX9500_CONVDONE_IRQ : 0);
+> > +	data->trigger_enabled = state;
+> Only set data->trigger_enabled if regmap_update_bits was successful.
+> > +
+> > +	mutex_unlock(&data->mutex);
+> > +
+> > +	return ret;
+> > +}
+> > +
+> > +static const struct iio_trigger_ops sx9500_trigger_ops = {
+> > +	.set_trigger_state = sx9500_set_trigger_state,
+> > +	.owner = THIS_MODULE,
+> > +};
+> > +
+> > +static irqreturn_t sx9500_trigger_handler(int irq, void *private)
+> > +{
+> > +	struct iio_poll_func *pf = private;
+> > +	struct iio_dev *indio_dev = pf->indio_dev;
+> > +	struct sx9500_data *data = iio_priv(indio_dev);
+> > +	s16 *buf;
+> > +	int val, bit, ret, i = 0;
+> > +
+> > +	buf = kmalloc(indio_dev->scan_bytes, GFP_KERNEL);
+> Use kzalloc for a clean buffer?
+
+Is this just cosmetic or am I missing something?  Assuming that
+scan_bytes has the correct value, won't all of 'buf' be written with
+channel data and the timestamp?
+
+[snip]
+
+> > +static int sx9500_init_device(struct iio_dev *indio_dev)
+> > +{
+> > +	struct sx9500_data *data = iio_priv(indio_dev);
+> > +	int ret, i, num_defaults;
+> > +	unsigned int val;
+> > +
+> > +	ret = regmap_write(data->regmap, SX9500_REG_IRQ_MSK, 0);
+> > +	if (ret < 0)
+> > +		return ret;
+> > +
+> > +	ret = regmap_write(data->regmap, SX9500_REG_RESET,
+> > +			   SX9500_SOFT_RESET);
+> > +	if (ret < 0)
+> > +		return ret;
+> > +
+> > +	ret = regmap_read(data->regmap, SX9500_REG_IRQ_SRC, &val);
+> > +	if (ret < 0)
+> > +		return ret;
+> > +
+> > +	num_defaults = ARRAY_SIZE(sx9500_default_regs);
+> num_defaults doesn't serve an essential purpose.
+
+Thought I'd avoid it being calculated at every step of the for loop.
+But it's not on a hot path, so I'll get rid of it.
+
+[snip]
+
+> > +static const struct acpi_device_id sx9500_acpi_match[] = {
+> > +	{"SSX9500", 0}, /* TODO is there a better ACPI handle? */
+> Is this a typo? Shouldn't it be "SX9500"?
+
+ACPI rules prohibit such a device ID:
+
+ssdt.dsl     11:                 Name (_HID, "SX9500")
+Error    6033 -                                    ^ _HID string must be
+exactly 7 or 8 characters (SX9500)
+
+I was unable to find a common method to fix such an issue and was hoping
+someone can help, that's why I left the TODO in the code.
