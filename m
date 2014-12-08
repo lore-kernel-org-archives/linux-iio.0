@@ -1,54 +1,294 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from www.linutronix.de ([62.245.132.108]:59907 "EHLO
-	Galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1758664AbaLKUkQ (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 11 Dec 2014 15:40:16 -0500
-Message-ID: <548A0125.6040708@linutronix.de>
-Date: Thu, 11 Dec 2014 21:40:05 +0100
-From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-MIME-Version: 1.0
-To: Nicolae Rosia <nicolae.rosia@gmail.com>,
-	Vignesh R <vigneshr@ti.com>
-CC: Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>,
-	Mark Rutland <mark.rutland@arm.com>,
-	Ian Campbell <ijc+devicetree@hellion.org.uk>,
-	Kumar Gala <galak@codeaurora.org>,
-	Benoit Cousson <bcousson@baylibre.com>,
-	Tony Lindgren <tony@atomide.com>,
-	Russell King <linux@arm.linux.org.uk>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>, richardcochran@gmail.com,
-	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-	Lee Jones <lee.jones@linaro.org>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	Samuel Ortiz <sameo@linux.intel.com>,
-	Felipe Balbi <balbi@ti.com>, Brad Griffis <bgriffis@ti.com>,
-	Sanjeev Sharma <sanjeev_sharma@mentor.com>,
-	Paul Gortmaker <paul.gortmaker@windriver.com>,
-	Jan Kardell <jan.kardell@telliq.com>,
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-	linux-iio@vger.kernel.org, linux-input@vger.kernel.org
-Subject: Re: [PATCH v4 0/6] Touchscreen performance related fixes
-References: <1415941651-28962-1-git-send-email-vigneshr@ti.com>	<20141124115116.GA14997@linutronix.de>	<547C3A95.30605@ti.com>	<547C3C19.5090501@linutronix.de>	<547C42FF.5010700@ti.com> <CAH=tA9FO5MCzE274thc-NugCNte6WdyC-Rxc6yfnuR=+6_qMbA@mail.gmail.com>
-In-Reply-To: <CAH=tA9FO5MCzE274thc-NugCNte6WdyC-Rxc6yfnuR=+6_qMbA@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
+Received: from mailout4.w1.samsung.com ([210.118.77.14]:14506 "EHLO
+	mailout4.w1.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753410AbaLHKlq (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 8 Dec 2014 05:41:46 -0500
+Message-id: <54858066.6080204@samsung.com>
+Date: Mon, 08 Dec 2014 11:41:42 +0100
+From: Karol Wrona <k.wrona@samsung.com>
+MIME-version: 1.0
+To: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
+	Hartmut Knaack <knaack.h@gmx.de>, linux-kernel@vger.kernel.org
+Cc: Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
+	Kyungmin Park <kyungmin.park@samsung.com>,
+	Karol Wrona <wrona.vy@gmail.com>
+Subject: Re: [PATCH v3 4/5] iio: common: ssp_sensors: Add sensorhub
+ accelerometer sensor
+References: <1417809290-9662-1-git-send-email-k.wrona@samsung.com>
+ <1417809290-9662-5-git-send-email-k.wrona@samsung.com>
+ <54831837.4030604@kernel.org>
+In-reply-to: <54831837.4030604@kernel.org>
+Content-type: text/plain; charset=windows-1252; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 12/11/2014 09:34 PM, Nicolae Rosia wrote:
-> Hello,
-
-Hi,
-
-> Any updates on this series? I don't see it applied in [1] or [2].
-
-I manage to freeze am335x-evm with those patches and I think Vignesh
-is looking into this.
-
-> Regards,
-> Nicolae Rosia
-
-Sebastian
+On 12/06/2014 03:52 PM, Jonathan Cameron wrote:
+> On 05/12/14 19:54, Karol Wrona wrote:
+>> This patch adds accelerometer iio driver which uses sensorhub as data
+>> provider.
+>>
+>> Change-Id: I4686741b7401ec5cbf4b5d0f2a5cc146fbe24d53
+>> Signed-off-by: Karol Wrona <k.wrona@samsung.com>
+>> Acked-by: Kyungmin Park <kyungmin.park@samsung.com>
+>> ---
+>>   drivers/iio/accel/Makefile           |    1 +
+>>   drivers/iio/accel/ssp_accel_sensor.c |  203 ++++++++++++++++++++++++++++++++++
+>>   2 files changed, 204 insertions(+)
+>>   create mode 100644 drivers/iio/accel/ssp_accel_sensor.c
+>>
+>> diff --git a/drivers/iio/accel/Makefile b/drivers/iio/accel/Makefile
+>> index a593996..df6a0b2 100644
+>> --- a/drivers/iio/accel/Makefile
+>> +++ b/drivers/iio/accel/Makefile
+>> @@ -9,6 +9,7 @@ obj-$(CONFIG_HID_SENSOR_ACCEL_3D) += hid-sensor-accel-3d.o
+>>   obj-$(CONFIG_KXCJK1013) += kxcjk-1013.o
+>>   obj-$(CONFIG_KXSD9)	+= kxsd9.o
+>>   obj-$(CONFIG_MMA8452)	+= mma8452.o
+>> +obj-$(CONFIG_IIO_SSP_SENSOR) += ssp_accel_sensor.o
+>>
+>>   obj-$(CONFIG_IIO_ST_ACCEL_3AXIS) += st_accel.o
+>>   st_accel-y := st_accel_core.o
+>> diff --git a/drivers/iio/accel/ssp_accel_sensor.c b/drivers/iio/accel/ssp_accel_sensor.c
+>> new file mode 100644
+>> index 0000000..0a47c29
+>> --- /dev/null
+>> +++ b/drivers/iio/accel/ssp_accel_sensor.c
+>> @@ -0,0 +1,203 @@
+>> +/*
+>> + *  Copyright (C) 2014, Samsung Electronics Co. Ltd. All Rights Reserved.
+>> + *
+>> + *  This program is free software; you can redistribute it and/or modify
+>> + *  it under the terms of the GNU General Public License as published by
+>> + *  the Free Software Foundation; either version 2 of the License, or
+>> + *  (at your option) any later version.
+>> + *
+>> + *  This program is distributed in the hope that it will be useful,
+>> + *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+>> + *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+>> + *  GNU General Public License for more details.
+>> + *
+>> + */
+>> +
+>> +#include <linux/iio/common/ssp_sensors.h>
+>> +#include <linux/iio/iio.h>
+>> +#include <linux/iio/kfifo_buf.h>
+>> +#include <linux/module.h>
+>> +#include <linux/platform_device.h>
+>> +#include <linux/slab.h>
+>> +#include "../common/ssp_sensors/ssp_iio_sensor.h"
+>> +
+>> +#define SSP_CHANNEL_COUNT 3
+>> +
+>> +#define SSP_ACCEL_NAME "ssp-accelerometer"
+>> +static const char ssp_accel_device_name[] = SSP_ACCEL_NAME;
+>> +
+>> +enum ssp_accel_3d_channel {
+>> +	SSP_CHANNEL_SCAN_INDEX_X,
+>> +	SSP_CHANNEL_SCAN_INDEX_Y,
+>> +	SSP_CHANNEL_SCAN_INDEX_Z,
+>> +	SSP_CHANNEL_SCAN_INDEX_TIME,
+>> +	SSP_ACCEL_3D_CHANNEL_MAX,
+> you don't actually use this max element so drop it.
+>> +};
+>> +
+>> +static int ssp_accel_read_raw(struct iio_dev *indio_dev,
+>> +			      struct iio_chan_spec const *chan,  int *val,
+>> +			      int *val2, long mask)
+>> +{
+>> +	u32 t;
+>> +	struct ssp_data *data = dev_get_drvdata(indio_dev->dev.parent->parent);
+>> +
+>> +	switch (mask) {
+>> +	case IIO_CHAN_INFO_SAMP_FREQ:
+>> +		t = ssp_get_sensor_delay(data, SSP_ACCELEROMETER_SENSOR);
+>> +		ssp_convert_to_freq(t, val, val2);
+>> +		return IIO_VAL_INT_PLUS_MICRO;
+>> +	default:
+>> +		break;
+>> +	}
+>> +
+>> +	return -EINVAL;
+>> +}
+>> +
+>> +static int ssp_accel_write_raw(struct iio_dev *indio_dev,
+>> +			       struct iio_chan_spec const *chan, int val,
+>> +			       int val2, long mask)
+>> +{
+>> +	int ret;
+>> +	struct ssp_data *data = dev_get_drvdata(indio_dev->dev.parent->parent);
+>> +
+>> +	switch (mask) {
+>> +	case IIO_CHAN_INFO_SAMP_FREQ:
+>> +		ret = ssp_convert_to_time(val, val2);
+>> +		ret = ssp_change_delay(data, SSP_ACCELEROMETER_SENSOR, ret);
+>> +		if (ret < 0)
+>> +			dev_err(&indio_dev->dev, "accel sensor enable fail\n");
+>> +
+>> +		return ret;
+>> +	default:
+>> +		break;
+>> +	}
+>> +
+>> +	return -EINVAL;
+>> +}
+>> +
+>> +static struct iio_info ssp_accel_iio_info = {
+>> +	.read_raw = &ssp_accel_read_raw,
+>> +	.write_raw = &ssp_accel_write_raw,
+>> +};
+>> +
+>> +static const struct iio_chan_spec ssp_acc_channels[] = {
+>> +	SSP_CHANNEL_AG(IIO_ACCEL, IIO_MOD_X, SSP_CHANNEL_SCAN_INDEX_X),
+>> +	SSP_CHANNEL_AG(IIO_ACCEL, IIO_MOD_Y, SSP_CHANNEL_SCAN_INDEX_Y),
+>> +	SSP_CHANNEL_AG(IIO_ACCEL, IIO_MOD_Z, SSP_CHANNEL_SCAN_INDEX_Z),
+>> +	IIO_CHAN_SOFT_TIMESTAMP(SSP_CHANNEL_SCAN_INDEX_TIME),
+> hmm. Not actually a soft timestamp so I guess we should really rename that
+> macro.  Actually is your resulting timestamp 32 bit?  If so you could
+> specify the channel as such and include a scale to allow userspace to
+> convert it as it wishes.
+Ok, I will rethink that.  This timestamp is 64-bit and it is system time
+plus diff taken from sample but I would have relative time at all on 32-bit.
+>> +};
+>> +
+>> +static int ssp_process_accel_data(struct iio_dev *indio_dev, void *buf,
+>> +				  int64_t timestamp)
+> We could hang a set of triggers of the parent device and use the in
+> conjunction with some local buffering to fire off the children.
+> There would be the advantage that we could trigger other sensors off them
+> (to get roughly synchronized additional signals).  Probably not worth it
+> though but I thought I'd mention the option.
+>> +{
+>> +	__le32 time;
+>> +	const int len = SSP_ACCELEROMETER_SIZE;
+>> +	int64_t calculated_time;
+>> +	char *data;
+>> +	int ret;
+>> +
+>> +	if (indio_dev->scan_bytes == 0)
+>> +		return 0;
+>> +
+>> +	data = kmalloc(indio_dev->scan_bytes, GFP_KERNEL);
+>> +	if (!data)
+>> +		return -ENOMEM;
+> I'd allocate this in your iio_priv structure and setup the length in preenable
+> etc.  Last thing we want in here is to waste time with a memory allocation and
+> free.
+You are right. Generally for commands in ssp_spi.c these allocation won't hurt 
+but here I created a pure waste..
+>> +
+>> +	memcpy(data, buf, len);
+> It's a little uggly but I think you can avoid the copy if the timestamp
+> isn't in use (as then we don't need the additional space).
+>> +
+>> +	if (indio_dev->scan_timestamp) {
+>> +		memcpy(&time, &((char *)buf)[len], SSP_TIME_SIZE);
+>> +		calculated_time =
+>> +			timestamp + (int64_t)le32_to_cpu(time) * 1000000;
+> Cool - our first hardware supplied timestamp ;)
+>> +	}
+>> +
+>> +	ret = iio_push_to_buffers_with_timestamp(indio_dev, data,
+>> +						 calculated_time);
+>> +
+>> +	kfree(data);
+>> +
+>> +	return ret;
+>> +}
+>> +
+>> +static const struct iio_buffer_setup_ops ssp_accel_buffer_ops = {
+>> +	.postenable = &ssp_common_buffer_postenable,
+>> +	.predisable = &ssp_common_buffer_predisable,
+>> +};
+>> +
+>> +static int ssp_accel_probe(struct platform_device *pdev)
+>> +{
+>> +	int ret;
+>> +	struct iio_dev *indio_dev;
+>> +	struct ssp_sensor_data *spd;
+>> +
+>> +	indio_dev = devm_iio_device_alloc(&pdev->dev, sizeof(*spd));
+>> +	if (!indio_dev)
+>> +		return -ENOMEM;
+>> +
+>> +	spd = iio_priv(indio_dev);
+>> +
+>> +	spd->process_data = ssp_process_accel_data;
+>> +	spd->type = SSP_ACCELEROMETER_SENSOR;
+>> +
+>> +	indio_dev->name = ssp_accel_device_name;
+>> +	indio_dev->dev.parent = &pdev->dev;
+>> +	indio_dev->dev.of_node = pdev->dev.of_node;
+>> +	indio_dev->info = &ssp_accel_iio_info;
+>> +	indio_dev->modes = INDIO_BUFFER_HARDWARE;
+> hmm. A rare beast with no polled access.  But is it actually a hardware
+> buffer?  Doesn't look that much like one.  I think we may need a more
+> refined set of options for the buffer type.
+Here I'm confused. Do you mean a new buffer type in IIO?
+>
+>> +	indio_dev->channels = ssp_acc_channels;
+>> +	indio_dev->num_channels = ARRAY_SIZE(ssp_acc_channels);
+>> +
+>> +	ret = ssp_common_setup_buffer(indio_dev, &ssp_accel_buffer_ops);
+>> +	if (ret < 0) {
+>> +		dev_err(&pdev->dev, "Buffer setup fail\n");
+>> +		return ret;
+>> +	}
+>> +
+>> +	platform_set_drvdata(pdev, indio_dev);
+>> +
+>> +	ret = iio_device_register(indio_dev);
+>> +	if (ret < 0) {
+>> +		iio_buffer_unregister(indio_dev);
+>> +		iio_kfifo_free(indio_dev->buffer);
+>> +		return ret;
+>> +	}
+>> +
+>> +	/* need to be really sure about success for this one */
+> err, what does the comment mean?
+this only adds ptr to the table so I wanted to assure that it should be done 
+after ii_device_register, maybe this is too obvious to comment.
+>> +	ssp_register_consumer(indio_dev, SSP_ACCELEROMETER_SENSOR);
+>> +
+>> +	return 0;
+>> +}
+>> +
+>> +static int ssp_accel_remove(struct platform_device *pdev)
+>> +{
+>> +	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
+>> +
+>> +	iio_device_unregister(indio_dev);
+>> +	iio_buffer_unregister(indio_dev);
+>> +	iio_kfifo_free(indio_dev->buffer);
+> Feels rather like we need a devm_iio_kfifo_alloc
+> Actually, as you are wrapping the allocation, I'd prefer you have
+> an obviously matched cleanup function to ssp_common_setup_buffer
+>> +
+>> +	return 0;
+>> +}
+>> +
+>> +static const struct of_device_id ssp_accel_id_table[] = {
+>> +	{
+>> +		.compatible = "samsung,mpu6500-accel",
+>> +	},
+>> +	{},
+>> +};
+>> +
+>> +static struct platform_driver ssp_accel_driver = {
+>> +	.driver = {
+>> +		.owner = THIS_MODULE,
+>> +		.name = SSP_ACCEL_NAME,
+>> +		.of_match_table = ssp_accel_id_table,
+>> +	},
+>> +	.probe = ssp_accel_probe,
+>> +	.remove =  ssp_accel_remove,
+>> +};
+>> +
+>> +module_platform_driver(ssp_accel_driver);
+>> +
+>> +MODULE_AUTHOR("Karol Wrona <k.wrona@samsung.com>");
+>> +MODULE_DESCRIPTION("Samsung sensorhub accelerometers driver");
+>> +MODULE_LICENSE("GPL");
+>>
+>
+>
 
