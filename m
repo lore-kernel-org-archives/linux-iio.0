@@ -1,47 +1,38 @@
-Return-Path: <irina.tirdea@intel.com>
-From: Irina Tirdea <irina.tirdea@intel.com>
-To: Jonathan Cameron <jic23@kernel.org>,
-	linux-iio@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org,
-	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
-	Daniel Baluta <daniel.baluta@intel.com>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	Irina Tirdea <irina.tirdea@intel.com>
-Subject: [PATCH v2 1/4] iio: accel: kxcjk-1013: always power on device in resume
-Date: Wed, 10 Dec 2014 18:23:51 +0200
-Message-Id: <1418228634-10505-2-git-send-email-irina.tirdea@intel.com>
-In-Reply-To: <1418228634-10505-1-git-send-email-irina.tirdea@intel.com>
-References: <1418228634-10505-1-git-send-email-irina.tirdea@intel.com>
+Return-Path: <k.wrona@samsung.com>
+From: Karol Wrona <k.wrona@samsung.com>
+To: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
+ Hartmut Knaack <knaack.h@gmx.de>, linux-kernel@vger.kernel.org
+Cc: Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
+ Kyungmin Park <kyungmin.park@samsung.com>, Karol Wrona <wrona.vy@gmail.com>,
+ Karol Wrona <k.wrona@samsung.com>
+Subject: [RFC PATCH 0/2] iio: kfifo: Add resource management alloc/free
+Date: Tue, 09 Dec 2014 20:29:43 +0100
+Message-id: <1418153385-18212-1-git-send-email-k.wrona@samsung.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-When the system resumes, it will first call system resume and
-then runtime suspend (if CONFIG_RUNTIME_PM is enabled).
-There is no need to conditionally power on the device in
-system resume, so always power it on and leave runtime
-suspend to power it off if needed.
+This is RFC because I felt a bit confused while devm_alloc/free adding.
+It applies on next but I've tested it partialy on 3.16.  It can cause some
+problemsi with several drivers so it does not fit for now. 
 
-Suggested-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-Signed-off-by: Irina Tirdea <irina.tirdea@intel.com>
-Reviewed-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
----
- drivers/iio/accel/kxcjk-1013.c |    5 +----
- 1 file changed, 1 insertion(+), 4 deletions(-)
+iio kfifo alloc takes one argument struct iio_dev * which is not used.
+iio_buffer is attached by external function.  In such situation resource 
+management alloc can be implemented in two ways:
+1. indio_dev ptr in iio_kfifo_alloc stays and devm_ functions have to
+provide it but it is still unused.
+2.  As there are a few drivers which use kfifo it can be removed and 
+iio_kfifo_allocate refactored.
 
-diff --git a/drivers/iio/accel/kxcjk-1013.c b/drivers/iio/accel/kxcjk-1013.c
-index 1720e9a..aed3777 100644
---- a/drivers/iio/accel/kxcjk-1013.c
-+++ b/drivers/iio/accel/kxcjk-1013.c
-@@ -1354,10 +1354,7 @@ static int kxcjk1013_resume(struct device *dev)
- 	int ret = 0;
- 
- 	mutex_lock(&data->mutex);
--	/* Check, if the suspend occured while active */
--	if (data->dready_trigger_on || data->motion_trigger_on ||
--							data->ev_enable_state)
--		ret = kxcjk1013_set_mode(data, OPERATION);
-+	ret = kxcjk1013_set_mode(data, OPERATION);
- 	mutex_unlock(&data->mutex);
- 
- 	return ret;
+I apologise if I missed something and it was done in such way intentionally.
+
+
+
+Karol Wrona (2):
+  iio: kfifo: Remove unused argument in iio_kfifo_allocate
+  iio: kfifo: Add resource management devm_iio_kfifo_allocate/free
+
+ drivers/iio/kfifo_buf.c       |   58 ++++++++++++++++++++++++++++++++++++++++-
+ include/linux/iio/kfifo_buf.h |    5 +++-
+ 2 files changed, 61 insertions(+), 2 deletions(-)
+
 -- 
 1.7.9.5
