@@ -1,90 +1,297 @@
-Return-Path: <teodora.baluta@intel.com>
-From: "Baluta, Teodora" <teodora.baluta@intel.com>
-To: "jic23@kernel.org" <jic23@kernel.org>
-CC: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Subject: Re: [RFC PATCH 0/3] Introduce IIO interface for fingerprint sensors
-Date: Mon, 8 Dec 2014 14:10:41 +0000
-Message-ID: <1418047828.18463.10.camel@bebop>
-References: <1417698017-13835-1-git-send-email-teodora.baluta@intel.com>
-	 <5481153B.4070609@kernel.org>
-In-Reply-To: <5481153B.4070609@kernel.org>
-Content-Type: text/plain; charset="utf-8"
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mout.gmx.net ([212.227.15.19]:53918 "EHLO mout.gmx.net"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1752261AbaLIA0M (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Mon, 8 Dec 2014 19:26:12 -0500
+Message-ID: <5486419A.70103@gmx.de>
+Date: Tue, 09 Dec 2014 01:26:02 +0100
+From: Hartmut Knaack <knaack.h@gmx.de>
 MIME-Version: 1.0
-List-ID: <linux-iio@vger.kernel.org>
+To: Vlad Dogaru <vlad.dogaru@intel.com>
+CC: linux-iio@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>
+Subject: Re: [PATCH v2] iio: driver for Semtech SX9500 proximity solution
+References: <1417006231-17952-1-git-send-email-vlad.dogaru@intel.com> <548444DD.1030003@gmx.de> <20141208114859.GA2066@vdogaru>
+In-Reply-To: <20141208114859.GA2066@vdogaru>
+Content-Type: text/plain; charset=US-ASCII
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-SGVsbG8sDQoNCk9uIFZpLCAyMDE0LTEyLTA1IGF0IDAyOjE1ICswMDAwLCBKb25hdGhhbiBDYW1l
-cm9uIHdyb3RlOg0KPiBPbiAwNC8xMi8xNCAxMzowMCwgVGVvZG9yYSBCYWx1dGEgd3JvdGU6DQo+
-ID4gVGhpcyBwYXRjaHNldCBhZGRzIHN1cHBvcnQgZm9yIGZpbmdlcnByaW50IHNlbnNvcnMgdGhy
-b3VnaCB0aGUgSUlPIGludGVyZmFjZS4NCj4gPiBUaGlzIHdheSB1c2Vyc3BhY2UgYXBwbGljYXRp
-b25zIGNvbGxlY3QgaW5mb3JtYXRpb24gaW4gYSB1bmlmb3JtIHdheS4gQWxsDQo+ID4gcHJvY2Vz
-c2luZyB3b3VsZCBiZSBkb25lIGluIHRoZSB1cHBlciBsYXllcnMgYXMgc3VnZ2VzdGVkIGluIFsw
-XS4NCj4gPiANCj4gPiBJbiBvcmRlciB0byB0ZXN0IG91dCB0aGlzIHByb3Bvc2FsLCBhIG1pbmlt
-YWwgaW1wbGVtZW50YXRpb24gZm9yIFVQRUsncw0KPiA+IFRvdWNoQ2hpcCBGaW5nZXJwcmludCBT
-ZW5zb3IgdmlhIFVTQiBpcyBhbHNvIGF2YWlsYWJsZS4gQWx0aG91Z2ggdGhlcmUgaXMgYW4NCj4g
-PiBleGlzdGluZyBpbXBsZW1lbnRhdGlvbiBpbiB1c2Vyc3BhY2UgZm9yIFVTQiBmaW5nZXJwcmlu
-dCBkZXZpY2VzLCBpbmNsdWRpbmcgdGhpcw0KPiA+IHBhcnRpY3VsYXIgZGV2aWNlLCB0aGUgZHJp
-dmVyIHJlcHJlc2VudHMgYSBwcm9vZiBvZiBjb25jZXB0IG9mIGhvdyBmaW5nZXJwcmludA0KPiA+
-IHNlbnNvcnMgY291bGQgYmUgaW50ZWdyYXRlZCBpbiB0aGUgSUlPIGZyYW1ld29yayByZWdhcmRs
-ZXNzIG9mIHRoZSB1c2VkIGJ1cy4gRm9yDQo+ID4gbG93ZXIgcG93ZXIgcmVxdWlyZW1lbnRzLCB0
-aGUgU1BJIGJ1cyBpcyBwcmVmZXJyZWQgYW5kIGEga2VybmVsIGRyaXZlcg0KPiA+IGltcGxlbWVu
-dGF0aW9uIG1ha2VzIG1vcmUgc2Vuc2UuDQo+IA0KPiBTbyB3aHkgbm90IHY0bD8gIFRoZXNlIGFy
-ZSBlZmZlY3RpdmVseSBpbWFnZSBzZW5zb3JzLi4gDQoNCldlbGwsIGhlcmUncyB3aHkgSSBkb24n
-dCB0aGluayB2NGwgd291bGQgYmUgdGhlIGJlc3Qgb3B0aW9uOg0KDQotIGFuIGltYWdlIHNjYW5u
-ZXIgY291bGQgYmUgaW1wbGVtZW50ZWQgaW4gdGhlIHY0bCBzdWJzeXN0ZW0sIGJ1dCBpdA0Kc2Vl
-bXMgZmFyIG1vcmUgY29tcGxpY2F0ZWQgZm9yIGEgc2ltcGxlIGZpbmdlcnByaW50IHNjYW5uZXIg
-LSBpdCB1c3VhbGx5DQpoYXMgZHJpdmVycyBmb3Igd2ViY2FtcywgVFZzIG9yIHZpZGVvIHN0cmVh
-bWluZyBkZXZpY2VzLiBUaGUgdjRsDQpzdWJzeXN0ZW0gKHdpdGggYWxsIGl0cyBzdXBwb3J0IGZv
-ciBjb2xvcnNwYWNlLCBkZWNvZGVycywgaW1hZ2UNCmNvbXByZXNzaW9uLCBmcmFtZSBjb250cm9s
-KSBzZWVtcyBhIGJpdCBvZiBhbiBvdmVya2lsbCBmb3IgYSB2ZXJ5DQpzdHJhaWdodGZvcndhcmQg
-ZmluZ2VycHJpbnQgaW1hZ2luZyBzZW5zb3IuDQoNCi0gYSBmaW5nZXJwcmludCBkZXZpY2UgY291
-bGQgYWxzbyBzZW5kIG91dCBhIHByb2Nlc3NlZCBpbmZvcm1hdGlvbiwgbm90DQpqdXN0IHRoZSBp
-bWFnZSBvZiBhIGZpbmdlcnByaW50LiBUaGlzIG1lYW5zIHRoYXQgdGhlIHByb2Nlc3NpbmcgaXMg
-ZG9uZQ0KaW4gaGFyZHdhcmUgLSB0aGUgVVBFSyBUb3VjaFN0cmlwIGNoaXBzZXQgaW4gbGliZnBy
-aW50IGhhcyB0aGlzIGJlaGF2aW9yDQooc2VlIFswXSkuIFNvLCB0aGUgSUlPIGZyYW1ld29yayB3
-b3VsZCBzdXBwb3J0IGEgdW5pZm9ybSB3YXkgb2YgaGFuZGxpbmcNCmZpbmdlcnByaW50IGRldmlj
-ZXMgdGhhdCBlaXRoZXIgZG8gcHJvY2Vzc2luZyBpbiBzb2Z0d2FyZSBvciBpbg0KaGFyZHdhcmUu
-DQoNClRoZSB3YXkgSSBzZWUgaXQgbm93LCBmb3IgcHJvY2Vzc2VkIGZpbmdlcnByaW50IGluZm9y
-bWF0aW9uLCBhbiBJSU8NCmRldmljZSBjb3VsZCBoYXZlIGFuIElJT19GSU5HRVJQUklOVCBjaGFu
-bmVsIHdpdGggYSBtb2RpZmllciBhbmQgb25seQ0KdGhlIHNlbnNpdGl2aXR5IHRocmVzaG9sZCBh
-dHRyaWJ1dGUgc2V0LiBXZSB3b3VsZCBhbHNvIG5lZWQgdHdvDQp0cmlnZ2Vyczogb25lIGZvciBl
-bnJvbGxtZW50IGFuZCBvbmUgZm9yIHRoZSB2ZXJpZmljYXRpb24gbW9kZSB0bw0KY29udHJvbCB0
-aGUgZGV2aWNlIGZyb20gYSB1c2Vyc3BhY2UgYXBwbGljYXRpb24uDQoNClRoYW5rcywNClRlb2Rv
-cmENCg0KWzBdIGh0dHA6Ly93d3cuZnJlZWRlc2t0b3Aub3JnL3dpa2kvU29mdHdhcmUvZnByaW50
-L2xpYmZwcmludC91cGVrdHMvDQoNCg0KPiA+IA0KPiA+IEEgc3lzZnMgdHJpZ2dlciBpcyBlbmFi
-bGVkIGFuZCB0aGUgZGV2aWNlIHN0YXJ0cyBzY2FubmluZy4gQXMgc29vbiBhcyBhbiBpbWFnZQ0K
-PiA+IGlzIGF2YWlsYWJsZSBpdCBpcyB3cml0dGVuIGluIHRoZSBjaGFyYWN0ZXIgZGV2aWNlIC9k
-ZXYvaWlvOmRldmljZVguDQo+ID4gDQo+ID4gVXNlcnNwYWNlIGFwcGxpY2F0aW9ucyB3aWxsIGJl
-IGFibGUgdG8gY2FsY3VsYXRlIHRoZSBleHBlY3RlZCBpbWFnZSBzaXplIHVzaW5nDQo+ID4gdGhl
-IGZpbmdlcnByaW50IGF0dHJpYnV0ZXMgaGVpZ2h0LCB3aWR0aCBhbmQgYml0IGRlcHRoLiBPdGhl
-ciBhdHRyaWJ1dGVzDQo+ID4gaW50cm9kdWNlZCBmb3IgdGhlIGZpbmdlcnByaW50IGNoYW5uZWwg
-aW4gSUlPIHJlcHJlc2VudCBpbmZvcm1hdGlvbiB0aGF0IGFpZHMgaW4NCj4gPiB0aGUgZmluZ2Vy
-cHJpbnQgaW1hZ2UgcHJvY2Vzc2luZy4gQmVzaWRlcyB0aGVzZSwgdGhlIHByb3Bvc2VkIGludGVy
-ZmFjZSBvZmZlcnMNCj4gPiB1c2Vyc3BhY2UgYSB3YXkgdG8gcmVhZCBhIGZlZWRiYWNrIGFmdGVy
-IGEgc2NhbiAobGlrZSB0aGUgc3dpcGUgd2FzIHRvbyBzbG93IG9yDQo+ID4gdG9vIGZhc3QpIHRo
-cm91Z2ggYSBtb2RpZmllZCBmaW5nZXJwcmludF9zdGF0dXMgY2hhbm5lbC4NCj4gPiANCj4gPiBb
-MF0gaHR0cDovL3d3dy5zcGluaWNzLm5ldC9saXN0cy9saW51eC1paW8vbXNnMTE0NjMuaHRtbA0K
-PiA+IA0KPiA+IFRlb2RvcmEgQmFsdXRhICgzKToNCj4gPiAgIGlpbzogY29yZTogYWRkIHN1cHBv
-cnQgZm9yIGZpbmdlcnByaW50IGRldmljZXMNCj4gPiAgIGlpbzogY29yZTogY2hhbmdlIGNoYW5u
-ZWwncyBzdG9yYWdlYml0cy9yZWFsYml0cyB0byB1MzINCj4gPiAgIGlpbzogZmluZ2VycHJpbnQ6
-IGFkZCBmaW5nZXJwcmludCBzZW5zb3IgdmlhIFVTQg0KPiA+IA0KPiA+ICBEb2N1bWVudGF0aW9u
-L0FCSS90ZXN0aW5nL3N5c2ZzLWJ1cy1paW8gfCAgNTEgKysrDQo+ID4gIGRyaXZlcnMvaWlvL0tj
-b25maWcgICAgICAgICAgICAgICAgICAgICB8ICAgMSArDQo+ID4gIGRyaXZlcnMvaWlvL01ha2Vm
-aWxlICAgICAgICAgICAgICAgICAgICB8ICAgMSArDQo+ID4gIGRyaXZlcnMvaWlvL2ZpbmdlcnBy
-aW50L0tjb25maWcgICAgICAgICB8ICAxNSArDQo+ID4gIGRyaXZlcnMvaWlvL2ZpbmdlcnByaW50
-L01ha2VmaWxlICAgICAgICB8ICAgNSArDQo+ID4gIGRyaXZlcnMvaWlvL2ZpbmdlcnByaW50L2Zw
-X3RjLmMgICAgICAgICB8IDE2MiArKysrKysrKysNCj4gPiAgZHJpdmVycy9paW8vZmluZ2VycHJp
-bnQvZnBfdGMuaCAgICAgICAgIHwgIDIyICsrDQo+ID4gIGRyaXZlcnMvaWlvL2ZpbmdlcnByaW50
-L2ZwX3RjX3VzYi5jICAgICB8IDYxOCArKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKw0K
-PiA+ICBkcml2ZXJzL2lpby9maW5nZXJwcmludC9mcF90Y191c2IuaCAgICAgfCAxNDQgKysrKysr
-KysNCj4gPiAgZHJpdmVycy9paW8vaW5kdXN0cmlhbGlvLWNvcmUuYyAgICAgICAgIHwgICA5ICsN
-Cj4gPiAgaW5jbHVkZS9saW51eC9paW8vaWlvLmggICAgICAgICAgICAgICAgIHwgIDExICstDQo+
-ID4gIGluY2x1ZGUvbGludXgvaWlvL3R5cGVzLmggICAgICAgICAgICAgICB8ICAxMCArDQo+ID4g
-IDEyIGZpbGVzIGNoYW5nZWQsIDEwNDcgaW5zZXJ0aW9ucygrKSwgMiBkZWxldGlvbnMoLSkNCj4g
-PiAgY3JlYXRlIG1vZGUgMTAwNjQ0IGRyaXZlcnMvaWlvL2ZpbmdlcnByaW50L0tjb25maWcNCj4g
-PiAgY3JlYXRlIG1vZGUgMTAwNjQ0IGRyaXZlcnMvaWlvL2ZpbmdlcnByaW50L01ha2VmaWxlDQo+
-ID4gIGNyZWF0ZSBtb2RlIDEwMDY0NCBkcml2ZXJzL2lpby9maW5nZXJwcmludC9mcF90Yy5jDQo+
-ID4gIGNyZWF0ZSBtb2RlIDEwMDY0NCBkcml2ZXJzL2lpby9maW5nZXJwcmludC9mcF90Yy5oDQo+
-ID4gIGNyZWF0ZSBtb2RlIDEwMDY0NCBkcml2ZXJzL2lpby9maW5nZXJwcmludC9mcF90Y191c2Iu
-Yw0KPiA+ICBjcmVhdGUgbW9kZSAxMDA2NDQgZHJpdmVycy9paW8vZmluZ2VycHJpbnQvZnBfdGNf
-dXNiLmgNCj4gPiANCj4gDQoNCg==
+Vlad Dogaru schrieb am 08.12.2014 um 12:48:
+> On Sun, Dec 07, 2014 at 01:15:25PM +0100, Hartmut Knaack wrote:
+>> Vlad Dogaru schrieb am 26.11.2014 um 13:50:
+>>> Supports buffering, IIO events and changing sampling frequency.
+>>>
+>>> Datasheet available at:
+>>> http://www.semtech.com/images/datasheet/sx9500_ag.pdf
+>>>
+>> Please find some issues and suggestions inline.
+> 
+> Thanks for the review.  I'll answer some points inline and hold off the
+> next version until I hear back from you.
+> 
+> As for the points I didn't address, I will fix them in the next
+> iteration.
+> 
+> [snip]
+> 
+>>> +#define SX9500_CHANNEL(idx)					\
+>>> +	{							\
+>>> +		.type = IIO_PROXIMITY,				\
+>>> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),	\
+>>> +		.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_SAMP_FREQ), \
+>>> +		.indexed = 1,					\
+>>> +		.channel = idx,					\
+>>> +		.event_spec = sx9500_events,			\
+>>> +		.num_event_specs = 1,				\
+>> = ARRAY_SIZE(sx9500_events)?
+>>> +		.scan_index = idx,				\
+>>> +		.scan_type = {					\
+>>> +			.sign = 'u',				\
+>> Datasheet says: Signed, 2's complement format.
+> 
+> See my comment below.
+> 
+> [snip]
+> 
+>>> +static int sx9500_read_proximity(struct sx9500_data *data,
+>>> +				 const struct iio_chan_spec *chan,
+>>> +				 int *val)
+>>> +{
+>>> +	int ret;
+>>> +	__be16 regval;
+>>> +
+>>> +	ret = regmap_write(data->regmap, SX9500_REG_SENSOR_SEL, chan->channel);
+>>> +	if (ret < 0)
+>>> +		return ret;
+>>> +
+>>> +	ret = regmap_bulk_read(data->regmap, SX9500_REG_USE_MSB, &regval, 2);
+>>> +	if (ret < 0)
+>>> +		return ret;
+>>> +
+>>> +	*val = 32767 - (s16)be16_to_cpu(regval);
+>> Unless I'm missing something, it should be:
+>> *val = (s16)be16_to_cpu(regval);
+> 
+> I've chosen the formula so that when a finger is touching the sensor,
+> the reported value is 0; as the distance grows, so does the value.
+> Your version would report a large value when a finger is touching the
+> sensor, with the value decreasing as distance grows.
+> 
+> The ABI documentation of in_proximity_raw mentions that, where possible,
+> the value after scaling should be meters.  In this case it is not
+> possible to convert the readings to meters, but I think it would be
+> beneficial to have a value that at least behaves like a distance.
+> 
+Good points. Given that the channel has got the IIO_CHAN_INFO_RAW flag, I would
+expect to get the raw value here. ABI also isn't clear yet, so I'll leave it to
+Jonathan or the others to decide.
+> [snip]
+> 
+>>> +static irqreturn_t sx9500_irq_handler(int irq, void *private)
+>>> +{
+>>> +	struct iio_dev *indio_dev = private;
+>>> +	struct sx9500_data *data = iio_priv(indio_dev);
+>>> +
+>>> +	if (data->trigger_enabled)
+>>> +		iio_trigger_poll(data->trig);
+>>> +
+>>> +	/*
+>>> +	 * Even if no event is enabled, we need to wake the thread to
+>>> +	 * clear the interrupt state by reading SX9500_REG_IRQ_SRC.  It
+>> Double whitespace.
+> 
+> I've consistently used double spaces after full stops in the comments
+> (and in my emails).  AFAICT, this is an open discussion [1].  The kernel
+> uses both standards, so as long as comments across a file are consistent
+> I don't see a problem with using double spaces to separate sentences.
+> 
+> [1] http://en.wikipedia.org/wiki/Sentence_spacing#Digital_age
+Thanks for sharing, I haven't heard of that before (autocorrect function in
+Office program even allowed to indicate these issues). But since even the
+CodingStyle document uses both ways, I can just say: never mind then :-)
+> 
+>>> +	 * is not possible to do that here because regmap_read takes a
+>>> +	 * mutex.
+>>> +	 */
+>>> +	return IRQ_WAKE_THREAD;
+>>> +}
+>>> +
+>>> +static irqreturn_t sx9500_irq_thread_handler(int irq, void *private)
+>>> +{
+>>> +	struct iio_dev *indio_dev = private;
+>>> +	struct sx9500_data *data = iio_priv(indio_dev);
+>>> +	int ret, chan;
+>> chan could be unsigned.
+>>> +	unsigned int val;
+>>> +
+>>> +	mutex_lock(&data->mutex);
+>>> +
+>>> +	ret = regmap_read(data->regmap, SX9500_REG_IRQ_SRC, &val);
+>>> +	if (ret < 0) {
+>>> +		dev_err(&data->client->dev, "i2c transfer error in irq\n");
+>>> +		goto out;
+>>> +	}
+>>> +
+>>> +	if (!(val & (SX9500_CLOSE_IRQ | SX9500_FAR_IRQ)))
+>>> +		goto out;
+>>> +
+>>> +	ret = regmap_read(data->regmap, SX9500_REG_STAT, &val);
+>>> +	if (ret < 0) {
+>>> +		dev_err(&data->client->dev, "i2c transfer error in irq\n");
+>>> +		goto out;
+>>> +	}
+>>> +
+>>> +	val >>= SX9500_PROXSTAT_SHIFT;
+>>> +	for (chan = 0; chan < SX9500_NUM_CHANNELS; chan++) {
+>>> +		int dir;
+>>> +		u64 ev;
+>>> +		u8 new_prox = !(val & (1 << chan));
+>> new_prox should be bool. (1 << chan) could be expressed as BIT(chan).
+>> Why the negation? If PROXSTATx gets set, doesn't this indicate, that an object
+>> gets close to the sensor? Shouldn't such an event cause IIO_EV_DIR_RISING?
+> 
+> Maybe I'm misreading the ABI, but if PROXSTATx is set, it means
+> proximity is detected.  If it wasn't detected previously, this means
+> that an object has moved closer to the sensor, thus the distance to the
+> object has decreased and we should cause an IIO_EV_DIR_FALLING.
+Sounds good to me. Thanks.
+> 
+> [snip]
+> 
+>>> +	any_active = 0;
+>> true or false should be used for bools, but better initialize during declaration.
+>>> +	for (i = 0; i < SX9500_NUM_CHANNELS; i++)
+>>> +		if (data->event_enabled[chan->channel]) {
+>> Don't you mean data->event_enabled[i]?
+> 
+> I definitely do, that was silly of me :)
+> 
+>>> +			any_active = true;
+>>> +			break;
+>>> +		}
+>>> +
+>>> +	irqmask = SX9500_CLOSE_IRQ | SX9500_FAR_IRQ;
+>>> +	ret = regmap_update_bits(data->regmap, SX9500_REG_IRQ_MSK,
+>>> +				 irqmask, any_active ? irqmask : 0);
+>>> +
+>>> +	mutex_unlock(&data->mutex);
+>>> +
+>>> +	return ret;
+>>> +}
+>>> +
+>>> +static IIO_CONST_ATTR_SAMP_FREQ_AVAIL(
+>>> +	"2.500000 3.333333 5 6.666666 8.333333 11.111111 16.666666 33.333333");
+>>> +
+>>> +static struct attribute *sx9500_attributes[] = {
+>>> +	&iio_const_attr_sampling_frequency_available.dev_attr.attr,
+>>> +	NULL,
+>>> +};
+>>> +
+>>> +static const struct attribute_group sx9500_attribute_group = {
+>>> +	.attrs = sx9500_attributes,
+>>> +};
+>>> +
+>>> +static const struct iio_info sx9500_info = {
+>>> +	.driver_module = THIS_MODULE,
+>>> +	.attrs = &sx9500_attribute_group,
+>>> +	.read_raw = &sx9500_read_raw,
+>>> +	.write_raw = &sx9500_write_raw,
+>>> +	.read_event_config = &sx9500_read_event_config,
+>>> +	.write_event_config = &sx9500_write_event_config,
+>>> +};
+>>> +
+>>> +static int sx9500_set_trigger_state(struct iio_trigger *trig,
+>>> +				    bool state)
+>>> +{
+>>> +	struct iio_dev *indio_dev = iio_trigger_get_drvdata(trig);
+>>> +	struct sx9500_data *data = iio_priv(indio_dev);
+>>> +	int ret;
+>>> +
+>>> +	mutex_lock(&data->mutex);
+>>> +
+>>> +	ret = regmap_update_bits(data->regmap, SX9500_REG_IRQ_MSK,
+>>> +				 SX9500_CONVDONE_IRQ,
+>>> +				 state ? SX9500_CONVDONE_IRQ : 0);
+>>> +	data->trigger_enabled = state;
+>> Only set data->trigger_enabled if regmap_update_bits was successful.
+>>> +
+>>> +	mutex_unlock(&data->mutex);
+>>> +
+>>> +	return ret;
+>>> +}
+>>> +
+>>> +static const struct iio_trigger_ops sx9500_trigger_ops = {
+>>> +	.set_trigger_state = sx9500_set_trigger_state,
+>>> +	.owner = THIS_MODULE,
+>>> +};
+>>> +
+>>> +static irqreturn_t sx9500_trigger_handler(int irq, void *private)
+>>> +{
+>>> +	struct iio_poll_func *pf = private;
+>>> +	struct iio_dev *indio_dev = pf->indio_dev;
+>>> +	struct sx9500_data *data = iio_priv(indio_dev);
+>>> +	s16 *buf;
+>>> +	int val, bit, ret, i = 0;
+>>> +
+>>> +	buf = kmalloc(indio_dev->scan_bytes, GFP_KERNEL);
+>> Use kzalloc for a clean buffer?
+> 
+> Is this just cosmetic or am I missing something?  Assuming that
+> scan_bytes has the correct value, won't all of 'buf' be written with
+> channel data and the timestamp?
+> 
+I think it's a safety measure. Think about future code changes which might
+introduce some bug, that wouldn't completely fill the buffer. If it was
+cleared during allocation, there can't be too much harm. But pushing out
+unwanted data could be exploited. Comparing the use of kmalloc and kzalloc
+nowadays, you get a relation of about 2500 vs. 4500 in favor of kzalloc.
+> [snip]
+> 
+>>> +static int sx9500_init_device(struct iio_dev *indio_dev)
+>>> +{
+>>> +	struct sx9500_data *data = iio_priv(indio_dev);
+>>> +	int ret, i, num_defaults;
+>>> +	unsigned int val;
+>>> +
+>>> +	ret = regmap_write(data->regmap, SX9500_REG_IRQ_MSK, 0);
+>>> +	if (ret < 0)
+>>> +		return ret;
+>>> +
+>>> +	ret = regmap_write(data->regmap, SX9500_REG_RESET,
+>>> +			   SX9500_SOFT_RESET);
+>>> +	if (ret < 0)
+>>> +		return ret;
+>>> +
+>>> +	ret = regmap_read(data->regmap, SX9500_REG_IRQ_SRC, &val);
+>>> +	if (ret < 0)
+>>> +		return ret;
+>>> +
+>>> +	num_defaults = ARRAY_SIZE(sx9500_default_regs);
+>> num_defaults doesn't serve an essential purpose.
+> 
+> Thought I'd avoid it being calculated at every step of the for loop.
+> But it's not on a hot path, so I'll get rid of it.
+> 
+The compiler replaces ARRAY_SIZE in an early step with its calculated value,
+so this won't be happening during runtime.
+> [snip]
+> 
+>>> +static const struct acpi_device_id sx9500_acpi_match[] = {
+>>> +	{"SSX9500", 0}, /* TODO is there a better ACPI handle? */
+>> Is this a typo? Shouldn't it be "SX9500"?
+> 
+> ACPI rules prohibit such a device ID:
+> 
+> ssdt.dsl     11:                 Name (_HID, "SX9500")
+> Error    6033 -                                    ^ _HID string must be
+> exactly 7 or 8 characters (SX9500)
+> 
+> I was unable to find a common method to fix such an issue and was hoping
+> someone can help, that's why I left the TODO in the code.
+Good point, thanks. ACPI is not exactly my favorite.
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> 
+
