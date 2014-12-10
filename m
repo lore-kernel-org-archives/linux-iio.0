@@ -1,53 +1,76 @@
-Return-Path: <knaack.h@gmx.de>
-Message-ID: <5488CA94.3000406@gmx.de>
-Date: Wed, 10 Dec 2014 23:35:00 +0100
-From: Hartmut Knaack <knaack.h@gmx.de>
-MIME-Version: 1.0
-To: Lars-Peter Clausen <lars@metafoo.de>,
- Jonathan Cameron <jic23@kernel.org>
-CC: Peter Meerwald <pmeerw@pmeerw.net>, linux-iio@vger.kernel.org
-Subject: Re: [PATCH 04/11] staging:iio:sca3000: Register same channels
- for device and buffer
-References: <1417024517-7564-1-git-send-email-lars@metafoo.de> <1417024517-7564-5-git-send-email-lars@metafoo.de>
-In-Reply-To: <1417024517-7564-5-git-send-email-lars@metafoo.de>
-Content-Type: text/plain; charset=ISO-8859-15
+Return-Path: <irina.tirdea@intel.com>
+From: Irina Tirdea <irina.tirdea@intel.com>
+To: Jonathan Cameron <jic23@kernel.org>,
+	linux-iio@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org,
+	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+	Daniel Baluta <daniel.baluta@intel.com>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Irina Tirdea <irina.tirdea@intel.com>
+Subject: [PATCH v2 3/4] iio: accel: kxcjk-1013: error handling when set mode fails
+Date: Wed, 10 Dec 2014 18:23:53 +0200
+Message-Id: <1418228634-10505-4-git-send-email-irina.tirdea@intel.com>
+In-Reply-To: <1418228634-10505-1-git-send-email-irina.tirdea@intel.com>
+References: <1418228634-10505-1-git-send-email-irina.tirdea@intel.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-Lars-Peter Clausen schrieb am 26.11.2014 um 18:55:
-> In preparation for moving the buffer registration to the core make sure to
-> register the same channel array for the device and the buffer. Currently
-> the temperature channel is not registered for the buffer, setting its scan
-> index to -1 will make sure that it is skipped for the buffer.
-> 
-> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
-> ---
->  drivers/staging/iio/accel/sca3000_core.c | 6 +++---
->  1 file changed, 3 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/staging/iio/accel/sca3000_core.c b/drivers/staging/iio/accel/sca3000_core.c
-> index cd46a61..9eedb93 100644
-> --- a/drivers/staging/iio/accel/sca3000_core.c
-> +++ b/drivers/staging/iio/accel/sca3000_core.c
-> @@ -459,6 +459,7 @@ static const struct iio_chan_spec sca3000_channels_with_temp[] = {
->  		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
->  		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE) |
->  			BIT(IIO_CHAN_INFO_OFFSET),
-> +		.scan_index = -1,
->  	},
->  };
->  
-> @@ -1154,9 +1155,8 @@ static int sca3000_probe(struct spi_device *spi)
->  	if (ret < 0)
->  		return ret;
->  
-> -	ret = iio_buffer_register(indio_dev,
-> -				  sca3000_channels,
-> -				  ARRAY_SIZE(sca3000_channels));
-> +	ret = iio_buffer_register(indio_dev, indio_dev->channels,
-> +		indio_dev->num_channels);
-Indentation could be better here, otherwise looking good to me (including
-previous patches in this series).
->  	if (ret < 0)
->  		goto error_unregister_dev;
->  
-> 
+If there is an error in set mode at runtime resume, reset the state of
+the runtime usage count.
+
+If there is an error in set mode at runtime suspend, make sure the framework
+retries to suspend the device.
+
+Signed-off-by: Irina Tirdea <irina.tirdea@intel.com>
+Reviewed-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+---
+ drivers/iio/accel/kxcjk-1013.c |   13 ++++++++++++-
+ 1 file changed, 12 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/iio/accel/kxcjk-1013.c b/drivers/iio/accel/kxcjk-1013.c
+index 7b0a9da..0dc6ccf 100644
+--- a/drivers/iio/accel/kxcjk-1013.c
++++ b/drivers/iio/accel/kxcjk-1013.c
+@@ -388,6 +388,8 @@ static int kxcjk1013_set_power_state(struct kxcjk1013_data *data, bool on)
+ 	if (ret < 0) {
+ 		dev_err(&data->client->dev,
+ 			"Failed: kxcjk1013_set_power_state for %d\n", on);
++		if (on)
++			pm_runtime_put_noidle(&data->client->dev);
+ 		return ret;
+ 	}
+ #endif
+@@ -859,6 +861,8 @@ static int kxcjk1013_write_event_config(struct iio_dev *indio_dev,
+ 
+ 	ret =  kxcjk1013_setup_any_motion_interrupt(data, state);
+ 	if (ret < 0) {
++		kxcjk1013_set_power_state(data, false);
++		data->ev_enable_state = 0;
+ 		mutex_unlock(&data->mutex);
+ 		return ret;
+ 	}
+@@ -1009,6 +1013,7 @@ static int kxcjk1013_data_rdy_trigger_set_state(struct iio_trigger *trig,
+ 	else
+ 		ret = kxcjk1013_setup_new_data_interrupt(data, state);
+ 	if (ret < 0) {
++		kxcjk1013_set_power_state(data, false);
+ 		mutex_unlock(&data->mutex);
+ 		return ret;
+ 	}
+@@ -1368,8 +1373,14 @@ static int kxcjk1013_runtime_suspend(struct device *dev)
+ {
+ 	struct iio_dev *indio_dev = i2c_get_clientdata(to_i2c_client(dev));
+ 	struct kxcjk1013_data *data = iio_priv(indio_dev);
++	int ret;
+ 
+-	return kxcjk1013_set_mode(data, STANDBY);
++	ret = kxcjk1013_set_mode(data, STANDBY);
++	if (ret < 0) {
++		dev_err(&data->client->dev, "powering off device failed\n");
++		return -EAGAIN;
++	}
++	return 0;
+ }
+ 
+ static int kxcjk1013_runtime_resume(struct device *dev)
+-- 
+1.7.9.5
