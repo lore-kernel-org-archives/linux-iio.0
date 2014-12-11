@@ -1,102 +1,91 @@
-Return-Path: <k.wrona@samsung.com>
-From: Karol Wrona <k.wrona@samsung.com>
-To: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
- Hartmut Knaack <knaack.h@gmx.de>, linux-kernel@vger.kernel.org
-Cc: Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
- Kyungmin Park <kyungmin.park@samsung.com>, Karol Wrona <wrona.vy@gmail.com>,
- Karol Wrona <k.wrona@samsung.com>
-Subject: [RFC PATCH 2/2] iio: kfifo: Add resource management
- devm_iio_kfifo_allocate/free
-Date: Tue, 09 Dec 2014 20:29:45 +0100
-Message-id: <1418153385-18212-3-git-send-email-k.wrona@samsung.com>
-In-reply-to: <1418153385-18212-1-git-send-email-k.wrona@samsung.com>
-References: <1418153385-18212-1-git-send-email-k.wrona@samsung.com>
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-la0-f46.google.com ([209.85.215.46]:38668 "EHLO
+	mail-la0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S932577AbaLKUeN (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 11 Dec 2014 15:34:13 -0500
+MIME-Version: 1.0
+In-Reply-To: <547C42FF.5010700@ti.com>
+References: <1415941651-28962-1-git-send-email-vigneshr@ti.com>
+	<20141124115116.GA14997@linutronix.de>
+	<547C3A95.30605@ti.com>
+	<547C3C19.5090501@linutronix.de>
+	<547C42FF.5010700@ti.com>
+Date: Thu, 11 Dec 2014 22:34:10 +0200
+Message-ID: <CAH=tA9FO5MCzE274thc-NugCNte6WdyC-Rxc6yfnuR=+6_qMbA@mail.gmail.com>
+Subject: Re: [PATCH v4 0/6] Touchscreen performance related fixes
+From: Nicolae Rosia <nicolae.rosia@gmail.com>
+To: Vignesh R <vigneshr@ti.com>
+Cc: Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+	Rob Herring <robh+dt@kernel.org>,
+	Pawel Moll <pawel.moll@arm.com>,
+	Mark Rutland <mark.rutland@arm.com>,
+	Ian Campbell <ijc+devicetree@hellion.org.uk>,
+	Kumar Gala <galak@codeaurora.org>,
+	Benoit Cousson <bcousson@baylibre.com>,
+	Tony Lindgren <tony@atomide.com>,
+	Russell King <linux@arm.linux.org.uk>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>, richardcochran@gmail.com,
+	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+	Lee Jones <lee.jones@linaro.org>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Samuel Ortiz <sameo@linux.intel.com>,
+	Felipe Balbi <balbi@ti.com>, Brad Griffis <bgriffis@ti.com>,
+	Sanjeev Sharma <sanjeev_sharma@mentor.com>,
+	Paul Gortmaker <paul.gortmaker@windriver.com>,
+	Jan Kardell <jan.kardell@telliq.com>,
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	linux-iio@vger.kernel.org, linux-input@vger.kernel.org
+Content-Type: text/plain; charset=UTF-8
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-iio kfifo allocate/free gained their devm_ wrappers.
+Hello,
 
-Change-Id: I10c19ccd7c01491caf088b3629137425ddccd29c
-Signed-off-by: Karol Wrona <k.wrona@samsung.com>
-Suggested-by: Jonathan Cameron <jic23@kernel.org>
----
- drivers/iio/kfifo_buf.c       |   54 +++++++++++++++++++++++++++++++++++++++++
- include/linux/iio/kfifo_buf.h |    3 +++
- 2 files changed, 57 insertions(+)
+Any updates on this series? I don't see it applied in [1] or [2].
 
-diff --git a/drivers/iio/kfifo_buf.c b/drivers/iio/kfifo_buf.c
-index 5b5387c..03a133f 100644
---- a/drivers/iio/kfifo_buf.c
-+++ b/drivers/iio/kfifo_buf.c
-@@ -191,4 +191,58 @@ void iio_kfifo_free(struct iio_buffer *r)
- }
- EXPORT_SYMBOL(iio_kfifo_free);
- 
-+static void devm_iio_kfifo_release(struct device *dev, void *res)
-+{
-+	iio_kfifo_free(*(struct iio_buffer **)res);
-+}
-+
-+static int devm_iio_kfifo_match(struct device *dev, void *res, void *data)
-+{
-+	struct iio_buffer **r = res;
-+
-+	if (WARN_ON(!r || !*r))
-+		return 0;
-+
-+	return *r == data;
-+}
-+
-+/**
-+ * devm_iio_fifo_allocate - Resource-managed iio_kfifo_allocate()
-+ * @dev:		Device to allocate kfifo buffer for
-+ *
-+ * RETURNS:
-+ * Pointer to allocated iio_buffer on success, NULL on failure.
-+ */
-+struct iio_buffer *devm_iio_kfifo_allocate(struct device *dev)
-+{
-+	struct iio_buffer **ptr, *r;
-+
-+	ptr = devres_alloc(devm_iio_kfifo_release, sizeof *ptr, GFP_KERNEL);
-+	if (!ptr)
-+		return NULL;
-+
-+	r = iio_kfifo_allocate();
-+	if (r) {
-+		*ptr = r;
-+		devres_add(dev, ptr);
-+	} else {
-+		devres_free(ptr);
-+	}
-+
-+	return r;
-+}
-+EXPORT_SYMBOL(devm_iio_kfifo_allocate);
-+
-+/**
-+ * devm_iio_fifo_free - Resource-managed iio_kfifo_free()
-+ * @dev:		Device the buffer belongs to
-+ * @r:			the buffer associated with the device
-+ */
-+void devm_iio_kfifo_free(struct device *dev, struct iio_buffer *r)
-+{
-+	WARN_ON(devres_release(dev, devm_iio_kfifo_release,
-+			       devm_iio_kfifo_match, r));
-+}
-+EXPORT_SYMBOL(devm_iio_kfifo_free);
-+
- MODULE_LICENSE("GPL");
-diff --git a/include/linux/iio/kfifo_buf.h b/include/linux/iio/kfifo_buf.h
-index 1a8d57a..1683bc7 100644
---- a/include/linux/iio/kfifo_buf.h
-+++ b/include/linux/iio/kfifo_buf.h
-@@ -8,4 +8,7 @@
- struct iio_buffer *iio_kfifo_allocate(void);
- void iio_kfifo_free(struct iio_buffer *r);
- 
-+struct iio_buffer *devm_iio_kfifo_allocate(struct device *dev);
-+void devm_iio_kfifo_free(struct device *dev, struct iio_buffer *r);
-+
- #endif
--- 
-1.7.9.5
+[1] https://github.com/RobertCNelson/ti-linux-kernel/commits/ti-linux-3.14.y/drivers/input/touchscreen/ti_am335x_tsc.c
+[2] https://github.com/RobertCNelson/ti-linux-kernel/commits/ti-linux-3.14.y-exp/drivers/input/touchscreen/ti_am335x_tsc.c
+
+Regards,
+Nicolae Rosia
+
+On Mon, Dec 1, 2014 at 12:29 PM, Vignesh R <vigneshr@ti.com> wrote:
+>
+> Hi,
+>
+> On Monday 01 December 2014 03:29 PM, Sebastian Andrzej Siewior wrote:
+>> On 12/01/2014 10:53 AM, Vignesh R wrote:
+>>> Hi Sebastian,
+>>
+>> Hi Vignesh,
+>>
+>>> I fixed the issue that was triggering the WARN_ON(). I think it would be
+>>> better if you tested these patches, before I posted them on the
+>>> mainline. I don't want to clutter the list with too main versions. Here
+>>> is the link to the tree with latest changes:
+>>
+>> awesome, thank you.
+>>
+>>>
+>>> git clone -b tsc-devel git://git.ti.com/kernel/tsc-adc.git
+>>> (tsc-devel branch)
+>>
+>> I will and let you know.
+>>
+>>> Please test the above tree and let me know the results.
+>>> I will post new version(v5) if there are no issues wrt IIO and TSC
+>>> working at the same time.
+>>
+>> Cool. Were you able to get in touch with someone who has a 5-wire touch?
+>
+> I have asked Jeff Lance to verify 5-wire touch.
+>
+> Regards
+> Vignesh
+> --
+> To unsubscribe from this list: send the line "unsubscribe devicetree" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
