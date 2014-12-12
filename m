@@ -1,93 +1,95 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:47392 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:47367 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S966274AbaLLLuw (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 12 Dec 2014 06:50:52 -0500
-Message-ID: <548AD69A.4040303@kernel.org>
-Date: Fri, 12 Dec 2014 11:50:50 +0000
+	with ESMTP id S966519AbaLLLqG (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 12 Dec 2014 06:46:06 -0500
+Message-ID: <548AD577.10508@kernel.org>
+Date: Fri, 12 Dec 2014 11:45:59 +0000
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Hartmut Knaack <knaack.h@gmx.de>,
-	Vlad Dogaru <vlad.dogaru@intel.com>, linux-iio@vger.kernel.org
-Subject: Re: [PATCH 2/4] iio: ensure scan index is unique at buffer register
-References: <1416919687-14271-1-git-send-email-vlad.dogaru@intel.com> <1416919687-14271-3-git-send-email-vlad.dogaru@intel.com> <548364C2.10401@gmx.de>
-In-Reply-To: <548364C2.10401@gmx.de>
-Content-Type: text/plain; charset=iso-8859-15
+To: Adam Thomson <Adam.Thomson.Opensource@diasemi.com>,
+	Lee Jones <lee.jones@linaro.org>,
+	Samuel Ortiz <sameo@linux.intel.com>,
+	linux-iio@vger.kernel.org, Sebastian Reichel <sre@kernel.org>,
+	Dmitry Eremin-Solenikov <dbaryshkov@gmail.com>,
+	David Woodhouse <dwmw2@infradead.org>,
+	linux-pm@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
+	Pawel Moll <pawel.moll@arm.com>,
+	Mark Rutland <mark.rutland@arm.com>,
+	Ian Campbell <ijc+devicetree@hellion.org.uk>,
+	Kumar Gala <galak@codeaurora.org>,
+	Grant Likely <grant.likely@linaro.org>,
+	devicetree@vger.kernel.org,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Joe Perches <joe@perches.com>, linux-api@vger.kernel.org
+CC: linux-kernel@vger.kernel.org, support.opensource@diasemi.com
+Subject: Re: [PATCH v4 8/8] iio: Add ABI documentation for input current readings
+References: <cover.1416938054.git.Adam.Thomson.Opensource@diasemi.com> <9d3c3451c2cac6035277fb36ffead1a1f8af453e.1416938054.git.Adam.Thomson.Opensource@diasemi.com>
+In-Reply-To: <9d3c3451c2cac6035277fb36ffead1a1f8af453e.1416938054.git.Adam.Thomson.Opensource@diasemi.com>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 06/12/14 20:19, Hartmut Knaack wrote:
-> Vlad Dogaru wrote on 25.11.2014 13:48:
->> Having two or more channels with the same positive scan_index field
->> makes no sense.  Prevent this situation by failing to register a buffer
->> if two scan indexes are identical.
->>
->> Signed-off-by: Vlad Dogaru <vlad.dogaru@intel.com>
-A sensible little sanity check that might avoid a few bugs.
+On 25/11/14 18:25, Adam Thomson wrote:
+> Add information on in_current related readings.
+> 
+> Signed-off-by: Adam Thomson <Adam.Thomson.Opensource@diasemi.com>
+This one stands on it's own to applied (with some fuzz and tiny
+bit of rearranging) to the togreg branch of iio.git - initially pushed
+out as testing for the autobuilders to play with it.
 
-I'm guessing will need a rebase (along with Harmut's point)
-given the buffer set from Lars I applied earlier today.
+Thanks,
 
 Jonathan
->> ---
->>  drivers/iio/industrialio-buffer.c | 28 ++++++++++++++++++++++++++++
->>  1 file changed, 28 insertions(+)
->>
->> diff --git a/drivers/iio/industrialio-buffer.c b/drivers/iio/industrialio-buffer.c
->> index f971f79..422b29e 100644
->> --- a/drivers/iio/industrialio-buffer.c
->> +++ b/drivers/iio/industrialio-buffer.c
->> @@ -309,6 +309,30 @@ static int iio_buffer_add_channel_sysfs(struct iio_dev *indio_dev,
->>  	return ret;
->>  }
->>  
->> +static int iio_check_unique_scan_index(struct iio_dev *indio_dev,
->> +				       const struct iio_chan_spec *channels,
->> +				       int num_channels)
->> +{
->> +	int i, j;
->> +
->> +	for (i = 0; i < num_channels - 1; i++) {
->> +		if (channels[i].scan_index < 0)
->> +			continue;
->> +		for (j = i + 1; j < num_channels; j++) {
->> +			if (channels[j].scan_index < 0)
->> +				continue;
-> This check up here is unnecessary, since channels[i].scan_index is already equal or
-> greater zero, so the check below results in a false for channels[j].scan_index smaller
-> than zero and cause a new loop iteration anyway.
+> ---
+>  Documentation/ABI/testing/sysfs-bus-iio | 17 +++++++++++++++++
+>  1 file changed, 17 insertions(+)
 > 
->> +			if (channels[i].scan_index == channels[j].scan_index) {
->> +				dev_err(&indio_dev->dev,
->> +					"duplicate scan index %d\n",
->> +					channels[i].scan_index);
->> +				return -EINVAL;
->> +			}
->> +		}
->> +	}
->> +
->> +	return 0;
->> +}
->> +
->>  static const char * const iio_scan_elements_group_name = "scan_elements";
->>  
->>  int iio_buffer_register(struct iio_dev *indio_dev,
->> @@ -320,6 +344,10 @@ int iio_buffer_register(struct iio_dev *indio_dev,
->>  	struct iio_buffer *buffer = indio_dev->buffer;
->>  	int ret, i, attrn, attrcount, attrcount_orig = 0;
->>  
->> +	ret = iio_check_unique_scan_index(indio_dev, channels, num_channels);
->> +	if (ret < 0)
->> +		return ret;
->> +
->>  	if (buffer->attrs)
->>  		indio_dev->groups[indio_dev->groupcounter++] = buffer->attrs;
->>  
->>
+> diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
+> index d760b02..37cd4d4 100644
+> --- a/Documentation/ABI/testing/sysfs-bus-iio
+> +++ b/Documentation/ABI/testing/sysfs-bus-iio
+> @@ -92,6 +92,18 @@ Description:
+>  		is required is a consistent labeling.  Units after application
+>  		of scale and offset are millivolts.
 > 
+> +What:		/sys/bus/iio/devices/iio:deviceX/in_currentY_raw
+> +What:		/sys/bus/iio/devices/iio:deviceX/in_currentY_supply_raw
+> +KernelVersion:	3.17
+> +Contact:	linux-iio@vger.kernel.org
+> +Description:
+> +		Raw (unscaled no bias removal etc.) current measurement from
+> +		channel Y. In special cases where the channel does not
+> +		correspond to externally available input one of the named
+> +		versions may be used. The number must always be specified and
+> +		unique to allow association with event codes. Units after
+> +		application of scale and offset are milliamps.
+> +
+>  What:		/sys/bus/iio/devices/iio:deviceX/in_capacitanceY_raw
+>  KernelVersion:	3.2
+>  Contact:	linux-iio@vger.kernel.org
+> @@ -227,6 +239,8 @@ What:		/sys/bus/iio/devices/iio:deviceX/in_accel_y_offset
+>  What:		/sys/bus/iio/devices/iio:deviceX/in_accel_z_offset
+>  What:		/sys/bus/iio/devices/iio:deviceX/in_voltageY_offset
+>  What:		/sys/bus/iio/devices/iio:deviceX/in_voltage_offset
+> +What:		/sys/bus/iio/devices/iio:deviceX/in_currentY_offset
+> +What:		/sys/bus/iio/devices/iio:deviceX/in_current_offset
+>  What:		/sys/bus/iio/devices/iio:deviceX/in_tempY_offset
+>  What:		/sys/bus/iio/devices/iio:deviceX/in_temp_offset
+>  What:		/sys/bus/iio/devices/iio:deviceX/in_pressureY_offset
+> @@ -249,8 +263,11 @@ Description:
+>  		to the _raw output.
+> 
+>  What:		/sys/bus/iio/devices/iio:deviceX/in_voltageY_scale
+> +What:		/sys/bus/iio/devices/iio:deviceX/in_currentY_scale
+>  What:		/sys/bus/iio/devices/iio:deviceX/in_voltageY_supply_scale
+> +What:		/sys/bus/iio/devices/iio:deviceX/in_currentY_supply_scale
+>  What:		/sys/bus/iio/devices/iio:deviceX/in_voltage_scale
+> +What:		/sys/bus/iio/devices/iio:deviceX/in_current_scale
+>  What:		/sys/bus/iio/devices/iio:deviceX/out_voltageY_scale
+>  What:		/sys/bus/iio/devices/iio:deviceX/out_altvoltageY_scale
+>  What:		/sys/bus/iio/devices/iio:deviceX/in_accel_scale
 > --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> 1.9.3
 > 
 
