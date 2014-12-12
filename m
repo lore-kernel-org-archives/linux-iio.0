@@ -1,87 +1,72 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:46996 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:47125 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S965849AbaLLKuA (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 12 Dec 2014 05:50:00 -0500
-Message-ID: <548AC856.9020708@kernel.org>
-Date: Fri, 12 Dec 2014 10:49:58 +0000
+	with ESMTP id S965753AbaLLLIZ (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 12 Dec 2014 06:08:25 -0500
+Message-ID: <548ACCA7.7080706@kernel.org>
+Date: Fri, 12 Dec 2014 11:08:23 +0000
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Daniel Baluta <daniel.baluta@intel.com>,
-	Lars-Peter Clausen <lars@metafoo.de>
+To: Lars-Peter Clausen <lars@metafoo.de>
 CC: Hartmut Knaack <knaack.h@gmx.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Subject: Re: [PATCH 06/11] iio: Move buffer registration to the core
-References: <1417024517-7564-1-git-send-email-lars@metafoo.de>	<1417024517-7564-7-git-send-email-lars@metafoo.de> <CAEnQRZBX9XAhaD=DXj5QhBGAtFgdpsa6h_YyPWurPAUfjyJ-5A@mail.gmail.com>
-In-Reply-To: <CAEnQRZBX9XAhaD=DXj5QhBGAtFgdpsa6h_YyPWurPAUfjyJ-5A@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
+	Peter Meerwald <pmeerw@pmeerw.net>, linux-iio@vger.kernel.org
+Subject: Re: [PATCH 10/11] iio: buffer: Make length attribute read only for
+ buffers without set_length
+References: <1417024517-7564-1-git-send-email-lars@metafoo.de> <1417024517-7564-11-git-send-email-lars@metafoo.de>
+In-Reply-To: <1417024517-7564-11-git-send-email-lars@metafoo.de>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 04/12/14 14:23, Daniel Baluta wrote:
-> On Wed, Nov 26, 2014 at 7:55 PM, Lars-Peter Clausen <lars@metafoo.de> wrote:
->> Originally device and buffer registration were kept as separate operations
->> in IIO to allow to register two distinct sets of channels for buffered and
->> non-buffered operations. This has since already been further restricted and
->> the channel set registered for the buffer needs to be a subset of the
->> channel set registered for the device. Additionally the possibility to not
->> have a raw (or processed) attribute for a channel which was registered for
->> the device was added a while ago. This means it is possible to not register
->> any device level attributes for a channel even if it is registered for the
->> device. Also if a channel's scan_index is set to -1 and the channel is
->> registered for the buffer it is ignored.
->>
->> So in summery it means it is possible to register the same channel array for
+On 26/11/14 17:55, Lars-Peter Clausen wrote:
+> If a buffer implementation does not implement the set_length() callback the
+> length will be static and can not be changed by userspace. Mark the length
+> attribute as a read only property in this case so userspace is aware of this
+> rather than just silently accepting any length value.
 > 
-> s/summery/summary
-> 
->> both the device and the buffer yet still end up with distinctive sets of
->> channels for both of them. This makes the argument for having to have to
->> manually register the channels for both the device and the buffer invalid.
->> Considering that the vast majority of all drivers want to register the same
->> set of channels for both the buffer and the device it makes sense to move
->> the buffer registration into the core to avoid some boiler-plate code in the
->> device driver setup path.
->>
->> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
->> ---
-> 
-> <snip>
-> 
->> diff --git a/drivers/iio/industrialio-triggered-buffer.c b/drivers/iio/industrialio-triggered-buffer.c
->> index d6f54930..ac97685 100644
->> --- a/drivers/iio/industrialio-triggered-buffer.c
->> +++ b/drivers/iio/industrialio-triggered-buffer.c
->> @@ -78,16 +78,8 @@ int iio_triggered_buffer_setup(struct iio_dev *indio_dev,
-> 
-> You should also update the comment for iio_triggered_buffer_setup. This function
-> doesn't register the buffer with IIO core anymore.
-> 
-I took out the relevant sentence whilst applying the patch.
+> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+Nice little change.
 
-Thanks for your reviews of these Daniel.
-
+Thanks
 Jonathan
+> ---
+>  drivers/iio/industrialio-buffer.c | 10 +++++++---
+>  1 file changed, 7 insertions(+), 3 deletions(-)
 > 
->>         /* Flag that polled ring buffering is possible */
->>         indio_dev->modes |= INDIO_BUFFER_TRIGGERED;
->>
->> -       ret = iio_buffer_register(indio_dev,
->> -                                 indio_dev->channels,
->> -                                 indio_dev->num_channels);
->> -       if (ret)
->> -               goto error_dealloc_pollfunc;
->> -
->>         return 0;
-> 
-> <snip>
-> 
-> thanks,
-> Daniel.
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> diff --git a/drivers/iio/industrialio-buffer.c b/drivers/iio/industrialio-buffer.c
+> index a4d3ff6..3e0c3a9 100644
+> --- a/drivers/iio/industrialio-buffer.c
+> +++ b/drivers/iio/industrialio-buffer.c
+> @@ -416,8 +416,7 @@ static ssize_t iio_buffer_write_length(struct device *dev,
+>  	if (iio_buffer_is_active(indio_dev->buffer)) {
+>  		ret = -EBUSY;
+>  	} else {
+> -		if (buffer->access->set_length)
+> -			buffer->access->set_length(buffer, val);
+> +		buffer->access->set_length(buffer, val);
+>  		ret = 0;
+>  	}
+>  	mutex_unlock(&indio_dev->mlock);
+> @@ -755,6 +754,8 @@ static const char * const iio_scan_elements_group_name = "scan_elements";
+>  
+>  static DEVICE_ATTR(length, S_IRUGO | S_IWUSR, iio_buffer_read_length,
+>  	iio_buffer_write_length);
+> +static struct device_attribute dev_attr_length_ro = __ATTR(length,
+> +	S_IRUGO, iio_buffer_read_length, NULL);
+>  static DEVICE_ATTR(enable, S_IRUGO | S_IWUSR,
+>  	iio_buffer_show_enable, iio_buffer_store_enable);
+>  
+> @@ -781,7 +782,10 @@ int iio_buffer_alloc_sysfs(struct iio_dev *indio_dev)
+>  	if (!buffer->buffer_group.attrs)
+>  		return -ENOMEM;
+>  
+> -	buffer->buffer_group.attrs[0] = &dev_attr_length.attr;
+> +	if (buffer->access->set_length)
+> +		buffer->buffer_group.attrs[0] = &dev_attr_length.attr;
+> +	else
+> +		buffer->buffer_group.attrs[0] = &dev_attr_length_ro.attr;
+>  	buffer->buffer_group.attrs[1] = &dev_attr_enable.attr;
+>  	if (buffer->attrs)
+>  		memcpy(&buffer->buffer_group.attrs[2], buffer->attrs,
 > 
 
