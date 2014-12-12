@@ -1,310 +1,88 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:47284 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:47392 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S966072AbaLLLdz (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 12 Dec 2014 06:33:55 -0500
-Message-ID: <548AD29F.9090706@kernel.org>
-Date: Fri, 12 Dec 2014 11:33:51 +0000
+	with ESMTP id S966274AbaLLLuw (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 12 Dec 2014 06:50:52 -0500
+Message-ID: <548AD69A.4040303@kernel.org>
+Date: Fri, 12 Dec 2014 11:50:50 +0000
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
 To: Hartmut Knaack <knaack.h@gmx.de>,
-	Vlad Dogaru <vlad.dogaru@intel.com>
-CC: linux-iio@vger.kernel.org
-Subject: Re: [PATCH v2] iio: driver for Semtech SX9500 proximity solution
-References: <1417006231-17952-1-git-send-email-vlad.dogaru@intel.com> <548444DD.1030003@gmx.de> <20141208114859.GA2066@vdogaru> <5486419A.70103@gmx.de>
-In-Reply-To: <5486419A.70103@gmx.de>
-Content-Type: text/plain; charset=windows-1252
+	Vlad Dogaru <vlad.dogaru@intel.com>, linux-iio@vger.kernel.org
+Subject: Re: [PATCH 2/4] iio: ensure scan index is unique at buffer register
+References: <1416919687-14271-1-git-send-email-vlad.dogaru@intel.com> <1416919687-14271-3-git-send-email-vlad.dogaru@intel.com> <548364C2.10401@gmx.de>
+In-Reply-To: <548364C2.10401@gmx.de>
+Content-Type: text/plain; charset=iso-8859-15
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 09/12/14 00:26, Hartmut Knaack wrote:
-> Vlad Dogaru schrieb am 08.12.2014 um 12:48:
->> On Sun, Dec 07, 2014 at 01:15:25PM +0100, Hartmut Knaack wrote:
->>> Vlad Dogaru schrieb am 26.11.2014 um 13:50:
->>>> Supports buffering, IIO events and changing sampling frequency.
->>>>
->>>> Datasheet available at:
->>>> http://www.semtech.com/images/datasheet/sx9500_ag.pdf
->>>>
->>> Please find some issues and suggestions inline.
+On 06/12/14 20:19, Hartmut Knaack wrote:
+> Vlad Dogaru wrote on 25.11.2014 13:48:
+>> Having two or more channels with the same positive scan_index field
+>> makes no sense.  Prevent this situation by failing to register a buffer
+>> if two scan indexes are identical.
 >>
->> Thanks for the review.  I'll answer some points inline and hold off the
->> next version until I hear back from you.
+>> Signed-off-by: Vlad Dogaru <vlad.dogaru@intel.com>
+A sensible little sanity check that might avoid a few bugs.
+
+I'm guessing will need a rebase (along with Harmut's point)
+given the buffer set from Lars I applied earlier today.
+
+Jonathan
+>> ---
+>>  drivers/iio/industrialio-buffer.c | 28 ++++++++++++++++++++++++++++
+>>  1 file changed, 28 insertions(+)
 >>
->> As for the points I didn't address, I will fix them in the next
->> iteration.
->>
->> [snip]
->>
->>>> +#define SX9500_CHANNEL(idx)					\
->>>> +	{							\
->>>> +		.type = IIO_PROXIMITY,				\
->>>> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),	\
->>>> +		.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_SAMP_FREQ), \
->>>> +		.indexed = 1,					\
->>>> +		.channel = idx,					\
->>>> +		.event_spec = sx9500_events,			\
->>>> +		.num_event_specs = 1,				\
->>> = ARRAY_SIZE(sx9500_events)?
->>>> +		.scan_index = idx,				\
->>>> +		.scan_type = {					\
->>>> +			.sign = 'u',				\
->>> Datasheet says: Signed, 2's complement format.
->>
->> See my comment below.
->>
->> [snip]
->>
->>>> +static int sx9500_read_proximity(struct sx9500_data *data,
->>>> +				 const struct iio_chan_spec *chan,
->>>> +				 int *val)
->>>> +{
->>>> +	int ret;
->>>> +	__be16 regval;
->>>> +
->>>> +	ret = regmap_write(data->regmap, SX9500_REG_SENSOR_SEL, chan->channel);
->>>> +	if (ret < 0)
->>>> +		return ret;
->>>> +
->>>> +	ret = regmap_bulk_read(data->regmap, SX9500_REG_USE_MSB, &regval, 2);
->>>> +	if (ret < 0)
->>>> +		return ret;
->>>> +
->>>> +	*val = 32767 - (s16)be16_to_cpu(regval);
->>> Unless I'm missing something, it should be:
->>> *val = (s16)be16_to_cpu(regval);
->>
->> I've chosen the formula so that when a finger is touching the sensor,
->> the reported value is 0; as the distance grows, so does the value.
->> Your version would report a large value when a finger is touching the
->> sensor, with the value decreasing as distance grows.
->>
->> The ABI documentation of in_proximity_raw mentions that, where possible,
->> the value after scaling should be meters.  In this case it is not
->> possible to convert the readings to meters, but I think it would be
->> beneficial to have a value that at least behaves like a distance.
->>
-> Good points. Given that the channel has got the IIO_CHAN_INFO_RAW flag, I would
-> expect to get the raw value here. ABI also isn't clear yet, so I'll leave it to
-> Jonathan or the others to decide.
-Certainly an interesting case.  As no 'scaling' can be provided we are
-in an odd corner.  I think what you have done is sensible and will encourage
-the same on other 'unscalable' devices.  Having said that I think a short note
-that it should increase with distance (all other factors being equal) in the
-proximity abi Docs would make this apparent to both userspace app developers
-(assuming they ever read the docs;) and writers of future drivers.
->> [snip]
->>
->>>> +static irqreturn_t sx9500_irq_handler(int irq, void *private)
->>>> +{
->>>> +	struct iio_dev *indio_dev = private;
->>>> +	struct sx9500_data *data = iio_priv(indio_dev);
->>>> +
->>>> +	if (data->trigger_enabled)
->>>> +		iio_trigger_poll(data->trig);
->>>> +
->>>> +	/*
->>>> +	 * Even if no event is enabled, we need to wake the thread to
->>>> +	 * clear the interrupt state by reading SX9500_REG_IRQ_SRC.  It
->>> Double whitespace.
->>
->> I've consistently used double spaces after full stops in the comments
->> (and in my emails).  AFAICT, this is an open discussion [1].  The kernel
->> uses both standards, so as long as comments across a file are consistent
->> I don't see a problem with using double spaces to separate sentences.
->>
->> [1] http://en.wikipedia.org/wiki/Sentence_spacing#Digital_age
-> Thanks for sharing, I haven't heard of that before (autocorrect function in
-> Office program even allowed to indicate these issues). But since even the
-> CodingStyle document uses both ways, I can just say: never mind then :-)
->>
->>>> +	 * is not possible to do that here because regmap_read takes a
->>>> +	 * mutex.
->>>> +	 */
->>>> +	return IRQ_WAKE_THREAD;
->>>> +}
->>>> +
->>>> +static irqreturn_t sx9500_irq_thread_handler(int irq, void *private)
->>>> +{
->>>> +	struct iio_dev *indio_dev = private;
->>>> +	struct sx9500_data *data = iio_priv(indio_dev);
->>>> +	int ret, chan;
->>> chan could be unsigned.
->>>> +	unsigned int val;
->>>> +
->>>> +	mutex_lock(&data->mutex);
->>>> +
->>>> +	ret = regmap_read(data->regmap, SX9500_REG_IRQ_SRC, &val);
->>>> +	if (ret < 0) {
->>>> +		dev_err(&data->client->dev, "i2c transfer error in irq\n");
->>>> +		goto out;
->>>> +	}
->>>> +
->>>> +	if (!(val & (SX9500_CLOSE_IRQ | SX9500_FAR_IRQ)))
->>>> +		goto out;
->>>> +
->>>> +	ret = regmap_read(data->regmap, SX9500_REG_STAT, &val);
->>>> +	if (ret < 0) {
->>>> +		dev_err(&data->client->dev, "i2c transfer error in irq\n");
->>>> +		goto out;
->>>> +	}
->>>> +
->>>> +	val >>= SX9500_PROXSTAT_SHIFT;
->>>> +	for (chan = 0; chan < SX9500_NUM_CHANNELS; chan++) {
->>>> +		int dir;
->>>> +		u64 ev;
->>>> +		u8 new_prox = !(val & (1 << chan));
->>> new_prox should be bool. (1 << chan) could be expressed as BIT(chan).
->>> Why the negation? If PROXSTATx gets set, doesn't this indicate, that an object
->>> gets close to the sensor? Shouldn't such an event cause IIO_EV_DIR_RISING?
->>
->> Maybe I'm misreading the ABI, but if PROXSTATx is set, it means
->> proximity is detected.  If it wasn't detected previously, this means
->> that an object has moved closer to the sensor, thus the distance to the
->> object has decreased and we should cause an IIO_EV_DIR_FALLING.
-> Sounds good to me. Thanks.
-Drat - that abi is indeed somewhat confusing.  Should have gone for
-distance in the first place rather than proximity.  Ah well, we get
-to live with our mistakes in ABIs for a long time.
->>
->> [snip]
->>
->>>> +	any_active = 0;
->>> true or false should be used for bools, but better initialize during declaration.
->>>> +	for (i = 0; i < SX9500_NUM_CHANNELS; i++)
->>>> +		if (data->event_enabled[chan->channel]) {
->>> Don't you mean data->event_enabled[i]?
->>
->> I definitely do, that was silly of me :)
->>
->>>> +			any_active = true;
->>>> +			break;
->>>> +		}
->>>> +
->>>> +	irqmask = SX9500_CLOSE_IRQ | SX9500_FAR_IRQ;
->>>> +	ret = regmap_update_bits(data->regmap, SX9500_REG_IRQ_MSK,
->>>> +				 irqmask, any_active ? irqmask : 0);
->>>> +
->>>> +	mutex_unlock(&data->mutex);
->>>> +
->>>> +	return ret;
->>>> +}
->>>> +
->>>> +static IIO_CONST_ATTR_SAMP_FREQ_AVAIL(
->>>> +	"2.500000 3.333333 5 6.666666 8.333333 11.111111 16.666666 33.333333");
->>>> +
->>>> +static struct attribute *sx9500_attributes[] = {
->>>> +	&iio_const_attr_sampling_frequency_available.dev_attr.attr,
->>>> +	NULL,
->>>> +};
->>>> +
->>>> +static const struct attribute_group sx9500_attribute_group = {
->>>> +	.attrs = sx9500_attributes,
->>>> +};
->>>> +
->>>> +static const struct iio_info sx9500_info = {
->>>> +	.driver_module = THIS_MODULE,
->>>> +	.attrs = &sx9500_attribute_group,
->>>> +	.read_raw = &sx9500_read_raw,
->>>> +	.write_raw = &sx9500_write_raw,
->>>> +	.read_event_config = &sx9500_read_event_config,
->>>> +	.write_event_config = &sx9500_write_event_config,
->>>> +};
->>>> +
->>>> +static int sx9500_set_trigger_state(struct iio_trigger *trig,
->>>> +				    bool state)
->>>> +{
->>>> +	struct iio_dev *indio_dev = iio_trigger_get_drvdata(trig);
->>>> +	struct sx9500_data *data = iio_priv(indio_dev);
->>>> +	int ret;
->>>> +
->>>> +	mutex_lock(&data->mutex);
->>>> +
->>>> +	ret = regmap_update_bits(data->regmap, SX9500_REG_IRQ_MSK,
->>>> +				 SX9500_CONVDONE_IRQ,
->>>> +				 state ? SX9500_CONVDONE_IRQ : 0);
->>>> +	data->trigger_enabled = state;
->>> Only set data->trigger_enabled if regmap_update_bits was successful.
->>>> +
->>>> +	mutex_unlock(&data->mutex);
->>>> +
->>>> +	return ret;
->>>> +}
->>>> +
->>>> +static const struct iio_trigger_ops sx9500_trigger_ops = {
->>>> +	.set_trigger_state = sx9500_set_trigger_state,
->>>> +	.owner = THIS_MODULE,
->>>> +};
->>>> +
->>>> +static irqreturn_t sx9500_trigger_handler(int irq, void *private)
->>>> +{
->>>> +	struct iio_poll_func *pf = private;
->>>> +	struct iio_dev *indio_dev = pf->indio_dev;
->>>> +	struct sx9500_data *data = iio_priv(indio_dev);
->>>> +	s16 *buf;
->>>> +	int val, bit, ret, i = 0;
->>>> +
->>>> +	buf = kmalloc(indio_dev->scan_bytes, GFP_KERNEL);
->>> Use kzalloc for a clean buffer?
->>
->> Is this just cosmetic or am I missing something?  Assuming that
->> scan_bytes has the correct value, won't all of 'buf' be written with
->> channel data and the timestamp?
->>
-> I think it's a safety measure. Think about future code changes which might
-> introduce some bug, that wouldn't completely fill the buffer. If it was
-> cleared during allocation, there can't be too much harm. But pushing out
-> unwanted data could be exploited. Comparing the use of kmalloc and kzalloc
-> nowadays, you get a relation of about 2500 vs. 4500 in favor of kzalloc.
->> [snip]
->>
->>>> +static int sx9500_init_device(struct iio_dev *indio_dev)
->>>> +{
->>>> +	struct sx9500_data *data = iio_priv(indio_dev);
->>>> +	int ret, i, num_defaults;
->>>> +	unsigned int val;
->>>> +
->>>> +	ret = regmap_write(data->regmap, SX9500_REG_IRQ_MSK, 0);
->>>> +	if (ret < 0)
->>>> +		return ret;
->>>> +
->>>> +	ret = regmap_write(data->regmap, SX9500_REG_RESET,
->>>> +			   SX9500_SOFT_RESET);
->>>> +	if (ret < 0)
->>>> +		return ret;
->>>> +
->>>> +	ret = regmap_read(data->regmap, SX9500_REG_IRQ_SRC, &val);
->>>> +	if (ret < 0)
->>>> +		return ret;
->>>> +
->>>> +	num_defaults = ARRAY_SIZE(sx9500_default_regs);
->>> num_defaults doesn't serve an essential purpose.
->>
->> Thought I'd avoid it being calculated at every step of the for loop.
->> But it's not on a hot path, so I'll get rid of it.
->>
-> The compiler replaces ARRAY_SIZE in an early step with its calculated value,
-> so this won't be happening during runtime.
->> [snip]
->>
->>>> +static const struct acpi_device_id sx9500_acpi_match[] = {
->>>> +	{"SSX9500", 0}, /* TODO is there a better ACPI handle? */
->>> Is this a typo? Shouldn't it be "SX9500"?
->>
->> ACPI rules prohibit such a device ID:
->>
->> ssdt.dsl     11:                 Name (_HID, "SX9500")
->> Error    6033 -                                    ^ _HID string must be
->> exactly 7 or 8 characters (SX9500)
->>
->> I was unable to find a common method to fix such an issue and was hoping
->> someone can help, that's why I left the TODO in the code.
-> Good point, thanks. ACPI is not exactly my favorite.
-ouch. That's dumb...  Ah well.
->> --
->> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
->> the body of a message to majordomo@vger.kernel.org
->> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+>> diff --git a/drivers/iio/industrialio-buffer.c b/drivers/iio/industrialio-buffer.c
+>> index f971f79..422b29e 100644
+>> --- a/drivers/iio/industrialio-buffer.c
+>> +++ b/drivers/iio/industrialio-buffer.c
+>> @@ -309,6 +309,30 @@ static int iio_buffer_add_channel_sysfs(struct iio_dev *indio_dev,
+>>  	return ret;
+>>  }
+>>  
+>> +static int iio_check_unique_scan_index(struct iio_dev *indio_dev,
+>> +				       const struct iio_chan_spec *channels,
+>> +				       int num_channels)
+>> +{
+>> +	int i, j;
+>> +
+>> +	for (i = 0; i < num_channels - 1; i++) {
+>> +		if (channels[i].scan_index < 0)
+>> +			continue;
+>> +		for (j = i + 1; j < num_channels; j++) {
+>> +			if (channels[j].scan_index < 0)
+>> +				continue;
+> This check up here is unnecessary, since channels[i].scan_index is already equal or
+> greater zero, so the check below results in a false for channels[j].scan_index smaller
+> than zero and cause a new loop iteration anyway.
+> 
+>> +			if (channels[i].scan_index == channels[j].scan_index) {
+>> +				dev_err(&indio_dev->dev,
+>> +					"duplicate scan index %d\n",
+>> +					channels[i].scan_index);
+>> +				return -EINVAL;
+>> +			}
+>> +		}
+>> +	}
+>> +
+>> +	return 0;
+>> +}
+>> +
+>>  static const char * const iio_scan_elements_group_name = "scan_elements";
+>>  
+>>  int iio_buffer_register(struct iio_dev *indio_dev,
+>> @@ -320,6 +344,10 @@ int iio_buffer_register(struct iio_dev *indio_dev,
+>>  	struct iio_buffer *buffer = indio_dev->buffer;
+>>  	int ret, i, attrn, attrcount, attrcount_orig = 0;
+>>  
+>> +	ret = iio_check_unique_scan_index(indio_dev, channels, num_channels);
+>> +	if (ret < 0)
+>> +		return ret;
+>> +
+>>  	if (buffer->attrs)
+>>  		indio_dev->groups[indio_dev->groupcounter++] = buffer->attrs;
+>>  
 >>
 > 
 > --
