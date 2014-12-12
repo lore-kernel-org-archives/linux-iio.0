@@ -1,218 +1,107 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:47851 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:47880 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S967659AbaLLMwX (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 12 Dec 2014 07:52:23 -0500
-Message-ID: <548AE501.7060602@kernel.org>
-Date: Fri, 12 Dec 2014 12:52:17 +0000
+	with ESMTP id S967608AbaLLM5n (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 12 Dec 2014 07:57:43 -0500
+Message-ID: <548AE644.7040905@kernel.org>
+Date: Fri, 12 Dec 2014 12:57:40 +0000
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Octavian Purdila <octavian.purdila@intel.com>
+To: Octavian Purdila <octavian.purdila@intel.com>,
+	Lars-Peter Clausen <lars@metafoo.de>
 CC: linux-iio@vger.kernel.org,
 	Srinivas Pandruvada <srinivas.pandruvada@intel.com>
 Subject: Re: [RFC 0/8] iio: add support for hardware fifo
-References: <1416246966-3083-1-git-send-email-octavian.purdila@intel.com>	<20141118132405.EF30A40277@saturn.retrosnub.co.uk> <CAE1zotJny3-Zcd81HUYNpNZJHkt=t6e2TANzVQ=-FU239MLarw@mail.gmail.com>
-In-Reply-To: <CAE1zotJny3-Zcd81HUYNpNZJHkt=t6e2TANzVQ=-FU239MLarw@mail.gmail.com>
+References: <1416246966-3083-1-git-send-email-octavian.purdila@intel.com>	<20141118132405.EF30A40277@saturn.retrosnub.co.uk>	<CAE1zotJny3-Zcd81HUYNpNZJHkt=t6e2TANzVQ=-FU239MLarw@mail.gmail.com>	<546B776F.1080800@metafoo.de>	<CAE1zotJik56OsM8-6Hg9rGqJT_VdRL0VvXv4kjEhBX6W0ijYLQ@mail.gmail.com>	<546B8084.6080400@metafoo.de>	<CAE1zotK9aR+Y7cEqZ+9rN_uiCH=kT06ZYvAdhWN_+x4b7JB4ag@mail.gmail.com>	<546C8375.9040705@metafoo.de> <CAE1zot+sy5nEokatSeP8nqwLg2cW283Bvfv6MYk40zYTLQUoFA@mail.gmail.com>
+In-Reply-To: <CAE1zot+sy5nEokatSeP8nqwLg2cW283Bvfv6MYk40zYTLQUoFA@mail.gmail.com>
 Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 18/11/14 15:03, Octavian Purdila wrote:
-> On Tue, Nov 18, 2014 at 3:24 PM, <jic23@kernel.org> wrote:
->>
->> Octavian Purdila writes:
+On 19/11/14 12:33, Octavian Purdila wrote:
+> On Wed, Nov 19, 2014 at 1:48 PM, Lars-Peter Clausen <lars@metafoo.de> wrote:
+>> On 11/18/2014 08:35 PM, Octavian Purdila wrote:
 >>>
->>> Hi everybody,
->>
->> Hi Octavian.
+>>> On Tue, Nov 18, 2014 at 7:23 PM, Lars-Peter Clausen <lars@metafoo.de>
+>>> wrote:
 >>>
-> 
-> Hi Jonathan,
-> 
-> Thanks for taking the time to look at this and for the detailed
-> feedback. I am new to IIO, so I may not understand your comments
-> fully, hope you will have patience with me :)
-> 
+>>>>>>> As far as I understood, the proposed watermark implementation only
+>>>>>>> affects the device buffer and as I mentioned above that will not help
+>>>>>>> with reducing the interrupt rate.
+>>>>>>
+>>>>>>
+>>>>>>
+>>>>>>
+>>>>>> By setting the watershed level the userspace application tells you that
+>>>>>> it
+>>>>>> is OK with getting data with a higher latency than one sample. This
+>>>>>> allows
+>>>>>> the driver to configure the FIFO level and hence reduce the interrupt
+>>>>>> rate.
+>>>>>>
+>>>>>
+>>>>> Hi Lars,
+>>>>>
+>>>>> The implementation (as proposed in the patch by Josselin and Yannick)
+>>>>> does not inform the driver of changes to watermark, that is only
+>>>>> visible to core iio / buffer logic.
+>>>>
+>>>>
+>>>>
+>>>> That should be trivial to add though.
+>>>>
 >>>
->>> I hope this RFC is a good starting point to discuss support for
->>> hardware fifo in IIO. The main reason to support it is to reduce the
->>> power consumtion, by allowing the CPU to enter deep sleep states for
->>> longer periods of time.
->>
->> A worthwhile aim indeed.
-> 
-> BTW, the larger context into which we are looking at this, is the new
-> batching Android API:
-> 
-> http://source.android.com/devices/sensors/batching.html
-> 
+>>> True. I've actually started by implementing hardware fifo support as a
+>>> new type of iio buffer, but I got scared by the buffer demux stuff. I
+>>> can take another stab at it, if that sounds better?
 >>>
+>>>>>
+>>>>> Also, the watermark alone is not enough to properly support hardware
+>>>>> fifos: the fifo can operate in multiple modes, we need to read data
+>>>>> from the hardware fifo even when the watermark interrupt is not issued
+>>>>> (the flush operation in the current patch set).
+>>>>
+>>>>
+>>>>
+>>>> What kind of modes are there?
+>>>>
 >>>
->>> Don't get discourage by the large number of patches most of them are
->>> refactors in the bmc150 driver, to make it easier to add support for
->>> the hardware fifo (basically to make adding interrupts and
->>> events/triggers easier).
->>> For discussing the hardware fifo stuff, only the first and last
->>> patches are important: the first adds new IIO attributes so that we
->>> can expose the hardware fifo and the last implements hadware fifo for
->>> IIO (as an example of how would a device use the exposed attributes).
->>> Note that the attributes can be exposed on a per device or per channel
->>> basis, since it seems both types of hardware fifos exists: those that
->>> store all data in a single fifo (temperature, accelerometer,
->>> magnetometer, etc.) and those that have separate fifos for
->>> accelerometer, gyroscope, etc. Thankfully, at the driver level we just
->>> need to use the appropriate sharing level to support one mode or the
->>> other.
+>>> Stream - new values overwrrite old values, Fifo - drop new values.
 >>
->> If this is the case, then the buffered outputs will have to be separate
->> so we know what is coming.  E.g. it will have to be effectively treated
->> as separate iio_buffers.  Now we have devices that already do (see some
->> of the more interesting SOC ADCs)
->> Is this actually the case for the bmc150? If you could point at
->> devices where it is then it would be great (as mentioned above one
->> or two SOC ADCs have a bonkers level of flexibility).
->> My reading of the datasheet is that the data is interleaved in the
->> buffer for any channels enable.
+>>
+>> So basically ring buffer) style (old samples are dropped and FIFO style (new
+>> samples are dropped). This mode should probably be aligned with the mode
+>> that the sw buffer is working. E.g. you wouldn't want the software buffer to
+>> work in FIFO mode and the hardware buffer in ring buffer mode. That would
+>> lead to weird effects.
 >>
 > 
-> While working on this I did though about exposing the hardware fifo by
-> implementing a custom iio bufer. However, the iio buffers are much
-> more flexible that most hadware fifos. In bmc150' case, the fifo case
-> store x,y,z data or x or y or z data. It can not store x,y or x,z,
-> etc. And if I understand correctly, the user can enable x,z collection
-> for the device buffer. Also I have noticed that there can be multiple
-> buffers attached to a device, for what it seems to be demuxing
-> buffers?
-The demuxing is also used to allow handling the x,y cases etc you have
-above.  Available_scan_masks sets which things the hardware supports, then
-the demux will rip out the elements actually requested by userspace.
+> Correct.
+> 
+>> We talked about adding support for ring buffer mode to the software buffer a
+>> while ago, but so far nobody really needed it so it hasn't been implemented
+>> yet.
+>>
+> 
+> This is something that would need ring buffer mode:
+> 
+> https://source.android.com/devices/sensors/batching.html#behavior_in_suspend_mode
+> 
+Hmm.. This gets ugly if we have a hardware ring buffer feeding a software ring buffer.
+For remotely consistent data I guess we'd have to dump the software buffer whenever
+we grab data from the hardware buffer that has overflowed.  
+> 
+> Leaving the buffer mode aside, there is another piece that we need for
+> hardware fifo. We need the ability to flush the fifo data earlier then
+> the watermark trigger and / or fifo full trigger so that we can
+> balance power vs latency. It is probably equivalent to the timeout
+> parameter in the watermark patch.
+Not really as the timeout could be trivially implemented in userspace and
+didn't cause a flush.  
 
-The other use is the inkernel 'push' interface.  The original target
-was an iio to input bridge, but I got side tracked and no one else
-has yet picked up that driver (google will find it for you) and pushed
-it through the last few things needed to make it a nice input driver.
-The biggest nasty corner is no one likes the iio_hwmon dt bindings and
-at the moment the iio_input ones would be similar.  Other options
-exist for setting up these links (configfs perhaps?) but nothing much
-has happened on that front.  I have some configfs patches for other
-userspace setup tasks - particularly creating sysfs based triggers etc
-but those aren't ready to go yet either!
+The suggestion I made earlier of flushing the buffer if an attempt to read
+more from the software buffer than it contains is made.  This wouldn't
+happen in our 'normal' e.g. current usage.
 
 > 
-> That is why I thought of keeping the hardware fifo decoupled from the
-> buffers and add a flush operation that will read the data from the
-> fifo and push it to the device buffer(s). This way we don't affect the
-> demuxing buffers logic.
-Yes. I think we'll need to do something like that - just with a different
-userspace interface to trigger this attempt to fetch extra data.
-> 
->>>
->>> Also note that this patch is orthogonal to the software watermark /
->>> batching patch send on the list a while back.
->>
->>
->> I'm not so sure this is orthogonal at all.   That proposal was actually
->> about hardware support.  I pushed back that I wanted any new interface
->> to work whether or not there was hardware support.  In a sense that is
->> a more complex problem - hence the discussion became a little bit focused
->> on that case.
->> The intent there was to hide the implementation details of exactly this
->> sort of hardware/software buffer interaction.
-> 
-> The reason I say they are orthogonal (IMHO) is that the software
-> watermark patch will only help reducing the number of kernel/user
-> context switches by allowing more data to gather before waking up
-> userspace. However, we will still have interrupts waking up the
-> processor to store the samples in the kernel buffer. With a hardware
-> fifo we can reduce that number of interrupts.
-Sure - but there is nothing stopping us having the same interface for
-both cases.
-> 
->> Perhaps some history is in order.
->> We had exactly what you propose here a long time back with the sca3000
->> accelerometer (which is why there is still core support for hardware
->> buffers).  The interface was precisely the watershed type you have
->> here.
->> A review by Arnd Bergman pointed out that this was seriously clunky.
->> It puts data related to the in-band data flow into our out-of-band channel.
->> His suggestion was to allow for watershed interrupts using one of the
->> more interesting POLL types leaving the main poll for the data flow.
->> Arnd also suggested the bits about using anonymous chardevs for the event
->> reporting etc.  The unusual form of poll bit never got implemented,
->> but in the interests of moving forward with the common case and because
->> they were on there way out anyway the watershed interrupts were dropped.
-> 
-> You lost me here :) but I will look for that discussion and try to
-> understand Arnd's review.
-In short we did the way you suggest (more or less) before and decided it
-was a bad route long run ;)
-> 
->> The more recent discussion came to the conclusion that there was no need
->> to use the weird forms of poll.  We could simply have an attribute to
->> control when poll was fired.  The only bit that caused friction was whether
->> there should be a timeout or not.
->> Now, when then ti_am35xx driver came along it became clear that it wasn't
->> actually terribly useful exposing the hardware buffers directly to
->> user space.  The buffers tend not to be terribly long (in your bma160) I
->> see they are only 32 elements.
-> 
-> As I mentioned before, the main gain of using hardware fifo is to
-> reduce the number of interrupts. Right now, if we have a rate of 25HZ
-> we will get 25 interrupts per second. With hardware fifos we can
-> reduce that significanlty, and even small buffers help.
-Of course, that is why the hardware support is again becoming more common
-(there was a phase a few years ago when this was happening, but it seems
-it then went away again, probably because android etc didn't care)
-> 
-> 
->>  As such the conclusion was that it makes
->> more sense to use the buffers as temporary storage to smooth out the
->> data flow.  Thus that driver fills a software buffer from a hardware
->> buffer.  This seems the method that is most likely to work long term.
->> I note this is effectively what you have here, though I'm not sure of
->> the advantage of the explicit software flush over just reading the data
->> whenever the interrupt fires.
-> 
-> The explicit software flush allows userspace to balance power and
-> latency. Userspace can use a timeout based poll to guarantee a maximum
-> latency.  If we have enough data then we get an interrupt, we flush
-> the fifo and read the data. If not, we get a timeout, we flush the
-> fifo and read the data. Perhaps the explicit flush is not optimal and
-> we can find out other ways, but in the end we should have a way to
-> allow userspace to balance power and latency.
-I wonder if we can have a callback in the driver that will be called to
-see if more data is available if a 'too large' read is attempted?
-Thus to do a full pull, one would simply read the size of the software
-buffer + that of the hardware buffer (the maximum data that might be
-available somewhere) Or perhaps twice the software buffer length...
 
-Under normal circumstances userspace would never read more than is in
-the software buffer so our current case would not change.  However
-if needed this would trigger a hardware flush.
-> 
->> Hence we started with something that at least superficially (I haven't
->> had a chance to go through the implementation in detail yet)
->> looks similar to what you have but ended up changing the method of
->> signalling to and from userspace.
->> Hardware buffer -> Software buffer -> user space.
->> Userspace watershed control -> Software buffer watershed control
->> -> Hardware buffer watershed control.
->> If userspace sets the watershed to say 16 then, as well as setting
->> that level in the software buffer it should be passed on to the
->> device driver allowing the watershed there to be set appropriately.
->> Now things get interesting if userspace sets the watershed to a value
->> that makes no sense for the hardware (say 17 on a device that does
->> power of 2 values only) as then it will have to fall back to
->> grabbing every one (Watershed of 1).  Perhaps we can provide 'hints'
->> for this?
-> 
-> As far as I understood, the proposed watermark implementation only
-> affects the device buffer and as I mentioned above that will not help
-> with reducing the interrupt rate.
-> 
-Plan was always to do more with it.  Like many nice bits and pieces
-it fell by the wayside when the changes requested were very minor...
-
-Ah well,
-
-Jonathan
