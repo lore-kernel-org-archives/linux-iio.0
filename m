@@ -1,42 +1,141 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-ie0-f181.google.com ([209.85.223.181]:39873 "EHLO
-	mail-ie0-f181.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S967589AbaLLNdr (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 12 Dec 2014 08:33:47 -0500
-Received: by mail-ie0-f181.google.com with SMTP id tp5so6656392ieb.26
-        for <linux-iio@vger.kernel.org>; Fri, 12 Dec 2014 05:33:46 -0800 (PST)
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:48205 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S967589AbaLLNft (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 12 Dec 2014 08:35:49 -0500
+Message-ID: <548AEF33.4060209@kernel.org>
+Date: Fri, 12 Dec 2014 13:35:47 +0000
+From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-In-Reply-To: <548AC0C7.90204@kernel.org>
-References: <1417041765-12782-1-git-send-email-dbaryshkov@gmail.com>
-	<5488D0DB.2060400@gmx.de>
-	<548AC0C7.90204@kernel.org>
-Date: Fri, 12 Dec 2014 17:33:46 +0400
-Message-ID: <CALT56yNePjPtESQEcUDuHdX0q4z398gR9-szq=CMHWoJPJ5AGA@mail.gmail.com>
-Subject: Re: [PATCH] iio: inkern: add iio_write_channel_raw
-From: Dmitry Eremin-Solenikov <dbaryshkov@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>, linux-iio@vger.kernel.org
-Content-Type: text/plain; charset=UTF-8
+To: Daniel Baluta <daniel.baluta@intel.com>, pmeerw@pmeerw.net,
+	srinivas.pandruvada@linux.intel.com, knaack.h@gmx.de
+CC: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v4 2/6] iio: imu: kmx61: Add acpi support
+References: <1417613513-28285-1-git-send-email-daniel.baluta@intel.com> <1417613513-28285-3-git-send-email-daniel.baluta@intel.com>
+In-Reply-To: <1417613513-28285-3-git-send-email-daniel.baluta@intel.com>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-2014-12-12 13:17 GMT+03:00 Jonathan Cameron <jic23@kernel.org>:
-> On 10/12/14 23:01, Hartmut Knaack wrote:
->> Dmitry Eremin-Solenikov schrieb am 26.11.2014 um 23:42:
->>> Introduce API for easy in-kernel setting of DAC values.
->>>
->> Looking good in general, but indentation of parameters could be
->> improved to align with opening parenthesis. See inline.
->>> Signed-off-by: Dmitry Eremin-Solenikov <dbaryshkov@gmail.com>
-> I've fixed up both Lars and Hartmut's comments and applied to the
-> togreg branch of iio.git - initially pushed out as testing sometime
-> later today.  Lots to catch up with first ;)
+On 03/12/14 13:31, Daniel Baluta wrote:
+> Signed-off-by: Daniel Baluta <daniel.baluta@intel.com>
+Applied to the togreg branch of iio.git
 
-Thank you. I was under the pile of other patches, so didn't have time
-to react to those comments.
+Thanks,
 
--- 
-With best wishes
-Dmitry
+Jonathan
+> ---
+>  drivers/iio/imu/kmx61.c | 59 +++++++++++++++++++++++++++++++++++++++++++++++++
+>  1 file changed, 59 insertions(+)
+> 
+> diff --git a/drivers/iio/imu/kmx61.c b/drivers/iio/imu/kmx61.c
+> index 5b44371..893f7c8 100644
+> --- a/drivers/iio/imu/kmx61.c
+> +++ b/drivers/iio/imu/kmx61.c
+> @@ -13,10 +13,13 @@
+>  
+>  #include <linux/module.h>
+>  #include <linux/i2c.h>
+> +#include <linux/acpi.h>
+> +#include <linux/gpio/consumer.h>
+>  #include <linux/iio/iio.h>
+>  #include <linux/iio/sysfs.h>
+>  
+>  #define KMX61_DRV_NAME "kmx61"
+> +#define KMX61_GPIO_NAME "kmx61_int"
+>  
+>  #define KMX61_REG_WHO_AM_I	0x00
+>  
+> @@ -573,6 +576,44 @@ static const struct iio_info kmx61_mag_info = {
+>  	.attrs			= &kmx61_mag_attribute_group,
+>  };
+>  
+> +static const char *kmx61_match_acpi_device(struct device *dev)
+> +{
+> +	const struct acpi_device_id *id;
+> +
+> +	id = acpi_match_device(dev->driver->acpi_match_table, dev);
+> +	if (!id)
+> +		return NULL;
+> +	return dev_name(dev);
+> +}
+> +
+> +static int kmx61_gpio_probe(struct i2c_client *client, struct kmx61_data *data)
+> +{
+> +	struct device *dev;
+> +	struct gpio_desc *gpio;
+> +	int ret;
+> +
+> +	if (!client)
+> +		return -EINVAL;
+> +
+> +	dev = &client->dev;
+> +
+> +	/* data ready gpio interrupt pin */
+> +	gpio = devm_gpiod_get_index(dev, KMX61_GPIO_NAME, 0);
+> +	if (IS_ERR(gpio)) {
+> +		dev_err(dev, "acpi gpio get index failed\n");
+> +		return PTR_ERR(gpio);
+> +	}
+> +
+> +	ret = gpiod_direction_input(gpio);
+> +	if (ret)
+> +		return ret;
+> +
+> +	ret = gpiod_to_irq(gpio);
+> +
+> +	dev_dbg(dev, "GPIO resource, no:%d irq:%d\n", desc_to_gpio(gpio), ret);
+> +	return ret;
+> +}
+> +
+>  static struct iio_dev *kmx61_indiodev_setup(struct kmx61_data *data,
+>  					    const struct iio_info *info,
+>  					    const struct iio_chan_spec *chan,
+> @@ -613,6 +654,13 @@ static int kmx61_probe(struct i2c_client *client,
+>  
+>  	mutex_init(&data->lock);
+>  
+> +	if (id)
+> +		name = id->name;
+> +	else if (ACPI_HANDLE(&client->dev))
+> +		name = kmx61_match_acpi_device(&client->dev);
+> +	else
+> +		return -ENODEV;
+> +
+>  	data->acc_indio_dev =
+>  		kmx61_indiodev_setup(data, &kmx61_acc_info,
+>  				     kmx61_acc_channels,
+> @@ -633,6 +681,9 @@ static int kmx61_probe(struct i2c_client *client,
+>  	if (ret < 0)
+>  		return ret;
+>  
+> +	if (client->irq < 0)
+> +		client->irq = kmx61_gpio_probe(client, data);
+> +
+>  	ret = iio_device_register(data->acc_indio_dev);
+>  	if (ret < 0) {
+>  		dev_err(&client->dev, "Failed to register acc iio device\n");
+> @@ -668,6 +719,13 @@ static int kmx61_remove(struct i2c_client *client)
+>  	return 0;
+>  }
+>  
+> +static const struct acpi_device_id kmx61_acpi_match[] = {
+> +	{"KMX61021", 0},
+> +	{}
+> +};
+> +
+> +MODULE_DEVICE_TABLE(acpi, kmx61_acpi_match);
+> +
+>  static const struct i2c_device_id kmx61_id[] = {
+>  	{"kmx611021", 0},
+>  	{}
+> @@ -678,6 +736,7 @@ MODULE_DEVICE_TABLE(i2c, kmx61_id);
+>  static struct i2c_driver kmx61_driver = {
+>  	.driver = {
+>  		.name = KMX61_DRV_NAME,
+> +		.acpi_match_table = ACPI_PTR(kmx61_acpi_match),
+>  	},
+>  	.probe		= kmx61_probe,
+>  	.remove		= kmx61_remove,
+> 
+
