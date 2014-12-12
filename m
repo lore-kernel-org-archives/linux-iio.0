@@ -1,101 +1,64 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mout.kundenserver.de ([212.227.126.131]:54254 "EHLO
-	mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S968152AbaLLQNq convert rfc822-to-8bit (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 12 Dec 2014 11:13:46 -0500
-Date: Fri, 12 Dec 2014 17:15:36 +0100
-From: Nikolaus Schulz <nikolaus.schulz@avionic-design.de>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Hartmut Knaack <knaack.h@gmx.de>,
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:49872 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754364AbaLLSPl (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 12 Dec 2014 13:15:41 -0500
+Message-ID: <548B30CB.7000909@kernel.org>
+Date: Fri, 12 Dec 2014 18:15:39 +0000
+From: Jonathan Cameron <jic23@kernel.org>
+MIME-Version: 1.0
+To: Daniel Baluta <daniel.baluta@intel.com>,
+	kbuild test robot <fengguang.wu@intel.com>
+CC: kbuild-all@01.org, Hartmut Knaack <knaack.h@gmx.de>,
 	Lars-Peter Clausen <lars@metafoo.de>,
 	Peter Meerwald <pmeerw@pmeerw.net>,
-	Grant Likely <grant.likely@linaro.org>,
-	Rob Herring <robh+dt@kernel.org>,
-	Michael Welling <mwelling@ieee.org>,
-	Philippe Reynes <tremyfr@yahoo.fr>,
-	linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-	devicetree@vger.kernel.org,
-	Alban Bedel <alban.bedel@avionic-design.de>
-Subject: Re: [PATCH v2 2/2] iio: add driver for the TI DAC8554
-Message-ID: <20141212161536.GC1142@avionic-0071.adnet.avionic-design.de>
-References: <1416858614-32265-1-git-send-email-nikolaus.schulz@avionic-design.de>
- <1416858614-32265-2-git-send-email-nikolaus.schulz@avionic-design.de>
- <5482EA33.7020305@gmx.de>
- <548AD814.2060206@kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-In-Reply-To: <548AD814.2060206@kernel.org>
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH iio] iio: imu: kmx61: kmx61_set_wake_up_odr() can be static
+References: <201412130004.58sFmPKu%fengguang.wu@intel.com>	<20141212162852.GA40238@snb.sh.intel.com> <CAEnQRZBc4=coYPy8-04oKB9OWCjD_CKovMYtmeV348-tLx2kpA@mail.gmail.com>
+In-Reply-To: <CAEnQRZBc4=coYPy8-04oKB9OWCjD_CKovMYtmeV348-tLx2kpA@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Fri, Dec 12, 2014 at 11:57:08AM +0000, Jonathan Cameron wrote:
-> On 06/12/14 11:36, Hartmut Knaack wrote:
-> > Nikolaus Schulz schrieb am 24.11.2014 um 20:50:
-> >> The TI DAC8554 is a quad-channel Digital-to-Analog Converter with an SPI
-> >> interface.
-> >>
-> >> Changes in v2:
-> >> * Use DMA-safe buffer for SPI transfer
-> >> * Normalize powerdown_mode name "hi-z" to "three_state" as per
-> >>   ABI/testing/sysfs-bus-iio
-> >> * Register device late in probe function
-> >> * Avoid powerdown broadcast update, which touches all DAC on the bus
-> > There are a few issues left, please see my comments inline.
-> 1 little one from me...
-> >>
-> >> Signed-off-by: Nikolaus Schulz <nikolaus.schulz@avionic-design.de>
-> >> ---
-> >>  drivers/iio/dac/Kconfig      |  10 ++
-> >>  drivers/iio/dac/Makefile     |   1 +
-> >>  drivers/iio/dac/ti-dac8554.c | 374 +++++++++++++++++++++++++++++++++++++++++++
-> >>  3 files changed, 385 insertions(+)
-> >>  create mode 100644 drivers/iio/dac/ti-dac8554.c
-[...]
-> >> diff --git a/drivers/iio/dac/ti-dac8554.c b/drivers/iio/dac/ti-dac8554.c
-> >> new file mode 100644
-> >> index 0000000..fca751f
-> >> --- /dev/null
-> >> +++ b/drivers/iio/dac/ti-dac8554.c
-[...]
-> >> +static int dac8554_powerdown(struct dac8554_state *st,
-> >> +			     u8 powerdown_mode)
-> >> +{
-> >> +	int chan, cmd, ret;
-> >> +
-> >> +	for (chan = DAC8554_DAC_CHANNELS-1; chan >= 0; --chan) {
-> > Please mind spaces around operators.
-> >> +		cmd = chan ? DAC8554_CMD_STORE_DAC_N
-> >> +			   : DAC8554_CMD_STORE_DAC_N_UPDATE_ALL;
-> >> +		ret = dac8554_spi_write(st, cmd, chan,
-> >> +				DAC8554_PWRDN_TO_SR(powerdown_mode));
-> >> +		if (ret)
-> >> +			return ret;
-> >> +	}
-> >> +
-> >> +	memset(st->powerdown_mode, powerdown_mode, sizeof(st->powerdown_mode));
-> >> +	memset(st->powerdown, true, sizeof(st->powerdown));
-> Whilst this probably works, I think for the boolean case it is less
-> than entirely obvious, so probably better to have a simple loop.
+On 12/12/14 16:41, Daniel Baluta wrote:
+> On Fri, Dec 12, 2014 at 6:28 PM, kbuild test robot
+> <fengguang.wu@intel.com> wrote:
+>> drivers/iio/imu/kmx61.c:422:5: sparse: symbol 'kmx61_set_wake_up_odr' was not declared. Should it be static?
+>>
+>> Signed-off-by: Fengguang Wu <fengguang.wu@intel.com>
+> 
+> Reviewed-by: Daniel Baluta <daniel.baluta@intel.com>
+Applied to the togreg branch of iio.git.
 
-Yeah, I agree it's better to keep it as simple and obvious as possible.
-Fixed in v3.
+Thanks!
 
-> >> +
-> >> +	return 0;
-> >> +}
+Jonathan
+> 
+>> ---
+>>  kmx61.c |    2 +-
+>>  1 file changed, 1 insertion(+), 1 deletion(-)
+>>
+>> diff --git a/drivers/iio/imu/kmx61.c b/drivers/iio/imu/kmx61.c
+>> index bda9c40..9b32f01 100644
+>> --- a/drivers/iio/imu/kmx61.c
+>> +++ b/drivers/iio/imu/kmx61.c
+>> @@ -419,7 +419,7 @@ static int kmx61_get_mode(struct kmx61_data *data, u8 *mode, u8 device)
+>>         return 0;
+>>  }
+>>
+>> -int kmx61_set_wake_up_odr(struct kmx61_data *data, int val, int val2)
+>> +static int kmx61_set_wake_up_odr(struct kmx61_data *data, int val, int val2)
+>>  {
+>>         int ret, odr_bits;
+>>
+>> --
+>> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+>> the body of a message to majordomo@vger.kernel.org
+>> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> 
 
--- 
-Avionic Design GmbH
-Nikolaus Schulz
-Wragekamp 10
-D-22397 Hamburg
-Germany
-
-Tel.:  +49 40 88187-163
-Fax:   +49 40 88187-150
-Email: nikolaus.schulz@avionic-design.de
-
-Avionic Design GmbH
-Amtsgericht Hamburg HRB 82598
-Geschäftsführung: Cornelis Broers
-Ust.-Ident-Nr.: DE813378254
