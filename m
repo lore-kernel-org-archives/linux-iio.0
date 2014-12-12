@@ -1,40 +1,68 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga01.intel.com ([192.55.52.88]:59678 "EHLO mga01.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S933644AbaLLQcv (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Fri, 12 Dec 2014 11:32:51 -0500
-Date: Sat, 13 Dec 2014 00:28:52 +0800
-From: kbuild test robot <fengguang.wu@intel.com>
-To: Daniel Baluta <daniel.baluta@intel.com>
-Cc: kbuild-all@01.org, Jonathan Cameron <jic23@kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: [iio:testing 44/44] drivers/iio/imu/kmx61.c:422:5: sparse: symbol
- 'kmx61_set_wake_up_odr' was not declared. Should it be static?
-Message-ID: <201412130004.58sFmPKu%fengguang.wu@intel.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <vlad.dogaru@intel.com>
+From: Vlad Dogaru <vlad.dogaru@intel.com>
+To: linux-iio@vger.kernel.org,
+	jic23@kernel.org,
+	knaack.h@gmx.de
+Cc: Vlad Dogaru <vlad.dogaru@intel.com>
+Subject: [PATCH v2] iio: ensure scan index is unique at buffer register
+Date: Fri, 12 Dec 2014 16:26:30 +0200
+Message-Id: <1418394390-19690-1-git-send-email-vlad.dogaru@intel.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-tree:   git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git testing
-head:   fd3ae7a9f21c2a51a1d220bc7a7c3b45ab5e6ad1
-commit: fd3ae7a9f21c2a51a1d220bc7a7c3b45ab5e6ad1 [44/44] iio: imu: kmx61: Add support for any motion trigger
-reproduce:
-  # apt-get install sparse
-  git checkout fd3ae7a9f21c2a51a1d220bc7a7c3b45ab5e6ad1
-  make ARCH=x86_64 allmodconfig
-  make C=1 CF=-D__CHECK_ENDIAN__
+Having two or more channels with the same positive scan_index field
+makes no sense.  Prevent this situation by failing to register a buffer
+if two scan indexes are identical.
 
-
-sparse warnings: (new ones prefixed by >>)
-
->> drivers/iio/imu/kmx61.c:422:5: sparse: symbol 'kmx61_set_wake_up_odr' was not declared. Should it be static?
-
-Please review and possibly fold the followup patch.
-
+Signed-off-by: Vlad Dogaru <vlad.dogaru@intel.com>
 ---
-0-DAY kernel test infrastructure                Open Source Technology Center
-http://lists.01.org/mailman/listinfo/kbuild                 Intel Corporation
+Changes since v1:
+ - remove redundant check for scan_index < 0 in the inner loop.
+
+ drivers/iio/industrialio-buffer.c | 25 +++++++++++++++++++++++++
+ 1 file changed, 25 insertions(+)
+
+diff --git a/drivers/iio/industrialio-buffer.c b/drivers/iio/industrialio-buffer.c
+index f971f79..baf09c1 100644
+--- a/drivers/iio/industrialio-buffer.c
++++ b/drivers/iio/industrialio-buffer.c
+@@ -309,6 +309,27 @@ static int iio_buffer_add_channel_sysfs(struct iio_dev *indio_dev,
+ 	return ret;
+ }
+ 
++static int iio_check_unique_scan_index(struct iio_dev *indio_dev,
++				       const struct iio_chan_spec *channels,
++				       int num_channels)
++{
++	int i, j;
++
++	for (i = 0; i < num_channels - 1; i++) {
++		if (channels[i].scan_index < 0)
++			continue;
++		for (j = i + 1; j < num_channels; j++)
++			if (channels[i].scan_index == channels[j].scan_index) {
++				dev_err(&indio_dev->dev,
++					"duplicate scan index %d\n",
++					channels[i].scan_index);
++				return -EINVAL;
++			}
++	}
++
++	return 0;
++}
++
+ static const char * const iio_scan_elements_group_name = "scan_elements";
+ 
+ int iio_buffer_register(struct iio_dev *indio_dev,
+@@ -320,6 +341,10 @@ int iio_buffer_register(struct iio_dev *indio_dev,
+ 	struct iio_buffer *buffer = indio_dev->buffer;
+ 	int ret, i, attrn, attrcount, attrcount_orig = 0;
+ 
++	ret = iio_check_unique_scan_index(indio_dev, channels, num_channels);
++	if (ret < 0)
++		return ret;
++
+ 	if (buffer->attrs)
+ 		indio_dev->groups[indio_dev->groupcounter++] = buffer->attrs;
+ 
+-- 
+1.9.1
