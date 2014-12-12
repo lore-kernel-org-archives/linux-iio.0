@@ -1,59 +1,58 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-wg0-f53.google.com ([74.125.82.53]:62616 "EHLO
-	mail-wg0-f53.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S968007AbaLLNzG (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 12 Dec 2014 08:55:06 -0500
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:48904 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1759878AbaLLP0a (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 12 Dec 2014 10:26:30 -0500
+Message-ID: <548B091E.9070303@kernel.org>
+Date: Fri, 12 Dec 2014 15:26:22 +0000
+From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-In-Reply-To: <548A0125.6040708@linutronix.de>
-References: <1415941651-28962-1-git-send-email-vigneshr@ti.com>
-	<20141124115116.GA14997@linutronix.de>
-	<547C3A95.30605@ti.com>
-	<547C3C19.5090501@linutronix.de>
-	<547C42FF.5010700@ti.com>
-	<CAH=tA9FO5MCzE274thc-NugCNte6WdyC-Rxc6yfnuR=+6_qMbA@mail.gmail.com>
-	<548A0125.6040708@linutronix.de>
-Date: Fri, 12 Dec 2014 15:55:04 +0200
-Message-ID: <CABH3fy8zCjsxARsqBf9JXOHBkzySdiqifA1KtjnGpJdBY2EikA@mail.gmail.com>
-Subject: Re: [PATCH v4 0/6] Touchscreen performance related fixes
-From: Catalin Crenguta <catalin.crenguta@gmail.com>
-To: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Cc: Nicolae Rosia <nicolae.rosia@gmail.com>,
-	Vignesh R <vigneshr@ti.com>, Rob Herring <robh+dt@kernel.org>,
-	Pawel Moll <pawel.moll@arm.com>,
-	Mark Rutland <mark.rutland@arm.com>,
-	Ian Campbell <ijc+devicetree@hellion.org.uk>,
-	Kumar Gala <galak@codeaurora.org>,
-	Benoit Cousson <bcousson@baylibre.com>,
-	Tony Lindgren <tony@atomide.com>,
-	Russell King <linux@arm.linux.org.uk>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>, richardcochran@gmail.com,
-	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-	Lee Jones <lee.jones@linaro.org>,
+To: "Rafael J. Wysocki" <rjw@rjwysocki.net>
+CC: linux-iio@vger.kernel.org,
+	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
 	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	Samuel Ortiz <sameo@linux.intel.com>,
-	Felipe Balbi <balbi@ti.com>, Brad Griffis <bgriffis@ti.com>,
-	Sanjeev Sharma <sanjeev_sharma@mentor.com>,
-	Paul Gortmaker <paul.gortmaker@windriver.com>,
-	Jan Kardell <jan.kardell@telliq.com>,
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-	linux-iio@vger.kernel.org, linux-input@vger.kernel.org
-Content-Type: text/plain; charset=UTF-8
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Linux PM list <linux-pm@vger.kernel.org>,
+	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] iio / PM: Replace CONFIG_PM_RUNTIME with CONFIG_PM
+References: <202529361.GBbZ7zGgn8@vostro.rjw.lan> <548ADFBA.6000303@kernel.org> <36391107.O5xXXLZB0Z@vostro.rjw.lan>
+In-Reply-To: <36391107.O5xXXLZB0Z@vostro.rjw.lan>
+Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Hello,
+On 12/12/14 14:59, Rafael J. Wysocki wrote:
+> On Friday, December 12, 2014 12:29:46 PM Jonathan Cameron wrote:
+>> On 03/12/14 02:06, Rafael J. Wysocki wrote:
+>>> From: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+>>>
+>>> After commit b2b49ccbdd54 (PM: Kconfig: Set PM_RUNTIME if PM_SLEEP is
+>>> selected) PM_RUNTIME is always set if PM is set, so #ifdef blocks
+>>> depending on CONFIG_PM_RUNTIME may now be changed to depend on
+>>> CONFIG_PM.
+>>>
+>>> Replace CONFIG_PM_RUNTIME with CONFIG_PM everywhere under
+>>> drivers/iio/.
+>>>
+>>> Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+>> Acked-by: Jonathan Cameron <jic23@kernel.org>
+> 
+> Thanks!
+> 
+>>> ---
+>>>
+>>> Note: This depends on commit b2b49ccbdd54 (PM: Kconfig: Set PM_RUNTIME if
+>>> PM_SLEEP is selected) which is only in linux-next at the moment (via the
+>>> linux-pm tree).
+>>>
+>>> Please let me know if it is OK to take this one into linux-pm.
+>> It is.  If I took too long to reply and the dependency merged
+>> in the current window, I can take these through IIO if you'd prefer?
+> 
+> I guess it still will be more convenient to take them through linux-pm,
+> as I'm going to follow up with a patch that removes CONFIG_PM_RUNTIME
+> entirely when I'm done with all of the users of it.
+Fine with me.
+> 
+> 
 
-I have tried your patches by cloning [1] and copying the
-relevant files over the kernel I've cloned from [2].
-It compiles & runs, but I'm seeing lots of pen-down/pen-up
-events when I'm not touching the screen.
-Any suggestions?
-
-Hardware: Beaglebone Black with BB-View 4.3 Cape from Farnell
-
-[1] git clone -b tsc-devel git://git.ti.com/kernel/tsc-adc.git
-(tsc-devel branch)
-[2] https://github.com/beagleboard/linux/tree/3.14
