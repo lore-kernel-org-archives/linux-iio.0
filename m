@@ -1,107 +1,123 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:47880 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:47679 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S967608AbaLLM5n (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 12 Dec 2014 07:57:43 -0500
-Message-ID: <548AE644.7040905@kernel.org>
-Date: Fri, 12 Dec 2014 12:57:40 +0000
+	with ESMTP id S967475AbaLLM3s (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 12 Dec 2014 07:29:48 -0500
+Message-ID: <548ADFBA.6000303@kernel.org>
+Date: Fri, 12 Dec 2014 12:29:46 +0000
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Octavian Purdila <octavian.purdila@intel.com>,
-	Lars-Peter Clausen <lars@metafoo.de>
-CC: linux-iio@vger.kernel.org,
-	Srinivas Pandruvada <srinivas.pandruvada@intel.com>
-Subject: Re: [RFC 0/8] iio: add support for hardware fifo
-References: <1416246966-3083-1-git-send-email-octavian.purdila@intel.com>	<20141118132405.EF30A40277@saturn.retrosnub.co.uk>	<CAE1zotJny3-Zcd81HUYNpNZJHkt=t6e2TANzVQ=-FU239MLarw@mail.gmail.com>	<546B776F.1080800@metafoo.de>	<CAE1zotJik56OsM8-6Hg9rGqJT_VdRL0VvXv4kjEhBX6W0ijYLQ@mail.gmail.com>	<546B8084.6080400@metafoo.de>	<CAE1zotK9aR+Y7cEqZ+9rN_uiCH=kT06ZYvAdhWN_+x4b7JB4ag@mail.gmail.com>	<546C8375.9040705@metafoo.de> <CAE1zot+sy5nEokatSeP8nqwLg2cW283Bvfv6MYk40zYTLQUoFA@mail.gmail.com>
-In-Reply-To: <CAE1zot+sy5nEokatSeP8nqwLg2cW283Bvfv6MYk40zYTLQUoFA@mail.gmail.com>
+To: "Rafael J. Wysocki" <rjw@rjwysocki.net>, linux-iio@vger.kernel.org
+CC: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Linux PM list <linux-pm@vger.kernel.org>,
+	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] iio / PM: Replace CONFIG_PM_RUNTIME with CONFIG_PM
+References: <202529361.GBbZ7zGgn8@vostro.rjw.lan>
+In-Reply-To: <202529361.GBbZ7zGgn8@vostro.rjw.lan>
 Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 19/11/14 12:33, Octavian Purdila wrote:
-> On Wed, Nov 19, 2014 at 1:48 PM, Lars-Peter Clausen <lars@metafoo.de> wrote:
->> On 11/18/2014 08:35 PM, Octavian Purdila wrote:
->>>
->>> On Tue, Nov 18, 2014 at 7:23 PM, Lars-Peter Clausen <lars@metafoo.de>
->>> wrote:
->>>
->>>>>>> As far as I understood, the proposed watermark implementation only
->>>>>>> affects the device buffer and as I mentioned above that will not help
->>>>>>> with reducing the interrupt rate.
->>>>>>
->>>>>>
->>>>>>
->>>>>>
->>>>>> By setting the watershed level the userspace application tells you that
->>>>>> it
->>>>>> is OK with getting data with a higher latency than one sample. This
->>>>>> allows
->>>>>> the driver to configure the FIFO level and hence reduce the interrupt
->>>>>> rate.
->>>>>>
->>>>>
->>>>> Hi Lars,
->>>>>
->>>>> The implementation (as proposed in the patch by Josselin and Yannick)
->>>>> does not inform the driver of changes to watermark, that is only
->>>>> visible to core iio / buffer logic.
->>>>
->>>>
->>>>
->>>> That should be trivial to add though.
->>>>
->>>
->>> True. I've actually started by implementing hardware fifo support as a
->>> new type of iio buffer, but I got scared by the buffer demux stuff. I
->>> can take another stab at it, if that sounds better?
->>>
->>>>>
->>>>> Also, the watermark alone is not enough to properly support hardware
->>>>> fifos: the fifo can operate in multiple modes, we need to read data
->>>>> from the hardware fifo even when the watermark interrupt is not issued
->>>>> (the flush operation in the current patch set).
->>>>
->>>>
->>>>
->>>> What kind of modes are there?
->>>>
->>>
->>> Stream - new values overwrrite old values, Fifo - drop new values.
->>
->>
->> So basically ring buffer) style (old samples are dropped and FIFO style (new
->> samples are dropped). This mode should probably be aligned with the mode
->> that the sw buffer is working. E.g. you wouldn't want the software buffer to
->> work in FIFO mode and the hardware buffer in ring buffer mode. That would
->> lead to weird effects.
->>
+On 03/12/14 02:06, Rafael J. Wysocki wrote:
+> From: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 > 
-> Correct.
+> After commit b2b49ccbdd54 (PM: Kconfig: Set PM_RUNTIME if PM_SLEEP is
+> selected) PM_RUNTIME is always set if PM is set, so #ifdef blocks
+> depending on CONFIG_PM_RUNTIME may now be changed to depend on
+> CONFIG_PM.
 > 
->> We talked about adding support for ring buffer mode to the software buffer a
->> while ago, but so far nobody really needed it so it hasn't been implemented
->> yet.
->>
+> Replace CONFIG_PM_RUNTIME with CONFIG_PM everywhere under
+> drivers/iio/.
 > 
-> This is something that would need ring buffer mode:
+> Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Acked-by: Jonathan Cameron <jic23@kernel.org>
+> ---
 > 
-> https://source.android.com/devices/sensors/batching.html#behavior_in_suspend_mode
+> Note: This depends on commit b2b49ccbdd54 (PM: Kconfig: Set PM_RUNTIME if
+> PM_SLEEP is selected) which is only in linux-next at the moment (via the
+> linux-pm tree).
 > 
-Hmm.. This gets ugly if we have a hardware ring buffer feeding a software ring buffer.
-For remotely consistent data I guess we'd have to dump the software buffer whenever
-we grab data from the hardware buffer that has overflowed.  
-> 
-> Leaving the buffer mode aside, there is another piece that we need for
-> hardware fifo. We need the ability to flush the fifo data earlier then
-> the watermark trigger and / or fifo full trigger so that we can
-> balance power vs latency. It is probably equivalent to the timeout
-> parameter in the watermark patch.
-Not really as the timeout could be trivially implemented in userspace and
-didn't cause a flush.  
+> Please let me know if it is OK to take this one into linux-pm.
+It is.  If I took too long to reply and the dependency merged
+in the current window, I can take these through IIO if you'd prefer?
 
-The suggestion I made earlier of flushing the buffer if an attempt to read
-more from the software buffer than it contains is made.  This wouldn't
-happen in our 'normal' e.g. current usage.
+Thanks,
 
+Jonathan
+> 
+> ---
+>  drivers/iio/accel/bmc150-accel.c |    4 ++--
+>  drivers/iio/accel/kxcjk-1013.c   |    4 ++--
+>  drivers/iio/gyro/bmg160.c        |    4 ++--
+>  3 files changed, 6 insertions(+), 6 deletions(-)
+> 
+> Index: linux-pm/drivers/iio/accel/bmc150-accel.c
+> ===================================================================
+> --- linux-pm.orig/drivers/iio/accel/bmc150-accel.c
+> +++ linux-pm/drivers/iio/accel/bmc150-accel.c
+> @@ -510,7 +510,7 @@ static int bmc150_accel_get_bw(struct bm
+>  	return -EINVAL;
+>  }
+>  
+> -#ifdef CONFIG_PM_RUNTIME
+> +#ifdef CONFIG_PM
+>  static int bmc150_accel_get_startup_times(struct bmc150_accel_data *data)
+>  {
+>  	int i;
+> @@ -1349,7 +1349,7 @@ static int bmc150_accel_resume(struct de
+>  }
+>  #endif
+>  
+> -#ifdef CONFIG_PM_RUNTIME
+> +#ifdef CONFIG_PM
+>  static int bmc150_accel_runtime_suspend(struct device *dev)
+>  {
+>  	struct iio_dev *indio_dev = i2c_get_clientdata(to_i2c_client(dev));
+> Index: linux-pm/drivers/iio/accel/kxcjk-1013.c
+> ===================================================================
+> --- linux-pm.orig/drivers/iio/accel/kxcjk-1013.c
+> +++ linux-pm/drivers/iio/accel/kxcjk-1013.c
+> @@ -358,7 +358,7 @@ static int kxcjk1013_chip_init(struct kx
+>  	return 0;
+>  }
+>  
+> -#ifdef CONFIG_PM_RUNTIME
+> +#ifdef CONFIG_PM
+>  static int kxcjk1013_get_startup_times(struct kxcjk1013_data *data)
+>  {
+>  	int i;
+> @@ -1357,7 +1357,7 @@ static int kxcjk1013_resume(struct devic
+>  }
+>  #endif
+>  
+> -#ifdef CONFIG_PM_RUNTIME
+> +#ifdef CONFIG_PM
+>  static int kxcjk1013_runtime_suspend(struct device *dev)
+>  {
+>  	struct iio_dev *indio_dev = i2c_get_clientdata(to_i2c_client(dev));
+> Index: linux-pm/drivers/iio/gyro/bmg160.c
+> ===================================================================
+> --- linux-pm.orig/drivers/iio/gyro/bmg160.c
+> +++ linux-pm/drivers/iio/gyro/bmg160.c
+> @@ -237,7 +237,7 @@ static int bmg160_chip_init(struct bmg16
+>  
+>  static int bmg160_set_power_state(struct bmg160_data *data, bool on)
+>  {
+> -#ifdef CONFIG_PM_RUNTIME
+> +#ifdef CONFIG_PM
+>  	int ret;
+>  
+>  	if (on)
+> @@ -1164,7 +1164,7 @@ static int bmg160_resume(struct device *
+>  }
+>  #endif
+>  
+> -#ifdef CONFIG_PM_RUNTIME
+> +#ifdef CONFIG_PM
+>  static int bmg160_runtime_suspend(struct device *dev)
+>  {
+>  	struct iio_dev *indio_dev = i2c_get_clientdata(to_i2c_client(dev));
 > 
 
