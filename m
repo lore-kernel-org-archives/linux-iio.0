@@ -1,40 +1,78 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp-out-084.synserver.de ([212.40.185.84]:1067 "EHLO
-	smtp-out-084.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1030334AbaLMLdK (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 13 Dec 2014 06:33:10 -0500
-Message-ID: <548C23C0.8000701@metafoo.de>
-Date: Sat, 13 Dec 2014 12:32:16 +0100
-From: Lars-Peter Clausen <lars@metafoo.de>
+Received: from mout.gmx.net ([212.227.15.19]:52768 "EHLO mout.gmx.net"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1753326AbaLNMbh (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Sun, 14 Dec 2014 07:31:37 -0500
+Message-ID: <548D8317.2070405@gmx.de>
+Date: Sun, 14 Dec 2014 13:31:19 +0100
+From: Hartmut Knaack <knaack.h@gmx.de>
 MIME-Version: 1.0
-To: Hartmut Knaack <knaack.h@gmx.de>,
-	Nikolaus Schulz <nikolaus.schulz@avionic-design.de>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	Grant Likely <grant.likely@linaro.org>,
-	Rob Herring <robh+dt@kernel.org>,
-	Michael Welling <mwelling@ieee.org>,
-	Philippe Reynes <tremyfr@yahoo.fr>,
-	linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-	devicetree@vger.kernel.org
-CC: Alban Bedel <alban.bedel@avionic-design.de>
-Subject: Re: [PATCH v2 2/2] iio: add driver for the TI DAC8554
-References: <1416858614-32265-1-git-send-email-nikolaus.schulz@avionic-design.de> <1416858614-32265-2-git-send-email-nikolaus.schulz@avionic-design.de> <5482EA33.7020305@gmx.de>
-In-Reply-To: <5482EA33.7020305@gmx.de>
-Content-Type: text/plain; charset=windows-1252; format=flowed
+To: Richard Weinberger <richard@nod.at>, jic23@kernel.org
+CC: harald@ccbib.org, lars@metafoo.de, pmeerw@pmeerw.net,
+	sanjeev_sharma@mentor.com, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/4] iio: dht11: Add locking
+References: <1417563176-31972-1-git-send-email-richard@nod.at> <1417563176-31972-2-git-send-email-richard@nod.at>
+In-Reply-To: <1417563176-31972-2-git-send-email-richard@nod.at>
+Content-Type: text/plain; charset=US-ASCII
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 12/06/2014 12:36 PM, Hartmut Knaack wrote:
-[...]
->> +static int dac8554_read_raw(struct iio_dev *indio_dev,
->> +			    struct iio_chan_spec const *chan,
->> +			    int *val,
->> +			    int *val2,
->> +			    long m)
-> Commonly, m is called mask (like you do in _write_raw).
+Richard Weinberger schrieb am 03.12.2014 um 00:32:
+> Make sure that the read function is not interrupted...
+There is already a mutex iio_dev->info_exist_lock used to serialize
+iio_channel_read(), which in turn accesses _read_raw(). See [1].
 
-We should call it info in new driver. It used to be a mask, but that was a 
-long long time ago.
+[1]http://lxr.free-electrons.com/ident?i=iio_channel_read
+> 
+> Signed-off-by: Richard Weinberger <richard@nod.at>
+> ---
+>  drivers/iio/humidity/dht11.c | 5 +++++
+>  1 file changed, 5 insertions(+)
+> 
+> diff --git a/drivers/iio/humidity/dht11.c b/drivers/iio/humidity/dht11.c
+> index d8771f5..168ebc4 100644
+> --- a/drivers/iio/humidity/dht11.c
+> +++ b/drivers/iio/humidity/dht11.c
+> @@ -29,6 +29,7 @@
+>  #include <linux/wait.h>
+>  #include <linux/bitops.h>
+>  #include <linux/completion.h>
+> +#include <linux/mutex.h>
+>  #include <linux/delay.h>
+>  #include <linux/gpio.h>
+>  #include <linux/of_gpio.h>
+> @@ -57,6 +58,7 @@ struct dht11 {
+>  	int				irq;
+>  
+>  	struct completion		completion;
+> +	struct mutex			lock;
+>  
+>  	s64				timestamp;
+>  	int				temperature;
+> @@ -145,6 +147,7 @@ static int dht11_read_raw(struct iio_dev *iio_dev,
+>  	struct dht11 *dht11 = iio_priv(iio_dev);
+>  	int ret;
+>  
+> +	mutex_lock(&dht11->lock);
+>  	if (dht11->timestamp + DHT11_DATA_VALID_TIME < iio_get_time_ns()) {
+>  		reinit_completion(&dht11->completion);
+>  
+> @@ -185,6 +188,7 @@ static int dht11_read_raw(struct iio_dev *iio_dev,
+>  		ret = -EINVAL;
+>  err:
+>  	dht11->num_edges = -1;
+> +	mutex_unlock(&dht11->lock);
+>  	return ret;
+>  }
+>  
+> @@ -268,6 +272,7 @@ static int dht11_probe(struct platform_device *pdev)
+>  	platform_set_drvdata(pdev, iio);
+>  
+>  	init_completion(&dht11->completion);
+> +	mutex_init(&dht11->lock);
+>  	iio->name = pdev->name;
+>  	iio->dev.parent = &pdev->dev;
+>  	iio->info = &dht11_iio_info;
+> 
 
-[...]
