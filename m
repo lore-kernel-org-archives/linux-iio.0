@@ -3,38 +3,53 @@ From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
 To: jic23@kernel.org
 Cc: linux-iio@vger.kernel.org,
 	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-Subject: [PATCH 2/3] iio: imu: inv_mpu6050: Added adapter class
-Date: Mon, 15 Dec 2014 13:19:22 -0800
-Message-Id: <1418678363-22437-3-git-send-email-srinivas.pandruvada@linux.intel.com>
+Subject: [PATCH 1/3] iio: imu: inv_mpu6050: ACPI enumeration
+Date: Mon, 15 Dec 2014 13:19:21 -0800
+Message-Id: <1418678363-22437-2-git-send-email-srinivas.pandruvada@linux.intel.com>
 In-Reply-To: <1418678363-22437-1-git-send-email-srinivas.pandruvada@linux.intel.com>
 References: <1418678363-22437-1-git-send-email-srinivas.pandruvada@linux.intel.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-To use i2c auto detect to work we need to have a non zero class.
-The closest class is I2C_CLASS_HWMON, as it defined to be used
-with all hw monitoring drivers.
-
-Also this class is already used by some iio driver, hid drivers, led
-and misc drivers. So this is not new that this is used outside
-hwmon drivers.
+Added changes so that the module can be enumerated via ACPI.
 
 Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
 ---
- drivers/iio/imu/inv_mpu6050/inv_mpu_core.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/iio/imu/inv_mpu6050/inv_mpu_core.c | 9 +++++++++
+ 1 file changed, 9 insertions(+)
 
 diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-index f73e60b..4af2d24 100644
+index 6d2c115..f73e60b 100644
 --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
 +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-@@ -813,7 +813,7 @@ static int inv_mpu_probe(struct i2c_client *client,
- 	st->mux_adapter = i2c_add_mux_adapter(client->adapter,
- 					      &client->dev,
- 					      indio_dev,
--					      0, 0, 0,
-+					      0, 0, I2C_CLASS_HWMON,
- 					      inv_mpu6050_select_bypass,
- 					      inv_mpu6050_deselect_bypass);
- 	if (!st->mux_adapter) {
+@@ -24,6 +24,7 @@
+ #include <linux/spinlock.h>
+ #include <linux/iio/iio.h>
+ #include <linux/i2c-mux.h>
++#include <linux/acpi.h>
+ #include "inv_mpu_iio.h"
+ 
+ /*
+@@ -875,6 +876,13 @@ static const struct i2c_device_id inv_mpu_id[] = {
+ 
+ MODULE_DEVICE_TABLE(i2c, inv_mpu_id);
+ 
++static const struct acpi_device_id inv_acpi_match[] = {
++	{"INVN6500", 0},
++	{ },
++};
++
++MODULE_DEVICE_TABLE(acpi, inv_acpi_match);
++
+ static struct i2c_driver inv_mpu_driver = {
+ 	.probe		=	inv_mpu_probe,
+ 	.remove		=	inv_mpu_remove,
+@@ -883,6 +891,7 @@ static struct i2c_driver inv_mpu_driver = {
+ 		.owner	=	THIS_MODULE,
+ 		.name	=	"inv-mpu6050",
+ 		.pm     =       INV_MPU6050_PMOPS,
++		.acpi_match_table = ACPI_PTR(inv_acpi_match),
+ 	},
+ };
+ 
 -- 
 1.9.3
