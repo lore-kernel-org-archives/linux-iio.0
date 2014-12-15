@@ -7,66 +7,63 @@ To: Michael Hennerich <Michael.Hennerich@analog.com>,
 	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 	linux-iio@vger.kernel.org
 Cc: Devendra Naga <devendra.aaru@gmail.com>
-Subject: [PATCH 2/2] iio: meter: ade7759: fix build warnings with make randconfig
-Date: Mon, 15 Dec 2014 06:46:46 -0500
-Message-Id: <1418644006-5558-2-git-send-email-devendra.aaru@gmail.com>
-In-Reply-To: <1418644006-5558-1-git-send-email-devendra.aaru@gmail.com>
-References: <1418644006-5558-1-git-send-email-devendra.aaru@gmail.com>
+Subject: [PATCH 1/2] iio: meter: ade7754: fix build warnings with make randconfig
+Date: Mon, 15 Dec 2014 06:46:45 -0500
+Message-Id: <1418644006-5558-1-git-send-email-devendra.aaru@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 List-ID: <linux-iio@vger.kernel.org>
 
 fixes
 
-drivers/staging/iio/meter/ade7759.c:224:6: warning: ‘val’ may be used
+drivers/staging/iio/meter/ade7754.c:222:6: warning: ‘val’ may be used
 uninitialized in this function [-Wmaybe-uninitialized]
-drivers/staging/iio/meter/ade7759.c:309:6: warning: ‘val’ may be used
+drivers/staging/iio/meter/ade7754.c:368:6: warning: ‘val’ may be used
 uninitialized in this function [-Wmaybe-uninitialized]
 
-the fix is to check the return value of ade7759_spi_read_reg_16.
+the fix here is to check the return value of ade7754_spi_read_reg_8.
 
 Signed-off-by: Devendra Naga <devendra.aaru@gmail.com>
 ---
 
  hapens on next-20141215 with make randconfig. compile tested only on x86_64.
 
- drivers/staging/iio/meter/ade7759.c | 11 +++++++++--
- 1 file changed, 9 insertions(+), 2 deletions(-)
+ drivers/staging/iio/meter/ade7754.c | 12 ++++++++++--
+ 1 file changed, 10 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/staging/iio/meter/ade7759.c b/drivers/staging/iio/meter/ade7759.c
-index 7d21743..aa10042 100644
---- a/drivers/staging/iio/meter/ade7759.c
-+++ b/drivers/staging/iio/meter/ade7759.c
-@@ -218,9 +218,12 @@ static int ade7759_reset(struct device *dev)
- 	int ret;
- 	u16 val;
+diff --git a/drivers/staging/iio/meter/ade7754.c b/drivers/staging/iio/meter/ade7754.c
+index 81f6731..9e71575 100644
+--- a/drivers/staging/iio/meter/ade7754.c
++++ b/drivers/staging/iio/meter/ade7754.c
+@@ -216,9 +216,13 @@ error_ret:
  
--	ade7759_spi_read_reg_16(dev,
-+	ret = ade7759_spi_read_reg_16(dev,
- 			ADE7759_MODE,
- 			&val);
+ static int ade7754_reset(struct device *dev)
+ {
++	int ret;
+ 	u8 val;
+ 
+-	ade7754_spi_read_reg_8(dev, ADE7754_OPMODE, &val);
++	ret = ade7754_spi_read_reg_8(dev, ADE7754_OPMODE, &val);
 +	if (ret < 0)
 +		return ret;
 +
  	val |= 1 << 6; /* Software Chip Reset */
- 	ret = ade7759_spi_write_reg_16(dev,
- 			ADE7759_MODE,
-@@ -301,11 +304,15 @@ error_ret:
+ 	return ade7754_spi_write_reg_8(dev, ADE7754_OPMODE, val);
+ }
+@@ -362,9 +366,13 @@ error_ret:
  /* Power down the device */
- static int ade7759_stop_device(struct device *dev)
+ static int ade7754_stop_device(struct device *dev)
  {
 +	int ret;
- 	u16 val;
+ 	u8 val;
  
--	ade7759_spi_read_reg_16(dev,
-+	ret = ade7759_spi_read_reg_16(dev,
- 			ADE7759_MODE,
- 			&val);
+-	ade7754_spi_read_reg_8(dev, ADE7754_OPMODE, &val);
++	ret = ade7754_spi_read_reg_8(dev, ADE7754_OPMODE, &val);
 +	if (ret < 0)
 +		return ret;
 +
- 	val |= 1 << 4;  /* AD converters can be turned off */
- 
- 	return ade7759_spi_write_reg_16(dev, ADE7759_MODE, val);
+ 	val |= 7 << 3;  /* ADE7754 powered down */
+ 	return ade7754_spi_write_reg_8(dev, ADE7754_OPMODE, val);
+ }
 -- 
 2.1.0
