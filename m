@@ -1,95 +1,57 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mout.kundenserver.de ([212.227.126.187]:55374 "EHLO
+Received: from mout.kundenserver.de ([212.227.17.10]:58885 "EHLO
 	mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750753AbaLONOC convert rfc822-to-8bit (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 15 Dec 2014 08:14:02 -0500
-Date: Mon, 15 Dec 2014 14:15:59 +0100
+	with ESMTP id S1750772AbaLOLi1 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 15 Dec 2014 06:38:27 -0500
 From: Nikolaus Schulz <nikolaus.schulz@avionic-design.de>
-To: Mark Rutland <mark.rutland@arm.com>
-Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	Rob Herring <robh+dt@kernel.org>,
-	Pawel Moll <Pawel.Moll@arm.com>,
+To: linux-iio@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
+	Pawel Moll <pawel.moll@arm.com>,
+	Mark Rutland <mark.rutland@arm.com>,
 	Ian Campbell <ijc+devicetree@hellion.org.uk>,
 	Kumar Gala <galak@codeaurora.org>,
-	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	Alban Bedel <alban.bedel@avionic-design.de>
-Subject: Re: [PATCH v3 1/2] iio: document ti-dac8554 devicetree bindings
-Message-ID: <20141215131559.GA16545@avionic-0071.adnet.avionic-design.de>
-References: <1418643605-15554-1-git-send-email-nikolaus.schulz@avionic-design.de>
- <20141215130248.GA8264@leverpostej>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-In-Reply-To: <20141215130248.GA8264@leverpostej>
+	Nikolaus Schulz <nikolaus.schulz@avionic-design.de>,
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc: Alban Bedel <alban.bedel@avionic-design.de>
+Subject: [PATCH v3 1/2] iio: document ti-dac8554 devicetree bindings
+Date: Mon, 15 Dec 2014 12:39:56 +0100
+Message-Id: <1418643605-15554-1-git-send-email-nikolaus.schulz@avionic-design.de>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Mon, Dec 15, 2014 at 01:02:48PM +0000, Mark Rutland wrote:
-> On Mon, Dec 15, 2014 at 11:39:56AM +0000, Nikolaus Schulz wrote:
-> > Signed-off-by: Nikolaus Schulz <nikolaus.schulz@avionic-design.de>
-> > ---
-> >  .../devicetree/bindings/iio/dac/ti-dac8554.txt     | 22 ++++++++++++++++++++++
-> >  1 file changed, 22 insertions(+)
-> >  create mode 100644 Documentation/devicetree/bindings/iio/dac/ti-dac8554.txt
-> > 
-> > diff --git a/Documentation/devicetree/bindings/iio/dac/ti-dac8554.txt b/Documentation/devicetree/bindings/iio/dac/ti-dac8554.txt
-> > new file mode 100644
-> > index 0000000..32e96859
-> > --- /dev/null
-> > +++ b/Documentation/devicetree/bindings/iio/dac/ti-dac8554.txt
-> > @@ -0,0 +1,22 @@
-> > +TI DAC8554 Digital to Analog Converter
-> > +
-> > +This driver supports the SPI bus.
-> 
-> The binding need not refer to the driver, this sentence can go. It might
-> be worth adding "(SPI)" to the first line.
+Signed-off-by: Nikolaus Schulz <nikolaus.schulz@avionic-design.de>
+---
+ .../devicetree/bindings/iio/dac/ti-dac8554.txt     | 22 ++++++++++++++++++++++
+ 1 file changed, 22 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/dac/ti-dac8554.txt
 
-OK
-
-> > +
-> > +Required properties:
-> > +	- compatible: must be "ti,dac8554"
-> > +	- vref-supply: the vref power supply
-> > +	- ti,address: the additional 2-bit chip address
-> > +
-> > +For required properties on SPI, please consult
-> > +Documentation/devicetree/bindings/spi/spi-bus.txt
-> > +
-> > +Example:
-> > +
-> > +	dac8554@0 {
-> > +		compatible = "ti,dac8554";
-> > +		reg = <0>;
-> > +		spi-max-frequency = <50000000>;
-> > +
-> > +		vref-supply = <&vdd_vref>;
-> > +		ti,address = <0>;
-> 
-> What's this property used for?
-
-The DAC8554 has its own addressing scheme, where each chip is assigned a
-two-bit address, defined by the state of two pins. So up to 4 DAC8554
-can be operated independently on the same SPI bus.
-
-> > +	};
-> 
-> Otherwise this looks sane to me.
-> 
-> Mark.
-
+diff --git a/Documentation/devicetree/bindings/iio/dac/ti-dac8554.txt b/Documentation/devicetree/bindings/iio/dac/ti-dac8554.txt
+new file mode 100644
+index 0000000..32e96859
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/dac/ti-dac8554.txt
+@@ -0,0 +1,22 @@
++TI DAC8554 Digital to Analog Converter
++
++This driver supports the SPI bus.
++
++Required properties:
++	- compatible: must be "ti,dac8554"
++	- vref-supply: the vref power supply
++	- ti,address: the additional 2-bit chip address
++
++For required properties on SPI, please consult
++Documentation/devicetree/bindings/spi/spi-bus.txt
++
++Example:
++
++	dac8554@0 {
++		compatible = "ti,dac8554";
++		reg = <0>;
++		spi-max-frequency = <50000000>;
++
++		vref-supply = <&vdd_vref>;
++		ti,address = <0>;
++	};
 -- 
-Avionic Design GmbH
-Nikolaus Schulz
-Wragekamp 10
-D-22397 Hamburg
-Germany
+2.1.3
 
-Tel.:  +49 40 88187-163
-Fax:   +49 40 88187-150
-Email: nikolaus.schulz@avionic-design.de
-
-Avionic Design GmbH
-Amtsgericht Hamburg HRB 82598
-Geschäftsführung: Cornelis Broers
-Ust.-Ident-Nr.: DE813378254
