@@ -1,42 +1,71 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga01.intel.com ([192.55.52.88]:59678 "EHLO mga01.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S934882AbaLLQcv (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Fri, 12 Dec 2014 11:32:51 -0500
-Date: Sat, 13 Dec 2014 00:28:52 +0800
-From: kbuild test robot <fengguang.wu@intel.com>
-To: Daniel Baluta <daniel.baluta@intel.com>
-Cc: kbuild-all@01.org, Jonathan Cameron <jic23@kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH iio] iio: imu: kmx61: kmx61_set_wake_up_odr() can be static
-Message-ID: <20141212162852.GA40238@snb.sh.intel.com>
-References: <201412130004.58sFmPKu%fengguang.wu@intel.com>
+Received: from cam-admin0.cambridge.arm.com ([217.140.96.50]:60056 "EHLO
+	cam-admin0.cambridge.arm.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1750711AbaLONGu (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 15 Dec 2014 08:06:50 -0500
+Date: Mon, 15 Dec 2014 13:02:48 +0000
+From: Mark Rutland <mark.rutland@arm.com>
+To: Nikolaus Schulz <nikolaus.schulz@avionic-design.de>
+Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	Rob Herring <robh+dt@kernel.org>,
+	Pawel Moll <Pawel.Moll@arm.com>,
+	Ian Campbell <ijc+devicetree@hellion.org.uk>,
+	Kumar Gala <galak@codeaurora.org>,
+	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	Alban Bedel <alban.bedel@avionic-design.de>
+Subject: Re: [PATCH v3 1/2] iio: document ti-dac8554 devicetree bindings
+Message-ID: <20141215130248.GA8264@leverpostej>
+References: <1418643605-15554-1-git-send-email-nikolaus.schulz@avionic-design.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <201412130004.58sFmPKu%fengguang.wu@intel.com>
+In-Reply-To: <1418643605-15554-1-git-send-email-nikolaus.schulz@avionic-design.de>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-drivers/iio/imu/kmx61.c:422:5: sparse: symbol 'kmx61_set_wake_up_odr' was not declared. Should it be static?
+On Mon, Dec 15, 2014 at 11:39:56AM +0000, Nikolaus Schulz wrote:
+> Signed-off-by: Nikolaus Schulz <nikolaus.schulz@avionic-design.de>
+> ---
+>  .../devicetree/bindings/iio/dac/ti-dac8554.txt     | 22 ++++++++++++++++++++++
+>  1 file changed, 22 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/iio/dac/ti-dac8554.txt
+> 
+> diff --git a/Documentation/devicetree/bindings/iio/dac/ti-dac8554.txt b/Documentation/devicetree/bindings/iio/dac/ti-dac8554.txt
+> new file mode 100644
+> index 0000000..32e96859
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/iio/dac/ti-dac8554.txt
+> @@ -0,0 +1,22 @@
+> +TI DAC8554 Digital to Analog Converter
+> +
+> +This driver supports the SPI bus.
 
-Signed-off-by: Fengguang Wu <fengguang.wu@intel.com>
----
- kmx61.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+The binding need not refer to the driver, this sentence can go. It might
+be worth adding "(SPI)" to the first line.
 
-diff --git a/drivers/iio/imu/kmx61.c b/drivers/iio/imu/kmx61.c
-index bda9c40..9b32f01 100644
---- a/drivers/iio/imu/kmx61.c
-+++ b/drivers/iio/imu/kmx61.c
-@@ -419,7 +419,7 @@ static int kmx61_get_mode(struct kmx61_data *data, u8 *mode, u8 device)
- 	return 0;
- }
- 
--int kmx61_set_wake_up_odr(struct kmx61_data *data, int val, int val2)
-+static int kmx61_set_wake_up_odr(struct kmx61_data *data, int val, int val2)
- {
- 	int ret, odr_bits;
- 
+> +
+> +Required properties:
+> +	- compatible: must be "ti,dac8554"
+> +	- vref-supply: the vref power supply
+> +	- ti,address: the additional 2-bit chip address
+> +
+> +For required properties on SPI, please consult
+> +Documentation/devicetree/bindings/spi/spi-bus.txt
+> +
+> +Example:
+> +
+> +	dac8554@0 {
+> +		compatible = "ti,dac8554";
+> +		reg = <0>;
+> +		spi-max-frequency = <50000000>;
+> +
+> +		vref-supply = <&vdd_vref>;
+> +		ti,address = <0>;
+
+What's this property used for?
+
+> +	};
+
+Otherwise this looks sane to me.
+
+Mark.
