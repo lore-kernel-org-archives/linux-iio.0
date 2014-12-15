@@ -1,71 +1,56 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from cam-admin0.cambridge.arm.com ([217.140.96.50]:60056 "EHLO
-	cam-admin0.cambridge.arm.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1750711AbaLONGu (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 15 Dec 2014 08:06:50 -0500
-Date: Mon, 15 Dec 2014 13:02:48 +0000
-From: Mark Rutland <mark.rutland@arm.com>
-To: Nikolaus Schulz <nikolaus.schulz@avionic-design.de>
-Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	Rob Herring <robh+dt@kernel.org>,
-	Pawel Moll <Pawel.Moll@arm.com>,
-	Ian Campbell <ijc+devicetree@hellion.org.uk>,
-	Kumar Gala <galak@codeaurora.org>,
-	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	Alban Bedel <alban.bedel@avionic-design.de>
-Subject: Re: [PATCH v3 1/2] iio: document ti-dac8554 devicetree bindings
-Message-ID: <20141215130248.GA8264@leverpostej>
-References: <1418643605-15554-1-git-send-email-nikolaus.schulz@avionic-design.de>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <1418643605-15554-1-git-send-email-nikolaus.schulz@avionic-design.de>
+Received: from mga01.intel.com ([192.55.52.88]:6887 "EHLO mga01.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751755AbaLOPRH (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Mon, 15 Dec 2014 10:17:07 -0500
+From: Vlad Dogaru <vlad.dogaru@intel.com>
+To: linux-iio@vger.kernel.org
+Cc: Vlad Dogaru <vlad.dogaru@intel.com>
+Subject: [PATCH] iio: mma9551: fix sparse warning
+Date: Mon, 15 Dec 2014 17:16:51 +0200
+Message-Id: <1418656611-13496-1-git-send-email-vlad.dogaru@intel.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Mon, Dec 15, 2014 at 11:39:56AM +0000, Nikolaus Schulz wrote:
-> Signed-off-by: Nikolaus Schulz <nikolaus.schulz@avionic-design.de>
-> ---
->  .../devicetree/bindings/iio/dac/ti-dac8554.txt     | 22 ++++++++++++++++++++++
->  1 file changed, 22 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/iio/dac/ti-dac8554.txt
-> 
-> diff --git a/Documentation/devicetree/bindings/iio/dac/ti-dac8554.txt b/Documentation/devicetree/bindings/iio/dac/ti-dac8554.txt
-> new file mode 100644
-> index 0000000..32e96859
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/iio/dac/ti-dac8554.txt
-> @@ -0,0 +1,22 @@
-> +TI DAC8554 Digital to Analog Converter
-> +
-> +This driver supports the SPI bus.
+sparse warnings: (new ones prefixed by >>)
 
-The binding need not refer to the driver, this sentence can go. It might
-be worth adding "(SPI)" to the first line.
+>> drivers/iio/accel/mma9551.c:554:57: sparse: mixing different enum types
+   drivers/iio/accel/mma9551.c:554:57:     int enum mma9551_tilt_axis  versus
+   drivers/iio/accel/mma9551.c:554:57:     int enum mma9551_gpio_pin
+>> drivers/iio/accel/mma9551.c:576:57: sparse: mixing different enum types
+   drivers/iio/accel/mma9551.c:576:57:     int enum mma9551_tilt_axis  versus
+   drivers/iio/accel/mma9551.c:576:57:     int enum mma9551_gpio_pin
 
-> +
-> +Required properties:
-> +	- compatible: must be "ti,dac8554"
-> +	- vref-supply: the vref power supply
-> +	- ti,address: the additional 2-bit chip address
-> +
-> +For required properties on SPI, please consult
-> +Documentation/devicetree/bindings/spi/spi-bus.txt
-> +
-> +Example:
-> +
-> +	dac8554@0 {
-> +		compatible = "ti,dac8554";
-> +		reg = <0>;
-> +		spi-max-frequency = <50000000>;
-> +
-> +		vref-supply = <&vdd_vref>;
-> +		ti,address = <0>;
+Signed-off-by: Vlad Dogaru <vlad.dogaru@intel.com>
+Reported-by: kbuild test robot <fengguang.wu@intel.com>
+---
+ drivers/iio/accel/mma9551.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-What's this property used for?
+diff --git a/drivers/iio/accel/mma9551.c b/drivers/iio/accel/mma9551.c
+index 1be125b..6563e26 100644
+--- a/drivers/iio/accel/mma9551.c
++++ b/drivers/iio/accel/mma9551.c
+@@ -551,7 +551,8 @@ static int mma9551_config_incli_event(struct iio_dev *indio_dev,
+ 		return 0;
+ 
+ 	if (state == 0) {
+-		ret = mma9551_gpio_config(data->client, mma_axis,
++		ret = mma9551_gpio_config(data->client,
++					  (enum mma9551_gpio_pin)mma_axis,
+ 					  MMA9551_APPID_NONE, 0, 0);
+ 		if (ret < 0)
+ 			return ret;
+@@ -573,7 +574,8 @@ static int mma9551_config_incli_event(struct iio_dev *indio_dev,
+ 			return -EINVAL;
+ 		}
+ 
+-		ret = mma9551_gpio_config(data->client, mma_axis,
++		ret = mma9551_gpio_config(data->client,
++					  (enum mma9551_gpio_pin)mma_axis,
+ 					  MMA9551_APPID_TILT, bitnum, 0);
+ 		if (ret < 0)
+ 			return ret;
+-- 
+1.9.1
 
-> +	};
-
-Otherwise this looks sane to me.
-
-Mark.
