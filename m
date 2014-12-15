@@ -1,69 +1,56 @@
-Return-Path: <devendra.aaru@gmail.com>
-From: Devendra Naga <devendra.aaru@gmail.com>
-To: Michael Hennerich <Michael.Hennerich@analog.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	linux-iio@vger.kernel.org
-Cc: Devendra Naga <devendra.aaru@gmail.com>
-Subject: [PATCH 1/2] iio: meter: ade7754: fix build warnings with make randconfig
-Date: Mon, 15 Dec 2014 06:46:45 -0500
-Message-Id: <1418644006-5558-1-git-send-email-devendra.aaru@gmail.com>
+Return-Path: <catalin.crenguta@gmail.com>
 MIME-Version: 1.0
+In-Reply-To: <912A29987EAE174BA6CF187D7CDFA9CE26FA135A@DLEE08.ent.ti.com>
+References: <1415941651-28962-1-git-send-email-vigneshr@ti.com>
+	<20141124115116.GA14997@linutronix.de>
+	<547C3A95.30605@ti.com>
+	<547C3C19.5090501@linutronix.de>
+	<547C42FF.5010700@ti.com>
+	<CAH=tA9FO5MCzE274thc-NugCNte6WdyC-Rxc6yfnuR=+6_qMbA@mail.gmail.com>
+	<548A0125.6040708@linutronix.de>
+	<CABH3fy8zCjsxARsqBf9JXOHBkzySdiqifA1KtjnGpJdBY2EikA@mail.gmail.com>
+	<912A29987EAE174BA6CF187D7CDFA9CE26FA135A@DLEE08.ent.ti.com>
+Date: Mon, 15 Dec 2014 14:45:03 +0200
+Message-ID: <CABH3fy9f9oaV=PKTP+-tS9ADd8bD1oqO--SH0fh9LemqwdL3zA@mail.gmail.com>
+Subject: Re: [PATCH v4 0/6] Touchscreen performance related fixes
+From: Catalin Crenguta <catalin.crenguta@gmail.com>
+To: "Griffis, Brad" <bgriffis@ti.com>
+Cc: Sebastian Andrzej Siewior <bigeasy@linutronix.de>, Nicolae Rosia <nicolae.rosia@gmail.com>,
+	"R, Vignesh" <vigneshr@ti.com>, Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>,
+	Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>,
+	Kumar Gala <galak@codeaurora.org>, Benoit Cousson <bcousson@baylibre.com>,
+	Tony Lindgren <tony@atomide.com>, Russell King <linux@arm.linux.org.uk>,
+	Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
+	"richardcochran@gmail.com" <richardcochran@gmail.com>, Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+	Lee Jones <lee.jones@linaro.org>, Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>, Samuel Ortiz <sameo@linux.intel.com>,
+	"Balbi, Felipe" <balbi@ti.com>, Sanjeev Sharma <sanjeev_sharma@mentor.com>,
+	Paul Gortmaker <paul.gortmaker@windriver.com>, Jan Kardell <jan.kardell@telliq.com>,
+	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"linux-omap@vger.kernel.org" <linux-omap@vger.kernel.org>,
+	"linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	"linux-input@vger.kernel.org" <linux-input@vger.kernel.org>
 Content-Type: text/plain; charset=UTF-8
 List-ID: <linux-iio@vger.kernel.org>
 
-fixes
+On Fri, Dec 12, 2014 at 4:16 PM, Griffis, Brad <bgriffis@ti.com> wrote:
+> How are you configuring ti,charge-delay in your dts?  I've seen this beha=
+vior on some custom boards where we were using a smaller charge delay (0x40=
+0) to begin with, and by upping it to 0xb000 we resolved the issue.  These =
+patches however already specified ti,charge-delay =3D 0xb000 by default so =
+this would surprise me that it's still seeing that issue.  Was the touchscr=
+een working as expected before these new patches, or does it have issues bo=
+th ways?
 
-drivers/staging/iio/meter/ade7754.c:222:6: warning: ‘val’ may be used
-uninitialized in this function [-Wmaybe-uninitialized]
-drivers/staging/iio/meter/ade7754.c:368:6: warning: ‘val’ may be used
-uninitialized in this function [-Wmaybe-uninitialized]
+I have created a DTS for Beaglebone Black with 4 wire touchscreen and
+display which works on 3.18 stable and tsc-devel, omap2plus_defconfig
+with tsc and tilcdc support.
+It seems that with lcdc disabled, I am not getting false reports but
+when I'm activating the lcdc, I get a lot of false pen-downs/pen-ups.
+Even with tilcdc enabled, after it prints "timeout waiting for
+framedone" and the screen get blanked (white), the noise is gone.
 
-the fix here is to check the return value of ade7754_spi_read_reg_8.
-
-Signed-off-by: Devendra Naga <devendra.aaru@gmail.com>
----
-
- hapens on next-20141215 with make randconfig. compile tested only on x86_64.
-
- drivers/staging/iio/meter/ade7754.c | 12 ++++++++++--
- 1 file changed, 10 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/staging/iio/meter/ade7754.c b/drivers/staging/iio/meter/ade7754.c
-index 81f6731..9e71575 100644
---- a/drivers/staging/iio/meter/ade7754.c
-+++ b/drivers/staging/iio/meter/ade7754.c
-@@ -216,9 +216,13 @@ error_ret:
- 
- static int ade7754_reset(struct device *dev)
- {
-+	int ret;
- 	u8 val;
- 
--	ade7754_spi_read_reg_8(dev, ADE7754_OPMODE, &val);
-+	ret = ade7754_spi_read_reg_8(dev, ADE7754_OPMODE, &val);
-+	if (ret < 0)
-+		return ret;
-+
- 	val |= 1 << 6; /* Software Chip Reset */
- 	return ade7754_spi_write_reg_8(dev, ADE7754_OPMODE, val);
- }
-@@ -362,9 +366,13 @@ error_ret:
- /* Power down the device */
- static int ade7754_stop_device(struct device *dev)
- {
-+	int ret;
- 	u8 val;
- 
--	ade7754_spi_read_reg_8(dev, ADE7754_OPMODE, &val);
-+	ret = ade7754_spi_read_reg_8(dev, ADE7754_OPMODE, &val);
-+	if (ret < 0)
-+		return ret;
-+
- 	val |= 7 << 3;  /* ADE7754 powered down */
- 	return ade7754_spi_write_reg_8(dev, ADE7754_OPMODE, val);
- }
--- 
-2.1.0
+Regards,
+Catalin.
