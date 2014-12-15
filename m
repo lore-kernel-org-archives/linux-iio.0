@@ -1,56 +1,72 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga01.intel.com ([192.55.52.88]:6887 "EHLO mga01.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751755AbaLOPRH (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Mon, 15 Dec 2014 10:17:07 -0500
-From: Vlad Dogaru <vlad.dogaru@intel.com>
-To: linux-iio@vger.kernel.org
-Cc: Vlad Dogaru <vlad.dogaru@intel.com>
-Subject: [PATCH] iio: mma9551: fix sparse warning
-Date: Mon, 15 Dec 2014 17:16:51 +0200
-Message-Id: <1418656611-13496-1-git-send-email-vlad.dogaru@intel.com>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <devendra.aaru@gmail.com>
+From: Devendra Naga <devendra.aaru@gmail.com>
+To: Michael Hennerich <Michael.Hennerich@analog.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	linux-iio@vger.kernel.org
+Cc: Devendra Naga <devendra.aaru@gmail.com>
+Subject: [PATCH 2/2] iio: meter: ade7759: fix build warnings with make randconfig
+Date: Mon, 15 Dec 2014 06:46:46 -0500
+Message-Id: <1418644006-5558-2-git-send-email-devendra.aaru@gmail.com>
+In-Reply-To: <1418644006-5558-1-git-send-email-devendra.aaru@gmail.com>
+References: <1418644006-5558-1-git-send-email-devendra.aaru@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+List-ID: <linux-iio@vger.kernel.org>
 
-sparse warnings: (new ones prefixed by >>)
+fixes
 
->> drivers/iio/accel/mma9551.c:554:57: sparse: mixing different enum types
-   drivers/iio/accel/mma9551.c:554:57:     int enum mma9551_tilt_axis  versus
-   drivers/iio/accel/mma9551.c:554:57:     int enum mma9551_gpio_pin
->> drivers/iio/accel/mma9551.c:576:57: sparse: mixing different enum types
-   drivers/iio/accel/mma9551.c:576:57:     int enum mma9551_tilt_axis  versus
-   drivers/iio/accel/mma9551.c:576:57:     int enum mma9551_gpio_pin
+drivers/staging/iio/meter/ade7759.c:224:6: warning: ‘val’ may be used
+uninitialized in this function [-Wmaybe-uninitialized]
+drivers/staging/iio/meter/ade7759.c:309:6: warning: ‘val’ may be used
+uninitialized in this function [-Wmaybe-uninitialized]
 
-Signed-off-by: Vlad Dogaru <vlad.dogaru@intel.com>
-Reported-by: kbuild test robot <fengguang.wu@intel.com>
+the fix is to check the return value of ade7759_spi_read_reg_16.
+
+Signed-off-by: Devendra Naga <devendra.aaru@gmail.com>
 ---
- drivers/iio/accel/mma9551.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/iio/accel/mma9551.c b/drivers/iio/accel/mma9551.c
-index 1be125b..6563e26 100644
---- a/drivers/iio/accel/mma9551.c
-+++ b/drivers/iio/accel/mma9551.c
-@@ -551,7 +551,8 @@ static int mma9551_config_incli_event(struct iio_dev *indio_dev,
- 		return 0;
+ hapens on next-20141215 with make randconfig. compile tested only on x86_64.
+
+ drivers/staging/iio/meter/ade7759.c | 11 +++++++++--
+ 1 file changed, 9 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/staging/iio/meter/ade7759.c b/drivers/staging/iio/meter/ade7759.c
+index 7d21743..aa10042 100644
+--- a/drivers/staging/iio/meter/ade7759.c
++++ b/drivers/staging/iio/meter/ade7759.c
+@@ -218,9 +218,12 @@ static int ade7759_reset(struct device *dev)
+ 	int ret;
+ 	u16 val;
  
- 	if (state == 0) {
--		ret = mma9551_gpio_config(data->client, mma_axis,
-+		ret = mma9551_gpio_config(data->client,
-+					  (enum mma9551_gpio_pin)mma_axis,
- 					  MMA9551_APPID_NONE, 0, 0);
- 		if (ret < 0)
- 			return ret;
-@@ -573,7 +574,8 @@ static int mma9551_config_incli_event(struct iio_dev *indio_dev,
- 			return -EINVAL;
- 		}
+-	ade7759_spi_read_reg_16(dev,
++	ret = ade7759_spi_read_reg_16(dev,
+ 			ADE7759_MODE,
+ 			&val);
++	if (ret < 0)
++		return ret;
++
+ 	val |= 1 << 6; /* Software Chip Reset */
+ 	ret = ade7759_spi_write_reg_16(dev,
+ 			ADE7759_MODE,
+@@ -301,11 +304,15 @@ error_ret:
+ /* Power down the device */
+ static int ade7759_stop_device(struct device *dev)
+ {
++	int ret;
+ 	u16 val;
  
--		ret = mma9551_gpio_config(data->client, mma_axis,
-+		ret = mma9551_gpio_config(data->client,
-+					  (enum mma9551_gpio_pin)mma_axis,
- 					  MMA9551_APPID_TILT, bitnum, 0);
- 		if (ret < 0)
- 			return ret;
+-	ade7759_spi_read_reg_16(dev,
++	ret = ade7759_spi_read_reg_16(dev,
+ 			ADE7759_MODE,
+ 			&val);
++	if (ret < 0)
++		return ret;
++
+ 	val |= 1 << 4;  /* AD converters can be turned off */
+ 
+ 	return ade7759_spi_write_reg_16(dev, ADE7759_MODE, val);
 -- 
-1.9.1
-
+2.1.0
