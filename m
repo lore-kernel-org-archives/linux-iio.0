@@ -1,52 +1,66 @@
-Return-Path: <arno@natisbad.org>
-From: Arnaud Ebalard <arno@natisbad.org>
-To: Jonathan Cameron <jic23@kernel.org>,
-    Hartmut Knaack <knaack.h@gmx.de>,
-    Lars-Peter Clausen <lars@metafoo.de>,
-    Peter Meerwald <pmeerw@pmeerw.net>,
-    Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-    Arnd Bergmann <arnd@arndb.de>,
-    Mark Rutland <mark.rutland@arm.com>,
-    Darshana Padmadas <darshanapadmadas@gmail.com>,
-    linux-iio@vger.kernel.org,
-    devel@driverdev.osuosl.org,
-    Andrew Morton <akpm@linux-foundation.org>,
-    Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <uwe@kleine-koenig.org>
-Subject: [PATCHv2 5/8] staging: iio: isl29028: deprecate use of isl in compatible string for isil
-In-Reply-To: <cover.1418763328.git.arno@natisbad.org>
-References: <cover.1418763328.git.arno@natisbad.org>
-Message-Id: <f935306404d9b6d8a37862987122b6988cb6ffff.1418763328.git.arno@natisbad.org>
-Date: Tue, 16 Dec 2014 22:20:37 +0100
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-wg0-f53.google.com ([74.125.82.53]:52737 "EHLO
+	mail-wg0-f53.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750894AbaLPLZO (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 16 Dec 2014 06:25:14 -0500
+Received: by mail-wg0-f53.google.com with SMTP id l18so16810438wgh.26
+        for <linux-iio@vger.kernel.org>; Tue, 16 Dec 2014 03:25:13 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain
-List-ID: <linux-iio@vger.kernel.org>
+In-Reply-To: <1418721366-5566-1-git-send-email-roberta.dobrescu@gmail.com>
+References: <1418721366-5566-1-git-send-email-roberta.dobrescu@gmail.com>
+Date: Tue, 16 Dec 2014 13:25:13 +0200
+Message-ID: <CAEnQRZBcrBgBCL_hT11=vdgODN0qWrjp=XdR=OzPoyQpYrX4bA@mail.gmail.com>
+Subject: Re: [PATCH] iio: trigger: Add a blank line after declarations
+From: Daniel Baluta <daniel.baluta@intel.com>
+To: Roberta Dobrescu <roberta.dobrescu@gmail.com>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	"octavian.purdila@intel.com" <octavian.purdila@intel.com>,
+	Daniel Baluta <daniel.baluta@intel.com>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Michael.Hennerich@analog.com, Hartmut Knaack <knaack.h@gmx.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>
+Content-Type: text/plain; charset=UTF-8
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
+On Tue, Dec 16, 2014 at 11:16 AM, Roberta Dobrescu
+<roberta.dobrescu@gmail.com> wrote:
+> This patch fixes the following checkpatch.pl warning:
+> WARNING: Missing a blank line after declarations
+>
+> Signed-off-by: Roberta Dobrescu <roberta.dobrescu@gmail.com>
 
-"isil" and "isl" prefixes are used at various locations inside the kernel
-to reference Intersil corporation. This patch is part of a series fixing
-those locations were "isl" is used in compatible strings to use the now
-expected "isil" prefix instead (NASDAQ symbol for Intersil and most used
-version). The old compatible string is kept for backward compatibility.
+Reviewed-by: Daniel Baluta <daniel.baluta@intel.com>
 
-Signed-off-by: Arnaud Ebalard <arno@natisbad.org>
----
- drivers/staging/iio/light/isl29028.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/staging/iio/light/isl29028.c b/drivers/staging/iio/light/isl29028.c
-index e969107ddb47..6440e3b293ca 100644
---- a/drivers/staging/iio/light/isl29028.c
-+++ b/drivers/staging/iio/light/isl29028.c
-@@ -537,8 +537,8 @@ static const struct i2c_device_id isl29028_id[] = {
- MODULE_DEVICE_TABLE(i2c, isl29028_id);
- 
- static const struct of_device_id isl29028_of_match[] = {
--	{ .compatible = "isl,isl29028", },
--	{ .compatible = "isil,isl29028", },/* deprecated, don't use */
-+	{ .compatible = "isl,isl29028", }, /* for backward compat., don't use */
-+	{ .compatible = "isil,isl29028", },
- 	{ },
- };
- MODULE_DEVICE_TABLE(of, isl29028_of_match);
--- 
-2.1.1
+> ---
+>  drivers/iio/trigger/iio-trig-sysfs.c | 2 ++
+>  1 file changed, 2 insertions(+)
+>
+> diff --git a/drivers/iio/trigger/iio-trig-sysfs.c b/drivers/iio/trigger/iio-trig-sysfs.c
+> index 254c7e9..3dfab2b 100644
+> --- a/drivers/iio/trigger/iio-trig-sysfs.c
+> +++ b/drivers/iio/trigger/iio-trig-sysfs.c
+> @@ -135,6 +135,7 @@ static int iio_sysfs_trigger_probe(int id)
+>         struct iio_sysfs_trig *t;
+>         int ret;
+>         bool foundit = false;
+> +
+>         mutex_lock(&iio_sysfs_trig_list_mut);
+>         list_for_each_entry(t, &iio_sysfs_trig_list, l)
+>                 if (id == t->id) {
+> @@ -185,6 +186,7 @@ static int iio_sysfs_trigger_remove(int id)
+>  {
+>         bool foundit = false;
+>         struct iio_sysfs_trig *t;
+> +
+>         mutex_lock(&iio_sysfs_trig_list_mut);
+>         list_for_each_entry(t, &iio_sysfs_trig_list, l)
+>                 if (id == t->id) {
+> --
+> 1.9.1
+>
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
