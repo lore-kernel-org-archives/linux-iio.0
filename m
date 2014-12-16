@@ -9,35 +9,33 @@ Cc: octavian.purdila@intel.com,
 	knaack.h@gmx.de,
 	pmeerw@pmeerw.net,
 	Roberta Dobrescu <roberta.dobrescu@gmail.com>
-Subject: [PATCH 2/3] iio: frequency: Remove unnecessary braces around single statement block
-Date: Tue, 16 Dec 2014 11:11:46 +0200
-Message-Id: <1418721107-5429-3-git-send-email-roberta.dobrescu@gmail.com>
+Subject: [PATCH 3/3] iio: frequency: Use usleep_range instead of msleep
+Date: Tue, 16 Dec 2014 11:11:47 +0200
+Message-Id: <1418721107-5429-4-git-send-email-roberta.dobrescu@gmail.com>
 In-Reply-To: <1418721107-5429-1-git-send-email-roberta.dobrescu@gmail.com>
 References: <1418721107-5429-1-git-send-email-roberta.dobrescu@gmail.com>
 List-ID: <linux-iio@vger.kernel.org>
 
 This patch fixes the following checkpatch.pl warning:
-WARNING: braces {} are not necessary for single statement blocks
+WARNING: msleep < 20ms can sleep for up to 20ms
 
 Signed-off-by: Roberta Dobrescu <roberta.dobrescu@gmail.com>
 ---
- drivers/iio/frequency/adf4350.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ drivers/iio/frequency/ad9523.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/iio/frequency/adf4350.c b/drivers/iio/frequency/adf4350.c
-index 2b301eb..10a0dfc 100644
---- a/drivers/iio/frequency/adf4350.c
-+++ b/drivers/iio/frequency/adf4350.c
-@@ -611,9 +611,8 @@ static int adf4350_remove(struct spi_device *spi)
- 	if (st->clk)
- 		clk_disable_unprepare(st->clk);
+diff --git a/drivers/iio/frequency/ad9523.c b/drivers/iio/frequency/ad9523.c
+index 7c5245d..2e41ca5 100644
+--- a/drivers/iio/frequency/ad9523.c
++++ b/drivers/iio/frequency/ad9523.c
+@@ -445,7 +445,7 @@ static int ad9523_store_eeprom(struct iio_dev *indio_dev)
  
--	if (!IS_ERR(reg)) {
-+	if (!IS_ERR(reg))
- 		regulator_disable(reg);
--	}
- 
- 	return 0;
- }
+ 	tmp = 4;
+ 	do {
+-		msleep(16);
++		usleep_range(16000, 17000);
+ 		ret = ad9523_read(indio_dev,
+ 				  AD9523_EEPROM_DATA_XFER_STATUS);
+ 		if (ret < 0)
 -- 
 1.9.1
