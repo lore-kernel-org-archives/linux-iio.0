@@ -1,63 +1,48 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-wi0-f169.google.com ([209.85.212.169]:55659 "EHLO
-	mail-wi0-f169.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750871AbaLPLXR (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 16 Dec 2014 06:23:17 -0500
-Received: by mail-wi0-f169.google.com with SMTP id r20so13317241wiv.0
-        for <linux-iio@vger.kernel.org>; Tue, 16 Dec 2014 03:23:15 -0800 (PST)
-MIME-Version: 1.0
-In-Reply-To: <1418721107-5429-3-git-send-email-roberta.dobrescu@gmail.com>
-References: <1418721107-5429-1-git-send-email-roberta.dobrescu@gmail.com>
-	<1418721107-5429-3-git-send-email-roberta.dobrescu@gmail.com>
-Date: Tue, 16 Dec 2014 13:23:15 +0200
-Message-ID: <CAEnQRZCmxDPCJmMPcsVAeX=euOU6EFpy58QnPttKCo7BD8vrxQ@mail.gmail.com>
-Subject: Re: [PATCH 2/3] iio: frequency: Remove unnecessary braces around
- single statement block
-From: Daniel Baluta <daniel.baluta@intel.com>
-To: Roberta Dobrescu <roberta.dobrescu@gmail.com>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"octavian.purdila@intel.com" <octavian.purdila@intel.com>,
-	Daniel Baluta <daniel.baluta@intel.com>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Michael.Hennerich@analog.com, Hartmut Knaack <knaack.h@gmx.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>
-Content-Type: text/plain; charset=UTF-8
+Received: from mail-wi0-f182.google.com ([209.85.212.182]:62036 "EHLO
+	mail-wi0-f182.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750990AbaLQSLS (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 17 Dec 2014 13:11:18 -0500
+Received: by mail-wi0-f182.google.com with SMTP id h11so16980937wiw.15
+        for <linux-iio@vger.kernel.org>; Wed, 17 Dec 2014 10:11:17 -0800 (PST)
+From: Angelo Compagnucci <angelo.compagnucci@gmail.com>
+To: linux-iio@vger.kernel.org
+Cc: Angelo Compagnucci <angelo.compagnucci@gmail.com>
+Subject: [PATCH] iio: mcp3422: Add DT binding documentation
+Date: Wed, 17 Dec 2014 19:11:02 +0100
+Message-Id: <1418839862-4235-1-git-send-email-angelo.compagnucci@gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Tue, Dec 16, 2014 at 11:11 AM, Roberta Dobrescu
-<roberta.dobrescu@gmail.com> wrote:
-> This patch fixes the following checkpatch.pl warning:
-> WARNING: braces {} are not necessary for single statement blocks
->
-> Signed-off-by: Roberta Dobrescu <roberta.dobrescu@gmail.com>
+Adding binding documentation for ADC MCP3422.
+---
+ Documentation/devicetree/bindings/iio/adc/mcp3422.txt | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/adc/mcp3422.txt
 
-Reviewed-by: Daniel Baluta <daniel.baluta@intel.com>
+diff --git a/Documentation/devicetree/bindings/iio/adc/mcp3422.txt b/Documentation/devicetree/bindings/iio/adc/mcp3422.txt
+new file mode 100644
+index 0000000..d6d6eb6
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/adc/mcp3422.txt
+@@ -0,0 +1,12 @@
++* Microchip mcp3422/3/4/6/7/8 chip family (ADC)
++
++Required properties:
++  - compatible: Should be 
++               "microchip,mcp3422" or
++               "microchip,mcp3423" or
++               "microchip,mcp3424" or
++               "microchip,mcp3426" or
++               "microchip,mcp3427" or
++               "microchip,mcp3428"
++  - reg: I2C address for the device
++
++Example:
++adc@0 {
++	compatible = "microchip,mcp3424";
++	reg = <0x68>;
++};
+-- 
+1.9.1
 
-> ---
->  drivers/iio/frequency/adf4350.c | 3 +--
->  1 file changed, 1 insertion(+), 2 deletions(-)
->
-> diff --git a/drivers/iio/frequency/adf4350.c b/drivers/iio/frequency/adf4350.c
-> index 2b301eb..10a0dfc 100644
-> --- a/drivers/iio/frequency/adf4350.c
-> +++ b/drivers/iio/frequency/adf4350.c
-> @@ -611,9 +611,8 @@ static int adf4350_remove(struct spi_device *spi)
->         if (st->clk)
->                 clk_disable_unprepare(st->clk);
->
-> -       if (!IS_ERR(reg)) {
-> +       if (!IS_ERR(reg))
->                 regulator_disable(reg);
-> -       }
->
->         return 0;
->  }
-> --
-> 1.9.1
->
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
