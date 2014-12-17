@@ -1,43 +1,117 @@
-Return-Path: <lars@metafoo.de>
-Message-ID: <5492FC53.5000100@metafoo.de>
-Date: Thu, 18 Dec 2014 17:09:55 +0100
-From: Lars-Peter Clausen <lars@metafoo.de>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mout.gmx.net ([212.227.17.21]:55076 "EHLO mout.gmx.net"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751155AbaLQWUo (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Wed, 17 Dec 2014 17:20:44 -0500
+Message-ID: <549201B6.1070502@gmx.de>
+Date: Wed, 17 Dec 2014 23:20:38 +0100
+From: Hartmut Knaack <knaack.h@gmx.de>
 MIME-Version: 1.0
-To: Roberta Dobrescu <roberta.dobrescu@gmail.com>, jic23@kernel.org,
- linux-iio@vger.kernel.org
-CC: octavian.purdila@intel.com, daniel.baluta@intel.com,
- Michael.Hennerich@analog.com, knaack.h@gmx.de, pmeerw@pmeerw.net
-Subject: Re: [PATCH 3/3] iio: frequency: Use usleep_range instead of msleep
-References: <1418721107-5429-1-git-send-email-roberta.dobrescu@gmail.com> <1418721107-5429-4-git-send-email-roberta.dobrescu@gmail.com>
-In-Reply-To: <1418721107-5429-4-git-send-email-roberta.dobrescu@gmail.com>
-Content-Type: text/plain; charset=windows-1252; format=flowed
-List-ID: <linux-iio@vger.kernel.org>
+To: Karol Wrona <k.wrona@samsung.com>,
+	Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+CC: Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
+	Kyungmin Park <kyungmin.park@samsung.com>,
+	Karol Wrona <wrona.vy@gmail.com>
+Subject: Re: [PATCH v3 5/5] iio: common: ssp_sensors: Add sensorhub
+ gyroscope sensor
+References: <1417809290-9662-1-git-send-email-k.wrona@samsung.com> <1417809290-9662-6-git-send-email-k.wrona@samsung.com>
+In-Reply-To: <1417809290-9662-6-git-send-email-k.wrona@samsung.com>
+Content-Type: text/plain; charset=ISO-8859-15
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On 12/16/2014 10:11 AM, Roberta Dobrescu wrote:
-> This patch fixes the following checkpatch.pl warning:
-> WARNING: msleep < 20ms can sleep for up to 20ms
->
-> Signed-off-by: Roberta Dobrescu <roberta.dobrescu@gmail.com>
+Karol Wrona schrieb am 05.12.2014 um 20:54:
+> This patch adds gyroscope iio driver which uses sensorhub as data
+> provider.
+> 
+This one has got a more serious issue.
+> Change-Id: Ia16bc92159d062a29957de8e62ea3fefdcd7985a
+> Signed-off-by: Karol Wrona <k.wrona@samsung.com>
+> Acked-by: Kyungmin Park <kyungmin.park@samsung.com>
 > ---
->   drivers/iio/frequency/ad9523.c | 2 +-
->   1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/drivers/iio/frequency/ad9523.c b/drivers/iio/frequency/ad9523.c
-> index 7c5245d..2e41ca5 100644
-> --- a/drivers/iio/frequency/ad9523.c
-> +++ b/drivers/iio/frequency/ad9523.c
-> @@ -445,7 +445,7 @@ static int ad9523_store_eeprom(struct iio_dev *indio_dev)
->
->   	tmp = 4;
->   	do {
-> -		msleep(16);
-> +		usleep_range(16000, 17000);
+>  drivers/iio/gyro/Makefile          |    2 +
+>  drivers/iio/gyro/ssp_gyro_sensor.c |  202 ++++++++++++++++++++++++++++++++++++
+>  2 files changed, 204 insertions(+)
+>  create mode 100644 drivers/iio/gyro/ssp_gyro_sensor.c
+> 
 
-I don't think this is exactly timing critical, things will work fine if this 
-sleeps a bit longer. If you want to silence the warning for the sake of 
-silencing the warning, maybe just replace it with a msleep(20).
+> +static int ssp_gyro_probe(struct platform_device *pdev)
+> +{
+> +	int ret;
+> +	struct iio_dev *indio_dev;
+> +	struct ssp_sensor_data *spd;
+> +
+> +	indio_dev = iio_device_alloc(sizeof(*spd));
+Need to use devm_iio_device_alloc(), since iio_device_free() has been dropped.
+> +	if (!indio_dev)
+> +		return -ENOMEM;
+> +
+> +	spd = iio_priv(indio_dev);
+> +
+> +	spd->process_data = ssp_process_gyro_data;
+> +	spd->type = SSP_GYROSCOPE_SENSOR;
+> +
+> +	indio_dev->name = ssp_gyro_name;
+> +	indio_dev->dev.parent = &pdev->dev;
+> +	indio_dev->info = &ssp_gyro_iio_info;
+> +	indio_dev->modes = INDIO_BUFFER_HARDWARE;
+> +	indio_dev->channels = ssp_gyro_channels;
+> +	indio_dev->num_channels = ARRAY_SIZE(ssp_gyro_channels);
+> +
+> +	ret = ssp_common_setup_buffer(indio_dev, &ssp_gyro_buffer_ops);
+> +	if (ret < 0) {
+> +		dev_err(&pdev->dev, "Buffer setup fail\n");
+> +		return ret;
+> +	}
+> +
+> +	platform_set_drvdata(pdev, indio_dev);
+> +
+> +	ret = iio_device_register(indio_dev);
+> +	if (ret < 0) {
+> +		iio_buffer_unregister(indio_dev);
+> +		iio_kfifo_free(indio_dev->buffer);
+> +		return ret;
+> +	};
+> +
+> +	/* similar to accel */
+> +	ssp_register_consumer(indio_dev, SSP_GYROSCOPE_SENSOR);
+> +
+> +	return 0;
+> +}
+> +
+> +static int ssp_gyro_remove(struct platform_device *pdev)
+> +{
+> +	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
+> +
+> +	iio_device_unregister(indio_dev);
+> +	iio_buffer_unregister(indio_dev);
+> +	iio_kfifo_free(indio_dev->buffer);
+> +
+> +	return 0;
+> +}
+> +
+> +static const struct of_device_id ssp_gyro_id_table[] = {
+> +	{
+> +		.compatible = "samsung,mpu6500-gyro",
+> +	},
+> +	{},
+> +};
+> +
+> +static struct platform_driver ssp_gyro_driver = {
+> +	.driver = {
+> +		.owner = THIS_MODULE,
+> +		.name = SSP_GYROSCOPE_NAME,
+> +		.of_match_table = ssp_gyro_id_table,
+> +	},
+> +	.probe = ssp_gyro_probe,
+> +	.remove = ssp_gyro_remove,
+> +};
+> +
+> +module_platform_driver(ssp_gyro_driver);
+> +
+> +MODULE_AUTHOR("Karol Wrona <k.wrona@samsung.com>");
+> +MODULE_DESCRIPTION("Samsung sensorhub gyroscopes driver");
+> +MODULE_LICENSE("GPL");
+> 
 
->   		ret = ad9523_read(indio_dev,
->   				  AD9523_EEPROM_DATA_XFER_STATUS);
->   		if (ret < 0)
->
