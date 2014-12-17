@@ -1,60 +1,88 @@
-Return-Path: <knaack.h@gmx.de>
-Message-ID: <54920096.5000409@gmx.de>
-Date: Wed, 17 Dec 2014 23:15:50 +0100
-From: Hartmut Knaack <knaack.h@gmx.de>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mga03.intel.com ([134.134.136.65]:45223 "EHLO mga03.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1750999AbaLQVJr (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Wed, 17 Dec 2014 16:09:47 -0500
+Date: Wed, 17 Dec 2014 13:09:46 -0800
+From: Todd E Brandt <todd.e.brandt@linux.intel.com>
+To: linux-iio@vger.kernel.org
+Cc: lee.jones@linaro.org, jacob.jun.pan@linux.intel.com
+Subject: [PATCH 2/2] mfd/axp20x: add support for fuel gauge cell
+Message-ID: <20141217210946.GC10978@linux.intel.com>
+Reply-To: todd.e.brandt@linux.intel.com
 MIME-Version: 1.0
-To: Karol Wrona <k.wrona@samsung.com>,
- Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org
-CC: Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
- Kyungmin Park <kyungmin.park@samsung.com>,
- Karol Wrona <wrona.vy@gmail.com>
-Subject: Re: [PATCH v3 3/5] iio: common: ssp_sensors: Add sensorhub iio commons
-References: <1417809290-9662-1-git-send-email-k.wrona@samsung.com> <1417809290-9662-4-git-send-email-k.wrona@samsung.com>
-In-Reply-To: <1417809290-9662-4-git-send-email-k.wrona@samsung.com>
-Content-Type: text/plain; charset=ISO-8859-15
-List-ID: <linux-iio@vger.kernel.org>
+Content-Type: text/plain; charset=us-ascii
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Karol Wrona schrieb am 05.12.2014 um 20:54:
-> This patch adds common library for sensorhub iio drivers.
-> 
-Looks good to me, overall. Just one very small nitpick.
-> Change-Id: I1038cb31c051f7e8ffde696a4121518daa5af081
-> Signed-off-by: Karol Wrona <k.wrona@samsung.com>
-> Acked-by: Kyungmin Park <kyungmin.park@samsung.com>
-> ---
->  drivers/iio/common/ssp_sensors/ssp_iio.c        |   82 +++++++++++++++++++++++
->  drivers/iio/common/ssp_sensors/ssp_iio_sensor.h |   56 ++++++++++++++++
->  2 files changed, 138 insertions(+)
->  create mode 100644 drivers/iio/common/ssp_sensors/ssp_iio.c
->  create mode 100644 drivers/iio/common/ssp_sensors/ssp_iio_sensor.h
-> 
+mfd/axp20x: add support for fuel gauge cell
 
-> +/* Converts time in ms to frequency */
-> +static inline void ssp_convert_to_freq(u32 time, int *integer_part,
-> +				       int *fractional)
-> +{
-> +	if (time == 0) {
-> +		*fractional = 0;
-> +		*integer_part = 0;
-> +		return;
-> +	}
-> +
-> +	*integer_part = SSP_DIVIDEND / time;
-> +	*fractional = do_div(*integer_part, SSP_DIVISOR);
-> +}
-> +
-> +/* Converts frequency to time in ms*/
-Missing whitespace at end of comment.
-> +static inline int ssp_convert_to_time(int integer_part, int fractional)
-> +{
-> +	u64 value;
-> +
-> +	value = integer_part * SSP_DIVISOR + fractional;
-> +	if (value == 0)
-> +		return 0;
-> +
-> +	return div_u64(SSP_DIVIDEND, value);
-> +}
-> +#endif /* __SSP_IIO_SENSOR_H__ */
-> 
+Register definitions and platform data structure 
+for fuel gauge cell devices.
+
+Signed-off-by: Todd Brandt <todd.e.brandt@intel.com>
+----
+ include/linux/mfd/axp20x.h | 43 +++++++++++++++++++++++++++++++++++++++++--
+ 1 file changed, 41 insertions(+), 2 deletions(-)
+
+diff --git a/include/linux/mfd/axp20x.h b/include/linux/mfd/axp20x.h
+index 81589d1..dfabd6d 100644
+--- a/include/linux/mfd/axp20x.h
++++ b/include/linux/mfd/axp20x.h
+@@ -124,10 +124,27 @@ enum {
+ #define AXP288_PMIC_ADC_H               0x56
+ #define AXP288_PMIC_ADC_L               0x57
+ #define AXP288_ADC_TS_PIN_CTRL          0x84
+-
+ #define AXP288_PMIC_ADC_EN              0x84
+-#define AXP288_FG_TUNE5			0xed
+ 
++/* Fuel Gauge */
++#define AXP288_FG_RDC1_REG          0xba
++#define AXP288_FG_RDC0_REG          0xbb
++#define AXP288_FG_OCVH_REG          0xbc
++#define AXP288_FG_OCVL_REG          0xbd
++#define AXP288_FG_OCV_CURVE_REG     0xc0
++#define AXP288_FG_DES_CAP1_REG      0xe0
++#define AXP288_FG_DES_CAP0_REG      0xe1
++#define AXP288_FG_CC_MTR1_REG       0xe2
++#define AXP288_FG_CC_MTR0_REG       0xe3
++#define AXP288_FG_OCV_CAP_REG       0xe4
++#define AXP288_FG_CC_CAP_REG        0xe5
++#define AXP288_FG_LOW_CAP_REG       0xe6
++#define AXP288_FG_TUNE0             0xe8
++#define AXP288_FG_TUNE1             0xe9
++#define AXP288_FG_TUNE2             0xea
++#define AXP288_FG_TUNE3             0xeb
++#define AXP288_FG_TUNE4             0xec
++#define AXP288_FG_TUNE5             0xed
+ 
+ /* Regulators IDs */
+ enum {
+@@ -236,4 +253,26 @@ struct axp20x_dev {
+ 	const struct regmap_irq_chip	*regmap_irq_chip;
+ };
+ 
++#define BATTID_LEN				64
++#define OCV_CURVE_SIZE			32
++#define MAX_THERM_CURVE_SIZE	25
++#define PD_DEF_MIN_TEMP			0
++#define PD_DEF_MAX_TEMP			55
++
++struct axp20x_fg_pdata {
++	char battid[BATTID_LEN + 1];
++	int design_cap;
++	int min_volt;
++	int max_volt;
++	int max_temp;
++	int min_temp;
++	int cap1;
++	int cap0;
++	int rdc1;
++	int rdc0;
++	int ocv_curve[OCV_CURVE_SIZE];
++	int tcsz;
++	int thermistor_curve[MAX_THERM_CURVE_SIZE][2];
++};
++
+ #endif /* __LINUX_MFD_AXP20X_H */
