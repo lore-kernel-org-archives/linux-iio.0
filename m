@@ -1,37 +1,27 @@
-Return-Path: <lars@metafoo.de>
-Message-ID: <54930250.1050400@metafoo.de>
-Date: Thu, 18 Dec 2014 17:35:28 +0100
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from smtp-out-208.synserver.de ([212.40.185.208]:1060 "EHLO
+	smtp-out-208.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751211AbaLRQOP (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 18 Dec 2014 11:14:15 -0500
+Message-ID: <5492FD51.40403@metafoo.de>
+Date: Thu, 18 Dec 2014 17:14:09 +0100
 From: Lars-Peter Clausen <lars@metafoo.de>
 MIME-Version: 1.0
-To: Jonathan Cameron <jic23@kernel.org>
-CC: Hartmut Knaack <knaack.h@gmx.de>, Peter Meerwald <pmeerw@pmeerw.net>,
- linux-iio@vger.kernel.org
-Subject: Re: [PATCH 10/11] iio: buffer: Make length attribute read only for
- buffers without set_length
-References: <1417024517-7564-1-git-send-email-lars@metafoo.de> <1417024517-7564-11-git-send-email-lars@metafoo.de> <548ACCA7.7080706@kernel.org> <548ACD6B.30608@kernel.org>
-In-Reply-To: <548ACD6B.30608@kernel.org>
+To: Roberta Dobrescu <roberta.dobrescu@gmail.com>, jic23@kernel.org,
+	linux-iio@vger.kernel.org
+CC: octavian.purdila@intel.com, daniel.baluta@intel.com,
+	Michael.Hennerich@analog.com, knaack.h@gmx.de, pmeerw@pmeerw.net
+Subject: Re: [PATCH 1/3] iio: frequency: Remove 'out of memory' message
+References: <1418721107-5429-1-git-send-email-roberta.dobrescu@gmail.com> <1418721107-5429-2-git-send-email-roberta.dobrescu@gmail.com>
+In-Reply-To: <1418721107-5429-2-git-send-email-roberta.dobrescu@gmail.com>
 Content-Type: text/plain; charset=windows-1252; format=flowed
-List-ID: <linux-iio@vger.kernel.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On 12/12/2014 12:11 PM, Jonathan Cameron wrote:
-> On 12/12/14 11:08, Jonathan Cameron wrote:
->> On 26/11/14 17:55, Lars-Peter Clausen wrote:
->>> If a buffer implementation does not implement the set_length() callback the
->>> length will be static and can not be changed by userspace. Mark the length
->>> attribute as a read only property in this case so userspace is aware of this
->>> rather than just silently accepting any length value.
->>>
->>> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
->> Nice little change.
->>
-> Having said that I doubt that longterm this will apply to many devices
-> as we'll be routing more and more hardware buffers through a software
-> front end and that front end will be variable size...
-
-We'll probably have something like a buffer_index field in channel struct.
-
+On 12/16/2014 10:11 AM, Roberta Dobrescu wrote:
+> This patch fixes the following checkpatch.pl warning:
+> WARNING: Possible unnecessary 'out of memory' message
 >
-> Anyhow, applied to the togreg branch of iio.git with fuzz etc
-> from my earlier patch tweaking.
+> Signed-off-by: Roberta Dobrescu <roberta.dobrescu@gmail.com>
 
-Thanks.
+Acked-by: Lars-Peter Clausen <lars@metafoo.de>
