@@ -1,71 +1,58 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga03.intel.com ([134.134.136.65]:26320 "EHLO mga03.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751033AbaLRRdG (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Thu, 18 Dec 2014 12:33:06 -0500
-Message-ID: <1418923812.4459.8.camel@spandruv-desktop.jf.intel.com>
-Subject: Re: [PATCH 3/3] iio: ak8975: Added autodetect feature for ACPI
-From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-To: Lars-Peter Clausen <lars@metafoo.de>
-Cc: jic23@kernel.org, linux-iio@vger.kernel.org,
-	"linux-i2c@vger.kernel.org" <linux-i2c@vger.kernel.org>,
-	Wolfram Sang <wsa@the-dreams.de>
-Date: Thu, 18 Dec 2014 09:30:12 -0800
-In-Reply-To: <54930965.3030008@metafoo.de>
-References: <1418678363-22437-1-git-send-email-srinivas.pandruvada@linux.intel.com>
-	 <1418678363-22437-4-git-send-email-srinivas.pandruvada@linux.intel.com>
-	 <549300A5.5080904@metafoo.de>
-	 <1418921521.740.282.camel@spandruv-desktop.jf.intel.com>
-	 <54930965.3030008@metafoo.de>
-Content-Type: text/plain; charset="UTF-8"
-Mime-Version: 1.0
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <daniel.baluta@intel.com>
+From: Daniel Baluta <daniel.baluta@intel.com>
+To: jic23@kernel.org
+Cc: knaack.h@gmx.de,
+	lars@metafoo.de,
+	pmeerw@pmeerw.net,
+	gwendal@chromium.org,
+	srinivas.pandruvada@linux.intel.com,
+	beomho.seo@samsung.com,
+	daniel.baluta@intel.com,
+	linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	octavian.purdila@intel.com
+Subject: [RFC PATCH] iio: ak8975: Make sure chipset is always initialized
+Date: Thu, 18 Dec 2014 19:16:42 +0200
+Message-Id: <1418923002-901-1-git-send-email-daniel.baluta@intel.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+List-ID: <linux-iio@vger.kernel.org>
 
-On Thu, 2014-12-18 at 18:05 +0100, Lars-Peter Clausen wrote: 
-> On 12/18/2014 05:52 PM, Srinivas Pandruvada wrote:
-> > On Thu, 2014-12-18 at 17:28 +0100, Lars-Peter Clausen wrote:
-> >> Added I2C to Cc.
-> >>
-> >> On 12/15/2014 10:19 PM, Srinivas Pandruvada wrote:
-> >>> Using i2c auto detect feature and auto device creation feature,
-> >>> enumerate ak8975 device, by checking their presence.
-> >>> This is needed because when this device sits behind an i2c mux, there
-> >>> is no way to define i2c mux in ACPI. This will enable ak8975 on
-> >>> windows based tablets/laptops running Linux when connected via a mux.
-> >>> Since DT model already can define an i2c mux and devices connected to
-> >>> it, this feature is only enabled for ACPI.
-> >>>
-> >>
-> >> This is quite a bit of a hack.
-> > Why?
-> > Auto detect is standard feature of i2c devices. This is using standard
-> > auto detect feature provided by the framework.
-> 
-> Auto detect is ugly, slow and unreliable, it's kind of like the last straw 
-> if nothing else works.
-That is true here. You can't enumerate this device by ACPI. As discussed
-before we created i2c mux in inv6050 so that we can use AK8975 in bypass
-mode. I added some API to create i2c device on this mux, which Wolfram
-didn't like. He wanted to enumerate using existing mechanisms. 
-> 
-> Autodetect will be executed for every adapter with every device that 
-> supports auto detection, so you want to keep the amount of devices that do 
-> auto detection to a minimum in order to avoid both false positives and 
-> reduce boot time.
-> 
-> 
-> >>   Did they decide to not include the device in
-> >> the ACPI description at all or is there a special id for INV6050+AK8975?
-> > This device needs has one combined id. Windows has a singe driver
-> > processing both as a combo device.
-> 
-> Ok, then use the combined id to instantiate INV6050+AK8975.
-No. The i2c address address is already consumed by INV6050 driver (which
-is valid for INV6050 not AK8975).
+When using ACPI, if acpi_match_device fails then chipset enum will be
+uninitialized and &ak_def_array[chipset] will point to some bad address.
 
-> 
-> - Lars
-> 
+This fixes the following compilation warning:
 
+drivers/iio/magnetometer/ak8975.c: In function ‘ak8975_probe’:
+drivers/iio/magnetometer/ak8975.c:788:14: warning: ‘chipset’ may be used
+uninitialized in this function [-Wmaybe-uninitialized]
+  data->def = &ak_def_array[chipset];
 
+Reported-by: Octavian Purdila <octavian.purdila@intel.com>
+Signed-off-by: Daniel Baluta <daniel.baluta@intel.com>
+---
+This is a RFC because while I'm pretty sure that chipset should be initialized
+with AK_MAX_TYPE in ak8975_match_acpi_device, I am not sure if we can live with
+a NULL return value of ak8975_match_acpi_device. Current implementation ignores
+return value of ak8975_match_acpi_device.
+
+The same situation is for kxcjk-1013, bmc150-accel, bmg160 and possible other
+drivers.
+
+ drivers/iio/magnetometer/ak8975.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/drivers/iio/magnetometer/ak8975.c b/drivers/iio/magnetometer/ak8975.c
+index 0d10a4b..cdf9e77 100644
+--- a/drivers/iio/magnetometer/ak8975.c
++++ b/drivers/iio/magnetometer/ak8975.c
+@@ -716,6 +716,7 @@ static const char *ak8975_match_acpi_device(struct device *dev,
+ {
+ 	const struct acpi_device_id *id;
+ 
++	*chipset = AK_MAX_TYPE;
+ 	id = acpi_match_device(dev->driver->acpi_match_table, dev);
+ 	if (!id)
+ 		return NULL;
+-- 
+1.9.1
