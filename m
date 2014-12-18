@@ -1,115 +1,27 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp-out-208.synserver.de ([212.40.185.208]:1064 "EHLO
-	smtp-out-208.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751273AbaLRQvZ (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 18 Dec 2014 11:51:25 -0500
-Message-ID: <54930604.1020607@metafoo.de>
-Date: Thu, 18 Dec 2014 17:51:16 +0100
+Return-Path: <lars@metafoo.de>
+Message-ID: <5493040F.5020206@metafoo.de>
+Date: Thu, 18 Dec 2014 17:42:55 +0100
 From: Lars-Peter Clausen <lars@metafoo.de>
 MIME-Version: 1.0
-To: "Baluta, Teodora" <teodora.baluta@intel.com>,
-	"jic23@kernel.org" <jic23@kernel.org>
-CC: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	Hans Verkuil <hverkuil@xs4all.nl>,
-	Mauro Carvalho Chehab <m.chehab@samsung.com>,
-	linux-media@vger.kernel.org
-Subject: Re: [RFC PATCH 0/3] Introduce IIO interface for fingerprint sensors
-References: <1417698017-13835-1-git-send-email-teodora.baluta@intel.com>	 <5481153B.4070609@kernel.org> <1418047828.18463.10.camel@bebop>
-In-Reply-To: <1418047828.18463.10.camel@bebop>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+To: Karol Wrona <k.wrona@samsung.com>,
+ Jonathan Cameron <jic23@kernel.org>,
+ linux-iio@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>,
+ linux-kernel@vger.kernel.org
+CC: Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
+ Kyungmin Park <kyungmin.park@samsung.com>,
+ Karol Wrona <wrona.vy@gmail.com>
+Subject: Re: [RFC PATCH 1/2] iio: kfifo: Remove unused argument in iio_kfifo_allocate
+References: <1418153385-18212-1-git-send-email-k.wrona@samsung.com> <1418153385-18212-2-git-send-email-k.wrona@samsung.com>
+In-Reply-To: <1418153385-18212-2-git-send-email-k.wrona@samsung.com>
+Content-Type: text/plain; charset=windows-1252; format=flowed
+List-ID: <linux-iio@vger.kernel.org>
 
-Adding V4L folks to Cc for more input.
+On 12/09/2014 08:29 PM, Karol Wrona wrote:
+> indio_dev was unused in function body plus some small style fix - add new
+> lines after "if(sth) return sth" and before the last return statement.
 
-On 12/08/2014 03:10 PM, Baluta, Teodora wrote:
-> Hello,
->
-> On Vi, 2014-12-05 at 02:15 +0000, Jonathan Cameron wrote:
->> On 04/12/14 13:00, Teodora Baluta wrote:
->>> This patchset adds support for fingerprint sensors through the IIO interface.
->>> This way userspace applications collect information in a uniform way. All
->>> processing would be done in the upper layers as suggested in [0].
->>>
->>> In order to test out this proposal, a minimal implementation for UPEK's
->>> TouchChip Fingerprint Sensor via USB is also available. Although there is an
->>> existing implementation in userspace for USB fingerprint devices, including this
->>> particular device, the driver represents a proof of concept of how fingerprint
->>> sensors could be integrated in the IIO framework regardless of the used bus. For
->>> lower power requirements, the SPI bus is preferred and a kernel driver
->>> implementation makes more sense.
->>
->> So why not v4l?  These are effectively image sensors..
->
-> Well, here's why I don't think v4l would be the best option:
->
-> - an image scanner could be implemented in the v4l subsystem, but it
-> seems far more complicated for a simple fingerprint scanner - it usually
-> has drivers for webcams, TVs or video streaming devices. The v4l
-> subsystem (with all its support for colorspace, decoders, image
-> compression, frame control) seems a bit of an overkill for a very
-> straightforward fingerprint imaging sensor.
->
-> - a fingerprint device could also send out a processed information, not
-> just the image of a fingerprint. This means that the processing is done
-> in hardware - the UPEK TouchStrip chipset in libfprint has this behavior
-> (see [0]). So, the IIO framework would support a uniform way of handling
-> fingerprint devices that either do processing in software or in
-> hardware.
->
-> The way I see it now, for processed fingerprint information, an IIO
-> device could have an IIO_FINGERPRINT channel with a modifier and only
-> the sensitivity threshold attribute set. We would also need two
-> triggers: one for enrollment and one for the verification mode to
-> control the device from a userspace application.
->
-> Thanks,
-> Teodora
->
-> [0] http://www.freedesktop.org/wiki/Software/fprint/libfprint/upekts/
->
->
->>>
->>> A sysfs trigger is enabled and the device starts scanning. As soon as an image
->>> is available it is written in the character device /dev/iio:deviceX.
->>>
->>> Userspace applications will be able to calculate the expected image size using
->>> the fingerprint attributes height, width and bit depth. Other attributes
->>> introduced for the fingerprint channel in IIO represent information that aids in
->>> the fingerprint image processing. Besides these, the proposed interface offers
->>> userspace a way to read a feedback after a scan (like the swipe was too slow or
->>> too fast) through a modified fingerprint_status channel.
->>>
->>> [0] http://www.spinics.net/lists/linux-iio/msg11463.html
->>>
->>> Teodora Baluta (3):
->>>    iio: core: add support for fingerprint devices
->>>    iio: core: change channel's storagebits/realbits to u32
->>>    iio: fingerprint: add fingerprint sensor via USB
->>>
->>>   Documentation/ABI/testing/sysfs-bus-iio |  51 +++
->>>   drivers/iio/Kconfig                     |   1 +
->>>   drivers/iio/Makefile                    |   1 +
->>>   drivers/iio/fingerprint/Kconfig         |  15 +
->>>   drivers/iio/fingerprint/Makefile        |   5 +
->>>   drivers/iio/fingerprint/fp_tc.c         | 162 +++++++++
->>>   drivers/iio/fingerprint/fp_tc.h         |  22 ++
->>>   drivers/iio/fingerprint/fp_tc_usb.c     | 618 ++++++++++++++++++++++++++++++++
->>>   drivers/iio/fingerprint/fp_tc_usb.h     | 144 ++++++++
->>>   drivers/iio/industrialio-core.c         |   9 +
->>>   include/linux/iio/iio.h                 |  11 +-
->>>   include/linux/iio/types.h               |  10 +
->>>   12 files changed, 1047 insertions(+), 2 deletions(-)
->>>   create mode 100644 drivers/iio/fingerprint/Kconfig
->>>   create mode 100644 drivers/iio/fingerprint/Makefile
->>>   create mode 100644 drivers/iio/fingerprint/fp_tc.c
->>>   create mode 100644 drivers/iio/fingerprint/fp_tc.h
->>>   create mode 100644 drivers/iio/fingerprint/fp_tc_usb.c
->>>   create mode 100644 drivers/iio/fingerprint/fp_tc_usb.h
->>>
->>
->
-> N�����r��y���b�X��ǧv�^�)޺{.n�+����{��*"��^n�r���z���h����&���G���h�(�階�ݢj"���m�����z�ޖ���f���h���~�mml==
->
+Looks good, except for the missing updates for the users.
 
+Doing some digging in the git history raveled that the user of that 
+parameter in that function was removed in commit f79a909890 
+("staging:iio:buffer struct iio_buffer doesn't need an indio_dev pointer.")
