@@ -1,51 +1,37 @@
 Return-Path: <lars@metafoo.de>
-Message-ID: <54930965.3030008@metafoo.de>
-Date: Thu, 18 Dec 2014 18:05:41 +0100
+Message-ID: <549304F4.5070105@metafoo.de>
+Date: Thu, 18 Dec 2014 17:46:44 +0100
 From: Lars-Peter Clausen <lars@metafoo.de>
 MIME-Version: 1.0
-To: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-CC: jic23@kernel.org, linux-iio@vger.kernel.org,
- "linux-i2c@vger.kernel.org" <linux-i2c@vger.kernel.org>,
- Wolfram Sang <wsa@the-dreams.de>
-Subject: Re: [PATCH 3/3] iio: ak8975: Added autodetect feature for ACPI
-References: <1418678363-22437-1-git-send-email-srinivas.pandruvada@linux.intel.com>	 <1418678363-22437-4-git-send-email-srinivas.pandruvada@linux.intel.com>	 <549300A5.5080904@metafoo.de> <1418921521.740.282.camel@spandruv-desktop.jf.intel.com>
-In-Reply-To: <1418921521.740.282.camel@spandruv-desktop.jf.intel.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
+To: Karol Wrona <k.wrona@samsung.com>,
+ Jonathan Cameron <jic23@kernel.org>,
+ linux-iio@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>,
+ linux-kernel@vger.kernel.org
+CC: Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
+ Kyungmin Park <kyungmin.park@samsung.com>,
+ Karol Wrona <wrona.vy@gmail.com>
+Subject: Re: [RFC PATCH 2/2] iio: kfifo: Add resource management devm_iio_kfifo_allocate/free
+References: <1418153385-18212-1-git-send-email-k.wrona@samsung.com> <1418153385-18212-3-git-send-email-k.wrona@samsung.com>
+In-Reply-To: <1418153385-18212-3-git-send-email-k.wrona@samsung.com>
+Content-Type: text/plain; charset=windows-1252; format=flowed
 List-ID: <linux-iio@vger.kernel.org>
 
-On 12/18/2014 05:52 PM, Srinivas Pandruvada wrote:
-> On Thu, 2014-12-18 at 17:28 +0100, Lars-Peter Clausen wrote:
->> Added I2C to Cc.
->>
->> On 12/15/2014 10:19 PM, Srinivas Pandruvada wrote:
->>> Using i2c auto detect feature and auto device creation feature,
->>> enumerate ak8975 device, by checking their presence.
->>> This is needed because when this device sits behind an i2c mux, there
->>> is no way to define i2c mux in ACPI. This will enable ak8975 on
->>> windows based tablets/laptops running Linux when connected via a mux.
->>> Since DT model already can define an i2c mux and devices connected to
->>> it, this feature is only enabled for ACPI.
->>>
->>
->> This is quite a bit of a hack.
-> Why?
-> Auto detect is standard feature of i2c devices. This is using standard
-> auto detect feature provided by the framework.
+On 12/09/2014 08:29 PM, Karol Wrona wrote:
+> iio kfifo allocate/free gained their devm_ wrappers.
+>
+> Change-Id: I10c19ccd7c01491caf088b3629137425ddccd29c
+> Signed-off-by: Karol Wrona <k.wrona@samsung.com>
+> Suggested-by: Jonathan Cameron <jic23@kernel.org>
 
-Auto detect is ugly, slow and unreliable, it's kind of like the last straw 
-if nothing else works.
+Looks good to me.
 
-Autodetect will be executed for every adapter with every device that 
-supports auto detection, so you want to keep the amount of devices that do 
-auto detection to a minimum in order to avoid both false positives and 
-reduce boot time.
+[...]
+> +struct iio_buffer *devm_iio_kfifo_allocate(struct device *dev)
+> +{
+> +	struct iio_buffer **ptr, *r;
+> +
+> +	ptr = devres_alloc(devm_iio_kfifo_release, sizeof *ptr, GFP_KERNEL);
 
+But this should be sizeof(*ptr) to compliant with the Linux kernel coding style.
 
->>   Did they decide to not include the device in
->> the ACPI description at all or is there a special id for INV6050+AK8975?
-> This device needs has one combined id. Windows has a singe driver
-> processing both as a combo device.
-
-Ok, then use the combined id to instantiate INV6050+AK8975.
-
-- Lars
+[...]
