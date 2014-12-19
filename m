@@ -1,91 +1,95 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga09.intel.com ([134.134.136.24]:39363 "EHLO mga09.intel.com"
+Received: from mout.gmx.net ([212.227.17.22]:63828 "EHLO mout.gmx.net"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1752747AbaLSW37 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Fri, 19 Dec 2014 17:29:59 -0500
-From: Irina Tirdea <irina.tirdea@intel.com>
-To: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org, Vlad Dogaru <vlad.dogaru@intel.com>,
-	Daniel Baluta <daniel.baluta@intel.com>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	Irina Tirdea <irina.tirdea@intel.com>
-Subject: [PATCH 1/8] iio: core: Introduce CALORIES channel type
-Date: Sat, 20 Dec 2014 00:57:52 +0200
-Message-Id: <1419029879-12024-2-git-send-email-irina.tirdea@intel.com>
-In-Reply-To: <1419029879-12024-1-git-send-email-irina.tirdea@intel.com>
-References: <1419029879-12024-1-git-send-email-irina.tirdea@intel.com>
+	id S1752610AbaLSW7e (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Fri, 19 Dec 2014 17:59:34 -0500
+Message-ID: <5494ADCD.2030401@gmx.de>
+Date: Fri, 19 Dec 2014 23:59:25 +0100
+From: Hartmut Knaack <knaack.h@gmx.de>
+MIME-Version: 1.0
+To: IIO <linux-iio@vger.kernel.org>
+CC: Vlad Dogaru <vlad.dogaru@intel.com>
+Subject: [PATCH V2]iio:pressure:bmp280: cleanup
+Content-Type: text/plain; charset=ISO-8859-15
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Some devices compute the number of calories that the user has
-burnt since the last reset.
+The calculations for temperature and pressure compensation were already slightly
+optimized in comparison to the datasheet. So, it makes sense to optimize even a
+bit more, making proper use of C operators:
+  - variable t in bmp280_compensate_temp() can be eliminated by directly
+    returning the result of the relevant equation.
+  - make use of the += operator and eliminate an unnecessary parenthesis level in
+    bmp280_compensate_press().
+When the initialization of the ctrl_meas register fails, the error message will
+now mention the right register name.
+During probe, i2c_set_clientdata() is called, although it is not necessary. Drop
+it.
 
-One of this devices is Freescale's MMA9553L
-(http://www.freescale.com/files/sensors/doc/ref_manual/MMA9553LSWRM.pdf)
-that computes the number of calories based on weight and step rate.
-
-Introduce a new channel type CALORIES to export these values.
-
-Signed-off-by: Irina Tirdea <irina.tirdea@intel.com>
+Signed-off-by: Hartmut Knaack <knaack.h@gmx.de>
 ---
- Documentation/ABI/testing/sysfs-bus-iio |    9 +++++++++
- drivers/iio/industrialio-core.c         |    1 +
- include/linux/iio/types.h               |    1 +
- 3 files changed, 11 insertions(+)
+Changes in V2:
+Rebase after refactoring of compensation code.
 
-diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
-index df5e69e..bb9342b 100644
---- a/Documentation/ABI/testing/sysfs-bus-iio
-+++ b/Documentation/ABI/testing/sysfs-bus-iio
-@@ -282,6 +282,7 @@ What:		/sys/bus/iio/devices/iio:deviceX/in_current_scale
- What:		/sys/bus/iio/devices/iio:deviceX/in_accel_scale
- What:		/sys/bus/iio/devices/iio:deviceX/in_accel_peak_scale
- What:		/sys/bus/iio/devices/iio:deviceX/in_anglvel_scale
-+What:		/sys/bus/iio/devices/iio:deviceX/in_calories_scale
- What:		/sys/bus/iio/devices/iio:deviceX/in_magn_scale
- What:		/sys/bus/iio/devices/iio:deviceX/in_magn_x_scale
- What:		/sys/bus/iio/devices/iio:deviceX/in_magn_y_scale
-@@ -1049,6 +1050,14 @@ Description:
- 		For a list of available output power modes read
- 		in_accel_power_mode_available.
+diff --git a/drivers/iio/pressure/bmp280.c b/drivers/iio/pressure/bmp280.c
+index 47dfd34..7c623e2 100644
+--- a/drivers/iio/pressure/bmp280.c
++++ b/drivers/iio/pressure/bmp280.c
+@@ -148,7 +148,7 @@ static s32 bmp280_compensate_temp(struct bmp280_data *data,
+ 				  s32 adc_temp)
+ {
+ 	int ret;
+-	s32 var1, var2, t;
++	s32 var1, var2;
+ 	__le16 buf[BMP280_COMP_TEMP_REG_COUNT / 2];
  
-+What:		/sys/.../iio:deviceX/in_calories_input
-+What:		/sys/.../iio:deviceX/in_calories_raw
-+KernelVersion:	3.17
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+		This attribute is used to read the number of calories burned since the last
-+		reset. Units after application of scale are Joules.
-+
- What:		/sys/bus/iio/devices/iio:deviceX/store_eeprom
- KernelVersion:	3.4.0
- Contact:	linux-iio@vger.kernel.org
-diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
-index ee442ee..5d95e84 100644
---- a/drivers/iio/industrialio-core.c
-+++ b/drivers/iio/industrialio-core.c
-@@ -72,6 +72,7 @@ static const char * const iio_chan_type_name_spec[] = {
- 	[IIO_HUMIDITYRELATIVE] = "humidityrelative",
- 	[IIO_ACTIVITY] = "activity",
- 	[IIO_STEPS] = "steps",
-+	[IIO_CALORIES] = "calories",
- };
+ 	ret = regmap_bulk_read(data->regmap, BMP280_REG_COMP_TEMP_START,
+@@ -173,10 +173,7 @@ static s32 bmp280_compensate_temp(struct bmp280_data *data,
+ 		  ((adc_temp >> 4) - ((s32)le16_to_cpu(buf[T1])))) >> 12) *
+ 		((s32)(s16)le16_to_cpu(buf[T3]))) >> 14;
  
- static const char * const iio_modifier_names[] = {
-diff --git a/include/linux/iio/types.h b/include/linux/iio/types.h
-index 904dcbb..d2fe930 100644
---- a/include/linux/iio/types.h
-+++ b/include/linux/iio/types.h
-@@ -32,6 +32,7 @@ enum iio_chan_type {
- 	IIO_HUMIDITYRELATIVE,
- 	IIO_ACTIVITY,
- 	IIO_STEPS,
-+	IIO_CALORIES,
- };
+-	data->t_fine = var1 + var2;
+-	t = (data->t_fine * 5 + 128) >> 8;
+-
+-	return t;
++	return (data->t_fine * 5 + 128) >> 8;
+ }
  
- enum iio_modifier {
--- 
-1.7.9.5
-
+ /*
+@@ -203,8 +200,8 @@ static u32 bmp280_compensate_press(struct bmp280_data *data,
+ 
+ 	var1 = ((s64)data->t_fine) - 128000;
+ 	var2 = var1 * var1 * (s64)(s16)le16_to_cpu(buf[P6]);
+-	var2 = var2 + ((var1 * (s64)(s16)le16_to_cpu(buf[P5])) << 17);
+-	var2 = var2 + (((s64)(s16)le16_to_cpu(buf[P4])) << 35);
++	var2 += (var1 * (s64)(s16)le16_to_cpu(buf[P5])) << 17;
++	var2 += ((s64)(s16)le16_to_cpu(buf[P4])) << 35;
+ 	var1 = ((var1 * var1 * (s64)(s16)le16_to_cpu(buf[P3])) >> 8) +
+ 		((var1 * (s64)(s16)le16_to_cpu(buf[P2])) << 12);
+ 	var1 = ((((s64)1) << 47) + var1) * ((s64)le16_to_cpu(buf[P1])) >> 33;
+@@ -218,7 +215,7 @@ static u32 bmp280_compensate_press(struct bmp280_data *data,
+ 	var2 = (((s64)(s16)le16_to_cpu(buf[P8])) * p) >> 19;
+ 	p = ((p + var1 + var2) >> 8) + (((s64)(s16)le16_to_cpu(buf[P7])) << 4);
+ 
+-	return (u32) p;
++	return (u32)p;
+ }
+ 
+ static int bmp280_read_temp(struct bmp280_data *data,
+@@ -330,7 +327,7 @@ static int bmp280_chip_init(struct bmp280_data *data)
+ 				 BMP280_MODE_NORMAL);
+ 	if (ret < 0) {
+ 		dev_err(&data->client->dev,
+-			"failed to write config register\n");
++			"failed to write ctrl_meas register\n");
+ 		return ret;
+ 	}
+ 
+@@ -358,7 +355,6 @@ static int bmp280_probe(struct i2c_client *client,
+ 	if (!indio_dev)
+ 		return -ENOMEM;
+ 
+-	i2c_set_clientdata(client, indio_dev);
+ 	data = iio_priv(indio_dev);
+ 	mutex_init(&data->lock);
+ 	data->client = client;
