@@ -6,40 +6,32 @@ To: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
 Cc: Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
  Kyungmin Park <kyungmin.park@samsung.com>, Karol Wrona <wrona.vy@gmail.com>,
  Karol Wrona <k.wrona@samsung.com>
-Subject: [PATCH v2 0/3] iio: Add resource management kfifo alloc/free
-Date: Fri, 19 Dec 2014 18:39:23 +0100
-Message-id: <1419010766-13557-1-git-send-email-k.wrona@samsung.com>
+Subject: [PATCH v2 3/3] iio: core: Get rid of misleading comment
+Date: Fri, 19 Dec 2014 18:39:26 +0100
+Message-id: <1419010766-13557-4-git-send-email-k.wrona@samsung.com>
+In-reply-to: <1419010766-13557-1-git-send-email-k.wrona@samsung.com>
+References: <1419010766-13557-1-git-send-email-k.wrona@samsung.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-Hello,
+This comment did not fit here.  It explains why devm_kmalloc
+uses dr_alloc.  Generally is not needed at all.
 
-iio kfifo alloc took one argument struct iio_dev * indio_dev which was not used 
-so it was removed in allocate function and in several drivers which used it.
-Second patch adds devm_ alloc/free.
+Signed-off-by: Karol Wrona <k.wrona@samsung.com>
+---
+ drivers/iio/industrialio-core.c |    1 -
+ 1 file changed, 1 deletion(-)
 
-Karol
-
-changes from RFC:
-- rebased on next-20141219
-- changes in clients
-- add minor doc fix to iio core
-
-
-Karol Wrona (3):
-  iio: kfifo: Remove unused argument in iio_kfifo_allocate
-  iio: kfifo: Add resource management devm_iio_kfifo_allocate/free
-  iio: core: Get rid of misleading comment
-
- drivers/iio/adc/ti_am335x_adc.c                 |    2 +-
- drivers/iio/industrialio-core.c                 |    1 -
- drivers/iio/industrialio-triggered-buffer.c     |    2 +-
- drivers/iio/kfifo_buf.c                         |   60 ++++++++++++++++++++++-
- drivers/staging/iio/accel/lis3l02dq_ring.c      |    2 +-
- drivers/staging/iio/iio_simple_dummy_buffer.c   |    2 +-
- drivers/staging/iio/impedance-analyzer/ad5933.c |    2 +-
- drivers/staging/iio/meter/ade7758_ring.c        |    2 +-
- include/linux/iio/kfifo_buf.h                   |    5 +-
- 9 files changed, 68 insertions(+), 10 deletions(-)
-
+diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+index af3e76d..1d030ae 100644
+--- a/drivers/iio/industrialio-core.c
++++ b/drivers/iio/industrialio-core.c
+@@ -1035,7 +1035,6 @@ struct iio_dev *devm_iio_device_alloc(struct device *dev, int sizeof_priv)
+ 	if (!ptr)
+ 		return NULL;
+ 
+-	/* use raw alloc_dr for kmalloc caller tracing */
+ 	iio_dev = iio_device_alloc(sizeof_priv);
+ 	if (iio_dev) {
+ 		*ptr = iio_dev;
 -- 
 1.7.9.5
