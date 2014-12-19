@@ -9,66 +9,79 @@ Cc: linux-kernel@vger.kernel.org,
 	Lars-Peter Clausen <lars@metafoo.de>,
 	Peter Meerwald <pmeerw@pmeerw.net>,
 	Irina Tirdea <irina.tirdea@intel.com>
-Subject: [PATCH 4/8] iio: core: Introduce IO_CHAN_INFO_CALIBWEIGHT
-Date: Sat, 20 Dec 2014 00:57:55 +0200
-Message-Id: <1419029879-12024-5-git-send-email-irina.tirdea@intel.com>
+Subject: [PATCH 2/8] iio: core: Introduce DISTANCE channel type
+Date: Sat, 20 Dec 2014 00:57:53 +0200
+Message-Id: <1419029879-12024-3-git-send-email-irina.tirdea@intel.com>
 In-Reply-To: <1419029879-12024-1-git-send-email-irina.tirdea@intel.com>
 References: <1419029879-12024-1-git-send-email-irina.tirdea@intel.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-Some devices need the weight of the user to compute other
-parameters. One of this devices is Freescale's MMA9553L
+Some devices export an estimation of the distance the user has covered
+since the last reset.
+
+One of this devices is Freescale's MMA9553L
 (http://www.freescale.com/files/sensors/doc/ref_manual/MMA9553LSWRM.pdf)
-that needs the weight of the user to compute the number of calories burnt.
+that computes the distance based on the stride length and step rate.
+
+Introduce a new channel type DISTANCE to export these values.
 
 Signed-off-by: Irina Tirdea <irina.tirdea@intel.com>
 ---
- Documentation/ABI/testing/sysfs-bus-iio |    7 +++++++
+ Documentation/ABI/testing/sysfs-bus-iio |    9 +++++++++
  drivers/iio/industrialio-core.c         |    1 +
- include/linux/iio/iio.h                 |    1 +
- 3 files changed, 9 insertions(+)
+ include/linux/iio/types.h               |    1 +
+ 3 files changed, 11 insertions(+)
 
 diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
-index 07acef7..e480175 100644
+index bb9342b..a5c1dcc 100644
 --- a/Documentation/ABI/testing/sysfs-bus-iio
 +++ b/Documentation/ABI/testing/sysfs-bus-iio
-@@ -351,6 +351,13 @@ Description:
- 		to compute the stride length, distance, speed and activity
- 		type.
+@@ -283,6 +283,7 @@ What:		/sys/bus/iio/devices/iio:deviceX/in_accel_scale
+ What:		/sys/bus/iio/devices/iio:deviceX/in_accel_peak_scale
+ What:		/sys/bus/iio/devices/iio:deviceX/in_anglvel_scale
+ What:		/sys/bus/iio/devices/iio:deviceX/in_calories_scale
++What:		/sys/bus/iio/devices/iio:deviceX/in_distance_scale
+ What:		/sys/bus/iio/devices/iio:deviceX/in_magn_scale
+ What:		/sys/bus/iio/devices/iio:deviceX/in_magn_x_scale
+ What:		/sys/bus/iio/devices/iio:deviceX/in_magn_y_scale
+@@ -1058,6 +1059,14 @@ Description:
+ 		This attribute is used to read the number of calories burned since the last
+ 		reset. Units after application of scale are Joules.
  
-+What:		/sys/bus/iio/devices/iio:deviceX/in_steps_calibweight
-+KernelVersion:	3.19
++What:		/sys/.../iio:deviceX/in_distance_input
++What:		/sys/.../iio:deviceX/in_distance_raw
++KernelVersion:	3.17
 +Contact:	linux-iio@vger.kernel.org
 +Description:
-+		Weight of the user (in kg). It is needed by some pedometers
-+		to compute the calories burnt by the user.
++		This attribute is used to read the distance covered by the user since
++		the last reboot while activated. Units after application of scale are meters.
 +
- What:		/sys/bus/iio/devices/iio:deviceX/in_accel_scale_available
- What:		/sys/.../iio:deviceX/in_voltageX_scale_available
- What:		/sys/.../iio:deviceX/in_voltage-voltage_scale_available
+ What:		/sys/bus/iio/devices/iio:deviceX/store_eeprom
+ KernelVersion:	3.4.0
+ Contact:	linux-iio@vger.kernel.org
 diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
-index 5e50aca..4c435c8 100644
+index 5d95e84..4a10d31 100644
 --- a/drivers/iio/industrialio-core.c
 +++ b/drivers/iio/industrialio-core.c
-@@ -124,6 +124,7 @@ static const char * const iio_chan_info_postfix[] = {
- 	[IIO_CHAN_INFO_INT_TIME] = "integration_time",
- 	[IIO_CHAN_INFO_ENABLE] = "en",
- 	[IIO_CHAN_INFO_CALIBHEIGHT] = "calibheight",
-+	[IIO_CHAN_INFO_CALIBWEIGHT] = "calibweight",
+@@ -73,6 +73,7 @@ static const char * const iio_chan_type_name_spec[] = {
+ 	[IIO_ACTIVITY] = "activity",
+ 	[IIO_STEPS] = "steps",
+ 	[IIO_CALORIES] = "calories",
++	[IIO_DISTANCE] = "distance",
  };
  
- /**
-diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
-index 878d861..752a929 100644
---- a/include/linux/iio/iio.h
-+++ b/include/linux/iio/iio.h
-@@ -40,6 +40,7 @@ enum iio_chan_info_enum {
- 	IIO_CHAN_INFO_INT_TIME,
- 	IIO_CHAN_INFO_ENABLE,
- 	IIO_CHAN_INFO_CALIBHEIGHT,
-+	IIO_CHAN_INFO_CALIBWEIGHT,
+ static const char * const iio_modifier_names[] = {
+diff --git a/include/linux/iio/types.h b/include/linux/iio/types.h
+index d2fe930..b98f751 100644
+--- a/include/linux/iio/types.h
++++ b/include/linux/iio/types.h
+@@ -33,6 +33,7 @@ enum iio_chan_type {
+ 	IIO_ACTIVITY,
+ 	IIO_STEPS,
+ 	IIO_CALORIES,
++	IIO_DISTANCE,
  };
  
- enum iio_shared_by {
+ enum iio_modifier {
 -- 
 1.7.9.5
