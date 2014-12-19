@@ -9,79 +9,66 @@ Cc: linux-kernel@vger.kernel.org,
 	Lars-Peter Clausen <lars@metafoo.de>,
 	Peter Meerwald <pmeerw@pmeerw.net>,
 	Irina Tirdea <irina.tirdea@intel.com>
-Subject: [PATCH 3/8] iio: core: Introduce SPEED channel type
-Date: Sat, 20 Dec 2014 00:57:54 +0200
-Message-Id: <1419029879-12024-4-git-send-email-irina.tirdea@intel.com>
+Subject: [PATCH 4/8] iio: core: Introduce IO_CHAN_INFO_CALIBWEIGHT
+Date: Sat, 20 Dec 2014 00:57:55 +0200
+Message-Id: <1419029879-12024-5-git-send-email-irina.tirdea@intel.com>
 In-Reply-To: <1419029879-12024-1-git-send-email-irina.tirdea@intel.com>
 References: <1419029879-12024-1-git-send-email-irina.tirdea@intel.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-Some devices export the current speed value of the user.
-
-One of this devices is Freescale's MMA9553L
+Some devices need the weight of the user to compute other
+parameters. One of this devices is Freescale's MMA9553L
 (http://www.freescale.com/files/sensors/doc/ref_manual/MMA9553LSWRM.pdf)
-that computes the speed of the user based on the number of steps and
-stride length.
-
-Introduce a new channel type SPEED to export these values.
+that needs the weight of the user to compute the number of calories burnt.
 
 Signed-off-by: Irina Tirdea <irina.tirdea@intel.com>
 ---
- Documentation/ABI/testing/sysfs-bus-iio |    9 +++++++++
+ Documentation/ABI/testing/sysfs-bus-iio |    7 +++++++
  drivers/iio/industrialio-core.c         |    1 +
- include/linux/iio/types.h               |    1 +
- 3 files changed, 11 insertions(+)
+ include/linux/iio/iio.h                 |    1 +
+ 3 files changed, 9 insertions(+)
 
 diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
-index a5c1dcc..07acef7 100644
+index 07acef7..e480175 100644
 --- a/Documentation/ABI/testing/sysfs-bus-iio
 +++ b/Documentation/ABI/testing/sysfs-bus-iio
-@@ -295,6 +295,7 @@ What:		/sys/bus/iio/devices/iio:deviceX/in_rot_from_north_true_tilt_comp_scale
- What:		/sys/bus/iio/devices/iio:deviceX/in_pressureY_scale
- What:		/sys/bus/iio/devices/iio:deviceX/in_pressure_scale
- What:		/sys/bus/iio/devices/iio:deviceX/in_humidityrelative_scale
-+What:		/sys/bus/iio/devices/iio:deviceX/in_speed_scale
- KernelVersion:	2.6.35
- Contact:	linux-iio@vger.kernel.org
- Description:
-@@ -1146,6 +1147,14 @@ Description:
- 		present, output should be considered as processed with the
- 		unit in milliamps.
+@@ -351,6 +351,13 @@ Description:
+ 		to compute the stride length, distance, speed and activity
+ 		type.
  
-+What:		/sys/.../iio:deviceX/in_speed_input
-+What:		/sys/.../iio:deviceX/in_speed_raw
++What:		/sys/bus/iio/devices/iio:deviceX/in_steps_calibweight
 +KernelVersion:	3.19
 +Contact:	linux-iio@vger.kernel.org
 +Description:
-+		This attribute is used to read the current speed value of the user.
-+		Units after application of scale are m/s.
++		Weight of the user (in kg). It is needed by some pedometers
++		to compute the calories burnt by the user.
 +
- What:		/sys/.../iio:deviceX/in_steps_en
- KernelVersion:	3.19
- Contact:	linux-iio@vger.kernel.org
+ What:		/sys/bus/iio/devices/iio:deviceX/in_accel_scale_available
+ What:		/sys/.../iio:deviceX/in_voltageX_scale_available
+ What:		/sys/.../iio:deviceX/in_voltage-voltage_scale_available
 diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
-index 4a10d31..5e50aca 100644
+index 5e50aca..4c435c8 100644
 --- a/drivers/iio/industrialio-core.c
 +++ b/drivers/iio/industrialio-core.c
-@@ -74,6 +74,7 @@ static const char * const iio_chan_type_name_spec[] = {
- 	[IIO_STEPS] = "steps",
- 	[IIO_CALORIES] = "calories",
- 	[IIO_DISTANCE] = "distance",
-+	[IIO_SPEED] = "speed",
+@@ -124,6 +124,7 @@ static const char * const iio_chan_info_postfix[] = {
+ 	[IIO_CHAN_INFO_INT_TIME] = "integration_time",
+ 	[IIO_CHAN_INFO_ENABLE] = "en",
+ 	[IIO_CHAN_INFO_CALIBHEIGHT] = "calibheight",
++	[IIO_CHAN_INFO_CALIBWEIGHT] = "calibweight",
  };
  
- static const char * const iio_modifier_names[] = {
-diff --git a/include/linux/iio/types.h b/include/linux/iio/types.h
-index b98f751..c848f45 100644
---- a/include/linux/iio/types.h
-+++ b/include/linux/iio/types.h
-@@ -34,6 +34,7 @@ enum iio_chan_type {
- 	IIO_STEPS,
- 	IIO_CALORIES,
- 	IIO_DISTANCE,
-+	IIO_SPEED,
+ /**
+diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
+index 878d861..752a929 100644
+--- a/include/linux/iio/iio.h
++++ b/include/linux/iio/iio.h
+@@ -40,6 +40,7 @@ enum iio_chan_info_enum {
+ 	IIO_CHAN_INFO_INT_TIME,
+ 	IIO_CHAN_INFO_ENABLE,
+ 	IIO_CHAN_INFO_CALIBHEIGHT,
++	IIO_CHAN_INFO_CALIBWEIGHT,
  };
  
- enum iio_modifier {
+ enum iio_shared_by {
 -- 
 1.7.9.5
