@@ -1,76 +1,66 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga01.intel.com ([192.55.52.88]:59357 "EHLO mga01.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751187AbaLTV3O (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Sat, 20 Dec 2014 16:29:14 -0500
-From: "Pandruvada, Srinivas" <srinivas.pandruvada@intel.com>
-To: "Baluta, Daniel" <daniel.baluta@intel.com>
-CC: "lars@metafoo.de" <lars@metafoo.de>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"knaack.h@gmx.de" <knaack.h@gmx.de>,
-	"jic23@kernel.org" <jic23@kernel.org>,
-	"Purdila, Octavian" <octavian.purdila@intel.com>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"Westerberg, Mika" <mika.westerberg@intel.com>,
-	"pmeerw@pmeerw.net" <pmeerw@pmeerw.net>,
-	"beomho.seo@samsung.com" <beomho.seo@samsung.com>,
-	"gwendal@chromium.org" <gwendal@chromium.org>
-Subject: Re: [RFC PATCH] iio: ak8975: Make sure chipset is always initialized
-Date: Sat, 20 Dec 2014 21:29:12 +0000
-Message-ID: <1419110952.2843.8.camel@spandruv-hsb-test>
-References: <1418923002-901-1-git-send-email-daniel.baluta@intel.com>
-	 <5494A3D6.60607@gmx.de>
-	 <CAEnQRZABxH5MuWEnS=RHmQqGUN0QhFTtXxnM1uyrLxvP2a-Rmg@mail.gmail.com>
-	 <1419110796.2843.6.camel@spandruv-hsb-test>
-In-Reply-To: <1419110796.2843.6.camel@spandruv-hsb-test>
-Content-Type: text/plain; charset="utf-8"
-MIME-Version: 1.0
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <rickard_strandqvist@spectrumdigital.se>
+From: Rickard Strandqvist <rickard_strandqvist@spectrumdigital.se>
+To: Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>
+Cc: Rickard Strandqvist <rickard_strandqvist@spectrumdigital.se>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Murilo Opsfelder Araujo <mopsfelder@gmail.com>,
+	linux-iio@vger.kernel.org,
+	devel@driverdev.osuosl.org,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH] staging: iio: accel: sca3000_core.c:  Remove unused function
+Date: Sat, 20 Dec 2014 15:53:07 +0100
+Message-Id: <1419087187-4250-1-git-send-email-rickard_strandqvist@spectrumdigital.se>
+List-ID: <linux-iio@vger.kernel.org>
 
-K01pa2ENCg0KT24gU2F0LCAyMDE0LTEyLTIwIGF0IDEzOjI2IC0wODAwLCBTcmluaXZhcyBQYW5k
-cnV2YWRhIHdyb3RlOg0KPiBPbiBTYXQsIDIwMTQtMTItMjAgYXQgMDA6MjUgKzAyMDAsIERhbmll
-bCBCYWx1dGEgd3JvdGU6DQo+ID4gT24gU2F0LCBEZWMgMjAsIDIwMTQgYXQgMTI6MTYgQU0sIEhh
-cnRtdXQgS25hYWNrIDxrbmFhY2suaEBnbXguZGU+IHdyb3RlOg0KPiA+ID4gRGFuaWVsIEJhbHV0
-YSBzY2hyaWViIGFtIDE4LjEyLjIwMTQgdW0gMTg6MTY6DQo+ID4gPj4gV2hlbiB1c2luZyBBQ1BJ
-LCBpZiBhY3BpX21hdGNoX2RldmljZSBmYWlscyB0aGVuIGNoaXBzZXQgZW51bSB3aWxsIGJlDQo+
-ID4gPj4gdW5pbml0aWFsaXplZCBhbmQgJmFrX2RlZl9hcnJheVtjaGlwc2V0XSB3aWxsIHBvaW50
-IHRvIHNvbWUgYmFkIGFkZHJlc3MuDQo+ID4gPj4NCj4gSSBhbSBtaXNzaW5nIHNvbWV0aGluZy4g
-WW91IGFyZSBlbnVtZXJhdGVkIG92ZXIgaTJjIGRldmljZSwgd2hpY2ggd2FzDQo+IGNyZWF0ZWQg
-ZnJvbSBBQ1BJIFBOUCByZXNvdXJjZS4gVGhlcmUgaXMgYSB2YWxpZCBoYW5kbGUgb3IgYW5kIHRo
-ZQ0KPiBkZXZpY2UgaGFzIGFuIEFDUEkgY29tcGFuaW9uIGF0IHRoZSBsZWFzdC4gSWYgdGhpcyBm
-YWlsaW5nLCBJIGhhdmUgdG8NCj4gY2hlY2sgdGhlIGNvZGUgZm9yIGFjcGkgaTJjLg0KPiBDYW4g
-eW91IGNoZWNrIHdoeSB0aGlzIGNoZWNrIGZhaWxlZD8gV2UgbWF5IGhhdmUgYnVnIGluIGkyYyBo
-YW5kbGluZy4NCj4gDQo+IFRoYW5rcywNCj4gU3Jpbml2YXMNCj4gDQo+ID4gPj4gVGhpcyBmaXhl
-cyB0aGUgZm9sbG93aW5nIGNvbXBpbGF0aW9uIHdhcm5pbmc6DQo+ID4gPj4NCj4gPiA+PiBkcml2
-ZXJzL2lpby9tYWduZXRvbWV0ZXIvYWs4OTc1LmM6IEluIGZ1bmN0aW9uIOKAmGFrODk3NV9wcm9i
-ZeKAmToNCj4gPiA+PiBkcml2ZXJzL2lpby9tYWduZXRvbWV0ZXIvYWs4OTc1LmM6Nzg4OjE0OiB3
-YXJuaW5nOiDigJhjaGlwc2V04oCZIG1heSBiZSB1c2VkDQo+ID4gPj4gdW5pbml0aWFsaXplZCBp
-biB0aGlzIGZ1bmN0aW9uIFstV21heWJlLXVuaW5pdGlhbGl6ZWRdDQo+ID4gPj4gICBkYXRhLT5k
-ZWYgPWFrX2RlZl9hcnJheVtjaGlwc2V0XTsNCj4gPiA+Pg0KPiA+ID4+IFJlcG9ydGVkLWJ5OiBP
-Y3RhdmlhbiBQdXJkaWxhIDxvY3Rhdmlhbi5wdXJkaWxhQGludGVsLmNvbT4NCj4gPiA+PiBTaWdu
-ZWQtb2ZmLWJ5OiBEYW5pZWwgQmFsdXRhIDxkYW5pZWwuYmFsdXRhQGludGVsLmNvbT4NCj4gPiA+
-PiAtLS0NCj4gPiA+PiBUaGlzIGlzIGEgUkZDIGJlY2F1c2Ugd2hpbGUgSSdtIHByZXR0eSBzdXJl
-IHRoYXQgY2hpcHNldCBzaG91bGQgYmUgaW5pdGlhbGl6ZWQNCj4gPiA+PiB3aXRoIEFLX01BWF9U
-WVBFIGluIGFrODk3NV9tYXRjaF9hY3BpX2RldmljZSwgSSBhbSBub3Qgc3VyZSBpZiB3ZSBjYW4g
-bGl2ZSB3aXRoDQo+ID4gPj4gYSBOVUxMIHJldHVybiB2YWx1ZSBvZiBhazg5NzVfbWF0Y2hfYWNw
-aV9kZXZpY2UuIEN1cnJlbnQgaW1wbGVtZW50YXRpb24gaWdub3Jlcw0KPiA+ID4+IHJldHVybiB2
-YWx1ZSBvZiBhazg5NzVfbWF0Y2hfYWNwaV9kZXZpY2UuDQo+ID4gPiBUaGlzIHNlZW1zIHRvIGJl
-IHRoZSBhY3R1YWwgcHJvYmxlbTogdGhlc2UgX21hdGNoX2FjcGlfZGV2aWNlIGZ1bmN0aW9ucyBy
-ZXR1cm4NCj4gPiA+IE5VTEwgb24gZmFpbHVyZSwgYW5kIHRoaXMgc2hvdWxkIGJlIGNoZWNrZWQg
-Zm9yLg0KPiA+IA0KPiA+IE9rLCBzbyB0aGlzIHdvdWxkIGFjY2VwdGFibGU/DQo+ID4gDQo+ID4g
-ZGlmZiAtLWdpdCBhL2RyaXZlcnMvaWlvL21hZ25ldG9tZXRlci9hazg5NzUuYw0KPiA+IGIvZHJp
-dmVycy9paW8vbWFnbmV0b21ldGVyL2FrODk3NS5jDQo+ID4gaW5kZXggMGQxMGE0Yi4uNjhkOTll
-OSAxMDA2NDQNCj4gPiAtLS0gYS9kcml2ZXJzL2lpby9tYWduZXRvbWV0ZXIvYWs4OTc1LmMNCj4g
-PiArKysgYi9kcml2ZXJzL2lpby9tYWduZXRvbWV0ZXIvYWs4OTc1LmMNCj4gPiBAQCAtNzc2LDgg
-Kzc3Niw5IEBAIHN0YXRpYyBpbnQgYWs4OTc1X3Byb2JlKHN0cnVjdCBpMmNfY2xpZW50ICpjbGll
-bnQsDQo+ID4gICAgICAgICAgICAgICAgIG5hbWUgPSBpZC0+bmFtZTsNCj4gPiAgICAgICAgIH0g
-ZWxzZSBpZiAoQUNQSV9IQU5ETEUoJmNsaWVudC0+ZGV2KSkNCj4gPiAgICAgICAgICAgICAgICAg
-bmFtZSA9IGFrODk3NV9tYXRjaF9hY3BpX2RldmljZSgmY2xpZW50LT5kZXYsICZjaGlwc2V0KTsN
-Cj4gPiAtICAgICAgIGVsc2UNCj4gPiAtICAgICAgICAgICAgICAgcmV0dXJuIC1FTk9TWVM7DQo+
-ID4gKw0KPiA+ICsgICAgICAgaWYgKCFuYW1lKQ0KPiA+ICsgICAgICAgICAgICAgICByZXR1cm4g
-LUVOT0RFVjsNCj4gPiANCj4gPiANCj4gPiBJIHN0aWxsIGhhdmUgc29tZSBkb3VidHMgYWJvdXQg
-cmV0dXJuIGNvZGUgaW4gY2FzZSBvZiBlcnJvci4NCj4gPiANCj4gPiBGb3IgYWs4OTc1IHdlIHVz
-ZSAtRU5PU1lTLCBidXQgZm9yIGt4Y2prLTEwMTMgd2UgdXNlIC1FTk9ERVYuDQo+ID4gDQo+ID4g
-SSB3aWxsIHNlbmQgYSBwYXRjaCBhZnRlciB3ZSBjbGVhciB0aGlzIG91dC4NCj4gPiANCj4gPiB0
-aGFua3MsDQo+ID4gRGFuaWVsLg0KPiANCg0K
+Remove the function sca3000_check_status() that is not used anywhere.
+
+This was partially found by using a static code analysis program called cppcheck.
+
+Signed-off-by: Rickard Strandqvist <rickard_strandqvist@spectrumdigital.se>
+---
+ drivers/staging/iio/accel/sca3000_core.c |   27 ---------------------------
+ 1 file changed, 27 deletions(-)
+
+diff --git a/drivers/staging/iio/accel/sca3000_core.c b/drivers/staging/iio/accel/sca3000_core.c
+index e4e5639..655e34c 100644
+--- a/drivers/staging/iio/accel/sca3000_core.c
++++ b/drivers/staging/iio/accel/sca3000_core.c
+@@ -223,33 +223,6 @@ error_ret:
+ 	return ret;
+ }
+ 
+-#ifdef SCA3000_DEBUG
+-/**
+- * sca3000_check_status() check the status register
+- *
+- * Only used for debugging purposes
+- **/
+-static int sca3000_check_status(struct device *dev)
+-{
+-	int ret;
+-	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+-	struct sca3000_state *st = iio_priv(indio_dev);
+-
+-	mutex_lock(&st->lock);
+-	ret = sca3000_read_data_short(st, SCA3000_REG_ADDR_STATUS, 1);
+-	if (ret < 0)
+-		goto error_ret;
+-	if (st->rx[0] & SCA3000_EEPROM_CS_ERROR)
+-		dev_err(dev, "eeprom error\n");
+-	if (st->rx[0] & SCA3000_SPI_FRAME_ERROR)
+-		dev_err(dev, "Previous SPI Frame was corrupt\n");
+-
+-error_ret:
+-	mutex_unlock(&st->lock);
+-	return ret;
+-}
+-#endif /* SCA3000_DEBUG */
+-
+ /**
+  * sca3000_show_rev() - sysfs interface to read the chip revision number
+  **/
+-- 
+1.7.10.4
