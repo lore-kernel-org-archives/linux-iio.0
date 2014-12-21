@@ -1,312 +1,214 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga02.intel.com ([134.134.136.20]:29125 "EHLO mga02.intel.com"
+Received: from mga14.intel.com ([192.55.52.115]:15551 "EHLO mga14.intel.com"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1752368AbaLUAqy (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Sat, 20 Dec 2014 19:46:54 -0500
+	id S1752572AbaLUAoq (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Sat, 20 Dec 2014 19:44:46 -0500
 From: Octavian Purdila <octavian.purdila@intel.com>
 To: linux-iio@vger.kernel.org
 Cc: Octavian Purdila <octavian.purdila@intel.com>
-Subject: [PATCH v2 09/11] iio: bmc150: introduce bmc150_accel_trigger
-Date: Sun, 21 Dec 2014 02:42:34 +0200
-Message-Id: <1419122556-8100-10-git-send-email-octavian.purdila@intel.com>
+Subject: [PATCH v2 04/11] iio: add support for hardware fifo
+Date: Sun, 21 Dec 2014 02:42:29 +0200
+Message-Id: <1419122556-8100-5-git-send-email-octavian.purdila@intel.com>
 In-Reply-To: <1419122556-8100-1-git-send-email-octavian.purdila@intel.com>
 References: <1419122556-8100-1-git-send-email-octavian.purdila@intel.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Add a separate structure for triggers and add the infrastructure to
-support an arbitrary number of triggers. Each trigger is associated
-with an interrupt and has an enabled/disabled state.
+Some devices have hardware buffers that can store a number of samples
+for later consumption. Hardware usually provides interrupts to notify
+the processor when the fifo is full or when it has reached a certain
+threshold. This helps with reducing the number of interrupts to the
+host processor and thus it helps decreasing the power consumption.
+
+This patch adds support for hardware fifo to IIO by allowing the
+drivers to register operations for flushing the hadware fifo and
+setting the watermark level.
+
+A driver implementing hardware fifo support must also provide a
+watermark trigger which must contain "watermark" in its name.
 
 Signed-off-by: Octavian Purdila <octavian.purdila@intel.com>
 ---
- drivers/iio/accel/bmc150-accel.c | 174 ++++++++++++++++++++++-----------------
- 1 file changed, 100 insertions(+), 74 deletions(-)
+ Documentation/ABI/testing/sysfs-bus-iio | 22 +++++++++++++++++
+ drivers/iio/industrialio-buffer.c       | 44 ++++++++++++++++++++++++++++-----
+ include/linux/iio/iio.h                 | 17 +++++++++++++
+ 3 files changed, 77 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/iio/accel/bmc150-accel.c b/drivers/iio/accel/bmc150-accel.c
-index 7c905f6..cd2f5d9 100644
---- a/drivers/iio/accel/bmc150-accel.c
-+++ b/drivers/iio/accel/bmc150-accel.c
-@@ -156,14 +156,21 @@ struct bmc150_accel_interrupt {
- 	atomic_t users;
- };
- 
-+struct bmc150_accel_trigger {
-+	struct bmc150_accel_interrupt *intr;
-+	struct bmc150_accel_data *data;
-+	struct iio_trigger *indio_trig;
-+	bool enabled;
-+};
+diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
+index 7260f1f..6bb67ac 100644
+--- a/Documentation/ABI/testing/sysfs-bus-iio
++++ b/Documentation/ABI/testing/sysfs-bus-iio
+@@ -1152,3 +1152,25 @@ Description:
+ 		Poll will block until the watermark is reached.
+ 		Blocking read will wait until the minimum between the requested
+ 		read amount or the low water mark is available.
++		If the device has a hardware fifo this value is going to be used
++		for the hardware fifo watermark as well.
 +
- #define BMC150_ACCEL_INTERRUPTS		2
-+#define BMC150_ACCEL_TRIGGERS		2
- 
- struct bmc150_accel_data {
- 	struct i2c_client *client;
- 	struct bmc150_accel_interrupt interrupts[BMC150_ACCEL_INTERRUPTS];
--	struct iio_trigger *dready_trig;
--	struct iio_trigger *motion_trig;
- 	atomic_t active_intr;
-+	struct bmc150_accel_trigger triggers[BMC150_ACCEL_TRIGGERS];
- 	struct mutex mutex;
- 	s16 buffer[8];
- 	u8 bw_bits;
-@@ -171,8 +178,6 @@ struct bmc150_accel_data {
- 	u32 slope_thres;
- 	u32 range;
- 	int ev_enable_state;
--	bool dready_trigger_on;
--	bool motion_trigger_on;
- 	int64_t timestamp;
- 	const struct bmc150_accel_chip_info *chip_info;
- };
-@@ -799,11 +804,14 @@ static int bmc150_accel_validate_trigger(struct iio_dev *indio_dev,
- 				   struct iio_trigger *trig)
- {
- 	struct bmc150_accel_data *data = iio_priv(indio_dev);
-+	int i;
- 
--	if (data->dready_trig != trig && data->motion_trig != trig)
--		return -EINVAL;
-+	for (i = 0; i < BMC150_ACCEL_TRIGGERS; i++) {
-+		if (data->triggers[i].indio_trig == trig)
-+			return 0;
-+	}
- 
--	return 0;
-+	return -EINVAL;
++What:		/sys/bus/iio/devices/iio:deviceX/buffer/hwfifo-length
++KernelVersion:	3.20
++Contact:	linux-iio@vger.kernel.org
++Description:
++		A single positive integer specifying the maximum number of
++		samples that the hardware fifo has. If the device does not
++		support hardware fifo this is zero.
++		When a device supports hardware fifo it will expose a trigger
++		with the name that contains "watermark"
++		(e.g. i2c-BMC150A:00-watermark-dev0).
++		To use the hardware fifo the user must set an appropriate value
++		in the buffer/length and buffer/low_watermark entries and select
++		the watermark trigger. At that poin the hardware fifo will be
++		enabled and the samples will be collected in a hardware buffer.
++		When the number of samples in the hardware fifo reaches the
++		watermark level the watermark trigger is issued and data is
++		flushed to the devices buffer.
++		A hardware buffer flush will also be triggered when reading from
++		the device buffer and there is not enough data available.
+\ No newline at end of file
+diff --git a/drivers/iio/industrialio-buffer.c b/drivers/iio/industrialio-buffer.c
+index 7f74c7f..3da6d07 100644
+--- a/drivers/iio/industrialio-buffer.c
++++ b/drivers/iio/industrialio-buffer.c
+@@ -37,9 +37,17 @@ static bool iio_buffer_is_active(struct iio_buffer *buf)
+ 	return !list_empty(&buf->buffer_list);
  }
  
- static IIO_CONST_ATTR_SAMP_FREQ_AVAIL(
-@@ -975,12 +983,12 @@ err_read:
- 
- static int bmc150_accel_trig_try_reen(struct iio_trigger *trig)
+-static size_t iio_buffer_data_available(struct iio_buffer *buf)
++static bool iio_buffer_data_available(struct iio_dev *indio_dev,
++				      struct iio_buffer *buf, size_t required)
  {
--	struct iio_dev *indio_dev = iio_trigger_get_drvdata(trig);
--	struct bmc150_accel_data *data = iio_priv(indio_dev);
-+	struct bmc150_accel_trigger *t = iio_trigger_get_drvdata(trig);
-+	struct bmc150_accel_data *data = t->data;
- 	int ret;
- 
- 	/* new data interrupts don't need ack */
--	if (data->dready_trigger_on)
-+	if (t == &t->data->triggers[0])
- 		return 0;
- 
- 	mutex_lock(&data->mutex);
-@@ -1002,38 +1010,24 @@ static int bmc150_accel_trig_try_reen(struct iio_trigger *trig)
- static int bmc150_accel_data_rdy_trigger_set_state(struct iio_trigger *trig,
- 						   bool state)
- {
--	struct iio_dev *indio_dev = iio_trigger_get_drvdata(trig);
--	struct bmc150_accel_data *data = iio_priv(indio_dev);
-+	struct bmc150_accel_trigger *t = iio_trigger_get_drvdata(trig);
-+	struct bmc150_accel_data *data = t->data;
- 	int ret;
- 
- 	mutex_lock(&data->mutex);
- 
--	if (data->motion_trig == trig) {
--		if (data->motion_trigger_on == state) {
--			mutex_unlock(&data->mutex);
--			return 0;
--		}
--	} else {
--		if (data->dready_trigger_on == state) {
--			mutex_unlock(&data->mutex);
--			return 0;
--		}
-+	if (t->enabled == state) {
-+		mutex_unlock(&data->mutex);
-+		return 0;
- 	}
- 
--	if (data->motion_trig == trig)
--		ret = bmc150_accel_set_interrupt(data, &data->interrupts[1],
--						 state);
--	else
--		ret = bmc150_accel_set_interrupt(data, &data->interrupts[0],
--						 state);
-+	ret = bmc150_accel_set_interrupt(data, t->intr, state);
- 	if (ret < 0) {
- 		mutex_unlock(&data->mutex);
- 		return ret;
- 	}
--	if (data->motion_trig == trig)
--		data->motion_trigger_on = state;
--	else
--		data->dready_trigger_on = state;
+-	return buf->access->data_available(buf);
++	size_t avail = buf->access->data_available(buf);
 +
-+	t->enabled = state;
- 
- 	mutex_unlock(&data->mutex);
- 
-@@ -1073,7 +1067,7 @@ static irqreturn_t bmc150_accel_event_handler(int irq, void *private)
- 							IIO_EV_DIR_EITHER),
- 							data->timestamp);
- ack_intr_status:
--	if (!data->dready_trigger_on)
-+	if (!data->triggers[0].enabled)
- 		ret = i2c_smbus_write_byte_data(data->client,
- 					BMC150_ACCEL_REG_INT_RST_LATCH,
- 					BMC150_ACCEL_INT_MODE_LATCH_INT |
-@@ -1086,13 +1080,16 @@ static irqreturn_t bmc150_accel_data_rdy_trig_poll(int irq, void *private)
- {
- 	struct iio_dev *indio_dev = private;
- 	struct bmc150_accel_data *data = iio_priv(indio_dev);
-+	int i;
- 
- 	data->timestamp = iio_get_time_ns();
- 
--	if (data->dready_trigger_on)
--		iio_trigger_poll(data->dready_trig);
--	else if (data->motion_trigger_on)
--		iio_trigger_poll(data->motion_trig);
-+	for (i = 0; i < BMC150_ACCEL_TRIGGERS; i++) {
-+		if (data->triggers[i].enabled) {
-+			iio_trigger_poll(data->triggers[i].indio_trig);
-+			break;
-+		}
++	if (avail < required && indio_dev->hwfifo) {
++		indio_dev->hwfifo->flush(indio_dev);
++		avail = buf->access->data_available(buf);
 +	}
- 
- 	if (data->ev_enable_state)
- 		return IRQ_WAKE_THREAD;
-@@ -1144,6 +1141,68 @@ static int bmc150_accel_gpio_probe(struct i2c_client *client,
- 	return ret;
++
++	return avail >= required;
  }
  
-+static struct {
-+	int intr;
-+	const char *name;
-+} bmc150_accel_triggers[BMC150_ACCEL_TRIGGERS] = {
-+	{
-+		.intr = 0,
-+		.name = "%s-dev%d",
-+	},
-+	{
-+		.intr = 1,
-+		.name = "%s-any-motion-dev%d",
-+	},
-+};
-+
-+static void bmc150_accel_unregister_triggers(struct bmc150_accel_data *data,
-+					     int from)
-+{
-+	int i;
-+
-+	for (i = from; i >= 0; i++) {
-+		if (data->triggers[i].indio_trig) {
-+			iio_trigger_unregister(data->triggers[i].indio_trig);
-+			data->triggers[i].indio_trig = NULL;
+ /**
+@@ -66,13 +74,13 @@ ssize_t iio_buffer_read_first_n_outer(struct file *filp, char __user *buf,
+ 
+ 	do {
+ 		if (filp->f_flags & O_NONBLOCK) {
+-			if (!iio_buffer_data_available(rb)) {
++			if (!iio_buffer_data_available(indio_dev, rb, 1)) {
+ 				ret = -EAGAIN;
+ 				break;
+ 			}
+ 		} else {
+ 			ret = wait_event_interruptible(rb->pollq,
+-			       iio_buffer_data_available(rb) >= to_read ||
++		            iio_buffer_data_available(indio_dev, rb, to_read) ||
+ 						       indio_dev->info == NULL);
+ 			if (ret)
+ 				return ret;
+@@ -112,7 +120,7 @@ unsigned int iio_buffer_poll(struct file *filp,
+ 		return -ENODEV;
+ 
+ 	poll_wait(filp, &rb->pollq, wait);
+-	if (iio_buffer_data_available(rb) >= rb->low_watermark)
++	if (iio_buffer_data_available(indio_dev, rb, rb->low_watermark))
+ 		return POLLIN | POLLRDNORM;
+ 	return 0;
+ }
+@@ -440,8 +448,14 @@ static ssize_t iio_buffer_write_length(struct device *dev,
+ 	if (buffer->length)
+ 		val = buffer->length;
+ 
+-	if (val < buffer->low_watermark)
++	if (val < buffer->low_watermark) {
++		if (indio_dev->hwfifo) {
++			ret = indio_dev->hwfifo->set_watermark(indio_dev, val);
++			if (ret)
++				return ret;
 +		}
+ 		buffer->low_watermark = val;
 +	}
-+}
-+
-+static int bmc150_accel_triggers_setup(struct iio_dev *indio_dev,
-+				       struct bmc150_accel_data *data)
-+{
-+	int i, ret;
-+
-+	for (i = 0; i < BMC150_ACCEL_TRIGGERS; i++) {
-+		struct bmc150_accel_trigger *t = &data->triggers[i];
-+		const char *name = bmc150_accel_triggers[i].name;
-+		int intr = bmc150_accel_triggers[i].intr;
-+
-+		t->indio_trig = devm_iio_trigger_alloc(&data->client->dev, name,
-+						       indio_dev->name,
-+						       indio_dev->id);
-+		if (!t->indio_trig) {
-+			ret = -ENOMEM;
-+			break;
-+		}
-+
-+		t->indio_trig->dev.parent = &data->client->dev;
-+		t->indio_trig->ops = &bmc150_accel_trigger_ops;
-+		t->intr = &data->interrupts[intr];
-+		t->data = data;
-+		iio_trigger_set_drvdata(t->indio_trig, t);
-+
-+		ret = iio_trigger_register(t->indio_trig);
+ 
+ 	return len;
+ }
+@@ -811,6 +825,12 @@ static ssize_t iio_buffer_store_watermark(struct device *dev,
+ 		goto out;
+ 	}
+ 
++	if (indio_dev->hwfifo) {
++		ret = indio_dev->hwfifo->set_watermark(indio_dev, val);
 +		if (ret)
-+			break;
++			goto out;
 +	}
 +
-+	if (ret)
-+		bmc150_accel_unregister_triggers(data, i - 1);
+ 	buffer->low_watermark = val;
+ 	ret = 0;
+ out:
+@@ -818,6 +838,16 @@ out:
+ 	return ret ? ret : len;
+ }
+ 
++ssize_t iio_buffer_hwfifo_read_length(struct device *dev,
++				      struct device_attribute *attr,
++				      char *buf)
++{
++	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
++	const struct iio_hwfifo *hwfifo = indio_dev->hwfifo;
 +
-+	return ret;
++	return sprintf(buf, "%u\n", hwfifo ? hwfifo->length : 0);
 +}
 +
- static int bmc150_accel_probe(struct i2c_client *client,
- 			      const struct i2c_device_id *id)
- {
-@@ -1214,36 +1273,10 @@ static int bmc150_accel_probe(struct i2c_client *client,
+ static DEVICE_ATTR(length, S_IRUGO | S_IWUSR, iio_buffer_read_length,
+ 		   iio_buffer_write_length);
+ static struct device_attribute dev_attr_length_ro = __ATTR(length,
+@@ -826,11 +856,13 @@ static DEVICE_ATTR(enable, S_IRUGO | S_IWUSR,
+ 		   iio_buffer_show_enable, iio_buffer_store_enable);
+ static DEVICE_ATTR(low_watermark, S_IRUGO | S_IWUSR,
+ 		   iio_buffer_show_watermark, iio_buffer_store_watermark);
++static DEVICE_ATTR(hwfifo_length, S_IRUGO, iio_buffer_hwfifo_read_length, NULL);
  
- 		bmc150_accel_interrupts_setup(indio_dev, data);
+ static struct attribute *iio_buffer_attrs[] = {
+ 	&dev_attr_length.attr,
+ 	&dev_attr_enable.attr,
+ 	&dev_attr_low_watermark.attr,
++	&dev_attr_hwfifo_length.attr,
+ };
  
--		data->dready_trig = devm_iio_trigger_alloc(&client->dev,
--							   "%s-dev%d",
--							   indio_dev->name,
--							   indio_dev->id);
--		if (!data->dready_trig)
--			return -ENOMEM;
--
--		data->motion_trig = devm_iio_trigger_alloc(&client->dev,
--							  "%s-any-motion-dev%d",
--							  indio_dev->name,
--							  indio_dev->id);
--		if (!data->motion_trig)
--			return -ENOMEM;
--
--		data->dready_trig->dev.parent = &client->dev;
--		data->dready_trig->ops = &bmc150_accel_trigger_ops;
--		iio_trigger_set_drvdata(data->dready_trig, indio_dev);
--		ret = iio_trigger_register(data->dready_trig);
-+		ret = bmc150_accel_triggers_setup(indio_dev, data);
- 		if (ret)
- 			return ret;
+ int iio_buffer_alloc_sysfs_and_mask(struct iio_dev *indio_dev)
+diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
+index 878d861..f64a05f 100644
+--- a/include/linux/iio/iio.h
++++ b/include/linux/iio/iio.h
+@@ -417,6 +417,22 @@ struct iio_buffer_setup_ops {
+ };
  
--		data->motion_trig->dev.parent = &client->dev;
--		data->motion_trig->ops = &bmc150_accel_trigger_ops;
--		iio_trigger_set_drvdata(data->motion_trig, indio_dev);
--		ret = iio_trigger_register(data->motion_trig);
--		if (ret) {
--			data->motion_trig = NULL;
--			goto err_trigger_unregister;
--		}
--
- 		ret = iio_triggered_buffer_setup(indio_dev,
- 						 &iio_pollfunc_store_time,
- 						 bmc150_accel_trigger_handler,
-@@ -1275,13 +1308,10 @@ static int bmc150_accel_probe(struct i2c_client *client,
- err_iio_unregister:
- 	iio_device_unregister(indio_dev);
- err_buffer_cleanup:
--	if (data->dready_trig)
-+	if (indio_dev->pollfunc)
- 		iio_triggered_buffer_cleanup(indio_dev);
- err_trigger_unregister:
--	if (data->dready_trig)
--		iio_trigger_unregister(data->dready_trig);
--	if (data->motion_trig)
--		iio_trigger_unregister(data->motion_trig);
-+	bmc150_accel_unregister_triggers(data, BMC150_ACCEL_TRIGGERS - 1);
+ /**
++ * struct iio_buffer_hwfifo_ops - hardware fifo operations
++ *
++ * @length:		[DRIVER] the hardware fifo length
++ * @set_watermark:	[DRIVER] setups the watermark level
++ * @flush:		[DRIVER] copies data from the hardware buffer to the
++ *		 	device buffer
++ * @watermark_trig:	[DRIVER] an allocated and registered trigger containing
++ *			"watermark" in its name
++ */
++struct iio_hwfifo {
++	int length;
++	int (*set_watermark)(struct iio_dev *, unsigned int);
++	int (*flush)(struct iio_dev *);
++};
++
++/**
+  * struct iio_dev - industrial I/O device
+  * @id:			[INTERN] used to identify device internally
+  * @modes:		[DRIVER] operating modes supported by device
+@@ -491,6 +507,7 @@ struct iio_dev {
+ 	int				groupcounter;
  
- 	return ret;
- }
-@@ -1297,11 +1327,7 @@ static int bmc150_accel_remove(struct i2c_client *client)
- 
- 	iio_device_unregister(indio_dev);
- 
--	if (data->dready_trig) {
--		iio_triggered_buffer_cleanup(indio_dev);
--		iio_trigger_unregister(data->dready_trig);
--		iio_trigger_unregister(data->motion_trig);
--	}
-+	bmc150_accel_unregister_triggers(data, BMC150_ACCEL_TRIGGERS - 1);
- 
- 	mutex_lock(&data->mutex);
- 	bmc150_accel_set_mode(data, BMC150_ACCEL_SLEEP_MODE_DEEP_SUSPEND, 0);
+ 	unsigned long			flags;
++	const struct iio_hwfifo		*hwfifo;
+ #if defined(CONFIG_DEBUG_FS)
+ 	struct dentry			*debugfs_dentry;
+ 	unsigned			cached_reg_addr;
 -- 
 1.9.1
 
