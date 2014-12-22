@@ -14,47 +14,92 @@ Cc: festevam@gmail.com,
 	linux-iio@vger.kernel.org,
 	devicetree@vger.kernel.org,
 	Stefan Wahren <stefan.wahren@i2se.com>
-Subject: [PATCH 1/2] DT: mxs-lradc: fix ranges of ts properties
-Date: Mon, 22 Dec 2014 12:14:35 +0000
-Message-Id: <1419250476-2393-2-git-send-email-stefan.wahren@i2se.com>
+Subject: [PATCH 2/2] iio: mxs-lradc: check ranges of ts properties
+Date: Mon, 22 Dec 2014 12:14:36 +0000
+Message-Id: <1419250476-2393-3-git-send-email-stefan.wahren@i2se.com>
 In-Reply-To: <1419250476-2393-1-git-send-email-stefan.wahren@i2se.com>
 References: <1419250476-2393-1-git-send-email-stefan.wahren@i2se.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-This patch fixes off-by-one issues in the devicetree binding of
-mxs-lradc.
+The devicetree binding for mxs-lradc defines ranges for the
+touchscreen properties. In order to avoid unexpected behavior like
+division by zero, we better check these ranges during probe and
+abort in error case.
 
-According to the i.MX23 and i.MX28 reference manuals [1][2] the range of
-NUM_SAMPLES is 0..31, but property ave-ctrl is substracted by 1 before used.
-
-Considering all limitations the range of DELAY is 1..2047, but also
-property ave-delay is substracted by 1 before used.
-
-The patch has been suggested by Hartmut Knaack and Kristina Martsenko.
-
-[1] - http://cache.freescale.com/files/dsp/doc/ref_manual/IMX23RM.pdf
-[2] - http://cache.freescale.com/files/dsp/doc/ref_manual/MCIMX28RM.pdf
+Additionally this patch adds an important note from the reference
+manual about the range of sample delay.
 
 Signed-off-by: Stefan Wahren <stefan.wahren@i2se.com>
 ---
- .../bindings/staging/iio/adc/mxs-lradc.txt         |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/staging/iio/adc/mxs-lradc.c |   44 +++++++++++++++++++++++++++--------
+ 1 file changed, 34 insertions(+), 10 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/staging/iio/adc/mxs-lradc.txt b/Documentation/devicetree/bindings/staging/iio/adc/mxs-lradc.txt
-index ee05dc3..3075377 100644
---- a/Documentation/devicetree/bindings/staging/iio/adc/mxs-lradc.txt
-+++ b/Documentation/devicetree/bindings/staging/iio/adc/mxs-lradc.txt
-@@ -12,9 +12,9 @@ Optional properties:
-                                property is not present, then the touchscreen is
-                                disabled. 5 wires is valid for i.MX28 SoC only.
- - fsl,ave-ctrl: number of samples per direction to calculate an average value.
--                Allowed value is 1 ... 31, default is 4
-+                Allowed value is 1 ... 32, default is 4
- - fsl,ave-delay: delay between consecutive samples. Allowed value is
--                 1 ... 2047. It is used if 'fsl,ave-ctrl' > 1, counts at
-+                 2 ... 2048. It is used if 'fsl,ave-ctrl' > 1, counts at
-                  2 kHz and its default is 2 (= 1 ms)
- - fsl,settling: delay between plate switch to next sample. Allowed value is
-                 1 ... 2047. It counts at 2 kHz and its default is
+diff --git a/drivers/staging/iio/adc/mxs-lradc.c b/drivers/staging/iio/adc/mxs-lradc.c
+index f053535..990e945 100644
+--- a/drivers/staging/iio/adc/mxs-lradc.c
++++ b/drivers/staging/iio/adc/mxs-lradc.c
+@@ -436,7 +436,13 @@ static void mxs_lradc_setup_ts_channel(struct mxs_lradc *lradc, unsigned ch)
+ 	 */
+ 	mxs_lradc_reg_clear(lradc, LRADC_CH_VALUE_MASK, LRADC_CH(ch));
+ 
+-	/* prepare the delay/loop unit according to the oversampling count */
++	/* prepare the delay/loop unit according to the oversampling count
++	 *
++	 * from the datasheet:
++	 * "The DELAY fields in HW_LRADC_DELAY0, HW_LRADC_DELAY1,
++	 * HW_LRADC_DELAY2, and HW_LRADC_DELAY3 must be non-zero; otherwise,
++	 * the LRADC will not trigger the delay group."
++	 */
+ 	mxs_lradc_reg_wrt(lradc, LRADC_DELAY_TRIGGER(1 << ch) |
+ 		LRADC_DELAY_TRIGGER_DELAYS(0) |
+ 		LRADC_DELAY_LOOP(lradc->over_sample_cnt - 1) |
+@@ -1495,20 +1501,38 @@ static int mxs_lradc_probe_touchscreen(struct mxs_lradc *lradc,
+ 		return -EINVAL;
+ 	}
+ 
+-	lradc->over_sample_cnt = 4;
+-	ret = of_property_read_u32(lradc_node, "fsl,ave-ctrl", &adapt);
+-	if (ret == 0)
++	if (of_property_read_u32(lradc_node, "fsl,ave-ctrl", &adapt)) {
++		lradc->over_sample_cnt = 4;
++	} else {
++		if (adapt < 1 || adapt > 32) {
++			dev_err(lradc->dev, "Invalid sample count (%lu)\n",
++				adapt);
++			return -EINVAL;
++		}
+ 		lradc->over_sample_cnt = adapt;
++	}
+ 
+-	lradc->over_sample_delay = 2;
+-	ret = of_property_read_u32(lradc_node, "fsl,ave-delay", &adapt);
+-	if (ret == 0)
++	if (of_property_read_u32(lradc_node, "fsl,ave-delay", &adapt)) {
++		lradc->over_sample_delay = 2;
++	} else {
++		if (adapt < 2 || adapt > LRADC_DELAY_DELAY_MASK+1) {
++			dev_err(lradc->dev, "Invalid sample delay (%u)\n",
++				adapt);
++			return -EINVAL;
++		}
+ 		lradc->over_sample_delay = adapt;
++	}
+ 
+-	lradc->settling_delay = 10;
+-	ret = of_property_read_u32(lradc_node, "fsl,settling", &adapt);
+-	if (ret == 0)
++	if (of_property_read_u32(lradc_node, "fsl,settling", &adapt)) {
++		lradc->settling_delay = 10;
++	} else {
++		if (adapt < 1 || adapt > LRADC_DELAY_DELAY_MASK) {
++			dev_err(lradc->dev, "Invalid settling delay (%u)\n",
++				adapt);
++			return -EINVAL;
++		}
+ 		lradc->settling_delay = adapt;
++	}
+ 
+ 	return 0;
+ }
 -- 
 1.7.9.5
