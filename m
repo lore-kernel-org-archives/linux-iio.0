@@ -1,51 +1,59 @@
-Return-Path: <daniel.baluta@gmail.com>
+Return-Path: <Adam.Thomson.Opensource@diasemi.com>
+Message-ID: <31e922b50d9efa6c77bac258182e3d239ecef3f8.1419264383.git.Adam.Thomson.Opensource@diasemi.com>
+In-Reply-To: <cover.1419264383.git.Adam.Thomson.Opensource@diasemi.com>
+References: <cover.1419264383.git.Adam.Thomson.Opensource@diasemi.com>
+From: Adam Thomson <Adam.Thomson.Opensource@diasemi.com>
+Date: Mon, 22 Dec 2014 16:51:34 +0000
+Subject: [PATCH v5 7/7] MAINTAINERS: Include DA9150 files in Dialog Semiconductor
+ support list.
+To: Lee Jones <lee.jones@linaro.org>, Samuel Ortiz <sameo@linux.intel.com>,
+	Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
+	<linux-iio@vger.kernel.org>, Sebastian Reichel <sre@kernel.org>, Dmitry
+ Eremin-Solenikov <dbaryshkov@gmail.com>, David Woodhouse
+	<dwmw2@infradead.org>, <linux-pm@vger.kernel.org>, Rob Herring
+	<robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland
+	<mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar
+ Gala <galak@codeaurora.org>, Grant Likely <grant.likely@linaro.org>,
+	<devicetree@vger.kernel.org>, Andrew Morton <akpm@linux-foundation.org>, Joe
+ Perches <joe@perches.com>
+CC: <linux-kernel@vger.kernel.org>, <support.opensource@diasemi.com>
 MIME-Version: 1.0
-Sender: daniel.baluta@gmail.com
-In-Reply-To: <1418721107-5429-2-git-send-email-roberta.dobrescu@gmail.com>
-References: <1418721107-5429-1-git-send-email-roberta.dobrescu@gmail.com>
-	<1418721107-5429-2-git-send-email-roberta.dobrescu@gmail.com>
-Date: Tue, 23 Dec 2014 10:51:00 +0200
-Message-ID: <CAEnQRZDYT4wUb5uOkqPvkmZ5+Rs8O1TP2Z7mEhF9OeQTHY97gw@mail.gmail.com>
-Subject: Re: [PATCH 1/3] iio: frequency: Remove 'out of memory' message
-From: Daniel Baluta <daniel.baluta@intel.com>
-To: Roberta Dobrescu <roberta.dobrescu@gmail.com>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"octavian.purdila@intel.com" <octavian.purdila@intel.com>, Daniel Baluta <daniel.baluta@intel.com>,
-	Lars-Peter Clausen <lars@metafoo.de>, Michael.Hennerich@analog.com,
-	Hartmut Knaack <knaack.h@gmx.de>, Peter Meerwald <pmeerw@pmeerw.net>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain
 List-ID: <linux-iio@vger.kernel.org>
 
-On Tue, Dec 16, 2014 at 11:11 AM, Roberta Dobrescu
-<roberta.dobrescu@gmail.com> wrote:
-> This patch fixes the following checkpatch.pl warning:
-> WARNING: Possible unnecessary 'out of memory' message
->
-> Signed-off-by: Roberta Dobrescu <roberta.dobrescu@gmail.com>
-> ---
->  drivers/iio/frequency/adf4350.c | 4 +---
->  1 file changed, 1 insertion(+), 3 deletions(-)
->
-> diff --git a/drivers/iio/frequency/adf4350.c b/drivers/iio/frequency/adf4350.c
-> index 63a25d9..2b301eb 100644
-> --- a/drivers/iio/frequency/adf4350.c
-> +++ b/drivers/iio/frequency/adf4350.c
-> @@ -387,10 +387,8 @@ static struct adf4350_platform_data *adf4350_parse_dt(struct device *dev)
->         int ret;
->
->         pdata = devm_kzalloc(dev, sizeof(*pdata), GFP_KERNEL);
-> -       if (!pdata) {
-> -               dev_err(dev, "could not allocate memory for platform data\n");
-> +       if (!pdata)
->                 return NULL;
-> -       }
->
-Based on Harmut's review we can return ERR_PTR(-ENOMEM) here
-and then use IS_ERR and PTR_ERR inside adf4350_probe()
+Signed-off-by: Adam Thomson <Adam.Thomson.Opensource@diasemi.com>
+Acked-by: Lee Jones <lee.jones@linaro.org>
+---
+ MAINTAINERS | 4 ++++
+ 1 file changed, 4 insertions(+)
 
->         strncpy(&pdata->name[0], np->name, SPI_NAME_SIZE - 1);
->
+diff --git a/MAINTAINERS b/MAINTAINERS
+index ddb9ac8..bd83dfc 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -3084,12 +3084,15 @@ S:	Supported
+ F:	Documentation/hwmon/da90??
+ F:	drivers/gpio/gpio-da90??.c
+ F:	drivers/hwmon/da90??-hwmon.c
++F:	drivers/iio/adc/da91??-*.c
+ F:	drivers/input/misc/da90??_onkey.c
+ F:	drivers/input/touchscreen/da9052_tsi.c
+ F:	drivers/leds/leds-da90??.c
+ F:	drivers/mfd/da903x.c
+ F:	drivers/mfd/da90??-*.c
++F:	drivers/mfd/da91??-*.c
+ F:	drivers/power/da9052-battery.c
++F:	drivers/power/da91??-*.c
+ F:	drivers/regulator/da903x.c
+ F:	drivers/regulator/da9???-regulator.[ch]
+ F:	drivers/rtc/rtc-da90??.c
+@@ -3099,6 +3102,7 @@ F:	include/linux/mfd/da903x.h
+ F:	include/linux/mfd/da9052/
+ F:	include/linux/mfd/da9055/
+ F:	include/linux/mfd/da9063/
++F:	include/linux/mfd/da9150/
+ F:	include/sound/da[79]*.h
+ F:	sound/soc/codecs/da[79]*.[ch]
 
-thanks,
-Daniel.
+--
+1.9.3
