@@ -1,98 +1,59 @@
-Return-Path: <stefan.wahren@i2se.com>
-Date: Tue, 23 Dec 2014 23:45:59 +0100 (CET)
-From: Stefan Wahren <stefan.wahren@i2se.com>
-Reply-To: Stefan Wahren <stefan.wahren@i2se.com>
-To: Marek Vasut <marex@denx.de>
-Cc: kristina.martsenko@gmail.com, kernel@pengutronix.de, jic23@kernel.org,
-	pawel.moll@arm.com, knaack.h@gmx.de, ijc+devicetree@hellion.org.uk,
-	robh+dt@kernel.org, galak@codeaurora.org, festevam@gmail.com,
-	mark.rutland@arm.com, linux-iio@vger.kernel.org,
-	devicetree@vger.kernel.org
-Message-ID: <1197201553.616296.1419374759245.JavaMail.open-xchange@oxbaltgw02.schlund.de>
-In-Reply-To: <201412231437.22809.marex@denx.de>
-References: <1419250476-2393-1-git-send-email-stefan.wahren@i2se.com> <1419250476-2393-3-git-send-email-stefan.wahren@i2se.com> <201412231437.22809.marex@denx.de>
-Subject: Re: [PATCH 2/2] iio: mxs-lradc: check ranges of ts properties
+Return-Path: <lars@metafoo.de>
+Message-ID: <5499E299.2080305@metafoo.de>
+Date: Tue, 23 Dec 2014 22:46:01 +0100
+From: Lars-Peter Clausen <lars@metafoo.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+To: Hartmut Knaack <knaack.h@gmx.de>
+CC: Daniel Baluta <daniel.baluta@intel.com>,
+ Roberta Dobrescu <roberta.dobrescu@gmail.com>,
+ Jonathan Cameron <jic23@kernel.org>,
+ "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+ "octavian.purdila@intel.com" <octavian.purdila@intel.com>,
+ Michael.Hennerich@analog.com, Peter Meerwald <pmeerw@pmeerw.net>
+Subject: Re: [PATCH 1/3] iio: frequency: Remove 'out of memory' message
+References: <1418721107-5429-1-git-send-email-roberta.dobrescu@gmail.com> <1418721107-5429-2-git-send-email-roberta.dobrescu@gmail.com> <CAEnQRZDYT4wUb5uOkqPvkmZ5+Rs8O1TP2Z7mEhF9OeQTHY97gw@mail.gmail.com> <549930D1.9050600@metafoo.de> <5499CEB0.5020508@gmx.de>
+In-Reply-To: <5499CEB0.5020508@gmx.de>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 List-ID: <linux-iio@vger.kernel.org>
 
-Hi Marek,
-
-> Marek Vasut <marex@denx.de> hat am 23. Dezember 2014 um 14:37 geschrieben:
+On 12/23/2014 09:21 PM, Hartmut Knaack wrote:
+> Lars-Peter Clausen schrieb am 23.12.2014 um 10:07:
+>> On 12/23/2014 09:51 AM, Daniel Baluta wrote:
+>>> On Tue, Dec 16, 2014 at 11:11 AM, Roberta Dobrescu
+>>> <roberta.dobrescu@gmail.com> wrote:
+>>>> This patch fixes the following checkpatch.pl warning:
+>>>> WARNING: Possible unnecessary 'out of memory' message
+>>>>
+>>>> Signed-off-by: Roberta Dobrescu <roberta.dobrescu@gmail.com>
+>>>> ---
+>>>>    drivers/iio/frequency/adf4350.c | 4 +---
+>>>>    1 file changed, 1 insertion(+), 3 deletions(-)
+>>>>
+>>>> diff --git a/drivers/iio/frequency/adf4350.c b/drivers/iio/frequency/adf4350.c
+>>>> index 63a25d9..2b301eb 100644
+>>>> --- a/drivers/iio/frequency/adf4350.c
+>>>> +++ b/drivers/iio/frequency/adf4350.c
+>>>> @@ -387,10 +387,8 @@ static struct adf4350_platform_data *adf4350_parse_dt(struct device *dev)
+>>>>           int ret;
+>>>>
+>>>>           pdata = devm_kzalloc(dev, sizeof(*pdata), GFP_KERNEL);
+>>>> -       if (!pdata) {
+>>>> -               dev_err(dev, "could not allocate memory for platform data\n");
+>>>> +       if (!pdata)
+>>>>                   return NULL;
+>>>> -       }
+>>>>
+>>> Based on Harmut's review we can return ERR_PTR(-ENOMEM) here
+>>> and then use IS_ERR and PTR_ERR inside adf4350_probe()
+>>
+>> This patch is fine as it is. It removes the redundant error message. Every
+>> thing else should be done in a second patch.
 >
->
-> On Monday, December 22, 2014 at 01:14:36 PM, Stefan Wahren wrote:
-> [...]
->
-> Very minor coding style flub in this comment above. Multi-line comments should
-> start with /* and a newline after that ;-)
+> I can't follow on this one. From what I see, if memory allocation fails here,
+> we will get an appropriate error message here, and _probe will pass up -EINVAL,
+> causing a misleading error message. Where do you see redundancy?
 
-Thanks for your advice.
+Unless you pass __GFP_NOWARN to k*alloc it will print a error message on its 
+own if the allocation fails.
 
->
-> > + * from the datasheet:
-> > + * "The DELAY fields in HW_LRADC_DELAY0, HW_LRADC_DELAY1,
-> > + * HW_LRADC_DELAY2, and HW_LRADC_DELAY3 must be non-zero; otherwise,
-> > + * the LRADC will not trigger the delay group."
-> > + */
-> > mxs_lradc_reg_wrt(lradc, LRADC_DELAY_TRIGGER(1 << ch) |
-> > LRADC_DELAY_TRIGGER_DELAYS(0) |
-> > LRADC_DELAY_LOOP(lradc->over_sample_cnt - 1) |
-> > @@ -1495,20 +1501,38 @@ static int mxs_lradc_probe_touchscreen(struct
-> > mxs_lradc *lradc, return -EINVAL;
-> > }
-> >
-> > - lradc->over_sample_cnt = 4;
-> > - ret = of_property_read_u32(lradc_node, "fsl,ave-ctrl", &adapt);
-> > - if (ret == 0)
-> > + if (of_property_read_u32(lradc_node, "fsl,ave-ctrl", &adapt)) {
-> > + lradc->over_sample_cnt = 4;
-> > + } else {
-> > + if (adapt < 1 || adapt > 32) {
->
-> This is just an idea, but do we not have some kind of a
-> "of_property_read_u32_range()" thingie, which would include this kind of range
-> checking ? Would it be worth implementing such thing ? What do you think
-> please ?
-
-I never heard of such a function. I think it's not the best idea of mixing dt
-parsing and range checking in a general function.
-
-But this code does nearly the same thing 3 times. How about defining an array of
-property range structures:
-
-static const struct property_value_range mxs_lradc_properties[] = {
-	{
-		.name = "fsl,ave-ctrl",
-		.min_value = 1,
-		.max_value = 32,
-		.default_value = 4,
-	},
-	{
-		.name = "fsl,ave-delay",
-		.min_value = 2,
-		.max_value = LRADC_DELAY_DELAY_MASK+1,
-		.default_value = 2,
-	},
-	{
-		.name = "fsl,settling",
-		.min_value = 1,
-		.max_value = LRADC_DELAY_DELAY_MASK,
-		.default_value = 10,
-	},
-};
-
-and a local validate function for these optional parameters.
-
->
-> [...]
->
-> Otherwise,
->
-> Reviewed-by: Marek Vasut <marex@denx.de>
-
-Thanks
-
-Btw i found an error in the format strings :(
-
-Stefan
+- Lars
