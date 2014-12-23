@@ -1,106 +1,428 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:44035 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751392AbaLZJXT (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 26 Dec 2014 04:23:19 -0500
-Message-ID: <549D2905.4050801@kernel.org>
-Date: Fri, 26 Dec 2014 09:23:17 +0000
-From: Jonathan Cameron <jic23@kernel.org>
+Received: from mail-wi0-f176.google.com ([209.85.212.176]:58363 "EHLO
+	mail-wi0-f176.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1756362AbaLWPjR (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 23 Dec 2014 10:39:17 -0500
+Received: by mail-wi0-f176.google.com with SMTP id ex7so11179576wid.15
+        for <linux-iio@vger.kernel.org>; Tue, 23 Dec 2014 07:39:15 -0800 (PST)
+From: Manuel Stahl <thymythos@googlemail.com>
+Date: Tue, 23 Dec 2014 16:39:12 +0100
+Subject: [PATCH v7] iio: acpi: Add ACPI0008 ALS driver
+To: linux-iio@vger.kernel.org
+Cc: Jonathan Cameron <jic23@kernel.org>
+Message-Id: <1419349152.30443.0@smtp.gmail.com>
 MIME-Version: 1.0
-To: Stefan Wahren <stefan.wahren@i2se.com>
-CC: festevam@gmail.com, kristina.martsenko@gmail.com, knaack.h@gmx.de,
-	marex@denx.de, kernel@pengutronix.de, pawel.moll@arm.com,
-	ijc+devicetree@hellion.org.uk, robh+dt@kernel.org,
-	galak@codeaurora.org, mark.rutland@arm.com,
-	linux-iio@vger.kernel.org, devicetree@vger.kernel.org
-Subject: Re: [PATCH 2/2] iio: mxs-lradc: check ranges of ts properties
-References: <1419250476-2393-1-git-send-email-stefan.wahren@i2se.com> <1419250476-2393-3-git-send-email-stefan.wahren@i2se.com>
-In-Reply-To: <1419250476-2393-3-git-send-email-stefan.wahren@i2se.com>
-Content-Type: text/plain; charset=windows-1252
+Content-Type: text/plain; charset=utf-8; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 22/12/14 12:14, Stefan Wahren wrote:
-> The devicetree binding for mxs-lradc defines ranges for the
-> touchscreen properties. In order to avoid unexpected behavior like
-> division by zero, we better check these ranges during probe and
-> abort in error case.
-> 
-> Additionally this patch adds an important note from the reference
-> manual about the range of sample delay.
-> 
-> Signed-off-by: Stefan Wahren <stefan.wahren@i2se.com>
-> ---
->  drivers/staging/iio/adc/mxs-lradc.c |   44 +++++++++++++++++++++++++++--------
->  1 file changed, 34 insertions(+), 10 deletions(-)
-> 
-> diff --git a/drivers/staging/iio/adc/mxs-lradc.c b/drivers/staging/iio/adc/mxs-lradc.c
-> index f053535..990e945 100644
-> --- a/drivers/staging/iio/adc/mxs-lradc.c
-> +++ b/drivers/staging/iio/adc/mxs-lradc.c
-> @@ -436,7 +436,13 @@ static void mxs_lradc_setup_ts_channel(struct mxs_lradc *lradc, unsigned ch)
->  	 */
->  	mxs_lradc_reg_clear(lradc, LRADC_CH_VALUE_MASK, LRADC_CH(ch));
->  
-> -	/* prepare the delay/loop unit according to the oversampling count */
-> +	/* prepare the delay/loop unit according to the oversampling count
-> +	 *
-> +	 * from the datasheet:
-> +	 * "The DELAY fields in HW_LRADC_DELAY0, HW_LRADC_DELAY1,
-> +	 * HW_LRADC_DELAY2, and HW_LRADC_DELAY3 must be non-zero; otherwise,
-> +	 * the LRADC will not trigger the delay group."
-> +	 */
->  	mxs_lradc_reg_wrt(lradc, LRADC_DELAY_TRIGGER(1 << ch) |
->  		LRADC_DELAY_TRIGGER_DELAYS(0) |
->  		LRADC_DELAY_LOOP(lradc->over_sample_cnt - 1) |
-> @@ -1495,20 +1501,38 @@ static int mxs_lradc_probe_touchscreen(struct mxs_lradc *lradc,
->  		return -EINVAL;
->  	}
->  
-> -	lradc->over_sample_cnt = 4;
-> -	ret = of_property_read_u32(lradc_node, "fsl,ave-ctrl", &adapt);
-> -	if (ret == 0)
-> +	if (of_property_read_u32(lradc_node, "fsl,ave-ctrl", &adapt)) {
-> +		lradc->over_sample_cnt = 4;
-> +	} else {
-> +		if (adapt < 1 || adapt > 32) {
-> +			dev_err(lradc->dev, "Invalid sample count (%lu)\n",
-> +				adapt);
-> +			return -EINVAL;
-> +		}
->  		lradc->over_sample_cnt = adapt;
-> +	}
->  
-> -	lradc->over_sample_delay = 2;
-> -	ret = of_property_read_u32(lradc_node, "fsl,ave-delay", &adapt);
-> -	if (ret == 0)
-> +	if (of_property_read_u32(lradc_node, "fsl,ave-delay", &adapt)) {
-> +		lradc->over_sample_delay = 2;
-> +	} else {
-> +		if (adapt < 2 || adapt > LRADC_DELAY_DELAY_MASK+1) {
-please run checkpatch.pl over these.  Should be spaces around the +
-> +			dev_err(lradc->dev, "Invalid sample delay (%u)\n",
-> +				adapt);
-> +			return -EINVAL;
-> +		}
->  		lradc->over_sample_delay = adapt;
-> +	}
->  
-> -	lradc->settling_delay = 10;
-> -	ret = of_property_read_u32(lradc_node, "fsl,settling", &adapt);
-> -	if (ret == 0)
-> +	if (of_property_read_u32(lradc_node, "fsl,settling", &adapt)) {
-> +		lradc->settling_delay = 10;
-> +	} else {
-> +		if (adapt < 1 || adapt > LRADC_DELAY_DELAY_MASK) {
-> +			dev_err(lradc->dev, "Invalid settling delay (%u)\n",
-> +				adapt);
-> +			return -EINVAL;
-> +		}
->  		lradc->settling_delay = adapt;
-> +	}
->  
->  	return 0;
->  }
-> 
+Add basic implementation of the ACPI0008 Ambient Light Sensor driver.
+This driver currently supports only the ALI property, yet is ready to
+be easily extended to handle ALC, ALT, ALP ones as well.
+
+V2: Fix the channel mask, so it's really reading RAW data.
+V3: Put scan timestamp into the buffer only when enabled,
+     Set the light sensor ID to 0 instead of 1
+V4: Select IIO_TRIGGERED_BUFFER as we need it here
+V5: Use irq_work to trigger the buffer
+     Use module_acpi_driver()
+V6: Align with 3.15-rc7
+    Use iio_push_to_buffers_with_timestamp()
+    Use iio_trigger_set_drvdata()
+    Use .info_mask_separate
+    Use devm_iio_device_alloc()
+    Stuff the event buffer into struct acpi_als so we don't alloc mem 
+twice
+    Compute the evt_buffer size automatically based on 
+acpi_als_channels[]
+    Implement .validate_device() and .validate_trigger()
+    Tested on MacBook Air (Mid 2013) and Acer IconiaTab W510V2: Fix the 
+channel mask, so it's really reading RAW data.
+V3: Put scan timestamp into the buffer only when enabled,
+     Set the light sensor ID to 0 instead of 1
+V4: Select IIO_TRIGGERED_BUFFER as we need it here
+V5: Use irq_work to trigger the buffer
+     Use module_acpi_driver()
+V6: Align with 3.15-rc7
+    Use iio_push_to_buffers_with_timestamp()
+    Use iio_trigger_set_drvdata()
+    Use .info_mask_separate
+    Use devm_iio_device_alloc()
+    Stuff the event buffer into struct acpi_als so we don't alloc mem 
+twice
+    Compute the evt_buffer size automatically based on 
+acpi_als_channels[]
+    Implement .validate_device() and .validate_trigger()
+    Tested on MacBook Air (Mid 2013) and Acer IconiaTab W510
+V7: Remove IIO trigger support (As suggested by Jonathan)
+    Add enable function (needed on Zenbook)
+    Tested on Asus Zenbook UX301L
+
+diff -uprN a/drivers/iio/light/acpi-als.c b/drivers/iio/light/acpi-als.c
+--- a/drivers/iio/light/acpi-als.c	1970-01-01 01:00:00.000000000 +0100
++++ b/drivers/iio/light/acpi-als.c	2014-12-23 16:21:24.763821632 +0100
+@@ -0,0 +1,318 @@
++/*
++ * ACPI Ambient Light Sensor Driver
++ *
++ * Based on ALS driver:
++ * Copyright (C) 2009 Zhang Rui <rui.zhang@intel.com>
++ *
++ * Rework for IIO subsystem:
++ * Copyright (C) 2012-2013 Martin Liska <marxin.liska@gmail.com>
++ *
++ * Final cleanup and debugging:
++ * Copyright (C) 2013-2014 Marek Vasut <marex@denx.de>
++ * Copyright (C) 2014 Manuel Stahl <thymythos@googlemail.com>
++ *
++ * This program is free software; you can redistribute it and/or 
+modify it
++ * under the terms and conditions of the GNU General Public License,
++ * version 2, as published by the Free Software Foundation.
++ *
++ * This program is distributed in the hope it will be useful, but 
+WITHOUT
++ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY 
+or
++ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public 
+License for
++ * more details.
++ *
++ * You should have received a copy of the GNU General Public License
++ * along with this program. If not, see <http://www.gnu.org/licenses/>.
++ */
++
++#include <linux/module.h>
++#include <linux/acpi.h>
++#include <linux/err.h>
++#include <linux/mutex.h>
++
++#include <linux/iio/iio.h>
++#include <linux/iio/buffer.h>
++#include <linux/iio/kfifo_buf.h>
++
++#define ACPI_ALS_CLASS			"als"
++#define ACPI_ALS_DEVICE_NAME		"acpi-als"
++#define ACPI_ALS_NOTIFY_ILLUMINANCE	0x80
++
++ACPI_MODULE_NAME("acpi-als");
++
++/*
++ * So far, there's only one channel in here, but the specification for
++ * ACPI0008 says there can be more to what the block can report. Like
++ * chromaticity and such. We are ready for incoming additions!
++ */
++static const struct iio_chan_spec acpi_als_channels[] = {
++	{
++		.type		= IIO_LIGHT,
++		.scan_type	= {
++			.sign		= 'u',
++			.realbits	= 10,
++			.storagebits	= 16,
++		},
++		.info_mask_separate	= BIT(IIO_CHAN_INFO_RAW),
++	},
++};
++
++/*
++ * The event buffer contains timestamp and all the data from
++ * the ACPI0008 block. There are multiple, but so far we only
++ * support _ALI (illuminance). Once someone adds new channels
++ * to acpi_als_channels[], the evt_buffer below will grow
++ * automatically.
++ */
++#define EVT_NR_SOURCES		ARRAY_SIZE(acpi_als_channels)
++#define EVT_BUFFER_SIZE		\
++	(sizeof(int64_t) + (EVT_NR_SOURCES * sizeof(uint16_t)))
++
++struct acpi_als {
++	struct acpi_device	*device;
++	struct mutex		lock;
++
++	uint16_t		evt_buffer[EVT_BUFFER_SIZE];
++};
++
++/*
++ * All types of properties the ACPI0008 block can report. The ALI, 
+ALC, ALT
++ * and ALP can all be handled by als_read_value() below, while the ALR 
+is
++ * special.
++ *
++ * The _ALR property returns tables that can be used to fine-tune the 
+values
++ * reported by the other props based on the particular hardware type 
+and it's
++ * location (it contains tables for "rainy", "bright inhouse lighting" 
+etc.).
++ *
++ * So far, we support only ALI (illuminance).
++ */
++#define ACPI_ALS_ILLUMINANCE	"_ALI"
++#define ACPI_ALS_CHROMATICITY	"_ALC"
++#define ACPI_ALS_COLOR_TEMP	"_ALT"
++#define ACPI_ALS_POLLING	"_ALP"
++#define ACPI_ALS_TABLES		"_ALR"
++
++static int32_t als_read_value(struct acpi_als *als, char *prop)
++{
++	unsigned long long illuminance;
++	acpi_status status;
++
++	status = acpi_evaluate_integer(als->device->handle,
++				prop, NULL, &illuminance);
++
++	if (ACPI_FAILURE(status)) {
++		ACPI_EXCEPTION((AE_INFO, status,
++				"Error reading ALS illuminance"));
++		return -EIO;
++	}
++
++	return illuminance;
++}
++
++static void acpi_als_notify(struct acpi_device *device, u32 event)
++{
++	struct iio_dev *indio_dev = acpi_driver_data(device);
++	struct acpi_als *als = iio_priv(indio_dev);
++	uint16_t *buffer = als->evt_buffer;
++	int64_t time_ns = iio_get_time_ns();
++	int32_t val;
++
++	mutex_lock(&als->lock);
++
++	memset(buffer, 0, EVT_BUFFER_SIZE);
++
++	switch (event) {
++	case ACPI_ALS_NOTIFY_ILLUMINANCE:
++		val = als_read_value(als, ACPI_ALS_ILLUMINANCE);
++		if (val < 0)
++			goto err_ret;
++		*buffer++ = (uint16_t)val;
++		break;
++	default: /* Unhandled event */
++		dev_dbg(&device->dev, "Unhandled ACPI ALS event (%08x)!\n",
++			event);
++		goto err_ret;
++	}
++
++	iio_push_to_buffers_with_timestamp(indio_dev,
++					   (uint8_t *)als->evt_buffer,
++					   time_ns);
++
++err_ret:
++	mutex_unlock(&als->lock);
++}
++
++static int acpi_als_read_raw(struct iio_dev *indio_dev,
++			struct iio_chan_spec const *chan, int *val,
++			int *val2, long mask)
++{
++	struct acpi_als *als = iio_priv(indio_dev);
++
++	if (mask != IIO_CHAN_INFO_RAW)
++		return -EINVAL;
++
++	/* we support only illumination (_ALI) so far. */
++	if (chan->type != IIO_LIGHT)
++		return -EINVAL;
++
++	*val = als_read_value(als, ACPI_ALS_ILLUMINANCE);
++	if (*val < 0)
++		return *val;
++
++	return IIO_VAL_INT;
++}
++
++static acpi_handle acpi_handle_from_string(const char *str)
++{
++	acpi_handle handle;
++	acpi_status handle_status;
++
++	handle_status = acpi_get_handle(NULL, (acpi_string)str, &handle);
++	return ACPI_FAILURE(handle_status) ? NULL : handle;
++}
++
++static int acpi_als_enable(struct acpi_device *device, int enable)
++{
++	acpi_handle handle;
++	acpi_status result;
++	struct acpi_object_list arg;
++	union acpi_object param;
++
++	arg.count = 1;
++	arg.pointer = &param;
++	param.type = ACPI_TYPE_INTEGER;
++
++	handle = acpi_handle_from_string("\\_SB.PCI0.LPCB.EC0.TALS");
++	if (handle == NULL) {
++		dev_err(&device->dev, "unable to get handle for 
+\\_SB.PCI0.LPCB.EC0.TALS\n");
++		return -EIO;
++	}
++
++	param.integer.value = enable;
++	result = acpi_evaluate_object(handle, NULL, &arg, NULL);
++
++	if (enable) {
++		handle = acpi_handle_from_string("\\_SB.ATKD.ALSC");
++		if (handle == NULL) {
++			dev_err(&device->dev, "unable to get handle for 
+\\_SB.PCI0.LPCB.EC0.TALS\n");
++			return -EIO;
++		}
++		result = acpi_evaluate_object(handle, NULL, &arg, NULL);
++	}
++
++	return 0;
++}
++
++static int acpi_als_buffer_register(struct iio_dev *indio_dev)
++{
++	struct iio_buffer *buffer;
++	int ret;
++
++	buffer = iio_kfifo_allocate(indio_dev);
++	if (!buffer)
++		return -ENOMEM;
++
++	iio_device_attach_buffer(indio_dev, buffer);
++	indio_dev->modes |= INDIO_BUFFER_HARDWARE;
++
++	ret = iio_buffer_register(indio_dev,
++				  indio_dev->channels,
++				  indio_dev->num_channels);
++	if (ret)
++		goto error_kfifo_free;
++
++	return 0;
++
++error_kfifo_free:
++	iio_kfifo_free(indio_dev->buffer);
++	return ret;
++}
++
++static void acpi_als_buffer_unregister(struct iio_dev *indio_dev)
++{
++	iio_kfifo_free(indio_dev->buffer);
++	iio_buffer_unregister(indio_dev);
++}
++
++static const struct iio_info acpi_als_info = {
++	.driver_module		= THIS_MODULE,
++	.read_raw		= acpi_als_read_raw,
++};
++
++static int acpi_als_add(struct acpi_device *device)
++{
++	struct acpi_als *als;
++	struct iio_dev *indio_dev;
++	int ret;
++
++	indio_dev = devm_iio_device_alloc(&device->dev, sizeof(*als));
++	if (!indio_dev)
++		return -ENOMEM;
++
++	als = iio_priv(indio_dev);
++
++	device->driver_data = indio_dev;
++	als->device = device;
++	mutex_init(&als->lock);
++
++	indio_dev->name = ACPI_ALS_DEVICE_NAME;
++	indio_dev->dev.parent = &device->dev;
++	indio_dev->info = &acpi_als_info;
++	indio_dev->modes = INDIO_DIRECT_MODE;
++	indio_dev->channels = acpi_als_channels;
++	indio_dev->num_channels = ARRAY_SIZE(acpi_als_channels);
++
++	ret = acpi_als_enable(device, 1);
++	if (ret < 0)
++		return ret;
++
++	ret = acpi_als_buffer_register(indio_dev);
++	if (ret < 0)
++		return ret;
++
++	ret = iio_device_register(indio_dev);
++	if (ret < 0)
++		goto err_ret;
++
++	return 0;
++
++err_ret:
++	acpi_als_buffer_unregister(indio_dev);
++	return ret;
++}
++
++static int acpi_als_remove(struct acpi_device *device)
++{
++	struct iio_dev *indio_dev = acpi_driver_data(device);
++
++	iio_device_unregister(indio_dev);
++	acpi_als_buffer_unregister(indio_dev);
++	acpi_als_enable(device, 0);
++	return 0;
++}
++
++static const struct acpi_device_id acpi_als_device_ids[] = {
++	{"ACPI0008", 0},
++	{"", 0},
++};
++
++MODULE_DEVICE_TABLE(acpi, acpi_als_device_ids);
++
++static struct acpi_driver acpi_als_driver = {
++	.name	= "acpi_als",
++	.class	= ACPI_ALS_CLASS,
++	.ids	= acpi_als_device_ids,
++	.ops = {
++		.add	= acpi_als_add,
++		.remove	= acpi_als_remove,
++		.notify	= acpi_als_notify,
++	},
++};
++
++module_acpi_driver(acpi_als_driver);
++
++MODULE_AUTHOR("Zhang Rui <rui.zhang@intel.com>");
++MODULE_AUTHOR("Martin Liska <marxin.liska@gmail.com>");
++MODULE_AUTHOR("Marek Vasut <marex@denx.de>");
++MODULE_AUTHOR("Manuel Stahl <thymythos@googlemail.com>");
++MODULE_DESCRIPTION("ACPI Ambient Light Sensor Driver");
++MODULE_LICENSE("GPL");
+diff -uprN a/drivers/iio/light/Kconfig b/drivers/iio/light/Kconfig
+--- a/drivers/iio/light/Kconfig	2014-12-23 16:13:28.219815997 +0100
++++ b/drivers/iio/light/Kconfig	2014-12-23 16:23:34.275823164 +0100
+@@ -5,6 +5,17 @@
+
+ menu "Light sensors"
+
++config ACPI_ALS
++	tristate "ACPI Ambient Light Sensor"
++	depends on ACPI
++	select IIO_BUFFER
++	select IIO_KFIFO_BUF
++	help
++	 Support for the ACPI0008 Ambient Light Sensor.
++
++	 This driver can also be built as a module.  If so, the module
++	 will be called acpi-als.
++
+ config ADJD_S311
+ 	tristate "ADJD-S311-CR999 digital color sensor"
+ 	select IIO_BUFFER
+diff -uprN a/drivers/iio/light/Makefile b/drivers/iio/light/Makefile
+--- a/drivers/iio/light/Makefile	2014-12-23 16:13:03.575815706 +0100
++++ b/drivers/iio/light/Makefile	2014-12-23 15:11:18.923771897 +0100
+@@ -3,6 +3,7 @@
+ #
+
+ # When adding new entries keep the list in alphabetical order
++obj-$(CONFIG_ACPI_ALS)		+= acpi-als.o
+ obj-$(CONFIG_ADJD_S311)		+= adjd_s311.o
+ obj-$(CONFIG_APDS9300)		+= apds9300.o
+ obj-$(CONFIG_CM32181)		+= cm32181.o
+
+
 
