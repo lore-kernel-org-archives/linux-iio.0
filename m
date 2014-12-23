@@ -1,55 +1,39 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga01.intel.com ([192.55.52.88]:23058 "EHLO mga01.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751355AbaLSW3v (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Fri, 19 Dec 2014 17:29:51 -0500
-From: Irina Tirdea <irina.tirdea@intel.com>
-To: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org, Vlad Dogaru <vlad.dogaru@intel.com>,
-	Daniel Baluta <daniel.baluta@intel.com>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	Irina Tirdea <irina.tirdea@intel.com>
-Subject: [PATCH 0/8] Add MMA9553 driver & PM support for MMA9551
-Date: Sat, 20 Dec 2014 00:57:51 +0200
-Message-Id: <1419029879-12024-1-git-send-email-irina.tirdea@intel.com>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <daniel.baluta@intel.com>
+From: Daniel Baluta <daniel.baluta@intel.com>
+To: jic23@kernel.org,
+	knaack.h@gmx.de
+Cc: lars@metafoo.de,
+	pmeerw@pmeerw.net,
+	daniel.baluta@intel.com,
+	linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	srinivas.pandruvada@linux.intel.com
+Subject: [PATCH 00/10] iio: KMX61 fixes
+Date: Tue, 23 Dec 2014 15:22:23 +0200
+Message-Id: <1419340953-23161-1-git-send-email-daniel.baluta@intel.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-This set of patches includes changes for the MMA9551 and MMA9553 drivers:
-- add support for Freescale MMA9553L Intelligent Pedometer Platform
-(http://www.freescale.com/files/sensors/doc/ref_manual/MMA9553LSWRM.pdf)
-- add new iio channels for CALORIES, DISTANCE and SPEED needed by the pedometer
-- add IIO_CHAN_INFO_CALIBGENDER and IO_CHAN_INFO_CALIBWEIGHT needed to
-configure the pedometer
-- add runtime PM support for MMA9551
+This is a series of cleanups after Hartmut's review:
 
-Irina Tirdea (8):
-  iio: core: Introduce CALORIES channel type
-  iio: core: Introduce DISTANCE channel type
-  iio: core: Introduce SPEED channel type
-  iio: core: Introduce IO_CHAN_INFO_CALIBWEIGHT
-  iio: core: Introduce IIO_CHAN_INFO_CALIBGENDER
-  iio: accel: mma9551: Add runtime pm support
-  iio: accel: mma9551: split driver to expose mma955x api
-  iio: add driver for Freescale MMA9553
+	* http://marc.info/?l=linux-iio&m=141859700810393&w=2
+	* http://marc.info/?l=linux-iio&m=141859774010580&w=2
+	* http://marc.info/?l=linux-iio&m=141859828910703&w=2
+	* http://marc.info/?l=linux-kernel&m=141868557909385&w=2
 
- Documentation/ABI/testing/sysfs-bus-iio |   42 ++
- drivers/iio/accel/Kconfig               |   16 +
- drivers/iio/accel/Makefile              |    5 +-
- drivers/iio/accel/mma9551.c             |  488 +++---------
- drivers/iio/accel/mma9551_core.c        |  531 +++++++++++++
- drivers/iio/accel/mma9551_core.h        |   89 +++
- drivers/iio/accel/mma9553.c             | 1239 +++++++++++++++++++++++++++++++
- drivers/iio/industrialio-core.c         |    5 +
- include/linux/iio/iio.h                 |    2 +
- include/linux/iio/types.h               |    3 +
- 10 files changed, 2015 insertions(+), 405 deletions(-)
- create mode 100644 drivers/iio/accel/mma9551_core.c
- create mode 100644 drivers/iio/accel/mma9551_core.h
- create mode 100644 drivers/iio/accel/mma9553.c
+Daniel Baluta (10):
+  iio: imu: kmx61: Save odr_bits for later use
+  iio: imu: kmx61: Don't ignore kmx61_set_power_state errors
+  iio: imu: kmx61: Enhance error handling
+  iio: imu: kmx61: Fixup parameters alignment
+  iio: imu: kmx61: Drop unused device parameter
+  iio: imu: kmx61: Use false instead of 0 for ev_enable_state
+  iio: imu: kmx61: Fix device initialization when setting trigger state
+  iio: imu: kmx61: Remove unnecessary REG_INS1 read
+  iio: imu: kmx61: Drop odr_bits from kmx61_samp_freq_table
+  iio: imu: kmx61: Use correct base when reading data
+
+ drivers/iio/imu/kmx61.c | 216 ++++++++++++++++++++++--------------------------
+ 1 file changed, 101 insertions(+), 115 deletions(-)
 
 -- 
-1.7.9.5
-
+1.9.1
