@@ -1,195 +1,104 @@
-Return-Path: <vigneshr@ti.com>
-From: Vignesh R <vigneshr@ti.com>
-To: Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Lee Jones
-	<lee.jones@linaro.org>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-CC: Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>,
-        Mark
- Rutland <mark.rutland@arm.com>,
-        Ian Campbell <ijc+devicetree@hellion.org.uk>,
-        Kumar Gala <galak@codeaurora.org>,
-        Benoit Cousson <bcousson@baylibre.com>,
-        Tony Lindgren <tony@atomide.com>,
-        Russell King <linux@arm.linux.org.uk>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald <pmeerw@pmeerw.net>,
-        Samuel Ortiz <sameo@linux.intel.com>, Brad Griffis <bgriffis@ti.com>,
-        Paul
- Gortmaker <paul.gortmaker@windriver.com>,
-        Sanjeev Sharma
-	<sanjeev_sharma@mentor.com>,
-        Jan Kardell <jan.kardell@telliq.com>, Felipe
- Balbi <balbi@ti.com>,
-        Wolfram Sang <wsa@the-dreams.de>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <linux-omap@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>, <linux-iio@vger.kernel.org>,
-        <linux-input@vger.kernel.org>, Vignesh R
-	<vigneshr@ti.com>
-Subject: [PATCH v5 1/6] input: touchscreen: ti_am335x_tsc Interchange touchscreen and ADC steps
-Date: Wed, 24 Dec 2014 12:33:34 +0530
-Message-ID: <1419404619-10744-2-git-send-email-vigneshr@ti.com>
-In-Reply-To: <1419404619-10744-1-git-send-email-vigneshr@ti.com>
-References: <1419404619-10744-1-git-send-email-vigneshr@ti.com>
+Return-Path: <marex@denx.de>
+From: Marek Vasut <marex@denx.de>
+To: Stefan Wahren <stefan.wahren@i2se.com>
+Subject: Re: [PATCH 2/2] iio: mxs-lradc: check ranges of ts properties
+Date: Wed, 24 Dec 2014 01:35:21 +0100
+Cc: kristina.martsenko@gmail.com,
+ kernel@pengutronix.de,
+ jic23@kernel.org,
+ pawel.moll@arm.com,
+ knaack.h@gmx.de,
+ ijc+devicetree@hellion.org.uk,
+ robh+dt@kernel.org,
+ galak@codeaurora.org,
+ festevam@gmail.com,
+ mark.rutland@arm.com,
+ linux-iio@vger.kernel.org,
+ devicetree@vger.kernel.org
+References: <1419250476-2393-1-git-send-email-stefan.wahren@i2se.com> <201412231437.22809.marex@denx.de> <1197201553.616296.1419374759245.JavaMail.open-xchange@oxbaltgw02.schlund.de>
+In-Reply-To: <1197201553.616296.1419374759245.JavaMail.open-xchange@oxbaltgw02.schlund.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: Text/Plain;
+  charset="us-ascii"
+Message-Id: <201412240135.21244.marex@denx.de>
 List-ID: <linux-iio@vger.kernel.org>
 
-From: Brad Griffis <bgriffis@ti.com>
+On Tuesday, December 23, 2014 at 11:45:59 PM, Stefan Wahren wrote:
+> Hi Marek,
 
-This patch makes the initial changes required to workaround TSC-false
-pen-up interrupts. It is required to implement these changes in order to
-remove udelay in the TSC interrupt handler and false pen-up events.
-The charge step is to be executed immediately after sampling X+. Hence
-TSC is made to use higher numbered steps (steps 5 to 16 for 5 co-ordinate
-readouts, 4 wire TSC configuration) and ADC to use lower ones. Further
-X co-ordinate readouts must be the last to be sampled, thus co-ordinates
-are sampled in the order Y-Z-X.
+Hi!
 
-Signed-off-by: Brad Griffis <bgriffis@ti.com>
-[vigneshr@ti.com: Ported the patch from v3.12 to v3.19rc1]
+> > Marek Vasut <marex@denx.de> hat am 23. Dezember 2014 um 14:37
+> > geschrieben:
+> > 
+> > 
+> > On Monday, December 22, 2014 at 01:14:36 PM, Stefan Wahren wrote:
+> > [...]
+> > 
+> > Very minor coding style flub in this comment above. Multi-line comments
+> > should start with /* and a newline after that ;-)
+> 
+> Thanks for your advice.
 
-Signed-off-by: Vignesh R <vigneshr@ti.com>
-Acked-by: Jonathan Cameron <jic23@kernel.org>
----
- drivers/iio/adc/ti_am335x_adc.c           |  5 ++--
- drivers/input/touchscreen/ti_am335x_tsc.c | 42 ++++++++++++++++++-------------
- 2 files changed, 26 insertions(+), 21 deletions(-)
+Sure, it's really a minor thing.
 
-diff --git a/drivers/iio/adc/ti_am335x_adc.c b/drivers/iio/adc/ti_am335x_adc.c
-index b730864731e8..adba23246474 100644
---- a/drivers/iio/adc/ti_am335x_adc.c
-+++ b/drivers/iio/adc/ti_am335x_adc.c
-@@ -86,19 +86,18 @@ static void tiadc_step_config(struct iio_dev *indio_dev)
- {
- 	struct tiadc_device *adc_dev = iio_priv(indio_dev);
- 	unsigned int stepconfig;
--	int i, steps;
-+	int i, steps = 0;
- 
- 	/*
- 	 * There are 16 configurable steps and 8 analog input
- 	 * lines available which are shared between Touchscreen and ADC.
- 	 *
--	 * Steps backwards i.e. from 16 towards 0 are used by ADC
-+	 * Steps forwards i.e. from 0 towards 16 are used by ADC
- 	 * depending on number of input lines needed.
- 	 * Channel would represent which analog input
- 	 * needs to be given to ADC to digitalize data.
- 	 */
- 
--	steps = TOTAL_STEPS - adc_dev->channels;
- 	if (iio_buffer_enabled(indio_dev))
- 		stepconfig = STEPCONFIG_AVG_16 | STEPCONFIG_FIFO1
- 					| STEPCONFIG_MODE_SWCNT;
-diff --git a/drivers/input/touchscreen/ti_am335x_tsc.c b/drivers/input/touchscreen/ti_am335x_tsc.c
-index 004f1346a957..dfbb9fe6a270 100644
---- a/drivers/input/touchscreen/ti_am335x_tsc.c
-+++ b/drivers/input/touchscreen/ti_am335x_tsc.c
-@@ -121,7 +121,7 @@ static void titsc_step_config(struct titsc *ts_dev)
- {
- 	unsigned int	config;
- 	int i;
--	int end_step;
-+	int end_step, first_step, tsc_steps;
- 	u32 stepenable;
- 
- 	config = STEPCONFIG_MODE_HWSYNC |
-@@ -140,9 +140,11 @@ static void titsc_step_config(struct titsc *ts_dev)
- 		break;
- 	}
- 
--	/* 1 … coordinate_readouts is for X */
--	end_step = ts_dev->coordinate_readouts;
--	for (i = 0; i < end_step; i++) {
-+	tsc_steps = ts_dev->coordinate_readouts * 2 + 2;
-+	first_step = TOTAL_STEPS - tsc_steps;
-+	/* Steps 16 to 16-coordinate_readouts is for X */
-+	end_step = first_step + tsc_steps;
-+	for (i = end_step - ts_dev->coordinate_readouts; i < end_step; i++) {
- 		titsc_writel(ts_dev, REG_STEPCONFIG(i), config);
- 		titsc_writel(ts_dev, REG_STEPDELAY(i), STEPCONFIG_OPENDLY);
- 	}
-@@ -164,9 +166,9 @@ static void titsc_step_config(struct titsc *ts_dev)
- 		break;
- 	}
- 
--	/* coordinate_readouts … coordinate_readouts * 2 is for Y */
--	end_step = ts_dev->coordinate_readouts * 2;
--	for (i = ts_dev->coordinate_readouts; i < end_step; i++) {
-+	/* 1 ... coordinate_readouts is for Y */
-+	end_step = first_step + ts_dev->coordinate_readouts;
-+	for (i = first_step; i < end_step; i++) {
- 		titsc_writel(ts_dev, REG_STEPCONFIG(i), config);
- 		titsc_writel(ts_dev, REG_STEPDELAY(i), STEPCONFIG_OPENDLY);
- 	}
-@@ -179,7 +181,7 @@ static void titsc_step_config(struct titsc *ts_dev)
- 	titsc_writel(ts_dev, REG_CHARGECONFIG, config);
- 	titsc_writel(ts_dev, REG_CHARGEDELAY, CHARGEDLY_OPENDLY);
- 
--	/* coordinate_readouts * 2 … coordinate_readouts * 2 + 2 is for Z */
-+	/* coordinate_readouts + 1 ... coordinate_readouts + 2 is for Z */
- 	config = STEPCONFIG_MODE_HWSYNC |
- 			STEPCONFIG_AVG_16 | ts_dev->bit_yp |
- 			ts_dev->bit_xn | STEPCONFIG_INM_ADCREFM |
-@@ -194,8 +196,11 @@ static void titsc_step_config(struct titsc *ts_dev)
- 	titsc_writel(ts_dev, REG_STEPDELAY(end_step),
- 			STEPCONFIG_OPENDLY);
- 
--	/* The steps1 … end and bit 0 for TS_Charge */
--	stepenable = (1 << (end_step + 2)) - 1;
-+	/* The steps end ... end - readouts * 2 + 2 and bit 0 for TS_Charge */
-+	stepenable = 1;
-+	for (i = 0; i < tsc_steps; i++)
-+		stepenable |= 1 << (first_step + i + 1);
-+
- 	ts_dev->step_mask = stepenable;
- 	am335x_tsc_se_set_cache(ts_dev->mfd_tscadc, ts_dev->step_mask);
- }
-@@ -209,6 +214,7 @@ static void titsc_read_coordinates(struct titsc *ts_dev,
- 	unsigned int read, diff;
- 	unsigned int i, channel;
- 	unsigned int creads = ts_dev->coordinate_readouts;
-+	unsigned int first_step = TOTAL_STEPS - (creads * 2 + 2);
- 
- 	*z1 = *z2 = 0;
- 	if (fifocount % (creads * 2 + 2))
-@@ -226,7 +232,7 @@ static void titsc_read_coordinates(struct titsc *ts_dev,
- 
- 		channel = (read & 0xf0000) >> 16;
- 		read &= 0xfff;
--		if (channel < creads) {
-+		if (channel > first_step + creads + 2) {
- 			diff = abs(read - prev_val_x);
- 			if (diff < prev_diff_x) {
- 				prev_diff_x = diff;
-@@ -234,19 +240,19 @@ static void titsc_read_coordinates(struct titsc *ts_dev,
- 			}
- 			prev_val_x = read;
- 
--		} else if (channel < creads * 2) {
-+		} else if (channel == first_step + creads + 1) {
-+			*z1 = read;
-+
-+		} else if (channel == first_step + creads + 2) {
-+			*z2 = read;
-+
-+		} else if (channel > first_step) {
- 			diff = abs(read - prev_val_y);
- 			if (diff < prev_diff_y) {
- 				prev_diff_y = diff;
- 				*y = read;
- 			}
- 			prev_val_y = read;
--
--		} else if (channel < creads * 2 + 1) {
--			*z1 = read;
--
--		} else if (channel < creads * 2 + 2) {
--			*z2 = read;
- 		}
- 	}
- }
--- 
-1.9.1
+> > > + * from the datasheet:
+> > > + * "The DELAY fields in HW_LRADC_DELAY0, HW_LRADC_DELAY1,
+> > > + * HW_LRADC_DELAY2, and HW_LRADC_DELAY3 must be non-zero; otherwise,
+> > > + * the LRADC will not trigger the delay group."
+> > > + */
+> > > mxs_lradc_reg_wrt(lradc, LRADC_DELAY_TRIGGER(1 << ch) |
+> > > LRADC_DELAY_TRIGGER_DELAYS(0) |
+> > > LRADC_DELAY_LOOP(lradc->over_sample_cnt - 1) |
+> > > @@ -1495,20 +1501,38 @@ static int mxs_lradc_probe_touchscreen(struct
+> > > mxs_lradc *lradc, return -EINVAL;
+> > > }
+> > > 
+> > > - lradc->over_sample_cnt = 4;
+> > > - ret = of_property_read_u32(lradc_node, "fsl,ave-ctrl", &adapt);
+> > > - if (ret == 0)
+> > > + if (of_property_read_u32(lradc_node, "fsl,ave-ctrl", &adapt)) {
+> > > + lradc->over_sample_cnt = 4;
+> > > + } else {
+> > > + if (adapt < 1 || adapt > 32) {
+> > 
+> > This is just an idea, but do we not have some kind of a
+> > "of_property_read_u32_range()" thingie, which would include this kind of
+> > range checking ? Would it be worth implementing such thing ? What do you
+> > think please ?
+> 
+> I never heard of such a function. I think it's not the best idea of mixing
+> dt parsing and range checking in a general function.
+
+It was just an idea, since it would trim down the code duplication a bit.
+
+> But this code does nearly the same thing 3 times. How about defining an
+> array of property range structures:
+> 
+> static const struct property_value_range mxs_lradc_properties[] = {
+> 	{
+> 		.name = "fsl,ave-ctrl",
+> 		.min_value = 1,
+> 		.max_value = 32,
+> 		.default_value = 4,
+> 	},
+> 	{
+> 		.name = "fsl,ave-delay",
+> 		.min_value = 2,
+> 		.max_value = LRADC_DELAY_DELAY_MASK+1,
+> 		.default_value = 2,
+> 	},
+> 	{
+> 		.name = "fsl,settling",
+> 		.min_value = 1,
+> 		.max_value = LRADC_DELAY_DELAY_MASK,
+> 		.default_value = 10,
+> 	},
+> };
+> 
+> and a local validate function for these optional parameters.
+
+That's becoming a bit too complex for such a simple task. I cannot tell right 
+now, so I'd prefer of others chimed in.
+
+Have a nice holiday!
