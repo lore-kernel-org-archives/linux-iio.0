@@ -1,89 +1,91 @@
-Return-Path: <helene.gsaenger@studium.fau.de>
-From: Helene Gsaenger <helene.gsaenger@studium.fau.de>
-To: helene.gsaenger@studium.fau.de
-Cc: simone.weiss@fau.de,
-	linux-kernel@i4.cs.fau.de,
-	lars@metafoo.de,
-	Michael.Hennerich@analog.com,
-	jic23@kernel.org,
-	knaack.h@gmx.de,
-	pmeerw@pmeerw.net,
-	gregkh@linuxfoundation.org,
-	linux-iio@vger.kernel.org,
-	devel@driverdev.osuosl.org,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH] staging/iio/accel: checkpatch: fixed long lines by moving comments
-Date: Mon, 22 Dec 2014 02:23:42 +0100
-Message-Id: <1419211422-9611-1-git-send-email-helene.gsaenger@studium.fau.de>
+Return-Path: <vigneshr@ti.com>
+From: Vignesh R <vigneshr@ti.com>
+To: Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Lee Jones
+	<lee.jones@linaro.org>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+CC: Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>,
+        Mark
+ Rutland <mark.rutland@arm.com>,
+        Ian Campbell <ijc+devicetree@hellion.org.uk>,
+        Kumar Gala <galak@codeaurora.org>,
+        Benoit Cousson <bcousson@baylibre.com>,
+        Tony Lindgren <tony@atomide.com>,
+        Russell King <linux@arm.linux.org.uk>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald <pmeerw@pmeerw.net>,
+        Samuel Ortiz <sameo@linux.intel.com>, Brad Griffis <bgriffis@ti.com>,
+        Paul
+ Gortmaker <paul.gortmaker@windriver.com>,
+        Sanjeev Sharma
+	<sanjeev_sharma@mentor.com>,
+        Jan Kardell <jan.kardell@telliq.com>, Felipe
+ Balbi <balbi@ti.com>,
+        Wolfram Sang <wsa@the-dreams.de>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <linux-omap@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>, <linux-iio@vger.kernel.org>,
+        <linux-input@vger.kernel.org>, Vignesh R
+	<vigneshr@ti.com>
+Subject: [PATCH v5 5/6] input: touchscreen: ti_am335x_tsc: Use charge delay DT parameter
+Date: Wed, 24 Dec 2014 12:33:38 +0530
+Message-ID: <1419404619-10744-6-git-send-email-vigneshr@ti.com>
+In-Reply-To: <1419404619-10744-1-git-send-email-vigneshr@ti.com>
+References: <1419404619-10744-1-git-send-email-vigneshr@ti.com>
+MIME-Version: 1.0
+Content-Type: text/plain
 List-ID: <linux-iio@vger.kernel.org>
 
-Signed-off-by: Helene Gsaenger <helene.gsaenger@studium.fau.de>
-Signed-off-by: Simone Weiss <simone.weiss@fau.de>
----
- drivers/staging/iio/accel/adis16203.h | 41 ++++++++++++++++++++++++++---------
- 1 file changed, 31 insertions(+), 10 deletions(-)
+This patch reads charge delay from tsc DT node and writes to
+REG_CHARGEDELAY register. If the charge delay is not specified in DT
+then default value of 0x400(CHARGEDLY_OPENDLY) is used.
 
-diff --git a/drivers/staging/iio/accel/adis16203.h b/drivers/staging/iio/accel/adis16203.h
-index acc688d..fefe2f9 100644
---- a/drivers/staging/iio/accel/adis16203.h
-+++ b/drivers/staging/iio/accel/adis16203.h
-@@ -16,26 +16,47 @@
- #define ADIS16203_ALM_SMPL2      0x26 /* Alarm 2, sample period */
- #define ADIS16203_ALM_CTRL       0x28 /* Alarm control */
- #define ADIS16203_AUX_DAC        0x30 /* Auxiliary DAC data */
--#define ADIS16203_GPIO_CTRL      0x32 /* General-purpose digital input/output control */
-+#define ADIS16203_GPIO_CTRL      0x32 /* General-purpose digital input/output
-+				       * control */
- #define ADIS16203_MSC_CTRL       0x34 /* Miscellaneous control */
--#define ADIS16203_SMPL_PRD       0x36 /* Internal sample period (rate) control */
-+#define ADIS16203_SMPL_PRD       0x36 /* Internal sample period (rate)
-+				       * control */
- #define ADIS16203_AVG_CNT        0x38 /* Operation, filter configuration */
- #define ADIS16203_SLP_CNT        0x3A /* Operation, sleep mode control */
- #define ADIS16203_DIAG_STAT      0x3C /* Diagnostics, system status register */
- #define ADIS16203_GLOB_CMD       0x3E /* Operation, system command register */
+Signed-off-by: Vignesh R <vigneshr@ti.com>
+---
+v5:
+ - print out a warning when ti,charge-delay is not specified
+
+ drivers/input/touchscreen/ti_am335x_tsc.c | 14 +++++++++++++-
+ 1 file changed, 13 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/input/touchscreen/ti_am335x_tsc.c b/drivers/input/touchscreen/ti_am335x_tsc.c
+index 8650b1dd24dc..9cb8b4a01dca 100644
+--- a/drivers/input/touchscreen/ti_am335x_tsc.c
++++ b/drivers/input/touchscreen/ti_am335x_tsc.c
+@@ -52,6 +52,7 @@ struct titsc {
+ 	u32			bit_xp, bit_xn, bit_yp, bit_yn;
+ 	u32			inp_xp, inp_xn, inp_yp, inp_yn;
+ 	u32			step_mask;
++	u32			charge_delay;
+ };
  
- /* MSC_CTRL */
--#define ADIS16203_MSC_CTRL_PWRUP_SELF_TEST	(1 << 10) /* Self-test at power-on: 1 = disabled, 0 = enabled */
--#define ADIS16203_MSC_CTRL_REVERSE_ROT_EN	(1 << 9)  /* Reverses rotation of both inclination outputs */
-+#define ADIS16203_MSC_CTRL_PWRUP_SELF_TEST	(1 << 10) /* Self-test at
-+							   * power-on:
-+							   * 1 = disabled,
-+							   * 0 = enabled */
-+#define ADIS16203_MSC_CTRL_REVERSE_ROT_EN	(1 << 9)  /* Reverses rotation
-+							   * of both
-+							   * inclination
-+							   * outputs */
- #define ADIS16203_MSC_CTRL_SELF_TEST_EN	        (1 << 8)  /* Self-test enable */
--#define ADIS16203_MSC_CTRL_DATA_RDY_EN	        (1 << 2)  /* Data-ready enable: 1 = enabled, 0 = disabled */
--#define ADIS16203_MSC_CTRL_ACTIVE_HIGH	        (1 << 1)  /* Data-ready polarity: 1 = active high, 0 = active low */
--#define ADIS16203_MSC_CTRL_DATA_RDY_DIO1	(1 << 0)  /* Data-ready line selection: 1 = DIO1, 0 = DIO0 */
-+#define ADIS16203_MSC_CTRL_DATA_RDY_EN	        (1 << 2)  /* Data-ready enable:
-+							   * 1 = enabled,
-+							   * 0 = disabled */
-+#define ADIS16203_MSC_CTRL_ACTIVE_HIGH	        (1 << 1)  /* Data-ready
-+							   * polarity:
-+							   * 1 = active high,
-+							   * 0 = active low */
-+#define ADIS16203_MSC_CTRL_DATA_RDY_DIO1	(1 << 0)  /* Data-ready line
-+							   * selection:
-+							   * 1 = DIO1,
-+							   * 0 = DIO0 */
+ static unsigned int titsc_readl(struct titsc *ts, unsigned int reg)
+@@ -177,7 +178,7 @@ static void titsc_step_config(struct titsc *ts_dev)
  
- /* DIAG_STAT */
--#define ADIS16203_DIAG_STAT_ALARM2        (1<<9) /* Alarm 2 status: 1 = alarm active, 0 = alarm inactive */
--#define ADIS16203_DIAG_STAT_ALARM1        (1<<8) /* Alarm 1 status: 1 = alarm active, 0 = alarm inactive */
--#define ADIS16203_DIAG_STAT_SELFTEST_FAIL_BIT 5 /* Self-test diagnostic error flag */
-+#define ADIS16203_DIAG_STAT_ALARM2        (1<<9) /* Alarm 2 status:
-+						  * 1 = alarm active,
-+						  * 0 = alarm inactive */
-+#define ADIS16203_DIAG_STAT_ALARM1        (1<<8) /* Alarm 1 status:
-+						  * 1 = alarm active,
-+						  * 0 = alarm inactive */
-+#define ADIS16203_DIAG_STAT_SELFTEST_FAIL_BIT 5 /* Self-test diagnostic error
-+						 * flag */
- #define ADIS16203_DIAG_STAT_SPI_FAIL_BIT      3 /* SPI communications failure */
- #define ADIS16203_DIAG_STAT_FLASH_UPT_BIT     2 /* Flash update failure */
- #define ADIS16203_DIAG_STAT_POWER_HIGH_BIT    1 /* Power supply above 3.625 V */
+ 	config = titsc_readl(ts_dev, REG_IDLECONFIG);
+ 	titsc_writel(ts_dev, REG_CHARGECONFIG, config);
+-	titsc_writel(ts_dev, REG_CHARGEDELAY, CHARGEDLY_OPENDLY);
++	titsc_writel(ts_dev, REG_CHARGEDELAY, ts_dev->charge_delay);
+ 
+ 	/* coordinate_readouts + 1 ... coordinate_readouts + 2 is for Z */
+ 	config = STEPCONFIG_MODE_HWSYNC |
+@@ -368,6 +369,17 @@ static int titsc_parse_dt(struct platform_device *pdev,
+ 	if (err < 0)
+ 		return err;
+ 
++	err = of_property_read_u32(node, "ti,charge-delay",
++				   &ts_dev->charge_delay);
++	/*
++	 * If ti,charge-delay value is not specified, then use CHARGEDLY_OPENDLY
++	 * as the default value.
++	 */
++	if (err < 0) {
++		ts_dev->charge_delay = CHARGEDLY_OPENDLY;
++		dev_warn(&pdev->dev, "ti,charge-delay not specified\n");
++	}
++
+ 	return of_property_read_u32_array(node, "ti,wire-config",
+ 			ts_dev->config_inp, ARRAY_SIZE(ts_dev->config_inp));
+ }
 -- 
 1.9.1
