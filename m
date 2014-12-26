@@ -1,183 +1,68 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from devils.ext.ti.com ([198.47.26.153]:45367 "EHLO
-	devils.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751440AbaLXHGX (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 24 Dec 2014 02:06:23 -0500
-From: Vignesh R <vigneshr@ti.com>
-To: Jonathan Cameron <jic23@kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-	Lee Jones <lee.jones@linaro.org>,
-	Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-CC: Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>,
-	Mark Rutland <mark.rutland@arm.com>,
-	Ian Campbell <ijc+devicetree@hellion.org.uk>,
-	Kumar Gala <galak@codeaurora.org>,
-	Benoit Cousson <bcousson@baylibre.com>,
-	Tony Lindgren <tony@atomide.com>,
-	Russell King <linux@arm.linux.org.uk>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	Samuel Ortiz <sameo@linux.intel.com>,
-	Brad Griffis <bgriffis@ti.com>,
-	Paul Gortmaker <paul.gortmaker@windriver.com>,
-	Sanjeev Sharma <sanjeev_sharma@mentor.com>,
-	Jan Kardell <jan.kardell@telliq.com>,
-	Felipe Balbi <balbi@ti.com>, Wolfram Sang <wsa@the-dreams.de>,
-	<devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-	<linux-omap@vger.kernel.org>,
-	<linux-arm-kernel@lists.infradead.org>,
-	<linux-iio@vger.kernel.org>, <linux-input@vger.kernel.org>,
-	Vignesh R <vigneshr@ti.com>
-Subject: [PATCH v5 6/6] input: touchscreen: ti_am335x_tsc: Replace delta filtering with median filtering
-Date: Wed, 24 Dec 2014 12:33:39 +0530
-Message-ID: <1419404619-10744-7-git-send-email-vigneshr@ti.com>
-In-Reply-To: <1419404619-10744-1-git-send-email-vigneshr@ti.com>
-References: <1419404619-10744-1-git-send-email-vigneshr@ti.com>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:44103 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751767AbaLZJiU (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 26 Dec 2014 04:38:20 -0500
+Message-ID: <549D2C89.2050007@kernel.org>
+Date: Fri, 26 Dec 2014 09:38:17 +0000
+From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain
+To: Lars-Peter Clausen <lars@metafoo.de>,
+	Hartmut Knaack <knaack.h@gmx.de>
+CC: Daniel Baluta <daniel.baluta@intel.com>,
+	Roberta Dobrescu <roberta.dobrescu@gmail.com>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	"octavian.purdila@intel.com" <octavian.purdila@intel.com>,
+	Michael.Hennerich@analog.com, Peter Meerwald <pmeerw@pmeerw.net>
+Subject: Re: [PATCH 1/3] iio: frequency: Remove 'out of memory' message
+References: <1418721107-5429-1-git-send-email-roberta.dobrescu@gmail.com> <1418721107-5429-2-git-send-email-roberta.dobrescu@gmail.com> <CAEnQRZDYT4wUb5uOkqPvkmZ5+Rs8O1TP2Z7mEhF9OeQTHY97gw@mail.gmail.com> <549930D1.9050600@metafoo.de> <5499CEB0.5020508@gmx.de> <5499E299.2080305@metafoo.de>
+In-Reply-To: <5499E299.2080305@metafoo.de>
+Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Previously, delta filtering was applied TSC co-ordinate readouts before
-reporting a single value to user space. This patch replaces delta filtering
-with median filtering. Median filtering sorts co-ordinate readouts, drops min
-and max values, and reports the average of remaining values. This method is
-more sensible than delta filering. Median filtering is applied only if number
-of readouts is greater than 3 else just average of co-ordinate readouts is
-reported.
+On 23/12/14 21:46, Lars-Peter Clausen wrote:
+> On 12/23/2014 09:21 PM, Hartmut Knaack wrote:
+>> Lars-Peter Clausen schrieb am 23.12.2014 um 10:07:
+>>> On 12/23/2014 09:51 AM, Daniel Baluta wrote:
+>>>> On Tue, Dec 16, 2014 at 11:11 AM, Roberta Dobrescu
+>>>> <roberta.dobrescu@gmail.com> wrote:
+>>>>> This patch fixes the following checkpatch.pl warning:
+>>>>> WARNING: Possible unnecessary 'out of memory' message
+>>>>>
+>>>>> Signed-off-by: Roberta Dobrescu <roberta.dobrescu@gmail.com>
+>>>>> ---
+>>>>>    drivers/iio/frequency/adf4350.c | 4 +---
+>>>>>    1 file changed, 1 insertion(+), 3 deletions(-)
+>>>>>
+>>>>> diff --git a/drivers/iio/frequency/adf4350.c b/drivers/iio/frequency/adf4350.c
+>>>>> index 63a25d9..2b301eb 100644
+>>>>> --- a/drivers/iio/frequency/adf4350.c
+>>>>> +++ b/drivers/iio/frequency/adf4350.c
+>>>>> @@ -387,10 +387,8 @@ static struct adf4350_platform_data *adf4350_parse_dt(struct device *dev)
+>>>>>           int ret;
+>>>>>
+>>>>>           pdata = devm_kzalloc(dev, sizeof(*pdata), GFP_KERNEL);
+>>>>> -       if (!pdata) {
+>>>>> -               dev_err(dev, "could not allocate memory for platform data\n");
+>>>>> +       if (!pdata)
+>>>>>                   return NULL;
+>>>>> -       }
+>>>>>
+>>>> Based on Harmut's review we can return ERR_PTR(-ENOMEM) here
+>>>> and then use IS_ERR and PTR_ERR inside adf4350_probe()
+>>>
+>>> This patch is fine as it is. It removes the redundant error message. Every
+>>> thing else should be done in a second patch.
+>>
+>> I can't follow on this one. From what I see, if memory allocation fails here,
+>> we will get an appropriate error message here, and _probe will pass up -EINVAL,
+>> causing a misleading error message. Where do you see redundancy?
+> 
+> Unless you pass __GFP_NOWARN to k*alloc it will print a error message on its own if the allocation fails.
+> 
+Yes, separate issues - be it the case that they both want fixing.  Anyhow, have applied
+this patch to the togreg branch of iio.git
 
-Signed-off-by: Vignesh R <vigneshr@ti.com>
----
- drivers/input/touchscreen/ti_am335x_tsc.c | 91 +++++++++++++++++--------------
- 1 file changed, 51 insertions(+), 40 deletions(-)
-
-diff --git a/drivers/input/touchscreen/ti_am335x_tsc.c b/drivers/input/touchscreen/ti_am335x_tsc.c
-index 9cb8b4a01dca..504b85db6425 100644
---- a/drivers/input/touchscreen/ti_am335x_tsc.c
-+++ b/drivers/input/touchscreen/ti_am335x_tsc.c
-@@ -26,6 +26,7 @@
- #include <linux/delay.h>
- #include <linux/of.h>
- #include <linux/of_device.h>
-+#include <linux/sort.h>
- 
- #include <linux/mfd/ti_am335x_tscadc.h>
- 
-@@ -204,56 +205,61 @@ static void titsc_step_config(struct titsc *ts_dev)
- 	am335x_tsc_se_set_cache(ts_dev->mfd_tscadc, ts_dev->step_mask);
- }
- 
-+static int titsc_cmp_coord(const void *a, const void *b)
-+{
-+	return *(int *)a - *(int *)b;
-+}
-+
- static void titsc_read_coordinates(struct titsc *ts_dev,
- 		u32 *x, u32 *y, u32 *z1, u32 *z2)
- {
--	unsigned int fifocount = titsc_readl(ts_dev, REG_FIFO0CNT);
--	unsigned int prev_val_x = ~0, prev_val_y = ~0;
--	unsigned int prev_diff_x = ~0, prev_diff_y = ~0;
--	unsigned int read, diff;
--	unsigned int i, channel;
-+	unsigned int yvals[7], xvals[7];
-+	unsigned int i, xsum = 0, ysum = 0;
- 	unsigned int creads = ts_dev->coordinate_readouts;
--	unsigned int first_step = TOTAL_STEPS - (creads * 2 + 2);
- 
--	*z1 = *z2 = 0;
--	if (fifocount % (creads * 2 + 2))
--		fifocount -= fifocount % (creads * 2 + 2);
--	/*
--	 * Delta filter is used to remove large variations in sampled
--	 * values from ADC. The filter tries to predict where the next
--	 * coordinate could be. This is done by taking a previous
--	 * coordinate and subtracting it form current one. Further the
--	 * algorithm compares the difference with that of a present value,
--	 * if true the value is reported to the sub system.
--	 */
--	for (i = 0; i < fifocount; i++) {
--		read = titsc_readl(ts_dev, REG_FIFO0);
--
--		channel = (read & 0xf0000) >> 16;
--		read &= 0xfff;
--		if (channel > first_step + creads + 2) {
--			diff = abs(read - prev_val_x);
--			if (diff < prev_diff_x) {
--				prev_diff_x = diff;
--				*x = read;
--			}
--			prev_val_x = read;
-+	for (i = 0; i < creads; i++) {
-+		yvals[i] = titsc_readl(ts_dev, REG_FIFO0);
-+		yvals[i] &= 0xfff;
-+	}
- 
--		} else if (channel == first_step + creads + 1) {
--			*z1 = read;
-+	*z1 = titsc_readl(ts_dev, REG_FIFO0);
-+	*z1 &= 0xfff;
-+	*z2 = titsc_readl(ts_dev, REG_FIFO0);
-+	*z2 &= 0xfff;
- 
--		} else if (channel == first_step + creads + 2) {
--			*z2 = read;
-+	for (i = 0; i < creads; i++) {
-+		xvals[i] = titsc_readl(ts_dev, REG_FIFO0);
-+		xvals[i] &= 0xfff;
-+	}
- 
--		} else if (channel > first_step) {
--			diff = abs(read - prev_val_y);
--			if (diff < prev_diff_y) {
--				prev_diff_y = diff;
--				*y = read;
--			}
--			prev_val_y = read;
-+	/*
-+	 * If co-ordinates readouts is less than 4 then
-+	 * report the average. In case of 4 or more
-+	 * readouts, sort the co-ordinate samples, drop
-+	 * min and max values and report the average of
-+	 * remaining values.
-+	 */
-+	if (creads <=  3) {
-+		for (i = 0; i < creads; i++) {
-+			ysum += yvals[i];
-+			xsum += xvals[i];
- 		}
-+		ysum /= creads;
-+		xsum /= creads;
-+	} else {
-+		sort(yvals, creads, sizeof(unsigned int),
-+		     titsc_cmp_coord, NULL);
-+		sort(xvals, creads, sizeof(unsigned int),
-+		     titsc_cmp_coord, NULL);
-+		for (i = 1; i < creads - 1; i++) {
-+			ysum += yvals[i];
-+			xsum += xvals[i];
-+		}
-+		ysum /= creads - 2;
-+		xsum /= creads - 2;
- 	}
-+	*y = ysum;
-+	*x = xsum;
- }
- 
- static irqreturn_t titsc_irq(int irq, void *dev)
-@@ -369,6 +375,11 @@ static int titsc_parse_dt(struct platform_device *pdev,
- 	if (err < 0)
- 		return err;
- 
-+	if (ts_dev->coordinate_readouts <= 0) {
-+		dev_warn(&pdev->dev, "invalid co-ordinate readouts, resetting it to 5\n");
-+		ts_dev->coordinate_readouts = 5;
-+	}
-+
- 	err = of_property_read_u32(node, "ti,charge-delay",
- 				   &ts_dev->charge_delay);
- 	/*
--- 
-1.9.1
+Thanks
 
