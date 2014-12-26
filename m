@@ -1,107 +1,37 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:45483 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751022AbaLZN0P (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 26 Dec 2014 08:26:15 -0500
-Message-ID: <549D61F3.3030302@kernel.org>
-Date: Fri, 26 Dec 2014 13:26:11 +0000
-From: Jonathan Cameron <jic23@kernel.org>
+Return-Path: <stefan.wahren@i2se.com>
+Date: Fri, 26 Dec 2014 21:50:37 +0100 (CET)
+From: Stefan Wahren <stefan.wahren@i2se.com>
+Reply-To: Stefan Wahren <stefan.wahren@i2se.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: kristina.martsenko@gmail.com, kernel@pengutronix.de, pawel.moll@arm.com,
+	knaack.h@gmx.de, ijc+devicetree@hellion.org.uk, robh+dt@kernel.org,
+	galak@codeaurora.org, festevam@gmail.com, mark.rutland@arm.com,
+	linux-iio@vger.kernel.org, marex@denx.de, devicetree@vger.kernel.org
+Message-ID: <1377154085.658607.1419627037868.JavaMail.open-xchange@oxbaltgw05.schlund.de>
+In-Reply-To: <549D2905.4050801@kernel.org>
+References: <1419250476-2393-1-git-send-email-stefan.wahren@i2se.com> <1419250476-2393-3-git-send-email-stefan.wahren@i2se.com> <549D2905.4050801@kernel.org>
+Subject: Re: [PATCH 2/2] iio: mxs-lradc: check ranges of ts properties
 MIME-Version: 1.0
-To: Irina Tirdea <irina.tirdea@intel.com>, linux-iio@vger.kernel.org
-CC: linux-kernel@vger.kernel.org, Vlad Dogaru <vlad.dogaru@intel.com>,
-	Daniel Baluta <daniel.baluta@intel.com>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>
-Subject: Re: [PATCH 1/8] iio: core: Introduce CALORIES channel type
-References: <1419029879-12024-1-git-send-email-irina.tirdea@intel.com> <1419029879-12024-2-git-send-email-irina.tirdea@intel.com>
-In-Reply-To: <1419029879-12024-2-git-send-email-irina.tirdea@intel.com>
-Content-Type: text/plain; charset=windows-1252
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain; charset=UTF-8
+List-ID: <linux-iio@vger.kernel.org>
 
-On 19/12/14 22:57, Irina Tirdea wrote:
-> Some devices compute the number of calories that the user has
-> burnt since the last reset.
-> 
-> One of this devices is Freescale's MMA9553L
-> (http://www.freescale.com/files/sensors/doc/ref_manual/MMA9553LSWRM.pdf)
-> that computes the number of calories based on weight and step rate.
-> 
-> Introduce a new channel type CALORIES to export these values.
-> 
-> Signed-off-by: Irina Tirdea <irina.tirdea@intel.com>
-hmm..  Ideally we use SI units for everything, but in human energy usage
-Calories are the most common unit by a long way.  I'm having some trouble
-even finding the conversion for this particular for of calorie. 
+Hi Jonathan,
 
-Now clearly it doesn't matter if the only energy sensors we ever get
-are for human activity. However, that's unlikely to be the case.  We
-already have devices doing instantaneous power and there are plenty
-of smart meter chips out there (though of course, they will use the
-option of kW Hours just to confuse matters).
+> Jonathan Cameron <jic23@kernel.org> hat am 26. Dezember 2014 um 10:23
+> geschrieben:
+>
+> [...]
+> >
+> > - lradc->over_sample_delay = 2;
+> > - ret = of_property_read_u32(lradc_node, "fsl,ave-delay", &adapt);
+> > - if (ret == 0)
+> > + if (of_property_read_u32(lradc_node, "fsl,ave-delay", &adapt)) {
+> > + lradc->over_sample_delay = 2;
+> > + } else {
+> > + if (adapt < 2 || adapt > LRADC_DELAY_DELAY_MASK+1) {
+> please run checkpatch.pl over these. Should be spaces around the +
 
-I'd definitely prefer joules if we can do it with out a large amount of
-pain.
+i'm afraid my checkpatch.pl doesn't find this issue. I'll fix it in the next
+version.
 
-Lars - any views on this?  (Analog do make plenty of 'energy' measurement
-devices after all!)
-> ---
->  Documentation/ABI/testing/sysfs-bus-iio |    9 +++++++++
->  drivers/iio/industrialio-core.c         |    1 +
->  include/linux/iio/types.h               |    1 +
->  3 files changed, 11 insertions(+)
-> 
-> diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
-> index df5e69e..bb9342b 100644
-> --- a/Documentation/ABI/testing/sysfs-bus-iio
-> +++ b/Documentation/ABI/testing/sysfs-bus-iio
-> @@ -282,6 +282,7 @@ What:		/sys/bus/iio/devices/iio:deviceX/in_current_scale
->  What:		/sys/bus/iio/devices/iio:deviceX/in_accel_scale
->  What:		/sys/bus/iio/devices/iio:deviceX/in_accel_peak_scale
->  What:		/sys/bus/iio/devices/iio:deviceX/in_anglvel_scale
-> +What:		/sys/bus/iio/devices/iio:deviceX/in_calories_scale
->  What:		/sys/bus/iio/devices/iio:deviceX/in_magn_scale
->  What:		/sys/bus/iio/devices/iio:deviceX/in_magn_x_scale
->  What:		/sys/bus/iio/devices/iio:deviceX/in_magn_y_scale
-> @@ -1049,6 +1050,14 @@ Description:
->  		For a list of available output power modes read
->  		in_accel_power_mode_available.
->  
-> +What:		/sys/.../iio:deviceX/in_calories_input
-> +What:		/sys/.../iio:deviceX/in_calories_raw
-> +KernelVersion:	3.17
-> +Contact:	linux-iio@vger.kernel.org
-> +Description:
-> +		This attribute is used to read the number of calories burned since the last
-> +		reset. Units after application of scale are Joules.
-> +
->  What:		/sys/bus/iio/devices/iio:deviceX/store_eeprom
->  KernelVersion:	3.4.0
->  Contact:	linux-iio@vger.kernel.org
-> diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
-> index ee442ee..5d95e84 100644
-> --- a/drivers/iio/industrialio-core.c
-> +++ b/drivers/iio/industrialio-core.c
-> @@ -72,6 +72,7 @@ static const char * const iio_chan_type_name_spec[] = {
->  	[IIO_HUMIDITYRELATIVE] = "humidityrelative",
->  	[IIO_ACTIVITY] = "activity",
->  	[IIO_STEPS] = "steps",
-> +	[IIO_CALORIES] = "calories",
->  };
->  
->  static const char * const iio_modifier_names[] = {
-> diff --git a/include/linux/iio/types.h b/include/linux/iio/types.h
-> index 904dcbb..d2fe930 100644
-> --- a/include/linux/iio/types.h
-> +++ b/include/linux/iio/types.h
-> @@ -32,6 +32,7 @@ enum iio_chan_type {
->  	IIO_HUMIDITYRELATIVE,
->  	IIO_ACTIVITY,
->  	IIO_STEPS,
-> +	IIO_CALORIES,
->  };
->  
->  enum iio_modifier {
-> 
-
+Stefan
