@@ -1,33 +1,48 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:44111 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:44215 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751629AbaLZJjc (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 26 Dec 2014 04:39:32 -0500
-Message-ID: <549D2CD3.80403@kernel.org>
-Date: Fri, 26 Dec 2014 09:39:31 +0000
+	with ESMTP id S1751468AbaLZJ5q (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 26 Dec 2014 04:57:46 -0500
+Message-ID: <549D3117.6040607@kernel.org>
+Date: Fri, 26 Dec 2014 09:57:43 +0000
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Lars-Peter Clausen <lars@metafoo.de>,
-	Roberta Dobrescu <roberta.dobrescu@gmail.com>,
-	linux-iio@vger.kernel.org
-CC: octavian.purdila@intel.com, daniel.baluta@intel.com,
-	Michael.Hennerich@analog.com, knaack.h@gmx.de, pmeerw@pmeerw.net
-Subject: Re: [PATCH 2/3] iio: frequency: Remove unnecessary braces around
- single statement block
-References: <1418721107-5429-1-git-send-email-roberta.dobrescu@gmail.com> <1418721107-5429-3-git-send-email-roberta.dobrescu@gmail.com> <5492FD46.6000303@metafoo.de>
-In-Reply-To: <5492FD46.6000303@metafoo.de>
+To: Daniel Baluta <daniel.baluta@intel.com>, knaack.h@gmx.de
+CC: lars@metafoo.de, pmeerw@pmeerw.net, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org, srinivas.pandruvada@linux.intel.com
+Subject: Re: [PATCH 00/10] iio: KMX61 fixes
+References: <1419340953-23161-1-git-send-email-daniel.baluta@intel.com>
+In-Reply-To: <1419340953-23161-1-git-send-email-daniel.baluta@intel.com>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 18/12/14 16:13, Lars-Peter Clausen wrote:
-> On 12/16/2014 10:11 AM, Roberta Dobrescu wrote:
->> This patch fixes the following checkpatch.pl warning:
->> WARNING: braces {} are not necessary for single statement blocks
->>
->> Signed-off-by: Roberta Dobrescu <roberta.dobrescu@gmail.com>
+On 23/12/14 13:22, Daniel Baluta wrote:
+> This is a series of cleanups after Hartmut's review:
 > 
-> Acked-by: Lars-Peter Clausen <lars@metafoo.de>
+> 	* http://marc.info/?l=linux-iio&m=141859700810393&w=2
+> 	* http://marc.info/?l=linux-iio&m=141859774010580&w=2
+> 	* http://marc.info/?l=linux-iio&m=141859828910703&w=2
+> 	* http://marc.info/?l=linux-kernel&m=141868557909385&w=2
 > 
-Applied to the togreg branch of iio.git - initially pushed out as testing
-etc etc.
+> Daniel Baluta (10):
+>   iio: imu: kmx61: Save odr_bits for later use
+>   iio: imu: kmx61: Don't ignore kmx61_set_power_state errors
+>   iio: imu: kmx61: Enhance error handling
+>   iio: imu: kmx61: Fixup parameters alignment
+>   iio: imu: kmx61: Drop unused device parameter
+>   iio: imu: kmx61: Use false instead of 0 for ev_enable_state
+>   iio: imu: kmx61: Fix device initialization when setting trigger state
+>   iio: imu: kmx61: Remove unnecessary REG_INS1 read
+>   iio: imu: kmx61: Drop odr_bits from kmx61_samp_freq_table
+>   iio: imu: kmx61: Use correct base when reading data
+> 
+>  drivers/iio/imu/kmx61.c | 216 ++++++++++++++++++++++--------------------------
+>  1 file changed, 101 insertions(+), 115 deletions(-)
+> 
+Ouch - I need to concentrate more when reviewing!
+Anyhow, these all look fine to me, but I'd like to leave them for a few days
+for Hartmut to take a look.
+
+Jonathan
+
