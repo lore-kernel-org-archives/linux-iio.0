@@ -1,96 +1,80 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:45494 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:45277 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751989AbaLZN2W (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 26 Dec 2014 08:28:22 -0500
-Message-ID: <549D6274.8030601@kernel.org>
-Date: Fri, 26 Dec 2014 13:28:20 +0000
+	with ESMTP id S1751496AbaLZMku (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 26 Dec 2014 07:40:50 -0500
+Message-ID: <549D574F.6010700@kernel.org>
+Date: Fri, 26 Dec 2014 12:40:47 +0000
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Irina Tirdea <irina.tirdea@intel.com>, linux-iio@vger.kernel.org
-CC: linux-kernel@vger.kernel.org, Vlad Dogaru <vlad.dogaru@intel.com>,
-	Daniel Baluta <daniel.baluta@intel.com>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>
-Subject: Re: [PATCH 3/8] iio: core: Introduce SPEED channel type
-References: <1419029879-12024-1-git-send-email-irina.tirdea@intel.com> <1419029879-12024-4-git-send-email-irina.tirdea@intel.com>
-In-Reply-To: <1419029879-12024-4-git-send-email-irina.tirdea@intel.com>
+To: Rickard Strandqvist <rickard_strandqvist@spectrumdigital.se>,
+	Hartmut Knaack <knaack.h@gmx.de>
+CC: Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Murilo Opsfelder Araujo <mopsfelder@gmail.com>,
+	linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] staging: iio: accel: sca3000_core.c:  Remove unused function
+References: <1419087187-4250-1-git-send-email-rickard_strandqvist@spectrumdigital.se>
+In-Reply-To: <1419087187-4250-1-git-send-email-rickard_strandqvist@spectrumdigital.se>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 19/12/14 22:57, Irina Tirdea wrote:
-> Some devices export the current speed value of the user.
+On 20/12/14 14:53, Rickard Strandqvist wrote:
+> Remove the function sca3000_check_status() that is not used anywhere.
 > 
-> One of this devices is Freescale's MMA9553L
-> (http://www.freescale.com/files/sensors/doc/ref_manual/MMA9553LSWRM.pdf)
-> that computes the speed of the user based on the number of steps and
-> stride length.
+> This was partially found by using a static code analysis program called cppcheck.
 > 
-> Introduce a new channel type SPEED to export these values.
-> 
-A fun question raised by this is whether we are going to end up with
-both speed and velocity (depending on whether it is signed or not).
-I suppose there isn't much to be done about that though and this looks fine
-to me (as does the previous one).
-> Signed-off-by: Irina Tirdea <irina.tirdea@intel.com>
+> Signed-off-by: Rickard Strandqvist <rickard_strandqvist@spectrumdigital.se>
+Applied to the togreg branch of iio.git - initially pushed out as testing
+for the autobuilders to play with it.
+
+Thanks,
+
+Jonathan
 > ---
->  Documentation/ABI/testing/sysfs-bus-iio |    9 +++++++++
->  drivers/iio/industrialio-core.c         |    1 +
->  include/linux/iio/types.h               |    1 +
->  3 files changed, 11 insertions(+)
+>  drivers/staging/iio/accel/sca3000_core.c |   27 ---------------------------
+>  1 file changed, 27 deletions(-)
 > 
-> diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
-> index a5c1dcc..07acef7 100644
-> --- a/Documentation/ABI/testing/sysfs-bus-iio
-> +++ b/Documentation/ABI/testing/sysfs-bus-iio
-> @@ -295,6 +295,7 @@ What:		/sys/bus/iio/devices/iio:deviceX/in_rot_from_north_true_tilt_comp_scale
->  What:		/sys/bus/iio/devices/iio:deviceX/in_pressureY_scale
->  What:		/sys/bus/iio/devices/iio:deviceX/in_pressure_scale
->  What:		/sys/bus/iio/devices/iio:deviceX/in_humidityrelative_scale
-> +What:		/sys/bus/iio/devices/iio:deviceX/in_speed_scale
->  KernelVersion:	2.6.35
->  Contact:	linux-iio@vger.kernel.org
->  Description:
-> @@ -1146,6 +1147,14 @@ Description:
->  		present, output should be considered as processed with the
->  		unit in milliamps.
+> diff --git a/drivers/staging/iio/accel/sca3000_core.c b/drivers/staging/iio/accel/sca3000_core.c
+> index e4e5639..655e34c 100644
+> --- a/drivers/staging/iio/accel/sca3000_core.c
+> +++ b/drivers/staging/iio/accel/sca3000_core.c
+> @@ -223,33 +223,6 @@ error_ret:
+>  	return ret;
+>  }
 >  
-> +What:		/sys/.../iio:deviceX/in_speed_input
-> +What:		/sys/.../iio:deviceX/in_speed_raw
-> +KernelVersion:	3.19
-> +Contact:	linux-iio@vger.kernel.org
-> +Description:
-> +		This attribute is used to read the current speed value of the user.
-> +		Units after application of scale are m/s.
-> +
->  What:		/sys/.../iio:deviceX/in_steps_en
->  KernelVersion:	3.19
->  Contact:	linux-iio@vger.kernel.org
-> diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
-> index 4a10d31..5e50aca 100644
-> --- a/drivers/iio/industrialio-core.c
-> +++ b/drivers/iio/industrialio-core.c
-> @@ -74,6 +74,7 @@ static const char * const iio_chan_type_name_spec[] = {
->  	[IIO_STEPS] = "steps",
->  	[IIO_CALORIES] = "calories",
->  	[IIO_DISTANCE] = "distance",
-> +	[IIO_SPEED] = "speed",
->  };
->  
->  static const char * const iio_modifier_names[] = {
-> diff --git a/include/linux/iio/types.h b/include/linux/iio/types.h
-> index b98f751..c848f45 100644
-> --- a/include/linux/iio/types.h
-> +++ b/include/linux/iio/types.h
-> @@ -34,6 +34,7 @@ enum iio_chan_type {
->  	IIO_STEPS,
->  	IIO_CALORIES,
->  	IIO_DISTANCE,
-> +	IIO_SPEED,
->  };
->  
->  enum iio_modifier {
+> -#ifdef SCA3000_DEBUG
+> -/**
+> - * sca3000_check_status() check the status register
+> - *
+> - * Only used for debugging purposes
+> - **/
+> -static int sca3000_check_status(struct device *dev)
+> -{
+> -	int ret;
+> -	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+> -	struct sca3000_state *st = iio_priv(indio_dev);
+> -
+> -	mutex_lock(&st->lock);
+> -	ret = sca3000_read_data_short(st, SCA3000_REG_ADDR_STATUS, 1);
+> -	if (ret < 0)
+> -		goto error_ret;
+> -	if (st->rx[0] & SCA3000_EEPROM_CS_ERROR)
+> -		dev_err(dev, "eeprom error\n");
+> -	if (st->rx[0] & SCA3000_SPI_FRAME_ERROR)
+> -		dev_err(dev, "Previous SPI Frame was corrupt\n");
+> -
+> -error_ret:
+> -	mutex_unlock(&st->lock);
+> -	return ret;
+> -}
+> -#endif /* SCA3000_DEBUG */
+> -
+>  /**
+>   * sca3000_show_rev() - sysfs interface to read the chip revision number
+>   **/
 > 
 
