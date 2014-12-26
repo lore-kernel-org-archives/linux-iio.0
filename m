@@ -1,133 +1,170 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:44665 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:44804 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751441AbaLZLNH (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 26 Dec 2014 06:13:07 -0500
-Message-ID: <549D42BD.1050901@kernel.org>
-Date: Fri, 26 Dec 2014 11:13:01 +0000
+	with ESMTP id S1751730AbaLZLfd (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 26 Dec 2014 06:35:33 -0500
+Message-ID: <549D4800.1040904@kernel.org>
+Date: Fri, 26 Dec 2014 11:35:28 +0000
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Lars-Peter Clausen <lars@metafoo.de>,
-	"Baluta, Teodora" <teodora.baluta@intel.com>
-CC: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	Hans Verkuil <hverkuil@xs4all.nl>,
-	Mauro Carvalho Chehab <m.chehab@samsung.com>,
-	linux-media@vger.kernel.org
-Subject: Re: [RFC PATCH 0/3] Introduce IIO interface for fingerprint sensors
-References: <1417698017-13835-1-git-send-email-teodora.baluta@intel.com>	 <5481153B.4070609@kernel.org> <1418047828.18463.10.camel@bebop> <54930604.1020607@metafoo.de>
-In-Reply-To: <54930604.1020607@metafoo.de>
-Content-Type: text/plain; charset=utf-8
+To: Karol Wrona <k.wrona@samsung.com>, linux-iio@vger.kernel.org,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	linux-kernel@vger.kernel.org
+CC: Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
+	Kyungmin Park <kyungmin.park@samsung.com>,
+	Karol Wrona <wrona.vy@gmail.com>
+Subject: Re: [PATCH v2 1/3] iio: kfifo: Remove unused argument in iio_kfifo_allocate
+References: <1419010766-13557-1-git-send-email-k.wrona@samsung.com> <1419010766-13557-2-git-send-email-k.wrona@samsung.com>
+In-Reply-To: <1419010766-13557-2-git-send-email-k.wrona@samsung.com>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 18/12/14 16:51, Lars-Peter Clausen wrote:
-> Adding V4L folks to Cc for more input.
-Thanks Lars - we definitely would need the v4l guys to agree to a driver like
-this going in IIO. (not that I'm convinced it should!)
+On 19/12/14 17:39, Karol Wrona wrote:
+> indio_dev was unused in function body plus some small style fix - add new
+> lines after "if(sth) return sth" and before the last return statement.
 > 
-> On 12/08/2014 03:10 PM, Baluta, Teodora wrote:
->> Hello,
->>
->> On Vi, 2014-12-05 at 02:15 +0000, Jonathan Cameron wrote:
->>> On 04/12/14 13:00, Teodora Baluta wrote:
->>>> This patchset adds support for fingerprint sensors through the IIO interface.
->>>> This way userspace applications collect information in a uniform way. All
->>>> processing would be done in the upper layers as suggested in [0].
->>>>
->>>> In order to test out this proposal, a minimal implementation for UPEK's
->>>> TouchChip Fingerprint Sensor via USB is also available. Although there is an
->>>> existing implementation in userspace for USB fingerprint devices, including this
->>>> particular device, the driver represents a proof of concept of how fingerprint
->>>> sensors could be integrated in the IIO framework regardless of the used bus. For
->>>> lower power requirements, the SPI bus is preferred and a kernel driver
->>>> implementation makes more sense.
->>>
->>> So why not v4l?  These are effectively image sensors..
->>
->> Well, here's why I don't think v4l would be the best option:
->>
->> - an image scanner could be implemented in the v4l subsystem, but it
->> seems far more complicated for a simple fingerprint scanner - it usually
->> has drivers for webcams, TVs or video streaming devices. The v4l
->> subsystem (with all its support for colorspace, decoders, image
->> compression, frame control) seems a bit of an overkill for a very
->> straightforward fingerprint imaging sensor.
-Whilst those are there, I would doubt the irrelevant bits would put much
-burden on a fingerprint scanning driver.  Been a while since I did
-anything in that area though so I could be wrong!
->>
->> - a fingerprint device could also send out a processed information, not
->> just the image of a fingerprint. This means that the processing is done
->> in hardware - the UPEK TouchStrip chipset in libfprint has this behavior
->> (see [0]). So, the IIO framework would support a uniform way of handling
->> fingerprint devices that either do processing in software or in
->> hardware.
-This is more interesting, but does that map well to IIO style
-channels anyway?  If not we are going to end up with a whole new
-interface which ever subsystem is used for the image side of things.
->>
->> The way I see it now, for processed fingerprint information, an IIO
->> device could have an IIO_FINGERPRINT channel with a modifier and only
->> the sensitivity threshold attribute set. We would also need two
->> triggers: one for enrollment and one for the verification mode to
->> control the device from a userspace application.
-Sure - what you proposed would work.  The question is whether it is
-the best way to do it.
-
-
->>
->> Thanks,
->> Teodora
->>
->> [0] http://www.freedesktop.org/wiki/Software/fprint/libfprint/upekts/
->>
->>
->>>>
->>>> A sysfs trigger is enabled and the device starts scanning. As soon as an image
->>>> is available it is written in the character device /dev/iio:deviceX.
->>>>
->>>> Userspace applications will be able to calculate the expected image size using
->>>> the fingerprint attributes height, width and bit depth. Other attributes
->>>> introduced for the fingerprint channel in IIO represent information that aids in
->>>> the fingerprint image processing. Besides these, the proposed interface offers
->>>> userspace a way to read a feedback after a scan (like the swipe was too slow or
->>>> too fast) through a modified fingerprint_status channel.
->>>>
->>>> [0] http://www.spinics.net/lists/linux-iio/msg11463.html
->>>>
->>>> Teodora Baluta (3):
->>>>    iio: core: add support for fingerprint devices
->>>>    iio: core: change channel's storagebits/realbits to u32
->>>>    iio: fingerprint: add fingerprint sensor via USB
->>>>
->>>>   Documentation/ABI/testing/sysfs-bus-iio |  51 +++
->>>>   drivers/iio/Kconfig                     |   1 +
->>>>   drivers/iio/Makefile                    |   1 +
->>>>   drivers/iio/fingerprint/Kconfig         |  15 +
->>>>   drivers/iio/fingerprint/Makefile        |   5 +
->>>>   drivers/iio/fingerprint/fp_tc.c         | 162 +++++++++
->>>>   drivers/iio/fingerprint/fp_tc.h         |  22 ++
->>>>   drivers/iio/fingerprint/fp_tc_usb.c     | 618 ++++++++++++++++++++++++++++++++
->>>>   drivers/iio/fingerprint/fp_tc_usb.h     | 144 ++++++++
->>>>   drivers/iio/industrialio-core.c         |   9 +
->>>>   include/linux/iio/iio.h                 |  11 +-
->>>>   include/linux/iio/types.h               |  10 +
->>>>   12 files changed, 1047 insertions(+), 2 deletions(-)
->>>>   create mode 100644 drivers/iio/fingerprint/Kconfig
->>>>   create mode 100644 drivers/iio/fingerprint/Makefile
->>>>   create mode 100644 drivers/iio/fingerprint/fp_tc.c
->>>>   create mode 100644 drivers/iio/fingerprint/fp_tc.h
->>>>   create mode 100644 drivers/iio/fingerprint/fp_tc_usb.c
->>>>   create mode 100644 drivers/iio/fingerprint/fp_tc_usb.h
->>>>
->>>
->>
->> N�����r��y���b�X��ǧv�^�)޺{.n�+����{��*"��^n�r���z���h����&���G���h�(�階�ݢj"���m�����z�ޖ���f���h���~�mml==
->>
+> The argument was removed also in its client.
 > 
-> -- 
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> Signed-off-by: Karol Wrona <k.wrona@samsung.com>
+Good cleanup - some fuzz applying and required a bit of hand editting
+in kfifo_buf.c for reasons I couldn't immediately spot.  Please sanity
+check I haven't messed anything up.
+
+Thanks,
+
+Jonathan
+> ---
+>  drivers/iio/adc/ti_am335x_adc.c                 |    2 +-
+>  drivers/iio/industrialio-triggered-buffer.c     |    2 +-
+>  drivers/iio/kfifo_buf.c                         |    6 ++++--
+>  drivers/staging/iio/accel/lis3l02dq_ring.c      |    2 +-
+>  drivers/staging/iio/iio_simple_dummy_buffer.c   |    2 +-
+>  drivers/staging/iio/impedance-analyzer/ad5933.c |    2 +-
+>  drivers/staging/iio/meter/ade7758_ring.c        |    2 +-
+>  include/linux/iio/kfifo_buf.h                   |    2 +-
+>  8 files changed, 11 insertions(+), 9 deletions(-)
+> 
+> diff --git a/drivers/iio/adc/ti_am335x_adc.c b/drivers/iio/adc/ti_am335x_adc.c
+> index b730864..bf87993 100644
+> --- a/drivers/iio/adc/ti_am335x_adc.c
+> +++ b/drivers/iio/adc/ti_am335x_adc.c
+> @@ -250,7 +250,7 @@ static int tiadc_iio_buffered_hardware_setup(struct iio_dev *indio_dev,
+>  	struct iio_buffer *buffer;
+>  	int ret;
+>  
+> -	buffer = iio_kfifo_allocate(indio_dev);
+> +	buffer = iio_kfifo_allocate();
+>  	if (!buffer)
+>  		return -ENOMEM;
+>  
+> diff --git a/drivers/iio/industrialio-triggered-buffer.c b/drivers/iio/industrialio-triggered-buffer.c
+> index d6f54930..6c6307a 100644
+> --- a/drivers/iio/industrialio-triggered-buffer.c
+> +++ b/drivers/iio/industrialio-triggered-buffer.c
+> @@ -49,7 +49,7 @@ int iio_triggered_buffer_setup(struct iio_dev *indio_dev,
+>  	struct iio_buffer *buffer;
+>  	int ret;
+>  
+> -	buffer = iio_kfifo_allocate(indio_dev);
+> +	buffer = iio_kfifo_allocate();
+>  	if (!buffer) {
+>  		ret = -ENOMEM;
+>  		goto error_ret;
+> diff --git a/drivers/iio/kfifo_buf.c b/drivers/iio/kfifo_buf.c
+> index 7134e8a..a383291 100644
+> --- a/drivers/iio/kfifo_buf.c
+> +++ b/drivers/iio/kfifo_buf.c
+> @@ -166,19 +166,21 @@ static const struct iio_buffer_access_funcs kfifo_access_funcs = {
+>  	.release = &iio_kfifo_buffer_release,
+>  };
+>  
+> -struct iio_buffer *iio_kfifo_allocate(struct iio_dev *indio_dev)
+> +struct iio_buffer *iio_kfifo_allocate(void)
+>  {
+>  	struct iio_kfifo *kf;
+>  
+> -	kf = kzalloc(sizeof *kf, GFP_KERNEL);
+> +	kf = kzalloc(sizeof(*kf), GFP_KERNEL);
+>  	if (!kf)
+>  		return NULL;
+> +
+>  	kf->update_needed = true;
+>  	iio_buffer_init(&kf->buffer);
+>  	kf->buffer.attrs = &iio_kfifo_attribute_group;
+>  	kf->buffer.access = &kfifo_access_funcs;
+>  	kf->buffer.length = 2;
+>  	mutex_init(&kf->user_lock);
+> +
+>  	return &kf->buffer;
+>  }
+>  EXPORT_SYMBOL(iio_kfifo_allocate);
+> diff --git a/drivers/staging/iio/accel/lis3l02dq_ring.c b/drivers/staging/iio/accel/lis3l02dq_ring.c
+> index 9efc77b..1fd9009 100644
+> --- a/drivers/staging/iio/accel/lis3l02dq_ring.c
+> +++ b/drivers/staging/iio/accel/lis3l02dq_ring.c
+> @@ -393,7 +393,7 @@ int lis3l02dq_configure_buffer(struct iio_dev *indio_dev)
+>  	int ret;
+>  	struct iio_buffer *buffer;
+>  
+> -	buffer = iio_kfifo_allocate(indio_dev);
+> +	buffer = iio_kfifo_allocate();
+>  	if (!buffer)
+>  		return -ENOMEM;
+>  
+> diff --git a/drivers/staging/iio/iio_simple_dummy_buffer.c b/drivers/staging/iio/iio_simple_dummy_buffer.c
+> index fd74f91..df765c9 100644
+> --- a/drivers/staging/iio/iio_simple_dummy_buffer.c
+> +++ b/drivers/staging/iio/iio_simple_dummy_buffer.c
+> @@ -122,7 +122,7 @@ int iio_simple_dummy_configure_buffer(struct iio_dev *indio_dev,
+>  	struct iio_buffer *buffer;
+>  
+>  	/* Allocate a buffer to use - here a kfifo */
+> -	buffer = iio_kfifo_allocate(indio_dev);
+> +	buffer = iio_kfifo_allocate();
+>  	if (buffer == NULL) {
+>  		ret = -ENOMEM;
+>  		goto error_ret;
+> diff --git a/drivers/staging/iio/impedance-analyzer/ad5933.c b/drivers/staging/iio/impedance-analyzer/ad5933.c
+> index b6bd609..ace9ef8 100644
+> --- a/drivers/staging/iio/impedance-analyzer/ad5933.c
+> +++ b/drivers/staging/iio/impedance-analyzer/ad5933.c
+> @@ -626,7 +626,7 @@ static int ad5933_register_ring_funcs_and_init(struct iio_dev *indio_dev)
+>  {
+>  	struct iio_buffer *buffer;
+>  
+> -	buffer = iio_kfifo_allocate(indio_dev);
+> +	buffer = iio_kfifo_allocate();
+>  	if (!buffer)
+>  		return -ENOMEM;
+>  
+> diff --git a/drivers/staging/iio/meter/ade7758_ring.c b/drivers/staging/iio/meter/ade7758_ring.c
+> index 6e90064..31d2cf3 100644
+> --- a/drivers/staging/iio/meter/ade7758_ring.c
+> +++ b/drivers/staging/iio/meter/ade7758_ring.c
+> @@ -118,7 +118,7 @@ int ade7758_configure_ring(struct iio_dev *indio_dev)
+>  	struct iio_buffer *buffer;
+>  	int ret = 0;
+>  
+> -	buffer = iio_kfifo_allocate(indio_dev);
+> +	buffer = iio_kfifo_allocate();
+>  	if (!buffer) {
+>  		ret = -ENOMEM;
+>  		return ret;
+> diff --git a/include/linux/iio/kfifo_buf.h b/include/linux/iio/kfifo_buf.h
+> index 25eeac7..1a8d57a 100644
+> --- a/include/linux/iio/kfifo_buf.h
+> +++ b/include/linux/iio/kfifo_buf.h
+> @@ -5,7 +5,7 @@
+>  #include <linux/iio/iio.h>
+>  #include <linux/iio/buffer.h>
+>  
+> -struct iio_buffer *iio_kfifo_allocate(struct iio_dev *indio_dev);
+> +struct iio_buffer *iio_kfifo_allocate(void);
+>  void iio_kfifo_free(struct iio_buffer *r);
+>  
+>  #endif
+> 
 
