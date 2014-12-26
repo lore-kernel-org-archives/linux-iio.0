@@ -1,90 +1,58 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:45065 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:44950 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751441AbaLZMOW (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 26 Dec 2014 07:14:22 -0500
-Message-ID: <549D511D.5030302@kernel.org>
-Date: Fri, 26 Dec 2014 12:14:21 +0000
+	with ESMTP id S1751627AbaLZL6D (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 26 Dec 2014 06:58:03 -0500
+Message-ID: <549D4D49.5000101@kernel.org>
+Date: Fri, 26 Dec 2014 11:58:01 +0000
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: "Tirdea, Irina" <irina.tirdea@intel.com>,
-	"Dogaru, Vlad" <vlad.dogaru@intel.com>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Subject: Re: [PATCH] iio: mma9551: fix sparse warning
-References: <1418656611-13496-1-git-send-email-vlad.dogaru@intel.com> <1F3AC3675D538145B1661F571FE1805F199E7105@IRSMSX105.ger.corp.intel.com>
-In-Reply-To: <1F3AC3675D538145B1661F571FE1805F199E7105@IRSMSX105.ger.corp.intel.com>
+To: Angelo Compagnucci <angelo.compagnucci@gmail.com>,
+	linux-iio@vger.kernel.org
+Subject: Re: [PATCH] iio: mcp3422: Add DT binding documentation
+References: <1418839862-4235-1-git-send-email-angelo.compagnucci@gmail.com>
+In-Reply-To: <1418839862-4235-1-git-send-email-angelo.compagnucci@gmail.com>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 15/12/14 16:30, Tirdea, Irina wrote:
-> 
-> 
->> -----Original Message-----
->> From: linux-iio-owner@vger.kernel.org [mailto:linux-iio-owner@vger.kernel.org] On Behalf Of Vlad Dogaru
->> Sent: 15 December, 2014 17:17
->> To: linux-iio@vger.kernel.org
->> Cc: Dogaru, Vlad
->> Subject: [PATCH] iio: mma9551: fix sparse warning
->>
->> sparse warnings: (new ones prefixed by >>)
->>
->>>> drivers/iio/accel/mma9551.c:554:57: sparse: mixing different enum types
->>    drivers/iio/accel/mma9551.c:554:57:     int enum mma9551_tilt_axis  versus
->>    drivers/iio/accel/mma9551.c:554:57:     int enum mma9551_gpio_pin
->>>> drivers/iio/accel/mma9551.c:576:57: sparse: mixing different enum types
->>    drivers/iio/accel/mma9551.c:576:57:     int enum mma9551_tilt_axis  versus
->>    drivers/iio/accel/mma9551.c:576:57:     int enum mma9551_gpio_pin
->>
->> Signed-off-by: Vlad Dogaru <vlad.dogaru@intel.com>
->> Reported-by: kbuild test robot <fengguang.wu@intel.com>
-Applied to the togreg branch of iio.git - initially pushed out as testing
-for the autobuilders to play.
+On 17/12/14 18:11, Angelo Compagnucci wrote:
+> Adding binding documentation for ADC MCP3422.
+No sign off.
 
-Thanks,
+Also, should go to the device tree list and maintainers.
+Another option for this would be to add it to the list
+in bindings/i2c/trivial-devices - but I think I prefer them
+to have explicit binding docs myself.
 
 Jonathan
->> ---
+> ---
+>  Documentation/devicetree/bindings/iio/adc/mcp3422.txt | 12 ++++++++++++
+>  1 file changed, 12 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/iio/adc/mcp3422.txt
 > 
-> Reviewed-by: Irina Tirdea <irina.tirdea@intel.com>
-> 
->>  drivers/iio/accel/mma9551.c | 6 ++++--
->>  1 file changed, 4 insertions(+), 2 deletions(-)
->>
->> diff --git a/drivers/iio/accel/mma9551.c b/drivers/iio/accel/mma9551.c
->> index 1be125b..6563e26 100644
->> --- a/drivers/iio/accel/mma9551.c
->> +++ b/drivers/iio/accel/mma9551.c
->> @@ -551,7 +551,8 @@ static int mma9551_config_incli_event(struct iio_dev *indio_dev,
->>  		return 0;
->>
->>  	if (state == 0) {
->> -		ret = mma9551_gpio_config(data->client, mma_axis,
->> +		ret = mma9551_gpio_config(data->client,
->> +					  (enum mma9551_gpio_pin)mma_axis,
->>  					  MMA9551_APPID_NONE, 0, 0);
->>  		if (ret < 0)
->>  			return ret;
->> @@ -573,7 +574,8 @@ static int mma9551_config_incli_event(struct iio_dev *indio_dev,
->>  			return -EINVAL;
->>  		}
->>
->> -		ret = mma9551_gpio_config(data->client, mma_axis,
->> +		ret = mma9551_gpio_config(data->client,
->> +					  (enum mma9551_gpio_pin)mma_axis,
->>  					  MMA9551_APPID_TILT, bitnum, 0);
->>  		if (ret < 0)
->>  			return ret;
->> --
->> 1.9.1
->>
->> --
->> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
->> the body of a message to majordomo@vger.kernel.org
->> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> diff --git a/Documentation/devicetree/bindings/iio/adc/mcp3422.txt b/Documentation/devicetree/bindings/iio/adc/mcp3422.txt
+> new file mode 100644
+> index 0000000..d6d6eb6
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/iio/adc/mcp3422.txt
+> @@ -0,0 +1,12 @@
+> +* Microchip mcp3422/3/4/6/7/8 chip family (ADC)
+> +
+> +Required properties:
+> +  - compatible: Should be 
+> +               "microchip,mcp3422" or
+> +               "microchip,mcp3423" or
+> +               "microchip,mcp3424" or
+> +               "microchip,mcp3426" or
+> +               "microchip,mcp3427" or
+> +               "microchip,mcp3428"
+> +  - reg: I2C address for the device
+> +
+> +Example:
+> +adc@0 {
+> +	compatible = "microchip,mcp3424";
+> +	reg = <0x68>;
+> +};
 > 
 
