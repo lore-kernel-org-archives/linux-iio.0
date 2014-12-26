@@ -1,51 +1,96 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:45235 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:45494 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751470AbaLZMhi (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 26 Dec 2014 07:37:38 -0500
-Message-ID: <549D5690.1070104@kernel.org>
-Date: Fri, 26 Dec 2014 12:37:36 +0000
+	with ESMTP id S1751989AbaLZN2W (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 26 Dec 2014 08:28:22 -0500
+Message-ID: <549D6274.8030601@kernel.org>
+Date: Fri, 26 Dec 2014 13:28:20 +0000
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-CC: linux-iio@vger.kernel.org, Wolfram Sang <wsa@the-dreams.de>
-Subject: Re: [PATCH 2/3] iio: imu: inv_mpu6050: Added adapter class
-References: <1418678363-22437-1-git-send-email-srinivas.pandruvada@linux.intel.com> <1418678363-22437-3-git-send-email-srinivas.pandruvada@linux.intel.com>
-In-Reply-To: <1418678363-22437-3-git-send-email-srinivas.pandruvada@linux.intel.com>
+To: Irina Tirdea <irina.tirdea@intel.com>, linux-iio@vger.kernel.org
+CC: linux-kernel@vger.kernel.org, Vlad Dogaru <vlad.dogaru@intel.com>,
+	Daniel Baluta <daniel.baluta@intel.com>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>
+Subject: Re: [PATCH 3/8] iio: core: Introduce SPEED channel type
+References: <1419029879-12024-1-git-send-email-irina.tirdea@intel.com> <1419029879-12024-4-git-send-email-irina.tirdea@intel.com>
+In-Reply-To: <1419029879-12024-4-git-send-email-irina.tirdea@intel.com>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 15/12/14 21:19, Srinivas Pandruvada wrote:
-> To use i2c auto detect to work we need to have a non zero class.
-> The closest class is I2C_CLASS_HWMON, as it defined to be used
-> with all hw monitoring drivers.
+On 19/12/14 22:57, Irina Tirdea wrote:
+> Some devices export the current speed value of the user.
 > 
-> Also this class is already used by some iio driver, hid drivers, led
-> and misc drivers. So this is not new that this is used outside
-> hwmon drivers.
+> One of this devices is Freescale's MMA9553L
+> (http://www.freescale.com/files/sensors/doc/ref_manual/MMA9553LSWRM.pdf)
+> that computes the speed of the user based on the number of steps and
+> stride length.
 > 
-> Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-Been meaning to sort this out for a while.  We really shouldn't be camping
-on the HWMON class (nor should anyone else).
-
-Wolfram, do you mind new classes being added?
+> Introduce a new channel type SPEED to export these values.
+> 
+A fun question raised by this is whether we are going to end up with
+both speed and velocity (depending on whether it is signed or not).
+I suppose there isn't much to be done about that though and this looks fine
+to me (as does the previous one).
+> Signed-off-by: Irina Tirdea <irina.tirdea@intel.com>
 > ---
->  drivers/iio/imu/inv_mpu6050/inv_mpu_core.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+>  Documentation/ABI/testing/sysfs-bus-iio |    9 +++++++++
+>  drivers/iio/industrialio-core.c         |    1 +
+>  include/linux/iio/types.h               |    1 +
+>  3 files changed, 11 insertions(+)
 > 
-> diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-> index f73e60b..4af2d24 100644
-> --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-> +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-> @@ -813,7 +813,7 @@ static int inv_mpu_probe(struct i2c_client *client,
->  	st->mux_adapter = i2c_add_mux_adapter(client->adapter,
->  					      &client->dev,
->  					      indio_dev,
-> -					      0, 0, 0,
-> +					      0, 0, I2C_CLASS_HWMON,
->  					      inv_mpu6050_select_bypass,
->  					      inv_mpu6050_deselect_bypass);
->  	if (!st->mux_adapter) {
+> diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
+> index a5c1dcc..07acef7 100644
+> --- a/Documentation/ABI/testing/sysfs-bus-iio
+> +++ b/Documentation/ABI/testing/sysfs-bus-iio
+> @@ -295,6 +295,7 @@ What:		/sys/bus/iio/devices/iio:deviceX/in_rot_from_north_true_tilt_comp_scale
+>  What:		/sys/bus/iio/devices/iio:deviceX/in_pressureY_scale
+>  What:		/sys/bus/iio/devices/iio:deviceX/in_pressure_scale
+>  What:		/sys/bus/iio/devices/iio:deviceX/in_humidityrelative_scale
+> +What:		/sys/bus/iio/devices/iio:deviceX/in_speed_scale
+>  KernelVersion:	2.6.35
+>  Contact:	linux-iio@vger.kernel.org
+>  Description:
+> @@ -1146,6 +1147,14 @@ Description:
+>  		present, output should be considered as processed with the
+>  		unit in milliamps.
+>  
+> +What:		/sys/.../iio:deviceX/in_speed_input
+> +What:		/sys/.../iio:deviceX/in_speed_raw
+> +KernelVersion:	3.19
+> +Contact:	linux-iio@vger.kernel.org
+> +Description:
+> +		This attribute is used to read the current speed value of the user.
+> +		Units after application of scale are m/s.
+> +
+>  What:		/sys/.../iio:deviceX/in_steps_en
+>  KernelVersion:	3.19
+>  Contact:	linux-iio@vger.kernel.org
+> diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+> index 4a10d31..5e50aca 100644
+> --- a/drivers/iio/industrialio-core.c
+> +++ b/drivers/iio/industrialio-core.c
+> @@ -74,6 +74,7 @@ static const char * const iio_chan_type_name_spec[] = {
+>  	[IIO_STEPS] = "steps",
+>  	[IIO_CALORIES] = "calories",
+>  	[IIO_DISTANCE] = "distance",
+> +	[IIO_SPEED] = "speed",
+>  };
+>  
+>  static const char * const iio_modifier_names[] = {
+> diff --git a/include/linux/iio/types.h b/include/linux/iio/types.h
+> index b98f751..c848f45 100644
+> --- a/include/linux/iio/types.h
+> +++ b/include/linux/iio/types.h
+> @@ -34,6 +34,7 @@ enum iio_chan_type {
+>  	IIO_STEPS,
+>  	IIO_CALORIES,
+>  	IIO_DISTANCE,
+> +	IIO_SPEED,
+>  };
+>  
+>  enum iio_modifier {
 > 
 
