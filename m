@@ -1,30 +1,27 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ns.pmeerw.net ([84.19.176.92]:38486 "EHLO pmeerw.net"
+Received: from mga09.intel.com ([134.134.136.24]:17704 "EHLO mga09.intel.com"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751580AbaL2JoB (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Mon, 29 Dec 2014 04:44:01 -0500
-Date: Mon, 29 Dec 2014 10:37:40 +0100 (CET)
-From: Peter Meerwald <pmeerw@pmeerw.net>
-To: Vlad Dogaru <vlad.dogaru@intel.com>
-cc: linux-iio@vger.kernel.org
+	id S1751683AbaL2Jha (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Mon, 29 Dec 2014 04:37:30 -0500
+Date: Mon, 29 Dec 2014 11:38:57 +0200
+From: Vlad Dogaru <vlad.dogaru@intel.com>
+To: linux-iio@vger.kernel.org
 Subject: Re: [PATCH v4] iio: ensure scan index is unique at device register
-In-Reply-To: <1419845361-24102-1-git-send-email-vlad.dogaru@intel.com>
-Message-ID: <alpine.DEB.2.02.1412291035560.3347@pmeerw.net>
+Message-ID: <20141229093857.GD16917@vdogaru>
 References: <1419845361-24102-1-git-send-email-vlad.dogaru@intel.com>
 MIME-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <1419845361-24102-1-git-send-email-vlad.dogaru@intel.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-
+On Mon, Dec 29, 2014 at 11:29:21AM +0200, Vlad Dogaru wrote:
 > Having two or more channels with the same positive scan_index field
 > makes no sense.  Prevent this situation by failing to register a device
 > if two scan indexes are identical.
 
-I don't see the check whether the device supports buffering; v3 == v4 by 
-mistake?
-
-p.
+Please drop this one as well, I've just sent a v5.  This just isn't my
+day :)
 
 > Signed-off-by: Vlad Dogaru <vlad.dogaru@intel.com>
 > ---
@@ -80,9 +77,6 @@ p.
 >  	/* configure elements for the chrdev */
 >  	indio_dev->dev.devt = MKDEV(MAJOR(iio_devt), indio_dev->id);
 >  
+> -- 
+> 1.9.1
 > 
-
--- 
-
-Peter Meerwald
-+43-664-2444418 (mobile)
