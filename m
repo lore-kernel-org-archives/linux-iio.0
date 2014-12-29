@@ -6,13 +6,13 @@ CC: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "Dogaru,
  Vlad" <vlad.dogaru@intel.com>, "Baluta, Daniel" <daniel.baluta@intel.com>,
 	Hartmut Knaack <knaack.h@gmx.de>, Lars-Peter Clausen <lars@metafoo.de>,
 	"Peter Meerwald" <pmeerw@pmeerw.net>
-Subject: RE: [PATCH 4/8] iio: core: Introduce IO_CHAN_INFO_CALIBWEIGHT
-Date: Mon, 29 Dec 2014 15:05:48 +0000
-Message-ID: <1F3AC3675D538145B1661F571FE1805F199F7B06@irsmsx105.ger.corp.intel.com>
+Subject: RE: [PATCH 1/8] iio: core: Introduce CALORIES channel type
+Date: Mon, 29 Dec 2014 14:42:16 +0000
+Message-ID: <1F3AC3675D538145B1661F571FE1805F199F7ADF@irsmsx105.ger.corp.intel.com>
 References: <1419029879-12024-1-git-send-email-irina.tirdea@intel.com>
- <1419029879-12024-5-git-send-email-irina.tirdea@intel.com>
- <549D632E.4000004@kernel.org>
-In-Reply-To: <549D632E.4000004@kernel.org>
+ <1419029879-12024-2-git-send-email-irina.tirdea@intel.com>
+ <549D61F3.3030302@kernel.org>
+In-Reply-To: <549D61F3.3030302@kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 List-ID: <linux-iio@vger.kernel.org>
@@ -20,89 +20,125 @@ List-ID: <linux-iio@vger.kernel.org>
 
 
 > -----Original Message-----
-> From: Jonathan Cameron [mailto:jic23@kernel.org]
-> Sent: 26 December, 2014 15:31
+> From: linux-iio-owner@vger.kernel.org [mailto:linux-iio-owner@vger.kernel=
+.org] On Behalf Of Jonathan Cameron
+> Sent: 26 December, 2014 15:26
 > To: Tirdea, Irina; linux-iio@vger.kernel.org
 > Cc: linux-kernel@vger.kernel.org; Dogaru, Vlad; Baluta, Daniel; Hartmut K=
 naack; Lars-Peter Clausen; Peter Meerwald
-> Subject: Re: [PATCH 4/8] iio: core: Introduce IO_CHAN_INFO_CALIBWEIGHT
+> Subject: Re: [PATCH 1/8] iio: core: Introduce CALORIES channel type
 >=20
 > On 19/12/14 22:57, Irina Tirdea wrote:
-> > Some devices need the weight of the user to compute other
-> > parameters. One of this devices is Freescale's MMA9553L
+> > Some devices compute the number of calories that the user has
+> > burnt since the last reset.
+> >
+> > One of this devices is Freescale's MMA9553L
 > > (http://www.freescale.com/files/sensors/doc/ref_manual/MMA9553LSWRM.pdf=
 )
-> > that needs the weight of the user to compute the number of calories bur=
-nt.
+> > that computes the number of calories based on weight and step rate.
+> >
+> > Introduce a new channel type CALORIES to export these values.
 > >
 > > Signed-off-by: Irina Tirdea <irina.tirdea@intel.com>
+> hmm..  Ideally we use SI units for everything, but in human energy usage
+> Calories are the most common unit by a long way.  I'm having some trouble
+> even finding the conversion for this particular for of calorie.
+>=20
+
+Initially I wanted to use the calorie as unit, but it seemed a little bit c=
+onfusing because there are 2 different units both called calorie:
+- The small calorie or gram calorie approximates the energy needed to incre=
+ase the temperature of 1 gram of water by 1 C.
+- The kilogram calorie or "large calorie" is an obsolete term used for the =
+kilocalorie, which is the calorie used to express the energy content of foo=
+ds. However, in practice, the prefix "kilo" is usually omitted.
+
+Instead of using cal (small calorie), kcal or Calorie (large calorie) as un=
+it, I think it would be more clear to use Joule since that would eliminate =
+confusion and it is also a SI unit.
+
+According to the conversion table from here http://physics.nist.gov/Pubs/SP=
+811/appenB9.html#ENERGY, we could convert nutritional calories to Joules us=
+ing the following formula:
+  Energy (Joules) =3D 4 184 * calories_th_nutrition
+I used this formula in the implementation of the driver.
+
+> Now clearly it doesn't matter if the only energy sensors we ever get
+> are for human activity. However, that's unlikely to be the case.  We
+> already have devices doing instantaneous power and there are plenty
+> of smart meter chips out there (though of course, they will use the
+> option of kW Hours just to confuse matters).
+>=20
+> I'd definitely prefer joules if we can do it with out a large amount of
+> pain.
+>=20
+> Lars - any views on this?  (Analog do make plenty of 'energy' measurement
+> devices after all!)
 > > ---
-> >  Documentation/ABI/testing/sysfs-bus-iio |    7 +++++++
+> >  Documentation/ABI/testing/sysfs-bus-iio |    9 +++++++++
 > >  drivers/iio/industrialio-core.c         |    1 +
-> >  include/linux/iio/iio.h                 |    1 +
-> >  3 files changed, 9 insertions(+)
+> >  include/linux/iio/types.h               |    1 +
+> >  3 files changed, 11 insertions(+)
 > >
 > > diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/AB=
 I/testing/sysfs-bus-iio
-> > index 07acef7..e480175 100644
+> > index df5e69e..bb9342b 100644
 > > --- a/Documentation/ABI/testing/sysfs-bus-iio
 > > +++ b/Documentation/ABI/testing/sysfs-bus-iio
-> > @@ -351,6 +351,13 @@ Description:
-> >  		to compute the stride length, distance, speed and activity
-> >  		type.
+> > @@ -282,6 +282,7 @@ What:		/sys/bus/iio/devices/iio:deviceX/in_current_=
+scale
+> >  What:		/sys/bus/iio/devices/iio:deviceX/in_accel_scale
+> >  What:		/sys/bus/iio/devices/iio:deviceX/in_accel_peak_scale
+> >  What:		/sys/bus/iio/devices/iio:deviceX/in_anglvel_scale
+> > +What:		/sys/bus/iio/devices/iio:deviceX/in_calories_scale
+> >  What:		/sys/bus/iio/devices/iio:deviceX/in_magn_scale
+> >  What:		/sys/bus/iio/devices/iio:deviceX/in_magn_x_scale
+> >  What:		/sys/bus/iio/devices/iio:deviceX/in_magn_y_scale
+> > @@ -1049,6 +1050,14 @@ Description:
+> >  		For a list of available output power modes read
+> >  		in_accel_power_mode_available.
 > >
-> > +What:		/sys/bus/iio/devices/iio:deviceX/in_steps_calibweight
-> > +KernelVersion:	3.19
+> > +What:		/sys/.../iio:deviceX/in_calories_input
+> > +What:		/sys/.../iio:deviceX/in_calories_raw
+> > +KernelVersion:	3.17
 > > +Contact:	linux-iio@vger.kernel.org
 > > +Description:
-> > +		Weight of the user (in kg). It is needed by some pedometers
-> > +		to compute the calories burnt by the user.
-> How about grams?  Nice to keep to SI units going forward (I appreciate we
-> have broken that for what seemed like good reasons at the time) in one
-> or two places, but it makes it much harder to define consistent interface=
-s in the
-> long run.
-
-According to SI [1] kg is the base unit for mass, so this was the obvious f=
-irst choice.
-I have nothing against using grams, but it is not clear to me why using gra=
-ms would make it easier to define consistent interfaces in the long run.
-I am probably missing something, so could you please clarify this?
-
-Thanks,
-Irina
-
-[1] http://www.bipm.org/en/measurement-units/
-
-> J
+> > +		This attribute is used to read the number of calories burned since t=
+he last
+> > +		reset. Units after application of scale are Joules.
 > > +
-> >  What:		/sys/bus/iio/devices/iio:deviceX/in_accel_scale_available
-> >  What:		/sys/.../iio:deviceX/in_voltageX_scale_available
-> >  What:		/sys/.../iio:deviceX/in_voltage-voltage_scale_available
+> >  What:		/sys/bus/iio/devices/iio:deviceX/store_eeprom
+> >  KernelVersion:	3.4.0
+> >  Contact:	linux-iio@vger.kernel.org
 > > diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio=
 -core.c
-> > index 5e50aca..4c435c8 100644
+> > index ee442ee..5d95e84 100644
 > > --- a/drivers/iio/industrialio-core.c
 > > +++ b/drivers/iio/industrialio-core.c
-> > @@ -124,6 +124,7 @@ static const char * const iio_chan_info_postfix[] =
+> > @@ -72,6 +72,7 @@ static const char * const iio_chan_type_name_spec[] =
 =3D {
-> >  	[IIO_CHAN_INFO_INT_TIME] =3D "integration_time",
-> >  	[IIO_CHAN_INFO_ENABLE] =3D "en",
-> >  	[IIO_CHAN_INFO_CALIBHEIGHT] =3D "calibheight",
-> > +	[IIO_CHAN_INFO_CALIBWEIGHT] =3D "calibweight",
+> >  	[IIO_HUMIDITYRELATIVE] =3D "humidityrelative",
+> >  	[IIO_ACTIVITY] =3D "activity",
+> >  	[IIO_STEPS] =3D "steps",
+> > +	[IIO_CALORIES] =3D "calories",
 > >  };
 > >
-> >  /**
-> > diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
-> > index 878d861..752a929 100644
-> > --- a/include/linux/iio/iio.h
-> > +++ b/include/linux/iio/iio.h
-> > @@ -40,6 +40,7 @@ enum iio_chan_info_enum {
-> >  	IIO_CHAN_INFO_INT_TIME,
-> >  	IIO_CHAN_INFO_ENABLE,
-> >  	IIO_CHAN_INFO_CALIBHEIGHT,
-> > +	IIO_CHAN_INFO_CALIBWEIGHT,
+> >  static const char * const iio_modifier_names[] =3D {
+> > diff --git a/include/linux/iio/types.h b/include/linux/iio/types.h
+> > index 904dcbb..d2fe930 100644
+> > --- a/include/linux/iio/types.h
+> > +++ b/include/linux/iio/types.h
+> > @@ -32,6 +32,7 @@ enum iio_chan_type {
+> >  	IIO_HUMIDITYRELATIVE,
+> >  	IIO_ACTIVITY,
+> >  	IIO_STEPS,
+> > +	IIO_CALORIES,
 > >  };
 > >
-> >  enum iio_shared_by {
+> >  enum iio_modifier {
 > >
+>=20
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
