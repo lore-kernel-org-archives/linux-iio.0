@@ -1,35 +1,41 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-wi0-f173.google.com ([209.85.212.173]:36589 "EHLO
-	mail-wi0-f173.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751305AbaL3S6U (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 30 Dec 2014 13:58:20 -0500
-Received: by mail-wi0-f173.google.com with SMTP id r20so24515053wiv.6
-        for <linux-iio@vger.kernel.org>; Tue, 30 Dec 2014 10:58:19 -0800 (PST)
+Return-Path: <roberta.dobrescu@gmail.com>
 From: Roberta Dobrescu <roberta.dobrescu@gmail.com>
-To: jic23@kernel.org, linux-iio@vger.kernel.org
-Cc: octavian.purdila@intel.com, daniel.baluta@intel.com,
-	lars@metafoo.de, Michael.Hennerich@analog.com, knaack.h@gmx.de,
-	pmeerw@pmeerw.net, Roberta Dobrescu <roberta.dobrescu@gmail.com>
-Subject: [PATCH 0/3] iio: accel: Fix checkpatch warnings
-Date: Tue, 30 Dec 2014 20:57:52 +0200
-Message-Id: <1419965875-4298-1-git-send-email-roberta.dobrescu@gmail.com>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+To: jic23@kernel.org,
+	linux-iio@vger.kernel.org
+Cc: octavian.purdila@intel.com,
+	daniel.baluta@intel.com,
+	lars@metafoo.de,
+	Michael.Hennerich@analog.com,
+	knaack.h@gmx.de,
+	pmeerw@pmeerw.net,
+	Roberta Dobrescu <roberta.dobrescu@gmail.com>
+Subject: [PATCH 2/2] iio: light: lm3533-als: Remove space before ','
+Date: Tue, 30 Dec 2014 20:48:50 +0200
+Message-Id: <1419965330-4102-3-git-send-email-roberta.dobrescu@gmail.com>
+In-Reply-To: <1419965330-4102-1-git-send-email-roberta.dobrescu@gmail.com>
+References: <1419965330-4102-1-git-send-email-roberta.dobrescu@gmail.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-This patchset fixes warnings detected using checkpatch.pl,
-such as: missing blank line after declarations, trailing whitespaces,
-incomplete config symbol description.
+This patch fixes the following checkpatch.pl error:
+ERROR: space prohibited before that ',' (ctx:WxE)
 
-Roberta Dobrescu (3):
-  iio: accel: kxcjk-1013: Add a blank line after declarations
-  iio: accel: mma8452: Remove trailing whitespace
-  iio: accel: Annotate Kconfig entries with module name information
+Signed-off-by: Roberta Dobrescu <roberta.dobrescu@gmail.com>
+---
+ drivers/iio/light/lm3533-als.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
- drivers/iio/accel/Kconfig      | 6 ++++++
- drivers/iio/accel/kxcjk-1013.c | 1 +
- drivers/iio/accel/mma8452.c    | 2 +-
- 3 files changed, 8 insertions(+), 1 deletion(-)
-
+diff --git a/drivers/iio/light/lm3533-als.c b/drivers/iio/light/lm3533-als.c
+index ae3c71b..076bc46 100644
+--- a/drivers/iio/light/lm3533-als.c
++++ b/drivers/iio/light/lm3533-als.c
+@@ -657,7 +657,7 @@ static ALS_HYSTERESIS_ATTR_RO(3);
+ #define ILLUMINANCE_ATTR_RO(_name) \
+ 	DEVICE_ATTR(in_illuminance0_##_name, S_IRUGO, show_##_name, NULL)
+ #define ILLUMINANCE_ATTR_RW(_name) \
+-	DEVICE_ATTR(in_illuminance0_##_name, S_IRUGO | S_IWUSR , \
++	DEVICE_ATTR(in_illuminance0_##_name, S_IRUGO | S_IWUSR, \
+ 						show_##_name, store_##_name)
+ /*
+  * ALS Zone threshold-event enable
 -- 
 1.9.1
-
