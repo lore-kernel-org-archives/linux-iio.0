@@ -1,43 +1,52 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:47813 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750779AbaLZVyd (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 26 Dec 2014 16:54:33 -0500
-Message-ID: <549DD916.1050904@kernel.org>
-Date: Fri, 26 Dec 2014 21:54:30 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-MIME-Version: 1.0
-To: Lars-Peter Clausen <lars@metafoo.de>,
-	Vlad Dogaru <vlad.dogaru@intel.com>, linux-iio@vger.kernel.org,
-	knaack.h@gmx.de
-Subject: Re: [PATCH v2] iio: ensure scan index is unique at buffer register
-References: <1418394390-19690-1-git-send-email-vlad.dogaru@intel.com> <5493016D.7000602@metafoo.de>
-In-Reply-To: <5493016D.7000602@metafoo.de>
-Content-Type: text/plain; charset=windows-1252
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <roberta.dobrescu@gmail.com>
+From: Roberta Dobrescu <roberta.dobrescu@gmail.com>
+To: jic23@kernel.org,
+	linux-iio@vger.kernel.org
+Cc: octavian.purdila@intel.com,
+	daniel.baluta@intel.com,
+	lars@metafoo.de,
+	Michael.Hennerich@analog.com,
+	knaack.h@gmx.de,
+	pmeerw@pmeerw.net,
+	Roberta Dobrescu <roberta.dobrescu@gmail.com>
+Subject: [PATCH 3/3] iio: accel: Annotate Kconfig entries with module name information
+Date: Tue, 30 Dec 2014 20:57:55 +0200
+Message-Id: <1419965875-4298-4-git-send-email-roberta.dobrescu@gmail.com>
+In-Reply-To: <1419965875-4298-1-git-send-email-roberta.dobrescu@gmail.com>
+References: <1419965875-4298-1-git-send-email-roberta.dobrescu@gmail.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-On 18/12/14 16:31, Lars-Peter Clausen wrote:
-> On 12/12/2014 03:26 PM, Vlad Dogaru wrote:
->> Having two or more channels with the same positive scan_index field
->> makes no sense.  Prevent this situation by failing to register a buffer
->> if two scan indexes are identical.
->>
->> Signed-off-by: Vlad Dogaru <vlad.dogaru@intel.com>
-> 
-> Looks ok, although I'm not convinced that we really need it.
-> 
-> Reviewed-by: Lars-Peter Clausen <lars@metafoo.de>
-> 
-> [...]
-I'm kind of mildly in favour of things that make bugs
-less likely.  However, I think this fell foul of Lars'
-recent set of cleanups for the buffered code.
+This patch fixes the following checkpatch.pl warning:
+WARNING: please write a paragraph that describes the config symbol fully
 
-Could you rebase on my togreg branch.
-https://git.kernel.org/cgit/linux/kernel/git/jic23/iio.git/log/?h=togreg
+Signed-off-by: Roberta Dobrescu <roberta.dobrescu@gmail.com>
+---
+ drivers/iio/accel/Kconfig | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-Thanks
-
-Jonathan
-
+diff --git a/drivers/iio/accel/Kconfig b/drivers/iio/accel/Kconfig
+index 9b9be87..402a3a5 100644
+--- a/drivers/iio/accel/Kconfig
++++ b/drivers/iio/accel/Kconfig
+@@ -43,6 +43,9 @@ config HID_SENSOR_ACCEL_3D
+ 	  Say yes here to build support for the HID SENSOR
+ 	  accelerometers 3D.
+ 
++	  To compile this driver as a module, choose M here: the
++	  module will be called hid-sensor-accel-3d.
++
+ config IIO_ST_ACCEL_3AXIS
+ 	tristate "STMicroelectronics accelerometers 3-Axis Driver"
+ 	depends on (I2C || SPI_MASTER) && SYSFS
+@@ -80,6 +83,9 @@ config KXSD9
+ 	  Say yes here to build support for the Kionix KXSD9 accelerometer.
+ 	  Currently this only supports the device via an SPI interface.
+ 
++	  To compile this driver as a module, choose M here: the module
++	  will be called kxsd9.
++
+ config MMA8452
+ 	tristate "Freescale MMA8452Q Accelerometer Driver"
+ 	depends on I2C
+-- 
+1.9.1
