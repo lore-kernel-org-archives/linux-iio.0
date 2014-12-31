@@ -1,103 +1,54 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga09.intel.com ([134.134.136.24]:17533 "EHLO mga09.intel.com"
+Received: from www.osadl.org ([62.245.132.105]:56732 "EHLO www.osadl.org"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751505AbaL2T70 convert rfc822-to-8bit (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 29 Dec 2014 14:59:26 -0500
-From: "Tirdea, Irina" <irina.tirdea@intel.com>
-To: Jonathan Cameron <jic23@kernel.org>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-CC: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"Dogaru, Vlad" <vlad.dogaru@intel.com>,
-	"Baluta, Daniel" <daniel.baluta@intel.com>,
-	Hartmut Knaack <knaack.h@gmx.de>,
+	id S1751698AbaLaJDs (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Wed, 31 Dec 2014 04:03:48 -0500
+From: Nicholas Mc Guire <der.herr@hofr.at>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Hartmut Knaack <knaack.h@gmx.de>,
 	Lars-Peter Clausen <lars@metafoo.de>,
-	"Peter Meerwald" <pmeerw@pmeerw.net>
-Subject: RE: [PATCH 5/8] iio: core: Introduce IIO_CHAN_INFO_CALIBGENDER
-Date: Mon, 29 Dec 2014 19:59:23 +0000
-Message-ID: <1F3AC3675D538145B1661F571FE1805F199F7B9F@irsmsx105.ger.corp.intel.com>
-References: <1419029879-12024-1-git-send-email-irina.tirdea@intel.com>
- <1419029879-12024-6-git-send-email-irina.tirdea@intel.com>
- <549D62D2.5000105@kernel.org>
-In-Reply-To: <549D62D2.5000105@kernel.org>
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Grant Likely <grant.likely@linaro.org>,
+	Rob Herring <robh+dt@kernel.org>,
+	"Ivan T. Ivanov" <iivanov@mm-sol.com>, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+	Nicholas Mc Guire <der.herr@hofr.at>
+Subject: [PATCH RFC] iio: iadc: wait_for_completion_timeout time in jiffies
+Date: Wed, 31 Dec 2014 03:59:46 -0500
+Message-Id: <1420016386-19638-1-git-send-email-der.herr@hofr.at>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
+The timeout value to wait_for_completion_timeout is in jiffies but
+the value being passed seems like it was intended to by microseconds
+Note that the timeout was extremely long thus it might be too short
+now. In any case it probably should be passed through usecs_to_jiffies()
+or msecs_to_jiffies()
 
+patch is against linux-next 3.19.0-rc1 -next-20141226
 
-> -----Original Message-----
-> From: Jonathan Cameron [mailto:jic23@kernel.org]
-> Sent: 26 December, 2014 15:30
-> To: Tirdea, Irina; linux-iio@vger.kernel.org
-> Cc: linux-kernel@vger.kernel.org; Dogaru, Vlad; Baluta, Daniel; Hartmut Knaack; Lars-Peter Clausen; Peter Meerwald
-> Subject: Re: [PATCH 5/8] iio: core: Introduce IIO_CHAN_INFO_CALIBGENDER
-> 
-> On 19/12/14 22:57, Irina Tirdea wrote:
-> > Some devices need the gender of the user to compute various
-> > parameters. One of this devices is Freescale's MMA9553L
-> > (http://www.freescale.com/files/sensors/doc/ref_manual/MMA9553LSWRM.pdf)
-> > that needs the gender of the user to compute distance, speed and activity type.
-> >
-> > Signed-off-by: Irina Tirdea <irina.tirdea@intel.com>
-> 
-> > ---
-> >  Documentation/ABI/testing/sysfs-bus-iio |    8 ++++++++
-> >  drivers/iio/industrialio-core.c         |    1 +
-> >  include/linux/iio/iio.h                 |    1 +
-> >  3 files changed, 10 insertions(+)
-> >
-> > diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
-> > index e480175..3b68c2d 100644
-> > --- a/Documentation/ABI/testing/sysfs-bus-iio
-> > +++ b/Documentation/ABI/testing/sysfs-bus-iio
-> > @@ -343,6 +343,14 @@ Description:
-> >  		production inaccuracies).  If shared across all channels,
-> >  		<type>_calibscale is used.
-> >
-> > +What:		/sys/bus/iio/devices/iio:deviceX/in_steps_calibgender
-> > +KernelVersion:	3.19
-> > +Contact:	linux-iio@vger.kernel.org
-> > +Description:
-> > +		Gender of the user: 0 for female and 1 for male. It is needed
-> > +		by some pedometers to compute the stride length, distance,
-> > +		speed and activity type.
-> This will have to go through the extended attribute enum interface. No magic
-> numbers in the interface please.
+patch was only compile-tested x86_64_defcofnig + CONFIG_SPMI=m
+CONFIG_IIO=m, CONFIG_QCOM_SPMI_IADC=m
 
-Sure, I will change this in next version.
+Signed-off-by: Nicholas Mc Guire <der.herr@hofr.at>
+---
+ drivers/iio/adc/qcom-spmi-iadc.c |    3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-Thanks for the reviews, Jonathan!
-
-Irina
-
-> > +
-> >  What:		/sys/bus/iio/devices/iio:deviceX/in_steps_calibheight
-> >  KernelVersion:	3.19
-> >  Contact:	linux-iio@vger.kernel.org
-> > diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
-> > index 4c435c8..93a39f9 100644
-> > --- a/drivers/iio/industrialio-core.c
-> > +++ b/drivers/iio/industrialio-core.c
-> > @@ -125,6 +125,7 @@ static const char * const iio_chan_info_postfix[] = {
-> >  	[IIO_CHAN_INFO_ENABLE] = "en",
-> >  	[IIO_CHAN_INFO_CALIBHEIGHT] = "calibheight",
-> >  	[IIO_CHAN_INFO_CALIBWEIGHT] = "calibweight",
-> > +	[IIO_CHAN_INFO_CALIBGENDER] = "calibgender",
-> >  };
-> >
-> >  /**
-> > diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
-> > index 752a929..63dac0f 100644
-> > --- a/include/linux/iio/iio.h
-> > +++ b/include/linux/iio/iio.h
-> > @@ -41,6 +41,7 @@ enum iio_chan_info_enum {
-> >  	IIO_CHAN_INFO_ENABLE,
-> >  	IIO_CHAN_INFO_CALIBHEIGHT,
-> >  	IIO_CHAN_INFO_CALIBWEIGHT,
-> > +	IIO_CHAN_INFO_CALIBGENDER,
-> >  };
-> >
-> >  enum iio_shared_by {
-> >
+diff --git a/drivers/iio/adc/qcom-spmi-iadc.c b/drivers/iio/adc/qcom-spmi-iadc.c
+index b9666f2..3080562 100644
+--- a/drivers/iio/adc/qcom-spmi-iadc.c
++++ b/drivers/iio/adc/qcom-spmi-iadc.c
+@@ -296,7 +296,8 @@ static int iadc_do_conversion(struct iadc_chip *iadc, int chan, u16 *data)
+ 	if (iadc->poll_eoc) {
+ 		ret = iadc_poll_wait_eoc(iadc, wait);
+ 	} else {
+-		ret = wait_for_completion_timeout(&iadc->complete, wait);
++		ret = wait_for_completion_timeout(&iadc->complete,
++			usecs_to_jiffies(wait));
+ 		if (!ret)
+ 			ret = -ETIMEDOUT;
+ 		else
+-- 
+1.7.10.4
 
