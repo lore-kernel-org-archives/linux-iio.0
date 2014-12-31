@@ -1,54 +1,51 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from www.osadl.org ([62.245.132.105]:56732 "EHLO www.osadl.org"
+Received: from sauhun.de ([89.238.76.85]:43319 "EHLO pokefinder.org"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751698AbaLaJDs (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Wed, 31 Dec 2014 04:03:48 -0500
-From: Nicholas Mc Guire <der.herr@hofr.at>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	Grant Likely <grant.likely@linaro.org>,
-	Rob Herring <robh+dt@kernel.org>,
-	"Ivan T. Ivanov" <iivanov@mm-sol.com>, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-	Nicholas Mc Guire <der.herr@hofr.at>
-Subject: [PATCH RFC] iio: iadc: wait_for_completion_timeout time in jiffies
-Date: Wed, 31 Dec 2014 03:59:46 -0500
-Message-Id: <1420016386-19638-1-git-send-email-der.herr@hofr.at>
+	id S1751436AbaLaK0A (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Wed, 31 Dec 2014 05:26:00 -0500
+Date: Wed, 31 Dec 2014 11:25:54 +0100
+From: Wolfram Sang <wsa@the-dreams.de>
+To: Jonathan Cameron <jic23@kernel.org>,
+	Jean Delvare <jdelvare@suse.de>
+Cc: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+	linux-iio@vger.kernel.org
+Subject: Re: [PATCH 2/3] iio: imu: inv_mpu6050: Added adapter class
+Message-ID: <20141231102554.GC1461@katana>
+References: <1418678363-22437-1-git-send-email-srinivas.pandruvada@linux.intel.com>
+ <1418678363-22437-3-git-send-email-srinivas.pandruvada@linux.intel.com>
+ <549D5690.1070104@kernel.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <549D5690.1070104@kernel.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-The timeout value to wait_for_completion_timeout is in jiffies but
-the value being passed seems like it was intended to by microseconds
-Note that the timeout was extremely long thus it might be too short
-now. In any case it probably should be passed through usecs_to_jiffies()
-or msecs_to_jiffies()
+On Fri, Dec 26, 2014 at 12:37:36PM +0000, Jonathan Cameron wrote:
+> On 15/12/14 21:19, Srinivas Pandruvada wrote:
+> > To use i2c auto detect to work we need to have a non zero class.
+> > The closest class is I2C_CLASS_HWMON, as it defined to be used
+> > with all hw monitoring drivers.
+> > 
+> > Also this class is already used by some iio driver, hid drivers, led
+> > and misc drivers. So this is not new that this is used outside
+> > hwmon drivers.
+> > 
+> > Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+> Been meaning to sort this out for a while.  We really shouldn't be camping
+> on the HWMON class (nor should anyone else).
+> 
+> Wolfram, do you mind new classes being added?
 
-patch is against linux-next 3.19.0-rc1 -next-20141226
+In general, I wouldn't mind but I wonder if it makes sense here. DDC and
+SPD are very special I2C uses where access should be limited, so a
+seperate class makes sense IMO. HWMON has a specific name, but really
+became "everything what people could hook to their I2C bus" these days.
+So, if anything, we could think about renaming I2C_CLASS_HWMON to
+I2C_CLASS_STANDARD or something (or at least add a comment about that in
+i2c.h)? I'd think IIO devices fall into the default category. Please say
+if you think different. If we'd add the IIO class, most drivers will
+need patches to support IIO devices which would have worked otherwise,
+so this change should be justified.
 
-patch was only compile-tested x86_64_defcofnig + CONFIG_SPMI=m
-CONFIG_IIO=m, CONFIG_QCOM_SPMI_IADC=m
-
-Signed-off-by: Nicholas Mc Guire <der.herr@hofr.at>
----
- drivers/iio/adc/qcom-spmi-iadc.c |    3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/iio/adc/qcom-spmi-iadc.c b/drivers/iio/adc/qcom-spmi-iadc.c
-index b9666f2..3080562 100644
---- a/drivers/iio/adc/qcom-spmi-iadc.c
-+++ b/drivers/iio/adc/qcom-spmi-iadc.c
-@@ -296,7 +296,8 @@ static int iadc_do_conversion(struct iadc_chip *iadc, int chan, u16 *data)
- 	if (iadc->poll_eoc) {
- 		ret = iadc_poll_wait_eoc(iadc, wait);
- 	} else {
--		ret = wait_for_completion_timeout(&iadc->complete, wait);
-+		ret = wait_for_completion_timeout(&iadc->complete,
-+			usecs_to_jiffies(wait));
- 		if (!ret)
- 			ret = -ETIMEDOUT;
- 		else
--- 
-1.7.10.4
+@Jean: Do you have anything to add?
 
