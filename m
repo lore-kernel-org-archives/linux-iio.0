@@ -1,1127 +1,564 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:55331 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750751AbbAAK6h (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 1 Jan 2015 05:58:37 -0500
-Message-ID: <54A52859.5000802@kernel.org>
-Date: Thu, 01 Jan 2015 10:58:33 +0000
-From: Jonathan Cameron <jic23@kernel.org>
+Return-Path: <pmeerw@pmeerw.net>
+Date: Thu, 1 Jan 2015 12:02:38 +0100 (CET)
+From: Peter Meerwald <pmeerw@pmeerw.net>
+To: Kevin Tsai <ktsai@capellamicro.com>
+cc: Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
+    Lars-Peter Clausen <lars@metafoo.de>,
+    Daniel Baluta <daniel.baluta@intel.com>,
+    Archana Patni <archana.patni@linux.intel.com>, linux-iio@vger.kernel.org
+Subject: Re: [PATCH V1 1/1] iio: Added Capella cm3232 ambient light sensor
+ driver.
+In-Reply-To: <1420071030-888-1-git-send-email-ktsai@capellamicro.com>
+Message-ID: <alpine.DEB.2.02.1501011140190.21620@pmeerw.net>
+References: <1420071030-888-1-git-send-email-ktsai@capellamicro.com>
 MIME-Version: 1.0
-To: Irina Tirdea <irina.tirdea@intel.com>, linux-iio@vger.kernel.org
-CC: linux-kernel@vger.kernel.org, Vlad Dogaru <vlad.dogaru@intel.com>,
-	Daniel Baluta <daniel.baluta@intel.com>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>
-Subject: Re: [PATCH 7/8] iio: accel: mma9551: split driver to expose mma955x
- api
-References: <1419029879-12024-1-git-send-email-irina.tirdea@intel.com> <1419029879-12024-8-git-send-email-irina.tirdea@intel.com>
-In-Reply-To: <1419029879-12024-8-git-send-email-irina.tirdea@intel.com>
-Content-Type: text/plain; charset=windows-1252
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: TEXT/PLAIN; charset=US-ASCII
+List-ID: <linux-iio@vger.kernel.org>
 
-On 19/12/14 22:57, Irina Tirdea wrote:
-> Freescale has the MMA955xL family of devices that use the
-> same communication protocol (based on i2c messages):
-> http://www.freescale.com/files/sensors/doc/data_sheet/MMA955xL.pdf.
-> 
-> To support more devices from this family, we need to split the
-> mma9551 driver so we can export the common functions that will
-> be used by other mma955x drivers.
-> 
-> Signed-off-by: Irina Tirdea <irina.tirdea@intel.com>
-> Reviewed-by: Vlad Dogaru <vlad.dogaru@intel.com>
-Sorry, didn't get this far the other day.
+On Wed, 31 Dec 2014, Kevin Tsai wrote:
 
-Anyhow, other than a query on the depends and a suggestion that some
-documentation of locking semantics might be good (perhaps in some
-general kernel doc for the exported functions) - this looks good to
-me.
+> CM3232 is an advanced ambient light sensor with I2C protocol interface.
+> The I2C slave address is internally hardwired as 0x10 (7-bit).  Writing
+> to configure register is byte mode, but reading ALS register requests to
+> use word mode for 16-bit resolution.
 
-Jonathan
+comments below
+ 
+> Signed-off-by: Kevin Tsai <ktsai@capellamicro.com>
 > ---
->  drivers/iio/accel/Kconfig        |    6 +
->  drivers/iio/accel/Makefile       |    4 +-
->  drivers/iio/accel/mma9551.c      |  443 +-------------------------------------
->  drivers/iio/accel/mma9551_core.c |  443 ++++++++++++++++++++++++++++++++++++++
->  drivers/iio/accel/mma9551_core.h |   74 +++++++
->  5 files changed, 530 insertions(+), 440 deletions(-)
->  create mode 100644 drivers/iio/accel/mma9551_core.c
->  create mode 100644 drivers/iio/accel/mma9551_core.h
+>  .../devicetree/bindings/i2c/trivial-devices.txt    |   1 +
+>  MAINTAINERS                                        |   6 +
+>  drivers/iio/light/Kconfig                          |  11 +
+>  drivers/iio/light/Makefile                         |   1 +
+>  drivers/iio/light/cm3232.c                         | 403 +++++++++++++++++++++
+>  5 files changed, 422 insertions(+)
+>  create mode 100644 drivers/iio/light/cm3232.c
 > 
-> diff --git a/drivers/iio/accel/Kconfig b/drivers/iio/accel/Kconfig
-> index d80616d..0600798 100644
-> --- a/drivers/iio/accel/Kconfig
-> +++ b/drivers/iio/accel/Kconfig
-> @@ -105,9 +105,15 @@ config KXCJK1013
->  	  To compile this driver as a module, choose M here: the module will
->  	  be called kxcjk-1013.
+> diff --git a/Documentation/devicetree/bindings/i2c/trivial-devices.txt b/Documentation/devicetree/bindings/i2c/trivial-devices.txt
+> index 9f4e382..572a7c4 100644
+> --- a/Documentation/devicetree/bindings/i2c/trivial-devices.txt
+> +++ b/Documentation/devicetree/bindings/i2c/trivial-devices.txt
+> @@ -34,6 +34,7 @@ atmel,24c512		i2c serial eeprom  (24cxx)
+>  atmel,24c1024		i2c serial eeprom  (24cxx)
+>  atmel,at97sc3204t	i2c trusted platform module (TPM)
+>  capella,cm32181		CM32181: Ambient Light Sensor
+> +capella,cm3232		CM3232: Ambient Light Sensor
+>  catalyst,24c32		i2c serial eeprom
+>  cirrus,cs42l51		Cirrus Logic CS42L51 audio codec
+>  dallas,ds1307		64 x 8, Serial, I2C Real-Time Clock
+> diff --git a/MAINTAINERS b/MAINTAINERS
+> index ddb9ac8..06a613a 100644
+> --- a/MAINTAINERS
+> +++ b/MAINTAINERS
+> @@ -2378,6 +2378,12 @@ F:	security/capability.c
+>  F:	security/commoncap.c
+>  F:	kernel/capability.c
 >  
-> +config MMA9551_CORE
-> +	tristate
-> +	depends on MMA9551
-Why depend here?  THis isn't visible (due to lack of help) and in theory
-an out of tree driver might want to use it.  Hence don't think you want this.
+> +CAPELLA MICROSYSTEMS LIGHT SENSOR DRIVER
+> +M:	Kevin Tsai <ktsai@capellamicro.com>
+> +S:	Maintained
+> +F:	drivers/iio/light/cm*
+> +F:	Documentation/devicetree/bindings/i2c/trivial-devices.txt
 > +
->  config MMA9551
->  	tristate "Freescale MMA9551L Intelligent Motion-Sensing Platform Driver"
+>  CC2520 IEEE-802.15.4 RADIO DRIVER
+>  M:	Varka Bhadram <varkabhadram@gmail.com>
+>  L:	linux-wpan@vger.kernel.org
+> diff --git a/drivers/iio/light/Kconfig b/drivers/iio/light/Kconfig
+> index 5bea821..d2318e2 100644
+> --- a/drivers/iio/light/Kconfig
+> +++ b/drivers/iio/light/Kconfig
+> @@ -48,6 +48,17 @@ config CM32181
+>  	 To compile this driver as a module, choose M here:
+>  	 the module will be called cm32181.
+>  
+> +config CM3232
+> +	depends on I2C
+> +	tristate "CM3232 driver"
+> +	help
+> +	 Say Y here if you use cm3232.
+> +	 This option enables ambient light sensor using
+> +	 Capella Microsystems cm3232 device driver.
+> +
+> +	 To compile this driver as a module, choose M here:
+> +	 the module will be called cm3232.
+> +
+>  config CM36651
 >  	depends on I2C
-> +	select MMA9551_CORE
-> +
->  	help
->  	  Say yes here to build support for the Freescale MMA9551L
->  	  Intelligent Motion-Sensing Platform Driver.
-> diff --git a/drivers/iio/accel/Makefile b/drivers/iio/accel/Makefile
-> index de5b9cb..8105316 100644
-> --- a/drivers/iio/accel/Makefile
-> +++ b/drivers/iio/accel/Makefile
-> @@ -9,7 +9,9 @@ obj-$(CONFIG_HID_SENSOR_ACCEL_3D) += hid-sensor-accel-3d.o
->  obj-$(CONFIG_KXCJK1013) += kxcjk-1013.o
->  obj-$(CONFIG_KXSD9)	+= kxsd9.o
->  obj-$(CONFIG_MMA8452)	+= mma8452.o
-> -obj-$(CONFIG_MMA9551)	+= mma9551.o
-> +
-> +obj-$(CONFIG_MMA9551_CORE)	+= mma9551_core.o
-> +obj-$(CONFIG_MMA9551)		+= mma9551.o
->  
->  obj-$(CONFIG_IIO_ST_ACCEL_3AXIS) += st_accel.o
->  st_accel-y := st_accel_core.o
-> diff --git a/drivers/iio/accel/mma9551.c b/drivers/iio/accel/mma9551.c
-> index 34ee9d6..6031b5a 100644
-> --- a/drivers/iio/accel/mma9551.c
-> +++ b/drivers/iio/accel/mma9551.c
-> @@ -23,63 +23,13 @@
->  #include <linux/iio/sysfs.h>
->  #include <linux/iio/events.h>
->  #include <linux/pm_runtime.h>
-> +#include "mma9551_core.h"
->  
->  #define MMA9551_DRV_NAME		"mma9551"
->  #define MMA9551_IRQ_NAME		"mma9551_event"
->  #define MMA9551_GPIO_NAME		"mma9551_int"
->  #define MMA9551_GPIO_COUNT		4
->  
-> -/* Applications IDs */
-> -#define MMA9551_APPID_VERSION		0x00
-> -#define MMA9551_APPID_GPIO		0x03
-> -#define MMA9551_APPID_AFE		0x06
-> -#define MMA9551_APPID_TILT		0x0B
-> -#define MMA9551_APPID_SLEEP_WAKE	0x12
-> -#define MMA9551_APPID_RESET		0x17
-> -#define MMA9551_APPID_NONE		0xff
-> -
-> -/* Command masks for mailbox write command */
-> -#define MMA9551_CMD_READ_VERSION_INFO	0x00
-> -#define MMA9551_CMD_READ_CONFIG		0x10
-> -#define MMA9551_CMD_WRITE_CONFIG	0x20
-> -#define MMA9551_CMD_READ_STATUS		0x30
-> -
-> -enum mma9551_gpio_pin {
-> -	mma9551_gpio6 = 0,
-> -	mma9551_gpio7,
-> -	mma9551_gpio8,
-> -	mma9551_gpio9,
-> -	mma9551_gpio_max = mma9551_gpio9,
-> -};
-> -
-> -/* Mailbox read command */
-> -#define MMA9551_RESPONSE_COCO		BIT(7)
-> -
-> -/* Error-Status codes returned in mailbox read command */
-> -#define MMA9551_MCI_ERROR_NONE			0x00
-> -#define MMA9551_MCI_ERROR_PARAM			0x04
-> -#define MMA9551_MCI_INVALID_COUNT		0x19
-> -#define MMA9551_MCI_ERROR_COMMAND		0x1C
-> -#define MMA9551_MCI_ERROR_INVALID_LENGTH	0x21
-> -#define MMA9551_MCI_ERROR_FIFO_BUSY		0x22
-> -#define MMA9551_MCI_ERROR_FIFO_ALLOCATED	0x23
-> -#define MMA9551_MCI_ERROR_FIFO_OVERSIZE		0x24
-> -
-> -/* GPIO Application */
-> -#define MMA9551_GPIO_POL_MSB		0x08
-> -#define MMA9551_GPIO_POL_LSB		0x09
-> -
-> -/* Sleep/Wake application */
-> -#define MMA9551_SLEEP_CFG		0x06
-> -#define MMA9551_SLEEP_CFG_SNCEN		BIT(0)
-> -#define MMA9551_SLEEP_CFG_FLEEN		BIT(1)
-> -#define MMA9551_SLEEP_CFG_SCHEN		BIT(2)
-> -
-> -/* AFE application */
-> -#define MMA9551_AFE_X_ACCEL_REG		0x00
-> -#define MMA9551_AFE_Y_ACCEL_REG		0x02
-> -#define MMA9551_AFE_Z_ACCEL_REG		0x04
-> -
->  /* Tilt application (inclination in IIO terms). */
->  #define MMA9551_TILT_XZ_ANG_REG		0x00
->  #define MMA9551_TILT_YZ_ANG_REG		0x01
-> @@ -92,6 +42,8 @@ enum mma9551_gpio_pin {
->  #define MMA9551_TILT_CFG_REG		0x01
->  #define MMA9551_TILT_ANG_THRESH_MASK	GENMASK(3, 0)
->  
-> +#define MMA9551_DEFAULT_SAMPLE_RATE	122	/* Hz */
-> +
->  /* Tilt events are mapped to the first three GPIO pins. */
->  enum mma9551_tilt_axis {
->  	mma9551_x = 0,
-> @@ -99,64 +51,6 @@ enum mma9551_tilt_axis {
->  	mma9551_z,
->  };
->  
-> -/*
-> - * A response is composed of:
-> - * - control registers: MB0-3
-> - * - data registers: MB4-31
-> - *
-> - * A request is composed of:
-> - * - mbox to write to (always 0)
-> - * - control registers: MB1-4
-> - * - data registers: MB5-31
-> - */
-> -#define MMA9551_MAILBOX_CTRL_REGS	4
-> -#define MMA9551_MAX_MAILBOX_DATA_REGS	28
-> -#define MMA9551_MAILBOX_REGS		32
-> -
-> -#define MMA9551_I2C_READ_RETRIES	5
-> -#define MMA9551_I2C_READ_DELAY	50	/* us */
-> -
-> -#define MMA9551_DEFAULT_SAMPLE_RATE	122	/* Hz */
-> -#define MMA9551_AUTO_SUSPEND_DELAY_MS	2000
-> -
-> -struct mma9551_mbox_request {
-> -	u8 start_mbox;		/* Always 0. */
-> -	u8 app_id;
-> -	/*
-> -	 * See Section 5.3.1 of the MMA955xL Software Reference Manual.
-> -	 *
-> -	 * Bit 7: reserved, always 0
-> -	 * Bits 6-4: command
-> -	 * Bits 3-0: upper bits of register offset
-> -	 */
-> -	u8 cmd_off;
-> -	u8 lower_off;
-> -	u8 nbytes;
-> -	u8 buf[MMA9551_MAX_MAILBOX_DATA_REGS - 1];
-> -} __packed;
-> -
-> -struct mma9551_mbox_response {
-> -	u8 app_id;
-> -	/*
-> -	 * See Section 5.3.3 of the MMA955xL Software Reference Manual.
-> -	 *
-> -	 * Bit 7: COCO
-> -	 * Bits 6-0: Error code.
-> -	 */
-> -	u8 coco_err;
-> -	u8 nbytes;
-> -	u8 req_bytes;
-> -	u8 buf[MMA9551_MAX_MAILBOX_DATA_REGS];
-> -} __packed;
-> -
-> -struct mma9551_version_info {
-> -	__be32 device_id;
-> -	u8 rom_version[2];
-> -	u8 fw_version[2];
-> -	u8 hw_version[2];
-> -	u8 fw_build[2];
-> -};
-> -
->  struct mma9551_data {
->  	struct i2c_client *client;
->  	struct mutex mutex;
-> @@ -164,285 +58,6 @@ struct mma9551_data {
->  	int irqs[MMA9551_GPIO_COUNT];
->  };
->  
-> -static int mma9551_transfer(struct i2c_client *client,
-> -			    u8 app_id, u8 command, u16 offset,
-> -			    u8 *inbytes, int num_inbytes,
-> -			    u8 *outbytes, int num_outbytes)
-> -{
-> -	struct mma9551_mbox_request req;
-> -	struct mma9551_mbox_response rsp;
-> -	struct i2c_msg in, out;
-> -	u8 req_len, err_code;
-> -	int ret, retries;
-> -
-> -	if (offset >= 1 << 12) {
-> -		dev_err(&client->dev, "register offset too large\n");
-> -		return -EINVAL;
-> -	}
-> -
-> -	req_len = 1 + MMA9551_MAILBOX_CTRL_REGS + num_inbytes;
-> -	req.start_mbox = 0;
-> -	req.app_id = app_id;
-> -	req.cmd_off = command | (offset >> 8);
-> -	req.lower_off = offset;
-> -
-> -	if (command == MMA9551_CMD_WRITE_CONFIG)
-> -		req.nbytes = num_inbytes;
-> -	else
-> -		req.nbytes = num_outbytes;
-> -	if (num_inbytes)
-> -		memcpy(req.buf, inbytes, num_inbytes);
-> -
-> -	out.addr = client->addr;
-> -	out.flags = 0;
-> -	out.len = req_len;
-> -	out.buf = (u8 *)&req;
-> -
-> -	ret = i2c_transfer(client->adapter, &out, 1);
-> -	if (ret < 0) {
-> -		dev_err(&client->dev, "i2c write failed\n");
-> -		return ret;
-> -	}
-> -
-> -	retries = MMA9551_I2C_READ_RETRIES;
-> -	do {
-> -		udelay(MMA9551_I2C_READ_DELAY);
-> -
-> -		in.addr = client->addr;
-> -		in.flags = I2C_M_RD;
-> -		in.len = sizeof(rsp);
-> -		in.buf = (u8 *)&rsp;
-> -
-> -		ret = i2c_transfer(client->adapter, &in, 1);
-> -		if (ret < 0) {
-> -			dev_err(&client->dev, "i2c read failed\n");
-> -			return ret;
-> -		}
-> -
-> -		if (rsp.coco_err & MMA9551_RESPONSE_COCO)
-> -			break;
-> -	} while (--retries > 0);
-> -
-> -	if (retries == 0) {
-> -		dev_err(&client->dev,
-> -			"timed out while waiting for command response\n");
-> -		return -ETIMEDOUT;
-> -	}
-> -
-> -	if (rsp.app_id != app_id) {
-> -		dev_err(&client->dev,
-> -			"app_id mismatch in response got %02x expected %02x\n",
-> -			rsp.app_id, app_id);
-> -		return -EINVAL;
-> -	}
-> -
-> -	err_code = rsp.coco_err & ~MMA9551_RESPONSE_COCO;
-> -	if (err_code != MMA9551_MCI_ERROR_NONE) {
-> -		dev_err(&client->dev, "read returned error %x\n", err_code);
-> -		return -EINVAL;
-> -	}
-> -
-> -	if (rsp.nbytes != rsp.req_bytes) {
-> -		dev_err(&client->dev,
-> -			"output length mismatch got %d expected %d\n",
-> -			rsp.nbytes, rsp.req_bytes);
-> -		return -EINVAL;
-> -	}
-> -
-> -	if (num_outbytes)
-> -		memcpy(outbytes, rsp.buf, num_outbytes);
-> -
-> -	return 0;
-> -}
-> -
-> -static int mma9551_read_config_byte(struct i2c_client *client, u8 app_id,
-> -				    u16 reg, u8 *val)
-> -{
-> -	return mma9551_transfer(client, app_id, MMA9551_CMD_READ_CONFIG,
-> -				reg, NULL, 0, val, 1);
-> -}
-> -
-> -static int mma9551_write_config_byte(struct i2c_client *client, u8 app_id,
-> -				     u16 reg, u8 val)
-> -{
-> -	return mma9551_transfer(client, app_id, MMA9551_CMD_WRITE_CONFIG, reg,
-> -				&val, 1, NULL, 0);
-> -}
-> -
-> -static int mma9551_read_status_byte(struct i2c_client *client, u8 app_id,
-> -				    u16 reg, u8 *val)
-> -{
-> -	return mma9551_transfer(client, app_id, MMA9551_CMD_READ_STATUS,
-> -				reg, NULL, 0, val, 1);
-> -}
-> -
-> -static int mma9551_read_status_word(struct i2c_client *client, u8 app_id,
-> -				    u16 reg, u16 *val)
-> -{
-> -	int ret;
-> -	__be16 v;
-> -
-> -	ret = mma9551_transfer(client, app_id, MMA9551_CMD_READ_STATUS,
-> -			       reg, NULL, 0, (u8 *)&v, 2);
-> -	*val = be16_to_cpu(v);
-> -
-> -	return ret;
-> -}
-> -
-> -static int mma9551_update_config_bits(struct i2c_client *client, u8 app_id,
-> -				      u16 reg, u8 mask, u8 val)
-> -{
-> -	int ret;
-> -	u8 tmp, orig;
-> -
-> -	ret = mma9551_read_config_byte(client, app_id, reg, &orig);
-> -	if (ret < 0)
-> -		return ret;
-> -
-> -	tmp = orig & ~mask;
-> -	tmp |= val & mask;
-> -
-> -	if (tmp == orig)
-> -		return 0;
-> -
-> -	return mma9551_write_config_byte(client, app_id, reg, tmp);
-> -}
-> -
-> -/*
-> - * The polarity parameter is described in section 6.2.2, page 66, of the
-> - * Software Reference Manual.  Basically, polarity=0 means the interrupt
-> - * line has the same value as the selected bit, while polarity=1 means
-> - * the line is inverted.
-> - */
-> -static int mma9551_gpio_config(struct i2c_client *client,
-> -			       enum mma9551_gpio_pin pin,
-> -			       u8 app_id, u8 bitnum, int polarity)
-> -{
-> -	u8 reg, pol_mask, pol_val;
-> -	int ret;
-> -
-> -	if (pin > mma9551_gpio_max) {
-> -		dev_err(&client->dev, "bad GPIO pin\n");
-> -		return -EINVAL;
-> -	}
-> -
-> -	/*
-> -	 * Pin 6 is configured by regs 0x00 and 0x01, pin 7 by 0x02 and
-> -	 * 0x03, and so on.
-> -	 */
-> -	reg = pin * 2;
-> -
-> -	ret = mma9551_write_config_byte(client, MMA9551_APPID_GPIO,
-> -					reg, app_id);
-> -	if (ret < 0) {
-> -		dev_err(&client->dev, "error setting GPIO app_id\n");
-> -		return ret;
-> -	}
-> -
-> -	ret = mma9551_write_config_byte(client, MMA9551_APPID_GPIO,
-> -					reg + 1, bitnum);
-> -	if (ret < 0) {
-> -		dev_err(&client->dev, "error setting GPIO bit number\n");
-> -		return ret;
-> -	}
-> -
-> -	switch (pin) {
-> -	case mma9551_gpio6:
-> -		reg = MMA9551_GPIO_POL_LSB;
-> -		pol_mask = 1 << 6;
-> -		break;
-> -	case mma9551_gpio7:
-> -		reg = MMA9551_GPIO_POL_LSB;
-> -		pol_mask = 1 << 7;
-> -		break;
-> -	case mma9551_gpio8:
-> -		reg = MMA9551_GPIO_POL_MSB;
-> -		pol_mask = 1 << 0;
-> -		break;
-> -	case mma9551_gpio9:
-> -		reg = MMA9551_GPIO_POL_MSB;
-> -		pol_mask = 1 << 1;
-> -		break;
-> -	}
-> -	pol_val = polarity ? pol_mask : 0;
-> -
-> -	ret = mma9551_update_config_bits(client, MMA9551_APPID_GPIO, reg,
-> -					 pol_mask, pol_val);
-> -	if (ret < 0)
-> -		dev_err(&client->dev, "error setting GPIO polarity\n");
-> -
-> -	return ret;
-> -}
-> -
-> -static int mma9551_read_version(struct i2c_client *client)
-> -{
-> -	struct mma9551_version_info info;
-> -	int ret;
-> -
-> -	ret = mma9551_transfer(client, MMA9551_APPID_VERSION, 0x00, 0x00,
-> -			       NULL, 0, (u8 *)&info, sizeof(info));
-> -	if (ret < 0)
-> -		return ret;
-> -
-> -	dev_info(&client->dev, "Device ID 0x%x, firmware version %02x.%02x\n",
-> -		 be32_to_cpu(info.device_id), info.fw_version[0],
-> -		 info.fw_version[1]);
-> -
-> -	return 0;
-> -}
-> -
-> -/*
-> - * Power on chip and enable doze mode.
-> - * Use 'false' as the second parameter to cause the device to enter
-> - * sleep.
-> - */
-> -static int mma9551_set_device_state(struct i2c_client *client, bool enable)
-> -{
-> -	return mma9551_update_config_bits(client, MMA9551_APPID_SLEEP_WAKE,
-> -					  MMA9551_SLEEP_CFG,
-> -					  MMA9551_SLEEP_CFG_SNCEN |
-> -					  MMA9551_SLEEP_CFG_FLEEN |
-> -					  MMA9551_SLEEP_CFG_SCHEN,
-> -					  enable ? MMA9551_SLEEP_CFG_SCHEN |
-> -					  MMA9551_SLEEP_CFG_FLEEN :
-> -					  MMA9551_SLEEP_CFG_SNCEN);
-> -}
-> -
-> -static int mma9551_set_power_state(struct i2c_client *client, bool on)
-> -{
-> -#ifdef CONFIG_PM
-> -	int ret;
-> -
-> -	if (on)
-> -		ret = pm_runtime_get_sync(&client->dev);
-> -	else {
-> -		pm_runtime_mark_last_busy(&client->dev);
-> -		ret = pm_runtime_put_autosuspend(&client->dev);
-> -	}
-> -
-> -	if (ret < 0) {
-> -		dev_err(&client->dev,
-> -			"failed to change power state to %d\n", on);
-> -		if (on)
-> -			pm_runtime_put_noidle(&client->dev);
-> -
-> -		return ret;
-> -	}
-> -#endif
-> -
-> -	return 0;
-> -}
-> -
-> -static void mma9551_sleep(int freq)
-> -{
-> -	int sleep_val = 1000 / freq;
-> -
-> -	if (sleep_val < 20)
-> -		usleep_range(sleep_val * 1000, 20000);
-> -	else
-> -		msleep_interruptible(sleep_val);
-> -}
-> -
->  static int mma9551_read_incli_chan(struct i2c_client *client,
->  				   const struct iio_chan_spec *chan,
->  				   int *val)
-> @@ -497,46 +112,6 @@ out_poweroff:
->  	return ret;
->  }
->  
-> -static int mma9551_read_accel_chan(struct i2c_client *client,
-> -				   const struct iio_chan_spec *chan,
-> -				   int *val, int *val2)
-> -{
-> -	u16 reg_addr;
-> -	s16 raw_accel;
-> -	int ret;
-> -
-> -	switch (chan->channel2) {
-> -	case IIO_MOD_X:
-> -		reg_addr = MMA9551_AFE_X_ACCEL_REG;
-> -		break;
-> -	case IIO_MOD_Y:
-> -		reg_addr = MMA9551_AFE_Y_ACCEL_REG;
-> -		break;
-> -	case IIO_MOD_Z:
-> -		reg_addr = MMA9551_AFE_Z_ACCEL_REG;
-> -		break;
-> -	default:
-> -		return -EINVAL;
-> -	}
-> -
-> -	ret = mma9551_set_power_state(client, true);
-> -	if (ret < 0)
-> -		return ret;
-> -
-> -	ret = mma9551_read_status_word(client, MMA9551_APPID_AFE,
-> -				       reg_addr, &raw_accel);
-> -	if (ret < 0)
-> -		goto out_poweroff;
-> -
-> -	*val = raw_accel;
-> -
-> -	ret = IIO_VAL_INT;
-> -
-> -out_poweroff:
-> -	mma9551_set_power_state(client, false);
-> -	return ret;
-> -}
-> -
->  static int mma9551_read_raw(struct iio_dev *indio_dev,
->  			    struct iio_chan_spec const *chan,
->  			    int *val, int *val2, long mask)
-> @@ -569,9 +144,7 @@ static int mma9551_read_raw(struct iio_dev *indio_dev,
->  	case IIO_CHAN_INFO_SCALE:
->  		switch (chan->type) {
->  		case IIO_ACCEL:
-> -			*val = 0;
-> -			*val2 = 2440;
-> -			return IIO_VAL_INT_PLUS_MICRO;
-> +			return mma9551_read_accel_scale(val, val2);
->  		default:
->  			return -EINVAL;
->  		}
-> @@ -737,14 +310,6 @@ static const struct iio_event_spec mma9551_incli_event = {
->  	.mask_shared_by_type = BIT(IIO_EV_INFO_VALUE),
->  };
->  
-> -#define MMA9551_ACCEL_CHANNEL(axis) {				\
-> -	.type = IIO_ACCEL,					\
-> -	.modified = 1,						\
-> -	.channel2 = axis,					\
-> -	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),		\
-> -	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),	\
-> -}
-> -
->  #define MMA9551_INCLI_CHANNEL(axis) {				\
->  	.type = IIO_INCLI,					\
->  	.modified = 1,						\
-> diff --git a/drivers/iio/accel/mma9551_core.c b/drivers/iio/accel/mma9551_core.c
+>  	tristate "CM36651 driver"
+> diff --git a/drivers/iio/light/Makefile b/drivers/iio/light/Makefile
+> index 47877a3..f2c8d55 100644
+> --- a/drivers/iio/light/Makefile
+> +++ b/drivers/iio/light/Makefile
+> @@ -7,6 +7,7 @@ obj-$(CONFIG_ADJD_S311)		+= adjd_s311.o
+>  obj-$(CONFIG_AL3320A)		+= al3320a.o
+>  obj-$(CONFIG_APDS9300)		+= apds9300.o
+>  obj-$(CONFIG_CM32181)		+= cm32181.o
+> +obj-$(CONFIG_CM3232)		+= cm3232.o
+>  obj-$(CONFIG_CM36651)		+= cm36651.o
+>  obj-$(CONFIG_GP2AP020A00F)	+= gp2ap020a00f.o
+>  obj-$(CONFIG_HID_SENSOR_ALS)	+= hid-sensor-als.o
+> diff --git a/drivers/iio/light/cm3232.c b/drivers/iio/light/cm3232.c
 > new file mode 100644
-> index 0000000..cab481b
+> index 0000000..fd98eeb
 > --- /dev/null
-> +++ b/drivers/iio/accel/mma9551_core.c
-> @@ -0,0 +1,443 @@
+> +++ b/drivers/iio/light/cm3232.c
+> @@ -0,0 +1,403 @@
 > +/*
-> + * Common code for Freescale MMA955x Intelligent Sensor Platform drivers
-> + * Copyright (c) 2014, Intel Corporation.
+> + * Copyright (C) 2014 Capella Microsystems Inc.
+> + * Author: Kevin Tsai <ktsai@capellamicro.com>
 > + *
 > + * This program is free software; you can redistribute it and/or modify it
-> + * under the terms and conditions of the GNU General Public License,
-> + * version 2, as published by the Free Software Foundation.
+> + * under the terms of the GNU General Public License version 2, as published
+> + * by the Free Software Foundation.
 > + *
-> + * This program is distributed in the hope it will be useful, but WITHOUT
-> + * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-> + * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
-> + * more details.
 > + */
 > +
-> +#include <linux/module.h>
-> +#include <linux/i2c.h>
 > +#include <linux/delay.h>
+> +#include <linux/err.h>
+> +#include <linux/i2c.h>
+> +#include <linux/mutex.h>
+> +#include <linux/module.h>
+> +#include <linux/interrupt.h>
+> +#include <linux/regulator/consumer.h>
 > +#include <linux/iio/iio.h>
-> +#include <linux/pm_runtime.h>
-> +#include "mma9551_core.h"
+> +#include <linux/iio/sysfs.h>
+> +#include <linux/iio/events.h>
+> +#include <linux/init.h>
 > +
-> +/* Command masks for mailbox write command */
-> +#define MMA9551_CMD_READ_VERSION_INFO	0x00
-> +#define MMA9551_CMD_READ_CONFIG		0x10
-> +#define MMA9551_CMD_WRITE_CONFIG	0x20
-> +#define MMA9551_CMD_READ_STATUS		0x30
+> +/* Registers Address */
+> +#define CM3232_REG_ADDR_CMD		0x00
+> +#define CM3232_REG_ADDR_ALS		0x50
+> +#define CM3232_REG_ADDR_ID		0x53
 > +
-> +/* Mailbox read command */
-> +#define MMA9551_RESPONSE_COCO		BIT(7)
-> +
-> +/* Error-Status codes returned in mailbox read command */
-> +#define MMA9551_MCI_ERROR_NONE			0x00
-> +#define MMA9551_MCI_ERROR_PARAM			0x04
-> +#define MMA9551_MCI_INVALID_COUNT		0x19
-> +#define MMA9551_MCI_ERROR_COMMAND		0x1C
-> +#define MMA9551_MCI_ERROR_INVALID_LENGTH	0x21
-> +#define MMA9551_MCI_ERROR_FIFO_BUSY		0x22
-> +#define MMA9551_MCI_ERROR_FIFO_ALLOCATED	0x23
-> +#define MMA9551_MCI_ERROR_FIFO_OVERSIZE		0x24
-> +
-> +/* GPIO Application */
-> +#define MMA9551_GPIO_POL_MSB		0x08
-> +#define MMA9551_GPIO_POL_LSB		0x09
-> +
-> +/* Sleep/Wake application */
-> +#define MMA9551_SLEEP_CFG		0x06
-> +#define MMA9551_SLEEP_CFG_SNCEN		BIT(0)
-> +#define MMA9551_SLEEP_CFG_FLEEN		BIT(1)
-> +#define MMA9551_SLEEP_CFG_SCHEN		BIT(2)
-> +
-> +/* AFE application */
-> +#define MMA9551_AFE_X_ACCEL_REG		0x00
-> +#define MMA9551_AFE_Y_ACCEL_REG		0x02
-> +#define MMA9551_AFE_Z_ACCEL_REG		0x04
-> +
-> +/*
-> + * A response is composed of:
-> + * - control registers: MB0-3
-> + * - data registers: MB4-31
-> + *
-> + * A request is composed of:
-> + * - mbox to write to (always 0)
-> + * - control registers: MB1-4
-> + * - data registers: MB5-31
-> + */
-> +#define MMA9551_MAILBOX_CTRL_REGS	4
-> +#define MMA9551_MAX_MAILBOX_DATA_REGS	28
-> +#define MMA9551_MAILBOX_REGS		32
-> +
-> +#define MMA9551_I2C_READ_RETRIES	5
-> +#define MMA9551_I2C_READ_DELAY	50	/* us */
-> +
-> +struct mma9551_mbox_request {
-> +	u8 start_mbox;		/* Always 0. */
-> +	u8 app_id;
-> +	/*
-> +	 * See Section 5.3.1 of the MMA955xL Software Reference Manual.
-> +	 *
-> +	 * Bit 7: reserved, always 0
-> +	 * Bits 6-4: command
-> +	 * Bits 3-0: upper bits of register offset
-> +	 */
-> +	u8 cmd_off;
-> +	u8 lower_off;
-> +	u8 nbytes;
-> +	u8 buf[MMA9551_MAX_MAILBOX_DATA_REGS - 1];
-> +} __packed;
-> +
-> +struct mma9551_mbox_response {
-> +	u8 app_id;
-> +	/*
-> +	 * See Section 5.3.3 of the MMA955xL Software Reference Manual.
-> +	 *
-> +	 * Bit 7: COCO
-> +	 * Bits 6-0: Error code.
-> +	 */
-> +	u8 coco_err;
-> +	u8 nbytes;
-> +	u8 req_bytes;
-> +	u8 buf[MMA9551_MAX_MAILBOX_DATA_REGS];
-> +} __packed;
-> +
-> +static int mma9551_transfer(struct i2c_client *client,
-> +			    u8 app_id, u8 command, u16 offset,
-> +			    u8 *inbytes, int num_inbytes,
-> +			    u8 *outbytes, int num_outbytes)
-> +{
-> +	struct mma9551_mbox_request req;
-> +	struct mma9551_mbox_response rsp;
-> +	struct i2c_msg in, out;
-> +	u8 req_len, err_code;
-> +	int ret, retries;
-> +
-> +	if (offset >= 1 << 12) {
-> +		dev_err(&client->dev, "register offset too large\n");
-> +		return -EINVAL;
-> +	}
-> +
-> +	req_len = 1 + MMA9551_MAILBOX_CTRL_REGS + num_inbytes;
-> +	req.start_mbox = 0;
-> +	req.app_id = app_id;
-> +	req.cmd_off = command | (offset >> 8);
-> +	req.lower_off = offset;
-> +
-> +	if (command == MMA9551_CMD_WRITE_CONFIG)
-> +		req.nbytes = num_inbytes;
-> +	else
-> +		req.nbytes = num_outbytes;
-> +	if (num_inbytes)
-> +		memcpy(req.buf, inbytes, num_inbytes);
-> +
-> +	out.addr = client->addr;
-> +	out.flags = 0;
-> +	out.len = req_len;
-> +	out.buf = (u8 *)&req;
-> +
-> +	ret = i2c_transfer(client->adapter, &out, 1);
-> +	if (ret < 0) {
-> +		dev_err(&client->dev, "i2c write failed\n");
-> +		return ret;
-> +	}
-> +
-> +	retries = MMA9551_I2C_READ_RETRIES;
-> +	do {
-> +		udelay(MMA9551_I2C_READ_DELAY);
-> +
-> +		in.addr = client->addr;
-> +		in.flags = I2C_M_RD;
-> +		in.len = sizeof(rsp);
-> +		in.buf = (u8 *)&rsp;
-> +
-> +		ret = i2c_transfer(client->adapter, &in, 1);
-> +		if (ret < 0) {
-> +			dev_err(&client->dev, "i2c read failed\n");
-> +			return ret;
-> +		}
-> +
-> +		if (rsp.coco_err & MMA9551_RESPONSE_COCO)
-> +			break;
-> +	} while (--retries > 0);
-> +
-> +	if (retries == 0) {
-> +		dev_err(&client->dev,
-> +			"timed out while waiting for command response\n");
-> +		return -ETIMEDOUT;
-> +	}
-> +
-> +	if (rsp.app_id != app_id) {
-> +		dev_err(&client->dev,
-> +			"app_id mismatch in response got %02x expected %02x\n",
-> +			rsp.app_id, app_id);
-> +		return -EINVAL;
-> +	}
-> +
-> +	err_code = rsp.coco_err & ~MMA9551_RESPONSE_COCO;
-> +	if (err_code != MMA9551_MCI_ERROR_NONE) {
-> +		dev_err(&client->dev, "read returned error %x\n", err_code);
-> +		return -EINVAL;
-> +	}
-> +
-> +	if (rsp.nbytes != rsp.req_bytes) {
-> +		dev_err(&client->dev,
-> +			"output length mismatch got %d expected %d\n",
-> +			rsp.nbytes, rsp.req_bytes);
-> +		return -EINVAL;
-> +	}
-> +
-> +	if (num_outbytes)
-> +		memcpy(outbytes, rsp.buf, num_outbytes);
-> +
-> +	return 0;
-> +}
-> +
-> +int mma9551_read_config_byte(struct i2c_client *client, u8 app_id,
-> +			     u16 reg, u8 *val)
-> +{
-> +	return mma9551_transfer(client, app_id, MMA9551_CMD_READ_CONFIG,
-> +				reg, NULL, 0, val, 1);
-> +}
-> +EXPORT_SYMBOL(mma9551_read_config_byte);
-> +
-> +int mma9551_write_config_byte(struct i2c_client *client, u8 app_id,
-> +			      u16 reg, u8 val)
-> +{
-> +	return mma9551_transfer(client, app_id, MMA9551_CMD_WRITE_CONFIG, reg,
-> +				&val, 1, NULL, 0);
-> +}
-> +EXPORT_SYMBOL(mma9551_write_config_byte);
-> +
-> +int mma9551_read_status_byte(struct i2c_client *client, u8 app_id,
-> +			     u16 reg, u8 *val)
-> +{
-> +	return mma9551_transfer(client, app_id, MMA9551_CMD_READ_STATUS,
-> +				reg, NULL, 0, val, 1);
-> +}
-> +EXPORT_SYMBOL(mma9551_read_status_byte);
-> +
-> +int mma9551_read_status_word(struct i2c_client *client, u8 app_id,
-> +			     u16 reg, u16 *val)
-> +{
-> +	int ret;
-> +	__be16 v;
-> +
-> +	ret = mma9551_transfer(client, app_id, MMA9551_CMD_READ_STATUS,
-> +			       reg, NULL, 0, (u8 *)&v, 2);
-> +	*val = be16_to_cpu(v);
-> +
-> +	return ret;
-> +}
-> +EXPORT_SYMBOL(mma9551_read_status_word);
-> +
-I wonder if it's worth adding documentation to these functions - to point
-out that they should only be used under a lock. Might get forgotten as
-it's not readily apparent from the naming that locking is done externally
-rather than internally.
+> +/* CMD register */
+> +#define CM3232_CMD_ALS_DISABLE		BIT(0)
+> +#define	CM3232_CMD_ALS_HS		BIT(1)
 
-> +int mma9551_update_config_bits(struct i2c_client *client, u8 app_id,
-> +			       u16 reg, u8 mask, u8 val)
-> +{
-> +	int ret;
-> +	u8 tmp, orig;
+whitespace issue, replace tab with space
+ALS_HS is not used
+
 > +
-> +	ret = mma9551_read_config_byte(client, app_id, reg, &orig);
-> +	if (ret < 0)
-> +		return ret;
+> +#define CM3232_CMD_ALS_IT_SHIFT         2
+> +#define CM3232_CMD_ALS_IT_MASK          (0x07 << CM3232_CMD_ALS_IT_SHIFT)
+> +#define CM3232_CMD_ALS_IT_DEFAULT       (0x01 << CM3232_CMD_ALS_IT_SHIFT)
 > +
-> +	tmp = orig & ~mask;
-> +	tmp |= val & mask;
+> +#define	CM3232_CMD_ALS_RESET		BIT(6)
 > +
-> +	if (tmp == orig)
-> +		return 0;
+> +#define CM3232_CMD_DEFAULT		CM3232_CMD_ALS_IT_DEFAULT
 > +
-> +	return mma9551_write_config_byte(client, app_id, reg, tmp);
-> +}
-> +EXPORT_SYMBOL(mma9551_update_config_bits);
+> +#define CM3232_CALIBSCALE_DEFAULT	100000
+> +#define CM3232_CALIBSCALE_RESOLUTION	100000
+> +#define CM3232_MLUX_PER_LUX		1000
 > +
-> +/*
-> + * The polarity parameter is described in section 6.2.2, page 66, of the
-> + * Software Reference Manual.  Basically, polarity=0 means the interrupt
-> + * line has the same value as the selected bit, while polarity=1 means
-> + * the line is inverted.
+> +#define CM3232_MLUX_PER_BIT_DEFAULT	64
+> +#define CM3232_MLUX_PER_BIT_BASE_IT	100000
+> +static const int CM3232_als_it_bits[] = { 0, 1, 2, 3, 4, 5};
+
+cm3232_als_it_bits and remove space before 0
+
+> +static const int CM3232_als_it_values[] = {
+> +			100000, 200000, 400000, 800000, 1600000, 3200000};
+
+cm3232_als_it_values
+
+> +
+> +struct cm3232_als_info {
+
+that may pay off lateron, currently there is just one chip...
+
+> +	u32 id;
+> +	int calibscale;
+> +	int mlux_per_bit;
+> +	int mlux_per_bit_base_it;
+> +	const int *als_it_bits;
+> +	const int *als_it_values;
+> +	const int num_als_it;
+
+num_als_it could be unsigned probably
+
+> +	int als_raw;
+> +};
+> +
+> +static struct cm3232_als_info cm3232_als_info_default = {
+> +	.id = 3232,
+> +	.calibscale = CM3232_CALIBSCALE_DEFAULT,
+> +	.mlux_per_bit = CM3232_MLUX_PER_BIT_DEFAULT,
+> +	.mlux_per_bit_base_it = CM3232_MLUX_PER_BIT_BASE_IT,
+> +	.als_it_bits = CM3232_als_it_bits,
+> +	.als_it_values = CM3232_als_it_values,
+> +	.num_als_it = ARRAY_SIZE(CM3232_als_it_bits),
+> +};
+> +
+> +struct cm3232_chip {
+> +	struct i2c_client *client;
+> +	struct mutex lock;
+> +	struct cm3232_als_info *als_info;
+> +	u8 regs_cmd;
+> +};
+> +
+> +static int cm3232_get_lux(struct cm3232_chip *chip);
+> +static int cm3232_read_als_it(struct cm3232_chip *chip, int *val2);
+> +
+> +/**
+> + * cm3232_reg_init() - Initialize CM3232 registers
+> + * @chip:	pointer of struct cm3232.
+> + *
+> + * Initialize CM3232 ambient light sensor register to default values.
+
+checks for and initializes; registers
+
+> + *
+> +  Return: 0 for success; otherwise for error code.
 > + */
-> +int mma9551_gpio_config(struct i2c_client *client, enum mma9551_gpio_pin pin,
-> +			u8 app_id, u8 bitnum, int polarity)
+> +static int cm3232_reg_init(struct cm3232_chip *chip)
 > +{
-> +	u8 reg, pol_mask, pol_val;
-> +	int ret;
+> +	struct i2c_client *client = chip->client;
+> +	struct cm3232_als_info *als_info;
+> +	s32 ret;
 > +
-> +	if (pin > mma9551_gpio_max) {
-> +		dev_err(&client->dev, "bad GPIO pin\n");
-> +		return -EINVAL;
-> +	}
-> +
-> +	/*
-> +	 * Pin 6 is configured by regs 0x00 and 0x01, pin 7 by 0x02 and
-> +	 * 0x03, and so on.
-> +	 */
-> +	reg = pin * 2;
-> +
-> +	ret = mma9551_write_config_byte(client, MMA9551_APPID_GPIO,
-> +					reg, app_id);
-> +	if (ret < 0) {
-> +		dev_err(&client->dev, "error setting GPIO app_id\n");
-> +		return ret;
-> +	}
-> +
-> +	ret = mma9551_write_config_byte(client, MMA9551_APPID_GPIO,
-> +					reg + 1, bitnum);
-> +	if (ret < 0) {
-> +		dev_err(&client->dev, "error setting GPIO bit number\n");
-> +		return ret;
-> +	}
-> +
-> +	switch (pin) {
-> +	case mma9551_gpio6:
-> +		reg = MMA9551_GPIO_POL_LSB;
-> +		pol_mask = 1 << 6;
-> +		break;
-> +	case mma9551_gpio7:
-> +		reg = MMA9551_GPIO_POL_LSB;
-> +		pol_mask = 1 << 7;
-> +		break;
-> +	case mma9551_gpio8:
-> +		reg = MMA9551_GPIO_POL_MSB;
-> +		pol_mask = 1 << 0;
-> +		break;
-> +	case mma9551_gpio9:
-> +		reg = MMA9551_GPIO_POL_MSB;
-> +		pol_mask = 1 << 1;
-> +		break;
-> +	}
-> +	pol_val = polarity ? pol_mask : 0;
-> +
-> +	ret = mma9551_update_config_bits(client, MMA9551_APPID_GPIO, reg,
-> +					 pol_mask, pol_val);
+> +	/* Identify device */
+> +	ret = i2c_smbus_read_word_data(client, CM3232_REG_ADDR_ID);
 > +	if (ret < 0)
-> +		dev_err(&client->dev, "error setting GPIO polarity\n");
+> +		return ret;
+> +	if ((ret & 0xFF) != 0x32)
+
+this could/should use the .id field of _als_info
+
+> +		return -ENODEV;
+> +
+> +	/* Disable and reset device */
+> +	chip->regs_cmd = CM3232_CMD_ALS_DISABLE | CM3232_CMD_ALS_RESET;
+> +	ret = i2c_smbus_write_byte_data(client, CM3232_REG_ADDR_CMD,
+> +				chip->regs_cmd);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	/* Initialization */
+> +	als_info = chip->als_info = &cm3232_als_info_default;
+> +	chip->regs_cmd = CM3232_CMD_DEFAULT;
+> +
+> +	/* Configure register */
+> +	ret = i2c_smbus_write_byte_data(client, CM3232_REG_ADDR_CMD,
+> +				chip->regs_cmd);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	return 0;
+> +}
+> +
+> +/**
+> + *  cm3232_read_als_it() - Get sensor integration time (ms)
+> + *  @chip:	pointer of struct cm3232
+> + *  @val2:	pointer of int to load the als_it value.
+> + *
+> + *  Report the current integration time in milliseconds.
+> + *
+> + *  Return: IIO_VAL_INT_PLUS_MICRO for success, otherwise -EINVAL.
+> + */
+> +static int cm3232_read_als_it(struct cm3232_chip *chip, int *val2)
+> +{
+> +	struct cm3232_als_info *als_info = chip->als_info;
+> +	u16 als_it;
+> +	int i;
+> +
+> +	als_it = chip->regs_cmd;
+> +	als_it &= CM3232_CMD_ALS_IT_MASK;
+> +	als_it >>= CM3232_CMD_ALS_IT_SHIFT;
+
+there is no i2c read here?!
+what is regs_cmd? the name seems to be rather inappropriate
+
+> +	for (i = 0; i < als_info->num_als_it; i++) {
+> +		if (als_it == als_info->als_it_bits[i]) {
+> +			*val2 = als_info->als_it_values[i];
+> +			return IIO_VAL_INT_PLUS_MICRO;
+> +		}
+> +	}
+> +
+> +	return -EINVAL;
+> +}
+> +
+> +/**
+> + * cm3232_write_als_it() - Write sensor integration time
+> + * @chip:	pointer of struct cm3232.
+> + * @val:	integration time in milliseconds.
+> + *
+> + * Convert integration time (ms) to sensor value.
+> + *
+> + * Return: i2c_smbus_write_word_data command return value.
+
+write_byte_data
+
+> + */
+> +static int cm3232_write_als_it(struct cm3232_chip *chip, int val)
+> +{
+> +	struct i2c_client *client = chip->client;
+> +	struct cm3232_als_info *als_info = chip->als_info;
+> +	u16 als_it;
+> +	int ret, i;
+> +
+> +	for (i = 0; i < als_info->num_als_it; i++)
+> +		if (val <= als_info->als_it_values[i])
+> +			break;
+> +	if (i >= als_info->num_als_it)
+> +		i = als_info->num_als_it - 1;
+> +
+> +	als_it = als_info->als_it_bits[i];
+> +	als_it <<= CM3232_CMD_ALS_IT_SHIFT;
+> +
+> +	mutex_lock(&chip->lock);
+
+I don't see what the mutex is trying to lock -- why?
+
+> +	chip->regs_cmd &= ~CM3232_CMD_ALS_IT_MASK;
+> +	chip->regs_cmd |= als_it;
+> +	ret = i2c_smbus_write_byte_data(client, CM3232_REG_ADDR_CMD,
+> +			chip->regs_cmd);
+> +	mutex_unlock(&chip->lock);
 > +
 > +	return ret;
 > +}
-> +EXPORT_SYMBOL(mma9551_gpio_config);
 > +
-> +int mma9551_read_version(struct i2c_client *client)
-> +{
-> +	struct mma9551_version_info info;
-> +	int ret;
-> +
-> +	ret = mma9551_transfer(client, MMA9551_APPID_VERSION, 0x00, 0x00,
-> +			       NULL, 0, (u8 *)&info, sizeof(info));
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	dev_info(&client->dev, "device ID 0x%x, firmware version %02x.%02x\n",
-> +		 be32_to_cpu(info.device_id), info.fw_version[0],
-> +		 info.fw_version[1]);
-> +
-> +	return 0;
-> +}
-> +EXPORT_SYMBOL(mma9551_read_version);
-> +
-> +/*
-> + * Power on chip and enable doze mode.
-> + * Use 'false' as the second parameter to cause the device to enter
-> + * sleep.
+> +/**
+> + * cm3232_get_lux() - report current lux value
+> + * @chip:	pointer of struct cm3232.
+> + *
+> + * Convert sensor raw data to lux.  It depends on integration
+> + * time and calibscale variable.
+> + *
+> + * Return: Positive value is lux, otherwise is error code.
+
+otherwise error code
+
 > + */
-> +int mma9551_set_device_state(struct i2c_client *client, bool enable)
+> +static int cm3232_get_lux(struct cm3232_chip *chip)
 > +{
-> +	return mma9551_update_config_bits(client, MMA9551_APPID_SLEEP_WAKE,
-> +					  MMA9551_SLEEP_CFG,
-> +					  MMA9551_SLEEP_CFG_SNCEN |
-> +					  MMA9551_SLEEP_CFG_FLEEN |
-> +					  MMA9551_SLEEP_CFG_SCHEN,
-> +					  enable ? MMA9551_SLEEP_CFG_SCHEN |
-> +					  MMA9551_SLEEP_CFG_FLEEN :
-> +					  MMA9551_SLEEP_CFG_SNCEN);
-> +}
-> +EXPORT_SYMBOL(mma9551_set_device_state);
+> +	struct i2c_client *client = chip->client;
+> +	struct cm3232_als_info *als_info = chip->als_info;
+> +	int ret;
+> +	int als_it;
+> +	u64 tmp;
 > +
-> +int mma9551_set_power_state(struct i2c_client *client, bool on)
+> +	/* Calculate mlux per bit based on als_it */
+> +	ret = cm3232_read_als_it(chip, &als_it);
+> +	if (ret < 0)
+> +		return -EINVAL;
+> +	tmp = (__force u64)als_info->mlux_per_bit;
+> +	tmp *= als_info->mlux_per_bit_base_it;
+> +	tmp = div_u64 (tmp, als_it);
+> +
+> +	/* Get als_raw */
+
+interesting comment :)
+
+> +	als_info->als_raw = i2c_smbus_read_word_data(
+> +				client,
+> +				CM3232_REG_ADDR_ALS);
+> +	if (als_info->als_raw < 0)
+> +		return als_info->als_raw;
+> +
+> +	tmp *= als_info->als_raw;
+> +	tmp *= als_info->calibscale;
+> +	tmp = div_u64(tmp, CM3232_CALIBSCALE_RESOLUTION);
+> +	tmp = div_u64(tmp, CM3232_MLUX_PER_LUX);
+> +
+> +	if (tmp > 0xFFFF)
+> +		tmp = 0xFFFF;
+> +
+> +	return (int)tmp;
+> +}
+> +
+> +static int cm3232_read_raw(struct iio_dev *indio_dev,
+> +			struct iio_chan_spec const *chan,
+> +			int *val, int *val2, long mask)
 > +{
-> +#ifdef CONFIG_PM
+> +	struct cm3232_chip *chip = iio_priv(indio_dev);
+> +	struct cm3232_als_info *als_info = chip->als_info;
 > +	int ret;
 > +
-> +	if (on)
-> +		ret = pm_runtime_get_sync(&client->dev);
-> +	else {
-> +		pm_runtime_mark_last_busy(&client->dev);
-> +		ret = pm_runtime_put_autosuspend(&client->dev);
-> +	}
-> +
-> +	if (ret < 0) {
-> +		dev_err(&client->dev,
-> +			"failed to change power state to %d\n", on);
-> +		if (on)
-> +			pm_runtime_put_noidle(&client->dev);
-> +
+> +	switch (mask) {
+> +	case IIO_CHAN_INFO_PROCESSED:
+> +		ret = cm3232_get_lux(chip);
+> +		if (ret < 0)
+> +			return ret;
+> +		*val = ret;
+> +		return IIO_VAL_INT;
+> +	case IIO_CHAN_INFO_CALIBSCALE:
+> +		*val = als_info->calibscale;
+> +		return IIO_VAL_INT;
+> +	case IIO_CHAN_INFO_INT_TIME:
+> +		*val = 0;
+> +		ret = cm3232_read_als_it(chip, val2);
 > +		return ret;
 > +	}
-> +#endif
 > +
-> +	return 0;
+> +	return -EINVAL;
 > +}
-> +EXPORT_SYMBOL(mma9551_set_power_state);
 > +
-> +void mma9551_sleep(int freq)
+> +static int cm3232_write_raw(struct iio_dev *indio_dev,
+> +			struct iio_chan_spec const *chan,
+> +			int val, int val2, long mask)
 > +{
-> +	int sleep_val = 1000 / freq;
+> +	struct cm3232_chip *chip = iio_priv(indio_dev);
+> +	struct cm3232_als_info *als_info = chip->als_info;
+> +	long ms;
+
+ms is cast into int later
+
+what is ms -- milliseconds or microseconds? the latter I guess; ms is 
+usually millisecs
+
 > +
-> +	if (sleep_val < 20)
-> +		usleep_range(sleep_val * 1000, 20000);
+> +	switch (mask) {
+> +	case IIO_CHAN_INFO_CALIBSCALE:
+> +		als_info->calibscale = val;
+> +		return val;
+> +	case IIO_CHAN_INFO_INT_TIME:
+> +		ms = val * 1000000 + val2;
+> +		return cm3232_write_als_it(chip, (int)ms);
+> +	}
+> +
+> +	return -EINVAL;
+> +}
+> +
+> +/**
+> + * cm3232_get_it_available() - Get available ALS IT value
+> + * @dev:	pointer of struct device.
+> + * @attr:	pointer of struct device_attribute.
+> + * @buf:	pointer of return string buffer.
+> + *
+> + * Display the available integration time in milliseconds.
+> + *
+> + * Return: string length.
+> + */
+> +static ssize_t cm3232_get_it_available(struct device *dev,
+> +			struct device_attribute *attr, char *buf)
+> +{
+> +	struct cm3232_chip *chip = iio_priv(dev_to_iio_dev(dev));
+> +	struct cm3232_als_info *als_info = chip->als_info;
+> +	int i, len;
+> +
+> +	for (i = 0, len = 0; i < als_info->num_als_it; i++)
+> +		len += scnprintf(buf + len, PAGE_SIZE - len, "%u.%06u ",
+> +			als_info->als_it_values[i]/1000000,
+> +			als_info->als_it_values[i]%1000000);
+> +	return len + scnprintf(buf + len, PAGE_SIZE - len, "\n");
+> +}
+> +
+> +static const struct iio_chan_spec cm3232_channels[] = {
+> +	{
+> +		.type = IIO_LIGHT,
+> +		.info_mask_separate =
+> +			BIT(IIO_CHAN_INFO_PROCESSED) |
+> +			BIT(IIO_CHAN_INFO_CALIBSCALE) |
+> +			BIT(IIO_CHAN_INFO_INT_TIME),
+> +	}
+> +};
+> +
+> +static IIO_DEVICE_ATTR(in_illuminance_integration_time_available,
+> +			S_IRUGO, cm3232_get_it_available, NULL, 0);
+> +
+> +static struct attribute *cm3232_attributes[] = {
+> +	&iio_dev_attr_in_illuminance_integration_time_available.dev_attr.attr,
+> +	NULL,
+> +};
+> +
+> +static const struct attribute_group cm3232_attribute_group = {
+> +	.attrs = cm3232_attributes
+> +};
+> +
+> +static const struct iio_info cm3232_info = {
+> +	.driver_module		= THIS_MODULE,
+> +	.read_raw		= &cm3232_read_raw,
+> +	.write_raw		= &cm3232_write_raw,
+> +	.attrs			= &cm3232_attribute_group,
+> +};
+> +
+> +static int cm3232_probe(struct i2c_client *client,
+> +			const struct i2c_device_id *id)
+> +{
+> +	struct cm3232_chip *chip;
+> +	struct iio_dev *indio_dev;
+> +	int ret;
+> +
+> +	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*chip));
+> +	if (!indio_dev) {
+> +		dev_err(&client->dev, "devm_iio_device_alloc failed\n");
+> +		return -ENOMEM;
+> +	}
+> +
+> +	chip = iio_priv(indio_dev);
+> +	i2c_set_clientdata(client, indio_dev);
+> +	chip->client = client;
+> +
+> +	mutex_init(&chip->lock);
+> +	indio_dev->dev.parent = &client->dev;
+> +	indio_dev->channels = cm3232_channels;
+> +	indio_dev->num_channels = ARRAY_SIZE(cm3232_channels);
+> +	indio_dev->info = &cm3232_info;
+> +	if (id && id->name)
+> +		indio_dev->name = id->name;
 > +	else
-> +		msleep_interruptible(sleep_val);
-> +}
-> +EXPORT_SYMBOL(mma9551_sleep);
+> +		indio_dev->name = (char *)dev_name(&client->dev);
+> +	indio_dev->modes = INDIO_DIRECT_MODE;
 > +
-> +int mma9551_read_accel_chan(struct i2c_client *client,
-> +			    const struct iio_chan_spec *chan,
-> +			    int *val, int *val2)
-> +{
-> +	u16 reg_addr;
-> +	s16 raw_accel;
-> +	int ret;
-> +
-> +	switch (chan->channel2) {
-> +	case IIO_MOD_X:
-> +		reg_addr = MMA9551_AFE_X_ACCEL_REG;
-> +		break;
-> +	case IIO_MOD_Y:
-> +		reg_addr = MMA9551_AFE_Y_ACCEL_REG;
-> +		break;
-> +	case IIO_MOD_Z:
-> +		reg_addr = MMA9551_AFE_Z_ACCEL_REG;
-> +		break;
-> +	default:
-> +		return -EINVAL;
+> +	ret = cm3232_reg_init(chip);
+> +	if (ret) {
+> +		dev_err(&client->dev,
+> +			"%s: register init failed\n",
+> +			__func__);
+> +		return ret;
 > +	}
 > +
-> +	ret = mma9551_set_power_state(client, true);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	ret = mma9551_read_status_word(client, MMA9551_APPID_AFE,
-> +				       reg_addr, &raw_accel);
-> +	if (ret < 0)
-> +		goto out_poweroff;
-> +
-> +	*val = raw_accel;
-> +
-> +	ret = IIO_VAL_INT;
-> +
-> +out_poweroff:
-> +	mma9551_set_power_state(client, false);
-> +	return ret;
+> +	ret = iio_device_register(indio_dev);
+
+ret not checked
+
+> +	return 0;
 > +}
-> +EXPORT_SYMBOL(mma9551_read_accel_chan);
 > +
-> +int mma9551_read_accel_scale(int *val, int *val2)
+> +static int cm3232_remove(struct i2c_client *client)
 > +{
-> +	*val = 0;
-> +	*val2 = 2440;
-> +	return IIO_VAL_INT_PLUS_MICRO;
-> +}
-> +EXPORT_SYMBOL(mma9551_read_accel_scale);
+> +	struct iio_dev *indio_dev = i2c_get_clientdata(client);
 > +
-> +MODULE_AUTHOR("Irina Tirdea <irina.tirdea@intel.com>");
-> +MODULE_AUTHOR("Vlad Dogaru <vlad.dogaru@intel.com>");
-> +MODULE_LICENSE("GPL v2");
-> +MODULE_DESCRIPTION("MMA955xL sensors core");
-> diff --git a/drivers/iio/accel/mma9551_core.h b/drivers/iio/accel/mma9551_core.h
-> new file mode 100644
-> index 0000000..0e1c9bb
-> --- /dev/null
-> +++ b/drivers/iio/accel/mma9551_core.h
-> @@ -0,0 +1,74 @@
-> +/*
-> + * Common code for Freescale MMA955x Intelligent Sensor Platform drivers
-> + * Copyright (c) 2014, Intel Corporation.
-> + *
-> + * This program is free software; you can redistribute it and/or modify it
-> + * under the terms and conditions of the GNU General Public License,
-> + * version 2, as published by the Free Software Foundation.
-> + *
-> + * This program is distributed in the hope it will be useful, but WITHOUT
-> + * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-> + * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
-> + * more details.
-> + */
-> +
-> +#ifndef _MMA9551_CORE_H_
-> +#define _MMA9551_CORE_H_
-> +
-> +/* Applications IDs */
-> +#define MMA9551_APPID_VERSION		0x00
-> +#define MMA9551_APPID_GPIO		0x03
-> +#define MMA9551_APPID_AFE		0x06
-> +#define MMA9551_APPID_TILT		0x0B
-> +#define MMA9551_APPID_SLEEP_WAKE	0x12
-> +#define MMA9551_APPID_RESET		0x17
-> +#define MMA9551_APPID_NONE		0xff
-> +
-> +#define MMA9551_AUTO_SUSPEND_DELAY_MS	2000
-> +
-> +enum mma9551_gpio_pin {
-> +	mma9551_gpio6 = 0,
-> +	mma9551_gpio7,
-> +	mma9551_gpio8,
-> +	mma9551_gpio9,
-> +	mma9551_gpio_max = mma9551_gpio9,
-> +};
-> +
-> +struct mma9551_version_info {
-> +	__be32 device_id;
-> +	u8 rom_version[2];
-> +	u8 fw_version[2];
-> +	u8 hw_version[2];
-> +	u8 fw_build[2];
-> +};
-> +
-> +#define MMA9551_ACCEL_CHANNEL(axis) {				\
-> +	.type = IIO_ACCEL,					\
-> +	.modified = 1,						\
-> +	.channel2 = axis,					\
-> +	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),		\
-> +	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),	\
+> +	iio_device_unregister(indio_dev);
+
+maybe disable device?
+
+> +	return 0;
 > +}
 > +
-> +int mma9551_read_config_byte(struct i2c_client *client, u8 app_id,
-> +			     u16 reg, u8 *val);
-> +int mma9551_write_config_byte(struct i2c_client *client, u8 app_id,
-> +			      u16 reg, u8 val);
-> +int mma9551_read_status_byte(struct i2c_client *client, u8 app_id,
-> +			     u16 reg, u8 *val);
-> +int mma9551_read_status_word(struct i2c_client *client, u8 app_id,
-> +			     u16 reg, u16 *val);
-> +int mma9551_update_config_bits(struct i2c_client *client, u8 app_id,
-> +			       u16 reg, u8 mask, u8 val);
-> +int mma9551_gpio_config(struct i2c_client *client, enum mma9551_gpio_pin pin,
-> +			u8 app_id, u8 bitnum, int polarity);
-> +int mma9551_read_version(struct i2c_client *client);
-> +int mma9551_set_device_state(struct i2c_client *client, bool enable);
-> +int mma9551_set_power_state(struct i2c_client *client, bool on);
-> +void mma9551_sleep(int freq);
-> +int mma9551_read_accel_chan(struct i2c_client *client,
-> +			    const struct iio_chan_spec *chan,
-> +			    int *val, int *val2);
-> +int mma9551_read_accel_scale(int *val, int *val2);
+> +static const struct i2c_device_id cm3232_id[] = {
+> +	{ "cm3232", 0},
+> +	{ }
+> +};
 > +
-> +#endif /* _MMA9551_CORE_H_ */
+> +MODULE_DEVICE_TABLE(i2c, cm3232_id);
+> +
+> +static const struct of_device_id cm3232_of_match[] = {
+> +	{ .compatible = "capella,cm3232" },
+> +	{ }
+> +};
+> +
+> +static struct i2c_driver cm3232_driver = {
+> +	.driver = {
+> +		.name	= "cm3232",
+> +		.owner	= THIS_MODULE,
+> +		.of_match_table = of_match_ptr(cm3232_of_match),
+> +	},
+> +	.id_table	= cm3232_id,
+> +	.probe		= cm3232_probe,
+> +	.remove		= cm3232_remove,
+> +};
+> +
+> +module_i2c_driver(cm3232_driver);
+> +
+> +MODULE_AUTHOR("Kevin Tsai <ktsai@capellamicro.com>");
+> +MODULE_DESCRIPTION("CM3232 ambient light sensor driver");
+> +MODULE_LICENSE("GPL");
 > 
 
+-- 
+
+Peter Meerwald
++43-664-2444418 (mobile)
