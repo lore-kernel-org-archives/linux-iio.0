@@ -1,52 +1,50 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:55795 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:55805 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750751AbbAAMTT (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 1 Jan 2015 07:19:19 -0500
-Message-ID: <54A53B45.7080007@kernel.org>
-Date: Thu, 01 Jan 2015 12:19:17 +0000
+	with ESMTP id S1750751AbbAAMVR (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 1 Jan 2015 07:21:17 -0500
+Message-ID: <54A53BBB.20402@kernel.org>
+Date: Thu, 01 Jan 2015 12:21:15 +0000
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Roberta Dobrescu <roberta.dobrescu@gmail.com>,
-	linux-iio@vger.kernel.org
-CC: octavian.purdila@intel.com, daniel.baluta@intel.com,
-	lars@metafoo.de, Michael.Hennerich@analog.com, knaack.h@gmx.de,
-	pmeerw@pmeerw.net
-Subject: Re: [PATCH v2] iio: frequency: ad9523: Increase sleep time in ad9523_store_eeprom
-References: <1419965074-3929-1-git-send-email-roberta.dobrescu@gmail.com>
-In-Reply-To: <1419965074-3929-1-git-send-email-roberta.dobrescu@gmail.com>
+To: Vlad Dogaru <vlad.dogaru@intel.com>, linux-iio@vger.kernel.org
+Subject: Re: [PATCH] staging: iio: dummy: fix compile error when not using
+ buffering
+References: <1419846616-31441-1-git-send-email-vlad.dogaru@intel.com>
+In-Reply-To: <1419846616-31441-1-git-send-email-vlad.dogaru@intel.com>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 30/12/14 18:44, Roberta Dobrescu wrote:
-> This patch increases sleep time in ad9523_store_eeprom to 20ms since
-> it isn't timing critical. It fixes the following checkpatch.pl warning:
-> WARNING: msleep < 20ms can sleep for up to 20ms
+On 29/12/14 09:50, Vlad Dogaru wrote:
+> Commit 4ae03019923f ("staging:iio:dummy: Register same channels for
+> device and buffer") has changed the number of parameters for
+> iio_simple_dummy_configure_buffer() only for the IIO_SIMPLE_DUMMY_BUFFER
+> case.  Fix this by also changing the placeholder function declared in
+> the header when buffering is not enabled.
 > 
-> Signed-off-by: Roberta Dobrescu <roberta.dobrescu@gmail.com>
-Applied to the togreg branch of iio.git - initially pushed out as testing
-for the autobuilders to play.
+> Signed-off-by: Vlad Dogaru <vlad.dogaru@intel.com>
+Good catch - clears up an autobuilder warning I'd been meaning to chase down as well.
+
+Thanks,
+
 > ---
-> Changes since v1:
-> 	* Increase sleep time in msleep instead of using usleep_range
-> 	* Change subject and commit message accordingly
+>  drivers/staging/iio/iio_simple_dummy.h | 3 +--
+>  1 file changed, 1 insertion(+), 2 deletions(-)
 > 
->  drivers/iio/frequency/ad9523.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/iio/frequency/ad9523.c b/drivers/iio/frequency/ad9523.c
-> index 7c5245d..50ed8d1 100644
-> --- a/drivers/iio/frequency/ad9523.c
-> +++ b/drivers/iio/frequency/ad9523.c
-> @@ -445,7 +445,7 @@ static int ad9523_store_eeprom(struct iio_dev *indio_dev)
->  
->  	tmp = 4;
->  	do {
-> -		msleep(16);
-> +		msleep(20);
->  		ret = ad9523_read(indio_dev,
->  				  AD9523_EEPROM_DATA_XFER_STATUS);
->  		if (ret < 0)
+> diff --git a/drivers/staging/iio/iio_simple_dummy.h b/drivers/staging/iio/iio_simple_dummy.h
+> index af70126..34989bf 100644
+> --- a/drivers/staging/iio/iio_simple_dummy.h
+> +++ b/drivers/staging/iio/iio_simple_dummy.h
+> @@ -117,8 +117,7 @@ enum iio_simple_dummy_scan_elements {
+>  int iio_simple_dummy_configure_buffer(struct iio_dev *indio_dev);
+>  void iio_simple_dummy_unconfigure_buffer(struct iio_dev *indio_dev);
+>  #else
+> -static inline int iio_simple_dummy_configure_buffer(struct iio_dev *indio_dev,
+> -	const struct iio_chan_spec *channels, unsigned int num_channels)
+> +static inline int iio_simple_dummy_configure_buffer(struct iio_dev *indio_dev)
+>  {
+>  	return 0;
+>  };
 > 
 
