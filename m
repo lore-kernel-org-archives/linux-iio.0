@@ -1,48 +1,43 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mout.kundenserver.de ([212.227.126.187]:60431 "EHLO
+Received: from mout.kundenserver.de ([212.227.17.10]:50337 "EHLO
 	mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750733AbbAASNl (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 1 Jan 2015 13:13:41 -0500
+	with ESMTP id S1751812AbbAATLb (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 1 Jan 2015 14:11:31 -0500
 From: Stefan Wahren <stefan.wahren@i2se.com>
 To: jic23@kernel.org
-Cc: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
+Cc: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net, marex@denx.de,
+	fabio.estevam@freescale.com, alexandre.belloni@free-electrons.com,
 	linux-iio@vger.kernel.org, Stefan Wahren <stefan.wahren@i2se.com>
-Subject: [PATCH RFC] iio: inkern: add out of range error message
-Date: Thu,  1 Jan 2015 18:13:24 +0000
-Message-Id: <1420136004-2058-1-git-send-email-stefan.wahren@i2se.com>
+Subject: [PATCH] iio: mxs-lradc: fix iio channel map regression
+Date: Thu,  1 Jan 2015 19:11:17 +0000
+Message-Id: <1420139477-2361-1-git-send-email-stefan.wahren@i2se.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-If the DT contains an invalid channel specifier then the probe of
-iio_hwmon fails with the following message:
+Since commit c8231a9af8147f8a ("iio: mxs-lradc: compute temperature
+from channel 8 and 9") with the removal of adc channel 9 there is
+no 1-1 mapping in the channel spec.
 
-iio_hwmon: probe of iio_hwmon failed with error -22
-
-So it's better to print out the relevant channel specifier in
-error case to locate the problem.
+All hwmon channel values above 9 are accessible via there index minus
+one. So add a "bogus" iio channel 9 to fix this issue.
 
 Signed-off-by: Stefan Wahren <stefan.wahren@i2se.com>
 ---
- drivers/iio/inkern.c |    5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ drivers/staging/iio/adc/mxs-lradc.c |    1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/iio/inkern.c b/drivers/iio/inkern.c
-index 866fe90..30a8d9c 100644
---- a/drivers/iio/inkern.c
-+++ b/drivers/iio/inkern.c
-@@ -116,8 +116,11 @@ static int __of_iio_simple_xlate(struct iio_dev *indio_dev,
- 	if (!iiospec->args_count)
- 		return 0;
- 
--	if (iiospec->args[0] >= indio_dev->num_channels)
-+	if (iiospec->args[0] >= indio_dev->num_channels) {
-+		dev_err(&indio_dev->dev, "invalid channel index %u\n",
-+			iiospec->args[0]);
- 		return -EINVAL;
-+	}
- 
- 	return iiospec->args[0];
- }
--- 
+diff --git a/drivers/staging/iio/adc/mxs-lradc.c b/drivers/staging/iio/adc/mxs-lradc.c
+index d9d6fad..126a07b 100644
+--- a/drivers/staging/iio/adc/mxs-lradc.c
++++ b/drivers/staging/iio/adc/mxs-lradc.c
+@@ -1413,6 +1413,7 @@ static const struct iio_chan_spec mxs_lradc_chan_spec[] = {
+ 		.channel = 8,
+ 		.scan_type = {.sign = 'u', .realbits = 18, .storagebits = 32,},
+ 	},
++	MXS_ADC_CHAN(9, IIO_VOLTAGE),
+ 	MXS_ADC_CHAN(10, IIO_VOLTAGE),	/* VDDIO */
+ 	MXS_ADC_CHAN(11, IIO_VOLTAGE),	/* VTH */
+ 	MXS_ADC_CHAN(12, IIO_VOLTAGE),	/* VDDA */
+--
 1.7.9.5
 
