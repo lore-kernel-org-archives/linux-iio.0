@@ -1,55 +1,48 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mout.gmx.net ([212.227.15.19]:59289 "EHLO mout.gmx.net"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751807AbbAANy3 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Thu, 1 Jan 2015 08:54:29 -0500
-Message-ID: <54A5518C.6050107@gmx.de>
-Date: Thu, 01 Jan 2015 14:54:20 +0100
-From: Hartmut Knaack <knaack.h@gmx.de>
-MIME-Version: 1.0
-To: Daniel Baluta <daniel.baluta@intel.com>, jic23@kernel.org
-CC: lars@metafoo.de, pmeerw@pmeerw.net, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org, srinivas.pandruvada@linux.intel.com
-Subject: Re: [PATCH 10/10] iio: imu: kmx61: Use correct base when reading data
-References: <1419340953-23161-1-git-send-email-daniel.baluta@intel.com> <1419340953-23161-11-git-send-email-daniel.baluta@intel.com>
-In-Reply-To: <1419340953-23161-11-git-send-email-daniel.baluta@intel.com>
-Content-Type: text/plain; charset=ISO-8859-15
+Received: from mout.kundenserver.de ([212.227.126.187]:60431 "EHLO
+	mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750733AbbAASNl (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 1 Jan 2015 13:13:41 -0500
+From: Stefan Wahren <stefan.wahren@i2se.com>
+To: jic23@kernel.org
+Cc: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
+	linux-iio@vger.kernel.org, Stefan Wahren <stefan.wahren@i2se.com>
+Subject: [PATCH RFC] iio: inkern: add out of range error message
+Date: Thu,  1 Jan 2015 18:13:24 +0000
+Message-Id: <1420136004-2058-1-git-send-email-stefan.wahren@i2se.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Daniel Baluta schrieb am 23.12.2014 um 14:22:
-> We have two IIO devices and we need to adjust the base
-> when reading data.
-> 
-> Signed-off-by: Daniel Baluta <daniel.baluta@intel.com>
-Reviewed-by: Hartmut Knaack <knaack.h@gmx.de>
-> ---
->  drivers/iio/imu/kmx61.c | 8 +++++++-
->  1 file changed, 7 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/iio/imu/kmx61.c b/drivers/iio/imu/kmx61.c
-> index 98369eb..6178cea 100644
-> --- a/drivers/iio/imu/kmx61.c
-> +++ b/drivers/iio/imu/kmx61.c
-> @@ -1210,12 +1210,18 @@ static irqreturn_t kmx61_trigger_handler(int irq, void *p)
->  	struct iio_dev *indio_dev = pf->indio_dev;
->  	struct kmx61_data *data = kmx61_get_data(indio_dev);
->  	int bit, ret, i = 0;
-> +	u8 base;
->  	s16 buffer[8];
->  
-> +	if (indio_dev == data->acc_indio_dev)
-> +		base = KMX61_ACC_XOUT_L;
-> +	else
-> +		base = KMX61_MAG_XOUT_L;
-> +
->  	mutex_lock(&data->lock);
->  	for_each_set_bit(bit, indio_dev->buffer->scan_mask,
->  			 indio_dev->masklength) {
-> -		ret = kmx61_read_measurement(data, KMX61_ACC_XOUT_L, bit);
-> +		ret = kmx61_read_measurement(data, base, bit);
->  		if (ret < 0) {
->  			mutex_unlock(&data->lock);
->  			goto err;
-> 
+If the DT contains an invalid channel specifier then the probe of
+iio_hwmon fails with the following message:
+
+iio_hwmon: probe of iio_hwmon failed with error -22
+
+So it's better to print out the relevant channel specifier in
+error case to locate the problem.
+
+Signed-off-by: Stefan Wahren <stefan.wahren@i2se.com>
+---
+ drivers/iio/inkern.c |    5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/iio/inkern.c b/drivers/iio/inkern.c
+index 866fe90..30a8d9c 100644
+--- a/drivers/iio/inkern.c
++++ b/drivers/iio/inkern.c
+@@ -116,8 +116,11 @@ static int __of_iio_simple_xlate(struct iio_dev *indio_dev,
+ 	if (!iiospec->args_count)
+ 		return 0;
+ 
+-	if (iiospec->args[0] >= indio_dev->num_channels)
++	if (iiospec->args[0] >= indio_dev->num_channels) {
++		dev_err(&indio_dev->dev, "invalid channel index %u\n",
++			iiospec->args[0]);
+ 		return -EINVAL;
++	}
+ 
+ 	return iiospec->args[0];
+ }
+-- 
+1.7.9.5
 
