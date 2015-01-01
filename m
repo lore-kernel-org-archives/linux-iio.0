@@ -1,564 +1,1568 @@
-Return-Path: <pmeerw@pmeerw.net>
-Date: Thu, 1 Jan 2015 12:02:38 +0100 (CET)
-From: Peter Meerwald <pmeerw@pmeerw.net>
-To: Kevin Tsai <ktsai@capellamicro.com>
-cc: Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
-    Lars-Peter Clausen <lars@metafoo.de>,
-    Daniel Baluta <daniel.baluta@intel.com>,
-    Archana Patni <archana.patni@linux.intel.com>, linux-iio@vger.kernel.org
-Subject: Re: [PATCH V1 1/1] iio: Added Capella cm3232 ambient light sensor
- driver.
-In-Reply-To: <1420071030-888-1-git-send-email-ktsai@capellamicro.com>
-Message-ID: <alpine.DEB.2.02.1501011140190.21620@pmeerw.net>
-References: <1420071030-888-1-git-send-email-ktsai@capellamicro.com>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:55620 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750849AbbAAL6W (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 1 Jan 2015 06:58:22 -0500
+Message-ID: <54A5365A.8040406@kernel.org>
+Date: Thu, 01 Jan 2015 11:58:18 +0000
+From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
-List-ID: <linux-iio@vger.kernel.org>
+To: Irina Tirdea <irina.tirdea@intel.com>, linux-iio@vger.kernel.org
+CC: linux-kernel@vger.kernel.org, Vlad Dogaru <vlad.dogaru@intel.com>,
+	Daniel Baluta <daniel.baluta@intel.com>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>
+Subject: Re: [PATCH 8/8] iio: add driver for Freescale MMA9553
+References: <1419029879-12024-1-git-send-email-irina.tirdea@intel.com> <1419029879-12024-9-git-send-email-irina.tirdea@intel.com>
+In-Reply-To: <1419029879-12024-9-git-send-email-irina.tirdea@intel.com>
+Content-Type: text/plain; charset=windows-1252
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Wed, 31 Dec 2014, Kevin Tsai wrote:
-
-> CM3232 is an advanced ambient light sensor with I2C protocol interface.
-> The I2C slave address is internally hardwired as 0x10 (7-bit).  Writing
-> to configure register is byte mode, but reading ALS register requests to
-> use word mode for 16-bit resolution.
-
-comments below
- 
-> Signed-off-by: Kevin Tsai <ktsai@capellamicro.com>
-> ---
->  .../devicetree/bindings/i2c/trivial-devices.txt    |   1 +
->  MAINTAINERS                                        |   6 +
->  drivers/iio/light/Kconfig                          |  11 +
->  drivers/iio/light/Makefile                         |   1 +
->  drivers/iio/light/cm3232.c                         | 403 +++++++++++++++++++++
->  5 files changed, 422 insertions(+)
->  create mode 100644 drivers/iio/light/cm3232.c
+On 19/12/14 22:57, Irina Tirdea wrote:
+> Add support for Freescale MMA9553L Intelligent Pedometer Platform.
 > 
-> diff --git a/Documentation/devicetree/bindings/i2c/trivial-devices.txt b/Documentation/devicetree/bindings/i2c/trivial-devices.txt
-> index 9f4e382..572a7c4 100644
-> --- a/Documentation/devicetree/bindings/i2c/trivial-devices.txt
-> +++ b/Documentation/devicetree/bindings/i2c/trivial-devices.txt
-> @@ -34,6 +34,7 @@ atmel,24c512		i2c serial eeprom  (24cxx)
->  atmel,24c1024		i2c serial eeprom  (24cxx)
->  atmel,at97sc3204t	i2c trusted platform module (TPM)
->  capella,cm32181		CM32181: Ambient Light Sensor
-> +capella,cm3232		CM3232: Ambient Light Sensor
->  catalyst,24c32		i2c serial eeprom
->  cirrus,cs42l51		Cirrus Logic CS42L51 audio codec
->  dallas,ds1307		64 x 8, Serial, I2C Real-Time Clock
-> diff --git a/MAINTAINERS b/MAINTAINERS
-> index ddb9ac8..06a613a 100644
-> --- a/MAINTAINERS
-> +++ b/MAINTAINERS
-> @@ -2378,6 +2378,12 @@ F:	security/capability.c
->  F:	security/commoncap.c
->  F:	kernel/capability.c
+> The following functionalities are supported:
+>  - step counter (counts the number of steps using a HW register)
+>  - step detector (generates an iio event at every step the user takes)
+>  - activity recognition (rest, walking, jogging, running)
+>  - speed
+>  - calories
+>  - distance
+> 
+> To get accurate pedometer results, the user's height, weight and gender
+> need to be configured.
+> 
+> The specifications can be downloaded from:
+> http://www.freescale.com/files/sensors/doc/ref_manual/MMA955xLSWRM.pdf
+> http://www.freescale.com/files/sensors/doc/ref_manual/MMA9553LSWRM.pdf
+> 
+> Signed-off-by: Irina Tirdea <irina.tirdea@intel.com>
+A few bits an bobs beyond the interface discussions in the earlier patches
+in the series.
+
+A nice looking driver on the whole, for a complex little device ;)
+
+Jonathan
+> ---
+>  drivers/iio/accel/Kconfig        |   12 +-
+>  drivers/iio/accel/Makefile       |    1 +
+>  drivers/iio/accel/mma9551_core.c |   88 +++
+>  drivers/iio/accel/mma9551_core.h |   17 +-
+>  drivers/iio/accel/mma9553.c      | 1239 ++++++++++++++++++++++++++++++++++++++
+>  5 files changed, 1355 insertions(+), 2 deletions(-)
+>  create mode 100644 drivers/iio/accel/mma9553.c
+> 
+> diff --git a/drivers/iio/accel/Kconfig b/drivers/iio/accel/Kconfig
+> index 0600798..afd50d0 100644
+> --- a/drivers/iio/accel/Kconfig
+> +++ b/drivers/iio/accel/Kconfig
+> @@ -107,7 +107,7 @@ config KXCJK1013
 >  
-> +CAPELLA MICROSYSTEMS LIGHT SENSOR DRIVER
-> +M:	Kevin Tsai <ktsai@capellamicro.com>
-> +S:	Maintained
-> +F:	drivers/iio/light/cm*
-> +F:	Documentation/devicetree/bindings/i2c/trivial-devices.txt
-> +
->  CC2520 IEEE-802.15.4 RADIO DRIVER
->  M:	Varka Bhadram <varkabhadram@gmail.com>
->  L:	linux-wpan@vger.kernel.org
-> diff --git a/drivers/iio/light/Kconfig b/drivers/iio/light/Kconfig
-> index 5bea821..d2318e2 100644
-> --- a/drivers/iio/light/Kconfig
-> +++ b/drivers/iio/light/Kconfig
-> @@ -48,6 +48,17 @@ config CM32181
->  	 To compile this driver as a module, choose M here:
->  	 the module will be called cm32181.
+>  config MMA9551_CORE
+>  	tristate
+> -	depends on MMA9551
+> +	depends on MMA9551 || MMA9553
 >  
-> +config CM3232
+>  config MMA9551
+>  	tristate "Freescale MMA9551L Intelligent Motion-Sensing Platform Driver"
+> @@ -121,4 +121,14 @@ config MMA9551
+>  	  To compile this driver as a module, choose M here: the module
+>  	  will be called mma9551.
+>  
+> +config MMA9553
+> +	tristate "Freescale MMA9553L Intelligent Pedometer Platform Driver"
 > +	depends on I2C
-> +	tristate "CM3232 driver"
+> +	select MMA9551_CORE
 > +	help
-> +	 Say Y here if you use cm3232.
-> +	 This option enables ambient light sensor using
-> +	 Capella Microsystems cm3232 device driver.
+> +	  Say yes here to build support for the Freescale MMA9553L
+> +	  Intelligent Pedometer Platform Driver.
 > +
-> +	 To compile this driver as a module, choose M here:
-> +	 the module will be called cm3232.
+> +	  To compile this driver as a module, choose M here: the module
+> +	  will be called mma9553.
+>  endmenu
+> diff --git a/drivers/iio/accel/Makefile b/drivers/iio/accel/Makefile
+> index 8105316..f815695 100644
+> --- a/drivers/iio/accel/Makefile
+> +++ b/drivers/iio/accel/Makefile
+> @@ -12,6 +12,7 @@ obj-$(CONFIG_MMA8452)	+= mma8452.o
+>  
+>  obj-$(CONFIG_MMA9551_CORE)	+= mma9551_core.o
+>  obj-$(CONFIG_MMA9551)		+= mma9551.o
+> +obj-$(CONFIG_MMA9553)		+= mma9553.o
+>  
+>  obj-$(CONFIG_IIO_ST_ACCEL_3AXIS) += st_accel.o
+>  st_accel-y := st_accel_core.o
+> diff --git a/drivers/iio/accel/mma9551_core.c b/drivers/iio/accel/mma9551_core.c
+> index cab481b..743a868 100644
+> --- a/drivers/iio/accel/mma9551_core.c
+> +++ b/drivers/iio/accel/mma9551_core.c
+> @@ -53,6 +53,11 @@
+>  #define MMA9551_AFE_Y_ACCEL_REG		0x02
+>  #define MMA9551_AFE_Z_ACCEL_REG		0x04
+>  
+> +/* Reset/Suspend/Clear application */
+> +#define MMA9551_RSC_RESET		0x00
+> +#define MMA9551_RSC_OFFSET(mask)	(3 - (ffs(mask) - 1) / 8)
+> +#define MMA9551_RSC_VAL(mask)		(mask >> (((ffs(mask) - 1) / 8) * 8))
 > +
->  config CM36651
->  	depends on I2C
->  	tristate "CM36651 driver"
-> diff --git a/drivers/iio/light/Makefile b/drivers/iio/light/Makefile
-> index 47877a3..f2c8d55 100644
-> --- a/drivers/iio/light/Makefile
-> +++ b/drivers/iio/light/Makefile
-> @@ -7,6 +7,7 @@ obj-$(CONFIG_ADJD_S311)		+= adjd_s311.o
->  obj-$(CONFIG_AL3320A)		+= al3320a.o
->  obj-$(CONFIG_APDS9300)		+= apds9300.o
->  obj-$(CONFIG_CM32181)		+= cm32181.o
-> +obj-$(CONFIG_CM3232)		+= cm3232.o
->  obj-$(CONFIG_CM36651)		+= cm36651.o
->  obj-$(CONFIG_GP2AP020A00F)	+= gp2ap020a00f.o
->  obj-$(CONFIG_HID_SENSOR_ALS)	+= hid-sensor-als.o
-> diff --git a/drivers/iio/light/cm3232.c b/drivers/iio/light/cm3232.c
+>  /*
+>   * A response is composed of:
+>   * - control registers: MB0-3
+> @@ -215,6 +220,30 @@ int mma9551_read_status_byte(struct i2c_client *client, u8 app_id,
+>  }
+>  EXPORT_SYMBOL(mma9551_read_status_byte);
+>  
+> +int mma9551_read_config_word(struct i2c_client *client, u8 app_id,
+> +			    u16 reg, u16 *val)
+> +{
+> +	int ret;
+> +	__be16 v;
+> +
+> +	ret = mma9551_transfer(client, app_id, MMA9551_CMD_READ_CONFIG,
+> +			       reg, NULL, 0, (u8 *)&v, 2);
+> +	*val = be16_to_cpu(v);
+> +
+> +	return ret;
+> +}
+> +EXPORT_SYMBOL(mma9551_read_config_word);
+> +
+> +int mma9551_write_config_word(struct i2c_client *client, u8 app_id,
+> +			     u16 reg, u16 val)
+> +{
+> +	__be16 v = cpu_to_be16(val);
+> +
+> +	return mma9551_transfer(client, app_id, MMA9551_CMD_WRITE_CONFIG, reg,
+> +				(u8 *) &v, 2, NULL, 0);
+> +}
+> +EXPORT_SYMBOL(mma9551_write_config_word);
+> +
+>  int mma9551_read_status_word(struct i2c_client *client, u8 app_id,
+>  			     u16 reg, u16 *val)
+>  {
+> @@ -229,6 +258,56 @@ int mma9551_read_status_word(struct i2c_client *client, u8 app_id,
+>  }
+>  EXPORT_SYMBOL(mma9551_read_status_word);
+>  
+> +int mma9551_read_config_words(struct i2c_client *client, u8 app_id,
+> +			     u16 reg, u8 len, u16 *buf)
+> +{
+> +	int ret, i;
+> +	int len_words = len / sizeof(u16);
+> +	__be16 be_buf[MMA9551_MAX_MAILBOX_DATA_REGS];
+> +
+> +	ret = mma9551_transfer(client, app_id, MMA9551_CMD_READ_CONFIG,
+> +			       reg, NULL, 0, (u8 *) be_buf, len);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	for (i = 0; i < len_words; i++)
+> +		buf[i] = be16_to_cpu(be_buf[i]);
+blank line
+> +	return 0;
+> +}
+> +EXPORT_SYMBOL(mma9551_read_config_words);
+> +
+> +int mma9551_read_status_words(struct i2c_client *client, u8 app_id,
+> +			      u16 reg, u8 len, u16 *buf)
+> +{
+> +	int ret, i;
+> +	int len_words = len / sizeof(u16);
+> +	__be16 be_buf[MMA9551_MAX_MAILBOX_DATA_REGS];
+> +
+> +	ret = mma9551_transfer(client, app_id, MMA9551_CMD_READ_STATUS,
+> +			       reg, NULL, 0, (u8 *) be_buf, len);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	for (i = 0; i < len_words; i++)
+> +		buf[i] = be16_to_cpu(be_buf[i]);
+blank line
+> +	return 0;
+> +}
+> +EXPORT_SYMBOL(mma9551_read_status_words);
+> +
+> +int mma9551_write_config_words(struct i2c_client *client, u8 app_id,
+> +			       u16 reg, u8 len, u16 *buf)
+> +{
+> +	int i;
+> +	int len_words = len / sizeof(u16);
+> +	__be16 be_buf[MMA9551_MAX_MAILBOX_DATA_REGS];
+> +
+> +	for (i = 0; i < len_words; i++)
+> +		be_buf[i] = cpu_to_be16(buf[i]);
+blank line.
+> +	return mma9551_transfer(client, app_id, MMA9551_CMD_WRITE_CONFIG,
+> +				reg, (u8 *) be_buf, len, NULL, 0);
+> +}
+> +EXPORT_SYMBOL(mma9551_write_config_words);
+> +
+>  int mma9551_update_config_bits(struct i2c_client *client, u8 app_id,
+>  			       u16 reg, u8 mask, u8 val)
+>  {
+> @@ -437,6 +516,15 @@ int mma9551_read_accel_scale(int *val, int *val2)
+>  }
+>  EXPORT_SYMBOL(mma9551_read_accel_scale);
+>  
+> +int mma9551_app_reset(struct i2c_client *client, u32 app_mask)
+> +{
+> +	return mma9551_write_config_byte(client, MMA9551_APPID_RCS,
+> +					 MMA9551_RSC_RESET +
+> +					 MMA9551_RSC_OFFSET(app_mask),
+> +					 MMA9551_RSC_VAL(app_mask));
+> +}
+> +EXPORT_SYMBOL(mma9551_app_reset);
+> +
+>  MODULE_AUTHOR("Irina Tirdea <irina.tirdea@intel.com>");
+>  MODULE_AUTHOR("Vlad Dogaru <vlad.dogaru@intel.com>");
+>  MODULE_LICENSE("GPL v2");
+> diff --git a/drivers/iio/accel/mma9551_core.h b/drivers/iio/accel/mma9551_core.h
+> index 0e1c9bb..19b6253 100644
+> --- a/drivers/iio/accel/mma9551_core.h
+> +++ b/drivers/iio/accel/mma9551_core.h
+> @@ -21,9 +21,13 @@
+>  #define MMA9551_APPID_AFE		0x06
+>  #define MMA9551_APPID_TILT		0x0B
+>  #define MMA9551_APPID_SLEEP_WAKE	0x12
+> -#define MMA9551_APPID_RESET		0x17
+> +#define MMA9551_APPID_PEDOMETER	        0x15
+> +#define MMA9551_APPID_RCS		0x17
+>  #define MMA9551_APPID_NONE		0xff
+>  
+> +/* Reset/Suspend/Clear application app masks */
+> +#define MMA9551_RSC_PED			BIT(21)
+> +
+>  #define MMA9551_AUTO_SUSPEND_DELAY_MS	2000
+>  
+>  enum mma9551_gpio_pin {
+> @@ -56,8 +60,18 @@ int mma9551_write_config_byte(struct i2c_client *client, u8 app_id,
+>  			      u16 reg, u8 val);
+>  int mma9551_read_status_byte(struct i2c_client *client, u8 app_id,
+>  			     u16 reg, u8 *val);
+> +int mma9551_read_config_word(struct i2c_client *client, u8 app_id,
+> +			    u16 reg, u16 *val);
+> +int mma9551_write_config_word(struct i2c_client *client, u8 app_id,
+> +			     u16 reg, u16 val);
+>  int mma9551_read_status_word(struct i2c_client *client, u8 app_id,
+>  			     u16 reg, u16 *val);
+> +int mma9551_read_config_words(struct i2c_client *client, u8 app_id,
+> +			     u16 reg, u8 len, u16 *buf);
+> +int mma9551_read_status_words(struct i2c_client *client, u8 app_id,
+> +			      u16 reg, u8 len, u16 *buf);
+> +int mma9551_write_config_words(struct i2c_client *client, u8 app_id,
+> +			       u16 reg, u8 len, u16 *buf);
+>  int mma9551_update_config_bits(struct i2c_client *client, u8 app_id,
+>  			       u16 reg, u8 mask, u8 val);
+>  int mma9551_gpio_config(struct i2c_client *client, enum mma9551_gpio_pin pin,
+> @@ -70,5 +84,6 @@ int mma9551_read_accel_chan(struct i2c_client *client,
+>  			    const struct iio_chan_spec *chan,
+>  			    int *val, int *val2);
+>  int mma9551_read_accel_scale(int *val, int *val2);
+> +int mma9551_app_reset(struct i2c_client *client, u32 app_mask);
+>  
+>  #endif /* _MMA9551_CORE_H_ */
+> diff --git a/drivers/iio/accel/mma9553.c b/drivers/iio/accel/mma9553.c
 > new file mode 100644
-> index 0000000..fd98eeb
+> index 0000000..35b657d
 > --- /dev/null
-> +++ b/drivers/iio/light/cm3232.c
-> @@ -0,0 +1,403 @@
+> +++ b/drivers/iio/accel/mma9553.c
+> @@ -0,0 +1,1239 @@
 > +/*
-> + * Copyright (C) 2014 Capella Microsystems Inc.
-> + * Author: Kevin Tsai <ktsai@capellamicro.com>
+> + * Freescale MMA9553L Intelligent Pedometer driver
+> + * Copyright (c) 2014, Intel Corporation.
 > + *
 > + * This program is free software; you can redistribute it and/or modify it
-> + * under the terms of the GNU General Public License version 2, as published
-> + * by the Free Software Foundation.
+> + * under the terms and conditions of the GNU General Public License,
+> + * version 2, as published by the Free Software Foundation.
 > + *
+> + * This program is distributed in the hope it will be useful, but WITHOUT
+> + * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+> + * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+> + * more details.
 > + */
 > +
-> +#include <linux/delay.h>
-> +#include <linux/err.h>
-> +#include <linux/i2c.h>
-> +#include <linux/mutex.h>
 > +#include <linux/module.h>
+> +#include <linux/i2c.h>
 > +#include <linux/interrupt.h>
-> +#include <linux/regulator/consumer.h>
+> +#include <linux/slab.h>
+> +#include <linux/acpi.h>
+> +#include <linux/gpio/consumer.h>
 > +#include <linux/iio/iio.h>
 > +#include <linux/iio/sysfs.h>
 > +#include <linux/iio/events.h>
-> +#include <linux/init.h>
+> +#include <linux/pm_runtime.h>
+> +#include "mma9551_core.h"
 > +
-> +/* Registers Address */
-> +#define CM3232_REG_ADDR_CMD		0x00
-> +#define CM3232_REG_ADDR_ALS		0x50
-> +#define CM3232_REG_ADDR_ID		0x53
+> +#define MMA9553_DRV_NAME			"mma9553"
+> +#define MMA9553_IRQ_NAME			"mma9553_event"
+> +#define MMA9553_GPIO_NAME			"mma9553_int"
 > +
-> +/* CMD register */
-> +#define CM3232_CMD_ALS_DISABLE		BIT(0)
-> +#define	CM3232_CMD_ALS_HS		BIT(1)
-
-whitespace issue, replace tab with space
-ALS_HS is not used
-
+> +/* Pedometer configuration registers (R/W) */
+> +#define MMA9553_CONF_SLEEPMIN		0x00
+> +#define MMA9553_CONF_SLEEPMAX		0x02
+> +#define MMA9553_CONF_SLEEPTHD		0x04
+> +#define MMA9553_CONF_WORD		GENMASK(15, 0)
 > +
-> +#define CM3232_CMD_ALS_IT_SHIFT         2
-> +#define CM3232_CMD_ALS_IT_MASK          (0x07 << CM3232_CMD_ALS_IT_SHIFT)
-> +#define CM3232_CMD_ALS_IT_DEFAULT       (0x01 << CM3232_CMD_ALS_IT_SHIFT)
+> +#define MMA9553_CONF_CONF_STEPLEN	0x06
+> +#define MMA9553_CONF_CONFIG		BIT(15)
+> +#define MMA9553_CONF_ACT_DBCNTM		BIT(14)
+> +#define MMA9553_CONF_SLP_DBCNTM		BIT(13)
+> +#define MMA9553_CONF_STEPLEN		GENMASK(7, 0)
 > +
-> +#define	CM3232_CMD_ALS_RESET		BIT(6)
+> +#define MMA9553_CONF_HEIGHT_WEIGHT	0x08
+> +#define MMA9553_CONF_HEIGHT		GENMASK(15, 8)
+> +#define MMA9553_CONF_WEIGHT		GENMASK(7, 0)
 > +
-> +#define CM3232_CMD_DEFAULT		CM3232_CMD_ALS_IT_DEFAULT
+> +#define MMA9553_CONF_FILTER		0x0A
+> +#define MMA9553_CONF_FILTSTEP		GENMASK(15, 8)
+> +#define MMA9553_CONF_MALE		BIT(7)
+> +#define MMA9553_CONF_FILTTIME		GENMASK(6, 0)
 > +
-> +#define CM3232_CALIBSCALE_DEFAULT	100000
-> +#define CM3232_CALIBSCALE_RESOLUTION	100000
-> +#define CM3232_MLUX_PER_LUX		1000
+> +#define MMA9553_CONF_SPEED_STEP		0x0C
+> +#define MMA9553_CONF_SPDPRD		GENMASK(15, 8)
+> +#define MMA9553_CONF_STEPCOALESCE	GENMASK(7, 0)
 > +
-> +#define CM3232_MLUX_PER_BIT_DEFAULT	64
-> +#define CM3232_MLUX_PER_BIT_BASE_IT	100000
-> +static const int CM3232_als_it_bits[] = { 0, 1, 2, 3, 4, 5};
-
-cm3232_als_it_bits and remove space before 0
-
-> +static const int CM3232_als_it_values[] = {
-> +			100000, 200000, 400000, 800000, 1600000, 3200000};
-
-cm3232_als_it_values
-
+> +#define MMA9553_CONF_ACTTHD		0x0E
 > +
-> +struct cm3232_als_info {
-
-that may pay off lateron, currently there is just one chip...
-
-> +	u32 id;
-> +	int calibscale;
-> +	int mlux_per_bit;
-> +	int mlux_per_bit_base_it;
-> +	const int *als_it_bits;
-> +	const int *als_it_values;
-> +	const int num_als_it;
-
-num_als_it could be unsigned probably
-
-> +	int als_raw;
-> +};
+> +/* Pedometer status registers (R-only) */
+> +#define MMA9553_STATUS			0x00
+> +#define MMA9553_STATUS_MRGFL		BIT(15)
+> +#define MMA9553_STATUS_SUSPCHG		BIT(14)
+> +#define MMA9553_STATUS_STEPCHG		BIT(13)
+> +#define MMA9553_STATUS_ACTCHG		BIT(12)
+> +#define MMA9553_STATUS_SUSP		BIT(11)
+> +#define MMA9553_STATUS_ACTIVITY		(BIT(10) | BIT(9) | BIT(8))
+> +#define MMA9553_STATUS_VERSION		0x00FF
 > +
-> +static struct cm3232_als_info cm3232_als_info_default = {
-> +	.id = 3232,
-> +	.calibscale = CM3232_CALIBSCALE_DEFAULT,
-> +	.mlux_per_bit = CM3232_MLUX_PER_BIT_DEFAULT,
-> +	.mlux_per_bit_base_it = CM3232_MLUX_PER_BIT_BASE_IT,
-> +	.als_it_bits = CM3232_als_it_bits,
-> +	.als_it_values = CM3232_als_it_values,
-> +	.num_als_it = ARRAY_SIZE(CM3232_als_it_bits),
-> +};
+> +#define MMA9553_STEPCNT			0x02
+> +#define MMA9553_DISTANCE		0x04
+> +#define MMA9553_SPEED			0x06
+> +#define MMA9553_CALORIES		0x08
+> +#define MMA9553_SLEEPCNT		0x0A
 > +
-> +struct cm3232_chip {
-> +	struct i2c_client *client;
-> +	struct mutex lock;
-> +	struct cm3232_als_info *als_info;
-> +	u8 regs_cmd;
-> +};
+> +/* Pedometer events are always mapped to this pin. */
+> +#define MMA9553_DEFAULT_GPIO_PIN	mma9551_gpio6
+> +#define MMA9553_DEFAULT_GPIO_POLARITY	0
 > +
-> +static int cm3232_get_lux(struct cm3232_chip *chip);
-> +static int cm3232_read_als_it(struct cm3232_chip *chip, int *val2);
+> +/* Bitnum used for gpio configuration = bit number in high status byte */
+> +#define STATUS_TO_BITNUM(bit)		(ffs(bit) - 9)
 > +
-> +/**
-> + * cm3232_reg_init() - Initialize CM3232 registers
-> + * @chip:	pointer of struct cm3232.
-> + *
-> + * Initialize CM3232 ambient light sensor register to default values.
-
-checks for and initializes; registers
-
-> + *
-> +  Return: 0 for success; otherwise for error code.
+> +#define MMA9553_DEFAULT_SAMPLE_RATE	30	/* Hz */
+> +
+> +/*
+> + * The internal activity level must be stable for ACTTHD samples before
+> + * ACTIVITY is updated.The ACTIVITY variable contains the current activity
+> + * level and is updated every time a step is detected or once a second
+> + * if there are no steps. So for 100% confidence level we need to have
+> + * the same activity level for about 30 sec.
+Not entirely sure I follow this argument on the confidence level.
+We do have period to directly in_activity_walking_thresh_rising_period etc
+to directly handle how long a condition has to be active before we fire an
+event.  Perhaps that would be better.  You'd then make the activity threshold
+read only (just return -EINVAL in the write) and set it at say 50% when read
+back.
 > + */
-> +static int cm3232_reg_init(struct cm3232_chip *chip)
+> +#define MMA9553_MAX_ACTTHD		(MMA9553_DEFAULT_SAMPLE_RATE * 30)
+> +#define MMA9553_PERCENTAGE_TO_THD(prc) (((prc) * MMA9553_MAX_ACTTHD) / 100)
+> +#define MMA9553_THD_TO_PERCENTAGE(thr) (((thr) * 100) / MMA9553_MAX_ACTTHD)
+> +
+> +/*
+> + * Autonomously suspend pedometer if acceleration vector magnitude
+> + * is near 1g (4096 at 0.244 mg/LSB resolution) for 30 seconds.
+> + */
+> +#define MMA9553_DEFAULT_SLEEPMIN	3688	/* 0,9 g */
+> +#define MMA9553_DEFAULT_SLEEPMAX	4508	/* 1,1 g */
+> +#define MMA9553_DEFAULT_SLEEPTHD	(MMA9553_DEFAULT_SAMPLE_RATE * 30)
+> +
+> +#define MMA9553_CONFIG_RETRIES		2
+> +
+> +/* Status register - activity field  */
+> +enum activity_level {
+> +	ACTIVITY_UNKNOWN,
+> +	ACTIVITY_REST,
+> +	ACTIVITY_WALKING,
+> +	ACTIVITY_JOGGING,
+> +	ACTIVITY_RUNNING,
+> +};
+> +
+> +struct mma9553_event {
+> +	enum iio_chan_type type;
+> +	enum iio_modifier mod;
+> +	enum iio_event_direction dir;
+> +	bool enabled;
+> +};
+> +
+> +struct mma9553_conf_regs {
+> +	u16 sleepmin;
+> +	u16 sleepmax;
+> +	u16 sleepthd;
+> +	u16 config;
+> +	u16 height_weight;
+> +	u16 filter;
+> +	u16 speed_step;
+> +	u16 actthd;
+> +} __packed;
+> +
+> +struct mma9553_data {
+> +	struct i2c_client *client;
+> +	struct mutex mutex;
+> +	struct mma9553_conf_regs conf;
+> +	struct mma9553_event *events;
+> +	int num_events;
+> +	u8 gpio_bitnum;
+> +	/*
+> +	 * This is used for all features that depend on step count:
+> +	 * step count, distance, speed, calories.
+> +	 */
+> +	bool stepcnt_enabled;
+> +	u16 stepcnt;
+> +	u8 activity;
+> +};
+> +
+> +static u8 mma9553_get_bits(u16 val, u16 mask)
 > +{
-> +	struct i2c_client *client = chip->client;
-> +	struct cm3232_als_info *als_info;
-> +	s32 ret;
+> +	return (val & mask) >> (ffs(mask) - 1);
+> +}
 > +
-> +	/* Identify device */
-> +	ret = i2c_smbus_read_word_data(client, CM3232_REG_ADDR_ID);
-> +	if (ret < 0)
+> +static u16 mma9553_set_bits(u16 current_val, u16 val, u16 mask)
+> +{
+> +	return (current_val & ~mask) | (val << (ffs(mask) - 1));
+> +}
+> +
+> +static enum iio_modifier mma9553_activity_to_mod(enum activity_level activity)
+> +{
+> +	switch (activity) {
+> +	case ACTIVITY_RUNNING:
+> +		return IIO_MOD_RUNNING;
+> +	case ACTIVITY_JOGGING:
+> +		return IIO_MOD_JOGGING;
+> +	case ACTIVITY_WALKING:
+> +		return IIO_MOD_WALKING;
+> +	case ACTIVITY_REST:
+> +		return IIO_MOD_STILL;
+> +	case ACTIVITY_UNKNOWN:
+> +	default:
+> +		return IIO_NO_MOD;
+> +	}
+> +}
+> +
+> +static struct mma9553_event *mma9553_get_event(struct mma9553_data *data,
+> +					       enum iio_chan_type type,
+> +					       enum iio_modifier mod,
+> +					       enum iio_event_direction dir)
+> +{
+> +	int i;
+> +
+> +	for (i = 0; i < data->num_events; i++)
+> +		if (data->events[i].type == type &&
+> +		    data->events[i].mod == mod &&
+> +		    data->events[i].dir == dir)
+> +			return &data->events[i];
+blank line.
+> +	return NULL;
+> +}
+> +
+> +static bool mma9553_is_any_event_enabled(struct mma9553_data *data,
+> +					 bool check_type,
+> +					 enum iio_chan_type type)
+> +{
+> +	int i;
+> +
+> +	for (i = 0; i < data->num_events; i++)
+> +		if ((check_type && data->events[i].type == type &&
+> +		     data->events[i].enabled) ||
+> +		     (!check_type && data->events[i].enabled))
+> +			return true;
+> +	return false;
+> +}
+> +
+> +static int mma9553_set_config(struct mma9553_data *data, u16 reg,
+> +			      u16 *p_reg_val, u16 val, u16 mask)
+> +{
+> +	int ret, retries;
+> +	u16 reg_val, config;
+> +
+> +	reg_val = *p_reg_val;
+> +	if (val == mma9553_get_bits(reg_val, mask))
+> +		return 0;
+> +
+> +	reg_val = mma9553_set_bits(reg_val, val, mask);
+> +	ret = mma9551_write_config_word(data->client, MMA9551_APPID_PEDOMETER,
+> +					reg, reg_val);
+> +	if (ret < 0) {
+> +		dev_err(&data->client->dev,
+> +			"error writing config register 0x%x\n", reg);
 > +		return ret;
-> +	if ((ret & 0xFF) != 0x32)
-
-this could/should use the .id field of _als_info
-
-> +		return -ENODEV;
+> +	}
 > +
-> +	/* Disable and reset device */
-> +	chip->regs_cmd = CM3232_CMD_ALS_DISABLE | CM3232_CMD_ALS_RESET;
-> +	ret = i2c_smbus_write_byte_data(client, CM3232_REG_ADDR_CMD,
-> +				chip->regs_cmd);
-> +	if (ret < 0)
+> +	*p_reg_val = reg_val;
+> +
+> +	/* Reinitializes the pedometer with current configuration values */
+> +	config = mma9553_set_bits(data->conf.config, 1, MMA9553_CONF_CONFIG);
+> +
+> +	ret = mma9551_write_config_word(data->client, MMA9551_APPID_PEDOMETER,
+> +					MMA9553_CONF_CONF_STEPLEN, config);
+> +	if (ret < 0) {
+> +		dev_err(&data->client->dev,
+> +			"error writing config register 0x%x\n",
+> +			MMA9553_CONF_CONF_STEPLEN);
 > +		return ret;
+> +	}
 > +
-> +	/* Initialization */
-> +	als_info = chip->als_info = &cm3232_als_info_default;
-> +	chip->regs_cmd = CM3232_CMD_DEFAULT;
-> +
-> +	/* Configure register */
-> +	ret = i2c_smbus_write_byte_data(client, CM3232_REG_ADDR_CMD,
-> +				chip->regs_cmd);
-> +	if (ret < 0)
-> +		return ret;
+> +	retries = MMA9553_CONFIG_RETRIES;
+> +	do {
+> +		mma9551_sleep(MMA9553_DEFAULT_SAMPLE_RATE);
+> +		ret = mma9551_read_config_word(data->client,
+> +					       MMA9551_APPID_PEDOMETER,
+> +					       MMA9553_CONF_CONF_STEPLEN,
+> +					       &config);
+> +		if (ret < 0)
+> +			return ret;
+> +	} while (mma9553_get_bits(config, MMA9553_CONF_CONFIG) &&
+> +		 --retries > 0);
 > +
 > +	return 0;
 > +}
 > +
-> +/**
-> + *  cm3232_read_als_it() - Get sensor integration time (ms)
-> + *  @chip:	pointer of struct cm3232
-> + *  @val2:	pointer of int to load the als_it value.
-> + *
-> + *  Report the current integration time in milliseconds.
-> + *
-> + *  Return: IIO_VAL_INT_PLUS_MICRO for success, otherwise -EINVAL.
-> + */
-> +static int cm3232_read_als_it(struct cm3232_chip *chip, int *val2)
+> +static int mma9553_read_activity_stepcnt(struct mma9553_data *data,
+> +					 u8 *activity, u16 *stepcnt)
 > +{
-> +	struct cm3232_als_info *als_info = chip->als_info;
-> +	u16 als_it;
-> +	int i;
+> +	u32 status_stepcnt;
+> +	u16 status;
+> +	int ret;
 > +
-> +	als_it = chip->regs_cmd;
-> +	als_it &= CM3232_CMD_ALS_IT_MASK;
-> +	als_it >>= CM3232_CMD_ALS_IT_SHIFT;
-
-there is no i2c read here?!
-what is regs_cmd? the name seems to be rather inappropriate
-
-> +	for (i = 0; i < als_info->num_als_it; i++) {
-> +		if (als_it == als_info->als_it_bits[i]) {
-> +			*val2 = als_info->als_it_values[i];
-> +			return IIO_VAL_INT_PLUS_MICRO;
-> +		}
+> +	ret = mma9551_read_status_words(data->client, MMA9551_APPID_PEDOMETER,
+> +					MMA9553_STATUS, sizeof(u32),
+> +					(u16 *) &status_stepcnt);
+> +	if (ret < 0) {
+> +		dev_err(&data->client->dev,
+> +			"error reading status and stepcnt\n");
+> +		return ret;
 > +	}
 > +
-> +	return -EINVAL;
+> +	status = status_stepcnt & MMA9553_CONF_WORD;
+> +	*activity = mma9553_get_bits(status, MMA9553_STATUS_ACTIVITY);
+> +	*stepcnt = status_stepcnt >> 16;
+> +	return 0;
 > +}
 > +
-> +/**
-> + * cm3232_write_als_it() - Write sensor integration time
-> + * @chip:	pointer of struct cm3232.
-> + * @val:	integration time in milliseconds.
-> + *
-> + * Convert integration time (ms) to sensor value.
-> + *
-> + * Return: i2c_smbus_write_word_data command return value.
-
-write_byte_data
-
-> + */
-> +static int cm3232_write_als_it(struct cm3232_chip *chip, int val)
+> +static int mma9553_conf_gpio(struct mma9553_data *data)
 > +{
-> +	struct i2c_client *client = chip->client;
-> +	struct cm3232_als_info *als_info = chip->als_info;
-> +	u16 als_it;
-> +	int ret, i;
+> +	u8 bitnum = 0, appid = MMA9551_APPID_PEDOMETER;
+> +	int ret;
+> +	struct mma9553_event *ev_step_detect;
+> +	bool activity_enabled;
 > +
-> +	for (i = 0; i < als_info->num_als_it; i++)
-> +		if (val <= als_info->als_it_values[i])
-> +			break;
-> +	if (i >= als_info->num_als_it)
-> +		i = als_info->num_als_it - 1;
+> +	activity_enabled =
+> +	    mma9553_is_any_event_enabled(data, true, IIO_ACTIVITY);
+> +	ev_step_detect =
+> +	    mma9553_get_event(data, IIO_STEPS, IIO_NO_MOD, IIO_EV_DIR_NONE);
 > +
-> +	als_it = als_info->als_it_bits[i];
-> +	als_it <<= CM3232_CMD_ALS_IT_SHIFT;
+> +	/*
+> +	 * If both step detector and activity are enabled, use the MRGFL bit.
+> +	 * This bit is the logical OR of the SUSPCHG, STEPCHG, and ACTCHG flags.
+> +	 */
+No brackets around single line statements (i.e. Drop all the {} below.)
+> +	if (activity_enabled && ev_step_detect->enabled) {
+> +		bitnum = STATUS_TO_BITNUM(MMA9553_STATUS_MRGFL);
+> +	} else if (ev_step_detect->enabled) {
+> +		bitnum = STATUS_TO_BITNUM(MMA9553_STATUS_STEPCHG);
+> +	} else if (activity_enabled) {
+> +		bitnum = STATUS_TO_BITNUM(MMA9553_STATUS_ACTCHG);
+> +	} else {		/* Reset */
+> +		appid = MMA9551_APPID_NONE;
+> +	}
 > +
-> +	mutex_lock(&chip->lock);
+> +	if (data->gpio_bitnum == bitnum)
+> +		return 0;
+> +
+> +	/* Save initial values for activity and stepcnt */
+> +	if (activity_enabled || ev_step_detect->enabled)
+> +		mma9553_read_activity_stepcnt(data, &data->activity,
+> +					      &data->stepcnt);
+> +
+> +	ret = mma9551_gpio_config(data->client,
+> +				  MMA9553_DEFAULT_GPIO_PIN,
+> +				  appid, bitnum, MMA9553_DEFAULT_GPIO_POLARITY);
+> +	if (ret < 0)
+> +		return ret;
+> +	data->gpio_bitnum = bitnum;
+blank line here.
+> +	return 0;
+> +}
+> +
+> +static int mma9553_init(struct mma9553_data *data)
+> +{
+> +	int ret;
+> +
+> +	ret = mma9551_read_version(data->client);
+> +	if (ret)
+> +		return ret;
+> +
+> +	/*
+> +	 * Read all the pedometer configuration registers. This is used as
+> +	 * a device identification command to differentiate the MMA9553L
+> +	 * from the MMA9550L.
+> +	 */
+> +	ret =
+> +	    mma9551_read_config_words(data->client, MMA9551_APPID_PEDOMETER,
+> +				      MMA9553_CONF_SLEEPMIN,
+> +				      sizeof(data->conf), (u16 *) &data->conf);
+> +	if (ret < 0) {
+> +		dev_err(&data->client->dev,
+> +			"device is not MMA9553L: failed to read cfg regs.\n");
+> +		return ret;
+> +	}
+> +
+> +
+> +	/* Reset gpio */
+> +	data->gpio_bitnum = -1;
+> +	ret = mma9553_conf_gpio(data);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	ret = mma9551_app_reset(data->client, MMA9551_RSC_PED);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	/* Init config registers */
+> +	data->conf.sleepmin = MMA9553_DEFAULT_SLEEPMIN;
+> +	data->conf.sleepmax = MMA9553_DEFAULT_SLEEPMAX;
+> +	data->conf.sleepthd = MMA9553_DEFAULT_SLEEPTHD;
+> +	data->conf.config =
+> +	    mma9553_set_bits(data->conf.config, 1, MMA9553_CONF_CONFIG);
+> +	/*
+> +	 * Clear the activity debounce counter when the activity level changes,
+> +	 * so that the confidence level applies for any activity level.
+> +	 */
+> +	data->conf.config =
+> +	    mma9553_set_bits(data->conf.config, 1, MMA9553_CONF_ACT_DBCNTM);
+> +	ret =
+> +	    mma9551_write_config_words(data->client, MMA9551_APPID_PEDOMETER,
+> +				       MMA9553_CONF_SLEEPMIN,
+> +				       sizeof(data->conf), (u16 *) &data->conf);
+> +	if (ret < 0) {
+> +		dev_err(&data->client->dev,
+> +			"failed to write configuration registers.\n");
+> +		return ret;
+> +	}
+> +
+> +	return mma9551_set_device_state(data->client, true);
+> +}
+> +
+> +static int mma9553_read_raw(struct iio_dev *indio_dev,
+> +			    struct iio_chan_spec const *chan,
+> +			    int *val, int *val2, long mask)
+> +{
+> +	struct mma9553_data *data = iio_priv(indio_dev);
+> +	int ret;
+> +	u16 tmp;
+> +	u8 activity;
+> +	bool powered_on;
+> +
+> +	switch (mask) {
+> +	case IIO_CHAN_INFO_PROCESSED:
+> +		switch (chan->type) {
+> +		case IIO_STEPS:
+> +			/*
+> +			 * The HW only counts steps and other dependent
+> +			 * parameters (speed, distance, calories, activity)
+> +			 * if power is on (from enabling an event or the
+> +			 * step counter */
+> +			powered_on =
+> +			    mma9553_is_any_event_enabled(data, false, 0) ||
+> +			    data->stepcnt_enabled;
+> +			if (!powered_on)
+> +				return -EINVAL;
+> +			mutex_lock(&data->mutex);
+> +			ret = mma9551_read_status_word(data->client,
+> +						       MMA9551_APPID_PEDOMETER,
+> +						       MMA9553_STEPCNT, &tmp);
+> +			mutex_unlock(&data->mutex);
+> +			if (ret < 0)
+> +				return ret;
+> +			*val = tmp;
+> +			return IIO_VAL_INT;
+> +		case IIO_DISTANCE:
+> +			powered_on =
+> +			    mma9553_is_any_event_enabled(data, false, 0) ||
+> +			    data->stepcnt_enabled;
+> +			if (!powered_on)
+> +				return -EINVAL;
+> +			mutex_lock(&data->mutex);
+> +			ret = mma9551_read_status_word(data->client,
+> +						       MMA9551_APPID_PEDOMETER,
+> +						       MMA9553_DISTANCE, &tmp);
+> +			mutex_unlock(&data->mutex);
+> +			if (ret < 0)
+> +				return ret;
+> +			*val = tmp;
+> +			return IIO_VAL_INT;
+> +		case IIO_ACTIVITY:
+> +			powered_on =
+> +			    mma9553_is_any_event_enabled(data, false, 0) ||
+> +			    data->stepcnt_enabled;
+> +			if (!powered_on)
+> +				return -EINVAL;
+> +			mutex_lock(&data->mutex);
+> +			ret = mma9551_read_status_word(data->client,
+> +						       MMA9551_APPID_PEDOMETER,
+> +						       MMA9553_STATUS, &tmp);
+> +			mutex_unlock(&data->mutex);
+> +			if (ret < 0)
+> +				return ret;
+> +
+> +			activity =
+> +			    mma9553_get_bits(tmp, MMA9553_STATUS_ACTIVITY);
+> +
+> +			/*
+> +			 * The device does not support confidence value levels,
+> +			 * so we will always have 100% for current activity and
+> +			 * 0% for the others.
+> +			 */
+> +			if (chan->channel2 == mma9553_activity_to_mod(activity))
+> +				*val = 100;
+> +			else
+> +				*val = 0;
+> +			return IIO_VAL_INT;
+> +		default:
+> +			return -EINVAL;
+> +		}
+> +	case IIO_CHAN_INFO_RAW:
+> +		switch (chan->type) {
+> +		case IIO_SPEED:	/* m/h */
+> +			powered_on =
+> +			    mma9553_is_any_event_enabled(data, false, 0) ||
+> +			    data->stepcnt_enabled;
+> +			if (!powered_on)
+> +				return -EINVAL;
+Seems like there ought to be a better error code - but I can't find one ;)
+> +			mutex_lock(&data->mutex);
+> +			ret = mma9551_read_status_word(data->client,
+> +						       MMA9551_APPID_PEDOMETER,
+> +						       MMA9553_SPEED, &tmp);
+> +			mutex_unlock(&data->mutex);
+> +			if (ret < 0)
+> +				return ret;
+> +			*val = tmp;
+> +			return IIO_VAL_INT;
+> +		case IIO_CALORIES:	/* Cal or kcal */
+> +			powered_on =
+> +			    mma9553_is_any_event_enabled(data, false, 0) ||
+> +			    data->stepcnt_enabled;
+> +			if (!powered_on)
+> +				return -EINVAL;
+> +			mutex_lock(&data->mutex);
+> +			ret = mma9551_read_status_word(data->client,
+> +						       MMA9551_APPID_PEDOMETER,
+> +						       MMA9553_CALORIES, &tmp);
+> +			mutex_unlock(&data->mutex);
+> +			if (ret < 0)
+> +				return ret;
+> +			*val = tmp;
+> +			return IIO_VAL_INT;
+> +		case IIO_ACCEL:
+> +			mutex_lock(&data->mutex);
+> +			ret = mma9551_read_accel_chan(data->client,
+> +						      chan, val, val2);
+> +			mutex_unlock(&data->mutex);
+> +			return ret;
+> +		default:
+> +			return -EINVAL;
+> +		}
+> +	case IIO_CHAN_INFO_SCALE:
+> +		switch (chan->type) {
+> +		case IIO_SPEED:	/* m/h to m/s */
+> +			*val = 0;
+> +			*val2 = 277;	/* 0.000277 */
+> +			return IIO_VAL_INT_PLUS_MICRO;
+> +		case IIO_CALORIES:	/* Cal or kcal to J */
+> +			*val = 4184;
+> +			return IIO_VAL_INT;
+> +		case IIO_ACCEL:
+> +			return mma9551_read_accel_scale(val, val2);
+> +		default:
+> +			return -EINVAL;
+> +		}
+> +	case IIO_CHAN_INFO_ENABLE:
+> +		*val = data->stepcnt_enabled;
+> +		return IIO_VAL_INT;
+> +	case IIO_CHAN_INFO_CALIBHEIGHT:
+> +		*val = mma9553_get_bits(data->conf.height_weight,
+> +					MMA9553_CONF_HEIGHT);
+> +		return IIO_VAL_INT;
+> +	case IIO_CHAN_INFO_CALIBWEIGHT:
+> +		*val = mma9553_get_bits(data->conf.height_weight,
+> +					MMA9553_CONF_WEIGHT);
+> +		return IIO_VAL_INT;
+> +	case IIO_CHAN_INFO_CALIBGENDER:
+> +		*val = mma9553_get_bits(data->conf.filter, MMA9553_CONF_MALE);
+> +		return IIO_VAL_INT;
+> +	case IIO_CHAN_INFO_OFFSET:
+> +		switch (chan->type) {
+> +		case IIO_STEPS:
+> +			*val = mma9553_get_bits(data->conf.filter,
+> +						MMA9553_CONF_FILTSTEP);
+> +			return IIO_VAL_INT;
+> +		default:
+> +			return -EINVAL;
+> +		}
+> +	case IIO_CHAN_INFO_INT_TIME:
+> +		switch (chan->type) {
+> +		case IIO_STEPS:
+> +			*val = mma9553_get_bits(data->conf.filter,
+> +						MMA9553_CONF_FILTTIME);
+> +			return IIO_VAL_INT;
+> +		case IIO_SPEED:
+> +			*val = mma9553_get_bits(data->conf.speed_step,
+> +						MMA9553_CONF_SPDPRD);
+> +			return IIO_VAL_INT;
+> +		default:
+> +			return -EINVAL;
+> +		}
+> +	default:
+> +		return -EINVAL;
+> +	}
+> +}
+> +
+> +static int mma9553_write_raw(struct iio_dev *indio_dev,
+> +			     struct iio_chan_spec const *chan,
+> +			     int val, int val2, long mask)
+> +{
+> +	struct mma9553_data *data = iio_priv(indio_dev);
+> +	int ret;
+> +
+> +	switch (mask) {
+> +	case IIO_CHAN_INFO_ENABLE:
+> +		if (data->stepcnt_enabled == !!val)
+> +			return 0;
+> +		mutex_lock(&data->mutex);
+> +		ret = mma9551_set_power_state(data->client, val);
+> +		if (ret < 0) {
+> +			mutex_unlock(&data->mutex);
+> +			return ret;
+> +		}
+> +		data->stepcnt_enabled = val;
+> +		mutex_unlock(&data->mutex);
+> +		return 0;
+> +	case IIO_CHAN_INFO_CALIBHEIGHT:
+> +		if (val < 0 || val > 255)
+> +			return -EINVAL;
+> +		mutex_lock(&data->mutex);
+> +		ret = mma9553_set_config(data,
+> +					 MMA9553_CONF_HEIGHT_WEIGHT,
+> +					 &data->conf.height_weight,
+> +					 val, MMA9553_CONF_HEIGHT);
+> +		mutex_unlock(&data->mutex);
+> +		return ret;
+> +	case IIO_CHAN_INFO_CALIBWEIGHT:
+> +		if (val < 0 || val > 255)
+> +			return -EINVAL;
+> +		mutex_lock(&data->mutex);
+> +		ret = mma9553_set_config(data,
+> +					 MMA9553_CONF_HEIGHT_WEIGHT,
+> +					 &data->conf.height_weight,
+> +					 val, MMA9553_CONF_WEIGHT);
+> +		mutex_unlock(&data->mutex);
+> +		return ret;
+> +	case IIO_CHAN_INFO_CALIBGENDER:
+As commented before - no magic numbers.  Hence this will need to use
+the extended interface with enums etc.
+> +		/* Gender can only be 0(female) or 1(male) */
+> +		if ((val != 0) && (val != 1))
+> +			return -EINVAL;
+> +		mutex_lock(&data->mutex);
+> +		ret = mma9553_set_config(data, MMA9553_CONF_FILTER,
+> +					 &data->conf.filter, val,
+> +					 MMA9553_CONF_MALE);
+> +		mutex_unlock(&data->mutex);
+> +		return ret;
+> +	case IIO_CHAN_INFO_OFFSET:
+> +		switch (chan->type) {
+> +		case IIO_STEPS:
+This seems like an ususual use of offset.
+A quick look is this is about rejection of steps based on the fact the
+user doesn't seem to be walking.  It's not an offset that I can see.
+Probably needs a completely new interface.
 
-I don't see what the mutex is trying to lock -- why?
+Off the top of my head
 
-> +	chip->regs_cmd &= ~CM3232_CMD_ALS_IT_MASK;
-> +	chip->regs_cmd |= als_it;
-> +	ret = i2c_smbus_write_byte_data(client, CM3232_REG_ADDR_CMD,
-> +			chip->regs_cmd);
-> +	mutex_unlock(&chip->lock);
+in_steps_filter_outliers_num
+and
+in_steps_filter_outliers_period
+
+err. Not that keen on this though but will let you propose something better!
+> +			/*
+> +			 * Set to 0 to disable step filtering. If the value
+> +			 * specified is greater than 6, then 6 will be used.
+> +			 */
+> +			if (val < 0)
+> +				return -EINVAL;
+> +			if (val > 6)
+> +				val = 6;
+> +			mutex_lock(&data->mutex);
+> +			ret = mma9553_set_config(data, MMA9553_CONF_FILTER,
+> +						 &data->conf.filter, val,
+> +						 MMA9553_CONF_FILTSTEP);
+> +			mutex_unlock(&data->mutex);
+> +			return ret;
+> +		default:
+> +			return -EINVAL;
+> +		}
+> +	case IIO_CHAN_INFO_INT_TIME:
+> +		switch (chan->type) {
+> +		case IIO_STEPS:
+> +			if (val < 0 || val > 127)
+> +				return -EINVAL;
+> +			mutex_lock(&data->mutex);
+> +			ret = mma9553_set_config(data, MMA9553_CONF_FILTER,
+> +						 &data->conf.filter, val,
+> +						 MMA9553_CONF_FILTTIME);
+This isn't an integration time really either...  Hence need a new element
+for this. 
+> +			mutex_unlock(&data->mutex);
+> +			return ret;
+> +		case IIO_SPEED:
+> +			/*
+> +			 * If set to a value greater than 5, then 5 will be
+> +			 * used. Warning: Do not set SPDPRD to 0 or 1 as
+> +			 * this may cause undesirable behavior.
+> +			 */
+I suppose this one is an integration time (be in it a different fashion to
+normal!)
+> +			if (val < 2)
+> +				return -EINVAL;
+> +			if (val > 5)
+> +				val = 5;
+> +			mutex_lock(&data->mutex);
+> +			ret = mma9553_set_config(data, MMA9553_CONF_SPEED_STEP,
+> +						 &data->conf.speed_step, val,
+> +						 MMA9553_CONF_SPDPRD);
+> +			mutex_unlock(&data->mutex);
+> +			return ret;
+> +		default:
+> +			return -EINVAL;
+> +		}
+> +	default:
+> +		return -EINVAL;
+> +	}
+> +}
+> +
+> +static int mma9553_read_event_config(struct iio_dev *indio_dev,
+> +				     const struct iio_chan_spec *chan,
+> +				     enum iio_event_type type,
+> +				     enum iio_event_direction dir)
+> +{
+> +
+> +	struct mma9553_data *data = iio_priv(indio_dev);
+> +	struct mma9553_event *event;
+> +
+> +	event = mma9553_get_event(data, chan->type, chan->channel2, dir);
+> +	if (!event)
+> +		return -EINVAL;
+blank line here prefered. (or someone one will send me a patch adding
+one within the week!)
+> +	return event->enabled;
+> +}
+> +
+> +static int mma9553_write_event_config(struct iio_dev *indio_dev,
+> +				      const struct iio_chan_spec *chan,
+> +				      enum iio_event_type type,
+> +				      enum iio_event_direction dir, int state)
+> +{
+> +	struct mma9553_data *data = iio_priv(indio_dev);
+> +	struct mma9553_event *event;
+> +	int ret;
+> +
+> +	event = mma9553_get_event(data, chan->type, chan->channel2, dir);
+> +	if (!event)
+> +		return -EINVAL;
+> +
+> +	if (event->enabled == state)
+> +		return 0;
+> +
+> +	mutex_lock(&data->mutex);
+> +
+> +	ret = mma9551_set_power_state(data->client, state);
+> +	if (ret < 0)
+> +		goto out;
+> +	event->enabled = state;
+> +
+> +	ret = mma9553_conf_gpio(data);
+> +	if (ret < 0)
+> +		goto err_conf_gpio;
+> +
+> +	goto out;
+Normal code style in IIO at least would be to have a separate return
+here (with unlocking) rather than jumping to the end of the error
+handling. Bit easier to follow.
+> +
+> +err_conf_gpio:
+> +	if (state) {
+> +		event->enabled = false;
+> +		mma9551_set_power_state(data->client, false);
+> +	}
+> +out:
+> +	mutex_unlock(&data->mutex);
+> +	return ret;
+> +}
+> +
+> +static int mma9553_read_event_value(struct iio_dev *indio_dev,
+> +				    const struct iio_chan_spec *chan,
+> +				    enum iio_event_type type,
+> +				    enum iio_event_direction dir,
+> +				    enum iio_event_info info,
+> +				    int *val, int *val2)
+> +{
+> +	struct mma9553_data *data = iio_priv(indio_dev);
+> +	int prc;
+> +
+> +	*val2 = 0;
+> +	switch (info) {
+> +	case IIO_EV_INFO_VALUE:
+> +		switch (chan->type) {
+> +		case IIO_ACTIVITY:
+> +			prc = MMA9553_THD_TO_PERCENTAGE(data->conf.actthd);
+> +			if (dir == IIO_EV_DIR_RISING)
+> +				*val = prc;
+> +			else if (dir == IIO_EV_DIR_FALLING)
+> +				*val = 100 - prc;
+> +			else
+> +				return -EINVAL;
+> +			return IIO_VAL_INT;
+> +		default:
+> +			return -EINVAL;
+> +		}
+> +	case IIO_EV_INFO_PERIOD:
+> +		switch (chan->type) {
+> +		case IIO_STEPS:
+> +			*val = mma9553_get_bits(data->conf.speed_step,
+> +						MMA9553_CONF_STEPCOALESCE);
+> +			return IIO_VAL_INT;
+> +		default:
+> +			return -EINVAL;
+> +		}
+> +	default:
+> +		return -EINVAL;
+> +	}
+> +}
+> +
+> +static int mma9553_write_event_value(struct iio_dev *indio_dev,
+> +				     const struct iio_chan_spec *chan,
+> +				     enum iio_event_type type,
+> +				     enum iio_event_direction dir,
+> +				     enum iio_event_info info,
+> +				     int val, int val2)
+> +{
+> +	struct mma9553_data *data = iio_priv(indio_dev);
+> +	int prc, thd;
+> +	int ret;
+> +
+> +	switch (info) {
+> +	case IIO_EV_INFO_VALUE:
+> +		switch (chan->type) {
+> +		case IIO_ACTIVITY:
+> +			if (val < 0 || val > 100)
+> +				return -EINVAL;
+> +
+> +			if (dir == IIO_EV_DIR_RISING)
+> +				prc = val;
+> +			else if (dir == IIO_EV_DIR_FALLING)
+> +				prc = 100 - val;
+> +			else
+> +				return -EINVAL;
+> +			thd = MMA9553_PERCENTAGE_TO_THD(prc);
+> +
+> +			mutex_lock(&data->mutex);
+> +			ret = mma9553_set_config(data, MMA9553_CONF_ACTTHD,
+> +						 &data->conf.actthd, thd,
+> +						 MMA9553_CONF_WORD);
+As commented above. this is a threshold on how long an activity is true
+- not the direct confidence interval - so I'd suggest handling it as as
+the event period, not threshold.
+> +			mutex_unlock(&data->mutex);
+> +			return ret;
+> +		default:
+> +			return -EINVAL;
+> +		}
+> +	case IIO_EV_INFO_PERIOD:
+> +		switch (chan->type) {
+> +		case IIO_STEPS:
+> +			if (val < 0 || val > 255)
+> +				return -EINVAL;
+> +			mutex_lock(&data->mutex);
+> +			ret = mma9553_set_config(data, MMA9553_CONF_SPEED_STEP,
+> +						 &data->conf.speed_step, val,
+> +						 MMA9553_CONF_STEPCOALESCE);
+So this makes it fire every N steps?  Kind of nice, but not quite what period
+is usually used for.  We have talked about having an absolute change
+(rather than ROC) event type before - (requires a change of N and doesn't care
+how long it took to happen).  Perhaps that makes sense here rather than
+an instance event and a period?
+
+> +			mutex_unlock(&data->mutex);
+> +			return ret;
+> +		default:
+> +			return -EINVAL;
+> +		}
+> +	default:
+> +		return -EINVAL;
+> +	}
+> +}
+> +
+> +static const struct iio_event_spec mma9553_step_event = {
+> +	.type = IIO_EV_TYPE_INSTANCE,
+> +	.dir = IIO_EV_DIR_NONE,
+> +	.mask_separate = BIT(IIO_EV_INFO_ENABLE) | BIT(IIO_EV_INFO_PERIOD),
+> +};
+> +
+> +static const struct iio_event_spec mma9553_activity_events[] = {
+> +	{
+> +		.type = IIO_EV_TYPE_THRESH,
+> +		.dir = IIO_EV_DIR_RISING,
+> +		.mask_separate = BIT(IIO_EV_INFO_ENABLE) |
+> +				 BIT(IIO_EV_INFO_VALUE),
+> +	 },
+> +	{
+> +		.type = IIO_EV_TYPE_THRESH,
+> +		.dir = IIO_EV_DIR_FALLING,
+> +		.mask_separate = BIT(IIO_EV_INFO_ENABLE) |
+> +				 BIT(IIO_EV_INFO_VALUE),
+> +	},
+> +};
+> +
+> +#define MMA9553_PEDOMETER_CHANNEL(_type, _mask) {		\
+> +	.type = _type,						\
+> +	.info_mask_separate = BIT(IIO_CHAN_INFO_ENABLE)      |	\
+> +			      BIT(IIO_CHAN_INFO_CALIBHEIGHT) |	\
+> +			      BIT(IIO_CHAN_INFO_CALIBGENDER) |	\
+> +			      _mask,				\
+> +}
+> +
+> +#define MMA9553_ACTIVITY_CHANNEL(_chan2) {				\
+> +	.type = IIO_ACTIVITY,						\
+> +	.modified = 1,							\
+> +	.channel2 = _chan2,						\
+> +	.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED),		\
+> +	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_CALIBHEIGHT) |	\
+> +				    BIT(IIO_CHAN_INFO_CALIBGENDER),	\
+> +	.event_spec = mma9553_activity_events,				\
+> +	.num_event_specs = ARRAY_SIZE(mma9553_activity_events),		\
+> +}
+> +
+> +static const struct iio_chan_spec mma9553_channels[] = {
+> +	MMA9551_ACCEL_CHANNEL(IIO_MOD_X),
+> +	MMA9551_ACCEL_CHANNEL(IIO_MOD_Y),
+> +	MMA9551_ACCEL_CHANNEL(IIO_MOD_Z),
+> +
+> +	{
+> +		.type = IIO_STEPS,
+> +		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED) |
+> +				      BIT(IIO_CHAN_INFO_ENABLE) |
+> +				      BIT(IIO_CHAN_INFO_OFFSET) |
+> +				      BIT(IIO_CHAN_INFO_INT_TIME),
+> +		.event_spec = &mma9553_step_event,
+> +		.num_event_specs = 1,
+> +	},
+> +
+> +	MMA9553_PEDOMETER_CHANNEL(IIO_DISTANCE, BIT(IIO_CHAN_INFO_PROCESSED)),
+> +	MMA9553_PEDOMETER_CHANNEL(IIO_SPEED, BIT(IIO_CHAN_INFO_RAW) |
+> +				  BIT(IIO_CHAN_INFO_SCALE) |
+> +				  BIT(IIO_CHAN_INFO_INT_TIME)),
+> +	MMA9553_PEDOMETER_CHANNEL(IIO_CALORIES, BIT(IIO_CHAN_INFO_RAW) |
+> +				  BIT(IIO_CHAN_INFO_SCALE) |
+> +				  BIT(IIO_CHAN_INFO_CALIBWEIGHT)),
+> +
+> +	MMA9553_ACTIVITY_CHANNEL(IIO_MOD_RUNNING),
+> +	MMA9553_ACTIVITY_CHANNEL(IIO_MOD_JOGGING),
+> +	MMA9553_ACTIVITY_CHANNEL(IIO_MOD_WALKING),
+> +	MMA9553_ACTIVITY_CHANNEL(IIO_MOD_STILL),
+> +};
+> +
+> +static const struct iio_info mma9553_info = {
+> +	.driver_module = THIS_MODULE,
+> +	.read_raw = mma9553_read_raw,
+> +	.write_raw = mma9553_write_raw,
+> +	.read_event_config = mma9553_read_event_config,
+> +	.write_event_config = mma9553_write_event_config,
+> +	.read_event_value = mma9553_read_event_value,
+> +	.write_event_value = mma9553_write_event_value,
+> +};
+> +
+Only one copy of this?  We don't want to prevent people having more
+than one of these devices attached to a given machine.
+Hence by all means have a default version of this but then
+clone it into the mma9553_data structure for manipulation.
+Or have a mached array of booleans in there (same indexes)
+to use for the "enabled"s.
+
+> +static struct mma9553_event mma9553_events[] = {
+> +	{
+> +		.type = IIO_STEPS,
+> +		.mod = IIO_NO_MOD,
+> +		.dir = IIO_EV_DIR_NONE,
+> +		.enabled = false,
+> +	},
+> +	{
+> +		.type = IIO_ACTIVITY,
+> +		.mod = IIO_MOD_STILL,
+> +		.dir = IIO_EV_DIR_RISING,
+> +		.enabled = false,
+> +	},
+> +	{
+> +		.type = IIO_ACTIVITY,
+> +		.mod = IIO_MOD_STILL,
+> +		.dir = IIO_EV_DIR_FALLING,
+> +		.enabled = false,
+> +	},
+> +	{
+> +		.type = IIO_ACTIVITY,
+> +		.mod = IIO_MOD_WALKING,
+> +		.dir = IIO_EV_DIR_RISING,
+> +		.enabled = false,
+> +	},
+> +	{
+> +		.type = IIO_ACTIVITY,
+> +		.mod = IIO_MOD_WALKING,
+> +		.dir = IIO_EV_DIR_FALLING,
+> +		.enabled = false,
+> +	},
+> +	{
+> +		.type = IIO_ACTIVITY,
+> +		.mod = IIO_MOD_JOGGING,
+> +		.dir = IIO_EV_DIR_RISING,
+> +		.enabled = false,
+> +	},
+> +	{
+> +		.type = IIO_ACTIVITY,
+> +		.mod = IIO_MOD_JOGGING,
+> +		.dir = IIO_EV_DIR_FALLING,
+> +		.enabled = false,
+> +	},
+> +	{
+> +		.type = IIO_ACTIVITY,
+> +		.mod = IIO_MOD_RUNNING,
+> +		.dir = IIO_EV_DIR_RISING,
+> +		.enabled = false,
+> +	},
+> +	{
+> +		.type = IIO_ACTIVITY,
+> +		.mod = IIO_MOD_RUNNING,
+> +		.dir = IIO_EV_DIR_FALLING,
+> +		.enabled = false,
+> +	},
+> +};
+> +
+> +static irqreturn_t mma9553_irq_handler(int irq, void *private)
+> +{
+> +	/*
+> +	 * Since we only configure the interrupt pin when an
+> +	 * event is enabled, we are sure we have at least
+> +	 * one event enabled at this point.
+> +	 */
+IIRC simply not supplyling the top half handler has the same effect as
+this (though then you don't have anywhere to put the comment!)
+Actually - I'd be tempted to grab and stash a timestamp in here to
+increase the precision of you step timing etc.
+> +	return IRQ_WAKE_THREAD;
+> +}
+> +
+> +static irqreturn_t mma9553_event_handler(int irq, void *private)
+> +{
+> +	struct iio_dev *indio_dev = private;
+> +	struct mma9553_data *data = iio_priv(indio_dev);
+> +	u16 stepcnt;
+> +	u8 activity;
+> +	struct mma9553_event *ev_activity, *ev_prev_activity, *ev_step_detect;
+> +	int ret;
+> +
+> +	mutex_lock(&data->mutex);
+> +	ret = mma9553_read_activity_stepcnt(data, &activity, &stepcnt);
+> +	if (ret < 0) {
+> +		mutex_unlock(&data->mutex);
+> +		return IRQ_HANDLED;
+> +	}
+> +
+> +	ev_prev_activity =
+> +	    mma9553_get_event(data, IIO_ACTIVITY,
+> +			      mma9553_activity_to_mod(data->activity),
+> +			      IIO_EV_DIR_FALLING);
+> +	ev_activity =
+> +	    mma9553_get_event(data, IIO_ACTIVITY,
+> +			      mma9553_activity_to_mod(activity),
+> +			      IIO_EV_DIR_RISING);
+> +	ev_step_detect =
+> +	    mma9553_get_event(data, IIO_STEPS, IIO_NO_MOD, IIO_EV_DIR_NONE);
+> +
+> +	if (ev_step_detect->enabled && (stepcnt != data->stepcnt)) {
+> +		data->stepcnt = stepcnt;
+> +		iio_push_event(indio_dev,
+> +			       IIO_EVENT_CODE(IIO_STEPS, 0, IIO_NO_MOD,
+> +			       IIO_EV_DIR_NONE, IIO_EV_TYPE_INSTANCE, 0, 0, 0),
+> +			       iio_get_time_ns());
+Worth grabbing the timestamp earlier than this for precision reasons?
+> +	}
+> +
+> +	if (activity != data->activity) {
+> +		data->activity = activity;
+> +		/* ev_activity can be NULL if activity == ACTIVITY_UNKNOWN */
+> +		if (ev_prev_activity && ev_prev_activity->enabled)
+> +			iio_push_event(indio_dev,
+> +				       IIO_EVENT_CODE(IIO_ACTIVITY, 0,
+> +				       ev_prev_activity->mod,
+> +				       IIO_EV_DIR_FALLING,
+> +				       IIO_EV_TYPE_THRESH, 0, 0, 0),
+> +				       iio_get_time_ns());
+> +
+> +		if (ev_activity && ev_activity->enabled)
+> +			iio_push_event(indio_dev,
+> +				       IIO_EVENT_CODE(IIO_ACTIVITY, 0,
+> +				       ev_activity->mod,
+> +				       IIO_EV_DIR_RISING,
+> +				       IIO_EV_TYPE_THRESH, 0, 0, 0),
+> +				       iio_get_time_ns());
+> +	}
+> +	mutex_unlock(&data->mutex);
+> +	return IRQ_HANDLED;
+> +}
+> +
+> +static int mma9553_gpio_probe(struct i2c_client *client)
+> +{
+> +	struct device *dev;
+> +	struct gpio_desc *gpio;
+> +	int ret;
+> +
+> +	if (!client)
+> +		return -EINVAL;
+> +
+> +	dev = &client->dev;
+> +
+> +	/* data ready gpio interrupt pin */
+> +	gpio = devm_gpiod_get_index(dev, MMA9553_GPIO_NAME, 0);
+> +	if (IS_ERR(gpio)) {
+> +		dev_err(dev, "acpi gpio get index failed\n");
+> +		return PTR_ERR(gpio);
+> +	}
+> +
+> +	ret = gpiod_direction_input(gpio);
+> +	if (ret)
+> +		return ret;
+> +
+> +	ret = gpiod_to_irq(gpio);
+> +
+> +	dev_dbg(dev, "gpio resource, no:%d irq:%d\n", desc_to_gpio(gpio), ret);
 > +
 > +	return ret;
 > +}
 > +
-> +/**
-> + * cm3232_get_lux() - report current lux value
-> + * @chip:	pointer of struct cm3232.
-> + *
-> + * Convert sensor raw data to lux.  It depends on integration
-> + * time and calibscale variable.
-> + *
-> + * Return: Positive value is lux, otherwise is error code.
-
-otherwise error code
-
-> + */
-> +static int cm3232_get_lux(struct cm3232_chip *chip)
+> +static const char *mma9553_match_acpi_device(struct device *dev)
 > +{
-> +	struct i2c_client *client = chip->client;
-> +	struct cm3232_als_info *als_info = chip->als_info;
-> +	int ret;
-> +	int als_it;
-> +	u64 tmp;
+> +	const struct acpi_device_id *id;
 > +
-> +	/* Calculate mlux per bit based on als_it */
-> +	ret = cm3232_read_als_it(chip, &als_it);
-> +	if (ret < 0)
-> +		return -EINVAL;
-> +	tmp = (__force u64)als_info->mlux_per_bit;
-> +	tmp *= als_info->mlux_per_bit_base_it;
-> +	tmp = div_u64 (tmp, als_it);
+> +	id = acpi_match_device(dev->driver->acpi_match_table, dev);
+> +	if (!id)
+> +		return NULL;
 > +
-> +	/* Get als_raw */
-
-interesting comment :)
-
-> +	als_info->als_raw = i2c_smbus_read_word_data(
-> +				client,
-> +				CM3232_REG_ADDR_ALS);
-> +	if (als_info->als_raw < 0)
-> +		return als_info->als_raw;
-> +
-> +	tmp *= als_info->als_raw;
-> +	tmp *= als_info->calibscale;
-> +	tmp = div_u64(tmp, CM3232_CALIBSCALE_RESOLUTION);
-> +	tmp = div_u64(tmp, CM3232_MLUX_PER_LUX);
-> +
-> +	if (tmp > 0xFFFF)
-> +		tmp = 0xFFFF;
-> +
-> +	return (int)tmp;
+> +	return dev_name(dev);
 > +}
 > +
-> +static int cm3232_read_raw(struct iio_dev *indio_dev,
-> +			struct iio_chan_spec const *chan,
-> +			int *val, int *val2, long mask)
+> +static int mma9553_probe(struct i2c_client *client,
+> +			 const struct i2c_device_id *id)
 > +{
-> +	struct cm3232_chip *chip = iio_priv(indio_dev);
-> +	struct cm3232_als_info *als_info = chip->als_info;
-> +	int ret;
-> +
-> +	switch (mask) {
-> +	case IIO_CHAN_INFO_PROCESSED:
-> +		ret = cm3232_get_lux(chip);
-> +		if (ret < 0)
-> +			return ret;
-> +		*val = ret;
-> +		return IIO_VAL_INT;
-> +	case IIO_CHAN_INFO_CALIBSCALE:
-> +		*val = als_info->calibscale;
-> +		return IIO_VAL_INT;
-> +	case IIO_CHAN_INFO_INT_TIME:
-> +		*val = 0;
-> +		ret = cm3232_read_als_it(chip, val2);
-> +		return ret;
-> +	}
-> +
-> +	return -EINVAL;
-> +}
-> +
-> +static int cm3232_write_raw(struct iio_dev *indio_dev,
-> +			struct iio_chan_spec const *chan,
-> +			int val, int val2, long mask)
-> +{
-> +	struct cm3232_chip *chip = iio_priv(indio_dev);
-> +	struct cm3232_als_info *als_info = chip->als_info;
-> +	long ms;
-
-ms is cast into int later
-
-what is ms -- milliseconds or microseconds? the latter I guess; ms is 
-usually millisecs
-
-> +
-> +	switch (mask) {
-> +	case IIO_CHAN_INFO_CALIBSCALE:
-> +		als_info->calibscale = val;
-> +		return val;
-> +	case IIO_CHAN_INFO_INT_TIME:
-> +		ms = val * 1000000 + val2;
-> +		return cm3232_write_als_it(chip, (int)ms);
-> +	}
-> +
-> +	return -EINVAL;
-> +}
-> +
-> +/**
-> + * cm3232_get_it_available() - Get available ALS IT value
-> + * @dev:	pointer of struct device.
-> + * @attr:	pointer of struct device_attribute.
-> + * @buf:	pointer of return string buffer.
-> + *
-> + * Display the available integration time in milliseconds.
-> + *
-> + * Return: string length.
-> + */
-> +static ssize_t cm3232_get_it_available(struct device *dev,
-> +			struct device_attribute *attr, char *buf)
-> +{
-> +	struct cm3232_chip *chip = iio_priv(dev_to_iio_dev(dev));
-> +	struct cm3232_als_info *als_info = chip->als_info;
-> +	int i, len;
-> +
-> +	for (i = 0, len = 0; i < als_info->num_als_it; i++)
-> +		len += scnprintf(buf + len, PAGE_SIZE - len, "%u.%06u ",
-> +			als_info->als_it_values[i]/1000000,
-> +			als_info->als_it_values[i]%1000000);
-> +	return len + scnprintf(buf + len, PAGE_SIZE - len, "\n");
-> +}
-> +
-> +static const struct iio_chan_spec cm3232_channels[] = {
-> +	{
-> +		.type = IIO_LIGHT,
-> +		.info_mask_separate =
-> +			BIT(IIO_CHAN_INFO_PROCESSED) |
-> +			BIT(IIO_CHAN_INFO_CALIBSCALE) |
-> +			BIT(IIO_CHAN_INFO_INT_TIME),
-> +	}
-> +};
-> +
-> +static IIO_DEVICE_ATTR(in_illuminance_integration_time_available,
-> +			S_IRUGO, cm3232_get_it_available, NULL, 0);
-> +
-> +static struct attribute *cm3232_attributes[] = {
-> +	&iio_dev_attr_in_illuminance_integration_time_available.dev_attr.attr,
-> +	NULL,
-> +};
-> +
-> +static const struct attribute_group cm3232_attribute_group = {
-> +	.attrs = cm3232_attributes
-> +};
-> +
-> +static const struct iio_info cm3232_info = {
-> +	.driver_module		= THIS_MODULE,
-> +	.read_raw		= &cm3232_read_raw,
-> +	.write_raw		= &cm3232_write_raw,
-> +	.attrs			= &cm3232_attribute_group,
-> +};
-> +
-> +static int cm3232_probe(struct i2c_client *client,
-> +			const struct i2c_device_id *id)
-> +{
-> +	struct cm3232_chip *chip;
+> +	struct mma9553_data *data;
 > +	struct iio_dev *indio_dev;
+> +	const char *name = NULL;
 > +	int ret;
 > +
-> +	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*chip));
-> +	if (!indio_dev) {
-> +		dev_err(&client->dev, "devm_iio_device_alloc failed\n");
+> +	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
+> +	if (!indio_dev)
 > +		return -ENOMEM;
-> +	}
 > +
-> +	chip = iio_priv(indio_dev);
+> +	data = iio_priv(indio_dev);
 > +	i2c_set_clientdata(client, indio_dev);
-> +	chip->client = client;
+> +	data->client = client;
 > +
-> +	mutex_init(&chip->lock);
-> +	indio_dev->dev.parent = &client->dev;
-> +	indio_dev->channels = cm3232_channels;
-> +	indio_dev->num_channels = ARRAY_SIZE(cm3232_channels);
-> +	indio_dev->info = &cm3232_info;
-> +	if (id && id->name)
-> +		indio_dev->name = id->name;
+> +	if (id)
+> +		name = id->name;
+> +	else if (ACPI_HANDLE(&client->dev))
+> +		name = mma9553_match_acpi_device(&client->dev);
 > +	else
-> +		indio_dev->name = (char *)dev_name(&client->dev);
-> +	indio_dev->modes = INDIO_DIRECT_MODE;
+Interesting to note the original driver doesn't have this else.  Worth
+checking?
+> +		return -ENOSYS;
 > +
-> +	ret = cm3232_reg_init(chip);
-> +	if (ret) {
-> +		dev_err(&client->dev,
-> +			"%s: register init failed\n",
-> +			__func__);
+> +	mutex_init(&data->mutex);
+> +	data->events = mma9553_events;
+> +	data->num_events = ARRAY_SIZE(mma9553_events);
+> +
+> +	ret = mma9553_init(data);
+> +	if (ret < 0)
 > +		return ret;
+> +
+> +	indio_dev->dev.parent = &client->dev;
+> +	indio_dev->channels = mma9553_channels;
+> +	indio_dev->num_channels = ARRAY_SIZE(mma9553_channels);
+> +	indio_dev->name = name;
+> +	indio_dev->modes = INDIO_DIRECT_MODE;
+> +	indio_dev->info = &mma9553_info;
+> +
+> +	if (client->irq < 0)
+> +		client->irq = mma9553_gpio_probe(client);
+> +
+So this time we just have a single irq.  That makes life simpler!
+> +	if (client->irq >= 0) {
+> +		ret = devm_request_threaded_irq(&client->dev, client->irq,
+> +						mma9553_irq_handler,
+> +						mma9553_event_handler,
+> +						IRQF_TRIGGER_RISING,
+> +						MMA9553_IRQ_NAME, indio_dev);
+> +		if (ret < 0) {
+> +			dev_err(&client->dev, "request irq %d failed\n",
+> +				client->irq);
+> +			goto out_poweroff;
+> +		}
+> +
 > +	}
 > +
 > +	ret = iio_device_register(indio_dev);
-
-ret not checked
-
+> +	if (ret < 0) {
+> +		dev_err(&client->dev, "unable to register iio device\n");
+> +		goto out_poweroff;
+> +	}
+> +
+> +	ret = pm_runtime_set_active(&client->dev);
+> +	if (ret < 0)
+> +		goto out_iio_unregister;
+> +
+> +	pm_runtime_enable(&client->dev);
+> +	pm_runtime_set_autosuspend_delay(&client->dev,
+> +					 MMA9551_AUTO_SUSPEND_DELAY_MS);
+> +	pm_runtime_use_autosuspend(&client->dev);
+> +
+> +	dev_dbg(&indio_dev->dev, "Registered device %s\n", name);
 > +	return 0;
+> +
+> +out_iio_unregister:
+> +	iio_device_unregister(indio_dev);
+> +out_poweroff:
+> +	mma9551_set_device_state(client, false);
+> +	return ret;
 > +}
 > +
-> +static int cm3232_remove(struct i2c_client *client)
+> +static int mma9553_remove(struct i2c_client *client)
 > +{
 > +	struct iio_dev *indio_dev = i2c_get_clientdata(client);
+> +	struct mma9553_data *data = iio_priv(indio_dev);
+> +
+> +	pm_runtime_disable(&client->dev);
+> +	pm_runtime_set_suspended(&client->dev);
+> +	pm_runtime_put_noidle(&client->dev);
 > +
 > +	iio_device_unregister(indio_dev);
-
-maybe disable device?
-
+> +	mutex_lock(&data->mutex);
+> +	mma9551_set_device_state(data->client, false);
+> +	mutex_unlock(&data->mutex);
+> +
 > +	return 0;
 > +}
 > +
-> +static const struct i2c_device_id cm3232_id[] = {
-> +	{ "cm3232", 0},
-> +	{ }
+> +#ifdef CONFIG_PM
+> +static int mma9553_runtime_suspend(struct device *dev)
+> +{
+> +	struct iio_dev *indio_dev = i2c_get_clientdata(to_i2c_client(dev));
+> +	struct mma9553_data *data = iio_priv(indio_dev);
+> +	int ret;
+> +
+> +	mutex_lock(&data->mutex);
+> +	ret = mma9551_set_device_state(data->client, false);
+> +	mutex_unlock(&data->mutex);
+> +	if (ret < 0) {
+> +		dev_err(&data->client->dev, "powering off device failed\n");
+> +		return -EAGAIN;
+> +	}
+> +
+> +	return 0;
+> +}
+> +
+> +static int mma9553_runtime_resume(struct device *dev)
+> +{
+> +	struct iio_dev *indio_dev = i2c_get_clientdata(to_i2c_client(dev));
+> +	struct mma9553_data *data = iio_priv(indio_dev);
+> +	int ret;
+> +
+> +	ret = mma9551_set_device_state(data->client, true);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	mma9551_sleep(MMA9553_DEFAULT_SAMPLE_RATE);
+> +	return 0;
+> +}
+> +#endif
+> +
+> +#ifdef CONFIG_PM_SLEEP
+> +static int mma9553_suspend(struct device *dev)
+> +{
+> +	struct iio_dev *indio_dev = i2c_get_clientdata(to_i2c_client(dev));
+> +	struct mma9553_data *data = iio_priv(indio_dev);
+> +	int ret;
+> +
+> +	mutex_lock(&data->mutex);
+> +	ret = mma9551_set_device_state(data->client, false);
+> +	mutex_unlock(&data->mutex);
+> +
+> +	return ret;
+> +}
+> +
+> +static int mma9553_resume(struct device *dev)
+> +{
+> +	struct iio_dev *indio_dev = i2c_get_clientdata(to_i2c_client(dev));
+> +	struct mma9553_data *data = iio_priv(indio_dev);
+> +	int ret;
+> +
+> +	mutex_lock(&data->mutex);
+> +	ret = mma9551_set_device_state(data->client, true);
+> +	mutex_unlock(&data->mutex);
+> +
+> +	return ret;
+> +}
+> +#endif
+> +
+> +static const struct dev_pm_ops mma9553_pm_ops = {
+> +	SET_SYSTEM_SLEEP_PM_OPS(mma9553_suspend, mma9553_resume)
+> +	SET_RUNTIME_PM_OPS(mma9553_runtime_suspend,
+> +			   mma9553_runtime_resume, NULL)
 > +};
 > +
-> +MODULE_DEVICE_TABLE(i2c, cm3232_id);
-> +
-> +static const struct of_device_id cm3232_of_match[] = {
-> +	{ .compatible = "capella,cm3232" },
-> +	{ }
+> +static const struct acpi_device_id mma9553_acpi_match[] = {
+> +	{"MMA9553", 0},
+> +	{},
 > +};
 > +
-> +static struct i2c_driver cm3232_driver = {
+> +MODULE_DEVICE_TABLE(acpi, mma9553_acpi_match);
+> +
+> +static const struct i2c_device_id mma9553_id[] = {
+> +	{"mma9553", 0},
+> +	{},
+> +};
+> +
+> +MODULE_DEVICE_TABLE(i2c, mma9553_id);
+> +
+> +static struct i2c_driver mma9553_driver = {
 > +	.driver = {
-> +		.name	= "cm3232",
-> +		.owner	= THIS_MODULE,
-> +		.of_match_table = of_match_ptr(cm3232_of_match),
-> +	},
-> +	.id_table	= cm3232_id,
-> +	.probe		= cm3232_probe,
-> +	.remove		= cm3232_remove,
+> +		   .name = MMA9553_DRV_NAME,
+> +		   .acpi_match_table = ACPI_PTR(mma9553_acpi_match),
+> +		   .pm = &mma9553_pm_ops,
+> +		   },
+> +	.probe = mma9553_probe,
+> +	.remove = mma9553_remove,
+> +	.id_table = mma9553_id,
 > +};
 > +
-> +module_i2c_driver(cm3232_driver);
+> +module_i2c_driver(mma9553_driver);
 > +
-> +MODULE_AUTHOR("Kevin Tsai <ktsai@capellamicro.com>");
-> +MODULE_DESCRIPTION("CM3232 ambient light sensor driver");
-> +MODULE_LICENSE("GPL");
+> +MODULE_AUTHOR("Irina Tirdea <irina.tirdea@intel.com>");
+> +MODULE_LICENSE("GPL v2");
+> +MODULE_DESCRIPTION("MMA9553L pedometer platform driver");
 > 
 
--- 
-
-Peter Meerwald
-+43-664-2444418 (mobile)
