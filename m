@@ -1,88 +1,72 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pd0-f176.google.com ([209.85.192.176]:38116 "EHLO
-	mail-pd0-f176.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750714AbbABJDl (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 2 Jan 2015 04:03:41 -0500
-Received: by mail-pd0-f176.google.com with SMTP id r10so23383162pdi.35
-        for <linux-iio@vger.kernel.org>; Fri, 02 Jan 2015 01:03:41 -0800 (PST)
-From: Devendra Naga <devendra.aaru@gmail.com>
-To: Lars-Peter Clausen <lars@metafoo.de>,
-	Michael Hennerich <Michael.Hennerich@analog.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	linux-iio@vger.kernel.org, devel@driverdev.osuosl.org
-Cc: Devendra Naga <devendra.aaru@gmail.com>
-Subject: [PATCH V2 2/2] iio: meter: ade7759: add error handling in _reset and _stop_device
-Date: Fri,  2 Jan 2015 04:02:55 -0500
-Message-Id: <1420189375-19854-2-git-send-email-devendra.aaru@gmail.com>
-In-Reply-To: <1420189375-19854-1-git-send-email-devendra.aaru@gmail.com>
-References: <1420189375-19854-1-git-send-email-devendra.aaru@gmail.com>
+Received: from a.ns.miles-group.at ([95.130.255.143]:65276 "EHLO radon.swed.at"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1750761AbbABL3A (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Fri, 2 Jan 2015 06:29:00 -0500
+Message-ID: <54A680F8.30209@nod.at>
+Date: Fri, 02 Jan 2015 12:28:56 +0100
+From: Richard Weinberger <richard@nod.at>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+To: harald@ccbib.org, Jonathan Cameron <jic23@kernel.org>
+CC: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
+	sanjeev_sharma@mentor.com, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: iio: dht11 Updates
+References: <1417563176-31972-1-git-send-email-richard@nod.at> <54A53FBF.5000003@kernel.org> <7e4f6a70e48afe96457ebbcf07572224@imap.cosmopool.net>
+In-Reply-To: <7e4f6a70e48afe96457ebbcf07572224@imap.cosmopool.net>
+Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-This patch adds the error handling for the value returned from
-ade7759_spi_read_reg_16. With this patch, the following randconfig
-warnings get fixed automatically.
+Am 01.01.2015 um 22:18 schrieb harald@ccbib.org:
+> Hi!
+> 
+> On Thu, 01 Jan 2015 12:38:23 +0000, Jonathan Cameron <jic23@kernel.org>
+> wrote:
+>> On 02/12/14 23:32, Richard Weinberger wrote:
+>>> Please see my current patches for your driver.
+>>> As discussed in an earlier mail I'm testing with the DHT22 sensor only.
+>>> With the IRQ changes I see 84 edges.
+>>>
+>>>
+>>> [PATCH 1/4] iio: dht11: Add locking
+>>> [PATCH 2/4] iio: dht11: IRQ fixes
+>>> [PATCH 3/4] iio: dht11: Logging updates
+>>> [PATCH 4/4] iio: dht11: Fix out-of-bounds read
+>>>
+>  
+>> I've lost track of where we are with this patch series.
+>> Does this cause trouble on any of the parts supported?
+> 
+> Yes, 2/4 needs an update. 
 
-drivers/staging/iio/meter/ade7759.c:224:6: warning: ‘val’ may be
-used uninitialized in this function [-Wmaybe-uninitialized]
-drivers/staging/iio/meter/ade7759.c:309:6: warning: ‘val’ may be
-used uninitialized in this function [-Wmaybe-uninitialized]
+Correct.
 
-Signed-off-by: Devendra Naga <devendra.aaru@gmail.com>
----
- Hello, 
+> 1/4 is fine by me, however it was noted that there is already
+> locking in the iio core for the in-kernel interface but not
+> for the sysfs interface. I think we need locking in the case of
+> the sysfs interace as well, but the final decision is yours...
 
- Please see if this is the error message you wanted.
+We definitely need it.
+I have more than one sensor attached and collectd queries them.
+Without locking collectd manages to hit this race window.
+So the issue is real.
 
- Build tested on next-20141231 with randconfig sent to iio ml,
- and with allmodconfig.
+> 4/4 is obviously right.
+> 
+> 3/4 is cleanup. I'd rather defer this to later and do it right,
+> because right now this patch is cosmetic and doesn't get rid of
+> the deeper issues. I'll start to work on a cleanup series once
+> the fixes are merged.
 
- drivers/staging/iio/meter/ade7759.c | 14 ++++++++++++--
- 1 file changed, 12 insertions(+), 2 deletions(-)
+Agreed.
 
-diff --git a/drivers/staging/iio/meter/ade7759.c b/drivers/staging/iio/meter/ade7759.c
-index 7d21743..86b5145 100644
---- a/drivers/staging/iio/meter/ade7759.c
-+++ b/drivers/staging/iio/meter/ade7759.c
-@@ -218,9 +218,12 @@ static int ade7759_reset(struct device *dev)
- 	int ret;
- 	u16 val;
- 
--	ade7759_spi_read_reg_16(dev,
-+	ret = ade7759_spi_read_reg_16(dev,
- 			ADE7759_MODE,
- 			&val);
-+	if (ret < 0)
-+		return ret;
-+
- 	val |= 1 << 6; /* Software Chip Reset */
- 	ret = ade7759_spi_write_reg_16(dev,
- 			ADE7759_MODE,
-@@ -301,11 +304,18 @@ error_ret:
- /* Power down the device */
- static int ade7759_stop_device(struct device *dev)
- {
-+	int ret;
- 	u16 val;
- 
--	ade7759_spi_read_reg_16(dev,
-+	ret = ade7759_spi_read_reg_16(dev,
- 			ADE7759_MODE,
- 			&val);
-+	if (ret < 0) {
-+		dev_err(dev, "unable to power down the device, error: %d\n",
-+			ret);
-+		return ret;
-+	}
-+
- 	val |= 1 << 4;  /* AD converters can be turned off */
- 
- 	return ade7759_spi_write_reg_16(dev, ADE7759_MODE, val);
--- 
-1.9.3
+> Richard, what's your timeframe to send an updated series?
+> I can send an update if you don't have time.
 
+It would be great if you can send an updated version of 2/4.
+I don't have a DHT11 sensor (only DHT22) and I'm still recovering
+from a cold.
+
+Thanks
+//richard
