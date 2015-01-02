@@ -1,72 +1,121 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from a.ns.miles-group.at ([95.130.255.143]:65276 "EHLO radon.swed.at"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1750761AbbABL3A (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Fri, 2 Jan 2015 06:29:00 -0500
-Message-ID: <54A680F8.30209@nod.at>
-Date: Fri, 02 Jan 2015 12:28:56 +0100
-From: Richard Weinberger <richard@nod.at>
+Received: from mho-02-ewr.mailhop.org ([204.13.248.72]:15792 "EHLO
+	mho-02-ewr.mailhop.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750745AbbABRNh (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 2 Jan 2015 12:13:37 -0500
+Date: Fri, 2 Jan 2015 09:09:33 -0800
+From: Tony Lindgren <tony@atomide.com>
+To: Vignesh R <vigneshr@ti.com>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+	Lee Jones <lee.jones@linaro.org>,
+	Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+	Rob Herring <robh+dt@kernel.org>,
+	Pawel Moll <pawel.moll@arm.com>,
+	Mark Rutland <mark.rutland@arm.com>,
+	Ian Campbell <ijc+devicetree@hellion.org.uk>,
+	Kumar Gala <galak@codeaurora.org>,
+	Benoit Cousson <bcousson@baylibre.com>,
+	Russell King <linux@arm.linux.org.uk>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Samuel Ortiz <sameo@linux.intel.com>,
+	Brad Griffis <bgriffis@ti.com>,
+	Paul Gortmaker <paul.gortmaker@windriver.com>,
+	Sanjeev Sharma <sanjeev_sharma@mentor.com>,
+	Jan Kardell <jan.kardell@telliq.com>,
+	Felipe Balbi <balbi@ti.com>, Wolfram Sang <wsa@the-dreams.de>,
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	linux-iio@vger.kernel.org, linux-input@vger.kernel.org
+Subject: Re: [PATCH v5 4/6] ARM: dts: AM335x: Make charge delay a DT
+ parameter for TSC
+Message-ID: <20150102170933.GB3298@atomide.com>
+References: <1419404619-10744-1-git-send-email-vigneshr@ti.com>
+ <1419404619-10744-5-git-send-email-vigneshr@ti.com>
 MIME-Version: 1.0
-To: harald@ccbib.org, Jonathan Cameron <jic23@kernel.org>
-CC: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
-	sanjeev_sharma@mentor.com, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: iio: dht11 Updates
-References: <1417563176-31972-1-git-send-email-richard@nod.at> <54A53FBF.5000003@kernel.org> <7e4f6a70e48afe96457ebbcf07572224@imap.cosmopool.net>
-In-Reply-To: <7e4f6a70e48afe96457ebbcf07572224@imap.cosmopool.net>
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <1419404619-10744-5-git-send-email-vigneshr@ti.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Am 01.01.2015 um 22:18 schrieb harald@ccbib.org:
-> Hi!
+* Vignesh R <vigneshr@ti.com> [141223 23:07]:
+> The charge delay value is by default 0x400. But it can be set to lower
+> values on some boards, as long as false pen-ups are avoided. Lowering the
+> value increases the sampling rate (though current sampling rate is
+> sufficient for TSC operation). In some boards, the value has to be
+> increased to avoid false pen-up events. Hence, charge delay has been
+> made a DT parameter.
 > 
-> On Thu, 01 Jan 2015 12:38:23 +0000, Jonathan Cameron <jic23@kernel.org>
-> wrote:
->> On 02/12/14 23:32, Richard Weinberger wrote:
->>> Please see my current patches for your driver.
->>> As discussed in an earlier mail I'm testing with the DHT22 sensor only.
->>> With the IRQ changes I see 84 edges.
->>>
->>>
->>> [PATCH 1/4] iio: dht11: Add locking
->>> [PATCH 2/4] iio: dht11: IRQ fixes
->>> [PATCH 3/4] iio: dht11: Logging updates
->>> [PATCH 4/4] iio: dht11: Fix out-of-bounds read
->>>
+> Signed-off-by: Vignesh R <vigneshr@ti.com>
+
+Assuming this binding makes sense for the input people, there should
+be no conflicts merging this patch along with the rest of the series
+via the input tree.
+
+Sounds like this value probably depends on the size of the touchscreen
+for the capacitance, so a numeric value is really needed here. Of course
+I would personally prefer generic bindings in general, but in any case
+please feel free to merge along with the other input patches:
+
+Acked-by: Tony Lindgren <tony@atomide.com>
+
+
+> ---
+> v4:
+>  - Set charge delay to 0x400 as default. Most devices function normally
+>    at this value
+> 
+>  .../devicetree/bindings/input/touchscreen/ti-tsc-adc.txt  | 15 +++++++++++++++
+>  arch/arm/boot/dts/am335x-evm.dts                          |  1 +
+>  2 files changed, 16 insertions(+)
+> 
+> diff --git a/Documentation/devicetree/bindings/input/touchscreen/ti-tsc-adc.txt b/Documentation/devicetree/bindings/input/touchscreen/ti-tsc-adc.txt
+> index 878549ba814d..6df5028a4ad3 100644
+> --- a/Documentation/devicetree/bindings/input/touchscreen/ti-tsc-adc.txt
+> +++ b/Documentation/devicetree/bindings/input/touchscreen/ti-tsc-adc.txt
+> @@ -28,6 +28,20 @@ Required properties:
+>  	ti,adc-channels: List of analog inputs available for ADC.
+>  			 AIN0 = 0, AIN1 = 1 and so on till AIN7 = 7.
 >  
->> I've lost track of where we are with this patch series.
->> Does this cause trouble on any of the parts supported?
+> +Optional properties:
+> +- child "tsc"
+> +	ti,charge-delay: Length of touch screen charge delay step in terms of
+> +			 ADC clock cycles. Charge delay value should be large
+> +			 in order to avoid false pen-up events. This value
+> +			 affects the overall sampling speed, hence need to be
+> +			 kept as low as possible, while avoiding false pen-up
+> +			 event. Start from a lower value, say 0x400, and
+> +			 increase value until false pen-up events are avoided.
+> +			 The pen-up detection happens immediately after the
+> +			 charge step, so this does in fact function as a
+> +			 hardware knob for adjusting the amount of "settling
+> +			 time".
+> +
+>  Example:
+>  	tscadc: tscadc@44e0d000 {
+>  		compatible = "ti,am3359-tscadc";
+> @@ -36,6 +50,7 @@ Example:
+>  			ti,x-plate-resistance = <200>;
+>  			ti,coordiante-readouts = <5>;
+>  			ti,wire-config = <0x00 0x11 0x22 0x33>;
+> +			ti,charge-delay = <0x400>;
+>  		};
+>  
+>  		adc {
+> diff --git a/arch/arm/boot/dts/am335x-evm.dts b/arch/arm/boot/dts/am335x-evm.dts
+> index 54f118c08db8..66342515df20 100644
+> --- a/arch/arm/boot/dts/am335x-evm.dts
+> +++ b/arch/arm/boot/dts/am335x-evm.dts
+> @@ -648,6 +648,7 @@
+>  		ti,x-plate-resistance = <200>;
+>  		ti,coordinate-readouts = <5>;
+>  		ti,wire-config = <0x00 0x11 0x22 0x33>;
+> +		ti,charge-delay = <0x400>;
+>  	};
+>  
+>  	adc {
+> -- 
+> 1.9.1
 > 
-> Yes, 2/4 needs an update. 
-
-Correct.
-
-> 1/4 is fine by me, however it was noted that there is already
-> locking in the iio core for the in-kernel interface but not
-> for the sysfs interface. I think we need locking in the case of
-> the sysfs interace as well, but the final decision is yours...
-
-We definitely need it.
-I have more than one sensor attached and collectd queries them.
-Without locking collectd manages to hit this race window.
-So the issue is real.
-
-> 4/4 is obviously right.
-> 
-> 3/4 is cleanup. I'd rather defer this to later and do it right,
-> because right now this patch is cosmetic and doesn't get rid of
-> the deeper issues. I'll start to work on a cleanup series once
-> the fixes are merged.
-
-Agreed.
-
-> Richard, what's your timeframe to send an updated series?
-> I can send an update if you don't have time.
-
-It would be great if you can send an updated version of 2/4.
-I don't have a DHT11 sensor (only DHT22) and I'm still recovering
-from a cold.
-
-Thanks
-//richard
