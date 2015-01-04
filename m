@@ -1,73 +1,89 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:50311 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752648AbbADRzW (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 4 Jan 2015 12:55:22 -0500
-Message-ID: <54A97E89.30109@kernel.org>
-Date: Sun, 04 Jan 2015 17:55:21 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-MIME-Version: 1.0
-To: Lars-Peter Clausen <lars@metafoo.de>
-CC: Hartmut Knaack <knaack.h@gmx.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	Daniel Baluta <daniel.baluta@intel.com>,
+Received: from cantor2.suse.de ([195.135.220.15]:39095 "EHLO mx2.suse.de"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1752737AbbADTU6 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Sun, 4 Jan 2015 14:20:58 -0500
+Date: Sun, 4 Jan 2015 20:20:54 +0100
+From: Jean Delvare <jdelvare@suse.de>
+To: Wolfram Sang <wsa@the-dreams.de>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
 	linux-iio@vger.kernel.org
-Subject: Re: [PATCH v2 4/4] staging:iio:ad5933: Remove platform data from
- state struct
-References: <1411655235-7635-1-git-send-email-lars@metafoo.de> <1411655235-7635-4-git-send-email-lars@metafoo.de>
-In-Reply-To: <1411655235-7635-4-git-send-email-lars@metafoo.de>
-Content-Type: text/plain; charset=windows-1252
+Subject: Re: [PATCH 2/3] iio: imu: inv_mpu6050: Added adapter class
+Message-ID: <20150104202054.08b93933@endymion.delvare>
+In-Reply-To: <20141231102554.GC1461@katana>
+References: <1418678363-22437-1-git-send-email-srinivas.pandruvada@linux.intel.com>
+	<1418678363-22437-3-git-send-email-srinivas.pandruvada@linux.intel.com>
+	<549D5690.1070104@kernel.org>
+	<20141231102554.GC1461@katana>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 25/09/14 15:27, Lars-Peter Clausen wrote:
-> The platform data is only used in the probe function. No need to keep it
-> around.
-> 
-> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
-Applied.
-> ---
-> No changes since v1
-> ---
->  drivers/staging/iio/impedance-analyzer/ad5933.c | 11 ++++-------
->  1 file changed, 4 insertions(+), 7 deletions(-)
-> 
-> diff --git a/drivers/staging/iio/impedance-analyzer/ad5933.c b/drivers/staging/iio/impedance-analyzer/ad5933.c
-> index 95b17c5..3c5d917 100644
-> --- a/drivers/staging/iio/impedance-analyzer/ad5933.c
-> +++ b/drivers/staging/iio/impedance-analyzer/ad5933.c
-> @@ -89,7 +89,6 @@
->  struct ad5933_state {
->  	struct i2c_client		*client;
->  	struct regulator		*reg;
-> -	struct ad5933_platform_data	*pdata;
->  	struct delayed_work		work;
->  	unsigned long			mclk_hz;
->  	unsigned char			ctrl_hb;
-> @@ -712,9 +711,7 @@ static int ad5933_probe(struct i2c_client *client,
->  	st->client = client;
->  
->  	if (!pdata)
-> -		st->pdata = &ad5933_default_pdata;
-> -	else
-> -		st->pdata = pdata;
-> +		pdata = &ad5933_default_pdata;
->  
->  	st->reg = devm_regulator_get(&client->dev, "vcc");
->  	if (!IS_ERR(st->reg)) {
-> @@ -727,10 +724,10 @@ static int ad5933_probe(struct i2c_client *client,
->  	if (voltage_uv)
->  		st->vref_mv = voltage_uv / 1000;
->  	else
-> -		st->vref_mv = st->pdata->vref_mv;
-> +		st->vref_mv = pdata->vref_mv;
->  
-> -	if (st->pdata->ext_clk_Hz) {
-> -		st->mclk_hz = st->pdata->ext_clk_Hz;
-> +	if (pdata->ext_clk_Hz) {
-> +		st->mclk_hz = pdata->ext_clk_Hz;
->  		st->ctrl_lb = AD5933_CTRL_EXT_SYSCLK;
->  	} else {
->  		st->mclk_hz = AD5933_INT_OSC_FREQ_Hz;
-> 
+Hi Wolfram,
 
+First of all, happy new year :-)
+
+On Wed, 31 Dec 2014 11:25:54 +0100, Wolfram Sang wrote:
+> On Fri, Dec 26, 2014 at 12:37:36PM +0000, Jonathan Cameron wrote:
+> > On 15/12/14 21:19, Srinivas Pandruvada wrote:
+> > > To use i2c auto detect to work we need to have a non zero class.
+> > > The closest class is I2C_CLASS_HWMON, as it defined to be used
+> > > with all hw monitoring drivers.
+> > > 
+> > > Also this class is already used by some iio driver, hid drivers, led
+> > > and misc drivers. So this is not new that this is used outside
+> > > hwmon drivers.
+> > > 
+> > > Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+> > Been meaning to sort this out for a while.  We really shouldn't be camping
+> > on the HWMON class (nor should anyone else).
+
+This is correct, side effects could be quite bad.
+
+> > Wolfram, do you mind new classes being added?
+> 
+> In general, I wouldn't mind but I wonder if it makes sense here. DDC and
+> SPD are very special I2C uses where access should be limited, so a
+> seperate class makes sense IMO. HWMON has a specific name, but really
+> became "everything what people could hook to their I2C bus" these days.
+
+HWMON is there mainly for historical reasons, which still hold due to
+the inability of PC hardware vendors to list which I2C devices are
+connected to the SMBus (although this is changing, ACPI could help to
+some degree now.)
+
+> So, if anything, we could think about renaming I2C_CLASS_HWMON to
+> I2C_CLASS_STANDARD or something (or at least add a comment about that in
+> i2c.h)? I'd think IIO devices fall into the default category. Please say
+> if you think different. If we'd add the IIO class, most drivers will
+> need patches to support IIO devices which would have worked otherwise,
+> so this change should be justified.
+> 
+> @Jean: Do you have anything to add?
+
+I2C_CLASS_STANDARD sounds like a rather bad idea to me. But really I
+miss the background for the discussion so it's hard for me to make an
+educated comment.
+
+Please keep in mind that I2C_CLASS_* is not about which class I2C
+devices (or even device drivers) belong to. It is about which drivers
+should actively _probe_ for their devices on which I2C bus segments.
+This is, in general, a bad idea and should be avoided as much as
+possible, in favor of enumeration. I2C device probing is inefficient,
+unreliable and dangerous by nature.
+
+The reason why we still do it for DDC and SPD is because the range of
+addresses is very limited, and probing is somewhat part of the
+specification. The reason why we do it for HWMON is because enumeration
+does not exist at the hardware level on popular platforms. For
+everything else we have backed out (analog and digital TV, in
+particular.)
+
+So I am wondering, which platforms are using IIO drivers and do not
+support device enumeration at the firmware / device tree level?
+
+-- 
+Jean Delvare
+SUSE L3 Support
