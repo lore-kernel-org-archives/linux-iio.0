@@ -1,92 +1,63 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:48333 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:48329 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751263AbbADLSJ (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 4 Jan 2015 06:18:09 -0500
-Message-ID: <54A9216F.8070200@kernel.org>
-Date: Sun, 04 Jan 2015 11:18:07 +0000
+	with ESMTP id S1750979AbbADLRB (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 4 Jan 2015 06:17:01 -0500
+Message-ID: <54A9212B.8050709@kernel.org>
+Date: Sun, 04 Jan 2015 11:16:59 +0000
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Vlad Dogaru <vlad.dogaru@intel.com>, linux-iio@vger.kernel.org
-Subject: Re: [PATCH v5] iio: ensure scan index is unique at device register
-References: <1419845868-24562-1-git-send-email-vlad.dogaru@intel.com>
-In-Reply-To: <1419845868-24562-1-git-send-email-vlad.dogaru@intel.com>
+To: Nicholas Mc Guire <der.herr@hofr.at>
+CC: Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Grant Likely <grant.likely@linaro.org>,
+	Rob Herring <robh+dt@kernel.org>,
+	"Ivan T. Ivanov" <iivanov@mm-sol.com>, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
+Subject: Re: [PATCH RFC] iio: iadc: wait_for_completion_timeout time in jiffies
+References: <1420016386-19638-1-git-send-email-der.herr@hofr.at>
+In-Reply-To: <1420016386-19638-1-git-send-email-der.herr@hofr.at>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 29/12/14 09:37, Vlad Dogaru wrote:
-> Having two or more channels with the same positive scan_index field
-> makes no sense if the device supports buffering.  Prevent this situation
-> by failing to register such a device.
+On 31/12/14 08:59, Nicholas Mc Guire wrote:
+> The timeout value to wait_for_completion_timeout is in jiffies but
+> the value being passed seems like it was intended to by microseconds
+> Note that the timeout was extremely long thus it might be too short
+> now. In any case it probably should be passed through usecs_to_jiffies()
+> or msecs_to_jiffies()
 > 
-> Signed-off-by: Vlad Dogaru <vlad.dogaru@intel.com>
-> Reviewed-by: Lars-Peter Clausen <lars@metafoo.de>
-Applied to the togreg branch of iio.git.
-Initially pushed out as testing for the autobuilders to play with it.
+> patch is against linux-next 3.19.0-rc1 -next-20141226
+> 
+> patch was only compile-tested x86_64_defcofnig + CONFIG_SPMI=m
+> CONFIG_IIO=m, CONFIG_QCOM_SPMI_IADC=m
+> 
+> Signed-off-by: Nicholas Mc Guire <der.herr@hofr.at>
+Certainly suspicious and I'd draw the same conclusion you did!
+Anyhow just waiting for Ivan to take a look as it's his driver.
 
 Thanks,
 
 Jonathan
 > ---
-> Changes since v4:
->  - actually include the check mentioned in v4, forgot to 'git add' it the first
->    time around :)
->  - reword description to mention that we only check devices that support
->    buffering.
-> Changes since v3:
->  - only check for duplicates if device supports buffering.
-> Changes since v2:
->  - rebase to latest togreg branch.
-> Changes since v1:
->  - remove redundant check for scan_index < 0 in the inner loop.
->  drivers/iio/industrialio-core.c | 27 +++++++++++++++++++++++++++
->  1 file changed, 27 insertions(+)
+>  drivers/iio/adc/qcom-spmi-iadc.c |    3 ++-
+>  1 file changed, 2 insertions(+), 1 deletion(-)
 > 
-> diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
-> index ee442ee..cc80c59 100644
-> --- a/drivers/iio/industrialio-core.c
-> +++ b/drivers/iio/industrialio-core.c
-> @@ -1135,6 +1135,29 @@ static const struct file_operations iio_buffer_fileops = {
->  	.compat_ioctl = iio_ioctl,
->  };
->  
-> +static int iio_check_unique_scan_index(struct iio_dev *indio_dev)
-> +{
-> +	int i, j;
-> +	const struct iio_chan_spec *channels = indio_dev->channels;
-> +
-> +	if (!(indio_dev->modes & INDIO_ALL_BUFFER_MODES))
-> +		return 0;
-> +
-> +	for (i = 0; i < indio_dev->num_channels - 1; i++) {
-> +		if (channels[i].scan_index < 0)
-> +			continue;
-> +		for (j = i + 1; j < indio_dev->num_channels; j++)
-> +			if (channels[i].scan_index == channels[j].scan_index) {
-> +				dev_err(&indio_dev->dev,
-> +					"Duplicate scan index %d\n",
-> +					channels[i].scan_index);
-> +				return -EINVAL;
-> +			}
-> +	}
-> +
-> +	return 0;
-> +}
-> +
->  static const struct iio_buffer_setup_ops noop_ring_setup_ops;
->  
->  /**
-> @@ -1149,6 +1172,10 @@ int iio_device_register(struct iio_dev *indio_dev)
->  	if (!indio_dev->dev.of_node && indio_dev->dev.parent)
->  		indio_dev->dev.of_node = indio_dev->dev.parent->of_node;
->  
-> +	ret = iio_check_unique_scan_index(indio_dev);
-> +	if (ret < 0)
-> +		return ret;
-> +
->  	/* configure elements for the chrdev */
->  	indio_dev->dev.devt = MKDEV(MAJOR(iio_devt), indio_dev->id);
->  
+> diff --git a/drivers/iio/adc/qcom-spmi-iadc.c b/drivers/iio/adc/qcom-spmi-iadc.c
+> index b9666f2..3080562 100644
+> --- a/drivers/iio/adc/qcom-spmi-iadc.c
+> +++ b/drivers/iio/adc/qcom-spmi-iadc.c
+> @@ -296,7 +296,8 @@ static int iadc_do_conversion(struct iadc_chip *iadc, int chan, u16 *data)
+>  	if (iadc->poll_eoc) {
+>  		ret = iadc_poll_wait_eoc(iadc, wait);
+>  	} else {
+> -		ret = wait_for_completion_timeout(&iadc->complete, wait);
+> +		ret = wait_for_completion_timeout(&iadc->complete,
+> +			usecs_to_jiffies(wait));
+>  		if (!ret)
+>  			ret = -ETIMEDOUT;
+>  		else
 > 
 
