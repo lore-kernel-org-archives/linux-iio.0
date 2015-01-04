@@ -1,83 +1,67 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:48198 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:48219 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751263AbbADLB4 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 4 Jan 2015 06:01:56 -0500
-Message-ID: <54A91DA1.6080107@kernel.org>
-Date: Sun, 04 Jan 2015 11:01:53 +0000
+	with ESMTP id S1751753AbbADLEO (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 4 Jan 2015 06:04:14 -0500
+Message-ID: <54A91E2C.7070109@kernel.org>
+Date: Sun, 04 Jan 2015 11:04:12 +0000
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Richard Weinberger <richard@nod.at>, harald@ccbib.org
-CC: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
-	sanjeev_sharma@mentor.com, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: iio: dht11 Updates
-References: <1417563176-31972-1-git-send-email-richard@nod.at> <54A53FBF.5000003@kernel.org> <7e4f6a70e48afe96457ebbcf07572224@imap.cosmopool.net> <54A680F8.30209@nod.at>
-In-Reply-To: <54A680F8.30209@nod.at>
-Content-Type: text/plain; charset=utf-8
+To: Stefan Wahren <stefan.wahren@i2se.com>
+CC: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net, marex@denx.de,
+	fabio.estevam@freescale.com, alexandre.belloni@free-electrons.com,
+	robert.hodaszi@digi.com, linux-iio@vger.kernel.org
+Subject: Re: [PATCH V2] iio: mxs-lradc: fix iio channel map regression
+References: <1420317252-19761-1-git-send-email-stefan.wahren@i2se.com>
+In-Reply-To: <1420317252-19761-1-git-send-email-stefan.wahren@i2se.com>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 02/01/15 11:28, Richard Weinberger wrote:
-> Am 01.01.2015 um 22:18 schrieb harald@ccbib.org:
->> Hi!
->>
->> On Thu, 01 Jan 2015 12:38:23 +0000, Jonathan Cameron <jic23@kernel.org>
->> wrote:
->>> On 02/12/14 23:32, Richard Weinberger wrote:
->>>> Please see my current patches for your driver.
->>>> As discussed in an earlier mail I'm testing with the DHT22 sensor only.
->>>> With the IRQ changes I see 84 edges.
->>>>
->>>>
->>>> [PATCH 1/4] iio: dht11: Add locking
->>>> [PATCH 2/4] iio: dht11: IRQ fixes
->>>> [PATCH 3/4] iio: dht11: Logging updates
->>>> [PATCH 4/4] iio: dht11: Fix out-of-bounds read
->>>>
->>  
->>> I've lost track of where we are with this patch series.
->>> Does this cause trouble on any of the parts supported?
->>
->> Yes, 2/4 needs an update. 
+On 03/01/15 20:34, Stefan Wahren wrote:
+> Since commit c8231a9af8147f8a ("iio: mxs-lradc: compute temperature
+> from channel 8 and 9") with the removal of adc channel 9 there is
+> no 1-1 mapping in the channel spec.
 > 
-> Correct.
+> All hwmon channel values above 9 are accessible via there index minus
+> one. So add a hidden iio channel 9 to fix this issue.
 > 
->> 1/4 is fine by me, however it was noted that there is already
->> locking in the iio core for the in-kernel interface but not
->> for the sysfs interface. I think we need locking in the case of
->> the sysfs interace as well, but the final decision is yours...
+> Signed-off-by: Stefan Wahren <stefan.wahren@i2se.com>
+I'll have to hold this for a bit.  I'm running rather behind with
+pull requests so my fixes tree is still pre the last release and
+hence doesn't have the patch that caused the problem yet...
+
+Should unwind that this week.
+
+Jonathan
+> ---
+> Changes in V2:
+> - define hidden channel instead of a bogus one
 > 
-> We definitely need it.
-> I have more than one sensor attached and collectd queries them.
-> Without locking collectd manages to hit this race window.
-> So the issue is real.
-Locking is needed.  Convention has normally been to do this in the
-driver rather than a subsystem core.
-That gives more fine grained control and avoids locking
-when not necessary (some devices will need a lock on data read,
-others will not).
-Clearly in this case, the need should have been picked up in review
-(oops).  Sorry about that.
+>  drivers/staging/iio/adc/mxs-lradc.c |    7 +++++++
+>  1 file changed, 7 insertions(+)
 > 
->> 4/4 is obviously right.
->>
->> 3/4 is cleanup. I'd rather defer this to later and do it right,
->> because right now this patch is cosmetic and doesn't get rid of
->> the deeper issues. I'll start to work on a cleanup series once
->> the fixes are merged.
+> diff --git a/drivers/staging/iio/adc/mxs-lradc.c b/drivers/staging/iio/adc/mxs-lradc.c
+> index d9d6fad..594684d 100644
+> --- a/drivers/staging/iio/adc/mxs-lradc.c
+> +++ b/drivers/staging/iio/adc/mxs-lradc.c
+> @@ -1413,6 +1413,13 @@ static const struct iio_chan_spec mxs_lradc_chan_spec[] = {
+>  		.channel = 8,
+>  		.scan_type = {.sign = 'u', .realbits = 18, .storagebits = 32,},
+>  	},
+> +	/* Hidden channel to keep indexes */
+> +	{
+> +		.type = IIO_TEMP,
+> +		.indexed = 1,
+> +		.scan_index = -1,
+> +		.channel = 9,
+> +	},
+>  	MXS_ADC_CHAN(10, IIO_VOLTAGE),	/* VDDIO */
+>  	MXS_ADC_CHAN(11, IIO_VOLTAGE),	/* VTH */
+>  	MXS_ADC_CHAN(12, IIO_VOLTAGE),	/* VDDA */
+> --
+> 1.7.9.5
 > 
-> Agreed.
-> 
->> Richard, what's your timeframe to send an updated series?
->> I can send an update if you don't have time.
-> 
-> It would be great if you can send an updated version of 2/4.
-> I don't have a DHT11 sensor (only DHT22) and I'm still recovering
-> from a cold.
-> 
-> Thanks
-> //richard
 > --
 > To unsubscribe from this list: send the line "unsubscribe linux-iio" in
 > the body of a message to majordomo@vger.kernel.org
