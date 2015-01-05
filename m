@@ -1,42 +1,93 @@
-Return-Path: <harald@ccbib.org>
-From: Harald Geyer <harald@ccbib.org>
-To: Jonathan Cameron <jic23@kernel.org>
-cc: Richard Weinberger <richard@nod.at>, knaack.h@gmx.de,
-    lars@metafoo.de, pmeerw@pmeerw.net, sanjeev_sharma@mentor.com,
-    linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCHv2 1/3] iio: dht11: Fix out-of-bounds read
-In-reply-to: <54A91DA1.6080107@kernel.org>
-References: <1417563176-31972-1-git-send-email-richard@nod.at> <54A53FBF.5000003@kernel.org> <7e4f6a70e48afe96457ebbcf07572224@imap.cosmopool.net> <54A680F8.30209@nod.at> <54A91DA1.6080107@kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Date: Mon, 05 Jan 2015 14:49:05 +0100
-Message-Id: <E1Y881p-0001Fp-NX@stardust.g4.wien.funkfeuer.at>
+Return-Path: <joe@perches.com>
+Message-ID: <1420463396.2652.8.camel@perches.com>
+Subject: Re: [PATCH V1 1/1] iio: Added Capella cm3232 ambient light sensor
+ driver.
+From: Joe Perches <joe@perches.com>
+To: Daniel Baluta <daniel.baluta@intel.com>
+Cc: Kevin Tsai <ktsai@capellamicro.com>, Wolfram Sang <wsa@the-dreams.de>,
+ Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark
+ Rutland <mark.rutland@arm.com>,  Ian Campbell
+ <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>,
+ Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
+ Lars-Peter Clausen <lars@metafoo.de>, Peter Meerwald <pmeerw@pmeerw.net>,
+ Grant Likely <grant.likely@linaro.org>, Andrew Morton
+ <akpm@linux-foundation.org>, "David S. Miller" <davem@davemloft.net>, Greg
+ Kroah-Hartman <gregkh@linuxfoundation.org>, Mauro Carvalho Chehab
+ <mchehab@osg.samsung.com>, Antti Palosaari <crope@iki.fi>, Archana Patni
+ <archana.patni@linux.intel.com>, linux-i2c@vger.kernel.org,
+ devicetree@vger.kernel.org, "linux-iio@vger.kernel.org"
+ <linux-iio@vger.kernel.org>, Linux Kernel Mailing List
+ <linux-kernel@vger.kernel.org>
+Date: Mon, 05 Jan 2015 05:09:56 -0800
+In-Reply-To: <CAEnQRZBD2NMYRp1cW0J2ssT4CT=0jSM=X6ByHQiUrA0ueV8fRA@mail.gmail.com>
+References: <1420071030-888-1-git-send-email-ktsai@capellamicro.com>
+	 <CAEnQRZBD2NMYRp1cW0J2ssT4CT=0jSM=X6ByHQiUrA0ueV8fRA@mail.gmail.com>
+Content-Type: text/plain; charset="ISO-8859-1"
+Mime-Version: 1.0
 List-ID: <linux-iio@vger.kernel.org>
 
-As we access i-1 we must not start with i=0.
+On Mon, 2015-01-05 at 12:51 +0200, Daniel Baluta wrote:
+> On Thu, Jan 1, 2015 at 2:10 AM, Kevin Tsai <ktsai@capellamicro.com> wrote:
+> > CM3232 is an advanced ambient light sensor with I2C protocol interface.
+> > The I2C slave address is internally hardwired as 0x10 (7-bit).  Writing
+> > to configure register is byte mode, but reading ALS register requests to
+> > use word mode for 16-bit resolution.
+> 
+> This looks good to me.  Few comments inline.
+[]
+> > diff --git a/drivers/iio/light/cm3232.c b/drivers/iio/light/cm3232.c
+[]
+> > +/**
+> > + * cm3232_reg_init() - Initialize CM3232 registers
+> > + * @chip:      pointer of struct cm3232.
+> > + *
+> > + * Initialize CM3232 ambient light sensor register to default values.
+> > + *
+> > +  Return: 0 for success; otherwise for error code.
+> > + */
+> > +static int cm3232_reg_init(struct cm3232_chip *chip)
+> > +{
+> > +       struct i2c_client *client = chip->client;
+> > +       struct cm3232_als_info *als_info;
+> > +       s32 ret;
+> > +
+> > +       /* Identify device */
+> > +       ret = i2c_smbus_read_word_data(client, CM3232_REG_ADDR_ID);
+> > +       if (ret < 0)
+> > +               return ret;
+> > +       if ((ret & 0xFF) != 0x32)
+> > +               return -ENODEV;
+> > +
+> > +       /* Disable and reset device */
+> > +       chip->regs_cmd = CM3232_CMD_ALS_DISABLE | CM3232_CMD_ALS_RESET;
+> > +       ret = i2c_smbus_write_byte_data(client, CM3232_REG_ADDR_CMD,
+> > +                               chip->regs_cmd);
+> > +       if (ret < 0)
+> > +               return ret;
+> > +
+> > +       /* Initialization */
+> > +       als_info = chip->als_info = &cm3232_als_info_default;
+> > +       chip->regs_cmd = CM3232_CMD_DEFAULT;
+> > +
+> > +       /* Configure register */
+> > +       ret = i2c_smbus_write_byte_data(client, CM3232_REG_ADDR_CMD,
+> > +                               chip->regs_cmd);
+> 
+> You could directly return i2c_smbus_write_byte_data(..).
 
-Signed-off-by: Richard Weinberger <richard@nod.at>
-Acked-by: Hartmut Knaack <knaack.h@gmx.de>
-Acked-by: Harald Geyer <harald@ccbib.org>
----
-Resending for Richard Weinberger.
-No changes since v1 except reordering.
+Sometimes it's better to return a specific value
+for the error instead of depending on correctness
+of all the indirect functions in the call chain.
 
- drivers/iio/humidity/dht11.c |    2 +-
- 1 files changed, 1 insertions(+), 1 deletions(-)
+In this case, all the smbus_xfer functions must
+return 0 on success.  Do they?
 
-diff --git a/drivers/iio/humidity/dht11.c b/drivers/iio/humidity/dht11.c
-index 623c145..f546eca 100644
---- a/drivers/iio/humidity/dht11.c
-+++ b/drivers/iio/humidity/dht11.c
-@@ -88,7 +88,7 @@ static int dht11_decode(struct dht11 *dht11, int offset)
- 	unsigned char temp_int, temp_dec, hum_int, hum_dec, checksum;
- 
- 	/* Calculate timestamp resolution */
--	for (i = 0; i < dht11->num_edges; ++i) {
-+	for (i = 1; i < dht11->num_edges; ++i) {
- 		t = dht11->edges[i].ts - dht11->edges[i-1].ts;
- 		if (t > 0 && t < timeres)
- 			timeres = t;
--- 
-1.7.2.5
+Inspecting the codebase for correctness or not
+depending on that correctness is sometimes better
+to avoid doing.
+
+> > +       if (ret < 0)
+> > +               return ret;
+> > +
+> > +       return 0;
+> > +}
