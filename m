@@ -1,182 +1,548 @@
-Return-Path: <octavian.purdila@intel.com>
+Return-Path: <daniel.baluta@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <54A96525.2030200@kernel.org>
-References: <1419122556-8100-1-git-send-email-octavian.purdila@intel.com>
-	<1419122556-8100-5-git-send-email-octavian.purdila@intel.com>
-	<54A96525.2030200@kernel.org>
-Date: Mon, 5 Jan 2015 21:29:13 +1000
-Message-ID: <CAE1zot+7DdscD6+D=XaX08Fpsbdheqn6OUPMSZYEMoRqV2m+rw@mail.gmail.com>
-Subject: Re: [PATCH v2 04/11] iio: add support for hardware fifo
-From: Octavian Purdila <octavian.purdila@intel.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Sender: daniel.baluta@gmail.com
+In-Reply-To: <1420071030-888-1-git-send-email-ktsai@capellamicro.com>
+References: <1420071030-888-1-git-send-email-ktsai@capellamicro.com>
+Date: Mon, 5 Jan 2015 12:51:02 +0200
+Message-ID: <CAEnQRZBD2NMYRp1cW0J2ssT4CT=0jSM=X6ByHQiUrA0ueV8fRA@mail.gmail.com>
+Subject: Re: [PATCH V1 1/1] iio: Added Capella cm3232 ambient light sensor driver.
+From: Daniel Baluta <daniel.baluta@intel.com>
+To: Kevin Tsai <ktsai@capellamicro.com>
+Cc: Wolfram Sang <wsa@the-dreams.de>, Rob Herring <robh+dt@kernel.org>,
+	Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>,
+	Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>,
+	Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>, Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>, Grant Likely <grant.likely@linaro.org>,
+	Andrew Morton <akpm@linux-foundation.org>, "David S. Miller" <davem@davemloft.net>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Joe Perches <joe@perches.com>,
+	Mauro Carvalho Chehab <mchehab@osg.samsung.com>, Antti Palosaari <crope@iki.fi>,
+	Daniel Baluta <daniel.baluta@intel.com>, Archana Patni <archana.patni@linux.intel.com>,
+	linux-i2c@vger.kernel.org, devicetree@vger.kernel.org,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset=UTF-8
 List-ID: <linux-iio@vger.kernel.org>
 
-On Mon, Jan 5, 2015 at 2:07 AM, Jonathan Cameron <jic23@kernel.org> wrote:
-> On 21/12/14 00:42, Octavian Purdila wrote:
->
-> Thanks for taking this on!
->
-> This all looks fairly sensible, though a few comments inline.
-> One big semantic change I'd suggest is to allow the watermark
-> level passed to the hardware to be a 'hint' rather than a hard
-> and fast rull.  A lot of these hardware buffers are fairly small
-> (perhaps 32 entries) and the devices can run fast so whilst
-> we will obviously have to handle an interrupt often, we may well
-> want to have a much larger software front end buffer with a
-> much larger watermark.  For example, a 8192Hz accelerometer
-> with 32 entry fifo (watermark at 16).  Will fire an interrupt 512 times
-> a second.  Userspace might be only interested in getting data 32 times
-> a second and hence want a watermark of 256 entries and probably have
-> a buffer that is 512 entries long or more.
->
+On Thu, Jan 1, 2015 at 2:10 AM, Kevin Tsai <ktsai@capellamicro.com> wrote:
+> CM3232 is an advanced ambient light sensor with I2C protocol interface.
+> The I2C slave address is internally hardwired as 0x10 (7-bit).  Writing
+> to configure register is byte mode, but reading ALS register requests to
+> use word mode for 16-bit resolution.
 
-Very good point with the above example, but I find the hint approach a
-bit too hard to diagnose and tune by the application.
-
-Could we perhaps expose the hwfifo watermark as well, in addition to
-the software watermark? We can even keep the hint behavior if the
-application only touches the software watermark, but if it the
-application directly sets the hwfifo level then we use that.
-
->> Some devices have hardware buffers that can store a number of samples
->> for later consumption. Hardware usually provides interrupts to notify
->> the processor when the fifo is full or when it has reached a certain
->> threshold. This helps with reducing the number of interrupts to the
->> host processor and thus it helps decreasing the power consumption.
->>
->> This patch adds support for hardware fifo to IIO by allowing the
->> drivers to register operations for flushing the hadware fifo and
->> setting the watermark level.
->
-> Perhaps put something in here to observe that this is a different approach
-> to the straight hardware buffer stuff we already have - of most interest
-> for hybrid buffering rather than a pure hardware buffer.
->
-
-Will do.
-
->>
->> A driver implementing hardware fifo support must also provide a
->> watermark trigger which must contain "watermark" in its name.
->>
->> Signed-off-by: Octavian Purdila <octavian.purdila@intel.com>
->> ---
->>  Documentation/ABI/testing/sysfs-bus-iio | 22 +++++++++++++++++
->>  drivers/iio/industrialio-buffer.c       | 44 ++++++++++++++++++++++++++++-----
->>  include/linux/iio/iio.h                 | 17 +++++++++++++
->>  3 files changed, 77 insertions(+), 6 deletions(-)
->>
->> diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
->> index 7260f1f..6bb67ac 100644
->> --- a/Documentation/ABI/testing/sysfs-bus-iio
->> +++ b/Documentation/ABI/testing/sysfs-bus-iio
->> @@ -1152,3 +1152,25 @@ Description:
->>               Poll will block until the watermark is reached.
->>               Blocking read will wait until the minimum between the requested
->>               read amount or the low water mark is available.
->> +             If the device has a hardware fifo this value is going to be used
->> +             for the hardware fifo watermark as well.
->
-> I'd make this a litle vaguer (deliberately ;).   Perhaps used as a 'hint'
-> for the hardware fifo watermark as well.  The reason being that if we set
-> the software watermark at say 20 and the hardware only has 15 fifo entries,
-> then we might want to be clever and say set the hardware fifo watershed to 10.
-> For now that would be a decision of the hardware driver rather than one for
-> the core.
-
-Sure, I'll update the docs with what ever we end-up deciding its best :)
-
->> +
->> +What:                /sys/bus/iio/devices/iio:deviceX/buffer/hwfifo-length
->> +KernelVersion:       3.20
->> +Contact:     linux-iio@vger.kernel.org
->> +Description:
->> +             A single positive integer specifying the maximum number of
->> +             samples that the hardware fifo has. If the device does not
->> +             support hardware fifo this is zero.
->> +             When a device supports hardware fifo it will expose a trigger
->> +             with the name that contains "watermark"
->> +             (e.g. i2c-BMC150A:00-watermark-dev0).
->> +             To use the hardware fifo the user must set an appropriate value
->> +             in the buffer/length and buffer/low_watermark entries and select
->> +             the watermark trigger. At that poin the hardware fifo will be
-> point
->> +             enabled and the samples will be collected in a hardware buffer.
-> Hmm. I wonder to a degree if the trigger approach really makes sense for
-> fifo equiped devices.  We've deliberately not added one in a few existing
-> cases.
->
-> Otherwise, is there a reason to run this separately from a trigger not using
-> the fifo.  Surely that's just the same as a watermark of 1?
->
-> Anyhow, a point for discussion!
-
-I might be misunderstand you here, but the reason for which we use a
-separate trigger is to have a way to enable/disable FIFO mode, because
-enabling the FIFO might have some downsides, e.g. more power
-consumption. This matters only when the application is interested in
-low latency sampling ( watermark of 1).
-
-I don't know if this is really an issue in practice, but I chose the
-safe option.
+This looks good to me.  Few comments inline.
 
 >
->> +             When the number of samples in the hardware fifo reaches the
->> +             watermark level the watermark trigger is issued and data is
->> +             flushed to the devices buffer.
->> +             A hardware buffer flush will also be triggered when reading from
->> +             the device buffer and there is not enough data available.
->> \ No newline at end of file
-> Fix this..
->> diff --git a/drivers/iio/industrialio-buffer.c b/drivers/iio/industrialio-buffer.c
->> index 7f74c7f..3da6d07 100644
->> --- a/drivers/iio/industrialio-buffer.c
->> +++ b/drivers/iio/industrialio-buffer.c
->> @@ -37,9 +37,17 @@ static bool iio_buffer_is_active(struct iio_buffer *buf)
->>       return !list_empty(&buf->buffer_list);
->>  }
->>
->> -static size_t iio_buffer_data_available(struct iio_buffer *buf)
->> +static bool iio_buffer_data_available(struct iio_dev *indio_dev,
->> +                                   struct iio_buffer *buf, size_t required)
->>  {
->> -     return buf->access->data_available(buf);
->> +     size_t avail = buf->access->data_available(buf);
->> +
->> +     if (avail < required && indio_dev->hwfifo) {
->> +             indio_dev->hwfifo->flush(indio_dev);
->> +             avail = buf->access->data_available(buf);
->> +     }
->> +
->> +     return avail >= required;
-> Does it make sense to move the decision in here?  Could just as easily
-> have left this as returning the length and done the logic outside...
-> I don't mind that much... However, we probably want to rename the function
-> now that it is doing more than strictly querying availability.
-
-I've put it here so that it affects both read and poll so that we
-avoid avoid latencies if possible. Will change the name.
-
+> Signed-off-by: Kevin Tsai <ktsai@capellamicro.com>
+> ---
+>  .../devicetree/bindings/i2c/trivial-devices.txt    |   1 +
+>  MAINTAINERS                                        |   6 +
+>  drivers/iio/light/Kconfig                          |  11 +
+>  drivers/iio/light/Makefile                         |   1 +
+>  drivers/iio/light/cm3232.c                         | 403 +++++++++++++++++++++
+>  5 files changed, 422 insertions(+)
+>  create mode 100644 drivers/iio/light/cm3232.c
 >
-> Could also have flush take a parameter for what is desired and only read
-> that many?  On relatively slow buses might make sense...
+> diff --git a/Documentation/devicetree/bindings/i2c/trivial-devices.txt b/Documentation/devicetree/bindings/i2c/trivial-devices.txt
+> index 9f4e382..572a7c4 100644
+> --- a/Documentation/devicetree/bindings/i2c/trivial-devices.txt
+> +++ b/Documentation/devicetree/bindings/i2c/trivial-devices.txt
+> @@ -34,6 +34,7 @@ atmel,24c512          i2c serial eeprom  (24cxx)
+>  atmel,24c1024          i2c serial eeprom  (24cxx)
+>  atmel,at97sc3204t      i2c trusted platform module (TPM)
+>  capella,cm32181                CM32181: Ambient Light Sensor
+> +capella,cm3232         CM3232: Ambient Light Sensor
+>  catalyst,24c32         i2c serial eeprom
+>  cirrus,cs42l51         Cirrus Logic CS42L51 audio codec
+>  dallas,ds1307          64 x 8, Serial, I2C Real-Time Clock
+> diff --git a/MAINTAINERS b/MAINTAINERS
+> index ddb9ac8..06a613a 100644
+> --- a/MAINTAINERS
+> +++ b/MAINTAINERS
+> @@ -2378,6 +2378,12 @@ F:       security/capability.c
+>  F:     security/commoncap.c
+>  F:     kernel/capability.c
+>
+> +CAPELLA MICROSYSTEMS LIGHT SENSOR DRIVER
+> +M:     Kevin Tsai <ktsai@capellamicro.com>
+> +S:     Maintained
+> +F:     drivers/iio/light/cm*
+> +F:     Documentation/devicetree/bindings/i2c/trivial-devices.txt
+> +
+>  CC2520 IEEE-802.15.4 RADIO DRIVER
+>  M:     Varka Bhadram <varkabhadram@gmail.com>
+>  L:     linux-wpan@vger.kernel.org
+> diff --git a/drivers/iio/light/Kconfig b/drivers/iio/light/Kconfig
+> index 5bea821..d2318e2 100644
+> --- a/drivers/iio/light/Kconfig
+> +++ b/drivers/iio/light/Kconfig
+> @@ -48,6 +48,17 @@ config CM32181
+>          To compile this driver as a module, choose M here:
+>          the module will be called cm32181.
+>
+> +config CM3232
+> +       depends on I2C
+> +       tristate "CM3232 driver"
 
-Good point, will add that.
+Better name this: "CM3232 ambient light sensor".
 
->>  /**
->> + * struct iio_buffer_hwfifo_ops - hardware fifo operations
->> + *
->> + * @length:          [DRIVER] the hardware fifo length
->> + * @set_watermark:   [DRIVER] setups the watermark level
->> + * @flush:           [DRIVER] copies data from the hardware buffer to the
->> + *                   device buffer
->> + * @watermark_trig:  [DRIVER] an allocated and registered trigger containing
->> + *                   "watermark" in its name
-> err. This last one isn't actually in the structure...
+> +       help
+> +        Say Y here if you use cm3232.
+> +        This option enables ambient light sensor using
+> +        Capella Microsystems cm3232 device driver.
+> +
+> +        To compile this driver as a module, choose M here:
+> +        the module will be called cm3232.
+> +
+>  config CM36651
+>         depends on I2C
+>         tristate "CM36651 driver"
+> diff --git a/drivers/iio/light/Makefile b/drivers/iio/light/Makefile
+> index 47877a3..f2c8d55 100644
+> --- a/drivers/iio/light/Makefile
+> +++ b/drivers/iio/light/Makefile
+> @@ -7,6 +7,7 @@ obj-$(CONFIG_ADJD_S311)         += adjd_s311.o
+>  obj-$(CONFIG_AL3320A)          += al3320a.o
+>  obj-$(CONFIG_APDS9300)         += apds9300.o
+>  obj-$(CONFIG_CM32181)          += cm32181.o
+> +obj-$(CONFIG_CM3232)           += cm3232.o
+>  obj-$(CONFIG_CM36651)          += cm36651.o
+>  obj-$(CONFIG_GP2AP020A00F)     += gp2ap020a00f.o
+>  obj-$(CONFIG_HID_SENSOR_ALS)   += hid-sensor-als.o
+> diff --git a/drivers/iio/light/cm3232.c b/drivers/iio/light/cm3232.c
+> new file mode 100644
+> index 0000000..fd98eeb
+> --- /dev/null
+> +++ b/drivers/iio/light/cm3232.c
+> @@ -0,0 +1,403 @@
+> +/*
+> + * Copyright (C) 2014 Capella Microsystems Inc.
+> + * Author: Kevin Tsai <ktsai@capellamicro.com>
+> + *
+> + * This program is free software; you can redistribute it and/or modify it
+> + * under the terms of the GNU General Public License version 2, as published
+> + * by the Free Software Foundation.
+> + *
 
-Yeah, I wanted to add some checks in the core to make sure that if the
-driver is registering the hwfifo ops then it should allocate and
-register a watermark trigger as well. If we decide to go with the
-trigger approach, do you think it is a good idea to add the checks?
+Usually, here is the place to mention the I2C slave address.
+
+> + */
+> +
+> +#include <linux/delay.h>
+> +#include <linux/err.h>
+> +#include <linux/i2c.h>
+> +#include <linux/mutex.h>
+> +#include <linux/module.h>
+> +#include <linux/interrupt.h>
+> +#include <linux/regulator/consumer.h>
+> +#include <linux/iio/iio.h>
+> +#include <linux/iio/sysfs.h>
+> +#include <linux/iio/events.h>
+> +#include <linux/init.h>
+> +
+> +/* Registers Address */
+> +#define CM3232_REG_ADDR_CMD            0x00
+> +#define CM3232_REG_ADDR_ALS            0x50
+> +#define CM3232_REG_ADDR_ID             0x53
+> +
+> +/* CMD register */
+> +#define CM3232_CMD_ALS_DISABLE         BIT(0)
+> +#define        CM3232_CMD_ALS_HS               BIT(1)
+> +
+> +#define CM3232_CMD_ALS_IT_SHIFT         2
+> +#define CM3232_CMD_ALS_IT_MASK          (0x07 << CM3232_CMD_ALS_IT_SHIFT)
+> +#define CM3232_CMD_ALS_IT_DEFAULT       (0x01 << CM3232_CMD_ALS_IT_SHIFT)
+> +
+> +#define        CM3232_CMD_ALS_RESET            BIT(6)
+> +
+> +#define CM3232_CMD_DEFAULT             CM3232_CMD_ALS_IT_DEFAULT
+> +
+> +#define CM3232_CALIBSCALE_DEFAULT      100000
+> +#define CM3232_CALIBSCALE_RESOLUTION   100000
+> +#define CM3232_MLUX_PER_LUX            1000
+> +
+> +#define CM3232_MLUX_PER_BIT_DEFAULT    64
+> +#define CM3232_MLUX_PER_BIT_BASE_IT    100000
+> +static const int CM3232_als_it_bits[] = { 0, 1, 2, 3, 4, 5};
+> +static const int CM3232_als_it_values[] = {
+> +                       100000, 200000, 400000, 800000, 1600000, 3200000};
+> +
+> +struct cm3232_als_info {
+> +       u32 id;
+> +       int calibscale;
+> +       int mlux_per_bit;
+> +       int mlux_per_bit_base_it;
+> +       const int *als_it_bits;
+> +       const int *als_it_values;
+> +       const int num_als_it;
+> +       int als_raw;
+> +};
+> +
+> +static struct cm3232_als_info cm3232_als_info_default = {
+> +       .id = 3232,
+> +       .calibscale = CM3232_CALIBSCALE_DEFAULT,
+> +       .mlux_per_bit = CM3232_MLUX_PER_BIT_DEFAULT,
+> +       .mlux_per_bit_base_it = CM3232_MLUX_PER_BIT_BASE_IT,
+> +       .als_it_bits = CM3232_als_it_bits,
+> +       .als_it_values = CM3232_als_it_values,
+> +       .num_als_it = ARRAY_SIZE(CM3232_als_it_bits),
+> +};
+> +
+> +struct cm3232_chip {
+> +       struct i2c_client *client;
+> +       struct mutex lock;
+> +       struct cm3232_als_info *als_info;
+> +       u8 regs_cmd;
+> +};
+> +
+> +static int cm3232_get_lux(struct cm3232_chip *chip);
+> +static int cm3232_read_als_it(struct cm3232_chip *chip, int *val2);
+> +
+> +/**
+> + * cm3232_reg_init() - Initialize CM3232 registers
+> + * @chip:      pointer of struct cm3232.
+> + *
+> + * Initialize CM3232 ambient light sensor register to default values.
+> + *
+> +  Return: 0 for success; otherwise for error code.
+> + */
+> +static int cm3232_reg_init(struct cm3232_chip *chip)
+> +{
+> +       struct i2c_client *client = chip->client;
+> +       struct cm3232_als_info *als_info;
+> +       s32 ret;
+> +
+> +       /* Identify device */
+> +       ret = i2c_smbus_read_word_data(client, CM3232_REG_ADDR_ID);
+> +       if (ret < 0)
+> +               return ret;
+> +       if ((ret & 0xFF) != 0x32)
+> +               return -ENODEV;
+> +
+> +       /* Disable and reset device */
+> +       chip->regs_cmd = CM3232_CMD_ALS_DISABLE | CM3232_CMD_ALS_RESET;
+> +       ret = i2c_smbus_write_byte_data(client, CM3232_REG_ADDR_CMD,
+> +                               chip->regs_cmd);
+> +       if (ret < 0)
+> +               return ret;
+> +
+> +       /* Initialization */
+> +       als_info = chip->als_info = &cm3232_als_info_default;
+> +       chip->regs_cmd = CM3232_CMD_DEFAULT;
+> +
+> +       /* Configure register */
+> +       ret = i2c_smbus_write_byte_data(client, CM3232_REG_ADDR_CMD,
+> +                               chip->regs_cmd);
+
+You could directly return i2c_smbus_write_byte_data(..).
+
+> +       if (ret < 0)
+> +               return ret;
+> +
+> +       return 0;
+> +}
+> +
+> +/**
+> + *  cm3232_read_als_it() - Get sensor integration time (ms)
+> + *  @chip:     pointer of struct cm3232
+> + *  @val2:     pointer of int to load the als_it value.
+> + *
+> + *  Report the current integration time in milliseconds.
+> + *
+> + *  Return: IIO_VAL_INT_PLUS_MICRO for success, otherwise -EINVAL.
+> + */
+> +static int cm3232_read_als_it(struct cm3232_chip *chip, int *val2)
+
+Wouldn't make more sense to also add val here?
+
+> +{
+> +       struct cm3232_als_info *als_info = chip->als_info;
+> +       u16 als_it;
+> +       int i;
+> +
+> +       als_it = chip->regs_cmd;
+> +       als_it &= CM3232_CMD_ALS_IT_MASK;
+> +       als_it >>= CM3232_CMD_ALS_IT_SHIFT;
+> +       for (i = 0; i < als_info->num_als_it; i++) {
+> +               if (als_it == als_info->als_it_bits[i]) {
+.. then make, *val = 0.
+
+> +                       *val2 = als_info->als_it_values[i];
+> +                       return IIO_VAL_INT_PLUS_MICRO;
+> +               }
+> +       }
+> +
+> +       return -EINVAL;
+> +}
+> +
+> +/**
+> + * cm3232_write_als_it() - Write sensor integration time
+> + * @chip:      pointer of struct cm3232.
+> + * @val:       integration time in milliseconds.
+> + *
+> + * Convert integration time (ms) to sensor value.
+> + *
+> + * Return: i2c_smbus_write_word_data command return value.
+> + */
+> +static int cm3232_write_als_it(struct cm3232_chip *chip, int val)
+> +{
+> +       struct i2c_client *client = chip->client;
+> +       struct cm3232_als_info *als_info = chip->als_info;
+> +       u16 als_it;
+> +       int ret, i;
+> +
+> +       for (i = 0; i < als_info->num_als_it; i++)
+> +               if (val <= als_info->als_it_values[i])
+> +                       break;
+> +       if (i >= als_info->num_als_it)
+> +               i = als_info->num_als_it - 1;
+> +
+> +       als_it = als_info->als_it_bits[i];
+> +       als_it <<= CM3232_CMD_ALS_IT_SHIFT;
+> +
+> +       mutex_lock(&chip->lock);
+> +       chip->regs_cmd &= ~CM3232_CMD_ALS_IT_MASK;
+> +       chip->regs_cmd |= als_it;
+> +       ret = i2c_smbus_write_byte_data(client, CM3232_REG_ADDR_CMD,
+> +                       chip->regs_cmd);
+> +       mutex_unlock(&chip->lock);
+> +
+> +       return ret;
+> +}
+> +
+> +/**
+> + * cm3232_get_lux() - report current lux value
+> + * @chip:      pointer of struct cm3232.
+> + *
+> + * Convert sensor raw data to lux.  It depends on integration
+> + * time and calibscale variable.
+> + *
+> + * Return: Positive value is lux, otherwise is error code.
+> + */
+> +static int cm3232_get_lux(struct cm3232_chip *chip)
+> +{
+> +       struct i2c_client *client = chip->client;
+> +       struct cm3232_als_info *als_info = chip->als_info;
+> +       int ret;
+> +       int als_it;
+> +       u64 tmp;
+> +
+> +       /* Calculate mlux per bit based on als_it */
+> +       ret = cm3232_read_als_it(chip, &als_it);
+> +       if (ret < 0)
+> +               return -EINVAL;
+> +       tmp = (__force u64)als_info->mlux_per_bit;
+> +       tmp *= als_info->mlux_per_bit_base_it;
+> +       tmp = div_u64 (tmp, als_it);
+> +
+> +       /* Get als_raw */
+> +       als_info->als_raw = i2c_smbus_read_word_data(
+> +                               client,
+> +                               CM3232_REG_ADDR_ALS);
+> +       if (als_info->als_raw < 0)
+> +               return als_info->als_raw;
+> +
+> +       tmp *= als_info->als_raw;
+> +       tmp *= als_info->calibscale;
+> +       tmp = div_u64(tmp, CM3232_CALIBSCALE_RESOLUTION);
+> +       tmp = div_u64(tmp, CM3232_MLUX_PER_LUX);
+> +
+> +       if (tmp > 0xFFFF)
+> +               tmp = 0xFFFF;
+> +
+> +       return (int)tmp;
+> +}
+> +
+> +static int cm3232_read_raw(struct iio_dev *indio_dev,
+> +                       struct iio_chan_spec const *chan,
+> +                       int *val, int *val2, long mask)
+> +{
+> +       struct cm3232_chip *chip = iio_priv(indio_dev);
+> +       struct cm3232_als_info *als_info = chip->als_info;
+> +       int ret;
+> +
+> +       switch (mask) {
+> +       case IIO_CHAN_INFO_PROCESSED:
+> +               ret = cm3232_get_lux(chip);
+> +               if (ret < 0)
+> +                       return ret;
+> +               *val = ret;
+> +               return IIO_VAL_INT;
+> +       case IIO_CHAN_INFO_CALIBSCALE:
+> +               *val = als_info->calibscale;
+> +               return IIO_VAL_INT;
+> +       case IIO_CHAN_INFO_INT_TIME:
+> +               *val = 0;
+> +               ret = cm3232_read_als_it(chip, val2);
+> +               return ret;
+Here you could just return cm3232_read_als_it(...)
+> +       }
+> +
+> +       return -EINVAL;
+> +}
+> +
+> +static int cm3232_write_raw(struct iio_dev *indio_dev,
+> +                       struct iio_chan_spec const *chan,
+> +                       int val, int val2, long mask)
+> +{
+> +       struct cm3232_chip *chip = iio_priv(indio_dev);
+> +       struct cm3232_als_info *als_info = chip->als_info;
+> +       long ms;
+> +
+> +       switch (mask) {
+> +       case IIO_CHAN_INFO_CALIBSCALE:
+> +               als_info->calibscale = val;
+> +               return val;
+> +       case IIO_CHAN_INFO_INT_TIME:
+> +               ms = val * 1000000 + val2;
+> +               return cm3232_write_als_it(chip, (int)ms);
+> +       }
+> +
+> +       return -EINVAL;
+> +}
+> +
+> +/**
+> + * cm3232_get_it_available() - Get available ALS IT value
+> + * @dev:       pointer of struct device.
+> + * @attr:      pointer of struct device_attribute.
+> + * @buf:       pointer of return string buffer.
+> + *
+> + * Display the available integration time in milliseconds.
+> + *
+> + * Return: string length.
+> + */
+> +static ssize_t cm3232_get_it_available(struct device *dev,
+> +                       struct device_attribute *attr, char *buf)
+> +{
+> +       struct cm3232_chip *chip = iio_priv(dev_to_iio_dev(dev));
+> +       struct cm3232_als_info *als_info = chip->als_info;
+> +       int i, len;
+> +
+> +       for (i = 0, len = 0; i < als_info->num_als_it; i++)
+> +               len += scnprintf(buf + len, PAGE_SIZE - len, "%u.%06u ",
+> +                       als_info->als_it_values[i]/1000000,
+> +                       als_info->als_it_values[i]%1000000);
+> +       return len + scnprintf(buf + len, PAGE_SIZE - len, "\n");
+> +}
+> +
+> +static const struct iio_chan_spec cm3232_channels[] = {
+> +       {
+> +               .type = IIO_LIGHT,
+> +               .info_mask_separate =
+> +                       BIT(IIO_CHAN_INFO_PROCESSED) |
+> +                       BIT(IIO_CHAN_INFO_CALIBSCALE) |
+> +                       BIT(IIO_CHAN_INFO_INT_TIME),
+> +       }
+> +};
+> +
+> +static IIO_DEVICE_ATTR(in_illuminance_integration_time_available,
+> +                       S_IRUGO, cm3232_get_it_available, NULL, 0);
+> +
+> +static struct attribute *cm3232_attributes[] = {
+> +       &iio_dev_attr_in_illuminance_integration_time_available.dev_attr.attr,
+> +       NULL,
+> +};
+> +
+> +static const struct attribute_group cm3232_attribute_group = {
+> +       .attrs = cm3232_attributes
+> +};
+> +
+> +static const struct iio_info cm3232_info = {
+> +       .driver_module          = THIS_MODULE,
+> +       .read_raw               = &cm3232_read_raw,
+> +       .write_raw              = &cm3232_write_raw,
+> +       .attrs                  = &cm3232_attribute_group,
+> +};
+> +
+> +static int cm3232_probe(struct i2c_client *client,
+> +                       const struct i2c_device_id *id)
+> +{
+> +       struct cm3232_chip *chip;
+> +       struct iio_dev *indio_dev;
+> +       int ret;
+> +
+> +       indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*chip));
+> +       if (!indio_dev) {
+> +               dev_err(&client->dev, "devm_iio_device_alloc failed\n");
+
+There is no need for this error message. devm_iio_device_alloc will print
+an error message in case of failure.
+
+> +               return -ENOMEM;
+> +       }
+> +
+> +       chip = iio_priv(indio_dev);
+> +       i2c_set_clientdata(client, indio_dev);
+> +       chip->client = client;
+> +
+> +       mutex_init(&chip->lock);
+> +       indio_dev->dev.parent = &client->dev;
+> +       indio_dev->channels = cm3232_channels;
+> +       indio_dev->num_channels = ARRAY_SIZE(cm3232_channels);
+> +       indio_dev->info = &cm3232_info;
+> +       if (id && id->name)
+> +               indio_dev->name = id->name;
+> +       else
+> +               indio_dev->name = (char *)dev_name(&client->dev);
+> +       indio_dev->modes = INDIO_DIRECT_MODE;
+> +
+> +       ret = cm3232_reg_init(chip);
+> +       if (ret) {
+> +               dev_err(&client->dev,
+> +                       "%s: register init failed\n",
+> +                       __func__);
+> +               return ret;
+> +       }
+> +
+> +       ret = iio_device_register(indio_dev);
+> +       return 0;
+Directly return iio_device_register()
+> +}
+> +
+> +static int cm3232_remove(struct i2c_client *client)
+> +{
+> +       struct iio_dev *indio_dev = i2c_get_clientdata(client);
+> +
+> +       iio_device_unregister(indio_dev);
+> +       return 0;
+> +}
+> +
+> +static const struct i2c_device_id cm3232_id[] = {
+> +       { "cm3232", 0},
+No need for space before ".
+
+> +       { }
+> +};
+> +
+> +MODULE_DEVICE_TABLE(i2c, cm3232_id);
+> +
+> +static const struct of_device_id cm3232_of_match[] = {
+> +       { .compatible = "capella,cm3232" },
+Same here. No need for space before "."
+
+> +       { }
+> +};
+> +
+> +static struct i2c_driver cm3232_driver = {
+> +       .driver = {
+> +               .name   = "cm3232",
+> +               .owner  = THIS_MODULE,
+> +               .of_match_table = of_match_ptr(cm3232_of_match),
+> +       },
+> +       .id_table       = cm3232_id,
+> +       .probe          = cm3232_probe,
+> +       .remove         = cm3232_remove,
+> +};
+> +
+> +module_i2c_driver(cm3232_driver);
+> +
+> +MODULE_AUTHOR("Kevin Tsai <ktsai@capellamicro.com>");
+> +MODULE_DESCRIPTION("CM3232 ambient light sensor driver");
+> +MODULE_LICENSE("GPL");
+> --
+> 1.8.3.1
+>
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-kernel" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> Please read the FAQ at  http://www.tux.org/lkml/
