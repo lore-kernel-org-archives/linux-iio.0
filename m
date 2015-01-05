@@ -1,49 +1,41 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pd0-f178.google.com ([209.85.192.178]:44547 "EHLO
-	mail-pd0-f178.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750959AbbAEGMj convert rfc822-to-8bit (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 5 Jan 2015 01:12:39 -0500
-Received: by mail-pd0-f178.google.com with SMTP id r10so27636431pdi.9
-        for <linux-iio@vger.kernel.org>; Sun, 04 Jan 2015 22:12:39 -0800 (PST)
+Received: from mga14.intel.com ([192.55.52.115]:23946 "EHLO mga14.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751541AbbAEIz3 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Mon, 5 Jan 2015 03:55:29 -0500
+Message-ID: <54AA51F0.20706@intel.com>
+Date: Mon, 05 Jan 2015 10:57:20 +0200
+From: Daniel Baluta <daniel.baluta@intel.com>
 MIME-Version: 1.0
-In-Reply-To: <54A91EBE.9030608@kernel.org>
-References: <1420189375-19854-1-git-send-email-devendra.aaru@gmail.com>
-	<54A91EBE.9030608@kernel.org>
-Date: Mon, 5 Jan 2015 01:12:39 -0500
-Message-ID: <CAHdPZaNNj-54aVhE-rCCg3xqq4tZo=S7n7=ikKWc9GQ6bghhtg@mail.gmail.com>
-Subject: Re: [PATCH V2 1/2] iio: meter: ade7754: add error handling in _reset
- and _stop_device
-From: "devendra.aaru" <devendra.aaru@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Lars-Peter Clausen <lars@metafoo.de>,
-	Michael Hennerich <Michael.Hennerich@analog.com>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"devel@driverdev.osuosl.org" <devel@driverdev.osuosl.org>
-Content-Type: text/plain; charset=UTF-8
+To: Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>
+CC: lars@metafoo.de, pmeerw@pmeerw.net, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org, srinivas.pandruvada@linux.intel.com
+Subject: Re: [PATCH 03/10] iio: imu: kmx61: Enhance error handling
+References: <1419340953-23161-1-git-send-email-daniel.baluta@intel.com> <1419340953-23161-4-git-send-email-daniel.baluta@intel.com> <54A54FE2.1020407@gmx.de> <54A919D5.2000408@kernel.org>
+In-Reply-To: <54A919D5.2000408@kernel.org>
+Content-Type: text/plain; charset=windows-1252; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Sun, Jan 4, 2015 at 6:06 AM, Jonathan Cameron <jic23@kernel.org> wrote:
-> On 02/01/15 09:02, Devendra Naga wrote:
->> This patch adds the error handling for the value returned from
->> ade7754_spi_read_reg_8. With this patch, the following randconfig
->> warnings get fixed automatically.
->>
->> drivers/staging/iio/meter/ade7754.c:222:6: warning: ‘val’ may be used
->> uninitialized in this function [-Wmaybe-uninitialized]
->> drivers/staging/iio/meter/ade7754.c:368:6: warning: ‘val’ may be used
->> uninitialized in this function [-Wmaybe-uninitialized]
->>
->> Signed-off-by: Devendra Naga <devendra.aaru@gmail.com>
-> Looks good to me.  A Hartmut reviewed the original patch I'll leave it
-> a few days to see if he wants to take a look at the update.
->
-> Thanks,
->
-> Jonathan
->> ---
 
-Thanks for the review Jonathan.
+
+On 01/04/2015 12:45 PM, Jonathan Cameron wrote:
+> On 01/01/15 13:47, Hartmut Knaack wrote:
+>> Daniel Baluta schrieb am 23.12.2014 um 14:22:
+>>> This fixes parts of kmx61 error handling to make code easier to read and to be
+>>> more consistent with IIO coding conventions:
+>>> 	* prefer as single point for error handling instead of duplicating code
+>>> 	for each function
+>>> 	* directly return a value from a case branch instead of breaking
+>>> 	* fix error message for writing REG_CTRL1
+>>>
+>>> Also, add separate error paths for kmx61_trigger_setup/iio_triggered_buffer_setup
+>>> calls.
+>> Some issues remain in this one, please see inline. Otherwise looking good.
+>>
+> Fixed up and applied.
+
+Thanks for doing this Jonathan.
+
+Daniel.
