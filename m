@@ -1,46 +1,137 @@
-Return-Path: <sanjeevsharmaengg@gmail.com>
+Return-Path: <knaack.h@gmx.de>
+Message-ID: <54AB179F.8020206@gmx.de>
+Date: Tue, 06 Jan 2015 00:00:47 +0100
+From: Hartmut Knaack <knaack.h@gmx.de>
 MIME-Version: 1.0
-In-Reply-To: <54AA97B9.7040703@nod.at>
-References: <1417563176-31972-1-git-send-email-richard@nod.at>
-	<54A53FBF.5000003@kernel.org>
-	<7e4f6a70e48afe96457ebbcf07572224@imap.cosmopool.net>
-	<54A680F8.30209@nod.at>
-	<54A91DA1.6080107@kernel.org>
-	<E1Y881p-0001Fp-NX@stardust.g4.wien.funkfeuer.at>
-	<54AA97B9.7040703@nod.at>
-Date: Tue, 6 Jan 2015 11:09:56 +0530
-Message-ID: <CAGUYZuTXy0SGzRKYA1TGtSr=aw_50n7Sy6E05WwTExqy_MGr-w@mail.gmail.com>
-Subject: Re: [PATCHv2 1/3] iio: dht11: Fix out-of-bounds read
-From: sanjeev sharma <sanjeevsharmaengg@gmail.com>
-To: Richard Weinberger <richard@nod.at>
-Cc: Harald Geyer <harald@ccbib.org>, Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>, Peter Meerwald <pmeerw@pmeerw.net>,
-	sanjeevs1 <sanjeev_sharma@mentor.com>, linux-iio@vger.kernel.org,
-	linux-kernel <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset=UTF-8
+To: Daniel Baluta <daniel.baluta@intel.com>, jic23@kernel.org
+CC: lars@metafoo.de, pmeerw@pmeerw.net,
+ srinivas.pandruvada@linux.intel.com, linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] iio: imu: kmx61: Drop odr_bits from
+ kmx61_samp_freq_table
+References: <1420449702-2085-1-git-send-email-daniel.baluta@intel.com>
+In-Reply-To: <1420449702-2085-1-git-send-email-daniel.baluta@intel.com>
+Content-Type: text/plain; charset=ISO-8859-15
 List-ID: <linux-iio@vger.kernel.org>
 
-On Mon, Jan 5, 2015 at 7:25 PM, Richard Weinberger <richard@nod.at> wrote:
-> Am 05.01.2015 um 14:49 schrieb Harald Geyer:
->> As we access i-1 we must not start with i=0.
->>
->> Signed-off-by: Richard Weinberger <richard@nod.at>
->> Acked-by: Hartmut Knaack <knaack.h@gmx.de>
->> Acked-by: Harald Geyer <harald@ccbib.org>
-     Reviewed-by: Sanjeev Sharma <sanjeev_sharma@mentor.com>
->> ---
->> Resending for Richard Weinberger.
->> No changes since v1 except reordering.
->
-> I fear you got the resend wrong.
-> The mail should be "From: Richard Weinberger <richard@nod.at>" to keep me
-> as author and the SoB-Chain should have a "Signed-off-by: Harald Geyer <harald@ccbib.org>"
-> at the end to indicate that this patch went though your hands.
->
-> Thanks,
-> //richard
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-kernel" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> Please read the FAQ at  http://www.tux.org/lkml/
+Daniel Baluta schrieb am 05.01.2015 um 10:21:
+> odr_bits values are between 0 and 11, so we can use the index
+> in kmx61_samp_freq_table instead of odr_bits structure member.
+> 
+> Signed-off-by: Daniel Baluta <daniel.baluta@intel.com>
+Reviewed-by: Hartmut Knaack <knaack.h@gmx.de>
+> ---
+> Changes since v1:
+> 	* use ARRAY_SIZE instead of an hardcoded value
+> 	* review is at: https://lkml.org/lkml/2015/1/1/46
+> 
+>  drivers/iio/imu/kmx61.c | 64 ++++++++++++++++++++-----------------------------
+>  1 file changed, 26 insertions(+), 38 deletions(-)
+> 
+> diff --git a/drivers/iio/imu/kmx61.c b/drivers/iio/imu/kmx61.c
+> index b60b22d..a32ddbb 100644
+> --- a/drivers/iio/imu/kmx61.c
+> +++ b/drivers/iio/imu/kmx61.c
+> @@ -169,19 +169,18 @@ static const u16 kmx61_uscale_table[] = {9582, 19163, 38326};
+>  static const struct {
+>  	int val;
+>  	int val2;
+> -	u8 odr_bits;
+> -} kmx61_samp_freq_table[] = { {12, 500000, 0x00},
+> -			{25, 0, 0x01},
+> -			{50, 0, 0x02},
+> -			{100, 0, 0x03},
+> -			{200, 0, 0x04},
+> -			{400, 0, 0x05},
+> -			{800, 0, 0x06},
+> -			{1600, 0, 0x07},
+> -			{0, 781000, 0x08},
+> -			{1, 563000, 0x09},
+> -			{3, 125000, 0x0A},
+> -			{6, 250000, 0x0B} };
+> +} kmx61_samp_freq_table[] = { {12, 500000},
+> +			{25, 0},
+> +			{50, 0},
+> +			{100, 0},
+> +			{200, 0},
+> +			{400, 0},
+> +			{800, 0},
+> +			{1600, 0},
+> +			{0, 781000},
+> +			{1, 563000},
+> +			{3, 125000},
+> +			{6, 250000} };
+>  
+>  static const struct {
+>  	int val;
+> @@ -302,24 +301,10 @@ static int kmx61_convert_freq_to_bit(int val, int val2)
+>  	for (i = 0; i < ARRAY_SIZE(kmx61_samp_freq_table); i++)
+>  		if (val == kmx61_samp_freq_table[i].val &&
+>  		    val2 == kmx61_samp_freq_table[i].val2)
+> -			return kmx61_samp_freq_table[i].odr_bits;
+> -	return -EINVAL;
+> -}
+> -
+> -static int kmx61_convert_bit_to_freq(u8 odr_bits, int *val, int *val2)
+> -{
+> -	int i;
+> -
+> -	for (i = 0; i < ARRAY_SIZE(kmx61_samp_freq_table); i++)
+> -		if (odr_bits == kmx61_samp_freq_table[i].odr_bits) {
+> -			*val = kmx61_samp_freq_table[i].val;
+> -			*val2 = kmx61_samp_freq_table[i].val2;
+> -			return 0;
+> -		}
+> +			return i;
+>  	return -EINVAL;
+>  }
+>  
+> -
+>  static int kmx61_convert_wake_up_odr_to_bit(int val, int val2)
+>  {
+>  	int i;
+> @@ -478,7 +463,7 @@ static int kmx61_set_odr(struct kmx61_data *data, int val, int val2, u8 device)
+>  
+>  static int kmx61_get_odr(struct kmx61_data *data, int *val, int *val2,
+>  			 u8 device)
+> -{	int i;
+> +{
+>  	u8 lodr_bits;
+>  
+>  	if (device & KMX61_ACC)
+> @@ -490,13 +475,13 @@ static int kmx61_get_odr(struct kmx61_data *data, int *val, int *val2,
+>  	else
+>  		return -EINVAL;
+>  
+> -	for (i = 0; i < ARRAY_SIZE(kmx61_samp_freq_table); i++)
+> -		if (lodr_bits == kmx61_samp_freq_table[i].odr_bits) {
+> -			*val = kmx61_samp_freq_table[i].val;
+> -			*val2 = kmx61_samp_freq_table[i].val2;
+> -			return 0;
+> -		}
+> -	return -EINVAL;
+> +	if (lodr_bits >= ARRAY_SIZE(kmx61_samp_freq_table))
+> +		return -EINVAL;
+> +
+> +	*val = kmx61_samp_freq_table[lodr_bits].val;
+> +	*val2 = kmx61_samp_freq_table[lodr_bits].val2;
+> +
+> +	return 0;
+>  }
+>  
+>  static int kmx61_set_range(struct kmx61_data *data, u8 range)
+> @@ -580,8 +565,11 @@ static int kmx61_chip_init(struct kmx61_data *data)
+>  	}
+>  	data->odr_bits = ret;
+>  
+> -	/* set output data rate for wake up (motion detection) function */
+> -	ret = kmx61_convert_bit_to_freq(data->odr_bits, &val, &val2);
+> +	/*
+> +	 * set output data rate for wake up (motion detection) function
+> +	 * to match data rate for accelerometer sampling
+> +	 */
+> +	ret = kmx61_get_odr(data, &val, &val2, KMX61_ACC);
+>  	if (ret < 0)
+>  		return ret;
+>  
+> 
