@@ -1,102 +1,134 @@
-Return-Path: <daniel.baluta@gmail.com>
+Return-Path: <harald@ccbib.org>
+From: Harald Geyer <harald@ccbib.org>
+To: Jonathan Cameron <jic23@kernel.org>
+cc: Richard Weinberger <richard@nod.at>, knaack.h@gmx.de,
+    lars@metafoo.de, pmeerw@pmeerw.net, sanjeev_sharma@mentor.com,
+    linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCHv2 3/3] iio: dht11: IRQ fixes
 MIME-Version: 1.0
-Sender: daniel.baluta@gmail.com
-In-Reply-To: <1420463396.2652.8.camel@perches.com>
-References: <1420071030-888-1-git-send-email-ktsai@capellamicro.com>
-	<CAEnQRZBD2NMYRp1cW0J2ssT4CT=0jSM=X6ByHQiUrA0ueV8fRA@mail.gmail.com>
-	<1420463396.2652.8.camel@perches.com>
-Date: Mon, 5 Jan 2015 16:20:02 +0200
-Message-ID: <CAEnQRZBmwurFCJU4E4ArO8waU+YcGWrRYr3DRVxq9haduX2t=w@mail.gmail.com>
-Subject: Re: [PATCH V1 1/1] iio: Added Capella cm3232 ambient light sensor driver.
-From: Daniel Baluta <daniel.baluta@intel.com>
-To: Joe Perches <joe@perches.com>
-Cc: Daniel Baluta <daniel.baluta@intel.com>, Kevin Tsai <ktsai@capellamicro.com>,
-	Wolfram Sang <wsa@the-dreams.de>, Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>,
-	Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>,
-	Kumar Gala <galak@codeaurora.org>, Jonathan Cameron <jic23@kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>, Lars-Peter Clausen <lars@metafoo.de>, Peter Meerwald <pmeerw@pmeerw.net>,
-	Grant Likely <grant.likely@linaro.org>, Andrew Morton <akpm@linux-foundation.org>,
-	"David S. Miller" <davem@davemloft.net>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Mauro Carvalho Chehab <mchehab@osg.samsung.com>, Antti Palosaari <crope@iki.fi>,
-	Archana Patni <archana.patni@linux.intel.com>, linux-i2c@vger.kernel.org,
-	devicetree@vger.kernel.org,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset="us-ascii"
+Date: Mon, 05 Jan 2015 14:55:06 +0100
+Message-Id: <E1Y887e-0001GB-G5@stardust.g4.wien.funkfeuer.at>
 List-ID: <linux-iio@vger.kernel.org>
 
-On Mon, Jan 5, 2015 at 3:09 PM, Joe Perches <joe@perches.com> wrote:
-> On Mon, 2015-01-05 at 12:51 +0200, Daniel Baluta wrote:
->> On Thu, Jan 1, 2015 at 2:10 AM, Kevin Tsai <ktsai@capellamicro.com> wrote:
->> > CM3232 is an advanced ambient light sensor with I2C protocol interface.
->> > The I2C slave address is internally hardwired as 0x10 (7-bit).  Writing
->> > to configure register is byte mode, but reading ALS register requests to
->> > use word mode for 16-bit resolution.
->>
->> This looks good to me.  Few comments inline.
-> []
->> > diff --git a/drivers/iio/light/cm3232.c b/drivers/iio/light/cm3232.c
-> []
->> > +/**
->> > + * cm3232_reg_init() - Initialize CM3232 registers
->> > + * @chip:      pointer of struct cm3232.
->> > + *
->> > + * Initialize CM3232 ambient light sensor register to default values.
->> > + *
->> > +  Return: 0 for success; otherwise for error code.
->> > + */
->> > +static int cm3232_reg_init(struct cm3232_chip *chip)
->> > +{
->> > +       struct i2c_client *client = chip->client;
->> > +       struct cm3232_als_info *als_info;
->> > +       s32 ret;
->> > +
->> > +       /* Identify device */
->> > +       ret = i2c_smbus_read_word_data(client, CM3232_REG_ADDR_ID);
->> > +       if (ret < 0)
->> > +               return ret;
->> > +       if ((ret & 0xFF) != 0x32)
->> > +               return -ENODEV;
->> > +
->> > +       /* Disable and reset device */
->> > +       chip->regs_cmd = CM3232_CMD_ALS_DISABLE | CM3232_CMD_ALS_RESET;
->> > +       ret = i2c_smbus_write_byte_data(client, CM3232_REG_ADDR_CMD,
->> > +                               chip->regs_cmd);
->> > +       if (ret < 0)
->> > +               return ret;
->> > +
->> > +       /* Initialization */
->> > +       als_info = chip->als_info = &cm3232_als_info_default;
->> > +       chip->regs_cmd = CM3232_CMD_DEFAULT;
->> > +
->> > +       /* Configure register */
->> > +       ret = i2c_smbus_write_byte_data(client, CM3232_REG_ADDR_CMD,
->> > +                               chip->regs_cmd);
->>
->> You could directly return i2c_smbus_write_byte_data(..).
->
-> Sometimes it's better to return a specific value
-> for the error instead of depending on correctness
-> of all the indirect functions in the call chain.
->
-> In this case, all the smbus_xfer functions must
-> return 0 on success.  Do they?
+Since setting irq-enabled GPIOs into output state is not supported
+by all GPIO controllers, we need to disable the irq while requesting
+sensor data. As side effect we lose a tiny bit of functionality:
+Some wiring problems can't be concluded from log messages anymore.
 
-Yes.
+Signed-off-by: Richard Weinberger <richard@nod.at>
+Signed-off-by: Harald Geyer <harald@ccbib.org>
+---
+changes since v1:
+Reduce the expected number of edges per data transmission, since we
+won't see the edges we generate ourselves.
 
-http://lxr.free-electrons.com/source/drivers/i2c/i2c-core.c#L2845
+ drivers/iio/humidity/dht11.c |   62 +++++++++++++++++++++++------------------
+ 1 files changed, 35 insertions(+), 27 deletions(-)
 
->
-> Inspecting the codebase for correctness or not
-> depending on that correctness is sometimes better
-> to avoid doing.
-
-You have a valid point. Anyhow, AFAIK the code from IIO
-prefers a direct return.
-
-Also, I guess kbuild test robot will complain about it, like here:
-
-http://marc.info/?l=linux-kernel&m=141963536230419&w=2
-
-thanks,
-Daniel.
+diff --git a/drivers/iio/humidity/dht11.c b/drivers/iio/humidity/dht11.c
+index 7717f5c..7d79a1a 100644
+--- a/drivers/iio/humidity/dht11.c
++++ b/drivers/iio/humidity/dht11.c
+@@ -40,8 +40,12 @@
+ 
+ #define DHT11_DATA_VALID_TIME	2000000000  /* 2s in ns */
+ 
+-#define DHT11_EDGES_PREAMBLE 4
++#define DHT11_EDGES_PREAMBLE 2
+ #define DHT11_BITS_PER_READ 40
++/*
++ * Note that when reading the sensor actually 84 edges are detected, but
++ * since the last edge is not significant, we only store 83:
++ */
+ #define DHT11_EDGES_PER_READ (2*DHT11_BITS_PER_READ + DHT11_EDGES_PREAMBLE + 1)
+ 
+ /* Data transmission timing (nano seconds) */
+@@ -140,6 +144,27 @@ static int dht11_decode(struct dht11 *dht11, int offset)
+ 	return 0;
+ }
+ 
++/*
++ * IRQ handler called on GPIO edges
++ */
++static irqreturn_t dht11_handle_irq(int irq, void *data)
++{
++	struct iio_dev *iio = data;
++	struct dht11 *dht11 = iio_priv(iio);
++
++	/* TODO: Consider making the handler safe for IRQ sharing */
++	if (dht11->num_edges < DHT11_EDGES_PER_READ && dht11->num_edges >= 0) {
++		dht11->edges[dht11->num_edges].ts = iio_get_time_ns();
++		dht11->edges[dht11->num_edges++].value =
++						gpio_get_value(dht11->gpio);
++
++		if (dht11->num_edges >= DHT11_EDGES_PER_READ)
++			complete(&dht11->completion);
++	}
++
++	return IRQ_HANDLED;
++}
++
+ static int dht11_read_raw(struct iio_dev *iio_dev,
+ 			const struct iio_chan_spec *chan,
+ 			int *val, int *val2, long m)
+@@ -160,8 +185,17 @@ static int dht11_read_raw(struct iio_dev *iio_dev,
+ 		if (ret)
+ 			goto err;
+ 
++		ret = request_irq(dht11->irq, dht11_handle_irq,
++				  IRQF_TRIGGER_RISING | IRQF_TRIGGER_FALLING,
++				  iio_dev->name, iio_dev);
++		if (ret)
++			goto err;
++
+ 		ret = wait_for_completion_killable_timeout(&dht11->completion,
+ 								 HZ);
++
++		free_irq(dht11->irq, iio_dev);
++
+ 		if (ret == 0 && dht11->num_edges < DHT11_EDGES_PER_READ - 1) {
+ 			dev_err(&iio_dev->dev,
+ 					"Only %d signal edges detected\n",
+@@ -197,27 +231,6 @@ static const struct iio_info dht11_iio_info = {
+ 	.read_raw		= dht11_read_raw,
+ };
+ 
+-/*
+- * IRQ handler called on GPIO edges
+-*/
+-static irqreturn_t dht11_handle_irq(int irq, void *data)
+-{
+-	struct iio_dev *iio = data;
+-	struct dht11 *dht11 = iio_priv(iio);
+-
+-	/* TODO: Consider making the handler safe for IRQ sharing */
+-	if (dht11->num_edges < DHT11_EDGES_PER_READ && dht11->num_edges >= 0) {
+-		dht11->edges[dht11->num_edges].ts = iio_get_time_ns();
+-		dht11->edges[dht11->num_edges++].value =
+-						gpio_get_value(dht11->gpio);
+-
+-		if (dht11->num_edges >= DHT11_EDGES_PER_READ)
+-			complete(&dht11->completion);
+-	}
+-
+-	return IRQ_HANDLED;
+-}
+-
+ static const struct iio_chan_spec dht11_chan_spec[] = {
+ 	{ .type = IIO_TEMP,
+ 		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED), },
+@@ -260,11 +273,6 @@ static int dht11_probe(struct platform_device *pdev)
+ 		dev_err(dev, "GPIO %d has no interrupt\n", dht11->gpio);
+ 		return -EINVAL;
+ 	}
+-	ret = devm_request_irq(dev, dht11->irq, dht11_handle_irq,
+-				IRQF_TRIGGER_RISING | IRQF_TRIGGER_FALLING,
+-				pdev->name, iio);
+-	if (ret)
+-		return ret;
+ 
+ 	dht11->timestamp = iio_get_time_ns() - DHT11_DATA_VALID_TIME - 1;
+ 	dht11->num_edges = -1;
+-- 
+1.7.2.5
