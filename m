@@ -1,82 +1,89 @@
-Return-Path: <Ezequiel.Garcia@imgtec.com>
-From: Ezequiel Garcia <ezequiel.garcia@imgtec.com>
-To: Jonathan Cameron <jic23@kernel.org>, James Hartley
-	<james.hartley@imgtec.com>, Andrew Bresticker <abrestic@chromium.org>,
-	<robh+dt@kernel.org>, <Mark.Rutland@arm.com>, <knaack.h@gmx.de>
-CC: <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
-	<Pawel.Moll@arm.com>, <ijc+devicetree@hellion.org.uk>,
-	<galak@codeaurora.org>, Ezequiel Garcia <ezequiel.garcia@imgtec.com>
-Subject: [PATCH v6 0/3] iio: Add Cosmic Circuits ADC support
-Date: Tue, 6 Jan 2015 12:29:00 -0300
-Message-ID: <1420558143-26276-1-git-send-email-ezequiel.garcia@imgtec.com>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-ob0-f179.google.com ([209.85.214.179]:63312 "EHLO
+	mail-ob0-f179.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751956AbbAFFll (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 6 Jan 2015 00:41:41 -0500
 MIME-Version: 1.0
-Content-Type: text/plain
-List-ID: <linux-iio@vger.kernel.org>
+In-Reply-To: <E1Y884W-0001G0-7b@stardust.g4.wien.funkfeuer.at>
+References: <E1Y884W-0001G0-7b@stardust.g4.wien.funkfeuer.at>
+Date: Tue, 6 Jan 2015 11:11:40 +0530
+Message-ID: <CAGUYZuQCUj2+yTaB_UHOSJ3-15gegpUsDZMdC0fgG9jd6CcCfg@mail.gmail.com>
+Subject: Re: [PATCHv2 2/3] iio: dht11: Add locking
+From: sanjeev sharma <sanjeevsharmaengg@gmail.com>
+To: Harald Geyer <harald@ccbib.org>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	Richard Weinberger <richard@nod.at>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	sanjeevs1 <sanjeev_sharma@mentor.com>, linux-iio@vger.kernel.org,
+	linux-kernel <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset=UTF-8
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-This series add the support for an ADC IP block from Cosmic Circuits.
-The patchset is based on v3.19-rc3.
-
-Rob/Mark: Jonathan has asked for an ack of the devicetree binding. Do you
-think you can take a look to that?
-
-Thanks a lot!
---
-Changes from v5:
-
-  * Fixed CC10001_ADC_CH_MASK macro definition, to separate the channel
-    number from the channel map, as noted by Hartmut.
-  * Return the real error code in devm_regulator_get failure.
-
-Changes from v4:
-
-  * Added a compile-time dependency on REGULATOR and HAVE_CLK.
-  * Replaced the silly XOR operation for a proper mask out of the
-    available channels.
-
-Changes from v3:
-
-  * Fixed a few style nitpicks as per Hartmut's feedback.
-  * Used GENMASK() to build the channel mask, which fixes a very nasty
-    bug. Also found by Hartmut.
-
-Changes from v2:
-
-  * Changed a devicetree property from adc-available-channels to
-    adc-reserved-channels, so it can be made optional.
-  * Renamed the driver from cc_10001_xxx to cc10001_xxx so it's consistent
-    with the rest of the kernel style.
-  * Some more minor cosmetic fixes.
-
-Changes from v1:
-
-  * Removed unneeded header includes.
-  * Changed all the names and macros prefix: s/CC_10001_/CC10001_.
-  * Used .update_scan_mode callback to preallocate the buffer.
-  * Used indio_dev for the struct iio_dev.
-  * Only read the regulator voltage when needed.
-  * Fixed probe() error handling.
-  * Used for_each_set_bit() instead of open-coding it.
-  * Name the power-down register as _POWER_UP, to make the code
-    less silly.
-  * Error out when no valid sample can be read (i.e. when end-of-conversion
-    poll times out).
-  * ... plus some assorted code cleaning based on the feedback.
-
-Ezequiel Garcia (1):
-  DT: Add a vendor prefix for Cosmic Circuits
-
-Phani Movva (2):
-  iio: adc: Cosmic Circuits 10001 ADC driver
-  DT: iio: adc: Add CC_10001 binding documentation
-
- .../devicetree/bindings/iio/adc/cc10001_adc.txt    |  22 ++
- .../devicetree/bindings/vendor-prefixes.txt        |   1 +
- drivers/iio/adc/Kconfig                            |  11 +
- drivers/iio/adc/Makefile                           |   1 +
- drivers/iio/adc/cc10001_adc.c                      | 424 +++++++++++++++++++++
- 5 files changed, 459 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/iio/adc/cc10001_adc.txt
- create mode 100644 drivers/iio/adc/cc10001_adc.c
-
--- 
-2.2.1
+On Mon, Jan 5, 2015 at 7:21 PM, Harald Geyer <harald@ccbib.org> wrote:
+> Make sure that the read function is not interrupted...
+>
+> Signed-off-by: Richard Weinberger <richard@nod.at>
+> Acked-by: Harald Geyer <harald@ccbib.org>
+   Reviewed-by: Sanjeev Sharma <sanjeev_sharma@mentor.com>
+> ---
+> Resending for Richard Weinberger.
+> No changes since v1 except reordering.
+>
+>  drivers/iio/humidity/dht11.c |    5 +++++
+>  1 files changed, 5 insertions(+), 0 deletions(-)
+>
+> diff --git a/drivers/iio/humidity/dht11.c b/drivers/iio/humidity/dht11.c
+> index f546eca..7717f5c 100644
+> --- a/drivers/iio/humidity/dht11.c
+> +++ b/drivers/iio/humidity/dht11.c
+> @@ -29,6 +29,7 @@
+>  #include <linux/wait.h>
+>  #include <linux/bitops.h>
+>  #include <linux/completion.h>
+> +#include <linux/mutex.h>
+>  #include <linux/delay.h>
+>  #include <linux/gpio.h>
+>  #include <linux/of_gpio.h>
+> @@ -57,6 +58,7 @@ struct dht11 {
+>         int                             irq;
+>
+>         struct completion               completion;
+> +       struct mutex                    lock;
+>
+>         s64                             timestamp;
+>         int                             temperature;
+> @@ -145,6 +147,7 @@ static int dht11_read_raw(struct iio_dev *iio_dev,
+>         struct dht11 *dht11 = iio_priv(iio_dev);
+>         int ret;
+>
+> +       mutex_lock(&dht11->lock);
+>         if (dht11->timestamp + DHT11_DATA_VALID_TIME < iio_get_time_ns()) {
+>                 reinit_completion(&dht11->completion);
+>
+> @@ -185,6 +188,7 @@ static int dht11_read_raw(struct iio_dev *iio_dev,
+>                 ret = -EINVAL;
+>  err:
+>         dht11->num_edges = -1;
+> +       mutex_unlock(&dht11->lock);
+>         return ret;
+>  }
+>
+> @@ -268,6 +272,7 @@ static int dht11_probe(struct platform_device *pdev)
+>         platform_set_drvdata(pdev, iio);
+>
+>         init_completion(&dht11->completion);
+> +       mutex_init(&dht11->lock);
+>         iio->name = pdev->name;
+>         iio->dev.parent = &pdev->dev;
+>         iio->info = &dht11_iio_info;
+> --
+> 1.7.2.5
+>
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-kernel" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> Please read the FAQ at  http://www.tux.org/lkml/
