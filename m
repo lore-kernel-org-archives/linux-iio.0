@@ -5,9 +5,9 @@ To: jkosina@suse.cz,
 Cc: linux-iio@vger.kernel.org,
 	linux-input@vger.kernel.org,
 	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-Subject: [PATCH 5/8] iio: hid-sensor-prox: Introduce PM
-Date: Tue,  6 Jan 2015 16:58:44 -0800
-Message-Id: <1420592328-9942-21-git-send-email-srinivas.pandruvada@linux.intel.com>
+Subject: [PATCH 6/8] iio: hid-sensor-magn-3d: Introduce PM
+Date: Tue,  6 Jan 2015 16:58:45 -0800
+Message-Id: <1420592328-9942-22-git-send-email-srinivas.pandruvada@linux.intel.com>
 In-Reply-To: <1420592328-9942-1-git-send-email-srinivas.pandruvada@linux.intel.com>
 References: <1420592328-9942-1-git-send-email-srinivas.pandruvada@linux.intel.com>
 List-ID: <linux-iio@vger.kernel.org>
@@ -18,14 +18,14 @@ remove from the client drivers.
 
 Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
 ---
- drivers/iio/light/hid-sensor-prox.c | 10 +---------
- 1 file changed, 1 insertion(+), 9 deletions(-)
+ drivers/iio/magnetometer/hid-sensor-magn-3d.c | 9 +--------
+ 1 file changed, 1 insertion(+), 8 deletions(-)
 
-diff --git a/drivers/iio/light/hid-sensor-prox.c b/drivers/iio/light/hid-sensor-prox.c
-index db9c60e..91ecc46 100644
---- a/drivers/iio/light/hid-sensor-prox.c
-+++ b/drivers/iio/light/hid-sensor-prox.c
-@@ -75,7 +75,6 @@ static int prox_read_raw(struct iio_dev *indio_dev,
+diff --git a/drivers/iio/magnetometer/hid-sensor-magn-3d.c b/drivers/iio/magnetometer/hid-sensor-magn-3d.c
+index 4d299f3..4f9c0be 100644
+--- a/drivers/iio/magnetometer/hid-sensor-magn-3d.c
++++ b/drivers/iio/magnetometer/hid-sensor-magn-3d.c
+@@ -157,20 +157,12 @@ static int magn_3d_read_raw(struct iio_dev *indio_dev,
  	int report_id = -1;
  	u32 address;
  	int ret_type;
@@ -33,30 +33,26 @@ index db9c60e..91ecc46 100644
  
  	*val = 0;
  	*val2 = 0;
-@@ -92,16 +91,8 @@ static int prox_read_raw(struct iio_dev *indio_dev,
- 			break;
- 		}
- 		if (report_id >= 0) {
--			poll_value = hid_sensor_read_poll_value(
--					&prox_state->common_attributes);
--			if (poll_value < 0)
+ 	switch (mask) {
+ 	case 0:
+-		poll_value = hid_sensor_read_poll_value(
+-					&magn_state->common_attributes);
+-		if (poll_value < 0)
 -				return -EINVAL;
 -
- 			hid_sensor_power_state(&prox_state->common_attributes,
- 						true);
+ 		hid_sensor_power_state(&magn_state->common_attributes, true);
+-		msleep_interruptible(poll_value * 2);
 -
--			msleep_interruptible(poll_value * 2);
--
- 			*val = sensor_hub_input_attr_get_raw_value(
- 				prox_state->common_attributes.hsdev,
- 				HID_USAGE_SENSOR_PROX, address,
-@@ -374,6 +365,7 @@ static struct platform_driver hid_prox_platform_driver = {
- 	.id_table = hid_prox_ids,
+ 		report_id =
+ 			magn_state->magn[chan->address].report_id;
+ 		address = magn_3d_addresses[chan->address];
+@@ -531,6 +523,7 @@ static struct platform_driver hid_magn_3d_platform_driver = {
+ 	.id_table = hid_magn_3d_ids,
  	.driver = {
  		.name	= KBUILD_MODNAME,
 +		.pm	= &hid_sensor_pm_ops,
  	},
- 	.probe		= hid_prox_probe,
- 	.remove		= hid_prox_remove,
+ 	.probe		= hid_magn_3d_probe,
+ 	.remove		= hid_magn_3d_remove,
 -- 
 1.9.1
