@@ -5,9 +5,9 @@ To: jkosina@suse.cz,
 Cc: linux-iio@vger.kernel.org,
 	linux-input@vger.kernel.org,
 	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-Subject: [PATCH 4/8] iio: hid-sensor-als: Introduce PM
-Date: Wed,  7 Jan 2015 10:55:56 -0800
-Message-Id: <1420656960-7365-5-git-send-email-srinivas.pandruvada@linux.intel.com>
+Subject: [PATCH 2/8] iio: hid-sensor-accel-3d: Introduce PM
+Date: Wed,  7 Jan 2015 10:55:54 -0800
+Message-Id: <1420656960-7365-3-git-send-email-srinivas.pandruvada@linux.intel.com>
 In-Reply-To: <1420656960-7365-1-git-send-email-srinivas.pandruvada@linux.intel.com>
 References: <1420656960-7365-1-git-send-email-srinivas.pandruvada@linux.intel.com>
 List-ID: <linux-iio@vger.kernel.org>
@@ -18,14 +18,14 @@ remove from the client drivers.
 
 Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
 ---
- drivers/iio/light/hid-sensor-als.c | 9 +--------
- 1 file changed, 1 insertion(+), 8 deletions(-)
+ drivers/iio/accel/hid-sensor-accel-3d.c | 8 +-------
+ 1 file changed, 1 insertion(+), 7 deletions(-)
 
-diff --git a/drivers/iio/light/hid-sensor-als.c b/drivers/iio/light/hid-sensor-als.c
-index 321862d..1609ecd 100644
---- a/drivers/iio/light/hid-sensor-als.c
-+++ b/drivers/iio/light/hid-sensor-als.c
-@@ -80,7 +80,6 @@ static int als_read_raw(struct iio_dev *indio_dev,
+diff --git a/drivers/iio/accel/hid-sensor-accel-3d.c b/drivers/iio/accel/hid-sensor-accel-3d.c
+index 0085c2f..2b4fad6 100644
+--- a/drivers/iio/accel/hid-sensor-accel-3d.c
++++ b/drivers/iio/accel/hid-sensor-accel-3d.c
+@@ -111,19 +111,12 @@ static int accel_3d_read_raw(struct iio_dev *indio_dev,
  	int report_id = -1;
  	u32 address;
  	int ret_type;
@@ -33,29 +33,25 @@ index 321862d..1609ecd 100644
  
  	*val = 0;
  	*val2 = 0;
-@@ -97,15 +96,8 @@ static int als_read_raw(struct iio_dev *indio_dev,
- 			break;
- 		}
- 		if (report_id >= 0) {
--			poll_value = hid_sensor_read_poll_value(
--						&als_state->common_attributes);
--			if (poll_value < 0)
--				return -EINVAL;
+ 	switch (mask) {
+ 	case 0:
+-		poll_value = hid_sensor_read_poll_value(
+-					&accel_state->common_attributes);
+-		if (poll_value < 0)
+-			return -EINVAL;
 -
- 			hid_sensor_power_state(&als_state->common_attributes,
- 						true);
--			msleep_interruptible(poll_value * 2);
--
- 			*val = sensor_hub_input_attr_get_raw_value(
- 					als_state->common_attributes.hsdev,
- 					HID_USAGE_SENSOR_ALS, address,
-@@ -382,6 +374,7 @@ static struct platform_driver hid_als_platform_driver = {
- 	.id_table = hid_als_ids,
+ 		hid_sensor_power_state(&accel_state->common_attributes, true);
+-		msleep_interruptible(poll_value * 2);
+ 		report_id = accel_state->accel[chan->scan_index].report_id;
+ 		address = accel_3d_addresses[chan->scan_index];
+ 		if (report_id >= 0)
+@@ -420,6 +413,7 @@ static struct platform_driver hid_accel_3d_platform_driver = {
+ 	.id_table = hid_accel_3d_ids,
  	.driver = {
  		.name	= KBUILD_MODNAME,
 +		.pm	= &hid_sensor_pm_ops,
  	},
- 	.probe		= hid_als_probe,
- 	.remove		= hid_als_remove,
+ 	.probe		= hid_accel_3d_probe,
+ 	.remove		= hid_accel_3d_remove,
 -- 
 1.9.3
