@@ -5,9 +5,9 @@ To: jkosina@suse.cz,
 Cc: linux-iio@vger.kernel.org,
 	linux-input@vger.kernel.org,
 	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-Subject: [PATCH 3/8] iio: hid-sensor-gyro-3d: Introduce PM
-Date: Tue,  6 Jan 2015 16:58:42 -0800
-Message-Id: <1420592328-9942-19-git-send-email-srinivas.pandruvada@linux.intel.com>
+Subject: [PATCH 5/8] iio: hid-sensor-prox: Introduce PM
+Date: Tue,  6 Jan 2015 16:58:44 -0800
+Message-Id: <1420592328-9942-21-git-send-email-srinivas.pandruvada@linux.intel.com>
 In-Reply-To: <1420592328-9942-1-git-send-email-srinivas.pandruvada@linux.intel.com>
 References: <1420592328-9942-1-git-send-email-srinivas.pandruvada@linux.intel.com>
 List-ID: <linux-iio@vger.kernel.org>
@@ -18,14 +18,14 @@ remove from the client drivers.
 
 Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
 ---
- drivers/iio/gyro/hid-sensor-gyro-3d.c | 8 +-------
- 1 file changed, 1 insertion(+), 7 deletions(-)
+ drivers/iio/light/hid-sensor-prox.c | 10 +---------
+ 1 file changed, 1 insertion(+), 9 deletions(-)
 
-diff --git a/drivers/iio/gyro/hid-sensor-gyro-3d.c b/drivers/iio/gyro/hid-sensor-gyro-3d.c
-index bdcd105..b5883b6 100644
---- a/drivers/iio/gyro/hid-sensor-gyro-3d.c
-+++ b/drivers/iio/gyro/hid-sensor-gyro-3d.c
-@@ -111,19 +111,12 @@ static int gyro_3d_read_raw(struct iio_dev *indio_dev,
+diff --git a/drivers/iio/light/hid-sensor-prox.c b/drivers/iio/light/hid-sensor-prox.c
+index db9c60e..91ecc46 100644
+--- a/drivers/iio/light/hid-sensor-prox.c
++++ b/drivers/iio/light/hid-sensor-prox.c
+@@ -75,7 +75,6 @@ static int prox_read_raw(struct iio_dev *indio_dev,
  	int report_id = -1;
  	u32 address;
  	int ret_type;
@@ -33,25 +33,30 @@ index bdcd105..b5883b6 100644
  
  	*val = 0;
  	*val2 = 0;
- 	switch (mask) {
- 	case 0:
--		poll_value = hid_sensor_read_poll_value(
--					&gyro_state->common_attributes);
--		if (poll_value < 0)
--			return -EINVAL;
+@@ -92,16 +91,8 @@ static int prox_read_raw(struct iio_dev *indio_dev,
+ 			break;
+ 		}
+ 		if (report_id >= 0) {
+-			poll_value = hid_sensor_read_poll_value(
+-					&prox_state->common_attributes);
+-			if (poll_value < 0)
+-				return -EINVAL;
 -
- 		hid_sensor_power_state(&gyro_state->common_attributes, true);
--		msleep_interruptible(poll_value * 2);
- 		report_id = gyro_state->gyro[chan->scan_index].report_id;
- 		address = gyro_3d_addresses[chan->scan_index];
- 		if (report_id >= 0)
-@@ -417,6 +410,7 @@ static struct platform_driver hid_gyro_3d_platform_driver = {
- 	.id_table = hid_gyro_3d_ids,
+ 			hid_sensor_power_state(&prox_state->common_attributes,
+ 						true);
+-
+-			msleep_interruptible(poll_value * 2);
+-
+ 			*val = sensor_hub_input_attr_get_raw_value(
+ 				prox_state->common_attributes.hsdev,
+ 				HID_USAGE_SENSOR_PROX, address,
+@@ -374,6 +365,7 @@ static struct platform_driver hid_prox_platform_driver = {
+ 	.id_table = hid_prox_ids,
  	.driver = {
  		.name	= KBUILD_MODNAME,
 +		.pm	= &hid_sensor_pm_ops,
  	},
- 	.probe		= hid_gyro_3d_probe,
- 	.remove		= hid_gyro_3d_remove,
+ 	.probe		= hid_prox_probe,
+ 	.remove		= hid_prox_remove,
 -- 
 1.9.1
