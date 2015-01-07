@@ -5,9 +5,9 @@ To: jkosina@suse.cz,
 Cc: linux-iio@vger.kernel.org,
 	linux-input@vger.kernel.org,
 	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-Subject: [PATCH 5/9] iio: hid-sensor-prox: Adjust parameter for attribute read
-Date: Tue,  6 Jan 2015 16:58:35 -0800
-Message-Id: <1420592328-9942-12-git-send-email-srinivas.pandruvada@linux.intel.com>
+Subject: [PATCH 6/9] iio: hid-sensor-magn-3d: Adjust parameter for attribute read
+Date: Tue,  6 Jan 2015 16:58:36 -0800
+Message-Id: <1420592328-9942-13-git-send-email-srinivas.pandruvada@linux.intel.com>
 In-Reply-To: <1420592328-9942-1-git-send-email-srinivas.pandruvada@linux.intel.com>
 References: <1420592328-9942-1-git-send-email-srinivas.pandruvada@linux.intel.com>
 List-ID: <linux-iio@vger.kernel.org>
@@ -16,22 +16,22 @@ The new API added a flag for sync/async mode. Added sync mode flag.
 
 Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
 ---
- drivers/iio/light/hid-sensor-prox.c | 3 ++-
+ drivers/iio/magnetometer/hid-sensor-magn-3d.c | 3 ++-
  1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/iio/light/hid-sensor-prox.c b/drivers/iio/light/hid-sensor-prox.c
-index f5a5146..db9c60e 100644
---- a/drivers/iio/light/hid-sensor-prox.c
-+++ b/drivers/iio/light/hid-sensor-prox.c
-@@ -105,7 +105,8 @@ static int prox_read_raw(struct iio_dev *indio_dev,
+diff --git a/drivers/iio/magnetometer/hid-sensor-magn-3d.c b/drivers/iio/magnetometer/hid-sensor-magn-3d.c
+index 6294575..4d299f3 100644
+--- a/drivers/iio/magnetometer/hid-sensor-magn-3d.c
++++ b/drivers/iio/magnetometer/hid-sensor-magn-3d.c
+@@ -178,7 +178,8 @@ static int magn_3d_read_raw(struct iio_dev *indio_dev,
  			*val = sensor_hub_input_attr_get_raw_value(
- 				prox_state->common_attributes.hsdev,
- 				HID_USAGE_SENSOR_PROX, address,
+ 				magn_state->common_attributes.hsdev,
+ 				HID_USAGE_SENSOR_COMPASS_3D, address,
 -				report_id);
 +				report_id,
 +				SENSOR_HUB_SYNC);
- 			hid_sensor_power_state(&prox_state->common_attributes,
- 						false);
- 		} else {
+ 		else {
+ 			*val = 0;
+ 			hid_sensor_power_state(&magn_state->common_attributes,
 -- 
 1.9.1
