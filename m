@@ -5,85 +5,50 @@ To: jkosina@suse.cz,
 Cc: linux-iio@vger.kernel.org,
 	linux-input@vger.kernel.org,
 	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-Subject: [PATCH 3/4] HID: hid-sensor-hub: Enhance feature report set API
-Date: Tue,  6 Jan 2015 16:58:28 -0800
-Message-Id: <1420592328-9942-5-git-send-email-srinivas.pandruvada@linux.intel.com>
+Subject: [PATCH] HID: sensor-hub: correct dyn_callback_lock IRQ-safe change
+Date: Tue,  6 Jan 2015 16:58:25 -0800
+Message-Id: <1420592328-9942-2-git-send-email-srinivas.pandruvada@linux.intel.com>
 In-Reply-To: <1420592328-9942-1-git-send-email-srinivas.pandruvada@linux.intel.com>
 References: <1420592328-9942-1-git-send-email-srinivas.pandruvada@linux.intel.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-Current API only allows setting one offset in the field. This API
-is extended to set multiple offsets in the field report.
+Commit 0ccf091d1fbc1f99bb7f93bff8cf346769a9b0cd ("HID: sensor-hub:
+make dyn_callback_lock IRQ-safe) was supposed to change locks
+in sensor_hub_get_callback(), but missed.
 
 Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
 ---
- drivers/hid/hid-sensor-hub.c   | 22 ++++++++++++++++++++--
- include/linux/hid-sensor-hub.h |  5 +++--
- 2 files changed, 23 insertions(+), 4 deletions(-)
+ drivers/hid/hid-sensor-hub.c | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/hid/hid-sensor-hub.c b/drivers/hid/hid-sensor-hub.c
-index 0ad5813..8e77e93c 100644
+index 6a58b6c..e54ce10 100644
 --- a/drivers/hid/hid-sensor-hub.c
 +++ b/drivers/hid/hid-sensor-hub.c
-@@ -208,10 +208,14 @@ int sensor_hub_remove_callback(struct hid_sensor_hub_device *hsdev,
- EXPORT_SYMBOL_GPL(sensor_hub_remove_callback);
- 
- int sensor_hub_set_feature(struct hid_sensor_hub_device *hsdev, u32 report_id,
--				u32 field_index, s32 value)
-+			   u32 field_index, int buffer_size, void *buffer)
+@@ -135,8 +135,9 @@ static struct hid_sensor_hub_callbacks *sensor_hub_get_callback(
  {
- 	struct hid_report *report;
- 	struct sensor_hub_data *data = hid_get_drvdata(hsdev->hdev);
-+	__s32 *buf32 = (__s32 *)buffer;
-+	int i = 0;
-+	int remaining_bytes;
-+	__s32 value;
- 	int ret = 0;
+ 	struct hid_sensor_hub_callbacks_list *callback;
+ 	struct sensor_hub_data *pdata = hid_get_drvdata(hdev);
++	unsigned long flags;
  
- 	mutex_lock(&data->mutex);
-@@ -220,7 +224,21 @@ int sensor_hub_set_feature(struct hid_sensor_hub_device *hsdev, u32 report_id,
- 		ret = -EINVAL;
- 		goto done_proc;
- 	}
--	hid_set_field(report->field[field_index], 0, value);
-+
-+	remaining_bytes = do_div(buffer_size, sizeof(__s32));
-+	if (buffer_size) {
-+		for (i = 0; i < buffer_size; ++i) {
-+			hid_set_field(report->field[field_index], i,
-+				      cpu_to_le32(*buf32));
-+			++buf32;
-+		}
-+	}
-+	if (remaining_bytes) {
-+		value = 0;
-+		memcpy(&value, (u8 *)buf32, remaining_bytes);
-+		hid_set_field(report->field[field_index], i,
-+			      cpu_to_le32(value));
-+	}
- 	hid_hw_request(hsdev->hdev, report, HID_REQ_SET_REPORT);
- 	hid_hw_wait(hsdev->hdev);
+-	spin_lock(&pdata->dyn_callback_lock);
++	spin_lock_irqsave(&pdata->dyn_callback_lock, flags);
+ 	list_for_each_entry(callback, &pdata->dyn_callback_list, list)
+ 		if (callback->usage_id == usage_id &&
+ 			(collection_index >=
+@@ -145,10 +146,11 @@ static struct hid_sensor_hub_callbacks *sensor_hub_get_callback(
+ 				callback->hsdev->end_collection_index)) {
+ 			*priv = callback->priv;
+ 			*hsdev = callback->hsdev;
+-			spin_unlock(&pdata->dyn_callback_lock);
++			spin_unlock_irqrestore(&pdata->dyn_callback_lock,
++					       flags);
+ 			return callback->usage_callback;
+ 		}
+-	spin_unlock(&pdata->dyn_callback_lock);
++	spin_unlock_irqrestore(&pdata->dyn_callback_lock, flags);
  
-diff --git a/include/linux/hid-sensor-hub.h b/include/linux/hid-sensor-hub.h
-index dfdf6ef..e899c67 100644
---- a/include/linux/hid-sensor-hub.h
-+++ b/include/linux/hid-sensor-hub.h
-@@ -166,13 +166,14 @@ int sensor_hub_input_attr_get_raw_value(struct hid_sensor_hub_device *hsdev,
- * @hsdev:	Hub device instance.
- * @report_id:	Report id to look for
- * @field_index:	Field index inside a report
--* @value:	Value to set
-+* @buffer_size: size of the buffer
-+* @buffer:	buffer to use in the feature set
- *
- * Used to set a field in feature report. For example this can set polling
- * interval, sensitivity, activate/deactivate state.
- */
- int sensor_hub_set_feature(struct hid_sensor_hub_device *hsdev, u32 report_id,
--			u32 field_index, s32 value);
-+			   u32 field_index, int buffer_size, void *buffer);
- 
- /**
- * sensor_hub_get_feature() - Feature get request
+ 	return NULL;
+ }
 -- 
 1.9.1
