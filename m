@@ -1,134 +1,137 @@
-Return-Path: <vigneshr@ti.com>
-Message-ID: <54ACC868.7040801@ti.com>
-Date: Wed, 7 Jan 2015 11:17:20 +0530
-From: Vignesh R <vigneshr@ti.com>
-MIME-Version: 1.0
-To: Tony Lindgren <tony@atomide.com>
-CC: Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Lee Jones
-	<lee.jones@linaro.org>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>,
-        Mark
- Rutland <mark.rutland@arm.com>,
-        Ian Campbell <ijc+devicetree@hellion.org.uk>,
-        Kumar Gala <galak@codeaurora.org>,
-        Benoit Cousson <bcousson@baylibre.com>,
-        Russell King <linux@arm.linux.org.uk>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald <pmeerw@pmeerw.net>,
-        Samuel Ortiz <sameo@linux.intel.com>, Brad Griffis <bgriffis@ti.com>,
-        Paul Gortmaker
-	<paul.gortmaker@windriver.com>,
-        Sanjeev Sharma <sanjeev_sharma@mentor.com>,
-        Jan Kardell <jan.kardell@telliq.com>, Felipe Balbi <balbi@ti.com>,
-        Wolfram
- Sang <wsa@the-dreams.de>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <linux-omap@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>, <linux-iio@vger.kernel.org>,
-        <linux-input@vger.kernel.org>
-Subject: Re: [PATCH v5 4/6] ARM: dts: AM335x: Make charge delay a DT parameter
- for TSC
-References: <1419404619-10744-1-git-send-email-vigneshr@ti.com> <1419404619-10744-5-git-send-email-vigneshr@ti.com> <20150102170933.GB3298@atomide.com>
-In-Reply-To: <20150102170933.GB3298@atomide.com>
-Content-Type: text/plain; charset="windows-1252"
+Return-Path: <srinivas.pandruvada@linux.intel.com>
+From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+To: jkosina@suse.cz,
+	jic23@kernel.org
+Cc: linux-iio@vger.kernel.org,
+	linux-input@vger.kernel.org,
+	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Subject: [PATCH] HID: hid-sensor-hub: Add collection device
+Date: Tue,  6 Jan 2015 16:58:48 -0800
+Message-Id: <1420592328-9942-25-git-send-email-srinivas.pandruvada@linux.intel.com>
+In-Reply-To: <1420592328-9942-1-git-send-email-srinivas.pandruvada@linux.intel.com>
+References: <1420592328-9942-1-git-send-email-srinivas.pandruvada@linux.intel.com>
 List-ID: <linux-iio@vger.kernel.org>
 
+HID sensor hub exports several sensor which are fusion sensors, where
+data is interpreted from one or more sensors. Some of them can't be
+exported via IIO like sysfs as the user space download some firmware,
+which defines what sensor will look like. They can be a part of a
+collection.
+Creating a MFD cell for a collection to write a standalone driver
+to manage collections. Most of the time they will be propritery drivers
+may not be even upstreamed. This patch allows framework to have
+capability to write such drivers.
 
+Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+---
+ drivers/hid/hid-sensor-hub.c   | 50 ++++++++++++++++++++++++++++++++++++++----
+ include/linux/hid-sensor-ids.h |  2 ++
+ 2 files changed, 48 insertions(+), 4 deletions(-)
 
-On Friday 02 January 2015 10:39 PM, Tony Lindgren wrote:
-> * Vignesh R <vigneshr@ti.com> [141223 23:07]:
->> The charge delay value is by default 0x400. But it can be set to lower
->> values on some boards, as long as false pen-ups are avoided. Lowering the
->> value increases the sampling rate (though current sampling rate is
->> sufficient for TSC operation). In some boards, the value has to be
->> increased to avoid false pen-up events. Hence, charge delay has been
->> made a DT parameter.
->>
->> Signed-off-by: Vignesh R <vigneshr@ti.com>
-> 
-> Assuming this binding makes sense for the input people, there should
-> be no conflicts merging this patch along with the rest of the series
-> via the input tree.
-> 
-
-I will post new version moving documentation to driver code and keeping
-DT changes as a separate patch.
-
-> Sounds like this value probably depends on the size of the touchscreen
-> for the capacitance, so a numeric value is really needed here. 
-
-Its not just dependent on the size of the touchscreen. It varies based
-on the individual setups.
-
-> I would personally prefer generic bindings in general, but in any case
-
-There isn't any generic binding that corresponds to charge-delay.
-Nothing as been pointed out by input maintainer either.
-
-Regards
-Vignesh
-
-> please feel free to merge along with the other input patches:
-> 
-> Acked-by: Tony Lindgren <tony@atomide.com>
-> 
-> 
->> ---
->> v4:
->>  - Set charge delay to 0x400 as default. Most devices function normally
->>    at this value
->>
->>  .../devicetree/bindings/input/touchscreen/ti-tsc-adc.txt  | 15 +++++++++++++++
->>  arch/arm/boot/dts/am335x-evm.dts                          |  1 +
->>  2 files changed, 16 insertions(+)
->>
->> diff --git a/Documentation/devicetree/bindings/input/touchscreen/ti-tsc-adc.txt b/Documentation/devicetree/bindings/input/touchscreen/ti-tsc-adc.txt
->> index 878549ba814d..6df5028a4ad3 100644
->> --- a/Documentation/devicetree/bindings/input/touchscreen/ti-tsc-adc.txt
->> +++ b/Documentation/devicetree/bindings/input/touchscreen/ti-tsc-adc.txt
->> @@ -28,6 +28,20 @@ Required properties:
->>  	ti,adc-channels: List of analog inputs available for ADC.
->>  			 AIN0 = 0, AIN1 = 1 and so on till AIN7 = 7.
->>  
->> +Optional properties:
->> +- child "tsc"
->> +	ti,charge-delay: Length of touch screen charge delay step in terms of
->> +			 ADC clock cycles. Charge delay value should be large
->> +			 in order to avoid false pen-up events. This value
->> +			 affects the overall sampling speed, hence need to be
->> +			 kept as low as possible, while avoiding false pen-up
->> +			 event. Start from a lower value, say 0x400, and
->> +			 increase value until false pen-up events are avoided.
->> +			 The pen-up detection happens immediately after the
->> +			 charge step, so this does in fact function as a
->> +			 hardware knob for adjusting the amount of "settling
->> +			 time".
->> +
->>  Example:
->>  	tscadc: tscadc@44e0d000 {
->>  		compatible = "ti,am3359-tscadc";
->> @@ -36,6 +50,7 @@ Example:
->>  			ti,x-plate-resistance = <200>;
->>  			ti,coordiante-readouts = <5>;
->>  			ti,wire-config = <0x00 0x11 0x22 0x33>;
->> +			ti,charge-delay = <0x400>;
->>  		};
->>  
->>  		adc {
->> diff --git a/arch/arm/boot/dts/am335x-evm.dts b/arch/arm/boot/dts/am335x-evm.dts
->> index 54f118c08db8..66342515df20 100644
->> --- a/arch/arm/boot/dts/am335x-evm.dts
->> +++ b/arch/arm/boot/dts/am335x-evm.dts
->> @@ -648,6 +648,7 @@
->>  		ti,x-plate-resistance = <200>;
->>  		ti,coordinate-readouts = <5>;
->>  		ti,wire-config = <0x00 0x11 0x22 0x33>;
->> +		ti,charge-delay = <0x400>;
->>  	};
->>  
->>  	adc {
->> -- 
->> 1.9.1
->>
+diff --git a/drivers/hid/hid-sensor-hub.c b/drivers/hid/hid-sensor-hub.c
+index 84290e5..7403b25 100644
+--- a/drivers/hid/hid-sensor-hub.c
++++ b/drivers/hid/hid-sensor-hub.c
+@@ -119,11 +119,12 @@ static struct hid_sensor_hub_callbacks *sensor_hub_get_callback(
+ 
+ 	spin_lock_irqsave(&pdata->dyn_callback_lock, flags);
+ 	list_for_each_entry(callback, &pdata->dyn_callback_list, list)
+-		if (callback->usage_id == usage_id &&
++		if (callback->usage_id == HID_USAGE_SENSOR_TYPE_COLLECTION ||
++			(callback->usage_id == usage_id &&
+ 			(collection_index >=
+ 				callback->hsdev->start_collection_index) &&
+ 			(collection_index <
+-				callback->hsdev->end_collection_index)) {
++				callback->hsdev->end_collection_index))) {
+ 			*priv = callback->priv;
+ 			*hsdev = callback->hsdev;
+ 			spin_unlock_irqrestore(&pdata->dyn_callback_lock,
+@@ -159,7 +160,12 @@ int sensor_hub_register_callback(struct hid_sensor_hub_device *hsdev,
+ 	callback->usage_callback = usage_callback;
+ 	callback->usage_id = usage_id;
+ 	callback->priv = NULL;
+-	list_add_tail(&callback->list, &pdata->dyn_callback_list);
++	/* Give higher priority to collection device, so add to front */
++	if (usage_id == HID_USAGE_SENSOR_TYPE_COLLECTION)
++		list_add(&callback->list, &pdata->dyn_callback_list);
++	else
++		list_add_tail(&callback->list, &pdata->dyn_callback_list);
++
+ 	spin_unlock_irqrestore(&pdata->dyn_callback_lock, flags);
+ 
+ 	return 0;
+@@ -590,6 +596,37 @@ static __u8 *sensor_hub_report_fixup(struct hid_device *hdev, __u8 *rdesc,
+ 	return rdesc;
+ }
+ 
++static int sensor_hub_add_collection_device(struct hid_device *hdev,
++					    struct sensor_hub_data *sd)
++{
++	struct hid_sensor_hub_device *hsdev;
++	char *name;
++
++	hsdev = devm_kzalloc(&hdev->dev, sizeof(*hsdev), GFP_KERNEL);
++	if (!hsdev)
++		return -ENOMEM;
++
++	hsdev->hdev = hdev;
++	hsdev->vendor_id = hdev->vendor;
++	hsdev->product_id = hdev->product;
++	hsdev->usage = HID_USAGE_SENSOR_TYPE_COLLECTION;
++	mutex_init(&hsdev->mutex);
++	name = devm_kasprintf(&hdev->dev, GFP_KERNEL, "HID-SENSOR-%x",
++			      HID_USAGE_SENSOR_TYPE_COLLECTION);
++	if (name == NULL) {
++		hid_err(hdev, "Failed MFD device name\n");
++		return -ENOMEM;
++	}
++	sd->hid_sensor_hub_client_devs[sd->hid_sensor_client_cnt].name = name;
++	sd->hid_sensor_hub_client_devs[
++			sd->hid_sensor_client_cnt].platform_data = hsdev;
++	sd->hid_sensor_hub_client_devs[
++			sd->hid_sensor_client_cnt].pdata_size = sizeof(*hsdev);
++	sd->hid_sensor_client_cnt++;
++
++	return 0;
++}
++
+ static int sensor_hub_probe(struct hid_device *hdev,
+ 				const struct hid_device_id *id)
+ {
+@@ -634,7 +671,8 @@ static int sensor_hub_probe(struct hid_device *hdev,
+ 		ret = -EINVAL;
+ 		goto err_stop_hw;
+ 	}
+-	sd->hid_sensor_hub_client_devs = devm_kzalloc(&hdev->dev, dev_cnt *
++	sd->hid_sensor_hub_client_devs = devm_kzalloc(&hdev->dev,
++						      (dev_cnt + 1) *
+ 						      sizeof(struct mfd_cell),
+ 						      GFP_KERNEL);
+ 	if (sd->hid_sensor_hub_client_devs == NULL) {
+@@ -688,6 +726,10 @@ static int sensor_hub_probe(struct hid_device *hdev,
+ 	if (last_hsdev)
+ 		last_hsdev->end_collection_index = i;
+ 
++	ret = sensor_hub_add_collection_device(hdev, sd);
++	if (ret)
++		goto err_stop_hw;
++
+ 	ret = mfd_add_hotplug_devices(&hdev->dev,
+ 			sd->hid_sensor_hub_client_devs,
+ 			sd->hid_sensor_client_cnt);
+diff --git a/include/linux/hid-sensor-ids.h b/include/linux/hid-sensor-ids.h
+index 109f0e6..300ffea 100644
+--- a/include/linux/hid-sensor-ids.h
++++ b/include/linux/hid-sensor-ids.h
+@@ -21,6 +21,8 @@
+ 
+ #define HID_MAX_PHY_DEVICES					0xFF
+ 
++#define HID_USAGE_SENSOR_TYPE_COLLECTION			0x200001
++
+ /* Accel 3D (200073) */
+ #define HID_USAGE_SENSOR_ACCEL_3D				0x200073
+ #define HID_USAGE_SENSOR_DATA_ACCELERATION			0x200452
+-- 
+1.9.1
