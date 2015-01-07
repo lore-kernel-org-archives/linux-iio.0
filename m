@@ -5,54 +5,32 @@ To: jkosina@suse.cz,
 Cc: linux-iio@vger.kernel.org,
 	linux-input@vger.kernel.org,
 	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-Subject: [PATCH 7/8] iio: hid-sensor-incl-3d: Introduce PM
-Date: Tue,  6 Jan 2015 16:58:46 -0800
-Message-Id: <1420592328-9942-23-git-send-email-srinivas.pandruvada@linux.intel.com>
+Subject: [PATCH 9/9] drivers/rtc/rtc-hid-sensor-time.c: Adjust parameter for attribute read
+Date: Tue,  6 Jan 2015 16:58:39 -0800
+Message-Id: <1420592328-9942-16-git-send-email-srinivas.pandruvada@linux.intel.com>
 In-Reply-To: <1420592328-9942-1-git-send-email-srinivas.pandruvada@linux.intel.com>
 References: <1420592328-9942-1-git-send-email-srinivas.pandruvada@linux.intel.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-Use common hid sensor iio pm functions. Also the poll time read and
-wait is part of power up function of hid sensor iio pm function, so
-remove from the client drivers.
+The new API added a flag for sync/async mode. Added sync mode flag.
 
 Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
 ---
- drivers/iio/orientation/hid-sensor-incl-3d.c | 9 +--------
- 1 file changed, 1 insertion(+), 8 deletions(-)
+ drivers/rtc/rtc-hid-sensor-time.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/iio/orientation/hid-sensor-incl-3d.c b/drivers/iio/orientation/hid-sensor-incl-3d.c
-index 45bed08..5930fa3 100644
---- a/drivers/iio/orientation/hid-sensor-incl-3d.c
-+++ b/drivers/iio/orientation/hid-sensor-incl-3d.c
-@@ -111,20 +111,12 @@ static int incl_3d_read_raw(struct iio_dev *indio_dev,
- 	int report_id = -1;
- 	u32 address;
- 	int ret_type;
--	s32 poll_value;
- 
- 	*val = 0;
- 	*val2 = 0;
- 	switch (mask) {
- 	case IIO_CHAN_INFO_RAW:
--		poll_value = hid_sensor_read_poll_value(
--					&incl_state->common_attributes);
--		if (poll_value < 0)
--			return -EINVAL;
--
- 		hid_sensor_power_state(&incl_state->common_attributes, true);
--		msleep_interruptible(poll_value * 2);
--
- 		report_id =
- 			incl_state->incl[chan->scan_index].report_id;
- 		address = incl_3d_addresses[chan->scan_index];
-@@ -438,6 +430,7 @@ static struct platform_driver hid_incl_3d_platform_driver = {
- 	.id_table = hid_incl_3d_ids,
- 	.driver = {
- 		.name	= KBUILD_MODNAME,
-+		.pm	= &hid_sensor_pm_ops,
- 	},
- 	.probe		= hid_incl_3d_probe,
- 	.remove		= hid_incl_3d_remove,
+diff --git a/drivers/rtc/rtc-hid-sensor-time.c b/drivers/rtc/rtc-hid-sensor-time.c
+index ae7c2ba..af4f85a 100644
+--- a/drivers/rtc/rtc-hid-sensor-time.c
++++ b/drivers/rtc/rtc-hid-sensor-time.c
+@@ -213,7 +213,7 @@ static int hid_rtc_read_time(struct device *dev, struct rtc_time *tm)
+ 	/* get a report with all values through requesting one value */
+ 	sensor_hub_input_attr_get_raw_value(time_state->common_attributes.hsdev,
+ 			HID_USAGE_SENSOR_TIME, hid_time_addresses[0],
+-			time_state->info[0].report_id);
++			time_state->info[0].report_id, SENSOR_HUB_SYNC);
+ 	/* wait for all values (event) */
+ 	ret = wait_for_completion_killable_timeout(
+ 			&time_state->comp_last_time, HZ*6);
 -- 
 1.9.1
