@@ -1,37 +1,40 @@
 Return-Path: <srinivas.pandruvada@linux.intel.com>
 From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
 To: jkosina@suse.cz,
-	jic23@kernel.org
+	jic23@kernel.org,
+	a.zummo@towertech.it
 Cc: linux-iio@vger.kernel.org,
 	linux-input@vger.kernel.org,
+	holler@ahsoftware.de,
+	rtc-linux@googlegroups.com,
 	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-Subject: [PATCH 0/8] Adding PM support to hid sensor iio drivers
-Date: Wed,  7 Jan 2015 10:55:52 -0800
-Message-Id: <1420656960-7365-1-git-send-email-srinivas.pandruvada@linux.intel.com>
+Subject: [PATCH 7/9] iio: hid-sensor-incl-3d: Adjust parameter for attribute read
+Date: Wed,  7 Jan 2015 10:48:01 -0800
+Message-Id: <1420656483-7093-8-git-send-email-srinivas.pandruvada@linux.intel.com>
+In-Reply-To: <1420656483-7093-1-git-send-email-srinivas.pandruvada@linux.intel.com>
+References: <1420656483-7093-1-git-send-email-srinivas.pandruvada@linux.intel.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-Linux PM and runtime PM support.
+The new API added a flag for sync/async mode. Added sync mode flag.
 
-Srinivas Pandruvada (8):
-  iio: hid_sensor_hub: Common PM functions
-  iio: hid-sensor-accel-3d: Introduce PM
-  iio: hid-sensor-gyro-3d: Introduce PM
-  iio: hid-sensor-als: Introduce PM
-  iio: hid-sensor-prox: Introduce PM
-  iio: hid-sensor-magn-3d: Introduce PM
-  iio: hid-sensor-incl-3d: Introduce PM
-  iio: hid-sensor-press: Introduce PM
+Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+---
+ drivers/iio/orientation/hid-sensor-incl-3d.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
- drivers/iio/accel/hid-sensor-accel-3d.c            |  8 +--
- .../iio/common/hid-sensors/hid-sensor-trigger.c    | 76 +++++++++++++++++++++-
- .../iio/common/hid-sensors/hid-sensor-trigger.h    |  5 ++
- drivers/iio/gyro/hid-sensor-gyro-3d.c              |  8 +--
- drivers/iio/light/hid-sensor-als.c                 |  9 +--
- drivers/iio/light/hid-sensor-prox.c                | 10 +--
- drivers/iio/magnetometer/hid-sensor-magn-3d.c      |  9 +--
- drivers/iio/orientation/hid-sensor-incl-3d.c       |  9 +--
- drivers/iio/pressure/hid-sensor-press.c            |  9 +--
- 9 files changed, 86 insertions(+), 57 deletions(-)
-
+diff --git a/drivers/iio/orientation/hid-sensor-incl-3d.c b/drivers/iio/orientation/hid-sensor-incl-3d.c
+index 1ff181b..45bed08 100644
+--- a/drivers/iio/orientation/hid-sensor-incl-3d.c
++++ b/drivers/iio/orientation/hid-sensor-incl-3d.c
+@@ -132,7 +132,8 @@ static int incl_3d_read_raw(struct iio_dev *indio_dev,
+ 			*val = sensor_hub_input_attr_get_raw_value(
+ 				incl_state->common_attributes.hsdev,
+ 				HID_USAGE_SENSOR_INCLINOMETER_3D, address,
+-				report_id);
++				report_id,
++				SENSOR_HUB_SYNC);
+ 		else {
+ 			hid_sensor_power_state(&incl_state->common_attributes,
+ 						false);
 -- 
 1.9.3
