@@ -5,33 +5,75 @@ To: jkosina@suse.cz,
 Cc: linux-iio@vger.kernel.org,
 	linux-input@vger.kernel.org,
 	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-Subject: [PATCH 4/9] iio: hid-sensor-als: Adjust parameter for attribute read
-Date: Tue,  6 Jan 2015 16:58:34 -0800
-Message-Id: <1420592328-9942-11-git-send-email-srinivas.pandruvada@linux.intel.com>
+Subject: [PATCH 4/4] iio: hid_sensor_hub: update parameters to set feature report
+Date: Tue,  6 Jan 2015 16:58:29 -0800
+Message-Id: <1420592328-9942-6-git-send-email-srinivas.pandruvada@linux.intel.com>
 In-Reply-To: <1420592328-9942-1-git-send-email-srinivas.pandruvada@linux.intel.com>
 References: <1420592328-9942-1-git-send-email-srinivas.pandruvada@linux.intel.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-The new API added a flag for sync/async mode. Added sync mode flag.
+The new sensor_hub_set_feature can set multiple values, this
+resulted in the change in API. Update the API usage here.
 
 Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
 ---
- drivers/iio/light/hid-sensor-als.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/iio/common/hid-sensors/hid-sensor-attributes.c | 11 +++++------
+ drivers/iio/common/hid-sensors/hid-sensor-trigger.c    |  9 +++++----
+ 2 files changed, 10 insertions(+), 10 deletions(-)
 
-diff --git a/drivers/iio/light/hid-sensor-als.c b/drivers/iio/light/hid-sensor-als.c
-index a5283d7..321862d 100644
---- a/drivers/iio/light/hid-sensor-als.c
-+++ b/drivers/iio/light/hid-sensor-als.c
-@@ -109,7 +109,8 @@ static int als_read_raw(struct iio_dev *indio_dev,
- 			*val = sensor_hub_input_attr_get_raw_value(
- 					als_state->common_attributes.hsdev,
- 					HID_USAGE_SENSOR_ALS, address,
--					report_id);
-+					report_id,
-+					SENSOR_HUB_SYNC);
- 			hid_sensor_power_state(&als_state->common_attributes,
- 						false);
- 		} else {
+diff --git a/drivers/iio/common/hid-sensors/hid-sensor-attributes.c b/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
+index e1435e9..e81f434 100644
+--- a/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
++++ b/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
+@@ -212,9 +212,8 @@ int hid_sensor_write_samp_freq_value(struct hid_sensor_common *st,
+ 		else
+ 			value = 0;
+ 	}
+-	ret = sensor_hub_set_feature(st->hsdev,
+-		st->poll.report_id,
+-		st->poll.index, value);
++	ret = sensor_hub_set_feature(st->hsdev, st->poll.report_id,
++				     st->poll.index, sizeof(value), &value);
+ 	if (ret < 0 || value < 0)
+ 		ret = -EINVAL;
+ 
+@@ -254,9 +253,9 @@ int hid_sensor_write_raw_hyst_value(struct hid_sensor_common *st,
+ 	value = convert_to_vtf_format(st->sensitivity.size,
+ 				st->sensitivity.unit_expo,
+ 				val1, val2);
+-	ret = sensor_hub_set_feature(st->hsdev,
+-		st->sensitivity.report_id,
+-		st->sensitivity.index, value);
++	ret = sensor_hub_set_feature(st->hsdev, st->sensitivity.report_id,
++				     st->sensitivity.index, sizeof(value),
++				     &value);
+ 	if (ret < 0 || value < 0)
+ 		ret = -EINVAL;
+ 
+diff --git a/drivers/iio/common/hid-sensors/hid-sensor-trigger.c b/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
+index ef0c495..910e82a 100644
+--- a/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
++++ b/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
+@@ -64,15 +64,16 @@ int hid_sensor_power_state(struct hid_sensor_common *st, bool state)
+ 	if (state_val >= 0) {
+ 		state_val += st->power_state.logical_minimum;
+ 		sensor_hub_set_feature(st->hsdev, st->power_state.report_id,
+-					st->power_state.index,
+-					(s32)state_val);
++				       st->power_state.index, sizeof(state_val),
++				       &state_val);
+ 	}
+ 
+ 	if (report_val >= 0) {
+ 		report_val += st->report_state.logical_minimum;
+ 		sensor_hub_set_feature(st->hsdev, st->report_state.report_id,
+-					st->report_state.index,
+-					(s32)report_val);
++				       st->report_state.index,
++				       sizeof(report_val),
++				       &report_val);
+ 	}
+ 
+ 	sensor_hub_get_feature(st->hsdev, st->power_state.report_id,
 -- 
 1.9.1
