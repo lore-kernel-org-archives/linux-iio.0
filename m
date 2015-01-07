@@ -5,50 +5,20 @@ To: jkosina@suse.cz,
 Cc: linux-iio@vger.kernel.org,
 	linux-input@vger.kernel.org,
 	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-Subject: [PATCH 2/2] HID: sensor-hub: correct dyn_callback_lock IRQ-safe change
-Date: Wed,  7 Jan 2015 10:14:44 -0800
-Message-Id: <1420654484-6410-3-git-send-email-srinivas.pandruvada@linux.intel.com>
-In-Reply-To: <1420654484-6410-1-git-send-email-srinivas.pandruvada@linux.intel.com>
-References: <1420654484-6410-1-git-send-email-srinivas.pandruvada@linux.intel.com>
+Subject: [PATCH 0/2] HID Sensor hub driver fixes
+Date: Wed,  7 Jan 2015 10:14:42 -0800
+Message-Id: <1420654484-6410-1-git-send-email-srinivas.pandruvada@linux.intel.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-Commit 0ccf091d1fbc1f99bb7f93bff8cf346769a9b0cd ("HID: sensor-hub:
-make dyn_callback_lock IRQ-safe) was supposed to change locks
-in sensor_hub_get_callback(), but missed.
+Address two bug fixes in the existing code.
 
-Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
----
- drivers/hid/hid-sensor-hub.c | 8 +++++---
- 1 file changed, 5 insertions(+), 3 deletions(-)
+Srinivas Pandruvada (2):
+  HID: hid-sensor-hub: Correct documentation
+  HID: sensor-hub: correct dyn_callback_lock IRQ-safe change
 
-diff --git a/drivers/hid/hid-sensor-hub.c b/drivers/hid/hid-sensor-hub.c
-index 6a58b6c..e54ce10 100644
---- a/drivers/hid/hid-sensor-hub.c
-+++ b/drivers/hid/hid-sensor-hub.c
-@@ -135,8 +135,9 @@ static struct hid_sensor_hub_callbacks *sensor_hub_get_callback(
- {
- 	struct hid_sensor_hub_callbacks_list *callback;
- 	struct sensor_hub_data *pdata = hid_get_drvdata(hdev);
-+	unsigned long flags;
- 
--	spin_lock(&pdata->dyn_callback_lock);
-+	spin_lock_irqsave(&pdata->dyn_callback_lock, flags);
- 	list_for_each_entry(callback, &pdata->dyn_callback_list, list)
- 		if (callback->usage_id == usage_id &&
- 			(collection_index >=
-@@ -145,10 +146,11 @@ static struct hid_sensor_hub_callbacks *sensor_hub_get_callback(
- 				callback->hsdev->end_collection_index)) {
- 			*priv = callback->priv;
- 			*hsdev = callback->hsdev;
--			spin_unlock(&pdata->dyn_callback_lock);
-+			spin_unlock_irqrestore(&pdata->dyn_callback_lock,
-+					       flags);
- 			return callback->usage_callback;
- 		}
--	spin_unlock(&pdata->dyn_callback_lock);
-+	spin_unlock_irqrestore(&pdata->dyn_callback_lock, flags);
- 
- 	return NULL;
- }
+ drivers/hid/hid-sensor-hub.c   | 8 +++++---
+ include/linux/hid-sensor-hub.h | 5 +++++
+ 2 files changed, 10 insertions(+), 3 deletions(-)
+
 -- 
 1.9.3
