@@ -1,84 +1,134 @@
 Return-Path: <vigneshr@ti.com>
+Message-ID: <54ACC868.7040801@ti.com>
+Date: Wed, 7 Jan 2015 11:17:20 +0530
 From: Vignesh R <vigneshr@ti.com>
-To: Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
+MIME-Version: 1.0
+To: Tony Lindgren <tony@atomide.com>
+CC: Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
         Dmitry Torokhov <dmitry.torokhov@gmail.com>,
         Lee Jones
 	<lee.jones@linaro.org>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-CC: Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>,
         Mark
  Rutland <mark.rutland@arm.com>,
         Ian Campbell <ijc+devicetree@hellion.org.uk>,
         Kumar Gala <galak@codeaurora.org>,
         Benoit Cousson <bcousson@baylibre.com>,
-        Tony Lindgren <tony@atomide.com>,
         Russell King <linux@arm.linux.org.uk>,
         Lars-Peter Clausen <lars@metafoo.de>,
         Peter Meerwald <pmeerw@pmeerw.net>,
         Samuel Ortiz <sameo@linux.intel.com>, Brad Griffis <bgriffis@ti.com>,
-        Paul
- Gortmaker <paul.gortmaker@windriver.com>,
-        Sanjeev Sharma
-	<sanjeev_sharma@mentor.com>,
-        Jan Kardell <jan.kardell@telliq.com>, Felipe
- Balbi <balbi@ti.com>,
-        Wolfram Sang <wsa@the-dreams.de>, <devicetree@vger.kernel.org>,
+        Paul Gortmaker
+	<paul.gortmaker@windriver.com>,
+        Sanjeev Sharma <sanjeev_sharma@mentor.com>,
+        Jan Kardell <jan.kardell@telliq.com>, Felipe Balbi <balbi@ti.com>,
+        Wolfram
+ Sang <wsa@the-dreams.de>, <devicetree@vger.kernel.org>,
         <linux-kernel@vger.kernel.org>, <linux-omap@vger.kernel.org>,
         <linux-arm-kernel@lists.infradead.org>, <linux-iio@vger.kernel.org>,
-        <linux-input@vger.kernel.org>, Vignesh R
-	<vigneshr@ti.com>
-Subject: [PATCH v6 0/6] Touchscreen performance related fixes
-Date: Wed, 7 Jan 2015 11:19:33 +0530
-Message-ID: <1420609779-11156-1-git-send-email-vigneshr@ti.com>
-MIME-Version: 1.0
-Content-Type: text/plain
+        <linux-input@vger.kernel.org>
+Subject: Re: [PATCH v5 4/6] ARM: dts: AM335x: Make charge delay a DT parameter
+ for TSC
+References: <1419404619-10744-1-git-send-email-vigneshr@ti.com> <1419404619-10744-5-git-send-email-vigneshr@ti.com> <20150102170933.GB3298@atomide.com>
+In-Reply-To: <20150102170933.GB3298@atomide.com>
+Content-Type: text/plain; charset="windows-1252"
 List-ID: <linux-iio@vger.kernel.org>
 
-This series is rebase of v4 onto v3.19-rc1. It also fixes concerns
-expressed on v4 wrt simultaneous use of IIO and TSC.
 
-I have tested this patch series on am335x-evm and Beaglebone black
-with lcd7-cape.
 
-Note that, these patches do not work as expected on Beaglebone Black
-with BB-View 4.3 Cape from Farnell due to a hardware issue in the cape.
+On Friday 02 January 2015 10:39 PM, Tony Lindgren wrote:
+> * Vignesh R <vigneshr@ti.com> [141223 23:07]:
+>> The charge delay value is by default 0x400. But it can be set to lower
+>> values on some boards, as long as false pen-ups are avoided. Lowering the
+>> value increases the sampling rate (though current sampling rate is
+>> sufficient for TSC operation). In some boards, the value has to be
+>> increased to avoid false pen-up events. Hence, charge delay has been
+>> made a DT parameter.
+>>
+>> Signed-off-by: Vignesh R <vigneshr@ti.com>
+> 
+> Assuming this binding makes sense for the input people, there should
+> be no conflicts merging this patch along with the rest of the series
+> via the input tree.
+> 
 
-Change log:
-v6:
- - Reorder patch 4 and 5.
+I will post new version moving documentation to driver code and keeping
+DT changes as a separate patch.
 
-v5:
- - Rebased onto v3.19-rc1
- - minor changes in patch 2,3 and 5.
+> Sounds like this value probably depends on the size of the touchscreen
+> for the capacitance, so a numeric value is really needed here. 
 
-v3:
- - Replace delta filtering logic in TSC driver with median filtering
-   as suggested by Richard.
- - Addressed Lee Jones comments.
+Its not just dependent on the size of the touchscreen. It varies based
+on the individual setups.
 
-v2:
- - Addressed comments by Hartmut Knaack
- - patch 2 was split into two as per Lee Jones comment
+> I would personally prefer generic bindings in general, but in any case
 
-Brad Griffis (2):
-  input: touchscreen: ti_am335x_tsc Interchange touchscreen and ADC
-    steps
-  input: touchscreen: ti_am335x_tsc: Remove udelay in interrupt handler
+There isn't any generic binding that corresponds to charge-delay.
+Nothing as been pointed out by input maintainer either.
 
-Vignesh R (4):
-  mfd: ti_am335x_tscadc: Remove unwanted reg_se_cache save
-  input: touchscreen: ti_am335x_tsc: Read charge delay from DT
-  ARM: dts: AM335x: Make charge delay a DT parameter for TSC
-  input: touchscreen: ti_am335x_tsc: Replace delta filtering with median
-    filtering
+Regards
+Vignesh
 
- .../bindings/input/touchscreen/ti-tsc-adc.txt      |  15 ++
- arch/arm/boot/dts/am335x-evm.dts                   |   1 +
- drivers/iio/adc/ti_am335x_adc.c                    |   5 +-
- drivers/input/touchscreen/ti_am335x_tsc.c          | 197 ++++++++++++---------
- drivers/mfd/ti_am335x_tscadc.c                     |  13 +-
- include/linux/mfd/ti_am335x_tscadc.h               |   4 +-
- 6 files changed, 137 insertions(+), 98 deletions(-)
-
--- 
-1.9.1
+> please feel free to merge along with the other input patches:
+> 
+> Acked-by: Tony Lindgren <tony@atomide.com>
+> 
+> 
+>> ---
+>> v4:
+>>  - Set charge delay to 0x400 as default. Most devices function normally
+>>    at this value
+>>
+>>  .../devicetree/bindings/input/touchscreen/ti-tsc-adc.txt  | 15 +++++++++++++++
+>>  arch/arm/boot/dts/am335x-evm.dts                          |  1 +
+>>  2 files changed, 16 insertions(+)
+>>
+>> diff --git a/Documentation/devicetree/bindings/input/touchscreen/ti-tsc-adc.txt b/Documentation/devicetree/bindings/input/touchscreen/ti-tsc-adc.txt
+>> index 878549ba814d..6df5028a4ad3 100644
+>> --- a/Documentation/devicetree/bindings/input/touchscreen/ti-tsc-adc.txt
+>> +++ b/Documentation/devicetree/bindings/input/touchscreen/ti-tsc-adc.txt
+>> @@ -28,6 +28,20 @@ Required properties:
+>>  	ti,adc-channels: List of analog inputs available for ADC.
+>>  			 AIN0 = 0, AIN1 = 1 and so on till AIN7 = 7.
+>>  
+>> +Optional properties:
+>> +- child "tsc"
+>> +	ti,charge-delay: Length of touch screen charge delay step in terms of
+>> +			 ADC clock cycles. Charge delay value should be large
+>> +			 in order to avoid false pen-up events. This value
+>> +			 affects the overall sampling speed, hence need to be
+>> +			 kept as low as possible, while avoiding false pen-up
+>> +			 event. Start from a lower value, say 0x400, and
+>> +			 increase value until false pen-up events are avoided.
+>> +			 The pen-up detection happens immediately after the
+>> +			 charge step, so this does in fact function as a
+>> +			 hardware knob for adjusting the amount of "settling
+>> +			 time".
+>> +
+>>  Example:
+>>  	tscadc: tscadc@44e0d000 {
+>>  		compatible = "ti,am3359-tscadc";
+>> @@ -36,6 +50,7 @@ Example:
+>>  			ti,x-plate-resistance = <200>;
+>>  			ti,coordiante-readouts = <5>;
+>>  			ti,wire-config = <0x00 0x11 0x22 0x33>;
+>> +			ti,charge-delay = <0x400>;
+>>  		};
+>>  
+>>  		adc {
+>> diff --git a/arch/arm/boot/dts/am335x-evm.dts b/arch/arm/boot/dts/am335x-evm.dts
+>> index 54f118c08db8..66342515df20 100644
+>> --- a/arch/arm/boot/dts/am335x-evm.dts
+>> +++ b/arch/arm/boot/dts/am335x-evm.dts
+>> @@ -648,6 +648,7 @@
+>>  		ti,x-plate-resistance = <200>;
+>>  		ti,coordinate-readouts = <5>;
+>>  		ti,wire-config = <0x00 0x11 0x22 0x33>;
+>> +		ti,charge-delay = <0x400>;
+>>  	};
+>>  
+>>  	adc {
+>> -- 
+>> 1.9.1
+>>
