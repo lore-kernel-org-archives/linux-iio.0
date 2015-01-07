@@ -1,52 +1,139 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga03.intel.com ([134.134.136.65]:41772 "EHLO mga03.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751381AbbAGQBv (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Wed, 7 Jan 2015 11:01:51 -0500
-Message-ID: <1420646463.4459.126.camel@spandruv-desktop.jf.intel.com>
-Subject: Re: [PATCH] HID: hid-sensor-hub: Correct documentation
-From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-To: Jiri Kosina <jkosina@suse.cz>
-Cc: jic23@kernel.org, linux-iio@vger.kernel.org,
-	linux-input@vger.kernel.org
-Date: Wed, 07 Jan 2015 08:01:03 -0800
-In-Reply-To: <alpine.LNX.2.00.1501070946540.25732@pobox.suse.cz>
-References: <1420592328-9942-1-git-send-email-srinivas.pandruvada@linux.intel.com>
-	 <alpine.LNX.2.00.1501070946540.25732@pobox.suse.cz>
-Content-Type: text/plain; charset="UTF-8"
-Mime-Version: 1.0
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <harald@ccbib.org>
+From: Harald Geyer <harald@ccbib.org>
+To: Jonathan Cameron <jic23@kernel.org>
+cc: Richard Weinberger <richard@nod.at>, knaack.h@gmx.de,
+    lars@metafoo.de, pmeerw@pmeerw.net, sanjeev_sharma@mentor.com,
+    linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCHv2 3/3,RESEND] iio: dht11: IRQ fixes
+In-reply-to: <54AA97B9.7040703@nod.at>
+References: <1417563176-31972-1-git-send-email-richard@nod.at> <54A53FBF.5000003@kernel.org> <7e4f6a70e48afe96457ebbcf07572224@imap.cosmopool.net> <54A680F8.30209@nod.at> <54A91DA1.6080107@kernel.org> <E1Y881p-0001Fp-NX@stardust.g4.wien.funkfeuer.at> <54AA97B9.7040703@nod.at>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Date: Wed, 07 Jan 2015 13:22:49 +0100
+Message-Id: <E1Y8pdR-00013J-DE@stardust.g4.wien.funkfeuer.at>
+List-ID: <linux-iio@vger.kernel.org>
 
-On Wed, 2015-01-07 at 09:48 +0100, Jiri Kosina wrote: Hi Jiri,
+Since setting irq-enabled GPIOs into output state is not supported
+by all GPIO controllers, we need to disable the irq while requesting
+sensor data. As side effect we lose a tiny bit of functionality:
+Some wiring problems can't be concluded from log messages anymore.
 
-> Srinivas,
-> 
-> the way you sent the patches are really confusing.
-> 
-> Most importantly, you seem to have inter-mixed three patch series (with 
-> 4,8 and 9 patches respectively) into one thread, plus there are 4 patches 
-> which aren't marked by series numbering. All this is mixed together into 
-> one thread without any particular ordering.
-> 
-There are 7 series:
-- The four patches, which are single independent patches
-- The others 3 are multiple patches part of series.
+From: Richard Weinberger <richard@nod.at>
+Signed-off-by: Richard Weinberger <richard@nod.at>
+Signed-off-by: Harald Geyer <harald@ccbib.org>
+---
+Resending to get the metadata right.
 
-> This way it makes it really difficult to review (and possibly apply 
-> afterwards).
-> 
-> Could you please resend as proper independent series, with correct 
-> threading etc?
-Let me send again one series at a time.
+changes since v1:
+Reduce the expected number of edges per data transmission, since we
+won't see the edges we generate ourselves.
 
-Thanks,
-Srinivas
+ drivers/iio/humidity/dht11.c |   62 +++++++++++++++++++++++------------------
+ 1 files changed, 35 insertions(+), 27 deletions(-)
 
-
-> 
-> -- 
-> Jiri Kosina
-> SUSE Labs
-
-
+diff --git a/drivers/iio/humidity/dht11.c b/drivers/iio/humidity/dht11.c
+index 7717f5c..7d79a1a 100644
+--- a/drivers/iio/humidity/dht11.c
++++ b/drivers/iio/humidity/dht11.c
+@@ -40,8 +40,12 @@
+ 
+ #define DHT11_DATA_VALID_TIME	2000000000  /* 2s in ns */
+ 
+-#define DHT11_EDGES_PREAMBLE 4
++#define DHT11_EDGES_PREAMBLE 2
+ #define DHT11_BITS_PER_READ 40
++/*
++ * Note that when reading the sensor actually 84 edges are detected, but
++ * since the last edge is not significant, we only store 83:
++ */
+ #define DHT11_EDGES_PER_READ (2*DHT11_BITS_PER_READ + DHT11_EDGES_PREAMBLE + 1)
+ 
+ /* Data transmission timing (nano seconds) */
+@@ -140,6 +144,27 @@ static int dht11_decode(struct dht11 *dht11, int offset)
+ 	return 0;
+ }
+ 
++/*
++ * IRQ handler called on GPIO edges
++ */
++static irqreturn_t dht11_handle_irq(int irq, void *data)
++{
++	struct iio_dev *iio = data;
++	struct dht11 *dht11 = iio_priv(iio);
++
++	/* TODO: Consider making the handler safe for IRQ sharing */
++	if (dht11->num_edges < DHT11_EDGES_PER_READ && dht11->num_edges >= 0) {
++		dht11->edges[dht11->num_edges].ts = iio_get_time_ns();
++		dht11->edges[dht11->num_edges++].value =
++						gpio_get_value(dht11->gpio);
++
++		if (dht11->num_edges >= DHT11_EDGES_PER_READ)
++			complete(&dht11->completion);
++	}
++
++	return IRQ_HANDLED;
++}
++
+ static int dht11_read_raw(struct iio_dev *iio_dev,
+ 			const struct iio_chan_spec *chan,
+ 			int *val, int *val2, long m)
+@@ -160,8 +185,17 @@ static int dht11_read_raw(struct iio_dev *iio_dev,
+ 		if (ret)
+ 			goto err;
+ 
++		ret = request_irq(dht11->irq, dht11_handle_irq,
++				  IRQF_TRIGGER_RISING | IRQF_TRIGGER_FALLING,
++				  iio_dev->name, iio_dev);
++		if (ret)
++			goto err;
++
+ 		ret = wait_for_completion_killable_timeout(&dht11->completion,
+ 								 HZ);
++
++		free_irq(dht11->irq, iio_dev);
++
+ 		if (ret == 0 && dht11->num_edges < DHT11_EDGES_PER_READ - 1) {
+ 			dev_err(&iio_dev->dev,
+ 					"Only %d signal edges detected\n",
+@@ -197,27 +231,6 @@ static const struct iio_info dht11_iio_info = {
+ 	.read_raw		= dht11_read_raw,
+ };
+ 
+-/*
+- * IRQ handler called on GPIO edges
+-*/
+-static irqreturn_t dht11_handle_irq(int irq, void *data)
+-{
+-	struct iio_dev *iio = data;
+-	struct dht11 *dht11 = iio_priv(iio);
+-
+-	/* TODO: Consider making the handler safe for IRQ sharing */
+-	if (dht11->num_edges < DHT11_EDGES_PER_READ && dht11->num_edges >= 0) {
+-		dht11->edges[dht11->num_edges].ts = iio_get_time_ns();
+-		dht11->edges[dht11->num_edges++].value =
+-						gpio_get_value(dht11->gpio);
+-
+-		if (dht11->num_edges >= DHT11_EDGES_PER_READ)
+-			complete(&dht11->completion);
+-	}
+-
+-	return IRQ_HANDLED;
+-}
+-
+ static const struct iio_chan_spec dht11_chan_spec[] = {
+ 	{ .type = IIO_TEMP,
+ 		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED), },
+@@ -260,11 +273,6 @@ static int dht11_probe(struct platform_device *pdev)
+ 		dev_err(dev, "GPIO %d has no interrupt\n", dht11->gpio);
+ 		return -EINVAL;
+ 	}
+-	ret = devm_request_irq(dev, dht11->irq, dht11_handle_irq,
+-				IRQF_TRIGGER_RISING | IRQF_TRIGGER_FALLING,
+-				pdev->name, iio);
+-	if (ret)
+-		return ret;
+ 
+ 	dht11->timestamp = iio_get_time_ns() - DHT11_DATA_VALID_TIME - 1;
+ 	dht11->num_edges = -1;
+-- 
+1.7.2.5
