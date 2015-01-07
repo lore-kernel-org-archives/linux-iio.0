@@ -5,165 +5,91 @@ To: jkosina@suse.cz,
 Cc: linux-iio@vger.kernel.org,
 	linux-input@vger.kernel.org,
 	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-Subject: [PATCH 1/8] iio: hid_sensor_hub: Common PM functions
-Date: Tue,  6 Jan 2015 16:58:40 -0800
-Message-Id: <1420592328-9942-17-git-send-email-srinivas.pandruvada@linux.intel.com>
+Subject: [PATCH 1/9] HID: hid-sensor-hub: Extend API for async reads
+Date: Tue,  6 Jan 2015 16:58:31 -0800
+Message-Id: <1420592328-9942-8-git-send-email-srinivas.pandruvada@linux.intel.com>
 In-Reply-To: <1420592328-9942-1-git-send-email-srinivas.pandruvada@linux.intel.com>
 References: <1420592328-9942-1-git-send-email-srinivas.pandruvada@linux.intel.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-To improvement power and performance, both regular and run time callbacks
-are introduced. Because of auto suspend delay, two consecutive read
-don't have to go through full power on/off procedure. The auto suspend
-time can be adjusted using regular power attributes of PM sysfs.
+Add additional flag to read in async mode. In this mode the caller
+need to register for events and match attribute usage id for result.
 
 Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
 ---
- .../iio/common/hid-sensors/hid-sensor-trigger.c    | 76 +++++++++++++++++++++-
- .../iio/common/hid-sensors/hid-sensor-trigger.h    |  5 ++
- 2 files changed, 79 insertions(+), 2 deletions(-)
+ drivers/hid/hid-sensor-hub.c   | 15 ++++++++++++++-
+ include/linux/hid-sensor-hub.h | 19 +++++++++++++------
+ 2 files changed, 27 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/iio/common/hid-sensors/hid-sensor-trigger.c b/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
-index 910e82a..d128070 100644
---- a/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
-+++ b/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
-@@ -22,16 +22,18 @@
- #include <linux/interrupt.h>
- #include <linux/irq.h>
- #include <linux/slab.h>
-+#include <linux/delay.h>
- #include <linux/hid-sensor-hub.h>
- #include <linux/iio/iio.h>
- #include <linux/iio/trigger.h>
- #include <linux/iio/sysfs.h>
- #include "hid-sensor-trigger.h"
+diff --git a/drivers/hid/hid-sensor-hub.c b/drivers/hid/hid-sensor-hub.c
+index 8d177f0..84290e5 100644
+--- a/drivers/hid/hid-sensor-hub.c
++++ b/drivers/hid/hid-sensor-hub.c
+@@ -269,13 +269,26 @@ EXPORT_SYMBOL_GPL(sensor_hub_get_feature);
  
--int hid_sensor_power_state(struct hid_sensor_common *st, bool state)
-+static int _hid_sensor_power_state(struct hid_sensor_common *st, bool state)
+ int sensor_hub_input_attr_get_raw_value(struct hid_sensor_hub_device *hsdev,
+ 					u32 usage_id,
+-					u32 attr_usage_id, u32 report_id)
++					u32 attr_usage_id, u32 report_id,
++					enum sensor_hub_read_flags flag)
  {
- 	int state_val;
- 	int report_val;
-+	s32 poll_value = 0;
+ 	struct sensor_hub_data *data = hid_get_drvdata(hsdev->hdev);
+ 	unsigned long flags;
+ 	struct hid_report *report;
+ 	int ret_val = 0;
  
- 	if (state) {
- 		if (sensor_hub_device_open(st->hsdev))
-@@ -47,6 +49,8 @@ int hid_sensor_power_state(struct hid_sensor_common *st, bool state)
- 			st->report_state.report_id,
- 			st->report_state.index,
- 			HID_USAGE_SENSOR_PROP_REPORTING_STATE_ALL_EVENTS_ENUM);
++	if (flag == SENSOR_HUB_ASYNC) {
++		report = sensor_hub_report(report_id, hsdev->hdev,
++					   HID_INPUT_REPORT);
++		if (!report)
++			return -EINVAL;
 +
-+		poll_value = hid_sensor_read_poll_value(st);
- 	} else {
- 		if (!atomic_dec_and_test(&st->data_ready))
- 			return 0;
-@@ -79,7 +83,34 @@ int hid_sensor_power_state(struct hid_sensor_common *st, bool state)
- 	sensor_hub_get_feature(st->hsdev, st->power_state.report_id,
- 			       st->power_state.index,
- 			       sizeof(state_val), &state_val);
-+
-+	if (state && poll_value)
-+		msleep_interruptible(poll_value * 2);
-+
-+	return 0;
-+}
-+
-+int hid_sensor_power_state(struct hid_sensor_common *st, bool state)
-+{
-+#ifdef CONFIG_PM
-+	int ret;
-+
-+	if (state)
-+		ret = pm_runtime_get_sync(&st->pdev->dev);
-+	else {
-+		pm_runtime_mark_last_busy(&st->pdev->dev);
-+		ret = pm_runtime_put_autosuspend(&st->pdev->dev);
-+	}
-+	if (ret < 0) {
-+		if (state)
-+			pm_runtime_put_noidle(&st->pdev->dev);
-+		return ret;
++		mutex_lock(&data->mutex);
++		hid_hw_request(hsdev->hdev, report, HID_REQ_GET_REPORT);
++		mutex_unlock(&data->mutex);
++		return 0;
 +	}
 +
- 	return 0;
-+#else
-+	return _hid_sensor_power_state(st, state);
-+#endif
- }
- EXPORT_SYMBOL(hid_sensor_power_state);
+ 	mutex_lock(&hsdev->mutex);
+ 	memset(&hsdev->pending, 0, sizeof(hsdev->pending));
+ 	init_completion(&hsdev->pending.ready);
+diff --git a/include/linux/hid-sensor-hub.h b/include/linux/hid-sensor-hub.h
+index a51c768..d48e91f 100644
+--- a/include/linux/hid-sensor-hub.h
++++ b/include/linux/hid-sensor-hub.h
+@@ -171,20 +171,27 @@ int sensor_hub_input_get_attribute_info(struct hid_sensor_hub_device *hsdev,
+ 			struct hid_sensor_hub_attribute_info *info);
  
-@@ -126,8 +157,21 @@ int hid_sensor_setup_trigger(struct iio_dev *indio_dev, const char *name,
- 	attrb->trigger = trig;
- 	indio_dev->trig = iio_trigger_get(trig);
+ /**
+-* sensor_hub_input_attr_get_raw_value() - Synchronous read request
++* sensor_hub_input_attr_get_raw_value() - Attribute read request
+ * @hsdev:	Hub device instance.
+ * @usage_id:	Attribute usage id of parent physical device as per spec
+ * @attr_usage_id:	Attribute usage id as per spec
+ * @report_id:	Report id to look for
++* @flag:	Synchronour or asynchronous read
+ *
+-* Issues a synchronous read request for an input attribute. Returns
+-* data upto 32 bits. Since client can get events, so this call should
+-* not be used for data paths, this will impact performance.
++* Issues a synchronous or asynchronous read request for an input attribute.
++* Returns data upto 32 bits.
+ */
  
--	return ret;
-+	ret = pm_runtime_set_active(&indio_dev->dev);
-+	if (ret)
-+		goto error_unreg_trigger;
-+
-+	iio_device_set_drvdata(indio_dev, attrb);
-+	pm_suspend_ignore_children(&attrb->pdev->dev, true);
-+	pm_runtime_enable(&attrb->pdev->dev);
-+	/* Default to 3 seconds, but can be changed from sysfs */
-+	pm_runtime_set_autosuspend_delay(&attrb->pdev->dev,
-+					 3000);
-+	pm_runtime_use_autosuspend(&attrb->pdev->dev);
- 
-+	return ret;
-+error_unreg_trigger:
-+	iio_trigger_unregister(trig);
- error_free_trig:
- 	iio_trigger_free(trig);
- error_ret:
-@@ -135,6 +179,34 @@ error_ret:
- }
- EXPORT_SYMBOL(hid_sensor_setup_trigger);
- 
-+#ifdef CONFIG_PM
-+static int hid_sensor_suspend(struct device *dev)
-+{
-+	struct platform_device *pdev = to_platform_device(dev);
-+	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
-+	struct hid_sensor_common *attrb = iio_device_get_drvdata(indio_dev);
-+
-+	return _hid_sensor_power_state(attrb, false);
-+}
-+
-+static int hid_sensor_resume(struct device *dev)
-+{
-+	struct platform_device *pdev = to_platform_device(dev);
-+	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
-+	struct hid_sensor_common *attrb = iio_device_get_drvdata(indio_dev);
-+
-+	return _hid_sensor_power_state(attrb, true);
-+}
-+
-+#endif
-+
-+const struct dev_pm_ops hid_sensor_pm_ops = {
-+	SET_SYSTEM_SLEEP_PM_OPS(hid_sensor_suspend, hid_sensor_resume)
-+	SET_RUNTIME_PM_OPS(hid_sensor_suspend,
-+			   hid_sensor_resume, NULL)
++enum sensor_hub_read_flags {
++	SENSOR_HUB_SYNC,
++	SENSOR_HUB_ASYNC,
 +};
-+EXPORT_SYMBOL(hid_sensor_pm_ops);
 +
- MODULE_AUTHOR("Srinivas Pandruvada <srinivas.pandruvada@intel.com>");
- MODULE_DESCRIPTION("HID Sensor trigger processing");
- MODULE_LICENSE("GPL");
-diff --git a/drivers/iio/common/hid-sensors/hid-sensor-trigger.h b/drivers/iio/common/hid-sensors/hid-sensor-trigger.h
-index 0f8e78c..9f4713f 100644
---- a/drivers/iio/common/hid-sensors/hid-sensor-trigger.h
-+++ b/drivers/iio/common/hid-sensors/hid-sensor-trigger.h
-@@ -19,6 +19,11 @@
- #ifndef _HID_SENSOR_TRIGGER_H
- #define _HID_SENSOR_TRIGGER_H
- 
-+#include <linux/pm.h>
-+#include <linux/pm_runtime.h>
-+
-+extern const struct dev_pm_ops hid_sensor_pm_ops;
-+
- int hid_sensor_setup_trigger(struct iio_dev *indio_dev, const char *name,
- 				struct hid_sensor_common *attrb);
- void hid_sensor_remove_trigger(struct hid_sensor_common *attrb);
+ int sensor_hub_input_attr_get_raw_value(struct hid_sensor_hub_device *hsdev,
+-			u32 usage_id,
+-			u32 attr_usage_id, u32 report_id);
++					u32 usage_id,
++					u32 attr_usage_id, u32 report_id,
++					enum sensor_hub_read_flags flag
++);
+ /**
+ * sensor_hub_set_feature() - Feature set request
+ * @hsdev:	Hub device instance.
 -- 
 1.9.1
