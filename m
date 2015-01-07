@@ -1,66 +1,89 @@
-Return-Path: <k.wrona@samsung.com>
-From: Karol Wrona <k.wrona@samsung.com>
-To: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
- Hartmut Knaack <knaack.h@gmx.de>, Lars-Peter Clausen <lars@metafoo.de>,
- Peter Meerwald <pmeerw@pmeerw.net>, linux-kernel@vger.kernel.org
-Cc: Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
- Kyungmin Park <kyungmin.park@samsung.com>, Karol Wrona <wrona.vy@gmail.com>,
- Karol Wrona <k.wrona@samsung.com>
-Subject: [RFC PATCH] iio: Add new operating mode for non triggered sw buffers
-Date: Wed, 07 Jan 2015 19:36:11 +0100
-Message-id: <1420655771-22465-1-git-send-email-k.wrona@samsung.com>
+Return-Path: <srinivas.pandruvada@linux.intel.com>
+From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+To: jkosina@suse.cz,
+	jic23@kernel.org
+Cc: linux-iio@vger.kernel.org,
+	linux-input@vger.kernel.org,
+	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Subject: [PATCH 3/4] HID: hid-sensor-hub: Enhance feature report set API
+Date: Wed,  7 Jan 2015 10:31:47 -0800
+Message-Id: <1420655508-6736-4-git-send-email-srinivas.pandruvada@linux.intel.com>
+In-Reply-To: <1420655508-6736-1-git-send-email-srinivas.pandruvada@linux.intel.com>
+References: <1420655508-6736-1-git-send-email-srinivas.pandruvada@linux.intel.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-There was a need for non triggered software buffer type.  It can be used when
-triggered model does not fit and INDIO_BUFFER_HARDWARE causes confusion because
-the data stream can be obtained not directly form hardware backend.
+Current API only allows setting one offset in the field. This API
+is extended to set multiple offsets in the field report.
 
-Suggested-by: Jonathan Cameron <jic23@kernel.org>
-Signed-off-by: Karol Wrona <k.wrona@samsung.com>
+Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
 ---
- drivers/iio/industrialio-buffer.c |    2 ++
- include/linux/iio/iio.h           |    6 ++++--
- 2 files changed, 6 insertions(+), 2 deletions(-)
+ drivers/hid/hid-sensor-hub.c   | 22 ++++++++++++++++++++--
+ include/linux/hid-sensor-hub.h |  5 +++--
+ 2 files changed, 23 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/iio/industrialio-buffer.c b/drivers/iio/industrialio-buffer.c
-index f971f79..15e6de3 100644
---- a/drivers/iio/industrialio-buffer.c
-+++ b/drivers/iio/industrialio-buffer.c
-@@ -680,6 +680,8 @@ static int __iio_update_buffers(struct iio_dev *indio_dev,
- 		indio_dev->currentmode = INDIO_BUFFER_TRIGGERED;
- 	} else if (indio_dev->modes & INDIO_BUFFER_HARDWARE) {
- 		indio_dev->currentmode = INDIO_BUFFER_HARDWARE;
-+	} else if (indio_dev->modes & INDIO_BUFFER_SOFTWARE) {
-+		indio_dev->currentmode = INDIO_BUFFER_SOFTWARE;
- 	} else { /* Should never be reached */
- 		ret = -EINVAL;
- 		goto error_run_postdisable;
-diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
-index 3642ce7..55e63fd 100644
---- a/include/linux/iio/iio.h
-+++ b/include/linux/iio/iio.h
-@@ -284,10 +284,11 @@ static inline s64 iio_get_time_ns(void)
- /* Device operating modes */
- #define INDIO_DIRECT_MODE		0x01
- #define INDIO_BUFFER_TRIGGERED		0x02
-+#define INDIO_BUFFER_SOFTWARE		0x04
- #define INDIO_BUFFER_HARDWARE		0x08
+diff --git a/drivers/hid/hid-sensor-hub.c b/drivers/hid/hid-sensor-hub.c
+index d17aa67..8bed109 100644
+--- a/drivers/hid/hid-sensor-hub.c
++++ b/drivers/hid/hid-sensor-hub.c
+@@ -194,10 +194,14 @@ int sensor_hub_remove_callback(struct hid_sensor_hub_device *hsdev,
+ EXPORT_SYMBOL_GPL(sensor_hub_remove_callback);
  
- #define INDIO_ALL_BUFFER_MODES					\
--	(INDIO_BUFFER_TRIGGERED | INDIO_BUFFER_HARDWARE)
-+	(INDIO_BUFFER_TRIGGERED | INDIO_BUFFER_HARDWARE | INDIO_BUFFER_SOFTWARE)
- 
- #define INDIO_MAX_RAW_ELEMENTS		4
- 
-@@ -591,7 +592,8 @@ void devm_iio_trigger_free(struct device *dev, struct iio_trigger *iio_trig);
- static inline bool iio_buffer_enabled(struct iio_dev *indio_dev)
+ int sensor_hub_set_feature(struct hid_sensor_hub_device *hsdev, u32 report_id,
+-				u32 field_index, s32 value)
++			   u32 field_index, int buffer_size, void *buffer)
  {
- 	return indio_dev->currentmode
--		& (INDIO_BUFFER_TRIGGERED | INDIO_BUFFER_HARDWARE);
-+		& (INDIO_BUFFER_TRIGGERED | INDIO_BUFFER_HARDWARE |
-+		   INDIO_BUFFER_SOFTWARE);
- }
+ 	struct hid_report *report;
+ 	struct sensor_hub_data *data = hid_get_drvdata(hsdev->hdev);
++	__s32 *buf32 = (__s32 *)buffer;
++	int i = 0;
++	int remaining_bytes;
++	__s32 value;
+ 	int ret = 0;
+ 
+ 	mutex_lock(&data->mutex);
+@@ -206,7 +210,21 @@ int sensor_hub_set_feature(struct hid_sensor_hub_device *hsdev, u32 report_id,
+ 		ret = -EINVAL;
+ 		goto done_proc;
+ 	}
+-	hid_set_field(report->field[field_index], 0, value);
++
++	remaining_bytes = do_div(buffer_size, sizeof(__s32));
++	if (buffer_size) {
++		for (i = 0; i < buffer_size; ++i) {
++			hid_set_field(report->field[field_index], i,
++				      cpu_to_le32(*buf32));
++			++buf32;
++		}
++	}
++	if (remaining_bytes) {
++		value = 0;
++		memcpy(&value, (u8 *)buf32, remaining_bytes);
++		hid_set_field(report->field[field_index], i,
++			      cpu_to_le32(value));
++	}
+ 	hid_hw_request(hsdev->hdev, report, HID_REQ_SET_REPORT);
+ 	hid_hw_wait(hsdev->hdev);
+ 
+diff --git a/include/linux/hid-sensor-hub.h b/include/linux/hid-sensor-hub.h
+index 1995bbd..a51c768 100644
+--- a/include/linux/hid-sensor-hub.h
++++ b/include/linux/hid-sensor-hub.h
+@@ -190,13 +190,14 @@ int sensor_hub_input_attr_get_raw_value(struct hid_sensor_hub_device *hsdev,
+ * @hsdev:	Hub device instance.
+ * @report_id:	Report id to look for
+ * @field_index:	Field index inside a report
+-* @value:	Value to set
++* @buffer_size: size of the buffer
++* @buffer:	buffer to use in the feature set
+ *
+ * Used to set a field in feature report. For example this can set polling
+ * interval, sensitivity, activate/deactivate state.
+ */
+ int sensor_hub_set_feature(struct hid_sensor_hub_device *hsdev, u32 report_id,
+-			u32 field_index, s32 value);
++			   u32 field_index, int buffer_size, void *buffer);
  
  /**
+ * sensor_hub_get_feature() - Feature get request
 -- 
-1.7.9.5
+1.9.3
