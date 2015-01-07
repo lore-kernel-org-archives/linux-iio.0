@@ -1,76 +1,31 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga09.intel.com ([134.134.136.24]:39246 "EHLO mga09.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1755753AbbAHBEd (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Wed, 7 Jan 2015 20:04:33 -0500
-Date: Wed, 7 Jan 2015 17:04:14 -0800
-From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-To: todd.e.brandt@linux.intel.com
-Cc: linux-pm@vger.kernel.org, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org, sameo@linux.intel.com,
-	lee.jones@linaro.org, sre@kernel.org, dbaryshkov@gmail.com,
-	dwmw2@infradead.org, david.woodhouse@intel.com,
-	todd.e.brandt@intel.com
-Subject: Re: [PATCH 1/3] mfd/axp20x: change battery cell name to fuel gauge
-Message-ID: <20150107170414.27762fea@ultegra>
-In-Reply-To: <20150107212450.GB3440@linux.intel.com>
-References: <20150107212450.GB3440@linux.intel.com>
+Received: from mail-ig0-f195.google.com ([209.85.213.195]:47750 "EHLO
+	mail-ig0-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754478AbbAGVg2 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 7 Jan 2015 16:36:28 -0500
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Date: Wed, 7 Jan 2015 16:36:27 -0500
+Message-ID: <CAH86sK+0fMKpkRAkPOt_oXGynhi6605w1acxWyXqywP3Cs4TTg@mail.gmail.com>
+Subject: sched_yield() call on Linux Kernel 2.6.39 is not behaving correctly
+From: Yogesh Ahire <yogesh02061983@gmail.com>
+To: linux-pm@vger.kernel.org, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Wed, 7 Jan 2015 13:24:50 -0800
-Todd E Brandt <todd.e.brandt@linux.intel.com> wrote:
+Hi All,
 
-> mfd/axp20x: change battery cell name to fuel gauge
-> 
-Acked-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
+I have a system with multiple CPU cores.  I have multiple threads
+assigned to particular CPU. Among these threads the main thread calls
+sched_yield() if it has nothing to do, I am hoping that doing so will
+give chance to other threads to run. But the strange behavior of
+sched_yield() is , even if there are ready-to-runs tasks on this CPU
+waiting for their turn, the task which calls sched_yield() is always
+running ( get scheduled) and not giving chance to any other task to
+run. It is consuming 100% of CPU. Is sched_yield() is broken on 2.6
+Kernel?
 
-> Name changes to the battery cell structure to a
-> more generic cell type: fuel gauge.
-> 
-> Signed-off-by: Todd Brandt <todd.e.brandt@intel.com>
-> ----
->  drivers/mfd/axp20x.c | 10 +++++-----
->  1 file changed, 5 insertions(+), 5 deletions(-)
-> 
-> diff --git a/drivers/mfd/axp20x.c b/drivers/mfd/axp20x.c
-> index b1b580a..e75717e 100644
-> --- a/drivers/mfd/axp20x.c
-> +++ b/drivers/mfd/axp20x.c
-> @@ -87,7 +87,7 @@ static struct resource axp20x_pek_resources[] = {
->  	},
->  };
->  
-> -static struct resource axp288_battery_resources[] = {
-> +static struct resource axp288_fuel_gauge_resources[] = {
->  	{
->  		.start = AXP288_IRQ_QWBTU,
->  		.end   = AXP288_IRQ_QWBTU,
-> @@ -236,7 +236,7 @@ static const struct i2c_device_id axp20x_i2c_id[]
-> = { };
->  MODULE_DEVICE_TABLE(i2c, axp20x_i2c_id);
->  
-> -static const struct acpi_device_id axp20x_acpi_match[] = {
-> +static struct acpi_device_id axp20x_acpi_match[] = {
->  	{
->  		.id = "INT33F4",
->  		.driver_data = AXP288_ID,
-> @@ -350,9 +350,9 @@ static struct mfd_cell axp288_cells[] = {
->  		.resources = axp288_charger_resources,
->  	},
->  	{
-> -		.name = "axp288_battery",
-> -		.num_resources =
-> ARRAY_SIZE(axp288_battery_resources),
-> -		.resources = axp288_battery_resources,
-> +		.name = "axp288_fuel_gauge",
-> +		.num_resources =
-> ARRAY_SIZE(axp288_fuel_gauge_resources),
-> +		.resources = axp288_fuel_gauge_resources,
->  	},
->  	{
->  		.name = "axp288_pmic_acpi",
 
-[Jacob Pan]
+Thanks
+Yogesh
