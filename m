@@ -5,53 +5,33 @@ To: jkosina@suse.cz,
 Cc: linux-iio@vger.kernel.org,
 	linux-input@vger.kernel.org,
 	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-Subject: [PATCH 2/8] iio: hid-sensor-accel-3d: Introduce PM
-Date: Wed,  7 Jan 2015 10:55:54 -0800
-Message-Id: <1420656960-7365-3-git-send-email-srinivas.pandruvada@linux.intel.com>
-In-Reply-To: <1420656960-7365-1-git-send-email-srinivas.pandruvada@linux.intel.com>
-References: <1420656960-7365-1-git-send-email-srinivas.pandruvada@linux.intel.com>
+Subject: [PATCH 0/8] Adding PM support to hid sensor iio drivers
+Date: Wed,  7 Jan 2015 10:55:52 -0800
+Message-Id: <1420656960-7365-1-git-send-email-srinivas.pandruvada@linux.intel.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-Use common hid sensor iio pm functions. Also the poll time read and
-wait is part of power up function of hid sensor iio pm function, so
-remove from the client drivers.
+Linux PM and runtime PM support.
 
-Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
----
- drivers/iio/accel/hid-sensor-accel-3d.c | 8 +-------
- 1 file changed, 1 insertion(+), 7 deletions(-)
+Srinivas Pandruvada (8):
+  iio: hid_sensor_hub: Common PM functions
+  iio: hid-sensor-accel-3d: Introduce PM
+  iio: hid-sensor-gyro-3d: Introduce PM
+  iio: hid-sensor-als: Introduce PM
+  iio: hid-sensor-prox: Introduce PM
+  iio: hid-sensor-magn-3d: Introduce PM
+  iio: hid-sensor-incl-3d: Introduce PM
+  iio: hid-sensor-press: Introduce PM
 
-diff --git a/drivers/iio/accel/hid-sensor-accel-3d.c b/drivers/iio/accel/hid-sensor-accel-3d.c
-index 0085c2f..2b4fad6 100644
---- a/drivers/iio/accel/hid-sensor-accel-3d.c
-+++ b/drivers/iio/accel/hid-sensor-accel-3d.c
-@@ -111,19 +111,12 @@ static int accel_3d_read_raw(struct iio_dev *indio_dev,
- 	int report_id = -1;
- 	u32 address;
- 	int ret_type;
--	s32 poll_value;
- 
- 	*val = 0;
- 	*val2 = 0;
- 	switch (mask) {
- 	case 0:
--		poll_value = hid_sensor_read_poll_value(
--					&accel_state->common_attributes);
--		if (poll_value < 0)
--			return -EINVAL;
--
- 		hid_sensor_power_state(&accel_state->common_attributes, true);
--		msleep_interruptible(poll_value * 2);
- 		report_id = accel_state->accel[chan->scan_index].report_id;
- 		address = accel_3d_addresses[chan->scan_index];
- 		if (report_id >= 0)
-@@ -420,6 +413,7 @@ static struct platform_driver hid_accel_3d_platform_driver = {
- 	.id_table = hid_accel_3d_ids,
- 	.driver = {
- 		.name	= KBUILD_MODNAME,
-+		.pm	= &hid_sensor_pm_ops,
- 	},
- 	.probe		= hid_accel_3d_probe,
- 	.remove		= hid_accel_3d_remove,
+ drivers/iio/accel/hid-sensor-accel-3d.c            |  8 +--
+ .../iio/common/hid-sensors/hid-sensor-trigger.c    | 76 +++++++++++++++++++++-
+ .../iio/common/hid-sensors/hid-sensor-trigger.h    |  5 ++
+ drivers/iio/gyro/hid-sensor-gyro-3d.c              |  8 +--
+ drivers/iio/light/hid-sensor-als.c                 |  9 +--
+ drivers/iio/light/hid-sensor-prox.c                | 10 +--
+ drivers/iio/magnetometer/hid-sensor-magn-3d.c      |  9 +--
+ drivers/iio/orientation/hid-sensor-incl-3d.c       |  9 +--
+ drivers/iio/pressure/hid-sensor-press.c            |  9 +--
+ 9 files changed, 86 insertions(+), 57 deletions(-)
+
 -- 
 1.9.3
