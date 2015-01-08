@@ -1,67 +1,89 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from sauhun.de ([89.238.76.85]:45601 "EHLO pokefinder.org"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1756985AbbAHQlE (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Thu, 8 Jan 2015 11:41:04 -0500
-Date: Thu, 8 Jan 2015 17:40:57 +0100
-From: Wolfram Sang <wsa@the-dreams.de>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	linux-iio@vger.kernel.org,
-	"linux-i2c@vger.kernel.org" <linux-i2c@vger.kernel.org>
-Subject: Re: [PATCH 3/3] iio: ak8975: Added autodetect feature for ACPI
-Message-ID: <20150108164057.GA7615@katana>
-References: <1418678363-22437-1-git-send-email-srinivas.pandruvada@linux.intel.com>
- <1418678363-22437-4-git-send-email-srinivas.pandruvada@linux.intel.com>
- <549300A5.5080904@metafoo.de>
- <1418921521.740.282.camel@spandruv-desktop.jf.intel.com>
- <54930965.3030008@metafoo.de>
- <1418923812.4459.8.camel@spandruv-desktop.jf.intel.com>
- <549314C4.8090001@metafoo.de>
- <1418925641.4459.11.camel@spandruv-desktop.jf.intel.com>
- <549D4C1F.6050907@kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:38574 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751001AbbAHTXE (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 8 Jan 2015 14:23:04 -0500
+Message-ID: <54AED914.5060108@kernel.org>
+Date: Thu, 08 Jan 2015 19:23:00 +0000
+From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="cWoXeonUoKmBZSoM"
-In-Reply-To: <549D4C1F.6050907@kernel.org>
+To: Daniel Baluta <daniel.baluta@intel.com>,
+	Peter Meerwald <pmeerw@pmeerw.net>
+CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Subject: Re: IIO_LIGHT vs IIO_INTENSITY
+References: <CAEnQRZAY82eKVK6B0-s1c1UWbZthML9gNvk2-+_hyb-VnTO-jw@mail.gmail.com>
+In-Reply-To: <CAEnQRZAY82eKVK6B0-s1c1UWbZthML9gNvk2-+_hyb-VnTO-jw@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
+On 08/01/15 15:19, Daniel Baluta wrote:
+> Hi,
+> 
+> I'm not sure I understand the difference between
+> IIO_LIGHT vs IIO_INTENSITY as seen by the IIO.
+> 
+> As far as i know:
+> 
+> * IIO_LIGHT channels are used to measure illuminance
+>   [1] and the units after application of scale and offset
+>   are lux.
+> * IIO_INTENSITY channels are used to measure luminous
+> intensity [2]? I guess that units after application of scale (?)
+> are candela (although, not documented in the ABI file [3]).
 
---cWoXeonUoKmBZSoM
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Units are really tricky for this as it tends to be a measure of light
+over a poorly specified frequency ranges.  Often these are not even
+in the visible range (infrared typically).
 
+Hence there isn't really a definition of what the units are.
 
-> This is odd enough, that I'd like a wider range of views on it.
->=20
-> Wolfram - was this the approach you had in mind?
+It would have been very tempting to insist that all light sensors
+only output the illuminance value and hide the real measurements,
+but some (tsl2563 and family IIRC amongst others) have threshold
+events based on the individual filtered light readings rather than
+the computed illuminance.
 
-Sorry, too busy with other stuff at this moment :(
+> 
+> Anyhow, reading the code for drivers with IIO_INTENSITY channels
+> it is not very clear what is the unit for in_intensityY_input or
+> in_intensityY_raw
+> after application of scale.
+> 
+> e.g for isl29125 the unit is lux [4]
+That's certainly novel given lux is only defined for a particular
+spectrum of light.  Hmm. That is an RGB sensor making this
+odd.  It's perfectly possible with calibrated colour sensors
+to estimate the illuminance but it isn't invertible so I can't
+really see how those can be in lux.  I suppose
+it might be the case that using that scale and the magic
+formula wikipedia gives, might give a resulting illuminance
+measurement?  Certainly not what we'd normally think of for
+scale though.
 
+Anyone else have a better understanding of this area than I
+can get from Wikipedia in 5 mins?
 
---cWoXeonUoKmBZSoM
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
+There is a note on on the isl29125 data sheet that may help us...
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
+5. 565nm Green, 620nm Red LED, 485nm Blue in white LED is used
+in production test. It’s irradiance is calibrated to produce
+the same DATA count against an illuminance level of 130 lux
+fluorescent light.
 
-iQIcBAEBAgAGBQJUrrMZAAoJEBQN5MwUoCm2N9cP/3/LtLkSfnId3ki54cIUK981
-xvFQZ3sr9ObMEj9OeDkdT1QKzk5k8wA5iJWwS5Esffne7qlZ7IbtP6juv0+grIL0
-Q/nWRCz6kV9IBpMZPEmi+1fvNBjmSvfthdMqVIRU6H/VxH5n+BWXrbEZFH6vBK/Z
-qGllQzlBeOCcZ7+jif088GiTbVudEQrJpqhIjQrHDJuXbi/EuA6lM82O2zv0UmLk
-wqZ/COizypgIUkP8mze2ww4y9PZ5N1iw4kCRGFEMSPYkEtIFPMW5/0nKD/4FxLrd
-bkxUIiCxL6811KjnyN8tv+29gYi1WxetI1NfanD/p5xHbtKZ6yB8F/YPUlgIWUoJ
-gksCoTH0L27oit2hab70XD68mB4gXSSmvBhkFcy8qBj0dHUSAhIU9rCrJab0iFqc
-sCKoLp4tR5mmhZC/uOHF1e8YHC8AxCf7aH/Hkm0+SBXPiE+nhDir9r7kf/c+D6ID
-2a5YCrWcrp88KiEphzuuEKP9wKa7rnB66mX2q0o7jPXVxQqp8w30B0xPMBgGUzkA
-VS53YpF1dT6euB0dTd3+6Qlc6DEbkV/T/uMAUreCjyF0CHdsl7RnS1YoFVN+yAJG
-x960OvtVwMiK5XXsgF360t46Ond8nXkXCbYWate0/+JeZBCm3Y0BdGWZAgpPQNRu
-KF1d+x9j3OBpCEteB/LI
-=d0o+
------END PGP SIGNATURE-----
+Clear as mud.  I guess that means they have a calibrated led
+with those frequencies matched against a calibrated 130 lux
+flourescent light?  Their scale is such that the colour
+values match....
 
---cWoXeonUoKmBZSoM--
+Jonathan
+> 
+> thanks,
+> Daniel.
+> 
+> [1] http://en.wikipedia.org/wiki/Illuminance
+> [2] http://en.wikipedia.org/wiki/Luminous_intensity
+> [3] http://lxr.free-electrons.com/source/Documentation/ABI/testing/sysfs-bus-iio#L992
+> [4] http://lxr.free-electrons.com/source/drivers/iio/light/isl29125.c#L122
+> 
+0
