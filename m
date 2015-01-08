@@ -1,137 +1,100 @@
-Return-Path: <knaack.h@gmx.de>
-Message-ID: <54AB179F.8020206@gmx.de>
-Date: Tue, 06 Jan 2015 00:00:47 +0100
-From: Hartmut Knaack <knaack.h@gmx.de>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mga14.intel.com ([192.55.52.115]:40344 "EHLO mga14.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1753708AbbAHBFB (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Wed, 7 Jan 2015 20:05:01 -0500
+Date: Wed, 7 Jan 2015 17:05:00 -0800
+From: Jacob Pan <jacob.jun.pan@linux.intel.com>
+To: todd.e.brandt@linux.intel.com
+Cc: linux-pm@vger.kernel.org, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org, sameo@linux.intel.com,
+	lee.jones@linaro.org, sre@kernel.org, dbaryshkov@gmail.com,
+	dwmw2@infradead.org, david.woodhouse@intel.com,
+	todd.e.brandt@intel.com
+Subject: Re: [PATCH 2/3] mfd/axp20x: add support for fuel gauge cell driver
+Message-ID: <20150107170500.321d0e8f@ultegra>
+In-Reply-To: <20150107212552.GC3440@linux.intel.com>
+References: <20150107212552.GC3440@linux.intel.com>
 MIME-Version: 1.0
-To: Daniel Baluta <daniel.baluta@intel.com>, jic23@kernel.org
-CC: lars@metafoo.de, pmeerw@pmeerw.net,
- srinivas.pandruvada@linux.intel.com, linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] iio: imu: kmx61: Drop odr_bits from
- kmx61_samp_freq_table
-References: <1420449702-2085-1-git-send-email-daniel.baluta@intel.com>
-In-Reply-To: <1420449702-2085-1-git-send-email-daniel.baluta@intel.com>
-Content-Type: text/plain; charset=ISO-8859-15
-List-ID: <linux-iio@vger.kernel.org>
+Content-Type: text/plain; charset=US-ASCII
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Daniel Baluta schrieb am 05.01.2015 um 10:21:
-> odr_bits values are between 0 and 11, so we can use the index
-> in kmx61_samp_freq_table instead of odr_bits structure member.
+On Wed, 7 Jan 2015 13:25:52 -0800
+Todd E Brandt <todd.e.brandt@linux.intel.com> wrote:
+
+> mfd/axp20x: add support for fuel gauge cell
 > 
-> Signed-off-by: Daniel Baluta <daniel.baluta@intel.com>
-Reviewed-by: Hartmut Knaack <knaack.h@gmx.de>
-> ---
-> Changes since v1:
-> 	* use ARRAY_SIZE instead of an hardcoded value
-> 	* review is at: https://lkml.org/lkml/2015/1/1/46
+Acked-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
+> Register definitions and platform data structure 
+> for fuel gauge cell devices.
 > 
->  drivers/iio/imu/kmx61.c | 64 ++++++++++++++++++++-----------------------------
->  1 file changed, 26 insertions(+), 38 deletions(-)
+> Signed-off-by: Todd Brandt <todd.e.brandt@intel.com>
+> ----
+>  include/linux/mfd/axp20x.h | 43
+> +++++++++++++++++++++++++++++++++++++++++-- 1 file changed, 41
+> insertions(+), 2 deletions(-)
 > 
-> diff --git a/drivers/iio/imu/kmx61.c b/drivers/iio/imu/kmx61.c
-> index b60b22d..a32ddbb 100644
-> --- a/drivers/iio/imu/kmx61.c
-> +++ b/drivers/iio/imu/kmx61.c
-> @@ -169,19 +169,18 @@ static const u16 kmx61_uscale_table[] = {9582, 19163, 38326};
->  static const struct {
->  	int val;
->  	int val2;
-> -	u8 odr_bits;
-> -} kmx61_samp_freq_table[] = { {12, 500000, 0x00},
-> -			{25, 0, 0x01},
-> -			{50, 0, 0x02},
-> -			{100, 0, 0x03},
-> -			{200, 0, 0x04},
-> -			{400, 0, 0x05},
-> -			{800, 0, 0x06},
-> -			{1600, 0, 0x07},
-> -			{0, 781000, 0x08},
-> -			{1, 563000, 0x09},
-> -			{3, 125000, 0x0A},
-> -			{6, 250000, 0x0B} };
-> +} kmx61_samp_freq_table[] = { {12, 500000},
-> +			{25, 0},
-> +			{50, 0},
-> +			{100, 0},
-> +			{200, 0},
-> +			{400, 0},
-> +			{800, 0},
-> +			{1600, 0},
-> +			{0, 781000},
-> +			{1, 563000},
-> +			{3, 125000},
-> +			{6, 250000} };
->  
->  static const struct {
->  	int val;
-> @@ -302,24 +301,10 @@ static int kmx61_convert_freq_to_bit(int val, int val2)
->  	for (i = 0; i < ARRAY_SIZE(kmx61_samp_freq_table); i++)
->  		if (val == kmx61_samp_freq_table[i].val &&
->  		    val2 == kmx61_samp_freq_table[i].val2)
-> -			return kmx61_samp_freq_table[i].odr_bits;
-> -	return -EINVAL;
-> -}
+> diff --git a/include/linux/mfd/axp20x.h b/include/linux/mfd/axp20x.h
+> index 81589d1..dfabd6d 100644
+> --- a/include/linux/mfd/axp20x.h
+> +++ b/include/linux/mfd/axp20x.h
+> @@ -124,10 +124,27 @@ enum {
+>  #define AXP288_PMIC_ADC_H               0x56
+>  #define AXP288_PMIC_ADC_L               0x57
+>  #define AXP288_ADC_TS_PIN_CTRL          0x84
 > -
-> -static int kmx61_convert_bit_to_freq(u8 odr_bits, int *val, int *val2)
-> -{
-> -	int i;
-> -
-> -	for (i = 0; i < ARRAY_SIZE(kmx61_samp_freq_table); i++)
-> -		if (odr_bits == kmx61_samp_freq_table[i].odr_bits) {
-> -			*val = kmx61_samp_freq_table[i].val;
-> -			*val2 = kmx61_samp_freq_table[i].val2;
-> -			return 0;
-> -		}
-> +			return i;
->  	return -EINVAL;
->  }
+>  #define AXP288_PMIC_ADC_EN              0x84
+> -#define AXP288_FG_TUNE5			0xed
 >  
-> -
->  static int kmx61_convert_wake_up_odr_to_bit(int val, int val2)
->  {
->  	int i;
-> @@ -478,7 +463,7 @@ static int kmx61_set_odr(struct kmx61_data *data, int val, int val2, u8 device)
+> +/* Fuel Gauge */
+> +#define AXP288_FG_RDC1_REG          0xba
+> +#define AXP288_FG_RDC0_REG          0xbb
+> +#define AXP288_FG_OCVH_REG          0xbc
+> +#define AXP288_FG_OCVL_REG          0xbd
+> +#define AXP288_FG_OCV_CURVE_REG     0xc0
+> +#define AXP288_FG_DES_CAP1_REG      0xe0
+> +#define AXP288_FG_DES_CAP0_REG      0xe1
+> +#define AXP288_FG_CC_MTR1_REG       0xe2
+> +#define AXP288_FG_CC_MTR0_REG       0xe3
+> +#define AXP288_FG_OCV_CAP_REG       0xe4
+> +#define AXP288_FG_CC_CAP_REG        0xe5
+> +#define AXP288_FG_LOW_CAP_REG       0xe6
+> +#define AXP288_FG_TUNE0             0xe8
+> +#define AXP288_FG_TUNE1             0xe9
+> +#define AXP288_FG_TUNE2             0xea
+> +#define AXP288_FG_TUNE3             0xeb
+> +#define AXP288_FG_TUNE4             0xec
+> +#define AXP288_FG_TUNE5             0xed
 >  
->  static int kmx61_get_odr(struct kmx61_data *data, int *val, int *val2,
->  			 u8 device)
-> -{	int i;
-> +{
->  	u8 lodr_bits;
+>  /* Regulators IDs */
+>  enum {
+> @@ -236,4 +253,26 @@ struct axp20x_dev {
+>  	const struct regmap_irq_chip	*regmap_irq_chip;
+>  };
 >  
->  	if (device & KMX61_ACC)
-> @@ -490,13 +475,13 @@ static int kmx61_get_odr(struct kmx61_data *data, int *val, int *val2,
->  	else
->  		return -EINVAL;
->  
-> -	for (i = 0; i < ARRAY_SIZE(kmx61_samp_freq_table); i++)
-> -		if (lodr_bits == kmx61_samp_freq_table[i].odr_bits) {
-> -			*val = kmx61_samp_freq_table[i].val;
-> -			*val2 = kmx61_samp_freq_table[i].val2;
-> -			return 0;
-> -		}
-> -	return -EINVAL;
-> +	if (lodr_bits >= ARRAY_SIZE(kmx61_samp_freq_table))
-> +		return -EINVAL;
+> +#define BATTID_LEN				64
+> +#define OCV_CURVE_SIZE			32
+> +#define MAX_THERM_CURVE_SIZE	25
+> +#define PD_DEF_MIN_TEMP			0
+> +#define PD_DEF_MAX_TEMP			55
 > +
-> +	*val = kmx61_samp_freq_table[lodr_bits].val;
-> +	*val2 = kmx61_samp_freq_table[lodr_bits].val2;
+> +struct axp20x_fg_pdata {
+> +	char battid[BATTID_LEN + 1];
+> +	int design_cap;
+> +	int min_volt;
+> +	int max_volt;
+> +	int max_temp;
+> +	int min_temp;
+> +	int cap1;
+> +	int cap0;
+> +	int rdc1;
+> +	int rdc0;
+> +	int ocv_curve[OCV_CURVE_SIZE];
+> +	int tcsz;
+> +	int thermistor_curve[MAX_THERM_CURVE_SIZE][2];
+> +};
 > +
-> +	return 0;
->  }
->  
->  static int kmx61_set_range(struct kmx61_data *data, u8 range)
-> @@ -580,8 +565,11 @@ static int kmx61_chip_init(struct kmx61_data *data)
->  	}
->  	data->odr_bits = ret;
->  
-> -	/* set output data rate for wake up (motion detection) function */
-> -	ret = kmx61_convert_bit_to_freq(data->odr_bits, &val, &val2);
-> +	/*
-> +	 * set output data rate for wake up (motion detection) function
-> +	 * to match data rate for accelerometer sampling
-> +	 */
-> +	ret = kmx61_get_odr(data, &val, &val2, KMX61_ACC);
->  	if (ret < 0)
->  		return ret;
->  
-> 
+>  #endif /* __LINUX_MFD_AXP20X_H */
+
+[Jacob Pan]
