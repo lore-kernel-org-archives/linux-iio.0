@@ -1,100 +1,84 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga14.intel.com ([192.55.52.115]:40344 "EHLO mga14.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1753708AbbAHBFB (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Wed, 7 Jan 2015 20:05:01 -0500
-Date: Wed, 7 Jan 2015 17:05:00 -0800
-From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-To: todd.e.brandt@linux.intel.com
-Cc: linux-pm@vger.kernel.org, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org, sameo@linux.intel.com,
-	lee.jones@linaro.org, sre@kernel.org, dbaryshkov@gmail.com,
-	dwmw2@infradead.org, david.woodhouse@intel.com,
-	todd.e.brandt@intel.com
-Subject: Re: [PATCH 2/3] mfd/axp20x: add support for fuel gauge cell driver
-Message-ID: <20150107170500.321d0e8f@ultegra>
-In-Reply-To: <20150107212552.GC3440@linux.intel.com>
-References: <20150107212552.GC3440@linux.intel.com>
+Received: from smtp-out-080.synserver.de ([212.40.185.80]:1095 "EHLO
+	smtp-out-080.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753868AbbAHKrJ (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 8 Jan 2015 05:47:09 -0500
+Message-ID: <54AE6024.8050303@metafoo.de>
+Date: Thu, 08 Jan 2015 11:47:00 +0100
+From: Lars-Peter Clausen <lars@metafoo.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+To: Karol Wrona <k.wrona@samsung.com>,
+	Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	linux-kernel@vger.kernel.org
+CC: Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
+	Kyungmin Park <kyungmin.park@samsung.com>,
+	Karol Wrona <wrona.vy@gmail.com>
+Subject: Re: [RFC PATCH] iio: Add new operating mode for non triggered sw
+ buffers
+References: <1420655771-22465-1-git-send-email-k.wrona@samsung.com>
+In-Reply-To: <1420655771-22465-1-git-send-email-k.wrona@samsung.com>
+Content-Type: text/plain; charset=windows-1252; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Wed, 7 Jan 2015 13:25:52 -0800
-Todd E Brandt <todd.e.brandt@linux.intel.com> wrote:
+On 01/07/2015 07:36 PM, Karol Wrona wrote:
+> There was a need for non triggered software buffer type.  It can be used when
+> triggered model does not fit and INDIO_BUFFER_HARDWARE causes confusion because
+> the data stream can be obtained not directly form hardware backend.
+>
+> Suggested-by: Jonathan Cameron <jic23@kernel.org>
+> Signed-off-by: Karol Wrona <k.wrona@samsung.com>
 
-> mfd/axp20x: add support for fuel gauge cell
-> 
-Acked-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
-> Register definitions and platform data structure 
-> for fuel gauge cell devices.
-> 
-> Signed-off-by: Todd Brandt <todd.e.brandt@intel.com>
-> ----
->  include/linux/mfd/axp20x.h | 43
-> +++++++++++++++++++++++++++++++++++++++++-- 1 file changed, 41
-> insertions(+), 2 deletions(-)
-> 
-> diff --git a/include/linux/mfd/axp20x.h b/include/linux/mfd/axp20x.h
-> index 81589d1..dfabd6d 100644
-> --- a/include/linux/mfd/axp20x.h
-> +++ b/include/linux/mfd/axp20x.h
-> @@ -124,10 +124,27 @@ enum {
->  #define AXP288_PMIC_ADC_H               0x56
->  #define AXP288_PMIC_ADC_L               0x57
->  #define AXP288_ADC_TS_PIN_CTRL          0x84
-> -
->  #define AXP288_PMIC_ADC_EN              0x84
-> -#define AXP288_FG_TUNE5			0xed
->  
-> +/* Fuel Gauge */
-> +#define AXP288_FG_RDC1_REG          0xba
-> +#define AXP288_FG_RDC0_REG          0xbb
-> +#define AXP288_FG_OCVH_REG          0xbc
-> +#define AXP288_FG_OCVL_REG          0xbd
-> +#define AXP288_FG_OCV_CURVE_REG     0xc0
-> +#define AXP288_FG_DES_CAP1_REG      0xe0
-> +#define AXP288_FG_DES_CAP0_REG      0xe1
-> +#define AXP288_FG_CC_MTR1_REG       0xe2
-> +#define AXP288_FG_CC_MTR0_REG       0xe3
-> +#define AXP288_FG_OCV_CAP_REG       0xe4
-> +#define AXP288_FG_CC_CAP_REG        0xe5
-> +#define AXP288_FG_LOW_CAP_REG       0xe6
-> +#define AXP288_FG_TUNE0             0xe8
-> +#define AXP288_FG_TUNE1             0xe9
-> +#define AXP288_FG_TUNE2             0xea
-> +#define AXP288_FG_TUNE3             0xeb
-> +#define AXP288_FG_TUNE4             0xec
-> +#define AXP288_FG_TUNE5             0xed
->  
->  /* Regulators IDs */
->  enum {
-> @@ -236,4 +253,26 @@ struct axp20x_dev {
->  	const struct regmap_irq_chip	*regmap_irq_chip;
->  };
->  
-> +#define BATTID_LEN				64
-> +#define OCV_CURVE_SIZE			32
-> +#define MAX_THERM_CURVE_SIZE	25
-> +#define PD_DEF_MIN_TEMP			0
-> +#define PD_DEF_MAX_TEMP			55
-> +
-> +struct axp20x_fg_pdata {
-> +	char battid[BATTID_LEN + 1];
-> +	int design_cap;
-> +	int min_volt;
-> +	int max_volt;
-> +	int max_temp;
-> +	int min_temp;
-> +	int cap1;
-> +	int cap0;
-> +	int rdc1;
-> +	int rdc0;
-> +	int ocv_curve[OCV_CURVE_SIZE];
-> +	int tcsz;
-> +	int thermistor_curve[MAX_THERM_CURVE_SIZE][2];
-> +};
-> +
->  #endif /* __LINUX_MFD_AXP20X_H */
+Looks good, thanks.
 
-[Jacob Pan]
+Reviewed-by: Lars-Peter Clausen <lars@metafoo.de>
+
+> ---
+>   drivers/iio/industrialio-buffer.c |    2 ++
+>   include/linux/iio/iio.h           |    6 ++++--
+>   2 files changed, 6 insertions(+), 2 deletions(-)
+>
+> diff --git a/drivers/iio/industrialio-buffer.c b/drivers/iio/industrialio-buffer.c
+> index f971f79..15e6de3 100644
+> --- a/drivers/iio/industrialio-buffer.c
+> +++ b/drivers/iio/industrialio-buffer.c
+> @@ -680,6 +680,8 @@ static int __iio_update_buffers(struct iio_dev *indio_dev,
+>   		indio_dev->currentmode = INDIO_BUFFER_TRIGGERED;
+>   	} else if (indio_dev->modes & INDIO_BUFFER_HARDWARE) {
+>   		indio_dev->currentmode = INDIO_BUFFER_HARDWARE;
+> +	} else if (indio_dev->modes & INDIO_BUFFER_SOFTWARE) {
+> +		indio_dev->currentmode = INDIO_BUFFER_SOFTWARE;
+>   	} else { /* Should never be reached */
+>   		ret = -EINVAL;
+>   		goto error_run_postdisable;
+> diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
+> index 3642ce7..55e63fd 100644
+> --- a/include/linux/iio/iio.h
+> +++ b/include/linux/iio/iio.h
+> @@ -284,10 +284,11 @@ static inline s64 iio_get_time_ns(void)
+>   /* Device operating modes */
+>   #define INDIO_DIRECT_MODE		0x01
+>   #define INDIO_BUFFER_TRIGGERED		0x02
+> +#define INDIO_BUFFER_SOFTWARE		0x04
+>   #define INDIO_BUFFER_HARDWARE		0x08
+>
+>   #define INDIO_ALL_BUFFER_MODES					\
+> -	(INDIO_BUFFER_TRIGGERED | INDIO_BUFFER_HARDWARE)
+> +	(INDIO_BUFFER_TRIGGERED | INDIO_BUFFER_HARDWARE | INDIO_BUFFER_SOFTWARE)
+>
+>   #define INDIO_MAX_RAW_ELEMENTS		4
+>
+> @@ -591,7 +592,8 @@ void devm_iio_trigger_free(struct device *dev, struct iio_trigger *iio_trig);
+>   static inline bool iio_buffer_enabled(struct iio_dev *indio_dev)
+>   {
+>   	return indio_dev->currentmode
+> -		& (INDIO_BUFFER_TRIGGERED | INDIO_BUFFER_HARDWARE);
+> +		& (INDIO_BUFFER_TRIGGERED | INDIO_BUFFER_HARDWARE |
+> +		   INDIO_BUFFER_SOFTWARE);
+>   }
+>
+>   /**
+>
+
