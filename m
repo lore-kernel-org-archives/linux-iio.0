@@ -1,32 +1,156 @@
-Return-Path: <srinivas.pandruvada@linux.intel.com>
-Message-ID: <1420736065.4459.182.camel@spandruv-desktop.jf.intel.com>
-Subject: Re: [PATCH 3/3] iio: ak8975: Added autodetect feature for ACPI
-From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-To: Wolfram Sang <wsa@the-dreams.de>
-Cc: Jonathan Cameron <jic23@kernel.org>, Lars-Peter Clausen
- <lars@metafoo.de>,  linux-iio@vger.kernel.org, "linux-i2c@vger.kernel.org"
- <linux-i2c@vger.kernel.org>
-Date: Thu, 08 Jan 2015 08:54:25 -0800
-In-Reply-To: <20150108164057.GA7615@katana>
-References: 
-	<1418678363-22437-1-git-send-email-srinivas.pandruvada@linux.intel.com>
-	 <1418678363-22437-4-git-send-email-srinivas.pandruvada@linux.intel.com>
-	 <549300A5.5080904@metafoo.de>
-	 <1418921521.740.282.camel@spandruv-desktop.jf.intel.com>
-	 <54930965.3030008@metafoo.de>
-	 <1418923812.4459.8.camel@spandruv-desktop.jf.intel.com>
-	 <549314C4.8090001@metafoo.de>
-	 <1418925641.4459.11.camel@spandruv-desktop.jf.intel.com>
-	 <549D4C1F.6050907@kernel.org> <20150108164057.GA7615@katana>
-Content-Type: text/plain; charset="UTF-8"
-Mime-Version: 1.0
+Return-Path: <k.wrona@samsung.com>
+From: Karol Wrona <k.wrona@samsung.com>
+To: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
+ Hartmut Knaack <knaack.h@gmx.de>, Lars-Peter Clausen <lars@metafoo.de>,
+ Peter Meerwald <pmeerw@pmeerw.net>, linux-kernel@vger.kernel.org
+Cc: Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
+ Kyungmin Park <kyungmin.park@samsung.com>, Karol Wrona <wrona.vy@gmail.com>,
+ Karol Wrona <k.wrona@samsung.com>
+Subject: [PATCH 1/2] iio: Add no-triggered buffer helper functions
+Date: Thu, 08 Jan 2015 17:40:26 +0100
+Message-id: <1420735227-21091-2-git-send-email-k.wrona@samsung.com>
+In-reply-to: <1420735227-21091-1-git-send-email-k.wrona@samsung.com>
+References: <1420735227-21091-1-git-send-email-k.wrona@samsung.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-On Thu, 2015-01-08 at 17:40 +0100, Wolfram Sang wrote: 
-> > This is odd enough, that I'd like a wider range of views on it.
-> > 
-> > Wolfram - was this the approach you had in mind?
-> 
-> Sorry, too busy with other stuff at this moment :(
-> 
-I will find some other way without using auto detect feature.
+These ones helps to create and manage iio_kfifo buffer when
+no-triggered buffer is used.
+
+Signed-off-by: Karol Wrona <k.wrona@samsung.com>
+Suggested-by: Jonathan Cameron <jic23@kernel.org>
+
+---
+ drivers/iio/Kconfig                           |    6 +++
+ drivers/iio/Makefile                          |    1 +
+ drivers/iio/industrialio-notriggered-buffer.c |   72 +++++++++++++++++++++++++
+ include/linux/iio/notriggered-buffer.h        |   11 ++++
+ 4 files changed, 90 insertions(+)
+ create mode 100644 drivers/iio/industrialio-notriggered-buffer.c
+ create mode 100644 include/linux/iio/notriggered-buffer.h
+
+diff --git a/drivers/iio/Kconfig b/drivers/iio/Kconfig
+index 345395e..50f6599 100644
+--- a/drivers/iio/Kconfig
++++ b/drivers/iio/Kconfig
+@@ -34,6 +34,12 @@ config IIO_KFIFO_BUF
+ 	  no buffer events so it is up to userspace to work out how
+ 	  often to read from the buffer.
+ 
++config IIO_NOTRIGGERED_BUFFER
++	tristate
++	select IIO_KFIFO_BUF
++	help
++	  Provides helper functions for setting up no-triggered buffers.
++
+ config IIO_TRIGGERED_BUFFER
+ 	tristate
+ 	select IIO_TRIGGER
+diff --git a/drivers/iio/Makefile b/drivers/iio/Makefile
+index 698afc2..fff7b1a 100644
+--- a/drivers/iio/Makefile
++++ b/drivers/iio/Makefile
+@@ -8,6 +8,7 @@ industrialio-$(CONFIG_IIO_BUFFER) += industrialio-buffer.o
+ industrialio-$(CONFIG_IIO_TRIGGER) += industrialio-trigger.o
+ industrialio-$(CONFIG_IIO_BUFFER_CB) += buffer_cb.o
+ 
++obj-$(CONFIG_IIO_NOTRIGGERED_BUFFER) += industrialio-notriggered-buffer.o
+ obj-$(CONFIG_IIO_TRIGGERED_BUFFER) += industrialio-triggered-buffer.o
+ obj-$(CONFIG_IIO_KFIFO_BUF) += kfifo_buf.o
+ 
+diff --git a/drivers/iio/industrialio-notriggered-buffer.c b/drivers/iio/industrialio-notriggered-buffer.c
+new file mode 100644
+index 0000000..3cbccab
+--- /dev/null
++++ b/drivers/iio/industrialio-notriggered-buffer.c
+@@ -0,0 +1,72 @@
++/*
++ *  Copyright (C) 2014, Samsung Electronics Co. Ltd. All Rights Reserved.
++ *
++ *  This program is free software; you can redistribute it and/or modify
++ *  it under the terms of the GNU General Public License as published by
++ *  the Free Software Foundation; either version 2 of the License, or
++ *  (at your option) any later version.
++ *
++ *  This program is distributed in the hope that it will be useful,
++ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
++ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ *  GNU General Public License for more details.
++ *
++ */
++
++#include <linux/kernel.h>
++#include <linux/export.h>
++#include <linux/module.h>
++#include <linux/iio/iio.h>
++#include <linux/iio/buffer.h>
++#include <linux/iio/kfifo_buf.h>
++
++/**
++ * iio_notriggered_buffer_setup() - Setup no-triggered buffer and pollfunc
++ * @indio_dev:		IIO device structure
++ * @setup_ops:		Buffer setup functions to use for this device.
++ *
++ * Usage: see iio_triggered_buffer_setup() comments.
++ *
++ * To free the resources allocated by this function call
++ * iio_notriggered_buffer_cleanup().
++ *
++ * Returns: 0 - success, < 0 failure
++ */
++int iio_notriggered_buffer_setup(struct iio_dev *indio_dev,
++				 const struct iio_buffer_setup_ops *setup_ops)
++
++{
++	int ret;
++	struct iio_buffer *buffer;
++
++	buffer = iio_kfifo_allocate();
++	if (!buffer)
++		return -ENOMEM;
++
++	iio_device_attach_buffer(indio_dev, buffer);
++
++	indio_dev->setup_ops = setup_ops;
++
++	ret = iio_buffer_register(indio_dev, indio_dev->channels,
++				  indio_dev->num_channels);
++	if (ret)
++		iio_kfifo_free(buffer);
++
++	return ret;
++}
++EXPORT_SYMBOL(iio_notriggered_buffer_setup);
++
++/**
++ * iio_notriggered_buffer_cleanup() - Free resources allocated by iio_notriggered_buffer_setup()
++ * @indio_dev: IIO device structure
++ */
++void iio_notriggered_buffer_cleanup(struct iio_dev *indio_dev)
++{
++	iio_buffer_unregister(indio_dev);
++	iio_kfifo_free(indio_dev->buffer);
++}
++EXPORT_SYMBOL(iio_notriggered_buffer_cleanup);
++
++MODULE_AUTHOR("Karol Wrona <k.wrona@samsung.com>");
++MODULE_DESCRIPTION("IIO helper functions for setting up no-triggered buffers");
++MODULE_LICENSE("GPL");
+diff --git a/include/linux/iio/notriggered-buffer.h b/include/linux/iio/notriggered-buffer.h
+new file mode 100644
+index 0000000..5b3e416
+--- /dev/null
++++ b/include/linux/iio/notriggered-buffer.h
+@@ -0,0 +1,11 @@
++#ifndef _LINUX_IIO_NOTRIGGERED_BUFFER_H_
++#define _LINUX_IIO_NOTRIGGERED_BUFFER_H_
++
++struct iio_dev;
++struct iio_buffer_setup_ops;
++
++int iio_notriggered_buffer_setup(struct iio_dev *indio_dev,
++				 const struct iio_buffer_setup_ops *setup_ops);
++void iio_notriggered_buffer_cleanup(struct iio_dev *indio_dev);
++
++#endif /* _LINUX_IIO_NOTRIGGERED_BUFFER_H_ */
+-- 
+1.7.9.5
