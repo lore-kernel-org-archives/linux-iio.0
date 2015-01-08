@@ -6,151 +6,40 @@ To: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
 Cc: Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
  Kyungmin Park <kyungmin.park@samsung.com>, Karol Wrona <wrona.vy@gmail.com>,
  Karol Wrona <k.wrona@samsung.com>
-Subject: [PATCH 1/2] iio: Add no-triggered buffer helper functions
-Date: Thu, 08 Jan 2015 17:40:26 +0100
-Message-id: <1420735227-21091-2-git-send-email-k.wrona@samsung.com>
-In-reply-to: <1420735227-21091-1-git-send-email-k.wrona@samsung.com>
-References: <1420735227-21091-1-git-send-email-k.wrona@samsung.com>
+Subject: [PATCH 0/2] iio: Add no-triggered buffer helper functions
+Date: Thu, 08 Jan 2015 17:40:25 +0100
+Message-id: <1420735227-21091-1-git-send-email-k.wrona@samsung.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-These ones helps to create and manage iio_kfifo buffer when
-no-triggered buffer is used.
+Hello,
 
-Signed-off-by: Karol Wrona <k.wrona@samsung.com>
-Suggested-by: Jonathan Cameron <jic23@kernel.org>
+This small patchset introduces helpers for iio kfifo which are useful when
+IIO_HARDWARE/SOFTWARE_BUFFER is used.  I decided to do it similar to Lars'
+industrialio-triggered-buffer as a separate module what can be considered
+as overkill but there is some risk that this source file will grow as new
+needs will appear.  Also it gives some flexibility with buffer handling choice.
 
----
- drivers/iio/Kconfig                           |    6 +++
+Second patch deselect IIO_TRIGGER for iio kfifo.  I think that there is no need
+to use triggers always when iio kfifo is used and IIO_TRIGGERED_BUFFER also
+selects IIO_KFIFO_BUF.  I need some comments for this one to be sure if I do not
+missed something.  TI's AM335X ADC driver uses kfifo directly but without
+triggered buffer/trigger in its sources so I hope there should be no problem
+with that.
+
+Thanks,
+Karol
+
+Karol Wrona (2):
+  iio: Add no-triggered buffer helper functions
+  iio: Deselect IIO_TRIGGER for IIO_KFIFO_BUF
+
+ drivers/iio/Kconfig                           |    7 ++-
  drivers/iio/Makefile                          |    1 +
  drivers/iio/industrialio-notriggered-buffer.c |   72 +++++++++++++++++++++++++
  include/linux/iio/notriggered-buffer.h        |   11 ++++
- 4 files changed, 90 insertions(+)
+ 4 files changed, 90 insertions(+), 1 deletion(-)
  create mode 100644 drivers/iio/industrialio-notriggered-buffer.c
  create mode 100644 include/linux/iio/notriggered-buffer.h
 
-diff --git a/drivers/iio/Kconfig b/drivers/iio/Kconfig
-index 345395e..50f6599 100644
---- a/drivers/iio/Kconfig
-+++ b/drivers/iio/Kconfig
-@@ -34,6 +34,12 @@ config IIO_KFIFO_BUF
- 	  no buffer events so it is up to userspace to work out how
- 	  often to read from the buffer.
- 
-+config IIO_NOTRIGGERED_BUFFER
-+	tristate
-+	select IIO_KFIFO_BUF
-+	help
-+	  Provides helper functions for setting up no-triggered buffers.
-+
- config IIO_TRIGGERED_BUFFER
- 	tristate
- 	select IIO_TRIGGER
-diff --git a/drivers/iio/Makefile b/drivers/iio/Makefile
-index 698afc2..fff7b1a 100644
---- a/drivers/iio/Makefile
-+++ b/drivers/iio/Makefile
-@@ -8,6 +8,7 @@ industrialio-$(CONFIG_IIO_BUFFER) += industrialio-buffer.o
- industrialio-$(CONFIG_IIO_TRIGGER) += industrialio-trigger.o
- industrialio-$(CONFIG_IIO_BUFFER_CB) += buffer_cb.o
- 
-+obj-$(CONFIG_IIO_NOTRIGGERED_BUFFER) += industrialio-notriggered-buffer.o
- obj-$(CONFIG_IIO_TRIGGERED_BUFFER) += industrialio-triggered-buffer.o
- obj-$(CONFIG_IIO_KFIFO_BUF) += kfifo_buf.o
- 
-diff --git a/drivers/iio/industrialio-notriggered-buffer.c b/drivers/iio/industrialio-notriggered-buffer.c
-new file mode 100644
-index 0000000..3cbccab
---- /dev/null
-+++ b/drivers/iio/industrialio-notriggered-buffer.c
-@@ -0,0 +1,72 @@
-+/*
-+ *  Copyright (C) 2014, Samsung Electronics Co. Ltd. All Rights Reserved.
-+ *
-+ *  This program is free software; you can redistribute it and/or modify
-+ *  it under the terms of the GNU General Public License as published by
-+ *  the Free Software Foundation; either version 2 of the License, or
-+ *  (at your option) any later version.
-+ *
-+ *  This program is distributed in the hope that it will be useful,
-+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
-+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-+ *  GNU General Public License for more details.
-+ *
-+ */
-+
-+#include <linux/kernel.h>
-+#include <linux/export.h>
-+#include <linux/module.h>
-+#include <linux/iio/iio.h>
-+#include <linux/iio/buffer.h>
-+#include <linux/iio/kfifo_buf.h>
-+
-+/**
-+ * iio_notriggered_buffer_setup() - Setup no-triggered buffer and pollfunc
-+ * @indio_dev:		IIO device structure
-+ * @setup_ops:		Buffer setup functions to use for this device.
-+ *
-+ * Usage: see iio_triggered_buffer_setup() comments.
-+ *
-+ * To free the resources allocated by this function call
-+ * iio_notriggered_buffer_cleanup().
-+ *
-+ * Returns: 0 - success, < 0 failure
-+ */
-+int iio_notriggered_buffer_setup(struct iio_dev *indio_dev,
-+				 const struct iio_buffer_setup_ops *setup_ops)
-+
-+{
-+	int ret;
-+	struct iio_buffer *buffer;
-+
-+	buffer = iio_kfifo_allocate();
-+	if (!buffer)
-+		return -ENOMEM;
-+
-+	iio_device_attach_buffer(indio_dev, buffer);
-+
-+	indio_dev->setup_ops = setup_ops;
-+
-+	ret = iio_buffer_register(indio_dev, indio_dev->channels,
-+				  indio_dev->num_channels);
-+	if (ret)
-+		iio_kfifo_free(buffer);
-+
-+	return ret;
-+}
-+EXPORT_SYMBOL(iio_notriggered_buffer_setup);
-+
-+/**
-+ * iio_notriggered_buffer_cleanup() - Free resources allocated by iio_notriggered_buffer_setup()
-+ * @indio_dev: IIO device structure
-+ */
-+void iio_notriggered_buffer_cleanup(struct iio_dev *indio_dev)
-+{
-+	iio_buffer_unregister(indio_dev);
-+	iio_kfifo_free(indio_dev->buffer);
-+}
-+EXPORT_SYMBOL(iio_notriggered_buffer_cleanup);
-+
-+MODULE_AUTHOR("Karol Wrona <k.wrona@samsung.com>");
-+MODULE_DESCRIPTION("IIO helper functions for setting up no-triggered buffers");
-+MODULE_LICENSE("GPL");
-diff --git a/include/linux/iio/notriggered-buffer.h b/include/linux/iio/notriggered-buffer.h
-new file mode 100644
-index 0000000..5b3e416
---- /dev/null
-+++ b/include/linux/iio/notriggered-buffer.h
-@@ -0,0 +1,11 @@
-+#ifndef _LINUX_IIO_NOTRIGGERED_BUFFER_H_
-+#define _LINUX_IIO_NOTRIGGERED_BUFFER_H_
-+
-+struct iio_dev;
-+struct iio_buffer_setup_ops;
-+
-+int iio_notriggered_buffer_setup(struct iio_dev *indio_dev,
-+				 const struct iio_buffer_setup_ops *setup_ops);
-+void iio_notriggered_buffer_cleanup(struct iio_dev *indio_dev);
-+
-+#endif /* _LINUX_IIO_NOTRIGGERED_BUFFER_H_ */
 -- 
 1.7.9.5
