@@ -1,36 +1,40 @@
-Return-Path: <k.wrona@samsung.com>
-From: Karol Wrona <k.wrona@samsung.com>
-To: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
- Hartmut Knaack <knaack.h@gmx.de>, Lars-Peter Clausen <lars@metafoo.de>,
- Peter Meerwald <pmeerw@pmeerw.net>, linux-kernel@vger.kernel.org
-Cc: Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
- Kyungmin Park <kyungmin.park@samsung.com>, Karol Wrona <wrona.vy@gmail.com>,
- Karol Wrona <k.wrona@samsung.com>
-Subject: [PATCH 2/2] iio: Deselect IIO_TRIGGER for IIO_KFIFO_BUF
-Date: Thu, 08 Jan 2015 17:40:27 +0100
-Message-id: <1420735227-21091-3-git-send-email-k.wrona@samsung.com>
-In-reply-to: <1420735227-21091-1-git-send-email-k.wrona@samsung.com>
-References: <1420735227-21091-1-git-send-email-k.wrona@samsung.com>
+Return-Path: <daniel.baluta@gmail.com>
+MIME-Version: 1.0
+Sender: daniel.baluta@gmail.com
+Date: Thu, 8 Jan 2015 17:19:23 +0200
+Message-ID: <CAEnQRZAY82eKVK6B0-s1c1UWbZthML9gNvk2-+_hyb-VnTO-jw@mail.gmail.com>
+Subject: IIO_LIGHT vs IIO_INTENSITY
+From: Daniel Baluta <daniel.baluta@intel.com>
+To: Peter Meerwald <pmeerw@pmeerw.net>, Jonathan Cameron <jic23@kernel.org>
+Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Content-Type: text/plain; charset=UTF-8
 List-ID: <linux-iio@vger.kernel.org>
 
-iio kfifo can be used without trigger support so there is no need to build it.
+Hi,
 
-Signed-off-by: Karol Wrona <k.wrona@samsung.com>
----
- drivers/iio/Kconfig |    1 -
- 1 file changed, 1 deletion(-)
+I'm not sure I understand the difference between
+IIO_LIGHT vs IIO_INTENSITY as seen by the IIO.
 
-diff --git a/drivers/iio/Kconfig b/drivers/iio/Kconfig
-index 50f6599..dfda2c3 100644
---- a/drivers/iio/Kconfig
-+++ b/drivers/iio/Kconfig
-@@ -27,7 +27,6 @@ boolean "IIO callback buffer used for push in-kernel interfaces"
- 	  usage.  That is, those where the data is pushed to the consumer.
- 
- config IIO_KFIFO_BUF
--	select IIO_TRIGGER
- 	tristate "Industrial I/O buffering based on kfifo"
- 	help
- 	  A simple fifo based on kfifo.  Note that this currently provides
--- 
-1.7.9.5
+As far as i know:
+
+* IIO_LIGHT channels are used to measure illuminance
+  [1] and the units after application of scale and offset
+  are lux.
+* IIO_INTENSITY channels are used to measure luminous
+intensity [2]? I guess that units after application of scale (?)
+are candela (although, not documented in the ABI file [3]).
+
+Anyhow, reading the code for drivers with IIO_INTENSITY channels
+it is not very clear what is the unit for in_intensityY_input or
+in_intensityY_raw
+after application of scale.
+
+e.g for isl29125 the unit is lux [4]
+
+thanks,
+Daniel.
+
+[1] http://en.wikipedia.org/wiki/Illuminance
+[2] http://en.wikipedia.org/wiki/Luminous_intensity
+[3] http://lxr.free-electrons.com/source/Documentation/ABI/testing/sysfs-bus-iio#L992
+[4] http://lxr.free-electrons.com/source/drivers/iio/light/isl29125.c#L122
