@@ -1,84 +1,67 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp-out-080.synserver.de ([212.40.185.80]:1095 "EHLO
-	smtp-out-080.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753868AbbAHKrJ (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 8 Jan 2015 05:47:09 -0500
-Message-ID: <54AE6024.8050303@metafoo.de>
-Date: Thu, 08 Jan 2015 11:47:00 +0100
-From: Lars-Peter Clausen <lars@metafoo.de>
+Received: from sauhun.de ([89.238.76.85]:45601 "EHLO pokefinder.org"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1756985AbbAHQlE (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Thu, 8 Jan 2015 11:41:04 -0500
+Date: Thu, 8 Jan 2015 17:40:57 +0100
+From: Wolfram Sang <wsa@the-dreams.de>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	linux-iio@vger.kernel.org,
+	"linux-i2c@vger.kernel.org" <linux-i2c@vger.kernel.org>
+Subject: Re: [PATCH 3/3] iio: ak8975: Added autodetect feature for ACPI
+Message-ID: <20150108164057.GA7615@katana>
+References: <1418678363-22437-1-git-send-email-srinivas.pandruvada@linux.intel.com>
+ <1418678363-22437-4-git-send-email-srinivas.pandruvada@linux.intel.com>
+ <549300A5.5080904@metafoo.de>
+ <1418921521.740.282.camel@spandruv-desktop.jf.intel.com>
+ <54930965.3030008@metafoo.de>
+ <1418923812.4459.8.camel@spandruv-desktop.jf.intel.com>
+ <549314C4.8090001@metafoo.de>
+ <1418925641.4459.11.camel@spandruv-desktop.jf.intel.com>
+ <549D4C1F.6050907@kernel.org>
 MIME-Version: 1.0
-To: Karol Wrona <k.wrona@samsung.com>,
-	Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	linux-kernel@vger.kernel.org
-CC: Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
-	Kyungmin Park <kyungmin.park@samsung.com>,
-	Karol Wrona <wrona.vy@gmail.com>
-Subject: Re: [RFC PATCH] iio: Add new operating mode for non triggered sw
- buffers
-References: <1420655771-22465-1-git-send-email-k.wrona@samsung.com>
-In-Reply-To: <1420655771-22465-1-git-send-email-k.wrona@samsung.com>
-Content-Type: text/plain; charset=windows-1252; format=flowed
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="cWoXeonUoKmBZSoM"
+In-Reply-To: <549D4C1F.6050907@kernel.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 01/07/2015 07:36 PM, Karol Wrona wrote:
-> There was a need for non triggered software buffer type.  It can be used when
-> triggered model does not fit and INDIO_BUFFER_HARDWARE causes confusion because
-> the data stream can be obtained not directly form hardware backend.
->
-> Suggested-by: Jonathan Cameron <jic23@kernel.org>
-> Signed-off-by: Karol Wrona <k.wrona@samsung.com>
 
-Looks good, thanks.
+--cWoXeonUoKmBZSoM
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Reviewed-by: Lars-Peter Clausen <lars@metafoo.de>
 
-> ---
->   drivers/iio/industrialio-buffer.c |    2 ++
->   include/linux/iio/iio.h           |    6 ++++--
->   2 files changed, 6 insertions(+), 2 deletions(-)
->
-> diff --git a/drivers/iio/industrialio-buffer.c b/drivers/iio/industrialio-buffer.c
-> index f971f79..15e6de3 100644
-> --- a/drivers/iio/industrialio-buffer.c
-> +++ b/drivers/iio/industrialio-buffer.c
-> @@ -680,6 +680,8 @@ static int __iio_update_buffers(struct iio_dev *indio_dev,
->   		indio_dev->currentmode = INDIO_BUFFER_TRIGGERED;
->   	} else if (indio_dev->modes & INDIO_BUFFER_HARDWARE) {
->   		indio_dev->currentmode = INDIO_BUFFER_HARDWARE;
-> +	} else if (indio_dev->modes & INDIO_BUFFER_SOFTWARE) {
-> +		indio_dev->currentmode = INDIO_BUFFER_SOFTWARE;
->   	} else { /* Should never be reached */
->   		ret = -EINVAL;
->   		goto error_run_postdisable;
-> diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
-> index 3642ce7..55e63fd 100644
-> --- a/include/linux/iio/iio.h
-> +++ b/include/linux/iio/iio.h
-> @@ -284,10 +284,11 @@ static inline s64 iio_get_time_ns(void)
->   /* Device operating modes */
->   #define INDIO_DIRECT_MODE		0x01
->   #define INDIO_BUFFER_TRIGGERED		0x02
-> +#define INDIO_BUFFER_SOFTWARE		0x04
->   #define INDIO_BUFFER_HARDWARE		0x08
->
->   #define INDIO_ALL_BUFFER_MODES					\
-> -	(INDIO_BUFFER_TRIGGERED | INDIO_BUFFER_HARDWARE)
-> +	(INDIO_BUFFER_TRIGGERED | INDIO_BUFFER_HARDWARE | INDIO_BUFFER_SOFTWARE)
->
->   #define INDIO_MAX_RAW_ELEMENTS		4
->
-> @@ -591,7 +592,8 @@ void devm_iio_trigger_free(struct device *dev, struct iio_trigger *iio_trig);
->   static inline bool iio_buffer_enabled(struct iio_dev *indio_dev)
->   {
->   	return indio_dev->currentmode
-> -		& (INDIO_BUFFER_TRIGGERED | INDIO_BUFFER_HARDWARE);
-> +		& (INDIO_BUFFER_TRIGGERED | INDIO_BUFFER_HARDWARE |
-> +		   INDIO_BUFFER_SOFTWARE);
->   }
->
->   /**
->
+> This is odd enough, that I'd like a wider range of views on it.
+>=20
+> Wolfram - was this the approach you had in mind?
 
+Sorry, too busy with other stuff at this moment :(
+
+
+--cWoXeonUoKmBZSoM
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
+
+iQIcBAEBAgAGBQJUrrMZAAoJEBQN5MwUoCm2N9cP/3/LtLkSfnId3ki54cIUK981
+xvFQZ3sr9ObMEj9OeDkdT1QKzk5k8wA5iJWwS5Esffne7qlZ7IbtP6juv0+grIL0
+Q/nWRCz6kV9IBpMZPEmi+1fvNBjmSvfthdMqVIRU6H/VxH5n+BWXrbEZFH6vBK/Z
+qGllQzlBeOCcZ7+jif088GiTbVudEQrJpqhIjQrHDJuXbi/EuA6lM82O2zv0UmLk
+wqZ/COizypgIUkP8mze2ww4y9PZ5N1iw4kCRGFEMSPYkEtIFPMW5/0nKD/4FxLrd
+bkxUIiCxL6811KjnyN8tv+29gYi1WxetI1NfanD/p5xHbtKZ6yB8F/YPUlgIWUoJ
+gksCoTH0L27oit2hab70XD68mB4gXSSmvBhkFcy8qBj0dHUSAhIU9rCrJab0iFqc
+sCKoLp4tR5mmhZC/uOHF1e8YHC8AxCf7aH/Hkm0+SBXPiE+nhDir9r7kf/c+D6ID
+2a5YCrWcrp88KiEphzuuEKP9wKa7rnB66mX2q0o7jPXVxQqp8w30B0xPMBgGUzkA
+VS53YpF1dT6euB0dTd3+6Qlc6DEbkV/T/uMAUreCjyF0CHdsl7RnS1YoFVN+yAJG
+x960OvtVwMiK5XXsgF360t46Ond8nXkXCbYWate0/+JeZBCm3Y0BdGWZAgpPQNRu
+KF1d+x9j3OBpCEteB/LI
+=d0o+
+-----END PGP SIGNATURE-----
+
+--cWoXeonUoKmBZSoM--
