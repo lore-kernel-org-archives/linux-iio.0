@@ -1,43 +1,56 @@
-Return-Path: <gregkh@linuxfoundation.org>
-Date: Thu, 8 Jan 2015 18:22:28 -0800
-From: Greg KH <gregkh@linuxfoundation.org>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Subject: Re: [PULL] First round of new IIO drivers, features and cleanups for
- the 3.20 cycle
-Message-ID: <20150109022228.GA12876@kroah.com>
-References: <54AAF235.5000209@kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-In-Reply-To: <54AAF235.5000209@kernel.org>
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mga03.intel.com ([134.134.136.65]:58147 "EHLO mga03.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1755419AbbAIJhd (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Fri, 9 Jan 2015 04:37:33 -0500
+From: Daniel Baluta <daniel.baluta@intel.com>
+To: gregkh@linuxfoundation.org, jic23@kernel.org
+Cc: linux-iio@vger.kernel.org, rafael.j.wysocki@intel.com
+Subject: [PATCH] iio kmx61 / PM: Replace CONFIG_PM_RUNTIME with CONFIG_PM
+Date: Fri,  9 Jan 2015 11:39:30 +0200
+Message-Id: <1420796370-12158-1-git-send-email-daniel.baluta@intel.com>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Mon, Jan 05, 2015 at 08:21:09PM +0000, Jonathan Cameron wrote:
-> The following changes since commit 5e62863aea463c9bf24538315327d0922be35d64:
-> 
->   staging: comedi: das800: use comedi_async 'scans_done' to detect EOA (2014-11-05 14:59:48 -0800)
-> 
-> are available in the git repository at:
-> 
->   git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git tags/iio-for-3.20a
+After commit b2b49ccbdd54 (PM: Kconfig: Set PM_RUNTIME if PM_SLEEP is
+selected) PM_RUNTIME is always set if PM is set, so #ifdef blocks
+depending on CONFIG_PM_RUNTIME may now be changed to depend on
+CONFIG_PM.
 
-This breaks the build for me:
+Replace CONFIG_PM_RUNTIME with CONFIG_PM everywhere under
+drivers/iio/imu/kmx61.c
 
-drivers/iio/imu/kmx61.c:1563:21: error: ‘kmx61_runtime_suspend’ undeclared here (not in a function)
-  SET_RUNTIME_PM_OPS(kmx61_runtime_suspend, kmx61_runtime_resume, NULL)
-                     ^
-include/linux/pm.h:347:21: note: in definition of macro ‘SET_RUNTIME_PM_OPS’
-  .runtime_suspend = suspend_fn, \
-                     ^
-drivers/iio/imu/kmx61.c:1563:44: error: ‘kmx61_runtime_resume’ undeclared here (not in a function)
-  SET_RUNTIME_PM_OPS(kmx61_runtime_suspend, kmx61_runtime_resume, NULL)
-                                            ^
-include/linux/pm.h:348:20: note: in definition of macro ‘SET_RUNTIME_PM_OPS’
-  .runtime_resume = resume_fn, \
-                    ^
+Signed-off-by: Daniel Baluta <daniel.baluta@intel.com>
+---
+This fixes build break when merging iio patches for 3.20
+into Greg's tree.
+http://marc.info/?l=linux-iio&m=142077015029632&w=2
 
-So I don't want to pull it :(
+ drivers/iio/imu/kmx61.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-thanks,
+diff --git a/drivers/iio/imu/kmx61.c b/drivers/iio/imu/kmx61.c
+index 841b033..4e2605e 100644
+--- a/drivers/iio/imu/kmx61.c
++++ b/drivers/iio/imu/kmx61.c
+@@ -735,7 +735,7 @@ static int kmx61_setup_any_motion_interrupt(struct kmx61_data *data,
+  */
+ static int kmx61_set_power_state(struct kmx61_data *data, bool on, u8 device)
+ {
+-#ifdef CONFIG_PM_RUNTIME
++#ifdef CONFIG_PM
+ 	int ret;
+ 
+ 	if (device & KMX61_ACC) {
+@@ -1523,7 +1523,7 @@ static int kmx61_resume(struct device *dev)
+ }
+ #endif
+ 
+-#ifdef CONFIG_PM_RUNTIME
++#ifdef CONFIG_PM
+ static int kmx61_runtime_suspend(struct device *dev)
+ {
+ 	struct kmx61_data *data = i2c_get_clientdata(to_i2c_client(dev));
+-- 
+1.9.1
 
-greg k-h
