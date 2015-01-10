@@ -1,66 +1,61 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:58728 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:58766 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751201AbbAJSLQ (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 10 Jan 2015 13:11:16 -0500
-Message-ID: <54B16B41.2080806@kernel.org>
-Date: Sat, 10 Jan 2015 18:11:13 +0000
+	with ESMTP id S1753012AbbAJSTS (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 10 Jan 2015 13:19:18 -0500
+Message-ID: <54B16D24.8090704@kernel.org>
+Date: Sat, 10 Jan 2015 18:19:16 +0000
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Daniel Baluta <daniel.baluta@intel.com>, gregkh@linuxfoundation.org
-CC: linux-iio@vger.kernel.org, rafael.j.wysocki@intel.com
-Subject: Re: [PATCH] iio kmx61 / PM: Replace CONFIG_PM_RUNTIME with CONFIG_PM
-References: <1420796370-12158-1-git-send-email-daniel.baluta@intel.com>
-In-Reply-To: <1420796370-12158-1-git-send-email-daniel.baluta@intel.com>
+To: Lars-Peter Clausen <lars@metafoo.de>,
+	Karol Wrona <k.wrona@samsung.com>, linux-iio@vger.kernel.org,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	linux-kernel@vger.kernel.org
+CC: Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
+	Kyungmin Park <kyungmin.park@samsung.com>,
+	Karol Wrona <wrona.vy@gmail.com>
+Subject: Re: [PATCH 2/2] iio: Deselect IIO_TRIGGER for IIO_KFIFO_BUF
+References: <1420735227-21091-1-git-send-email-k.wrona@samsung.com> <1420735227-21091-3-git-send-email-k.wrona@samsung.com> <54B108FA.6010704@metafoo.de>
+In-Reply-To: <54B108FA.6010704@metafoo.de>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 09/01/15 09:39, Daniel Baluta wrote:
-> After commit b2b49ccbdd54 (PM: Kconfig: Set PM_RUNTIME if PM_SLEEP is
-> selected) PM_RUNTIME is always set if PM is set, so #ifdef blocks
-> depending on CONFIG_PM_RUNTIME may now be changed to depend on
-> CONFIG_PM.
+On 10/01/15 11:11, Lars-Peter Clausen wrote:
+> On 01/08/2015 05:40 PM, Karol Wrona wrote:
+>> iio kfifo can be used without trigger support so there is no need to build it.
+>>
+>> Signed-off-by: Karol Wrona <k.wrona@samsung.com>
 > 
-> Replace CONFIG_PM_RUNTIME with CONFIG_PM everywhere under
-> drivers/iio/imu/kmx61.c
+> Looks good, not sure why this was ever selected it in the first place.
 > 
-> Signed-off-by: Daniel Baluta <daniel.baluta@intel.com>
-Acked-by: Jonathan Cameron <jic23@kernel.org>
+> Reviewed-by: Lars-Peter Clausen <lars@metafoo.de>
+Applied to the togreg branch of iio.git initially pushed out as testing.
+That's certainly been there a while. I got bored looking for the source
+when we hit the move out of staging :)
 
-Thanks Daniel and thanks Greg. 
-Should have thought to give a preemptive ack earlier!
+oops for a long time ago - though prior to there being any examples
+where a kfifo didn't meant there was a trigger as well.
 
-Jonathan
-> ---
-> This fixes build break when merging iio patches for 3.20
-> into Greg's tree.
-> http://marc.info/?l=linux-iio&m=142077015029632&w=2
+J
 > 
->  drivers/iio/imu/kmx61.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/iio/imu/kmx61.c b/drivers/iio/imu/kmx61.c
-> index 841b033..4e2605e 100644
-> --- a/drivers/iio/imu/kmx61.c
-> +++ b/drivers/iio/imu/kmx61.c
-> @@ -735,7 +735,7 @@ static int kmx61_setup_any_motion_interrupt(struct kmx61_data *data,
->   */
->  static int kmx61_set_power_state(struct kmx61_data *data, bool on, u8 device)
->  {
-> -#ifdef CONFIG_PM_RUNTIME
-> +#ifdef CONFIG_PM
->  	int ret;
->  
->  	if (device & KMX61_ACC) {
-> @@ -1523,7 +1523,7 @@ static int kmx61_resume(struct device *dev)
->  }
->  #endif
->  
-> -#ifdef CONFIG_PM_RUNTIME
-> +#ifdef CONFIG_PM
->  static int kmx61_runtime_suspend(struct device *dev)
->  {
->  	struct kmx61_data *data = i2c_get_clientdata(to_i2c_client(dev));
+>> ---
+>>   drivers/iio/Kconfig |    1 -
+>>   1 file changed, 1 deletion(-)
+>>
+>> diff --git a/drivers/iio/Kconfig b/drivers/iio/Kconfig
+>> index 50f6599..dfda2c3 100644
+>> --- a/drivers/iio/Kconfig
+>> +++ b/drivers/iio/Kconfig
+>> @@ -27,7 +27,6 @@ boolean "IIO callback buffer used for push in-kernel interfaces"
+>>         usage.  That is, those where the data is pushed to the consumer.
+>>
+>>   config IIO_KFIFO_BUF
+>> -    select IIO_TRIGGER
+>>       tristate "Industrial I/O buffering based on kfifo"
+>>       help
+>>         A simple fifo based on kfifo.  Note that this currently provides
+>>
 > 
 
