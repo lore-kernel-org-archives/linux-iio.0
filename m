@@ -1,57 +1,72 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp-out-098.synserver.de ([212.40.185.98]:1038 "EHLO
-	smtp-out-098.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1757721AbbAIQRA (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 9 Jan 2015 11:17:00 -0500
-Message-ID: <54AFFEF9.5080408@metafoo.de>
-Date: Fri, 09 Jan 2015 17:16:57 +0100
-From: Lars-Peter Clausen <lars@metafoo.de>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:55907 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750962AbbAJKdE (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 10 Jan 2015 05:33:04 -0500
+Message-ID: <54B0FFDB.1020402@kernel.org>
+Date: Sat, 10 Jan 2015 10:32:59 +0000
+From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: "Ivan T. Ivanov" <iivanov@mm-sol.com>
-CC: Jonathan Cameron <jic23@kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iio: Simplify IIO provider access locking mechanism
-References: <1420817893-5858-1-git-send-email-iivanov@mm-sol.com>		 <54AFF6C4.9020306@metafoo.de> <1420818639.28652.5.camel@mm-sol.com>	 <54AFF9D3.7000007@metafoo.de> <1420820083.28652.7.camel@mm-sol.com>
-In-Reply-To: <1420820083.28652.7.camel@mm-sol.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
+To: Daniel Baluta <daniel.baluta@intel.com>, gregkh@linuxfoundation.org
+CC: linux-iio@vger.kernel.org, rafael.j.wysocki@intel.com
+Subject: Re: [PATCH] iio kmx61 / PM: Replace CONFIG_PM_RUNTIME with CONFIG_PM
+References: <1420796370-12158-1-git-send-email-daniel.baluta@intel.com>
+In-Reply-To: <1420796370-12158-1-git-send-email-daniel.baluta@intel.com>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 01/09/2015 05:14 PM, Ivan T. Ivanov wrote:
->
-> On Fri, 2015-01-09 at 16:54 +0100, Lars-Peter Clausen wrote:
->> On 01/09/2015 04:50 PM, Ivan T. Ivanov wrote:
->>> On Fri, 2015-01-09 at 16:41 +0100, Lars-Peter Clausen wrote:
->>>> On 01/09/2015 04:38 PM, Ivan T. Ivanov wrote:
->>>>> Instead of checking whether provider module is still
->>>>> loaded on every access to device just lock module to
->>>>> memory when client get reference to provider device.
->>>>>
->>>>
->>>> This has nothing to do with the module, it's about the device. In the Linux
->>>> device driver model as device can be unbound at any time and the IIO
->>>> framework needs to handle this.
->>>>
->>>
->>> Hm. Probably i am missing something here, but is this
->>> still true if we have reference to device structure?
->>
->> Yes, that only prevents the memory of device from being freed. But the
->> device can still be unbound from the driver.
->>
->> Think of e.g. a USB device that is pulled from the USB connector. Nothing
->> you can do in software about having the device disappear.
->>
->
-> Agree, but I think that the patch is still valid. Module
-> have to be pinned in memory as long as there are device
-> driver users.
+On 09/01/15 09:39, Daniel Baluta wrote:
+> After commit b2b49ccbdd54 (PM: Kconfig: Set PM_RUNTIME if PM_SLEEP is
+> selected) PM_RUNTIME is always set if PM is set, so #ifdef blocks
+> depending on CONFIG_PM_RUNTIME may now be changed to depend on
+> CONFIG_PM.
+> 
+> Replace CONFIG_PM_RUNTIME with CONFIG_PM everywhere under
+> drivers/iio/imu/kmx61.c
+> 
+> Signed-off-by: Daniel Baluta <daniel.baluta@intel.com>
+Thanks Daniel, glad you tracked this down.  I was wondering why
+the autobuilders were happy but it broke for Greg! (short memory
+sometimes, given that patch was only a month ago).
 
-No, the idea of the Linux driver model is that you can remove the module of 
-a driver at any time, which will unbind the device from the driver. Once you 
-reinsert the module the device will be re-bound to the driver.
+Greg, as my tree is currently behind the point where Rafael did the big
+patch series to fix this (and hence doesn't have the precursor patch)
+there are two obvious solutions - either I rebase, or you take
+this one patch directly as a merge fix.
 
-- Lars
+Which would you prefer?
+
+Jonathan
+> ---
+> This fixes build break when merging iio patches for 3.20
+> into Greg's tree.
+> http://marc.info/?l=linux-iio&m=142077015029632&w=2
+> 
+>  drivers/iio/imu/kmx61.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/iio/imu/kmx61.c b/drivers/iio/imu/kmx61.c
+> index 841b033..4e2605e 100644
+> --- a/drivers/iio/imu/kmx61.c
+> +++ b/drivers/iio/imu/kmx61.c
+> @@ -735,7 +735,7 @@ static int kmx61_setup_any_motion_interrupt(struct kmx61_data *data,
+>   */
+>  static int kmx61_set_power_state(struct kmx61_data *data, bool on, u8 device)
+>  {
+> -#ifdef CONFIG_PM_RUNTIME
+> +#ifdef CONFIG_PM
+>  	int ret;
+>  
+>  	if (device & KMX61_ACC) {
+> @@ -1523,7 +1523,7 @@ static int kmx61_resume(struct device *dev)
+>  }
+>  #endif
+>  
+> -#ifdef CONFIG_PM_RUNTIME
+> +#ifdef CONFIG_PM
+>  static int kmx61_runtime_suspend(struct device *dev)
+>  {
+>  	struct kmx61_data *data = i2c_get_clientdata(to_i2c_client(dev));
+> 
 
