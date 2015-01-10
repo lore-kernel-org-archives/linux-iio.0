@@ -1,70 +1,56 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:58789 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:58831 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752822AbbAJSWO (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 10 Jan 2015 13:22:14 -0500
-Message-ID: <54B16DD3.3030505@kernel.org>
-Date: Sat, 10 Jan 2015 18:22:11 +0000
+	with ESMTP id S1753118AbbAJSdS (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 10 Jan 2015 13:33:18 -0500
+Message-ID: <54B1706A.3080809@kernel.org>
+Date: Sat, 10 Jan 2015 18:33:14 +0000
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Lars-Peter Clausen <lars@metafoo.de>,
-	Karol Wrona <k.wrona@samsung.com>, linux-iio@vger.kernel.org,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	linux-kernel@vger.kernel.org
-CC: Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
-	Kyungmin Park <kyungmin.park@samsung.com>,
-	Karol Wrona <wrona.vy@gmail.com>
-Subject: Re: [PATCH 1/2] iio: Add no-triggered buffer helper functions
-References: <1420735227-21091-1-git-send-email-k.wrona@samsung.com> <1420735227-21091-2-git-send-email-k.wrona@samsung.com> <54B108A9.7080307@metafoo.de>
-In-Reply-To: <54B108A9.7080307@metafoo.de>
+To: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+CC: linux-iio@vger.kernel.org, Wolfram Sang <wsa@the-dreams.de>,
+	Jean Delvare <khali@linux-fr.org>
+Subject: Re: [PATCH] iio: magnetometer: ak8975: Add AK8963
+References: <1420846238-31802-1-git-send-email-srinivas.pandruvada@linux.intel.com>
+In-Reply-To: <1420846238-31802-1-git-send-email-srinivas.pandruvada@linux.intel.com>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 10/01/15 11:10, Lars-Peter Clausen wrote:
-> On 01/08/2015 05:40 PM, Karol Wrona wrote:
->> These ones helps to create and manage iio_kfifo buffer when
->> no-triggered buffer is used.
-> [...]
->> +int iio_notriggered_buffer_setup(struct iio_dev *indio_dev,
->> +                 const struct iio_buffer_setup_ops *setup_ops)
->> +
->> +{
->> +    int ret;
->> +    struct iio_buffer *buffer;
->> +
->> +    buffer = iio_kfifo_allocate();
->> +    if (!buffer)
->> +        return -ENOMEM;
->> +
->> +    iio_device_attach_buffer(indio_dev, buffer);
->> +
->> +    indio_dev->setup_ops = setup_ops;
->> +
->> +    ret = iio_buffer_register(indio_dev, indio_dev->channels,
->> +                  indio_dev->num_channels);
->> +    if (ret)
->> +        iio_kfifo_free(buffer);
->> +
+On 09/01/15 23:30, Srinivas Pandruvada wrote:
+> Added AK8963 in the id table. Unfortunately some commercial devices
+> using caps version ak8963.
 > 
-> We recently got rid of having to manually call iio_buffer_register() and iio_buffer_unregister(). This is now done by the IIO core. See http://git.kernel.org/cgit/linux/kernel/git/jic23/iio.git/commit/?h=togreg&id=3e1b6c95b990c93f4aa3b17e9f66221e2fa44bee
-> 
-> I don't think we actually need these non-triggered helper functions anymore. It basically just boils down to iio_kfifo_allocate() and iio_device_attach_buffer().
-> 
-Even if they are still worthwhile, I'd just put them in the core code rather
-than having the additional module.  Too trivial for it to make sense
-in a utility module.
+> Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Hmm. I'm not sure what the general opinion on supporting this sort of
+mess up is.
 
-I'm inclined to agree with Lars that the recent changes reduce the argument for
-having these to marginal at best.  Bad luck for crossing with those!
+Are we talking naming provided from a device tree or via old fashioned board
+files?  If the board files I'd be inclined to say they are running a custom
+kernel anyway so can patch this driver themselves.  If device tree I guess
+we probably do need to support it - perhaps as a deprecated binding?
+
+Wolfram / Jean - you guys must have seen this before. Did you let
+the capital form in alongside the lower case one?  I guessing no ;)
+
+I did a quick grep of hwmon and couldn't find any instances of this...
 
 Jonathan
-
-J
-> - Lars
-> -- 
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> ---
+>  drivers/iio/magnetometer/ak8975.c | 1 +
+>  1 file changed, 1 insertion(+)
+> 
+> diff --git a/drivers/iio/magnetometer/ak8975.c b/drivers/iio/magnetometer/ak8975.c
+> index 0d10a4b..b13936d 100644
+> --- a/drivers/iio/magnetometer/ak8975.c
+> +++ b/drivers/iio/magnetometer/ak8975.c
+> @@ -813,6 +813,7 @@ static int ak8975_probe(struct i2c_client *client,
+>  static const struct i2c_device_id ak8975_id[] = {
+>  	{"ak8975", AK8975},
+>  	{"ak8963", AK8963},
+> +	{"AK8963", AK8963},
+>  	{"ak09911", AK09911},
+>  	{"ak09912", AK09912},
+>  	{}
+> 
 
