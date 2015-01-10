@@ -1,89 +1,93 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:56274 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:57367 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751085AbbAJLQB (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 10 Jan 2015 06:16:01 -0500
-Message-ID: <54B109F0.5060101@kernel.org>
-Date: Sat, 10 Jan 2015 11:16:00 +0000
+	with ESMTP id S1752400AbbAJOGY (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 10 Jan 2015 09:06:24 -0500
+Message-ID: <54B131D7.4040705@kernel.org>
+Date: Sat, 10 Jan 2015 14:06:15 +0000
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Harald Geyer <harald@ccbib.org>
-CC: Richard Weinberger <richard@nod.at>, knaack.h@gmx.de,
-	lars@metafoo.de, pmeerw@pmeerw.net, sanjeev_sharma@mentor.com,
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCHv2 2/3,RESEND] iio: dht11: Add locking
-References: <1417563176-31972-1-git-send-email-richard@nod.at> <54A53FBF.5000003@kernel.org> <7e4f6a70e48afe96457ebbcf07572224@imap.cosmopool.net> <54A680F8.30209@nod.at> <54A91DA1.6080107@kernel.org> <E1Y881p-0001Fp-NX@stardust.g4.wien.funkfeuer.at> <54AA97B9.7040703@nod.at> <E1Y8pZ9-000133-AF@stardust.g4.wien.funkfeuer.at>
-In-Reply-To: <E1Y8pZ9-000133-AF@stardust.g4.wien.funkfeuer.at>
+To: Joe Perches <joe@perches.com>,
+	Daniel Baluta <daniel.baluta@intel.com>
+CC: Kevin Tsai <ktsai@capellamicro.com>,
+	Wolfram Sang <wsa@the-dreams.de>,
+	Rob Herring <robh+dt@kernel.org>,
+	Pawel Moll <pawel.moll@arm.com>,
+	Mark Rutland <mark.rutland@arm.com>,
+	Ian Campbell <ijc+devicetree@hellion.org.uk>,
+	Kumar Gala <galak@codeaurora.org>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Grant Likely <grant.likely@linaro.org>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	"David S. Miller" <davem@davemloft.net>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Mauro Carvalho Chehab <mchehab@osg.samsung.com>,
+	Antti Palosaari <crope@iki.fi>,
+	Archana Patni <archana.patni@linux.intel.com>,
+	linux-i2c@vger.kernel.org, devicetree@vger.kernel.org,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH V1 1/1] iio: Added Capella cm3232 ambient light sensor
+ driver.
+References: <1420071030-888-1-git-send-email-ktsai@capellamicro.com>	 <CAEnQRZBD2NMYRp1cW0J2ssT4CT=0jSM=X6ByHQiUrA0ueV8fRA@mail.gmail.com>	 <1420463396.2652.8.camel@perches.com>	 <CAEnQRZBmwurFCJU4E4ArO8waU+YcGWrRYr3DRVxq9haduX2t=w@mail.gmail.com>	 <1420476166.2652.14.camel@perches.com>	 <CAEnQRZA6=FK8CaJvh7kxOEAyDLQQE77xZ02UofLUUT67yZG8bg@mail.gmail.com> <1420480611.2652.19.camel@perches.com>
+In-Reply-To: <1420480611.2652.19.camel@perches.com>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 07/01/15 12:18, Harald Geyer wrote:
-> Make sure that the read function is not interrupted...
+On 05/01/15 17:56, Joe Perches wrote:
+> On Mon, 2015-01-05 at 19:50 +0200, Daniel Baluta wrote:
+>> On Mon, Jan 5, 2015 at 6:42 PM, Joe Perches <joe@perches.com> wrote:
+>>> On Mon, 2015-01-05 at 16:20 +0200, Daniel Baluta wrote:
+>>>> On Mon, Jan 5, 2015 at 3:09 PM, Joe Perches <joe@perches.com> wrote:
+>>>>> On Mon, 2015-01-05 at 12:51 +0200, Daniel Baluta wrote:
+>>>>>> On Thu, Jan 1, 2015 at 2:10 AM, Kevin Tsai <ktsai@capellamicro.com> wrote:
+>>>>>>> CM3232 is an advanced ambient light sensor with I2C protocol interface.
+>>>>>>> The I2C slave address is internally hardwired as 0x10 (7-bit).  Writing
+>>>>>>> to configure register is byte mode, but reading ALS register requests to
+>>>>>>> use word mode for 16-bit resolution.
+>>> []
+>>>>>> You could directly return i2c_smbus_write_byte_data(..).
+>>>>>
+>>>>> Sometimes it's better to return a specific value
+>>>>> for the error instead of depending on correctness
+>>>>> of all the indirect functions in the call chain.
+>>>>>
+>>>>> In this case, all the smbus_xfer functions must
+>>>>> return 0 on success.  Do they?
+>>>>
+>>>> Yes.
+>>>>
+>>>> http://lxr.free-electrons.com/source/drivers/i2c/i2c-core.c#L2845
+>>>
+>>> This doesn't show that adapter->algo->smbus_xfer()
+>>> returns 0, you have to look at the code for that
+>>> indirectly called function.
+>>
+>> I based my answer on the comment at the top of the function:
+>>
+>> 2845  * This executes an SMBus protocol operation, and returns a negative
+>> 2846  * errno code else zero on success.
 > 
-> From: Richard Weinberger <richard@nod.at>
-> Signed-off-by: Richard Weinberger <richard@nod.at>
-> Acked-by: Harald Geyer <harald@ccbib.org>
-> Reviewed-by: Sanjeev Sharma <sanjeev_sharma@mentor.com>
-> ---
-> Resending again to get the metadata right.
-> No Signed-off-by from me, because I didn't contribute anything.
-Technically you 'handled' the patch which is all that actually
-matters for a sign-off.  Anyhow I don't really care either way ;)
-
-Applied to the fixes-togreg branch of iio.git
-
-Thanks,
+> Sure, but comments and code often differ and the
+> implementation of any of those smbus_xfer functions
+> could return a positive value like the byte value or
+> the number of bytes written instead of 0.
+> 
+> For correctness, you'd have to inspect them all.
+> 
+> If some new future smbus_xfer function was written
+> incorrectly, the return value from this function could
+> now be positive.
+> 
+That would however, clearly be a bug and likely to cause all
+sorts of issues elsewhere given the documentation requires that
+it does return 0 on success and people will have been
+relying on it.
 
 Jonathan
-> No changes since v1 except reordering.
-> 
->  drivers/iio/humidity/dht11.c |    5 +++++
->  1 files changed, 5 insertions(+), 0 deletions(-)
-> 
-> diff --git a/drivers/iio/humidity/dht11.c b/drivers/iio/humidity/dht11.c
-> index f546eca..7717f5c 100644
-> --- a/drivers/iio/humidity/dht11.c
-> +++ b/drivers/iio/humidity/dht11.c
-> @@ -29,6 +29,7 @@
->  #include <linux/wait.h>
->  #include <linux/bitops.h>
->  #include <linux/completion.h>
-> +#include <linux/mutex.h>
->  #include <linux/delay.h>
->  #include <linux/gpio.h>
->  #include <linux/of_gpio.h>
-> @@ -57,6 +58,7 @@ struct dht11 {
->  	int				irq;
->  
->  	struct completion		completion;
-> +	struct mutex			lock;
->  
->  	s64				timestamp;
->  	int				temperature;
-> @@ -145,6 +147,7 @@ static int dht11_read_raw(struct iio_dev *iio_dev,
->  	struct dht11 *dht11 = iio_priv(iio_dev);
->  	int ret;
->  
-> +	mutex_lock(&dht11->lock);
->  	if (dht11->timestamp + DHT11_DATA_VALID_TIME < iio_get_time_ns()) {
->  		reinit_completion(&dht11->completion);
->  
-> @@ -185,6 +188,7 @@ static int dht11_read_raw(struct iio_dev *iio_dev,
->  		ret = -EINVAL;
->  err:
->  	dht11->num_edges = -1;
-> +	mutex_unlock(&dht11->lock);
->  	return ret;
->  }
->  
-> @@ -268,6 +272,7 @@ static int dht11_probe(struct platform_device *pdev)
->  	platform_set_drvdata(pdev, iio);
->  
->  	init_completion(&dht11->completion);
-> +	mutex_init(&dht11->lock);
->  	iio->name = pdev->name;
->  	iio->dev.parent = &pdev->dev;
->  	iio->info = &dht11_iio_info;
+> cheers, Joe
 > 
 
