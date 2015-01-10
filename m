@@ -1,93 +1,106 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:57367 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:57425 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752400AbbAJOGY (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 10 Jan 2015 09:06:24 -0500
-Message-ID: <54B131D7.4040705@kernel.org>
-Date: Sat, 10 Jan 2015 14:06:15 +0000
+	with ESMTP id S1753151AbbAJOP3 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 10 Jan 2015 09:15:29 -0500
+Message-ID: <54B133FE.1020808@kernel.org>
+Date: Sat, 10 Jan 2015 14:15:26 +0000
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Joe Perches <joe@perches.com>,
-	Daniel Baluta <daniel.baluta@intel.com>
-CC: Kevin Tsai <ktsai@capellamicro.com>,
-	Wolfram Sang <wsa@the-dreams.de>,
-	Rob Herring <robh+dt@kernel.org>,
-	Pawel Moll <pawel.moll@arm.com>,
-	Mark Rutland <mark.rutland@arm.com>,
-	Ian Campbell <ijc+devicetree@hellion.org.uk>,
-	Kumar Gala <galak@codeaurora.org>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	Grant Likely <grant.likely@linaro.org>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	"David S. Miller" <davem@davemloft.net>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Mauro Carvalho Chehab <mchehab@osg.samsung.com>,
-	Antti Palosaari <crope@iki.fi>,
-	Archana Patni <archana.patni@linux.intel.com>,
-	linux-i2c@vger.kernel.org, devicetree@vger.kernel.org,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH V1 1/1] iio: Added Capella cm3232 ambient light sensor
- driver.
-References: <1420071030-888-1-git-send-email-ktsai@capellamicro.com>	 <CAEnQRZBD2NMYRp1cW0J2ssT4CT=0jSM=X6ByHQiUrA0ueV8fRA@mail.gmail.com>	 <1420463396.2652.8.camel@perches.com>	 <CAEnQRZBmwurFCJU4E4ArO8waU+YcGWrRYr3DRVxq9haduX2t=w@mail.gmail.com>	 <1420476166.2652.14.camel@perches.com>	 <CAEnQRZA6=FK8CaJvh7kxOEAyDLQQE77xZ02UofLUUT67yZG8bg@mail.gmail.com> <1420480611.2652.19.camel@perches.com>
-In-Reply-To: <1420480611.2652.19.camel@perches.com>
+To: Ezequiel Garcia <ezequiel.garcia@imgtec.com>,
+	James Hartley <james.hartley@imgtec.com>,
+	Andrew Bresticker <abrestic@chromium.org>, robh+dt@kernel.org,
+	Mark.Rutland@arm.com, knaack.h@gmx.de
+CC: linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+	Pawel.Moll@arm.com, ijc+devicetree@hellion.org.uk,
+	galak@codeaurora.org
+Subject: Re: [PATCH v7 0/3] iio: Add Cosmic Circuits ADC support
+References: <1420577257-10846-1-git-send-email-ezequiel.garcia@imgtec.com>
+In-Reply-To: <1420577257-10846-1-git-send-email-ezequiel.garcia@imgtec.com>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 05/01/15 17:56, Joe Perches wrote:
-> On Mon, 2015-01-05 at 19:50 +0200, Daniel Baluta wrote:
->> On Mon, Jan 5, 2015 at 6:42 PM, Joe Perches <joe@perches.com> wrote:
->>> On Mon, 2015-01-05 at 16:20 +0200, Daniel Baluta wrote:
->>>> On Mon, Jan 5, 2015 at 3:09 PM, Joe Perches <joe@perches.com> wrote:
->>>>> On Mon, 2015-01-05 at 12:51 +0200, Daniel Baluta wrote:
->>>>>> On Thu, Jan 1, 2015 at 2:10 AM, Kevin Tsai <ktsai@capellamicro.com> wrote:
->>>>>>> CM3232 is an advanced ambient light sensor with I2C protocol interface.
->>>>>>> The I2C slave address is internally hardwired as 0x10 (7-bit).  Writing
->>>>>>> to configure register is byte mode, but reading ALS register requests to
->>>>>>> use word mode for 16-bit resolution.
->>> []
->>>>>> You could directly return i2c_smbus_write_byte_data(..).
->>>>>
->>>>> Sometimes it's better to return a specific value
->>>>> for the error instead of depending on correctness
->>>>> of all the indirect functions in the call chain.
->>>>>
->>>>> In this case, all the smbus_xfer functions must
->>>>> return 0 on success.  Do they?
->>>>
->>>> Yes.
->>>>
->>>> http://lxr.free-electrons.com/source/drivers/i2c/i2c-core.c#L2845
->>>
->>> This doesn't show that adapter->algo->smbus_xfer()
->>> returns 0, you have to look at the code for that
->>> indirectly called function.
->>
->> I based my answer on the comment at the top of the function:
->>
->> 2845  * This executes an SMBus protocol operation, and returns a negative
->> 2846  * errno code else zero on success.
+On 06/01/15 20:47, Ezequiel Garcia wrote:
+> This series add the support for an ADC IP block from Cosmic Circuits.
+> The patchset is based on v3.19-rc3.
 > 
-> Sure, but comments and code often differ and the
-> implementation of any of those smbus_xfer functions
-> could return a positive value like the byte value or
-> the number of bytes written instead of 0.
+> As agreed with Rob, this series drops the vendor prefix in the
+> adc-reserved-channels DT property. This property is generic enough to
+> be used in other drivers (at91 is a potential candidate).
 > 
-> For correctness, you'd have to inspect them all.
-> 
-> If some new future smbus_xfer function was written
-> incorrectly, the return value from this function could
-> now be positive.
-> 
-That would however, clearly be a bug and likely to cause all
-sorts of issues elsewhere given the documentation requires that
-it does return 0 on success and people will have been
-relying on it.
+> A follow-up patch can use the property in at91 and add it to the
+> IIO generic bindings.
+I'm happy - will let this sit for a little while to let Harmut say
+if wants to take another look (or give a reviewed-by or similar).
+
+Thanks all,
 
 Jonathan
-> cheers, Joe
+> 
+> Changes from v6:
+> 
+>   * Dropped the vendor prefix in the adc-reserved-channels property,
+>     as suggested by Rob.
+>   * Added Andrew's Reviewed-by tags. Andrew reviewed v3, and the driver
+>     changed little since then.
+>     http://www.spinics.net/lists/linux-iio/msg15630.html.
+> 
+> Changes from v5:
+> 
+>   * Fixed CC10001_ADC_CH_MASK macro definition, to separate the channel
+>     number from the channel map, as noted by Hartmut.
+>   * Return the real error code in devm_regulator_get failure.
+> 
+> Changes from v4:
+> 
+>   * Added a compile-time dependency on REGULATOR and HAVE_CLK.
+>   * Replaced the silly XOR operation for a proper mask out of the
+>     available channels.
+> 
+> Changes from v3:
+> 
+>   * Fixed a few style nitpicks as per Hartmut's feedback.
+>   * Used GENMASK() to build the channel mask, which fixes a very nasty
+>     bug. Also found by Hartmut.
+> 
+> Changes from v2:
+> 
+>   * Changed a devicetree property from adc-available-channels to
+>     adc-reserved-channels, so it can be made optional.
+>   * Renamed the driver from cc_10001_xxx to cc10001_xxx so it's consistent
+>     with the rest of the kernel style.
+>   * Some more minor cosmetic fixes.
+> 
+> Changes from v1:
+> 
+>   * Removed unneeded header includes.
+>   * Changed all the names and macros prefix: s/CC_10001_/CC10001_.
+>   * Used .update_scan_mode callback to preallocate the buffer.
+>   * Used indio_dev for the struct iio_dev.
+>   * Only read the regulator voltage when needed.
+>   * Fixed probe() error handling.
+>   * Used for_each_set_bit() instead of open-coding it.
+>   * Name the power-down register as _POWER_UP, to make the code
+>     less silly.
+>   * Error out when no valid sample can be read (i.e. when end-of-conversion
+>     poll times out).
+>   * ... plus some assorted code cleaning based on the feedback.
+> 
+> Ezequiel Garcia (1):
+>   DT: Add a vendor prefix for Cosmic Circuits
+> 
+> Phani Movva (2):
+>   iio: adc: Cosmic Circuits 10001 ADC driver
+>   DT: iio: adc: Add CC_10001 binding documentation
+> 
+>  .../devicetree/bindings/iio/adc/cc10001_adc.txt    |  22 ++
+>  .../devicetree/bindings/vendor-prefixes.txt        |   1 +
+>  drivers/iio/adc/Kconfig                            |  11 +
+>  drivers/iio/adc/Makefile                           |   1 +
+>  drivers/iio/adc/cc10001_adc.c                      | 423 +++++++++++++++++++++
+>  5 files changed, 458 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/iio/adc/cc10001_adc.txt
+>  create mode 100644 drivers/iio/adc/cc10001_adc.c
 > 
 
