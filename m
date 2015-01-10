@@ -1,96 +1,233 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:59940 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:60000 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752636AbbAJWLf (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 10 Jan 2015 17:11:35 -0500
-Message-ID: <54B1A394.2090704@kernel.org>
-Date: Sat, 10 Jan 2015 22:11:32 +0000
+	with ESMTP id S1755072AbbAJWTV (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 10 Jan 2015 17:19:21 -0500
+Message-ID: <54B1A563.5080404@kernel.org>
+Date: Sat, 10 Jan 2015 22:19:15 +0000
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Lars-Peter Clausen <lars@metafoo.de>,
-	Karol Wrona <k.wrona@samsung.com>, linux-iio@vger.kernel.org,
+To: "Opensource [Adam Thomson]" <Adam.Thomson.Opensource@diasemi.com>,
+	Lee Jones <lee.jones@linaro.org>,
+	Samuel Ortiz <sameo@linux.intel.com>,
 	Hartmut Knaack <knaack.h@gmx.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	linux-kernel@vger.kernel.org
-CC: Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
-	Kyungmin Park <kyungmin.park@samsung.com>,
-	Karol Wrona <wrona.vy@gmail.com>
-Subject: Re: [RFC PATCH] iio: Add new operating mode for non triggered sw
- buffers
-References: <1420655771-22465-1-git-send-email-k.wrona@samsung.com> <54AE6024.8050303@metafoo.de>
-In-Reply-To: <54AE6024.8050303@metafoo.de>
-Content-Type: text/plain; charset=windows-1252
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	Sebastian Reichel <sre@kernel.org>,
+	Dmitry Eremin-Solenikov <dbaryshkov@gmail.com>,
+	David Woodhouse <dwmw2@infradead.org>,
+	"linux-pm@vger.kernel.org" <linux-pm@vger.kernel.org>,
+	Rob Herring <robh+dt@kernel.org>,
+	Pawel Moll <pawel.moll@arm.com>,
+	Mark Rutland <mark.rutland@arm.com>,
+	Ian Campbell <ijc+devicetree@hellion.org.uk>,
+	Kumar Gala <galak@codeaurora.org>,
+	Grant Likely <grant.likely@linaro.org>,
+	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Joe Perches <joe@perches.com>
+CC: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	Support Opensource <Support.Opensource@diasemi.com>
+Subject: Re: [PATCH v5 3/7] iio: Add support for DA9150 GPADC
+References: <cover.1419264383.git.Adam.Thomson.Opensource@diasemi.com> <58b7b001b38662c36595412f96c7d2eb5c3adcad.1419264383.git.Adam.Thomson.Opensource@diasemi.com> <54A976D2.9040104@kernel.org> <2E89032DDAA8B9408CB92943514A0337AB526A19@SW-EX-MBX01.diasemi.com>
+In-Reply-To: <2E89032DDAA8B9408CB92943514A0337AB526A19@SW-EX-MBX01.diasemi.com>
+Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 08/01/15 10:47, Lars-Peter Clausen wrote:
-> On 01/07/2015 07:36 PM, Karol Wrona wrote:
->> There was a need for non triggered software buffer type.  It can be used when
->> triggered model does not fit and INDIO_BUFFER_HARDWARE causes confusion because
->> the data stream can be obtained not directly form hardware backend.
+On 07/01/15 16:03, Opensource [Adam Thomson] wrote:
+> On January 4, 2015 17:22, Jonathan Cameron wrote:
+> 
+>> On 22/12/14 16:51, Adam Thomson wrote:
+>>> This patch adds support for DA9150 Charger & Fuel-Gauge IC GPADC.
+>>>
+>>> Signed-off-by: Adam Thomson <Adam.Thomson.Opensource@diasemi.com>
+>> One last query from me.
 >>
->> Suggested-by: Jonathan Cameron <jic23@kernel.org>
->> Signed-off-by: Karol Wrona <k.wrona@samsung.com>
+>> Using the extended channel names in IIO is only really appropriate when
+>> they don't correspond to simple pins on the side of the chip. For those
+>> just drop the extname bit.  Some of the channels you have here, definitely
+>> need them though.
+>>
+>> Drop those first 4 or convince me otherwise and add
+>> Acked-by: Jonathan Cameron <jic23@kernel.org>
 > 
-> Looks good, thanks.
+> Have added responses below. If the comments are accepted then I'll respin
+> and add you're 'Acked-by'. Is that ok?
 > 
-> Reviewed-by: Lars-Peter Clausen <lars@metafoo.de>
+Not accepted as yet :)
+>>> +#define DA9150_GPADC_CHANNEL_PROCESSED(_id, _hw_id, _type, _ext_name)
+>> 	\
+>>> +	DA9150_GPADC_CHANNEL(_id, _hw_id, _type,			\
+>>> +			     BIT(IIO_CHAN_INFO_PROCESSED), _ext_name)
+>>> +
+>>> +/* Supported channels */
+>>> +static const struct iio_chan_spec da9150_gpadc_channels[] = {
+>>> +	DA9150_GPADC_CHANNEL_PROCESSED(GPIOA, GPIOA_6V, IIO_VOLTAGE,
+>> "GPIOA"),
+>>> +	DA9150_GPADC_CHANNEL_PROCESSED(GPIOB, GPIOB_6V, IIO_VOLTAGE,
+>> "GPIOB"),
+>>> +	DA9150_GPADC_CHANNEL_PROCESSED(GPIOC, GPIOC_6V, IIO_VOLTAGE,
+>> "GPIOC"),
+>>> +	DA9150_GPADC_CHANNEL_PROCESSED(GPIOD, GPIOD_6V, IIO_VOLTAGE,
+>> "GPIOD"),
+>> I'm not sure some of these really deserve extended names.  Those are usually
+>> reserved for naming strange internal adc channels etc.  These first 4 are
+>> presumably just for input pins?  Those should just be channels 0..3
+>> On another note, unless you want really weird sysfs attribute names, the
+>> extended names want to be lowercase.
+>>
 > 
-Thanks for doing this.
+> I'd prefer to keep the names because the input pins are muxed with GPIOs of the
+> chip, so thought it sensible to show that this is the case. Am happy to change
+> to lower-case to follow convention.
+Hmm.  It's a bit of an oddity as the point of the naming
+is about the uses, not which pins they are on.  If we exposed the
+'datasheet_name' parameter directly rather than just using it internally
+I'd suggest relying on that - but clearly you want it to be apparent
+in the interface.  Whether that is useful is the question I'd raise
+here (and is the reason datasheet_name is not exposed.
 
-Applied to the togreg branch of iio.git - initially pushed out
-as testing.
+The obvious question is does userspace care?  Answer is probably not.
 
-Jonathan
->> ---
->>   drivers/iio/industrialio-buffer.c |    2 ++
->>   include/linux/iio/iio.h           |    6 ++++--
->>   2 files changed, 6 insertions(+), 2 deletions(-)
->>
->> diff --git a/drivers/iio/industrialio-buffer.c b/drivers/iio/industrialio-buffer.c
->> index f971f79..15e6de3 100644
->> --- a/drivers/iio/industrialio-buffer.c
->> +++ b/drivers/iio/industrialio-buffer.c
->> @@ -680,6 +680,8 @@ static int __iio_update_buffers(struct iio_dev *indio_dev,
->>           indio_dev->currentmode = INDIO_BUFFER_TRIGGERED;
->>       } else if (indio_dev->modes & INDIO_BUFFER_HARDWARE) {
->>           indio_dev->currentmode = INDIO_BUFFER_HARDWARE;
->> +    } else if (indio_dev->modes & INDIO_BUFFER_SOFTWARE) {
->> +        indio_dev->currentmode = INDIO_BUFFER_SOFTWARE;
->>       } else { /* Should never be reached */
->>           ret = -EINVAL;
->>           goto error_run_postdisable;
->> diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
->> index 3642ce7..55e63fd 100644
->> --- a/include/linux/iio/iio.h
->> +++ b/include/linux/iio/iio.h
->> @@ -284,10 +284,11 @@ static inline s64 iio_get_time_ns(void)
->>   /* Device operating modes */
->>   #define INDIO_DIRECT_MODE        0x01
->>   #define INDIO_BUFFER_TRIGGERED        0x02
->> +#define INDIO_BUFFER_SOFTWARE        0x04
->>   #define INDIO_BUFFER_HARDWARE        0x08
->>
->>   #define INDIO_ALL_BUFFER_MODES                    \
->> -    (INDIO_BUFFER_TRIGGERED | INDIO_BUFFER_HARDWARE)
->> +    (INDIO_BUFFER_TRIGGERED | INDIO_BUFFER_HARDWARE | INDIO_BUFFER_SOFTWARE)
->>
->>   #define INDIO_MAX_RAW_ELEMENTS        4
->>
->> @@ -591,7 +592,8 @@ void devm_iio_trigger_free(struct device *dev, struct iio_trigger *iio_trig);
->>   static inline bool iio_buffer_enabled(struct iio_dev *indio_dev)
->>   {
->>       return indio_dev->currentmode
->> -        & (INDIO_BUFFER_TRIGGERED | INDIO_BUFFER_HARDWARE);
->> +        & (INDIO_BUFFER_TRIGGERED | INDIO_BUFFER_HARDWARE |
->> +           INDIO_BUFFER_SOFTWARE);
->>   }
->>
->>   /**
->>
+It cares what is being measured but this is about what pins it is
+on and doesn't provide any information on what is connected to them.
+
+
 > 
-> -- 
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+>>> +	DA9150_GPADC_CHANNEL_PROCESSED(IBUS, IBUS_SENSE, IIO_CURRENT,
+>> "IBUS"),
+>>> +	DA9150_GPADC_CHANNEL_PROCESSED(VBUS, VBUS_DIV_, IIO_VOLTAGE,
+>> "VBUS"),
+>>> +	DA9150_GPADC_CHANNEL_RAW(ID, ID, IIO_VOLTAGE, "ID"),
+>> You hae an identifier voltage? That's certainly unusual but if so - fair enough
+>> and it defintely needs the extname!
+> 
+> Thanks for pointing that out. Having checked again, this is not needed and can
+> be dispensed with.
+> 
+>>> +	DA9150_GPADC_CHANNEL_PROCESSED(VSYS, VSYS, IIO_VOLTAGE, "VSYS"),
+>>> +	DA9150_GPADC_CHANNEL_SCALED(VBAT, VBAT, IIO_VOLTAGE, "VBAT"),
+>>> +	DA9150_GPADC_CHANNEL_RAW(TBAT, TBAT, IIO_VOLTAGE, "TBAT"),
+>>> +	DA9150_GPADC_CHANNEL_SCALED(TJUNC_CORE, TJUNC_CORE,
+>> IIO_TEMP,
+>>> +				    "TJUNC_CORE"),
+>> tjunc_core is a good use of extname ;)
+>>> +	DA9150_GPADC_CHANNEL_SCALED(TJUNC_OVP, TJUNC_OVP, IIO_TEMP,
+>>> +				    "TJUNC_OVP"),
+>>> +};
+>>> +
+>>> +/* Default maps used by da9150-charger */
+>>> +static struct iio_map da9150_gpadc_default_maps[] = {
+>>> +	{
+>>> +		.consumer_dev_name = "da9150-charger",
+>>> +		.consumer_channel = "CHAN_IBUS",
+>>> +		.adc_channel_label = "IBUS",
+>>> +	},
+>>> +	{
+>>> +		.consumer_dev_name = "da9150-charger",
+>>> +		.consumer_channel = "CHAN_VBUS",
+>>> +		.adc_channel_label = "VBUS",
+>>> +	},
+>>> +	{
+>>> +		.consumer_dev_name = "da9150-charger",
+>>> +		.consumer_channel = "CHAN_TJUNC",
+>>> +		.adc_channel_label = "TJUNC_CORE",
+>>> +	},
+>>> +	{
+>>> +		.consumer_dev_name = "da9150-charger",
+>>> +		.consumer_channel = "CHAN_VBAT",
+>>> +		.adc_channel_label = "VBAT",
+>>> +	},
+>>> +	{},
+>>> +};
+>>> +
+>>> +static int da9150_gpadc_probe(struct platform_device *pdev)
+>>> +{
+>>> +	struct device *dev = &pdev->dev;
+>>> +	struct da9150 *da9150 = dev_get_drvdata(dev->parent);
+>>> +	struct da9150_gpadc *gpadc;
+>>> +	struct iio_dev *indio_dev;
+>>> +	int irq, ret;
+>>> +
+>>> +	indio_dev = devm_iio_device_alloc(&pdev->dev, sizeof(*gpadc));
+>>> +	if (!indio_dev) {
+>>> +		dev_err(&pdev->dev, "Failed to allocate IIO device\n");
+>>> +		return -ENOMEM;
+>>> +	}
+>>> +	gpadc = iio_priv(indio_dev);
+>>> +
+>>> +	platform_set_drvdata(pdev, indio_dev);
+>>> +	gpadc->da9150 = da9150;
+>>> +	gpadc->dev = dev;
+>>> +	mutex_init(&gpadc->lock);
+>>> +	init_completion(&gpadc->complete);
+>>> +
+>>> +	irq = platform_get_irq_byname(pdev, "GPADC");
+>>> +	if (irq < 0) {
+>>> +		dev_err(dev, "Failed to get IRQ: %d\n", irq);
+>>> +		return irq;
+>>> +	}
+>>> +
+>>> +	ret = devm_request_threaded_irq(dev, irq, NULL, da9150_gpadc_irq,
+>>> +					IRQF_ONESHOT, "GPADC", gpadc);
+>>> +	if (ret) {
+>>> +		dev_err(dev, "Failed to request IRQ %d: %d\n", irq, ret);
+>>> +		return ret;
+>>> +	}
+>>> +
+>>> +	ret = iio_map_array_register(indio_dev, da9150_gpadc_default_maps);
+>>> +	if (ret) {
+>>> +		dev_err(dev, "Failed to register IIO maps: %d\n", ret);
+>>> +		return ret;
+>>> +	}
+>>> +
+>>> +	indio_dev->name = dev_name(dev);
+>>> +	indio_dev->dev.parent = dev;
+>>> +	indio_dev->dev.of_node = pdev->dev.of_node;
+>>> +	indio_dev->info = &da9150_gpadc_info;
+>>> +	indio_dev->modes = INDIO_DIRECT_MODE;
+>>> +	indio_dev->channels = da9150_gpadc_channels;
+>>> +	indio_dev->num_channels = ARRAY_SIZE(da9150_gpadc_channels);
+>>> +
+>>> +	ret = iio_device_register(indio_dev);
+>>> +	if (ret) {
+>>> +		dev_err(dev, "Failed to register IIO device: %d\n", ret);
+>>> +		goto iio_map_unreg;
+>>> +	}
+>>> +
+>>> +	return 0;
+>>> +
+>>> +iio_map_unreg:
+>>> +	iio_map_array_unregister(indio_dev);
+>>> +
+>>> +	return ret;
+>>> +}
+>>> +
+>>> +static int da9150_gpadc_remove(struct platform_device *pdev)
+>>> +{
+>>> +	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
+>>> +
+>>> +	iio_device_unregister(indio_dev);
+>>> +	iio_map_array_unregister(indio_dev);
+>>> +
+>>> +	return 0;
+>>> +}
+>>> +
+>>> +static struct platform_driver da9150_gpadc_driver = {
+>>> +	.driver = {
+>>> +		.name = "da9150-gpadc",
+>>> +	},
+>>> +	.probe = da9150_gpadc_probe,
+>>> +	.remove = da9150_gpadc_remove,
+>>> +};
+>>> +
+>>> +module_platform_driver(da9150_gpadc_driver);
+>>> +
+>>> +MODULE_DESCRIPTION("GPADC Driver for DA9150");
+>>> +MODULE_AUTHOR("Adam Thomson
+>> <Adam.Thomson.Opensource@diasemi.com>");
+>>> +MODULE_LICENSE("GPL");
+>>> --
+>>> 1.9.3
+>>>
 
