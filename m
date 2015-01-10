@@ -1,45 +1,55 @@
-Return-Path: <lars@metafoo.de>
-Message-ID: <54B108FA.6010704@metafoo.de>
-Date: Sat, 10 Jan 2015 12:11:54 +0100
-From: Lars-Peter Clausen <lars@metafoo.de>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:56259 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752140AbbAJLOh (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 10 Jan 2015 06:14:37 -0500
+Message-ID: <54B10997.6090708@kernel.org>
+Date: Sat, 10 Jan 2015 11:14:31 +0000
+From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Karol Wrona <k.wrona@samsung.com>,
- Jonathan Cameron <jic23@kernel.org>,
- linux-iio@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>,
- Peter Meerwald <pmeerw@pmeerw.net>,
- linux-kernel@vger.kernel.org
-CC: Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
- Kyungmin Park <kyungmin.park@samsung.com>,
- Karol Wrona <wrona.vy@gmail.com>
-Subject: Re: [PATCH 2/2] iio: Deselect IIO_TRIGGER for IIO_KFIFO_BUF
-References: <1420735227-21091-1-git-send-email-k.wrona@samsung.com> <1420735227-21091-3-git-send-email-k.wrona@samsung.com>
-In-Reply-To: <1420735227-21091-3-git-send-email-k.wrona@samsung.com>
-Content-Type: text/plain; charset=windows-1252; format=flowed
-List-ID: <linux-iio@vger.kernel.org>
+To: Harald Geyer <harald@ccbib.org>
+CC: Richard Weinberger <richard@nod.at>, knaack.h@gmx.de,
+	lars@metafoo.de, pmeerw@pmeerw.net, sanjeev_sharma@mentor.com,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCHv2 1/3,RESEND] iio: dht11: Fix out-of-bounds read
+References: <1417563176-31972-1-git-send-email-richard@nod.at> <54A53FBF.5000003@kernel.org> <7e4f6a70e48afe96457ebbcf07572224@imap.cosmopool.net> <54A680F8.30209@nod.at> <54A91DA1.6080107@kernel.org> <E1Y881p-0001Fp-NX@stardust.g4.wien.funkfeuer.at> <54AA97B9.7040703@nod.at> <E1Y8pWE-00012g-Ec@stardust.g4.wien.funkfeuer.at>
+In-Reply-To: <E1Y8pWE-00012g-Ec@stardust.g4.wien.funkfeuer.at>
+Content-Type: text/plain; charset=windows-1252
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On 01/08/2015 05:40 PM, Karol Wrona wrote:
-> iio kfifo can be used without trigger support so there is no need to build it.
->
-> Signed-off-by: Karol Wrona <k.wrona@samsung.com>
-
-Looks good, not sure why this was ever selected it in the first place.
-
-Reviewed-by: Lars-Peter Clausen <lars@metafoo.de>
-
+On 07/01/15 12:15, Harald Geyer wrote:
+> As we access i-1 we must not start with i=0.
+> 
+> From: Richard Weinberger <richard@nod.at>
+> Signed-off-by: Richard Weinberger <richard@nod.at>
+> Acked-by: Hartmut Knaack <knaack.h@gmx.de>
+> Acked-by: Harald Geyer <harald@ccbib.org>
+> Reviewed-by: Sanjeev Sharma <sanjeev_sharma@mentor.com>
 > ---
->   drivers/iio/Kconfig |    1 -
->   1 file changed, 1 deletion(-)
->
-> diff --git a/drivers/iio/Kconfig b/drivers/iio/Kconfig
-> index 50f6599..dfda2c3 100644
-> --- a/drivers/iio/Kconfig
-> +++ b/drivers/iio/Kconfig
-> @@ -27,7 +27,6 @@ boolean "IIO callback buffer used for push in-kernel interfaces"
->   	  usage.  That is, those where the data is pushed to the consumer.
->
->   config IIO_KFIFO_BUF
-> -	select IIO_TRIGGER
->   	tristate "Industrial I/O buffering based on kfifo"
->   	help
->   	  A simple fifo based on kfifo.  Note that this currently provides
->
+> Resending again to get the metadata right.
+Putting a From: in doesn't work, you need to use git commit --amend --author to
+fix it up.
+
+Anyhow, applied and author fixed up.
+> No Signed-off-by from me, because I didn't contribute anything.
+> No changes since v1 except reordering.
+> 
+>  drivers/iio/humidity/dht11.c |    2 +-
+>  1 files changed, 1 insertions(+), 1 deletions(-)
+> 
+> diff --git a/drivers/iio/humidity/dht11.c b/drivers/iio/humidity/dht11.c
+> index 623c145..f546eca 100644
+> --- a/drivers/iio/humidity/dht11.c
+> +++ b/drivers/iio/humidity/dht11.c
+> @@ -88,7 +88,7 @@ static int dht11_decode(struct dht11 *dht11, int offset)
+>  	unsigned char temp_int, temp_dec, hum_int, hum_dec, checksum;
+>  
+>  	/* Calculate timestamp resolution */
+> -	for (i = 0; i < dht11->num_edges; ++i) {
+> +	for (i = 1; i < dht11->num_edges; ++i) {
+>  		t = dht11->edges[i].ts - dht11->edges[i-1].ts;
+>  		if (t > 0 && t < timeres)
+>  			timeres = t;
+> 
+
