@@ -6,15 +6,15 @@ CC: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "Dogaru,
  Vlad" <vlad.dogaru@intel.com>, "Baluta, Daniel" <daniel.baluta@intel.com>,
 	Hartmut Knaack <knaack.h@gmx.de>, Lars-Peter Clausen <lars@metafoo.de>,
 	"Peter Meerwald" <pmeerw@pmeerw.net>
-Subject: RE: [PATCH 3/8] iio: core: Introduce SPEED channel type
-Date: Sun, 11 Jan 2015 13:47:29 +0000
-Message-ID: <1F3AC3675D538145B1661F571FE1805F199FDDDD@irsmsx105.ger.corp.intel.com>
+Subject: RE: [PATCH 1/8] iio: core: Introduce CALORIES channel type
+Date: Sun, 11 Jan 2015 13:44:13 +0000
+Message-ID: <1F3AC3675D538145B1661F571FE1805F199FDDC4@irsmsx105.ger.corp.intel.com>
 References: <1419029879-12024-1-git-send-email-irina.tirdea@intel.com>
- <1419029879-12024-4-git-send-email-irina.tirdea@intel.com>
- <549D6274.8030601@kernel.org>
- <1F3AC3675D538145B1661F571FE1805F199F7B6F@irsmsx105.ger.corp.intel.com>
- <54A522AB.1020401@kernel.org>
-In-Reply-To: <54A522AB.1020401@kernel.org>
+ <1419029879-12024-2-git-send-email-irina.tirdea@intel.com>
+ <549D61F3.3030302@kernel.org>
+ <1F3AC3675D538145B1661F571FE1805F199F7ADF@irsmsx105.ger.corp.intel.com>
+ <54A5218D.1070204@kernel.org>
+In-Reply-To: <54A5218D.1070204@kernel.org>
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 List-ID: <linux-iio@vger.kernel.org>
@@ -23,75 +23,84 @@ List-ID: <linux-iio@vger.kernel.org>
 
 > -----Original Message-----
 > From: Jonathan Cameron [mailto:jic23@kernel.org]
-> Sent: 01 January, 2015 12:34
+> Sent: 01 January, 2015 12:30
 > To: Tirdea, Irina; linux-iio@vger.kernel.org
 > Cc: linux-kernel@vger.kernel.org; Dogaru, Vlad; Baluta, Daniel; Hartmut K=
 naack; Lars-Peter Clausen; Peter Meerwald
-> Subject: Re: [PATCH 3/8] iio: core: Introduce SPEED channel type
+> Subject: Re: [PATCH 1/8] iio: core: Introduce CALORIES channel type
 >=20
-> On 29/12/14 18:13, Tirdea, Irina wrote:
+> On 29/12/14 14:42, Tirdea, Irina wrote:
 > >
 > >
 > >> -----Original Message-----
-> >> From: Jonathan Cameron [mailto:jic23@kernel.org]
-> >> Sent: 26 December, 2014 15:28
+> >> From: linux-iio-owner@vger.kernel.org [mailto:linux-iio-owner@vger.ker=
+nel.org] On Behalf Of Jonathan Cameron
+> >> Sent: 26 December, 2014 15:26
 > >> To: Tirdea, Irina; linux-iio@vger.kernel.org
 > >> Cc: linux-kernel@vger.kernel.org; Dogaru, Vlad; Baluta, Daniel; Hartmu=
 t Knaack; Lars-Peter Clausen; Peter Meerwald
-> >> Subject: Re: [PATCH 3/8] iio: core: Introduce SPEED channel type
+> >> Subject: Re: [PATCH 1/8] iio: core: Introduce CALORIES channel type
 > >>
 > >> On 19/12/14 22:57, Irina Tirdea wrote:
-> >>> Some devices export the current speed value of the user.
+> >>> Some devices compute the number of calories that the user has
+> >>> burnt since the last reset.
 > >>>
 > >>> One of this devices is Freescale's MMA9553L
 > >>> (http://www.freescale.com/files/sensors/doc/ref_manual/MMA9553LSWRM.p=
 df)
-> >>> that computes the speed of the user based on the number of steps and
-> >>> stride length.
+> >>> that computes the number of calories based on weight and step rate.
 > >>>
-> >>> Introduce a new channel type SPEED to export these values.
+> >>> Introduce a new channel type CALORIES to export these values.
 > >>>
-> >> A fun question raised by this is whether we are going to end up with
-> >> both speed and velocity (depending on whether it is signed or not).
-> >> I suppose there isn't much to be done about that though and this looks=
- fine
-> >> to me (as does the previous one).
+> >>> Signed-off-by: Irina Tirdea <irina.tirdea@intel.com>
+> >> hmm..  Ideally we use SI units for everything, but in human energy usa=
+ge
+> >> Calories are the most common unit by a long way.  I'm having some trou=
+ble
+> >> even finding the conversion for this particular for of calorie.
+> >>
 > >
-> > We might be able to unify speed and velocity if we use modifiers.
+> > Initially I wanted to use the calorie as unit, but it seemed a little b=
+it confusing because there are 2 different units both called calorie:
+> > - The small calorie or gram calorie approximates the energy needed to i=
+ncrease the temperature of 1 gram of water by 1 C.
+> > - The kilogram calorie or "large calorie" is an obsolete term used for =
+the kilocalorie, which is the calorie used to express the energy
+> content of foods. However, in practice, the prefix "kilo" is usually omit=
+ted.
 > >
-> > I am not sure how a device would export velocity information, but I
-> > assume it would be similar to acceleration (since we are talking
-> > about a vector as well). In this case we would need one channel type
-> > IIO_VELOCITY with modifiers for the 3 axes (IIO_MOD_X, IIO_MOD_Y,
-> > IIO_MOD_Z). We can further compute speed as the magnitude or the norm
-> > of the velocity vector (root of the sum squared values for x, y, z),
-> > so we can export it as an additional modifier IIO_MOD_NORM.
-> Good, except for the last bit. We already have IIO_MOD_ROOT_SUM_SQUARED_X=
-_Y so
-> should add IIO_MOD_ROOT_SUM_SQUARED_X_Y_Z for 3D devices and use that.  A=
- little
-> confusing perhaps for people just looking for a speed though.  Meh. Most
-> people will use this through a library anyway so that can wrap up the
-> measurement as speed if it wants to.
-> Note resulting attribute names will end up as the somewhat convoluted
->=20
-> in_velocity_sqrt(x^2+y^2+z^2)_*
->=20
-> I suppose that's clear enough...
-Yes, IIO_MOD_ROOT_SUM_SQUARED_X_Y_Z would fit better. I will also add ABI d=
-ocumentation to make it easier for people looking for speed.
+> oops. I didn't actually read the patch beyond seeing CALORIES as the type=
+ in the title ;)
+> > Instead of using cal (small calorie), kcal or Calorie (large calorie) a=
+s unit, I think it would be more clear to use Joule since that would
+> eliminate confusion and it is also a SI unit.
+> >
+> > According to the conversion table from here http://physics.nist.gov/Pub=
+s/SP811/appenB9.html#ENERGY, we could convert
+> nutritional calories to Joules using the following formula:
+> >   Energy (Joules) =3D 4 184 * calories_th_nutrition
+> > I used this formula in the implementation of the driver.
+> Joules is good, but then the type needs to be ENERGY rather than CALORIES=
+.
+> (and in_energy_* etc).
+
+
+That sounds better. Will change the type to ENERGY.
 
 > >
-> > The pedometer only gives speed information without keeping track of
-> > the direction, so in this case we will have one channel IIO_VELOCITY
-> > with one modifier IIO_MOD_NORM.
-> >
-> > Would this be a better approach than just exporting IIO_SPEED?>
-> Saves us some confusion later, so yes I prefer this.
-> > Thanks,
-> > Irina
-> >
-> >>> Signed-off-by: Irina Tirdea <irina.tirdea@intel.com>
+> >> Now clearly it doesn't matter if the only energy sensors we ever get
+> >> are for human activity. However, that's unlikely to be the case.  We
+> >> already have devices doing instantaneous power and there are plenty
+> >> of smart meter chips out there (though of course, they will use the
+> >> option of kW Hours just to confuse matters).
+> >>
+> >> I'd definitely prefer joules if we can do it with out a large amount o=
+f
+> >> pain.
+> >>
+> >> Lars - any views on this?  (Analog do make plenty of 'energy' measurem=
+ent
+> >> devices after all!)
 > >>> ---
 > >>>  Documentation/ABI/testing/sysfs-bus-iio |    9 +++++++++
 > >>>  drivers/iio/industrialio-core.c         |    1 +
@@ -100,59 +109,64 @@ ocumentation to make it easier for people looking for speed.
 > >>>
 > >>> diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/=
 ABI/testing/sysfs-bus-iio
-> >>> index a5c1dcc..07acef7 100644
+> >>> index df5e69e..bb9342b 100644
 > >>> --- a/Documentation/ABI/testing/sysfs-bus-iio
 > >>> +++ b/Documentation/ABI/testing/sysfs-bus-iio
-> >>> @@ -295,6 +295,7 @@ What:		/sys/bus/iio/devices/iio:deviceX/in_rot_fr=
-om_north_true_tilt_comp_scale
-> >>>  What:		/sys/bus/iio/devices/iio:deviceX/in_pressureY_scale
-> >>>  What:		/sys/bus/iio/devices/iio:deviceX/in_pressure_scale
-> >>>  What:		/sys/bus/iio/devices/iio:deviceX/in_humidityrelative_scale
-> >>> +What:		/sys/bus/iio/devices/iio:deviceX/in_speed_scale
-> >>>  KernelVersion:	2.6.35
-> >>>  Contact:	linux-iio@vger.kernel.org
-> >>>  Description:
-> >>> @@ -1146,6 +1147,14 @@ Description:
-> >>>  		present, output should be considered as processed with the
-> >>>  		unit in milliamps.
+> >>> @@ -282,6 +282,7 @@ What:		/sys/bus/iio/devices/iio:deviceX/in_curren=
+t_scale
+> >>>  What:		/sys/bus/iio/devices/iio:deviceX/in_accel_scale
+> >>>  What:		/sys/bus/iio/devices/iio:deviceX/in_accel_peak_scale
+> >>>  What:		/sys/bus/iio/devices/iio:deviceX/in_anglvel_scale
+> >>> +What:		/sys/bus/iio/devices/iio:deviceX/in_calories_scale
+> >>>  What:		/sys/bus/iio/devices/iio:deviceX/in_magn_scale
+> >>>  What:		/sys/bus/iio/devices/iio:deviceX/in_magn_x_scale
+> >>>  What:		/sys/bus/iio/devices/iio:deviceX/in_magn_y_scale
+> >>> @@ -1049,6 +1050,14 @@ Description:
+> >>>  		For a list of available output power modes read
+> >>>  		in_accel_power_mode_available.
 > >>>
-> >>> +What:		/sys/.../iio:deviceX/in_speed_input
-> >>> +What:		/sys/.../iio:deviceX/in_speed_raw
-> >>> +KernelVersion:	3.19
+> >>> +What:		/sys/.../iio:deviceX/in_calories_input
+> >>> +What:		/sys/.../iio:deviceX/in_calories_raw
+> >>> +KernelVersion:	3.17
 > >>> +Contact:	linux-iio@vger.kernel.org
 > >>> +Description:
-> >>> +		This attribute is used to read the current speed value of the user=
-.
-> >>> +		Units after application of scale are m/s.
+> >>> +		This attribute is used to read the number of calories burned since=
+ the last
+> >>> +		reset. Units after application of scale are Joules.
 > >>> +
-> >>>  What:		/sys/.../iio:deviceX/in_steps_en
-> >>>  KernelVersion:	3.19
+> >>>  What:		/sys/bus/iio/devices/iio:deviceX/store_eeprom
+> >>>  KernelVersion:	3.4.0
 > >>>  Contact:	linux-iio@vger.kernel.org
 > >>> diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrial=
 io-core.c
-> >>> index 4a10d31..5e50aca 100644
+> >>> index ee442ee..5d95e84 100644
 > >>> --- a/drivers/iio/industrialio-core.c
 > >>> +++ b/drivers/iio/industrialio-core.c
-> >>> @@ -74,6 +74,7 @@ static const char * const iio_chan_type_name_spec[]=
+> >>> @@ -72,6 +72,7 @@ static const char * const iio_chan_type_name_spec[]=
  =3D {
+> >>>  	[IIO_HUMIDITYRELATIVE] =3D "humidityrelative",
+> >>>  	[IIO_ACTIVITY] =3D "activity",
 > >>>  	[IIO_STEPS] =3D "steps",
-> >>>  	[IIO_CALORIES] =3D "calories",
-> >>>  	[IIO_DISTANCE] =3D "distance",
-> >>> +	[IIO_SPEED] =3D "speed",
+> >>> +	[IIO_CALORIES] =3D "calories",
 > >>>  };
 > >>>
 > >>>  static const char * const iio_modifier_names[] =3D {
 > >>> diff --git a/include/linux/iio/types.h b/include/linux/iio/types.h
-> >>> index b98f751..c848f45 100644
+> >>> index 904dcbb..d2fe930 100644
 > >>> --- a/include/linux/iio/types.h
 > >>> +++ b/include/linux/iio/types.h
-> >>> @@ -34,6 +34,7 @@ enum iio_chan_type {
+> >>> @@ -32,6 +32,7 @@ enum iio_chan_type {
+> >>>  	IIO_HUMIDITYRELATIVE,
+> >>>  	IIO_ACTIVITY,
 > >>>  	IIO_STEPS,
-> >>>  	IIO_CALORIES,
-> >>>  	IIO_DISTANCE,
-> >>> +	IIO_SPEED,
+> >>> +	IIO_CALORIES,
 > >>>  };
 > >>>
 > >>>  enum iio_modifier {
 > >>>
-> >
+> >>
+> >> --
+> >> To unsubscribe from this list: send the line "unsubscribe linux-iio" i=
+n
+> >> the body of a message to majordomo@vger.kernel.org
+> >> More majordomo info at  http://vger.kernel.org/majordomo-info.html
