@@ -1,106 +1,174 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga01.intel.com ([192.55.52.88]:3387 "EHLO mga01.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751537AbbAKTKw (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Sun, 11 Jan 2015 14:10:52 -0500
-From: Irina Tirdea <irina.tirdea@intel.com>
-To: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org, Vlad Dogaru <vlad.dogaru@intel.com>,
-	Daniel Baluta <daniel.baluta@intel.com>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	Irina Tirdea <irina.tirdea@intel.com>
-Subject: [PATCH v2 03/10] iio: core: Introduce IIO_VELOCITY and IIO_MOD_ROOT_SUM_SQUARED_X_Y_Z
-Date: Sun, 11 Jan 2015 21:10:09 +0200
-Message-Id: <1421003416-27557-4-git-send-email-irina.tirdea@intel.com>
-In-Reply-To: <1421003416-27557-1-git-send-email-irina.tirdea@intel.com>
-References: <1421003416-27557-1-git-send-email-irina.tirdea@intel.com>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <srinivas.pandruvada@linux.intel.com>
+Message-ID: <1421080726.4459.205.camel@spandruv-desktop.jf.intel.com>
+Subject: Re: [PATCH v1 1/2] HID: hid-sensor-hub: Enhance get feature report
+ API
+From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+To: Antonio Borneo <borneo.antonio@gmail.com>
+Cc: Jonathan Cameron <jic23@kernel.org>, Jiri Kosina <jkosina@suse.cz>,
+	linux-iio@vger.kernel.org, linux-input <linux-input@vger.kernel.org>
+Date: Mon, 12 Jan 2015 08:38:46 -0800
+In-Reply-To: <CAAj6DX1a-UNkdtKZ+eoF2Cvv_nfM1Cc-Vqu_+iHn_sRNto+NjQ@mail.gmail.com>
+References: 
+	<1421027714-25726-1-git-send-email-srinivas.pandruvada@linux.intel.com>
+	 <1421027714-25726-2-git-send-email-srinivas.pandruvada@linux.intel.com>
+	 <CAAj6DX1a-UNkdtKZ+eoF2Cvv_nfM1Cc-Vqu_+iHn_sRNto+NjQ@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Mime-Version: 1.0
+List-ID: <linux-iio@vger.kernel.org>
 
-Some devices export the current speed value of the user.
+On Mon, 2015-01-12 at 11:57 +0800, Antonio Borneo wrote: 
+> On Mon, Jan 12, 2015 at 9:55 AM, Srinivas Pandruvada
+> <srinivas.pandruvada@linux.intel.com> wrote:
+> > Some hid sensor feature report can contain more than one reports.
+> > This API can now support receiving multiple values from the feature
+> > report.
+> > Also update the parameters in the users of this API.
+> >
+> > Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+> > ---
+> >  drivers/hid/hid-sensor-hub.c                           | 16 ++++++++++++++--
+> >  drivers/iio/common/hid-sensors/hid-sensor-attributes.c | 13 +++++++------
+> >  drivers/iio/common/hid-sensors/hid-sensor-trigger.c    |  4 ++--
+> >  include/linux/hid-sensor-hub.h                         |  8 +++++---
+> >  4 files changed, 28 insertions(+), 13 deletions(-)
+> >
+> > diff --git a/drivers/hid/hid-sensor-hub.c b/drivers/hid/hid-sensor-hub.c
+> > index 83b6e15..d17aa67 100644
+> > --- a/drivers/hid/hid-sensor-hub.c
+> > +++ b/drivers/hid/hid-sensor-hub.c
+> > @@ -218,10 +218,11 @@ done_proc:
+> >  EXPORT_SYMBOL_GPL(sensor_hub_set_feature);
+> >
+> >  int sensor_hub_get_feature(struct hid_sensor_hub_device *hsdev, u32 report_id,
+> > -                               u32 field_index, s32 *value)
+> > +                          u32 field_index, int buffer_size, void *buffer)
+> >  {
+> >         struct hid_report *report;
+> >         struct sensor_hub_data *data = hid_get_drvdata(hsdev->hdev);
+> > +       int report_size;
+> >         int ret = 0;
+> >
+> >         mutex_lock(&data->mutex);
+> > @@ -233,7 +234,18 @@ int sensor_hub_get_feature(struct hid_sensor_hub_device *hsdev, u32 report_id,
+> >         }
+> >         hid_hw_request(hsdev->hdev, report, HID_REQ_GET_REPORT);
+> >         hid_hw_wait(hsdev->hdev);
+> > -       *value = report->field[field_index]->value[0];
+> > +
+> > +       /* calculate number of bytes required to read this field */
+> > +       report_size = report->field[field_index]->report_size / 8;
+> > +       if (report->field[field_index]->report_size % 8)
+> > +               ++report_size;
+> > +       report_size *= report->field[field_index]->report_count;
+> 
+> Hi Srinivas,
+Hi Antonio, 
+> 
+> I resend my reply.
+> It was discarded by the mailing list due to wrong setting with html formatting.
+> 
+> I think would be more clear writing directly:
+> 
+>         report_size = DIV_ROUND_UP(report->field[field_index]->report_size, 8) *
+>                       report->field[field_index]->report_count;
+Correct. I will resubmit this one.
 
-One of this devices is Freescale's MMA9553L
-(http://www.freescale.com/files/sensors/doc/ref_manual/MMA9553LSWRM.pdf)
-that computes the speed of the user based on the number of steps and
-stride length.
+Thanks,
+Srinivas
 
-Introduce a new channel type VELOCITY and a modifier for the magniture or
-norm of the velocity vector, IIO_MOD_ROOT_SUM_SQUARED_X_Y_Z.
-
-Signed-off-by: Irina Tirdea <irina.tirdea@intel.com>
----
- Documentation/ABI/testing/sysfs-bus-iio | 10 ++++++++++
- drivers/iio/industrialio-core.c         |  2 ++
- include/linux/iio/types.h               |  2 ++
- 3 files changed, 14 insertions(+)
-
-diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
-index c627a9a..80b5efb1 100644
---- a/Documentation/ABI/testing/sysfs-bus-iio
-+++ b/Documentation/ABI/testing/sysfs-bus-iio
-@@ -295,6 +295,7 @@ What:		/sys/bus/iio/devices/iio:deviceX/in_rot_from_north_true_tilt_comp_scale
- What:		/sys/bus/iio/devices/iio:deviceX/in_pressureY_scale
- What:		/sys/bus/iio/devices/iio:deviceX/in_pressure_scale
- What:		/sys/bus/iio/devices/iio:deviceX/in_humidityrelative_scale
-+What:		/sys/bus/iio/devices/iio:deviceX/in_velocity_sqrt(x^2+y^2+z^2)_scale
- KernelVersion:	2.6.35
- Contact:	linux-iio@vger.kernel.org
- Description:
-@@ -1164,3 +1165,12 @@ Contact:	linux-iio@vger.kernel.org
- Description:
- 		This attribute is used to read the number of steps taken by the user
- 		since the last reboot while activated.
-+
-+What:		/sys/.../iio:deviceX/in_velocity_sqrt(x^2+y^2+z^2)_input
-+What:		/sys/.../iio:deviceX/in_velocity_sqrt(x^2+y^2+z^2)_raw
-+KernelVersion:	3.19
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+		This attribute is used to read the current speed value of the
-+		user (which is the norm or magnitude of the velocity vector).
-+		Units after application of scale are m/s.
-diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
-index 655755b..18a8ab9 100644
---- a/drivers/iio/industrialio-core.c
-+++ b/drivers/iio/industrialio-core.c
-@@ -74,6 +74,7 @@ static const char * const iio_chan_type_name_spec[] = {
- 	[IIO_STEPS] = "steps",
- 	[IIO_ENERGY] = "energy",
- 	[IIO_DISTANCE] = "distance",
-+	[IIO_VELOCITY] = "velocity",
- };
- 
- static const char * const iio_modifier_names[] = {
-@@ -99,6 +100,7 @@ static const char * const iio_modifier_names[] = {
- 	[IIO_MOD_JOGGING] = "jogging",
- 	[IIO_MOD_WALKING] = "walking",
- 	[IIO_MOD_STILL] = "still",
-+	[IIO_MOD_ROOT_SUM_SQUARED_X_Y_Z] = "sqrt(x^2+y^2+z^2)",
- };
- 
- /* relies on pairs of these shared then separate */
-diff --git a/include/linux/iio/types.h b/include/linux/iio/types.h
-index a7de445..c3601c2 100644
---- a/include/linux/iio/types.h
-+++ b/include/linux/iio/types.h
-@@ -34,6 +34,7 @@ enum iio_chan_type {
- 	IIO_STEPS,
- 	IIO_ENERGY,
- 	IIO_DISTANCE,
-+	IIO_VELOCITY,
- };
- 
- enum iio_modifier {
-@@ -68,6 +69,7 @@ enum iio_modifier {
- 	IIO_MOD_JOGGING,
- 	IIO_MOD_WALKING,
- 	IIO_MOD_STILL,
-+	IIO_MOD_ROOT_SUM_SQUARED_X_Y_Z,
- };
- 
- enum iio_event_type {
--- 
-1.9.1
-
+> 
+> Regards,
+> Antonio
+> 
+> > +       if (!report_size) {
+> > +               ret = -EINVAL;
+> > +               goto done_proc;
+> > +       }
+> > +       ret = min(report_size, buffer_size);
+> > +       memcpy(buffer, report->field[field_index]->value, ret);
+> >
+> >  done_proc:
+> >         mutex_unlock(&data->mutex);
+> > diff --git a/drivers/iio/common/hid-sensors/hid-sensor-attributes.c b/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
+> > index 25b01e1..e1435e9 100644
+> > --- a/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
+> > +++ b/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
+> > @@ -153,8 +153,8 @@ s32 hid_sensor_read_poll_value(struct hid_sensor_common *st)
+> >         int ret;
+> >
+> >         ret = sensor_hub_get_feature(st->hsdev,
+> > -               st->poll.report_id,
+> > -               st->poll.index, &value);
+> > +                                    st->poll.report_id,
+> > +                                    st->poll.index, sizeof(value), &value);
+> >
+> >         if (ret < 0 || value < 0) {
+> >                 return -EINVAL;
+> > @@ -174,8 +174,8 @@ int hid_sensor_read_samp_freq_value(struct hid_sensor_common *st,
+> >         int ret;
+> >
+> >         ret = sensor_hub_get_feature(st->hsdev,
+> > -               st->poll.report_id,
+> > -               st->poll.index, &value);
+> > +                                    st->poll.report_id,
+> > +                                    st->poll.index, sizeof(value), &value);
+> >         if (ret < 0 || value < 0) {
+> >                 *val1 = *val2 = 0;
+> >                 return -EINVAL;
+> > @@ -229,8 +229,9 @@ int hid_sensor_read_raw_hyst_value(struct hid_sensor_common *st,
+> >         int ret;
+> >
+> >         ret = sensor_hub_get_feature(st->hsdev,
+> > -               st->sensitivity.report_id,
+> > -               st->sensitivity.index, &value);
+> > +                                    st->sensitivity.report_id,
+> > +                                    st->sensitivity.index, sizeof(value),
+> > +                                    &value);
+> >         if (ret < 0 || value < 0) {
+> >                 *val1 = *val2 = 0;
+> >                 return -EINVAL;
+> > diff --git a/drivers/iio/common/hid-sensors/hid-sensor-trigger.c b/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
+> > index 92068cd..ef0c495 100644
+> > --- a/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
+> > +++ b/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
+> > @@ -76,8 +76,8 @@ int hid_sensor_power_state(struct hid_sensor_common *st, bool state)
+> >         }
+> >
+> >         sensor_hub_get_feature(st->hsdev, st->power_state.report_id,
+> > -                                       st->power_state.index,
+> > -                                       &state_val);
+> > +                              st->power_state.index,
+> > +                              sizeof(state_val), &state_val);
+> >         return 0;
+> >  }
+> >  EXPORT_SYMBOL(hid_sensor_power_state);
+> > diff --git a/include/linux/hid-sensor-hub.h b/include/linux/hid-sensor-hub.h
+> > index 0b21c4f..1995bbd 100644
+> > --- a/include/linux/hid-sensor-hub.h
+> > +++ b/include/linux/hid-sensor-hub.h
+> > @@ -203,13 +203,15 @@ int sensor_hub_set_feature(struct hid_sensor_hub_device *hsdev, u32 report_id,
+> >  * @hsdev:      Hub device instance.
+> >  * @report_id:  Report id to look for
+> >  * @field_index:        Field index inside a report
+> > -* @value:      Place holder for return value
+> > +* @buffer_size:        size of the buffer
+> > +* @buffer:     buffer to copy output
+> >  *
+> >  * Used to get a field in feature report. For example this can get polling
+> > -* interval, sensitivity, activate/deactivate state.
+> > +* interval, sensitivity, activate/deactivate state. On success it returns
+> > +* number of bytes copied to buffer. On failure, it returns value < 0.
+> >  */
+> >  int sensor_hub_get_feature(struct hid_sensor_hub_device *hsdev, u32 report_id,
+> > -                       u32 field_index, s32 *value);
+> > +                          u32 field_index, int buffer_size, void *buffer);
+> >
+> >  /* hid-sensor-attributes */
+> >
+> > --
+> > 1.9.3
+> >
+> > --
+> > To unsubscribe from this list: send the line "unsubscribe linux-input" in
+> > the body of a message to majordomo@vger.kernel.org
+> > More majordomo info at  http://vger.kernel.org/majordomo-info.html
