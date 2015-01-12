@@ -1,78 +1,164 @@
-Return-Path: <k.wrona@samsung.com>
-Message-id: <54B39472.4000303@samsung.com>
-Date: Mon, 12 Jan 2015 10:31:30 +0100
-From: Karol Wrona <k.wrona@samsung.com>
-MIME-version: 1.0
-To: Jonathan Cameron <jic23@kernel.org>, Lars-Peter Clausen <lars@metafoo.de>,
- linux-iio@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>,
- Peter Meerwald <pmeerw@pmeerw.net>, linux-kernel@vger.kernel.org
-Cc: Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
- Kyungmin Park <kyungmin.park@samsung.com>, Karol Wrona <wrona.vy@gmail.com>
-Subject: Re: [PATCH 1/2] iio: Add no-triggered buffer helper functions
-References: <1420735227-21091-1-git-send-email-k.wrona@samsung.com>
- <1420735227-21091-2-git-send-email-k.wrona@samsung.com>
- <54B108A9.7080307@metafoo.de> <54B16DD3.3030505@kernel.org>
-In-reply-to: <54B16DD3.3030505@kernel.org>
-Content-type: text/plain; charset=windows-1252
+Return-Path: <borneo.antonio@gmail.com>
+MIME-Version: 1.0
+In-Reply-To: <1421027714-25726-2-git-send-email-srinivas.pandruvada@linux.intel.com>
+References: <1421027714-25726-1-git-send-email-srinivas.pandruvada@linux.intel.com>
+	<1421027714-25726-2-git-send-email-srinivas.pandruvada@linux.intel.com>
+Date: Mon, 12 Jan 2015 11:57:37 +0800
+Message-ID: <CAAj6DX1a-UNkdtKZ+eoF2Cvv_nfM1Cc-Vqu_+iHn_sRNto+NjQ@mail.gmail.com>
+Subject: Re: [PATCH v1 1/2] HID: hid-sensor-hub: Enhance get feature report API
+From: Antonio Borneo <borneo.antonio@gmail.com>
+To: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Cc: Jonathan Cameron <jic23@kernel.org>, Jiri Kosina <jkosina@suse.cz>, linux-iio@vger.kernel.org,
+	linux-input <linux-input@vger.kernel.org>
+Content-Type: text/plain; charset=UTF-8
 List-ID: <linux-iio@vger.kernel.org>
 
-On 01/10/2015 07:22 PM, Jonathan Cameron wrote:
-> On 10/01/15 11:10, Lars-Peter Clausen wrote:
->> On 01/08/2015 05:40 PM, Karol Wrona wrote:
->>> These ones helps to create and manage iio_kfifo buffer when
->>> no-triggered buffer is used.
->> [...]
->>> +int iio_notriggered_buffer_setup(struct iio_dev *indio_dev,
->>> +                 const struct iio_buffer_setup_ops *setup_ops)
->>> +
->>> +{
->>> +    int ret;
->>> +    struct iio_buffer *buffer;
->>> +
->>> +    buffer = iio_kfifo_allocate();
->>> +    if (!buffer)
->>> +        return -ENOMEM;
->>> +
->>> +    iio_device_attach_buffer(indio_dev, buffer);
->>> +
->>> +    indio_dev->setup_ops = setup_ops;
->>> +
->>> +    ret = iio_buffer_register(indio_dev, indio_dev->channels,
->>> +                  indio_dev->num_channels);
->>> +    if (ret)
->>> +        iio_kfifo_free(buffer);
->>> +
->>
->> We recently got rid of having to manually call iio_buffer_register() and iio_buffer_unregister(). This is now done by the IIO core. See http://git.kernel.org/cgit/linux/kernel/git/jic23/iio.git/commit/?h=togreg&id=3e1b6c95b990c93f4aa3b17e9f66221e2fa44bee
->>
->> I don't think we actually need these non-triggered helper functions anymore. It basically just boils down to iio_kfifo_allocate() and iio_device_attach_buffer().
->>
-> Even if they are still worthwhile, I'd just put them in the core code rather
-> than having the additional module.  Too trivial for it to make sense
-> in a utility module.
-> 
-> I'm inclined to agree with Lars that the recent changes reduce the argument for
-> having these to marginal at best.  Bad luck for crossing with those!
-> 
-> Jonathan
-> 
-> J
->> - Lars
+On Mon, Jan 12, 2015 at 9:55 AM, Srinivas Pandruvada
+<srinivas.pandruvada@linux.intel.com> wrote:
+> Some hid sensor feature report can contain more than one reports.
+> This API can now support receiving multiple values from the feature
+> report.
+> Also update the parameters in the users of this API.
+>
+> Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+> ---
+>  drivers/hid/hid-sensor-hub.c                           | 16 ++++++++++++++--
+>  drivers/iio/common/hid-sensors/hid-sensor-attributes.c | 13 +++++++------
+>  drivers/iio/common/hid-sensors/hid-sensor-trigger.c    |  4 ++--
+>  include/linux/hid-sensor-hub.h                         |  8 +++++---
+>  4 files changed, 28 insertions(+), 13 deletions(-)
+>
+> diff --git a/drivers/hid/hid-sensor-hub.c b/drivers/hid/hid-sensor-hub.c
+> index 83b6e15..d17aa67 100644
+> --- a/drivers/hid/hid-sensor-hub.c
+> +++ b/drivers/hid/hid-sensor-hub.c
+> @@ -218,10 +218,11 @@ done_proc:
+>  EXPORT_SYMBOL_GPL(sensor_hub_set_feature);
+>
+>  int sensor_hub_get_feature(struct hid_sensor_hub_device *hsdev, u32 report_id,
+> -                               u32 field_index, s32 *value)
+> +                          u32 field_index, int buffer_size, void *buffer)
+>  {
+>         struct hid_report *report;
+>         struct sensor_hub_data *data = hid_get_drvdata(hsdev->hdev);
+> +       int report_size;
+>         int ret = 0;
+>
+>         mutex_lock(&data->mutex);
+> @@ -233,7 +234,18 @@ int sensor_hub_get_feature(struct hid_sensor_hub_device *hsdev, u32 report_id,
+>         }
+>         hid_hw_request(hsdev->hdev, report, HID_REQ_GET_REPORT);
+>         hid_hw_wait(hsdev->hdev);
+> -       *value = report->field[field_index]->value[0];
+> +
+> +       /* calculate number of bytes required to read this field */
+> +       report_size = report->field[field_index]->report_size / 8;
+> +       if (report->field[field_index]->report_size % 8)
+> +               ++report_size;
+> +       report_size *= report->field[field_index]->report_count;
 
-No problem with dropping that. I prefer to be done this way too as now cleanup
-wrapper has no sense at all.
+Hi Srinivas,
 
-Thanks
-Karol
+I resend my reply.
+It was discarded by the mailing list due to wrong setting with html formatting.
 
+I think would be more clear writing directly:
 
->> -- 
->> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
->> the body of a message to majordomo@vger.kernel.org
->> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> 
+        report_size = DIV_ROUND_UP(report->field[field_index]->report_size, 8) *
+                      report->field[field_index]->report_count;
+
+Regards,
+Antonio
+
+> +       if (!report_size) {
+> +               ret = -EINVAL;
+> +               goto done_proc;
+> +       }
+> +       ret = min(report_size, buffer_size);
+> +       memcpy(buffer, report->field[field_index]->value, ret);
+>
+>  done_proc:
+>         mutex_unlock(&data->mutex);
+> diff --git a/drivers/iio/common/hid-sensors/hid-sensor-attributes.c b/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
+> index 25b01e1..e1435e9 100644
+> --- a/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
+> +++ b/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
+> @@ -153,8 +153,8 @@ s32 hid_sensor_read_poll_value(struct hid_sensor_common *st)
+>         int ret;
+>
+>         ret = sensor_hub_get_feature(st->hsdev,
+> -               st->poll.report_id,
+> -               st->poll.index, &value);
+> +                                    st->poll.report_id,
+> +                                    st->poll.index, sizeof(value), &value);
+>
+>         if (ret < 0 || value < 0) {
+>                 return -EINVAL;
+> @@ -174,8 +174,8 @@ int hid_sensor_read_samp_freq_value(struct hid_sensor_common *st,
+>         int ret;
+>
+>         ret = sensor_hub_get_feature(st->hsdev,
+> -               st->poll.report_id,
+> -               st->poll.index, &value);
+> +                                    st->poll.report_id,
+> +                                    st->poll.index, sizeof(value), &value);
+>         if (ret < 0 || value < 0) {
+>                 *val1 = *val2 = 0;
+>                 return -EINVAL;
+> @@ -229,8 +229,9 @@ int hid_sensor_read_raw_hyst_value(struct hid_sensor_common *st,
+>         int ret;
+>
+>         ret = sensor_hub_get_feature(st->hsdev,
+> -               st->sensitivity.report_id,
+> -               st->sensitivity.index, &value);
+> +                                    st->sensitivity.report_id,
+> +                                    st->sensitivity.index, sizeof(value),
+> +                                    &value);
+>         if (ret < 0 || value < 0) {
+>                 *val1 = *val2 = 0;
+>                 return -EINVAL;
+> diff --git a/drivers/iio/common/hid-sensors/hid-sensor-trigger.c b/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
+> index 92068cd..ef0c495 100644
+> --- a/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
+> +++ b/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
+> @@ -76,8 +76,8 @@ int hid_sensor_power_state(struct hid_sensor_common *st, bool state)
+>         }
+>
+>         sensor_hub_get_feature(st->hsdev, st->power_state.report_id,
+> -                                       st->power_state.index,
+> -                                       &state_val);
+> +                              st->power_state.index,
+> +                              sizeof(state_val), &state_val);
+>         return 0;
+>  }
+>  EXPORT_SYMBOL(hid_sensor_power_state);
+> diff --git a/include/linux/hid-sensor-hub.h b/include/linux/hid-sensor-hub.h
+> index 0b21c4f..1995bbd 100644
+> --- a/include/linux/hid-sensor-hub.h
+> +++ b/include/linux/hid-sensor-hub.h
+> @@ -203,13 +203,15 @@ int sensor_hub_set_feature(struct hid_sensor_hub_device *hsdev, u32 report_id,
+>  * @hsdev:      Hub device instance.
+>  * @report_id:  Report id to look for
+>  * @field_index:        Field index inside a report
+> -* @value:      Place holder for return value
+> +* @buffer_size:        size of the buffer
+> +* @buffer:     buffer to copy output
+>  *
+>  * Used to get a field in feature report. For example this can get polling
+> -* interval, sensitivity, activate/deactivate state.
+> +* interval, sensitivity, activate/deactivate state. On success it returns
+> +* number of bytes copied to buffer. On failure, it returns value < 0.
+>  */
+>  int sensor_hub_get_feature(struct hid_sensor_hub_device *hsdev, u32 report_id,
+> -                       u32 field_index, s32 *value);
+> +                          u32 field_index, int buffer_size, void *buffer);
+>
+>  /* hid-sensor-attributes */
+>
 > --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> 1.9.3
+>
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-input" in
 > the body of a message to majordomo@vger.kernel.org
 > More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> 
