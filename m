@@ -1,40 +1,78 @@
-Return-Path: <harald@ccbib.org>
-From: Harald Geyer <harald@ccbib.org>
-To: Richard Weinberger <richard@nod.at>
-cc: Jonathan Cameron <jic23@kernel.org>, knaack.h@gmx.de,
-    lars@metafoo.de, pmeerw@pmeerw.net, sanjeev_sharma@mentor.com,
-    linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCHv2 1/3,RESEND] iio: dht11: Fix out-of-bounds read
-In-reply-to: <54B171D8.6020301@nod.at>
-References: <1417563176-31972-1-git-send-email-richard@nod.at> <54A53FBF.5000003@kernel.org> <7e4f6a70e48afe96457ebbcf07572224@imap.cosmopool.net> <54A680F8.30209@nod.at> <54A91DA1.6080107@kernel.org> <E1Y881p-0001Fp-NX@stardust.g4.wien.funkfeuer.at> <54AA97B9.7040703@nod.at> <E1Y8pWE-00012g-Ec@stardust.g4.wien.funkfeuer.at> <54B10997.6090708@kernel.org> <54B171D8.6020301@nod.at>
-MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Date: Mon, 12 Jan 2015 12:26:45 +0100
-Message-Id: <E1YAd8v-0001FF-CI@stardust.g4.wien.funkfeuer.at>
+Return-Path: <k.wrona@samsung.com>
+Message-id: <54B39472.4000303@samsung.com>
+Date: Mon, 12 Jan 2015 10:31:30 +0100
+From: Karol Wrona <k.wrona@samsung.com>
+MIME-version: 1.0
+To: Jonathan Cameron <jic23@kernel.org>, Lars-Peter Clausen <lars@metafoo.de>,
+ linux-iio@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>,
+ Peter Meerwald <pmeerw@pmeerw.net>, linux-kernel@vger.kernel.org
+Cc: Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
+ Kyungmin Park <kyungmin.park@samsung.com>, Karol Wrona <wrona.vy@gmail.com>
+Subject: Re: [PATCH 1/2] iio: Add no-triggered buffer helper functions
+References: <1420735227-21091-1-git-send-email-k.wrona@samsung.com>
+ <1420735227-21091-2-git-send-email-k.wrona@samsung.com>
+ <54B108A9.7080307@metafoo.de> <54B16DD3.3030505@kernel.org>
+In-reply-to: <54B16DD3.3030505@kernel.org>
+Content-type: text/plain; charset=windows-1252
 List-ID: <linux-iio@vger.kernel.org>
 
-Richard Weinberger writes:
-> Am 10.01.2015 um 12:14 schrieb Jonathan Cameron:
-> > On 07/01/15 12:15, Harald Geyer wrote:
-> >> As we access i-1 we must not start with i=0.
-> >>
-> >> From: Richard Weinberger <richard@nod.at>
-> >> Signed-off-by: Richard Weinberger <richard@nod.at>
-> >> Acked-by: Hartmut Knaack <knaack.h@gmx.de>
-> >> Acked-by: Harald Geyer <harald@ccbib.org>
-> >> Reviewed-by: Sanjeev Sharma <sanjeev_sharma@mentor.com>
-> >> ---
-> >> Resending again to get the metadata right.
-> > Putting a From: in doesn't work, you need to use
-> > git commit --amend --author to fix it up.
+On 01/10/2015 07:22 PM, Jonathan Cameron wrote:
+> On 10/01/15 11:10, Lars-Peter Clausen wrote:
+>> On 01/08/2015 05:40 PM, Karol Wrona wrote:
+>>> These ones helps to create and manage iio_kfifo buffer when
+>>> no-triggered buffer is used.
+>> [...]
+>>> +int iio_notriggered_buffer_setup(struct iio_dev *indio_dev,
+>>> +                 const struct iio_buffer_setup_ops *setup_ops)
+>>> +
+>>> +{
+>>> +    int ret;
+>>> +    struct iio_buffer *buffer;
+>>> +
+>>> +    buffer = iio_kfifo_allocate();
+>>> +    if (!buffer)
+>>> +        return -ENOMEM;
+>>> +
+>>> +    iio_device_attach_buffer(indio_dev, buffer);
+>>> +
+>>> +    indio_dev->setup_ops = setup_ops;
+>>> +
+>>> +    ret = iio_buffer_register(indio_dev, indio_dev->channels,
+>>> +                  indio_dev->num_channels);
+>>> +    if (ret)
+>>> +        iio_kfifo_free(buffer);
+>>> +
+>>
+>> We recently got rid of having to manually call iio_buffer_register() and iio_buffer_unregister(). This is now done by the IIO core. See http://git.kernel.org/cgit/linux/kernel/git/jic23/iio.git/commit/?h=togreg&id=3e1b6c95b990c93f4aa3b17e9f66221e2fa44bee
+>>
+>> I don't think we actually need these non-triggered helper functions anymore. It basically just boils down to iio_kfifo_allocate() and iio_device_attach_buffer().
+>>
+> Even if they are still worthwhile, I'd just put them in the core code rather
+> than having the additional module.  Too trivial for it to make sense
+> in a utility module.
 > 
-> Or just use "git am" to apply a patch to a tree and keep the original author.
-> If you use "git format-patch" later it will produce the correct "From:".
+> I'm inclined to agree with Lars that the recent changes reduce the argument for
+> having these to marginal at best.  Bad luck for crossing with those!
+> 
+> Jonathan
+> 
+> J
+>> - Lars
 
-Thats exactly what I did initially, but of course when pasting the
-patch into my MUA, the headers got lost. I guess you don't suggest that
-I forge your address, so what's the right way to handle this? Include
-the entire mbox file into the body of the message?
+No problem with dropping that. I prefer to be done this way too as now cleanup
+wrapper has no sense at all.
 
-TIA,
-Harald
+Thanks
+Karol
+
+
+>> -- 
+>> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+>> the body of a message to majordomo@vger.kernel.org
+>> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> 
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> 
