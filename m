@@ -1,57 +1,36 @@
-Return-Path: <srinivas.pandruvada@linux.intel.com>
-Message-ID: <54B30186.3030104@linux.intel.com>
-Date: Sun, 11 Jan 2015 15:04:38 -0800
-From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-MIME-Version: 1.0
+Return-Path: <jkosina@suse.cz>
+Date: Mon, 12 Jan 2015 09:52:03 +0100 (CET)
+From: Jiri Kosina <jkosina@suse.cz>
 To: Jonathan Cameron <jic23@kernel.org>
-CC: linux-iio@vger.kernel.org, Wolfram Sang <wsa@the-dreams.de>,
- Jean Delvare <khali@linux-fr.org>
-Subject: Re: [PATCH] iio: magnetometer: ak8975: Add AK8963
-References: <1420846238-31802-1-git-send-email-srinivas.pandruvada@linux.intel.com> <54B1706A.3080809@kernel.org>
-In-Reply-To: <54B1706A.3080809@kernel.org>
-Content-Type: text/plain; charset=windows-1252; format=flowed
+cc: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+    linux-iio@vger.kernel.org, linux-input@vger.kernel.org
+Subject: Re: [PATCH 1/2] HID: hid-sensor-hub: Correct documentation
+In-Reply-To: <54B1A6DA.8080103@kernel.org>
+Message-ID: <alpine.LNX.2.00.1501120951060.15299@pobox.suse.cz>
+References: <1420654484-6410-1-git-send-email-srinivas.pandruvada@linux.intel.com> <1420654484-6410-2-git-send-email-srinivas.pandruvada@linux.intel.com> <54B1A5F0.9080904@kernel.org> <54B1A6DA.8080103@kernel.org>
+MIME-Version: 1.0
+Content-Type: TEXT/PLAIN; charset=US-ASCII
 List-ID: <linux-iio@vger.kernel.org>
 
+On Sat, 10 Jan 2015, Jonathan Cameron wrote:
 
-On 01/10/2015 10:33 AM, Jonathan Cameron wrote:
-> On 09/01/15 23:30, Srinivas Pandruvada wrote:
->> Added AK8963 in the id table. Unfortunately some commercial devices
->> using caps version ak8963.
->>
->> Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-> Hmm. I'm not sure what the general opinion on supporting this sort of
-> mess up is.
-This string comes from manufacturer provided BIOS (via ACPI config).
+> >> Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+> > Applied to the togreg branch of iio.git as absence of docs is irritating
+> > rather than a bug ;)
+> Sorry, dopey evening.  This one is Jiri's area not mine so over to him and
+> backed out of the togreg branch of iio.git.
+> 
+> Sorry about that.
+
+No problem. I guess we have to sort out which tree this whole lot will go 
+through anyway.
+
+I haven't yet unfortunately have time go to through the patches at all, so 
+I don't know whether they are touching more the HID part or the IIO part. 
+It's in my TODO queue.
 
 Thanks,
-Srinivas
 
-> Are we talking naming provided from a device tree or via old fashioned board
-> files?  If the board files I'd be inclined to say they are running a custom
-> kernel anyway so can patch this driver themselves.  If device tree I guess
-> we probably do need to support it - perhaps as a deprecated binding?
->
-> Wolfram / Jean - you guys must have seen this before. Did you let
-> the capital form in alongside the lower case one?  I guessing no ;)
->
-> I did a quick grep of hwmon and couldn't find any instances of this...
->
-> Jonathan
->> ---
->>   drivers/iio/magnetometer/ak8975.c | 1 +
->>   1 file changed, 1 insertion(+)
->>
->> diff --git a/drivers/iio/magnetometer/ak8975.c b/drivers/iio/magnetometer/ak8975.c
->> index 0d10a4b..b13936d 100644
->> --- a/drivers/iio/magnetometer/ak8975.c
->> +++ b/drivers/iio/magnetometer/ak8975.c
->> @@ -813,6 +813,7 @@ static int ak8975_probe(struct i2c_client *client,
->>   static const struct i2c_device_id ak8975_id[] = {
->>   	{"ak8975", AK8975},
->>   	{"ak8963", AK8963},
->> +	{"AK8963", AK8963},
->>   	{"ak09911", AK09911},
->>   	{"ak09912", AK09912},
->>   	{}
->>
->
+-- 
+Jiri Kosina
+SUSE Labs
