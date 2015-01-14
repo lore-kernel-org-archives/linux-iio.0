@@ -1,128 +1,130 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mailout3.w1.samsung.com ([210.118.77.13]:15860 "EHLO
-	mailout3.w1.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752743AbbAORiB (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 15 Jan 2015 12:38:01 -0500
-Message-id: <54B7FAF2.8080207@samsung.com>
-Date: Thu, 15 Jan 2015 18:37:54 +0100
-From: Sylwester Nawrocki <s.nawrocki@samsung.com>
-MIME-version: 1.0
-To: "Baluta, Teodora" <teodora.baluta@intel.com>,
-	Jonathan Cameron <jic23@kernel.org>
-Cc: Mauro Carvalho Chehab <m.chehab@samsung.com>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-	linux-iio <linux-iio@vger.kernel.org>,
-	LMML <linux-media@vger.kernel.org>,
-	Hans Verkuil <hverkuil@xs4all.nl>
+Received: from mga03.intel.com ([134.134.136.65]:30965 "EHLO mga03.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1752470AbbANROV (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Wed, 14 Jan 2015 12:14:21 -0500
+From: "Baluta, Teodora" <teodora.baluta@intel.com>
+To: "jic23@kernel.org" <jic23@kernel.org>
+CC: "m.chehab@samsung.com" <m.chehab@samsung.com>,
+	"lars@metafoo.de" <lars@metafoo.de>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	"linux-media@vger.kernel.org" <linux-media@vger.kernel.org>,
+	"hverkuil@xs4all.nl" <hverkuil@xs4all.nl>
 Subject: Re: [RFC PATCH 0/3] Introduce IIO interface for fingerprint sensors
+Date: Wed, 14 Jan 2015 17:14:03 +0000
+Message-ID: <1421255642.31900.4.camel@bebop>
 References: <1417698017-13835-1-git-send-email-teodora.baluta@intel.com>
- <5481153B.4070609@kernel.org> <1418047828.18463.10.camel@bebop>
- <54930604.1020607@metafoo.de> <549D42BD.1050901@kernel.org>
- <1421255642.31900.4.camel@bebop>
-In-reply-to: <1421255642.31900.4.camel@bebop>
-Content-type: text/plain; charset=utf-8
+		 <5481153B.4070609@kernel.org> <1418047828.18463.10.camel@bebop>
+	 <54930604.1020607@metafoo.de> <549D42BD.1050901@kernel.org>
+In-Reply-To: <549D42BD.1050901@kernel.org>
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 14/01/15 18:14, Baluta, Teodora wrote:
-> On Vi, 2014-12-26 at 11:13 +0000, Jonathan Cameron wrote:
->> On 18/12/14 16:51, Lars-Peter Clausen wrote:
->>> Adding V4L folks to Cc for more input.
->>
->> Thanks Lars - we definitely would need the v4l guys to agree to a driver like
->> this going in IIO. (not that I'm convinced it should!)
->>
->>> On 12/08/2014 03:10 PM, Baluta, Teodora wrote:
->>>> Hello,
->>>>
->>>> On Vi, 2014-12-05 at 02:15 +0000, Jonathan Cameron wrote:
->>>>> On 04/12/14 13:00, Teodora Baluta wrote:
->>>>>> This patchset adds support for fingerprint sensors through the IIO interface.
->>>>>> This way userspace applications collect information in a uniform way. All
->>>>>> processing would be done in the upper layers as suggested in [0].
->>>>>>
->>>>>> In order to test out this proposal, a minimal implementation for UPEK's
->>>>>> TouchChip Fingerprint Sensor via USB is also available. Although there is an
->>>>>> existing implementation in userspace for USB fingerprint devices, including this
->>>>>> particular device, the driver represents a proof of concept of how fingerprint
->>>>>> sensors could be integrated in the IIO framework regardless of the used bus. For
->>>>>> lower power requirements, the SPI bus is preferred and a kernel driver
->>>>>> implementation makes more sense.
->>>>>
->>>>> So why not v4l?  These are effectively image sensors..
->>>>
->>>> Well, here's why I don't think v4l would be the best option:
->>>>
->>>> - an image scanner could be implemented in the v4l subsystem, but it
->>>> seems far more complicated for a simple fingerprint scanner - it usually
->>>> has drivers for webcams, TVs or video streaming devices. The v4l
->>>> subsystem (with all its support for colorspace, decoders, image
->>>> compression, frame control) seems a bit of an overkill for a very
->>>> straightforward fingerprint imaging sensor.
->
->> Whilst those are there, I would doubt the irrelevant bits would put much
->> burden on a fingerprint scanning driver.  Been a while since I did
->> anything in that area though so I could be wrong!
-
-IMO V4L is much better fit for this kind of devices than IIO. You can use
-just a subset of the API, it shouldn't take much effort to write a simple
-v4l2 capture driver, supporting fixed (probably vendor/chip specific) image
-format.  I'm not sure if it's better to use the v4l2 controls [1], define
-a new v4l2 controls class for the fingerprint scanner processing features,
-rather than trying to pass raw data to user space and interpret it then
-in some library.  I know there has been resistance to allowing passing
-unknown binary blobs to user space, due to possible abuses.
-
-[1] Documentation/video4linux/v4l2-controls.txt
-
->>>> - a fingerprint device could also send out a processed information, not
->>>> just the image of a fingerprint. This means that the processing is done
->>>> in hardware - the UPEK TouchStrip chipset in libfprint has this behavior
->>>> (see [0]). So, the IIO framework would support a uniform way of handling
->>>> fingerprint devices that either do processing in software or in
->>>> hardware.
-
-You can use the v4l2 controls API for that, which also supports events.
-The controls could be made read only.
-It would be interesting to list what kind of features these could be.
-
->> This is more interesting, but does that map well to IIO style
->> channels anyway?  If not we are going to end up with a whole new
->> interface which ever subsystem is used for the image side of things.
->>>>
->>>> The way I see it now, for processed fingerprint information, an IIO
->>>> device could have an IIO_FINGERPRINT channel with a modifier and only
->>>> the sensitivity threshold attribute set. We would also need two
->>>> triggers: one for enrollment and one for the verification mode to
->>>> control the device from a userspace application.
-
-This could be all well handled with the v4l2 controls, for instance see
-what features are available in the Camera Flash controls subset
-
-http://linuxtv.org/downloads/v4l-dvb-apis/extended-controls.html#flash-controls
-
->> Sure - what you proposed would work.  The question is whether it is
->> the best way to do it.
-> 
-> Any thoughts on this from the v4l community?
-
-I would try it with V4L2, it seems to me most suitable subsystem for such
-devices to me.  The question is what ends up in the kernel and what in user
-space.  Anyway IMO V4L2 API is quite flexible with regards to that, due to
-wide range of devices it needs to cover.
-
->>>> [0] http://www.freedesktop.org/wiki/Software/fprint/libfprint/upekts/
->>>>
->>>>>> A sysfs trigger is enabled and the device starts scanning. As soon as an image
->>>>>> is available it is written in the character device /dev/iio:deviceX.
->>>>>>
->>>>>> Userspace applications will be able to calculate the expected image size using
->>>>>> the fingerprint attributes height, width and bit depth. Other attributes
->>>>>> introduced for the fingerprint channel in IIO represent information that aids in
->>>>>> the fingerprint image processing. Besides these, the proposed interface offers
->>>>>> userspace a way to read a feedback after a scan (like the swipe was too slow or
->>>>>> too fast) through a modified fingerprint_status channel.
->>>>>>
->>>>>> [0] http://www.spinics.net/lists/linux-iio/msg11463.html
-
+T24gVmksIDIwMTQtMTItMjYgYXQgMTE6MTMgKzAwMDAsIEpvbmF0aGFuIENhbWVyb24gd3JvdGU6
+DQo+IE9uIDE4LzEyLzE0IDE2OjUxLCBMYXJzLVBldGVyIENsYXVzZW4gd3JvdGU6DQo+ID4gQWRk
+aW5nIFY0TCBmb2xrcyB0byBDYyBmb3IgbW9yZSBpbnB1dC4NCj4gVGhhbmtzIExhcnMgLSB3ZSBk
+ZWZpbml0ZWx5IHdvdWxkIG5lZWQgdGhlIHY0bCBndXlzIHRvIGFncmVlIHRvIGEgZHJpdmVyIGxp
+a2UNCj4gdGhpcyBnb2luZyBpbiBJSU8uIChub3QgdGhhdCBJJ20gY29udmluY2VkIGl0IHNob3Vs
+ZCEpDQo+ID4gDQo+ID4gT24gMTIvMDgvMjAxNCAwMzoxMCBQTSwgQmFsdXRhLCBUZW9kb3JhIHdy
+b3RlOg0KPiA+PiBIZWxsbywNCj4gPj4NCj4gPj4gT24gVmksIDIwMTQtMTItMDUgYXQgMDI6MTUg
+KzAwMDAsIEpvbmF0aGFuIENhbWVyb24gd3JvdGU6DQo+ID4+PiBPbiAwNC8xMi8xNCAxMzowMCwg
+VGVvZG9yYSBCYWx1dGEgd3JvdGU6DQo+ID4+Pj4gVGhpcyBwYXRjaHNldCBhZGRzIHN1cHBvcnQg
+Zm9yIGZpbmdlcnByaW50IHNlbnNvcnMgdGhyb3VnaCB0aGUgSUlPIGludGVyZmFjZS4NCj4gPj4+
+PiBUaGlzIHdheSB1c2Vyc3BhY2UgYXBwbGljYXRpb25zIGNvbGxlY3QgaW5mb3JtYXRpb24gaW4g
+YSB1bmlmb3JtIHdheS4gQWxsDQo+ID4+Pj4gcHJvY2Vzc2luZyB3b3VsZCBiZSBkb25lIGluIHRo
+ZSB1cHBlciBsYXllcnMgYXMgc3VnZ2VzdGVkIGluIFswXS4NCj4gPj4+Pg0KPiA+Pj4+IEluIG9y
+ZGVyIHRvIHRlc3Qgb3V0IHRoaXMgcHJvcG9zYWwsIGEgbWluaW1hbCBpbXBsZW1lbnRhdGlvbiBm
+b3IgVVBFSydzDQo+ID4+Pj4gVG91Y2hDaGlwIEZpbmdlcnByaW50IFNlbnNvciB2aWEgVVNCIGlz
+IGFsc28gYXZhaWxhYmxlLiBBbHRob3VnaCB0aGVyZSBpcyBhbg0KPiA+Pj4+IGV4aXN0aW5nIGlt
+cGxlbWVudGF0aW9uIGluIHVzZXJzcGFjZSBmb3IgVVNCIGZpbmdlcnByaW50IGRldmljZXMsIGlu
+Y2x1ZGluZyB0aGlzDQo+ID4+Pj4gcGFydGljdWxhciBkZXZpY2UsIHRoZSBkcml2ZXIgcmVwcmVz
+ZW50cyBhIHByb29mIG9mIGNvbmNlcHQgb2YgaG93IGZpbmdlcnByaW50DQo+ID4+Pj4gc2Vuc29y
+cyBjb3VsZCBiZSBpbnRlZ3JhdGVkIGluIHRoZSBJSU8gZnJhbWV3b3JrIHJlZ2FyZGxlc3Mgb2Yg
+dGhlIHVzZWQgYnVzLiBGb3INCj4gPj4+PiBsb3dlciBwb3dlciByZXF1aXJlbWVudHMsIHRoZSBT
+UEkgYnVzIGlzIHByZWZlcnJlZCBhbmQgYSBrZXJuZWwgZHJpdmVyDQo+ID4+Pj4gaW1wbGVtZW50
+YXRpb24gbWFrZXMgbW9yZSBzZW5zZS4NCj4gPj4+DQo+ID4+PiBTbyB3aHkgbm90IHY0bD8gIFRo
+ZXNlIGFyZSBlZmZlY3RpdmVseSBpbWFnZSBzZW5zb3JzLi4NCj4gPj4NCj4gPj4gV2VsbCwgaGVy
+ZSdzIHdoeSBJIGRvbid0IHRoaW5rIHY0bCB3b3VsZCBiZSB0aGUgYmVzdCBvcHRpb246DQo+ID4+
+DQo+ID4+IC0gYW4gaW1hZ2Ugc2Nhbm5lciBjb3VsZCBiZSBpbXBsZW1lbnRlZCBpbiB0aGUgdjRs
+IHN1YnN5c3RlbSwgYnV0IGl0DQo+ID4+IHNlZW1zIGZhciBtb3JlIGNvbXBsaWNhdGVkIGZvciBh
+IHNpbXBsZSBmaW5nZXJwcmludCBzY2FubmVyIC0gaXQgdXN1YWxseQ0KPiA+PiBoYXMgZHJpdmVy
+cyBmb3Igd2ViY2FtcywgVFZzIG9yIHZpZGVvIHN0cmVhbWluZyBkZXZpY2VzLiBUaGUgdjRsDQo+
+ID4+IHN1YnN5c3RlbSAod2l0aCBhbGwgaXRzIHN1cHBvcnQgZm9yIGNvbG9yc3BhY2UsIGRlY29k
+ZXJzLCBpbWFnZQ0KPiA+PiBjb21wcmVzc2lvbiwgZnJhbWUgY29udHJvbCkgc2VlbXMgYSBiaXQg
+b2YgYW4gb3ZlcmtpbGwgZm9yIGEgdmVyeQ0KPiA+PiBzdHJhaWdodGZvcndhcmQgZmluZ2VycHJp
+bnQgaW1hZ2luZyBzZW5zb3IuDQo+IFdoaWxzdCB0aG9zZSBhcmUgdGhlcmUsIEkgd291bGQgZG91
+YnQgdGhlIGlycmVsZXZhbnQgYml0cyB3b3VsZCBwdXQgbXVjaA0KPiBidXJkZW4gb24gYSBmaW5n
+ZXJwcmludCBzY2FubmluZyBkcml2ZXIuICBCZWVuIGEgd2hpbGUgc2luY2UgSSBkaWQNCj4gYW55
+dGhpbmcgaW4gdGhhdCBhcmVhIHRob3VnaCBzbyBJIGNvdWxkIGJlIHdyb25nIQ0KPiA+Pg0KPiA+
+PiAtIGEgZmluZ2VycHJpbnQgZGV2aWNlIGNvdWxkIGFsc28gc2VuZCBvdXQgYSBwcm9jZXNzZWQg
+aW5mb3JtYXRpb24sIG5vdA0KPiA+PiBqdXN0IHRoZSBpbWFnZSBvZiBhIGZpbmdlcnByaW50LiBU
+aGlzIG1lYW5zIHRoYXQgdGhlIHByb2Nlc3NpbmcgaXMgZG9uZQ0KPiA+PiBpbiBoYXJkd2FyZSAt
+IHRoZSBVUEVLIFRvdWNoU3RyaXAgY2hpcHNldCBpbiBsaWJmcHJpbnQgaGFzIHRoaXMgYmVoYXZp
+b3INCj4gPj4gKHNlZSBbMF0pLiBTbywgdGhlIElJTyBmcmFtZXdvcmsgd291bGQgc3VwcG9ydCBh
+IHVuaWZvcm0gd2F5IG9mIGhhbmRsaW5nDQo+ID4+IGZpbmdlcnByaW50IGRldmljZXMgdGhhdCBl
+aXRoZXIgZG8gcHJvY2Vzc2luZyBpbiBzb2Z0d2FyZSBvciBpbg0KPiA+PiBoYXJkd2FyZS4NCj4g
+VGhpcyBpcyBtb3JlIGludGVyZXN0aW5nLCBidXQgZG9lcyB0aGF0IG1hcCB3ZWxsIHRvIElJTyBz
+dHlsZQ0KPiBjaGFubmVscyBhbnl3YXk/ICBJZiBub3Qgd2UgYXJlIGdvaW5nIHRvIGVuZCB1cCB3
+aXRoIGEgd2hvbGUgbmV3DQo+IGludGVyZmFjZSB3aGljaCBldmVyIHN1YnN5c3RlbSBpcyB1c2Vk
+IGZvciB0aGUgaW1hZ2Ugc2lkZSBvZiB0aGluZ3MuDQo+ID4+DQo+ID4+IFRoZSB3YXkgSSBzZWUg
+aXQgbm93LCBmb3IgcHJvY2Vzc2VkIGZpbmdlcnByaW50IGluZm9ybWF0aW9uLCBhbiBJSU8NCj4g
+Pj4gZGV2aWNlIGNvdWxkIGhhdmUgYW4gSUlPX0ZJTkdFUlBSSU5UIGNoYW5uZWwgd2l0aCBhIG1v
+ZGlmaWVyIGFuZCBvbmx5DQo+ID4+IHRoZSBzZW5zaXRpdml0eSB0aHJlc2hvbGQgYXR0cmlidXRl
+IHNldC4gV2Ugd291bGQgYWxzbyBuZWVkIHR3bw0KPiA+PiB0cmlnZ2Vyczogb25lIGZvciBlbnJv
+bGxtZW50IGFuZCBvbmUgZm9yIHRoZSB2ZXJpZmljYXRpb24gbW9kZSB0bw0KPiA+PiBjb250cm9s
+IHRoZSBkZXZpY2UgZnJvbSBhIHVzZXJzcGFjZSBhcHBsaWNhdGlvbi4NCj4gU3VyZSAtIHdoYXQg
+eW91IHByb3Bvc2VkIHdvdWxkIHdvcmsuICBUaGUgcXVlc3Rpb24gaXMgd2hldGhlciBpdCBpcw0K
+PiB0aGUgYmVzdCB3YXkgdG8gZG8gaXQuDQoNCkFueSB0aG91Z2h0cyBvbiB0aGlzIGZyb20gdGhl
+IHY0bCBjb21tdW5pdHk/DQoNClRoYW5rcywNClRlb2RvcmENCg0KPiANCj4gDQo+ID4+DQo+ID4+
+IFRoYW5rcywNCj4gPj4gVGVvZG9yYQ0KPiA+Pg0KPiA+PiBbMF0gaHR0cDovL3d3dy5mcmVlZGVz
+a3RvcC5vcmcvd2lraS9Tb2Z0d2FyZS9mcHJpbnQvbGliZnByaW50L3VwZWt0cy8NCj4gPj4NCj4g
+Pj4NCj4gPj4+Pg0KPiA+Pj4+IEEgc3lzZnMgdHJpZ2dlciBpcyBlbmFibGVkIGFuZCB0aGUgZGV2
+aWNlIHN0YXJ0cyBzY2FubmluZy4gQXMgc29vbiBhcyBhbiBpbWFnZQ0KPiA+Pj4+IGlzIGF2YWls
+YWJsZSBpdCBpcyB3cml0dGVuIGluIHRoZSBjaGFyYWN0ZXIgZGV2aWNlIC9kZXYvaWlvOmRldmlj
+ZVguDQo+ID4+Pj4NCj4gPj4+PiBVc2Vyc3BhY2UgYXBwbGljYXRpb25zIHdpbGwgYmUgYWJsZSB0
+byBjYWxjdWxhdGUgdGhlIGV4cGVjdGVkIGltYWdlIHNpemUgdXNpbmcNCj4gPj4+PiB0aGUgZmlu
+Z2VycHJpbnQgYXR0cmlidXRlcyBoZWlnaHQsIHdpZHRoIGFuZCBiaXQgZGVwdGguIE90aGVyIGF0
+dHJpYnV0ZXMNCj4gPj4+PiBpbnRyb2R1Y2VkIGZvciB0aGUgZmluZ2VycHJpbnQgY2hhbm5lbCBp
+biBJSU8gcmVwcmVzZW50IGluZm9ybWF0aW9uIHRoYXQgYWlkcyBpbg0KPiA+Pj4+IHRoZSBmaW5n
+ZXJwcmludCBpbWFnZSBwcm9jZXNzaW5nLiBCZXNpZGVzIHRoZXNlLCB0aGUgcHJvcG9zZWQgaW50
+ZXJmYWNlIG9mZmVycw0KPiA+Pj4+IHVzZXJzcGFjZSBhIHdheSB0byByZWFkIGEgZmVlZGJhY2sg
+YWZ0ZXIgYSBzY2FuIChsaWtlIHRoZSBzd2lwZSB3YXMgdG9vIHNsb3cgb3INCj4gPj4+PiB0b28g
+ZmFzdCkgdGhyb3VnaCBhIG1vZGlmaWVkIGZpbmdlcnByaW50X3N0YXR1cyBjaGFubmVsLg0KPiA+
+Pj4+DQo+ID4+Pj4gWzBdIGh0dHA6Ly93d3cuc3Bpbmljcy5uZXQvbGlzdHMvbGludXgtaWlvL21z
+ZzExNDYzLmh0bWwNCj4gPj4+Pg0KPiA+Pj4+IFRlb2RvcmEgQmFsdXRhICgzKToNCj4gPj4+PiAg
+ICBpaW86IGNvcmU6IGFkZCBzdXBwb3J0IGZvciBmaW5nZXJwcmludCBkZXZpY2VzDQo+ID4+Pj4g
+ICAgaWlvOiBjb3JlOiBjaGFuZ2UgY2hhbm5lbCdzIHN0b3JhZ2ViaXRzL3JlYWxiaXRzIHRvIHUz
+Mg0KPiA+Pj4+ICAgIGlpbzogZmluZ2VycHJpbnQ6IGFkZCBmaW5nZXJwcmludCBzZW5zb3Igdmlh
+IFVTQg0KPiA+Pj4+DQo+ID4+Pj4gICBEb2N1bWVudGF0aW9uL0FCSS90ZXN0aW5nL3N5c2ZzLWJ1
+cy1paW8gfCAgNTEgKysrDQo+ID4+Pj4gICBkcml2ZXJzL2lpby9LY29uZmlnICAgICAgICAgICAg
+ICAgICAgICAgfCAgIDEgKw0KPiA+Pj4+ICAgZHJpdmVycy9paW8vTWFrZWZpbGUgICAgICAgICAg
+ICAgICAgICAgIHwgICAxICsNCj4gPj4+PiAgIGRyaXZlcnMvaWlvL2ZpbmdlcnByaW50L0tjb25m
+aWcgICAgICAgICB8ICAxNSArDQo+ID4+Pj4gICBkcml2ZXJzL2lpby9maW5nZXJwcmludC9NYWtl
+ZmlsZSAgICAgICAgfCAgIDUgKw0KPiA+Pj4+ICAgZHJpdmVycy9paW8vZmluZ2VycHJpbnQvZnBf
+dGMuYyAgICAgICAgIHwgMTYyICsrKysrKysrKw0KPiA+Pj4+ICAgZHJpdmVycy9paW8vZmluZ2Vy
+cHJpbnQvZnBfdGMuaCAgICAgICAgIHwgIDIyICsrDQo+ID4+Pj4gICBkcml2ZXJzL2lpby9maW5n
+ZXJwcmludC9mcF90Y191c2IuYyAgICAgfCA2MTggKysrKysrKysrKysrKysrKysrKysrKysrKysr
+KysrKysNCj4gPj4+PiAgIGRyaXZlcnMvaWlvL2ZpbmdlcnByaW50L2ZwX3RjX3VzYi5oICAgICB8
+IDE0NCArKysrKysrKw0KPiA+Pj4+ICAgZHJpdmVycy9paW8vaW5kdXN0cmlhbGlvLWNvcmUuYyAg
+ICAgICAgIHwgICA5ICsNCj4gPj4+PiAgIGluY2x1ZGUvbGludXgvaWlvL2lpby5oICAgICAgICAg
+ICAgICAgICB8ICAxMSArLQ0KPiA+Pj4+ICAgaW5jbHVkZS9saW51eC9paW8vdHlwZXMuaCAgICAg
+ICAgICAgICAgIHwgIDEwICsNCj4gPj4+PiAgIDEyIGZpbGVzIGNoYW5nZWQsIDEwNDcgaW5zZXJ0
+aW9ucygrKSwgMiBkZWxldGlvbnMoLSkNCj4gPj4+PiAgIGNyZWF0ZSBtb2RlIDEwMDY0NCBkcml2
+ZXJzL2lpby9maW5nZXJwcmludC9LY29uZmlnDQo+ID4+Pj4gICBjcmVhdGUgbW9kZSAxMDA2NDQg
+ZHJpdmVycy9paW8vZmluZ2VycHJpbnQvTWFrZWZpbGUNCj4gPj4+PiAgIGNyZWF0ZSBtb2RlIDEw
+MDY0NCBkcml2ZXJzL2lpby9maW5nZXJwcmludC9mcF90Yy5jDQo+ID4+Pj4gICBjcmVhdGUgbW9k
+ZSAxMDA2NDQgZHJpdmVycy9paW8vZmluZ2VycHJpbnQvZnBfdGMuaA0KPiA+Pj4+ICAgY3JlYXRl
+IG1vZGUgMTAwNjQ0IGRyaXZlcnMvaWlvL2ZpbmdlcnByaW50L2ZwX3RjX3VzYi5jDQo+ID4+Pj4g
+ICBjcmVhdGUgbW9kZSAxMDA2NDQgZHJpdmVycy9paW8vZmluZ2VycHJpbnQvZnBfdGNfdXNiLmgN
+Cj4gPj4+Pg0KPiA+Pj4NCj4gPj4NCj4gPj4gTu+/ve+/ve+/ve+/ve+/vXLvv73vv71577+977+9
+77+9Yu+/vVjvv73vv73Hp3bvv71e77+9Kd66ey5u77+9K++/ve+/ve+/ve+/vXvvv73vv70qIu+/
+ve+/vV5u77+9cu+/ve+/ve+/vXrvv70a77+977+9aO+/ve+/ve+/ve+/vSbvv73vv70e77+9R++/
+ve+/ve+/vWjvv70DKO+/vemaju+/vd2iaiLvv73vv70a77+9G23vv73vv73vv73vv73vv71677+9
+3pbvv73vv73vv71m77+977+977+9aO+/ve+/ve+/vX7vv71tbWw9PQ0KPiA+Pg0KPiA+IA0KPiA+
+IC0tIA0KPiA+IFRvIHVuc3Vic2NyaWJlIGZyb20gdGhpcyBsaXN0OiBzZW5kIHRoZSBsaW5lICJ1
+bnN1YnNjcmliZSBsaW51eC1paW8iIGluDQo+ID4gdGhlIGJvZHkgb2YgYSBtZXNzYWdlIHRvIG1h
+am9yZG9tb0B2Z2VyLmtlcm5lbC5vcmcNCj4gPiBNb3JlIG1ham9yZG9tbyBpbmZvIGF0ICBodHRw
+Oi8vdmdlci5rZXJuZWwub3JnL21ham9yZG9tby1pbmZvLmh0bWwNCj4gDQoNCg==
