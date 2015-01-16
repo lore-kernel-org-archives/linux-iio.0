@@ -1,36 +1,26 @@
-Return-Path: <roberta.dobrescu@gmail.com>
-From: Roberta Dobrescu <roberta.dobrescu@gmail.com>
-To: linux-iio@vger.kernel.org,
-	jic23@kernel.org
-Cc: octavian.purdila@intel.com,
-	daniel.baluta@intel.com,
-	lars@metafoo.de,
-	Michael.Hennerich@analog.com,
-	knaack.h@gmx.de,
-	pmeerw@pmeerw.net,
-	Roberta Dobrescu <roberta.dobrescu@gmail.com>
-Subject: [PATCH] iio: industrialio-event: Fix typo 's/dynically/dynamically/'
-Date: Fri, 16 Jan 2015 00:24:14 +0200
-Message-Id: <1421360654-1390-1-git-send-email-roberta.dobrescu@gmail.com>
+Return-Path: <gabriele.mzt@gmail.com>
+From: Gabriele Mazzotta <gabriele.mzt@gmail.com>
+To: thymythos@googlemail.com
+Reply-To: 1419349152.30443.0@smtp.gmail.com
+Cc: jic23@kernel.org, linux-iio@vger.kernel.org
+Subject: Re: [PATCH v7] iio: acpi: Add ACPI0008 ALS driver
+Date: Fri, 16 Jan 2015 18:36:48 +0100
+Message-ID: <1504751.reIqVWQMRq@xps13>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
 List-ID: <linux-iio@vger.kernel.org>
 
-Signed-off-by: Roberta Dobrescu <roberta.dobrescu@gmail.com>
----
- drivers/iio/industrialio-event.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Hi,
 
-diff --git a/drivers/iio/industrialio-event.c b/drivers/iio/industrialio-event.c
-index 0c1e37e..db0cc4f 100644
---- a/drivers/iio/industrialio-event.c
-+++ b/drivers/iio/industrialio-event.c
-@@ -404,7 +404,7 @@ static inline int __iio_add_event_config_attrs(struct iio_dev *indio_dev)
- {
- 	int j, ret, attrcount = 0;
- 
--	/* Dynically created from the channels array */
-+	/* Dynamically created from the channels array */
- 	for (j = 0; j < indio_dev->num_channels; j++) {
- 		ret = iio_device_add_event_sysfs(indio_dev,
- 						 &indio_dev->channels[j]);
--- 
-1.9.1
+I found this driver and I'm quite interested in it since my laptop has
+this kind of sensor.
+
+I've noticed a problem with v7, with acpi_als_enable() to be specific.
+The ACPI handles used to enable the sensor are not standard and as a
+matter of fact they are not available on my system, so the driver fails
+to load. This should not happen, I think some quirk should be used here.
+
+Please, Cc me, I'm not suscribed to this list.
+
+Regards,
+Gabriele
