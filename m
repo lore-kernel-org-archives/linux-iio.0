@@ -1,11 +1,11 @@
 Return-Path: <daniel.baluta@gmail.com>
 MIME-Version: 1.0
 Sender: daniel.baluta@gmail.com
-In-Reply-To: <1421360681-1443-1-git-send-email-roberta.dobrescu@gmail.com>
-References: <1421360681-1443-1-git-send-email-roberta.dobrescu@gmail.com>
-Date: Fri, 16 Jan 2015 11:40:58 +0200
-Message-ID: <CAEnQRZBp7BC-phZ71h3EmkTM9KeY5_3GMJszbiYdWEAk+Nbaiw@mail.gmail.com>
-Subject: Re: [PATCH] iio: light: cm32181: Fix typo 's/claibscale/calibscale/'
+In-Reply-To: <1421360702-1488-1-git-send-email-roberta.dobrescu@gmail.com>
+References: <1421360702-1488-1-git-send-email-roberta.dobrescu@gmail.com>
+Date: Fri, 16 Jan 2015 11:38:16 +0200
+Message-ID: <CAEnQRZDCaWcs-Kqfh6EfW_Ax24KmkdAycu=6XC0AnGh+2zri_w@mail.gmail.com>
+Subject: Re: [PATCH] iio: light: tcs3414: Fix misindented lines
 From: Daniel Baluta <daniel.baluta@intel.com>
 To: Roberta Dobrescu <roberta.dobrescu@gmail.com>
 Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>, Jonathan Cameron <jic23@kernel.org>,
@@ -15,29 +15,31 @@ Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>, Jonathan Cameron <j
 Content-Type: text/plain; charset=UTF-8
 List-ID: <linux-iio@vger.kernel.org>
 
-On Fri, Jan 16, 2015 at 12:24 AM, Roberta Dobrescu
+On Fri, Jan 16, 2015 at 12:25 AM, Roberta Dobrescu
 <roberta.dobrescu@gmail.com> wrote:
 > Signed-off-by: Roberta Dobrescu <roberta.dobrescu@gmail.com>
 
 Reviewed-by: Daniel Baluta <daniel.baluta@intel.com>
 
 > ---
->  drivers/iio/light/cm32181.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+>  drivers/iio/light/tcs3414.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
 >
-> diff --git a/drivers/iio/light/cm32181.c b/drivers/iio/light/cm32181.c
-> index ad36b29..5d12ae54 100644
-> --- a/drivers/iio/light/cm32181.c
-> +++ b/drivers/iio/light/cm32181.c
-> @@ -169,7 +169,7 @@ static int cm32181_write_als_it(struct cm32181_chip *cm32181, int val)
->   * @cm32181:   pointer of struct cm32181.
->   *
->   * Convert sensor raw data to lux.  It depends on integration
-> - * time and claibscale variable.
-> + * time and calibscale variable.
->   *
->   * Return: Positive value is lux, otherwise is error code.
->   */
+> diff --git a/drivers/iio/light/tcs3414.c b/drivers/iio/light/tcs3414.c
+> index a9e449b..71c2bde 100644
+> --- a/drivers/iio/light/tcs3414.c
+> +++ b/drivers/iio/light/tcs3414.c
+> @@ -149,8 +149,8 @@ static int tcs3414_read_raw(struct iio_dev *indio_dev,
+>                 *val = ret;
+>                 return IIO_VAL_INT;
+>         case IIO_CHAN_INFO_SCALE:
+> -       i = (data->gain & TCS3414_GAIN_MASK) >> TCS3414_GAIN_SHIFT;
+> -       *val = tcs3414_scales[i][0];
+> +               i = (data->gain & TCS3414_GAIN_MASK) >> TCS3414_GAIN_SHIFT;
+> +               *val = tcs3414_scales[i][0];
+>                 *val2 = tcs3414_scales[i][1];
+>                 return IIO_VAL_INT_PLUS_MICRO;
+>         case IIO_CHAN_INFO_INT_TIME:
 > --
 > 1.9.1
 >
