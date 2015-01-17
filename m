@@ -1,48 +1,74 @@
-Return-Path: <daniel.baluta@gmail.com>
+Return-Path: <thymythos@googlemail.com>
 MIME-Version: 1.0
-Sender: daniel.baluta@gmail.com
-In-Reply-To: <1421360720-1533-1-git-send-email-roberta.dobrescu@gmail.com>
-References: <1421360720-1533-1-git-send-email-roberta.dobrescu@gmail.com>
-Date: Fri, 16 Jan 2015 11:36:51 +0200
-Message-ID: <CAEnQRZALuzB2rudR8QeOFeA4Bk5c4SgqgCHGGonfprOrpfMfFA@mail.gmail.com>
-Subject: Re: [PATCH] iio: light: hid-sensor-als: Use IIO_CHAN_INFO_RAW instead
- of hardcoded 0
-From: Daniel Baluta <daniel.baluta@intel.com>
-To: Roberta Dobrescu <roberta.dobrescu@gmail.com>
-Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>, Jonathan Cameron <jic23@kernel.org>,
-	"octavian.purdila@intel.com" <octavian.purdila@intel.com>, Daniel Baluta <daniel.baluta@intel.com>,
-	Lars-Peter Clausen <lars@metafoo.de>, Michael.Hennerich@analog.com,
-	Hartmut Knaack <knaack.h@gmx.de>, Peter Meerwald <pmeerw@pmeerw.net>
-Content-Type: text/plain; charset=UTF-8
+In-Reply-To: <1504751.reIqVWQMRq@xps13>
+References: <1504751.reIqVWQMRq@xps13>
+Date: Sat, 17 Jan 2015 12:24:54 +0100
+Message-ID: <CALm2MhfeO82HiTmkdFpHzomKdVrjnYXzGnsaTd6BwFyYT2wsAQ@mail.gmail.com>
+Subject: Re: [PATCH v7] iio: acpi: Add ACPI0008 ALS driver
+From: Manuel Stahl <thymythos@googlemail.com>
+To: 1419349152.30443.0@smtp.gmail.com
+Cc: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org
+Content-Type: multipart/alternative; boundary=001a11c387d2a4a2d9050cd756a0
 List-ID: <linux-iio@vger.kernel.org>
 
-On Fri, Jan 16, 2015 at 12:25 AM, Roberta Dobrescu
-<roberta.dobrescu@gmail.com> wrote:
-> Signed-off-by: Roberta Dobrescu <roberta.dobrescu@gmail.com>
+--001a11c387d2a4a2d9050cd756a0
+Content-Type: text/plain; charset=UTF-8
 
-Reviewed-by: Daniel Baluta <daniel.baluta@intel.com>
+Hi Gabriele,
 
-> ---
->  drivers/iio/light/hid-sensor-als.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+can you please tell us what kind of laptop you have? On my Asus UX301L this
+function is required. I have to see, how I can detect if it is available.
+
+Regards,
+Manuel
+
+2015-01-16 18:36 GMT+01:00 Gabriele Mazzotta <gabriele.mzt@gmail.com>:
+
+> Hi,
 >
-> diff --git a/drivers/iio/light/hid-sensor-als.c b/drivers/iio/light/hid-sensor-als.c
-> index a5283d7..e97101d 100644
-> --- a/drivers/iio/light/hid-sensor-als.c
-> +++ b/drivers/iio/light/hid-sensor-als.c
-> @@ -85,7 +85,7 @@ static int als_read_raw(struct iio_dev *indio_dev,
->         *val = 0;
->         *val2 = 0;
->         switch (mask) {
-> -       case 0:
-> +       case IIO_CHAN_INFO_RAW:
->                 switch (chan->scan_index) {
->                 case  CHANNEL_SCAN_INDEX_ILLUM:
->                         report_id = als_state->als_illum.report_id;
-> --
-> 1.9.1
+> I found this driver and I'm quite interested in it since my laptop has
+> this kind of sensor.
 >
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> I've noticed a problem with v7, with acpi_als_enable() to be specific.
+> The ACPI handles used to enable the sensor are not standard and as a
+> matter of fact they are not available on my system, so the driver fails
+> to load. This should not happen, I think some quirk should be used here.
+>
+> Please, Cc me, I'm not suscribed to this list.
+>
+> Regards,
+> Gabriele
+>
+
+--001a11c387d2a4a2d9050cd756a0
+Content-Type: text/html; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+
+<div dir=3D"ltr">Hi Gabriele,<div><br></div><div>can you please tell us wha=
+t kind of laptop you have? On my Asus UX301L this function is required. I h=
+ave to see, how I can detect if it is available.</div><div><br></div><div>R=
+egards,</div><div>Manuel</div></div><div class=3D"gmail_extra"><br><div cla=
+ss=3D"gmail_quote">2015-01-16 18:36 GMT+01:00 Gabriele Mazzotta <span dir=
+=3D"ltr">&lt;<a href=3D"mailto:gabriele.mzt@gmail.com" target=3D"_blank">ga=
+briele.mzt@gmail.com</a>&gt;</span>:<br><blockquote class=3D"gmail_quote" s=
+tyle=3D"margin:0 0 0 .8ex;border-left:1px #ccc solid;padding-left:1ex">Hi,<=
+br>
+<br>
+I found this driver and I&#39;m quite interested in it since my laptop has<=
+br>
+this kind of sensor.<br>
+<br>
+I&#39;ve noticed a problem with v7, with acpi_als_enable() to be specific.<=
+br>
+The ACPI handles used to enable the sensor are not standard and as a<br>
+matter of fact they are not available on my system, so the driver fails<br>
+to load. This should not happen, I think some quirk should be used here.<br=
+>
+<br>
+Please, Cc me, I&#39;m not suscribed to this list.<br>
+<br>
+Regards,<br>
+Gabriele<br>
+</blockquote></div><br></div>
+
+--001a11c387d2a4a2d9050cd756a0--
