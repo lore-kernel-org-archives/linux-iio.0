@@ -13,75 +13,94 @@ Cc: Hartmut Knaack <knaack.h@gmx.de>,
 	linux-iio@vger.kernel.org,
 	devel@driverdev.osuosl.org,
 	=?UTF-8?q?Kristina=20Mart=C5=A1enko?= <kristina.martsenko@gmail.com>
-Subject: [PATCH 3/4] iio: mxs-lradc: make ADC reads not unschedule touchscreen conversions
-Date: Sat, 17 Jan 2015 02:22:10 +0200
-Message-Id: <1421454131-3501-4-git-send-email-kristina.martsenko@gmail.com>
+Subject: [PATCH 2/4] iio: mxs-lradc: make ADC reads not disable touchscreen interrupts
+Date: Sat, 17 Jan 2015 02:22:09 +0200
+Message-Id: <1421454131-3501-3-git-send-email-kristina.martsenko@gmail.com>
 In-Reply-To: <1421454131-3501-1-git-send-email-kristina.martsenko@gmail.com>
 References: <1421454131-3501-1-git-send-email-kristina.martsenko@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 List-ID: <linux-iio@vger.kernel.org>
 
-Reading a channel through sysfs, or starting a buffered capture, can
-occasionally turn off the touchscreen.
+Reading a channel through sysfs, or starting a buffered capture, will
+currently turn off the touchscreen. This is because the read_raw() and
+buffer preenable()/postdisable() callbacks disable interrupts for all
+LRADC channels, including those the touchscreen uses.
 
-This is because the read_raw() and buffer preenable()/postdisable()
-callbacks unschedule current conversions on all channels. If a delay
-channel happens to schedule a touchscreen conversion at the same time,
-the conversion gets cancelled and the touchscreen sequence stops.
-
-This is probably related to this note from the reference manual:
-
-	"If a delay group schedules channels to be sampled and a manual
-	write to the schedule field in CTRL0 occurs while the block is
-	discarding samples, the LRADC will switch to the new schedule
-	and will not sample the channels that were previously scheduled.
-	The time window for this to happen is very small and lasts only
-	while the LRADC is discarding samples."
-
-So make the callbacks only unschedule conversions for the channels they
-use. This means channel 0 for read_raw() and channels 0-5 for the buffer
-(if the touchscreen is enabled). Since the touchscreen uses different
+So make the callbacks only disable interrupts for the channels they use.
+This means channel 0 for read_raw() and channels 0-5 for the buffer (if
+the touchscreen is enabled). Since the touchscreen uses different
 channels (6 and 7), it no longer gets turned off.
 
-This is tested and fixes the issue on i.MX28, but hasn't been tested on
-i.MX23.
+Note that only i.MX28 is affected by this issue, i.MX23 should be fine.
 
 Signed-off-by: Kristina Martšenko <kristina.martsenko@gmail.com>
 ---
- drivers/staging/iio/adc/mxs-lradc.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/staging/iio/adc/mxs-lradc.c | 24 +++++++++++++++++-------
+ 1 file changed, 17 insertions(+), 7 deletions(-)
 
 diff --git a/drivers/staging/iio/adc/mxs-lradc.c b/drivers/staging/iio/adc/mxs-lradc.c
-index 0cf276ff0dc5..5b5cb205b9ed 100644
+index fc65cd311be9..0cf276ff0dc5 100644
 --- a/drivers/staging/iio/adc/mxs-lradc.c
 +++ b/drivers/staging/iio/adc/mxs-lradc.c
-@@ -825,7 +825,7 @@ static int mxs_lradc_read_single(struct iio_dev *iio_dev, int chan, int *val)
- 	if (lradc->soc == IMX28_LRADC)
- 		mxs_lradc_reg_clear(lradc, LRADC_CTRL1_LRADC_IRQ_EN(0),
- 			LRADC_CTRL1);
--	mxs_lradc_reg_clear(lradc, 0xff, LRADC_CTRL0);
-+	mxs_lradc_reg_clear(lradc, 0x1, LRADC_CTRL0);
+@@ -218,8 +218,11 @@ struct mxs_lradc {
+ 	 * channels: #6 and #7. This means that only 6 virtual channels (instead
+ 	 * of 8) will be available for buffered capture.
+ 	 */
+-#define TS_VCH1		7
+-#define TS_VCH2		6
++#define TS_VCH1				7
++#define TS_VCH2				6
++#define BUFFER_VCHANS_LIMITED		0x3f
++#define BUFFER_VCHANS_ALL		0xff
++	u8			buffer_vchans;
  
- 	/* Enable / disable the divider per requirement */
- 	if (test_bit(chan, &lradc->is_divided))
-@@ -1273,7 +1273,7 @@ static int mxs_lradc_buffer_preenable(struct iio_dev *iio)
- 		mxs_lradc_reg_clear(lradc,
- 			lradc->buffer_vchans << LRADC_CTRL1_LRADC_IRQ_EN_OFFSET,
+ 	/*
+ 	 * Furthermore, certain LRADC channels are shared between touchscreen
+@@ -820,7 +823,7 @@ static int mxs_lradc_read_single(struct iio_dev *iio_dev, int chan, int *val)
+ 	 * used if doing raw sampling.
+ 	 */
+ 	if (lradc->soc == IMX28_LRADC)
+-		mxs_lradc_reg_clear(lradc, LRADC_CTRL1_MX28_LRADC_IRQ_EN_MASK,
++		mxs_lradc_reg_clear(lradc, LRADC_CTRL1_LRADC_IRQ_EN(0),
  			LRADC_CTRL1);
--	mxs_lradc_reg_clear(lradc, 0xff, LRADC_CTRL0);
-+	mxs_lradc_reg_clear(lradc, lradc->buffer_vchans, LRADC_CTRL0);
+ 	mxs_lradc_reg_clear(lradc, 0xff, LRADC_CTRL0);
+ 
+@@ -1267,8 +1270,9 @@ static int mxs_lradc_buffer_preenable(struct iio_dev *iio)
+ 	}
+ 
+ 	if (lradc->soc == IMX28_LRADC)
+-		mxs_lradc_reg_clear(lradc, LRADC_CTRL1_MX28_LRADC_IRQ_EN_MASK,
+-							LRADC_CTRL1);
++		mxs_lradc_reg_clear(lradc,
++			lradc->buffer_vchans << LRADC_CTRL1_LRADC_IRQ_EN_OFFSET,
++			LRADC_CTRL1);
+ 	mxs_lradc_reg_clear(lradc, 0xff, LRADC_CTRL0);
  
  	for_each_set_bit(chan, iio->active_scan_mask, LRADC_MAX_TOTAL_CHANS) {
- 		ctrl4_set |= chan << LRADC_CTRL4_LRADCSELECT_OFFSET(ofs);
-@@ -1306,7 +1306,7 @@ static int mxs_lradc_buffer_postdisable(struct iio_dev *iio)
- 	mxs_lradc_reg_clear(lradc, LRADC_DELAY_TRIGGER_LRADCS_MASK |
- 					LRADC_DELAY_KICK, LRADC_DELAY(0));
+@@ -1304,8 +1308,9 @@ static int mxs_lradc_buffer_postdisable(struct iio_dev *iio)
  
--	mxs_lradc_reg_clear(lradc, 0xff, LRADC_CTRL0);
-+	mxs_lradc_reg_clear(lradc, lradc->buffer_vchans, LRADC_CTRL0);
+ 	mxs_lradc_reg_clear(lradc, 0xff, LRADC_CTRL0);
  	if (lradc->soc == IMX28_LRADC)
- 		mxs_lradc_reg_clear(lradc,
- 			lradc->buffer_vchans << LRADC_CTRL1_LRADC_IRQ_EN_OFFSET,
+-		mxs_lradc_reg_clear(lradc, LRADC_CTRL1_MX28_LRADC_IRQ_EN_MASK,
+-					LRADC_CTRL1);
++		mxs_lradc_reg_clear(lradc,
++			lradc->buffer_vchans << LRADC_CTRL1_LRADC_IRQ_EN_OFFSET,
++			LRADC_CTRL1);
+ 
+ 	kfree(lradc->buffer);
+ 	mutex_unlock(&lradc->lock);
+@@ -1561,6 +1566,11 @@ static int mxs_lradc_probe(struct platform_device *pdev)
+ 
+ 	touch_ret = mxs_lradc_probe_touchscreen(lradc, node);
+ 
++	if (touch_ret == 0)
++		lradc->buffer_vchans = BUFFER_VCHANS_LIMITED;
++	else
++		lradc->buffer_vchans = BUFFER_VCHANS_ALL;
++
+ 	/* Grab all IRQ sources */
+ 	for (i = 0; i < of_cfg->irq_count; i++) {
+ 		lradc->irq[i] = platform_get_irq(pdev, i);
 -- 
 2.2.0
