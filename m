@@ -1,60 +1,109 @@
-Return-Path: <stefan.wahren@i2se.com>
-Date: Sun, 18 Jan 2015 12:21:17 +0100 (CET)
-From: Stefan Wahren <stefan.wahren@i2se.com>
-Reply-To: Stefan Wahren <stefan.wahren@i2se.com>
-To: =?UTF-8?Q?=22Kristina_Mart=C5=A1enko=22?= <kristina.martsenko@gmail.com>
-Cc: Peter Meerwald <pmeerw@pmeerw.net>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>, devel@driverdev.osuosl.org,
-	Alexandre Belloni <alexandre.belloni@free-electrons.com>,
-	Juergen Beisert <jbe@pengutronix.de>,
-	Fabio Estevam <fabio.estevam@freescale.com>,
-	linux-iio@vger.kernel.org, Marek Vasut <marex@denx.de>,
-	Jonathan Cameron <jic23@kernel.org>
-Message-ID: <496109820.289562.1421580077115.JavaMail.open-xchange@oxbaltgw03.schlund.de>
-In-Reply-To: <1421454131-3501-1-git-send-email-kristina.martsenko@gmail.com>
-References: <1421454131-3501-1-git-send-email-kristina.martsenko@gmail.com>
-Subject: Re: [PATCH 0/4] iio: mxs-lradc: fix interactions between the
- touchscreen and the ADC
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail.kernel.org ([198.145.29.136]:36735 "EHLO mail.kernel.org"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751740AbbARKte (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Sun, 18 Jan 2015 05:49:34 -0500
+Date: Sun, 18 Jan 2015 11:49:27 +0100
+From: Sebastian Reichel <sre@kernel.org>
+To: Todd E Brandt <todd.e.brandt@linux.intel.com>
+Cc: linux-pm@vger.kernel.org, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org, jacob.jun.pan@linux.intel.com,
+	sameo@linux.intel.com, lee.jones@linaro.org, dbaryshkov@gmail.com,
+	dwmw2@infradead.org, david.woodhouse@intel.com,
+	todd.e.brandt@intel.com
+Subject: Re: [PATCH 3/3] power/axp288_fuel_gauge: axp288 fuel gauge driver
+Message-ID: <20150118104923.GA11147@earth.universe>
+References: <20150107212655.GD3440@linux.intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-List-ID: <linux-iio@vger.kernel.org>
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="liOOAslEiF7prFVr"
+In-Reply-To: <20150107212655.GD3440@linux.intel.com>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Hi Kristina,
 
-> Kristina Mart=C5=A1enko <kristina.martsenko@gmail.com> hat am 17. Januar =
-2015 um
-> 01:22 geschrieben:
->
->
-> Hi,
->
-> These patches fix some issues with using the touchscreen and reading
-> other ADC channels at the same time.
->
-> The main issue is that the "virtual" channels the touchscreen uses can
-> overlap with the channels that the iio buffer is configured to read,
-> causing the touchscreen to read those channels instead, and report wrong
-> values. Patch #1 fixes that by separating the channels they use.
->
-> Patches #2 and #3 stop buffered mode and sysfs reads from disabling the
-> touchscreen. Patch #4 keeps the buffer from reporting wrong values when
-> the touchscreen is in use.
->
-> Note that I've only tested these patches on i.MX28. I checked the i.MX23
-> reference manual [1], and there don't seem to be any differences in the
-> parts I changed, but it would still be nice if someone could test on
-> i.MX23 as well.
+--liOOAslEiF7prFVr
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-i have a iMX233-Olinuxino-MAXI, but no touchscreen. If it does make sense
-to you, could you please send me testing instructions and i'll give it a tr=
-y?
+Hi,
 
-Stefan
+On Wed, Jan 07, 2015 at 01:26:55PM -0800, Todd E Brandt wrote:
+> X-Power AXP288 PMIC Fuel Gauge Driver
+>=20
+>  new power_supply driver at driver/power
+>  interfaces with the axp20x mfd driver as a cell
+>  provides battery info and monitors for changes
+>  generates alerts on temperature and capacity issues
+>=20
+> [...]
+>
+> +static int fuel_gauge_battery_health(struct axp288_fg_info *info)
+> +{
+> +	int temp, vocv;
+> +	int ret, health =3D POWER_SUPPLY_HEALTH_UNKNOWN;
+> +
+> +	ret =3D fuel_gauge_get_btemp(info, &temp);
+> +	if (ret < 0)
+> +		goto health_read_fail;
+> +
+> +	ret =3D fuel_gauge_get_vocv(info, &vocv);
+> +	if (ret < 0)
+> +		goto health_read_fail;
+> +
+> +	if (vocv > info->pdata->max_volt)
+> +		health =3D POWER_SUPPLY_HEALTH_OVERVOLTAGE;
+> +	else if (temp > info->pdata->max_temp ||
+> +			temp < info->pdata->min_temp)
+> +		health =3D POWER_SUPPLY_HEALTH_OVERHEAT;
 
+if (temp < info->pdata->min_temp)
+    health =3D POWER_SUPPLY_HEALTH_COLD;
+
+> +	else if (vocv < info->pdata->min_volt)
+> +		health =3D POWER_SUPPLY_HEALTH_DEAD;
+> +	else
+> +		health =3D POWER_SUPPLY_HEALTH_GOOD;
+> +
+> +health_read_fail:
+> +	return health;
+> +}
 >
-> The patches were tested on next-20150113 and rebased onto iio/togreg.
+> [...]
 >
-> Thanks,
-> Kristina
+> +static int axp288_fuel_gauge_remove(struct platform_device *pdev)
+> +{
+> +	return 0;
+> +}
+
+You can drop this function if nothing needs to be cleaned, but
+that's not the case, so where is the cleanup code?
+
+> [...]
+
+-- Sebastian
+
+--liOOAslEiF7prFVr
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
+
+iQIcBAEBCgAGBQJUu4+wAAoJENju1/PIO/qaqiAP/Ai1gGGYOSSK9/MJsxQgkce5
+eeZpk+3mCUsle1Ks1CfaGQ84WtrEp9j3gnT3pZRSlOa4EaHsuuZ4U/T4cx+u+C9G
+hmgKs2ATX2H++5ehsv/sNdmUABpSAa/U7jbxQiWYT+QFEdsTnhSNjIwECPVQ+qFp
+PT9cRWiszwXcLWn5/3Sn/hxYDYgvYiWYlT4jV4kMr5j/zJsMEatW7zHIoqhoMO4a
+y6Wm2HVr1A2+psIDw95UA3vUg+hPZELLeyLc0cKi6aXJ3JNZX8JuzOFAjL8mLMcH
+IXRCDtogt+fVO37mTQKxy/zmMNcwtEa0Qu33i1kK9uAQXfQBmCw0mlkT3FCchSXP
+j4hvp2SY3Z6zpl1YD0Dllgx36FzglKP8d3R5TTkYDbFLoBePscWgbhATGTCHJCkC
+fIxqJxZ1KT7C//du2JYx9HFgIqzzLBxGs47VinFOKc+8ekfzMLyjUaN4B7Iw1sKt
+a8irTX9EpStBYwzW22IUdv+2I6SQ3Igox3X+XNtPmUKHiAvulWdtBh//rkGvYApl
+0dLfVA5P2/fNLc19VwzvzfSe5U0ed25/lkXElx1+Tn/mlXiwzIuZsbO/vwWPK4f6
+7cnzv9piYWuZQ2ckRvcdpJtDTC0EHiUnhVceQr9j6XUvok7ntYDzzQVnDJMHfFdO
+Fx6HusY6m2rIjmRnkyS7
+=umqx
+-----END PGP SIGNATURE-----
+
+--liOOAslEiF7prFVr--
