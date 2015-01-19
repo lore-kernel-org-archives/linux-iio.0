@@ -1,80 +1,63 @@
-Return-Path: <kristina.martsenko@gmail.com>
-Message-ID: <54BD54AB.7020802@gmail.com>
-Date: Mon, 19 Jan 2015 21:02:03 +0200
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-lb0-f171.google.com ([209.85.217.171]:54522 "EHLO
+	mail-lb0-f171.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751462AbbASUbJ (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 19 Jan 2015 15:31:09 -0500
+Received: by mail-lb0-f171.google.com with SMTP id w7so30136053lbi.2
+        for <linux-iio@vger.kernel.org>; Mon, 19 Jan 2015 12:31:07 -0800 (PST)
+Message-ID: <54BD6977.4050906@gmail.com>
+Date: Mon, 19 Jan 2015 22:30:47 +0200
 From: =?windows-1252?Q?Kristina_Mart=9Aenko?=
- <kristina.martsenko@gmail.com>
+	<kristina.martsenko@gmail.com>
 MIME-Version: 1.0
-To: Marek Vasut <marex@denx.de>
-CC: Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
- Lars-Peter Clausen <lars@metafoo.de>,
- Peter Meerwald <pmeerw@pmeerw.net>, Juergen Beisert <jbe@pengutronix.de>,
- Alexandre Belloni <alexandre.belloni@free-electrons.com>,
- Fabio Estevam <fabio.estevam@freescale.com>,
- Stefan Wahren <stefan.wahren@i2se.com>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- linux-iio@vger.kernel.org, devel@driverdev.osuosl.org
-Subject: Re: [PATCH 1/4] iio: mxs-lradc: separate touchscreen and buffer virtual
- channels
-References: <1421454131-3501-1-git-send-email-kristina.martsenko@gmail.com> <1421454131-3501-2-git-send-email-kristina.martsenko@gmail.com> <201501180119.04510.marex@denx.de>
-In-Reply-To: <201501180119.04510.marex@denx.de>
+To: Stefan Wahren <stefan.wahren@i2se.com>
+CC: Peter Meerwald <pmeerw@pmeerw.net>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	devel@driverdev.osuosl.org,
+	Alexandre Belloni <alexandre.belloni@free-electrons.com>,
+	Juergen Beisert <jbe@pengutronix.de>,
+	Fabio Estevam <fabio.estevam@freescale.com>,
+	linux-iio@vger.kernel.org, Marek Vasut <marex@denx.de>,
+	Jonathan Cameron <jic23@kernel.org>
+Subject: Re: [PATCH 0/4] iio: mxs-lradc: fix interactions between the touchscreen
+ and the ADC
+References: <1421454131-3501-1-git-send-email-kristina.martsenko@gmail.com> <496109820.289562.1421580077115.JavaMail.open-xchange@oxbaltgw03.schlund.de>
+In-Reply-To: <496109820.289562.1421580077115.JavaMail.open-xchange@oxbaltgw03.schlund.de>
 Content-Type: text/plain; charset=windows-1252
-List-ID: <linux-iio@vger.kernel.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On 18/01/15 02:19, Marek Vasut wrote:
-> On Saturday, January 17, 2015 at 01:22:08 AM, Kristina Martšenko wrote:
-> 
-> Hi!
+On 18/01/15 13:21, Stefan Wahren wrote:
+> Hi Kristina,
 
-Hi!
+Hi Stefan!
 
-> Good stuff, thank you! Just minor nitpicks below.
->
-> [...]
-> 
->> diff --git a/drivers/staging/iio/adc/mxs-lradc.c
->> b/drivers/staging/iio/adc/mxs-lradc.c index e0e91836eec1..fc65cd311be9
->> 100644
->> --- a/drivers/staging/iio/adc/mxs-lradc.c
->> +++ b/drivers/staging/iio/adc/mxs-lradc.c
->> @@ -214,11 +214,14 @@ struct mxs_lradc {
->>  	unsigned long		is_divided;
+>> Kristina Martšenko <kristina.martsenko@gmail.com> hat am 17. Januar 2015 um
+>> 01:22 geschrieben:
+>> These patches fix some issues with using the touchscreen and reading
+>> other ADC channels at the same time.
 >>
->>  	/*
->> -	 * Touchscreen LRADC channels receives a private slot in the CTRL4
->> -	 * register, the slot #7. Therefore only 7 slots instead of 8 in the
->> -	 * CTRL4 register can be mapped to LRADC channels when using the
->> -	 * touchscreen.
->> -	 *
->> +	 * When the touchscreen is enabled, we give it two private virtual
->> +	 * channels: #6 and #7. This means that only 6 virtual channels (instead
->> +	 * of 8) will be available for buffered capture.
->> +	 */
->> +#define TS_VCH1		7
->> +#define TS_VCH2		6
+>> The main issue is that the "virtual" channels the touchscreen uses can
+>> overlap with the channels that the iio buffer is configured to read,
+>> causing the touchscreen to read those channels instead, and report wrong
+>> values. Patch #1 fixes that by separating the channels they use.
+>>
+>> Patches #2 and #3 stop buffered mode and sysfs reads from disabling the
+>> touchscreen. Patch #4 keeps the buffer from reporting wrong values when
+>> the touchscreen is in use.
+>>
+>> Note that I've only tested these patches on i.MX28. I checked the i.MX23
+>> reference manual [1], and there don't seem to be any differences in the
+>> parts I changed, but it would still be nice if someone could test on
+>> i.MX23 as well.
 > 
-> Please use a bit more explicit name for the macro, it's really not clear what
-> the macro represents from it's name. Something like TOUCHSCREEN_VCHANNEL1 might
-> work better for example. What do you think ?
+> i have a iMX233-Olinuxino-MAXI, but no touchscreen. If it does make sense
+> to you, could you please send me testing instructions and i'll give it a try?
 
-Sure, I tried to keep it short and similar to the TS_CH_YP (etc) macros,
-but clearer is better, so I'll change it to TOUCHSCREEN_VCHANNEL1 in v2.
-
->> +
->> +	/*
->>  	 * Furthermore, certain LRADC channels are shared between touchscreen
->>  	 * and/or touch-buttons and generic LRADC block. Therefore when using
->>  	 * either of these, these channels are not available for the regular
-> [...]
-> 
-> I also have a general question/idea here, it's explicitly not something I'd like
-> to force upon you to implement. I see we have some kind of a hardware, which can
-> sample up-to N inputs in parallel . Each input is muxed between M possible 
-> sources . Is such a thing common in the ADC/DAC world ? Would it be worth to
-> implement generic helper to handle this kind of a N:M mapping ? What do you all
-> think please ?
-
-Hmm, I don't know how other drivers do this, or if there's anything in
-common. The IIO people will probably have a better idea, so I'll wait
-for them to respond.
+Thanks a lot for offering! Unfortunately in this case all testing
+involves using the touchscreen while reading other ADC channels, so
+without a touchscreen there isn't much to test, sorry :(
 
 Kristina
