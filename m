@@ -1,133 +1,119 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail1.bemta5.messagelabs.com ([195.245.231.153]:31665 "EHLO
-	mail1.bemta5.messagelabs.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1752055AbbASNXW (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 19 Jan 2015 08:23:22 -0500
-From: "Opensource [Adam Thomson]" <Adam.Thomson.Opensource@diasemi.com>
-To: Lee Jones <lee.jones@linaro.org>,
-	"Opensource [Adam Thomson]" <Adam.Thomson.Opensource@diasemi.com>
-CC: Samuel Ortiz <sameo@linux.intel.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	Sebastian Reichel <sre@kernel.org>,
-	"Dmitry Eremin-Solenikov" <dbaryshkov@gmail.com>,
-	David Woodhouse <dwmw2@infradead.org>,
-	"linux-pm@vger.kernel.org" <linux-pm@vger.kernel.org>,
-	Rob Herring <robh+dt@kernel.org>,
-	Pawel Moll <pawel.moll@arm.com>,
-	"Mark Rutland" <mark.rutland@arm.com>,
-	Ian Campbell <ijc+devicetree@hellion.org.uk>,
-	Kumar Gala <galak@codeaurora.org>,
-	Grant Likely <grant.likely@linaro.org>,
-	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	Joe Perches <joe@perches.com>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"Support Opensource" <Support.Opensource@diasemi.com>
-Subject: RE: [PATCH v5 1/7] mfd: Add support for DA9150 combined charger &
- fuel-gauge device
-Date: Mon, 19 Jan 2015 13:23:15 +0000
-Message-ID: <2E89032DDAA8B9408CB92943514A0337AB52874E@SW-EX-MBX01.diasemi.com>
-References: <cover.1419264383.git.Adam.Thomson.Opensource@diasemi.com>
- <8768cf84babd1bc3e16dadc25bdbb50cebfb44b6.1419264383.git.Adam.Thomson.Opensource@diasemi.com>
- <20150119113332.GP21886@x1>
-In-Reply-To: <20150119113332.GP21886@x1>
-Content-Type: text/plain; charset="utf-8"
+Received: from mail-wi0-f178.google.com ([209.85.212.178]:36114 "EHLO
+	mail-wi0-f178.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752104AbbASOkk convert rfc822-to-8bit (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 19 Jan 2015 09:40:40 -0500
 MIME-Version: 1.0
+In-Reply-To: <1419110952.2843.8.camel@spandruv-hsb-test>
+References: <1418923002-901-1-git-send-email-daniel.baluta@intel.com>
+	<5494A3D6.60607@gmx.de>
+	<CAEnQRZABxH5MuWEnS=RHmQqGUN0QhFTtXxnM1uyrLxvP2a-Rmg@mail.gmail.com>
+	<1419110796.2843.6.camel@spandruv-hsb-test>
+	<1419110952.2843.8.camel@spandruv-hsb-test>
+Date: Mon, 19 Jan 2015 16:40:38 +0200
+Message-ID: <CAEnQRZC_SR_p2oYq9EpDDfBi2nCAAWvYmf0tR7V7WPZRZEp79g@mail.gmail.com>
+Subject: Re: [RFC PATCH] iio: ak8975: Make sure chipset is always initialized
+From: Daniel Baluta <daniel.baluta@intel.com>
+To: "Pandruvada, Srinivas" <srinivas.pandruvada@intel.com>
+Cc: "Baluta, Daniel" <daniel.baluta@intel.com>,
+	"lars@metafoo.de" <lars@metafoo.de>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"knaack.h@gmx.de" <knaack.h@gmx.de>,
+	"jic23@kernel.org" <jic23@kernel.org>,
+	"Purdila, Octavian" <octavian.purdila@intel.com>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	"Westerberg, Mika" <mika.westerberg@intel.com>,
+	"pmeerw@pmeerw.net" <pmeerw@pmeerw.net>,
+	"beomho.seo@samsung.com" <beomho.seo@samsung.com>,
+	"gwendal@chromium.org" <gwendal@chromium.org>
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-T24gSmFudWFyeSAxOSwgMjAxNSAxMTozNCwgTGVlIEpvbmVzIHdyb3RlOg0KDQo+IE9uIE1vbiwg
-MjIgRGVjIDIwMTQsIEFkYW0gVGhvbXNvbiB3cm90ZToNCj4gDQo+ID4gREE5MTUwIGlzIGEgY29t
-YmluZWQgQ2hhcmdlciBhbmQgRnVlbC1HYXVnZSBJQywgd2l0aCBhZGRpdGlvbmFsDQo+ID4gR1BJ
-TyBhbmQgR1BBREMgZnVuY3Rpb25hbGl0eS4NCj4gPg0KPiA+IFNpZ25lZC1vZmYtYnk6IEFkYW0g
-VGhvbXNvbiA8QWRhbS5UaG9tc29uLk9wZW5zb3VyY2VAZGlhc2VtaS5jb20+DQo+ID4gLS0tDQo+
-ID4gIGRyaXZlcnMvbWZkL0tjb25maWcgICAgICAgICAgICAgICAgICB8ICAgMTIgKw0KPiA+ICBk
-cml2ZXJzL21mZC9NYWtlZmlsZSAgICAgICAgICAgICAgICAgfCAgICAyICstDQo+ID4gIGRyaXZl
-cnMvbWZkL2RhOTE1MC1jb3JlLmMgICAgICAgICAgICB8ICA0MTMgKysrKysrKysrKysrDQo+ID4g
-IGluY2x1ZGUvbGludXgvbWZkL2RhOTE1MC9jb3JlLmggICAgICB8ICAgNjggKysNCj4gPiAgaW5j
-bHVkZS9saW51eC9tZmQvZGE5MTUwL3JlZ2lzdGVycy5oIHwgMTE1NQ0KPiArKysrKysrKysrKysr
-KysrKysrKysrKysrKysrKysrKysrDQo+ID4gIDUgZmlsZXMgY2hhbmdlZCwgMTY0OSBpbnNlcnRp
-b25zKCspLCAxIGRlbGV0aW9uKC0pDQo+ID4gIGNyZWF0ZSBtb2RlIDEwMDY0NCBkcml2ZXJzL21m
-ZC9kYTkxNTAtY29yZS5jDQo+ID4gIGNyZWF0ZSBtb2RlIDEwMDY0NCBpbmNsdWRlL2xpbnV4L21m
-ZC9kYTkxNTAvY29yZS5oDQo+ID4gIGNyZWF0ZSBtb2RlIDEwMDY0NCBpbmNsdWRlL2xpbnV4L21m
-ZC9kYTkxNTAvcmVnaXN0ZXJzLmgNCj4gPg0KPiA+IGRpZmYgLS1naXQgYS9kcml2ZXJzL21mZC9L
-Y29uZmlnIGIvZHJpdmVycy9tZmQvS2NvbmZpZw0KPiA+IGluZGV4IDJlNmI3MzEuLjU2ZTgwZDIg
-MTAwNjQ0DQo+ID4gLS0tIGEvZHJpdmVycy9tZmQvS2NvbmZpZw0KPiA+ICsrKyBiL2RyaXZlcnMv
-bWZkL0tjb25maWcNCj4gPiBAQCAtMTk1LDYgKzE5NSwxOCBAQCBjb25maWcgTUZEX0RBOTA2Mw0K
-PiA+ICAJICBBZGRpdGlvbmFsIGRyaXZlcnMgbXVzdCBiZSBlbmFibGVkIGluIG9yZGVyIHRvIHVz
-ZSB0aGUgZnVuY3Rpb25hbGl0eQ0KPiA+ICAJICBvZiB0aGUgZGV2aWNlLg0KPiA+DQo+ID4gK2Nv
-bmZpZyBNRkRfREE5MTUwDQo+ID4gKwl0cmlzdGF0ZSAiRGlhbG9nIFNlbWljb25kdWN0b3IgREE5
-MTUwIENoYXJnZXIgRnVlbC1HYXVnZSBjaGlwIg0KPiA+ICsJZGVwZW5kcyBvbiBJMkM9eQ0KPiA+
-ICsJc2VsZWN0IE1GRF9DT1JFDQo+ID4gKwlzZWxlY3QgUkVHTUFQX0kyQw0KPiA+ICsJc2VsZWN0
-IFJFR01BUF9JUlENCj4gPiArCWhlbHANCj4gPiArCSAgVGhpcyBhZGRzIHN1cHBvcnQgZm9yIHRo
-ZSBEQTkxNTAgaW50ZWdyYXRlZCBjaGFyZ2VyIGFuZCBmdWVsLWdhdWdlDQo+ID4gKwkgIGNoaXAu
-IFRoaXMgZHJpdmVyIHByb3ZpZGVzIGNvbW1vbiBzdXBwb3J0IGZvciBhY2Nlc3NpbmcgdGhlIGRl
-dmljZS4NCj4gPiArCSAgQWRkaXRpb25hbCBkcml2ZXJzIG11c3QgYmUgZW5hYmxlZCBpbiBvcmRl
-ciB0byB1c2UgdGhlIHNwZWNpZmljDQo+ID4gKwkgIGZlYXR1cmVzIG9mIHRoZSBkZXZpY2UuDQo+
-ID4gKw0KPiA+ICBjb25maWcgTUZEX0RMTjINCj4gPiAgCXRyaXN0YXRlICJEaW9sYW4gRExOMiBz
-dXBwb3J0Ig0KPiA+ICAJc2VsZWN0IE1GRF9DT1JFDQo+ID4gZGlmZiAtLWdpdCBhL2RyaXZlcnMv
-bWZkL01ha2VmaWxlIGIvZHJpdmVycy9tZmQvTWFrZWZpbGUNCj4gPiBpbmRleCA1MzQ2N2UyLi5m
-MDZmNGM2IDEwMDY0NA0KPiA+IC0tLSBhL2RyaXZlcnMvbWZkL01ha2VmaWxlDQo+ID4gKysrIGIv
-ZHJpdmVycy9tZmQvTWFrZWZpbGUNCj4gPiBAQCAtMTEzLDcgKzExMyw3IEBAIG9iai0kKENPTkZJ
-R19NRkRfREE5MDU1KQkrPSBkYTkwNTUubw0KPiA+DQo+ID4gIGRhOTA2My1vYmpzCQkJOj0gZGE5
-MDYzLWNvcmUubyBkYTkwNjMtaXJxLm8gZGE5MDYzLWkyYy5vDQo+ID4gIG9iai0kKENPTkZJR19N
-RkRfREE5MDYzKQkrPSBkYTkwNjMubw0KPiA+IC0NCj4gPiArb2JqLSQoQ09ORklHX01GRF9EQTkx
-NTApCSs9IGRhOTE1MC1jb3JlLm8NCj4gPiAgb2JqLSQoQ09ORklHX01GRF9NQVgxNDU3NykJKz0g
-bWF4MTQ1Nzcubw0KPiA+ICBvYmotJChDT05GSUdfTUZEX01BWDc3Njg2KQkrPSBtYXg3NzY4Ni5v
-DQo+ID4gIG9iai0kKENPTkZJR19NRkRfTUFYNzc2OTMpCSs9IG1heDc3NjkzLm8NCj4gPiBkaWZm
-IC0tZ2l0IGEvZHJpdmVycy9tZmQvZGE5MTUwLWNvcmUuYyBiL2RyaXZlcnMvbWZkL2RhOTE1MC1j
-b3JlLmMNCj4gPiBuZXcgZmlsZSBtb2RlIDEwMDY0NA0KPiA+IGluZGV4IDAwMDAwMDAuLjRkNzU3
-YjkNCj4gPiAtLS0gL2Rldi9udWxsDQo+ID4gKysrIGIvZHJpdmVycy9tZmQvZGE5MTUwLWNvcmUu
-Yw0KPiA+IEBAIC0wLDAgKzEsNDEzIEBADQo+ID4gKy8qDQo+ID4gKyAqIERBOTE1MCBDb3JlIE1G
-RCBEcml2ZXINCj4gPiArICoNCj4gPiArICogQ29weXJpZ2h0IChjKSAyMDE0IERpYWxvZyBTZW1p
-Y29uZHVjdG9yDQo+ID4gKyAqDQo+ID4gKyAqIEF1dGhvcjogQWRhbSBUaG9tc29uIDxBZGFtLlRo
-b21zb24uT3BlbnNvdXJjZUBkaWFzZW1pLmNvbT4NCj4gPiArICoNCj4gPiArICogVGhpcyBwcm9n
-cmFtIGlzIGZyZWUgc29mdHdhcmU7IHlvdSBjYW4gcmVkaXN0cmlidXRlICBpdCBhbmQvb3IgbW9k
-aWZ5IGl0DQo+ID4gKyAqIHVuZGVyICB0aGUgdGVybXMgb2YgIHRoZSBHTlUgR2VuZXJhbCAgUHVi
-bGljIExpY2Vuc2UgYXMgcHVibGlzaGVkIGJ5IHRoZQ0KPiA+ICsgKiBGcmVlIFNvZnR3YXJlIEZv
-dW5kYXRpb247ICBlaXRoZXIgdmVyc2lvbiAyIG9mIHRoZSAgTGljZW5zZSwgb3IgKGF0IHlvdXIN
-Cj4gPiArICogb3B0aW9uKSBhbnkgbGF0ZXIgdmVyc2lvbi4NCj4gPiArICovDQo+IA0KPiBbLi4u
-XQ0KPiANCj4gPiArdTggZGE5MTUwX3JlZ19yZWFkKHN0cnVjdCBkYTkxNTAgKmRhOTE1MCwgdTE2
-IHJlZykNCj4gPiArew0KPiA+ICsJaW50IHZhbCwgcmV0Ow0KPiA+ICsNCj4gPiArCXJldCA9IHJl
-Z21hcF9yZWFkKGRhOTE1MC0+cmVnbWFwLCByZWcsICZ2YWwpOw0KPiA+ICsJaWYgKHJldCkNCj4g
-PiArCQlkZXZfZXJyKGRhOTE1MC0+ZGV2LCAiRmFpbGVkIHRvIHJlYWQgZnJvbSByZWcgMHgleDog
-JWRcbiIsDQo+ID4gKwkJCXJlZywgcmV0KTsNCj4gPiArDQo+ID4gKwlyZXR1cm4gKHU4KSB2YWw7
-DQo+ID4gK30NCj4gPiArRVhQT1JUX1NZTUJPTF9HUEwoZGE5MTUwX3JlZ19yZWFkKTsNCj4gPiAr
-DQo+ID4gK3ZvaWQgZGE5MTUwX3JlZ193cml0ZShzdHJ1Y3QgZGE5MTUwICpkYTkxNTAsIHUxNiBy
-ZWcsIHU4IHZhbCkNCj4gPiArew0KPiA+ICsJaW50IHJldDsNCj4gPiArDQo+ID4gKwlyZXQgPSBy
-ZWdtYXBfd3JpdGUoZGE5MTUwLT5yZWdtYXAsIHJlZywgdmFsKTsNCj4gPiArCWlmIChyZXQpDQo+
-ID4gKwkJZGV2X2VycihkYTkxNTAtPmRldiwgIkZhaWxlZCB0byB3cml0ZSB0byByZWcgMHgleDog
-JWRcbiIsDQo+ID4gKwkJCXJlZywgcmV0KTsNCj4gPiArfQ0KPiA+ICtFWFBPUlRfU1lNQk9MX0dQ
-TChkYTkxNTBfcmVnX3dyaXRlKTsNCj4gPiArDQo+ID4gK3ZvaWQgZGE5MTUwX3NldF9iaXRzKHN0
-cnVjdCBkYTkxNTAgKmRhOTE1MCwgdTE2IHJlZywgdTggbWFzaywgdTggdmFsKQ0KPiA+ICt7DQo+
-ID4gKwlpbnQgcmV0Ow0KPiA+ICsNCj4gPiArCXJldCA9IHJlZ21hcF91cGRhdGVfYml0cyhkYTkx
-NTAtPnJlZ21hcCwgcmVnLCBtYXNrLCB2YWwpOw0KPiA+ICsJaWYgKHJldCkNCj4gPiArCQlkZXZf
-ZXJyKGRhOTE1MC0+ZGV2LCAiRmFpbGVkIHRvIHNldCBiaXRzIGluIHJlZyAweCV4OiAlZFxuIiwN
-Cj4gPiArCQkJcmVnLCByZXQpOw0KPiA+ICt9DQo+ID4gK0VYUE9SVF9TWU1CT0xfR1BMKGRhOTE1
-MF9zZXRfYml0cyk7DQo+ID4gKw0KPiA+ICt2b2lkIGRhOTE1MF9idWxrX3JlYWQoc3RydWN0IGRh
-OTE1MCAqZGE5MTUwLCB1MTYgcmVnLCBpbnQgY291bnQsIHU4ICpidWYpDQo+ID4gK3sNCj4gPiAr
-CWludCByZXQ7DQo+ID4gKw0KPiA+ICsJcmV0ID0gcmVnbWFwX2J1bGtfcmVhZChkYTkxNTAtPnJl
-Z21hcCwgcmVnLCBidWYsIGNvdW50KTsNCj4gPiArCWlmIChyZXQpDQo+ID4gKwkJZGV2X2Vycihk
-YTkxNTAtPmRldiwgIkZhaWxlZCB0byBidWxrIHJlYWQgZnJvbSByZWcgMHgleDogJWRcbiIsDQo+
-ID4gKwkJCXJlZywgcmV0KTsNCj4gPiArfQ0KPiA+ICtFWFBPUlRfU1lNQk9MX0dQTChkYTkxNTBf
-YnVsa19yZWFkKTsNCj4gPiArDQo+ID4gK3ZvaWQgZGE5MTUwX2J1bGtfd3JpdGUoc3RydWN0IGRh
-OTE1MCAqZGE5MTUwLCB1MTYgcmVnLCBpbnQgY291bnQsIGNvbnN0IHU4DQo+ICpidWYpDQo+ID4g
-K3sNCj4gPiArCWludCByZXQ7DQo+ID4gKw0KPiA+ICsJcmV0ID0gcmVnbWFwX3Jhd193cml0ZShk
-YTkxNTAtPnJlZ21hcCwgcmVnLCBidWYsIGNvdW50KTsNCj4gPiArCWlmIChyZXQpDQo+ID4gKwkJ
-ZGV2X2VycihkYTkxNTAtPmRldiwgIkZhaWxlZCB0byBidWxrIHdyaXRlIHRvIHJlZyAweCV4ICVk
-XG4iLA0KPiA+ICsJCQlyZWcsIHJldCk7DQo+ID4gK30NCj4gPiArRVhQT1JUX1NZTUJPTF9HUEwo
-ZGE5MTUwX2J1bGtfd3JpdGUpOw0KPiANCj4gSSd2ZSBuZXZlciBiZWVuIGEgZmFuIG9mIHRoaXMg
-dHlwZSBvZiBhZ2dyZWdhdGlvbi4gIENhbiB5b3UgZXhwbGFpbiB0bw0KPiBtZSB3aGF0IHRoZSBw
-b2ludCBvZiB0aGVtIGlzPw0KDQpJIHJlZmVyIHlvdSBiYWNrIHRvIG91ciBwcmV2aW91cyBkaXNj
-dXNzaW9uIHNvbWUgdGltZSBiYWNrOg0KDQpodHRwczovL2xrbWwub3JnL2xrbWwvMjAxNC85Lzkv
-Mjg0DQoNCidUaGUgcmVhc29uIGZvciB0aGVzZSBpcyBiZWNhdXNlIGZ1dHVyZSBwYXRjaGVzIHRv
-IGFkZCBhZGRpdGlvbmFsIGZ1bmN0aW9uYWxpdHkNCndpbGwgaW50cm9kdWNlIEkyQyBhY2Nlc3Mg
-ZnVuY3Rpb25zIHdoaWNoIGRvIG5vdCB1c2UgcmVnbWFwIGFuZCBhY2Nlc3MgdGhlDQpkZXZpY2Ug
-dmlhIGEgc2VwYXJhdGUgSTJDIGFkZHJlc3MgZm9yIHRoaXMgcHVycG9zZS4gSSB3aWxsIG5lZWQg
-dG8gcHJvdmlkZQ0KYWNjZXNzIGZ1bmN0aW9ucyBmb3IgdGhhdCwgYW5kIHNvIGhhdmluZyBhIGNv
-bW1vbiBzdHlsZSBvZiBJMkMgYWNjZXNzIG1ha2VzDQpzZW5zZSBmb3IgdGhpcyBkcml2ZXIuIE1l
-YW5zIGFueSBhY2Nlc3MganVzdCBuZWVkcyB0byBwcm92aWRlIHRoZSBNRkQgcHJpdmF0ZQ0KZGF0
-YSwgYW5kIHRoZSByZWxldmFudCBmdW5jdGlvbnMgdGFrZSBjYXJlIG9mIHRoZSByZXN0LiBJIHRo
-aW5rIHRoaXMgaXMgY2xlYW5lcg0KaW4gdGhpcyBpbnN0YW5jZS4nDQo=
+Hello,
+
+On Sat, Dec 20, 2014 at 11:29 PM, Pandruvada, Srinivas
+<srinivas.pandruvada@intel.com> wrote:
+> +Mika
+>
+> On Sat, 2014-12-20 at 13:26 -0800, Srinivas Pandruvada wrote:
+>> On Sat, 2014-12-20 at 00:25 +0200, Daniel Baluta wrote:
+>> > On Sat, Dec 20, 2014 at 12:16 AM, Hartmut Knaack <knaack.h@gmx.de> wrote:
+>> > > Daniel Baluta schrieb am 18.12.2014 um 18:16:
+>> > >> When using ACPI, if acpi_match_device fails then chipset enum will be
+>> > >> uninitialized and &ak_def_array[chipset] will point to some bad address.
+>> > >>
+>> I am missing something. You are enumerated over i2c device, which was
+>> created from ACPI PNP resource. There is a valid handle or and the
+>> device has an ACPI companion at the least. If this failing, I have to
+>> check the code for acpi i2c.
+>> Can you check why this check failed? We may have bug in i2c handling.
+
+You are right about this. Under normal circumstances, if probe is called
+then acpi_match_device will not fail. I even tried to remove the
+device after probe
+but before acpi_match_device, anyhow acpi_match_device was still successful :)
+
+This is more a matter of code correctness.
+
+In ak8975_match_acpi_device we have:
+
+»       const struct acpi_device_id *id;
+
+»       id = acpi_match_device(dev->driver->acpi_match_table, dev);
+»       if (!id)
+»       »       return NULL;
+»       *chipset = (int)id->driver_data;
+
+Compiler complains on the fact that chipset might be uninitialized
+if this returns NULL, and we shouldn't ignore this warning even this case
+will never happen.
+
+We could use some code injection techniques to force acpi_match_device
+to return NULL tough.
+
+>> > >> This fixes the following compilation warning:
+>> > >>
+>> > >> drivers/iio/magnetometer/ak8975.c: In function ‘ak8975_probe’:
+>> > >> drivers/iio/magnetometer/ak8975.c:788:14: warning: ‘chipset’ may be used
+>> > >> uninitialized in this function [-Wmaybe-uninitialized]
+>> > >>   data->def =ak_def_array[chipset];
+>> > >>
+>> > >> Reported-by: Octavian Purdila <octavian.purdila@intel.com>
+>> > >> Signed-off-by: Daniel Baluta <daniel.baluta@intel.com>
+>> > >> ---
+>> > >> This is a RFC because while I'm pretty sure that chipset should be initialized
+>> > >> with AK_MAX_TYPE in ak8975_match_acpi_device, I am not sure if we can live with
+>> > >> a NULL return value of ak8975_match_acpi_device. Current implementation ignores
+>> > >> return value of ak8975_match_acpi_device.
+>> > > This seems to be the actual problem: these _match_acpi_device functions return
+>> > > NULL on failure, and this should be checked for.
+>> >
+>> > Ok, so this would acceptable?
+>> >
+>> > diff --git a/drivers/iio/magnetometer/ak8975.c
+>> > b/drivers/iio/magnetometer/ak8975.c
+>> > index 0d10a4b..68d99e9 100644
+>> > --- a/drivers/iio/magnetometer/ak8975.c
+>> > +++ b/drivers/iio/magnetometer/ak8975.c
+>> > @@ -776,8 +776,9 @@ static int ak8975_probe(struct i2c_client *client,
+>> >                 name = id->name;
+>> >         } else if (ACPI_HANDLE(&client->dev))
+>> >                 name = ak8975_match_acpi_device(&client->dev, &chipset);
+>> > -       else
+>> > -               return -ENOSYS;
+>> > +
+>> > +       if (!name)
+>> > +               return -ENODEV;
+>> >
+>> >
+>> > I still have some doubts about return code in case of error.
+>> >
+>> > For ak8975 we use -ENOSYS, but for kxcjk-1013 we use -ENODEV.
+>> >
+>> > I will send a patch after we clear this out.
+>> >
+>> > thanks,
+>> > Daniel.
+>>
+>
