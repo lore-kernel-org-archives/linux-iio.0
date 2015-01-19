@@ -1,11 +1,24 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga11.intel.com ([192.55.52.93]:28778 "EHLO mga11.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751520AbbASQoo (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Mon, 19 Jan 2015 11:44:44 -0500
-From: "Pandruvada, Srinivas" <srinivas.pandruvada@intel.com>
-To: "Baluta, Daniel" <daniel.baluta@intel.com>
-CC: "lars@metafoo.de" <lars@metafoo.de>,
+Received: from mail-wi0-f182.google.com ([209.85.212.182]:33103 "EHLO
+	mail-wi0-f182.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751626AbbASQta convert rfc822-to-8bit (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 19 Jan 2015 11:49:30 -0500
+MIME-Version: 1.0
+In-Reply-To: <1421685827.4459.397.camel@spandruv-desktop.jf.intel.com>
+References: <1418923002-901-1-git-send-email-daniel.baluta@intel.com>
+	<5494A3D6.60607@gmx.de>
+	<CAEnQRZABxH5MuWEnS=RHmQqGUN0QhFTtXxnM1uyrLxvP2a-Rmg@mail.gmail.com>
+	<1419110796.2843.6.camel@spandruv-hsb-test>
+	<1419110952.2843.8.camel@spandruv-hsb-test>
+	<CAEnQRZC_SR_p2oYq9EpDDfBi2nCAAWvYmf0tR7V7WPZRZEp79g@mail.gmail.com>
+	<1421685827.4459.397.camel@spandruv-desktop.jf.intel.com>
+Date: Mon, 19 Jan 2015 18:49:18 +0200
+Message-ID: <CAEnQRZAfRJ+-1x_ZgRAC2Kkr2js4EQB1xA6gTJ5n0uCAZS4y2g@mail.gmail.com>
+Subject: Re: [RFC PATCH] iio: ak8975: Make sure chipset is always initialized
+From: Daniel Baluta <daniel.baluta@intel.com>
+To: "Pandruvada, Srinivas" <srinivas.pandruvada@intel.com>
+Cc: "Baluta, Daniel" <daniel.baluta@intel.com>,
+	"lars@metafoo.de" <lars@metafoo.de>,
 	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
 	"knaack.h@gmx.de" <knaack.h@gmx.de>,
 	"jic23@kernel.org" <jic23@kernel.org>,
@@ -15,87 +28,62 @@ CC: "lars@metafoo.de" <lars@metafoo.de>,
 	"pmeerw@pmeerw.net" <pmeerw@pmeerw.net>,
 	"beomho.seo@samsung.com" <beomho.seo@samsung.com>,
 	"gwendal@chromium.org" <gwendal@chromium.org>
-Subject: Re: [RFC PATCH] iio: ak8975: Make sure chipset is always initialized
-Date: Mon, 19 Jan 2015 16:44:31 +0000
-Message-ID: <1421685827.4459.397.camel@spandruv-desktop.jf.intel.com>
-References: <1418923002-901-1-git-send-email-daniel.baluta@intel.com>
-	 <5494A3D6.60607@gmx.de>
-	 <CAEnQRZABxH5MuWEnS=RHmQqGUN0QhFTtXxnM1uyrLxvP2a-Rmg@mail.gmail.com>
-	 <1419110796.2843.6.camel@spandruv-hsb-test>
-	 <1419110952.2843.8.camel@spandruv-hsb-test>
-	 <CAEnQRZC_SR_p2oYq9EpDDfBi2nCAAWvYmf0tR7V7WPZRZEp79g@mail.gmail.com>
-In-Reply-To: <CAEnQRZC_SR_p2oYq9EpDDfBi2nCAAWvYmf0tR7V7WPZRZEp79g@mail.gmail.com>
-Content-Type: text/plain; charset="utf-8"
-MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-T24gTW9uLCAyMDE1LTAxLTE5IGF0IDE2OjQwICswMjAwLCBEYW5pZWwgQmFsdXRhIHdyb3RlOiAN
-Cj4gSGVsbG8sDQo+IA0KPiBPbiBTYXQsIERlYyAyMCwgMjAxNCBhdCAxMToyOSBQTSwgUGFuZHJ1
-dmFkYSwgU3Jpbml2YXMNCj4gPHNyaW5pdmFzLnBhbmRydXZhZGFAaW50ZWwuY29tPiB3cm90ZToN
-Cj4gPiArTWlrYQ0KPiA+DQo+ID4gT24gU2F0LCAyMDE0LTEyLTIwIGF0IDEzOjI2IC0wODAwLCBT
-cmluaXZhcyBQYW5kcnV2YWRhIHdyb3RlOg0KPiA+PiBPbiBTYXQsIDIwMTQtMTItMjAgYXQgMDA6
-MjUgKzAyMDAsIERhbmllbCBCYWx1dGEgd3JvdGU6DQo+ID4+ID4gT24gU2F0LCBEZWMgMjAsIDIw
-MTQgYXQgMTI6MTYgQU0sIEhhcnRtdXQgS25hYWNrIDxrbmFhY2suaEBnbXguZGU+IHdyb3RlOg0K
-PiA+PiA+ID4gRGFuaWVsIEJhbHV0YSBzY2hyaWViIGFtIDE4LjEyLjIwMTQgdW0gMTg6MTY6DQo+
-ID4+ID4gPj4gV2hlbiB1c2luZyBBQ1BJLCBpZiBhY3BpX21hdGNoX2RldmljZSBmYWlscyB0aGVu
-IGNoaXBzZXQgZW51bSB3aWxsIGJlDQo+ID4+ID4gPj4gdW5pbml0aWFsaXplZCBhbmQgJmFrX2Rl
-Zl9hcnJheVtjaGlwc2V0XSB3aWxsIHBvaW50IHRvIHNvbWUgYmFkIGFkZHJlc3MuDQo+ID4+ID4g
-Pj4NCj4gPj4gSSBhbSBtaXNzaW5nIHNvbWV0aGluZy4gWW91IGFyZSBlbnVtZXJhdGVkIG92ZXIg
-aTJjIGRldmljZSwgd2hpY2ggd2FzDQo+ID4+IGNyZWF0ZWQgZnJvbSBBQ1BJIFBOUCByZXNvdXJj
-ZS4gVGhlcmUgaXMgYSB2YWxpZCBoYW5kbGUgb3IgYW5kIHRoZQ0KPiA+PiBkZXZpY2UgaGFzIGFu
-IEFDUEkgY29tcGFuaW9uIGF0IHRoZSBsZWFzdC4gSWYgdGhpcyBmYWlsaW5nLCBJIGhhdmUgdG8N
-Cj4gPj4gY2hlY2sgdGhlIGNvZGUgZm9yIGFjcGkgaTJjLg0KPiA+PiBDYW4geW91IGNoZWNrIHdo
-eSB0aGlzIGNoZWNrIGZhaWxlZD8gV2UgbWF5IGhhdmUgYnVnIGluIGkyYyBoYW5kbGluZy4NCj4g
-DQo+IFlvdSBhcmUgcmlnaHQgYWJvdXQgdGhpcy4gVW5kZXIgbm9ybWFsIGNpcmN1bXN0YW5jZXMs
-IGlmIHByb2JlIGlzIGNhbGxlZA0KPiB0aGVuIGFjcGlfbWF0Y2hfZGV2aWNlIHdpbGwgbm90IGZh
-aWwuIEkgZXZlbiB0cmllZCB0byByZW1vdmUgdGhlDQo+IGRldmljZSBhZnRlciBwcm9iZQ0KPiBi
-dXQgYmVmb3JlIGFjcGlfbWF0Y2hfZGV2aWNlLCBhbnlob3cgYWNwaV9tYXRjaF9kZXZpY2Ugd2Fz
-IHN0aWxsIHN1Y2Nlc3NmdWwgOikNCj4gDQo+IFRoaXMgaXMgbW9yZSBhIG1hdHRlciBvZiBjb2Rl
-IGNvcnJlY3RuZXNzLg0KPiANCj4gSW4gYWs4OTc1X21hdGNoX2FjcGlfZGV2aWNlIHdlIGhhdmU6
-DQo+IA0KPiDCuyAgICAgICBjb25zdCBzdHJ1Y3QgYWNwaV9kZXZpY2VfaWQgKmlkOw0KPiANCj4g
-wrsgICAgICAgaWQgPSBhY3BpX21hdGNoX2RldmljZShkZXYtPmRyaXZlci0+YWNwaV9tYXRjaF90
-YWJsZSwgZGV2KTsNCj4gwrsgICAgICAgaWYgKCFpZCkNCj4gwrsgICAgICAgwrsgICAgICAgcmV0
-dXJuIE5VTEw7DQo+IMK7ICAgICAgICpjaGlwc2V0ID0gKGludClpZC0+ZHJpdmVyX2RhdGE7DQo+
-IA0KPiBDb21waWxlciBjb21wbGFpbnMgb24gdGhlIGZhY3QgdGhhdCBjaGlwc2V0IG1pZ2h0IGJl
-IHVuaW5pdGlhbGl6ZWQNCj4gaWYgdGhpcyByZXR1cm5zIE5VTEwsIGFuZCB3ZSBzaG91bGRuJ3Qg
-aWdub3JlIHRoaXMgd2FybmluZyBldmVuIHRoaXMgY2FzZQ0KPiB3aWxsIG5ldmVyIGhhcHBlbi4N
-Cj4gDQpXaWxsIHRoaXMgZml4Pw0KZGF0YS0+Y2hpcHNldCA9IEFLODk3NTsNCmJlZm9yZQ0KYWs4
-OTc1X21hdGNoX2FjcGlfZGV2aWNlKCZjbGllbnQtPmRldiwgJmRhdGEtPmNoaXBzZXQpOw0KDQpU
-aGFua3MsDQpTcmluaXZhcyANCj4gV2UgY291bGQgdXNlIHNvbWUgY29kZSBpbmplY3Rpb24gdGVj
-aG5pcXVlcyB0byBmb3JjZSBhY3BpX21hdGNoX2RldmljZQ0KPiB0byByZXR1cm4gTlVMTCB0b3Vn
-aC4NCj4gDQo+ID4+ID4gPj4gVGhpcyBmaXhlcyB0aGUgZm9sbG93aW5nIGNvbXBpbGF0aW9uIHdh
-cm5pbmc6DQo+ID4+ID4gPj4NCj4gPj4gPiA+PiBkcml2ZXJzL2lpby9tYWduZXRvbWV0ZXIvYWs4
-OTc1LmM6IEluIGZ1bmN0aW9uIOKAmGFrODk3NV9wcm9iZeKAmToNCj4gPj4gPiA+PiBkcml2ZXJz
-L2lpby9tYWduZXRvbWV0ZXIvYWs4OTc1LmM6Nzg4OjE0OiB3YXJuaW5nOiDigJhjaGlwc2V04oCZ
-IG1heSBiZSB1c2VkDQo+ID4+ID4gPj4gdW5pbml0aWFsaXplZCBpbiB0aGlzIGZ1bmN0aW9uIFst
-V21heWJlLXVuaW5pdGlhbGl6ZWRdDQo+ID4+ID4gPj4gICBkYXRhLT5kZWYgPWFrX2RlZl9hcnJh
-eVtjaGlwc2V0XTsNCj4gPj4gPiA+Pg0KPiA+PiA+ID4+IFJlcG9ydGVkLWJ5OiBPY3RhdmlhbiBQ
-dXJkaWxhIDxvY3Rhdmlhbi5wdXJkaWxhQGludGVsLmNvbT4NCj4gPj4gPiA+PiBTaWduZWQtb2Zm
-LWJ5OiBEYW5pZWwgQmFsdXRhIDxkYW5pZWwuYmFsdXRhQGludGVsLmNvbT4NCj4gPj4gPiA+PiAt
-LS0NCj4gPj4gPiA+PiBUaGlzIGlzIGEgUkZDIGJlY2F1c2Ugd2hpbGUgSSdtIHByZXR0eSBzdXJl
-IHRoYXQgY2hpcHNldCBzaG91bGQgYmUgaW5pdGlhbGl6ZWQNCj4gPj4gPiA+PiB3aXRoIEFLX01B
-WF9UWVBFIGluIGFrODk3NV9tYXRjaF9hY3BpX2RldmljZSwgSSBhbSBub3Qgc3VyZSBpZiB3ZSBj
-YW4gbGl2ZSB3aXRoDQo+ID4+ID4gPj4gYSBOVUxMIHJldHVybiB2YWx1ZSBvZiBhazg5NzVfbWF0
-Y2hfYWNwaV9kZXZpY2UuIEN1cnJlbnQgaW1wbGVtZW50YXRpb24gaWdub3Jlcw0KPiA+PiA+ID4+
-IHJldHVybiB2YWx1ZSBvZiBhazg5NzVfbWF0Y2hfYWNwaV9kZXZpY2UuDQo+ID4+ID4gPiBUaGlz
-IHNlZW1zIHRvIGJlIHRoZSBhY3R1YWwgcHJvYmxlbTogdGhlc2UgX21hdGNoX2FjcGlfZGV2aWNl
-IGZ1bmN0aW9ucyByZXR1cm4NCj4gPj4gPiA+IE5VTEwgb24gZmFpbHVyZSwgYW5kIHRoaXMgc2hv
-dWxkIGJlIGNoZWNrZWQgZm9yLg0KPiA+PiA+DQo+ID4+ID4gT2ssIHNvIHRoaXMgd291bGQgYWNj
-ZXB0YWJsZT8NCj4gPj4gPg0KPiA+PiA+IGRpZmYgLS1naXQgYS9kcml2ZXJzL2lpby9tYWduZXRv
-bWV0ZXIvYWs4OTc1LmMNCj4gPj4gPiBiL2RyaXZlcnMvaWlvL21hZ25ldG9tZXRlci9hazg5NzUu
-Yw0KPiA+PiA+IGluZGV4IDBkMTBhNGIuLjY4ZDk5ZTkgMTAwNjQ0DQo+ID4+ID4gLS0tIGEvZHJp
-dmVycy9paW8vbWFnbmV0b21ldGVyL2FrODk3NS5jDQo+ID4+ID4gKysrIGIvZHJpdmVycy9paW8v
-bWFnbmV0b21ldGVyL2FrODk3NS5jDQo+ID4+ID4gQEAgLTc3Niw4ICs3NzYsOSBAQCBzdGF0aWMg
-aW50IGFrODk3NV9wcm9iZShzdHJ1Y3QgaTJjX2NsaWVudCAqY2xpZW50LA0KPiA+PiA+ICAgICAg
-ICAgICAgICAgICBuYW1lID0gaWQtPm5hbWU7DQo+ID4+ID4gICAgICAgICB9IGVsc2UgaWYgKEFD
-UElfSEFORExFKCZjbGllbnQtPmRldikpDQo+ID4+ID4gICAgICAgICAgICAgICAgIG5hbWUgPSBh
-azg5NzVfbWF0Y2hfYWNwaV9kZXZpY2UoJmNsaWVudC0+ZGV2LCAmY2hpcHNldCk7DQo+ID4+ID4g
-LSAgICAgICBlbHNlDQo+ID4+ID4gLSAgICAgICAgICAgICAgIHJldHVybiAtRU5PU1lTOw0KPiA+
-PiA+ICsNCj4gPj4gPiArICAgICAgIGlmICghbmFtZSkNCj4gPj4gPiArICAgICAgICAgICAgICAg
-cmV0dXJuIC1FTk9ERVY7DQo+ID4+ID4NCj4gPj4gPg0KPiA+PiA+IEkgc3RpbGwgaGF2ZSBzb21l
-IGRvdWJ0cyBhYm91dCByZXR1cm4gY29kZSBpbiBjYXNlIG9mIGVycm9yLg0KPiA+PiA+DQo+ID4+
-ID4gRm9yIGFrODk3NSB3ZSB1c2UgLUVOT1NZUywgYnV0IGZvciBreGNqay0xMDEzIHdlIHVzZSAt
-RU5PREVWLg0KPiA+PiA+DQo+ID4+ID4gSSB3aWxsIHNlbmQgYSBwYXRjaCBhZnRlciB3ZSBjbGVh
-ciB0aGlzIG91dC4NCj4gPj4gPg0KPiA+PiA+IHRoYW5rcywNCj4gPj4gPiBEYW5pZWwuDQo+ID4+
-DQo+ID4NCg0K
+On Mon, Jan 19, 2015 at 6:44 PM, Pandruvada, Srinivas
+<srinivas.pandruvada@intel.com> wrote:
+> On Mon, 2015-01-19 at 16:40 +0200, Daniel Baluta wrote:
+>> Hello,
+>>
+>> On Sat, Dec 20, 2014 at 11:29 PM, Pandruvada, Srinivas
+>> <srinivas.pandruvada@intel.com> wrote:
+>> > +Mika
+>> >
+>> > On Sat, 2014-12-20 at 13:26 -0800, Srinivas Pandruvada wrote:
+>> >> On Sat, 2014-12-20 at 00:25 +0200, Daniel Baluta wrote:
+>> >> > On Sat, Dec 20, 2014 at 12:16 AM, Hartmut Knaack <knaack.h@gmx.de> wrote:
+>> >> > > Daniel Baluta schrieb am 18.12.2014 um 18:16:
+>> >> > >> When using ACPI, if acpi_match_device fails then chipset enum will be
+>> >> > >> uninitialized and &ak_def_array[chipset] will point to some bad address.
+>> >> > >>
+>> >> I am missing something. You are enumerated over i2c device, which was
+>> >> created from ACPI PNP resource. There is a valid handle or and the
+>> >> device has an ACPI companion at the least. If this failing, I have to
+>> >> check the code for acpi i2c.
+>> >> Can you check why this check failed? We may have bug in i2c handling.
+>>
+>> You are right about this. Under normal circumstances, if probe is called
+>> then acpi_match_device will not fail. I even tried to remove the
+>> device after probe
+>> but before acpi_match_device, anyhow acpi_match_device was still successful :)
+>>
+>> This is more a matter of code correctness.
+>>
+>> In ak8975_match_acpi_device we have:
+>>
+>> »       const struct acpi_device_id *id;
+>>
+>> »       id = acpi_match_device(dev->driver->acpi_match_table, dev);
+>> »       if (!id)
+>> »       »       return NULL;
+>> »       *chipset = (int)id->driver_data;
+>>
+>> Compiler complains on the fact that chipset might be uninitialized
+>> if this returns NULL, and we shouldn't ignore this warning even this case
+>> will never happen.
+>>
+> Will this fix?
+> data->chipset = AK8975;
+> before
+> ak8975_match_acpi_device(&client->dev, &data->chipset);
+>
+
+Yes, this is done in the original patch:
+
++       *chipset = AK_MAX_TYPE;
+
+.. and fixes the warning.
+
+Daniel.
