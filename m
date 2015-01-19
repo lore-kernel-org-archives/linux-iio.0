@@ -1,59 +1,58 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-ig0-f178.google.com ([209.85.213.178]:60188 "EHLO
-	mail-ig0-f178.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751249AbbARRrz (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 18 Jan 2015 12:47:55 -0500
-Received: by mail-ig0-f178.google.com with SMTP id hl2so8184114igb.5
-        for <linux-iio@vger.kernel.org>; Sun, 18 Jan 2015 09:47:54 -0800 (PST)
-Date: Sun, 18 Jan 2015 17:47:50 +0000
-From: Lee Jones <lee.jones@linaro.org>
-To: Todd E Brandt <todd.e.brandt@linux.intel.com>
-Cc: linux-pm@vger.kernel.org, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org, jacob.jun.pan@linux.intel.com,
-	sameo@linux.intel.com, sre@kernel.org, dbaryshkov@gmail.com,
-	dwmw2@infradead.org, david.woodhouse@intel.com
-Subject: Re: [PATCH 0/3] X-Power AXP288 PMIC Fuel Gauge Driver
-Message-ID: <20150118174750.GG3574@x1>
-References: <20150107212328.GA3440@linux.intel.com>
+Return-Path: <kristina.martsenko@gmail.com>
+Message-ID: <54BD6319.8080103@gmail.com>
+Date: Mon, 19 Jan 2015 22:03:37 +0200
+From: =?windows-1252?Q?Kristina_Mart=9Aenko?=
+ <kristina.martsenko@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-In-Reply-To: <20150107212328.GA3440@linux.intel.com>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+To: Marek Vasut <marex@denx.de>, Juergen Borleis <jbe@pengutronix.de>
+CC: Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
+ Lars-Peter Clausen <lars@metafoo.de>,
+ Peter Meerwald <pmeerw@pmeerw.net>,
+ Alexandre Belloni <alexandre.belloni@free-electrons.com>,
+ Fabio Estevam <fabio.estevam@freescale.com>,
+ Stefan Wahren <stefan.wahren@i2se.com>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ linux-iio@vger.kernel.org, devel@driverdev.osuosl.org
+Subject: Re: [PATCH 3/4] iio: mxs-lradc: make ADC reads not unschedule touchscreen
+ conversions
+References: <1421454131-3501-1-git-send-email-kristina.martsenko@gmail.com> <1421454131-3501-4-git-send-email-kristina.martsenko@gmail.com> <201501190820.32090.jbe@pengutronix.de> <201501190857.50107.marex@denx.de>
+In-Reply-To: <201501190857.50107.marex@denx.de>
+Content-Type: text/plain; charset=windows-1252
+List-ID: <linux-iio@vger.kernel.org>
 
-So now I have this odd looking front cover letter randomly in my
-inbox.
+On 19/01/15 09:57, Marek Vasut wrote:
+> On Monday, January 19, 2015 at 08:20:31 AM, Juergen Borleis wrote:
+>> On Saturday 17 January 2015 01:22:10 Kristina Martšenko wrote:
+>>> Reading a channel through sysfs, or starting a buffered capture, can
+>>> occasionally turn off the touchscreen.
+>>> [...]
+>>
+>> I have my old ChumbyOne around (i.MX23). How to test this buffered capture
+>> while using the touchscreen part of the ADC (I have never used the IIO
+>> before).
 
-Please sent patch-sets threaded, so that they cling together.
+That's great, thanks for offering to test this.
 
-> X-Power AXP288 PMIC Fuel Gauge Driver
-> 
->  new power_supply driver at driver/power
->  interfaces with the axp20x mfd driver as a cell
->  provides battery info and monitors for changes
->  generates alerts on temperature and capacity issues
+> Last time I checked there was drivers/staging/iio/Documentation/generic_buffer.c 
+> , but you can also wait for a more precise advice from Kristina . Hope it helps
+> at least a bit ;-)
 
-Use the full 76 chars for full sentences, or if this is a
-bullet-pointed list, use actual bullet points.
+Yeah, I used generic_buffer.c for testing.
 
-> (1/3) mfd/axp20x.c: change the battery cell name to fuel_gauge
-> (2/3) mfd/axp20x.h: add the register defs and platform struct for fuel gauge
-> (3/3) power/axp288_fuel_gauge.c: axp288 fuel gauge driver
+You can enable some channels like this:
 
-Don't hand-roll your own cover letters, use --cover-letter when
-creating your patch-sets instead.
+echo 1 >/sys/bus/iio/devices/iio\:device0/scan_elements/in_voltage7_en
+echo 1 >/sys/bus/iio/devices/iio\:device0/scan_elements/in_voltage10_en
+echo 1 >/sys/bus/iio/devices/iio\:device0/scan_elements/in_voltage12_en
+echo 1 >/sys/bus/iio/devices/iio\:device0/scan_elements/in_voltage13_en
+echo 1 >/sys/bus/iio/devices/iio\:device0/scan_elements/in_voltage14_en
+echo 1 >/sys/bus/iio/devices/iio\:device0/scan_elements/in_voltage15_en
 
-> Signed-off-by: Todd Brandt <todd.e.brandt@intel.com>
-> ----
->  drivers/mfd/axp20x.c              |   10 +-
->  drivers/power/Kconfig             |    9 +
->  drivers/power/Makefile            |    1 +
->  drivers/power/axp288_fuel_gauge.c | 1108 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
->  include/linux/mfd/axp20x.h        |   43 ++-
->  5 files changed, 1164 insertions(+), 7 deletions(-)
+And then start the capture and read 10 samples with generic_buffer:
 
--- 
-Lee Jones
-Linaro STMicroelectronics Landing Team Lead
-Linaro.org â”‚ Open source software for ARM SoCs
-Follow Linaro: Facebook | Twitter | Blog
+./generic_buffer -n 80050000.lradc -c 10
+
+And using the touchscreen at the same time should work now. Let me know
+if it doesn't :)
+
+Kristina
