@@ -1,65 +1,41 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-ie0-f169.google.com ([209.85.223.169]:54358 "EHLO
-	mail-ie0-f169.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752487AbbATLrc (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 20 Jan 2015 06:47:32 -0500
-Received: by mail-ie0-f169.google.com with SMTP id rl12so12047718iec.0
-        for <linux-iio@vger.kernel.org>; Tue, 20 Jan 2015 03:47:31 -0800 (PST)
-Date: Tue, 20 Jan 2015 11:47:25 +0000
-From: Lee Jones <lee.jones@linaro.org>
-To: Todd E Brandt <todd.e.brandt@linux.intel.com>
-Cc: linux-pm@vger.kernel.org, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org, jacob.jun.pan@linux.intel.com,
-	sameo@linux.intel.com, sre@kernel.org, dbaryshkov@gmail.com,
-	dwmw2@infradead.org, david.woodhouse@intel.com,
-	todd.e.brandt@intel.com
-Subject: Re: [PATCH 1/3] mfd/axp20x: change battery cell name to fuel gauge
-Message-ID: <20150120114725.GI13701@x1>
-References: <20150107212450.GB3440@linux.intel.com>
+Return-Path: <Ezequiel.Garcia@imgtec.com>
+Message-ID: <54BE33FB.6020800@imgtec.com>
+Date: Tue, 20 Jan 2015 07:54:51 -0300
+From: Ezequiel Garcia <ezequiel.garcia@imgtec.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-In-Reply-To: <20150107212450.GB3440@linux.intel.com>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+To: Jonathan Cameron <jic23@kernel.org>, James Hartley
+	<james.hartley@imgtec.com>, Andrew Bresticker <abrestic@chromium.org>,
+	<robh+dt@kernel.org>, <Mark.Rutland@arm.com>, <knaack.h@gmx.de>
+CC: <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
+	<Pawel.Moll@arm.com>, <ijc+devicetree@hellion.org.uk>, <galak@codeaurora.org>
+Subject: Re: [PATCH v7 0/3] iio: Add Cosmic Circuits ADC support
+References: <1420577257-10846-1-git-send-email-ezequiel.garcia@imgtec.com> <54B133FE.1020808@kernel.org>
+In-Reply-To: <54B133FE.1020808@kernel.org>
+Content-Type: text/plain; charset="windows-1252"
+List-ID: <linux-iio@vger.kernel.org>
 
-On Wed, 07 Jan 2015, Todd E Brandt wrote:
 
-> mfd/axp20x: change battery cell name to fuel gauge
+
+On 01/10/2015 11:15 AM, Jonathan Cameron wrote:
+> On 06/01/15 20:47, Ezequiel Garcia wrote:
+>> This series add the support for an ADC IP block from Cosmic Circuits.
+>> The patchset is based on v3.19-rc3.
+>>
+>> As agreed with Rob, this series drops the vendor prefix in the
+>> adc-reserved-channels DT property. This property is generic enough to
+>> be used in other drivers (at91 is a potential candidate).
+>>
+>> A follow-up patch can use the property in at91 and add it to the
+>> IIO generic bindings.
+> I'm happy - will let this sit for a little while to let Harmut say
+> if wants to take another look (or give a reviewed-by or similar).
 > 
-> Name changes to the battery cell structure to a
-> more generic cell type: fuel gauge.
-> 
-> Signed-off-by: Todd Brandt <todd.e.brandt@intel.com>
-> ----
->  drivers/mfd/axp20x.c | 10 +++++-----
->  1 file changed, 5 insertions(+), 5 deletions(-)
-> 
-> diff --git a/drivers/mfd/axp20x.c b/drivers/mfd/axp20x.c
-> index b1b580a..e75717e 100644
-> --- a/drivers/mfd/axp20x.c
-> +++ b/drivers/mfd/axp20x.c
-> @@ -87,7 +87,7 @@ static struct resource axp20x_pek_resources[] = {
->  	},
->  };
->  
-> -static struct resource axp288_battery_resources[] = {
-> +static struct resource axp288_fuel_gauge_resources[] = {
->  	{
->  		.start = AXP288_IRQ_QWBTU,
->  		.end   = AXP288_IRQ_QWBTU,
-> @@ -236,7 +236,7 @@ static const struct i2c_device_id axp20x_i2c_id[] = {
->  };
->  MODULE_DEVICE_TABLE(i2c, axp20x_i2c_id);
->  
-> -static const struct acpi_device_id axp20x_acpi_match[] = {
-> +static struct acpi_device_id axp20x_acpi_match[] = {
 
-Why have you dropped the cost qualifier here?
+Hi Jonathan,
 
-[...]
+As Harmut gave a Reviewed-by, I'm wondering if you can pick this sooner
+than later, so we don't miss next window.
 
+Thanks a lot!
 -- 
-Lee Jones
-Linaro STMicroelectronics Landing Team Lead
-Linaro.org │ Open source software for ARM SoCs
-Follow Linaro: Facebook | Twitter | Blog
+Ezequiel
