@@ -1,58 +1,52 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-wi0-f182.google.com ([209.85.212.182]:39540 "EHLO
-	mail-wi0-f182.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752814AbbATHZ0 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 20 Jan 2015 02:25:26 -0500
-Received: by mail-wi0-f182.google.com with SMTP id n3so19413338wiv.3
-        for <linux-iio@vger.kernel.org>; Mon, 19 Jan 2015 23:25:24 -0800 (PST)
-Date: Tue, 20 Jan 2015 09:25:22 +0200
+Received: from mail-we0-f169.google.com ([74.125.82.169]:57696 "EHLO
+	mail-we0-f169.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751335AbbATJ2E (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 20 Jan 2015 04:28:04 -0500
+Received: by mail-we0-f169.google.com with SMTP id p10so12408131wes.0
+        for <linux-iio@vger.kernel.org>; Tue, 20 Jan 2015 01:28:02 -0800 (PST)
+Date: Tue, 20 Jan 2015 11:27:58 +0200
 From: Asaf Vertz <asaf.vertz@tandemg.com>
 To: gregkh@linuxfoundation.org
-Cc: lars@metafoo.de, Michael.Hennerich@analog.com, jic23@kernel.org,
-	knaack.h@gmx.de, pmeerw@pmeerw.net, linux-iio@vger.kernel.org,
-	devel@driverdev.osuosl.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] staging: iio: ad5933: fix format string warnings
-Message-ID: <20150120072522.GA3361@ubuntu>
+Cc: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
+	daniel.baluta@intel.com, roberta.dobrescu@gmail.com,
+	paulmck@linux.vnet.ibm.com, mario.schuknecht@dresearch-fe.de,
+	aybuke.147@gmail.com, tinajohnson.1234@gmail.com,
+	linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH] staging: iio: tsl2x7x_core: fix format string warnings
+Message-ID: <20150120092758.GA4321@ubuntu>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
 Fixed the following warnings (reported by cppcheck):
-[drivers/staging/iio/impedance-analyzer/ad5933.c:363]: (warning) %d in format string (no. 1)
+[drivers/staging/iio/light/tsl2x7x_core.c:1150]: (warning) %d in format string (no. 1)
 requires 'int' but the argument type is 'unsigned int'.
-[drivers/staging/iio/impedance-analyzer/ad5933.c:367]: (warning) %d in format string (no. 1)
+[drivers/staging/iio/light/tsl2x7x_core.c:1150]: (warning) %d in format string (no. 2)
 requires 'int' but the argument type is 'unsigned int'.
-[drivers/staging/iio/impedance-analyzer/ad5933.c:367]: (warning) %d in format string (no. 2)
-requires 'int' but the argument type is 'unsigned int'.
-[drivers/staging/iio/impedance-analyzer/ad5933.c:367]: (warning) %d in format string (no. 3)
-requires 'int' but the argument type is 'unsigned int'.
-[drivers/staging/iio/impedance-analyzer/ad5933.c:367]: (warning) %d in format string (no. 4)
+[drivers/staging/iio/light/tsl2x7x_core.c:1150]: (warning) %d in format string (no. 3)
 requires 'int' but the argument type is 'unsigned int'.
 
 Signed-off-by: Asaf Vertz <asaf.vertz@tandemg.com>
 ---
- drivers/staging/iio/impedance-analyzer/ad5933.c |    4 ++--
- 1 files changed, 2 insertions(+), 2 deletions(-)
+ drivers/staging/iio/light/tsl2x7x_core.c |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
 
-diff --git a/drivers/staging/iio/impedance-analyzer/ad5933.c b/drivers/staging/iio/impedance-analyzer/ad5933.c
-index b6bd609..4230a43 100644
---- a/drivers/staging/iio/impedance-analyzer/ad5933.c
-+++ b/drivers/staging/iio/impedance-analyzer/ad5933.c
-@@ -360,11 +360,11 @@ static ssize_t ad5933_show(struct device *dev,
- 	mutex_lock(&indio_dev->mlock);
- 	switch ((u32) this_attr->address) {
- 	case AD5933_OUT_RANGE:
--		len = sprintf(buf, "%d\n",
-+		len = sprintf(buf, "%u\n",
- 			      st->range_avail[(st->ctrl_hb >> 1) & 0x3]);
- 		break;
- 	case AD5933_OUT_RANGE_AVAIL:
--		len = sprintf(buf, "%d %d %d %d\n", st->range_avail[0],
-+		len = sprintf(buf, "%u %u %u %u\n", st->range_avail[0],
- 			      st->range_avail[3], st->range_avail[2],
- 			      st->range_avail[1]);
- 		break;
+diff --git a/drivers/staging/iio/light/tsl2x7x_core.c b/drivers/staging/iio/light/tsl2x7x_core.c
+index 423f96b..4a5dc26 100644
+--- a/drivers/staging/iio/light/tsl2x7x_core.c
++++ b/drivers/staging/iio/light/tsl2x7x_core.c
+@@ -1147,7 +1147,7 @@ static ssize_t tsl2x7x_luxtable_show(struct device *dev,
+ 	int offset = 0;
+ 
+ 	while (i < (TSL2X7X_MAX_LUX_TABLE_SIZE * 3)) {
+-		offset += snprintf(buf + offset, PAGE_SIZE, "%d,%d,%d,",
++		offset += snprintf(buf + offset, PAGE_SIZE, "%u,%u,%u,",
+ 			chip->tsl2x7x_device_lux[i].ratio,
+ 			chip->tsl2x7x_device_lux[i].ch0,
+ 			chip->tsl2x7x_device_lux[i].ch1);
 -- 
 1.7.0.4
 
