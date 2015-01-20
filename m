@@ -1,47 +1,57 @@
-Return-Path: <iivanov@mm-sol.com>
-From: "Ivan T. Ivanov" <iivanov@mm-sol.com>
-To: Jonathan Cameron <jic23@kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>
-Cc: "Ivan T. Ivanov" <iivanov@mm-sol.com>,
-	Grant Likely <grant.likely@linaro.org>,
-	Rob Herring <robh+dt@kernel.org>,
-	linux-kernel@vger.kernel.org,
-	linux-iio@vger.kernel.org,
-	devicetree@vger.kernel.org
-Subject: [PATCH v5 0/2]  Initial support for voltage ADC
-Date: Tue, 20 Jan 2015 12:15:20 +0200
-Message-Id: <1421748922-8933-1-git-send-email-iivanov@mm-sol.com>
+Return-Path: <lars@metafoo.de>
+Message-ID: <54BE175D.3070504@metafoo.de>
+Date: Tue, 20 Jan 2015 09:52:45 +0100
+From: Lars-Peter Clausen <lars@metafoo.de>
+MIME-Version: 1.0
+To: Asaf Vertz <asaf.vertz@tandemg.com>, gregkh@linuxfoundation.org
+CC: Michael.Hennerich@analog.com, jic23@kernel.org, knaack.h@gmx.de,
+ pmeerw@pmeerw.net, linux-iio@vger.kernel.org,
+ devel@driverdev.osuosl.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] staging: iio: ad5933: fix format string warnings
+References: <20150120072522.GA3361@ubuntu>
+In-Reply-To: <20150120072522.GA3361@ubuntu>
+Content-Type: text/plain; charset=windows-1252; format=flowed
 List-ID: <linux-iio@vger.kernel.org>
 
-This type of volatage ADC could be found in Qualcomm's SPMI PMIC's.
-I'm sorry that it took me so long to send the updated version.
+On 01/20/2015 08:25 AM, Asaf Vertz wrote:
+> Fixed the following warnings (reported by cppcheck):
+> [drivers/staging/iio/impedance-analyzer/ad5933.c:363]: (warning) %d in format string (no. 1)
+> requires 'int' but the argument type is 'unsigned int'.
+> [drivers/staging/iio/impedance-analyzer/ad5933.c:367]: (warning) %d in format string (no. 1)
+> requires 'int' but the argument type is 'unsigned int'.
+> [drivers/staging/iio/impedance-analyzer/ad5933.c:367]: (warning) %d in format string (no. 2)
+> requires 'int' but the argument type is 'unsigned int'.
+> [drivers/staging/iio/impedance-analyzer/ad5933.c:367]: (warning) %d in format string (no. 3)
+> requires 'int' but the argument type is 'unsigned int'.
+> [drivers/staging/iio/impedance-analyzer/ad5933.c:367]: (warning) %d in format string (no. 4)
+> requires 'int' but the argument type is 'unsigned int'.
+>
+> Signed-off-by: Asaf Vertz <asaf.vertz@tandemg.com>
 
-Changes since v4.
-- Addressed review comments from Hartmut Knaack and Jonathan Cameron:
-  Fixed spelling errors in DT description files.
-  Removed unused structure member.
-  Access to hardware during conversion is protected with mutex.
-  Measuring reference points moved at driver probe time.
+Acked-by: Lars-Peter Clausen <lars@metafoo.de>
 
-Patches are based on current iio/testing branch.
+Thanks.
 
-v4 could be found here: https://lkml.org/lkml/2014/11/3/425
-
-Stanimir Varbanov (2):
-  DT: iio: vadc: document dt binding
-  iio: vadc: Qualcomm SPMI PMIC voltage ADC driver
-
- .../devicetree/bindings/iio/adc/qcom,spmi-vadc.txt |  129 +++
- drivers/iio/adc/Kconfig                            |   14 +
- drivers/iio/adc/Makefile                           |    1 +
- drivers/iio/adc/qcom-spmi-vadc.c                   | 1016 ++++++++++++++++++++
- include/dt-bindings/iio/qcom,spmi-vadc.h           |  119 +++
- 5 files changed, 1279 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/iio/adc/qcom,spmi-vadc.txt
- create mode 100644 drivers/iio/adc/qcom-spmi-vadc.c
- create mode 100644 include/dt-bindings/iio/qcom,spmi-vadc.h
-
---
-1.9.1
+> ---
+>   drivers/staging/iio/impedance-analyzer/ad5933.c |    4 ++--
+>   1 files changed, 2 insertions(+), 2 deletions(-)
+>
+> diff --git a/drivers/staging/iio/impedance-analyzer/ad5933.c b/drivers/staging/iio/impedance-analyzer/ad5933.c
+> index b6bd609..4230a43 100644
+> --- a/drivers/staging/iio/impedance-analyzer/ad5933.c
+> +++ b/drivers/staging/iio/impedance-analyzer/ad5933.c
+> @@ -360,11 +360,11 @@ static ssize_t ad5933_show(struct device *dev,
+>   	mutex_lock(&indio_dev->mlock);
+>   	switch ((u32) this_attr->address) {
+>   	case AD5933_OUT_RANGE:
+> -		len = sprintf(buf, "%d\n",
+> +		len = sprintf(buf, "%u\n",
+>   			      st->range_avail[(st->ctrl_hb >> 1) & 0x3]);
+>   		break;
+>   	case AD5933_OUT_RANGE_AVAIL:
+> -		len = sprintf(buf, "%d %d %d %d\n", st->range_avail[0],
+> +		len = sprintf(buf, "%u %u %u %u\n", st->range_avail[0],
+>   			      st->range_avail[3], st->range_avail[2],
+>   			      st->range_avail[1]);
+>   		break;
+>
