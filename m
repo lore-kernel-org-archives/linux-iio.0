@@ -1,118 +1,104 @@
-Return-Path: <lee.jones@linaro.org>
-Date: Tue, 20 Jan 2015 11:53:25 +0000
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-ie0-f174.google.com ([209.85.223.174]:34961 "EHLO
+	mail-ie0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752072AbbATLtj (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 20 Jan 2015 06:49:39 -0500
+Received: by mail-ie0-f174.google.com with SMTP id at20so34381535iec.5
+        for <linux-iio@vger.kernel.org>; Tue, 20 Jan 2015 03:49:39 -0800 (PST)
+Date: Tue, 20 Jan 2015 11:49:33 +0000
 From: Lee Jones <lee.jones@linaro.org>
-To: Vignesh R <vigneshr@ti.com>
-Cc: Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
-	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-	Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-	Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>,
-	Mark Rutland <mark.rutland@arm.com>,
-	Ian Campbell <ijc+devicetree@hellion.org.uk>,
-	Kumar Gala <galak@codeaurora.org>,
-	Benoit Cousson <bcousson@baylibre.com>,
-	Tony Lindgren <tony@atomide.com>,
-	Russell King <linux@arm.linux.org.uk>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	Samuel Ortiz <sameo@linux.intel.com>,
-	Brad Griffis <bgriffis@ti.com>,
-	Paul Gortmaker <paul.gortmaker@windriver.com>,
-	Sanjeev Sharma <sanjeev_sharma@mentor.com>,
-	Jan Kardell <jan.kardell@telliq.com>, Felipe Balbi <balbi@ti.com>,
-	Wolfram Sang <wsa@the-dreams.de>, devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org, linux-iio@vger.kernel.org,
-	linux-input@vger.kernel.org
-Subject: Re: [PATCH v6 3/6] mfd: ti_am335x_tscadc: Remove unwanted
- reg_se_cache save
-Message-ID: <20150120115325.GK13701@x1>
-References: <1420609779-11156-1-git-send-email-vigneshr@ti.com>
- <1420609779-11156-4-git-send-email-vigneshr@ti.com>
+To: Todd E Brandt <todd.e.brandt@linux.intel.com>
+Cc: linux-pm@vger.kernel.org, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org, jacob.jun.pan@linux.intel.com,
+	sameo@linux.intel.com, sre@kernel.org, dbaryshkov@gmail.com,
+	dwmw2@infradead.org, david.woodhouse@intel.com,
+	todd.e.brandt@intel.com
+Subject: Re: [PATCH 2/3] mfd/axp20x: add support for fuel gauge cell driver
+Message-ID: <20150120114933.GJ13701@x1>
+References: <20150107212552.GC3440@linux.intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
-In-Reply-To: <1420609779-11156-4-git-send-email-vigneshr@ti.com>
-List-ID: <linux-iio@vger.kernel.org>
+In-Reply-To: <20150107212552.GC3440@linux.intel.com>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Wed, 07 Jan 2015, Vignesh R wrote:
+FYI: It's easier to track patch-sets when they are connected.  Please
+send them as 'threaded'.  Take a look at the man page for `git
+send-email` for more details.
 
-> In one shot mode, sequencer automatically disables all enabled steps at
-> the end of each cycle. (both ADC steps and TSC steps) Hence these steps
-> need not be saved in reg_se_cache for clearing these steps at a later
-> stage.
-> Also, when ADC wakes up Sequencer should not be busy executing any of the
-> config steps except for the charge step. Previously charge step was 1 ADC
-> clock cycle and hence it was ignored.
-> TSC steps are always disabled at the end of each conversion cycle, hence
-> there is no need to explicitly disable TSC steps by writing 0 to REG_SE.
+> mfd/axp20x: add support for fuel gauge cell
 > 
-> Signed-off-by: Vignesh R <vigneshr@ti.com>
-> ---
+> Register definitions and platform data structure 
+> for fuel gauge cell devices.
 > 
-> v5:
->  - Remove unnecessary clearing of REG_SE
-> 
->  drivers/mfd/ti_am335x_tscadc.c       | 13 +++++--------
->  include/linux/mfd/ti_am335x_tscadc.h |  1 +
->  2 files changed, 6 insertions(+), 8 deletions(-)
+> Signed-off-by: Todd Brandt <todd.e.brandt@intel.com>
+> ----
+>  include/linux/mfd/axp20x.h | 43 +++++++++++++++++++++++++++++++++++++++++--
+>  1 file changed, 41 insertions(+), 2 deletions(-)
 
-Looks fine.
+Applied, thanks.
 
-For my own reference:
-  Acked-by: Lee Jones <lee.jones@linaro.org>
-
-Can this patch be applied on its own?
-
-> diff --git a/drivers/mfd/ti_am335x_tscadc.c b/drivers/mfd/ti_am335x_tscadc.c
-> index 467c80e1c4ae..e4e4b22eebc9 100644
-> --- a/drivers/mfd/ti_am335x_tscadc.c
-> +++ b/drivers/mfd/ti_am335x_tscadc.c
-> @@ -68,12 +68,6 @@ static void am335x_tscadc_need_adc(struct ti_tscadc_dev *tsadc)
->  	DEFINE_WAIT(wait);
->  	u32 reg;
+> diff --git a/include/linux/mfd/axp20x.h b/include/linux/mfd/axp20x.h
+> index 81589d1..dfabd6d 100644
+> --- a/include/linux/mfd/axp20x.h
+> +++ b/include/linux/mfd/axp20x.h
+> @@ -124,10 +124,27 @@ enum {
+>  #define AXP288_PMIC_ADC_H               0x56
+>  #define AXP288_PMIC_ADC_L               0x57
+>  #define AXP288_ADC_TS_PIN_CTRL          0x84
+> -
+>  #define AXP288_PMIC_ADC_EN              0x84
+> -#define AXP288_FG_TUNE5			0xed
 >  
-> -	/*
-> -	 * disable TSC steps so it does not run while the ADC is using it. If
-> -	 * write 0 while it is running (it just started or was already running)
-> -	 * then it completes all steps that were enabled and stops then.
-> -	 */
-> -	tscadc_writel(tsadc, REG_SE, 0);
->  	reg = tscadc_readl(tsadc, REG_ADCFSM);
->  	if (reg & SEQ_STATUS) {
->  		tsadc->adc_waiting = true;
-> @@ -86,8 +80,12 @@ static void am335x_tscadc_need_adc(struct ti_tscadc_dev *tsadc)
->  		spin_lock_irq(&tsadc->reg_lock);
->  		finish_wait(&tsadc->reg_se_wait, &wait);
+> +/* Fuel Gauge */
+> +#define AXP288_FG_RDC1_REG          0xba
+> +#define AXP288_FG_RDC0_REG          0xbb
+> +#define AXP288_FG_OCVH_REG          0xbc
+> +#define AXP288_FG_OCVL_REG          0xbd
+> +#define AXP288_FG_OCV_CURVE_REG     0xc0
+> +#define AXP288_FG_DES_CAP1_REG      0xe0
+> +#define AXP288_FG_DES_CAP0_REG      0xe1
+> +#define AXP288_FG_CC_MTR1_REG       0xe2
+> +#define AXP288_FG_CC_MTR0_REG       0xe3
+> +#define AXP288_FG_OCV_CAP_REG       0xe4
+> +#define AXP288_FG_CC_CAP_REG        0xe5
+> +#define AXP288_FG_LOW_CAP_REG       0xe6
+> +#define AXP288_FG_TUNE0             0xe8
+> +#define AXP288_FG_TUNE1             0xe9
+> +#define AXP288_FG_TUNE2             0xea
+> +#define AXP288_FG_TUNE3             0xeb
+> +#define AXP288_FG_TUNE4             0xec
+> +#define AXP288_FG_TUNE5             0xed
 >  
-> +		/*
-> +		 * Sequencer should either be idle or
-> +		 * busy applying the charge step.
-> +		 */
->  		reg = tscadc_readl(tsadc, REG_ADCFSM);
-> -		WARN_ON(reg & SEQ_STATUS);
-> +		WARN_ON((reg & SEQ_STATUS) && !(reg & CHARGE_STEP));
->  		tsadc->adc_waiting = false;
->  	}
->  	tsadc->adc_in_use = true;
-> @@ -96,7 +94,6 @@ static void am335x_tscadc_need_adc(struct ti_tscadc_dev *tsadc)
->  void am335x_tsc_se_set_once(struct ti_tscadc_dev *tsadc, u32 val)
->  {
->  	spin_lock_irq(&tsadc->reg_lock);
-> -	tsadc->reg_se_cache |= val;
->  	am335x_tscadc_need_adc(tsadc);
+>  /* Regulators IDs */
+>  enum {
+> @@ -236,4 +253,26 @@ struct axp20x_dev {
+>  	const struct regmap_irq_chip	*regmap_irq_chip;
+>  };
 >  
->  	tscadc_writel(tsadc, REG_SE, val);
-> diff --git a/include/linux/mfd/ti_am335x_tscadc.h b/include/linux/mfd/ti_am335x_tscadc.h
-> index 3f4e994ace2b..1fd50dcfe47c 100644
-> --- a/include/linux/mfd/ti_am335x_tscadc.h
-> +++ b/include/linux/mfd/ti_am335x_tscadc.h
-> @@ -128,6 +128,7 @@
->  
->  /* Sequencer Status */
->  #define SEQ_STATUS BIT(5)
-> +#define CHARGE_STEP		0x11
->  
->  #define ADC_CLK			3000000
->  #define TOTAL_STEPS		16
+> +#define BATTID_LEN				64
+> +#define OCV_CURVE_SIZE			32
+> +#define MAX_THERM_CURVE_SIZE	25
+> +#define PD_DEF_MIN_TEMP			0
+> +#define PD_DEF_MAX_TEMP			55
+> +
+> +struct axp20x_fg_pdata {
+> +	char battid[BATTID_LEN + 1];
+> +	int design_cap;
+> +	int min_volt;
+> +	int max_volt;
+> +	int max_temp;
+> +	int min_temp;
+> +	int cap1;
+> +	int cap0;
+> +	int rdc1;
+> +	int rdc0;
+> +	int ocv_curve[OCV_CURVE_SIZE];
+> +	int tcsz;
+> +	int thermistor_curve[MAX_THERM_CURVE_SIZE][2];
+> +};
+> +
+>  #endif /* __LINUX_MFD_AXP20X_H */
 
 -- 
 Lee Jones
