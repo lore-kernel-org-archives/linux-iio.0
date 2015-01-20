@@ -1,62 +1,55 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mailapp01.imgtec.com ([195.59.15.196]:7195 "EHLO
-	mailapp01.imgtec.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752672AbbATUi5 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 20 Jan 2015 15:38:57 -0500
-Message-ID: <54BEBC5D.6010809@imgtec.com>
-Date: Tue, 20 Jan 2015 17:36:45 -0300
-From: Ezequiel Garcia <ezequiel.garcia@imgtec.com>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:36965 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750777AbbATUnd (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 20 Jan 2015 15:43:33 -0500
+Message-ID: <54BEBDF1.8090909@kernel.org>
+Date: Tue, 20 Jan 2015 20:43:29 +0000
+From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Jonathan Cameron <jic23@kernel.org>,
-	James Hartley <james.hartley@imgtec.com>,
-	Andrew Bresticker <abrestic@chromium.org>,
-	<robh+dt@kernel.org>, <Mark.Rutland@arm.com>, <knaack.h@gmx.de>
-CC: <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
-	<Pawel.Moll@arm.com>, <ijc+devicetree@hellion.org.uk>,
-	<galak@codeaurora.org>
-Subject: Re: [PATCH v7 0/3] iio: Add Cosmic Circuits ADC support
-References: <1420577257-10846-1-git-send-email-ezequiel.garcia@imgtec.com> <54B133FE.1020808@kernel.org> <54BE33FB.6020800@imgtec.com> <54BEBC80.1090608@kernel.org>
-In-Reply-To: <54BEBC80.1090608@kernel.org>
-Content-Type: text/plain; charset="windows-1252"
+To: Asaf Vertz <asaf.vertz@tandemg.com>, gregkh@linuxfoundation.org
+CC: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
+	mwelling@ieee.org, daniel.baluta@intel.com, aybuke.147@gmail.com,
+	monamagarwal123@gmail.com, linux-iio@vger.kernel.org,
+	devel@driverdev.osuosl.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] staging: iio: tsl2583: fix format string warnings
+References: <20150120104338.GA17675@ubuntu>
+In-Reply-To: <20150120104338.GA17675@ubuntu>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
+On 20/01/15 10:43, Asaf Vertz wrote:
+> Fixed the following warnings (reported by cppcheck):
+> [drivers/staging/iio/light/tsl2583.c:695]: (warning) %d in format string (no. 1)
+> requires 'int' but the argument type is 'unsigned int'.
+> [drivers/staging/iio/light/tsl2583.c:695]: (warning) %d in format string (no. 2)
+> requires 'int' but the argument type is 'unsigned int'.
+> [drivers/staging/iio/light/tsl2583.c:695]: (warning) %d in format string (no. 3)
+> requires 'int' but the argument type is 'unsigned int'.
+> 
+> Signed-off-by: Asaf Vertz <asaf.vertz@tandemg.com>
+Applied to the togreg branch of iio.git - initially pushed out
+as testing.  Note this branch will almost certainly get rebased
+before going upstream.
 
-
-On 01/20/2015 05:37 PM, Jonathan Cameron wrote:
-> On 20/01/15 10:54, Ezequiel Garcia wrote:
->>
->>
->> On 01/10/2015 11:15 AM, Jonathan Cameron wrote:
->>> On 06/01/15 20:47, Ezequiel Garcia wrote:
->>>> This series add the support for an ADC IP block from Cosmic Circuits.
->>>> The patchset is based on v3.19-rc3.
->>>>
->>>> As agreed with Rob, this series drops the vendor prefix in the
->>>> adc-reserved-channels DT property. This property is generic enough to
->>>> be used in other drivers (at91 is a potential candidate).
->>>>
->>>> A follow-up patch can use the property in at91 and add it to the
->>>> IIO generic bindings.
->>> I'm happy - will let this sit for a little while to let Harmut say
->>> if wants to take another look (or give a reviewed-by or similar).
->>>
->>
->> Hi Jonathan,
->>
->> As Harmut gave a Reviewed-by, I'm wondering if you can pick this sooner
->> than later, so we don't miss next window.
->>
->> Thanks a lot!
->>
-> Hi, I'm afraid that I'm a little stalled on sending it on because Greg
-> hasn't yet picked up my last pull request.  In the mean time I've applied
-> it to the branch that will get rebased once he's taken that and pushed it
-> out as testing.
+Jonathan
+> ---
+>  drivers/staging/iio/light/tsl2583.c |    2 +-
+>  1 files changed, 1 insertions(+), 1 deletions(-)
+> 
+> diff --git a/drivers/staging/iio/light/tsl2583.c b/drivers/staging/iio/light/tsl2583.c
+> index cc4ddcc..8afae8e 100644
+> --- a/drivers/staging/iio/light/tsl2583.c
+> +++ b/drivers/staging/iio/light/tsl2583.c
+> @@ -692,7 +692,7 @@ static ssize_t taos_luxtable_show(struct device *dev,
+>  	int offset = 0;
+>  
+>  	for (i = 0; i < ARRAY_SIZE(taos_device_lux); i++) {
+> -		offset += sprintf(buf + offset, "%d,%d,%d,",
+> +		offset += sprintf(buf + offset, "%u,%u,%u,",
+>  				  taos_device_lux[i].ratio,
+>  				  taos_device_lux[i].ch0,
+>  				  taos_device_lux[i].ch1);
 > 
 
-OK, thanks a lot for the heads up.
-
-Cheers,
--- 
-Ezequiel
