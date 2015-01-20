@@ -1,55 +1,70 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:36965 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:36985 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750777AbbATUnd (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 20 Jan 2015 15:43:33 -0500
-Message-ID: <54BEBDF1.8090909@kernel.org>
-Date: Tue, 20 Jan 2015 20:43:29 +0000
+	with ESMTP id S1753628AbbATUpk (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 20 Jan 2015 15:45:40 -0500
+Message-ID: <54BEBE72.5020106@kernel.org>
+Date: Tue, 20 Jan 2015 20:45:38 +0000
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Asaf Vertz <asaf.vertz@tandemg.com>, gregkh@linuxfoundation.org
-CC: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
-	mwelling@ieee.org, daniel.baluta@intel.com, aybuke.147@gmail.com,
-	monamagarwal123@gmail.com, linux-iio@vger.kernel.org,
-	devel@driverdev.osuosl.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] staging: iio: tsl2583: fix format string warnings
-References: <20150120104338.GA17675@ubuntu>
-In-Reply-To: <20150120104338.GA17675@ubuntu>
+To: Lars-Peter Clausen <lars@metafoo.de>,
+	Asaf Vertz <asaf.vertz@tandemg.com>, gregkh@linuxfoundation.org
+CC: Michael.Hennerich@analog.com, knaack.h@gmx.de, pmeerw@pmeerw.net,
+	linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] staging: iio: ad5933: fix format string warnings
+References: <20150120072522.GA3361@ubuntu> <54BE175D.3070504@metafoo.de>
+In-Reply-To: <54BE175D.3070504@metafoo.de>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 20/01/15 10:43, Asaf Vertz wrote:
-> Fixed the following warnings (reported by cppcheck):
-> [drivers/staging/iio/light/tsl2583.c:695]: (warning) %d in format string (no. 1)
-> requires 'int' but the argument type is 'unsigned int'.
-> [drivers/staging/iio/light/tsl2583.c:695]: (warning) %d in format string (no. 2)
-> requires 'int' but the argument type is 'unsigned int'.
-> [drivers/staging/iio/light/tsl2583.c:695]: (warning) %d in format string (no. 3)
-> requires 'int' but the argument type is 'unsigned int'.
+On 20/01/15 08:52, Lars-Peter Clausen wrote:
+> On 01/20/2015 08:25 AM, Asaf Vertz wrote:
+>> Fixed the following warnings (reported by cppcheck):
+>> [drivers/staging/iio/impedance-analyzer/ad5933.c:363]: (warning) %d in format string (no. 1)
+>> requires 'int' but the argument type is 'unsigned int'.
+>> [drivers/staging/iio/impedance-analyzer/ad5933.c:367]: (warning) %d in format string (no. 1)
+>> requires 'int' but the argument type is 'unsigned int'.
+>> [drivers/staging/iio/impedance-analyzer/ad5933.c:367]: (warning) %d in format string (no. 2)
+>> requires 'int' but the argument type is 'unsigned int'.
+>> [drivers/staging/iio/impedance-analyzer/ad5933.c:367]: (warning) %d in format string (no. 3)
+>> requires 'int' but the argument type is 'unsigned int'.
+>> [drivers/staging/iio/impedance-analyzer/ad5933.c:367]: (warning) %d in format string (no. 4)
+>> requires 'int' but the argument type is 'unsigned int'.
+>>
+>> Signed-off-by: Asaf Vertz <asaf.vertz@tandemg.com>
 > 
-> Signed-off-by: Asaf Vertz <asaf.vertz@tandemg.com>
-Applied to the togreg branch of iio.git - initially pushed out
-as testing.  Note this branch will almost certainly get rebased
-before going upstream.
+> Acked-by: Lars-Peter Clausen <lars@metafoo.de>
+Applied to the togreg branch of iio.git. Initially pushed out
+as testing.  Thanks,
 
 Jonathan
-> ---
->  drivers/staging/iio/light/tsl2583.c |    2 +-
->  1 files changed, 1 insertions(+), 1 deletions(-)
 > 
-> diff --git a/drivers/staging/iio/light/tsl2583.c b/drivers/staging/iio/light/tsl2583.c
-> index cc4ddcc..8afae8e 100644
-> --- a/drivers/staging/iio/light/tsl2583.c
-> +++ b/drivers/staging/iio/light/tsl2583.c
-> @@ -692,7 +692,7 @@ static ssize_t taos_luxtable_show(struct device *dev,
->  	int offset = 0;
->  
->  	for (i = 0; i < ARRAY_SIZE(taos_device_lux); i++) {
-> -		offset += sprintf(buf + offset, "%d,%d,%d,",
-> +		offset += sprintf(buf + offset, "%u,%u,%u,",
->  				  taos_device_lux[i].ratio,
->  				  taos_device_lux[i].ch0,
->  				  taos_device_lux[i].ch1);
+> Thanks.
+> 
+>> ---
+>>   drivers/staging/iio/impedance-analyzer/ad5933.c |    4 ++--
+>>   1 files changed, 2 insertions(+), 2 deletions(-)
+>>
+>> diff --git a/drivers/staging/iio/impedance-analyzer/ad5933.c b/drivers/staging/iio/impedance-analyzer/ad5933.c
+>> index b6bd609..4230a43 100644
+>> --- a/drivers/staging/iio/impedance-analyzer/ad5933.c
+>> +++ b/drivers/staging/iio/impedance-analyzer/ad5933.c
+>> @@ -360,11 +360,11 @@ static ssize_t ad5933_show(struct device *dev,
+>>       mutex_lock(&indio_dev->mlock);
+>>       switch ((u32) this_attr->address) {
+>>       case AD5933_OUT_RANGE:
+>> -        len = sprintf(buf, "%d\n",
+>> +        len = sprintf(buf, "%u\n",
+>>                     st->range_avail[(st->ctrl_hb >> 1) & 0x3]);
+>>           break;
+>>       case AD5933_OUT_RANGE_AVAIL:
+>> -        len = sprintf(buf, "%d %d %d %d\n", st->range_avail[0],
+>> +        len = sprintf(buf, "%u %u %u %u\n", st->range_avail[0],
+>>                     st->range_avail[3], st->range_avail[2],
+>>                     st->range_avail[1]);
+>>           break;
+>>
 > 
 
