@@ -1,57 +1,63 @@
-Return-Path: <lars@metafoo.de>
-Message-ID: <54BE175D.3070504@metafoo.de>
-Date: Tue, 20 Jan 2015 09:52:45 +0100
-From: Lars-Peter Clausen <lars@metafoo.de>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:36867 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750768AbbATU2i (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 20 Jan 2015 15:28:38 -0500
+Message-ID: <54BEBA73.5090709@kernel.org>
+Date: Tue, 20 Jan 2015 20:28:35 +0000
+From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Asaf Vertz <asaf.vertz@tandemg.com>, gregkh@linuxfoundation.org
-CC: Michael.Hennerich@analog.com, jic23@kernel.org, knaack.h@gmx.de,
- pmeerw@pmeerw.net, linux-iio@vger.kernel.org,
- devel@driverdev.osuosl.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] staging: iio: ad5933: fix format string warnings
-References: <20150120072522.GA3361@ubuntu>
-In-Reply-To: <20150120072522.GA3361@ubuntu>
-Content-Type: text/plain; charset=windows-1252; format=flowed
-List-ID: <linux-iio@vger.kernel.org>
+To: Daniel Baluta <daniel.baluta@gmail.com>,
+	Greg KH <gregkh@linuxfoundation.org>
+CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Subject: Re: [PULL] First round of new IIO drivers, features and cleanups
+ for the 3.20 cycle
+References: <54AAF235.5000209@kernel.org>	<20150109022228.GA12876@kroah.com>	<CAEnQRZC_nQXqOqpS7P5SyyFTfU5TiBp6VEnDK9Q2ZCuWqdh9NQ@mail.gmail.com> <CAEnQRZARBq9fztLFuOVHQUpXmW1p9NuYBNq4gzYuJV1fYGvo7g@mail.gmail.com>
+In-Reply-To: <CAEnQRZARBq9fztLFuOVHQUpXmW1p9NuYBNq4gzYuJV1fYGvo7g@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On 01/20/2015 08:25 AM, Asaf Vertz wrote:
-> Fixed the following warnings (reported by cppcheck):
-> [drivers/staging/iio/impedance-analyzer/ad5933.c:363]: (warning) %d in format string (no. 1)
-> requires 'int' but the argument type is 'unsigned int'.
-> [drivers/staging/iio/impedance-analyzer/ad5933.c:367]: (warning) %d in format string (no. 1)
-> requires 'int' but the argument type is 'unsigned int'.
-> [drivers/staging/iio/impedance-analyzer/ad5933.c:367]: (warning) %d in format string (no. 2)
-> requires 'int' but the argument type is 'unsigned int'.
-> [drivers/staging/iio/impedance-analyzer/ad5933.c:367]: (warning) %d in format string (no. 3)
-> requires 'int' but the argument type is 'unsigned int'.
-> [drivers/staging/iio/impedance-analyzer/ad5933.c:367]: (warning) %d in format string (no. 4)
-> requires 'int' but the argument type is 'unsigned int'.
->
-> Signed-off-by: Asaf Vertz <asaf.vertz@tandemg.com>
+On 09/01/15 09:46, Daniel Baluta wrote:
+> On Fri, Jan 9, 2015 at 9:43 AM, Daniel Baluta <daniel.baluta@gmail.com> wrote:
+>> On Fri, Jan 9, 2015 at 4:22 AM, Greg KH <gregkh@linuxfoundation.org> wrote:
+>>> On Mon, Jan 05, 2015 at 08:21:09PM +0000, Jonathan Cameron wrote:
+>>>> The following changes since commit 5e62863aea463c9bf24538315327d0922be35d64:
+>>>>
+>>>>   staging: comedi: das800: use comedi_async 'scans_done' to detect EOA (2014-11-05 14:59:48 -0800)
+>>>>
+>>>> are available in the git repository at:
+>>>>
+>>>>   git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git tags/iio-for-3.20a
+>>>
+>>> This breaks the build for me:
+>>>
+>>> drivers/iio/imu/kmx61.c:1563:21: error: ‘kmx61_runtime_suspend’ undeclared here (not in a function)
+>>>   SET_RUNTIME_PM_OPS(kmx61_runtime_suspend, kmx61_runtime_resume, NULL)
+>>>                      ^
+>>> include/linux/pm.h:347:21: note: in definition of macro ‘SET_RUNTIME_PM_OPS’
+>>>   .runtime_suspend = suspend_fn, \
+>>>                      ^
+>>> drivers/iio/imu/kmx61.c:1563:44: error: ‘kmx61_runtime_resume’ undeclared here (not in a function)
+>>>   SET_RUNTIME_PM_OPS(kmx61_runtime_suspend, kmx61_runtime_resume, NULL)
+>>>                                             ^
+>>> include/linux/pm.h:348:20: note: in definition of macro ‘SET_RUNTIME_PM_OPS’
+>>>   .runtime_resume = resume_fn, \
+>>>                     ^
+>>>
+>>> So I don't want to pull it :(
+>>
+>> I will look into this.
+> 
+> OK. It's my fault :(. I've sent a patch to fix this.
+> 
+> Daniel.
+> 
+Hi Greg,
 
-Acked-by: Lars-Peter Clausen <lars@metafoo.de>
+Just thought I'd check where we are with this. Are you still
+OK to take the series and handle the fixup patch in the merge?
 
-Thanks.
+Thanks,
 
-> ---
->   drivers/staging/iio/impedance-analyzer/ad5933.c |    4 ++--
->   1 files changed, 2 insertions(+), 2 deletions(-)
->
-> diff --git a/drivers/staging/iio/impedance-analyzer/ad5933.c b/drivers/staging/iio/impedance-analyzer/ad5933.c
-> index b6bd609..4230a43 100644
-> --- a/drivers/staging/iio/impedance-analyzer/ad5933.c
-> +++ b/drivers/staging/iio/impedance-analyzer/ad5933.c
-> @@ -360,11 +360,11 @@ static ssize_t ad5933_show(struct device *dev,
->   	mutex_lock(&indio_dev->mlock);
->   	switch ((u32) this_attr->address) {
->   	case AD5933_OUT_RANGE:
-> -		len = sprintf(buf, "%d\n",
-> +		len = sprintf(buf, "%u\n",
->   			      st->range_avail[(st->ctrl_hb >> 1) & 0x3]);
->   		break;
->   	case AD5933_OUT_RANGE_AVAIL:
-> -		len = sprintf(buf, "%d %d %d %d\n", st->range_avail[0],
-> +		len = sprintf(buf, "%u %u %u %u\n", st->range_avail[0],
->   			      st->range_avail[3], st->range_avail[2],
->   			      st->range_avail[1]);
->   		break;
->
+Jonathan
