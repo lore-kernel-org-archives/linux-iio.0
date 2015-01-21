@@ -1,81 +1,57 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:44150 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:44194 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751815AbbAURUt (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 21 Jan 2015 12:20:49 -0500
-In-Reply-To: <20150121165250.GG13715@earth.universe>
-References: <cover.1421854282.git.Adam.Thomson.Opensource@diasemi.com> <20150121165250.GG13715@earth.universe>
+	with ESMTP id S1754146AbbAUR0D (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 21 Jan 2015 12:26:03 -0500
+In-Reply-To: <CAEUmHyYkn6g28=9zqx6DLoFEFNeM1bkV4KyRJH7F7_TNatY-+w@mail.gmail.com>
+References: <1421819977-32232-1-git-send-email-varkabhadram@gmail.com> <54BF7D24.5090009@metafoo.de> <CAEUmHyYkn6g28=9zqx6DLoFEFNeM1bkV4KyRJH7F7_TNatY-+w@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain;
  charset=UTF-8
-Subject: Re: [PATCH v6 0/7] Add initial support for DA9150 Charger & Fuel-Gauge IC
+Subject: Re: [PATCH iio 1/3] imu: inv_mpu6050: use devm_request_irq
 From: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
-Date: Wed, 21 Jan 2015 17:19:38 +0000
-To: Sebastian Reichel <sre@kernel.org>,
-	Adam Thomson <Adam.Thomson.Opensource@diasemi.com>,
-	Lee Jones <lee.jones@linaro.org>,
-	Jonathan Cameron <jic23@kernel.org>
-CC: Samuel Ortiz <sameo@linux.intel.com>,
-	Hartmut Knaack <knaack.h@gmx.de>, linux-iio@vger.kernel.org,
-	Dmitry Eremin-Solenikov <dbaryshkov@gmail.com>,
-	David Woodhouse <dwmw2@infradead.org>,
-	linux-pm@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
-	Pawel Moll <pawel.moll@arm.com>,
-	Mark Rutland <mark.rutland@arm.com>,
-	Ian Campbell <ijc+devicetree@hellion.org.uk>,
-	Kumar Gala <galak@codeaurora.org>,
-	Grant Likely <grant.likely@linaro.org>,
-	devicetree@vger.kernel.org,
-	Andrew Morton <akpm@linux-foundation.org>,
-	Joe Perches <joe@perches.com>, linux-kernel@vger.kernel.org,
-	support.opensource@diasemi.com
-Message-ID: <C1079F30-5D1D-45AA-A129-FE1E68EA5DC5@jic23.retrosnub.co.uk>
+Date: Wed, 21 Jan 2015 17:25:57 +0000
+To: Varka Bhadram <varkabhadram@gmail.com>,
+	Lars-Peter Clausen <lars@metafoo.de>
+CC: linux-iio@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>,
+	Varka Bhadram <varkab@cdac.in>
+Message-ID: <CA1EB95B-DE20-4917-963A-E175C1937FFC@jic23.retrosnub.co.uk>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
 
 
-On 21 January 2015 16:52:50 GMT+00:00, Sebastian Reichel <sre@kernel.org> wrote:
->Hi,
+On 21 January 2015 11:14:11 GMT+00:00, Varka Bhadram <varkabhadram@gmail.com> wrote:
+>On Wed, Jan 21, 2015 at 3:49 PM, Lars-Peter Clausen <lars@metafoo.de>
+>wrote:
+>> On 01/21/2015 06:59 AM, varkabhadram@gmail.com wrote:
+>> [...]
+>>>
+>>>   void inv_mpu6050_remove_trigger(struct inv_mpu6050_state *st)
+>>>   {
+>>>         iio_trigger_unregister(st->trig);
+>>> -       free_irq(st->client->irq, st->trig);
+>>>         iio_trigger_free(st->trig);
+>>
+>>
+>> You are changing the relative order between free_irq() and
+>> iio_trigger_free() here and by doing so introduce a use-after-free
+>race
+>> condition. The IRQ handler uses the trigger, so the IRQ has to be
+>released
+>> before the trigger is freed.
+>>
+>> This can be easily fixed though by changing the order of patch 1 and
+>patch 2
+>> in this series.
 >
->On Wed, Jan 21, 2015 at 03:46:25PM +0000, Adam Thomson wrote:
->> This patch set adds initial support for the Dialog DA9150 Integrated
->Charger &
->> Fuel-Gauge IC. The device also provides GPIO and GPADC functionality.
->> 
->> In this patch set the following is provided:
->>  - MFD Core support and DT bindings documentation.
->>  - IIO GPADC support and DT bindings documentation.
->>  - Power Supply Charger support and DT bindings documentation.
->>  - Update to MAINTAINERS file to add DA9150 files to Dialog support
->list.
->> 
->> To keep patch submission from being too large, support for GPIO and
->Fuel-Gauge
->> will come after initial support patches are accepted.
->> 
->> This patch set is baselined against the v3.19-rc5 kernel version.
->> 
->> Changes in v6:
->> - For GPADC driver, Use lower case extended names for IIO GPADC
->channels, and
->>   remove extended names for GPIO related channels.
->> - For charger driver, revert to no devm IRQ request/free functions as
->ordering
->>   is important, and probe failure scenario was not being correctly
->covered. A
->>   helper function for free IRQs has been added to make code cleaner.
->
->Probably a devm_ variant of power_supply_register should be created,
->but for now this is ok for me.
->
->Jonathan, Lee: I assume you are ok with the whole patchset going
->through the power supply subsystem?
->
-Fine by me if either power supply or MFD.
+>It does not make any difference if we take this patch series...?
+>>
+>>
+>>
+Bad practice to introduce a bug even if for only one patch...  It made Lars review
+two changes together when they were separable .
 
-Jonathan
->-- Sebastian
-
+I'd prefer them reordered but will probably cope if not!
 -- 
 Sent from my Android device with K-9 Mail. Please excuse my brevity.
