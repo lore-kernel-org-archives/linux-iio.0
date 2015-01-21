@@ -1,10 +1,10 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pa0-f44.google.com ([209.85.220.44]:60501 "EHLO
-	mail-pa0-f44.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752086AbbAUQHD (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 21 Jan 2015 11:07:03 -0500
-Message-ID: <54BFCE97.4050007@gmail.com>
-Date: Wed, 21 Jan 2015 21:36:47 +0530
+Received: from mail-pd0-f170.google.com ([209.85.192.170]:63968 "EHLO
+	mail-pd0-f170.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752449AbbAUQOv (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 21 Jan 2015 11:14:51 -0500
+Message-ID: <54BFD072.8000707@gmail.com>
+Date: Wed, 21 Jan 2015 21:44:42 +0530
 From: Varka Bhadram <varkabhadram@gmail.com>
 MIME-Version: 1.0
 To: Adam Thomson <Adam.Thomson.Opensource@diasemi.com>,
@@ -25,36 +25,81 @@ To: Adam Thomson <Adam.Thomson.Opensource@diasemi.com>,
 	Andrew Morton <akpm@linux-foundation.org>,
 	Joe Perches <joe@perches.com>
 CC: linux-kernel@vger.kernel.org, support.opensource@diasemi.com
-Subject: Re: [PATCH v6 3/7] iio: Add support for DA9150 GPADC
-References: <cover.1421854282.git.Adam.Thomson.Opensource@diasemi.com> <ae9b56cc8cd15bd72ea1b721ae02b1dde8632dbf.1421854282.git.Adam.Thomson.Opensource@diasemi.com>
-In-Reply-To: <ae9b56cc8cd15bd72ea1b721ae02b1dde8632dbf.1421854282.git.Adam.Thomson.Opensource@diasemi.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
+Subject: Re: [PATCH v6 5/7] power: Add support for DA9150 Charger
+References: <cover.1421854282.git.Adam.Thomson.Opensource@diasemi.com> <d9c5c61443e266880cab3cbe7502142439fe9886.1421854282.git.Adam.Thomson.Opensource@diasemi.com>
+In-Reply-To: <d9c5c61443e266880cab3cbe7502142439fe9886.1421854282.git.Adam.Thomson.Opensource@diasemi.com>
+Content-Type: text/plain; charset=windows-1252; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
 
 On Wednesday 21 January 2015 09:16 PM, Adam Thomson wrote:
-> This patch adds support for DA9150 Charger & Fuel-Gauge IC GPADC.
+> This patch adds support for DA9150 Charger & Fuel-Gauge IC Charger.
 >
 > Signed-off-by: Adam Thomson <Adam.Thomson.Opensource@diasemi.com>
-> Reviewed-by: Hartmut Knaack <knaack.h@gmx.de>
-> Acked-by: Jonathan Cameron <jic23@kernel.org>
+> ---
 
 (...)
 
+> +static int da9150_charger_register_irq(struct platform_device *pdev,
+> +				       irq_handler_t handler,
+> +				       const char *irq_name)
+> +{
+> +	struct device *dev = &pdev->dev;
+> +	struct da9150_charger *charger = platform_get_drvdata(pdev);
+> +	int irq, ret;
 > +
-> +static int da9150_gpadc_probe(struct platform_device *pdev)
+> +	irq = platform_get_irq_byname(pdev, irq_name);
+> +	if (irq < 0) {
+> +		dev_err(dev, "Failed to get IRQ CHG_STATUS: %d\n", irq);
+> +		return irq;
+> +	}
+> +
+> +	ret = request_threaded_irq(irq, NULL, handler, IRQF_ONESHOT, irq_name,
+> +				   charger);
+
+Why don you use devm_* API..?
+
+> +	if (ret)
+> +		dev_err(dev, "Failed to request IRQ %d: %d\n", irq, ret);
+> +
+> +	return ret;
+> +}
+> +
+> +static void da9150_charger_unregister_irq(struct platform_device *pdev,
+> +					  const char *irq_name)
+> +{
+> +	struct device *dev = &pdev->dev;
+> +	struct da9150_charger *charger = platform_get_drvdata(pdev);
+> +	int irq;
+> +
+> +	irq = platform_get_irq_byname(pdev, irq_name);
+> +	if (irq < 0) {
+> +		dev_err(dev, "Failed to get IRQ CHG_STATUS: %d\n", irq);
+> +		return;
+> +	}
+> +
+> +	free_irq(irq, charger);
+> +}
+> +
+> +static int da9150_charger_probe(struct platform_device *pdev)
 > +{
 > +	struct device *dev = &pdev->dev;
 > +	struct da9150 *da9150 = dev_get_drvdata(dev->parent);
-> +	struct da9150_gpadc *gpadc;
-> +	struct iio_dev *indio_dev;
-> +	int irq, ret;
+> +	struct da9150_charger *charger;
+> +	struct power_supply *usb, *battery;
+> +	u8 reg;
+> +	int ret;
 > +
-> +	indio_dev = devm_iio_device_alloc(&pdev->dev, sizeof(*gpadc));
+> +	charger = devm_kzalloc(dev, sizeof(struct da9150_charger), GFP_KERNEL);
+> +	if (charger == NULL)
+> +		return -ENOMEM;
 
-  You can directly use *dev* instead of *&pdev->dev*
+sizeof(struct da9150_charger) can be replaced with sizeof(*charger)...
 
+*!* operator can be used in comparison with NULL...
+
+(...)
 
 -- 
 Thanks and Regards,
