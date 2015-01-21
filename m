@@ -1,98 +1,51 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail1.bemta5.messagelabs.com ([195.245.231.144]:26773 "EHLO
-	mail1.bemta5.messagelabs.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1750754AbbAULCN (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 21 Jan 2015 06:02:13 -0500
-From: "Opensource [Adam Thomson]" <Adam.Thomson.Opensource@diasemi.com>
-To: Jonathan Cameron <jic23@kernel.org>,
-	"Opensource [Adam Thomson]" <Adam.Thomson.Opensource@diasemi.com>,
-	Lee Jones <lee.jones@linaro.org>,
-	Samuel Ortiz <sameo@linux.intel.com>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	Sebastian Reichel <sre@kernel.org>,
-	Dmitry Eremin-Solenikov <dbaryshkov@gmail.com>,
-	"David Woodhouse" <dwmw2@infradead.org>,
-	"linux-pm@vger.kernel.org" <linux-pm@vger.kernel.org>,
-	Rob Herring <robh+dt@kernel.org>,
-	Pawel Moll <pawel.moll@arm.com>,
-	Mark Rutland <mark.rutland@arm.com>,
-	Ian Campbell <ijc+devicetree@hellion.org.uk>,
-	Kumar Gala <galak@codeaurora.org>,
-	"Grant Likely" <grant.likely@linaro.org>,
-	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	"Joe Perches" <joe@perches.com>
-CC: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"Support Opensource" <Support.Opensource@diasemi.com>
-Subject: RE: [PATCH v5 3/7] iio: Add support for DA9150 GPADC
-Date: Wed, 21 Jan 2015 11:02:07 +0000
-Message-ID: <2E89032DDAA8B9408CB92943514A0337AB528C82@SW-EX-MBX01.diasemi.com>
-References: <cover.1419264383.git.Adam.Thomson.Opensource@diasemi.com>
- <58b7b001b38662c36595412f96c7d2eb5c3adcad.1419264383.git.Adam.Thomson.Opensource@diasemi.com>
- <54A976D2.9040104@kernel.org>
- <2E89032DDAA8B9408CB92943514A0337AB526A19@SW-EX-MBX01.diasemi.com>
- <54B1A563.5080404@kernel.org>
- <2E89032DDAA8B9408CB92943514A0337AB527B9D@SW-EX-MBX01.diasemi.com>
- <54BEBF58.30308@kernel.org>
-In-Reply-To: <54BEBF58.30308@kernel.org>
-Content-Type: text/plain; charset="utf-8"
+Received: from mail-la0-f42.google.com ([209.85.215.42]:62495 "EHLO
+	mail-la0-f42.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751602AbbAULOM (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 21 Jan 2015 06:14:12 -0500
+Received: by mail-la0-f42.google.com with SMTP id ms9so17291145lab.1
+        for <linux-iio@vger.kernel.org>; Wed, 21 Jan 2015 03:14:11 -0800 (PST)
 MIME-Version: 1.0
+In-Reply-To: <54BF7D24.5090009@metafoo.de>
+References: <1421819977-32232-1-git-send-email-varkabhadram@gmail.com>
+	<54BF7D24.5090009@metafoo.de>
+Date: Wed, 21 Jan 2015 16:44:11 +0530
+Message-ID: <CAEUmHyYkn6g28=9zqx6DLoFEFNeM1bkV4KyRJH7F7_TNatY-+w@mail.gmail.com>
+Subject: Re: [PATCH iio 1/3] imu: inv_mpu6050: use devm_request_irq
+From: Varka Bhadram <varkabhadram@gmail.com>
+To: Lars-Peter Clausen <lars@metafoo.de>
+Cc: linux-iio@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>,
+	Varka Bhadram <varkab@cdac.in>
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-T24gSmFudWFyeSAyMCwgMjAxNSAyMDo0OSwgSm9uYXRoYW4gQ2FtZXJvbiB3cm90ZToNCg0KPiA+
-Pj4+PiArI2RlZmluZSBEQTkxNTBfR1BBRENfQ0hBTk5FTF9QUk9DRVNTRUQoX2lkLCBfaHdfaWQs
-IF90eXBlLA0KPiA+PiBfZXh0X25hbWUpDQo+ID4+Pj4gCVwNCj4gPj4+Pj4gKwlEQTkxNTBfR1BB
-RENfQ0hBTk5FTChfaWQsIF9od19pZCwgX3R5cGUsCQkJXA0KPiA+Pj4+PiArCQkJICAgICBCSVQo
-SUlPX0NIQU5fSU5GT19QUk9DRVNTRUQpLCBfZXh0X25hbWUpDQo+ID4+Pj4+ICsNCj4gPj4+Pj4g
-Ky8qIFN1cHBvcnRlZCBjaGFubmVscyAqLw0KPiA+Pj4+PiArc3RhdGljIGNvbnN0IHN0cnVjdCBp
-aW9fY2hhbl9zcGVjIGRhOTE1MF9ncGFkY19jaGFubmVsc1tdID0gew0KPiA+Pj4+PiArCURBOTE1
-MF9HUEFEQ19DSEFOTkVMX1BST0NFU1NFRChHUElPQSwgR1BJT0FfNlYsIElJT19WT0xUQUdFLA0K
-PiA+Pj4+ICJHUElPQSIpLA0KPiA+Pj4+PiArCURBOTE1MF9HUEFEQ19DSEFOTkVMX1BST0NFU1NF
-RChHUElPQiwgR1BJT0JfNlYsIElJT19WT0xUQUdFLA0KPiA+Pj4+ICJHUElPQiIpLA0KPiA+Pj4+
-PiArCURBOTE1MF9HUEFEQ19DSEFOTkVMX1BST0NFU1NFRChHUElPQywgR1BJT0NfNlYsIElJT19W
-T0xUQUdFLA0KPiA+Pj4+ICJHUElPQyIpLA0KPiA+Pj4+PiArCURBOTE1MF9HUEFEQ19DSEFOTkVM
-X1BST0NFU1NFRChHUElPRCwgR1BJT0RfNlYsIElJT19WT0xUQUdFLA0KPiA+Pj4+ICJHUElPRCIp
-LA0KPiA+Pj4+IEknbSBub3Qgc3VyZSBzb21lIG9mIHRoZXNlIHJlYWxseSBkZXNlcnZlIGV4dGVu
-ZGVkIG5hbWVzLiAgVGhvc2UgYXJlIHVzdWFsbHkNCj4gPj4+PiByZXNlcnZlZCBmb3IgbmFtaW5n
-IHN0cmFuZ2UgaW50ZXJuYWwgYWRjIGNoYW5uZWxzIGV0Yy4gIFRoZXNlIGZpcnN0IDQgYXJlDQo+
-ID4+Pj4gcHJlc3VtYWJseSBqdXN0IGZvciBpbnB1dCBwaW5zPyAgVGhvc2Ugc2hvdWxkIGp1c3Qg
-YmUgY2hhbm5lbHMgMC4uMw0KPiA+Pj4+IE9uIGFub3RoZXIgbm90ZSwgdW5sZXNzIHlvdSB3YW50
-IHJlYWxseSB3ZWlyZCBzeXNmcyBhdHRyaWJ1dGUgbmFtZXMsIHRoZQ0KPiA+Pj4+IGV4dGVuZGVk
-IG5hbWVzIHdhbnQgdG8gYmUgbG93ZXJjYXNlLg0KPiA+Pj4+DQo+ID4+Pg0KPiA+Pj4gSSdkIHBy
-ZWZlciB0byBrZWVwIHRoZSBuYW1lcyBiZWNhdXNlIHRoZSBpbnB1dCBwaW5zIGFyZSBtdXhlZCB3
-aXRoIEdQSU9zIG9mIHRoZQ0KPiA+Pj4gY2hpcCwgc28gdGhvdWdodCBpdCBzZW5zaWJsZSB0byBz
-aG93IHRoYXQgdGhpcyBpcyB0aGUgY2FzZS4gQW0gaGFwcHkgdG8gY2hhbmdlDQo+ID4+PiB0byBs
-b3dlci1jYXNlIHRvIGZvbGxvdyBjb252ZW50aW9uLg0KPiA+PiBIbW0uICBJdCdzIGEgYml0IG9m
-IGFuIG9kZGl0eSBhcyB0aGUgcG9pbnQgb2YgdGhlIG5hbWluZw0KPiA+PiBpcyBhYm91dCB0aGUg
-dXNlcywgbm90IHdoaWNoIHBpbnMgdGhleSBhcmUgb24uICBJZiB3ZSBleHBvc2VkIHRoZQ0KPiA+
-PiAnZGF0YXNoZWV0X25hbWUnIHBhcmFtZXRlciBkaXJlY3RseSByYXRoZXIgdGhhbiBqdXN0IHVz
-aW5nIGl0IGludGVybmFsbHkNCj4gPj4gSSdkIHN1Z2dlc3QgcmVseWluZyBvbiB0aGF0IC0gYnV0
-IGNsZWFybHkgeW91IHdhbnQgaXQgdG8gYmUgYXBwYXJlbnQNCj4gPj4gaW4gdGhlIGludGVyZmFj
-ZS4gIFdoZXRoZXIgdGhhdCBpcyB1c2VmdWwgaXMgdGhlIHF1ZXN0aW9uIEknZCByYWlzZQ0KPiA+
-PiBoZXJlIChhbmQgaXMgdGhlIHJlYXNvbiBkYXRhc2hlZXRfbmFtZSBpcyBub3QgZXhwb3NlZC4N
-Cj4gPj4NCj4gPj4gVGhlIG9idmlvdXMgcXVlc3Rpb24gaXMgZG9lcyB1c2Vyc3BhY2UgY2FyZT8g
-IEFuc3dlciBpcyBwcm9iYWJseSBub3QuDQo+ID4+DQo+ID4+IEl0IGNhcmVzIHdoYXQgaXMgYmVp
-bmcgbWVhc3VyZWQgYnV0IHRoaXMgaXMgYWJvdXQgd2hhdCBwaW5zIGl0IGlzDQo+ID4+IG9uIGFu
-ZCBkb2Vzbid0IHByb3ZpZGUgYW55IGluZm9ybWF0aW9uIG9uIHdoYXQgaXMgY29ubmVjdGVkIHRv
-IHRoZW0uDQo+ID4+DQo+ID4NCj4gPiBTdXJlbHkgaXQgaGVscHMgd2hlbiB1c2luZyBzeXNmcyB0
-byBhY2Nlc3Mgd2hhdGV2ZXIgaXMgY29ubmVjdGVkIHRvIG9uZSBvZg0KPiA+IHRob3NlIHBpbnMg
-aWYgd2UgbGFiZWwgdGhlIHBpbiB3aXRoIHNvbWV0aGluZyBtZWFuaW5nZnVsPyBJZiBzYXkgeW91
-IGhhdmUgYQ0KPiA+IGRldmljZSBjb25uZWN0ZWQgdG8gR1BJQyBvZiB0aGUgY2hhcmdlciBJQywg
-aXQncyBlYXNpZXIgdG8gd29yayBvdXQgd2hpY2ggQURDDQo+ID4gY2hhbm5lbCB5b3UgbmVlZCB0
-byBhY2Nlc3MgdGhyb3VnaCBzeXNmcyBpZiB0aGUgbmFtaW5nIGlzIGFzIEkgaGF2ZSBub3csIHJh
-dGhlcg0KPiA+IHRoYW4gc29tZSBhcmJpdHJhcnkgbnVtYmVyIHdoaWNoIGRvZXNuJ3QgbmVjZXNz
-YXJpbHkgdGFsbHkgdG8gdGhlIGNoYW5uZWwgaW4gdGhlDQo+ID4gZGF0YXNoZWV0LiBZb3UnZCB0
-aGVuIG5lZWQgdG8gbG9vayBhdCB0aGUgY29kZSBhbmQgd29yayBvdXQgd2hpY2ggY2hhbm5lbA0K
-PiBudW1iZXINCj4gPiBHUElPQyBhY3R1YWxseSB3YXMuIE9yIGFtIEkganVzdCBtaXNzaW5nIHNv
-bWV0aGluZyBoZXJlPyA6KQ0KPiBOb3QgcmVhbGx5IGZvciB0aGUgdmFzdCBtYWpvcml0eSBvZiB1
-c2Vycy4gIFRoZXkgdGVuZCBub3QgdG8gaGF2ZSBhIGRldGFpbGVkDQo+IGJvYXJkIGxheW91dCBp
-biBmcm9udCBvZiB0aGVtLiAgSXQncyBtb3JlIGludGVyZXN0aW5nIGlmIHlvdSBrbm93ICd3aGF0
-JyB0aGV5DQo+IGFyZSBtZWFzdXJpbmcgKGhlbmNlIHdlIGRvIHVzZSB0aGVzZSBuYW1lcyB3aGVu
-IHRoYXQgaXMgdHJ1ZSAtIHN1Y2ggYXMNCj4gaW50ZXJuYWwgdm9sdGFnZSBtZWFzdXJlbWVudHMp
-Lg0KPiANCj4gVGhlIG51bWJlcnMgYWxtb3N0IG5ldmVyIHRhbGx5IHdpdGggdGhlIGRhdGFzaGVl
-dCwgYnV0IHRoZW4gZGF0YXNoZWV0IG51bWJlcmluZw0KPiBoYXMgYSBoYWJpdCBvZiBiZWluZyBp
-bmNvbnNpc3RlbnQgYXMgd2VsbCENCg0KQ2FuJ3Qgc2F5IEkgYWdyZWUgdGhhdCB0aGlzIHdvbid0
-IGJlIHVzZWZ1bC9pbmZvcm1hdGl2ZSB0byBtYW55IHVzZXJzLCBidXQgZG9uJ3QNCndhbnQgdG8g
-bWFrZSB0aGlzIGEgc3RpY2tpbmcgcG9pbnQgc28gd2lsbCB1cGRhdGUuDQo=
+On Wed, Jan 21, 2015 at 3:49 PM, Lars-Peter Clausen <lars@metafoo.de> wrote:
+> On 01/21/2015 06:59 AM, varkabhadram@gmail.com wrote:
+> [...]
+>>
+>>   void inv_mpu6050_remove_trigger(struct inv_mpu6050_state *st)
+>>   {
+>>         iio_trigger_unregister(st->trig);
+>> -       free_irq(st->client->irq, st->trig);
+>>         iio_trigger_free(st->trig);
+>
+>
+> You are changing the relative order between free_irq() and
+> iio_trigger_free() here and by doing so introduce a use-after-free race
+> condition. The IRQ handler uses the trigger, so the IRQ has to be released
+> before the trigger is freed.
+>
+> This can be easily fixed though by changing the order of patch 1 and patch 2
+> in this series.
+
+It does not make any difference if we take this patch series...?
+>
+>
+>
+
+
+
+-- 
+Thanks and Regards,
+Varka Bhadram.
