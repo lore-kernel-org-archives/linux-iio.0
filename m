@@ -1,63 +1,49 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga03.intel.com ([134.134.136.65]:23209 "EHLO mga03.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751938AbbAUU54 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Wed, 21 Jan 2015 15:57:56 -0500
-Date: Wed, 21 Jan 2015 12:58:17 -0800
-From: Todd E Brandt <todd.e.brandt@linux.intel.com>
-To: Lee Jones <lee.jones@linaro.org>
-Cc: linux-pm@vger.kernel.org, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org, jacob.jun.pan@linux.intel.com,
-	sameo@linux.intel.com, sre@kernel.org, dbaryshkov@gmail.com,
-	dwmw2@infradead.org, david.woodhouse@intel.com
-Subject: Re: [PATCH 0/3] X-Power AXP288 PMIC Fuel Gauge Driver
-Message-ID: <20150121205817.GC15525@linux.intel.com>
-Reply-To: todd.e.brandt@linux.intel.com
-References: <20150107212328.GA3440@linux.intel.com>
- <20150118174750.GG3574@x1>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:45838 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752739AbbAUVj6 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 21 Jan 2015 16:39:58 -0500
+Message-ID: <54C01CAB.40909@kernel.org>
+Date: Wed, 21 Jan 2015 21:39:55 +0000
+From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-In-Reply-To: <20150118174750.GG3574@x1>
+To: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+	jkosina@suse.cz
+CC: linux-iio@vger.kernel.org, linux-input@vger.kernel.org
+Subject: Re: [PATCH 0/8] Adding PM support to hid sensor iio drivers
+References: <1420656960-7365-1-git-send-email-srinivas.pandruvada@linux.intel.com>
+In-Reply-To: <1420656960-7365-1-git-send-email-srinivas.pandruvada@linux.intel.com>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Sun, Jan 18, 2015 at 05:47:50PM +0000, Lee Jones wrote:
-> So now I have this odd looking front cover letter randomly in my
-> inbox.
+On 07/01/15 18:55, Srinivas Pandruvada wrote:
+> Linux PM and runtime PM support.
 > 
-> Please sent patch-sets threaded, so that they cling together.
+> Srinivas Pandruvada (8):
+>   iio: hid_sensor_hub: Common PM functions
+>   iio: hid-sensor-accel-3d: Introduce PM
+>   iio: hid-sensor-gyro-3d: Introduce PM
+>   iio: hid-sensor-als: Introduce PM
+>   iio: hid-sensor-prox: Introduce PM
+>   iio: hid-sensor-magn-3d: Introduce PM
+>   iio: hid-sensor-incl-3d: Introduce PM
+>   iio: hid-sensor-press: Introduce PM
 > 
-> > X-Power AXP288 PMIC Fuel Gauge Driver
-> > 
-> >  new power_supply driver at driver/power
-> >  interfaces with the axp20x mfd driver as a cell
-> >  provides battery info and monitors for changes
-> >  generates alerts on temperature and capacity issues
+>  drivers/iio/accel/hid-sensor-accel-3d.c            |  8 +--
+>  .../iio/common/hid-sensors/hid-sensor-trigger.c    | 76 +++++++++++++++++++++-
+>  .../iio/common/hid-sensors/hid-sensor-trigger.h    |  5 ++
+>  drivers/iio/gyro/hid-sensor-gyro-3d.c              |  8 +--
+>  drivers/iio/light/hid-sensor-als.c                 |  9 +--
+>  drivers/iio/light/hid-sensor-prox.c                | 10 +--
+>  drivers/iio/magnetometer/hid-sensor-magn-3d.c      |  9 +--
+>  drivers/iio/orientation/hid-sensor-incl-3d.c       |  9 +--
+>  drivers/iio/pressure/hid-sensor-press.c            |  9 +--
+>  9 files changed, 86 insertions(+), 57 deletions(-)
 > 
-> Use the full 76 chars for full sentences, or if this is a
-> bullet-pointed list, use actual bullet points.
-> 
-> > (1/3) mfd/axp20x.c: change the battery cell name to fuel_gauge
-> > (2/3) mfd/axp20x.h: add the register defs and platform struct for fuel gauge
-> > (3/3) power/axp288_fuel_gauge.c: axp288 fuel gauge driver
-> 
-> Don't hand-roll your own cover letters, use --cover-letter when
-> creating your patch-sets instead.
+Series applied to the togreg branch of iio.git.
+First patch caused a bit of fuzz- probably due to my picking up the
+series you sent based on time I have to review them (rather than in
+the original order).
 
-Sorry for for formatting issues, I'll do it correctly in my v2 submission, thanks.
-
-> 
-> > Signed-off-by: Todd Brandt <todd.e.brandt@intel.com>
-> > ----
-> >  drivers/mfd/axp20x.c              |   10 +-
-> >  drivers/power/Kconfig             |    9 +
-> >  drivers/power/Makefile            |    1 +
-> >  drivers/power/axp288_fuel_gauge.c | 1108 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-> >  include/linux/mfd/axp20x.h        |   43 ++-
-> >  5 files changed, 1164 insertions(+), 7 deletions(-)
-> 
-> -- 
-> Lee Jones
-> Linaro STMicroelectronics Landing Team Lead
-> Linaro.org │ Open source software for ARM SoCs
-> Follow Linaro: Facebook | Twitter | Blog
+Anyhow, pushed out as testing for the autobuilders to play with it.
