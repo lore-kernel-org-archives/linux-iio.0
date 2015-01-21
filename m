@@ -1,58 +1,94 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:45304 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751484AbbAUUWW (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 21 Jan 2015 15:22:22 -0500
-Message-ID: <54C00A79.5040104@kernel.org>
-Date: Wed, 21 Jan 2015 20:22:17 +0000
-From: Jonathan Cameron <jic23@kernel.org>
+Received: from mga01.intel.com ([192.55.52.88]:32062 "EHLO mga01.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1750914AbbAUUwd (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Wed, 21 Jan 2015 15:52:33 -0500
+Date: Wed, 21 Jan 2015 12:52:53 -0800
+From: Todd E Brandt <todd.e.brandt@linux.intel.com>
+To: Sebastian Reichel <sre@kernel.org>
+Cc: linux-pm@vger.kernel.org, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org, jacob.jun.pan@linux.intel.com,
+	sameo@linux.intel.com, lee.jones@linaro.org, dbaryshkov@gmail.com,
+	dwmw2@infradead.org, david.woodhouse@intel.com,
+	todd.e.brandt@intel.com
+Subject: Re: [PATCH 3/3] power/axp288_fuel_gauge: axp288 fuel gauge driver
+Message-ID: <20150121205253.GB15525@linux.intel.com>
+Reply-To: todd.e.brandt@linux.intel.com
+References: <20150107212655.GD3440@linux.intel.com>
+ <20150118104923.GA11147@earth.universe>
 MIME-Version: 1.0
-To: Asaf Vertz <asaf.vertz@tandemg.com>, gregkh@linuxfoundation.org
-CC: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
-	daniel.baluta@intel.com, roberta.dobrescu@gmail.com,
-	paulmck@linux.vnet.ibm.com, mario.schuknecht@dresearch-fe.de,
-	aybuke.147@gmail.com, tinajohnson.1234@gmail.com,
-	linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] staging: iio: tsl2x7x_core: fix format string warnings
-References: <20150120092758.GA4321@ubuntu>
-In-Reply-To: <20150120092758.GA4321@ubuntu>
-Content-Type: text/plain; charset=windows-1252
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <20150118104923.GA11147@earth.universe>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 20/01/15 09:27, Asaf Vertz wrote:
-> Fixed the following warnings (reported by cppcheck):
-> [drivers/staging/iio/light/tsl2x7x_core.c:1150]: (warning) %d in format string (no. 1)
-> requires 'int' but the argument type is 'unsigned int'.
-> [drivers/staging/iio/light/tsl2x7x_core.c:1150]: (warning) %d in format string (no. 2)
-> requires 'int' but the argument type is 'unsigned int'.
-> [drivers/staging/iio/light/tsl2x7x_core.c:1150]: (warning) %d in format string (no. 3)
-> requires 'int' but the argument type is 'unsigned int'.
+On Sun, Jan 18, 2015 at 11:49:27AM +0100, Sebastian Reichel wrote:
+> Hi,
 > 
-> Signed-off-by: Asaf Vertz <asaf.vertz@tandemg.com>
-Applied to the togreg branch of iio.git.  Initially pushed out as
-testing for the autobuilders to play.
+> On Wed, Jan 07, 2015 at 01:26:55PM -0800, Todd E Brandt wrote:
+> > X-Power AXP288 PMIC Fuel Gauge Driver
+> > 
+> >  new power_supply driver at driver/power
+> >  interfaces with the axp20x mfd driver as a cell
+> >  provides battery info and monitors for changes
+> >  generates alerts on temperature and capacity issues
+> > 
+> > [...]
+> >
+> > +static int fuel_gauge_battery_health(struct axp288_fg_info *info)
+> > +{
+> > +	int temp, vocv;
+> > +	int ret, health = POWER_SUPPLY_HEALTH_UNKNOWN;
+> > +
+> > +	ret = fuel_gauge_get_btemp(info, &temp);
+> > +	if (ret < 0)
+> > +		goto health_read_fail;
+> > +
+> > +	ret = fuel_gauge_get_vocv(info, &vocv);
+> > +	if (ret < 0)
+> > +		goto health_read_fail;
+> > +
+> > +	if (vocv > info->pdata->max_volt)
+> > +		health = POWER_SUPPLY_HEALTH_OVERVOLTAGE;
+> > +	else if (temp > info->pdata->max_temp ||
+> > +			temp < info->pdata->min_temp)
+> > +		health = POWER_SUPPLY_HEALTH_OVERHEAT;
+> 
+> if (temp < info->pdata->min_temp)
+>     health = POWER_SUPPLY_HEALTH_COLD;
 
-Thanks,
+Will add in v2, thanks.
 
-Jonathan
-> ---
->  drivers/staging/iio/light/tsl2x7x_core.c |    2 +-
->  1 files changed, 1 insertions(+), 1 deletions(-)
 > 
-> diff --git a/drivers/staging/iio/light/tsl2x7x_core.c b/drivers/staging/iio/light/tsl2x7x_core.c
-> index 423f96b..4a5dc26 100644
-> --- a/drivers/staging/iio/light/tsl2x7x_core.c
-> +++ b/drivers/staging/iio/light/tsl2x7x_core.c
-> @@ -1147,7 +1147,7 @@ static ssize_t tsl2x7x_luxtable_show(struct device *dev,
->  	int offset = 0;
->  
->  	while (i < (TSL2X7X_MAX_LUX_TABLE_SIZE * 3)) {
-> -		offset += snprintf(buf + offset, PAGE_SIZE, "%d,%d,%d,",
-> +		offset += snprintf(buf + offset, PAGE_SIZE, "%u,%u,%u,",
->  			chip->tsl2x7x_device_lux[i].ratio,
->  			chip->tsl2x7x_device_lux[i].ch0,
->  			chip->tsl2x7x_device_lux[i].ch1);
+> > +	else if (vocv < info->pdata->min_volt)
+> > +		health = POWER_SUPPLY_HEALTH_DEAD;
+> > +	else
+> > +		health = POWER_SUPPLY_HEALTH_GOOD;
+> > +
+> > +health_read_fail:
+> > +	return health;
+> > +}
+> >
+> > [...]
+> >
+> > +static int axp288_fuel_gauge_remove(struct platform_device *pdev)
+> > +{
+> > +	return 0;
+> > +}
 > 
+> You can drop this function if nothing needs to be cleaned, but
+> that's not the case, so where is the cleanup code?
+
+You're right, I believe it needs:
+
+cancel_delayed_work_sync(&info->status_monitor);
+power_supply_unregister(&info->bat);
+
+will add in v2, thanks
+
+> 
+> > [...]
+> 
+> -- Sebastian
+
 
