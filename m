@@ -1,28 +1,47 @@
-Return-Path: <lars@metafoo.de>
-Message-ID: <54C20CAF.3010901@metafoo.de>
-Date: Fri, 23 Jan 2015 09:56:15 +0100
-From: Lars-Peter Clausen <lars@metafoo.de>
-MIME-Version: 1.0
-To: Rasmus Villemoes <linux@rasmusvillemoes.dk>,
- Jonathan Cameron <jic23@kernel.org>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-CC: Hartmut Knaack <knaack.h@gmx.de>, Peter Meerwald <pmeerw@pmeerw.net>,
- linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
- linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] staging: iio: ad2s1200: Fix sign extension
-References: <1421968196-17193-1-git-send-email-linux@rasmusvillemoes.dk>
-In-Reply-To: <1421968196-17193-1-git-send-email-linux@rasmusvillemoes.dk>
-Content-Type: text/plain; charset=windows-1252; format=flowed
+Return-Path: <linux@rasmusvillemoes.dk>
+From: Rasmus Villemoes <linux@rasmusvillemoes.dk>
+To: Lars-Peter Clausen <lars@metafoo.de>,
+	Michael Hennerich <Michael.Hennerich@analog.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>
+Cc: Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+	linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH] iio: imu: adis16400: Fix sign extension
+Date: Fri, 23 Jan 2015 00:34:02 +0100
+Message-Id: <1421969642-18167-1-git-send-email-linux@rasmusvillemoes.dk>
 List-ID: <linux-iio@vger.kernel.org>
 
-On 01/23/2015 12:09 AM, Rasmus Villemoes wrote:
-> The line above makes vel a 12-bit quantity (st->rx[] is u8). The
-> intention is to sign-extend vel using bit 11 as the sign bit. But
-> because of C's promotion rules "vel = (vel << 4) >> 4;" is actually a
-> no-op, since vel is promoted to int before the inner
-> shift. sign_extend32 works equally well for 8 and 16 bits types, so
-> use that.
->
-> Signed-off-by: Rasmus Villemoes <linux@rasmusvillemoes.dk>
+The intention is obviously to sign-extend a 12 bit quantity. But
+because of C's promotion rules, the assignment is equivalent to "val16
+&= 0xfff;". Use the proper API for this.
 
-Acked-by: Lars-Peter Clausen <lars@metafoo.de>
+Signed-off-by: Rasmus Villemoes <linux@rasmusvillemoes.dk>
+---
+ drivers/iio/imu/adis16400_core.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/iio/imu/adis16400_core.c b/drivers/iio/imu/adis16400_core.c
+index b70873de04ea..fa795dcd5f75 100644
+--- a/drivers/iio/imu/adis16400_core.c
++++ b/drivers/iio/imu/adis16400_core.c
+@@ -26,6 +26,7 @@
+ #include <linux/list.h>
+ #include <linux/module.h>
+ #include <linux/debugfs.h>
++#include <linux/bitops.h>
+ 
+ #include <linux/iio/iio.h>
+ #include <linux/iio/sysfs.h>
+@@ -414,7 +415,7 @@ static int adis16400_read_raw(struct iio_dev *indio_dev,
+ 		mutex_unlock(&indio_dev->mlock);
+ 		if (ret)
+ 			return ret;
+-		val16 = ((val16 & 0xFFF) << 4) >> 4;
++		val16 = sign_extend32(val16, 11);
+ 		*val = val16;
+ 		return IIO_VAL_INT;
+ 	case IIO_CHAN_INFO_OFFSET:
+-- 
+2.1.3
