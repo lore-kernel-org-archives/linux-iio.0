@@ -1,7 +1,7 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
 Received: from mga01.intel.com ([192.55.52.88]:27748 "EHLO mga01.intel.com"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1754130AbbAVUwU (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	id S1752975AbbAVUwU (ORCPT <rfc822;linux-iio@vger.kernel.org>);
 	Thu, 22 Jan 2015 15:52:20 -0500
 From: Todd Brandt <todd.e.brandt@linux.intel.com>
 To: linux-pm@vger.kernel.org, linux-iio@vger.kernel.org,
@@ -10,54 +10,29 @@ Cc: todd.e.brandt@linux.intel.com, todd.e.brandt@intel.com,
 	jacob.jun.pan@linux.intel.com, sameo@linux.intel.com,
 	lee.jones@linaro.org, sre@kernel.org, dbaryshkov@gmail.com,
 	dwmw2@infradead.org, david.woodhouse@intel.com
-Subject: [PATCH v2 1/3] mfd/axp20x: change battery cell name to fuel gauge
-Date: Thu, 22 Jan 2015 12:52:05 -0800
-Message-Id: <b7c6d711c78eb85fc0c7d5904da4e4c930be0ca9.1421957474.git.todd.e.brandt@linux.intel.com>
-In-Reply-To: <cover.1421957474.git.todd.e.brandt@linux.intel.com>
-References: <cover.1421957474.git.todd.e.brandt@linux.intel.com>
-In-Reply-To: <cover.1421957474.git.todd.e.brandt@linux.intel.com>
-References: <cover.1421957474.git.todd.e.brandt@linux.intel.com>
+Subject: [PATCH v2 0/3] X-Power AXP288 PMIC Fuel Gauge Driver
+Date: Thu, 22 Jan 2015 12:52:04 -0800
+Message-Id: <cover.1421957474.git.todd.e.brandt@linux.intel.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Name changes to the battery cell structure to a
-more generic cell type: fuel gauge.
+New power_supply driver at driver/power which interfaces with the
+axp20x mfd driver as a cell. Provides battery info, monitors for
+changes, and generates alerts on temperature and capacity issues
 
-Signed-off-by: Todd Brandt <todd.e.brandt@linux.intel.com>
----
- drivers/mfd/axp20x.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+Todd Brandt (3):
+  mfd/axp20x: change battery cell name to fuel gauge
+  mfd/axp20x: add support for fuel gauge cell
+  X-Power AXP288 PMIC Fuel Gauge Driver
 
-v1: 01/07/14
-v2: 01/22/14
-- replaced the const in axp20x_acpi_match declaration
+ drivers/mfd/axp20x.c              |    8 +-
+ drivers/power/Kconfig             |    9 +
+ drivers/power/Makefile            |    1 +
+ drivers/power/axp288_fuel_gauge.c | 1148 +++++++++++++++++++++++++++++++++++++
+ include/linux/mfd/axp20x.h        |   43 +-
+ 5 files changed, 1203 insertions(+), 6 deletions(-)
+ create mode 100644 drivers/power/axp288_fuel_gauge.c
 
-diff --git a/drivers/mfd/axp20x.c b/drivers/mfd/axp20x.c
-index b1b580a..0acbe52 100644
---- a/drivers/mfd/axp20x.c
-+++ b/drivers/mfd/axp20x.c
-@@ -87,7 +87,7 @@ static struct resource axp20x_pek_resources[] = {
- 	},
- };
- 
--static struct resource axp288_battery_resources[] = {
-+static struct resource axp288_fuel_gauge_resources[] = {
- 	{
- 		.start = AXP288_IRQ_QWBTU,
- 		.end   = AXP288_IRQ_QWBTU,
-@@ -350,9 +350,9 @@ static struct mfd_cell axp288_cells[] = {
- 		.resources = axp288_charger_resources,
- 	},
- 	{
--		.name = "axp288_battery",
--		.num_resources = ARRAY_SIZE(axp288_battery_resources),
--		.resources = axp288_battery_resources,
-+		.name = "axp288_fuel_gauge",
-+		.num_resources = ARRAY_SIZE(axp288_fuel_gauge_resources),
-+		.resources = axp288_fuel_gauge_resources,
- 	},
- 	{
- 		.name = "axp288_pmic_acpi",
 -- 
 2.1.0
 
