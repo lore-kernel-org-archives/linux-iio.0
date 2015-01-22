@@ -1,157 +1,96 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:45909 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753285AbbAUVxQ (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 21 Jan 2015 16:53:16 -0500
-Message-ID: <54C01FC8.2040501@kernel.org>
-Date: Wed, 21 Jan 2015 21:53:12 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-MIME-Version: 1.0
-To: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
-	jkosina@suse.cz
-CC: linux-iio@vger.kernel.org, linux-input@vger.kernel.org
-Subject: Re: [PATCH 2/2] HID: hid-sensor-hub: Add collection device
-References: <1420655051-6587-1-git-send-email-srinivas.pandruvada@linux.intel.com> <1420655051-6587-3-git-send-email-srinivas.pandruvada@linux.intel.com>
-In-Reply-To: <1420655051-6587-3-git-send-email-srinivas.pandruvada@linux.intel.com>
-Content-Type: text/plain; charset=windows-1252
+Received: from mga01.intel.com ([192.55.52.88]:27748 "EHLO mga01.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1754685AbbAVUwV (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Thu, 22 Jan 2015 15:52:21 -0500
+From: Todd Brandt <todd.e.brandt@linux.intel.com>
+To: linux-pm@vger.kernel.org, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Cc: todd.e.brandt@linux.intel.com, todd.e.brandt@intel.com,
+	jacob.jun.pan@linux.intel.com, sameo@linux.intel.com,
+	lee.jones@linaro.org, sre@kernel.org, dbaryshkov@gmail.com,
+	dwmw2@infradead.org, david.woodhouse@intel.com
+Subject: [PATCH v2 2/3] mfd/axp20x: add support for fuel gauge cell
+Date: Thu, 22 Jan 2015 12:52:06 -0800
+Message-Id: <0d1c6b3e06c3195a87d72ca5ec8456748af463ca.1421957474.git.todd.e.brandt@linux.intel.com>
+In-Reply-To: <cover.1421957474.git.todd.e.brandt@linux.intel.com>
+References: <cover.1421957474.git.todd.e.brandt@linux.intel.com>
+In-Reply-To: <cover.1421957474.git.todd.e.brandt@linux.intel.com>
+References: <cover.1421957474.git.todd.e.brandt@linux.intel.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 07/01/15 18:24, Srinivas Pandruvada wrote:
-> HID sensor hub exports several sensor which are fusion sensors, where
-> data is interpreted from one or more sensors. Some of them can't be
-> exported via IIO like sysfs as the user space download some firmware,
-> which defines what sensor will look like. They can be a part of a
-> collection.
-This functionality is beginning to turn up on a number of devices.
-I'd argue that where at all possible, we should try for standard
-interfaces on the resulting 'fused sensors'.  Still you do indeed
-always need a means of uploading the firmware!
-> Creating a MFD cell for a collection to write a standalone driver
-> to manage collections. Most of the time they will be propritery drivers
-> may not be even upstreamed. This patch allows framework to have
-> capability to write such drivers.
-> 
-> Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
->
+Register definitions and platform data structure
+for fuel gauge cell devices.
 
-A few comments inline...
+Signed-off-by: Todd Brandt <todd.e.brandt@linux.intel.com>
+---
+ include/linux/mfd/axp20x.h | 43 +++++++++++++++++++++++++++++++++++++++++--
+ 1 file changed, 41 insertions(+), 2 deletions(-)
 
-How does userspace download a firmware?
+v2: same as v1 and is already accepted, re-included for continuity
 
+diff --git a/include/linux/mfd/axp20x.h b/include/linux/mfd/axp20x.h
+index 81589d1..dfabd6d 100644
+--- a/include/linux/mfd/axp20x.h
++++ b/include/linux/mfd/axp20x.h
+@@ -124,10 +124,27 @@ enum {
+ #define AXP288_PMIC_ADC_H               0x56
+ #define AXP288_PMIC_ADC_L               0x57
+ #define AXP288_ADC_TS_PIN_CTRL          0x84
+-
+ #define AXP288_PMIC_ADC_EN              0x84
+-#define AXP288_FG_TUNE5			0xed
  
- ---
->  drivers/hid/hid-sensor-hub.c   | 50 ++++++++++++++++++++++++++++++++++++++----
->  include/linux/hid-sensor-ids.h |  2 ++
->  2 files changed, 48 insertions(+), 4 deletions(-)
-> 
-> diff --git a/drivers/hid/hid-sensor-hub.c b/drivers/hid/hid-sensor-hub.c
-> index 865cd56..83b6e15 100644
-> --- a/drivers/hid/hid-sensor-hub.c
-> +++ b/drivers/hid/hid-sensor-hub.c
-> @@ -119,11 +119,12 @@ static struct hid_sensor_hub_callbacks *sensor_hub_get_callback(
->  
->  	spin_lock_irqsave(&pdata->dyn_callback_lock, flags);
->  	list_for_each_entry(callback, &pdata->dyn_callback_list, list)
-> -		if (callback->usage_id == usage_id &&
-> +		if (callback->usage_id == HID_USAGE_SENSOR_TYPE_COLLECTION ||
-> +			(callback->usage_id == usage_id &&
->  			(collection_index >=
->  				callback->hsdev->start_collection_index) &&
->  			(collection_index <
-> -				callback->hsdev->end_collection_index)) {
-> +				callback->hsdev->end_collection_index))) {
->  			*priv = callback->priv;
->  			*hsdev = callback->hsdev;
->  			spin_unlock_irqrestore(&pdata->dyn_callback_lock,
-> @@ -159,7 +160,12 @@ int sensor_hub_register_callback(struct hid_sensor_hub_device *hsdev,
->  	callback->usage_callback = usage_callback;
->  	callback->usage_id = usage_id;
->  	callback->priv = NULL;
-> -	list_add_tail(&callback->list, &pdata->dyn_callback_list);
-> +	/* Give higher priority to collection device, so add to front */
-Comment should probably state why we want to give them higher priorities.
-
-> +	if (usage_id == HID_USAGE_SENSOR_TYPE_COLLECTION)
-> +		list_add(&callback->list, &pdata->dyn_callback_list);
-> +	else
-> +		list_add_tail(&callback->list, &pdata->dyn_callback_list);
-> +
->  	spin_unlock_irqrestore(&pdata->dyn_callback_lock, flags);
->  
->  	return 0;
-> @@ -547,6 +553,37 @@ static __u8 *sensor_hub_report_fixup(struct hid_device *hdev, __u8 *rdesc,
->  	return rdesc;
->  }
->  
-> +static int sensor_hub_add_collection_device(struct hid_device *hdev,
-> +					    struct sensor_hub_data *sd)
-> +{
-> +	struct hid_sensor_hub_device *hsdev;
-> +	char *name;
-> +
-> +	hsdev = devm_kzalloc(&hdev->dev, sizeof(*hsdev), GFP_KERNEL);
-> +	if (!hsdev)
-> +		return -ENOMEM;
-> +
-> +	hsdev->hdev = hdev;
-> +	hsdev->vendor_id = hdev->vendor;
-> +	hsdev->product_id = hdev->product;
-> +	hsdev->usage = HID_USAGE_SENSOR_TYPE_COLLECTION;
-> +	mutex_init(&hsdev->mutex);
-> +	name = devm_kasprintf(&hdev->dev, GFP_KERNEL, "HID-SENSOR-%x",
-> +			      HID_USAGE_SENSOR_TYPE_COLLECTION);
-> +	if (name == NULL) {
-> +		hid_err(hdev, "Failed MFD device name\n");
-> +		return -ENOMEM;
-> +	}
-> +	sd->hid_sensor_hub_client_devs[sd->hid_sensor_client_cnt].name = name;
-> +	sd->hid_sensor_hub_client_devs[
-> +			sd->hid_sensor_client_cnt].platform_data = hsdev;
-Odd breaking up of the line...  Perhaps break before .platform_data instead?
-> +	sd->hid_sensor_hub_client_devs[
-> +			sd->hid_sensor_client_cnt].pdata_size = sizeof(*hsdev);
-> +	sd->hid_sensor_client_cnt++;
-> +
-> +	return 0;
-> +}
-> +
->  static int sensor_hub_probe(struct hid_device *hdev,
->  				const struct hid_device_id *id)
->  {
-> @@ -591,7 +628,8 @@ static int sensor_hub_probe(struct hid_device *hdev,
->  		ret = -EINVAL;
->  		goto err_stop_hw;
->  	}
-> -	sd->hid_sensor_hub_client_devs = devm_kzalloc(&hdev->dev, dev_cnt *
-> +	sd->hid_sensor_hub_client_devs = devm_kzalloc(&hdev->dev,
-> +						      (dev_cnt + 1) *
->  						      sizeof(struct mfd_cell),
->  						      GFP_KERNEL);
->  	if (sd->hid_sensor_hub_client_devs == NULL) {
-> @@ -645,6 +683,10 @@ static int sensor_hub_probe(struct hid_device *hdev,
->  	if (last_hsdev)
->  		last_hsdev->end_collection_index = i;
->  
-> +	ret = sensor_hub_add_collection_device(hdev, sd);
-> +	if (ret)
-> +		goto err_stop_hw;
-> +
->  	ret = mfd_add_hotplug_devices(&hdev->dev,
->  			sd->hid_sensor_hub_client_devs,
->  			sd->hid_sensor_client_cnt);
-> diff --git a/include/linux/hid-sensor-ids.h b/include/linux/hid-sensor-ids.h
-> index 109f0e6..300ffea 100644
-> --- a/include/linux/hid-sensor-ids.h
-> +++ b/include/linux/hid-sensor-ids.h
-> @@ -21,6 +21,8 @@
->  
->  #define HID_MAX_PHY_DEVICES					0xFF
->  
-> +#define HID_USAGE_SENSOR_TYPE_COLLECTION			0x200001
-> +
->  /* Accel 3D (200073) */
->  #define HID_USAGE_SENSOR_ACCEL_3D				0x200073
->  #define HID_USAGE_SENSOR_DATA_ACCELERATION			0x200452
-> 
++/* Fuel Gauge */
++#define AXP288_FG_RDC1_REG          0xba
++#define AXP288_FG_RDC0_REG          0xbb
++#define AXP288_FG_OCVH_REG          0xbc
++#define AXP288_FG_OCVL_REG          0xbd
++#define AXP288_FG_OCV_CURVE_REG     0xc0
++#define AXP288_FG_DES_CAP1_REG      0xe0
++#define AXP288_FG_DES_CAP0_REG      0xe1
++#define AXP288_FG_CC_MTR1_REG       0xe2
++#define AXP288_FG_CC_MTR0_REG       0xe3
++#define AXP288_FG_OCV_CAP_REG       0xe4
++#define AXP288_FG_CC_CAP_REG        0xe5
++#define AXP288_FG_LOW_CAP_REG       0xe6
++#define AXP288_FG_TUNE0             0xe8
++#define AXP288_FG_TUNE1             0xe9
++#define AXP288_FG_TUNE2             0xea
++#define AXP288_FG_TUNE3             0xeb
++#define AXP288_FG_TUNE4             0xec
++#define AXP288_FG_TUNE5             0xed
+ 
+ /* Regulators IDs */
+ enum {
+@@ -236,4 +253,26 @@ struct axp20x_dev {
+ 	const struct regmap_irq_chip	*regmap_irq_chip;
+ };
+ 
++#define BATTID_LEN				64
++#define OCV_CURVE_SIZE			32
++#define MAX_THERM_CURVE_SIZE	25
++#define PD_DEF_MIN_TEMP			0
++#define PD_DEF_MAX_TEMP			55
++
++struct axp20x_fg_pdata {
++	char battid[BATTID_LEN + 1];
++	int design_cap;
++	int min_volt;
++	int max_volt;
++	int max_temp;
++	int min_temp;
++	int cap1;
++	int cap0;
++	int rdc1;
++	int rdc0;
++	int ocv_curve[OCV_CURVE_SIZE];
++	int tcsz;
++	int thermistor_curve[MAX_THERM_CURVE_SIZE][2];
++};
++
+ #endif /* __LINUX_MFD_AXP20X_H */
+-- 
+2.1.0
 
