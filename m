@@ -1,38 +1,98 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga01.intel.com ([192.55.52.88]:27748 "EHLO mga01.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1752975AbbAVUwU (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Thu, 22 Jan 2015 15:52:20 -0500
-From: Todd Brandt <todd.e.brandt@linux.intel.com>
-To: linux-pm@vger.kernel.org, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Cc: todd.e.brandt@linux.intel.com, todd.e.brandt@intel.com,
-	jacob.jun.pan@linux.intel.com, sameo@linux.intel.com,
-	lee.jones@linaro.org, sre@kernel.org, dbaryshkov@gmail.com,
-	dwmw2@infradead.org, david.woodhouse@intel.com
-Subject: [PATCH v2 0/3] X-Power AXP288 PMIC Fuel Gauge Driver
-Date: Thu, 22 Jan 2015 12:52:04 -0800
-Message-Id: <cover.1421957474.git.todd.e.brandt@linux.intel.com>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <knaack.h@gmx.de>
+Message-ID: <54C2DB5F.2050106@gmx.de>
+Date: Sat, 24 Jan 2015 00:38:07 +0100
+From: Hartmut Knaack <knaack.h@gmx.de>
+MIME-Version: 1.0
+To: "Pandruvada, Srinivas" <srinivas.pandruvada@intel.com>,
+ "Baluta, Daniel" <daniel.baluta@intel.com>
+CC: "lars@metafoo.de" <lars@metafoo.de>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+ "jic23@kernel.org" <jic23@kernel.org>,
+ "Purdila, Octavian" <octavian.purdila@intel.com>,
+ "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+ "Westerberg, Mika" <mika.westerberg@intel.com>,
+ "pmeerw@pmeerw.net" <pmeerw@pmeerw.net>,
+ "beomho.seo@samsung.com" <beomho.seo@samsung.com>,
+ "gwendal@chromium.org" <gwendal@chromium.org>
+Subject: Re: [RFC PATCH] iio: ak8975: Make sure chipset is always initialized
+References: <1418923002-901-1-git-send-email-daniel.baluta@intel.com>	 <5494A3D6.60607@gmx.de>	 <CAEnQRZABxH5MuWEnS=RHmQqGUN0QhFTtXxnM1uyrLxvP2a-Rmg@mail.gmail.com>	 <1419110796.2843.6.camel@spandruv-hsb-test>	 <1419110952.2843.8.camel@spandruv-hsb-test>	 <CAEnQRZC_SR_p2oYq9EpDDfBi2nCAAWvYmf0tR7V7WPZRZEp79g@mail.gmail.com>	 <1421685827.4459.397.camel@spandruv-desktop.jf.intel.com>	 <CAEnQRZAfRJ+-1x_ZgRAC2Kkr2js4EQB1xA6gTJ5n0uCAZS4y2g@mail.gmail.com> <1421686560.4459.400.camel@spandruv-desktop.jf.intel.com>
+In-Reply-To: <1421686560.4459.400.camel@spandruv-desktop.jf.intel.com>
+Content-Type: text/plain; charset=UTF-8
+List-ID: <linux-iio@vger.kernel.org>
 
-New power_supply driver at driver/power which interfaces with the
-axp20x mfd driver as a cell. Provides battery info, monitors for
-changes, and generates alerts on temperature and capacity issues
+Pandruvada, Srinivas schrieb am 19.01.2015 um 17:56:
+> On Mon, 2015-01-19 at 18:49 +0200, Daniel Baluta wrote: 
+>> On Mon, Jan 19, 2015 at 6:44 PM, Pandruvada, Srinivas
+>> <srinivas.pandruvada@intel.com> wrote:
+>>> On Mon, 2015-01-19 at 16:40 +0200, Daniel Baluta wrote:
+>>>> Hello,
+>>>>
+>>>> On Sat, Dec 20, 2014 at 11:29 PM, Pandruvada, Srinivas
+>>>> <srinivas.pandruvada@intel.com> wrote:
+>>>>> +Mika
+>>>>>
+>>>>> On Sat, 2014-12-20 at 13:26 -0800, Srinivas Pandruvada wrote:
+>>>>>> On Sat, 2014-12-20 at 00:25 +0200, Daniel Baluta wrote:
+>>>>>>> On Sat, Dec 20, 2014 at 12:16 AM, Hartmut Knaack <knaack.h@gmx.de> wrote:
+>>>>>>>> Daniel Baluta schrieb am 18.12.2014 um 18:16:
+>>>>>>>>> When using ACPI, if acpi_match_device fails then chipset enum will be
+>>>>>>>>> uninitialized and &ak_def_array[chipset] will point to some bad address.
+>>>>>>>>>
+>>>>>> I am missing something. You are enumerated over i2c device, which was
+>>>>>> created from ACPI PNP resource. There is a valid handle or and the
+>>>>>> device has an ACPI companion at the least. If this failing, I have to
+>>>>>> check the code for acpi i2c.
+>>>>>> Can you check why this check failed? We may have bug in i2c handling.
+>>>>
+>>>> You are right about this. Under normal circumstances, if probe is called
+>>>> then acpi_match_device will not fail. I even tried to remove the
+>>>> device after probe
+>>>> but before acpi_match_device, anyhow acpi_match_device was still successful :)
+>>>>
+>>>> This is more a matter of code correctness.
+>>>>
+>>>> In ak8975_match_acpi_device we have:
+>>>>
+>>>> »       const struct acpi_device_id *id;
+>>>>
+>>>> »       id = acpi_match_device(dev->driver->acpi_match_table, dev);
+>>>> »       if (!id)
+>>>> »       »       return NULL;
+>>>> »       *chipset = (int)id->driver_data;
+>>>>
+>>>> Compiler complains on the fact that chipset might be uninitialized
+>>>> if this returns NULL, and we shouldn't ignore this warning even this case
+>>>> will never happen.
+>>>>
+>>> Will this fix?
+>>> data->chipset = AK8975;
+>>> before
+>>> ak8975_match_acpi_device(&client->dev, &data->chipset);
+>>>
 
-Todd Brandt (3):
-  mfd/axp20x: change battery cell name to fuel gauge
-  mfd/axp20x: add support for fuel gauge cell
-  X-Power AXP288 PMIC Fuel Gauge Driver
+This would fix the compiler warning, but doesn't seem the right solution for
+this issue. Quoting the description of acpi_match_device:
+"Return a pointer to the first matching ID on success or %NULL on failure."
+So, even if it is very unlikely to for it to fail - if it does fail, the
+error should be handled as quick as possible. I would favor Daniels solution
+to check for a valid assignment of name.
 
- drivers/mfd/axp20x.c              |    8 +-
- drivers/power/Kconfig             |    9 +
- drivers/power/Makefile            |    1 +
- drivers/power/axp288_fuel_gauge.c | 1148 +++++++++++++++++++++++++++++++++++++
- include/linux/mfd/axp20x.h        |   43 +-
- 5 files changed, 1203 insertions(+), 6 deletions(-)
- create mode 100644 drivers/power/axp288_fuel_gauge.c
+>>
+>> Yes, this is done in the original patch:
+>>
+>> +       *chipset = AK_MAX_TYPE;
+> Since data memory is not zero alloced, other member of data are anyway
+> initialized, so adding this also may be better. 
 
--- 
-2.1.0
+If there did not occur an error condition, it will be assigned a value
+before being checked for valid ranges. And if there is an error, probe
+should be aborted, anyway. So initializing *chipset doesn't seem to add
+any benefit IMHO.
 
+>>
+>> .. and fixes the warning.
+>>
+>> Daniel.
+> 
+> N�����r��y���b�X��ǧv�^�)޺{.n�+����{��*"��^n�r���z���h����&���G���h�(�階�ݢj"���m�����z�ޖ���f���h���~�mml==
+> 
