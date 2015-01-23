@@ -1,335 +1,143 @@
-Return-Path: <srinivas.pandruvada@linux.intel.com>
-Message-ID: <1422029798.2908.1.camel@spandruv-hsb-test>
-Subject: Re: [PATCH v2] iio: imu: inv_mpu6050: Create mux clients for ACPI
-From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-To: jic23@kernel.org
-Cc: wsa@the-dreams.de, lars@metafoo.de, linux-iio@vger.kernel.org,
-	linux-i2c@vger.kernel.org
-Date: Fri, 23 Jan 2015 08:16:38 -0800
-In-Reply-To: <1421965915-19747-2-git-send-email-srinivas.pandruvada@linux.intel.com>
-References: 
-	<1421965915-19747-1-git-send-email-srinivas.pandruvada@linux.intel.com>
-	 <1421965915-19747-2-git-send-email-srinivas.pandruvada@linux.intel.com>
-Content-Type: text/plain; charset="UTF-8"
-Mime-Version: 1.0
+Return-Path: <teodora.baluta@intel.com>
+From: "Baluta, Teodora" <teodora.baluta@intel.com>
+To: Sylwester Nawrocki <s.nawrocki@samsung.com>, Jonathan Cameron
+	<jic23@kernel.org>
+CC: Mauro Carvalho Chehab <m.chehab@samsung.com>, Lars-Peter Clausen
+	<lars@metafoo.de>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+	linux-iio <linux-iio@vger.kernel.org>, LMML <linux-media@vger.kernel.org>,
+	Hans Verkuil <hverkuil@xs4all.nl>
+Subject: RE: [RFC PATCH 0/3] Introduce IIO interface for fingerprint sensors
+Date: Fri, 23 Jan 2015 13:05:28 +0000
+Message-ID: <A2E3DE9C026DE6469D89C3A4C6C219390A89FE37@IRSMSX107.ger.corp.intel.com>
+References: <1417698017-13835-1-git-send-email-teodora.baluta@intel.com>
+ <5481153B.4070609@kernel.org> <1418047828.18463.10.camel@bebop>
+ <54930604.1020607@metafoo.de> <549D42BD.1050901@kernel.org>
+ <1421255642.31900.4.camel@bebop> <54B7FAF2.8080207@samsung.com>
+In-Reply-To: <54B7FAF2.8080207@samsung.com>
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
 List-ID: <linux-iio@vger.kernel.org>
 
-On Thu, 2015-01-22 at 14:31 -0800, Srinivas Pandruvada wrote:
-> This is a follow up patches after adding i2c mux adapter for bypass
-> mode. Potentially many different types of sensor can be attached to
-> INVMPU6XXX device, which can be connected to main cpu i2c bus in
-> bypass mode.
-> Why do we need this?
-> The system ACPI table entry will consist of only one device for
-> INV6XXX, assuming that this driver will handle all connected sensors.
-> That is not true for the Linux driver. There are bunch of IIO drivers
-> for each sensors, hence we created a mux on this device. So to load
-> these additional drivers, we need to create i2c devices for them
-> in this driver using this mux adapter.
-> 
-> There are multiple options:
-> 1. Use the auto detect feature, this needs a new i2c class for the
-> adapter as the existing HWMON class is not acceptable. Also the
-> autodetect has overhead of executing detect method for each
-> matching class of adapters.
-> This is a simple implementation. This option was previously submitted
-> with not a happy feedback.
-> 
-> 2. Option is use ACPI magic and parse the configuration data. What
-> we need to create a i2c device at a minimum is address and a name.
-> Address can be obtained for secondary device in more or less in a
-> standard way from using _CRS element. But there is no name. To get
-> name we need to process proprietary vendor data. Not having name is
-> not fun, as you have to create device using the device name of
-> INVN6XXXX, respecting driver duplicate name space restriction.
-> Also each client driver needs to have this name in the id table.
-> Since multiple driver can be loaded, the driver should be able to
-> detect its presence and gracefully exit for the other client driver
-> to take it over.
-> So we use two step process:
-> - Use DMI to id platform and parse propritery data. This is not uncommon
-> for many x86 platform specific driver. We will get both name and address.
-> The change created necessary infrastructure to add more properitery vendor
-> data parsing.
-> - If DMI match fails, then create device on INV6XXX-client (we can't
-> create with same name as INV6XXX as it will cause duplicate name and driver
-> model will reject.) With this each client sensor driver which needs to get
-> attached via INV6XXXX, need this name in the id table and detect the
-> physical presence of sensor in probe and exit if not found.
-> 
-> Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-> ---
->  drivers/iio/imu/inv_mpu6050/Makefile       |   2 +-
->  drivers/iio/imu/inv_mpu6050/inv_mpu_acpi.c | 196 +++++++++++++++++++++++++++++
->  drivers/iio/imu/inv_mpu6050/inv_mpu_core.c |  11 ++
->  drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h  |   3 +
->  4 files changed, 211 insertions(+), 1 deletion(-)
->  create mode 100644 drivers/iio/imu/inv_mpu6050/inv_mpu_acpi.c
-> 
-> diff --git a/drivers/iio/imu/inv_mpu6050/Makefile b/drivers/iio/imu/inv_mpu6050/Makefile
-> index 3a677c7..f566f6a 100644
-> --- a/drivers/iio/imu/inv_mpu6050/Makefile
-> +++ b/drivers/iio/imu/inv_mpu6050/Makefile
-> @@ -3,4 +3,4 @@
->  #
->  
->  obj-$(CONFIG_INV_MPU6050_IIO) += inv-mpu6050.o
-> -inv-mpu6050-objs := inv_mpu_core.o inv_mpu_ring.o inv_mpu_trigger.o
-> +inv-mpu6050-objs := inv_mpu_core.o inv_mpu_ring.o inv_mpu_trigger.o inv_mpu_acpi.o
-> diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_acpi.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_acpi.c
-> new file mode 100644
-> index 0000000..2d98c1a
-> --- /dev/null
-> +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_acpi.c
-> @@ -0,0 +1,196 @@
-> +/*
-> + * inv_mpu_acpi: ACPI processing for creating client devices
-> + * Copyright (c) 2015, Intel Corporation.
-> + *
-> + * This program is free software; you can redistribute it and/or modify it
-> + * under the terms and conditions of the GNU General Public License,
-> + * version 2, as published by the Free Software Foundation.
-> + *
-> + * This program is distributed in the hope it will be useful, but WITHOUT
-> + * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-> + * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
-> + * more details.
-> + */
-> +
-> +#include <linux/kernel.h>
-> +#include <linux/i2c.h>
-> +#include <linux/dmi.h>
-> +#include <linux/acpi.h>
-> +#include "inv_mpu_iio.h"
-> +
-> +enum inv_mpu_product_name {
-> +	INV_MPU_NOT_MATCHED,
-> +	INV_MPU_ASUS_T100TA,
-> +};
-> +
-> +static enum inv_mpu_product_name matched_product_name;
-> +
-> +static int __init asus_t100_matched(const struct dmi_system_id *d)
-> +{
-> +	matched_product_name = INV_MPU_ASUS_T100TA;
-> +
-> +	return 0;
-> +}
-> +
-> +static const struct dmi_system_id inv_mpu_dev_list[] = {
-> +	{
-> +	.callback = asus_t100_matched,
-> +	.ident = "Asus Transformer Book T100",
-> +		.matches = {
-> +			DMI_MATCH(DMI_SYS_VENDOR, "ASUSTeK COMPUTER INC"),
-> +			DMI_MATCH(DMI_PRODUCT_NAME, "T100TA"),
-> +			DMI_MATCH(DMI_PRODUCT_VERSION, "1.0"),
-> +		},
-> +	},
-> +	/* Add more matching tables here..*/
-> +	{}
-> +};
-> +
-> +static int asus_acpi_get_sensor_info(struct acpi_device *adev,
-> +				     struct i2c_client *client,
-> +				     struct i2c_board_info *info)
-> +{
-> +	struct acpi_buffer buffer = {ACPI_ALLOCATE_BUFFER, NULL};
-> +	int i;
-> +	acpi_status status;
-> +	union acpi_object *cpm;
-> +
-> +	status = acpi_evaluate_object(adev->handle, "CNF0", NULL, &buffer);
-> +	if (ACPI_FAILURE(status))
-> +		return -ENODEV;
-> +
-> +	cpm = buffer.pointer;
-> +	for (i = 0; i < cpm->package.count; ++i) {
-> +		union acpi_object *elem;
-> +		int j;
-> +
-> +		elem = &(cpm->package.elements[i]);
-> +		for (j = 0; j < elem->package.count; ++j) {
-> +			union acpi_object *sub_elem;
-> +
-> +			sub_elem = &(elem->package.elements[j]);
-> +			if (sub_elem->type == ACPI_TYPE_STRING)
-> +				strlcpy(info->type, sub_elem->string.pointer,
-> +					sizeof(info->type));
-> +			else if (sub_elem->type == ACPI_TYPE_INTEGER) {
-> +				if (sub_elem->integer.value != client->addr) {
-> +					info->addr = sub_elem->integer.value;
-> +					break; /* Not a MPU6500 primary */
-> +				}
-> +			}
-> +		}
-> +	}
-> +
-> +	kfree(buffer.pointer);
-> +
-> +	return cpm->package.count;
-> +}
-> +
-> +static int acpi_i2c_check_resource(struct acpi_resource *ares, void *data)
-> +{
-> +	u32 *addr = data;
-> +
-> +	if (ares->type == ACPI_RESOURCE_TYPE_SERIAL_BUS) {
-> +		struct acpi_resource_i2c_serialbus *sb;
-> +
-> +		sb = &ares->data.i2c_serial_bus;
-> +		if (sb->type == ACPI_RESOURCE_SERIAL_TYPE_I2C) {
-> +			if (*addr)
-> +				*addr |= (sb->slave_address << 16);
-> +			else
-> +				*addr = sb->slave_address;
-> +		}
-> +	}
-> +
-> +	/* Tell the ACPI core that we already copied this address */
-> +	return 1;
-> +}
-> +
-> +static int inv_mpu_process_acpi_config(struct i2c_client *client,
-> +				       unsigned short *primary_addr,
-> +				       unsigned short *secondary_addr)
-> +{
-> +	const struct acpi_device_id *id;
-> +	struct acpi_device *adev;
-> +	u32 i2c_addr = 0;
-> +	LIST_HEAD(resources);
-> +	int ret;
-> +
-> +	id = acpi_match_device(client->dev.driver->acpi_match_table,
-> +			       &client->dev);
-> +	if (!id)
-> +		return -ENODEV;
-> +
-> +	adev = ACPI_COMPANION(&client->dev);
-> +	if (!adev)
-> +		return -ENODEV;
-> +
-> +	ret = acpi_dev_get_resources(adev, &resources,
-> +				     acpi_i2c_check_resource, &i2c_addr);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	acpi_dev_free_resource_list(&resources);
-> +	*primary_addr = i2c_addr & 0x0000ffff;
-> +	*secondary_addr = (i2c_addr & 0xffff0000) >> 16;
-> +
-> +	return 0;
-> +}
-> +
-> +int inv_mpu_acpi_create_mux_client(struct inv_mpu6050_state *st)
-> +{
-> +
-> +	st->mux_client = NULL;
-> +	if (ACPI_HANDLE(&st->client->dev)) {
-> +		struct i2c_board_info info;
-> +		struct acpi_device *adev;
-> +		int ret = -1;
-> +
-> +		adev = ACPI_COMPANION(&st->client->dev);
-> +		memset(&info, 0, sizeof(info));
-> +
-> +		dmi_check_system(inv_mpu_dev_list);
-> +		switch (matched_product_name) {
-> +		case INV_MPU_ASUS_T100TA:
-> +			ret = asus_acpi_get_sensor_info(adev, st->client,
-> +							&info);
-> +			break;
-> +		/* Add more matched product processing here */
-> +		default:
-> +			break;
-> +		}
-> +
-> +		if (ret < 0) {
-> +			/* No matching DMI, so create device on INV6XX type */
-> +			unsigned short primary, secondary;
-> +
-> +			ret = inv_mpu_process_acpi_config(st->client, &primary,
-> +							  &secondary);
-> +			if (!ret && secondary) {
-> +				char *name;
-> +
-> +				info.addr = secondary;
-> +				strlcpy(info.type, dev_name(&adev->dev),
-> +					sizeof(info.type));
-> +				name = strchr(info.type, ':');
-> +				if (name)
-> +					*name = '\0';
-> +				strlcat(info.type, "-client",
-> +					sizeof(info.type));
-> +			} else
-> +				return 0; /* no secondary addr, which is OK */
-> +		}
-> +		st->mux_client = i2c_new_device(st->mux_adapter, &info);
-> +		if (!st->mux_client)
-> +			return -ENODEV;
-> +
-> +	}
-> +
-> +	return 0;
-> +}
-> +
-> +void inv_mpu_acpi_delete_mux_client(struct inv_mpu6050_state *st)
-> +{
-> +	if (st->mux_client)
-> +		i2c_unregister_device(st->mux_client);
-> +}
-> diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-> index d8d5bed..280aa77 100644
-> --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-> +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-> @@ -825,8 +825,16 @@ static int inv_mpu_probe(struct i2c_client *client,
->  		goto out_unreg_device;
->  	}
->  
-> +#ifdef CONFIG_ACPI
-> +	result = inv_mpu_acpi_create_mux_client(st);
-> +	if (result)
-> +		goto out_del_mux;
-> +#endif
-> +
->  	return 0;
->  
-> +out_del_mux:
-> +	i2c_del_mux_adapter(st->mux_adapter);
-Need to enclose above two lines under CONFIG_ACPI also.
-I will resubmit with any other changes suggested.
-
-Thanks,
-Srinivas
-
->  out_unreg_device:
->  	iio_device_unregister(indio_dev);
->  out_remove_trigger:
-> @@ -841,6 +849,9 @@ static int inv_mpu_remove(struct i2c_client *client)
->  	struct iio_dev *indio_dev = i2c_get_clientdata(client);
->  	struct inv_mpu6050_state *st = iio_priv(indio_dev);
->  
-> +#ifdef CONFIG_ACPI
-> +	inv_mpu_acpi_delete_mux_client(st);
-> +#endif
->  	i2c_del_mux_adapter(st->mux_adapter);
->  	iio_device_unregister(indio_dev);
->  	inv_mpu6050_remove_trigger(st);
-> diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h b/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
-> index aa837de..db0a4a2 100644
-> --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
-> +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
-> @@ -121,6 +121,7 @@ struct inv_mpu6050_state {
->  	spinlock_t time_stamp_lock;
->  	struct i2c_client *client;
->  	struct i2c_adapter *mux_adapter;
-> +	struct i2c_client *mux_client;
->  	unsigned int powerup_count;
->  	struct inv_mpu6050_platform_data plat_data;
->  	DECLARE_KFIFO(timestamps, long long, TIMESTAMP_FIFO_SIZE);
-> @@ -251,3 +252,5 @@ int inv_reset_fifo(struct iio_dev *indio_dev);
->  int inv_mpu6050_switch_engine(struct inv_mpu6050_state *st, bool en, u32 mask);
->  int inv_mpu6050_write_reg(struct inv_mpu6050_state *st, int reg, u8 val);
->  int inv_mpu6050_set_power_itg(struct inv_mpu6050_state *st, bool power_on);
-> +int inv_mpu_acpi_create_mux_client(struct inv_mpu6050_state *st);
-> +void inv_mpu_acpi_delete_mux_client(struct inv_mpu6050_state *st);
+SGksDQoNClRoYW5rcyBmb3IgdGhlIHJlcGx5LCBTeWx3ZXN0ZXIhIEkgYW0gY29uc2lkZXJpbmcg
+djRsMiBub3cgYW5kIEkgaGF2ZSBzb21lIHF1ZXN0aW9ucy9jb21tZW50cyBiZWxvdy4NCg0KPiAt
+LS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPiBGcm9tOiBsaW51eC1paW8tb3duZXJAdmdlci5r
+ZXJuZWwub3JnIFttYWlsdG86bGludXgtaWlvLQ0KPiBvd25lckB2Z2VyLmtlcm5lbC5vcmddIE9u
+IEJlaGFsZiBPZiBTeWx3ZXN0ZXIgTmF3cm9ja2kNCj4gU2VudDogVGh1cnNkYXksIEphbnVhcnkg
+MTUsIDIwMTUgNzozOCBQTQ0KPiBUbzogQmFsdXRhLCBUZW9kb3JhOyBKb25hdGhhbiBDYW1lcm9u
+DQo+IENjOiBNYXVybyBDYXJ2YWxobyBDaGVoYWI7IExhcnMtUGV0ZXIgQ2xhdXNlbjsgTGludXgg
+S2VybmVsIE1haWxpbmcgTGlzdDsNCj4gbGludXgtaWlvOyBMTU1MOyBIYW5zIFZlcmt1aWwNCj4g
+U3ViamVjdDogUmU6IFtSRkMgUEFUQ0ggMC8zXSBJbnRyb2R1Y2UgSUlPIGludGVyZmFjZSBmb3Ig
+ZmluZ2VycHJpbnQgc2Vuc29ycw0KPiANCj4gT24gMTQvMDEvMTUgMTg6MTQsIEJhbHV0YSwgVGVv
+ZG9yYSB3cm90ZToNCj4gPiBPbiBWaSwgMjAxNC0xMi0yNiBhdCAxMToxMyArMDAwMCwgSm9uYXRo
+YW4gQ2FtZXJvbiB3cm90ZToNCj4gPj4gT24gMTgvMTIvMTQgMTY6NTEsIExhcnMtUGV0ZXIgQ2xh
+dXNlbiB3cm90ZToNCj4gPj4+IEFkZGluZyBWNEwgZm9sa3MgdG8gQ2MgZm9yIG1vcmUgaW5wdXQu
+DQo+ID4+DQo+ID4+IFRoYW5rcyBMYXJzIC0gd2UgZGVmaW5pdGVseSB3b3VsZCBuZWVkIHRoZSB2
+NGwgZ3V5cyB0byBhZ3JlZSB0byBhDQo+ID4+IGRyaXZlciBsaWtlIHRoaXMgZ29pbmcgaW4gSUlP
+LiAobm90IHRoYXQgSSdtIGNvbnZpbmNlZCBpdCBzaG91bGQhKQ0KPiA+Pg0KPiA+Pj4gT24gMTIv
+MDgvMjAxNCAwMzoxMCBQTSwgQmFsdXRhLCBUZW9kb3JhIHdyb3RlOg0KPiA+Pj4+IEhlbGxvLA0K
+PiA+Pj4+DQo+ID4+Pj4gT24gVmksIDIwMTQtMTItMDUgYXQgMDI6MTUgKzAwMDAsIEpvbmF0aGFu
+IENhbWVyb24gd3JvdGU6DQo+ID4+Pj4+IE9uIDA0LzEyLzE0IDEzOjAwLCBUZW9kb3JhIEJhbHV0
+YSB3cm90ZToNCj4gPj4+Pj4+IFRoaXMgcGF0Y2hzZXQgYWRkcyBzdXBwb3J0IGZvciBmaW5nZXJw
+cmludCBzZW5zb3JzIHRocm91Z2ggdGhlIElJTw0KPiBpbnRlcmZhY2UuDQo+ID4+Pj4+PiBUaGlz
+IHdheSB1c2Vyc3BhY2UgYXBwbGljYXRpb25zIGNvbGxlY3QgaW5mb3JtYXRpb24gaW4gYSB1bmlm
+b3JtDQo+ID4+Pj4+PiB3YXkuIEFsbCBwcm9jZXNzaW5nIHdvdWxkIGJlIGRvbmUgaW4gdGhlIHVw
+cGVyIGxheWVycyBhcyBzdWdnZXN0ZWQNCj4gaW4gWzBdLg0KPiA+Pj4+Pj4NCj4gPj4+Pj4+IElu
+IG9yZGVyIHRvIHRlc3Qgb3V0IHRoaXMgcHJvcG9zYWwsIGEgbWluaW1hbCBpbXBsZW1lbnRhdGlv
+biBmb3INCj4gPj4+Pj4+IFVQRUsncyBUb3VjaENoaXAgRmluZ2VycHJpbnQgU2Vuc29yIHZpYSBV
+U0IgaXMgYWxzbyBhdmFpbGFibGUuDQo+ID4+Pj4+PiBBbHRob3VnaCB0aGVyZSBpcyBhbiBleGlz
+dGluZyBpbXBsZW1lbnRhdGlvbiBpbiB1c2Vyc3BhY2UgZm9yIFVTQg0KPiA+Pj4+Pj4gZmluZ2Vy
+cHJpbnQgZGV2aWNlcywgaW5jbHVkaW5nIHRoaXMgcGFydGljdWxhciBkZXZpY2UsIHRoZSBkcml2
+ZXINCj4gPj4+Pj4+IHJlcHJlc2VudHMgYSBwcm9vZiBvZiBjb25jZXB0IG9mIGhvdyBmaW5nZXJw
+cmludCBzZW5zb3JzIGNvdWxkIGJlDQo+ID4+Pj4+PiBpbnRlZ3JhdGVkIGluIHRoZSBJSU8gZnJh
+bWV3b3JrIHJlZ2FyZGxlc3Mgb2YgdGhlIHVzZWQgYnVzLiBGb3INCj4gPj4+Pj4+IGxvd2VyIHBv
+d2VyIHJlcXVpcmVtZW50cywgdGhlIFNQSSBidXMgaXMgcHJlZmVycmVkIGFuZCBhIGtlcm5lbA0K
+PiBkcml2ZXIgaW1wbGVtZW50YXRpb24gbWFrZXMgbW9yZSBzZW5zZS4NCj4gPj4+Pj4NCj4gPj4+
+Pj4gU28gd2h5IG5vdCB2NGw/ICBUaGVzZSBhcmUgZWZmZWN0aXZlbHkgaW1hZ2Ugc2Vuc29ycy4u
+DQo+ID4+Pj4NCj4gPj4+PiBXZWxsLCBoZXJlJ3Mgd2h5IEkgZG9uJ3QgdGhpbmsgdjRsIHdvdWxk
+IGJlIHRoZSBiZXN0IG9wdGlvbjoNCj4gPj4+Pg0KPiA+Pj4+IC0gYW4gaW1hZ2Ugc2Nhbm5lciBj
+b3VsZCBiZSBpbXBsZW1lbnRlZCBpbiB0aGUgdjRsIHN1YnN5c3RlbSwgYnV0DQo+ID4+Pj4gaXQg
+c2VlbXMgZmFyIG1vcmUgY29tcGxpY2F0ZWQgZm9yIGEgc2ltcGxlIGZpbmdlcnByaW50IHNjYW5u
+ZXIgLSBpdA0KPiA+Pj4+IHVzdWFsbHkgaGFzIGRyaXZlcnMgZm9yIHdlYmNhbXMsIFRWcyBvciB2
+aWRlbyBzdHJlYW1pbmcgZGV2aWNlcy4NCj4gPj4+PiBUaGUgdjRsIHN1YnN5c3RlbSAod2l0aCBh
+bGwgaXRzIHN1cHBvcnQgZm9yIGNvbG9yc3BhY2UsIGRlY29kZXJzLA0KPiA+Pj4+IGltYWdlIGNv
+bXByZXNzaW9uLCBmcmFtZSBjb250cm9sKSBzZWVtcyBhIGJpdCBvZiBhbiBvdmVya2lsbCBmb3Ig
+YQ0KPiA+Pj4+IHZlcnkgc3RyYWlnaHRmb3J3YXJkIGZpbmdlcnByaW50IGltYWdpbmcgc2Vuc29y
+Lg0KPiA+DQo+ID4+IFdoaWxzdCB0aG9zZSBhcmUgdGhlcmUsIEkgd291bGQgZG91YnQgdGhlIGly
+cmVsZXZhbnQgYml0cyB3b3VsZCBwdXQNCj4gPj4gbXVjaCBidXJkZW4gb24gYSBmaW5nZXJwcmlu
+dCBzY2FubmluZyBkcml2ZXIuICBCZWVuIGEgd2hpbGUgc2luY2UgSQ0KPiA+PiBkaWQgYW55dGhp
+bmcgaW4gdGhhdCBhcmVhIHRob3VnaCBzbyBJIGNvdWxkIGJlIHdyb25nIQ0KPiANCj4gSU1PIFY0
+TCBpcyBtdWNoIGJldHRlciBmaXQgZm9yIHRoaXMga2luZCBvZiBkZXZpY2VzIHRoYW4gSUlPLiBZ
+b3UgY2FuIHVzZSBqdXN0IGENCj4gc3Vic2V0IG9mIHRoZSBBUEksIGl0IHNob3VsZG4ndCB0YWtl
+IG11Y2ggZWZmb3J0IHRvIHdyaXRlIGEgc2ltcGxlDQo+IHY0bDIgY2FwdHVyZSBkcml2ZXIsIHN1
+cHBvcnRpbmcgZml4ZWQgKHByb2JhYmx5IHZlbmRvci9jaGlwIHNwZWNpZmljKSBpbWFnZQ0KPiBm
+b3JtYXQuICBJJ20gbm90IHN1cmUgaWYgaXQncyBiZXR0ZXIgdG8gdXNlIHRoZSB2NGwyIGNvbnRy
+b2xzIFsxXSwgZGVmaW5lIGEgbmV3DQo+IHY0bDIgY29udHJvbHMgY2xhc3MgZm9yIHRoZSBmaW5n
+ZXJwcmludCBzY2FubmVyIHByb2Nlc3NpbmcgZmVhdHVyZXMsIHJhdGhlciB0aGFuDQo+IHRyeWlu
+ZyB0byBwYXNzIHJhdyBkYXRhIHRvIHVzZXIgc3BhY2UgYW5kIGludGVycHJldCBpdCB0aGVuIGlu
+IHNvbWUgbGlicmFyeS4gIEkNCj4ga25vdyB0aGVyZSBoYXMgYmVlbiByZXNpc3RhbmNlIHRvIGFs
+bG93aW5nIHBhc3NpbmcgdW5rbm93biBiaW5hcnkgYmxvYnMgdG8NCj4gdXNlciBzcGFjZSwgZHVl
+IHRvIHBvc3NpYmxlIGFidXNlcy4NCj4gDQo+IFsxXSBEb2N1bWVudGF0aW9uL3ZpZGVvNGxpbnV4
+L3Y0bDItY29udHJvbHMudHh0DQo+DQogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICANClRoZSBmaW5nZXJwcmludCBzZW5zb3IgYWN0cyBtb3JlIGxp
+a2UgYSBzY2FubmVyIGRldmljZSwgc28gdGhlIGNsb3Nlc3QgdHlwZSBpcyB0aGUgVjRMMl9DQVBf
+VklERU9fQ0FQVFVSRS4gSG93ZXZlciwgdGhpcyBpcyBub3QgYSBwZXJmZWN0IG1hdGNoIGJlY2F1
+c2UgdGhlIGRyaXZlciBvbmx5IHNlbmRzIGFuIGltYWdlLCBvbmNlLCB3aGVuIHRyaWdnZXJlZC4g
+V291bGQgaXQgYmUgYSBiZXR0ZXIgYWx0ZXJuYXRpdmUgdG8gZGVmaW5lIGEgbmV3IGNhcGFiaWxp
+dHkgdHlwZT8gT3IgaXQgd291bGQgYmUgYWNjZXB0YWJsZSB0byBzaW1wbHkgaGF2ZSBhIHZpZGVv
+IGRldmljZSB3aXRoIG5vIGZyYW1lIGJ1ZmZlciBvciBmcmFtZSByYXRlIGFuZCB0aGUgdXNlciBz
+cGFjZSBhcHBsaWNhdGlvbiB0byByZWFkIGZyb20gdGhlIGNoYXJhY3RlciBkZXZpY2UgL2Rldi92
+aWRlb1g/DQoNCj4gPj4+PiAtIGEgZmluZ2VycHJpbnQgZGV2aWNlIGNvdWxkIGFsc28gc2VuZCBv
+dXQgYSBwcm9jZXNzZWQgaW5mb3JtYXRpb24sDQo+ID4+Pj4gbm90IGp1c3QgdGhlIGltYWdlIG9m
+IGEgZmluZ2VycHJpbnQuIFRoaXMgbWVhbnMgdGhhdCB0aGUgcHJvY2Vzc2luZw0KPiA+Pj4+IGlz
+IGRvbmUgaW4gaGFyZHdhcmUgLSB0aGUgVVBFSyBUb3VjaFN0cmlwIGNoaXBzZXQgaW4gbGliZnBy
+aW50IGhhcw0KPiA+Pj4+IHRoaXMgYmVoYXZpb3IgKHNlZSBbMF0pLiBTbywgdGhlIElJTyBmcmFt
+ZXdvcmsgd291bGQgc3VwcG9ydCBhDQo+ID4+Pj4gdW5pZm9ybSB3YXkgb2YgaGFuZGxpbmcgZmlu
+Z2VycHJpbnQgZGV2aWNlcyB0aGF0IGVpdGhlciBkbw0KPiA+Pj4+IHByb2Nlc3NpbmcgaW4gc29m
+dHdhcmUgb3IgaW4gaGFyZHdhcmUuDQo+IA0KPiBZb3UgY2FuIHVzZSB0aGUgdjRsMiBjb250cm9s
+cyBBUEkgZm9yIHRoYXQsIHdoaWNoIGFsc28gc3VwcG9ydHMgZXZlbnRzLg0KPiBUaGUgY29udHJv
+bHMgY291bGQgYmUgbWFkZSByZWFkIG9ubHkuDQo+IEl0IHdvdWxkIGJlIGludGVyZXN0aW5nIHRv
+IGxpc3Qgd2hhdCBraW5kIG9mIGZlYXR1cmVzIHRoZXNlIGNvdWxkIGJlLg0KDQpMb29raW5nIHRo
+cm91Z2ggdGhlIGNvbnRyb2xzIEFQSSwgdGhleSBzZWVtIHRvIGJlIGEgZ29vZCBmaXQuDQoNCj4g
+DQo+ID4+IFRoaXMgaXMgbW9yZSBpbnRlcmVzdGluZywgYnV0IGRvZXMgdGhhdCBtYXAgd2VsbCB0
+byBJSU8gc3R5bGUNCj4gPj4gY2hhbm5lbHMgYW55d2F5PyAgSWYgbm90IHdlIGFyZSBnb2luZyB0
+byBlbmQgdXAgd2l0aCBhIHdob2xlIG5ldw0KPiA+PiBpbnRlcmZhY2Ugd2hpY2ggZXZlciBzdWJz
+eXN0ZW0gaXMgdXNlZCBmb3IgdGhlIGltYWdlIHNpZGUgb2YgdGhpbmdzLg0KPiA+Pj4+DQo+ID4+
+Pj4gVGhlIHdheSBJIHNlZSBpdCBub3csIGZvciBwcm9jZXNzZWQgZmluZ2VycHJpbnQgaW5mb3Jt
+YXRpb24sIGFuIElJTw0KPiA+Pj4+IGRldmljZSBjb3VsZCBoYXZlIGFuIElJT19GSU5HRVJQUklO
+VCBjaGFubmVsIHdpdGggYSBtb2RpZmllciBhbmQNCj4gPj4+PiBvbmx5IHRoZSBzZW5zaXRpdml0
+eSB0aHJlc2hvbGQgYXR0cmlidXRlIHNldC4gV2Ugd291bGQgYWxzbyBuZWVkDQo+ID4+Pj4gdHdv
+DQo+ID4+Pj4gdHJpZ2dlcnM6IG9uZSBmb3IgZW5yb2xsbWVudCBhbmQgb25lIGZvciB0aGUgdmVy
+aWZpY2F0aW9uIG1vZGUgdG8NCj4gPj4+PiBjb250cm9sIHRoZSBkZXZpY2UgZnJvbSBhIHVzZXJz
+cGFjZSBhcHBsaWNhdGlvbi4NCj4gDQo+IFRoaXMgY291bGQgYmUgYWxsIHdlbGwgaGFuZGxlZCB3
+aXRoIHRoZSB2NGwyIGNvbnRyb2xzLCBmb3IgaW5zdGFuY2Ugc2VlIHdoYXQNCj4gZmVhdHVyZXMg
+YXJlIGF2YWlsYWJsZSBpbiB0aGUgQ2FtZXJhIEZsYXNoIGNvbnRyb2xzIHN1YnNldA0KPiANCj4g
+aHR0cDovL2xpbnV4dHYub3JnL2Rvd25sb2Fkcy92NGwtZHZiLWFwaXMvZXh0ZW5kZWQtY29udHJv
+bHMuaHRtbCNmbGFzaC0NCj4gY29udHJvbHMNCj4gDQo+ID4+IFN1cmUgLSB3aGF0IHlvdSBwcm9w
+b3NlZCB3b3VsZCB3b3JrLiAgVGhlIHF1ZXN0aW9uIGlzIHdoZXRoZXIgaXQgaXMNCj4gPj4gdGhl
+IGJlc3Qgd2F5IHRvIGRvIGl0Lg0KPiA+DQo+ID4gQW55IHRob3VnaHRzIG9uIHRoaXMgZnJvbSB0
+aGUgdjRsIGNvbW11bml0eT8NCj4gDQo+IEkgd291bGQgdHJ5IGl0IHdpdGggVjRMMiwgaXQgc2Vl
+bXMgdG8gbWUgbW9zdCBzdWl0YWJsZSBzdWJzeXN0ZW0gZm9yIHN1Y2gNCj4gZGV2aWNlcyB0byBt
+ZS4gIFRoZSBxdWVzdGlvbiBpcyB3aGF0IGVuZHMgdXAgaW4gdGhlIGtlcm5lbCBhbmQgd2hhdCBp
+biB1c2VyDQo+IHNwYWNlLiAgQW55d2F5IElNTyBWNEwyIEFQSSBpcyBxdWl0ZSBmbGV4aWJsZSB3
+aXRoIHJlZ2FyZHMgdG8gdGhhdCwgZHVlIHRvDQo+IHdpZGUgcmFuZ2Ugb2YgZGV2aWNlcyBpdCBu
+ZWVkcyB0byBjb3Zlci4NCj4gDQo+ID4+Pj4gWzBdDQo+ID4+Pj4gaHR0cDovL3d3dy5mcmVlZGVz
+a3RvcC5vcmcvd2lraS9Tb2Z0d2FyZS9mcHJpbnQvbGliZnByaW50L3VwZWt0cy8NCj4gPj4+Pg0K
+PiA+Pj4+Pj4gQSBzeXNmcyB0cmlnZ2VyIGlzIGVuYWJsZWQgYW5kIHRoZSBkZXZpY2Ugc3RhcnRz
+IHNjYW5uaW5nLiBBcw0KPiA+Pj4+Pj4gc29vbiBhcyBhbiBpbWFnZSBpcyBhdmFpbGFibGUgaXQg
+aXMgd3JpdHRlbiBpbiB0aGUgY2hhcmFjdGVyIGRldmljZQ0KPiAvZGV2L2lpbzpkZXZpY2VYLg0K
+PiA+Pj4+Pj4NCj4gPj4+Pj4+IFVzZXJzcGFjZSBhcHBsaWNhdGlvbnMgd2lsbCBiZSBhYmxlIHRv
+IGNhbGN1bGF0ZSB0aGUgZXhwZWN0ZWQNCj4gPj4+Pj4+IGltYWdlIHNpemUgdXNpbmcgdGhlIGZp
+bmdlcnByaW50IGF0dHJpYnV0ZXMgaGVpZ2h0LCB3aWR0aCBhbmQgYml0DQo+ID4+Pj4+PiBkZXB0
+aC4gT3RoZXIgYXR0cmlidXRlcyBpbnRyb2R1Y2VkIGZvciB0aGUgZmluZ2VycHJpbnQgY2hhbm5l
+bCBpbg0KPiA+Pj4+Pj4gSUlPIHJlcHJlc2VudCBpbmZvcm1hdGlvbiB0aGF0IGFpZHMgaW4gdGhl
+IGZpbmdlcnByaW50IGltYWdlDQo+ID4+Pj4+PiBwcm9jZXNzaW5nLiBCZXNpZGVzIHRoZXNlLCB0
+aGUgcHJvcG9zZWQgaW50ZXJmYWNlIG9mZmVycw0KPiA+Pj4+Pj4gdXNlcnNwYWNlIGEgd2F5IHRv
+IHJlYWQgYSBmZWVkYmFjayBhZnRlciBhIHNjYW4gKGxpa2UgdGhlIHN3aXBlIHdhcw0KPiB0b28g
+c2xvdyBvciB0b28gZmFzdCkgdGhyb3VnaCBhIG1vZGlmaWVkIGZpbmdlcnByaW50X3N0YXR1cyBj
+aGFubmVsLg0KPiA+Pj4+Pj4NCj4gPj4+Pj4+IFswXSBodHRwOi8vd3d3LnNwaW5pY3MubmV0L2xp
+c3RzL2xpbnV4LWlpby9tc2cxMTQ2My5odG1sDQo+IA0KPiAtLQ0KPiBUbyB1bnN1YnNjcmliZSBm
+cm9tIHRoaXMgbGlzdDogc2VuZCB0aGUgbGluZSAidW5zdWJzY3JpYmUgbGludXgtaWlvIiBpbiB0
+aGUgYm9keQ0KPiBvZiBhIG1lc3NhZ2UgdG8gbWFqb3Jkb21vQHZnZXIua2VybmVsLm9yZyBNb3Jl
+IG1ham9yZG9tbyBpbmZvIGF0DQo+IGh0dHA6Ly92Z2VyLmtlcm5lbC5vcmcvbWFqb3Jkb21vLWlu
+Zm8uaHRtbA0K
