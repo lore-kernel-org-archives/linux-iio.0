@@ -1,7 +1,7 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from metis.ext.pengutronix.de ([92.198.50.35]:40210 "EHLO
+Received: from metis.ext.pengutronix.de ([92.198.50.35]:40205 "EHLO
 	metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752666AbbAXOCs (ORCPT
+	with ESMTP id S1753005AbbAXOCs (ORCPT
 	<rfc822;linux-iio@vger.kernel.org>); Sat, 24 Jan 2015 09:02:48 -0500
 From: Markus Pargmann <mpa@pengutronix.de>
 To: Shawn Guo <shawn.guo@linaro.org>,
@@ -23,67 +23,75 @@ Cc: Denis Carikli <denis@eukrea.com>,
 	Ian Campbell <ijc+devicetree@hellion.org.uk>,
 	Kumar Gala <galak@codeaurora.org>,
 	Markus Pargmann <mpa@pengutronix.de>
-Subject: [PATCH v5 5/6] ARM: dts: imx25: Add TSC and ADC support
-Date: Sat, 24 Jan 2015 15:01:42 +0100
-Message-Id: <1422108103-15052-6-git-send-email-mpa@pengutronix.de>
+Subject: [PATCH v5 2/6] ARM: dt: Binding documentation for imx25 ADC/TSC
+Date: Sat, 24 Jan 2015 15:01:39 +0100
+Message-Id: <1422108103-15052-3-git-send-email-mpa@pengutronix.de>
 In-Reply-To: <1422108103-15052-1-git-send-email-mpa@pengutronix.de>
 References: <1422108103-15052-1-git-send-email-mpa@pengutronix.de>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-From: Denis Carikli <denis@eukrea.com>
+This documentation describes the devicetree bindings for the
+ADC/Touchscreen unit of the i.MX25 SoC.
 
-Signed-off-by: Denis Carikli <denis@eukrea.com>
 Signed-off-by: Markus Pargmann <mpa@pengutronix.de>
 ---
- arch/arm/boot/dts/imx25.dtsi | 30 +++++++++++++++++++++++++++---
- 1 file changed, 27 insertions(+), 3 deletions(-)
+ .../devicetree/bindings/mfd/fsl-imx25-tsadc.txt    | 46 ++++++++++++++++++++++
+ 1 file changed, 46 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/mfd/fsl-imx25-tsadc.txt
 
-diff --git a/arch/arm/boot/dts/imx25.dtsi b/arch/arm/boot/dts/imx25.dtsi
-index 58d3c3cf2923..73ebc63353ef 100644
---- a/arch/arm/boot/dts/imx25.dtsi
-+++ b/arch/arm/boot/dts/imx25.dtsi
-@@ -265,13 +265,37 @@
- 				status = "disabled";
- 			};
- 
--			tsc: tsc@50030000 {
--				compatible = "fsl,imx25-adc", "fsl,imx21-tsc";
--				reg = <0x50030000 0x4000>;
-+			tscadc: tscadc@50030000 {
-+				compatible = "fsl,imx25-tsadc";
-+				reg = <0x50030000 0xc>;
- 				interrupts = <46>;
- 				clocks = <&clks 119>;
- 				clock-names = "ipg";
-+				interrupt-controller;
-+				#interrupt-cells = <1>;
-+				#address-cells = <1>;
-+				#size-cells = <1>;
-+				ranges;
- 				status = "disabled";
+diff --git a/Documentation/devicetree/bindings/mfd/fsl-imx25-tsadc.txt b/Documentation/devicetree/bindings/mfd/fsl-imx25-tsadc.txt
+new file mode 100644
+index 000000000000..a857af0eb68c
+--- /dev/null
++++ b/Documentation/devicetree/bindings/mfd/fsl-imx25-tsadc.txt
+@@ -0,0 +1,46 @@
++Freescale mx25 ADC/TSC multifunction device
 +
-+				adc: adc@50030800 {
-+					compatible = "fsl,imx25-gcq";
-+					reg = <0x50030800 0x60>;
-+					interrupt-parent = <&tscadc>;
-+					interrupts = <1>;
-+					#address-cells = <1>;
-+					#size-cells = <0>;
-+					status = "disabled";
-+				};
++This device combines two general purpose conversion queues one used for general
++ADC and the other used for touchscreens.
 +
-+				tsc: tcq@50030400 {
-+					compatible = "fsl,imx25-tcq";
-+					reg = <0x50030400 0x60>;
-+					interrupt-parent = <&tscadc>;
-+					interrupts = <0>;
-+					fsl,wires = <4>;
-+					status = "disabled";
-+				};
- 			};
- 
- 			ssi1: ssi@50034000 {
++Required properties:
++ - compatible: Should be "fsl,imx25-tsadc".
++ - reg: Memory range of the device.
++ - interrupts: Interrupt for this device as described in
++   interrupts/interrupts.txt
++ - clocks: An 'ipg' clock defined as described in clocks/clock.txt
++ - interrupt-controller: This device is an interrupt controller. It controls
++   the interrupts of both conversion queues.
++ - #interrupt-cells: Should be '<1>'.
++ - #address-cells: Should be '<1>'.
++ - #size-cells: Should be '<1>'.
++ - ranges
++
++This device includes two conversion queues which can be added as subnodes.
++The first queue is for the touchscreen, the second for general purpose ADC.
++
++Example:
++	tscadc: tscadc@50030000 {
++		compatible = "fsl,imx25-tsadc";
++		reg = <0x50030000 0xc>;
++		interrupts = <46>;
++		clocks = <&clks 119>;
++		clock-names = "ipg";
++		interrupt-controller;
++		#interrupt-cells = <1>;
++		#address-cells = <1>;
++		#size-cells = <1>;
++		ranges;
++
++		tsc: tcq@50030400 {
++			compatible = "fsl,imx25-tcq";
++			reg = <0x50030400 0x60>;
++			...
++		};
++
++		adc: gcq@50030800 {
++			compatible = "fsl,imx25-gcq";
++			reg = <0x50030800 0x60>;
++			...
++		};
++	};
 -- 
 2.1.4
 
