@@ -1,51 +1,101 @@
-Return-Path: <linux@rasmusvillemoes.dk>
-From: Rasmus Villemoes <linux@rasmusvillemoes.dk>
-To: Lars-Peter Clausen <lars@metafoo.de>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	linux-iio@vger.kernel.org,
-	devel@driverdev.osuosl.org,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH] staging: iio: ad2s1200: Fix sign extension
-Date: Fri, 23 Jan 2015 00:09:56 +0100
-Message-Id: <1421968196-17193-1-git-send-email-linux@rasmusvillemoes.dk>
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mga14.intel.com ([192.55.52.115]:42145 "EHLO mga14.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1750820AbbAXARQ (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Fri, 23 Jan 2015 19:17:16 -0500
+From: "Pandruvada, Srinivas" <srinivas.pandruvada@intel.com>
+To: "knaack.h@gmx.de" <knaack.h@gmx.de>
+CC: "Baluta, Daniel" <daniel.baluta@intel.com>,
+	"lars@metafoo.de" <lars@metafoo.de>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"jic23@kernel.org" <jic23@kernel.org>,
+	"Purdila, Octavian" <octavian.purdila@intel.com>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	"Westerberg, Mika" <mika.westerberg@intel.com>,
+	"pmeerw@pmeerw.net" <pmeerw@pmeerw.net>,
+	"beomho.seo@samsung.com" <beomho.seo@samsung.com>,
+	"gwendal@chromium.org" <gwendal@chromium.org>
+Subject: Re: [RFC PATCH] iio: ak8975: Make sure chipset is always initialized
+Date: Sat, 24 Jan 2015 00:17:12 +0000
+Message-ID: <1422058633.15254.2.camel@spandruv-hsb-test>
+References: <1418923002-901-1-git-send-email-daniel.baluta@intel.com>
+		 <5494A3D6.60607@gmx.de>
+		 <CAEnQRZABxH5MuWEnS=RHmQqGUN0QhFTtXxnM1uyrLxvP2a-Rmg@mail.gmail.com>
+		 <1419110796.2843.6.camel@spandruv-hsb-test>
+		 <1419110952.2843.8.camel@spandruv-hsb-test>
+		 <CAEnQRZC_SR_p2oYq9EpDDfBi2nCAAWvYmf0tR7V7WPZRZEp79g@mail.gmail.com>
+		 <1421685827.4459.397.camel@spandruv-desktop.jf.intel.com>
+		 <CAEnQRZAfRJ+-1x_ZgRAC2Kkr2js4EQB1xA6gTJ5n0uCAZS4y2g@mail.gmail.com>
+	 <1421686560.4459.400.camel@spandruv-desktop.jf.intel.com>
+	 <54C2DB5F.2050106@gmx.de>
+In-Reply-To: <54C2DB5F.2050106@gmx.de>
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-The line above makes vel a 12-bit quantity (st->rx[] is u8). The
-intention is to sign-extend vel using bit 11 as the sign bit. But
-because of C's promotion rules "vel = (vel << 4) >> 4;" is actually a
-no-op, since vel is promoted to int before the inner
-shift. sign_extend32 works equally well for 8 and 16 bits types, so
-use that.
-
-Signed-off-by: Rasmus Villemoes <linux@rasmusvillemoes.dk>
----
- drivers/staging/iio/resolver/ad2s1200.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/staging/iio/resolver/ad2s1200.c b/drivers/staging/iio/resolver/ad2s1200.c
-index 017d2f8379b7..c17893b4918c 100644
---- a/drivers/staging/iio/resolver/ad2s1200.c
-+++ b/drivers/staging/iio/resolver/ad2s1200.c
-@@ -18,6 +18,7 @@
- #include <linux/delay.h>
- #include <linux/gpio.h>
- #include <linux/module.h>
-+#include <linux/bitops.h>
- 
- #include <linux/iio/iio.h>
- #include <linux/iio/sysfs.h>
-@@ -68,7 +69,7 @@ static int ad2s1200_read_raw(struct iio_dev *indio_dev,
- 		break;
- 	case IIO_ANGL_VEL:
- 		vel = (((s16)(st->rx[0])) << 4) | ((st->rx[1] & 0xF0) >> 4);
--		vel = (vel << 4) >> 4;
-+		vel = sign_extend32(vel, 11);
- 		*val = vel;
- 		break;
- 	default:
--- 
-2.1.3
+T24gU2F0LCAyMDE1LTAxLTI0IGF0IDAwOjM4ICswMTAwLCBIYXJ0bXV0IEtuYWFjayB3cm90ZToN
+Cj4gUGFuZHJ1dmFkYSwgU3Jpbml2YXMgc2NocmllYiBhbSAxOS4wMS4yMDE1IHVtIDE3OjU2Og0K
+PiA+IE9uIE1vbiwgMjAxNS0wMS0xOSBhdCAxODo0OSArMDIwMCwgRGFuaWVsIEJhbHV0YSB3cm90
+ZTogDQo+ID4+IE9uIE1vbiwgSmFuIDE5LCAyMDE1IGF0IDY6NDQgUE0sIFBhbmRydXZhZGEsIFNy
+aW5pdmFzDQo+ID4+IDxzcmluaXZhcy5wYW5kcnV2YWRhQGludGVsLmNvbT4gd3JvdGU6DQo+ID4+
+PiBPbiBNb24sIDIwMTUtMDEtMTkgYXQgMTY6NDAgKzAyMDAsIERhbmllbCBCYWx1dGEgd3JvdGU6
+DQo+ID4+Pj4gSGVsbG8sDQo+ID4+Pj4NCj4gPj4+PiBPbiBTYXQsIERlYyAyMCwgMjAxNCBhdCAx
+MToyOSBQTSwgUGFuZHJ1dmFkYSwgU3Jpbml2YXMNCj4gPj4+PiA8c3Jpbml2YXMucGFuZHJ1dmFk
+YUBpbnRlbC5jb20+IHdyb3RlOg0KPiA+Pj4+PiArTWlrYQ0KPiA+Pj4+Pg0KPiA+Pj4+PiBPbiBT
+YXQsIDIwMTQtMTItMjAgYXQgMTM6MjYgLTA4MDAsIFNyaW5pdmFzIFBhbmRydXZhZGEgd3JvdGU6
+DQo+ID4+Pj4+PiBPbiBTYXQsIDIwMTQtMTItMjAgYXQgMDA6MjUgKzAyMDAsIERhbmllbCBCYWx1
+dGEgd3JvdGU6DQo+ID4+Pj4+Pj4gT24gU2F0LCBEZWMgMjAsIDIwMTQgYXQgMTI6MTYgQU0sIEhh
+cnRtdXQgS25hYWNrIDxrbmFhY2suaEBnbXguZGU+IHdyb3RlOg0KPiA+Pj4+Pj4+PiBEYW5pZWwg
+QmFsdXRhIHNjaHJpZWIgYW0gMTguMTIuMjAxNCB1bSAxODoxNjoNCj4gPj4+Pj4+Pj4+IFdoZW4g
+dXNpbmcgQUNQSSwgaWYgYWNwaV9tYXRjaF9kZXZpY2UgZmFpbHMgdGhlbiBjaGlwc2V0IGVudW0g
+d2lsbCBiZQ0KPiA+Pj4+Pj4+Pj4gdW5pbml0aWFsaXplZCBhbmQgJmFrX2RlZl9hcnJheVtjaGlw
+c2V0XSB3aWxsIHBvaW50IHRvIHNvbWUgYmFkIGFkZHJlc3MuDQo+ID4+Pj4+Pj4+Pg0KPiA+Pj4+
+Pj4gSSBhbSBtaXNzaW5nIHNvbWV0aGluZy4gWW91IGFyZSBlbnVtZXJhdGVkIG92ZXIgaTJjIGRl
+dmljZSwgd2hpY2ggd2FzDQo+ID4+Pj4+PiBjcmVhdGVkIGZyb20gQUNQSSBQTlAgcmVzb3VyY2Uu
+IFRoZXJlIGlzIGEgdmFsaWQgaGFuZGxlIG9yIGFuZCB0aGUNCj4gPj4+Pj4+IGRldmljZSBoYXMg
+YW4gQUNQSSBjb21wYW5pb24gYXQgdGhlIGxlYXN0LiBJZiB0aGlzIGZhaWxpbmcsIEkgaGF2ZSB0
+bw0KPiA+Pj4+Pj4gY2hlY2sgdGhlIGNvZGUgZm9yIGFjcGkgaTJjLg0KPiA+Pj4+Pj4gQ2FuIHlv
+dSBjaGVjayB3aHkgdGhpcyBjaGVjayBmYWlsZWQ/IFdlIG1heSBoYXZlIGJ1ZyBpbiBpMmMgaGFu
+ZGxpbmcuDQo+ID4+Pj4NCj4gPj4+PiBZb3UgYXJlIHJpZ2h0IGFib3V0IHRoaXMuIFVuZGVyIG5v
+cm1hbCBjaXJjdW1zdGFuY2VzLCBpZiBwcm9iZSBpcyBjYWxsZWQNCj4gPj4+PiB0aGVuIGFjcGlf
+bWF0Y2hfZGV2aWNlIHdpbGwgbm90IGZhaWwuIEkgZXZlbiB0cmllZCB0byByZW1vdmUgdGhlDQo+
+ID4+Pj4gZGV2aWNlIGFmdGVyIHByb2JlDQo+ID4+Pj4gYnV0IGJlZm9yZSBhY3BpX21hdGNoX2Rl
+dmljZSwgYW55aG93IGFjcGlfbWF0Y2hfZGV2aWNlIHdhcyBzdGlsbCBzdWNjZXNzZnVsIDopDQo+
+ID4+Pj4NCj4gPj4+PiBUaGlzIGlzIG1vcmUgYSBtYXR0ZXIgb2YgY29kZSBjb3JyZWN0bmVzcy4N
+Cj4gPj4+Pg0KPiA+Pj4+IEluIGFrODk3NV9tYXRjaF9hY3BpX2RldmljZSB3ZSBoYXZlOg0KPiA+
+Pj4+DQo+ID4+Pj4gwrsgICAgICAgY29uc3Qgc3RydWN0IGFjcGlfZGV2aWNlX2lkICppZDsNCj4g
+Pj4+Pg0KPiA+Pj4+IMK7ICAgICAgIGlkID0gYWNwaV9tYXRjaF9kZXZpY2UoZGV2LT5kcml2ZXIt
+PmFjcGlfbWF0Y2hfdGFibGUsIGRldik7DQo+ID4+Pj4gwrsgICAgICAgaWYgKCFpZCkNCj4gPj4+
+PiDCuyAgICAgICDCuyAgICAgICByZXR1cm4gTlVMTDsNCj4gPj4+PiDCuyAgICAgICAqY2hpcHNl
+dCA9IChpbnQpaWQtPmRyaXZlcl9kYXRhOw0KPiA+Pj4+DQo+ID4+Pj4gQ29tcGlsZXIgY29tcGxh
+aW5zIG9uIHRoZSBmYWN0IHRoYXQgY2hpcHNldCBtaWdodCBiZSB1bmluaXRpYWxpemVkDQo+ID4+
+Pj4gaWYgdGhpcyByZXR1cm5zIE5VTEwsIGFuZCB3ZSBzaG91bGRuJ3QgaWdub3JlIHRoaXMgd2Fy
+bmluZyBldmVuIHRoaXMgY2FzZQ0KPiA+Pj4+IHdpbGwgbmV2ZXIgaGFwcGVuLg0KPiA+Pj4+DQo+
+ID4+PiBXaWxsIHRoaXMgZml4Pw0KPiA+Pj4gZGF0YS0+Y2hpcHNldCA9IEFLODk3NTsNCj4gPj4+
+IGJlZm9yZQ0KPiA+Pj4gYWs4OTc1X21hdGNoX2FjcGlfZGV2aWNlKCZjbGllbnQtPmRldiwgJmRh
+dGEtPmNoaXBzZXQpOw0KPiA+Pj4NCj4gDQo+IFRoaXMgd291bGQgZml4IHRoZSBjb21waWxlciB3
+YXJuaW5nLCBidXQgZG9lc24ndCBzZWVtIHRoZSByaWdodCBzb2x1dGlvbiBmb3INCj4gdGhpcyBp
+c3N1ZS4gUXVvdGluZyB0aGUgZGVzY3JpcHRpb24gb2YgYWNwaV9tYXRjaF9kZXZpY2U6DQo+ICJS
+ZXR1cm4gYSBwb2ludGVyIHRvIHRoZSBmaXJzdCBtYXRjaGluZyBJRCBvbiBzdWNjZXNzIG9yICVO
+VUxMIG9uIGZhaWx1cmUuIg0KPiBTbywgZXZlbiBpZiBpdCBpcyB2ZXJ5IHVubGlrZWx5IHRvIGZv
+ciBpdCB0byBmYWlsIC0gaWYgaXQgZG9lcyBmYWlsLCB0aGUNCj4gZXJyb3Igc2hvdWxkIGJlIGhh
+bmRsZWQgYXMgcXVpY2sgYXMgcG9zc2libGUuIEkgd291bGQgZmF2b3IgRGFuaWVscyBzb2x1dGlv
+bg0KPiB0byBjaGVjayBmb3IgYSB2YWxpZCBhc3NpZ25tZW50IG9mIG5hbWUuDQo+IA0KVGhpcyBz
+aG91bGQgbmV2ZXIgZmFpbCBhcyB0aGUgZGV2aWNlIGlzIGVudW1lcmF0ZWQgYnkgdGhpcy4gU28g
+aXQNCmRvZXNuJ3QgbWF0dGVyIGFzIGxvbmcgYXMgeW91IHNpbGVudCBjb21waWxlciB3YXJuaW5n
+Lg0KPiA+Pg0KPiA+PiBZZXMsIHRoaXMgaXMgZG9uZSBpbiB0aGUgb3JpZ2luYWwgcGF0Y2g6DQo+
+ID4+DQo+ID4+ICsgICAgICAgKmNoaXBzZXQgPSBBS19NQVhfVFlQRTsNCj4gPiBTaW5jZSBkYXRh
+IG1lbW9yeSBpcyBub3QgemVybyBhbGxvY2VkLCBvdGhlciBtZW1iZXIgb2YgZGF0YSBhcmUgYW55
+d2F5DQo+ID4gaW5pdGlhbGl6ZWQsIHNvIGFkZGluZyB0aGlzIGFsc28gbWF5IGJlIGJldHRlci4g
+DQo+IA0KPiBJZiB0aGVyZSBkaWQgbm90IG9jY3VyIGFuIGVycm9yIGNvbmRpdGlvbiwgaXQgd2ls
+bCBiZSBhc3NpZ25lZCBhIHZhbHVlDQo+IGJlZm9yZSBiZWluZyBjaGVja2VkIGZvciB2YWxpZCBy
+YW5nZXMuIEFuZCBpZiB0aGVyZSBpcyBhbiBlcnJvciwgcHJvYmUNCj4gc2hvdWxkIGJlIGFib3J0
+ZWQsIGFueXdheS4gU28gaW5pdGlhbGl6aW5nICpjaGlwc2V0IGRvZXNuJ3Qgc2VlbSB0byBhZGQN
+Cj4gYW55IGJlbmVmaXQgSU1ITy4NCj4gDQo+ID4+DQo+ID4+IC4uIGFuZCBmaXhlcyB0aGUgd2Fy
+bmluZy4NCj4gPj4NCj4gPj4gRGFuaWVsLg0KPiA+IA0KPiA+IE7vv73vv73vv73vv73vv71y77+9
+77+9ee+/ve+/ve+/vWLvv71Y77+977+9x6d277+9Xu+/vSneunsubu+/vSvvv73vv73vv73vv717
+77+977+9KiLvv73vv71ebu+/vXLvv73vv73vv71677+9Gu+/ve+/vWjvv73vv73vv73vv70m77+9
+77+9Hu+/vUfvv73vv73vv71o77+9Ayjvv73pmo7vv73domoi77+977+9Gu+/vRtt77+977+977+9
+77+977+9eu+/vd6W77+977+977+9Zu+/ve+/ve+/vWjvv73vv73vv71+77+9bW1sPT0NCj4gPiAN
+Cj4gDQoNCg==
