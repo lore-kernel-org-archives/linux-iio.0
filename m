@@ -1,118 +1,44 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:51066 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751419AbbAYXDU (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 25 Jan 2015 18:03:20 -0500
-Message-ID: <54C57636.10500@kernel.org>
-Date: Sun, 25 Jan 2015 23:03:18 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-MIME-Version: 1.0
-To: Irina Tirdea <irina.tirdea@intel.com>, linux-iio@vger.kernel.org
-CC: linux-kernel@vger.kernel.org, Vlad Dogaru <vlad.dogaru@intel.com>,
-	Daniel Baluta <daniel.baluta@intel.com>,
+Received: from mail-out.m-online.net ([212.18.0.10]:54418 "EHLO
+	mail-out.m-online.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751053AbbAYXHD convert rfc822-to-8bit (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 25 Jan 2015 18:07:03 -0500
+From: Marek Vasut <marex@denx.de>
+To: Kristina =?utf-8?q?Mart=C5=A1enko?= <kristina.martsenko@gmail.com>
+Subject: Re: [PATCH v2 0/4] iio: mxs-lradc: fix interactions between the touchscreen and the ADC
+Date: Sun, 25 Jan 2015 19:47:17 +0100
+Cc: Jonathan Cameron <jic23@kernel.org>,
 	Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>
-Subject: Re: [PATCH v2 05/10] iio: core: Introduce CHANGE event type
-References: <1421003416-27557-1-git-send-email-irina.tirdea@intel.com> <1421003416-27557-6-git-send-email-irina.tirdea@intel.com>
-In-Reply-To: <1421003416-27557-6-git-send-email-irina.tirdea@intel.com>
-Content-Type: text/plain; charset=windows-1252
+	"Lars-Peter Clausen" <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Juergen Beisert <jbe@pengutronix.de>,
+	Alexandre Belloni <alexandre.belloni@free-electrons.com>,
+	Fabio Estevam <fabio.estevam@freescale.com>,
+	Stefan Wahren <stefan.wahren@i2se.com>,
+	"Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
+	linux-iio@vger.kernel.org, devel@driverdev.osuosl.org
+References: <1422203302-17090-1-git-send-email-kristina.martsenko@gmail.com>
+In-Reply-To: <1422203302-17090-1-git-send-email-kristina.martsenko@gmail.com>
+MIME-Version: 1.0
+Content-Type: Text/Plain;
+  charset="utf-8"
+Message-Id: <201501251947.17832.marex@denx.de>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 11/01/15 19:10, Irina Tirdea wrote:
-> A step detector will generate an interrupt each time N step are detected.
-> A device that has such pedometer functionality is Freescale's MMA9553L:
-> http://www.freescale.com/files/sensors/doc/ref_manual/MMA9553LSWRM.pdf.
-> 
-> Introduce IIO_EV_TYPE_CHANGE event type for events that are generated
-> when the channel passes a threshold on the absolute change in value.
-> 
-> Signed-off-by: Irina Tirdea <irina.tirdea@intel.com>
-Applied.
-> ---
->  Documentation/ABI/testing/sysfs-bus-iio              | 20 ++++++++++++++++----
->  drivers/iio/industrialio-event.c                     |  1 +
->  .../staging/iio/Documentation/iio_event_monitor.c    |  2 ++
->  include/linux/iio/types.h                            |  1 +
->  4 files changed, 20 insertions(+), 4 deletions(-)
-> 
-> diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
-> index 71dc8db..c03a140 100644
-> --- a/Documentation/ABI/testing/sysfs-bus-iio
-> +++ b/Documentation/ABI/testing/sysfs-bus-iio
-> @@ -891,12 +891,24 @@ Description:
->  		number or direction is not specified, applies to all channels of
->  		this type.
->  
-> -What:		/sys/.../events/in_steps_instance_en
-> -KernelVersion:	3.19
-> +What:		/sys/.../events/in_steps_change_en
-> +KernelVersion:	3.20
->  Contact:	linux-iio@vger.kernel.org
->  Description:
-> -		Enables or disables step detection. Each time the user takes a step an
-> -		event of this type will be generated.
-> +		Event generated when channel passes a threshold on the absolute
-> +		change in value. E.g. for steps: a step change event is
-> +		generated each time the user takes N steps, where N is set using
-> +		in_steps_change_value.
-> +
-> +What:		/sys/.../events/in_steps_change_value
-> +KernelVersion:	3.20
-> +Contact:	linux-iio@vger.kernel.org
-> +Description:
-> +		Specifies the value of change threshold that the
-> +		device is comparing against for the events enabled by
-> +		<type>[Y][_name]_roc[_rising|falling|]_en. E.g. for steps:
-> +		if set to 3, a step change event will be generated every 3
-> +		steps.
->  
->  What:		/sys/bus/iio/devices/iio:deviceX/trigger/current_trigger
->  KernelVersion:	2.6.35
-> diff --git a/drivers/iio/industrialio-event.c b/drivers/iio/industrialio-event.c
-> index 3f5cee0..08c4a4c 100644
-> --- a/drivers/iio/industrialio-event.c
-> +++ b/drivers/iio/industrialio-event.c
-> @@ -198,6 +198,7 @@ static const char * const iio_ev_type_text[] = {
->  	[IIO_EV_TYPE_THRESH_ADAPTIVE] = "thresh_adaptive",
->  	[IIO_EV_TYPE_MAG_ADAPTIVE] = "mag_adaptive",
->  	[IIO_EV_TYPE_INSTANCE] = "instance",
-> +	[IIO_EV_TYPE_CHANGE] = "change",
->  };
->  
->  static const char * const iio_ev_dir_text[] = {
-> diff --git a/drivers/staging/iio/Documentation/iio_event_monitor.c b/drivers/staging/iio/Documentation/iio_event_monitor.c
-> index def236a..2e78d58 100644
-> --- a/drivers/staging/iio/Documentation/iio_event_monitor.c
-> +++ b/drivers/staging/iio/Documentation/iio_event_monitor.c
-> @@ -60,6 +60,7 @@ static const char * const iio_ev_type_text[] = {
->  	[IIO_EV_TYPE_THRESH_ADAPTIVE] = "thresh_adaptive",
->  	[IIO_EV_TYPE_MAG_ADAPTIVE] = "mag_adaptive",
->  	[IIO_EV_TYPE_INSTANCE] = "instance",
-> +	[IIO_EV_TYPE_CHANGE] = "change",
->  };
->  
->  static const char * const iio_ev_dir_text[] = {
-> @@ -179,6 +180,7 @@ static bool event_is_known(struct iio_event_data *event)
->  	case IIO_EV_TYPE_THRESH_ADAPTIVE:
->  	case IIO_EV_TYPE_MAG_ADAPTIVE:
->  	case IIO_EV_TYPE_INSTANCE:
-> +	case IIO_EV_TYPE_CHANGE:
->  		break;
->  	default:
->  		return false;
-> diff --git a/include/linux/iio/types.h b/include/linux/iio/types.h
-> index c3601c2..3ba3d66 100644
-> --- a/include/linux/iio/types.h
-> +++ b/include/linux/iio/types.h
-> @@ -79,6 +79,7 @@ enum iio_event_type {
->  	IIO_EV_TYPE_THRESH_ADAPTIVE,
->  	IIO_EV_TYPE_MAG_ADAPTIVE,
->  	IIO_EV_TYPE_INSTANCE,
-> +	IIO_EV_TYPE_CHANGE,
->  };
->  
->  enum iio_event_info {
-> 
+On Sunday, January 25, 2015 at 05:28:18 PM, Kristina Martšenko wrote:
+> These patches fix some issues with using the touchscreen and reading
+> other ADC channels at the same time.
 
+[...]
+
+Hi!
+
+Thanks!
+
+Entire series
+
+Reviewed-by: Marek Vasut <marex@denx.de>
+
+Best regards,
+Marek Vasut
