@@ -1,10 +1,10 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-lb0-f176.google.com ([209.85.217.176]:50793 "EHLO
-	mail-lb0-f176.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753760AbbAYQaR (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 25 Jan 2015 11:30:17 -0500
-Received: by mail-lb0-f176.google.com with SMTP id z12so4348682lbi.7
-        for <linux-iio@vger.kernel.org>; Sun, 25 Jan 2015 08:30:16 -0800 (PST)
+Received: from mail-lb0-f173.google.com ([209.85.217.173]:34612 "EHLO
+	mail-lb0-f173.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753480AbbAYQaU (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 25 Jan 2015 11:30:20 -0500
+Received: by mail-lb0-f173.google.com with SMTP id p9so4390726lbv.4
+        for <linux-iio@vger.kernel.org>; Sun, 25 Jan 2015 08:30:18 -0800 (PST)
 From: =?UTF-8?q?Kristina=20Mart=C5=A1enko?=
 	<kristina.martsenko@gmail.com>
 To: Jonathan Cameron <jic23@kernel.org>
@@ -20,9 +20,9 @@ Cc: Hartmut Knaack <knaack.h@gmx.de>,
 	linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
 	=?UTF-8?q?Kristina=20Mart=C5=A1enko?=
 	<kristina.martsenko@gmail.com>
-Subject: [PATCH v2 3/4] iio: mxs-lradc: make ADC reads not unschedule touchscreen conversions
-Date: Sun, 25 Jan 2015 18:28:21 +0200
-Message-Id: <1422203302-17090-4-git-send-email-kristina.martsenko@gmail.com>
+Subject: [PATCH v2 4/4] iio: mxs-lradc: only update the buffer when its conversions have finished
+Date: Sun, 25 Jan 2015 18:28:22 +0200
+Message-Id: <1422203302-17090-5-git-send-email-kristina.martsenko@gmail.com>
 In-Reply-To: <1422203302-17090-1-git-send-email-kristina.martsenko@gmail.com>
 References: <1422203302-17090-1-git-send-email-kristina.martsenko@gmail.com>
 MIME-Version: 1.0
@@ -30,68 +30,39 @@ Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Reading a channel through sysfs, or starting a buffered capture, can
-occasionally turn off the touchscreen.
-
-This is because the read_raw() and buffer preenable()/postdisable()
-callbacks unschedule current conversions on all channels. If a delay
-channel happens to schedule a touchscreen conversion at the same time,
-the conversion gets cancelled and the touchscreen sequence stops.
-
-This is probably related to this note from the reference manual:
-
-	"If a delay group schedules channels to be sampled and a manual
-	write to the schedule field in CTRL0 occurs while the block is
-	discarding samples, the LRADC will switch to the new schedule
-	and will not sample the channels that were previously scheduled.
-	The time window for this to happen is very small and lasts only
-	while the LRADC is discarding samples."
-
-So make the callbacks only unschedule conversions for the channels they
-use. This means channel 0 for read_raw() and channels 0-5 for the buffer
-(if the touchscreen is enabled). Since the touchscreen uses different
-channels (6 and 7), it no longer gets turned off.
-
-This is tested and fixes the issue on i.MX28, but hasn't been tested on
-i.MX23.
+Using the touchscreen while running buffered capture results in the
+buffer reporting lots of wrong values, often just zeros. This is because
+we push readings to the buffer every time a touchscreen interrupt
+arrives, including when the buffer's own conversions have not yet
+finished. So let's only push to the buffer when its conversions are
+ready.
 
 Signed-off-by: Kristina Martšenko <kristina.martsenko@gmail.com>
 Reviewed-by: Marek Vasut <marex@denx.de>
 ---
- drivers/staging/iio/adc/mxs-lradc.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/staging/iio/adc/mxs-lradc.c | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/staging/iio/adc/mxs-lradc.c b/drivers/staging/iio/adc/mxs-lradc.c
-index 653af03bc69d..d2e0c275bf4d 100644
+index d2e0c275bf4d..ebcbd12d48b9 100644
 --- a/drivers/staging/iio/adc/mxs-lradc.c
 +++ b/drivers/staging/iio/adc/mxs-lradc.c
-@@ -824,7 +824,7 @@ static int mxs_lradc_read_single(struct iio_dev *iio_dev, int chan, int *val)
- 	if (lradc->soc == IMX28_LRADC)
- 		mxs_lradc_reg_clear(lradc, LRADC_CTRL1_LRADC_IRQ_EN(0),
- 			LRADC_CTRL1);
--	mxs_lradc_reg_clear(lradc, 0xff, LRADC_CTRL0);
-+	mxs_lradc_reg_clear(lradc, 0x1, LRADC_CTRL0);
+@@ -1152,10 +1152,12 @@ static irqreturn_t mxs_lradc_handle_irq(int irq, void *data)
+ 				LRADC_CTRL1_LRADC_IRQ(TOUCHSCREEN_VCHANNEL2));
+ 	}
  
- 	/* Enable / disable the divider per requirement */
- 	if (test_bit(chan, &lradc->is_divided))
-@@ -1272,7 +1272,7 @@ static int mxs_lradc_buffer_preenable(struct iio_dev *iio)
- 		mxs_lradc_reg_clear(lradc,
- 			lradc->buffer_vchans << LRADC_CTRL1_LRADC_IRQ_EN_OFFSET,
- 			LRADC_CTRL1);
--	mxs_lradc_reg_clear(lradc, 0xff, LRADC_CTRL0);
-+	mxs_lradc_reg_clear(lradc, lradc->buffer_vchans, LRADC_CTRL0);
+-	if (iio_buffer_enabled(iio))
+-		iio_trigger_poll(iio->trig);
+-	else if (reg & LRADC_CTRL1_LRADC_IRQ(0))
++	if (iio_buffer_enabled(iio)) {
++		if (reg & lradc->buffer_vchans)
++			iio_trigger_poll(iio->trig);
++	} else if (reg & LRADC_CTRL1_LRADC_IRQ(0)) {
+ 		complete(&lradc->completion);
++	}
  
- 	for_each_set_bit(chan, iio->active_scan_mask, LRADC_MAX_TOTAL_CHANS) {
- 		ctrl4_set |= chan << LRADC_CTRL4_LRADCSELECT_OFFSET(ofs);
-@@ -1305,7 +1305,7 @@ static int mxs_lradc_buffer_postdisable(struct iio_dev *iio)
- 	mxs_lradc_reg_clear(lradc, LRADC_DELAY_TRIGGER_LRADCS_MASK |
- 					LRADC_DELAY_KICK, LRADC_DELAY(0));
+ 	mxs_lradc_reg_clear(lradc, reg & clr_irq, LRADC_CTRL1);
  
--	mxs_lradc_reg_clear(lradc, 0xff, LRADC_CTRL0);
-+	mxs_lradc_reg_clear(lradc, lradc->buffer_vchans, LRADC_CTRL0);
- 	if (lradc->soc == IMX28_LRADC)
- 		mxs_lradc_reg_clear(lradc,
- 			lradc->buffer_vchans << LRADC_CTRL1_LRADC_IRQ_EN_OFFSET,
 -- 
 2.2.0
 
