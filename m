@@ -1,69 +1,78 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:58141 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:58386 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1756684AbbAZVRR (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 26 Jan 2015 16:17:17 -0500
-Message-ID: <54C6AEDC.90001@kernel.org>
-Date: Mon, 26 Jan 2015 21:17:16 +0000
+	with ESMTP id S1753100AbbAZWHR (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 26 Jan 2015 17:07:17 -0500
+Message-ID: <54C6BA92.30102@kernel.org>
+Date: Mon, 26 Jan 2015 22:07:14 +0000
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Varka Bhadram <varkabhadram@gmail.com>, linux-iio@vger.kernel.org
-CC: lars@metafoo.de, Varka Bhadram <varkab@cdac.in>
-Subject: Re: [PATCH iio v2 3/3] imu: inv_mpu6050: cleanup on error check
-References: <1421897884-32663-1-git-send-email-varkab@cdac.in> <1421897884-32663-4-git-send-email-varkab@cdac.in>
-In-Reply-To: <1421897884-32663-4-git-send-email-varkab@cdac.in>
+To: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+CC: linux-iio@vger.kernel.org, Wolfram Sang <wsa@the-dreams.de>,
+	Jean Delvare <khali@linux-fr.org>
+Subject: Re: [PATCH] iio: magnetometer: ak8975: Add AK8963
+References: <1420846238-31802-1-git-send-email-srinivas.pandruvada@linux.intel.com> <54B1706A.3080809@kernel.org> <54B30186.3030104@linux.intel.com> <54B43BE4.6040909@kernel.org>
+In-Reply-To: <54B43BE4.6040909@kernel.org>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 22/01/15 03:38, Varka Bhadram wrote:
-> Signed-off-by: Varka Bhadram <varkab@cdac.in>
-Applied etc.
-> ---
->  drivers/iio/imu/inv_mpu6050/inv_mpu_trigger.c |   17 ++++++++---------
->  1 file changed, 8 insertions(+), 9 deletions(-)
+On 12/01/15 21:25, Jonathan Cameron wrote:
+> On 11/01/15 23:04, Srinivas Pandruvada wrote:
+>>
+>> On 01/10/2015 10:33 AM, Jonathan Cameron wrote:
+>>> On 09/01/15 23:30, Srinivas Pandruvada wrote:
+>>>> Added AK8963 in the id table. Unfortunately some commercial devices
+>>>> using caps version ak8963.
+>>>>
+>>>> Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+>>> Hmm. I'm not sure what the general opinion on supporting this sort of
+>>> mess up is.
+>> This string comes from manufacturer provided BIOS (via ACPI config).
+>>
+>> Thanks,
+>> Srinivas
+> grr, guess we'll have to take it then.  I'm tempted to add a comment
+> saying it is strictly as a work around though..
+Applied to the togreg branch of iio.git
+
+Thanks,
+>>
+>>> Are we talking naming provided from a device tree or via old fashioned board
+>>> files?  If the board files I'd be inclined to say they are running a custom
+>>> kernel anyway so can patch this driver themselves.  If device tree I guess
+>>> we probably do need to support it - perhaps as a deprecated binding?
+>>>
+>>> Wolfram / Jean - you guys must have seen this before. Did you let
+>>> the capital form in alongside the lower case one?  I guessing no ;)
+>>>
+>>> I did a quick grep of hwmon and couldn't find any instances of this...
+>>>
+>>> Jonathan
+
+>>>> ---
+>>>>   drivers/iio/magnetometer/ak8975.c | 1 +
+>>>>   1 file changed, 1 insertion(+)
+>>>>
+>>>> diff --git a/drivers/iio/magnetometer/ak8975.c b/drivers/iio/magnetometer/ak8975.c
+>>>> index 0d10a4b..b13936d 100644
+>>>> --- a/drivers/iio/magnetometer/ak8975.c
+>>>> +++ b/drivers/iio/magnetometer/ak8975.c
+>>>> @@ -813,6 +813,7 @@ static int ak8975_probe(struct i2c_client *client,
+>>>>   static const struct i2c_device_id ak8975_id[] = {
+>>>>       {"ak8975", AK8975},
+>>>>       {"ak8963", AK8963},
+>>>> +    {"AK8963", AK8963},
+>>>>       {"ak09911", AK09911},
+>>>>       {"ak09912", AK09912},
+>>>>       {}
+>>>>
+>>>
+>>
 > 
-> diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_trigger.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_trigger.c
-> index ab8c85a..844610c 100644
-> --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_trigger.c
-> +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_trigger.c
-> @@ -120,29 +120,28 @@ int inv_mpu6050_probe_trigger(struct iio_dev *indio_dev)
->  					  "%s-dev%d",
->  					  indio_dev->name,
->  					  indio_dev->id);
-> -	if (st->trig == NULL) {
-> -		ret = -ENOMEM;
-> -		goto error_ret;
-> -	}
-> +	if (!st->trig)
-> +		return -ENOMEM;
-> +
->  	ret = devm_request_irq(&indio_dev->dev, st->client->irq,
->  			       &iio_trigger_generic_data_rdy_poll,
->  			       IRQF_TRIGGER_RISING,
->  			       "inv_mpu",
->  			       st->trig);
->  	if (ret)
-> -		goto error_ret;
-> +		return ret;
-> +
->  	st->trig->dev.parent = &st->client->dev;
->  	st->trig->ops = &inv_mpu_trigger_ops;
->  	iio_trigger_set_drvdata(st->trig, indio_dev);
-> +
->  	ret = iio_trigger_register(st->trig);
->  	if (ret)
-> -		goto error_ret;
-> +		return ret;
-> +
->  	indio_dev->trig = iio_trigger_get(st->trig);
->  
->  	return 0;
-> -
-> -error_ret:
-> -	return ret;
->  }
->  
->  void inv_mpu6050_remove_trigger(struct inv_mpu6050_state *st)
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
 > 
 
