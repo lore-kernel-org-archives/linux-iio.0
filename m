@@ -1,61 +1,130 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga03.intel.com ([134.134.136.65]:59311 "EHLO mga03.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1754201AbbAZKYt (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Mon, 26 Jan 2015 05:24:49 -0500
-From: "Baluta, Teodora" <teodora.baluta@intel.com>
-To: "floe@butterbrot.org" <floe@butterbrot.org>
-CC: "s.nawrocki@samsung.com" <s.nawrocki@samsung.com>,
-	"lars@metafoo.de" <lars@metafoo.de>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"jic23@kernel.org" <jic23@kernel.org>,
-	"linux-media@vger.kernel.org" <linux-media@vger.kernel.org>,
-	"m.chehab@samsung.com" <m.chehab@samsung.com>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"hverkuil@xs4all.nl" <hverkuil@xs4all.nl>
-Subject: Re: [RFC PATCH 0/3] Introduce IIO interface for fingerprint sensors
-Date: Mon, 26 Jan 2015 10:24:44 +0000
-Message-ID: <1422267881.2662.39.camel@bebop>
-References: <1417698017-13835-1-git-send-email-teodora.baluta@intel.com>
-	 <5481153B.4070609@kernel.org> <1418047828.18463.10.camel@bebop>
-	 <54930604.1020607@metafoo.de> <549D42BD.1050901@kernel.org>
-	 <1421255642.31900.4.camel@bebop> <54B7FAF2.8080207@samsung.com>
-	 <A2E3DE9C026DE6469D89C3A4C6C219390A89FE37@IRSMSX107.ger.corp.intel.com>
-	 <54C27AE4.4020702@butterbrot.org>
-In-Reply-To: <54C27AE4.4020702@butterbrot.org>
-Content-Type: text/plain; charset="utf-8"
+Received: from mail-wg0-f54.google.com ([74.125.82.54]:36762 "EHLO
+	mail-wg0-f54.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755431AbbAZOkL (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 26 Jan 2015 09:40:11 -0500
 MIME-Version: 1.0
+In-Reply-To: <54C5773E.2030508@kernel.org>
+References: <1421003416-27557-1-git-send-email-irina.tirdea@intel.com>
+	<1421003416-27557-8-git-send-email-irina.tirdea@intel.com>
+	<54C5773E.2030508@kernel.org>
+Date: Mon, 26 Jan 2015 16:40:09 +0200
+Message-ID: <CAEnQRZBYU+JBUjTHh0pXnyUfBxkWV0hzTj6DBHucQkJKet970A@mail.gmail.com>
+Subject: Re: [PATCH v2 07/10] iio: core: Introduce IIO_CHAN_INFO_FILTER_OUTLIERS_THRESH
+ and _PERIOD
+From: Daniel Baluta <daniel.baluta@intel.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Irina Tirdea <irina.tirdea@intel.com>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+	Vlad Dogaru <vlad.dogaru@intel.com>,
+	Daniel Baluta <daniel.baluta@intel.com>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-SGkgRmxvcmlhbiwNCg0KVGhhbmtzIGZvciB0aGUgcmVwbHkhDQoNCk9uIFZpLCAyMDE1LTAxLTIz
-IGF0IDE3OjQ2ICswMTAwLCBGbG9yaWFuIEVjaHRsZXIgd3JvdGU6DQo+IEhlbGxvIFRlb2RvcmEs
-DQo+IA0KPiBPbiAyMy4wMS4yMDE1IDE0OjA1LCBCYWx1dGEsIFRlb2RvcmEgd3JvdGU6DQo+ID4g
-VGhlIGZpbmdlcnByaW50IHNlbnNvciBhY3RzIG1vcmUgbGlrZSBhIHNjYW5uZXIgZGV2aWNlLCBz
-byB0aGUNCj4gPiBjbG9zZXN0IHR5cGUgaXMgdGhlIFY0TDJfQ0FQX1ZJREVPX0NBUFRVUkUuIEhv
-d2V2ZXIsIHRoaXMgaXMgbm90IGENCj4gPiBwZXJmZWN0IG1hdGNoIGJlY2F1c2UgdGhlIGRyaXZl
-ciBvbmx5IHNlbmRzIGFuIGltYWdlLCBvbmNlLCB3aGVuDQo+ID4gdHJpZ2dlcmVkLiBXb3VsZCBp
-dCBiZSBhIGJldHRlciBhbHRlcm5hdGl2ZSB0byBkZWZpbmUgYSBuZXcNCj4gPiBjYXBhYmlsaXR5
-IHR5cGU/IE9yIGl0IHdvdWxkIGJlIGFjY2VwdGFibGUgdG8gc2ltcGx5IGhhdmUgYSB2aWRlbw0K
-PiA+IGRldmljZSB3aXRoIG5vIGZyYW1lIGJ1ZmZlciBvciBmcmFtZSByYXRlIGFuZCB0aGUgdXNl
-ciBzcGFjZQ0KPiA+IGFwcGxpY2F0aW9uIHRvIHJlYWQgZnJvbSB0aGUgY2hhcmFjdGVyIGRldmlj
-ZSAvZGV2L3ZpZGVvWD8NCj4gU29ycnkgaWYgSSBqdW1wIGluIGhlcmUgcmlnaHQgaW4gdGhlIG1p
-ZGRsZSBvZiB0aGlzIGRpc2N1c3Npb24sIGJ1dCBzb21lDQo+IHRpbWUgYWdvLCBJIHdyb3RlIGEg
-ZmluZ2VycHJpbnQgc2Vuc29yIGRyaXZlciBmb3IgdGhlIFNpZW1lbnMgSUQgTW91c2UNCj4gKHN0
-aWxsIHBhcnQgb2YgdGhlIGtlcm5lbCBBRkFJQ1QpIHdoaWNoIGFjdHMgYXMgYSBtaXNjIGRldmlj
-ZSBhbmQganVzdA0KPiBjcmVhdGVzIGEgY2hhcmFjdGVyIGRldmljZSBub2RlIHRoYXQgY2FuIGJl
-IHVzZWQgdG8gZGlyZWN0bHkgcmVhZCBhIFBHTQ0KPiBmaWxlLg0KDQpJIGFncmVlIHRoYXQgaXQg
-d291bGQgYmUgdGhlIHNpbXBsZXN0IGFwcHJvYWNoIGlmIHlvdSB3YW50IGEgVVNCDQpmaW5nZXJw
-cmludCBkcml2ZXIgaW4ga2VybmVsIHNwYWNlLCBidXQgSSB3YXMgbG9va2luZyBmb3IgYSB3YXkg
-dG8NCnN1cHBvcnQgZmluZ2VycHJpbnQgZGV2aWNlcyByZWdhcmRsZXNzIG9mIGJ1cyAodGhlcmUn
-cyBhbHNvIGZpbmdlcnByaW50DQpkZXZpY2VzIHRoYXQgdXNlIFNQSSkgYW5kIHByb3ZpZGUgYSBj
-b21tb24gaW50ZXJmYWNlIGZvciB1c2VyIHNwYWNlDQphcHBsaWNhdGlvbnMuDQoNClRoZSBhY3R1
-YWwgZHJpdmVyIGZvciBVUEVLJ3MgVG91Y2hDaGlwIHNlbnNvciBpcyBqdXN0IGEgcHJvb2Ygb2Yg
-Y29uY2VwdA0Kb24gaG93IHRoZSBpbnRlcmZhY2Ugd291bGQgd29yaywgcmF0aGVyIHRoYW4gdGhl
-IGZpbmFsIGdvYWwuIFRoZXJlJ3MNCmFscmVhZHkgYSBsaWJyYXJ5IHRoYXQgZW5hYmxlcyBVU0It
-b25seSBmaW5nZXJwcmludCBkZXZpY2VzIChsaWJmcHJpbnQpLg0KPiANCj4gTWF5YmUgdGhpcyB3
-b3VsZCBiZSBhIHNsaWdodGx5IHNpbXBsZXIgYXBwcm9hY2ggdGhhbiBwdWxsaW5nIGluIGFsbCB0
-aGUNCj4gc3RyZWFtaW5nLW9wdGltaXplZCBmZWF0dXJlcyBvZiBWNEwyPw0KDQpJIGFncmVlIHRo
-YXQgZm9yIGEgZmluZ2VycHJpbnQgZGV2aWNlLCB0aGUgVjRMMiBzdWJzeXN0ZW0gb2ZmZXJzIHRv
-bw0KbXVjaCAodGhlIGluaXRpYWwgUkZDIGlzIGZvciBJSU8pLg0KDQpUaGFua3MsDQpUZW9kb3Jh
-DQoNCg==
+On Mon, Jan 26, 2015 at 1:07 AM, Jonathan Cameron <jic23@kernel.org> wrote:
+> On 11/01/15 19:10, Irina Tirdea wrote:
+>> The pedometer needs to filter out false steps that might be generated by
+>> tapping the foot, sitting, etc. To do that it computes the number of
+>> steps that occur in a given time and decides the user is moving only
+>> if this value is over a threshold. E.g.: the user starts moving only
+>> if he takes 4 steps in 3 seconds. This filter is applied only when
+>> the user starts moving.
+>>
+>> A device that has such pedometer functionality is Freescale's MMA9553L:
+>> http://www.freescale.com/files/sensors/doc/ref_manual/MMA9553LSWRM.pdf.
+>>
+>> To export this feature, this patch introduces
+>> IIO_CHAN_INFO_FILTER_OUTLIERS_THRESH and IIO_CHAN_INFO_FILTER_OUTLIERS_PERIOD.
+>> For the pedometer, in_steps_filter_outlier_thresh will specify the number of
+>> steps that need to occur in in_steps_filter_outlier_period seconds so that
+>> the pedometer decides the user is moving.
+>>
+>> Signed-off-by: Irina Tirdea <irina.tirdea@intel.com>
+> I wonder if the naming here is infact too generic.  They aren't what
+> people would normally think of as outliers.  That would be removing
+> missidentified steps mid way through grabbing data (to my mind).
+>
+> These are almost a 'debounce' of the transition from stationary to
+> walking... Maybe there is another better term.  All suggestions welcome!
+
+What about:
+
+in_steps_debounce_count instead of in_steps_filter_outlier_thresh
+and
+in_steps_debounce_delay instead of in_steps_filter_outlier_period.
+
+Also in_steps_debounce_time could work for in_steps_filter_outlier_period.
+
+>
+>> ---
+>>  Documentation/ABI/testing/sysfs-bus-iio | 21 +++++++++++++++++++++
+>>  drivers/iio/industrialio-core.c         |  2 ++
+>>  include/linux/iio/iio.h                 |  2 ++
+>>  3 files changed, 25 insertions(+)
+>>
+>> diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
+>> index c03a140..e009f49 100644
+>> --- a/Documentation/ABI/testing/sysfs-bus-iio
+>> +++ b/Documentation/ABI/testing/sysfs-bus-iio
+>> @@ -1193,3 +1193,24 @@ Description:
+>>               This attribute is used to read the current speed value of the
+>>               user (which is the norm or magnitude of the velocity vector).
+>>               Units after application of scale are m/s.
+>> +
+>> +What:                /sys/.../iio:deviceX/in_steps_filter_outliers_period
+>> +KernelVersion:       3.20
+>> +Contact:     linux-iio@vger.kernel.org
+>> +Description:
+>> +             Specifies the number of seconds in which we compute the
+>> +             values so we can decide if they are outlier values and
+>> +             need to be filter out. These computed values are then
+>> +             compared with in_steps_filter_outliers_thresh. E.g. for steps:
+>> +             specifies number of seconds in which we compute the steps
+>> +             that occur in order to decide if the consumer is making steps.
+>> +
+>> +What:                /sys/.../iio:deviceX/in_steps_filter_outliers_thresh
+>> +KernelVersion:       3.20
+>> +Contact:     linux-iio@vger.kernel.org
+>> +Description:
+>> +             Specifies a threshold for filtering outlier values: if value
+>> +             measured in in_steps_filter_outliers_period seconds is below
+>> +             threshold, we filter it out. E.g. for steps: specifies number
+>> +             of steps that must occur within in_steps_filter_outliers_period
+>> +             for the pedometer to decide the consumer is making steps.
+>> diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+>> index 4ee6fdf..81678b3 100644
+>> --- a/drivers/iio/industrialio-core.c
+>> +++ b/drivers/iio/industrialio-core.c
+>> @@ -126,6 +126,8 @@ static const char * const iio_chan_info_postfix[] = {
+>>       [IIO_CHAN_INFO_ENABLE] = "en",
+>>       [IIO_CHAN_INFO_CALIBHEIGHT] = "calibheight",
+>>       [IIO_CHAN_INFO_CALIBWEIGHT] = "calibweight",
+>> +     [IIO_CHAN_INFO_FILTER_OUTLIERS_THRESH] = "filter_outliers_thresh",
+>> +     [IIO_CHAN_INFO_FILTER_OUTLIERS_PERIOD] = "filter_outliers_period",
+>>  };
+>>
+>>  /**
+>> diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
+>> index 752a929..b6b12ac 100644
+>> --- a/include/linux/iio/iio.h
+>> +++ b/include/linux/iio/iio.h
+>> @@ -41,6 +41,8 @@ enum iio_chan_info_enum {
+>>       IIO_CHAN_INFO_ENABLE,
+>>       IIO_CHAN_INFO_CALIBHEIGHT,
+>>       IIO_CHAN_INFO_CALIBWEIGHT,
+>> +     IIO_CHAN_INFO_FILTER_OUTLIERS_THRESH,
+>> +     IIO_CHAN_INFO_FILTER_OUTLIERS_PERIOD,
+>>  };
+>>
+>>  enum iio_shared_by {
+>>
+>
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
