@@ -1,40 +1,33 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:58065 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:58082 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1756766AbbAZVFV (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 26 Jan 2015 16:05:21 -0500
-Message-ID: <54C6AC0F.8030202@kernel.org>
-Date: Mon, 26 Jan 2015 21:05:19 +0000
+	with ESMTP id S1753248AbbAZVHr (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 26 Jan 2015 16:07:47 -0500
+Message-ID: <54C6ACA1.6000909@kernel.org>
+Date: Mon, 26 Jan 2015 21:07:45 +0000
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
 To: Lars-Peter Clausen <lars@metafoo.de>,
 	Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-CC: Hartmut Knaack <knaack.h@gmx.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>, linux-iio@vger.kernel.org,
-	devel@driverdev.osuosl.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] staging: iio: ad2s1200: Fix sign extension
-References: <1421968196-17193-1-git-send-email-linux@rasmusvillemoes.dk> <54C20CAF.3010901@metafoo.de>
-In-Reply-To: <54C20CAF.3010901@metafoo.de>
+	Michael Hennerich <Michael.Hennerich@analog.com>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>
+CC: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] iio: imu: adis16400: Fix sign extension
+References: <1421969642-18167-1-git-send-email-linux@rasmusvillemoes.dk> <54C20CA5.7050204@metafoo.de>
+In-Reply-To: <54C20CA5.7050204@metafoo.de>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
 On 23/01/15 08:56, Lars-Peter Clausen wrote:
-> On 01/23/2015 12:09 AM, Rasmus Villemoes wrote:
->> The line above makes vel a 12-bit quantity (st->rx[] is u8). The
->> intention is to sign-extend vel using bit 11 as the sign bit. But
->> because of C's promotion rules "vel = (vel << 4) >> 4;" is actually a
->> no-op, since vel is promoted to int before the inner
->> shift. sign_extend32 works equally well for 8 and 16 bits types, so
->> use that.
+> On 01/23/2015 12:34 AM, Rasmus Villemoes wrote:
+>> The intention is obviously to sign-extend a 12 bit quantity. But
+>> because of C's promotion rules, the assignment is equivalent to "val16
+>> &= 0xfff;". Use the proper API for this.
 >>
 >> Signed-off-by: Rasmus Villemoes <linux@rasmusvillemoes.dk>
 > 
 > Acked-by: Lars-Peter Clausen <lars@metafoo.de>
-Applied to fixes-togreg branch of iio.git.
-
-Thanks,
-
-Jonathan
-
+> 
+Applied to the fixes-togreg branch of iio.git and cc'd to stable.
