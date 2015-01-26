@@ -1,66 +1,61 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-wg0-f53.google.com ([74.125.82.53]:35710 "EHLO
-	mail-wg0-f53.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754589AbbAZJrc (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 26 Jan 2015 04:47:32 -0500
-Received: by mail-wg0-f53.google.com with SMTP id a1so7913786wgh.12
-        for <linux-iio@vger.kernel.org>; Mon, 26 Jan 2015 01:47:31 -0800 (PST)
+Received: from mga03.intel.com ([134.134.136.65]:59311 "EHLO mga03.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1754201AbbAZKYt (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Mon, 26 Jan 2015 05:24:49 -0500
+From: "Baluta, Teodora" <teodora.baluta@intel.com>
+To: "floe@butterbrot.org" <floe@butterbrot.org>
+CC: "s.nawrocki@samsung.com" <s.nawrocki@samsung.com>,
+	"lars@metafoo.de" <lars@metafoo.de>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"jic23@kernel.org" <jic23@kernel.org>,
+	"linux-media@vger.kernel.org" <linux-media@vger.kernel.org>,
+	"m.chehab@samsung.com" <m.chehab@samsung.com>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	"hverkuil@xs4all.nl" <hverkuil@xs4all.nl>
+Subject: Re: [RFC PATCH 0/3] Introduce IIO interface for fingerprint sensors
+Date: Mon, 26 Jan 2015 10:24:44 +0000
+Message-ID: <1422267881.2662.39.camel@bebop>
+References: <1417698017-13835-1-git-send-email-teodora.baluta@intel.com>
+	 <5481153B.4070609@kernel.org> <1418047828.18463.10.camel@bebop>
+	 <54930604.1020607@metafoo.de> <549D42BD.1050901@kernel.org>
+	 <1421255642.31900.4.camel@bebop> <54B7FAF2.8080207@samsung.com>
+	 <A2E3DE9C026DE6469D89C3A4C6C219390A89FE37@IRSMSX107.ger.corp.intel.com>
+	 <54C27AE4.4020702@butterbrot.org>
+In-Reply-To: <54C27AE4.4020702@butterbrot.org>
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-In-Reply-To: <54C55EAD.8020404@gmx.de>
-References: <1419122556-8100-1-git-send-email-octavian.purdila@intel.com>
-	<1419122556-8100-4-git-send-email-octavian.purdila@intel.com>
-	<54C55EAD.8020404@gmx.de>
-Date: Mon, 26 Jan 2015 11:40:51 +0200
-Message-ID: <CAE1zotK0VhB_2Zq72nnMCNe_ZERGOQmPd3+-6Hzc9JeY-JGMTw@mail.gmail.com>
-Subject: Re: [PATCH v2 03/11] iio: add watermark logic to iio read and poll
-From: Octavian Purdila <octavian.purdila@intel.com>
-To: Hartmut Knaack <knaack.h@gmx.de>
-Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	Josselin Costanzi <josselin.costanzi@mobile-devices.fr>
-Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Sun, Jan 25, 2015 at 11:22 PM, Hartmut Knaack <knaack.h@gmx.de> wrote:
->
-> Octavian Purdila schrieb am 21.12.2014 um 01:42:
-> > From: Josselin Costanzi <josselin.costanzi@mobile-devices.fr>
-> >
-> > Currently the IIO buffer blocking read only wait until at least one
-> > data element is available.
-> > This patch makes the reader sleep until enough data is collected before
-> > returning to userspace. This should limit the read() calls count when
-> > trying to get data in batches.
-> >
->
-> Hi,
-> I have a question and a minor recommendation, please see inline.
->
-
-Thanks for looking at this.
-
-Any feedback on the hardware buffer stuff? We are still trying to find
-the right ABIs. I did not get feedback after my last reply, did it got
-lost?
-
-<snip>
-
-> >       struct iio_dev *indio_dev = filp->private_data;
-> >       struct iio_buffer *rb = indio_dev->buffer;
-> > +     size_t datum_size = rb->bytes_per_datum;
-> > +     size_t to_read = min_t(size_t, n / datum_size, rb->low_watermark);
-> Are you sure that rb->bytes_per_datum can not be zero, when accessed here? From
-> what I could see, there is a chance of it being zero, if the scan_mask is clear
-> and timestamps are disabled.
->
-
-Good catch, I will fix that.
-
-> > +
-> > +     /* We can't just test for watermark to decide if we wake the poll queue
-> > +      * because read may request less samples than the watermark
-> I think this comment could end with a full stop. Also, first line should be
-> empty.
->
-
-Correct.
+SGkgRmxvcmlhbiwNCg0KVGhhbmtzIGZvciB0aGUgcmVwbHkhDQoNCk9uIFZpLCAyMDE1LTAxLTIz
+IGF0IDE3OjQ2ICswMTAwLCBGbG9yaWFuIEVjaHRsZXIgd3JvdGU6DQo+IEhlbGxvIFRlb2RvcmEs
+DQo+IA0KPiBPbiAyMy4wMS4yMDE1IDE0OjA1LCBCYWx1dGEsIFRlb2RvcmEgd3JvdGU6DQo+ID4g
+VGhlIGZpbmdlcnByaW50IHNlbnNvciBhY3RzIG1vcmUgbGlrZSBhIHNjYW5uZXIgZGV2aWNlLCBz
+byB0aGUNCj4gPiBjbG9zZXN0IHR5cGUgaXMgdGhlIFY0TDJfQ0FQX1ZJREVPX0NBUFRVUkUuIEhv
+d2V2ZXIsIHRoaXMgaXMgbm90IGENCj4gPiBwZXJmZWN0IG1hdGNoIGJlY2F1c2UgdGhlIGRyaXZl
+ciBvbmx5IHNlbmRzIGFuIGltYWdlLCBvbmNlLCB3aGVuDQo+ID4gdHJpZ2dlcmVkLiBXb3VsZCBp
+dCBiZSBhIGJldHRlciBhbHRlcm5hdGl2ZSB0byBkZWZpbmUgYSBuZXcNCj4gPiBjYXBhYmlsaXR5
+IHR5cGU/IE9yIGl0IHdvdWxkIGJlIGFjY2VwdGFibGUgdG8gc2ltcGx5IGhhdmUgYSB2aWRlbw0K
+PiA+IGRldmljZSB3aXRoIG5vIGZyYW1lIGJ1ZmZlciBvciBmcmFtZSByYXRlIGFuZCB0aGUgdXNl
+ciBzcGFjZQ0KPiA+IGFwcGxpY2F0aW9uIHRvIHJlYWQgZnJvbSB0aGUgY2hhcmFjdGVyIGRldmlj
+ZSAvZGV2L3ZpZGVvWD8NCj4gU29ycnkgaWYgSSBqdW1wIGluIGhlcmUgcmlnaHQgaW4gdGhlIG1p
+ZGRsZSBvZiB0aGlzIGRpc2N1c3Npb24sIGJ1dCBzb21lDQo+IHRpbWUgYWdvLCBJIHdyb3RlIGEg
+ZmluZ2VycHJpbnQgc2Vuc29yIGRyaXZlciBmb3IgdGhlIFNpZW1lbnMgSUQgTW91c2UNCj4gKHN0
+aWxsIHBhcnQgb2YgdGhlIGtlcm5lbCBBRkFJQ1QpIHdoaWNoIGFjdHMgYXMgYSBtaXNjIGRldmlj
+ZSBhbmQganVzdA0KPiBjcmVhdGVzIGEgY2hhcmFjdGVyIGRldmljZSBub2RlIHRoYXQgY2FuIGJl
+IHVzZWQgdG8gZGlyZWN0bHkgcmVhZCBhIFBHTQ0KPiBmaWxlLg0KDQpJIGFncmVlIHRoYXQgaXQg
+d291bGQgYmUgdGhlIHNpbXBsZXN0IGFwcHJvYWNoIGlmIHlvdSB3YW50IGEgVVNCDQpmaW5nZXJw
+cmludCBkcml2ZXIgaW4ga2VybmVsIHNwYWNlLCBidXQgSSB3YXMgbG9va2luZyBmb3IgYSB3YXkg
+dG8NCnN1cHBvcnQgZmluZ2VycHJpbnQgZGV2aWNlcyByZWdhcmRsZXNzIG9mIGJ1cyAodGhlcmUn
+cyBhbHNvIGZpbmdlcnByaW50DQpkZXZpY2VzIHRoYXQgdXNlIFNQSSkgYW5kIHByb3ZpZGUgYSBj
+b21tb24gaW50ZXJmYWNlIGZvciB1c2VyIHNwYWNlDQphcHBsaWNhdGlvbnMuDQoNClRoZSBhY3R1
+YWwgZHJpdmVyIGZvciBVUEVLJ3MgVG91Y2hDaGlwIHNlbnNvciBpcyBqdXN0IGEgcHJvb2Ygb2Yg
+Y29uY2VwdA0Kb24gaG93IHRoZSBpbnRlcmZhY2Ugd291bGQgd29yaywgcmF0aGVyIHRoYW4gdGhl
+IGZpbmFsIGdvYWwuIFRoZXJlJ3MNCmFscmVhZHkgYSBsaWJyYXJ5IHRoYXQgZW5hYmxlcyBVU0It
+b25seSBmaW5nZXJwcmludCBkZXZpY2VzIChsaWJmcHJpbnQpLg0KPiANCj4gTWF5YmUgdGhpcyB3
+b3VsZCBiZSBhIHNsaWdodGx5IHNpbXBsZXIgYXBwcm9hY2ggdGhhbiBwdWxsaW5nIGluIGFsbCB0
+aGUNCj4gc3RyZWFtaW5nLW9wdGltaXplZCBmZWF0dXJlcyBvZiBWNEwyPw0KDQpJIGFncmVlIHRo
+YXQgZm9yIGEgZmluZ2VycHJpbnQgZGV2aWNlLCB0aGUgVjRMMiBzdWJzeXN0ZW0gb2ZmZXJzIHRv
+bw0KbXVjaCAodGhlIGluaXRpYWwgUkZDIGlzIGZvciBJSU8pLg0KDQpUaGFua3MsDQpUZW9kb3Jh
+DQoNCg==
