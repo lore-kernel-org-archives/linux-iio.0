@@ -1,58 +1,40 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:58039 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:58065 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753818AbbAZVBf (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 26 Jan 2015 16:01:35 -0500
-Message-ID: <54C6AB2B.9040709@kernel.org>
-Date: Mon, 26 Jan 2015 21:01:31 +0000
+	with ESMTP id S1756766AbbAZVFV (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 26 Jan 2015 16:05:21 -0500
+Message-ID: <54C6AC0F.8030202@kernel.org>
+Date: Mon, 26 Jan 2015 21:05:19 +0000
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Marek Vasut <marex@denx.de>,
-	=?UTF-8?B?S3Jpc3RpbmEgTWFydMWhZW5rbw==?=
-	<kristina.martsenko@gmail.com>
+To: Lars-Peter Clausen <lars@metafoo.de>,
+	Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 CC: Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	Juergen Beisert <jbe@pengutronix.de>,
-	Alexandre Belloni <alexandre.belloni@free-electrons.com>,
-	Fabio Estevam <fabio.estevam@freescale.com>,
-	Stefan Wahren <stefan.wahren@i2se.com>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	linux-iio@vger.kernel.org, devel@driverdev.osuosl.org
-Subject: Re: [PATCH v2 0/4] iio: mxs-lradc: fix interactions between the touchscreen
- and the ADC
-References: <1422203302-17090-1-git-send-email-kristina.martsenko@gmail.com> <201501251947.17832.marex@denx.de>
-In-Reply-To: <201501251947.17832.marex@denx.de>
-Content-Type: text/plain; charset=utf-8
+	Peter Meerwald <pmeerw@pmeerw.net>, linux-iio@vger.kernel.org,
+	devel@driverdev.osuosl.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] staging: iio: ad2s1200: Fix sign extension
+References: <1421968196-17193-1-git-send-email-linux@rasmusvillemoes.dk> <54C20CAF.3010901@metafoo.de>
+In-Reply-To: <54C20CAF.3010901@metafoo.de>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 25/01/15 18:47, Marek Vasut wrote:
-> On Sunday, January 25, 2015 at 05:28:18 PM, Kristina Martšenko wrote:
->> These patches fix some issues with using the touchscreen and reading
->> other ADC channels at the same time.
+On 23/01/15 08:56, Lars-Peter Clausen wrote:
+> On 01/23/2015 12:09 AM, Rasmus Villemoes wrote:
+>> The line above makes vel a 12-bit quantity (st->rx[] is u8). The
+>> intention is to sign-extend vel using bit 11 as the sign bit. But
+>> because of C's promotion rules "vel = (vel << 4) >> 4;" is actually a
+>> no-op, since vel is promoted to int before the inner
+>> shift. sign_extend32 works equally well for 8 and 16 bits types, so
+>> use that.
+>>
+>> Signed-off-by: Rasmus Villemoes <linux@rasmusvillemoes.dk>
 > 
-> [...]
-> 
-> Hi!
-> 
-> Thanks!
-> 
-> Entire series
-> 
-> Reviewed-by: Marek Vasut <marex@denx.de>
-All 4 applied to the fixes-togreg branch of iio.git and cc'd to
-stable.
+> Acked-by: Lars-Peter Clausen <lars@metafoo.de>
+Applied to fixes-togreg branch of iio.git.
 
-Thanks
+Thanks,
 
 Jonathan
-> 
-> Best regards,
-> Marek Vasut
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> 
 
