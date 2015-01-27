@@ -1,76 +1,49 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mailout1.w1.samsung.com ([210.118.77.11]:36149 "EHLO
-	mailout1.w1.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751326AbbA0LdE (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 27 Jan 2015 06:33:04 -0500
-Message-id: <54C77762.9090807@samsung.com>
-Date: Tue, 27 Jan 2015 12:32:50 +0100
-From: Sylwester Nawrocki <s.nawrocki@samsung.com>
-MIME-version: 1.0
-To: "Baluta, Teodora" <teodora.baluta@intel.com>,
-	Jonathan Cameron <jic23@kernel.org>
-Cc: Mauro Carvalho Chehab <m.chehab@samsung.com>,
+Received: from mail-lb0-f175.google.com ([209.85.217.175]:49351 "EHLO
+	mail-lb0-f175.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754863AbbA0OTl (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 27 Jan 2015 09:19:41 -0500
+Received: by mail-lb0-f175.google.com with SMTP id 10so13310668lbg.6
+        for <linux-iio@vger.kernel.org>; Tue, 27 Jan 2015 06:19:39 -0800 (PST)
+Message-ID: <54C79E65.6030706@gmail.com>
+Date: Tue, 27 Jan 2015 16:19:17 +0200
+From: =?UTF-8?B?S3Jpc3RpbmEgTWFydMWhZW5rbw==?=
+	<kristina.martsenko@gmail.com>
+MIME-Version: 1.0
+To: Jonathan Cameron <jic23@kernel.org>, Marek Vasut <marex@denx.de>
+CC: Hartmut Knaack <knaack.h@gmx.de>,
 	Lars-Peter Clausen <lars@metafoo.de>,
-	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-	linux-iio <linux-iio@vger.kernel.org>,
-	LMML <linux-media@vger.kernel.org>,
-	Hans Verkuil <hverkuil@xs4all.nl>
-Subject: Re: [RFC PATCH 0/3] Introduce IIO interface for fingerprint sensors
-References: <1417698017-13835-1-git-send-email-teodora.baluta@intel.com>
- <5481153B.4070609@kernel.org> <1418047828.18463.10.camel@bebop>
- <54930604.1020607@metafoo.de> <549D42BD.1050901@kernel.org>
- <1421255642.31900.4.camel@bebop> <54B7FAF2.8080207@samsung.com>
- <A2E3DE9C026DE6469D89C3A4C6C219390A89FE37@IRSMSX107.ger.corp.intel.com>
-In-reply-to: <A2E3DE9C026DE6469D89C3A4C6C219390A89FE37@IRSMSX107.ger.corp.intel.com>
-Content-type: text/plain; charset=utf-8
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Juergen Beisert <jbe@pengutronix.de>,
+	Alexandre Belloni <alexandre.belloni@free-electrons.com>,
+	Fabio Estevam <fabio.estevam@freescale.com>,
+	Stefan Wahren <stefan.wahren@i2se.com>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	linux-iio@vger.kernel.org, devel@driverdev.osuosl.org
+Subject: Re: [PATCH v2 0/4] iio: mxs-lradc: fix interactions between the touchscreen
+ and the ADC
+References: <1422203302-17090-1-git-send-email-kristina.martsenko@gmail.com> <201501251947.17832.marex@denx.de> <54C6AB2B.9040709@kernel.org>
+In-Reply-To: <54C6AB2B.9040709@kernel.org>
+Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Hi,
-
-On 23/01/15 14:05, Baluta, Teodora wrote:
-...
->>>>>>> So why not v4l?  These are effectively image sensors..
->>>>>>
->>>>>> Well, here's why I don't think v4l would be the best option:
->>>>>>
->>>>>> - an image scanner could be implemented in the v4l subsystem, but
->>>>>> it seems far more complicated for a simple fingerprint scanner - it
->>>>>> usually has drivers for webcams, TVs or video streaming devices.
->>>>>> The v4l subsystem (with all its support for colorspace, decoders,
->>>>>> image compression, frame control) seems a bit of an overkill for a
->>>>>> very straightforward fingerprint imaging sensor.
->>>
->>>> Whilst those are there, I would doubt the irrelevant bits would put
->>>> much burden on a fingerprint scanning driver.  Been a while since I
->>>> did anything in that area though so I could be wrong!
+On 26/01/15 23:01, Jonathan Cameron wrote:
+> On 25/01/15 18:47, Marek Vasut wrote:
+>> On Sunday, January 25, 2015 at 05:28:18 PM, Kristina Martšenko wrote:
+>>> These patches fix some issues with using the touchscreen and reading
+>>> other ADC channels at the same time.
 >>
->> IMO V4L is much better fit for this kind of devices than IIO. You can use just a
->> subset of the API, it shouldn't take much effort to write a simple
->> v4l2 capture driver, supporting fixed (probably vendor/chip specific) image
->> format.  I'm not sure if it's better to use the v4l2 controls [1], define a new
->> v4l2 controls class for the fingerprint scanner processing features, rather than
->> trying to pass raw data to user space and interpret it then in some library.  I
->> know there has been resistance to allowing passing unknown binary blobs to
->> user space, due to possible abuses.
+>> Entire series
 >>
->> [1] Documentation/video4linux/v4l2-controls.txt
->                                                                                                                
-> The fingerprint sensor acts more like a scanner device, so the closest type 
-> is the V4L2_CAP_VIDEO_CAPTURE. However, this is not a perfect match because
-> the driver only sends an image, once, when triggered. Would it be a better
-> alternative to define a new capability type? Or it would be acceptable to
-> simply have a video device with no frame buffer or frame rate and the user
-> space application to read from the character device /dev/videoX?
+>> Reviewed-by: Marek Vasut <marex@denx.de>
 
-I don't think a new capability is needed for just one buffer capture.
-The capture driver could just support read() and signal it by setting the
-V4L2_CAP_READWRITE capability flag [2], [3].
+Thanks again!
 
-[2]
-http://linuxtv.org/downloads/v4l-dvb-apis/vidioc-querycap.html#device-capabilities
-[3] http://linuxtv.org/downloads/v4l-dvb-apis/io.html#rw
+> All 4 applied to the fixes-togreg branch of iio.git and cc'd to
+> stable.
 
---
-Regards,
-Sylwester
+Thanks, Jonathan! I'm not entirely sure if these are critical enough to
+go in stable, but alright.
+
+Kristina
