@@ -1,29 +1,25 @@
-Return-Path: <rickard.strandqvist@spctrm.se>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-lb0-f174.google.com ([209.85.217.174]:61339 "EHLO
+	mail-lb0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S932533AbbA0WTR (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 27 Jan 2015 17:19:17 -0500
+Received: by mail-lb0-f174.google.com with SMTP id f15so15628183lbj.5
+        for <linux-iio@vger.kernel.org>; Tue, 27 Jan 2015 14:19:16 -0800 (PST)
 From: Rickard Strandqvist <rickard_strandqvist@spectrumdigital.se>
-To: Jonathan Cameron <jic23@kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>
+To: Lars-Peter Clausen <lars@metafoo.de>,
+	Michael Hennerich <Michael.Hennerich@analog.com>
 Cc: Rickard Strandqvist <rickard_strandqvist@spectrumdigital.se>,
-	Lars-Peter Clausen <lars@metafoo.de>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>,
 	Peter Meerwald <pmeerw@pmeerw.net>,
 	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Grant Likely <grant.likely@linaro.org>,
-	Rob Herring <robh+dt@kernel.org>,
-	Alexandre Belloni <alexandre.belloni@free-electrons.com>,
-	Marek Vasut <marex@denx.de>,
-	Fabio Estevam <fabio.estevam@freescale.com>,
-	Darshana Padmadas <darshanapadmadas@gmail.com>,
-	Aybuke Ozdemir <aybuke.147@gmail.com>,
-	Vaishali Thakkar <vthakkar1994@gmail.com>,
-	Robert Hodaszi <robert.hodaszi@digi.com>,
-	Brian Vandre <bvandre@gmail.com>,
-	linux-iio@vger.kernel.org,
-	devel@driverdev.osuosl.org,
-	linux-kernel@vger.kernel.org,
-	devicetree@vger.kernel.org
-Subject: [PATCH] staging: iio: adc: mxs-lradc: Change type in printf format string
-Date: Tue, 27 Jan 2015 23:23:33 +0100
-Message-Id: <1422397413-9447-1-git-send-email-rickard_strandqvist@spectrumdigital.se>
-List-ID: <linux-iio@vger.kernel.org>
+	linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH] staging: iio: resolver: ad2s1210: Change type in printf format string
+Date: Tue, 27 Jan 2015 23:22:34 +0100
+Message-Id: <1422397354-9326-1-git-send-email-rickard_strandqvist@spectrumdigital.se>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
 Wrong type in printf format string, requires 'int'
 but the argument type is 'unsigned int'
@@ -32,21 +28,31 @@ This was found using a static code analysis program called cppcheck
 
 Signed-off-by: Rickard Strandqvist <rickard_strandqvist@spectrumdigital.se>
 ---
- drivers/staging/iio/adc/mxs-lradc.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/staging/iio/resolver/ad2s1210.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/staging/iio/adc/mxs-lradc.c b/drivers/staging/iio/adc/mxs-lradc.c
-index f053535..887767b 100644
---- a/drivers/staging/iio/adc/mxs-lradc.c
-+++ b/drivers/staging/iio/adc/mxs-lradc.c
-@@ -1001,7 +1001,7 @@ static ssize_t mxs_lradc_show_scale_available_ch(struct device *dev,
- 	int i, len = 0;
+diff --git a/drivers/staging/iio/resolver/ad2s1210.c b/drivers/staging/iio/resolver/ad2s1210.c
+index b4c14ba..a8ecf87 100644
+--- a/drivers/staging/iio/resolver/ad2s1210.c
++++ b/drivers/staging/iio/resolver/ad2s1210.c
+@@ -198,7 +198,7 @@ static ssize_t ad2s1210_show_fclkin(struct device *dev,
+ {
+ 	struct ad2s1210_state *st = iio_priv(dev_to_iio_dev(dev));
  
- 	for (i = 0; i < ARRAY_SIZE(lradc->scale_avail[ch]); i++)
--		len += sprintf(buf + len, "%d.%09u ",
-+		len += sprintf(buf + len, "%u.%09u ",
- 			       lradc->scale_avail[ch][i].integer,
- 			       lradc->scale_avail[ch][i].nano);
+-	return sprintf(buf, "%d\n", st->fclkin);
++	return sprintf(buf, "%u\n", st->fclkin);
+ }
  
+ static ssize_t ad2s1210_store_fclkin(struct device *dev,
+@@ -237,7 +237,7 @@ static ssize_t ad2s1210_show_fexcit(struct device *dev,
+ {
+ 	struct ad2s1210_state *st = iio_priv(dev_to_iio_dev(dev));
+ 
+-	return sprintf(buf, "%d\n", st->fexcit);
++	return sprintf(buf, "%u\n", st->fexcit);
+ }
+ 
+ static ssize_t ad2s1210_store_fexcit(struct device *dev,
 -- 
 1.7.10.4
+
