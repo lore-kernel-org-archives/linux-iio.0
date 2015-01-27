@@ -1,28 +1,19 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-la0-f54.google.com ([209.85.215.54]:49200 "EHLO
-	mail-la0-f54.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1759698AbbA0WPs (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 27 Jan 2015 17:15:48 -0500
-Received: by mail-la0-f54.google.com with SMTP id hv19so15746627lab.13
-        for <linux-iio@vger.kernel.org>; Tue, 27 Jan 2015 14:15:46 -0800 (PST)
+Return-Path: <rickard.strandqvist@spctrm.se>
 From: Rickard Strandqvist <rickard_strandqvist@spectrumdigital.se>
-To: Jonathan Cameron <jic23@kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>
+To: Lars-Peter Clausen <lars@metafoo.de>,
+	Michael Hennerich <Michael.Hennerich@analog.com>
 Cc: Rickard Strandqvist <rickard_strandqvist@spectrumdigital.se>,
-	Lars-Peter Clausen <lars@metafoo.de>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>,
 	Peter Meerwald <pmeerw@pmeerw.net>,
 	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Michael Welling <mwelling@ieee.org>,
-	Daniel Baluta <daniel.baluta@intel.com>,
-	Aybuke Ozdemir <aybuke.147@gmail.com>,
-	Monam Agarwal <monamagarwal123@gmail.com>,
-	linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
+	linux-iio@vger.kernel.org,
+	devel@driverdev.osuosl.org,
 	linux-kernel@vger.kernel.org
-Subject: [PATCH] staging: iio: light: tsl2583: Change type in printf format string
-Date: Tue, 27 Jan 2015 23:19:05 +0100
-Message-Id: <1422397145-8957-1-git-send-email-rickard_strandqvist@spectrumdigital.se>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Subject: [PATCH] staging: iio: impedance-analyzer: ad5933: Change type in printf format string
+Date: Tue, 27 Jan 2015 23:18:01 +0100
+Message-Id: <1422397081-8832-1-git-send-email-rickard_strandqvist@spectrumdigital.se>
+List-ID: <linux-iio@vger.kernel.org>
 
 Wrong type in printf format string, requires 'int'
 but the argument type is 'unsigned int'
@@ -31,22 +22,26 @@ This was found using a static code analysis program called cppcheck
 
 Signed-off-by: Rickard Strandqvist <rickard_strandqvist@spectrumdigital.se>
 ---
- drivers/staging/iio/light/tsl2583.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/staging/iio/impedance-analyzer/ad5933.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/staging/iio/light/tsl2583.c b/drivers/staging/iio/light/tsl2583.c
-index cc4ddcc..8afae8e 100644
---- a/drivers/staging/iio/light/tsl2583.c
-+++ b/drivers/staging/iio/light/tsl2583.c
-@@ -692,7 +692,7 @@ static ssize_t taos_luxtable_show(struct device *dev,
- 	int offset = 0;
- 
- 	for (i = 0; i < ARRAY_SIZE(taos_device_lux); i++) {
--		offset += sprintf(buf + offset, "%d,%d,%d,",
-+		offset += sprintf(buf + offset, "%u,%u,%u,",
- 				  taos_device_lux[i].ratio,
- 				  taos_device_lux[i].ch0,
- 				  taos_device_lux[i].ch1);
+diff --git a/drivers/staging/iio/impedance-analyzer/ad5933.c b/drivers/staging/iio/impedance-analyzer/ad5933.c
+index b6bd609..4230a43 100644
+--- a/drivers/staging/iio/impedance-analyzer/ad5933.c
++++ b/drivers/staging/iio/impedance-analyzer/ad5933.c
+@@ -360,11 +360,11 @@ static ssize_t ad5933_show(struct device *dev,
+ 	mutex_lock(&indio_dev->mlock);
+ 	switch ((u32) this_attr->address) {
+ 	case AD5933_OUT_RANGE:
+-		len = sprintf(buf, "%d\n",
++		len = sprintf(buf, "%u\n",
+ 			      st->range_avail[(st->ctrl_hb >> 1) & 0x3]);
+ 		break;
+ 	case AD5933_OUT_RANGE_AVAIL:
+-		len = sprintf(buf, "%d %d %d %d\n", st->range_avail[0],
++		len = sprintf(buf, "%u %u %u %u\n", st->range_avail[0],
+ 			      st->range_avail[3], st->range_avail[2],
+ 			      st->range_avail[1]);
+ 		break;
 -- 
 1.7.10.4
-
