@@ -1,340 +1,209 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:37007 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:37048 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751401AbbA0Uwo (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 27 Jan 2015 15:52:44 -0500
-Message-ID: <54C7FA98.9060700@kernel.org>
-Date: Tue, 27 Jan 2015 20:52:40 +0000
+	with ESMTP id S1754875AbbA0U7f (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 27 Jan 2015 15:59:35 -0500
+Message-ID: <54C7FC31.2000306@kernel.org>
+Date: Tue, 27 Jan 2015 20:59:29 +0000
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-CC: wsa@the-dreams.de, lars@metafoo.de, linux-iio@vger.kernel.org,
-	linux-i2c@vger.kernel.org
-Subject: Re: [PATCH v2] iio: imu: inv_mpu6050: Create mux clients for ACPI
-References: <1421965915-19747-1-git-send-email-srinivas.pandruvada@linux.intel.com> <1421965915-19747-2-git-send-email-srinivas.pandruvada@linux.intel.com>
-In-Reply-To: <1421965915-19747-2-git-send-email-srinivas.pandruvada@linux.intel.com>
+To: Stefan Agner <stefan@agner.ch>
+CC: shawn.guo@linaro.org, B38611@freescale.com,
+	maitysanchayan@gmail.com, linux-iio@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+	Fugang Duan <B38611@freescale.com>
+Subject: Re: [PATCH 1/3] iio: adc: vf610: use ADC clock within specification
+References: <1421769723-28677-1-git-send-email-stefan@agner.ch> <1421769723-28677-2-git-send-email-stefan@agner.ch>
+In-Reply-To: <1421769723-28677-2-git-send-email-stefan@agner.ch>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 22/01/15 22:31, Srinivas Pandruvada wrote:
-> This is a follow up patches after adding i2c mux adapter for bypass
-> mode. Potentially many different types of sensor can be attached to
-> INVMPU6XXX device, which can be connected to main cpu i2c bus in
-> bypass mode.
-> Why do we need this?
-> The system ACPI table entry will consist of only one device for
-> INV6XXX, assuming that this driver will handle all connected sensors.
-> That is not true for the Linux driver. There are bunch of IIO drivers
-> for each sensors, hence we created a mux on this device. So to load
-> these additional drivers, we need to create i2c devices for them
-> in this driver using this mux adapter.
+On 20/01/15 16:02, Stefan Agner wrote:
+> Depending on conversion mode used, the ADC clock (ADCK) needs
+> to be below a maximum frequency. According to Vybrid's data
+> sheet this is 20MHz for the low power conversion mode.
 > 
-> There are multiple options:
-> 1. Use the auto detect feature, this needs a new i2c class for the
-> adapter as the existing HWMON class is not acceptable. Also the
-> autodetect has overhead of executing detect method for each
-> matching class of adapters.
-> This is a simple implementation. This option was previously submitted
-> with not a happy feedback.
+> The ADC clock is depending on input clock, which is the bus
+> clock by default. Vybrid SoC are typically clocked at at 400MHz
+> or 500MHz, which leads to 66MHz or 83MHz bus clock respectively.
+> Hence, a divider of 8 is required to stay below the specified
+> maximum clock of 20MHz.
+I hate to point out the obvious, by 83/8 > 20.  Missing something?
 > 
-> 2. Option is use ACPI magic and parse the configuration data. What
-> we need to create a i2c device at a minimum is address and a name.
-> Address can be obtained for secondary device in more or less in a
-> standard way from using _CRS element. But there is no name. To get
-> name we need to process proprietary vendor data. Not having name is
-> not fun, as you have to create device using the device name of
-> INVN6XXXX, respecting driver duplicate name space restriction.
-> Also each client driver needs to have this name in the id table.
-> Since multiple driver can be loaded, the driver should be able to
-> detect its presence and gracefully exit for the other client driver
-> to take it over.
-> So we use two step process:
-> - Use DMI to id platform and parse propritery data. This is not uncommon
-> for many x86 platform specific driver. We will get both name and address.
-> The change created necessary infrastructure to add more properitery vendor
-> data parsing.
-> - If DMI match fails, then create device on INV6XXX-client (we can't
-> create with same name as INV6XXX as it will cause duplicate name and driver
-> model will reject.) With this each client sensor driver which needs to get
-> attached via INV6XXXX, need this name in the id table and detect the
-> physical presence of sensor in probe and exit if not found.
+> Due to the different bus clock speeds, the resulting sampling
+> frequency is not static. Hence use the ADC clock and calculate
+> the actual available sampling frequency dynamically.
 > 
-> Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-This all looks fine to me, though ideally I'd like some input from
-others, more familiar with the dmi stuff etc and from Wolfram / others
-wrt to the approach.
+> This fixes bogous values observed on some 500MHz clocked Vybrid
+> SoC. The resulting value usually showed Bit 9 being stuck at 1,
+> or 0, which lead to a value of +/-512.
+> 
+> Signed-off-by: Stefan Agner <stefan@agner.ch>
+In principle this looks fine to me. I would however like an
+Ack from Fugang as the original author of the driver).
+
+Given timing I probably wouldn't send this upstream until after
+the merge window now (as it's stable material this won't really
+matter).
 
 Jonathan
 > ---
->  drivers/iio/imu/inv_mpu6050/Makefile       |   2 +-
->  drivers/iio/imu/inv_mpu6050/inv_mpu_acpi.c | 196 +++++++++++++++++++++++++++++
->  drivers/iio/imu/inv_mpu6050/inv_mpu_core.c |  11 ++
->  drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h  |   3 +
->  4 files changed, 211 insertions(+), 1 deletion(-)
->  create mode 100644 drivers/iio/imu/inv_mpu6050/inv_mpu_acpi.c
+>  drivers/iio/adc/vf610_adc.c | 91 ++++++++++++++++++++++++++++++---------------
+>  1 file changed, 61 insertions(+), 30 deletions(-)
 > 
-> diff --git a/drivers/iio/imu/inv_mpu6050/Makefile b/drivers/iio/imu/inv_mpu6050/Makefile
-> index 3a677c7..f566f6a 100644
-> --- a/drivers/iio/imu/inv_mpu6050/Makefile
-> +++ b/drivers/iio/imu/inv_mpu6050/Makefile
-> @@ -3,4 +3,4 @@
->  #
+> diff --git a/drivers/iio/adc/vf610_adc.c b/drivers/iio/adc/vf610_adc.c
+> index 8ec353c..e63b8e7 100644
+> --- a/drivers/iio/adc/vf610_adc.c
+> +++ b/drivers/iio/adc/vf610_adc.c
+> @@ -141,9 +141,13 @@ struct vf610_adc {
+>  	struct regulator *vref;
+>  	struct vf610_adc_feature adc_feature;
 >  
->  obj-$(CONFIG_INV_MPU6050_IIO) += inv-mpu6050.o
-> -inv-mpu6050-objs := inv_mpu_core.o inv_mpu_ring.o inv_mpu_trigger.o
-> +inv-mpu6050-objs := inv_mpu_core.o inv_mpu_ring.o inv_mpu_trigger.o inv_mpu_acpi.o
-> diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_acpi.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_acpi.c
-> new file mode 100644
-> index 0000000..2d98c1a
-> --- /dev/null
-> +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_acpi.c
-> @@ -0,0 +1,196 @@
-> +/*
-> + * inv_mpu_acpi: ACPI processing for creating client devices
-> + * Copyright (c) 2015, Intel Corporation.
-> + *
-> + * This program is free software; you can redistribute it and/or modify it
-> + * under the terms and conditions of the GNU General Public License,
-> + * version 2, as published by the Free Software Foundation.
-> + *
-> + * This program is distributed in the hope it will be useful, but WITHOUT
-> + * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-> + * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
-> + * more details.
-> + */
+> +	u32 sample_freq_avail[5];
 > +
-> +#include <linux/kernel.h>
-> +#include <linux/i2c.h>
-> +#include <linux/dmi.h>
-> +#include <linux/acpi.h>
-> +#include "inv_mpu_iio.h"
+>  	struct completion completion;
+>  };
+>  
+> +static const u32 vf610_hw_avgs[] = { 1, 4, 8, 16, 32 };
 > +
-> +enum inv_mpu_product_name {
-> +	INV_MPU_NOT_MATCHED,
-> +	INV_MPU_ASUS_T100TA,
-> +};
-> +
-> +static enum inv_mpu_product_name matched_product_name;
-> +
-> +static int __init asus_t100_matched(const struct dmi_system_id *d)
+>  #define VF610_ADC_CHAN(_idx, _chan_type) {			\
+>  	.type = (_chan_type),					\
+>  	.indexed = 1,						\
+> @@ -180,35 +184,47 @@ static const struct iio_chan_spec vf610_adc_iio_channels[] = {
+>  	/* sentinel */
+>  };
+>  
+> -/*
+> - * ADC sample frequency, unit is ADCK cycles.
+> - * ADC clk source is ipg clock, which is the same as bus clock.
+> - *
+> - * ADC conversion time = SFCAdder + AverageNum x (BCT + LSTAdder)
+> - * SFCAdder: fixed to 6 ADCK cycles
+> - * AverageNum: 1, 4, 8, 16, 32 samples for hardware average.
+> - * BCT (Base Conversion Time): fixed to 25 ADCK cycles for 12 bit mode
+> - * LSTAdder(Long Sample Time): fixed to 3 ADCK cycles
+> - *
+> - * By default, enable 12 bit resolution mode, clock source
+> - * set to ipg clock, So get below frequency group:
+> - */
+> -static const u32 vf610_sample_freq_avail[5] =
+> -{1941176, 559332, 286957, 145374, 73171};
+> +static inline void vf610_adc_calculate_rates(struct vf610_adc *info)
 > +{
-> +	matched_product_name = INV_MPU_ASUS_T100TA;
-> +
-> +	return 0;
-> +}
-> +
-> +static const struct dmi_system_id inv_mpu_dev_list[] = {
-> +	{
-> +	.callback = asus_t100_matched,
-> +	.ident = "Asus Transformer Book T100",
-> +		.matches = {
-> +			DMI_MATCH(DMI_SYS_VENDOR, "ASUSTeK COMPUTER INC"),
-> +			DMI_MATCH(DMI_PRODUCT_NAME, "T100TA"),
-> +			DMI_MATCH(DMI_PRODUCT_VERSION, "1.0"),
-> +		},
-> +	},
-> +	/* Add more matching tables here..*/
-> +	{}
-> +};
-> +
-> +static int asus_acpi_get_sensor_info(struct acpi_device *adev,
-> +				     struct i2c_client *client,
-> +				     struct i2c_board_info *info)
-> +{
-> +	struct acpi_buffer buffer = {ACPI_ALLOCATE_BUFFER, NULL};
+> +	unsigned long adck_rate, ipg_rate = clk_get_rate(info->clk);
 > +	int i;
-> +	acpi_status status;
-> +	union acpi_object *cpm;
 > +
-> +	status = acpi_evaluate_object(adev->handle, "CNF0", NULL, &buffer);
-> +	if (ACPI_FAILURE(status))
-> +		return -ENODEV;
-> +
-> +	cpm = buffer.pointer;
-> +	for (i = 0; i < cpm->package.count; ++i) {
-> +		union acpi_object *elem;
-> +		int j;
-> +
-> +		elem = &(cpm->package.elements[i]);
-> +		for (j = 0; j < elem->package.count; ++j) {
-> +			union acpi_object *sub_elem;
-> +
-> +			sub_elem = &(elem->package.elements[j]);
-> +			if (sub_elem->type == ACPI_TYPE_STRING)
-> +				strlcpy(info->type, sub_elem->string.pointer,
-> +					sizeof(info->type));
-> +			else if (sub_elem->type == ACPI_TYPE_INTEGER) {
-> +				if (sub_elem->integer.value != client->addr) {
-> +					info->addr = sub_elem->integer.value;
-> +					break; /* Not a MPU6500 primary */
-> +				}
-> +			}
-> +		}
-> +	}
-> +
-> +	kfree(buffer.pointer);
-> +
-> +	return cpm->package.count;
+> +	/*
+> +	 * Calculate ADC sample frequencies
+> +	 * Sample time unit is ADCK cycles. ADCK clk source is ipg clock,
+> +	 * which is the same as bus clock.
+> +	 *
+> +	 * ADC conversion time = SFCAdder + AverageNum x (BCT + LSTAdder)
+> +	 * SFCAdder: fixed to 6 ADCK cycles
+> +	 * AverageNum: 1, 4, 8, 16, 32 samples for hardware average.
+> +	 * BCT (Base Conversion Time): fixed to 25 ADCK cycles for 12 bit mode
+> +	 * LSTAdder(Long Sample Time): fixed to 3 ADCK cycles
+> +	 */
+> +	adck_rate = ipg_rate / info->adc_feature.clk_div;
+> +	for (i = 0; i < ARRAY_SIZE(vf610_hw_avgs); i++)
+> +		info->sample_freq_avail[i] =
+> +			adck_rate / (6 + vf610_hw_avgs[i] * (25 + 3));
 > +}
-> +
-> +static int acpi_i2c_check_resource(struct acpi_resource *ares, void *data)
-> +{
-> +	u32 *addr = data;
-> +
-> +	if (ares->type == ACPI_RESOURCE_TYPE_SERIAL_BUS) {
-> +		struct acpi_resource_i2c_serialbus *sb;
-> +
-> +		sb = &ares->data.i2c_serial_bus;
-> +		if (sb->type == ACPI_RESOURCE_SERIAL_TYPE_I2C) {
-> +			if (*addr)
-> +				*addr |= (sb->slave_address << 16);
-> +			else
-> +				*addr = sb->slave_address;
-> +		}
-> +	}
-> +
-> +	/* Tell the ACPI core that we already copied this address */
-> +	return 1;
-> +}
-> +
-> +static int inv_mpu_process_acpi_config(struct i2c_client *client,
-> +				       unsigned short *primary_addr,
-> +				       unsigned short *secondary_addr)
-> +{
-> +	const struct acpi_device_id *id;
-> +	struct acpi_device *adev;
-> +	u32 i2c_addr = 0;
-> +	LIST_HEAD(resources);
-> +	int ret;
-> +
-> +	id = acpi_match_device(client->dev.driver->acpi_match_table,
-> +			       &client->dev);
-> +	if (!id)
-> +		return -ENODEV;
-> +
-> +	adev = ACPI_COMPANION(&client->dev);
-> +	if (!adev)
-> +		return -ENODEV;
-> +
-> +	ret = acpi_dev_get_resources(adev, &resources,
-> +				     acpi_i2c_check_resource, &i2c_addr);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	acpi_dev_free_resource_list(&resources);
-> +	*primary_addr = i2c_addr & 0x0000ffff;
-> +	*secondary_addr = (i2c_addr & 0xffff0000) >> 16;
-> +
-> +	return 0;
-> +}
-> +
-> +int inv_mpu_acpi_create_mux_client(struct inv_mpu6050_state *st)
-> +{
-> +
-Bonus blank line to use here.
-> +	st->mux_client = NULL;
-> +	if (ACPI_HANDLE(&st->client->dev)) {
-> +		struct i2c_board_info info;
-> +		struct acpi_device *adev;
-> +		int ret = -1;
-> +
-> +		adev = ACPI_COMPANION(&st->client->dev);
-> +		memset(&info, 0, sizeof(info));
-> +
-> +		dmi_check_system(inv_mpu_dev_list);
-> +		switch (matched_product_name) {
-> +		case INV_MPU_ASUS_T100TA:
-> +			ret = asus_acpi_get_sensor_info(adev, st->client,
-> +							&info);
-> +			break;
-> +		/* Add more matched product processing here */
-> +		default:
-> +			break;
-> +		}
-> +
-> +		if (ret < 0) {
-> +			/* No matching DMI, so create device on INV6XX type */
-> +			unsigned short primary, secondary;
-> +
-> +			ret = inv_mpu_process_acpi_config(st->client, &primary,
-> +							  &secondary);
-> +			if (!ret && secondary) {
-> +				char *name;
-> +
-> +				info.addr = secondary;
-> +				strlcpy(info.type, dev_name(&adev->dev),
-> +					sizeof(info.type));
-> +				name = strchr(info.type, ':');
-> +				if (name)
-> +					*name = '\0';
-> +				strlcat(info.type, "-client",
-> +					sizeof(info.type));
-> +			} else
-> +				return 0; /* no secondary addr, which is OK */
-> +		}
-> +		st->mux_client = i2c_new_device(st->mux_adapter, &info);
-> +		if (!st->mux_client)
-> +			return -ENODEV;
-> +
-> +	}
-> +
-> +	return 0;
-> +}
-> +
-> +void inv_mpu_acpi_delete_mux_client(struct inv_mpu6050_state *st)
-> +{
-> +	if (st->mux_client)
-> +		i2c_unregister_device(st->mux_client);
-> +}
-> diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-> index d8d5bed..280aa77 100644
-> --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-> +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-> @@ -825,8 +825,16 @@ static int inv_mpu_probe(struct i2c_client *client,
->  		goto out_unreg_device;
->  	}
 >  
-> +#ifdef CONFIG_ACPI
-> +	result = inv_mpu_acpi_create_mux_client(st);
-> +	if (result)
-> +		goto out_del_mux;
-> +#endif
+>  static inline void vf610_adc_cfg_init(struct vf610_adc *info)
+>  {
+> +	struct vf610_adc_feature *adc_feature = &info->adc_feature;
 > +
->  	return 0;
+>  	/* set default Configuration for ADC controller */
+> -	info->adc_feature.clk_sel = VF610_ADCIOC_BUSCLK_SET;
+> -	info->adc_feature.vol_ref = VF610_ADCIOC_VR_VREF_SET;
+> +	adc_feature->clk_sel = VF610_ADCIOC_BUSCLK_SET;
+> +	adc_feature->vol_ref = VF610_ADCIOC_VR_VREF_SET;
+> +
+> +	adc_feature->calibration = true;
+> +	adc_feature->ovwren = true;
+> +
+> +	adc_feature->res_mode = 12;
+> +	adc_feature->sample_rate = 1;
+> +	adc_feature->lpm = true;
 >  
-> +out_del_mux:
-> +	i2c_del_mux_adapter(st->mux_adapter);
->  out_unreg_device:
->  	iio_device_unregister(indio_dev);
->  out_remove_trigger:
-> @@ -841,6 +849,9 @@ static int inv_mpu_remove(struct i2c_client *client)
->  	struct iio_dev *indio_dev = i2c_get_clientdata(client);
->  	struct inv_mpu6050_state *st = iio_priv(indio_dev);
+> -	info->adc_feature.calibration = true;
+> -	info->adc_feature.ovwren = true;
+> +	/* Use a save ADCK which is below 20MHz on all devices */
+> +	adc_feature->clk_div = 8;
 >  
-> +#ifdef CONFIG_ACPI
-> +	inv_mpu_acpi_delete_mux_client(st);
-> +#endif
->  	i2c_del_mux_adapter(st->mux_adapter);
->  	iio_device_unregister(indio_dev);
->  	inv_mpu6050_remove_trigger(st);
-> diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h b/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
-> index aa837de..db0a4a2 100644
-> --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
-> +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
-> @@ -121,6 +121,7 @@ struct inv_mpu6050_state {
->  	spinlock_t time_stamp_lock;
->  	struct i2c_client *client;
->  	struct i2c_adapter *mux_adapter;
-> +	struct i2c_client *mux_client;
->  	unsigned int powerup_count;
->  	struct inv_mpu6050_platform_data plat_data;
->  	DECLARE_KFIFO(timestamps, long long, TIMESTAMP_FIFO_SIZE);
-> @@ -251,3 +252,5 @@ int inv_reset_fifo(struct iio_dev *indio_dev);
->  int inv_mpu6050_switch_engine(struct inv_mpu6050_state *st, bool en, u32 mask);
->  int inv_mpu6050_write_reg(struct inv_mpu6050_state *st, int reg, u8 val);
->  int inv_mpu6050_set_power_itg(struct inv_mpu6050_state *st, bool power_on);
-> +int inv_mpu_acpi_create_mux_client(struct inv_mpu6050_state *st);
-> +void inv_mpu_acpi_delete_mux_client(struct inv_mpu6050_state *st);
+> -	info->adc_feature.clk_div = 1;
+> -	info->adc_feature.res_mode = 12;
+> -	info->adc_feature.sample_rate = 1;
+> -	info->adc_feature.lpm = true;
+> +	vf610_adc_calculate_rates(info);
+>  }
+>  
+>  static void vf610_adc_cfg_post_set(struct vf610_adc *info)
+> @@ -290,12 +306,10 @@ static void vf610_adc_cfg_set(struct vf610_adc *info)
+>  
+>  	cfg_data = readl(info->regs + VF610_REG_ADC_CFG);
+>  
+> -	/* low power configuration */
+>  	cfg_data &= ~VF610_ADC_ADLPC_EN;
+>  	if (adc_feature->lpm)
+>  		cfg_data |= VF610_ADC_ADLPC_EN;
+>  
+> -	/* disable high speed */
+>  	cfg_data &= ~VF610_ADC_ADHSC_EN;
+>  
+>  	writel(cfg_data, info->regs + VF610_REG_ADC_CFG);
+> @@ -435,10 +449,27 @@ static irqreturn_t vf610_adc_isr(int irq, void *dev_id)
+>  	return IRQ_HANDLED;
+>  }
+>  
+> -static IIO_CONST_ATTR_SAMP_FREQ_AVAIL("1941176, 559332, 286957, 145374, 73171");
+> +static ssize_t vf610_show_samp_freq_avail(struct device *dev,
+> +				struct device_attribute *attr, char *buf)
+> +{
+> +	struct vf610_adc *info = iio_priv(dev_to_iio_dev(dev));
+> +	size_t len = 0;
+> +	int i;
+> +
+> +	for (i = 0; i < ARRAY_SIZE(info->sample_freq_avail); i++)
+> +		len += scnprintf(buf + len, PAGE_SIZE - len,
+> +			"%u ", info->sample_freq_avail[i]);
+> +
+> +	/* replace trailing space by newline */
+> +	buf[len - 1] = '\n';
+> +
+> +	return len;
+> +}
+> +
+> +static IIO_DEV_ATTR_SAMP_FREQ_AVAIL(vf610_show_samp_freq_avail);
+>  
+>  static struct attribute *vf610_attributes[] = {
+> -	&iio_const_attr_sampling_frequency_available.dev_attr.attr,
+> +	&iio_dev_attr_sampling_frequency_available.dev_attr.attr,
+>  	NULL
+>  };
+>  
+> @@ -502,7 +533,7 @@ static int vf610_read_raw(struct iio_dev *indio_dev,
+>  		return IIO_VAL_FRACTIONAL_LOG2;
+>  
+>  	case IIO_CHAN_INFO_SAMP_FREQ:
+> -		*val = vf610_sample_freq_avail[info->adc_feature.sample_rate];
+> +		*val = info->sample_freq_avail[info->adc_feature.sample_rate];
+>  		*val2 = 0;
+>  		return IIO_VAL_INT;
+>  
+> @@ -525,9 +556,9 @@ static int vf610_write_raw(struct iio_dev *indio_dev,
+>  	switch (mask) {
+>  		case IIO_CHAN_INFO_SAMP_FREQ:
+>  			for (i = 0;
+> -				i < ARRAY_SIZE(vf610_sample_freq_avail);
+> +				i < ARRAY_SIZE(info->sample_freq_avail);
+>  				i++)
+> -				if (val == vf610_sample_freq_avail[i]) {
+> +				if (val == info->sample_freq_avail[i]) {
+>  					info->adc_feature.sample_rate = i;
+>  					vf610_adc_sample_set(info);
+>  					return 0;
 > 
 
