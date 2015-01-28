@@ -1,110 +1,231 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:38151 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754625AbbA1U1z (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 28 Jan 2015 15:27:55 -0500
-In-Reply-To: <CAE1zotLxq0E+aOpCHnT=MrpRxmcFyDRe816xjMG4ntOV+DL0ZQ@mail.gmail.com>
-References: <1419122556-8100-1-git-send-email-octavian.purdila@intel.com> <1419122556-8100-9-git-send-email-octavian.purdila@intel.com> <54A96BF4.303@kernel.org> <CAE1zotLxq0E+aOpCHnT=MrpRxmcFyDRe816xjMG4ntOV+DL0ZQ@mail.gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain;
- charset=UTF-8
-Subject: Re: [PATCH v2 08/11] iio: bmc150: introduce bmc150_accel_interrupt
-From: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
-Date: Wed, 28 Jan 2015 13:20:22 +0000
-To: Octavian Purdila <octavian.purdila@intel.com>,
-	Jonathan Cameron <jic23@kernel.org>
-CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Message-ID: <A0167C26-04DA-4F34-AA3E-788439809449@jic23.retrosnub.co.uk>
+Received: from mailout2.w1.samsung.com ([210.118.77.12]:43629 "EHLO
+	mailout2.w1.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755363AbbA1UQ4 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 28 Jan 2015 15:16:56 -0500
+From: Karol Wrona <k.wrona@samsung.com>
+To: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc: Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Rob Herring <robh+dt@kernel.org>,
+	Pawel Moll <pawel.moll@arm.com>,
+	Mark Rutland <mark.rutland@arm.com>,
+	Ian Campbell <ijc+devicetree@hellion.org.uk>,
+	Kumar Gala <galak@codeaurora.org>,
+	Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
+	Kyungmin Park <kyungmin.park@samsung.com>,
+	Karol Wrona <wrona.vy@gmail.com>,
+	Karol Wrona <k.wrona@samsung.com>
+Subject: [PATCH v5 3/5] iio: common: ssp_sensors: Add sensorhub iio commons
+Date: Wed, 28 Jan 2015 15:05:52 +0100
+Message-id: <1422453954-27317-4-git-send-email-k.wrona@samsung.com>
+In-reply-to: <1422453954-27317-1-git-send-email-k.wrona@samsung.com>
+References: <1422453954-27317-1-git-send-email-k.wrona@samsung.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
+This patch adds common library for sensorhub iio drivers.
 
+Signed-off-by: Karol Wrona <k.wrona@samsung.com>
+Acked-by: Kyungmin Park <kyungmin.park@samsung.com>
+---
+ drivers/iio/common/ssp_sensors/ssp_iio.c        |  107 +++++++++++++++++++++++
+ drivers/iio/common/ssp_sensors/ssp_iio_sensor.h |   70 +++++++++++++++
+ 2 files changed, 177 insertions(+)
+ create mode 100644 drivers/iio/common/ssp_sensors/ssp_iio.c
+ create mode 100644 drivers/iio/common/ssp_sensors/ssp_iio_sensor.h
 
-On 28 January 2015 11:09:46 GMT+00:00, Octavian Purdila <octavian.purdila@intel.com> wrote:
->On Sun, Jan 4, 2015 at 6:36 PM, Jonathan Cameron <jic23@kernel.org>
->wrote:
->> On 21/12/14 00:42, Octavian Purdila wrote:
->>> Since both triggers and events can share an interrupt, add a data
->>> structure that tracks the users of an interrupt so that it enables
->or
->>> disables it only for the first users and respectively last user.
->>>
->>> This will allows us to easily add more events or triggers.
->>>
->>> The patch also adds an interrupt enabled counter, so that we can
->>> easily know if we need to put the device in normal mode when the
->>> resume callback is issued.
->>>
->>> Signed-off-by: Octavian Purdila <octavian.purdila@intel.com>
->> This is probably the cleanest way of doing this, but an alternative
->is
->> to register an interrupt chip and then you can have each interrupt
->source
->> (internal to the device) have it's own interrupt and register as if
->> it had direct access (rather than having to read what interrupt
->occured
->> first).  This is the preferred method these days for MFDs where this
->> tree structure of interrupts is common.
->>
->> I think that would result in slightly more code though, so perhaps
->this
->> local version of some of that infrastructure is fine.
->>
->
->Good to know about the interrupt chip approach. I also think in this
->case the local version is better.
->
->But if we see a common pattern across multiple drivers, perhaps we can
->add the interrupt chip to the IIO core for those drivers that want to
->make use of it. I'll take a look, but on the top of your head, do you
->know of any drivers for this would be useful?
-I doubt it would generalise in a useful way.
-The code needed is pretty compact and mostly very part specific.
-Note the triggers in iio are already using this approach but there the purpose is a bit different. We always want to interrupt all children who are ready...
->
->>> ---
->>>  drivers/iio/accel/bmc150-accel.c | 87
->+++++++++++++++++++++-------------------
->>>  1 file changed, 45 insertions(+), 42 deletions(-)
->>>
->>> diff --git a/drivers/iio/accel/bmc150-accel.c
->b/drivers/iio/accel/bmc150-accel.c
->>> index aaad2fb..7c905f6 100644
->>> --- a/drivers/iio/accel/bmc150-accel.c
->>> +++ b/drivers/iio/accel/bmc150-accel.c
->>> @@ -151,10 +151,19 @@ struct bmc150_accel_interrupt_info {
->>>       u8 en_bitmask;
->>>  };
->>>
->>> +struct bmc150_accel_interrupt {
->>> +     struct bmc150_accel_interrupt_info *info;
->>> +     atomic_t users;
->>> +};
->>> +
->>> +#define BMC150_ACCEL_INTERRUPTS              2
->>> +
->>>  struct bmc150_accel_data {
->>>       struct i2c_client *client;
->>> +     struct bmc150_accel_interrupt
->interrupts[BMC150_ACCEL_INTERRUPTS];
->>>       struct iio_trigger *dready_trig;
->>>       struct iio_trigger *motion_trig;
->>> +     atomic_t active_intr;
->>>       struct mutex mutex;
->>>       s16 buffer[8];
->>>       u8 bw_bits;
->>> @@ -436,7 +445,8 @@ static int bmc150_accel_set_power_state(struct
->bmc150_accel_data *data, bool on)
->>>  }
->>>  #endif
->>>
->>> -static struct bmc150_accel_interrupt_info bmc150_accel_interrupts[]
->= {
->>> +static struct bmc150_accel_interrupt_info
->> Just noticed. Should this not also be const?
->>> +bmc150_accel_interrupts[BMC150_ACCEL_INTERRUPTS] = {
->
->Yes indeed, fixed.
-
+diff --git a/drivers/iio/common/ssp_sensors/ssp_iio.c b/drivers/iio/common/ssp_sensors/ssp_iio.c
+new file mode 100644
+index 0000000..a3ae165
+--- /dev/null
++++ b/drivers/iio/common/ssp_sensors/ssp_iio.c
+@@ -0,0 +1,107 @@
++/*
++ *  Copyright (C) 2014, Samsung Electronics Co. Ltd. All Rights Reserved.
++ *
++ *  This program is free software; you can redistribute it and/or modify
++ *  it under the terms of the GNU General Public License as published by
++ *  the Free Software Foundation; either version 2 of the License, or
++ *  (at your option) any later version.
++ *
++ *  This program is distributed in the hope that it will be useful,
++ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
++ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ *  GNU General Public License for more details.
++ *
++ */
++
++#include <linux/iio/common/ssp_sensors.h>
++#include <linux/iio/kfifo_buf.h>
++#include <linux/module.h>
++#include <linux/slab.h>
++#include "ssp_iio_sensor.h"
++
++/**
++ * ssp_common_buffer_postenable() - generic postenable callback for ssp buffer
++ *
++ * @indio_dev:		iio device
++ *
++ * Returns 0 or negative value in case of error
++ */
++int ssp_common_buffer_postenable(struct iio_dev *indio_dev)
++{
++	struct ssp_sensor_data *spd = iio_priv(indio_dev);
++	struct ssp_data *data = dev_get_drvdata(indio_dev->dev.parent->parent);
++
++	/* the allocation is made in post because scan size is known in this
++	 * moment
++	 * */
++	spd->buffer = kmalloc(indio_dev->scan_bytes, GFP_KERNEL | GFP_DMA);
++	if (!spd->buffer)
++		return -ENOMEM;
++
++	return ssp_enable_sensor(data, spd->type,
++				 ssp_get_sensor_delay(data, spd->type));
++}
++EXPORT_SYMBOL(ssp_common_buffer_postenable);
++
++/**
++ * ssp_common_buffer_postdisable() - generic postdisable callback for ssp buffer
++ *
++ * @indio_dev:		iio device
++ *
++ * Returns 0 or negative value in case of error
++ */
++int ssp_common_buffer_postdisable(struct iio_dev *indio_dev)
++{
++	int ret;
++	struct ssp_sensor_data *spd = iio_priv(indio_dev);
++	struct ssp_data *data = dev_get_drvdata(indio_dev->dev.parent->parent);
++
++	ret = ssp_disable_sensor(data, spd->type);
++	if (ret < 0)
++		return ret;
++
++	kfree(spd->buffer);
++
++	return ret;
++}
++EXPORT_SYMBOL(ssp_common_buffer_postdisable);
++
++/**
++ * ssp_common_process_data() - Common process data callback for ssp sensors
++ *
++ * @indio_dev:		iio device
++ * @buf:		source buffer
++ * @len:		sensor data length
++ * @timestamp:		system timestamp
++ *
++ * Returns 0 or negative value in case of error
++ */
++int ssp_common_process_data(struct iio_dev *indio_dev, void *buf,
++			    unsigned int len, int64_t timestamp)
++{
++	__le32 time;
++	int64_t calculated_time;
++	struct ssp_sensor_data *spd = iio_priv(indio_dev);
++
++	if (indio_dev->scan_bytes == 0)
++		return 0;
++
++	/*
++	 * it always sends full set of samples, remember about available masks
++	 */
++	memcpy(spd->buffer, buf, len);
++
++	if (indio_dev->scan_timestamp) {
++		memcpy(&time, &((char *)buf)[len], SSP_TIME_SIZE);
++		calculated_time =
++			timestamp + (int64_t)le32_to_cpu(time) * 1000000;
++	}
++
++	return iio_push_to_buffers_with_timestamp(indio_dev, spd->buffer,
++						  calculated_time);
++}
++EXPORT_SYMBOL(ssp_common_process_data);
++
++MODULE_AUTHOR("Karol Wrona <k.wrona@samsung.com>");
++MODULE_DESCRIPTION("Samsung sensorhub commons");
++MODULE_LICENSE("GPL");
+diff --git a/drivers/iio/common/ssp_sensors/ssp_iio_sensor.h b/drivers/iio/common/ssp_sensors/ssp_iio_sensor.h
+new file mode 100644
+index 0000000..dda267c
+--- /dev/null
++++ b/drivers/iio/common/ssp_sensors/ssp_iio_sensor.h
+@@ -0,0 +1,70 @@
++#ifndef __SSP_IIO_SENSOR_H__
++#define __SSP_IIO_SENSOR_H__
++
++#define SSP_CHANNEL_AG(_type, _mod, _index) \
++{ \
++		.type = _type,\
++		.modified = 1,\
++		.channel2 = _mod,\
++		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SAMP_FREQ),\
++		.scan_index = _index,\
++		.scan_type = {\
++			.sign = 's',\
++			.realbits = 16,\
++			.storagebits = 16,\
++			.shift = 0,\
++			.endianness = IIO_LE,\
++		},\
++}
++
++/* It is defined here as it is a mixed timestamp */
++#define SSP_CHAN_TIMESTAMP(_si) {					\
++	.type = IIO_TIMESTAMP,						\
++	.channel = -1,							\
++	.scan_index = _si,						\
++	.scan_type = {							\
++		.sign = 's',						\
++		.realbits = 64,						\
++		.storagebits = 64,					\
++		},							\
++}
++
++#define SSP_MS_PER_S			1000
++#define SSP_INVERTED_SCALING_FACTOR	1000000ULL
++
++#define SSP_FACTOR_WITH_MS \
++	(SSP_INVERTED_SCALING_FACTOR * SSP_MS_PER_S)
++
++int ssp_common_buffer_postenable(struct iio_dev *indio_dev);
++
++int ssp_common_buffer_postdisable(struct iio_dev *indio_dev);
++
++int ssp_common_process_data(struct iio_dev *indio_dev, void *buf,
++			    unsigned int len, int64_t timestamp);
++
++/* Converts time in ms to frequency */
++static inline void ssp_convert_to_freq(u32 time, int *integer_part,
++				       int *fractional)
++{
++	if (time == 0) {
++		*fractional = 0;
++		*integer_part = 0;
++		return;
++	}
++
++	*integer_part = SSP_FACTOR_WITH_MS / time;
++	*fractional = do_div(*integer_part, SSP_INVERTED_SCALING_FACTOR);
++}
++
++/* Converts frequency to time in ms */
++static inline int ssp_convert_to_time(int integer_part, int fractional)
++{
++	u64 value;
++
++	value = integer_part * SSP_INVERTED_SCALING_FACTOR + fractional;
++	if (value == 0)
++		return 0;
++
++	return div_u64(SSP_FACTOR_WITH_MS, value);
++}
++#endif /* __SSP_IIO_SENSOR_H__ */
 -- 
-Sent from my Android device with K-9 Mail. Please excuse my brevity.
+1.7.9.5
+
