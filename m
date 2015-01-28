@@ -1,51 +1,62 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mout.kundenserver.de ([212.227.126.130]:57064 "EHLO
-	mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1757088AbbA1Uh3 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 28 Jan 2015 15:37:29 -0500
-From: Arnd Bergmann <arnd@arndb.de>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
-	Gwendal Grignou <gwendal@chromium.org>,
-	linux-arm-kernel@lists.infradead.org,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>, linux-iio@vger.kernel.org
-Subject: [PATCH] iio: ak8975: fix AK09911 dependencies
-Date: Wed, 28 Jan 2015 14:58:44 +0100
-Message-ID: <7968545.0Cq9DcaG85@wuerfel>
+Received: from mail-wi0-f181.google.com ([209.85.212.181]:48195 "EHLO
+	mail-wi0-f181.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S933246AbbA1Ukn (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 28 Jan 2015 15:40:43 -0500
+Received: by mail-wi0-f181.google.com with SMTP id fb4so15218852wid.2
+        for <linux-iio@vger.kernel.org>; Wed, 28 Jan 2015 12:40:42 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+In-Reply-To: <1420570433.4459.105.camel@spandruv-desktop.jf.intel.com>
+References: <1419122556-8100-1-git-send-email-octavian.purdila@intel.com>
+	<1419122556-8100-6-git-send-email-octavian.purdila@intel.com>
+	<54A96870.1000206@kernel.org>
+	<1420570433.4459.105.camel@spandruv-desktop.jf.intel.com>
+Date: Wed, 28 Jan 2015 11:22:22 +0200
+Message-ID: <CAE1zotKSo0yH96TcejmrrPbG=_vfBSN=dEWQJXkxg9H_QGLWjQ@mail.gmail.com>
+Subject: Re: [PATCH v2 05/11] iio: bmc150: refactor slope duration and
+ threshold update
+From: Octavian Purdila <octavian.purdila@intel.com>
+To: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	Laurentiu Palcu <laurentiu.palcu@intel.com>
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-ak8975 depends on I2C and GPIOLIB, so any symbols that selects
-ak8975 must have the same dependency, or we get build errors:
+On Tue, Jan 6, 2015 at 8:53 PM, Srinivas Pandruvada
+<srinivas.pandruvada@linux.intel.com> wrote:
+>
+> On Sun, 2015-01-04 at 16:21 +0000, Jonathan Cameron wrote:
+> > On 21/12/14 00:42, Octavian Purdila wrote:
+> > > Move the slope duration and threshold update in separate functions
+> > > to reduce code duplicate between chip init and motion interrupt setup.
+> > >
+> > > The patch also moves the update from the motion interrupt setup
+> > > function to the write event function so that we can later refactor the
+> > > interrupt code.
+> > The side effect of this is that these will get updated at a different
+> > point in time from before.  Previously these values would only get
+> > updated when the event was enabled (or the trigger).  So to change
+> > them a disable / enable cycle was needed. Now they happen the moment
+> > they are relevant.
+> >
+> > I prefer the new option, but it is an ABI change (be it one most people
+> > won't notice!)
+> I did purposely this way.
+> IMO when user is changing critical parameters he should disable and re
+> enable to avoid undesirable side effects.
+> We have similar situation in other  thermal drivers where user can
+> change policy parameters. Initially we let them change while zone is
+> enabled (system is armed), this led to undesirable side effects due to
+> race conditions.
+>
 
-drivers/iio/magnetometer/ak8975.c: In function 'ak8975_who_i_am':
-drivers/iio/magnetometer/ak8975.c:393:2: error: implicit declaration of function 'i2c_smbus_read_i2c_block_data' [-Werror=implicit-function-declaration]
-  ret = i2c_smbus_read_i2c_block_data(client, AK09912_REG_WIA1,
-  ^
-drivers/iio/magnetometer/ak8975.c: In function 'ak8975_set_mode':
-drivers/iio/magnetometer/ak8975.c:431:2: error: implicit declaration of function 'i2c_smbus_write_byte_data' [-Werror=implicit-function-declaration]
-  ret = i2c_smbus_write_byte_data(data->client,
+We already have a check that prevents the change while the event is
+active. We could add a check for the data motion trigger as well, to
+avoid the above scenario.
 
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-Fixes: 57e73a423b1e85 ("iio: ak8975: add ak09911 and ak09912 support")
----
-I found this recent regression doing ARM randconfig builds, please apply
+Alternatively I can rewrite the patch to keep the current behavior and
+update the parameters when we enable the trigger.
 
-diff --git a/drivers/iio/magnetometer/Kconfig b/drivers/iio/magnetometer/Kconfig
-index 4c7a4c52dd06..a5d6de72c523 100644
---- a/drivers/iio/magnetometer/Kconfig
-+++ b/drivers/iio/magnetometer/Kconfig
-@@ -18,6 +18,8 @@ config AK8975
- 
- config AK09911
- 	tristate "Asahi Kasei AK09911 3-axis Compass"
-+	depends on I2C
-+	depends on GPIOLIB
- 	select AK8975
- 	help
- 	  Deprecated: AK09911 is now supported by AK8975 driver.
-
+Which one sounds better?
