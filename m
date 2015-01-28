@@ -1,228 +1,315 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mout.gmx.net ([212.227.15.15]:58561 "EHLO mout.gmx.net"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1754127AbbA2Bct (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Wed, 28 Jan 2015 20:32:49 -0500
-Message-ID: <54C974C5.9000502@gmx.de>
-Date: Thu, 29 Jan 2015 00:46:13 +0100
-From: Hartmut Knaack <knaack.h@gmx.de>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:39612 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754178AbbA2Bw4 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 28 Jan 2015 20:52:56 -0500
+Message-ID: <54C92E51.5040508@kernel.org>
+Date: Wed, 28 Jan 2015 18:45:37 +0000
+From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Octavian Purdila <octavian.purdila@intel.com>,
-	linux-iio@vger.kernel.org
-CC: Jonathan Cameron <jic23@kernel.org>,
+To: "Ivan T. Ivanov" <iivanov@mm-sol.com>,
+	Rob Herring <robh+dt@kernel.org>,
+	Pawel Moll <pawel.moll@arm.com>,
+	Mark Rutland <mark.rutland@arm.com>,
+	Ian Campbell <ijc+devicetree@hellion.org.uk>,
+	Kumar Gala <galak@codeaurora.org>
+CC: Stanimir Varbanov <svarbanov@mm-sol.com>,
+	Hartmut Knaack <knaack.h@gmx.de>,
 	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>
-Subject: Re: [PATCH v2 04/11] iio: add support for hardware fifo
-References: <1419122556-8100-1-git-send-email-octavian.purdila@intel.com> <1419122556-8100-5-git-send-email-octavian.purdila@intel.com>
-In-Reply-To: <1419122556-8100-5-git-send-email-octavian.purdila@intel.com>
-Content-Type: text/plain; charset=UTF-8
+	Peter Meerwald <pmeerw@pmeerw.net>, devicetree@vger.kernel.org,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v5 1/2] DT: iio: vadc: document dt binding
+References: <1421748922-8933-1-git-send-email-iivanov@mm-sol.com> <1421748922-8933-2-git-send-email-iivanov@mm-sol.com>
+In-Reply-To: <1421748922-8933-2-git-send-email-iivanov@mm-sol.com>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Octavian Purdila schrieb am 21.12.2014 um 01:42:
-> Some devices have hardware buffers that can store a number of samples
-> for later consumption. Hardware usually provides interrupts to notify
-> the processor when the fifo is full or when it has reached a certain
-> threshold. This helps with reducing the number of interrupts to the
-> host processor and thus it helps decreasing the power consumption.
+On 20/01/15 10:15, Ivan T. Ivanov wrote:
+> From: Stanimir Varbanov <svarbanov@mm-sol.com>
 > 
-> This patch adds support for hardware fifo to IIO by allowing the
-> drivers to register operations for flushing the hadware fifo and
-> setting the watermark level.
+> Document DT binding for Qualcomm SPMI PMIC voltage ADC
+> driver.
 > 
-> A driver implementing hardware fifo support must also provide a
-> watermark trigger which must contain "watermark" in its name.
-> 
+> Signed-off-by: Stanimir Varbanov <svarbanov@mm-sol.com>
+> Signed-off-by: Ivan T. Ivanov <iivanov@mm-sol.com>
+Given the only changes since the previous version (back in
+November are trivial typo corrections) I'm deeming this
+to have met the 3 weeks waiting for any DT responses and
+taking it through IIO.
 
-A few comments inline, also addressed to the other IIO maintainers.
+Applied to the togreg branch of iio.git - initially pushed out
+as testing.
 
-> Signed-off-by: Octavian Purdila <octavian.purdila@intel.com>
+Jonathan
 > ---
->  Documentation/ABI/testing/sysfs-bus-iio | 22 +++++++++++++++++
->  drivers/iio/industrialio-buffer.c       | 44 ++++++++++++++++++++++++++++-----
->  include/linux/iio/iio.h                 | 17 +++++++++++++
->  3 files changed, 77 insertions(+), 6 deletions(-)
+>  .../devicetree/bindings/iio/adc/qcom,spmi-vadc.txt | 129 +++++++++++++++++++++
+>  include/dt-bindings/iio/qcom,spmi-vadc.h           | 119 +++++++++++++++++++
+>  2 files changed, 248 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/iio/adc/qcom,spmi-vadc.txt
+>  create mode 100644 include/dt-bindings/iio/qcom,spmi-vadc.h
 > 
-> diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
-> index 7260f1f..6bb67ac 100644
-> --- a/Documentation/ABI/testing/sysfs-bus-iio
-> +++ b/Documentation/ABI/testing/sysfs-bus-iio
-> @@ -1152,3 +1152,25 @@ Description:
->  		Poll will block until the watermark is reached.
->  		Blocking read will wait until the minimum between the requested
->  		read amount or the low water mark is available.
-> +		If the device has a hardware fifo this value is going to be used
-> +		for the hardware fifo watermark as well.
+> diff --git a/Documentation/devicetree/bindings/iio/adc/qcom,spmi-vadc.txt b/Documentation/devicetree/bindings/iio/adc/qcom,spmi-vadc.txt
+> new file mode 100644
+> index 0000000..0fb4613
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/iio/adc/qcom,spmi-vadc.txt
+> @@ -0,0 +1,129 @@
+> +Qualcomm's SPMI PMIC voltage ADC
 > +
-> +What:		/sys/bus/iio/devices/iio:deviceX/buffer/hwfifo-length
-> +KernelVersion:	3.20
-> +Contact:	linux-iio@vger.kernel.org
-> +Description:
-> +		A single positive integer specifying the maximum number of
-> +		samples that the hardware fifo has. If the device does not
-> +		support hardware fifo this is zero.
-> +		When a device supports hardware fifo it will expose a trigger
-> +		with the name that contains "watermark"
-> +		(e.g. i2c-BMC150A:00-watermark-dev0).
-> +		To use the hardware fifo the user must set an appropriate value
-> +		in the buffer/length and buffer/low_watermark entries and select
-> +		the watermark trigger. At that poin the hardware fifo will be
-> +		enabled and the samples will be collected in a hardware buffer.
-> +		When the number of samples in the hardware fifo reaches the
-> +		watermark level the watermark trigger is issued and data is
-> +		flushed to the devices buffer.
-> +		A hardware buffer flush will also be triggered when reading from
-> +		the device buffer and there is not enough data available.
-> \ No newline at end of file
-> diff --git a/drivers/iio/industrialio-buffer.c b/drivers/iio/industrialio-buffer.c
-> index 7f74c7f..3da6d07 100644
-> --- a/drivers/iio/industrialio-buffer.c
-> +++ b/drivers/iio/industrialio-buffer.c
-> @@ -37,9 +37,17 @@ static bool iio_buffer_is_active(struct iio_buffer *buf)
->  	return !list_empty(&buf->buffer_list);
->  }
->  
-> -static size_t iio_buffer_data_available(struct iio_buffer *buf)
-> +static bool iio_buffer_data_available(struct iio_dev *indio_dev,
-> +				      struct iio_buffer *buf, size_t required)
->  {
-> -	return buf->access->data_available(buf);
-> +	size_t avail = buf->access->data_available(buf);
+> +SPMI PMIC voltage ADC (VADC) provides interface to clients to read
+> +voltage. The VADC is a 15-bit sigma-delta ADC.
 > +
-> +	if (avail < required && indio_dev->hwfifo) {
-> +		indio_dev->hwfifo->flush(indio_dev);
-> +		avail = buf->access->data_available(buf);
-> +	}
+> +VADC node:
 > +
-> +	return avail >= required;
->  }
->  
->  /**
-> @@ -66,13 +74,13 @@ ssize_t iio_buffer_read_first_n_outer(struct file *filp, char __user *buf,
->  
->  	do {
->  		if (filp->f_flags & O_NONBLOCK) {
-> -			if (!iio_buffer_data_available(rb)) {
-> +			if (!iio_buffer_data_available(indio_dev, rb, 1)) {
->  				ret = -EAGAIN;
->  				break;
->  			}
->  		} else {
->  			ret = wait_event_interruptible(rb->pollq,
-> -			       iio_buffer_data_available(rb) >= to_read ||
-> +		            iio_buffer_data_available(indio_dev, rb, to_read) ||
->  						       indio_dev->info == NULL);
->  			if (ret)
->  				return ret;
-> @@ -112,7 +120,7 @@ unsigned int iio_buffer_poll(struct file *filp,
->  		return -ENODEV;
->  
->  	poll_wait(filp, &rb->pollq, wait);
-> -	if (iio_buffer_data_available(rb) >= rb->low_watermark)
-> +	if (iio_buffer_data_available(indio_dev, rb, rb->low_watermark))
->  		return POLLIN | POLLRDNORM;
->  	return 0;
->  }
-> @@ -440,8 +448,14 @@ static ssize_t iio_buffer_write_length(struct device *dev,
->  	if (buffer->length)
->  		val = buffer->length;
->  
-> -	if (val < buffer->low_watermark)
-> +	if (val < buffer->low_watermark) {
-> +		if (indio_dev->hwfifo) {
-> +			ret = indio_dev->hwfifo->set_watermark(indio_dev, val);
-> +			if (ret)
-> +				return ret;
-> +		}
->  		buffer->low_watermark = val;
-> +	}
->  
->  	return len;
->  }
-> @@ -811,6 +825,12 @@ static ssize_t iio_buffer_store_watermark(struct device *dev,
->  		goto out;
->  	}
->  
-> +	if (indio_dev->hwfifo) {
-> +		ret = indio_dev->hwfifo->set_watermark(indio_dev, val);
-> +		if (ret)
-> +			goto out;
-> +	}
+> +- compatible:
+> +    Usage: required
+> +    Value type: <string>
+> +    Definition: Should contain "qcom,spmi-vadc".
 > +
->  	buffer->low_watermark = val;
->  	ret = 0;
->  out:
-> @@ -818,6 +838,16 @@ out:
->  	return ret ? ret : len;
->  }
->  
-> +ssize_t iio_buffer_hwfifo_read_length(struct device *dev,
-> +				      struct device_attribute *attr,
-> +				      char *buf)
-> +{
-> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
-> +	const struct iio_hwfifo *hwfifo = indio_dev->hwfifo;
+> +- reg:
+> +    Usage: required
+> +    Value type: <prop-encoded-array>
+> +    Definition: VADC base address and length in the SPMI PMIC register map.
 > +
-> +	return sprintf(buf, "%u\n", hwfifo ? hwfifo->length : 0);
-> +}
+> +- #address-cells:
+> +    Usage: required
+> +    Value type: <u32>
+> +    Definition: Must be one. Child node 'reg' property should define ADC
+> +            channel number.
 > +
->  static DEVICE_ATTR(length, S_IRUGO | S_IWUSR, iio_buffer_read_length,
->  		   iio_buffer_write_length);
->  static struct device_attribute dev_attr_length_ro = __ATTR(length,
-> @@ -826,11 +856,13 @@ static DEVICE_ATTR(enable, S_IRUGO | S_IWUSR,
->  		   iio_buffer_show_enable, iio_buffer_store_enable);
->  static DEVICE_ATTR(low_watermark, S_IRUGO | S_IWUSR,
->  		   iio_buffer_show_watermark, iio_buffer_store_watermark);
-> +static DEVICE_ATTR(hwfifo_length, S_IRUGO, iio_buffer_hwfifo_read_length, NULL);
->  
->  static struct attribute *iio_buffer_attrs[] = {
->  	&dev_attr_length.attr,
->  	&dev_attr_enable.attr,
->  	&dev_attr_low_watermark.attr,
-> +	&dev_attr_hwfifo_length.attr,
->  };
->  
->  int iio_buffer_alloc_sysfs_and_mask(struct iio_dev *indio_dev)
-> diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
-> index 878d861..f64a05f 100644
-> --- a/include/linux/iio/iio.h
-> +++ b/include/linux/iio/iio.h
-> @@ -417,6 +417,22 @@ struct iio_buffer_setup_ops {
->  };
->  
->  /**
-> + * struct iio_buffer_hwfifo_ops - hardware fifo operations
+> +- #size-cells:
+> +    Usage: required
+> +    Value type: <u32>
+> +    Definition: Must be zero.
+> +
+> +- #io-channel-cells:
+> +    Usage: required
+> +    Value type: <u32>
+> +    Definition: Must be one. For details about IIO bindings see:
+> +            Documentation/devicetree/bindings/iio/iio-bindings.txt
+> +
+> +- interrupts:
+> +    Usage: optional
+> +    Value type: <prop-encoded-array>
+> +    Definition: End of conversion interrupt.
+> +
+> +Channel node properties:
+> +
+> +- reg:
+> +    Usage: required
+> +    Value type: <u32>
+> +    Definition: ADC channel number.
+> +            See include/dt-bindings/iio/qcom,spmi-vadc.h
+> +
+> +- qcom,decimation:
+> +    Usage: optional
+> +    Value type: <u32>
+> +    Definition: This parameter is used to decrease ADC sampling rate.
+> +            Quicker measurements can be made by reducing decimation ratio.
+> +            Valid values are 512, 1024, 2048, 4096.
+> +            If property is not found, default value of 512 will be used.
+> +
+> +- qcom,pre-scaling:
+> +    Usage: optional
+> +    Value type: <u32 array>
+> +    Definition: Used for scaling the channel input signal before the signal is
+> +            fed to VADC. The configuration for this node is to know the
+> +            pre-determined ratio and use it for post scaling. Select one from
+> +            the following options.
+> +            <1 1>, <1 3>, <1 4>, <1 6>, <1 20>, <1 8>, <10 81>, <1 10>
+> +            If property is not found default value depending on chip will be used.
+> +
+> +- qcom,ratiometric:
+> +    Usage: optional
+> +    Value type: <empty>
+> +    Definition: Channel calibration type. If this property is specified
+> +            VADC will use the VDD reference (1.8V) and GND for channel
+> +            calibration. If property is not found, channel will be
+> +            calibrated with 0.625V and 1.25V reference channels, also
+> +            known as absolute calibration.
+> +
+> +- qcom,hw-settle-time:
+> +    Usage: optional
+> +    Value type: <u32>
+> +    Definition: Time between AMUX getting configured and the ADC starting
+> +            conversion. Delay = 100us * (value) for value < 11, and
+> +            2ms * (value - 10) otherwise.
+> +            Valid values are: 0, 100, 200, 300, 400, 500, 600, 700, 800,
+> +            900 us and 1, 2, 4, 6, 8, 10 ms
+> +            If property is not found, channel will use 0us.
+> +
+> +- qcom,avg-samples:
+> +    Usage: optional
+> +    Value type: <u32>
+> +    Definition: Number of samples to be used for measurement.
+> +            Averaging provides the option to obtain a single measurement
+> +            from the ADC that is an average of multiple samples. The value
+> +            selected is 2^(value).
+> +            Valid values are: 1, 2, 4, 8, 16, 32, 64, 128, 256, 512
+> +            If property is not found, 1 sample will be used.
+> +
+> +NOTE:
+> +
+> +Following channels, also known as reference point channels, are used for
+> +result calibration and their channel configuration nodes should be defined:
+> +VADC_REF_625MV and/or VADC_SPARE1(based on PMIC version) VADC_REF_1250MV,
+> +VADC_GND_REF and VADC_VDD_VADC.
+> +
+> +Example:
+> +
+> +	/* VADC node */
+> +	pmic_vadc: vadc@3100 {
+> +		compatible = "qcom,spmi-vadc";
+> +		reg = <0x3100 0x100>;
+> +		interrupts = <0x0 0x31 0x0 IRQ_TYPE_EDGE_RISING>;
+> +		#address-cells = <1>;
+> +		#size-cells = <0>;
+> +		#io-channel-cells = <1>;
+> +		io-channel-ranges;
+> +
+> +		/* Channel node */
+> +		usb_id_nopull {
+> +			reg = <VADC_LR_MUX10_USB_ID>;
+> +			qcom,decimation = <512>;
+> +			qcom,ratiometric;
+> +			qcom,hw-settle-time = <200>;
+> +			qcom,avg-samples = <1>;
+> +			qcom,pre-scaling = <1 3>;
+> +		};
+> +	};
+> +
+> +	/* IIO client node */
+> +	usb {
+> +		io-channels = <&pmic_vadc VADC_LR_MUX10_USB_ID>;
+> +		io-channel-names = "vadc";
+> +	};
+> diff --git a/include/dt-bindings/iio/qcom,spmi-vadc.h b/include/dt-bindings/iio/qcom,spmi-vadc.h
+> new file mode 100644
+> index 0000000..42121fa
+> --- /dev/null
+> +++ b/include/dt-bindings/iio/qcom,spmi-vadc.h
+> @@ -0,0 +1,119 @@
+> +/*
+> + * Copyright (c) 2012-2014, The Linux Foundation. All rights reserved.
 > + *
-> + * @length:		[DRIVER] the hardware fifo length
-> + * @set_watermark:	[DRIVER] setups the watermark level
-Maybe use "sets" instead of "setups".
-Also, and this is more a general question, as it was quite annoying when getting into
-the topic: I would prefer to place some information about the expected return values of
-these functions into these descriptions. What do you guys think about that?
-
-> + * @flush:		[DRIVER] copies data from the hardware buffer to the
-> + *		 	device buffer
-> + * @watermark_trig:	[DRIVER] an allocated and registered trigger containing
-> + *			"watermark" in its name
+> + * This program is free software; you can redistribute it and/or modify
+> + * it under the terms of the GNU General Public License version 2 and
+> + * only version 2 as published by the Free Software Foundation.
+> + *
+> + * This program is distributed in the hope that it will be useful
+> + * but WITHOUT ANY WARRANTY; without even the implied warranty of
+> + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+> + * GNU General Public License for more details.
 > + */
-> +struct iio_hwfifo {
-> +	int length;
-> +	int (*set_watermark)(struct iio_dev *, unsigned int);
-> +	int (*flush)(struct iio_dev *);
-> +};
 > +
-> +/**
->   * struct iio_dev - industrial I/O device
->   * @id:			[INTERN] used to identify device internally
->   * @modes:		[DRIVER] operating modes supported by device
-> @@ -491,6 +507,7 @@ struct iio_dev {
->  	int				groupcounter;
->  
->  	unsigned long			flags;
-> +	const struct iio_hwfifo		*hwfifo;
-This new entry should be added to the description of the iio_dev struct, as well.
->  #if defined(CONFIG_DEBUG_FS)
->  	struct dentry			*debugfs_dentry;
->  	unsigned			cached_reg_addr;
+> +#ifndef _DT_BINDINGS_QCOM_SPMI_VADC_H
+> +#define _DT_BINDINGS_QCOM_SPMI_VADC_H
+> +
+> +/* Voltage ADC channels */
+> +#define VADC_USBIN				0x00
+> +#define VADC_DCIN				0x01
+> +#define VADC_VCHG_SNS				0x02
+> +#define VADC_SPARE1_03				0x03
+> +#define VADC_USB_ID_MV				0x04
+> +#define VADC_VCOIN				0x05
+> +#define VADC_VBAT_SNS				0x06
+> +#define VADC_VSYS				0x07
+> +#define VADC_DIE_TEMP				0x08
+> +#define VADC_REF_625MV				0x09
+> +#define VADC_REF_1250MV				0x0a
+> +#define VADC_CHG_TEMP				0x0b
+> +#define VADC_SPARE1				0x0c
+> +#define VADC_SPARE2				0x0d
+> +#define VADC_GND_REF				0x0e
+> +#define VADC_VDD_VADC				0x0f
+> +
+> +#define VADC_P_MUX1_1_1				0x10
+> +#define VADC_P_MUX2_1_1				0x11
+> +#define VADC_P_MUX3_1_1				0x12
+> +#define VADC_P_MUX4_1_1				0x13
+> +#define VADC_P_MUX5_1_1				0x14
+> +#define VADC_P_MUX6_1_1				0x15
+> +#define VADC_P_MUX7_1_1				0x16
+> +#define VADC_P_MUX8_1_1				0x17
+> +#define VADC_P_MUX9_1_1				0x18
+> +#define VADC_P_MUX10_1_1			0x19
+> +#define VADC_P_MUX11_1_1			0x1a
+> +#define VADC_P_MUX12_1_1			0x1b
+> +#define VADC_P_MUX13_1_1			0x1c
+> +#define VADC_P_MUX14_1_1			0x1d
+> +#define VADC_P_MUX15_1_1			0x1e
+> +#define VADC_P_MUX16_1_1			0x1f
+> +
+> +#define VADC_P_MUX1_1_3				0x20
+> +#define VADC_P_MUX2_1_3				0x21
+> +#define VADC_P_MUX3_1_3				0x22
+> +#define VADC_P_MUX4_1_3				0x23
+> +#define VADC_P_MUX5_1_3				0x24
+> +#define VADC_P_MUX6_1_3				0x25
+> +#define VADC_P_MUX7_1_3				0x26
+> +#define VADC_P_MUX8_1_3				0x27
+> +#define VADC_P_MUX9_1_3				0x28
+> +#define VADC_P_MUX10_1_3			0x29
+> +#define VADC_P_MUX11_1_3			0x2a
+> +#define VADC_P_MUX12_1_3			0x2b
+> +#define VADC_P_MUX13_1_3			0x2c
+> +#define VADC_P_MUX14_1_3			0x2d
+> +#define VADC_P_MUX15_1_3			0x2e
+> +#define VADC_P_MUX16_1_3			0x2f
+> +
+> +#define VADC_LR_MUX1_BAT_THERM			0x30
+> +#define VADC_LR_MUX2_BAT_ID			0x31
+> +#define VADC_LR_MUX3_XO_THERM			0x32
+> +#define VADC_LR_MUX4_AMUX_THM1			0x33
+> +#define VADC_LR_MUX5_AMUX_THM2			0x34
+> +#define VADC_LR_MUX6_AMUX_THM3			0x35
+> +#define VADC_LR_MUX7_HW_ID			0x36
+> +#define VADC_LR_MUX8_AMUX_THM4			0x37
+> +#define VADC_LR_MUX9_AMUX_THM5			0x38
+> +#define VADC_LR_MUX10_USB_ID			0x39
+> +#define VADC_AMUX_PU1				0x3a
+> +#define VADC_AMUX_PU2				0x3b
+> +#define VADC_LR_MUX3_BUF_XO_THERM		0x3c
+> +
+> +#define VADC_LR_MUX1_PU1_BAT_THERM		0x70
+> +#define VADC_LR_MUX2_PU1_BAT_ID			0x71
+> +#define VADC_LR_MUX3_PU1_XO_THERM		0x72
+> +#define VADC_LR_MUX4_PU1_AMUX_THM1		0x73
+> +#define VADC_LR_MUX5_PU1_AMUX_THM2		0x74
+> +#define VADC_LR_MUX6_PU1_AMUX_THM3		0x75
+> +#define VADC_LR_MUX7_PU1_AMUX_HW_ID		0x76
+> +#define VADC_LR_MUX8_PU1_AMUX_THM4		0x77
+> +#define VADC_LR_MUX9_PU1_AMUX_THM5		0x78
+> +#define VADC_LR_MUX10_PU1_AMUX_USB_ID		0x79
+> +#define VADC_LR_MUX3_BUF_PU1_XO_THERM		0x7c
+> +
+> +#define VADC_LR_MUX1_PU2_BAT_THERM		0xb0
+> +#define VADC_LR_MUX2_PU2_BAT_ID			0xb1
+> +#define VADC_LR_MUX3_PU2_XO_THERM		0xb2
+> +#define VADC_LR_MUX4_PU2_AMUX_THM1		0xb3
+> +#define VADC_LR_MUX5_PU2_AMUX_THM2		0xb4
+> +#define VADC_LR_MUX6_PU2_AMUX_THM3		0xb5
+> +#define VADC_LR_MUX7_PU2_AMUX_HW_ID		0xb6
+> +#define VADC_LR_MUX8_PU2_AMUX_THM4		0xb7
+> +#define VADC_LR_MUX9_PU2_AMUX_THM5		0xb8
+> +#define VADC_LR_MUX10_PU2_AMUX_USB_ID		0xb9
+> +#define VADC_LR_MUX3_BUF_PU2_XO_THERM		0xbc
+> +
+> +#define VADC_LR_MUX1_PU1_PU2_BAT_THERM		0xf0
+> +#define VADC_LR_MUX2_PU1_PU2_BAT_ID		0xf1
+> +#define VADC_LR_MUX3_PU1_PU2_XO_THERM		0xf2
+> +#define VADC_LR_MUX4_PU1_PU2_AMUX_THM1		0xf3
+> +#define VADC_LR_MUX5_PU1_PU2_AMUX_THM2		0xf4
+> +#define VADC_LR_MUX6_PU1_PU2_AMUX_THM3		0xf5
+> +#define VADC_LR_MUX7_PU1_PU2_AMUX_HW_ID		0xf6
+> +#define VADC_LR_MUX8_PU1_PU2_AMUX_THM4		0xf7
+> +#define VADC_LR_MUX9_PU1_PU2_AMUX_THM5		0xf8
+> +#define VADC_LR_MUX10_PU1_PU2_AMUX_USB_ID	0xf9
+> +#define VADC_LR_MUX3_BUF_PU1_PU2_XO_THERM	0xfc
+> +
+> +#endif /* _DT_BINDINGS_QCOM_SPMI_VADC_H */
+> --
+> 1.9.1
 > 
 
