@@ -1,91 +1,68 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:38235 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755032AbbA1Ury (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 28 Jan 2015 15:47:54 -0500
-Message-ID: <54C92847.7010204@kernel.org>
-Date: Wed, 28 Jan 2015 18:19:51 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-MIME-Version: 1.0
-To: Stefan Agner <stefan@agner.ch>
-CC: shawn.guo@linaro.org, B38611@freescale.com,
-	maitysanchayan@gmail.com, linux-iio@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-	Rob Herring <robh+dt@kernel.org>,
-	Pawel Moll <Pawel.Moll@arm.com>,
-	Mark Rutland <Mark.Rutland@arm.com>,
-	Ian Campbell <ijc+devicetree@hellion.org.uk>,
-	Kumar Gala <galak@codeaurora.org>
-Subject: Re: [PATCH 3/3] ARM: dts: add property for maximum ADC clock frequencies
-References: <1421769723-28677-1-git-send-email-stefan@agner.ch> <1421769723-28677-4-git-send-email-stefan@agner.ch>
-In-Reply-To: <1421769723-28677-4-git-send-email-stefan@agner.ch>
-Content-Type: text/plain; charset=windows-1252
+Received: from mga14.intel.com ([192.55.52.115]:38306 "EHLO mga14.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1759441AbbA1UlY (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Wed, 28 Jan 2015 15:41:24 -0500
+Message-ID: <1422465317.2136.12.camel@spandruv-DESK3.jf.intel.com>
+Subject: Re: [PATCH v2 05/11] iio: bmc150: refactor slope duration and
+ threshold update
+From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+To: Octavian Purdila <octavian.purdila@intel.com>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	Laurentiu Palcu <laurentiu.palcu@intel.com>
+Date: Wed, 28 Jan 2015 09:15:17 -0800
+In-Reply-To: <CAE1zotKSo0yH96TcejmrrPbG=_vfBSN=dEWQJXkxg9H_QGLWjQ@mail.gmail.com>
+References: <1419122556-8100-1-git-send-email-octavian.purdila@intel.com>
+	 <1419122556-8100-6-git-send-email-octavian.purdila@intel.com>
+	 <54A96870.1000206@kernel.org>
+	 <1420570433.4459.105.camel@spandruv-desktop.jf.intel.com>
+	 <CAE1zotKSo0yH96TcejmrrPbG=_vfBSN=dEWQJXkxg9H_QGLWjQ@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Mime-Version: 1.0
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 20/01/15 16:02, Stefan Agner wrote:
-> The ADC clock frequency is limited depending on modes used. Add
-> device tree property which allow to set the mode used and the
-> maximum frequency ratings for the instance. These allows to
-> set the ADC clock to a frequency which is within specification
-> according to the actual mode used.
+On Wed, 2015-01-28 at 11:22 +0200, Octavian Purdila wrote: 
+> On Tue, Jan 6, 2015 at 8:53 PM, Srinivas Pandruvada
+> <srinivas.pandruvada@linux.intel.com> wrote:
+> >
+> > On Sun, 2015-01-04 at 16:21 +0000, Jonathan Cameron wrote:
+> > > On 21/12/14 00:42, Octavian Purdila wrote:
+> > > > Move the slope duration and threshold update in separate functions
+> > > > to reduce code duplicate between chip init and motion interrupt setup.
+> > > >
+> > > > The patch also moves the update from the motion interrupt setup
+> > > > function to the write event function so that we can later refactor the
+> > > > interrupt code.
+> > > The side effect of this is that these will get updated at a different
+> > > point in time from before.  Previously these values would only get
+> > > updated when the event was enabled (or the trigger).  So to change
+> > > them a disable / enable cycle was needed. Now they happen the moment
+> > > they are relevant.
+> > >
+> > > I prefer the new option, but it is an ABI change (be it one most people
+> > > won't notice!)
+> > I did purposely this way.
+> > IMO when user is changing critical parameters he should disable and re
+> > enable to avoid undesirable side effects.
+> > We have similar situation in other  thermal drivers where user can
+> > change policy parameters. Initially we let them change while zone is
+> > enabled (system is armed), this led to undesirable side effects due to
+> > race conditions.
+> >
 > 
-> Signed-off-by: Stefan Agner <stefan@agner.ch>
-This should have been sent to the devicetree list and maintainers
-in the first place.  Now cc'd.
-> ---
->  Documentation/devicetree/bindings/iio/adc/vf610-adc.txt | 9 +++++++++
->  arch/arm/boot/dts/vfxxx.dtsi                            | 4 ++++
->  2 files changed, 13 insertions(+)
+> We already have a check that prevents the change while the event is
+> active. We could add a check for the data motion trigger as well, to
+> avoid the above scenario.
 > 
-> diff --git a/Documentation/devicetree/bindings/iio/adc/vf610-adc.txt b/Documentation/devicetree/bindings/iio/adc/vf610-adc.txt
-> index 1a4a43d..3eb40e2 100644
-> --- a/Documentation/devicetree/bindings/iio/adc/vf610-adc.txt
-> +++ b/Documentation/devicetree/bindings/iio/adc/vf610-adc.txt
-> @@ -11,6 +11,13 @@ Required properties:
->  - clock-names: Must contain "adc", matching entry in the clocks property.
->  - vref-supply: The regulator supply ADC reference voltage.
->  
-> +Recommended properties:
-> +- fsl,adck-max-frequency: Maximum frequencies according to datasheets operating
-> +  requirements. Three values are required, depending on conversion mode:
-> +  - Frequency in normal mode (ADLPC=0, ADHSC=0)
-> +  - Frequency in high-speed mode (ADLPC=0, ADHSC=1)
-> +  - Frequency in low-power mode (ADLPC=1, ADHSC=0)
-> +
->  Example:
->  adc0: adc@4003b000 {
->  	compatible = "fsl,vf610-adc";
-> @@ -18,5 +25,7 @@ adc0: adc@4003b000 {
->  	interrupts = <0 53 0x04>;
->  	clocks = <&clks VF610_CLK_ADC0>;
->  	clock-names = "adc";
-> +	fsl,adck-max-frequency = <30000000>, <40000000>,
-> +				<20000000>;
->  	vref-supply = <&reg_vcc_3v3_mcu>;
->  };
-> diff --git a/arch/arm/boot/dts/vfxxx.dtsi b/arch/arm/boot/dts/vfxxx.dtsi
-> index 505969a..7584e0a 100644
-> --- a/arch/arm/boot/dts/vfxxx.dtsi
-> +++ b/arch/arm/boot/dts/vfxxx.dtsi
-> @@ -182,6 +182,8 @@
->  				clocks = <&clks VF610_CLK_ADC0>;
->  				clock-names = "adc";
->  				status = "disabled";
-> +				fsl,adck-max-frequency = <30000000>, <40000000>,
-> +							<20000000>;
->  			};
->  
->  			wdog@4003e000 {
-> @@ -361,6 +363,8 @@
->  				clocks = <&clks VF610_CLK_ADC1>;
->  				clock-names = "adc";
->  				status = "disabled";
-> +				fsl,adck-max-frequency = <30000000>, <40000000>,
-> +							<20000000>;
->  			};
->  
->  			esdhc1: esdhc@400b2000 {
+> Alternatively I can rewrite the patch to keep the current behavior and
+> update the parameters when we enable the trigger.
 > 
+> Which one sounds better?
+I prefer the second option.
+
+Thanks,
+Srinivas
+
 
