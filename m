@@ -1,7 +1,7 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from metis.ext.pengutronix.de ([92.198.50.35]:38046 "EHLO
+Received: from metis.ext.pengutronix.de ([92.198.50.35]:38048 "EHLO
 	metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754614AbbA2OJ4 (ORCPT
+	with ESMTP id S1754702AbbA2OJ4 (ORCPT
 	<rfc822;linux-iio@vger.kernel.org>); Thu, 29 Jan 2015 09:09:56 -0500
 From: Markus Pargmann <mpa@pengutronix.de>
 To: Shawn Guo <shawn.guo@linaro.org>,
@@ -23,93 +23,81 @@ Cc: Denis Carikli <denis@eukrea.com>,
 	Ian Campbell <ijc+devicetree@hellion.org.uk>,
 	Kumar Gala <galak@codeaurora.org>,
 	Markus Pargmann <mpa@pengutronix.de>
-Subject: [PATCH v6 2/8] ARM: dt: Binding documentation for imx25 GCQ
-Date: Thu, 29 Jan 2015 15:09:10 +0100
-Message-Id: <1422540556-14828-3-git-send-email-mpa@pengutronix.de>
+Subject: [PATCH v6 1/8] ARM: dt: Binding documentation for imx25 ADC/TSC
+Date: Thu, 29 Jan 2015 15:09:09 +0100
+Message-Id: <1422540556-14828-2-git-send-email-mpa@pengutronix.de>
 In-Reply-To: <1422540556-14828-1-git-send-email-mpa@pengutronix.de>
 References: <1422540556-14828-1-git-send-email-mpa@pengutronix.de>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-The documentation describes the bindings for the imx25 GCQ unit which is
-essentially a generic conversion queue using the imx25 ADC.
+This documentation describes the devicetree bindings for the
+ADC/Touchscreen unit of the i.MX25 SoC.
 
 Signed-off-by: Markus Pargmann <mpa@pengutronix.de>
 ---
 
 Notes:
     Changes in v6:
-     - Moved the raw_read code out to a different function to cleanup the code
-     - Changed bindings to use adc-refp and adc-refn. Also a bit of cleanup in the
-       setup routine.
-     - Added defines for a complete list of references in the dt binding macros
-    
-    Changes in v5:
-     - Fixed locking
-     - Removed module owner
+     - Removed adc-ref property and replaced it with refp and refn for positive and
+       negative references. The properties are optional now as the default
+       behaviour is a positive internal reference voltage and ADC GND as negative
+       reference.
 
- .../devicetree/bindings/iio/adc/fsl,imx25-gcq.txt  | 54 ++++++++++++++++++++++
- 1 file changed, 54 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/iio/adc/fsl,imx25-gcq.txt
+ .../devicetree/bindings/mfd/fsl-imx25-tsadc.txt    | 46 ++++++++++++++++++++++
+ 1 file changed, 46 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/mfd/fsl-imx25-tsadc.txt
 
-diff --git a/Documentation/devicetree/bindings/iio/adc/fsl,imx25-gcq.txt b/Documentation/devicetree/bindings/iio/adc/fsl,imx25-gcq.txt
+diff --git a/Documentation/devicetree/bindings/mfd/fsl-imx25-tsadc.txt b/Documentation/devicetree/bindings/mfd/fsl-imx25-tsadc.txt
 new file mode 100644
-index 000000000000..9f7c08990034
+index 000000000000..a857af0eb68c
 --- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/adc/fsl,imx25-gcq.txt
-@@ -0,0 +1,54 @@
-+Freescale i.MX25 ADC GCQ device
++++ b/Documentation/devicetree/bindings/mfd/fsl-imx25-tsadc.txt
+@@ -0,0 +1,46 @@
++Freescale mx25 ADC/TSC multifunction device
 +
-+This is a generic conversion queue device that can convert any of the
-+analog inputs using the ADC unit of the i.MX25.
++This device combines two general purpose conversion queues one used for general
++ADC and the other used for touchscreens.
 +
 +Required properties:
-+ - compatible: Should be "fsl,imx25-gcq".
-+ - reg: Should be the register range of the module.
-+ - interrupts: Should be the interrupt number of the module.
-+   Typically this is <1>.
-+ - interrupt-parent: phandle to the tsadc module of the i.MX25.
-+ - #address-cells: Should be <1> (setting for the subnodes)
-+ - #size-cells: Should be <0> (setting for the subnodes)
++ - compatible: Should be "fsl,imx25-tsadc".
++ - reg: Memory range of the device.
++ - interrupts: Interrupt for this device as described in
++   interrupts/interrupts.txt
++ - clocks: An 'ipg' clock defined as described in clocks/clock.txt
++ - interrupt-controller: This device is an interrupt controller. It controls
++   the interrupts of both conversion queues.
++ - #interrupt-cells: Should be '<1>'.
++ - #address-cells: Should be '<1>'.
++ - #size-cells: Should be '<1>'.
++ - ranges
 +
-+Optional properties:
-+ - vref-supply: The regulator supplying the ADC reference voltage.
-+   Required when at least one subnode uses the external reference.
-+
-+Sub-nodes:
-+Optionally you can define subnodes which define the reference voltage
-+for the analog inputs.
-+
-+Required properties for subnodes:
-+ - reg: Should be the number of the analog input.
-+     0: xp
-+     1: yp
-+     2: xn
-+     3: yn
-+     4: wiper
-+     5: inaux0
-+     6: inaux1
-+     7: inaux2
-+Optional properties for subnodes:
-+ - fsl,adc-refp: specifies the positive reference input as defined in
-+     <dt-bindings/iio/adc/fsl-imx25-gcq.h>
-+ - fsl,adc-refn: specifies the negative reference input as defined in
-+     <dt-bindings/iio/adc/fsl-imx25-gcq.h>
++This device includes two conversion queues which can be added as subnodes.
++The first queue is for the touchscreen, the second for general purpose ADC.
 +
 +Example:
-+
-+	adc: adc@50030800 {
-+		compatible = "fsl,imx25-gcq";
-+		reg = <0x50030800 0x60>;
-+		interrupt-parent = <&tscadc>;
-+		interrupts = <1>;
++	tscadc: tscadc@50030000 {
++		compatible = "fsl,imx25-tsadc";
++		reg = <0x50030000 0xc>;
++		interrupts = <46>;
++		clocks = <&clks 119>;
++		clock-names = "ipg";
++		interrupt-controller;
++		#interrupt-cells = <1>;
 +		#address-cells = <1>;
-+		#size-cells = <0>;
++		#size-cells = <1>;
++		ranges;
 +
-+		inaux@5 {
-+			reg = <5>;
-+			fsl,adc-refp = <MX25_ADC_REF_INT>;
-+			fsl,adc-refn = <MX25_ADC_REF_NGND>;
++		tsc: tcq@50030400 {
++			compatible = "fsl,imx25-tcq";
++			reg = <0x50030400 0x60>;
++			...
++		};
++
++		adc: gcq@50030800 {
++			compatible = "fsl,imx25-gcq";
++			reg = <0x50030800 0x60>;
++			...
 +		};
 +	};
 -- 
