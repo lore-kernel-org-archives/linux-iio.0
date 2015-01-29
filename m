@@ -1,141 +1,255 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:45312 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753767AbbA2Sxc (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 29 Jan 2015 13:53:32 -0500
-Message-ID: <54CA81A5.50206@kernel.org>
-Date: Thu, 29 Jan 2015 18:53:25 +0000
-From: Jonathan Cameron <jic23@kernel.org>
+Received: from mout.gmx.net ([212.227.15.15]:61268 "EHLO mout.gmx.net"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751320AbbA2Wtd (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Thu, 29 Jan 2015 17:49:33 -0500
+Message-ID: <54CAB8EB.9000209@gmx.de>
+Date: Thu, 29 Jan 2015 23:49:15 +0100
+From: Hartmut Knaack <knaack.h@gmx.de>
 MIME-Version: 1.0
-To: Karol Wrona <k.wrona@samsung.com>, linux-iio@vger.kernel.org,
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-CC: Hartmut Knaack <knaack.h@gmx.de>,
+To: Octavian Purdila <octavian.purdila@intel.com>
+CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	Jonathan Cameron <jic23@kernel.org>,
 	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	Rob Herring <robh+dt@kernel.org>,
-	Pawel Moll <pawel.moll@arm.com>,
-	Mark Rutland <mark.rutland@arm.com>,
-	Ian Campbell <ijc+devicetree@hellion.org.uk>,
-	Kumar Gala <galak@codeaurora.org>,
-	Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
-	Kyungmin Park <kyungmin.park@samsung.com>,
-	Karol Wrona <wrona.vy@gmail.com>
-Subject: Re: [PATCH v5 1/5] iio: common: ssp_sensors: Add sensorhub driver
-References: <1422453954-27317-1-git-send-email-k.wrona@samsung.com> <1422453954-27317-2-git-send-email-k.wrona@samsung.com> <54CA7D85.20409@kernel.org> <54CA8021.2020909@samsung.com>
-In-Reply-To: <54CA8021.2020909@samsung.com>
-Content-Type: text/plain; charset=windows-1252
+	Peter Meerwald <pmeerw@pmeerw.net>
+Subject: Re: [PATCH v2 04/11] iio: add support for hardware fifo
+References: <1419122556-8100-1-git-send-email-octavian.purdila@intel.com>	<1419122556-8100-5-git-send-email-octavian.purdila@intel.com>	<54C974C5.9000502@gmx.de> <CAE1zot+p_MmokODtXWAhffHwun+ux-qr9aPD8yAUzqGUce+cLg@mail.gmail.com>
+In-Reply-To: <CAE1zot+p_MmokODtXWAhffHwun+ux-qr9aPD8yAUzqGUce+cLg@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 29/01/15 18:46, Karol Wrona wrote:
-> On 01/29/2015 07:35 PM, Jonathan Cameron wrote:
->> On 28/01/15 14:05, Karol Wrona wrote:
->>> Sensorhub  is MCU dedicated to collect data and manage several sensors.
->>> Sensorhub is a spi device which provides a layer for IIO devices. It provides
->>> some data parsing and common mechanism for sensorhub sensors.
->>>
->>> Adds common sensorhub library for sensorhub driver and iio drivers
->>> which uses sensorhub MCU to communicate with sensors.
->>>
->>> Signed-off-by: Karol Wrona <k.wrona@samsung.com>
->>> Acked-by: Kyungmin Park <kyungmin.park@samsung.com>
->> A couple of build errors from this one...
+Octavian Purdila schrieb am 29.01.2015 um 12:38:
+> On Thu, Jan 29, 2015 at 1:46 AM, Hartmut Knaack <knaack.h@gmx.de> wrote:
 >>
->> I've fixed them up and applied to the togreg branch of iio.git.
->> Pushed out as testing.  If you get a chance to check I didn't
->> mess anything up that would be great.
->>> ---
->>>  drivers/iio/common/Kconfig               |    1 +
->>>  drivers/iio/common/Makefile              |    1 +
->>>  drivers/iio/common/ssp_sensors/Kconfig   |   26 ++
->>>  drivers/iio/common/ssp_sensors/Makefile  |    8 +
->>>  drivers/iio/common/ssp_sensors/ssp.h     |  257 +++++++++++
->>>  drivers/iio/common/ssp_sensors/ssp_dev.c |  712 ++++++++++++++++++++++++++++++
->>>  drivers/iio/common/ssp_sensors/ssp_spi.c |  608 +++++++++++++++++++++++++
->>>  include/linux/iio/common/ssp_sensors.h   |   82 ++++
->>>  8 files changed, 1695 insertions(+)
->>>  create mode 100644 drivers/iio/common/ssp_sensors/Kconfig
->>>  create mode 100644 drivers/iio/common/ssp_sensors/Makefile
->>>  create mode 100644 drivers/iio/common/ssp_sensors/ssp.h
->>>  create mode 100644 drivers/iio/common/ssp_sensors/ssp_dev.c
->>>  create mode 100644 drivers/iio/common/ssp_sensors/ssp_spi.c
->>>  create mode 100644 include/linux/iio/common/ssp_sensors.h
+>> Octavian Purdila schrieb am 21.12.2014 um 01:42:
+>>> Some devices have hardware buffers that can store a number of samples
+>>> for later consumption. Hardware usually provides interrupts to notify
+>>> the processor when the fifo is full or when it has reached a certain
+>>> threshold. This helps with reducing the number of interrupts to the
+>>> host processor and thus it helps decreasing the power consumption.
 >>>
->>> diff --git a/drivers/iio/common/Kconfig b/drivers/iio/common/Kconfig
->>> index 0b6e97d..790f106 100644
->>> --- a/drivers/iio/common/Kconfig
->>> +++ b/drivers/iio/common/Kconfig
->>> @@ -3,4 +3,5 @@
->>>  #
->>>  
->>>  source "drivers/iio/common/hid-sensors/Kconfig"
->>> +source "drivers/iio/common/ssp_sensors/Kconfig"
->>>  source "drivers/iio/common/st_sensors/Kconfig"
->>> diff --git a/drivers/iio/common/Makefile b/drivers/iio/common/Makefile
->>> index 3112df0..b1e4d9c 100644
->>> --- a/drivers/iio/common/Makefile
->>> +++ b/drivers/iio/common/Makefile
->>> @@ -8,4 +8,5 @@
->>>  
->>>  # When adding new entries keep the list in alphabetical order
->>>  obj-y += hid-sensors/
->>> +obj-y += ssp_sensors/
->>>  obj-y += st_sensors/
->>> diff --git a/drivers/iio/common/ssp_sensors/Kconfig b/drivers/iio/common/ssp_sensors/Kconfig
->>> new file mode 100644
->>> index 0000000..0ea4faf
->>> --- /dev/null
->>> +++ b/drivers/iio/common/ssp_sensors/Kconfig
->>> @@ -0,0 +1,26 @@
->>> +#
->>> +# SSP sensor drivers and commons configuration
->>> +#
->>> +menu "SSP Sensor Common"
->>> +
->>> +config IIO_SSP_SENSORS_COMMONS
->>> +	tristate "Commons for all SSP Sensor IIO drivers"
->>> +	depends on IIO_SSP_SENSORHUB
->>> +	select IIO_BUFFER
->>> +	select IIO_KFIFO_BUF
->>> +	help
->>> +	  Say yes here to build commons for SSP sensors.
->>> +	  To compile this as a module, choose M here: the module
->>> +	  will be called ssp_iio.
->>> +
->>> +config IIO_SSP_SENSORHUB
->>> +	tristate "Samsung Sensorhub driver"
->>> +	depends on SPI
->>> +	select MFD_CORE
->>> +	help
->>> +	  SSP driver for sensorhub. +	  If you say yes here you get ssp support for sensorhub.
->>> +	  To compile this driver as a module, choose M here: the
->>> +	  module will be called sensorhub.
->>> +
->>> +endmenu
->>> diff --git a/drivers/iio/common/ssp_sensors/Makefile b/drivers/iio/common/ssp_sensors/Makefile
->>> new file mode 100644
->>> index 0000000..1e0389e
->>> --- /dev/null
->>> +++ b/drivers/iio/common/ssp_sensors/Makefile
->>> @@ -0,0 +1,8 @@
->>> +#
->>> +# Makefile for SSP sensor drivers and commons.
->>> +#
->>> +
->>> +sensorhub-objs				:= ssp_dev.o ssp_spi.o
->>> +obj-$(CONFIG_IIO_SSP_SENSORHUB)		+= sensorhub.o
->>> +
->>> +obj-$(CONFIG_IIO_SSP_SENSORS_COMMONS) 	+= ssp_iio.o
->> This file isn't in this patch.
+>>> This patch adds support for hardware fifo to IIO by allowing the
+>>> drivers to register operations for flushing the hadware fifo and
+>>> setting the watermark level.
+>>>
+>>> A driver implementing hardware fifo support must also provide a
+>>> watermark trigger which must contain "watermark" in its name.
+>>>
+>>
+>> A few comments inline, also addressed to the other IIO maintainers.
+>>
 > 
-> Thanks for doing that.
-> I had to mess sth up during rebase.
-> 
-> [...]
-> 
-That's fine, I just messed up moving it myself.  Forgot the Kconfig
-bit needed to move patch as well.
+> Thanks for the review Hartmut. What do you think about the watermark
+> trigger approach?
 
-Anyhow, hopefully the version I push in a few secs will be right!
+Looks good to me, so far. But keep in mind, that I am still pretty new
+to the IIO area, so people like Jonathan have a better understanding
+where the core development started out and where it should be heading.
+I will have a look at your other patches during the next days, as time
+permits.
 
-Jonathan
+> 
+> Also, after the discussion with Jonathan I am thinking of exposing a
+> dedicated watermark level for the hardware FIFO. That way userspace
+> can set a large value for the software buffer watermark and it also
+> give control to userspace over the hardware watermark. I think that
+> control is very important to achieve a good power/latency balance.
+> 
+>>> Signed-off-by: Octavian Purdila <octavian.purdila@intel.com>
+>>> ---
+>>>  Documentation/ABI/testing/sysfs-bus-iio | 22 +++++++++++++++++
+>>>  drivers/iio/industrialio-buffer.c       | 44 ++++++++++++++++++++++++++++-----
+>>>  include/linux/iio/iio.h                 | 17 +++++++++++++
+>>>  3 files changed, 77 insertions(+), 6 deletions(-)
+>>>
+>>> diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
+>>> index 7260f1f..6bb67ac 100644
+>>> --- a/Documentation/ABI/testing/sysfs-bus-iio
+>>> +++ b/Documentation/ABI/testing/sysfs-bus-iio
+>>> @@ -1152,3 +1152,25 @@ Description:
+>>>               Poll will block until the watermark is reached.
+>>>               Blocking read will wait until the minimum between the requested
+>>>               read amount or the low water mark is available.
+>>> +             If the device has a hardware fifo this value is going to be used
+>>> +             for the hardware fifo watermark as well.
+>>> +
+>>> +What:                /sys/bus/iio/devices/iio:deviceX/buffer/hwfifo-length
+>>> +KernelVersion:       3.20
+>>> +Contact:     linux-iio@vger.kernel.org
+>>> +Description:
+>>> +             A single positive integer specifying the maximum number of
+>>> +             samples that the hardware fifo has. If the device does not
+>>> +             support hardware fifo this is zero.
+>>> +             When a device supports hardware fifo it will expose a trigger
+>>> +             with the name that contains "watermark"
+>>> +             (e.g. i2c-BMC150A:00-watermark-dev0).
+>>> +             To use the hardware fifo the user must set an appropriate value
+>>> +             in the buffer/length and buffer/low_watermark entries and select
+>>> +             the watermark trigger. At that poin the hardware fifo will be
+>>> +             enabled and the samples will be collected in a hardware buffer.
+>>> +             When the number of samples in the hardware fifo reaches the
+>>> +             watermark level the watermark trigger is issued and data is
+>>> +             flushed to the devices buffer.
+>>> +             A hardware buffer flush will also be triggered when reading from
+>>> +             the device buffer and there is not enough data available.
+>>> \ No newline at end of file
+>>> diff --git a/drivers/iio/industrialio-buffer.c b/drivers/iio/industrialio-buffer.c
+>>> index 7f74c7f..3da6d07 100644
+>>> --- a/drivers/iio/industrialio-buffer.c
+>>> +++ b/drivers/iio/industrialio-buffer.c
+>>> @@ -37,9 +37,17 @@ static bool iio_buffer_is_active(struct iio_buffer *buf)
+>>>       return !list_empty(&buf->buffer_list);
+>>>  }
+>>>
+>>> -static size_t iio_buffer_data_available(struct iio_buffer *buf)
+>>> +static bool iio_buffer_data_available(struct iio_dev *indio_dev,
+>>> +                                   struct iio_buffer *buf, size_t required)
+>>>  {
+>>> -     return buf->access->data_available(buf);
+>>> +     size_t avail = buf->access->data_available(buf);
+>>> +
+>>> +     if (avail < required && indio_dev->hwfifo) {
+>>> +             indio_dev->hwfifo->flush(indio_dev);
+>>> +             avail = buf->access->data_available(buf);
+>>> +     }
+>>> +
+>>> +     return avail >= required;
+>>>  }
+>>>
+>>>  /**
+>>> @@ -66,13 +74,13 @@ ssize_t iio_buffer_read_first_n_outer(struct file *filp, char __user *buf,
+>>>
+>>>       do {
+>>>               if (filp->f_flags & O_NONBLOCK) {
+>>> -                     if (!iio_buffer_data_available(rb)) {
+>>> +                     if (!iio_buffer_data_available(indio_dev, rb, 1)) {
+>>>                               ret = -EAGAIN;
+>>>                               break;
+>>>                       }
+>>>               } else {
+>>>                       ret = wait_event_interruptible(rb->pollq,
+>>> -                            iio_buffer_data_available(rb) >= to_read ||
+>>> +                         iio_buffer_data_available(indio_dev, rb, to_read) ||
+>>>                                                      indio_dev->info == NULL);
+>>>                       if (ret)
+>>>                               return ret;
+>>> @@ -112,7 +120,7 @@ unsigned int iio_buffer_poll(struct file *filp,
+>>>               return -ENODEV;
+>>>
+>>>       poll_wait(filp, &rb->pollq, wait);
+>>> -     if (iio_buffer_data_available(rb) >= rb->low_watermark)
+>>> +     if (iio_buffer_data_available(indio_dev, rb, rb->low_watermark))
+>>>               return POLLIN | POLLRDNORM;
+>>>       return 0;
+>>>  }
+>>> @@ -440,8 +448,14 @@ static ssize_t iio_buffer_write_length(struct device *dev,
+>>>       if (buffer->length)
+>>>               val = buffer->length;
+>>>
+>>> -     if (val < buffer->low_watermark)
+>>> +     if (val < buffer->low_watermark) {
+>>> +             if (indio_dev->hwfifo) {
+>>> +                     ret = indio_dev->hwfifo->set_watermark(indio_dev, val);
+>>> +                     if (ret)
+>>> +                             return ret;
+>>> +             }
+>>>               buffer->low_watermark = val;
+>>> +     }
+>>>
+>>>       return len;
+>>>  }
+>>> @@ -811,6 +825,12 @@ static ssize_t iio_buffer_store_watermark(struct device *dev,
+>>>               goto out;
+>>>       }
+>>>
+>>> +     if (indio_dev->hwfifo) {
+>>> +             ret = indio_dev->hwfifo->set_watermark(indio_dev, val);
+>>> +             if (ret)
+>>> +                     goto out;
+>>> +     }
+>>> +
+>>>       buffer->low_watermark = val;
+>>>       ret = 0;
+>>>  out:
+>>> @@ -818,6 +838,16 @@ out:
+>>>       return ret ? ret : len;
+>>>  }
+>>>
+>>> +ssize_t iio_buffer_hwfifo_read_length(struct device *dev,
+>>> +                                   struct device_attribute *attr,
+>>> +                                   char *buf)
+>>> +{
+>>> +     struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+>>> +     const struct iio_hwfifo *hwfifo = indio_dev->hwfifo;
+>>> +
+>>> +     return sprintf(buf, "%u\n", hwfifo ? hwfifo->length : 0);
+>>> +}
+>>> +
+>>>  static DEVICE_ATTR(length, S_IRUGO | S_IWUSR, iio_buffer_read_length,
+>>>                  iio_buffer_write_length);
+>>>  static struct device_attribute dev_attr_length_ro = __ATTR(length,
+>>> @@ -826,11 +856,13 @@ static DEVICE_ATTR(enable, S_IRUGO | S_IWUSR,
+>>>                  iio_buffer_show_enable, iio_buffer_store_enable);
+>>>  static DEVICE_ATTR(low_watermark, S_IRUGO | S_IWUSR,
+>>>                  iio_buffer_show_watermark, iio_buffer_store_watermark);
+>>> +static DEVICE_ATTR(hwfifo_length, S_IRUGO, iio_buffer_hwfifo_read_length, NULL);
+>>>
+>>>  static struct attribute *iio_buffer_attrs[] = {
+>>>       &dev_attr_length.attr,
+>>>       &dev_attr_enable.attr,
+>>>       &dev_attr_low_watermark.attr,
+>>> +     &dev_attr_hwfifo_length.attr,
+>>>  };
+>>>
+>>>  int iio_buffer_alloc_sysfs_and_mask(struct iio_dev *indio_dev)
+>>> diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
+>>> index 878d861..f64a05f 100644
+>>> --- a/include/linux/iio/iio.h
+>>> +++ b/include/linux/iio/iio.h
+>>> @@ -417,6 +417,22 @@ struct iio_buffer_setup_ops {
+>>>  };
+>>>
+>>>  /**
+>>> + * struct iio_buffer_hwfifo_ops - hardware fifo operations
+>>> + *
+>>> + * @length:          [DRIVER] the hardware fifo length
+>>> + * @set_watermark:   [DRIVER] setups the watermark level
+>> Maybe use "sets" instead of "setups".
+>>
+> 
+> Ok, sensible suggestion, I'll do that in the next version.
+> 
+>> Also, and this is more a general question, as it was quite annoying when getting into
+>> the topic: I would prefer to place some information about the expected return values of
+>> these functions into these descriptions. What do you guys think about that?
+>>
+>>> + * @flush:           [DRIVER] copies data from the hardware buffer to the
+>>> + *                   device buffer
+>>> + * @watermark_trig:  [DRIVER] an allocated and registered trigger containing
+>>> + *                   "watermark" in its name
+>>> + */
+>>> +struct iio_hwfifo {
+>>> +     int length;
+>>> +     int (*set_watermark)(struct iio_dev *, unsigned int);
+>>> +     int (*flush)(struct iio_dev *);
+>>> +};
+>>> +
+>>> +/**
+>>>   * struct iio_dev - industrial I/O device
+>>>   * @id:                      [INTERN] used to identify device internally
+>>>   * @modes:           [DRIVER] operating modes supported by device
+>>> @@ -491,6 +507,7 @@ struct iio_dev {
+>>>       int                             groupcounter;
+>>>
+>>>       unsigned long                   flags;
+>>> +     const struct iio_hwfifo         *hwfifo;
+>> This new entry should be added to the description of the iio_dev struct, as well.
+> 
+> Sure.
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> 
+
