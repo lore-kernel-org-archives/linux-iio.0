@@ -1,80 +1,87 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga14.intel.com ([192.55.52.115]:20358 "EHLO mga14.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1753209AbbA2NQy (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Thu, 29 Jan 2015 08:16:54 -0500
-From: Irina Tirdea <irina.tirdea@intel.com>
-To: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org,
-	Srinivas Pandruvada <srinivas.pandruvada@intel.com>,
-	Irina Tirdea <irina.tirdea@intel.com>
-Subject: [PATCH] iio: gyro: bmg160: optimize i2c transfers in trigger handler
-Date: Thu, 29 Jan 2015 15:15:52 +0200
-Message-Id: <1422537352-1374-1-git-send-email-irina.tirdea@intel.com>
+Received: from metis.ext.pengutronix.de ([92.198.50.35]:37981 "EHLO
+	metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752455AbbA2OJs (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 29 Jan 2015 09:09:48 -0500
+From: Markus Pargmann <mpa@pengutronix.de>
+To: Shawn Guo <shawn.guo@linaro.org>,
+	Samuel Ortiz <sameo@linux.intel.com>,
+	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Fabio Estevam <festevam@gmail.com>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Hartmut Knaack <knaack.h@gmx.de>
+Cc: Denis Carikli <denis@eukrea.com>,
+	=?UTF-8?q?Eric=20B=C3=A9nard?= <eric@eukrea.com>,
+	Sascha Hauer <kernel@pengutronix.de>,
+	linux-arm-kernel@lists.infradead.org,
+	Lee Jones <lee.jones@linaro.org>, linux-input@vger.kernel.org,
+	linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>,
+	devicetree@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
+	Pawel Moll <pawel.moll@arm.com>,
+	Mark Rutland <mark.rutland@arm.com>,
+	Ian Campbell <ijc+devicetree@hellion.org.uk>,
+	Kumar Gala <galak@codeaurora.org>,
+	Markus Pargmann <mpa@pengutronix.de>
+Subject: [PATCH v6 0/8] imx25 adc and touchscreen driver
+Date: Thu, 29 Jan 2015 15:09:08 +0100
+Message-Id: <1422540556-14828-1-git-send-email-mpa@pengutronix.de>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Some i2c busses (e.g.: Synopsys DesignWare I2C adapter) need to
-enable/disable the bus at each i2c transfer and must wait for
-the enable/disable to happen before sending the data.
+This series adds a driver for the Freescale i.MX25 SoC internal ADC unit which
+is used for touchscreen and ADC. The driver consists of three parts, the MFD
+driver which handles interrupts and some central configuration registers, the
+ADC driver and the touchscreen driver.
 
-When reading data in the trigger handler, the bmg160 driver does
-one i2c transfer for each axis. This has an impact on the frequency
-of the gyroscope at high sample rates due to additional delays
-introduced by the i2c bus at each transfer.
+v6 splits the remaining DT binding documentation out into seperate patches. I
+reworked the dt bindings for the gcq unit and made some code improvements from
+comments.
 
-Reading all axis values in one i2c transfer reduces the delays
-introduced by the i2c bus.
+Best regards,
 
-Signed-off-by: Irina Tirdea <irina.tirdea@intel.com>
-Reviewed-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
----
- drivers/iio/gyro/bmg160.c | 20 +++++++++++---------
- 1 file changed, 11 insertions(+), 9 deletions(-)
+Markus
 
-diff --git a/drivers/iio/gyro/bmg160.c b/drivers/iio/gyro/bmg160.c
-index 60451b3..814eb20 100644
---- a/drivers/iio/gyro/bmg160.c
-+++ b/drivers/iio/gyro/bmg160.c
-@@ -115,6 +115,7 @@ enum bmg160_axis {
- 	AXIS_X,
- 	AXIS_Y,
- 	AXIS_Z,
-+	AXIS_MAX,
- };
- 
- static const struct {
-@@ -820,20 +821,21 @@ static irqreturn_t bmg160_trigger_handler(int irq, void *p)
- 	struct iio_dev *indio_dev = pf->indio_dev;
- 	struct bmg160_data *data = iio_priv(indio_dev);
- 	int bit, ret, i = 0;
-+	s16 values[AXIS_MAX];
- 
- 	mutex_lock(&data->mutex);
--	for_each_set_bit(bit, indio_dev->buffer->scan_mask,
--			 indio_dev->masklength) {
--		ret = i2c_smbus_read_word_data(data->client,
--					       BMG160_AXIS_TO_REG(bit));
--		if (ret < 0) {
--			mutex_unlock(&data->mutex);
--			goto err;
--		}
--		data->buffer[i++] = ret;
-+	ret = i2c_smbus_read_i2c_block_data(data->client, BMG160_REG_XOUT_L,
-+					    sizeof(values), (u8 *) values);
-+	if (ret < 0) {
-+		mutex_unlock(&data->mutex);
-+		goto err;
- 	}
- 	mutex_unlock(&data->mutex);
- 
-+	for_each_set_bit(bit, indio_dev->buffer->scan_mask,
-+			 indio_dev->masklength)
-+		data->buffer[i++] = values[bit];
-+
- 	iio_push_to_buffers_with_timestamp(indio_dev, data->buffer,
- 					   data->timestamp);
- err:
+
+Denis Carikli (2):
+  ARM: dts: imx25: Add TSC and ADC support
+  ARM: imx_v4_v5_defconfig: Add I.MX25 Touchscreen controller and ADC
+    support.
+
+Markus Pargmann (6):
+  ARM: dt: Binding documentation for imx25 ADC/TSC
+  ARM: dt: Binding documentation for imx25 GCQ
+  ARM: dt: Binding documentation for imx25 touchscreen controller
+  mfd: fsl imx25 Touchscreen ADC driver
+  iio: adc: fsl,imx25-gcq driver
+  input: touchscreen: imx25 tcq driver
+
+ .../devicetree/bindings/iio/adc/fsl,imx25-gcq.txt  |  54 ++
+ .../bindings/input/touchscreen/fsl-mx25-tcq.txt    |  29 +
+ .../devicetree/bindings/mfd/fsl-imx25-tsadc.txt    |  46 ++
+ arch/arm/boot/dts/imx25.dtsi                       |  30 +-
+ arch/arm/configs/imx_v4_v5_defconfig               |   4 +
+ drivers/iio/adc/Kconfig                            |   7 +
+ drivers/iio/adc/Makefile                           |   1 +
+ drivers/iio/adc/fsl-imx25-gcq.c                    | 361 +++++++++++++
+ drivers/input/touchscreen/Kconfig                  |   6 +
+ drivers/input/touchscreen/Makefile                 |   1 +
+ drivers/input/touchscreen/fsl-imx25-tcq.c          | 587 +++++++++++++++++++++
+ drivers/mfd/Kconfig                                |  10 +
+ drivers/mfd/Makefile                               |   2 +
+ drivers/mfd/fsl-imx25-tsadc.c                      | 167 ++++++
+ include/dt-bindings/iio/adc/fsl-imx25-gcq.h        |  18 +
+ include/linux/mfd/imx25-tsadc.h                    | 143 +++++
+ 16 files changed, 1463 insertions(+), 3 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/iio/adc/fsl,imx25-gcq.txt
+ create mode 100644 Documentation/devicetree/bindings/input/touchscreen/fsl-mx25-tcq.txt
+ create mode 100644 Documentation/devicetree/bindings/mfd/fsl-imx25-tsadc.txt
+ create mode 100644 drivers/iio/adc/fsl-imx25-gcq.c
+ create mode 100644 drivers/input/touchscreen/fsl-imx25-tcq.c
+ create mode 100644 drivers/mfd/fsl-imx25-tsadc.c
+ create mode 100644 include/dt-bindings/iio/adc/fsl-imx25-gcq.h
+ create mode 100644 include/linux/mfd/imx25-tsadc.h
+
 -- 
-1.9.1
+2.1.4
 
