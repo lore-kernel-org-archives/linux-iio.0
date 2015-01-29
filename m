@@ -1,8 +1,8 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from metis.ext.pengutronix.de ([92.198.50.35]:37981 "EHLO
+Received: from metis.ext.pengutronix.de ([92.198.50.35]:37988 "EHLO
 	metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752455AbbA2OJs (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 29 Jan 2015 09:09:48 -0500
+	with ESMTP id S1753098AbbA2OJt (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 29 Jan 2015 09:09:49 -0500
 From: Markus Pargmann <mpa@pengutronix.de>
 To: Shawn Guo <shawn.guo@linaro.org>,
 	Samuel Ortiz <sameo@linux.intel.com>,
@@ -23,65 +23,67 @@ Cc: Denis Carikli <denis@eukrea.com>,
 	Ian Campbell <ijc+devicetree@hellion.org.uk>,
 	Kumar Gala <galak@codeaurora.org>,
 	Markus Pargmann <mpa@pengutronix.de>
-Subject: [PATCH v6 0/8] imx25 adc and touchscreen driver
-Date: Thu, 29 Jan 2015 15:09:08 +0100
-Message-Id: <1422540556-14828-1-git-send-email-mpa@pengutronix.de>
+Subject: [PATCH v6 7/8] ARM: dts: imx25: Add TSC and ADC support
+Date: Thu, 29 Jan 2015 15:09:15 +0100
+Message-Id: <1422540556-14828-8-git-send-email-mpa@pengutronix.de>
+In-Reply-To: <1422540556-14828-1-git-send-email-mpa@pengutronix.de>
+References: <1422540556-14828-1-git-send-email-mpa@pengutronix.de>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-This series adds a driver for the Freescale i.MX25 SoC internal ADC unit which
-is used for touchscreen and ADC. The driver consists of three parts, the MFD
-driver which handles interrupts and some central configuration registers, the
-ADC driver and the touchscreen driver.
+From: Denis Carikli <denis@eukrea.com>
 
-v6 splits the remaining DT binding documentation out into seperate patches. I
-reworked the dt bindings for the gcq unit and made some code improvements from
-comments.
+Signed-off-by: Denis Carikli <denis@eukrea.com>
+Signed-off-by: Markus Pargmann <mpa@pengutronix.de>
+---
+ arch/arm/boot/dts/imx25.dtsi | 30 +++++++++++++++++++++++++++---
+ 1 file changed, 27 insertions(+), 3 deletions(-)
 
-Best regards,
-
-Markus
-
-
-Denis Carikli (2):
-  ARM: dts: imx25: Add TSC and ADC support
-  ARM: imx_v4_v5_defconfig: Add I.MX25 Touchscreen controller and ADC
-    support.
-
-Markus Pargmann (6):
-  ARM: dt: Binding documentation for imx25 ADC/TSC
-  ARM: dt: Binding documentation for imx25 GCQ
-  ARM: dt: Binding documentation for imx25 touchscreen controller
-  mfd: fsl imx25 Touchscreen ADC driver
-  iio: adc: fsl,imx25-gcq driver
-  input: touchscreen: imx25 tcq driver
-
- .../devicetree/bindings/iio/adc/fsl,imx25-gcq.txt  |  54 ++
- .../bindings/input/touchscreen/fsl-mx25-tcq.txt    |  29 +
- .../devicetree/bindings/mfd/fsl-imx25-tsadc.txt    |  46 ++
- arch/arm/boot/dts/imx25.dtsi                       |  30 +-
- arch/arm/configs/imx_v4_v5_defconfig               |   4 +
- drivers/iio/adc/Kconfig                            |   7 +
- drivers/iio/adc/Makefile                           |   1 +
- drivers/iio/adc/fsl-imx25-gcq.c                    | 361 +++++++++++++
- drivers/input/touchscreen/Kconfig                  |   6 +
- drivers/input/touchscreen/Makefile                 |   1 +
- drivers/input/touchscreen/fsl-imx25-tcq.c          | 587 +++++++++++++++++++++
- drivers/mfd/Kconfig                                |  10 +
- drivers/mfd/Makefile                               |   2 +
- drivers/mfd/fsl-imx25-tsadc.c                      | 167 ++++++
- include/dt-bindings/iio/adc/fsl-imx25-gcq.h        |  18 +
- include/linux/mfd/imx25-tsadc.h                    | 143 +++++
- 16 files changed, 1463 insertions(+), 3 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/iio/adc/fsl,imx25-gcq.txt
- create mode 100644 Documentation/devicetree/bindings/input/touchscreen/fsl-mx25-tcq.txt
- create mode 100644 Documentation/devicetree/bindings/mfd/fsl-imx25-tsadc.txt
- create mode 100644 drivers/iio/adc/fsl-imx25-gcq.c
- create mode 100644 drivers/input/touchscreen/fsl-imx25-tcq.c
- create mode 100644 drivers/mfd/fsl-imx25-tsadc.c
- create mode 100644 include/dt-bindings/iio/adc/fsl-imx25-gcq.h
- create mode 100644 include/linux/mfd/imx25-tsadc.h
-
+diff --git a/arch/arm/boot/dts/imx25.dtsi b/arch/arm/boot/dts/imx25.dtsi
+index e4d3aecc4ed2..4780926fa20e 100644
+--- a/arch/arm/boot/dts/imx25.dtsi
++++ b/arch/arm/boot/dts/imx25.dtsi
+@@ -265,13 +265,37 @@
+ 				status = "disabled";
+ 			};
+ 
+-			tsc: tsc@50030000 {
+-				compatible = "fsl,imx25-adc", "fsl,imx21-tsc";
+-				reg = <0x50030000 0x4000>;
++			tscadc: tscadc@50030000 {
++				compatible = "fsl,imx25-tsadc";
++				reg = <0x50030000 0xc>;
+ 				interrupts = <46>;
+ 				clocks = <&clks 119>;
+ 				clock-names = "ipg";
++				interrupt-controller;
++				#interrupt-cells = <1>;
++				#address-cells = <1>;
++				#size-cells = <1>;
++				ranges;
+ 				status = "disabled";
++
++				adc: adc@50030800 {
++					compatible = "fsl,imx25-gcq";
++					reg = <0x50030800 0x60>;
++					interrupt-parent = <&tscadc>;
++					interrupts = <1>;
++					#address-cells = <1>;
++					#size-cells = <0>;
++					status = "disabled";
++				};
++
++				tsc: tcq@50030400 {
++					compatible = "fsl,imx25-tcq";
++					reg = <0x50030400 0x60>;
++					interrupt-parent = <&tscadc>;
++					interrupts = <0>;
++					fsl,wires = <4>;
++					status = "disabled";
++				};
+ 			};
+ 
+ 			ssi1: ssi@50034000 {
 -- 
 2.1.4
 
