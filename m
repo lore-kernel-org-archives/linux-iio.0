@@ -1,92 +1,627 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-wi0-f171.google.com ([209.85.212.171]:33327 "EHLO
-	mail-wi0-f171.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754331AbbA2DkT (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 28 Jan 2015 22:40:19 -0500
-Received: by mail-wi0-f171.google.com with SMTP id l15so19440990wiw.4
-        for <linux-iio@vger.kernel.org>; Wed, 28 Jan 2015 19:40:18 -0800 (PST)
-MIME-Version: 1.0
-In-Reply-To: <54A96BF4.303@kernel.org>
-References: <1419122556-8100-1-git-send-email-octavian.purdila@intel.com>
-	<1419122556-8100-9-git-send-email-octavian.purdila@intel.com>
-	<54A96BF4.303@kernel.org>
-Date: Wed, 28 Jan 2015 13:09:46 +0200
-Message-ID: <CAE1zotLxq0E+aOpCHnT=MrpRxmcFyDRe816xjMG4ntOV+DL0ZQ@mail.gmail.com>
-Subject: Re: [PATCH v2 08/11] iio: bmc150: introduce bmc150_accel_interrupt
-From: Octavian Purdila <octavian.purdila@intel.com>
+Received: from metis.ext.pengutronix.de ([92.198.50.35]:59818 "EHLO
+	metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S932108AbbA2KLU (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 29 Jan 2015 05:11:20 -0500
+Date: Thu, 29 Jan 2015 11:11:04 +0100
+From: Markus Pargmann <mpa@pengutronix.de>
 To: Jonathan Cameron <jic23@kernel.org>
-Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Content-Type: text/plain; charset=UTF-8
+Cc: Shawn Guo <shawn.guo@linaro.org>,
+	Samuel Ortiz <sameo@linux.intel.com>,
+	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+	Fabio Estevam <festevam@gmail.com>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Denis Carikli <denis@eukrea.com>,
+	Eric =?utf-8?Q?B=C3=A9nard?= <eric@eukrea.com>,
+	Sascha Hauer <kernel@pengutronix.de>,
+	linux-arm-kernel@lists.infradead.org,
+	Lee Jones <lee.jones@linaro.org>, linux-input@vger.kernel.org,
+	linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>,
+	devicetree@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
+	Pawel Moll <pawel.moll@arm.com>,
+	Mark Rutland <mark.rutland@arm.com>,
+	Ian Campbell <ijc+devicetree@hellion.org.uk>,
+	Kumar Gala <galak@codeaurora.org>
+Subject: Re: [PATCH v5 3/6] iio: adc: fsl,imx25-gcq driver
+Message-ID: <20150129101104.GE27422@pengutronix.de>
+References: <1422108103-15052-1-git-send-email-mpa@pengutronix.de>
+ <1422108103-15052-4-git-send-email-mpa@pengutronix.de>
+ <54C7F580.1030901@kernel.org>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="3XA6nns4nE4KvaS/"
+In-Reply-To: <54C7F580.1030901@kernel.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Sun, Jan 4, 2015 at 6:36 PM, Jonathan Cameron <jic23@kernel.org> wrote:
-> On 21/12/14 00:42, Octavian Purdila wrote:
->> Since both triggers and events can share an interrupt, add a data
->> structure that tracks the users of an interrupt so that it enables or
->> disables it only for the first users and respectively last user.
->>
->> This will allows us to easily add more events or triggers.
->>
->> The patch also adds an interrupt enabled counter, so that we can
->> easily know if we need to put the device in normal mode when the
->> resume callback is issued.
->>
->> Signed-off-by: Octavian Purdila <octavian.purdila@intel.com>
-> This is probably the cleanest way of doing this, but an alternative is
-> to register an interrupt chip and then you can have each interrupt source
-> (internal to the device) have it's own interrupt and register as if
-> it had direct access (rather than having to read what interrupt occured
-> first).  This is the preferred method these days for MFDs where this
-> tree structure of interrupts is common.
->
-> I think that would result in slightly more code though, so perhaps this
-> local version of some of that infrastructure is fine.
->
 
-Good to know about the interrupt chip approach. I also think in this
-case the local version is better.
+--3XA6nns4nE4KvaS/
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-But if we see a common pattern across multiple drivers, perhaps we can
-add the interrupt chip to the IIO core for those drivers that want to
-make use of it. I'll take a look, but on the top of your head, do you
-know of any drivers for this would be useful?
+On Tue, Jan 27, 2015 at 08:30:56PM +0000, Jonathan Cameron wrote:
+> On 24/01/15 14:01, Markus Pargmann wrote:
+> > This is a conversion queue driver for the mx25 SoC. It uses the central
+> > ADC which is used by two seperate independent queues. This driver
+> > prepares different conversion configurations for each possible input.
+> > For a conversion it creates a conversionqueue of one item with the
+> > correct configuration for the chosen channel. It then executes the queue
+> > once and disables the conversion queue afterwards.
+> >=20
+> > The reference voltages are configurable through devicetree subnodes,
+> > depending on the connections of the ADC inputs.
+> >=20
+> > Signed-off-by: Markus Pargmann <mpa@pengutronix.de>
+> > Signed-off-by: Denis Carikli <denis@eukrea.com>
+> A couple of queries inline.
+> > ---
+> >=20
+> > Notes:
+> >     Changes in v5:
+> >      - Fixed locking
+> >      - Removed module owner
+> >=20
+> >  .../devicetree/bindings/iio/adc/fsl,imx25-gcq.txt  |  51 +++
+> >  drivers/iio/adc/Kconfig                            |   7 +
+> >  drivers/iio/adc/Makefile                           |   1 +
+> >  drivers/iio/adc/fsl-imx25-gcq.c                    | 369 +++++++++++++=
+++++++++
+> >  include/dt-bindings/iio/adc/fsl-imx25-gcq.h        |  11 +
+> >  5 files changed, 439 insertions(+)
+> >  create mode 100644 Documentation/devicetree/bindings/iio/adc/fsl,imx25=
+-gcq.txt
+> >  create mode 100644 drivers/iio/adc/fsl-imx25-gcq.c
+> >  create mode 100644 include/dt-bindings/iio/adc/fsl-imx25-gcq.h
+> >=20
+> > diff --git a/Documentation/devicetree/bindings/iio/adc/fsl,imx25-gcq.tx=
+t b/Documentation/devicetree/bindings/iio/adc/fsl,imx25-gcq.txt
+> > new file mode 100644
+> > index 000000000000..d55b6b751349
+> > --- /dev/null
+> > +++ b/Documentation/devicetree/bindings/iio/adc/fsl,imx25-gcq.txt
+> > @@ -0,0 +1,51 @@
+> > +Freescale i.MX25 ADC GCQ device
+> > +
+> > +This is a generic conversion queue device that can convert any of the
+> > +analog inputs using the ADC unit of the i.MX25.
+> > +
+> > +Required properties:
+> > + - compatible: Should be "fsl,imx25-gcq".
+> > + - reg: Should be the register range of the module.
+> > + - interrupts: Should be the interrupt number of the module.
+> > +   Typically this is <1>.
+> > + - interrupt-parent: phandle to the tsadc module of the i.MX25.
+> > + - #address-cells: Should be <1> (setting for the subnodes)
+> > + - #size-cells: Should be <0> (setting for the subnodes)
+> > +
+> > +Optional properties:
+> > + - vref-supply: The regulator supplying the ADC reference voltage.
+> > +   Required when at least one subnode uses the external reference.
+> > +
+> > +Sub-nodes:
+> > +Optionally you can define subnodes which define the reference voltage
+> > +for the analog inputs.
+> > +
+> > +Required properties for subnodes:
+> > + - reg: Should be the number of the analog input.
+> > +     0: xp
+> > +     1: yp
+> > +     2: xn
+> > +     3: yn
+> > +     4: wiper
+> > +     5: inaux0
+> > +     6: inaux1
+> > +     7: inaux2
+> > + - fsl,adc-ref: specifies the reference input as defined in
+> > +     <dt-bindings/iio/adc/fsl-imx25-gcq.h>
+> > +     MX25_ADC_REF_INT and MX25_ADC_REF_EXT flags are supported.
+> > +
+> > +Example:
+> > +
+> > +	adc: adc@50030800 {
+> > +		compatible =3D "fsl,imx25-gcq";
+> > +		reg =3D <0x50030800 0x60>;
+> > +		interrupt-parent =3D <&tscadc>;
+> > +		interrupts =3D <1>;
+> > +		#address-cells =3D <1>;
+> > +		#size-cells =3D <0>;
+> > +
+> > +		inaux@5 {
+> > +			reg =3D <5>;
+> > +			fsl,adc-ref =3D <MX25_ADC_REF_INT>;
+> > +		};
+> > +	};
+> > diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+> > index 0f79e4725763..fccbb4bf44cc 100644
+> > --- a/drivers/iio/adc/Kconfig
+> > +++ b/drivers/iio/adc/Kconfig
+> > @@ -143,6 +143,13 @@ config EXYNOS_ADC
+> >  	  of SoCs for drivers such as the touchscreen and hwmon to use to sha=
+re
+> >  	  this resource.
+> > =20
+> > +config FSL_MX25_ADC
+> > +	tristate "Freescale MX25 ADC driver"
+> > +	depends on MFD_MX25_TSADC
+> > +	help
+> > +	  Generic Conversion Queue driver used for general purpose ADC in the
+> > +	  MX25. This driver supports single measurements using the MX25 ADC.
+> > +
+> >  config LP8788_ADC
+> >  	tristate "LP8788 ADC driver"
+> >  	depends on MFD_LP8788
+> > diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
+> > index 701fdb7c96aa..acab8d956371 100644
+> > --- a/drivers/iio/adc/Makefile
+> > +++ b/drivers/iio/adc/Makefile
+> > @@ -16,6 +16,7 @@ obj-$(CONFIG_AD799X) +=3D ad799x.o
+> >  obj-$(CONFIG_AT91_ADC) +=3D at91_adc.o
+> >  obj-$(CONFIG_AXP288_ADC) +=3D axp288_adc.o
+> >  obj-$(CONFIG_EXYNOS_ADC) +=3D exynos_adc.o
+> > +obj-$(CONFIG_FSL_MX25_ADC) +=3D fsl-imx25-gcq.o
+> >  obj-$(CONFIG_LP8788_ADC) +=3D lp8788_adc.o
+> >  obj-$(CONFIG_MAX1027) +=3D max1027.o
+> >  obj-$(CONFIG_MAX1363) +=3D max1363.o
+> > diff --git a/drivers/iio/adc/fsl-imx25-gcq.c b/drivers/iio/adc/fsl-imx2=
+5-gcq.c
+> > new file mode 100644
+> > index 000000000000..c1ac5af41ec5
+> > --- /dev/null
+> > +++ b/drivers/iio/adc/fsl-imx25-gcq.c
+> > @@ -0,0 +1,369 @@
+> > +/*
+> > + * Copyright 2014 Markus Pargmann, Pengutronix <mpa@pengutronix.de>
+> > + *
+> > + * The code contained herein is licensed under the GNU General Public
+> > + * License. You may obtain a copy of the GNU General Public License
+> > + * Version 2 or later at the following locations:
+> > + *
+> > + * http://www.opensource.org/licenses/gpl-license.html
+> > + * http://www.gnu.org/copyleft/gpl.html
+> > + *
+> > + * This is the driver for the imx25 GCQ (Generic Conversion Queue)
+> > + * connected to the imx25 ADC.
+> > + */
+> > +
+> > +#include <dt-bindings/iio/adc/fsl-imx25-gcq.h>
+> > +#include <linux/clk.h>
+> > +#include <linux/iio/iio.h>
+> > +#include <linux/interrupt.h>
+> > +#include <linux/mfd/imx25-tsadc.h>
+> > +#include <linux/module.h>
+> > +#include <linux/of.h>
+> > +#include <linux/platform_device.h>
+> > +#include <linux/regmap.h>
+> > +#include <linux/regulator/consumer.h>
+> > +
+> > +#define MX25_GCQ_TIMEOUT (msecs_to_jiffies(2000))
+> > +
+> > +enum mx25_gcq_cfgs {
+> > +	MX25_CFG_XP =3D 0,
+> > +	MX25_CFG_YP,
+> > +	MX25_CFG_XN,
+> > +	MX25_CFG_YN,
+> > +	MX25_CFG_WIPER,
+> > +	MX25_CFG_INAUX0,
+> > +	MX25_CFG_INAUX1,
+> > +	MX25_CFG_INAUX2,
+> > +	MX25_NUM_CFGS,
+> > +};
+> > +
+> > +struct mx25_gcq_priv {
+> > +	struct regmap *regs;
+> > +	struct completion completed;
+> > +	unsigned int settling_time;
+> > +	struct clk *clk;
+> > +	int irq;
+> > +	struct regulator *ext_vref;
+> > +	u32 channel_vref_mv[MX25_NUM_CFGS];
+> > +};
+> > +
+> > +#define MX25_CQG_CHAN(chan, id) {\
+> > +	.type =3D IIO_VOLTAGE,\
+> > +	.indexed =3D 1,\
+> > +	.channel =3D chan,\
+> > +	.info_mask_separate =3D BIT(IIO_CHAN_INFO_RAW),\
+> > +	.info_mask_shared_by_type =3D BIT(IIO_CHAN_INFO_SCALE),\
+> > +	.datasheet_name =3D id,\
+> > +}
+> > +
+> > +static const struct iio_chan_spec mx25_gcq_channels[MX25_NUM_CFGS] =3D=
+ {
+> > +	MX25_CQG_CHAN(0, "xp"),
+> > +	MX25_CQG_CHAN(1, "yp"),
+> > +	MX25_CQG_CHAN(2, "xn"),
+> > +	MX25_CQG_CHAN(3, "yn"),
+> > +	MX25_CQG_CHAN(4, "wiper"),
+> > +	MX25_CQG_CHAN(5, "inaux0"),
+> > +	MX25_CQG_CHAN(6, "inaux1"),
+> > +	MX25_CQG_CHAN(7, "inaux2"),
+> > +};
+> > +
+> > +static void mx25_gcq_disable_eoq(struct mx25_gcq_priv *priv)
+> > +{
+> > +	regmap_update_bits(priv->regs, MX25_ADCQ_MR, MX25_ADCQ_MR_EOQ_IRQ,
+> > +			   MX25_ADCQ_MR_EOQ_IRQ);
+> > +}
+> > +
+> > +static void mx25_gcq_enable_eoq(struct mx25_gcq_priv *priv)
+> > +{
+> > +	regmap_update_bits(priv->regs, MX25_ADCQ_MR,
+> > +			   MX25_ADCQ_MR_EOQ_IRQ, 0);
+> > +}
+> > +
+> > +static irqreturn_t mx25_gcq_irq(int irq, void *data)
+> > +{
+> > +	struct mx25_gcq_priv *priv =3D data;
+> > +	u32 stats;
+> > +
+> > +	regmap_read(priv->regs, MX25_ADCQ_SR, &stats);
+> > +
+> > +	if (stats & MX25_ADCQ_SR_EOQ) {
+> > +		mx25_gcq_disable_eoq(priv);
+> > +		complete(&priv->completed);
+> > +	}
+> > +
+> > +	/* Disable conversion queue run */
+> > +	regmap_update_bits(priv->regs, MX25_ADCQ_CR, MX25_ADCQ_CR_FQS, 0);
+> > +
+> > +	/* Acknowledge all possible irqs */
+> > +	regmap_write(priv->regs, MX25_ADCQ_SR, MX25_ADCQ_SR_FRR |
+> > +		     MX25_ADCQ_SR_FUR | MX25_ADCQ_SR_FOR |
+> > +		     MX25_ADCQ_SR_EOQ | MX25_ADCQ_SR_PD);
+> > +
+> > +	return IRQ_HANDLED;
+> > +}
+> > +
+> > +static int mx25_gcq_read_raw(struct iio_dev *indio_dev,
+> > +			     struct iio_chan_spec const *chan, int *val,
+> > +			     int *val2, long mask)
+> > +{
+> > +	struct mx25_gcq_priv *priv =3D iio_priv(indio_dev);
+> > +	long timeout;
+> > +	u32 data;
+> > +	int ret =3D 0;
+> > +
+> > +	switch (mask) {
+> > +	case IIO_CHAN_INFO_RAW:
+> > +		mutex_lock(&indio_dev->mlock);
+> > +
+> > +		/* Setup the configuration we want to use */
+> > +		regmap_write(priv->regs, MX25_ADCQ_ITEM_7_0,
+> > +			     MX25_ADCQ_ITEM(0, chan->channel));
+> > +
+> > +		mx25_gcq_enable_eoq(priv);
+> > +
+> > +		/* Trigger queue for one run */
+> > +		regmap_update_bits(priv->regs, MX25_ADCQ_CR, MX25_ADCQ_CR_FQS,
+> > +				   MX25_ADCQ_CR_FQS);
+> > +
+> > +		timeout =3D wait_for_completion_interruptible_timeout(
+> > +			&priv->completed, MX25_GCQ_TIMEOUT);
+> > +		if (timeout < 0) {
+> > +			dev_err(&indio_dev->dev,
+> > +				"ADC wait for measurement failed\n");
+> > +			ret =3D timeout;
+> > +			goto info_raw_out;
+> > +		} else if (timeout =3D=3D 0) {
+> > +			dev_err(&indio_dev->dev, "ADC timed out\n");
+> > +			ret =3D -ETIMEDOUT;
+> > +			goto info_raw_out;
+> > +		}
+> > +
+> > +		regmap_read(priv->regs, MX25_ADCQ_FIFO, &data);
+> > +
+> > +		*val =3D MX25_ADCQ_FIFO_DATA(data);
+> > +		ret =3D IIO_VAL_INT;
+> > +info_raw_out:
+> Having this label and exit path in the middle is ugly.
+> Perhaps break out this case statement content as a separate function?
 
->> ---
->>  drivers/iio/accel/bmc150-accel.c | 87 +++++++++++++++++++++-------------------
->>  1 file changed, 45 insertions(+), 42 deletions(-)
->>
->> diff --git a/drivers/iio/accel/bmc150-accel.c b/drivers/iio/accel/bmc150-accel.c
->> index aaad2fb..7c905f6 100644
->> --- a/drivers/iio/accel/bmc150-accel.c
->> +++ b/drivers/iio/accel/bmc150-accel.c
->> @@ -151,10 +151,19 @@ struct bmc150_accel_interrupt_info {
->>       u8 en_bitmask;
->>  };
->>
->> +struct bmc150_accel_interrupt {
->> +     struct bmc150_accel_interrupt_info *info;
->> +     atomic_t users;
->> +};
->> +
->> +#define BMC150_ACCEL_INTERRUPTS              2
->> +
->>  struct bmc150_accel_data {
->>       struct i2c_client *client;
->> +     struct bmc150_accel_interrupt interrupts[BMC150_ACCEL_INTERRUPTS];
->>       struct iio_trigger *dready_trig;
->>       struct iio_trigger *motion_trig;
->> +     atomic_t active_intr;
->>       struct mutex mutex;
->>       s16 buffer[8];
->>       u8 bw_bits;
->> @@ -436,7 +445,8 @@ static int bmc150_accel_set_power_state(struct bmc150_accel_data *data, bool on)
->>  }
->>  #endif
->>
->> -static struct bmc150_accel_interrupt_info bmc150_accel_interrupts[] = {
->> +static struct bmc150_accel_interrupt_info
-> Just noticed. Should this not also be const?
->> +bmc150_accel_interrupts[BMC150_ACCEL_INTERRUPTS] = {
+Sounds like a good idea.
 
-Yes indeed, fixed.
+> > +		mutex_unlock(&indio_dev->mlock);
+> > +
+> > +		return ret;
+> > +
+> > +	case IIO_CHAN_INFO_SCALE:
+> > +		*val =3D priv->channel_vref_mv[chan->channel];
+> > +		*val2 =3D 12;
+> > +		return IIO_VAL_FRACTIONAL_LOG2;
+> > +
+> > +	default:
+> > +		return -EINVAL;
+> > +	}
+> > +}
+> > +
+> > +static const struct iio_info mx25_gcq_iio_info =3D {
+> > +	.read_raw =3D mx25_gcq_read_raw,
+> > +};
+> > +
+> > +static const struct regmap_config mx25_gcq_regconfig =3D {
+> > +	.max_register =3D 0x5c,
+> > +	.reg_bits =3D 32,
+> > +	.val_bits =3D 32,
+> > +	.reg_stride =3D 4,
+> > +};
+> > +
+> > +static int mx25_gcq_setup_cfgs(struct platform_device *pdev,
+> > +			       struct mx25_gcq_priv *priv)
+> > +{
+> > +	struct device_node *np =3D pdev->dev.of_node;
+> > +	struct device_node *child;
+> > +	struct device *dev =3D &pdev->dev;
+> > +	int ret, i;
+> > +
+> > +	/*
+> > +	 * Setup all configurations registers with a default conversion
+> > +	 * configuration for each input
+> > +	 */
+> > +	for (i =3D 0; i < MX25_NUM_CFGS; ++i)
+> > +		regmap_write(priv->regs, MX25_ADCQ_CFG(i),
+> > +			     MX25_ADCQ_CFG_YPLL_OFF |
+> > +			     MX25_ADCQ_CFG_XNUR_OFF |
+> > +			     MX25_ADCQ_CFG_XPUL_OFF |
+> > +			     MX25_ADCQ_CFG_REFP_INT |
+> > +			     (i << 4) |
+> Again, given all the definitions i'd expect the shift to
+> be a defined constant as well.  Perhaps even a macro taking
+> i as an arguement.
+
+Added a macro that shifts the value.
+
+> > +			     MX25_ADCQ_CFG_REFN_NGND2);
+> > +
+> > +	for_each_child_of_node(np, child) {
+> > +		u32 reg;
+> > +		u32 refp;
+> > +		u32 adc_ref;
+> > +
+> > +		ret =3D of_property_read_u32(child, "reg", &reg);
+> > +		if (ret) {
+> > +			dev_err(dev, "Failed to get reg property\n");
+> > +			return ret;
+> > +		}
+> > +
+> > +		if (reg >=3D MX25_NUM_CFGS) {
+> > +			dev_err(dev,
+> > +				"reg value is greater than the number of available configuration r=
+egisters\n");
+> > +			return -EINVAL;
+> > +		}
+> > +
+> > +		ret =3D of_property_read_u32(child, "fsl,adc-ref", &adc_ref);
+> > +		if (ret) {
+> > +			dev_err(dev, "Failed to get fsl,adc-ref property\n");
+> > +			return ret;
+> > +		}
+> > +
+> > +		if (adc_ref !=3D MX25_ADC_REF_INT &&
+> > +		    adc_ref !=3D MX25_ADC_REF_EXT) {
+> > +			dev_err(dev, "Invalid fsl,adc-refp property value %d\n",
+> > +				adc_ref);
+> > +			return -EINVAL;
+> > +		}
+> > +
+> > +		switch (adc_ref) {
+> > +		case MX25_ADC_REF_EXT:
+> > +			if (IS_ERR_OR_NULL(priv->ext_vref)) {
+> > +				dev_err(dev,
+> > +					"No regulator found for the external vref\n");
+> > +				return -EINVAL;
+> > +			}
+> > +			priv->channel_vref_mv[reg] =3D
+> > +				regulator_get_voltage(priv->ext_vref);
+> > +			refp =3D MX25_ADCQ_CFG_REFP_EXT;
+> > +			break;
+> > +		case MX25_ADC_REF_INT:
+> > +			priv->channel_vref_mv[reg] =3D 2500;
+> > +			refp =3D MX25_ADCQ_CFG_REFP_INT;
+> > +			break;
+> > +		default:
+> > +			return -EINVAL;
+> > +		}
+> > +
+> > +		regmap_update_bits(priv->regs, MX25_ADCQ_CFG(reg),
+> > +				   MX25_ADCQ_CFG_REFP_MASK |
+> > +				   MX25_ADCQ_CFG_REFN_MASK, (refp << 7) |
+> > +				   (MX25_ADCQ_CFG_REFN_NGND << 2));
+> It's a little inconsistent to define constants for the masks, but not
+> the shifts.  Particularly given these constants are already shifted in
+> their definitions...  Is that a bug?
+
+Yes that definetly looks like a bug, thanks. Fixed and added a macro for
+refp.
+
+> > +	}
+> > +	regmap_update_bits(priv->regs, MX25_ADCQ_CR,
+> > +			   MX25_ADCQ_CR_FRST | MX25_ADCQ_CR_QRST,
+> > +			   MX25_ADCQ_CR_FRST | MX25_ADCQ_CR_QRST);
+> > +
+> > +	regmap_write(priv->regs, MX25_ADCQ_CR,
+> > +		     MX25_ADCQ_CR_PDMSK |
+> > +		     MX25_ADCQ_CR_QSM_FQS);
+> > +
+> > +	return 0;
+> > +}
+> > +
+> > +static int mx25_gcq_probe(struct platform_device *pdev)
+> > +{
+> > +	struct iio_dev *indio_dev;
+> > +	struct mx25_gcq_priv *priv;
+> > +	struct mx25_tsadc *tsadc =3D dev_get_drvdata(pdev->dev.parent);
+> > +	struct device *dev =3D &pdev->dev;
+> > +	struct resource *res;
+> > +	void __iomem *mem;
+> > +	int ret;
+> > +
+> > +	indio_dev =3D devm_iio_device_alloc(&pdev->dev, sizeof(*priv));
+> > +	if (!indio_dev)
+> > +		return -ENOMEM;
+> > +
+> > +	priv =3D iio_priv(indio_dev);
+> > +
+> > +	res =3D platform_get_resource(pdev, IORESOURCE_MEM, 0);
+> > +	mem =3D devm_ioremap_resource(dev, res);
+> > +	if (!mem)
+> > +		return -ENOMEM;
+> > +
+> > +	priv->regs =3D devm_regmap_init_mmio(dev, mem, &mx25_gcq_regconfig);
+> > +	if (IS_ERR(priv->regs)) {
+> > +		dev_err(dev, "Failed to initialize regmap\n");
+> > +		return PTR_ERR(priv->regs);
+> > +	}
+> > +
+> > +	init_completion(&priv->completed);
+> > +
+> > +	/* Optional external regulator */
+> > +	priv->ext_vref =3D devm_regulator_get(&pdev->dev, "vref");
+> > +	if (!IS_ERR_OR_NULL(priv->ext_vref)) {
+> > +		ret =3D regulator_enable(priv->ext_vref);
+> > +		if (ret)
+> > +			return ret;
+> > +	}
+> > +
+> > +	ret =3D mx25_gcq_setup_cfgs(pdev, priv);
+> > +	if (ret)
+> > +		return ret;
+> > +
+> > +	priv->clk =3D tsadc->clk;
+> > +	ret =3D clk_prepare_enable(priv->clk);
+> > +	if (ret) {
+> > +		dev_err(dev, "Failed to enable clock\n");
+> > +		return ret;
+> > +	}
+> > +
+> > +	priv->irq =3D platform_get_irq(pdev, 0);
+> > +	if (priv->irq <=3D 0) {
+> > +		dev_err(dev, "Failed to get IRQ\n");
+> > +		ret =3D priv->irq;
+> > +		goto err_clk_unprepare;
+> > +	}
+> > +
+> > +	ret =3D request_irq(priv->irq, mx25_gcq_irq, 0, pdev->name, priv);
+> > +	if (ret) {
+> > +		dev_err(dev, "Failed requesting IRQ\n");
+> > +		goto err_clk_unprepare;
+> > +	}
+> > +
+> > +	indio_dev->dev.parent =3D &pdev->dev;
+> > +	indio_dev->channels =3D mx25_gcq_channels;
+> > +	indio_dev->num_channels =3D ARRAY_SIZE(mx25_gcq_channels);
+> > +	indio_dev->info =3D &mx25_gcq_iio_info;
+> > +
+> > +	ret =3D iio_device_register(indio_dev);
+> > +	if (ret) {
+> > +		dev_err(dev, "Failed to register iio device\n");
+> > +		goto err_irq_free;
+> > +	}
+> > +
+> > +	platform_set_drvdata(pdev, priv);
+> > +
+> > +	return 0;
+> > +
+> > +err_irq_free:
+> > +	free_irq(priv->irq, (void *)priv);
+> > +err_clk_unprepare:
+> > +	clk_disable_unprepare(priv->clk);
+> > +	return ret;
+> > +}
+> > +
+> > +static int mx25_gcq_remove(struct platform_device *pdev)
+> > +{
+> > +	struct mx25_gcq_priv *priv =3D platform_get_drvdata(pdev);
+> > +	struct iio_dev *indio_dev =3D iio_priv_to_dev(pdev);
+> > +
+> > +	iio_device_unregister(indio_dev);
+> > +	free_irq(priv->irq, priv);
+> > +	clk_disable_unprepare(priv->clk);
+> > +
+> > +	return 0;
+> > +}
+> > +
+> > +static struct of_device_id mx25_gcq_ids[] =3D {
+> > +	{ .compatible =3D "fsl,imx25-gcq", },
+> > +	{ /* Sentinel */ }
+> > +};
+> > +
+> > +static struct platform_driver mx25_gcq_driver =3D {
+> > +	.driver		=3D {
+> > +		.name	=3D "mx25-gcq",
+> > +		.of_match_table =3D mx25_gcq_ids,
+> > +	},
+> > +	.probe		=3D mx25_gcq_probe,
+> > +	.remove		=3D mx25_gcq_remove,
+> > +};
+> > +module_platform_driver(mx25_gcq_driver);
+> > +
+> > +MODULE_DESCRIPTION("ADC driver for Freescale mx25");
+> > +MODULE_AUTHOR("Markus Pargmann <mpa@pengutronix.de>");
+> > +MODULE_LICENSE("GPL v2");
+> > diff --git a/include/dt-bindings/iio/adc/fsl-imx25-gcq.h b/include/dt-b=
+indings/iio/adc/fsl-imx25-gcq.h
+> > new file mode 100644
+> > index 000000000000..486dce735ac9
+> > --- /dev/null
+> > +++ b/include/dt-bindings/iio/adc/fsl-imx25-gcq.h
+> > @@ -0,0 +1,11 @@
+> > +/*
+> > + * This header provides constants for configuring the I.MX25 ADC
+> > + */
+> > +
+> > +#ifndef _DT_BINDINGS_IIO_ADC_FS_IMX25_GCQ_H
+> > +#define _DT_BINDINGS_IIO_ADC_FS_IMX25_GCQ_H
+> > +
+> > +#define MX25_ADC_REF_INT	0 /* Internal voltage reference */
+> > +#define MX25_ADC_REF_EXT	1 /* External voltage reference */
+> Seems to me that this could be dealt with using a boolean property.
+> Afterall, we need to get a reference from somewhere, so if it isn't
+> internal it must be external?
+
+The driver is currently very simple, the ADC itself is capable of much
+more combinations and complicated conversion queues. Internal and
+external references are not the only possible references. There is also
+YP and XP which are not supported by the driver yet. I will change this
+to the actual register values representing these references. At a second
+look on this it may also be better to change the DT-binding from
+'fsl,adc-ref' to 'fsl,adc-refp' as it is actually the positive reference
+voltage. The negative reference is hardcoded in the driver for the
+moment but the DT-bindings could be extended later if necessary.
+
+Added refp and refn now with all reference values.
+
+Thanks,
+
+Markus
+
+--=20
+Pengutronix e.K.                           |                             |
+Industrial Linux Solutions                 | http://www.pengutronix.de/  |
+Peiner Str. 6-8, 31137 Hildesheim, Germany | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+
+--3XA6nns4nE4KvaS/
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
+
+iQIcBAEBAgAGBQJUygc4AAoJEEpcgKtcEGQQYFIP/1ebyCv5RJFjMAx2clOPVvbl
+V6ycqqBIguPARG2wB0s63wHQ45USBhSHbOvCETG/J5anL/Xu/lClf56Awj80eouS
+IruPCx/RxHk26h01sWOOR35RQqg76arMM6k1TGXg/a17wn/BkPpeIS+K3pQ5Nzps
++BShPdYoBrHUp8z8J9vuWL3o5+c7wPddRLxAzjV47ztiW9Nri51JY/hBfKuTr5it
+/oYANsC9i7hyOzQSq/dgcAulgBnIPm1Cp4jXARwjtBaGw/Eus4uXfp8C2LxKXCho
+WizQxplXTX03onoICkUevVBWQeqcnhn7hXolJyp0Sn2ebImqSIdKtlhDeOIdcggj
+snZkVHE4H52kw/JnRtG56HDxkFUH7QQRmG1zxK88RxuPZWK+qto5/rZGcHwE6Jme
+8/2lDehdJs9Xbui0FhRUdlkC5ibqfauG7GmAzVwMo07wwQZD1zgoaXpcIL6Z/Diq
+Bv5Mue/K3U6M7Bm/KCVJP5Sr3PmRVRCXsR4muFFRqHzL6ikIH06H8JH0in9kUW7T
+UKe7tZuA9F1mgWkenpduDKAaZj9R6F4onWWvck/stAMbHKhjnF8hrtudIxnpm6xB
+RHrUqhR/UswuxuMRhXXShyNBDnEGrdfjFRmTwpffWEyvQCjxANbf37p9ml/R8bR1
+4MGQTCPQ1LsxfBHL/l/o
+=rP8z
+-----END PGP SIGNATURE-----
+
+--3XA6nns4nE4KvaS/--
