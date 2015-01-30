@@ -1,74 +1,96 @@
-Return-Path: <jic23@kernel.org>
-From: Jonathan Cameron <jic23@kernel.org>
-To: linux-iio@vger.kernel.org
-Cc: k.wrona@samsung.com,
-	kbuild-all@01.org,
-	Jonathan Cameron <jic23@kernel.org>
-Subject: [PATCH V2] iio:common:ssp_sensors fix warnings due to 32 bit instead of 64 bit passed to do_div
-Date: Sat, 31 Jan 2015 09:42:14 +0000
-Message-Id: <1422697334-13656-1-git-send-email-jic23@kernel.org>
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-ig0-f181.google.com ([209.85.213.181]:37644 "EHLO
+	mail-ig0-f181.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752347AbbA3S51 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 30 Jan 2015 13:57:27 -0500
+Date: Fri, 30 Jan 2015 10:57:21 -0800
+From: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+To: Varka Bhadram <varkabhadram@gmail.com>
+Cc: Markus Pargmann <mpa@pengutronix.de>,
+	Shawn Guo <shawn.guo@linaro.org>,
+	Samuel Ortiz <sameo@linux.intel.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Fabio Estevam <festevam@gmail.com>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Denis Carikli <denis@eukrea.com>,
+	Eric =?iso-8859-1?Q?B=E9nard?= <eric@eukrea.com>,
+	Sascha Hauer <kernel@pengutronix.de>,
+	linux-arm-kernel@lists.infradead.org,
+	Lee Jones <lee.jones@linaro.org>, linux-input@vger.kernel.org,
+	linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>,
+	devicetree@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
+	Pawel Moll <pawel.moll@arm.com>,
+	Mark Rutland <mark.rutland@arm.com>,
+	Ian Campbell <ijc+devicetree@hellion.org.uk>,
+	Kumar Gala <galak@codeaurora.org>
+Subject: Re: [PATCH v6 6/8] input: touchscreen: imx25 tcq driver
+Message-ID: <20150130185721.GA11695@dtor-ws>
+References: <1422540556-14828-1-git-send-email-mpa@pengutronix.de>
+ <1422540556-14828-7-git-send-email-mpa@pengutronix.de>
+ <54CA4320.4030607@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <54CA4320.4030607@gmail.com>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Also change to div64_u64 in one place to avoid loss of precision
-(was dividing a 32 bit number by a 64 bit number, but casting this
-to 64 bit divided by 32 bit)  Those divide functions certainly have
-esoteric naming!
+On Thu, Jan 29, 2015 at 07:56:40PM +0530, Varka Bhadram wrote:
+> Hi,
+> 
+> On Thursday 29 January 2015 07:39 PM, Markus Pargmann wrote:
+> >This is a driver for the imx25 ADC/TSC module. It controls the
+> >touchscreen conversion queue and creates a touchscreen input device.
+> >The driver currently only supports 4 wire touchscreens. The driver uses
+> >a simple conversion queue of precharge, touch detection, X measurement,
+> >Y measurement, precharge and another touch detection.
+> >
+> >This driver uses the regmap from the parent to setup some touch specific
+> >settings in the core driver and setup a idle configuration with touch
+> >detection.
+> >
+> >Signed-off-by: Markus Pargmann <mpa@pengutronix.de>
+> >Signed-off-by: Denis Carikli <denis@eukrea.com>
+> >Acked-by: Dmitry Torokhov <dtor@vmware.com>
+> >Signed-off-by: Markus Pargmann <mpa@pengutronix.de>
+> >---
+> >  drivers/input/touchscreen/Kconfig         |   6 +
+> >  drivers/input/touchscreen/Makefile        |   1 +
+> >  drivers/input/touchscreen/fsl-imx25-tcq.c | 587 ++++++++++++++++++++++++++++++
+> >  3 files changed, 594 insertions(+)
+> >  create mode 100644 drivers/input/touchscreen/fsl-imx25-tcq.c
+> >
+> (...)
+> 
+> >+	ret = request_threaded_irq(priv->irq, mx25_tcq_irq, mx25_tcq_irq_thread,
+> >+				   IRQF_ONESHOT, pdev->name, priv);
+> 
+> We can use devres API for request_thread_irq()...
+> 
+> >+	if (ret) {
+> >+		dev_err(dev, "Failed requesting IRQ\n");
+> >+		goto err_clk_unprepare;
+> >+	}
+> >+
+> >+	ret = mx25_tcq_init(priv);
+> >+	if (ret) {
+> >+		dev_err(dev, "Failed to init tcq\n");
+> >+		goto error_free_irq;
+> >+	}
+> >+
+> >+	platform_set_drvdata(pdev, priv);
+> >+
+> >+	return 0;
+> >+
+> >+error_free_irq:
+> >+	free_irq(priv->irq, priv);
+> 
+> This is not required if we use devres API
 
-Fixes warnings with asm-generic/div64.h do_div such as:
-   In file included from drivers/iio/common/ssp_sensors/ssp_iio.c:20:0:
-   drivers/iio/common/ssp_sensors/ssp_iio_sensor.h: In function 'ssp_convert_to_freq':
->> drivers/iio/common/ssp_sensors/ssp_iio_sensor.h:56:16: warning: comparison of distinct pointer types lacks a cast [enabled by default]
-   drivers/iio/common/ssp_sensors/ssp_iio_sensor.h:56:2: warning: right shift count >= width of type [enabled by default]
->> drivers/iio/common/ssp_sensors/ssp_iio_sensor.h:56:2: warning: passing argument 1 of '__div64_32' from incompatible pointer type [enabled by default]
-   include/asm-generic/div64.h:35:17: note: expected 'uint64_t *' but argument is of type 'int *'
-   drivers/iio/common/ssp_sensors/ssp_iio.c: In function 'ssp_common_process_data':
-   include/linux/iio/buffer.h:142:32: warning: 'calculated_time' may be used uninitialized in this function [-Wuninitialized]
-   drivers/iio/common/ssp_sensors/ssp_iio.c:83:10: note: 'calculated_time' was declared here
+Yes it does - you do not really want to stop clocks in the middle of
+servicing interrupt.
 
-Fixed by using straight coded version as per the description in the
-div64.h header, thus ensuring no issue with 32 bit integers.
+Thanks.
 
-Reported-by: kbuild test robot <fengguang.wu@intel.com>
-Signed-off-by: Jonathan Cameron <jic23@kernel.org>
----
- drivers/iio/common/ssp_sensors/ssp_iio_sensor.h | 9 +++++----
- 1 file changed, 5 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/iio/common/ssp_sensors/ssp_iio_sensor.h b/drivers/iio/common/ssp_sensors/ssp_iio_sensor.h
-index dda267c9bd2a..541c6590d69c 100644
---- a/drivers/iio/common/ssp_sensors/ssp_iio_sensor.h
-+++ b/drivers/iio/common/ssp_sensors/ssp_iio_sensor.h
-@@ -30,7 +30,7 @@
- }
- 
- #define SSP_MS_PER_S			1000
--#define SSP_INVERTED_SCALING_FACTOR	1000000ULL
-+#define SSP_INVERTED_SCALING_FACTOR	1000000U
- 
- #define SSP_FACTOR_WITH_MS \
- 	(SSP_INVERTED_SCALING_FACTOR * SSP_MS_PER_S)
-@@ -53,7 +53,8 @@ static inline void ssp_convert_to_freq(u32 time, int *integer_part,
- 	}
- 
- 	*integer_part = SSP_FACTOR_WITH_MS / time;
--	*fractional = do_div(*integer_part, SSP_INVERTED_SCALING_FACTOR);
-+	*fractional = *integer_part % SSP_INVERTED_SCALING_FACTOR;
-+	*integer_part = *integer_part / SSP_INVERTED_SCALING_FACTOR;
- }
- 
- /* Converts frequency to time in ms */
-@@ -61,10 +62,10 @@ static inline int ssp_convert_to_time(int integer_part, int fractional)
- {
- 	u64 value;
- 
--	value = integer_part * SSP_INVERTED_SCALING_FACTOR + fractional;
-+	value = (u64)integer_part * SSP_INVERTED_SCALING_FACTOR + fractional;
- 	if (value == 0)
- 		return 0;
- 
--	return div_u64(SSP_FACTOR_WITH_MS, value);
-+	return div64_u64((u64)SSP_FACTOR_WITH_MS, value);
- }
- #endif /* __SSP_IIO_SENSOR_H__ */
 -- 
-2.2.2
+Dmitry
