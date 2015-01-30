@@ -1,214 +1,210 @@
-Return-Path: <viorel.suman@gmail.com>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from comal.ext.ti.com ([198.47.26.152]:45317 "EHLO comal.ext.ti.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1750724AbbA3F1z (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Fri, 30 Jan 2015 00:27:55 -0500
+Message-ID: <54CB1604.9030709@ti.com>
+Date: Fri, 30 Jan 2015 10:56:28 +0530
+From: Vignesh R <vigneshr@ti.com>
 MIME-Version: 1.0
-In-Reply-To: <1422537352-1374-1-git-send-email-irina.tirdea@intel.com>
-References: <1422537352-1374-1-git-send-email-irina.tirdea@intel.com>
-Date: Fri, 30 Jan 2015 06:03:38 +0200
-Message-ID: <CAAH5R_OYTbY3AW-pA3-p4+Gzo3MdGYX0a52UtJTbt=F8HSOj0A@mail.gmail.com>
-Subject: Re: [PATCH] iio: gyro: bmg160: optimize i2c transfers in trigger handler
-From: Viorel Suman <viorel.suman@gmail.com>
-To: Irina Tirdea <irina.tirdea@intel.com>
-Cc: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Srinivas Pandruvada <srinivas.pandruvada@intel.com>
-Content-Type: multipart/alternative; boundary=047d7bf0e73c80a9aa050dd6b0f1
-List-ID: <linux-iio@vger.kernel.org>
+To: Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+	Lee Jones <lee.jones@linaro.org>,
+	Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+CC: Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>,
+	Mark Rutland <mark.rutland@arm.com>,
+	Ian Campbell <ijc+devicetree@hellion.org.uk>,
+	Kumar Gala <galak@codeaurora.org>,
+	Benoit Cousson <bcousson@baylibre.com>,
+	Tony Lindgren <tony@atomide.com>,
+	Russell King <linux@arm.linux.org.uk>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Samuel Ortiz <sameo@linux.intel.com>,
+	Brad Griffis <bgriffis@ti.com>,
+	Paul Gortmaker <paul.gortmaker@windriver.com>,
+	Sanjeev Sharma <sanjeev_sharma@mentor.com>,
+	Jan Kardell <jan.kardell@telliq.com>,
+	Felipe Balbi <balbi@ti.com>, Wolfram Sang <wsa@the-dreams.de>,
+	<devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+	<linux-omap@vger.kernel.org>,
+	<linux-arm-kernel@lists.infradead.org>,
+	<linux-iio@vger.kernel.org>, <linux-input@vger.kernel.org>
+Subject: Re: [PATCH v6 2/6] input: touchscreen: ti_am335x_tsc: Remove udelay
+ in interrupt handler
+References: <1420609779-11156-1-git-send-email-vigneshr@ti.com> <1420609779-11156-3-git-send-email-vigneshr@ti.com>
+In-Reply-To: <1420609779-11156-3-git-send-email-vigneshr@ti.com>
+Content-Type: text/plain; charset="windows-1252"
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
---047d7bf0e73c80a9aa050dd6b0f1
-Content-Type: text/plain; charset=UTF-8
-
-Hi,
-
-You might need more space in "values" buffer, for more details please check
-the
-"iio_push_to_buffers_with_timestamp" description and implementation.
-
-Regards,
-Viorel
 
 
-On Thu, Jan 29, 2015 at 3:15 PM, Irina Tirdea <irina.tirdea@intel.com>
-wrote:
-
-> Some i2c busses (e.g.: Synopsys DesignWare I2C adapter) need to
-> enable/disable the bus at each i2c transfer and must wait for
-> the enable/disable to happen before sending the data.
->
-> When reading data in the trigger handler, the bmg160 driver does
-> one i2c transfer for each axis. This has an impact on the frequency
-> of the gyroscope at high sample rates due to additional delays
-> introduced by the i2c bus at each transfer.
->
-> Reading all axis values in one i2c transfer reduces the delays
-> introduced by the i2c bus.
->
-> Signed-off-by: Irina Tirdea <irina.tirdea@intel.com>
-> Reviewed-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+On Wednesday 07 January 2015 11:19 AM, Vignesh R wrote:
+> From: Brad Griffis <bgriffis@ti.com>
+> 
+> TSC interrupt handler had udelay to avoid reporting of false pen-up
+> interrupt to user space. This patch implements workaround suggesting in
+> Advisory 1.0.31 of silicon errata for am335x, thus eliminating udelay
+> and touchscreen lag. This also improves performance of touchscreen and
+> eliminates sudden jump of cursor at touch release.
+> 
+> IDLECONFIG and CHARGECONFIG registers are to be configured
+> with same values in order to eliminate false pen-up events. This
+> workaround may result in false pen-down to be detected, hence considerable
+> charge step delay needs to be added. The charge delay is set to 0xB000
+> (in terms of ADC clock cycles) by default.
+> 
+> TSC steps are disabled at the end of every sampling cycle and EOS bit is
+> set. Once the EOS bit is set, the TSC steps need to be re-enabled to begin
+> next sampling cycle.
+> 
+> Signed-off-by: Brad Griffis <bgriffis@ti.com>
+> [vigneshr@ti.com: Ported the patch from v3.12 to v3.19rc1]
+> 
+> Signed-off-by: Vignesh R <vigneshr@ti.com>
 > ---
->  drivers/iio/gyro/bmg160.c | 20 +++++++++++---------
->  1 file changed, 11 insertions(+), 9 deletions(-)
->
-> diff --git a/drivers/iio/gyro/bmg160.c b/drivers/iio/gyro/bmg160.c
-> index 60451b3..814eb20 100644
-> --- a/drivers/iio/gyro/bmg160.c
-> +++ b/drivers/iio/gyro/bmg160.c
-> @@ -115,6 +115,7 @@ enum bmg160_axis {
->         AXIS_X,
->         AXIS_Y,
->         AXIS_Z,
-> +       AXIS_MAX,
->  };
->
->  static const struct {
-> @@ -820,20 +821,21 @@ static irqreturn_t bmg160_trigger_handler(int irq,
-> void *p)
->         struct iio_dev *indio_dev = pf->indio_dev;
->         struct bmg160_data *data = iio_priv(indio_dev);
->         int bit, ret, i = 0;
-> +       s16 values[AXIS_MAX];
->
->         mutex_lock(&data->mutex);
-> -       for_each_set_bit(bit, indio_dev->buffer->scan_mask,
-> -                        indio_dev->masklength) {
-> -               ret = i2c_smbus_read_word_data(data->client,
-> -                                              BMG160_AXIS_TO_REG(bit));
-> -               if (ret < 0) {
-> -                       mutex_unlock(&data->mutex);
-> -                       goto err;
-> -               }
-> -               data->buffer[i++] = ret;
-> +       ret = i2c_smbus_read_i2c_block_data(data->client,
-> BMG160_REG_XOUT_L,
-> +                                           sizeof(values), (u8 *) values);
-> +       if (ret < 0) {
-> +               mutex_unlock(&data->mutex);
-> +               goto err;
->         }
->         mutex_unlock(&data->mutex);
->
-> +       for_each_set_bit(bit, indio_dev->buffer->scan_mask,
-> +                        indio_dev->masklength)
-> +               data->buffer[i++] = values[bit];
+
+Ping... Can somebody pick this patch series if there are no more comments??
+
+> v5:
+>  - enable TSC steps only on EOS interrup
+> 
+> v4:
+>  - check for PEN_IRQ bit in ADCFSM to avoid false-pen when ADC
+>    and TSC are used together.
+>  - Set charge delay to 0x400 as default. Most devices function
+>    normally at this value.
+> 
+>  drivers/input/touchscreen/ti_am335x_tsc.c | 67 ++++++++++++++-----------------
+>  include/linux/mfd/ti_am335x_tscadc.h      |  3 +-
+>  2 files changed, 33 insertions(+), 37 deletions(-)
+> 
+> diff --git a/drivers/input/touchscreen/ti_am335x_tsc.c b/drivers/input/touchscreen/ti_am335x_tsc.c
+> index dfbb9fe6a270..0625c102a1d0 100644
+> --- a/drivers/input/touchscreen/ti_am335x_tsc.c
+> +++ b/drivers/input/touchscreen/ti_am335x_tsc.c
+> @@ -173,11 +173,9 @@ static void titsc_step_config(struct titsc *ts_dev)
+>  		titsc_writel(ts_dev, REG_STEPDELAY(i), STEPCONFIG_OPENDLY);
+>  	}
+>  
+> -	/* Charge step configuration */
+> -	config = ts_dev->bit_xp | ts_dev->bit_yn |
+> -			STEPCHARGE_RFP_XPUL | STEPCHARGE_RFM_XNUR |
+> -			STEPCHARGE_INM_AN1 | STEPCHARGE_INP(ts_dev->inp_yp);
+> +	/* Make CHARGECONFIG same as IDLECONFIG */
+>  
+> +	config = titsc_readl(ts_dev, REG_IDLECONFIG);
+>  	titsc_writel(ts_dev, REG_CHARGECONFIG, config);
+>  	titsc_writel(ts_dev, REG_CHARGEDELAY, CHARGEDLY_OPENDLY);
+>  
+> @@ -261,12 +259,34 @@ static irqreturn_t titsc_irq(int irq, void *dev)
+>  {
+>  	struct titsc *ts_dev = dev;
+>  	struct input_dev *input_dev = ts_dev->input;
+> -	unsigned int status, irqclr = 0;
+> +	unsigned int fsm, status, irqclr = 0;
+>  	unsigned int x = 0, y = 0;
+>  	unsigned int z1, z2, z;
+> -	unsigned int fsm;
+>  
+> -	status = titsc_readl(ts_dev, REG_IRQSTATUS);
+> +	status = titsc_readl(ts_dev, REG_RAWIRQSTATUS);
+> +	if (status & IRQENB_HW_PEN) {
+> +		ts_dev->pen_down = true;
+> +		titsc_writel(ts_dev, REG_IRQWAKEUP, 0x00);
+> +		titsc_writel(ts_dev, REG_IRQCLR, IRQENB_HW_PEN);
+> +		irqclr |= IRQENB_HW_PEN;
+> +	}
 > +
->         iio_push_to_buffers_with_timestamp(indio_dev, data->buffer,
->                                            data->timestamp);
->  err:
-> --
-> 1.9.1
->
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
->
-
---047d7bf0e73c80a9aa050dd6b0f1
-Content-Type: text/html; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-
-<div dir=3D"ltr"><div><div>Hi,<br><br></div>You might need more space in &q=
-uot;values&quot; buffer, for more details please check the<br> &quot;iio_pu=
-sh_to_buffers_with_timestamp&quot; description and implementation.<br><br><=
-/div>Regards,<br>Viorel<br><br></div><div class=3D"gmail_extra"><br><div cl=
-ass=3D"gmail_quote">On Thu, Jan 29, 2015 at 3:15 PM, Irina Tirdea <span dir=
-=3D"ltr">&lt;<a href=3D"mailto:irina.tirdea@intel.com" target=3D"_blank">ir=
-ina.tirdea@intel.com</a>&gt;</span> wrote:<br><blockquote class=3D"gmail_qu=
-ote" style=3D"margin:0 0 0 .8ex;border-left:1px #ccc solid;padding-left:1ex=
-">Some i2c busses (e.g.: Synopsys DesignWare I2C adapter) need to<br>
-enable/disable the bus at each i2c transfer and must wait for<br>
-the enable/disable to happen before sending the data.<br>
-<br>
-When reading data in the trigger handler, the bmg160 driver does<br>
-one i2c transfer for each axis. This has an impact on the frequency<br>
-of the gyroscope at high sample rates due to additional delays<br>
-introduced by the i2c bus at each transfer.<br>
-<br>
-Reading all axis values in one i2c transfer reduces the delays<br>
-introduced by the i2c bus.<br>
-<br>
-Signed-off-by: Irina Tirdea &lt;<a href=3D"mailto:irina.tirdea@intel.com">i=
-rina.tirdea@intel.com</a>&gt;<br>
-Reviewed-by: Srinivas Pandruvada &lt;<a href=3D"mailto:srinivas.pandruvada@=
-linux.intel.com">srinivas.pandruvada@linux.intel.com</a>&gt;<br>
----<br>
-=C2=A0drivers/iio/gyro/bmg160.c | 20 +++++++++++---------<br>
-=C2=A01 file changed, 11 insertions(+), 9 deletions(-)<br>
-<br>
-diff --git a/drivers/iio/gyro/bmg160.c b/drivers/iio/gyro/bmg160.c<br>
-index 60451b3..814eb20 100644<br>
---- a/drivers/iio/gyro/bmg160.c<br>
-+++ b/drivers/iio/gyro/bmg160.c<br>
-@@ -115,6 +115,7 @@ enum bmg160_axis {<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 AXIS_X,<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 AXIS_Y,<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 AXIS_Z,<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0AXIS_MAX,<br>
-=C2=A0};<br>
-<br>
-=C2=A0static const struct {<br>
-@@ -820,20 +821,21 @@ static irqreturn_t bmg160_trigger_handler(int irq, vo=
-id *p)<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 struct iio_dev *indio_dev =3D pf-&gt;indio_dev;=
-<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 struct bmg160_data *data =3D iio_priv(indio_dev=
-);<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 int bit, ret, i =3D 0;<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0s16 values[AXIS_MAX];<br>
-<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 mutex_lock(&amp;data-&gt;mutex);<br>
--=C2=A0 =C2=A0 =C2=A0 =C2=A0for_each_set_bit(bit, indio_dev-&gt;buffer-&gt;=
-scan_mask,<br>
--=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
-=A0 =C2=A0 indio_dev-&gt;masklength) {<br>
--=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0ret =3D i2c_smbus_r=
-ead_word_data(data-&gt;client,<br>
--=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
-=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
-=C2=A0 =C2=A0 BMG160_AXIS_TO_REG(bit));<br>
--=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0if (ret &lt; 0) {<b=
-r>
--=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
-=A0 =C2=A0mutex_unlock(&amp;data-&gt;mutex);<br>
--=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
-=A0 =C2=A0goto err;<br>
--=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0}<br>
--=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0data-&gt;buffer[i++=
-] =3D ret;<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0ret =3D i2c_smbus_read_i2c_block_data(data-&gt;=
-client, BMG160_REG_XOUT_L,<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
-=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
-=C2=A0sizeof(values), (u8 *) values);<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0if (ret &lt; 0) {<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0mutex_unlock(&amp;d=
-ata-&gt;mutex);<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0goto err;<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 }<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 mutex_unlock(&amp;data-&gt;mutex);<br>
-<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0for_each_set_bit(bit, indio_dev-&gt;buffer-&gt;=
-scan_mask,<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
-=A0 =C2=A0 indio_dev-&gt;masklength)<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0data-&gt;buffer[i++=
-] =3D values[bit];<br>
-+<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 iio_push_to_buffers_with_timestamp(indio_dev, d=
-ata-&gt;buffer,<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
-=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
-=C2=A0data-&gt;timestamp);<br>
-=C2=A0err:<br>
-<span class=3D"HOEnZb"><font color=3D"#888888">--<br>
-1.9.1<br>
-<br>
---<br>
-To unsubscribe from this list: send the line &quot;unsubscribe linux-iio&qu=
-ot; in<br>
-the body of a message to <a href=3D"mailto:majordomo@vger.kernel.org">major=
-domo@vger.kernel.org</a><br>
-More majordomo info at=C2=A0 <a href=3D"http://vger.kernel.org/majordomo-in=
-fo.html" target=3D"_blank">http://vger.kernel.org/majordomo-info.html</a><b=
-r>
-</font></span></blockquote></div><br></div>
-
---047d7bf0e73c80a9aa050dd6b0f1--
+> +	if (status & IRQENB_PENUP) {
+> +		fsm = titsc_readl(ts_dev, REG_ADCFSM);
+> +		if (fsm == ADCFSM_STEPID) {
+> +			ts_dev->pen_down = false;
+> +			input_report_key(input_dev, BTN_TOUCH, 0);
+> +			input_report_abs(input_dev, ABS_PRESSURE, 0);
+> +			input_sync(input_dev);
+> +		} else {
+> +			ts_dev->pen_down = true;
+> +		}
+> +		irqclr |= IRQENB_PENUP;
+> +	}
+> +
+> +	if (status & IRQENB_EOS)
+> +		irqclr |= IRQENB_EOS;
+> +
+>  	/*
+>  	 * ADC and touchscreen share the IRQ line.
+>  	 * FIFO1 interrupts are used by ADC. Handle FIFO0 IRQs here only
+> @@ -297,37 +317,11 @@ static irqreturn_t titsc_irq(int irq, void *dev)
+>  		}
+>  		irqclr |= IRQENB_FIFO0THRES;
+>  	}
+> -
+> -	/*
+> -	 * Time for sequencer to settle, to read
+> -	 * correct state of the sequencer.
+> -	 */
+> -	udelay(SEQ_SETTLE);
+> -
+> -	status = titsc_readl(ts_dev, REG_RAWIRQSTATUS);
+> -	if (status & IRQENB_PENUP) {
+> -		/* Pen up event */
+> -		fsm = titsc_readl(ts_dev, REG_ADCFSM);
+> -		if (fsm == ADCFSM_STEPID) {
+> -			ts_dev->pen_down = false;
+> -			input_report_key(input_dev, BTN_TOUCH, 0);
+> -			input_report_abs(input_dev, ABS_PRESSURE, 0);
+> -			input_sync(input_dev);
+> -		} else {
+> -			ts_dev->pen_down = true;
+> -		}
+> -		irqclr |= IRQENB_PENUP;
+> -	}
+> -
+> -	if (status & IRQENB_HW_PEN) {
+> -
+> -		titsc_writel(ts_dev, REG_IRQWAKEUP, 0x00);
+> -		titsc_writel(ts_dev, REG_IRQCLR, IRQENB_HW_PEN);
+> -	}
+> -
+>  	if (irqclr) {
+>  		titsc_writel(ts_dev, REG_IRQSTATUS, irqclr);
+> -		am335x_tsc_se_set_cache(ts_dev->mfd_tscadc, ts_dev->step_mask);
+> +		if (status & IRQENB_EOS)
+> +			am335x_tsc_se_set_cache(ts_dev->mfd_tscadc,
+> +						ts_dev->step_mask);
+>  		return IRQ_HANDLED;
+>  	}
+>  	return IRQ_NONE;
+> @@ -417,6 +411,7 @@ static int titsc_probe(struct platform_device *pdev)
+>  	}
+>  
+>  	titsc_writel(ts_dev, REG_IRQENABLE, IRQENB_FIFO0THRES);
+> +	titsc_writel(ts_dev, REG_IRQENABLE, IRQENB_EOS);
+>  	err = titsc_config_wires(ts_dev);
+>  	if (err) {
+>  		dev_err(&pdev->dev, "wrong i/p wire configuration\n");
+> diff --git a/include/linux/mfd/ti_am335x_tscadc.h b/include/linux/mfd/ti_am335x_tscadc.h
+> index e2e70053470e..3f4e994ace2b 100644
+> --- a/include/linux/mfd/ti_am335x_tscadc.h
+> +++ b/include/linux/mfd/ti_am335x_tscadc.h
+> @@ -52,6 +52,7 @@
+>  
+>  /* IRQ enable */
+>  #define IRQENB_HW_PEN		BIT(0)
+> +#define IRQENB_EOS		BIT(1)
+>  #define IRQENB_FIFO0THRES	BIT(2)
+>  #define IRQENB_FIFO0OVRRUN	BIT(3)
+>  #define IRQENB_FIFO0UNDRFLW	BIT(4)
+> @@ -107,7 +108,7 @@
+>  /* Charge delay */
+>  #define CHARGEDLY_OPEN_MASK	(0x3FFFF << 0)
+>  #define CHARGEDLY_OPEN(val)	((val) << 0)
+> -#define CHARGEDLY_OPENDLY	CHARGEDLY_OPEN(1)
+> +#define CHARGEDLY_OPENDLY	CHARGEDLY_OPEN(0x400)
+>  
+>  /* Control register */
+>  #define CNTRLREG_TSCSSENB	BIT(0)
+> 
