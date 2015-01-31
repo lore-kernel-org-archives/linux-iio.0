@@ -1,320 +1,230 @@
-Return-Path: <wrona.vy@gmail.com>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:58376 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752185AbbAaOOK (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 31 Jan 2015 09:14:10 -0500
+Message-ID: <54CCE32C.1010205@kernel.org>
+Date: Sat, 31 Jan 2015 14:14:04 +0000
+From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-In-Reply-To: <54CC014B.30004@kernel.org>
-References: <1422642358-30473-1-git-send-email-jic23@kernel.org>
-	<54CBFDD2.9020604@kernel.org>
-	<54CC014B.30004@kernel.org>
-Date: Sat, 31 Jan 2015 02:35:38 +0100
-Message-ID: <CABj4xxnitektifnbv+Tcf6T1YZETEusvE-wHpwPrF8bUj-yTpA@mail.gmail.com>
-Subject: Re: [PATCH] iio:common:ssp_sensors fix warnings due to 32 bit instead
- of 64 bit passed to do_div
-From: Karol Wrona <wrona.vy@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: linux-iio@vger.kernel.org, Karol Wrona <k.wrona@samsung.com>, kbuild-all@01.org
-Content-Type: multipart/alternative; boundary=047d7bf0f66606bb90050de8bdca
-List-ID: <linux-iio@vger.kernel.org>
+To: Greg KH <gregkh@linuxfoundation.org>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Subject: [PULL] Second round of new IIO drivers, features and cleanups for
+ the 3.20 cycle
+Content-Type: text/plain; charset=utf-8
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
---047d7bf0f66606bb90050de8bdca
-Content-Type: text/plain; charset=UTF-8
+The following changes since commit 3ec698816ab3a7aca39dd3389115840a48d5266d:
 
-I apologise for a such mess.
+  staging: nvec: specify a platform-device base id (2015-01-21 10:31:09 +0800)
 
-For me the first fix plus this:
--#define SSP_INVERTED_SCALING_FACTOR 1000000ULL
-+#define SSP_INVERTED_SCALING_FACTOR 1000000U
-is better. I think there is no sense to do local 64 bit val to use
-specially do_div.
+are available in the git repository at:
 
-When converting the other way I think we can cast first value to u64.
+  git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git tags/iio-for-3.20b
 
-I wonder what is turned on in kbuild robot that it shows more then during
-normal build?
+for you to fetch changes up to 67460e8c9a5c59f66e1d476fd9341086cd792e5a:
 
- @@ -61,7 +61,7 @@ static inline int ssp_convert_to_time(int integer_part,
-int fractional)
- {
-  u64 value;
+  iio:common:ssp_sensors fix warnings due to 32 bit instead of 64 bit passed to do_div (2015-01-31 09:41:14 +0000)
 
-- value = integer_part * SSP_INVERTED_SCALING_FACTOR + fractional;
-+ value = (u64)integer_part * SSP_INVERTED_SCALING_FACTOR + fractional;
-  if (value == 0)
-  return 0;
+----------------------------------------------------------------
+Second round of IIO new drivers, functionality and cleanups for the 3.20 cycle.
 
+New drivers and device support:
+* Capella cm3232 ambient light sensor driver.
+* Freescale MMA9553 pedometer and activity monitor. Note this involved a
+  refactor of the mma9551 driver to pull out shared elements.
+* Samsung sensor hub (as used in the galaxy gear 2 watch) Core support
+  and initial drivers (gyro and accelerometer) more to follow.
+  An additional fix was applied on top of this for a build issue
+  thrown up by the autobuilders on some platforms.
+* Cosmic Circuits 10001 ADC driver
+* Qualcomm SPMI PMIC voltage ADC driver (current adc merged a while back).
+* Add binding for AK8963 (in capitals) as unfortunately there are bios'
+  out there not using lower case.
 
+New functionality
+* Add newe operating mode to the core to allow for non triggered software
+  buffers.  This is mostly semantics as previously drivers just claimed they
+  had a hardware buffer (when they didn't).
+* Add distance channel type.
+* Add energy channel type.
+* Add velocity channel type and IIO_MOD_ROOT_SUM_SQUARED (i.e. speed when
+  our channel type is velocity).
+* Add _debounce_count and _debounce_time filter attributes.  Only really
+  make sense for counting types of measurements.  First use is for avoiding
+  miss detection of steps prior to walking.
+* Add change event type.   This replaces the briefly present INSTANCE type
+  (which hadn't gained any users).  It is more generic as it allows for
+  events say every 10 steps rather than every step.
+* Add _calibweight attributes to the ABI (and core support).  Used by
+  activity monitors to estimate energy use.  Can imagine there will be
+  other uses for this one.
 
-2015-01-30 23:10 GMT+01:00 Jonathan Cameron <jic23@kernel.org>:
+Driver new functionality
+* mma9551 gains runtime pm support.
+* hid-sensors gain PM support.
 
-> On 30/01/15 21:55, Jonathan Cameron wrote:
-> > On 30/01/15 18:25, Jonathan Cameron wrote:
-> >> Fixes warnings with asm-generic/div64.h do_div such as:
-> >>    In file included from drivers/iio/common/ssp_sensors/ssp_iio.c:20:0:
-> >>    drivers/iio/common/ssp_sensors/ssp_iio_sensor.h: In function
-> 'ssp_convert_to_freq':
-> >>>> drivers/iio/common/ssp_sensors/ssp_iio_sensor.h:56:16: warning:
-> comparison of distinct pointer types lacks a cast [enabled by default]
-> >>    drivers/iio/common/ssp_sensors/ssp_iio_sensor.h:56:2: warning: right
-> shift count >= width of type [enabled by default]
-> >>>> drivers/iio/common/ssp_sensors/ssp_iio_sensor.h:56:2: warning:
-> passing argument 1 of '__div64_32' from incompatible pointer type [enabled
-> by default]
-> >>    include/asm-generic/div64.h:35:17: note: expected 'uint64_t *' but
-> argument is of type 'int *'
-> >>    drivers/iio/common/ssp_sensors/ssp_iio.c: In function
-> 'ssp_common_process_data':
-> >>    include/linux/iio/buffer.h:142:32: warning: 'calculated_time' may be
-> used uninitialized in this function [-Wuninitialized]
-> >>    drivers/iio/common/ssp_sensors/ssp_iio.c:83:10: note:
-> 'calculated_time' was declared here
-> >>
-> >> Fixed by using straight coded version as per the description in the
-> >> div64.h header, thus ensuring no issue with 32 bit integers.
-> >>
-> >> Reported-by: kbuild test robot <fengguang.wu@intel.com>
-> >> Signed-off-by: Jonathan Cameron <jic23@kernel.org>
-> > hmm. failed the build tests. I'd missed SSP_INVERTED_SCALING_FACTOR is
-> forced
-> > to be ULL.  Any reason for that?
-> >
-> > I can't immediately see that it is necessary. Being rather tired and
-> > running out of evening, I've pushed a version with the LL dropped out
-> > to testing to see if that causes any build issues.
-> >
-> > What fun,
->
-> Had one final look. It looks like we might need that constant to be 64 bit
-> to force integer promotion when converting the other way.
->
-> Hence, perhaps we just need a temporary u64 in this function?
-> How about... (and I know it is ugly).
->
-> Karol, what do you think?
->
-> diff --git a/drivers/iio/common/ssp_sensors/ssp_iio_sensor.h
-> b/drivers/iio/common/ssp_sensors/ssp_iio_sensor.h
-> index dda267c9bd2a..40dac417734e 100644
-> --- a/drivers/iio/common/ssp_sensors/ssp_iio_sensor.h
-> +++ b/drivers/iio/common/ssp_sensors/ssp_iio_sensor.h
-> @@ -46,14 +46,17 @@ int ssp_common_process_data(struct iio_dev *indio_dev,
-> void *buf,
->  static inline void ssp_convert_to_freq(u32 time, int *integer_part,
->                                        int *fractional)
->  {
-> +       u64 integer_part64;
-> +
->         if (time == 0) {
->                 *fractional = 0;
->                 *integer_part = 0;
->                 return;
->         }
->
-> -       *integer_part = SSP_FACTOR_WITH_MS / time;
-> -       *fractional = do_div(*integer_part, SSP_INVERTED_SCALING_FACTOR);
-> +       integer_part64 = SSP_FACTOR_WITH_MS / time;
-> +       *fractional = do_div(integer_part64, SSP_INVERTED_SCALING_FACTOR);
-> +       *integer_part = integer_part64;
->  }
->
->  /* Converts frequency to time in ms */
->
-> >
-> > Jonathan
-> >> ---
-> >>  drivers/iio/common/ssp_sensors/ssp_iio_sensor.h | 3 ++-
-> >>  1 file changed, 2 insertions(+), 1 deletion(-)
-> >>
-> >> diff --git a/drivers/iio/common/ssp_sensors/ssp_iio_sensor.h
-> b/drivers/iio/common/ssp_sensors/ssp_iio_sensor.h
-> >> index dda267c9bd2a..fdf61a8c499a 100644
-> >> --- a/drivers/iio/common/ssp_sensors/ssp_iio_sensor.h
-> >> +++ b/drivers/iio/common/ssp_sensors/ssp_iio_sensor.h
-> >> @@ -53,7 +53,8 @@ static inline void ssp_convert_to_freq(u32 time, int
-> *integer_part,
-> >>      }
-> >>
-> >>      *integer_part = SSP_FACTOR_WITH_MS / time;
-> >> -    *fractional = do_div(*integer_part, SSP_INVERTED_SCALING_FACTOR);
-> >> +    *fractional = *integer_part % SSP_INVERTED_SCALING_FACTOR;
-> >> +    *integer_part = *integer_part / SSP_INVERTED_SCALING_FACTOR;
-> >>  }
-> >>
-> >>  /* Converts frequency to time in ms */
-> >>
-> >
-> > --
-> > To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> > the body of a message to majordomo@vger.kernel.org
-> > More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> >
->
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
->
+Cleanup
+* Change calibheight unit to m from cm.  As there are no prior users
+  and this was inconsistent with other distance units, it makes sense
+  to fix it before hte mma9553 driver which uses it.
+* mpu6050 cleanups and devm_ use.
+* as3935 switch over to PM ops.
+* Fix a few format strings for signed vs unsigned.
+* Fix tcs3414 missindentation
+* Typo in industrialio-event
+* Stop requiring IIO_TRIGGER for IIO_KFIFO_BUF as we have drivers that don't
+  need it. No one is quite sure why that dependency was there and it
+  seems to not matter.
 
---047d7bf0f66606bb90050de8bdca
-Content-Type: text/html; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+----------------------------------------------------------------
+Asaf Vertz (3):
+      staging: iio: tsl2583: fix format string warnings
+      staging: iio: ad5933: fix format string warnings
+      staging: iio: tsl2x7x_core: fix format string warnings
 
-<div dir=3D"ltr">I apologise for a such mess.<div><br></div><div>For me the=
- first fix plus this:</div><div><div>-#define SSP_INVERTED_SCALING_FACTOR<s=
-pan class=3D"" style=3D"white-space:pre">	</span>1000000ULL</div><div>+#def=
-ine SSP_INVERTED_SCALING_FACTOR<span class=3D"" style=3D"white-space:pre">	=
-</span>1000000U</div></div><div>is better. I think there is no sense to do =
-local 64 bit val to use specially do_div.</div><div><br></div><div>When con=
-verting the other way I think we can cast first value to u64.</div><div><br=
-></div><div>I wonder what is turned on in kbuild robot that it shows more t=
-hen during normal build?</div><div>=C2=A0</div><div>=C2=A0@@ -61,7 +61,7 @@=
- static inline int ssp_convert_to_time(int integer_part, int fractional)</d=
-iv><div><div>=C2=A0{</div><div>=C2=A0<span class=3D"" style=3D"white-space:=
-pre">	</span>u64 value;</div><div>=C2=A0=C2=A0</div><div>-<span class=3D"" =
-style=3D"white-space:pre">	</span>value =3D integer_part * SSP_INVERTED_SCA=
-LING_FACTOR + fractional;</div><div>+<span class=3D"" style=3D"white-space:=
-pre">	</span>value =3D (u64)integer_part * SSP_INVERTED_SCALING_FACTOR + fr=
-actional;</div><div>=C2=A0<span class=3D"" style=3D"white-space:pre">	</spa=
-n>if (value =3D=3D 0)</div><div>=C2=A0<span class=3D"" style=3D"white-space=
-:pre">		</span>return 0;</div><div>=C2=A0</div><div><br></div></div><div cl=
-ass=3D"gmail_extra"><br><div class=3D"gmail_quote">2015-01-30 23:10 GMT+01:=
-00 Jonathan Cameron <span dir=3D"ltr">&lt;<a href=3D"mailto:jic23@kernel.or=
-g" target=3D"_blank">jic23@kernel.org</a>&gt;</span>:<br><blockquote class=
-=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8ex;border-left-width:1px;bo=
-rder-left-color:rgb(204,204,204);border-left-style:solid;padding-left:1ex">=
-<span class=3D"">On 30/01/15 21:55, Jonathan Cameron wrote:<br>
-&gt; On 30/01/15 18:25, Jonathan Cameron wrote:<br>
-&gt;&gt; Fixes warnings with asm-generic/div64.h do_div such as:<br>
-&gt;&gt;=C2=A0 =C2=A0 In file included from drivers/iio/common/ssp_sensors/=
-ssp_iio.c:20:0:<br>
-&gt;&gt;=C2=A0 =C2=A0 drivers/iio/common/ssp_sensors/ssp_iio_sensor.h: In f=
-unction &#39;ssp_convert_to_freq&#39;:<br>
-&gt;&gt;&gt;&gt; drivers/iio/common/ssp_sensors/ssp_iio_sensor.h:56:16: war=
-ning: comparison of distinct pointer types lacks a cast [enabled by default=
-]<br>
-&gt;&gt;=C2=A0 =C2=A0 drivers/iio/common/ssp_sensors/ssp_iio_sensor.h:56:2:=
- warning: right shift count &gt;=3D width of type [enabled by default]<br>
-&gt;&gt;&gt;&gt; drivers/iio/common/ssp_sensors/ssp_iio_sensor.h:56:2: warn=
-ing: passing argument 1 of &#39;__div64_32&#39; from incompatible pointer t=
-ype [enabled by default]<br>
-&gt;&gt;=C2=A0 =C2=A0 include/asm-generic/div64.h:35:17: note: expected &#3=
-9;uint64_t *&#39; but argument is of type &#39;int *&#39;<br>
-&gt;&gt;=C2=A0 =C2=A0 drivers/iio/common/ssp_sensors/ssp_iio.c: In function=
- &#39;ssp_common_process_data&#39;:<br>
-&gt;&gt;=C2=A0 =C2=A0 include/linux/iio/buffer.h:142:32: warning: &#39;calc=
-ulated_time&#39; may be used uninitialized in this function [-Wuninitialize=
-d]<br>
-&gt;&gt;=C2=A0 =C2=A0 drivers/iio/common/ssp_sensors/ssp_iio.c:83:10: note:=
- &#39;calculated_time&#39; was declared here<br>
-&gt;&gt;<br>
-&gt;&gt; Fixed by using straight coded version as per the description in th=
-e<br>
-&gt;&gt; div64.h header, thus ensuring no issue with 32 bit integers.<br>
-&gt;&gt;<br>
-&gt;&gt; Reported-by: kbuild test robot &lt;<a href=3D"mailto:fengguang.wu@=
-intel.com">fengguang.wu@intel.com</a>&gt;<br>
-&gt;&gt; Signed-off-by: Jonathan Cameron &lt;<a href=3D"mailto:jic23@kernel=
-.org">jic23@kernel.org</a>&gt;<br>
-&gt; hmm. failed the build tests. I&#39;d missed SSP_INVERTED_SCALING_FACTO=
-R is forced<br>
-&gt; to be ULL.=C2=A0 Any reason for that?<br>
-&gt;<br>
-&gt; I can&#39;t immediately see that it is necessary. Being rather tired a=
-nd<br>
-&gt; running out of evening, I&#39;ve pushed a version with the LL dropped =
-out<br>
-&gt; to testing to see if that causes any build issues.<br>
-&gt;<br>
-&gt; What fun,<br>
-<br>
-</span>Had one final look. It looks like we might need that constant to be =
-64 bit<br>
-to force integer promotion when converting the other way.<br>
-<br>
-Hence, perhaps we just need a temporary u64 in this function?<br>
-How about... (and I know it is ugly).<br>
-<br>
-Karol, what do you think?<br>
-<br>
-diff --git a/drivers/iio/common/ssp_sensors/ssp_iio_sensor.h b/drivers/iio/=
-common/ssp_sensors/ssp_iio_sensor.h<br>
-index dda267c9bd2a..40dac417734e 100644<br>
---- a/drivers/iio/common/ssp_sensors/ssp_iio_sensor.h<br>
-+++ b/drivers/iio/common/ssp_sensors/ssp_iio_sensor.h<br>
-@@ -46,14 +46,17 @@ int ssp_common_process_data(struct iio_dev *indio_dev, =
-void *buf,<br>
-<span class=3D"">=C2=A0static inline void ssp_convert_to_freq(u32 time, int=
- *integer_part,<br>
-</span>=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
-=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0in=
-t *fractional)<br>
-=C2=A0{<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0u64 integer_part64;<br>
-+<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 if (time =3D=3D 0) {<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 *fractional =3D 0;<=
-br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 *integer_part =3D 0=
-;<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 return;<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 }<br>
-<br>
--=C2=A0 =C2=A0 =C2=A0 =C2=A0*integer_part =3D SSP_FACTOR_WITH_MS / time;<br=
->
-<span class=3D"">-=C2=A0 =C2=A0 =C2=A0 =C2=A0*fractional =3D do_div(*intege=
-r_part, SSP_INVERTED_SCALING_FACTOR);<br>
-</span>+=C2=A0 =C2=A0 =C2=A0 =C2=A0integer_part64 =3D SSP_FACTOR_WITH_MS / =
-time;<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0*fractional =3D do_div(integer_part64, SSP_INVE=
-RTED_SCALING_FACTOR);<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0*integer_part =3D integer_part64;<br>
-<div class=3D""><div class=3D"h5">=C2=A0}<br>
-<br>
-=C2=A0/* Converts frequency to time in ms */<br>
-<br>
-&gt;<br>
-&gt; Jonathan<br>
-&gt;&gt; ---<br>
-&gt;&gt;=C2=A0 drivers/iio/common/ssp_sensors/ssp_iio_sensor.h | 3 ++-<br>
-&gt;&gt;=C2=A0 1 file changed, 2 insertions(+), 1 deletion(-)<br>
-&gt;&gt;<br>
-&gt;&gt; diff --git a/drivers/iio/common/ssp_sensors/ssp_iio_sensor.h b/dri=
-vers/iio/common/ssp_sensors/ssp_iio_sensor.h<br>
-&gt;&gt; index dda267c9bd2a..fdf61a8c499a 100644<br>
-&gt;&gt; --- a/drivers/iio/common/ssp_sensors/ssp_iio_sensor.h<br>
-&gt;&gt; +++ b/drivers/iio/common/ssp_sensors/ssp_iio_sensor.h<br>
-&gt;&gt; @@ -53,7 +53,8 @@ static inline void ssp_convert_to_freq(u32 time,=
- int *integer_part,<br>
-&gt;&gt;=C2=A0 =C2=A0 =C2=A0 }<br>
-&gt;&gt;<br>
-&gt;&gt;=C2=A0 =C2=A0 =C2=A0 *integer_part =3D SSP_FACTOR_WITH_MS / time;<b=
-r>
-&gt;&gt; -=C2=A0 =C2=A0 *fractional =3D do_div(*integer_part, SSP_INVERTED_=
-SCALING_FACTOR);<br>
-&gt;&gt; +=C2=A0 =C2=A0 *fractional =3D *integer_part % SSP_INVERTED_SCALIN=
-G_FACTOR;<br>
-&gt;&gt; +=C2=A0 =C2=A0 *integer_part =3D *integer_part / SSP_INVERTED_SCAL=
-ING_FACTOR;<br>
-&gt;&gt;=C2=A0 }<br>
-&gt;&gt;<br>
-&gt;&gt;=C2=A0 /* Converts frequency to time in ms */<br>
-&gt;&gt;<br>
-&gt;<br>
-&gt; --<br>
-&gt; To unsubscribe from this list: send the line &quot;unsubscribe linux-i=
-io&quot; in<br>
-&gt; the body of a message to <a href=3D"mailto:majordomo@vger.kernel.org">=
-majordomo@vger.kernel.org</a><br>
-&gt; More majordomo info at=C2=A0 <a href=3D"http://vger.kernel.org/majordo=
-mo-info.html" target=3D"_blank">http://vger.kernel.org/majordomo-info.html<=
-/a><br>
-&gt;<br>
-<br>
---<br>
-To unsubscribe from this list: send the line &quot;unsubscribe linux-iio&qu=
-ot; in<br>
-the body of a message to <a href=3D"mailto:majordomo@vger.kernel.org">major=
-domo@vger.kernel.org</a><br>
-More majordomo info at=C2=A0 <a href=3D"http://vger.kernel.org/majordomo-in=
-fo.html" target=3D"_blank">http://vger.kernel.org/majordomo-info.html</a><b=
-r>
-</div></div></blockquote></div><br></div></div>
+Ezequiel Garcia (1):
+      DT: Add a vendor prefix for Cosmic Circuits
 
---047d7bf0f66606bb90050de8bdca--
+Irina Tirdea (11):
+      iio: core: Introduce ENERGY channel type
+      iio: core: Introduce DISTANCE channel type
+      iio: core: Introduce IIO_VELOCITY and IIO_MOD_ROOT_SUM_SQUARED_X_Y_Z
+      iio: core: Introduce IIO_CHAN_INFO_CALIBWEIGHT
+      iio: core: Introduce CHANGE event type
+      iio: core: Remove IIO_EV_TYPE_INSTANCE
+      iio: accel: mma9551: Add runtime pm support
+      iio: accel: mma9551: split driver to expose mma955x api
+      iio: core: Introduce IIO_CHAN_INFO_DEBOUNCE_COUNT and _TIME
+      iio: Documentation: Fix calibheight unit
+      iio: add driver for Freescale MMA9553
+
+Jonathan Cameron (1):
+      iio:common:ssp_sensors fix warnings due to 32 bit instead of 64 bit passed to do_div
+
+Karol Wrona (7):
+      iio: Deselect IIO_TRIGGER for IIO_KFIFO_BUF
+      iio: Add new operating mode for non triggered sw buffers
+      iio: common: ssp_sensors: Add sensorhub driver
+      iio: sensorhub: Add sensorhub bindings
+      iio: common: ssp_sensors: Add sensorhub iio commons
+      iio: common: ssp_sensors: Add sensorhub accelerometer sensor
+      iio: common: ssp_sensors: Add sensorhub gyroscope sensor
+
+Kevin Tsai (1):
+      iio: Added Capella cm3232 ambient light sensor driver.
+
+Lars-Peter Clausen (1):
+      iio: as3935: Switch to PM ops
+
+Phani Movva (2):
+      DT: iio: adc: Add CC_10001 binding documentation
+      iio: adc: Cosmic Circuits 10001 ADC driver
+
+Roberta Dobrescu (3):
+      iio: industrialio-event: Fix typo 's/dynically/dynamically/'
+      iio: light: tcs3414: Fix misindented lines
+      iio: light: cm32181: Fix typo 's/claibscale/calibscale/'
+
+Srinivas Pandruvada (9):
+      iio: hid_sensor_hub: Common PM functions
+      iio: hid-sensor-accel-3d: Introduce PM
+      iio: hid-sensor-gyro-3d: Introduce PM
+      iio: hid-sensor-als: Introduce PM
+      iio: hid-sensor-prox: Introduce PM
+      iio: hid-sensor-magn-3d: Introduce PM
+      iio: hid-sensor-incl-3d: Introduce PM
+      iio: hid-sensor-press: Introduce PM
+      iio: magnetometer: ak8975: Add AK8963
+
+Stanimir Varbanov (2):
+      DT: iio: vadc: document dt binding
+      iio: vadc: Qualcomm SPMI PMIC voltage ADC driver
+
+Varka Bhadram (3):
+      imu: inv_mpu6050: use devm_iio_trigger_alloc
+      imu: inv_mpu6050: use devm_request_irq
+      imu: inv_mpu6050: cleanup on error check
+
+ Documentation/ABI/testing/sysfs-bus-iio            |  123 +-
+ .../devicetree/bindings/i2c/trivial-devices.txt    |    1 +
+ .../devicetree/bindings/iio/adc/cc10001_adc.txt    |   22 +
+ .../devicetree/bindings/iio/adc/qcom,spmi-vadc.txt |  129 ++
+ .../devicetree/bindings/iio/sensorhub.txt          |   25 +
+ .../devicetree/bindings/vendor-prefixes.txt        |    1 +
+ MAINTAINERS                                        |    6 +
+ drivers/iio/Kconfig                                |    1 -
+ drivers/iio/accel/Kconfig                          |   15 +
+ drivers/iio/accel/Makefile                         |    7 +-
+ drivers/iio/accel/hid-sensor-accel-3d.c            |    8 +-
+ drivers/iio/accel/mma9551.c                        |  489 ++-----
+ drivers/iio/accel/mma9551_core.c                   |  798 ++++++++++++
+ drivers/iio/accel/mma9551_core.h                   |   81 ++
+ drivers/iio/accel/mma9553.c                        | 1334 ++++++++++++++++++++
+ drivers/iio/accel/ssp_accel_sensor.c               |  169 +++
+ drivers/iio/adc/Kconfig                            |   25 +
+ drivers/iio/adc/Makefile                           |    2 +
+ drivers/iio/adc/cc10001_adc.c                      |  423 +++++++
+ drivers/iio/adc/qcom-spmi-vadc.c                   | 1016 +++++++++++++++
+ drivers/iio/common/Kconfig                         |    1 +
+ drivers/iio/common/Makefile                        |    1 +
+ .../iio/common/hid-sensors/hid-sensor-trigger.c    |   75 +-
+ .../iio/common/hid-sensors/hid-sensor-trigger.h    |    5 +
+ drivers/iio/common/ssp_sensors/Kconfig             |   26 +
+ drivers/iio/common/ssp_sensors/Makefile            |    8 +
+ drivers/iio/common/ssp_sensors/ssp.h               |  257 ++++
+ drivers/iio/common/ssp_sensors/ssp_dev.c           |  712 +++++++++++
+ drivers/iio/common/ssp_sensors/ssp_iio.c           |  107 ++
+ drivers/iio/common/ssp_sensors/ssp_iio_sensor.h    |   71 ++
+ drivers/iio/common/ssp_sensors/ssp_spi.c           |  608 +++++++++
+ drivers/iio/gyro/Makefile                          |    2 +
+ drivers/iio/gyro/hid-sensor-gyro-3d.c              |    8 +-
+ drivers/iio/gyro/ssp_gyro_sensor.c                 |  168 +++
+ drivers/iio/imu/inv_mpu6050/inv_mpu_trigger.c      |   39 +-
+ drivers/iio/industrialio-buffer.c                  |    2 +
+ drivers/iio/industrialio-core.c                    |    7 +
+ drivers/iio/industrialio-event.c                   |    4 +-
+ drivers/iio/light/Kconfig                          |   11 +
+ drivers/iio/light/Makefile                         |    1 +
+ drivers/iio/light/cm32181.c                        |    2 +-
+ drivers/iio/light/cm3232.c                         |  403 ++++++
+ drivers/iio/light/hid-sensor-als.c                 |    9 +-
+ drivers/iio/light/hid-sensor-prox.c                |   10 +-
+ drivers/iio/light/tcs3414.c                        |    4 +-
+ drivers/iio/magnetometer/ak8975.c                  |    1 +
+ drivers/iio/magnetometer/hid-sensor-magn-3d.c      |    9 +-
+ drivers/iio/orientation/hid-sensor-incl-3d.c       |    9 +-
+ drivers/iio/pressure/hid-sensor-press.c            |    9 +-
+ drivers/iio/proximity/as3935.c                     |   18 +-
+ .../staging/iio/Documentation/iio_event_monitor.c  |    4 +-
+ drivers/staging/iio/iio_simple_dummy.c             |    2 +-
+ drivers/staging/iio/iio_simple_dummy_events.c      |    4 +-
+ drivers/staging/iio/impedance-analyzer/ad5933.c    |    4 +-
+ drivers/staging/iio/light/tsl2583.c                |    2 +-
+ drivers/staging/iio/light/tsl2x7x_core.c           |    2 +-
+ include/dt-bindings/iio/qcom,spmi-vadc.h           |  119 ++
+ include/linux/iio/common/ssp_sensors.h             |   82 ++
+ include/linux/iio/iio.h                            |    9 +-
+ include/linux/iio/types.h                          |    6 +-
+ 60 files changed, 6977 insertions(+), 519 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/iio/adc/cc10001_adc.txt
+ create mode 100644 Documentation/devicetree/bindings/iio/adc/qcom,spmi-vadc.txt
+ create mode 100644 Documentation/devicetree/bindings/iio/sensorhub.txt
+ create mode 100644 drivers/iio/accel/mma9551_core.c
+ create mode 100644 drivers/iio/accel/mma9551_core.h
+ create mode 100644 drivers/iio/accel/mma9553.c
+ create mode 100644 drivers/iio/accel/ssp_accel_sensor.c
+ create mode 100644 drivers/iio/adc/cc10001_adc.c
+ create mode 100644 drivers/iio/adc/qcom-spmi-vadc.c
+ create mode 100644 drivers/iio/common/ssp_sensors/Kconfig
+ create mode 100644 drivers/iio/common/ssp_sensors/Makefile
+ create mode 100644 drivers/iio/common/ssp_sensors/ssp.h
+ create mode 100644 drivers/iio/common/ssp_sensors/ssp_dev.c
+ create mode 100644 drivers/iio/common/ssp_sensors/ssp_iio.c
+ create mode 100644 drivers/iio/common/ssp_sensors/ssp_iio_sensor.h
+ create mode 100644 drivers/iio/common/ssp_sensors/ssp_spi.c
+ create mode 100644 drivers/iio/gyro/ssp_gyro_sensor.c
+ create mode 100644 drivers/iio/light/cm3232.c
+ create mode 100644 include/dt-bindings/iio/qcom,spmi-vadc.h
+ create mode 100644 include/linux/iio/common/ssp_sensors.h
