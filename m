@@ -1,343 +1,192 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
 Received: from mga03.intel.com ([134.134.136.65]:60030 "EHLO mga03.intel.com"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1759911AbbAaAAj (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Fri, 30 Jan 2015 19:00:39 -0500
+	id S1759911AbbAaAAh (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Fri, 30 Jan 2015 19:00:37 -0500
 From: Octavian Purdila <octavian.purdila@intel.com>
 To: linux-iio@vger.kernel.org
 Cc: srinivas.pandruvada@linux.intel.com,
 	Octavian Purdila <octavian.purdila@intel.com>
-Subject: [PATCH v3 8/9] iio: bmc150: introduce bmc150_accel_trigger
-Date: Sat, 31 Jan 2015 02:00:07 +0200
-Message-Id: <1422662408-8149-9-git-send-email-octavian.purdila@intel.com>
+Subject: [PATCH v3 7/9] iio: bmc150: introduce bmc150_accel_interrupt
+Date: Sat, 31 Jan 2015 02:00:06 +0200
+Message-Id: <1422662408-8149-8-git-send-email-octavian.purdila@intel.com>
 In-Reply-To: <1422662408-8149-1-git-send-email-octavian.purdila@intel.com>
 References: <1422662408-8149-1-git-send-email-octavian.purdila@intel.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Add a separate structure for triggers and add the infrastructure to
-support an arbitrary number of triggers. Each trigger is associated
-with an interrupt and has an enabled/disabled state.
+Since both triggers and events can share an interrupt, add a data
+structure that tracks the users of an interrupt so that it enables or
+disables it only for the first users and respectively last user.
+
+This will allows us to easily add more events or triggers.
+
+The patch also adds an interrupt enabled counter, so that we can
+easily know if we need to put the device in normal mode when the
+resume callback is issued.
 
 Signed-off-by: Octavian Purdila <octavian.purdila@intel.com>
 ---
- drivers/iio/accel/bmc150-accel.c | 195 ++++++++++++++++++++++++---------------
- 1 file changed, 119 insertions(+), 76 deletions(-)
+ drivers/iio/accel/bmc150-accel.c | 77 ++++++++++++++++++++++------------------
+ 1 file changed, 43 insertions(+), 34 deletions(-)
 
 diff --git a/drivers/iio/accel/bmc150-accel.c b/drivers/iio/accel/bmc150-accel.c
-index b23ad1b..c05aa43 100644
+index f040f40..b23ad1b 100644
 --- a/drivers/iio/accel/bmc150-accel.c
 +++ b/drivers/iio/accel/bmc150-accel.c
-@@ -152,14 +152,22 @@ struct bmc150_accel_interrupt {
- 	atomic_t users;
+@@ -147,10 +147,19 @@ struct bmc150_accel_chip_info {
+ 	const struct bmc150_scale_info scale_table[4];
  };
  
-+struct bmc150_accel_trigger {
-+	struct bmc150_accel_interrupt *intr;
-+	struct bmc150_accel_data *data;
-+	struct iio_trigger *indio_trig;
-+	bool enabled;
-+	int (*setup)(struct bmc150_accel_trigger *t, bool state);
++struct bmc150_accel_interrupt {
++	const struct bmc150_accel_interrupt_info *info;
++	atomic_t users;
 +};
 +
- #define BMC150_ACCEL_INTERRUPTS		2
-+#define BMC150_ACCEL_TRIGGERS		2
- 
++#define BMC150_ACCEL_INTERRUPTS		2
++
  struct bmc150_accel_data {
  	struct i2c_client *client;
- 	struct bmc150_accel_interrupt interrupts[BMC150_ACCEL_INTERRUPTS];
--	struct iio_trigger *dready_trig;
--	struct iio_trigger *motion_trig;
- 	atomic_t active_intr;
-+	struct bmc150_accel_trigger triggers[BMC150_ACCEL_TRIGGERS];
++	struct bmc150_accel_interrupt interrupts[BMC150_ACCEL_INTERRUPTS];
+ 	struct iio_trigger *dready_trig;
+ 	struct iio_trigger *motion_trig;
++	atomic_t active_intr;
  	struct mutex mutex;
  	s16 buffer[8];
  	u8 bw_bits;
-@@ -167,8 +175,6 @@ struct bmc150_accel_data {
- 	u32 slope_thres;
- 	u32 range;
- 	int ev_enable_state;
--	bool dready_trigger_on;
--	bool motion_trigger_on;
- 	int64_t timestamp;
- 	const struct bmc150_accel_chip_info *chip_info;
+@@ -421,7 +430,7 @@ static const struct bmc150_accel_interrupt_info {
+ 	u8 map_bitmask;
+ 	u8 en_reg;
+ 	u8 en_bitmask;
+-} bmc150_accel_interrupts[] = {
++} bmc150_accel_interrupts[BMC150_ACCEL_INTERRUPTS] = {
+ 	{ /* data ready interrupt */
+ 		.map_reg = BMC150_ACCEL_REG_INT_MAP_1,
+ 		.map_bitmask = BMC150_ACCEL_INT_MAP_1_BIT_DATA,
+@@ -438,12 +447,30 @@ static const struct bmc150_accel_interrupt_info {
+ 	},
  };
-@@ -309,6 +315,15 @@ static int bmc150_accel_update_slope(struct bmc150_accel_data *data)
+ 
++static void bmc150_accel_interrupts_setup(struct iio_dev *indio_dev,
++					  struct bmc150_accel_data *data)
++{
++	int i;
++
++	for (i = 0; i < BMC150_ACCEL_INTERRUPTS; i++)
++		data->interrupts[i].info = &bmc150_accel_interrupts[i];
++}
++
+ static int bmc150_accel_set_interrupt(struct bmc150_accel_data *data,
+-				const struct bmc150_accel_interrupt_info *info,
++				      struct bmc150_accel_interrupt *intr,
+ 				      bool state)
+ {
++	const struct bmc150_accel_interrupt_info *info = intr->info;
+ 	int ret;
+ 
++	if (state) {
++		if (atomic_inc_return(&intr->users) > 1)
++			return 0;
++	} else {
++		if (atomic_dec_return(&intr->users) > 0)
++			return 0;
++	}
++
+ 	/*
+ 	 * We will expect the enable and disable to do operation in
+ 	 * in reverse order. This will happen here anyway as our
+@@ -493,6 +520,11 @@ static int bmc150_accel_set_interrupt(struct bmc150_accel_data *data,
+ 		goto out_fix_power_state;
+ 	}
+ 
++	if (state)
++		atomic_inc(&data->active_intr);
++	else
++		atomic_dec(&data->active_intr);
++
+ 	return 0;
+ 
+ out_fix_power_state:
+@@ -500,20 +532,6 @@ out_fix_power_state:
  	return ret;
  }
  
-+static int bmc150_accel_any_motion_setup(struct bmc150_accel_trigger *t,
-+					 bool state)
-+{
-+	if (state)
-+		return bmc150_accel_update_slope(t->data);
-+
-+	return 0;
-+}
-+
- static int bmc150_accel_chip_init(struct bmc150_accel_data *data)
+-static int bmc150_accel_setup_any_motion_interrupt(
+-					struct bmc150_accel_data *data,
+-					bool status)
+-{
+-	return bmc150_accel_set_interrupt(data, &bmc150_accel_interrupts[1],
+-					  status);
+-}
+-
+-static int bmc150_accel_setup_new_data_interrupt(struct bmc150_accel_data *data,
+-						 bool status)
+-{
+-	return bmc150_accel_set_interrupt(data, &bmc150_accel_interrupts[0],
+-					  status);
+-}
+ 
+ static int bmc150_accel_set_scale(struct bmc150_accel_data *data, int val)
  {
- 	int ret;
-@@ -787,11 +802,14 @@ static int bmc150_accel_validate_trigger(struct iio_dev *indio_dev,
- 				   struct iio_trigger *trig)
- {
- 	struct bmc150_accel_data *data = iio_priv(indio_dev);
-+	int i;
- 
--	if (data->dready_trig != trig && data->motion_trig != trig)
--		return -EINVAL;
-+	for (i = 0; i < BMC150_ACCEL_TRIGGERS; i++) {
-+		if (data->triggers[i].indio_trig == trig)
-+			return 0;
-+	}
- 
--	return 0;
-+	return -EINVAL;
- }
- 
- static IIO_CONST_ATTR_SAMP_FREQ_AVAIL(
-@@ -963,12 +981,12 @@ err_read:
- 
- static int bmc150_accel_trig_try_reen(struct iio_trigger *trig)
- {
--	struct iio_dev *indio_dev = iio_trigger_get_drvdata(trig);
--	struct bmc150_accel_data *data = iio_priv(indio_dev);
-+	struct bmc150_accel_trigger *t = iio_trigger_get_drvdata(trig);
-+	struct bmc150_accel_data *data = t->data;
- 	int ret;
- 
- 	/* new data interrupts don't need ack */
--	if (data->dready_trigger_on)
-+	if (t == &t->data->triggers[0])
- 		return 0;
- 
- 	mutex_lock(&data->mutex);
-@@ -990,42 +1008,32 @@ static int bmc150_accel_trig_try_reen(struct iio_trigger *trig)
- static int bmc150_accel_data_rdy_trigger_set_state(struct iio_trigger *trig,
- 						   bool state)
- {
--	struct iio_dev *indio_dev = iio_trigger_get_drvdata(trig);
--	struct bmc150_accel_data *data = iio_priv(indio_dev);
-+	struct bmc150_accel_trigger *t = iio_trigger_get_drvdata(trig);
-+	struct bmc150_accel_data *data = t->data;
- 	int ret;
+@@ -753,13 +771,7 @@ static int bmc150_accel_write_event_config(struct iio_dev *indio_dev,
  
  	mutex_lock(&data->mutex);
  
--	if (data->motion_trig == trig) {
--		if (data->motion_trigger_on == state) {
--			mutex_unlock(&data->mutex);
--			return 0;
--		}
--	} else {
--		if (data->dready_trigger_on == state) {
-+	if (t->enabled == state) {
-+		mutex_unlock(&data->mutex);
-+		return 0;
-+	}
-+
-+	if (t->setup) {
-+		ret = t->setup(t, state);
-+		if (ret < 0) {
- 			mutex_unlock(&data->mutex);
--			return 0;
-+			return ret;
- 		}
- 	}
- 
--	if (data->motion_trig == trig) {
--		ret = bmc150_accel_update_slope(data);
--		if (!ret)
--			ret = bmc150_accel_set_interrupt(data,
--							 &data->interrupts[1],
--							 state);
--	} else {
--		ret = bmc150_accel_set_interrupt(data, &data->interrupts[0],
--						 state);
+-	if (!state && data->motion_trigger_on) {
+-		data->ev_enable_state = 0;
+-		mutex_unlock(&data->mutex);
+-		return 0;
 -	}
-+	ret = bmc150_accel_set_interrupt(data, t->intr, state);
+-
+-	ret =  bmc150_accel_setup_any_motion_interrupt(data, state);
++	ret = bmc150_accel_set_interrupt(data, &data->interrupts[1], state);
  	if (ret < 0) {
  		mutex_unlock(&data->mutex);
  		return ret;
+@@ -996,19 +1008,15 @@ static int bmc150_accel_data_rdy_trigger_set_state(struct iio_trigger *trig,
+ 		}
  	}
--	if (data->motion_trig == trig)
--		data->motion_trigger_on = state;
--	else
--		data->dready_trigger_on = state;
-+
-+	t->enabled = state;
  
- 	mutex_unlock(&data->mutex);
- 
-@@ -1079,7 +1087,7 @@ static irqreturn_t bmc150_accel_event_handler(int irq, void *private)
- 							dir),
- 							data->timestamp);
- ack_intr_status:
--	if (!data->dready_trigger_on)
-+	if (!data->triggers[0].enabled)
- 		ret = i2c_smbus_write_byte_data(data->client,
- 					BMC150_ACCEL_REG_INT_RST_LATCH,
- 					BMC150_ACCEL_INT_MODE_LATCH_INT |
-@@ -1092,13 +1100,16 @@ static irqreturn_t bmc150_accel_data_rdy_trig_poll(int irq, void *private)
- {
- 	struct iio_dev *indio_dev = private;
- 	struct bmc150_accel_data *data = iio_priv(indio_dev);
-+	int i;
- 
- 	data->timestamp = iio_get_time_ns();
- 
--	if (data->dready_trigger_on)
--		iio_trigger_poll(data->dready_trig);
--	else if (data->motion_trigger_on)
--		iio_trigger_poll(data->motion_trig);
-+	for (i = 0; i < BMC150_ACCEL_TRIGGERS; i++) {
-+		if (data->triggers[i].enabled) {
-+			iio_trigger_poll(data->triggers[i].indio_trig);
-+			break;
-+		}
-+	}
- 
- 	if (data->ev_enable_state)
- 		return IRQ_WAKE_THREAD;
-@@ -1150,6 +1161,71 @@ static int bmc150_accel_gpio_probe(struct i2c_client *client,
- 	return ret;
- }
- 
-+static const struct {
-+	int intr;
-+	const char *name;
-+	int (*setup)(struct bmc150_accel_trigger *t, bool state);
-+} bmc150_accel_triggers[BMC150_ACCEL_TRIGGERS] = {
-+	{
-+		.intr = 0,
-+		.name = "%s-dev%d",
-+	},
-+	{
-+		.intr = 1,
-+		.name = "%s-any-motion-dev%d",
-+		.setup = bmc150_accel_any_motion_setup,
-+	},
-+};
-+
-+static void bmc150_accel_unregister_triggers(struct bmc150_accel_data *data,
-+					     int from)
-+{
-+	int i;
-+
-+	for (i = from; i >= 0; i++) {
-+		if (data->triggers[i].indio_trig) {
-+			iio_trigger_unregister(data->triggers[i].indio_trig);
-+			data->triggers[i].indio_trig = NULL;
-+		}
-+	}
-+}
-+
-+static int bmc150_accel_triggers_setup(struct iio_dev *indio_dev,
-+				       struct bmc150_accel_data *data)
-+{
-+	int i, ret;
-+
-+	for (i = 0; i < BMC150_ACCEL_TRIGGERS; i++) {
-+		struct bmc150_accel_trigger *t = &data->triggers[i];
-+		const char *name = bmc150_accel_triggers[i].name;
-+		int intr = bmc150_accel_triggers[i].intr;
-+
-+		t->indio_trig = devm_iio_trigger_alloc(&data->client->dev, name,
-+						       indio_dev->name,
-+						       indio_dev->id);
-+		if (!t->indio_trig) {
-+			ret = -ENOMEM;
-+			break;
-+		}
-+
-+		t->indio_trig->dev.parent = &data->client->dev;
-+		t->indio_trig->ops = &bmc150_accel_trigger_ops;
-+		t->intr = &data->interrupts[intr];
-+		t->data = data;
-+		t->setup = bmc150_accel_triggers[i].setup;
-+		iio_trigger_set_drvdata(t->indio_trig, t);
-+
-+		ret = iio_trigger_register(t->indio_trig);
-+		if (ret)
-+			break;
-+	}
-+
-+	if (ret)
-+		bmc150_accel_unregister_triggers(data, i - 1);
-+
-+	return ret;
-+}
-+
- static int bmc150_accel_probe(struct i2c_client *client,
- 			      const struct i2c_device_id *id)
- {
-@@ -1220,36 +1296,10 @@ static int bmc150_accel_probe(struct i2c_client *client,
- 
- 		bmc150_accel_interrupts_setup(indio_dev, data);
- 
--		data->dready_trig = devm_iio_trigger_alloc(&client->dev,
--							   "%s-dev%d",
--							   indio_dev->name,
--							   indio_dev->id);
--		if (!data->dready_trig)
--			return -ENOMEM;
--
--		data->motion_trig = devm_iio_trigger_alloc(&client->dev,
--							  "%s-any-motion-dev%d",
--							  indio_dev->name,
--							  indio_dev->id);
--		if (!data->motion_trig)
--			return -ENOMEM;
--
--		data->dready_trig->dev.parent = &client->dev;
--		data->dready_trig->ops = &bmc150_accel_trigger_ops;
--		iio_trigger_set_drvdata(data->dready_trig, indio_dev);
--		ret = iio_trigger_register(data->dready_trig);
-+		ret = bmc150_accel_triggers_setup(indio_dev, data);
- 		if (ret)
- 			return ret;
- 
--		data->motion_trig->dev.parent = &client->dev;
--		data->motion_trig->ops = &bmc150_accel_trigger_ops;
--		iio_trigger_set_drvdata(data->motion_trig, indio_dev);
--		ret = iio_trigger_register(data->motion_trig);
--		if (ret) {
--			data->motion_trig = NULL;
--			goto err_trigger_unregister;
--		}
--
- 		ret = iio_triggered_buffer_setup(indio_dev,
- 						 &iio_pollfunc_store_time,
- 						 bmc150_accel_trigger_handler,
-@@ -1281,13 +1331,10 @@ static int bmc150_accel_probe(struct i2c_client *client,
- err_iio_unregister:
- 	iio_device_unregister(indio_dev);
- err_buffer_cleanup:
--	if (data->dready_trig)
-+	if (indio_dev->pollfunc)
- 		iio_triggered_buffer_cleanup(indio_dev);
- err_trigger_unregister:
--	if (data->dready_trig)
--		iio_trigger_unregister(data->dready_trig);
--	if (data->motion_trig)
--		iio_trigger_unregister(data->motion_trig);
-+	bmc150_accel_unregister_triggers(data, BMC150_ACCEL_TRIGGERS - 1);
- 
- 	return ret;
- }
-@@ -1303,11 +1350,7 @@ static int bmc150_accel_remove(struct i2c_client *client)
- 
- 	iio_device_unregister(indio_dev);
- 
--	if (data->dready_trig) {
--		iio_triggered_buffer_cleanup(indio_dev);
--		iio_trigger_unregister(data->dready_trig);
--		iio_trigger_unregister(data->motion_trig);
+-	if (!state && data->ev_enable_state && data->motion_trigger_on) {
+-		data->motion_trigger_on = false;
+-		mutex_unlock(&data->mutex);
+-		return 0;
 -	}
-+	bmc150_accel_unregister_triggers(data, BMC150_ACCEL_TRIGGERS - 1);
+-
+ 	if (data->motion_trig == trig) {
+ 		ret = bmc150_accel_update_slope(data);
+ 		if (!ret)
+-			ret = bmc150_accel_setup_any_motion_interrupt(data,
+-								      state);
++			ret = bmc150_accel_set_interrupt(data,
++							 &data->interrupts[1],
++							 state);
+ 	} else {
+-		ret = bmc150_accel_setup_new_data_interrupt(data, state);
++		ret = bmc150_accel_set_interrupt(data, &data->interrupts[0],
++						 state);
+ 	}
+ 	if (ret < 0) {
+ 		mutex_unlock(&data->mutex);
+@@ -1210,6 +1218,8 @@ static int bmc150_accel_probe(struct i2c_client *client,
+ 			return ret;
+ 		}
+ 
++		bmc150_accel_interrupts_setup(indio_dev, data);
++
+ 		data->dready_trig = devm_iio_trigger_alloc(&client->dev,
+ 							   "%s-dev%d",
+ 							   indio_dev->name,
+@@ -1325,8 +1335,7 @@ static int bmc150_accel_resume(struct device *dev)
+ 	struct bmc150_accel_data *data = iio_priv(indio_dev);
  
  	mutex_lock(&data->mutex);
- 	bmc150_accel_set_mode(data, BMC150_ACCEL_SLEEP_MODE_DEEP_SUSPEND, 0);
+-	if (data->dready_trigger_on || data->motion_trigger_on ||
+-							data->ev_enable_state)
++	if (atomic_read(&data->active_intr))
+ 		bmc150_accel_set_mode(data, BMC150_ACCEL_SLEEP_MODE_NORMAL, 0);
+ 	mutex_unlock(&data->mutex);
+ 
 -- 
 1.9.1
 
