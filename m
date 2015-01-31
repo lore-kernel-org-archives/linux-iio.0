@@ -1,339 +1,152 @@
-Return-Path: <srinivas.pandruvada@linux.intel.com>
-From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-To: jic23@kernel.org
-Cc: wsa@the-dreams.de,
-	lars@metafoo.de,
-	linux-iio@vger.kernel.org,
-	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-Subject: [PATCH v3] iio: imu: inv_mpu6050: Create mux clients for ACPI
-Date: Fri, 30 Jan 2015 14:25:45 -0800
-Message-Id: <1422656745-13576-2-git-send-email-srinivas.pandruvada@linux.intel.com>
-In-Reply-To: <1422656745-13576-1-git-send-email-srinivas.pandruvada@linux.intel.com>
-References: <1422656745-13576-1-git-send-email-srinivas.pandruvada@linux.intel.com>
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:57012 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750908AbbAaJkR (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 31 Jan 2015 04:40:17 -0500
+Message-ID: <54CCA2E9.2070409@jic23.retrosnub.co.uk>
+Date: Sat, 31 Jan 2015 09:39:53 +0000
+From: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
+MIME-Version: 1.0
+To: Karol Wrona <wrona.vy@gmail.com>,
+	Jonathan Cameron <jic23@kernel.org>
+CC: linux-iio@vger.kernel.org, Karol Wrona <k.wrona@samsung.com>,
+	kbuild-all@01.org
+Subject: Re: [PATCH] iio:common:ssp_sensors fix warnings due to 32 bit instead
+ of 64 bit passed to do_div
+References: <1422642358-30473-1-git-send-email-jic23@kernel.org>	<54CBFDD2.9020604@kernel.org>	<54CC014B.30004@kernel.org> <CABj4xxnitektifnbv+Tcf6T1YZETEusvE-wHpwPrF8bUj-yTpA@mail.gmail.com>
+In-Reply-To: <CABj4xxnitektifnbv+Tcf6T1YZETEusvE-wHpwPrF8bUj-yTpA@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-This is a follow up patches after adding i2c mux adapter for bypass
-mode. Potentially many different types of sensor can be attached to
-INVMPU6XXX device, which can be connected to main cpu i2c bus in
-bypass mode.
-Why do we need this?
-The system ACPI table entry will consist of only one device for
-INV6XXX, assuming that this driver will handle all connected sensors.
-That is not true for the Linux driver. There are bunch of IIO drivers
-for each sensors, hence we created a mux on this device. So to load
-these additional drivers, we need to create i2c devices for them
-in this driver using this mux adapter.
+On 31/01/15 01:35, Karol Wrona wrote:
+> I apologise for a such mess.
+>
+> For me the first fix plus this:
+> -#define SSP_INVERTED_SCALING_FACTOR1000000ULL
+> +#define SSP_INVERTED_SCALING_FACTOR1000000U
+> is better. I think there is no sense to do local 64 bit val to use specially do_div.
+>
+> When converting the other way I think we can cast first value to u64.
+>
+> I wonder what is turned on in kbuild robot that it shows more then during normal build?
+It's building for a lot more architectures, some of which have different implementations of
+these divide functions...  Also tends to have more variants of gcc than either you or I
+are likely to try!
+>  
+>  @@ -61,7 +61,7 @@ static inline int ssp_convert_to_time(int integer_part, int fractional)
+>  {
+>  u64 value;
+>   
+> -value = integer_part * SSP_INVERTED_SCALING_FACTOR + fractional;
+> +value = (u64)integer_part * SSP_INVERTED_SCALING_FACTOR + fractional;
+>  if (value == 0)
+>  return 0;
+I've also tweaked the final divide in this function as the div_u64 is 64bit / 32bit and you
+were doing 32bit/64bit.  I've changed it to.
+-       return div_u64(SSP_FACTOR_WITH_MS, value);
++       return div64_u64((u64)SSP_FACTOR_WITH_MS, value);
 
-There are multiple options:
-1. Use the auto detect feature, this needs a new i2c class for the
-adapter as the existing HWMON class is not acceptable. Also the
-autodetect has overhead of executing detect method for each
-matching class of adapters.
-This is a simple implementation. This option was previously submitted
-with not a happy feedback.
+Feels rather like we need to take another look at what is 64 bit and what isn't in here, but that
+can happen later as what we have should 'work'.
 
-2. Option is use ACPI magic and parse the configuration data. What
-we need to create a i2c device at a minimum is address and a name.
-Address can be obtained for secondary device in more or less in a
-standard way from using _CRS element. But there is no name. To get
-name we need to process proprietary vendor data. Not having name is
-not fun, as you have to create device using the device name of
-INVN6XXXX, respecting driver duplicate name space restriction.
-Also each client driver needs to have this name in the id table.
-Since multiple driver can be loaded, the driver should be able to
-detect its presence and gracefully exit for the other client driver
-to take it over.
-So we use two step process:
-- Use DMI to id platform and parse propritery data. This is not uncommon
-for many x86 platform specific driver. We will get both name and address.
-The change created necessary infrastructure to add more properitery vendor
-data parsing.
-- If DMI match fails, then create device on INV6XXX-client (we can't
-create with same name as INV6XXX as it will cause duplicate name and driver
-model will reject.) With this each client sensor driver which needs to get
-attached via INV6XXXX, need this name in the id table and detect the
-physical presence of sensor in probe and exit if not found.
+>  
+>
+>
+> 2015-01-30 23:10 GMT+01:00 Jonathan Cameron <jic23@kernel.org <mailto:jic23@kernel.org>>:
+>
+>     On 30/01/15 21:55, Jonathan Cameron wrote:
+>     > On 30/01/15 18:25, Jonathan Cameron wrote:
+>     >> Fixes warnings with asm-generic/div64.h do_div such as:
+>     >>    In file included from drivers/iio/common/ssp_sensors/ssp_iio.c:20:0:
+>     >>    drivers/iio/common/ssp_sensors/ssp_iio_sensor.h: In function 'ssp_convert_to_freq':
+>     >>>> drivers/iio/common/ssp_sensors/ssp_iio_sensor.h:56:16: warning: comparison of distinct pointer types lacks a cast [enabled by default]
+>     >>    drivers/iio/common/ssp_sensors/ssp_iio_sensor.h:56:2: warning: right shift count >= width of type [enabled by default]
+>     >>>> drivers/iio/common/ssp_sensors/ssp_iio_sensor.h:56:2: warning: passing argument 1 of '__div64_32' from incompatible pointer type [enabled by default]
+>     >>    include/asm-generic/div64.h:35:17: note: expected 'uint64_t *' but argument is of type 'int *'
+>     >>    drivers/iio/common/ssp_sensors/ssp_iio.c: In function 'ssp_common_process_data':
+>     >>    include/linux/iio/buffer.h:142:32: warning: 'calculated_time' may be used uninitialized in this function [-Wuninitialized]
+>     >>    drivers/iio/common/ssp_sensors/ssp_iio.c:83:10: note: 'calculated_time' was declared here
+>     >>
+>     >> Fixed by using straight coded version as per the description in the
+>     >> div64.h header, thus ensuring no issue with 32 bit integers.
+>     >>
+>     >> Reported-by: kbuild test robot <fengguang.wu@intel.com <mailto:fengguang.wu@intel.com>>
+>     >> Signed-off-by: Jonathan Cameron <jic23@kernel.org <mailto:jic23@kernel.org>>
+>     > hmm. failed the build tests. I'd missed SSP_INVERTED_SCALING_FACTOR is forced
+>     > to be ULL.  Any reason for that?
+>     >
+>     > I can't immediately see that it is necessary. Being rather tired and
+>     > running out of evening, I've pushed a version with the LL dropped out
+>     > to testing to see if that causes any build issues.
+>     >
+>     > What fun,
+>
+>     Had one final look. It looks like we might need that constant to be 64 bit
+>     to force integer promotion when converting the other way.
+>
+>     Hence, perhaps we just need a temporary u64 in this function?
+>     How about... (and I know it is ugly).
+>
+>     Karol, what do you think?
+>
+>     diff --git a/drivers/iio/common/ssp_sensors/ssp_iio_sensor.h b/drivers/iio/common/ssp_sensors/ssp_iio_sensor.h
+>     index dda267c9bd2a..40dac417734e 100644
+>     --- a/drivers/iio/common/ssp_sensors/ssp_iio_sensor.h
+>     +++ b/drivers/iio/common/ssp_sensors/ssp_iio_sensor.h
+>     @@ -46,14 +46,17 @@ int ssp_common_process_data(struct iio_dev *indio_dev, void *buf,
+>      static inline void ssp_convert_to_freq(u32 time, int *integer_part,
+>                                            int *fractional)
+>      {
+>     +       u64 integer_part64;
+>     +
+>             if (time == 0) {
+>                     *fractional = 0;
+>                     *integer_part = 0;
+>                     return;
+>             }
+>
+>     -       *integer_part = SSP_FACTOR_WITH_MS / time;
+>     -       *fractional = do_div(*integer_part, SSP_INVERTED_SCALING_FACTOR);
+>     +       integer_part64 = SSP_FACTOR_WITH_MS / time;
+>     +       *fractional = do_div(integer_part64, SSP_INVERTED_SCALING_FACTOR);
+>     +       *integer_part = integer_part64;
+>      }
+>
+>      /* Converts frequency to time in ms */
+>
+>     >
+>     > Jonathan
+>     >> ---
+>     >>  drivers/iio/common/ssp_sensors/ssp_iio_sensor.h | 3 ++-
+>     >>  1 file changed, 2 insertions(+), 1 deletion(-)
+>     >>
+>     >> diff --git a/drivers/iio/common/ssp_sensors/ssp_iio_sensor.h b/drivers/iio/common/ssp_sensors/ssp_iio_sensor.h
+>     >> index dda267c9bd2a..fdf61a8c499a 100644
+>     >> --- a/drivers/iio/common/ssp_sensors/ssp_iio_sensor.h
+>     >> +++ b/drivers/iio/common/ssp_sensors/ssp_iio_sensor.h
+>     >> @@ -53,7 +53,8 @@ static inline void ssp_convert_to_freq(u32 time, int *integer_part,
+>     >>      }
+>     >>
+>     >>      *integer_part = SSP_FACTOR_WITH_MS / time;
+>     >> -    *fractional = do_div(*integer_part, SSP_INVERTED_SCALING_FACTOR);
+>     >> +    *fractional = *integer_part % SSP_INVERTED_SCALING_FACTOR;
+>     >> +    *integer_part = *integer_part / SSP_INVERTED_SCALING_FACTOR;
+>     >>  }
+>     >>
+>     >>  /* Converts frequency to time in ms */
+>     >>
+>     >
+>     > --
+>     > To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+>     > the body of a message to majordomo@vger.kernel.org <mailto:majordomo@vger.kernel.org>
+>     > More majordomo info at  http://vger.kernel.org/majordomo-info.html
+>     >
+>
+>     --
+>     To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+>     the body of a message to majordomo@vger.kernel.org <mailto:majordomo@vger.kernel.org>
+>     More majordomo info at  http://vger.kernel.org/majordomo-info.html
+>
+>
 
-Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
----
- drivers/iio/imu/inv_mpu6050/Makefile       |   2 +-
- drivers/iio/imu/inv_mpu6050/inv_mpu_acpi.c | 211 +++++++++++++++++++++++++++++
- drivers/iio/imu/inv_mpu6050/inv_mpu_core.c |   7 +
- drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h  |   3 +
- 4 files changed, 222 insertions(+), 1 deletion(-)
- create mode 100644 drivers/iio/imu/inv_mpu6050/inv_mpu_acpi.c
-
-diff --git a/drivers/iio/imu/inv_mpu6050/Makefile b/drivers/iio/imu/inv_mpu6050/Makefile
-index 3a677c7..f566f6a 100644
---- a/drivers/iio/imu/inv_mpu6050/Makefile
-+++ b/drivers/iio/imu/inv_mpu6050/Makefile
-@@ -3,4 +3,4 @@
- #
- 
- obj-$(CONFIG_INV_MPU6050_IIO) += inv-mpu6050.o
--inv-mpu6050-objs := inv_mpu_core.o inv_mpu_ring.o inv_mpu_trigger.o
-+inv-mpu6050-objs := inv_mpu_core.o inv_mpu_ring.o inv_mpu_trigger.o inv_mpu_acpi.o
-diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_acpi.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_acpi.c
-new file mode 100644
-index 0000000..1c982a5
---- /dev/null
-+++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_acpi.c
-@@ -0,0 +1,211 @@
-+/*
-+ * inv_mpu_acpi: ACPI processing for creating client devices
-+ * Copyright (c) 2015, Intel Corporation.
-+ *
-+ * This program is free software; you can redistribute it and/or modify it
-+ * under the terms and conditions of the GNU General Public License,
-+ * version 2, as published by the Free Software Foundation.
-+ *
-+ * This program is distributed in the hope it will be useful, but WITHOUT
-+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-+ * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
-+ * more details.
-+ */
-+
-+#ifdef CONFIG_ACPI
-+
-+#include <linux/kernel.h>
-+#include <linux/i2c.h>
-+#include <linux/dmi.h>
-+#include <linux/acpi.h>
-+#include "inv_mpu_iio.h"
-+
-+enum inv_mpu_product_name {
-+	INV_MPU_NOT_MATCHED,
-+	INV_MPU_ASUS_T100TA,
-+};
-+
-+static enum inv_mpu_product_name matched_product_name;
-+
-+static int __init asus_t100_matched(const struct dmi_system_id *d)
-+{
-+	matched_product_name = INV_MPU_ASUS_T100TA;
-+
-+	return 0;
-+}
-+
-+static const struct dmi_system_id inv_mpu_dev_list[] = {
-+	{
-+	.callback = asus_t100_matched,
-+	.ident = "Asus Transformer Book T100",
-+		.matches = {
-+			DMI_MATCH(DMI_SYS_VENDOR, "ASUSTeK COMPUTER INC"),
-+			DMI_MATCH(DMI_PRODUCT_NAME, "T100TA"),
-+			DMI_MATCH(DMI_PRODUCT_VERSION, "1.0"),
-+		},
-+	},
-+	/* Add more matching tables here..*/
-+	{}
-+};
-+
-+static int asus_acpi_get_sensor_info(struct acpi_device *adev,
-+				     struct i2c_client *client,
-+				     struct i2c_board_info *info)
-+{
-+	struct acpi_buffer buffer = {ACPI_ALLOCATE_BUFFER, NULL};
-+	int i;
-+	acpi_status status;
-+	union acpi_object *cpm;
-+
-+	status = acpi_evaluate_object(adev->handle, "CNF0", NULL, &buffer);
-+	if (ACPI_FAILURE(status))
-+		return -ENODEV;
-+
-+	cpm = buffer.pointer;
-+	for (i = 0; i < cpm->package.count; ++i) {
-+		union acpi_object *elem;
-+		int j;
-+
-+		elem = &(cpm->package.elements[i]);
-+		for (j = 0; j < elem->package.count; ++j) {
-+			union acpi_object *sub_elem;
-+
-+			sub_elem = &(elem->package.elements[j]);
-+			if (sub_elem->type == ACPI_TYPE_STRING)
-+				strlcpy(info->type, sub_elem->string.pointer,
-+					sizeof(info->type));
-+			else if (sub_elem->type == ACPI_TYPE_INTEGER) {
-+				if (sub_elem->integer.value != client->addr) {
-+					info->addr = sub_elem->integer.value;
-+					break; /* Not a MPU6500 primary */
-+				}
-+			}
-+		}
-+	}
-+
-+	kfree(buffer.pointer);
-+
-+	return cpm->package.count;
-+}
-+
-+static int acpi_i2c_check_resource(struct acpi_resource *ares, void *data)
-+{
-+	u32 *addr = data;
-+
-+	if (ares->type == ACPI_RESOURCE_TYPE_SERIAL_BUS) {
-+		struct acpi_resource_i2c_serialbus *sb;
-+
-+		sb = &ares->data.i2c_serial_bus;
-+		if (sb->type == ACPI_RESOURCE_SERIAL_TYPE_I2C) {
-+			if (*addr)
-+				*addr |= (sb->slave_address << 16);
-+			else
-+				*addr = sb->slave_address;
-+		}
-+	}
-+
-+	/* Tell the ACPI core that we already copied this address */
-+	return 1;
-+}
-+
-+static int inv_mpu_process_acpi_config(struct i2c_client *client,
-+				       unsigned short *primary_addr,
-+				       unsigned short *secondary_addr)
-+{
-+	const struct acpi_device_id *id;
-+	struct acpi_device *adev;
-+	u32 i2c_addr = 0;
-+	LIST_HEAD(resources);
-+	int ret;
-+
-+	id = acpi_match_device(client->dev.driver->acpi_match_table,
-+			       &client->dev);
-+	if (!id)
-+		return -ENODEV;
-+
-+	adev = ACPI_COMPANION(&client->dev);
-+	if (!adev)
-+		return -ENODEV;
-+
-+	ret = acpi_dev_get_resources(adev, &resources,
-+				     acpi_i2c_check_resource, &i2c_addr);
-+	if (ret < 0)
-+		return ret;
-+
-+	acpi_dev_free_resource_list(&resources);
-+	*primary_addr = i2c_addr & 0x0000ffff;
-+	*secondary_addr = (i2c_addr & 0xffff0000) >> 16;
-+
-+	return 0;
-+}
-+
-+int inv_mpu_acpi_create_mux_client(struct inv_mpu6050_state *st)
-+{
-+
-+	st->mux_client = NULL;
-+	if (ACPI_HANDLE(&st->client->dev)) {
-+		struct i2c_board_info info;
-+		struct acpi_device *adev;
-+		int ret = -1;
-+
-+		adev = ACPI_COMPANION(&st->client->dev);
-+		memset(&info, 0, sizeof(info));
-+
-+		dmi_check_system(inv_mpu_dev_list);
-+		switch (matched_product_name) {
-+		case INV_MPU_ASUS_T100TA:
-+			ret = asus_acpi_get_sensor_info(adev, st->client,
-+							&info);
-+			break;
-+		/* Add more matched product processing here */
-+		default:
-+			break;
-+		}
-+
-+		if (ret < 0) {
-+			/* No matching DMI, so create device on INV6XX type */
-+			unsigned short primary, secondary;
-+
-+			ret = inv_mpu_process_acpi_config(st->client, &primary,
-+							  &secondary);
-+			if (!ret && secondary) {
-+				char *name;
-+
-+				info.addr = secondary;
-+				strlcpy(info.type, dev_name(&adev->dev),
-+					sizeof(info.type));
-+				name = strchr(info.type, ':');
-+				if (name)
-+					*name = '\0';
-+				strlcat(info.type, "-client",
-+					sizeof(info.type));
-+			} else
-+				return 0; /* no secondary addr, which is OK */
-+		}
-+		st->mux_client = i2c_new_device(st->mux_adapter, &info);
-+		if (!st->mux_client)
-+			return -ENODEV;
-+
-+	}
-+
-+	return 0;
-+}
-+
-+void inv_mpu_acpi_delete_mux_client(struct inv_mpu6050_state *st)
-+{
-+	if (st->mux_client)
-+		i2c_unregister_device(st->mux_client);
-+}
-+#else
-+
-+#include "inv_mpu_iio.h"
-+
-+int inv_mpu_acpi_create_mux_client(struct inv_mpu6050_state *st)
-+{
-+	return 0;
-+}
-+
-+void inv_mpu_acpi_delete_mux_client(struct inv_mpu6050_state *st)
-+{
-+}
-+#endif
-diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-index d8d5bed..5613f3a 100644
---- a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-+++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-@@ -825,8 +825,14 @@ static int inv_mpu_probe(struct i2c_client *client,
- 		goto out_unreg_device;
- 	}
- 
-+	result = inv_mpu_acpi_create_mux_client(st);
-+	if (result)
-+		goto out_del_mux;
-+
- 	return 0;
- 
-+out_del_mux:
-+	i2c_del_mux_adapter(st->mux_adapter);
- out_unreg_device:
- 	iio_device_unregister(indio_dev);
- out_remove_trigger:
-@@ -841,6 +847,7 @@ static int inv_mpu_remove(struct i2c_client *client)
- 	struct iio_dev *indio_dev = i2c_get_clientdata(client);
- 	struct inv_mpu6050_state *st = iio_priv(indio_dev);
- 
-+	inv_mpu_acpi_delete_mux_client(st);
- 	i2c_del_mux_adapter(st->mux_adapter);
- 	iio_device_unregister(indio_dev);
- 	inv_mpu6050_remove_trigger(st);
-diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h b/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
-index aa837de..db0a4a2 100644
---- a/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
-+++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
-@@ -121,6 +121,7 @@ struct inv_mpu6050_state {
- 	spinlock_t time_stamp_lock;
- 	struct i2c_client *client;
- 	struct i2c_adapter *mux_adapter;
-+	struct i2c_client *mux_client;
- 	unsigned int powerup_count;
- 	struct inv_mpu6050_platform_data plat_data;
- 	DECLARE_KFIFO(timestamps, long long, TIMESTAMP_FIFO_SIZE);
-@@ -251,3 +252,5 @@ int inv_reset_fifo(struct iio_dev *indio_dev);
- int inv_mpu6050_switch_engine(struct inv_mpu6050_state *st, bool en, u32 mask);
- int inv_mpu6050_write_reg(struct inv_mpu6050_state *st, int reg, u8 val);
- int inv_mpu6050_set_power_itg(struct inv_mpu6050_state *st, bool power_on);
-+int inv_mpu_acpi_create_mux_client(struct inv_mpu6050_state *st);
-+void inv_mpu_acpi_delete_mux_client(struct inv_mpu6050_state *st);
--- 
-1.9.3
