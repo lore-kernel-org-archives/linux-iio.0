@@ -1,60 +1,80 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:53244 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S966250AbbBCTQr (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 3 Feb 2015 14:16:47 -0500
-Message-ID: <54D11E9C.5030701@kernel.org>
-Date: Tue, 03 Feb 2015 19:16:44 +0000
-From: Jonathan Cameron <jic23@kernel.org>
+Received: from mail-ig0-f178.google.com ([209.85.213.178]:33345 "EHLO
+	mail-ig0-f178.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1756150AbbBCTuC (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 3 Feb 2015 14:50:02 -0500
+Date: Tue, 3 Feb 2015 11:49:56 -0800
+From: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+To: Vignesh R <vigneshr@ti.com>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Lee Jones <lee.jones@linaro.org>,
+	Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+	Rob Herring <robh+dt@kernel.org>,
+	Pawel Moll <pawel.moll@arm.com>,
+	Mark Rutland <mark.rutland@arm.com>,
+	Ian Campbell <ijc+devicetree@hellion.org.uk>,
+	Kumar Gala <galak@codeaurora.org>,
+	Benoit Cousson <bcousson@baylibre.com>,
+	Tony Lindgren <tony@atomide.com>,
+	Russell King <linux@arm.linux.org.uk>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Samuel Ortiz <sameo@linux.intel.com>,
+	Brad Griffis <bgriffis@ti.com>,
+	Paul Gortmaker <paul.gortmaker@windriver.com>,
+	Sanjeev Sharma <sanjeev_sharma@mentor.com>,
+	Jan Kardell <jan.kardell@telliq.com>,
+	Felipe Balbi <balbi@ti.com>, Wolfram Sang <wsa@the-dreams.de>,
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	linux-iio@vger.kernel.org, linux-input@vger.kernel.org
+Subject: Re: [PATCH v6 2/6] input: touchscreen: ti_am335x_tsc: Remove udelay
+ in interrupt handler
+Message-ID: <20150203194956.GD20256@dtor-ws>
+References: <1420609779-11156-1-git-send-email-vigneshr@ti.com>
+ <1420609779-11156-3-git-send-email-vigneshr@ti.com>
+ <54CB1604.9030709@ti.com>
 MIME-Version: 1.0
-To: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-CC: wsa@the-dreams.de, lars@metafoo.de, linux-iio@vger.kernel.org
-Subject: Re: [PATCH v3] iio: imu: inv_mpu6050: client enumeration
-References: <1422656745-13576-1-git-send-email-srinivas.pandruvada@linux.intel.com>
-In-Reply-To: <1422656745-13576-1-git-send-email-srinivas.pandruvada@linux.intel.com>
-Content-Type: text/plain; charset=windows-1252
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <54CB1604.9030709@ti.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 30/01/15 22:25, Srinivas Pandruvada wrote:
-> Last comment from Jonathan was
-> "
-> This all looks fine to me, though ideally I'd like some input from
-> others, more familiar with the dmi stuff etc and from Wolfram / others
-> wrt to the approach.
-> "
-Given timing, (just missed likely merge this cycle) we now have a reasonable
-amount of time.  So lets leave this a little while yet...
+On Fri, Jan 30, 2015 at 10:56:28AM +0530, Vignesh R wrote:
 > 
-> So anybody have a better suggestion, I am still open to take them.
-> Otherwise please consider as a merge candidate.
 > 
-> v3
-> Add CONFIG_ACPI protection to avoid compiler warning.
+> On Wednesday 07 January 2015 11:19 AM, Vignesh R wrote:
+> > From: Brad Griffis <bgriffis@ti.com>
+> > 
+> > TSC interrupt handler had udelay to avoid reporting of false pen-up
+> > interrupt to user space. This patch implements workaround suggesting in
+> > Advisory 1.0.31 of silicon errata for am335x, thus eliminating udelay
+> > and touchscreen lag. This also improves performance of touchscreen and
+> > eliminates sudden jump of cursor at touch release.
+> > 
+> > IDLECONFIG and CHARGECONFIG registers are to be configured
+> > with same values in order to eliminate false pen-up events. This
+> > workaround may result in false pen-down to be detected, hence considerable
+> > charge step delay needs to be added. The charge delay is set to 0xB000
+> > (in terms of ADC clock cycles) by default.
+> > 
+> > TSC steps are disabled at the end of every sampling cycle and EOS bit is
+> > set. Once the EOS bit is set, the TSC steps need to be re-enabled to begin
+> > next sampling cycle.
+> > 
+> > Signed-off-by: Brad Griffis <bgriffis@ti.com>
+> > [vigneshr@ti.com: Ported the patch from v3.12 to v3.19rc1]
+> > 
+> > Signed-off-by: Vignesh R <vigneshr@ti.com>
+> > ---
 > 
-> v2
-> Add CONFIG_ACPI to call creation of mux clients, instead of relying
-> on ACPI_HANDLE not present for non ACPI platforms
-> It is possible that there is no secondary address, this is not an error.
-> 
-> v1
-> This is an option if auto detect is not desired. 
-> Here using ACPI magic, by parsing both standard and vendor ACPI
-> data.
-> 
-> v0
-> Using autodetect feature.
-> Using HWMON class as other places in the system for mux and
-> client sensor drivers.
-> 
-> Srinivas Pandruvada (1):
->   iio: imu: inv_mpu6050: Create mux clients for ACPI
-> 
->  drivers/iio/imu/inv_mpu6050/Makefile       |   2 +-
->  drivers/iio/imu/inv_mpu6050/inv_mpu_acpi.c | 211 +++++++++++++++++++++++++++++
->  drivers/iio/imu/inv_mpu6050/inv_mpu_core.c |   7 +
->  drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h  |   3 +
->  4 files changed, 222 insertions(+), 1 deletion(-)
->  create mode 100644 drivers/iio/imu/inv_mpu6050/inv_mpu_acpi.c
-> 
+> Ping... Can somebody pick this patch series if there are no more comments??
 
+Yes, I picked up everything but patch #3 as I assume Lee will merge it
+through MFD tree.
+
+Thanks.
+
+-- 
+Dmitry
