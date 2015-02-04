@@ -1,36 +1,68 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:60608 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:60563 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1162079AbbBDSku (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 4 Feb 2015 13:40:50 -0500
-Message-ID: <54D24F21.4010603@kernel.org>
-Date: Wed, 04 Feb 2015 16:56:01 +0000
+	with ESMTP id S1161289AbbBDSkn (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 4 Feb 2015 13:40:43 -0500
+Message-ID: <54D24962.10402@kernel.org>
+Date: Wed, 04 Feb 2015 16:31:30 +0000
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Lars-Peter Clausen <lars@metafoo.de>,
-	=?UTF-8?B?VXJzIEbDpHNzbGVy?= <urs.fassler@bytesatwork.ch>
-CC: Michael.Hennerich@analog.com, linux-iio@vger.kernel.org
-Subject: Re: [PATCH] iio: ad5686: fix optional reference voltage declaration
-References: <54CFA1E7.4020907@bytesatwork.ch> <54CFB84C.7090503@metafoo.de>
-In-Reply-To: <54CFB84C.7090503@metafoo.de>
-Content-Type: text/plain; charset=utf-8
+To: Angelo Compagnucci <angelo.compagnucci@gmail.com>,
+	linux-iio@vger.kernel.org
+Subject: Re: [PATCH] iio:adc:mcp3422 Fix incorrect scales table
+References: <1423059266-18143-1-git-send-email-angelo.compagnucci@gmail.com>
+In-Reply-To: <1423059266-18143-1-git-send-email-angelo.compagnucci@gmail.com>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 02/02/15 17:47, Lars-Peter Clausen wrote:
-> On 02/02/2015 05:12 PM, Urs Fässler wrote:
->> When not using the "_optional" function, a dummy regulator is returned
->> and the driver fails to initialize.
->>
->> Signed-off-by: Urs Fässler <urs.fassler@bytesatwork.ch>
+On 04/02/15 14:14, Angelo Compagnucci wrote:
+> This patch fixes uncorrect order of mcp3422_scales table, the values
+> was erroneously transposed.
+> It removes also an unused array and a wrong comment.
 > 
-> Acked-by: Lars-Peter Clausen <lars@metafoo.de>
-> 
-> Thanks.
-> 
-> Added Jonathan to Cc.
-Applied to fixes-togreg (will hit git.kernel.org at the weekend
-as I am travelling, and Greg / Mainline after the merge window)
-Marked for stable.
+> Signed-off-by: Angelo Compagnucci <angelo.compagnucci@gmail.com>
+Applied to the fixes-togreg branch of iio.git.  Given timing this will
+got to Greg after the merge windows closes.  
 
-Jonathan
+I'm travelling without my ssh key so this won't hit git.kernel.org until
+at least Sunday.
+
+(Mind you Manchester airport's wifi isn't working in the bar, so who knows
+when the email will go out!)
+
+> ---
+>  drivers/iio/adc/mcp3422.c | 17 ++++-------------
+>  1 file changed, 4 insertions(+), 13 deletions(-)
+> 
+> diff --git a/drivers/iio/adc/mcp3422.c b/drivers/iio/adc/mcp3422.c
+> index 5167225..b96c636 100644
+> --- a/drivers/iio/adc/mcp3422.c
+> +++ b/drivers/iio/adc/mcp3422.c
+> @@ -58,20 +58,11 @@
+>  		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SAMP_FREQ), \
+>  	}
+>  
+> -/* LSB is in nV to eliminate floating point */
+> -static const u32 rates_to_lsb[] = {1000000, 250000, 62500, 15625};
+> -
+> -/*
+> - *  scales calculated as:
+> - *  rates_to_lsb[sample_rate] / (1 << pga);
+> - *  pga is 1 for 0, 2
+> - */
+> -
+>  static const int mcp3422_scales[4][4] = {
+> -	{ 1000000, 250000, 62500, 15625 },
+> -	{ 500000 , 125000, 31250, 7812 },
+> -	{ 250000 , 62500 , 15625, 3906 },
+> -	{ 125000 , 31250 , 7812 , 1953 } };
+> +	{ 1000000, 500000, 250000, 125000 },
+> +	{ 250000 , 125000, 62500 , 31250  },
+> +	{ 62500  , 31250 , 15625 , 7812   },
+> +	{ 15625  , 7812  , 3906  , 1953   } };
+>  
+>  /* Constant msleep times for data acquisitions */
+>  static const int mcp3422_read_times[4] = {
+> 
+
