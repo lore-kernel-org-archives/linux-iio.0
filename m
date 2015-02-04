@@ -1,59 +1,92 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga14.intel.com ([192.55.52.115]:34916 "EHLO mga14.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S966186AbbBEAYt (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Wed, 4 Feb 2015 19:24:49 -0500
-From: Todd Brandt <todd.e.brandt@linux.intel.com>
-To: sre@kernel.org, dbaryshkov@gmail.com
-Cc: dwmw2@infradead.org, linux-pm@vger.kernel.org,
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-	todd.e.brandt@linux.intel.com, todd.e.brandt@intel.com,
-	jacob.jun.pan@linux.intel.com, sameo@linux.intel.com,
-	lee.jones@linaro.org, david.woodhouse@intel.com, jic23@kernel.org
-Subject: [PATCH v4 0/3] X-Power AXP288 PMIC Fuel Gauge Driver
-Date: Wed,  4 Feb 2015 16:24:35 -0800
-Message-Id: <cover.1423082056.git.todd.e.brandt@linux.intel.com>
+Received: from mail-wi0-f172.google.com ([209.85.212.172]:34154 "EHLO
+	mail-wi0-f172.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1161055AbbBDUSI (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 4 Feb 2015 15:18:08 -0500
+Received: by mail-wi0-f172.google.com with SMTP id h11so34452382wiw.5
+        for <linux-iio@vger.kernel.org>; Wed, 04 Feb 2015 12:18:07 -0800 (PST)
+MIME-Version: 1.0
+In-Reply-To: <54D25406.8040109@kernel.org>
+References: <1419122556-8100-1-git-send-email-octavian.purdila@intel.com>
+	<1419122556-8100-12-git-send-email-octavian.purdila@intel.com>
+	<54A97375.8090606@kernel.org>
+	<CAE1zot+7NPJGDcNFHnPofWZUt=_q9_q__N8BpXgo3G6fUbzjOQ@mail.gmail.com>
+	<54D25406.8040109@kernel.org>
+Date: Wed, 4 Feb 2015 22:18:06 +0200
+Message-ID: <CAE1zot+H7y0Nu_kYzHAeNd7d4org4dW8RyCCx8egQTEv0q0LMA@mail.gmail.com>
+Subject: Re: [PATCH v2 11/11] iio: bmc150: add support for hardware fifo
+From: Octavian Purdila <octavian.purdila@intel.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-New power_supply driver at driver/power which interfaces with the
-axp20x mfd driver as a cell. Provides battery info, monitors for
-changes, and generates alerts on temperature and capacity issues
+On Wed, Feb 4, 2015 at 7:16 PM, Jonathan Cameron <jic23@kernel.org> wrote:
+<snip>
+>>> As this is on the flush rather than an interrupt these are going
+>>> to be of dubious benefit... There isn't an obvious way of doing better though
+>>> unless we do have an interrupt.  In that case you want to grab them as
+>>> early as possible (typically even in the interrupt top half) and pass it
+>>> down to where you want to use it.
+>>
+>> Actually flush gets called from two places: from the watermark trigger
+>> and in this case we take the timestamp in the IRQ handler, and when we
+>> do a read or poll and there is not enough data available in the
+>> buffer.
+>>
+>> For this later case we will have an error of up to a maximum of a one
+>> sample period since flush was called in between one of the sampling
+>> periods - the watermark interrupt makes sure we don't stall forever.
+>> That is not that bad.
+> Not terrible.  I wonder if we want to indicated a dubious timestamp
+> in some way?  Or maybe event specify a jitter on the channel?
+> (been wondering if we want this sort of description for channels in
+> general - how noisy are they?)  Can be very useful to userspace and
+> is often tied up with the particular settings of the device.
 
-Sebestian, please review the patch set and consider it for 3.20 rc1.
-I've applied it over git.infradead.org/battery-2.6.git/master and
-verified that it works. Thanks.
+Do you mean adding something like IIO_CHAN_INFO_JITTER? That would be
+nice, but in this case the value is variable and depends on the
+sampling frequency. What could work would be to also add a new event
+IIO_EV_TYPE_JITTER_CHANGED and issue it when the sampling frequency is
+changed.
 
-Todd Brandt (3):
-  mfd/axp20x: change battery cell name to fuel gauge
-  mfd/axp20x: add support for fuel gauge cell
-  X-Power AXP288 PMIC Fuel Gauge Driver
+But at this point is getting too complex and I don't know how much it
+helps userspace.
 
-v1: 01/07/15
-v2: 01/22/15
-- replaced the const in axp20x_acpi_match declaration
-- reformatted the commit text
-- added IIO as driver dependency
-- moved debug info to debugfs in file fuelgauge
-- added HEALTH_COLD value to health calculation
-- added better cleanup to remove call
-        cancelling any delayed work calls
-        unregistration of the power_supply
-v3: 01/28/15
-- moved debugs create and init config regs after error case
-- freed the virqs in the remove function
-- remove .owner field as it is populated automatically
-v4: 02/04/15
-- re-applied to Sebastian Reichel's repo git.infradead.org/battery-2.6.git
 
- drivers/mfd/axp20x.c              |    8 +-
- drivers/power/Kconfig             |    9 +
- drivers/power/Makefile            |    1 +
- drivers/power/axp288_fuel_gauge.c | 1151 +++++++++++++++++++++++++++++++++++++
- include/linux/mfd/axp20x.h        |   43 +-
- 5 files changed, 1206 insertions(+), 6 deletions(-)
- create mode 100644 drivers/power/axp288_fuel_gauge.c
+>> Also, the later case should be an exception if the application sets
+>> the right watermark level and uses the right timeout. Otherwise it
+>> will not use power optimally which is the whole point of the hw fifo.
+>>
+>>>> +
+>>>> +     tstamp = data->timestamp - count * sample_freq;
+>>>> +
+>>>> +     for (i = 0; i < count; i++) {
+>>>> +             u16 sample[8];
+>>>> +             int j, bit;
+>>>> +
+>>>> +             j = 0;
+>>>> +             for_each_set_bit(bit, indio_dev->buffer->scan_mask,
+>>>> +                              indio_dev->masklength) {
+>>>> +                     memcpy(&sample[j++], &buffer[i * 3 + bit], 2);
+>>>> +             }
+>>>
+>>> A local demux rather than using the main iio one. Given you clearly read the
+>>> lot anyway is there any reason not to just pass it all on and let the IIO
+>>> demux handling the demux on the way to the kfifo?
+>>>
+>>
+>> Hmm, isn't the demux part only used when we have client buffers?  The
+>> demux part is not used at all in my tests, due to
+>> indio_dev->active_scan_mask being equal to buffer->scan_mask.
+> I'm guessing you figured this out. Yes, only used with client buffers,
+> but the normal buffered access is a client buffer :)
+>>
 
--- 
-2.1.0
+Correct me if I am wrong: when we only use normal buffer access (no
+kernel clients) the active_scan_mask is always equal to
+buffer->scan_mask thus no demux will happen in core. So we still need
+to do the demux in the driver.
 
+In fact the above is true when we have only one client, be it user or kernel.
