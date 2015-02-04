@@ -1,114 +1,168 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:60637 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:60576 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1162089AbbBDSkz (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 4 Feb 2015 13:40:55 -0500
-Message-ID: <54D25670.8000408@kernel.org>
-Date: Wed, 04 Feb 2015 17:27:12 +0000
+	with ESMTP id S1161624AbbBDSkt (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 4 Feb 2015 13:40:49 -0500
+Message-ID: <54D24BEA.4060201@kernel.org>
+Date: Wed, 04 Feb 2015 16:42:18 +0000
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Viorel Suman <viorel.suman@gmail.com>,
-	Irina Tirdea <irina.tirdea@intel.com>
-CC: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-	Srinivas Pandruvada <srinivas.pandruvada@intel.com>
-Subject: Re: [PATCH] iio: gyro: bmg160: optimize i2c transfers in trigger
- handler
-References: <1422537352-1374-1-git-send-email-irina.tirdea@intel.com> <CAAH5R_OYTbY3AW-pA3-p4+Gzo3MdGYX0a52UtJTbt=F8HSOj0A@mail.gmail.com>
-In-Reply-To: <CAAH5R_OYTbY3AW-pA3-p4+Gzo3MdGYX0a52UtJTbt=F8HSOj0A@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
+To: Varka Bhadram <varkabhadram@gmail.com>,
+	Markus Pargmann <mpa@pengutronix.de>,
+	Shawn Guo <shawn.guo@linaro.org>,
+	Samuel Ortiz <sameo@linux.intel.com>,
+	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+	Fabio Estevam <festevam@gmail.com>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Hartmut Knaack <knaack.h@gmx.de>
+CC: Denis Carikli <denis@eukrea.com>,
+	=?windows-1252?Q?Eric_B=E9nard?= <eric@eukrea.com>,
+	Sascha Hauer <kernel@pengutronix.de>,
+	linux-arm-kernel@lists.infradead.org,
+	Lee Jones <lee.jones@linaro.org>, linux-input@vger.kernel.org,
+	linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>,
+	devicetree@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
+	Pawel Moll <pawel.moll@arm.com>,
+	Mark Rutland <mark.rutland@arm.com>,
+	Ian Campbell <ijc+devicetree@hellion.org.uk>,
+	Kumar Gala <galak@codeaurora.org>
+Subject: Re: [PATCH v6 5/8] iio: adc: fsl,imx25-gcq driver
+References: <1422540556-14828-1-git-send-email-mpa@pengutronix.de> <1422540556-14828-6-git-send-email-mpa@pengutronix.de> <54CA4419.1060207@gmail.com>
+In-Reply-To: <54CA4419.1060207@gmail.com>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 30/01/15 04:03, Viorel Suman wrote:
+On 29/01/15 14:30, Varka Bhadram wrote:
 > Hi,
 > 
-> You might need more space in "values" buffer, for more details please check the
-> "iio_push_to_buffers_with_timestamp" description and implementation.
-Whilst that function is a little 'odd', this patch doesn't change the use
-of buffer (simply how it if filled).  The buffer is 16bytes long
-(8 x s16) so should be fine (4 x 16 bit and 1 x 64 bit).
+> On Thursday 29 January 2015 07:39 PM, Markus Pargmann wrote:
+>> This is a conversion queue driver for the mx25 SoC. It uses the central
+>> ADC which is used by two seperate independent queues. This driver
+>> prepares different conversion configurations for each possible input.
+>> For a conversion it creates a conversionqueue of one item with the
+>> correct configuration for the chosen channel. It then executes the queue
+>> once and disables the conversion queue afterwards.
+>>
+>> The reference voltages are configurable through devicetree subnodes,
+>> depending on the connections of the ADC inputs.
+>>
+>> Signed-off-by: Markus Pargmann <mpa@pengutronix.de>
+>> Signed-off-by: Denis Carikli <denis@eukrea.com>
+>> Signed-off-by: Markus Pargmann <mpa@pengutronix.de>
+>> ---
+>>   drivers/iio/adc/Kconfig                     |   7 +
+>>   drivers/iio/adc/Makefile                    |   1 +
+>>   drivers/iio/adc/fsl-imx25-gcq.c             | 361 ++++++++++++++++++++++++++++
+>>   include/dt-bindings/iio/adc/fsl-imx25-gcq.h |  18 ++
+>>   4 files changed, 387 insertions(+)
+>>   create mode 100644 drivers/iio/adc/fsl-imx25-gcq.c
+>>   create mode 100644 include/dt-bindings/iio/adc/fsl-imx25-gcq.h
+>>
+> (...)
+> 
+>> +static int mx25_gcq_probe(struct platform_device *pdev)
+>> +{
+>> +    struct iio_dev *indio_dev;
+>> +    struct mx25_gcq_priv *priv;
+>> +    struct mx25_tsadc *tsadc = dev_get_drvdata(pdev->dev.parent);
+>> +    struct device *dev = &pdev->dev;
+>> +    struct resource *res;
+>> +    void __iomem *mem;
+>> +    int ret;
+>> +
+>> +    indio_dev = devm_iio_device_alloc(&pdev->dev, sizeof(*priv));
+>> +    if (!indio_dev)
+>> +        return -ENOMEM;
+>> +
+>> +    priv = iio_priv(indio_dev);
+>> +
+>> +    res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+>> +    mem = devm_ioremap_resource(dev, res);
+>> +    if (!mem)
+>> +        return -ENOMEM;
+>> +
+>> +    priv->regs = devm_regmap_init_mmio(dev, mem, &mx25_gcq_regconfig);
+>> +    if (IS_ERR(priv->regs)) {
+>> +        dev_err(dev, "Failed to initialize regmap\n");
+>> +        return PTR_ERR(priv->regs);
+>> +    }
+>> +
+>> +    init_completion(&priv->completed);
+>> +
+>> +    /* Optional external regulator */
+>> +    priv->ext_vref = devm_regulator_get(&pdev->dev, "vref");
+>> +    if (!IS_ERR_OR_NULL(priv->ext_vref)) {
+>> +        ret = regulator_enable(priv->ext_vref);
+>> +        if (ret)
+>> +            return ret;
+>> +    }
+>> +
+>> +    ret = mx25_gcq_setup_cfgs(pdev, priv);
+>> +    if (ret)
+>> +        return ret;
+>> +
+>> +    priv->clk = tsadc->clk;
+>> +    ret = clk_prepare_enable(priv->clk);
+>> +    if (ret) {
+>> +        dev_err(dev, "Failed to enable clock\n");
+>> +        return ret;
+>> +    }
+>> +
+>> +    priv->irq = platform_get_irq(pdev, 0);
+>> +    if (priv->irq <= 0) {
+>> +        dev_err(dev, "Failed to get IRQ\n");
+>> +        ret = priv->irq;
+>> +        goto err_clk_unprepare;
+>> +    }
+>> +
+>> +    ret = request_irq(priv->irq, mx25_gcq_irq, 0, pdev->name, priv);
+> 
+> Use of devm_* API
+Changes the ordering wrt to the clk prepare / unprepare so don't use
+devm (or change the order if appropriate! (I haven't thought about it!)
 
-More problematically, we have using a new smbus capability here
-(to read it one transaction).  It's one you can check for, so I'm guessing
-we aren't guaranteed it is present.
-I2C_FUNC_SMBUS_READ_I2C_BLOCK 
- 
-Jonathan
 > 
-> Regards,
-> Viorel
+>> +    if (ret) {
+>> +        dev_err(dev, "Failed requesting IRQ\n");
+>> +        goto err_clk_unprepare;
+>> +    }
+>> +
+>> +    indio_dev->dev.parent = &pdev->dev;
+>> +    indio_dev->channels = mx25_gcq_channels;
+>> +    indio_dev->num_channels = ARRAY_SIZE(mx25_gcq_channels);
+>> +    indio_dev->info = &mx25_gcq_iio_info;
+>> +
+>> +    ret = iio_device_register(indio_dev);
+>> +    if (ret) {
+>> +        dev_err(dev, "Failed to register iio device\n");
+>> +        goto err_irq_free;
+>> +    }
+>> +
+>> +    platform_set_drvdata(pdev, priv);
+>> +
+>> +    return 0;
+>> +
+>> +err_irq_free:
+>> +    free_irq(priv->irq, (void *)priv);
 > 
+> This is not required if use devm_*
 > 
-> On Thu, Jan 29, 2015 at 3:15 PM, Irina Tirdea <irina.tirdea@intel.com <mailto:irina.tirdea@intel.com>> wrote:
+>> +err_clk_unprepare:
+>> +    clk_disable_unprepare(priv->clk);
+>> +    return ret;
+>> +}
+>> +
+>> +static int mx25_gcq_remove(struct platform_device *pdev)
+>> +{
+>> +    struct mx25_gcq_priv *priv = platform_get_drvdata(pdev);
+>> +    struct iio_dev *indio_dev = iio_priv_to_dev(pdev);
+>> +
+>> +    iio_device_unregister(indio_dev);
+>> +    free_irq(priv->irq, priv);
 > 
->     Some i2c busses (e.g.: Synopsys DesignWare I2C adapter) need to
->     enable/disable the bus at each i2c transfer and must wait for
->     the enable/disable to happen before sending the data.
+> Dto...
 > 
->     When reading data in the trigger handler, the bmg160 driver does
->     one i2c transfer for each axis. This has an impact on the frequency
->     of the gyroscope at high sample rates due to additional delays
->     introduced by the i2c bus at each transfer.
-> 
->     Reading all axis values in one i2c transfer reduces the delays
->     introduced by the i2c bus.
-> 
->     Signed-off-by: Irina Tirdea <irina.tirdea@intel.com <mailto:irina.tirdea@intel.com>>
->     Reviewed-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com <mailto:srinivas.pandruvada@linux.intel.com>>
->     ---
->      drivers/iio/gyro/bmg160.c | 20 +++++++++++---------
->      1 file changed, 11 insertions(+), 9 deletions(-)
-> 
->     diff --git a/drivers/iio/gyro/bmg160.c b/drivers/iio/gyro/bmg160.c
->     index 60451b3..814eb20 100644
->     --- a/drivers/iio/gyro/bmg160.c
->     +++ b/drivers/iio/gyro/bmg160.c
->     @@ -115,6 +115,7 @@ enum bmg160_axis {
->             AXIS_X,
->             AXIS_Y,
->             AXIS_Z,
->     +       AXIS_MAX,
->      };
-> 
->      static const struct {
->     @@ -820,20 +821,21 @@ static irqreturn_t bmg160_trigger_handler(int irq, void *p)
->             struct iio_dev *indio_dev = pf->indio_dev;
->             struct bmg160_data *data = iio_priv(indio_dev);
->             int bit, ret, i = 0;
->     +       s16 values[AXIS_MAX];
-> 
->             mutex_lock(&data->mutex);
->     -       for_each_set_bit(bit, indio_dev->buffer->scan_mask,
->     -                        indio_dev->masklength) {
->     -               ret = i2c_smbus_read_word_data(data->client,
->     -                                              BMG160_AXIS_TO_REG(bit));
->     -               if (ret < 0) {
->     -                       mutex_unlock(&data->mutex);
->     -                       goto err;
->     -               }
->     -               data->buffer[i++] = ret;
->     +       ret = i2c_smbus_read_i2c_block_data(data->client, BMG160_REG_XOUT_L,
->     +                                           sizeof(values), (u8 *) values);
->     +       if (ret < 0) {
->     +               mutex_unlock(&data->mutex);
->     +               goto err;
->             }
->             mutex_unlock(&data->mutex);
-> 
->     +       for_each_set_bit(bit, indio_dev->buffer->scan_mask,
->     +                        indio_dev->masklength)
->     +               data->buffer[i++] = values[bit];
->     +
->             iio_push_to_buffers_with_timestamp(indio_dev, data->buffer,
->                                                data->timestamp);
->      err:
->     --
->     1.9.1
-> 
->     --
->     To unsubscribe from this list: send the line "unsubscribe linux-iio" in
->     the body of a message to majordomo@vger.kernel.org <mailto:majordomo@vger.kernel.org>
->     More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> 
+>>
 > 
 
