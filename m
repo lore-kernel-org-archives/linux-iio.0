@@ -1,258 +1,496 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:60626 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:60605 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1162084AbbBDSkx (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 4 Feb 2015 13:40:53 -0500
-Message-ID: <54D252CD.2040209@kernel.org>
-Date: Wed, 04 Feb 2015 17:11:41 +0000
+	with ESMTP id S1162078AbbBDSkv (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 4 Feb 2015 13:40:51 -0500
+Message-ID: <54D24D63.4040404@kernel.org>
+Date: Wed, 04 Feb 2015 16:48:35 +0000
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Octavian Purdila <octavian.purdila@intel.com>,
+To: Markus Pargmann <mpa@pengutronix.de>,
+	Shawn Guo <shawn.guo@linaro.org>,
+	Samuel Ortiz <sameo@linux.intel.com>,
+	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+	Fabio Estevam <festevam@gmail.com>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
 	Hartmut Knaack <knaack.h@gmx.de>
-CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>
-Subject: Re: [PATCH v2 04/11] iio: add support for hardware fifo
-References: <1419122556-8100-1-git-send-email-octavian.purdila@intel.com>	<1419122556-8100-5-git-send-email-octavian.purdila@intel.com>	<54C974C5.9000502@gmx.de> <CAE1zot+p_MmokODtXWAhffHwun+ux-qr9aPD8yAUzqGUce+cLg@mail.gmail.com>
-In-Reply-To: <CAE1zot+p_MmokODtXWAhffHwun+ux-qr9aPD8yAUzqGUce+cLg@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
+CC: Denis Carikli <denis@eukrea.com>,
+	=?windows-1252?Q?Eric_B=E9nard?= <eric@eukrea.com>,
+	Sascha Hauer <kernel@pengutronix.de>,
+	linux-arm-kernel@lists.infradead.org,
+	Lee Jones <lee.jones@linaro.org>, linux-input@vger.kernel.org,
+	linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>,
+	devicetree@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
+	Pawel Moll <pawel.moll@arm.com>,
+	Mark Rutland <mark.rutland@arm.com>,
+	Ian Campbell <ijc+devicetree@hellion.org.uk>,
+	Kumar Gala <galak@codeaurora.org>
+Subject: Re: [PATCH v6 5/8] iio: adc: fsl,imx25-gcq driver
+References: <1422540556-14828-1-git-send-email-mpa@pengutronix.de> <1422540556-14828-6-git-send-email-mpa@pengutronix.de>
+In-Reply-To: <1422540556-14828-6-git-send-email-mpa@pengutronix.de>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 29/01/15 11:38, Octavian Purdila wrote:
-> On Thu, Jan 29, 2015 at 1:46 AM, Hartmut Knaack <knaack.h@gmx.de> wrote:
->>
->> Octavian Purdila schrieb am 21.12.2014 um 01:42:
->>> Some devices have hardware buffers that can store a number of samples
->>> for later consumption. Hardware usually provides interrupts to notify
->>> the processor when the fifo is full or when it has reached a certain
->>> threshold. This helps with reducing the number of interrupts to the
->>> host processor and thus it helps decreasing the power consumption.
->>>
->>> This patch adds support for hardware fifo to IIO by allowing the
->>> drivers to register operations for flushing the hadware fifo and
->>> setting the watermark level.
->>>
->>> A driver implementing hardware fifo support must also provide a
->>> watermark trigger which must contain "watermark" in its name.
->>>
->>
->> A few comments inline, also addressed to the other IIO maintainers.
->>
+On 29/01/15 14:09, Markus Pargmann wrote:
+> This is a conversion queue driver for the mx25 SoC. It uses the central
+> ADC which is used by two seperate independent queues. This driver
+> prepares different conversion configurations for each possible input.
+> For a conversion it creates a conversionqueue of one item with the
+> correct configuration for the chosen channel. It then executes the queue
+> once and disables the conversion queue afterwards.
 > 
-> Thanks for the review Hartmut. What do you think about the watermark
-> trigger approach?
+> The reference voltages are configurable through devicetree subnodes,
+> depending on the connections of the ADC inputs.
 > 
-> Also, after the discussion with Jonathan I am thinking of exposing a
-> dedicated watermark level for the hardware FIFO. That way userspace
-> can set a large value for the software buffer watermark and it also
-> give control to userspace over the hardware watermark. I think that
-> control is very important to achieve a good power/latency balance.
-It would be odd to have a high watermark for the software buffer and a
-low one for the hardware, but I guess there might be some 'on demand'
-applications where this makes sense.  Ones where they will do a lower
-latency capture if they have time or demand, but otherwise do a high
-latency pass. This feels niche enough to me that maybe we don't
-want to support it in the first instance, but keep it in mind for
-future fun and games!
+> Signed-off-by: Markus Pargmann <mpa@pengutronix.de>
+> Signed-off-by: Denis Carikli <denis@eukrea.com>
+> Signed-off-by: Markus Pargmann <mpa@pengutronix.de>
+Some really small bits and bobs inline...
+Only non trivial one is that I'd prefer that the need for a regulator
+in the event of an external reference being specified was explicitly enforced.
+> ---
+>  drivers/iio/adc/Kconfig                     |   7 +
+>  drivers/iio/adc/Makefile                    |   1 +
+>  drivers/iio/adc/fsl-imx25-gcq.c             | 361 ++++++++++++++++++++++++++++
+>  include/dt-bindings/iio/adc/fsl-imx25-gcq.h |  18 ++
+>  4 files changed, 387 insertions(+)
+>  create mode 100644 drivers/iio/adc/fsl-imx25-gcq.c
+>  create mode 100644 include/dt-bindings/iio/adc/fsl-imx25-gcq.h
 > 
->>> Signed-off-by: Octavian Purdila <octavian.purdila@intel.com>
->>> ---
->>>  Documentation/ABI/testing/sysfs-bus-iio | 22 +++++++++++++++++
->>>  drivers/iio/industrialio-buffer.c       | 44 ++++++++++++++++++++++++++++-----
->>>  include/linux/iio/iio.h                 | 17 +++++++++++++
->>>  3 files changed, 77 insertions(+), 6 deletions(-)
->>>
->>> diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
->>> index 7260f1f..6bb67ac 100644
->>> --- a/Documentation/ABI/testing/sysfs-bus-iio
->>> +++ b/Documentation/ABI/testing/sysfs-bus-iio
->>> @@ -1152,3 +1152,25 @@ Description:
->>>               Poll will block until the watermark is reached.
->>>               Blocking read will wait until the minimum between the requested
->>>               read amount or the low water mark is available.
->>> +             If the device has a hardware fifo this value is going to be used
->>> +             for the hardware fifo watermark as well.
->>> +
->>> +What:                /sys/bus/iio/devices/iio:deviceX/buffer/hwfifo-length
->>> +KernelVersion:       3.20
->>> +Contact:     linux-iio@vger.kernel.org
->>> +Description:
->>> +             A single positive integer specifying the maximum number of
->>> +             samples that the hardware fifo has. If the device does not
->>> +             support hardware fifo this is zero.
->>> +             When a device supports hardware fifo it will expose a trigger
->>> +             with the name that contains "watermark"
->>> +             (e.g. i2c-BMC150A:00-watermark-dev0).
->>> +             To use the hardware fifo the user must set an appropriate value
->>> +             in the buffer/length and buffer/low_watermark entries and select
->>> +             the watermark trigger. At that poin the hardware fifo will be
->>> +             enabled and the samples will be collected in a hardware buffer.
->>> +             When the number of samples in the hardware fifo reaches the
->>> +             watermark level the watermark trigger is issued and data is
->>> +             flushed to the devices buffer.
->>> +             A hardware buffer flush will also be triggered when reading from
->>> +             the device buffer and there is not enough data available.
->>> \ No newline at end of file
->>> diff --git a/drivers/iio/industrialio-buffer.c b/drivers/iio/industrialio-buffer.c
->>> index 7f74c7f..3da6d07 100644
->>> --- a/drivers/iio/industrialio-buffer.c
->>> +++ b/drivers/iio/industrialio-buffer.c
->>> @@ -37,9 +37,17 @@ static bool iio_buffer_is_active(struct iio_buffer *buf)
->>>       return !list_empty(&buf->buffer_list);
->>>  }
->>>
->>> -static size_t iio_buffer_data_available(struct iio_buffer *buf)
->>> +static bool iio_buffer_data_available(struct iio_dev *indio_dev,
->>> +                                   struct iio_buffer *buf, size_t required)
->>>  {
->>> -     return buf->access->data_available(buf);
->>> +     size_t avail = buf->access->data_available(buf);
->>> +
->>> +     if (avail < required && indio_dev->hwfifo) {
->>> +             indio_dev->hwfifo->flush(indio_dev);
->>> +             avail = buf->access->data_available(buf);
->>> +     }
->>> +
->>> +     return avail >= required;
->>>  }
->>>
->>>  /**
->>> @@ -66,13 +74,13 @@ ssize_t iio_buffer_read_first_n_outer(struct file *filp, char __user *buf,
->>>
->>>       do {
->>>               if (filp->f_flags & O_NONBLOCK) {
->>> -                     if (!iio_buffer_data_available(rb)) {
->>> +                     if (!iio_buffer_data_available(indio_dev, rb, 1)) {
->>>                               ret = -EAGAIN;
->>>                               break;
->>>                       }
->>>               } else {
->>>                       ret = wait_event_interruptible(rb->pollq,
->>> -                            iio_buffer_data_available(rb) >= to_read ||
->>> +                         iio_buffer_data_available(indio_dev, rb, to_read) ||
->>>                                                      indio_dev->info == NULL);
->>>                       if (ret)
->>>                               return ret;
->>> @@ -112,7 +120,7 @@ unsigned int iio_buffer_poll(struct file *filp,
->>>               return -ENODEV;
->>>
->>>       poll_wait(filp, &rb->pollq, wait);
->>> -     if (iio_buffer_data_available(rb) >= rb->low_watermark)
->>> +     if (iio_buffer_data_available(indio_dev, rb, rb->low_watermark))
->>>               return POLLIN | POLLRDNORM;
->>>       return 0;
->>>  }
->>> @@ -440,8 +448,14 @@ static ssize_t iio_buffer_write_length(struct device *dev,
->>>       if (buffer->length)
->>>               val = buffer->length;
->>>
->>> -     if (val < buffer->low_watermark)
->>> +     if (val < buffer->low_watermark) {
->>> +             if (indio_dev->hwfifo) {
->>> +                     ret = indio_dev->hwfifo->set_watermark(indio_dev, val);
->>> +                     if (ret)
->>> +                             return ret;
->>> +             }
->>>               buffer->low_watermark = val;
->>> +     }
->>>
->>>       return len;
->>>  }
->>> @@ -811,6 +825,12 @@ static ssize_t iio_buffer_store_watermark(struct device *dev,
->>>               goto out;
->>>       }
->>>
->>> +     if (indio_dev->hwfifo) {
->>> +             ret = indio_dev->hwfifo->set_watermark(indio_dev, val);
->>> +             if (ret)
->>> +                     goto out;
->>> +     }
->>> +
->>>       buffer->low_watermark = val;
->>>       ret = 0;
->>>  out:
->>> @@ -818,6 +838,16 @@ out:
->>>       return ret ? ret : len;
->>>  }
->>>
->>> +ssize_t iio_buffer_hwfifo_read_length(struct device *dev,
->>> +                                   struct device_attribute *attr,
->>> +                                   char *buf)
->>> +{
->>> +     struct iio_dev *indio_dev = dev_to_iio_dev(dev);
->>> +     const struct iio_hwfifo *hwfifo = indio_dev->hwfifo;
->>> +
->>> +     return sprintf(buf, "%u\n", hwfifo ? hwfifo->length : 0);
->>> +}
->>> +
->>>  static DEVICE_ATTR(length, S_IRUGO | S_IWUSR, iio_buffer_read_length,
->>>                  iio_buffer_write_length);
->>>  static struct device_attribute dev_attr_length_ro = __ATTR(length,
->>> @@ -826,11 +856,13 @@ static DEVICE_ATTR(enable, S_IRUGO | S_IWUSR,
->>>                  iio_buffer_show_enable, iio_buffer_store_enable);
->>>  static DEVICE_ATTR(low_watermark, S_IRUGO | S_IWUSR,
->>>                  iio_buffer_show_watermark, iio_buffer_store_watermark);
->>> +static DEVICE_ATTR(hwfifo_length, S_IRUGO, iio_buffer_hwfifo_read_length, NULL);
->>>
->>>  static struct attribute *iio_buffer_attrs[] = {
->>>       &dev_attr_length.attr,
->>>       &dev_attr_enable.attr,
->>>       &dev_attr_low_watermark.attr,
->>> +     &dev_attr_hwfifo_length.attr,
->>>  };
->>>
->>>  int iio_buffer_alloc_sysfs_and_mask(struct iio_dev *indio_dev)
->>> diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
->>> index 878d861..f64a05f 100644
->>> --- a/include/linux/iio/iio.h
->>> +++ b/include/linux/iio/iio.h
->>> @@ -417,6 +417,22 @@ struct iio_buffer_setup_ops {
->>>  };
->>>
->>>  /**
->>> + * struct iio_buffer_hwfifo_ops - hardware fifo operations
->>> + *
->>> + * @length:          [DRIVER] the hardware fifo length
->>> + * @set_watermark:   [DRIVER] setups the watermark level
->> Maybe use "sets" instead of "setups".
->>
-> 
-> Ok, sensible suggestion, I'll do that in the next version.
-> 
->> Also, and this is more a general question, as it was quite annoying when getting into
->> the topic: I would prefer to place some information about the expected return values of
->> these functions into these descriptions. What do you guys think about that?
-Absolutely - Not sure how one does that whilst keeping within kernel-doc, but
-would definitely be a good thing (even if kernel-doc doesn't have a nice format for it!)
+> diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+> index 0f79e4725763..fccbb4bf44cc 100644
+> --- a/drivers/iio/adc/Kconfig
+> +++ b/drivers/iio/adc/Kconfig
+> @@ -143,6 +143,13 @@ config EXYNOS_ADC
+>  	  of SoCs for drivers such as the touchscreen and hwmon to use to share
+>  	  this resource.
+>  
+> +config FSL_MX25_ADC
+> +	tristate "Freescale MX25 ADC driver"
+> +	depends on MFD_MX25_TSADC
+> +	help
+> +	  Generic Conversion Queue driver used for general purpose ADC in the
+> +	  MX25. This driver supports single measurements using the MX25 ADC.
+> +
+>  config LP8788_ADC
+>  	tristate "LP8788 ADC driver"
+>  	depends on MFD_LP8788
+> diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
+> index 701fdb7c96aa..acab8d956371 100644
+> --- a/drivers/iio/adc/Makefile
+> +++ b/drivers/iio/adc/Makefile
+> @@ -16,6 +16,7 @@ obj-$(CONFIG_AD799X) += ad799x.o
+>  obj-$(CONFIG_AT91_ADC) += at91_adc.o
+>  obj-$(CONFIG_AXP288_ADC) += axp288_adc.o
+>  obj-$(CONFIG_EXYNOS_ADC) += exynos_adc.o
+> +obj-$(CONFIG_FSL_MX25_ADC) += fsl-imx25-gcq.o
+>  obj-$(CONFIG_LP8788_ADC) += lp8788_adc.o
+>  obj-$(CONFIG_MAX1027) += max1027.o
+>  obj-$(CONFIG_MAX1363) += max1363.o
+> diff --git a/drivers/iio/adc/fsl-imx25-gcq.c b/drivers/iio/adc/fsl-imx25-gcq.c
+> new file mode 100644
+> index 000000000000..398e40c0e4fd
+> --- /dev/null
+> +++ b/drivers/iio/adc/fsl-imx25-gcq.c
+> @@ -0,0 +1,361 @@
+> +/*
+> + * Copyright 2014 Markus Pargmann, Pengutronix <mpa@pengutronix.de>
+> + *
+> + * The code contained herein is licensed under the GNU General Public
+> + * License. You may obtain a copy of the GNU General Public License
+> + * Version 2 or later at the following locations:
+> + *
+> + * http://www.opensource.org/licenses/gpl-license.html
+> + * http://www.gnu.org/copyleft/gpl.html
+> + *
+> + * This is the driver for the imx25 GCQ (Generic Conversion Queue)
+> + * connected to the imx25 ADC.
+> + */
+> +
+> +#include <dt-bindings/iio/adc/fsl-imx25-gcq.h>
+> +#include <linux/clk.h>
+> +#include <linux/iio/iio.h>
+> +#include <linux/interrupt.h>
+> +#include <linux/mfd/imx25-tsadc.h>
+> +#include <linux/module.h>
+> +#include <linux/of.h>
+> +#include <linux/platform_device.h>
+> +#include <linux/regmap.h>
+> +#include <linux/regulator/consumer.h>
+> +
+> +#define MX25_GCQ_TIMEOUT (msecs_to_jiffies(2000))
+> +
+> +enum mx25_gcq_cfgs {
+> +	MX25_CFG_XP = 0,
+> +	MX25_CFG_YP,
+> +	MX25_CFG_XN,
+> +	MX25_CFG_YN,
+> +	MX25_CFG_WIPER,
+> +	MX25_CFG_INAUX0,
+> +	MX25_CFG_INAUX1,
+> +	MX25_CFG_INAUX2,
+> +	MX25_NUM_CFGS,
+> +};
+> +
+> +struct mx25_gcq_priv {
+> +	struct regmap *regs;
+> +	struct completion completed;
+> +	unsigned int settling_time;
+> +	struct clk *clk;
+> +	int irq;
+> +	struct regulator *ext_vref;
+> +	u32 channel_vref_mv[MX25_NUM_CFGS];
+> +};
+> +
+> +#define MX25_CQG_CHAN(chan, id) {\
+> +	.type = IIO_VOLTAGE,\
+> +	.indexed = 1,\
+> +	.channel = chan,\
+> +	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),\
+> +	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),\
+> +	.datasheet_name = id,\
+> +}
+> +
+> +static const struct iio_chan_spec mx25_gcq_channels[MX25_NUM_CFGS] = {
+> +	MX25_CQG_CHAN(0, "xp"),
+> +	MX25_CQG_CHAN(1, "yp"),
+> +	MX25_CQG_CHAN(2, "xn"),
+> +	MX25_CQG_CHAN(3, "yn"),
+> +	MX25_CQG_CHAN(4, "wiper"),
+> +	MX25_CQG_CHAN(5, "inaux0"),
+> +	MX25_CQG_CHAN(6, "inaux1"),
+> +	MX25_CQG_CHAN(7, "inaux2"),
+> +};
+> +
+I'd be tempted to not bother separating out the next two given they
+are only used in one place each..
+> +static void mx25_gcq_disable_eoq(struct mx25_gcq_priv *priv)
+> +{
+> +	regmap_update_bits(priv->regs, MX25_ADCQ_MR, MX25_ADCQ_MR_EOQ_IRQ,
+> +			   MX25_ADCQ_MR_EOQ_IRQ);
+> +}
+> +
+> +static void mx25_gcq_enable_eoq(struct mx25_gcq_priv *priv)
+> +{
+> +	regmap_update_bits(priv->regs, MX25_ADCQ_MR,
+> +			   MX25_ADCQ_MR_EOQ_IRQ, 0);
+> +}
+> +
+> +static irqreturn_t mx25_gcq_irq(int irq, void *data)
+> +{
+> +	struct mx25_gcq_priv *priv = data;
+> +	u32 stats;
+> +
+> +	regmap_read(priv->regs, MX25_ADCQ_SR, &stats);
+> +
+> +	if (stats & MX25_ADCQ_SR_EOQ) {
+> +		mx25_gcq_disable_eoq(priv);
+> +		complete(&priv->completed);
+> +	}
+> +
+> +	/* Disable conversion queue run */
+> +	regmap_update_bits(priv->regs, MX25_ADCQ_CR, MX25_ADCQ_CR_FQS, 0);
+> +
+> +	/* Acknowledge all possible irqs */
+> +	regmap_write(priv->regs, MX25_ADCQ_SR, MX25_ADCQ_SR_FRR |
+> +		     MX25_ADCQ_SR_FUR | MX25_ADCQ_SR_FOR |
+> +		     MX25_ADCQ_SR_EOQ | MX25_ADCQ_SR_PD);
+> +
+> +	return IRQ_HANDLED;
+> +}
+> +
+> +static int mx25_gcq_get_raw_value(struct device *dev,
+> +				  struct iio_chan_spec const *chan,
+> +				  struct mx25_gcq_priv *priv,
+> +				  int *val)
+> +{
+> +	long timeout;
+> +	u32 data;
+> +
+> +	/* Setup the configuration we want to use */
+> +	regmap_write(priv->regs, MX25_ADCQ_ITEM_7_0,
+> +		     MX25_ADCQ_ITEM(0, chan->channel));
+> +
+> +	mx25_gcq_enable_eoq(priv);
+> +
+> +	/* Trigger queue for one run */
+> +	regmap_update_bits(priv->regs, MX25_ADCQ_CR, MX25_ADCQ_CR_FQS,
+> +			   MX25_ADCQ_CR_FQS);
+> +
+> +	timeout = wait_for_completion_interruptible_timeout(
+> +		&priv->completed, MX25_GCQ_TIMEOUT);
+> +	if (timeout < 0) {
+> +		dev_err(dev,
+> +			"ADC wait for measurement failed\n");
+> +		return timeout;
+> +	} else if (timeout == 0) {
+> +		dev_err(dev, "ADC timed out\n");
+> +		return -ETIMEDOUT;
+> +	}
+> +
+> +	regmap_read(priv->regs, MX25_ADCQ_FIFO, &data);
+> +
+> +	*val = MX25_ADCQ_FIFO_DATA(data);
+> +
+> +	return IIO_VAL_INT;
+> +}
+> +
+> +static int mx25_gcq_read_raw(struct iio_dev *indio_dev,
+> +			     struct iio_chan_spec const *chan, int *val,
+> +			     int *val2, long mask)
+> +{
+> +	struct mx25_gcq_priv *priv = iio_priv(indio_dev);
+> +	int ret = 0;
+> +
+> +	switch (mask) {
+> +	case IIO_CHAN_INFO_RAW:
+> +		mutex_lock(&indio_dev->mlock);
+> +		ret = mx25_gcq_get_raw_value(&indio_dev->dev, chan, priv, val);
+> +		mutex_unlock(&indio_dev->mlock);
+> +		return ret;
+> +
+> +	case IIO_CHAN_INFO_SCALE:
+> +		*val = priv->channel_vref_mv[chan->channel];
+> +		*val2 = 12;
+> +		return IIO_VAL_FRACTIONAL_LOG2;
+> +
+> +	default:
+> +		return -EINVAL;
+> +	}
+> +}
+> +
+> +static const struct iio_info mx25_gcq_iio_info = {
+> +	.read_raw = mx25_gcq_read_raw,
+> +};
+> +
+> +static const struct regmap_config mx25_gcq_regconfig = {
+> +	.max_register = 0x5c,
+> +	.reg_bits = 32,
+> +	.val_bits = 32,
+> +	.reg_stride = 4,
+> +};
+> +
+> +static int mx25_gcq_setup_cfgs(struct platform_device *pdev,
+> +			       struct mx25_gcq_priv *priv)
+> +{
+> +	struct device_node *np = pdev->dev.of_node;
+> +	struct device_node *child;
+> +	struct device *dev = &pdev->dev;
+> +	int ret, i;
+> +
+> +	/*
+> +	 * Setup all configurations registers with a default conversion
+> +	 * configuration for each input
+> +	 */
+> +	for (i = 0; i < MX25_NUM_CFGS; ++i)
+> +		regmap_write(priv->regs, MX25_ADCQ_CFG(i),
+> +			     MX25_ADCQ_CFG_YPLL_OFF |
+> +			     MX25_ADCQ_CFG_XNUR_OFF |
+> +			     MX25_ADCQ_CFG_XPUL_OFF |
+> +			     MX25_ADCQ_CFG_REFP_INT |
+> +			     MX25_ADCQ_CFG_IN(i) |
+> +			     MX25_ADCQ_CFG_REFN_NGND2);
+> +
+> +	for_each_child_of_node(np, child) {
+> +		u32 reg;
+> +		u32 refp = MX25_ADCQ_CFG_REFP_INT;
+> +		u32 refn = MX25_ADCQ_CFG_REFN_NGND2;
+> +
+> +		ret = of_property_read_u32(child, "reg", &reg);
+> +		if (ret) {
+> +			dev_err(dev, "Failed to get reg property\n");
+> +			return ret;
+> +		}
+> +
+> +		if (reg >= MX25_NUM_CFGS) {
+> +			dev_err(dev,
+> +				"reg value is greater than the number of available configuration registers\n");
+> +			return -EINVAL;
+> +		}
+> +
+> +		of_property_read_u32(child, "fsl,adc-refp", &refp);
+> +		of_property_read_u32(child, "fsl,adc-refn", &refn);
+> +
+> +		/*
+> +		 * Shift the read values to the correct positions within the
+> +		 * register.
+> +		 */
+> +		refp = MX25_ADCQ_CFG_REFP(refp);
+> +		refn = MX25_ADCQ_CFG_REFN(refn);
+> +
+> +		if ((refp & MX25_ADCQ_CFG_REFP_MASK) != refp) {
+> +			dev_err(dev, "Invalid fsl,adc-refp property value\n");
+> +			return -EINVAL;
+> +		}
+> +		if ((refn & MX25_ADCQ_CFG_REFN_MASK) != refn) {
+> +			dev_err(dev, "Invalid fsl,adc-refn property value");
+> +			return -EINVAL;
+> +		}
+> +
+> +		regmap_update_bits(priv->regs, MX25_ADCQ_CFG(reg),
+> +				   MX25_ADCQ_CFG_REFP_MASK |
+> +				   MX25_ADCQ_CFG_REFN_MASK,
+> +				   refp | refn);
+> +	}
+> +	regmap_update_bits(priv->regs, MX25_ADCQ_CR,
+> +			   MX25_ADCQ_CR_FRST | MX25_ADCQ_CR_QRST,
+> +			   MX25_ADCQ_CR_FRST | MX25_ADCQ_CR_QRST);
+> +
+> +	regmap_write(priv->regs, MX25_ADCQ_CR,
+> +		     MX25_ADCQ_CR_PDMSK |
+> +		     MX25_ADCQ_CR_QSM_FQS);
+Odd line breaking. I certainly wouldn't break the last two lines.
+> +
+> +	return 0;
+> +}
+> +
+> +static int mx25_gcq_probe(struct platform_device *pdev)
+> +{
+> +	struct iio_dev *indio_dev;
+> +	struct mx25_gcq_priv *priv;
+> +	struct mx25_tsadc *tsadc = dev_get_drvdata(pdev->dev.parent);
+> +	struct device *dev = &pdev->dev;
+> +	struct resource *res;
+> +	void __iomem *mem;
+> +	int ret;
+> +
+> +	indio_dev = devm_iio_device_alloc(&pdev->dev, sizeof(*priv));
+> +	if (!indio_dev)
+> +		return -ENOMEM;
+> +
+> +	priv = iio_priv(indio_dev);
+> +
+> +	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+> +	mem = devm_ioremap_resource(dev, res);
+> +	if (!mem)
+> +		return -ENOMEM;
+> +
+> +	priv->regs = devm_regmap_init_mmio(dev, mem, &mx25_gcq_regconfig);
+> +	if (IS_ERR(priv->regs)) {
+> +		dev_err(dev, "Failed to initialize regmap\n");
+> +		return PTR_ERR(priv->regs);
+> +	}
+> +
+> +	init_completion(&priv->completed);
+> +
+> +	/* Optional external regulator */
+> +	priv->ext_vref = devm_regulator_get(&pdev->dev, "vref");
+> +	if (!IS_ERR_OR_NULL(priv->ext_vref)) {
+> +		ret = regulator_enable(priv->ext_vref);
+This is documented in the bindings as being only optional in the sense
+that there may or may not be channels using it.  I'd be inclined
+to have it as non optional, but only request it if in use.
 
->>
->>> + * @flush:           [DRIVER] copies data from the hardware buffer to the
->>> + *                   device buffer
->>> + * @watermark_trig:  [DRIVER] an allocated and registered trigger containing
->>> + *                   "watermark" in its name
->>> + */
->>> +struct iio_hwfifo {
->>> +     int length;
->>> +     int (*set_watermark)(struct iio_dev *, unsigned int);
->>> +     int (*flush)(struct iio_dev *);
->>> +};
->>> +
->>> +/**
->>>   * struct iio_dev - industrial I/O device
->>>   * @id:                      [INTERN] used to identify device internally
->>>   * @modes:           [DRIVER] operating modes supported by device
->>> @@ -491,6 +507,7 @@ struct iio_dev {
->>>       int                             groupcounter;
->>>
->>>       unsigned long                   flags;
->>> +     const struct iio_hwfifo         *hwfifo;
->> This new entry should be added to the description of the iio_dev struct, as well.
-> 
-> Sure.
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+If truely optional then should be using the get_optional form as otherwise
+IIRC the regulator framework will feed you a dummy regulator under some
+circumstances.
+> +		if (ret)
+> +			return ret;
+> +	}
+> +
+> +	ret = mx25_gcq_setup_cfgs(pdev, priv);
+> +	if (ret)
+> +		return ret;
+> +
+> +	priv->clk = tsadc->clk;
+> +	ret = clk_prepare_enable(priv->clk);
+> +	if (ret) {
+> +		dev_err(dev, "Failed to enable clock\n");
+> +		return ret;
+> +	}
+> +
+> +	priv->irq = platform_get_irq(pdev, 0);
+> +	if (priv->irq <= 0) {
+> +		dev_err(dev, "Failed to get IRQ\n");
+> +		ret = priv->irq;
+> +		goto err_clk_unprepare;
+> +	}
+> +
+> +	ret = request_irq(priv->irq, mx25_gcq_irq, 0, pdev->name, priv);
+> +	if (ret) {
+> +		dev_err(dev, "Failed requesting IRQ\n");
+> +		goto err_clk_unprepare;
+> +	}
+> +
+> +	indio_dev->dev.parent = &pdev->dev;
+> +	indio_dev->channels = mx25_gcq_channels;
+> +	indio_dev->num_channels = ARRAY_SIZE(mx25_gcq_channels);
+> +	indio_dev->info = &mx25_gcq_iio_info;
+> +
+> +	ret = iio_device_register(indio_dev);
+> +	if (ret) {
+> +		dev_err(dev, "Failed to register iio device\n");
+> +		goto err_irq_free;
+> +	}
+> +
+> +	platform_set_drvdata(pdev, priv);
+I'd normally prefer slightly if this used the indio_dev
+(just a case of logically what contains what...)
+Doesn't really matter though.
+> +
+> +	return 0;
+> +
+> +err_irq_free:
+> +	free_irq(priv->irq, (void *)priv);
+> +err_clk_unprepare:
+> +	clk_disable_unprepare(priv->clk);
+> +	return ret;
+> +}
+> +
+> +static int mx25_gcq_remove(struct platform_device *pdev)
+> +{
+> +	struct mx25_gcq_priv *priv = platform_get_drvdata(pdev);
+> +	struct iio_dev *indio_dev = iio_priv_to_dev(pdev);
+> +
+> +	iio_device_unregister(indio_dev);
+> +	free_irq(priv->irq, priv);
+> +	clk_disable_unprepare(priv->clk);
+> +
+> +	return 0;
+> +}
+> +
+> +static struct of_device_id mx25_gcq_ids[] = {
+> +	{ .compatible = "fsl,imx25-gcq", },
+> +	{ /* Sentinel */ }
+> +};
+> +
+> +static struct platform_driver mx25_gcq_driver = {
+> +	.driver		= {
+> +		.name	= "mx25-gcq",
+> +		.of_match_table = mx25_gcq_ids,
+> +	},
+> +	.probe		= mx25_gcq_probe,
+> +	.remove		= mx25_gcq_remove,
+> +};
+> +module_platform_driver(mx25_gcq_driver);
+> +
+> +MODULE_DESCRIPTION("ADC driver for Freescale mx25");
+> +MODULE_AUTHOR("Markus Pargmann <mpa@pengutronix.de>");
+> +MODULE_LICENSE("GPL v2");
+> diff --git a/include/dt-bindings/iio/adc/fsl-imx25-gcq.h b/include/dt-bindings/iio/adc/fsl-imx25-gcq.h
+> new file mode 100644
+> index 000000000000..4f2f4a9baafe
+> --- /dev/null
+> +++ b/include/dt-bindings/iio/adc/fsl-imx25-gcq.h
+> @@ -0,0 +1,18 @@
+> +/*
+> + * This header provides constants for configuring the I.MX25 ADC
+> + */
+> +
+> +#ifndef _DT_BINDINGS_IIO_ADC_FS_IMX25_GCQ_H
+> +#define _DT_BINDINGS_IIO_ADC_FS_IMX25_GCQ_H
+> +
+> +#define MX25_ADC_REFP_YP	0 /* YP voltage reference */
+> +#define MX25_ADC_REFP_XP	1 /* XP voltage reference */
+> +#define MX25_ADC_REFP_INT	2 /* Internal voltage reference */
+> +#define MX25_ADC_REFP_EXT	3 /* External voltage reference */
+> +
+> +#define MX25_ADC_REFN_XN	0
+> +#define MX25_ADC_REFN_YN	1
+> +#define MX25_ADC_REFN_NGND	2
+> +#define MX25_ADC_REFN_NGND2	3
+> +
+> +#endif
 > 
 
