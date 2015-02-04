@@ -1,57 +1,70 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-we0-f175.google.com ([74.125.82.175]:46863 "EHLO
-	mail-we0-f175.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753296AbbBDOOi (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 4 Feb 2015 09:14:38 -0500
-Received: by mail-we0-f175.google.com with SMTP id p10so1989174wes.6
-        for <linux-iio@vger.kernel.org>; Wed, 04 Feb 2015 06:14:37 -0800 (PST)
-From: Angelo Compagnucci <angelo.compagnucci@gmail.com>
-To: linux-iio@vger.kernel.org
-Cc: Angelo Compagnucci <angelo.compagnucci@gmail.com>
-Subject: [PATCH] iio:adc:mcp3422 Fix incorrect scales table
-Date: Wed,  4 Feb 2015 15:14:26 +0100
-Message-Id: <1423059266-18143-1-git-send-email-angelo.compagnucci@gmail.com>
+Received: from mail.kernel.org ([198.145.29.136]:39552 "EHLO mail.kernel.org"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S932877AbbBDPH3 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Wed, 4 Feb 2015 10:07:29 -0500
+Date: Wed, 4 Feb 2015 16:07:21 +0100
+From: "sre@kernel.org" <sre@kernel.org>
+To: "Brandt, Todd E" <todd.e.brandt@intel.com>
+Cc: Todd Brandt <todd.e.brandt@linux.intel.com>,
+	"dbaryshkov@gmail.com" <dbaryshkov@gmail.com>,
+	"Woodhouse, David" <david.woodhouse@intel.com>,
+	"linux-pm@vger.kernel.org" <linux-pm@vger.kernel.org>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"jacob.jun.pan@linux.intel.com" <jacob.jun.pan@linux.intel.com>,
+	"sameo@linux.intel.com" <sameo@linux.intel.com>,
+	"lee.jones@linaro.org" <lee.jones@linaro.org>,
+	"dwmw2@infradead.org" <dwmw2@infradead.org>,
+	"jic23@kernel.org" <jic23@kernel.org>
+Subject: Re: [PATCH RESEND v3 3/3] X-Power AXP288 PMIC Fuel Gauge Driver
+Message-ID: <20150204150721.GB21968@earth.universe>
+References: <cover.1422909564.git.todd.e.brandt@linux.intel.com>
+ <261ddb17dbc29e216575e337ff69ca5f8a340f28.1422909564.git.todd.e.brandt@linux.intel.com>
+ <11E08D716F0541429B7042699DD5C1A170962C70@FMSMSX103.amr.corp.intel.com>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="i9LlY+UWpKt15+FH"
+In-Reply-To: <11E08D716F0541429B7042699DD5C1A170962C70@FMSMSX103.amr.corp.intel.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-This patch fixes uncorrect order of mcp3422_scales table, the values
-was erroneously transposed.
-It removes also an unused array and a wrong comment.
 
-Signed-off-by: Angelo Compagnucci <angelo.compagnucci@gmail.com>
----
- drivers/iio/adc/mcp3422.c | 17 ++++-------------
- 1 file changed, 4 insertions(+), 13 deletions(-)
+--i9LlY+UWpKt15+FH
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-diff --git a/drivers/iio/adc/mcp3422.c b/drivers/iio/adc/mcp3422.c
-index 5167225..b96c636 100644
---- a/drivers/iio/adc/mcp3422.c
-+++ b/drivers/iio/adc/mcp3422.c
-@@ -58,20 +58,11 @@
- 		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SAMP_FREQ), \
- 	}
- 
--/* LSB is in nV to eliminate floating point */
--static const u32 rates_to_lsb[] = {1000000, 250000, 62500, 15625};
--
--/*
-- *  scales calculated as:
-- *  rates_to_lsb[sample_rate] / (1 << pga);
-- *  pga is 1 for 0, 2
-- */
--
- static const int mcp3422_scales[4][4] = {
--	{ 1000000, 250000, 62500, 15625 },
--	{ 500000 , 125000, 31250, 7812 },
--	{ 250000 , 62500 , 15625, 3906 },
--	{ 125000 , 31250 , 7812 , 1953 } };
-+	{ 1000000, 500000, 250000, 125000 },
-+	{ 250000 , 125000, 62500 , 31250  },
-+	{ 62500  , 31250 , 15625 , 7812   },
-+	{ 15625  , 7812  , 3906  , 1953   } };
- 
- /* Constant msleep times for data acquisitions */
- static const int mcp3422_read_times[4] = {
--- 
-1.9.1
+Hi,
 
+On Mon, Feb 02, 2015 at 08:57:35PM +0000, Brandt, Todd E wrote:
+> Hi Dmitry and Sebastian, can we get this driver included for 3.20?
+
+Since the merge window is near I did not plan to take any more
+patches for 3.20 (except fixes). Apart from that the patches
+do not apply cleanly to battery-2.6's master branch.
+
+-- Sebastian
+
+--i9LlY+UWpKt15+FH
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
+
+iQIcBAEBCgAGBQJU0jWmAAoJENju1/PIO/qahz4QAIWIEBrt++85aMYeU2TWDZt/
+0mSYiRV26p7g9gusTkJOwpxYsdYv6pUSQClb0zKV5rVPUiOQc6nFDkbutiynKOrQ
+siiQ5ZAq3jvd/YRJ38/5poKlQSnVic7wM5j09aRzpJuQudX99pjgaI9V3wDCzdry
+Rx3o9aySXSpF9rsPPupeMWP/RmP/ZEXJX/+TLNhR93KyxZfVBkUoFsBNZkONv0QL
+XnUXqx7m+5+RkQGjjCnQfjWpIRQ8yTTuDPm+Lh01X5WS8yFQ8Uzq17AhvI7UlDvp
+UGYsenTqZ2VfVNuj21WL0s0hV7kkf9+kf07fFWOJCSPNJGYg6PsiaBuTUmpuqZP5
+Uew8PdxLajUOjm8DlWuDzuNhs4XwCx6W/rzRV/NzLPV5JiGC2ySkXjJySxJowP/e
+vVKQ+PcYSE4Q8g0iI/gtJ1H74WADrTydOzK293hKiPoLzUmKrBQTMj6FkHRbqCZx
+3IDnEAKeC8x/Zo/VCrZDh9WGLTDWYbi1elw21rs59V7JJSx9ewNd7TQSkgsw6Wpx
+X5g146n6eiy4O97qKgGPgFGze35K/6aJLSVbidDoM1B+amtTmZd5LgIlrljxWhEU
+tY6ImVKmTDz57sYlEevl+c6VOfjvu9jXyOXCZuB4OXpN65SxJcpm9zkxkLFDBxNK
+JwnPUiy+sd1mSe3qV1wn
+=bbew
+-----END PGP SIGNATURE-----
+
+--i9LlY+UWpKt15+FH--
