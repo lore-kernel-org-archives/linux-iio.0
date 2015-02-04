@@ -1,70 +1,74 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.136]:39552 "EHLO mail.kernel.org"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S932877AbbBDPH3 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Wed, 4 Feb 2015 10:07:29 -0500
-Date: Wed, 4 Feb 2015 16:07:21 +0100
-From: "sre@kernel.org" <sre@kernel.org>
-To: "Brandt, Todd E" <todd.e.brandt@intel.com>
-Cc: Todd Brandt <todd.e.brandt@linux.intel.com>,
-	"dbaryshkov@gmail.com" <dbaryshkov@gmail.com>,
-	"Woodhouse, David" <david.woodhouse@intel.com>,
-	"linux-pm@vger.kernel.org" <linux-pm@vger.kernel.org>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"jacob.jun.pan@linux.intel.com" <jacob.jun.pan@linux.intel.com>,
-	"sameo@linux.intel.com" <sameo@linux.intel.com>,
-	"lee.jones@linaro.org" <lee.jones@linaro.org>,
-	"dwmw2@infradead.org" <dwmw2@infradead.org>,
-	"jic23@kernel.org" <jic23@kernel.org>
-Subject: Re: [PATCH RESEND v3 3/3] X-Power AXP288 PMIC Fuel Gauge Driver
-Message-ID: <20150204150721.GB21968@earth.universe>
-References: <cover.1422909564.git.todd.e.brandt@linux.intel.com>
- <261ddb17dbc29e216575e337ff69ca5f8a340f28.1422909564.git.todd.e.brandt@linux.intel.com>
- <11E08D716F0541429B7042699DD5C1A170962C70@FMSMSX103.amr.corp.intel.com>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:60619 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1162082AbbBDSkw (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 4 Feb 2015 13:40:52 -0500
+Message-ID: <54D25061.4030909@kernel.org>
+Date: Wed, 04 Feb 2015 17:01:21 +0000
+From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="i9LlY+UWpKt15+FH"
-In-Reply-To: <11E08D716F0541429B7042699DD5C1A170962C70@FMSMSX103.amr.corp.intel.com>
+To: Nicholas Mc Guire <hofrat@osadl.org>
+CC: Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Fabio Estevam <fabio.estevam@freescale.com>,
+	Fugang Duan <B38611@freescale.com>,
+	Sanjeev Sharma <sanjeev_sharma@mentor.com>,
+	Sanchayan Maity <maitysanchayan@gmail.com>,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/3] iio: vf610_adc: cleanup wait_for_completion return
+ handling
+References: <1422866120-10442-1-git-send-email-hofrat@osadl.org>
+In-Reply-To: <1422866120-10442-1-git-send-email-hofrat@osadl.org>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
+On 02/02/15 08:35, Nicholas Mc Guire wrote:
+> return type of wait_for_completion_timeout is unsigned long not int, this
+> patch only fixes up the return handling.
+> 
+> Signed-off-by: Nicholas Mc Guire <hofrat@osadl.org>
+Applied to the togreg branch of iio.git which will at somepoint get
+pushed out as testing for the autobuilders to play with. 
+If anyone has comments still plenty of time before I push this out
+properly!
 
---i9LlY+UWpKt15+FH
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+J
+> ---
+>  drivers/iio/adc/vf610_adc.c |    5 +----
+>  1 file changed, 1 insertion(+), 4 deletions(-)
+> 
+> Rather than changing timeout to unsigned long it can be moved into the
+> if condition and dropped.
+> 
+> Patch was compile tested only for imx_v6_v7_defconfig + CONFIG_IIO=m,
+> CONFIG_VF610_ADC=m
+> 
+> Patch is against 3.19.0-rc6 -next-20150130
+> 
+> diff --git a/drivers/iio/adc/vf610_adc.c b/drivers/iio/adc/vf610_adc.c
+> index 8ec353c..5b72d17 100644
+> --- a/drivers/iio/adc/vf610_adc.c
+> +++ b/drivers/iio/adc/vf610_adc.c
+> @@ -259,7 +259,6 @@ static void vf610_adc_cfg_post_set(struct vf610_adc *info)
+>  static void vf610_adc_calibration(struct vf610_adc *info)
+>  {
+>  	int adc_gc, hc_cfg;
+> -	int timeout;
+>  
+>  	if (!info->adc_feature.calibration)
+>  		return;
+> @@ -271,9 +270,7 @@ static void vf610_adc_calibration(struct vf610_adc *info)
+>  	adc_gc = readl(info->regs + VF610_REG_ADC_GC);
+>  	writel(adc_gc | VF610_ADC_CAL, info->regs + VF610_REG_ADC_GC);
+>  
+> -	timeout = wait_for_completion_timeout
+> -			(&info->completion, VF610_ADC_TIMEOUT);
+> -	if (timeout == 0)
+> +	if (!wait_for_completion_timeout(&info->completion, VF610_ADC_TIMEOUT))
+>  		dev_err(info->dev, "Timeout for adc calibration\n");
+>  
+>  	adc_gc = readl(info->regs + VF610_REG_ADC_GS);
+> 
 
-Hi,
-
-On Mon, Feb 02, 2015 at 08:57:35PM +0000, Brandt, Todd E wrote:
-> Hi Dmitry and Sebastian, can we get this driver included for 3.20?
-
-Since the merge window is near I did not plan to take any more
-patches for 3.20 (except fixes). Apart from that the patches
-do not apply cleanly to battery-2.6's master branch.
-
--- Sebastian
-
---i9LlY+UWpKt15+FH
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
-
-iQIcBAEBCgAGBQJU0jWmAAoJENju1/PIO/qahz4QAIWIEBrt++85aMYeU2TWDZt/
-0mSYiRV26p7g9gusTkJOwpxYsdYv6pUSQClb0zKV5rVPUiOQc6nFDkbutiynKOrQ
-siiQ5ZAq3jvd/YRJ38/5poKlQSnVic7wM5j09aRzpJuQudX99pjgaI9V3wDCzdry
-Rx3o9aySXSpF9rsPPupeMWP/RmP/ZEXJX/+TLNhR93KyxZfVBkUoFsBNZkONv0QL
-XnUXqx7m+5+RkQGjjCnQfjWpIRQ8yTTuDPm+Lh01X5WS8yFQ8Uzq17AhvI7UlDvp
-UGYsenTqZ2VfVNuj21WL0s0hV7kkf9+kf07fFWOJCSPNJGYg6PsiaBuTUmpuqZP5
-Uew8PdxLajUOjm8DlWuDzuNhs4XwCx6W/rzRV/NzLPV5JiGC2ySkXjJySxJowP/e
-vVKQ+PcYSE4Q8g0iI/gtJ1H74WADrTydOzK293hKiPoLzUmKrBQTMj6FkHRbqCZx
-3IDnEAKeC8x/Zo/VCrZDh9WGLTDWYbi1elw21rs59V7JJSx9ewNd7TQSkgsw6Wpx
-X5g146n6eiy4O97qKgGPgFGze35K/6aJLSVbidDoM1B+amtTmZd5LgIlrljxWhEU
-tY6ImVKmTDz57sYlEevl+c6VOfjvu9jXyOXCZuB4OXpN65SxJcpm9zkxkLFDBxNK
-JwnPUiy+sd1mSe3qV1wn
-=bbew
------END PGP SIGNATURE-----
-
---i9LlY+UWpKt15+FH--
