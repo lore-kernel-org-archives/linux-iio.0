@@ -1,94 +1,55 @@
-Return-Path: <srinivas.pandruvada@intel.com>
-From: "Pandruvada, Srinivas" <srinivas.pandruvada@intel.com>
-To: "jic23@kernel.org" <jic23@kernel.org>
-CC: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>, "Tirdea, Irina"
-	<irina.tirdea@intel.com>, "viorel.suman@gmail.com" <viorel.suman@gmail.com>
-Subject: Re: [PATCH] iio: gyro: bmg160: optimize i2c transfers in trigger
- handler
-Date: Wed, 4 Feb 2015 20:39:09 +0000
-Message-ID: <1423082350.3211.1.camel@spandruv-mobl2>
-References: <1422537352-1374-1-git-send-email-irina.tirdea@intel.com>
-	 <CAAH5R_OYTbY3AW-pA3-p4+Gzo3MdGYX0a52UtJTbt=F8HSOj0A@mail.gmail.com>
-	 <54D25670.8000408@kernel.org>
-In-Reply-To: <54D25670.8000408@kernel.org>
-Content-Type: text/plain; charset="utf-8"
+Return-Path: <octavian.purdila@intel.com>
 MIME-Version: 1.0
+In-Reply-To: <54D269B7.3070202@kernel.org>
+References: <1422662408-8149-1-git-send-email-octavian.purdila@intel.com>
+	<1422662408-8149-3-git-send-email-octavian.purdila@intel.com>
+	<54D269B7.3070202@kernel.org>
+Date: Wed, 4 Feb 2015 21:29:22 +0200
+Message-ID: <CAE1zotJEUxMwHcnjiJwGq_R6N9DSEDY=5dO9MEYOynU6-UtA=Q@mail.gmail.com>
+Subject: Re: [PATCH v3 2/9] iio: add watermark logic to iio read and poll
+From: Octavian Purdila <octavian.purdila@intel.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+	Josselin Costanzi <josselin.costanzi@mobile-devices.fr>
+Content-Type: text/plain; charset=UTF-8
 List-ID: <linux-iio@vger.kernel.org>
 
-T24gV2VkLCAyMDE1LTAyLTA0IGF0IDE3OjI3ICswMDAwLCBKb25hdGhhbiBDYW1lcm9uIHdyb3Rl
-Og0KPiBPbiAzMC8wMS8xNSAwNDowMywgVmlvcmVsIFN1bWFuIHdyb3RlOg0KPiA+IEhpLA0KPiA+
-IA0KPiA+IFlvdSBtaWdodCBuZWVkIG1vcmUgc3BhY2UgaW4gInZhbHVlcyIgYnVmZmVyLCBmb3Ig
-bW9yZSBkZXRhaWxzIHBsZWFzZSBjaGVjayB0aGUNCj4gPiAiaWlvX3B1c2hfdG9fYnVmZmVyc193
-aXRoX3RpbWVzdGFtcCIgZGVzY3JpcHRpb24gYW5kIGltcGxlbWVudGF0aW9uLg0KPiBXaGlsc3Qg
-dGhhdCBmdW5jdGlvbiBpcyBhIGxpdHRsZSAnb2RkJywgdGhpcyBwYXRjaCBkb2Vzbid0IGNoYW5n
-ZSB0aGUgdXNlDQo+IG9mIGJ1ZmZlciAoc2ltcGx5IGhvdyBpdCBpZiBmaWxsZWQpLiAgVGhlIGJ1
-ZmZlciBpcyAxNmJ5dGVzIGxvbmcNCj4gKDggeCBzMTYpIHNvIHNob3VsZCBiZSBmaW5lICg0IHgg
-MTYgYml0IGFuZCAxIHggNjQgYml0KS4NCj4gDQo+IE1vcmUgcHJvYmxlbWF0aWNhbGx5LCB3ZSBo
-YXZlIHVzaW5nIGEgbmV3IHNtYnVzIGNhcGFiaWxpdHkgaGVyZQ0KPiAodG8gcmVhZCBpdCBvbmUg
-dHJhbnNhY3Rpb24pLiAgSXQncyBvbmUgeW91IGNhbiBjaGVjayBmb3IsIHNvIEknbSBndWVzc2lu
-Zw0KPiB3ZSBhcmVuJ3QgZ3VhcmFudGVlZCBpdCBpcyBwcmVzZW50Lg0KPiBJMkNfRlVOQ19TTUJV
-U19SRUFEX0kyQ19CTE9DSyANCkdvb2QgY2F0Y2guIFdlIHNob3VsZCBhZGQNCiAgaWYgKGkyY19j
-aGVja19mdW5jdGlvbmFsaXR5KGNsaWVudC0+YWRhcHRlciwNCkkyQ19GVU5DX1NNQlVTX1JFQURf
-STJDX0JMT0NLKSBpbiBwcm9iZSBhbmQgdXNlIHRoaXMgb3RoZXJ3aXNlIHJldmVydCB0bw0Kb2xk
-IG1ldGhvZC4NCg0KVGhhbmtzLA0KU3Jpbml2YXMNCg0KPiAgDQo+IEpvbmF0aGFuDQo+ID4gDQo+
-ID4gUmVnYXJkcywNCj4gPiBWaW9yZWwNCj4gPiANCj4gPiANCj4gPiBPbiBUaHUsIEphbiAyOSwg
-MjAxNSBhdCAzOjE1IFBNLCBJcmluYSBUaXJkZWEgPGlyaW5hLnRpcmRlYUBpbnRlbC5jb20gPG1h
-aWx0bzppcmluYS50aXJkZWFAaW50ZWwuY29tPj4gd3JvdGU6DQo+ID4gDQo+ID4gICAgIFNvbWUg
-aTJjIGJ1c3NlcyAoZS5nLjogU3lub3BzeXMgRGVzaWduV2FyZSBJMkMgYWRhcHRlcikgbmVlZCB0
-bw0KPiA+ICAgICBlbmFibGUvZGlzYWJsZSB0aGUgYnVzIGF0IGVhY2ggaTJjIHRyYW5zZmVyIGFu
-ZCBtdXN0IHdhaXQgZm9yDQo+ID4gICAgIHRoZSBlbmFibGUvZGlzYWJsZSB0byBoYXBwZW4gYmVm
-b3JlIHNlbmRpbmcgdGhlIGRhdGEuDQo+ID4gDQo+ID4gICAgIFdoZW4gcmVhZGluZyBkYXRhIGlu
-IHRoZSB0cmlnZ2VyIGhhbmRsZXIsIHRoZSBibWcxNjAgZHJpdmVyIGRvZXMNCj4gPiAgICAgb25l
-IGkyYyB0cmFuc2ZlciBmb3IgZWFjaCBheGlzLiBUaGlzIGhhcyBhbiBpbXBhY3Qgb24gdGhlIGZy
-ZXF1ZW5jeQ0KPiA+ICAgICBvZiB0aGUgZ3lyb3Njb3BlIGF0IGhpZ2ggc2FtcGxlIHJhdGVzIGR1
-ZSB0byBhZGRpdGlvbmFsIGRlbGF5cw0KPiA+ICAgICBpbnRyb2R1Y2VkIGJ5IHRoZSBpMmMgYnVz
-IGF0IGVhY2ggdHJhbnNmZXIuDQo+ID4gDQo+ID4gICAgIFJlYWRpbmcgYWxsIGF4aXMgdmFsdWVz
-IGluIG9uZSBpMmMgdHJhbnNmZXIgcmVkdWNlcyB0aGUgZGVsYXlzDQo+ID4gICAgIGludHJvZHVj
-ZWQgYnkgdGhlIGkyYyBidXMuDQo+ID4gDQo+ID4gICAgIFNpZ25lZC1vZmYtYnk6IElyaW5hIFRp
-cmRlYSA8aXJpbmEudGlyZGVhQGludGVsLmNvbSA8bWFpbHRvOmlyaW5hLnRpcmRlYUBpbnRlbC5j
-b20+Pg0KPiA+ICAgICBSZXZpZXdlZC1ieTogU3Jpbml2YXMgUGFuZHJ1dmFkYSA8c3Jpbml2YXMu
-cGFuZHJ1dmFkYUBsaW51eC5pbnRlbC5jb20gPG1haWx0bzpzcmluaXZhcy5wYW5kcnV2YWRhQGxp
-bnV4LmludGVsLmNvbT4+DQo+ID4gICAgIC0tLQ0KPiA+ICAgICAgZHJpdmVycy9paW8vZ3lyby9i
-bWcxNjAuYyB8IDIwICsrKysrKysrKysrLS0tLS0tLS0tDQo+ID4gICAgICAxIGZpbGUgY2hhbmdl
-ZCwgMTEgaW5zZXJ0aW9ucygrKSwgOSBkZWxldGlvbnMoLSkNCj4gPiANCj4gPiAgICAgZGlmZiAt
-LWdpdCBhL2RyaXZlcnMvaWlvL2d5cm8vYm1nMTYwLmMgYi9kcml2ZXJzL2lpby9neXJvL2JtZzE2
-MC5jDQo+ID4gICAgIGluZGV4IDYwNDUxYjMuLjgxNGViMjAgMTAwNjQ0DQo+ID4gICAgIC0tLSBh
-L2RyaXZlcnMvaWlvL2d5cm8vYm1nMTYwLmMNCj4gPiAgICAgKysrIGIvZHJpdmVycy9paW8vZ3ly
-by9ibWcxNjAuYw0KPiA+ICAgICBAQCAtMTE1LDYgKzExNSw3IEBAIGVudW0gYm1nMTYwX2F4aXMg
-ew0KPiA+ICAgICAgICAgICAgIEFYSVNfWCwNCj4gPiAgICAgICAgICAgICBBWElTX1ksDQo+ID4g
-ICAgICAgICAgICAgQVhJU19aLA0KPiA+ICAgICArICAgICAgIEFYSVNfTUFYLA0KPiA+ICAgICAg
-fTsNCj4gPiANCj4gPiAgICAgIHN0YXRpYyBjb25zdCBzdHJ1Y3Qgew0KPiA+ICAgICBAQCAtODIw
-LDIwICs4MjEsMjEgQEAgc3RhdGljIGlycXJldHVybl90IGJtZzE2MF90cmlnZ2VyX2hhbmRsZXIo
-aW50IGlycSwgdm9pZCAqcCkNCj4gPiAgICAgICAgICAgICBzdHJ1Y3QgaWlvX2RldiAqaW5kaW9f
-ZGV2ID0gcGYtPmluZGlvX2RldjsNCj4gPiAgICAgICAgICAgICBzdHJ1Y3QgYm1nMTYwX2RhdGEg
-KmRhdGEgPSBpaW9fcHJpdihpbmRpb19kZXYpOw0KPiA+ICAgICAgICAgICAgIGludCBiaXQsIHJl
-dCwgaSA9IDA7DQo+ID4gICAgICsgICAgICAgczE2IHZhbHVlc1tBWElTX01BWF07DQo+ID4gDQo+
-ID4gICAgICAgICAgICAgbXV0ZXhfbG9jaygmZGF0YS0+bXV0ZXgpOw0KPiA+ICAgICAtICAgICAg
-IGZvcl9lYWNoX3NldF9iaXQoYml0LCBpbmRpb19kZXYtPmJ1ZmZlci0+c2Nhbl9tYXNrLA0KPiA+
-ICAgICAtICAgICAgICAgICAgICAgICAgICAgICAgaW5kaW9fZGV2LT5tYXNrbGVuZ3RoKSB7DQo+
-ID4gICAgIC0gICAgICAgICAgICAgICByZXQgPSBpMmNfc21idXNfcmVhZF93b3JkX2RhdGEoZGF0
-YS0+Y2xpZW50LA0KPiA+ICAgICAtICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgIEJNRzE2MF9BWElTX1RPX1JFRyhiaXQpKTsNCj4gPiAgICAgLSAgICAgICAgICAg
-ICAgIGlmIChyZXQgPCAwKSB7DQo+ID4gICAgIC0gICAgICAgICAgICAgICAgICAgICAgIG11dGV4
-X3VubG9jaygmZGF0YS0+bXV0ZXgpOw0KPiA+ICAgICAtICAgICAgICAgICAgICAgICAgICAgICBn
-b3RvIGVycjsNCj4gPiAgICAgLSAgICAgICAgICAgICAgIH0NCj4gPiAgICAgLSAgICAgICAgICAg
-ICAgIGRhdGEtPmJ1ZmZlcltpKytdID0gcmV0Ow0KPiA+ICAgICArICAgICAgIHJldCA9IGkyY19z
-bWJ1c19yZWFkX2kyY19ibG9ja19kYXRhKGRhdGEtPmNsaWVudCwgQk1HMTYwX1JFR19YT1VUX0ws
-DQo+ID4gICAgICsgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgc2l6
-ZW9mKHZhbHVlcyksICh1OCAqKSB2YWx1ZXMpOw0KPiA+ICAgICArICAgICAgIGlmIChyZXQgPCAw
-KSB7DQo+ID4gICAgICsgICAgICAgICAgICAgICBtdXRleF91bmxvY2soJmRhdGEtPm11dGV4KTsN
-Cj4gPiAgICAgKyAgICAgICAgICAgICAgIGdvdG8gZXJyOw0KPiA+ICAgICAgICAgICAgIH0NCj4g
-PiAgICAgICAgICAgICBtdXRleF91bmxvY2soJmRhdGEtPm11dGV4KTsNCj4gPiANCj4gPiAgICAg
-KyAgICAgICBmb3JfZWFjaF9zZXRfYml0KGJpdCwgaW5kaW9fZGV2LT5idWZmZXItPnNjYW5fbWFz
-aywNCj4gPiAgICAgKyAgICAgICAgICAgICAgICAgICAgICAgIGluZGlvX2Rldi0+bWFza2xlbmd0
-aCkNCj4gPiAgICAgKyAgICAgICAgICAgICAgIGRhdGEtPmJ1ZmZlcltpKytdID0gdmFsdWVzW2Jp
-dF07DQo+ID4gICAgICsNCj4gPiAgICAgICAgICAgICBpaW9fcHVzaF90b19idWZmZXJzX3dpdGhf
-dGltZXN0YW1wKGluZGlvX2RldiwgZGF0YS0+YnVmZmVyLA0KPiA+ICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgZGF0YS0+dGltZXN0YW1wKTsNCj4gPiAgICAg
-IGVycjoNCj4gPiAgICAgLS0NCj4gPiAgICAgMS45LjENCj4gPiANCj4gPiAgICAgLS0NCj4gPiAg
-ICAgVG8gdW5zdWJzY3JpYmUgZnJvbSB0aGlzIGxpc3Q6IHNlbmQgdGhlIGxpbmUgInVuc3Vic2Ny
-aWJlIGxpbnV4LWlpbyIgaW4NCj4gPiAgICAgdGhlIGJvZHkgb2YgYSBtZXNzYWdlIHRvIG1ham9y
-ZG9tb0B2Z2VyLmtlcm5lbC5vcmcgPG1haWx0bzptYWpvcmRvbW9Admdlci5rZXJuZWwub3JnPg0K
-PiA+ICAgICBNb3JlIG1ham9yZG9tbyBpbmZvIGF0ICBodHRwOi8vdmdlci5rZXJuZWwub3JnL21h
-am9yZG9tby1pbmZvLmh0bWwNCj4gPiANCj4gPiANCj4gDQoNCg==
+On Wed, Feb 4, 2015 at 8:49 PM, Jonathan Cameron <jic23@kernel.org> wrote:
+> On 31/01/15 00:00, Octavian Purdila wrote:
+>> From: Josselin Costanzi <josselin.costanzi@mobile-devices.fr>
+>>
+>> Currently the IIO buffer blocking read only wait until at least one
+>> data element is available.
+>> This patch makes the reader sleep until enough data is collected before
+>> returning to userspace. This should limit the read() calls count when
+>> trying to get data in batches.
+>>
+>> Co-author: Yannick Bedhomme <yannick.bedhomme@mobile-devices.fr>
+>> Signed-off-by: Josselin Costanzi <josselin.costanzi@mobile-devices.fr>
+>> [rebased and remove buffer timeout]
+>> Signed-off-by: Octavian Purdila <octavian.purdila@intel.com>
+> One question on the ABI below... Otherwise looks good to me.
+>
+>> ---
+>>  Documentation/ABI/testing/sysfs-bus-iio  |  10 +++
+>>  drivers/iio/industrialio-buffer.c        | 124 ++++++++++++++++++++++++++-----
+>>  drivers/iio/kfifo_buf.c                  |  11 +--
+>>  drivers/staging/iio/accel/sca3000_ring.c |   4 +-
+>>  include/linux/iio/buffer.h               |   8 +-
+>>  5 files changed, 127 insertions(+), 30 deletions(-)
+>>
+>> diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
+>> index c03a140..2a3dc12 100644
+>> --- a/Documentation/ABI/testing/sysfs-bus-iio
+>> +++ b/Documentation/ABI/testing/sysfs-bus-iio
+>> @@ -1193,3 +1193,13 @@ Description:
+>>               This attribute is used to read the current speed value of the
+>>               user (which is the norm or magnitude of the velocity vector).
+>>               Units after application of scale are m/s.
+>> +
+>> +What:                /sys/bus/iio/devices/iio:deviceX/buffer/low_watermark
+> Just thinking about this again.  Why low?
+
+I just kept the original name. A simple watermark sounds better to me,
+I will change it in the next version.
