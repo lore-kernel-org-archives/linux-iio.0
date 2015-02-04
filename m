@@ -1,80 +1,57 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-ig0-f178.google.com ([209.85.213.178]:33345 "EHLO
-	mail-ig0-f178.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1756150AbbBCTuC (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 3 Feb 2015 14:50:02 -0500
-Date: Tue, 3 Feb 2015 11:49:56 -0800
-From: Dmitry Torokhov <dmitry.torokhov@gmail.com>
-To: Vignesh R <vigneshr@ti.com>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Lee Jones <lee.jones@linaro.org>,
-	Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-	Rob Herring <robh+dt@kernel.org>,
-	Pawel Moll <pawel.moll@arm.com>,
-	Mark Rutland <mark.rutland@arm.com>,
-	Ian Campbell <ijc+devicetree@hellion.org.uk>,
-	Kumar Gala <galak@codeaurora.org>,
-	Benoit Cousson <bcousson@baylibre.com>,
-	Tony Lindgren <tony@atomide.com>,
-	Russell King <linux@arm.linux.org.uk>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	Samuel Ortiz <sameo@linux.intel.com>,
-	Brad Griffis <bgriffis@ti.com>,
-	Paul Gortmaker <paul.gortmaker@windriver.com>,
-	Sanjeev Sharma <sanjeev_sharma@mentor.com>,
-	Jan Kardell <jan.kardell@telliq.com>,
-	Felipe Balbi <balbi@ti.com>, Wolfram Sang <wsa@the-dreams.de>,
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-	linux-iio@vger.kernel.org, linux-input@vger.kernel.org
-Subject: Re: [PATCH v6 2/6] input: touchscreen: ti_am335x_tsc: Remove udelay
- in interrupt handler
-Message-ID: <20150203194956.GD20256@dtor-ws>
-References: <1420609779-11156-1-git-send-email-vigneshr@ti.com>
- <1420609779-11156-3-git-send-email-vigneshr@ti.com>
- <54CB1604.9030709@ti.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <54CB1604.9030709@ti.com>
+Received: from mail-we0-f175.google.com ([74.125.82.175]:46863 "EHLO
+	mail-we0-f175.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753296AbbBDOOi (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 4 Feb 2015 09:14:38 -0500
+Received: by mail-we0-f175.google.com with SMTP id p10so1989174wes.6
+        for <linux-iio@vger.kernel.org>; Wed, 04 Feb 2015 06:14:37 -0800 (PST)
+From: Angelo Compagnucci <angelo.compagnucci@gmail.com>
+To: linux-iio@vger.kernel.org
+Cc: Angelo Compagnucci <angelo.compagnucci@gmail.com>
+Subject: [PATCH] iio:adc:mcp3422 Fix incorrect scales table
+Date: Wed,  4 Feb 2015 15:14:26 +0100
+Message-Id: <1423059266-18143-1-git-send-email-angelo.compagnucci@gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Fri, Jan 30, 2015 at 10:56:28AM +0530, Vignesh R wrote:
-> 
-> 
-> On Wednesday 07 January 2015 11:19 AM, Vignesh R wrote:
-> > From: Brad Griffis <bgriffis@ti.com>
-> > 
-> > TSC interrupt handler had udelay to avoid reporting of false pen-up
-> > interrupt to user space. This patch implements workaround suggesting in
-> > Advisory 1.0.31 of silicon errata for am335x, thus eliminating udelay
-> > and touchscreen lag. This also improves performance of touchscreen and
-> > eliminates sudden jump of cursor at touch release.
-> > 
-> > IDLECONFIG and CHARGECONFIG registers are to be configured
-> > with same values in order to eliminate false pen-up events. This
-> > workaround may result in false pen-down to be detected, hence considerable
-> > charge step delay needs to be added. The charge delay is set to 0xB000
-> > (in terms of ADC clock cycles) by default.
-> > 
-> > TSC steps are disabled at the end of every sampling cycle and EOS bit is
-> > set. Once the EOS bit is set, the TSC steps need to be re-enabled to begin
-> > next sampling cycle.
-> > 
-> > Signed-off-by: Brad Griffis <bgriffis@ti.com>
-> > [vigneshr@ti.com: Ported the patch from v3.12 to v3.19rc1]
-> > 
-> > Signed-off-by: Vignesh R <vigneshr@ti.com>
-> > ---
-> 
-> Ping... Can somebody pick this patch series if there are no more comments??
+This patch fixes uncorrect order of mcp3422_scales table, the values
+was erroneously transposed.
+It removes also an unused array and a wrong comment.
 
-Yes, I picked up everything but patch #3 as I assume Lee will merge it
-through MFD tree.
+Signed-off-by: Angelo Compagnucci <angelo.compagnucci@gmail.com>
+---
+ drivers/iio/adc/mcp3422.c | 17 ++++-------------
+ 1 file changed, 4 insertions(+), 13 deletions(-)
 
-Thanks.
-
+diff --git a/drivers/iio/adc/mcp3422.c b/drivers/iio/adc/mcp3422.c
+index 5167225..b96c636 100644
+--- a/drivers/iio/adc/mcp3422.c
++++ b/drivers/iio/adc/mcp3422.c
+@@ -58,20 +58,11 @@
+ 		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SAMP_FREQ), \
+ 	}
+ 
+-/* LSB is in nV to eliminate floating point */
+-static const u32 rates_to_lsb[] = {1000000, 250000, 62500, 15625};
+-
+-/*
+- *  scales calculated as:
+- *  rates_to_lsb[sample_rate] / (1 << pga);
+- *  pga is 1 for 0, 2
+- */
+-
+ static const int mcp3422_scales[4][4] = {
+-	{ 1000000, 250000, 62500, 15625 },
+-	{ 500000 , 125000, 31250, 7812 },
+-	{ 250000 , 62500 , 15625, 3906 },
+-	{ 125000 , 31250 , 7812 , 1953 } };
++	{ 1000000, 500000, 250000, 125000 },
++	{ 250000 , 125000, 62500 , 31250  },
++	{ 62500  , 31250 , 15625 , 7812   },
++	{ 15625  , 7812  , 3906  , 1953   } };
+ 
+ /* Constant msleep times for data acquisitions */
+ static const int mcp3422_read_times[4] = {
 -- 
-Dmitry
+1.9.1
+
