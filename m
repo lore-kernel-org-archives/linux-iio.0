@@ -1,168 +1,269 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:60576 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:60632 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1161624AbbBDSkt (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 4 Feb 2015 13:40:49 -0500
-Message-ID: <54D24BEA.4060201@kernel.org>
-Date: Wed, 04 Feb 2015 16:42:18 +0000
+	with ESMTP id S1162087AbbBDSkz (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 4 Feb 2015 13:40:55 -0500
+Message-ID: <54D25483.2060802@kernel.org>
+Date: Wed, 04 Feb 2015 17:18:59 +0000
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Varka Bhadram <varkabhadram@gmail.com>,
-	Markus Pargmann <mpa@pengutronix.de>,
-	Shawn Guo <shawn.guo@linaro.org>,
-	Samuel Ortiz <sameo@linux.intel.com>,
-	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-	Fabio Estevam <festevam@gmail.com>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	Hartmut Knaack <knaack.h@gmx.de>
-CC: Denis Carikli <denis@eukrea.com>,
-	=?windows-1252?Q?Eric_B=E9nard?= <eric@eukrea.com>,
-	Sascha Hauer <kernel@pengutronix.de>,
-	linux-arm-kernel@lists.infradead.org,
-	Lee Jones <lee.jones@linaro.org>, linux-input@vger.kernel.org,
-	linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>,
-	devicetree@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
-	Pawel Moll <pawel.moll@arm.com>,
-	Mark Rutland <mark.rutland@arm.com>,
-	Ian Campbell <ijc+devicetree@hellion.org.uk>,
-	Kumar Gala <galak@codeaurora.org>
-Subject: Re: [PATCH v6 5/8] iio: adc: fsl,imx25-gcq driver
-References: <1422540556-14828-1-git-send-email-mpa@pengutronix.de> <1422540556-14828-6-git-send-email-mpa@pengutronix.de> <54CA4419.1060207@gmail.com>
-In-Reply-To: <54CA4419.1060207@gmail.com>
-Content-Type: text/plain; charset=windows-1252
+To: Hartmut Knaack <knaack.h@gmx.de>,
+	Octavian Purdila <octavian.purdila@intel.com>
+CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>
+Subject: Re: [PATCH v2 04/11] iio: add support for hardware fifo
+References: <1419122556-8100-1-git-send-email-octavian.purdila@intel.com>	<1419122556-8100-5-git-send-email-octavian.purdila@intel.com>	<54C974C5.9000502@gmx.de> <CAE1zot+p_MmokODtXWAhffHwun+ux-qr9aPD8yAUzqGUce+cLg@mail.gmail.com> <54CAB8EB.9000209@gmx.de>
+In-Reply-To: <54CAB8EB.9000209@gmx.de>
+Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 29/01/15 14:30, Varka Bhadram wrote:
-> Hi,
-> 
-> On Thursday 29 January 2015 07:39 PM, Markus Pargmann wrote:
->> This is a conversion queue driver for the mx25 SoC. It uses the central
->> ADC which is used by two seperate independent queues. This driver
->> prepares different conversion configurations for each possible input.
->> For a conversion it creates a conversionqueue of one item with the
->> correct configuration for the chosen channel. It then executes the queue
->> once and disables the conversion queue afterwards.
+On 29/01/15 22:49, Hartmut Knaack wrote:
+> Octavian Purdila schrieb am 29.01.2015 um 12:38:
+>> On Thu, Jan 29, 2015 at 1:46 AM, Hartmut Knaack <knaack.h@gmx.de> wrote:
+>>>
+>>> Octavian Purdila schrieb am 21.12.2014 um 01:42:
+>>>> Some devices have hardware buffers that can store a number of samples
+>>>> for later consumption. Hardware usually provides interrupts to notify
+>>>> the processor when the fifo is full or when it has reached a certain
+>>>> threshold. This helps with reducing the number of interrupts to the
+>>>> host processor and thus it helps decreasing the power consumption.
+>>>>
+>>>> This patch adds support for hardware fifo to IIO by allowing the
+>>>> drivers to register operations for flushing the hadware fifo and
+>>>> setting the watermark level.
+>>>>
+>>>> A driver implementing hardware fifo support must also provide a
+>>>> watermark trigger which must contain "watermark" in its name.
+>>>>
+>>>
+>>> A few comments inline, also addressed to the other IIO maintainers.
+>>>
 >>
->> The reference voltages are configurable through devicetree subnodes,
->> depending on the connections of the ADC inputs.
->>
->> Signed-off-by: Markus Pargmann <mpa@pengutronix.de>
->> Signed-off-by: Denis Carikli <denis@eukrea.com>
->> Signed-off-by: Markus Pargmann <mpa@pengutronix.de>
->> ---
->>   drivers/iio/adc/Kconfig                     |   7 +
->>   drivers/iio/adc/Makefile                    |   1 +
->>   drivers/iio/adc/fsl-imx25-gcq.c             | 361 ++++++++++++++++++++++++++++
->>   include/dt-bindings/iio/adc/fsl-imx25-gcq.h |  18 ++
->>   4 files changed, 387 insertions(+)
->>   create mode 100644 drivers/iio/adc/fsl-imx25-gcq.c
->>   create mode 100644 include/dt-bindings/iio/adc/fsl-imx25-gcq.h
->>
-> (...)
+>> Thanks for the review Hartmut. What do you think about the watermark
+>> trigger approach?
 > 
->> +static int mx25_gcq_probe(struct platform_device *pdev)
->> +{
->> +    struct iio_dev *indio_dev;
->> +    struct mx25_gcq_priv *priv;
->> +    struct mx25_tsadc *tsadc = dev_get_drvdata(pdev->dev.parent);
->> +    struct device *dev = &pdev->dev;
->> +    struct resource *res;
->> +    void __iomem *mem;
->> +    int ret;
->> +
->> +    indio_dev = devm_iio_device_alloc(&pdev->dev, sizeof(*priv));
->> +    if (!indio_dev)
->> +        return -ENOMEM;
->> +
->> +    priv = iio_priv(indio_dev);
->> +
->> +    res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
->> +    mem = devm_ioremap_resource(dev, res);
->> +    if (!mem)
->> +        return -ENOMEM;
->> +
->> +    priv->regs = devm_regmap_init_mmio(dev, mem, &mx25_gcq_regconfig);
->> +    if (IS_ERR(priv->regs)) {
->> +        dev_err(dev, "Failed to initialize regmap\n");
->> +        return PTR_ERR(priv->regs);
->> +    }
->> +
->> +    init_completion(&priv->completed);
->> +
->> +    /* Optional external regulator */
->> +    priv->ext_vref = devm_regulator_get(&pdev->dev, "vref");
->> +    if (!IS_ERR_OR_NULL(priv->ext_vref)) {
->> +        ret = regulator_enable(priv->ext_vref);
->> +        if (ret)
->> +            return ret;
->> +    }
->> +
->> +    ret = mx25_gcq_setup_cfgs(pdev, priv);
->> +    if (ret)
->> +        return ret;
->> +
->> +    priv->clk = tsadc->clk;
->> +    ret = clk_prepare_enable(priv->clk);
->> +    if (ret) {
->> +        dev_err(dev, "Failed to enable clock\n");
->> +        return ret;
->> +    }
->> +
->> +    priv->irq = platform_get_irq(pdev, 0);
->> +    if (priv->irq <= 0) {
->> +        dev_err(dev, "Failed to get IRQ\n");
->> +        ret = priv->irq;
->> +        goto err_clk_unprepare;
->> +    }
->> +
->> +    ret = request_irq(priv->irq, mx25_gcq_irq, 0, pdev->name, priv);
-> 
-> Use of devm_* API
-Changes the ordering wrt to the clk prepare / unprepare so don't use
-devm (or change the order if appropriate! (I haven't thought about it!)
+> Looks good to me, so far. But keep in mind, that I am still pretty new
+> to the IIO area, so people like Jonathan have a better understanding
+> where the core development started out and where it should be heading.
+> I will have a look at your other patches during the next days, as time
+> permits.
+You are under selling yourself Hartmut!  Anyhow, for the 'exciting'
+end of buffers, Lars is probably the most familiar with them these
+days as he has a lot of out of tree code in this area (dma stuff).
 
-> 
->> +    if (ret) {
->> +        dev_err(dev, "Failed requesting IRQ\n");
->> +        goto err_clk_unprepare;
->> +    }
->> +
->> +    indio_dev->dev.parent = &pdev->dev;
->> +    indio_dev->channels = mx25_gcq_channels;
->> +    indio_dev->num_channels = ARRAY_SIZE(mx25_gcq_channels);
->> +    indio_dev->info = &mx25_gcq_iio_info;
->> +
->> +    ret = iio_device_register(indio_dev);
->> +    if (ret) {
->> +        dev_err(dev, "Failed to register iio device\n");
->> +        goto err_irq_free;
->> +    }
->> +
->> +    platform_set_drvdata(pdev, priv);
->> +
->> +    return 0;
->> +
->> +err_irq_free:
->> +    free_irq(priv->irq, (void *)priv);
-> 
-> This is not required if use devm_*
-> 
->> +err_clk_unprepare:
->> +    clk_disable_unprepare(priv->clk);
->> +    return ret;
->> +}
->> +
->> +static int mx25_gcq_remove(struct platform_device *pdev)
->> +{
->> +    struct mx25_gcq_priv *priv = platform_get_drvdata(pdev);
->> +    struct iio_dev *indio_dev = iio_priv_to_dev(pdev);
->> +
->> +    iio_device_unregister(indio_dev);
->> +    free_irq(priv->irq, priv);
-> 
-> Dto...
+Anyhow, I like the general approach, only the details that need
+pinning down in my view.  This is heading towards pretty much what
+I always envisioned.
 > 
 >>
+>> Also, after the discussion with Jonathan I am thinking of exposing a
+>> dedicated watermark level for the hardware FIFO. That way userspace
+>> can set a large value for the software buffer watermark and it also
+>> give control to userspace over the hardware watermark. I think that
+>> control is very important to achieve a good power/latency balance.
+>>
+>>>> Signed-off-by: Octavian Purdila <octavian.purdila@intel.com>
+>>>> ---
+>>>>  Documentation/ABI/testing/sysfs-bus-iio | 22 +++++++++++++++++
+>>>>  drivers/iio/industrialio-buffer.c       | 44 ++++++++++++++++++++++++++++-----
+>>>>  include/linux/iio/iio.h                 | 17 +++++++++++++
+>>>>  3 files changed, 77 insertions(+), 6 deletions(-)
+>>>>
+>>>> diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
+>>>> index 7260f1f..6bb67ac 100644
+>>>> --- a/Documentation/ABI/testing/sysfs-bus-iio
+>>>> +++ b/Documentation/ABI/testing/sysfs-bus-iio
+>>>> @@ -1152,3 +1152,25 @@ Description:
+>>>>               Poll will block until the watermark is reached.
+>>>>               Blocking read will wait until the minimum between the requested
+>>>>               read amount or the low water mark is available.
+>>>> +             If the device has a hardware fifo this value is going to be used
+>>>> +             for the hardware fifo watermark as well.
+>>>> +
+>>>> +What:                /sys/bus/iio/devices/iio:deviceX/buffer/hwfifo-length
+>>>> +KernelVersion:       3.20
+>>>> +Contact:     linux-iio@vger.kernel.org
+>>>> +Description:
+>>>> +             A single positive integer specifying the maximum number of
+>>>> +             samples that the hardware fifo has. If the device does not
+>>>> +             support hardware fifo this is zero.
+>>>> +             When a device supports hardware fifo it will expose a trigger
+>>>> +             with the name that contains "watermark"
+>>>> +             (e.g. i2c-BMC150A:00-watermark-dev0).
+>>>> +             To use the hardware fifo the user must set an appropriate value
+>>>> +             in the buffer/length and buffer/low_watermark entries and select
+>>>> +             the watermark trigger. At that poin the hardware fifo will be
+>>>> +             enabled and the samples will be collected in a hardware buffer.
+>>>> +             When the number of samples in the hardware fifo reaches the
+>>>> +             watermark level the watermark trigger is issued and data is
+>>>> +             flushed to the devices buffer.
+>>>> +             A hardware buffer flush will also be triggered when reading from
+>>>> +             the device buffer and there is not enough data available.
+>>>> \ No newline at end of file
+>>>> diff --git a/drivers/iio/industrialio-buffer.c b/drivers/iio/industrialio-buffer.c
+>>>> index 7f74c7f..3da6d07 100644
+>>>> --- a/drivers/iio/industrialio-buffer.c
+>>>> +++ b/drivers/iio/industrialio-buffer.c
+>>>> @@ -37,9 +37,17 @@ static bool iio_buffer_is_active(struct iio_buffer *buf)
+>>>>       return !list_empty(&buf->buffer_list);
+>>>>  }
+>>>>
+>>>> -static size_t iio_buffer_data_available(struct iio_buffer *buf)
+>>>> +static bool iio_buffer_data_available(struct iio_dev *indio_dev,
+>>>> +                                   struct iio_buffer *buf, size_t required)
+>>>>  {
+>>>> -     return buf->access->data_available(buf);
+>>>> +     size_t avail = buf->access->data_available(buf);
+>>>> +
+>>>> +     if (avail < required && indio_dev->hwfifo) {
+>>>> +             indio_dev->hwfifo->flush(indio_dev);
+>>>> +             avail = buf->access->data_available(buf);
+>>>> +     }
+>>>> +
+>>>> +     return avail >= required;
+>>>>  }
+>>>>
+>>>>  /**
+>>>> @@ -66,13 +74,13 @@ ssize_t iio_buffer_read_first_n_outer(struct file *filp, char __user *buf,
+>>>>
+>>>>       do {
+>>>>               if (filp->f_flags & O_NONBLOCK) {
+>>>> -                     if (!iio_buffer_data_available(rb)) {
+>>>> +                     if (!iio_buffer_data_available(indio_dev, rb, 1)) {
+>>>>                               ret = -EAGAIN;
+>>>>                               break;
+>>>>                       }
+>>>>               } else {
+>>>>                       ret = wait_event_interruptible(rb->pollq,
+>>>> -                            iio_buffer_data_available(rb) >= to_read ||
+>>>> +                         iio_buffer_data_available(indio_dev, rb, to_read) ||
+>>>>                                                      indio_dev->info == NULL);
+>>>>                       if (ret)
+>>>>                               return ret;
+>>>> @@ -112,7 +120,7 @@ unsigned int iio_buffer_poll(struct file *filp,
+>>>>               return -ENODEV;
+>>>>
+>>>>       poll_wait(filp, &rb->pollq, wait);
+>>>> -     if (iio_buffer_data_available(rb) >= rb->low_watermark)
+>>>> +     if (iio_buffer_data_available(indio_dev, rb, rb->low_watermark))
+>>>>               return POLLIN | POLLRDNORM;
+>>>>       return 0;
+>>>>  }
+>>>> @@ -440,8 +448,14 @@ static ssize_t iio_buffer_write_length(struct device *dev,
+>>>>       if (buffer->length)
+>>>>               val = buffer->length;
+>>>>
+>>>> -     if (val < buffer->low_watermark)
+>>>> +     if (val < buffer->low_watermark) {
+>>>> +             if (indio_dev->hwfifo) {
+>>>> +                     ret = indio_dev->hwfifo->set_watermark(indio_dev, val);
+>>>> +                     if (ret)
+>>>> +                             return ret;
+>>>> +             }
+>>>>               buffer->low_watermark = val;
+>>>> +     }
+>>>>
+>>>>       return len;
+>>>>  }
+>>>> @@ -811,6 +825,12 @@ static ssize_t iio_buffer_store_watermark(struct device *dev,
+>>>>               goto out;
+>>>>       }
+>>>>
+>>>> +     if (indio_dev->hwfifo) {
+>>>> +             ret = indio_dev->hwfifo->set_watermark(indio_dev, val);
+>>>> +             if (ret)
+>>>> +                     goto out;
+>>>> +     }
+>>>> +
+>>>>       buffer->low_watermark = val;
+>>>>       ret = 0;
+>>>>  out:
+>>>> @@ -818,6 +838,16 @@ out:
+>>>>       return ret ? ret : len;
+>>>>  }
+>>>>
+>>>> +ssize_t iio_buffer_hwfifo_read_length(struct device *dev,
+>>>> +                                   struct device_attribute *attr,
+>>>> +                                   char *buf)
+>>>> +{
+>>>> +     struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+>>>> +     const struct iio_hwfifo *hwfifo = indio_dev->hwfifo;
+>>>> +
+>>>> +     return sprintf(buf, "%u\n", hwfifo ? hwfifo->length : 0);
+>>>> +}
+>>>> +
+>>>>  static DEVICE_ATTR(length, S_IRUGO | S_IWUSR, iio_buffer_read_length,
+>>>>                  iio_buffer_write_length);
+>>>>  static struct device_attribute dev_attr_length_ro = __ATTR(length,
+>>>> @@ -826,11 +856,13 @@ static DEVICE_ATTR(enable, S_IRUGO | S_IWUSR,
+>>>>                  iio_buffer_show_enable, iio_buffer_store_enable);
+>>>>  static DEVICE_ATTR(low_watermark, S_IRUGO | S_IWUSR,
+>>>>                  iio_buffer_show_watermark, iio_buffer_store_watermark);
+>>>> +static DEVICE_ATTR(hwfifo_length, S_IRUGO, iio_buffer_hwfifo_read_length, NULL);
+>>>>
+>>>>  static struct attribute *iio_buffer_attrs[] = {
+>>>>       &dev_attr_length.attr,
+>>>>       &dev_attr_enable.attr,
+>>>>       &dev_attr_low_watermark.attr,
+>>>> +     &dev_attr_hwfifo_length.attr,
+>>>>  };
+>>>>
+>>>>  int iio_buffer_alloc_sysfs_and_mask(struct iio_dev *indio_dev)
+>>>> diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
+>>>> index 878d861..f64a05f 100644
+>>>> --- a/include/linux/iio/iio.h
+>>>> +++ b/include/linux/iio/iio.h
+>>>> @@ -417,6 +417,22 @@ struct iio_buffer_setup_ops {
+>>>>  };
+>>>>
+>>>>  /**
+>>>> + * struct iio_buffer_hwfifo_ops - hardware fifo operations
+>>>> + *
+>>>> + * @length:          [DRIVER] the hardware fifo length
+>>>> + * @set_watermark:   [DRIVER] setups the watermark level
+>>> Maybe use "sets" instead of "setups".
+>>>
+>>
+>> Ok, sensible suggestion, I'll do that in the next version.
+>>
+>>> Also, and this is more a general question, as it was quite annoying when getting into
+>>> the topic: I would prefer to place some information about the expected return values of
+>>> these functions into these descriptions. What do you guys think about that?
+>>>
+>>>> + * @flush:           [DRIVER] copies data from the hardware buffer to the
+>>>> + *                   device buffer
+>>>> + * @watermark_trig:  [DRIVER] an allocated and registered trigger containing
+>>>> + *                   "watermark" in its name
+>>>> + */
+>>>> +struct iio_hwfifo {
+>>>> +     int length;
+>>>> +     int (*set_watermark)(struct iio_dev *, unsigned int);
+>>>> +     int (*flush)(struct iio_dev *);
+>>>> +};
+>>>> +
+>>>> +/**
+>>>>   * struct iio_dev - industrial I/O device
+>>>>   * @id:                      [INTERN] used to identify device internally
+>>>>   * @modes:           [DRIVER] operating modes supported by device
+>>>> @@ -491,6 +507,7 @@ struct iio_dev {
+>>>>       int                             groupcounter;
+>>>>
+>>>>       unsigned long                   flags;
+>>>> +     const struct iio_hwfifo         *hwfifo;
+>>> This new entry should be added to the description of the iio_dev struct, as well.
+>>
+>> Sure.
+>> --
+>> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+>> the body of a message to majordomo@vger.kernel.org
+>> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+>>
+> 
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
 > 
 
