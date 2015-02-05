@@ -1,92 +1,96 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from devils.ext.ti.com ([198.47.26.153]:45788 "EHLO
-	devils.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751061AbbBEGWw (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 5 Feb 2015 01:22:52 -0500
-Message-ID: <54D30BE5.4070906@ti.com>
-Date: Thu, 5 Feb 2015 11:51:25 +0530
-From: Vignesh R <vigneshr@ti.com>
-MIME-Version: 1.0
-To: Lee Jones <lee.jones@linaro.org>
-CC: Jonathan Cameron <jic23@kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-	Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-	Rob Herring <robh+dt@kernel.org>,
-	Pawel Moll <pawel.moll@arm.com>,
-	Mark Rutland <mark.rutland@arm.com>,
-	Ian Campbell <ijc+devicetree@hellion.org.uk>,
-	Kumar Gala <galak@codeaurora.org>,
-	Benoit Cousson <bcousson@baylibre.com>,
-	Tony Lindgren <tony@atomide.com>,
-	Russell King <linux@arm.linux.org.uk>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	Samuel Ortiz <sameo@linux.intel.com>,
-	Brad Griffis <bgriffis@ti.com>,
-	Paul Gortmaker <paul.gortmaker@windriver.com>,
-	Sanjeev Sharma <sanjeev_sharma@mentor.com>,
-	Jan Kardell <jan.kardell@telliq.com>,
-	Felipe Balbi <balbi@ti.com>, Wolfram Sang <wsa@the-dreams.de>,
-	<devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-	<linux-omap@vger.kernel.org>,
-	<linux-arm-kernel@lists.infradead.org>,
-	<linux-iio@vger.kernel.org>, <linux-input@vger.kernel.org>
-Subject: Re: [PATCH v6 3/6] mfd: ti_am335x_tscadc: Remove unwanted reg_se_cache
- save
-References: <1420609779-11156-1-git-send-email-vigneshr@ti.com> <1420609779-11156-4-git-send-email-vigneshr@ti.com> <20150120115325.GK13701@x1> <54BE4CD1.1020709@ti.com> <20150120160410.GL13701@x1> <54BF7C14.1080907@ti.com>
-In-Reply-To: <54BF7C14.1080907@ti.com>
-Content-Type: text/plain; charset="utf-8"
+Received: from mga14.intel.com ([192.55.52.115]:34916 "EHLO mga14.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S966537AbbBEAYu (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Wed, 4 Feb 2015 19:24:50 -0500
+From: Todd Brandt <todd.e.brandt@linux.intel.com>
+To: sre@kernel.org, dbaryshkov@gmail.com
+Cc: dwmw2@infradead.org, linux-pm@vger.kernel.org,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+	todd.e.brandt@linux.intel.com, todd.e.brandt@intel.com,
+	jacob.jun.pan@linux.intel.com, sameo@linux.intel.com,
+	lee.jones@linaro.org, david.woodhouse@intel.com, jic23@kernel.org
+Subject: [PATCH v4 2/3] mfd/axp20x: add support for fuel gauge cell
+Date: Wed,  4 Feb 2015 16:24:37 -0800
+Message-Id: <ffbbd295a05d6e224b995affec67ff5707bb64ce.1423082056.git.todd.e.brandt@linux.intel.com>
+In-Reply-To: <cover.1423082056.git.todd.e.brandt@linux.intel.com>
+References: <cover.1423082056.git.todd.e.brandt@linux.intel.com>
+In-Reply-To: <cover.1423082056.git.todd.e.brandt@linux.intel.com>
+References: <cover.1423082056.git.todd.e.brandt@linux.intel.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
+Register definitions and platform data structure
+for fuel gauge cell devices.
 
+Signed-off-by: Todd Brandt <todd.e.brandt@linux.intel.com>
+---
+ include/linux/mfd/axp20x.h | 43 +++++++++++++++++++++++++++++++++++++++++--
+ 1 file changed, 41 insertions(+), 2 deletions(-)
 
-On Wednesday 21 January 2015 03:44 PM, Vignesh R wrote:
-> On Tuesday 20 January 2015 09:34 PM, Lee Jones wrote:
->> On Tue, 20 Jan 2015, R, Vignesh wrote:
->>> On 1/20/2015 5:23 PM, Lee Jones wrote:
->>>> On Wed, 07 Jan 2015, Vignesh R wrote:
->>>>
->>>>> In one shot mode, sequencer automatically disables all enabled steps at
->>>>> the end of each cycle. (both ADC steps and TSC steps) Hence these steps
->>>>> need not be saved in reg_se_cache for clearing these steps at a later
->>>>> stage.
->>>>> Also, when ADC wakes up Sequencer should not be busy executing any of the
->>>>> config steps except for the charge step. Previously charge step was 1 ADC
->>>>> clock cycle and hence it was ignored.
->>>>> TSC steps are always disabled at the end of each conversion cycle, hence
->>>>> there is no need to explicitly disable TSC steps by writing 0 to REG_SE.
->>>>>
->>>>> Signed-off-by: Vignesh R <vigneshr@ti.com>
->>>>> ---
->>>>>
->>>>> v5:
->>>>>  - Remove unnecessary clearing of REG_SE
->>>>>
->>>>>  drivers/mfd/ti_am335x_tscadc.c       | 13 +++++--------
->>>>>  include/linux/mfd/ti_am335x_tscadc.h |  1 +
->>>>>  2 files changed, 6 insertions(+), 8 deletions(-)
->>>>
->>>> Looks fine.
->>>>
->>>> For my own reference:
->>>>   Acked-by: Lee Jones <lee.jones@linaro.org>
->>>>
->>>> Can this patch be applied on its own?
->>>>
->>>
->>> I prefer to wait until input patches are picked up.
->>
->> I have no problem with that, but is there a technical reason why?
->>
-> 
-> Nothing, in particular. This patch alone has no impact on the
-> performance of TSC/ADC unit. Patch 2/6 is necessary to observe the
-> changes caused by this series. Hence, please wait until those patches
-> are picked up.
+v4: same as v1-3 and is already accepted, re-included for continuity
 
-Input maintainer has applied other patches. You can pick this one.
+diff --git a/include/linux/mfd/axp20x.h b/include/linux/mfd/axp20x.h
+index 81589d1..dfabd6d 100644
+--- a/include/linux/mfd/axp20x.h
++++ b/include/linux/mfd/axp20x.h
+@@ -124,10 +124,27 @@ enum {
+ #define AXP288_PMIC_ADC_H               0x56
+ #define AXP288_PMIC_ADC_L               0x57
+ #define AXP288_ADC_TS_PIN_CTRL          0x84
+-
+ #define AXP288_PMIC_ADC_EN              0x84
+-#define AXP288_FG_TUNE5			0xed
+ 
++/* Fuel Gauge */
++#define AXP288_FG_RDC1_REG          0xba
++#define AXP288_FG_RDC0_REG          0xbb
++#define AXP288_FG_OCVH_REG          0xbc
++#define AXP288_FG_OCVL_REG          0xbd
++#define AXP288_FG_OCV_CURVE_REG     0xc0
++#define AXP288_FG_DES_CAP1_REG      0xe0
++#define AXP288_FG_DES_CAP0_REG      0xe1
++#define AXP288_FG_CC_MTR1_REG       0xe2
++#define AXP288_FG_CC_MTR0_REG       0xe3
++#define AXP288_FG_OCV_CAP_REG       0xe4
++#define AXP288_FG_CC_CAP_REG        0xe5
++#define AXP288_FG_LOW_CAP_REG       0xe6
++#define AXP288_FG_TUNE0             0xe8
++#define AXP288_FG_TUNE1             0xe9
++#define AXP288_FG_TUNE2             0xea
++#define AXP288_FG_TUNE3             0xeb
++#define AXP288_FG_TUNE4             0xec
++#define AXP288_FG_TUNE5             0xed
+ 
+ /* Regulators IDs */
+ enum {
+@@ -236,4 +253,26 @@ struct axp20x_dev {
+ 	const struct regmap_irq_chip	*regmap_irq_chip;
+ };
+ 
++#define BATTID_LEN				64
++#define OCV_CURVE_SIZE			32
++#define MAX_THERM_CURVE_SIZE	25
++#define PD_DEF_MIN_TEMP			0
++#define PD_DEF_MAX_TEMP			55
++
++struct axp20x_fg_pdata {
++	char battid[BATTID_LEN + 1];
++	int design_cap;
++	int min_volt;
++	int max_volt;
++	int max_temp;
++	int min_temp;
++	int cap1;
++	int cap0;
++	int rdc1;
++	int rdc0;
++	int ocv_curve[OCV_CURVE_SIZE];
++	int tcsz;
++	int thermistor_curve[MAX_THERM_CURVE_SIZE][2];
++};
++
+ #endif /* __LINUX_MFD_AXP20X_H */
+-- 
+2.1.0
 
-Regards
-Vignesh R
