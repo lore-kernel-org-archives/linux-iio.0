@@ -1,106 +1,153 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-wg0-f45.google.com ([74.125.82.45]:39309 "EHLO
-	mail-wg0-f45.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751081AbbBEVgE (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 5 Feb 2015 16:36:04 -0500
-Received: by mail-wg0-f45.google.com with SMTP id x12so9993760wgg.4
-        for <linux-iio@vger.kernel.org>; Thu, 05 Feb 2015 13:36:02 -0800 (PST)
+Return-Path: <sanjeevsharmaengg@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <54D25209.2050809@kernel.org>
-References: <1419122556-8100-1-git-send-email-octavian.purdila@intel.com>
-	<1419122556-8100-5-git-send-email-octavian.purdila@intel.com>
-	<54A96525.2030200@kernel.org>
-	<CAE1zot+7DdscD6+D=XaX08Fpsbdheqn6OUPMSZYEMoRqV2m+rw@mail.gmail.com>
-	<54D25209.2050809@kernel.org>
-Date: Thu, 5 Feb 2015 23:36:02 +0200
-Message-ID: <CAE1zot+9S__23yT3AVxPY-g1dp4OBRv8iqU9XG=UithgZ-FZwg@mail.gmail.com>
-Subject: Re: [PATCH v2 04/11] iio: add support for hardware fifo
-From: Octavian Purdila <octavian.purdila@intel.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+In-Reply-To: <1422866120-10442-1-git-send-email-hofrat@osadl.org>
+References: <1422866120-10442-1-git-send-email-hofrat@osadl.org>
+Date: Fri, 6 Feb 2015 11:35:50 +0530
+Message-ID: <CAGUYZuQ2zoH+EZ1PbwRtoSS_WE7MzqaNe1aSENp50yE0dzW1-w@mail.gmail.com>
+Subject: Re: [PATCH 1/3] iio: vf610_adc: cleanup wait_for_completion return handling
+From: sanjeev sharma <sanjeevsharmaengg@gmail.com>
+To: Nicholas Mc Guire <hofrat@osadl.org>
+Cc: Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>, Peter Meerwald <pmeerw@pmeerw.net>,
+	Fabio Estevam <fabio.estevam@freescale.com>, Fugang Duan <B38611@freescale.com>,
+	Sanjeev Sharma <sanjeev_sharma@mentor.com>, Sanchayan Maity <maitysanchayan@gmail.com>,
+	linux-iio@vger.kernel.org, linux-kernel <linux-kernel@vger.kernel.org>
+Content-Type: multipart/alternative; boundary=001a11c30a0661ac75050e653618
+List-ID: <linux-iio@vger.kernel.org>
+
+--001a11c30a0661ac75050e653618
 Content-Type: text/plain; charset=UTF-8
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
 
-On Wed, Feb 4, 2015 at 7:08 PM, Jonathan Cameron <jic23@kernel.org> wrote:
-> On 05/01/15 11:29, Octavian Purdila wrote:
->> On Mon, Jan 5, 2015 at 2:07 AM, Jonathan Cameron <jic23@kernel.org> wrote:
->>> On 21/12/14 00:42, Octavian Purdila wrote:
->>>
->>> Thanks for taking this on!
->>>
->>> This all looks fairly sensible, though a few comments inline.
->>> One big semantic change I'd suggest is to allow the watermark
->>> level passed to the hardware to be a 'hint' rather than a hard
->>> and fast rull.  A lot of these hardware buffers are fairly small
->>> (perhaps 32 entries) and the devices can run fast so whilst
->>> we will obviously have to handle an interrupt often, we may well
->>> want to have a much larger software front end buffer with a
->>> much larger watermark.  For example, a 8192Hz accelerometer
->>> with 32 entry fifo (watermark at 16).  Will fire an interrupt 512 times
->>> a second.  Userspace might be only interested in getting data 32 times
->>> a second and hence want a watermark of 256 entries and probably have
->>> a buffer that is 512 entries long or more.
->>>
->>
->> Very good point with the above example, but I find the hint approach a
->> bit too hard to diagnose and tune by the application.
->>
->> Could we perhaps expose the hwfifo watermark as well, in addition to
->> the software watermark? We can even keep the hint behavior if the
->> application only touches the software watermark, but if it the
->> application directly sets the hwfifo level then we use that.
-> Hmm. Not sure how well this would work.  We probably need a way of indicating
-> the hardware buffer has not been 'pinned' to a particular value.
-> Maybe we can have it read only?
-> That way it is obvious what effect the 'hint' is having on the hardware
-> without adding a confusing double control for the same thing...
+On Mon, Feb 2, 2015 at 2:05 PM, Nicholas Mc Guire <hofrat@osadl.org> wrote:
 
-Yeah, the double control do seem confusing...
+> return type of wait_for_completion_timeout is unsigned long not int, this
+> patch only fixes up the return handling.
+>
+> Signed-off-by: Nicholas Mc Guire <hofrat@osadl.org>
+>
+Reviewed-by: Sanjeev Sharma <sanjeev_sharma@mentor.com>
 
->>> Hmm. I wonder to a degree if the trigger approach really makes sense for
->>> fifo equiped devices.  We've deliberately not added one in a few existing
->>> cases.
->>>
->>> Otherwise, is there a reason to run this separately from a trigger not using
->>> the fifo.  Surely that's just the same as a watermark of 1?
->>>
->>> Anyhow, a point for discussion!
->>
->> I might be misunderstand you here, but the reason for which we use a
->> separate trigger is to have a way to enable/disable FIFO mode, because
->> enabling the FIFO might have some downsides, e.g. more power
->> consumption. This matters only when the application is interested in
->> low latency sampling ( watermark of 1).
-> Perhaps we use a watermark of one to disable the fifo if present.  Can't
-> think why you'd want it under those circumstances unless the data can't
-> be read without.  This then becomes a driver issue as all the core
-> cares about is that the data turns up, not particularly whether it very
-> briefly bounces through a buffer or not.
->>
+> ---
+>  drivers/iio/adc/vf610_adc.c |    5 +----
+>  1 file changed, 1 insertion(+), 4 deletions(-)
+>
+> Rather than changing timeout to unsigned long it can be moved into the
+> if condition and dropped.
+>
+> Patch was compile tested only for imx_v6_v7_defconfig + CONFIG_IIO=m,
+> CONFIG_VF610_ADC=m
+>
+> Patch is against 3.19.0-rc6 -next-20150130
+>
+> diff --git a/drivers/iio/adc/vf610_adc.c b/drivers/iio/adc/vf610_adc.c
+> index 8ec353c..5b72d17 100644
+> --- a/drivers/iio/adc/vf610_adc.c
+> +++ b/drivers/iio/adc/vf610_adc.c
+> @@ -259,7 +259,6 @@ static void vf610_adc_cfg_post_set(struct vf610_adc
+> *info)
+>  static void vf610_adc_calibration(struct vf610_adc *info)
+>  {
+>         int adc_gc, hc_cfg;
+> -       int timeout;
+>
+>         if (!info->adc_feature.calibration)
+>                 return;
+> @@ -271,9 +270,7 @@ static void vf610_adc_calibration(struct vf610_adc
+> *info)
+>         adc_gc = readl(info->regs + VF610_REG_ADC_GC);
+>         writel(adc_gc | VF610_ADC_CAL, info->regs + VF610_REG_ADC_GC);
+>
+> -       timeout = wait_for_completion_timeout
+> -                       (&info->completion, VF610_ADC_TIMEOUT);
+> -       if (timeout == 0)
+> +       if (!wait_for_completion_timeout(&info->completion,
+> VF610_ADC_TIMEOUT))
+>                 dev_err(info->dev, "Timeout for adc calibration\n");
+>
+>         adc_gc = readl(info->regs + VF610_REG_ADC_GS);
+> --
+> 1.7.10.4
+>
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-kernel" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> Please read the FAQ at  http://www.tux.org/lkml/
+>
 
-There is another reason to use a trigger to enable/disable the FIFO.
+--001a11c30a0661ac75050e653618
+Content-Type: text/html; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-Lets take the bmc150 driver and say that the user sets the any-motion
-trigger. In this case we only get data in the buffer when the
-accelerometer is moved regardless of sample_frequency. Now, if we
-enable the FIFO, the user might expect to see this behavior unchanged
-- get data only when the accelerometer is moved. With BMC150's FIFO
-this is not true, the FIFO will be filled with data at the
-sample_frequency. We effectively switched to a data ready trigger.
+<div dir=3D"ltr">On Mon, Feb 2, 2015 at 2:05 PM, Nicholas Mc Guire <span di=
+r=3D"ltr">&lt;<a href=3D"mailto:hofrat@osadl.org" target=3D"_blank">hofrat@=
+osadl.org</a>&gt;</span> wrote:<br><div class=3D"gmail_extra"><div class=3D=
+"gmail_quote"><blockquote class=3D"gmail_quote" style=3D"margin:0px 0px 0px=
+ 0.8ex;border-left:1px solid rgb(204,204,204);padding-left:1ex">return type=
+ of wait_for_completion_timeout is unsigned long not int, this<br>
+patch only fixes up the return handling.<br>
+<br>
+Signed-off-by: Nicholas Mc Guire &lt;<a href=3D"mailto:hofrat@osadl.org">ho=
+frat@osadl.org</a>&gt;<br></blockquote><div>Reviewed-by: Sanjeev Sharma &lt=
+;<a href=3D"mailto:sanjeev_sharma@mentor.com">sanjeev_sharma@mentor.com</a>=
+&gt; <br></div><blockquote class=3D"gmail_quote" style=3D"margin:0px 0px 0p=
+x 0.8ex;border-left:1px solid rgb(204,204,204);padding-left:1ex">
+---<br>
+=C2=A0drivers/iio/adc/vf610_adc.c |=C2=A0 =C2=A0 5 +----<br>
+=C2=A01 file changed, 1 insertion(+), 4 deletions(-)<br>
+<br>
+Rather than changing timeout to unsigned long it can be moved into the<br>
+if condition and dropped.<br>
+<br>
+Patch was compile tested only for imx_v6_v7_defconfig + CONFIG_IIO=3Dm,<br>
+CONFIG_VF610_ADC=3Dm<br>
+<br>
+Patch is against 3.19.0-rc6 -next-20150130<br>
+<br>
+diff --git a/drivers/iio/adc/vf610_adc.c b/drivers/iio/adc/vf610_adc.c<br>
+index 8ec353c..5b72d17 100644<br>
+--- a/drivers/iio/adc/vf610_adc.c<br>
++++ b/drivers/iio/adc/vf610_adc.c<br>
+@@ -259,7 +259,6 @@ static void vf610_adc_cfg_post_set(struct vf610_adc *in=
+fo)<br>
+=C2=A0static void vf610_adc_calibration(struct vf610_adc *info)<br>
+=C2=A0{<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 int adc_gc, hc_cfg;<br>
+-=C2=A0 =C2=A0 =C2=A0 =C2=A0int timeout;<br>
+<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 if (!info-&gt;adc_feature.calibration)<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 return;<br>
+@@ -271,9 +270,7 @@ static void vf610_adc_calibration(struct vf610_adc *inf=
+o)<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 adc_gc =3D readl(info-&gt;regs + VF610_REG_ADC_=
+GC);<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 writel(adc_gc | VF610_ADC_CAL, info-&gt;regs + =
+VF610_REG_ADC_GC);<br>
+<br>
+-=C2=A0 =C2=A0 =C2=A0 =C2=A0timeout =3D wait_for_completion_timeout<br>
+-=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
+=A0 =C2=A0(&amp;info-&gt;completion, VF610_ADC_TIMEOUT);<br>
+-=C2=A0 =C2=A0 =C2=A0 =C2=A0if (timeout =3D=3D 0)<br>
++=C2=A0 =C2=A0 =C2=A0 =C2=A0if (!wait_for_completion_timeout(&amp;info-&gt;=
+completion, VF610_ADC_TIMEOUT))<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 dev_err(info-&gt;de=
+v, &quot;Timeout for adc calibration\n&quot;);<br>
+<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 adc_gc =3D readl(info-&gt;regs + VF610_REG_ADC_=
+GS);<br>
+<span class=3D""><font color=3D"#888888">--<br>
+1.7.10.4<br>
+<br>
+--<br>
+To unsubscribe from this list: send the line &quot;unsubscribe linux-kernel=
+&quot; in<br>
+the body of a message to <a href=3D"mailto:majordomo@vger.kernel.org">major=
+domo@vger.kernel.org</a><br>
+More majordomo info at=C2=A0 <a href=3D"http://vger.kernel.org/majordomo-in=
+fo.html" target=3D"_blank">http://vger.kernel.org/majordomo-info.html</a><b=
+r>
+Please read the FAQ at=C2=A0 <a href=3D"http://www.tux.org/lkml/" target=3D=
+"_blank">http://www.tux.org/lkml/</a><br>
+</font></span></blockquote></div><br></div></div>
 
->> Yeah, I wanted to add some checks in the core to make sure that if the
->> driver is registering the hwfifo ops then it should allocate and
->> register a watermark trigger as well. If we decide to go with the
->> trigger approach, do you think it is a good idea to add the checks?
->>
-> If so, but I'll be honest I really don't like the trigger approach here.
-> It feels like an abuse of an interface that is really there to allow
-> synchronized capture/ controllable capture on devices without fixed
-> timing... (when they are fixed, the point is really to allow other
-> non fixed devices to lock on and sample at the same time - very handy
-> for inertial data fusion and other places...)
-
-Ah, I was not aware of what the trigger abstraction was intended for.
-I always thought it was the equivalent of a device interrupt so it
-felt natural to me to implement it as a trigger.
+--001a11c30a0661ac75050e653618--
