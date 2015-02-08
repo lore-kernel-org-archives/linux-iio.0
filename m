@@ -1,139 +1,208 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:38750 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:38812 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752020AbbBHKxG (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 8 Feb 2015 05:53:06 -0500
-Message-ID: <54D7400F.2070300@kernel.org>
-Date: Sun, 08 Feb 2015 10:53:03 +0000
+	with ESMTP id S1755064AbbBHLCA (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 8 Feb 2015 06:02:00 -0500
+Message-ID: <54D74225.9060508@kernel.org>
+Date: Sun, 08 Feb 2015 11:01:57 +0000
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Octavian Purdila <octavian.purdila@intel.com>
-CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Subject: Re: [PATCH v2 04/11] iio: add support for hardware fifo
-References: <1419122556-8100-1-git-send-email-octavian.purdila@intel.com>	<1419122556-8100-5-git-send-email-octavian.purdila@intel.com>	<54A96525.2030200@kernel.org>	<CAE1zot+7DdscD6+D=XaX08Fpsbdheqn6OUPMSZYEMoRqV2m+rw@mail.gmail.com>	<54D25209.2050809@kernel.org> <CAE1zot+9S__23yT3AVxPY-g1dp4OBRv8iqU9XG=UithgZ-FZwg@mail.gmail.com>
-In-Reply-To: <CAE1zot+9S__23yT3AVxPY-g1dp4OBRv8iqU9XG=UithgZ-FZwg@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
+To: Octavian Purdila <octavian.purdila@intel.com>,
+	linux-iio@vger.kernel.org
+CC: srinivas.pandruvada@linux.intel.com
+Subject: Re: [PATCH v3 7/9] iio: bmc150: introduce bmc150_accel_interrupt
+References: <1422662408-8149-1-git-send-email-octavian.purdila@intel.com> <1422662408-8149-8-git-send-email-octavian.purdila@intel.com>
+In-Reply-To: <1422662408-8149-8-git-send-email-octavian.purdila@intel.com>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 05/02/15 21:36, Octavian Purdila wrote:
-> On Wed, Feb 4, 2015 at 7:08 PM, Jonathan Cameron <jic23@kernel.org> wrote:
->> On 05/01/15 11:29, Octavian Purdila wrote:
->>> On Mon, Jan 5, 2015 at 2:07 AM, Jonathan Cameron <jic23@kernel.org> wrote:
->>>> On 21/12/14 00:42, Octavian Purdila wrote:
->>>>
->>>> Thanks for taking this on!
->>>>
->>>> This all looks fairly sensible, though a few comments inline.
->>>> One big semantic change I'd suggest is to allow the watermark
->>>> level passed to the hardware to be a 'hint' rather than a hard
->>>> and fast rull.  A lot of these hardware buffers are fairly small
->>>> (perhaps 32 entries) and the devices can run fast so whilst
->>>> we will obviously have to handle an interrupt often, we may well
->>>> want to have a much larger software front end buffer with a
->>>> much larger watermark.  For example, a 8192Hz accelerometer
->>>> with 32 entry fifo (watermark at 16).  Will fire an interrupt 512 times
->>>> a second.  Userspace might be only interested in getting data 32 times
->>>> a second and hence want a watermark of 256 entries and probably have
->>>> a buffer that is 512 entries long or more.
->>>>
->>>
->>> Very good point with the above example, but I find the hint approach a
->>> bit too hard to diagnose and tune by the application.
->>>
->>> Could we perhaps expose the hwfifo watermark as well, in addition to
->>> the software watermark? We can even keep the hint behavior if the
->>> application only touches the software watermark, but if it the
->>> application directly sets the hwfifo level then we use that.
->> Hmm. Not sure how well this would work.  We probably need a way of indicating
->> the hardware buffer has not been 'pinned' to a particular value.
->> Maybe we can have it read only?
->> That way it is obvious what effect the 'hint' is having on the hardware
->> without adding a confusing double control for the same thing...
+On 31/01/15 00:00, Octavian Purdila wrote:
+> Since both triggers and events can share an interrupt, add a data
+> structure that tracks the users of an interrupt so that it enables or
+> disables it only for the first users and respectively last user.
 > 
-> Yeah, the double control do seem confusing...
+> This will allows us to easily add more events or triggers.
 > 
->>>> Hmm. I wonder to a degree if the trigger approach really makes sense for
->>>> fifo equiped devices.  We've deliberately not added one in a few existing
->>>> cases.
->>>>
->>>> Otherwise, is there a reason to run this separately from a trigger not using
->>>> the fifo.  Surely that's just the same as a watermark of 1?
->>>>
->>>> Anyhow, a point for discussion!
->>>
->>> I might be misunderstand you here, but the reason for which we use a
->>> separate trigger is to have a way to enable/disable FIFO mode, because
->>> enabling the FIFO might have some downsides, e.g. more power
->>> consumption. This matters only when the application is interested in
->>> low latency sampling ( watermark of 1).
->> Perhaps we use a watermark of one to disable the fifo if present.  Can't
->> think why you'd want it under those circumstances unless the data can't
->> be read without.  This then becomes a driver issue as all the core
->> cares about is that the data turns up, not particularly whether it very
->> briefly bounces through a buffer or not.
->>>
+> The patch also adds an interrupt enabled counter, so that we can
+> easily know if we need to put the device in normal mode when the
+> resume callback is issued.
 > 
-> There is another reason to use a trigger to enable/disable the FIFO.
-> 
-> Lets take the bmc150 driver and say that the user sets the any-motion
-> trigger. In this case we only get data in the buffer when the
-> accelerometer is moved regardless of sample_frequency. Now, if we
-> enable the FIFO, the user might expect to see this behavior unchanged
-> - get data only when the accelerometer is moved. With BMC150's FIFO
-> this is not true, the FIFO will be filled with data at the
-> sample_frequency. We effectively switched to a data ready trigger.
-Hmm. They way to stop that would be to prevent the fifo being enabled
-if the any-motion trigger is enabled.  Effectively the hardware doesn't
-support doing this in a coherent (e.g. vaguely expected!) way.
+> Signed-off-by: Octavian Purdila <octavian.purdila@intel.com>
+I'm still undecided on whether this should be using an irq_chip to
+avoid reinventing the wheel.  The few drivers that doing things
+similarly to what you have here all predate at least my knowledge
+of that infrastructure.
 
-This is getting a little tricky.  My general concept of this would normally
-say that a hardware fifo and trigger are mutually exclusive.  We've effectively
-never seen both in a single driver before.
+Unless others (e.g. Srinivas have stron opinions on this),
+lets go with what you have here for now, but very much keep in mind
+that we might want to refactor it in future. Otherwise, I'll keep you
+working on this patch set for another few months!
+(In my mind this isn't the important bit at all!)
 
-I can see it might be a little confusing to have to 'unset' the trigger if
-the fifo is to be used.  The question is which is worse from a usability
-point of view?  From a control point of view, both are fine - we can do
-what we want either way.
-
-So options:
-
-1) Have a 'fake' trigger for the hardware fifo. This trigger is set to reject
-   any other devices binding to it.
-
-2) Use no trigger when enabling the hardware fifo.  Basically if the buffer
-   is enabled with no trigger and a watermark of greater than 1 it will go
-   through the fifo.  If watermark is 1 it won't (or at least userspace will
-   think it looks like it doesn't).  If a trigger is selected, then the
-   watermark for the software buffer will work as normal, but the hardware
-   fifo will be disabled (and this will be reflected in the hw_watermark
-   value if read).
-
-The second option corresponds to what our few existing hardware buffered drivers
-effectively do.  Be it that they don't have a trigger consumer registered so
-no one would try to set a trigger!
-> 
->>> Yeah, I wanted to add some checks in the core to make sure that if the
->>> driver is registering the hwfifo ops then it should allocate and
->>> register a watermark trigger as well. If we decide to go with the
->>> trigger approach, do you think it is a good idea to add the checks?
->>>
->> If so, but I'll be honest I really don't like the trigger approach here.
->> It feels like an abuse of an interface that is really there to allow
->> synchronized capture/ controllable capture on devices without fixed
->> timing... (when they are fixed, the point is really to allow other
->> non fixed devices to lock on and sample at the same time - very handy
->> for inertial data fusion and other places...)
-> 
-> Ah, I was not aware of what the trigger abstraction was intended for.
-> I always thought it was the equivalent of a device interrupt so it
-> felt natural to me to implement it as a trigger.
-It's always been an interesting corner as it's sometimes helpful for
-events to trigger data capture (e.g. the anymotion-triggers).
-At somepoint I'd like to figure out how to allow any iio event
-to act as at trigger in a generic fashion.  Keeping the interface
-clean for that might however be a pain.  Probably more of the configfs
-magic that we've discussed on the list before (and I keep making a
-start on but never finishing!)
+Having said that I'd like an Ack from Srinivas if possible.
 
 Jonathan
+> ---
+>  drivers/iio/accel/bmc150-accel.c | 77 ++++++++++++++++++++++------------------
+>  1 file changed, 43 insertions(+), 34 deletions(-)
+> 
+> diff --git a/drivers/iio/accel/bmc150-accel.c b/drivers/iio/accel/bmc150-accel.c
+> index f040f40..b23ad1b 100644
+> --- a/drivers/iio/accel/bmc150-accel.c
+> +++ b/drivers/iio/accel/bmc150-accel.c
+> @@ -147,10 +147,19 @@ struct bmc150_accel_chip_info {
+>  	const struct bmc150_scale_info scale_table[4];
+>  };
+>  
+> +struct bmc150_accel_interrupt {
+> +	const struct bmc150_accel_interrupt_info *info;
+> +	atomic_t users;
+> +};
+> +
+> +#define BMC150_ACCEL_INTERRUPTS		2
+> +
+>  struct bmc150_accel_data {
+>  	struct i2c_client *client;
+> +	struct bmc150_accel_interrupt interrupts[BMC150_ACCEL_INTERRUPTS];
+>  	struct iio_trigger *dready_trig;
+>  	struct iio_trigger *motion_trig;
+> +	atomic_t active_intr;
+>  	struct mutex mutex;
+>  	s16 buffer[8];
+>  	u8 bw_bits;
+> @@ -421,7 +430,7 @@ static const struct bmc150_accel_interrupt_info {
+>  	u8 map_bitmask;
+>  	u8 en_reg;
+>  	u8 en_bitmask;
+> -} bmc150_accel_interrupts[] = {
+> +} bmc150_accel_interrupts[BMC150_ACCEL_INTERRUPTS] = {
+>  	{ /* data ready interrupt */
+>  		.map_reg = BMC150_ACCEL_REG_INT_MAP_1,
+>  		.map_bitmask = BMC150_ACCEL_INT_MAP_1_BIT_DATA,
+> @@ -438,12 +447,30 @@ static const struct bmc150_accel_interrupt_info {
+>  	},
+>  };
+>  
+> +static void bmc150_accel_interrupts_setup(struct iio_dev *indio_dev,
+> +					  struct bmc150_accel_data *data)
+> +{
+> +	int i;
+> +
+> +	for (i = 0; i < BMC150_ACCEL_INTERRUPTS; i++)
+> +		data->interrupts[i].info = &bmc150_accel_interrupts[i];
+> +}
+> +
+>  static int bmc150_accel_set_interrupt(struct bmc150_accel_data *data,
+> -				const struct bmc150_accel_interrupt_info *info,
+> +				      struct bmc150_accel_interrupt *intr,
+>  				      bool state)
+>  {
+> +	const struct bmc150_accel_interrupt_info *info = intr->info;
+>  	int ret;
+>  
+> +	if (state) {
+> +		if (atomic_inc_return(&intr->users) > 1)
+> +			return 0;
+> +	} else {
+> +		if (atomic_dec_return(&intr->users) > 0)
+> +			return 0;
+> +	}
+> +
+>  	/*
+>  	 * We will expect the enable and disable to do operation in
+>  	 * in reverse order. This will happen here anyway as our
+> @@ -493,6 +520,11 @@ static int bmc150_accel_set_interrupt(struct bmc150_accel_data *data,
+>  		goto out_fix_power_state;
+>  	}
+>  
+> +	if (state)
+> +		atomic_inc(&data->active_intr);
+> +	else
+> +		atomic_dec(&data->active_intr);
+> +
+>  	return 0;
+>  
+>  out_fix_power_state:
+> @@ -500,20 +532,6 @@ out_fix_power_state:
+>  	return ret;
+>  }
+>  
+> -static int bmc150_accel_setup_any_motion_interrupt(
+> -					struct bmc150_accel_data *data,
+> -					bool status)
+> -{
+> -	return bmc150_accel_set_interrupt(data, &bmc150_accel_interrupts[1],
+> -					  status);
+> -}
+> -
+> -static int bmc150_accel_setup_new_data_interrupt(struct bmc150_accel_data *data,
+> -						 bool status)
+> -{
+> -	return bmc150_accel_set_interrupt(data, &bmc150_accel_interrupts[0],
+> -					  status);
+> -}
+>  
+>  static int bmc150_accel_set_scale(struct bmc150_accel_data *data, int val)
+>  {
+> @@ -753,13 +771,7 @@ static int bmc150_accel_write_event_config(struct iio_dev *indio_dev,
+>  
+>  	mutex_lock(&data->mutex);
+>  
+> -	if (!state && data->motion_trigger_on) {
+> -		data->ev_enable_state = 0;
+> -		mutex_unlock(&data->mutex);
+> -		return 0;
+> -	}
+> -
+> -	ret =  bmc150_accel_setup_any_motion_interrupt(data, state);
+> +	ret = bmc150_accel_set_interrupt(data, &data->interrupts[1], state);
+>  	if (ret < 0) {
+>  		mutex_unlock(&data->mutex);
+>  		return ret;
+> @@ -996,19 +1008,15 @@ static int bmc150_accel_data_rdy_trigger_set_state(struct iio_trigger *trig,
+>  		}
+>  	}
+>  
+> -	if (!state && data->ev_enable_state && data->motion_trigger_on) {
+> -		data->motion_trigger_on = false;
+> -		mutex_unlock(&data->mutex);
+> -		return 0;
+> -	}
+> -
+>  	if (data->motion_trig == trig) {
+>  		ret = bmc150_accel_update_slope(data);
+>  		if (!ret)
+> -			ret = bmc150_accel_setup_any_motion_interrupt(data,
+> -								      state);
+> +			ret = bmc150_accel_set_interrupt(data,
+> +							 &data->interrupts[1],
+> +							 state);
+>  	} else {
+> -		ret = bmc150_accel_setup_new_data_interrupt(data, state);
+> +		ret = bmc150_accel_set_interrupt(data, &data->interrupts[0],
+> +						 state);
+>  	}
+>  	if (ret < 0) {
+>  		mutex_unlock(&data->mutex);
+> @@ -1210,6 +1218,8 @@ static int bmc150_accel_probe(struct i2c_client *client,
+>  			return ret;
+>  		}
+>  
+> +		bmc150_accel_interrupts_setup(indio_dev, data);
+> +
+>  		data->dready_trig = devm_iio_trigger_alloc(&client->dev,
+>  							   "%s-dev%d",
+>  							   indio_dev->name,
+> @@ -1325,8 +1335,7 @@ static int bmc150_accel_resume(struct device *dev)
+>  	struct bmc150_accel_data *data = iio_priv(indio_dev);
+>  
+>  	mutex_lock(&data->mutex);
+> -	if (data->dready_trigger_on || data->motion_trigger_on ||
+> -							data->ev_enable_state)
+> +	if (atomic_read(&data->active_intr))
+>  		bmc150_accel_set_mode(data, BMC150_ACCEL_SLEEP_MODE_NORMAL, 0);
+>  	mutex_unlock(&data->mutex);
+>  
+> 
+
