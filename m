@@ -1,52 +1,136 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:39292 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:39324 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751927AbbBHMHw (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 8 Feb 2015 07:07:52 -0500
-Message-ID: <54D75194.40201@kernel.org>
-Date: Sun, 08 Feb 2015 12:07:48 +0000
+	with ESMTP id S1754814AbbBHMNV (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 8 Feb 2015 07:13:21 -0500
+Message-ID: <54D752DF.3070806@kernel.org>
+Date: Sun, 08 Feb 2015 12:13:19 +0000
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Marek Vasut <marex@denx.de>,
-	Rickard Strandqvist <rickard_strandqvist@spectrumdigital.se>
-CC: Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Grant Likely <grant.likely@linaro.org>,
-	Rob Herring <robh+dt@kernel.org>,
-	Alexandre Belloni <alexandre.belloni@free-electrons.com>,
-	Fabio Estevam <fabio.estevam@freescale.com>,
-	Darshana Padmadas <darshanapadmadas@gmail.com>,
-	Aybuke Ozdemir <aybuke.147@gmail.com>,
-	Vaishali Thakkar <vthakkar1994@gmail.com>,
-	Robert Hodaszi <robert.hodaszi@digi.com>,
-	Brian Vandre <bvandre@gmail.com>, linux-iio@vger.kernel.org,
-	devel@driverdev.osuosl.org, linux-kernel@vger.kernel.org,
-	devicetree@vger.kernel.org
-Subject: Re: [PATCH] staging: iio: adc: mxs-lradc: Change type in printf format
- string
-References: <1422397413-9447-1-git-send-email-rickard_strandqvist@spectrumdigital.se> <201501272359.59011.marex@denx.de>
-In-Reply-To: <201501272359.59011.marex@denx.de>
-Content-Type: text/plain; charset=windows-1252
+To: Sanchayan Maity <maitysanchayan@gmail.com>,
+	linux-iio@vger.kernel.org
+Subject: Re: Query regarding a IIO consumer touchscreen driver
+References: <54AF6DFA.7040204@gmail.com> <54B10707.9060603@kernel.org> <54B3C41E.8080203@gmail.com>
+In-Reply-To: <54B3C41E.8080203@gmail.com>
+Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 27/01/15 22:59, Marek Vasut wrote:
-> On Tuesday, January 27, 2015 at 11:23:33 PM, Rickard Strandqvist wrote:
->> Wrong type in printf format string, requires 'int'
->> but the argument type is 'unsigned int'
+On 12/01/15 12:54, Sanchayan Maity wrote:
+> On 01/10/2015 04:33 PM, Jonathan Cameron wrote:
+>> On 09/01/15 05:58, Sanchayan Maity wrote:
+>>> Hello,
+>>>
+>>> I have been working on a IIO consumer touchscreen driver. On one of our Vybrid modules we use the ADC channels for
+>>> the touchscreen. I ported an earlier driver in the 3.0 kernel done by my colleague to the recent 3.18/19 kernel to
+>>> use the IIO based consumer interface.
+>>>
+>>> The touchscreen driver is here
+>>> http://git.toradex.com/cgit/linux-toradex.git/tree/drivers/input/touchscreen/colibri-vf50-ts.c?h=toradex_vf_3.18-next&id=7142dd741e948e1536632f9db1f3dd3a015450a5
+>>>
+>>> The ADC driver with which it interacts is here
+>>> http://git.toradex.com/cgit/linux-toradex.git/tree/drivers/iio/adc/vf610_adc.c?h=toradex_vf_3.18-next&id=7142dd741e948e1536632f9db1f3dd3a015450a5
+>>>
+>>> Currently, this works in a limited capaicty I would say. One of the problems I have with this driver is that when
+>>> this driver is used I can't get valid readings for any of the other ADC channels by using something like "cat". I
+>>> believe this is because of the fact that the workqueue runs a while loop every 10ms and reads the channels. This
+>>> clearly does not play well with reading of other channels and results in random reads on trying to read other channels,
+>>> for example the temperature channel. The exact reason I have not figured out here. I was thinking may be a device
+>>> lock would be required, but, that doesn't help.
+>> Certainly sounds like something along those lines. 
+>>>
+>>> The workqueue function
+>>> http://git.toradex.com/cgit/linux-toradex.git/tree/drivers/input/touchscreen/colibri-vf50-ts.c?h=toradex_vf_3.18-next&id=7142dd741e948e1536632f9db1f3dd3a015450a5#n102
+>>>
+>>> The primary read raw function
+>>> http://git.toradex.com/cgit/linux-toradex.git/tree/drivers/iio/adc/vf610_adc.c?h=toradex_vf_3.18-next&id=7142dd741e948e1536632f9db1f3dd3a015450a5#n449
+>>>
+>>> I was thinking this would need a better design than what has been done? Can someone give some suggestions as what
+>>> would be the right design/architecture here. I was thinking if setting up a IIO ring buffer, pushing the readings
+>>> to it and then reading from the touchscreen driver would work. One of the aims is also to make it clean enough for
+>>> eventual submission to the mainline. 
+>> This sort of use case was what the in kernel buffer interfaces were intended for.
+>> They don't actually use a buffer as such - but rather at the same point where
+>> we demultiplex the incoming data to fill the IIO buffer we can also send data
+>> on to other 'consumer' drivers.
+> 
+> How exactly data can be send to other consumer drivers? I tried going through the 
+> drivers in iio/adc and the header files, but, couldn't exactly figure this out.
+When you do a iio_push_to_buffers_* if there are multiple consumers registered they
+will all get whatever channels they are asking for.  This is done via a fiddly demux
+unit in the core code.  In the simple case this does nothing, but we should get
+the right data going to the right consumer when needed.  Note the normal 'buffer'
+interface of iio is just one such consumer.
 >>
->> This was found using a static code analysis program called cppcheck
+>> It's rather ancient but I did write a proof of concept input driver at one point.
+>> http://permalink.gmane.org/gmane.linux.kernel.iio/5757
+>> Might be the latest version...
+> 
+> Thanks for the idea.
 >>
->> Signed-off-by: Rickard Strandqvist <rickard_strandqvist@spectrumdigital.se>
+>> Should give you an idea of the thinking behind it anyway.  We have have discussed
+>> a generic approach to touchscreen drivers based on ADCs in the past, but that
+>> has mostly been for devices with more explicit touch screen features and we
+>> concluded that writing a generic driver would be 'tricky' given how many
+>> subtle variants there are.
 > 
-> Makes sense, thanks!
+> I would agree. Our touchscreen requires controlling four GPIO and pin multiplexing
+> of four ADC channels for enabling/disabling/re-enabling readouts. Haven't been able
+> to exactly figure how to maintain a clean separation between the input subsytem
+> driver and the IIO ADC one, due to the GPIO pins, GPIO IRQs and ADC channels. We
+> first enable the so called plates/gpios to detect IRQ, while keeping two of the
+> ADC channels as GPIOs. Once the IRQ is detected, we disable IRQ, the touch detection
+> plates/gpios, change the pinmux to ADC and the continously sample the ADC channels
+> at 10ms intervals. Not as straight forward as the other drivers which I could see.
+To do this I think we'd need to have carefully synchronised output and input in a fashion
+that we haven't begun to look at yet I'm afraid.  I can conceive of how it might work
+but would involved nasty things like delayed triggers (one trigger firing another, only
+after the first is finished).  It'd be fiddly and require a lot of new infrastructure.
 > 
-> Reviewed-by: Marek Vasut <marex@denx.de>
-Applied.
+>>
+>> Looking at the driver - you are correct that the first step would be to
+>> implement buffered IIO support and go from there.  It's a bit of an irritating
+>> device by the look of it... Every time you want to grab a different channel
+>> you have to explicitly change it (not concept of multichannel scans).
+>> It does have a continuous mode which would be great to support, but that's
+>> not going to be much use for your touch screen as it will only read one
+>> channel.
 > 
-> Best regards,
-> Marek Vasut
+> Yes, it is tricky. Currently, I couldn't find anything similar in the souce for 
+> what I wanted to do.
+I'm not aware of anything.   It's been discussed a few times, but no one has
+taken on the challenge yet (at least not publically).
+> 
+> From what I understand at the moment, the relevant GPIO, IRQ data needs to be
+> with the ADC driver. I do all the enable/renable of plates/IRQs/ADC in the driver,
+> push the data in the buffers and the have my touchscreen driver read the data
+> from the buffers. Though I do not have the separation I would wanted to have
+> between the data and the two subsystems.
+Too fiddly indeed.  Perhaps best bet in the first instance is a unified driver doing
+it all, then try to split it up later once we have code to look at.
+>>
+>> Another more generic snag is that currently is drivers operate in one or other mode.
+>> Either we do buffered access, or we do polled access.  The only devices
+>> that do both are those that maintain hardware storage of the previous
+>> value for a given channel.
+>>
+>> I have some thoughts on how to deal with this by grabbing additional
+>> 'of interest' channels during buffered capture and stashing them.  The
+>> main issue is that the userspace interface is then messy or non obvious.
+>>
+>> Hope that might give you somewhere to get started.
+>>
+>> Jonathan
+>>>
+>>> Thanks & Regards,
+>>> Sanchayan Maity.
+>>> --
+>>> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+>>> the body of a message to majordomo@vger.kernel.org
+>>> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+>>>
+>>
+> Regards,
+> Sanchayan.
 > 
 
