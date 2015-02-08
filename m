@@ -1,98 +1,40 @@
 Return-Path: <tolga.ceylan@gmail.com>
 From: Tolga Ceylan <tolga.ceylan@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>,
+To: Lars-Peter Clausen <lars@metafoo.de>,
+	Michael Hennerich <Michael.Hennerich@analog.com>,
+	Jonathan Cameron <jic23@kernel.org>,
 	Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
 	Peter Meerwald <pmeerw@pmeerw.net>,
 	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Josef Gajdusek <atx@atalax.net>,
-	Tolga Ceylan <tolga.ceylan@gmail.com>,
 	linux-iio@vger.kernel.org ,
 	devel@driverdev.osuosl.org ,
 	linux-kernel@vger.kernel.org
-Subject: [PATCH 1/1] Staging: iio: Coding Style Correction
-Date: Sun,  8 Feb 2015 00:04:53 -0800
-Message-Id: <1423382693-4189-1-git-send-email-tolga.ceylan@gmail.com>
+Cc: tolga.ceylan@gmail.com
+Subject: [PATCH 1/1] Staging: iio: Coding style correction
+Date: Sat,  7 Feb 2015 23:40:33 -0800
+Message-Id: <1423381233-11810-1-git-send-email-tolga.ceylan@gmail.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-Indentation corrections in struct initializations and
-one line over 80 characters split into two lines
+Line over 80 characters corrected
 
 Signed-off-by: Tolga Ceylan <tolga.ceylan@gmail.com>
 ---
- drivers/staging/iio/magnetometer/hmc5843_i2c.c | 34 +++++++++++++-------------
- 1 file changed, 17 insertions(+), 17 deletions(-)
+ drivers/staging/iio/meter/ade7854-i2c.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/staging/iio/magnetometer/hmc5843_i2c.c b/drivers/staging/iio/magnetometer/hmc5843_i2c.c
-index 6acd614..e221a58 100644
---- a/drivers/staging/iio/magnetometer/hmc5843_i2c.c
-+++ b/drivers/staging/iio/magnetometer/hmc5843_i2c.c
-@@ -19,49 +19,49 @@
- #include "hmc5843.h"
+diff --git a/drivers/staging/iio/meter/ade7854-i2c.c b/drivers/staging/iio/meter/ade7854-i2c.c
+index 5b33c7f..5d0671a 100644
+--- a/drivers/staging/iio/meter/ade7854-i2c.c
++++ b/drivers/staging/iio/meter/ade7854-i2c.c
+@@ -195,7 +195,8 @@ static int ade7854_i2c_read_reg_32(struct device *dev,
+ 	if (ret)
+ 		goto out;
  
- static const struct regmap_range hmc5843_readable_ranges[] = {
--		regmap_reg_range(0, HMC5843_ID_END),
-+	regmap_reg_range(0, HMC5843_ID_END),
- };
- 
- static struct regmap_access_table hmc5843_readable_table = {
--		.yes_ranges = hmc5843_readable_ranges,
--		.n_yes_ranges = ARRAY_SIZE(hmc5843_readable_ranges),
-+	.yes_ranges = hmc5843_readable_ranges,
-+	.n_yes_ranges = ARRAY_SIZE(hmc5843_readable_ranges),
- };
- 
- static const struct regmap_range hmc5843_writable_ranges[] = {
--		regmap_reg_range(0, HMC5843_MODE_REG),
-+	regmap_reg_range(0, HMC5843_MODE_REG),
- };
- 
- static struct regmap_access_table hmc5843_writable_table = {
--		.yes_ranges = hmc5843_writable_ranges,
--		.n_yes_ranges = ARRAY_SIZE(hmc5843_writable_ranges),
-+	.yes_ranges = hmc5843_writable_ranges,
-+	.n_yes_ranges = ARRAY_SIZE(hmc5843_writable_ranges),
- };
- 
- static const struct regmap_range hmc5843_volatile_ranges[] = {
--		regmap_reg_range(HMC5843_DATA_OUT_MSB_REGS, HMC5843_STATUS_REG),
-+	regmap_reg_range(HMC5843_DATA_OUT_MSB_REGS, HMC5843_STATUS_REG),
- };
- 
- static struct regmap_access_table hmc5843_volatile_table = {
--		.yes_ranges = hmc5843_volatile_ranges,
--		.n_yes_ranges = ARRAY_SIZE(hmc5843_volatile_ranges),
-+	.yes_ranges = hmc5843_volatile_ranges,
-+	.n_yes_ranges = ARRAY_SIZE(hmc5843_volatile_ranges),
- };
- 
- static struct regmap_config hmc5843_i2c_regmap_config = {
--		.reg_bits = 8,
--		.val_bits = 8,
-+	.reg_bits = 8,
-+	.val_bits = 8,
- 
--		.rd_table = &hmc5843_readable_table,
--		.wr_table = &hmc5843_writable_table,
--		.volatile_table = &hmc5843_volatile_table,
-+	.rd_table = &hmc5843_readable_table,
-+	.wr_table = &hmc5843_writable_table,
-+	.volatile_table = &hmc5843_volatile_table,
- 
--		.cache_type = REGCACHE_RBTREE,
-+	.cache_type = REGCACHE_RBTREE,
- };
- 
- static int hmc5843_i2c_probe(struct i2c_client *client,
- 			 const struct i2c_device_id *id)
- {
- 	return hmc5843_common_probe(&client->dev,
--			devm_regmap_init_i2c(client, &hmc5843_i2c_regmap_config),
--			id->driver_data);
-+		devm_regmap_init_i2c(client, &hmc5843_i2c_regmap_config),
-+		id->driver_data);
- }
- 
- static int hmc5843_i2c_remove(struct i2c_client *client)
+-	*val = (st->rx[0] << 24) | (st->rx[1] << 16) | (st->rx[2] << 8) | st->rx[3];
++	*val = (st->rx[0] << 24) | (st->rx[1] << 16) |
++		(st->rx[2] << 8) | st->rx[3];
+ out:
+ 	mutex_unlock(&st->buf_lock);
+ 	return ret;
 -- 
 2.3.0
