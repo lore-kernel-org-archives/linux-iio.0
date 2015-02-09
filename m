@@ -1,85 +1,379 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-wi0-f178.google.com ([209.85.212.178]:50148 "EHLO
-	mail-wi0-f178.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752239AbbBHSTa (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 8 Feb 2015 13:19:30 -0500
-Received: by mail-wi0-f178.google.com with SMTP id hm9so1337173wib.5
-        for <linux-iio@vger.kernel.org>; Sun, 08 Feb 2015 10:19:29 -0800 (PST)
-From: Rickard Strandqvist <rickard_strandqvist@spectrumdigital.se>
-To: Jonathan Cameron <jic23@kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>
-Cc: Rickard Strandqvist <rickard_strandqvist@spectrumdigital.se>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Joel Porquet <joel@porquet.org>,
-	Darshana Padmadas <darshanapadmadas@gmail.com>,
-	Catalina Mocanu <catalina.mocanu@gmail.com>,
-	Wolfram Sang <wsa@the-dreams.de>, linux-iio@vger.kernel.org,
-	devel@driverdev.osuosl.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v2] staging: iio: trigger: iio-trig-periodic-rtc: Change frequency type to unsigned int
-Date: Sun,  8 Feb 2015 19:22:54 +0100
-Message-Id: <1423419774-16753-1-git-send-email-rickard_strandqvist@spectrumdigital.se>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <daniel.baluta@intel.com>
+From: Daniel Baluta <daniel.baluta@intel.com>
+To: jic23@kernel.org,
+	knaack.h@gmx.de,
+	lars@metafoo.de,
+	pmeerw@pmeerw.net
+Cc: irina.tirdea@intel.com,
+	roberta.dobrescu@gmail.com,
+	linux-kernel@vger.kernel.org,
+	linux-iio@vger.kernel.org,
+	linux-api@vger.kernel.org
+Subject: [RFC PATCH] iio: Export userspace IIO headers
+Date: Mon,  9 Feb 2015 18:49:46 +0200
+Message-Id: <1423500586-26480-1-git-send-email-daniel.baluta@intel.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-Change struct iio_prtc_trigger_info frequency
-type from int to unsigned int.
-Since it is always treated as such in the driver
-so they type should probably reflect this.
+After UAPI header file split [1] all user-kernel interfaces were
+placed under include/uapi/.
 
-Signed-off-by: Rickard Strandqvist <rickard_strandqvist@spectrumdigital.se>
+This patch moves IIO user specific API from:
+	* include/linux/iio/events.h => include/uapi/linux/iio/events.h
+	* include/linux/iio/types.h => include/uapi/linux/iio/types.h
+
+Now there is no need for nasty tricks to compile userspace programs
+(e.g iio_event_monitor). Just installing the kernel headers with
+make headers_install command does the job.
+
+[1] http://lwn.net/Articles/507794/
+
+Signed-off-by: Daniel Baluta <daniel.baluta@intel.com>
 ---
- drivers/staging/iio/trigger/iio-trig-periodic-rtc.c |   12 +++++-------
- 1 file changed, 5 insertions(+), 7 deletions(-)
+I am not sure if this is the right thing to do. I am still 
+trying to understand the inners workings of make headers_install.
 
-diff --git a/drivers/staging/iio/trigger/iio-trig-periodic-rtc.c b/drivers/staging/iio/trigger/iio-trig-periodic-rtc.c
-index a24caf7..89df1d3 100644
---- a/drivers/staging/iio/trigger/iio-trig-periodic-rtc.c
-+++ b/drivers/staging/iio/trigger/iio-trig-periodic-rtc.c
-@@ -24,7 +24,7 @@ static DEFINE_MUTEX(iio_prtc_trigger_list_lock);
+ include/linux/iio/events.h      |  30 +-----------
+ include/linux/iio/types.h       |  94 +----------------------------------
+ include/uapi/linux/Kbuild       |   1 +
+ include/uapi/linux/iio/Kbuild   |   3 ++
+ include/uapi/linux/iio/events.h |  43 ++++++++++++++++
+ include/uapi/linux/iio/types.h  | 106 ++++++++++++++++++++++++++++++++++++++++
+ 6 files changed, 155 insertions(+), 122 deletions(-)
+ create mode 100644 include/uapi/linux/iio/Kbuild
+ create mode 100644 include/uapi/linux/iio/events.h
+ create mode 100644 include/uapi/linux/iio/types.h
+
+diff --git a/include/linux/iio/events.h b/include/linux/iio/events.h
+index 03fa332..8ad87d1 100644
+--- a/include/linux/iio/events.h
++++ b/include/linux/iio/events.h
+@@ -9,22 +9,8 @@
+ #ifndef _IIO_EVENTS_H_
+ #define _IIO_EVENTS_H_
  
- struct iio_prtc_trigger_info {
- 	struct rtc_device *rtc;
--	int frequency;
-+	unsigned int frequency;
- 	struct rtc_task task;
- 	bool state;
- };
-@@ -36,7 +36,7 @@ static int iio_trig_periodic_rtc_set_state(struct iio_trigger *trig, bool state)
+-#include <linux/ioctl.h>
+-#include <linux/types.h>
+ #include <linux/iio/types.h>
+-
+-/**
+- * struct iio_event_data - The actual event being pushed to userspace
+- * @id:		event identifier
+- * @timestamp:	best estimate of time of event occurrence (often from
+- *		the interrupt handler)
+- */
+-struct iio_event_data {
+-	__u64	id;
+-	__s64	timestamp;
+-};
+-
+-#define IIO_GET_EVENT_FD_IOCTL _IOR('i', 0x90, int)
++#include <uapi/linux/iio/events.h>
  
- 	if (trig_info->frequency == 0 && state)
- 		return -EINVAL;
--	dev_dbg(&trig_info->rtc->dev, "trigger frequency is %d\n",
-+	dev_dbg(&trig_info->rtc->dev, "trigger frequency is %u\n",
- 			trig_info->frequency);
- 	ret = rtc_irq_set_state(trig_info->rtc, &trig_info->task, state);
- 	if (ret == 0)
-@@ -62,10 +62,10 @@ static ssize_t iio_trig_periodic_write_freq(struct device *dev,
- {
- 	struct iio_trigger *trig = to_iio_trigger(dev);
- 	struct iio_prtc_trigger_info *trig_info = iio_trigger_get_drvdata(trig);
--	int val;
-+	unsigned int val;
- 	int ret;
+ /**
+  * IIO_EVENT_CODE() - create event identifier
+@@ -70,18 +56,4 @@ struct iio_event_data {
+ #define IIO_UNMOD_EVENT_CODE(chan_type, number, type, direction)	\
+ 	IIO_EVENT_CODE(chan_type, 0, 0, direction, type, number, 0, 0)
  
--	ret = kstrtoint(buf, 10, &val);
-+	ret = kstrtouint(buf, 10, &val);
- 	if (ret)
- 		goto error_ret;
+-#define IIO_EVENT_CODE_EXTRACT_TYPE(mask) ((mask >> 56) & 0xFF)
+-
+-#define IIO_EVENT_CODE_EXTRACT_DIR(mask) ((mask >> 48) & 0x7F)
+-
+-#define IIO_EVENT_CODE_EXTRACT_CHAN_TYPE(mask) ((mask >> 32) & 0xFF)
+-
+-/* Event code number extraction depends on which type of event we have.
+- * Perhaps review this function in the future*/
+-#define IIO_EVENT_CODE_EXTRACT_CHAN(mask) ((__s16)(mask & 0xFFFF))
+-#define IIO_EVENT_CODE_EXTRACT_CHAN2(mask) ((__s16)(((mask) >> 16) & 0xFFFF))
+-
+-#define IIO_EVENT_CODE_EXTRACT_MODIFIER(mask) ((mask >> 40) & 0xFF)
+-#define IIO_EVENT_CODE_EXTRACT_DIFF(mask) (((mask) >> 55) & 0x1)
+-
+ #endif
+diff --git a/include/linux/iio/types.h b/include/linux/iio/types.h
+index 580ed5b..146cda1 100644
+--- a/include/linux/iio/types.h
++++ b/include/linux/iio/types.h
+@@ -10,97 +10,5 @@
+ #ifndef _IIO_TYPES_H_
+ #define _IIO_TYPES_H_
  
-@@ -74,10 +74,8 @@ static ssize_t iio_trig_periodic_write_freq(struct device *dev,
- 		if (ret == 0 && trig_info->state && trig_info->frequency == 0)
- 			ret = rtc_irq_set_state(trig_info->rtc,
- 						&trig_info->task, 1);
--	} else if (val == 0) {
--		ret = rtc_irq_set_state(trig_info->rtc, &trig_info->task, 0);
- 	} else
--		ret = -EINVAL;
-+		ret = rtc_irq_set_state(trig_info->rtc, &trig_info->task, 0);
- 	if (ret)
- 		goto error_ret;
- 
+-enum iio_chan_type {
+-	IIO_VOLTAGE,
+-	IIO_CURRENT,
+-	IIO_POWER,
+-	IIO_ACCEL,
+-	IIO_ANGL_VEL,
+-	IIO_MAGN,
+-	IIO_LIGHT,
+-	IIO_INTENSITY,
+-	IIO_PROXIMITY,
+-	IIO_TEMP,
+-	IIO_INCLI,
+-	IIO_ROT,
+-	IIO_ANGL,
+-	IIO_TIMESTAMP,
+-	IIO_CAPACITANCE,
+-	IIO_ALTVOLTAGE,
+-	IIO_CCT,
+-	IIO_PRESSURE,
+-	IIO_HUMIDITYRELATIVE,
+-	IIO_ACTIVITY,
+-	IIO_STEPS,
+-	IIO_ENERGY,
+-	IIO_DISTANCE,
+-	IIO_VELOCITY,
+-};
+-
+-enum iio_modifier {
+-	IIO_NO_MOD,
+-	IIO_MOD_X,
+-	IIO_MOD_Y,
+-	IIO_MOD_Z,
+-	IIO_MOD_X_AND_Y,
+-	IIO_MOD_X_AND_Z,
+-	IIO_MOD_Y_AND_Z,
+-	IIO_MOD_X_AND_Y_AND_Z,
+-	IIO_MOD_X_OR_Y,
+-	IIO_MOD_X_OR_Z,
+-	IIO_MOD_Y_OR_Z,
+-	IIO_MOD_X_OR_Y_OR_Z,
+-	IIO_MOD_LIGHT_BOTH,
+-	IIO_MOD_LIGHT_IR,
+-	IIO_MOD_ROOT_SUM_SQUARED_X_Y,
+-	IIO_MOD_SUM_SQUARED_X_Y_Z,
+-	IIO_MOD_LIGHT_CLEAR,
+-	IIO_MOD_LIGHT_RED,
+-	IIO_MOD_LIGHT_GREEN,
+-	IIO_MOD_LIGHT_BLUE,
+-	IIO_MOD_QUATERNION,
+-	IIO_MOD_TEMP_AMBIENT,
+-	IIO_MOD_TEMP_OBJECT,
+-	IIO_MOD_NORTH_MAGN,
+-	IIO_MOD_NORTH_TRUE,
+-	IIO_MOD_NORTH_MAGN_TILT_COMP,
+-	IIO_MOD_NORTH_TRUE_TILT_COMP,
+-	IIO_MOD_RUNNING,
+-	IIO_MOD_JOGGING,
+-	IIO_MOD_WALKING,
+-	IIO_MOD_STILL,
+-	IIO_MOD_ROOT_SUM_SQUARED_X_Y_Z,
+-};
+-
+-enum iio_event_type {
+-	IIO_EV_TYPE_THRESH,
+-	IIO_EV_TYPE_MAG,
+-	IIO_EV_TYPE_ROC,
+-	IIO_EV_TYPE_THRESH_ADAPTIVE,
+-	IIO_EV_TYPE_MAG_ADAPTIVE,
+-	IIO_EV_TYPE_CHANGE,
+-};
+-
+-enum iio_event_info {
+-	IIO_EV_INFO_ENABLE,
+-	IIO_EV_INFO_VALUE,
+-	IIO_EV_INFO_HYSTERESIS,
+-	IIO_EV_INFO_PERIOD,
+-};
+-
+-enum iio_event_direction {
+-	IIO_EV_DIR_EITHER,
+-	IIO_EV_DIR_RISING,
+-	IIO_EV_DIR_FALLING,
+-	IIO_EV_DIR_NONE,
+-};
+-
+-#define IIO_VAL_INT 1
+-#define IIO_VAL_INT_PLUS_MICRO 2
+-#define IIO_VAL_INT_PLUS_NANO 3
+-#define IIO_VAL_INT_PLUS_MICRO_DB 4
+-#define IIO_VAL_INT_MULTIPLE 5
+-#define IIO_VAL_FRACTIONAL 10
+-#define IIO_VAL_FRACTIONAL_LOG2 11
+-
++#include <uapi/linux/iio/types.h>
+ #endif /* _IIO_TYPES_H_ */
+diff --git a/include/uapi/linux/Kbuild b/include/uapi/linux/Kbuild
+index 00b10002..5bfc5bd 100644
+--- a/include/uapi/linux/Kbuild
++++ b/include/uapi/linux/Kbuild
+@@ -6,6 +6,7 @@ header-y += caif/
+ header-y += dvb/
+ header-y += hdlc/
+ header-y += hsi/
++header-y += iio/
+ header-y += isdn/
+ header-y += mmc/
+ header-y += nfsd/
+diff --git a/include/uapi/linux/iio/Kbuild b/include/uapi/linux/iio/Kbuild
+new file mode 100644
+index 0000000..86f76d8
+--- /dev/null
++++ b/include/uapi/linux/iio/Kbuild
+@@ -0,0 +1,3 @@
++# UAPI Header export list
++header-y += events.h
++header-y += types.h
+diff --git a/include/uapi/linux/iio/events.h b/include/uapi/linux/iio/events.h
+new file mode 100644
+index 0000000..4b06477
+--- /dev/null
++++ b/include/uapi/linux/iio/events.h
+@@ -0,0 +1,43 @@
++/* The industrial I/O - event passing to userspace
++ *
++ * Copyright (c) 2008-2011 Jonathan Cameron
++ *
++ * This program is free software; you can redistribute it and/or modify it
++ * under the terms of the GNU General Public License version 2 as published by
++ * the Free Software Foundation.
++ */
++#ifndef _UAPI_IIO_EVENTS_H_
++#define _UAPI_IIO_EVENTS_H_
++
++#include <linux/ioctl.h>
++#include <linux/types.h>
++
++/**
++ * struct iio_event_data - The actual event being pushed to userspace
++ * @id:		event identifier
++ * @timestamp:	best estimate of time of event occurrence (often from
++ *		the interrupt handler)
++ */
++struct iio_event_data {
++	__u64	id;
++	__s64	timestamp;
++};
++
++#define IIO_GET_EVENT_FD_IOCTL _IOR('i', 0x90, int)
++
++#define IIO_EVENT_CODE_EXTRACT_TYPE(mask) ((mask >> 56) & 0xFF)
++
++#define IIO_EVENT_CODE_EXTRACT_DIR(mask) ((mask >> 48) & 0x7F)
++
++#define IIO_EVENT_CODE_EXTRACT_CHAN_TYPE(mask) ((mask >> 32) & 0xFF)
++
++/* Event code number extraction depends on which type of event we have.
++ * Perhaps review this function in the future*/
++#define IIO_EVENT_CODE_EXTRACT_CHAN(mask) ((__s16)(mask & 0xFFFF))
++#define IIO_EVENT_CODE_EXTRACT_CHAN2(mask) ((__s16)(((mask) >> 16) & 0xFFFF))
++
++#define IIO_EVENT_CODE_EXTRACT_MODIFIER(mask) ((mask >> 40) & 0xFF)
++#define IIO_EVENT_CODE_EXTRACT_DIFF(mask) (((mask) >> 55) & 0x1)
++
++#endif /* _UAPI_IIO_EVENTS_H_ */
++
+diff --git a/include/uapi/linux/iio/types.h b/include/uapi/linux/iio/types.h
+new file mode 100644
+index 0000000..1aa8dcf
+--- /dev/null
++++ b/include/uapi/linux/iio/types.h
+@@ -0,0 +1,106 @@
++/* industrial I/O data types needed both in and out of kernel
++ *
++ * Copyright (c) 2008 Jonathan Cameron
++ *
++ * This program is free software; you can redistribute it and/or modify it
++ * under the terms of the GNU General Public License version 2 as published by
++ * the Free Software Foundation.
++ */
++
++#ifndef _UAPI_IIO_TYPES_H_
++#define _UAPI_IIO_TYPES_H_
++
++enum iio_chan_type {
++	IIO_VOLTAGE,
++	IIO_CURRENT,
++	IIO_POWER,
++	IIO_ACCEL,
++	IIO_ANGL_VEL,
++	IIO_MAGN,
++	IIO_LIGHT,
++	IIO_INTENSITY,
++	IIO_PROXIMITY,
++	IIO_TEMP,
++	IIO_INCLI,
++	IIO_ROT,
++	IIO_ANGL,
++	IIO_TIMESTAMP,
++	IIO_CAPACITANCE,
++	IIO_ALTVOLTAGE,
++	IIO_CCT,
++	IIO_PRESSURE,
++	IIO_HUMIDITYRELATIVE,
++	IIO_ACTIVITY,
++	IIO_STEPS,
++	IIO_ENERGY,
++	IIO_DISTANCE,
++	IIO_VELOCITY,
++};
++
++enum iio_modifier {
++	IIO_NO_MOD,
++	IIO_MOD_X,
++	IIO_MOD_Y,
++	IIO_MOD_Z,
++	IIO_MOD_X_AND_Y,
++	IIO_MOD_X_AND_Z,
++	IIO_MOD_Y_AND_Z,
++	IIO_MOD_X_AND_Y_AND_Z,
++	IIO_MOD_X_OR_Y,
++	IIO_MOD_X_OR_Z,
++	IIO_MOD_Y_OR_Z,
++	IIO_MOD_X_OR_Y_OR_Z,
++	IIO_MOD_LIGHT_BOTH,
++	IIO_MOD_LIGHT_IR,
++	IIO_MOD_ROOT_SUM_SQUARED_X_Y,
++	IIO_MOD_SUM_SQUARED_X_Y_Z,
++	IIO_MOD_LIGHT_CLEAR,
++	IIO_MOD_LIGHT_RED,
++	IIO_MOD_LIGHT_GREEN,
++	IIO_MOD_LIGHT_BLUE,
++	IIO_MOD_QUATERNION,
++	IIO_MOD_TEMP_AMBIENT,
++	IIO_MOD_TEMP_OBJECT,
++	IIO_MOD_NORTH_MAGN,
++	IIO_MOD_NORTH_TRUE,
++	IIO_MOD_NORTH_MAGN_TILT_COMP,
++	IIO_MOD_NORTH_TRUE_TILT_COMP,
++	IIO_MOD_RUNNING,
++	IIO_MOD_JOGGING,
++	IIO_MOD_WALKING,
++	IIO_MOD_STILL,
++	IIO_MOD_ROOT_SUM_SQUARED_X_Y_Z,
++};
++
++enum iio_event_type {
++	IIO_EV_TYPE_THRESH,
++	IIO_EV_TYPE_MAG,
++	IIO_EV_TYPE_ROC,
++	IIO_EV_TYPE_THRESH_ADAPTIVE,
++	IIO_EV_TYPE_MAG_ADAPTIVE,
++	IIO_EV_TYPE_CHANGE,
++};
++
++enum iio_event_info {
++	IIO_EV_INFO_ENABLE,
++	IIO_EV_INFO_VALUE,
++	IIO_EV_INFO_HYSTERESIS,
++	IIO_EV_INFO_PERIOD,
++};
++
++enum iio_event_direction {
++	IIO_EV_DIR_EITHER,
++	IIO_EV_DIR_RISING,
++	IIO_EV_DIR_FALLING,
++	IIO_EV_DIR_NONE,
++};
++
++#define IIO_VAL_INT 1
++#define IIO_VAL_INT_PLUS_MICRO 2
++#define IIO_VAL_INT_PLUS_NANO 3
++#define IIO_VAL_INT_PLUS_MICRO_DB 4
++#define IIO_VAL_INT_MULTIPLE 5
++#define IIO_VAL_FRACTIONAL 10
++#define IIO_VAL_FRACTIONAL_LOG2 11
++
++#endif /* _UAPI_IIO_TYPES_H_ */
 -- 
-1.7.10.4
-
+1.9.1
