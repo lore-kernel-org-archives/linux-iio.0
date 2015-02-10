@@ -1,136 +1,91 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:39324 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754814AbbBHMNV (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 8 Feb 2015 07:13:21 -0500
-Message-ID: <54D752DF.3070806@kernel.org>
-Date: Sun, 08 Feb 2015 12:13:19 +0000
-From: Jonathan Cameron <jic23@kernel.org>
+Return-Path: <daniel.baluta@gmail.com>
 MIME-Version: 1.0
-To: Sanchayan Maity <maitysanchayan@gmail.com>,
-	linux-iio@vger.kernel.org
-Subject: Re: Query regarding a IIO consumer touchscreen driver
-References: <54AF6DFA.7040204@gmail.com> <54B10707.9060603@kernel.org> <54B3C41E.8080203@gmail.com>
-In-Reply-To: <54B3C41E.8080203@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Sender: daniel.baluta@gmail.com
+In-Reply-To: <54D8E8BD.3090904@metafoo.de>
+References: <1423500586-26480-1-git-send-email-daniel.baluta@intel.com>
+	<54D8E8BD.3090904@metafoo.de>
+Date: Tue, 10 Feb 2015 10:05:06 +0200
+Message-ID: <CAEnQRZBWRmWcSe1izK7cEikwfG_oAEty05eCQXxWr71=8jbDEw@mail.gmail.com>
+Subject: Re: [RFC PATCH] iio: Export userspace IIO headers
+From: Daniel Baluta <daniel.baluta@intel.com>
+To: Lars-Peter Clausen <lars@metafoo.de>
+Cc: Daniel Baluta <daniel.baluta@intel.com>, Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>, Peter Meerwald <pmeerw@pmeerw.net>,
+	Irina Tirdea <irina.tirdea@intel.com>, Roberta Dobrescu <roberta.dobrescu@gmail.com>,
+	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>, linux-api@vger.kernel.org
+Content-Type: text/plain; charset=UTF-8
+List-ID: <linux-iio@vger.kernel.org>
 
-On 12/01/15 12:54, Sanchayan Maity wrote:
-> On 01/10/2015 04:33 PM, Jonathan Cameron wrote:
->> On 09/01/15 05:58, Sanchayan Maity wrote:
->>> Hello,
->>>
->>> I have been working on a IIO consumer touchscreen driver. On one of our Vybrid modules we use the ADC channels for
->>> the touchscreen. I ported an earlier driver in the 3.0 kernel done by my colleague to the recent 3.18/19 kernel to
->>> use the IIO based consumer interface.
->>>
->>> The touchscreen driver is here
->>> http://git.toradex.com/cgit/linux-toradex.git/tree/drivers/input/touchscreen/colibri-vf50-ts.c?h=toradex_vf_3.18-next&id=7142dd741e948e1536632f9db1f3dd3a015450a5
->>>
->>> The ADC driver with which it interacts is here
->>> http://git.toradex.com/cgit/linux-toradex.git/tree/drivers/iio/adc/vf610_adc.c?h=toradex_vf_3.18-next&id=7142dd741e948e1536632f9db1f3dd3a015450a5
->>>
->>> Currently, this works in a limited capaicty I would say. One of the problems I have with this driver is that when
->>> this driver is used I can't get valid readings for any of the other ADC channels by using something like "cat". I
->>> believe this is because of the fact that the workqueue runs a while loop every 10ms and reads the channels. This
->>> clearly does not play well with reading of other channels and results in random reads on trying to read other channels,
->>> for example the temperature channel. The exact reason I have not figured out here. I was thinking may be a device
->>> lock would be required, but, that doesn't help.
->> Certainly sounds like something along those lines. 
->>>
->>> The workqueue function
->>> http://git.toradex.com/cgit/linux-toradex.git/tree/drivers/input/touchscreen/colibri-vf50-ts.c?h=toradex_vf_3.18-next&id=7142dd741e948e1536632f9db1f3dd3a015450a5#n102
->>>
->>> The primary read raw function
->>> http://git.toradex.com/cgit/linux-toradex.git/tree/drivers/iio/adc/vf610_adc.c?h=toradex_vf_3.18-next&id=7142dd741e948e1536632f9db1f3dd3a015450a5#n449
->>>
->>> I was thinking this would need a better design than what has been done? Can someone give some suggestions as what
->>> would be the right design/architecture here. I was thinking if setting up a IIO ring buffer, pushing the readings
->>> to it and then reading from the touchscreen driver would work. One of the aims is also to make it clean enough for
->>> eventual submission to the mainline. 
->> This sort of use case was what the in kernel buffer interfaces were intended for.
->> They don't actually use a buffer as such - but rather at the same point where
->> we demultiplex the incoming data to fill the IIO buffer we can also send data
->> on to other 'consumer' drivers.
-> 
-> How exactly data can be send to other consumer drivers? I tried going through the 
-> drivers in iio/adc and the header files, but, couldn't exactly figure this out.
-When you do a iio_push_to_buffers_* if there are multiple consumers registered they
-will all get whatever channels they are asking for.  This is done via a fiddly demux
-unit in the core code.  In the simple case this does nothing, but we should get
-the right data going to the right consumer when needed.  Note the normal 'buffer'
-interface of iio is just one such consumer.
+On Mon, Feb 9, 2015 at 7:05 PM, Lars-Peter Clausen <lars@metafoo.de> wrote:
+> On 02/09/2015 05:49 PM, Daniel Baluta wrote:
 >>
->> It's rather ancient but I did write a proof of concept input driver at one point.
->> http://permalink.gmane.org/gmane.linux.kernel.iio/5757
->> Might be the latest version...
-> 
-> Thanks for the idea.
+>> After UAPI header file split [1] all user-kernel interfaces were
+>> placed under include/uapi/.
 >>
->> Should give you an idea of the thinking behind it anyway.  We have have discussed
->> a generic approach to touchscreen drivers based on ADCs in the past, but that
->> has mostly been for devices with more explicit touch screen features and we
->> concluded that writing a generic driver would be 'tricky' given how many
->> subtle variants there are.
-> 
-> I would agree. Our touchscreen requires controlling four GPIO and pin multiplexing
-> of four ADC channels for enabling/disabling/re-enabling readouts. Haven't been able
-> to exactly figure how to maintain a clean separation between the input subsytem
-> driver and the IIO ADC one, due to the GPIO pins, GPIO IRQs and ADC channels. We
-> first enable the so called plates/gpios to detect IRQ, while keeping two of the
-> ADC channels as GPIOs. Once the IRQ is detected, we disable IRQ, the touch detection
-> plates/gpios, change the pinmux to ADC and the continously sample the ADC channels
-> at 10ms intervals. Not as straight forward as the other drivers which I could see.
-To do this I think we'd need to have carefully synchronised output and input in a fashion
-that we haven't begun to look at yet I'm afraid.  I can conceive of how it might work
-but would involved nasty things like delayed triggers (one trigger firing another, only
-after the first is finished).  It'd be fiddly and require a lot of new infrastructure.
-> 
+>> This patch moves IIO user specific API from:
+>>         * include/linux/iio/events.h => include/uapi/linux/iio/events.h
+>>         * include/linux/iio/types.h => include/uapi/linux/iio/types.h
 >>
->> Looking at the driver - you are correct that the first step would be to
->> implement buffered IIO support and go from there.  It's a bit of an irritating
->> device by the look of it... Every time you want to grab a different channel
->> you have to explicitly change it (not concept of multichannel scans).
->> It does have a continuous mode which would be great to support, but that's
->> not going to be much use for your touch screen as it will only read one
->> channel.
-> 
-> Yes, it is tricky. Currently, I couldn't find anything similar in the souce for 
-> what I wanted to do.
-I'm not aware of anything.   It's been discussed a few times, but no one has
-taken on the challenge yet (at least not publically).
-> 
-> From what I understand at the moment, the relevant GPIO, IRQ data needs to be
-> with the ADC driver. I do all the enable/renable of plates/IRQs/ADC in the driver,
-> push the data in the buffers and the have my touchscreen driver read the data
-> from the buffers. Though I do not have the separation I would wanted to have
-> between the data and the two subsystems.
-Too fiddly indeed.  Perhaps best bet in the first instance is a unified driver doing
-it all, then try to split it up later once we have code to look at.
+>> Now there is no need for nasty tricks to compile userspace programs
+>> (e.g iio_event_monitor). Just installing the kernel headers with
+>> make headers_install command does the job.
 >>
->> Another more generic snag is that currently is drivers operate in one or other mode.
->> Either we do buffered access, or we do polled access.  The only devices
->> that do both are those that maintain hardware storage of the previous
->> value for a given channel.
->>
->> I have some thoughts on how to deal with this by grabbing additional
->> 'of interest' channels during buffered capture and stashing them.  The
->> main issue is that the userspace interface is then messy or non obvious.
->>
->> Hope that might give you somewhere to get started.
->>
->> Jonathan
->>>
->>> Thanks & Regards,
->>> Sanchayan Maity.
->>> --
->>> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
->>> the body of a message to majordomo@vger.kernel.org
->>> More majordomo info at  http://vger.kernel.org/majordomo-info.html
->>>
->>
-> Regards,
-> Sanchayan.
-> 
+>> [1] http://lwn.net/Articles/507794/
+>
+>
+> Thanks for taking care of this, this is something that should have done a
+> while ago.
 
+Hi Lars,
+
+Thanks for the feedback!
+>
+> [...]
+>
+>> index 580ed5b..146cda1 100644
+
+<snip>
+
+>
+>
+> I think everything in this file below is not part of the ABI and should not
+> be exported to userspace.
+
+I agree about iio_event_info and IIO_VAL_* constants.
+
+>
+>> -
+>> -enum iio_event_info {
+>> -       IIO_EV_INFO_ENABLE,
+>> -       IIO_EV_INFO_VALUE,
+>> -       IIO_EV_INFO_HYSTERESIS,
+>> -       IIO_EV_INFO_PERIOD,
+>> -};
+>> -
+>> -enum iio_event_direction {
+>> -       IIO_EV_DIR_EITHER,
+>> -       IIO_EV_DIR_RISING,
+>> -       IIO_EV_DIR_FALLING,
+>> -       IIO_EV_DIR_NONE,
+>> -};
+
+iio_event_direction is exported to userspace via IIO_EVENT_CODE and
+I think it belongs to this file.
+
+>> -
+>> -#define IIO_VAL_INT 1
+>> -#define IIO_VAL_INT_PLUS_MICRO 2
+>> -#define IIO_VAL_INT_PLUS_NANO 3
+>> -#define IIO_VAL_INT_PLUS_MICRO_DB 4
+>> -#define IIO_VAL_INT_MULTIPLE 5
+>> -#define IIO_VAL_FRACTIONAL 10
+>> -#define IIO_VAL_FRACTIONAL_LOG2 11
+>> -
+
+I will send v2 in few hours, hopefully I'll get more feedback meanwhile.
+
+Do you thing should I remove the RFC tag?
+
+thanks,
+Daniel.
