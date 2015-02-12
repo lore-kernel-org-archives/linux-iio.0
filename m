@@ -1,46 +1,33 @@
-Return-Path: <andrew.smirnov@gmail.com>
-MIME-Version: 1.0
-Date: Thu, 12 Feb 2015 12:23:33 -0800
-Message-ID: <CAHQ1cqG313SrRWbBLaHm1gwmdTOXOqjviBaA8tEcsbv7m=n-Bg@mail.gmail.com>
-Subject: Revert e0922e5e3ccb78aa0152e93dfbd1755ac39c8582
-From: Andrey Smirnov <andrew.smirnov@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Hartmut Knaack <knaack.h@gmx.de>, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org, Kaptain Kernel <andrew.smirnov@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-we0-f178.google.com ([74.125.82.178]:39208 "EHLO
+	mail-we0-f178.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752058AbbBLVA3 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 12 Feb 2015 16:00:29 -0500
+Received: by mail-we0-f178.google.com with SMTP id w62so12654341wes.9
+        for <linux-iio@vger.kernel.org>; Thu, 12 Feb 2015 13:00:27 -0800 (PST)
+From: Roberta Dobrescu <roberta.dobrescu@gmail.com>
+To: linux-iio@vger.kernel.org
+Cc: daniel.baluta@intel.com, octavian.purdila@intel.com,
+	jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
+	pmeerw@pmeerw.net, Roberta Dobrescu <roberta.dobrescu@gmail.com>
+Subject: [PATCH 0/2] iio: light: Select REGMAP_I2C
+Date: Thu, 12 Feb 2015 23:00:13 +0200
+Message-Id: <1423774815-26816-1-git-send-email-roberta.dobrescu@gmail.com>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Hi Jonathan,
+This patchset adds missing select statements for gp2ap020a00f and jsa1212
+drivers. Without regmap_i2c, loadind these drivers fails with the following
+error message:
+Unknown symbol devm_regmap_init_i2c.
 
-Please revert patch e0922e5e3ccb78aa0152e93dfbd1755ac39c8582:
+Roberta Dobrescu (2):
+  iio: light: jsa1212: Select REGMAP_I2C
+  iio: light: gp2ap020a00f: Select REGMAP_I2C
 
-https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git/commit/drivers/iio/humidity/si7020.c?id=e0922e5e3ccb78aa0152e93dfbd1755ac39c8582
+ drivers/iio/light/Kconfig | 2 ++
+ 1 file changed, 2 insertions(+)
 
-It incorrectly assumes that the level of indirection is not needed
-which is not true(probably because the driver incorrectly allocates
-sizeof(*client) instead of sizeof(*data) via devm_iio_device_alloc).
-If you look at the code of the probe function(see below) it is easy to
-see that what is being stored in the private memory of the IIO device
-instance is not a copy of a 'struct i2c_client' but a pointer to an
-instance passed as an argument to the probe function.
+-- 
+1.9.1
 
-struct i2c_client **data;
-int ret;
-
-< Some code skipped >
-
-indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*client));
-if (!indio_dev)
-return -ENOMEM;
-
-data = iio_priv(indio_dev);
-*data = client;
-
-Without reverting this change any read of a raw value of this sensor
-leads to a kernel oops due to a NULL pointer de-reference on my
-hardware setup.
-
-I will be sending a patch to fix the 'sizeof' mixup shortly.
-
-Thank you,
-Andrey Smirnov
