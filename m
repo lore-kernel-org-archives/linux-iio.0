@@ -1,38 +1,35 @@
-Return-Path: <sudipm.mukherjee@gmail.com>
-Date: Fri, 13 Feb 2015 13:57:20 +0530
-From: Sudip Mukherjee <sudipm.mukherjee@gmail.com>
-To: Tolga Ceylan <tolga.ceylan@gmail.com>
-Cc: Lars-Peter Clausen <lars@metafoo.de>,
-	Michael Hennerich <Michael.Hennerich@analog.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/1] Staging: iio: meter: ade7854-i2c: code style
- improvements
-Message-ID: <20150213082720.GA6088@sudip-PC>
-References: <1423810186-28774-1-git-send-email-tolga.ceylan@gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <1423810186-28774-1-git-send-email-tolga.ceylan@gmail.com>
+Return-Path: <andrew.smirnov@gmail.com>
+From: Andrey Smirnov <andrew.smirnov@gmail.com>
+To: linux-iio@vger.kernel.org
+Cc: Andrey Smirnov <andrew.smirnov@gmail.com>,
+	linux-kernel@vger.kernel.org,
+	Jonathan Cameron <jic23@kernel.org>
+Subject: [PATCH] IIO: si7020: Allocate correct amount of memory in devm_iio_device_alloc
+Date: Thu, 12 Feb 2015 23:58:41 -0800
+Message-Id: <1423814321-15606-1-git-send-email-andrew.smirnov@gmail.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-On Thu, Feb 12, 2015 at 10:49:46PM -0800, Tolga Ceylan wrote:
-> Code reformatting based on checkpatch.pl with --strict:
-> 1) Lines over 80 characters were fixed
-> 2) Alignment should match open paranthesis cases corrected
-> 3) Comparison to NULL rewritten as !indio_dev
+Since only a pointer to struct i2c_client is stored in a private area
+of IIO device created by the driver there's no need to allocate
+sizeof(struct i2c_client) worth of storage.
 
-you are doing three different types of changes here. one patch should have only one type of change.
+Signed-off-by: Andrey Smirnov <andrew.smirnov@gmail.com>
+---
+ drivers/iio/humidity/si7020.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-regards
-sudip
-> 
-> Signed-off-by: Tolga Ceylan <tolga.ceylan@gmail.com>
-> ---
->  drivers/staging/iio/meter/ade7854-i2c.c | 39 +++++++++++++++++----------------
->  1 file changed, 20 insertions(+), 19 deletions(-)
-> 
->  
+diff --git a/drivers/iio/humidity/si7020.c b/drivers/iio/humidity/si7020.c
+index 69e49f5..fa3b809 100644
+--- a/drivers/iio/humidity/si7020.c
++++ b/drivers/iio/humidity/si7020.c
+@@ -126,7 +126,7 @@ static int si7020_probe(struct i2c_client *client,
+ 	/* Wait the maximum power-up time after software reset. */
+ 	msleep(15);
+
+-	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*client));
++	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
+ 	if (!indio_dev)
+ 		return -ENOMEM;
+
+--
+2.1.0
