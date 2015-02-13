@@ -1,33 +1,24 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-wi0-f180.google.com ([209.85.212.180]:35118 "EHLO
-	mail-wi0-f180.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751592AbbBMIAj (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 13 Feb 2015 03:00:39 -0500
-Received: by mail-wi0-f180.google.com with SMTP id h11so10094887wiw.1
-        for <linux-iio@vger.kernel.org>; Fri, 13 Feb 2015 00:00:38 -0800 (PST)
+Return-Path: <daniel.baluta@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <1423774815-26816-3-git-send-email-roberta.dobrescu@gmail.com>
+Sender: daniel.baluta@gmail.com
+In-Reply-To: <1423774815-26816-2-git-send-email-roberta.dobrescu@gmail.com>
 References: <1423774815-26816-1-git-send-email-roberta.dobrescu@gmail.com>
-	<1423774815-26816-3-git-send-email-roberta.dobrescu@gmail.com>
-Date: Fri, 13 Feb 2015 10:00:37 +0200
-Message-ID: <CAEnQRZDQ5iAP5_VGFk4b+RvRtbTmY6PVKEP01PPAmYUuCtvkhQ@mail.gmail.com>
-Subject: Re: [PATCH 2/2] iio: light: gp2ap020a00f: Select REGMAP_I2C
+	<1423774815-26816-2-git-send-email-roberta.dobrescu@gmail.com>
+Date: Fri, 13 Feb 2015 09:59:14 +0200
+Message-ID: <CAEnQRZAr9N1iNxEhqLo8_1tiKW0zhPztP9mhQxoZjdDojhdgpw@mail.gmail.com>
+Subject: Re: [PATCH 1/2] iio: light: jsa1212: Select REGMAP_I2C
 From: Daniel Baluta <daniel.baluta@intel.com>
-To: Roberta Dobrescu <roberta.dobrescu@gmail.com>
-Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	Daniel Baluta <daniel.baluta@intel.com>,
-	"octavian.purdila@intel.com" <octavian.purdila@intel.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>
+To: Roberta Dobrescu <roberta.dobrescu@gmail.com>, Jonathan Cameron <jic23@kernel.org>,
+	Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
+Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>, Daniel Baluta <daniel.baluta@intel.com>,
+	"octavian.purdila@intel.com" <octavian.purdila@intel.com>, Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>, Peter Meerwald <pmeerw@pmeerw.net>
 Content-Type: text/plain; charset=UTF-8
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+List-ID: <linux-iio@vger.kernel.org>
 
 On Thu, Feb 12, 2015 at 11:00 PM, Roberta Dobrescu
 <roberta.dobrescu@gmail.com> wrote:
-> This patch adds missing 'select' statement for gp2ap020a00f driver.
+> This patch adds missing 'select' statement for jsa1212 driver.
 > Without regmap_i2c, we get the following error when loading the module:
 > Unknown symbol devm_regmap_init_i2c.
 >
@@ -40,17 +31,17 @@ Reviewed-by: Daniel Baluta <daniel.baluta@intel.com>
 >  1 file changed, 1 insertion(+)
 >
 > diff --git a/drivers/iio/light/Kconfig b/drivers/iio/light/Kconfig
-> index e0ed374..a224afd 100644
+> index ae68c64..e0ed374 100644
 > --- a/drivers/iio/light/Kconfig
 > +++ b/drivers/iio/light/Kconfig
-> @@ -73,6 +73,7 @@ config CM36651
->  config GP2AP020A00F
->         tristate "Sharp GP2AP020A00F Proximity/ALS sensor"
+> @@ -126,6 +126,7 @@ config HID_SENSOR_PROX
+>  config JSA1212
+>         tristate "JSA1212 ALS and proximity sensor driver"
 >         depends on I2C
 > +       select REGMAP_I2C
->         select IIO_BUFFER
->         select IIO_TRIGGERED_BUFFER
->         select IRQ_WORK
+>         help
+>          Say Y here if you want to build a IIO driver for JSA1212
+>          proximity & ALS sensor device.
 > --
 > 1.9.1
 >
