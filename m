@@ -1,51 +1,147 @@
-Return-Path: <daniel.baluta@gmail.com>
-MIME-Version: 1.0
-Sender: daniel.baluta@gmail.com
-In-Reply-To: <1423774815-26816-2-git-send-email-roberta.dobrescu@gmail.com>
-References: <1423774815-26816-1-git-send-email-roberta.dobrescu@gmail.com>
-	<1423774815-26816-2-git-send-email-roberta.dobrescu@gmail.com>
-Date: Fri, 13 Feb 2015 09:59:14 +0200
-Message-ID: <CAEnQRZAr9N1iNxEhqLo8_1tiKW0zhPztP9mhQxoZjdDojhdgpw@mail.gmail.com>
-Subject: Re: [PATCH 1/2] iio: light: jsa1212: Select REGMAP_I2C
-From: Daniel Baluta <daniel.baluta@intel.com>
-To: Roberta Dobrescu <roberta.dobrescu@gmail.com>, Jonathan Cameron <jic23@kernel.org>,
-	Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
-Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>, Daniel Baluta <daniel.baluta@intel.com>,
-	"octavian.purdila@intel.com" <octavian.purdila@intel.com>, Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>, Peter Meerwald <pmeerw@pmeerw.net>
-Content-Type: text/plain; charset=UTF-8
+Return-Path: <tolga.ceylan@gmail.com>
+From: Tolga Ceylan <tolga.ceylan@gmail.com>
+To: Lars-Peter Clausen <lars@metafoo.de>,
+	Michael Hennerich <Michael.Hennerich@analog.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	linux-iio@vger.kernel.org,
+	devel@driverdev.osuosl.org,
+	linux-kernel@vger.kernel.org,
+	tolga.ceylan@gmail.com
+Subject: [PATCH 1/1] Staging: iio: meter: ade7854-i2c: code style improvements
+Date: Thu, 12 Feb 2015 22:49:46 -0800
+Message-Id: <1423810186-28774-1-git-send-email-tolga.ceylan@gmail.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-On Thu, Feb 12, 2015 at 11:00 PM, Roberta Dobrescu
-<roberta.dobrescu@gmail.com> wrote:
-> This patch adds missing 'select' statement for jsa1212 driver.
-> Without regmap_i2c, we get the following error when loading the module:
-> Unknown symbol devm_regmap_init_i2c.
->
-> Signed-off-by: Roberta Dobrescu <roberta.dobrescu@gmail.com>
+Code reformatting based on checkpatch.pl with --strict:
+1) Lines over 80 characters were fixed
+2) Alignment should match open paranthesis cases corrected
+3) Comparison to NULL rewritten as !indio_dev
 
-Reviewed-by: Daniel Baluta <daniel.baluta@intel.com>
+Signed-off-by: Tolga Ceylan <tolga.ceylan@gmail.com>
+---
+ drivers/staging/iio/meter/ade7854-i2c.c | 39 +++++++++++++++++----------------
+ 1 file changed, 20 insertions(+), 19 deletions(-)
 
-> ---
->  drivers/iio/light/Kconfig | 1 +
->  1 file changed, 1 insertion(+)
->
-> diff --git a/drivers/iio/light/Kconfig b/drivers/iio/light/Kconfig
-> index ae68c64..e0ed374 100644
-> --- a/drivers/iio/light/Kconfig
-> +++ b/drivers/iio/light/Kconfig
-> @@ -126,6 +126,7 @@ config HID_SENSOR_PROX
->  config JSA1212
->         tristate "JSA1212 ALS and proximity sensor driver"
->         depends on I2C
-> +       select REGMAP_I2C
->         help
->          Say Y here if you want to build a IIO driver for JSA1212
->          proximity & ALS sensor device.
-> --
-> 1.9.1
->
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+diff --git a/drivers/staging/iio/meter/ade7854-i2c.c b/drivers/staging/iio/meter/ade7854-i2c.c
+index 5b33c7f..fcb4714 100644
+--- a/drivers/staging/iio/meter/ade7854-i2c.c
++++ b/drivers/staging/iio/meter/ade7854-i2c.c
+@@ -16,8 +16,8 @@
+ #include "ade7854.h"
+ 
+ static int ade7854_i2c_write_reg_8(struct device *dev,
+-		u16 reg_address,
+-		u8 value)
++				   u16 reg_address,
++				   u8 value)
+ {
+ 	int ret;
+ 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+@@ -35,8 +35,8 @@ static int ade7854_i2c_write_reg_8(struct device *dev,
+ }
+ 
+ static int ade7854_i2c_write_reg_16(struct device *dev,
+-		u16 reg_address,
+-		u16 value)
++				    u16 reg_address,
++				    u16 value)
+ {
+ 	int ret;
+ 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+@@ -55,8 +55,8 @@ static int ade7854_i2c_write_reg_16(struct device *dev,
+ }
+ 
+ static int ade7854_i2c_write_reg_24(struct device *dev,
+-		u16 reg_address,
+-		u32 value)
++				    u16 reg_address,
++				    u32 value)
+ {
+ 	int ret;
+ 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+@@ -76,8 +76,8 @@ static int ade7854_i2c_write_reg_24(struct device *dev,
+ }
+ 
+ static int ade7854_i2c_write_reg_32(struct device *dev,
+-		u16 reg_address,
+-		u32 value)
++				    u16 reg_address,
++				    u32 value)
+ {
+ 	int ret;
+ 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+@@ -98,8 +98,8 @@ static int ade7854_i2c_write_reg_32(struct device *dev,
+ }
+ 
+ static int ade7854_i2c_read_reg_8(struct device *dev,
+-		u16 reg_address,
+-		u8 *val)
++				  u16 reg_address,
++				  u8 *val)
+ {
+ 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+ 	struct ade7854_state *st = iio_priv(indio_dev);
+@@ -124,8 +124,8 @@ out:
+ }
+ 
+ static int ade7854_i2c_read_reg_16(struct device *dev,
+-		u16 reg_address,
+-		u16 *val)
++				   u16 reg_address,
++				   u16 *val)
+ {
+ 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+ 	struct ade7854_state *st = iio_priv(indio_dev);
+@@ -150,8 +150,8 @@ out:
+ }
+ 
+ static int ade7854_i2c_read_reg_24(struct device *dev,
+-		u16 reg_address,
+-		u32 *val)
++				   u16 reg_address,
++				   u32 *val)
+ {
+ 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+ 	struct ade7854_state *st = iio_priv(indio_dev);
+@@ -176,8 +176,8 @@ out:
+ }
+ 
+ static int ade7854_i2c_read_reg_32(struct device *dev,
+-		u16 reg_address,
+-		u32 *val)
++				   u16 reg_address,
++				   u32 *val)
+ {
+ 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+ 	struct ade7854_state *st = iio_priv(indio_dev);
+@@ -195,21 +195,22 @@ static int ade7854_i2c_read_reg_32(struct device *dev,
+ 	if (ret)
+ 		goto out;
+ 
+-	*val = (st->rx[0] << 24) | (st->rx[1] << 16) | (st->rx[2] << 8) | st->rx[3];
++	*val = (st->rx[0] << 24) | (st->rx[1] << 16)
++		| (st->rx[2] << 8) | st->rx[3];
+ out:
+ 	mutex_unlock(&st->buf_lock);
+ 	return ret;
+ }
+ 
+ static int ade7854_i2c_probe(struct i2c_client *client,
+-		const struct i2c_device_id *id)
++			     const struct i2c_device_id *id)
+ {
+ 	int ret;
+ 	struct ade7854_state *st;
+ 	struct iio_dev *indio_dev;
+ 
+ 	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*st));
+-	if (indio_dev == NULL)
++	if (!indio_dev)
+ 		return -ENOMEM;
+ 	st = iio_priv(indio_dev);
+ 	i2c_set_clientdata(client, indio_dev);
+-- 
+2.3.0
