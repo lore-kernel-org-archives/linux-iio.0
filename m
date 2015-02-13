@@ -1,44 +1,38 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-wg0-f41.google.com ([74.125.82.41]:61838 "EHLO
-	mail-wg0-f41.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752867AbbBLVAa (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 12 Feb 2015 16:00:30 -0500
-Received: by mail-wg0-f41.google.com with SMTP id b13so12816084wgh.0
-        for <linux-iio@vger.kernel.org>; Thu, 12 Feb 2015 13:00:29 -0800 (PST)
-From: Roberta Dobrescu <roberta.dobrescu@gmail.com>
-To: linux-iio@vger.kernel.org
-Cc: daniel.baluta@intel.com, octavian.purdila@intel.com,
-	jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
-	pmeerw@pmeerw.net, Roberta Dobrescu <roberta.dobrescu@gmail.com>
-Subject: [PATCH 1/2] iio: light: jsa1212: Select REGMAP_I2C
-Date: Thu, 12 Feb 2015 23:00:14 +0200
-Message-Id: <1423774815-26816-2-git-send-email-roberta.dobrescu@gmail.com>
-In-Reply-To: <1423774815-26816-1-git-send-email-roberta.dobrescu@gmail.com>
-References: <1423774815-26816-1-git-send-email-roberta.dobrescu@gmail.com>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <sudipm.mukherjee@gmail.com>
+Date: Fri, 13 Feb 2015 13:57:20 +0530
+From: Sudip Mukherjee <sudipm.mukherjee@gmail.com>
+To: Tolga Ceylan <tolga.ceylan@gmail.com>
+Cc: Lars-Peter Clausen <lars@metafoo.de>,
+	Michael Hennerich <Michael.Hennerich@analog.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/1] Staging: iio: meter: ade7854-i2c: code style
+ improvements
+Message-ID: <20150213082720.GA6088@sudip-PC>
+References: <1423810186-28774-1-git-send-email-tolga.ceylan@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <1423810186-28774-1-git-send-email-tolga.ceylan@gmail.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-This patch adds missing 'select' statement for jsa1212 driver.
-Without regmap_i2c, we get the following error when loading the module:
-Unknown symbol devm_regmap_init_i2c.
+On Thu, Feb 12, 2015 at 10:49:46PM -0800, Tolga Ceylan wrote:
+> Code reformatting based on checkpatch.pl with --strict:
+> 1) Lines over 80 characters were fixed
+> 2) Alignment should match open paranthesis cases corrected
+> 3) Comparison to NULL rewritten as !indio_dev
 
-Signed-off-by: Roberta Dobrescu <roberta.dobrescu@gmail.com>
----
- drivers/iio/light/Kconfig | 1 +
- 1 file changed, 1 insertion(+)
+you are doing three different types of changes here. one patch should have only one type of change.
 
-diff --git a/drivers/iio/light/Kconfig b/drivers/iio/light/Kconfig
-index ae68c64..e0ed374 100644
---- a/drivers/iio/light/Kconfig
-+++ b/drivers/iio/light/Kconfig
-@@ -126,6 +126,7 @@ config HID_SENSOR_PROX
- config JSA1212
- 	tristate "JSA1212 ALS and proximity sensor driver"
- 	depends on I2C
-+	select REGMAP_I2C
- 	help
- 	 Say Y here if you want to build a IIO driver for JSA1212
- 	 proximity & ALS sensor device.
--- 
-1.9.1
-
+regards
+sudip
+> 
+> Signed-off-by: Tolga Ceylan <tolga.ceylan@gmail.com>
+> ---
+>  drivers/staging/iio/meter/ade7854-i2c.c | 39 +++++++++++++++++----------------
+>  1 file changed, 20 insertions(+), 19 deletions(-)
+> 
+>  
