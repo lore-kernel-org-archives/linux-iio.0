@@ -1,56 +1,354 @@
-Return-Path: <rdunlap@infradead.org>
-Message-ID: <54DE97A1.2000607@infradead.org>
-Date: Fri, 13 Feb 2015 16:32:33 -0800
-From: Randy Dunlap <rdunlap@infradead.org>
-MIME-Version: 1.0
-To: Stephen Rothwell <sfr@canb.auug.org.au>, linux-next@vger.kernel.org
-CC: LKML <linux-kernel@vger.kernel.org>,
- Jonathan Cameron <jic23@kernel.org>,
- linux-iio@vger.kernel.org, Laxman Dewangan <ldewangan@nvidia.com>
-Subject: Re: linux-next: Tree for Feb 13 (iio/magnetometer/ak8975.c)
-References: <20150213165615.1ad43047@canb.auug.org.au>
-In-Reply-To: <20150213165615.1ad43047@canb.auug.org.au>
-Content-Type: text/plain; charset=utf-8
+Return-Path: <srinivas.pandruvada@linux.intel.com>
+Message-ID: <1423872214.2136.292.camel@spandruv-DESK3.jf.intel.com>
+Subject: Re: [PATCH v3 8/9] iio: bmc150: introduce bmc150_accel_trigger
+From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Octavian Purdila <octavian.purdila@intel.com>, linux-iio@vger.kernel.org
+Date: Fri, 13 Feb 2015 16:03:34 -0800
+In-Reply-To: <54D74358.108@kernel.org>
+References: <1422662408-8149-1-git-send-email-octavian.purdila@intel.com>
+	 <1422662408-8149-9-git-send-email-octavian.purdila@intel.com>
+	 <54D74358.108@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Mime-Version: 1.0
 List-ID: <linux-iio@vger.kernel.org>
 
-On 02/12/15 21:56, Stephen Rothwell wrote:
-> Hi all,
+On Sun, 2015-02-08 at 11:07 +0000, Jonathan Cameron wrote: 
+> On 31/01/15 00:00, Octavian Purdila wrote:
+> > Add a separate structure for triggers and add the infrastructure to
+> > support an arbitrary number of triggers. Each trigger is associated
+> > with an interrupt and has an enabled/disabled state.
+> > 
+> > Signed-off-by: Octavian Purdila <octavian.purdila@intel.com>
+> Another sensible patch. One trivial point inline.  Otherwise, I'd
+> like an Ack from Srinivas on this as it's a non trivial bit of refactoring
+> and despite seeming like a good idea does add a fair bit of code!
 > 
-> Please do not add any material destined for v3.21 to your linux-next
-> included trees until after v3.20-rc1 has been released.
+Some minor comment (But not a big deal at this time) in addition to
+Jonathan's. Once addressed you can add:
+Acked-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com> 
+> J
+> > ---
+> >  drivers/iio/accel/bmc150-accel.c | 195 ++++++++++++++++++++++++---------------
+> >  1 file changed, 119 insertions(+), 76 deletions(-)
+> > 
+> > diff --git a/drivers/iio/accel/bmc150-accel.c b/drivers/iio/accel/bmc150-accel.c
+> > index b23ad1b..c05aa43 100644
+> > --- a/drivers/iio/accel/bmc150-accel.c
+> > +++ b/drivers/iio/accel/bmc150-accel.c
+> > @@ -152,14 +152,22 @@ struct bmc150_accel_interrupt {
+> >  	atomic_t users;
+> >  };
+> >  
+> > +struct bmc150_accel_trigger {
+> > +	struct bmc150_accel_interrupt *intr;
+> > +	struct bmc150_accel_data *data;
+> > +	struct iio_trigger *indio_trig;
+> > +	bool enabled;
+> > +	int (*setup)(struct bmc150_accel_trigger *t, bool state);
+> > +};
+> > +
+> >  #define BMC150_ACCEL_INTERRUPTS		2
+> > +#define BMC150_ACCEL_TRIGGERS		2
+> >  
+> >  struct bmc150_accel_data {
+> >  	struct i2c_client *client;
+> >  	struct bmc150_accel_interrupt interrupts[BMC150_ACCEL_INTERRUPTS];
+> > -	struct iio_trigger *dready_trig;
+> > -	struct iio_trigger *motion_trig;
+> >  	atomic_t active_intr;
+> > +	struct bmc150_accel_trigger triggers[BMC150_ACCEL_TRIGGERS];
+> >  	struct mutex mutex;
+> >  	s16 buffer[8];
+> >  	u8 bw_bits;
+> > @@ -167,8 +175,6 @@ struct bmc150_accel_data {
+> >  	u32 slope_thres;
+> >  	u32 range;
+> >  	int ev_enable_state;
+> > -	bool dready_trigger_on;
+> > -	bool motion_trigger_on;
+> >  	int64_t timestamp;
+> >  	const struct bmc150_accel_chip_info *chip_info;
+> >  };
+> > @@ -309,6 +315,15 @@ static int bmc150_accel_update_slope(struct bmc150_accel_data *data)
+> >  	return ret;
+> >  }
+> >  
+> > +static int bmc150_accel_any_motion_setup(struct bmc150_accel_trigger *t,
+> > +					 bool state)
+> > +{
+> > +	if (state)
+> > +		return bmc150_accel_update_slope(t->data);
+> > +
+> > +	return 0;
+> > +}
+> > +
+> >  static int bmc150_accel_chip_init(struct bmc150_accel_data *data)
+> >  {
+> >  	int ret;
+> > @@ -787,11 +802,14 @@ static int bmc150_accel_validate_trigger(struct iio_dev *indio_dev,
+> >  				   struct iio_trigger *trig)
+> >  {
+> >  	struct bmc150_accel_data *data = iio_priv(indio_dev);
+> > +	int i;
+> >  
+> > -	if (data->dready_trig != trig && data->motion_trig != trig)
+> > -		return -EINVAL;
+> > +	for (i = 0; i < BMC150_ACCEL_TRIGGERS; i++) {
+> > +		if (data->triggers[i].indio_trig == trig)
+> > +			return 0;
+> > +	}
+> >  
+> > -	return 0;
+> > +	return -EINVAL;
+> >  }
+> >  
+> >  static IIO_CONST_ATTR_SAMP_FREQ_AVAIL(
+> > @@ -963,12 +981,12 @@ err_read:
+> >  
+> >  static int bmc150_accel_trig_try_reen(struct iio_trigger *trig)
+> >  {
+> > -	struct iio_dev *indio_dev = iio_trigger_get_drvdata(trig);
+> > -	struct bmc150_accel_data *data = iio_priv(indio_dev);
+> > +	struct bmc150_accel_trigger *t = iio_trigger_get_drvdata(trig);
+> > +	struct bmc150_accel_data *data = t->data;
+> >  	int ret;
+> >  
+> >  	/* new data interrupts don't need ack */
+> > -	if (data->dready_trigger_on)
+> > +	if (t == &t->data->triggers[0])
+> >  		return 0;
+> >  
+> >  	mutex_lock(&data->mutex);
+> > @@ -990,42 +1008,32 @@ static int bmc150_accel_trig_try_reen(struct iio_trigger *trig)
+> >  static int bmc150_accel_data_rdy_trigger_set_state(struct iio_trigger *trig,
+> >  						   bool state)
+> >  {
+> > -	struct iio_dev *indio_dev = iio_trigger_get_drvdata(trig);
+> > -	struct bmc150_accel_data *data = iio_priv(indio_dev);
+> > +	struct bmc150_accel_trigger *t = iio_trigger_get_drvdata(trig);
+> > +	struct bmc150_accel_data *data = t->data;
+> >  	int ret;
+> >  
+> >  	mutex_lock(&data->mutex);
+> >  
+> > -	if (data->motion_trig == trig) {
+> > -		if (data->motion_trigger_on == state) {
+> > -			mutex_unlock(&data->mutex);
+> > -			return 0;
+> > -		}
+> > -	} else {
+> > -		if (data->dready_trigger_on == state) {
+> > +	if (t->enabled == state) {
+> > +		mutex_unlock(&data->mutex);
+> > +		return 0;
+> > +	}
+> > +
+> > +	if (t->setup) {
+> > +		ret = t->setup(t, state);
+> > +		if (ret < 0) {
+> >  			mutex_unlock(&data->mutex);
+> > -			return 0;
+> > +			return ret;
+> >  		}
+> >  	}
+> >  
+> > -	if (data->motion_trig == trig) {
+> > -		ret = bmc150_accel_update_slope(data);
+> > -		if (!ret)
+> > -			ret = bmc150_accel_set_interrupt(data,
+> > -							 &data->interrupts[1],
+> > -							 state);
+> > -	} else {
+> > -		ret = bmc150_accel_set_interrupt(data, &data->interrupts[0],
+> > -						 state);
+> > -	}
+> > +	ret = bmc150_accel_set_interrupt(data, t->intr, state);
+> >  	if (ret < 0) {
+> >  		mutex_unlock(&data->mutex);
+> >  		return ret;
+> >  	}
+> > -	if (data->motion_trig == trig)
+> > -		data->motion_trigger_on = state;
+> > -	else
+> > -		data->dready_trigger_on = state;
+> > +
+> > +	t->enabled = state;
+> >  
+> >  	mutex_unlock(&data->mutex);
+> >  
+> > @@ -1079,7 +1087,7 @@ static irqreturn_t bmc150_accel_event_handler(int irq, void *private)
+> >  							dir),
+> >  							data->timestamp);
+> >  ack_intr_status:
+> > -	if (!data->dready_trigger_on)
+> > +	if (!data->triggers[0].enabled)
+I think it is better to use some enum in place of 0, this way it will be
+less confusing when we have many triggers. 
+> >  		ret = i2c_smbus_write_byte_data(data->client,
+> >  					BMC150_ACCEL_REG_INT_RST_LATCH,
+> >  					BMC150_ACCEL_INT_MODE_LATCH_INT |
+> > @@ -1092,13 +1100,16 @@ static irqreturn_t bmc150_accel_data_rdy_trig_poll(int irq, void *private)
+> >  {
+> >  	struct iio_dev *indio_dev = private;
+> >  	struct bmc150_accel_data *data = iio_priv(indio_dev);
+> > +	int i;
+> >  
+> >  	data->timestamp = iio_get_time_ns();
+> >  
+> > -	if (data->dready_trigger_on)
+> > -		iio_trigger_poll(data->dready_trig);
+> > -	else if (data->motion_trigger_on)
+> > -		iio_trigger_poll(data->motion_trig);
+> > +	for (i = 0; i < BMC150_ACCEL_TRIGGERS; i++) {
+> > +		if (data->triggers[i].enabled) {
+> > +			iio_trigger_poll(data->triggers[i].indio_trig);
+> > +			break;
+> > +		}
+> > +	}
+> >  
+> >  	if (data->ev_enable_state)
+> >  		return IRQ_WAKE_THREAD;
+> > @@ -1150,6 +1161,71 @@ static int bmc150_accel_gpio_probe(struct i2c_client *client,
+> >  	return ret;
+> >  }
+> >  
+> > +static const struct {
+> > +	int intr;
+> > +	const char *name;
+> > +	int (*setup)(struct bmc150_accel_trigger *t, bool state);
+> > +} bmc150_accel_triggers[BMC150_ACCEL_TRIGGERS] = {
+> > +	{
+> > +		.intr = 0,
+> > +		.name = "%s-dev%d",
+> > +	},
+> > +	{
+> > +		.intr = 1,
+> > +		.name = "%s-any-motion-dev%d",
+> > +		.setup = bmc150_accel_any_motion_setup,
+> > +	},
+> > +};
+> > +
+> > +static void bmc150_accel_unregister_triggers(struct bmc150_accel_data *data,
+> > +					     int from)
+> > +{
+> > +	int i;
+> > +
+> > +	for (i = from; i >= 0; i++) {
+> > +		if (data->triggers[i].indio_trig) {
+> > +			iio_trigger_unregister(data->triggers[i].indio_trig);
+> > +			data->triggers[i].indio_trig = NULL;
+> > +		}
+> > +	}
+> > +}
+> > +
+> > +static int bmc150_accel_triggers_setup(struct iio_dev *indio_dev,
+> > +				       struct bmc150_accel_data *data)
+> > +{
+> > +	int i, ret;
+> > +
+> > +	for (i = 0; i < BMC150_ACCEL_TRIGGERS; i++) {
+> > +		struct bmc150_accel_trigger *t = &data->triggers[i];
+> > +		const char *name = bmc150_accel_triggers[i].name;
+> Why bother with this local variable?  Just pass it straight in.
 > 
-> Changes since 20150212:
-
-on i386:  when CONFIG_I2C is not enabled:
-
-../drivers/iio/magnetometer/ak8975.c: In function 'ak8975_who_i_am':
-../drivers/iio/magnetometer/ak8975.c:393:2: error: implicit declaration of function 'i2c_smbus_read_i2c_block_data' [-Werror=implicit-function-declaration]
-  ret = i2c_smbus_read_i2c_block_data(client, AK09912_REG_WIA1,
-  ^
-../drivers/iio/magnetometer/ak8975.c: In function 'ak8975_set_mode':
-../drivers/iio/magnetometer/ak8975.c:431:2: error: implicit declaration of function 'i2c_smbus_write_byte_data' [-Werror=implicit-function-declaration]
-  ret = i2c_smbus_write_byte_data(data->client,
-  ^
-../drivers/iio/magnetometer/ak8975.c: In function 'wait_conversion_complete_gpio':
-../drivers/iio/magnetometer/ak8975.c:555:2: error: implicit declaration of function 'i2c_smbus_read_byte_data' [-Werror=implicit-function-declaration]
-  ret = i2c_smbus_read_byte_data(client, data->def->ctrl_regs[ST1]);
-  ^
-../drivers/iio/magnetometer/ak8975.c: In function 'ak8975_read_axis':
-../drivers/iio/magnetometer/ak8975.c:650:2: error: implicit declaration of function 'i2c_smbus_read_word_data' [-Werror=implicit-function-declaration]
-  ret = i2c_smbus_read_word_data(client, data->def->data_regs[index]);
-  ^
-../drivers/iio/magnetometer/ak8975.c: At top level:
-../drivers/iio/magnetometer/ak8975.c:846:1: warning: data definition has no type or storage class [enabled by default]
- module_i2c_driver(ak8975_driver);
- ^
-../drivers/iio/magnetometer/ak8975.c:846:1: error: type defaults to 'int' in declaration of 'module_i2c_driver' [-Werror=implicit-int]
-../drivers/iio/magnetometer/ak8975.c:846:1: warning: parameter names (without types) in function declaration [enabled by default]
-../drivers/iio/magnetometer/ak8975.c:837:26: warning: 'ak8975_driver' defined but not used [-Wunused-variable]
- static struct i2c_driver ak8975_driver = {
-                          ^
-cc1: some warnings being treated as errors
-make[4]: *** [drivers/iio/magnetometer/ak8975.o] Error 1
-
-
--- 
-~Randy
+> > +		int intr = bmc150_accel_triggers[i].intr;
+> > +
+> > +		t->indio_trig = devm_iio_trigger_alloc(&data->client->dev, name,
+> > +						       indio_dev->name,
+> > +						       indio_dev->id);
+> > +		if (!t->indio_trig) {
+> > +			ret = -ENOMEM;
+> > +			break;
+> > +		}
+> > +
+> > +		t->indio_trig->dev.parent = &data->client->dev;
+> > +		t->indio_trig->ops = &bmc150_accel_trigger_ops;
+> > +		t->intr = &data->interrupts[intr];
+> > +		t->data = data;
+> > +		t->setup = bmc150_accel_triggers[i].setup;
+> > +		iio_trigger_set_drvdata(t->indio_trig, t);
+> > +
+> > +		ret = iio_trigger_register(t->indio_trig);
+> > +		if (ret)
+> > +			break;
+> > +	}
+> > +
+> > +	if (ret)
+> > +		bmc150_accel_unregister_triggers(data, i - 1);
+> > +
+> > +	return ret;
+> > +}
+> > +
+> >  static int bmc150_accel_probe(struct i2c_client *client,
+> >  			      const struct i2c_device_id *id)
+> >  {
+> > @@ -1220,36 +1296,10 @@ static int bmc150_accel_probe(struct i2c_client *client,
+> >  
+> >  		bmc150_accel_interrupts_setup(indio_dev, data);
+> >  
+> > -		data->dready_trig = devm_iio_trigger_alloc(&client->dev,
+> > -							   "%s-dev%d",
+> > -							   indio_dev->name,
+> > -							   indio_dev->id);
+> > -		if (!data->dready_trig)
+> > -			return -ENOMEM;
+> > -
+> > -		data->motion_trig = devm_iio_trigger_alloc(&client->dev,
+> > -							  "%s-any-motion-dev%d",
+> > -							  indio_dev->name,
+> > -							  indio_dev->id);
+> > -		if (!data->motion_trig)
+> > -			return -ENOMEM;
+> > -
+> > -		data->dready_trig->dev.parent = &client->dev;
+> > -		data->dready_trig->ops = &bmc150_accel_trigger_ops;
+> > -		iio_trigger_set_drvdata(data->dready_trig, indio_dev);
+> > -		ret = iio_trigger_register(data->dready_trig);
+> > +		ret = bmc150_accel_triggers_setup(indio_dev, data);
+> >  		if (ret)
+> >  			return ret;
+> >  
+> > -		data->motion_trig->dev.parent = &client->dev;
+> > -		data->motion_trig->ops = &bmc150_accel_trigger_ops;
+> > -		iio_trigger_set_drvdata(data->motion_trig, indio_dev);
+> > -		ret = iio_trigger_register(data->motion_trig);
+> > -		if (ret) {
+> > -			data->motion_trig = NULL;
+> > -			goto err_trigger_unregister;
+> > -		}
+> > -
+> >  		ret = iio_triggered_buffer_setup(indio_dev,
+> >  						 &iio_pollfunc_store_time,
+> >  						 bmc150_accel_trigger_handler,
+> > @@ -1281,13 +1331,10 @@ static int bmc150_accel_probe(struct i2c_client *client,
+> >  err_iio_unregister:
+> >  	iio_device_unregister(indio_dev);
+> >  err_buffer_cleanup:
+> > -	if (data->dready_trig)
+> > +	if (indio_dev->pollfunc)
+> >  		iio_triggered_buffer_cleanup(indio_dev);
+> >  err_trigger_unregister:
+> > -	if (data->dready_trig)
+> > -		iio_trigger_unregister(data->dready_trig);
+> > -	if (data->motion_trig)
+> > -		iio_trigger_unregister(data->motion_trig);
+> > +	bmc150_accel_unregister_triggers(data, BMC150_ACCEL_TRIGGERS - 1);
+> >  
+> >  	return ret;
+> >  }
+> > @@ -1303,11 +1350,7 @@ static int bmc150_accel_remove(struct i2c_client *client)
+> >  
+> >  	iio_device_unregister(indio_dev);
+> >  
+> > -	if (data->dready_trig) {
+> > -		iio_triggered_buffer_cleanup(indio_dev);
+> > -		iio_trigger_unregister(data->dready_trig);
+> > -		iio_trigger_unregister(data->motion_trig);
+> > -	}
+> > +	bmc150_accel_unregister_triggers(data, BMC150_ACCEL_TRIGGERS - 1);
+> >  
+> >  	mutex_lock(&data->mutex);
+> >  	bmc150_accel_set_mode(data, BMC150_ACCEL_SLEEP_MODE_DEEP_SUSPEND, 0);
+> > 
+> 
