@@ -6,20 +6,117 @@ Cc: linux-kernel@vger.kernel.org,
 	Srinivas Pandruvada <srinivas.pandruvada@intel.com>,
 	Adriana Reus <adriana.reus@intel.com>,
 	Irina Tirdea <irina.tirdea@intel.com>
-Subject: [PATCH 0/2] kxcjk-1013 driver optimizations
-Date: Mon, 16 Feb 2015 20:21:47 +0200
-Message-Id: <1424110909-16878-1-git-send-email-irina.tirdea@intel.com>
+Subject: [PATCH 2/2] iio: accel: bmc150: optimize i2c transfers in trigger handler
+Date: Mon, 16 Feb 2015 20:17:01 +0200
+Message-Id: <1424110621-16571-3-git-send-email-irina.tirdea@intel.com>
+In-Reply-To: <1424110621-16571-1-git-send-email-irina.tirdea@intel.com>
+References: <1424110621-16571-1-git-send-email-irina.tirdea@intel.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-Adds optimization of i2c transactions in trigger handler and
-usage of available_scan_masks for kxcjk-1013.
+Some i2c busses (e.g.: Synopsys DesignWare I2C adapter) need to
+enable/disable the bus at each i2c transfer and must wait for
+the enable/disable to happen before sending the data.
 
-Adriana Reus (2):
-  iio: accel: kxcjk-1013: use available_scan_masks
-  iio: accel: kxcjk-1013: optimize i2c transfers in trigger handler
+When reading data in the trigger handler, the bmc150 accel driver does
+one i2c transfer for each axis. This has an impact on the frequency
+of the accelerometer at high sample rates due to additional delays
+introduced by the i2c bus at each transfer.
 
- drivers/iio/accel/kxcjk-1013.c | 50 ++++++++++++++++++++++++++++++++----------
- 1 file changed, 39 insertions(+), 11 deletions(-)
+Reading all axis values in one i2c transfer reduces the delays
+introduced by the i2c bus. In case i2c block read is not supported,
+fallback to reading each axis as a separate word.
 
+Signed-off-by: Irina Tirdea <irina.tirdea@intel.com>
+Reviewed-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+---
+ drivers/iio/accel/bmc150-accel.c | 44 +++++++++++++++++++++++++++++++---------
+ 1 file changed, 34 insertions(+), 10 deletions(-)
+
+diff --git a/drivers/iio/accel/bmc150-accel.c b/drivers/iio/accel/bmc150-accel.c
+index 2eb0102..db2e362 100644
+--- a/drivers/iio/accel/bmc150-accel.c
++++ b/drivers/iio/accel/bmc150-accel.c
+@@ -163,6 +163,8 @@ struct bmc150_accel_data {
+ 	bool motion_trigger_on;
+ 	int64_t timestamp;
+ 	const struct bmc150_accel_chip_info *chip_info;
++	s32 (*read_block_data)(const struct i2c_client *client, u8 command,
++			       u8 length, u8 *values);
+ };
+ 
+ static const struct {
+@@ -206,6 +208,22 @@ static const struct {
+ 				       {500000, BMC150_ACCEL_SLEEP_500_MS},
+ 				       {1000000, BMC150_ACCEL_SLEEP_1_SEC} };
+ 
++static s32 bmc150_accel_read_block_data(const struct i2c_client *client,
++					u8 command, u8 length, u8 *values)
++{
++	s32 data;
++	u8 i;
++
++	for (i = 0; i < length; i += 2) {
++		data = i2c_smbus_read_word_data(client, command + i);
++		if (data < 0)
++			return data;
++
++		values[i] = data & 0xFF;
++		values[i+1] = data >> 8;
++	}
++	return i;
++}
+ 
+ static int bmc150_accel_set_mode(struct bmc150_accel_data *data,
+ 				 enum bmc150_power_modes mode,
+@@ -929,19 +947,14 @@ static irqreturn_t bmc150_accel_trigger_handler(int irq, void *p)
+ 	struct iio_poll_func *pf = p;
+ 	struct iio_dev *indio_dev = pf->indio_dev;
+ 	struct bmc150_accel_data *data = iio_priv(indio_dev);
+-	int bit, ret, i = 0;
++	int ret;
+ 
+ 	mutex_lock(&data->mutex);
+-	for (bit = 0; bit < AXIS_MAX; bit++) {
+-		ret = i2c_smbus_read_word_data(data->client,
+-					       BMC150_ACCEL_AXIS_TO_REG(bit));
+-		if (ret < 0) {
+-			mutex_unlock(&data->mutex);
+-			goto err_read;
+-		}
+-		data->buffer[i++] = ret;
+-	}
++	ret = data->read_block_data(data->client, BMC150_ACCEL_REG_XOUT_L,
++				    AXIS_MAX * 2, (u8 *) data->buffer);
+ 	mutex_unlock(&data->mutex);
++	if (ret < 0)
++		goto err_read;
+ 
+ 	iio_push_to_buffers_with_timestamp(indio_dev, data->buffer,
+ 					   data->timestamp);
+@@ -1153,6 +1166,11 @@ static int bmc150_accel_probe(struct i2c_client *client,
+ 	const char *name = NULL;
+ 	int chip_id = 0;
+ 
++	if (!i2c_check_functionality(client->adapter,
++				     I2C_FUNC_SMBUS_BYTE_DATA |
++				     I2C_FUNC_SMBUS_READ_WORD_DATA))
++		return -ENODEV;
++
+ 	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
+ 	if (!indio_dev)
+ 		return -ENOMEM;
+@@ -1161,6 +1179,12 @@ static int bmc150_accel_probe(struct i2c_client *client,
+ 	i2c_set_clientdata(client, indio_dev);
+ 	data->client = client;
+ 
++	if (i2c_check_functionality(client->adapter,
++				    I2C_FUNC_SMBUS_READ_I2C_BLOCK))
++		data->read_block_data = i2c_smbus_read_i2c_block_data;
++	else
++		data->read_block_data = bmc150_accel_read_block_data;
++
+ 	if (id) {
+ 		name = id->name;
+ 		chip_id = id->driver_data;
 -- 
 1.9.1
