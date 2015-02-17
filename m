@@ -1,40 +1,42 @@
-Return-Path: <festevam@gmail.com>
+Return-Path: <Adam.Thomson.Opensource@diasemi.com>
+From: "Opensource [Adam Thomson]" <Adam.Thomson.Opensource@diasemi.com>
+To: Sebastian Reichel <sre@kernel.org>, "Opensource [Adam Thomson]"
+	<Adam.Thomson.Opensource@diasemi.com>
+CC: Lee Jones <lee.jones@linaro.org>, Jonathan Cameron
+	<jic23@jic23.retrosnub.co.uk>, Jonathan Cameron <jic23@kernel.org>, "Samuel
+ Ortiz" <sameo@linux.intel.com>, Hartmut Knaack <knaack.h@gmx.de>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>, "Dmitry
+ Eremin-Solenikov" <dbaryshkov@gmail.com>, David Woodhouse
+	<dwmw2@infradead.org>, "linux-pm@vger.kernel.org" <linux-pm@vger.kernel.org>,
+	Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, "Mark
+ Rutland" <mark.rutland@arm.com>, Ian Campbell
+	<ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, Grant
+ Likely <grant.likely@linaro.org>, "devicetree@vger.kernel.org"
+	<devicetree@vger.kernel.org>, Andrew Morton <akpm@linux-foundation.org>, Joe
+ Perches <joe@perches.com>, "linux-kernel@vger.kernel.org"
+	<linux-kernel@vger.kernel.org>, "Support Opensource"
+	<Support.Opensource@diasemi.com>
+Subject: RE: [PATCH v6 0/7] Add initial support for DA9150 Charger &
+ Fuel-Gauge IC
+Date: Tue, 17 Feb 2015 18:15:11 +0000
+Message-ID: <2E89032DDAA8B9408CB92943514A0337AB534CBC@NB-EX-MBX01.diasemi.com>
+References: <cover.1421854282.git.Adam.Thomson.Opensource@diasemi.com>
+ <20150121165250.GG13715@earth.universe>
+ <C1079F30-5D1D-45AA-A129-FE1E68EA5DC5@jic23.retrosnub.co.uk>
+ <20150122075811.GO22024@x1>
+ <2E89032DDAA8B9408CB92943514A0337AB52D71F@SW-EX-MBX01.diasemi.com>
+ <20150217180401.GA13777@earth.universe>
+In-Reply-To: <20150217180401.GA13777@earth.universe>
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-In-Reply-To: <20150216133829.GG14545@x1>
-References: <1422108103-15052-1-git-send-email-mpa@pengutronix.de>
-	<1422108103-15052-2-git-send-email-mpa@pengutronix.de>
-	<20150216133829.GG14545@x1>
-Date: Tue, 17 Feb 2015 16:54:54 -0200
-Message-ID: <CAOMZO5AwbNeEhVgUuLUi-_QT0DesPBBCTvvebuA91y-P2_CNzg@mail.gmail.com>
-Subject: Re: [PATCH v5 1/6] mfd: fsl imx25 Touchscreen ADC driver
-From: Fabio Estevam <festevam@gmail.com>
-To: Lee Jones <lee.jones@linaro.org>
-Cc: Markus Pargmann <mpa@pengutronix.de>, Shawn Guo <shawn.guo@linaro.org>,
-	Samuel Ortiz <sameo@linux.intel.com>, Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-	Jonathan Cameron <jic23@kernel.org>, Peter Meerwald <pmeerw@pmeerw.net>, Hartmut Knaack <knaack.h@gmx.de>,
-	Denis Carikli <denis@eukrea.com>, =?UTF-8?B?RXJpYyBCw6luYXJk?= <eric@eukrea.com>,
-	Sascha Hauer <kernel@pengutronix.de>,
-	"linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, linux-input@vger.kernel.org,
-	linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>,
-	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, Rob Herring <robh+dt@kernel.org>,
-	Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>,
-	Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>
-Content-Type: text/plain; charset=UTF-8
 List-ID: <linux-iio@vger.kernel.org>
 
-On Mon, Feb 16, 2015 at 11:38 AM, Lee Jones <lee.jones@linaro.org> wrote:
-
->> +static int mx25_tsadc_setup_irq(struct platform_device *pdev,
->> +                             struct mx25_tsadc *tsadc)
->> +{
->> +     struct device *dev = &pdev->dev;
->> +     struct device_node *np = dev->of_node;
->> +     int irq;
->> +
->> +     irq = platform_get_irq(pdev, 0);
->> +     if (irq < 0) {
->
-> What if 0 is returned?
-
-Then  imx25.dtsi would be passing irq=0 for the ADC, which would be
-totally wrong.
+T24gRmVicnVhcnkgMTcsIDIwMTUgMTg6MDQsIFNlYmFzdGlhbiBSZWljaGVsIHdyb3RlOg0KDQo+
+IEhpLA0KPiANCj4gT24gTW9uLCBGZWIgMTYsIDIwMTUgYXQgMDk6NDU6NTlQTSArMDAwMCwgT3Bl
+bnNvdXJjZSBbQWRhbSBUaG9tc29uXSB3cm90ZToNCj4gPiBKdXN0IGEgcXVpY2sgb25lIHRvIHNl
+ZSB3aGF0IHRoZSBzdGF0dXMgaXMgb24gdGhpcyBwYXRjaCBzZXQ/IEp1c3QNCj4gPiBpbnRlcmVz
+dGVkIGFzIHRvIHdoZW4gaXQnbGwgYmUgcHVsbGVkIGluLg0KPiANCj4gSSBwbGFuIHRvIHB1bGwg
+aXQgaW50byBmb3ItbmV4dCBvbmNlIC1yYzEgaGFzIGJlZW4gdGFnZ2VkIChwcm9iYWJseQ0KPiBh
+Ym91dCBhIHdlZWspLiBGZWVsIGZyZWUgdG8gc2VuZCBhIG5ldyB2ZXJzaW9uIHdpdGggdGhlIHN0
+eWxlIGZpeGVzLg0KDQpPayB0aGFua3MgZm9yIHRoZSB1cGRhdGUuIFdpbGwgc2VlIGlmIEkgY2Fu
+IGdldCB0aGUgdXBkYXRlcyBvdXQgYmVmb3JlIHRoZW4uDQoNClRoYW5rcw0KQWRhbQ0K
