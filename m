@@ -1,89 +1,61 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:32860 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751936AbbBQTLA (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 17 Feb 2015 14:11:00 -0500
-Message-ID: <54E39241.7010407@kernel.org>
-Date: Tue, 17 Feb 2015 19:10:57 +0000
-From: Jonathan Cameron <jic23@kernel.org>
+Return-Path: <ukl@pengutronix.de>
+Date: Tue, 17 Feb 2015 20:14:38 +0100
+From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
+To: Markus Pargmann <mpa@pengutronix.de>
+Cc: Shawn Guo <shawn.guo@linaro.org>, Samuel Ortiz <sameo@linux.intel.com>,
+	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Fabio Estevam <festevam@gmail.com>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Mark Rutland <mark.rutland@arm.com>, devicetree@vger.kernel.org,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Eric =?iso-8859-1?Q?B=E9nard?= <eric@eukrea.com>,
+	Pawel Moll <pawel.moll@arm.com>,
+	Ian Campbell <ijc+devicetree@hellion.org.uk>,
+	linux-iio@vger.kernel.org, Kumar Gala <galak@codeaurora.org>,
+	Denis Carikli <denis@eukrea.com>, Rob Herring <robh+dt@kernel.org>,
+	Sascha Hauer <kernel@pengutronix.de>, linux-input@vger.kernel.org,
+	Lee Jones <lee.jones@linaro.org>,
+	linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH v5 1/6] mfd: fsl imx25 Touchscreen ADC driver
+Message-ID: <20150217191438.GF19388@pengutronix.de>
+References: <1422108103-15052-1-git-send-email-mpa@pengutronix.de>
+ <1422108103-15052-2-git-send-email-mpa@pengutronix.de>
 MIME-Version: 1.0
-To: Viorel Suman <viorel.suman@gmail.com>,
-	Peter Meerwald <pmeerw@pmeerw.net>, linux-iio@vger.kernel.org
-Subject: Re: [PATCH] iio: Clear timestamps fifo while resetting hardware fifo
-References: <1424127550-2615-1-git-send-email-viorel.suman@gmail.com>
-In-Reply-To: <1424127550-2615-1-git-send-email-viorel.suman@gmail.com>
-Content-Type: text/plain; charset=windows-1252
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain; charset=iso-8859-1
+In-Reply-To: <1422108103-15052-2-git-send-email-mpa@pengutronix.de>
+List-ID: <linux-iio@vger.kernel.org>
 
-On 16/02/15 22:59, Viorel Suman wrote:
-> A hardware fifo reset always imply an invalidation of the
-> existing timestamps, so we'll clear timestamps fifo on
-> successfull hardware fifo reset.
-For reference, this wants iio:inv_mpu6050 as a prefix as the current
-implies it is IIO in general rather than the particular driver.
-> 
-> Signed-off-by: Viorel Suman <viorel.suman@gmail.com>
-> ---
->  drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c | 25 ++++++++++++++-----------
->  1 file changed, 14 insertions(+), 11 deletions(-)
-> 
-> diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c
-> index 0cd306a..ba27e27 100644
-> --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c
-> +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c
-> @@ -24,6 +24,16 @@
->  #include <linux/poll.h>
->  #include "inv_mpu_iio.h"
->  
-> +static void inv_clear_kfifo(struct inv_mpu6050_state *st)
-> +{
-> +	unsigned long flags;
-> +
-> +	/* take the spin lock sem to avoid interrupt kick in */
-> +	spin_lock_irqsave(&st->time_stamp_lock, flags);
-> +	kfifo_reset(&st->timestamps);
-> +	spin_unlock_irqrestore(&st->time_stamp_lock, flags);
-> +}
-> +
->  int inv_reset_fifo(struct iio_dev *indio_dev)
->  {
->  	int result;
-> @@ -50,6 +60,10 @@ int inv_reset_fifo(struct iio_dev *indio_dev)
->  					INV_MPU6050_BIT_FIFO_RST);
->  	if (result)
->  		goto reset_fifo_fail;
-> +
-> +	/* clear timestamps fifo */
-> +	inv_clear_kfifo(st);
-> +
->  	/* enable interrupt */
->  	if (st->chip_config.accl_fifo_enable ||
->  	    st->chip_config.gyro_fifo_enable) {
-> @@ -83,16 +97,6 @@ reset_fifo_fail:
->  	return result;
->  }
->  
-> -static void inv_clear_kfifo(struct inv_mpu6050_state *st)
-> -{
-> -	unsigned long flags;
-> -
-> -	/* take the spin lock sem to avoid interrupt kick in */
-> -	spin_lock_irqsave(&st->time_stamp_lock, flags);
-> -	kfifo_reset(&st->timestamps);
-> -	spin_unlock_irqrestore(&st->time_stamp_lock, flags);
-> -}
-> -
->  /**
->   * inv_mpu6050_irq_handler() - Cache a timestamp at each data ready interrupt.
->   */
-> @@ -184,7 +188,6 @@ end_session:
->  flush_fifo:
->  	/* Flush HW and SW FIFOs. */
->  	inv_reset_fifo(indio_dev);
-> -	inv_clear_kfifo(st);
->  	mutex_unlock(&indio_dev->mlock);
->  	iio_trigger_notify_done(indio_dev->trig);
->  
-> 
+Hello Markus,
 
+On Sat, Jan 24, 2015 at 03:01:38PM +0100, Markus Pargmann wrote:
+> +config MFD_MX25_TSADC
+> +	tristate "Freescale i.MX25 integrated Touchscreen and ADC unit"
+> +	select REGMAP_MMIO
+> +	depends on SOC_IMX25
+Can you make that:
+
+	depends on SOC_IMX25 || COMPILE_TEST
+
+?
+
+> + * The code contained herein is licensed under the GNU General Public
+> + * License. You may obtain a copy of the GNU General Public License
+> + * Version 2 or later at the following locations:
+Which version of the GPL is your code licensed under?
+
+> +static int mx25_tsadc_setup_irq(struct platform_device *pdev,
+> +				struct mx25_tsadc *tsadc)
+> [...]
+> +	irq_set_chained_handler(irq, mx25_tsadc_irq_handler);
+> +	irq_set_handler_data(irq, tsadc);
+Do you need to reverse the order of these two calls to prevent the
+handler being called while handler_data is still unset?
+
+Best regards
+Uwe
+
+-- 
+Pengutronix e.K.                           | Uwe Kleine-König            |
+Industrial Linux Solutions                 | http://www.pengutronix.de/  |
