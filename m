@@ -1,102 +1,89 @@
-Return-Path: <viorel.suman@gmail.com>
-From: Viorel Suman <viorel.suman@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>,
-	linux-iio@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org,
-	Viorel Suman <viorel.suman@gmail.com>
-Subject: [PATCH] Clear timestamp kfifo on trigger enabling
-Date: Mon, 16 Feb 2015 23:09:43 +0200
-Message-Id: <1424120983-21399-1-git-send-email-viorel.suman@gmail.com>
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:32860 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751936AbbBQTLA (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 17 Feb 2015 14:11:00 -0500
+Message-ID: <54E39241.7010407@kernel.org>
+Date: Tue, 17 Feb 2015 19:10:57 +0000
+From: Jonathan Cameron <jic23@kernel.org>
+MIME-Version: 1.0
+To: Viorel Suman <viorel.suman@gmail.com>,
+	Peter Meerwald <pmeerw@pmeerw.net>, linux-iio@vger.kernel.org
+Subject: Re: [PATCH] iio: Clear timestamps fifo while resetting hardware fifo
+References: <1424127550-2615-1-git-send-email-viorel.suman@gmail.com>
+In-Reply-To: <1424127550-2615-1-git-send-email-viorel.suman@gmail.com>
+Content-Type: text/plain; charset=windows-1252
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-The timestamp kfifo must be cleared once the
-hardware fifo is reset, thus are removed
-timestamps related to unprocessed events from
-hardware fifo - see "inv_mpu6050_read_fifo"
-method implementation.
+On 16/02/15 22:59, Viorel Suman wrote:
+> A hardware fifo reset always imply an invalidation of the
+> existing timestamps, so we'll clear timestamps fifo on
+> successfull hardware fifo reset.
+For reference, this wants iio:inv_mpu6050 as a prefix as the current
+implies it is IIO in general rather than the particular driver.
+> 
+> Signed-off-by: Viorel Suman <viorel.suman@gmail.com>
+> ---
+>  drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c | 25 ++++++++++++++-----------
+>  1 file changed, 14 insertions(+), 11 deletions(-)
+> 
+> diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c
+> index 0cd306a..ba27e27 100644
+> --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c
+> +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c
+> @@ -24,6 +24,16 @@
+>  #include <linux/poll.h>
+>  #include "inv_mpu_iio.h"
+>  
+> +static void inv_clear_kfifo(struct inv_mpu6050_state *st)
+> +{
+> +	unsigned long flags;
+> +
+> +	/* take the spin lock sem to avoid interrupt kick in */
+> +	spin_lock_irqsave(&st->time_stamp_lock, flags);
+> +	kfifo_reset(&st->timestamps);
+> +	spin_unlock_irqrestore(&st->time_stamp_lock, flags);
+> +}
+> +
+>  int inv_reset_fifo(struct iio_dev *indio_dev)
+>  {
+>  	int result;
+> @@ -50,6 +60,10 @@ int inv_reset_fifo(struct iio_dev *indio_dev)
+>  					INV_MPU6050_BIT_FIFO_RST);
+>  	if (result)
+>  		goto reset_fifo_fail;
+> +
+> +	/* clear timestamps fifo */
+> +	inv_clear_kfifo(st);
+> +
+>  	/* enable interrupt */
+>  	if (st->chip_config.accl_fifo_enable ||
+>  	    st->chip_config.gyro_fifo_enable) {
+> @@ -83,16 +97,6 @@ reset_fifo_fail:
+>  	return result;
+>  }
+>  
+> -static void inv_clear_kfifo(struct inv_mpu6050_state *st)
+> -{
+> -	unsigned long flags;
+> -
+> -	/* take the spin lock sem to avoid interrupt kick in */
+> -	spin_lock_irqsave(&st->time_stamp_lock, flags);
+> -	kfifo_reset(&st->timestamps);
+> -	spin_unlock_irqrestore(&st->time_stamp_lock, flags);
+> -}
+> -
+>  /**
+>   * inv_mpu6050_irq_handler() - Cache a timestamp at each data ready interrupt.
+>   */
+> @@ -184,7 +188,6 @@ end_session:
+>  flush_fifo:
+>  	/* Flush HW and SW FIFOs. */
+>  	inv_reset_fifo(indio_dev);
+> -	inv_clear_kfifo(st);
+>  	mutex_unlock(&indio_dev->mlock);
+>  	iio_trigger_notify_done(indio_dev->trig);
+>  
+> 
 
-Signed-off-by: Viorel Suman <viorel.suman@gmail.com>
----
- drivers/iio/imu/inv_mpu6050/inv_mpu_trigger.c | 28 +++++++++++++++------------
- 1 file changed, 16 insertions(+), 12 deletions(-)
-
-diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_trigger.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_trigger.c
-index 926fcce..b617920 100644
---- a/drivers/iio/imu/inv_mpu6050/inv_mpu_trigger.c
-+++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_trigger.c
-@@ -42,57 +42,61 @@ static void inv_scan_query(struct iio_dev *indio_dev)
- static int inv_mpu6050_set_enable(struct iio_dev *indio_dev, bool enable)
- {
- 	struct inv_mpu6050_state *st = iio_priv(indio_dev);
--	int result;
-+	int result = 0;
- 
-+	mutex_lock(&indio_dev->mlock);
- 	if (enable) {
- 		result = inv_mpu6050_set_power_itg(st, true);
- 		if (result)
--			return result;
-+			goto write_error;
- 		inv_scan_query(indio_dev);
- 		if (st->chip_config.gyro_fifo_enable) {
- 			result = inv_mpu6050_switch_engine(st, true,
- 					INV_MPU6050_BIT_PWR_GYRO_STBY);
- 			if (result)
--				return result;
-+				goto write_error;
- 		}
- 		if (st->chip_config.accl_fifo_enable) {
- 			result = inv_mpu6050_switch_engine(st, true,
- 					INV_MPU6050_BIT_PWR_ACCL_STBY);
- 			if (result)
--				return result;
-+				goto write_error;
- 		}
-+		inv_clear_kfifo(st);
- 		result = inv_reset_fifo(indio_dev);
- 		if (result)
--			return result;
-+			goto write_error;
- 	} else {
- 		result = inv_mpu6050_write_reg(st, st->reg->fifo_en, 0);
- 		if (result)
--			return result;
-+			goto write_error;
- 
- 		result = inv_mpu6050_write_reg(st, st->reg->int_enable, 0);
- 		if (result)
--			return result;
-+			goto write_error;
- 
- 		result = inv_mpu6050_write_reg(st, st->reg->user_ctrl, 0);
- 		if (result)
--			return result;
-+			goto write_error;
- 
- 		result = inv_mpu6050_switch_engine(st, false,
- 					INV_MPU6050_BIT_PWR_GYRO_STBY);
- 		if (result)
--			return result;
-+			goto write_error;
- 
- 		result = inv_mpu6050_switch_engine(st, false,
- 					INV_MPU6050_BIT_PWR_ACCL_STBY);
- 		if (result)
--			return result;
-+			goto write_error;
- 		result = inv_mpu6050_set_power_itg(st, false);
- 		if (result)
--			return result;
-+			goto write_error;
- 	}
- 	st->chip_config.enable = enable;
-+write_error:
-+	mutex_unlock(&indio_dev->mlock);
- 
--	return 0;
-+	return result;
- }
- 
- /**
--- 
-2.3.0
