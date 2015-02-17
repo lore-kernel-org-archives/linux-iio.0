@@ -1,30 +1,29 @@
-Return-Path: <jkosina@suse.cz>
-Date: Tue, 17 Feb 2015 13:35:18 +0100 (CET)
-From: Jiri Kosina <jkosina@suse.cz>
-To: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-cc: jic23@kernel.org, linux-iio@vger.kernel.org, linux-input@vger.kernel.org
-Subject: Re: [PATCH 0/2] HID Sensor hub driver fixes
-In-Reply-To: <1420654484-6410-1-git-send-email-srinivas.pandruvada@linux.intel.com>
-Message-ID: <alpine.LNX.2.00.1502171335030.2279@pobox.suse.cz>
-References: <1420654484-6410-1-git-send-email-srinivas.pandruvada@linux.intel.com>
+Return-Path: <linus.walleij@linaro.org>
 MIME-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
+In-Reply-To: <1424164881-11816-1-git-send-email-u.kleine-koenig@pengutronix.de>
+References: <1424164881-11816-1-git-send-email-u.kleine-koenig@pengutronix.de>
+Date: Tue, 17 Feb 2015 11:05:03 +0100
+Message-ID: <CACRpkdZydeFkeVEB_MWDMU5qomJdiqxKmgr1+THjh8dis+JvpA@mail.gmail.com>
+Subject: Re: [PATCH] iio: improve usage of gpiod API
+From: Linus Walleij <linus.walleij@linaro.org>
+To: =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>, Sascha Hauer <kernel@pengutronix.de>,
+	Alexandre Courbot <acourbot@nvidia.com>, Mark Brown <broonie@linaro.org>
+Content-Type: text/plain; charset=UTF-8
 List-ID: <linux-iio@vger.kernel.org>
 
-On Wed, 7 Jan 2015, Srinivas Pandruvada wrote:
+On Tue, Feb 17, 2015 at 10:21 AM, Uwe Kleine-K=C3=B6nig
+<u.kleine-koenig@pengutronix.de> wrote:
 
-> Address two bug fixes in the existing code.
-> 
-> Srinivas Pandruvada (2):
->   HID: hid-sensor-hub: Correct documentation
->   HID: sensor-hub: correct dyn_callback_lock IRQ-safe change
-> 
->  drivers/hid/hid-sensor-hub.c   | 8 +++++---
->  include/linux/hid-sensor-hub.h | 5 +++++
->  2 files changed, 10 insertions(+), 3 deletions(-)
+> Since 39b2bbe3d715 (gpio: add flags argument to gpiod_get*() functions)
+> which appeared in v3.17-rc1, the gpiod_get* functions take an additional
+> parameter that allows to specify direction and initial value for
+> outputs.
+>
+> Signed-off-by: Uwe Kleine-K=C3=B6nig <u.kleine-koenig@pengutronix.de>
 
-Applied to for-3.20/upstream-fixes. Thanks,
+Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
 
--- 
-Jiri Kosina
-SUSE Labs
+Yours,
+Linus Walleij
