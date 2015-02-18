@@ -1,43 +1,54 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-ob0-f177.google.com ([209.85.214.177]:47227 "EHLO
-	mail-ob0-f177.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751221AbbBRLkd (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 18 Feb 2015 06:40:33 -0500
-MIME-Version: 1.0
-In-Reply-To: <54E47571.7060904@samsung.com>
-References: <1424256432-20808-1-git-send-email-geert@linux-m68k.org>
-	<54E47571.7060904@samsung.com>
-Date: Wed, 18 Feb 2015 12:40:33 +0100
-Message-ID: <CAMuHMdUa7E2=3TSBz9j8yZq1YLkbn58KJGb8WKGVnyBBbwbSMg@mail.gmail.com>
-Subject: Re: [PATCH] iio: accel: mma9551: Protect PM-only functions by #ifdef CONFIG_PM_SLEEP
+Return-Path: <geert@linux-m68k.org>
 From: Geert Uytterhoeven <geert@linux-m68k.org>
-To: Karol Wrona <k.wrona@samsung.com>
-Cc: Jonathan Cameron <jic23@kernel.org>,
+To: Karol Wrona <k.wrona@samsung.com>,
+	Jonathan Cameron <jic23@kernel.org>,
 	Hartmut Knaack <knaack.h@gmx.de>,
 	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>, linux-iio@vger.kernel.org,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+	Peter Meerwald <pmeerw@pmeerw.net>
+Cc: linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Geert Uytterhoeven <geert@linux-m68k.org>
+Subject: [PATCH v2] iio: common: ssp_sensors: Protect PM-only functions to kill warning
+Date: Wed, 18 Feb 2015 12:39:46 +0100
+Message-Id: <1424259586-29334-1-git-send-email-geert@linux-m68k.org>
+MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+List-ID: <linux-iio@vger.kernel.org>
 
-On Wed, Feb 18, 2015 at 12:20 PM, Karol Wrona <k.wrona@samsung.com> wrote:
-> Patch is ok but commit title points to different driver.  Irina would be
-> surprised and confused to see it on the list and log.
+If CONFIG_PM_SLEEP=n:
 
-Woops, that was a serious copy-and-paste bug on my side. Sorry for that.
+    drivers/iio/common/ssp_sensors/ssp_dev.c:644: warning: ‘ssp_suspend’ defined but not used
+    drivers/iio/common/ssp_sensors/ssp_dev.c:669: warning: ‘ssp_resume’ defined but not used
 
-> Please, use something like that: iio: common: ssp_sensors: Fix warnings ...
+Protect the unused functions by #ifdef CONFIG_PM_SLEEP to fix this.
 
-Resent with corrected subject.
+Signed-off-by: Geert Uytterhoeven <geert@linux-m68k.org>
+---
+v2:
+  - Fix driver name in one-line summary
+---
+ drivers/iio/common/ssp_sensors/ssp_dev.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-Gr{oetje,eeting}s,
-
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+diff --git a/drivers/iio/common/ssp_sensors/ssp_dev.c b/drivers/iio/common/ssp_sensors/ssp_dev.c
+index 52d70435f5a11c55..55a90082a29bd484 100644
+--- a/drivers/iio/common/ssp_sensors/ssp_dev.c
++++ b/drivers/iio/common/ssp_sensors/ssp_dev.c
+@@ -640,6 +640,7 @@ static int ssp_remove(struct spi_device *spi)
+ 	return 0;
+ }
+ 
++#ifdef CONFIG_PM_SLEEP
+ static int ssp_suspend(struct device *dev)
+ {
+ 	int ret;
+@@ -688,6 +689,7 @@ static int ssp_resume(struct device *dev)
+ 
+ 	return 0;
+ }
++#endif /* CONFIG_PM_SLEEP */
+ 
+ static const struct dev_pm_ops ssp_pm_ops = {
+ 	SET_SYSTEM_SLEEP_PM_OPS(ssp_suspend, ssp_resume)
+-- 
+1.9.1
