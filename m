@@ -1,48 +1,85 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from metis.ext.pengutronix.de ([92.198.50.35]:33576 "EHLO
-	metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751596AbbBRQGo (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 18 Feb 2015 11:06:44 -0500
-Date: Wed, 18 Feb 2015 17:06:40 +0100
-From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
-	<u.kleine-koenig@pengutronix.de>
-To: Daniel Baluta <daniel.baluta@intel.com>
-Cc: Mark Brown <broonie@linaro.org>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	Linus Walleij <linus.walleij@linaro.org>,
-	Alexandre Courbot <acourbot@nvidia.com>, kernel@pengutronix.de,
-	Jonathan Cameron <jic23@kernel.org>
-Subject: Re: [PATCH v3] iio: improve usage of gpiod API
-Message-ID: <20150218160640.GK19388@pengutronix.de>
-References: <1424263631-18876-1-git-send-email-u.kleine-koenig@pengutronix.de>
- <CAEnQRZCgEqfc01AHL4E2YTPebAsrCtSAPeWnwE1quUL2F2U8Pg@mail.gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-In-Reply-To: <CAEnQRZCgEqfc01AHL4E2YTPebAsrCtSAPeWnwE1quUL2F2U8Pg@mail.gmail.com>
+Received: from mail-wi0-f177.google.com ([209.85.212.177]:39761 "EHLO
+	mail-wi0-f177.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752622AbbBRSGH (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 18 Feb 2015 13:06:07 -0500
+From: Viorel Suman <viorel.suman@gmail.com>
+To: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org, Viorel Suman <viorel.suman@gmail.com>
+Subject: [PATCH v2] iio: inv_mpu6050: Clear timestamps fifo while resetting hardware fifo
+Date: Wed, 18 Feb 2015 20:05:21 +0200
+Message-Id: <1424282721-3033-1-git-send-email-viorel.suman@gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Hello Daniel,
+A hardware fifo reset always imply an invalidation of the
+existing timestamps, so we'll clear timestamps fifo on
+successfull hardware fifo reset.
 
-On Wed, Feb 18, 2015 at 03:48:12PM +0200, Daniel Baluta wrote:
-> On Wed, Feb 18, 2015 at 2:47 PM, Uwe Kleine-König
-> <u.kleine-koenig@pengutronix.de> wrote:
-> > Since 39b2bbe3d715 (gpio: add flags argument to gpiod_get*() functions)
-> > which appeared in v3.17-rc1, the gpiod_get* functions take an additional
-> > parameter that allows to specify direction and initial value for
-> > outputs.
-> >
-> > Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
-> 
-> Reviewed-by: Daniel Baluta <daniel.baluta@intel.com>
-Thanks.
+Signed-off-by: Viorel Suman <viorel.suman@gmail.com>
+---
+  v2: Addressed Jonathan's comment regarding the subject prefix.
 
-> I can take care of gpiod_to_irq error code checking.
-Great.
+ drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c | 25 ++++++++++++++-----------
+ 1 file changed, 14 insertions(+), 11 deletions(-)
 
-Best regards
-Uwe
-
+diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c
+index 0cd306a..ba27e27 100644
+--- a/drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c
++++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c
+@@ -24,6 +24,16 @@
+ #include <linux/poll.h>
+ #include "inv_mpu_iio.h"
+ 
++static void inv_clear_kfifo(struct inv_mpu6050_state *st)
++{
++	unsigned long flags;
++
++	/* take the spin lock sem to avoid interrupt kick in */
++	spin_lock_irqsave(&st->time_stamp_lock, flags);
++	kfifo_reset(&st->timestamps);
++	spin_unlock_irqrestore(&st->time_stamp_lock, flags);
++}
++
+ int inv_reset_fifo(struct iio_dev *indio_dev)
+ {
+ 	int result;
+@@ -50,6 +60,10 @@ int inv_reset_fifo(struct iio_dev *indio_dev)
+ 					INV_MPU6050_BIT_FIFO_RST);
+ 	if (result)
+ 		goto reset_fifo_fail;
++
++	/* clear timestamps fifo */
++	inv_clear_kfifo(st);
++
+ 	/* enable interrupt */
+ 	if (st->chip_config.accl_fifo_enable ||
+ 	    st->chip_config.gyro_fifo_enable) {
+@@ -83,16 +97,6 @@ reset_fifo_fail:
+ 	return result;
+ }
+ 
+-static void inv_clear_kfifo(struct inv_mpu6050_state *st)
+-{
+-	unsigned long flags;
+-
+-	/* take the spin lock sem to avoid interrupt kick in */
+-	spin_lock_irqsave(&st->time_stamp_lock, flags);
+-	kfifo_reset(&st->timestamps);
+-	spin_unlock_irqrestore(&st->time_stamp_lock, flags);
+-}
+-
+ /**
+  * inv_mpu6050_irq_handler() - Cache a timestamp at each data ready interrupt.
+  */
+@@ -184,7 +188,6 @@ end_session:
+ flush_fifo:
+ 	/* Flush HW and SW FIFOs. */
+ 	inv_reset_fifo(indio_dev);
+-	inv_clear_kfifo(st);
+ 	mutex_unlock(&indio_dev->mlock);
+ 	iio_trigger_notify_done(indio_dev->trig);
+ 
 -- 
-Pengutronix e.K.                           | Uwe Kleine-König            |
-Industrial Linux Solutions                 | http://www.pengutronix.de/  |
+2.3.0
+
