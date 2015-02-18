@@ -1,218 +1,775 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-we0-f177.google.com ([74.125.82.177]:44341 "EHLO
-	mail-we0-f177.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751103AbbBRNsN convert rfc822-to-8bit (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 18 Feb 2015 08:48:13 -0500
-Received: by wesk11 with SMTP id k11so1214947wes.11
-        for <linux-iio@vger.kernel.org>; Wed, 18 Feb 2015 05:48:12 -0800 (PST)
+Received: from mail1.bemta3.messagelabs.com ([195.245.230.176]:54091 "EHLO
+	mail1.bemta3.messagelabs.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1751527AbbBROIk (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 18 Feb 2015 09:08:40 -0500
+Message-ID: <606cf85a796f8ba8a5548b68e4afa95799efbc95.1424267009.git.Adam.Thomson.Opensource@diasemi.com>
+In-Reply-To: <cover.1424267009.git.Adam.Thomson.Opensource@diasemi.com>
+References: <cover.1424267009.git.Adam.Thomson.Opensource@diasemi.com>
+From: Adam Thomson <Adam.Thomson.Opensource@diasemi.com>
+Date: Wed, 18 Feb 2015 14:08:32 +0000
+Subject: [PATCH v7 5/7] power: Add support for DA9150 Charger
+To: Lee Jones <lee.jones@linaro.org>,
+	Samuel Ortiz <sameo@linux.intel.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>, <linux-iio@vger.kernel.org>,
+	Sebastian Reichel <sre@kernel.org>,
+	"Dmitry Eremin-Solenikov" <dbaryshkov@gmail.com>,
+	David Woodhouse <dwmw2@infradead.org>,
+	<linux-pm@vger.kernel.org>, Rob Herring <robh+dt@kernel.org>,
+	Pawel Moll <pawel.moll@arm.com>,
+	Mark Rutland <mark.rutland@arm.com>,
+	Ian Campbell <ijc+devicetree@hellion.org.uk>,
+	"Kumar Gala" <galak@codeaurora.org>,
+	Grant Likely <grant.likely@linaro.org>,
+	<devicetree@vger.kernel.org>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	"Joe Perches" <joe@perches.com>
+CC: <linux-kernel@vger.kernel.org>, <support.opensource@diasemi.com>
 MIME-Version: 1.0
-In-Reply-To: <1424263631-18876-1-git-send-email-u.kleine-koenig@pengutronix.de>
-References: <1424263631-18876-1-git-send-email-u.kleine-koenig@pengutronix.de>
-Date: Wed, 18 Feb 2015 15:48:12 +0200
-Message-ID: <CAEnQRZCgEqfc01AHL4E2YTPebAsrCtSAPeWnwE1quUL2F2U8Pg@mail.gmail.com>
-Subject: Re: [PATCH v3] iio: improve usage of gpiod API
-From: Daniel Baluta <daniel.baluta@intel.com>
-To: =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?=
-	<u.kleine-koenig@pengutronix.de>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	kernel@pengutronix.de, Alexandre Courbot <acourbot@nvidia.com>,
-	Mark Brown <broonie@linaro.org>,
-	Linus Walleij <linus.walleij@linaro.org>,
-	Daniel Baluta <daniel.baluta@intel.com>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Wed, Feb 18, 2015 at 2:47 PM, Uwe Kleine-König
-<u.kleine-koenig@pengutronix.de> wrote:
-> Since 39b2bbe3d715 (gpio: add flags argument to gpiod_get*() functions)
-> which appeared in v3.17-rc1, the gpiod_get* functions take an additional
-> parameter that allows to specify direction and initial value for
-> outputs.
->
-> Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+This patch adds support for DA9150 Charger & Fuel-Gauge IC Charger.
 
-Reviewed-by: Daniel Baluta <daniel.baluta@intel.com>
+Signed-off-by: Adam Thomson <Adam.Thomson.Opensource@diasemi.com>
+---
+ drivers/power/Kconfig          |  12 +
+ drivers/power/Makefile         |   1 +
+ drivers/power/da9150-charger.c | 688 +++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 701 insertions(+)
+ create mode 100644 drivers/power/da9150-charger.c
 
-I can take care of gpiod_to_irq error code checking.
+diff --git a/drivers/power/Kconfig b/drivers/power/Kconfig
+index 0108c2a..eb79a7a 100644
+--- a/drivers/power/Kconfig
++++ b/drivers/power/Kconfig
+@@ -192,6 +192,18 @@ config BATTERY_DA9052
+ 	  Say Y here to enable support for batteries charger integrated into
+ 	  DA9052 PMIC.
 
-> ---
->
-> Notes:
->     Changes since v2, sent with Message-Id:
->     1424255921-6429-1-git-send-email-u.kleine-koenig@pengutronix.de
->
->      - also fix drivers/iio/accel/mma9553.c
->
->  drivers/iio/accel/bmc150-accel.c | 6 +-----
->  drivers/iio/accel/kxcjk-1013.c   | 6 +-----
->  drivers/iio/accel/mma9551.c      | 7 ++-----
->  drivers/iio/accel/mma9553.c      | 6 +-----
->  drivers/iio/gyro/bmg160.c        | 6 +-----
->  drivers/iio/imu/kmx61.c          | 6 +-----
->  drivers/iio/proximity/sx9500.c   | 6 +-----
->  7 files changed, 8 insertions(+), 35 deletions(-)
->
-> diff --git a/drivers/iio/accel/bmc150-accel.c b/drivers/iio/accel/bmc150-accel.c
-> index 066d0c04072c..9f208755eb66 100644
-> --- a/drivers/iio/accel/bmc150-accel.c
-> +++ b/drivers/iio/accel/bmc150-accel.c
-> @@ -1176,16 +1176,12 @@ static int bmc150_accel_gpio_probe(struct i2c_client *client,
->         dev = &client->dev;
->
->         /* data ready gpio interrupt pin */
-> -       gpio = devm_gpiod_get_index(dev, BMC150_ACCEL_GPIO_NAME, 0);
-> +       gpio = devm_gpiod_get_index(dev, BMC150_ACCEL_GPIO_NAME, 0, GPIOD_IN);
->         if (IS_ERR(gpio)) {
->                 dev_err(dev, "Failed: gpio get index\n");
->                 return PTR_ERR(gpio);
->         }
->
-> -       ret = gpiod_direction_input(gpio);
-> -       if (ret)
-> -               return ret;
-> -
->         ret = gpiod_to_irq(gpio);
->
->         dev_dbg(dev, "GPIO resource, no:%d irq:%d\n", desc_to_gpio(gpio), ret);
-> diff --git a/drivers/iio/accel/kxcjk-1013.c b/drivers/iio/accel/kxcjk-1013.c
-> index 567de269cc00..a98b5d212fb3 100644
-> --- a/drivers/iio/accel/kxcjk-1013.c
-> +++ b/drivers/iio/accel/kxcjk-1013.c
-> @@ -1169,16 +1169,12 @@ static int kxcjk1013_gpio_probe(struct i2c_client *client,
->         dev = &client->dev;
->
->         /* data ready gpio interrupt pin */
-> -       gpio = devm_gpiod_get_index(dev, "kxcjk1013_int", 0);
-> +       gpio = devm_gpiod_get_index(dev, "kxcjk1013_int", 0, GPIOD_IN);
->         if (IS_ERR(gpio)) {
->                 dev_err(dev, "acpi gpio get index failed\n");
->                 return PTR_ERR(gpio);
->         }
->
-> -       ret = gpiod_direction_input(gpio);
-> -       if (ret)
-> -               return ret;
-> -
->         ret = gpiod_to_irq(gpio);
->
->         dev_dbg(dev, "GPIO resource, no:%d irq:%d\n", desc_to_gpio(gpio), ret);
-> diff --git a/drivers/iio/accel/mma9551.c b/drivers/iio/accel/mma9551.c
-> index 46c38351c6a3..1277f407cd12 100644
-> --- a/drivers/iio/accel/mma9551.c
-> +++ b/drivers/iio/accel/mma9551.c
-> @@ -418,16 +418,13 @@ static int mma9551_gpio_probe(struct iio_dev *indio_dev)
->         struct device *dev = &data->client->dev;
->
->         for (i = 0; i < MMA9551_GPIO_COUNT; i++) {
-> -               gpio = devm_gpiod_get_index(dev, MMA9551_GPIO_NAME, i);
-> +               gpio = devm_gpiod_get_index(dev, MMA9551_GPIO_NAME, i,
-> +                                           GPIOD_IN);
->                 if (IS_ERR(gpio)) {
->                         dev_err(dev, "acpi gpio get index failed\n");
->                         return PTR_ERR(gpio);
->                 }
->
-> -               ret = gpiod_direction_input(gpio);
-> -               if (ret)
-> -                       return ret;
-> -
->                 data->irqs[i] = gpiod_to_irq(gpio);
->                 ret = devm_request_threaded_irq(dev, data->irqs[i],
->                                 NULL, mma9551_event_handler,
-> diff --git a/drivers/iio/accel/mma9553.c b/drivers/iio/accel/mma9553.c
-> index d23ebf192f63..2df1af7d43fc 100644
-> --- a/drivers/iio/accel/mma9553.c
-> +++ b/drivers/iio/accel/mma9553.c
-> @@ -1109,16 +1109,12 @@ static int mma9553_gpio_probe(struct i2c_client *client)
->         dev = &client->dev;
->
->         /* data ready gpio interrupt pin */
-> -       gpio = devm_gpiod_get_index(dev, MMA9553_GPIO_NAME, 0);
-> +       gpio = devm_gpiod_get_index(dev, MMA9553_GPIO_NAME, 0, GPIOD_IN);
->         if (IS_ERR(gpio)) {
->                 dev_err(dev, "acpi gpio get index failed\n");
->                 return PTR_ERR(gpio);
->         }
->
-> -       ret = gpiod_direction_input(gpio);
-> -       if (ret)
-> -               return ret;
-> -
->         ret = gpiod_to_irq(gpio);
->
->         dev_dbg(dev, "gpio resource, no:%d irq:%d\n", desc_to_gpio(gpio), ret);
-> diff --git a/drivers/iio/gyro/bmg160.c b/drivers/iio/gyro/bmg160.c
-> index 60451b328242..56d68e1d0987 100644
-> --- a/drivers/iio/gyro/bmg160.c
-> +++ b/drivers/iio/gyro/bmg160.c
-> @@ -1001,16 +1001,12 @@ static int bmg160_gpio_probe(struct i2c_client *client,
->         dev = &client->dev;
->
->         /* data ready gpio interrupt pin */
-> -       gpio = devm_gpiod_get_index(dev, BMG160_GPIO_NAME, 0);
-> +       gpio = devm_gpiod_get_index(dev, BMG160_GPIO_NAME, 0, GPIOD_IN);
->         if (IS_ERR(gpio)) {
->                 dev_err(dev, "acpi gpio get index failed\n");
->                 return PTR_ERR(gpio);
->         }
->
-> -       ret = gpiod_direction_input(gpio);
-> -       if (ret)
-> -               return ret;
-> -
->         ret = gpiod_to_irq(gpio);
->
->         dev_dbg(dev, "GPIO resource, no:%d irq:%d\n", desc_to_gpio(gpio), ret);
-> diff --git a/drivers/iio/imu/kmx61.c b/drivers/iio/imu/kmx61.c
-> index 5cc3692acf37..adba9dcae788 100644
-> --- a/drivers/iio/imu/kmx61.c
-> +++ b/drivers/iio/imu/kmx61.c
-> @@ -1267,16 +1267,12 @@ static int kmx61_gpio_probe(struct i2c_client *client, struct kmx61_data *data)
->         dev = &client->dev;
->
->         /* data ready gpio interrupt pin */
-> -       gpio = devm_gpiod_get_index(dev, KMX61_GPIO_NAME, 0);
-> +       gpio = devm_gpiod_get_index(dev, KMX61_GPIO_NAME, 0, GPIOD_IN);
->         if (IS_ERR(gpio)) {
->                 dev_err(dev, "acpi gpio get index failed\n");
->                 return PTR_ERR(gpio);
->         }
->
-> -       ret = gpiod_direction_input(gpio);
-> -       if (ret)
-> -               return ret;
-> -
->         ret = gpiod_to_irq(gpio);
->
->         dev_dbg(dev, "GPIO resource, no:%d irq:%d\n", desc_to_gpio(gpio), ret);
-> diff --git a/drivers/iio/proximity/sx9500.c b/drivers/iio/proximity/sx9500.c
-> index 74dff4e4a11a..0b4d79490b05 100644
-> --- a/drivers/iio/proximity/sx9500.c
-> +++ b/drivers/iio/proximity/sx9500.c
-> @@ -618,16 +618,12 @@ static int sx9500_gpio_probe(struct i2c_client *client,
->         dev = &client->dev;
->
->         /* data ready gpio interrupt pin */
-> -       gpio = devm_gpiod_get_index(dev, SX9500_GPIO_NAME, 0);
-> +       gpio = devm_gpiod_get_index(dev, SX9500_GPIO_NAME, 0, GPIOD_IN);
->         if (IS_ERR(gpio)) {
->                 dev_err(dev, "acpi gpio get index failed\n");
->                 return PTR_ERR(gpio);
->         }
->
-> -       ret = gpiod_direction_input(gpio);
-> -       if (ret)
-> -               return ret;
-> -
->         ret = gpiod_to_irq(gpio);
->
->         dev_dbg(dev, "GPIO resource, no:%d irq:%d\n", desc_to_gpio(gpio), ret);
-> --
-> 2.1.4
->
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
++config CHARGER_DA9150
++	tristate "Dialog Semiconductor DA9150 Charger support"
++	depends on MFD_DA9150
++	depends on DA9150_GPADC
++	depends on IIO
++	help
++	  Say Y here to enable support for charger unit of the DA9150
++	  Integrated Charger & Fuel-Gauge IC.
++
++	  This driver can also be built as a module. If so, the module will be
++	  called da9150-charger.
++
+ config BATTERY_MAX17040
+ 	tristate "Maxim MAX17040 Fuel Gauge"
+ 	depends on I2C
+diff --git a/drivers/power/Makefile b/drivers/power/Makefile
+index dfa8942..0c1896d 100644
+--- a/drivers/power/Makefile
++++ b/drivers/power/Makefile
+@@ -31,6 +31,7 @@ obj-$(CONFIG_BATTERY_SBS)	+= sbs-battery.o
+ obj-$(CONFIG_BATTERY_BQ27x00)	+= bq27x00_battery.o
+ obj-$(CONFIG_BATTERY_DA9030)	+= da9030_battery.o
+ obj-$(CONFIG_BATTERY_DA9052)	+= da9052-battery.o
++obj-$(CONFIG_CHARGER_DA9150)	+= da9150-charger.o
+ obj-$(CONFIG_BATTERY_MAX17040)	+= max17040_battery.o
+ obj-$(CONFIG_BATTERY_MAX17042)	+= max17042_battery.o
+ obj-$(CONFIG_BATTERY_Z2)	+= z2_battery.o
+diff --git a/drivers/power/da9150-charger.c b/drivers/power/da9150-charger.c
+new file mode 100644
+index 0000000..4df97ea
+--- /dev/null
++++ b/drivers/power/da9150-charger.c
+@@ -0,0 +1,688 @@
++/*
++ * DA9150 Charger Driver
++ *
++ * Copyright (c) 2014 Dialog Semiconductor
++ *
++ * Author: Adam Thomson <Adam.Thomson.Opensource@diasemi.com>
++ *
++ * This program is free software; you can redistribute  it and/or modify it
++ * under  the terms of  the GNU General  Public License as published by the
++ * Free Software Foundation;  either version 2 of the  License, or (at your
++ * option) any later version.
++ */
++
++#include <linux/kernel.h>
++#include <linux/slab.h>
++#include <linux/module.h>
++#include <linux/platform_device.h>
++#include <linux/of.h>
++#include <linux/of_platform.h>
++#include <linux/interrupt.h>
++#include <linux/power_supply.h>
++#include <linux/notifier.h>
++#include <linux/usb/phy.h>
++#include <linux/iio/consumer.h>
++#include <linux/mfd/da9150/core.h>
++#include <linux/mfd/da9150/registers.h>
++
++/* Private data */
++struct da9150_charger {
++	struct da9150 *da9150;
++	struct device *dev;
++
++	struct power_supply usb;
++	struct power_supply battery;
++	struct power_supply *supply_online;
++
++	struct usb_phy *usb_phy;
++	struct notifier_block otg_nb;
++	struct work_struct otg_work;
++	unsigned long usb_event;
++
++	struct iio_channel *ibus_chan;
++	struct iio_channel *vbus_chan;
++	struct iio_channel *tjunc_chan;
++	struct iio_channel *vbat_chan;
++};
++
++static inline int da9150_charger_supply_online(struct da9150_charger *charger,
++					       struct power_supply *psy,
++					       union power_supply_propval *val)
++{
++	val->intval = (psy == charger->supply_online) ? 1 : 0;
++
++	return 0;
++}
++
++/* Charger Properties */
++static int da9150_charger_vbus_voltage_now(struct da9150_charger *charger,
++					   union power_supply_propval *val)
++{
++	int v_val, ret;
++
++	/* Read processed value - mV units */
++	ret = iio_read_channel_processed(charger->vbus_chan, &v_val);
++	if (ret < 0)
++		return ret;
++
++	/* Convert voltage to expected uV units */
++	val->intval = v_val * 1000;
++
++	return 0;
++}
++
++static int da9150_charger_ibus_current_avg(struct da9150_charger *charger,
++					   union power_supply_propval *val)
++{
++	int i_val, ret;
++
++	/* Read processed value - mA units */
++	ret = iio_read_channel_processed(charger->ibus_chan, &i_val);
++	if (ret < 0)
++		return ret;
++
++	/* Convert current to expected uA units */
++	val->intval = i_val * 1000;
++
++	return 0;
++}
++
++static int da9150_charger_tjunc_temp(struct da9150_charger *charger,
++				     union power_supply_propval *val)
++{
++	int t_val, ret;
++
++	/* Read processed value - 0.001 degrees C units */
++	ret = iio_read_channel_processed(charger->tjunc_chan, &t_val);
++	if (ret < 0)
++		return ret;
++
++	/* Convert temp to expect 0.1 degrees C units */
++	val->intval = t_val / 100;
++
++	return 0;
++}
++
++static enum power_supply_property da9150_charger_props[] = {
++	POWER_SUPPLY_PROP_ONLINE,
++	POWER_SUPPLY_PROP_VOLTAGE_NOW,
++	POWER_SUPPLY_PROP_CURRENT_AVG,
++	POWER_SUPPLY_PROP_TEMP,
++};
++
++static int da9150_charger_get_prop(struct power_supply *psy,
++				   enum power_supply_property psp,
++				   union power_supply_propval *val)
++{
++	struct da9150_charger *charger = dev_get_drvdata(psy->dev->parent);
++	int ret;
++
++	switch (psp) {
++	case POWER_SUPPLY_PROP_ONLINE:
++		ret = da9150_charger_supply_online(charger, psy, val);
++		break;
++	case POWER_SUPPLY_PROP_VOLTAGE_NOW:
++		ret = da9150_charger_vbus_voltage_now(charger, val);
++		break;
++	case POWER_SUPPLY_PROP_CURRENT_AVG:
++		ret = da9150_charger_ibus_current_avg(charger, val);
++		break;
++	case POWER_SUPPLY_PROP_TEMP:
++		ret = da9150_charger_tjunc_temp(charger, val);
++		break;
++	default:
++		ret = -EINVAL;
++		break;
++	}
++
++	return ret;
++}
++
++/* Battery Properties */
++static int da9150_charger_battery_status(struct da9150_charger *charger,
++					 union power_supply_propval *val)
++{
++	u8 reg;
++
++	/* Check to see if battery is discharging */
++	reg = da9150_reg_read(charger->da9150, DA9150_STATUS_H);
++
++	if (((reg & DA9150_VBUS_STAT_MASK) == DA9150_VBUS_STAT_OFF) ||
++	    ((reg & DA9150_VBUS_STAT_MASK) == DA9150_VBUS_STAT_WAIT)) {
++		val->intval = POWER_SUPPLY_STATUS_DISCHARGING;
++
++		return 0;
++	}
++
++	reg = da9150_reg_read(charger->da9150, DA9150_STATUS_J);
++
++	/* Now check for other states */
++	switch (reg & DA9150_CHG_STAT_MASK) {
++	case DA9150_CHG_STAT_ACT:
++	case DA9150_CHG_STAT_PRE:
++	case DA9150_CHG_STAT_CC:
++	case DA9150_CHG_STAT_CV:
++		val->intval = POWER_SUPPLY_STATUS_CHARGING;
++		break;
++	case DA9150_CHG_STAT_OFF:
++	case DA9150_CHG_STAT_SUSP:
++	case DA9150_CHG_STAT_TEMP:
++	case DA9150_CHG_STAT_TIME:
++	case DA9150_CHG_STAT_BAT:
++		val->intval = POWER_SUPPLY_STATUS_NOT_CHARGING;
++		break;
++	case DA9150_CHG_STAT_FULL:
++		val->intval = POWER_SUPPLY_STATUS_FULL;
++		break;
++	default:
++		val->intval = POWER_SUPPLY_STATUS_UNKNOWN;
++		break;
++	}
++
++	return 0;
++}
++
++static int da9150_charger_battery_health(struct da9150_charger *charger,
++					 union power_supply_propval *val)
++{
++	u8 reg;
++
++	reg = da9150_reg_read(charger->da9150, DA9150_STATUS_J);
++
++	/* Check if temperature limit reached */
++	switch (reg & DA9150_CHG_TEMP_MASK) {
++	case DA9150_CHG_TEMP_UNDER:
++		val->intval = POWER_SUPPLY_HEALTH_COLD;
++		return 0;
++	case DA9150_CHG_TEMP_OVER:
++		val->intval = POWER_SUPPLY_HEALTH_OVERHEAT;
++		return 0;
++	default:
++		break;
++	}
++
++	/* Check for other health states */
++	switch (reg & DA9150_CHG_STAT_MASK) {
++	case DA9150_CHG_STAT_ACT:
++	case DA9150_CHG_STAT_PRE:
++		val->intval = POWER_SUPPLY_HEALTH_DEAD;
++		break;
++	case DA9150_CHG_STAT_TIME:
++		val->intval = POWER_SUPPLY_HEALTH_UNSPEC_FAILURE;
++		break;
++	default:
++		val->intval = POWER_SUPPLY_HEALTH_GOOD;
++		break;
++	}
++
++	return 0;
++}
++
++static int da9150_charger_battery_present(struct da9150_charger *charger,
++					  union power_supply_propval *val)
++{
++	u8 reg;
++
++	/* Check if battery present or removed */
++	reg = da9150_reg_read(charger->da9150, DA9150_STATUS_J);
++	if ((reg & DA9150_CHG_STAT_MASK) == DA9150_CHG_STAT_BAT)
++		val->intval = 0;
++	else
++		val->intval = 1;
++
++	return 0;
++}
++
++static int da9150_charger_battery_charge_type(struct da9150_charger *charger,
++					      union power_supply_propval *val)
++{
++	u8 reg;
++
++	reg = da9150_reg_read(charger->da9150, DA9150_STATUS_J);
++
++	switch (reg & DA9150_CHG_STAT_MASK) {
++	case DA9150_CHG_STAT_CC:
++		val->intval = POWER_SUPPLY_CHARGE_TYPE_FAST;
++		break;
++	case DA9150_CHG_STAT_ACT:
++	case DA9150_CHG_STAT_PRE:
++	case DA9150_CHG_STAT_CV:
++		val->intval = POWER_SUPPLY_CHARGE_TYPE_TRICKLE;
++		break;
++	default:
++		val->intval = POWER_SUPPLY_CHARGE_TYPE_NONE;
++		break;
++	}
++
++	return 0;
++}
++
++static int da9150_charger_battery_voltage_min(struct da9150_charger *charger,
++					      union power_supply_propval *val)
++{
++	u8 reg;
++
++	reg = da9150_reg_read(charger->da9150, DA9150_PPR_CHGCTRL_C);
++
++	/* Value starts at 2500 mV, 50 mV increments, presented in uV */
++	val->intval = ((reg & DA9150_CHG_VFAULT_MASK) * 50000) + 2500000;
++
++	return 0;
++}
++
++static int da9150_charger_battery_voltage_now(struct da9150_charger *charger,
++					      union power_supply_propval *val)
++{
++	int v_val, ret;
++
++	/* Read processed value - mV units */
++	ret = iio_read_channel_processed(charger->vbat_chan, &v_val);
++	if (ret < 0)
++		return ret;
++
++	val->intval = v_val * 1000;
++
++	return 0;
++}
++
++static int da9150_charger_battery_current_max(struct da9150_charger *charger,
++					      union power_supply_propval *val)
++{
++	int reg;
++
++	reg = da9150_reg_read(charger->da9150, DA9150_PPR_CHGCTRL_D);
++
++	/* 25mA increments */
++	val->intval = reg * 25000;
++
++	return 0;
++}
++
++static int da9150_charger_battery_voltage_max(struct da9150_charger *charger,
++					      union power_supply_propval *val)
++{
++	u8 reg;
++
++	reg = da9150_reg_read(charger->da9150, DA9150_PPR_CHGCTRL_B);
++
++	/* Value starts at 3650 mV, 25 mV increments, presented in uV */
++	val->intval = ((reg & DA9150_CHG_VBAT_MASK) * 25000) + 3650000;
++	return 0;
++}
++
++static enum power_supply_property da9150_charger_bat_props[] = {
++	POWER_SUPPLY_PROP_STATUS,
++	POWER_SUPPLY_PROP_ONLINE,
++	POWER_SUPPLY_PROP_HEALTH,
++	POWER_SUPPLY_PROP_PRESENT,
++	POWER_SUPPLY_PROP_CHARGE_TYPE,
++	POWER_SUPPLY_PROP_VOLTAGE_MIN_DESIGN,
++	POWER_SUPPLY_PROP_VOLTAGE_NOW,
++	POWER_SUPPLY_PROP_CONSTANT_CHARGE_CURRENT_MAX,
++	POWER_SUPPLY_PROP_CONSTANT_CHARGE_VOLTAGE_MAX,
++};
++
++static int da9150_charger_battery_get_prop(struct power_supply *psy,
++					   enum power_supply_property psp,
++					   union power_supply_propval *val)
++{
++	struct da9150_charger *charger = dev_get_drvdata(psy->dev->parent);
++	int ret;
++
++	switch (psp) {
++	case POWER_SUPPLY_PROP_STATUS:
++		ret = da9150_charger_battery_status(charger, val);
++		break;
++	case POWER_SUPPLY_PROP_ONLINE:
++		ret = da9150_charger_supply_online(charger, psy, val);
++		break;
++	case POWER_SUPPLY_PROP_HEALTH:
++		ret = da9150_charger_battery_health(charger, val);
++		break;
++	case POWER_SUPPLY_PROP_PRESENT:
++		ret = da9150_charger_battery_present(charger, val);
++		break;
++	case POWER_SUPPLY_PROP_CHARGE_TYPE:
++		ret = da9150_charger_battery_charge_type(charger, val);
++		break;
++	case POWER_SUPPLY_PROP_VOLTAGE_MIN_DESIGN:
++		ret = da9150_charger_battery_voltage_min(charger, val);
++		break;
++	case POWER_SUPPLY_PROP_VOLTAGE_NOW:
++		ret = da9150_charger_battery_voltage_now(charger, val);
++		break;
++	case POWER_SUPPLY_PROP_CONSTANT_CHARGE_CURRENT_MAX:
++		ret = da9150_charger_battery_current_max(charger, val);
++		break;
++	case POWER_SUPPLY_PROP_CONSTANT_CHARGE_VOLTAGE_MAX:
++		ret = da9150_charger_battery_voltage_max(charger, val);
++		break;
++	default:
++		ret = -EINVAL;
++		break;
++	}
++
++	return ret;
++}
++
++static irqreturn_t da9150_charger_chg_irq(int irq, void *data)
++{
++	struct da9150_charger *charger = data;
++
++	power_supply_changed(&charger->battery);
++
++	return IRQ_HANDLED;
++}
++
++static irqreturn_t da9150_charger_tjunc_irq(int irq, void *data)
++{
++	struct da9150_charger *charger = data;
++
++	/* Nothing we can really do except report this. */
++	dev_crit(charger->dev, "TJunc over temperature!!!\n");
++	power_supply_changed(&charger->usb);
++
++	return IRQ_HANDLED;
++}
++
++static irqreturn_t da9150_charger_vfault_irq(int irq, void *data)
++{
++	struct da9150_charger *charger = data;
++
++	/* Nothing we can really do except report this. */
++	dev_crit(charger->dev, "VSYS under voltage!!!\n");
++	power_supply_changed(&charger->usb);
++	power_supply_changed(&charger->battery);
++
++	return IRQ_HANDLED;
++}
++
++static irqreturn_t da9150_charger_vbus_irq(int irq, void *data)
++{
++	struct da9150_charger *charger = data;
++	u8 reg;
++
++	reg = da9150_reg_read(charger->da9150, DA9150_STATUS_H);
++
++	/* Charger plugged in or battery only */
++	switch (reg & DA9150_VBUS_STAT_MASK) {
++	case DA9150_VBUS_STAT_OFF:
++	case DA9150_VBUS_STAT_WAIT:
++		charger->supply_online = &charger->battery;
++		break;
++	case DA9150_VBUS_STAT_CHG:
++		charger->supply_online = &charger->usb;
++		break;
++	default:
++		dev_warn(charger->dev, "Unknown VBUS state - reg = 0x%x\n",
++			 reg);
++		charger->supply_online = NULL;
++		break;
++	}
++
++	power_supply_changed(&charger->usb);
++	power_supply_changed(&charger->battery);
++
++	return IRQ_HANDLED;
++}
++
++static void da9150_charger_otg_work(struct work_struct *data)
++{
++	struct da9150_charger *charger =
++		container_of(data, struct da9150_charger, otg_work);
++
++	switch (charger->usb_event) {
++	case USB_EVENT_ID:
++		/* Enable OTG Boost */
++		da9150_set_bits(charger->da9150, DA9150_PPR_BKCTRL_A,
++				DA9150_VBUS_MODE_MASK, DA9150_VBUS_MODE_OTG);
++		break;
++	case USB_EVENT_NONE:
++		/* Revert to charge mode */
++		power_supply_changed(&charger->usb);
++		power_supply_changed(&charger->battery);
++		da9150_set_bits(charger->da9150, DA9150_PPR_BKCTRL_A,
++				DA9150_VBUS_MODE_MASK, DA9150_VBUS_MODE_CHG);
++		break;
++	}
++}
++
++static int da9150_charger_otg_ncb(struct notifier_block *nb, unsigned long val,
++				  void *priv)
++{
++	struct da9150_charger *charger =
++		container_of(nb, struct da9150_charger, otg_nb);
++
++	dev_dbg(charger->dev, "DA9150 OTG notify %lu\n", val);
++
++	charger->usb_event = val;
++	schedule_work(&charger->otg_work);
++
++	return NOTIFY_OK;
++}
++
++static int da9150_charger_register_irq(struct platform_device *pdev,
++				       irq_handler_t handler,
++				       const char *irq_name)
++{
++	struct device *dev = &pdev->dev;
++	struct da9150_charger *charger = platform_get_drvdata(pdev);
++	int irq, ret;
++
++	irq = platform_get_irq_byname(pdev, irq_name);
++	if (irq < 0) {
++		dev_err(dev, "Failed to get IRQ CHG_STATUS: %d\n", irq);
++		return irq;
++	}
++
++	ret = request_threaded_irq(irq, NULL, handler, IRQF_ONESHOT, irq_name,
++				   charger);
++	if (ret)
++		dev_err(dev, "Failed to request IRQ %d: %d\n", irq, ret);
++
++	return ret;
++}
++
++static void da9150_charger_unregister_irq(struct platform_device *pdev,
++					  const char *irq_name)
++{
++	struct device *dev = &pdev->dev;
++	struct da9150_charger *charger = platform_get_drvdata(pdev);
++	int irq;
++
++	irq = platform_get_irq_byname(pdev, irq_name);
++	if (irq < 0) {
++		dev_err(dev, "Failed to get IRQ CHG_STATUS: %d\n", irq);
++		return;
++	}
++
++	free_irq(irq, charger);
++}
++
++static int da9150_charger_probe(struct platform_device *pdev)
++{
++	struct device *dev = &pdev->dev;
++	struct da9150 *da9150 = dev_get_drvdata(dev->parent);
++	struct da9150_charger *charger;
++	struct power_supply *usb, *battery;
++	u8 reg;
++	int ret;
++
++	charger = devm_kzalloc(dev, sizeof(struct da9150_charger), GFP_KERNEL);
++	if (!charger)
++		return -ENOMEM;
++
++	platform_set_drvdata(pdev, charger);
++	charger->da9150 = da9150;
++	charger->dev = dev;
++
++	/* Acquire ADC channels */
++	charger->ibus_chan = iio_channel_get(dev, "CHAN_IBUS");
++	if (IS_ERR(charger->ibus_chan)) {
++		ret = PTR_ERR(charger->ibus_chan);
++		goto ibus_chan_fail;
++	}
++
++	charger->vbus_chan = iio_channel_get(dev, "CHAN_VBUS");
++	if (IS_ERR(charger->vbus_chan)) {
++		ret = PTR_ERR(charger->vbus_chan);
++		goto vbus_chan_fail;
++	}
++
++	charger->tjunc_chan = iio_channel_get(dev, "CHAN_TJUNC");
++	if (IS_ERR(charger->tjunc_chan)) {
++		ret = PTR_ERR(charger->tjunc_chan);
++		goto tjunc_chan_fail;
++	}
++
++	charger->vbat_chan = iio_channel_get(dev, "CHAN_VBAT");
++	if (IS_ERR(charger->vbat_chan)) {
++		ret = PTR_ERR(charger->vbat_chan);
++		goto vbat_chan_fail;
++	}
++
++	/* Register power supplies */
++	usb = &charger->usb;
++	battery = &charger->battery;
++
++	usb->name = "da9150-usb",
++	usb->type = POWER_SUPPLY_TYPE_USB;
++	usb->properties = da9150_charger_props;
++	usb->num_properties = ARRAY_SIZE(da9150_charger_props);
++	usb->get_property = da9150_charger_get_prop;
++	ret = power_supply_register(dev, usb);
++	if (ret)
++		goto usb_fail;
++
++	battery->name = "da9150-battery";
++	battery->type = POWER_SUPPLY_TYPE_BATTERY;
++	battery->properties = da9150_charger_bat_props;
++	battery->num_properties = ARRAY_SIZE(da9150_charger_bat_props);
++	battery->get_property = da9150_charger_battery_get_prop;
++	ret = power_supply_register(dev, battery);
++	if (ret)
++		goto battery_fail;
++
++	/* Get initial online supply */
++	reg = da9150_reg_read(da9150, DA9150_STATUS_H);
++
++	switch (reg & DA9150_VBUS_STAT_MASK) {
++	case DA9150_VBUS_STAT_OFF:
++	case DA9150_VBUS_STAT_WAIT:
++		charger->supply_online = &charger->battery;
++		break;
++	case DA9150_VBUS_STAT_CHG:
++		charger->supply_online = &charger->usb;
++		break;
++	default:
++		dev_warn(dev, "Unknown VBUS state - reg = 0x%x\n", reg);
++		charger->supply_online = NULL;
++		break;
++	}
++
++	/* Setup OTG reporting & configuration */
++	charger->usb_phy = devm_usb_get_phy(dev, USB_PHY_TYPE_USB2);
++	if (!IS_ERR_OR_NULL(charger->usb_phy)) {
++		INIT_WORK(&charger->otg_work, da9150_charger_otg_work);
++		charger->otg_nb.notifier_call = da9150_charger_otg_ncb;
++		usb_register_notifier(charger->usb_phy, &charger->otg_nb);
++	}
++
++	/* Register IRQs */
++	ret = da9150_charger_register_irq(pdev, da9150_charger_chg_irq,
++					  "CHG_STATUS");
++	if (ret < 0)
++		goto chg_irq_fail;
++
++	ret = da9150_charger_register_irq(pdev, da9150_charger_tjunc_irq,
++					  "CHG_TJUNC");
++	if (ret < 0)
++		goto tjunc_irq_fail;
++
++	ret = da9150_charger_register_irq(pdev, da9150_charger_vfault_irq,
++					  "CHG_VFAULT");
++	if (ret < 0)
++		goto vfault_irq_fail;
++
++	ret = da9150_charger_register_irq(pdev, da9150_charger_vbus_irq,
++					  "CHG_VBUS");
++	if (ret < 0)
++		goto vbus_irq_fail;
++
++	return 0;
++
++
++vbus_irq_fail:
++	da9150_charger_unregister_irq(pdev, "CHG_VFAULT");
++vfault_irq_fail:
++	da9150_charger_unregister_irq(pdev, "CHG_TJUNC");
++tjunc_irq_fail:
++	da9150_charger_unregister_irq(pdev, "CHG_STATUS");
++chg_irq_fail:
++	if (!IS_ERR_OR_NULL(charger->usb_phy))
++		usb_unregister_notifier(charger->usb_phy, &charger->otg_nb);
++battery_fail:
++	power_supply_unregister(usb);
++
++usb_fail:
++	iio_channel_release(charger->vbat_chan);
++
++vbat_chan_fail:
++	iio_channel_release(charger->tjunc_chan);
++
++tjunc_chan_fail:
++	iio_channel_release(charger->vbus_chan);
++
++vbus_chan_fail:
++	iio_channel_release(charger->ibus_chan);
++
++ibus_chan_fail:
++	return ret;
++}
++
++static int da9150_charger_remove(struct platform_device *pdev)
++{
++	struct da9150_charger *charger = platform_get_drvdata(pdev);
++	int irq;
++
++	/* Make sure IRQs are released before unregistering power supplies */
++	irq = platform_get_irq_byname(pdev, "CHG_VBUS");
++	free_irq(irq, charger);
++
++	irq = platform_get_irq_byname(pdev, "CHG_VFAULT");
++	free_irq(irq, charger);
++
++	irq = platform_get_irq_byname(pdev, "CHG_TJUNC");
++	free_irq(irq, charger);
++
++	irq = platform_get_irq_byname(pdev, "CHG_STATUS");
++	free_irq(irq, charger);
++
++	if (!IS_ERR_OR_NULL(charger->usb_phy))
++		usb_unregister_notifier(charger->usb_phy, &charger->otg_nb);
++
++	power_supply_unregister(&charger->battery);
++	power_supply_unregister(&charger->usb);
++
++	/* Release ADC channels */
++	iio_channel_release(charger->ibus_chan);
++	iio_channel_release(charger->vbus_chan);
++	iio_channel_release(charger->tjunc_chan);
++	iio_channel_release(charger->vbat_chan);
++
++	return 0;
++}
++
++static struct platform_driver da9150_charger_driver = {
++	.driver = {
++		.name = "da9150-charger",
++	},
++	.probe = da9150_charger_probe,
++	.remove = da9150_charger_remove,
++};
++
++module_platform_driver(da9150_charger_driver);
++
++MODULE_DESCRIPTION("Charger Driver for DA9150");
++MODULE_AUTHOR("Adam Thomson <Adam.Thomson.Opensource@diasemi.com>");
++MODULE_LICENSE("GPL");
+--
+1.9.3
+
