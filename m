@@ -1,14 +1,15 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail1.bemta3.messagelabs.com ([195.245.230.177]:13410 "EHLO
+Received: from mail1.bemta3.messagelabs.com ([195.245.230.165]:55282 "EHLO
 	mail1.bemta3.messagelabs.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1751730AbbBROIu (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 18 Feb 2015 09:08:50 -0500
-Message-ID: <c2b303c9e399b7d72b32b4eb9e26bd6d16af80c9.1424267009.git.Adam.Thomson.Opensource@diasemi.com>
+	by vger.kernel.org with ESMTP id S1751527AbbBROJI (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 18 Feb 2015 09:09:08 -0500
+Message-ID: <cf14316d275a74b9a57660c0a8783a14b5f08eb5.1424267009.git.Adam.Thomson.Opensource@diasemi.com>
 In-Reply-To: <cover.1424267009.git.Adam.Thomson.Opensource@diasemi.com>
 References: <cover.1424267009.git.Adam.Thomson.Opensource@diasemi.com>
 From: Adam Thomson <Adam.Thomson.Opensource@diasemi.com>
-Date: Wed, 18 Feb 2015 14:08:30 +0000
-Subject: [PATCH v7 4/7] iio: da9150: Add DT binding documentation for GPADC
+Date: Wed, 18 Feb 2015 14:08:37 +0000
+Subject: [PATCH v7 7/7] MAINTAINERS: Include DA9150 files in Dialog Semiconductor
+ support list.
 To: Lee Jones <lee.jones@linaro.org>,
 	Samuel Ortiz <sameo@linux.intel.com>,
 	Jonathan Cameron <jic23@kernel.org>,
@@ -32,34 +33,39 @@ Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
 Signed-off-by: Adam Thomson <Adam.Thomson.Opensource@diasemi.com>
-Acked-by: Jonathan Cameron <jic23@kernel.org>
+Acked-by: Lee Jones <lee.jones@linaro.org>
 ---
- .../devicetree/bindings/iio/adc/da9150-gpadc.txt         | 16 ++++++++++++++++
- 1 file changed, 16 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/iio/adc/da9150-gpadc.txt
+ MAINTAINERS | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/iio/adc/da9150-gpadc.txt b/Documentation/devicetree/bindings/iio/adc/da9150-gpadc.txt
-new file mode 100644
-index 0000000..c07228d
---- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/adc/da9150-gpadc.txt
-@@ -0,0 +1,16 @@
-+Dialog Semiconductor DA9150 IIO GPADC bindings
-+
-+Required properties:
-+- compatible: "dlg,da9150-gpadc" for DA9150 IIO GPADC
-+- #io-channel-cells: Should be set to <1>
-+  (See Documentation/devicetree/bindings/iio/iio-bindings.txt for further info)
-+
-+For further information on GPADC channels, see device datasheet.
-+
-+
-+Example:
-+
-+	gpadc: da9150-gpadc {
-+		compatible = "dlg,da9150-gpadc";
-+		#io-channel-cells = <1>;
-+	};
+diff --git a/MAINTAINERS b/MAINTAINERS
+index d66a97d..10df1bd 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -3090,12 +3090,15 @@ S:	Supported
+ F:	Documentation/hwmon/da90??
+ F:	drivers/gpio/gpio-da90??.c
+ F:	drivers/hwmon/da90??-hwmon.c
++F:	drivers/iio/adc/da91??-*.c
+ F:	drivers/input/misc/da90??_onkey.c
+ F:	drivers/input/touchscreen/da9052_tsi.c
+ F:	drivers/leds/leds-da90??.c
+ F:	drivers/mfd/da903x.c
+ F:	drivers/mfd/da90??-*.c
++F:	drivers/mfd/da91??-*.c
+ F:	drivers/power/da9052-battery.c
++F:	drivers/power/da91??-*.c
+ F:	drivers/regulator/da903x.c
+ F:	drivers/regulator/da9???-regulator.[ch]
+ F:	drivers/rtc/rtc-da90??.c
+@@ -3105,6 +3108,7 @@ F:	include/linux/mfd/da903x.h
+ F:	include/linux/mfd/da9052/
+ F:	include/linux/mfd/da9055/
+ F:	include/linux/mfd/da9063/
++F:	include/linux/mfd/da9150/
+ F:	include/sound/da[79]*.h
+ F:	sound/soc/codecs/da[79]*.[ch]
+
 --
 1.9.3
 
