@@ -1,104 +1,74 @@
 Return-Path: <mfuzzey@parkeon.com>
-Subject: [PATCH 1/9] iio: mma8452: Initialise before activating
+Subject: [RESEND PATCH] iio: core: Fix double free.
 To: linux-iio@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>
 From: Martin Fuzzey <mfuzzey@parkeon.com>
-Date: Thu, 19 Feb 2015 15:15:56 +0100
-Message-ID: <20150219141556.27001.96911.stgit@localhost>
-In-Reply-To: <20150219141553.27001.18825.stgit@localhost>
-References: <20150219141553.27001.18825.stgit@localhost>
+Date: Thu, 19 Feb 2015 15:17:44 +0100
+Message-ID: <20150219141744.27201.80796.stgit@localhost>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 List-ID: <linux-iio@vger.kernel.org>
 
-Many of the hardware configuration registers may only be modified while the
-device is inactive.
+When an error occurred during event registration memory was freed twice
+resulting in kernel memory corruption and a crash in unrelated code.
 
-Currently the probe code first activates the device and then modifies the
-registers (eg to set the scale). This doesn't actually work but is not
-noticed since the scale used is the default value.
+The problem was caused by
+	iio_device_unregister_eventset()
+	iio_device_unregister_sysfs()
 
-While at it also issue a hardware reset command at probe time.
+being called twice, once on the error path and then
+again via iio_dev_release().
+
+Fix this by making these two functions idempotent so they
+may be called multiple times.
+
+The problem was observed before applying
+	78b33216 iio:core: Handle error when mask type is not separate
 
 Signed-off-by: Martin Fuzzey <mfuzzey@parkeon.com>
 ---
- drivers/iio/accel/mma8452.c |   39 ++++++++++++++++++++++++++++++++++-----
- 1 file changed, 34 insertions(+), 5 deletions(-)
+ drivers/iio/industrialio-core.c  |    5 +++--
+ drivers/iio/industrialio-event.c |    1 +
+ 2 files changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/iio/accel/mma8452.c b/drivers/iio/accel/mma8452.c
-index 3c12d49..04a4f34 100644
---- a/drivers/iio/accel/mma8452.c
-+++ b/drivers/iio/accel/mma8452.c
-@@ -32,6 +32,7 @@
- #define MMA8452_OFF_Z 0x31
- #define MMA8452_CTRL_REG1 0x2a
- #define MMA8452_CTRL_REG2 0x2b
-+#define MMA8452_CTRL_REG2_RST		BIT(6)
- 
- #define MMA8452_STATUS_DRDY (BIT(2) | BIT(1) | BIT(0))
- 
-@@ -111,7 +112,7 @@ static const int mma8452_samp_freq[8][2] = {
- 	{6, 250000}, {1, 560000}
- };
- 
--/* 
-+/*
-  * Hardware has fullscale of -2G, -4G, -8G corresponding to raw value -2048
-  * The userspace interface uses m/s^2 and we declare micro units
-  * So scale factor is given by:
-@@ -335,6 +336,30 @@ static const struct iio_info mma8452_info = {
- 
- static const unsigned long mma8452_scan_masks[] = {0x7, 0};
- 
-+static int mma8452_reset(struct i2c_client *client)
-+{
-+	int i;
-+	int ret;
-+
-+	ret = i2c_smbus_write_byte_data(client,	MMA8452_CTRL_REG2,
-+						MMA8452_CTRL_REG2_RST);
-+	if (ret)
-+		return ret;
-+
-+	for (i = 0; i < 10; i++) {
-+		udelay(100);
-+		ret = i2c_smbus_read_byte_data(client, MMA8452_CTRL_REG2);
-+		if (ret == -EIO)
-+			continue; /* I2C comm reset */
-+		if (ret < 0)
-+			return ret;
-+		if (!(ret & MMA8452_CTRL_REG2_RST))
-+			return 0;
-+	}
-+
-+	return -ETIMEDOUT;
-+}
-+
- static int mma8452_probe(struct i2c_client *client,
- 			 const struct i2c_device_id *id)
+diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+index af3e76d..f009d05 100644
+--- a/drivers/iio/industrialio-core.c
++++ b/drivers/iio/industrialio-core.c
+@@ -832,8 +832,7 @@ static int iio_device_add_channel_sysfs(struct iio_dev *indio_dev,
+  * @attr_list: List of IIO device attributes
+  *
+  * This function frees the memory allocated for each of the IIO device
+- * attributes in the list. Note: if you want to reuse the list after calling
+- * this function you have to reinitialize it using INIT_LIST_HEAD().
++ * attributes in the list.
+  */
+ void iio_free_chan_devattr_list(struct list_head *attr_list)
  {
-@@ -365,10 +390,7 @@ static int mma8452_probe(struct i2c_client *client,
- 	indio_dev->num_channels = ARRAY_SIZE(mma8452_channels);
- 	indio_dev->available_scan_masks = mma8452_scan_masks;
+@@ -841,6 +840,7 @@ void iio_free_chan_devattr_list(struct list_head *attr_list)
  
--	data->ctrl_reg1 = MMA8452_CTRL_ACTIVE |
--		(MMA8452_CTRL_DR_DEFAULT << MMA8452_CTRL_DR_SHIFT);
--	ret = i2c_smbus_write_byte_data(client, MMA8452_CTRL_REG1,
--		data->ctrl_reg1);
-+	ret = mma8452_reset(client);
- 	if (ret < 0)
- 		return ret;
+ 	list_for_each_entry_safe(p, n, attr_list, l) {
+ 		kfree(p->dev_attr.attr.name);
++		list_del(&p->l);
+ 		kfree(p);
+ 	}
+ }
+@@ -921,6 +921,7 @@ static void iio_device_unregister_sysfs(struct iio_dev *indio_dev)
  
-@@ -378,6 +400,13 @@ static int mma8452_probe(struct i2c_client *client,
- 	if (ret < 0)
- 		return ret;
+ 	iio_free_chan_devattr_list(&indio_dev->channel_attr_list);
+ 	kfree(indio_dev->chan_attr_group.attrs);
++	indio_dev->chan_attr_group.attrs = NULL;
+ }
  
-+	data->ctrl_reg1 = MMA8452_CTRL_ACTIVE |
-+		(MMA8452_CTRL_DR_DEFAULT << MMA8452_CTRL_DR_SHIFT);
-+	ret = i2c_smbus_write_byte_data(client, MMA8452_CTRL_REG1,
-+		data->ctrl_reg1);
-+	if (ret < 0)
-+		return ret;
-+
- 	ret = iio_triggered_buffer_setup(indio_dev, NULL,
- 		mma8452_trigger_handler, NULL);
- 	if (ret < 0)
+ static void iio_dev_release(struct device *device)
+diff --git a/drivers/iio/industrialio-event.c b/drivers/iio/industrialio-event.c
+index 0c1e37e..35c02ae 100644
+--- a/drivers/iio/industrialio-event.c
++++ b/drivers/iio/industrialio-event.c
+@@ -493,6 +493,7 @@ int iio_device_register_eventset(struct iio_dev *indio_dev)
+ error_free_setup_event_lines:
+ 	iio_free_chan_devattr_list(&indio_dev->event_interface->dev_attr_list);
+ 	kfree(indio_dev->event_interface);
++	indio_dev->event_interface = NULL;
+ 	return ret;
+ }
+ 
