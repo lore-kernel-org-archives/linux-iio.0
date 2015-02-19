@@ -1,85 +1,97 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-wi0-f177.google.com ([209.85.212.177]:39761 "EHLO
-	mail-wi0-f177.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752622AbbBRSGH (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 18 Feb 2015 13:06:07 -0500
-From: Viorel Suman <viorel.suman@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org, Viorel Suman <viorel.suman@gmail.com>
-Subject: [PATCH v2] iio: inv_mpu6050: Clear timestamps fifo while resetting hardware fifo
-Date: Wed, 18 Feb 2015 20:05:21 +0200
-Message-Id: <1424282721-3033-1-git-send-email-viorel.suman@gmail.com>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <pmeerw@pmeerw.net>
+Date: Thu, 19 Feb 2015 08:15:27 +0100 (CET)
+From: Peter Meerwald <pmeerw@pmeerw.net>
+To: Kevin Tsai <ktsai@capellamicro.com>
+cc: Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
+    Lars-Peter Clausen <lars@metafoo.de>, linux-iio@vger.kernel.org,
+    linux-kernel@vger.kernel.org
+Subject: Re: [PATCH V1 1/1] iio: light: Added PM support for Capella CM3232
+ ambient light sensor driver.
+In-Reply-To: <1424304808-14666-1-git-send-email-ktsai@capellamicro.com>
+Message-ID: <alpine.DEB.2.02.1502190813420.16447@pmeerw.net>
+References: <1424304808-14666-1-git-send-email-ktsai@capellamicro.com>
+MIME-Version: 1.0
+Content-Type: TEXT/PLAIN; charset=US-ASCII
+List-ID: <linux-iio@vger.kernel.org>
 
-A hardware fifo reset always imply an invalidation of the
-existing timestamps, so we'll clear timestamps fifo on
-successfull hardware fifo reset.
 
-Signed-off-by: Viorel Suman <viorel.suman@gmail.com>
----
-  v2: Addressed Jonathan's comment regarding the subject prefix.
+> Added Power Management Support.
 
- drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c | 25 ++++++++++++++-----------
- 1 file changed, 14 insertions(+), 11 deletions(-)
-
-diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c
-index 0cd306a..ba27e27 100644
---- a/drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c
-+++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c
-@@ -24,6 +24,16 @@
- #include <linux/poll.h>
- #include "inv_mpu_iio.h"
+comments below
  
-+static void inv_clear_kfifo(struct inv_mpu6050_state *st)
-+{
-+	unsigned long flags;
-+
-+	/* take the spin lock sem to avoid interrupt kick in */
-+	spin_lock_irqsave(&st->time_stamp_lock, flags);
-+	kfifo_reset(&st->timestamps);
-+	spin_unlock_irqrestore(&st->time_stamp_lock, flags);
-+}
-+
- int inv_reset_fifo(struct iio_dev *indio_dev)
- {
- 	int result;
-@@ -50,6 +60,10 @@ int inv_reset_fifo(struct iio_dev *indio_dev)
- 					INV_MPU6050_BIT_FIFO_RST);
- 	if (result)
- 		goto reset_fifo_fail;
-+
-+	/* clear timestamps fifo */
-+	inv_clear_kfifo(st);
-+
- 	/* enable interrupt */
- 	if (st->chip_config.accl_fifo_enable ||
- 	    st->chip_config.gyro_fifo_enable) {
-@@ -83,16 +97,6 @@ reset_fifo_fail:
- 	return result;
- }
- 
--static void inv_clear_kfifo(struct inv_mpu6050_state *st)
--{
--	unsigned long flags;
--
--	/* take the spin lock sem to avoid interrupt kick in */
--	spin_lock_irqsave(&st->time_stamp_lock, flags);
--	kfifo_reset(&st->timestamps);
--	spin_unlock_irqrestore(&st->time_stamp_lock, flags);
--}
--
- /**
-  * inv_mpu6050_irq_handler() - Cache a timestamp at each data ready interrupt.
-  */
-@@ -184,7 +188,6 @@ end_session:
- flush_fifo:
- 	/* Flush HW and SW FIFOs. */
- 	inv_reset_fifo(indio_dev);
--	inv_clear_kfifo(st);
- 	mutex_unlock(&indio_dev->mlock);
- 	iio_trigger_notify_done(indio_dev->trig);
- 
+> Signed-off-by: Kevin Tsai <ktsai@capellamicro.com>
+> ---
+> v1:
+> Added Power Management support.
+> 
+>  drivers/iio/light/cm3232.c | 32 ++++++++++++++++++++++++++++++++
+>  1 file changed, 32 insertions(+)
+> 
+> diff --git a/drivers/iio/light/cm3232.c b/drivers/iio/light/cm3232.c
+> index 90e3519..9e54ea7 100644
+> --- a/drivers/iio/light/cm3232.c
+> +++ b/drivers/iio/light/cm3232.c
+> @@ -378,6 +378,34 @@ static const struct i2c_device_id cm3232_id[] = {
+>  	{}
+>  };
+>  
+> +static int cm3232_suspend(struct device *dev)
+> +{
+> +	struct iio_dev *indio_dev = i2c_get_clientdata(to_i2c_client(dev));
+> +	struct cm3232_chip *chip = iio_priv(indio_dev);
+> +	struct i2c_client *client = chip->client;
+> +	int ret;
+> +
+> +	chip->regs_cmd |= CM3232_CMD_ALS_DISABLE;
+> +	ret = i2c_smbus_write_byte_data(client, CM3232_REG_ADDR_CMD,
+> +					chip->regs_cmd);
+> +
+> +	return ret;
+> +}
+> +
+
+these functions are not used when CONFIG_PM_SLEEP is not #defined, leading 
+to warning
+
+> +static int cm3232_resume(struct device *dev)
+> +{
+> +	struct iio_dev *indio_dev = i2c_get_clientdata(to_i2c_client(dev));
+> +	struct cm3232_chip *chip = iio_priv(indio_dev);
+> +	struct i2c_client *client = chip->client;
+> +	int ret;
+> +
+> +	chip->regs_cmd &= ~CM3232_CMD_ALS_DISABLE;
+> +	ret = i2c_smbus_write_byte_data(client, CM3232_REG_ADDR_CMD,
+> +					chip->regs_cmd | CM3232_CMD_ALS_RESET);
+> +
+> +	return ret;
+> +}
+> +
+>  MODULE_DEVICE_TABLE(i2c, cm3232_id);
+>  
+>  static const struct of_device_id cm3232_of_match[] = {
+> @@ -385,11 +413,15 @@ static const struct of_device_id cm3232_of_match[] = {
+>  	{}
+>  };
+>  
+> +static const struct dev_pm_ops cm3232_pm_ops = {
+> +	SET_SYSTEM_SLEEP_PM_OPS(cm3232_suspend, cm3232_resume)};
+
+probably put the closing brace in the next line
+
+> +
+>  static struct i2c_driver cm3232_driver = {
+>  	.driver = {
+>  		.name	= "cm3232",
+>  		.owner	= THIS_MODULE,
+>  		.of_match_table = of_match_ptr(cm3232_of_match),
+> +		.pm	= &cm3232_pm_ops,
+>  	},
+>  	.id_table	= cm3232_id,
+>  	.probe		= cm3232_probe,
+> 
+
 -- 
-2.3.0
 
+Peter Meerwald
++43-664-2444418 (mobile)
