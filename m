@@ -1,74 +1,124 @@
 Return-Path: <mfuzzey@parkeon.com>
-Subject: [RESEND PATCH] iio: core: Fix double free.
+Subject: [PATCH 3/9] iio: core: add high pass filter attributes
 To: linux-iio@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>
 From: Martin Fuzzey <mfuzzey@parkeon.com>
-Date: Thu, 19 Feb 2015 15:17:44 +0100
-Message-ID: <20150219141744.27201.80796.stgit@localhost>
+Date: Thu, 19 Feb 2015 15:16:00 +0100
+Message-ID: <20150219141600.27001.39877.stgit@localhost>
+In-Reply-To: <20150219141553.27001.18825.stgit@localhost>
+References: <20150219141553.27001.18825.stgit@localhost>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 List-ID: <linux-iio@vger.kernel.org>
 
-When an error occurred during event registration memory was freed twice
-resulting in kernel memory corruption and a crash in unrelated code.
+Add a high pass filter attribute for measurements (like the existing low pass)
 
-The problem was caused by
-	iio_device_unregister_eventset()
-	iio_device_unregister_sysfs()
-
-being called twice, once on the error path and then
-again via iio_dev_release().
-
-Fix this by making these two functions idempotent so they
-may be called multiple times.
-
-The problem was observed before applying
-	78b33216 iio:core: Handle error when mask type is not separate
+Also add both high and low pass attibutes for events.
 
 Signed-off-by: Martin Fuzzey <mfuzzey@parkeon.com>
 ---
- drivers/iio/industrialio-core.c  |    5 +++--
- drivers/iio/industrialio-event.c |    1 +
- 2 files changed, 4 insertions(+), 2 deletions(-)
+ Documentation/ABI/testing/sysfs-bus-iio |   30 ++++++++++++++++++++++++++++++
+ drivers/iio/industrialio-core.c         |    2 ++
+ drivers/iio/industrialio-event.c        |    2 ++
+ include/linux/iio/iio.h                 |    1 +
+ include/linux/iio/types.h               |    2 ++
+ 5 files changed, 37 insertions(+)
 
+diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
+index 117521d..ab592dd 100644
+--- a/Documentation/ABI/testing/sysfs-bus-iio
++++ b/Documentation/ABI/testing/sysfs-bus-iio
+@@ -358,6 +358,16 @@ Description:
+ 		to the underlying data channel, then this parameter
+ 		gives the 3dB frequency of the filter in Hz.
+ 
++What:		/sys/.../in_accel_filter_high_pass_3db_frequency
++What:		/sys/.../in_magn_filter_high_pass_3db_frequency
++What:		/sys/.../in_anglvel_filter_high_pass_3db_frequency
++KernelVersion:	3.21
++Contact:	linux-iio@vger.kernel.org
++Description:
++		If a known or controllable high pass filter is applied
++		to the underlying data channel, then this parameter
++		gives the 3dB frequency of the filter in Hz.
++
+ What:		/sys/bus/iio/devices/iio:deviceX/out_voltageY_raw
+ What:		/sys/bus/iio/devices/iio:deviceX/out_altvoltageY_raw
+ KernelVersion:	2.6.37
+@@ -790,6 +800,26 @@ Description:
+ 		met before an event is generated. If direction is not
+ 		specified then this period applies to both directions.
+ 
++What:		/sys/.../events/in_accel_thresh_rising_low_pass_filter_3db
++What:		/sys/.../events/in_anglvel_thresh_rising_low_pass_filter_3db
++What:		/sys/.../events/in_magn_thresh_rising_low_pass_filter_3db
++KernelVersion:	3.21
++Contact:	linux-iio@vger.kernel.org
++Description:
++		If a low pass filter can be applied to the event generation
++		this property gives its 3db frequency in Hz.
++		A value of zero disables the filter.
++
++What:		/sys/.../events/in_accel_thresh_rising_high_pass_filter_3db
++What:		/sys/.../events/in_anglvel_thresh_rising_high_pass_filter_3db
++What:		/sys/.../events/in_magn_thresh_rising_high_pass_filter_3db
++KernelVersion:	3.21
++Contact:	linux-iio@vger.kernel.org
++Description:
++		If a high pass filter can be applied to the event generation
++		this property gives its 3db frequency in Hz.
++		A value of zero disables the filter.
++
+ What:		/sys/.../iio:deviceX/events/in_accel_mag_en
+ What:		/sys/.../iio:deviceX/events/in_accel_mag_rising_en
+ What:		/sys/.../iio:deviceX/events/in_accel_mag_falling_en
 diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
-index af3e76d..f009d05 100644
+index f009d05..94b1b28 100644
 --- a/drivers/iio/industrialio-core.c
 +++ b/drivers/iio/industrialio-core.c
-@@ -832,8 +832,7 @@ static int iio_device_add_channel_sysfs(struct iio_dev *indio_dev,
-  * @attr_list: List of IIO device attributes
-  *
-  * This function frees the memory allocated for each of the IIO device
-- * attributes in the list. Note: if you want to reuse the list after calling
-- * this function you have to reinitialize it using INIT_LIST_HEAD().
-+ * attributes in the list.
-  */
- void iio_free_chan_devattr_list(struct list_head *attr_list)
- {
-@@ -841,6 +840,7 @@ void iio_free_chan_devattr_list(struct list_head *attr_list)
- 
- 	list_for_each_entry_safe(p, n, attr_list, l) {
- 		kfree(p->dev_attr.attr.name);
-+		list_del(&p->l);
- 		kfree(p);
- 	}
- }
-@@ -921,6 +921,7 @@ static void iio_device_unregister_sysfs(struct iio_dev *indio_dev)
- 
- 	iio_free_chan_devattr_list(&indio_dev->channel_attr_list);
- 	kfree(indio_dev->chan_attr_group.attrs);
-+	indio_dev->chan_attr_group.attrs = NULL;
- }
- 
- static void iio_dev_release(struct device *device)
+@@ -107,6 +107,8 @@ static const char * const iio_chan_info_postfix[] = {
+ 	[IIO_CHAN_INFO_AVERAGE_RAW] = "mean_raw",
+ 	[IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY]
+ 	= "filter_low_pass_3db_frequency",
++	[IIO_CHAN_INFO_HIGH_PASS_FILTER_3DB_FREQUENCY]
++	= "filter_high_pass_3db_frequency",
+ 	[IIO_CHAN_INFO_SAMP_FREQ] = "sampling_frequency",
+ 	[IIO_CHAN_INFO_FREQUENCY] = "frequency",
+ 	[IIO_CHAN_INFO_PHASE] = "phase",
 diff --git a/drivers/iio/industrialio-event.c b/drivers/iio/industrialio-event.c
-index 0c1e37e..35c02ae 100644
+index 35c02ae..4321380 100644
 --- a/drivers/iio/industrialio-event.c
 +++ b/drivers/iio/industrialio-event.c
-@@ -493,6 +493,7 @@ int iio_device_register_eventset(struct iio_dev *indio_dev)
- error_free_setup_event_lines:
- 	iio_free_chan_devattr_list(&indio_dev->event_interface->dev_attr_list);
- 	kfree(indio_dev->event_interface);
-+	indio_dev->event_interface = NULL;
- 	return ret;
- }
+@@ -210,6 +210,8 @@ static const char * const iio_ev_info_text[] = {
+ 	[IIO_EV_INFO_VALUE] = "value",
+ 	[IIO_EV_INFO_HYSTERESIS] = "hysteresis",
+ 	[IIO_EV_INFO_PERIOD] = "period",
++	[IIO_EV_INFO_HIGH_PASS_FILTER_3DB] = "high_pass_filter_3db",
++	[IIO_EV_INFO_LOW_PASS_FILTER_3DB] = "low_pass_filter_3db",
+ };
  
+ static enum iio_event_direction iio_ev_attr_dir(struct iio_dev_attr *attr)
+diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
+index 3642ce7..3ce2793 100644
+--- a/include/linux/iio/iio.h
++++ b/include/linux/iio/iio.h
+@@ -32,6 +32,7 @@ enum iio_chan_info_enum {
+ 	IIO_CHAN_INFO_QUADRATURE_CORRECTION_RAW,
+ 	IIO_CHAN_INFO_AVERAGE_RAW,
+ 	IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY,
++	IIO_CHAN_INFO_HIGH_PASS_FILTER_3DB_FREQUENCY,
+ 	IIO_CHAN_INFO_SAMP_FREQ,
+ 	IIO_CHAN_INFO_FREQUENCY,
+ 	IIO_CHAN_INFO_PHASE,
+diff --git a/include/linux/iio/types.h b/include/linux/iio/types.h
+index 4a2af8a..fc5c123 100644
+--- a/include/linux/iio/types.h
++++ b/include/linux/iio/types.h
+@@ -75,6 +75,8 @@ enum iio_event_info {
+ 	IIO_EV_INFO_VALUE,
+ 	IIO_EV_INFO_HYSTERESIS,
+ 	IIO_EV_INFO_PERIOD,
++	IIO_EV_INFO_HIGH_PASS_FILTER_3DB,
++	IIO_EV_INFO_LOW_PASS_FILTER_3DB,
+ };
+ 
+ enum iio_event_direction {
