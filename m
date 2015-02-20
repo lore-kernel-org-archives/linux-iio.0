@@ -1,166 +1,168 @@
-Return-Path: <irina.tirdea@intel.com>
-From: "Tirdea, Irina" <irina.tirdea@intel.com>
-To: Peter Meerwald <pmeerw@pmeerw.net>
-CC: Jonathan Cameron <jic23@kernel.org>, "linux-iio@vger.kernel.org"
-	<linux-iio@vger.kernel.org>, "linux-kernel@vger.kernel.org"
-	<linux-kernel@vger.kernel.org>, "Pandruvada, Srinivas"
-	<srinivas.pandruvada@intel.com>, "Reus, Adriana" <adriana.reus@intel.com>
-Subject: RE: [PATCH 2/2] iio: accel: kxcjk-1013: optimize i2c transfers in
- trigger handler
-Date: Fri, 20 Feb 2015 12:02:19 +0000
-Message-ID: <1F3AC3675D538145B1661F571FE1805F19A20D9C@irsmsx105.ger.corp.intel.com>
-References: <1424110909-16878-1-git-send-email-irina.tirdea@intel.com>
- <1424110909-16878-3-git-send-email-irina.tirdea@intel.com>
- <alpine.DEB.2.02.1502162014280.26763@pmeerw.net>
-In-Reply-To: <alpine.DEB.2.02.1502162014280.26763@pmeerw.net>
-Content-Type: text/plain; charset="us-ascii"
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-ie0-f169.google.com ([209.85.223.169]:41182 "EHLO
+	mail-ie0-f169.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752566AbbBTHSI (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 20 Feb 2015 02:18:08 -0500
+Received: by iecrd18 with SMTP id rd18so5865032iec.8
+        for <linux-iio@vger.kernel.org>; Thu, 19 Feb 2015 23:18:07 -0800 (PST)
 MIME-Version: 1.0
-List-ID: <linux-iio@vger.kernel.org>
+Date: Fri, 20 Feb 2015 08:18:07 +0100
+Message-ID: <CAEmm_Tb8Tfw8==UD8XT0rg1vkqCdVOTw_X8uvG4h=dF+hyhxxg@mail.gmail.com>
+Subject: [RESEND PATCH] iio: max517: Add support for MAX520 and MAX521 chips.
+From: =?UTF-8?Q?Antonio_Fiol_Bonn=C3=ADn?= <antonio@fiol.es>
+To: Peter Meerwald <pmeerw@pmeerw.net>
+Cc: linux-iio <linux-iio@vger.kernel.org>
+Content-Type: text/plain; charset=UTF-8
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
+MAX520 and MAX521 are protocol-compatible with the already supported
+chips, just have more channels.
 
+Signed-off-by: Antonio Fiol <antonio@fiol.es>
+---
+ drivers/iio/dac/Kconfig        | 11 ++++++++---
+ drivers/iio/dac/max517.c       | 45 +++++++++++++++++++++++++++++++-----------
+ include/linux/iio/dac/max517.h |  2 +-
+ 3 files changed, 42 insertions(+), 16 deletions(-)
 
-> -----Original Message-----
-> From: Peter Meerwald [mailto:pmeerw@pmeerw.net]
-> Sent: 16 February, 2015 21:26
-> To: Tirdea, Irina
-> Cc: Jonathan Cameron; linux-iio@vger.kernel.org; linux-kernel@vger.kernel=
-.org; Pandruvada, Srinivas; Reus, Adriana
-> Subject: Re: [PATCH 2/2] iio: accel: kxcjk-1013: optimize i2c transfers i=
-n trigger handler
->=20
->=20
-> > Reading all axis values in one i2c transfer reduces the delays
-> > introduced by the i2c bus. In case i2c block read is not supported,
-> > fallback to reading each axis as a separate word.
->=20
-> see comments inline below
->=20
-Thanks for the review, Peter!
+diff --git a/drivers/iio/dac/Kconfig b/drivers/iio/dac/Kconfig
+index 2236ea2..13471a7 100644
+--- a/drivers/iio/dac/Kconfig
++++ b/drivers/iio/dac/Kconfig
+@@ -143,11 +143,16 @@ config AD7303
+       ad7303.
 
-> > Signed-off-by: Adriana Reus <adriana.reus@intel.com>
-> > Signed-off-by: Irina Tirdea <irina.tirdea@intel.com>
-> > Reviewed-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-> > ---
-> >  drivers/iio/accel/kxcjk-1013.c | 44 +++++++++++++++++++++++++++++++++-=
---------
-> >  1 file changed, 35 insertions(+), 9 deletions(-)
-> >
-> > diff --git a/drivers/iio/accel/kxcjk-1013.c b/drivers/iio/accel/kxcjk-1=
-013.c
-> > index 5f27787..bfa2899 100644
-> > --- a/drivers/iio/accel/kxcjk-1013.c
-> > +++ b/drivers/iio/accel/kxcjk-1013.c
-> > @@ -109,6 +109,8 @@ struct kxcjk1013_data {
-> >  	int64_t timestamp;
-> >  	enum kx_chipset chipset;
-> >  	bool is_smo8500_device;
-> > +	s32 (*read_block_data)(const struct i2c_client *client, u8 command,
-> > +			       u8 length, u8 *values);
->=20
-> probably this could/should be done in the i2c layer or we end up adding a
-> similar function in every driver?
->=20
-Actually this is exactly what I did: adding this code in a couple of driver=
-s :)
-You are right, this belongs to the i2c core. Will move it there.
+ config MAX517
+-    tristate "Maxim MAX517/518/519 DAC driver"
++    tristate "Maxim MAX517/518/519/520/521 DAC driver"
+     depends on I2C
+     help
+-      If you say yes here you get support for the Maxim chips MAX517,
+-      MAX518 and MAX519 (I2C 8-Bit DACs with rail-to-rail outputs).
++      If you say yes here you get support for the following Maxim chips
++      (I2C 8-Bit DACs with rail-to-rail outputs):
++      MAX517 - Single channel, single reference
++      MAX518 - Dual channel, ref=Vdd
++      MAX519 - Dual channel, dual reference
++      MAX520 - Quad channel, quad reference
++      MAX521 - Octal channel, independent ref for ch0-3, shared ref for ch4-7
 
-> >  };
-> >
-> >  enum kxcjk1013_axis {
-> > @@ -216,6 +218,23 @@ static const struct {
-> >  				 {800, 0, 0x06},
-> >  				 {1600, 0, 0x06} };
-> >
-> > +static s32 kxcjk1013_read_block_data(const struct i2c_client *client,
-> > +				     u8 command, u8 length, u8 *values)
-> > +{
-> > +	s32 data;
-> > +	u8 i;
-> > +
-> > +	for (i =3D 0; i < length; i +=3D 2) {
-> > +		data =3D i2c_smbus_read_word_data(client, command + i);
-> > +		if (data < 0)
-> > +			return data;
-> > +
-> > +		values[i] =3D data & 0xFF;
-> > +		values[i+1] =3D data >> 8;
->=20
-> this is incorrect; it forces the data to be little endian, however, the
-> endianness (as specified in the driver's .scan_type) is IIO_CPU -- the
-> code breaks for big-endian CPUs
->=20
-> since _read_i2c_block_data() can't do endianness conversion (and the chip
-> does i2c endianness, i.e. little-endian), the .scan_type should become
-> IIO_LE and above code is correct again but still ugly :)
->=20
-> bottom line: change .scan_type to IIO_LE
->=20
-Good point. Changing the endianess to IIO_LE is correct for either kxcjk101=
-3_read_block_data or i2c_smbus_read_i2c_block_data.
-Will fix this in the next version. Thanks for catching this!
+       This driver can also be built as a module.  If so, the module
+       will be called max517.
+diff --git a/drivers/iio/dac/max517.c b/drivers/iio/dac/max517.c
+index 9a82a72..5507b39 100644
+--- a/drivers/iio/dac/max517.c
++++ b/drivers/iio/dac/max517.c
+@@ -39,11 +39,13 @@ enum max517_device_ids {
+     ID_MAX517,
+     ID_MAX518,
+     ID_MAX519,
++    ID_MAX520,
++    ID_MAX521,
+ };
 
-> > +	}
-> > +	return i;
-> > +}
-> > +
-> >  static int kxcjk1013_set_mode(struct kxcjk1013_data *data,
-> >  			      enum kxcjk1013_mode mode)
-> >  {
-> > @@ -955,18 +974,14 @@ static irqreturn_t kxcjk1013_trigger_handler(int =
-irq, void *p)
-> >  	struct iio_poll_func *pf =3D p;
-> >  	struct iio_dev *indio_dev =3D pf->indio_dev;
-> >  	struct kxcjk1013_data *data =3D iio_priv(indio_dev);
-> > -	int bit, ret, i =3D 0;
-> > +	int ret;
-> >
-> >  	mutex_lock(&data->mutex);
-> > -	for (bit =3D 0; bit < AXIS_MAX; bit++) {
-> > -		ret =3D kxcjk1013_get_acc_reg(data, bit);
-> > -		if (ret < 0) {
-> > -			mutex_unlock(&data->mutex);
-> > -			goto err;
-> > -		}
-> > -		data->buffer[i++] =3D ret;
-> > -	}
-> > +	ret =3D data->read_block_data(data->client, KXCJK1013_REG_XOUT_L,
-> > +				    AXIS_MAX * 2, (u8 *) data->buffer);
-> >  	mutex_unlock(&data->mutex);
-> > +	if (ret < 0)
-> > +		goto err;
-> >
-> >  	iio_push_to_buffers_with_timestamp(indio_dev, data->buffer,
-> >  					   data->timestamp);
-> > @@ -1196,6 +1211,11 @@ static int kxcjk1013_probe(struct i2c_client *cl=
-ient,
-> >  	const char *name;
-> >  	int ret;
-> >
-> > +	if (!i2c_check_functionality(client->adapter,
-> > +				     I2C_FUNC_SMBUS_BYTE_DATA |
-> > +				     I2C_FUNC_SMBUS_READ_WORD_DATA))
-> > +		return -ENODEV;
-> > +
-> >  	indio_dev =3D devm_iio_device_alloc(&client->dev, sizeof(*data));
-> >  	if (!indio_dev)
-> >  		return -ENOMEM;
-> > @@ -1204,6 +1224,12 @@ static int kxcjk1013_probe(struct i2c_client *cl=
-ient,
-> >  	i2c_set_clientdata(client, indio_dev);
-> >  	data->client =3D client;
-> >
-> > +	if (i2c_check_functionality(client->adapter,
-> > +				    I2C_FUNC_SMBUS_READ_I2C_BLOCK))
-> > +		data->read_block_data =3D i2c_smbus_read_i2c_block_data;
-> > +	else
-> > +		data->read_block_data =3D kxcjk1013_read_block_data;
-> > +
-> >  	pdata =3D dev_get_platdata(&client->dev);
-> >  	if (pdata)
-> >  		data->active_high_intr =3D pdata->active_high_intr;
-> >
->=20
-> --
->=20
-> Peter Meerwald
-> +43-664-2444418 (mobile)
+ struct max517_data {
+     struct i2c_client    *client;
+-    unsigned short        vref_mv[2];
++    unsigned short        vref_mv[8];
+ };
+
+ /*
+@@ -149,7 +151,13 @@ static const struct iio_info max517_info = {
+
+ static const struct iio_chan_spec max517_channels[] = {
+     MAX517_CHANNEL(0),
+-    MAX517_CHANNEL(1)
++    MAX517_CHANNEL(1),
++    MAX517_CHANNEL(2),
++    MAX517_CHANNEL(3),
++    MAX517_CHANNEL(4),
++    MAX517_CHANNEL(5),
++    MAX517_CHANNEL(6),
++    MAX517_CHANNEL(7),
+ };
+
+ static int max517_probe(struct i2c_client *client,
+@@ -158,6 +166,7 @@ static int max517_probe(struct i2c_client *client,
+     struct max517_data *data;
+     struct iio_dev *indio_dev;
+     struct max517_platform_data *platform_data = client->dev.platform_data;
++    int chan;
+
+     indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
+     if (!indio_dev)
+@@ -169,11 +178,21 @@ static int max517_probe(struct i2c_client *client,
+     /* establish that the iio_dev is a child of the i2c device */
+     indio_dev->dev.parent = &client->dev;
+
+-    /* reduced channel set for MAX517 */
+-    if (id->driver_data == ID_MAX517)
+-        indio_dev->num_channels = 1;
+-    else
++    switch (id->driver_data) {
++    case ID_MAX521:
++        indio_dev->num_channels = 8;
++        break;
++    case ID_MAX520:
++        indio_dev->num_channels = 4;
++        break;
++    case ID_MAX519:
++    case ID_MAX518:
+         indio_dev->num_channels = 2;
++        break;
++    default:  /* single channel for MAX517 */
++        indio_dev->num_channels = 1;
++        break;
++    }
+     indio_dev->channels = max517_channels;
+     indio_dev->modes = INDIO_DIRECT_MODE;
+     indio_dev->info = &max517_info;
+@@ -182,11 +201,11 @@ static int max517_probe(struct i2c_client *client,
+      * Reference voltage on MAX518 and default is 5V, else take vref_mv
+      * from platform_data
+      */
+-    if (id->driver_data == ID_MAX518 || !platform_data) {
+-        data->vref_mv[0] = data->vref_mv[1] = 5000; /* mV */
+-    } else {
+-        data->vref_mv[0] = platform_data->vref_mv[0];
+-        data->vref_mv[1] = platform_data->vref_mv[1];
++    for (chan = 0; chan < indio_dev->num_channels; chan++) {
++        if (id->driver_data == ID_MAX518 || !platform_data)
++            data->vref_mv[chan] = 5000; /* mV */
++        else
++            data->vref_mv[chan] = platform_data->vref_mv[chan];
+     }
+
+     return iio_device_register(indio_dev);
+@@ -202,6 +221,8 @@ static const struct i2c_device_id max517_id[] = {
+     { "max517", ID_MAX517 },
+     { "max518", ID_MAX518 },
+     { "max519", ID_MAX519 },
++    { "max520", ID_MAX520 },
++    { "max521", ID_MAX521 },
+     { }
+ };
+ MODULE_DEVICE_TABLE(i2c, max517_id);
+@@ -218,5 +239,5 @@ static struct i2c_driver max517_driver = {
+ module_i2c_driver(max517_driver);
+
+ MODULE_AUTHOR("Roland Stigge <stigge@antcom.de>");
+-MODULE_DESCRIPTION("MAX517/MAX518/MAX519 8-bit DAC");
++MODULE_DESCRIPTION("MAX517/518/519/520/521 8-bit DAC");
+ MODULE_LICENSE("GPL");
+diff --git a/include/linux/iio/dac/max517.h b/include/linux/iio/dac/max517.h
+index f6d1d25..7668716 100644
+--- a/include/linux/iio/dac/max517.h
++++ b/include/linux/iio/dac/max517.h
+@@ -9,7 +9,7 @@
+ #define IIO_DAC_MAX517_H_
+
+ struct max517_platform_data {
+-    u16                vref_mv[2];
++    u16                vref_mv[8];
+ };
+
+ #endif /* IIO_DAC_MAX517_H_ */
+-- 
+1.9.1
