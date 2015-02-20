@@ -1,51 +1,115 @@
-Return-Path: <pmeerw@pmeerw.net>
-Date: Fri, 20 Feb 2015 16:23:48 +0100 (CET)
-From: Peter Meerwald <pmeerw@pmeerw.net>
-To: "Pandruvada, Srinivas" <srinivas.pandruvada@intel.com>
-cc: "Tirdea, Irina" <irina.tirdea@intel.com>,
-    "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-    "jic23@kernel.org" <jic23@kernel.org>,
-    "Reus, Adriana" <adriana.reus@intel.com>,
-    "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Return-Path: <srinivas.pandruvada@intel.com>
+From: "Pandruvada, Srinivas" <srinivas.pandruvada@intel.com>
+To: "Tirdea, Irina" <irina.tirdea@intel.com>
+CC: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"pmeerw@pmeerw.net" <pmeerw@pmeerw.net>, "jic23@kernel.org"
+	<jic23@kernel.org>, "Reus, Adriana" <adriana.reus@intel.com>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
 Subject: Re: [PATCH 2/2] iio: accel: kxcjk-1013: optimize i2c transfers in
  trigger handler
-In-Reply-To: <1424444331.2916.2.camel@spandruv-mobl2>
-Message-ID: <alpine.DEB.2.02.1502201621430.2739@pmeerw.net>
-References: <1424110909-16878-1-git-send-email-irina.tirdea@intel.com>  <1424110909-16878-3-git-send-email-irina.tirdea@intel.com>  <alpine.DEB.2.02.1502162014280.26763@pmeerw.net>  <1F3AC3675D538145B1661F571FE1805F19A20D9C@irsmsx105.ger.corp.intel.com>
- <1424444331.2916.2.camel@spandruv-mobl2>
+Date: Fri, 20 Feb 2015 14:58:51 +0000
+Message-ID: <1424444331.2916.2.camel@spandruv-mobl2>
+References: <1424110909-16878-1-git-send-email-irina.tirdea@intel.com>
+	 <1424110909-16878-3-git-send-email-irina.tirdea@intel.com>
+	 <alpine.DEB.2.02.1502162014280.26763@pmeerw.net>
+	 <1F3AC3675D538145B1661F571FE1805F19A20D9C@irsmsx105.ger.corp.intel.com>
+In-Reply-To: <1F3AC3675D538145B1661F571FE1805F19A20D9C@irsmsx105.ger.corp.intel.com>
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
 List-ID: <linux-iio@vger.kernel.org>
 
-
-> > > > +
-> > > > +		values[i] = data & 0xFF;
-> > > > +		values[i+1] = data >> 8;
-> > > 
-> > > this is incorrect; it forces the data to be little endian, however, the
-> > > endianness (as specified in the driver's .scan_type) is IIO_CPU -- the
-> > > code breaks for big-endian CPUs
-> > > 
-> > > since _read_i2c_block_data() can't do endianness conversion (and the chip
-> > > does i2c endianness, i.e. little-endian), the .scan_type should become
-> > > IIO_LE and above code is correct again but still ugly :)
-> > > 
-> > > bottom line: change .scan_type to IIO_LE
-> > > 
-> > Good point. Changing the endianess to IIO_LE is correct for either kxcjk1013_read_block_data or i2c_smbus_read_i2c_block_data.
-> > Will fix this in the next version. Thanks for catching this!
-> > 
-> I don't think changing to IIO_LE is good idea as when i2c_read_bock..
-> then the scan type will be CPU. So better to fix endianness in this
-> function.
-
-the chip has little-endian data registers; i2c_read_block() just transfers 
-the data (no endianness conversion), so the data will still be 
-little-endian
-
-p.
-
--- 
-
-Peter Meerwald
-+43-664-2444418 (mobile)
+T24gRnJpLCAyMDE1LTAyLTIwIGF0IDEyOjAyICswMDAwLCBUaXJkZWEsIElyaW5hIHdyb3RlOg0K
+PiANCj4gPiAtLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPiA+IEZyb206IFBldGVyIE1lZXJ3
+YWxkIFttYWlsdG86cG1lZXJ3QHBtZWVydy5uZXRdDQo+ID4gU2VudDogMTYgRmVicnVhcnksIDIw
+MTUgMjE6MjYNCj4gPiBUbzogVGlyZGVhLCBJcmluYQ0KPiA+IENjOiBKb25hdGhhbiBDYW1lcm9u
+OyBsaW51eC1paW9Admdlci5rZXJuZWwub3JnOyBsaW51eC1rZXJuZWxAdmdlci5rZXJuZWwub3Jn
+OyBQYW5kcnV2YWRhLCBTcmluaXZhczsgUmV1cywgQWRyaWFuYQ0KPiA+IFN1YmplY3Q6IFJlOiBb
+UEFUQ0ggMi8yXSBpaW86IGFjY2VsOiBreGNqay0xMDEzOiBvcHRpbWl6ZSBpMmMgdHJhbnNmZXJz
+IGluIHRyaWdnZXIgaGFuZGxlcg0KPiA+IA0KPiA+IA0KPiA+ID4gUmVhZGluZyBhbGwgYXhpcyB2
+YWx1ZXMgaW4gb25lIGkyYyB0cmFuc2ZlciByZWR1Y2VzIHRoZSBkZWxheXMNCj4gPiA+IGludHJv
+ZHVjZWQgYnkgdGhlIGkyYyBidXMuIEluIGNhc2UgaTJjIGJsb2NrIHJlYWQgaXMgbm90IHN1cHBv
+cnRlZCwNCj4gPiA+IGZhbGxiYWNrIHRvIHJlYWRpbmcgZWFjaCBheGlzIGFzIGEgc2VwYXJhdGUg
+d29yZC4NCj4gPiANCj4gPiBzZWUgY29tbWVudHMgaW5saW5lIGJlbG93DQo+ID4gDQo+IFRoYW5r
+cyBmb3IgdGhlIHJldmlldywgUGV0ZXIhDQo+IA0KPiA+ID4gU2lnbmVkLW9mZi1ieTogQWRyaWFu
+YSBSZXVzIDxhZHJpYW5hLnJldXNAaW50ZWwuY29tPg0KPiA+ID4gU2lnbmVkLW9mZi1ieTogSXJp
+bmEgVGlyZGVhIDxpcmluYS50aXJkZWFAaW50ZWwuY29tPg0KPiA+ID4gUmV2aWV3ZWQtYnk6IFNy
+aW5pdmFzIFBhbmRydXZhZGEgPHNyaW5pdmFzLnBhbmRydXZhZGFAbGludXguaW50ZWwuY29tPg0K
+PiA+ID4gLS0tDQo+ID4gPiAgZHJpdmVycy9paW8vYWNjZWwva3hjamstMTAxMy5jIHwgNDQgKysr
+KysrKysrKysrKysrKysrKysrKysrKysrKysrKysrLS0tLS0tLS0tDQo+ID4gPiAgMSBmaWxlIGNo
+YW5nZWQsIDM1IGluc2VydGlvbnMoKyksIDkgZGVsZXRpb25zKC0pDQo+ID4gPg0KPiA+ID4gZGlm
+ZiAtLWdpdCBhL2RyaXZlcnMvaWlvL2FjY2VsL2t4Y2prLTEwMTMuYyBiL2RyaXZlcnMvaWlvL2Fj
+Y2VsL2t4Y2prLTEwMTMuYw0KPiA+ID4gaW5kZXggNWYyNzc4Ny4uYmZhMjg5OSAxMDA2NDQNCj4g
+PiA+IC0tLSBhL2RyaXZlcnMvaWlvL2FjY2VsL2t4Y2prLTEwMTMuYw0KPiA+ID4gKysrIGIvZHJp
+dmVycy9paW8vYWNjZWwva3hjamstMTAxMy5jDQo+ID4gPiBAQCAtMTA5LDYgKzEwOSw4IEBAIHN0
+cnVjdCBreGNqazEwMTNfZGF0YSB7DQo+ID4gPiAgCWludDY0X3QgdGltZXN0YW1wOw0KPiA+ID4g
+IAllbnVtIGt4X2NoaXBzZXQgY2hpcHNldDsNCj4gPiA+ICAJYm9vbCBpc19zbW84NTAwX2Rldmlj
+ZTsNCj4gPiA+ICsJczMyICgqcmVhZF9ibG9ja19kYXRhKShjb25zdCBzdHJ1Y3QgaTJjX2NsaWVu
+dCAqY2xpZW50LCB1OCBjb21tYW5kLA0KPiA+ID4gKwkJCSAgICAgICB1OCBsZW5ndGgsIHU4ICp2
+YWx1ZXMpOw0KPiA+IA0KPiA+IHByb2JhYmx5IHRoaXMgY291bGQvc2hvdWxkIGJlIGRvbmUgaW4g
+dGhlIGkyYyBsYXllciBvciB3ZSBlbmQgdXAgYWRkaW5nIGENCj4gPiBzaW1pbGFyIGZ1bmN0aW9u
+IGluIGV2ZXJ5IGRyaXZlcj8NCj4gPiANCj4gQWN0dWFsbHkgdGhpcyBpcyBleGFjdGx5IHdoYXQg
+SSBkaWQ6IGFkZGluZyB0aGlzIGNvZGUgaW4gYSBjb3VwbGUgb2YgZHJpdmVycyA6KQ0KPiBZb3Ug
+YXJlIHJpZ2h0LCB0aGlzIGJlbG9uZ3MgdG8gdGhlIGkyYyBjb3JlLiBXaWxsIG1vdmUgaXQgdGhl
+cmUuDQo+IA0KPiA+ID4gIH07DQo+ID4gPg0KPiA+ID4gIGVudW0ga3hjamsxMDEzX2F4aXMgew0K
+PiA+ID4gQEAgLTIxNiw2ICsyMTgsMjMgQEAgc3RhdGljIGNvbnN0IHN0cnVjdCB7DQo+ID4gPiAg
+CQkJCSB7ODAwLCAwLCAweDA2fSwNCj4gPiA+ICAJCQkJIHsxNjAwLCAwLCAweDA2fSB9Ow0KPiA+
+ID4NCj4gPiA+ICtzdGF0aWMgczMyIGt4Y2prMTAxM19yZWFkX2Jsb2NrX2RhdGEoY29uc3Qgc3Ry
+dWN0IGkyY19jbGllbnQgKmNsaWVudCwNCj4gPiA+ICsJCQkJICAgICB1OCBjb21tYW5kLCB1OCBs
+ZW5ndGgsIHU4ICp2YWx1ZXMpDQo+ID4gPiArew0KPiA+ID4gKwlzMzIgZGF0YTsNCj4gPiA+ICsJ
+dTggaTsNCj4gPiA+ICsNCj4gPiA+ICsJZm9yIChpID0gMDsgaSA8IGxlbmd0aDsgaSArPSAyKSB7
+DQo+ID4gPiArCQlkYXRhID0gaTJjX3NtYnVzX3JlYWRfd29yZF9kYXRhKGNsaWVudCwgY29tbWFu
+ZCArIGkpOw0KPiA+ID4gKwkJaWYgKGRhdGEgPCAwKQ0KPiA+ID4gKwkJCXJldHVybiBkYXRhOw0K
+PiA+ID4gKw0KPiA+ID4gKwkJdmFsdWVzW2ldID0gZGF0YSAmIDB4RkY7DQo+ID4gPiArCQl2YWx1
+ZXNbaSsxXSA9IGRhdGEgPj4gODsNCj4gPiANCj4gPiB0aGlzIGlzIGluY29ycmVjdDsgaXQgZm9y
+Y2VzIHRoZSBkYXRhIHRvIGJlIGxpdHRsZSBlbmRpYW4sIGhvd2V2ZXIsIHRoZQ0KPiA+IGVuZGlh
+bm5lc3MgKGFzIHNwZWNpZmllZCBpbiB0aGUgZHJpdmVyJ3MgLnNjYW5fdHlwZSkgaXMgSUlPX0NQ
+VSAtLSB0aGUNCj4gPiBjb2RlIGJyZWFrcyBmb3IgYmlnLWVuZGlhbiBDUFVzDQo+ID4gDQo+ID4g
+c2luY2UgX3JlYWRfaTJjX2Jsb2NrX2RhdGEoKSBjYW4ndCBkbyBlbmRpYW5uZXNzIGNvbnZlcnNp
+b24gKGFuZCB0aGUgY2hpcA0KPiA+IGRvZXMgaTJjIGVuZGlhbm5lc3MsIGkuZS4gbGl0dGxlLWVu
+ZGlhbiksIHRoZSAuc2Nhbl90eXBlIHNob3VsZCBiZWNvbWUNCj4gPiBJSU9fTEUgYW5kIGFib3Zl
+IGNvZGUgaXMgY29ycmVjdCBhZ2FpbiBidXQgc3RpbGwgdWdseSA6KQ0KPiA+IA0KPiA+IGJvdHRv
+bSBsaW5lOiBjaGFuZ2UgLnNjYW5fdHlwZSB0byBJSU9fTEUNCj4gPiANCj4gR29vZCBwb2ludC4g
+Q2hhbmdpbmcgdGhlIGVuZGlhbmVzcyB0byBJSU9fTEUgaXMgY29ycmVjdCBmb3IgZWl0aGVyIGt4
+Y2prMTAxM19yZWFkX2Jsb2NrX2RhdGEgb3IgaTJjX3NtYnVzX3JlYWRfaTJjX2Jsb2NrX2RhdGEu
+DQo+IFdpbGwgZml4IHRoaXMgaW4gdGhlIG5leHQgdmVyc2lvbi4gVGhhbmtzIGZvciBjYXRjaGlu
+ZyB0aGlzIQ0KPiANCkkgZG9uJ3QgdGhpbmsgY2hhbmdpbmcgdG8gSUlPX0xFIGlzIGdvb2QgaWRl
+YSBhcyB3aGVuIGkyY19yZWFkX2JvY2suLg0KdGhlbiB0aGUgc2NhbiB0eXBlIHdpbGwgYmUgQ1BV
+LiBTbyBiZXR0ZXIgdG8gZml4IGVuZGlhbm5lc3MgaW4gdGhpcw0KZnVuY3Rpb24uDQoNCj4gPiA+
+ICsJfQ0KPiA+ID4gKwlyZXR1cm4gaTsNCj4gPiA+ICt9DQo+ID4gPiArDQo+ID4gPiAgc3RhdGlj
+IGludCBreGNqazEwMTNfc2V0X21vZGUoc3RydWN0IGt4Y2prMTAxM19kYXRhICpkYXRhLA0KPiA+
+ID4gIAkJCSAgICAgIGVudW0ga3hjamsxMDEzX21vZGUgbW9kZSkNCj4gPiA+ICB7DQo+ID4gPiBA
+QCAtOTU1LDE4ICs5NzQsMTQgQEAgc3RhdGljIGlycXJldHVybl90IGt4Y2prMTAxM190cmlnZ2Vy
+X2hhbmRsZXIoaW50IGlycSwgdm9pZCAqcCkNCj4gPiA+ICAJc3RydWN0IGlpb19wb2xsX2Z1bmMg
+KnBmID0gcDsNCj4gPiA+ICAJc3RydWN0IGlpb19kZXYgKmluZGlvX2RldiA9IHBmLT5pbmRpb19k
+ZXY7DQo+ID4gPiAgCXN0cnVjdCBreGNqazEwMTNfZGF0YSAqZGF0YSA9IGlpb19wcml2KGluZGlv
+X2Rldik7DQo+ID4gPiAtCWludCBiaXQsIHJldCwgaSA9IDA7DQo+ID4gPiArCWludCByZXQ7DQo+
+ID4gPg0KPiA+ID4gIAltdXRleF9sb2NrKCZkYXRhLT5tdXRleCk7DQo+ID4gPiAtCWZvciAoYml0
+ID0gMDsgYml0IDwgQVhJU19NQVg7IGJpdCsrKSB7DQo+ID4gPiAtCQlyZXQgPSBreGNqazEwMTNf
+Z2V0X2FjY19yZWcoZGF0YSwgYml0KTsNCj4gPiA+IC0JCWlmIChyZXQgPCAwKSB7DQo+ID4gPiAt
+CQkJbXV0ZXhfdW5sb2NrKCZkYXRhLT5tdXRleCk7DQo+ID4gPiAtCQkJZ290byBlcnI7DQo+ID4g
+PiAtCQl9DQo+ID4gPiAtCQlkYXRhLT5idWZmZXJbaSsrXSA9IHJldDsNCj4gPiA+IC0JfQ0KPiA+
+ID4gKwlyZXQgPSBkYXRhLT5yZWFkX2Jsb2NrX2RhdGEoZGF0YS0+Y2xpZW50LCBLWENKSzEwMTNf
+UkVHX1hPVVRfTCwNCj4gPiA+ICsJCQkJICAgIEFYSVNfTUFYICogMiwgKHU4ICopIGRhdGEtPmJ1
+ZmZlcik7DQo+ID4gPiAgCW11dGV4X3VubG9jaygmZGF0YS0+bXV0ZXgpOw0KPiA+ID4gKwlpZiAo
+cmV0IDwgMCkNCj4gPiA+ICsJCWdvdG8gZXJyOw0KPiA+ID4NCj4gPiA+ICAJaWlvX3B1c2hfdG9f
+YnVmZmVyc193aXRoX3RpbWVzdGFtcChpbmRpb19kZXYsIGRhdGEtPmJ1ZmZlciwNCj4gPiA+ICAJ
+CQkJCSAgIGRhdGEtPnRpbWVzdGFtcCk7DQo+ID4gPiBAQCAtMTE5Niw2ICsxMjExLDExIEBAIHN0
+YXRpYyBpbnQga3hjamsxMDEzX3Byb2JlKHN0cnVjdCBpMmNfY2xpZW50ICpjbGllbnQsDQo+ID4g
+PiAgCWNvbnN0IGNoYXIgKm5hbWU7DQo+ID4gPiAgCWludCByZXQ7DQo+ID4gPg0KPiA+ID4gKwlp
+ZiAoIWkyY19jaGVja19mdW5jdGlvbmFsaXR5KGNsaWVudC0+YWRhcHRlciwNCj4gPiA+ICsJCQkJ
+ICAgICBJMkNfRlVOQ19TTUJVU19CWVRFX0RBVEEgfA0KPiA+ID4gKwkJCQkgICAgIEkyQ19GVU5D
+X1NNQlVTX1JFQURfV09SRF9EQVRBKSkNCj4gPiA+ICsJCXJldHVybiAtRU5PREVWOw0KPiA+ID4g
+Kw0KPiA+ID4gIAlpbmRpb19kZXYgPSBkZXZtX2lpb19kZXZpY2VfYWxsb2MoJmNsaWVudC0+ZGV2
+LCBzaXplb2YoKmRhdGEpKTsNCj4gPiA+ICAJaWYgKCFpbmRpb19kZXYpDQo+ID4gPiAgCQlyZXR1
+cm4gLUVOT01FTTsNCj4gPiA+IEBAIC0xMjA0LDYgKzEyMjQsMTIgQEAgc3RhdGljIGludCBreGNq
+azEwMTNfcHJvYmUoc3RydWN0IGkyY19jbGllbnQgKmNsaWVudCwNCj4gPiA+ICAJaTJjX3NldF9j
+bGllbnRkYXRhKGNsaWVudCwgaW5kaW9fZGV2KTsNCj4gPiA+ICAJZGF0YS0+Y2xpZW50ID0gY2xp
+ZW50Ow0KPiA+ID4NCj4gPiA+ICsJaWYgKGkyY19jaGVja19mdW5jdGlvbmFsaXR5KGNsaWVudC0+
+YWRhcHRlciwNCj4gPiA+ICsJCQkJICAgIEkyQ19GVU5DX1NNQlVTX1JFQURfSTJDX0JMT0NLKSkN
+Cj4gPiA+ICsJCWRhdGEtPnJlYWRfYmxvY2tfZGF0YSA9IGkyY19zbWJ1c19yZWFkX2kyY19ibG9j
+a19kYXRhOw0KPiA+ID4gKwllbHNlDQo+ID4gPiArCQlkYXRhLT5yZWFkX2Jsb2NrX2RhdGEgPSBr
+eGNqazEwMTNfcmVhZF9ibG9ja19kYXRhOw0KPiA+ID4gKw0KPiA+ID4gIAlwZGF0YSA9IGRldl9n
+ZXRfcGxhdGRhdGEoJmNsaWVudC0+ZGV2KTsNCj4gPiA+ICAJaWYgKHBkYXRhKQ0KPiA+ID4gIAkJ
+ZGF0YS0+YWN0aXZlX2hpZ2hfaW50ciA9IHBkYXRhLT5hY3RpdmVfaGlnaF9pbnRyOw0KPiA+ID4N
+Cj4gPiANCj4gPiAtLQ0KPiA+IA0KPiA+IFBldGVyIE1lZXJ3YWxkDQo+ID4gKzQzLTY2NC0yNDQ0
+NDE4IChtb2JpbGUpDQoNCg==
