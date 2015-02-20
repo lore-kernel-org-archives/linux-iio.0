@@ -5,12 +5,14 @@ CC: Jonathan Cameron <jic23@kernel.org>, "linux-iio@vger.kernel.org"
 	<linux-iio@vger.kernel.org>, "linux-kernel@vger.kernel.org"
 	<linux-kernel@vger.kernel.org>, "Pandruvada, Srinivas"
 	<srinivas.pandruvada@intel.com>, "Reus, Adriana" <adriana.reus@intel.com>
-Subject: RE: [PATCH 0/2] bmc150-accel driver optimizations
-Date: Fri, 20 Feb 2015 12:05:45 +0000
-Message-ID: <1F3AC3675D538145B1661F571FE1805F19A20DE0@irsmsx105.ger.corp.intel.com>
-References: <1424110621-16571-1-git-send-email-irina.tirdea@intel.com>
- <alpine.DEB.2.02.1502162026470.26763@pmeerw.net>
-In-Reply-To: <alpine.DEB.2.02.1502162026470.26763@pmeerw.net>
+Subject: RE: [PATCH 2/2] iio: accel: kxcjk-1013: optimize i2c transfers in
+ trigger handler
+Date: Fri, 20 Feb 2015 12:02:19 +0000
+Message-ID: <1F3AC3675D538145B1661F571FE1805F19A20D9C@irsmsx105.ger.corp.intel.com>
+References: <1424110909-16878-1-git-send-email-irina.tirdea@intel.com>
+ <1424110909-16878-3-git-send-email-irina.tirdea@intel.com>
+ <alpine.DEB.2.02.1502162014280.26763@pmeerw.net>
+In-Reply-To: <alpine.DEB.2.02.1502162014280.26763@pmeerw.net>
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 List-ID: <linux-iio@vger.kernel.org>
@@ -18,41 +20,147 @@ List-ID: <linux-iio@vger.kernel.org>
 
 
 > -----Original Message-----
-> From: linux-iio-owner@vger.kernel.org [mailto:linux-iio-owner@vger.kernel=
-.org] On Behalf Of Peter Meerwald
-> Sent: 16 February, 2015 21:27
+> From: Peter Meerwald [mailto:pmeerw@pmeerw.net]
+> Sent: 16 February, 2015 21:26
 > To: Tirdea, Irina
 > Cc: Jonathan Cameron; linux-iio@vger.kernel.org; linux-kernel@vger.kernel=
 .org; Pandruvada, Srinivas; Reus, Adriana
-> Subject: Re: [PATCH 0/2] bmc150-accel driver optimizations
+> Subject: Re: [PATCH 2/2] iio: accel: kxcjk-1013: optimize i2c transfers i=
+n trigger handler
 >=20
 >=20
-> > Adds optimization of i2c transactions in trigger handler and
-> > usage of available_scan_masks for bmc150-accel.
+> > Reading all axis values in one i2c transfer reduces the delays
+> > introduced by the i2c bus. In case i2c block read is not supported,
+> > fallback to reading each axis as a separate word.
 >=20
-> same comments as for kxcjk-1013, this changes the capabilities of the
-> driver
+> see comments inline below
 >=20
-Will fix the comments for all the patchsets.
+Thanks for the review, Peter!
 
-Thanks,
-Irina
-
-> > Irina Tirdea (2):
-> >   iio: accel: bmc150: use available_scan_masks
-> >   iio: accel: bmc150: optimize i2c transfers in trigger handler
-> >
-> >  drivers/iio/accel/bmc150-accel.c | 49 +++++++++++++++++++++++++++++++-=
+> > Signed-off-by: Adriana Reus <adriana.reus@intel.com>
+> > Signed-off-by: Irina Tirdea <irina.tirdea@intel.com>
+> > Reviewed-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+> > ---
+> >  drivers/iio/accel/kxcjk-1013.c | 44 +++++++++++++++++++++++++++++++++-=
 --------
-> >  1 file changed, 38 insertions(+), 11 deletions(-)
+> >  1 file changed, 35 insertions(+), 9 deletions(-)
 > >
+> > diff --git a/drivers/iio/accel/kxcjk-1013.c b/drivers/iio/accel/kxcjk-1=
+013.c
+> > index 5f27787..bfa2899 100644
+> > --- a/drivers/iio/accel/kxcjk-1013.c
+> > +++ b/drivers/iio/accel/kxcjk-1013.c
+> > @@ -109,6 +109,8 @@ struct kxcjk1013_data {
+> >  	int64_t timestamp;
+> >  	enum kx_chipset chipset;
+> >  	bool is_smo8500_device;
+> > +	s32 (*read_block_data)(const struct i2c_client *client, u8 command,
+> > +			       u8 length, u8 *values);
+>=20
+> probably this could/should be done in the i2c layer or we end up adding a
+> similar function in every driver?
+>=20
+Actually this is exactly what I did: adding this code in a couple of driver=
+s :)
+You are right, this belongs to the i2c core. Will move it there.
+
+> >  };
+> >
+> >  enum kxcjk1013_axis {
+> > @@ -216,6 +218,23 @@ static const struct {
+> >  				 {800, 0, 0x06},
+> >  				 {1600, 0, 0x06} };
+> >
+> > +static s32 kxcjk1013_read_block_data(const struct i2c_client *client,
+> > +				     u8 command, u8 length, u8 *values)
+> > +{
+> > +	s32 data;
+> > +	u8 i;
+> > +
+> > +	for (i =3D 0; i < length; i +=3D 2) {
+> > +		data =3D i2c_smbus_read_word_data(client, command + i);
+> > +		if (data < 0)
+> > +			return data;
+> > +
+> > +		values[i] =3D data & 0xFF;
+> > +		values[i+1] =3D data >> 8;
+>=20
+> this is incorrect; it forces the data to be little endian, however, the
+> endianness (as specified in the driver's .scan_type) is IIO_CPU -- the
+> code breaks for big-endian CPUs
+>=20
+> since _read_i2c_block_data() can't do endianness conversion (and the chip
+> does i2c endianness, i.e. little-endian), the .scan_type should become
+> IIO_LE and above code is correct again but still ugly :)
+>=20
+> bottom line: change .scan_type to IIO_LE
+>=20
+Good point. Changing the endianess to IIO_LE is correct for either kxcjk101=
+3_read_block_data or i2c_smbus_read_i2c_block_data.
+Will fix this in the next version. Thanks for catching this!
+
+> > +	}
+> > +	return i;
+> > +}
+> > +
+> >  static int kxcjk1013_set_mode(struct kxcjk1013_data *data,
+> >  			      enum kxcjk1013_mode mode)
+> >  {
+> > @@ -955,18 +974,14 @@ static irqreturn_t kxcjk1013_trigger_handler(int =
+irq, void *p)
+> >  	struct iio_poll_func *pf =3D p;
+> >  	struct iio_dev *indio_dev =3D pf->indio_dev;
+> >  	struct kxcjk1013_data *data =3D iio_priv(indio_dev);
+> > -	int bit, ret, i =3D 0;
+> > +	int ret;
+> >
+> >  	mutex_lock(&data->mutex);
+> > -	for (bit =3D 0; bit < AXIS_MAX; bit++) {
+> > -		ret =3D kxcjk1013_get_acc_reg(data, bit);
+> > -		if (ret < 0) {
+> > -			mutex_unlock(&data->mutex);
+> > -			goto err;
+> > -		}
+> > -		data->buffer[i++] =3D ret;
+> > -	}
+> > +	ret =3D data->read_block_data(data->client, KXCJK1013_REG_XOUT_L,
+> > +				    AXIS_MAX * 2, (u8 *) data->buffer);
+> >  	mutex_unlock(&data->mutex);
+> > +	if (ret < 0)
+> > +		goto err;
+> >
+> >  	iio_push_to_buffers_with_timestamp(indio_dev, data->buffer,
+> >  					   data->timestamp);
+> > @@ -1196,6 +1211,11 @@ static int kxcjk1013_probe(struct i2c_client *cl=
+ient,
+> >  	const char *name;
+> >  	int ret;
+> >
+> > +	if (!i2c_check_functionality(client->adapter,
+> > +				     I2C_FUNC_SMBUS_BYTE_DATA |
+> > +				     I2C_FUNC_SMBUS_READ_WORD_DATA))
+> > +		return -ENODEV;
+> > +
+> >  	indio_dev =3D devm_iio_device_alloc(&client->dev, sizeof(*data));
+> >  	if (!indio_dev)
+> >  		return -ENOMEM;
+> > @@ -1204,6 +1224,12 @@ static int kxcjk1013_probe(struct i2c_client *cl=
+ient,
+> >  	i2c_set_clientdata(client, indio_dev);
+> >  	data->client =3D client;
+> >
+> > +	if (i2c_check_functionality(client->adapter,
+> > +				    I2C_FUNC_SMBUS_READ_I2C_BLOCK))
+> > +		data->read_block_data =3D i2c_smbus_read_i2c_block_data;
+> > +	else
+> > +		data->read_block_data =3D kxcjk1013_read_block_data;
+> > +
+> >  	pdata =3D dev_get_platdata(&client->dev);
+> >  	if (pdata)
+> >  		data->active_high_intr =3D pdata->active_high_intr;
 > >
 >=20
 > --
 >=20
 > Peter Meerwald
 > +43-664-2444418 (mobile)
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
