@@ -1,56 +1,71 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga02.intel.com ([134.134.136.20]:24942 "EHLO mga02.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1753942AbbBTMDm convert rfc822-to-8bit (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 20 Feb 2015 07:03:42 -0500
-From: "Tirdea, Irina" <irina.tirdea@intel.com>
-To: Peter Meerwald <pmeerw@pmeerw.net>
-CC: Jonathan Cameron <jic23@kernel.org>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"Pandruvada, Srinivas" <srinivas.pandruvada@intel.com>,
-	"Reus, Adriana" <adriana.reus@intel.com>
-Subject: RE: [PATCH 0/2] kxcjk-1013 driver optimizations
-Date: Fri, 20 Feb 2015 12:03:38 +0000
-Message-ID: <1F3AC3675D538145B1661F571FE1805F19A20DB9@irsmsx105.ger.corp.intel.com>
-References: <1424110909-16878-1-git-send-email-irina.tirdea@intel.com>
- <alpine.DEB.2.02.1502162011090.26763@pmeerw.net>
-In-Reply-To: <alpine.DEB.2.02.1502162011090.26763@pmeerw.net>
-Content-Type: text/plain; charset="us-ascii"
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:34628 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751659AbbBUSGe (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 21 Feb 2015 13:06:34 -0500
+Message-ID: <54E8C925.6080805@kernel.org>
+Date: Sat, 21 Feb 2015 18:06:29 +0000
+From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
+To: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+CC: wsa@the-dreams.de, lars@metafoo.de, linux-iio@vger.kernel.org
+Subject: Re: [PATCH v3] iio: imu: inv_mpu6050: client enumeration
+References: <1422656745-13576-1-git-send-email-srinivas.pandruvada@linux.intel.com> <54D11E9C.5030701@kernel.org>
+In-Reply-To: <54D11E9C.5030701@kernel.org>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
+On 03/02/15 19:16, Jonathan Cameron wrote:
+> On 30/01/15 22:25, Srinivas Pandruvada wrote:
+>> Last comment from Jonathan was
+>> "
+>> This all looks fine to me, though ideally I'd like some input from
+>> others, more familiar with the dmi stuff etc and from Wolfram / others
+>> wrt to the approach.
+>> "
+> Given timing, (just missed likely merge this cycle) we now have a reasonable
+> amount of time.  So lets leave this a little while yet...
+I no one else has any comments on this than I'm going to take it pretty soon
+as is.
 
-
-> -----Original Message-----
-> From: Peter Meerwald [mailto:pmeerw@pmeerw.net]
-> Sent: 16 February, 2015 21:14
-> To: Tirdea, Irina
-> Cc: Jonathan Cameron; linux-iio@vger.kernel.org; linux-kernel@vger.kernel.org; Pandruvada, Srinivas; Reus, Adriana
-> Subject: Re: [PATCH 0/2] kxcjk-1013 driver optimizations
-> 
-> 
-> > Adds optimization of i2c transactions in trigger handler and
-> > usage of available_scan_masks for kxcjk-1013.
-> 
-> the 'optimization' changes the capabilities of the driver, reading
-> individual channel is not possible anymore
-> 
-We can still read individual channels, just that the driver does not see that anymore and the demux is handled by the iio core.
-available_scan_masks contains the bitmap superset for all channels we can enable (I will remove the 0 available_scan_mask as it does not makes sense).
-When a new channel is enabled, the iio core checks if the new mask is a subset of any entry in available_scan_masks. When the buffer is pushed from the driver, the iio core will select only the enabled channel values.
-
-> > Adriana Reus (2):
-> >   iio: accel: kxcjk-1013: use available_scan_masks
-> >   iio: accel: kxcjk-1013: optimize i2c transfers in trigger handler
-> >
-> >  drivers/iio/accel/kxcjk-1013.c | 50 ++++++++++++++++++++++++++++++++----------
-> >  1 file changed, 39 insertions(+), 11 deletions(-)
-> >
-> >
+Jonathan
+>>
+>> So anybody have a better suggestion, I am still open to take them.
+>> Otherwise please consider as a merge candidate.
+>>
+>> v3
+>> Add CONFIG_ACPI protection to avoid compiler warning.
+>>
+>> v2
+>> Add CONFIG_ACPI to call creation of mux clients, instead of relying
+>> on ACPI_HANDLE not present for non ACPI platforms
+>> It is possible that there is no secondary address, this is not an error.
+>>
+>> v1
+>> This is an option if auto detect is not desired. 
+>> Here using ACPI magic, by parsing both standard and vendor ACPI
+>> data.
+>>
+>> v0
+>> Using autodetect feature.
+>> Using HWMON class as other places in the system for mux and
+>> client sensor drivers.
+>>
+>> Srinivas Pandruvada (1):
+>>   iio: imu: inv_mpu6050: Create mux clients for ACPI
+>>
+>>  drivers/iio/imu/inv_mpu6050/Makefile       |   2 +-
+>>  drivers/iio/imu/inv_mpu6050/inv_mpu_acpi.c | 211 +++++++++++++++++++++++++++++
+>>  drivers/iio/imu/inv_mpu6050/inv_mpu_core.c |   7 +
+>>  drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h  |   3 +
+>>  4 files changed, 222 insertions(+), 1 deletion(-)
+>>  create mode 100644 drivers/iio/imu/inv_mpu6050/inv_mpu_acpi.c
+>>
 > 
 > --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
 > 
-> Peter Meerwald
-> +43-664-2444418 (mobile)
+
