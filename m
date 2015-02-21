@@ -1,71 +1,92 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:34628 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:34670 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751659AbbBUSGe (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 21 Feb 2015 13:06:34 -0500
-Message-ID: <54E8C925.6080805@kernel.org>
-Date: Sat, 21 Feb 2015 18:06:29 +0000
+	with ESMTP id S1751488AbbBUSLU (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 21 Feb 2015 13:11:20 -0500
+Message-ID: <54E8CA45.2010306@kernel.org>
+Date: Sat, 21 Feb 2015 18:11:17 +0000
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-CC: wsa@the-dreams.de, lars@metafoo.de, linux-iio@vger.kernel.org
-Subject: Re: [PATCH v3] iio: imu: inv_mpu6050: client enumeration
-References: <1422656745-13576-1-git-send-email-srinivas.pandruvada@linux.intel.com> <54D11E9C.5030701@kernel.org>
-In-Reply-To: <54D11E9C.5030701@kernel.org>
+To: Rickard Strandqvist <rickard_strandqvist@spectrumdigital.se>,
+	Hartmut Knaack <knaack.h@gmx.de>
+CC: Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Joel Porquet <joel@porquet.org>,
+	Darshana Padmadas <darshanapadmadas@gmail.com>,
+	Catalina Mocanu <catalina.mocanu@gmail.com>,
+	Wolfram Sang <wsa@the-dreams.de>, linux-iio@vger.kernel.org,
+	devel@driverdev.osuosl.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] staging: iio: trigger: iio-trig-periodic-rtc: Change
+ frequency type to unsigned int
+References: <1423419774-16753-1-git-send-email-rickard_strandqvist@spectrumdigital.se>
+In-Reply-To: <1423419774-16753-1-git-send-email-rickard_strandqvist@spectrumdigital.se>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 03/02/15 19:16, Jonathan Cameron wrote:
-> On 30/01/15 22:25, Srinivas Pandruvada wrote:
->> Last comment from Jonathan was
->> "
->> This all looks fine to me, though ideally I'd like some input from
->> others, more familiar with the dmi stuff etc and from Wolfram / others
->> wrt to the approach.
->> "
-> Given timing, (just missed likely merge this cycle) we now have a reasonable
-> amount of time.  So lets leave this a little while yet...
-I no one else has any comments on this than I'm going to take it pretty soon
-as is.
+On 08/02/15 18:22, Rickard Strandqvist wrote:
+> Change struct iio_prtc_trigger_info frequency
+> type from int to unsigned int.
+> Since it is always treated as such in the driver
+> so they type should probably reflect this.
+> 
+> Signed-off-by: Rickard Strandqvist <rickard_strandqvist@spectrumdigital.se>
+The only argument against this is that the rtc_irq_set_freq function takes
+a signed int. Arguably that shouldn't perhaps, but whilst it does we should
+probably track it's type to avoid confusion.
 
 Jonathan
->>
->> So anybody have a better suggestion, I am still open to take them.
->> Otherwise please consider as a merge candidate.
->>
->> v3
->> Add CONFIG_ACPI protection to avoid compiler warning.
->>
->> v2
->> Add CONFIG_ACPI to call creation of mux clients, instead of relying
->> on ACPI_HANDLE not present for non ACPI platforms
->> It is possible that there is no secondary address, this is not an error.
->>
->> v1
->> This is an option if auto detect is not desired. 
->> Here using ACPI magic, by parsing both standard and vendor ACPI
->> data.
->>
->> v0
->> Using autodetect feature.
->> Using HWMON class as other places in the system for mux and
->> client sensor drivers.
->>
->> Srinivas Pandruvada (1):
->>   iio: imu: inv_mpu6050: Create mux clients for ACPI
->>
->>  drivers/iio/imu/inv_mpu6050/Makefile       |   2 +-
->>  drivers/iio/imu/inv_mpu6050/inv_mpu_acpi.c | 211 +++++++++++++++++++++++++++++
->>  drivers/iio/imu/inv_mpu6050/inv_mpu_core.c |   7 +
->>  drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h  |   3 +
->>  4 files changed, 222 insertions(+), 1 deletion(-)
->>  create mode 100644 drivers/iio/imu/inv_mpu6050/inv_mpu_acpi.c
->>
+> ---
+>  drivers/staging/iio/trigger/iio-trig-periodic-rtc.c |   12 +++++-------
+>  1 file changed, 5 insertions(+), 7 deletions(-)
 > 
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> diff --git a/drivers/staging/iio/trigger/iio-trig-periodic-rtc.c b/drivers/staging/iio/trigger/iio-trig-periodic-rtc.c
+> index a24caf7..89df1d3 100644
+> --- a/drivers/staging/iio/trigger/iio-trig-periodic-rtc.c
+> +++ b/drivers/staging/iio/trigger/iio-trig-periodic-rtc.c
+> @@ -24,7 +24,7 @@ static DEFINE_MUTEX(iio_prtc_trigger_list_lock);
+>  
+>  struct iio_prtc_trigger_info {
+>  	struct rtc_device *rtc;
+> -	int frequency;
+> +	unsigned int frequency;
+>  	struct rtc_task task;
+>  	bool state;
+>  };
+> @@ -36,7 +36,7 @@ static int iio_trig_periodic_rtc_set_state(struct iio_trigger *trig, bool state)
+>  
+>  	if (trig_info->frequency == 0 && state)
+>  		return -EINVAL;
+> -	dev_dbg(&trig_info->rtc->dev, "trigger frequency is %d\n",
+> +	dev_dbg(&trig_info->rtc->dev, "trigger frequency is %u\n",
+>  			trig_info->frequency);
+>  	ret = rtc_irq_set_state(trig_info->rtc, &trig_info->task, state);
+>  	if (ret == 0)
+> @@ -62,10 +62,10 @@ static ssize_t iio_trig_periodic_write_freq(struct device *dev,
+>  {
+>  	struct iio_trigger *trig = to_iio_trigger(dev);
+>  	struct iio_prtc_trigger_info *trig_info = iio_trigger_get_drvdata(trig);
+> -	int val;
+> +	unsigned int val;
+>  	int ret;
+>  
+> -	ret = kstrtoint(buf, 10, &val);
+> +	ret = kstrtouint(buf, 10, &val);
+>  	if (ret)
+>  		goto error_ret;
+>  
+> @@ -74,10 +74,8 @@ static ssize_t iio_trig_periodic_write_freq(struct device *dev,
+>  		if (ret == 0 && trig_info->state && trig_info->frequency == 0)
+>  			ret = rtc_irq_set_state(trig_info->rtc,
+>  						&trig_info->task, 1);
+> -	} else if (val == 0) {
+> -		ret = rtc_irq_set_state(trig_info->rtc, &trig_info->task, 0);
+>  	} else
+> -		ret = -EINVAL;
+> +		ret = rtc_irq_set_state(trig_info->rtc, &trig_info->task, 0);
+>  	if (ret)
+>  		goto error_ret;
+>  
 > 
 
