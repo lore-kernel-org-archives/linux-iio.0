@@ -1,183 +1,90 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:34884 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:34925 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751946AbbBUSpd (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 21 Feb 2015 13:45:33 -0500
-Message-ID: <54E8D24A.4040309@kernel.org>
-Date: Sat, 21 Feb 2015 18:45:30 +0000
+	with ESMTP id S1751488AbbBUSxr (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 21 Feb 2015 13:53:47 -0500
+Message-ID: <54E8D439.7010701@kernel.org>
+Date: Sat, 21 Feb 2015 18:53:45 +0000
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: =?UTF-8?B?QW50b25pbyBGaW9sIEJvbm7DrW4=?= <antonio@fiol.es>,
-	Peter Meerwald <pmeerw@pmeerw.net>
-CC: linux-iio <linux-iio@vger.kernel.org>,
-	Roland Stigge <stigge@antcom.de>
-Subject: Re: [RESEND PATCH] iio: max517: Add support for MAX520 and MAX521
- chips.
-References: <CAEmm_Tb8Tfw8==UD8XT0rg1vkqCdVOTw_X8uvG4h=dF+hyhxxg@mail.gmail.com>
-In-Reply-To: <CAEmm_Tb8Tfw8==UD8XT0rg1vkqCdVOTw_X8uvG4h=dF+hyhxxg@mail.gmail.com>
+To: Martin Fuzzey <mfuzzey@parkeon.com>, linux-iio@vger.kernel.org
+Subject: Re: [RESEND PATCH] iio: core: Fix double free.
+References: <20150219141744.27201.80796.stgit@localhost>
+In-Reply-To: <20150219141744.27201.80796.stgit@localhost>
 Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 20/02/15 07:18, Antonio Fiol Bonnín wrote:
-> MAX520 and MAX521 are protocol-compatible with the already supported
-> chips, just have more channels.
+On 19/02/15 14:17, Martin Fuzzey wrote:
+> When an error occurred during event registration memory was freed twice
+> resulting in kernel memory corruption and a crash in unrelated code.
 > 
-> Signed-off-by: Antonio Fiol <antonio@fiol.es>
-The patch is good, however your email client has gone and replaced
-all the tabs with spaces which is a real pain to fix up.
-
-If you can't persuade the email client not to do this (guidelines on
-this in Documentation/email-client.txt) then please just attach the 
-output of git format-patch as an attachment. For one off patches,
-maintainers don't complain too much about this, but if you want to
-send lots in the future, then please figure out how to fix your
-mail client.
+> The problem was caused by
+> 	iio_device_unregister_eventset()
+> 	iio_device_unregister_sysfs()
+> 
+> being called twice, once on the error path and then
+> again via iio_dev_release().
+> 
+> Fix this by making these two functions idempotent so they
+> may be called multiple times.
+> 
+> The problem was observed before applying
+> 	78b33216 iio:core: Handle error when mask type is not separate
+> 
+> Signed-off-by: Martin Fuzzey <mfuzzey@parkeon.com>
+Good find.  I'm trying to get my head around why those functions are
+in the release rather than the unregister.  Need to think on this
+a little more to work out if this is the right fix or is papering
+over a nastier issue.
 
 Jonathan
 > ---
->  drivers/iio/dac/Kconfig        | 11 ++++++++---
->  drivers/iio/dac/max517.c       | 45 +++++++++++++++++++++++++++++++-----------
->  include/linux/iio/dac/max517.h |  2 +-
->  3 files changed, 42 insertions(+), 16 deletions(-)
+>  drivers/iio/industrialio-core.c  |    5 +++--
+>  drivers/iio/industrialio-event.c |    1 +
+>  2 files changed, 4 insertions(+), 2 deletions(-)
 > 
-> diff --git a/drivers/iio/dac/Kconfig b/drivers/iio/dac/Kconfig
-> index 2236ea2..13471a7 100644
-> --- a/drivers/iio/dac/Kconfig
-> +++ b/drivers/iio/dac/Kconfig
-> @@ -143,11 +143,16 @@ config AD7303
->        ad7303.
-> 
->  config MAX517
-> -    tristate "Maxim MAX517/518/519 DAC driver"
-> +    tristate "Maxim MAX517/518/519/520/521 DAC driver"
->      depends on I2C
->      help
-> -      If you say yes here you get support for the Maxim chips MAX517,
-> -      MAX518 and MAX519 (I2C 8-Bit DACs with rail-to-rail outputs).
-> +      If you say yes here you get support for the following Maxim chips
-> +      (I2C 8-Bit DACs with rail-to-rail outputs):
-> +      MAX517 - Single channel, single reference
-> +      MAX518 - Dual channel, ref=Vdd
-> +      MAX519 - Dual channel, dual reference
-> +      MAX520 - Quad channel, quad reference
-> +      MAX521 - Octal channel, independent ref for ch0-3, shared ref for ch4-7
-> 
->        This driver can also be built as a module.  If so, the module
->        will be called max517.
-> diff --git a/drivers/iio/dac/max517.c b/drivers/iio/dac/max517.c
-> index 9a82a72..5507b39 100644
-> --- a/drivers/iio/dac/max517.c
-> +++ b/drivers/iio/dac/max517.c
-> @@ -39,11 +39,13 @@ enum max517_device_ids {
->      ID_MAX517,
->      ID_MAX518,
->      ID_MAX519,
-> +    ID_MAX520,
-> +    ID_MAX521,
->  };
-> 
->  struct max517_data {
->      struct i2c_client    *client;
-> -    unsigned short        vref_mv[2];
-> +    unsigned short        vref_mv[8];
->  };
-> 
->  /*
-> @@ -149,7 +151,13 @@ static const struct iio_info max517_info = {
-> 
->  static const struct iio_chan_spec max517_channels[] = {
->      MAX517_CHANNEL(0),
-> -    MAX517_CHANNEL(1)
-> +    MAX517_CHANNEL(1),
-> +    MAX517_CHANNEL(2),
-> +    MAX517_CHANNEL(3),
-> +    MAX517_CHANNEL(4),
-> +    MAX517_CHANNEL(5),
-> +    MAX517_CHANNEL(6),
-> +    MAX517_CHANNEL(7),
->  };
-> 
->  static int max517_probe(struct i2c_client *client,
-> @@ -158,6 +166,7 @@ static int max517_probe(struct i2c_client *client,
->      struct max517_data *data;
->      struct iio_dev *indio_dev;
->      struct max517_platform_data *platform_data = client->dev.platform_data;
-> +    int chan;
-> 
->      indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
->      if (!indio_dev)
-> @@ -169,11 +178,21 @@ static int max517_probe(struct i2c_client *client,
->      /* establish that the iio_dev is a child of the i2c device */
->      indio_dev->dev.parent = &client->dev;
-> 
-> -    /* reduced channel set for MAX517 */
-> -    if (id->driver_data == ID_MAX517)
-> -        indio_dev->num_channels = 1;
-> -    else
-> +    switch (id->driver_data) {
-> +    case ID_MAX521:
-> +        indio_dev->num_channels = 8;
-> +        break;
-> +    case ID_MAX520:
-> +        indio_dev->num_channels = 4;
-> +        break;
-> +    case ID_MAX519:
-> +    case ID_MAX518:
->          indio_dev->num_channels = 2;
-> +        break;
-> +    default:  /* single channel for MAX517 */
-> +        indio_dev->num_channels = 1;
-> +        break;
-> +    }
->      indio_dev->channels = max517_channels;
->      indio_dev->modes = INDIO_DIRECT_MODE;
->      indio_dev->info = &max517_info;
-> @@ -182,11 +201,11 @@ static int max517_probe(struct i2c_client *client,
->       * Reference voltage on MAX518 and default is 5V, else take vref_mv
->       * from platform_data
->       */
-> -    if (id->driver_data == ID_MAX518 || !platform_data) {
-> -        data->vref_mv[0] = data->vref_mv[1] = 5000; /* mV */
-> -    } else {
-> -        data->vref_mv[0] = platform_data->vref_mv[0];
-> -        data->vref_mv[1] = platform_data->vref_mv[1];
-> +    for (chan = 0; chan < indio_dev->num_channels; chan++) {
-> +        if (id->driver_data == ID_MAX518 || !platform_data)
-> +            data->vref_mv[chan] = 5000; /* mV */
-> +        else
-> +            data->vref_mv[chan] = platform_data->vref_mv[chan];
->      }
-> 
->      return iio_device_register(indio_dev);
-> @@ -202,6 +221,8 @@ static const struct i2c_device_id max517_id[] = {
->      { "max517", ID_MAX517 },
->      { "max518", ID_MAX518 },
->      { "max519", ID_MAX519 },
-> +    { "max520", ID_MAX520 },
-> +    { "max521", ID_MAX521 },
->      { }
->  };
->  MODULE_DEVICE_TABLE(i2c, max517_id);
-> @@ -218,5 +239,5 @@ static struct i2c_driver max517_driver = {
->  module_i2c_driver(max517_driver);
-> 
->  MODULE_AUTHOR("Roland Stigge <stigge@antcom.de>");
-> -MODULE_DESCRIPTION("MAX517/MAX518/MAX519 8-bit DAC");
-> +MODULE_DESCRIPTION("MAX517/518/519/520/521 8-bit DAC");
->  MODULE_LICENSE("GPL");
-> diff --git a/include/linux/iio/dac/max517.h b/include/linux/iio/dac/max517.h
-> index f6d1d25..7668716 100644
-> --- a/include/linux/iio/dac/max517.h
-> +++ b/include/linux/iio/dac/max517.h
-> @@ -9,7 +9,7 @@
->  #define IIO_DAC_MAX517_H_
-> 
->  struct max517_platform_data {
-> -    u16                vref_mv[2];
-> +    u16                vref_mv[8];
->  };
-> 
->  #endif /* IIO_DAC_MAX517_H_ */
+> diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+> index af3e76d..f009d05 100644
+> --- a/drivers/iio/industrialio-core.c
+> +++ b/drivers/iio/industrialio-core.c
+> @@ -832,8 +832,7 @@ static int iio_device_add_channel_sysfs(struct iio_dev *indio_dev,
+>   * @attr_list: List of IIO device attributes
+>   *
+>   * This function frees the memory allocated for each of the IIO device
+> - * attributes in the list. Note: if you want to reuse the list after calling
+> - * this function you have to reinitialize it using INIT_LIST_HEAD().
+> + * attributes in the list.
+>   */
+>  void iio_free_chan_devattr_list(struct list_head *attr_list)
+>  {
+> @@ -841,6 +840,7 @@ void iio_free_chan_devattr_list(struct list_head *attr_list)
+>  
+>  	list_for_each_entry_safe(p, n, attr_list, l) {
+>  		kfree(p->dev_attr.attr.name);
+> +		list_del(&p->l);
+>  		kfree(p);
+>  	}
+>  }
+> @@ -921,6 +921,7 @@ static void iio_device_unregister_sysfs(struct iio_dev *indio_dev)
+>  
+>  	iio_free_chan_devattr_list(&indio_dev->channel_attr_list);
+>  	kfree(indio_dev->chan_attr_group.attrs);
+> +	indio_dev->chan_attr_group.attrs = NULL;
+>  }
+>  
+>  static void iio_dev_release(struct device *device)
+> diff --git a/drivers/iio/industrialio-event.c b/drivers/iio/industrialio-event.c
+> index 0c1e37e..35c02ae 100644
+> --- a/drivers/iio/industrialio-event.c
+> +++ b/drivers/iio/industrialio-event.c
+> @@ -493,6 +493,7 @@ int iio_device_register_eventset(struct iio_dev *indio_dev)
+>  error_free_setup_event_lines:
+>  	iio_free_chan_devattr_list(&indio_dev->event_interface->dev_attr_list);
+>  	kfree(indio_dev->event_interface);
+> +	indio_dev->event_interface = NULL;
+>  	return ret;
+>  }
+>  
 > 
 
