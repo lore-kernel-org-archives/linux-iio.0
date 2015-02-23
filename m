@@ -1,52 +1,117 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-vc0-f178.google.com ([209.85.220.178]:53929 "EHLO
-	mail-vc0-f178.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751671AbbBVKo4 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 22 Feb 2015 05:44:56 -0500
-MIME-Version: 1.0
-In-Reply-To: <54B109F0.5060101@kernel.org>
-References: <1417563176-31972-1-git-send-email-richard@nod.at>
-	<54A53FBF.5000003@kernel.org>
-	<7e4f6a70e48afe96457ebbcf07572224@imap.cosmopool.net>
-	<54A680F8.30209@nod.at>
-	<54A91DA1.6080107@kernel.org>
-	<E1Y881p-0001Fp-NX@stardust.g4.wien.funkfeuer.at>
-	<54AA97B9.7040703@nod.at>
-	<E1Y8pZ9-000133-AF@stardust.g4.wien.funkfeuer.at>
-	<54B109F0.5060101@kernel.org>
-Date: Sun, 22 Feb 2015 11:44:55 +0100
-Message-ID: <CAFLxGvw09BN+Nrq2qEt-a=XndYKYF6HzdEgZswYxrzRqUm9ebw@mail.gmail.com>
-Subject: Re: [PATCHv2 2/3,RESEND] iio: dht11: Add locking
-From: Richard Weinberger <richard.weinberger@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Harald Geyer <harald@ccbib.org>,
-	Richard Weinberger <richard@nod.at>, knaack.h@gmx.de,
-	Lars-Peter Clausen <lars@metafoo.de>, pmeerw@pmeerw.net,
-	sanjeev_sharma@mentor.com, linux-iio@vger.kernel.org,
-	LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset=UTF-8
+Received: from mga14.intel.com ([192.55.52.115]:54927 "EHLO mga14.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1752157AbbBWOlJ (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Mon, 23 Feb 2015 09:41:09 -0500
+From: Adriana Reus <adriana.reus@intel.com>
+To: jic23@kernel.org, linux-iio@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org, srinivas.pandruvada@intel.com,
+	Adriana Reus <adriana.reus@intel.com>
+Subject: [PATCH] iio:inv-mpu6050: Fix inconsistency for the scale channel
+Date: Mon, 23 Feb 2015 16:40:51 +0200
+Message-Id: <1424702451-1299-1-git-send-email-adriana.reus@intel.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Sat, Jan 10, 2015 at 12:16 PM, Jonathan Cameron <jic23@kernel.org> wrote:
-> On 07/01/15 12:18, Harald Geyer wrote:
->> Make sure that the read function is not interrupted...
->>
->> From: Richard Weinberger <richard@nod.at>
->> Signed-off-by: Richard Weinberger <richard@nod.at>
->> Acked-by: Harald Geyer <harald@ccbib.org>
->> Reviewed-by: Sanjeev Sharma <sanjeev_sharma@mentor.com>
->> ---
->> Resending again to get the metadata right.
->> No Signed-off-by from me, because I didn't contribute anything.
-> Technically you 'handled' the patch which is all that actually
-> matters for a sign-off.  Anyhow I don't really care either way ;)
->
-> Applied to the fixes-togreg branch of iio.git
+Fix inconsistency in the semantics of the scale attribute.
+For scale the write_raw function was considering the scale table index
+and writing the appropriate value into the range register, while
+for read_raw it was outputting the actual scale.
+Fix this behaviour and adhere to the iio ABI specification.
 
-I don't see any of my fixes in Linus' tree.
-Did I miss something?
+Signed-off-by: Adriana Reus <adriana.reus@intel.com>
+---
+ drivers/iio/imu/inv_mpu6050/inv_mpu_core.c | 56 ++++++++++++++++--------------
+ 1 file changed, 30 insertions(+), 26 deletions(-)
 
+diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
+index 9be9b20..4cf056d 100644
+--- a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
++++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
+@@ -401,42 +401,46 @@ error_read_raw:
+ 	}
+ }
+ 
+-static int inv_mpu6050_write_fsr(struct inv_mpu6050_state *st, int fsr)
++static int inv_mpu6050_write_gyro_scale(struct inv_mpu6050_state *st, int val)
+ {
+-	int result;
++	int result, i;
+ 	u8 d;
+ 
+-	if (fsr < 0 || fsr > INV_MPU6050_MAX_GYRO_FS_PARAM)
+-		return -EINVAL;
+-	if (fsr == st->chip_config.fsr)
+-		return 0;
++	for (i = 0; i < ARRAY_SIZE(gyro_scale_6050); ++i) {
++		if (gyro_scale_6050[i] == val) {
++			d = (i << INV_MPU6050_GYRO_CONFIG_FSR_SHIFT);
++			result = inv_mpu6050_write_reg(st,
++					st->reg->gyro_config, d);
++			if (result)
++				return result;
+ 
+-	d = (fsr << INV_MPU6050_GYRO_CONFIG_FSR_SHIFT);
+-	result = inv_mpu6050_write_reg(st, st->reg->gyro_config, d);
+-	if (result)
+-		return result;
+-	st->chip_config.fsr = fsr;
++			st->chip_config.fsr = i;
++			return 0;
++		}
++	}
+ 
+-	return 0;
++	return -EINVAL;
+ }
+ 
+-static int inv_mpu6050_write_accel_fs(struct inv_mpu6050_state *st, int fs)
++static int inv_mpu6050_write_accel_scale(struct inv_mpu6050_state *st, int val)
+ {
+-	int result;
++	int result, i;
+ 	u8 d;
+ 
+-	if (fs < 0 || fs > INV_MPU6050_MAX_ACCL_FS_PARAM)
+-		return -EINVAL;
+-	if (fs == st->chip_config.accl_fs)
+-		return 0;
++	for (i = 0; i < ARRAY_SIZE(accel_scale); ++i) {
++		if (accel_scale[i] == val) {
++			d = (i << INV_MPU6050_ACCL_CONFIG_FSR_SHIFT);
++			result = inv_mpu6050_write_reg(st,
++					st->reg->accl_config, d);
++			if (result)
++				return result;
+ 
+-	d = (fs << INV_MPU6050_ACCL_CONFIG_FSR_SHIFT);
+-	result = inv_mpu6050_write_reg(st, st->reg->accl_config, d);
+-	if (result)
+-		return result;
+-	st->chip_config.accl_fs = fs;
++			st->chip_config.accl_fs = i;
++			return 0;
++		}
++	}
+ 
+-	return 0;
++	return -EINVAL;
+ }
+ 
+ static int inv_mpu6050_write_raw(struct iio_dev *indio_dev,
+@@ -463,10 +467,10 @@ static int inv_mpu6050_write_raw(struct iio_dev *indio_dev,
+ 	case IIO_CHAN_INFO_SCALE:
+ 		switch (chan->type) {
+ 		case IIO_ANGL_VEL:
+-			result = inv_mpu6050_write_fsr(st, val);
++			result = inv_mpu6050_write_gyro_scale(st, val2);
+ 			break;
+ 		case IIO_ACCEL:
+-			result = inv_mpu6050_write_accel_fs(st, val);
++			result = inv_mpu6050_write_accel_scale(st, val2);
+ 			break;
+ 		default:
+ 			result = -EINVAL;
 -- 
-Thanks,
-//richard
+1.9.1
+
