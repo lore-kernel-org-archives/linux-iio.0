@@ -1,117 +1,99 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga14.intel.com ([192.55.52.115]:54927 "EHLO mga14.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1752157AbbBWOlJ (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Mon, 23 Feb 2015 09:41:09 -0500
-From: Adriana Reus <adriana.reus@intel.com>
-To: jic23@kernel.org, linux-iio@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org, srinivas.pandruvada@intel.com,
-	Adriana Reus <adriana.reus@intel.com>
-Subject: [PATCH] iio:inv-mpu6050: Fix inconsistency for the scale channel
-Date: Mon, 23 Feb 2015 16:40:51 +0200
-Message-Id: <1424702451-1299-1-git-send-email-adriana.reus@intel.com>
+Received: from mail-wg0-f41.google.com ([74.125.82.41]:40033 "EHLO
+	mail-wg0-f41.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752851AbbBWTgN (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 23 Feb 2015 14:36:13 -0500
+Received: by wghl18 with SMTP id l18so873064wgh.7
+        for <linux-iio@vger.kernel.org>; Mon, 23 Feb 2015 11:36:12 -0800 (PST)
+From: Roberta Dobrescu <roberta.dobrescu@gmail.com>
+To: linux-iio@vger.kernel.org
+Cc: daniel.baluta@intel.com, octavian.purdila@intel.com,
+	jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
+	pmeerw@pmeerw.net, Roberta Dobrescu <roberta.dobrescu@gmail.com>
+Subject: [PATCH 3/4] staging: iio: light: isl29018: Rename lux_scale to calibscale
+Date: Mon, 23 Feb 2015 21:35:53 +0200
+Message-Id: <1424720154-4762-4-git-send-email-roberta.dobrescu@gmail.com>
+In-Reply-To: <1424720154-4762-1-git-send-email-roberta.dobrescu@gmail.com>
+References: <1424720154-4762-1-git-send-email-roberta.dobrescu@gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Fix inconsistency in the semantics of the scale attribute.
-For scale the write_raw function was considering the scale table index
-and writing the appropriate value into the range register, while
-for read_raw it was outputting the actual scale.
-Fix this behaviour and adhere to the iio ABI specification.
+This patch renames lux_scale to calibscale and lux_uscale to
+ucalibscale.
 
-Signed-off-by: Adriana Reus <adriana.reus@intel.com>
+This is done in order to avoid confusion since these parameters are
+used for hardware applied calibration.
+
+Signed-off-by: Roberta Dobrescu <roberta.dobrescu@gmail.com>
 ---
- drivers/iio/imu/inv_mpu6050/inv_mpu_core.c | 56 ++++++++++++++++--------------
- 1 file changed, 30 insertions(+), 26 deletions(-)
+ drivers/staging/iio/light/isl29018.c | 22 +++++++++++-----------
+ 1 file changed, 11 insertions(+), 11 deletions(-)
 
-diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-index 9be9b20..4cf056d 100644
---- a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-+++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-@@ -401,42 +401,46 @@ error_read_raw:
+diff --git a/drivers/staging/iio/light/isl29018.c b/drivers/staging/iio/light/isl29018.c
+index d3d0611..ffc3d1b 100644
+--- a/drivers/staging/iio/light/isl29018.c
++++ b/drivers/staging/iio/light/isl29018.c
+@@ -71,8 +71,8 @@ struct isl29018_chip {
+ 	struct regmap		*regmap;
+ 	struct mutex		lock;
+ 	int			type;
+-	unsigned int		lux_scale;
+-	unsigned int		lux_uscale;
++	unsigned int		calibscale;
++	unsigned int		ucalibscale;
+ 	unsigned int		range;
+ 	unsigned int		adc_bit;
+ 	int			prox_scheme;
+@@ -165,12 +165,12 @@ static int isl29018_read_lux(struct isl29018_chip *chip, int *lux)
+ 
+ 	/* To support fractional scaling, separate the unshifted lux
+ 	 * into two calculations: int scaling and micro-scaling.
+-	 * lux_uscale ranges from 0-999999, so about 20 bits.  Split
++	 * ucalibscale ranges from 0-999999, so about 20 bits.  Split
+ 	 * the /1,000,000 in two to reduce the risk of over/underflow.
+ 	 */
+ 	data_x_range = lux_data * chip->range;
+-	lux_unshifted = data_x_range * chip->lux_scale;
+-	lux_unshifted += data_x_range / 1000 * chip->lux_uscale / 1000;
++	lux_unshifted = data_x_range * chip->calibscale;
++	lux_unshifted += data_x_range / 1000 * chip->ucalibscale / 1000;
+ 	*lux = lux_unshifted >> chip->adc_bit;
+ 
+ 	return 0;
+@@ -277,9 +277,9 @@ static int isl29018_write_raw(struct iio_dev *indio_dev,
+ 
+ 	mutex_lock(&chip->lock);
+ 	if (mask == IIO_CHAN_INFO_CALIBSCALE && chan->type == IIO_LIGHT) {
+-		chip->lux_scale = val;
++		chip->calibscale = val;
+ 		/* With no write_raw_get_fmt(), val2 is a MICRO fraction. */
+-		chip->lux_uscale = val2;
++		chip->ucalibscale = val2;
+ 		ret = 0;
  	}
- }
+ 	mutex_unlock(&chip->lock);
+@@ -323,8 +323,8 @@ static int isl29018_read_raw(struct iio_dev *indio_dev,
+ 		break;
+ 	case IIO_CHAN_INFO_CALIBSCALE:
+ 		if (chan->type == IIO_LIGHT) {
+-			*val = chip->lux_scale;
+-			*val2 = chip->lux_uscale;
++			*val = chip->calibscale;
++			*val2 = chip->ucalibscale;
+ 			ret = IIO_VAL_INT_PLUS_MICRO;
+ 		}
+ 		break;
+@@ -607,8 +607,8 @@ static int isl29018_probe(struct i2c_client *client,
+ 	mutex_init(&chip->lock);
  
--static int inv_mpu6050_write_fsr(struct inv_mpu6050_state *st, int fsr)
-+static int inv_mpu6050_write_gyro_scale(struct inv_mpu6050_state *st, int val)
- {
--	int result;
-+	int result, i;
- 	u8 d;
- 
--	if (fsr < 0 || fsr > INV_MPU6050_MAX_GYRO_FS_PARAM)
--		return -EINVAL;
--	if (fsr == st->chip_config.fsr)
--		return 0;
-+	for (i = 0; i < ARRAY_SIZE(gyro_scale_6050); ++i) {
-+		if (gyro_scale_6050[i] == val) {
-+			d = (i << INV_MPU6050_GYRO_CONFIG_FSR_SHIFT);
-+			result = inv_mpu6050_write_reg(st,
-+					st->reg->gyro_config, d);
-+			if (result)
-+				return result;
- 
--	d = (fsr << INV_MPU6050_GYRO_CONFIG_FSR_SHIFT);
--	result = inv_mpu6050_write_reg(st, st->reg->gyro_config, d);
--	if (result)
--		return result;
--	st->chip_config.fsr = fsr;
-+			st->chip_config.fsr = i;
-+			return 0;
-+		}
-+	}
- 
--	return 0;
-+	return -EINVAL;
- }
- 
--static int inv_mpu6050_write_accel_fs(struct inv_mpu6050_state *st, int fs)
-+static int inv_mpu6050_write_accel_scale(struct inv_mpu6050_state *st, int val)
- {
--	int result;
-+	int result, i;
- 	u8 d;
- 
--	if (fs < 0 || fs > INV_MPU6050_MAX_ACCL_FS_PARAM)
--		return -EINVAL;
--	if (fs == st->chip_config.accl_fs)
--		return 0;
-+	for (i = 0; i < ARRAY_SIZE(accel_scale); ++i) {
-+		if (accel_scale[i] == val) {
-+			d = (i << INV_MPU6050_ACCL_CONFIG_FSR_SHIFT);
-+			result = inv_mpu6050_write_reg(st,
-+					st->reg->accl_config, d);
-+			if (result)
-+				return result;
- 
--	d = (fs << INV_MPU6050_ACCL_CONFIG_FSR_SHIFT);
--	result = inv_mpu6050_write_reg(st, st->reg->accl_config, d);
--	if (result)
--		return result;
--	st->chip_config.accl_fs = fs;
-+			st->chip_config.accl_fs = i;
-+			return 0;
-+		}
-+	}
- 
--	return 0;
-+	return -EINVAL;
- }
- 
- static int inv_mpu6050_write_raw(struct iio_dev *indio_dev,
-@@ -463,10 +467,10 @@ static int inv_mpu6050_write_raw(struct iio_dev *indio_dev,
- 	case IIO_CHAN_INFO_SCALE:
- 		switch (chan->type) {
- 		case IIO_ANGL_VEL:
--			result = inv_mpu6050_write_fsr(st, val);
-+			result = inv_mpu6050_write_gyro_scale(st, val2);
- 			break;
- 		case IIO_ACCEL:
--			result = inv_mpu6050_write_accel_fs(st, val);
-+			result = inv_mpu6050_write_accel_scale(st, val2);
- 			break;
- 		default:
- 			result = -EINVAL;
+ 	chip->type = dev_id;
+-	chip->lux_scale = 1;
+-	chip->lux_uscale = 0;
++	chip->calibscale = 1;
++	chip->ucalibscale = 0;
+ 	chip->range = 1000;
+ 	chip->adc_bit = 16;
+ 	chip->suspended = false;
 -- 
 1.9.1
 
