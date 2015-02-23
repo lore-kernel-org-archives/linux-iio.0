@@ -1,43 +1,159 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-wi0-f180.google.com ([209.85.212.180]:58472 "EHLO
-	mail-wi0-f180.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751959AbbBWTgI (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 23 Feb 2015 14:36:08 -0500
-Received: by mail-wi0-f180.google.com with SMTP id h11so20120185wiw.1
-        for <linux-iio@vger.kernel.org>; Mon, 23 Feb 2015 11:36:07 -0800 (PST)
+Received: from mail-we0-f181.google.com ([74.125.82.181]:33548 "EHLO
+	mail-we0-f181.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752206AbbBWTgK (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 23 Feb 2015 14:36:10 -0500
+Received: by wevk48 with SMTP id k48so20909878wev.0
+        for <linux-iio@vger.kernel.org>; Mon, 23 Feb 2015 11:36:09 -0800 (PST)
 From: Roberta Dobrescu <roberta.dobrescu@gmail.com>
 To: linux-iio@vger.kernel.org
 Cc: daniel.baluta@intel.com, octavian.purdila@intel.com,
 	jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
 	pmeerw@pmeerw.net, Roberta Dobrescu <roberta.dobrescu@gmail.com>
-Subject: [PATCH 0/4] staging: iio: light: isl29018: Remove non-standard sysfs attributes
-Date: Mon, 23 Feb 2015 21:35:50 +0200
-Message-Id: <1424720154-4762-1-git-send-email-roberta.dobrescu@gmail.com>
+Subject: [PATCH 1/4] staging: iio: light: isl29018: Remove non-standard sysfs attributes
+Date: Mon, 23 Feb 2015 21:35:51 +0200
+Message-Id: <1424720154-4762-2-git-send-email-roberta.dobrescu@gmail.com>
+In-Reply-To: <1424720154-4762-1-git-send-email-roberta.dobrescu@gmail.com>
+References: <1424720154-4762-1-git-send-email-roberta.dobrescu@gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-This set of patches removes non-standard sysfs attributes used
-by isl29018 driver.
+This patch removes non-standard sysfs attributes range, range_available,
+adc_resolution and adc_resolution_available. It also removes the
+corresponding show and store functions.
 
-It introduces IIO_CHAN_INFO_RANGE and then refactors isl29018 driver
-code in order to use standard attributes.
+This is in preparation for using standard IIO attributes in order to move
+the code out of staging.
 
-The purpose of these patches is to change the isl29018 driver to use
-standard IIO attributes in order to be moved out of staging.
+Signed-off-by: Roberta Dobrescu <roberta.dobrescu@gmail.com>
+---
+ drivers/staging/iio/light/isl29018.c | 94 ------------------------------------
+ 1 file changed, 94 deletions(-)
 
-Roberta Dobrescu (4):
-  staging: iio: light: isl29018: Remove non-standard sysfs attributes
-  iio: Introduce IIO_CHAN_INFO_RANGE
-  staging: iio: light: isl29018: Rename lux_scale to calibscale
-  staging: iio: light: isl29018: Use standard sysfs attributes for range
-    and scale
-
- Documentation/ABI/testing/sysfs-bus-iio |  13 ++
- drivers/iio/industrialio-core.c         |   1 +
- drivers/staging/iio/light/isl29018.c    | 257 +++++++++++++++-----------------
- include/linux/iio/iio.h                 |   1 +
- 4 files changed, 137 insertions(+), 135 deletions(-)
-
+diff --git a/drivers/staging/iio/light/isl29018.c b/drivers/staging/iio/light/isl29018.c
+index a348918..d3d0611 100644
+--- a/drivers/staging/iio/light/isl29018.c
++++ b/drivers/staging/iio/light/isl29018.c
+@@ -230,87 +230,6 @@ static int isl29018_read_proximity_ir(struct isl29018_chip *chip, int scheme,
+ }
+ 
+ /* Sysfs interface */
+-/* range */
+-static ssize_t show_range(struct device *dev,
+-			struct device_attribute *attr, char *buf)
+-{
+-	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+-	struct isl29018_chip *chip = iio_priv(indio_dev);
+-
+-	return sprintf(buf, "%u\n", chip->range);
+-}
+-
+-static ssize_t store_range(struct device *dev,
+-		struct device_attribute *attr, const char *buf, size_t count)
+-{
+-	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+-	struct isl29018_chip *chip = iio_priv(indio_dev);
+-	int status;
+-	unsigned long lval;
+-	unsigned int new_range;
+-
+-	if (kstrtoul(buf, 10, &lval))
+-		return -EINVAL;
+-
+-	if (!(lval == 1000UL || lval == 4000UL ||
+-			lval == 16000UL || lval == 64000UL)) {
+-		dev_err(dev, "The range is not supported\n");
+-		return -EINVAL;
+-	}
+-
+-	mutex_lock(&chip->lock);
+-	status = isl29018_set_range(chip, lval, &new_range);
+-	if (status < 0) {
+-		mutex_unlock(&chip->lock);
+-		dev_err(dev,
+-			"Error in setting max range with err %d\n", status);
+-		return status;
+-	}
+-	chip->range = new_range;
+-	mutex_unlock(&chip->lock);
+-
+-	return count;
+-}
+-
+-/* resolution */
+-static ssize_t show_resolution(struct device *dev,
+-			struct device_attribute *attr, char *buf)
+-{
+-	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+-	struct isl29018_chip *chip = iio_priv(indio_dev);
+-
+-	return sprintf(buf, "%u\n", chip->adc_bit);
+-}
+-
+-static ssize_t store_resolution(struct device *dev,
+-		struct device_attribute *attr, const char *buf, size_t count)
+-{
+-	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+-	struct isl29018_chip *chip = iio_priv(indio_dev);
+-	int status;
+-	unsigned int val;
+-	unsigned int new_adc_bit;
+-
+-	if (kstrtouint(buf, 10, &val))
+-		return -EINVAL;
+-	if (!(val == 4 || val == 8 || val == 12 || val == 16)) {
+-		dev_err(dev, "The resolution is not supported\n");
+-		return -EINVAL;
+-	}
+-
+-	mutex_lock(&chip->lock);
+-	status = isl29018_set_resolution(chip, val, &new_adc_bit);
+-	if (status < 0) {
+-		mutex_unlock(&chip->lock);
+-		dev_err(dev, "Error in setting resolution\n");
+-		return status;
+-	}
+-	chip->adc_bit = new_adc_bit;
+-	mutex_unlock(&chip->lock);
+-
+-	return count;
+-}
+-
+ /* proximity scheme */
+ static ssize_t show_prox_infrared_suppression(struct device *dev,
+ 			struct device_attribute *attr, char *buf)
+@@ -447,11 +366,6 @@ static const struct iio_chan_spec isl29023_channels[] = {
+ 	ISL29018_IR_CHANNEL,
+ };
+ 
+-static IIO_DEVICE_ATTR(range, S_IRUGO | S_IWUSR, show_range, store_range, 0);
+-static IIO_CONST_ATTR(range_available, "1000 4000 16000 64000");
+-static IIO_CONST_ATTR(adc_resolution_available, "4 8 12 16");
+-static IIO_DEVICE_ATTR(adc_resolution, S_IRUGO | S_IWUSR,
+-					show_resolution, store_resolution, 0);
+ static IIO_DEVICE_ATTR(proximity_on_chip_ambient_infrared_suppression,
+ 					S_IRUGO | S_IWUSR,
+ 					show_prox_infrared_suppression,
+@@ -460,19 +374,11 @@ static IIO_DEVICE_ATTR(proximity_on_chip_ambient_infrared_suppression,
+ #define ISL29018_DEV_ATTR(name) (&iio_dev_attr_##name.dev_attr.attr)
+ #define ISL29018_CONST_ATTR(name) (&iio_const_attr_##name.dev_attr.attr)
+ static struct attribute *isl29018_attributes[] = {
+-	ISL29018_DEV_ATTR(range),
+-	ISL29018_CONST_ATTR(range_available),
+-	ISL29018_DEV_ATTR(adc_resolution),
+-	ISL29018_CONST_ATTR(adc_resolution_available),
+ 	ISL29018_DEV_ATTR(proximity_on_chip_ambient_infrared_suppression),
+ 	NULL
+ };
+ 
+ static struct attribute *isl29023_attributes[] = {
+-	ISL29018_DEV_ATTR(range),
+-	ISL29018_CONST_ATTR(range_available),
+-	ISL29018_DEV_ATTR(adc_resolution),
+-	ISL29018_CONST_ATTR(adc_resolution_available),
+ 	NULL
+ };
+ 
 -- 
 1.9.1
 
