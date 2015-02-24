@@ -1,85 +1,119 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-wg0-f45.google.com ([74.125.82.45]:42210 "EHLO
-	mail-wg0-f45.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751861AbbBWTgL (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 23 Feb 2015 14:36:11 -0500
-Received: by wghl2 with SMTP id l2so878261wgh.9
-        for <linux-iio@vger.kernel.org>; Mon, 23 Feb 2015 11:36:10 -0800 (PST)
-From: Roberta Dobrescu <roberta.dobrescu@gmail.com>
-To: linux-iio@vger.kernel.org
-Cc: daniel.baluta@intel.com, octavian.purdila@intel.com,
-	jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
-	pmeerw@pmeerw.net, Roberta Dobrescu <roberta.dobrescu@gmail.com>
-Subject: [PATCH 2/4] iio: Introduce IIO_CHAN_INFO_RANGE
-Date: Mon, 23 Feb 2015 21:35:52 +0200
-Message-Id: <1424720154-4762-3-git-send-email-roberta.dobrescu@gmail.com>
-In-Reply-To: <1424720154-4762-1-git-send-email-roberta.dobrescu@gmail.com>
-References: <1424720154-4762-1-git-send-email-roberta.dobrescu@gmail.com>
+Received: from cantor2.suse.de ([195.135.220.15]:57685 "EHLO mx2.suse.de"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751875AbbBXCVh (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Mon, 23 Feb 2015 21:21:37 -0500
+Date: Tue, 24 Feb 2015 13:21:25 +1100
+From: NeilBrown <neilb@suse.de>
+To: Hartmut Knaack <knaack.h@gmx.de>
+Cc: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	GTA04 owners <gta04-owner@goldelico.com>
+Subject: Re: [PATCH] iio: gyro: itg3200: add suspend/resume support.
+Message-ID: <20150224132125.31118411@notabene.brown>
+In-Reply-To: <546D1BB5.8010308@gmx.de>
+References: <20141108111833.3829480c@notabene.brown>
+	<546D1BB5.8010308@gmx.de>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ boundary="Sig_/s6z2LZlKo.fKFm_vbJmqqRx"; protocol="application/pgp-signature"
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Some ambient light sensors have hardware dependent ranges and
-resolutions. In this case user won't be able to calculate illuminance
-(lux) using only scale attribute.
+--Sig_/s6z2LZlKo.fKFm_vbJmqqRx
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-For instance, a device that uses a Full Scale Range is the
-light sensor ISL29018. In this case, IIO_CHAN_INFO_RANGE is
-needed since the number of ADC bits can be 4, 8, 12 or 16 and
-using just scales would result in too similar values for different
-ranges and resolutions.
+On Wed, 19 Nov 2014 23:37:41 +0100 Hartmut Knaack <knaack.h@gmx.de> wrote:
 
-Signed-off-by: Roberta Dobrescu <roberta.dobrescu@gmail.com>
----
- Documentation/ABI/testing/sysfs-bus-iio | 13 +++++++++++++
- drivers/iio/industrialio-core.c         |  1 +
- include/linux/iio/iio.h                 |  1 +
- 3 files changed, 15 insertions(+)
+> NeilBrown schrieb am 08.11.2014 01:18:
+> >=20
+> >=20
+> > Unless we put the device to sleep when not it use, it wastes
+> > 6mA.
+> >=20
+> > If the device is asleep on probe, the 'id' register
+> > sometimes mis-reads - so reset first.  If the device responds
+> > at all a command sent to the address, it is almost certainly
+> > the correct device already.
+> >=20
+> Hi Neil,
+> I still have some question and issues, see inline.
+> > Signed-off-by: NeilBrown <neil@brown.name>
+> >=20
+> > diff --git a/drivers/iio/gyro/itg3200_core.c b/drivers/iio/gyro/itg3200=
+_core.c
+> > index 6a8020d48140..394667fb23f9 100644
+> > --- a/drivers/iio/gyro/itg3200_core.c
+> > +++ b/drivers/iio/gyro/itg3200_core.c
+> > @@ -223,6 +223,7 @@ static int itg3200_initial_setup(struct iio_dev *in=
+dio_dev)
+> >  	int ret;
+> >  	u8 val;
+> > =20
+> > +	ret =3D itg3200_reset(indio_dev);
+> You should check possible error codes here. Also, there is still another =
+reset issued some lines further down, although in between, there is only th=
+e register-read performed, which we see right below here - I would assume t=
+his wouldn't change anything in the device to require another reset. So, in=
+ conclusion, wouldn't it be sufficient to just move the reset part from fur=
+ther down up here?
+> >  	ret =3D itg3200_read_reg_8(indio_dev, ITG3200_REG_ADDRESS, &val);
+> >  	if (ret)
+> >  		goto err_ret;
+> > @@ -351,6 +352,35 @@ static int itg3200_remove(struct i2c_client *clien=
+t)
+> >  	return 0;
+> >  }
+> > =20
+> > +#ifdef CONFIG_PM_SLEEP
+> > +static int itg3200_suspend(struct device *dev)
+> > +{
+> > +	struct iio_dev *indio_dev =3D dev_get_drvdata(dev);
+> > +	struct itg3200 *st =3D iio_priv(indio_dev);
+> > +	int ret;
+> > +
+> > +	dev_dbg(&st->i2c->dev, "suspend device");
+> > +
+> > +	ret =3D itg3200_write_reg_8(indio_dev,
+> > +			ITG3200_REG_POWER_MANAGEMENT,
+> > +			ITG3200_SLEEP);
+> > +	return ret;
+> No need for ret, if you do it like this (fixing also some indentation iss=
+ue):
+> 	return itg3200_write_reg_8(indio_dev, ITG3200_REG_POWER_MANAGEMENT,
+> 				   ITG3200_SLEEP);
 
-diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
-index 9a70c31..ad1541f 100644
---- a/Documentation/ABI/testing/sysfs-bus-iio
-+++ b/Documentation/ABI/testing/sysfs-bus-iio
-@@ -1249,3 +1249,16 @@ Contact:	linux-iio@vger.kernel.org
- Description:
- 		Specifies number of seconds in which we compute the steps
- 		that occur in order to decide if the consumer is making steps.
-+
-+What:		/sys/bus/iio/devices/deviceX/in_illuminance0_range
-+KernelVersion:	3.21
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+		Hardware dependent ADC Full Scale Range used for some ambient
-+		light sensors in calculating lux.
-+
-+What:		/sys/bus/iio/devices/deviceX/in_illuminance_range_available
-+KernelVersion:	3.21
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+		Hardware dependent supported values for ADC Full Scale Range.
-diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
-index aaba9d3..4138042 100644
---- a/drivers/iio/industrialio-core.c
-+++ b/drivers/iio/industrialio-core.c
-@@ -128,6 +128,7 @@ static const char * const iio_chan_info_postfix[] = {
- 	[IIO_CHAN_INFO_CALIBWEIGHT] = "calibweight",
- 	[IIO_CHAN_INFO_DEBOUNCE_COUNT] = "debounce_count",
- 	[IIO_CHAN_INFO_DEBOUNCE_TIME] = "debounce_time",
-+	[IIO_CHAN_INFO_RANGE] = "range",
- };
- 
- /**
-diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
-index 80d8550..fbdd434 100644
---- a/include/linux/iio/iio.h
-+++ b/include/linux/iio/iio.h
-@@ -43,6 +43,7 @@ enum iio_chan_info_enum {
- 	IIO_CHAN_INFO_CALIBWEIGHT,
- 	IIO_CHAN_INFO_DEBOUNCE_COUNT,
- 	IIO_CHAN_INFO_DEBOUNCE_TIME,
-+	IIO_CHAN_INFO_RANGE,
- };
- 
- enum iio_shared_by {
--- 
-1.9.1
 
+hi Hartmut,
+ thanks for these suggestions.  I made the changes you suggested to my code,
+ but it appears that I never replied or reposted.  Sorry about that.
+
+ I'll resubmit in a moment...
+
+Thanks,
+NeilBrown
+
+--Sig_/s6z2LZlKo.fKFm_vbJmqqRx
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2
+
+iQIVAwUBVOvgJTnsnt1WYoG5AQKJeA//ZDcLNkB3ODAZ1hiFXCvPisanP1F5Pzu9
+Sw9MDYMTfGi8zyCO3BYrfgTqDzSPiF8d9GgW1FcGWYi/f/B0aFdZRsx3cFqbVrV6
+b4RPECspyv9wy40ErnqP2ifLwwWK6rd0ovF/MbmwO328iABKZUllGelDfrwAWekh
+Jh2HuAPTp9bY6NslBX6QPq1kAynMQG2U1SC3S/6oOzKpExAYkXV18YeO6Cuhn81e
+c99LOfxsNs3Ii4oyhL9CDjk+ooFgIKoHW96vVRn9f6CsBl2f0QkcJHlDziGf5tug
+5LAWoegWbQ26X0CHHgoJUOLq0JFhQrbZ8gSdxpOWcy59n3j7Rat6CYq02yp7FQ08
+TwW4HZSnkX08F4gwXPbfOpWdaoapBuwbXDJEudgKSLBB2titWLuWecDzJOlToaL3
+aOLlXmP14YjAuJe6BqosyegTc2umeA85DY5oiCRnkT6VybdFiAGLGm1nvlxWjLDI
+txhiIvQ460Wnr2Wn+IzriRZlIdTV/C6P+1f0K35gvrrEXNd9SVQmkywhc7RezA9O
+iVvW0rBGO6x7VwasUMtzostRJEK/2rd79NZkhzbxUgEOeeQxGVviOGsctgrlVjEe
+FSJGa8DETwTJrDzXuFXwzalqEfY3ksgH4IWuXn+Qb+hGN8fZRscbSn4/rDj1IFsD
+L5vnkANHeOg=
+=bqL1
+-----END PGP SIGNATURE-----
+
+--Sig_/s6z2LZlKo.fKFm_vbJmqqRx--
