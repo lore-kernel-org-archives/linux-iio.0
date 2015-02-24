@@ -1,128 +1,108 @@
-Return-Path: <neilb@suse.de>
-Date: Tue, 24 Feb 2015 13:24:41 +1100
-From: NeilBrown <neilb@suse.de>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, GTA04 owners
- <gta04-owner@goldelico.com>, Doug Anderson <dianders@chromium.org>,
- Thorsten Nowak <thorsten.nowak@iis.fraunhofer.de>, Manuel Stahl
- <manuel.stahl@iis.fraunhofer.de>, Christian Strobel
- <christian.strobel@iis.fraunhofer.de>, Hartmut Knaack <knaack.h@gmx.de>
-Subject: [PATCH v2] iio: gyro: itg3200: add suspend/resume support.
-Message-ID: <20150224132441.2cb8ae6d@notabene.brown>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- boundary="Sig_/_ACoLr95MR.wTVDaWAB65Ub"; protocol="application/pgp-signature"
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mailout1.w1.samsung.com ([210.118.77.11]:34274 "EHLO
+	mailout1.w1.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751383AbbBXJmB (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 24 Feb 2015 04:42:01 -0500
+From: Krzysztof Kozlowski <k.kozlowski@samsung.com>
+To: Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+	devel@driverdev.osuosl.org
+Cc: Krzysztof Kozlowski <k.kozlowski@samsung.com>
+Subject: [PATCH 1/2] staging:iio:hmc5843: Constify register tables and struct
+ regmap_config
+Date: Tue, 24 Feb 2015 10:41:48 +0100
+Message-id: <1424770909-7360-1-git-send-email-k.kozlowski@samsung.com>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
---Sig_/_ACoLr95MR.wTVDaWAB65Ub
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+The regmap_access_table and regmap_config structures may be const
+because they are not modified by the driver and regmap_init() accepts
+pointer to const.
 
-
-Unless we put the device to sleep when not it use, it wastes
-6mA.
-
-If the device is asleep on probe, the 'id' register
-sometimes mis-reads - so reset first.  If the device responds
-at all a command sent to the address, it is almost certainly
-the correct device already.
-
-Acked-by: Manuel Stahl <manuel.stahl@iis.fraunhofer.de>
-Acked-by: Hartmut Knaack <knaack.h@gmx.de>
-Signed-off-by: NeilBrown <neil@brown.name>
-
+Signed-off-by: Krzysztof Kozlowski <k.kozlowski@samsung.com>
 ---
-v1 of this was sent in November.  I got some useful feedback, but then got =
-distracted
-by something.  Sorry for the long gap.
-NeilBrown
+ drivers/staging/iio/magnetometer/hmc5843_i2c.c | 8 ++++----
+ drivers/staging/iio/magnetometer/hmc5843_spi.c | 8 ++++----
+ 2 files changed, 8 insertions(+), 8 deletions(-)
 
+diff --git a/drivers/staging/iio/magnetometer/hmc5843_i2c.c b/drivers/staging/iio/magnetometer/hmc5843_i2c.c
+index 6acd614cdbc6..8346cf81fc2e 100644
+--- a/drivers/staging/iio/magnetometer/hmc5843_i2c.c
++++ b/drivers/staging/iio/magnetometer/hmc5843_i2c.c
+@@ -22,7 +22,7 @@ static const struct regmap_range hmc5843_readable_ranges[] = {
+ 		regmap_reg_range(0, HMC5843_ID_END),
+ };
+ 
+-static struct regmap_access_table hmc5843_readable_table = {
++static const struct regmap_access_table hmc5843_readable_table = {
+ 		.yes_ranges = hmc5843_readable_ranges,
+ 		.n_yes_ranges = ARRAY_SIZE(hmc5843_readable_ranges),
+ };
+@@ -31,7 +31,7 @@ static const struct regmap_range hmc5843_writable_ranges[] = {
+ 		regmap_reg_range(0, HMC5843_MODE_REG),
+ };
+ 
+-static struct regmap_access_table hmc5843_writable_table = {
++static const struct regmap_access_table hmc5843_writable_table = {
+ 		.yes_ranges = hmc5843_writable_ranges,
+ 		.n_yes_ranges = ARRAY_SIZE(hmc5843_writable_ranges),
+ };
+@@ -40,12 +40,12 @@ static const struct regmap_range hmc5843_volatile_ranges[] = {
+ 		regmap_reg_range(HMC5843_DATA_OUT_MSB_REGS, HMC5843_STATUS_REG),
+ };
+ 
+-static struct regmap_access_table hmc5843_volatile_table = {
++static const struct regmap_access_table hmc5843_volatile_table = {
+ 		.yes_ranges = hmc5843_volatile_ranges,
+ 		.n_yes_ranges = ARRAY_SIZE(hmc5843_volatile_ranges),
+ };
+ 
+-static struct regmap_config hmc5843_i2c_regmap_config = {
++static const struct regmap_config hmc5843_i2c_regmap_config = {
+ 		.reg_bits = 8,
+ 		.val_bits = 8,
+ 
+diff --git a/drivers/staging/iio/magnetometer/hmc5843_spi.c b/drivers/staging/iio/magnetometer/hmc5843_spi.c
+index 98c4b57101c9..8e658f736e1f 100644
+--- a/drivers/staging/iio/magnetometer/hmc5843_spi.c
++++ b/drivers/staging/iio/magnetometer/hmc5843_spi.c
+@@ -19,7 +19,7 @@ static const struct regmap_range hmc5843_readable_ranges[] = {
+ 		regmap_reg_range(0, HMC5843_ID_END),
+ };
+ 
+-static struct regmap_access_table hmc5843_readable_table = {
++static const struct regmap_access_table hmc5843_readable_table = {
+ 		.yes_ranges = hmc5843_readable_ranges,
+ 		.n_yes_ranges = ARRAY_SIZE(hmc5843_readable_ranges),
+ };
+@@ -28,7 +28,7 @@ static const struct regmap_range hmc5843_writable_ranges[] = {
+ 		regmap_reg_range(0, HMC5843_MODE_REG),
+ };
+ 
+-static struct regmap_access_table hmc5843_writable_table = {
++static const struct regmap_access_table hmc5843_writable_table = {
+ 		.yes_ranges = hmc5843_writable_ranges,
+ 		.n_yes_ranges = ARRAY_SIZE(hmc5843_writable_ranges),
+ };
+@@ -37,12 +37,12 @@ static const struct regmap_range hmc5843_volatile_ranges[] = {
+ 		regmap_reg_range(HMC5843_DATA_OUT_MSB_REGS, HMC5843_STATUS_REG),
+ };
+ 
+-static struct regmap_access_table hmc5843_volatile_table = {
++static const struct regmap_access_table hmc5843_volatile_table = {
+ 		.yes_ranges = hmc5843_volatile_ranges,
+ 		.n_yes_ranges = ARRAY_SIZE(hmc5843_volatile_ranges),
+ };
+ 
+-static struct regmap_config hmc5843_spi_regmap_config = {
++static const struct regmap_config hmc5843_spi_regmap_config = {
+ 		.reg_bits = 8,
+ 		.val_bits = 8,
+ 
+-- 
+1.9.1
 
-diff --git a/drivers/iio/gyro/itg3200_core.c b/drivers/iio/gyro/itg3200_cor=
-e.c
-index 6a8020d48140..f0fd94055d88 100644
---- a/drivers/iio/gyro/itg3200_core.c
-+++ b/drivers/iio/gyro/itg3200_core.c
-@@ -223,6 +223,10 @@ static int itg3200_initial_setup(struct iio_dev *indio=
-_dev)
- 	int ret;
- 	u8 val;
-=20
-+	ret =3D itg3200_reset(indio_dev);
-+	if (ret)
-+		goto err_ret;
-+
- 	ret =3D itg3200_read_reg_8(indio_dev, ITG3200_REG_ADDRESS, &val);
- 	if (ret)
- 		goto err_ret;
-@@ -233,10 +237,6 @@ static int itg3200_initial_setup(struct iio_dev *indio=
-_dev)
- 		goto err_ret;
- 	}
-=20
--	ret =3D itg3200_reset(indio_dev);
--	if (ret)
--		goto err_ret;
--
- 	ret =3D itg3200_enable_full_scale(indio_dev);
- err_ret:
- 	return ret;
-@@ -351,6 +351,26 @@ static int itg3200_remove(struct i2c_client *client)
- 	return 0;
- }
-=20
-+static int __maybe_unused itg3200_suspend(struct device *dev)
-+{
-+	struct iio_dev *indio_dev =3D dev_get_drvdata(dev);
-+	struct itg3200 *st =3D iio_priv(indio_dev);
-+
-+	dev_dbg(&st->i2c->dev, "suspend device");
-+
-+	return itg3200_write_reg_8(indio_dev, ITG3200_REG_POWER_MANAGEMENT,
-+				   ITG3200_SLEEP);
-+}
-+
-+static int __maybe_unused itg3200_resume(struct device *dev)
-+{
-+	struct iio_dev *indio_dev =3D dev_get_drvdata(dev);
-+
-+	return itg3200_initial_setup(indio_dev);
-+}
-+
-+static SIMPLE_DEV_PM_OPS(itg3200_pm_ops, itg3200_suspend, itg3200_resume);
-+
- static const struct i2c_device_id itg3200_id[] =3D {
- 	{ "itg3200", 0 },
- 	{ }
-@@ -361,6 +381,7 @@ static struct i2c_driver itg3200_driver =3D {
- 	.driver =3D {
- 		.owner  =3D THIS_MODULE,
- 		.name	=3D "itg3200",
-+		.pm	=3D &itg3200_pm_ops,
- 	},
- 	.id_table	=3D itg3200_id,
- 	.probe		=3D itg3200_probe,
-
---Sig_/_ACoLr95MR.wTVDaWAB65Ub
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2
-
-iQIVAwUBVOvg6Tnsnt1WYoG5AQI0Sg/9Ex04ScBIxZDjrNV8hmFUJ8+zbfLNgXY4
-9hcujk4Rm4LtzwLEy3i4U2RS/qUgNOxbrkew/Q+PSPGpo9kk3CdbflTtapNDSP7t
-W72jJsr2T8hTDJZN7ylBELpilxajYePpch4KvtWaiCrkm6lGXuzB7i6v41AHrz9m
-kFo6eqMzpZUprel/O5ZNwLM3oQffecd5HHuLJkhskL5mRpwNUSfZxqoO1go0e64e
-hy6tsftM56+qBLA1WYbXVBtpHWrnbuKVMiGsSlGPBSKoa8uzDQYB73RdssytID/p
-TZerC0g57oIh+VvKhm7eF72RJpMZ6r/fsaiMlcFVhFdo7+LfGkbhWLewU5bQ3A5m
-FWGg5aryew+/nlSneAgTEJZra0mpz7sGOK0JcX+4vPuAqYk+rgcSrUSIyx7vqsK3
-GKu5561YMBzG3DZ8mbHl6TSut/ycG3u2tZnitSnkPOxEpEZ45GTXQUkkoit6T0lM
-HbqTllBqJDYfO/dV08AlGPSf1Ands0adUEcDX38IvgDPwm6OtP69Lc1tACvpbClP
-9VUMCnNwSKxNhtWKBMp7zufTn1wa5yNWwsIY6zdcK9CscOkL7wETUiAnSFy2pbPb
-sp3wOAOIPkxy35qac2UBqeKjmc+z8+kE5k3eXjmkqQFHqAu1rQ7towQFxYVhvBA5
-7aamxEtopdM=
-=rTga
------END PGP SIGNATURE-----
-
---Sig_/_ACoLr95MR.wTVDaWAB65Ub--
