@@ -1,60 +1,33 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from 132.79-246-81.adsl-static.isp.belgacom.be ([81.246.79.132]:35179
-	"EHLO viper.mind.be" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752576AbbBYPzW (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 25 Feb 2015 10:55:22 -0500
-From: =?UTF-8?q?Vianney=20le=20Cl=C3=A9ment=20de=20Saint-Marcq?=
-	<vianney.leclement@essensium.com>
-To: linux-iio@vger.kernel.org, Peter Meerwald <pmeerw@pmeerw.net>,
-	devicetree@vger.kernel.org
-Cc: =?UTF-8?q?Vianney=20le=20Cl=C3=A9ment=20de=20Saint-Marcq?=
-	<vianney.leclement@essensium.com>,
-	"Arnout Vandecappelle (Essensium/Mind)" <arnout@mind.be>
-Subject: [PATCH 0/7] iio: mlx90614 enhancements
-Date: Wed, 25 Feb 2015 16:55:05 +0100
-Message-Id: <1424879712-28304-1-git-send-email-vianney.leclement@essensium.com>
+Return-Path: <daniel.baluta@gmail.com>
 MIME-Version: 1.0
+Sender: daniel.baluta@gmail.com
+Date: Wed, 25 Feb 2015 15:38:59 +0200
+Message-ID: <CAEnQRZAwv-=aHWDgN1S+V3O6nzu9801GHvZyXNGMvxMGrKG5bA@mail.gmail.com>
+Subject: Linux IIO test framework
+From: Daniel Baluta <daniel.baluta@intel.com>
+To: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Cc: Jonathan Cameron <jic23@kernel.org>, bogdan.m.davidoaia@intel.com,
+	antonel.g.dobre@intel.com, alin.g.arhip@intel.com
 Content-Type: text/plain; charset=UTF-8
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+List-ID: <linux-iio@vger.kernel.org>
 
-This set of patches adds the following additional features to the
-mlx90614 temperature sensor driver.
+Hello,
 
-* Processed temperature output (patch 3)
-* Support for the dual IR sensor model (patch 4)
-* EEPROM configuration tuning (patch 5)
-* Power management (patch 6)
-* Raw IR value access (RFC, patch 7)
+We are analyzing the possibility of writing a Linux IIO test framework.
 
-The changes have been split into 7 patches to ease code review.
-Patches 1 and 2 contain mandatory symbol definitions.
-Patches 3-7 implement the additional features and are mostly independent
-from each other.  If some features are not desired, the corresponding
-patches can be left out.
+First, we need to know if there is already any work done in this
+area. Didn't find anything on the Internet :).
 
-Perhaps the most tricky part is the power management implemented by
-patch 6, as it involves an extra GPIO messing with the SDA line in order
-to wake up the sensor.  See the commit message for details.
+Second, do you think that this would bring any benefit to the Linux kernel
+IIO subsystem?
 
-Patch 6 introduces device tree bindings and is the only one sent to the
-devicetree list.
+We would like to keep the tests in kernel tree under (tools/testing/selftests)
+and I'm not yet sure if we can make use of libiio [1].
 
-Vianney le Clément de Saint-Marcq (7):
-  iio: mlx90614: Refactor register symbols
-  iio: mlx90614: Add symbols for accessible registers
-  iio: mlx90614: Add processed temperature output
-  iio: mlx90614: Support devices with dual IR sensor
-  iio: mlx90614: Allow tuning EEPROM configuration
-  iio: mlx90614: Add power management
-  iio: mlx90614: Provide raw IR value for object channels
+Because we are now gathering requirements for this, any feedback would
+be more than welcomed.
 
- .../bindings/iio/temperature/mlx90614.txt          |  24 +
- .../devicetree/bindings/vendor-prefixes.txt        |   1 +
- drivers/iio/temperature/mlx90614.c                 | 574 ++++++++++++++++++++-
- 3 files changed, 580 insertions(+), 19 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/iio/temperature/mlx90614.txt
+thanks,
+Daniel.
 
--- 
-2.3.0
-
+[1] https://github.com/analogdevicesinc/libiio
