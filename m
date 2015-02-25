@@ -1,115 +1,131 @@
 Return-Path: <pmeerw@pmeerw.net>
-Date: Thu, 26 Feb 2015 00:05:06 +0100 (CET)
+Date: Wed, 25 Feb 2015 23:54:08 +0100 (CET)
 From: Peter Meerwald <pmeerw@pmeerw.net>
 To: Martin Fuzzey <mfuzzey@parkeon.com>
 cc: linux-iio@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>
-Subject: Re: [PATCH 1/9] iio: mma8452: Initialise before activating
-In-Reply-To: <20150219141556.27001.96911.stgit@localhost>
-Message-ID: <alpine.DEB.2.02.1502252358060.6800@pmeerw.net>
-References: <20150219141553.27001.18825.stgit@localhost> <20150219141556.27001.96911.stgit@localhost>
+Subject: Re: [PATCH 9/9] iio: mma8452: add support for self test.
+In-Reply-To: <20150219141612.27001.62858.stgit@localhost>
+Message-ID: <alpine.DEB.2.02.1502252351140.6800@pmeerw.net>
+References: <20150219141553.27001.18825.stgit@localhost> <20150219141612.27001.62858.stgit@localhost>
 MIME-Version: 1.0
 Content-Type: TEXT/PLAIN; charset=US-ASCII
 List-ID: <linux-iio@vger.kernel.org>
 
 On Thu, 19 Feb 2015, Martin Fuzzey wrote:
 
-> Many of the hardware configuration registers may only be modified while the
-> device is inactive.
+> Add a new attribute to activate the self test mode.
 > 
-> Currently the probe code first activates the device and then modifies the
-> registers (eg to set the scale). This doesn't actually work but is not
-> noticed since the scale used is the default value.
-> 
-> While at it also issue a hardware reset command at probe time.
+> When self test is activated, an electrostatic actuation force is
+> applied to the sensor, simulating a small acceleration.
 
 comment below
- 
+
 > Signed-off-by: Martin Fuzzey <mfuzzey@parkeon.com>
 > ---
->  drivers/iio/accel/mma8452.c |   39 ++++++++++++++++++++++++++++++++++-----
->  1 file changed, 34 insertions(+), 5 deletions(-)
+>  .../ABI/testing/sysfs-bus-iio-accel-mma8452        |   10 ++++
+>  drivers/iio/accel/mma8452.c                        |   52 ++++++++++++++++++++
+>  2 files changed, 62 insertions(+)
+>  create mode 100644 Documentation/ABI/testing/sysfs-bus-iio-accel-mma8452
 > 
+> diff --git a/Documentation/ABI/testing/sysfs-bus-iio-accel-mma8452 b/Documentation/ABI/testing/sysfs-bus-iio-accel-mma8452
+> new file mode 100644
+> index 0000000..387ed38
+> --- /dev/null
+> +++ b/Documentation/ABI/testing/sysfs-bus-iio-accel-mma8452
+> @@ -0,0 +1,10 @@
+> +What:		/sys/bus/iio/devices/iio:deviceX/self_test
+> +KernelVersion:	3.21
+
+bad timing :)
+
+> +Contact:	linux-iio@vger.kernel.org
+> +Description:
+> +		Allow self test mode to be controlled:
+> +			"0" = inactive
+> +			"1" = active
+> +		When self test is activated, an electrostatic actuation force is
+> +		applied to the sensor, simulating a small acceleration.
+> +
 > diff --git a/drivers/iio/accel/mma8452.c b/drivers/iio/accel/mma8452.c
-> index 3c12d49..04a4f34 100644
+> index 6277b5d..75dcc6e 100644
 > --- a/drivers/iio/accel/mma8452.c
 > +++ b/drivers/iio/accel/mma8452.c
-> @@ -32,6 +32,7 @@
->  #define MMA8452_OFF_Z 0x31
+> @@ -49,6 +49,7 @@
 >  #define MMA8452_CTRL_REG1 0x2a
 >  #define MMA8452_CTRL_REG2 0x2b
-> +#define MMA8452_CTRL_REG2_RST		BIT(6)
+>  #define MMA8452_CTRL_REG2_RST		BIT(6)
+> +#define MMA8452_CTRL_REG2_SELFTEST	BIT(7)
+>  #define MMA8452_CTRL_REG4 0x2d
+>  #define MMA8452_CTRL_REG5 0x2e
 >  
->  #define MMA8452_STATUS_DRDY (BIT(2) | BIT(1) | BIT(0))
+> @@ -639,6 +640,56 @@ static int mma8452_reg_access_dbg(struct iio_dev *indio_dev,
+>  	return ret;
+>  }
 >  
-> @@ -111,7 +112,7 @@ static const int mma8452_samp_freq[8][2] = {
->  	{6, 250000}, {1, 560000}
->  };
->  
-> -/* 
-> +/*
->   * Hardware has fullscale of -2G, -4G, -8G corresponding to raw value -2048
->   * The userspace interface uses m/s^2 and we declare micro units
->   * So scale factor is given by:
-> @@ -335,6 +336,30 @@ static const struct iio_info mma8452_info = {
->  
->  static const unsigned long mma8452_scan_masks[] = {0x7, 0};
->  
-> +static int mma8452_reset(struct i2c_client *client)
+> +static ssize_t mma8452_show_selftest(struct device *dev,
+> +				struct device_attribute *attr, char *buf)
 > +{
-> +	int i;
+> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+> +	struct mma8452_data *data = iio_priv(indio_dev);
 > +	int ret;
 > +
-> +	ret = i2c_smbus_write_byte_data(client,	MMA8452_CTRL_REG2,
-> +						MMA8452_CTRL_REG2_RST);
-> +	if (ret)
-
-maybe ret < 0 for consistency
-
-> +		return ret;
-> +
-> +	for (i = 0; i < 10; i++) {
-> +		udelay(100);
-> +		ret = i2c_smbus_read_byte_data(client, MMA8452_CTRL_REG2);
-> +		if (ret == -EIO)
-> +			continue; /* I2C comm reset */
-> +		if (ret < 0)
-> +			return ret;
-> +		if (!(ret & MMA8452_CTRL_REG2_RST))
-> +			return 0;
-> +	}
-> +
-> +	return -ETIMEDOUT;
-> +}
-> +
->  static int mma8452_probe(struct i2c_client *client,
->  			 const struct i2c_device_id *id)
->  {
-> @@ -365,10 +390,7 @@ static int mma8452_probe(struct i2c_client *client,
->  	indio_dev->num_channels = ARRAY_SIZE(mma8452_channels);
->  	indio_dev->available_scan_masks = mma8452_scan_masks;
->  
-> -	data->ctrl_reg1 = MMA8452_CTRL_ACTIVE |
-> -		(MMA8452_CTRL_DR_DEFAULT << MMA8452_CTRL_DR_SHIFT);
-> -	ret = i2c_smbus_write_byte_data(client, MMA8452_CTRL_REG1,
-> -		data->ctrl_reg1);
-> +	ret = mma8452_reset(client);
->  	if (ret < 0)
->  		return ret;
->  
-> @@ -378,6 +400,13 @@ static int mma8452_probe(struct i2c_client *client,
->  	if (ret < 0)
->  		return ret;
->  
-> +	data->ctrl_reg1 = MMA8452_CTRL_ACTIVE |
-> +		(MMA8452_CTRL_DR_DEFAULT << MMA8452_CTRL_DR_SHIFT);
-> +	ret = i2c_smbus_write_byte_data(client, MMA8452_CTRL_REG1,
-> +		data->ctrl_reg1);
+> +	ret = i2c_smbus_read_byte_data(data->client, MMA8452_CTRL_REG2);
 > +	if (ret < 0)
 > +		return ret;
 > +
->  	ret = iio_triggered_buffer_setup(indio_dev, NULL,
->  		mma8452_trigger_handler, NULL);
->  	if (ret < 0)
+> +	return sprintf(buf, "%d\n", ret & MMA8452_CTRL_REG2_SELFTEST ? 1 : 0);
+> +}
+> +
+> +static ssize_t mma8452_store_selftest(struct device *dev,
+> +				struct device_attribute *attr,
+> +				const char *buf, size_t len)
+> +{
+> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+> +	struct mma8452_data *data = iio_priv(indio_dev);
+> +	bool state;
+> +	int ret;
+> +	u8 val;
+> +
+> +	ret = strtobool(buf, &state);
+> +	if (ret < 0)
+> +		return ret;
+> +
+
+take mutex?
+
+> +	ret = i2c_smbus_read_byte_data(data->client, MMA8452_CTRL_REG2);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	val = ret;
+> +	if (state)
+> +		val |= MMA8452_CTRL_REG2_SELFTEST;
+> +	else
+> +		val &= ~MMA8452_CTRL_REG2_SELFTEST;
+> +
+> +	ret = mma8452_change_config(data, MMA8452_CTRL_REG2, val);
+> +	if (ret)
+> +		return ret;
+> +
+> +	return len;
+> +}
+> +
+> +static IIO_DEVICE_ATTR(self_test,
+> +			 S_IRUGO | S_IWUSR,
+> +			 mma8452_show_selftest,
+> +			 mma8452_store_selftest, 0);
+> +
+>  static const struct iio_event_spec mma8452_transient_event[] = {
+>  	{
+>  		.type = IIO_EV_TYPE_THRESH,
+> @@ -698,6 +749,7 @@ static struct attribute *mma8452_attributes[] = {
+>  	&iio_dev_attr_sampling_frequency_available.dev_attr.attr,
+>  	&iio_dev_attr_in_accel_scale_available.dev_attr.attr,
+>  	&iio_dev_attr_in_accel_filter_high_pass_3db_frequency_available.dev_attr.attr,
+> +	&iio_dev_attr_self_test.dev_attr.attr,
+>  	NULL
+>  };
+>  
 > 
 > --
 > To unsubscribe from this list: send the line "unsubscribe linux-iio" in
