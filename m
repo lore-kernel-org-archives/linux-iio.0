@@ -1,83 +1,114 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:37333 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:37336 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752649AbbBYUn4 (ORCPT
+	with ESMTP id S1753021AbbBYUn4 (ORCPT
 	<rfc822;linux-iio@vger.kernel.org>); Wed, 25 Feb 2015 15:43:56 -0500
-Message-ID: <54EDBBF0.7070307@kernel.org>
-Date: Wed, 25 Feb 2015 12:11:28 +0000
+Message-ID: <54EDBC44.4010405@kernel.org>
+Date: Wed, 25 Feb 2015 12:12:52 +0000
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Adam Thomson <Adam.Thomson.Opensource@diasemi.com>,
-	Lee Jones <lee.jones@linaro.org>,
-	Samuel Ortiz <sameo@linux.intel.com>,
-	Hartmut Knaack <knaack.h@gmx.de>, linux-iio@vger.kernel.org,
-	Sebastian Reichel <sre@kernel.org>,
-	Dmitry Eremin-Solenikov <dbaryshkov@gmail.com>,
-	David Woodhouse <dwmw2@infradead.org>,
-	linux-pm@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
-	Pawel Moll <pawel.moll@arm.com>,
-	Mark Rutland <mark.rutland@arm.com>,
-	Ian Campbell <ijc+devicetree@hellion.org.uk>,
-	Kumar Gala <galak@codeaurora.org>,
-	Grant Likely <grant.likely@linaro.org>,
-	devicetree@vger.kernel.org,
-	Andrew Morton <akpm@linux-foundation.org>,
-	Joe Perches <joe@perches.com>
-CC: linux-kernel@vger.kernel.org, support.opensource@diasemi.com
-Subject: Re: [PATCH v7 6/7] power: da9150: Add DT binding documentation for
- charger
-References: <cover.1424267009.git.Adam.Thomson.Opensource@diasemi.com> <f6c1bb16817176c5f253aec7cb5a912219bd814a.1424267009.git.Adam.Thomson.Opensource@diasemi.com>
-In-Reply-To: <f6c1bb16817176c5f253aec7cb5a912219bd814a.1424267009.git.Adam.Thomson.Opensource@diasemi.com>
-Content-Type: text/plain; charset=windows-1252
+To: Martin Fuzzey <mfuzzey@parkeon.com>, linux-iio@vger.kernel.org,
+	Peter Meerwald <pmeerw@pmeerw.net>
+Subject: Re: [PATCH 1/9] iio: mma8452: Initialise before activating
+References: <20150219141553.27001.18825.stgit@localhost> <20150219141556.27001.96911.stgit@localhost>
+In-Reply-To: <20150219141556.27001.96911.stgit@localhost>
+Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 18/02/15 14:08, Adam Thomson wrote:
-> Signed-off-by: Adam Thomson <Adam.Thomson.Opensource@diasemi.com>
-Acked-by: Jonathan Cameron <jic23@kernel.org>
+On 19/02/15 14:15, Martin Fuzzey wrote:
+> Many of the hardware configuration registers may only be modified while the
+> device is inactive.
+> 
+> Currently the probe code first activates the device and then modifies the
+> registers (eg to set the scale). This doesn't actually work but is not
+> noticed since the scale used is the default value.
+> 
+> While at it also issue a hardware reset command at probe time.
+> 
+> Signed-off-by: Martin Fuzzey <mfuzzey@parkeon.com>
+Looks good to me, but I'd like Peters input on this as it's his driver.
 > ---
->  .../devicetree/bindings/power/da9150-charger.txt   | 26 ++++++++++++++++++++++
->  1 file changed, 26 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/power/da9150-charger.txt
+>  drivers/iio/accel/mma8452.c |   39 ++++++++++++++++++++++++++++++++++-----
+>  1 file changed, 34 insertions(+), 5 deletions(-)
 > 
-> diff --git a/Documentation/devicetree/bindings/power/da9150-charger.txt b/Documentation/devicetree/bindings/power/da9150-charger.txt
-> new file mode 100644
-> index 0000000..f390666
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/power/da9150-charger.txt
-> @@ -0,0 +1,26 @@
-> +Dialog Semiconductor DA9150 Charger Power Supply bindings
+> diff --git a/drivers/iio/accel/mma8452.c b/drivers/iio/accel/mma8452.c
+> index 3c12d49..04a4f34 100644
+> --- a/drivers/iio/accel/mma8452.c
+> +++ b/drivers/iio/accel/mma8452.c
+> @@ -32,6 +32,7 @@
+>  #define MMA8452_OFF_Z 0x31
+>  #define MMA8452_CTRL_REG1 0x2a
+>  #define MMA8452_CTRL_REG2 0x2b
+> +#define MMA8452_CTRL_REG2_RST		BIT(6)
+>  
+>  #define MMA8452_STATUS_DRDY (BIT(2) | BIT(1) | BIT(0))
+>  
+> @@ -111,7 +112,7 @@ static const int mma8452_samp_freq[8][2] = {
+>  	{6, 250000}, {1, 560000}
+>  };
+>  
+> -/* 
+> +/*
+>   * Hardware has fullscale of -2G, -4G, -8G corresponding to raw value -2048
+>   * The userspace interface uses m/s^2 and we declare micro units
+>   * So scale factor is given by:
+> @@ -335,6 +336,30 @@ static const struct iio_info mma8452_info = {
+>  
+>  static const unsigned long mma8452_scan_masks[] = {0x7, 0};
+>  
+> +static int mma8452_reset(struct i2c_client *client)
+> +{
+> +	int i;
+> +	int ret;
 > +
-> +Required properties:
-> +- compatible: "dlg,da9150-charger" for DA9150 Charger Power Supply
+> +	ret = i2c_smbus_write_byte_data(client,	MMA8452_CTRL_REG2,
+> +						MMA8452_CTRL_REG2_RST);
+> +	if (ret)
+> +		return ret;
 > +
-> +Optional properties:
-> +- io-channels: List of phandle and IIO specifier pairs
-> +- io-channel-names: List of channel names used by charger
-> +      ["CHAN_IBUS", "CHAN_VBUS", "CHAN_TJUNC", "CHAN_VBAT"]
-> +  (See Documentation/devicetree/bindings/iio/iio-bindings.txt for further info)
+> +	for (i = 0; i < 10; i++) {
+> +		udelay(100);
+> +		ret = i2c_smbus_read_byte_data(client, MMA8452_CTRL_REG2);
+> +		if (ret == -EIO)
+> +			continue; /* I2C comm reset */
+> +		if (ret < 0)
+> +			return ret;
+> +		if (!(ret & MMA8452_CTRL_REG2_RST))
+> +			return 0;
+> +	}
 > +
+> +	return -ETIMEDOUT;
+> +}
 > +
-> +Example:
+>  static int mma8452_probe(struct i2c_client *client,
+>  			 const struct i2c_device_id *id)
+>  {
+> @@ -365,10 +390,7 @@ static int mma8452_probe(struct i2c_client *client,
+>  	indio_dev->num_channels = ARRAY_SIZE(mma8452_channels);
+>  	indio_dev->available_scan_masks = mma8452_scan_masks;
+>  
+> -	data->ctrl_reg1 = MMA8452_CTRL_ACTIVE |
+> -		(MMA8452_CTRL_DR_DEFAULT << MMA8452_CTRL_DR_SHIFT);
+> -	ret = i2c_smbus_write_byte_data(client, MMA8452_CTRL_REG1,
+> -		data->ctrl_reg1);
+> +	ret = mma8452_reset(client);
+>  	if (ret < 0)
+>  		return ret;
+>  
+> @@ -378,6 +400,13 @@ static int mma8452_probe(struct i2c_client *client,
+>  	if (ret < 0)
+>  		return ret;
+>  
+> +	data->ctrl_reg1 = MMA8452_CTRL_ACTIVE |
+> +		(MMA8452_CTRL_DR_DEFAULT << MMA8452_CTRL_DR_SHIFT);
+> +	ret = i2c_smbus_write_byte_data(client, MMA8452_CTRL_REG1,
+> +		data->ctrl_reg1);
+> +	if (ret < 0)
+> +		return ret;
 > +
-> +	da9150-charger {
-> +		compatible = "dlg,da9150-charger";
-> +
-> +		io-channels = <&gpadc 0>,
-> +			      <&gpadc 2>,
-> +			      <&gpadc 8>,
-> +			      <&gpadc 5>;
-> +		io-channel-names = "CHAN_IBUS",
-> +				   "CHAN_VBUS",
-> +				   "CHAN_TJUNC",
-> +				   "CHAN_VBAT";
-> +	};
-> --
-> 1.9.3
-> 
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+>  	ret = iio_triggered_buffer_setup(indio_dev, NULL,
+>  		mma8452_trigger_handler, NULL);
+>  	if (ret < 0)
 > 
 
