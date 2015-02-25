@@ -1,92 +1,51 @@
-Return-Path: <lee.jones@linaro.org>
-Date: Thu, 26 Feb 2015 08:43:15 +0000
-From: Lee Jones <lee.jones@linaro.org>
-To: Adam Thomson <Adam.Thomson.Opensource@diasemi.com>
-Cc: Samuel Ortiz <sameo@linux.intel.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>, linux-iio@vger.kernel.org,
-	Sebastian Reichel <sre@kernel.org>,
-	Dmitry Eremin-Solenikov <dbaryshkov@gmail.com>,
-	David Woodhouse <dwmw2@infradead.org>, linux-pm@vger.kernel.org,
-	Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>,
-	Mark Rutland <mark.rutland@arm.com>,
-	Ian Campbell <ijc+devicetree@hellion.org.uk>,
-	Kumar Gala <galak@codeaurora.org>,
-	Grant Likely <grant.likely@linaro.org>, devicetree@vger.kernel.org,
-	Andrew Morton <akpm@linux-foundation.org>,
-	Joe Perches <joe@perches.com>, linux-kernel@vger.kernel.org,
-	support.opensource@diasemi.com
-Subject: Re: [PATCH v7 2/7] mfd: da9150: Add DT binding documentation for core
-Message-ID: <20150226084315.GJ6688@x1>
-References: <cover.1424267009.git.Adam.Thomson.Opensource@diasemi.com>
- <d3c040b8f0c74a7d731b36e24384215327b83725.1424267009.git.Adam.Thomson.Opensource@diasemi.com>
+Return-Path: <pmeerw@pmeerw.net>
+Date: Thu, 26 Feb 2015 00:11:08 +0100 (CET)
+From: Peter Meerwald <pmeerw@pmeerw.net>
+To: Martin Fuzzey <mfuzzey@parkeon.com>
+cc: linux-iio@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>
+Subject: Re: [PATCH V3 0/9] iio: mma8452 enhancements
+In-Reply-To: <20150219141553.27001.18825.stgit@localhost>
+Message-ID: <alpine.DEB.2.02.1502260009570.6800@pmeerw.net>
+References: <20150219141553.27001.18825.stgit@localhost>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-In-Reply-To: <d3c040b8f0c74a7d731b36e24384215327b83725.1424267009.git.Adam.Thomson.Opensource@diasemi.com>
+Content-Type: TEXT/PLAIN; charset=US-ASCII
 List-ID: <linux-iio@vger.kernel.org>
 
-On Wed, 18 Feb 2015, Adam Thomson wrote:
 
-> Signed-off-by: Adam Thomson <Adam.Thomson.Opensource@diasemi.com>
-> ---
->  Documentation/devicetree/bindings/mfd/da9150.txt | 43 ++++++++++++++++++++++++
->  1 file changed, 43 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/mfd/da9150.txt
+> This series adds some additional features to the mma8452 accelerometer driver
+> 	* debugfs register access
+> 	* transient threshold events
+> 	* highpass filter
+> 	* interrupt driven sampling (trigger)
+> 	* self test mode
 
-Applied, thanks.
-
-> diff --git a/Documentation/devicetree/bindings/mfd/da9150.txt b/Documentation/devicetree/bindings/mfd/da9150.txt
-> new file mode 100644
-> index 0000000..d0588ea
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/mfd/da9150.txt
-> @@ -0,0 +1,43 @@
-> +Dialog Semiconductor DA9150 Combined Charger/Fuel-Gauge MFD bindings
-> +
-> +DA9150 consists of a group of sub-devices:
-> +
-> +Device			 Description
-> +------			 -----------
-> +da9150-gpadc		: General Purpose ADC
-> +da9150-charger		: Battery Charger
-> +
-> +======
-> +
-> +Required properties:
-> +- compatible : Should be "dlg,da9150"
-> +- reg: Specifies the I2C slave address
-> +- interrupt-parent: Specifies the phandle of the interrupt controller to which
-> +  the IRQs from da9150 are delivered to.
-> +- interrupts: IRQ line info for da9150 chip.
-> +- interrupt-controller: da9150 has internal IRQs (own IRQ domain).
-> +  (See Documentation/devicetree/bindings/interrupt-controller/interrupts.txt for
-> +   further information relating to interrupt properties)
-> +
-> +Sub-devices:
-> +- da9150-gpadc: See Documentation/devicetree/bindings/iio/adc/da9150-gpadc.txt
-> +- da9150-charger: See Documentation/devicetree/bindings/power/da9150-charger.txt
-> +
-> +
-> +Example:
-> +
-> +	charger_fg: da9150@58 {
-> +		compatible = "dlg,da9150";
-> +		reg = <0x58>;
-> +		interrupt-parent = <&gpio6>;
-> +		interrupts = <11 IRQ_TYPE_LEVEL_LOW>;
-> +		interrupt-controller;
-> +
-> +		gpadc: da9150-gpadc {
-> +			...
-> +		};
-> +
-> +		da9150-charger {
-> +			...
-> +		};
-> +	};
+looks good except some very minor things;
+great to see the code is used and enhanced
+ 
+> Attributes are added to the core for:
+> * highpass filter for readings
+> * both high and lowpass filters for events
+> 
+> In addition a latent bug in the device initialisation is fixed.
+> 
+> V3 changes:
+> 	Use 3db frequency for filter enable / disable (0=disable)
+> 	Support enabling filter for readings in addition to events
+> 	Use IIO_EV_INFO_PERIOD rather than custom attribute
+> 	Use devm_iio_trigger_alloc()
+> 	Add comment to explain irq activation during probe()
+> 	iio_device_register() only after all setup
+> 	Drop iio_push_event() wrapper
+> 	Correct parameters to iio_push_event()
+> 	Document missing attributes
+> 	Add self test mode
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> 
 
 -- 
-Lee Jones
-Linaro STMicroelectronics Landing Team Lead
-Linaro.org │ Open source software for ARM SoCs
-Follow Linaro: Facebook | Twitter | Blog
+
+Peter Meerwald
++43-664-2444418 (mobile)
