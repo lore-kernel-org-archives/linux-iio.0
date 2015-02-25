@@ -1,787 +1,335 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:37312 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:37340 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753265AbbBYUnz (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 25 Feb 2015 15:43:55 -0500
-Message-ID: <54EDBBC1.9080301@kernel.org>
-Date: Wed, 25 Feb 2015 12:10:41 +0000
+	with ESMTP id S1752617AbbBYUn5 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 25 Feb 2015 15:43:57 -0500
+Message-ID: <54EDBF33.1060309@kernel.org>
+Date: Wed, 25 Feb 2015 12:25:23 +0000
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Adam Thomson <Adam.Thomson.Opensource@diasemi.com>,
-	Lee Jones <lee.jones@linaro.org>,
-	Samuel Ortiz <sameo@linux.intel.com>,
-	Hartmut Knaack <knaack.h@gmx.de>, linux-iio@vger.kernel.org,
-	Sebastian Reichel <sre@kernel.org>,
-	Dmitry Eremin-Solenikov <dbaryshkov@gmail.com>,
-	David Woodhouse <dwmw2@infradead.org>,
-	linux-pm@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
-	Pawel Moll <pawel.moll@arm.com>,
-	Mark Rutland <mark.rutland@arm.com>,
-	Ian Campbell <ijc+devicetree@hellion.org.uk>,
-	Kumar Gala <galak@codeaurora.org>,
-	Grant Likely <grant.likely@linaro.org>,
-	devicetree@vger.kernel.org,
-	Andrew Morton <akpm@linux-foundation.org>,
-	Joe Perches <joe@perches.com>
-CC: linux-kernel@vger.kernel.org, support.opensource@diasemi.com
-Subject: Re: [PATCH v7 5/7] power: Add support for DA9150 Charger
-References: <cover.1424267009.git.Adam.Thomson.Opensource@diasemi.com> <606cf85a796f8ba8a5548b68e4afa95799efbc95.1424267009.git.Adam.Thomson.Opensource@diasemi.com>
-In-Reply-To: <606cf85a796f8ba8a5548b68e4afa95799efbc95.1424267009.git.Adam.Thomson.Opensource@diasemi.com>
-Content-Type: text/plain; charset=windows-1252
+To: Martin Fuzzey <mfuzzey@parkeon.com>, linux-iio@vger.kernel.org,
+	Peter Meerwald <pmeerw@pmeerw.net>
+Subject: Re: [PATCH 4/9] iio: mma8452: Basic support for transient events.
+References: <20150219141553.27001.18825.stgit@localhost> <20150219141602.27001.51592.stgit@localhost>
+In-Reply-To: <20150219141602.27001.51592.stgit@localhost>
+Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 18/02/15 14:08, Adam Thomson wrote:
-> This patch adds support for DA9150 Charger & Fuel-Gauge IC Charger.
+On 19/02/15 14:16, Martin Fuzzey wrote:
+> The event is triggered when the highpass filtered absolute acceleration
+> exceeds the threshold.
 > 
-> Signed-off-by: Adam Thomson <Adam.Thomson.Opensource@diasemi.com>
-For the IIO side of things (with one small suggestion inline)
-Reviewed-by: Jonathan Cameron <jic23@kernel.org>
+> Signed-off-by: Martin Fuzzey <mfuzzey@parkeon.com>
+you in_accel_transient_scale isn't documented.
+Why do we need this naming at all?
+Ah. It's not clear this is just the event rather than the underlying channel.
+Perhaps, make it an event parameter instead... e.g. add scale to the ev_info
+array like we do for hysteresis etc.
+
+Otherwise, looks good to me.
+
+Again, Peter's input would be good.
+
 > ---
->  drivers/power/Kconfig          |  12 +
->  drivers/power/Makefile         |   1 +
->  drivers/power/da9150-charger.c | 688 +++++++++++++++++++++++++++++++++++++++++
->  3 files changed, 701 insertions(+)
->  create mode 100644 drivers/power/da9150-charger.c
+>  drivers/iio/accel/mma8452.c |  212 +++++++++++++++++++++++++++++++++++++++++++
+>  1 file changed, 211 insertions(+), 1 deletion(-)
 > 
-> diff --git a/drivers/power/Kconfig b/drivers/power/Kconfig
-> index 0108c2a..eb79a7a 100644
-> --- a/drivers/power/Kconfig
-> +++ b/drivers/power/Kconfig
-> @@ -192,6 +192,18 @@ config BATTERY_DA9052
->  	  Say Y here to enable support for batteries charger integrated into
->  	  DA9052 PMIC.
-> 
-> +config CHARGER_DA9150
-> +	tristate "Dialog Semiconductor DA9150 Charger support"
-> +	depends on MFD_DA9150
-> +	depends on DA9150_GPADC
-> +	depends on IIO
-> +	help
-> +	  Say Y here to enable support for charger unit of the DA9150
-> +	  Integrated Charger & Fuel-Gauge IC.
+> diff --git a/drivers/iio/accel/mma8452.c b/drivers/iio/accel/mma8452.c
+> index c46df4e..d44044f 100644
+> --- a/drivers/iio/accel/mma8452.c
+> +++ b/drivers/iio/accel/mma8452.c
+> @@ -9,7 +9,7 @@
+>   *
+>   * 7-bit I2C slave address 0x1c/0x1d (pin selectable)
+>   *
+> - * TODO: interrupt, thresholding, orientation / freefall events, autosleep
+> + * TODO: orientation / freefall events, autosleep
+>   */
+>  
+>  #include <linux/module.h>
+> @@ -19,20 +19,33 @@
+>  #include <linux/iio/trigger_consumer.h>
+>  #include <linux/iio/buffer.h>
+>  #include <linux/iio/triggered_buffer.h>
+> +#include <linux/iio/events.h>
+>  #include <linux/delay.h>
+>  
+>  #define MMA8452_STATUS 0x00
+>  #define MMA8452_OUT_X 0x01 /* MSB first, 12-bit  */
+>  #define MMA8452_OUT_Y 0x03
+>  #define MMA8452_OUT_Z 0x05
+> +#define MMA8452_INT_SRC 0x0c
+>  #define MMA8452_WHO_AM_I 0x0d
+>  #define MMA8452_DATA_CFG 0x0e
+> +#define MMA8452_TRANSIENT_CFG 0x1d
+> +#define MMA8452_TRANSIENT_CFG_ELE		BIT(4)
+> +#define MMA8452_TRANSIENT_CFG_CHAN_MASK(chan)	(BIT(1) << chan)
+> +#define MMA8452_TRANSIENT_SRC 0x1e
+> +#define MMA8452_TRANSIENT_SRC_XTRANSE		BIT(1)
+> +#define MMA8452_TRANSIENT_SRC_YTRANSE		BIT(3)
+> +#define MMA8452_TRANSIENT_SRC_ZTRANSE		BIT(5)
+> +#define MMA8452_TRANSIENT_THS 0x1f
+> +#define MMA8452_TRANSIENT_COUNT 0x20
+>  #define MMA8452_OFF_X 0x2f
+>  #define MMA8452_OFF_Y 0x30
+>  #define MMA8452_OFF_Z 0x31
+>  #define MMA8452_CTRL_REG1 0x2a
+>  #define MMA8452_CTRL_REG2 0x2b
+>  #define MMA8452_CTRL_REG2_RST		BIT(6)
+> +#define MMA8452_CTRL_REG4 0x2d
+> +#define MMA8452_CTRL_REG5 0x2e
+>  
+>  #define MMA8452_MAX_REG 0x31
+>  
+> @@ -48,6 +61,13 @@
+>  #define MMA8452_DATA_CFG_FS_4G 1
+>  #define MMA8452_DATA_CFG_FS_8G 2
+>  
+> +#define MMA8452_INT_DRDY	BIT(0)
+> +#define MMA8452_INT_FF_MT	BIT(2)
+> +#define MMA8452_INT_PULSE	BIT(3)
+> +#define MMA8452_INT_LNDPRT	BIT(4)
+> +#define MMA8452_INT_TRANS	BIT(5)
+> +#define MMA8452_INT_ASLP	BIT(7)
 > +
-> +	  This driver can also be built as a module. If so, the module will be
-> +	  called da9150-charger.
-> +
->  config BATTERY_MAX17040
->  	tristate "Maxim MAX17040 Fuel Gauge"
->  	depends on I2C
-> diff --git a/drivers/power/Makefile b/drivers/power/Makefile
-> index dfa8942..0c1896d 100644
-> --- a/drivers/power/Makefile
-> +++ b/drivers/power/Makefile
-> @@ -31,6 +31,7 @@ obj-$(CONFIG_BATTERY_SBS)	+= sbs-battery.o
->  obj-$(CONFIG_BATTERY_BQ27x00)	+= bq27x00_battery.o
->  obj-$(CONFIG_BATTERY_DA9030)	+= da9030_battery.o
->  obj-$(CONFIG_BATTERY_DA9052)	+= da9052-battery.o
-> +obj-$(CONFIG_CHARGER_DA9150)	+= da9150-charger.o
->  obj-$(CONFIG_BATTERY_MAX17040)	+= max17040_battery.o
->  obj-$(CONFIG_BATTERY_MAX17042)	+= max17042_battery.o
->  obj-$(CONFIG_BATTERY_Z2)	+= z2_battery.o
-> diff --git a/drivers/power/da9150-charger.c b/drivers/power/da9150-charger.c
-> new file mode 100644
-> index 0000000..4df97ea
-> --- /dev/null
-> +++ b/drivers/power/da9150-charger.c
-> @@ -0,0 +1,688 @@
-> +/*
-> + * DA9150 Charger Driver
-> + *
-> + * Copyright (c) 2014 Dialog Semiconductor
-> + *
-> + * Author: Adam Thomson <Adam.Thomson.Opensource@diasemi.com>
-> + *
-> + * This program is free software; you can redistribute  it and/or modify it
-> + * under  the terms of  the GNU General  Public License as published by the
-> + * Free Software Foundation;  either version 2 of the  License, or (at your
-> + * option) any later version.
-> + */
-> +
-> +#include <linux/kernel.h>
-> +#include <linux/slab.h>
-> +#include <linux/module.h>
-> +#include <linux/platform_device.h>
-> +#include <linux/of.h>
-> +#include <linux/of_platform.h>
-> +#include <linux/interrupt.h>
-> +#include <linux/power_supply.h>
-> +#include <linux/notifier.h>
-> +#include <linux/usb/phy.h>
-> +#include <linux/iio/consumer.h>
-> +#include <linux/mfd/da9150/core.h>
-> +#include <linux/mfd/da9150/registers.h>
-> +
-> +/* Private data */
-> +struct da9150_charger {
-> +	struct da9150 *da9150;
-> +	struct device *dev;
-> +
-> +	struct power_supply usb;
-> +	struct power_supply battery;
-> +	struct power_supply *supply_online;
-> +
-> +	struct usb_phy *usb_phy;
-> +	struct notifier_block otg_nb;
-> +	struct work_struct otg_work;
-> +	unsigned long usb_event;
-> +
-> +	struct iio_channel *ibus_chan;
-> +	struct iio_channel *vbus_chan;
-> +	struct iio_channel *tjunc_chan;
-> +	struct iio_channel *vbat_chan;
-> +};
-> +
-> +static inline int da9150_charger_supply_online(struct da9150_charger *charger,
-> +					       struct power_supply *psy,
-> +					       union power_supply_propval *val)
+>  #define MMA8452_DEVICE_ID 0x2a
+>  
+>  struct mma8452_data {
+> @@ -274,6 +294,121 @@ static int mma8452_write_raw(struct iio_dev *indio_dev,
+>  	}
+>  }
+>  
+> +static int mma8452_read_thresh(struct iio_dev *indio_dev,
+> +	const struct iio_chan_spec *chan, enum iio_event_type type,
+> +	enum iio_event_direction dir, enum iio_event_info info, int *val,
+> +	int *val2)
 > +{
-> +	val->intval = (psy == charger->supply_online) ? 1 : 0;
-> +
-> +	return 0;
-> +}
-> +
-> +/* Charger Properties */
-> +static int da9150_charger_vbus_voltage_now(struct da9150_charger *charger,
-> +					   union power_supply_propval *val)
-> +{
-> +	int v_val, ret;
-> +
-> +	/* Read processed value - mV units */
-> +	ret = iio_read_channel_processed(charger->vbus_chan, &v_val);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	/* Convert voltage to expected uV units */
-> +	val->intval = v_val * 1000;
-> +
-> +	return 0;
-> +}
-> +
-> +static int da9150_charger_ibus_current_avg(struct da9150_charger *charger,
-> +					   union power_supply_propval *val)
-> +{
-> +	int i_val, ret;
-> +
-> +	/* Read processed value - mA units */
-> +	ret = iio_read_channel_processed(charger->ibus_chan, &i_val);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	/* Convert current to expected uA units */
-> +	val->intval = i_val * 1000;
-> +
-> +	return 0;
-> +}
-> +
-> +static int da9150_charger_tjunc_temp(struct da9150_charger *charger,
-> +				     union power_supply_propval *val)
-> +{
-> +	int t_val, ret;
-> +
-> +	/* Read processed value - 0.001 degrees C units */
-> +	ret = iio_read_channel_processed(charger->tjunc_chan, &t_val);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	/* Convert temp to expect 0.1 degrees C units */
-> +	val->intval = t_val / 100;
-> +
-> +	return 0;
-> +}
-> +
-> +static enum power_supply_property da9150_charger_props[] = {
-> +	POWER_SUPPLY_PROP_ONLINE,
-> +	POWER_SUPPLY_PROP_VOLTAGE_NOW,
-> +	POWER_SUPPLY_PROP_CURRENT_AVG,
-> +	POWER_SUPPLY_PROP_TEMP,
-> +};
-> +
-> +static int da9150_charger_get_prop(struct power_supply *psy,
-> +				   enum power_supply_property psp,
-> +				   union power_supply_propval *val)
-> +{
-> +	struct da9150_charger *charger = dev_get_drvdata(psy->dev->parent);
+> +	struct mma8452_data *data = iio_priv(indio_dev);
 > +	int ret;
 > +
-> +	switch (psp) {
-> +	case POWER_SUPPLY_PROP_ONLINE:
-> +		ret = da9150_charger_supply_online(charger, psy, val);
-> +		break;
-> +	case POWER_SUPPLY_PROP_VOLTAGE_NOW:
-> +		ret = da9150_charger_vbus_voltage_now(charger, val);
-> +		break;
-> +	case POWER_SUPPLY_PROP_CURRENT_AVG:
-> +		ret = da9150_charger_ibus_current_avg(charger, val);
-> +		break;
-> +	case POWER_SUPPLY_PROP_TEMP:
-> +		ret = da9150_charger_tjunc_temp(charger, val);
-> +		break;
-> +	default:
-> +		ret = -EINVAL;
-> +		break;
-> +	}
+> +	ret = i2c_smbus_read_byte_data(data->client, MMA8452_TRANSIENT_THS);
+> +	if (ret < 0)
+> +		return ret;
 > +
-> +	return ret;
+> +	*val = ret & 0x7f;
+> +
+> +	return IIO_VAL_INT;
 > +}
 > +
-> +/* Battery Properties */
-> +static int da9150_charger_battery_status(struct da9150_charger *charger,
-> +					 union power_supply_propval *val)
+> +static int mma8452_write_thresh(struct iio_dev *indio_dev,
+> +	const struct iio_chan_spec *chan, enum iio_event_type type,
+> +	enum iio_event_direction dir, enum iio_event_info info, int val,
+> +	int val2)
 > +{
-> +	u8 reg;
+> +	struct mma8452_data *data = iio_priv(indio_dev);
 > +
-> +	/* Check to see if battery is discharging */
-> +	reg = da9150_reg_read(charger->da9150, DA9150_STATUS_H);
-> +
-> +	if (((reg & DA9150_VBUS_STAT_MASK) == DA9150_VBUS_STAT_OFF) ||
-> +	    ((reg & DA9150_VBUS_STAT_MASK) == DA9150_VBUS_STAT_WAIT)) {
-> +		val->intval = POWER_SUPPLY_STATUS_DISCHARGING;
-> +
-> +		return 0;
-> +	}
-> +
-> +	reg = da9150_reg_read(charger->da9150, DA9150_STATUS_J);
-> +
-> +	/* Now check for other states */
-> +	switch (reg & DA9150_CHG_STAT_MASK) {
-> +	case DA9150_CHG_STAT_ACT:
-> +	case DA9150_CHG_STAT_PRE:
-> +	case DA9150_CHG_STAT_CC:
-> +	case DA9150_CHG_STAT_CV:
-> +		val->intval = POWER_SUPPLY_STATUS_CHARGING;
-> +		break;
-> +	case DA9150_CHG_STAT_OFF:
-> +	case DA9150_CHG_STAT_SUSP:
-> +	case DA9150_CHG_STAT_TEMP:
-> +	case DA9150_CHG_STAT_TIME:
-> +	case DA9150_CHG_STAT_BAT:
-> +		val->intval = POWER_SUPPLY_STATUS_NOT_CHARGING;
-> +		break;
-> +	case DA9150_CHG_STAT_FULL:
-> +		val->intval = POWER_SUPPLY_STATUS_FULL;
-> +		break;
-> +	default:
-> +		val->intval = POWER_SUPPLY_STATUS_UNKNOWN;
-> +		break;
-> +	}
-> +
-> +	return 0;
+> +	return mma8452_change_config(data, MMA8452_TRANSIENT_THS, val & 0x7f);
 > +}
 > +
-> +static int da9150_charger_battery_health(struct da9150_charger *charger,
-> +					 union power_supply_propval *val)
+> +static int mma8452_read_event_config(struct iio_dev *indio_dev,
+> +	const struct iio_chan_spec *chan, enum iio_event_type type,
+> +	enum iio_event_direction dir)
 > +{
-> +	u8 reg;
+> +	struct mma8452_data *data = iio_priv(indio_dev);
+> +	int ret;
 > +
-> +	reg = da9150_reg_read(charger->da9150, DA9150_STATUS_J);
+> +	ret = i2c_smbus_read_byte_data(data->client, MMA8452_TRANSIENT_CFG);
+> +	if (ret < 0)
+> +		return ret;
 > +
-> +	/* Check if temperature limit reached */
-> +	switch (reg & DA9150_CHG_TEMP_MASK) {
-> +	case DA9150_CHG_TEMP_UNDER:
-> +		val->intval = POWER_SUPPLY_HEALTH_COLD;
-> +		return 0;
-> +	case DA9150_CHG_TEMP_OVER:
-> +		val->intval = POWER_SUPPLY_HEALTH_OVERHEAT;
-> +		return 0;
-> +	default:
-> +		break;
-> +	}
-> +
-> +	/* Check for other health states */
-> +	switch (reg & DA9150_CHG_STAT_MASK) {
-> +	case DA9150_CHG_STAT_ACT:
-> +	case DA9150_CHG_STAT_PRE:
-> +		val->intval = POWER_SUPPLY_HEALTH_DEAD;
-> +		break;
-> +	case DA9150_CHG_STAT_TIME:
-> +		val->intval = POWER_SUPPLY_HEALTH_UNSPEC_FAILURE;
-> +		break;
-> +	default:
-> +		val->intval = POWER_SUPPLY_HEALTH_GOOD;
-> +		break;
-> +	}
-> +
-> +	return 0;
+> +	return ret & MMA8452_TRANSIENT_CFG_CHAN_MASK(chan->scan_index) ? 1 : 0;
 > +}
 > +
-> +static int da9150_charger_battery_present(struct da9150_charger *charger,
-> +					  union power_supply_propval *val)
+> +static int mma8452_write_event_config(struct iio_dev *indio_dev,
+> +	const struct iio_chan_spec *chan, enum iio_event_type type,
+> +	enum iio_event_direction dir, int state)
 > +{
-> +	u8 reg;
+> +	struct mma8452_data *data = iio_priv(indio_dev);
+> +	int val;
 > +
-> +	/* Check if battery present or removed */
-> +	reg = da9150_reg_read(charger->da9150, DA9150_STATUS_J);
-> +	if ((reg & DA9150_CHG_STAT_MASK) == DA9150_CHG_STAT_BAT)
-> +		val->intval = 0;
+> +	val = i2c_smbus_read_byte_data(data->client, MMA8452_TRANSIENT_CFG);
+> +	if (val < 0)
+> +		return val;
+> +
+> +	if (state)
+> +		val |= MMA8452_TRANSIENT_CFG_CHAN_MASK(chan->scan_index);
 > +	else
-> +		val->intval = 1;
+> +		val &= ~MMA8452_TRANSIENT_CFG_CHAN_MASK(chan->scan_index);
 > +
-> +	return 0;
+> +	val |= MMA8452_TRANSIENT_CFG_ELE;
+> +
+> +	return mma8452_change_config(data, MMA8452_TRANSIENT_CFG, val);
 > +}
 > +
-> +static int da9150_charger_battery_charge_type(struct da9150_charger *charger,
-> +					      union power_supply_propval *val)
+> +static void mma8452_transient_interrupt(struct iio_dev *indio_dev)
 > +{
-> +	u8 reg;
+> +	struct mma8452_data *data = iio_priv(indio_dev);
+> +	s64 ts = iio_get_time_ns();
+> +	int src;
 > +
-> +	reg = da9150_reg_read(charger->da9150, DA9150_STATUS_J);
+> +	src = i2c_smbus_read_byte_data(data->client, MMA8452_TRANSIENT_SRC);
+> +	if (src < 0)
+> +		return;
 > +
-> +	switch (reg & DA9150_CHG_STAT_MASK) {
-> +	case DA9150_CHG_STAT_CC:
-> +		val->intval = POWER_SUPPLY_CHARGE_TYPE_FAST;
-> +		break;
-> +	case DA9150_CHG_STAT_ACT:
-> +	case DA9150_CHG_STAT_PRE:
-> +	case DA9150_CHG_STAT_CV:
-> +		val->intval = POWER_SUPPLY_CHARGE_TYPE_TRICKLE;
-> +		break;
-> +	default:
-> +		val->intval = POWER_SUPPLY_CHARGE_TYPE_NONE;
-> +		break;
+> +	if (src & MMA8452_TRANSIENT_SRC_XTRANSE)
+> +		iio_push_event(indio_dev, IIO_MOD_EVENT_CODE(IIO_ACCEL,
+> +							0,
+> +							IIO_MOD_X,
+> +							IIO_EV_TYPE_THRESH,
+> +							IIO_EV_DIR_RISING),
+> +							ts);
+> +
+> +	if (src & MMA8452_TRANSIENT_SRC_YTRANSE)
+> +		iio_push_event(indio_dev, IIO_MOD_EVENT_CODE(IIO_ACCEL,
+> +							0,
+> +							IIO_MOD_Y,
+> +							IIO_EV_TYPE_THRESH,
+> +							IIO_EV_DIR_RISING),
+> +							ts);
+> +
+> +	if (src & MMA8452_TRANSIENT_SRC_ZTRANSE)
+> +		iio_push_event(indio_dev, IIO_MOD_EVENT_CODE(IIO_ACCEL,
+> +							0,
+> +							IIO_MOD_Z,
+> +							IIO_EV_TYPE_THRESH,
+> +							IIO_EV_DIR_RISING),
+> +							ts);
+> +}
+> +
+> +static irqreturn_t mma8452_interrupt(int irq, void *p)
+> +{
+> +	struct iio_dev *indio_dev = p;
+> +	struct mma8452_data *data = iio_priv(indio_dev);
+> +	int src;
+> +
+> +	src = i2c_smbus_read_byte_data(data->client, MMA8452_INT_SRC);
+> +	if (src < 0)
+> +		return IRQ_NONE;
+> +
+> +	if (src & MMA8452_INT_TRANS) {
+> +		mma8452_transient_interrupt(indio_dev);
+> +		return IRQ_HANDLED;
 > +	}
 > +
-> +	return 0;
+> +	return IRQ_NONE;
 > +}
 > +
-> +static int da9150_charger_battery_voltage_min(struct da9150_charger *charger,
-> +					      union power_supply_propval *val)
-> +{
-> +	u8 reg;
+>  static irqreturn_t mma8452_trigger_handler(int irq, void *p)
+>  {
+>  	struct iio_poll_func *pf = p;
+> @@ -316,6 +451,32 @@ static int mma8452_reg_access_dbg(struct iio_dev *indio_dev,
+>  	return ret;
+>  }
+>  
+> +static const struct iio_event_spec mma8452_transient_event[] = {
+> +	{
+> +		.type = IIO_EV_TYPE_THRESH,
+> +		.dir = IIO_EV_DIR_RISING,
+> +		.mask_separate = BIT(IIO_EV_INFO_ENABLE),
+> +		.mask_shared_by_type = BIT(IIO_EV_INFO_VALUE) |
+> +					BIT(IIO_EV_INFO_HIGH_PASS_FILTER_3DB),
+> +	},
+> +};
 > +
-> +	reg = da9150_reg_read(charger->da9150, DA9150_PPR_CHGCTRL_C);
+> +/**
+> + * Threshold is configured in fixed 8G/127 steps regardless of
+> + * currently selected scale for measurement.
+> + */
+> +static IIO_CONST_ATTR_NAMED(accel_transient_scale, in_accel_scale, "0.617742");
 > +
-> +	/* Value starts at 2500 mV, 50 mV increments, presented in uV */
-> +	val->intval = ((reg & DA9150_CHG_VFAULT_MASK) * 50000) + 2500000;
+> +static struct attribute *mma8452_event_attributes[] = {
+> +	&iio_const_attr_accel_transient_scale.dev_attr.attr,
+> +	NULL,
+> +};
 > +
-> +	return 0;
-> +}
+> +static struct attribute_group mma8452_event_attribute_group = {
+> +	.attrs = mma8452_event_attributes,
+> +	.name = "events",
+> +};
 > +
-> +static int da9150_charger_battery_voltage_now(struct da9150_charger *charger,
-> +					      union power_supply_propval *val)
-> +{
-> +	int v_val, ret;
-> +
-> +	/* Read processed value - mV units */
-> +	ret = iio_read_channel_processed(charger->vbat_chan, &v_val);
+>  #define MMA8452_CHANNEL(axis, idx) { \
+>  	.type = IIO_ACCEL, \
+>  	.modified = 1, \
+> @@ -332,6 +493,8 @@ static int mma8452_reg_access_dbg(struct iio_dev *indio_dev,
+>  		.shift = 4, \
+>  		.endianness = IIO_BE, \
+>  	}, \
+> +	.event_spec = mma8452_transient_event, \
+> +	.num_event_specs = ARRAY_SIZE(mma8452_transient_event), \
+>  }
+>  
+>  static const struct iio_chan_spec mma8452_channels[] = {
+> @@ -355,6 +518,11 @@ static const struct iio_info mma8452_info = {
+>  	.attrs = &mma8452_group,
+>  	.read_raw = &mma8452_read_raw,
+>  	.write_raw = &mma8452_write_raw,
+> +	.event_attrs = &mma8452_event_attribute_group,
+> +	.read_event_value = &mma8452_read_thresh,
+> +	.write_event_value = &mma8452_write_thresh,
+> +	.read_event_config = &mma8452_read_event_config,
+> +	.write_event_config = &mma8452_write_event_config,
+>  	.debugfs_reg_access = &mma8452_reg_access_dbg,
+>  	.driver_module = THIS_MODULE,
+>  };
+> @@ -425,6 +593,37 @@ static int mma8452_probe(struct i2c_client *client,
+>  	if (ret < 0)
+>  		return ret;
+>  
+> +	/*
+> +	 * By default set transient threshold to max to avoid events if
+> +	 * enabling without configuring threshold
+> +	 */
+> +	ret = i2c_smbus_write_byte_data(client, MMA8452_TRANSIENT_THS, 0x7f);
 > +	if (ret < 0)
 > +		return ret;
 > +
-> +	val->intval = v_val * 1000;
+> +	if (client->irq) {
+> +		/*
+> +		 * Although we enable the transient interrupt source once and
+> +		 * for all here the transient event detection itself is not
+> +		 * enabled until userspace asks for it by
+> +		 * mma8452_write_event_config()
+> +		 */
+> +		int supported_interrupts = MMA8452_INT_TRANS;
 > +
-> +	return 0;
-> +}
+> +		/* Assume wired to INT1 pin */
+> +		ret = i2c_smbus_write_byte_data(client,
+> +						MMA8452_CTRL_REG5,
+> +						supported_interrupts);
+> +		if (ret < 0)
+> +			return ret;
 > +
-> +static int da9150_charger_battery_current_max(struct da9150_charger *charger,
-> +					      union power_supply_propval *val)
-> +{
-> +	int reg;
-> +
-> +	reg = da9150_reg_read(charger->da9150, DA9150_PPR_CHGCTRL_D);
-> +
-> +	/* 25mA increments */
-> +	val->intval = reg * 25000;
-> +
-> +	return 0;
-> +}
-> +
-> +static int da9150_charger_battery_voltage_max(struct da9150_charger *charger,
-> +					      union power_supply_propval *val)
-> +{
-> +	u8 reg;
-> +
-> +	reg = da9150_reg_read(charger->da9150, DA9150_PPR_CHGCTRL_B);
-> +
-> +	/* Value starts at 3650 mV, 25 mV increments, presented in uV */
-> +	val->intval = ((reg & DA9150_CHG_VBAT_MASK) * 25000) + 3650000;
-> +	return 0;
-> +}
-> +
-> +static enum power_supply_property da9150_charger_bat_props[] = {
-> +	POWER_SUPPLY_PROP_STATUS,
-> +	POWER_SUPPLY_PROP_ONLINE,
-> +	POWER_SUPPLY_PROP_HEALTH,
-> +	POWER_SUPPLY_PROP_PRESENT,
-> +	POWER_SUPPLY_PROP_CHARGE_TYPE,
-> +	POWER_SUPPLY_PROP_VOLTAGE_MIN_DESIGN,
-> +	POWER_SUPPLY_PROP_VOLTAGE_NOW,
-> +	POWER_SUPPLY_PROP_CONSTANT_CHARGE_CURRENT_MAX,
-> +	POWER_SUPPLY_PROP_CONSTANT_CHARGE_VOLTAGE_MAX,
-> +};
-> +
-> +static int da9150_charger_battery_get_prop(struct power_supply *psy,
-> +					   enum power_supply_property psp,
-> +					   union power_supply_propval *val)
-> +{
-> +	struct da9150_charger *charger = dev_get_drvdata(psy->dev->parent);
-> +	int ret;
-> +
-> +	switch (psp) {
-> +	case POWER_SUPPLY_PROP_STATUS:
-> +		ret = da9150_charger_battery_status(charger, val);
-> +		break;
-> +	case POWER_SUPPLY_PROP_ONLINE:
-> +		ret = da9150_charger_supply_online(charger, psy, val);
-> +		break;
-> +	case POWER_SUPPLY_PROP_HEALTH:
-> +		ret = da9150_charger_battery_health(charger, val);
-> +		break;
-> +	case POWER_SUPPLY_PROP_PRESENT:
-> +		ret = da9150_charger_battery_present(charger, val);
-> +		break;
-> +	case POWER_SUPPLY_PROP_CHARGE_TYPE:
-> +		ret = da9150_charger_battery_charge_type(charger, val);
-> +		break;
-> +	case POWER_SUPPLY_PROP_VOLTAGE_MIN_DESIGN:
-> +		ret = da9150_charger_battery_voltage_min(charger, val);
-> +		break;
-> +	case POWER_SUPPLY_PROP_VOLTAGE_NOW:
-> +		ret = da9150_charger_battery_voltage_now(charger, val);
-> +		break;
-> +	case POWER_SUPPLY_PROP_CONSTANT_CHARGE_CURRENT_MAX:
-> +		ret = da9150_charger_battery_current_max(charger, val);
-> +		break;
-> +	case POWER_SUPPLY_PROP_CONSTANT_CHARGE_VOLTAGE_MAX:
-> +		ret = da9150_charger_battery_voltage_max(charger, val);
-> +		break;
-> +	default:
-> +		ret = -EINVAL;
-> +		break;
+> +		ret = i2c_smbus_write_byte_data(client,
+> +						MMA8452_CTRL_REG4,
+> +						supported_interrupts);
+> +		if (ret < 0)
+> +			return ret;
 > +	}
 > +
-> +	return ret;
-> +}
-> +
-> +static irqreturn_t da9150_charger_chg_irq(int irq, void *data)
-> +{
-> +	struct da9150_charger *charger = data;
-> +
-> +	power_supply_changed(&charger->battery);
-> +
-> +	return IRQ_HANDLED;
-> +}
-> +
-> +static irqreturn_t da9150_charger_tjunc_irq(int irq, void *data)
-> +{
-> +	struct da9150_charger *charger = data;
-> +
-> +	/* Nothing we can really do except report this. */
-> +	dev_crit(charger->dev, "TJunc over temperature!!!\n");
-> +	power_supply_changed(&charger->usb);
-> +
-> +	return IRQ_HANDLED;
-> +}
-> +
-> +static irqreturn_t da9150_charger_vfault_irq(int irq, void *data)
-> +{
-> +	struct da9150_charger *charger = data;
-> +
-> +	/* Nothing we can really do except report this. */
-> +	dev_crit(charger->dev, "VSYS under voltage!!!\n");
-> +	power_supply_changed(&charger->usb);
-> +	power_supply_changed(&charger->battery);
-> +
-> +	return IRQ_HANDLED;
-> +}
-> +
-> +static irqreturn_t da9150_charger_vbus_irq(int irq, void *data)
-> +{
-> +	struct da9150_charger *charger = data;
-> +	u8 reg;
-> +
-> +	reg = da9150_reg_read(charger->da9150, DA9150_STATUS_H);
-> +
-> +	/* Charger plugged in or battery only */
-> +	switch (reg & DA9150_VBUS_STAT_MASK) {
-> +	case DA9150_VBUS_STAT_OFF:
-> +	case DA9150_VBUS_STAT_WAIT:
-> +		charger->supply_online = &charger->battery;
-> +		break;
-> +	case DA9150_VBUS_STAT_CHG:
-> +		charger->supply_online = &charger->usb;
-> +		break;
-> +	default:
-> +		dev_warn(charger->dev, "Unknown VBUS state - reg = 0x%x\n",
-> +			 reg);
-> +		charger->supply_online = NULL;
-> +		break;
+>  	data->ctrl_reg1 = MMA8452_CTRL_ACTIVE |
+>  		(MMA8452_CTRL_DR_DEFAULT << MMA8452_CTRL_DR_SHIFT);
+>  	ret = i2c_smbus_write_byte_data(client, MMA8452_CTRL_REG1,
+> @@ -437,9 +636,20 @@ static int mma8452_probe(struct i2c_client *client,
+>  	if (ret < 0)
+>  		return ret;
+>  
+> +	if (client->irq) {
+> +		ret = devm_request_threaded_irq(&client->dev,
+> +						client->irq,
+> +						NULL, mma8452_interrupt,
+> +						IRQF_TRIGGER_LOW | IRQF_ONESHOT,
+> +						client->name, indio_dev);
+> +		if (ret)
+> +			goto buffer_cleanup;
 > +	}
 > +
-> +	power_supply_changed(&charger->usb);
-> +	power_supply_changed(&charger->battery);
+>  	ret = iio_device_register(indio_dev);
+>  	if (ret < 0)
+>  		goto buffer_cleanup;
 > +
-> +	return IRQ_HANDLED;
-> +}
-> +
-> +static void da9150_charger_otg_work(struct work_struct *data)
-> +{
-> +	struct da9150_charger *charger =
-> +		container_of(data, struct da9150_charger, otg_work);
-> +
-> +	switch (charger->usb_event) {
-> +	case USB_EVENT_ID:
-> +		/* Enable OTG Boost */
-> +		da9150_set_bits(charger->da9150, DA9150_PPR_BKCTRL_A,
-> +				DA9150_VBUS_MODE_MASK, DA9150_VBUS_MODE_OTG);
-> +		break;
-> +	case USB_EVENT_NONE:
-> +		/* Revert to charge mode */
-> +		power_supply_changed(&charger->usb);
-> +		power_supply_changed(&charger->battery);
-> +		da9150_set_bits(charger->da9150, DA9150_PPR_BKCTRL_A,
-> +				DA9150_VBUS_MODE_MASK, DA9150_VBUS_MODE_CHG);
-> +		break;
-> +	}
-> +}
-> +
-> +static int da9150_charger_otg_ncb(struct notifier_block *nb, unsigned long val,
-> +				  void *priv)
-> +{
-> +	struct da9150_charger *charger =
-> +		container_of(nb, struct da9150_charger, otg_nb);
-> +
-> +	dev_dbg(charger->dev, "DA9150 OTG notify %lu\n", val);
-> +
-> +	charger->usb_event = val;
-> +	schedule_work(&charger->otg_work);
-> +
-> +	return NOTIFY_OK;
-> +}
-> +
-> +static int da9150_charger_register_irq(struct platform_device *pdev,
-> +				       irq_handler_t handler,
-> +				       const char *irq_name)
-> +{
-> +	struct device *dev = &pdev->dev;
-> +	struct da9150_charger *charger = platform_get_drvdata(pdev);
-> +	int irq, ret;
-> +
-> +	irq = platform_get_irq_byname(pdev, irq_name);
-> +	if (irq < 0) {
-> +		dev_err(dev, "Failed to get IRQ CHG_STATUS: %d\n", irq);
-> +		return irq;
-> +	}
-> +
-> +	ret = request_threaded_irq(irq, NULL, handler, IRQF_ONESHOT, irq_name,
-> +				   charger);
-> +	if (ret)
-> +		dev_err(dev, "Failed to request IRQ %d: %d\n", irq, ret);
-> +
-> +	return ret;
-> +}
-> +
-> +static void da9150_charger_unregister_irq(struct platform_device *pdev,
-> +					  const char *irq_name)
-> +{
-> +	struct device *dev = &pdev->dev;
-> +	struct da9150_charger *charger = platform_get_drvdata(pdev);
-> +	int irq;
-> +
-> +	irq = platform_get_irq_byname(pdev, irq_name);
-> +	if (irq < 0) {
-> +		dev_err(dev, "Failed to get IRQ CHG_STATUS: %d\n", irq);
-> +		return;
-> +	}
-> +
-> +	free_irq(irq, charger);
-> +}
-> +
-> +static int da9150_charger_probe(struct platform_device *pdev)
-> +{
-> +	struct device *dev = &pdev->dev;
-> +	struct da9150 *da9150 = dev_get_drvdata(dev->parent);
-> +	struct da9150_charger *charger;
-> +	struct power_supply *usb, *battery;
-> +	u8 reg;
-> +	int ret;
-> +
-> +	charger = devm_kzalloc(dev, sizeof(struct da9150_charger), GFP_KERNEL);
-> +	if (!charger)
-> +		return -ENOMEM;
-> +
-> +	platform_set_drvdata(pdev, charger);
-> +	charger->da9150 = da9150;
-> +	charger->dev = dev;
-> +
-> +	/* Acquire ADC channels */
-> +	charger->ibus_chan = iio_channel_get(dev, "CHAN_IBUS");
-> +	if (IS_ERR(charger->ibus_chan)) {
-> +		ret = PTR_ERR(charger->ibus_chan);
-> +		goto ibus_chan_fail;
-> +	}
-> +
-> +	charger->vbus_chan = iio_channel_get(dev, "CHAN_VBUS");
-> +	if (IS_ERR(charger->vbus_chan)) {
-> +		ret = PTR_ERR(charger->vbus_chan);
-> +		goto vbus_chan_fail;
-> +	}
-> +
-> +	charger->tjunc_chan = iio_channel_get(dev, "CHAN_TJUNC");
-> +	if (IS_ERR(charger->tjunc_chan)) {
-> +		ret = PTR_ERR(charger->tjunc_chan);
-> +		goto tjunc_chan_fail;
-> +	}
-> +
-> +	charger->vbat_chan = iio_channel_get(dev, "CHAN_VBAT");
-> +	if (IS_ERR(charger->vbat_chan)) {
-> +		ret = PTR_ERR(charger->vbat_chan);
-> +		goto vbat_chan_fail;
-> +	}
-> +
-> +	/* Register power supplies */
-> +	usb = &charger->usb;
-> +	battery = &charger->battery;
-> +
-> +	usb->name = "da9150-usb",
-> +	usb->type = POWER_SUPPLY_TYPE_USB;
-> +	usb->properties = da9150_charger_props;
-> +	usb->num_properties = ARRAY_SIZE(da9150_charger_props);
-> +	usb->get_property = da9150_charger_get_prop;
-> +	ret = power_supply_register(dev, usb);
-> +	if (ret)
-> +		goto usb_fail;
-> +
-> +	battery->name = "da9150-battery";
-> +	battery->type = POWER_SUPPLY_TYPE_BATTERY;
-> +	battery->properties = da9150_charger_bat_props;
-> +	battery->num_properties = ARRAY_SIZE(da9150_charger_bat_props);
-> +	battery->get_property = da9150_charger_battery_get_prop;
-> +	ret = power_supply_register(dev, battery);
-> +	if (ret)
-> +		goto battery_fail;
-> +
-> +	/* Get initial online supply */
-> +	reg = da9150_reg_read(da9150, DA9150_STATUS_H);
-> +
-> +	switch (reg & DA9150_VBUS_STAT_MASK) {
-> +	case DA9150_VBUS_STAT_OFF:
-> +	case DA9150_VBUS_STAT_WAIT:
-> +		charger->supply_online = &charger->battery;
-> +		break;
-> +	case DA9150_VBUS_STAT_CHG:
-> +		charger->supply_online = &charger->usb;
-> +		break;
-> +	default:
-> +		dev_warn(dev, "Unknown VBUS state - reg = 0x%x\n", reg);
-> +		charger->supply_online = NULL;
-> +		break;
-> +	}
-> +
-> +	/* Setup OTG reporting & configuration */
-> +	charger->usb_phy = devm_usb_get_phy(dev, USB_PHY_TYPE_USB2);
-> +	if (!IS_ERR_OR_NULL(charger->usb_phy)) {
-> +		INIT_WORK(&charger->otg_work, da9150_charger_otg_work);
-> +		charger->otg_nb.notifier_call = da9150_charger_otg_ncb;
-> +		usb_register_notifier(charger->usb_phy, &charger->otg_nb);
-> +	}
-> +
-> +	/* Register IRQs */
-> +	ret = da9150_charger_register_irq(pdev, da9150_charger_chg_irq,
-> +					  "CHG_STATUS");
-> +	if (ret < 0)
-> +		goto chg_irq_fail;
-> +
-> +	ret = da9150_charger_register_irq(pdev, da9150_charger_tjunc_irq,
-> +					  "CHG_TJUNC");
-> +	if (ret < 0)
-> +		goto tjunc_irq_fail;
-> +
-> +	ret = da9150_charger_register_irq(pdev, da9150_charger_vfault_irq,
-> +					  "CHG_VFAULT");
-> +	if (ret < 0)
-> +		goto vfault_irq_fail;
-> +
-> +	ret = da9150_charger_register_irq(pdev, da9150_charger_vbus_irq,
-> +					  "CHG_VBUS");
-> +	if (ret < 0)
-> +		goto vbus_irq_fail;
-> +
-> +	return 0;
-> +
-> +
-> +vbus_irq_fail:
-> +	da9150_charger_unregister_irq(pdev, "CHG_VFAULT");
-> +vfault_irq_fail:
-> +	da9150_charger_unregister_irq(pdev, "CHG_TJUNC");
-> +tjunc_irq_fail:
-> +	da9150_charger_unregister_irq(pdev, "CHG_STATUS");
-> +chg_irq_fail:
-> +	if (!IS_ERR_OR_NULL(charger->usb_phy))
-> +		usb_unregister_notifier(charger->usb_phy, &charger->otg_nb);
-> +battery_fail:
-> +	power_supply_unregister(usb);
-> +
-> +usb_fail:
-> +	iio_channel_release(charger->vbat_chan);
-> +
-> +vbat_chan_fail:
-> +	iio_channel_release(charger->tjunc_chan);
-> +
-> +tjunc_chan_fail:
-> +	iio_channel_release(charger->vbus_chan);
-> +
-> +vbus_chan_fail:
-> +	iio_channel_release(charger->ibus_chan);
-> +
-> +ibus_chan_fail:
-> +	return ret;
-> +}
-> +
-> +static int da9150_charger_remove(struct platform_device *pdev)
-> +{
-> +	struct da9150_charger *charger = platform_get_drvdata(pdev);
-> +	int irq;
-> +
-> +	/* Make sure IRQs are released before unregistering power supplies */
-> +	irq = platform_get_irq_byname(pdev, "CHG_VBUS");
-> +	free_irq(irq, charger);
-I'd use your unregister_irq function here as well.  Better than open
-coding the same thing again. (more obviously correct as well as the
-error condition unwinding above then looks just like we have here).
-> +
-> +	irq = platform_get_irq_byname(pdev, "CHG_VFAULT");
-> +	free_irq(irq, charger);
-> +
-> +	irq = platform_get_irq_byname(pdev, "CHG_TJUNC");
-> +	free_irq(irq, charger);
-> +
-> +	irq = platform_get_irq_byname(pdev, "CHG_STATUS");
-> +	free_irq(irq, charger);
-> +
-> +	if (!IS_ERR_OR_NULL(charger->usb_phy))
-> +		usb_unregister_notifier(charger->usb_phy, &charger->otg_nb);
-> +
-> +	power_supply_unregister(&charger->battery);
-> +	power_supply_unregister(&charger->usb);
-> +
-> +	/* Release ADC channels */
-> +	iio_channel_release(charger->ibus_chan);
-> +	iio_channel_release(charger->vbus_chan);
-> +	iio_channel_release(charger->tjunc_chan);
-> +	iio_channel_release(charger->vbat_chan);
-> +
-> +	return 0;
-> +}
-> +
-> +static struct platform_driver da9150_charger_driver = {
-> +	.driver = {
-> +		.name = "da9150-charger",
-> +	},
-> +	.probe = da9150_charger_probe,
-> +	.remove = da9150_charger_remove,
-> +};
-> +
-> +module_platform_driver(da9150_charger_driver);
-> +
-> +MODULE_DESCRIPTION("Charger Driver for DA9150");
-> +MODULE_AUTHOR("Adam Thomson <Adam.Thomson.Opensource@diasemi.com>");
-> +MODULE_LICENSE("GPL");
-> --
-> 1.9.3
-> 
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+>  	return 0;
+>  
+>  buffer_cleanup:
 > 
 
