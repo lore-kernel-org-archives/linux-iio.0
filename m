@@ -1,83 +1,115 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:37306 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:37300 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752711AbbBYUnv (ORCPT
+	with ESMTP id S1752649AbbBYUnv (ORCPT
 	<rfc822;linux-iio@vger.kernel.org>); Wed, 25 Feb 2015 15:43:51 -0500
-Message-ID: <54EDBA29.5040901@kernel.org>
-Date: Wed, 25 Feb 2015 12:03:53 +0000
+Message-ID: <54EDB7E5.2050809@kernel.org>
+Date: Wed, 25 Feb 2015 11:54:13 +0000
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-CC: wsa@the-dreams.de, lars@metafoo.de, linux-iio@vger.kernel.org
-Subject: Re: [PATCH v3] iio: imu: inv_mpu6050: client enumeration
-References: <1422656745-13576-1-git-send-email-srinivas.pandruvada@linux.intel.com> <54D11E9C.5030701@kernel.org> <54E8C925.6080805@kernel.org>
-In-Reply-To: <54E8C925.6080805@kernel.org>
+To: Krzysztof Kozlowski <k.kozlowski@samsung.com>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+	devel@driverdev.osuosl.org
+Subject: Re: [PATCH 1/2] staging:iio:hmc5843: Constify register tables and
+ struct regmap_config
+References: <1424770909-7360-1-git-send-email-k.kozlowski@samsung.com>
+In-Reply-To: <1424770909-7360-1-git-send-email-k.kozlowski@samsung.com>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 21/02/15 18:06, Jonathan Cameron wrote:
-> On 03/02/15 19:16, Jonathan Cameron wrote:
->> On 30/01/15 22:25, Srinivas Pandruvada wrote:
->>> Last comment from Jonathan was
->>> "
->>> This all looks fine to me, though ideally I'd like some input from
->>> others, more familiar with the dmi stuff etc and from Wolfram / others
->>> wrt to the approach.
->>> "
->> Given timing, (just missed likely merge this cycle) we now have a reasonable
->> amount of time.  So lets leave this a little while yet...
-> I no one else has any comments on this than I'm going to take it pretty soon
-> as is.
+On 24/02/15 09:41, Krzysztof Kozlowski wrote:
+> The regmap_access_table and regmap_config structures may be const
+> because they are not modified by the driver and regmap_init() accepts
+> pointer to const.
 > 
-> Jonathan
-Applied to the togreg branch of iio.git.  Will be pushed out as testing
-for the autobuilders to play sometime soonish.
-(travelling until Friday)
+> Signed-off-by: Krzysztof Kozlowski <k.kozlowski@samsung.com>
+Applied to the togreg branch of iio.git. Note I ended up hand applying
+this due to DOS line endings and some fuzz.
 
 Jonathan
->>>
->>> So anybody have a better suggestion, I am still open to take them.
->>> Otherwise please consider as a merge candidate.
->>>
->>> v3
->>> Add CONFIG_ACPI protection to avoid compiler warning.
->>>
->>> v2
->>> Add CONFIG_ACPI to call creation of mux clients, instead of relying
->>> on ACPI_HANDLE not present for non ACPI platforms
->>> It is possible that there is no secondary address, this is not an error.
->>>
->>> v1
->>> This is an option if auto detect is not desired. 
->>> Here using ACPI magic, by parsing both standard and vendor ACPI
->>> data.
->>>
->>> v0
->>> Using autodetect feature.
->>> Using HWMON class as other places in the system for mux and
->>> client sensor drivers.
->>>
->>> Srinivas Pandruvada (1):
->>>   iio: imu: inv_mpu6050: Create mux clients for ACPI
->>>
->>>  drivers/iio/imu/inv_mpu6050/Makefile       |   2 +-
->>>  drivers/iio/imu/inv_mpu6050/inv_mpu_acpi.c | 211 +++++++++++++++++++++++++++++
->>>  drivers/iio/imu/inv_mpu6050/inv_mpu_core.c |   7 +
->>>  drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h  |   3 +
->>>  4 files changed, 222 insertions(+), 1 deletion(-)
->>>  create mode 100644 drivers/iio/imu/inv_mpu6050/inv_mpu_acpi.c
->>>
->>
->> --
->> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
->> the body of a message to majordomo@vger.kernel.org
->> More majordomo info at  http://vger.kernel.org/majordomo-info.html
->>
+> ---
+>  drivers/staging/iio/magnetometer/hmc5843_i2c.c | 8 ++++----
+>  drivers/staging/iio/magnetometer/hmc5843_spi.c | 8 ++++----
+>  2 files changed, 8 insertions(+), 8 deletions(-)
 > 
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> diff --git a/drivers/staging/iio/magnetometer/hmc5843_i2c.c b/drivers/staging/iio/magnetometer/hmc5843_i2c.c
+> index 6acd614cdbc6..8346cf81fc2e 100644
+> --- a/drivers/staging/iio/magnetometer/hmc5843_i2c.c
+> +++ b/drivers/staging/iio/magnetometer/hmc5843_i2c.c
+> @@ -22,7 +22,7 @@ static const struct regmap_range hmc5843_readable_ranges[] = {
+>  		regmap_reg_range(0, HMC5843_ID_END),
+>  };
+>  
+> -static struct regmap_access_table hmc5843_readable_table = {
+> +static const struct regmap_access_table hmc5843_readable_table = {
+>  		.yes_ranges = hmc5843_readable_ranges,
+>  		.n_yes_ranges = ARRAY_SIZE(hmc5843_readable_ranges),
+>  };
+> @@ -31,7 +31,7 @@ static const struct regmap_range hmc5843_writable_ranges[] = {
+>  		regmap_reg_range(0, HMC5843_MODE_REG),
+>  };
+>  
+> -static struct regmap_access_table hmc5843_writable_table = {
+> +static const struct regmap_access_table hmc5843_writable_table = {
+>  		.yes_ranges = hmc5843_writable_ranges,
+>  		.n_yes_ranges = ARRAY_SIZE(hmc5843_writable_ranges),
+>  };
+> @@ -40,12 +40,12 @@ static const struct regmap_range hmc5843_volatile_ranges[] = {
+>  		regmap_reg_range(HMC5843_DATA_OUT_MSB_REGS, HMC5843_STATUS_REG),
+>  };
+>  
+> -static struct regmap_access_table hmc5843_volatile_table = {
+> +static const struct regmap_access_table hmc5843_volatile_table = {
+>  		.yes_ranges = hmc5843_volatile_ranges,
+>  		.n_yes_ranges = ARRAY_SIZE(hmc5843_volatile_ranges),
+>  };
+>  
+> -static struct regmap_config hmc5843_i2c_regmap_config = {
+> +static const struct regmap_config hmc5843_i2c_regmap_config = {
+>  		.reg_bits = 8,
+>  		.val_bits = 8,
+>  
+> diff --git a/drivers/staging/iio/magnetometer/hmc5843_spi.c b/drivers/staging/iio/magnetometer/hmc5843_spi.c
+> index 98c4b57101c9..8e658f736e1f 100644
+> --- a/drivers/staging/iio/magnetometer/hmc5843_spi.c
+> +++ b/drivers/staging/iio/magnetometer/hmc5843_spi.c
+> @@ -19,7 +19,7 @@ static const struct regmap_range hmc5843_readable_ranges[] = {
+>  		regmap_reg_range(0, HMC5843_ID_END),
+>  };
+>  
+> -static struct regmap_access_table hmc5843_readable_table = {
+> +static const struct regmap_access_table hmc5843_readable_table = {
+>  		.yes_ranges = hmc5843_readable_ranges,
+>  		.n_yes_ranges = ARRAY_SIZE(hmc5843_readable_ranges),
+>  };
+> @@ -28,7 +28,7 @@ static const struct regmap_range hmc5843_writable_ranges[] = {
+>  		regmap_reg_range(0, HMC5843_MODE_REG),
+>  };
+>  
+> -static struct regmap_access_table hmc5843_writable_table = {
+> +static const struct regmap_access_table hmc5843_writable_table = {
+>  		.yes_ranges = hmc5843_writable_ranges,
+>  		.n_yes_ranges = ARRAY_SIZE(hmc5843_writable_ranges),
+>  };
+> @@ -37,12 +37,12 @@ static const struct regmap_range hmc5843_volatile_ranges[] = {
+>  		regmap_reg_range(HMC5843_DATA_OUT_MSB_REGS, HMC5843_STATUS_REG),
+>  };
+>  
+> -static struct regmap_access_table hmc5843_volatile_table = {
+> +static const struct regmap_access_table hmc5843_volatile_table = {
+>  		.yes_ranges = hmc5843_volatile_ranges,
+>  		.n_yes_ranges = ARRAY_SIZE(hmc5843_volatile_ranges),
+>  };
+>  
+> -static struct regmap_config hmc5843_spi_regmap_config = {
+> +static const struct regmap_config hmc5843_spi_regmap_config = {
+>  		.reg_bits = 8,
+>  		.val_bits = 8,
+>  
 > 
 
