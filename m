@@ -1,98 +1,282 @@
-Return-Path: <vigneshr@ti.com>
-Message-ID: <54ED4A7D.4060609@ti.com>
-Date: Wed, 25 Feb 2015 09:37:25 +0530
-From: Vignesh R <vigneshr@ti.com>
+Return-Path: <pmeerw@pmeerw.net>
+Date: Wed, 25 Feb 2015 23:45:05 +0100 (CET)
+From: Peter Meerwald <pmeerw@pmeerw.net>
+To: Martin Fuzzey <mfuzzey@parkeon.com>
+cc: linux-iio@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>
+Subject: Re: [PATCH 7/9] iio: mma8452: Add highpass filter configuration.
+In-Reply-To: <20150219141608.27001.29038.stgit@localhost>
+Message-ID: <alpine.DEB.2.02.1502252342050.6800@pmeerw.net>
+References: <20150219141553.27001.18825.stgit@localhost> <20150219141608.27001.29038.stgit@localhost>
 MIME-Version: 1.0
-To: Lee Jones <lee.jones@linaro.org>
-CC: Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Sebastian Andrzej Siewior
-	<bigeasy@linutronix.de>,
-        Rob Herring <robh+dt@kernel.org>, Pawel Moll
-	<pawel.moll@arm.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Ian Campbell
-	<ijc+devicetree@hellion.org.uk>,
-        Kumar Gala <galak@codeaurora.org>,
-        Benoit
- Cousson <bcousson@baylibre.com>,
-        Tony Lindgren <tony@atomide.com>,
-        Russell
- King <linux@arm.linux.org.uk>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter
- Meerwald <pmeerw@pmeerw.net>,
-        Samuel Ortiz <sameo@linux.intel.com>, Brad
- Griffis <bgriffis@ti.com>,
-        Paul Gortmaker <paul.gortmaker@windriver.com>,
-        Sanjeev Sharma <sanjeev_sharma@mentor.com>,
-        Jan Kardell
-	<jan.kardell@telliq.com>, Felipe Balbi <balbi@ti.com>,
-        Wolfram Sang
-	<wsa@the-dreams.de>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <linux-omap@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>, <linux-iio@vger.kernel.org>,
-        <linux-input@vger.kernel.org>
-Subject: Re: [PATCH v6 3/6] mfd: ti_am335x_tscadc: Remove unwanted reg_se_cache
- save
-References: <1420609779-11156-1-git-send-email-vigneshr@ti.com> <1420609779-11156-4-git-send-email-vigneshr@ti.com> <20150120115325.GK13701@x1> <54BE4CD1.1020709@ti.com> <20150120160410.GL13701@x1> <54BF7C14.1080907@ti.com> <54D30BE5.4070906@ti.com>
-In-Reply-To: <54D30BE5.4070906@ti.com>
-Content-Type: text/plain; charset="utf-8"
+Content-Type: TEXT/PLAIN; charset=US-ASCII
 List-ID: <linux-iio@vger.kernel.org>
 
-Hi,
 
-On Thursday 05 February 2015 11:51 AM, Vignesh R wrote:
-> 
-> 
-> On Wednesday 21 January 2015 03:44 PM, Vignesh R wrote:
->> On Tuesday 20 January 2015 09:34 PM, Lee Jones wrote:
->>> On Tue, 20 Jan 2015, R, Vignesh wrote:
->>>> On 1/20/2015 5:23 PM, Lee Jones wrote:
->>>>> On Wed, 07 Jan 2015, Vignesh R wrote:
->>>>>
->>>>>> In one shot mode, sequencer automatically disables all enabled steps at
->>>>>> the end of each cycle. (both ADC steps and TSC steps) Hence these steps
->>>>>> need not be saved in reg_se_cache for clearing these steps at a later
->>>>>> stage.
->>>>>> Also, when ADC wakes up Sequencer should not be busy executing any of the
->>>>>> config steps except for the charge step. Previously charge step was 1 ADC
->>>>>> clock cycle and hence it was ignored.
->>>>>> TSC steps are always disabled at the end of each conversion cycle, hence
->>>>>> there is no need to explicitly disable TSC steps by writing 0 to REG_SE.
->>>>>>
->>>>>> Signed-off-by: Vignesh R <vigneshr@ti.com>
->>>>>> ---
->>>>>>
->>>>>> v5:
->>>>>>  - Remove unnecessary clearing of REG_SE
->>>>>>
->>>>>>  drivers/mfd/ti_am335x_tscadc.c       | 13 +++++--------
->>>>>>  include/linux/mfd/ti_am335x_tscadc.h |  1 +
->>>>>>  2 files changed, 6 insertions(+), 8 deletions(-)
->>>>>
->>>>> Looks fine.
->>>>>
->>>>> For my own reference:
->>>>>   Acked-by: Lee Jones <lee.jones@linaro.org>
->>>>>
->>>>> Can this patch be applied on its own?
->>>>>
->>>>
->>>> I prefer to wait until input patches are picked up.
->>>
->>> I have no problem with that, but is there a technical reason why?
->>>
->>
->> Nothing, in particular. This patch alone has no impact on the
->> performance of TSC/ADC unit. Patch 2/6 is necessary to observe the
->> changes caused by this series. Hence, please wait until those patches
->> are picked up.
-> 
-> Input maintainer has applied other patches. You can pick this one.
+> Allow the cutoff frequency of the high pass filter to be configured.
 
-Gentle ping... Can you pull this patch into 4.0-rc? Other patches of
-this series are already in mainline.
+looks good, probably a few newlines would make it look even nicer (see 
+below)
+ 
+> Signed-off-by: Martin Fuzzey <mfuzzey@parkeon.com>
+> ---
+>  drivers/iio/accel/mma8452.c |  135 ++++++++++++++++++++++++++++++++++++++++++-
+>  1 file changed, 132 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/iio/accel/mma8452.c b/drivers/iio/accel/mma8452.c
+> index b7f13dd..fe17c42 100644
+> --- a/drivers/iio/accel/mma8452.c
+> +++ b/drivers/iio/accel/mma8452.c
+> @@ -29,9 +29,12 @@
+>  #define MMA8452_INT_SRC 0x0c
+>  #define MMA8452_WHO_AM_I 0x0d
+>  #define MMA8452_DATA_CFG 0x0e
+> +#define MMA8452_HP_FILTER_CUTOFF 0x0f
+> +#define MMA8452_HP_FILTER_CUTOFF_SEL_MASK	(BIT(0) | BIT(1))
+>  #define MMA8452_TRANSIENT_CFG 0x1d
+>  #define MMA8452_TRANSIENT_CFG_ELE		BIT(4)
+>  #define MMA8452_TRANSIENT_CFG_CHAN_MASK(chan)	(BIT(1) << chan)
+> +#define MMA8452_TRANSIENT_CFG_HPF_BYP		BIT(0)
+>  #define MMA8452_TRANSIENT_SRC 0x1e
+>  #define MMA8452_TRANSIENT_SRC_XTRANSE		BIT(1)
+>  #define MMA8452_TRANSIENT_SRC_YTRANSE		BIT(3)
+> @@ -60,6 +63,7 @@
+>  #define MMA8452_DATA_CFG_FS_2G 0
+>  #define MMA8452_DATA_CFG_FS_4G 1
+>  #define MMA8452_DATA_CFG_FS_8G 2
+> +#define MMA8452_DATA_CFG_HPF_MASK BIT(4)
+>  
+>  #define MMA8452_INT_DRDY	BIT(0)
+>  #define MMA8452_INT_FF_MT	BIT(2)
+> @@ -162,6 +166,18 @@ static const int mma8452_transient_time_step_us[8] = {
+>  	20000
+>  };
+>  
+> +/* Datasheet table 18 (normal mode) */
+> +static const int mma8452_hp_filter_cutoff[8][4][2] = {
+> +	{ {16, 0}, {8, 0}, {4, 0}, {2, 0} },		/* 800 Hz sample */
+> +	{ {16, 0}, {8, 0}, {4, 0}, {2, 0} },		/* 400 Hz sample */
+> +	{ {8, 0}, {4, 0}, {2, 0}, {1, 0} },		/* 200 Hz sample */
+> +	{ {4, 0}, {2, 0}, {1, 0}, {0, 500000} },	/* 100 Hz sample */
+> +	{ {2, 0}, {1, 0}, {0, 500000}, {0, 250000} },	/* 50 Hz sample */
+> +	{ {2, 0}, {1, 0}, {0, 500000}, {0, 250000} },	/* 12.5 Hz sample */
+> +	{ {2, 0}, {1, 0}, {0, 500000}, {0, 250000} },	/* 6.25 Hz sample */
+> +	{ {2, 0}, {1, 0}, {0, 500000}, {0, 250000} }	/* 1.56 Hz sample */
+> +};
+> +
+>  static ssize_t mma8452_show_samp_freq_avail(struct device *dev,
+>  				struct device_attribute *attr, char *buf)
+>  {
+> @@ -176,9 +192,22 @@ static ssize_t mma8452_show_scale_avail(struct device *dev,
+>  		ARRAY_SIZE(mma8452_scales));
+>  }
+>  
+> +static ssize_t mma8452_show_hp_cutoff_avail(struct device *dev,
+> +				struct device_attribute *attr, char *buf)
+> +{
+> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+> +	struct mma8452_data *data = iio_priv(indio_dev);
+> +	int i = mma8452_get_odr_index(data);
+> +
+> +	return mma8452_show_int_plus_micros(buf, mma8452_hp_filter_cutoff[i],
+> +		ARRAY_SIZE(mma8452_hp_filter_cutoff[0]));
+> +}
+> +
+>  static IIO_DEV_ATTR_SAMP_FREQ_AVAIL(mma8452_show_samp_freq_avail);
+>  static IIO_DEVICE_ATTR(in_accel_scale_available, S_IRUGO,
+>  	mma8452_show_scale_avail, NULL, 0);
+> +static IIO_DEVICE_ATTR(in_accel_filter_high_pass_3db_frequency_available,
+> +			S_IRUGO, mma8452_show_hp_cutoff_avail, NULL, 0);
+>  
+>  static int mma8452_get_samp_freq_index(struct mma8452_data *data,
+>  	int val, int val2)
+> @@ -194,6 +223,30 @@ static int mma8452_get_scale_index(struct mma8452_data *data,
+>  		ARRAY_SIZE(mma8452_scales), val, val2);
+>  }
+>  
+> +static int mma8452_get_hp_filter_index(struct mma8452_data *data,
+> +	int val, int val2)
+> +{
+> +	int i = mma8452_get_odr_index(data);
+> +
+> +	return mma8452_get_int_plus_micros_index(mma8452_hp_filter_cutoff[i],
+> +		ARRAY_SIZE(mma8452_scales[0]), val, val2);
+> +}
+> +
+> +static int mma8452_read_hp_filter(struct mma8452_data *data, int *hz, int *uHz)
+> +{
+> +	int i, ret;
+> +
+> +	ret = i2c_smbus_read_byte_data(data->client, MMA8452_HP_FILTER_CUTOFF);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	i = mma8452_get_odr_index(data);
+> +	ret &= MMA8452_HP_FILTER_CUTOFF_SEL_MASK;
+> +	*hz = mma8452_hp_filter_cutoff[i][ret][0];
+> +	*uHz = mma8452_hp_filter_cutoff[i][ret][1];
 
-Regards
-Vignesh
+newline
+
+> +	return 0;
+> +}
+> +
+>  static int mma8452_read_raw(struct iio_dev *indio_dev,
+>  			    struct iio_chan_spec const *chan,
+>  			    int *val, int *val2, long mask)
+> @@ -232,6 +285,16 @@ static int mma8452_read_raw(struct iio_dev *indio_dev,
+>  			return ret;
+>  		*val = sign_extend32(ret, 7);
+>  		return IIO_VAL_INT;
+> +	case IIO_CHAN_INFO_HIGH_PASS_FILTER_3DB_FREQUENCY:
+> +		if (data->data_cfg & MMA8452_DATA_CFG_HPF_MASK) {
+> +			ret = mma8452_read_hp_filter(data, val, val2);
+> +			if (ret < 0)
+> +				return ret;
+> +		} else {
+> +			*val = 0;
+> +			*val2 = 0;
+> +		}
+> +		return IIO_VAL_INT_PLUS_MICRO;
+>  	}
+>  	return -EINVAL;
+>  }
+> @@ -273,12 +336,30 @@ fail:
+>  	return ret;
+>  }
+>  
+> +static int mma8452_set_hp_filter_frequency(struct mma8452_data *data,
+> +						int val, int val2)
+> +{
+> +	int i, reg;
+> +
+> +	i = mma8452_get_hp_filter_index(data, val, val2);
+> +	if (i < 0)
+> +		return -EINVAL;
+> +
+> +	reg = i2c_smbus_read_byte_data(data->client,
+> +					MMA8452_HP_FILTER_CUTOFF);
+> +	if (reg < 0)
+> +		return reg;
+> +	reg &= ~MMA8452_HP_FILTER_CUTOFF_SEL_MASK;
+> +	reg |= i;
+
+newline
+
+> +	return mma8452_change_config(data, MMA8452_HP_FILTER_CUTOFF, reg);
+> +}
+> +
+>  static int mma8452_write_raw(struct iio_dev *indio_dev,
+>  			     struct iio_chan_spec const *chan,
+>  			     int val, int val2, long mask)
+>  {
+>  	struct mma8452_data *data = iio_priv(indio_dev);
+> -	int i;
+> +	int i, ret;
+>  
+>  	if (iio_buffer_enabled(indio_dev))
+>  		return -EBUSY;
+> @@ -306,6 +387,19 @@ static int mma8452_write_raw(struct iio_dev *indio_dev,
+>  			return -EINVAL;
+>  		return mma8452_change_config(data, MMA8452_OFF_X +
+>  			chan->scan_index, val);
+> +
+> +	case IIO_CHAN_INFO_HIGH_PASS_FILTER_3DB_FREQUENCY:
+> +		if (val == 0 && val2 == 0) {
+> +			data->data_cfg &= ~MMA8452_DATA_CFG_HPF_MASK;
+> +		} else {
+> +			data->data_cfg |= MMA8452_DATA_CFG_HPF_MASK;
+> +			ret = mma8452_set_hp_filter_frequency(data, val, val2);
+> +			if (ret < 0)
+> +				return ret;
+> +		}
+> +		return mma8452_change_config(data, MMA8452_DATA_CFG,
+> +						data->data_cfg);
+> +
+>  	default:
+>  		return -EINVAL;
+>  	}
+> @@ -341,6 +435,22 @@ static int mma8452_read_thresh(struct iio_dev *indio_dev,
+>  		*val2 = us % USEC_PER_SEC;
+>  		return IIO_VAL_INT_PLUS_MICRO;
+>  
+> +	case IIO_EV_INFO_HIGH_PASS_FILTER_3DB:
+> +		ret = i2c_smbus_read_byte_data(data->client,
+> +						MMA8452_TRANSIENT_CFG);
+> +		if (ret < 0)
+> +			return ret;
+> +
+> +		if (ret & MMA8452_TRANSIENT_CFG_HPF_BYP) {
+> +			*val = 0;
+> +			*val2 = 0;
+> +		} else {
+> +			ret = mma8452_read_hp_filter(data, val, val2);
+> +			if (ret < 0)
+> +				return ret;
+> +		}
+> +		return IIO_VAL_INT_PLUS_MICRO;
+> +
+>  	default:
+>  		return -EINVAL;
+>  	}
+> @@ -352,7 +462,7 @@ static int mma8452_write_thresh(struct iio_dev *indio_dev,
+>  	int val2)
+>  {
+>  	struct mma8452_data *data = iio_priv(indio_dev);
+> -	int steps;
+> +	int ret, reg, steps;
+>  
+>  	switch (info) {
+>  	case IIO_EV_INFO_VALUE:
+> @@ -369,6 +479,23 @@ static int mma8452_write_thresh(struct iio_dev *indio_dev,
+>  
+>  		return mma8452_change_config(data,
+>  				MMA8452_TRANSIENT_COUNT, steps);
+> +
+> +	case IIO_EV_INFO_HIGH_PASS_FILTER_3DB:
+> +		reg = i2c_smbus_read_byte_data(data->client,
+> +						MMA8452_TRANSIENT_CFG);
+> +		if (reg < 0)
+> +			return reg;
+> +
+> +		if (val == 0 && val2 == 0) {
+> +			reg |= MMA8452_TRANSIENT_CFG_HPF_BYP;
+> +		} else {
+> +			reg &= ~MMA8452_TRANSIENT_CFG_HPF_BYP;
+> +			ret = mma8452_set_hp_filter_frequency(data, val, val2);
+> +			if (ret < 0)
+> +				return ret;
+> +		}
+> +		return mma8452_change_config(data, MMA8452_TRANSIENT_CFG, reg);
+> +
+>  	default:
+>  		return -EINVAL;
+>  	}
+> @@ -538,7 +665,8 @@ static struct attribute_group mma8452_event_attribute_group = {
+>  	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) | \
+>  		BIT(IIO_CHAN_INFO_CALIBBIAS), \
+>  	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SAMP_FREQ) | \
+> -		BIT(IIO_CHAN_INFO_SCALE), \
+> +		BIT(IIO_CHAN_INFO_SCALE) | \
+> +		BIT(IIO_CHAN_INFO_HIGH_PASS_FILTER_3DB_FREQUENCY), \
+>  	.scan_index = idx, \
+>  	.scan_type = { \
+>  		.sign = 's', \
+> @@ -561,6 +689,7 @@ static const struct iio_chan_spec mma8452_channels[] = {
+>  static struct attribute *mma8452_attributes[] = {
+>  	&iio_dev_attr_sampling_frequency_available.dev_attr.attr,
+>  	&iio_dev_attr_in_accel_scale_available.dev_attr.attr,
+> +	&iio_dev_attr_in_accel_filter_high_pass_3db_frequency_available.dev_attr.attr,
+>  	NULL
+>  };
+>  
+> 
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> 
+
+-- 
+
+Peter Meerwald
++43-664-2444418 (mobile)
