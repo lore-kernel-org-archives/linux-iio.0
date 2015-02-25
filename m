@@ -1,86 +1,98 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga01.intel.com ([192.55.52.88]:54062 "EHLO mga01.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751605AbbBXRcz convert rfc822-to-8bit (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 24 Feb 2015 12:32:55 -0500
-From: "Tirdea, Irina" <irina.tirdea@intel.com>
-To: Jonathan Cameron <jic23@kernel.org>,
-	Peter Meerwald <pmeerw@pmeerw.net>
-CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"Pandruvada, Srinivas" <srinivas.pandruvada@intel.com>,
-	"Reus, Adriana" <adriana.reus@intel.com>
-Subject: RE: [PATCH 0/2] kxcjk-1013 driver optimizations
-Date: Tue, 24 Feb 2015 17:22:12 +0000
-Message-ID: <1F3AC3675D538145B1661F571FE1805F19A21DCC@irsmsx105.ger.corp.intel.com>
-References: <1424110909-16878-1-git-send-email-irina.tirdea@intel.com>
- <alpine.DEB.2.02.1502162011090.26763@pmeerw.net>
- <1F3AC3675D538145B1661F571FE1805F19A20DB9@irsmsx105.ger.corp.intel.com>
- <54E8CDE2.8070503@kernel.org>
-In-Reply-To: <54E8CDE2.8070503@kernel.org>
-Content-Type: text/plain; charset="us-ascii"
+Return-Path: <vigneshr@ti.com>
+Message-ID: <54ED4A7D.4060609@ti.com>
+Date: Wed, 25 Feb 2015 09:37:25 +0530
+From: Vignesh R <vigneshr@ti.com>
 MIME-Version: 1.0
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+To: Lee Jones <lee.jones@linaro.org>
+CC: Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Sebastian Andrzej Siewior
+	<bigeasy@linutronix.de>,
+        Rob Herring <robh+dt@kernel.org>, Pawel Moll
+	<pawel.moll@arm.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Ian Campbell
+	<ijc+devicetree@hellion.org.uk>,
+        Kumar Gala <galak@codeaurora.org>,
+        Benoit
+ Cousson <bcousson@baylibre.com>,
+        Tony Lindgren <tony@atomide.com>,
+        Russell
+ King <linux@arm.linux.org.uk>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter
+ Meerwald <pmeerw@pmeerw.net>,
+        Samuel Ortiz <sameo@linux.intel.com>, Brad
+ Griffis <bgriffis@ti.com>,
+        Paul Gortmaker <paul.gortmaker@windriver.com>,
+        Sanjeev Sharma <sanjeev_sharma@mentor.com>,
+        Jan Kardell
+	<jan.kardell@telliq.com>, Felipe Balbi <balbi@ti.com>,
+        Wolfram Sang
+	<wsa@the-dreams.de>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <linux-omap@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>, <linux-iio@vger.kernel.org>,
+        <linux-input@vger.kernel.org>
+Subject: Re: [PATCH v6 3/6] mfd: ti_am335x_tscadc: Remove unwanted reg_se_cache
+ save
+References: <1420609779-11156-1-git-send-email-vigneshr@ti.com> <1420609779-11156-4-git-send-email-vigneshr@ti.com> <20150120115325.GK13701@x1> <54BE4CD1.1020709@ti.com> <20150120160410.GL13701@x1> <54BF7C14.1080907@ti.com> <54D30BE5.4070906@ti.com>
+In-Reply-To: <54D30BE5.4070906@ti.com>
+Content-Type: text/plain; charset="utf-8"
+List-ID: <linux-iio@vger.kernel.org>
 
+Hi,
 
-
-> -----Original Message-----
-> From: Jonathan Cameron [mailto:jic23@kernel.org]
-> Sent: 21 February, 2015 20:27
-> To: Tirdea, Irina; Peter Meerwald
-> Cc: linux-iio@vger.kernel.org; linux-kernel@vger.kernel.org; Pandruvada, Srinivas; Reus, Adriana
-> Subject: Re: [PATCH 0/2] kxcjk-1013 driver optimizations
+On Thursday 05 February 2015 11:51 AM, Vignesh R wrote:
 > 
-> On 20/02/15 12:03, Tirdea, Irina wrote:
-> >
-> >
-> >> -----Original Message-----
-> >> From: Peter Meerwald [mailto:pmeerw@pmeerw.net]
-> >> Sent: 16 February, 2015 21:14
-> >> To: Tirdea, Irina
-> >> Cc: Jonathan Cameron; linux-iio@vger.kernel.org; linux-kernel@vger.kernel.org; Pandruvada, Srinivas; Reus, Adriana
-> >> Subject: Re: [PATCH 0/2] kxcjk-1013 driver optimizations
-> >>
-> >>
-> >>> Adds optimization of i2c transactions in trigger handler and
-> >>> usage of available_scan_masks for kxcjk-1013.
-> >>
-> >> the 'optimization' changes the capabilities of the driver, reading
-> >> individual channel is not possible anymore
-> >>
-> > We can still read individual channels, just that the driver does not see that anymore and the demux is handled by the iio core.
-> > available_scan_masks contains the bitmap superset for all channels we can enable (I will remove the 0 available_scan_mask as it
-> does not makes sense).
-> Careful. That's there as a null terminator for this list of available scan masks.
-Missed this. You are right, thanks! Seems it's good as is.
-
-> > When a new channel is enabled, the iio core checks if the new mask is a subset of any entry in available_scan_masks.
-> > When the buffer is pushed from the driver, the iio core will select only the enabled channel values.
 > 
-> Pretty much.  IIRC This originally went in as part of handling multiple clients on these
-> data streams, but it was rapidly pointed out that lots of drivers spun their own
-> versions to break out particular elements from a multichannel read.
-> As such, using the generic form saved on repetition in these cases as well.
-> A good, complex example is drivers/iio/adc/max1363 in which really weird combinations
-> of channels (but far from all) are available for bulk capture and reading.
-> >
-> >>> Adriana Reus (2):
-> >>>   iio: accel: kxcjk-1013: use available_scan_masks
-> >>>   iio: accel: kxcjk-1013: optimize i2c transfers in trigger handler
-> >>>
-> >>>  drivers/iio/accel/kxcjk-1013.c | 50 ++++++++++++++++++++++++++++++++----------
-> >>>  1 file changed, 39 insertions(+), 11 deletions(-)
-> >>>
-> >>>
-> >>
-> >> --
-> >>
-> >> Peter Meerwald
-> >> +43-664-2444418 (mobile)
-> > --
-> > To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> > the body of a message to majordomo@vger.kernel.org
-> > More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> >
+> On Wednesday 21 January 2015 03:44 PM, Vignesh R wrote:
+>> On Tuesday 20 January 2015 09:34 PM, Lee Jones wrote:
+>>> On Tue, 20 Jan 2015, R, Vignesh wrote:
+>>>> On 1/20/2015 5:23 PM, Lee Jones wrote:
+>>>>> On Wed, 07 Jan 2015, Vignesh R wrote:
+>>>>>
+>>>>>> In one shot mode, sequencer automatically disables all enabled steps at
+>>>>>> the end of each cycle. (both ADC steps and TSC steps) Hence these steps
+>>>>>> need not be saved in reg_se_cache for clearing these steps at a later
+>>>>>> stage.
+>>>>>> Also, when ADC wakes up Sequencer should not be busy executing any of the
+>>>>>> config steps except for the charge step. Previously charge step was 1 ADC
+>>>>>> clock cycle and hence it was ignored.
+>>>>>> TSC steps are always disabled at the end of each conversion cycle, hence
+>>>>>> there is no need to explicitly disable TSC steps by writing 0 to REG_SE.
+>>>>>>
+>>>>>> Signed-off-by: Vignesh R <vigneshr@ti.com>
+>>>>>> ---
+>>>>>>
+>>>>>> v5:
+>>>>>>  - Remove unnecessary clearing of REG_SE
+>>>>>>
+>>>>>>  drivers/mfd/ti_am335x_tscadc.c       | 13 +++++--------
+>>>>>>  include/linux/mfd/ti_am335x_tscadc.h |  1 +
+>>>>>>  2 files changed, 6 insertions(+), 8 deletions(-)
+>>>>>
+>>>>> Looks fine.
+>>>>>
+>>>>> For my own reference:
+>>>>>   Acked-by: Lee Jones <lee.jones@linaro.org>
+>>>>>
+>>>>> Can this patch be applied on its own?
+>>>>>
+>>>>
+>>>> I prefer to wait until input patches are picked up.
+>>>
+>>> I have no problem with that, but is there a technical reason why?
+>>>
+>>
+>> Nothing, in particular. This patch alone has no impact on the
+>> performance of TSC/ADC unit. Patch 2/6 is necessary to observe the
+>> changes caused by this series. Hence, please wait until those patches
+>> are picked up.
+> 
+> Input maintainer has applied other patches. You can pick this one.
 
+Gentle ping... Can you pull this patch into 4.0-rc? Other patches of
+this series are already in mainline.
+
+Regards
+Vignesh
