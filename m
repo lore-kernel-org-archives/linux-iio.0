@@ -1,162 +1,116 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-we0-f177.google.com ([74.125.82.177]:41591 "EHLO
-	mail-we0-f177.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753432AbbBZNYV (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 26 Feb 2015 08:24:21 -0500
-Received: by wevm14 with SMTP id m14so10639017wev.8
-        for <linux-iio@vger.kernel.org>; Thu, 26 Feb 2015 05:24:20 -0800 (PST)
-MIME-Version: 1.0
-In-Reply-To: <CALwa49s2icVTEvBiTzW9D_aE0Y0_qhWhggRb5ZNKJ-FOZ=Hj-g@mail.gmail.com>
-References: <CALwa49s2icVTEvBiTzW9D_aE0Y0_qhWhggRb5ZNKJ-FOZ=Hj-g@mail.gmail.com>
-Date: Thu, 26 Feb 2015 15:24:20 +0200
-Message-ID: <CAEnQRZDHJNigK-79AABuXbenyp4SyM8OHFuYg8aH_qet2Ty+8Q@mail.gmail.com>
-Subject: Re: Getting error "failed to setup attributes" on Adding Custom
- Fields in accelerometer HID driver
-From: Daniel Baluta <daniel.baluta@gmail.com>
-To: "s.rawat" <imsaurabhrawat@gmail.com>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Cc: kernelnewbies <kernelnewbies@kernelnewbies.org>
-Content-Type: text/plain; charset=UTF-8
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <k.kozlowski@samsung.com>
+MIME-version: 1.0
+Content-type: text/plain; charset=UTF-8
+Message-id: <1424941884.27971.4.camel@AMDC1943>
+Subject: Re: [PATCH 1/2] staging:iio:hmc5843: Constify register tables and
+ struct regmap_config
+From: Krzysztof Kozlowski <k.kozlowski@samsung.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Hartmut Knaack <knaack.h@gmx.de>, Lars-Peter Clausen <lars@metafoo.de>,
+ Peter Meerwald <pmeerw@pmeerw.net>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org, devel@driverdev.osuosl.org
+Date: Thu, 26 Feb 2015 10:11:24 +0100
+In-reply-to: <54EDB7E5.2050809@kernel.org>
+References: <1424770909-7360-1-git-send-email-k.kozlowski@samsung.com>
+ <54EDB7E5.2050809@kernel.org>
+List-ID: <linux-iio@vger.kernel.org>
 
-+ linux-iio list.
+On śro, 2015-02-25 at 11:54 +0000, Jonathan Cameron wrote:
+> On 24/02/15 09:41, Krzysztof Kozlowski wrote:
+> > The regmap_access_table and regmap_config structures may be const
+> > because they are not modified by the driver and regmap_init() accepts
+> > pointer to const.
+> > 
+> > Signed-off-by: Krzysztof Kozlowski <k.kozlowski@samsung.com>
+> Applied to the togreg branch of iio.git. Note I ended up hand applying
+> this due to DOS line endings and some fuzz.
 
-On Thu, Feb 26, 2015 at 8:04 AM, s.rawat <imsaurabhrawat@gmail.com> wrote:
-> I have modified the hid-sensor-accel_3d.c driver to add the custom fields -
-> CHANNEL_SCAN_DATA_MOTION and HID_USAGE_SENSOR_DATA_CUSTOM_VALUEX ( X =
-> 2,3,4).
-> Below are my modifications :
->
-> enum accel_3d_channel {
-> CHANNEL_SCAN_INDEX_X,
-> CHANNEL_SCAN_INDEX_Y,
-> CHANNEL_SCAN_INDEX_Z,
-> CHANNEL_SCAN_DATA_MOTION,
-> CHANNEL_CUSTOM_VALUE_2,
-> CHANNEL_CUSTOM_VALUE_3,
->         CHANNEL_CUSTOM_VALUE_4,
-> ACCEL_3D_CHANNEL_MAX,
->
-> static const u32 accel_3d_addresses[ACCEL_3D_CHANNEL_MAX] = {
-> HID_USAGE_SENSOR_ACCEL_X_AXIS,
-> HID_USAGE_SENSOR_ACCEL_Y_AXIS,
-> HID_USAGE_SENSOR_ACCEL_Z_AXIS,
-> HID_USAGE_SENSOR_DATA_MOTION_STATE,
-> HID_USAGE_SENSOR_DATA_CUSTOM_VALUE2,
-> HID_USAGE_SENSOR_DATA_CUSTOM_VALUE3,
-> HID_USAGE_SENSOR_DATA_CUSTOM_VALUE4
-> };
->
->
->
-> /* Channel definitions */
-> static const struct iio_chan_spec accel_3d_channels[] = {
-> {
-> ..
-> ..
-> ..
-> {
-> .type = IIO_ACCEL,
-> .modified = 1,
-> .channel2 = IIO_MOD_X,
-> .info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
-> .info_mask_shared_by_type = BIT(IIO_CHAN_INFO_OFFSET) |
-> BIT(IIO_CHAN_INFO_SCALE) |
-> BIT(IIO_CHAN_INFO_SAMP_FREQ) |
-> BIT(IIO_CHAN_INFO_HYSTERESIS),
-> .scan_index = CHANNEL_SCAN_DATA_MOTION,
-> },
-> {
-> .type = IIO_ACCEL,
-> .modified = 1,
-> .channel2 = IIO_MOD_X,
-> .info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
-> .info_mask_shared_by_type = BIT(IIO_CHAN_INFO_OFFSET) |
-> BIT(IIO_CHAN_INFO_SCALE) |
-> BIT(IIO_CHAN_INFO_SAMP_FREQ) |
-> BIT(IIO_CHAN_INFO_HYSTERESIS),
-> .scan_index = CHANNEL_CUSTOM_VALUE_2,
-> },
-> {
-> .type = IIO_ACCEL,
-> .modified = 1,
-> .channel2 = IIO_MOD_X,
-> .info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
-> .info_mask_shared_by_type = BIT(IIO_CHAN_INFO_OFFSET) |
-> BIT(IIO_CHAN_INFO_SCALE) |
-> BIT(IIO_CHAN_INFO_SAMP_FREQ) |
-> BIT(IIO_CHAN_INFO_HYSTERESIS),
-> .scan_index = CHANNEL_CUSTOM_VALUE_3,
-> },
-> {
-> .type = IIO_ACCEL,
-> .modified = 1,
-> .channel2 = IIO_MOD_X,
-> .info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
-> .info_mask_shared_by_type = BIT(IIO_CHAN_INFO_OFFSET) |
-> BIT(IIO_CHAN_INFO_SCALE) |
-> BIT(IIO_CHAN_INFO_SAMP_FREQ) |
-> BIT(IIO_CHAN_INFO_HYSTERESIS),
-> .scan_index = CHANNEL_CUSTOM_VALUE_4,
-> }
->
->
->
-> /* Capture samples in local storage */
-> static int accel_3d_capture_sample(struct hid_sensor_hub_device *hsdev,
-> unsigned usage_id,
-> size_t raw_len, char *raw_data,
-> void *priv)
-> {
-> struct iio_dev *indio_dev = platform_get_drvdata(priv);
-> struct accel_3d_state *accel_state = iio_priv(indio_dev);
-> int offset;
-> int ret = -EINVAL;
->
-> switch (usage_id) {
-> case HID_USAGE_SENSOR_ACCEL_X_AXIS:
-> case HID_USAGE_SENSOR_ACCEL_Y_AXIS:
-> case HID_USAGE_SENSOR_ACCEL_Z_AXIS:
-> case HID_USAGE_SENSOR_DATA_MOTION_STATE:
->         case HID_USAGE_SENSOR_DATA_CUSTOM_VALUE2:
->   case HID_USAGE_SENSOR_DATA_CUSTOM_VALUE3:
->   case HID_USAGE_SENSOR_DATA_CUSTOM_VALUE4:
-> offset = usage_id - HID_USAGE_SENSOR_ACCEL_X_AXIS;
->
->
->
-> /* Parse report which is specific to an usage id*/
-> static int accel_3d_parse_report(struct platform_device *pdev,
-> struct hid_sensor_hub_device *hsdev,
-> struct iio_chan_spec *channels,
-> unsigned usage_id,
-> struct accel_3d_state *st)
-> {
-> int ret;
-> int i;
->
-> for (i = 0; i <= CHANNEL_CUSTOM_VALUE_4; ++i) {  //previously <
-> CHANNEL_SCAN_INDEX_Z
-> ret = sensor_hub_input_get_attribute_info(hsdev,
->
->
->
-> After build /insmod i get the following dmesg :
->
-> hid_sensor_accel_3d:HID-SENSOR-200073.3 auto : failed to setup attributes
-> hid_sensor_accel_3d:HID-SENSOR-200073.3 auto.failed with error -1
->
->
-> I am not getting what else I have to modify to avoid this error .If i remove
-> the portion in bold(and use this original code
-> :http://lxr.free-electrons.com/source/drivers/iio/accel/hid-sensor-accel-3d.c)
-> I can happily insert the module without any error and can interact with the
-> driver using my application.
->
->
-> _______________________________________________
-> Kernelnewbies mailing list
-> Kernelnewbies@kernelnewbies.org
-> http://lists.kernelnewbies.org/mailman/listinfo/kernelnewbies
->
+Thanks! I rebased the patchsed on next-20150224 so I did not expect any
+fuzz.
+
+Best regards,
+Krzysztof
+
+> 
+> Jonathan
+> > ---
+> >  drivers/staging/iio/magnetometer/hmc5843_i2c.c | 8 ++++----
+> >  drivers/staging/iio/magnetometer/hmc5843_spi.c | 8 ++++----
+> >  2 files changed, 8 insertions(+), 8 deletions(-)
+> > 
+> > diff --git a/drivers/staging/iio/magnetometer/hmc5843_i2c.c b/drivers/staging/iio/magnetometer/hmc5843_i2c.c
+> > index 6acd614cdbc6..8346cf81fc2e 100644
+> > --- a/drivers/staging/iio/magnetometer/hmc5843_i2c.c
+> > +++ b/drivers/staging/iio/magnetometer/hmc5843_i2c.c
+> > @@ -22,7 +22,7 @@ static const struct regmap_range hmc5843_readable_ranges[] = {
+> >  		regmap_reg_range(0, HMC5843_ID_END),
+> >  };
+> >  
+> > -static struct regmap_access_table hmc5843_readable_table = {
+> > +static const struct regmap_access_table hmc5843_readable_table = {
+> >  		.yes_ranges = hmc5843_readable_ranges,
+> >  		.n_yes_ranges = ARRAY_SIZE(hmc5843_readable_ranges),
+> >  };
+> > @@ -31,7 +31,7 @@ static const struct regmap_range hmc5843_writable_ranges[] = {
+> >  		regmap_reg_range(0, HMC5843_MODE_REG),
+> >  };
+> >  
+> > -static struct regmap_access_table hmc5843_writable_table = {
+> > +static const struct regmap_access_table hmc5843_writable_table = {
+> >  		.yes_ranges = hmc5843_writable_ranges,
+> >  		.n_yes_ranges = ARRAY_SIZE(hmc5843_writable_ranges),
+> >  };
+> > @@ -40,12 +40,12 @@ static const struct regmap_range hmc5843_volatile_ranges[] = {
+> >  		regmap_reg_range(HMC5843_DATA_OUT_MSB_REGS, HMC5843_STATUS_REG),
+> >  };
+> >  
+> > -static struct regmap_access_table hmc5843_volatile_table = {
+> > +static const struct regmap_access_table hmc5843_volatile_table = {
+> >  		.yes_ranges = hmc5843_volatile_ranges,
+> >  		.n_yes_ranges = ARRAY_SIZE(hmc5843_volatile_ranges),
+> >  };
+> >  
+> > -static struct regmap_config hmc5843_i2c_regmap_config = {
+> > +static const struct regmap_config hmc5843_i2c_regmap_config = {
+> >  		.reg_bits = 8,
+> >  		.val_bits = 8,
+> >  
+> > diff --git a/drivers/staging/iio/magnetometer/hmc5843_spi.c b/drivers/staging/iio/magnetometer/hmc5843_spi.c
+> > index 98c4b57101c9..8e658f736e1f 100644
+> > --- a/drivers/staging/iio/magnetometer/hmc5843_spi.c
+> > +++ b/drivers/staging/iio/magnetometer/hmc5843_spi.c
+> > @@ -19,7 +19,7 @@ static const struct regmap_range hmc5843_readable_ranges[] = {
+> >  		regmap_reg_range(0, HMC5843_ID_END),
+> >  };
+> >  
+> > -static struct regmap_access_table hmc5843_readable_table = {
+> > +static const struct regmap_access_table hmc5843_readable_table = {
+> >  		.yes_ranges = hmc5843_readable_ranges,
+> >  		.n_yes_ranges = ARRAY_SIZE(hmc5843_readable_ranges),
+> >  };
+> > @@ -28,7 +28,7 @@ static const struct regmap_range hmc5843_writable_ranges[] = {
+> >  		regmap_reg_range(0, HMC5843_MODE_REG),
+> >  };
+> >  
+> > -static struct regmap_access_table hmc5843_writable_table = {
+> > +static const struct regmap_access_table hmc5843_writable_table = {
+> >  		.yes_ranges = hmc5843_writable_ranges,
+> >  		.n_yes_ranges = ARRAY_SIZE(hmc5843_writable_ranges),
+> >  };
+> > @@ -37,12 +37,12 @@ static const struct regmap_range hmc5843_volatile_ranges[] = {
+> >  		regmap_reg_range(HMC5843_DATA_OUT_MSB_REGS, HMC5843_STATUS_REG),
+> >  };
+> >  
+> > -static struct regmap_access_table hmc5843_volatile_table = {
+> > +static const struct regmap_access_table hmc5843_volatile_table = {
+> >  		.yes_ranges = hmc5843_volatile_ranges,
+> >  		.n_yes_ranges = ARRAY_SIZE(hmc5843_volatile_ranges),
+> >  };
+> >  
+> > -static struct regmap_config hmc5843_spi_regmap_config = {
+> > +static const struct regmap_config hmc5843_spi_regmap_config = {
+> >  		.reg_bits = 8,
+> >  		.val_bits = 8,
+> >  
+> > 
