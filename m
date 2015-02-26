@@ -1,161 +1,162 @@
-Return-Path: <mpa@pengutronix.de>
-Date: Thu, 26 Feb 2015 15:30:51 +0100
-From: Markus Pargmann <mpa@pengutronix.de>
-To: Dmitry Torokhov <dmitry.torokhov@gmail.com>
-Cc: Varka Bhadram <varkabhadram@gmail.com>,
-	Shawn Guo <shawn.guo@linaro.org>,
-	Samuel Ortiz <sameo@linux.intel.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Fabio Estevam <festevam@gmail.com>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	Hartmut Knaack <knaack.h@gmx.de>, Denis Carikli <denis@eukrea.com>,
-	Eric =?utf-8?Q?B=C3=A9nard?= <eric@eukrea.com>,
-	Sascha Hauer <kernel@pengutronix.de>,
-	linux-arm-kernel@lists.infradead.org,
-	Lee Jones <lee.jones@linaro.org>, linux-input@vger.kernel.org,
-	linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>,
-	devicetree@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
-	Pawel Moll <pawel.moll@arm.com>,
-	Mark Rutland <mark.rutland@arm.com>,
-	Ian Campbell <ijc+devicetree@hellion.org.uk>,
-	Kumar Gala <galak@codeaurora.org>
-Subject: Re: [PATCH v6 6/8] input: touchscreen: imx25 tcq driver
-Message-ID: <20150226143051.GA10070@pengutronix.de>
-References: <1422540556-14828-1-git-send-email-mpa@pengutronix.de>
- <1422540556-14828-7-git-send-email-mpa@pengutronix.de>
- <54CA4320.4030607@gmail.com>
- <20150130185721.GA11695@dtor-ws>
- <20150202160539.GS16879@pengutronix.de>
- <20150202175134.GB23909@dtor-ws>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-we0-f177.google.com ([74.125.82.177]:41591 "EHLO
+	mail-we0-f177.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753432AbbBZNYV (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 26 Feb 2015 08:24:21 -0500
+Received: by wevm14 with SMTP id m14so10639017wev.8
+        for <linux-iio@vger.kernel.org>; Thu, 26 Feb 2015 05:24:20 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="82I3+IH0IqGh5yIs"
-In-Reply-To: <20150202175134.GB23909@dtor-ws>
-List-ID: <linux-iio@vger.kernel.org>
+In-Reply-To: <CALwa49s2icVTEvBiTzW9D_aE0Y0_qhWhggRb5ZNKJ-FOZ=Hj-g@mail.gmail.com>
+References: <CALwa49s2icVTEvBiTzW9D_aE0Y0_qhWhggRb5ZNKJ-FOZ=Hj-g@mail.gmail.com>
+Date: Thu, 26 Feb 2015 15:24:20 +0200
+Message-ID: <CAEnQRZDHJNigK-79AABuXbenyp4SyM8OHFuYg8aH_qet2Ty+8Q@mail.gmail.com>
+Subject: Re: Getting error "failed to setup attributes" on Adding Custom
+ Fields in accelerometer HID driver
+From: Daniel Baluta <daniel.baluta@gmail.com>
+To: "s.rawat" <imsaurabhrawat@gmail.com>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Cc: kernelnewbies <kernelnewbies@kernelnewbies.org>
+Content-Type: text/plain; charset=UTF-8
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
++ linux-iio list.
 
---82I3+IH0IqGh5yIs
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-Hi,
-
-On Mon, Feb 02, 2015 at 09:51:34AM -0800, Dmitry Torokhov wrote:
-> On Mon, Feb 02, 2015 at 05:05:39PM +0100, Markus Pargmann wrote:
-> > Hi,
-> >=20
-> > On Fri, Jan 30, 2015 at 10:57:21AM -0800, Dmitry Torokhov wrote:
-> > > On Thu, Jan 29, 2015 at 07:56:40PM +0530, Varka Bhadram wrote:
-> > > > Hi,
-> > > >=20
-> > > > On Thursday 29 January 2015 07:39 PM, Markus Pargmann wrote:
-> > > > >This is a driver for the imx25 ADC/TSC module. It controls the
-> > > > >touchscreen conversion queue and creates a touchscreen input devic=
-e.
-> > > > >The driver currently only supports 4 wire touchscreens. The driver=
- uses
-> > > > >a simple conversion queue of precharge, touch detection, X measure=
-ment,
-> > > > >Y measurement, precharge and another touch detection.
-> > > > >
-> > > > >This driver uses the regmap from the parent to setup some touch sp=
-ecific
-> > > > >settings in the core driver and setup a idle configuration with to=
-uch
-> > > > >detection.
-> > > > >
-> > > > >Signed-off-by: Markus Pargmann <mpa@pengutronix.de>
-> > > > >Signed-off-by: Denis Carikli <denis@eukrea.com>
-> > > > >Acked-by: Dmitry Torokhov <dtor@vmware.com>
-> > > > >Signed-off-by: Markus Pargmann <mpa@pengutronix.de>
-> > > > >---
-> > > > >  drivers/input/touchscreen/Kconfig         |   6 +
-> > > > >  drivers/input/touchscreen/Makefile        |   1 +
-> > > > >  drivers/input/touchscreen/fsl-imx25-tcq.c | 587 ++++++++++++++++=
-++++++++++++++
-> > > > >  3 files changed, 594 insertions(+)
-> > > > >  create mode 100644 drivers/input/touchscreen/fsl-imx25-tcq.c
-> > > > >
-> > > > (...)
-> > > >=20
-> > > > >+	ret =3D request_threaded_irq(priv->irq, mx25_tcq_irq, mx25_tcq_i=
-rq_thread,
-> > > > >+				   IRQF_ONESHOT, pdev->name, priv);
-> > > >=20
-> > > > We can use devres API for request_thread_irq()...
-> > > >=20
-> > > > >+	if (ret) {
-> > > > >+		dev_err(dev, "Failed requesting IRQ\n");
-> > > > >+		goto err_clk_unprepare;
-> > > > >+	}
-> > > > >+
-> > > > >+	ret =3D mx25_tcq_init(priv);
-> > > > >+	if (ret) {
-> > > > >+		dev_err(dev, "Failed to init tcq\n");
-> > > > >+		goto error_free_irq;
-> > > > >+	}
-> > > > >+
-> > > > >+	platform_set_drvdata(pdev, priv);
-> > > > >+
-> > > > >+	return 0;
-> > > > >+
-> > > > >+error_free_irq:
-> > > > >+	free_irq(priv->irq, priv);
-> > > >=20
-> > > > This is not required if we use devres API
-> > >=20
-> > > Yes it does - you do not really want to stop clocks in the middle of
-> > > servicing interrupt.
-> >=20
-> > Thanks, I missed the clocks. I will not use devm here then.
->=20
-> Actually, you still can if you move clock enabling/disabling and
-> mx25_tcq_init() into input_dev->open() and ->close() callbacks. Close
-> will be called during input device un-registration which happens (given
-> your current sequence) after freeing irq by devm.
-
-Thank you. I now moved that code into open() and close(), replaced the
-irq_request() with devm_irq_request. mx25_tcq_remove() is gone now.
-
->=20
-> By the way, I used my old @vmware address by accident. Can you please
-> replace the original acked by with:
->=20
-> Acked-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
-
-Replaced it.
-
-Thanks,
-
-Markus
-
---=20
-Pengutronix e.K.                           |                             |
-Industrial Linux Solutions                 | http://www.pengutronix.de/  |
-Peiner Str. 6-8, 31137 Hildesheim, Germany | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
-
---82I3+IH0IqGh5yIs
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
-
-iQIcBAEBAgAGBQJU7y4bAAoJEEpcgKtcEGQQ5K8P/2OQsxrAuCynIXRsWX4v/lgM
-qzGWwcyy76b5P/u4+JQUBk0MSXeYFVL5q70/Bd6bvT0sc9K4O2TcIFOuKhpQHjsB
-D2vTB1cE+WV7F83nCUyiHUO5ylNJfsWS2ZZvB28u+y2p/Q7DpGSio1IdI8juED4o
-pIHBfdXFjy6ilQ2H5yy8MX4LBSC5u2ZyvMXV1Aw+1J3oqy3rdFlMJm/42uULbc9R
-GeMNQWqc8VsKbb367cXT7asDBYnHNjKy9yQq8M8yiZkk2fwFY4ScphnmzwVZ+U9w
-lXmJMJ3nT36rLE7NzgrogyrYOlq07xw8Wbrf8+0N/ePM11i1CuKwUtDxYTUUaBOc
-qo0ReVAwcM8+QuERGS0UuXTAuUWpTMDbkkU21c3H521KaK9Rrh2YeM+HZ2JBPQyY
-IJKFy6C7azlxmvev3lUq77lN5lYrp2VjD+4P+S91WkY2EJVXhTkvuomj8VEVkQxV
-jH7ZByI7qWT7/2AlDgUmmPVYjZgxyLUDmm4+mvcccRME+ZEFxyfNTeyZ0XryP8RN
-BbiJoArDkQTzfAc5sLu4N9qiYySQGAoaCjw0X2Rv9+jIJlYWtBmI1yFzrMYtdaLc
-59u47WBBfx8zQ1MMwaQL2pvGOFcQUl/vcx2Q+D7MM4Lzmcnr3I8cvNqTDIzDx/LO
-Ac4HluBGLED45gCNZuIA
-=oSst
------END PGP SIGNATURE-----
-
---82I3+IH0IqGh5yIs--
+On Thu, Feb 26, 2015 at 8:04 AM, s.rawat <imsaurabhrawat@gmail.com> wrote:
+> I have modified the hid-sensor-accel_3d.c driver to add the custom fields -
+> CHANNEL_SCAN_DATA_MOTION and HID_USAGE_SENSOR_DATA_CUSTOM_VALUEX ( X =
+> 2,3,4).
+> Below are my modifications :
+>
+> enum accel_3d_channel {
+> CHANNEL_SCAN_INDEX_X,
+> CHANNEL_SCAN_INDEX_Y,
+> CHANNEL_SCAN_INDEX_Z,
+> CHANNEL_SCAN_DATA_MOTION,
+> CHANNEL_CUSTOM_VALUE_2,
+> CHANNEL_CUSTOM_VALUE_3,
+>         CHANNEL_CUSTOM_VALUE_4,
+> ACCEL_3D_CHANNEL_MAX,
+>
+> static const u32 accel_3d_addresses[ACCEL_3D_CHANNEL_MAX] = {
+> HID_USAGE_SENSOR_ACCEL_X_AXIS,
+> HID_USAGE_SENSOR_ACCEL_Y_AXIS,
+> HID_USAGE_SENSOR_ACCEL_Z_AXIS,
+> HID_USAGE_SENSOR_DATA_MOTION_STATE,
+> HID_USAGE_SENSOR_DATA_CUSTOM_VALUE2,
+> HID_USAGE_SENSOR_DATA_CUSTOM_VALUE3,
+> HID_USAGE_SENSOR_DATA_CUSTOM_VALUE4
+> };
+>
+>
+>
+> /* Channel definitions */
+> static const struct iio_chan_spec accel_3d_channels[] = {
+> {
+> ..
+> ..
+> ..
+> {
+> .type = IIO_ACCEL,
+> .modified = 1,
+> .channel2 = IIO_MOD_X,
+> .info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
+> .info_mask_shared_by_type = BIT(IIO_CHAN_INFO_OFFSET) |
+> BIT(IIO_CHAN_INFO_SCALE) |
+> BIT(IIO_CHAN_INFO_SAMP_FREQ) |
+> BIT(IIO_CHAN_INFO_HYSTERESIS),
+> .scan_index = CHANNEL_SCAN_DATA_MOTION,
+> },
+> {
+> .type = IIO_ACCEL,
+> .modified = 1,
+> .channel2 = IIO_MOD_X,
+> .info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
+> .info_mask_shared_by_type = BIT(IIO_CHAN_INFO_OFFSET) |
+> BIT(IIO_CHAN_INFO_SCALE) |
+> BIT(IIO_CHAN_INFO_SAMP_FREQ) |
+> BIT(IIO_CHAN_INFO_HYSTERESIS),
+> .scan_index = CHANNEL_CUSTOM_VALUE_2,
+> },
+> {
+> .type = IIO_ACCEL,
+> .modified = 1,
+> .channel2 = IIO_MOD_X,
+> .info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
+> .info_mask_shared_by_type = BIT(IIO_CHAN_INFO_OFFSET) |
+> BIT(IIO_CHAN_INFO_SCALE) |
+> BIT(IIO_CHAN_INFO_SAMP_FREQ) |
+> BIT(IIO_CHAN_INFO_HYSTERESIS),
+> .scan_index = CHANNEL_CUSTOM_VALUE_3,
+> },
+> {
+> .type = IIO_ACCEL,
+> .modified = 1,
+> .channel2 = IIO_MOD_X,
+> .info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
+> .info_mask_shared_by_type = BIT(IIO_CHAN_INFO_OFFSET) |
+> BIT(IIO_CHAN_INFO_SCALE) |
+> BIT(IIO_CHAN_INFO_SAMP_FREQ) |
+> BIT(IIO_CHAN_INFO_HYSTERESIS),
+> .scan_index = CHANNEL_CUSTOM_VALUE_4,
+> }
+>
+>
+>
+> /* Capture samples in local storage */
+> static int accel_3d_capture_sample(struct hid_sensor_hub_device *hsdev,
+> unsigned usage_id,
+> size_t raw_len, char *raw_data,
+> void *priv)
+> {
+> struct iio_dev *indio_dev = platform_get_drvdata(priv);
+> struct accel_3d_state *accel_state = iio_priv(indio_dev);
+> int offset;
+> int ret = -EINVAL;
+>
+> switch (usage_id) {
+> case HID_USAGE_SENSOR_ACCEL_X_AXIS:
+> case HID_USAGE_SENSOR_ACCEL_Y_AXIS:
+> case HID_USAGE_SENSOR_ACCEL_Z_AXIS:
+> case HID_USAGE_SENSOR_DATA_MOTION_STATE:
+>         case HID_USAGE_SENSOR_DATA_CUSTOM_VALUE2:
+>   case HID_USAGE_SENSOR_DATA_CUSTOM_VALUE3:
+>   case HID_USAGE_SENSOR_DATA_CUSTOM_VALUE4:
+> offset = usage_id - HID_USAGE_SENSOR_ACCEL_X_AXIS;
+>
+>
+>
+> /* Parse report which is specific to an usage id*/
+> static int accel_3d_parse_report(struct platform_device *pdev,
+> struct hid_sensor_hub_device *hsdev,
+> struct iio_chan_spec *channels,
+> unsigned usage_id,
+> struct accel_3d_state *st)
+> {
+> int ret;
+> int i;
+>
+> for (i = 0; i <= CHANNEL_CUSTOM_VALUE_4; ++i) {  //previously <
+> CHANNEL_SCAN_INDEX_Z
+> ret = sensor_hub_input_get_attribute_info(hsdev,
+>
+>
+>
+> After build /insmod i get the following dmesg :
+>
+> hid_sensor_accel_3d:HID-SENSOR-200073.3 auto : failed to setup attributes
+> hid_sensor_accel_3d:HID-SENSOR-200073.3 auto.failed with error -1
+>
+>
+> I am not getting what else I have to modify to avoid this error .If i remove
+> the portion in bold(and use this original code
+> :http://lxr.free-electrons.com/source/drivers/iio/accel/hid-sensor-accel-3d.c)
+> I can happily insert the module without any error and can interact with the
+> driver using my application.
+>
+>
+> _______________________________________________
+> Kernelnewbies mailing list
+> Kernelnewbies@kernelnewbies.org
+> http://lists.kernelnewbies.org/mailman/listinfo/kernelnewbies
+>
