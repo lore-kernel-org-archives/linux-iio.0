@@ -1,57 +1,92 @@
-Return-Path: <roberta.dobrescu@gmail.com>
-From: Roberta Dobrescu <roberta.dobrescu@gmail.com>
-To: linux-iio@vger.kernel.org
-Cc: daniel.baluta@intel.com,
-	octavian.purdila@intel.com,
-	jic23@kernel.org,
-	knaack.h@gmx.de,
-	lars@metafoo.de,
-	pmeerw@pmeerw.net,
-	Roberta Dobrescu <roberta.dobrescu@gmail.com>
-Subject: [PATCH 0/5] iio: Move iio userspace applications out of staging
-Date: Thu, 26 Feb 2015 10:49:22 +0200
-Message-Id: <1424940567-24877-1-git-send-email-roberta.dobrescu@gmail.com>
+Return-Path: <lee.jones@linaro.org>
+Date: Thu, 26 Feb 2015 08:43:15 +0000
+From: Lee Jones <lee.jones@linaro.org>
+To: Adam Thomson <Adam.Thomson.Opensource@diasemi.com>
+Cc: Samuel Ortiz <sameo@linux.intel.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>, linux-iio@vger.kernel.org,
+	Sebastian Reichel <sre@kernel.org>,
+	Dmitry Eremin-Solenikov <dbaryshkov@gmail.com>,
+	David Woodhouse <dwmw2@infradead.org>, linux-pm@vger.kernel.org,
+	Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>,
+	Mark Rutland <mark.rutland@arm.com>,
+	Ian Campbell <ijc+devicetree@hellion.org.uk>,
+	Kumar Gala <galak@codeaurora.org>,
+	Grant Likely <grant.likely@linaro.org>, devicetree@vger.kernel.org,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Joe Perches <joe@perches.com>, linux-kernel@vger.kernel.org,
+	support.opensource@diasemi.com
+Subject: Re: [PATCH v7 2/7] mfd: da9150: Add DT binding documentation for core
+Message-ID: <20150226084315.GJ6688@x1>
+References: <cover.1424267009.git.Adam.Thomson.Opensource@diasemi.com>
+ <d3c040b8f0c74a7d731b36e24384215327b83725.1424267009.git.Adam.Thomson.Opensource@diasemi.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+In-Reply-To: <d3c040b8f0c74a7d731b36e24384215327b83725.1424267009.git.Adam.Thomson.Opensource@diasemi.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-The purpose of this patchset is to move iio userpace applications
-to tools/iio/.
+On Wed, 18 Feb 2015, Adam Thomson wrote:
 
-It adds a missing header to iio_event_monitor in order
-to compile without any tricks and adds the implementation of
-the functions from iio_utils.h to iio_utils.c.
+> Signed-off-by: Adam Thomson <Adam.Thomson.Opensource@diasemi.com>
+> ---
+>  Documentation/devicetree/bindings/mfd/da9150.txt | 43 ++++++++++++++++++++++++
+>  1 file changed, 43 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/mfd/da9150.txt
 
-It also creates a Makefile and gets rid of compilation warnings.
+Applied, thanks.
 
-Roberta Dobrescu (5):
-  staging: iio: Documentation: iio_event_monitor: Include
-    linux/iio/types.h
-  staging: iio: Documentation: Introduce iio_utils.c
-  iio: Move iio userspace applications out of staging
-  tools: iio: Define _GNU_SOURCE in Makefile
-  tools: iio: lsiio: Remove unused variables
-
- MAINTAINERS                                        |   1 +
- drivers/staging/iio/Documentation/generic_buffer.c | 360 -----------
- .../staging/iio/Documentation/iio_event_monitor.c  | 308 ----------
- drivers/staging/iio/Documentation/iio_utils.h      | 683 ---------------------
- drivers/staging/iio/Documentation/lsiio.c          | 163 -----
- tools/iio/Makefile                                 |  16 +
- tools/iio/generic_buffer.c                         | 359 +++++++++++
- tools/iio/iio_event_monitor.c                      | 308 ++++++++++
- tools/iio/iio_utils.c                              | 651 ++++++++++++++++++++
- tools/iio/iio_utils.h                              |  71 +++
- tools/iio/lsiio.c                                  | 158 +++++
- 11 files changed, 1564 insertions(+), 1514 deletions(-)
- delete mode 100644 drivers/staging/iio/Documentation/generic_buffer.c
- delete mode 100644 drivers/staging/iio/Documentation/iio_event_monitor.c
- delete mode 100644 drivers/staging/iio/Documentation/iio_utils.h
- delete mode 100644 drivers/staging/iio/Documentation/lsiio.c
- create mode 100644 tools/iio/Makefile
- create mode 100644 tools/iio/generic_buffer.c
- create mode 100644 tools/iio/iio_event_monitor.c
- create mode 100644 tools/iio/iio_utils.c
- create mode 100644 tools/iio/iio_utils.h
- create mode 100644 tools/iio/lsiio.c
+> diff --git a/Documentation/devicetree/bindings/mfd/da9150.txt b/Documentation/devicetree/bindings/mfd/da9150.txt
+> new file mode 100644
+> index 0000000..d0588ea
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/mfd/da9150.txt
+> @@ -0,0 +1,43 @@
+> +Dialog Semiconductor DA9150 Combined Charger/Fuel-Gauge MFD bindings
+> +
+> +DA9150 consists of a group of sub-devices:
+> +
+> +Device			 Description
+> +------			 -----------
+> +da9150-gpadc		: General Purpose ADC
+> +da9150-charger		: Battery Charger
+> +
+> +======
+> +
+> +Required properties:
+> +- compatible : Should be "dlg,da9150"
+> +- reg: Specifies the I2C slave address
+> +- interrupt-parent: Specifies the phandle of the interrupt controller to which
+> +  the IRQs from da9150 are delivered to.
+> +- interrupts: IRQ line info for da9150 chip.
+> +- interrupt-controller: da9150 has internal IRQs (own IRQ domain).
+> +  (See Documentation/devicetree/bindings/interrupt-controller/interrupts.txt for
+> +   further information relating to interrupt properties)
+> +
+> +Sub-devices:
+> +- da9150-gpadc: See Documentation/devicetree/bindings/iio/adc/da9150-gpadc.txt
+> +- da9150-charger: See Documentation/devicetree/bindings/power/da9150-charger.txt
+> +
+> +
+> +Example:
+> +
+> +	charger_fg: da9150@58 {
+> +		compatible = "dlg,da9150";
+> +		reg = <0x58>;
+> +		interrupt-parent = <&gpio6>;
+> +		interrupts = <11 IRQ_TYPE_LEVEL_LOW>;
+> +		interrupt-controller;
+> +
+> +		gpadc: da9150-gpadc {
+> +			...
+> +		};
+> +
+> +		da9150-charger {
+> +			...
+> +		};
+> +	};
 
 -- 
-1.9.1
+Lee Jones
+Linaro STMicroelectronics Landing Team Lead
+Linaro.org │ Open source software for ARM SoCs
+Follow Linaro: Facebook | Twitter | Blog
