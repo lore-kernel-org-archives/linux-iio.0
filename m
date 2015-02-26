@@ -1,49 +1,104 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:37456 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752984AbbBYU7I (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 25 Feb 2015 15:59:08 -0500
-Message-ID: <54EE3796.9010306@kernel.org>
-Date: Wed, 25 Feb 2015 20:59:02 +0000
-From: Jonathan Cameron <jic23@kernel.org>
+Return-Path: <GGao@invensense.com>
+From: Ge Gao <GGao@invensense.com>
+To: Jonathan Cameron <jic23@kernel.org>, Viorel Suman
+	<viorel.suman@gmail.com>, "linux-iio@vger.kernel.org"
+	<linux-iio@vger.kernel.org>
+CC: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "Srinivas
+ Pandruvada" <srinivas.pandruvada@linux.intel.com>
+Subject: RE: [PATCH v2] iio: inv_mpu6050: Clear timestamps fifo while
+ resetting hardware fifo
+Date: Thu, 26 Feb 2015 18:35:40 +0000
+Message-ID: <E7747D604FBC9F43A71AA431AFF4476299AD37A8@IUSEXCH01.invcorp.invensense.com>
+References: <1424282721-3033-1-git-send-email-viorel.suman@gmail.com>
+ <54E8D5D7.7050205@kernel.org>
+In-Reply-To: <54E8D5D7.7050205@kernel.org>
+Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
-To: Daniel Baluta <daniel.baluta@intel.com>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-CC: bogdan.m.davidoaia@intel.com, antonel.g.dobre@intel.com,
-	alin.g.arhip@intel.com, Lars-Peter Clausen <lars@metafoo.de>
-Subject: Re: Linux IIO test framework
-References: <CAEnQRZAwv-=aHWDgN1S+V3O6nzu9801GHvZyXNGMvxMGrKG5bA@mail.gmail.com>
-In-Reply-To: <CAEnQRZAwv-=aHWDgN1S+V3O6nzu9801GHvZyXNGMvxMGrKG5bA@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+List-ID: <linux-iio@vger.kernel.org>
 
-On 25/02/15 13:38, Daniel Baluta wrote:
-> Hello,
-> 
-> We are analyzing the possibility of writing a Linux IIO test framework.
-cool
-> 
-> First, we need to know if there is already any work done in this
-> area. Didn't find anything on the Internet :).
-Not that I know of, but if anyone is going to have such tests (or
-know of them) my guess is Lars...
-> 
-> Second, do you think that this would bring any benefit to the Linux kernel
-> IIO subsystem?
-Definitely has potential.  Do you have some examples of particular tests
-in mind?
-> 
-> We would like to keep the tests in kernel tree under (tools/testing/selftests)
-> and I'm not yet sure if we can make use of libiio [1].
-Sounds sensible to me.
-> 
-> Because we are now gathering requirements for this, any feedback would
-> be more than welcomed.
-> 
-> thanks,
-> Daniel.
-> 
-> [1] https://github.com/analogdevicesinc/libiio
-> 
+Look fine to me.
+Thanks.
 
+Best Regards,
+
+Ge GAO
+
+
+-----Original Message-----
+From: Jonathan Cameron [mailto:jic23@kernel.org]=20
+Sent: Saturday, February 21, 2015 11:01 AM
+To: Viorel Suman; linux-iio@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org; Srinivas Pandruvada; Ge Gao
+Subject: Re: [PATCH v2] iio: inv_mpu6050: Clear timestamps fifo while reset=
+ting hardware fifo
+
+On 18/02/15 18:05, Viorel Suman wrote:
+> A hardware fifo reset always imply an invalidation of the existing=20
+> timestamps, so we'll clear timestamps fifo on successfull hardware=20
+> fifo reset.
+>=20
+> Signed-off-by: Viorel Suman <viorel.suman@gmail.com>
+Looks sensible to me. Ge / Srinivas?
+> ---
+>   v2: Addressed Jonathan's comment regarding the subject prefix.
+>=20
+>  drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c | 25=20
+> ++++++++++++++-----------
+>  1 file changed, 14 insertions(+), 11 deletions(-)
+>=20
+> diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c=20
+> b/drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c
+> index 0cd306a..ba27e27 100644
+> --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c
+> +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c
+> @@ -24,6 +24,16 @@
+>  #include <linux/poll.h>
+>  #include "inv_mpu_iio.h"
+> =20
+> +static void inv_clear_kfifo(struct inv_mpu6050_state *st) {
+> +	unsigned long flags;
+> +
+> +	/* take the spin lock sem to avoid interrupt kick in */
+> +	spin_lock_irqsave(&st->time_stamp_lock, flags);
+> +	kfifo_reset(&st->timestamps);
+> +	spin_unlock_irqrestore(&st->time_stamp_lock, flags); }
+> +
+>  int inv_reset_fifo(struct iio_dev *indio_dev)  {
+>  	int result;
+> @@ -50,6 +60,10 @@ int inv_reset_fifo(struct iio_dev *indio_dev)
+>  					INV_MPU6050_BIT_FIFO_RST);
+>  	if (result)
+>  		goto reset_fifo_fail;
+> +
+> +	/* clear timestamps fifo */
+> +	inv_clear_kfifo(st);
+> +
+>  	/* enable interrupt */
+>  	if (st->chip_config.accl_fifo_enable ||
+>  	    st->chip_config.gyro_fifo_enable) { @@ -83,16 +97,6 @@=20
+> reset_fifo_fail:
+>  	return result;
+>  }
+> =20
+> -static void inv_clear_kfifo(struct inv_mpu6050_state *st) -{
+> -	unsigned long flags;
+> -
+> -	/* take the spin lock sem to avoid interrupt kick in */
+> -	spin_lock_irqsave(&st->time_stamp_lock, flags);
+> -	kfifo_reset(&st->timestamps);
+> -	spin_unlock_irqrestore(&st->time_stamp_lock, flags);
+> -}
+> -
+>  /**
+>   * inv_mpu6050_irq_handler() - Cache a timestamp at each data ready inte=
+rrupt.
+>   */
+> @@ -184,7 +188,6 @@ end_session:
+>  flush_fifo:
+>  	/* Flush HW and SW FIFOs. */
+>  	inv_reset_fifo(indio_dev);
+> -	inv_clear_kfifo(st);
+>  	mutex_unlock(&indio_dev->mlock);
+>  	iio_trigger_notify_done(indio_dev->trig);
+> =20
+>=20
