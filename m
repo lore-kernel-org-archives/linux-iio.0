@@ -1,282 +1,272 @@
-Return-Path: <pmeerw@pmeerw.net>
-Date: Wed, 25 Feb 2015 23:45:05 +0100 (CET)
-From: Peter Meerwald <pmeerw@pmeerw.net>
-To: Martin Fuzzey <mfuzzey@parkeon.com>
-cc: linux-iio@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>
-Subject: Re: [PATCH 7/9] iio: mma8452: Add highpass filter configuration.
-In-Reply-To: <20150219141608.27001.29038.stgit@localhost>
-Message-ID: <alpine.DEB.2.02.1502252342050.6800@pmeerw.net>
-References: <20150219141553.27001.18825.stgit@localhost> <20150219141608.27001.29038.stgit@localhost>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-wg0-f44.google.com ([74.125.82.44]:44420 "EHLO
+	mail-wg0-f44.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753328AbbB0OaO (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 27 Feb 2015 09:30:14 -0500
+Received: by wggx12 with SMTP id x12so20744967wgg.11
+        for <linux-iio@vger.kernel.org>; Fri, 27 Feb 2015 06:30:13 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
-List-ID: <linux-iio@vger.kernel.org>
+In-Reply-To: <CALwa49uj+e-=fqkppQPd+NfXwG03+joHqBHGYyjvOWgrmvD-4Q@mail.gmail.com>
+References: <CALwa49sP4Vg_ZNr6UmnZCs7PUxCs=JLDS8nXeBWCGJoJ1QgdoQ@mail.gmail.com>
+	<CALwa49uj+e-=fqkppQPd+NfXwG03+joHqBHGYyjvOWgrmvD-4Q@mail.gmail.com>
+Date: Fri, 27 Feb 2015 16:30:13 +0200
+Message-ID: <CAEnQRZDY171bYoUKHmxhQ46NGQoW_nRozX1uYuA-d-ksrSRiew@mail.gmail.com>
+Subject: Re: Getting error "failed to setup attributes" on Adding Custom
+ Fields in accelerometer HID driver
+From: Daniel Baluta <daniel.baluta@gmail.com>
+To: "s.rawat" <imsaurabhrawat@gmail.com>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Content-Type: text/plain; charset=UTF-8
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
+On Fri, Feb 27, 2015 at 3:18 PM, s.rawat <imsaurabhrawat@gmail.com> wrote:
+> Hi Daniel,
+> I got a failure in sending last mail to iio mailing list.Can you please fwd
+> it to that chain while i subscribe my self to it.
+> Many thanks.
 
-> Allow the cutoff frequency of the high pass filter to be configured.
+Not sure if you need to be subscribed in order to post there.
 
-looks good, probably a few newlines would make it look even nicer (see 
-below)
- 
-> Signed-off-by: Martin Fuzzey <mfuzzey@parkeon.com>
-> ---
->  drivers/iio/accel/mma8452.c |  135 ++++++++++++++++++++++++++++++++++++++++++-
->  1 file changed, 132 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/iio/accel/mma8452.c b/drivers/iio/accel/mma8452.c
-> index b7f13dd..fe17c42 100644
-> --- a/drivers/iio/accel/mma8452.c
-> +++ b/drivers/iio/accel/mma8452.c
-> @@ -29,9 +29,12 @@
->  #define MMA8452_INT_SRC 0x0c
->  #define MMA8452_WHO_AM_I 0x0d
->  #define MMA8452_DATA_CFG 0x0e
-> +#define MMA8452_HP_FILTER_CUTOFF 0x0f
-> +#define MMA8452_HP_FILTER_CUTOFF_SEL_MASK	(BIT(0) | BIT(1))
->  #define MMA8452_TRANSIENT_CFG 0x1d
->  #define MMA8452_TRANSIENT_CFG_ELE		BIT(4)
->  #define MMA8452_TRANSIENT_CFG_CHAN_MASK(chan)	(BIT(1) << chan)
-> +#define MMA8452_TRANSIENT_CFG_HPF_BYP		BIT(0)
->  #define MMA8452_TRANSIENT_SRC 0x1e
->  #define MMA8452_TRANSIENT_SRC_XTRANSE		BIT(1)
->  #define MMA8452_TRANSIENT_SRC_YTRANSE		BIT(3)
-> @@ -60,6 +63,7 @@
->  #define MMA8452_DATA_CFG_FS_2G 0
->  #define MMA8452_DATA_CFG_FS_4G 1
->  #define MMA8452_DATA_CFG_FS_8G 2
-> +#define MMA8452_DATA_CFG_HPF_MASK BIT(4)
->  
->  #define MMA8452_INT_DRDY	BIT(0)
->  #define MMA8452_INT_FF_MT	BIT(2)
-> @@ -162,6 +166,18 @@ static const int mma8452_transient_time_step_us[8] = {
->  	20000
->  };
->  
-> +/* Datasheet table 18 (normal mode) */
-> +static const int mma8452_hp_filter_cutoff[8][4][2] = {
-> +	{ {16, 0}, {8, 0}, {4, 0}, {2, 0} },		/* 800 Hz sample */
-> +	{ {16, 0}, {8, 0}, {4, 0}, {2, 0} },		/* 400 Hz sample */
-> +	{ {8, 0}, {4, 0}, {2, 0}, {1, 0} },		/* 200 Hz sample */
-> +	{ {4, 0}, {2, 0}, {1, 0}, {0, 500000} },	/* 100 Hz sample */
-> +	{ {2, 0}, {1, 0}, {0, 500000}, {0, 250000} },	/* 50 Hz sample */
-> +	{ {2, 0}, {1, 0}, {0, 500000}, {0, 250000} },	/* 12.5 Hz sample */
-> +	{ {2, 0}, {1, 0}, {0, 500000}, {0, 250000} },	/* 6.25 Hz sample */
-> +	{ {2, 0}, {1, 0}, {0, 500000}, {0, 250000} }	/* 1.56 Hz sample */
-> +};
-> +
->  static ssize_t mma8452_show_samp_freq_avail(struct device *dev,
->  				struct device_attribute *attr, char *buf)
->  {
-> @@ -176,9 +192,22 @@ static ssize_t mma8452_show_scale_avail(struct device *dev,
->  		ARRAY_SIZE(mma8452_scales));
->  }
->  
-> +static ssize_t mma8452_show_hp_cutoff_avail(struct device *dev,
-> +				struct device_attribute *attr, char *buf)
-> +{
-> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
-> +	struct mma8452_data *data = iio_priv(indio_dev);
-> +	int i = mma8452_get_odr_index(data);
-> +
-> +	return mma8452_show_int_plus_micros(buf, mma8452_hp_filter_cutoff[i],
-> +		ARRAY_SIZE(mma8452_hp_filter_cutoff[0]));
-> +}
-> +
->  static IIO_DEV_ATTR_SAMP_FREQ_AVAIL(mma8452_show_samp_freq_avail);
->  static IIO_DEVICE_ATTR(in_accel_scale_available, S_IRUGO,
->  	mma8452_show_scale_avail, NULL, 0);
-> +static IIO_DEVICE_ATTR(in_accel_filter_high_pass_3db_frequency_available,
-> +			S_IRUGO, mma8452_show_hp_cutoff_avail, NULL, 0);
->  
->  static int mma8452_get_samp_freq_index(struct mma8452_data *data,
->  	int val, int val2)
-> @@ -194,6 +223,30 @@ static int mma8452_get_scale_index(struct mma8452_data *data,
->  		ARRAY_SIZE(mma8452_scales), val, val2);
->  }
->  
-> +static int mma8452_get_hp_filter_index(struct mma8452_data *data,
-> +	int val, int val2)
-> +{
-> +	int i = mma8452_get_odr_index(data);
-> +
-> +	return mma8452_get_int_plus_micros_index(mma8452_hp_filter_cutoff[i],
-> +		ARRAY_SIZE(mma8452_scales[0]), val, val2);
-> +}
-> +
-> +static int mma8452_read_hp_filter(struct mma8452_data *data, int *hz, int *uHz)
-> +{
-> +	int i, ret;
-> +
-> +	ret = i2c_smbus_read_byte_data(data->client, MMA8452_HP_FILTER_CUTOFF);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	i = mma8452_get_odr_index(data);
-> +	ret &= MMA8452_HP_FILTER_CUTOFF_SEL_MASK;
-> +	*hz = mma8452_hp_filter_cutoff[i][ret][0];
-> +	*uHz = mma8452_hp_filter_cutoff[i][ret][1];
+Cc'ed linux-iio, anyway.
 
-newline
-
-> +	return 0;
-> +}
-> +
->  static int mma8452_read_raw(struct iio_dev *indio_dev,
->  			    struct iio_chan_spec const *chan,
->  			    int *val, int *val2, long mask)
-> @@ -232,6 +285,16 @@ static int mma8452_read_raw(struct iio_dev *indio_dev,
->  			return ret;
->  		*val = sign_extend32(ret, 7);
->  		return IIO_VAL_INT;
-> +	case IIO_CHAN_INFO_HIGH_PASS_FILTER_3DB_FREQUENCY:
-> +		if (data->data_cfg & MMA8452_DATA_CFG_HPF_MASK) {
-> +			ret = mma8452_read_hp_filter(data, val, val2);
-> +			if (ret < 0)
-> +				return ret;
-> +		} else {
-> +			*val = 0;
-> +			*val2 = 0;
-> +		}
-> +		return IIO_VAL_INT_PLUS_MICRO;
->  	}
->  	return -EINVAL;
->  }
-> @@ -273,12 +336,30 @@ fail:
->  	return ret;
->  }
->  
-> +static int mma8452_set_hp_filter_frequency(struct mma8452_data *data,
-> +						int val, int val2)
-> +{
-> +	int i, reg;
-> +
-> +	i = mma8452_get_hp_filter_index(data, val, val2);
-> +	if (i < 0)
-> +		return -EINVAL;
-> +
-> +	reg = i2c_smbus_read_byte_data(data->client,
-> +					MMA8452_HP_FILTER_CUTOFF);
-> +	if (reg < 0)
-> +		return reg;
-> +	reg &= ~MMA8452_HP_FILTER_CUTOFF_SEL_MASK;
-> +	reg |= i;
-
-newline
-
-> +	return mma8452_change_config(data, MMA8452_HP_FILTER_CUTOFF, reg);
-> +}
-> +
->  static int mma8452_write_raw(struct iio_dev *indio_dev,
->  			     struct iio_chan_spec const *chan,
->  			     int val, int val2, long mask)
->  {
->  	struct mma8452_data *data = iio_priv(indio_dev);
-> -	int i;
-> +	int i, ret;
->  
->  	if (iio_buffer_enabled(indio_dev))
->  		return -EBUSY;
-> @@ -306,6 +387,19 @@ static int mma8452_write_raw(struct iio_dev *indio_dev,
->  			return -EINVAL;
->  		return mma8452_change_config(data, MMA8452_OFF_X +
->  			chan->scan_index, val);
-> +
-> +	case IIO_CHAN_INFO_HIGH_PASS_FILTER_3DB_FREQUENCY:
-> +		if (val == 0 && val2 == 0) {
-> +			data->data_cfg &= ~MMA8452_DATA_CFG_HPF_MASK;
-> +		} else {
-> +			data->data_cfg |= MMA8452_DATA_CFG_HPF_MASK;
-> +			ret = mma8452_set_hp_filter_frequency(data, val, val2);
-> +			if (ret < 0)
-> +				return ret;
-> +		}
-> +		return mma8452_change_config(data, MMA8452_DATA_CFG,
-> +						data->data_cfg);
-> +
->  	default:
->  		return -EINVAL;
->  	}
-> @@ -341,6 +435,22 @@ static int mma8452_read_thresh(struct iio_dev *indio_dev,
->  		*val2 = us % USEC_PER_SEC;
->  		return IIO_VAL_INT_PLUS_MICRO;
->  
-> +	case IIO_EV_INFO_HIGH_PASS_FILTER_3DB:
-> +		ret = i2c_smbus_read_byte_data(data->client,
-> +						MMA8452_TRANSIENT_CFG);
-> +		if (ret < 0)
-> +			return ret;
-> +
-> +		if (ret & MMA8452_TRANSIENT_CFG_HPF_BYP) {
-> +			*val = 0;
-> +			*val2 = 0;
-> +		} else {
-> +			ret = mma8452_read_hp_filter(data, val, val2);
-> +			if (ret < 0)
-> +				return ret;
-> +		}
-> +		return IIO_VAL_INT_PLUS_MICRO;
-> +
->  	default:
->  		return -EINVAL;
->  	}
-> @@ -352,7 +462,7 @@ static int mma8452_write_thresh(struct iio_dev *indio_dev,
->  	int val2)
->  {
->  	struct mma8452_data *data = iio_priv(indio_dev);
-> -	int steps;
-> +	int ret, reg, steps;
->  
->  	switch (info) {
->  	case IIO_EV_INFO_VALUE:
-> @@ -369,6 +479,23 @@ static int mma8452_write_thresh(struct iio_dev *indio_dev,
->  
->  		return mma8452_change_config(data,
->  				MMA8452_TRANSIENT_COUNT, steps);
-> +
-> +	case IIO_EV_INFO_HIGH_PASS_FILTER_3DB:
-> +		reg = i2c_smbus_read_byte_data(data->client,
-> +						MMA8452_TRANSIENT_CFG);
-> +		if (reg < 0)
-> +			return reg;
-> +
-> +		if (val == 0 && val2 == 0) {
-> +			reg |= MMA8452_TRANSIENT_CFG_HPF_BYP;
-> +		} else {
-> +			reg &= ~MMA8452_TRANSIENT_CFG_HPF_BYP;
-> +			ret = mma8452_set_hp_filter_frequency(data, val, val2);
-> +			if (ret < 0)
-> +				return ret;
-> +		}
-> +		return mma8452_change_config(data, MMA8452_TRANSIENT_CFG, reg);
-> +
->  	default:
->  		return -EINVAL;
->  	}
-> @@ -538,7 +665,8 @@ static struct attribute_group mma8452_event_attribute_group = {
->  	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) | \
->  		BIT(IIO_CHAN_INFO_CALIBBIAS), \
->  	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SAMP_FREQ) | \
-> -		BIT(IIO_CHAN_INFO_SCALE), \
-> +		BIT(IIO_CHAN_INFO_SCALE) | \
-> +		BIT(IIO_CHAN_INFO_HIGH_PASS_FILTER_3DB_FREQUENCY), \
->  	.scan_index = idx, \
->  	.scan_type = { \
->  		.sign = 's', \
-> @@ -561,6 +689,7 @@ static const struct iio_chan_spec mma8452_channels[] = {
->  static struct attribute *mma8452_attributes[] = {
->  	&iio_dev_attr_sampling_frequency_available.dev_attr.attr,
->  	&iio_dev_attr_in_accel_scale_available.dev_attr.attr,
-> +	&iio_dev_attr_in_accel_filter_high_pass_3db_frequency_available.dev_attr.attr,
->  	NULL
->  };
->  
-> 
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> 
-
--- 
-
-Peter Meerwald
-+43-664-2444418 (mobile)
+>
+> On Fri, Feb 27, 2015 at 6:45 PM, s.rawat <imsaurabhrawat@gmail.com> wrote:
+>>
+>> Do I need to define the all the Usage Tags in the input report of a sensor
+>> to retrieve minimum any one field or Only a Usage Tag which I wanted to
+>> retrieve is enough.
+>> e.g for an input report of an accelerometer which has the below
+>> fields(added new one in Bold),
+>>
+>> HID_USAGE_SENSOR_ACCEL_X_AXIS
+>> HID_USAGE_SENSOR_ACCEL_Y_AXIS
+>> HID_USAGE_SENSOR_ACCEL_Z_AXIS
+>> HID_USAGE_SENSOR_DATA_MOTION_STATE,
+>> HID_USAGE_SENSOR_DATA_CUSTOM_VALUE_2
+>> HID_USAGE_SENSOR_DATA_CUSTOM_VALUE_3
+>> HID_USAGE_SENSOR_DATA_CUSTOM_VALUE_4
+>>
+>>  I want to retrieve Custom_Value_4 do I also need to define parameters for
+>> Data_Motion_state, Custom_Value2,Custom_Value3 as well apart from
+>> Custom_Value4 in the below structure.
+>>
+>> enum accel_3d_channel {.. }
+>> struct accel_3d_state {.. }
+>> static const struct iio_chan_spec accel_3d_channels[] = { ..}
+>>
+>> I did so but was getting error - "failed to setup attributes" but after I
+>> modified the code in the function : accel_3d_parse_report() like below to
+>> accommodate all the non Contigous Usage Tags and associated them with their
+>> channels - *_SCAN_INDEX_* .  I did not get this error but some other error
+>> (listed at the end of the mail)
+>>
+>>
+>> //First Three channel X,Y and Z whose Usage Tags are contionus -
+>> 0x200453/54/55
+>> for (i = 0; i <= CHANNEL_SCAN_INDEX_Z; ++i) {
+>>
+>> ret = sensor_hub_input_get_attribute_info(hsdev,
+>> HID_INPUT_REPORT,
+>> usage_id,
+>> HID_USAGE_SENSOR_ACCEL_X_AXIS + i,
+>> &st->accel[CHANNEL_SCAN_INDEX_X + i]);
+>>           accel_3d_adjust_channel_bit_mask(channels,
+>> CHANNEL_SCAN_INDEX_X + i,
+>> st->accel[CHANNEL_SCAN_INDEX_X + i].size);
+>> }
+>>
+>> //Fourth channel For Data Motion - 0x200451
+>> ret = sensor_hub_input_get_attribute_info(hsdev,
+>> HID_INPUT_REPORT,
+>> usage_id,
+>> HID_USAGE_SENSOR_DATA_MOTION_STATE, // For CHANNEL_SCAN_DATA_MOTION
+>> &st->accel[CHANNEL_SCAN_INDEX_X + i]);
+>> accel_3d_adjust_channel_bit_mask(channels,
+>> CHANNEL_SCAN_INDEX_X + i,
+>> st->accel[CHANNEL_SCAN_INDEX_X + i].size);
+>>
+>> //Last Three Channel for Custom Value 2,3,4 - 0x200545/46/47
+>> for (i = 0; i <= 2; ++i) {
+>>
+>> ret = sensor_hub_input_get_attribute_info(hsdev,
+>> HID_INPUT_REPORT,
+>> usage_id,
+>> HID_USAGE_SENSOR_DATA_CUSTOM_VALUE_2 + i,
+>> &st->accel[CHANNEL_SCAN_INDEX_X + i + 4]); //start after
+>> CHANNEL_SCAN_DATA_MOTION Channel
+>> accel_3d_adjust_channel_bit_mask(channels,
+>> CHANNEL_SCAN_INDEX_X + i + 4,
+>> st->accel[CHANNEL_SCAN_INDEX_X + i].size);
+>> }
+>>
+>>
+>>
+>> But now I am getting a different error :
+>>
+>> [13778.127716] iio iio:device4: tried to double register :
+>> in_accel_x_index
+>> [13778.127899] hid_sensor_accel_3d HID-SENSOR-200073.3.auto: failed to
+>> initialize trigger buffer
+>> [13778.143676] hid_sensor_accel_3d: probe of HID-SENSOR-200073.3.auto
+>> failed with error -16
+>>
+>> I am still figuring out where else Do I have to modify the code in order
+>> to receive the above custom values ..
+>> Thanks,
+>> S
+>>
+>>
+>>
+>> On Thu, Feb 26, 2015 at 6:54 PM, Daniel Baluta <daniel.baluta@gmail.com>
+>> wrote:
+>>>
+>>> + linux-iio list.
+>>>
+>>> On Thu, Feb 26, 2015 at 8:04 AM, s.rawat <imsaurabhrawat@gmail.com>
+>>> wrote:
+>>> > I have modified the hid-sensor-accel_3d.c driver to add the custom
+>>> > fields -
+>>> > CHANNEL_SCAN_DATA_MOTION and HID_USAGE_SENSOR_DATA_CUSTOM_VALUEX ( X =
+>>> > 2,3,4).
+>>> > Below are my modifications :
+>>> >
+>>> > enum accel_3d_channel {
+>>> > CHANNEL_SCAN_INDEX_X,
+>>> > CHANNEL_SCAN_INDEX_Y,
+>>> > CHANNEL_SCAN_INDEX_Z,
+>>> > CHANNEL_SCAN_DATA_MOTION,
+>>> > CHANNEL_CUSTOM_VALUE_2,
+>>> > CHANNEL_CUSTOM_VALUE_3,
+>>> >         CHANNEL_CUSTOM_VALUE_4,
+>>> > ACCEL_3D_CHANNEL_MAX,
+>>> >
+>>> > static const u32 accel_3d_addresses[ACCEL_3D_CHANNEL_MAX] = {
+>>> > HID_USAGE_SENSOR_ACCEL_X_AXIS,
+>>> > HID_USAGE_SENSOR_ACCEL_Y_AXIS,
+>>> > HID_USAGE_SENSOR_ACCEL_Z_AXIS,
+>>> > HID_USAGE_SENSOR_DATA_MOTION_STATE,
+>>> > HID_USAGE_SENSOR_DATA_CUSTOM_VALUE2,
+>>> > HID_USAGE_SENSOR_DATA_CUSTOM_VALUE3,
+>>> > HID_USAGE_SENSOR_DATA_CUSTOM_VALUE4
+>>> > };
+>>> >
+>>> >
+>>> >
+>>> > /* Channel definitions */
+>>> > static const struct iio_chan_spec accel_3d_channels[] = {
+>>> > {
+>>> > ..
+>>> > ..
+>>> > ..
+>>> > {
+>>> > .type = IIO_ACCEL,
+>>> > .modified = 1,
+>>> > .channel2 = IIO_MOD_X,
+>>> > .info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
+>>> > .info_mask_shared_by_type = BIT(IIO_CHAN_INFO_OFFSET) |
+>>> > BIT(IIO_CHAN_INFO_SCALE) |
+>>> > BIT(IIO_CHAN_INFO_SAMP_FREQ) |
+>>> > BIT(IIO_CHAN_INFO_HYSTERESIS),
+>>> > .scan_index = CHANNEL_SCAN_DATA_MOTION,
+>>> > },
+>>> > {
+>>> > .type = IIO_ACCEL,
+>>> > .modified = 1,
+>>> > .channel2 = IIO_MOD_X,
+>>> > .info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
+>>> > .info_mask_shared_by_type = BIT(IIO_CHAN_INFO_OFFSET) |
+>>> > BIT(IIO_CHAN_INFO_SCALE) |
+>>> > BIT(IIO_CHAN_INFO_SAMP_FREQ) |
+>>> > BIT(IIO_CHAN_INFO_HYSTERESIS),
+>>> > .scan_index = CHANNEL_CUSTOM_VALUE_2,
+>>> > },
+>>> > {
+>>> > .type = IIO_ACCEL,
+>>> > .modified = 1,
+>>> > .channel2 = IIO_MOD_X,
+>>> > .info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
+>>> > .info_mask_shared_by_type = BIT(IIO_CHAN_INFO_OFFSET) |
+>>> > BIT(IIO_CHAN_INFO_SCALE) |
+>>> > BIT(IIO_CHAN_INFO_SAMP_FREQ) |
+>>> > BIT(IIO_CHAN_INFO_HYSTERESIS),
+>>> > .scan_index = CHANNEL_CUSTOM_VALUE_3,
+>>> > },
+>>> > {
+>>> > .type = IIO_ACCEL,
+>>> > .modified = 1,
+>>> > .channel2 = IIO_MOD_X,
+>>> > .info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
+>>> > .info_mask_shared_by_type = BIT(IIO_CHAN_INFO_OFFSET) |
+>>> > BIT(IIO_CHAN_INFO_SCALE) |
+>>> > BIT(IIO_CHAN_INFO_SAMP_FREQ) |
+>>> > BIT(IIO_CHAN_INFO_HYSTERESIS),
+>>> > .scan_index = CHANNEL_CUSTOM_VALUE_4,
+>>> > }
+>>> >
+>>> >
+>>> >
+>>> > /* Capture samples in local storage */
+>>> > static int accel_3d_capture_sample(struct hid_sensor_hub_device *hsdev,
+>>> > unsigned usage_id,
+>>> > size_t raw_len, char *raw_data,
+>>> > void *priv)
+>>> > {
+>>> > struct iio_dev *indio_dev = platform_get_drvdata(priv);
+>>> > struct accel_3d_state *accel_state = iio_priv(indio_dev);
+>>> > int offset;
+>>> > int ret = -EINVAL;
+>>> >
+>>> > switch (usage_id) {
+>>> > case HID_USAGE_SENSOR_ACCEL_X_AXIS:
+>>> > case HID_USAGE_SENSOR_ACCEL_Y_AXIS:
+>>> > case HID_USAGE_SENSOR_ACCEL_Z_AXIS:
+>>> > case HID_USAGE_SENSOR_DATA_MOTION_STATE:
+>>> >         case HID_USAGE_SENSOR_DATA_CUSTOM_VALUE2:
+>>> >   case HID_USAGE_SENSOR_DATA_CUSTOM_VALUE3:
+>>> >   case HID_USAGE_SENSOR_DATA_CUSTOM_VALUE4:
+>>> > offset = usage_id - HID_USAGE_SENSOR_ACCEL_X_AXIS;
+>>> >
+>>> >
+>>> >
+>>> > /* Parse report which is specific to an usage id*/
+>>> > static int accel_3d_parse_report(struct platform_device *pdev,
+>>> > struct hid_sensor_hub_device *hsdev,
+>>> > struct iio_chan_spec *channels,
+>>> > unsigned usage_id,
+>>> > struct accel_3d_state *st)
+>>> > {
+>>> > int ret;
+>>> > int i;
+>>> >
+>>> > for (i = 0; i <= CHANNEL_CUSTOM_VALUE_4; ++i) {  //previously <
+>>> > CHANNEL_SCAN_INDEX_Z
+>>> > ret = sensor_hub_input_get_attribute_info(hsdev,
+>>> >
+>>> >
+>>> >
+>>> > After build /insmod i get the following dmesg :
+>>> >
+>>> > hid_sensor_accel_3d:HID-SENSOR-200073.3 auto : failed to setup
+>>> > attributes
+>>> > hid_sensor_accel_3d:HID-SENSOR-200073.3 auto.failed with error -1
+>>> >
+>>> >
+>>> > I am not getting what else I have to modify to avoid this error .If i
+>>> > remove
+>>> > the portion in bold(and use this original code
+>>> >
+>>> > :http://lxr.free-electrons.com/source/drivers/iio/accel/hid-sensor-accel-3d.c)
+>>> > I can happily insert the module without any error and can interact with
+>>> > the
+>>> > driver using my application.
+>>> >
+>>> >
+>>> > _______________________________________________
+>>> > Kernelnewbies mailing list
+>>> > Kernelnewbies@kernelnewbies.org
+>>> > http://lists.kernelnewbies.org/mailman/listinfo/kernelnewbies
+>>> >
+>>
+>>
+>
