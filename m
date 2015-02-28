@@ -1,41 +1,30 @@
-Return-Path: <marek.belisko@gmail.com>
-Sender: Belisko Marek <marek.belisko@gmail.com>
-From: Marek Belisko <marek@goldelico.com>
-To: jic23@kernel.org,
-	gregkh@linuxfoundation.org
-Cc: linux-iio@vger.kernel.org,
-	devel@driverdev.osuosl.org,
-	linux-kernel@vger.kernel.org,
-	hns@goldelico.com,
-	Marek Belisko <marek@goldelico.com>
-Subject: [PATCH] staging: iio: hmc5843: Set iio name property in sysfs
-Date: Sat, 28 Feb 2015 21:54:42 +0100
-Message-Id: <1425156882-27691-1-git-send-email-marek@goldelico.com>
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail.linuxfoundation.org ([140.211.169.12]:54322 "EHLO
+	mail.linuxfoundation.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751310AbbB1PUU (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 28 Feb 2015 10:20:20 -0500
+Date: Sat, 28 Feb 2015 07:20:18 -0800
+From: Greg KH <gregkh@linuxfoundation.org>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Subject: Re: [PULL] IIO fixes for 4.0 set 2
+Message-ID: <20150228152018.GB16354@kroah.com>
+References: <54F1A845.2020109@kernel.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <54F1A845.2020109@kernel.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Without this change file name for hmc5843 is empty in
-/sys/bus/iio/devices/iio\:device*/name
+On Sat, Feb 28, 2015 at 11:36:37AM +0000, Jonathan Cameron wrote:
+> The following changes since commit 533e80b1ea709577ec5cf73b8b566569bc711259:
+> 
+>   staging: lustre: lustre: libcfs: define symbols as static (2015-02-07 17:41:12 +0800)
+> 
+> are available in the git repository at:
+> 
+>   git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git tags/iio-fixes-for-4.0b
 
-With this change name is reported correctly:
-cat /sys/bus/iio/devices/iio\:device*/name
-hmc5843
+Pulled and pushed out, thanks.
 
-Signed-off-by: Marek Belisko <marek@goldelico.com>
----
- drivers/staging/iio/magnetometer/hmc5843_core.c | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/drivers/staging/iio/magnetometer/hmc5843_core.c b/drivers/staging/iio/magnetometer/hmc5843_core.c
-index fd171d8..90cc18b 100644
---- a/drivers/staging/iio/magnetometer/hmc5843_core.c
-+++ b/drivers/staging/iio/magnetometer/hmc5843_core.c
-@@ -592,6 +592,7 @@ int hmc5843_common_probe(struct device *dev, struct regmap *regmap,
- 	mutex_init(&data->lock);
- 
- 	indio_dev->dev.parent = dev;
-+	indio_dev->name = dev->driver->name;
- 	indio_dev->info = &hmc5843_info;
- 	indio_dev->modes = INDIO_DIRECT_MODE;
- 	indio_dev->channels = data->variant->channels;
--- 
-1.9.1
+greg k-h
