@@ -1,272 +1,100 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-wg0-f44.google.com ([74.125.82.44]:44420 "EHLO
-	mail-wg0-f44.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753328AbbB0OaO (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 27 Feb 2015 09:30:14 -0500
-Received: by wggx12 with SMTP id x12so20744967wgg.11
-        for <linux-iio@vger.kernel.org>; Fri, 27 Feb 2015 06:30:13 -0800 (PST)
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:57914 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750761AbbB1LV0 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 28 Feb 2015 06:21:26 -0500
+Message-ID: <54F1A4B3.3000404@kernel.org>
+Date: Sat, 28 Feb 2015 11:21:23 +0000
+From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-In-Reply-To: <CALwa49uj+e-=fqkppQPd+NfXwG03+joHqBHGYyjvOWgrmvD-4Q@mail.gmail.com>
-References: <CALwa49sP4Vg_ZNr6UmnZCs7PUxCs=JLDS8nXeBWCGJoJ1QgdoQ@mail.gmail.com>
-	<CALwa49uj+e-=fqkppQPd+NfXwG03+joHqBHGYyjvOWgrmvD-4Q@mail.gmail.com>
-Date: Fri, 27 Feb 2015 16:30:13 +0200
-Message-ID: <CAEnQRZDY171bYoUKHmxhQ46NGQoW_nRozX1uYuA-d-ksrSRiew@mail.gmail.com>
-Subject: Re: Getting error "failed to setup attributes" on Adding Custom
- Fields in accelerometer HID driver
-From: Daniel Baluta <daniel.baluta@gmail.com>
-To: "s.rawat" <imsaurabhrawat@gmail.com>,
+To: Greg KH <gregkh@linuxfoundation.org>,
 	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Fri, Feb 27, 2015 at 3:18 PM, s.rawat <imsaurabhrawat@gmail.com> wrote:
-> Hi Daniel,
-> I got a failure in sending last mail to iio mailing list.Can you please fwd
-> it to that chain while i subscribe my self to it.
-> Many thanks.
+The following changes since commit 8ecb55b849b74dff026681b41266970072b207dd:
 
-Not sure if you need to be subscribed in order to post there.
+  Merge tag 'iio-fixes-for-3.19a' of git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio into staging-linus (2015-01-08 17:59:04 -0800)
 
-Cc'ed linux-iio, anyway.
+are available in the git repository at:
 
->
-> On Fri, Feb 27, 2015 at 6:45 PM, s.rawat <imsaurabhrawat@gmail.com> wrote:
->>
->> Do I need to define the all the Usage Tags in the input report of a sensor
->> to retrieve minimum any one field or Only a Usage Tag which I wanted to
->> retrieve is enough.
->> e.g for an input report of an accelerometer which has the below
->> fields(added new one in Bold),
->>
->> HID_USAGE_SENSOR_ACCEL_X_AXIS
->> HID_USAGE_SENSOR_ACCEL_Y_AXIS
->> HID_USAGE_SENSOR_ACCEL_Z_AXIS
->> HID_USAGE_SENSOR_DATA_MOTION_STATE,
->> HID_USAGE_SENSOR_DATA_CUSTOM_VALUE_2
->> HID_USAGE_SENSOR_DATA_CUSTOM_VALUE_3
->> HID_USAGE_SENSOR_DATA_CUSTOM_VALUE_4
->>
->>  I want to retrieve Custom_Value_4 do I also need to define parameters for
->> Data_Motion_state, Custom_Value2,Custom_Value3 as well apart from
->> Custom_Value4 in the below structure.
->>
->> enum accel_3d_channel {.. }
->> struct accel_3d_state {.. }
->> static const struct iio_chan_spec accel_3d_channels[] = { ..}
->>
->> I did so but was getting error - "failed to setup attributes" but after I
->> modified the code in the function : accel_3d_parse_report() like below to
->> accommodate all the non Contigous Usage Tags and associated them with their
->> channels - *_SCAN_INDEX_* .  I did not get this error but some other error
->> (listed at the end of the mail)
->>
->>
->> //First Three channel X,Y and Z whose Usage Tags are contionus -
->> 0x200453/54/55
->> for (i = 0; i <= CHANNEL_SCAN_INDEX_Z; ++i) {
->>
->> ret = sensor_hub_input_get_attribute_info(hsdev,
->> HID_INPUT_REPORT,
->> usage_id,
->> HID_USAGE_SENSOR_ACCEL_X_AXIS + i,
->> &st->accel[CHANNEL_SCAN_INDEX_X + i]);
->>           accel_3d_adjust_channel_bit_mask(channels,
->> CHANNEL_SCAN_INDEX_X + i,
->> st->accel[CHANNEL_SCAN_INDEX_X + i].size);
->> }
->>
->> //Fourth channel For Data Motion - 0x200451
->> ret = sensor_hub_input_get_attribute_info(hsdev,
->> HID_INPUT_REPORT,
->> usage_id,
->> HID_USAGE_SENSOR_DATA_MOTION_STATE, // For CHANNEL_SCAN_DATA_MOTION
->> &st->accel[CHANNEL_SCAN_INDEX_X + i]);
->> accel_3d_adjust_channel_bit_mask(channels,
->> CHANNEL_SCAN_INDEX_X + i,
->> st->accel[CHANNEL_SCAN_INDEX_X + i].size);
->>
->> //Last Three Channel for Custom Value 2,3,4 - 0x200545/46/47
->> for (i = 0; i <= 2; ++i) {
->>
->> ret = sensor_hub_input_get_attribute_info(hsdev,
->> HID_INPUT_REPORT,
->> usage_id,
->> HID_USAGE_SENSOR_DATA_CUSTOM_VALUE_2 + i,
->> &st->accel[CHANNEL_SCAN_INDEX_X + i + 4]); //start after
->> CHANNEL_SCAN_DATA_MOTION Channel
->> accel_3d_adjust_channel_bit_mask(channels,
->> CHANNEL_SCAN_INDEX_X + i + 4,
->> st->accel[CHANNEL_SCAN_INDEX_X + i].size);
->> }
->>
->>
->>
->> But now I am getting a different error :
->>
->> [13778.127716] iio iio:device4: tried to double register :
->> in_accel_x_index
->> [13778.127899] hid_sensor_accel_3d HID-SENSOR-200073.3.auto: failed to
->> initialize trigger buffer
->> [13778.143676] hid_sensor_accel_3d: probe of HID-SENSOR-200073.3.auto
->> failed with error -16
->>
->> I am still figuring out where else Do I have to modify the code in order
->> to receive the above custom values ..
->> Thanks,
->> S
->>
->>
->>
->> On Thu, Feb 26, 2015 at 6:54 PM, Daniel Baluta <daniel.baluta@gmail.com>
->> wrote:
->>>
->>> + linux-iio list.
->>>
->>> On Thu, Feb 26, 2015 at 8:04 AM, s.rawat <imsaurabhrawat@gmail.com>
->>> wrote:
->>> > I have modified the hid-sensor-accel_3d.c driver to add the custom
->>> > fields -
->>> > CHANNEL_SCAN_DATA_MOTION and HID_USAGE_SENSOR_DATA_CUSTOM_VALUEX ( X =
->>> > 2,3,4).
->>> > Below are my modifications :
->>> >
->>> > enum accel_3d_channel {
->>> > CHANNEL_SCAN_INDEX_X,
->>> > CHANNEL_SCAN_INDEX_Y,
->>> > CHANNEL_SCAN_INDEX_Z,
->>> > CHANNEL_SCAN_DATA_MOTION,
->>> > CHANNEL_CUSTOM_VALUE_2,
->>> > CHANNEL_CUSTOM_VALUE_3,
->>> >         CHANNEL_CUSTOM_VALUE_4,
->>> > ACCEL_3D_CHANNEL_MAX,
->>> >
->>> > static const u32 accel_3d_addresses[ACCEL_3D_CHANNEL_MAX] = {
->>> > HID_USAGE_SENSOR_ACCEL_X_AXIS,
->>> > HID_USAGE_SENSOR_ACCEL_Y_AXIS,
->>> > HID_USAGE_SENSOR_ACCEL_Z_AXIS,
->>> > HID_USAGE_SENSOR_DATA_MOTION_STATE,
->>> > HID_USAGE_SENSOR_DATA_CUSTOM_VALUE2,
->>> > HID_USAGE_SENSOR_DATA_CUSTOM_VALUE3,
->>> > HID_USAGE_SENSOR_DATA_CUSTOM_VALUE4
->>> > };
->>> >
->>> >
->>> >
->>> > /* Channel definitions */
->>> > static const struct iio_chan_spec accel_3d_channels[] = {
->>> > {
->>> > ..
->>> > ..
->>> > ..
->>> > {
->>> > .type = IIO_ACCEL,
->>> > .modified = 1,
->>> > .channel2 = IIO_MOD_X,
->>> > .info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
->>> > .info_mask_shared_by_type = BIT(IIO_CHAN_INFO_OFFSET) |
->>> > BIT(IIO_CHAN_INFO_SCALE) |
->>> > BIT(IIO_CHAN_INFO_SAMP_FREQ) |
->>> > BIT(IIO_CHAN_INFO_HYSTERESIS),
->>> > .scan_index = CHANNEL_SCAN_DATA_MOTION,
->>> > },
->>> > {
->>> > .type = IIO_ACCEL,
->>> > .modified = 1,
->>> > .channel2 = IIO_MOD_X,
->>> > .info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
->>> > .info_mask_shared_by_type = BIT(IIO_CHAN_INFO_OFFSET) |
->>> > BIT(IIO_CHAN_INFO_SCALE) |
->>> > BIT(IIO_CHAN_INFO_SAMP_FREQ) |
->>> > BIT(IIO_CHAN_INFO_HYSTERESIS),
->>> > .scan_index = CHANNEL_CUSTOM_VALUE_2,
->>> > },
->>> > {
->>> > .type = IIO_ACCEL,
->>> > .modified = 1,
->>> > .channel2 = IIO_MOD_X,
->>> > .info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
->>> > .info_mask_shared_by_type = BIT(IIO_CHAN_INFO_OFFSET) |
->>> > BIT(IIO_CHAN_INFO_SCALE) |
->>> > BIT(IIO_CHAN_INFO_SAMP_FREQ) |
->>> > BIT(IIO_CHAN_INFO_HYSTERESIS),
->>> > .scan_index = CHANNEL_CUSTOM_VALUE_3,
->>> > },
->>> > {
->>> > .type = IIO_ACCEL,
->>> > .modified = 1,
->>> > .channel2 = IIO_MOD_X,
->>> > .info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
->>> > .info_mask_shared_by_type = BIT(IIO_CHAN_INFO_OFFSET) |
->>> > BIT(IIO_CHAN_INFO_SCALE) |
->>> > BIT(IIO_CHAN_INFO_SAMP_FREQ) |
->>> > BIT(IIO_CHAN_INFO_HYSTERESIS),
->>> > .scan_index = CHANNEL_CUSTOM_VALUE_4,
->>> > }
->>> >
->>> >
->>> >
->>> > /* Capture samples in local storage */
->>> > static int accel_3d_capture_sample(struct hid_sensor_hub_device *hsdev,
->>> > unsigned usage_id,
->>> > size_t raw_len, char *raw_data,
->>> > void *priv)
->>> > {
->>> > struct iio_dev *indio_dev = platform_get_drvdata(priv);
->>> > struct accel_3d_state *accel_state = iio_priv(indio_dev);
->>> > int offset;
->>> > int ret = -EINVAL;
->>> >
->>> > switch (usage_id) {
->>> > case HID_USAGE_SENSOR_ACCEL_X_AXIS:
->>> > case HID_USAGE_SENSOR_ACCEL_Y_AXIS:
->>> > case HID_USAGE_SENSOR_ACCEL_Z_AXIS:
->>> > case HID_USAGE_SENSOR_DATA_MOTION_STATE:
->>> >         case HID_USAGE_SENSOR_DATA_CUSTOM_VALUE2:
->>> >   case HID_USAGE_SENSOR_DATA_CUSTOM_VALUE3:
->>> >   case HID_USAGE_SENSOR_DATA_CUSTOM_VALUE4:
->>> > offset = usage_id - HID_USAGE_SENSOR_ACCEL_X_AXIS;
->>> >
->>> >
->>> >
->>> > /* Parse report which is specific to an usage id*/
->>> > static int accel_3d_parse_report(struct platform_device *pdev,
->>> > struct hid_sensor_hub_device *hsdev,
->>> > struct iio_chan_spec *channels,
->>> > unsigned usage_id,
->>> > struct accel_3d_state *st)
->>> > {
->>> > int ret;
->>> > int i;
->>> >
->>> > for (i = 0; i <= CHANNEL_CUSTOM_VALUE_4; ++i) {  //previously <
->>> > CHANNEL_SCAN_INDEX_Z
->>> > ret = sensor_hub_input_get_attribute_info(hsdev,
->>> >
->>> >
->>> >
->>> > After build /insmod i get the following dmesg :
->>> >
->>> > hid_sensor_accel_3d:HID-SENSOR-200073.3 auto : failed to setup
->>> > attributes
->>> > hid_sensor_accel_3d:HID-SENSOR-200073.3 auto.failed with error -1
->>> >
->>> >
->>> > I am not getting what else I have to modify to avoid this error .If i
->>> > remove
->>> > the portion in bold(and use this original code
->>> >
->>> > :http://lxr.free-electrons.com/source/drivers/iio/accel/hid-sensor-accel-3d.c)
->>> > I can happily insert the module without any error and can interact with
->>> > the
->>> > driver using my application.
->>> >
->>> >
->>> > _______________________________________________
->>> > Kernelnewbies mailing list
->>> > Kernelnewbies@kernelnewbies.org
->>> > http://lists.kernelnewbies.org/mailman/listinfo/kernelnewbies
->>> >
->>
->>
->
+  git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git tags/iio-fixes-for-4.0a
+
+for you to fetch changes up to e01becbad300712a28f29b666e685536f45e83bc:
+
+  IIO: si7020: Allocate correct amount of memory in devm_iio_device_alloc (2015-02-14 11:35:12 +0000)
+
+----------------------------------------------------------------
+First round of fixes for IIO in the 4.0 cycle. Note a followup
+set dependent on patches in the recent merge windows will follow shortly.
+
+* dht11 - fix a read off the end of an array, add some locking to prevent
+          the read function being interrupted and make sure gpio/irq lines
+	  are not enabled for irqs during output.
+* iadc - timeout should be in jiffies not msecs
+* mpu6050 - avoid a null id from ACPI emumeration being dereferenced.
+* mxs-lradc - fix up some interaction issues between the touchscreen driver
+              and iio driver.  Mostly about making sure that the adc driver
+              only affects channels that are not being used for the
+              touchscreen.
+* ad2s1200 - sign extension fix for a result of c type promotion.
+* adis16400 - sign extension fix for a result of c type promotion.
+* mcp3422 - scale table was transposed.
+* ad5686 - use _optional regulator get to avoid a dummy reg being allocate
+           which would cause the driver to fail to initialize.
+* gp2ap020a00f - select REGMAP_I2C
+* si7020 - revert an incorrect cleanup up and then fix the issue that made
+           that cleanup seem like a good idea.
+
+----------------------------------------------------------------
+Andrey Smirnov (1):
+      IIO: si7020: Allocate correct amount of memory in devm_iio_device_alloc
+
+Angelo Compagnucci (1):
+      iio:adc:mcp3422 Fix incorrect scales table
+
+Jonathan Cameron (1):
+      Revert "iio:humidity:si7020: fix pointer to i2c client"
+
+Kristina Martšenko (4):
+      iio: mxs-lradc: separate touchscreen and buffer virtual channels
+      iio: mxs-lradc: make ADC reads not disable touchscreen interrupts
+      iio: mxs-lradc: make ADC reads not unschedule touchscreen conversions
+      iio: mxs-lradc: only update the buffer when its conversions have finished
+
+Nicholas Mc Guire (1):
+      iio: iadc: wait_for_completion_timeout time in jiffies
+
+Rasmus Villemoes (2):
+      staging: iio: ad2s1200: Fix sign extension
+      iio: imu: adis16400: Fix sign extension
+
+Richard Weinberger (3):
+      iio: dht11: Fix out-of-bounds read
+      iio: dht11: Add locking
+      iio: dht11: IRQ fixes
+
+Roberta Dobrescu (1):
+      iio: light: gp2ap020a00f: Select REGMAP_I2C
+
+Srinivas Pandruvada (1):
+      iio: imu: inv_mpu6050: Prevent dereferencing NULL
+
+Stefan Wahren (1):
+      iio: mxs-lradc: fix iio channel map regression
+
+Urs Fässler (1):
+      iio: ad5686: fix optional reference voltage declaration
+
+ drivers/iio/adc/mcp3422.c                  |  17 +--
+ drivers/iio/adc/qcom-spmi-iadc.c           |   3 +-
+ drivers/iio/dac/ad5686.c                   |   2 +-
+ drivers/iio/humidity/dht11.c               |  69 ++++++----
+ drivers/iio/humidity/si7020.c              |   6 +-
+ drivers/iio/imu/adis16400_core.c           |   3 +-
+ drivers/iio/imu/inv_mpu6050/inv_mpu_core.c |   6 +-
+ drivers/iio/light/Kconfig                  |   1 +
+ drivers/staging/iio/adc/mxs-lradc.c        | 207 +++++++++++++++--------------
+ drivers/staging/iio/resolver/ad2s1200.c    |   3 +-
+ 10 files changed, 166 insertions(+), 151 deletions(-)
