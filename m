@@ -1,52 +1,54 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail1.bemta14.messagelabs.com ([193.109.254.109]:5505 "EHLO
-	mail1.bemta14.messagelabs.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1751340AbbCBK66 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 2 Mar 2015 05:58:58 -0500
-From: "Opensource [Adam Thomson]" <Adam.Thomson.Opensource@diasemi.com>
-To: Jonathan Cameron <jic23@kernel.org>,
-	"Opensource [Adam Thomson]" <Adam.Thomson.Opensource@diasemi.com>,
-	Lee Jones <lee.jones@linaro.org>,
-	Samuel Ortiz <sameo@linux.intel.com>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	Sebastian Reichel <sre@kernel.org>,
-	Dmitry Eremin-Solenikov <dbaryshkov@gmail.com>,
-	"David Woodhouse" <dwmw2@infradead.org>,
-	"linux-pm@vger.kernel.org" <linux-pm@vger.kernel.org>,
-	Rob Herring <robh+dt@kernel.org>,
-	Pawel Moll <pawel.moll@arm.com>,
-	Mark Rutland <mark.rutland@arm.com>,
-	Ian Campbell <ijc+devicetree@hellion.org.uk>,
-	Kumar Gala <galak@codeaurora.org>,
-	"Grant Likely" <grant.likely@linaro.org>,
-	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	"Joe Perches" <joe@perches.com>
-CC: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"Support Opensource" <Support.Opensource@diasemi.com>
-Subject: RE: [PATCH v7 5/7] power: Add support for DA9150 Charger
-Date: Mon, 2 Mar 2015 10:58:48 +0000
-Message-ID: <2E89032DDAA8B9408CB92943514A0337AB53E980@SW-EX-MBX01.diasemi.com>
-References: <cover.1424267009.git.Adam.Thomson.Opensource@diasemi.com>
- <606cf85a796f8ba8a5548b68e4afa95799efbc95.1424267009.git.Adam.Thomson.Opensource@diasemi.com>
- <54EDBBC1.9080301@kernel.org>
-In-Reply-To: <54EDBBC1.9080301@kernel.org>
-Content-Type: text/plain; charset="utf-8"
+Received: from smtp-out-249.synserver.de ([212.40.185.249]:1134 "EHLO
+	smtp-out-245.synserver.de" rhost-flags-OK-OK-OK-FAIL)
+	by vger.kernel.org with ESMTP id S1751241AbbCBLSy (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 2 Mar 2015 06:18:54 -0500
+Message-ID: <54F4471E.1090705@metafoo.de>
+Date: Mon, 02 Mar 2015 12:18:54 +0100
+From: Lars-Peter Clausen <lars@metafoo.de>
 MIME-Version: 1.0
+To: Roberta Dobrescu <roberta.dobrescu@gmail.com>,
+	linux-iio@vger.kernel.org
+CC: daniel.baluta@intel.com, octavian.purdila@intel.com,
+	jic23@kernel.org, knaack.h@gmx.de, pmeerw@pmeerw.net,
+	vlad.dogaru@intel.com
+Subject: Re: [PATCH] iio: accel: mma9551: Check gpiod_to_irq return value
+References: <1425292752-7768-1-git-send-email-roberta.dobrescu@gmail.com>
+In-Reply-To: <1425292752-7768-1-git-send-email-roberta.dobrescu@gmail.com>
+Content-Type: text/plain; charset=windows-1252; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-T24gRmVicnVhcnkgMjUsIDIwMTUgMTI6MTEsIEpvbmF0aGFuIENhbWVyb24gd3JvdGU6DQoNCj4g
-PiArc3RhdGljIGludCBkYTkxNTBfY2hhcmdlcl9yZW1vdmUoc3RydWN0IHBsYXRmb3JtX2Rldmlj
-ZSAqcGRldikNCj4gPiArew0KPiA+ICsJc3RydWN0IGRhOTE1MF9jaGFyZ2VyICpjaGFyZ2VyID0g
-cGxhdGZvcm1fZ2V0X2RydmRhdGEocGRldik7DQo+ID4gKwlpbnQgaXJxOw0KPiA+ICsNCj4gPiAr
-CS8qIE1ha2Ugc3VyZSBJUlFzIGFyZSByZWxlYXNlZCBiZWZvcmUgdW5yZWdpc3RlcmluZyBwb3dl
-ciBzdXBwbGllcyAqLw0KPiA+ICsJaXJxID0gcGxhdGZvcm1fZ2V0X2lycV9ieW5hbWUocGRldiwg
-IkNIR19WQlVTIik7DQo+ID4gKwlmcmVlX2lycShpcnEsIGNoYXJnZXIpOw0KPiBJJ2QgdXNlIHlv
-dXIgdW5yZWdpc3Rlcl9pcnEgZnVuY3Rpb24gaGVyZSBhcyB3ZWxsLiAgQmV0dGVyIHRoYW4gb3Bl
-bg0KPiBjb2RpbmcgdGhlIHNhbWUgdGhpbmcgYWdhaW4uIChtb3JlIG9idmlvdXNseSBjb3JyZWN0
-IGFzIHdlbGwgYXMgdGhlDQo+IGVycm9yIGNvbmRpdGlvbiB1bndpbmRpbmcgYWJvdmUgdGhlbiBs
-b29rcyBqdXN0IGxpa2Ugd2UgaGF2ZSBoZXJlKS4NCg0KRmFpciBwb2ludC4gV2lsbCB1cGRhdGUg
-dGhhdCB3aGVuIEkgc3RhcnQgb24gdGhlIGFkZGl0aW9uYWwgbW9kdWxlcyBJIG5lZWQgdG8NCnN1
-Ym1pdC4gVGhhbmtzLg0K
+On 03/02/2015 11:39 AM, Roberta Dobrescu wrote:
+> The return value of gpiod_to_irq should be checked before giving
+> it to devm_request_threaded_irq in order to not pass an error
+> code in case it fails.
+>
+> Signed-off-by: Roberta Dobrescu <roberta.dobrescu@gmail.com>
+> Reviewed-by: Vlad Dogaru <vlad.dogaru@intel.com>
+> ---
+> gpiod_to_irq also appears in the following drivers:
+> 	* drivers/iio/accel/bmc150-accel.c
+> 	* drivers/iio/accel/kxcjk-1013.c
+> 	* drivers/iio/accel/mma9553.c
+> 	* drivers/iio/gyro/bmg160.c
+> 	* drivers/iio/imu/kmx61.c
+> 	* drivers/iio/proximity/sx9500.c,
+>
+> something like this:
+>
+> <code>
+> 	ret = gpiod_to_irq(gpio);
+>
+> 	dev_dbg(dev, "GPIO resource, no:%d irq:%d\n", desc_to_gpio(gpio), ret);
+>
+> 	return ret;
+> </code>
+
+Only slightly related, but why are these drivers even using GPIOs to get the 
+IRQs. As far as I can see the GPIOs are not used otherwise in which case 
+they should rather request the IRQ directly than going making the detour via 
+the GPIO.
+
+- Lars
+
