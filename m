@@ -1,109 +1,163 @@
-Return-Path: <mpa@pengutronix.de>
-Date: Mon, 2 Mar 2015 20:12:01 +0100
-From: Markus Pargmann <mpa@pengutronix.de>
-To: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-Cc: Shawn Guo <shawn.guo@linaro.org>, Samuel Ortiz <sameo@linux.intel.com>,
-	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Fabio Estevam <festevam@gmail.com>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Mark Rutland <mark.rutland@arm.com>, devicetree@vger.kernel.org,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Eric =?utf-8?Q?B=C3=A9nard?= <eric@eukrea.com>,
-	Pawel Moll <pawel.moll@arm.com>,
-	Ian Campbell <ijc+devicetree@hellion.org.uk>,
-	linux-iio@vger.kernel.org, Kumar Gala <galak@codeaurora.org>,
-	Denis Carikli <denis@eukrea.com>, Rob Herring <robh+dt@kernel.org>,
-	Sascha Hauer <kernel@pengutronix.de>, linux-input@vger.kernel.org,
-	Lee Jones <lee.jones@linaro.org>,
-	linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH v5 1/6] mfd: fsl imx25 Touchscreen ADC driver
-Message-ID: <20150302191201.GA26884@pengutronix.de>
-References: <1422108103-15052-1-git-send-email-mpa@pengutronix.de>
- <1422108103-15052-2-git-send-email-mpa@pengutronix.de>
- <20150217191438.GF19388@pengutronix.de>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="6c2NcOVqGQ03X4Wi"
-In-Reply-To: <20150217191438.GF19388@pengutronix.de>
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mga01.intel.com ([192.55.52.88]:22511 "EHLO mga01.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1754008AbbCBTD3 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Mon, 2 Mar 2015 14:03:29 -0500
+From: Octavian Purdila <octavian.purdila@intel.com>
+To: linux-iio@vger.kernel.org
+Cc: Octavian Purdila <octavian.purdila@intel.com>
+Subject: [PATCH] iio: fix drivers that check buffer->scan_mask
+Date: Mon,  2 Mar 2015 21:03:05 +0200
+Message-Id: <1425322985-24190-1-git-send-email-octavian.purdila@intel.com>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
+If the in-kernel push interface is used we may have a different masks
+on the device buffer and the kernel buffer and in this case the device
+should generate data for the reunion of the buffers, which is
+available at indio_dev->active_scan_mask.
 
---6c2NcOVqGQ03X4Wi
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Compiled tested only except for bmc150-accel which was tested at
+runtime with the hardware.
 
-Hi,
+Signed-off-by: Octavian Purdila <octavian.purdila@intel.com>
+---
+ drivers/iio/accel/bma180.c       | 2 +-
+ drivers/iio/accel/bmc150-accel.c | 2 +-
+ drivers/iio/accel/kxcjk-1013.c   | 2 +-
+ drivers/iio/adc/at91_adc.c       | 5 ++---
+ drivers/iio/adc/ti_am335x_adc.c  | 3 +--
+ drivers/iio/gyro/bmg160.c        | 2 +-
+ drivers/iio/imu/kmx61.c          | 2 +-
+ drivers/iio/proximity/sx9500.c   | 2 +-
+ 8 files changed, 9 insertions(+), 11 deletions(-)
 
-On Tue, Feb 17, 2015 at 08:14:38PM +0100, Uwe Kleine-K=C3=B6nig wrote:
-> Hello Markus,
->=20
-> On Sat, Jan 24, 2015 at 03:01:38PM +0100, Markus Pargmann wrote:
-> > +config MFD_MX25_TSADC
-> > +	tristate "Freescale i.MX25 integrated Touchscreen and ADC unit"
-> > +	select REGMAP_MMIO
-> > +	depends on SOC_IMX25
-> Can you make that:
->=20
-> 	depends on SOC_IMX25 || COMPILE_TEST
->=20
-> ?
+diff --git a/drivers/iio/accel/bma180.c b/drivers/iio/accel/bma180.c
+index 1096da3..75c6d21 100644
+--- a/drivers/iio/accel/bma180.c
++++ b/drivers/iio/accel/bma180.c
+@@ -659,7 +659,7 @@ static irqreturn_t bma180_trigger_handler(int irq, void *p)
+ 
+ 	mutex_lock(&data->mutex);
+ 
+-	for_each_set_bit(bit, indio_dev->buffer->scan_mask,
++	for_each_set_bit(bit, indio_dev->active_scan_mask,
+ 			 indio_dev->masklength) {
+ 		ret = bma180_get_data_reg(data, bit);
+ 		if (ret < 0) {
+diff --git a/drivers/iio/accel/bmc150-accel.c b/drivers/iio/accel/bmc150-accel.c
+index 46ac965..8004ce3 100644
+--- a/drivers/iio/accel/bmc150-accel.c
++++ b/drivers/iio/accel/bmc150-accel.c
+@@ -929,7 +929,7 @@ static irqreturn_t bmc150_accel_trigger_handler(int irq, void *p)
+ 	int bit, ret, i = 0;
+ 
+ 	mutex_lock(&data->mutex);
+-	for_each_set_bit(bit, indio_dev->buffer->scan_mask,
++	for_each_set_bit(bit, indio_dev->active_scan_mask,
+ 			 indio_dev->masklength) {
+ 		ret = i2c_smbus_read_word_data(data->client,
+ 					       BMC150_ACCEL_AXIS_TO_REG(bit));
+diff --git a/drivers/iio/accel/kxcjk-1013.c b/drivers/iio/accel/kxcjk-1013.c
+index a98b5d2..51da369 100644
+--- a/drivers/iio/accel/kxcjk-1013.c
++++ b/drivers/iio/accel/kxcjk-1013.c
+@@ -956,7 +956,7 @@ static irqreturn_t kxcjk1013_trigger_handler(int irq, void *p)
+ 
+ 	mutex_lock(&data->mutex);
+ 
+-	for_each_set_bit(bit, indio_dev->buffer->scan_mask,
++	for_each_set_bit(bit, indio_dev->active_scan_mask,
+ 			 indio_dev->masklength) {
+ 		ret = kxcjk1013_get_acc_reg(data, bit);
+ 		if (ret < 0) {
+diff --git a/drivers/iio/adc/at91_adc.c b/drivers/iio/adc/at91_adc.c
+index ff61ae5..8a0eb4a 100644
+--- a/drivers/iio/adc/at91_adc.c
++++ b/drivers/iio/adc/at91_adc.c
+@@ -544,7 +544,6 @@ static int at91_adc_configure_trigger(struct iio_trigger *trig, bool state)
+ {
+ 	struct iio_dev *idev = iio_trigger_get_drvdata(trig);
+ 	struct at91_adc_state *st = iio_priv(idev);
+-	struct iio_buffer *buffer = idev->buffer;
+ 	struct at91_adc_reg_desc *reg = st->registers;
+ 	u32 status = at91_adc_readl(st, reg->trigger_register);
+ 	int value;
+@@ -564,7 +563,7 @@ static int at91_adc_configure_trigger(struct iio_trigger *trig, bool state)
+ 		at91_adc_writel(st, reg->trigger_register,
+ 				status | value);
+ 
+-		for_each_set_bit(bit, buffer->scan_mask,
++		for_each_set_bit(bit, idev->active_scan_mask,
+ 				 st->num_channels) {
+ 			struct iio_chan_spec const *chan = idev->channels + bit;
+ 			at91_adc_writel(st, AT91_ADC_CHER,
+@@ -579,7 +578,7 @@ static int at91_adc_configure_trigger(struct iio_trigger *trig, bool state)
+ 		at91_adc_writel(st, reg->trigger_register,
+ 				status & ~value);
+ 
+-		for_each_set_bit(bit, buffer->scan_mask,
++		for_each_set_bit(bit, idev->active_scan_mask,
+ 				 st->num_channels) {
+ 			struct iio_chan_spec const *chan = idev->channels + bit;
+ 			at91_adc_writel(st, AT91_ADC_CHDR,
+diff --git a/drivers/iio/adc/ti_am335x_adc.c b/drivers/iio/adc/ti_am335x_adc.c
+index 5eea299..29de6c8 100644
+--- a/drivers/iio/adc/ti_am335x_adc.c
++++ b/drivers/iio/adc/ti_am335x_adc.c
+@@ -189,12 +189,11 @@ static int tiadc_buffer_preenable(struct iio_dev *indio_dev)
+ static int tiadc_buffer_postenable(struct iio_dev *indio_dev)
+ {
+ 	struct tiadc_device *adc_dev = iio_priv(indio_dev);
+-	struct iio_buffer *buffer = indio_dev->buffer;
+ 	unsigned int enb = 0;
+ 	u8 bit;
+ 
+ 	tiadc_step_config(indio_dev);
+-	for_each_set_bit(bit, buffer->scan_mask, adc_dev->channels)
++	for_each_set_bit(bit, indio_dev->active_scan_mask, adc_dev->channels)
+ 		enb |= (get_adc_step_bit(adc_dev, bit) << 1);
+ 	adc_dev->buffer_en_ch_steps = enb;
+ 
+diff --git a/drivers/iio/gyro/bmg160.c b/drivers/iio/gyro/bmg160.c
+index 56d68e1..4415f55 100644
+--- a/drivers/iio/gyro/bmg160.c
++++ b/drivers/iio/gyro/bmg160.c
+@@ -822,7 +822,7 @@ static irqreturn_t bmg160_trigger_handler(int irq, void *p)
+ 	int bit, ret, i = 0;
+ 
+ 	mutex_lock(&data->mutex);
+-	for_each_set_bit(bit, indio_dev->buffer->scan_mask,
++	for_each_set_bit(bit, indio_dev->active_scan_mask,
+ 			 indio_dev->masklength) {
+ 		ret = i2c_smbus_read_word_data(data->client,
+ 					       BMG160_AXIS_TO_REG(bit));
+diff --git a/drivers/iio/imu/kmx61.c b/drivers/iio/imu/kmx61.c
+index 75ab701..462a010 100644
+--- a/drivers/iio/imu/kmx61.c
++++ b/drivers/iio/imu/kmx61.c
+@@ -1215,7 +1215,7 @@ static irqreturn_t kmx61_trigger_handler(int irq, void *p)
+ 		base = KMX61_MAG_XOUT_L;
+ 
+ 	mutex_lock(&data->lock);
+-	for_each_set_bit(bit, indio_dev->buffer->scan_mask,
++	for_each_set_bit(bit, indio_dev->active_scan_mask,
+ 			 indio_dev->masklength) {
+ 		ret = kmx61_read_measurement(data, base, bit);
+ 		if (ret < 0) {
+diff --git a/drivers/iio/proximity/sx9500.c b/drivers/iio/proximity/sx9500.c
+index 0b4d794..fa40f6d 100644
+--- a/drivers/iio/proximity/sx9500.c
++++ b/drivers/iio/proximity/sx9500.c
+@@ -494,7 +494,7 @@ static irqreturn_t sx9500_trigger_handler(int irq, void *private)
+ 
+ 	mutex_lock(&data->mutex);
+ 
+-	for_each_set_bit(bit, indio_dev->buffer->scan_mask,
++	for_each_set_bit(bit, indio_dev->active_scan_mask,
+ 			 indio_dev->masklength) {
+ 		ret = sx9500_read_proximity(data, &indio_dev->channels[bit],
+ 					    &val);
+-- 
+1.9.1
 
-Yes, changed.
-
->=20
-> > + * The code contained herein is licensed under the GNU General Public
-> > + * License. You may obtain a copy of the GNU General Public License
-> > + * Version 2 or later at the following locations:
-> Which version of the GPL is your code licensed under?
-
-GPLv2 as described by MODULE_LICENSE. Will change the header
-accordingly.
-
->=20
-> > +static int mx25_tsadc_setup_irq(struct platform_device *pdev,
-> > +				struct mx25_tsadc *tsadc)
-> > [...]
-> > +	irq_set_chained_handler(irq, mx25_tsadc_irq_handler);
-> > +	irq_set_handler_data(irq, tsadc);
-> Do you need to reverse the order of these two calls to prevent the
-> handler being called while handler_data is still unset?
-
-Yes that's probably better although the subdevices which may cause
-interrupts here are not populated at this point.
-
-Thanks,
-
-Markus
-
---=20
-Pengutronix e.K.                           |                             |
-Industrial Linux Solutions                 | http://www.pengutronix.de/  |
-Peiner Str. 6-8, 31137 Hildesheim, Germany | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
-
---6c2NcOVqGQ03X4Wi
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
-
-iQIcBAEBAgAGBQJU9LYBAAoJEEpcgKtcEGQQTa8QAIvVq8nneBnZyXTeRaEaiQ9C
-ib3PxhTW3aXduGlXyBhULXJAW9hE97rVQeKUuYSZbW7SU3G55SuNq/J1DhIhLu3j
-ueC0j/kdALDAIUYr3YF5VDHCB7zJ3G5UmT+heD+sQzDv3qP6AAx93TU7eIDyM2GL
-ZN57p4NdjNSdI3x9301eGwgcnDMUI7KgfEtxJNV1+tU7/umQq7A5GDZ46+7/SE8j
-wRnvdKXjxqpEzygf9MF7vlYoeJuWie/2/9/pm7EZl8u4ibQvn4i5CLCCTM2GNNwn
-CrUhdTJpolARkFoJ/Ie4ieJd/PIYicinUayDsYWvTDnL7B8g6wJ0ZR1AcipIrBHw
-cYjcf8SHFWpnKmAmADw6Nxu6AvEoVf9Cc2vFl7fixirDJgrEkhvGVl/T3vuLQSBo
-EG38XTf5Kjgt5PJqosXigAGak0gYxZ12+qM2eS7MWKC5L+1NJs6UdF0TTKKyEHh6
-kfqBwfp1ZSRDgxaCzANMozxuFctLGETG3AoOgxsZ1ATu4l38rjCTjSIYzrs5CGyM
-3LPXQE6cWH1CvtZN5zR0plGYNTxh+L8+6I03tU4aCcPQ2ZdlX0qeaO28TT336C5g
-5uA5M+PZegvxfS/r2YzUWA+EyHBO6ouZalp23fUPYmNZEYd+9vxbXksbwf/O9alz
-9vx/g7EUWbO6jcqta2OE
-=IqLz
------END PGP SIGNATURE-----
-
---6c2NcOVqGQ03X4Wi--
