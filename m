@@ -22,91 +22,49 @@ Cc: Denis Carikli <denis@eukrea.com>,
 	Ian Campbell <ijc+devicetree@hellion.org.uk>,
 	Kumar Gala <galak@codeaurora.org>,
 	Markus Pargmann <mpa@pengutronix.de>
-Subject: [PATCH v7 2/8] ARM: dt: Binding documentation for imx25 GCQ
-Date: Tue,  3 Mar 2015 08:58:12 +0100
-Message-Id: <1425369498-25541-3-git-send-email-mpa@pengutronix.de>
+Subject: [PATCH v7 8/8] ARM: imx_v4_v5_defconfig: Add I.MX25 Touchscreen controller and ADC support.
+Date: Tue,  3 Mar 2015 08:58:18 +0100
+Message-Id: <1425369498-25541-9-git-send-email-mpa@pengutronix.de>
 In-Reply-To: <1425369498-25541-1-git-send-email-mpa@pengutronix.de>
 References: <1425369498-25541-1-git-send-email-mpa@pengutronix.de>
 List-ID: <linux-iio@vger.kernel.org>
 
-The documentation describes the bindings for the imx25 GCQ unit which is
-essentially a generic conversion queue using the imx25 ADC.
+From: Denis Carikli <denis@eukrea.com>
 
+Signed-off-by: Denis Carikli <denis@eukrea.com>
 Signed-off-by: Markus Pargmann <mpa@pengutronix.de>
 ---
+ arch/arm/configs/imx_v4_v5_defconfig | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-Notes:
-    Changes in v6:
-     - Changed bindings to use adc-refp and adc-refn. Also a bit of cleanup in the
-       setup routine.
-    
-    Changes in v5:
-     - Fixed locking
-     - Removed module owner
-
- .../devicetree/bindings/iio/adc/fsl,imx25-gcq.txt  | 54 ++++++++++++++++++++++
- 1 file changed, 54 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/iio/adc/fsl,imx25-gcq.txt
-
-diff --git a/Documentation/devicetree/bindings/iio/adc/fsl,imx25-gcq.txt b/Documentation/devicetree/bindings/iio/adc/fsl,imx25-gcq.txt
-new file mode 100644
-index 000000000000..9f7c08990034
---- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/adc/fsl,imx25-gcq.txt
-@@ -0,0 +1,54 @@
-+Freescale i.MX25 ADC GCQ device
-+
-+This is a generic conversion queue device that can convert any of the
-+analog inputs using the ADC unit of the i.MX25.
-+
-+Required properties:
-+ - compatible: Should be "fsl,imx25-gcq".
-+ - reg: Should be the register range of the module.
-+ - interrupts: Should be the interrupt number of the module.
-+   Typically this is <1>.
-+ - interrupt-parent: phandle to the tsadc module of the i.MX25.
-+ - #address-cells: Should be <1> (setting for the subnodes)
-+ - #size-cells: Should be <0> (setting for the subnodes)
-+
-+Optional properties:
-+ - vref-supply: The regulator supplying the ADC reference voltage.
-+   Required when at least one subnode uses the external reference.
-+
-+Sub-nodes:
-+Optionally you can define subnodes which define the reference voltage
-+for the analog inputs.
-+
-+Required properties for subnodes:
-+ - reg: Should be the number of the analog input.
-+     0: xp
-+     1: yp
-+     2: xn
-+     3: yn
-+     4: wiper
-+     5: inaux0
-+     6: inaux1
-+     7: inaux2
-+Optional properties for subnodes:
-+ - fsl,adc-refp: specifies the positive reference input as defined in
-+     <dt-bindings/iio/adc/fsl-imx25-gcq.h>
-+ - fsl,adc-refn: specifies the negative reference input as defined in
-+     <dt-bindings/iio/adc/fsl-imx25-gcq.h>
-+
-+Example:
-+
-+	adc: adc@50030800 {
-+		compatible = "fsl,imx25-gcq";
-+		reg = <0x50030800 0x60>;
-+		interrupt-parent = <&tscadc>;
-+		interrupts = <1>;
-+		#address-cells = <1>;
-+		#size-cells = <0>;
-+
-+		inaux@5 {
-+			reg = <5>;
-+			fsl,adc-refp = <MX25_ADC_REF_INT>;
-+			fsl,adc-refn = <MX25_ADC_REF_NGND>;
-+		};
-+	};
+diff --git a/arch/arm/configs/imx_v4_v5_defconfig b/arch/arm/configs/imx_v4_v5_defconfig
+index e6b0007355f8..e1bda0136f6c 100644
+--- a/arch/arm/configs/imx_v4_v5_defconfig
++++ b/arch/arm/configs/imx_v4_v5_defconfig
+@@ -89,6 +89,7 @@ CONFIG_KEYBOARD_IMX=y
+ # CONFIG_INPUT_MOUSE is not set
+ CONFIG_INPUT_TOUCHSCREEN=y
+ CONFIG_TOUCHSCREEN_ADS7846=m
++CONFIG_TOUCHSCREEN_MX25=y
+ CONFIG_TOUCHSCREEN_MC13783=y
+ # CONFIG_LEGACY_PTYS is not set
+ CONFIG_SERIAL_8250=m
+@@ -108,6 +109,7 @@ CONFIG_HWMON=m
+ CONFIG_SENSORS_MC13783_ADC=m
+ CONFIG_WATCHDOG=y
+ CONFIG_IMX2_WDT=y
++CONFIG_MFD_MX25_TSADC=y
+ CONFIG_MFD_MC13XXX_SPI=y
+ CONFIG_REGULATOR=y
+ CONFIG_REGULATOR_FIXED_VOLTAGE=y
+@@ -173,6 +175,8 @@ CONFIG_DMADEVICES=y
+ CONFIG_IMX_SDMA=y
+ CONFIG_IMX_DMA=y
+ # CONFIG_IOMMU_SUPPORT is not set
++CONFIG_IIO=y
++CONFIG_FSL_MX25_ADC=y
+ CONFIG_EXT2_FS=y
+ CONFIG_EXT3_FS=y
+ CONFIG_EXT4_FS=y
 -- 
 2.1.4
