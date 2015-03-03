@@ -1,87 +1,123 @@
-Return-Path: <mpa@pengutronix.de>
-From: Markus Pargmann <mpa@pengutronix.de>
-To: Shawn Guo <shawn.guo@linaro.org>,
-	Samuel Ortiz <sameo@linux.intel.com>,
-	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+Return-Path: <vlad.dogaru@intel.com>
+Date: Tue, 3 Mar 2015 09:02:32 +0200
+From: Vlad Dogaru <vlad.dogaru@intel.com>
+To: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
+Cc: Daniel Baluta <daniel.baluta@intel.com>,
+	Roberta Dobrescu <roberta.dobrescu@gmail.com>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	"octavian.purdila@intel.com" <octavian.purdila@intel.com>,
 	Jonathan Cameron <jic23@kernel.org>,
-	Fabio Estevam <festevam@gmail.com>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	Hartmut Knaack <knaack.h@gmx.de>
-Cc: Denis Carikli <denis@eukrea.com>,
-	=?UTF-8?q?Eric=20B=C3=A9nard?= <eric@eukrea.com>,
-	Sascha Hauer <kernel@pengutronix.de>,
-	linux-arm-kernel@lists.infradead.org,
-	Lee Jones <lee.jones@linaro.org>,
-	linux-input@vger.kernel.org,
-	linux-iio@vger.kernel.org,
+	Hartmut Knaack <knaack.h@gmx.de>,
 	Lars-Peter Clausen <lars@metafoo.de>,
-	devicetree@vger.kernel.org,
-	Rob Herring <robh+dt@kernel.org>,
-	Pawel Moll <pawel.moll@arm.com>,
-	Mark Rutland <mark.rutland@arm.com>,
-	Ian Campbell <ijc+devicetree@hellion.org.uk>,
-	Kumar Gala <galak@codeaurora.org>,
-	Markus Pargmann <mpa@pengutronix.de>
-Subject: [PATCH v7 0/8] imx25 adc and touchscreen driver
-Date: Tue,  3 Mar 2015 08:58:10 +0100
-Message-Id: <1425369498-25541-1-git-send-email-mpa@pengutronix.de>
+	Peter Meerwald <pmeerw@pmeerw.net>, kernel@pengutronix.de
+Subject: Re: [PATCH] iio: accel: mma9551: Check gpiod_to_irq return value
+Message-ID: <20150303070232.GC27074@vdogaru>
+References: <1425292752-7768-1-git-send-email-roberta.dobrescu@gmail.com>
+ <CAEnQRZCBt++Ebjd6uwu6mpVCrsZyDxX53mOf4c17T1RUGAsQMA@mail.gmail.com>
+ <20150302161503.GE7865@pengutronix.de>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+In-Reply-To: <20150302161503.GE7865@pengutronix.de>
 List-ID: <linux-iio@vger.kernel.org>
 
-Hi,
+On Mon, Mar 02, 2015 at 05:15:03PM +0100, Uwe Kleine-König wrote:
+> Hello,
+> 
+> On Mon, Mar 02, 2015 at 04:09:52PM +0200, Daniel Baluta wrote:
+> > On Mon, Mar 2, 2015 at 12:39 PM, Roberta Dobrescu
+> > <roberta.dobrescu@gmail.com> wrote:
+> > > The return value of gpiod_to_irq should be checked before giving
+> > > it to devm_request_threaded_irq in order to not pass an error
+> > > code in case it fails.
+> nothing really bad should happen because request_irq with a negative irq
+> parameter just returns an error I think. So it's not urgent, but still a
+> good idea to fix.
+> 
+> > > Signed-off-by: Roberta Dobrescu <roberta.dobrescu@gmail.com>
+> > > Reviewed-by: Vlad Dogaru <vlad.dogaru@intel.com>
+> It's good habit to point out the commit that introduced the problem. In
+> this case this would be:
+> 
+> Fixes: c78b91716340 ("iio: add driver for Freescale MMA9551L")
+> 
+> > > ---
+> > > gpiod_to_irq also appears in the following drivers:
+> > >         * drivers/iio/accel/bmc150-accel.c
+> > >         * drivers/iio/accel/kxcjk-1013.c
+> > >         * drivers/iio/accel/mma9553.c
+> > >         * drivers/iio/gyro/bmg160.c
+> > >         * drivers/iio/imu/kmx61.c
+> > >         * drivers/iio/proximity/sx9500.c,
+> > >
+> > > something like this:
+> > >
+> > > <code>
+> > >         ret = gpiod_to_irq(gpio);
+> > >
+> > >         dev_dbg(dev, "GPIO resource, no:%d irq:%d\n", desc_to_gpio(gpio), ret);
+> > >
+> > >         return ret;
+> > > </code>
+> > >
+> > > The return value of the functions containing the above code is checked,
+> > > so the only problem would be that the debug message would contain a wrong
+> > > value for irq in case gpiod_to_irq fails. So it doesn't affects much.
+> Still worth fixing, isn't it? Also the error isn't handled, but ignored,
+> like:
+> 
+> 	if (client->irq <= 0)
+> 		client->irq = sx9500_gpio_probe(client, data);
+> 
+> 	if (client->irq > 0) {
+> 		ret = devm_request_threaded_irq(....
+> 
+> but if an irq is specified (be it by means of a "normal" irq or by
+> specifying a gpio in the device tree/acpi tables) I expect the driver to
+> fail probing instead of just behaving as if no irq would be available.
 
-This series adds a driver for the Freescale i.MX25 SoC internal ADC unit which
-is used for touchscreen and ADC. The driver consists of three parts, the MFD
-driver which handles interrupts and some central configuration registers, the
-ADC driver and the touchscreen driver.
+If there is no IRQ available this device would still be able to do raw
+reads, although I admit I have not tested this.
 
-v7 has some modifications in the probe functions to use devres irq requests.
-irq checks were fixed to check for irqs <= 0. The header was cleaned up to have
-a more uniform presentation of the bit fields. Detailed changelogs are attached
-to the according mails.
+> I don't know how this was tested, but I wonder further about
+> 
+> 	#define SX9500_GPIO_NAME                "sx9500_gpio"
+> 	...
+> 	devm_gpiod_get_index(dev, SX9500_GPIO_NAME, 0, GPIOD_IN);
+> 
+> If I understand the code correctly that is supposed to look for
+> "sx9500_gpio-gpio" in the ACPI data. Is this really correct?
 
-Best Regards,
+I'm in the process of changing this, will post some patches soon.  This
+should include failing to probe if an IRQ is not found.
 
-Markus
+At the time I wrote the driver, I wasn't using Device Tree and ACPI had
+no support for _DSD (or at least I wasn't aware of it), so the name did
+not matter, only the index.
 
+Thanks for the 
 
-Denis Carikli (2):
-  ARM: dts: imx25: Add TSC and ADC support
-  ARM: imx_v4_v5_defconfig: Add I.MX25 Touchscreen controller and ADC
-    support.
-
-Markus Pargmann (6):
-  ARM: dt: Binding documentation for imx25 ADC/TSC
-  ARM: dt: Binding documentation for imx25 GCQ
-  ARM: dt: Binding documentation for imx25 touchscreen controller
-  mfd: fsl imx25 Touchscreen ADC driver
-  iio: adc: fsl,imx25-gcq driver
-  input: touchscreen: imx25 tcq driver
-
- .../devicetree/bindings/iio/adc/fsl,imx25-gcq.txt  |  54 ++
- .../bindings/input/touchscreen/fsl-mx25-tcq.txt    |  29 +
- .../devicetree/bindings/mfd/fsl-imx25-tsadc.txt    |  46 ++
- arch/arm/boot/dts/imx25.dtsi                       |  30 +-
- arch/arm/configs/imx_v4_v5_defconfig               |   4 +
- drivers/iio/adc/Kconfig                            |   7 +
- drivers/iio/adc/Makefile                           |   1 +
- drivers/iio/adc/fsl-imx25-gcq.c                    | 356 +++++++++++++
- drivers/input/touchscreen/Kconfig                  |   6 +
- drivers/input/touchscreen/Makefile                 |   1 +
- drivers/input/touchscreen/fsl-imx25-tcq.c          | 593 +++++++++++++++++++++
- drivers/mfd/Kconfig                                |  10 +
- drivers/mfd/Makefile                               |   2 +
- drivers/mfd/fsl-imx25-tsadc.c                      | 164 ++++++
- include/dt-bindings/iio/adc/fsl-imx25-gcq.h        |  18 +
- include/linux/mfd/imx25-tsadc.h                    | 141 +++++
- 16 files changed, 1459 insertions(+), 3 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/iio/adc/fsl,imx25-gcq.txt
- create mode 100644 Documentation/devicetree/bindings/input/touchscreen/fsl-mx25-tcq.txt
- create mode 100644 Documentation/devicetree/bindings/mfd/fsl-imx25-tsadc.txt
- create mode 100644 drivers/iio/adc/fsl-imx25-gcq.c
- create mode 100644 drivers/input/touchscreen/fsl-imx25-tcq.c
- create mode 100644 drivers/mfd/fsl-imx25-tsadc.c
- create mode 100644 include/dt-bindings/iio/adc/fsl-imx25-gcq.h
- create mode 100644 include/linux/mfd/imx25-tsadc.h
-
--- 
-2.1.4
+> > >  drivers/iio/accel/mma9551.c | 6 +++++-
+> > >  1 file changed, 5 insertions(+), 1 deletion(-)
+> > >
+> > > diff --git a/drivers/iio/accel/mma9551.c b/drivers/iio/accel/mma9551.c
+> > > index 46c3835..b6f3041 100644
+> > > --- a/drivers/iio/accel/mma9551.c
+> > > +++ b/drivers/iio/accel/mma9551.c
+> > > @@ -428,7 +428,11 @@ static int mma9551_gpio_probe(struct iio_dev *indio_dev)
+> > >                 if (ret)
+> > >                         return ret;
+> > >
+> > > -               data->irqs[i] = gpiod_to_irq(gpio);
+> > > +               ret = gpiod_to_irq(gpio);
+> > > +               if (ret < 0)
+> > > +                       return ret;
+> I wonder if you should handle 0 as error, too. But even as is:
+> 
+> 	Acked-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+> 
+> Thanks
+> Uwe
+> 
+> -- 
+> Pengutronix e.K.                           | Uwe Kleine-König            |
+> Industrial Linux Solutions                 | http://www.pengutronix.de/  |
