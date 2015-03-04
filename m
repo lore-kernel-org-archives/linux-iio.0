@@ -1,249 +1,146 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-we0-f178.google.com ([74.125.82.178]:38747 "EHLO
-	mail-we0-f178.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754221AbbCDNzT (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 4 Mar 2015 08:55:19 -0500
-Received: by wesw55 with SMTP id w55so46448111wes.5
-        for <linux-iio@vger.kernel.org>; Wed, 04 Mar 2015 05:55:17 -0800 (PST)
+Received: from mga09.intel.com ([134.134.136.24]:5581 "EHLO mga09.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751326AbbCDN53 convert rfc822-to-8bit (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 4 Mar 2015 08:57:29 -0500
+From: "Suman, Viorel" <viorel.suman@intel.com>
+To: "Reus, Adriana" <adriana.reus@intel.com>,
+	"jic23@kernel.org" <jic23@kernel.org>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+CC: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"Pandruvada, Srinivas" <srinivas.pandruvada@intel.com>,
+	"Reus, Adriana" <adriana.reus@intel.com>
+Subject: RE: [PATCH] iio:inv-mpu6050: Fix inconsistency for the scale channel
+Date: Wed, 4 Mar 2015 13:57:23 +0000
+Message-ID: <2FFB68359810C64CBFB43927F67FC93F48873F58@IRSMSX102.ger.corp.intel.com>
+References: <1424702451-1299-1-git-send-email-adriana.reus@intel.com>
+In-Reply-To: <1424702451-1299-1-git-send-email-adriana.reus@intel.com>
+Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
-In-Reply-To: <54F5F380.7030509@metafoo.de>
-References: <1425399662-5539-1-git-send-email-octavian.purdila@intel.com>
-	<1425399662-5539-2-git-send-email-octavian.purdila@intel.com>
-	<54F5F380.7030509@metafoo.de>
-Date: Wed, 4 Mar 2015 15:55:17 +0200
-Message-ID: <CAE1zot+z7q5Oziv5rjxbWw0FO32eQciGOHQXLp5UG9zbeiNdBg@mail.gmail.com>
-Subject: Re: [PATCH v4 1/3] iio: add watermark logic to iio read and poll
-From: Octavian Purdila <octavian.purdila@intel.com>
-To: Lars-Peter Clausen <lars@metafoo.de>
-Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
-	Josselin Costanzi <josselin.costanzi@mobile-devices.fr>
-Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Tue, Mar 3, 2015 at 7:46 PM, Lars-Peter Clausen <lars@metafoo.de> wrote:
-> On 03/03/2015 05:21 PM, Octavian Purdila wrote:
-> [...]
 
-Hi Lars,
+> -----Original Message-----
+> From: linux-iio-owner@vger.kernel.org [mailto:linux-iio-
+> owner@vger.kernel.org] On Behalf Of Adriana Reus
+> Sent: Monday, February 23, 2015 4:41 PM
+> To: jic23@kernel.org; linux-iio@vger.kernel.org
+> Cc: linux-kernel@vger.kernel.org; Pandruvada, Srinivas; Reus, Adriana
+> Subject: [PATCH] iio:inv-mpu6050: Fix inconsistency for the scale channel
+> 
+> Fix inconsistency in the semantics of the scale attribute.
+> For scale the write_raw function was considering the scale table index and
+> writing the appropriate value into the range register, while for read_raw it
+> was outputting the actual scale.
+> Fix this behaviour and adhere to the iio ABI specification.
+> 
+> Signed-off-by: Adriana Reus <adriana.reus@intel.com>
 
-Thank you for the review!
+Reviewed-by: Viorel Suman <viorel.suman@intel.com>
 
->>
->> @@ -61,26 +64,48 @@ ssize_t iio_buffer_read_first_n_outer(struct file
->> *filp, char __user *buf,
->>         if (!rb || !rb->access->read_first_n)
->>                 return -EINVAL;
->>
->> -       do {
->> -               if (!iio_buffer_data_available(rb)) {
->> -                       if (filp->f_flags & O_NONBLOCK)
->> -                               return -EAGAIN;
->> +       /*
->> +        * If datum_size is 0 there will never be anything to read from
->> the
->> +        * buffer, so signal end of file now.
->> +        */
->> +       if (!datum_size)
->> +               return 0;
->>
->> +       to_read = min_t(size_t, n / datum_size, rb->watermark);
->
->
-> I'd maybe call it wakeup_threshold.
->
->> +
->> +       do {
->> +               if (filp->f_flags & O_NONBLOCK) {
->> +                       if (!iio_buffer_data_available(rb)) {
->> +                               ret = -EAGAIN;
->> +                               break;
->> +                       }
->> +               } else {
->>                         ret = wait_event_interruptible(rb->pollq,
->> -                                       iio_buffer_data_available(rb) ||
->> -                                       indio_dev->info == NULL);
->> +                              iio_buffer_data_available(rb) >= to_read ||
->> +                                                      indio_dev->info ==
->> NULL);
->
->
-> This needs also to evaluate to true if the buffer is disabled so we have a
-> chance to read any amount residue sample that are less than watermark.
->
-
-Good point.
-
->>                         if (ret)
->>                                 return ret;
->> -                       if (indio_dev->info == NULL)
->> -                               return -ENODEV;
->> +                       if (indio_dev->info == NULL) {
->> +                               ret = -ENODEV;
->> +                               break;
->> +                       }
->>                 }
->>
->> -               ret = rb->access->read_first_n(rb, n, buf);
->> -               if (ret == 0 && (filp->f_flags & O_NONBLOCK))
->> -                       ret = -EAGAIN;
->> -        } while (ret == 0);
->> +               ret = rb->access->read_first_n(rb, n, buf + count);
->> +               if (ret < 0)
->> +                       break;
->>
->> -       return ret;
->> +               count += ret;
->> +               n -= ret;
->> +               to_read -= ret / datum_size;
->
->
->
-> This will underflow if there are more than watermark sample in the buffer
-> and and more than watermark samples have been requested by userspace...
->
->
->> +        } while (to_read > 0);
->
->
-> ... and then we get trapped in a very long loop.
->
-> In my opinion there is no need to change the loop at all, only update the
-> wakeup condition.
->
-
-Correct, how did I miss that :/ I will rewrite the code to keep the
-loop unchanged.
-
->> +
->> +       if (count)
->> +               return count;
->> +       if (ret < 0)
->> +               return ret;
->> +
->> +       return -EAGAIN;
->>   }
->>
->>   /**
->> @@ -96,9 +121,8 @@ unsigned int iio_buffer_poll(struct file *filp,
->>                 return -ENODEV;
->>
->>         poll_wait(filp, &rb->pollq, wait);
->> -       if (iio_buffer_data_available(rb))
->> +       if (iio_buffer_data_available(rb) >= rb->watermark)
->
->
-> Same here needs to wakeup if the buffer is disabled and there is at least
-> one sample.
->
-
-Ok.
-
->>                 return POLLIN | POLLRDNORM;
->> -       /* need a way of knowing if there may be enough data... */
->>         return 0;
->>   }
->>
-> [...]
->>
->> @@ -418,7 +443,16 @@ static ssize_t iio_buffer_write_length(struct device
->> *dev,
->>         }
->>         mutex_unlock(&indio_dev->mlock);
->>
->> -       return ret ? ret : len;
->> +       if (ret)
->> +               return ret;
->> +
->> +       if (buffer->length)
->> +               val = buffer->length;
->> +
->> +       if (val < buffer->watermark)
->> +               buffer->watermark = val;
->
->
-> Needs to be inside the locked section.
->
-
-Ok.
-
->> +
->> +       return len;
->>   }
->
-> [...]
->>
->> +static ssize_t iio_buffer_store_watermark(struct device *dev,
->> +                                         struct device_attribute *attr,
->> +                                         const char *buf,
->> +                                         size_t len)
->> +{
->> +       struct iio_dev *indio_dev = dev_to_iio_dev(dev);
->> +       struct iio_buffer *buffer = indio_dev->buffer;
->> +       unsigned int val;
->> +       int ret;
->> +
->> +       ret = kstrtouint(buf, 10, &val);
->> +       if (ret)
->> +               return ret;
->> +
->> +       if (val > buffer->length)
->
->
-> Same here.
-
-Ok.
-
->
->> +               return -EINVAL;
->> +
->> +       mutex_lock(&indio_dev->mlock);
->> +       if (iio_buffer_is_active(indio_dev->buffer)) {
->> +               ret = -EBUSY;
->> +               goto out;
->> +       }
->> +
->> +       buffer->watermark = val;
->
->
-> We should probably reject 0.
->
-
-I agree.
-
->> +       ret = 0;
->> +out:
->> +       mutex_unlock(&indio_dev->mlock);
->> +       return ret ? ret : len;
->> +}
->> +
->
-> [...]
->>
->>   int iio_buffer_alloc_sysfs_and_mask(struct iio_dev *indio_dev)
->> @@ -944,8 +1022,18 @@ static const void *iio_demux(struct iio_buffer
->> *buffer,
->>   static int iio_push_to_buffer(struct iio_buffer *buffer, const void
->> *data)
->>   {
->>         const void *dataout = iio_demux(buffer, data);
->> +       int ret;
->> +
->> +       ret = buffer->access->store_to(buffer, dataout);
->> +       if (ret)
->> +               return ret;
->>
->> -       return buffer->access->store_to(buffer, dataout);
->> +       /*
->> +        * We can't just test for watermark to decide if we wake the poll
->> queue
->> +        * because read may request less samples than the watermark.
->> +        */
->> +       wake_up_interruptible(&buffer->pollq);
->
->
-> What happened to poll parameters?
->
-
-I don't understand you question, can you please elaborate?
+> ---
+>  drivers/iio/imu/inv_mpu6050/inv_mpu_core.c | 56 ++++++++++++++++--
+> ------------
+>  1 file changed, 30 insertions(+), 26 deletions(-)
+> 
+> diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
+> b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
+> index 9be9b20..4cf056d 100644
+> --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
+> +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
+> @@ -401,42 +401,46 @@ error_read_raw:
+>  	}
+>  }
+> 
+> -static int inv_mpu6050_write_fsr(struct inv_mpu6050_state *st, int fsr)
+> +static int inv_mpu6050_write_gyro_scale(struct inv_mpu6050_state *st,
+> +int val)
+>  {
+> -	int result;
+> +	int result, i;
+>  	u8 d;
+> 
+> -	if (fsr < 0 || fsr > INV_MPU6050_MAX_GYRO_FS_PARAM)
+> -		return -EINVAL;
+> -	if (fsr == st->chip_config.fsr)
+> -		return 0;
+> +	for (i = 0; i < ARRAY_SIZE(gyro_scale_6050); ++i) {
+> +		if (gyro_scale_6050[i] == val) {
+> +			d = (i <<
+> INV_MPU6050_GYRO_CONFIG_FSR_SHIFT);
+> +			result = inv_mpu6050_write_reg(st,
+> +					st->reg->gyro_config, d);
+> +			if (result)
+> +				return result;
+> 
+> -	d = (fsr << INV_MPU6050_GYRO_CONFIG_FSR_SHIFT);
+> -	result = inv_mpu6050_write_reg(st, st->reg->gyro_config, d);
+> -	if (result)
+> -		return result;
+> -	st->chip_config.fsr = fsr;
+> +			st->chip_config.fsr = i;
+> +			return 0;
+> +		}
+> +	}
+> 
+> -	return 0;
+> +	return -EINVAL;
+>  }
+> 
+> -static int inv_mpu6050_write_accel_fs(struct inv_mpu6050_state *st, int
+> fs)
+> +static int inv_mpu6050_write_accel_scale(struct inv_mpu6050_state *st,
+> +int val)
+>  {
+> -	int result;
+> +	int result, i;
+>  	u8 d;
+> 
+> -	if (fs < 0 || fs > INV_MPU6050_MAX_ACCL_FS_PARAM)
+> -		return -EINVAL;
+> -	if (fs == st->chip_config.accl_fs)
+> -		return 0;
+> +	for (i = 0; i < ARRAY_SIZE(accel_scale); ++i) {
+> +		if (accel_scale[i] == val) {
+> +			d = (i << INV_MPU6050_ACCL_CONFIG_FSR_SHIFT);
+> +			result = inv_mpu6050_write_reg(st,
+> +					st->reg->accl_config, d);
+> +			if (result)
+> +				return result;
+> 
+> -	d = (fs << INV_MPU6050_ACCL_CONFIG_FSR_SHIFT);
+> -	result = inv_mpu6050_write_reg(st, st->reg->accl_config, d);
+> -	if (result)
+> -		return result;
+> -	st->chip_config.accl_fs = fs;
+> +			st->chip_config.accl_fs = i;
+> +			return 0;
+> +		}
+> +	}
+> 
+> -	return 0;
+> +	return -EINVAL;
+>  }
+> 
+>  static int inv_mpu6050_write_raw(struct iio_dev *indio_dev, @@ -463,10
+> +467,10 @@ static int inv_mpu6050_write_raw(struct iio_dev *indio_dev,
+>  	case IIO_CHAN_INFO_SCALE:
+>  		switch (chan->type) {
+>  		case IIO_ANGL_VEL:
+> -			result = inv_mpu6050_write_fsr(st, val);
+> +			result = inv_mpu6050_write_gyro_scale(st, val2);
+>  			break;
+>  		case IIO_ACCEL:
+> -			result = inv_mpu6050_write_accel_fs(st, val);
+> +			result = inv_mpu6050_write_accel_scale(st, val2);
+>  			break;
+>  		default:
+>  			result = -EINVAL;
+> --
+> 1.9.1
+> 
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in the
+> body of a message to majordomo@vger.kernel.org More majordomo info
+> at  http://vger.kernel.org/majordomo-info.html
