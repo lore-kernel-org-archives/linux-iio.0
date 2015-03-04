@@ -1,260 +1,38 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga02.intel.com ([134.134.136.20]:33450 "EHLO mga02.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S933155AbbCDR4U (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Wed, 4 Mar 2015 12:56:20 -0500
-From: Octavian Purdila <octavian.purdila@intel.com>
-To: linux-iio@vger.kernel.org
-Cc: srinivas.pandruvada@linux.intel.com,
-	Octavian Purdila <octavian.purdila@intel.com>
-Subject: [PATCH v5 2/3] iio: add support for hardware fifo
-Date: Wed,  4 Mar 2015 19:56:12 +0200
-Message-Id: <1425491773-28499-3-git-send-email-octavian.purdila@intel.com>
-In-Reply-To: <1425491773-28499-1-git-send-email-octavian.purdila@intel.com>
-References: <1425491773-28499-1-git-send-email-octavian.purdila@intel.com>
+Received: from mail-pd0-f170.google.com ([209.85.192.170]:40162 "EHLO
+	mail-pd0-f170.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1756987AbbCDDou (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 3 Mar 2015 22:44:50 -0500
+Received: by pdbfp1 with SMTP id fp1so16668969pdb.7
+        for <linux-iio@vger.kernel.org>; Tue, 03 Mar 2015 19:44:50 -0800 (PST)
+From: Masanari Iida <standby24x7@gmail.com>
+To: jic23@kernel.org, linux-kernel.vger.kernel.org@masabert,
+	linux-iio@vger.kernel.org
+Cc: Masanari Iida <standby24x7@gmail.com>
+Subject: [PATCH] iio:adc: Fix typo in MODULE_DESCRIPTION in ad7793.c
+Date: Wed,  4 Mar 2015 12:44:33 +0900
+Message-Id: <1425440673-12400-1-git-send-email-standby24x7@gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Some devices have hardware buffers that can store a number of samples
-for later consumption. Hardware usually provides interrupts to notify
-the processor when the fifo is full or when it has reached a certain
-threshold. This helps with reducing the number of interrupts to the
-host processor and thus it helps decreasing the power consumption.
+This patch fix spelling typo in MODULE_DESCRIPTION
 
-This patch adds support for hardware fifo to IIO by adding drivers
-operations for flushing the hadware fifo and setting and getting the
-watermark level.
-
-Since a driver may support hardware fifo only when not in triggered
-buffer mode (due to different samantics of hardware fifo sampling and
-triggered sampling) this patch changes the IIO core code to allow
-falling back to non-triggered buffered mode if no trigger is enabled.
-
-Signed-off-by: Octavian Purdila <octavian.purdila@intel.com>
+Signed-off-by: Masanari Iida <standby24x7@gmail.com>
 ---
- Documentation/ABI/testing/sysfs-bus-iio | 25 ++++++++++++
- drivers/iio/industrialio-buffer.c       | 69 +++++++++++++++++++++++++++------
- include/linux/iio/iio.h                 | 26 +++++++++++++
- 3 files changed, 108 insertions(+), 12 deletions(-)
+ drivers/iio/adc/ad7793.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
-index 1283ca7..143ddf2d 100644
---- a/Documentation/ABI/testing/sysfs-bus-iio
-+++ b/Documentation/ABI/testing/sysfs-bus-iio
-@@ -1264,3 +1264,28 @@ Description:
- 		allows the application to block on poll with a timeout and read
- 		the available samples after the timeout expires and thus have a
- 		maximum delay guarantee.
-+
-+What:          /sys/bus/iio/devices/iio:deviceX/buffer/hwfifo_watermark
-+KernelVersion: 3.21
-+Contact:       linux-iio@vger.kernel.org
-+Description:
-+	       Read-only entry that contains a single integer specifying the
-+	       current level for the hardware fifo watermark level. If this
-+	       value is negative it means that the device does not support a
-+	       hardware fifo. If this value is 0 it means that the hardware fifo
-+	       is currently disabled.
-+	       If this value is strictly positive it signals that the hardware
-+	       fifo of the device is active and that samples are stored in an
-+	       internal hardware buffer. When the level of the hardware fifo
-+	       reaches the watermark level the device will flush its internal
-+	       buffer to the device buffer. Because of this a trigger is not
-+	       needed to use the device in buffer mode.
-+	       The hardware watermark level is set by the driver based on the
-+	       value set by the user in buffer/watermark but taking into account
-+	       the limitations of the hardware (e.g. most hardware buffers are
-+	       limited to 32-64 samples).
-+	       Because the sematics of triggers and hardware fifo may be
-+	       different (e.g. the hadware fifo may record samples according to
-+	       the sample rate while an any-motion trigger generates samples
-+	       based on the set rate of change) setting a trigger may disable
-+	       the hardware fifo.
-diff --git a/drivers/iio/industrialio-buffer.c b/drivers/iio/industrialio-buffer.c
-index a4f4f07..b6f1bd4 100644
---- a/drivers/iio/industrialio-buffer.c
-+++ b/drivers/iio/industrialio-buffer.c
-@@ -42,18 +42,47 @@ static size_t iio_buffer_data_available(struct iio_buffer *buf)
- 	return buf->access->data_available(buf);
- }
+diff --git a/drivers/iio/adc/ad7793.c b/drivers/iio/adc/ad7793.c
+index 4dddeab..b84922a 100644
+--- a/drivers/iio/adc/ad7793.c
++++ b/drivers/iio/adc/ad7793.c
+@@ -861,5 +861,5 @@ static struct spi_driver ad7793_driver = {
+ module_spi_driver(ad7793_driver);
  
-+static int iio_buffer_flush_hwfifo(struct iio_dev *indio_dev,
-+				   struct iio_buffer *buf, size_t required)
-+{
-+	if (!indio_dev->info->hwfifo_flush)
-+		return -ENODEV;
-+
-+	return indio_dev->info->hwfifo_flush(indio_dev, required);
-+}
-+
- static bool iio_buffer_ready(struct iio_dev *indio_dev, struct iio_buffer *buf,
--			     size_t to_wait)
-+			     size_t to_wait, bool try_flush)
- {
-+	size_t avail;
-+	int flushed = 0;
-+
- 	/* wakeup if the device was unregistered */
- 	if (!indio_dev->info)
- 		return true;
- 
- 	/* drain the buffer if it was disabled */
--	if (!iio_buffer_is_active(buf))
-+	if (!iio_buffer_is_active(buf)) {
- 		to_wait = min_t(size_t, to_wait, 1);
-+		try_flush = false;
-+	}
-+
-+	avail = iio_buffer_data_available(buf);
- 
--	if (iio_buffer_data_available(buf) >= to_wait)
-+	if (avail >= to_wait) {
-+		/* force a flush for non-blocking reads */
-+		if (!to_wait && !avail && try_flush)
-+			iio_buffer_flush_hwfifo(indio_dev, buf, 1);
-+		return true;
-+	}
-+
-+	if (try_flush)
-+		flushed = iio_buffer_flush_hwfifo(indio_dev, buf,
-+						  to_wait - avail);
-+	if (flushed <= 0)
-+		return false;
-+
-+	if (avail + flushed >= to_wait)
- 		return true;
- 
- 	return false;
-@@ -92,7 +121,7 @@ ssize_t iio_buffer_read_first_n_outer(struct file *filp, char __user *buf,
- 
- 	do {
- 		ret = wait_event_interruptible(rb->pollq,
--				      iio_buffer_ready(indio_dev, rb, to_wait));
-+			       iio_buffer_ready(indio_dev, rb, to_wait, true));
- 		if (ret)
- 			return ret;
- 
-@@ -120,7 +149,7 @@ unsigned int iio_buffer_poll(struct file *filp,
- 		return -ENODEV;
- 
- 	poll_wait(filp, &rb->pollq, wait);
--	if (iio_buffer_ready(indio_dev, rb, rb->watermark))
-+	if (iio_buffer_ready(indio_dev, rb, rb->watermark, false))
- 		return POLLIN | POLLRDNORM;
- 	return 0;
- }
-@@ -659,19 +688,16 @@ static int __iio_update_buffers(struct iio_dev *indio_dev,
- 		}
- 	}
- 	/* Definitely possible for devices to support both of these. */
--	if (indio_dev->modes & INDIO_BUFFER_TRIGGERED) {
--		if (!indio_dev->trig) {
--			printk(KERN_INFO "Buffer not started: no trigger\n");
--			ret = -EINVAL;
--			/* Can only occur on first buffer */
--			goto error_run_postdisable;
--		}
-+	if ((indio_dev->modes & INDIO_BUFFER_TRIGGERED) && indio_dev->trig) {
- 		indio_dev->currentmode = INDIO_BUFFER_TRIGGERED;
- 	} else if (indio_dev->modes & INDIO_BUFFER_HARDWARE) {
- 		indio_dev->currentmode = INDIO_BUFFER_HARDWARE;
- 	} else if (indio_dev->modes & INDIO_BUFFER_SOFTWARE) {
- 		indio_dev->currentmode = INDIO_BUFFER_SOFTWARE;
- 	} else { /* Should never be reached */
-+		/* Can only occur on first buffer */
-+		if (indio_dev->modes & INDIO_BUFFER_TRIGGERED)
-+			pr_info("Buffer not started: no trigger\n");
- 		ret = -EINVAL;
- 		goto error_run_postdisable;
- 	}
-@@ -823,12 +849,28 @@ static ssize_t iio_buffer_store_watermark(struct device *dev,
- 	}
- 
- 	buffer->watermark = val;
-+
-+	if (indio_dev->info->hwfifo_set_watermark)
-+		indio_dev->info->hwfifo_set_watermark(indio_dev, val);
- out:
- 	mutex_unlock(&indio_dev->mlock);
- 
- 	return ret ? ret : len;
- }
- 
-+static ssize_t iio_buffer_show_hwfifo_watermark(struct device *dev,
-+						struct device_attribute *attr,
-+						char *buf)
-+{
-+	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
-+	int ret = -1;
-+
-+	if (indio_dev->info->hwfifo_get_watermark)
-+		ret = indio_dev->info->hwfifo_get_watermark(indio_dev);
-+
-+	return sprintf(buf, "%d\n", ret < -1 ? -1 : ret);
-+}
-+
- static DEVICE_ATTR(length, S_IRUGO | S_IWUSR, iio_buffer_read_length,
- 		   iio_buffer_write_length);
- static struct device_attribute dev_attr_length_ro = __ATTR(length,
-@@ -837,11 +879,14 @@ static DEVICE_ATTR(enable, S_IRUGO | S_IWUSR,
- 		   iio_buffer_show_enable, iio_buffer_store_enable);
- static DEVICE_ATTR(watermark, S_IRUGO | S_IWUSR,
- 		   iio_buffer_show_watermark, iio_buffer_store_watermark);
-+static DEVICE_ATTR(hwfifo_watermark, S_IRUGO, iio_buffer_show_hwfifo_watermark,
-+		   NULL);
- 
- static struct attribute *iio_buffer_attrs[] = {
- 	&dev_attr_length.attr,
- 	&dev_attr_enable.attr,
- 	&dev_attr_watermark.attr,
-+	&dev_attr_hwfifo_watermark.attr,
- };
- 
- int iio_buffer_alloc_sysfs_and_mask(struct iio_dev *indio_dev)
-diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
-index 80d8550..1b1cd7d 100644
---- a/include/linux/iio/iio.h
-+++ b/include/linux/iio/iio.h
-@@ -338,6 +338,29 @@ struct iio_dev;
-  *			provide a custom of_xlate function that reads the
-  *			*args* and returns the appropriate index in registered
-  *			IIO channels array.
-+ * @hwfifo_set_watermark: function pointer to set the current hardware fifo
-+ *			watermark level. It receives the desired watermark as a
-+ *			hint and the device driver may adjust it to take into
-+ *			account hardware limitations. Setting the watermark to a
-+ *			strictly positive value should enable the hardware fifo
-+ *			if not already enabled. When the hardware fifo is
-+ *			enabled and its level reaches the watermark level the
-+ *			device must flush the samples stored in the hardware
-+ *			fifo to the device buffer. Setting the watermark to 0
-+ *			should disable the hardware fifo. The device driver must
-+ *			disable the hardware fifo when a trigger with different
-+ *			sampling semantic (then the hardware fifo) is set
-+ *			(e.g. when setting an any-motion trigger to a device
-+ *			that has its hardware fifo sample based on the set
-+ *			sample frequency).
-+ * @hwfifo_get_watermark: function pointer to obtain the current hardware fifo
-+ *			watermark level
-+ * @hwfifo_flush:	function pointer to flush the samples stored in the
-+ *			hardware fifo to the device buffer. The driver should
-+ *			not flush more then count samples. The function must
-+ *			return the number of samples flushed, 0 if no samples
-+ *			were flushed or a negative integer if no samples were
-+ *			flushed and there was an error.
-  **/
- struct iio_info {
- 	struct module			*driver_module;
-@@ -399,6 +422,9 @@ struct iio_info {
- 				  unsigned *readval);
- 	int (*of_xlate)(struct iio_dev *indio_dev,
- 			const struct of_phandle_args *iiospec);
-+	int (*hwfifo_set_watermark)(struct iio_dev *indio_dev, unsigned val);
-+	int (*hwfifo_get_watermark)(struct iio_dev *indio_dev);
-+	int (*hwfifo_flush)(struct iio_dev *indio_dev, unsigned count);
- };
- 
- /**
+ MODULE_AUTHOR("Michael Hennerich <hennerich@blackfin.uclinux.org>");
+-MODULE_DESCRIPTION("Analog Devices AD7793 and simialr ADCs");
++MODULE_DESCRIPTION("Analog Devices AD7793 and similar ADCs");
+ MODULE_LICENSE("GPL v2");
 -- 
-1.9.1
+2.3.1.167.g7f4ba4b
 
