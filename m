@@ -1,358 +1,120 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga02.intel.com ([134.134.136.20]:28567 "EHLO mga02.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S933133AbbCDR4T (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Wed, 4 Mar 2015 12:56:19 -0500
-From: Octavian Purdila <octavian.purdila@intel.com>
-To: linux-iio@vger.kernel.org
-Cc: srinivas.pandruvada@linux.intel.com,
-	Josselin Costanzi <josselin.costanzi@mobile-devices.fr>,
-	Octavian Purdila <octavian.purdila@intel.com>
-Subject: [PATCH v5 1/3] iio: add watermark logic to iio read and poll
-Date: Wed,  4 Mar 2015 19:56:11 +0200
-Message-Id: <1425491773-28499-2-git-send-email-octavian.purdila@intel.com>
-In-Reply-To: <1425491773-28499-1-git-send-email-octavian.purdila@intel.com>
-References: <1425491773-28499-1-git-send-email-octavian.purdila@intel.com>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <mpa@pengutronix.de>
+Date: Thu, 5 Mar 2015 08:12:52 +0100
+From: Markus Pargmann <mpa@pengutronix.de>
+To: Arnd Bergmann <arnd@arndb.de>
+Cc: Shawn Guo <shawn.guo@linaro.org>, Samuel Ortiz <sameo@linux.intel.com>,
+	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Fabio Estevam <festevam@gmail.com>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Hartmut Knaack <knaack.h@gmx.de>, Denis Carikli <denis@eukrea.com>,
+	Eric =?utf-8?Q?B=C3=A9nard?= <eric@eukrea.com>,
+	Sascha Hauer <kernel@pengutronix.de>,
+	linux-arm-kernel@lists.infradead.org,
+	Lee Jones <lee.jones@linaro.org>, linux-input@vger.kernel.org,
+	linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>,
+	devicetree@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
+	Pawel Moll <pawel.moll@arm.com>,
+	Mark Rutland <mark.rutland@arm.com>,
+	Ian Campbell <ijc+devicetree@hellion.org.uk>,
+	Kumar Gala <galak@codeaurora.org>
+Subject: Re: [PATCH v7 1/8] ARM: dt: Binding documentation for imx25 ADC/TSC
+Message-ID: <20150305071252.GA8062@pengutronix.de>
+References: <1425369498-25541-1-git-send-email-mpa@pengutronix.de>
+ <1425369498-25541-2-git-send-email-mpa@pengutronix.de>
+ <2620642.Qp1W4O8uh6@wuerfel>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="EeQfGwPcQSOJBaQU"
+In-Reply-To: <2620642.Qp1W4O8uh6@wuerfel>
+List-ID: <linux-iio@vger.kernel.org>
 
-From: Josselin Costanzi <josselin.costanzi@mobile-devices.fr>
 
-Currently the IIO buffer blocking read only wait until at least one
-data element is available.
-This patch makes the reader sleep until enough data is collected before
-returning to userspace. This should limit the read() calls count when
-trying to get data in batches.
+--EeQfGwPcQSOJBaQU
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Co-author: Yannick Bedhomme <yannick.bedhomme@mobile-devices.fr>
-Signed-off-by: Josselin Costanzi <josselin.costanzi@mobile-devices.fr>
-[rebased and remove buffer timeout]
-Signed-off-by: Octavian Purdila <octavian.purdila@intel.com>
----
- Documentation/ABI/testing/sysfs-bus-iio  |  15 ++++
- drivers/iio/industrialio-buffer.c        | 118 +++++++++++++++++++++++++++----
- drivers/iio/kfifo_buf.c                  |  11 ++-
- drivers/staging/iio/accel/sca3000_ring.c |   4 +-
- include/linux/iio/buffer.h               |   8 ++-
- 5 files changed, 129 insertions(+), 27 deletions(-)
+Hi,
 
-diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
-index 9a70c31..1283ca7 100644
---- a/Documentation/ABI/testing/sysfs-bus-iio
-+++ b/Documentation/ABI/testing/sysfs-bus-iio
-@@ -1249,3 +1249,18 @@ Contact:	linux-iio@vger.kernel.org
- Description:
- 		Specifies number of seconds in which we compute the steps
- 		that occur in order to decide if the consumer is making steps.
-+
-+What:		/sys/bus/iio/devices/iio:deviceX/buffer/watermark
-+KernelVersion:	3.21
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+		A single positive integer specifying the maximum number of scan
-+		elements to wait for.
-+		Poll will block until the watermark is reached.
-+		Blocking read will wait until the minimum between the requested
-+		read amount or the low water mark is available.
-+		Non-blocking read will retrieve the available samples from the
-+		buffer even if there are less samples then watermark level. This
-+		allows the application to block on poll with a timeout and read
-+		the available samples after the timeout expires and thus have a
-+		maximum delay guarantee.
-diff --git a/drivers/iio/industrialio-buffer.c b/drivers/iio/industrialio-buffer.c
-index c2d5440..a4f4f07 100644
---- a/drivers/iio/industrialio-buffer.c
-+++ b/drivers/iio/industrialio-buffer.c
-@@ -37,11 +37,28 @@ static bool iio_buffer_is_active(struct iio_buffer *buf)
- 	return !list_empty(&buf->buffer_list);
- }
- 
--static bool iio_buffer_data_available(struct iio_buffer *buf)
-+static size_t iio_buffer_data_available(struct iio_buffer *buf)
- {
- 	return buf->access->data_available(buf);
- }
- 
-+static bool iio_buffer_ready(struct iio_dev *indio_dev, struct iio_buffer *buf,
-+			     size_t to_wait)
-+{
-+	/* wakeup if the device was unregistered */
-+	if (!indio_dev->info)
-+		return true;
-+
-+	/* drain the buffer if it was disabled */
-+	if (!iio_buffer_is_active(buf))
-+		to_wait = min_t(size_t, to_wait, 1);
-+
-+	if (iio_buffer_data_available(buf) >= to_wait)
-+		return true;
-+
-+	return false;
-+}
-+
- /**
-  * iio_buffer_read_first_n_outer() - chrdev read for buffer access
-  *
-@@ -53,6 +70,8 @@ ssize_t iio_buffer_read_first_n_outer(struct file *filp, char __user *buf,
- {
- 	struct iio_dev *indio_dev = filp->private_data;
- 	struct iio_buffer *rb = indio_dev->buffer;
-+	size_t datum_size = rb->bytes_per_datum;
-+	size_t to_wait = 0;
- 	int ret;
- 
- 	if (!indio_dev->info)
-@@ -61,19 +80,24 @@ ssize_t iio_buffer_read_first_n_outer(struct file *filp, char __user *buf,
- 	if (!rb || !rb->access->read_first_n)
- 		return -EINVAL;
- 
-+	/*
-+	 * If datum_size is 0 there will never be anything to read from the
-+	 * buffer, so signal end of file now.
-+	 */
-+	if (!datum_size)
-+		return 0;
-+
-+	if (!(filp->f_flags & O_NONBLOCK))
-+		to_wait = min_t(size_t, n / datum_size, rb->watermark);
-+
- 	do {
--		if (!iio_buffer_data_available(rb)) {
--			if (filp->f_flags & O_NONBLOCK)
--				return -EAGAIN;
-+		ret = wait_event_interruptible(rb->pollq,
-+				      iio_buffer_ready(indio_dev, rb, to_wait));
-+		if (ret)
-+			return ret;
- 
--			ret = wait_event_interruptible(rb->pollq,
--					iio_buffer_data_available(rb) ||
--					indio_dev->info == NULL);
--			if (ret)
--				return ret;
--			if (indio_dev->info == NULL)
--				return -ENODEV;
--		}
-+		if (!indio_dev->info)
-+			return -ENODEV;
- 
- 		ret = rb->access->read_first_n(rb, n, buf);
- 		if (ret == 0 && (filp->f_flags & O_NONBLOCK))
-@@ -96,9 +120,8 @@ unsigned int iio_buffer_poll(struct file *filp,
- 		return -ENODEV;
- 
- 	poll_wait(filp, &rb->pollq, wait);
--	if (iio_buffer_data_available(rb))
-+	if (iio_buffer_ready(indio_dev, rb, rb->watermark))
- 		return POLLIN | POLLRDNORM;
--	/* need a way of knowing if there may be enough data... */
- 	return 0;
- }
- 
-@@ -123,6 +146,7 @@ void iio_buffer_init(struct iio_buffer *buffer)
- 	INIT_LIST_HEAD(&buffer->buffer_list);
- 	init_waitqueue_head(&buffer->pollq);
- 	kref_init(&buffer->ref);
-+	buffer->watermark = 1;
- }
- EXPORT_SYMBOL(iio_buffer_init);
- 
-@@ -416,6 +440,11 @@ static ssize_t iio_buffer_write_length(struct device *dev,
- 		buffer->access->set_length(buffer, val);
- 		ret = 0;
- 	}
-+	if (ret)
-+		goto out;
-+	if (buffer->length && buffer->length < buffer->watermark)
-+		buffer->watermark = buffer->length;
-+out:
- 	mutex_unlock(&indio_dev->mlock);
- 
- 	return ret ? ret : len;
-@@ -472,6 +501,7 @@ static void iio_buffer_activate(struct iio_dev *indio_dev,
- static void iio_buffer_deactivate(struct iio_buffer *buffer)
- {
- 	list_del_init(&buffer->buffer_list);
-+	wake_up_interruptible(&buffer->pollq);
- 	iio_buffer_put(buffer);
- }
- 
-@@ -754,16 +784,64 @@ done:
- 
- static const char * const iio_scan_elements_group_name = "scan_elements";
- 
-+static ssize_t iio_buffer_show_watermark(struct device *dev,
-+					 struct device_attribute *attr,
-+					 char *buf)
-+{
-+	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
-+	struct iio_buffer *buffer = indio_dev->buffer;
-+
-+	return sprintf(buf, "%u\n", buffer->watermark);
-+}
-+
-+static ssize_t iio_buffer_store_watermark(struct device *dev,
-+					  struct device_attribute *attr,
-+					  const char *buf,
-+					  size_t len)
-+{
-+	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
-+	struct iio_buffer *buffer = indio_dev->buffer;
-+	unsigned int val;
-+	int ret;
-+
-+	ret = kstrtouint(buf, 10, &val);
-+	if (ret)
-+		return ret;
-+	if (!val)
-+		return -EINVAL;
-+
-+	mutex_lock(&indio_dev->mlock);
-+
-+	if (val > buffer->length) {
-+		ret = -EINVAL;
-+		goto out;
-+	}
-+
-+	if (iio_buffer_is_active(indio_dev->buffer)) {
-+		ret = -EBUSY;
-+		goto out;
-+	}
-+
-+	buffer->watermark = val;
-+out:
-+	mutex_unlock(&indio_dev->mlock);
-+
-+	return ret ? ret : len;
-+}
-+
- static DEVICE_ATTR(length, S_IRUGO | S_IWUSR, iio_buffer_read_length,
- 		   iio_buffer_write_length);
- static struct device_attribute dev_attr_length_ro = __ATTR(length,
- 	S_IRUGO, iio_buffer_read_length, NULL);
- static DEVICE_ATTR(enable, S_IRUGO | S_IWUSR,
- 		   iio_buffer_show_enable, iio_buffer_store_enable);
-+static DEVICE_ATTR(watermark, S_IRUGO | S_IWUSR,
-+		   iio_buffer_show_watermark, iio_buffer_store_watermark);
- 
- static struct attribute *iio_buffer_attrs[] = {
- 	&dev_attr_length.attr,
- 	&dev_attr_enable.attr,
-+	&dev_attr_watermark.attr,
- };
- 
- int iio_buffer_alloc_sysfs_and_mask(struct iio_dev *indio_dev)
-@@ -944,8 +1022,18 @@ static const void *iio_demux(struct iio_buffer *buffer,
- static int iio_push_to_buffer(struct iio_buffer *buffer, const void *data)
- {
- 	const void *dataout = iio_demux(buffer, data);
-+	int ret;
-+
-+	ret = buffer->access->store_to(buffer, dataout);
-+	if (ret)
-+		return ret;
- 
--	return buffer->access->store_to(buffer, dataout);
-+	/*
-+	 * We can't just test for watermark to decide if we wake the poll queue
-+	 * because read may request less samples than the watermark.
-+	 */
-+	wake_up_interruptible_poll(&buffer->pollq, POLLIN | POLLRDNORM);
-+	return 0;
- }
- 
- static void iio_buffer_demux_free(struct iio_buffer *buffer)
-diff --git a/drivers/iio/kfifo_buf.c b/drivers/iio/kfifo_buf.c
-index b2beea0..847ca56 100644
---- a/drivers/iio/kfifo_buf.c
-+++ b/drivers/iio/kfifo_buf.c
-@@ -83,9 +83,6 @@ static int iio_store_to_kfifo(struct iio_buffer *r,
- 	ret = kfifo_in(&kf->kf, data, 1);
- 	if (ret != 1)
- 		return -EBUSY;
--
--	wake_up_interruptible_poll(&r->pollq, POLLIN | POLLRDNORM);
--
- 	return 0;
- }
- 
-@@ -109,16 +106,16 @@ static int iio_read_first_n_kfifo(struct iio_buffer *r,
- 	return copied;
- }
- 
--static bool iio_kfifo_buf_data_available(struct iio_buffer *r)
-+static size_t iio_kfifo_buf_data_available(struct iio_buffer *r)
- {
- 	struct iio_kfifo *kf = iio_to_kfifo(r);
--	bool empty;
-+	size_t samples;
- 
- 	mutex_lock(&kf->user_lock);
--	empty = kfifo_is_empty(&kf->kf);
-+	samples = kfifo_len(&kf->kf);
- 	mutex_unlock(&kf->user_lock);
- 
--	return !empty;
-+	return samples;
- }
- 
- static void iio_kfifo_buffer_release(struct iio_buffer *buffer)
-diff --git a/drivers/staging/iio/accel/sca3000_ring.c b/drivers/staging/iio/accel/sca3000_ring.c
-index f76a268..8589ead 100644
---- a/drivers/staging/iio/accel/sca3000_ring.c
-+++ b/drivers/staging/iio/accel/sca3000_ring.c
-@@ -129,9 +129,9 @@ error_ret:
- 	return ret ? ret : num_read;
- }
- 
--static bool sca3000_ring_buf_data_available(struct iio_buffer *r)
-+static size_t sca3000_ring_buf_data_available(struct iio_buffer *r)
- {
--	return r->stufftoread;
-+	return r->stufftoread ? r->watermark : 0;
- }
- 
- /**
-diff --git a/include/linux/iio/buffer.h b/include/linux/iio/buffer.h
-index b65850a..eb8622b 100644
---- a/include/linux/iio/buffer.h
-+++ b/include/linux/iio/buffer.h
-@@ -21,8 +21,8 @@ struct iio_buffer;
-  * struct iio_buffer_access_funcs - access functions for buffers.
-  * @store_to:		actually store stuff to the buffer
-  * @read_first_n:	try to get a specified number of bytes (must exist)
-- * @data_available:	indicates whether data for reading from the buffer is
-- *			available.
-+ * @data_available:	indicates how much data is available for reading from
-+ *			the buffer.
-  * @request_update:	if a parameter change has been marked, update underlying
-  *			storage.
-  * @set_bytes_per_datum:set number of bytes per datum
-@@ -43,7 +43,7 @@ struct iio_buffer_access_funcs {
- 	int (*read_first_n)(struct iio_buffer *buffer,
- 			    size_t n,
- 			    char __user *buf);
--	bool (*data_available)(struct iio_buffer *buffer);
-+	size_t (*data_available)(struct iio_buffer *buffer);
- 
- 	int (*request_update)(struct iio_buffer *buffer);
- 
-@@ -72,6 +72,7 @@ struct iio_buffer_access_funcs {
-  * @demux_bounce:	[INTERN] buffer for doing gather from incoming scan.
-  * @buffer_list:	[INTERN] entry in the devices list of current buffers.
-  * @ref:		[INTERN] reference count of the buffer.
-+ * @watermark:		[INTERN] number of datums to wait for poll/read.
-  */
- struct iio_buffer {
- 	int					length;
-@@ -90,6 +91,7 @@ struct iio_buffer {
- 	void					*demux_bounce;
- 	struct list_head			buffer_list;
- 	struct kref				ref;
-+	unsigned int				watermark;
- };
- 
- /**
--- 
-1.9.1
+On Tue, Mar 03, 2015 at 10:02:12AM +0100, Arnd Bergmann wrote:
+> On Tuesday 03 March 2015 08:58:11 Markus Pargmann wrote:
+> > +Example:
+> > +       tscadc: tscadc@50030000 {
+> > +               compatible =3D "fsl,imx25-tsadc";
+> > +               reg =3D <0x50030000 0xc>;
+> > +               interrupts =3D <46>;
+> > +               clocks =3D <&clks 119>;
+> > +               clock-names =3D "ipg";
+> > +               interrupt-controller;
+> > +               #interrupt-cells =3D <1>;
+> > +               #address-cells =3D <1>;
+> > +               #size-cells =3D <1>;
+> > +               ranges;
+> > +
+> > +               tsc: tcq@50030400 {
+> > +                       compatible =3D "fsl,imx25-tcq";
+> > +                       reg =3D <0x50030400 0x60>;
+> > +                       ...
+> > +               };
+> > +
+> > +               adc: gcq@50030800 {
+> > +                       compatible =3D "fsl,imx25-gcq";
+> > +                       reg =3D <0x50030800 0x60>;
+> > +                       ...
+> > +               };
+> > +       };
+> >=20
+>=20
+> I wonder if we should just treat this MFD as a single IIO device
+> that also registers to the input layer.
+>=20
+> Are there any other registers in the 0x50030000-0x50031000
+> range, or could the fsl,imx25-tcq and fsl,imx25-gcq devices
+> be reused outside of a fsl,imx25-tsadc device?
 
+There are no other registers in this range. The tcq and gcq devices can
+not be used outside of the tsadc. gcq and tcq are identical units so it
+may work to use both of them as gcq for example but nothing else.
+
+It may work to have this as single IIO device. However this would be a
+major rework of this series. There are a lot less users of imx25 than
+imx6 for example. And of these users barely anyone uses this unit at
+all. I really would like to get these drivers mainline so others can use
+it. But after 1 year and 7 versions of this series I don't want to put
+a lot of work into these drivers. I think there are other components in
+the kernel where the time is better used.
+
+Best Regards,
+
+Markus
+
+--=20
+Pengutronix e.K.                           |                             |
+Industrial Linux Solutions                 | http://www.pengutronix.de/  |
+Peiner Str. 6-8, 31137 Hildesheim, Germany | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+
+--EeQfGwPcQSOJBaQU
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
+
+iQIcBAEBAgAGBQJU+AH0AAoJEEpcgKtcEGQQQCIP/2qrkPHgsuNjeS3sV8jt0r4b
+CQ6EkzSZnFelrjZGcw05rV07oGA7WCx8WNNwGI9CI4yq4C2SIbC3bNIl9B6+SSS+
+SaFOp7inDsw297oCSQMnaiyltHlAI1efhVOawNmJt6gjslMy7172EmpTEpRsgly9
+t+vT4oYng6r/GBxYNZSMbaju75/D6T23OvFPvXPDqWb+kESffngRHmrnQf0htfuD
+CWaUeFi4yPp9kzNRIxkDMcDtEFC113OtOozRaLQktrXevDs+1qc+L1rke5ZubIbY
+UvNdaQjOiADylaqW/DCNedRlq9sRKDy+SMDHKy12JIACvMeLMYotvlSSBWblc/t0
+2OLrtt5+4QUkkSUKNcJfsKOhRKYTVruj8GqkYkC7uRMKXIxIjxNAooLG7L54oEdB
+jmg/uTzqkGWLz+xnom9T4nG3M5DrpZL0JK95cH02JhaY2w7XOpR9llTAuSf6WRdS
+nY8ammXBc5SdFPU1fJlYUV8FZHRB5yB7mNpedxcP90M9n1qZrbnwAW31rIeAU9xG
+7I66J4b0jNzMX3cZ3EoPNpLrc9xXUV+D7MRp0VYxyUiVFPr2AhqMyCuZPfOL0GfX
+yYo2eeCd7wpazq2TQm0/MrOdu+SCZu2dMAFyNW1zYxLjp5smm488FXtWK3AUiOE6
+c0x1YT3OZcMUu2PCzTvj
+=jOYu
+-----END PGP SIGNATURE-----
+
+--EeQfGwPcQSOJBaQU--
