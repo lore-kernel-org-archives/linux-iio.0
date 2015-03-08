@@ -1,99 +1,57 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:35281 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:35446 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752271AbbCHMF6 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 8 Mar 2015 08:05:58 -0400
-Message-ID: <54FC3B24.5080601@kernel.org>
-Date: Sun, 08 Mar 2015 12:05:56 +0000
+	with ESMTP id S1752226AbbCHMfs (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 8 Mar 2015 08:35:48 -0400
+Message-ID: <54FC4222.3030206@kernel.org>
+Date: Sun, 08 Mar 2015 12:35:46 +0000
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Kevin Tsai <ktsai@capellamicro.com>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>
-CC: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH V2 1/1] iio: light: Added PM support for Capella CM3232
- ambient light sensor driver.
-References: <1424386971-811-1-git-send-email-ktsai@capellamicro.com>
-In-Reply-To: <1424386971-811-1-git-send-email-ktsai@capellamicro.com>
+To: Angelo Compagnucci <angelo.compagnucci@gmail.com>,
+	devicetree@vger.kernel.org
+CC: linux-iio@vger.kernel.org
+Subject: Re: [PATCH] iio: mcp3422: Add DT binding documentation
+References: <1424085663-21799-1-git-send-email-angelo.compagnucci@gmail.com>
+In-Reply-To: <1424085663-21799-1-git-send-email-angelo.compagnucci@gmail.com>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 19/02/15 23:02, Kevin Tsai wrote:
-> Added Power Management Support.
-> 
-> Signed-off-by: Kevin Tsai <ktsai@capellamicro.com>
-Applied to the togreg branch of iio.git - initially pushed out
-as testing for the autobuilders to play.
+On 16/02/15 11:21, Angelo Compagnucci wrote:
+> Adding binding documentation for ADC MCP3422.
+Could have gone in the trivial bindings, but I'm happy enough happy enough with it
+here.
 
-Thanks,
+Anyhow, no sign off so not applied.  Please repost with a sign off.
 
 Jonathan
 > ---
-> v2:
-> Added CONFIG_PM_SLEEP to suspend/resume functions to fix the build warning
-> when CONFIG_PM_SLEEP is not selected.
+>  Documentation/devicetree/bindings/iio/adc/mcp3422.txt | 17 +++++++++++++++++
+>  1 file changed, 17 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/iio/adc/mcp3422.txt
 > 
-> v1:
-> Added Power Management support.
-> 
->  drivers/iio/light/cm3232.c | 36 ++++++++++++++++++++++++++++++++++++
->  1 file changed, 36 insertions(+)
-> 
-> diff --git a/drivers/iio/light/cm3232.c b/drivers/iio/light/cm3232.c
-> index 90e3519..39c8d99 100644
-> --- a/drivers/iio/light/cm3232.c
-> +++ b/drivers/iio/light/cm3232.c
-> @@ -378,6 +378,39 @@ static const struct i2c_device_id cm3232_id[] = {
->  	{}
->  };
->  
-> +#ifdef CONFIG_PM_SLEEP
-> +static int cm3232_suspend(struct device *dev)
-> +{
-> +	struct iio_dev *indio_dev = i2c_get_clientdata(to_i2c_client(dev));
-> +	struct cm3232_chip *chip = iio_priv(indio_dev);
-> +	struct i2c_client *client = chip->client;
-> +	int ret;
+> diff --git a/Documentation/devicetree/bindings/iio/adc/mcp3422.txt b/Documentation/devicetree/bindings/iio/adc/mcp3422.txt
+> new file mode 100644
+> index 0000000..333139c
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/iio/adc/mcp3422.txt
+> @@ -0,0 +1,17 @@
+> +* Microchip mcp3422/3/4/6/7/8 chip family (ADC)
 > +
-> +	chip->regs_cmd |= CM3232_CMD_ALS_DISABLE;
-> +	ret = i2c_smbus_write_byte_data(client, CM3232_REG_ADDR_CMD,
-> +					chip->regs_cmd);
+> +Required properties:
+> + - compatible: Should be
+> +	"microchip,mcp3422" or
+> +	"microchip,mcp3423" or
+> +	"microchip,mcp3424" or
+> +	"microchip,mcp3426" or
+> +	"microchip,mcp3427" or
+> +	"microchip,mcp3428"
+> + - reg: I2C address for the device
 > +
-> +	return ret;
-> +}
-> +
-> +static int cm3232_resume(struct device *dev)
-> +{
-> +	struct iio_dev *indio_dev = i2c_get_clientdata(to_i2c_client(dev));
-> +	struct cm3232_chip *chip = iio_priv(indio_dev);
-> +	struct i2c_client *client = chip->client;
-> +	int ret;
-> +
-> +	chip->regs_cmd &= ~CM3232_CMD_ALS_DISABLE;
-> +	ret = i2c_smbus_write_byte_data(client, CM3232_REG_ADDR_CMD,
-> +					chip->regs_cmd | CM3232_CMD_ALS_RESET);
-> +
-> +	return ret;
-> +}
-> +
-> +static const struct dev_pm_ops cm3232_pm_ops = {
-> +	SET_SYSTEM_SLEEP_PM_OPS(cm3232_suspend, cm3232_resume)};
-> +#endif
-> +
->  MODULE_DEVICE_TABLE(i2c, cm3232_id);
->  
->  static const struct of_device_id cm3232_of_match[] = {
-> @@ -390,6 +423,9 @@ static struct i2c_driver cm3232_driver = {
->  		.name	= "cm3232",
->  		.owner	= THIS_MODULE,
->  		.of_match_table = of_match_ptr(cm3232_of_match),
-> +#ifdef CONFIG_PM_SLEEP
-> +		.pm	= &cm3232_pm_ops,
-> +#endif
->  	},
->  	.id_table	= cm3232_id,
->  	.probe		= cm3232_probe,
+> +Example:
+> +adc@0 {
+> +	compatible = "microchip,mcp3424";
+> +	reg = <0x68>;
+> +};
 > 
 
