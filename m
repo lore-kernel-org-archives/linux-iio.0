@@ -1,70 +1,63 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-wi0-f172.google.com ([209.85.212.172]:41091 "EHLO
-	mail-wi0-f172.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751050AbbCHTLJ (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 8 Mar 2015 15:11:09 -0400
+Received: from mail-we0-f169.google.com ([74.125.82.169]:40827 "EHLO
+	mail-we0-f169.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751779AbbCHUgi (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 8 Mar 2015 16:36:38 -0400
+Received: by wevk48 with SMTP id k48so26701777wev.7
+        for <linux-iio@vger.kernel.org>; Sun, 08 Mar 2015 13:36:37 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <1425835778-7827-1-git-send-email-tduszyns@gmail.com>
-References: <1425835778-7827-1-git-send-email-tduszyns@gmail.com>
-Date: Sun, 8 Mar 2015 21:11:07 +0200
-Message-ID: <CAEnQRZAfZZFN7TLMfa_MNOM4JEVgDoNnTRMi-ff_O4V-C1o22Q@mail.gmail.com>
-Subject: Re: [PATCH] iio: pressure: add support for MS5611 pressure and
- temperature sensor
-From: Daniel Baluta <daniel.baluta@gmail.com>
-To: Tomasz Duszynski <tduszyns@gmail.com>
-Cc: Jonathan Cameron <jic23@kernel.org>,
+In-Reply-To: <54FC35A0.6000901@kernel.org>
+References: <1424720154-4762-1-git-send-email-roberta.dobrescu@gmail.com>
+	<1424720154-4762-3-git-send-email-roberta.dobrescu@gmail.com>
+	<54FC35A0.6000901@kernel.org>
+Date: Sun, 8 Mar 2015 22:36:37 +0200
+Message-ID: <CAEnQRZAqJxgqvORnXBcVyHq0kExyoqq-NvLBw+sxHmku2CdkfQ@mail.gmail.com>
+Subject: Re: [PATCH 2/4] iio: Introduce IIO_CHAN_INFO_RANGE
+From: Daniel Baluta <daniel.baluta@intel.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Roberta Dobrescu <roberta.dobrescu@gmail.com>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	Daniel Baluta <daniel.baluta@intel.com>,
+	"octavian.purdila@intel.com" <octavian.purdila@intel.com>,
 	Hartmut Knaack <knaack.h@gmx.de>,
 	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+	Peter Meerwald <pmeerw@pmeerw.net>
 Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Hi Tomasz,
+On Sun, Mar 8, 2015 at 1:42 PM, Jonathan Cameron <jic23@kernel.org> wrote:
+> On 23/02/15 19:35, Roberta Dobrescu wrote:
+>> Some ambient light sensors have hardware dependent ranges and
+>> resolutions. In this case user won't be able to calculate illuminance
+>> (lux) using only scale attribute.
+>>
+>> For instance, a device that uses a Full Scale Range is the
+>> light sensor ISL29018. In this case, IIO_CHAN_INFO_RANGE is
+>> needed since the number of ADC bits can be 4, 8, 12 or 16 and
+>> using just scales would result in too similar values for different
+>> ranges and resolutions.
+> This is always an interesting corner.  The big question is what is
+> to be gained by ever running these sensors in their lower resolutions?
 
-On Sun, Mar 8, 2015 at 7:29 PM, Tomasz Duszynski <tduszyns@gmail.com> wrote:
-> Add support for Measurement Specialities MS5611 pressure
-> and temperature sensor.
+I think the big answer here is power consumption.
+
 >
-> Signed-off-by: Tomasz Duszynski <tduszyns@gmail.com>
+> The reason I've always resisted range is that it's too easy
+> for people to be lazy and go with which ever of scale / range
+> is presented in the datasheet.  Most of the time they are really
+> the same thing.
+>
+> The exception as you've noted here is in variable resolution devices.
+> There is no way that any generic code is ever going to know the right
+> option for the combinations of scaling and adc resolution vs time
+> requirements.  So we are dealing here with parameters that might
+> be hand tweaked for a particular board.
+>
+> Anyhow, I'd like more opinions on this before I take it.
+>
+> Lars, Peter, Hartmut - what you guys think on this?
 
-<snip>
+Thanks for your answer Jonathan!
 
-> +++ b/drivers/iio/pressure/ms5611_i2c.c
-> @@ -0,0 +1,131 @@
-> +/*
-> + * MS5611 pressure and temperature sensor driver (I2C bus)
-> + *
-> + * Copyright (c) Tomasz Duszynski <tduszyns@gmail.com>
-> + *
-> + * This program is free software; you can redistribute it and/or modify
-> + * it under the terms of the GNU General Public License version 2 as
-> + * published by the Free Software Foundation.
-> + *
-
-If fixed, please specify here the I2C slave address.
-
-> + */
-> +#include <linux/delay.h>
-
-<snip>
-
-> +static int ms5611_read_adc(struct ms5611_state *st, s32 *val)
-> +{
-> +       int ret;
-> +       u8 buf[3];
-> +
-> +       ret = i2c_smbus_read_i2c_block_data(st->client, MS5611_READ_ADC,
-> +                                           3, buf);
-> +       if (ret < 0)
-> +               return ret;
-> +
-> +       *val = (buf[0] << 16) | (buf[1] << 8) | buf[0];
-
-Hmm, buf[2] is not used. Is this intended or the formula
-has buf[2] as the last OR factor?
-
-thanks,
 Daniel.
