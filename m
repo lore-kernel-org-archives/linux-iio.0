@@ -1,75 +1,133 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.136]:55279 "EHLO mail.kernel.org"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751434AbbCGT00 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Sat, 7 Mar 2015 14:26:26 -0500
-Date: Sat, 7 Mar 2015 20:26:11 +0100
-From: Sebastian Reichel <sre@kernel.org>
-To: Todd Brandt <todd.e.brandt@linux.intel.com>
-Cc: dbaryshkov@gmail.com, dwmw2@infradead.org,
-	linux-pm@vger.kernel.org, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org, todd.e.brandt@intel.com,
-	jacob.jun.pan@linux.intel.com, sameo@linux.intel.com,
-	lee.jones@linaro.org, david.woodhouse@intel.com, jic23@kernel.org
-Subject: Re: [PATCH v4 0/3] X-Power AXP288 PMIC Fuel Gauge Driver
-Message-ID: <20150307192610.GC5233@earth>
-References: <cover.1423082056.git.todd.e.brandt@linux.intel.com>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:34804 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751764AbbCHLDe (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 8 Mar 2015 07:03:34 -0400
+Message-ID: <54FC2C83.5090802@kernel.org>
+Date: Sun, 08 Mar 2015 11:03:31 +0000
+From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="raC6veAxrt5nqIoY"
-In-Reply-To: <cover.1423082056.git.todd.e.brandt@linux.intel.com>
+To: Vlad Dogaru <vlad.dogaru@intel.com>,
+	=?windows-1252?Q?Uwe_Kleine-K=F6?= =?windows-1252?Q?nig?=
+	<u.kleine-koenig@pengutronix.de>
+CC: Daniel Baluta <daniel.baluta@intel.com>,
+	Roberta Dobrescu <roberta.dobrescu@gmail.com>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	"octavian.purdila@intel.com" <octavian.purdila@intel.com>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>, kernel@pengutronix.de
+Subject: Re: [PATCH] iio: accel: mma9551: Check gpiod_to_irq return value
+References: <1425292752-7768-1-git-send-email-roberta.dobrescu@gmail.com> <CAEnQRZCBt++Ebjd6uwu6mpVCrsZyDxX53mOf4c17T1RUGAsQMA@mail.gmail.com> <20150302161503.GE7865@pengutronix.de> <20150303070232.GC27074@vdogaru>
+In-Reply-To: <20150303070232.GC27074@vdogaru>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
+On 03/03/15 07:02, Vlad Dogaru wrote:
+> On Mon, Mar 02, 2015 at 05:15:03PM +0100, Uwe Kleine-König wrote:
+>> Hello,
+>>
+>> On Mon, Mar 02, 2015 at 04:09:52PM +0200, Daniel Baluta wrote:
+>>> On Mon, Mar 2, 2015 at 12:39 PM, Roberta Dobrescu
+>>> <roberta.dobrescu@gmail.com> wrote:
+>>>> The return value of gpiod_to_irq should be checked before giving
+>>>> it to devm_request_threaded_irq in order to not pass an error
+>>>> code in case it fails.
+>> nothing really bad should happen because request_irq with a negative irq
+>> parameter just returns an error I think. So it's not urgent, but still a
+>> good idea to fix.
+>>
+>>>> Signed-off-by: Roberta Dobrescu <roberta.dobrescu@gmail.com>
+>>>> Reviewed-by: Vlad Dogaru <vlad.dogaru@intel.com>
+>> It's good habit to point out the commit that introduced the problem. In
+>> this case this would be:
+>>
+>> Fixes: c78b91716340 ("iio: add driver for Freescale MMA9551L")
+Vlad, do you want to respin taking the comments into account, or as Uwe
+put it, it's worth having as is so should I consider it as it stands?
 
---raC6veAxrt5nqIoY
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Jonathan
+>>
+>>>> ---
+>>>> gpiod_to_irq also appears in the following drivers:
+>>>>         * drivers/iio/accel/bmc150-accel.c
+>>>>         * drivers/iio/accel/kxcjk-1013.c
+>>>>         * drivers/iio/accel/mma9553.c
+>>>>         * drivers/iio/gyro/bmg160.c
+>>>>         * drivers/iio/imu/kmx61.c
+>>>>         * drivers/iio/proximity/sx9500.c,
+>>>>
+>>>> something like this:
+>>>>
+>>>> <code>
+>>>>         ret = gpiod_to_irq(gpio);
+>>>>
+>>>>         dev_dbg(dev, "GPIO resource, no:%d irq:%d\n", desc_to_gpio(gpio), ret);
+>>>>
+>>>>         return ret;
+>>>> </code>
+>>>>
+>>>> The return value of the functions containing the above code is checked,
+>>>> so the only problem would be that the debug message would contain a wrong
+>>>> value for irq in case gpiod_to_irq fails. So it doesn't affects much.
+>> Still worth fixing, isn't it? Also the error isn't handled, but ignored,
+>> like:
+>>
+>> 	if (client->irq <= 0)
+>> 		client->irq = sx9500_gpio_probe(client, data);
+>>
+>> 	if (client->irq > 0) {
+>> 		ret = devm_request_threaded_irq(....
+>>
+>> but if an irq is specified (be it by means of a "normal" irq or by
+>> specifying a gpio in the device tree/acpi tables) I expect the driver to
+>> fail probing instead of just behaving as if no irq would be available.
+> 
+> If there is no IRQ available this device would still be able to do raw
+> reads, although I admit I have not tested this.
+> 
+>> I don't know how this was tested, but I wonder further about
+>>
+>> 	#define SX9500_GPIO_NAME                "sx9500_gpio"
+>> 	...
+>> 	devm_gpiod_get_index(dev, SX9500_GPIO_NAME, 0, GPIOD_IN);
+>>
+>> If I understand the code correctly that is supposed to look for
+>> "sx9500_gpio-gpio" in the ACPI data. Is this really correct?
+> 
+> I'm in the process of changing this, will post some patches soon.  This
+> should include failing to probe if an IRQ is not found.
+> 
+> At the time I wrote the driver, I wasn't using Device Tree and ACPI had
+> no support for _DSD (or at least I wasn't aware of it), so the name did
+> not matter, only the index.
+> 
+> Thanks for the 
+> 
+>>>>  drivers/iio/accel/mma9551.c | 6 +++++-
+>>>>  1 file changed, 5 insertions(+), 1 deletion(-)
+>>>>
+>>>> diff --git a/drivers/iio/accel/mma9551.c b/drivers/iio/accel/mma9551.c
+>>>> index 46c3835..b6f3041 100644
+>>>> --- a/drivers/iio/accel/mma9551.c
+>>>> +++ b/drivers/iio/accel/mma9551.c
+>>>> @@ -428,7 +428,11 @@ static int mma9551_gpio_probe(struct iio_dev *indio_dev)
+>>>>                 if (ret)
+>>>>                         return ret;
+>>>>
+>>>> -               data->irqs[i] = gpiod_to_irq(gpio);
+>>>> +               ret = gpiod_to_irq(gpio);
+>>>> +               if (ret < 0)
+>>>> +                       return ret;
+>> I wonder if you should handle 0 as error, too. But even as is:
+>>
+>> 	Acked-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+>>
+>> Thanks
+>> Uwe
+>>
+>> -- 
+>> Pengutronix e.K.                           | Uwe Kleine-König            |
+>> Industrial Linux Solutions                 | http://www.pengutronix.de/  |
 
-Hi,
-
-On Wed, Feb 04, 2015 at 04:24:35PM -0800, Todd Brandt wrote:
-> New power_supply driver at driver/power which interfaces with the
-> axp20x mfd driver as a cell. Provides battery info, monitors for
-> changes, and generates alerts on temperature and capacity issues
->=20
-> Sebestian, please review the patch set and consider it for 3.20 rc1.
-> I've applied it over git.infradead.org/battery-2.6.git/master and
-> verified that it works. Thanks.
->=20
-> Todd Brandt (3):
->   mfd/axp20x: change battery cell name to fuel gauge
->   mfd/axp20x: add support for fuel gauge cell
->   X-Power AXP288 PMIC Fuel Gauge Driver
-
-Thanks, queued for 4.1:=20
-
-http://git.infradead.org/battery-2.6.git/commit/5a5bf49088f4c92f36786a2e4c2=
-0e17f715f0827
-
--- Sebastian
-
---raC6veAxrt5nqIoY
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
-
-iQIcBAEBCgAGBQJU+1DMAAoJENju1/PIO/qa7bcP/2ZBBv9t8uZhQ9FZIu3G0I9f
-Ak+ZV3eJ+4NYRHFrkV/cWded4/c4SJdBU4GsfGN5kPUUBlUrAvbRIrDVNaV+o0AR
-U6pxKgX5ZZ4BbD4ebohrQ7/rd2ETj5u0rEqGRDS1gSdp9cH2BdhfZcaU+K2XrOU0
-vxJDXRZnzYmR5zMZOQCxqUGAx0ggvlJfh25/0ceS6PvjSLpRxinybBW+5s7hqcRa
-zKI0eNAco0IldjVx25MH407pOI/D1xLWnAn3xdFzyZvbEOXjr9nHWqdmIRcNPKfm
-xvT+3mizhG3ALZCz5+UqYXVWJ6qhtfV6Xkanjtnfk5cHzn0xkbwxzZBsSw7Nzk2h
-/k/MjUgIUKDasxMQhszEahGjoldOEW54R8PXZLAHwTwd2zeN2EPIousdq6eCzviX
-AYjxC2s15Exc8T6ZmWuv+V4VcuBG4pcdMF3B9VGaP6vWy0va+Cixg2yygi5XW6JC
-le5RkFAeAQm6h4Nlu0ukcFPnPuHUSL/7w2JkR/UECyIR5nnIfYyPtxkw+Ietn6MO
-wEbqMWAGidMJ8l5PJOZyyjdeqq2utylgN5sqB1lQQbo7xGsgVrP/Y4o5Vjx/CqNY
-rhfal79jU4HzCDlTiIIKrw2dAvd8TCa05UsuCS05Yaj473uHjm7yKGvKFZ4pOBfh
-OYbzvPsfr+H6T4oyHTb/
-=5wJh
------END PGP SIGNATURE-----
-
---raC6veAxrt5nqIoY--
