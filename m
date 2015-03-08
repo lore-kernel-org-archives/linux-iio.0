@@ -1,117 +1,165 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:35143 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:35158 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751963AbbCHLv6 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 8 Mar 2015 07:51:58 -0400
-Message-ID: <54FC37DC.4010608@kernel.org>
-Date: Sun, 08 Mar 2015 11:51:56 +0000
+	with ESMTP id S1751963AbbCHLxH (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 8 Mar 2015 07:53:07 -0400
+Message-ID: <54FC3821.4010201@kernel.org>
+Date: Sun, 08 Mar 2015 11:53:05 +0000
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
 To: Roberta Dobrescu <roberta.dobrescu@gmail.com>,
 	linux-iio@vger.kernel.org
 CC: daniel.baluta@intel.com, octavian.purdila@intel.com,
 	knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net
-Subject: Re: [PATCH 2/4] iio: Introduce IIO_CHAN_INFO_RANGE
-References: <1424720154-4762-1-git-send-email-roberta.dobrescu@gmail.com> <1424720154-4762-3-git-send-email-roberta.dobrescu@gmail.com> <54FC35A0.6000901@kernel.org>
-In-Reply-To: <54FC35A0.6000901@kernel.org>
+Subject: Re: [PATCH 1/4] staging: iio: light: isl29018: Remove non-standard
+ sysfs attributes
+References: <1424720154-4762-1-git-send-email-roberta.dobrescu@gmail.com> <1424720154-4762-2-git-send-email-roberta.dobrescu@gmail.com>
+In-Reply-To: <1424720154-4762-2-git-send-email-roberta.dobrescu@gmail.com>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 08/03/15 11:42, Jonathan Cameron wrote:
-> On 23/02/15 19:35, Roberta Dobrescu wrote:
->> Some ambient light sensors have hardware dependent ranges and
->> resolutions. In this case user won't be able to calculate illuminance
->> (lux) using only scale attribute.
->>
->> For instance, a device that uses a Full Scale Range is the
->> light sensor ISL29018. In this case, IIO_CHAN_INFO_RANGE is
->> needed since the number of ADC bits can be 4, 8, 12 or 16 and
->> using just scales would result in too similar values for different
->> ranges and resolutions.
-> This is always an interesting corner.  The big question is what is
-> to be gained by ever running these sensors in their lower resolutions?
+On 23/02/15 19:35, Roberta Dobrescu wrote:
+> This patch removes non-standard sysfs attributes range, range_available,
+> adc_resolution and adc_resolution_available. It also removes the
+> corresponding show and store functions.
 > 
-> The reason I've always resisted range is that it's too easy
-> for people to be lazy and go with which ever of scale / range
-> is presented in the datasheet.  Most of the time they are really
-> the same thing.
+> This is in preparation for using standard IIO attributes in order to move
+> the code out of staging.
 > 
-> The exception as you've noted here is in variable resolution devices.
-> There is no way that any generic code is ever going to know the right
-> option for the combinations of scaling and adc resolution vs time
-> requirements.  So we are dealing here with parameters that might
-> be hand tweaked for a particular board.
-> 
-> Anyhow, I'd like more opinions on this before I take it.
-> 
-> Lars, Peter, Hartmut - what you guys think on this?
-> 
-Actually please see my comments on patch 4.
-This device has tight coupling between the integration time
-and the adc resolution.  Hence that's the parameter to provide
-/ control in my view.
+> Signed-off-by: Roberta Dobrescu <roberta.dobrescu@gmail.com>
+As a general rule, put in the new interface first then kill off the
+old ones in the final patch. Doesn't matter that much in a short
+series like this though!
 
 Jonathan
+> ---
+>  drivers/staging/iio/light/isl29018.c | 94 ------------------------------------
+>  1 file changed, 94 deletions(-)
 > 
->>
->> Signed-off-by: Roberta Dobrescu <roberta.dobrescu@gmail.com>
->> ---
->>  Documentation/ABI/testing/sysfs-bus-iio | 13 +++++++++++++
->>  drivers/iio/industrialio-core.c         |  1 +
->>  include/linux/iio/iio.h                 |  1 +
->>  3 files changed, 15 insertions(+)
->>
->> diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
->> index 9a70c31..ad1541f 100644
->> --- a/Documentation/ABI/testing/sysfs-bus-iio
->> +++ b/Documentation/ABI/testing/sysfs-bus-iio
->> @@ -1249,3 +1249,16 @@ Contact:	linux-iio@vger.kernel.org
->>  Description:
->>  		Specifies number of seconds in which we compute the steps
->>  		that occur in order to decide if the consumer is making steps.
->> +
->> +What:		/sys/bus/iio/devices/deviceX/in_illuminance0_range
->> +KernelVersion:	3.21
->> +Contact:	linux-iio@vger.kernel.org
->> +Description:
->> +		Hardware dependent ADC Full Scale Range used for some ambient
->> +		light sensors in calculating lux.
->> +
->> +What:		/sys/bus/iio/devices/deviceX/in_illuminance_range_available
->> +KernelVersion:	3.21
->> +Contact:	linux-iio@vger.kernel.org
->> +Description:
->> +		Hardware dependent supported values for ADC Full Scale Range.
->> diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
->> index aaba9d3..4138042 100644
->> --- a/drivers/iio/industrialio-core.c
->> +++ b/drivers/iio/industrialio-core.c
->> @@ -128,6 +128,7 @@ static const char * const iio_chan_info_postfix[] = {
->>  	[IIO_CHAN_INFO_CALIBWEIGHT] = "calibweight",
->>  	[IIO_CHAN_INFO_DEBOUNCE_COUNT] = "debounce_count",
->>  	[IIO_CHAN_INFO_DEBOUNCE_TIME] = "debounce_time",
->> +	[IIO_CHAN_INFO_RANGE] = "range",
->>  };
->>  
->>  /**
->> diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
->> index 80d8550..fbdd434 100644
->> --- a/include/linux/iio/iio.h
->> +++ b/include/linux/iio/iio.h
->> @@ -43,6 +43,7 @@ enum iio_chan_info_enum {
->>  	IIO_CHAN_INFO_CALIBWEIGHT,
->>  	IIO_CHAN_INFO_DEBOUNCE_COUNT,
->>  	IIO_CHAN_INFO_DEBOUNCE_TIME,
->> +	IIO_CHAN_INFO_RANGE,
->>  };
->>  
->>  enum iio_shared_by {
->>
-> 
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> diff --git a/drivers/staging/iio/light/isl29018.c b/drivers/staging/iio/light/isl29018.c
+> index a348918..d3d0611 100644
+> --- a/drivers/staging/iio/light/isl29018.c
+> +++ b/drivers/staging/iio/light/isl29018.c
+> @@ -230,87 +230,6 @@ static int isl29018_read_proximity_ir(struct isl29018_chip *chip, int scheme,
+>  }
+>  
+>  /* Sysfs interface */
+> -/* range */
+> -static ssize_t show_range(struct device *dev,
+> -			struct device_attribute *attr, char *buf)
+> -{
+> -	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+> -	struct isl29018_chip *chip = iio_priv(indio_dev);
+> -
+> -	return sprintf(buf, "%u\n", chip->range);
+> -}
+> -
+> -static ssize_t store_range(struct device *dev,
+> -		struct device_attribute *attr, const char *buf, size_t count)
+> -{
+> -	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+> -	struct isl29018_chip *chip = iio_priv(indio_dev);
+> -	int status;
+> -	unsigned long lval;
+> -	unsigned int new_range;
+> -
+> -	if (kstrtoul(buf, 10, &lval))
+> -		return -EINVAL;
+> -
+> -	if (!(lval == 1000UL || lval == 4000UL ||
+> -			lval == 16000UL || lval == 64000UL)) {
+> -		dev_err(dev, "The range is not supported\n");
+> -		return -EINVAL;
+> -	}
+> -
+> -	mutex_lock(&chip->lock);
+> -	status = isl29018_set_range(chip, lval, &new_range);
+> -	if (status < 0) {
+> -		mutex_unlock(&chip->lock);
+> -		dev_err(dev,
+> -			"Error in setting max range with err %d\n", status);
+> -		return status;
+> -	}
+> -	chip->range = new_range;
+> -	mutex_unlock(&chip->lock);
+> -
+> -	return count;
+> -}
+> -
+> -/* resolution */
+> -static ssize_t show_resolution(struct device *dev,
+> -			struct device_attribute *attr, char *buf)
+> -{
+> -	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+> -	struct isl29018_chip *chip = iio_priv(indio_dev);
+> -
+> -	return sprintf(buf, "%u\n", chip->adc_bit);
+> -}
+> -
+> -static ssize_t store_resolution(struct device *dev,
+> -		struct device_attribute *attr, const char *buf, size_t count)
+> -{
+> -	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+> -	struct isl29018_chip *chip = iio_priv(indio_dev);
+> -	int status;
+> -	unsigned int val;
+> -	unsigned int new_adc_bit;
+> -
+> -	if (kstrtouint(buf, 10, &val))
+> -		return -EINVAL;
+> -	if (!(val == 4 || val == 8 || val == 12 || val == 16)) {
+> -		dev_err(dev, "The resolution is not supported\n");
+> -		return -EINVAL;
+> -	}
+> -
+> -	mutex_lock(&chip->lock);
+> -	status = isl29018_set_resolution(chip, val, &new_adc_bit);
+> -	if (status < 0) {
+> -		mutex_unlock(&chip->lock);
+> -		dev_err(dev, "Error in setting resolution\n");
+> -		return status;
+> -	}
+> -	chip->adc_bit = new_adc_bit;
+> -	mutex_unlock(&chip->lock);
+> -
+> -	return count;
+> -}
+> -
+>  /* proximity scheme */
+>  static ssize_t show_prox_infrared_suppression(struct device *dev,
+>  			struct device_attribute *attr, char *buf)
+> @@ -447,11 +366,6 @@ static const struct iio_chan_spec isl29023_channels[] = {
+>  	ISL29018_IR_CHANNEL,
+>  };
+>  
+> -static IIO_DEVICE_ATTR(range, S_IRUGO | S_IWUSR, show_range, store_range, 0);
+> -static IIO_CONST_ATTR(range_available, "1000 4000 16000 64000");
+> -static IIO_CONST_ATTR(adc_resolution_available, "4 8 12 16");
+> -static IIO_DEVICE_ATTR(adc_resolution, S_IRUGO | S_IWUSR,
+> -					show_resolution, store_resolution, 0);
+>  static IIO_DEVICE_ATTR(proximity_on_chip_ambient_infrared_suppression,
+>  					S_IRUGO | S_IWUSR,
+>  					show_prox_infrared_suppression,
+> @@ -460,19 +374,11 @@ static IIO_DEVICE_ATTR(proximity_on_chip_ambient_infrared_suppression,
+>  #define ISL29018_DEV_ATTR(name) (&iio_dev_attr_##name.dev_attr.attr)
+>  #define ISL29018_CONST_ATTR(name) (&iio_const_attr_##name.dev_attr.attr)
+>  static struct attribute *isl29018_attributes[] = {
+> -	ISL29018_DEV_ATTR(range),
+> -	ISL29018_CONST_ATTR(range_available),
+> -	ISL29018_DEV_ATTR(adc_resolution),
+> -	ISL29018_CONST_ATTR(adc_resolution_available),
+>  	ISL29018_DEV_ATTR(proximity_on_chip_ambient_infrared_suppression),
+>  	NULL
+>  };
+>  
+>  static struct attribute *isl29023_attributes[] = {
+> -	ISL29018_DEV_ATTR(range),
+> -	ISL29018_CONST_ATTR(range_available),
+> -	ISL29018_DEV_ATTR(adc_resolution),
+> -	ISL29018_CONST_ATTR(adc_resolution_available),
+>  	NULL
+>  };
+>  
 > 
 
