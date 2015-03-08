@@ -1,15 +1,15 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-wi0-f170.google.com ([209.85.212.170]:37082 "EHLO
-	mail-wi0-f170.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752619AbbCHNhh (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 8 Mar 2015 09:37:37 -0400
+Received: from mail-wi0-f175.google.com ([209.85.212.175]:41881 "EHLO
+	mail-wi0-f175.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751414AbbCHOb5 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 8 Mar 2015 10:31:57 -0400
 From: Angelo Compagnucci <angelo.compagnucci@gmail.com>
 To: linux-iio@vger.kernel.org
 Cc: devicetree@vger.kernel.org,
 	Angelo Compagnucci <angelo.compagnucci@gmail.com>
-Subject: [PATCH] iio: mcp3422: Add DT binding documentation
-Date: Sun,  8 Mar 2015 14:37:23 +0100
-Message-Id: <1425821843-29185-1-git-send-email-angelo.compagnucci@gmail.com>
+Subject: [PATCH v2] iio: mcp3422: Add DT binding documentation
+Date: Sun,  8 Mar 2015 15:31:44 +0100
+Message-Id: <1425825104-4817-1-git-send-email-angelo.compagnucci@gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
@@ -17,6 +17,10 @@ Adding binding documentation for ADC MCP3422.
 
 Signed-off-by: Angelo Compagnucci <angelo.compagnucci@gmail.com>
 ---
+Changelog:
+
+* Added signed-off
+
  Documentation/devicetree/bindings/iio/adc/mcp3422.txt | 17 +++++++++++++++++
  1 file changed, 17 insertions(+)
  create mode 100644 Documentation/devicetree/bindings/iio/adc/mcp3422.txt
