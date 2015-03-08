@@ -1,125 +1,104 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:35024 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:35076 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752271AbbCHLdW (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 8 Mar 2015 07:33:22 -0400
-Message-ID: <54FC3381.5060006@kernel.org>
-Date: Sun, 08 Mar 2015 11:33:21 +0000
+	with ESMTP id S1751963AbbCHLm1 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 8 Mar 2015 07:42:27 -0400
+Message-ID: <54FC35A0.6000901@kernel.org>
+Date: Sun, 08 Mar 2015 11:42:24 +0000
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Ge Gao <GGao@invensense.com>,
-	Viorel Suman <viorel.suman@gmail.com>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-CC: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-Subject: Re: [PATCH v2] iio: inv_mpu6050: Clear timestamps fifo while resetting
- hardware fifo
-References: <1424282721-3033-1-git-send-email-viorel.suman@gmail.com> <54E8D5D7.7050205@kernel.org> <E7747D604FBC9F43A71AA431AFF4476299AD37A8@IUSEXCH01.invcorp.invensense.com> <54FC3329.10302@kernel.org>
-In-Reply-To: <54FC3329.10302@kernel.org>
+To: Roberta Dobrescu <roberta.dobrescu@gmail.com>,
+	linux-iio@vger.kernel.org
+CC: daniel.baluta@intel.com, octavian.purdila@intel.com,
+	knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net
+Subject: Re: [PATCH 2/4] iio: Introduce IIO_CHAN_INFO_RANGE
+References: <1424720154-4762-1-git-send-email-roberta.dobrescu@gmail.com> <1424720154-4762-3-git-send-email-roberta.dobrescu@gmail.com>
+In-Reply-To: <1424720154-4762-3-git-send-email-roberta.dobrescu@gmail.com>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 08/03/15 11:31, Jonathan Cameron wrote:
-> On 26/02/15 18:35, Ge Gao wrote:
->> Look fine to me.
->> Thanks.
->>
->> Best Regards,
->>
->> Ge GAO
->>
-> Formal Acks preferred ;)
+On 23/02/15 19:35, Roberta Dobrescu wrote:
+> Some ambient light sensors have hardware dependent ranges and
+> resolutions. In this case user won't be able to calculate illuminance
+> (lux) using only scale attribute.
 > 
-> Anyhow, applied to the fixes-togreg branch of iio.git.
-Forgot to say - marked for stable as well.
+> For instance, a device that uses a Full Scale Range is the
+> light sensor ISL29018. In this case, IIO_CHAN_INFO_RANGE is
+> needed since the number of ADC bits can be 4, 8, 12 or 16 and
+> using just scales would result in too similar values for different
+> ranges and resolutions.
+This is always an interesting corner.  The big question is what is
+to be gained by ever running these sensors in their lower resolutions?
+
+The reason I've always resisted range is that it's too easy
+for people to be lazy and go with which ever of scale / range
+is presented in the datasheet.  Most of the time they are really
+the same thing.
+
+The exception as you've noted here is in variable resolution devices.
+There is no way that any generic code is ever going to know the right
+option for the combinations of scaling and adc resolution vs time
+requirements.  So we are dealing here with parameters that might
+be hand tweaked for a particular board.
+
+Anyhow, I'd like more opinions on this before I take it.
+
+Lars, Peter, Hartmut - what you guys think on this?
+
 
 > 
-> Thanks,
+> Signed-off-by: Roberta Dobrescu <roberta.dobrescu@gmail.com>
+> ---
+>  Documentation/ABI/testing/sysfs-bus-iio | 13 +++++++++++++
+>  drivers/iio/industrialio-core.c         |  1 +
+>  include/linux/iio/iio.h                 |  1 +
+>  3 files changed, 15 insertions(+)
 > 
-> Jonathan
->>
->> -----Original Message-----
->> From: Jonathan Cameron [mailto:jic23@kernel.org] 
->> Sent: Saturday, February 21, 2015 11:01 AM
->> To: Viorel Suman; linux-iio@vger.kernel.org
->> Cc: linux-kernel@vger.kernel.org; Srinivas Pandruvada; Ge Gao
->> Subject: Re: [PATCH v2] iio: inv_mpu6050: Clear timestamps fifo while resetting hardware fifo
->>
->> On 18/02/15 18:05, Viorel Suman wrote:
->>> A hardware fifo reset always imply an invalidation of the existing 
->>> timestamps, so we'll clear timestamps fifo on successfull hardware 
->>> fifo reset.
->>>
->>> Signed-off-by: Viorel Suman <viorel.suman@gmail.com>
->> Looks sensible to me. Ge / Srinivas?
->>> ---
->>>   v2: Addressed Jonathan's comment regarding the subject prefix.
->>>
->>>  drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c | 25 
->>> ++++++++++++++-----------
->>>  1 file changed, 14 insertions(+), 11 deletions(-)
->>>
->>> diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c 
->>> b/drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c
->>> index 0cd306a..ba27e27 100644
->>> --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c
->>> +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c
->>> @@ -24,6 +24,16 @@
->>>  #include <linux/poll.h>
->>>  #include "inv_mpu_iio.h"
->>>  
->>> +static void inv_clear_kfifo(struct inv_mpu6050_state *st) {
->>> +	unsigned long flags;
->>> +
->>> +	/* take the spin lock sem to avoid interrupt kick in */
->>> +	spin_lock_irqsave(&st->time_stamp_lock, flags);
->>> +	kfifo_reset(&st->timestamps);
->>> +	spin_unlock_irqrestore(&st->time_stamp_lock, flags); }
->>> +
->>>  int inv_reset_fifo(struct iio_dev *indio_dev)  {
->>>  	int result;
->>> @@ -50,6 +60,10 @@ int inv_reset_fifo(struct iio_dev *indio_dev)
->>>  					INV_MPU6050_BIT_FIFO_RST);
->>>  	if (result)
->>>  		goto reset_fifo_fail;
->>> +
->>> +	/* clear timestamps fifo */
->>> +	inv_clear_kfifo(st);
->>> +
->>>  	/* enable interrupt */
->>>  	if (st->chip_config.accl_fifo_enable ||
->>>  	    st->chip_config.gyro_fifo_enable) { @@ -83,16 +97,6 @@ 
->>> reset_fifo_fail:
->>>  	return result;
->>>  }
->>>  
->>> -static void inv_clear_kfifo(struct inv_mpu6050_state *st) -{
->>> -	unsigned long flags;
->>> -
->>> -	/* take the spin lock sem to avoid interrupt kick in */
->>> -	spin_lock_irqsave(&st->time_stamp_lock, flags);
->>> -	kfifo_reset(&st->timestamps);
->>> -	spin_unlock_irqrestore(&st->time_stamp_lock, flags);
->>> -}
->>> -
->>>  /**
->>>   * inv_mpu6050_irq_handler() - Cache a timestamp at each data ready interrupt.
->>>   */
->>> @@ -184,7 +188,6 @@ end_session:
->>>  flush_fifo:
->>>  	/* Flush HW and SW FIFOs. */
->>>  	inv_reset_fifo(indio_dev);
->>> -	inv_clear_kfifo(st);
->>>  	mutex_unlock(&indio_dev->mlock);
->>>  	iio_trigger_notify_done(indio_dev->trig);
->>>  
->>>
->>
-> 
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
+> index 9a70c31..ad1541f 100644
+> --- a/Documentation/ABI/testing/sysfs-bus-iio
+> +++ b/Documentation/ABI/testing/sysfs-bus-iio
+> @@ -1249,3 +1249,16 @@ Contact:	linux-iio@vger.kernel.org
+>  Description:
+>  		Specifies number of seconds in which we compute the steps
+>  		that occur in order to decide if the consumer is making steps.
+> +
+> +What:		/sys/bus/iio/devices/deviceX/in_illuminance0_range
+> +KernelVersion:	3.21
+> +Contact:	linux-iio@vger.kernel.org
+> +Description:
+> +		Hardware dependent ADC Full Scale Range used for some ambient
+> +		light sensors in calculating lux.
+> +
+> +What:		/sys/bus/iio/devices/deviceX/in_illuminance_range_available
+> +KernelVersion:	3.21
+> +Contact:	linux-iio@vger.kernel.org
+> +Description:
+> +		Hardware dependent supported values for ADC Full Scale Range.
+> diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+> index aaba9d3..4138042 100644
+> --- a/drivers/iio/industrialio-core.c
+> +++ b/drivers/iio/industrialio-core.c
+> @@ -128,6 +128,7 @@ static const char * const iio_chan_info_postfix[] = {
+>  	[IIO_CHAN_INFO_CALIBWEIGHT] = "calibweight",
+>  	[IIO_CHAN_INFO_DEBOUNCE_COUNT] = "debounce_count",
+>  	[IIO_CHAN_INFO_DEBOUNCE_TIME] = "debounce_time",
+> +	[IIO_CHAN_INFO_RANGE] = "range",
+>  };
+>  
+>  /**
+> diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
+> index 80d8550..fbdd434 100644
+> --- a/include/linux/iio/iio.h
+> +++ b/include/linux/iio/iio.h
+> @@ -43,6 +43,7 @@ enum iio_chan_info_enum {
+>  	IIO_CHAN_INFO_CALIBWEIGHT,
+>  	IIO_CHAN_INFO_DEBOUNCE_COUNT,
+>  	IIO_CHAN_INFO_DEBOUNCE_TIME,
+> +	IIO_CHAN_INFO_RANGE,
+>  };
+>  
+>  enum iio_shared_by {
 > 
 
