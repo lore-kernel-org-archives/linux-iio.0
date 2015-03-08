@@ -1,133 +1,160 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:34804 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:34831 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751764AbbCHLDe (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 8 Mar 2015 07:03:34 -0400
-Message-ID: <54FC2C83.5090802@kernel.org>
-Date: Sun, 08 Mar 2015 11:03:31 +0000
+	with ESMTP id S1751823AbbCHLGv (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 8 Mar 2015 07:06:51 -0400
+Message-ID: <54FC2D48.6000300@kernel.org>
+Date: Sun, 08 Mar 2015 11:06:48 +0000
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Vlad Dogaru <vlad.dogaru@intel.com>,
-	=?windows-1252?Q?Uwe_Kleine-K=F6?= =?windows-1252?Q?nig?=
-	<u.kleine-koenig@pengutronix.de>
-CC: Daniel Baluta <daniel.baluta@intel.com>,
-	Roberta Dobrescu <roberta.dobrescu@gmail.com>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"octavian.purdila@intel.com" <octavian.purdila@intel.com>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>, kernel@pengutronix.de
-Subject: Re: [PATCH] iio: accel: mma9551: Check gpiod_to_irq return value
-References: <1425292752-7768-1-git-send-email-roberta.dobrescu@gmail.com> <CAEnQRZCBt++Ebjd6uwu6mpVCrsZyDxX53mOf4c17T1RUGAsQMA@mail.gmail.com> <20150302161503.GE7865@pengutronix.de> <20150303070232.GC27074@vdogaru>
-In-Reply-To: <20150303070232.GC27074@vdogaru>
+To: "Suman, Viorel" <viorel.suman@intel.com>,
+	"Reus, Adriana" <adriana.reus@intel.com>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+CC: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"Pandruvada, Srinivas" <srinivas.pandruvada@intel.com>,
+	Ge Gao <ggao@invensense.com>
+Subject: Re: [PATCH] iio:inv-mpu6050: Fix inconsistency for the scale channel
+References: <1424702451-1299-1-git-send-email-adriana.reus@intel.com> <2FFB68359810C64CBFB43927F67FC93F48873F58@IRSMSX102.ger.corp.intel.com>
+In-Reply-To: <2FFB68359810C64CBFB43927F67FC93F48873F58@IRSMSX102.ger.corp.intel.com>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 03/03/15 07:02, Vlad Dogaru wrote:
-> On Mon, Mar 02, 2015 at 05:15:03PM +0100, Uwe Kleine-König wrote:
->> Hello,
+On 04/03/15 13:57, Suman, Viorel wrote:
+> 
+>> -----Original Message-----
+>> From: linux-iio-owner@vger.kernel.org [mailto:linux-iio-
+>> owner@vger.kernel.org] On Behalf Of Adriana Reus
+>> Sent: Monday, February 23, 2015 4:41 PM
+>> To: jic23@kernel.org; linux-iio@vger.kernel.org
+>> Cc: linux-kernel@vger.kernel.org; Pandruvada, Srinivas; Reus, Adriana
+>> Subject: [PATCH] iio:inv-mpu6050: Fix inconsistency for the scale channel
 >>
->> On Mon, Mar 02, 2015 at 04:09:52PM +0200, Daniel Baluta wrote:
->>> On Mon, Mar 2, 2015 at 12:39 PM, Roberta Dobrescu
->>> <roberta.dobrescu@gmail.com> wrote:
->>>> The return value of gpiod_to_irq should be checked before giving
->>>> it to devm_request_threaded_irq in order to not pass an error
->>>> code in case it fails.
->> nothing really bad should happen because request_irq with a negative irq
->> parameter just returns an error I think. So it's not urgent, but still a
->> good idea to fix.
+>> Fix inconsistency in the semantics of the scale attribute.
+>> For scale the write_raw function was considering the scale table index and
+>> writing the appropriate value into the range register, while for read_raw it
+>> was outputting the actual scale.
+>> Fix this behaviour and adhere to the iio ABI specification.
 >>
->>>> Signed-off-by: Roberta Dobrescu <roberta.dobrescu@gmail.com>
->>>> Reviewed-by: Vlad Dogaru <vlad.dogaru@intel.com>
->> It's good habit to point out the commit that introduced the problem. In
->> this case this would be:
->>
->> Fixes: c78b91716340 ("iio: add driver for Freescale MMA9551L")
-Vlad, do you want to respin taking the comments into account, or as Uwe
-put it, it's worth having as is so should I consider it as it stands?
+>> Signed-off-by: Adriana Reus <adriana.reus@intel.com>
+> 
+> Reviewed-by: Viorel Suman <viorel.suman@intel.com>
+Good catch.  I'd just like to give Ge an opportunity to comment
+before applying it.
+
+Please do CC the original driver author as often they've moved on to
+other stuff and aren't actively reading linux-iio anymore.
 
 Jonathan
->>
->>>> ---
->>>> gpiod_to_irq also appears in the following drivers:
->>>>         * drivers/iio/accel/bmc150-accel.c
->>>>         * drivers/iio/accel/kxcjk-1013.c
->>>>         * drivers/iio/accel/mma9553.c
->>>>         * drivers/iio/gyro/bmg160.c
->>>>         * drivers/iio/imu/kmx61.c
->>>>         * drivers/iio/proximity/sx9500.c,
->>>>
->>>> something like this:
->>>>
->>>> <code>
->>>>         ret = gpiod_to_irq(gpio);
->>>>
->>>>         dev_dbg(dev, "GPIO resource, no:%d irq:%d\n", desc_to_gpio(gpio), ret);
->>>>
->>>>         return ret;
->>>> </code>
->>>>
->>>> The return value of the functions containing the above code is checked,
->>>> so the only problem would be that the debug message would contain a wrong
->>>> value for irq in case gpiod_to_irq fails. So it doesn't affects much.
->> Still worth fixing, isn't it? Also the error isn't handled, but ignored,
->> like:
->>
->> 	if (client->irq <= 0)
->> 		client->irq = sx9500_gpio_probe(client, data);
->>
->> 	if (client->irq > 0) {
->> 		ret = devm_request_threaded_irq(....
->>
->> but if an irq is specified (be it by means of a "normal" irq or by
->> specifying a gpio in the device tree/acpi tables) I expect the driver to
->> fail probing instead of just behaving as if no irq would be available.
 > 
-> If there is no IRQ available this device would still be able to do raw
-> reads, although I admit I have not tested this.
-> 
->> I don't know how this was tested, but I wonder further about
+>> ---
+>>  drivers/iio/imu/inv_mpu6050/inv_mpu_core.c | 56 ++++++++++++++++--
+>> ------------
+>>  1 file changed, 30 insertions(+), 26 deletions(-)
 >>
->> 	#define SX9500_GPIO_NAME                "sx9500_gpio"
->> 	...
->> 	devm_gpiod_get_index(dev, SX9500_GPIO_NAME, 0, GPIOD_IN);
+>> diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
+>> b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
+>> index 9be9b20..4cf056d 100644
+>> --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
+>> +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
+>> @@ -401,42 +401,46 @@ error_read_raw:
+>>  	}
+>>  }
 >>
->> If I understand the code correctly that is supposed to look for
->> "sx9500_gpio-gpio" in the ACPI data. Is this really correct?
-> 
-> I'm in the process of changing this, will post some patches soon.  This
-> should include failing to probe if an IRQ is not found.
-> 
-> At the time I wrote the driver, I wasn't using Device Tree and ACPI had
-> no support for _DSD (or at least I wasn't aware of it), so the name did
-> not matter, only the index.
-> 
-> Thanks for the 
-> 
->>>>  drivers/iio/accel/mma9551.c | 6 +++++-
->>>>  1 file changed, 5 insertions(+), 1 deletion(-)
->>>>
->>>> diff --git a/drivers/iio/accel/mma9551.c b/drivers/iio/accel/mma9551.c
->>>> index 46c3835..b6f3041 100644
->>>> --- a/drivers/iio/accel/mma9551.c
->>>> +++ b/drivers/iio/accel/mma9551.c
->>>> @@ -428,7 +428,11 @@ static int mma9551_gpio_probe(struct iio_dev *indio_dev)
->>>>                 if (ret)
->>>>                         return ret;
->>>>
->>>> -               data->irqs[i] = gpiod_to_irq(gpio);
->>>> +               ret = gpiod_to_irq(gpio);
->>>> +               if (ret < 0)
->>>> +                       return ret;
->> I wonder if you should handle 0 as error, too. But even as is:
+>> -static int inv_mpu6050_write_fsr(struct inv_mpu6050_state *st, int fsr)
+>> +static int inv_mpu6050_write_gyro_scale(struct inv_mpu6050_state *st,
+>> +int val)
+>>  {
+>> -	int result;
+>> +	int result, i;
+>>  	u8 d;
 >>
->> 	Acked-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+>> -	if (fsr < 0 || fsr > INV_MPU6050_MAX_GYRO_FS_PARAM)
+>> -		return -EINVAL;
+>> -	if (fsr == st->chip_config.fsr)
+>> -		return 0;
+>> +	for (i = 0; i < ARRAY_SIZE(gyro_scale_6050); ++i) {
+>> +		if (gyro_scale_6050[i] == val) {
+>> +			d = (i <<
+>> INV_MPU6050_GYRO_CONFIG_FSR_SHIFT);
+>> +			result = inv_mpu6050_write_reg(st,
+>> +					st->reg->gyro_config, d);
+>> +			if (result)
+>> +				return result;
 >>
->> Thanks
->> Uwe
+>> -	d = (fsr << INV_MPU6050_GYRO_CONFIG_FSR_SHIFT);
+>> -	result = inv_mpu6050_write_reg(st, st->reg->gyro_config, d);
+>> -	if (result)
+>> -		return result;
+>> -	st->chip_config.fsr = fsr;
+>> +			st->chip_config.fsr = i;
+>> +			return 0;
+>> +		}
+>> +	}
 >>
->> -- 
->> Pengutronix e.K.                           | Uwe Kleine-König            |
->> Industrial Linux Solutions                 | http://www.pengutronix.de/  |
+>> -	return 0;
+>> +	return -EINVAL;
+>>  }
+>>
+>> -static int inv_mpu6050_write_accel_fs(struct inv_mpu6050_state *st, int
+>> fs)
+>> +static int inv_mpu6050_write_accel_scale(struct inv_mpu6050_state *st,
+>> +int val)
+>>  {
+>> -	int result;
+>> +	int result, i;
+>>  	u8 d;
+>>
+>> -	if (fs < 0 || fs > INV_MPU6050_MAX_ACCL_FS_PARAM)
+>> -		return -EINVAL;
+>> -	if (fs == st->chip_config.accl_fs)
+>> -		return 0;
+>> +	for (i = 0; i < ARRAY_SIZE(accel_scale); ++i) {
+>> +		if (accel_scale[i] == val) {
+>> +			d = (i << INV_MPU6050_ACCL_CONFIG_FSR_SHIFT);
+>> +			result = inv_mpu6050_write_reg(st,
+>> +					st->reg->accl_config, d);
+>> +			if (result)
+>> +				return result;
+>>
+>> -	d = (fs << INV_MPU6050_ACCL_CONFIG_FSR_SHIFT);
+>> -	result = inv_mpu6050_write_reg(st, st->reg->accl_config, d);
+>> -	if (result)
+>> -		return result;
+>> -	st->chip_config.accl_fs = fs;
+>> +			st->chip_config.accl_fs = i;
+>> +			return 0;
+>> +		}
+>> +	}
+>>
+>> -	return 0;
+>> +	return -EINVAL;
+>>  }
+>>
+>>  static int inv_mpu6050_write_raw(struct iio_dev *indio_dev, @@ -463,10
+>> +467,10 @@ static int inv_mpu6050_write_raw(struct iio_dev *indio_dev,
+>>  	case IIO_CHAN_INFO_SCALE:
+>>  		switch (chan->type) {
+>>  		case IIO_ANGL_VEL:
+>> -			result = inv_mpu6050_write_fsr(st, val);
+>> +			result = inv_mpu6050_write_gyro_scale(st, val2);
+>>  			break;
+>>  		case IIO_ACCEL:
+>> -			result = inv_mpu6050_write_accel_fs(st, val);
+>> +			result = inv_mpu6050_write_accel_scale(st, val2);
+>>  			break;
+>>  		default:
+>>  			result = -EINVAL;
+>> --
+>> 1.9.1
+>>
+>> --
+>> To unsubscribe from this list: send the line "unsubscribe linux-iio" in the
+>> body of a message to majordomo@vger.kernel.org More majordomo info
+>> at  http://vger.kernel.org/majordomo-info.html
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> 
 
