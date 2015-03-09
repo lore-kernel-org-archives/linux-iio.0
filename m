@@ -1,58 +1,114 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:43532 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:44028 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753062AbbCINtw (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 9 Mar 2015 09:49:52 -0400
-Message-ID: <54FDA4FE.4080005@kernel.org>
-Date: Mon, 09 Mar 2015 13:49:50 +0000
+	with ESMTP id S1752768AbbCIOzd (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 9 Mar 2015 10:55:33 -0400
+Message-ID: <54FDB463.1070409@kernel.org>
+Date: Mon, 09 Mar 2015 14:55:31 +0000
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Peter Meerwald <pmeerw@pmeerw.net>,
-	Martin Fuzzey <mfuzzey@parkeon.com>
-CC: linux-iio@vger.kernel.org
-Subject: Re: [PATCH V3 0/9] iio: mma8452 enhancements
-References: <20150219141553.27001.18825.stgit@localhost> <alpine.DEB.2.02.1502260009570.6800@pmeerw.net>
-In-Reply-To: <alpine.DEB.2.02.1502260009570.6800@pmeerw.net>
+To: NeilBrown <neilb@suse.de>
+CC: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+	GTA04 owners <gta04-owner@goldelico.com>,
+	Doug Anderson <dianders@chromium.org>,
+	Thorsten Nowak <thorsten.nowak@iis.fraunhofer.de>,
+	Manuel Stahl <manuel.stahl@iis.fraunhofer.de>,
+	Christian Strobel <christian.strobel@iis.fraunhofer.de>,
+	Hartmut Knaack <knaack.h@gmx.de>
+Subject: Re: [PATCH v2] iio: gyro: itg3200: add suspend/resume support.
+References: <20150224132441.2cb8ae6d@notabene.brown>
+In-Reply-To: <20150224132441.2cb8ae6d@notabene.brown>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 25/02/15 23:11, Peter Meerwald wrote:
+On 24/02/15 02:24, NeilBrown wrote:
 > 
->> This series adds some additional features to the mma8452 accelerometer driver
->> 	* debugfs register access
->> 	* transient threshold events
->> 	* highpass filter
->> 	* interrupt driven sampling (trigger)
->> 	* self test mode
+> Unless we put the device to sleep when not it use, it wastes
+> 6mA.
 > 
-> looks good except some very minor things;
-> great to see the code is used and enhanced
-I'm happy with all the patches I didn't comment on.
+> If the device is asleep on probe, the 'id' register
+> sometimes mis-reads - so reset first.  If the device responds
+> at all a command sent to the address, it is almost certainly
+> the correct device already.
+> 
+> Acked-by: Manuel Stahl <manuel.stahl@iis.fraunhofer.de>
+> Acked-by: Hartmut Knaack <knaack.h@gmx.de>
+> Signed-off-by: NeilBrown <neil@brown.name>
+Applied to the togreg branch of iio.git. Initially pushed out
+as testing for the autobuilders to play with it.
 
-Looks good Martin, not much to tidy up!
+Thanks,
+
+Jonathan
+> 
+> ---
+> v1 of this was sent in November.  I got some useful feedback, but then got distracted
+> by something.  Sorry for the long gap.
+> NeilBrown
+Not to worry, I've got lots of stuff in that category ;(
+> 
+> 
+> diff --git a/drivers/iio/gyro/itg3200_core.c b/drivers/iio/gyro/itg3200_core.c
+> index 6a8020d48140..f0fd94055d88 100644
+> --- a/drivers/iio/gyro/itg3200_core.c
+> +++ b/drivers/iio/gyro/itg3200_core.c
+> @@ -223,6 +223,10 @@ static int itg3200_initial_setup(struct iio_dev *indio_dev)
+>  	int ret;
+>  	u8 val;
 >  
->> Attributes are added to the core for:
->> * highpass filter for readings
->> * both high and lowpass filters for events
->>
->> In addition a latent bug in the device initialisation is fixed.
->>
->> V3 changes:
->> 	Use 3db frequency for filter enable / disable (0=disable)
->> 	Support enabling filter for readings in addition to events
->> 	Use IIO_EV_INFO_PERIOD rather than custom attribute
->> 	Use devm_iio_trigger_alloc()
->> 	Add comment to explain irq activation during probe()
->> 	iio_device_register() only after all setup
->> 	Drop iio_push_event() wrapper
->> 	Correct parameters to iio_push_event()
->> 	Document missing attributes
->> 	Add self test mode
->> --
->> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
->> the body of a message to majordomo@vger.kernel.org
->> More majordomo info at  http://vger.kernel.org/majordomo-info.html
->>
+> +	ret = itg3200_reset(indio_dev);
+> +	if (ret)
+> +		goto err_ret;
+> +
+>  	ret = itg3200_read_reg_8(indio_dev, ITG3200_REG_ADDRESS, &val);
+>  	if (ret)
+>  		goto err_ret;
+> @@ -233,10 +237,6 @@ static int itg3200_initial_setup(struct iio_dev *indio_dev)
+>  		goto err_ret;
+>  	}
+>  
+> -	ret = itg3200_reset(indio_dev);
+> -	if (ret)
+> -		goto err_ret;
+> -
+>  	ret = itg3200_enable_full_scale(indio_dev);
+>  err_ret:
+>  	return ret;
+> @@ -351,6 +351,26 @@ static int itg3200_remove(struct i2c_client *client)
+>  	return 0;
+>  }
+>  
+> +static int __maybe_unused itg3200_suspend(struct device *dev)
+> +{
+> +	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+> +	struct itg3200 *st = iio_priv(indio_dev);
+> +
+> +	dev_dbg(&st->i2c->dev, "suspend device");
+> +
+> +	return itg3200_write_reg_8(indio_dev, ITG3200_REG_POWER_MANAGEMENT,
+> +				   ITG3200_SLEEP);
+> +}
+> +
+> +static int __maybe_unused itg3200_resume(struct device *dev)
+> +{
+> +	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+> +
+> +	return itg3200_initial_setup(indio_dev);
+> +}
+> +
+> +static SIMPLE_DEV_PM_OPS(itg3200_pm_ops, itg3200_suspend, itg3200_resume);
+> +
+>  static const struct i2c_device_id itg3200_id[] = {
+>  	{ "itg3200", 0 },
+>  	{ }
+> @@ -361,6 +381,7 @@ static struct i2c_driver itg3200_driver = {
+>  	.driver = {
+>  		.owner  = THIS_MODULE,
+>  		.name	= "itg3200",
+> +		.pm	= &itg3200_pm_ops,
+>  	},
+>  	.id_table	= itg3200_id,
+>  	.probe		= itg3200_probe,
 > 
 
