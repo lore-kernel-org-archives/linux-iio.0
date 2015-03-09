@@ -1,74 +1,55 @@
-Return-Path: <vianney.leclement@essensium.com>
-Date: Mon, 9 Mar 2015 20:52:50 +0100
-From: Vianney le =?iso-8859-1?q?Cl=E9ment?= <vianney.leclement@essensium.com>
-Subject: Re: [PATCH 5/7] iio: mlx90614: Allow tuning EEPROM configuration
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mout.kundenserver.de ([212.227.17.24]:65401 "EHLO
+	mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752983AbbCIUFP (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 9 Mar 2015 16:05:15 -0400
+From: Arnd Bergmann <arnd@arndb.de>
 To: Jonathan Cameron <jic23@kernel.org>
-CC: <linux-iio@vger.kernel.org>, Peter Meerwald <pmeerw@pmeerw.net>, "Arnout
- Vandecappelle (Essensium/Mind)" <arnout@mind.be>, Wolfram Sang
-	<wsa@the-dreams.de>
-Message-ID: <1425930770.5817.5@mail.essensium.com>
-In-Reply-To: <54FDBF2A.6010402@kernel.org>
-References: <1424879712-28304-1-git-send-email-vianney.leclement@essensium.com>
-	<1424879712-28304-6-git-send-email-vianney.leclement@essensium.com>
-	<54FDBDCC.50204@kernel.org> <54FDBF2A.6010402@kernel.org>
+Cc: Geert Uytterhoeven <geert@linux-m68k.org>,
+	Gwendal Grignou <gwendal@chromium.org>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	linux-iio@vger.kernel.org,
+	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	"linux-arm-kernel@lists.infradead.org"
+	<linux-arm-kernel@lists.infradead.org>
+Subject: Re: [PATCH] iio: ak8975: fix AK09911 dependencies
+Date: Mon, 09 Mar 2015 21:05:02 +0100
+Message-ID: <3043946.mVD7WvMa1C@wuerfel>
+In-Reply-To: <54FD7AF2.8020605@kernel.org>
+References: <7968545.0Cq9DcaG85@wuerfel> <CAMuHMdU9x_OUReNMdZx+urZE3FDx2qz1m6gDRVp8qJ0r_QF5tA@mail.gmail.com> <54FD7AF2.8020605@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"; format=flowed
-List-ID: <linux-iio@vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Mon, Mar 9, 2015 at 4:41 , Jonathan Cameron <jic23@kernel.org> wrote:
-> 
->  Emissivity is well defined. I'd like this to be a standard attribute 
-> with
-> 
->  full documentation please rather than a driver specific one.  Happy
->  to have this added to the infomask elements if it make sense.
+On Monday 09 March 2015 10:50:26 Jonathan Cameron wrote:
+> >> diff --git a/drivers/iio/magnetometer/Kconfig b/drivers/iio/magnetometer/Kconfig
+> >> index 4c7a4c52dd06..a5d6de72c523 100644
+> >> --- a/drivers/iio/magnetometer/Kconfig
+> >> +++ b/drivers/iio/magnetometer/Kconfig
+> >> @@ -18,6 +18,8 @@ config AK8975
+> >>
+> >>  config AK09911
+> >>         tristate "Asahi Kasei AK09911 3-axis Compass"
+> >> +       depends on I2C
+> >> +       depends on GPIOLIB
+> >>         select AK8975
+> >>         help
+> >>           Deprecated: AK09911 is now supported by AK8975 driver.
+> > 
+> > I just saw the AK8975/AK09911 config options disappear for a v4.0-rc3 m68k
+> > allmodconfig kernel. Apparently it built fine with !GPIOLIB before, as many
+> > gpiolib (consumer) functions have dummies for the !GPIOLIB case.
+> > 
+> > So I think the GPIOLIB dependency can be relaxed to "GPIOLIB || COMPILE_TEST".
+> > The same may be true for many other GPIOLIB consumer drivers.
+> > Will look into it and send patches...
 
-It does make sense.  This parameter cannot be set separately for the 
-two IR sensors though (for the dual-sensor model).  Should the 
-attribute still be shared by type, even though it does not apply to the 
-ambient temperature?  Or should we add "shared by modifier" attributes 
-(not sure it is worth it)?
+The reason for this dependency is the 'select AK8975', which causes a Kconfig
+warning if GPIOLIB is disabled. I do not see an actual dependency on gpiolib
+in the ak8975 driver, but relaxing this means we have to remove the dependency
+for both of them together, not just for AK09911.
 
-> 
->  Hmm odd to have two different filter types with separate control.
-> 
->  However we have _filter_low_pass_3db_frequency and whilst it is a 
-> pain
-> 
->  obviously to map this to that form that's the way to go from a useful
-> 
->  userspace interface point of view.  If we need to extend the filter
-> 
->  description interface (filter type has been suggested before) then 
-> please
-> 
->  propose that.
-> 
-> 
-> 
->  Here I see they are suggesting one filter is effectively for 
-> ignoreing
-> 
->  fast passing objects, and the other for noise prevention.  They both
-> 
->  effect the settling time.
-> 
-> 
-> 
->  Anyhow it's not entirely obvious what the right answer is, but its
-> 
->  definitely not a driver specific interface such as we have.
-> 
-> 
->  Peter, any thoughts?
-
-I will look into this.  Any thoughts from Peter are indeed welcome.
-
->>  +	&iio_dev_attr_gain.dev_attr.attr,
-> 
->  Please use the standard IIO infomask elements for scale (or perhaps
->  calibscale - I haven't checked which is appropriate).
-
-Ok.
-
-Vianney
+	Arnd
