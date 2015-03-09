@@ -1,217 +1,51 @@
-Return-Path: <srinivas.pandruvada@linux.intel.com>
-Message-ID: <1425933634.2797.3.camel@spandruv-mobl2.hf.intel.com>
-Subject: Re: [PATCH v4 2/3] iio: bmc150: introduce bmc150_accel_interrupt
-From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from exchange.essensium.com ([81.246.79.137]:31084 "EHLO
+	exchange.essensium.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753345AbbCITf5 convert rfc822-to-8bit (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 9 Mar 2015 15:35:57 -0400
+Date: Mon, 9 Mar 2015 20:35:29 +0100
+From: Vianney le =?iso-8859-1?q?Cl=E9ment?=
+	<vianney.leclement@essensium.com>
+Subject: Re: [PATCH 4/7] iio: mlx90614: Support devices with dual IR sensor
 To: Jonathan Cameron <jic23@kernel.org>
-Cc: Octavian Purdila <octavian.purdila@intel.com>, linux-iio@vger.kernel.org
-Date: Mon, 09 Mar 2015 13:40:34 -0700
-In-Reply-To: <54FC30FF.8080703@kernel.org>
-References: <1425399478-5464-1-git-send-email-octavian.purdila@intel.com>
-	 <1425399478-5464-3-git-send-email-octavian.purdila@intel.com>
-	 <54FC30FF.8080703@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Mime-Version: 1.0
-List-ID: <linux-iio@vger.kernel.org>
+CC: <linux-iio@vger.kernel.org>, Peter Meerwald <pmeerw@pmeerw.net>,
+	"Arnout Vandecappelle (Essensium/Mind)" <arnout@mind.be>
+Message-ID: <1425929729.5817.4@mail.essensium.com>
+In-Reply-To: <54FDB9CE.2060104@kernel.org>
+References: <1424879712-28304-1-git-send-email-vianney.leclement@essensium.com>
+	<1424879712-28304-5-git-send-email-vianney.leclement@essensium.com>
+	<54FDB9CE.2060104@kernel.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Sun, 2015-03-08 at 11:22 +0000, Jonathan Cameron wrote:
-> On 03/03/15 16:17, Octavian Purdila wrote:
-> > Since both triggers and events can share an interrupt, add a data
-> > structure that tracks the users of an interrupt so that it enables or
-> > disables it only for the first users and respectively last user.
-> > 
-> > This will allows us to easily add more events or triggers.
-> > 
-> > The patch also adds an interrupt enabled counter, so that we can
-> > easily know if we need to put the device in normal mode when the
-> > resume callback is issued.
-> > 
-> > Signed-off-by: Octavian Purdila <octavian.purdila@intel.com>
-> As I stated before I'd like an Ack from Srinivas on this
-> (obviously Srinivas, if you've handed the driver maintenance over
-> to Octavian just let me know and I'll stop pestering you ;)
+On Mon, Mar 9, 2015 at 4:18 , Jonathan Cameron <jic23@kernel.org> wrote:
+> On 25/02/15 15:55, Vianney le Clément de Saint-Marcq wrote:
+>>  The model is detected by reading the EEPROM configuration during
+>>  probing.  In the dual IR sensor model, the ambient temperature is
+>>  exported twice to userspace.  This makes the two channels appear
+>>  completely symmetrical.
+> Why do we want it to be symmetrical?
 
-Reviewed-by:: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Well, except for the beauty of symmetry, I do not have any hard 
+argument, nor do I have any strong feelings about it :).  I can leave 
+the duplicate out in v2.
 
+> Is there a part number difference for the dual sensor version?  If so 
+> we can still
+> autoprobe for it, but want to make sure we have it listed as a 
+> supported part.
 
-I prefer to test before Acks. Since Octavian is adding Fifo support and
-many changes, If Octavian wants he can take over the maintenance of this
-driver.
+Nope.  The only difference lies in the option code: 
+MLX90614ESF-BAA-000-TU is single-zone, while MLX90614ESF-BBA-000-TU is 
+dual (notice the second letter in the second group).
 
+>>  +/* Return 0 for single sensor, 1 for dual sensor, <0 on error. */
+>>  +static int mlx90614_probe_model(struct i2c_client *client)
+> I'd give this a more specific name.  probe_num_ir_sensors or similar.
 
-Thanks,
-Srinivas
+Will be changed in v2.
 
-> 
+Vianney
 
-> Jonathan
-> > ---
-> >  drivers/iio/accel/bmc150-accel.c | 86 ++++++++++++++++++++++++----------------
-> >  1 file changed, 51 insertions(+), 35 deletions(-)
-> > 
-> > diff --git a/drivers/iio/accel/bmc150-accel.c b/drivers/iio/accel/bmc150-accel.c
-> > index 74ee54e..70497c3 100644
-> > --- a/drivers/iio/accel/bmc150-accel.c
-> > +++ b/drivers/iio/accel/bmc150-accel.c
-> > @@ -147,10 +147,24 @@ struct bmc150_accel_chip_info {
-> >  	const struct bmc150_scale_info scale_table[4];
-> >  };
-> >  
-> > +struct bmc150_accel_interrupt {
-> > +	const struct bmc150_accel_interrupt_info *info;
-> > +	atomic_t users;
-> > +};
-> > +
-> > +enum bmc150_accel_interrupt_id {
-> > +	BMC150_ACCEL_INT_DATA_READY,
-> > +	BMC150_ACCEL_INT_ANY_MOTION,
-> > +	BMC150_ACCEL_INT_WATERMARK,
-> > +	BMC150_ACCEL_INTERRUPTS,
-> > +};
-> > +
-> >  struct bmc150_accel_data {
-> >  	struct i2c_client *client;
-> > +	struct bmc150_accel_interrupt interrupts[BMC150_ACCEL_INTERRUPTS];
-> >  	struct iio_trigger *dready_trig;
-> >  	struct iio_trigger *motion_trig;
-> > +	atomic_t active_intr;
-> >  	struct mutex mutex;
-> >  	s16 buffer[8];
-> >  	u8 bw_bits;
-> > @@ -421,7 +435,7 @@ static const struct bmc150_accel_interrupt_info {
-> >  	u8 map_bitmask;
-> >  	u8 en_reg;
-> >  	u8 en_bitmask;
-> > -} bmc150_accel_interrupts[] = {
-> > +} bmc150_accel_interrupts[BMC150_ACCEL_INTERRUPTS] = {
-> >  	{ /* data ready interrupt */
-> >  		.map_reg = BMC150_ACCEL_REG_INT_MAP_1,
-> >  		.map_bitmask = BMC150_ACCEL_INT_MAP_1_BIT_DATA,
-> > @@ -438,12 +452,30 @@ static const struct bmc150_accel_interrupt_info {
-> >  	},
-> >  };
-> >  
-> > -static int bmc150_accel_set_interrupt(struct bmc150_accel_data *data,
-> > -				const struct bmc150_accel_interrupt_info *info,
-> > +static void bmc150_accel_interrupts_setup(struct iio_dev *indio_dev,
-> > +					  struct bmc150_accel_data *data)
-> > +{
-> > +	int i;
-> > +
-> > +	for (i = 0; i < BMC150_ACCEL_INTERRUPTS; i++)
-> > +		data->interrupts[i].info = &bmc150_accel_interrupts[i];
-> > +}
-> > +
-> > +static int bmc150_accel_set_interrupt(struct bmc150_accel_data *data, int i,
-> >  				      bool state)
-> >  {
-> > +	struct bmc150_accel_interrupt *intr = &data->interrupts[i];
-> > +	const struct bmc150_accel_interrupt_info *info = intr->info;
-> >  	int ret;
-> >  
-> > +	if (state) {
-> > +		if (atomic_inc_return(&intr->users) > 1)
-> > +			return 0;
-> > +	} else {
-> > +		if (atomic_dec_return(&intr->users) > 0)
-> > +			return 0;
-> > +	}
-> > +
-> >  	/*
-> >  	 * We will expect the enable and disable to do operation in
-> >  	 * in reverse order. This will happen here anyway as our
-> > @@ -493,6 +525,11 @@ static int bmc150_accel_set_interrupt(struct bmc150_accel_data *data,
-> >  		goto out_fix_power_state;
-> >  	}
-> >  
-> > +	if (state)
-> > +		atomic_inc(&data->active_intr);
-> > +	else
-> > +		atomic_dec(&data->active_intr);
-> > +
-> >  	return 0;
-> >  
-> >  out_fix_power_state:
-> > @@ -500,20 +537,6 @@ out_fix_power_state:
-> >  	return ret;
-> >  }
-> >  
-> > -static int bmc150_accel_setup_any_motion_interrupt(
-> > -					struct bmc150_accel_data *data,
-> > -					bool status)
-> > -{
-> > -	return bmc150_accel_set_interrupt(data, &bmc150_accel_interrupts[1],
-> > -					  status);
-> > -}
-> > -
-> > -static int bmc150_accel_setup_new_data_interrupt(struct bmc150_accel_data *data,
-> > -						 bool status)
-> > -{
-> > -	return bmc150_accel_set_interrupt(data, &bmc150_accel_interrupts[0],
-> > -					  status);
-> > -}
-> >  
-> >  static int bmc150_accel_set_scale(struct bmc150_accel_data *data, int val)
-> >  {
-> > @@ -753,13 +776,8 @@ static int bmc150_accel_write_event_config(struct iio_dev *indio_dev,
-> >  
-> >  	mutex_lock(&data->mutex);
-> >  
-> > -	if (!state && data->motion_trigger_on) {
-> > -		data->ev_enable_state = 0;
-> > -		mutex_unlock(&data->mutex);
-> > -		return 0;
-> > -	}
-> > -
-> > -	ret =  bmc150_accel_setup_any_motion_interrupt(data, state);
-> > +	ret = bmc150_accel_set_interrupt(data, BMC150_ACCEL_INT_ANY_MOTION,
-> > +					 state);
-> >  	if (ret < 0) {
-> >  		mutex_unlock(&data->mutex);
-> >  		return ret;
-> > @@ -996,19 +1014,16 @@ static int bmc150_accel_data_rdy_trigger_set_state(struct iio_trigger *trig,
-> >  		}
-> >  	}
-> >  
-> > -	if (!state && data->ev_enable_state && data->motion_trigger_on) {
-> > -		data->motion_trigger_on = false;
-> > -		mutex_unlock(&data->mutex);
-> > -		return 0;
-> > -	}
-> > -
-> >  	if (data->motion_trig == trig) {
-> >  		ret = bmc150_accel_update_slope(data);
-> >  		if (!ret)
-> > -			ret = bmc150_accel_setup_any_motion_interrupt(data,
-> > -								      state);
-> > +			ret = bmc150_accel_set_interrupt(data,
-> > +						 BMC150_ACCEL_INT_ANY_MOTION,
-> > +							 state);
-> >  	} else {
-> > -		ret = bmc150_accel_setup_new_data_interrupt(data, state);
-> > +		ret = bmc150_accel_set_interrupt(data,
-> > +						 BMC150_ACCEL_INT_DATA_READY,
-> > +						 state);
-> >  	}
-> >  	if (ret < 0) {
-> >  		mutex_unlock(&data->mutex);
-> > @@ -1206,6 +1221,8 @@ static int bmc150_accel_probe(struct i2c_client *client,
-> >  			return ret;
-> >  		}
-> >  
-> > +		bmc150_accel_interrupts_setup(indio_dev, data);
-> > +
-> >  		data->dready_trig = devm_iio_trigger_alloc(&client->dev,
-> >  							   "%s-dev%d",
-> >  							   indio_dev->name,
-> > @@ -1321,8 +1338,7 @@ static int bmc150_accel_resume(struct device *dev)
-> >  	struct bmc150_accel_data *data = iio_priv(indio_dev);
-> >  
-> >  	mutex_lock(&data->mutex);
-> > -	if (data->dready_trigger_on || data->motion_trigger_on ||
-> > -							data->ev_enable_state)
-> > +	if (atomic_read(&data->active_intr))
-> >  		bmc150_accel_set_mode(data, BMC150_ACCEL_SLEEP_MODE_NORMAL, 0);
-> >  	mutex_unlock(&data->mutex);
-> >  
-> > 
-> 
