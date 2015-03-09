@@ -1,38 +1,74 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from exchange.essensium.com ([81.246.79.137]:31791 "EHLO
-	exchange.essensium.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751664AbbCITnv convert rfc822-to-8bit (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 9 Mar 2015 15:43:51 -0400
-Date: Mon, 9 Mar 2015 20:27:39 +0100
-From: Vianney le =?iso-8859-1?q?Cl=E9ment?=
-	<vianney.leclement@essensium.com>
-Subject: Re: [PATCH 3/7] iio: mlx90614: Add processed temperature output
+Return-Path: <vianney.leclement@essensium.com>
+Date: Mon, 9 Mar 2015 20:52:50 +0100
+From: Vianney le =?iso-8859-1?q?Cl=E9ment?= <vianney.leclement@essensium.com>
+Subject: Re: [PATCH 5/7] iio: mlx90614: Allow tuning EEPROM configuration
 To: Jonathan Cameron <jic23@kernel.org>
-CC: <linux-iio@vger.kernel.org>, Peter Meerwald <pmeerw@pmeerw.net>,
-	"Arnout Vandecappelle (Essensium/Mind)" <arnout@mind.be>
-Message-ID: <1425929259.5817.3@mail.essensium.com>
-In-Reply-To: <54FDB788.3050009@kernel.org>
+CC: <linux-iio@vger.kernel.org>, Peter Meerwald <pmeerw@pmeerw.net>, "Arnout
+ Vandecappelle (Essensium/Mind)" <arnout@mind.be>, Wolfram Sang
+	<wsa@the-dreams.de>
+Message-ID: <1425930770.5817.5@mail.essensium.com>
+In-Reply-To: <54FDBF2A.6010402@kernel.org>
 References: <1424879712-28304-1-git-send-email-vianney.leclement@essensium.com>
-	<1424879712-28304-4-git-send-email-vianney.leclement@essensium.com>
-	<54FDB788.3050009@kernel.org>
+	<1424879712-28304-6-git-send-email-vianney.leclement@essensium.com>
+	<54FDBDCC.50204@kernel.org> <54FDBF2A.6010402@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"; format=flowed
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+List-ID: <linux-iio@vger.kernel.org>
 
-On Mon, Mar 9, 2015 at 4:08 , Jonathan Cameron <jic23@kernel.org> wrote:
-> On 25/02/15 15:55, Vianney le Clément de Saint-Marcq wrote:
->>  Provide processed temperature in milli-Celsius through the
->>  in_temp_*_input interface.
-> Why?  It's trivial for userspace to do the conversion, so
-> why provide the additional interface?  As a rule we don't provide
-> both as in general these sensors are wrapped up in a library that can
-> do the work more efficiently in userspace when needed.
+On Mon, Mar 9, 2015 at 4:41 , Jonathan Cameron <jic23@kernel.org> wrote:
+> 
+>  Emissivity is well defined. I'd like this to be a standard attribute 
+> with
+> 
+>  full documentation please rather than a driver specific one.  Happy
+>  to have this added to the infomask elements if it make sense.
 
-Many thanks for reviewing this series, Jonathan.
+It does make sense.  This parameter cannot be set separately for the 
+two IR sensors though (for the dual-sensor model).  Should the 
+attribute still be shared by type, even though it does not apply to the 
+ambient temperature?  Or should we add "shared by modifier" attributes 
+(not sure it is worth it)?
 
-I was not aware of this rule.  I will remove this patch from v2 (except 
-for the tiny comment fix).
+> 
+>  Hmm odd to have two different filter types with separate control.
+> 
+>  However we have _filter_low_pass_3db_frequency and whilst it is a 
+> pain
+> 
+>  obviously to map this to that form that's the way to go from a useful
+> 
+>  userspace interface point of view.  If we need to extend the filter
+> 
+>  description interface (filter type has been suggested before) then 
+> please
+> 
+>  propose that.
+> 
+> 
+> 
+>  Here I see they are suggesting one filter is effectively for 
+> ignoreing
+> 
+>  fast passing objects, and the other for noise prevention.  They both
+> 
+>  effect the settling time.
+> 
+> 
+> 
+>  Anyhow it's not entirely obvious what the right answer is, but its
+> 
+>  definitely not a driver specific interface such as we have.
+> 
+> 
+>  Peter, any thoughts?
+
+I will look into this.  Any thoughts from Peter are indeed welcome.
+
+>>  +	&iio_dev_attr_gain.dev_attr.attr,
+> 
+>  Please use the standard IIO infomask elements for scale (or perhaps
+>  calibscale - I haven't checked which is appropriate).
+
+Ok.
 
 Vianney
-
