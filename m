@@ -1,40 +1,153 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:43265 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:43371 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754016AbbCINPJ (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 9 Mar 2015 09:15:09 -0400
-Message-ID: <54FD9CD9.3080306@kernel.org>
-Date: Mon, 09 Mar 2015 13:15:05 +0000
+	with ESMTP id S1753087AbbCIN3K (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 9 Mar 2015 09:29:10 -0400
+Message-ID: <54FDA023.1010408@kernel.org>
+Date: Mon, 09 Mar 2015 13:29:07 +0000
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: abhijit <abhijitnaik27@gmail.com>, linux-iio@vger.kernel.org,
-	Patrick Vasseur <patrick.vasseur@c-s.fr>,
+To: Vlad Dogaru <vlad.dogaru@intel.com>
+CC: =?windows-1252?Q?Uwe_Kleine-K=F6nig?=
+	<u.kleine-koenig@pengutronix.de>,
+	Daniel Baluta <daniel.baluta@intel.com>,
+	Roberta Dobrescu <roberta.dobrescu@gmail.com>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	"octavian.purdila@intel.com" <octavian.purdila@intel.com>,
+	Hartmut Knaack <knaack.h@gmx.de>,
 	Lars-Peter Clausen <lars@metafoo.de>,
-	Michael Hennerich <hennerich@blackfin.uclinux.org>
-Subject: Re: AD7923 sequencer functionality implementation in Kernel
-References: <54FD2F9A.2070502@gmail.com>
-In-Reply-To: <54FD2F9A.2070502@gmail.com>
-Content-Type: text/plain; charset=utf-8
+	Peter Meerwald <pmeerw@pmeerw.net>, kernel@pengutronix.de
+Subject: Re: [PATCH] iio: accel: mma9551: Check gpiod_to_irq return value
+References: <1425292752-7768-1-git-send-email-roberta.dobrescu@gmail.com> <CAEnQRZCBt++Ebjd6uwu6mpVCrsZyDxX53mOf4c17T1RUGAsQMA@mail.gmail.com> <20150302161503.GE7865@pengutronix.de> <20150303070232.GC27074@vdogaru> <54FC2C83.5090802@kernel.org> <20150309123400.GB32609@vdogaru>
+In-Reply-To: <20150309123400.GB32609@vdogaru>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 09/03/15 05:28, abhijit wrote:
-> Hi All,
+On 09/03/15 12:34, Vlad Dogaru wrote:
+> On Sun, Mar 08, 2015 at 11:03:31AM +0000, Jonathan Cameron wrote:
+>> On 03/03/15 07:02, Vlad Dogaru wrote:
+>>> On Mon, Mar 02, 2015 at 05:15:03PM +0100, Uwe Kleine-König wrote:
+>>>> Hello,
+>>>>
+>>>> On Mon, Mar 02, 2015 at 04:09:52PM +0200, Daniel Baluta wrote:
+>>>>> On Mon, Mar 2, 2015 at 12:39 PM, Roberta Dobrescu
+>>>>> <roberta.dobrescu@gmail.com> wrote:
+>>>>>> The return value of gpiod_to_irq should be checked before giving
+>>>>>> it to devm_request_threaded_irq in order to not pass an error
+>>>>>> code in case it fails.
+>>>> nothing really bad should happen because request_irq with a negative irq
+>>>> parameter just returns an error I think. So it's not urgent, but still a
+>>>> good idea to fix.
+>>>>
+>>>>>> Signed-off-by: Roberta Dobrescu <roberta.dobrescu@gmail.com>
+>>>>>> Reviewed-by: Vlad Dogaru <vlad.dogaru@intel.com>
+>>>> It's good habit to point out the commit that introduced the problem. In
+>>>> this case this would be:
+>>>>
+>>>> Fixes: c78b91716340 ("iio: add driver for Freescale MMA9551L")
+>> Vlad, do you want to respin taking the comments into account, or as Uwe
+>> put it, it's worth having as is so should I consider it as it stands?
 > 
-> We are using AD7923 driver as reference for one of our customer's ADC IP
+> I got slightly confused in my previous mail because the code was pasted
+> from the sx9500 driver.  That's the one I said I was working on.
 > 
-> The ADC that we are using, has sequencer functionality. In current state of AD7923 driver, there is no support for sequencer functionality.
+> The original mma9551 patch looks good as it is, please apply it.
 > 
-> Can you please let me know whether the IIO driver team is coming up with design for sequencer functionality of the device.
-Cc'd Lars, Michael and Patrick.  Looks like a fairly standard sequencer.
-Just a question of whether anyone has already looked at it.
+> Acked-by: Vlad Dogaru <vlad.dogaru@intel.com>
+> 
+> Thanks,
+> Vlad
+> 
+And you managed to confused me in turn :)
+
+Anyhow, applied with the reviewed-by you'd already given it.
+
+Applied to the togreg branch of iio.git
+Shortly to be pushed out as testing for the autobuilders to play.
 
 Jonathan
-> 
-> With Warm Wishes,
->       Abhijit Naik
-> -- 
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+>>>>
+>>>>>> ---
+>>>>>> gpiod_to_irq also appears in the following drivers:
+>>>>>>         * drivers/iio/accel/bmc150-accel.c
+>>>>>>         * drivers/iio/accel/kxcjk-1013.c
+>>>>>>         * drivers/iio/accel/mma9553.c
+>>>>>>         * drivers/iio/gyro/bmg160.c
+>>>>>>         * drivers/iio/imu/kmx61.c
+>>>>>>         * drivers/iio/proximity/sx9500.c,
+>>>>>>
+>>>>>> something like this:
+>>>>>>
+>>>>>> <code>
+>>>>>>         ret = gpiod_to_irq(gpio);
+>>>>>>
+>>>>>>         dev_dbg(dev, "GPIO resource, no:%d irq:%d\n", desc_to_gpio(gpio), ret);
+>>>>>>
+>>>>>>         return ret;
+>>>>>> </code>
+>>>>>>
+>>>>>> The return value of the functions containing the above code is checked,
+>>>>>> so the only problem would be that the debug message would contain a wrong
+>>>>>> value for irq in case gpiod_to_irq fails. So it doesn't affects much.
+>>>> Still worth fixing, isn't it? Also the error isn't handled, but ignored,
+>>>> like:
+>>>>
+>>>> 	if (client->irq <= 0)
+>>>> 		client->irq = sx9500_gpio_probe(client, data);
+>>>>
+>>>> 	if (client->irq > 0) {
+>>>> 		ret = devm_request_threaded_irq(....
+>>>>
+>>>> but if an irq is specified (be it by means of a "normal" irq or by
+>>>> specifying a gpio in the device tree/acpi tables) I expect the driver to
+>>>> fail probing instead of just behaving as if no irq would be available.
+>>>
+>>> If there is no IRQ available this device would still be able to do raw
+>>> reads, although I admit I have not tested this.
+>>>
+>>>> I don't know how this was tested, but I wonder further about
+>>>>
+>>>> 	#define SX9500_GPIO_NAME                "sx9500_gpio"
+>>>> 	...
+>>>> 	devm_gpiod_get_index(dev, SX9500_GPIO_NAME, 0, GPIOD_IN);
+>>>>
+>>>> If I understand the code correctly that is supposed to look for
+>>>> "sx9500_gpio-gpio" in the ACPI data. Is this really correct?
+>>>
+>>> I'm in the process of changing this, will post some patches soon.  This
+>>> should include failing to probe if an IRQ is not found.
+>>>
+>>> At the time I wrote the driver, I wasn't using Device Tree and ACPI had
+>>> no support for _DSD (or at least I wasn't aware of it), so the name did
+>>> not matter, only the index.
+>>>
+>>> Thanks for the 
+>>>
+>>>>>>  drivers/iio/accel/mma9551.c | 6 +++++-
+>>>>>>  1 file changed, 5 insertions(+), 1 deletion(-)
+>>>>>>
+>>>>>> diff --git a/drivers/iio/accel/mma9551.c b/drivers/iio/accel/mma9551.c
+>>>>>> index 46c3835..b6f3041 100644
+>>>>>> --- a/drivers/iio/accel/mma9551.c
+>>>>>> +++ b/drivers/iio/accel/mma9551.c
+>>>>>> @@ -428,7 +428,11 @@ static int mma9551_gpio_probe(struct iio_dev *indio_dev)
+>>>>>>                 if (ret)
+>>>>>>                         return ret;
+>>>>>>
+>>>>>> -               data->irqs[i] = gpiod_to_irq(gpio);
+>>>>>> +               ret = gpiod_to_irq(gpio);
+>>>>>> +               if (ret < 0)
+>>>>>> +                       return ret;
+>>>> I wonder if you should handle 0 as error, too. But even as is:
+>>>>
+>>>> 	Acked-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+>>>>
+>>>> Thanks
+>>>> Uwe
+>>>>
+>>>> -- 
+>>>> Pengutronix e.K.                           | Uwe Kleine-König            |
+>>>> Industrial Linux Solutions                 | http://www.pengutronix.de/  |
+>>
 
