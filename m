@@ -1,52 +1,61 @@
-Return-Path: <lars@metafoo.de>
-Message-ID: <54FD6084.7000704@metafoo.de>
-Date: Mon, 09 Mar 2015 09:57:40 +0100
-From: Lars-Peter Clausen <lars@metafoo.de>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-we0-f173.google.com ([74.125.82.173]:35215 "EHLO
+	mail-we0-f173.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751111AbbCII5l (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 9 Mar 2015 04:57:41 -0400
+Received: by wesw55 with SMTP id w55so9675501wes.2
+        for <linux-iio@vger.kernel.org>; Mon, 09 Mar 2015 01:57:40 -0700 (PDT)
+Message-ID: <54FD6081.6000001@gmail.com>
+Date: Mon, 09 Mar 2015 10:57:37 +0200
+From: Roberta Dobrescu <roberta.dobrescu@gmail.com>
 MIME-Version: 1.0
-To: Arnd Bergmann <arnd@arndb.de>, Fengguang Wu <fengguang.wu@intel.com>
-CC: kbuild-all@01.org, Jonathan Cameron <jic23@kernel.org>,
- linux-iio@vger.kernel.org, Peter Meerwald <pmeerw@pmeerw.net>,
- Hartmut Knaack <knaack.h@gmx.de>
-Subject: Re: [next:master 1712/3346] ERROR: "iio_trigger_notify_done" [drivers/staging/iio/iio_dummy.ko]
- undefined!
-References: <201503080501.uKS2e4HY%fengguang.wu@intel.com> <2452788.WEdufg3otZ@wuerfel> <20150309012706.GA4550@wfg-t540p.sh.intel.com> <2530839.vrY3not473@wuerfel>
-In-Reply-To: <2530839.vrY3not473@wuerfel>
+To: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org
+CC: daniel.baluta@intel.com, octavian.purdila@intel.com,
+	knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net
+Subject: Re: [PATCH 4/4] staging: iio: light: isl29018: Use standard sysfs
+ attributes for range and scale
+References: <1424720154-4762-1-git-send-email-roberta.dobrescu@gmail.com> <1424720154-4762-5-git-send-email-roberta.dobrescu@gmail.com> <54FC3786.5000000@kernel.org>
+In-Reply-To: <54FC3786.5000000@kernel.org>
 Content-Type: text/plain; charset=windows-1252; format=flowed
-List-ID: <linux-iio@vger.kernel.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On 03/09/2015 09:55 AM, Arnd Bergmann wrote:
-> On Monday 09 March 2015 09:27:06 Fengguang Wu wrote:
->> On Sun, Mar 08, 2015 at 11:11:31PM +0100, Arnd Bergmann wrote:
->>> On Sunday 08 March 2015 05:31:03 kbuild test robot wrote:
->>>> tree:   git://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git master
->>>> head:   28855005be1d6a0a041de46fd2e61da2b796abff
->>>> commit: 3608688973e8c85fbcd9b7e72b90e224b8d01526 [1712/3346] iio: ak8975: fix AK09911 dependencies
->>>> config: x86_64-randconfig-iv1-03080434 (attached as .config)
->>>> reproduce:
->>>>    git checkout 3608688973e8c85fbcd9b7e72b90e224b8d01526
->>>>    # save the attached .config to linux build tree
->>>>    make ARCH=x86_64
->>>>
->>>> All error/warnings:
->>>>
->>>>>> ERROR: "iio_trigger_notify_done" [drivers/staging/iio/iio_dummy.ko] undefined!
->>>>>> ERROR: "iio_triggered_buffer_postenable" [drivers/staging/iio/iio_dummy.ko] undefined!
->>>>>> ERROR: "iio_triggered_buffer_predisable" [drivers/staging/iio/iio_dummy.ko] undefined!
->>>>>> ERROR: "iio_alloc_pollfunc" [drivers/staging/iio/iio_dummy.ko] undefined!
->>>>>> ERROR: "iio_dealloc_pollfunc" [drivers/staging/iio/iio_dummy.ko] undefined!
->>>>
->>>
->>> I don't understand what that error has to do with my patch, it
->>> seems like a separate issue.
+On 08.03.2015 13:50, Jonathan Cameron wrote:
+> On 23/02/15 19:35, Roberta Dobrescu wrote:
+>> This patch refactors the isl29018 driver code in order to use standard
+>> sysfs attributes for range and scale.
 >>
->> Arnd, they should be old link errors exposed by your build fix (which
->> enables the build to progress further).
+>> ISL29018 light sensor uses four ranges and four ADC's resolutions
+>> which influence the calculated lux.
 >>
+>> This patch eliminates the resolution (adc bits) and introduces scale.
+>> Each range (1k, 4k, 16k or 64k) has a corresponding set of 4 scales
+>> (for 16, 12, 8 or 4 bits). Both range and scale can be changed by the
+>> user according to the corresponding set of values (exposed by the attributes
+>> in_illuminance_range_available and in_illuminance_scale_available).
+>>
+>> When the range is changed, the set of available scales is set accordingly and
+>> by default the scale used is the one for 16 adc bits. Scale can be changed
+>> anytime with one of the available values.
+> So we have 3 things interacting here.
 >
-> Ok, makes sense. For some reason, I never see this particular error on ARM,
-> otherwise I'd already have a fix for it.
+> range - absolutely controlled for the device
+> scale - from current range, with the adc resolution confusing things - we could just
+>          multiply the output result up and not need to report this to userspace at all
+> integration_time - This is the one element that's really being controlled by the adc
+>                     resolution. This adc resolution is really effecting our sensitivity
+>                     not the accuracy of measurement of the signal.
+>
+> Hence I'd have your adc resolution controlled by in_illuminance0_integration_time
+> and the full scale range controlled by scale.
+>
+> For the lower adc resolutions simply apply the relevant scaling to get the output
+> value to be on the same scale (assuming the range has not changed)
+>
+> How does that sound?
 
-Fengguang do you still have the config that triggered this build error?
+Sounds good :D.
 
-Thanks,
-- Lars
+Thanks for reviewing this.
+
+Roberta
