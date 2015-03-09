@@ -1,60 +1,46 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:43387 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750976AbbCINbH (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 9 Mar 2015 09:31:07 -0400
-Message-ID: <54FDA09A.6060705@kernel.org>
-Date: Mon, 09 Mar 2015 13:31:06 +0000
-From: Jonathan Cameron <jic23@kernel.org>
+Return-Path: <lars@metafoo.de>
+Message-ID: <54FDA14D.3010803@metafoo.de>
+Date: Mon, 09 Mar 2015 14:34:05 +0100
+From: Lars-Peter Clausen <lars@metafoo.de>
 MIME-Version: 1.0
-To: Martin Fuzzey <mfuzzey@parkeon.com>, linux-iio@vger.kernel.org
-Subject: Re: [PATCH 5/9] iio: doc: Describe scale attributes for event thresholds
-References: <20150219141553.27001.18825.stgit@localhost> <20150219141604.27001.24235.stgit@localhost>
-In-Reply-To: <20150219141604.27001.24235.stgit@localhost>
-Content-Type: text/plain; charset=utf-8
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+To: Jonathan Cameron <jic23@kernel.org>,
+ abhijit <abhijitnaik27@gmail.com>,
+ linux-iio@vger.kernel.org, Patrick Vasseur <patrick.vasseur@c-s.fr>,
+ Michael Hennerich <hennerich@blackfin.uclinux.org>
+Subject: Re: AD7923 sequencer functionality implementation in Kernel
+References: <54FD2F9A.2070502@gmail.com> <54FD9CD9.3080306@kernel.org>
+In-Reply-To: <54FD9CD9.3080306@kernel.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+List-ID: <linux-iio@vger.kernel.org>
 
-On 19/02/15 14:16, Martin Fuzzey wrote:
-> Signed-off-by: Martin Fuzzey <mfuzzey@parkeon.com>
-Applied to the togreg branch of iio.git. 
-These have been in the effective ABI for a while even if
-we didn't have them documented so this patch stands
-fine on it's own.
+On 03/09/2015 02:15 PM, Jonathan Cameron wrote:
+> On 09/03/15 05:28, abhijit wrote:
+>> Hi All,
+>>
+>> We are using AD7923 driver as reference for one of our customer's ADC IP
+>>
+>> The ADC that we are using, has sequencer functionality. In current state of AD7923 driver, there is no support for sequencer functionality.
+>>
+>> Can you please let me know whether the IIO driver team is coming up with design for sequencer functionality of the device.
+> Cc'd Lars, Michael and Patrick.  Looks like a fairly standard sequencer.
+> Just a question of whether anyone has already looked at it.
 
-Jonathan
-> ---
->  Documentation/ABI/testing/sysfs-bus-iio |   18 ++++++++++++++++++
->  1 file changed, 18 insertions(+)
-> 
-> diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
-> index ab592dd..d15a61d 100644
-> --- a/Documentation/ABI/testing/sysfs-bus-iio
-> +++ b/Documentation/ABI/testing/sysfs-bus-iio
-> @@ -613,6 +613,24 @@ Description:
->  		value is in raw device units or in processed units (as _raw
->  		and _input do on sysfs direct channel read attributes).
->  
-> +What:		/sys/.../events/in_accel_scale
-> +What:		/sys/.../events/in_accel_peak_scale
-> +What:		/sys/.../events/in_anglvel_scale
-> +What:		/sys/.../events/in_magn_scale
-> +What:		/sys/.../events/in_rot_from_north_magnetic_scale
-> +What:		/sys/.../events/in_rot_from_north_true_scale
-> +What:		/sys/.../events/in_voltage_scale
-> +What:		/sys/.../events/in_voltage_supply_scale
-> +What:		/sys/.../events/in_temp_scale
-> +What:		/sys/.../events/in_illuminance_scale
-> +What:		/sys/.../events/in_proximity_scale
-> +KernelVersion:	3.21
-> +Contact:	linux-iio@vger.kernel.org
-> +Description:
-> +                Specifies the conversion factor from the standard units
-> +                to device specific units used to set the event trigger
-> +                threshold.
-> +
->  What:		/sys/.../events/in_accel_x_thresh_rising_hysteresis
->  What:		/sys/.../events/in_accel_x_thresh_falling_hysteresis
->  What:		/sys/.../events/in_accel_x_thresh_either_hysteresis
-> 
+I've been tormenting my head now for a while how to properly model 
+sequencers in IIO, but haven't come to a conclusion yet.
 
+The problem is you have one physical channel but a configurable amount of 
+logical channels. The ADC will cycle through the selected channels one after 
+another.
+
+IIO on the other hand expects that all channels that are selected are 
+actually converted at the same time. E.g. you have to supply all the 
+selected channels at the same time to iio_buffer_push_data() and also 
+metadata, like the timestamps, is expected to be supplied only once for 
+every set of samples and not for every individual logical channel.
+
+Furthermore things like the output data rate of each channel depend on the 
+number of selected channels. So if you configure the sample rate and then 
+change the number of selected channels you potentially end up with a 
+different sample rate than initially selected.
+
+- Lars
