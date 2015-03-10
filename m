@@ -1,30 +1,51 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-wg0-f44.google.com ([74.125.82.44]:39860 "EHLO
-	mail-wg0-f44.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752418AbbCJQEB (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 10 Mar 2015 12:04:01 -0400
-Received: by wghn12 with SMTP id n12so2893319wgh.6
-        for <linux-iio@vger.kernel.org>; Tue, 10 Mar 2015 09:04:00 -0700 (PDT)
-Message-ID: <54FF15ED.6060605@gmail.com>
-Date: Tue, 10 Mar 2015 18:03:57 +0200
-From: Roberta Dobrescu <roberta.dobrescu@gmail.com>
+Received: from mga01.intel.com ([192.55.52.88]:19579 "EHLO mga01.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1752446AbbCJSAr (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Tue, 10 Mar 2015 14:00:47 -0400
+Date: Tue, 10 Mar 2015 11:00:43 -0700
+From: Todd E Brandt <todd.e.brandt@linux.intel.com>
+To: Sebastian Reichel <sre@kernel.org>
+Cc: dbaryshkov@gmail.com, dwmw2@infradead.org,
+	linux-pm@vger.kernel.org, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org, todd.e.brandt@intel.com,
+	jacob.jun.pan@linux.intel.com, sameo@linux.intel.com,
+	lee.jones@linaro.org, david.woodhouse@intel.com, jic23@kernel.org,
+	ramakrishna.pallala@intel.com
+Subject: Re: [PATCH v4 0/3] X-Power AXP288 PMIC Fuel Gauge Driver
+Message-ID: <20150310180043.GA1818@linux.intel.com>
+Reply-To: todd.e.brandt@linux.intel.com
+References: <cover.1423082056.git.todd.e.brandt@linux.intel.com>
+ <20150307192610.GC5233@earth>
 MIME-Version: 1.0
-To: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org
-CC: daniel.baluta@intel.com, octavian.purdila@intel.com,
-	knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net
-Subject: Re: [PATCH 5/5] tools: iio: lsiio: Remove unused variables
-References: <1424940567-24877-1-git-send-email-roberta.dobrescu@gmail.com> <1424940567-24877-6-git-send-email-roberta.dobrescu@gmail.com> <54FDD72A.8020105@kernel.org>
-In-Reply-To: <54FDD72A.8020105@kernel.org>
-Content-Type: text/plain; charset=windows-1252; format=flowed
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <20150307192610.GC5233@earth>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-> Applied to the togreg branch of iio.git
->
-> Thanks again for sorting this out.
+On Sat, Mar 07, 2015 at 08:26:11PM +0100, Sebastian Reichel wrote:
+> Hi,
+> 
+> On Wed, Feb 04, 2015 at 04:24:35PM -0800, Todd Brandt wrote:
+> > New power_supply driver at driver/power which interfaces with the
+> > axp20x mfd driver as a cell. Provides battery info, monitors for
+> > changes, and generates alerts on temperature and capacity issues
+> > 
+> > Sebestian, please review the patch set and consider it for 3.20 rc1.
+> > I've applied it over git.infradead.org/battery-2.6.git/master and
+> > verified that it works. Thanks.
+> > 
+> > Todd Brandt (3):
+> >   mfd/axp20x: change battery cell name to fuel gauge
+> >   mfd/axp20x: add support for fuel gauge cell
+> >   X-Power AXP288 PMIC Fuel Gauge Driver
+> 
+> Thanks, queued for 4.1: 
+> 
+> http://git.infradead.org/battery-2.6.git/commit/5a5bf49088f4c92f36786a2e4c20e17f715f0827
+> 
+> -- Sebastian
 
-Great :D! It's nice to see this done!
-
-Thanks,
-Roberta
-
+Excellent, thanks! Also, I should also mention that Ramakrishna Pallala was
+the author of the original draft of the XPower fuel gauge driver. I ported
+and tested it for upstream use. He can also serve as a maintainer.
