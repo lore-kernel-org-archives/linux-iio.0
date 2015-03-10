@@ -1,53 +1,52 @@
-Return-Path: <daniel.baluta@intel.com>
-From: Daniel Baluta <daniel.baluta@intel.com>
+Return-Path: <san@rosetechnology.dk>
+Message-ID: <1426022097.5476.39.camel@sanws1.rosetechnology.dk>
+Subject: [patch 2/2] dt-bindings Help for MCP ADCs
+From: =?ISO-8859-1?Q?S=F8ren?= Andersen <san@rosetechnology.dk>
 To: jic23@kernel.org
-Cc: knaack.h@gmx.de,
-	lars@metafoo.de,
-	pmeerw@pmeerw.net,
-	linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH] staging: iio: trigger: Use standard attr for sampling frequency
-Date: Wed, 11 Mar 2015 18:36:17 +0200
-Message-Id: <1426091777-30592-1-git-send-email-daniel.baluta@intel.com>
+Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org
+Date: Tue, 10 Mar 2015 22:14:57 +0100
+Content-Type: text/plain; charset="UTF-8"
+Mime-Version: 1.0
 List-ID: <linux-iio@vger.kernel.org>
 
-As written in Documentation/ABI/testing/sysfs-bus-iio the trigger
-attribute for sampling frequency should be sampling_frequency.
-
-Fix this for iio-trig-periodic-rtc module in order to prepare it
-for moving out of staging.
-
-Signed-off-by: Daniel Baluta <daniel.baluta@intel.com>
+Signed-off-by: Soeren Andersen <san at rosetechnology.dk>
 ---
-Jonathan, this module is very useful for devices that do not have
-an interrupt pin.
+Documentation/devicetree/bindings/iio/adc/mcp320x.txt | 30 ++++++++++++++++++++++++++++++
+ 1 file changed, 30 insertions(+)
 
-We are working on drivers for such devices and would be very nice to
-move this driver in advance to the IIO non-staging location.
-
-What do you say?
-
- drivers/staging/iio/trigger/iio-trig-periodic-rtc.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/staging/iio/trigger/iio-trig-periodic-rtc.c b/drivers/staging/iio/trigger/iio-trig-periodic-rtc.c
-index 89df1d3..f1cfe2d 100644
---- a/drivers/staging/iio/trigger/iio-trig-periodic-rtc.c
-+++ b/drivers/staging/iio/trigger/iio-trig-periodic-rtc.c
-@@ -87,12 +87,12 @@ error_ret:
- 	return ret;
- }
- 
--static DEVICE_ATTR(frequency, S_IRUGO | S_IWUSR,
-+static DEVICE_ATTR(sampling_frequency, S_IRUGO | S_IWUSR,
- 	    iio_trig_periodic_read_freq,
- 	    iio_trig_periodic_write_freq);
- 
- static struct attribute *iio_trig_prtc_attrs[] = {
--	&dev_attr_frequency.attr,
-+	&dev_attr_sampling_frequency.attr,
- 	NULL,
- };
- 
--- 
-1.9.1
+diff --git a/Documentation/devicetree/bindings/iio/adc/mcp320x.txt b/Documentation/devicetree/bindings/iio/adc/mcp320x.txt
+new file mode 100644
+index 0000000..b851843
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/adc/mcp320x.txt
+@@ -0,0 +1,30 @@
++* Microchip Analog to Digital Converter (ADC)
++
++The node for this driver must be a child node of a SPI controller, hence
++all mandatory properties described in
++
++        Documentation/devicetree/bindings/spi/spi-bus.txt
++
++must be specified.
++
++Required properties:
++	- compatible:  	Must be one of the following, depending on the
++			model:
++				"mcp3001"
++				"mcp3002"
++				"mcp3004"
++				"mcp3008"
++				"mcp3201"
++				"mcp3202"
++				"mcp3204"
++				"mcp3208"
++
++
++Examples:
++spi_controller {
++	mcp3x0x@0 {
++		compatible = "mcp3002";
++		reg = <0>;
++		spi-max-frequency = <1000000>;
++	};
++};
