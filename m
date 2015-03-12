@@ -1,53 +1,42 @@
-Return-Path: <lars@metafoo.de>
-Message-ID: <550150EC.5080100@metafoo.de>
-Date: Thu, 12 Mar 2015 09:40:12 +0100
-From: Lars-Peter Clausen <lars@metafoo.de>
+Return-Path: <daniel.baluta@gmail.com>
 MIME-Version: 1.0
-To: Octavian Purdila <octavian.purdila@intel.com>,
- Daniel Baluta <daniel.baluta@intel.com>
-CC: Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
- Peter Meerwald <pmeerw@pmeerw.net>,
- "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
- lkml <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] staging: iio: trigger: Use standard attr for sampling
- frequency
-References: <1426091777-30592-1-git-send-email-daniel.baluta@intel.com> <CAE1zot+us4bP2n1xQkFdAvJ3iAWwqTFgMK4SNZbmugPD_nB_Lg@mail.gmail.com>
-In-Reply-To: <CAE1zot+us4bP2n1xQkFdAvJ3iAWwqTFgMK4SNZbmugPD_nB_Lg@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
+Sender: daniel.baluta@gmail.com
+In-Reply-To: <CAEnQRZAK-aLWvcgMrJy0+xiHFAX+2kGgy4nek+q_OtqCmkrwPQ@mail.gmail.com>
+References: <20150312145536.GA20026@haneen-vb>
+	<CAEnQRZAK-aLWvcgMrJy0+xiHFAX+2kGgy4nek+q_OtqCmkrwPQ@mail.gmail.com>
+Date: Thu, 12 Mar 2015 17:09:15 +0200
+Message-ID: <CAEnQRZA=4DfNUNPL3YH0C70PUe9OYdymoy2wB76=qygjwmjLgw@mail.gmail.com>
+Subject: Re: [Outreachy kernel] [PATCH] iio: Add ABI documentation for
+ proximity scan_emlements
+From: Daniel Baluta <daniel.baluta@intel.com>
+To: Daniel Baluta <daniel.baluta@intel.com>, Haneen Mohammed <hamohammed.sa@gmail.com>
+Cc: Jonathan Cameron <jic23@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	outreachy-kernel@googlegroups.com,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Content-Type: text/plain; charset=UTF-8
 List-ID: <linux-iio@vger.kernel.org>
 
-On 03/12/2015 09:16 AM, Octavian Purdila wrote:
-> On Wed, Mar 11, 2015 at 6:36 PM, Daniel Baluta <daniel.baluta@intel.com> wrote:
+On Thu, Mar 12, 2015 at 5:06 PM, Daniel Baluta <daniel.baluta@intel.com> wrote:
+> On Thu, Mar 12, 2015 at 4:55 PM, Haneen Mohammed
+> <hamohammed.sa@gmail.com> wrote:
+>> This patch adds ABI documentation entries for in_proximity_en,
+>> in_proximity_type, and in_proximity_index in the scan_elements.
+>> At lease one user for these is present, the AS3935 Franklin lightning sensor.
 >>
->> As written in Documentation/ABI/testing/sysfs-bus-iio the trigger
->> attribute for sampling frequency should be sampling_frequency.
->>
->> Fix this for iio-trig-periodic-rtc module in order to prepare it
->> for moving out of staging.
->>
->> Signed-off-by: Daniel Baluta <daniel.baluta@intel.com>
->> ---
->> Jonathan, this module is very useful for devices that do not have
->> an interrupt pin.
->>
->> We are working on drivers for such devices and would be very nice to
->> move this driver in advance to the IIO non-staging location.
->>
->> What do you say?
->>
+>> Signed-off-by: Haneen Mohammed <hamohammed.sa@gmail.com>
 >
-> Hmm, I wonder what are the advantages of using RTC timers. Couldn't we
-> use a regular kernel timer instead?
+> Reviewed-by: Daniel Baluta <daniel.baluta@intel.com>
+>
+> I know that Greg won't accept patches outside of drivers/staging/. I
+> think this should go via linux-iio tree.
+>
+> Thanks Haneen!
 
-The long term plan is to get rid of the RTC timer trigger due to its various 
-limitations (poor resolution, etc).
+One thing. There is a typo in the commit subject:
 
-There is the hrtimer trigger 
-(https://github.com/analogdevicesinc/linux/blob/xcomm_zynq/drivers/staging/iio/trigger/iio-trig-hrtimer.c) 
-but we haven't agreed on a proper interface yet how to instantiate the 
-hrtimer trigger.
+s/scan_emlements/scan_elements.
 
-Check the ml archive for the various discussions on it: 
-http://marc.info/?l=linux-iio&w=2&r=1&s=hrtimer&q=b
+Could you resend? Please keep Jonathan, Greg and linux-iio mailing list in Cc.
 
-- Lars
+thanks,
+Daniel.
