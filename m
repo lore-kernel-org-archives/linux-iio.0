@@ -1,638 +1,387 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-lb0-f176.google.com ([209.85.217.176]:35308 "EHLO
-	mail-lb0-f176.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751090AbbCNUeb (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 14 Mar 2015 16:34:31 -0400
-From: Tomasz Duszynski <tduszyns@gmail.com>
-To: jic23@kernel.org
-Cc: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
-	linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-	tduszyns@gmail.com
-Subject: [PATCH v3] iio: pressure: add support for MS5611 pressure and temperature sensor
-Date: Sat, 14 Mar 2015 21:29:31 +0100
-Message-Id: <1426364971-5382-1-git-send-email-tduszyns@gmail.com>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:60490 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752338AbbCOLof (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 15 Mar 2015 07:44:35 -0400
+Message-ID: <5505709F.6010608@kernel.org>
+Date: Sun, 15 Mar 2015 11:44:31 +0000
+From: Jonathan Cameron <jic23@kernel.org>
+MIME-Version: 1.0
+To: Daniel Baluta <daniel.baluta@intel.com>
+CC: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
+	linux-iio@vger.kernel.org, ktsai@capellamicro.com,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3] iio: light: Add support for Capella CM3323 color sensor
+References: <1426360301-9873-1-git-send-email-daniel.baluta@intel.com>
+In-Reply-To: <1426360301-9873-1-git-send-email-daniel.baluta@intel.com>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Add support for Measurement Specialities MS5611 pressure
-and temperature sensor.
+On 14/03/15 19:11, Daniel Baluta wrote:
+> Minimal implementation providing raw light intensity
+> and integration time attribute.
+> 
+> Userspace applications can use GREEN channel for raw
+> illuminance readings following this table:
+> 
+> Integration Time | G Sensitivity
+> ================================
+> 40 ms            | 0.18
+> 80 ms            | 0.09
+> 160 ms           | 0.045
+> 320 ms           | 0.0225
+> 640 ms           | 0.01125
+> 1280 ms          | 0.005625
+> 
+> Signed-off-by: Daniel Baluta <daniel.baluta@intel.com>
+Applied to the togreg branch of iio.git - initially pushed out as testing
+for the autobuilders to play with it.
 
-Signed-off-by: Tomasz Duszynski <tduszyns@gmail.com>
----
+Thanks,
 
- Changes in v3:
- 	- Fix coding style
-	- Use spi_write_then_read instead of spi_write to ensure that
-	  data send to device is in it's own cacheline
-
- Changes in v2:
-  	- Fix coding style
-     	- Document i2c slave addresses
-     	- Simplify device registration/removal using devm_iio_device_register()
-	- Return temperature in mC and pressure in kPa
-
- drivers/iio/pressure/Kconfig       |  27 +++++
- drivers/iio/pressure/Makefile      |   3 +
- drivers/iio/pressure/ms5611.h      |  44 ++++++++
- drivers/iio/pressure/ms5611_core.c | 215 +++++++++++++++++++++++++++++++++++++
- drivers/iio/pressure/ms5611_i2c.c  | 128 ++++++++++++++++++++++
- drivers/iio/pressure/ms5611_spi.c  | 127 ++++++++++++++++++++++
- 6 files changed, 544 insertions(+)
- create mode 100644 drivers/iio/pressure/ms5611.h
- create mode 100644 drivers/iio/pressure/ms5611_core.c
- create mode 100644 drivers/iio/pressure/ms5611_i2c.c
- create mode 100644 drivers/iio/pressure/ms5611_spi.c
-
-diff --git a/drivers/iio/pressure/Kconfig b/drivers/iio/pressure/Kconfig
-index a3be537..fa62950 100644
---- a/drivers/iio/pressure/Kconfig
-+++ b/drivers/iio/pressure/Kconfig
-@@ -52,6 +52,33 @@ config MPL3115
-           To compile this driver as a module, choose M here: the module
-           will be called mpl3115.
-
-+config MS5611
-+	tristate "Measurement Specialities MS5611 pressure sensor driver"
-+	help
-+	  Say Y here to build support for the Measurement Specialities
-+	  MS5611 pressure and temperature sensor.
-+
-+	  To compile this driver as a module, choose M here: the module will
-+	  be called ms5611_core.
-+
-+config MS5611_I2C
-+	tristate "support I2C bus connection"
-+	depends on I2C && MS5611
-+	help
-+	  Say Y here to build I2C bus support for MS5611.
-+
-+	  To compile this driver as a module, choose M here: the module will
-+	  be called ms5611_i2c.
-+
-+config MS5611_SPI
-+	tristate "support SPI bus connection"
-+	depends on SPI_MASTER && MS5611
-+	help
-+	  Say Y here to build SPI bus support for MS5611.
-+
-+	  To compile this driver as a module, choose M here: the module will
-+	  be called ms5611_spi.
-+
- config IIO_ST_PRESS
- 	tristate "STMicroelectronics pressure sensor Driver"
- 	depends on (I2C || SPI_MASTER) && SYSFS
-diff --git a/drivers/iio/pressure/Makefile b/drivers/iio/pressure/Makefile
-index 88011f2..a4f98f8 100644
---- a/drivers/iio/pressure/Makefile
-+++ b/drivers/iio/pressure/Makefile
-@@ -7,6 +7,9 @@ obj-$(CONFIG_BMP280) += bmp280.o
- obj-$(CONFIG_HID_SENSOR_PRESS)   += hid-sensor-press.o
- obj-$(CONFIG_MPL115) += mpl115.o
- obj-$(CONFIG_MPL3115) += mpl3115.o
-+obj-$(CONFIG_MS5611) += ms5611_core.o
-+obj-$(CONFIG_MS5611_I2C) += ms5611_i2c.o
-+obj-$(CONFIG_MS5611_SPI) += ms5611_spi.o
- obj-$(CONFIG_IIO_ST_PRESS) += st_pressure.o
- st_pressure-y := st_pressure_core.o
- st_pressure-$(CONFIG_IIO_BUFFER) += st_pressure_buffer.o
-diff --git a/drivers/iio/pressure/ms5611.h b/drivers/iio/pressure/ms5611.h
-new file mode 100644
-index 0000000..099c6cd
---- /dev/null
-+++ b/drivers/iio/pressure/ms5611.h
-@@ -0,0 +1,44 @@
-+/*
-+ * MS5611 pressure and temperature sensor driver
-+ *
-+ * Copyright (c) Tomasz Duszynski <tduszyns@gmail.com>
-+ *
-+ * This program is free software; you can redistribute it and/or modify
-+ * it under the terms of the GNU General Public License version 2 as
-+ * published by the Free Software Foundation.
-+ *
-+ */
-+
-+#ifndef _MS5611_H
-+#define _MS5611_H
-+
-+#include <linux/device.h>
-+#include <linux/iio/iio.h>
-+#include <linux/mutex.h>
-+
-+#define MS5611_RESET			0x1e
-+#define MS5611_READ_ADC			0x00
-+#define MS5611_READ_PROM_WORD		0xA0
-+#define MS5611_START_TEMP_CONV		0x58
-+#define MS5611_START_PRESSURE_CONV	0x48
-+
-+#define MS5611_CONV_TIME_MIN		9040
-+#define MS5611_CONV_TIME_MAX		10000
-+
-+#define MS5611_PROM_WORDS_NB		8
-+
-+struct ms5611_state {
-+	void *client;
-+	struct mutex lock;
-+
-+	int (*reset)(struct device *dev);
-+	int (*read_prom_word)(struct device *dev, int index, u16 *word);
-+	int (*read_adc_temp_and_pressure)(struct device *dev,
-+					  s32 *temp, s32 *pressure);
-+
-+	u16 prom[MS5611_PROM_WORDS_NB];
-+};
-+
-+int ms5611_probe(struct iio_dev *indio_dev, struct device *dev);
-+
-+#endif /* _MS5611_H */
-diff --git a/drivers/iio/pressure/ms5611_core.c b/drivers/iio/pressure/ms5611_core.c
-new file mode 100644
-index 0000000..e42c853
---- /dev/null
-+++ b/drivers/iio/pressure/ms5611_core.c
-@@ -0,0 +1,215 @@
-+/*
-+ * MS5611 pressure and temperature sensor driver
-+ *
-+ * Copyright (c) Tomasz Duszynski <tduszyns@gmail.com>
-+ *
-+ * This program is free software; you can redistribute it and/or modify
-+ * it under the terms of the GNU General Public License version 2 as
-+ * published by the Free Software Foundation.
-+ *
-+ * Data sheet:
-+ *  http://www.meas-spec.com/downloads/MS5611-01BA03.pdf
-+ *
-+ */
-+
-+#include <linux/module.h>
-+#include <linux/iio/iio.h>
-+#include <linux/delay.h>
-+
-+#include "ms5611.h"
-+
-+static bool ms5611_prom_is_valid(u16 *prom, size_t len)
-+{
-+	int i, j;
-+	uint16_t crc = 0, crc_orig = prom[7] & 0x000F;
-+
-+	prom[7] &= 0xFF00;
-+
-+	for (i = 0; i < len * 2; i++) {
-+		if (i % 2 == 1)
-+			crc ^= prom[i >> 1] & 0x00FF;
-+		else
-+			crc ^= prom[i >> 1] >> 8;
-+
-+		for (j = 0; j < 8; j++) {
-+			if (crc & 0x8000)
-+				crc = (crc << 1) ^ 0x3000;
-+			else
-+				crc <<= 1;
-+		}
-+	}
-+
-+	crc = (crc >> 12) & 0x000F;
-+
-+	return crc_orig != 0x0000 && crc == crc_orig;
-+}
-+
-+static int ms5611_read_prom(struct iio_dev *indio_dev)
-+{
-+	int ret, i;
-+	struct ms5611_state *st = iio_priv(indio_dev);
-+
-+	for (i = 0; i < MS5611_PROM_WORDS_NB; i++) {
-+		ret = st->read_prom_word(&indio_dev->dev, i, &st->prom[i]);
-+		if (ret < 0) {
-+			dev_err(&indio_dev->dev,
-+				"failed to read prom at %d\n", i);
-+			return ret;
-+		}
-+	}
-+
-+	if (!ms5611_prom_is_valid(st->prom, MS5611_PROM_WORDS_NB)) {
-+		dev_err(&indio_dev->dev, "PROM integrity check failed\n");
-+		return -ENODEV;
-+	}
-+
-+	return 0;
-+}
-+
-+static int ms5611_read_temp_and_pressure(struct iio_dev *indio_dev,
-+					 s32 *temp, s32 *pressure)
-+{
-+	int ret;
-+	s32 t, p;
-+	s64 off, sens, dt;
-+	struct ms5611_state *st = iio_priv(indio_dev);
-+
-+	ret = st->read_adc_temp_and_pressure(&indio_dev->dev, &t, &p);
-+	if (ret < 0) {
-+		dev_err(&indio_dev->dev,
-+			"failed to read temperature and pressure\n");
-+		return ret;
-+	}
-+
-+	dt = t - (st->prom[5] << 8);
-+	off = ((s64)st->prom[2] << 16) + ((st->prom[4] * dt) >> 7);
-+	sens = ((s64)st->prom[1] << 15) + ((st->prom[3] * dt) >> 8);
-+
-+	t = 2000 + ((st->prom[6] * dt) >> 23);
-+	if (t < 2000) {
-+		s64 off2, sens2, t2;
-+
-+		t2 = (dt * dt) >> 31;
-+		off2 = (5 * (t - 2000) * (t - 2000)) >> 1;
-+		sens2 = off2 >> 1;
-+
-+		if (t < -1500) {
-+			s64 tmp = (t + 1500) * (t + 1500);
-+
-+			off2 += 7 * tmp;
-+			sens2 += (11 * tmp) >> 1;
-+		}
-+
-+		t -= t2;
-+		off -= off2;
-+		sens -= sens2;
-+	}
-+
-+	*temp = t;
-+	*pressure = (((p * sens) >> 21) - off) >> 15;
-+
-+	return 0;
-+}
-+
-+static int ms5611_reset(struct iio_dev *indio_dev)
-+{
-+	int ret;
-+	struct ms5611_state *st = iio_priv(indio_dev);
-+
-+	ret = st->reset(&indio_dev->dev);
-+	if (ret < 0) {
-+		dev_err(&indio_dev->dev, "failed to reset device\n");
-+		return ret;
-+	}
-+
-+	usleep_range(3000, 4000);
-+
-+	return 0;
-+}
-+
-+static int ms5611_read_raw(struct iio_dev *indio_dev,
-+			   struct iio_chan_spec const *chan,
-+			   int *val, int *val2, long mask)
-+{
-+	int ret;
-+	s32 temp, pressure;
-+	struct ms5611_state *st = iio_priv(indio_dev);
-+
-+	switch (mask) {
-+	case IIO_CHAN_INFO_PROCESSED:
-+		mutex_lock(&st->lock);
-+		ret = ms5611_read_temp_and_pressure(indio_dev,
-+						    &temp, &pressure);
-+		mutex_unlock(&st->lock);
-+		if (ret < 0)
-+			return ret;
-+
-+		switch (chan->type) {
-+		case IIO_TEMP:
-+			*val = temp * 10;
-+			return IIO_VAL_INT;
-+		case IIO_PRESSURE:
-+			*val = pressure / 1000;
-+			*val2 = (pressure % 1000) * 1000;
-+			return IIO_VAL_INT_PLUS_MICRO;
-+		default:
-+			return -EINVAL;
-+		}
-+	}
-+
-+	return -EINVAL;
-+}
-+
-+static const struct iio_chan_spec ms5611_channels[] = {
-+	{
-+		.type = IIO_PRESSURE,
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED) |
-+			BIT(IIO_CHAN_INFO_SCALE)
-+	},
-+	{
-+		.type = IIO_TEMP,
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED) |
-+			BIT(IIO_CHAN_INFO_SCALE)
-+	}
-+};
-+
-+static const struct iio_info ms5611_info = {
-+	.read_raw = &ms5611_read_raw,
-+	.driver_module = THIS_MODULE,
-+};
-+
-+static int ms5611_init(struct iio_dev *indio_dev)
-+{
-+	int ret;
-+
-+	ret = ms5611_reset(indio_dev);
-+	if (ret < 0)
-+		return ret;
-+
-+	return ms5611_read_prom(indio_dev);
-+}
-+
-+int ms5611_probe(struct iio_dev *indio_dev, struct device *dev)
-+{
-+	int ret;
-+	struct ms5611_state *st = iio_priv(indio_dev);
-+
-+	mutex_init(&st->lock);
-+	indio_dev->dev.parent = dev;
-+	indio_dev->name = dev->driver->name;
-+	indio_dev->info = &ms5611_info;
-+	indio_dev->channels = ms5611_channels;
-+	indio_dev->num_channels = ARRAY_SIZE(ms5611_channels);
-+	indio_dev->modes = INDIO_DIRECT_MODE;
-+
-+	ret = ms5611_init(indio_dev);
-+	if (ret < 0)
-+		return ret;
-+
-+	return devm_iio_device_register(dev, indio_dev);
-+}
-+EXPORT_SYMBOL(ms5611_probe);
-+
-+MODULE_AUTHOR("Tomasz Duszynski <tduszyns@gmail.com>");
-+MODULE_DESCRIPTION("MS5611 core driver");
-+MODULE_LICENSE("GPL v2");
-diff --git a/drivers/iio/pressure/ms5611_i2c.c b/drivers/iio/pressure/ms5611_i2c.c
-new file mode 100644
-index 0000000..748fd9a
---- /dev/null
-+++ b/drivers/iio/pressure/ms5611_i2c.c
-@@ -0,0 +1,128 @@
-+/*
-+ * MS5611 pressure and temperature sensor driver (I2C bus)
-+ *
-+ * Copyright (c) Tomasz Duszynski <tduszyns@gmail.com>
-+ *
-+ * This program is free software; you can redistribute it and/or modify
-+ * it under the terms of the GNU General Public License version 2 as
-+ * published by the Free Software Foundation.
-+ *
-+ * 7-bit I2C slave addresses:
-+ *
-+ * 0x77 (CSB pin low)
-+ * 0x76 (CSB pin high)
-+ *
-+ */
-+
-+#include <linux/delay.h>
-+#include <linux/i2c.h>
-+#include <linux/module.h>
-+
-+#include "ms5611.h"
-+
-+static int ms5611_i2c_reset(struct device *dev)
-+{
-+	struct ms5611_state *st = iio_priv(dev_to_iio_dev(dev));
-+
-+	return i2c_smbus_write_byte(st->client, MS5611_RESET);
-+}
-+
-+static int ms5611_i2c_read_prom_word(struct device *dev, int index, u16 *word)
-+{
-+	int ret;
-+	struct ms5611_state *st = iio_priv(dev_to_iio_dev(dev));
-+
-+	ret = i2c_smbus_read_word_swapped(st->client,
-+			MS5611_READ_PROM_WORD + (index << 1));
-+	if (ret < 0)
-+		return ret;
-+
-+	*word = ret;
-+
-+	return 0;
-+}
-+
-+static int ms5611_i2c_read_adc(struct ms5611_state *st, s32 *val)
-+{
-+	int ret;
-+	u8 buf[3];
-+
-+	ret = i2c_smbus_read_i2c_block_data(st->client, MS5611_READ_ADC,
-+					    3, buf);
-+	if (ret < 0)
-+		return ret;
-+
-+	*val = (buf[0] << 16) | (buf[1] << 8) | buf[2];
-+
-+	return 0;
-+}
-+
-+static int ms5611_i2c_read_adc_temp_and_pressure(struct device *dev,
-+						 s32 *temp, s32 *pressure)
-+{
-+	int ret;
-+	struct ms5611_state *st = iio_priv(dev_to_iio_dev(dev));
-+
-+	ret = i2c_smbus_write_byte(st->client, MS5611_START_TEMP_CONV);
-+	if (ret < 0)
-+		return ret;
-+
-+	usleep_range(MS5611_CONV_TIME_MIN, MS5611_CONV_TIME_MAX);
-+
-+	ret = ms5611_i2c_read_adc(st, temp);
-+	if (ret < 0)
-+		return ret;
-+
-+	ret = i2c_smbus_write_byte(st->client, MS5611_START_PRESSURE_CONV);
-+	if (ret < 0)
-+		return ret;
-+
-+	usleep_range(MS5611_CONV_TIME_MIN, MS5611_CONV_TIME_MAX);
-+
-+	return ms5611_i2c_read_adc(st, pressure);
-+}
-+
-+static int ms5611_i2c_probe(struct i2c_client *client,
-+			    const struct i2c_device_id *id)
-+{
-+	struct ms5611_state *st;
-+	struct iio_dev *indio_dev;
-+
-+	if (!i2c_check_functionality(client->adapter,
-+				     I2C_FUNC_SMBUS_WRITE_BYTE |
-+				     I2C_FUNC_SMBUS_READ_WORD_DATA |
-+				     I2C_FUNC_SMBUS_READ_I2C_BLOCK))
-+		return -ENODEV;
-+
-+	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*st));
-+	if (!indio_dev)
-+		return -ENOMEM;
-+
-+	st = iio_priv(indio_dev);
-+	st->reset = ms5611_i2c_reset;
-+	st->read_prom_word = ms5611_i2c_read_prom_word;
-+	st->read_adc_temp_and_pressure = ms5611_i2c_read_adc_temp_and_pressure;
-+	st->client = client;
-+
-+	return ms5611_probe(indio_dev, &client->dev);
-+}
-+
-+static const struct i2c_device_id ms5611_id[] = {
-+	{ "ms5611", 0 },
-+	{ }
-+};
-+MODULE_DEVICE_TABLE(i2c, ms5611_id);
-+
-+static struct i2c_driver ms5611_driver = {
-+	.driver = {
-+		.name = "ms5611",
-+		.owner = THIS_MODULE,
-+	},
-+	.id_table = ms5611_id,
-+	.probe = ms5611_i2c_probe,
-+};
-+module_i2c_driver(ms5611_driver);
-+
-+MODULE_AUTHOR("Tomasz Duszynski <tduszyns@gmail.com>");
-+MODULE_DESCRIPTION("MS5611 i2c driver");
-+MODULE_LICENSE("GPL v2");
-diff --git a/drivers/iio/pressure/ms5611_spi.c b/drivers/iio/pressure/ms5611_spi.c
-new file mode 100644
-index 0000000..976726f
---- /dev/null
-+++ b/drivers/iio/pressure/ms5611_spi.c
-@@ -0,0 +1,127 @@
-+/*
-+ * MS5611 pressure and temperature sensor driver (SPI bus)
-+ *
-+ * Copyright (c) Tomasz Duszynski <tduszyns@gmail.com>
-+ *
-+ * This program is free software; you can redistribute it and/or modify
-+ * it under the terms of the GNU General Public License version 2 as
-+ * published by the Free Software Foundation.
-+ *
-+ */
-+
-+#include <linux/delay.h>
-+#include <linux/module.h>
-+#include <linux/spi/spi.h>
-+
-+#include "ms5611.h"
-+
-+static int ms5611_spi_reset(struct device *dev)
-+{
-+	u8 cmd = MS5611_RESET;
-+	struct ms5611_state *st = iio_priv(dev_to_iio_dev(dev));
-+
-+	return spi_write_then_read(st->client, &cmd, 1, NULL, 0);
-+}
-+
-+static int ms5611_spi_read_prom_word(struct device *dev, int index, u16 *word)
-+{
-+	int ret;
-+	struct ms5611_state *st = iio_priv(dev_to_iio_dev(dev));
-+
-+	ret = spi_w8r16be(st->client, MS5611_READ_PROM_WORD + (index << 1));
-+	if (ret < 0)
-+		return ret;
-+
-+	*word = ret;
-+
-+	return 0;
-+}
-+
-+static int ms5611_spi_read_adc(struct device *dev, s32 *val)
-+{
-+	int ret;
-+	u8 buf[3] = { MS5611_READ_ADC };
-+	struct ms5611_state *st = iio_priv(dev_to_iio_dev(dev));
-+
-+	ret = spi_write_then_read(st->client, buf, 1, buf, 3);
-+	if (ret < 0)
-+		return ret;
-+
-+	*val = (buf[0] << 16) | (buf[1] << 8) | buf[2];
-+
-+	return 0;
-+}
-+
-+static int ms5611_spi_read_adc_temp_and_pressure(struct device *dev,
-+						 s32 *temp, s32 *pressure)
-+{
-+	u8 cmd;
-+	int ret;
-+	struct ms5611_state *st = iio_priv(dev_to_iio_dev(dev));
-+
-+	cmd = MS5611_START_TEMP_CONV;
-+	ret = spi_write_then_read(st->client, &cmd, 1, NULL, 0);
-+	if (ret < 0)
-+		return ret;
-+
-+	usleep_range(MS5611_CONV_TIME_MIN, MS5611_CONV_TIME_MAX);
-+
-+	ret = ms5611_spi_read_adc(dev, temp);
-+	if (ret < 0)
-+		return ret;
-+
-+	cmd = MS5611_START_PRESSURE_CONV;
-+	ret = spi_write_then_read(st->client, &cmd, 1, NULL, 0);
-+	if (ret < 0)
-+		return ret;
-+
-+	usleep_range(MS5611_CONV_TIME_MIN, MS5611_CONV_TIME_MAX);
-+
-+	return ms5611_spi_read_adc(dev, pressure);
-+}
-+
-+static int ms5611_spi_probe(struct spi_device *spi)
-+{
-+	int ret;
-+	struct ms5611_state *st;
-+	struct iio_dev *indio_dev;
-+
-+	indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*st));
-+	if (!indio_dev)
-+		return -ENOMEM;
-+
-+	spi->mode = SPI_MODE_0;
-+	spi->max_speed_hz = 20000000;
-+	spi->bits_per_word = 8;
-+	ret = spi_setup(spi);
-+	if (ret < 0)
-+		return ret;
-+
-+	st = iio_priv(indio_dev);
-+	st->reset = ms5611_spi_reset;
-+	st->read_prom_word = ms5611_spi_read_prom_word;
-+	st->read_adc_temp_and_pressure = ms5611_spi_read_adc_temp_and_pressure;
-+	st->client = spi;
-+
-+	return ms5611_probe(indio_dev, &spi->dev);
-+}
-+
-+static const struct spi_device_id ms5611_id[] = {
-+	{ "ms5611", 0 },
-+	{ }
-+};
-+MODULE_DEVICE_TABLE(spi, ms5611_id);
-+
-+static struct spi_driver ms5611_driver = {
-+	.driver = {
-+		.name = "ms5611",
-+		.owner = THIS_MODULE,
-+	},
-+	.id_table = ms5611_id,
-+	.probe = ms5611_spi_probe,
-+};
-+module_spi_driver(ms5611_driver);
-+
-+MODULE_AUTHOR("Tomasz Duszynski <tduszyns@gmail.com>");
-+MODULE_DESCRIPTION("MS5611 spi driver");
-+MODULE_LICENSE("GPL v2");
---
-2.3.2
+Jonathan
+> ---
+> Changes since v2:
+>  * use iio_device_register instead of devm_* variant, in order
+>    to better control call order at remove
+>  * introduce cm3323_disable and call it in error path for cm3323_probe
+> 
+> Changes since v1:
+>  * fixed nits after Peter's review - https://lkml.org/lkml/2015/1/22/196
+>  * removed IIO_LIGHT channel since illuminance can be computed
+>    in userspace based on GREEN channel
+> 
+>  drivers/iio/light/Kconfig  |   10 ++
+>  drivers/iio/light/Makefile |    1 +
+>  drivers/iio/light/cm3323.c |  286 ++++++++++++++++++++++++++++++++++++++++++++
+>  3 files changed, 297 insertions(+)
+>  create mode 100644 drivers/iio/light/cm3323.c
+> 
+> diff --git a/drivers/iio/light/Kconfig b/drivers/iio/light/Kconfig
+> index ae68c64..cd937d9 100644
+> --- a/drivers/iio/light/Kconfig
+> +++ b/drivers/iio/light/Kconfig
+> @@ -59,6 +59,16 @@ config CM3232
+>  	 To compile this driver as a module, choose M here:
+>  	 the module will be called cm3232.
+>  
+> +config CM3323
+> +	depends on I2C
+> +	tristate "Capella CM3323 color light sensor"
+> +	help
+> +	 Say Y here if you want to build a driver for Capela CM3323
+> +	 color sensor.
+> +
+> +	 To compile this driver as a module, choose M here: the module will
+> +	 be called cm3323.
+> +
+>  config CM36651
+>  	depends on I2C
+>  	tristate "CM36651 driver"
+> diff --git a/drivers/iio/light/Makefile b/drivers/iio/light/Makefile
+> index b12a516..ad7c30f 100644
+> --- a/drivers/iio/light/Makefile
+> +++ b/drivers/iio/light/Makefile
+> @@ -8,6 +8,7 @@ obj-$(CONFIG_AL3320A)		+= al3320a.o
+>  obj-$(CONFIG_APDS9300)		+= apds9300.o
+>  obj-$(CONFIG_CM32181)		+= cm32181.o
+>  obj-$(CONFIG_CM3232)		+= cm3232.o
+> +obj-$(CONFIG_CM3323)		+= cm3323.o
+>  obj-$(CONFIG_CM36651)		+= cm36651.o
+>  obj-$(CONFIG_GP2AP020A00F)	+= gp2ap020a00f.o
+>  obj-$(CONFIG_HID_SENSOR_ALS)	+= hid-sensor-als.o
+> diff --git a/drivers/iio/light/cm3323.c b/drivers/iio/light/cm3323.c
+> new file mode 100644
+> index 0000000..869033e
+> --- /dev/null
+> +++ b/drivers/iio/light/cm3323.c
+> @@ -0,0 +1,286 @@
+> +/*
+> + * CM3323 - Capella Color Light Sensor
+> + *
+> + * Copyright (c) 2015, Intel Corporation.
+> + *
+> + * This file is subject to the terms and conditions of version 2 of
+> + * the GNU General Public License.  See the file COPYING in the main
+> + * directory of this archive for more details.
+> + *
+> + * IIO driver for CM3323 (7-bit I2C slave address 0x10)
+> + *
+> + * TODO: calibscale to correct the lens factor
+> + */
+> +#include <linux/module.h>
+> +#include <linux/init.h>
+> +#include <linux/i2c.h>
+> +#include <linux/mutex.h>
+> +
+> +#include <linux/iio/iio.h>
+> +#include <linux/iio/sysfs.h>
+> +
+> +#define CM3323_DRV_NAME "cm3323"
+> +
+> +#define CM3323_CMD_CONF		0x00
+> +#define CM3323_CMD_RED_DATA	0x08
+> +#define CM3323_CMD_GREEN_DATA	0x09
+> +#define CM3323_CMD_BLUE_DATA	0x0A
+> +#define CM3323_CMD_CLEAR_DATA	0x0B
+> +
+> +#define CM3323_CONF_SD_BIT	BIT(0) /* sensor disable */
+> +#define CM3323_CONF_AF_BIT	BIT(1) /* auto/manual force mode */
+> +#define CM3323_CONF_IT_MASK	(BIT(4) | BIT(5) | BIT(6))
+> +#define CM3323_CONF_IT_SHIFT	4
+> +
+> +#define CM3323_INT_TIME_AVAILABLE "0.04 0.08 0.16 0.32 0.64 1.28"
+> +
+> +static const struct {
+> +	int val;
+> +	int val2;
+> +} cm3323_int_time[] = {
+> +	{0, 40000},  /* 40 ms */
+> +	{0, 80000},  /* 80 ms */
+> +	{0, 160000}, /* 160 ms */
+> +	{0, 320000}, /* 320 ms */
+> +	{0, 640000}, /* 640 ms */
+> +	{1, 280000}, /* 1280 ms */
+> +};
+> +
+> +struct cm3323_data {
+> +	struct i2c_client *client;
+> +	u16 reg_conf;
+> +	struct mutex mutex;
+> +};
+> +
+> +#define CM3323_COLOR_CHANNEL(_color, _addr) { \
+> +	.type = IIO_INTENSITY, \
+> +	.modified = 1, \
+> +	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW), \
+> +	.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_INT_TIME), \
+> +	.channel2 = IIO_MOD_LIGHT_##_color, \
+> +	.address = _addr, \
+> +}
+> +
+> +static const struct iio_chan_spec cm3323_channels[] = {
+> +	CM3323_COLOR_CHANNEL(RED, CM3323_CMD_RED_DATA),
+> +	CM3323_COLOR_CHANNEL(GREEN, CM3323_CMD_GREEN_DATA),
+> +	CM3323_COLOR_CHANNEL(BLUE, CM3323_CMD_BLUE_DATA),
+> +	CM3323_COLOR_CHANNEL(CLEAR, CM3323_CMD_CLEAR_DATA),
+> +};
+> +
+> +static IIO_CONST_ATTR_INT_TIME_AVAIL(CM3323_INT_TIME_AVAILABLE);
+> +
+> +static struct attribute *cm3323_attributes[] = {
+> +	&iio_const_attr_integration_time_available.dev_attr.attr,
+> +	NULL
+> +};
+> +
+> +static const struct attribute_group cm3323_attribute_group = {
+> +	.attrs = cm3323_attributes,
+> +};
+> +
+> +static int cm3323_init(struct iio_dev *indio_dev)
+> +{
+> +	int ret;
+> +	struct cm3323_data *data = iio_priv(indio_dev);
+> +
+> +	ret = i2c_smbus_read_word_data(data->client, CM3323_CMD_CONF);
+> +	if (ret < 0) {
+> +		dev_err(&data->client->dev, "Error reading reg_conf\n");
+> +		return ret;
+> +	}
+> +
+> +	/* enable sensor and set auto force mode */
+> +	ret &= ~(CM3323_CONF_SD_BIT | CM3323_CONF_AF_BIT);
+> +
+> +	ret = i2c_smbus_write_word_data(data->client, CM3323_CMD_CONF, ret);
+> +	if (ret < 0) {
+> +		dev_err(&data->client->dev, "Error writing reg_conf\n");
+> +		return ret;
+> +	}
+> +
+> +	data->reg_conf = ret;
+> +
+> +	return 0;
+> +}
+> +
+> +static void cm3323_disable(struct iio_dev *indio_dev)
+> +{
+> +	int ret;
+> +	struct cm3323_data *data = iio_priv(indio_dev);
+> +
+> +	ret = i2c_smbus_write_word_data(data->client, CM3323_CMD_CONF,
+> +					CM3323_CONF_SD_BIT);
+> +	if (ret < 0)
+> +		dev_err(&data->client->dev, "Error writing reg_conf\n");
+> +}
+> +
+> +static int cm3323_set_it_bits(struct cm3323_data *data, int val, int val2)
+> +{
+> +	int i, ret;
+> +	u16 reg_conf;
+> +
+> +	for (i = 0; i < ARRAY_SIZE(cm3323_int_time); i++) {
+> +		if (val == cm3323_int_time[i].val &&
+> +		    val2 == cm3323_int_time[i].val2) {
+> +			reg_conf = data->reg_conf;
+> +			reg_conf |= i << CM3323_CONF_IT_SHIFT;
+> +
+> +			ret = i2c_smbus_write_word_data(data->client,
+> +							CM3323_CMD_CONF,
+> +							reg_conf);
+> +			if (ret < 0)
+> +				return ret;
+> +
+> +			data->reg_conf = reg_conf;
+> +			return 0;
+> +		}
+> +	}
+> +	return -EINVAL;
+> +}
+> +
+> +static int cm3323_get_it_bits(struct cm3323_data *data)
+> +{
+> +	int bits;
+> +
+> +	bits = (data->reg_conf & CM3323_CONF_IT_MASK) >>
+> +		CM3323_CONF_IT_SHIFT;
+> +
+> +	if (bits >= ARRAY_SIZE(cm3323_int_time))
+> +		return -EINVAL;
+> +	return bits;
+> +}
+> +
+> +static int cm3323_read_raw(struct iio_dev *indio_dev,
+> +			   struct iio_chan_spec const *chan, int *val,
+> +			   int *val2, long mask)
+> +{
+> +	int i, ret;
+> +	struct cm3323_data *data = iio_priv(indio_dev);
+> +
+> +	switch (mask) {
+> +	case IIO_CHAN_INFO_RAW:
+> +		mutex_lock(&data->mutex);
+> +		ret = i2c_smbus_read_word_data(data->client, chan->address);
+> +		if (ret < 0) {
+> +			mutex_unlock(&data->mutex);
+> +			return ret;
+> +		}
+> +		*val = ret;
+> +		mutex_unlock(&data->mutex);
+> +
+> +		return IIO_VAL_INT;
+> +	case IIO_CHAN_INFO_INT_TIME:
+> +		mutex_lock(&data->mutex);
+> +		i = cm3323_get_it_bits(data);
+> +		if (i < 0) {
+> +			mutex_unlock(&data->mutex);
+> +			return -EINVAL;
+> +		}
+> +
+> +		*val = cm3323_int_time[i].val;
+> +		*val2 = cm3323_int_time[i].val2;
+> +		mutex_unlock(&data->mutex);
+> +
+> +		return IIO_VAL_INT_PLUS_MICRO;
+> +	default:
+> +		return -EINVAL;
+> +	}
+> +}
+> +
+> +static int cm3323_write_raw(struct iio_dev *indio_dev,
+> +			    struct iio_chan_spec const *chan, int val,
+> +			    int val2, long mask)
+> +{
+> +	struct cm3323_data *data = iio_priv(indio_dev);
+> +	int ret;
+> +
+> +	switch (mask) {
+> +	case IIO_CHAN_INFO_INT_TIME:
+> +		mutex_lock(&data->mutex);
+> +		ret = cm3323_set_it_bits(data, val, val2);
+> +		mutex_unlock(&data->mutex);
+> +
+> +		return ret;
+> +	default:
+> +		return -EINVAL;
+> +	}
+> +}
+> +
+> +static const struct iio_info cm3323_info = {
+> +	.driver_module	= THIS_MODULE,
+> +	.read_raw	= cm3323_read_raw,
+> +	.write_raw	= cm3323_write_raw,
+> +	.attrs		= &cm3323_attribute_group,
+> +};
+> +
+> +static int cm3323_probe(struct i2c_client *client,
+> +			const struct i2c_device_id *id)
+> +{
+> +	struct cm3323_data *data;
+> +	struct iio_dev *indio_dev;
+> +	int ret;
+> +
+> +	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
+> +	if (!indio_dev)
+> +		return -ENOMEM;
+> +
+> +	data = iio_priv(indio_dev);
+> +	i2c_set_clientdata(client, indio_dev);
+> +	data->client = client;
+> +
+> +	mutex_init(&data->mutex);
+> +
+> +	indio_dev->dev.parent = &client->dev;
+> +	indio_dev->info = &cm3323_info;
+> +	indio_dev->name = CM3323_DRV_NAME;
+> +	indio_dev->channels = cm3323_channels;
+> +	indio_dev->num_channels = ARRAY_SIZE(cm3323_channels);
+> +	indio_dev->modes = INDIO_DIRECT_MODE;
+> +
+> +	ret = cm3323_init(indio_dev);
+> +	if (ret < 0) {
+> +		dev_err(&client->dev, "cm3323 chip init failed\n");
+> +		return ret;
+> +	}
+> +	ret = iio_device_register(indio_dev);
+> +	if (ret < 0) {
+> +		dev_err(&client->dev, "failed to register iio dev\n");
+> +		goto err_init;
+> +	}
+> +	return 0;
+> +err_init:
+> +	cm3323_disable(indio_dev);
+> +	return ret;
+> +}
+> +
+> +static int cm3323_remove(struct i2c_client *client)
+> +{
+> +	struct iio_dev *indio_dev = i2c_get_clientdata(client);
+> +
+> +	iio_device_unregister(indio_dev);
+> +	cm3323_disable(indio_dev);
+> +
+> +	return 0;
+> +}
+> +
+> +static const struct i2c_device_id cm3323_id[] = {
+> +	{"cm3323", 0},
+> +	{}
+> +};
+> +MODULE_DEVICE_TABLE(i2c, cm3323_id);
+> +
+> +static struct i2c_driver cm3323_driver = {
+> +	.driver = {
+> +		.name = CM3323_DRV_NAME,
+> +	},
+> +	.probe		= cm3323_probe,
+> +	.remove		= cm3323_remove,
+> +	.id_table	= cm3323_id,
+> +};
+> +
+> +module_i2c_driver(cm3323_driver);
+> +
+> +MODULE_AUTHOR("Daniel Baluta <daniel.baluta@intel.com>");
+> +MODULE_DESCRIPTION("Capella CM3323 Color Light Sensor driver");
+> +MODULE_LICENSE("GPL v2");
+> 
 
