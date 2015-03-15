@@ -1,88 +1,115 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:34754 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751840AbbCOUKO (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 15 Mar 2015 16:10:14 -0400
-Message-ID: <5505E723.2090205@kernel.org>
-Date: Sun, 15 Mar 2015 20:10:11 +0000
-From: Jonathan Cameron <jic23@kernel.org>
+Received: from mail-wi0-f175.google.com ([209.85.212.175]:38893 "EHLO
+	mail-wi0-f175.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751875AbbCOUeW (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 15 Mar 2015 16:34:22 -0400
 MIME-Version: 1.0
-To: Greg KH <gregkh@linuxfoundation.org>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Subject: [PULL] IIO fixes for 4.0 set 3
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <55046E31.3020404@kernel.org>
+References: <1426091777-30592-1-git-send-email-daniel.baluta@intel.com>
+	<CAE1zot+us4bP2n1xQkFdAvJ3iAWwqTFgMK4SNZbmugPD_nB_Lg@mail.gmail.com>
+	<550150EC.5080100@metafoo.de>
+	<CAEnQRZCyUXpuG1R636c0C9_b0CPctigStkqWgK=PYKYFxGvcbA@mail.gmail.com>
+	<55046E31.3020404@kernel.org>
+Date: Sun, 15 Mar 2015 22:34:21 +0200
+Message-ID: <CAEnQRZD=XcAjV0YNHVRn30oEtXa++e-vSb3y_oS9h3+A2LSH4Q@mail.gmail.com>
+Subject: Re: [PATCH] staging: iio: trigger: Use standard attr for sampling frequency
+From: Daniel Baluta <daniel.baluta@intel.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Daniel Baluta <daniel.baluta@intel.com>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Octavian Purdila <octavian.purdila@intel.com>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	lkml <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-The following changes since commit abe46b8932dd9a6dfc3698e3eb121809b7b9ed28:
+On Sat, Mar 14, 2015 at 7:21 PM, Jonathan Cameron <jic23@kernel.org> wrote:
+> On 12/03/15 12:48, Daniel Baluta wrote:
+>> On Thu, Mar 12, 2015 at 10:40 AM, Lars-Peter Clausen <lars@metafoo.de> wrote:
+>>> On 03/12/2015 09:16 AM, Octavian Purdila wrote:
+>>>>
+>>>> On Wed, Mar 11, 2015 at 6:36 PM, Daniel Baluta <daniel.baluta@intel.com>
+>>>> wrote:
+>>>>>
+>>>>>
+>>>>> As written in Documentation/ABI/testing/sysfs-bus-iio the trigger
+>>>>> attribute for sampling frequency should be sampling_frequency.
+>>>>>
+>>>>> Fix this for iio-trig-periodic-rtc module in order to prepare it
+>>>>> for moving out of staging.
+>>>>>
+>>>>> Signed-off-by: Daniel Baluta <daniel.baluta@intel.com>
+>>>>> ---
+>>>>> Jonathan, this module is very useful for devices that do not have
+>>>>> an interrupt pin.
+>>>>>
+>>>>> We are working on drivers for such devices and would be very nice to
+>>>>> move this driver in advance to the IIO non-staging location.
+>>>>>
+>>>>> What do you say?
+>>>>>
+>>>>
+>>>> Hmm, I wonder what are the advantages of using RTC timers. Couldn't we
+>>>> use a regular kernel timer instead?
+>>>
+>>>
+>>> The long term plan is to get rid of the RTC timer trigger due to its various
+>>> limitations (poor resolution, etc).
+>>>
+>>> There is the hrtimer trigger
+>>> (https://github.com/analogdevicesinc/linux/blob/xcomm_zynq/drivers/staging/iio/trigger/iio-trig-hrtimer.c)
+>>> but we haven't agreed on a proper interface yet how to instantiate the
+>>> hrtimer trigger.
+>>>
+>>> Check the ml archive for the various discussions on it:
+>>> http://marc.info/?l=linux-iio&w=2&r=1&s=hrtimer&q=b
+>>
+>>
+>> Hi Lars,
+>>
+>> That was an interesting reading. There were people trying to push
+>>  hrtimer based IIO trigger 4 years ago :).
+>>
+>> I think it's now the time to have this upstream.
+>>
+>> I will be back :) (as many others said before) with an RFC patch.
+>>
+>> I think we should keep the following requirements:
+>>
+>> 1) Create a common framework for software based triggers.
+>> 2) User space driven configuration for trigger instances,
+>> as opposed to platform device files used for RTC based trigger
+>> 3) Remove RTC interrupt source, use hrtimers instead
+>>
+>> Still not clear, but I will trying to figure it out during implementation:
+>>
+>> 4) configfs vs sysfs interface.
+>>
+>> At the first glance, I would say we should stay with sysfs interface in order
+>> to avoid another dependency. But let's see how it works.
+> This issue with the sysfs only approach (as originally raised by Lars)
+> is that it is actually very poorly suited to instantiating new elements of
+> the device model.  Configfs was introduced in the first place exactly to
+> cover this area.  We only ended up with the instantiation code in
+> the sysfs trigger via sysfs because at the time (a good long while ago!)
+> I wasn't aware of configfs.
+>
+> I have some initial work on the base elements on an iio configfs interface
+> somewhere that I can dig out if you like.  I started working on it in a rare
+> quiet period about a year ago, but never got all that far.
+>
+> There aren't that many examples in tree of how to actually use configfs
+> so it's a bit more of a learning curve than sysfs!
 
-  staging: comedi: adv_pci1710: fix AI INSN_READ for non-zero channel (2015-03-01 19:25:59 -0800)
+I use this:
 
-are available in the git repository at:
+http://lxr.free-electrons.com/source/Documentation/filesystems/configfs/configfs_example_explicit.c
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git tags/iio-fixes-for-4.0c
+as an example. But, sure if you find your work please share.
 
-for you to fetch changes up to c1b03ab5e886760bdd38c9c7a27af149046ffe01:
+I am not sure if we could use this approach for iio-trig-interrupt trigger?
 
-  iio: core: Fix double free. (2015-03-14 18:54:14 +0000)
-
-----------------------------------------------------------------
-3rd set of IIO fixes for the 4.0 cycle.
-
-* A double free occured on an error path in due to an event registration issue.
-  The fix is the minimal change rather than possibly reworking this area of
-  the core to give a more elegant solution (future work).
-* A number of drivers were directly accessing indio_dev->buffer->scan_mask
-  to identify the currently enabled channel set.  This may not be correct
-  if we have additional clients on the push interface.  The correct option
-  is indio_dev->active_scan_mask. This is fixed.
-* bmc150 had incorrectly specified sampling frequency (a datasheet confusion
-  as they are specified in terms of bandwith - e.g. half the sampling
-  frequency).
-* hmc5843 wasn't setting it's name and hence the name attribute was
-  returning an empty string.
-* inv_mpu6050 wasn't clearing the locally held timestamp buffer when the
-  hardware fifo was reset. Also an inconsistency existed in the interface
-  for the scale of the channels.  Magic numbers were written but real ones
-  were used for the reads.  Now uses real numbers (i.e. not array indexes)
-  for both.
-* fix a missing dependency in the dummy driver. Previously shielded from
-  the autobuilders by an earlier build error.
-
-----------------------------------------------------------------
-Adriana Reus (1):
-      iio:inv-mpu6050: Fix inconsistency for the scale channel
-
-Daniel Baluta (1):
-      staging: iio: dummy: Fix undefined symbol build error
-
-Marek Belisko (1):
-      staging: iio: hmc5843: Set iio name property in sysfs
-
-Martin Fuzzey (1):
-      iio: core: Fix double free.
-
-Octavian Purdila (1):
-      iio: fix drivers that check buffer->scan_mask
-
-Sathyanarayanan Kuppuswamy (1):
-      iio: bmc150: change sampling frequency
-
-Viorel Suman (1):
-      iio: inv_mpu6050: Clear timestamps fifo while resetting hardware fifo
-
- drivers/iio/accel/bma180.c                      |  2 +-
- drivers/iio/accel/bmc150-accel.c                | 20 ++++-----
- drivers/iio/accel/kxcjk-1013.c                  |  2 +-
- drivers/iio/adc/at91_adc.c                      |  5 +--
- drivers/iio/adc/ti_am335x_adc.c                 |  3 +-
- drivers/iio/gyro/bmg160.c                       |  2 +-
- drivers/iio/imu/inv_mpu6050/inv_mpu_core.c      | 56 +++++++++++++------------
- drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c      | 25 ++++++-----
- drivers/iio/imu/kmx61.c                         |  2 +-
- drivers/iio/industrialio-core.c                 |  5 ++-
- drivers/iio/industrialio-event.c                |  1 +
- drivers/iio/proximity/sx9500.c                  |  2 +-
- drivers/staging/iio/Kconfig                     |  1 +
- drivers/staging/iio/magnetometer/hmc5843_core.c |  1 +
- 14 files changed, 68 insertions(+), 59 deletions(-)
+Daniel.
