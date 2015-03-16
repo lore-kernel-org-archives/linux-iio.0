@@ -1,106 +1,85 @@
-Return-Path: <jacob.jun.pan@linux.intel.com>
-From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-To: IIO <linux-iio@vger.kernel.org>,
-	Jonathan Cameron <jic23@kernel.org>,
-	LKML <linux-kernel@vger.kernel.org>
-Cc: Lee Jones <lee.jones@linaro.org>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Aaron Lu <aaron.lu@intel.com>,
-	Todd Brandt <todd.e.brandt@linux.intel.com>,
-	Jacob Pan <jacob.jun.pan@linux.intel.com>
-Subject: [PATCH] iio/axp288_adc: add missing channel info mask
-Date: Mon, 16 Mar 2015 10:34:25 -0700
-Message-Id: <1426527265-14979-1-git-send-email-jacob.jun.pan@linux.intel.com>
+Return-Path: <stefan@agner.ch>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Date: Mon, 16 Mar 2015 16:17:55 +0100
+From: Stefan Agner <stefan@agner.ch>
+To: shawn.guo@linaro.org, kernel@pengutronix.de
+Cc: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
+ robh+dt@kernel.org, pawel.moll@arm.com, mark.rutland@arm.com,
+ ijc+devicetree@hellion.org.uk, galak@codeaurora.org, B38611@freescale.com,
+ maitysanchayan@gmail.com, devicetree@vger.kernel.org,
+ linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+ linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 3/3] ARM: dts: add property for maximum ADC clock
+ frequencies
+In-Reply-To: <1426518614-20201-4-git-send-email-stefan@agner.ch>
+References: <1426518614-20201-1-git-send-email-stefan@agner.ch>
+ <1426518614-20201-4-git-send-email-stefan@agner.ch>
+Message-ID: <80ba0aa345e8bb04e23e2988f51a851d@agner.ch>
 List-ID: <linux-iio@vger.kernel.org>
 
-Commit 65de7654d39c70c2b ("iio: iio: Fix iio_channel_read return if
-channel havn't info") added a check for valid info masks.
+Forgot to add i.MX/Vybrid maintainers Shawn and Sascha.
 
-This patch adds missing channel info masks for all ADC channels.
-Otherwise, iio_read_channel_raw() would return -EINVAL when called
-by consumer drivers.
-
-Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
----
- drivers/iio/adc/axp288_adc.c | 17 +++++++++++------
- 1 file changed, 11 insertions(+), 6 deletions(-)
-
-diff --git a/drivers/iio/adc/axp288_adc.c b/drivers/iio/adc/axp288_adc.c
-index 08bcfb0..7ce361c 100644
---- a/drivers/iio/adc/axp288_adc.c
-+++ b/drivers/iio/adc/axp288_adc.c
-@@ -53,39 +53,45 @@ static const struct iio_chan_spec const axp288_adc_channels[] = {
- 		.channel = 0,
- 		.address = AXP288_TS_ADC_H,
- 		.datasheet_name = "TS_PIN",
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
- 	}, {
- 		.indexed = 1,
- 		.type = IIO_TEMP,
- 		.channel = 1,
- 		.address = AXP288_PMIC_ADC_H,
- 		.datasheet_name = "PMIC_TEMP",
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
- 	}, {
- 		.indexed = 1,
- 		.type = IIO_TEMP,
- 		.channel = 2,
- 		.address = AXP288_GP_ADC_H,
- 		.datasheet_name = "GPADC",
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
- 	}, {
- 		.indexed = 1,
- 		.type = IIO_CURRENT,
- 		.channel = 3,
- 		.address = AXP20X_BATT_CHRG_I_H,
- 		.datasheet_name = "BATT_CHG_I",
--		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED),
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED)
-+		| BIT(IIO_CHAN_INFO_RAW),
- 	}, {
- 		.indexed = 1,
- 		.type = IIO_CURRENT,
- 		.channel = 4,
- 		.address = AXP20X_BATT_DISCHRG_I_H,
- 		.datasheet_name = "BATT_DISCHRG_I",
--		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED),
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED)
-+		| BIT(IIO_CHAN_INFO_RAW),
- 	}, {
- 		.indexed = 1,
- 		.type = IIO_VOLTAGE,
- 		.channel = 5,
- 		.address = AXP20X_BATT_V_H,
- 		.datasheet_name = "BATT_V",
--		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED),
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED)
-+		| BIT(IIO_CHAN_INFO_RAW),
- 	},
- };
- 
-@@ -140,20 +146,19 @@ static int axp288_adc_read_raw(struct iio_dev *indio_dev,
- 	mutex_lock(&indio_dev->mlock);
- 	switch (mask) {
- 	case IIO_CHAN_INFO_RAW:
-+	case IIO_CHAN_INFO_PROCESSED:
- 		if (axp288_adc_set_ts(info->regmap, AXP288_ADC_TS_PIN_GPADC,
- 					chan->address)) {
- 			dev_err(&indio_dev->dev, "GPADC mode\n");
- 			ret = -EINVAL;
- 			break;
- 		}
-+
- 		ret = axp288_adc_read_channel(val, chan->address, info->regmap);
- 		if (axp288_adc_set_ts(info->regmap, AXP288_ADC_TS_PIN_ON,
- 						chan->address))
- 			dev_err(&indio_dev->dev, "TS pin restore\n");
- 		break;
--	case IIO_CHAN_INFO_PROCESSED:
--		ret = axp288_adc_read_channel(val, chan->address, info->regmap);
--		break;
- 	default:
- 		ret = -EINVAL;
- 	}
--- 
-1.9.1
+On 2015-03-16 16:10, Stefan Agner wrote:
+> The ADC clock frequency is limited depending on modes used. Add
+> device tree property which allow to set the mode used and the
+> maximum frequency ratings for the instance. These allows to
+> set the ADC clock to a frequency which is within specification
+> according to the actual mode used.
+> 
+> Acked-by: Fugang Duan <B38611@freescale.com>
+> Signed-off-by: Stefan Agner <stefan@agner.ch>
+> ---
+>  Documentation/devicetree/bindings/iio/adc/vf610-adc.txt | 9 +++++++++
+>  arch/arm/boot/dts/vfxxx.dtsi                            | 4 ++++
+>  2 files changed, 13 insertions(+)
+> 
+> diff --git a/Documentation/devicetree/bindings/iio/adc/vf610-adc.txt
+> b/Documentation/devicetree/bindings/iio/adc/vf610-adc.txt
+> index 1a4a43d..3eb40e2 100644
+> --- a/Documentation/devicetree/bindings/iio/adc/vf610-adc.txt
+> +++ b/Documentation/devicetree/bindings/iio/adc/vf610-adc.txt
+> @@ -11,6 +11,13 @@ Required properties:
+>  - clock-names: Must contain "adc", matching entry in the clocks property.
+>  - vref-supply: The regulator supply ADC reference voltage.
+>  
+> +Recommended properties:
+> +- fsl,adck-max-frequency: Maximum frequencies according to datasheets operating
+> +  requirements. Three values are required, depending on conversion mode:
+> +  - Frequency in normal mode (ADLPC=0, ADHSC=0)
+> +  - Frequency in high-speed mode (ADLPC=0, ADHSC=1)
+> +  - Frequency in low-power mode (ADLPC=1, ADHSC=0)
+> +
+>  Example:
+>  adc0: adc@4003b000 {
+>  	compatible = "fsl,vf610-adc";
+> @@ -18,5 +25,7 @@ adc0: adc@4003b000 {
+>  	interrupts = <0 53 0x04>;
+>  	clocks = <&clks VF610_CLK_ADC0>;
+>  	clock-names = "adc";
+> +	fsl,adck-max-frequency = <30000000>, <40000000>,
+> +				<20000000>;
+>  	vref-supply = <&reg_vcc_3v3_mcu>;
+>  };
+> diff --git a/arch/arm/boot/dts/vfxxx.dtsi b/arch/arm/boot/dts/vfxxx.dtsi
+> index a29c7ce..c6609bd 100644
+> --- a/arch/arm/boot/dts/vfxxx.dtsi
+> +++ b/arch/arm/boot/dts/vfxxx.dtsi
+> @@ -189,6 +189,8 @@
+>  				clocks = <&clks VF610_CLK_ADC0>;
+>  				clock-names = "adc";
+>  				status = "disabled";
+> +				fsl,adck-max-frequency = <30000000>, <40000000>,
+> +							<20000000>;
+>  			};
+>  
+>  			wdoga5: wdog@4003e000 {
+> @@ -387,6 +389,8 @@
+>  				clocks = <&clks VF610_CLK_ADC1>;
+>  				clock-names = "adc";
+>  				status = "disabled";
+> +				fsl,adck-max-frequency = <30000000>, <40000000>,
+> +							<20000000>;
+>  			};
+>  
+>  			esdhc1: esdhc@400b2000 {
