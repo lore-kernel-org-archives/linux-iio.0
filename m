@@ -1,46 +1,44 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.sigma-star.at ([95.130.255.111]:14390 "EHLO
-	mail.sigma-star.at" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S933710AbbCPVhP (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 16 Mar 2015 17:37:15 -0400
-From: Richard Weinberger <richard@nod.at>
-To: linux-kernel@vger.kernel.org
-Cc: linux-iio@vger.kernel.org, linux-pm@vger.kernel.org,
-	dwmw2@infradead.org, dbaryshkov@gmail.com, sre@kernel.org,
-	jassisinghbrar@gmail.com, pmeerw@pmeerw.net, lars@metafoo.de,
-	knaack.h@gmx.de, jic23@kernel.org, tglx@linutronix.de,
-	daniel.lezcano@linaro.org, Richard Weinberger <richard@nod.at>
-Subject: [PATCH 6/6] iio/adc/cc10001_adc.c: Fix !HAS_IOMEM build
-Date: Mon, 16 Mar 2015 22:27:10 +0100
-Message-Id: <1426541230-928-6-git-send-email-richard@nod.at>
-In-Reply-To: <1426541230-928-1-git-send-email-richard@nod.at>
-References: <1426541230-928-1-git-send-email-richard@nod.at>
+Received: from mga14.intel.com ([192.55.52.115]:20383 "EHLO mga14.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751563AbbCPXKV (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Mon, 16 Mar 2015 19:10:21 -0400
+From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+To: jkosina@suse.cz, jic23@kernel.org
+Cc: linux-input@vger.kernel.org, linux-iio@vger.kernel.org,
+	Srinivas Pandruvada <spandruvada@spandruv-bdw-test.jf.intel.com>
+Subject: [PATCH v2 0/2] HID: HID Sensor: Custom and Generic sensor support
+Date: Mon, 16 Mar 2015 16:09:01 -0700
+Message-Id: <1426547343-27747-1-git-send-email-srinivas.pandruvada@linux.intel.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Fixes:
-drivers/built-in.o: In function `cc10001_adc_probe':
-cc10001_adc.c:(.text+0x412e92): undefined reference to `devm_ioremap_resource'
+From: Srinivas Pandruvada <spandruvada@spandruv-bdw-test.jf.intel.com>
 
-Signed-off-by: Richard Weinberger <richard@nod.at>
----
- drivers/iio/adc/Kconfig | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+v2
+- Addressed review comments from Jonathan
+- Added poll capability on misc device
+- Added time stamp to the report id
 
-diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
-index 202daf8..46379b1 100644
---- a/drivers/iio/adc/Kconfig
-+++ b/drivers/iio/adc/Kconfig
-@@ -137,7 +137,8 @@ config AXP288_ADC
- 
- config CC10001_ADC
- 	tristate "Cosmic Circuits 10001 ADC driver"
--	depends on HAS_IOMEM || HAVE_CLK || REGULATOR
-+	depends on HAVE_CLK || REGULATOR
-+	depends on HAS_IOMEM
- 	select IIO_BUFFER
- 	select IIO_TRIGGERED_BUFFER
- 	help
+v1
+- Two trailing white spaces in the document
+- Error in getting attribute value found by
+saurabh rawat <saurabh.rawat@st.com>
+
+v0
+Base version
+
+Srinivas Pandruvada (2):
+  HID: HID Sensor: Custom and Generic sensor support
+  HID: HID Sensor: Update document for custom sensor
+
+ Documentation/hid/hid-sensor.txt |  79 ++++
+ drivers/hid/Kconfig              |  15 +
+ drivers/hid/Makefile             |   1 +
+ drivers/hid/hid-sensor-custom.c  | 759 +++++++++++++++++++++++++++++++++++++++
+ 4 files changed, 854 insertions(+)
+ create mode 100644 drivers/hid/hid-sensor-custom.c
+
 -- 
-1.8.4.5
+2.1.0
 
