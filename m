@@ -1,51 +1,58 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-ob0-f179.google.com ([209.85.214.179]:33280 "EHLO
-	mail-ob0-f179.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753446AbbCQITj convert rfc822-to-8bit (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 17 Mar 2015 04:19:39 -0400
-MIME-Version: 1.0
-In-Reply-To: <1426541230-928-4-git-send-email-richard@nod.at>
-References: <1426541230-928-1-git-send-email-richard@nod.at>
-	<1426541230-928-4-git-send-email-richard@nod.at>
-Date: Tue, 17 Mar 2015 09:19:38 +0100
-Message-ID: <CAMuHMdX371wF+P8sdJDDYYFbfaPC419pn4iF96AP4jJAiFa+sg@mail.gmail.com>
-Subject: Re: [PATCH 4/6] power/reset/rmobile-reset.c: Fix !HAS_IOMEM build
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-To: Richard Weinberger <richard@nod.at>
-Cc: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	linux-iio@vger.kernel.org,
-	Linux PM list <linux-pm@vger.kernel.org>,
-	David Woodhouse <dwmw2@infradead.org>,
-	Dmitry Eremin-Solenikov <dbaryshkov@gmail.com>,
-	Sebastian Reichel <sre@kernel.org>,
-	Jassi Brar <jassisinghbrar@gmail.com>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Thomas Gleixner <tglx@linutronix.de>,
-	Daniel Lezcano <daniel.lezcano@linaro.org>
-Content-Type: text/plain; charset=UTF-8
+Received: from mail-wg0-f49.google.com ([74.125.82.49]:34701 "EHLO
+	mail-wg0-f49.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752908AbbCQKhG (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 17 Mar 2015 06:37:06 -0400
+Received: by wggv3 with SMTP id v3so4732415wgg.1
+        for <linux-iio@vger.kernel.org>; Tue, 17 Mar 2015 03:37:05 -0700 (PDT)
+From: Haneen Mohammed <hamohammed.sa@gmail.com>
+To: outreachy-kernel@googlegroups.com, linux-iio@vger.kernel.org,
+	jic23@kernel.org, daniel.baluta@intel.com
+Cc: Haneen Mohammed <hamohammed.sa@gmail.com>
+Subject: [PATCH] iio: Add ABI documentation for out_voltage scan_elements
+Date: Tue, 17 Mar 2015 13:36:49 +0300
+Message-Id: <1426588609-24683-1-git-send-email-hamohammed.sa@gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Mon, Mar 16, 2015 at 10:27 PM, Richard Weinberger <richard@nod.at> wrote:
-> Fixes:
-> drivers/power/reset/rmobile-reset.c: In function ‘rmobile_reset_probe’:
-> drivers/power/reset/rmobile-reset.c:61:2: error: implicit declaration of function ‘iounmap’ [-Werror=implicit-function-declaration]
->   iounmap(sysc_base2);
->
-> Signed-off-by: Richard Weinberger <richard@nod.at>
+This patch adds ABI documentation entries for out_voltageY_en,
+out_voltageY_type, and out_voltageY_index.
+At least one user for these is preset:
+AD8366 SPI Dual-Digital VGA.
 
-Acked-by: Geert Uytterhoeven <geert+renesas@glider.be>
+Signed-off-by: Haneen Mohammed <hamohammed.sa@gmail.com>
+---
+ Documentation/ABI/testing/sysfs-bus-iio | 3 +++
+ 1 file changed, 3 insertions(+)
 
-Gr{oetje,eeting}s,
+diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
+index fd026d9..bbb0bfd 100644
+--- a/Documentation/ABI/testing/sysfs-bus-iio
++++ b/Documentation/ABI/testing/sysfs-bus-iio
+@@ -994,6 +994,7 @@ What:		/sys/.../iio:deviceX/scan_elements/in_timestamp_en
+ What:		/sys/.../iio:deviceX/scan_elements/in_voltageY_supply_en
+ What:		/sys/.../iio:deviceX/scan_elements/in_voltageY_en
+ What:		/sys/.../iio:deviceX/scan_elements/in_voltageY-voltageZ_en
++What:		/sys/.../iio:deviceX/scan_elements/out_voltageY_en
+ What:		/sys/.../iio:deviceX/scan_elements/in_incli_x_en
+ What:		/sys/.../iio:deviceX/scan_elements/in_incli_y_en
+ What:		/sys/.../iio:deviceX/scan_elements/in_pressureY_en
+@@ -1011,6 +1012,7 @@ What:		/sys/.../iio:deviceX/scan_elements/in_magn_type
+ What:		/sys/.../iio:deviceX/scan_elements/in_incli_type
+ What:		/sys/.../iio:deviceX/scan_elements/in_voltageY_type
+ What:		/sys/.../iio:deviceX/scan_elements/in_voltage_type
++What:		/sys/.../iio:deviceX/scan_elements/out_voltageY_type
+ What:		/sys/.../iio:deviceX/scan_elements/in_voltageY_supply_type
+ What:		/sys/.../iio:deviceX/scan_elements/in_timestamp_type
+ What:		/sys/.../iio:deviceX/scan_elements/in_pressureY_type
+@@ -1049,6 +1051,7 @@ Description:
+ 
+ What:		/sys/.../iio:deviceX/scan_elements/in_voltageY_index
+ What:		/sys/.../iio:deviceX/scan_elements/in_voltageY_supply_index
++What:		/sys/.../iio:deviceX/scan_elements/out_voltageY_index
+ What:		/sys/.../iio:deviceX/scan_elements/in_accel_x_index
+ What:		/sys/.../iio:deviceX/scan_elements/in_accel_y_index
+ What:		/sys/.../iio:deviceX/scan_elements/in_accel_z_index
+-- 
+1.9.1
 
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
