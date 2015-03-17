@@ -1,15 +1,15 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-ob0-f169.google.com ([209.85.214.169]:34642 "EHLO
-	mail-ob0-f169.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752750AbbCQITZ convert rfc822-to-8bit (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 17 Mar 2015 04:19:25 -0400
+Received: from mail-ob0-f179.google.com ([209.85.214.179]:33280 "EHLO
+	mail-ob0-f179.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753446AbbCQITj convert rfc822-to-8bit (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 17 Mar 2015 04:19:39 -0400
 MIME-Version: 1.0
-In-Reply-To: <1426541230-928-3-git-send-email-richard@nod.at>
+In-Reply-To: <1426541230-928-4-git-send-email-richard@nod.at>
 References: <1426541230-928-1-git-send-email-richard@nod.at>
-	<1426541230-928-3-git-send-email-richard@nod.at>
-Date: Tue, 17 Mar 2015 09:19:25 +0100
-Message-ID: <CAMuHMdUbOya3D3K0i2kgv1-Eqj1JqKfL18ByRgemZuB1gTCP1w@mail.gmail.com>
-Subject: Re: [PATCH 3/6] clocksource/sh_tmu.c: Fix !HAS_IOMEM build
+	<1426541230-928-4-git-send-email-richard@nod.at>
+Date: Tue, 17 Mar 2015 09:19:38 +0100
+Message-ID: <CAMuHMdX371wF+P8sdJDDYYFbfaPC419pn4iF96AP4jJAiFa+sg@mail.gmail.com>
+Subject: Re: [PATCH 4/6] power/reset/rmobile-reset.c: Fix !HAS_IOMEM build
 From: Geert Uytterhoeven <geert@linux-m68k.org>
 To: Richard Weinberger <richard@nod.at>
 Cc: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
@@ -31,16 +31,9 @@ List-Id: linux-iio@vger.kernel.org
 
 On Mon, Mar 16, 2015 at 10:27 PM, Richard Weinberger <richard@nod.at> wrote:
 > Fixes:
-> drivers/clocksource/sh_tmu.c: In function ‘sh_tmu_map_memory’:
-> drivers/clocksource/sh_tmu.c:506:2: error: implicit declaration of function ‘ioremap_nocache’ [-Werror=implicit-function-declaration]
->   tmu->mapbase = ioremap_nocache(res->start, resource_size(res));
->   ^
-> drivers/clocksource/sh_tmu.c:506:15: warning: assignment makes pointer from integer without a cast [enabled by default]
->   tmu->mapbase = ioremap_nocache(res->start, resource_size(res));
->                ^
-> drivers/clocksource/sh_tmu.c: In function ‘sh_tmu_setup’:
-> drivers/clocksource/sh_tmu.c:598:2: error: implicit declaration of function ‘iounmap’ [-Werror=implicit-function-declaration]
->   iounmap(tmu->mapbase);
+> drivers/power/reset/rmobile-reset.c: In function ‘rmobile_reset_probe’:
+> drivers/power/reset/rmobile-reset.c:61:2: error: implicit declaration of function ‘iounmap’ [-Werror=implicit-function-declaration]
+>   iounmap(sysc_base2);
 >
 > Signed-off-by: Richard Weinberger <richard@nod.at>
 
