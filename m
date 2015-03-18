@@ -1,136 +1,154 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-wg0-f45.google.com ([74.125.82.45]:34041 "EHLO
-	mail-wg0-f45.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S932090AbbCRQr6 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 18 Mar 2015 12:47:58 -0400
-Received: by wggv3 with SMTP id v3so40371596wgg.1
-        for <linux-iio@vger.kernel.org>; Wed, 18 Mar 2015 09:47:57 -0700 (PDT)
+Received: from mail-we0-f178.google.com ([74.125.82.178]:36163 "EHLO
+	mail-we0-f178.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755201AbbCRRVP (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 18 Mar 2015 13:21:15 -0400
 MIME-Version: 1.0
-In-Reply-To: <550967B5.7000100@metafoo.de>
-References: <1425491773-28499-1-git-send-email-octavian.purdila@intel.com>
-	<1425491773-28499-3-git-send-email-octavian.purdila@intel.com>
-	<550967B5.7000100@metafoo.de>
-Date: Wed, 18 Mar 2015 18:47:57 +0200
-Message-ID: <CAE1zotLLpRFNsQ1h1_set2MXTo2o0zeq1JrNif+vbSojjSR+aw@mail.gmail.com>
-Subject: Re: [PATCH v5 2/3] iio: add support for hardware fifo
-From: Octavian Purdila <octavian.purdila@intel.com>
+In-Reply-To: <5509AC15.5070400@metafoo.de>
+References: <1426091777-30592-1-git-send-email-daniel.baluta@intel.com>
+	<CAE1zot+us4bP2n1xQkFdAvJ3iAWwqTFgMK4SNZbmugPD_nB_Lg@mail.gmail.com>
+	<550150EC.5080100@metafoo.de>
+	<CAEnQRZCyUXpuG1R636c0C9_b0CPctigStkqWgK=PYKYFxGvcbA@mail.gmail.com>
+	<55046E31.3020404@kernel.org>
+	<CAEnQRZASq1YYGouYtd0Km1rR0Ld51H=nK04CWfeRZNe_=3suvA@mail.gmail.com>
+	<5509AC15.5070400@metafoo.de>
+Date: Wed, 18 Mar 2015 19:21:14 +0200
+Message-ID: <CAEnQRZCe9A36ouGvZ2k1ng0NrnhiUCn2kSaqxOJszGCMYYbr3Q@mail.gmail.com>
+Subject: Re: [PATCH] staging: iio: trigger: Use standard attr for sampling frequency
+From: Daniel Baluta <daniel.baluta@intel.com>
 To: Lars-Peter Clausen <lars@metafoo.de>
-Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Cc: Daniel Baluta <daniel.baluta@intel.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Octavian Purdila <octavian.purdila@intel.com>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	lkml <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Wed, Mar 18, 2015 at 1:55 PM, Lars-Peter Clausen <lars@metafoo.de> wrote:
->
-> On 03/04/2015 06:56 PM, Octavian Purdila wrote:
+On Wed, Mar 18, 2015 at 6:47 PM, Lars-Peter Clausen <lars@metafoo.de> wrote:
+> On 03/18/2015 04:04 PM, Daniel Baluta wrote:
 >>
->> [...]
+>> On Sat, Mar 14, 2015 at 7:21 PM, Jonathan Cameron <jic23@kernel.org>
+>> wrote:
+>>>
+>>> On 12/03/15 12:48, Daniel Baluta wrote:
+>>>>
+>>>> On Thu, Mar 12, 2015 at 10:40 AM, Lars-Peter Clausen <lars@metafoo.de>
+>>>> wrote:
+>>>>>
+>>>>> On 03/12/2015 09:16 AM, Octavian Purdila wrote:
+>>>>>>
+>>>>>>
+>>>>>> On Wed, Mar 11, 2015 at 6:36 PM, Daniel Baluta
+>>>>>> <daniel.baluta@intel.com>
+>>>>>> wrote:
+>>>>>>>
+>>>>>>>
+>>>>>>>
+>>>>>>> As written in Documentation/ABI/testing/sysfs-bus-iio the trigger
+>>>>>>> attribute for sampling frequency should be sampling_frequency.
+>>>>>>>
+>>>>>>> Fix this for iio-trig-periodic-rtc module in order to prepare it
+>>>>>>> for moving out of staging.
+>>>>>>>
+>>>>>>> Signed-off-by: Daniel Baluta <daniel.baluta@intel.com>
+>>>>>>> ---
+>>>>>>> Jonathan, this module is very useful for devices that do not have
+>>>>>>> an interrupt pin.
+>>>>>>>
+>>>>>>> We are working on drivers for such devices and would be very nice to
+>>>>>>> move this driver in advance to the IIO non-staging location.
+>>>>>>>
+>>>>>>> What do you say?
+>>>>>>>
+>>>>>>
+>>>>>> Hmm, I wonder what are the advantages of using RTC timers. Couldn't we
+>>>>>> use a regular kernel timer instead?
+>>>>>
+>>>>>
+>>>>>
+>>>>> The long term plan is to get rid of the RTC timer trigger due to its
+>>>>> various
+>>>>> limitations (poor resolution, etc).
+>>>>>
+>>>>> There is the hrtimer trigger
+>>>>>
+>>>>> (https://github.com/analogdevicesinc/linux/blob/xcomm_zynq/drivers/staging/iio/trigger/iio-trig-hrtimer.c)
+>>>>> but we haven't agreed on a proper interface yet how to instantiate the
+>>>>> hrtimer trigger.
+>>>>>
+>>>>> Check the ml archive for the various discussions on it:
+>>>>> http://marc.info/?l=linux-iio&w=2&r=1&s=hrtimer&q=b
+>>>>
+>>>>
+>>>>
+>>>> Hi Lars,
+>>>>
+>>>> That was an interesting reading. There were people trying to push
+>>>>   hrtimer based IIO trigger 4 years ago :).
+>>>>
+>>>> I think it's now the time to have this upstream.
+>>>>
+>>>> I will be back :) (as many others said before) with an RFC patch.
+>>>>
+>>>> I think we should keep the following requirements:
+>>>>
+>>>> 1) Create a common framework for software based triggers.
+>>>> 2) User space driven configuration for trigger instances,
+>>>> as opposed to platform device files used for RTC based trigger
+>>>> 3) Remove RTC interrupt source, use hrtimers instead
+>>>>
+>>>> Still not clear, but I will trying to figure it out during
+>>>> implementation:
+>>>>
+>>>> 4) configfs vs sysfs interface.
+>>>>
+>>>> At the first glance, I would say we should stay with sysfs interface in
+>>>> order
+>>>> to avoid another dependency. But let's see how it works.
+>>>
+>>> This issue with the sysfs only approach (as originally raised by Lars)
+>>> is that it is actually very poorly suited to instantiating new elements
+>>> of
+>>> the device model.  Configfs was introduced in the first place exactly to
+>>> cover this area.  We only ended up with the instantiation code in
+>>> the sysfs trigger via sysfs because at the time (a good long while ago!)
+>>> I wasn't aware of configfs.
+>>>
+>>> I have some initial work on the base elements on an iio configfs
+>>> interface
+>>> somewhere that I can dig out if you like.  I started working on it in a
+>>> rare
+>>> quiet period about a year ago, but never got all that far.
+>>>
+>>> There aren't that many examples in tree of how to actually use configfs
+>>> so it's a bit more of a learning curve than sysfs!
 >>
->>   Documentation/ABI/testing/sysfs-bus-iio | 25 ++++++++++++
->>   drivers/iio/industrialio-buffer.c       | 69 +++++++++++++++++++++++++++------
->>   include/linux/iio/iio.h                 | 26 +++++++++++++
->>   3 files changed, 108 insertions(+), 12 deletions(-)
 >>
->> diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
->> index 1283ca7..143ddf2d 100644
->> --- a/Documentation/ABI/testing/sysfs-bus-iio
->> +++ b/Documentation/ABI/testing/sysfs-bus-iio
->> @@ -1264,3 +1264,28 @@ Description:
->>                 allows the application to block on poll with a timeout and read
->>                 the available samples after the timeout expires and thus have a
->>                 maximum delay guarantee.
->> +
->> +What:          /sys/bus/iio/devices/iio:deviceX/buffer/hwfifo_watermark
->> +KernelVersion: 3.21
->> +Contact:       linux-iio@vger.kernel.org
->> +Description:
->> +              Read-only entry that contains a single integer specifying the
->> +              current level for the hardware fifo watermark level. If this
->> +              value is negative it means that the device does not support a
->> +              hardware fifo. If this value is 0 it means that the hardware fifo
->> +              is currently disabled.
->> +              If this value is strictly positive it signals that the hardware
->> +              fifo of the device is active and that samples are stored in an
->> +              internal hardware buffer. When the level of the hardware fifo
->> +              reaches the watermark level the device will flush its internal
->> +              buffer to the device buffer. Because of this a trigger is not
->> +              needed to use the device in buffer mode.
->> +              The hardware watermark level is set by the driver based on the
->> +              value set by the user in buffer/watermark but taking into account
->> +              the limitations of the hardware (e.g. most hardware buffers are
->> +              limited to 32-64 samples).
->> +              Because the sematics of triggers and hardware fifo may be
+>> First notable problem with using configfs with IIO is boot time modules
+>> loading.
+>>
+>> Because,
+>>
+>> * configs uses module_init(configfs_init);
+>> * IIO uses subsys_initcall(iio_init);
+>>
+>> it is guaranteed that IIO will be loaded before configfs. Not fun! :)
+>>
+>> So for the moment I will not add configfs support directly into
+>> industrialiio-core but in a separate module.
 >
 >
-> semantics
+> Just fix configfs, that should clearly not be at the module init level.
+>
+> But keeping it in a separate module doesn't hurt either way.
 
-Ack.
+Looking at drivers/fs all filesystems modules are at module init level.
+I'll drop an email to fs folks :).
 
->
->> +              different (e.g. the hadware fifo may record samples according to
->> +              the sample rate while an any-motion trigger generates samples
->> +              based on the set rate of change) setting a trigger may disable
->> +              the hardware fifo.
->
->
-> I still don't understand why the hardware fifo level is something the userspace application needs to set. And how would the application decide which level it wants?
+What if IIO core should be at module init core?
 
-This entry is read-only, it is not set by the user.  The user sets
-buffer/watermark then the driver sets the hardware fifo watermark and
-that is visible here.
-
-Please also see my last proposals in the response I've sent to Jonathan:
-
-* add a hwfifo_watermark_min to let the application know what
-watermark level it needs to set so that hardware fifo can be enabled
-
-* add a hwfifo_watermark_max entry - required by Android batch mode
-(see sensor_t.fifoMaxEventCount at [1]); it should be useful to
-compute a watermark value that avoids overflowing the hardware fifo
-
-* add a hwfifo_active entry - makes it easy to know if the hardware
-fifo is active or not
-
-[1] https://source.android.com/devices/sensors/batching.html
-
->
->
-> [...]
->
->>   int iio_buffer_alloc_sysfs_and_mask(struct iio_dev *indio_dev)
->> diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
->> index 80d8550..1b1cd7d 100644
->> --- a/include/linux/iio/iio.h
->> +++ b/include/linux/iio/iio.h
->> @@ -338,6 +338,29 @@ struct iio_dev;
->>    *                    provide a custom of_xlate function that reads the
->>    *                    *args* and returns the appropriate index in registered
->>    *                    IIO channels array.
->> + * @hwfifo_set_watermark: function pointer to set the current hardware fifo
->> + *                     watermark level. It receives the desired watermark as a
->> + *                     hint and the device driver may adjust it to take into
->> + *                     account hardware limitations. Setting the watermark to a
->> + *                     strictly positive value should enable the hardware fifo
->> + *                     if not already enabled. When the hardware fifo is
->> + *                     enabled and its level reaches the watermark level the
->> + *                     device must flush the samples stored in the hardware
->> + *                     fifo to the device buffer. Setting the watermark to 0
->> + *                     should disable the hardware fifo. The device driver must
->> + *                     disable the hardware fifo when a trigger with different
->> + *                     sampling semantic (then the hardware fifo) is set
->> + *                     (e.g. when setting an any-motion trigger to a device
->> + *                     that has its hardware fifo sample based on the set
->> + *                     sample frequency).
->> + * @hwfifo_get_watermark: function pointer to obtain the current hardware fifo
->> + *                     watermark level
->> + * @hwfifo_flush:      function pointer to flush the samples stored in the
->
->
-> This might just be me, but I associate flushing a FIFO with discarding the data. Our previous discussions make a lot more sense now :)
->
->
-
-I see :) I've used the terminology from the processor cache where
-flush is used to "save" the cache line to memory and invalidate to
-discard it.
+Daniel.
