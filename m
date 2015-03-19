@@ -1,18 +1,18 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-wg0-f49.google.com ([74.125.82.49]:33243 "EHLO
-	mail-wg0-f49.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751129AbbCSPnL (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 19 Mar 2015 11:43:11 -0400
-Received: by wgbcc7 with SMTP id cc7so65928467wgb.0
-        for <linux-iio@vger.kernel.org>; Thu, 19 Mar 2015 08:43:09 -0700 (PDT)
+Received: from mail-wg0-f53.google.com ([74.125.82.53]:34101 "EHLO
+	mail-wg0-f53.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751183AbbCSPql (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 19 Mar 2015 11:46:41 -0400
+Received: by wggv3 with SMTP id v3so66126734wgg.1
+        for <linux-iio@vger.kernel.org>; Thu, 19 Mar 2015 08:46:40 -0700 (PDT)
 MIME-Version: 1.0
 In-Reply-To: <CAE1zot+ZJao0zDWNqpjH57oegiVq5E1kGM7dyAepUCd-REUSLQ@mail.gmail.com>
 References: <1425491773-28499-1-git-send-email-octavian.purdila@intel.com>
 	<1425491773-28499-2-git-send-email-octavian.purdila@intel.com>
 	<55094327.9040903@metafoo.de>
 	<CAE1zot+ZJao0zDWNqpjH57oegiVq5E1kGM7dyAepUCd-REUSLQ@mail.gmail.com>
-Date: Thu, 19 Mar 2015 17:43:09 +0200
-Message-ID: <CAE1zotLUw1EctGWrQ-+pudF_qmeKrUzzjjrzxvfpv5ayNjBAJw@mail.gmail.com>
+Date: Thu, 19 Mar 2015 17:46:40 +0200
+Message-ID: <CAE1zotL6Drk9Be1b=xAd=kS=8U85n-5t1p9ZHD1U5yJC3P5maw@mail.gmail.com>
 Subject: Re: [PATCH v5 1/3] iio: add watermark logic to iio read and poll
 From: Octavian Purdila <octavian.purdila@intel.com>
 To: Lars-Peter Clausen <lars@metafoo.de>
@@ -65,6 +65,16 @@ On Wed, Mar 18, 2015 at 11:29 AM, Octavian Purdila
 > (!iio_buffer_data_available(rb) && (filp->f_flags & O_NONBLOCK))
 > statement.
 >
+
+Actually this case is already taken care of below the patch context:
+
+                ret = rb->access->read_first_n(rb, n, buf);
+                if (ret == 0 && (filp->f_flags & O_NONBLOCK))
+                        ret = -EAGAIN;
+
+
+And sorry for the previous spurious email :)
+
 >>> +               ret = wait_event_interruptible(rb->pollq,
 >>> +                                     iio_buffer_ready(indio_dev, rb,
 >>> to_wait));
