@@ -1,53 +1,72 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-wi0-f171.google.com ([209.85.212.171]:34443 "EHLO
-	mail-wi0-f171.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750782AbbCTIsy (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 20 Mar 2015 04:48:54 -0400
-Received: by wibg7 with SMTP id g7so22948106wib.1
-        for <linux-iio@vger.kernel.org>; Fri, 20 Mar 2015 01:48:53 -0700 (PDT)
+Received: from mail.kernel.org ([198.145.29.136]:42636 "EHLO mail.kernel.org"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1750925AbbCTMcP (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Fri, 20 Mar 2015 08:32:15 -0400
+Date: Fri, 20 Mar 2015 13:31:53 +0100
+From: Sebastian Reichel <sre@kernel.org>
+To: Richard Weinberger <richard@nod.at>
+Cc: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
+	linux-pm@vger.kernel.org, dwmw2@infradead.org,
+	dbaryshkov@gmail.com, jassisinghbrar@gmail.com, pmeerw@pmeerw.net,
+	lars@metafoo.de, knaack.h@gmx.de, jic23@kernel.org,
+	tglx@linutronix.de, daniel.lezcano@linaro.org
+Subject: Re: [PATCH 4/6] power/reset/rmobile-reset.c: Fix !HAS_IOMEM build
+Message-ID: <20150320123153.GA7734@earth>
+References: <1426541230-928-1-git-send-email-richard@nod.at>
+ <1426541230-928-4-git-send-email-richard@nod.at>
 MIME-Version: 1.0
-In-Reply-To: <1426506500-11836-1-git-send-email-darshanapadmadas@gmail.com>
-References: <1426506500-11836-1-git-send-email-darshanapadmadas@gmail.com>
-Date: Fri, 20 Mar 2015 10:48:52 +0200
-Message-ID: <CAEnQRZDvupQzUVNtTRNyHSQG1tJpHcZMPkKOkM3j=TdXAN6ZXw@mail.gmail.com>
-Subject: Re: [Outreachy kernel] [PATCH] iio: Add ABI documentation for
- illuminance raw and scale values in light
-From: Daniel Baluta <daniel.baluta@gmail.com>
-To: Darshana Padmadas <darshanapadmadas@gmail.com>
-Cc: outreachy-kernel@googlegroups.com,
-	Jonathan Cameron <jic23@kernel.org>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="BXVAT5kNtrzKuDFl"
+In-Reply-To: <1426541230-928-4-git-send-email-richard@nod.at>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Mon, Mar 16, 2015 at 1:48 PM, Darshana Padmadas
-<darshanapadmadas@gmail.com> wrote:
-> This patchset adds ABI documentation for the following attributes:
->
-> in_illuminance_scale, used atleast once in al3320a staging/iio/light/
 
-Reference to staging/iio/light here is confusing. People might think
-that al3320 is in staging, while staging is your source tree top directory.
+--BXVAT5kNtrzKuDFl
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Better drop it :).
+Hi Richard,
 
-Also s/atleast/at least/
+On Mon, Mar 16, 2015 at 10:27:08PM +0100, Richard Weinberger wrote:
+> Fixes:
+> drivers/power/reset/rmobile-reset.c: In function =E2=80=98rmobile_reset_p=
+robe=E2=80=99:
+> drivers/power/reset/rmobile-reset.c:61:2: error: implicit declaration of =
+function =E2=80=98iounmap=E2=80=99 [-Werror=3Dimplicit-function-declaration]
+>   iounmap(sysc_base2);
+>=20
+> Signed-off-by: Richard Weinberger <richard@nod.at>
 
-Just say:
+Thanks, applied:
 
-in_illuminance_scale, exported by  al3320a ambient light sensor.
+http://git.infradead.org/battery-2.6.git/commit/039ab50bda5606307138b1baa1f=
+18c7e33d357e4
 
-> in_illuminance_calibscale, used atleast once in cm32181
-> in_illuminance_input, used in cm3232 at least once
-> in_illuminance_raw used atleast once in al3320a
-> in_illuminance_clear_raw and in_illuminance_ir_raw exposed by
-> gp2ap020a00f with modifiers IIO_MOD_LIGHT_CLEAR and
-> IIO_MOD_LIGHT_IR respectively.
+-- Sebastian
 
-The same for all the above.
+--BXVAT5kNtrzKuDFl
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
 
-Other than that, the patch looks good to me.
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
 
-Daniel.
+iQIcBAEBCgAGBQJVDBM2AAoJENju1/PIO/qa2vEP/RgVin1l7LgiOycaX4gUsp69
+vBEJkmD20Ea2K4059n1zYCpPr5GAcFgQwgAguRwe0+lCyhh2rZPit44sTYBhftDu
+xX0nlaAGNPQpIiPp7kI3DCc5wXzYlS50XsNUKwXbuCVoX7k7UU+ENRAzxsmSLJlk
+Yw/WxMVjo6dJo0z8urTEUx9kNhq72hvgvXj+cdI4zQcMN02gOmaaRR/l647EE93P
+XH930b5BPYoLY42OtvpnoKfVP0L7PwRUWk79anGZdE6NJ9RbHKIdzQ0uyyGqjwYu
+ll2NPeP4vDzd12V0X7FFvBNQr1o74yEZubFNPFQcKaOhyku3CEUXpIvw/laubLkQ
+ZAuANPAxyvK6zKOUxUfJB+AyRyIpTy9nQsirlK47HvHnjpJKRFSgnwZdaqXSeb85
+40wGorpmeKgfRsQS7khaYjAuIFWXYJDyspMJiEgJM8syPwiEbqyqXgtgMo5BpqdE
+0IxXD/FxdN3brNJ5hN3f0AlzYHbD5PDvzSJ8rmxVrqed4fPfQTgA0wjlGSOt1wDm
+MT9hTLbb3vpHQm/rjMVqAWkppAbMmQgilylna4yKX6sDOo/c6MlNzjGOpy4vQNDM
+1DyJsqv8NM9BmFIhMrXzir6wzRomSwJ2pQzU5vY5g2+v5EB+6a0V03YkxJ2jDcyI
+cS5zZMgQfF6jecedCUjV
+=1OZn
+-----END PGP SIGNATURE-----
+
+--BXVAT5kNtrzKuDFl--
