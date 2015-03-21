@@ -1,263 +1,373 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:59456 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:59500 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751422AbbCUMLI (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 21 Mar 2015 08:11:08 -0400
-Message-ID: <550D5FD7.70903@kernel.org>
-Date: Sat, 21 Mar 2015 12:11:03 +0000
+	with ESMTP id S1751422AbbCUMQh (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 21 Mar 2015 08:16:37 -0400
+Message-ID: <550D6123.8080807@kernel.org>
+Date: Sat, 21 Mar 2015 12:16:35 +0000
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Stefan Agner <stefan@agner.ch>
-CC: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
-	robh+dt@kernel.org, pawel.moll@arm.com, mark.rutland@arm.com,
-	ijc+devicetree@hellion.org.uk, galak@codeaurora.org,
-	B38611@freescale.com, maitysanchayan@gmail.com,
-	devicetree@vger.kernel.org, linux-iio@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 2/3] iio: adc: vf610: implement configurable conversion
- modes
-References: <1426518614-20201-1-git-send-email-stefan@agner.ch> <1426518614-20201-3-git-send-email-stefan@agner.ch>
-In-Reply-To: <1426518614-20201-3-git-send-email-stefan@agner.ch>
-Content-Type: text/plain; charset=windows-1252
+To: Octavian Purdila <octavian.purdila@intel.com>
+CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Hartmut Knaack <knaack.h@gmx.de>
+Subject: Re: [PATCH v5 2/3] iio: add support for hardware fifo
+References: <1425491773-28499-1-git-send-email-octavian.purdila@intel.com>	<1425491773-28499-3-git-send-email-octavian.purdila@intel.com>	<55047B00.9000800@kernel.org> <CAE1zotK1xxccif6d7pPSDRKoOWp8qNYO=-rvQjjzVU_=JGkF0A@mail.gmail.com>
+In-Reply-To: <CAE1zotK1xxccif6d7pPSDRKoOWp8qNYO=-rvQjjzVU_=JGkF0A@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 16/03/15 15:10, Stefan Agner wrote:
-> Support configureable conversion mode through sysfs. So far, the
-> mode used was low-power, which is enabled by default now. Beside
-> that, the modes normal and high-speed are selectable as well.
+On 16/03/15 10:05, Octavian Purdila wrote:
+> On Sat, Mar 14, 2015 at 8:16 PM, Jonathan Cameron <jic23@kernel.org> wrote:
+>>
+>> On 04/03/15 17:56, Octavian Purdila wrote:
+>>> Some devices have hardware buffers that can store a number of samples
+>>> for later consumption. Hardware usually provides interrupts to notify
+>>> the processor when the fifo is full or when it has reached a certain
+>>> threshold. This helps with reducing the number of interrupts to the
+>>> host processor and thus it helps decreasing the power consumption.
+>>>
+>>> This patch adds support for hardware fifo to IIO by adding drivers
+>>> operations for flushing the hadware fifo and setting and getting the
+>>> watermark level.
+>>>
+>>> Since a driver may support hardware fifo only when not in triggered
+>>> buffer mode (due to different samantics of hardware fifo sampling and
+>>> triggered sampling) this patch changes the IIO core code to allow
+>>> falling back to non-triggered buffered mode if no trigger is enabled.
+>>>
+>>> Signed-off-by: Octavian Purdila <octavian.purdila@intel.com>
+>> Bits and bobs inline
+>>
+>> Typo's and a comment on weird hardware possibilities..
+>>
+>> Also I'm not keen on some of the error handling.
+>>
+>> Sorry it too me so very long to look at this.  I keep thinking
+>> it'll be fiddly and hence doing the easier stuff first only
+>> to come to this and see that actually its very straight forward!.
 > 
-> Use the new device tree property which specifies the maximum ADC
-> conversion clock frequencies. Depending on the mode used, the
-> available resulting conversion frequency are calcaulated
-> dynamically.
+> Thank you for the review Jonathan ! I will try to be more responsive
+> to help with the review process, sorry for the long absence.
+You are welcome.  Take any time you need with this stuff. You are working
+on an area we have all wanted for a while, but no one else has taken the
+time to do it. Your hard work is very much appreciated!
 > 
-> Acked-by: Fugang Duan <B38611@freescale.com>
-> Signed-off-by: Stefan Agner <stefan@agner.ch>
-Only issues are spell checking your commit message and that
-you need to add documentation to Documentation/ABI/testing/sysfs-iio-bus-vf610 to
-cover the non standard attribute.
+>>
+>> Jonathan
+>>> ---
+>>>  Documentation/ABI/testing/sysfs-bus-iio | 25 ++++++++++++
+>>>  drivers/iio/industrialio-buffer.c       | 69 +++++++++++++++++++++++++++------
+>>>  include/linux/iio/iio.h                 | 26 +++++++++++++
+>>>  3 files changed, 108 insertions(+), 12 deletions(-)
+>>>
+>>> diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
+>>> index 1283ca7..143ddf2d 100644
+>>> --- a/Documentation/ABI/testing/sysfs-bus-iio
+>>> +++ b/Documentation/ABI/testing/sysfs-bus-iio
+>>> @@ -1264,3 +1264,28 @@ Description:
+>>>               allows the application to block on poll with a timeout and read
+>>>               the available samples after the timeout expires and thus have a
+>>>               maximum delay guarantee.
+>>> +
+>>> +What:          /sys/bus/iio/devices/iio:deviceX/buffer/hwfifo_watermark
+>>> +KernelVersion: 3.21
+>>> +Contact:       linux-iio@vger.kernel.org
+>>> +Description:
+>>> +            Read-only entry that contains a single integer specifying the
+>>> +            current level for the hardware fifo watermark level. If this
+>>> +            value is negative it means that the device does not support a
+>>> +            hardware fifo. If this value is 0 it means that the hardware fifo
+>>> +            is currently disabled.
+>> I wonder if we should indicate lack of hardware support by just not exporting
+>> this attribute in the first place?
+> 
+> OK, I don't see any reasons for which shouldn't work, I will give it a
+> try in the next version.
+> 
+>>> +            If this value is strictly positive it signals that the hardware
+>>> +            fifo of the device is active and that samples are stored in an
+>>> +            internal hardware buffer. When the level of the hardware fifo
+>>> +            reaches the watermark level the device will flush its internal
+>>> +            buffer to the device buffer. Because of this a trigger is not
+>>> +            needed to use the device in buffer mode.
+>>> +            The hardware watermark level is set by the driver based on the
+>>> +            value set by the user in buffer/watermark but taking into account
+>>> +            the limitations of the hardware (e.g. most hardware buffers are
+>>> +            limited to 32-64 samples).
+>>> +            Because the sematics of triggers and hardware fifo may be
+>>> +            different (e.g. the hadware fifo may record samples according to
+>> hardware fifo
+> 
+> Ack.
+> 
+>>> +            the sample rate while an any-motion trigger generates samples
+>>> +            based on the set rate of change) setting a trigger may disable
+>>> +            the hardware fifo.
+>>> diff --git a/drivers/iio/industrialio-buffer.c b/drivers/iio/industrialio-buffer.c
+>>> index a4f4f07..b6f1bd4 100644
+>>> --- a/drivers/iio/industrialio-buffer.c
+>>> +++ b/drivers/iio/industrialio-buffer.c
+>>> @@ -42,18 +42,47 @@ static size_t iio_buffer_data_available(struct iio_buffer *buf)
+>>>       return buf->access->data_available(buf);
+>>>  }
+>>>
+>>> +static int iio_buffer_flush_hwfifo(struct iio_dev *indio_dev,
+>>> +                                struct iio_buffer *buf, size_t required)
+>>> +{
+>>> +     if (!indio_dev->info->hwfifo_flush)
+>>> +             return -ENODEV;
+>>> +
+>>> +     return indio_dev->info->hwfifo_flush(indio_dev, required);
+>>> +}
+>>> +
+>>>  static bool iio_buffer_ready(struct iio_dev *indio_dev, struct iio_buffer *buf,
+>>> -                          size_t to_wait)
+>>> +                          size_t to_wait, bool try_flush)
+>>>  {
+>>> +     size_t avail;
+>>> +     int flushed = 0;
+>>> +
+>>>       /* wakeup if the device was unregistered */
+>>>       if (!indio_dev->info)
+>>>               return true;
+>>>
+>>>       /* drain the buffer if it was disabled */
+>>> -     if (!iio_buffer_is_active(buf))
+>>> +     if (!iio_buffer_is_active(buf)) {
+>>>               to_wait = min_t(size_t, to_wait, 1);
+>>> +             try_flush = false;
+>>> +     }
+>>> +
+>>> +     avail = iio_buffer_data_available(buf);
+>>>
+>>> -     if (iio_buffer_data_available(buf) >= to_wait)
+>>> +     if (avail >= to_wait) {
+>> I'm not really following what this is for.
+>> If to_wait = 0 and avail = 0 and we have requested a flush
+>> then try to read 1 element?
+>>
+>> I think this only occurs on a non blocking read when nothing is
+>> available?  What I don't understand is why we'd only try to read 1
+>> sample.  Surely asking for as many as requested is more intuitive?
+>>
+> 
+> Yes, good idea.
+> 
+>>> +             /* force a flush for non-blocking reads */
+>>> +             if (!to_wait && !avail && try_flush)
+>>> +                     iio_buffer_flush_hwfifo(indio_dev, buf, 1);
+>>> +             return true;
+>>> +     }
+>>> +
+>>> +     if (try_flush)
+>>> +             flushed = iio_buffer_flush_hwfifo(indio_dev, buf,
+>>> +                                               to_wait - avail);
+>>> +     if (flushed <= 0)
+>>> +             return false;
+>>> +
+>>> +     if (avail + flushed >= to_wait)
+>>>               return true;
+>>>
+>>>       return false;
+>>> @@ -92,7 +121,7 @@ ssize_t iio_buffer_read_first_n_outer(struct file *filp, char __user *buf,
+>>>
+>>>       do {
+>>>               ret = wait_event_interruptible(rb->pollq,
+>>> -                                   iio_buffer_ready(indio_dev, rb, to_wait));
+>>> +                            iio_buffer_ready(indio_dev, rb, to_wait, true));
+>>>               if (ret)
+>>>                       return ret;
+>>>
+>>> @@ -120,7 +149,7 @@ unsigned int iio_buffer_poll(struct file *filp,
+>>>               return -ENODEV;
+>>>
+>>>       poll_wait(filp, &rb->pollq, wait);
+>>> -     if (iio_buffer_ready(indio_dev, rb, rb->watermark))
+>>> +     if (iio_buffer_ready(indio_dev, rb, rb->watermark, false))
+>>>               return POLLIN | POLLRDNORM;
+>>>       return 0;
+>>>  }
+>>> @@ -659,19 +688,16 @@ static int __iio_update_buffers(struct iio_dev *indio_dev,
+>>>               }
+>>>       }
+>>>       /* Definitely possible for devices to support both of these. */
+>>> -     if (indio_dev->modes & INDIO_BUFFER_TRIGGERED) {
+>>> -             if (!indio_dev->trig) {
+>>> -                     printk(KERN_INFO "Buffer not started: no trigger\n");
+>>> -                     ret = -EINVAL;
+>>> -                     /* Can only occur on first buffer */
+>>> -                     goto error_run_postdisable;
+>>> -             }
+>>> +     if ((indio_dev->modes & INDIO_BUFFER_TRIGGERED) && indio_dev->trig) {
+>>>               indio_dev->currentmode = INDIO_BUFFER_TRIGGERED;
+>>>       } else if (indio_dev->modes & INDIO_BUFFER_HARDWARE) {
+>>>               indio_dev->currentmode = INDIO_BUFFER_HARDWARE;
+>>>       } else if (indio_dev->modes & INDIO_BUFFER_SOFTWARE) {
+>>>               indio_dev->currentmode = INDIO_BUFFER_SOFTWARE;
+>>>       } else { /* Should never be reached */
+>>> +             /* Can only occur on first buffer */
+>>> +             if (indio_dev->modes & INDIO_BUFFER_TRIGGERED)
+>>> +                     pr_info("Buffer not started: no trigger\n");
+>>>               ret = -EINVAL;
+>>>               goto error_run_postdisable;
+>>>       }
+>>> @@ -823,12 +849,28 @@ static ssize_t iio_buffer_store_watermark(struct device *dev,
+>>>       }
+>>>
+>>>       buffer->watermark = val;
+>>> +
+>>> +     if (indio_dev->info->hwfifo_set_watermark)
+>>> +             indio_dev->info->hwfifo_set_watermark(indio_dev, val);
+>>>  out:
+>>>       mutex_unlock(&indio_dev->mlock);
+>>>
+>>>       return ret ? ret : len;
+>>>  }
+>>>
+>>> +static ssize_t iio_buffer_show_hwfifo_watermark(struct device *dev,
+>>> +                                             struct device_attribute *attr,
+>>> +                                             char *buf)
+>>> +{
+>>> +     struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+>>> +     int ret = -1;
+>>> +
+>>> +     if (indio_dev->info->hwfifo_get_watermark)
+>>> +             ret = indio_dev->info->hwfifo_get_watermark(indio_dev);
+>> Any error code returned should be returned by this function to userspace.
+>>
+>> Also, ret = -1 would be EPERM, a possible error code.  Hence you need
+>> to separate your handling of not supported from possible return values.
+>>
+>> if (indio_dev->info->hwfifo_get_watermark) {
+>>         ret = indio_dev->info->hwfifo_get_watermark(indio_dev);
+>>         if (ret < 0)
+>>            return ret;
+>>         return sprintf(buf, "%d\n", ret);
+>> } else {
+>>         return sprintf(buf, "-1\n");
+>>
+>> seems the simplest way to me.
+> 
+> If we make the entry visible only when we have the hw fifo supported
+> then we can remove the else branch. What do you think?
+exactly.
+> 
+>>> +
+>>> +     return sprintf(buf, "%d\n", ret < -1 ? -1 : ret);
+>>> +}
+>>> +
+>>>  static DEVICE_ATTR(length, S_IRUGO | S_IWUSR, iio_buffer_read_length,
+>>>                  iio_buffer_write_length);
+>>>  static struct device_attribute dev_attr_length_ro = __ATTR(length,
+>>> @@ -837,11 +879,14 @@ static DEVICE_ATTR(enable, S_IRUGO | S_IWUSR,
+>>>                  iio_buffer_show_enable, iio_buffer_store_enable);
+>>>  static DEVICE_ATTR(watermark, S_IRUGO | S_IWUSR,
+>>>                  iio_buffer_show_watermark, iio_buffer_store_watermark);
+>>> +static DEVICE_ATTR(hwfifo_watermark, S_IRUGO, iio_buffer_show_hwfifo_watermark,
+>>> +                NULL);
+>>>
+>>>  static struct attribute *iio_buffer_attrs[] = {
+>>>       &dev_attr_length.attr,
+>>>       &dev_attr_enable.attr,
+>>>       &dev_attr_watermark.attr,
+>>> +     &dev_attr_hwfifo_watermark.attr,
+>>>  };
+>>>
+>>>  int iio_buffer_alloc_sysfs_and_mask(struct iio_dev *indio_dev)
+>>> diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
+>>> index 80d8550..1b1cd7d 100644
+>>> --- a/include/linux/iio/iio.h
+>>> +++ b/include/linux/iio/iio.h
+>>> @@ -338,6 +338,29 @@ struct iio_dev;
+>>>   *                   provide a custom of_xlate function that reads the
+>>>   *                   *args* and returns the appropriate index in registered
+>>>   *                   IIO channels array.
+>>> + * @hwfifo_set_watermark: function pointer to set the current hardware fifo
+>>> + *                   watermark level. It receives the desired watermark as a
+>>> + *                   hint and the device driver may adjust it to take into
+>>> + *                   account hardware limitations. Setting the watermark to a
+>>> + *                   strictly positive value should enable the hardware fifo
+>>> + *                   if not already enabled. When the hardware fifo is
+>>> + *                   enabled and its level reaches the watermark level the
+>>> + *                   device must flush the samples stored in the hardware
+>>> + *                   fifo to the device buffer.
+>> Hmm. This one is interesting.  I wonder if we have devices with minimum
+>> watermark levels.  I know that devices with fixed levels exist (sca3000 IIRC)
+>> but in that case if we are below the level we can fallback to the data ready
+>> signal (watermark of 1 effectively).  If the device provides no notification
+>> that data capture is occuring until we reach a particular level (say 50% full)
+>> then its not entirely clear whether we should turn the buffer on when a
+>> watermark below that is set.
+> 
+> Interesting, in that case I think we should expose
+> hwfifo_min_watermark to let userspace know how it needs to set the
+> watermark level to enable the hardware fifo. Then we can update the
+> ABI to say that the driver will enable the fifo if the watermark level
+> is greater than hwfifo_min_watermark.
+That would work nicely.
+> 
+> Related to this, I think we should also add hwfifo_max_watermark to
+> make it easier to userspace to pick a good value.
+Again, as information only attributes, they will help and add no
+real ABI burden
+> 
+> One more thing: right now I am overloading the hwfifo_get_watermark
+> (and hwfifio_watermark sysfs entry with information about whether the
+> fifo is active. Hence if hwfifo is not active we return 0, otherwise
+> we return the current hwfifo level. Given that some hardware may have
+> additional hwfifo limitations (say perhaps not all values in the min
+> .. max range are supported), perhaps is better to add a separate
+> function and sysfs entry for checking if the hwfifo is active or not.
+> This way userspace can set watermark then read hwfifo_watermark to see
+> what is the actual watermark value without needing to start the buffer
+> for checking that value. What do you think?
+Either that or for non standard cases, just add an _available attribute
+listing what it can be set to. 
 
-> ---
->  drivers/iio/adc/vf610_adc.c | 146 +++++++++++++++++++++++++++++++-------------
->  1 file changed, 104 insertions(+), 42 deletions(-)
+I'd like to get much tighter listing of what is possible on all the attributes
+we expose.  Working very slowly towards that ;)
 > 
-> diff --git a/drivers/iio/adc/vf610_adc.c b/drivers/iio/adc/vf610_adc.c
-> index e63b8e7..b5f94ab8 100644
-> --- a/drivers/iio/adc/vf610_adc.c
-> +++ b/drivers/iio/adc/vf610_adc.c
-> @@ -118,15 +118,21 @@ enum average_sel {
->  	VF610_ADC_SAMPLE_32,
->  };
->  
-> +enum conversion_mode_sel {
-> +	VF610_ADC_CONV_NORMAL,
-> +	VF610_ADC_CONV_HIGH_SPEED,
-> +	VF610_ADC_CONV_LOW_POWER,
-> +};
-> +IIO_CHAN_INFO_PROCESSED)
-+		| BIT(IIO_CHAN_INFO_RAW),
->  struct vf610_adc_feature {
->  	enum clk_sel	clk_sel;
->  	enum vol_ref	vol_ref;
-> +	enum conversion_mode_sel conv_mode;
->  
->  	int	clk_div;
->  	int     sample_rate;
->  	int	res_mode;
->  
-> -	bool	lpm;
->  	bool	calibration;
->  	bool	ovwren;
->  };
-> @@ -139,6 +145,8 @@ struct vf610_adc {
->  	u32 vref_uv;
->  	u32 value;
->  	struct regulator *vref;
-> +
-> +	u32 max_adck_rate[3];
->  	struct vf610_adc_feature adc_feature;
->  
->  	u32 sample_freq_avail[5];
-> @@ -148,46 +156,22 @@ struct vf610_adc {
->  
->  static const u32 vf610_hw_avgs[] = { 1, 4, 8, 16, 32 };
->  
-> -#define VF610_ADC_CHAN(_idx, _chan_type) {			\
-> -	.type = (_chan_type),					\
-> -	.indexed = 1,						\
-> -	.channel = (_idx),					\
-> -	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),		\
-> -	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE) |	\
-> -				BIT(IIO_CHAN_INFO_SAMP_FREQ),	\
-> -}
-> -
-> -#define VF610_ADC_TEMPERATURE_CHAN(_idx, _chan_type) {	\
-> -	.type = (_chan_type),	\
-> -	.channel = (_idx),		\
-> -	.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED),	\
-> -}
-> -
-> -static const struct iio_chan_spec vf610_adc_iio_channels[] = {
-> -	VF610_ADC_CHAN(0, IIO_VOLTAGE),
-> -	VF610_ADC_CHAN(1, IIO_VOLTAGE),
-> -	VF610_ADC_CHAN(2, IIO_VOLTAGE),
-> -	VF610_ADC_CHAN(3, IIO_VOLTAGE),
-> -	VF610_ADC_CHAN(4, IIO_VOLTAGE),
-> -	VF610_ADC_CHAN(5, IIO_VOLTAGE),
-> -	VF610_ADC_CHAN(6, IIO_VOLTAGE),
-> -	VF610_ADC_CHAN(7, IIO_VOLTAGE),
-> -	VF610_ADC_CHAN(8, IIO_VOLTAGE),
-> -	VF610_ADC_CHAN(9, IIO_VOLTAGE),
-> -	VF610_ADC_CHAN(10, IIO_VOLTAGE),
-> -	VF610_ADC_CHAN(11, IIO_VOLTAGE),
-> -	VF610_ADC_CHAN(12, IIO_VOLTAGE),
-> -	VF610_ADC_CHAN(13, IIO_VOLTAGE),
-> -	VF610_ADC_CHAN(14, IIO_VOLTAGE),
-> -	VF610_ADC_CHAN(15, IIO_VOLTAGE),
-> -	VF610_ADC_TEMPERATURE_CHAN(26, IIO_TEMP),
-> -	/* sentinel */
-> -};
-> -
->  static inline void vf610_adc_calculate_rates(struct vf610_adc *info)
->  {
-> +	struct vf610_adc_feature *adc_feature = &info->adc_feature;
->  	unsigned long adck_rate, ipg_rate = clk_get_rate(info->clk);
-> -	int i;
-> +	int divisor, i;
-> +
-> +	adck_rate = info->max_adck_rate[adc_feature->conv_mode];
-> +
-> +	if (adck_rate) {
-> +		/* calculate clk divider which is within specification */
-> +		divisor = ipg_rate / adck_rate;
-> +		adc_feature->clk_div = 1 << fls(divisor + 1);
-> +	} else {
-> +		/* fall-back value using a safe divisor */
-> +		adc_feature->clk_div = 8;
-> +	}
->  
->  	/*
->  	 * Calculate ADC sample frequencies
-> @@ -219,10 +203,8 @@ static inline void vf610_adc_cfg_init(struct vf610_adc *info)
->  
->  	adc_feature->res_mode = 12;
->  	adc_feature->sample_rate = 1;
-> -	adc_feature->lpm = true;
->  
-> -	/* Use a save ADCK which is below 20MHz on all devices */
-> -	adc_feature->clk_div = 8;
-> +	adc_feature->conv_mode = VF610_ADC_CONV_LOW_POWER;
->  
->  	vf610_adc_calculate_rates(info);
->  }
-> @@ -307,10 +289,12 @@ static void vf610_adc_cfg_set(struct vf610_adc *info)
->  	cfg_data = readl(info->regs + VF610_REG_ADC_CFG);
->  
->  	cfg_data &= ~VF610_ADC_ADLPC_EN;
-> -	if (adc_feature->lpm)
-> +	if (adc_feature->conv_mode == VF610_ADC_CONV_LOW_POWER)
->  		cfg_data |= VF610_ADC_ADLPC_EN;
->  
->  	cfg_data &= ~VF610_ADC_ADHSC_EN;
-> +	if (adc_feature->conv_mode == VF610_ADC_CONV_HIGH_SPEED)
-> +		cfg_data |= VF610_ADC_ADHSC_EN;
->  
->  	writel(cfg_data, info->regs + VF610_REG_ADC_CFG);
->  }IIO_CHAN_INFO_PROCESSED)
-+		| BIT(IIO_CHAN_INFO_RAW),
-> @@ -412,6 +396,81 @@ static void vf610_adc_hw_init(struct vf610_adc *info)
->  	vf610_adc_cfg_set(info);
->  }
->  
-> +static int vf610_set_conversion_mode(struct iio_dev *indio_dev,
-> +				     const struct iio_chan_spec *chan,
-> +				     unsigned int mode)
-> +{
-> +	struct vf610_adc *info = iio_priv(indio_dev);
-> +
-> +	mutex_lock(&indio_dev->mlock);
-> +	info->adc_feature.conv_mode = mode;
-> +	vf610_adc_calculate_rates(info);
-> +	vf610_adc_hw_init(info);
-> +	mutex_unlock(&indio_dev->mlock);
-> +
-> +	return 0;
-> +}
-> +
-> +static int vf610_get_conversion_mode(struct iio_dev *indio_dev,
-> +				     const struct iio_chan_spec *chan)
-> +{
-> +	struct vf610_adc *info = iio_priv(indio_dev);
-> +
-> +	return info->adc_feature.conv_mode;
-> +}
-> +
-> +static const char * const vf610_conv_modes[] = { "normal", "high-speed",
-> +						 "low-power" };
-> +
-> +static const struct iio_enum vf610_conversion_mode = {
-> +	.items = vf610_conv_modes,
-> +	.num_items = ARRAY_SIZE(vf610_conv_modes),
-> +	.get = vf610_get_conversion_mode,
-> +	.set = vf610_set_conversion_mode,
-> +};
-> +
-> +static const struct iio_chan_spec_ext_info vf610_ext_info[] = {
-> +	IIO_ENUM("conversion_mode", IIO_SHARED_BY_DIR, &vf610_conversion_mode),
-> +	{},
-> +};
-Documentation for this non standard sysfs attribute?
-> +
-> +#define VF610_ADC_CHAN(_idx, _chan_type) {			\
-> +	.type = (_chan_type),					\
-> +	.indexed = 1,						\
-> +	.channel = (_idx),					\
-> +	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),		\
-> +	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE) |	\
-> +				BIT(IIO_CHAN_INFO_SAMP_FREQ),	\
-> +	.ext_info = vf610_ext_info,				\
-> +}
-> +
-> +#define VF610_ADC_TEMPERATURE_CHAN(_idx, _chan_type) {	\
-> +	.type = (_chan_type),	\
-> +	.channel = (_idx),		\
-> +	.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED),	\
-> +}
-> +
-> +static const struct iio_chan_spec vf610_adc_iio_channels[] = {
-> +	VF610_ADC_CHAN(0, IIO_VOLTAGE),
-> +	VF610_ADC_CHAN(1, IIO_VOLTAGE),
-> +	VF610_ADC_CHAN(2, IIO_VOLTAGE),
-> +	VF610_ADC_CHAN(3, IIO_VOLTAGE),
-> +	VF610_ADC_CHAN(4, IIO_VOLTAGE),
-> +	VF610_ADC_CHAN(5, IIO_VOLTAGE),
-> +	VF610_ADC_CHAN(6, IIO_VOLTAGE),
-> +	VF610_ADC_CHAN(7, IIO_VOLTAGE),
-> +	VF610_ADC_CHAN(8, IIO_VOLTAGE),
-> +	VF610_ADC_CHAN(9, IIO_VOLTAGE),
-> +	VF610_ADC_CHAN(10, IIO_VOLTAGE),
-> +	VF610_ADC_CHAN(11, IIO_VOLTAGE),
-> +	VF610_ADC_CHAN(12, IIO_VOLTAGE),
-> +	VF610_ADC_CHAN(13, IIO_VOLTAGE),
-> +	VF610_ADC_CHAN(14, IIO_VOLTAGE),
-> +	VF610_ADC_CHAN(15, IIO_VOLTAGE),
-> +	VF610_ADC_TEMPERATURE_CHAN(26, IIO_TEMP),
-> +	/* sentinel */
-> +};
-> +
->  static int vf610_adc_read_data(struct vf610_adc *info)
->  {
->  	int result;
-> @@ -654,6 +713,9 @@ static int vf610_adc_probe(struct platform_device *pdev)
->  
->  	info->vref_uv = regulator_get_voltage(info->vref);
->  
-> +	of_property_read_u32_array(pdev->dev.of_node, "fsl,adck-max-frequency",
-> +			info->max_adck_rate, 3);
-> +
->  	platform_set_drvdata(pdev, indio_dev);
->  
->  	init_completion(&info->completion);
+>>> Setting the watermark to 0
+>>> + *                   should disable the hardware fifo. The device driver must
+>>> + *                   disable the hardware fifo when a trigger with different
+>>> + *                   sampling semantic (then the hardware fifo) is set
+>> (than the...
+>>> + *                   (e.g. when setting an any-motion trigger to a device
+>>> + *                   that has its hardware fifo sample based on the set
+>>> + *                   sample frequency).
+>>> + * @hwfifo_get_watermark: function pointer to obtain the current hardware fifo
+>>> + *                   watermark level
+>>> + * @hwfifo_flush:    function pointer to flush the samples stored in the
+>>> + *                   hardware fifo to the device buffer. The driver should
+>>> + *                   not flush more then count samples. The function must
+>> more than count
 > 
+> Oops :)
+> 
+>>> + *                   return the number of samples flushed, 0 if no samples
+>>> + *                   were flushed or a negative integer if no samples were
+>>> + *                   flushed and there was an error.
+>>>   **/
+>>>  struct iio_info {
+>>>       struct module                   *driver_module;
+>>> @@ -399,6 +422,9 @@ struct iio_info {
+>>>                                 unsigned *readval);
+>>>       int (*of_xlate)(struct iio_dev *indio_dev,
+>>>                       const struct of_phandle_args *iiospec);
+>>> +     int (*hwfifo_set_watermark)(struct iio_dev *indio_dev, unsigned val);
+>>> +     int (*hwfifo_get_watermark)(struct iio_dev *indio_dev);
+>>> +     int (*hwfifo_flush)(struct iio_dev *indio_dev, unsigned count);
+>>>  };
+>>>
+>>>  /**
+>>>
+>>
+>> --
+>> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+>> the body of a message to majordomo@vger.kernel.org
+>> More majordomo info at  http://vger.kernel.org/majordomo-info.html
 
