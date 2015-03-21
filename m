@@ -1,1029 +1,563 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:59685 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:59713 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751348AbbCUMqO (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 21 Mar 2015 08:46:14 -0400
-Message-ID: <550D6813.6020502@kernel.org>
-Date: Sat, 21 Mar 2015 12:46:11 +0000
+	with ESMTP id S1751348AbbCUMuO (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 21 Mar 2015 08:50:14 -0400
+Message-ID: <550D6902.9030801@kernel.org>
+Date: Sat, 21 Mar 2015 12:50:10 +0000
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Cristina Ciocan <cristina.ciocan@intel.com>
-CC: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
-	linux-iio@vger.kernel.org
-Subject: Re: [PATCH] iio:light: Add Avago APDS9930 ALS support
-References: <1426768752-20951-1-git-send-email-cristina.ciocan@intel.com>
-In-Reply-To: <1426768752-20951-1-git-send-email-cristina.ciocan@intel.com>
+To: Peter Meerwald <pmeerw@pmeerw.net>,
+	Antoine Tenart <antoine.tenart@free-electrons.com>
+CC: sebastian.hesselbarth@gmail.com, knaack.h@gmx.de, lars@metafoo.de,
+	zmxu@marvell.com, jszhang@marvell.com, yrliao@marvell.com,
+	linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/4] iio: adc: add support for Berlin
+References: <1426858565-31053-1-git-send-email-antoine.tenart@free-electrons.com> <1426858565-31053-2-git-send-email-antoine.tenart@free-electrons.com> <alpine.DEB.2.02.1503201819010.21628@pmeerw.net>
+In-Reply-To: <alpine.DEB.2.02.1503201819010.21628@pmeerw.net>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 19/03/15 12:39, Cristina Ciocan wrote:
-> Added IIO driver for Avago's APDS 9930 proximity and ALS sensor. The current
-> implementation is for ALS functionality.
+On 20/03/15 17:43, Peter Meerwald wrote:
+> Hello Antoine,
 > 
-> It offers ACPI/DT support, irq and event handling, raw readings.
+>> This patch adds the support of the Berlin ADC, available on Berlin SoCs.
+>> This ADC has 8 channels available, with one connected to a temperature
+>> sensor.
+>>
+>> The particularity here, is that the temperature sensor connected to the
+>> ADC has its own registers, and both the ADC and the temperature sensor
+>> must be configured when using it.
 > 
-> Datasheet for this device can be found at
-> 	http://www.avagotech.com/docs/AV02-3190EN.
+> some quick comments inline below;
+> sometimes this refers to berlin, sometimes to berlin2?
 > 
-> Signed-off-by: Cristina Ciocan <cristina.ciocan@intel.com>
-Obviously taking into account that you might rewrite this as additions to the
-other similar driver, here's a quick review.
-
-The event / autothreshold changing handling suggestions are a new option,
-so might be controversial and we may be better off sticking with what other
-drivers are doing for compatability reasons.
-
-Jonathan
-> ---
->  drivers/iio/light/Kconfig    |  10 +
->  drivers/iio/light/Makefile   |   1 +
->  drivers/iio/light/apds9930.c | 912 +++++++++++++++++++++++++++++++++++++++++++
->  3 files changed, 923 insertions(+)
->  create mode 100644 drivers/iio/light/apds9930.c
+> probably these regmap_read() / _write() pairs could be MACRO()'d away 
+> somehow
 > 
-> diff --git a/drivers/iio/light/Kconfig b/drivers/iio/light/Kconfig
-> index cd937d9..abeca21 100644
-> --- a/drivers/iio/light/Kconfig
-> +++ b/drivers/iio/light/Kconfig
-> @@ -37,6 +37,16 @@ config APDS9300
->  	 To compile this driver as a module, choose M here: the
->  	 module will be called apds9300.
->  
-> +config APDS9930
-> +	tristate "APDS9930 ambient light sensor"
-> +	depends on I2C
-> +	help
-> +	 Say Y here if you want to build a driver for the Avago APDS9930
-> +	 ambient light sensor.
-> +
-> +	 To compile this driver as a module, choose M here: the
-> +	 module will be called apds9930.
-> +
->  config CM32181
->  	depends on I2C
->  	tristate "CM32181 driver"
-> diff --git a/drivers/iio/light/Makefile b/drivers/iio/light/Makefile
-> index ad7c30f..535d289 100644
-> --- a/drivers/iio/light/Makefile
-> +++ b/drivers/iio/light/Makefile
-> @@ -6,6 +6,7 @@
->  obj-$(CONFIG_ADJD_S311)		+= adjd_s311.o
->  obj-$(CONFIG_AL3320A)		+= al3320a.o
->  obj-$(CONFIG_APDS9300)		+= apds9300.o
-> +obj-$(CONFIG_APDS9930)		+= apds9930.o
->  obj-$(CONFIG_CM32181)		+= cm32181.o
->  obj-$(CONFIG_CM3232)		+= cm3232.o
->  obj-$(CONFIG_CM3323)		+= cm3323.o
-> diff --git a/drivers/iio/light/apds9930.c b/drivers/iio/light/apds9930.c
-> new file mode 100644
-> index 0000000..47b53d1
-> --- /dev/null
-> +++ b/drivers/iio/light/apds9930.c
-> @@ -0,0 +1,912 @@
-> +/*
-> + * This is a driver for Avago APDS 9930 ALS sensor chip. It
-> + * is inspired from drivers/misc/apds990x.c to use IIO.
-> + *
-> + * The I2C slave address for this device is 0x39.
-> + *
-> + * This program is distributed in the hope that it will be useful, but
-> + * WITHOUT ANY WARRANTY; without even the implied warranty of
-> + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
-> + * General Public License for more details.
-> + */
-> +
-> +#include <linux/module.h>
-> +#include <linux/i2c.h>
-> +#include <linux/pm.h>
-> +#include <linux/mutex.h>
-> +#include <linux/kernel.h>
-> +#include <linux/mutex.h>
-> +#include <linux/interrupt.h>
-> +#include <linux/acpi.h>
-> +#include <linux/delay.h>
-> +#include <linux/property.h>
-> +
-> +#include <linux/iio/types.h>
-> +#include <linux/iio/iio.h>
-> +#include <linux/iio/events.h>
-> +
-> +#include <linux/gpio/consumer.h>
-> +
-> +#define APDS9930_DRIVER_NAME	"apds9930"
-> +#define APDS9930_IRQ_NAME	"apds9930_irq"
-> +#define APDS9930_GPIO_NAME	"apds9930_gpio"
-> +
-> +#define APDS9930_INIT_SLEEP	5 /* sleep for 5 ms before issuing commands */
-> +
-> +/* I2C command register - fields and possible field values */
-> +/* CMD bit value must be set to 1 when addressing command register */
-> +#define APDS9930_CMD_SELECT		0x80
-> +/* TYPE possible values */
-> +#define APDS9930_CMD_TYPE_RB		0		/* Repeated byte */
-> +#define APDS9930_CMD_TYPE_AUTO_INC	BIT(5)		/* Auto-increment */
-> +#define APDS9930_CMD_TYPE_SPECIAL_FUNC	GENMASK(6, 5)	/* Special function */
-> +/* ADDR possible values */
-> +#define APDS9930_CMD_TYPE_ALS		0x6	/* ALS interrupt clear */
-> +/* Clear masks */
-> +#define APDS9930_CLEAR_CMD_TYPE_MASK	GENMASK(4, 0)
-> +/* Shortcut to clear and set CMD and TYPE fields */
-> +#define CMD_REG_SETUP(reg, transaction_type) {		\
-> +	reg &= APDS9930_CLEAR_CMD_TYPE_MASK;		\
-> +	reg |= APDS9930_CMD_SELECT | transaction_type;	\
-> +}
-> +
-> +/* Register set (rw = read/write, r = read, w = write) */
-> +#define APDS9930_ENABLE_REG	0x00	/* rw-Enable of states and interrupts */
-> +#define APDS9930_ATIME_REG	0x01	/* rw-ALS ADC time*/
-> +#define APDS9930_WTIME_REG	0x03	/* rw-Wait time */
-> +#define APDS9930_AILTL_REG	0x04	/* rw-ALS interrupt low threshold low
-> +					 * byte
-> +					 */
-> +#define APDS9930_AIHTL_REG	0x06	/* rw-ALS interrupt high threshold low
-> +					 * byte
-> +					 */
-> +#define APDS9930_PERS_REG	0x0C	/* rw-Interrupt persistence filters */
-> +#define APDS9930_CONFIG_REG	0x0D	/* rw-Configuration */
-> +#define APDS9930_CONTROL_REG	0x0F	/* rw-Gain control register */
-> +#define APDS9930_ID_REG		0x12	/* r-Device ID */
-> +#define APDS9930_STATUS_REG	0x13	/* r-Device status */
-> +#define APDS9930_CDATAL_REG	0x14	/* r-Ch0 ADC low data register */
-> +#define APDS9930_IRDATAL_REG	0x16	/* r-Ch1 ADC low data register */
-> +
-> +/* Useful bits per register */
-> +
-> +/* Enable register */
-> +#define APDS9930_AIEN		BIT(4)	/* ALS interrupt enable */
-> +/* Persistence register */
-> +#define APDS9930_APERS_SHIFT	0	/* Interrupt persistence */
-> +/* Configuration register */
-> +#define APDS9930_AGL_SHIFT	2	/* ALS gain level */
-> +/* Control register */
-> +#define APDS9930_AGAIN_SHIFT	0	/* ALS gain control */
-> +/* Device ID - possible values */
-> +#define APDS9930_ID		0x39
-> +/* Status register */
-> +#define APDS9930_AINT		BIT(4)	/* ALS interrupt */
-> +
-> +/* Default values (already shifted) for registers content */
-> +#define APDS9930_DISABLE_ALL	0	/* Disable and powerdown */
-> +#define APDS9930_ENABLE_ALL	0x13	/* Set all ALS bits and power on */
-> +#define APDS9930_DEF_ATIME	0xdb	/* 101 ms */
-> +#define APDS9930_DEF_WTIME	0xff	/* 2.7 ms - min wait time */
-> +#define APDS9930_DEF_AGAIN	2	/* 16 x ALS gain */
-> +#define APDS9930_DEF_APERS	0	/* Each over/underflow triggers an
-> +					 * interrupt
-> +					 */
-> +
-> +/*
-> + * Interrupt threshold defaults - setting low to maximum will trigger a first
-> + * interrupt to allow us to read the data registers status and properly set a
-> + * threshold value to match the current environment.
-> + *
-> + * The default high threshold is set only for consistency, since the registers
-> + * are checked against in order: first if the value of CDATA is above LOW; if
-> + * so, trigger interrupt and do not check the HIGH threshold.
-> + */
-> +#define APDS9930_DEF_ALS_THRESH_LOW	0xffff
-> +#define APDS9930_DEF_ALS_THRESH_HIGH	0x0
-> +
-> +/* Default, open air, coefficients (for Lux computation) */
-> +#define DEF_DF	52	/* Device factor */
-> +/*
-> + * Material-depending coefficients (set to open air values). They are scaled for
-> + * computation purposes by 100.
-> + */
-> +#define DEF_LUX_DIVISION_SCALE	10000
-> +#define DEF_GA			49
-> +#define DEF_B			186
-> +#define DEF_C			74
-> +#define DEF_D			129
-> +
-> +/* Possible ALS gain values (with AGL cleared) */
-> +static const int again_values[] = {1, 8, 16, 120};
-> +#define APDS9930_MAX_AGAIN_INDEX	3
-> +#define APDS9930_AGL_DIVISION_SCALE	6
-> +
-> +/*
-> + * Percentages from the maximum CH0 value that indicate the recorded CH0 data is
-> + * too low or too high - for AGAIN adapting purposes.
-> + */
-> +#define APDS9930_CH0_HIGH_PERCENTAGE	90
-> +#define APDS9930_CH0_LOW_PERCENTAGE	10
-> +
-> +/*
-> + * With how much (in percentages) must the CH0 value differ from one step to
-> + * another in order to consider a significant change in light and trigger an
-> + * interrupt.
-> + */
-> +#define APDS9930_ALS_HYSTERESIS		20
-> +
-> +/*
-> + * Number of consecutive out-of-range measurements needed to trigger a gain
-> + * change. We count them and not change the gain each time the CH0 data is
-> + * out-of-range because it takes a couple of cycles for system to adapt to new
-> + * gain values.
-> + */
-> +#define APDS9930_MAX_COUNTS_FOR_GAIN_CHANGE	2
-> +
-> +/* DT or ACPI device properties names */
-> +#define GA_PROP		"intel,ga"
-> +#define COEF_B_PROP	"intel,coeff-B"
-> +#define COEF_C_PROP	"intel,coeff-B"
-> +#define COEF_D_PROP	"intel,coeff-D"
-> +#define DF_PROP		"intel,df"
-> +#define AGAIN_PROP	"intel,als-gain"
-> +#define ATIME_PROP	"intel,atime"
-> +
-> +struct apds9930_coefficients {
-> +	/* GA, B, C and D coefficients are scaled by 100 for computational
-> +	   purposes. */
-> +	int ga;
-> +	int coef_a; /* This is 1, but needs to be set to a scaled value, thus if
-> +		       we decide to change the scale, this coefficient must also
-> +		       be changed. */
-> +	int coef_b;
-> +	int coef_c;
-> +	int coef_d;
-> +	int df;
-> +};
-> +
-> +struct apds9930_device_data {
-> +	struct apds9930_coefficients coefs;
-> +
-> +	u8 again;	/* AGAIN value (index in again_values[]) */
-> +	u8 atime;	/* ALS integration time */
-> +};
-> +
-> +struct apds9930_threshold {
-> +	u16 low;
-> +	u16 high;
-> +};
-> +
-> +struct apds9930_data {
-> +	struct i2c_client	*client;
-> +	struct mutex		mutex;	/* Protect access to device data */
-> +
-> +	struct apds9930_device_data	device_data;
-> +
-> +#define __coefs	device_data.coefs
-> +#define __again	device_data.again
-> +#define __atime	device_data.atime
-> +
-> +	u8	alsit;
-> +	u16	ch0_max;		/* Maximum possible Ch0 data value */
-> +	bool	agl_enabled;
-> +	int	again_change;		/* Number of consecutive situations in
-> +					 * which the gain needed to be changed
-> +					 */
-> +	bool	als_intr_state;
-> +	struct apds9930_threshold	als_thresh;
-> +};
-> +
-> +/*
-> + * Writes data to the register; the next i2c_write call will write to the same
-> + * register.
-> + */
-> +static int apds9930_write_byte(struct i2c_client *client, u8 reg, u8 data)
-> +{
-> +	CMD_REG_SETUP(reg, APDS9930_CMD_TYPE_RB);
-> +
-> +	return i2c_smbus_write_byte_data(client, reg, data);
-> +}
-> +
-> +/*
-> + * Reads data from a register; the next i2c_read call will read from the same
-> + * address.
-> + */
-> +static int apds9930_read_byte(struct i2c_client *client, u8 reg, u8 *data)
-> +{
-> +	int ret;
-> +
-> +	CMD_REG_SETUP(reg, APDS9930_CMD_TYPE_RB);
-> +	ret	= i2c_smbus_read_byte_data(client, reg);
-> +	*data	= ret;
-> +
-> +	return ret;
-> +}
-> +
-> +/* Writes 2 bytes at the given address */
-> +static int apds9930_write_word(struct i2c_client *client, u8 reg, u16 data)
-> +{
-> +	CMD_REG_SETUP(reg, APDS9930_CMD_TYPE_AUTO_INC);
-> +
-> +	return i2c_smbus_write_word_data(client, reg, data);
-> +}
-> +
-> +/* Reads 2 bytes from the given address */
-> +static int apds9930_read_word(struct i2c_client *client, u8 reg, u16 *data)
-> +{
-There's not a whole lot of magic going on here, I'd just roll it out inline
-where it is called.  Not worth the wrapper function.
-Same is true for the others here.  As far as the smbus is concerned you just
-have some register addresses, it doesn't care that other stuff is encoded in
-them.
-> +	int ret;
-> +
-> +	CMD_REG_SETUP(reg, APDS9930_CMD_TYPE_AUTO_INC);
-> +	ret	= i2c_smbus_read_word_data(client, reg);
-> +	*data	= ret;
-> +
-> +	return ret;
-> +}
-> +
-> +/* ALSIT = 2.73ms * (256 - ATIME), 2.73 = 5591/(2^11) */
-> +static inline u8 atime_to_alsit(u8 atime_val)
-> +{
-> +	return (u8)(((256 - (u32)atime_val) * 5591) >> 11);
-> +}
-> +
-> +/* ATIME = 256 - ALSIT/2.73ms, 1/2.73 = 375/(2^10) */
-> +static inline u8 alsit_to_atime(u8 alsit_val)
-> +{
-> +	return (u8)(256 - (((u32)alsit_val * 375) >> 10));
-> +}
-> +
-> +/* Computes maximum Ch0 data when atime is the given one. */
-> +static inline u16 apds9930_compute_max_ch0(u8 atime_val)
-> +{
-> +	return 1024 * (256 - (u32)atime_val) - 1;
-> +}
-> +
-> +/* Computes the ALS gain value for the next step and updates the current one */
-> +static void apds9930_update_again(struct apds9930_data *data, u16 ch0)
-> +{
-> +	int current_index, next_index, err;
-> +
-> +	/* Compute the value for the next measurement */
-> +	current_index	= data->__again;
-> +	next_index	= data->__again;
-> +
-> +	/* CH0 data too high, try to lower the ALS gain if possible */
-> +	if (ch0 >= (data->ch0_max * APDS9930_CH0_HIGH_PERCENTAGE) / 100) {
-> +		if (data->again_change + 1 <
-> +		    APDS9930_MAX_COUNTS_FOR_GAIN_CHANGE)
-> +			data->again_change++;
-> +		else {
-> +			data->again_change = 0;
-> +
-> +			if (next_index == 0 && !(data->agl_enabled)) {
-> +				err = apds9930_write_byte(
-> +						data->client,
-> +						APDS9930_CONFIG_REG,
-> +						1 << APDS9930_AGL_SHIFT);
-> +				if (!err)
-> +					data->agl_enabled = true;
-> +			} else if (next_index > 0) {
-> +				next_index--;
-> +			}
-> +		}
-> +	}
-> +
-> +	/* CH0 data too low, try to increase the ALS gain if possible */
-> +	else if (ch0 <= (data->ch0_max * APDS9930_CH0_LOW_PERCENTAGE) / 100) {
-> +		if (data->again_change + 1 <
-> +		    APDS9930_MAX_COUNTS_FOR_GAIN_CHANGE)
-> +			data->again_change++;
-> +		else {
-> +			data->again_change = 0;
-> +			if (data->agl_enabled) {
-> +				err = apds9930_write_byte(data->client,
-> +							  APDS9930_CONFIG_REG,
-> +							  0);
-> +				if (!err)
-> +					data->agl_enabled = false;
-> +			} else if (next_index < APDS9930_MAX_AGAIN_INDEX) {
-> +				next_index++;
-> +			}
-> +		}
-> +	}
-> +
-> +	if (next_index != current_index) {
-> +		/* Update data's index value */
-> +		data->__again = next_index;
-> +
-> +		/* Update AGAIN for the next reading */
-> +		apds9930_write_byte(data->client, APDS9930_CONTROL_REG,
-> +				    data->__again << APDS9930_AGAIN_SHIFT);
-> +	}
-> +}
-> +
-> +/*
-> + * Update thresholds so as to generate interrupts when the CH0 data changes
-> + * significantly since the last update; significantly is quantifies by the
-> + * hysteresis factor: if the ALS state changes with more than hysteresis %,
-> + * update the thresholds.
-> + */
-This one is always 'interesting' as it means the driver is messing around with the
-value set in the threshold.  Whilst you can just do this and rely on userspace
-not getting too confused, we do now have an even type of IIO_EV_TYPE_CHANGE which
-might be used here (event on value difference from previous event). It's not specified
-as a percentage however so we might need to work an interface out for that.
+> regards, p.
+> 
+>> Signed-off-by: Antoine Tenart <antoine.tenart@free-electrons.com>
+>> ---
+>>  drivers/iio/adc/Kconfig      |   7 +
+>>  drivers/iio/adc/Makefile     |   1 +
+>>  drivers/iio/adc/berlin-adc.c | 397 +++++++++++++++++++++++++++++++++++++++++++
+>>  3 files changed, 405 insertions(+)
+>>  create mode 100644 drivers/iio/adc/berlin-adc.c
+>>
+>> diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+>> index 202daf889be2..2f10a6d8d442 100644
+>> --- a/drivers/iio/adc/Kconfig
+>> +++ b/drivers/iio/adc/Kconfig
+>> @@ -135,6 +135,13 @@ config AXP288_ADC
+>>  	  device. Depending on platform configuration, this general purpose ADC can
+>>  	  be used for sampling sensors such as thermal resistors.
+>>  
+>> +config BERLIN_ADC
+>> +	tristate "Marvell Berlin ADC driver"
+>> +	depends on ARCH_BERLIN
+>> +	help
+>> +	  Marvell Berlin ADC driver. This ADC has 8 channels, with one used for
+>> +	  temparature measurement.
+> 
+> temperature
+> 
+>> +
+>>  config CC10001_ADC
+>>  	tristate "Cosmic Circuits 10001 ADC driver"
+>>  	depends on HAS_IOMEM || HAVE_CLK || REGULATOR
+>> diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
+>> index 0315af640866..d7b2d1df2353 100644
+>> --- a/drivers/iio/adc/Makefile
+>> +++ b/drivers/iio/adc/Makefile
+>> @@ -15,6 +15,7 @@ obj-$(CONFIG_AD7887) += ad7887.o
+>>  obj-$(CONFIG_AD799X) += ad799x.o
+>>  obj-$(CONFIG_AT91_ADC) += at91_adc.o
+>>  obj-$(CONFIG_AXP288_ADC) += axp288_adc.o
+>> +obj-$(CONFIG_BERLIN_ADC) += berlin-adc.o
+>>  obj-$(CONFIG_CC10001_ADC) += cc10001_adc.o
+>>  obj-$(CONFIG_EXYNOS_ADC) += exynos_adc.o
+>>  obj-$(CONFIG_LP8788_ADC) += lp8788_adc.o
+>> diff --git a/drivers/iio/adc/berlin-adc.c b/drivers/iio/adc/berlin-adc.c
+>> new file mode 100644
+>> index 000000000000..8cb0f5800511
+>> --- /dev/null
+>> +++ b/drivers/iio/adc/berlin-adc.c
+>> @@ -0,0 +1,397 @@
+>> +/*
+>> + * Marvell Berlin ADC driver
+>> + *
+>> + * Copyright (C) 2015 Marvell Technology Group Ltd.
+>> + *
+>> + * Antoine Tenart <antoine.tenart@free-electrons.com>
+>> + *
+>> + * This file is licensed under the terms of the GNU General Public
+>> + * License version 2. This program is licensed "as is" without any
+>> + * warranty of any kind, whether express or implied.
+>> + */
+>> +
+>> +#include <linux/iio/iio.h>
+>> +#include <linux/iio/driver.h>
+>> +#include <linux/iio/machine.h>
+>> +#include <linux/interrupt.h>
+>> +#include <linux/kernel.h>
+>> +#include <linux/module.h>
+>> +#include <linux/platform_device.h>
+>> +#include <linux/slab.h>
+>> +#include <linux/mfd/syscon.h>
+>> +#include <linux/regmap.h>
+>> +#include <linux/sched.h>
+>> +#include <linux/wait.h>
+>> +
+> 
+> the prefix SYSCTL prefix is unexpected, couldn't you use BERLIN_ or 
+> something?
+> 
+>> +#define SYSCTL_SM_CTRL				0x14
+>> +#define  SYSCTL_SM_CTRL_SM_SOC_INT		BIT(1)
+> 
+> whitespace issue?
+> 
+>> +#define  SYSCTL_SM_CTRL_SOC_SM_INT		BIT(2)
+>> +#define  SYSCTL_SM_CTRL_ADC_SEL(x)		(BIT(x) << 5)	/* 0-15 */
+>> +#define  SYSCTL_SM_CTRL_ADC_SEL_MASK		(0xf << 5)
+>> +#define  SYSCTL_SM_CTRL_ADC_POWER		BIT(9)
+>> +#define  SYSCTL_SM_CTRL_ADC_CLKSEL_DIV2		(0x0 << 10)
+>> +#define  SYSCTL_SM_CTRL_ADC_CLKSEL_DIV3		(0x1 << 10)
+>> +#define  SYSCTL_SM_CTRL_ADC_CLKSEL_DIV4		(0x2 << 10)
+>> +#define  SYSCTL_SM_CTRL_ADC_CLKSEL_DIV8		(0x3 << 10)
+>> +#define  SYSCTL_SM_CTRL_ADC_CLKSEL_MASK		(0x3 << 10)
+>> +#define  SYSCTL_SM_CTRL_ADC_START		BIT(12)
+>> +#define  SYSCTL_SM_CTRL_ADC_RESET		BIT(13)
+>> +#define  SYSCTL_SM_CTRL_ADC_BANDGAP_RDY		BIT(14)
+>> +#define  SYSCTL_SM_CTRL_ADC_CONT_SINGLE		(0x0 << 15)
+>> +#define  SYSCTL_SM_CTRL_ADC_CONT_CONTINUOUS	(0x1 << 15)
+>> +#define  SYSCTL_SM_CTRL_ADC_BUFFER_EN		BIT(16)
+>> +#define  SYSCTL_SM_CTRL_ADC_VREF_EXT		(0x0 << 17)
+>> +#define  SYSCTL_SM_CTRL_ADC_VREF_INT		(0x1 << 17)
+>> +#define  SYSCTL_SM_CTRL_ADC_ROTATE		BIT(19)
+>> +#define  SYSCTL_SM_CTRL_TSEN_EN			BIT(20)
+>> +#define  SYSCTL_SM_CTRL_TSEN_CLK_SEL_125	(0x0 << 21)	/* 1.25 MHz */
+>> +#define  SYSCTL_SM_CTRL_TSEN_CLK_SEL_250	(0x1 << 21)	/* 2.5 MHz */
+>> +#define  SYSCTL_SM_CTRL_TSEN_MODE_0_125		(0x0 << 22)	/* 0-125 C */
+>> +#define  SYSCTL_SM_CTRL_TSEN_MODE_10_50		(0x1 << 22)	/* 10-50 C */
+>> +#define  SYSCTL_SM_CTRL_TSEN_RESET		BIT(29)
+>> +#define SYSCTL_SM_ADC_DATA			0x20
+>> +#define  SYSCTL_SM_ADC_MASK			0x3ff
+>> +#define SYSCTL_SM_ADC_STATUS			0x1c
+>> +#define  SYSCTL_SM_ADC_STATUS_DATA_RDY(x)	BIT(x)		/* 0-15 */
+>> +#define  SYSCTL_SM_ADC_STATUS_DATA_RDY_MASK	0xf
+>> +#define  SYSCTL_SM_ADC_STATUS_INT_EN(x)		(BIT(x) << 16)	/* 0-15 */
+>> +#define  SYSCTL_SM_ADC_STATUS_INT_EN_MASK	(0xf << 16)
+>> +#define SYSCTL_SM_TSEN_STATUS			0x24
+>> +#define  SYSCTL_SM_TSEN_STATUS_DATA_RDY		BIT(0)
+>> +#define  SYSCTL_SM_TSEN_STATUS_INT_EN		BIT(1)
+>> +#define SYSCTL_SM_TSEN_DATA			0x28
+>> +#define  SYSCTL_SM_TSEN_MASK			0x3ff
+>> +#define SYSCTL_SM_TSEN_CTRL			0x74
+>> +#define  SYSCTL_SM_TSEN_CTRL_START		BIT(8)
+>> +#define  SYSCTL_SM_TSEN_CTRL_SETTLING_4		(0x0 << 21)	/* 4 us */
+>> +#define  SYSCTL_SM_TSEN_CTRL_SETTLING_12	(0x1 << 21)	/* 12 us */
+>> +#define  SYSCTL_SM_TSEN_CTRL_TRIM(x)		((x) << 22)
+>> +#define  SYSCTL_SM_TSEN_CTRL_TRIM_MASK		(0xf << 22)
+>> +
+>> +struct berlin2_adc_priv {
+>> +	struct regmap		*regmap;
+>> +	struct mutex		lock;
+>> +	wait_queue_head_t	wq;
+>> +	u32			irq;
+>> +	u32			tsen_irq;
+> 
+> int rather
+> 
+>> +	bool			data_available;
+>> +	int			data;
+>> +};
+>> +
+>> +#define BERLIN2_ADC_CHANNEL(n, t)					\
+>> +		{							\
+>> +			.channel	= n,				\
+>> +			.datasheet_name	= "channel"#n,			\
+>> +			.type		= t,				\
+>> +			.indexed	= 1,				\
+>> +			.scan_index	= n,				\
+>> +			.scan_type	= {				\
+>> +				.sign		= 'u',			\
+>> +				.realbits	= 64,			\
+>> +				.storagebits	= 64,			\
+>> +			},						\
+> 
+> the data read is not 64 bit I think
+> 
+> the driver does not seem to support buffered reads, so scan_type and 
+> scan_index can be removed
+> 
+> 
+>> +			.info_mask_shared_by_type = 0,			\
+> 
+> .info_mask_shared_by_type = 0 is unnecessary
+> 
+>> +			.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),	\
+>> +		}
+>> +
+>> +#define N_CHANNELS		8
+> 
+> not prefixed; would be good if you could do with ARRAY_SIZE over 
+> _adc_channels instead
+> 
+>> +static struct iio_chan_spec berlin2_adc_channels[] = {
+> 
+> why berlin2?
+> 
+>> +	BERLIN2_ADC_CHANNEL(0, IIO_VOLTAGE),	/* external input */
+>> +	BERLIN2_ADC_CHANNEL(1, IIO_VOLTAGE),	/* external input */
+>> +	BERLIN2_ADC_CHANNEL(2, IIO_VOLTAGE),	/* external input */
+>> +	BERLIN2_ADC_CHANNEL(3, IIO_VOLTAGE),	/* external input */
+>> +	BERLIN2_ADC_CHANNEL(4, IIO_VOLTAGE),	/* reserved */
+>> +	BERLIN2_ADC_CHANNEL(5, IIO_VOLTAGE),	/* reserved */
+>> +	BERLIN2_ADC_CHANNEL(6, IIO_TEMP),	/* temperature sensor */
+> 
+> the temperature channel is not indexed (there is only one)
+> 
+>> +	BERLIN2_ADC_CHANNEL(7, IIO_VOLTAGE),	/* reserved */
+>> +	{					/* timestamp */
+> 
+> 
+> use IIO_CHAN_SOFT_TIMESTAMP(N_CHANNELS) here
+> 
+>> +		.channel	= -1,
+>> +		.type		= IIO_TIMESTAMP,
+>> +		.scan_index	= N_CHANNELS,
+>> +		.scan_type	= {
+>> +			.sign		= 's',
+>> +			.realbits	= 64,
+>> +			.storagebits	= 64,
+>> +		},
+>> +	},
+>> +};
+>> +
+>> +static int berlin2_adc_read(struct iio_dev *idev, int channel)
+>> +{
+>> +	struct berlin2_adc_priv *priv = iio_priv(idev);
+>> +	int val, data, ret;
+>> +
+>> +	mutex_lock(&priv->lock);
+>> +
+>> +	/* Configure the ADC */
+>> +	regmap_read(priv->regmap, SYSCTL_SM_CTRL, &val);
+>> +	val &= ~(SYSCTL_SM_CTRL_ADC_RESET | SYSCTL_SM_CTRL_ADC_SEL_MASK);
+>> +	val |= SYSCTL_SM_CTRL_ADC_SEL(channel) | SYSCTL_SM_CTRL_ADC_START;
+>> +	regmap_write(priv->regmap, SYSCTL_SM_CTRL, val);
+>> +
+>> +	/* Enable the interrupts */
+>> +	regmap_write(priv->regmap, SYSCTL_SM_ADC_STATUS,
+>> +			SYSCTL_SM_ADC_STATUS_INT_EN(channel));
+>> +
+>> +	ret = wait_event_interruptible_timeout(priv->wq, priv->data_available,
+>> +			msecs_to_jiffies(1000));
+>> +
+>> +	/* Disable the interrupts */
+>> +	regmap_read(priv->regmap, SYSCTL_SM_ADC_STATUS, &val);
+>> +	val &= ~SYSCTL_SM_ADC_STATUS_INT_EN(channel);
+>> +	regmap_write(priv->regmap, SYSCTL_SM_ADC_STATUS, val);
+>> +
+>> +	if (ret == 0)
+>> +		ret = -ETIMEDOUT;
+>> +	if (ret < 0) {
+>> +		mutex_unlock(&priv->lock);
+>> +		return ret;
+>> +	}
+>> +
+>> +	regmap_read(priv->regmap, SYSCTL_SM_CTRL, &val);
+>> +	val &= ~SYSCTL_SM_CTRL_ADC_START;
+>> +	regmap_write(priv->regmap, SYSCTL_SM_CTRL, val);
+>> +
+>> +	data = priv->data;
+>> +	priv->data = -1;
+>> +	priv->data_available = false;
+>> +
+>> +	mutex_unlock(&priv->lock);
+>> +
+>> +	return data;
+>> +}
+>> +
+>> +static int berlin2_adc_tsen_read(struct iio_dev *idev)
+>> +{
+>> +	struct berlin2_adc_priv *priv = iio_priv(idev);
+>> +	int val, data, ret;
+>> +
+>> +	mutex_lock(&priv->lock);
+>> +
+>> +	/* Configure the ADC */
+>> +	regmap_read(priv->regmap, SYSCTL_SM_CTRL, &val);
+>> +	val &= ~SYSCTL_SM_CTRL_TSEN_RESET;
+>> +	val |= SYSCTL_SM_CTRL_ADC_ROTATE;
+>> +	regmap_write(priv->regmap, SYSCTL_SM_CTRL, val);
+>> +
+>> +	/* Configure the temperature sensor */
+>> +	regmap_read(priv->regmap, SYSCTL_SM_TSEN_CTRL, &val);
+>> +	val &= ~SYSCTL_SM_TSEN_CTRL_TRIM_MASK;
+>> +	val |= SYSCTL_SM_TSEN_CTRL_TRIM(3) | SYSCTL_SM_TSEN_CTRL_SETTLING_12
+>> +		| SYSCTL_SM_TSEN_CTRL_START;
+>> +	regmap_write(priv->regmap, SYSCTL_SM_TSEN_CTRL, val);
+>> +
+>> +	/* Enable interrupts */
+>> +	regmap_write(priv->regmap, SYSCTL_SM_TSEN_STATUS,
+>> +			SYSCTL_SM_TSEN_STATUS_INT_EN);
+>> +
+>> +	ret = wait_event_interruptible_timeout(priv->wq, priv->data_available,
+>> +			msecs_to_jiffies(1000));
+>> +
+>> +	/* Disable interrupts */
+>> +	regmap_read(priv->regmap, SYSCTL_SM_TSEN_STATUS, &val);
+>> +	val &= ~SYSCTL_SM_TSEN_STATUS_INT_EN;
+>> +	regmap_write(priv->regmap, SYSCTL_SM_TSEN_STATUS, val);
+>> +
+>> +	if (ret == 0)
+>> +		ret = -ETIMEDOUT;
+>> +	if (ret < 0) {
+>> +		mutex_unlock(&priv->lock);
+>> +		return ret;
+>> +	}
+>> +
+>> +	regmap_read(priv->regmap, SYSCTL_SM_TSEN_CTRL, &val);
+>> +	val &= ~SYSCTL_SM_TSEN_CTRL_START;
+>> +	regmap_write(priv->regmap, SYSCTL_SM_TSEN_CTRL, val);
+>> +
+>> +	data = priv->data;
+>> +	priv->data = -1;
+>> +	priv->data_available = false;
+>> +
+>> +	mutex_unlock(&priv->lock);
+>> +
+>> +	return data;
+>> +}
+>> +
+>> +static int berlin2_adc_read_raw(struct iio_dev *idev,
+>> +		struct iio_chan_spec const *chan, int *val, int *val2,
+>> +		long mask)
+>> +{
+>> +	int temp;
+> 
+> maybe named it ret and use instead of *val and temp
+> 
+>> +
+>> +	switch (mask) {
+>> +	case IIO_CHAN_INFO_RAW:
+>> +		if (chan->type == IIO_VOLTAGE) {
+>> +			*val = berlin2_adc_read(idev, chan->channel);
+>> +			if (*val < 0)
+>> +				return *val;
+> 
+> is this milli-Volts?
+> 
+>> +
+>> +			return IIO_VAL_INT;
+>> +		} else if (chan->type == IIO_TEMP) {
+>> +			temp = berlin2_adc_tsen_read(idev);
+>> +			if (temp < 0)
+>> +				return temp;
+>> +
+>> +			if (temp > 2047)
+>> +				temp = -(4096 - temp);
+>> +
+>> +			/* Convert to Celsius */
+>> +			*val = (temp * 100) / 264 - 270;
+> 
+> use SCALE and OFFSET IIO_CHAN_INFO_s to that the temperature can be 
+> interpreted as milli-Celsius (or use _PROCESSED, not _RAW)
+> 
+>> +			return IIO_VAL_INT;
+>> +		}
+>> +	default:
+>> +		break;
+>> +	}
+>> +
+>> +	return -EINVAL;
+>> +}
+>> +
+>> +static irqreturn_t berlin2_adc_irq(int irq, void *private)
+>> +{
+>> +	struct iio_dev *idev = private;
+>> +	struct berlin2_adc_priv *priv = iio_priv(idev);
+>> +	unsigned val;
+>> +
+>> +	regmap_read(priv->regmap, SYSCTL_SM_ADC_STATUS, &val);
+>> +	if (val & SYSCTL_SM_ADC_STATUS_DATA_RDY_MASK) {
+>> +		regmap_read(priv->regmap, SYSCTL_SM_ADC_DATA, &priv->data);
+>> +		priv->data &= SYSCTL_SM_ADC_MASK;
+>> +
+>> +		val &= ~SYSCTL_SM_ADC_STATUS_DATA_RDY_MASK;
+>> +		regmap_write(priv->regmap, SYSCTL_SM_ADC_STATUS, val);
+>> +
+>> +		priv->data_available = true;
+>> +		wake_up_interruptible(&priv->wq);
+>> +	}
+>> +
+>> +	return IRQ_HANDLED;
+>> +}
+>> +
+>> +static irqreturn_t berlin2_adc_tsen_irq(int irq, void *private)
+>> +{
+>> +	struct iio_dev *idev = private;
+>> +	struct berlin2_adc_priv *priv = iio_priv(idev);
+>> +	unsigned val;
+>> +
+>> +	regmap_read(priv->regmap, SYSCTL_SM_TSEN_STATUS, &val);
+>> +	if (val & SYSCTL_SM_TSEN_STATUS_DATA_RDY) {
+>> +		regmap_read(priv->regmap, SYSCTL_SM_TSEN_DATA, &priv->data);
+>> +		priv->data &= SYSCTL_SM_TSEN_MASK;
+>> +
+>> +		val &= ~SYSCTL_SM_TSEN_STATUS_DATA_RDY;
+>> +		regmap_write(priv->regmap, SYSCTL_SM_TSEN_STATUS, val);
+>> +
+>> +		priv->data_available = true;
+>> +		wake_up_interruptible(&priv->wq);
+>> +	}
+>> +
+>> +	return IRQ_HANDLED;
+>> +}
+>> +
+>> +static const struct iio_info berlin2_adc_info = {
+>> +	.driver_module	= THIS_MODULE,
+>> +	.read_raw	= berlin2_adc_read_raw,
+>> +};
+>> +
+>> +static int berlin2_adc_probe(struct platform_device *pdev)
+>> +{
+>> +	struct iio_dev *idev;
+> 
+> people prefer indio_dev instead of idev
+> 
+>> +	struct berlin2_adc_priv *priv;
+>> +	struct device_node *parent_np = of_get_parent(pdev->dev.of_node);
+>> +	int ret, val;
+>> +
+>> +	idev = iio_device_alloc(sizeof(struct berlin2_adc_priv));
+> 
+> devm_iio_device_alloc?
+> 
+>> +	if (!idev)
+>> +		return -ENOMEM;
+>> +
+>> +	priv = iio_priv(idev);
+>> +	platform_set_drvdata(pdev, idev);
+>> +
+>> +	priv->regmap = syscon_node_to_regmap(parent_np);
+>> +	of_node_put(parent_np);
+>> +	if (IS_ERR(priv->regmap))
+>> +		return PTR_ERR(priv->regmap);
+>> +
+>> +	priv->irq = platform_get_irq_byname(pdev, "adc");
+>> +	if (priv->irq < 0)
+> 
+> you have irq as u32, should be int otherwise the check does not make sense
+> 
+>> +		return -ENODEV;
+>> +
+>> +	priv->tsen_irq = platform_get_irq_byname(pdev, "tsen");
+>> +	if (priv->tsen_irq < 0)
+>> +		return -ENODEV;
+>> +
+>> +	ret = devm_request_irq(&pdev->dev, priv->irq, berlin2_adc_irq, 0,
+>> +			pdev->dev.driver->name, idev);
+>> +	if (ret)
+>> +		return ret;
+>> +
+>> +	ret = devm_request_irq(&pdev->dev, priv->tsen_irq, berlin2_adc_tsen_irq,
+>> +			0, pdev->dev.driver->name, idev);
+>> +	if (ret)
+>> +		return ret;
+>> +
+>> +	init_waitqueue_head(&priv->wq);
+>> +	mutex_init(&priv->lock);
+>> +
+>> +	idev->dev.parent = &pdev->dev;
+>> +	idev->name = dev_name(&pdev->dev);
+>> +	idev->modes = INDIO_DIRECT_MODE;
+>> +	idev->info = &berlin2_adc_info;
+>> +
+>> +	idev->num_channels = N_CHANNELS;
+>> +	idev->channels = berlin2_adc_channels;
+>> +
+>> +	/* Power up the ADC */
+>> +	regmap_read(priv->regmap, SYSCTL_SM_CTRL, &val);
+>> +	val |= SYSCTL_SM_CTRL_ADC_POWER;
+>> +	regmap_write(priv->regmap, SYSCTL_SM_CTRL, val);
+>> +
+>> +	ret = iio_device_register(idev);
+> 
+> devm_iio_device_register?
+> 
+>> +	if (ret) {
+>> +		dev_err(&pdev->dev,  "Failed to register the IIO device: %d\n",
+>> +			ret);
+> 
+> probably not the most useful error msg and about the only logging; drop 
+> it?
+> 
+> and just do 
+> return devm_iio_device_register(idev);
+There is an ordering issue here that makes that look sensible, but it isn't.
+Rule of thumb. If there is anything else in the remove, you shouldn't
+use devm_iio_device_register (same is often true of the interrupt equivalent
+though occasionally the ordering is such that using the devm versions
+of those is fine.)
+> 
+>> +		return ret;
+>> +	}
+>> +
+>> +	return 0;
+>> +}
+>> +
+>> +static int berlin2_adc_remove(struct platform_device *pdev)
+>> +{
+>> +	struct iio_dev *idev = platform_get_drvdata(pdev);
+>> +	struct berlin2_adc_priv *priv = iio_priv(idev);
+>> +	int val;
+>> +
+>> +	/* Power down the ADC */
+>> +	regmap_read(priv->regmap, SYSCTL_SM_CTRL, &val);
+>> +	val &= ~SYSCTL_SM_CTRL_ADC_POWER;
+>> +	regmap_write(priv->regmap, SYSCTL_SM_CTRL, val);
+>> +
+>> +	free_irq(priv->irq, idev);
+>> +	free_irq(priv->tsen_irq, idev);
+>> +
+>> +	iio_device_unregister(idev);
+You are removing the userspace interface only after you have
+turned the device off and disabled the irq's etc. Not a good
+plan.  There is a reason why most remove functions are the
+reverse of the probe (in what they do and in the order they do
+it in). Leads to far fewer issues like this and makes them much
+easier to review!
 
-Just a thought...
-> +static void apds9930_update_als_thresholds(struct apds9930_data *data, u16 ch0)
-> +{
-> +	data->als_thresh.low	= (ch0*(100 - APDS9930_ALS_HYSTERESIS))/100;
-> +	data->als_thresh.high	= min((ch0*(100 + APDS9930_ALS_HYSTERESIS))/100,
-> +				      (int)data->ch0_max);
-> +
-> +	apds9930_write_word(data->client, APDS9930_AILTL_REG,
-> +			    data->als_thresh.low);
-> +	apds9930_write_word(data->client, APDS9930_AIHTL_REG,
-> +			    data->als_thresh.high);
-> +}
-> +
-> +/* Having the channel 0 and channels 1's data, compute the Lux value */
-> +static int apds9930_compute_lux(struct apds9930_data *data, u16 ch0, u16 ch1)
-> +{
-> +	long int iac1, iac2, alsit_val, again_val, tmp_iac;
-> +	unsigned long int iac, lux;
-> +	struct apds9930_coefficients cf;
-> +
-> +	/* Lux equation */
-> +	cf		= data->__coefs;
-> +	iac1		= cf.coef_a * ch0 - cf.coef_b * ch1;
-> +	iac2		= cf.coef_c * ch0 - cf.coef_d * ch1;
-> +	tmp_iac		= max(iac1, iac2);
-> +	iac		= (tmp_iac < 0) ? 0 : (unsigned long)tmp_iac;
-> +	alsit_val	= (int)(data->alsit);
-> +	again_val	= again_values[data->__again];
-> +	lux		= (iac * cf.ga * cf.df) / (alsit_val * again_val *
-> +						   DEF_LUX_DIVISION_SCALE);
-> +
-> +	return data->agl_enabled ? (APDS9930_AGL_DIVISION_SCALE * lux) : lux;
-> +}
-> +
-> +static int apds9930_enable_all(struct apds9930_data *data)
-> +{
-> +	int ret;
-> +
-> +	mutex_lock(&data->mutex);
-> +	ret = apds9930_write_byte(data->client, APDS9930_ENABLE_REG,
-> +				  APDS9930_ENABLE_ALL);
-> +	if (ret < 0)
-> +		goto err;
-> +
-> +	data->als_intr_state	= true;
-> +err:
-> +	mutex_unlock(&data->mutex);
-> +
-> +	return ret;
-> +}
-> +
-> +static int apds9930_disable_all(struct apds9930_data *data)
-> +{
-> +	int ret;
-> +
-> +	mutex_lock(&data->mutex);
-> +	ret = apds9930_write_byte(data->client, APDS9930_ENABLE_REG,
-> +				  APDS9930_DISABLE_ALL);
-> +	if (ret < 0)
-> +		goto err;
-> +
-> +	data->als_intr_state = false;
-> +err:
-> +	mutex_unlock(&data->mutex);
-> +
-> +	return ret;
-> +}
-> +
-> +static int apds9930_chip_detect(struct apds9930_data *data)
-> +{
-> +	int ret;
-> +	u8 id;
-> +
-> +	ret = apds9930_read_byte(data->client, APDS9930_ID_REG, &id);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	if (id != APDS9930_ID)
-> +		ret = -EINVAL;
-> +
-> +	return ret;
-> +}
-> +
-> +/*
-> + * Set the coefficients to those specified in properties if they exist,
-> + * otherwise to default values.
-> + */
-> +static void apds9930_set_device_data(struct apds9930_data *data)
-> +{
-> +	struct apds9930_coefficients defaults = {
-> +		.ga	= DEF_GA,
-> +		.coef_a	= 100,
-> +		.coef_b	= DEF_B,
-> +		.coef_c	= DEF_C,
-> +		.coef_d	= DEF_D,
-> +		.df	= DEF_DF,
-> +	};
-> +	struct device *dev = &data->client->dev;
-> +
-> +	/*
-> +	 * Look for device properties and set them to property value or to
-> +	 * default.
-> +	 */
-> +	if (device_property_read_u32(dev, GA_PROP, &data->__coefs.ga) != 0)
-> +		data->__coefs.ga = defaults.ga;
-> +
-> +	if (device_property_read_u32(dev, DF_PROP, &data->__coefs.df) != 0)
-> +		data->__coefs.df = defaults.df;
-> +
-> +	if (device_property_read_u32(dev, COEF_B_PROP,
-> +				     &data->__coefs.coef_b) != 0 ||
-> +	    device_property_read_u32(dev, COEF_C_PROP,
-> +				     &data->__coefs.coef_c) != 0 ||
-> +	    device_property_read_u32(dev, COEF_D_PROP,
-> +				     &data->__coefs.coef_d) != 0) {
-> +		data->__coefs.coef_b	= defaults.coef_b;
-> +		data->__coefs.coef_c	= defaults.coef_c;
-> +		data->__coefs.coef_d	= defaults.coef_d;
-> +	}
-> +	data->__coefs.coef_a = defaults.coef_a;
-> +
-> +	if (device_property_read_u32(dev, ATIME_PROP,
-> +				     (int *)&data->__atime) != 0)
-> +		data->__atime = APDS9930_DEF_ATIME;
-> +
-> +	if (device_property_read_u32(dev, AGAIN_PROP,
-> +				     (int *)&data->__again) != 0)
-> +		data->__again = APDS9930_DEF_AGAIN;
-> +
-> +	/*
-> +	 * AGAIN can only have the following values (as found in the register):
-> +	 * 0, 1, 2, 3. Check if we receive invalid data and fall back to
-> +	 * defaults if that is the case.
-> +	 */
-> +	if (data->__again > APDS9930_MAX_AGAIN_INDEX)
-> +		data->__again = APDS9930_DEF_AGAIN;
-> +}
-> +
-> +static void apds9930_chip_data_init(struct apds9930_data *data)
-> +{
-> +	apds9930_set_device_data(data);
-> +
-> +	/* Init data to default values */
-> +	data->alsit		= atime_to_alsit(data->__atime);
-> +	data->ch0_max		= apds9930_compute_max_ch0(APDS9930_DEF_ATIME);
-> +	data->agl_enabled	= false;
-> +	data->again_change	= 0;
-> +	data->als_intr_state	= false;
-> +	data->als_thresh.low	= APDS9930_DEF_ALS_THRESH_LOW;
-> +	data->als_thresh.high	= APDS9930_DEF_ALS_THRESH_HIGH;
-> +}
-> +
-> +/* Basic chip initialization, as described in the datasheet */
-> +static int apds9930_chip_registers_init(struct apds9930_data *data)
-> +{
-> +	struct i2c_client *client = data->client;
-> +	int ret;
-> +
-> +	/* Disable and powerdown device */
-> +	ret = apds9930_disable_all(data);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	/* Set timing registers default values (minimum) */
-> +	ret = apds9930_write_byte(client, APDS9930_ATIME_REG,
-> +				  APDS9930_DEF_ATIME);
-> +	if (ret < 0)
-> +		return ret;
-> +	ret = apds9930_write_byte(client, APDS9930_WTIME_REG,
-> +				  APDS9930_DEF_WTIME);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	/* Reset the configuration register (do not wait long) */
-> +	ret = apds9930_write_byte(client, APDS9930_CONFIG_REG, 0);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	/* Gain selection setting */
-> +	ret = apds9930_write_byte(client, APDS9930_CONTROL_REG,
-> +				  data->__again << APDS9930_AGAIN_SHIFT);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	/* Interrupt threshold default settings */
-> +	ret = apds9930_write_word(client, APDS9930_AILTL_REG,
-> +				  APDS9930_DEF_ALS_THRESH_LOW);
-> +	if (ret < 0)
-> +		return ret;
-> +	ret = apds9930_write_word(client, APDS9930_AIHTL_REG,
-> +				  APDS9930_DEF_ALS_THRESH_HIGH);
-> +
-> +	/* Set ALS persistence filter to default values */
-> +	ret = apds9930_write_byte(client, APDS9930_PERS_REG,
-> +				  APDS9930_DEF_APERS << APDS9930_APERS_SHIFT);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	/* Power the device back on */
-> +	return apds9930_enable_all(data);
-> +}
-> +
-> +static int apds9930_read_raw(struct iio_dev *indio_dev,
-> +			     struct iio_chan_spec const *chan, int *val,
-> +			     int *val2, long mask)
-> +{
-> +	struct apds9930_data *data	= iio_priv(indio_dev);
-> +	struct i2c_client *client	= data->client;
-> +	int ret;
-> +	u16 ch0, ch1, ch;
-> +
-> +	mutex_lock(&data->mutex);
-> +	switch (chan->type) {
-> +	case IIO_LIGHT:
-> +		/* Get Lux value */
-> +		ret = apds9930_read_word(client, APDS9930_CDATAL_REG,
-> +					 &ch0);
-> +		if (ret < 0)
-> +			break;
-> +		ret = apds9930_read_word(client, APDS9930_IRDATAL_REG,
-> +					 &ch1);
-> +		if (ret < 0)
-> +			break;
-> +
-> +		/* Compute Lux value */
-> +		*val = apds9930_compute_lux(data, ch0, ch1);
-> +		apds9930_update_again(data, ch0);
-> +		ret = IIO_VAL_INT;
-> +		break;
-> +	case IIO_INTENSITY:
-> +		/* Get ch0 or ch1 raw value */
-Given you are going to drop channel (as per my comment where it is set)
-use channel2 instead (containing the modifier that says what sort of light
-we are sensing)
-> +		ret = apds9930_read_word(client, chan->channel ?
-> +					 APDS9930_IRDATAL_REG :
-> +					 APDS9930_CDATAL_REG,
-> +					 &ch);
-> +		if (ret < 0)
-> +			break;
-> +
-> +		*val	= (int)ch;
-> +		ret	= IIO_VAL_INT;
-> +		break;
-> +	default:
-> +		ret = -EINVAL;
-> +		break;
-> +	}
-> +	mutex_unlock(&data->mutex);
-> +
-> +	return ret;
-> +}
-> +
-> +/* Event handling functions */
-> +static int apds9930_read_event_config(struct iio_dev *indio_dev,
-> +				      const struct iio_chan_spec *chan,
-> +				      enum iio_event_type type,
-> +				      enum iio_event_direction dir)
-> +{
-> +	struct apds9930_data *data = iio_priv(indio_dev);
-> +
-> +	switch (chan->type) {
-> +	case IIO_INTENSITY:
-> +		return data->als_intr_state;
-> +	default:
-> +		return -EINVAL;
-> +	}
-> +}
-> +
-> +static int apds9930_write_event_config(struct iio_dev *indio_dev,
-> +				       const struct iio_chan_spec *chan,
-> +				       enum iio_event_type type,
-> +				       enum iio_event_direction dir,
-> +				       int state)
-> +{
-> +	struct apds9930_data *data	= iio_priv(indio_dev);
-> +	struct i2c_client *client	= data->client;
-> +	u8 enable_reg;
-> +	int ret;
-> +
-> +	if (chan->type != IIO_INTENSITY)
-> +		return -EINVAL;
-> +
-> +	mutex_lock(&data->mutex);
-> +
-> +	ret = apds9930_read_byte(client, APDS9930_ENABLE_REG, &enable_reg);
-> +	if (ret < 0)
-> +		goto err;
-> +
-> +	if (state)
-> +		enable_reg |= APDS9930_AIEN; /* enable */
-> +	else
-> +		enable_reg &= ~APDS9930_AIEN; /* disable */
-> +
-> +	ret = apds9930_write_byte(client, APDS9930_ENABLE_REG, enable_reg);
-> +	if (ret == 0)
-> +		data->als_intr_state = (bool)state;
-> +err:
-> +	mutex_unlock(&data->mutex);
-> +
-> +	return ret;
-> +}
-> +
-> +static int apds9930_read_event_value(struct iio_dev *indio_dev,
-> +				     const struct iio_chan_spec *chan,
-> +				     enum iio_event_type type,
-> +				     enum iio_event_direction dir,
-> +				     enum iio_event_info info,
-> +				     int *val, int *val2)
-> +{
-> +	struct apds9930_data *data = iio_priv(indio_dev);
-> +	struct apds9930_threshold thresh;
-> +
-> +	switch (chan->type) {
-> +	case IIO_INTENSITY:
-> +		thresh = data->als_thresh;
-> +		break;
-> +	default:
-> +		return -EINVAL;
-> +	}
-> +
-> +	switch (dir) {
-> +	case IIO_EV_DIR_RISING:
-> +		*val = (int)(thresh.high);
-> +		break;
-> +	case IIO_EV_DIR_FALLING:
-> +		*val = (int)(thresh.low);
-> +		break;
-> +	default:
-> +		return -EINVAL;
-> +	}
-> +
-> +	return IIO_VAL_INT;
-> +}
-> +
-> +/* IIO device specific data structures */
-> +static const struct iio_info apds9930_info = {
-> +	.driver_module		= THIS_MODULE,
-> +	.read_raw		= apds9930_read_raw,
-> +	.read_event_config	= apds9930_read_event_config,
-> +	.write_event_config	= apds9930_write_event_config,
-> +	.read_event_value	= apds9930_read_event_value,
-> +};
-> +
-> +static const struct iio_event_spec apds9930_als_event_spec[] = {
-> +	{
-> +		/* ALS Ch0 interrupt "above threshold" event */
-> +		.type		= IIO_EV_TYPE_THRESH,
-> +		.dir		= IIO_EV_DIR_RISING,
-> +		.mask_separate	= BIT(IIO_EV_INFO_VALUE) |
-> +			BIT(IIO_EV_INFO_ENABLE),
-> +	}, {
-> +		/* ALS Ch0 interrupt "below threshold" event */
-> +		.type		= IIO_EV_TYPE_THRESH,
-> +		.dir		= IIO_EV_DIR_FALLING,
-> +		.mask_separate	= BIT(IIO_EV_INFO_VALUE) |
-> +			BIT(IIO_EV_INFO_ENABLE),
-> +	},
-> +};
-> +
-> +static const struct iio_chan_spec apds9930_channels[] = {
-> +	/* ALS channels */
-> +	{
-> +		/* Lux (processed Ch0 + Ch1) */
-> +		.type			= IIO_LIGHT,
-> +		.channel		= 0,
-No need to specify channlel. For starters, it isn't indexed so it won't be used
-and secondly will default to 0 anyway.
-> +		.info_mask_separate	= BIT(IIO_CHAN_INFO_PROCESSED),
-> +	}, {
-> +		/*
-> +		 * Ch0 photodiode (visible light + infrared); threshold
-> +		 * triggered event
-> +		 */
-> +		.type			= IIO_INTENSITY,
-> +		.channel		= 0,
-> +		.modified		= true,
-> +		.channel2		= IIO_MOD_LIGHT_BOTH,
-> +		.info_mask_separate	= BIT(IIO_CHAN_INFO_RAW),
-> +		.event_spec		= apds9930_als_event_spec,
-> +		.num_event_specs	= ARRAY_SIZE(apds9930_als_event_spec),
-> +	}, {
-> +		/* Ch1 photodiode (infrared) */
-> +		.type			= IIO_INTENSITY,
-> +		.channel		= 1,
-Not indexed so not channel is not used - hence don't bother setting it.
-> +		.modified		= true,
-> +		.channel2		= IIO_MOD_LIGHT_IR,
-> +		.info_mask_separate	= BIT(IIO_CHAN_INFO_RAW),
-> +	}
-> +};
-> +
-> +/* Determine what has triggered the interrupt and clear it accordingly */
-> +static int apds9930_interrupt_clear(struct apds9930_data *data, u8 intr_status)
-> +{
-> +	u8 reg = 0x00;
-> +
-> +	if (intr_status & APDS9930_AINT) {
-> +		CMD_REG_SETUP(reg, APDS9930_CMD_TYPE_SPECIAL_FUNC);
-> +		reg |= APDS9930_CMD_TYPE_ALS;
-> +
-> +		return i2c_smbus_read_byte_data(data->client, reg);
-> +	}
-> +
-> +	return -EINVAL;
-> +}
-> +
-> +/* ALS interrupt handler */
-> +static irqreturn_t apds9930_irq_handler(int irq, void *private_data)
-> +{
-> +	struct iio_dev *indio_dev	= private_data;
-> +	struct apds9930_data *data	= iio_priv(indio_dev);
-> +	u8 status, enable_reg;
-> +	u16 ch0;
-> +	int ret;
-> +
-> +	/* Disable ALS function while processing data */
-> +	ret = apds9930_read_byte(data->client, APDS9930_ENABLE_REG,
-> +				 &enable_reg);
-> +	if (ret < 0)
-> +		return IRQ_HANDLED;
-> +	ret = apds9930_write_byte(data->client, APDS9930_ENABLE_REG, 1);
-> +	if (ret < 0)
-> +		return IRQ_HANDLED;
-> +
-> +	/* Read status register to see what caused the interrupt */
-> +	ret = apds9930_read_byte(data->client, APDS9930_STATUS_REG, &status);
-> +	if (ret < 0)
-> +		goto err;
-> +
-> +	ret = apds9930_read_word(data->client, APDS9930_CDATAL_REG, &ch0);
-> +	if (ret < 0)
-> +		goto err;
-> +
-> +	apds9930_update_again(data, ch0);
-> +
-> +	/* Push event to userspace */
-> +	if (status & APDS9930_AINT) {
-> +		/* Clear interrupt */
-> +		apds9930_interrupt_clear(data, status);
-> +
-> +		iio_push_event(indio_dev,
-> +			       IIO_MOD_EVENT_CODE(IIO_INTENSITY,
-> +						  0,
-> +						  IIO_MOD_LIGHT_BOTH,
-> +						  IIO_EV_TYPE_THRESH,
-> +						  IIO_EV_DIR_EITHER),
-> +			       iio_get_time_ns());
-> +
-> +		/* Update ALS thresholds to environment */
-> +		apds9930_update_als_thresholds(data, ch0);
-> +	}
-> +
-> +err:
-> +	/* Re-enable ALS converter */
-> +	apds9930_write_byte(data->client, APDS9930_ENABLE_REG, enable_reg);
-> +
-> +	return IRQ_HANDLED;
-> +}
-> +
-
-I groan everytime I see this code.  Can we not add a utility function for this
-somewhere in the ACPI core?  For non acpi stuff we'd just get an irq and
-not care that it was a gpio, thus avoiding the irritating chunk of boiler
-plate in every ACPI driver with an interrupt. I suppose that at least
-it is getting shorter with the gpiod flags arguement...  
-
-> +static int apds9930_gpio_probe(struct i2c_client *client,
-> +			       struct apds9930_data *data)
-> +{
-> +	struct device *dev;
-> +	struct gpio_desc *gpio;
-> +	int ret;
-> +
-> +	if (!client)
-> +		return -EINVAL;
-> +
-> +	dev = &client->dev;
-> +
-> +	gpio = devm_gpiod_get_index(dev, APDS9930_GPIO_NAME, 0);
-> +	if (IS_ERR(gpio)) {
-> +		dev_err(dev, "ACPI GPIO get index failed\n");
-> +		return PTR_ERR(gpio);
-> +	}
-> +
-The flags arguement above allows setting the direction in the single call.
-> +	ret = gpiod_direction_input(gpio);
-> +	if (ret)
-> +		return ret;
-> +
-> +	return gpiod_to_irq(gpio);
-> +}
-> +
-> +static int apds9930_probe(struct i2c_client *client,
-> +			  const struct i2c_device_id *id)
-> +{
-> +	struct apds9930_data *data;
-> +	struct iio_dev *indio_dev;
-> +	int ret;
-> +
-> +	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
-> +	if (!indio_dev)
-> +		return -ENOMEM;
-> +
-> +	data = iio_priv(indio_dev);
-> +	i2c_set_clientdata(client, indio_dev);
-> +	data->client = client;
-> +
-> +	mutex_init(&data->mutex);
-> +
-> +	/* Recommended wait time after power on. */
-> +	msleep(APDS9930_INIT_SLEEP);
-> +
-> +	/* Check if the chip is the one we are expecting */
-> +	ret = apds9930_chip_detect(data);
-> +	if (ret < 0)
-> +		goto err;
-> +
-> +	apds9930_chip_data_init(data);
-> +	ret = apds9930_chip_registers_init(data);
-> +	if (ret < 0)
-> +		goto err;
-> +
-> +	indio_dev->dev.parent	= &client->dev;
-> +	indio_dev->name		= APDS9930_DRIVER_NAME;
-> +	indio_dev->modes	= INDIO_DIRECT_MODE;
-> +	indio_dev->channels	= apds9930_channels;
-> +	indio_dev->num_channels	= ARRAY_SIZE(apds9930_channels);
-> +	indio_dev->info		= &apds9930_info;
-> +
-> +	if (client->irq <= 0)
-> +		client->irq = apds9930_gpio_probe(client, data);
-> +
-> +	if (client->irq > 0) {
-> +		ret = devm_request_threaded_irq(&client->dev,
-> +						client->irq,
-> +						NULL,
-> +						apds9930_irq_handler,
-> +						IRQF_TRIGGER_FALLING |
-> +						IRQF_ONESHOT,
-> +						APDS9930_IRQ_NAME,
-> +						indio_dev);
-> +		if (ret < 0)
-> +			goto err;
-> +	}
-> +
-> +	ret = iio_device_register(indio_dev);
-> +	if (ret < 0)
-> +		goto err;
-> +
-> +	return 0;
-> +err:
-> +	apds9930_disable_all(data);
-This seems a little odd given we don't have a matched enable in the probe?
-Ah, it's in the chip registers init. I'd pull it out of that function and
-directly into here as it will make the code more obviously correct.
-Would also make the ordering issue below in remove more obvious.
-> +
-> +	return ret;
-> +}
-> +
-> +static int apds9930_remove(struct i2c_client *client)
-> +{
-> +	struct iio_dev *indio_dev	= i2c_get_clientdata(client);
-> +	struct apds9930_data *data	= iio_priv(indio_dev);
-> +	int ret;
-> +
-> +	/* Disable interrupts */
-> +	ret = apds9930_disable_all(data);
-> +
-> +	iio_device_unregister(indio_dev);
-Race condition here as you are removing the userspace interface after disabling
-the hardware.  Unless I'm missing something wants to be in the other order.
-> +
-> +	return ret;
-> +}
-> +
-> +static const struct acpi_device_id apds9930_acpi_table[] = {
-> +	{"APDS9930", 0},
-> +	{}
-> +};
-> +MODULE_DEVICE_TABLE(acpi, apds9930_acpi_table);
-> +
-> +static const struct i2c_device_id apds9930_ids_table[] = {
-> +	{"apds9930", 0},
-> +	{}
-> +};
-> +MODULE_DEVICE_TABLE(i2c, apds9930_ids_table);
-> +
-> +static struct i2c_driver apds9930_iio_driver = {
-> +	.driver	= {
-> +		.owner			= THIS_MODULE,
-> +		.name			= APDS9930_DRIVER_NAME,
-> +		.acpi_match_table	= ACPI_PTR(apds9930_acpi_table),
-> +	},
-> +	.probe		= apds9930_probe,
-> +	.remove		= apds9930_remove,
-> +	.id_table	= apds9930_ids_table,
-> +};
-> +module_i2c_driver(apds9930_iio_driver);
-> +
-> +MODULE_AUTHOR("Cristina Ciocan <cristina.ciocan@intel.com>");
-> +MODULE_DESCRIPTION("APDS-9930 ALS sensor IIO driver");
-> +MODULE_LICENSE("GPL v2");
+>> +	iio_device_free(idev);
+>> +
+>> +	return 0;
+>> +}
+>> +
+>> +static const struct of_device_id berlin2_adc_match[] = {
+>> +	{ .compatible = "marvell,berlin2-adc", },
+>> +	{ },
+>> +};
+>> +MODULE_DEVICE_TABLE(of, berlin2q_adc_match);
+>> +
+>> +static struct platform_driver berlin2_adc_driver = {
+>> +	.driver	= {
+>> +		.name		= "berlin2-adc",
+>> +		.of_match_table	= berlin2_adc_match,
+>> +	},
+>> +	.probe	= berlin2_adc_probe,
+>> +	.remove	= berlin2_adc_remove,
+>> +};
+>> +module_platform_driver(berlin2_adc_driver);
+>> +
+>> +MODULE_AUTHOR("Antoine Tenart <antoine.tenart@free-electrons.com>");
+>> +MODULE_DESCRIPTION("Marvell Berlin2 ADC driver");
+>> +MODULE_LICENSE("GPL");
+>>
 > 
 
