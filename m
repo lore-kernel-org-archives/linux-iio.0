@@ -1,295 +1,590 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
 Received: from mga02.intel.com ([134.134.136.20]:9091 "EHLO mga02.intel.com"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751888AbbCVSd4 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Sun, 22 Mar 2015 14:33:56 -0400
+	id S1751946AbbCVSd6 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Sun, 22 Mar 2015 14:33:58 -0400
 From: Octavian Purdila <octavian.purdila@intel.com>
 To: jic23@kernel.org
 Cc: lars@metafoo.de, pmeerw@pmeerw.net, knaack.h@gmx.de,
 	linux-iio@vger.kernel.org,
 	Octavian Purdila <octavian.purdila@intel.com>
-Subject: [PATCH v6 2/3] iio: add support for hardware fifo
-Date: Sun, 22 Mar 2015 20:33:39 +0200
-Message-Id: <1427049220-2876-3-git-send-email-octavian.purdila@intel.com>
+Subject: [PATCH v6 3/3] iio: bmc150_accel: add support for hardware fifo
+Date: Sun, 22 Mar 2015 20:33:40 +0200
+Message-Id: <1427049220-2876-4-git-send-email-octavian.purdila@intel.com>
 In-Reply-To: <1427049220-2876-1-git-send-email-octavian.purdila@intel.com>
 References: <1427049220-2876-1-git-send-email-octavian.purdila@intel.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Some devices have hardware buffers that can store a number of samples
-for later consumption. Hardware usually provides interrupts to notify
-the processor when the FIFO is full or when it has reached a certain
-watermark level. This helps with reducing the number of interrupts to
-the host processor and thus it helps decreasing the power consumption.
+We only advertise hardware fifo support if the I2C bus supports full
+I2C or smbus I2C block data reads since it is mandatory to read the
+full frame in one read (otherwise the rest of the frame is discarded).
 
-This patch enables usage of hardware FIFOs for IIO devices in
-conjunction with software device buffers. When the hardware FIFO is
-enabled the samples are stored in the hardware FIFO. The samples are
-later flushed to the device software buffer when the number of entries
-in the hardware FIFO reaches the hardware watermark or when a flush
-operation is triggered by the user when doing a non-blocking read
-on an empty software device buffer.
+The hardware fifo is enabled only when triggers are not active because:
 
-In order to implement hardware FIFO support the device drivers must
-implement the following new operations: setting and getting the
-hardware FIFO watermark level, flushing the hardware FIFO to the
-software device buffer. The device must also expose information about
-the hardware FIFO such it's minimum and maximum watermark and if
-necessary a list of supported watermark values. Finally, the device
-driver must activate the hardware FIFO when the device buffer is
-enabled, if the current device settings allows it.
+(a) when using the any-motion trigger the user expects to see samples
+based on ROC events, but the fifo stores samples based on the sample
+frequency
 
-The software device buffer watermark is passed by the IIO core to the
-device driver as a hint for the hardware FIFO watermark. The device
-driver can adjust this value to allow for hardware limitations (such
-as capping it to the maximum hardware watermark or adjust it to a
-value that is supported by the hardware). It can also disable the
-hardware watermark (and implicitly the hardware FIFO) it this value is
-below the minimum hardware watermark.
-
-Since a driver may support hardware FIFO only when not in triggered
-buffer mode (due to different semantics of hardware FIFO sampling and
-triggered sampling) this patch changes the IIO core code to allow
-falling back to non-triggered buffered mode if no trigger is enabled.
+(b) the data-ready trigger is waking the CPU for for every sample, so
+using the hardware fifo does not have any benefit
 
 Signed-off-by: Octavian Purdila <octavian.purdila@intel.com>
 ---
- Documentation/ABI/testing/sysfs-bus-iio | 69 +++++++++++++++++++++++++++++++++
- drivers/iio/industrialio-buffer.c       | 58 ++++++++++++++++++++-------
- include/linux/iio/iio.h                 | 13 +++++++
- 3 files changed, 127 insertions(+), 13 deletions(-)
+ drivers/iio/accel/bmc150-accel.c | 407 +++++++++++++++++++++++++++++++++++++--
+ 1 file changed, 391 insertions(+), 16 deletions(-)
 
-diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
-index 0051641..8742302 100644
---- a/Documentation/ABI/testing/sysfs-bus-iio
-+++ b/Documentation/ABI/testing/sysfs-bus-iio
-@@ -1288,3 +1288,72 @@ Description:
- 		allows the application to block on poll with a timeout and read
- 		the available samples after the timeout expires and thus have a
- 		maximum delay guarantee.
-+
-+What:		/sys/bus/iio/devices/iio:deviceX/buffer/hwfifo_enabled
-+KernelVersion: 4.2
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+		A read-only boolean value that indicates if the hardware fifo is
-+		currently enabled or disabled. If the device does not have a
-+		hardware fifo this entry is not present.
-+		The hardware fifo is enabled when the buffer is enabled if the
-+		current hardware fifo watermark level is set and other current
-+		device settings allows it (e.g. if a trigger is set that samples
-+		data differently that the hardware fifo does then hardware fifo
-+		will not enabled).
-+		If the hardware fifo is enabled and the level of the hardware
-+		fifo reaches the hardware fifo watermark level the device will
-+		flush its hardware fifo to the device buffer. Doing a non
-+		blocking read on the device when no samples are present in the
-+		device buffer will also force a flush.
-+		When the hardware fifo is enabled there is no need to use a
-+		trigger to use buffer mode since the watermark settings
-+		guarantees that the hardware fifo is flushed to the device
-+		buffer.
-+
-+What:		/sys/bus/iio/devices/iio:deviceX/buffer/hwfifo_watermark
-+KernelVersion: 4.2
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+		Read-only entry that contains a single integer specifying the
-+		current watermark level for the hardware fifo. If the device
-+		does not have a hardware fifo this entry is not present.
-+		The watermark level for the hardware fifo is set by the driver
-+		based on the value set by the user in buffer/watermark but
-+		taking into account hardware limitations (e.g. most hardware
-+		buffers are limited to 32-64 samples, some hardware buffers
-+		watermarks are fixed or have minimum levels).  A value of 0
-+		means that the hardware watermark is unset.
-+
-+What:		/sys/bus/iio/devices/iio:deviceX/buffer/hwfifo_watermark_min
-+KernelVersion: 4.2
-+Contact:       linux-iio@vger.kernel.org
-+Description:
-+		A single positive integer specifying the minimum watermark level
-+		for the hardware fifo of this device. If the device does not
-+		have a hardware fifo this entry is not present.
-+		If the user sets buffer/watermark to a value less than this one,
-+		then the hardware watermark will remain unset.
-+
-+What:	       /sys/bus/iio/devices/iio:deviceX/buffer/hwfifo_watermark_max
-+KernelVersion: 4.2
-+Contact:       linux-iio@vger.kernel.org
-+Description:
-+		A single positive integer specifying the maximum watermark level
-+		for the hardware fifo of this device. If the device does not
-+		have a hardware fifo this entry is not present.
-+		If the user sets buffer/watermark to a value greater than this
-+		one, then the hardware watermark will be capped at this value.
-+
-+What:	       /sys/bus/iio/devices/iio:deviceX/buffer/hwfifo_watermark_available
-+KernelVersion: 4.2
-+Contact:       linux-iio@vger.kernel.org
-+Description:
-+		A list of positive integers specifying the available watermark
-+		levels for the hardware fifo. This entry is optional and if it
-+		is not present it means that all the values between
-+		hwfifo_watermark_min and hwfifo_watermark_max are supported.
-+		If the user sets buffer/watermark to a value greater than
-+		hwfifo_watermak_min but not equal to any of the values in this
-+		list, the driver will chose an appropriate value for the
-+		hardware fifo watermark level.
-diff --git a/drivers/iio/industrialio-buffer.c b/drivers/iio/industrialio-buffer.c
-index a4f4f07..87142bb 100644
---- a/drivers/iio/industrialio-buffer.c
-+++ b/drivers/iio/industrialio-buffer.c
-@@ -42,18 +42,47 @@ static size_t iio_buffer_data_available(struct iio_buffer *buf)
- 	return buf->access->data_available(buf);
- }
+diff --git a/drivers/iio/accel/bmc150-accel.c b/drivers/iio/accel/bmc150-accel.c
+index d826394..34b11ba 100644
+--- a/drivers/iio/accel/bmc150-accel.c
++++ b/drivers/iio/accel/bmc150-accel.c
+@@ -70,7 +70,9 @@
+ #define BMC150_ACCEL_INT_MAP_0_BIT_SLOPE	BIT(2)
  
-+static int iio_buffer_flush_hwfifo(struct iio_dev *indio_dev,
-+				   struct iio_buffer *buf, size_t required)
-+{
-+	if (!indio_dev->info->hwfifo_flush_to_buffer)
-+		return -ENODEV;
+ #define BMC150_ACCEL_REG_INT_MAP_1		0x1A
+-#define BMC150_ACCEL_INT_MAP_1_BIT_DATA	BIT(0)
++#define BMC150_ACCEL_INT_MAP_1_BIT_DATA		BIT(0)
++#define BMC150_ACCEL_INT_MAP_1_BIT_FWM		BIT(1)
++#define BMC150_ACCEL_INT_MAP_1_BIT_FFULL	BIT(2)
+ 
+ #define BMC150_ACCEL_REG_INT_RST_LATCH		0x21
+ #define BMC150_ACCEL_INT_MODE_LATCH_RESET	0x80
+@@ -83,7 +85,9 @@
+ #define BMC150_ACCEL_INT_EN_BIT_SLP_Z		BIT(2)
+ 
+ #define BMC150_ACCEL_REG_INT_EN_1		0x17
+-#define BMC150_ACCEL_INT_EN_BIT_DATA_EN	BIT(4)
++#define BMC150_ACCEL_INT_EN_BIT_DATA_EN		BIT(4)
++#define BMC150_ACCEL_INT_EN_BIT_FFULL_EN	BIT(5)
++#define BMC150_ACCEL_INT_EN_BIT_FWM_EN		BIT(6)
+ 
+ #define BMC150_ACCEL_REG_INT_OUT_CTRL		0x20
+ #define BMC150_ACCEL_INT_OUT_CTRL_INT1_LVL	BIT(0)
+@@ -122,6 +126,12 @@
+ #define BMC150_ACCEL_AXIS_TO_REG(axis)	(BMC150_ACCEL_REG_XOUT_L + (axis * 2))
+ #define BMC150_AUTO_SUSPEND_DELAY_MS		2000
+ 
++#define BMC150_ACCEL_REG_FIFO_STATUS		0x0E
++#define BMC150_ACCEL_REG_FIFO_CONFIG0		0x30
++#define BMC150_ACCEL_REG_FIFO_CONFIG1		0x3E
++#define BMC150_ACCEL_REG_FIFO_DATA		0x3F
++#define BMC150_ACCEL_FIFO_LENGTH		32
 +
-+	return indio_dev->info->hwfifo_flush_to_buffer(indio_dev, required);
-+}
-+
- static bool iio_buffer_ready(struct iio_dev *indio_dev, struct iio_buffer *buf,
--			     size_t to_wait)
-+			     size_t to_wait, int to_flush)
- {
-+	size_t avail;
-+	int flushed = 0;
-+
- 	/* wakeup if the device was unregistered */
- 	if (!indio_dev->info)
- 		return true;
- 
- 	/* drain the buffer if it was disabled */
--	if (!iio_buffer_is_active(buf))
-+	if (!iio_buffer_is_active(buf)) {
- 		to_wait = min_t(size_t, to_wait, 1);
-+		to_flush = 0;
-+	}
-+
-+	avail = iio_buffer_data_available(buf);
- 
--	if (iio_buffer_data_available(buf) >= to_wait)
-+	if (avail >= to_wait) {
-+		/* force a flush for non-blocking reads */
-+		if (!to_wait && !avail && to_flush)
-+			iio_buffer_flush_hwfifo(indio_dev, buf, to_flush);
-+		return true;
-+	}
-+
-+	if (to_flush)
-+		flushed = iio_buffer_flush_hwfifo(indio_dev, buf,
-+						  to_wait - avail);
-+	if (flushed <= 0)
-+		return false;
-+
-+	if (avail + flushed >= to_wait)
- 		return true;
- 
- 	return false;
-@@ -72,6 +101,7 @@ ssize_t iio_buffer_read_first_n_outer(struct file *filp, char __user *buf,
- 	struct iio_buffer *rb = indio_dev->buffer;
- 	size_t datum_size = rb->bytes_per_datum;
- 	size_t to_wait = 0;
-+	size_t to_read;
- 	int ret;
- 
- 	if (!indio_dev->info)
-@@ -87,12 +117,14 @@ ssize_t iio_buffer_read_first_n_outer(struct file *filp, char __user *buf,
- 	if (!datum_size)
- 		return 0;
- 
-+	to_read = min_t(size_t, n / datum_size, rb->watermark);
-+
- 	if (!(filp->f_flags & O_NONBLOCK))
--		to_wait = min_t(size_t, n / datum_size, rb->watermark);
-+		to_wait = to_read;
- 
- 	do {
- 		ret = wait_event_interruptible(rb->pollq,
--				      iio_buffer_ready(indio_dev, rb, to_wait));
-+			iio_buffer_ready(indio_dev, rb, to_wait, to_read));
- 		if (ret)
- 			return ret;
- 
-@@ -120,7 +152,7 @@ unsigned int iio_buffer_poll(struct file *filp,
- 		return -ENODEV;
- 
- 	poll_wait(filp, &rb->pollq, wait);
--	if (iio_buffer_ready(indio_dev, rb, rb->watermark))
-+	if (iio_buffer_ready(indio_dev, rb, rb->watermark, 0))
- 		return POLLIN | POLLRDNORM;
- 	return 0;
- }
-@@ -659,19 +691,16 @@ static int __iio_update_buffers(struct iio_dev *indio_dev,
- 		}
- 	}
- 	/* Definitely possible for devices to support both of these. */
--	if (indio_dev->modes & INDIO_BUFFER_TRIGGERED) {
--		if (!indio_dev->trig) {
--			printk(KERN_INFO "Buffer not started: no trigger\n");
--			ret = -EINVAL;
--			/* Can only occur on first buffer */
--			goto error_run_postdisable;
--		}
-+	if ((indio_dev->modes & INDIO_BUFFER_TRIGGERED) && indio_dev->trig) {
- 		indio_dev->currentmode = INDIO_BUFFER_TRIGGERED;
- 	} else if (indio_dev->modes & INDIO_BUFFER_HARDWARE) {
- 		indio_dev->currentmode = INDIO_BUFFER_HARDWARE;
- 	} else if (indio_dev->modes & INDIO_BUFFER_SOFTWARE) {
- 		indio_dev->currentmode = INDIO_BUFFER_SOFTWARE;
- 	} else { /* Should never be reached */
-+		/* Can only occur on first buffer */
-+		if (indio_dev->modes & INDIO_BUFFER_TRIGGERED)
-+			pr_info("Buffer not started: no trigger\n");
- 		ret = -EINVAL;
- 		goto error_run_postdisable;
- 	}
-@@ -823,6 +852,9 @@ static ssize_t iio_buffer_store_watermark(struct device *dev,
- 	}
- 
- 	buffer->watermark = val;
-+
-+	if (indio_dev->info->hwfifo_set_watermark)
-+		indio_dev->info->hwfifo_set_watermark(indio_dev, val);
- out:
- 	mutex_unlock(&indio_dev->mlock);
- 
-diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
-index 80d8550..d86b753 100644
---- a/include/linux/iio/iio.h
-+++ b/include/linux/iio/iio.h
-@@ -338,6 +338,16 @@ struct iio_dev;
-  *			provide a custom of_xlate function that reads the
-  *			*args* and returns the appropriate index in registered
-  *			IIO channels array.
-+ * @hwfifo_set_watermark: function pointer to set the current hardware
-+ *			fifo watermark level; see hwfifo_* entries in
-+ *			Documentation/ABI/testing/sysfs-bus-iio for details on
-+ *			how the hardware fifo operates
-+ * @hwfifo_flush_to_buffer: function pointer to flush the samples stored
-+ *			in the hardware fifo to the device buffer. The driver
-+ *			should not flush more than count samples. The function
-+ *			must return the number of samples flushed, 0 if no
-+ *			samples were flushed or a negative integer if no samples
-+ *			were flushed and there was an error.
-  **/
- struct iio_info {
- 	struct module			*driver_module;
-@@ -399,6 +409,9 @@ struct iio_info {
- 				  unsigned *readval);
- 	int (*of_xlate)(struct iio_dev *indio_dev,
- 			const struct of_phandle_args *iiospec);
-+	int (*hwfifo_set_watermark)(struct iio_dev *indio_dev, unsigned val);
-+	int (*hwfifo_flush_to_buffer)(struct iio_dev *indio_dev,
-+				      unsigned count);
+ enum bmc150_accel_axis {
+ 	AXIS_X,
+ 	AXIS_Y,
+@@ -179,13 +189,14 @@ struct bmc150_accel_data {
+ 	atomic_t active_intr;
+ 	struct bmc150_accel_trigger triggers[BMC150_ACCEL_TRIGGERS];
+ 	struct mutex mutex;
++	u8 fifo_mode, watermark;
+ 	s16 buffer[8];
+ 	u8 bw_bits;
+ 	u32 slope_dur;
+ 	u32 slope_thres;
+ 	u32 range;
+ 	int ev_enable_state;
+-	int64_t timestamp;
++	int64_t timestamp, old_timestamp;
+ 	const struct bmc150_accel_chip_info *chip_info;
  };
  
- /**
+@@ -470,6 +481,12 @@ static const struct bmc150_accel_interrupt_info {
+ 			BMC150_ACCEL_INT_EN_BIT_SLP_Y |
+ 			BMC150_ACCEL_INT_EN_BIT_SLP_Z
+ 	},
++	{ /* fifo watermark interrupt */
++		.map_reg = BMC150_ACCEL_REG_INT_MAP_1,
++		.map_bitmask = BMC150_ACCEL_INT_MAP_1_BIT_FWM,
++		.en_reg = BMC150_ACCEL_REG_INT_EN_1,
++		.en_bitmask = BMC150_ACCEL_INT_EN_BIT_FWM_EN,
++	},
+ };
+ 
+ static void bmc150_accel_interrupts_setup(struct iio_dev *indio_dev,
+@@ -823,6 +840,213 @@ static int bmc150_accel_validate_trigger(struct iio_dev *indio_dev,
+ 	return -EINVAL;
+ }
+ 
++static ssize_t bmc150_accel_get_fifo_watermark(struct device *dev,
++					       struct device_attribute *attr,
++					       char *buf)
++{
++	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
++	struct bmc150_accel_data *data = iio_priv(indio_dev);
++	int wm;
++
++	mutex_lock(&data->mutex);
++	wm = data->watermark;
++	mutex_unlock(&data->mutex);
++
++	return sprintf(buf, "%d\n", wm);
++}
++
++static ssize_t bmc150_accel_get_fifo_state(struct device *dev,
++					   struct device_attribute *attr,
++					   char *buf)
++{
++	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
++	struct bmc150_accel_data *data = iio_priv(indio_dev);
++	bool state;
++
++	mutex_lock(&data->mutex);
++	state = data->fifo_mode;
++	mutex_unlock(&data->mutex);
++
++	return sprintf(buf, "%d\n", state);
++}
++
++static IIO_CONST_ATTR(hwfifo_watermark_min, "1");
++static IIO_CONST_ATTR(hwfifo_watermark_max,
++		      __stringify(BMC150_ACCEL_FIFO_LENGTH));
++static IIO_DEVICE_ATTR(hwfifo_enabled, S_IRUGO,
++		       bmc150_accel_get_fifo_state, NULL, 0);
++static IIO_DEVICE_ATTR(hwfifo_watermark, S_IRUGO,
++		       bmc150_accel_get_fifo_watermark, NULL, 0);
++
++static const struct attribute *bmc150_accel_fifo_attributes[] = {
++	&iio_const_attr_hwfifo_watermark_min.dev_attr.attr,
++	&iio_const_attr_hwfifo_watermark_max.dev_attr.attr,
++	&iio_dev_attr_hwfifo_watermark.dev_attr.attr,
++	&iio_dev_attr_hwfifo_enabled.dev_attr.attr,
++	NULL,
++};
++
++static int bmc150_accel_set_watermark(struct iio_dev *indio_dev, unsigned val)
++{
++	struct bmc150_accel_data *data = iio_priv(indio_dev);
++
++	if (val > BMC150_ACCEL_FIFO_LENGTH)
++		val = BMC150_ACCEL_FIFO_LENGTH;
++
++	mutex_lock(&data->mutex);
++	data->watermark = val;
++	mutex_unlock(&data->mutex);
++
++	return 0;
++}
++
++/*
++ * We must read at least one full frame in one burst, otherwise the rest of the
++ * frame data is discarded.
++ */
++static int bmc150_accel_fifo_transfer(const struct i2c_client *client,
++				      char *buffer, int samples)
++{
++	int sample_length = 3 * 2;
++	u8 reg_fifo_data = BMC150_ACCEL_REG_FIFO_DATA;
++	int ret = -EIO;
++
++	if (i2c_check_functionality(client->adapter, I2C_FUNC_I2C)) {
++		struct i2c_msg msg[2] = {
++			{
++				.addr = client->addr,
++				.flags = 0,
++				.buf = &reg_fifo_data,
++				.len = sizeof(reg_fifo_data),
++			},
++			{
++				.addr = client->addr,
++				.flags = I2C_M_RD,
++				.buf = (u8 *)buffer,
++				.len = samples * sample_length,
++			}
++		};
++
++		ret = i2c_transfer(client->adapter, msg, 2);
++		if (ret != 2)
++			ret = -EIO;
++		else
++			ret = 0;
++	} else {
++		int i, step = I2C_SMBUS_BLOCK_MAX / sample_length;
++
++		for (i = 0; i < samples * sample_length; i += step) {
++			ret = i2c_smbus_read_i2c_block_data(client,
++							    reg_fifo_data, step,
++							    &buffer[i]);
++			if (ret != step) {
++				ret = -EIO;
++				break;
++			}
++
++			ret = 0;
++		}
++	}
++
++	if (ret)
++		dev_err(&client->dev, "Error transferring data from fifo\n");
++
++	return ret;
++}
++
++static int __bmc150_accel_fifo_flush(struct iio_dev *indio_dev,
++				     unsigned samples, bool irq)
++{
++	struct bmc150_accel_data *data = iio_priv(indio_dev);
++	int ret, i;
++	u8 count;
++	u16 buffer[BMC150_ACCEL_FIFO_LENGTH * 3];
++	int64_t tstamp, sample_period;
++
++	ret = i2c_smbus_read_byte_data(data->client,
++				       BMC150_ACCEL_REG_FIFO_STATUS);
++	if (ret < 0) {
++		dev_err(&data->client->dev, "Error reading reg_fifo_status\n");
++		return ret;
++	}
++
++	count = ret & 0x7F;
++
++	if (!count)
++		return 0;
++
++	/*
++	 * If we getting called from IRQ handler we know the stored timestamp is
++	 * fairly accurate for the last stored sample. Otherwise, if we are
++	 * called as a result of a read operation from userspace and hence
++	 * before the watermark interrupt was triggered, take a timestamp
++	 * now. We can fall anywhere in between two samples so the error in this
++	 * case is at most one sample period.
++	 */
++	if (!irq) {
++		data->old_timestamp = data->timestamp;
++		data->timestamp = iio_get_time_ns();
++	}
++
++	/*
++	 * Approximate timestamps for each of the sample based on the sampling
++	 * frequency, timestamp for last sample and number of samples.
++	 *
++	 * Note that we can't use the current bandwidth settings to compute the
++	 * sample period because the sample rate varies with the device
++	 * (e.g. between 31.70ms to 32.20ms for a bandwidth of 15.63HZ). That
++	 * small variation adds when we store a large number of samples and
++	 * creates significant jitter between the last and first samples in
++	 * different batches (e.g. 32ms vs 21ms).
++	 *
++	 * To avoid this issue we compute the actual sample period ourselves
++	 * based on the timestamp delta between the last two flush operations.
++	 */
++	sample_period = (data->timestamp - data->old_timestamp) / count;
++	tstamp = data->timestamp - (count - 1) * sample_period;
++
++	if (samples && count > samples)
++		count = samples;
++
++	ret = bmc150_accel_fifo_transfer(data->client, (u8 *)buffer, count);
++	if (ret)
++		return ret;
++
++	/*
++	 * Ideally we want the IIO core to handle the demux when running in fifo
++	 * mode but not when running in triggered buffer mode. Unfortunately
++	 * this does not seem to be possible, so stick with driver demux for
++	 * now.
++	 */
++	for (i = 0; i < count; i++) {
++		u16 sample[8];
++		int j, bit;
++
++		j = 0;
++		for_each_set_bit(bit, indio_dev->active_scan_mask,
++				 indio_dev->masklength)
++			memcpy(&sample[j++], &buffer[i * 3 + bit], 2);
++
++		iio_push_to_buffers_with_timestamp(indio_dev, sample, tstamp);
++
++		tstamp += sample_period;
++	}
++
++	return count;
++}
++
++static int bmc150_accel_fifo_flush(struct iio_dev *indio_dev, unsigned samples)
++{
++	struct bmc150_accel_data *data = iio_priv(indio_dev);
++	int ret;
++
++	mutex_lock(&data->mutex);
++	ret = __bmc150_accel_fifo_flush(indio_dev, samples, false);
++	mutex_unlock(&data->mutex);
++
++	return ret;
++}
++
+ static IIO_CONST_ATTR_SAMP_FREQ_AVAIL(
+ 		"15.620000 31.260000 62.50000 125 250 500 1000 2000");
+ 
+@@ -962,6 +1186,20 @@ static const struct iio_info bmc150_accel_info = {
+ 	.driver_module		= THIS_MODULE,
+ };
+ 
++static const struct iio_info bmc150_accel_info_fifo = {
++	.attrs			= &bmc150_accel_attrs_group,
++	.read_raw		= bmc150_accel_read_raw,
++	.write_raw		= bmc150_accel_write_raw,
++	.read_event_value	= bmc150_accel_read_event,
++	.write_event_value	= bmc150_accel_write_event,
++	.write_event_config	= bmc150_accel_write_event_config,
++	.read_event_config	= bmc150_accel_read_event_config,
++	.validate_trigger	= bmc150_accel_validate_trigger,
++	.hwfifo_set_watermark	= bmc150_accel_set_watermark,
++	.hwfifo_flush_to_buffer	= bmc150_accel_fifo_flush,
++	.driver_module		= THIS_MODULE,
++};
++
+ static irqreturn_t bmc150_accel_trigger_handler(int irq, void *p)
+ {
+ 	struct iio_poll_func *pf = p;
+@@ -1057,18 +1295,17 @@ static const struct iio_trigger_ops bmc150_accel_trigger_ops = {
+ 	.owner = THIS_MODULE,
+ };
+ 
+-static irqreturn_t bmc150_accel_event_handler(int irq, void *private)
++static int bmc150_accel_handle_roc_event(struct iio_dev *indio_dev)
+ {
+-	struct iio_dev *indio_dev = private;
+ 	struct bmc150_accel_data *data = iio_priv(indio_dev);
+-	int ret;
+ 	int dir;
++	int ret;
+ 
+ 	ret = i2c_smbus_read_byte_data(data->client,
+ 				       BMC150_ACCEL_REG_INT_STATUS_2);
+ 	if (ret < 0) {
+ 		dev_err(&data->client->dev, "Error reading reg_int_status_2\n");
+-		goto ack_intr_status;
++		return ret;
+ 	}
+ 
+ 	if (ret & BMC150_ACCEL_ANY_MOTION_BIT_SIGN)
+@@ -1097,35 +1334,73 @@ static irqreturn_t bmc150_accel_event_handler(int irq, void *private)
+ 							IIO_EV_TYPE_ROC,
+ 							dir),
+ 							data->timestamp);
+-ack_intr_status:
+-	if (!data->triggers[BMC150_ACCEL_TRIGGER_DATA_READY].enabled)
++	return ret;
++}
++
++static irqreturn_t bmc150_accel_irq_thread_handler(int irq, void *private)
++{
++	struct iio_dev *indio_dev = private;
++	struct bmc150_accel_data *data = iio_priv(indio_dev);
++	bool ack = false;
++	int ret;
++
++	mutex_lock(&data->mutex);
++
++	if (data->fifo_mode) {
++		ret = __bmc150_accel_fifo_flush(indio_dev,
++						BMC150_ACCEL_FIFO_LENGTH, true);
++		if (ret > 0)
++			ack = true;
++	}
++
++	if (data->ev_enable_state) {
++		ret = bmc150_accel_handle_roc_event(indio_dev);
++		if (ret > 0)
++			ack = true;
++	}
++
++	if (ack) {
+ 		ret = i2c_smbus_write_byte_data(data->client,
+ 					BMC150_ACCEL_REG_INT_RST_LATCH,
+ 					BMC150_ACCEL_INT_MODE_LATCH_INT |
+ 					BMC150_ACCEL_INT_MODE_LATCH_RESET);
++		if (ret)
++			dev_err(&data->client->dev, "Error writing reg_int_rst_latch\n");
++		ret = IRQ_HANDLED;
++	} else {
++		ret = IRQ_NONE;
++	}
+ 
+-	return IRQ_HANDLED;
++	mutex_unlock(&data->mutex);
++
++	return ret;
+ }
+ 
+-static irqreturn_t bmc150_accel_data_rdy_trig_poll(int irq, void *private)
++static irqreturn_t bmc150_accel_irq_handler(int irq, void *private)
+ {
+ 	struct iio_dev *indio_dev = private;
+ 	struct bmc150_accel_data *data = iio_priv(indio_dev);
++	bool ack = false;
+ 	int i;
+ 
++	data->old_timestamp = data->timestamp;
+ 	data->timestamp = iio_get_time_ns();
+ 
+ 	for (i = 0; i < BMC150_ACCEL_TRIGGERS; i++) {
+ 		if (data->triggers[i].enabled) {
+ 			iio_trigger_poll(data->triggers[i].indio_trig);
++			ack = true;
+ 			break;
+ 		}
+ 	}
+ 
+-	if (data->ev_enable_state)
++	if (data->ev_enable_state || data->fifo_mode)
+ 		return IRQ_WAKE_THREAD;
+-	else
++
++	if (ack)
+ 		return IRQ_HANDLED;
++
++	return IRQ_NONE;
+ }
+ 
+ static const char *bmc150_accel_match_acpi_device(struct device *dev, int *data)
+@@ -1232,6 +1507,94 @@ static int bmc150_accel_triggers_setup(struct iio_dev *indio_dev,
+ 	return ret;
+ }
+ 
++#define BMC150_ACCEL_FIFO_MODE_STREAM          0x80
++#define BMC150_ACCEL_FIFO_MODE_FIFO            0x40
++#define BMC150_ACCEL_FIFO_MODE_BYPASS          0x00
++
++static int bmc150_accel_fifo_set_mode(struct bmc150_accel_data *data)
++{
++	u8 reg = BMC150_ACCEL_REG_FIFO_CONFIG1;
++	int ret;
++
++	ret = i2c_smbus_write_byte_data(data->client, reg, data->fifo_mode);
++	if (ret < 0) {
++		dev_err(&data->client->dev, "Error writing reg_fifo_config1\n");
++		return ret;
++	}
++
++	if (!data->fifo_mode)
++		return 0;
++
++	ret = i2c_smbus_write_byte_data(data->client,
++					BMC150_ACCEL_REG_FIFO_CONFIG0,
++					data->watermark);
++	if (ret < 0)
++		dev_err(&data->client->dev, "Error writing reg_fifo_config0\n");
++
++	return ret;
++}
++
++static int bmc150_accel_buffer_postenable(struct iio_dev *indio_dev)
++{
++	struct bmc150_accel_data *data = iio_priv(indio_dev);
++	int ret = 0;
++
++	if (indio_dev->currentmode == INDIO_BUFFER_TRIGGERED)
++		return iio_triggered_buffer_postenable(indio_dev);
++
++	mutex_lock(&data->mutex);
++
++	if (!data->watermark)
++		goto out;
++
++	ret = bmc150_accel_set_interrupt(data, BMC150_ACCEL_INT_WATERMARK,
++					 true);
++	if (ret)
++		goto out;
++
++	data->fifo_mode = BMC150_ACCEL_FIFO_MODE_FIFO;
++
++	ret = bmc150_accel_fifo_set_mode(data);
++	if (ret) {
++		data->fifo_mode = 0;
++		bmc150_accel_set_interrupt(data, BMC150_ACCEL_INT_WATERMARK,
++					   false);
++	}
++
++out:
++	mutex_unlock(&data->mutex);
++
++	return ret;
++}
++
++static int bmc150_accel_buffer_predisable(struct iio_dev *indio_dev)
++{
++	struct bmc150_accel_data *data = iio_priv(indio_dev);
++
++	if (indio_dev->currentmode == INDIO_BUFFER_TRIGGERED)
++		return iio_triggered_buffer_predisable(indio_dev);
++
++	mutex_lock(&data->mutex);
++
++	if (!data->fifo_mode)
++		goto out;
++
++	bmc150_accel_set_interrupt(data, BMC150_ACCEL_INT_WATERMARK, false);
++	__bmc150_accel_fifo_flush(indio_dev, BMC150_ACCEL_FIFO_LENGTH, false);
++	data->fifo_mode = 0;
++	bmc150_accel_fifo_set_mode(data);
++
++out:
++	mutex_unlock(&data->mutex);
++
++	return 0;
++}
++
++static const struct iio_buffer_setup_ops bmc150_accel_buffer_ops = {
++	.postenable = bmc150_accel_buffer_postenable,
++	.predisable = bmc150_accel_buffer_predisable,
++};
++
+ static int bmc150_accel_probe(struct i2c_client *client,
+ 			      const struct i2c_device_id *id)
+ {
+@@ -1278,8 +1641,8 @@ static int bmc150_accel_probe(struct i2c_client *client,
+ 	if (client->irq >= 0) {
+ 		ret = devm_request_threaded_irq(
+ 						&client->dev, client->irq,
+-						bmc150_accel_data_rdy_trig_poll,
+-						bmc150_accel_event_handler,
++						bmc150_accel_irq_handler,
++						bmc150_accel_irq_thread_handler,
+ 						IRQF_TRIGGER_RISING,
+ 						BMC150_ACCEL_IRQ_NAME,
+ 						indio_dev);
+@@ -1309,12 +1672,20 @@ static int bmc150_accel_probe(struct i2c_client *client,
+ 		ret = iio_triggered_buffer_setup(indio_dev,
+ 						 &iio_pollfunc_store_time,
+ 						 bmc150_accel_trigger_handler,
+-						 NULL);
++						 &bmc150_accel_buffer_ops);
+ 		if (ret < 0) {
+ 			dev_err(&client->dev,
+ 				"Failed: iio triggered buffer setup\n");
+ 			goto err_trigger_unregister;
+ 		}
++
++		if (i2c_check_functionality(client->adapter, I2C_FUNC_I2C) ||
++		    i2c_check_functionality(client->adapter,
++					    I2C_FUNC_SMBUS_READ_I2C_BLOCK)) {
++			indio_dev->modes |= INDIO_BUFFER_SOFTWARE;
++			indio_dev->info = &bmc150_accel_info_fifo;
++			indio_dev->buffer->attrs = bmc150_accel_fifo_attributes;
++		}
+ 	}
+ 
+ 	ret = iio_device_register(indio_dev);
+@@ -1386,6 +1757,7 @@ static int bmc150_accel_resume(struct device *dev)
+ 	mutex_lock(&data->mutex);
+ 	if (atomic_read(&data->active_intr))
+ 		bmc150_accel_set_mode(data, BMC150_ACCEL_SLEEP_MODE_NORMAL, 0);
++	bmc150_accel_fifo_set_mode(data);
+ 	mutex_unlock(&data->mutex);
+ 
+ 	return 0;
+@@ -1419,6 +1791,9 @@ static int bmc150_accel_runtime_resume(struct device *dev)
+ 	ret = bmc150_accel_set_mode(data, BMC150_ACCEL_SLEEP_MODE_NORMAL, 0);
+ 	if (ret < 0)
+ 		return ret;
++	ret = bmc150_accel_fifo_set_mode(data);
++	if (ret < 0)
++		return ret;
+ 
+ 	sleep_val = bmc150_accel_get_startup_times(data);
+ 	if (sleep_val < 20)
 -- 
 1.9.1
 
