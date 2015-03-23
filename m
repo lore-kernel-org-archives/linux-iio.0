@@ -1,36 +1,30 @@
-Return-Path: <linus.walleij@linaro.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-wg0-f51.google.com ([74.125.82.51]:35975 "EHLO
+	mail-wg0-f51.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752610AbbCWNkk (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 23 Mar 2015 09:40:40 -0400
+Received: by wgra20 with SMTP id a20so146236874wgr.3
+        for <linux-iio@vger.kernel.org>; Mon, 23 Mar 2015 06:40:39 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <550D5B65.10906@kernel.org>
-References: <1426672326-6292-1-git-send-email-linus.walleij@linaro.org>
-	<20150318153948.GQ3318@x1>
-	<550D5B65.10906@kernel.org>
-Date: Mon, 23 Mar 2015 10:21:50 +0100
-Message-ID: <CACRpkdYuWL_rs9nzg8ivRehG6-yFOheo+ZugZ-1iqmAyhwVaLQ@mail.gmail.com>
-Subject: Re: [PATCH RESEND] iio: st-sensors: add support for lis3lv02d accelerometer
-From: Linus Walleij <linus.walleij@linaro.org>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Lee Jones <lee.jones@linaro.org>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>, Denis CIOCCA <denis.ciocca@st.com>,
-	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>
+In-Reply-To: <CALwa49u4s7qqBUbV8FUU=3dFJczEkzQwXZAEhakxGY1Xay-8iA@mail.gmail.com>
+References: <CALwa49u4s7qqBUbV8FUU=3dFJczEkzQwXZAEhakxGY1Xay-8iA@mail.gmail.com>
+Date: Mon, 23 Mar 2015 15:40:39 +0200
+Message-ID: <CAEnQRZDmYTzZPyMiO=0SMo=d1k3s_Dj-T7u7Jw696dz1c5uRJA@mail.gmail.com>
+Subject: Re: Sysfs requirement for running generic_buffer.c application - IIO sensors
+From: Daniel Baluta <daniel.baluta@gmail.com>
+To: "s.rawat" <imsaurabhrawat@gmail.com>
+Cc: kernelnewbies <kernelnewbies@kernelnewbies.org>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
 Content-Type: text/plain; charset=UTF-8
-List-ID: <linux-iio@vger.kernel.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Sat, Mar 21, 2015 at 12:52 PM, Jonathan Cameron <jic23@kernel.org> wrote:
+On Mon, Mar 23, 2015 at 7:27 AM, s.rawat <imsaurabhrawat@gmail.com> wrote:
+> I have two system having different kernel version and drivers(IIO) on which
+> i can run the generic_buffer.c application .On one system it works fine but
+> on the other it does not give the input reports data.
 
-> We aren't going to move forward without doing something.
-> Hence applied to the togreg branch of iio.git.
+What kernel versions are you using? Why are you using different drivers? :D
 
-Thanks!
-
->  Lets see
-> whether anyone cares enough to add the stuff the other driver supports
-> and this one doesn't.
-
-The one really interesting feature I saw was the free-fall detection.
-I think it'd be nice if we had the ability to register for listening
-to such events from the IIO accelerometer subsystem, but I'm
-scared to even try to test it, god knows how many boards I'd
-break before I had this properly supported...
-
-Yours,
-Linus Walleij
+thanks,
+Daniel.
