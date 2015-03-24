@@ -1,140 +1,32 @@
-Return-Path: <mpa@pengutronix.de>
-Date: Tue, 24 Mar 2015 17:10:58 +0100
-From: Markus Pargmann <mpa@pengutronix.de>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Shawn Guo <shawn.guo@linaro.org>, Samuel Ortiz <sameo@linux.intel.com>,
-	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-	Fabio Estevam <festevam@gmail.com>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	Hartmut Knaack <knaack.h@gmx.de>, Denis Carikli <denis@eukrea.com>,
-	Eric =?utf-8?Q?B=C3=A9nard?= <eric@eukrea.com>,
-	Sascha Hauer <kernel@pengutronix.de>,
-	linux-arm-kernel@lists.infradead.org,
-	Lee Jones <lee.jones@linaro.org>, linux-input@vger.kernel.org,
-	linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>,
-	devicetree@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
-	Pawel Moll <pawel.moll@arm.com>,
-	Mark Rutland <mark.rutland@arm.com>,
-	Ian Campbell <ijc+devicetree@hellion.org.uk>,
-	Kumar Gala <galak@codeaurora.org>
-Subject: Re: [PATCH v7 3/8] ARM: dt: Binding documentation for imx25
- touchscreen controller
-Message-ID: <20150324161058.GJ28604@pengutronix.de>
-References: <1425369498-25541-1-git-send-email-mpa@pengutronix.de>
- <1425369498-25541-4-git-send-email-mpa@pengutronix.de>
- <54FB3740.6010908@kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from smtp-out-173.synserver.de ([212.40.185.173]:1079 "EHLO
+	smtp-out-173.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751980AbbCXQC2 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 24 Mar 2015 12:02:28 -0400
+Message-ID: <55118A93.5050202@metafoo.de>
+Date: Tue, 24 Mar 2015 17:02:27 +0100
+From: Lars-Peter Clausen <lars@metafoo.de>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="liqSWPDvh3eyfZ9k"
-In-Reply-To: <54FB3740.6010908@kernel.org>
-List-ID: <linux-iio@vger.kernel.org>
+To: =?UTF-8?B?Vmlhbm5leSBsZSBDbMOpbWVudCBkZSBTYWludC1NYXJjcQ==?=
+	<vianney.leclement@essensium.com>, linux-iio@vger.kernel.org
+CC: "Arnout Vandecappelle (Essensium/Mind)" <arnout@mind.be>
+Subject: Re: [PATCH v2 4/7] iio: core: Introduce IIO_CHAN_INFO_EMISSIVITY
+References: <1427212459-31585-1-git-send-email-vianney.leclement@essensium.com> <1427212459-31585-5-git-send-email-vianney.leclement@essensium.com>
+In-Reply-To: <1427212459-31585-5-git-send-email-vianney.leclement@essensium.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
+On 03/24/2015 04:54 PM, Vianney le Clément de Saint-Marcq wrote:
+> Contact-less IR temperature sensors measure the temperature of an object
+> by using its thermal radiation.  Surfaces with different emissivity
+> ratios emit different amounts of energy at the same temperature.
+>
+> IIO_CHAN_INFO_EMISSIVITY allows the user to inform the sensor of the
+> emissivity of the object in front of it, in order to effectively measure
+> its temperature.
 
---liqSWPDvh3eyfZ9k
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+All the other attributes that need to be setup according to the object being 
+measured start with the calib prefix. So maybe call this calibemissivity.
 
-On Sat, Mar 07, 2015 at 05:37:04PM +0000, Jonathan Cameron wrote:
-> On 03/03/15 07:58, Markus Pargmann wrote:
-> > This is the touchscreen conversion queue binding documentation. It uses
-> > the shared imx25 ADC.
-> >=20
-> > Signed-off-by: Markus Pargmann <mpa@pengutronix.de>
-> Looks fine, one more general binding approach comment though.
-> A lot of the vendor specific elements in here are awfully generic.
-> Does it not make sense to have them as standard attributes for
-> touch screen drivers?
-> > ---
-> >=20
-> > Notes:
-> >     Changes in v5:
-> >      - Fix signed/unsigned comparison
-> >      - Fix unused variable settling_time by putting it in the correct a=
-rgument list
-> >      - Use continous conversion queue with the repeat feature and a pro=
-per
-> >        repeat-wait. Previously the touchscreen caused massive number of=
- interrupts.
-> >=20
-> >  .../bindings/input/touchscreen/fsl-mx25-tcq.txt    | 29 ++++++++++++++=
-++++++++
-> >  1 file changed, 29 insertions(+)
-> >  create mode 100644 Documentation/devicetree/bindings/input/touchscreen=
-/fsl-mx25-tcq.txt
-> >=20
-> > diff --git a/Documentation/devicetree/bindings/input/touchscreen/fsl-mx=
-25-tcq.txt b/Documentation/devicetree/bindings/input/touchscreen/fsl-mx25-t=
-cq.txt
-> > new file mode 100644
-> > index 000000000000..4214a99d197a
-> > --- /dev/null
-> > +++ b/Documentation/devicetree/bindings/input/touchscreen/fsl-mx25-tcq.=
-txt
-> > @@ -0,0 +1,29 @@
-> > +Freescale mx25 TS conversion queue module
-> > +
-> > +mx25 touchscreen conversion queue module which controls the ADC unit o=
-f the
-> > +mx25 for attached touchscreens.
-> > +
-> > +Required properties:
-> > + - compatible: Should be "fsl,imx25-tcq".
-> > + - reg: Memory range of the device.
-> > + - interrupts: Should be the interrupt number associated with this mod=
-ule within
-> > +   the tscadc unit (<0>).
-> > + - interrupt-parent: Should be a phandle to the tscadc unit.
-> > + - fsl,wires: Should be '<4>' or '<5>'
-> > +
-> > +Optional properties:
-> > + - fsl,pen-debounce: Pen debounce time.
-> > + - fsl,pen-threshold: Pen-down threshold for the touchscreen.
-> > + - fsl,settling-time: Settling time in nanoseconds.
-> Obviously it's up to Dmitry etc, but are these not standard enough attrib=
-utes to
-> not be vendor specific?  I'd expect say touch-pen-debouce and touch-pen-t=
-hreshold
-> etc to be standard binding elements for touch screens.
-
-Seems like a good idea. I just discovered that there is a 'touchscreen-fuzz=
--pressure'
-which seems to be the same as fsl,pen-threshold. So this should be
-replaced in my patches. The other properties do not exist.
-
-Dmitry, what do you think about some standard properties for the
-remaining?
-
-Best Regards,
-
-Markus
-
---=20
-Pengutronix e.K.                           |                             |
-Industrial Linux Solutions                 | http://www.pengutronix.de/  |
-Peiner Str. 6-8, 31137 Hildesheim, Germany | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
-
---liqSWPDvh3eyfZ9k
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
-
-iQIcBAEBAgAGBQJVEYySAAoJEEpcgKtcEGQQOLAP+QFnOQA6/FPTVapckMK7i84b
-7fhvPB12SsGH0mculX5SxmLgwEr0Ab9A+97HyiIn0rvuDxtKZ5kTvov4tOl8vspW
-4H1aA6hfpe+2+G2QHIcoRIpk9ulwDtPOhgpv1FsdgkFOdQWiLIDTE0hWGJfKBgUo
-tKBjBHFIP34nytS9Z16yB+k4+hG1elwZg1EKp67j4RUzvP4g8J/0Y5Jn1JA2KS55
-C9hCSpxyLIvyzYD+bfyM1H2nm6GacysWtWgXEM4wrZCJgxpuMHcQFKUgLs2oV/YN
-15opOvwLZFQVj6iKV2oVihXYykdNPHcwGCj9PeAz476/5hlacQlzpL907yAytqsT
-EHoAlAMt8TOCMhC3/z6G3CLxTKW8+5NC5Q8ZKPiIjRDZntKiS5oY1s3fyq3W4sO1
-yEijtAgxrGC6ES3lrHlg5ucP4sMU6yP6+sOSoocFk3Id63CZrPKeIzPWZ8SiMbYB
-IBwQC42bBuIaLHzE43v1Q/199+xKXKS8uYgMp5RJKeh4Q/blSThKq9vHyjaAkMQX
-AztlQDjJFwFROb+huOQmzZMTjgnut58hNAC2FgpdpkwUkyXBf0RJ3R6WRPTjc0hG
-zBkN62q6G7ZeCD0coPLKCgASKd6D27bpFRn0ZotQMGFpzxW9LwBEFgDRQpU1IRgc
-RmmKmDKcnMM8jotgkE5K
-=DKoQ
------END PGP SIGNATURE-----
-
---liqSWPDvh3eyfZ9k--
+- Lars
