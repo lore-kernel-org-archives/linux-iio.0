@@ -1,45 +1,30 @@
-Return-Path: <daniel.baluta@intel.com>
-From: Daniel Baluta <daniel.baluta@intel.com>
-To: jic23@kernel.org
-Cc: jlbec@evilplan.org,
-	lars@metafoo.de,
-	knaack.h@gmx.de,
-	pmeerw@pmeerw.net,
-	linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	octavian.purdila@intel.com,
-	daniel.baluta@intel.com
-Subject: [PATCH 0/3] Add configfs support for software triggers in IIO
-Date: Wed, 25 Mar 2015 19:00:29 +0200
-Message-Id: <1427302832-9336-1-git-send-email-daniel.baluta@intel.com>
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail.linuxfoundation.org ([140.211.169.12]:37653 "EHLO
+	mail.linuxfoundation.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751874AbbCXV5P (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 24 Mar 2015 17:57:15 -0400
+Date: Tue, 24 Mar 2015 22:57:12 +0100
+From: Greg KH <gregkh@linuxfoundation.org>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Subject: Re: [PULL] IIO fixes for 4.0 set 3
+Message-ID: <20150324215712.GE19829@kroah.com>
+References: <5505E723.2090205@kernel.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <5505E723.2090205@kernel.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-This patchset adds initial support for configfs in IIO. It is structured in 
-the following way:
+On Sun, Mar 15, 2015 at 08:10:11PM +0000, Jonathan Cameron wrote:
+> The following changes since commit abe46b8932dd9a6dfc3698e3eb121809b7b9ed28:
+> 
+>   staging: comedi: adv_pci1710: fix AI INSN_READ for non-zero channel (2015-03-01 19:25:59 -0800)
+> 
+> are available in the git repository at:
+> 
+>   git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git tags/iio-fixes-for-4.0c
 
-	* patch 1 - adds configfs infrastructure creating an "iio" configfs
-	subystem + an initial "triggers" group.
-	* patch 2 - adds the first "real" trigger type - hrtimer.
-	* patch 3 - adds Documentation
+Pulled and pushed out, thanks.
 
-Daniel Baluta (3):
-  iio: configfs: Add configfs support to IIO
-  iio: trigger: Add support for highres timer trigger
-  iio: Documentation: Add initial documentaton for IIO
-
- Documentation/iio/iio_configfs.txt       |  74 ++++++++
- drivers/iio/Kconfig                      |   8 +
- drivers/iio/Makefile                     |   1 +
- drivers/iio/industrialio-configfs.c      | 301 +++++++++++++++++++++++++++++++
- drivers/iio/trigger/Kconfig              |   8 +
- drivers/iio/trigger/Makefile             |   2 +
- drivers/iio/trigger/iio-trig-hrtimer.c   | 146 +++++++++++++++
- include/linux/iio/iio_configfs_trigger.h |  49 +++++
- 8 files changed, 589 insertions(+)
- create mode 100644 Documentation/iio/iio_configfs.txt
- create mode 100644 drivers/iio/industrialio-configfs.c
- create mode 100644 drivers/iio/trigger/iio-trig-hrtimer.c
- create mode 100644 include/linux/iio/iio_configfs_trigger.h
-
--- 
-1.9.1
+greg k-h
