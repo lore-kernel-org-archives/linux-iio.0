@@ -1,40 +1,65 @@
 Return-Path: <lars@metafoo.de>
-Message-ID: <5511583C.4080501@metafoo.de>
-Date: Tue, 24 Mar 2015 13:27:40 +0100
+Message-ID: <551155C3.2030403@metafoo.de>
+Date: Tue, 24 Mar 2015 13:17:07 +0100
 From: Lars-Peter Clausen <lars@metafoo.de>
 MIME-Version: 1.0
-To: Octavian Purdila <octavian.purdila@intel.com>, jic23@kernel.org
-CC: pmeerw@pmeerw.net, knaack.h@gmx.de, linux-iio@vger.kernel.org
-Subject: Re: [PATCH v6 0/3] iio: add support for hardware fifo
-References: <1427049220-2876-1-git-send-email-octavian.purdila@intel.com>
-In-Reply-To: <1427049220-2876-1-git-send-email-octavian.purdila@intel.com>
+To: Robert Dolca <robert.dolca@intel.com>, linux-iio@vger.kernel.org,
+ Jonathan Cameron <jic23@kernel.org>
+CC: linux-kernel@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>,
+ Peter Meerwald <pmeerw@pmeerw.net>,
+ Linus Walleij <linus.walleij@linaro.org>,
+ Denis CIOCCA <denis.ciocca@st.com>
+Subject: Re: [PATCH] IIO: Adds ACPI support for ST gyroscopes
+References: <1427118025-4380-1-git-send-email-robert.dolca@intel.com>
+In-Reply-To: <1427118025-4380-1-git-send-email-robert.dolca@intel.com>
 Content-Type: text/plain; charset=windows-1252; format=flowed
 List-ID: <linux-iio@vger.kernel.org>
 
-On 03/22/2015 07:33 PM, Octavian Purdila wrote:
-> Changes since v5:
->
->   * remove hwfifo_get_watermark operation from iio_info operations; the
->     driver can expose it dirrectly as a read-only buffer attribute and
->     there is not much gain from do it in the core
->
->   * in the case of non-blocking read flush with the full to read amount
->
->   * fix a few spelling errors
->
->   * add hwfifo_watermark_min, hwfifo_watermark_max,
->     hwfifo_watermark_available, hwfifo_enabled attributes to give
->     userspace more information of how to select a watermark that can
->     used to enable the hardware fifo
->
->   * rename hwfifo_flush to hwfifo_flush_to_buffer
->
->   * bmc150: avoid changing the iio_info to keep it constant
->
->   * bmc150: rename irq and threaded irq handlers
->
+[...]
+> +int st_sensors_acpi_i2c_probe(struct i2c_client *client,
+> +			       const struct acpi_device_id *match)
+> +{
+> +	const struct acpi_device_id *id;
+> +	struct gpio_desc *gpiod_irq;
+> +	int ret;
+> +
+> +	id = acpi_match_device(match, &client->dev);
+> +	if (!id)
+> +		return -ENODEV;
+> +
+> +	/* Get IRQ GPIO */
+> +	gpiod_irq = devm_gpiod_get_index(&client->dev, 0, 0);
+> +	if (IS_ERR(gpiod_irq))
+> +		return -ENODEV;
+> +
+> +	/* Configure IRQ GPIO */
+> +	ret = gpiod_direction_input(gpiod_irq);
+> +	if (ret)
+> +		return ret;
 
-Looks pretty good to me now, thanks for doing this patch series. I'll try to 
-give it some testing. If you don't hear anything else from me, that's a
+How exactly does this whole GPIO IRQ thing work with ACPI. Does the ACPI 
+description just specify the GPIOs and the driver needs to know which GPIO 
+is the is used for the IRQ or does the description indicate that a certain 
+GPIO should be used as a IRQ. The reason why I'm asking is that same code 
+pops up in pretty much every ACPI I2C sensor driver now. Which suggests that 
+this should be factored out into common infrastructure.
 
-Reviewed-by: Lars-Peter Clausen <lars@metafoo.de>
+And especially the requesting and the setting of the direction of the GPIO 
+should not be necessary if the GPIO controller implements interrupt handling 
+correctly as this is something that is, as far as I understand, taken care 
+of by the GPIO framework when the IRQ is requested.
+
+> +
+> +	/* Map the pin to an IRQ */
+> +	client->irq = gpiod_to_irq(gpiod_irq);
+> +
+> +	/* The name from the ACPI match takes precedence if present */
+> +	memset(client->name, 0, sizeof(client->name));
+> +	strncpy(client->name, (char *) id->driver_data,
+> +		min(sizeof(client->name), strlen((char *) id->driver_data)));
+
+Both client->irq and client->name should not be modified by the driver, 
+these are only supposed to be set by the I2C framework. Modifying them in 
+the driver can result in undefined behavior.
+
+- Lars
