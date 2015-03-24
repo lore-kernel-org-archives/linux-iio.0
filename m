@@ -1,167 +1,113 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from 132.79-246-81.adsl-static.isp.belgacom.be ([81.246.79.132]:46624
-	"EHLO viper.mind.be" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754473AbbCXPyq (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 24 Mar 2015 11:54:46 -0400
-From: =?UTF-8?q?Vianney=20le=20Cl=C3=A9ment=20de=20Saint-Marcq?=
-	<vianney.leclement@essensium.com>
-To: linux-iio@vger.kernel.org
-Cc: =?UTF-8?q?Vianney=20le=20Cl=C3=A9ment=20de=20Saint-Marcq?=
-	<vianney.leclement@essensium.com>,
-	"Arnout Vandecappelle (Essensium/Mind)" <arnout@mind.be>
-Subject: [PATCH v2 3/7] iio: mlx90614: Support devices with dual IR sensor
-Date: Tue, 24 Mar 2015 16:54:15 +0100
-Message-Id: <1427212459-31585-4-git-send-email-vianney.leclement@essensium.com>
-In-Reply-To: <1427212459-31585-1-git-send-email-vianney.leclement@essensium.com>
-References: <1427212459-31585-1-git-send-email-vianney.leclement@essensium.com>
+Return-Path: <mika.westerberg@linux.intel.com>
+Date: Tue, 24 Mar 2015 17:55:15 +0200
+From: Mika Westerberg <mika.westerberg@linux.intel.com>
+To: Lars-Peter Clausen <lars@metafoo.de>
+Cc: Linus Walleij <linus.walleij@linaro.org>,
+	Robert Dolca <robert.dolca@gmail.com>,
+	Robert Dolca <robert.dolca@intel.com>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	Jonathan Cameron <jic23@kernel.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Denis CIOCCA <denis.ciocca@st.com>,
+	"linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>,
+	Alexandre Courbot <gnurou@gmail.com>
+Subject: Re: [PATCH] IIO: Adds ACPI support for ST gyroscopes
+Message-ID: <20150324155515.GR1878@lahna.fi.intel.com>
+References: <1427118025-4380-1-git-send-email-robert.dolca@intel.com>
+ <551155C3.2030403@metafoo.de>
+ <CAFPB+YdwrPoob1CPdUfSt2uBJWPi=6_0-d0NChj2agD6-z-8qw@mail.gmail.com>
+ <551168F0.1090901@metafoo.de>
+ <CACRpkdaOQ-onkgQJSyoVEQNtkZ9nF_4z=9jNdU-tug-TwvAAkQ@mail.gmail.com>
+ <20150324150630.GP1878@lahna.fi.intel.com>
+ <55118128.10402@metafoo.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <55118128.10402@metafoo.de>
+List-ID: <linux-iio@vger.kernel.org>
 
-The model is detected by reading the EEPROM configuration during
-probing.
+On Tue, Mar 24, 2015 at 04:22:16PM +0100, Lars-Peter Clausen wrote:
+> Add Alexandre and linux-gpio to Cc.
+> 
+> On 03/24/2015 04:06 PM, Mika Westerberg wrote:
+> >On Tue, Mar 24, 2015 at 02:57:49PM +0100, Linus Walleij wrote:
+> >>On Tue, Mar 24, 2015 at 2:38 PM, Lars-Peter Clausen <lars@metafoo.de> wrote:
+> >>>On 03/24/2015 02:26 PM, Robert Dolca wrote:
+> >>>>On Tue, Mar 24, 2015 at 2:17 PM, Lars-Peter Clausen <lars@metafoo.de>
+> >>>>wrote:
+> >>
+> >>>>In the ACPI description you specify one or more IRQ GPIO pins. In the
+> >>>>driver you request the GPIO pin using the index. In the ACPI 5.1
+> >>>>specification you can use named GPIOs instead of index.
+> >>>
+> >>>
+> >>>But is there a way to distinguish between IRQ GPIOs and non IRQ GPIOs? If it
+> >>>is clear that a certain GPIO is the IRQ for the device the I2C framework
+> >>>should take care of assigning the client->irq field, instead of doing it
+> >>>manually in each and every device driver.
+> >>
+> >>In the device tree case we have a mechanism where each
+> >>GPIO chip implements two API:s, one gpio_chip API and
+> >>one irqchip API.
+> >>
+> >>Then in the tree both the GPIO and IRQs can be assigned as
+> >>resources to clients, orthogonally. Usually this will only work
+> >>if there is a 1-to-1 correspondence between the GPIO lines
+> >>and available IRQ line triggers on the GPIO chip, but that is
+> >>indeed the most common. They will then usually also have
+> >>the same line offset numbers. In some odd cases I guess it
+> >>won't work this way.
+> >>
+> >>The I2C subsystem does this for the device tree case in
+> >>i2c_device_probe() like this:
+> >>
+> >>  if (!client->irq && dev->of_node) {
+> >>                 int irq = of_irq_get(dev->of_node, 0);
+> >>
+> >>                 if (irq == -EPROBE_DEFER)
+> >>                         return irq;
+> >>                 if (irq < 0)
+> >>                         irq = 0;
+> >>
+> >>                 client->irq = irq;
+> >>         }
+> >>
+> >>This is why the code does not contain any OF/DT
+> >>IRQ assignment code.
+> >>
+> >>However in the ACPI probe path I guess it doesn't
+> >>happen then?
+> >
+> >In ACPI we have two kind of GPIOs: GpioIo and GpioInt. The latter is
+> >used to describe GPIOs that can be used as interrupts.
+> >
+> >In order to translate a GpioInt to an interrupt number we would need to
+> >request the GPIO first here (in the I2C core), call gpiod_to_irq() to it
+> >and assign that to the client->irq.
+> 
+> Maybe the API can be extended to support to translate a GPIO to a IRQ
+> without actually requesting the GPIO first.
 
-Signed-off-by: Vianney le Clément de Saint-Marcq <vianney.leclement@essensium.com>
-Cc: Arnout Vandecappelle (Essensium/Mind) <arnout@mind.be>
+We still need to take care the the GPIO is properly requested and locked
+as IRQ. Otherwise something else (userspace for example) can mess this
+up.
 
----
+> >
+> >This has few problems that I have not yet figured out. Maybe someone
+> >here can suggest what to do:
+> >
+> >  1) Who is responsible in releasing the GPIO?
+> >  2) What if the driver wants to use that pin as a GPIO instead? The GPIO
+> >     is already requested by the I2C core.
+> >  3) We may have multiple GpioInts for devices like GPIO button array.
+> >     Which one we should pick, or should we let the driver to handle this
+> >     separetely?
+> 
+> Well, we have the same issue with devicetree already. I'd say use the first
+> IRQ for client->irq and ignore the other ones for now.
 
-v2: * remove symmetrical ambient channel
-    * rename _probe_model to _probe_num_ir_sensors
----
- drivers/iio/temperature/mlx90614.c | 67 ++++++++++++++++++++++++++++++++------
- 1 file changed, 57 insertions(+), 10 deletions(-)
-
-diff --git a/drivers/iio/temperature/mlx90614.c b/drivers/iio/temperature/mlx90614.c
-index a2e3aa6..a112fc9 100644
---- a/drivers/iio/temperature/mlx90614.c
-+++ b/drivers/iio/temperature/mlx90614.c
-@@ -2,6 +2,7 @@
-  * mlx90614.c - Support for Melexis MLX90614 contactless IR temperature sensor
-  *
-  * Copyright (c) 2014 Peter Meerwald <pmeerw@pmeerw.net>
-+ * Copyright (c) 2015 Essensium NV
-  *
-  * This file is subject to the terms and conditions of version 2 of
-  * the GNU General Public License.  See the file COPYING in the main
-@@ -59,26 +60,34 @@ static int mlx90614_read_raw(struct iio_dev *indio_dev,
- 			    int *val2, long mask)
- {
- 	struct mlx90614_data *data = iio_priv(indio_dev);
-+	u8 cmd;
- 	s32 ret;
- 
- 	switch (mask) {
- 	case IIO_CHAN_INFO_RAW: /* 0.02K / LSB */
- 		switch (channel->channel2) {
- 		case IIO_MOD_TEMP_AMBIENT:
--			ret = i2c_smbus_read_word_data(data->client,
--			    MLX90614_TA);
--			if (ret < 0)
--				return ret;
-+			cmd = MLX90614_TA;
- 			break;
- 		case IIO_MOD_TEMP_OBJECT:
--			ret = i2c_smbus_read_word_data(data->client,
--			    MLX90614_TOBJ1);
--			if (ret < 0)
--				return ret;
-+			switch (channel->channel) {
-+			case 0:
-+				cmd = MLX90614_TOBJ1;
-+				break;
-+			case 1:
-+				cmd = MLX90614_TOBJ2;
-+				break;
-+			default:
-+				return -EINVAL;
-+			}
- 			break;
- 		default:
- 			return -EINVAL;
- 		}
-+
-+		ret = i2c_smbus_read_word_data(data->client, cmd);
-+		if (ret < 0)
-+			return ret;
- 		*val = ret;
- 		return IIO_VAL_INT;
- 	case IIO_CHAN_INFO_OFFSET:
-@@ -110,6 +119,16 @@ static const struct iio_chan_spec mlx90614_channels[] = {
- 		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_OFFSET) |
- 		    BIT(IIO_CHAN_INFO_SCALE),
- 	},
-+	{
-+		.type = IIO_TEMP,
-+		.indexed = 1,
-+		.modified = 1,
-+		.channel = 1,
-+		.channel2 = IIO_MOD_TEMP_OBJECT,
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
-+		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_OFFSET) |
-+		    BIT(IIO_CHAN_INFO_SCALE),
-+	},
- };
- 
- static const struct iio_info mlx90614_info = {
-@@ -117,11 +136,25 @@ static const struct iio_info mlx90614_info = {
- 	.driver_module = THIS_MODULE,
- };
- 
-+/* Return 0 for single sensor, 1 for dual sensor, <0 on error. */
-+static int mlx90614_probe_num_ir_sensors(struct i2c_client *client)
-+{
-+	s32 ret;
-+
-+	ret = i2c_smbus_read_word_data(client, MLX90614_CONFIG);
-+
-+	if (ret < 0)
-+		return ret;
-+
-+	return (ret & MLX90614_CONFIG_DUAL_MASK) ? 1 : 0;
-+}
-+
- static int mlx90614_probe(struct i2c_client *client,
- 			 const struct i2c_device_id *id)
- {
- 	struct iio_dev *indio_dev;
- 	struct mlx90614_data *data;
-+	int ret;
- 
- 	if (!i2c_check_functionality(client->adapter, I2C_FUNC_SMBUS_WORD_DATA))
- 		return -ENODEV;
-@@ -139,8 +172,21 @@ static int mlx90614_probe(struct i2c_client *client,
- 	indio_dev->modes = INDIO_DIRECT_MODE;
- 	indio_dev->info = &mlx90614_info;
- 
--	indio_dev->channels = mlx90614_channels;
--	indio_dev->num_channels = ARRAY_SIZE(mlx90614_channels);
-+	ret = mlx90614_probe_num_ir_sensors(client);
-+	switch (ret) {
-+	case 0:
-+		dev_dbg(&client->dev, "Found single sensor");
-+		indio_dev->channels = mlx90614_channels;
-+		indio_dev->num_channels = 2;
-+		break;
-+	case 1:
-+		dev_dbg(&client->dev, "Found dual sensor");
-+		indio_dev->channels = mlx90614_channels;
-+		indio_dev->num_channels = 3;
-+		break;
-+	default:
-+		return ret;
-+	}
- 
- 	return iio_device_register(indio_dev);
- }
-@@ -170,5 +216,6 @@ static struct i2c_driver mlx90614_driver = {
- module_i2c_driver(mlx90614_driver);
- 
- MODULE_AUTHOR("Peter Meerwald <pmeerw@pmeerw.net>");
-+MODULE_AUTHOR("Vianney le Clément de Saint-Marcq <vianney.leclement@essensium.com>");
- MODULE_DESCRIPTION("Melexis MLX90614 contactless IR temperature sensor driver");
- MODULE_LICENSE("GPL");
--- 
-2.3.3
-
+For devices like the button array above doing that leaves the driver
+wondering where the heck is one of my GPIOs :-) Perhaps we could to
+automatic translation if we find out that there is only one GpioInt for
+this device.
