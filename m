@@ -1,113 +1,90 @@
-Return-Path: <mika.westerberg@linux.intel.com>
-Date: Tue, 24 Mar 2015 17:55:15 +0200
-From: Mika Westerberg <mika.westerberg@linux.intel.com>
-To: Lars-Peter Clausen <lars@metafoo.de>
-Cc: Linus Walleij <linus.walleij@linaro.org>,
-	Robert Dolca <robert.dolca@gmail.com>,
-	Robert Dolca <robert.dolca@intel.com>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	Jonathan Cameron <jic23@kernel.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	Denis CIOCCA <denis.ciocca@st.com>,
-	"linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>,
-	Alexandre Courbot <gnurou@gmail.com>
-Subject: Re: [PATCH] IIO: Adds ACPI support for ST gyroscopes
-Message-ID: <20150324155515.GR1878@lahna.fi.intel.com>
-References: <1427118025-4380-1-git-send-email-robert.dolca@intel.com>
- <551155C3.2030403@metafoo.de>
- <CAFPB+YdwrPoob1CPdUfSt2uBJWPi=6_0-d0NChj2agD6-z-8qw@mail.gmail.com>
- <551168F0.1090901@metafoo.de>
- <CACRpkdaOQ-onkgQJSyoVEQNtkZ9nF_4z=9jNdU-tug-TwvAAkQ@mail.gmail.com>
- <20150324150630.GP1878@lahna.fi.intel.com>
- <55118128.10402@metafoo.de>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from 132.79-246-81.adsl-static.isp.belgacom.be ([81.246.79.132]:46630
+	"EHLO viper.mind.be" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754470AbbCXPyq (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 24 Mar 2015 11:54:46 -0400
+From: =?UTF-8?q?Vianney=20le=20Cl=C3=A9ment=20de=20Saint-Marcq?=
+	<vianney.leclement@essensium.com>
+To: linux-iio@vger.kernel.org
+Cc: =?UTF-8?q?Vianney=20le=20Cl=C3=A9ment=20de=20Saint-Marcq?=
+	<vianney.leclement@essensium.com>,
+	"Arnout Vandecappelle (Essensium/Mind)" <arnout@mind.be>
+Subject: [PATCH v2 4/7] iio: core: Introduce IIO_CHAN_INFO_EMISSIVITY
+Date: Tue, 24 Mar 2015 16:54:16 +0100
+Message-Id: <1427212459-31585-5-git-send-email-vianney.leclement@essensium.com>
+In-Reply-To: <1427212459-31585-1-git-send-email-vianney.leclement@essensium.com>
+References: <1427212459-31585-1-git-send-email-vianney.leclement@essensium.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <55118128.10402@metafoo.de>
-List-ID: <linux-iio@vger.kernel.org>
+Content-Type: text/plain; charset=UTF-8
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Tue, Mar 24, 2015 at 04:22:16PM +0100, Lars-Peter Clausen wrote:
-> Add Alexandre and linux-gpio to Cc.
-> 
-> On 03/24/2015 04:06 PM, Mika Westerberg wrote:
-> >On Tue, Mar 24, 2015 at 02:57:49PM +0100, Linus Walleij wrote:
-> >>On Tue, Mar 24, 2015 at 2:38 PM, Lars-Peter Clausen <lars@metafoo.de> wrote:
-> >>>On 03/24/2015 02:26 PM, Robert Dolca wrote:
-> >>>>On Tue, Mar 24, 2015 at 2:17 PM, Lars-Peter Clausen <lars@metafoo.de>
-> >>>>wrote:
-> >>
-> >>>>In the ACPI description you specify one or more IRQ GPIO pins. In the
-> >>>>driver you request the GPIO pin using the index. In the ACPI 5.1
-> >>>>specification you can use named GPIOs instead of index.
-> >>>
-> >>>
-> >>>But is there a way to distinguish between IRQ GPIOs and non IRQ GPIOs? If it
-> >>>is clear that a certain GPIO is the IRQ for the device the I2C framework
-> >>>should take care of assigning the client->irq field, instead of doing it
-> >>>manually in each and every device driver.
-> >>
-> >>In the device tree case we have a mechanism where each
-> >>GPIO chip implements two API:s, one gpio_chip API and
-> >>one irqchip API.
-> >>
-> >>Then in the tree both the GPIO and IRQs can be assigned as
-> >>resources to clients, orthogonally. Usually this will only work
-> >>if there is a 1-to-1 correspondence between the GPIO lines
-> >>and available IRQ line triggers on the GPIO chip, but that is
-> >>indeed the most common. They will then usually also have
-> >>the same line offset numbers. In some odd cases I guess it
-> >>won't work this way.
-> >>
-> >>The I2C subsystem does this for the device tree case in
-> >>i2c_device_probe() like this:
-> >>
-> >>  if (!client->irq && dev->of_node) {
-> >>                 int irq = of_irq_get(dev->of_node, 0);
-> >>
-> >>                 if (irq == -EPROBE_DEFER)
-> >>                         return irq;
-> >>                 if (irq < 0)
-> >>                         irq = 0;
-> >>
-> >>                 client->irq = irq;
-> >>         }
-> >>
-> >>This is why the code does not contain any OF/DT
-> >>IRQ assignment code.
-> >>
-> >>However in the ACPI probe path I guess it doesn't
-> >>happen then?
-> >
-> >In ACPI we have two kind of GPIOs: GpioIo and GpioInt. The latter is
-> >used to describe GPIOs that can be used as interrupts.
-> >
-> >In order to translate a GpioInt to an interrupt number we would need to
-> >request the GPIO first here (in the I2C core), call gpiod_to_irq() to it
-> >and assign that to the client->irq.
-> 
-> Maybe the API can be extended to support to translate a GPIO to a IRQ
-> without actually requesting the GPIO first.
+Contact-less IR temperature sensors measure the temperature of an object
+by using its thermal radiation.  Surfaces with different emissivity
+ratios emit different amounts of energy at the same temperature.
 
-We still need to take care the the GPIO is properly requested and locked
-as IRQ. Otherwise something else (userspace for example) can mess this
-up.
+IIO_CHAN_INFO_EMISSIVITY allows the user to inform the sensor of the
+emissivity of the object in front of it, in order to effectively measure
+its temperature.
 
-> >
-> >This has few problems that I have not yet figured out. Maybe someone
-> >here can suggest what to do:
-> >
-> >  1) Who is responsible in releasing the GPIO?
-> >  2) What if the driver wants to use that pin as a GPIO instead? The GPIO
-> >     is already requested by the I2C core.
-> >  3) We may have multiple GpioInts for devices like GPIO button array.
-> >     Which one we should pick, or should we let the driver to handle this
-> >     separetely?
-> 
-> Well, we have the same issue with devicetree already. I'd say use the first
-> IRQ for client->irq and ignore the other ones for now.
+A device providing such setting is Melexis's MLX90614:
+http://melexis.com/Assets/IR-sensor-thermometer-MLX90614-Datasheet-5152.aspx.
 
-For devices like the button array above doing that leaves the driver
-wondering where the heck is one of my GPIOs :-) Perhaps we could to
-automatic translation if we find out that there is only one GpioInt for
-this device.
+Signed-off-by: Vianney le Clément de Saint-Marcq <vianney.leclement@essensium.com>
+Cc: Arnout Vandecappelle (Essensium/Mind) <arnout@mind.be>
+
+---
+
+v2: new patch
+---
+ Documentation/ABI/testing/sysfs-bus-iio | 11 +++++++++++
+ drivers/iio/industrialio-core.c         |  1 +
+ include/linux/iio/iio.h                 |  1 +
+ 3 files changed, 13 insertions(+)
+
+diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
+index 9a70c31..a8b103a 100644
+--- a/Documentation/ABI/testing/sysfs-bus-iio
++++ b/Documentation/ABI/testing/sysfs-bus-iio
+@@ -1249,3 +1249,14 @@ Contact:	linux-iio@vger.kernel.org
+ Description:
+ 		Specifies number of seconds in which we compute the steps
+ 		that occur in order to decide if the consumer is making steps.
++
++What:		/sys/bus/iio/devices/iio:deviceX/in_temp_emissivity
++What:		/sys/bus/iio/devices/iio:deviceX/in_tempX_emissivity
++What:		/sys/bus/iio/devices/iio:deviceX/in_temp_object_emissivity
++What:		/sys/bus/iio/devices/iio:deviceX/in_tempX_object_emissivity
++KernelVersion:	4.0
++Contact:	linux-iio@vger.kernel.org
++Description:
++		The emissivity ratio of the surface in the field of view of the
++		contactless temperature sensor.  Emissivity varies from 0 to 1,
++		with 1 being the emissivity of a black body.
+diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+index aaba9d3..902d03b 100644
+--- a/drivers/iio/industrialio-core.c
++++ b/drivers/iio/industrialio-core.c
+@@ -128,6 +128,7 @@ static const char * const iio_chan_info_postfix[] = {
+ 	[IIO_CHAN_INFO_CALIBWEIGHT] = "calibweight",
+ 	[IIO_CHAN_INFO_DEBOUNCE_COUNT] = "debounce_count",
+ 	[IIO_CHAN_INFO_DEBOUNCE_TIME] = "debounce_time",
++	[IIO_CHAN_INFO_EMISSIVITY] = "emissivity",
+ };
+ 
+ /**
+diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
+index 80d8550..24bd0bdd 100644
+--- a/include/linux/iio/iio.h
++++ b/include/linux/iio/iio.h
+@@ -43,6 +43,7 @@ enum iio_chan_info_enum {
+ 	IIO_CHAN_INFO_CALIBWEIGHT,
+ 	IIO_CHAN_INFO_DEBOUNCE_COUNT,
+ 	IIO_CHAN_INFO_DEBOUNCE_TIME,
++	IIO_CHAN_INFO_EMISSIVITY,
+ };
+ 
+ enum iio_shared_by {
+-- 
+2.3.3
+
