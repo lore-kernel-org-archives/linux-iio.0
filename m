@@ -1,7 +1,7 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from 132.79-246-81.adsl-static.isp.belgacom.be ([81.246.79.132]:46630
+Received: from 132.79-246-81.adsl-static.isp.belgacom.be ([81.246.79.132]:46620
 	"EHLO viper.mind.be" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754470AbbCXPyq (ORCPT
+	with ESMTP id S1754468AbbCXPyq (ORCPT
 	<rfc822;linux-iio@vger.kernel.org>); Tue, 24 Mar 2015 11:54:46 -0400
 From: =?UTF-8?q?Vianney=20le=20Cl=C3=A9ment=20de=20Saint-Marcq?=
 	<vianney.leclement@essensium.com>
@@ -9,9 +9,9 @@ To: linux-iio@vger.kernel.org
 Cc: =?UTF-8?q?Vianney=20le=20Cl=C3=A9ment=20de=20Saint-Marcq?=
 	<vianney.leclement@essensium.com>,
 	"Arnout Vandecappelle (Essensium/Mind)" <arnout@mind.be>
-Subject: [PATCH v2 4/7] iio: core: Introduce IIO_CHAN_INFO_EMISSIVITY
-Date: Tue, 24 Mar 2015 16:54:16 +0100
-Message-Id: <1427212459-31585-5-git-send-email-vianney.leclement@essensium.com>
+Subject: [PATCH v2 2/7] iio: mlx90614: Add symbols for accessible registers
+Date: Tue, 24 Mar 2015 16:54:14 +0100
+Message-Id: <1427212459-31585-3-git-send-email-vianney.leclement@essensium.com>
 In-Reply-To: <1427212459-31585-1-git-send-email-vianney.leclement@essensium.com>
 References: <1427212459-31585-1-git-send-email-vianney.leclement@essensium.com>
 MIME-Version: 1.0
@@ -19,72 +19,56 @@ Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Contact-less IR temperature sensors measure the temperature of an object
-by using its thermal radiation.  Surfaces with different emissivity
-ratios emit different amounts of energy at the same temperature.
-
-IIO_CHAN_INFO_EMISSIVITY allows the user to inform the sensor of the
-emissivity of the object in front of it, in order to effectively measure
-its temperature.
-
-A device providing such setting is Melexis's MLX90614:
-http://melexis.com/Assets/IR-sensor-thermometer-MLX90614-Datasheet-5152.aspx.
+Add symbols for all accessible RAM and EEPROM registers, as well as the
+sleep command and timings defined in the datasheet.
 
 Signed-off-by: Vianney le Clément de Saint-Marcq <vianney.leclement@essensium.com>
 Cc: Arnout Vandecappelle (Essensium/Mind) <arnout@mind.be>
-
 ---
+ drivers/iio/temperature/mlx90614.c | 26 +++++++++++++++++++++++++-
+ 1 file changed, 25 insertions(+), 1 deletion(-)
 
-v2: new patch
----
- Documentation/ABI/testing/sysfs-bus-iio | 11 +++++++++++
- drivers/iio/industrialio-core.c         |  1 +
- include/linux/iio/iio.h                 |  1 +
- 3 files changed, 13 insertions(+)
-
-diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
-index 9a70c31..a8b103a 100644
---- a/Documentation/ABI/testing/sysfs-bus-iio
-+++ b/Documentation/ABI/testing/sysfs-bus-iio
-@@ -1249,3 +1249,14 @@ Contact:	linux-iio@vger.kernel.org
- Description:
- 		Specifies number of seconds in which we compute the steps
- 		that occur in order to decide if the consumer is making steps.
+diff --git a/drivers/iio/temperature/mlx90614.c b/drivers/iio/temperature/mlx90614.c
+index e2c6f1a..a2e3aa6 100644
+--- a/drivers/iio/temperature/mlx90614.c
++++ b/drivers/iio/temperature/mlx90614.c
+@@ -20,11 +20,35 @@
+ 
+ #include <linux/iio/iio.h>
+ 
+-#define MLX90614_OP_RAM 0x00
++#define MLX90614_OP_RAM		0x00
++#define MLX90614_OP_EEPROM	0x20
++#define MLX90614_OP_SLEEP	0xff
+ 
+ /* RAM offsets with 16-bit data, MSB first */
++#define MLX90614_RAW1	(MLX90614_OP_RAM | 0x04) /* raw data IR channel 1 */
++#define MLX90614_RAW2	(MLX90614_OP_RAM | 0x05) /* raw data IR channel 2 */
+ #define MLX90614_TA	(MLX90614_OP_RAM | 0x06) /* ambient temperature */
+ #define MLX90614_TOBJ1	(MLX90614_OP_RAM | 0x07) /* object 1 temperature */
++#define MLX90614_TOBJ2	(MLX90614_OP_RAM | 0x08) /* object 2 temperature */
 +
-+What:		/sys/bus/iio/devices/iio:deviceX/in_temp_emissivity
-+What:		/sys/bus/iio/devices/iio:deviceX/in_tempX_emissivity
-+What:		/sys/bus/iio/devices/iio:deviceX/in_temp_object_emissivity
-+What:		/sys/bus/iio/devices/iio:deviceX/in_tempX_object_emissivity
-+KernelVersion:	4.0
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+		The emissivity ratio of the surface in the field of view of the
-+		contactless temperature sensor.  Emissivity varies from 0 to 1,
-+		with 1 being the emissivity of a black body.
-diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
-index aaba9d3..902d03b 100644
---- a/drivers/iio/industrialio-core.c
-+++ b/drivers/iio/industrialio-core.c
-@@ -128,6 +128,7 @@ static const char * const iio_chan_info_postfix[] = {
- 	[IIO_CHAN_INFO_CALIBWEIGHT] = "calibweight",
- 	[IIO_CHAN_INFO_DEBOUNCE_COUNT] = "debounce_count",
- 	[IIO_CHAN_INFO_DEBOUNCE_TIME] = "debounce_time",
-+	[IIO_CHAN_INFO_EMISSIVITY] = "emissivity",
- };
++/* EEPROM offsets with 16-bit data, MSB first */
++#define MLX90614_EMISSIVITY	(MLX90614_OP_EEPROM | 0x04) /* emissivity correction coefficient */
++#define MLX90614_CONFIG		(MLX90614_OP_EEPROM | 0x05) /* configuration register */
++
++/* Control bits in configuration register */
++#define MLX90614_CONFIG_IIR_SHIFT 0 /* IIR coefficient */
++#define MLX90614_CONFIG_IIR_MASK (0x7 << MLX90614_CONFIG_IIR_SHIFT)
++#define MLX90614_CONFIG_DUAL_SHIFT 6 /* single (0) or dual (1) IR sensor */
++#define MLX90614_CONFIG_DUAL_MASK (1 << MLX90614_CONFIG_DUAL_SHIFT)
++#define MLX90614_CONFIG_FIR_SHIFT 8 /* FIR coefficient */
++#define MLX90614_CONFIG_FIR_MASK (0x7 << MLX90614_CONFIG_FIR_SHIFT)
++#define MLX90614_CONFIG_GAIN_SHIFT 11 /* gain */
++#define MLX90614_CONFIG_GAIN_MASK (0x7 << MLX90614_CONFIG_GAIN_SHIFT)
++
++/* Timings (in ms) */
++#define MLX90614_TIMING_EEPROM 20 /* time for EEPROM write/erase to complete */
++#define MLX90614_TIMING_WAKEUP 34 /* time to hold SDA low for wake-up */
++#define MLX90614_TIMING_STARTUP 250 /* time before first data after wake-up */
  
- /**
-diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
-index 80d8550..24bd0bdd 100644
---- a/include/linux/iio/iio.h
-+++ b/include/linux/iio/iio.h
-@@ -43,6 +43,7 @@ enum iio_chan_info_enum {
- 	IIO_CHAN_INFO_CALIBWEIGHT,
- 	IIO_CHAN_INFO_DEBOUNCE_COUNT,
- 	IIO_CHAN_INFO_DEBOUNCE_TIME,
-+	IIO_CHAN_INFO_EMISSIVITY,
- };
- 
- enum iio_shared_by {
+ struct mlx90614_data {
+ 	struct i2c_client *client;
 -- 
 2.3.3
 
