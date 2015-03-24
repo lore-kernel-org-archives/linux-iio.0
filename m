@@ -18,46 +18,41 @@ Cc: knaack.h@gmx.de,
 	linux-arm-kernel@lists.infradead.org,
 	linux-kernel@vger.kernel.org,
 	Stefan Agner <stefan@agner.ch>
-Subject: [PATCH v4 3/3] ARM: dts: add property for maximum ADC clock frequencies
-Date: Tue, 24 Mar 2015 13:47:49 +0100
-Message-Id: <1427201269-4902-4-git-send-email-stefan@agner.ch>
-In-Reply-To: <1427201269-4902-1-git-send-email-stefan@agner.ch>
-References: <1427201269-4902-1-git-send-email-stefan@agner.ch>
+Subject: [PATCH v4 0/3] iio: adc: vf610: respect ADC clocking limitations
+Date: Tue, 24 Mar 2015 13:47:46 +0100
+Message-Id: <1427201269-4902-1-git-send-email-stefan@agner.ch>
 List-ID: <linux-iio@vger.kernel.org>
 
-The ADC clock frequency is limited depending on modes used. Add
-device tree property which allow to set the mode used and the
-maximum frequency ratings for the instance. These allows to
-set the ADC clock to a frequency which is within specification
-according to the actual mode used.
+Respect ADC clocking limitations which lead to bogous reading on
+500MHz clocked Vybrid SoC's. Additionally, also implement a
+sysfs-property to configure the conversion mode available in this
+ADC peripherial.
 
-Acked-by: Fugang Duan <B38611@freescale.com>
-Signed-off-by: Stefan Agner <stefan@agner.ch>
----
- arch/arm/boot/dts/vfxxx.dtsi | 4 ++++
- 1 file changed, 4 insertions(+)
+The clock limitations are specified using the device tree, hence
+I seek an Ack from the device tree maintainers here...
 
-diff --git a/arch/arm/boot/dts/vfxxx.dtsi b/arch/arm/boot/dts/vfxxx.dtsi
-index a29c7ce..c6609bd 100644
---- a/arch/arm/boot/dts/vfxxx.dtsi
-+++ b/arch/arm/boot/dts/vfxxx.dtsi
-@@ -189,6 +189,8 @@
- 				clocks = <&clks VF610_CLK_ADC0>;
- 				clock-names = "adc";
- 				status = "disabled";
-+				fsl,adck-max-frequency = <30000000>, <40000000>,
-+							<20000000>;
- 			};
- 
- 			wdoga5: wdog@4003e000 {
-@@ -387,6 +389,8 @@
- 				clocks = <&clks VF610_CLK_ADC1>;
- 				clock-names = "adc";
- 				status = "disabled";
-+				fsl,adck-max-frequency = <30000000>, <40000000>,
-+							<20000000>;
- 			};
- 
- 			esdhc1: esdhc@400b2000 {
+Changes since v3:
+- Move device tree bindings to driver changes
+
+Changes since v2:
+- Add sysfs ABI documentation
+- Fix commit message spelling errors
+
+Changes since v1:
+- Use ext_info for conversion mode
+
+
+Stefan Agner (3):
+  iio: adc: vf610: use ADC clock within specification
+  iio: adc: vf610: implement configurable conversion modes
+  ARM: dts: add property for maximum ADC clock frequencies
+
+ Documentation/ABI/testing/sysfs-bus-iio-vf610      |   7 +
+ .../devicetree/bindings/iio/adc/vf610-adc.txt      |   9 +
+ arch/arm/boot/dts/vfxxx.dtsi                       |   4 +
+ drivers/iio/adc/vf610_adc.c                        | 225 +++++++++++++++------
+ 4 files changed, 179 insertions(+), 66 deletions(-)
+ create mode 100644 Documentation/ABI/testing/sysfs-bus-iio-vf610
+
 -- 
 2.3.3
