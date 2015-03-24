@@ -1,113 +1,140 @@
-Return-Path: <lars@metafoo.de>
-Message-ID: <55119429.6070806@metafoo.de>
-Date: Tue, 24 Mar 2015 17:43:21 +0100
-From: Lars-Peter Clausen <lars@metafoo.de>
+Return-Path: <mpa@pengutronix.de>
+Date: Tue, 24 Mar 2015 17:10:58 +0100
+From: Markus Pargmann <mpa@pengutronix.de>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Shawn Guo <shawn.guo@linaro.org>, Samuel Ortiz <sameo@linux.intel.com>,
+	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+	Fabio Estevam <festevam@gmail.com>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Hartmut Knaack <knaack.h@gmx.de>, Denis Carikli <denis@eukrea.com>,
+	Eric =?utf-8?Q?B=C3=A9nard?= <eric@eukrea.com>,
+	Sascha Hauer <kernel@pengutronix.de>,
+	linux-arm-kernel@lists.infradead.org,
+	Lee Jones <lee.jones@linaro.org>, linux-input@vger.kernel.org,
+	linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>,
+	devicetree@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
+	Pawel Moll <pawel.moll@arm.com>,
+	Mark Rutland <mark.rutland@arm.com>,
+	Ian Campbell <ijc+devicetree@hellion.org.uk>,
+	Kumar Gala <galak@codeaurora.org>
+Subject: Re: [PATCH v7 3/8] ARM: dt: Binding documentation for imx25
+ touchscreen controller
+Message-ID: <20150324161058.GJ28604@pengutronix.de>
+References: <1425369498-25541-1-git-send-email-mpa@pengutronix.de>
+ <1425369498-25541-4-git-send-email-mpa@pengutronix.de>
+ <54FB3740.6010908@kernel.org>
 MIME-Version: 1.0
-To: Mika Westerberg <mika.westerberg@linux.intel.com>
-CC: Linus Walleij <linus.walleij@linaro.org>,
- Robert Dolca <robert.dolca@gmail.com>,
- Robert Dolca <robert.dolca@intel.com>,
- "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
- Jonathan Cameron <jic23@kernel.org>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
- Hartmut Knaack <knaack.h@gmx.de>, Peter Meerwald <pmeerw@pmeerw.net>,
- Denis CIOCCA <denis.ciocca@st.com>,
- "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>,
- Alexandre Courbot <gnurou@gmail.com>
-Subject: Re: [PATCH] IIO: Adds ACPI support for ST gyroscopes
-References: <1427118025-4380-1-git-send-email-robert.dolca@intel.com> <551155C3.2030403@metafoo.de> <CAFPB+YdwrPoob1CPdUfSt2uBJWPi=6_0-d0NChj2agD6-z-8qw@mail.gmail.com> <551168F0.1090901@metafoo.de> <CACRpkdaOQ-onkgQJSyoVEQNtkZ9nF_4z=9jNdU-tug-TwvAAkQ@mail.gmail.com> <20150324150630.GP1878@lahna.fi.intel.com> <55118128.10402@metafoo.de> <20150324155515.GR1878@lahna.fi.intel.com>
-In-Reply-To: <20150324155515.GR1878@lahna.fi.intel.com>
-Content-Type: text/plain; charset=windows-1252; format=flowed
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="liqSWPDvh3eyfZ9k"
+In-Reply-To: <54FB3740.6010908@kernel.org>
 List-ID: <linux-iio@vger.kernel.org>
 
-On 03/24/2015 04:55 PM, Mika Westerberg wrote:
-> On Tue, Mar 24, 2015 at 04:22:16PM +0100, Lars-Peter Clausen wrote:
->> Add Alexandre and linux-gpio to Cc.
->>
->> On 03/24/2015 04:06 PM, Mika Westerberg wrote:
->>> On Tue, Mar 24, 2015 at 02:57:49PM +0100, Linus Walleij wrote:
->>>> On Tue, Mar 24, 2015 at 2:38 PM, Lars-Peter Clausen <lars@metafoo.de> wrote:
->>>>> On 03/24/2015 02:26 PM, Robert Dolca wrote:
->>>>>> On Tue, Mar 24, 2015 at 2:17 PM, Lars-Peter Clausen <lars@metafoo.de>
->>>>>> wrote:
->>>>
->>>>>> In the ACPI description you specify one or more IRQ GPIO pins. In the
->>>>>> driver you request the GPIO pin using the index. In the ACPI 5.1
->>>>>> specification you can use named GPIOs instead of index.
->>>>>
->>>>>
->>>>> But is there a way to distinguish between IRQ GPIOs and non IRQ GPIOs? If it
->>>>> is clear that a certain GPIO is the IRQ for the device the I2C framework
->>>>> should take care of assigning the client->irq field, instead of doing it
->>>>> manually in each and every device driver.
->>>>
->>>> In the device tree case we have a mechanism where each
->>>> GPIO chip implements two API:s, one gpio_chip API and
->>>> one irqchip API.
->>>>
->>>> Then in the tree both the GPIO and IRQs can be assigned as
->>>> resources to clients, orthogonally. Usually this will only work
->>>> if there is a 1-to-1 correspondence between the GPIO lines
->>>> and available IRQ line triggers on the GPIO chip, but that is
->>>> indeed the most common. They will then usually also have
->>>> the same line offset numbers. In some odd cases I guess it
->>>> won't work this way.
->>>>
->>>> The I2C subsystem does this for the device tree case in
->>>> i2c_device_probe() like this:
->>>>
->>>>   if (!client->irq && dev->of_node) {
->>>>                  int irq = of_irq_get(dev->of_node, 0);
->>>>
->>>>                  if (irq == -EPROBE_DEFER)
->>>>                          return irq;
->>>>                  if (irq < 0)
->>>>                          irq = 0;
->>>>
->>>>                  client->irq = irq;
->>>>          }
->>>>
->>>> This is why the code does not contain any OF/DT
->>>> IRQ assignment code.
->>>>
->>>> However in the ACPI probe path I guess it doesn't
->>>> happen then?
->>>
->>> In ACPI we have two kind of GPIOs: GpioIo and GpioInt. The latter is
->>> used to describe GPIOs that can be used as interrupts.
->>>
->>> In order to translate a GpioInt to an interrupt number we would need to
->>> request the GPIO first here (in the I2C core), call gpiod_to_irq() to it
->>> and assign that to the client->irq.
->>
->> Maybe the API can be extended to support to translate a GPIO to a IRQ
->> without actually requesting the GPIO first.
->
-> We still need to take care the the GPIO is properly requested and locked
-> as IRQ. Otherwise something else (userspace for example) can mess this
-> up.
->
->>>
->>> This has few problems that I have not yet figured out. Maybe someone
->>> here can suggest what to do:
->>>
->>>   1) Who is responsible in releasing the GPIO?
->>>   2) What if the driver wants to use that pin as a GPIO instead? The GPIO
->>>      is already requested by the I2C core.
->>>   3) We may have multiple GpioInts for devices like GPIO button array.
->>>      Which one we should pick, or should we let the driver to handle this
->>>      separetely?
->>
->> Well, we have the same issue with devicetree already. I'd say use the first
->> IRQ for client->irq and ignore the other ones for now.
->
-> For devices like the button array above doing that leaves the driver
-> wondering where the heck is one of my GPIOs :-) Perhaps we could to
-> automatic translation if we find out that there is only one GpioInt for
-> this device.
 
-Btw. in the ACPI case client->irq is already initialized by 
-acpi_dev_resource_interrupt() in the I2C core. Should the GpioInts just map 
-onto this API as well?
+--liqSWPDvh3eyfZ9k
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-- Lars
+On Sat, Mar 07, 2015 at 05:37:04PM +0000, Jonathan Cameron wrote:
+> On 03/03/15 07:58, Markus Pargmann wrote:
+> > This is the touchscreen conversion queue binding documentation. It uses
+> > the shared imx25 ADC.
+> >=20
+> > Signed-off-by: Markus Pargmann <mpa@pengutronix.de>
+> Looks fine, one more general binding approach comment though.
+> A lot of the vendor specific elements in here are awfully generic.
+> Does it not make sense to have them as standard attributes for
+> touch screen drivers?
+> > ---
+> >=20
+> > Notes:
+> >     Changes in v5:
+> >      - Fix signed/unsigned comparison
+> >      - Fix unused variable settling_time by putting it in the correct a=
+rgument list
+> >      - Use continous conversion queue with the repeat feature and a pro=
+per
+> >        repeat-wait. Previously the touchscreen caused massive number of=
+ interrupts.
+> >=20
+> >  .../bindings/input/touchscreen/fsl-mx25-tcq.txt    | 29 ++++++++++++++=
+++++++++
+> >  1 file changed, 29 insertions(+)
+> >  create mode 100644 Documentation/devicetree/bindings/input/touchscreen=
+/fsl-mx25-tcq.txt
+> >=20
+> > diff --git a/Documentation/devicetree/bindings/input/touchscreen/fsl-mx=
+25-tcq.txt b/Documentation/devicetree/bindings/input/touchscreen/fsl-mx25-t=
+cq.txt
+> > new file mode 100644
+> > index 000000000000..4214a99d197a
+> > --- /dev/null
+> > +++ b/Documentation/devicetree/bindings/input/touchscreen/fsl-mx25-tcq.=
+txt
+> > @@ -0,0 +1,29 @@
+> > +Freescale mx25 TS conversion queue module
+> > +
+> > +mx25 touchscreen conversion queue module which controls the ADC unit o=
+f the
+> > +mx25 for attached touchscreens.
+> > +
+> > +Required properties:
+> > + - compatible: Should be "fsl,imx25-tcq".
+> > + - reg: Memory range of the device.
+> > + - interrupts: Should be the interrupt number associated with this mod=
+ule within
+> > +   the tscadc unit (<0>).
+> > + - interrupt-parent: Should be a phandle to the tscadc unit.
+> > + - fsl,wires: Should be '<4>' or '<5>'
+> > +
+> > +Optional properties:
+> > + - fsl,pen-debounce: Pen debounce time.
+> > + - fsl,pen-threshold: Pen-down threshold for the touchscreen.
+> > + - fsl,settling-time: Settling time in nanoseconds.
+> Obviously it's up to Dmitry etc, but are these not standard enough attrib=
+utes to
+> not be vendor specific?  I'd expect say touch-pen-debouce and touch-pen-t=
+hreshold
+> etc to be standard binding elements for touch screens.
+
+Seems like a good idea. I just discovered that there is a 'touchscreen-fuzz=
+-pressure'
+which seems to be the same as fsl,pen-threshold. So this should be
+replaced in my patches. The other properties do not exist.
+
+Dmitry, what do you think about some standard properties for the
+remaining?
+
+Best Regards,
+
+Markus
+
+--=20
+Pengutronix e.K.                           |                             |
+Industrial Linux Solutions                 | http://www.pengutronix.de/  |
+Peiner Str. 6-8, 31137 Hildesheim, Germany | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+
+--liqSWPDvh3eyfZ9k
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
+
+iQIcBAEBAgAGBQJVEYySAAoJEEpcgKtcEGQQOLAP+QFnOQA6/FPTVapckMK7i84b
+7fhvPB12SsGH0mculX5SxmLgwEr0Ab9A+97HyiIn0rvuDxtKZ5kTvov4tOl8vspW
+4H1aA6hfpe+2+G2QHIcoRIpk9ulwDtPOhgpv1FsdgkFOdQWiLIDTE0hWGJfKBgUo
+tKBjBHFIP34nytS9Z16yB+k4+hG1elwZg1EKp67j4RUzvP4g8J/0Y5Jn1JA2KS55
+C9hCSpxyLIvyzYD+bfyM1H2nm6GacysWtWgXEM4wrZCJgxpuMHcQFKUgLs2oV/YN
+15opOvwLZFQVj6iKV2oVihXYykdNPHcwGCj9PeAz476/5hlacQlzpL907yAytqsT
+EHoAlAMt8TOCMhC3/z6G3CLxTKW8+5NC5Q8ZKPiIjRDZntKiS5oY1s3fyq3W4sO1
+yEijtAgxrGC6ES3lrHlg5ucP4sMU6yP6+sOSoocFk3Id63CZrPKeIzPWZ8SiMbYB
+IBwQC42bBuIaLHzE43v1Q/199+xKXKS8uYgMp5RJKeh4Q/blSThKq9vHyjaAkMQX
+AztlQDjJFwFROb+huOQmzZMTjgnut58hNAC2FgpdpkwUkyXBf0RJ3R6WRPTjc0hG
+zBkN62q6G7ZeCD0coPLKCgASKd6D27bpFRn0ZotQMGFpzxW9LwBEFgDRQpU1IRgc
+RmmKmDKcnMM8jotgkE5K
+=DKoQ
+-----END PGP SIGNATURE-----
+
+--liqSWPDvh3eyfZ9k--
