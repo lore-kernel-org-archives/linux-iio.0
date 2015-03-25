@@ -1,35 +1,65 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.linuxfoundation.org ([140.211.169.12]:37631 "EHLO
-	mail.linuxfoundation.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751912AbbCXV4K (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 24 Mar 2015 17:56:10 -0400
-Date: Tue, 24 Mar 2015 22:54:37 +0100
-From: Greg KH <gregkh@linuxfoundation.org>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Subject: Re: [PULL] IIO new drivers, cleanups and functionality for the 4.1
- cycle.
-Message-ID: <20150324215437.GD19829@kroah.com>
-References: <5505EF30.5020205@kernel.org>
+Received: from mail-oi0-f41.google.com ([209.85.218.41]:35272 "EHLO
+	mail-oi0-f41.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751797AbbCYIof (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 25 Mar 2015 04:44:35 -0400
+Received: by oiag65 with SMTP id g65so15582005oia.2
+        for <linux-iio@vger.kernel.org>; Wed, 25 Mar 2015 01:44:34 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <5505EF30.5020205@kernel.org>
+In-Reply-To: <20150324150630.GP1878@lahna.fi.intel.com>
+References: <1427118025-4380-1-git-send-email-robert.dolca@intel.com>
+	<551155C3.2030403@metafoo.de>
+	<CAFPB+YdwrPoob1CPdUfSt2uBJWPi=6_0-d0NChj2agD6-z-8qw@mail.gmail.com>
+	<551168F0.1090901@metafoo.de>
+	<CACRpkdaOQ-onkgQJSyoVEQNtkZ9nF_4z=9jNdU-tug-TwvAAkQ@mail.gmail.com>
+	<20150324150630.GP1878@lahna.fi.intel.com>
+Date: Wed, 25 Mar 2015 09:44:34 +0100
+Message-ID: <CACRpkdYmN5YnH5rcA13NerPKdx62TpQVi5Hwr1vchu13QUcaOw@mail.gmail.com>
+Subject: Re: [PATCH] IIO: Adds ACPI support for ST gyroscopes
+From: Linus Walleij <linus.walleij@linaro.org>
+To: Mika Westerberg <mika.westerberg@linux.intel.com>
+Cc: Lars-Peter Clausen <lars@metafoo.de>,
+	Robert Dolca <robert.dolca@gmail.com>,
+	Robert Dolca <robert.dolca@intel.com>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	Jonathan Cameron <jic23@kernel.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Denis CIOCCA <denis.ciocca@st.com>
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Sun, Mar 15, 2015 at 08:44:32PM +0000, Jonathan Cameron wrote:
-> The following changes since commit 178cf7de6f1d3b95407f5a76af249fc924d42576:
-> 
->   Merge 3.19-rc7 into staging-next (2015-02-02 08:41:02 -0800)
-> 
-> are available in the git repository at:
-> 
->   git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git tags/iio-for-4.1a
+On Tue, Mar 24, 2015 at 4:06 PM, Mika Westerberg
+<mika.westerberg@linux.intel.com> wrote:
 
-There was one merge conflict, and one merge that caused a build error,
-but I fixed them both up.  If you could verify I got it all right, that
-would be great.
+> This has few problems that I have not yet figured out. Maybe someone
+> here can suggest what to do:
+>
+>  1) Who is responsible in releasing the GPIO?
+>  2) What if the driver wants to use that pin as a GPIO instead? The GPIO
+>     is already requested by the I2C core.
 
-thanks,
+In the DT usecase we actually specify that in the DTS file
+so we don't have the problem. Either the consumer accesses
+the irqchip API with:
 
-greg k-h
+interrupts = <nn nn>;
+
+or it accesses the GPIO API with:
+
+gpios = <nn nn>;
+
+so in that sense it is clear what is requested. Then the core
+of course uses gpiochip_lock/unlock_as_irq() to handle the
+case where bugs make a collision (like if both were specified
+and both APIs tries to access the same resource).
+
+But as long as the DTS file is consistent there is no problem.
+
+So it seems the ACPI tables are lacking this semantic
+information?
+
+Yours,
+Linus Walleij
