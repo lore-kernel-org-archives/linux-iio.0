@@ -1,48 +1,43 @@
-Return-Path: <daniel.baluta@gmail.com>
-MIME-Version: 1.0
-Sender: daniel.baluta@gmail.com
-In-Reply-To: <alpine.DEB.2.02.1503251817280.30570@pmeerw.net>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from lb1-smtp-cloud2.xs4all.net ([194.109.24.21]:51242 "EHLO
+	lb1-smtp-cloud2.xs4all.net" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1752707AbbCYUPG (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 25 Mar 2015 16:15:06 -0400
+Message-ID: <1427314499.10958.36.camel@x220>
+Subject: Re: [PATCH 1/3] iio: configfs: Add configfs support to IIO
+From: Paul Bolle <pebolle@tiscali.nl>
+To: Daniel Baluta <daniel.baluta@intel.com>
+Cc: jic23@kernel.org, jlbec@evilplan.org, lars@metafoo.de,
+	knaack.h@gmx.de, pmeerw@pmeerw.net, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org, octavian.purdila@intel.com
+Date: Wed, 25 Mar 2015 21:14:59 +0100
+In-Reply-To: <1427302832-9336-2-git-send-email-daniel.baluta@intel.com>
 References: <1427302832-9336-1-git-send-email-daniel.baluta@intel.com>
-	<1427302832-9336-4-git-send-email-daniel.baluta@intel.com>
-	<alpine.DEB.2.02.1503251817280.30570@pmeerw.net>
-Date: Wed, 25 Mar 2015 21:28:56 +0200
-Message-ID: <CAEnQRZA6Y2GcNqi7UT5ipcHRPvA_tOh+Eqd4-v8tdQ0BaaPiRQ@mail.gmail.com>
-Subject: Re: [PATCH 3/3] iio: Documentation: Add initial documentaton for IIO
-From: Daniel Baluta <daniel.baluta@intel.com>
-To: Peter Meerwald <pmeerw@pmeerw.net>
-Cc: Daniel Baluta <daniel.baluta@intel.com>, Jonathan Cameron <jic23@kernel.org>,
-	Joel Becker <jlbec@evilplan.org>, Lars-Peter Clausen <lars@metafoo.de>, Hartmut Knaack <knaack.h@gmx.de>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-	"octavian.purdila@intel.com" <octavian.purdila@intel.com>
-Content-Type: text/plain; charset=UTF-8
-List-ID: <linux-iio@vger.kernel.org>
+	 <1427302832-9336-2-git-send-email-daniel.baluta@intel.com>
+Content-Type: text/plain; charset="UTF-8"
+Mime-Version: 1.0
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Wed, Mar 25, 2015 at 7:22 PM, Peter Meerwald <pmeerw@pmeerw.net> wrote:
-> On Wed, 25 Mar 2015, Daniel Baluta wrote:
->
->> This file wants to be a starting point document for anyone wanting
->> to use IIO configfs support or adding new IIO configfs functionality.
->
-> typos below; I'm just trying to understand what's going on...
+A license nit.
 
-Hi Peter,
+On Wed, 2015-03-25 at 19:00 +0200, Daniel Baluta wrote:
+> --- /dev/null
+> +++ b/drivers/iio/industrialio-configfs.c
 
-Thanks a lot for your time. I agree with all your comments for this patch
-and will fix in v2.
-<snip>
+> + * This program is free software; you can redistribute it and/or modify it
+> + * under the terms of the GNU General Public License version 2 as published by
+> + * the Free Software Foundation.
 
->> +* IIO on IIO drivers
->
-> ??
+> +MODULE_AUTHOR("Daniel Baluta <daniel.baluta@intel.com>");
+> +MODULE_DESCRIPTION("Industrial I/O configfs support");
 
-I will add more details about this. I was trying to describe the IIO
-elements that
-would make sense to be configured via configfs.
+You probably want
+    MODULE_LICENSE("GPL v2");
 
-Have a look at Jonathan's email:
+here too. Because now, at module load time, the license will default to
+"unspecified" which will taint the kernel.
 
-http://marc.info/?l=linux-iio&m=142693832028677&w=2
 
-thanks,
-Daniel.
+Paul Bolle
+
