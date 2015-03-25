@@ -9,244 +9,418 @@ Cc: jlbec@evilplan.org,
 	linux-kernel@vger.kernel.org,
 	octavian.purdila@intel.com,
 	daniel.baluta@intel.com
-Subject: [PATCH 2/3] iio: trigger: Add support for highres timer trigger
-Date: Wed, 25 Mar 2015 19:00:31 +0200
-Message-Id: <1427302832-9336-3-git-send-email-daniel.baluta@intel.com>
+Subject: [PATCH 1/3] iio: configfs: Add configfs support to IIO
+Date: Wed, 25 Mar 2015 19:00:30 +0200
+Message-Id: <1427302832-9336-2-git-send-email-daniel.baluta@intel.com>
 In-Reply-To: <1427302832-9336-1-git-send-email-daniel.baluta@intel.com>
 References: <1427302832-9336-1-git-send-email-daniel.baluta@intel.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-This patch adds an IIO trigger driver which uses a high resolution
-timer to provide a frequency based trigger.
+This creates an IIO configfs subsystem named "iio", which has one default
+group named "triggers". This allows us to easily create/destroy software
+triggers. One must create a driver which implements iio_configfs_trigger.h
+interface and then add its trigger type to IIO configfs core.
 
-Signed-off-by: Marten Svanfeldt <marten@intuitiveaerial.com>
-Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+See Documentation/iio/iio_configfs.txt for more details on how configfs
+support for IIO works.
+
 Signed-off-by: Daniel Baluta <daniel.baluta@intel.com>
 ---
- drivers/iio/industrialio-configfs.c      |   4 +
- drivers/iio/trigger/Kconfig              |   8 ++
- drivers/iio/trigger/Makefile             |   2 +
- drivers/iio/trigger/iio-trig-hrtimer.c   | 146 +++++++++++++++++++++++++++++++
- include/linux/iio/iio_configfs_trigger.h |   1 +
- 5 files changed, 161 insertions(+)
- create mode 100644 drivers/iio/trigger/iio-trig-hrtimer.c
+ drivers/iio/Kconfig                      |   8 +
+ drivers/iio/Makefile                     |   1 +
+ drivers/iio/industrialio-configfs.c      | 297 +++++++++++++++++++++++++++++++
+ include/linux/iio/iio_configfs_trigger.h |  48 +++++
+ 4 files changed, 354 insertions(+)
+ create mode 100644 drivers/iio/industrialio-configfs.c
+ create mode 100644 include/linux/iio/iio_configfs_trigger.h
 
-diff --git a/drivers/iio/industrialio-configfs.c b/drivers/iio/industrialio-configfs.c
-index 4d2133a..22740c0 100644
---- a/drivers/iio/industrialio-configfs.c
-+++ b/drivers/iio/industrialio-configfs.c
-@@ -17,6 +17,7 @@
- static const char *trigger_types[] =
- {
- 	"none",
-+	"hrtimer",
- };
+diff --git a/drivers/iio/Kconfig b/drivers/iio/Kconfig
+index 4132935..39f1b69 100644
+--- a/drivers/iio/Kconfig
++++ b/drivers/iio/Kconfig
+@@ -18,6 +18,14 @@ config IIO_BUFFER
+ 	  Provide core support for various buffer based data
+ 	  acquisition methods.
  
- struct iio_configfs_ops iio_none_ops = {
-@@ -59,6 +60,9 @@ void iio_trigger_set_configfs_ops(struct iio_configfs_trigger_info *trig_info,
- 	case IIO_TRIGGER_TYPE_NONE:
- 		trig_info->configfs_ops = &iio_none_ops;
- 		break;
-+	case IIO_TRIGGER_TYPE_HRTIMER:
-+		trig_info->configfs_ops = &iio_hrtimer_ops;
-+		break;
- 	default:
- 		pr_err("Setting configfs ops failed! Unknown type %d\n", type);
- 		break;
-diff --git a/drivers/iio/trigger/Kconfig b/drivers/iio/trigger/Kconfig
-index 7999612..c856664 100644
---- a/drivers/iio/trigger/Kconfig
-+++ b/drivers/iio/trigger/Kconfig
-@@ -5,6 +5,14 @@
- 
- menu "Triggers - standalone"
- 
-+config IIO_TRIGGER_HRTIMER
-+	tristate "High resolution timer trigger"
++config IIO_CONFIGFS
++	tristate "Enable IIO configuration via configfs"
++	select CONFIGFS_FS
 +	help
-+	  Provides a frequency based IIO trigger using hrtimers.
++	  This allows configuring various IIO bits through configfs
++	  (e.g software trigger creation / destruction). For more info
++	  see Documentation/iio/iio_configfs.txt.
 +
-+	  To compile this driver as a module, choose M here: the
-+	  module will be called iio-trig-hrtimer.
-+
- config IIO_INTERRUPT_TRIGGER
- 	tristate "Generic interrupt trigger"
- 	help
-diff --git a/drivers/iio/trigger/Makefile b/drivers/iio/trigger/Makefile
-index 0694dae..3d289f6 100644
---- a/drivers/iio/trigger/Makefile
-+++ b/drivers/iio/trigger/Makefile
-@@ -3,5 +3,7 @@
- #
+ if IIO_BUFFER
  
- # When adding new entries keep the list in alphabetical order
-+
-+obj-$(CONFIG_IIO_TRIGGER_HRTIMER) += iio-trig-hrtimer.o
- obj-$(CONFIG_IIO_INTERRUPT_TRIGGER) += iio-trig-interrupt.o
- obj-$(CONFIG_IIO_SYSFS_TRIGGER) += iio-trig-sysfs.o
-diff --git a/drivers/iio/trigger/iio-trig-hrtimer.c b/drivers/iio/trigger/iio-trig-hrtimer.c
+ config IIO_BUFFER_CB
+diff --git a/drivers/iio/Makefile b/drivers/iio/Makefile
+index 698afc2..90cc407 100644
+--- a/drivers/iio/Makefile
++++ b/drivers/iio/Makefile
+@@ -5,6 +5,7 @@
+ obj-$(CONFIG_IIO) += industrialio.o
+ industrialio-y := industrialio-core.o industrialio-event.o inkern.o
+ industrialio-$(CONFIG_IIO_BUFFER) += industrialio-buffer.o
++industrialio-$(CONFIG_IIO_CONFIGFS) += industrialio-configfs.o
+ industrialio-$(CONFIG_IIO_TRIGGER) += industrialio-trigger.o
+ industrialio-$(CONFIG_IIO_BUFFER_CB) += buffer_cb.o
+ 
+diff --git a/drivers/iio/industrialio-configfs.c b/drivers/iio/industrialio-configfs.c
 new file mode 100644
-index 0000000..1a8beaf
+index 0000000..4d2133a
 --- /dev/null
-+++ b/drivers/iio/trigger/iio-trig-hrtimer.c
-@@ -0,0 +1,146 @@
-+/**
-+ * The industrial I/O periodic hrtimer trigger driver
++++ b/drivers/iio/industrialio-configfs.c
+@@ -0,0 +1,297 @@
++/*
++ * Industrial I/O configfs bits
 + *
-+ * Copyright (C) Intuitive Aerial AB
-+ * Written by Marten Svanfeldt, marten@intuitiveaerial.com
-+ * Copyright (C) 2012, Analog Device Inc.
-+ *	Author: Lars-Peter Clausen <lars@metafoo.de>
++ * Copyright (c) 2015 Intel Corporation
 + *
 + * This program is free software; you can redistribute it and/or modify it
 + * under the terms of the GNU General Public License version 2 as published by
 + * the Free Software Foundation.
-+ *
 + */
 +
-+#include <linux/platform_device.h>
-+#include <linux/kernel.h>
++#include <linux/configfs.h>
++#include <linux/module.h>
 +#include <linux/slab.h>
-+#include <linux/hrtimer.h>
-+#include <linux/iio/iio.h>
-+#include <linux/iio/trigger.h>
 +
 +#include <linux/iio/iio_configfs_trigger.h>
 +
-+struct iio_hrtimer_trig_info {
-+	struct iio_configfs_trigger_info *configfs_info;
-+	unsigned int frequency;
-+	struct hrtimer timer;
-+	ktime_t period;
++static const char *trigger_types[] =
++{
++	"none",
 +};
 +
-+static enum hrtimer_restart iio_trig_hrtimer_trig(struct hrtimer *timer)
++struct iio_configfs_ops iio_none_ops = {
++	.get_freq	= iio_none_get_freq,
++	.set_freq	= iio_none_set_freq,
++	.probe		= iio_none_probe,
++	.remove		= iio_none_remove,
++};
++
++struct iio_trigger_item {
++	struct config_item item;
++	struct iio_configfs_trigger_info *trigger_info;
++};
++
++static
++inline struct iio_trigger_item *to_iio_trigger_item(struct config_item *item)
 +{
-+	struct iio_hrtimer_trig_info *trig_info;
-+
-+	trig_info = container_of(timer, struct iio_hrtimer_trig_info, timer);
-+
-+	hrtimer_forward_now(timer, trig_info->period);
-+	iio_trigger_poll(trig_info->configfs_info->trigger);
-+
-+	return HRTIMER_RESTART;
++	if (!item)
++		return NULL;
++	return container_of(item, struct iio_trigger_item, item);
 +}
 +
-+static int iio_trig_hrtimer_set_state(struct iio_trigger *trig, bool state)
++static unsigned int iio_trigger_get_type(const char *type_str)
 +{
-+	struct iio_hrtimer_trig_info *trig_info;
++	int i;
 +
-+	trig_info = iio_trigger_get_drvdata(trig);
-+
-+	if (trig_info->frequency == 0)
-+		return -EINVAL;
-+
-+	if (state) {
-+		hrtimer_start(&trig_info->timer, trig_info->period,
-+			HRTIMER_MODE_REL);
-+	} else {
-+		hrtimer_cancel(&trig_info->timer);
++	for (i = 0; i < ARRAY_SIZE(trigger_types); i++) {
++		if (!strncmp(trigger_types[i], type_str,
++			    strlen(trigger_types[i])))
++			return i;
 +	}
-+
-+	return 0;
++	return -EINVAL;
 +}
 +
-+int iio_trig_hrtimer_read_freq(struct iio_configfs_trigger_info *cinfo)
++static
++void iio_trigger_set_configfs_ops(struct iio_configfs_trigger_info *trig_info,
++				  unsigned int type)
 +{
-+	struct iio_hrtimer_trig_info *trig_info;
-+
-+	trig_info = iio_trigger_get_drvdata(cinfo->trigger);
-+	return trig_info->frequency;
++	switch (type) {
++	case IIO_TRIGGER_TYPE_NONE:
++		trig_info->configfs_ops = &iio_none_ops;
++		break;
++	default:
++		pr_err("Setting configfs ops failed! Unknown type %d\n", type);
++		break;
++	}
 +}
 +
-+int iio_trig_hrtimer_write_freq(struct iio_configfs_trigger_info *cinfo,
-+				unsigned long freq)
++CONFIGFS_ATTR_STRUCT(iio_trigger_item);
++
++#define IIO_TRIGGER_ITEM_ATTR(_name, _mode, _show, _store) \
++struct iio_trigger_item_attribute iio_trigger_item_attr_##_name = \
++	__CONFIGFS_ATTR(_name, _mode, _show, _store)
++
++static ssize_t iio_trigger_item_type_read(struct iio_trigger_item *item,
++					  char *page)
 +{
-+	struct iio_hrtimer_trig_info *trig_info;
++	return sprintf(page, "%s\n", trigger_types[item->trigger_info->type]);
++}
 +
-+	trig_info = iio_trigger_get_drvdata(cinfo->trigger);
++static ssize_t iio_trigger_item_type_write(struct iio_trigger_item *item,
++					   const char *page, size_t count)
++{
++	int type;
 +
-+	if (freq > NSEC_PER_SEC)
++	if (item->trigger_info->active)
++		return -EBUSY;
++
++	type = iio_trigger_get_type(page);
++	if (type < 0)
 +		return -EINVAL;
 +
-+	if (freq != 0)
-+		trig_info->period = ktime_set(0, NSEC_PER_SEC / freq);
-+	trig_info->frequency = freq;
++	item->trigger_info->type = type;
 +
-+	return 0;
++	iio_trigger_set_configfs_ops(item->trigger_info, type);
++
++	return count;
 +}
 +
-+static const struct iio_trigger_ops iio_hrtimer_trigger_ops = {
-+	.owner = THIS_MODULE,
-+	.set_trigger_state = iio_trig_hrtimer_set_state,
-+};
-+
-+static int iio_trig_hrtimer_probe(struct iio_configfs_trigger_info *cinfo)
++static ssize_t iio_trigger_item_activate_read(struct iio_trigger_item *item,
++					      char *page)
 +{
-+	struct iio_hrtimer_trig_info *trig_info;
++	return sprintf(page, "%d\n", item->trigger_info->active);
++}
++
++static ssize_t iio_trigger_item_activate_write(struct iio_trigger_item *item,
++					       const char *page, size_t count)
++{
++	bool requested_action;
 +	int ret;
 +
-+	trig_info = kzalloc(sizeof(*trig_info), GFP_KERNEL);
-+	if (!trig_info)
-+		return -ENOMEM;
++	ret = strtobool(page, &requested_action);
++	if (ret < 0)
++		return ret;
 +
-+	trig_info->configfs_info = cinfo;
++	if (requested_action == item->trigger_info->active)
++		return -EINVAL;
 +
-+	cinfo->trigger = iio_trigger_alloc("%s", cinfo->name);
-+	if (!cinfo->trigger)
-+		return -ENOMEM;
++	if (requested_action)
++		item->trigger_info->configfs_ops->probe(item->trigger_info);
++	else
++		item->trigger_info->configfs_ops->remove(item->trigger_info);
 +
-+	iio_trigger_set_drvdata(cinfo->trigger, trig_info);
-+	cinfo->trigger->ops = &iio_hrtimer_trigger_ops;
++	item->trigger_info->active = requested_action;
 +
-+	hrtimer_init(&trig_info->timer, CLOCK_MONOTONIC, HRTIMER_MODE_REL);
-+	trig_info->timer.function = iio_trig_hrtimer_trig;
-+	ret = iio_trigger_register(cinfo->trigger);
-+	if (ret)
-+		goto err_free_trigger;
-+
-+	return 0;
-+err_free_trigger:
-+	iio_trigger_free(cinfo->trigger);
-+
-+	return ret;
++	return count;
 +}
 +
-+static int iio_trig_hrtimer_remove(struct iio_configfs_trigger_info *cinfo)
++static
++ssize_t iio_trigger_item_get_sampling_freq(struct iio_trigger_item *item,
++					   char *page)
 +{
-+	struct iio_hrtimer_trig_info *trig_info;
++	int ret;
 +
-+	trig_info = iio_trigger_get_drvdata(cinfo->trigger);
++	if (!item->trigger_info->active)
++		return -ENODEV;
 +
-+	iio_trigger_unregister(cinfo->trigger);
-+	hrtimer_cancel(&trig_info->timer);
-+	iio_trigger_free(cinfo->trigger);
-+
-+	return 0;
++	ret = item->trigger_info->configfs_ops->get_freq(item->trigger_info);
++	if (ret < 0)
++		return ret;
++	return sprintf(page, "%d\n", ret);
 +}
 +
-+struct iio_configfs_ops iio_hrtimer_ops = {
-+	.get_freq = iio_trig_hrtimer_read_freq,
-+	.set_freq = iio_trig_hrtimer_write_freq,
-+	.probe = iio_trig_hrtimer_probe,
-+	.remove = iio_trig_hrtimer_remove,
-+};
-+EXPORT_SYMBOL(iio_hrtimer_ops);
++static
++ssize_t iio_trigger_item_set_sampling_freq(struct iio_trigger_item *item,
++					   const char *page,
++					   size_t count)
++{
++	int ret;
++	unsigned long freq;
 +
-+MODULE_AUTHOR("Marten Svanfeldt <marten@intuitiveaerial.com>");
-+MODULE_DESCRIPTION("Periodic hrtimer trigger for the IIO subsystem");
-+MODULE_LICENSE("GPL v2");
++	if (!item->trigger_info->active)
++		return -ENODEV;
++
++	ret = kstrtoul(page, 10, &freq);
++	if (ret < 0)
++		return 0;
++
++	ret = item->trigger_info->configfs_ops->set_freq(item->trigger_info,
++							 freq);
++	if (ret < 0)
++		return ret;
++
++	return count;
++}
++
++IIO_TRIGGER_ITEM_ATTR(type, S_IRUGO | S_IWUSR,
++		      iio_trigger_item_type_read,
++		      iio_trigger_item_type_write);
++
++IIO_TRIGGER_ITEM_ATTR(activate, S_IRUGO | S_IWUSR,
++		      iio_trigger_item_activate_read,
++		      iio_trigger_item_activate_write);
++
++IIO_TRIGGER_ITEM_ATTR(sampling_frequency, S_IRUGO | S_IWUSR,
++		      iio_trigger_item_get_sampling_freq,
++		      iio_trigger_item_set_sampling_freq);
++
++static struct configfs_attribute *iio_trigger_item_attrs[] = {
++	&iio_trigger_item_attr_type.attr,
++	&iio_trigger_item_attr_sampling_frequency.attr,
++	&iio_trigger_item_attr_activate.attr,
++	NULL
++};
++
++CONFIGFS_ATTR_OPS(iio_trigger_item);
++
++static struct configfs_item_operations iio_trigger_item_ops = {
++	.show_attribute = iio_trigger_item_attr_show,
++	.store_attribute = iio_trigger_item_attr_store,
++};
++
++static struct config_item_type iio_triggers_item_type;
++
++static struct config_item *iio_triggers_make_item(struct config_group *group,
++						  const char *name)
++{
++	struct iio_trigger_item *trigger_item;
++	struct iio_configfs_trigger_info *trigger_info;
++
++	trigger_item = kzalloc(sizeof(*trigger_item), GFP_KERNEL);
++	if (!trigger_item)
++		return ERR_PTR(-ENOMEM);
++	trigger_info = kzalloc(sizeof(*trigger_info), GFP_KERNEL);
++	if (!trigger_info)
++		goto out_free_trigger_item;
++
++	trigger_info->name = kstrdup(name, GFP_KERNEL);
++	if (!trigger_info->name)
++		goto out_free_trigger_info;
++
++	trigger_info->type = IIO_TRIGGER_TYPE_NONE;
++	trigger_info->configfs_ops = &iio_none_ops;
++
++	trigger_item->trigger_info = trigger_info;
++	config_item_init_type_name(&trigger_item->item, name,
++				   &iio_triggers_item_type);
++
++	return &trigger_item->item;
++out_free_trigger_info:
++	kfree(trigger_info);
++out_free_trigger_item:
++	kfree(trigger_item);
++	return ERR_PTR(-ENOMEM);
++}
++
++static void iio_triggers_drop_item(struct config_group *group,
++				   struct config_item *item)
++{
++	struct iio_trigger_item *trigger_item;
++
++	trigger_item = container_of(item, struct iio_trigger_item, item);
++
++	kfree(trigger_item->trigger_info->name);
++	kfree(trigger_item->trigger_info);
++	kfree(trigger_item);
++}
++
++static struct configfs_group_operations iio_triggers_group_ops = {
++	.make_item = iio_triggers_make_item,
++	.drop_item = iio_triggers_drop_item,
++};
++
++static struct config_item_type iio_triggers_item_type = {
++	.ct_owner	= THIS_MODULE,
++	.ct_item_ops	= &iio_trigger_item_ops,
++	.ct_attrs	= iio_trigger_item_attrs,
++};
++
++static struct config_item_type iio_triggers_root_type = {
++	.ct_owner	= THIS_MODULE,
++	.ct_group_ops	= &iio_triggers_group_ops,
++};
++
++static struct config_group iio_triggers_group = {
++	.cg_item = {
++		.ci_namebuf = "triggers",
++		.ci_type = &iio_triggers_root_type,
++	},
++};
++
++static struct config_group *iio_default_groups[] = {
++	&iio_triggers_group,
++	NULL
++};
++
++static struct config_item_type iio_root_group_type = {
++	.ct_owner       = THIS_MODULE,
++};
++
++static struct configfs_subsystem iio_configfs_subsys = {
++	.su_group = {
++		.cg_item = {
++			.ci_namebuf = "iio",
++			.ci_type = &iio_root_group_type,
++		},
++		.default_groups = iio_default_groups,
++	},
++	.su_mutex = __MUTEX_INITIALIZER(iio_configfs_subsys.su_mutex),
++};
++
++static int __init iio_configfs_init(void)
++{
++	config_group_init(&iio_triggers_group);
++	config_group_init(&iio_configfs_subsys.su_group);
++
++	return configfs_register_subsystem(&iio_configfs_subsys);
++}
++module_init(iio_configfs_init);
++
++static void __exit iio_configfs_exit(void)
++{
++	configfs_unregister_subsystem(&iio_configfs_subsys);
++}
++module_exit(iio_configfs_exit);
++
++MODULE_AUTHOR("Daniel Baluta <daniel.baluta@intel.com>");
++MODULE_DESCRIPTION("Industrial I/O configfs support");
 diff --git a/include/linux/iio/iio_configfs_trigger.h b/include/linux/iio/iio_configfs_trigger.h
-index e7b5777..1390474 100644
---- a/include/linux/iio/iio_configfs_trigger.h
+new file mode 100644
+index 0000000..e7b5777
+--- /dev/null
 +++ b/include/linux/iio/iio_configfs_trigger.h
-@@ -2,6 +2,7 @@
- #define __IIO_CONFIGFS_TRIGGER
- 
- #define IIO_TRIGGER_TYPE_NONE		0
-+#define IIO_TRIGGER_TYPE_HRTIMER	1
- 
- struct iio_configfs_trigger_info {
- 	const char *name;
+@@ -0,0 +1,48 @@
++#ifndef __IIO_CONFIGFS_TRIGGER
++#define __IIO_CONFIGFS_TRIGGER
++
++#define IIO_TRIGGER_TYPE_NONE		0
++
++struct iio_configfs_trigger_info {
++	const char *name;
++	unsigned int type;
++	unsigned int active;
++	struct iio_trigger *trigger;
++	struct iio_configfs_ops *configfs_ops;
++};
++
++struct iio_configfs_ops {
++	int (*get_freq)(struct iio_configfs_trigger_info* );
++	int (*set_freq)(struct iio_configfs_trigger_info *, unsigned long);
++	int (*probe)(struct iio_configfs_trigger_info* );
++	int (*remove)(struct iio_configfs_trigger_info* );
++};
++
++static 
++inline int iio_none_get_freq(struct iio_configfs_trigger_info *trigger_info)
++{ 
++	return 0; 
++}
++
++static 
++inline int iio_none_set_freq(struct iio_configfs_trigger_info *trigger_info,
++			     unsigned long f)
++{
++	return 0; 
++}
++
++static
++inline int iio_none_probe(struct iio_configfs_trigger_info *trigger_info)
++{
++	return 0; 
++}
++
++static 
++inline int iio_none_remove(struct iio_configfs_trigger_info *trigger_info)
++{
++	return 0; 
++}
++
++extern struct iio_configfs_ops iio_hrtimer_ops;
++
++#endif /* __IIO_CONFIGFS_TRIGGER */
 -- 
 1.9.1
