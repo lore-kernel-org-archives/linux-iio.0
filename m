@@ -9,101 +9,244 @@ Cc: jlbec@evilplan.org,
 	linux-kernel@vger.kernel.org,
 	octavian.purdila@intel.com,
 	daniel.baluta@intel.com
-Subject: [PATCH 3/3] iio: Documentation: Add initial documentaton for IIO
-Date: Wed, 25 Mar 2015 19:00:32 +0200
-Message-Id: <1427302832-9336-4-git-send-email-daniel.baluta@intel.com>
+Subject: [PATCH 2/3] iio: trigger: Add support for highres timer trigger
+Date: Wed, 25 Mar 2015 19:00:31 +0200
+Message-Id: <1427302832-9336-3-git-send-email-daniel.baluta@intel.com>
 In-Reply-To: <1427302832-9336-1-git-send-email-daniel.baluta@intel.com>
 References: <1427302832-9336-1-git-send-email-daniel.baluta@intel.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-This file wants to be a starting point document for anyone wanting
-to use IIO configfs support or adding new IIO configfs functionality.
+This patch adds an IIO trigger driver which uses a high resolution
+timer to provide a frequency based trigger.
 
+Signed-off-by: Marten Svanfeldt <marten@intuitiveaerial.com>
+Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
 Signed-off-by: Daniel Baluta <daniel.baluta@intel.com>
 ---
- Documentation/iio/iio_configfs.txt | 74 ++++++++++++++++++++++++++++++++++++++
- 1 file changed, 74 insertions(+)
- create mode 100644 Documentation/iio/iio_configfs.txt
+ drivers/iio/industrialio-configfs.c      |   4 +
+ drivers/iio/trigger/Kconfig              |   8 ++
+ drivers/iio/trigger/Makefile             |   2 +
+ drivers/iio/trigger/iio-trig-hrtimer.c   | 146 +++++++++++++++++++++++++++++++
+ include/linux/iio/iio_configfs_trigger.h |   1 +
+ 5 files changed, 161 insertions(+)
+ create mode 100644 drivers/iio/trigger/iio-trig-hrtimer.c
 
-diff --git a/Documentation/iio/iio_configfs.txt b/Documentation/iio/iio_configfs.txt
+diff --git a/drivers/iio/industrialio-configfs.c b/drivers/iio/industrialio-configfs.c
+index 4d2133a..22740c0 100644
+--- a/drivers/iio/industrialio-configfs.c
++++ b/drivers/iio/industrialio-configfs.c
+@@ -17,6 +17,7 @@
+ static const char *trigger_types[] =
+ {
+ 	"none",
++	"hrtimer",
+ };
+ 
+ struct iio_configfs_ops iio_none_ops = {
+@@ -59,6 +60,9 @@ void iio_trigger_set_configfs_ops(struct iio_configfs_trigger_info *trig_info,
+ 	case IIO_TRIGGER_TYPE_NONE:
+ 		trig_info->configfs_ops = &iio_none_ops;
+ 		break;
++	case IIO_TRIGGER_TYPE_HRTIMER:
++		trig_info->configfs_ops = &iio_hrtimer_ops;
++		break;
+ 	default:
+ 		pr_err("Setting configfs ops failed! Unknown type %d\n", type);
+ 		break;
+diff --git a/drivers/iio/trigger/Kconfig b/drivers/iio/trigger/Kconfig
+index 7999612..c856664 100644
+--- a/drivers/iio/trigger/Kconfig
++++ b/drivers/iio/trigger/Kconfig
+@@ -5,6 +5,14 @@
+ 
+ menu "Triggers - standalone"
+ 
++config IIO_TRIGGER_HRTIMER
++	tristate "High resolution timer trigger"
++	help
++	  Provides a frequency based IIO trigger using hrtimers.
++
++	  To compile this driver as a module, choose M here: the
++	  module will be called iio-trig-hrtimer.
++
+ config IIO_INTERRUPT_TRIGGER
+ 	tristate "Generic interrupt trigger"
+ 	help
+diff --git a/drivers/iio/trigger/Makefile b/drivers/iio/trigger/Makefile
+index 0694dae..3d289f6 100644
+--- a/drivers/iio/trigger/Makefile
++++ b/drivers/iio/trigger/Makefile
+@@ -3,5 +3,7 @@
+ #
+ 
+ # When adding new entries keep the list in alphabetical order
++
++obj-$(CONFIG_IIO_TRIGGER_HRTIMER) += iio-trig-hrtimer.o
+ obj-$(CONFIG_IIO_INTERRUPT_TRIGGER) += iio-trig-interrupt.o
+ obj-$(CONFIG_IIO_SYSFS_TRIGGER) += iio-trig-sysfs.o
+diff --git a/drivers/iio/trigger/iio-trig-hrtimer.c b/drivers/iio/trigger/iio-trig-hrtimer.c
 new file mode 100644
-index 0000000..494f4ff
+index 0000000..1a8beaf
 --- /dev/null
-+++ b/Documentation/iio/iio_configfs.txt
-@@ -0,0 +1,74 @@
-+Industrial IIO configfs support
++++ b/drivers/iio/trigger/iio-trig-hrtimer.c
+@@ -0,0 +1,146 @@
++/**
++ * The industrial I/O periodic hrtimer trigger driver
++ *
++ * Copyright (C) Intuitive Aerial AB
++ * Written by Marten Svanfeldt, marten@intuitiveaerial.com
++ * Copyright (C) 2012, Analog Device Inc.
++ *	Author: Lars-Peter Clausen <lars@metafoo.de>
++ *
++ * This program is free software; you can redistribute it and/or modify it
++ * under the terms of the GNU General Public License version 2 as published by
++ * the Free Software Foundation.
++ *
++ */
 +
-+1. Overview
++#include <linux/platform_device.h>
++#include <linux/kernel.h>
++#include <linux/slab.h>
++#include <linux/hrtimer.h>
++#include <linux/iio/iio.h>
++#include <linux/iio/trigger.h>
 +
-+Configfs is a filesystem-based manager of kernel objects. IIO uses some
-+objects that could be easily configured using configfs (e.g: devices,
-+triggers).
++#include <linux/iio/iio_configfs_trigger.h>
 +
-+See Documentation/filesystems/configfs/configfs.txt for more information about
-+how configfs works.
++struct iio_hrtimer_trig_info {
++	struct iio_configfs_trigger_info *configfs_info;
++	unsigned int frequency;
++	struct hrtimer timer;
++	ktime_t period;
++};
 +
-+2. Usage
++static enum hrtimer_restart iio_trig_hrtimer_trig(struct hrtimer *timer)
++{
++	struct iio_hrtimer_trig_info *trig_info;
 +
-+In order to use configfs support in IIO we need to select it at compile time
-+via CONFIG_IIO_CONFIGFS config option.
++	trig_info = container_of(timer, struct iio_hrtimer_trig_info, timer);
 +
-+Then, mount the configfs filesystem (usually under /config directory):
++	hrtimer_forward_now(timer, trig_info->period);
++	iio_trigger_poll(trig_info->configfs_info->trigger);
 +
-+$ mkdir /config
-+$ mount -t configfs none /config
++	return HRTIMER_RESTART;
++}
 +
-+At this point, all default IIO groups will be creatd and can be accessed under
-+/config/iio. Next chapters will describe available IIO configurable objects.
++static int iio_trig_hrtimer_set_state(struct iio_trigger *trig, bool state)
++{
++	struct iio_hrtimer_trig_info *trig_info;
 +
-+2.1. Software triggers creation and destruction
++	trig_info = iio_trigger_get_drvdata(trig);
 +
-+One of the IIO default configfs groups is the "triggers" groups. It is
-+automagically accessible when the configfs is mounted and can be found under
-+/config/iio/triggers.
++	if (trig_info->frequency == 0)
++		return -EINVAL;
 +
-+2.1.1. Trigger creation
++	if (state) {
++		hrtimer_start(&trig_info->timer, trig_info->period,
++			HRTIMER_MODE_REL);
++	} else {
++		hrtimer_cancel(&trig_info->timer);
++	}
 +
-+As simply as:
++	return 0;
++}
 +
-+$ mkdir /config/triggers/my_trigger
++int iio_trig_hrtimer_read_freq(struct iio_configfs_trigger_info *cinfo)
++{
++	struct iio_hrtimer_trig_info *trig_info;
 +
-+This will create a directory associated with a trigger. To understand how this
-+works we first need to see "my_triggers"'s attributes:
++	trig_info = iio_trigger_get_drvdata(cinfo->trigger);
++	return trig_info->frequency;
++}
 +
-+$ ls /config/triggers/my_trigger
-+activate            sampling_frequency  type
++int iio_trig_hrtimer_write_freq(struct iio_configfs_trigger_info *cinfo,
++				unsigned long freq)
++{
++	struct iio_hrtimer_trig_info *trig_info;
 +
-+Available types for triggers are:
-+	* none, this is a default dummy trigger that does nothing.
-+	* hrtimer, this is trigger based on high resolution timer.
++	trig_info = iio_trigger_get_drvdata(cinfo->trigger);
 +
-+Order of operations in order to create a "hrtimer" trigger:
++	if (freq > NSEC_PER_SEC)
++		return -EINVAL;
 +
-+$ echo hrtimer > /config/triggers/my_trigger/type
-+$ echo 1 > /config/triggers/my_trigger/activate
-+$ echo 100 > /config/triggers/my_trigger/sampling_frequency
++	if (freq != 0)
++		trig_info->period = ktime_set(0, NSEC_PER_SEC / freq);
++	trig_info->frequency = freq;
 +
-+At this point the trigger can be used by an IIO device.
++	return 0;
++}
 +
-+2.1.2 Trigger destruction
++static const struct iio_trigger_ops iio_hrtimer_trigger_ops = {
++	.owner = THIS_MODULE,
++	.set_trigger_state = iio_trig_hrtimer_set_state,
++};
 +
-+$ echo 1 > /config/triggers/my_trigger/activate
++static int iio_trig_hrtimer_probe(struct iio_configfs_trigger_info *cinfo)
++{
++	struct iio_hrtimer_trig_info *trig_info;
++	int ret;
 +
-+3. Misc
++	trig_info = kzalloc(sizeof(*trig_info), GFP_KERNEL);
++	if (!trig_info)
++		return -ENOMEM;
 +
-+In order to add a new trigger type, one need to implement a driver that creates
-+an instance of struct iio_configfs_ops (see iio_configfs_trigger.h header file
-+in include/linux/iio) and then support it in iio_trigger_set_configfs_ops
-+function from industrialiio-configfs.c file.
++	trig_info->configfs_info = cinfo;
 +
-+These are the existing drivers implementing new trigger types:
-+	* hrtimer => iio/trigger/iio-trig-hrtimer.c
++	cinfo->trigger = iio_trigger_alloc("%s", cinfo->name);
++	if (!cinfo->trigger)
++		return -ENOMEM;
 +
-+4. Further work
++	iio_trigger_set_drvdata(cinfo->trigger, trig_info);
++	cinfo->trigger->ops = &iio_hrtimer_trigger_ops;
 +
-+* IIO dummy device creation
-+* Mappings to 'soft' in kernel users such as iio_input and iio_hwmon
-+* IIO on IIO drivers
++	hrtimer_init(&trig_info->timer, CLOCK_MONOTONIC, HRTIMER_MODE_REL);
++	trig_info->timer.function = iio_trig_hrtimer_trig;
++	ret = iio_trigger_register(cinfo->trigger);
++	if (ret)
++		goto err_free_trigger;
 +
++	return 0;
++err_free_trigger:
++	iio_trigger_free(cinfo->trigger);
++
++	return ret;
++}
++
++static int iio_trig_hrtimer_remove(struct iio_configfs_trigger_info *cinfo)
++{
++	struct iio_hrtimer_trig_info *trig_info;
++
++	trig_info = iio_trigger_get_drvdata(cinfo->trigger);
++
++	iio_trigger_unregister(cinfo->trigger);
++	hrtimer_cancel(&trig_info->timer);
++	iio_trigger_free(cinfo->trigger);
++
++	return 0;
++}
++
++struct iio_configfs_ops iio_hrtimer_ops = {
++	.get_freq = iio_trig_hrtimer_read_freq,
++	.set_freq = iio_trig_hrtimer_write_freq,
++	.probe = iio_trig_hrtimer_probe,
++	.remove = iio_trig_hrtimer_remove,
++};
++EXPORT_SYMBOL(iio_hrtimer_ops);
++
++MODULE_AUTHOR("Marten Svanfeldt <marten@intuitiveaerial.com>");
++MODULE_DESCRIPTION("Periodic hrtimer trigger for the IIO subsystem");
++MODULE_LICENSE("GPL v2");
+diff --git a/include/linux/iio/iio_configfs_trigger.h b/include/linux/iio/iio_configfs_trigger.h
+index e7b5777..1390474 100644
+--- a/include/linux/iio/iio_configfs_trigger.h
++++ b/include/linux/iio/iio_configfs_trigger.h
+@@ -2,6 +2,7 @@
+ #define __IIO_CONFIGFS_TRIGGER
+ 
+ #define IIO_TRIGGER_TYPE_NONE		0
++#define IIO_TRIGGER_TYPE_HRTIMER	1
+ 
+ struct iio_configfs_trigger_info {
+ 	const char *name;
 -- 
 1.9.1
