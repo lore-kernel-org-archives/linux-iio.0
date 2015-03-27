@@ -1,67 +1,79 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-ob0-f182.google.com ([209.85.214.182]:34013 "EHLO
-	mail-ob0-f182.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752412AbbC0KgZ (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 27 Mar 2015 06:36:25 -0400
-Received: by obbgh1 with SMTP id gh1so5522096obb.1
-        for <linux-iio@vger.kernel.org>; Fri, 27 Mar 2015 03:36:25 -0700 (PDT)
-MIME-Version: 1.0
-In-Reply-To: <20150327100627.GW1878@lahna.fi.intel.com>
-References: <20150325122505.GX1878@lahna.fi.intel.com>
-	<20150325132116.GY1878@lahna.fi.intel.com>
-	<CAE1zotJas26oRGdext7V69mNNyaYT3Ds7+Ruhg_kNKBf-Ewoew@mail.gmail.com>
-	<20150326101616.GD1878@lahna.fi.intel.com>
-	<CAE1zotKAJBS2_rnYG9K0DxbvVP9-G4iGm_E+b5jQtHVYjiQwVA@mail.gmail.com>
-	<20150326140430.GM1878@lahna.fi.intel.com>
-	<CAE1zotL0Si3=dGLGPmq0CGhc+tsJwDxY8GYwh8fcHA-1jcBdqA@mail.gmail.com>
-	<20150326144753.GO1878@lahna.fi.intel.com>
-	<CAE1zot+67M96HbMnorYxEd06r=Aew=x830sCXoovBCCy_YMF7w@mail.gmail.com>
-	<CAE1zot+MaycNK91yOMLAfdvo=f21S9hts9ufk4krBMJ7PNYogA@mail.gmail.com>
-	<20150327100627.GW1878@lahna.fi.intel.com>
-Date: Fri, 27 Mar 2015 11:36:25 +0100
-Message-ID: <CACRpkda9pUqy9r9EUSfzC5ntqKpH_CywcLJLDXCUa25U_cgFgg@mail.gmail.com>
-Subject: Re: [PATCH] IIO: Adds ACPI support for ST gyroscopes
-From: Linus Walleij <linus.walleij@linaro.org>
-To: Mika Westerberg <mika.westerberg@linux.intel.com>
-Cc: Octavian Purdila <octavian.purdila@intel.com>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Robert Dolca <robert.dolca@gmail.com>,
-	Robert Dolca <robert.dolca@intel.com>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	Jonathan Cameron <jic23@kernel.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	Denis CIOCCA <denis.ciocca@st.com>
-Content-Type: text/plain; charset=UTF-8
+Received: from mga14.intel.com ([192.55.52.115]:32978 "EHLO mga14.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1752561AbbC0Lxy (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Fri, 27 Mar 2015 07:53:54 -0400
+From: Irina Tirdea <irina.tirdea@intel.com>
+To: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org, Irina Tirdea <irina.tirdea@intel.com>
+Subject: [PATCH] tools: iio: generic_buffer: Fix generic scale extraction
+Date: Fri, 27 Mar 2015 13:53:00 +0200
+Message-Id: <1427457180-2668-1-git-send-email-irina.tirdea@intel.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Fri, Mar 27, 2015 at 11:06 AM, Mika Westerberg
-<mika.westerberg@linux.intel.com> wrote:
-> On Thu, Mar 26, 2015 at 06:28:19PM +0200, Octavian Purdila wrote:
+When using generic_buffer to read data, the scale is not properly
+detected for scale shared by type. This is caused by a problem
+with the generation of generic name out of the full name.
+E.g.: for current->name in_accel_z, the extracted generic name
+is "in" (when it should be "in_accel"). This is used in generic_buffer
+to generate scale and offset paths (in_accel_scale).
 
->> For the sleep case I think the GPIO controller needs to do the pin
->> enable and set input direction operation in it's irq_bus_sync_unlock.
->
-> I wonder how DT handles all this? Is it the boot firmware that sets up
-> the pins accordingly or is there something we are missing?
+Consider the in_ or out_ prefix when extracting the generic name
+from the full name.
 
-DT systems mostly do not have firmware for power usecases, they
-handle it all using pin control. I would more say that is a feature of
-all-SW systems without power-firmware ideas, without ACPI and
-without PSCI (well PSCI systems do not care about much more
-than CPU power down in firmware anyway...)
+Signed-off-by: Irina Tirdea <irina.tirdea@intel.com>
+---
+ tools/iio/iio_utils.c | 20 +++++++++++++++++---
+ 1 file changed, 17 insertions(+), 3 deletions(-)
 
-Sometimes the power-down/up path includes driving pins to
-GND using the generic pin config option PIN_CONFIG_OUTPUT to
-drive the logic.
+diff --git a/tools/iio/iio_utils.c b/tools/iio/iio_utils.c
+index aea9282..63fbf99 100644
+--- a/tools/iio/iio_utils.c
++++ b/tools/iio/iio_utils.c
+@@ -18,6 +18,11 @@
+ 
+ const char *iio_dir = "/sys/bus/iio/devices/";
+ 
++static char * const iio_direction[] = {
++	"in",
++	"out",
++};
++
+ /**
+  * iioutils_break_up_name() - extract generic name from full channel name
+  * @full_name: the full channel name
+@@ -28,10 +33,19 @@ int iioutils_break_up_name(const char *full_name,
+ {
+ 	char *current;
+ 	char *w, *r;
+-	char *working;
++	char *working, *prefix = "";
++	int i;
+ 
+-	current = strdup(full_name);
++	for (i = 0; i < sizeof(iio_direction) / sizeof(iio_direction[0]); i++)
++		if (!strncmp(full_name, iio_direction[i],
++			     strlen(iio_direction[i]))) {
++			prefix = iio_direction[i];
++			break;
++		}
++
++	current = strdup(full_name + strlen(prefix) + 1);
+ 	working = strtok(current, "_\0");
++
+ 	w = working;
+ 	r = working;
+ 
+@@ -43,7 +57,7 @@ int iioutils_break_up_name(const char *full_name,
+ 		r++;
+ 	}
+ 	*w = '\0';
+-	*generic_name = strdup(working);
++	asprintf(generic_name, "%s_%s", prefix, working);
+ 	free(current);
+ 
+ 	return 0;
+-- 
+1.9.1
 
-For details on this mess where HW designers think that low-power
-sleep mode is "GPIO-something" see Documentation/pinctrl.txt
-section named "GPIO mode pitfalls". I..e the question is not what
-registers are involved and what these are named, but the actual
-usecase.
-
-Yours,
-Linus Walleij
