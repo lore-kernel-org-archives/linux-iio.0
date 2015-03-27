@@ -1,69 +1,93 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga02.intel.com ([134.134.136.20]:13034 "EHLO mga02.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1752519AbbC0MxM (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Fri, 27 Mar 2015 08:53:12 -0400
-From: Alin Arhip <alin.g.arhip@intel.com>
-To: jic23@kernel.org
-Cc: knaack.h@gmx.de, lars@metafoo.de, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Alin Gabriel Arhip <alin.g.arhip@intel.com>
-Subject: [PATCH] tools: iio: Add help option for generic_buffer
-Date: Fri, 27 Mar 2015 14:42:19 +0200
-Message-Id: <1427460139-5136-1-git-send-email-alin.g.arhip@intel.com>
+Received: from mail-wi0-f171.google.com ([209.85.212.171]:35251 "EHLO
+	mail-wi0-f171.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752612AbbC0M5V (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 27 Mar 2015 08:57:21 -0400
+MIME-Version: 1.0
+In-Reply-To: <1427457180-2668-1-git-send-email-irina.tirdea@intel.com>
+References: <1427457180-2668-1-git-send-email-irina.tirdea@intel.com>
+Date: Fri, 27 Mar 2015 14:57:20 +0200
+Message-ID: <CAEnQRZBFjx9y6QgNOFFdeyNF5960X+yNLSi6kkMCTNLOb2kiRw@mail.gmail.com>
+Subject: Re: [PATCH] tools: iio: generic_buffer: Fix generic scale extraction
+From: Daniel Baluta <daniel.baluta@gmail.com>
+To: Irina Tirdea <irina.tirdea@intel.com>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-From: Alin Gabriel Arhip <alin.g.arhip@intel.com>
+On Fri, Mar 27, 2015 at 1:53 PM, Irina Tirdea <irina.tirdea@intel.com> wrote:
+> When using generic_buffer to read data, the scale is not properly
+> detected for scale shared by type. This is caused by a problem
+> with the generation of generic name out of the full name.
+> E.g.: for current->name in_accel_z, the extracted generic name
+> is "in" (when it should be "in_accel"). This is used in generic_buffer
+> to generate scale and offset paths (in_accel_scale).
+>
+> Consider the in_ or out_ prefix when extracting the generic name
+> from the full name.
+>
+> Signed-off-by: Irina Tirdea <irina.tirdea@intel.com>
 
-This patch adds usage instructions and -h parameter to view available
-command line parameters.
+Reviewed-by: Daniel Baluta <daniel.baluta@intel.com>
 
-Signed-off-by: Alin Gabriel Arhip <alin.g.arhip@intel.com>
----
- tools/iio/generic_buffer.c | 22 ++++++++++++++++++++--
- 1 file changed, 20 insertions(+), 2 deletions(-)
-
-diff --git a/tools/iio/generic_buffer.c b/tools/iio/generic_buffer.c
-index 8f8f058..8dd77ac 100644
---- a/tools/iio/generic_buffer.c
-+++ b/tools/iio/generic_buffer.c
-@@ -166,7 +166,17 @@ int main(int argc, char **argv)
- 
- 	struct iio_channel_info *channels;
- 
--	while ((c = getopt(argc, argv, "l:w:c:et:n:g")) != -1) {
-+	if (argc <= 1) {
-+		printf("Usage: %s -n <device_name> -t <trigger_name>\n"
-+			"\tIf trigger name is not specified the program\n"
-+			"\tassumes you want a dataready trigger associated\n"
-+			"\twith the device and goes looking for it.\n"
-+			"\tUse -h to see available command line parameters.\n",
-+			argv[0]);
-+		return -1;
-+	}
-+
-+	while ((c = getopt(argc, argv, "l:w:c:et:n:gh")) != -1) {
- 		switch (c) {
- 		case 'n':
- 			device_name = optarg;
-@@ -190,7 +200,15 @@ int main(int argc, char **argv)
- 		case 'g':
- 			notrigger = 1;
- 			break;
--		case '?':
-+		case '?': case 'h':
-+			printf("Usage: %s -n <device_name> to set device name\n"
-+				"\t-t <trigger_name> to set trigger name\n"
-+				"\t-e to set noevents to 1\n"
-+				"\t-c <num_loops> to set number of loops\n"
-+				"\t-w <timedelay> to set time delay\n"
-+				"\t-l <buf_len> to set buffer length\n"
-+				"\t-g to set notrigger to 1\n"
-+				"\t-h to see this help\n", argv[0]);
- 			return -1;
- 		}
- 	}
--- 
-1.9.1
-
+> ---
+>  tools/iio/iio_utils.c | 20 +++++++++++++++++---
+>  1 file changed, 17 insertions(+), 3 deletions(-)
+>
+> diff --git a/tools/iio/iio_utils.c b/tools/iio/iio_utils.c
+> index aea9282..63fbf99 100644
+> --- a/tools/iio/iio_utils.c
+> +++ b/tools/iio/iio_utils.c
+> @@ -18,6 +18,11 @@
+>
+>  const char *iio_dir = "/sys/bus/iio/devices/";
+>
+> +static char * const iio_direction[] = {
+> +       "in",
+> +       "out",
+> +};
+> +
+>  /**
+>   * iioutils_break_up_name() - extract generic name from full channel name
+>   * @full_name: the full channel name
+> @@ -28,10 +33,19 @@ int iioutils_break_up_name(const char *full_name,
+>  {
+>         char *current;
+>         char *w, *r;
+> -       char *working;
+> +       char *working, *prefix = "";
+> +       int i;
+>
+> -       current = strdup(full_name);
+> +       for (i = 0; i < sizeof(iio_direction) / sizeof(iio_direction[0]); i++)
+> +               if (!strncmp(full_name, iio_direction[i],
+> +                            strlen(iio_direction[i]))) {
+> +                       prefix = iio_direction[i];
+> +                       break;
+> +               }
+> +
+> +       current = strdup(full_name + strlen(prefix) + 1);
+>         working = strtok(current, "_\0");
+> +
+>         w = working;
+>         r = working;
+>
+> @@ -43,7 +57,7 @@ int iioutils_break_up_name(const char *full_name,
+>                 r++;
+>         }
+>         *w = '\0';
+> -       *generic_name = strdup(working);
+> +       asprintf(generic_name, "%s_%s", prefix, working);
+>         free(current);
+>
+>         return 0;
+> --
+> 1.9.1
+>
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
