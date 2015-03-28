@@ -1,171 +1,49 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:59382 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:59399 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752054AbbC1K57 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 28 Mar 2015 06:57:59 -0400
-Message-ID: <55168934.3050009@kernel.org>
-Date: Sat, 28 Mar 2015 10:57:56 +0000
+	with ESMTP id S1752092AbbC1LAC (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 28 Mar 2015 07:00:02 -0400
+Message-ID: <551689B0.2030903@kernel.org>
+Date: Sat, 28 Mar 2015 11:00:00 +0000
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Antonio Fiol <antonio@fiol.es>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Subject: Re: [PATCH] iio: max517: Add support for MAX520 and MAX521 chips.
-References: <1427530034-22848-1-git-send-email-antonio@fiol.es>
-In-Reply-To: <1427530034-22848-1-git-send-email-antonio@fiol.es>
+To: Haneen Mohammed <hamohammed.sa@gmail.com>,
+	outreachy-kernel@googlegroups.com, linux-iio@vger.kernel.org,
+	daniel.baluta@intel.com
+Subject: Re: [PATCH] iio: Add ABI documentation for in_rot offset value
+References: <1427500959-3404-1-git-send-email-hamohammed.sa@gmail.com>
+In-Reply-To: <1427500959-3404-1-git-send-email-hamohammed.sa@gmail.com>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 28/03/15 08:07, Antonio Fiol wrote:
-> MAX520 and MAX521 are protocol-compatible with the already supported
-> chips, just have more channels.
+On 28/03/15 00:02, Haneen Mohammed wrote:
+> This patch adds ABI documentation entries for in_rot_offset.
+> At least one user for these is present that is the  HID Sensors Driver.
 > 
-> Signed-off-by: Antonio Fiol <antonio@fiol.es>
-Applied to the togreg branch of iio.git - initially pushed out as testing
-for the autobuilders to play with it.  Thanks.
+> Signed-off-by: Haneen Mohammed <hamohammed.sa@gmail.com>
+Applied to the togreg branch of iio.git.
+Will be initially pushed out as testing to allow other patches to
+be build tested.
+
+Thanks,
+
+Jonathan
 > ---
->  drivers/iio/dac/Kconfig        | 11 ++++++++---
->  drivers/iio/dac/max517.c       | 45 +++++++++++++++++++++++++++++++-----------
->  include/linux/iio/dac/max517.h |  2 +-
->  3 files changed, 42 insertions(+), 16 deletions(-)
+>  Documentation/ABI/testing/sysfs-bus-iio | 1 +
+>  1 file changed, 1 insertion(+)
 > 
-> diff --git a/drivers/iio/dac/Kconfig b/drivers/iio/dac/Kconfig
-> index 2236ea2..13471a7 100644
-> --- a/drivers/iio/dac/Kconfig
-> +++ b/drivers/iio/dac/Kconfig
-> @@ -143,11 +143,16 @@ config AD7303
->  	  ad7303.
->  
->  config MAX517
-> -	tristate "Maxim MAX517/518/519 DAC driver"
-> +	tristate "Maxim MAX517/518/519/520/521 DAC driver"
->  	depends on I2C
->  	help
-> -	  If you say yes here you get support for the Maxim chips MAX517,
-> -	  MAX518 and MAX519 (I2C 8-Bit DACs with rail-to-rail outputs).
-> +	  If you say yes here you get support for the following Maxim chips
-> +	  (I2C 8-Bit DACs with rail-to-rail outputs):
-> +	  MAX517 - Single channel, single reference
-> +	  MAX518 - Dual channel, ref=Vdd
-> +	  MAX519 - Dual channel, dual reference
-> +	  MAX520 - Quad channel, quad reference
-> +	  MAX521 - Octal channel, independent ref for ch0-3, shared ref for ch4-7
->  
->  	  This driver can also be built as a module.  If so, the module
->  	  will be called max517.
-> diff --git a/drivers/iio/dac/max517.c b/drivers/iio/dac/max517.c
-> index 9a82a72..5507b39 100644
-> --- a/drivers/iio/dac/max517.c
-> +++ b/drivers/iio/dac/max517.c
-> @@ -39,11 +39,13 @@ enum max517_device_ids {
->  	ID_MAX517,
->  	ID_MAX518,
->  	ID_MAX519,
-> +	ID_MAX520,
-> +	ID_MAX521,
->  };
->  
->  struct max517_data {
->  	struct i2c_client	*client;
-> -	unsigned short		vref_mv[2];
-> +	unsigned short		vref_mv[8];
->  };
->  
->  /*
-> @@ -149,7 +151,13 @@ static const struct iio_info max517_info = {
->  
->  static const struct iio_chan_spec max517_channels[] = {
->  	MAX517_CHANNEL(0),
-> -	MAX517_CHANNEL(1)
-> +	MAX517_CHANNEL(1),
-> +	MAX517_CHANNEL(2),
-> +	MAX517_CHANNEL(3),
-> +	MAX517_CHANNEL(4),
-> +	MAX517_CHANNEL(5),
-> +	MAX517_CHANNEL(6),
-> +	MAX517_CHANNEL(7),
->  };
->  
->  static int max517_probe(struct i2c_client *client,
-> @@ -158,6 +166,7 @@ static int max517_probe(struct i2c_client *client,
->  	struct max517_data *data;
->  	struct iio_dev *indio_dev;
->  	struct max517_platform_data *platform_data = client->dev.platform_data;
-> +	int chan;
->  
->  	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
->  	if (!indio_dev)
-> @@ -169,11 +178,21 @@ static int max517_probe(struct i2c_client *client,
->  	/* establish that the iio_dev is a child of the i2c device */
->  	indio_dev->dev.parent = &client->dev;
->  
-> -	/* reduced channel set for MAX517 */
-> -	if (id->driver_data == ID_MAX517)
-> -		indio_dev->num_channels = 1;
-> -	else
-> +	switch (id->driver_data) {
-> +	case ID_MAX521:
-> +		indio_dev->num_channels = 8;
-> +		break;
-> +	case ID_MAX520:
-> +		indio_dev->num_channels = 4;
-> +		break;
-> +	case ID_MAX519:
-> +	case ID_MAX518:
->  		indio_dev->num_channels = 2;
-> +		break;
-> +	default:  /* single channel for MAX517 */
-> +		indio_dev->num_channels = 1;
-> +		break;
-> +	}
->  	indio_dev->channels = max517_channels;
->  	indio_dev->modes = INDIO_DIRECT_MODE;
->  	indio_dev->info = &max517_info;
-> @@ -182,11 +201,11 @@ static int max517_probe(struct i2c_client *client,
->  	 * Reference voltage on MAX518 and default is 5V, else take vref_mv
->  	 * from platform_data
->  	 */
-> -	if (id->driver_data == ID_MAX518 || !platform_data) {
-> -		data->vref_mv[0] = data->vref_mv[1] = 5000; /* mV */
-> -	} else {
-> -		data->vref_mv[0] = platform_data->vref_mv[0];
-> -		data->vref_mv[1] = platform_data->vref_mv[1];
-> +	for (chan = 0; chan < indio_dev->num_channels; chan++) {
-> +		if (id->driver_data == ID_MAX518 || !platform_data)
-> +			data->vref_mv[chan] = 5000; /* mV */
-> +		else
-> +			data->vref_mv[chan] = platform_data->vref_mv[chan];
->  	}
->  
->  	return iio_device_register(indio_dev);
-> @@ -202,6 +221,8 @@ static const struct i2c_device_id max517_id[] = {
->  	{ "max517", ID_MAX517 },
->  	{ "max518", ID_MAX518 },
->  	{ "max519", ID_MAX519 },
-> +	{ "max520", ID_MAX520 },
-> +	{ "max521", ID_MAX521 },
->  	{ }
->  };
->  MODULE_DEVICE_TABLE(i2c, max517_id);
-> @@ -218,5 +239,5 @@ static struct i2c_driver max517_driver = {
->  module_i2c_driver(max517_driver);
->  
->  MODULE_AUTHOR("Roland Stigge <stigge@antcom.de>");
-> -MODULE_DESCRIPTION("MAX517/MAX518/MAX519 8-bit DAC");
-> +MODULE_DESCRIPTION("MAX517/518/519/520/521 8-bit DAC");
->  MODULE_LICENSE("GPL");
-> diff --git a/include/linux/iio/dac/max517.h b/include/linux/iio/dac/max517.h
-> index f6d1d25..7668716 100644
-> --- a/include/linux/iio/dac/max517.h
-> +++ b/include/linux/iio/dac/max517.h
-> @@ -9,7 +9,7 @@
->  #define IIO_DAC_MAX517_H_
->  
->  struct max517_platform_data {
-> -	u16				vref_mv[2];
-> +	u16				vref_mv[8];
->  };
->  
->  #endif /* IIO_DAC_MAX517_H_ */
+> diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
+> index 5cabafb..4736a34 100644
+> --- a/Documentation/ABI/testing/sysfs-bus-iio
+> +++ b/Documentation/ABI/testing/sysfs-bus-iio
+> @@ -254,6 +254,7 @@ What:		/sys/bus/iio/devices/iio:deviceX/in_pressureY_offset
+>  What:		/sys/bus/iio/devices/iio:deviceX/in_pressure_offset
+>  What:		/sys/bus/iio/devices/iio:deviceX/in_humidityrelative_offset
+>  What:		/sys/bus/iio/devices/iio:deviceX/in_magn_offset
+> +What:		/sys/bus/iio/devices/iio:deviceX/in_rot_offset
+>  KernelVersion:	2.6.35
+>  Contact:	linux-iio@vger.kernel.org
+>  Description:
 > 
 
