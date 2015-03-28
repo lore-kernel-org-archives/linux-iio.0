@@ -1,114 +1,212 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:59733 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:59794 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752748AbbC1Lys (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 28 Mar 2015 07:54:48 -0400
-Message-ID: <55169686.9060107@kernel.org>
-Date: Sat, 28 Mar 2015 11:54:46 +0000
+	with ESMTP id S1753234AbbC1MDY (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 28 Mar 2015 08:03:24 -0400
+Message-ID: <55169887.3040001@kernel.org>
+Date: Sat, 28 Mar 2015 12:03:19 +0000
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Daniel Baluta <daniel.baluta@intel.com>
-CC: jlbec@evilplan.org, lars@metafoo.de, knaack.h@gmx.de,
-	pmeerw@pmeerw.net, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org, octavian.purdila@intel.com
-Subject: Re: [PATCH 3/3] iio: Documentation: Add initial documentaton for
- IIO
-References: <1427302832-9336-1-git-send-email-daniel.baluta@intel.com> <1427302832-9336-4-git-send-email-daniel.baluta@intel.com>
-In-Reply-To: <1427302832-9336-4-git-send-email-daniel.baluta@intel.com>
+To: Stefan Agner <stefan@agner.ch>, shawn.guo@linaro.org,
+	kernel@pengutronix.de
+CC: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
+	robh+dt@kernel.org, pawel.moll@arm.com, mark.rutland@arm.com,
+	ijc+devicetree@hellion.org.uk, galak@codeaurora.org,
+	B38611@freescale.com, maitysanchayan@gmail.com,
+	devicetree@vger.kernel.org, linux-iio@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v4 1/3] iio: adc: vf610: use ADC clock within specification
+References: <1427201269-4902-1-git-send-email-stefan@agner.ch> <1427201269-4902-2-git-send-email-stefan@agner.ch>
+In-Reply-To: <1427201269-4902-2-git-send-email-stefan@agner.ch>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 25/03/15 17:00, Daniel Baluta wrote:
-> This file wants to be a starting point document for anyone wanting
-> to use IIO configfs support or adding new IIO configfs functionality.
+On 24/03/15 12:47, Stefan Agner wrote:
+> Depending on conversion mode used, the ADC clock (ADCK) needs
+> to be below a maximum frequency. According to Vybrid's data
+> sheet this is 20MHz for the low power conversion mode.
 > 
-> Signed-off-by: Daniel Baluta <daniel.baluta@intel.com>
-Looks like a good flexible structure to me.  Thanks!
+> The ADC clock is depending on input clock, which is the bus
+> clock by default. Vybrid SoC are typically clocked at at 400MHz
+> or 500MHz, which leads to 66MHz or 83MHz bus clock respectively.
+> Hence, a divider of 8 is required to stay below the specified
+> maximum clock of 20MHz.
+> 
+> Due to the different bus clock speeds, the resulting sampling
+> frequency is not static. Hence use the ADC clock and calculate
+> the actual available sampling frequency dynamically.
+> 
+> This fixes bogous values observed on some 500MHz clocked Vybrid
+> SoC. The resulting value usually showed Bit 9 being stuck at 1,
+> or 0, which lead to a value of +/-512.
+> 
+> Acked-by: Fugang Duan <B38611@freescale.com>
+> Signed-off-by: Stefan Agner <stefan@agner.ch>
+I'd perhaps have stuck the word 'fix' in the description ;)
+
+Anyhow, applied to the fixes-togreg branch of iio.git and marked for stable.
+
+I'll leave the other two for nwo to allow for device tree review and this one to
+propagate through to my upstream...
+
+Jonathan
 > ---
->  Documentation/iio/iio_configfs.txt | 74 ++++++++++++++++++++++++++++++++++++++
->  1 file changed, 74 insertions(+)
->  create mode 100644 Documentation/iio/iio_configfs.txt
+>  drivers/iio/adc/vf610_adc.c | 91 ++++++++++++++++++++++++++++++---------------
+>  1 file changed, 61 insertions(+), 30 deletions(-)
 > 
-> diff --git a/Documentation/iio/iio_configfs.txt b/Documentation/iio/iio_configfs.txt
-> new file mode 100644
-> index 0000000..494f4ff
-> --- /dev/null
-> +++ b/Documentation/iio/iio_configfs.txt
-> @@ -0,0 +1,74 @@
-> +Industrial IIO configfs support
+> diff --git a/drivers/iio/adc/vf610_adc.c b/drivers/iio/adc/vf610_adc.c
+> index 8ec353c..e63b8e7 100644
+> --- a/drivers/iio/adc/vf610_adc.c
+> +++ b/drivers/iio/adc/vf610_adc.c
+> @@ -141,9 +141,13 @@ struct vf610_adc {
+>  	struct regulator *vref;
+>  	struct vf610_adc_feature adc_feature;
+>  
+> +	u32 sample_freq_avail[5];
 > +
-> +1. Overview
+>  	struct completion completion;
+>  };
+>  
+> +static const u32 vf610_hw_avgs[] = { 1, 4, 8, 16, 32 };
 > +
-> +Configfs is a filesystem-based manager of kernel objects. IIO uses some
-> +objects that could be easily configured using configfs (e.g: devices,
-> +triggers).
+>  #define VF610_ADC_CHAN(_idx, _chan_type) {			\
+>  	.type = (_chan_type),					\
+>  	.indexed = 1,						\
+> @@ -180,35 +184,47 @@ static const struct iio_chan_spec vf610_adc_iio_channels[] = {
+>  	/* sentinel */
+>  };
+>  
+> -/*
+> - * ADC sample frequency, unit is ADCK cycles.
+> - * ADC clk source is ipg clock, which is the same as bus clock.
+> - *
+> - * ADC conversion time = SFCAdder + AverageNum x (BCT + LSTAdder)
+> - * SFCAdder: fixed to 6 ADCK cycles
+> - * AverageNum: 1, 4, 8, 16, 32 samples for hardware average.
+> - * BCT (Base Conversion Time): fixed to 25 ADCK cycles for 12 bit mode
+> - * LSTAdder(Long Sample Time): fixed to 3 ADCK cycles
+> - *
+> - * By default, enable 12 bit resolution mode, clock source
+> - * set to ipg clock, So get below frequency group:
+> - */
+> -static const u32 vf610_sample_freq_avail[5] =
+> -{1941176, 559332, 286957, 145374, 73171};
+> +static inline void vf610_adc_calculate_rates(struct vf610_adc *info)
+> +{
+> +	unsigned long adck_rate, ipg_rate = clk_get_rate(info->clk);
+> +	int i;
 > +
-> +See Documentation/filesystems/configfs/configfs.txt for more information about
-> +how configfs works.
+> +	/*
+> +	 * Calculate ADC sample frequencies
+> +	 * Sample time unit is ADCK cycles. ADCK clk source is ipg clock,
+> +	 * which is the same as bus clock.
+> +	 *
+> +	 * ADC conversion time = SFCAdder + AverageNum x (BCT + LSTAdder)
+> +	 * SFCAdder: fixed to 6 ADCK cycles
+> +	 * AverageNum: 1, 4, 8, 16, 32 samples for hardware average.
+> +	 * BCT (Base Conversion Time): fixed to 25 ADCK cycles for 12 bit mode
+> +	 * LSTAdder(Long Sample Time): fixed to 3 ADCK cycles
+> +	 */
+> +	adck_rate = ipg_rate / info->adc_feature.clk_div;
+> +	for (i = 0; i < ARRAY_SIZE(vf610_hw_avgs); i++)
+> +		info->sample_freq_avail[i] =
+> +			adck_rate / (6 + vf610_hw_avgs[i] * (25 + 3));
+> +}
+>  
+>  static inline void vf610_adc_cfg_init(struct vf610_adc *info)
+>  {
+> +	struct vf610_adc_feature *adc_feature = &info->adc_feature;
 > +
-> +2. Usage
+>  	/* set default Configuration for ADC controller */
+> -	info->adc_feature.clk_sel = VF610_ADCIOC_BUSCLK_SET;
+> -	info->adc_feature.vol_ref = VF610_ADCIOC_VR_VREF_SET;
+> +	adc_feature->clk_sel = VF610_ADCIOC_BUSCLK_SET;
+> +	adc_feature->vol_ref = VF610_ADCIOC_VR_VREF_SET;
 > +
-> +In order to use configfs support in IIO we need to select it at compile time
-> +via CONFIG_IIO_CONFIGFS config option.
+> +	adc_feature->calibration = true;
+> +	adc_feature->ovwren = true;
 > +
-> +Then, mount the configfs filesystem (usually under /config directory):
+> +	adc_feature->res_mode = 12;
+> +	adc_feature->sample_rate = 1;
+> +	adc_feature->lpm = true;
+>  
+> -	info->adc_feature.calibration = true;
+> -	info->adc_feature.ovwren = true;
+> +	/* Use a save ADCK which is below 20MHz on all devices */
+> +	adc_feature->clk_div = 8;
+>  
+> -	info->adc_feature.clk_div = 1;
+> -	info->adc_feature.res_mode = 12;
+> -	info->adc_feature.sample_rate = 1;
+> -	info->adc_feature.lpm = true;
+> +	vf610_adc_calculate_rates(info);
+>  }
+>  
+>  static void vf610_adc_cfg_post_set(struct vf610_adc *info)
+> @@ -290,12 +306,10 @@ static void vf610_adc_cfg_set(struct vf610_adc *info)
+>  
+>  	cfg_data = readl(info->regs + VF610_REG_ADC_CFG);
+>  
+> -	/* low power configuration */
+>  	cfg_data &= ~VF610_ADC_ADLPC_EN;
+>  	if (adc_feature->lpm)
+>  		cfg_data |= VF610_ADC_ADLPC_EN;
+>  
+> -	/* disable high speed */
+>  	cfg_data &= ~VF610_ADC_ADHSC_EN;
+>  
+>  	writel(cfg_data, info->regs + VF610_REG_ADC_CFG);
+> @@ -435,10 +449,27 @@ static irqreturn_t vf610_adc_isr(int irq, void *dev_id)
+>  	return IRQ_HANDLED;
+>  }
+>  
+> -static IIO_CONST_ATTR_SAMP_FREQ_AVAIL("1941176, 559332, 286957, 145374, 73171");
+> +static ssize_t vf610_show_samp_freq_avail(struct device *dev,
+> +				struct device_attribute *attr, char *buf)
+> +{
+> +	struct vf610_adc *info = iio_priv(dev_to_iio_dev(dev));
+> +	size_t len = 0;
+> +	int i;
 > +
-> +$ mkdir /config
-> +$ mount -t configfs none /config
+> +	for (i = 0; i < ARRAY_SIZE(info->sample_freq_avail); i++)
+> +		len += scnprintf(buf + len, PAGE_SIZE - len,
+> +			"%u ", info->sample_freq_avail[i]);
 > +
-> +At this point, all default IIO groups will be creatd and can be accessed under
-> +/config/iio. Next chapters will describe available IIO configurable objects.
+> +	/* replace trailing space by newline */
+> +	buf[len - 1] = '\n';
 > +
-> +2.1. Software triggers creation and destruction
+> +	return len;
+> +}
 > +
-> +One of the IIO default configfs groups is the "triggers" groups. It is
-> +automagically accessible when the configfs is mounted and can be found under
-> +/config/iio/triggers.
-> +
-> +2.1.1. Trigger creation
-> +
-> +As simply as:
-> +
-> +$ mkdir /config/triggers/my_trigger
-> +
-> +This will create a directory associated with a trigger. To understand how this
-> +works we first need to see "my_triggers"'s attributes:
-> +
-> +$ ls /config/triggers/my_trigger
-> +activate            sampling_frequency  type
-> +
-> +Available types for triggers are:
-> +	* none, this is a default dummy trigger that does nothing.
-> +	* hrtimer, this is trigger based on high resolution timer.
-> +
-> +Order of operations in order to create a "hrtimer" trigger:
-> +
-> +$ echo hrtimer > /config/triggers/my_trigger/type
-> +$ echo 1 > /config/triggers/my_trigger/activate
-> +$ echo 100 > /config/triggers/my_trigger/sampling_frequency
-> +
-> +At this point the trigger can be used by an IIO device.
-> +
-> +2.1.2 Trigger destruction
-> +
-> +$ echo 1 > /config/triggers/my_trigger/activate
-> +
-> +3. Misc
-> +
-> +In order to add a new trigger type, one need to implement a driver that creates
-> +an instance of struct iio_configfs_ops (see iio_configfs_trigger.h header file
-> +in include/linux/iio) and then support it in iio_trigger_set_configfs_ops
-> +function from industrialiio-configfs.c file.
-> +
-> +These are the existing drivers implementing new trigger types:
-> +	* hrtimer => iio/trigger/iio-trig-hrtimer.c
-> +
-> +4. Further work
-> +
-> +* IIO dummy device creation
-> +* Mappings to 'soft' in kernel users such as iio_input and iio_hwmon
-> +* IIO on IIO drivers
-> +
+> +static IIO_DEV_ATTR_SAMP_FREQ_AVAIL(vf610_show_samp_freq_avail);
+>  
+>  static struct attribute *vf610_attributes[] = {
+> -	&iio_const_attr_sampling_frequency_available.dev_attr.attr,
+> +	&iio_dev_attr_sampling_frequency_available.dev_attr.attr,
+>  	NULL
+>  };
+>  
+> @@ -502,7 +533,7 @@ static int vf610_read_raw(struct iio_dev *indio_dev,
+>  		return IIO_VAL_FRACTIONAL_LOG2;
+>  
+>  	case IIO_CHAN_INFO_SAMP_FREQ:
+> -		*val = vf610_sample_freq_avail[info->adc_feature.sample_rate];
+> +		*val = info->sample_freq_avail[info->adc_feature.sample_rate];
+>  		*val2 = 0;
+>  		return IIO_VAL_INT;
+>  
+> @@ -525,9 +556,9 @@ static int vf610_write_raw(struct iio_dev *indio_dev,
+>  	switch (mask) {
+>  		case IIO_CHAN_INFO_SAMP_FREQ:
+>  			for (i = 0;
+> -				i < ARRAY_SIZE(vf610_sample_freq_avail);
+> +				i < ARRAY_SIZE(info->sample_freq_avail);
+>  				i++)
+> -				if (val == vf610_sample_freq_avail[i]) {
+> +				if (val == info->sample_freq_avail[i]) {
+>  					info->adc_feature.sample_rate = i;
+>  					vf610_adc_sample_set(info);
+>  					return 0;
 > 
 
