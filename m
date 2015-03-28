@@ -1,48 +1,40 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-wg0-f48.google.com ([74.125.82.48]:35731 "EHLO
-	mail-wg0-f48.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752876AbbC0WKY (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 27 Mar 2015 18:10:24 -0400
-Received: by wgdm6 with SMTP id m6so113494407wgd.2
-        for <linux-iio@vger.kernel.org>; Fri, 27 Mar 2015 15:10:23 -0700 (PDT)
-Date: Sat, 28 Mar 2015 01:10:18 +0300
-From: Haneen <hamohammed.sa@gmail.com>
-To: jic23@kernel.org, daniel.baluta@intel.com
-Cc: linux-iio@vger.kernel.org, lars@metafoo.de
-Subject: Re: [PATCH] iio: Add ABI documentation for out_voltage scan_elements
-Message-ID: <20150327221018.GA3568@haneen-vb>
-References: <1426588609-24683-1-git-send-email-hamohammed.sa@gmail.com>
- <550D5D41.7070606@kernel.org>
- <551158E0.7040401@metafoo.de>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <551158E0.7040401@metafoo.de>
+Received: from mail-wi0-f181.google.com ([209.85.212.181]:36772 "EHLO
+	mail-wi0-f181.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752296AbbC1ADa (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 27 Mar 2015 20:03:30 -0400
+Received: by wibg7 with SMTP id g7so43252992wib.1
+        for <linux-iio@vger.kernel.org>; Fri, 27 Mar 2015 17:03:29 -0700 (PDT)
+From: Haneen Mohammed <hamohammed.sa@gmail.com>
+To: outreachy-kernel@googlegroups.com, linux-iio@vger.kernel.org,
+	jic23@kernel.org, daniel.baluta@intel.com
+Cc: Haneen Mohammed <hamohammed.sa@gmail.com>
+Subject: [PATCH] iio: Add ABI documentation for in_rot offset value
+Date: Sat, 28 Mar 2015 03:02:39 +0300
+Message-Id: <1427500959-3404-1-git-send-email-hamohammed.sa@gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Tue, Mar 24, 2015 at 01:30:24PM +0100, Lars-Peter Clausen wrote:
-> On 03/21/2015 01:00 PM, Jonathan Cameron wrote:
-> >On 17/03/15 10:36, Haneen Mohammed wrote:
-> >>This patch adds ABI documentation entries for out_voltageY_en,
-> >>out_voltageY_type, and out_voltageY_index.
-> >>At least one user for these is preset:
-> >>AD8366 SPI Dual-Digital VGA.
-> >>
-> >>Signed-off-by: Haneen Mohammed <hamohammed.sa@gmail.com>
-> >These aren't used in the mainline driver.  We don't have buffered support
-> >for output channels yet.  Looking at Analog's tree I don't think they have
-> >support for this driver doing buffered output either (I think they may have
-> >some internal support or maybe it's just a plan on how to do it!)
-> 
-> We do have support for output buffers in our tree, but obviously not
-> for a VGA. I think we should add the upstream documentation for
-> these attributes at the same time we add the infrastructure support.
-> 
-> - Lars
+This patch adds ABI documentation entries for in_rot_offset.
+At least one user for these is present that is the  HID Sensors Driver.
 
-Sorry my bad. I used the iio dummy to check that out, and I didn't
-know I had to specify no buffer support through the scan_index since
-the driver I checked didn't have that. I will be more carefull next
-time!
+Signed-off-by: Haneen Mohammed <hamohammed.sa@gmail.com>
+---
+ Documentation/ABI/testing/sysfs-bus-iio | 1 +
+ 1 file changed, 1 insertion(+)
 
-Haneen
+diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
+index 5cabafb..4736a34 100644
+--- a/Documentation/ABI/testing/sysfs-bus-iio
++++ b/Documentation/ABI/testing/sysfs-bus-iio
+@@ -254,6 +254,7 @@ What:		/sys/bus/iio/devices/iio:deviceX/in_pressureY_offset
+ What:		/sys/bus/iio/devices/iio:deviceX/in_pressure_offset
+ What:		/sys/bus/iio/devices/iio:deviceX/in_humidityrelative_offset
+ What:		/sys/bus/iio/devices/iio:deviceX/in_magn_offset
++What:		/sys/bus/iio/devices/iio:deviceX/in_rot_offset
+ KernelVersion:	2.6.35
+ Contact:	linux-iio@vger.kernel.org
+ Description:
+-- 
+1.9.1
+
