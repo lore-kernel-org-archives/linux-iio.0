@@ -1,59 +1,73 @@
-Return-Path: <jic23@jic23.retrosnub.co.uk>
-Message-ID: <5516B838.2040004@jic23.retrosnub.co.uk>
-Date: Sat, 28 Mar 2015 14:18:32 +0000
-From: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
-MIME-Version: 1.0
-To: kbuild test robot <fengguang.wu@intel.com>,
- Octavian Purdila <octavian.purdila@intel.com>
-CC: kbuild-all@01.org, Jonathan Cameron <jic23@kernel.org>,
- "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Subject: Re: [iio:testing 10/10] ERROR: "__divdi3" [drivers/iio/accel/bmc150-accel.ko]
- undefined!
-References: <201503282121.NkeMOw9e%fengguang.wu@intel.com>
-In-Reply-To: <201503282121.NkeMOw9e%fengguang.wu@intel.com>
-Content-Type: text/plain; charset=windows-1252
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-wi0-f171.google.com ([209.85.212.171]:37770 "EHLO
+	mail-wi0-f171.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751927AbbC1Tnc (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 28 Mar 2015 15:43:32 -0400
+Received: by wiaa2 with SMTP id a2so73386538wia.0
+        for <linux-iio@vger.kernel.org>; Sat, 28 Mar 2015 12:43:30 -0700 (PDT)
+From: Roberta Dobrescu <roberta.dobrescu@gmail.com>
+To: linux-iio@vger.kernel.org
+Cc: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
+	pmeerw@pmeerw.net, daniel.baluta@intel.com,
+	Roberta Dobrescu <roberta.dobrescu@gmail.com>
+Subject: [PATCH] tools: iio: Add iio targets in tools Makefile
+Date: Sat, 28 Mar 2015 21:43:08 +0200
+Message-Id: <1427571788-2909-1-git-send-email-roberta.dobrescu@gmail.com>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On 28/03/15 13:02, kbuild test robot wrote:
-> tree:   git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git testing
-> head:   5e02849a682600c1663a333f95f0388d1c536108
-> commit: 5e02849a682600c1663a333f95f0388d1c536108 [10/10] iio: bmc150_accel: add support for hardware fifo
-> config: m68k-allmodconfig (attached as .config)
-> reproduce:
->   wget https://git.kernel.org/cgit/linux/kernel/git/wfg/lkp-tests.git/plain/sbin/make.cross -O ~/bin/make.cross
->   chmod +x ~/bin/make.cross
->   git checkout 5e02849a682600c1663a333f95f0388d1c536108
->   # save the attached .config to linux build tree
->   make.cross ARCH=m68k 
-> 
-> All error/warnings:
-> 
->>> ERROR: "__divdi3" [drivers/iio/accel/bmc150-accel.ko] undefined!
-Oops, missed that.  I think we can use a simple do_div for computing the sample_period
-(which included 64bit / 8 bit).
+This patch adds targets for building and cleaning iio tools to tools/Makefile.
+To build iio tools from the toplevel kernel directory one should call:
 
-Will push out a patch to the testing branch to see if they autobuilders are
-happy with it then fix up the driver properly if they are.
+$ make -C tools iio
 
-diff --git a/drivers/iio/accel/bmc150-accel.c b/drivers/iio/accel/bmc150-accel.c
-index c639489671bb..d5e103b208ba 100644
---- a/drivers/iio/accel/bmc150-accel.c
-+++ b/drivers/iio/accel/bmc150-accel.c
-@@ -1002,7 +1002,8 @@ static int __bmc150_accel_fifo_flush(struct iio_dev *indio_dev,
-         * To avoid this issue we compute the actual sample period ourselves
-         * based on the timestamp delta between the last two flush operations.
-         */
--       sample_period = (data->timestamp - data->old_timestamp) / count;
-+       sample_period = (data->timestamp - data->old_timestamp);
-+       do_div(sample_period, count);
-        tstamp = data->timestamp - (count - 1) * sample_period;
+and for cleaning it
+
+$ make -C tools iio_clean
+
+Signed-off-by: Roberta Dobrescu <roberta.dobrescu@gmail.com>
+---
+ tools/Makefile | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
+
+diff --git a/tools/Makefile b/tools/Makefile
+index 9a617ad..79463b0 100644
+--- a/tools/Makefile
++++ b/tools/Makefile
+@@ -8,6 +8,7 @@ help:
+ 	@echo '  cpupower   - a tool for all things x86 CPU power'
+ 	@echo '  firewire   - the userspace part of nosy, an IEEE-1394 traffic sniffer'
+ 	@echo '  hv         - tools used when in Hyper-V clients'
++	@echo '  iio        - IIO tools'
+ 	@echo '  lguest     - a minimal 32-bit x86 hypervisor'
+ 	@echo '  perf       - Linux performance measurement and analysis tool'
+ 	@echo '  selftests  - various kernel selftests'
+@@ -41,7 +42,7 @@ acpi: FORCE
+ cpupower: FORCE
+ 	$(call descend,power/$@)
  
-        if (samples && count > samples)
+-cgroup firewire hv guest usb virtio vm net: FORCE
++cgroup firewire hv guest usb virtio vm net iio: FORCE
+ 	$(call descend,$@)
+ 
+ liblockdep: FORCE
+@@ -91,7 +92,7 @@ acpi_clean:
+ cpupower_clean:
+ 	$(call descend,power/cpupower,clean)
+ 
+-cgroup_clean hv_clean firewire_clean lguest_clean usb_clean virtio_clean vm_clean net_clean:
++cgroup_clean hv_clean firewire_clean lguest_clean usb_clean virtio_clean vm_clean net_clean iio_clean:
+ 	$(call descend,$(@:_clean=),clean)
+ 
+ liblockdep_clean:
+@@ -114,6 +115,6 @@ tmon_clean:
+ 
+ clean: acpi_clean cgroup_clean cpupower_clean hv_clean firewire_clean lguest_clean \
+ 		perf_clean selftests_clean turbostat_clean usb_clean virtio_clean \
+-		vm_clean net_clean x86_energy_perf_policy_clean tmon_clean
++		vm_clean net_clean iio_clean x86_energy_perf_policy_clean tmon_clean
+ 
+ .PHONY: FORCE
+-- 
+1.9.1
 
-
-
-> 
-> ---
-> 0-DAY kernel test infrastructure                Open Source Technology Center
-> http://lists.01.org/mailman/listinfo/kbuild                 Intel Corporation
-> 
