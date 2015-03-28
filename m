@@ -1,44 +1,58 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-qc0-f174.google.com ([209.85.216.174]:33523 "EHLO
-	mail-qc0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750772AbbC1NKm (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 28 Mar 2015 09:10:42 -0400
-Received: by qcbjx9 with SMTP id jx9so37928287qcb.0
-        for <linux-iio@vger.kernel.org>; Sat, 28 Mar 2015 06:10:41 -0700 (PDT)
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:60409 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752804AbbC1Nn4 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 28 Mar 2015 09:43:56 -0400
+Message-ID: <5516B017.8050409@kernel.org>
+Date: Sat, 28 Mar 2015 13:43:51 +0000
+From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-In-Reply-To: <55169AD2.3080400@kernel.org>
-References: <cover.1426981797.git.cristina.opriceana@gmail.com>
-	<ac0d5b2399b00fe9763c7844c726ffad0a65df99.1426981797.git.cristina.opriceana@gmail.com>
-	<55169AD2.3080400@kernel.org>
-Date: Sat, 28 Mar 2015 15:10:41 +0200
-Message-ID: <CAFA9rWNH8nwSQv75eQMOdxNGgF6bEGOjDCLw5pvdoALUjkh2xA@mail.gmail.com>
-Subject: Re: [PATCH v2 1/2] Staging: iio: Place driver in sleep mode on error
-From: Cristina Georgiana Opriceana <cristina.opriceana@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: "outreachy-kernel@googlegroups.com"
-	<outreachy-kernel@googlegroups.com>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>
-Content-Type: text/plain; charset=UTF-8
+To: =?UTF-8?B?Vmlhbm5leSBsZSBDbMOpbWVudCBkZSBTYWludC1NYXJjcQ==?=
+	<vianney.leclement@essensium.com>, linux-iio@vger.kernel.org
+CC: "Arnout Vandecappelle (Essensium/Mind)" <arnout@mind.be>
+Subject: Re: [PATCH v2 7/7] iio: mlx90614: Check for errors in read values
+References: <1427212459-31585-1-git-send-email-vianney.leclement@essensium.com> <1427212459-31585-8-git-send-email-vianney.leclement@essensium.com>
+In-Reply-To: <1427212459-31585-8-git-send-email-vianney.leclement@essensium.com>
+Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Sat, Mar 28, 2015 at 2:13 PM, Jonathan Cameron <jic23@kernel.org> wrote:
-> On 22/03/15 00:26, Cristina Opriceana wrote:
->> Put device in sleep mode if an error is encountered after
->> initialization in order to avoid wasting power.
-> The patch title should definitely include the name of the driver in question!
-> Otherwise you'll not generally get reviews from the relevant people.
-> Staging:iio:hmc5843 Place driver in sleep mode on error during probe.
->
-> Also try to cc relevant people and the relevant list.
-> See MAINTAINERS and you'll notice we have both a list and a
-> set of designated reviewers who would like to be cc'd on IIO patches.
+On 24/03/15 15:54, Vianney le Clément de Saint-Marcq wrote:
+> The device uses the MSB of the returned temperature values as an error
+> flag.  Return a read error when this bit is set.
+> 
+> Signed-off-by: Vianney le Clément de Saint-Marcq <vianney.leclement@essensium.com>
+> Cc: Arnout Vandecappelle (Essensium/Mind) <arnout@mind.be>
+> 
+Hmm. Does it really signify a remote IO issue.  I'd have thought EIO was
+more appropriate.
 
-Okay, thanks for your feedback, I'll keep that in mind for the future work
-because Greg has already merged this on his staging-next branch.
+I see one -EREMOTEIO using driver (vybrid ADC) but in other similar
+cases we've always gone with EIO.
 
-Thanks,
-Cristina
+J
+> ---
+> 
+> v2: new patch
+> ---
+>  drivers/iio/temperature/mlx90614.c | 5 +++++
+>  1 file changed, 5 insertions(+)
+> 
+> diff --git a/drivers/iio/temperature/mlx90614.c b/drivers/iio/temperature/mlx90614.c
+> index 6b9bfcd..6cb1e81 100644
+> --- a/drivers/iio/temperature/mlx90614.c
+> +++ b/drivers/iio/temperature/mlx90614.c
+> @@ -196,6 +196,11 @@ static int mlx90614_read_raw(struct iio_dev *indio_dev,
+>  
+>  		if (ret < 0)
+>  			return ret;
+> +
+> +		/* MSB is an error flag */
+> +		if (ret & 0x8000)
+> +			return -EREMOTEIO;
+> +
+>  		*val = ret;
+>  		return IIO_VAL_INT;
+>  	case IIO_CHAN_INFO_OFFSET:
+> 
+
