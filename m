@@ -1,327 +1,463 @@
-Return-Path: <stefan@agner.ch>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:60145 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753654AbbC1Myr (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 28 Mar 2015 08:54:47 -0400
+Message-ID: <5516A493.7090406@kernel.org>
+Date: Sat, 28 Mar 2015 12:54:43 +0000
+From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Date: Sat, 28 Mar 2015 13:49:52 +0100
-From: Stefan Agner <stefan@agner.ch>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: shawn.guo@linaro.org, kernel@pengutronix.de, knaack.h@gmx.de,
- lars@metafoo.de, pmeerw@pmeerw.net, robh+dt@kernel.org, pawel.moll@arm.com,
- mark.rutland@arm.com, ijc+devicetree@hellion.org.uk, galak@codeaurora.org,
- B38611@freescale.com, maitysanchayan@gmail.com, devicetree@vger.kernel.org,
- linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
- linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v4 2/3] iio: adc: vf610: implement configurable
- conversion modes
-In-Reply-To: <5516999E.7010809@kernel.org>
-References: <1427201269-4902-1-git-send-email-stefan@agner.ch>
- <1427201269-4902-3-git-send-email-stefan@agner.ch>
- <5516999E.7010809@kernel.org>
-Message-ID: <30b761623036c4e13df4c3a8b157421b@agner.ch>
-List-ID: <linux-iio@vger.kernel.org>
+To: =?UTF-8?B?Vmlhbm5leSBsZSBDbMOpbWVudCBkZSBTYWludC1NYXJjcQ==?=
+	<vianney.leclement@essensium.com>, linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org
+CC: "Arnout Vandecappelle (Essensium/Mind)" <arnout@mind.be>
+Subject: Re: [PATCH v2 6/7] iio: mlx90614: Add power management
+References: <1427212459-31585-1-git-send-email-vianney.leclement@essensium.com> <1427212459-31585-7-git-send-email-vianney.leclement@essensium.com>
+In-Reply-To: <1427212459-31585-7-git-send-email-vianney.leclement@essensium.com>
+Content-Type: text/plain; charset=utf-8
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On 2015-03-28 13:07, Jonathan Cameron wrote:
-> On 24/03/15 12:47, Stefan Agner wrote:
->> Support configurable conversion mode through sysfs. So far, the
->> mode used was low-power, which is enabled by default now. Beside
->> that, the modes normal and high-speed are selectable as well.
->>
->> Use the new device tree property which specifies the maximum ADC
->> conversion clock frequencies. Depending on the mode used, the
->> available resulting conversion frequency are calculated
->> dynamically.
->>
-> One trivial bit inline, otherwise looks good to me.
-> I wish there was a better way of 'hinting' to drivers what power mode
-> is required, but in the absense of this I guess explicit control is
-> all we can do.
-
-An implicit implementation would be possible by just calculating all
-frequencies for the three power modes. The driver would then select the
-right power mode to get the individual frequencies. However, due to the
-nature of sampling timing of the different modes, the frequencies of the
-individual modes would overlap over a large range. For the user it would
-not be possible to tell which frequency leads to which mode... Hence I
-like this implementation more...
-
->> Acked-by: Fugang Duan <B38611@freescale.com>
->> Signed-off-by: Stefan Agner <stefan@agner.ch>
->> ---
->>  Documentation/ABI/testing/sysfs-bus-iio-vf610      |   7 +
->>  .../devicetree/bindings/iio/adc/vf610-adc.txt      |   9 ++
->>  drivers/iio/adc/vf610_adc.c                        | 146 +++++++++++++++------
->>  3 files changed, 120 insertions(+), 42 deletions(-)
->>  create mode 100644 Documentation/ABI/testing/sysfs-bus-iio-vf610
->>
->> diff --git a/Documentation/ABI/testing/sysfs-bus-iio-vf610 b/Documentation/ABI/testing/sysfs-bus-iio-vf610
->> new file mode 100644
->> index 0000000..85fd0ecd5
->> --- /dev/null
->> +++ b/Documentation/ABI/testing/sysfs-bus-iio-vf610
->> @@ -0,0 +1,7 @@
->> +What:		/sys/bus/iio/devices/iio:deviceX/conversion_mode
->> +KernelVersion:	4.1
->> +Contact:	linux-iio@vger.kernel.org
->> +Description:
->> +		Specifies the hardware conversion mode used. The three
->> +		available modes are "normal", "high-speed" and "low-power",
->> +		whereas the last is the default mode.
-> Fussy English of the day.  where rather than whereas (whereas is only
-> used if you say something like. A is normally the case, whereas here B
-> is the case)
-
-Ok, got it, thx for pointing that out.
-
-> I like the default that isn't 'normal' :)
-
-Hehe, like that too. The driver historically used the low power mode by
-default, and it is probably fine for most application, hence I just kept
-that.
-
-What didn't came out by your comment above, do you expect me to do
-another revision or did you applied the patch?
-
---
-Stefan
-
+On 24/03/15 15:54, Vianney le Clément de Saint-Marcq wrote:
+> Add support for system sleep and runtime power management.
 > 
->> diff --git a/Documentation/devicetree/bindings/iio/adc/vf610-adc.txt b/Documentation/devicetree/bindings/iio/adc/vf610-adc.txt
->> index 1a4a43d..3eb40e2 100644
->> --- a/Documentation/devicetree/bindings/iio/adc/vf610-adc.txt
->> +++ b/Documentation/devicetree/bindings/iio/adc/vf610-adc.txt
->> @@ -11,6 +11,13 @@ Required properties:
->>  - clock-names: Must contain "adc", matching entry in the clocks property.
->>  - vref-supply: The regulator supply ADC reference voltage.
->>
->> +Recommended properties:
->> +- fsl,adck-max-frequency: Maximum frequencies according to datasheets operating
->> +  requirements. Three values are required, depending on conversion mode:
->> +  - Frequency in normal mode (ADLPC=0, ADHSC=0)
->> +  - Frequency in high-speed mode (ADLPC=0, ADHSC=1)
->> +  - Frequency in low-power mode (ADLPC=1, ADHSC=0)
->> +
->>  Example:
->>  adc0: adc@4003b000 {
->>  	compatible = "fsl,vf610-adc";
->> @@ -18,5 +25,7 @@ adc0: adc@4003b000 {
->>  	interrupts = <0 53 0x04>;
->>  	clocks = <&clks VF610_CLK_ADC0>;
->>  	clock-names = "adc";
->> +	fsl,adck-max-frequency = <30000000>, <40000000>,
->> +				<20000000>;
->>  	vref-supply = <&reg_vcc_3v3_mcu>;
->>  };
->> diff --git a/drivers/iio/adc/vf610_adc.c b/drivers/iio/adc/vf610_adc.c
->> index e63b8e7..b5f94ab8 100644
->> --- a/drivers/iio/adc/vf610_adc.c
->> +++ b/drivers/iio/adc/vf610_adc.c
->> @@ -118,15 +118,21 @@ enum average_sel {
->>  	VF610_ADC_SAMPLE_32,
->>  };
->>
->> +enum conversion_mode_sel {
->> +	VF610_ADC_CONV_NORMAL,
->> +	VF610_ADC_CONV_HIGH_SPEED,
->> +	VF610_ADC_CONV_LOW_POWER,
->> +};
->> +
->>  struct vf610_adc_feature {
->>  	enum clk_sel	clk_sel;
->>  	enum vol_ref	vol_ref;
->> +	enum conversion_mode_sel conv_mode;
->>
->>  	int	clk_div;
->>  	int     sample_rate;
->>  	int	res_mode;
->>
->> -	bool	lpm;
->>  	bool	calibration;
->>  	bool	ovwren;
->>  };
->> @@ -139,6 +145,8 @@ struct vf610_adc {
->>  	u32 vref_uv;
->>  	u32 value;
->>  	struct regulator *vref;
->> +
->> +	u32 max_adck_rate[3];
->>  	struct vf610_adc_feature adc_feature;
->>
->>  	u32 sample_freq_avail[5];
->> @@ -148,46 +156,22 @@ struct vf610_adc {
->>
->>  static const u32 vf610_hw_avgs[] = { 1, 4, 8, 16, 32 };
->>
->> -#define VF610_ADC_CHAN(_idx, _chan_type) {			\
->> -	.type = (_chan_type),					\
->> -	.indexed = 1,						\
->> -	.channel = (_idx),					\
->> -	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),		\
->> -	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE) |	\
->> -				BIT(IIO_CHAN_INFO_SAMP_FREQ),	\
->> -}
->> -
->> -#define VF610_ADC_TEMPERATURE_CHAN(_idx, _chan_type) {	\
->> -	.type = (_chan_type),	\
->> -	.channel = (_idx),		\
->> -	.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED),	\
->> -}
->> -
->> -static const struct iio_chan_spec vf610_adc_iio_channels[] = {
->> -	VF610_ADC_CHAN(0, IIO_VOLTAGE),
->> -	VF610_ADC_CHAN(1, IIO_VOLTAGE),
->> -	VF610_ADC_CHAN(2, IIO_VOLTAGE),
->> -	VF610_ADC_CHAN(3, IIO_VOLTAGE),
->> -	VF610_ADC_CHAN(4, IIO_VOLTAGE),
->> -	VF610_ADC_CHAN(5, IIO_VOLTAGE),
->> -	VF610_ADC_CHAN(6, IIO_VOLTAGE),
->> -	VF610_ADC_CHAN(7, IIO_VOLTAGE),
->> -	VF610_ADC_CHAN(8, IIO_VOLTAGE),
->> -	VF610_ADC_CHAN(9, IIO_VOLTAGE),
->> -	VF610_ADC_CHAN(10, IIO_VOLTAGE),
->> -	VF610_ADC_CHAN(11, IIO_VOLTAGE),
->> -	VF610_ADC_CHAN(12, IIO_VOLTAGE),
->> -	VF610_ADC_CHAN(13, IIO_VOLTAGE),
->> -	VF610_ADC_CHAN(14, IIO_VOLTAGE),
->> -	VF610_ADC_CHAN(15, IIO_VOLTAGE),
->> -	VF610_ADC_TEMPERATURE_CHAN(26, IIO_TEMP),
->> -	/* sentinel */
->> -};
->> -
->>  static inline void vf610_adc_calculate_rates(struct vf610_adc *info)
->>  {
->> +	struct vf610_adc_feature *adc_feature = &info->adc_feature;
->>  	unsigned long adck_rate, ipg_rate = clk_get_rate(info->clk);
->> -	int i;
->> +	int divisor, i;
->> +
->> +	adck_rate = info->max_adck_rate[adc_feature->conv_mode];
->> +
->> +	if (adck_rate) {
->> +		/* calculate clk divider which is within specification */
->> +		divisor = ipg_rate / adck_rate;
->> +		adc_feature->clk_div = 1 << fls(divisor + 1);
->> +	} else {
->> +		/* fall-back value using a safe divisor */
->> +		adc_feature->clk_div = 8;
->> +	}
->>
->>  	/*
->>  	 * Calculate ADC sample frequencies
->> @@ -219,10 +203,8 @@ static inline void vf610_adc_cfg_init(struct vf610_adc *info)
->>
->>  	adc_feature->res_mode = 12;
->>  	adc_feature->sample_rate = 1;
->> -	adc_feature->lpm = true;
->>
->> -	/* Use a save ADCK which is below 20MHz on all devices */
->> -	adc_feature->clk_div = 8;
->> +	adc_feature->conv_mode = VF610_ADC_CONV_LOW_POWER;
->>
->>  	vf610_adc_calculate_rates(info);
->>  }
->> @@ -307,10 +289,12 @@ static void vf610_adc_cfg_set(struct vf610_adc *info)
->>  	cfg_data = readl(info->regs + VF610_REG_ADC_CFG);
->>
->>  	cfg_data &= ~VF610_ADC_ADLPC_EN;
->> -	if (adc_feature->lpm)
->> +	if (adc_feature->conv_mode == VF610_ADC_CONV_LOW_POWER)
->>  		cfg_data |= VF610_ADC_ADLPC_EN;
->>
->>  	cfg_data &= ~VF610_ADC_ADHSC_EN;
->> +	if (adc_feature->conv_mode == VF610_ADC_CONV_HIGH_SPEED)
->> +		cfg_data |= VF610_ADC_ADHSC_EN;
->>
->>  	writel(cfg_data, info->regs + VF610_REG_ADC_CFG);
->>  }
->> @@ -412,6 +396,81 @@ static void vf610_adc_hw_init(struct vf610_adc *info)
->>  	vf610_adc_cfg_set(info);
->>  }
->>
->> +static int vf610_set_conversion_mode(struct iio_dev *indio_dev,
->> +				     const struct iio_chan_spec *chan,
->> +				     unsigned int mode)
->> +{
->> +	struct vf610_adc *info = iio_priv(indio_dev);
->> +
->> +	mutex_lock(&indio_dev->mlock);
->> +	info->adc_feature.conv_mode = mode;
->> +	vf610_adc_calculate_rates(info);
->> +	vf610_adc_hw_init(info);
->> +	mutex_unlock(&indio_dev->mlock);
->> +
->> +	return 0;
->> +}
->> +
->> +static int vf610_get_conversion_mode(struct iio_dev *indio_dev,
->> +				     const struct iio_chan_spec *chan)
->> +{
->> +	struct vf610_adc *info = iio_priv(indio_dev);
->> +
->> +	return info->adc_feature.conv_mode;
->> +}
->> +
->> +static const char * const vf610_conv_modes[] = { "normal", "high-speed",
->> +						 "low-power" };
->> +
->> +static const struct iio_enum vf610_conversion_mode = {
->> +	.items = vf610_conv_modes,
->> +	.num_items = ARRAY_SIZE(vf610_conv_modes),
->> +	.get = vf610_get_conversion_mode,
->> +	.set = vf610_set_conversion_mode,
->> +};
->> +
->> +static const struct iio_chan_spec_ext_info vf610_ext_info[] = {
->> +	IIO_ENUM("conversion_mode", IIO_SHARED_BY_DIR, &vf610_conversion_mode),
->> +	{},
->> +};
->> +
->> +#define VF610_ADC_CHAN(_idx, _chan_type) {			\
->> +	.type = (_chan_type),					\
->> +	.indexed = 1,						\
->> +	.channel = (_idx),					\
->> +	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),		\
->> +	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE) |	\
->> +				BIT(IIO_CHAN_INFO_SAMP_FREQ),	\
->> +	.ext_info = vf610_ext_info,				\
->> +}
->> +
->> +#define VF610_ADC_TEMPERATURE_CHAN(_idx, _chan_type) {	\
->> +	.type = (_chan_type),	\
->> +	.channel = (_idx),		\
->> +	.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED),	\
->> +}
->> +
->> +static const struct iio_chan_spec vf610_adc_iio_channels[] = {
->> +	VF610_ADC_CHAN(0, IIO_VOLTAGE),
->> +	VF610_ADC_CHAN(1, IIO_VOLTAGE),
->> +	VF610_ADC_CHAN(2, IIO_VOLTAGE),
->> +	VF610_ADC_CHAN(3, IIO_VOLTAGE),
->> +	VF610_ADC_CHAN(4, IIO_VOLTAGE),
->> +	VF610_ADC_CHAN(5, IIO_VOLTAGE),
->> +	VF610_ADC_CHAN(6, IIO_VOLTAGE),
->> +	VF610_ADC_CHAN(7, IIO_VOLTAGE),
->> +	VF610_ADC_CHAN(8, IIO_VOLTAGE),
->> +	VF610_ADC_CHAN(9, IIO_VOLTAGE),
->> +	VF610_ADC_CHAN(10, IIO_VOLTAGE),
->> +	VF610_ADC_CHAN(11, IIO_VOLTAGE),
->> +	VF610_ADC_CHAN(12, IIO_VOLTAGE),
->> +	VF610_ADC_CHAN(13, IIO_VOLTAGE),
->> +	VF610_ADC_CHAN(14, IIO_VOLTAGE),
->> +	VF610_ADC_CHAN(15, IIO_VOLTAGE),
->> +	VF610_ADC_TEMPERATURE_CHAN(26, IIO_TEMP),
->> +	/* sentinel */
->> +};
->> +
->>  static int vf610_adc_read_data(struct vf610_adc *info)
->>  {
->>  	int result;
->> @@ -654,6 +713,9 @@ static int vf610_adc_probe(struct platform_device *pdev)
->>
->>  	info->vref_uv = regulator_get_voltage(info->vref);
->>
->> +	of_property_read_u32_array(pdev->dev.of_node, "fsl,adck-max-frequency",
->> +			info->max_adck_rate, 3);
->> +
->>  	platform_set_drvdata(pdev, indio_dev);
->>
->>  	init_completion(&info->completion);
->>
+> To wake up the device, the SDA line should be held low for at least 33ms
+> while SCL is high.  As this is not possible using the i2c API (and not
+> supported by all i2c adapters), a GPIO connected to the SDA line is
+> needed.  The GPIO is named "wakeup" and can be specified in a device
+> tree with the "wakeup-gpios" binding.
+> 
+> If the wake-up GPIO is not given, disable power management for the
+> device.  Entering sleep requires an SMBus byte access, hence power
+> management is also disabled if byte access is not supported by the
+> adapter.
+> 
+> Introduce "melexis" as a vendor prefix for device tree bindings.
+> 
+> Signed-off-by: Vianney le Clément de Saint-Marcq <vianney.leclement@essensium.com>
+> Cc: Arnout Vandecappelle (Essensium/Mind) <arnout@mind.be>
+> 
+A couple of bits inline.  In particularly please break the docs into
+a separate patch and only add the new element in this one.
+
+Also, your probe and remove are not mirror images and should be.
+
+Jonathan
+> ---
+> 
+> The default autosleep delay (5s) is chosen arbitrarily, trying to take
+> into account the long startup time (250ms).  Feel free to change it to
+> another value if you think it is saner.
+> 
+> v2: return -EINTR when the startup delay is interrupted
+> ---
+>  .../bindings/iio/temperature/mlx90614.txt          |  24 ++
+>  .../devicetree/bindings/vendor-prefixes.txt        |   1 +
+>  drivers/iio/temperature/mlx90614.c                 | 246 ++++++++++++++++++++-
+>  3 files changed, 269 insertions(+), 2 deletions(-)
+>  create mode 100644 Documentation/devicetree/bindings/iio/temperature/mlx90614.txt
+> 
+> diff --git a/Documentation/devicetree/bindings/iio/temperature/mlx90614.txt b/Documentation/devicetree/bindings/iio/temperature/mlx90614.txt
+> new file mode 100644
+> index 0000000..9be57b0
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/iio/temperature/mlx90614.txt
+Please split out an initial device tree patch adding the device and docs
+then a followup one adding the new stuff.
+> @@ -0,0 +1,24 @@
+> +* Melexis MLX90614 contactless IR temperature sensor
+> +
+> +http://melexis.com/Infrared-Thermometer-Sensors/Infrared-Thermometer-Sensors/MLX90614-615.aspx
+> +
+> +Required properties:
+> +
+> +  - compatible: should be "melexis,mlx90614"
+> +  - reg: the I2C address of the sensor
+> +
+> +Optional properties:
+> +
+> +  - wakeup-gpios: device tree identifier of the GPIO connected to the SDA line
+> +      to hold low in order to wake up the device.  In normal operation, the
+> +      GPIO is set as input and will not interfere in I2C communication.  There
+> +      is no need for a GPIO driving the SCL line.  If no GPIO is given, power
+> +      management is disabled.
+> +
+> +Example:
+> +
+> +mlx90614@5a {
+> +	compatible = "melexis,mlx90614";
+> +	reg = <0x5a>;
+> +	wakeup-gpios = <&gpio0 2 GPIO_ACTIVE_HIGH>;
+> +};
+> diff --git a/Documentation/devicetree/bindings/vendor-prefixes.txt b/Documentation/devicetree/bindings/vendor-prefixes.txt
+> index fae26d0..c8db30c 100644
+> --- a/Documentation/devicetree/bindings/vendor-prefixes.txt
+> +++ b/Documentation/devicetree/bindings/vendor-prefixes.txt
+> @@ -110,6 +110,7 @@ lltc	Linear Technology Corporation
+>  marvell	Marvell Technology Group Ltd.
+>  maxim	Maxim Integrated Products
+>  mediatek	MediaTek Inc.
+> +melexis	Melexis N.V.
+>  merrii	Merrii Technology Co., Ltd.
+>  micrel	Micrel Inc.
+>  microchip	Microchip Technology Inc.
+> diff --git a/drivers/iio/temperature/mlx90614.c b/drivers/iio/temperature/mlx90614.c
+> index b981d1e..6b9bfcd 100644
+> --- a/drivers/iio/temperature/mlx90614.c
+> +++ b/drivers/iio/temperature/mlx90614.c
+> @@ -12,13 +12,24 @@
+>   *
+>   * (7-bit I2C slave address 0x5a, 100KHz bus speed only!)
+>   *
+> - * TODO: sleep mode, filter configuration
+> + * To wake up from sleep mode, the SDA line must be held low while SCL is high
+> + * for at least 33ms.  This is achieved with an extra GPIO that can be connected
+> + * directly to the SDA line.  In normal operation, the GPIO is set as input and
+> + * will not interfere in I2C communication.  While the GPIO is driven low, the
+> + * i2c adapter is locked since it cannot be used by other clients.  The SCL line
+> + * always has a pull-up so we do not need an extra GPIO to drive it high.  If
+> + * the "wakeup" GPIO is not given, power management will be disabled.
+> + *
+> + * TODO: filter configuration
+>   */
+>  
+>  #include <linux/err.h>
+>  #include <linux/i2c.h>
+>  #include <linux/module.h>
+>  #include <linux/delay.h>
+> +#include <linux/jiffies.h>
+> +#include <linux/gpio/consumer.h>
+> +#include <linux/pm_runtime.h>
+>  
+>  #include <linux/iio/iio.h>
+>  
+> @@ -52,9 +63,13 @@
+>  #define MLX90614_TIMING_WAKEUP 34 /* time to hold SDA low for wake-up */
+>  #define MLX90614_TIMING_STARTUP 250 /* time before first data after wake-up */
+>  
+> +#define MLX90614_AUTOSLEEP_DELAY 5000 /* default autosleep delay */
+> +
+>  struct mlx90614_data {
+>  	struct i2c_client *client;
+>  	struct mutex lock; /* for EEPROM access only */
+> +	struct gpio_desc *wakeup_gpio; /* NULL to disable sleep/wake-up */
+> +	unsigned long ready_timestamp; /* in jiffies */
+>  };
+>  
+>  /*
+> @@ -95,6 +110,54 @@ static s32 mlx90614_write_word(const struct i2c_client *client, u8 command,
+>  	return ret;
+>  }
+>  
+> +#ifdef CONFIG_PM
+> +/*
+> + * If @startup is true, make sure MLX90614_TIMING_STARTUP ms have elapsed since
+> + * the last wake-up.  This is normally only needed to get a valid temperature
+> + * reading.  EEPROM access does not need such delay.
+> + * Return 0 on success, <0 on error.
+> + */
+> +static int mlx90614_power_get(struct mlx90614_data *data, bool startup)
+> +{
+> +	unsigned long now;
+> +
+> +	if (!data->wakeup_gpio)
+> +		return 0;
+> +
+> +	pm_runtime_get_sync(&data->client->dev);
+> +
+> +	if (startup) {
+> +		now = jiffies;
+> +		if (time_before(now, data->ready_timestamp) &&
+> +		    msleep_interruptible(jiffies_to_msecs(
+> +				data->ready_timestamp - now)) != 0) {
+> +			pm_runtime_put_autosuspend(&data->client->dev);
+> +			return -EINTR;
+> +		}
+> +	}
+> +
+> +	return 0;
+> +}
+> +
+> +static void mlx90614_power_put(struct mlx90614_data *data)
+> +{
+> +	if (!data->wakeup_gpio)
+> +		return;
+> +
+> +	pm_runtime_mark_last_busy(&data->client->dev);
+> +	pm_runtime_put_autosuspend(&data->client->dev);
+> +}
+> +#else
+> +static inline int mlx90614_power_get(struct mlx90614_data *data, bool startup)
+> +{
+> +	return 0;
+> +}
+> +
+> +static inline void mlx90614_power_put(struct mlx90614_data *data)
+> +{
+> +}
+> +#endif
+> +
+>  static int mlx90614_read_raw(struct iio_dev *indio_dev,
+>  			    struct iio_chan_spec const *channel, int *val,
+>  			    int *val2, long mask)
+> @@ -125,7 +188,12 @@ static int mlx90614_read_raw(struct iio_dev *indio_dev,
+>  			return -EINVAL;
+>  		}
+>  
+> +		ret = mlx90614_power_get(data, true);
+> +		if (ret < 0)
+> +			return ret;
+>  		ret = i2c_smbus_read_word_data(data->client, cmd);
+> +		mlx90614_power_put(data);
+> +
+>  		if (ret < 0)
+>  			return ret;
+>  		*val = ret;
+> @@ -138,10 +206,12 @@ static int mlx90614_read_raw(struct iio_dev *indio_dev,
+>  		*val = 20;
+>  		return IIO_VAL_INT;
+>  	case IIO_CHAN_INFO_EMISSIVITY: /* 1/65535 / LSB */
+> +		mlx90614_power_get(data, false);
+>  		mutex_lock(&data->lock);
+>  		ret = i2c_smbus_read_word_data(data->client,
+>  					       MLX90614_EMISSIVITY);
+>  		mutex_unlock(&data->lock);
+> +		mlx90614_power_put(data);
+>  
+>  		if (ret < 0)
+>  			return ret;
+> @@ -172,10 +242,12 @@ static int mlx90614_write_raw(struct iio_dev *indio_dev,
+>  			return -EINVAL;
+>  		val = val * 65535 + val2 / 15259; /* 1/65535 ~ 0.000015259 */
+>  
+> +		mlx90614_power_get(data, false);
+>  		mutex_lock(&data->lock);
+>  		ret = mlx90614_write_word(data->client, MLX90614_EMISSIVITY,
+>  					  val);
+>  		mutex_unlock(&data->lock);
+> +		mlx90614_power_put(data);
+>  
+>  		if (ret < 0)
+>  			return ret;
+> @@ -235,6 +307,98 @@ static const struct iio_info mlx90614_info = {
+>  	.driver_module = THIS_MODULE,
+>  };
+>  
+> +#ifdef CONFIG_PM
+> +static int mlx90614_sleep(struct mlx90614_data *data)
+> +{
+> +	s32 ret;
+> +
+> +	if (!data->wakeup_gpio) {
+> +		dev_dbg(&data->client->dev, "Sleep disabled");
+> +		return -ENOSYS;
+> +	}
+> +
+> +	dev_dbg(&data->client->dev, "Requesting sleep");
+> +
+> +	mutex_lock(&data->lock);
+> +	ret = i2c_smbus_xfer(data->client->adapter, data->client->addr,
+> +			     data->client->flags | I2C_CLIENT_PEC,
+> +			     I2C_SMBUS_WRITE, MLX90614_OP_SLEEP,
+> +			     I2C_SMBUS_BYTE, NULL);
+> +	mutex_unlock(&data->lock);
+> +
+> +	return ret;
+> +}
+> +
+> +static int mlx90614_wakeup(struct mlx90614_data *data)
+> +{
+> +	if (!data->wakeup_gpio) {
+> +		dev_dbg(&data->client->dev, "Wake-up disabled");
+> +		return -ENOSYS;
+> +	}
+> +
+> +	dev_dbg(&data->client->dev, "Requesting wake-up");
+> +
+> +	i2c_lock_adapter(data->client->adapter);
+> +	gpiod_direction_output(data->wakeup_gpio, 0);
+> +	msleep(MLX90614_TIMING_WAKEUP);
+> +	gpiod_direction_input(data->wakeup_gpio);
+> +	i2c_unlock_adapter(data->client->adapter);
+> +
+> +	data->ready_timestamp = jiffies +
+> +			msecs_to_jiffies(MLX90614_TIMING_STARTUP);
+> +
+> +	/*
+> +	 * Quirk: the i2c controller may get confused right after the
+> +	 * wake-up signal has been sent.  As a workaround, do a dummy read.
+> +	 * If the read fails, the controller will probably be reset so that
+> +	 * further reads will work.
+> +	 */
+> +	i2c_smbus_read_word_data(data->client, MLX90614_CONFIG);
+That wins the nasty award for the day!  It'll probably not work
+on lots of boards, but there we are...  No obvious alternatives exist.
+
+> +
+> +	return 0;
+> +}
+> +
+> +/* Return wake-up GPIO or NULL if sleep functionality should be disabled. */
+> +static struct gpio_desc *mlx90614_probe_wakeup(struct i2c_client *client)
+> +{
+> +	struct gpio_desc *gpio;
+> +
+> +	if (!i2c_check_functionality(client->adapter,
+> +						I2C_FUNC_SMBUS_WRITE_BYTE)) {
+> +		dev_info(&client->dev,
+> +			 "i2c adapter does not support SMBUS_WRITE_BYTE, sleep disabled");
+> +		return NULL;
+> +	}
+> +
+> +	gpio = devm_gpiod_get_optional(&client->dev, "wakeup", GPIOD_IN);
+> +
+> +	if (IS_ERR(gpio)) {
+> +		dev_warn(&client->dev,
+> +			 "gpio acquisition failed with error %ld, sleep disabled",
+> +			 PTR_ERR(gpio));
+> +		return NULL;
+> +	} else if (!gpio) {
+> +		dev_info(&client->dev,
+> +			 "wakeup-gpio not found, sleep disabled");
+> +	}
+> +
+> +	return gpio;
+> +}
+> +#else
+> +static inline int mlx90614_sleep(struct mlx90614_data *data)
+> +{
+> +	return -ENOSYS;
+> +}
+> +static inline int mlx90614_wakeup(struct mlx90614_data *data)
+> +{
+> +	return -ENOSYS;
+> +}
+> +static inline struct gpio_desc *mlx90614_probe_wakeup(struct i2c_client *client)
+> +{
+> +	return NULL;
+> +}
+> +#endif
+> +
+>  /* Return 0 for single sensor, 1 for dual sensor, <0 on error. */
+>  static int mlx90614_probe_num_ir_sensors(struct i2c_client *client)
+>  {
+> @@ -266,6 +430,9 @@ static int mlx90614_probe(struct i2c_client *client,
+>  	i2c_set_clientdata(client, indio_dev);
+>  	data->client = client;
+>  	mutex_init(&data->lock);
+> +	data->wakeup_gpio = mlx90614_probe_wakeup(client);
+> +
+> +	mlx90614_wakeup(data);
+>  
+>  	indio_dev->dev.parent = &client->dev;
+>  	indio_dev->name = id->name;
+> @@ -288,12 +455,30 @@ static int mlx90614_probe(struct i2c_client *client,
+>  		return ret;
+>  	}
+>  
+> +	if (data->wakeup_gpio) {
+> +		pm_runtime_set_autosuspend_delay(&client->dev,
+> +						 MLX90614_AUTOSLEEP_DELAY);
+> +		pm_runtime_use_autosuspend(&client->dev);
+> +		pm_runtime_set_active(&client->dev);
+> +		pm_runtime_enable(&client->dev);
+> +	}
+> +
+>  	return iio_device_register(indio_dev);
+>  }
+>  
+>  static int mlx90614_remove(struct i2c_client *client)
+>  {
+> -	iio_device_unregister(i2c_get_clientdata(client));
+> +	struct iio_dev *indio_dev = i2c_get_clientdata(client);
+> +	struct mlx90614_data *data = iio_priv(indio_dev);
+> +
+> +	if (data->wakeup_gpio) {
+> +		pm_runtime_disable(&client->dev);
+> +		if (!pm_runtime_status_suspended(&client->dev))
+> +			mlx90614_sleep(data);
+> +		pm_runtime_set_suspended(&client->dev);
+> +	}
+> +
+> +	iio_device_unregister(indio_dev);
+Your ordering is not the reverse of probe.  The unregister should
+be before the pm stuff.  While it may well not actually matter,
+keeping this clean remove -> reverse operations of probe makes
+for more obviously correct code so is good to maintain where
+possible (and add comments where it actually needs to be different!)
+
+>  
+>  	return 0;
+>  }
+> @@ -304,10 +489,67 @@ static const struct i2c_device_id mlx90614_id[] = {
+>  };
+>  MODULE_DEVICE_TABLE(i2c, mlx90614_id);
+>  
+> +#ifdef CONFIG_PM_SLEEP
+> +static int mlx90614_pm_suspend(struct device *dev)
+> +{
+> +	struct iio_dev *indio_dev = i2c_get_clientdata(to_i2c_client(dev));
+> +	struct mlx90614_data *data = iio_priv(indio_dev);
+> +
+> +	if (data->wakeup_gpio && pm_runtime_active(dev))
+> +		return mlx90614_sleep(data);
+> +
+> +	return 0;
+> +}
+> +
+> +static int mlx90614_pm_resume(struct device *dev)
+> +{
+> +	struct iio_dev *indio_dev = i2c_get_clientdata(to_i2c_client(dev));
+> +	struct mlx90614_data *data = iio_priv(indio_dev);
+> +	int err;
+> +
+> +	if (data->wakeup_gpio) {
+> +		err = mlx90614_wakeup(data);
+> +		if (err < 0)
+> +			return err;
+> +
+> +		pm_runtime_disable(dev);
+> +		pm_runtime_set_active(dev);
+> +		pm_runtime_enable(dev);
+> +	}
+> +
+> +	return 0;
+> +}
+> +#endif
+> +
+> +#ifdef CONFIG_PM
+> +static int mlx90614_pm_runtime_suspend(struct device *dev)
+> +{
+> +	struct iio_dev *indio_dev = i2c_get_clientdata(to_i2c_client(dev));
+> +	struct mlx90614_data *data = iio_priv(indio_dev);
+> +
+> +	return mlx90614_sleep(data);
+> +}
+> +
+> +static int mlx90614_pm_runtime_resume(struct device *dev)
+> +{
+> +	struct iio_dev *indio_dev = i2c_get_clientdata(to_i2c_client(dev));
+> +	struct mlx90614_data *data = iio_priv(indio_dev);
+> +
+> +	return mlx90614_wakeup(data);
+Could have rolled this into one line, but it doesn't really matter.
+        return mlx90614_wakeup(iio_priv(i2c_get_clientdata(to_i2c_client(dev))));
+> +}
+> +#endif
+> +
+> +static const struct dev_pm_ops mlx90614_pm_ops = {
+> +	SET_SYSTEM_SLEEP_PM_OPS(mlx90614_pm_suspend, mlx90614_pm_resume)
+> +	SET_RUNTIME_PM_OPS(mlx90614_pm_runtime_suspend,
+> +			   mlx90614_pm_runtime_resume, NULL)
+> +};
+> +
+>  static struct i2c_driver mlx90614_driver = {
+>  	.driver = {
+>  		.name	= "mlx90614",
+>  		.owner	= THIS_MODULE,
+> +		.pm	= &mlx90614_pm_ops,
+>  	},
+>  	.probe = mlx90614_probe,
+>  	.remove = mlx90614_remove,
+> 
+
