@@ -1,60 +1,99 @@
-Return-Path: <octavian.purdila@intel.com>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-ig0-f181.google.com ([209.85.213.181]:37143 "EHLO
+	mail-ig0-f181.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750707AbbC2EA6 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 29 Mar 2015 00:00:58 -0400
+Date: Sat, 28 Mar 2015 21:00:53 -0700
+From: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+To: Andrew Bresticker <abrestic@chromium.org>
+Cc: linux-input@vger.kernel.org, devicetree@vger.kernel.org,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+	Rob Herring <robh+dt@kernel.org>,
+	Pawel Moll <pawel.moll@arm.com>,
+	Mark Rutland <mark.rutland@arm.com>,
+	Ian Campbell <ijc+devicetree@hellion.org.uk>,
+	Kumar Gala <galak@codeaurora.org>
+Subject: Re: [PATCH 1/2] Input: Add binding document for a generic ADC keypad
+Message-ID: <20150329040053.GD36501@dtor-ws>
+References: <1427503398-19682-1-git-send-email-abrestic@chromium.org>
 MIME-Version: 1.0
-In-Reply-To: <5516B838.2040004@jic23.retrosnub.co.uk>
-References: <201503282121.NkeMOw9e%fengguang.wu@intel.com>
-	<5516B838.2040004@jic23.retrosnub.co.uk>
-Date: Sun, 29 Mar 2015 02:15:37 +0200
-Message-ID: <CAE1zot+PyXFOxP-EoYCjPgJ5T8eMKQPcAwVRjBmrpKwcDtbbrA@mail.gmail.com>
-Subject: Re: [iio:testing 10/10] ERROR: "__divdi3" [drivers/iio/accel/bmc150-accel.ko]
- undefined!
-From: Octavian Purdila <octavian.purdila@intel.com>
-To: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
-Cc: Fengguang Wu <fengguang.wu@intel.com>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>, Jonathan Cameron <jic23@kernel.org>, kbuild-all@01.org
-Content-Type: text/plain; charset=UTF-8
-List-ID: <linux-iio@vger.kernel.org>
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <1427503398-19682-1-git-send-email-abrestic@chromium.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On 28 Mar 2015 16:18, "Jonathan Cameron" <jic23@jic23.retrosnub.co.uk> wrote:
->
-> On 28/03/15 13:02, kbuild test robot wrote:
-> > tree:   git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git testing
-> > head:   5e02849a682600c1663a333f95f0388d1c536108
-> > commit: 5e02849a682600c1663a333f95f0388d1c536108 [10/10] iio: bmc150_accel: add support for hardware fifo
-> > config: m68k-allmodconfig (attached as .config)
-> > reproduce:
-> >   wget https://git.kernel.org/cgit/linux/kernel/git/wfg/lkp-tests.git/plain/sbin/make.cross -O ~/bin/make.cross
-> >   chmod +x ~/bin/make.cross
-> >   git checkout 5e02849a682600c1663a333f95f0388d1c536108
-> >   # save the attached .config to linux build tree
-> >   make.cross ARCH=m68k
-> >
-> > All error/warnings:
-> >
-> >>> ERROR: "__divdi3" [drivers/iio/accel/bmc150-accel.ko] undefined!
-> Oops, missed that.  I think we can use a simple do_div for computing the sample_period
-> (which included 64bit / 8 bit).
->
-> Will push out a patch to the testing branch to see if they autobuilders are
-> happy with it then fix up the driver properly if they are.
->
-> diff --git a/drivers/iio/accel/bmc150-accel.c b/drivers/iio/accel/bmc150-accel.c
-> index c639489671bb..d5e103b208ba 100644
-> --- a/drivers/iio/accel/bmc150-accel.c
-> +++ b/drivers/iio/accel/bmc150-accel.c
-> @@ -1002,7 +1002,8 @@ static int __bmc150_accel_fifo_flush(struct iio_dev *indio_dev,
->          * To avoid this issue we compute the actual sample period ourselves
->          * based on the timestamp delta between the last two flush operations.
->          */
-> -       sample_period = (data->timestamp - data->old_timestamp) / count;
-> +       sample_period = (data->timestamp - data->old_timestamp);
-> +       do_div(sample_period, count);
->         tstamp = data->timestamp - (count - 1) * sample_period;
->
->         if (samples && count > samples)
->
+On Fri, Mar 27, 2015 at 05:43:17PM -0700, Andrew Bresticker wrote:
+> Add a binding document for a generic ADC keypad.  Buttons on an ADC
+> keypad are connected in a resistor ladder to an ADC.  The binding
+> describes the mapping of ADC channel and voltage ranges to buttons.
+> 
+> Signed-off-by: Andrew Bresticker <abrestic@chromium.org>
+> Cc: Rob Herring <robh+dt@kernel.org>
+> Cc: Pawel Moll <pawel.moll@arm.com>
+> Cc: Mark Rutland <mark.rutland@arm.com>
+> Cc: Ian Campbell <ijc+devicetree@hellion.org.uk>
+> Cc: Kumar Gala <galak@codeaurora.org>
+> ---
+>  .../devicetree/bindings/input/adc-keys.txt         | 43 ++++++++++++++++++++++
+>  1 file changed, 43 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/input/adc-keys.txt
+> 
+> diff --git a/Documentation/devicetree/bindings/input/adc-keys.txt b/Documentation/devicetree/bindings/input/adc-keys.txt
+> new file mode 100644
+> index 0000000..c9a57de
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/input/adc-keys.txt
+> @@ -0,0 +1,43 @@
+> +Generic ADC keypad
+> +==================
+> +
+> +Required properties:
+> + - compatible: "adc-keys"
+> + - poll-interval: Polling interval time in ms.
+> + - io-channels: List of IIO channels used by the keypad.
+> +   See ../iio/iio-bindings.txt for details.
+> +
+> +Optional properties:
+> + - autorepeat: Enable auto-repeat.
+> +
+> +Each button on the ADC keypad is represented by a sub-node.
+> +
+> +Required sub-node properties:
+> + - label: Descriptive name for the key.
+> + - linux,code: Keycode to emit.
+> + - channel: IIO channel (index into the 'io-channels' above) to which this
+> +   button is attached.
+> + - min-voltage: Minimum voltage in uV when this key is pressed.
+> + - max-voltage: Maximum voltage in uV when this key is pressed.
+> +
+> +Optional sub-node properties:
+> + - linux,input-type: Event type this key generates.  Defaults to 1 (EV_KEY) if
+> +   not specified.
 
-Oops, sorry about this Jonathan and thank you for fixing it so quickly.
+I'd rather we have it defined explicitly in the binding, i.e. make it a
+required property?
 
-One more thing, I marked the new sysfs entries for 4.2, but it seems
-that these might make it in 4.1. Should I send a patch to correct
-this?
+> +
+> +Example:
+> +
+> +adc-keypad {
+> +	compatible = "adc-keys";
+> +	poll-interval = <100>;
+> +	io-channels = <&adc 0>, <&adc 1>;
+> +
+> +	vol-up-button {
+> +		label = "Volume Up";
+> +		linux,code = <KEY_VOLUMEUP>;
+> +		channel = <0>;
+> +		min-voltage = <1600000>;
+> +		max-voltage = <1640000>;
+> +	};
+> +
+> +	...
+> +};
+> -- 
+> 2.2.0.rc0.207.ga3a616c
+> 
+
+-- 
+Dmitry
