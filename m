@@ -1,155 +1,100 @@
-Return-Path: <knaack.h@gmx.de>
-Message-ID: <55171612.9010903@gmx.de>
-Date: Sat, 28 Mar 2015 21:58:58 +0100
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mout.gmx.net ([212.227.15.15]:59622 "EHLO mout.gmx.net"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751743AbbC2AOW (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Sat, 28 Mar 2015 20:14:22 -0400
+Message-ID: <551743D1.90808@gmx.de>
+Date: Sun, 29 Mar 2015 01:14:09 +0100
 From: Hartmut Knaack <knaack.h@gmx.de>
 MIME-Version: 1.0
-To: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
- jkosina@suse.cz, jic23@kernel.org
-CC: linux-iio@vger.kernel.org, linux-input@vger.kernel.org,
- borneo.antonio@gmail.com
-Subject: Re: [PATCH v2 1/2] HID: hid-sensor-hub: Enhance get feature report API
-References: <1421455165-3944-1-git-send-email-srinivas.pandruvada@linux.intel.com> <1421455165-3944-2-git-send-email-srinivas.pandruvada@linux.intel.com>
-In-Reply-To: <1421455165-3944-2-git-send-email-srinivas.pandruvada@linux.intel.com>
+To: Irina Tirdea <irina.tirdea@intel.com>,
+	Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org
+CC: linux-kernel@vger.kernel.org, Vlad Dogaru <vlad.dogaru@intel.com>,
+	Daniel Baluta <daniel.baluta@intel.com>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>
+Subject: Re: [PATCH v2 01/10] iio: core: Introduce ENERGY channel type
+References: <1421003416-27557-1-git-send-email-irina.tirdea@intel.com> <1421003416-27557-2-git-send-email-irina.tirdea@intel.com>
+In-Reply-To: <1421003416-27557-2-git-send-email-irina.tirdea@intel.com>
 Content-Type: text/plain; charset=ISO-8859-15
-List-ID: <linux-iio@vger.kernel.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Srinivas Pandruvada schrieb am 17.01.2015 um 01:39:
-> Some hid sensor feature report can contain more than one reports.
-> This API can now support receiving multiple values from the feature
-> report.
-> Also update the parameters in the users of this API.
+Irina Tirdea schrieb am 11.01.2015 um 20:10:
+> Human activity sensors report the energy burnt by the user.
+> One of this devices is Freescale's MMA9553L
+> (http://www.freescale.com/files/sensors/doc/ref_manual/MMA9553LSWRM.pdf)
+> that computes the number of calories based on weight and step rate.
 > 
-Hi Srinivas,
-I noticed this series got applied already to linux-input. Yet I was wondering
-if it wouldn't be better to have size variables like buffer_size, report_size
-and remaining_bytes (from the next patch) defined as unsigned.
-Also a minor indentation issue spotted inline, in case you get to work on that
-section again some time.
+> Introduce a new channel type ENERGY to export these values.
+> 
 
-> Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Hi Irina,
+annoyingly, some people decided to increase the major version number of the
+kernel. Could you take care of updating your introduced instances from 3.20
+to 4.0?
+Thanks,
+
+Hartmut
+
+> Signed-off-by: Irina Tirdea <irina.tirdea@intel.com>
 > ---
->  drivers/hid/hid-sensor-hub.c                           | 15 +++++++++++++--
->  drivers/iio/common/hid-sensors/hid-sensor-attributes.c | 13 +++++++------
->  drivers/iio/common/hid-sensors/hid-sensor-trigger.c    |  4 ++--
->  include/linux/hid-sensor-hub.h                         |  8 +++++---
->  4 files changed, 27 insertions(+), 13 deletions(-)
+>  Documentation/ABI/testing/sysfs-bus-iio | 10 ++++++++++
+>  drivers/iio/industrialio-core.c         |  1 +
+>  include/linux/iio/types.h               |  1 +
+>  3 files changed, 12 insertions(+)
 > 
-> diff --git a/drivers/hid/hid-sensor-hub.c b/drivers/hid/hid-sensor-hub.c
-> index e54ce10..4d22bd4 100644
-> --- a/drivers/hid/hid-sensor-hub.c
-> +++ b/drivers/hid/hid-sensor-hub.c
-> @@ -232,10 +232,11 @@ done_proc:
->  EXPORT_SYMBOL_GPL(sensor_hub_set_feature);
+> diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
+> index 831db86..3311886 100644
+> --- a/Documentation/ABI/testing/sysfs-bus-iio
+> +++ b/Documentation/ABI/testing/sysfs-bus-iio
+> @@ -282,6 +282,7 @@ What:		/sys/bus/iio/devices/iio:deviceX/in_current_scale
+>  What:		/sys/bus/iio/devices/iio:deviceX/in_accel_scale
+>  What:		/sys/bus/iio/devices/iio:deviceX/in_accel_peak_scale
+>  What:		/sys/bus/iio/devices/iio:deviceX/in_anglvel_scale
+> +What:		/sys/bus/iio/devices/iio:deviceX/in_energy_scale
+>  What:		/sys/bus/iio/devices/iio:deviceX/in_magn_scale
+>  What:		/sys/bus/iio/devices/iio:deviceX/in_magn_x_scale
+>  What:		/sys/bus/iio/devices/iio:deviceX/in_magn_y_scale
+> @@ -1049,6 +1050,15 @@ Description:
+>  		For a list of available output power modes read
+>  		in_accel_power_mode_available.
 >  
->  int sensor_hub_get_feature(struct hid_sensor_hub_device *hsdev, u32 report_id,
-> -				u32 field_index, s32 *value)
-> +			   u32 field_index, int buffer_size, void *buffer)
->  {
->  	struct hid_report *report;
->  	struct sensor_hub_data *data = hid_get_drvdata(hsdev->hdev);
-> +	int report_size;
->  	int ret = 0;
->  
->  	mutex_lock(&data->mutex);
-> @@ -247,7 +248,17 @@ int sensor_hub_get_feature(struct hid_sensor_hub_device *hsdev, u32 report_id,
->  	}
->  	hid_hw_request(hsdev->hdev, report, HID_REQ_GET_REPORT);
->  	hid_hw_wait(hsdev->hdev);
-> -	*value = report->field[field_index]->value[0];
+> +What:		/sys/.../iio:deviceX/in_energy_input
+> +What:		/sys/.../iio:deviceX/in_energy_raw
+> +KernelVersion:	3.20
+> +Contact:	linux-iio@vger.kernel.org
+> +Description:
+> +		This attribute is used to read the energy value reported by the
+> +		device (e.g.: human activity sensors report energy burnt by the
+> +		user). Units after application of scale are Joules.
 > +
-> +	/* calculate number of bytes required to read this field */
-> +	report_size = DIV_ROUND_UP(report->field[field_index]->report_size,
-> +				   8) *
-> +				   report->field[field_index]->report_count;
-The last line should not be indented with the opening parenthesis any more.
-What do you think about this solution:
-
-	report_size = DIV_ROUND_UP(report->field[field_index]->report_size, 8);
-	report_size *= report->field[field_index]->report_count;
-
-> +	if (!report_size) {
-> +		ret = -EINVAL;
-> +		goto done_proc;
-> +	}
-> +	ret = min(report_size, buffer_size);
-> +	memcpy(buffer, report->field[field_index]->value, ret);
+>  What:		/sys/bus/iio/devices/iio:deviceX/store_eeprom
+>  KernelVersion:	3.4.0
+>  Contact:	linux-iio@vger.kernel.org
+> diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+> index 69feb91..8d2c9ba 100644
+> --- a/drivers/iio/industrialio-core.c
+> +++ b/drivers/iio/industrialio-core.c
+> @@ -72,6 +72,7 @@ static const char * const iio_chan_type_name_spec[] = {
+>  	[IIO_HUMIDITYRELATIVE] = "humidityrelative",
+>  	[IIO_ACTIVITY] = "activity",
+>  	[IIO_STEPS] = "steps",
+> +	[IIO_ENERGY] = "energy",
+>  };
 >  
->  done_proc:
->  	mutex_unlock(&data->mutex);
-> diff --git a/drivers/iio/common/hid-sensors/hid-sensor-attributes.c b/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
-> index 25b01e1..e1435e9 100644
-> --- a/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
-> +++ b/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
-> @@ -153,8 +153,8 @@ s32 hid_sensor_read_poll_value(struct hid_sensor_common *st)
->  	int ret;
+>  static const char * const iio_modifier_names[] = {
+> diff --git a/include/linux/iio/types.h b/include/linux/iio/types.h
+> index 904dcbb..26b8a1c 100644
+> --- a/include/linux/iio/types.h
+> +++ b/include/linux/iio/types.h
+> @@ -32,6 +32,7 @@ enum iio_chan_type {
+>  	IIO_HUMIDITYRELATIVE,
+>  	IIO_ACTIVITY,
+>  	IIO_STEPS,
+> +	IIO_ENERGY,
+>  };
 >  
->  	ret = sensor_hub_get_feature(st->hsdev,
-> -		st->poll.report_id,
-> -		st->poll.index, &value);
-> +				     st->poll.report_id,
-> +				     st->poll.index, sizeof(value), &value);
->  
->  	if (ret < 0 || value < 0) {
->  		return -EINVAL;
-> @@ -174,8 +174,8 @@ int hid_sensor_read_samp_freq_value(struct hid_sensor_common *st,
->  	int ret;
->  
->  	ret = sensor_hub_get_feature(st->hsdev,
-> -		st->poll.report_id,
-> -		st->poll.index, &value);
-> +				     st->poll.report_id,
-> +				     st->poll.index, sizeof(value), &value);
->  	if (ret < 0 || value < 0) {
->  		*val1 = *val2 = 0;
->  		return -EINVAL;
-> @@ -229,8 +229,9 @@ int hid_sensor_read_raw_hyst_value(struct hid_sensor_common *st,
->  	int ret;
->  
->  	ret = sensor_hub_get_feature(st->hsdev,
-> -		st->sensitivity.report_id,
-> -		st->sensitivity.index, &value);
-> +				     st->sensitivity.report_id,
-> +				     st->sensitivity.index, sizeof(value),
-> +				     &value);
->  	if (ret < 0 || value < 0) {
->  		*val1 = *val2 = 0;
->  		return -EINVAL;
-> diff --git a/drivers/iio/common/hid-sensors/hid-sensor-trigger.c b/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
-> index 92068cd..ef0c495 100644
-> --- a/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
-> +++ b/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
-> @@ -76,8 +76,8 @@ int hid_sensor_power_state(struct hid_sensor_common *st, bool state)
->  	}
->  
->  	sensor_hub_get_feature(st->hsdev, st->power_state.report_id,
-> -					st->power_state.index,
-> -					&state_val);
-> +			       st->power_state.index,
-> +			       sizeof(state_val), &state_val);
->  	return 0;
->  }
->  EXPORT_SYMBOL(hid_sensor_power_state);
-> diff --git a/include/linux/hid-sensor-hub.h b/include/linux/hid-sensor-hub.h
-> index 4173a8f..dfdf6ef 100644
-> --- a/include/linux/hid-sensor-hub.h
-> +++ b/include/linux/hid-sensor-hub.h
-> @@ -179,13 +179,15 @@ int sensor_hub_set_feature(struct hid_sensor_hub_device *hsdev, u32 report_id,
->  * @hsdev:	Hub device instance.
->  * @report_id:	Report id to look for
->  * @field_index:	Field index inside a report
-> -* @value:	Place holder for return value
-> +* @buffer_size:	size of the buffer
-> +* @buffer:	buffer to copy output
->  *
->  * Used to get a field in feature report. For example this can get polling
-> -* interval, sensitivity, activate/deactivate state.
-> +* interval, sensitivity, activate/deactivate state. On success it returns
-> +* number of bytes copied to buffer. On failure, it returns value < 0.
->  */
->  int sensor_hub_get_feature(struct hid_sensor_hub_device *hsdev, u32 report_id,
-> -			u32 field_index, s32 *value);
-> +			   u32 field_index, int buffer_size, void *buffer);
->  
->  /* hid-sensor-attributes */
->  
+>  enum iio_modifier {
 > 
+
