@@ -1,404 +1,334 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:39318 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752388AbbC2PPr (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 29 Mar 2015 11:15:47 -0400
-Message-ID: <5518171D.7040305@kernel.org>
-Date: Sun, 29 Mar 2015 16:15:41 +0100
-From: Jonathan Cameron <jic23@kernel.org>
+Return-Path: <pmeerw@pmeerw.net>
+Date: Mon, 30 Mar 2015 13:16:52 +0200 (CEST)
+From: Peter Meerwald <pmeerw@pmeerw.net>
+To: Dmitry Eremin-Solenikov <dbaryshkov@gmail.com>
+cc: linux-iio@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>,
+    Hartmut Knaack <knaack.h@gmx.de>, Lars-Peter Clausen <lars@metafoo.de>
+Subject: Re: [PATCH] iio: add m62332 DAC driver
+In-Reply-To: <1427711081-7921-1-git-send-email-dbaryshkov@gmail.com>
+Message-ID: <alpine.DEB.2.02.1503301302450.22350@pmeerw.net>
+References: <1427711081-7921-1-git-send-email-dbaryshkov@gmail.com>
 MIME-Version: 1.0
-To: Octavian Purdila <octavian.purdila@intel.com>
-CC: lars@metafoo.de, pmeerw@pmeerw.net, knaack.h@gmx.de,
-	linux-iio@vger.kernel.org,
-	Josselin Costanzi <josselin.costanzi@mobile-devices.fr>
-Subject: Re: [PATCH v6 1/3] iio: add watermark logic to iio read and poll
-References: <1427049220-2876-1-git-send-email-octavian.purdila@intel.com> <1427049220-2876-2-git-send-email-octavian.purdila@intel.com> <55169D7A.6060005@kernel.org>
-In-Reply-To: <55169D7A.6060005@kernel.org>
-Content-Type: text/plain; charset=windows-1252
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: TEXT/PLAIN; charset=US-ASCII
+List-ID: <linux-iio@vger.kernel.org>
 
-On 28/03/15 12:24, Jonathan Cameron wrote:
-> On 22/03/15 18:33, Octavian Purdila wrote:
->> From: Josselin Costanzi <josselin.costanzi@mobile-devices.fr>
->>
->> Currently the IIO buffer blocking read only wait until at least one
->> data element is available.
->> This patch makes the reader sleep until enough data is collected before
->> returning to userspace. This should limit the read() calls count when
->> trying to get data in batches.
->>
->> Co-author: Yannick Bedhomme <yannick.bedhomme@mobile-devices.fr>
->> Signed-off-by: Josselin Costanzi <josselin.costanzi@mobile-devices.fr>
->> [rebased and remove buffer timeout]
->> Signed-off-by: Octavian Purdila <octavian.purdila@intel.com>
-> Great.  Applied to the togreg branch of iio.git - initially pushed out as
-> testing for the autobuilders to try their best to break things.
 
-The autobuilder threw up the following:
+> m62332 is a simple 2-channel DAC used on several Sharp Zaurus boards to
+> control LCD voltage, backlight and sound. The driver use regulators to
+> control the reference voltage and enabling/disabling the DAC.
 
-drivers/iio/industrialio-buffer.c:110 iio_buffer_read_first_n_outer() warn: variable dereferenced before check 'rb' (see line 102)
-Fix is fairly obvious:
-
-    Fixup for add watermark logic
-
----------------------- drivers/iio/industrialio-buffer.c ----------------------
-index 87142bb0f010..df919f44d513 100644
-@@ -99,7 +99,7 @@ ssize_t iio_buffer_read_first_n_outer(struct file *filp, char __user *buf,
- {
- 	struct iio_dev *indio_dev = filp->private_data;
- 	struct iio_buffer *rb = indio_dev->buffer;
--	size_t datum_size = rb->bytes_per_datum;
-+	size_t datum_size;
- 	size_t to_wait = 0;
- 	size_t to_read;
- 	int ret;
-@@ -110,6 +110,8 @@ ssize_t iio_buffer_read_first_n_outer(struct file *filp, char __user *buf,
- 	if (!rb || !rb->access->read_first_n)
- 		return -EINVAL;
+some minor comments inline
  
-+	datum_size = rb->bytes_per_datum;
-+
- 	/*
- 	 * If datum_size is 0 there will never be anything to read from the
- 	 * buffer, so signal end of file now.
-
-So I'll just merge it into the original patch unless someone shouts that I've
-messed it up!
-
-
+> Signed-off-by: Dmitry Eremin-Solenikov <dbaryshkov@gmail.com>
+> ---
+>  drivers/iio/dac/Kconfig  |  10 ++
+>  drivers/iio/dac/Makefile |   1 +
+>  drivers/iio/dac/m62332.c | 236 +++++++++++++++++++++++++++++++++++++++++++++++
+>  3 files changed, 247 insertions(+)
+>  create mode 100644 drivers/iio/dac/m62332.c
 > 
-> Jonathan
->> ---
->>  Documentation/ABI/testing/sysfs-bus-iio  |  15 ++++
->>  drivers/iio/industrialio-buffer.c        | 118 +++++++++++++++++++++++++++----
->>  drivers/iio/kfifo_buf.c                  |  11 ++-
->>  drivers/staging/iio/accel/sca3000_ring.c |   4 +-
->>  include/linux/iio/buffer.h               |   8 ++-
->>  5 files changed, 129 insertions(+), 27 deletions(-)
->>
->> diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
->> index 6be17c2..0051641 100644
->> --- a/Documentation/ABI/testing/sysfs-bus-iio
->> +++ b/Documentation/ABI/testing/sysfs-bus-iio
->> @@ -1273,3 +1273,18 @@ Contact:	linux-iio@vger.kernel.org
->>  Description:
->>  		Specifies number of seconds in which we compute the steps
->>  		that occur in order to decide if the consumer is making steps.
->> +
->> +What:		/sys/bus/iio/devices/iio:deviceX/buffer/watermark
->> +KernelVersion:	4.2
->> +Contact:	linux-iio@vger.kernel.org
->> +Description:
->> +		A single positive integer specifying the maximum number of scan
->> +		elements to wait for.
->> +		Poll will block until the watermark is reached.
->> +		Blocking read will wait until the minimum between the requested
->> +		read amount or the low water mark is available.
->> +		Non-blocking read will retrieve the available samples from the
->> +		buffer even if there are less samples then watermark level. This
->> +		allows the application to block on poll with a timeout and read
->> +		the available samples after the timeout expires and thus have a
->> +		maximum delay guarantee.
->> diff --git a/drivers/iio/industrialio-buffer.c b/drivers/iio/industrialio-buffer.c
->> index c2d5440..a4f4f07 100644
->> --- a/drivers/iio/industrialio-buffer.c
->> +++ b/drivers/iio/industrialio-buffer.c
->> @@ -37,11 +37,28 @@ static bool iio_buffer_is_active(struct iio_buffer *buf)
->>  	return !list_empty(&buf->buffer_list);
->>  }
->>  
->> -static bool iio_buffer_data_available(struct iio_buffer *buf)
->> +static size_t iio_buffer_data_available(struct iio_buffer *buf)
->>  {
->>  	return buf->access->data_available(buf);
->>  }
->>  
->> +static bool iio_buffer_ready(struct iio_dev *indio_dev, struct iio_buffer *buf,
->> +			     size_t to_wait)
->> +{
->> +	/* wakeup if the device was unregistered */
->> +	if (!indio_dev->info)
->> +		return true;
->> +
->> +	/* drain the buffer if it was disabled */
->> +	if (!iio_buffer_is_active(buf))
->> +		to_wait = min_t(size_t, to_wait, 1);
->> +
->> +	if (iio_buffer_data_available(buf) >= to_wait)
->> +		return true;
->> +
->> +	return false;
->> +}
->> +
->>  /**
->>   * iio_buffer_read_first_n_outer() - chrdev read for buffer access
->>   *
->> @@ -53,6 +70,8 @@ ssize_t iio_buffer_read_first_n_outer(struct file *filp, char __user *buf,
->>  {
->>  	struct iio_dev *indio_dev = filp->private_data;
->>  	struct iio_buffer *rb = indio_dev->buffer;
->> +	size_t datum_size = rb->bytes_per_datum;
->> +	size_t to_wait = 0;
->>  	int ret;
->>  
->>  	if (!indio_dev->info)
->> @@ -61,19 +80,24 @@ ssize_t iio_buffer_read_first_n_outer(struct file *filp, char __user *buf,
->>  	if (!rb || !rb->access->read_first_n)
->>  		return -EINVAL;
->>  
->> +	/*
->> +	 * If datum_size is 0 there will never be anything to read from the
->> +	 * buffer, so signal end of file now.
->> +	 */
->> +	if (!datum_size)
->> +		return 0;
->> +
->> +	if (!(filp->f_flags & O_NONBLOCK))
->> +		to_wait = min_t(size_t, n / datum_size, rb->watermark);
->> +
->>  	do {
->> -		if (!iio_buffer_data_available(rb)) {
->> -			if (filp->f_flags & O_NONBLOCK)
->> -				return -EAGAIN;
->> +		ret = wait_event_interruptible(rb->pollq,
->> +				      iio_buffer_ready(indio_dev, rb, to_wait));
->> +		if (ret)
->> +			return ret;
->>  
->> -			ret = wait_event_interruptible(rb->pollq,
->> -					iio_buffer_data_available(rb) ||
->> -					indio_dev->info == NULL);
->> -			if (ret)
->> -				return ret;
->> -			if (indio_dev->info == NULL)
->> -				return -ENODEV;
->> -		}
->> +		if (!indio_dev->info)
->> +			return -ENODEV;
->>  
->>  		ret = rb->access->read_first_n(rb, n, buf);
->>  		if (ret == 0 && (filp->f_flags & O_NONBLOCK))
->> @@ -96,9 +120,8 @@ unsigned int iio_buffer_poll(struct file *filp,
->>  		return -ENODEV;
->>  
->>  	poll_wait(filp, &rb->pollq, wait);
->> -	if (iio_buffer_data_available(rb))
->> +	if (iio_buffer_ready(indio_dev, rb, rb->watermark))
->>  		return POLLIN | POLLRDNORM;
->> -	/* need a way of knowing if there may be enough data... */
->>  	return 0;
->>  }
->>  
->> @@ -123,6 +146,7 @@ void iio_buffer_init(struct iio_buffer *buffer)
->>  	INIT_LIST_HEAD(&buffer->buffer_list);
->>  	init_waitqueue_head(&buffer->pollq);
->>  	kref_init(&buffer->ref);
->> +	buffer->watermark = 1;
->>  }
->>  EXPORT_SYMBOL(iio_buffer_init);
->>  
->> @@ -416,6 +440,11 @@ static ssize_t iio_buffer_write_length(struct device *dev,
->>  		buffer->access->set_length(buffer, val);
->>  		ret = 0;
->>  	}
->> +	if (ret)
->> +		goto out;
->> +	if (buffer->length && buffer->length < buffer->watermark)
->> +		buffer->watermark = buffer->length;
->> +out:
->>  	mutex_unlock(&indio_dev->mlock);
->>  
->>  	return ret ? ret : len;
->> @@ -472,6 +501,7 @@ static void iio_buffer_activate(struct iio_dev *indio_dev,
->>  static void iio_buffer_deactivate(struct iio_buffer *buffer)
->>  {
->>  	list_del_init(&buffer->buffer_list);
->> +	wake_up_interruptible(&buffer->pollq);
->>  	iio_buffer_put(buffer);
->>  }
->>  
->> @@ -754,16 +784,64 @@ done:
->>  
->>  static const char * const iio_scan_elements_group_name = "scan_elements";
->>  
->> +static ssize_t iio_buffer_show_watermark(struct device *dev,
->> +					 struct device_attribute *attr,
->> +					 char *buf)
->> +{
->> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
->> +	struct iio_buffer *buffer = indio_dev->buffer;
->> +
->> +	return sprintf(buf, "%u\n", buffer->watermark);
->> +}
->> +
->> +static ssize_t iio_buffer_store_watermark(struct device *dev,
->> +					  struct device_attribute *attr,
->> +					  const char *buf,
->> +					  size_t len)
->> +{
->> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
->> +	struct iio_buffer *buffer = indio_dev->buffer;
->> +	unsigned int val;
->> +	int ret;
->> +
->> +	ret = kstrtouint(buf, 10, &val);
->> +	if (ret)
->> +		return ret;
->> +	if (!val)
->> +		return -EINVAL;
->> +
->> +	mutex_lock(&indio_dev->mlock);
->> +
->> +	if (val > buffer->length) {
->> +		ret = -EINVAL;
->> +		goto out;
->> +	}
->> +
->> +	if (iio_buffer_is_active(indio_dev->buffer)) {
->> +		ret = -EBUSY;
->> +		goto out;
->> +	}
->> +
->> +	buffer->watermark = val;
->> +out:
->> +	mutex_unlock(&indio_dev->mlock);
->> +
->> +	return ret ? ret : len;
->> +}
->> +
->>  static DEVICE_ATTR(length, S_IRUGO | S_IWUSR, iio_buffer_read_length,
->>  		   iio_buffer_write_length);
->>  static struct device_attribute dev_attr_length_ro = __ATTR(length,
->>  	S_IRUGO, iio_buffer_read_length, NULL);
->>  static DEVICE_ATTR(enable, S_IRUGO | S_IWUSR,
->>  		   iio_buffer_show_enable, iio_buffer_store_enable);
->> +static DEVICE_ATTR(watermark, S_IRUGO | S_IWUSR,
->> +		   iio_buffer_show_watermark, iio_buffer_store_watermark);
->>  
->>  static struct attribute *iio_buffer_attrs[] = {
->>  	&dev_attr_length.attr,
->>  	&dev_attr_enable.attr,
->> +	&dev_attr_watermark.attr,
->>  };
->>  
->>  int iio_buffer_alloc_sysfs_and_mask(struct iio_dev *indio_dev)
->> @@ -944,8 +1022,18 @@ static const void *iio_demux(struct iio_buffer *buffer,
->>  static int iio_push_to_buffer(struct iio_buffer *buffer, const void *data)
->>  {
->>  	const void *dataout = iio_demux(buffer, data);
->> +	int ret;
->> +
->> +	ret = buffer->access->store_to(buffer, dataout);
->> +	if (ret)
->> +		return ret;
->>  
->> -	return buffer->access->store_to(buffer, dataout);
->> +	/*
->> +	 * We can't just test for watermark to decide if we wake the poll queue
->> +	 * because read may request less samples than the watermark.
->> +	 */
->> +	wake_up_interruptible_poll(&buffer->pollq, POLLIN | POLLRDNORM);
->> +	return 0;
->>  }
->>  
->>  static void iio_buffer_demux_free(struct iio_buffer *buffer)
->> diff --git a/drivers/iio/kfifo_buf.c b/drivers/iio/kfifo_buf.c
->> index b2beea0..847ca56 100644
->> --- a/drivers/iio/kfifo_buf.c
->> +++ b/drivers/iio/kfifo_buf.c
->> @@ -83,9 +83,6 @@ static int iio_store_to_kfifo(struct iio_buffer *r,
->>  	ret = kfifo_in(&kf->kf, data, 1);
->>  	if (ret != 1)
->>  		return -EBUSY;
->> -
->> -	wake_up_interruptible_poll(&r->pollq, POLLIN | POLLRDNORM);
->> -
->>  	return 0;
->>  }
->>  
->> @@ -109,16 +106,16 @@ static int iio_read_first_n_kfifo(struct iio_buffer *r,
->>  	return copied;
->>  }
->>  
->> -static bool iio_kfifo_buf_data_available(struct iio_buffer *r)
->> +static size_t iio_kfifo_buf_data_available(struct iio_buffer *r)
->>  {
->>  	struct iio_kfifo *kf = iio_to_kfifo(r);
->> -	bool empty;
->> +	size_t samples;
->>  
->>  	mutex_lock(&kf->user_lock);
->> -	empty = kfifo_is_empty(&kf->kf);
->> +	samples = kfifo_len(&kf->kf);
->>  	mutex_unlock(&kf->user_lock);
->>  
->> -	return !empty;
->> +	return samples;
->>  }
->>  
->>  static void iio_kfifo_buffer_release(struct iio_buffer *buffer)
->> diff --git a/drivers/staging/iio/accel/sca3000_ring.c b/drivers/staging/iio/accel/sca3000_ring.c
->> index f76a268..8589ead 100644
->> --- a/drivers/staging/iio/accel/sca3000_ring.c
->> +++ b/drivers/staging/iio/accel/sca3000_ring.c
->> @@ -129,9 +129,9 @@ error_ret:
->>  	return ret ? ret : num_read;
->>  }
->>  
->> -static bool sca3000_ring_buf_data_available(struct iio_buffer *r)
->> +static size_t sca3000_ring_buf_data_available(struct iio_buffer *r)
->>  {
->> -	return r->stufftoread;
->> +	return r->stufftoread ? r->watermark : 0;
->>  }
->>  
->>  /**
->> diff --git a/include/linux/iio/buffer.h b/include/linux/iio/buffer.h
->> index b65850a..eb8622b 100644
->> --- a/include/linux/iio/buffer.h
->> +++ b/include/linux/iio/buffer.h
->> @@ -21,8 +21,8 @@ struct iio_buffer;
->>   * struct iio_buffer_access_funcs - access functions for buffers.
->>   * @store_to:		actually store stuff to the buffer
->>   * @read_first_n:	try to get a specified number of bytes (must exist)
->> - * @data_available:	indicates whether data for reading from the buffer is
->> - *			available.
->> + * @data_available:	indicates how much data is available for reading from
->> + *			the buffer.
->>   * @request_update:	if a parameter change has been marked, update underlying
->>   *			storage.
->>   * @set_bytes_per_datum:set number of bytes per datum
->> @@ -43,7 +43,7 @@ struct iio_buffer_access_funcs {
->>  	int (*read_first_n)(struct iio_buffer *buffer,
->>  			    size_t n,
->>  			    char __user *buf);
->> -	bool (*data_available)(struct iio_buffer *buffer);
->> +	size_t (*data_available)(struct iio_buffer *buffer);
->>  
->>  	int (*request_update)(struct iio_buffer *buffer);
->>  
->> @@ -72,6 +72,7 @@ struct iio_buffer_access_funcs {
->>   * @demux_bounce:	[INTERN] buffer for doing gather from incoming scan.
->>   * @buffer_list:	[INTERN] entry in the devices list of current buffers.
->>   * @ref:		[INTERN] reference count of the buffer.
->> + * @watermark:		[INTERN] number of datums to wait for poll/read.
->>   */
->>  struct iio_buffer {
->>  	int					length;
->> @@ -90,6 +91,7 @@ struct iio_buffer {
->>  	void					*demux_bounce;
->>  	struct list_head			buffer_list;
->>  	struct kref				ref;
->> +	unsigned int				watermark;
->>  };
->>  
->>  /**
->>
-> 
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> diff --git a/drivers/iio/dac/Kconfig b/drivers/iio/dac/Kconfig
+> index 2236ea2..2ede061 100644
+> --- a/drivers/iio/dac/Kconfig
+> +++ b/drivers/iio/dac/Kconfig
+> @@ -142,6 +142,16 @@ config AD7303
+>  	  To compile this driver as module choose M here: the module will be called
+>  	  ad7303.
+>  
+> +config M62332
+> +	tristate "Mitsubishi M62332 DAC driver"
+> +	depends on I2C
+> +	help
+> +	  If you say yes here you get support for the Mitsubishi M62332
+> +	  (I2C 8-Bit DACs with rail-to-rail outputs).
+> +
+> +	  This driver can also be built as a module.  If so, the module
+> +	  will be called m62332.
+> +
+>  config MAX517
+>  	tristate "Maxim MAX517/518/519 DAC driver"
+>  	depends on I2C
+> diff --git a/drivers/iio/dac/Makefile b/drivers/iio/dac/Makefile
+> index 52be7e1..63ae056 100644
+> --- a/drivers/iio/dac/Makefile
+> +++ b/drivers/iio/dac/Makefile
+> @@ -16,6 +16,7 @@ obj-$(CONFIG_AD5764) += ad5764.o
+>  obj-$(CONFIG_AD5791) += ad5791.o
+>  obj-$(CONFIG_AD5686) += ad5686.o
+>  obj-$(CONFIG_AD7303) += ad7303.o
+> +obj-$(CONFIG_M62332) += m62332.o
+>  obj-$(CONFIG_MAX517) += max517.o
+>  obj-$(CONFIG_MAX5821) += max5821.o
+>  obj-$(CONFIG_MCP4725) += mcp4725.o
+> diff --git a/drivers/iio/dac/m62332.c b/drivers/iio/dac/m62332.c
+> new file mode 100644
+> index 0000000..90574d7
+> --- /dev/null
+> +++ b/drivers/iio/dac/m62332.c
+> @@ -0,0 +1,236 @@
+> +/*
+> + *  m62332.c - Support for Mitsubishi m62332 DAC
+> + *
+> + *  Copyright (c) 2014 Dmitry Eremin-Solenikov
+> + *
+> + *  Based on max517 driver:
+> + *  Copyright (C) 2010, 2011 Roland Stigge <stigge@antcom.de>
+> + *
+> + *  This program is free software; you can redistribute it and/or modify
+> + *  it under the terms of the GNU General Public License as published by
+> + *  the Free Software Foundation; either version 2 of the License, or
+> + *  (at your option) any later version.
+> + *
+> + *  This program is distributed in the hope that it will be useful,
+> + *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+> + *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+> + *  GNU General Public License for more details.
+> + */
+> +
+> +#include <linux/module.h>
+> +#include <linux/slab.h>
+> +#include <linux/jiffies.h>
+
+is jiffies.h needed?
+
+> +#include <linux/i2c.h>
+> +#include <linux/err.h>
+> +
+> +#include <linux/iio/iio.h>
+> +#include <linux/iio/driver.h>
+> +
+> +#include <linux/regulator/consumer.h>
+> +
+> +struct m62332_data {
+> +	struct i2c_client	*client;
+> +	unsigned short		vref_mv;
+> +	unsigned char		raw[2];
+
+could use u8, u16
+
+> +	struct regulator	*vcc;
+> +#ifdef CONFIG_PM_SLEEP
+> +	unsigned char		save[2];
+> +#endif
+> +};
+> +
+> +static int m62332_set_value(struct iio_dev *indio_dev,
+> +	unsigned char val, int channel)
+> +{
+> +	struct m62332_data *data = iio_priv(indio_dev);
+> +	struct i2c_client *client = data->client;
+> +	u8 outbuf[2];
+> +	int res = 0;
+> +
+> +	if (val == data->raw[channel])
+> +		return 0;
+> +
+> +	outbuf[0] = channel;
+> +	outbuf[1] = val;
+> +
+
+probably use a mutex here to protect the enable/send/disable sequence
+
+> +	if (val || data->raw[!channel])
+
+!channel looks a bit strange; what is the intent here?
+is data->raw[!channel] needed?
+maybe there exist devices with more than 2 channels so a function like 
+all_channels_off() would make sense
+
+> +		res = regulator_enable(data->vcc);
+> +	if (res)
+> +		return res;
+> +
+> +	res = i2c_master_send(client, outbuf, 2);
+> +	if (res < 0)
+> +		return res;
+> +	else if (res != 2)
+> +		return -EIO;
+> +
+
+should the regulator be disabled if write fails?
+
+> +	data->raw[channel] = val;
+> +
+> +	if (!data->raw[0] && !data->raw[1])
+> +		regulator_disable(data->vcc);
+> +
+> +	return 0;
+> +}
+> +
+> +static int m62332_read_raw(struct iio_dev *indio_dev,
+> +			   struct iio_chan_spec const *chan,
+> +			   int *val,
+> +			   int *val2,
+> +			   long m)
+> +{
+> +	struct m62332_data *data = iio_priv(indio_dev);
+> +
+> +	switch (m) {
+> +	case IIO_CHAN_INFO_SCALE:
+> +		/* Corresponds to Vref / 2^(bits) */
+> +		*val = data->vref_mv;
+> +		*val2 = 8;
+> +		return IIO_VAL_FRACTIONAL_LOG2;
+> +	case IIO_CHAN_INFO_RAW:
+> +		*val = data->raw[chan->channel];
+> +		return IIO_VAL_INT;
+> +	default:
+> +		break;
+> +	}
+> +	return -EINVAL;
+> +}
+> +
+> +static int m62332_write_raw(struct iio_dev *indio_dev,
+> +	struct iio_chan_spec const *chan, int val, int val2, long mask)
+> +{
+> +	int ret;
+> +
+> +	switch (mask) {
+> +	case IIO_CHAN_INFO_RAW:
+> +		if (val < 0 || val > 255)
+> +			return -EINVAL;
+> +
+> +		ret = m62332_set_value(indio_dev, val, chan->channel);
+> +		break;
+> +	default:
+> +		ret = -EINVAL;
+> +		break;
+> +	}
+> +
+> +	return ret;
+> +}
+> +
+> +#ifdef CONFIG_PM_SLEEP
+> +static int m62332_suspend(struct device *dev)
+> +{
+> +	struct i2c_client *client = to_i2c_client(dev);
+> +	struct iio_dev *indio_dev = i2c_get_clientdata(client);
+> +	struct m62332_data *data = iio_priv(indio_dev);
+> +	int ret;
+> +
+> +	data->save[0] = data->raw[0];
+> +	data->save[1] = data->raw[1];
+> +
+> +	ret = m62332_set_value(indio_dev, 0, 0);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	return m62332_set_value(indio_dev, 0, 1);
+> +}
+> +
+> +static int m62332_resume(struct device *dev)
+> +{
+> +	struct i2c_client *client = to_i2c_client(dev);
+> +	struct iio_dev *indio_dev = i2c_get_clientdata(client);
+> +	struct m62332_data *data = iio_priv(indio_dev);
+> +	int ret;
+> +
+> +	ret = m62332_set_value(indio_dev, data->save[0], 0);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	return m62332_set_value(indio_dev, data->save[1], 1);
+> +}
+> +
+> +static SIMPLE_DEV_PM_OPS(m62332_pm_ops, m62332_suspend, m62332_resume);
+> +#define M62332_PM_OPS (&m62332_pm_ops)
+> +#else
+> +#define M62332_PM_OPS NULL
+> +#endif
+> +
+> +static const struct iio_info m62332_info = {
+> +	.read_raw = m62332_read_raw,
+> +	.write_raw = m62332_write_raw,
+> +	.driver_module = THIS_MODULE,
+> +};
+> +
+> +#define M62332_CHANNEL(chan) {				\
+> +	.type = IIO_VOLTAGE,				\
+> +	.indexed = 1,					\
+> +	.output = 1,					\
+> +	.channel = (chan),				\
+> +	.datasheet_name = "CH" #chan,			\
+> +	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |	\
+> +		BIT(IIO_CHAN_INFO_SCALE),		\
+> +}
+> +
+> +static const struct iio_chan_spec m62332_channels[] = {
+> +	M62332_CHANNEL(0),
+> +	M62332_CHANNEL(1)
+> +};
+> +
+> +static int m62332_probe(struct i2c_client *client,
+> +			const struct i2c_device_id *id)
+> +{
+> +	struct m62332_data *data;
+> +	struct iio_dev *indio_dev;
+> +
+> +	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
+> +	if (!indio_dev)
+> +		return -ENOMEM;
+> +	data = iio_priv(indio_dev);
+> +	i2c_set_clientdata(client, indio_dev);
+> +	data->client = client;
+> +
+> +	data->vcc = devm_regulator_get(&client->dev, "VCC");
+> +	if (IS_ERR(data->vcc))
+> +		return PTR_ERR(data->vcc);
+> +
+> +	/* establish that the iio_dev is a child of the i2c device */
+> +	indio_dev->dev.parent = &client->dev;
+> +
+
+indio_dev->name?
+
+> +	indio_dev->num_channels = 2;
+> +	indio_dev->channels = m62332_channels;
+> +	indio_dev->modes = INDIO_DIRECT_MODE;
+> +	indio_dev->info = &m62332_info;
+> +
+> +	data->vref_mv = regulator_get_voltage(data->vcc) / 1000; /* mV */
+> +
+> +	iio_map_array_register(indio_dev, client->dev.platform_data);
+
+check return code?
+
+> +
+> +	return iio_device_register(indio_dev);
+> +}
+> +
+> +static int m62332_remove(struct i2c_client *client)
+> +{
+> +	struct iio_dev *indio_dev = i2c_get_clientdata(client);
+> +
+> +	iio_device_unregister(indio_dev);
+> +	iio_map_array_unregister(indio_dev);
+> +	return 0;
+> +}
+> +
+> +static const struct i2c_device_id m62332_id[] = {
+> +	{ "m62332", },
+> +	{ }
+> +};
+> +MODULE_DEVICE_TABLE(i2c, m62332_id);
+> +
+> +static struct i2c_driver m62332_driver = {
+> +	.driver = {
+> +		.name	= "m62332",
+> +		.pm	= M62332_PM_OPS,
+> +	},
+> +	.probe		= m62332_probe,
+> +	.remove		= m62332_remove,
+> +	.id_table	= m62332_id,
+> +};
+> +module_i2c_driver(m62332_driver);
+> +
+> +MODULE_AUTHOR("Dmitry Eremin-Solenikov");
+> +MODULE_DESCRIPTION("M62332 8-bit DAC");
+> +MODULE_LICENSE("GPL v2");
 > 
 
+-- 
+
+Peter Meerwald
++43-664-2444418 (mobile)
