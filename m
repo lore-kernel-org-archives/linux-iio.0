@@ -1,58 +1,59 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:48367 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:48390 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753153AbbC3Tio (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 30 Mar 2015 15:38:44 -0400
-Message-ID: <5519A642.3070407@kernel.org>
-Date: Mon, 30 Mar 2015 20:38:42 +0100
+	with ESMTP id S1753681AbbC3Tkn (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 30 Mar 2015 15:40:43 -0400
+Message-ID: <5519A6B7.1000706@kernel.org>
+Date: Mon, 30 Mar 2015 20:40:39 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Greg KH <gregkh@linuxfoundation.org>
-CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Subject: [PULL] IIO fixes for 4.0 set 4
-Content-Type: text/plain; charset=utf-8
+To: Richard Weinberger <richard@nod.at>, linux-kernel@vger.kernel.org
+CC: linux-iio@vger.kernel.org, linux-pm@vger.kernel.org,
+	dwmw2@infradead.org, dbaryshkov@gmail.com, sre@kernel.org,
+	jassisinghbrar@gmail.com, pmeerw@pmeerw.net, lars@metafoo.de,
+	knaack.h@gmx.de, tglx@linutronix.de, daniel.lezcano@linaro.org
+Subject: Re: [PATCH 6/6] iio/adc/cc10001_adc.c: Fix !HAS_IOMEM build
+References: <1426541230-928-1-git-send-email-richard@nod.at> <1426541230-928-6-git-send-email-richard@nod.at> <550D5772.2010400@kernel.org>
+In-Reply-To: <550D5772.2010400@kernel.org>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-The following changes since commit 3d8bbe243dc7418b4b2eadcbf5693887d076a521:
+On 21/03/15 11:35, Jonathan Cameron wrote:
+> On 16/03/15 21:27, Richard Weinberger wrote:
+>> Fixes:
+>> drivers/built-in.o: In function `cc10001_adc_probe':
+>> cc10001_adc.c:(.text+0x412e92): undefined reference to `devm_ioremap_resource'
+>>
+>> Signed-off-by: Richard Weinberger <richard@nod.at>
+> Applied to the fixes-togreg branch of iio.git.
+> Won't push this out for a day or so as waiting for Greg to pull the previous set.
+>> ---
+>>  drivers/iio/adc/Kconfig | 3 ++-
+>>  1 file changed, 2 insertions(+), 1 deletion(-)
+>>
+>> diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+>> index 202daf8..46379b1 100644
+>> --- a/drivers/iio/adc/Kconfig
+>> +++ b/drivers/iio/adc/Kconfig
+>> @@ -137,7 +137,8 @@ config AXP288_ADC
+>>  
+>>  config CC10001_ADC
+>>  	tristate "Cosmic Circuits 10001 ADC driver"
+>> -	depends on HAS_IOMEM || HAVE_CLK || REGULATOR
+>> +	depends on HAVE_CLK || REGULATOR
+>> +	depends on HAS_IOMEM
+>>  	select IIO_BUFFER
+>>  	select IIO_TRIGGERED_BUFFER
+>>  	help
+>>
+Hmm. Just noticed this whilst sending the pull request.  That
+HAVE_CLK || REGULATOR also seems rather implausible!
 
-  Merge tag 'iio-fixes-for-4.0c' of git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio into staging-linus (2015-03-24 22:55:20 +0100)
+> 
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> 
 
-are available in the git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git tags/iio-fixes-for-4.0d
-
-for you to fetch changes up to 4ce7ca89d6e8eae9e201cd0e972ba323f33e2fb4:
-
-  iio: imu: Use iio_trigger_get for indio_dev->trig assignment (2015-03-28 13:51:40 +0000)
-
-----------------------------------------------------------------
-IIO fixes for 4.0 set 4
-
-A couple more IIO fixes.
-
-* Fix check for HAS_IOMEM in the cc100001_adc driver to avoid build errors.
-  Rather curiously it was ORed with Regulator and clock support.
-* vf610 driver was trying to use an ADC clock outside the possible
-  spec on some boards.  The driver assumed a fixed clock speed previously
-  across all boards, but that is not true.  This fix ensures that the
-  reported frequency is correct on all boards.
-* The adis imu common code directly set the current trigger to the
-  driver supplied one.  Unfortunately this didn't increase the use count
-  leading to a double free via a particular path of changing the trigger
-  then removing the driver.
-
-----------------------------------------------------------------
-Darshana Padmadas (1):
-      iio: imu: Use iio_trigger_get for indio_dev->trig assignment
-
-Richard Weinberger (1):
-      iio/adc/cc10001_adc.c: Fix !HAS_IOMEM build
-
-Stefan Agner (1):
-      iio: adc: vf610: use ADC clock within specification
-
- drivers/iio/adc/Kconfig        |  3 +-
- drivers/iio/adc/vf610_adc.c    | 91 ++++++++++++++++++++++++++++--------------
- drivers/iio/imu/adis_trigger.c |  2 +-
- 3 files changed, 64 insertions(+), 32 deletions(-)
