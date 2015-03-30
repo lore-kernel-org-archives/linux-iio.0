@@ -1,119 +1,77 @@
-Return-Path: <irina.tirdea@intel.com>
-From: Irina Tirdea <irina.tirdea@intel.com>
-To: Jonathan Cameron <jic23@kernel.org>,
-	linux-iio@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Irina Tirdea <irina.tirdea@intel.com>
-Subject: [PATCH] iio: Documentation: fix kernel version for 4.0 new ABI
-Date: Mon, 30 Mar 2015 14:22:13 +0300
-Message-Id: <1427714533-28176-1-git-send-email-irina.tirdea@intel.com>
+Return-Path: <octavian.purdila@intel.com>
+MIME-Version: 1.0
+In-Reply-To: <20150330095254.GB1524@lahna.fi.intel.com>
+References: <CAE1zotJas26oRGdext7V69mNNyaYT3Ds7+Ruhg_kNKBf-Ewoew@mail.gmail.com>
+	<20150326101616.GD1878@lahna.fi.intel.com>
+	<CAE1zotKAJBS2_rnYG9K0DxbvVP9-G4iGm_E+b5jQtHVYjiQwVA@mail.gmail.com>
+	<20150326140430.GM1878@lahna.fi.intel.com>
+	<CAE1zotL0Si3=dGLGPmq0CGhc+tsJwDxY8GYwh8fcHA-1jcBdqA@mail.gmail.com>
+	<20150326144753.GO1878@lahna.fi.intel.com>
+	<CAE1zot+67M96HbMnorYxEd06r=Aew=x830sCXoovBCCy_YMF7w@mail.gmail.com>
+	<CAE1zot+MaycNK91yOMLAfdvo=f21S9hts9ufk4krBMJ7PNYogA@mail.gmail.com>
+	<20150327100627.GW1878@lahna.fi.intel.com>
+	<CACRpkda9pUqy9r9EUSfzC5ntqKpH_CywcLJLDXCUa25U_cgFgg@mail.gmail.com>
+	<20150330095254.GB1524@lahna.fi.intel.com>
+Date: Mon, 30 Mar 2015 15:55:14 +0300
+Message-ID: <CAE1zotJCo2oUJLb3ETozxutFCXUD8gKZeUL-qWj-Y8gW0idr8Q@mail.gmail.com>
+Subject: Re: [PATCH] IIO: Adds ACPI support for ST gyroscopes
+From: Octavian Purdila <octavian.purdila@intel.com>
+To: Mika Westerberg <mika.westerberg@linux.intel.com>
+Cc: Linus Walleij <linus.walleij@linaro.org>, Lars-Peter Clausen <lars@metafoo.de>,
+	Robert Dolca <robert.dolca@gmail.com>, Robert Dolca <robert.dolca@intel.com>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>, Jonathan Cameron <jic23@kernel.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>, Denis CIOCCA <denis.ciocca@st.com>
+Content-Type: text/plain; charset=UTF-8
 List-ID: <linux-iio@vger.kernel.org>
 
-Kernel version for new ABI in 4.0 has been documented
-as 3.20, since the changes have been merged before the kernel
-version number change.
+On Mon, Mar 30, 2015 at 12:52 PM, Mika Westerberg
+<mika.westerberg@linux.intel.com> wrote:
+> On Fri, Mar 27, 2015 at 11:36:25AM +0100, Linus Walleij wrote:
+>> On Fri, Mar 27, 2015 at 11:06 AM, Mika Westerberg
+>> <mika.westerberg@linux.intel.com> wrote:
+>> > On Thu, Mar 26, 2015 at 06:28:19PM +0200, Octavian Purdila wrote:
+>>
+>> >> For the sleep case I think the GPIO controller needs to do the pin
+>> >> enable and set input direction operation in it's irq_bus_sync_unlock.
+>> >
+>> > I wonder how DT handles all this? Is it the boot firmware that sets up
+>> > the pins accordingly or is there something we are missing?
+>>
+>> DT systems mostly do not have firmware for power usecases, they
+>> handle it all using pin control. I would more say that is a feature of
+>> all-SW systems without power-firmware ideas, without ACPI and
+>> without PSCI (well PSCI systems do not care about much more
+>> than CPU power down in firmware anyway...)
+>
+> OK, thanks.
+>
+> In case of ACPI (where firmware does lot more) it is supposed to
+> configure pins based on what is connected, if the firmware knows that.
+> Due to bugs in the boot firmware that obviously does not happen in all
+> cases (like this one).
+>
 
-Change kernel version from 3.20 to 4.0.
+Ah, interesting, I was not aware that the firmware was supposed to do
+the pin configuration. In this case I think your patch can be merged
+as it is Mika, mine doesn't make sense anymore.
 
-Signed-off-by: Irina Tirdea <irina.tirdea@intel.com>
----
- Documentation/ABI/testing/sysfs-bus-iio | 20 ++++++++++----------
- 1 file changed, 10 insertions(+), 10 deletions(-)
+This particular case is special since we did not performed the tests
+on a full system that has the component integrated. We instead used
+and I2C to USB bridge to which we connected the component and we
+loaded the ACPI table dynamically.
 
-diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
-index 103dd9b..3befcb1 100644
---- a/Documentation/ABI/testing/sysfs-bus-iio
-+++ b/Documentation/ABI/testing/sysfs-bus-iio
-@@ -351,7 +351,7 @@ What:		/sys/bus/iio/devices/iio:deviceX/in_activity_calibgender
- What:		/sys/bus/iio/devices/iio:deviceX/in_energy_calibgender
- What:		/sys/bus/iio/devices/iio:deviceX/in_distance_calibgender
- What:		/sys/bus/iio/devices/iio:deviceX/in_velocity_calibgender
--KernelVersion:	3.20
-+KernelVersion:	4.0
- Contact:	linux-iio@vger.kernel.org
- Description:
- 		Gender of the user (e.g.: male, female) used by some pedometers
-@@ -362,7 +362,7 @@ What:		/sys/bus/iio/devices/iio:deviceX/in_activity_calibgender_available
- What:		/sys/bus/iio/devices/iio:deviceX/in_energy_calibgender_available
- What:		/sys/bus/iio/devices/iio:deviceX/in_distance_calibgender_available
- What:		/sys/bus/iio/devices/iio:deviceX/in_velocity_calibgender_available
--KernelVersion:	3.20
-+KernelVersion:	4.0
- Contact:	linux-iio@vger.kernel.org
- Description:
- 		Lists all available gender values (e.g.: male, female).
-@@ -379,7 +379,7 @@ Description:
- 		type.
- 
- What:		/sys/bus/iio/devices/iio:deviceX/in_energy_calibweight
--KernelVersion:	3.20
-+KernelVersion:	4.0
- Contact:	linux-iio@vger.kernel.org
- Description:
- 		Weight of the user (in kg). It is needed by some pedometers
-@@ -947,7 +947,7 @@ Description:
- 		this type.
- 
- What:		/sys/.../events/in_steps_change_en
--KernelVersion:	3.20
-+KernelVersion:	4.0
- Contact:	linux-iio@vger.kernel.org
- Description:
- 		Event generated when channel passes a threshold on the absolute
-@@ -956,7 +956,7 @@ Description:
- 		in_steps_change_value.
- 
- What:		/sys/.../events/in_steps_change_value
--KernelVersion:	3.20
-+KernelVersion:	4.0
- Contact:	linux-iio@vger.kernel.org
- Description:
- 		Specifies the value of change threshold that the
-@@ -1131,7 +1131,7 @@ Description:
- 
- What:		/sys/.../iio:deviceX/in_energy_input
- What:		/sys/.../iio:deviceX/in_energy_raw
--KernelVersion:	3.20
-+KernelVersion:	4.0
- Contact:	linux-iio@vger.kernel.org
- Description:
- 		This attribute is used to read the energy value reported by the
-@@ -1140,7 +1140,7 @@ Description:
- 
- What:		/sys/.../iio:deviceX/in_distance_input
- What:		/sys/.../iio:deviceX/in_distance_raw
--KernelVersion:	3.20
-+KernelVersion:	4.0
- Contact:	linux-iio@vger.kernel.org
- Description:
- 		This attribute is used to read the distance covered by the user
-@@ -1205,7 +1205,7 @@ Description:
- 		seconds.
- 
- What:		/sys/.../iio:deviceX/in_velocity_sqrt(x^2+y^2+z^2)_integration_time
--KernelVersion:	3.20
-+KernelVersion:	4.0
- Contact:	linux-iio@vger.kernel.org
- Description:
- 		Number of seconds in which to compute speed.
-@@ -1267,7 +1267,7 @@ Description:
- 		Units after application of scale are m/s.
- 
- What:		/sys/.../iio:deviceX/in_steps_debounce_count
--KernelVersion:	3.20
-+KernelVersion:	4.0
- Contact:	linux-iio@vger.kernel.org
- Description:
- 		Specifies the number of steps that must occur within
-@@ -1275,7 +1275,7 @@ Description:
- 		consumer is making steps.
- 
- What:		/sys/.../iio:deviceX/in_steps_debounce_time
--KernelVersion:	3.20
-+KernelVersion:	4.0
- Contact:	linux-iio@vger.kernel.org
- Description:
- 		Specifies number of seconds in which we compute the steps
--- 
-1.9.1
+> If we want to support requesting IRQ directly through irqchip interface
+> on ACPI systems there needs to be some way the GPIO/pinctrl core can use
+> to turn the pin as input, GPIO mode.
+>
+> Octavian's patch does that but not sure if it is good idea for non-ACPI
+> systems as they already work. We could also do the same in GPIO/irqchip
+> drivers but there is no guarantee for the caller that it is done. IMHO
+> safest option is to explictly request the GPIO, turn it input and then
+> convert the GPIO to interrupt. That way we know the pin is configured
+> just like we expect.
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
