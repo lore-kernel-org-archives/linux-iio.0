@@ -1,70 +1,301 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga14.intel.com ([192.55.52.115]:24894 "EHLO mga14.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1752757AbbC3JxE (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Mon, 30 Mar 2015 05:53:04 -0400
-Date: Mon, 30 Mar 2015 12:52:54 +0300
-From: Mika Westerberg <mika.westerberg@linux.intel.com>
-To: Linus Walleij <linus.walleij@linaro.org>
-Cc: Octavian Purdila <octavian.purdila@intel.com>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Robert Dolca <robert.dolca@gmail.com>,
-	Robert Dolca <robert.dolca@intel.com>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	Jonathan Cameron <jic23@kernel.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+Return-Path: <dbaryshkov@gmail.com>
+From: Dmitry Eremin-Solenikov <dbaryshkov@gmail.com>
+To: linux-iio@vger.kernel.org
+Cc: Jonathan Cameron <jic23@kernel.org>,
 	Hartmut Knaack <knaack.h@gmx.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	Denis CIOCCA <denis.ciocca@st.com>
-Subject: Re: [PATCH] IIO: Adds ACPI support for ST gyroscopes
-Message-ID: <20150330095254.GB1524@lahna.fi.intel.com>
-References: <CAE1zotJas26oRGdext7V69mNNyaYT3Ds7+Ruhg_kNKBf-Ewoew@mail.gmail.com>
- <20150326101616.GD1878@lahna.fi.intel.com>
- <CAE1zotKAJBS2_rnYG9K0DxbvVP9-G4iGm_E+b5jQtHVYjiQwVA@mail.gmail.com>
- <20150326140430.GM1878@lahna.fi.intel.com>
- <CAE1zotL0Si3=dGLGPmq0CGhc+tsJwDxY8GYwh8fcHA-1jcBdqA@mail.gmail.com>
- <20150326144753.GO1878@lahna.fi.intel.com>
- <CAE1zot+67M96HbMnorYxEd06r=Aew=x830sCXoovBCCy_YMF7w@mail.gmail.com>
- <CAE1zot+MaycNK91yOMLAfdvo=f21S9hts9ufk4krBMJ7PNYogA@mail.gmail.com>
- <20150327100627.GW1878@lahna.fi.intel.com>
- <CACRpkda9pUqy9r9EUSfzC5ntqKpH_CywcLJLDXCUa25U_cgFgg@mail.gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <CACRpkda9pUqy9r9EUSfzC5ntqKpH_CywcLJLDXCUa25U_cgFgg@mail.gmail.com>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>
+Subject: [PATCH] iio: add m62332 DAC driver
+Date: Mon, 30 Mar 2015 13:24:41 +0300
+Message-Id: <1427711081-7921-1-git-send-email-dbaryshkov@gmail.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-On Fri, Mar 27, 2015 at 11:36:25AM +0100, Linus Walleij wrote:
-> On Fri, Mar 27, 2015 at 11:06 AM, Mika Westerberg
-> <mika.westerberg@linux.intel.com> wrote:
-> > On Thu, Mar 26, 2015 at 06:28:19PM +0200, Octavian Purdila wrote:
-> 
-> >> For the sleep case I think the GPIO controller needs to do the pin
-> >> enable and set input direction operation in it's irq_bus_sync_unlock.
-> >
-> > I wonder how DT handles all this? Is it the boot firmware that sets up
-> > the pins accordingly or is there something we are missing?
-> 
-> DT systems mostly do not have firmware for power usecases, they
-> handle it all using pin control. I would more say that is a feature of
-> all-SW systems without power-firmware ideas, without ACPI and
-> without PSCI (well PSCI systems do not care about much more
-> than CPU power down in firmware anyway...)
+m62332 is a simple 2-channel DAC used on several Sharp Zaurus boards to
+control LCD voltage, backlight and sound. The driver use regulators to
+control the reference voltage and enabling/disabling the DAC.
 
-OK, thanks.
+Signed-off-by: Dmitry Eremin-Solenikov <dbaryshkov@gmail.com>
+---
+ drivers/iio/dac/Kconfig  |  10 ++
+ drivers/iio/dac/Makefile |   1 +
+ drivers/iio/dac/m62332.c | 236 +++++++++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 247 insertions(+)
+ create mode 100644 drivers/iio/dac/m62332.c
 
-In case of ACPI (where firmware does lot more) it is supposed to
-configure pins based on what is connected, if the firmware knows that.
-Due to bugs in the boot firmware that obviously does not happen in all
-cases (like this one).
-
-If we want to support requesting IRQ directly through irqchip interface
-on ACPI systems there needs to be some way the GPIO/pinctrl core can use
-to turn the pin as input, GPIO mode.
-
-Octavian's patch does that but not sure if it is good idea for non-ACPI
-systems as they already work. We could also do the same in GPIO/irqchip
-drivers but there is no guarantee for the caller that it is done. IMHO
-safest option is to explictly request the GPIO, turn it input and then
-convert the GPIO to interrupt. That way we know the pin is configured
-just like we expect.
+diff --git a/drivers/iio/dac/Kconfig b/drivers/iio/dac/Kconfig
+index 2236ea2..2ede061 100644
+--- a/drivers/iio/dac/Kconfig
++++ b/drivers/iio/dac/Kconfig
+@@ -142,6 +142,16 @@ config AD7303
+ 	  To compile this driver as module choose M here: the module will be called
+ 	  ad7303.
+ 
++config M62332
++	tristate "Mitsubishi M62332 DAC driver"
++	depends on I2C
++	help
++	  If you say yes here you get support for the Mitsubishi M62332
++	  (I2C 8-Bit DACs with rail-to-rail outputs).
++
++	  This driver can also be built as a module.  If so, the module
++	  will be called m62332.
++
+ config MAX517
+ 	tristate "Maxim MAX517/518/519 DAC driver"
+ 	depends on I2C
+diff --git a/drivers/iio/dac/Makefile b/drivers/iio/dac/Makefile
+index 52be7e1..63ae056 100644
+--- a/drivers/iio/dac/Makefile
++++ b/drivers/iio/dac/Makefile
+@@ -16,6 +16,7 @@ obj-$(CONFIG_AD5764) += ad5764.o
+ obj-$(CONFIG_AD5791) += ad5791.o
+ obj-$(CONFIG_AD5686) += ad5686.o
+ obj-$(CONFIG_AD7303) += ad7303.o
++obj-$(CONFIG_M62332) += m62332.o
+ obj-$(CONFIG_MAX517) += max517.o
+ obj-$(CONFIG_MAX5821) += max5821.o
+ obj-$(CONFIG_MCP4725) += mcp4725.o
+diff --git a/drivers/iio/dac/m62332.c b/drivers/iio/dac/m62332.c
+new file mode 100644
+index 0000000..90574d7
+--- /dev/null
++++ b/drivers/iio/dac/m62332.c
+@@ -0,0 +1,236 @@
++/*
++ *  m62332.c - Support for Mitsubishi m62332 DAC
++ *
++ *  Copyright (c) 2014 Dmitry Eremin-Solenikov
++ *
++ *  Based on max517 driver:
++ *  Copyright (C) 2010, 2011 Roland Stigge <stigge@antcom.de>
++ *
++ *  This program is free software; you can redistribute it and/or modify
++ *  it under the terms of the GNU General Public License as published by
++ *  the Free Software Foundation; either version 2 of the License, or
++ *  (at your option) any later version.
++ *
++ *  This program is distributed in the hope that it will be useful,
++ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
++ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ *  GNU General Public License for more details.
++ */
++
++#include <linux/module.h>
++#include <linux/slab.h>
++#include <linux/jiffies.h>
++#include <linux/i2c.h>
++#include <linux/err.h>
++
++#include <linux/iio/iio.h>
++#include <linux/iio/driver.h>
++
++#include <linux/regulator/consumer.h>
++
++struct m62332_data {
++	struct i2c_client	*client;
++	unsigned short		vref_mv;
++	unsigned char		raw[2];
++	struct regulator	*vcc;
++#ifdef CONFIG_PM_SLEEP
++	unsigned char		save[2];
++#endif
++};
++
++static int m62332_set_value(struct iio_dev *indio_dev,
++	unsigned char val, int channel)
++{
++	struct m62332_data *data = iio_priv(indio_dev);
++	struct i2c_client *client = data->client;
++	u8 outbuf[2];
++	int res = 0;
++
++	if (val == data->raw[channel])
++		return 0;
++
++	outbuf[0] = channel;
++	outbuf[1] = val;
++
++	if (val || data->raw[!channel])
++		res = regulator_enable(data->vcc);
++	if (res)
++		return res;
++
++	res = i2c_master_send(client, outbuf, 2);
++	if (res < 0)
++		return res;
++	else if (res != 2)
++		return -EIO;
++
++	data->raw[channel] = val;
++
++	if (!data->raw[0] && !data->raw[1])
++		regulator_disable(data->vcc);
++
++	return 0;
++}
++
++static int m62332_read_raw(struct iio_dev *indio_dev,
++			   struct iio_chan_spec const *chan,
++			   int *val,
++			   int *val2,
++			   long m)
++{
++	struct m62332_data *data = iio_priv(indio_dev);
++
++	switch (m) {
++	case IIO_CHAN_INFO_SCALE:
++		/* Corresponds to Vref / 2^(bits) */
++		*val = data->vref_mv;
++		*val2 = 8;
++		return IIO_VAL_FRACTIONAL_LOG2;
++	case IIO_CHAN_INFO_RAW:
++		*val = data->raw[chan->channel];
++		return IIO_VAL_INT;
++	default:
++		break;
++	}
++	return -EINVAL;
++}
++
++static int m62332_write_raw(struct iio_dev *indio_dev,
++	struct iio_chan_spec const *chan, int val, int val2, long mask)
++{
++	int ret;
++
++	switch (mask) {
++	case IIO_CHAN_INFO_RAW:
++		if (val < 0 || val > 255)
++			return -EINVAL;
++
++		ret = m62332_set_value(indio_dev, val, chan->channel);
++		break;
++	default:
++		ret = -EINVAL;
++		break;
++	}
++
++	return ret;
++}
++
++#ifdef CONFIG_PM_SLEEP
++static int m62332_suspend(struct device *dev)
++{
++	struct i2c_client *client = to_i2c_client(dev);
++	struct iio_dev *indio_dev = i2c_get_clientdata(client);
++	struct m62332_data *data = iio_priv(indio_dev);
++	int ret;
++
++	data->save[0] = data->raw[0];
++	data->save[1] = data->raw[1];
++
++	ret = m62332_set_value(indio_dev, 0, 0);
++	if (ret < 0)
++		return ret;
++
++	return m62332_set_value(indio_dev, 0, 1);
++}
++
++static int m62332_resume(struct device *dev)
++{
++	struct i2c_client *client = to_i2c_client(dev);
++	struct iio_dev *indio_dev = i2c_get_clientdata(client);
++	struct m62332_data *data = iio_priv(indio_dev);
++	int ret;
++
++	ret = m62332_set_value(indio_dev, data->save[0], 0);
++	if (ret < 0)
++		return ret;
++
++	return m62332_set_value(indio_dev, data->save[1], 1);
++}
++
++static SIMPLE_DEV_PM_OPS(m62332_pm_ops, m62332_suspend, m62332_resume);
++#define M62332_PM_OPS (&m62332_pm_ops)
++#else
++#define M62332_PM_OPS NULL
++#endif
++
++static const struct iio_info m62332_info = {
++	.read_raw = m62332_read_raw,
++	.write_raw = m62332_write_raw,
++	.driver_module = THIS_MODULE,
++};
++
++#define M62332_CHANNEL(chan) {				\
++	.type = IIO_VOLTAGE,				\
++	.indexed = 1,					\
++	.output = 1,					\
++	.channel = (chan),				\
++	.datasheet_name = "CH" #chan,			\
++	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |	\
++		BIT(IIO_CHAN_INFO_SCALE),		\
++}
++
++static const struct iio_chan_spec m62332_channels[] = {
++	M62332_CHANNEL(0),
++	M62332_CHANNEL(1)
++};
++
++static int m62332_probe(struct i2c_client *client,
++			const struct i2c_device_id *id)
++{
++	struct m62332_data *data;
++	struct iio_dev *indio_dev;
++
++	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
++	if (!indio_dev)
++		return -ENOMEM;
++	data = iio_priv(indio_dev);
++	i2c_set_clientdata(client, indio_dev);
++	data->client = client;
++
++	data->vcc = devm_regulator_get(&client->dev, "VCC");
++	if (IS_ERR(data->vcc))
++		return PTR_ERR(data->vcc);
++
++	/* establish that the iio_dev is a child of the i2c device */
++	indio_dev->dev.parent = &client->dev;
++
++	indio_dev->num_channels = 2;
++	indio_dev->channels = m62332_channels;
++	indio_dev->modes = INDIO_DIRECT_MODE;
++	indio_dev->info = &m62332_info;
++
++	data->vref_mv = regulator_get_voltage(data->vcc) / 1000; /* mV */
++
++	iio_map_array_register(indio_dev, client->dev.platform_data);
++
++	return iio_device_register(indio_dev);
++}
++
++static int m62332_remove(struct i2c_client *client)
++{
++	struct iio_dev *indio_dev = i2c_get_clientdata(client);
++
++	iio_device_unregister(indio_dev);
++	iio_map_array_unregister(indio_dev);
++	return 0;
++}
++
++static const struct i2c_device_id m62332_id[] = {
++	{ "m62332", },
++	{ }
++};
++MODULE_DEVICE_TABLE(i2c, m62332_id);
++
++static struct i2c_driver m62332_driver = {
++	.driver = {
++		.name	= "m62332",
++		.pm	= M62332_PM_OPS,
++	},
++	.probe		= m62332_probe,
++	.remove		= m62332_remove,
++	.id_table	= m62332_id,
++};
++module_i2c_driver(m62332_driver);
++
++MODULE_AUTHOR("Dmitry Eremin-Solenikov");
++MODULE_DESCRIPTION("M62332 8-bit DAC");
++MODULE_LICENSE("GPL v2");
+-- 
+2.1.4
