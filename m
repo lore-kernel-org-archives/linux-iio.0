@@ -1,301 +1,122 @@
-Return-Path: <dbaryshkov@gmail.com>
-From: Dmitry Eremin-Solenikov <dbaryshkov@gmail.com>
-To: linux-iio@vger.kernel.org
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>,
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mga02.intel.com ([134.134.136.20]:25690 "EHLO mga02.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751398AbbC3LSQ convert rfc822-to-8bit (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 30 Mar 2015 07:18:16 -0400
+From: "Tirdea, Irina" <irina.tirdea@intel.com>
+To: Hartmut Knaack <knaack.h@gmx.de>,
+	Jonathan Cameron <jic23@kernel.org>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+CC: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"Dogaru, Vlad" <vlad.dogaru@intel.com>,
+	"Baluta, Daniel" <daniel.baluta@intel.com>,
 	Lars-Peter Clausen <lars@metafoo.de>,
 	Peter Meerwald <pmeerw@pmeerw.net>
-Subject: [PATCH] iio: add m62332 DAC driver
-Date: Mon, 30 Mar 2015 13:24:41 +0300
-Message-Id: <1427711081-7921-1-git-send-email-dbaryshkov@gmail.com>
-List-ID: <linux-iio@vger.kernel.org>
+Subject: RE: [PATCH v2 01/10] iio: core: Introduce ENERGY channel type
+Date: Mon, 30 Mar 2015 11:18:12 +0000
+Message-ID: <1F3AC3675D538145B1661F571FE1805F19A4B3D1@irsmsx105.ger.corp.intel.com>
+References: <1421003416-27557-1-git-send-email-irina.tirdea@intel.com>
+ <1421003416-27557-2-git-send-email-irina.tirdea@intel.com>
+ <551743D1.90808@gmx.de>
+In-Reply-To: <551743D1.90808@gmx.de>
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-m62332 is a simple 2-channel DAC used on several Sharp Zaurus boards to
-control LCD voltage, backlight and sound. The driver use regulators to
-control the reference voltage and enabling/disabling the DAC.
 
-Signed-off-by: Dmitry Eremin-Solenikov <dbaryshkov@gmail.com>
----
- drivers/iio/dac/Kconfig  |  10 ++
- drivers/iio/dac/Makefile |   1 +
- drivers/iio/dac/m62332.c | 236 +++++++++++++++++++++++++++++++++++++++++++++++
- 3 files changed, 247 insertions(+)
- create mode 100644 drivers/iio/dac/m62332.c
 
-diff --git a/drivers/iio/dac/Kconfig b/drivers/iio/dac/Kconfig
-index 2236ea2..2ede061 100644
---- a/drivers/iio/dac/Kconfig
-+++ b/drivers/iio/dac/Kconfig
-@@ -142,6 +142,16 @@ config AD7303
- 	  To compile this driver as module choose M here: the module will be called
- 	  ad7303.
- 
-+config M62332
-+	tristate "Mitsubishi M62332 DAC driver"
-+	depends on I2C
-+	help
-+	  If you say yes here you get support for the Mitsubishi M62332
-+	  (I2C 8-Bit DACs with rail-to-rail outputs).
-+
-+	  This driver can also be built as a module.  If so, the module
-+	  will be called m62332.
-+
- config MAX517
- 	tristate "Maxim MAX517/518/519 DAC driver"
- 	depends on I2C
-diff --git a/drivers/iio/dac/Makefile b/drivers/iio/dac/Makefile
-index 52be7e1..63ae056 100644
---- a/drivers/iio/dac/Makefile
-+++ b/drivers/iio/dac/Makefile
-@@ -16,6 +16,7 @@ obj-$(CONFIG_AD5764) += ad5764.o
- obj-$(CONFIG_AD5791) += ad5791.o
- obj-$(CONFIG_AD5686) += ad5686.o
- obj-$(CONFIG_AD7303) += ad7303.o
-+obj-$(CONFIG_M62332) += m62332.o
- obj-$(CONFIG_MAX517) += max517.o
- obj-$(CONFIG_MAX5821) += max5821.o
- obj-$(CONFIG_MCP4725) += mcp4725.o
-diff --git a/drivers/iio/dac/m62332.c b/drivers/iio/dac/m62332.c
-new file mode 100644
-index 0000000..90574d7
---- /dev/null
-+++ b/drivers/iio/dac/m62332.c
-@@ -0,0 +1,236 @@
-+/*
-+ *  m62332.c - Support for Mitsubishi m62332 DAC
-+ *
-+ *  Copyright (c) 2014 Dmitry Eremin-Solenikov
-+ *
-+ *  Based on max517 driver:
-+ *  Copyright (C) 2010, 2011 Roland Stigge <stigge@antcom.de>
-+ *
-+ *  This program is free software; you can redistribute it and/or modify
-+ *  it under the terms of the GNU General Public License as published by
-+ *  the Free Software Foundation; either version 2 of the License, or
-+ *  (at your option) any later version.
-+ *
-+ *  This program is distributed in the hope that it will be useful,
-+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
-+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-+ *  GNU General Public License for more details.
-+ */
-+
-+#include <linux/module.h>
-+#include <linux/slab.h>
-+#include <linux/jiffies.h>
-+#include <linux/i2c.h>
-+#include <linux/err.h>
-+
-+#include <linux/iio/iio.h>
-+#include <linux/iio/driver.h>
-+
-+#include <linux/regulator/consumer.h>
-+
-+struct m62332_data {
-+	struct i2c_client	*client;
-+	unsigned short		vref_mv;
-+	unsigned char		raw[2];
-+	struct regulator	*vcc;
-+#ifdef CONFIG_PM_SLEEP
-+	unsigned char		save[2];
-+#endif
-+};
-+
-+static int m62332_set_value(struct iio_dev *indio_dev,
-+	unsigned char val, int channel)
-+{
-+	struct m62332_data *data = iio_priv(indio_dev);
-+	struct i2c_client *client = data->client;
-+	u8 outbuf[2];
-+	int res = 0;
-+
-+	if (val == data->raw[channel])
-+		return 0;
-+
-+	outbuf[0] = channel;
-+	outbuf[1] = val;
-+
-+	if (val || data->raw[!channel])
-+		res = regulator_enable(data->vcc);
-+	if (res)
-+		return res;
-+
-+	res = i2c_master_send(client, outbuf, 2);
-+	if (res < 0)
-+		return res;
-+	else if (res != 2)
-+		return -EIO;
-+
-+	data->raw[channel] = val;
-+
-+	if (!data->raw[0] && !data->raw[1])
-+		regulator_disable(data->vcc);
-+
-+	return 0;
-+}
-+
-+static int m62332_read_raw(struct iio_dev *indio_dev,
-+			   struct iio_chan_spec const *chan,
-+			   int *val,
-+			   int *val2,
-+			   long m)
-+{
-+	struct m62332_data *data = iio_priv(indio_dev);
-+
-+	switch (m) {
-+	case IIO_CHAN_INFO_SCALE:
-+		/* Corresponds to Vref / 2^(bits) */
-+		*val = data->vref_mv;
-+		*val2 = 8;
-+		return IIO_VAL_FRACTIONAL_LOG2;
-+	case IIO_CHAN_INFO_RAW:
-+		*val = data->raw[chan->channel];
-+		return IIO_VAL_INT;
-+	default:
-+		break;
-+	}
-+	return -EINVAL;
-+}
-+
-+static int m62332_write_raw(struct iio_dev *indio_dev,
-+	struct iio_chan_spec const *chan, int val, int val2, long mask)
-+{
-+	int ret;
-+
-+	switch (mask) {
-+	case IIO_CHAN_INFO_RAW:
-+		if (val < 0 || val > 255)
-+			return -EINVAL;
-+
-+		ret = m62332_set_value(indio_dev, val, chan->channel);
-+		break;
-+	default:
-+		ret = -EINVAL;
-+		break;
-+	}
-+
-+	return ret;
-+}
-+
-+#ifdef CONFIG_PM_SLEEP
-+static int m62332_suspend(struct device *dev)
-+{
-+	struct i2c_client *client = to_i2c_client(dev);
-+	struct iio_dev *indio_dev = i2c_get_clientdata(client);
-+	struct m62332_data *data = iio_priv(indio_dev);
-+	int ret;
-+
-+	data->save[0] = data->raw[0];
-+	data->save[1] = data->raw[1];
-+
-+	ret = m62332_set_value(indio_dev, 0, 0);
-+	if (ret < 0)
-+		return ret;
-+
-+	return m62332_set_value(indio_dev, 0, 1);
-+}
-+
-+static int m62332_resume(struct device *dev)
-+{
-+	struct i2c_client *client = to_i2c_client(dev);
-+	struct iio_dev *indio_dev = i2c_get_clientdata(client);
-+	struct m62332_data *data = iio_priv(indio_dev);
-+	int ret;
-+
-+	ret = m62332_set_value(indio_dev, data->save[0], 0);
-+	if (ret < 0)
-+		return ret;
-+
-+	return m62332_set_value(indio_dev, data->save[1], 1);
-+}
-+
-+static SIMPLE_DEV_PM_OPS(m62332_pm_ops, m62332_suspend, m62332_resume);
-+#define M62332_PM_OPS (&m62332_pm_ops)
-+#else
-+#define M62332_PM_OPS NULL
-+#endif
-+
-+static const struct iio_info m62332_info = {
-+	.read_raw = m62332_read_raw,
-+	.write_raw = m62332_write_raw,
-+	.driver_module = THIS_MODULE,
-+};
-+
-+#define M62332_CHANNEL(chan) {				\
-+	.type = IIO_VOLTAGE,				\
-+	.indexed = 1,					\
-+	.output = 1,					\
-+	.channel = (chan),				\
-+	.datasheet_name = "CH" #chan,			\
-+	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |	\
-+		BIT(IIO_CHAN_INFO_SCALE),		\
-+}
-+
-+static const struct iio_chan_spec m62332_channels[] = {
-+	M62332_CHANNEL(0),
-+	M62332_CHANNEL(1)
-+};
-+
-+static int m62332_probe(struct i2c_client *client,
-+			const struct i2c_device_id *id)
-+{
-+	struct m62332_data *data;
-+	struct iio_dev *indio_dev;
-+
-+	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
-+	if (!indio_dev)
-+		return -ENOMEM;
-+	data = iio_priv(indio_dev);
-+	i2c_set_clientdata(client, indio_dev);
-+	data->client = client;
-+
-+	data->vcc = devm_regulator_get(&client->dev, "VCC");
-+	if (IS_ERR(data->vcc))
-+		return PTR_ERR(data->vcc);
-+
-+	/* establish that the iio_dev is a child of the i2c device */
-+	indio_dev->dev.parent = &client->dev;
-+
-+	indio_dev->num_channels = 2;
-+	indio_dev->channels = m62332_channels;
-+	indio_dev->modes = INDIO_DIRECT_MODE;
-+	indio_dev->info = &m62332_info;
-+
-+	data->vref_mv = regulator_get_voltage(data->vcc) / 1000; /* mV */
-+
-+	iio_map_array_register(indio_dev, client->dev.platform_data);
-+
-+	return iio_device_register(indio_dev);
-+}
-+
-+static int m62332_remove(struct i2c_client *client)
-+{
-+	struct iio_dev *indio_dev = i2c_get_clientdata(client);
-+
-+	iio_device_unregister(indio_dev);
-+	iio_map_array_unregister(indio_dev);
-+	return 0;
-+}
-+
-+static const struct i2c_device_id m62332_id[] = {
-+	{ "m62332", },
-+	{ }
-+};
-+MODULE_DEVICE_TABLE(i2c, m62332_id);
-+
-+static struct i2c_driver m62332_driver = {
-+	.driver = {
-+		.name	= "m62332",
-+		.pm	= M62332_PM_OPS,
-+	},
-+	.probe		= m62332_probe,
-+	.remove		= m62332_remove,
-+	.id_table	= m62332_id,
-+};
-+module_i2c_driver(m62332_driver);
-+
-+MODULE_AUTHOR("Dmitry Eremin-Solenikov");
-+MODULE_DESCRIPTION("M62332 8-bit DAC");
-+MODULE_LICENSE("GPL v2");
--- 
-2.1.4
+> -----Original Message-----
+> From: Hartmut Knaack [mailto:knaack.h@gmx.de]
+> Sent: 29 March, 2015 2:14
+> To: Tirdea, Irina; Jonathan Cameron; linux-iio@vger.kernel.org
+> Cc: linux-kernel@vger.kernel.org; Dogaru, Vlad; Baluta, Daniel; Lars-Peter Clausen; Peter Meerwald
+> Subject: Re: [PATCH v2 01/10] iio: core: Introduce ENERGY channel type
+> 
+> Irina Tirdea schrieb am 11.01.2015 um 20:10:
+> > Human activity sensors report the energy burnt by the user.
+> > One of this devices is Freescale's MMA9553L
+> > (http://www.freescale.com/files/sensors/doc/ref_manual/MMA9553LSWRM.pdf)
+> > that computes the number of calories based on weight and step rate.
+> >
+> > Introduce a new channel type ENERGY to export these values.
+> >
+> 
+> Hi Irina,
+> annoyingly, some people decided to increase the major version number of the
+> kernel. Could you take care of updating your introduced instances from 3.20
+> to 4.0?
+
+Hi Hartmut,
+
+Sure, I'll send a patch to fix all instances .
+Thanks for pointing it out to me, I completely forgot about the version change since the patches have been merged before that.
+
+Thanks,
+Irina
+
+> Thanks,
+> 
+> Hartmut
+> 
+> > Signed-off-by: Irina Tirdea <irina.tirdea@intel.com>
+> > ---
+> >  Documentation/ABI/testing/sysfs-bus-iio | 10 ++++++++++
+> >  drivers/iio/industrialio-core.c         |  1 +
+> >  include/linux/iio/types.h               |  1 +
+> >  3 files changed, 12 insertions(+)
+> >
+> > diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
+> > index 831db86..3311886 100644
+> > --- a/Documentation/ABI/testing/sysfs-bus-iio
+> > +++ b/Documentation/ABI/testing/sysfs-bus-iio
+> > @@ -282,6 +282,7 @@ What:		/sys/bus/iio/devices/iio:deviceX/in_current_scale
+> >  What:		/sys/bus/iio/devices/iio:deviceX/in_accel_scale
+> >  What:		/sys/bus/iio/devices/iio:deviceX/in_accel_peak_scale
+> >  What:		/sys/bus/iio/devices/iio:deviceX/in_anglvel_scale
+> > +What:		/sys/bus/iio/devices/iio:deviceX/in_energy_scale
+> >  What:		/sys/bus/iio/devices/iio:deviceX/in_magn_scale
+> >  What:		/sys/bus/iio/devices/iio:deviceX/in_magn_x_scale
+> >  What:		/sys/bus/iio/devices/iio:deviceX/in_magn_y_scale
+> > @@ -1049,6 +1050,15 @@ Description:
+> >  		For a list of available output power modes read
+> >  		in_accel_power_mode_available.
+> >
+> > +What:		/sys/.../iio:deviceX/in_energy_input
+> > +What:		/sys/.../iio:deviceX/in_energy_raw
+> > +KernelVersion:	3.20
+> > +Contact:	linux-iio@vger.kernel.org
+> > +Description:
+> > +		This attribute is used to read the energy value reported by the
+> > +		device (e.g.: human activity sensors report energy burnt by the
+> > +		user). Units after application of scale are Joules.
+> > +
+> >  What:		/sys/bus/iio/devices/iio:deviceX/store_eeprom
+> >  KernelVersion:	3.4.0
+> >  Contact:	linux-iio@vger.kernel.org
+> > diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+> > index 69feb91..8d2c9ba 100644
+> > --- a/drivers/iio/industrialio-core.c
+> > +++ b/drivers/iio/industrialio-core.c
+> > @@ -72,6 +72,7 @@ static const char * const iio_chan_type_name_spec[] = {
+> >  	[IIO_HUMIDITYRELATIVE] = "humidityrelative",
+> >  	[IIO_ACTIVITY] = "activity",
+> >  	[IIO_STEPS] = "steps",
+> > +	[IIO_ENERGY] = "energy",
+> >  };
+> >
+> >  static const char * const iio_modifier_names[] = {
+> > diff --git a/include/linux/iio/types.h b/include/linux/iio/types.h
+> > index 904dcbb..26b8a1c 100644
+> > --- a/include/linux/iio/types.h
+> > +++ b/include/linux/iio/types.h
+> > @@ -32,6 +32,7 @@ enum iio_chan_type {
+> >  	IIO_HUMIDITYRELATIVE,
+> >  	IIO_ACTIVITY,
+> >  	IIO_STEPS,
+> > +	IIO_ENERGY,
+> >  };
+> >
+> >  enum iio_modifier {
+> >
+
