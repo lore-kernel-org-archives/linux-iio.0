@@ -1,127 +1,58 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:48267 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:48367 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752942AbbC3TY5 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 30 Mar 2015 15:24:57 -0400
-Message-ID: <5519A304.4010901@kernel.org>
-Date: Mon, 30 Mar 2015 20:24:52 +0100
+	with ESMTP id S1753153AbbC3Tio (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 30 Mar 2015 15:38:44 -0400
+Message-ID: <5519A642.3070407@kernel.org>
+Date: Mon, 30 Mar 2015 20:38:42 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Irina Tirdea <irina.tirdea@intel.com>, linux-iio@vger.kernel.org
-CC: linux-kernel@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>
-Subject: Re: [PATCH] iio: Documentation: fix kernel version for 4.0 new ABI
-References: <1427714533-28176-1-git-send-email-irina.tirdea@intel.com>
-In-Reply-To: <1427714533-28176-1-git-send-email-irina.tirdea@intel.com>
-Content-Type: text/plain; charset=windows-1252
+To: Greg KH <gregkh@linuxfoundation.org>
+CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Subject: [PULL] IIO fixes for 4.0 set 4
+Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 30/03/15 12:22, Irina Tirdea wrote:
-> Kernel version for new ABI in 4.0 has been documented
-> as 3.20, since the changes have been merged before the kernel
-> version number change.
-> 
-> Change kernel version from 3.20 to 4.0.
-> 
-> Signed-off-by: Irina Tirdea <irina.tirdea@intel.com>
-Applied.
-> ---
->  Documentation/ABI/testing/sysfs-bus-iio | 20 ++++++++++----------
->  1 file changed, 10 insertions(+), 10 deletions(-)
-> 
-> diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
-> index 103dd9b..3befcb1 100644
-> --- a/Documentation/ABI/testing/sysfs-bus-iio
-> +++ b/Documentation/ABI/testing/sysfs-bus-iio
-> @@ -351,7 +351,7 @@ What:		/sys/bus/iio/devices/iio:deviceX/in_activity_calibgender
->  What:		/sys/bus/iio/devices/iio:deviceX/in_energy_calibgender
->  What:		/sys/bus/iio/devices/iio:deviceX/in_distance_calibgender
->  What:		/sys/bus/iio/devices/iio:deviceX/in_velocity_calibgender
-> -KernelVersion:	3.20
-> +KernelVersion:	4.0
->  Contact:	linux-iio@vger.kernel.org
->  Description:
->  		Gender of the user (e.g.: male, female) used by some pedometers
-> @@ -362,7 +362,7 @@ What:		/sys/bus/iio/devices/iio:deviceX/in_activity_calibgender_available
->  What:		/sys/bus/iio/devices/iio:deviceX/in_energy_calibgender_available
->  What:		/sys/bus/iio/devices/iio:deviceX/in_distance_calibgender_available
->  What:		/sys/bus/iio/devices/iio:deviceX/in_velocity_calibgender_available
-> -KernelVersion:	3.20
-> +KernelVersion:	4.0
->  Contact:	linux-iio@vger.kernel.org
->  Description:
->  		Lists all available gender values (e.g.: male, female).
-> @@ -379,7 +379,7 @@ Description:
->  		type.
->  
->  What:		/sys/bus/iio/devices/iio:deviceX/in_energy_calibweight
-> -KernelVersion:	3.20
-> +KernelVersion:	4.0
->  Contact:	linux-iio@vger.kernel.org
->  Description:
->  		Weight of the user (in kg). It is needed by some pedometers
-> @@ -947,7 +947,7 @@ Description:
->  		this type.
->  
->  What:		/sys/.../events/in_steps_change_en
-> -KernelVersion:	3.20
-> +KernelVersion:	4.0
->  Contact:	linux-iio@vger.kernel.org
->  Description:
->  		Event generated when channel passes a threshold on the absolute
-> @@ -956,7 +956,7 @@ Description:
->  		in_steps_change_value.
->  
->  What:		/sys/.../events/in_steps_change_value
-> -KernelVersion:	3.20
-> +KernelVersion:	4.0
->  Contact:	linux-iio@vger.kernel.org
->  Description:
->  		Specifies the value of change threshold that the
-> @@ -1131,7 +1131,7 @@ Description:
->  
->  What:		/sys/.../iio:deviceX/in_energy_input
->  What:		/sys/.../iio:deviceX/in_energy_raw
-> -KernelVersion:	3.20
-> +KernelVersion:	4.0
->  Contact:	linux-iio@vger.kernel.org
->  Description:
->  		This attribute is used to read the energy value reported by the
-> @@ -1140,7 +1140,7 @@ Description:
->  
->  What:		/sys/.../iio:deviceX/in_distance_input
->  What:		/sys/.../iio:deviceX/in_distance_raw
-> -KernelVersion:	3.20
-> +KernelVersion:	4.0
->  Contact:	linux-iio@vger.kernel.org
->  Description:
->  		This attribute is used to read the distance covered by the user
-> @@ -1205,7 +1205,7 @@ Description:
->  		seconds.
->  
->  What:		/sys/.../iio:deviceX/in_velocity_sqrt(x^2+y^2+z^2)_integration_time
-> -KernelVersion:	3.20
-> +KernelVersion:	4.0
->  Contact:	linux-iio@vger.kernel.org
->  Description:
->  		Number of seconds in which to compute speed.
-> @@ -1267,7 +1267,7 @@ Description:
->  		Units after application of scale are m/s.
->  
->  What:		/sys/.../iio:deviceX/in_steps_debounce_count
-> -KernelVersion:	3.20
-> +KernelVersion:	4.0
->  Contact:	linux-iio@vger.kernel.org
->  Description:
->  		Specifies the number of steps that must occur within
-> @@ -1275,7 +1275,7 @@ Description:
->  		consumer is making steps.
->  
->  What:		/sys/.../iio:deviceX/in_steps_debounce_time
-> -KernelVersion:	3.20
-> +KernelVersion:	4.0
->  Contact:	linux-iio@vger.kernel.org
->  Description:
->  		Specifies number of seconds in which we compute the steps
-> 
+The following changes since commit 3d8bbe243dc7418b4b2eadcbf5693887d076a521:
 
+  Merge tag 'iio-fixes-for-4.0c' of git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio into staging-linus (2015-03-24 22:55:20 +0100)
+
+are available in the git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git tags/iio-fixes-for-4.0d
+
+for you to fetch changes up to 4ce7ca89d6e8eae9e201cd0e972ba323f33e2fb4:
+
+  iio: imu: Use iio_trigger_get for indio_dev->trig assignment (2015-03-28 13:51:40 +0000)
+
+----------------------------------------------------------------
+IIO fixes for 4.0 set 4
+
+A couple more IIO fixes.
+
+* Fix check for HAS_IOMEM in the cc100001_adc driver to avoid build errors.
+  Rather curiously it was ORed with Regulator and clock support.
+* vf610 driver was trying to use an ADC clock outside the possible
+  spec on some boards.  The driver assumed a fixed clock speed previously
+  across all boards, but that is not true.  This fix ensures that the
+  reported frequency is correct on all boards.
+* The adis imu common code directly set the current trigger to the
+  driver supplied one.  Unfortunately this didn't increase the use count
+  leading to a double free via a particular path of changing the trigger
+  then removing the driver.
+
+----------------------------------------------------------------
+Darshana Padmadas (1):
+      iio: imu: Use iio_trigger_get for indio_dev->trig assignment
+
+Richard Weinberger (1):
+      iio/adc/cc10001_adc.c: Fix !HAS_IOMEM build
+
+Stefan Agner (1):
+      iio: adc: vf610: use ADC clock within specification
+
+ drivers/iio/adc/Kconfig        |  3 +-
+ drivers/iio/adc/vf610_adc.c    | 91 ++++++++++++++++++++++++++++--------------
+ drivers/iio/imu/adis_trigger.c |  2 +-
+ 3 files changed, 64 insertions(+), 32 deletions(-)
