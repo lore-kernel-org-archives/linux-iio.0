@@ -1,90 +1,91 @@
-Return-Path: <vigneshr@ti.com>
-From: Vignesh R <vigneshr@ti.com>
-To: Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>,
-        Mark
- Rutland <mark.rutland@arm.com>,
-        Ian Campbell <ijc+devicetree@hellion.org.uk>,
-        Kumar Gala <galak@codeaurora.org>, Jonathan Cameron <jic23@kernel.org>
-CC: Hartmut Knaack <knaack.h@gmx.de>, Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald <pmeerw@pmeerw.net>,
-        Dmitry Torokhov
-	<dmitry.torokhov@gmail.com>,
-        Karol Wrona <k.wrona@samsung.com>,
-        Jan Kardell
-	<jan.kardell@telliq.com>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <linux-iio@vger.kernel.org>,
-        <fcooper@ti.com>, Vignesh R <vigneshr@ti.com>
-Subject: [PATCH 1/2] iio: adc: ti_am335x_adc: refactor DT parsing into a function
-Date: Tue, 31 Mar 2015 16:42:36 +0530
-Message-ID: <1427800357-21680-2-git-send-email-vigneshr@ti.com>
-In-Reply-To: <1427800357-21680-1-git-send-email-vigneshr@ti.com>
-References: <1427800357-21680-1-git-send-email-vigneshr@ti.com>
-MIME-Version: 1.0
-Content-Type: text/plain
+Return-Path: <abrestic@google.com>
+From: Andrew Bresticker <abrestic@chromium.org>
+To: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Cc: devicetree@vger.kernel.org,
+	linux-input@vger.kernel.org,
+	linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Andrew Bresticker <abrestic@chromium.org>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Rob Herring <robh+dt@kernel.org>,
+	Pawel Moll <pawel.moll@arm.com>,
+	Mark Rutland <mark.rutland@arm.com>,
+	Ian Campbell <ijc+devicetree@hellion.org.uk>,
+	Kumar Gala <galak@codeaurora.org>
+Subject: [PATCH V2 2/3] Input: Add binding document for ADC keypad
+Date: Mon, 30 Mar 2015 17:28:08 -0700
+Message-Id: <1427761689-5238-2-git-send-email-abrestic@chromium.org>
+In-Reply-To: <1427761689-5238-1-git-send-email-abrestic@chromium.org>
+References: <1427761689-5238-1-git-send-email-abrestic@chromium.org>
 List-ID: <linux-iio@vger.kernel.org>
 
-Refactor DT parsing into a separate function from probe() to
-help addition of more DT parameters later.
+Add a binding document for a generic ADC keypad.  Buttons on an ADC
+keypad are connected in a resistor ladder to an ADC.  The binding
+describes the mapping of ADC channel and voltage ranges to buttons.
+Note that this binding only describes simple ADC keypads where only
+a single button press can be detected at once per ADC channel.
 
-No functional changes.
-
-Signed-off-by: Vignesh R <vigneshr@ti.com>
+Signed-off-by: Andrew Bresticker <abrestic@chromium.org>
+Cc: Jonathan Cameron <jic23@kernel.org>
+Cc: Rob Herring <robh+dt@kernel.org>
+Cc: Pawel Moll <pawel.moll@arm.com>
+Cc: Mark Rutland <mark.rutland@arm.com>
+Cc: Ian Campbell <ijc+devicetree@hellion.org.uk>
+Cc: Kumar Gala <galak@codeaurora.org>
 ---
- drivers/iio/adc/ti_am335x_adc.c | 29 +++++++++++++++++++----------
- 1 file changed, 19 insertions(+), 10 deletions(-)
+Changes from v1:
+ - Made linux,input-type a required property.
+---
+ .../devicetree/bindings/input/adc-keys.txt         | 41 ++++++++++++++++++++++
+ 1 file changed, 41 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/input/adc-keys.txt
 
-diff --git a/drivers/iio/adc/ti_am335x_adc.c b/drivers/iio/adc/ti_am335x_adc.c
-index 2e5cc4409f78..2f818405ffbe 100644
---- a/drivers/iio/adc/ti_am335x_adc.c
-+++ b/drivers/iio/adc/ti_am335x_adc.c
-@@ -396,16 +396,30 @@ static const struct iio_info tiadc_info = {
- 	.driver_module = THIS_MODULE,
- };
- 
-+static int tiadc_parse_dt(struct platform_device *pdev,
-+			  struct tiadc_device *adc_dev)
-+{
-+	struct device_node *node = pdev->dev.of_node;
-+	struct property *prop;
-+	const __be32 *cur;
-+	int channels = 0;
-+	u32 val;
+diff --git a/Documentation/devicetree/bindings/input/adc-keys.txt b/Documentation/devicetree/bindings/input/adc-keys.txt
+new file mode 100644
+index 0000000..e531f25
+--- /dev/null
++++ b/Documentation/devicetree/bindings/input/adc-keys.txt
+@@ -0,0 +1,41 @@
++Generic ADC keypad
++==================
 +
-+	of_property_for_each_u32(node, "ti,adc-channels", prop, cur, val) {
-+		adc_dev->channel_line[channels] = val;
-+		channels++;
-+	}
++Required properties:
++ - compatible: "adc-keys"
++ - poll-interval: Polling interval time in ms.
++ - io-channels: List of IIO channels used by the keypad.
++   See ../iio/iio-bindings.txt for details.
 +
-+	adc_dev->channels = channels;
-+	return 0;
-+}
++Optional properties:
++ - autorepeat: Enable auto-repeat.
 +
- static int tiadc_probe(struct platform_device *pdev)
- {
- 	struct iio_dev		*indio_dev;
- 	struct tiadc_device	*adc_dev;
- 	struct device_node	*node = pdev->dev.of_node;
--	struct property		*prop;
--	const __be32		*cur;
- 	int			err;
--	u32			val;
--	int			channels = 0;
- 
- 	if (!node) {
- 		dev_err(&pdev->dev, "Could not find valid DT data.\n");
-@@ -421,12 +435,7 @@ static int tiadc_probe(struct platform_device *pdev)
- 	adc_dev = iio_priv(indio_dev);
- 
- 	adc_dev->mfd_tscadc = ti_tscadc_dev_get(pdev);
--
--	of_property_for_each_u32(node, "ti,adc-channels", prop, cur, val) {
--		adc_dev->channel_line[channels] = val;
--		channels++;
--	}
--	adc_dev->channels = channels;
-+	tiadc_parse_dt(pdev, adc_dev);
- 
- 	indio_dev->dev.parent = &pdev->dev;
- 	indio_dev->name = dev_name(&pdev->dev);
++Each button on the ADC keypad is represented by a sub-node.
++
++Required sub-node properties:
++ - label: Descriptive name for the key.
++ - linux,code: Keycode to emit.
++ - linux,input-type: Event type this key generates.
++ - channel: IIO channel (index into the 'io-channels' above) to which this
++   button is attached.
++ - min-voltage: Minimum voltage in uV when this key is pressed.
++ - max-voltage: Maximum voltage in uV when this key is pressed.
++
++Example:
++
++adc-keypad {
++	compatible = "adc-keys";
++	poll-interval = <100>;
++	io-channels = <&adc 0>, <&adc 1>;
++
++	vol-up-button {
++		label = "Volume Up";
++		linux,code = <KEY_VOLUMEUP>;
++		linux,input-type = <EV_KEY>;
++		channel = <0>;
++		min-voltage = <1600000>;
++		max-voltage = <1640000>;
++	};
++
++	...
++};
 -- 
-1.9.1
+2.2.0.rc0.207.ga3a616c
