@@ -1,172 +1,177 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga14.intel.com ([192.55.52.115]:7689 "EHLO mga14.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1752684AbbC3UA3 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Mon, 30 Mar 2015 16:00:29 -0400
-Message-ID: <1427745382.26322.10.camel@spandruv-DESK3.jf.intel.com>
-Subject: Re: [PATCH v2 1/2] HID: hid-sensor-hub: Enhance get feature report
- API
-From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-To: Hartmut Knaack <knaack.h@gmx.de>
-Cc: jkosina@suse.cz, jic23@kernel.org, linux-iio@vger.kernel.org,
-	linux-input@vger.kernel.org, borneo.antonio@gmail.com
-Date: Mon, 30 Mar 2015 12:56:22 -0700
-In-Reply-To: <55171612.9010903@gmx.de>
-References: <1421455165-3944-1-git-send-email-srinivas.pandruvada@linux.intel.com>
-	 <1421455165-3944-2-git-send-email-srinivas.pandruvada@linux.intel.com>
-	 <55171612.9010903@gmx.de>
-Content-Type: text/plain; charset="UTF-8"
-Mime-Version: 1.0
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <vigneshr@ti.com>
+From: Vignesh R <vigneshr@ti.com>
+To: Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>,
+        Mark
+ Rutland <mark.rutland@arm.com>,
+        Ian Campbell <ijc+devicetree@hellion.org.uk>,
+        Kumar Gala <galak@codeaurora.org>, Jonathan Cameron <jic23@kernel.org>
+CC: Hartmut Knaack <knaack.h@gmx.de>, Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald <pmeerw@pmeerw.net>,
+        Dmitry Torokhov
+	<dmitry.torokhov@gmail.com>,
+        Karol Wrona <k.wrona@samsung.com>,
+        Jan Kardell
+	<jan.kardell@telliq.com>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <linux-iio@vger.kernel.org>,
+        <fcooper@ti.com>, Vignesh R <vigneshr@ti.com>
+Subject: [PATCH 2/2] iio: adc: ti_am335x_adc: make sample delay, open delay, averaging DT parameters
+Date: Tue, 31 Mar 2015 16:42:37 +0530
+Message-ID: <1427800357-21680-3-git-send-email-vigneshr@ti.com>
+In-Reply-To: <1427800357-21680-1-git-send-email-vigneshr@ti.com>
+References: <1427800357-21680-1-git-send-email-vigneshr@ti.com>
+MIME-Version: 1.0
+Content-Type: text/plain
+List-ID: <linux-iio@vger.kernel.org>
 
-On Sat, 2015-03-28 at 21:58 +0100, Hartmut Knaack wrote: 
-> Srinivas Pandruvada schrieb am 17.01.2015 um 01:39:
-> > Some hid sensor feature report can contain more than one reports.
-> > This API can now support receiving multiple values from the feature
-> > report.
-> > Also update the parameters in the users of this API.
-> > 
-Hi Hartmut, 
-> Hi Srinivas,
-> I noticed this series got applied already to linux-input. Yet I was wondering
-> if it wouldn't be better to have size variables like buffer_size, report_size
-> and remaining_bytes (from the next patch) defined as unsigned.
-> Also a minor indentation issue spotted inline, in case you get to work on that
-> section again some time.
-> 
-This module will go further enhancements soon, then I will take care of
-this.
+Add optional DT properties to set open delay, sample delay and number
+of averages per sample for each adc step. Open delay, sample delay
+and averaging are some of the parameters that affect the sampling rate
+and accuracy of the sample. Making these parameters configurable via
+DT will help in balancing speed vs accuracy.
 
-Thanks,
-Srinivas 
-> > Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-> > ---
-> >  drivers/hid/hid-sensor-hub.c                           | 15 +++++++++++++--
-> >  drivers/iio/common/hid-sensors/hid-sensor-attributes.c | 13 +++++++------
-> >  drivers/iio/common/hid-sensors/hid-sensor-trigger.c    |  4 ++--
-> >  include/linux/hid-sensor-hub.h                         |  8 +++++---
-> >  4 files changed, 27 insertions(+), 13 deletions(-)
-> > 
-> > diff --git a/drivers/hid/hid-sensor-hub.c b/drivers/hid/hid-sensor-hub.c
-> > index e54ce10..4d22bd4 100644
-> > --- a/drivers/hid/hid-sensor-hub.c
-> > +++ b/drivers/hid/hid-sensor-hub.c
-> > @@ -232,10 +232,11 @@ done_proc:
-> >  EXPORT_SYMBOL_GPL(sensor_hub_set_feature);
-> >  
-> >  int sensor_hub_get_feature(struct hid_sensor_hub_device *hsdev, u32 report_id,
-> > -				u32 field_index, s32 *value)
-> > +			   u32 field_index, int buffer_size, void *buffer)
-> >  {
-> >  	struct hid_report *report;
-> >  	struct sensor_hub_data *data = hid_get_drvdata(hsdev->hdev);
-> > +	int report_size;
-> >  	int ret = 0;
-> >  
-> >  	mutex_lock(&data->mutex);
-> > @@ -247,7 +248,17 @@ int sensor_hub_get_feature(struct hid_sensor_hub_device *hsdev, u32 report_id,
-> >  	}
-> >  	hid_hw_request(hsdev->hdev, report, HID_REQ_GET_REPORT);
-> >  	hid_hw_wait(hsdev->hdev);
-> > -	*value = report->field[field_index]->value[0];
-> > +
-> > +	/* calculate number of bytes required to read this field */
-> > +	report_size = DIV_ROUND_UP(report->field[field_index]->report_size,
-> > +				   8) *
-> > +				   report->field[field_index]->report_count;
-> The last line should not be indented with the opening parenthesis any more.
-> What do you think about this solution:
-> 
-> 	report_size = DIV_ROUND_UP(report->field[field_index]->report_size, 8);
-> 	report_size *= report->field[field_index]->report_count;
-> 
-> > +	if (!report_size) {
-> > +		ret = -EINVAL;
-> > +		goto done_proc;
-> > +	}
-> > +	ret = min(report_size, buffer_size);
-> > +	memcpy(buffer, report->field[field_index]->value, ret);
-> >  
-> >  done_proc:
-> >  	mutex_unlock(&data->mutex);
-> > diff --git a/drivers/iio/common/hid-sensors/hid-sensor-attributes.c b/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
-> > index 25b01e1..e1435e9 100644
-> > --- a/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
-> > +++ b/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
-> > @@ -153,8 +153,8 @@ s32 hid_sensor_read_poll_value(struct hid_sensor_common *st)
-> >  	int ret;
-> >  
-> >  	ret = sensor_hub_get_feature(st->hsdev,
-> > -		st->poll.report_id,
-> > -		st->poll.index, &value);
-> > +				     st->poll.report_id,
-> > +				     st->poll.index, sizeof(value), &value);
-> >  
-> >  	if (ret < 0 || value < 0) {
-> >  		return -EINVAL;
-> > @@ -174,8 +174,8 @@ int hid_sensor_read_samp_freq_value(struct hid_sensor_common *st,
-> >  	int ret;
-> >  
-> >  	ret = sensor_hub_get_feature(st->hsdev,
-> > -		st->poll.report_id,
-> > -		st->poll.index, &value);
-> > +				     st->poll.report_id,
-> > +				     st->poll.index, sizeof(value), &value);
-> >  	if (ret < 0 || value < 0) {
-> >  		*val1 = *val2 = 0;
-> >  		return -EINVAL;
-> > @@ -229,8 +229,9 @@ int hid_sensor_read_raw_hyst_value(struct hid_sensor_common *st,
-> >  	int ret;
-> >  
-> >  	ret = sensor_hub_get_feature(st->hsdev,
-> > -		st->sensitivity.report_id,
-> > -		st->sensitivity.index, &value);
-> > +				     st->sensitivity.report_id,
-> > +				     st->sensitivity.index, sizeof(value),
-> > +				     &value);
-> >  	if (ret < 0 || value < 0) {
-> >  		*val1 = *val2 = 0;
-> >  		return -EINVAL;
-> > diff --git a/drivers/iio/common/hid-sensors/hid-sensor-trigger.c b/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
-> > index 92068cd..ef0c495 100644
-> > --- a/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
-> > +++ b/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
-> > @@ -76,8 +76,8 @@ int hid_sensor_power_state(struct hid_sensor_common *st, bool state)
-> >  	}
-> >  
-> >  	sensor_hub_get_feature(st->hsdev, st->power_state.report_id,
-> > -					st->power_state.index,
-> > -					&state_val);
-> > +			       st->power_state.index,
-> > +			       sizeof(state_val), &state_val);
-> >  	return 0;
-> >  }
-> >  EXPORT_SYMBOL(hid_sensor_power_state);
-> > diff --git a/include/linux/hid-sensor-hub.h b/include/linux/hid-sensor-hub.h
-> > index 4173a8f..dfdf6ef 100644
-> > --- a/include/linux/hid-sensor-hub.h
-> > +++ b/include/linux/hid-sensor-hub.h
-> > @@ -179,13 +179,15 @@ int sensor_hub_set_feature(struct hid_sensor_hub_device *hsdev, u32 report_id,
-> >  * @hsdev:	Hub device instance.
-> >  * @report_id:	Report id to look for
-> >  * @field_index:	Field index inside a report
-> > -* @value:	Place holder for return value
-> > +* @buffer_size:	size of the buffer
-> > +* @buffer:	buffer to copy output
-> >  *
-> >  * Used to get a field in feature report. For example this can get polling
-> > -* interval, sensitivity, activate/deactivate state.
-> > +* interval, sensitivity, activate/deactivate state. On success it returns
-> > +* number of bytes copied to buffer. On failure, it returns value < 0.
-> >  */
-> >  int sensor_hub_get_feature(struct hid_sensor_hub_device *hsdev, u32 report_id,
-> > -			u32 field_index, s32 *value);
-> > +			   u32 field_index, int buffer_size, void *buffer);
-> >  
-> >  /* hid-sensor-attributes */
-> >  
-> > 
-> 
+Signed-off-by: Vignesh R <vigneshr@ti.com>
+---
+ .../bindings/input/touchscreen/ti-tsc-adc.txt      | 24 ++++++++++
+ drivers/iio/adc/ti_am335x_adc.c                    | 54 +++++++++++++++++++---
+ 2 files changed, 72 insertions(+), 6 deletions(-)
 
-
+diff --git a/Documentation/devicetree/bindings/input/touchscreen/ti-tsc-adc.txt b/Documentation/devicetree/bindings/input/touchscreen/ti-tsc-adc.txt
+index 6c4fb34823d3..8aafbe87f0eb 100644
+--- a/Documentation/devicetree/bindings/input/touchscreen/ti-tsc-adc.txt
++++ b/Documentation/devicetree/bindings/input/touchscreen/ti-tsc-adc.txt
+@@ -42,6 +42,27 @@ Optional properties:
+ 			 hardware knob for adjusting the amount of "settling
+ 			 time".
+ 
++- child "adc"
++	ti,chan-step-opendelay: List of open delays for each channel of
++				ADC in the order of ti,adc-channels. The
++				value corresponds to the number of ADC
++				clock cycles to wait after applying the
++				step configuration registers and before
++				sending the start of ADC conversion.
++				Maximum value is 0x3FFFF.
++       ti,chan-step-sampledelay: List of sample delays for each channel
++				  of ADC in the order of ti,adc-channels.
++				  The value corresponds to the number of
++				  ADC clock cycles to sample (to hold
++				  start of conversion high).
++				  Maximum value is 0xFF.
++       ti,chan-step-avg: Number of averages to be performed for each
++			  channel of ADC. If average is 16 then input
++			  is sampled 16 times and averaged to get more
++			  accurate value. This increases the time taken
++			  by ADC to generate a sample. Valid range is 0
++			  average to 16 averages. Maximum value is 16.
++
+ Example:
+ 	tscadc: tscadc@44e0d000 {
+ 		compatible = "ti,am3359-tscadc";
+@@ -55,5 +76,8 @@ Example:
+ 
+ 		adc {
+ 			ti,adc-channels = <4 5 6 7>;
++			ti,chan-step-opendelay = <0x098 0x3ffff 0x098 0x0>;
++			ti,chan-step-sampledelay = <0xff 0x0 0xf 0x0>;
++			ti,chan-step-avg = <16 2 4 8>;
+ 		};
+ 	}
+diff --git a/drivers/iio/adc/ti_am335x_adc.c b/drivers/iio/adc/ti_am335x_adc.c
+index 2f818405ffbe..5ee597b4a1af 100644
+--- a/drivers/iio/adc/ti_am335x_adc.c
++++ b/drivers/iio/adc/ti_am335x_adc.c
+@@ -37,6 +37,7 @@ struct tiadc_device {
+ 	u8 channel_step[8];
+ 	int buffer_en_ch_steps;
+ 	u16 data[8];
++	u32 open_delay[8], sample_delay[8], step_avg[8];
+ };
+ 
+ static unsigned int tiadc_readl(struct tiadc_device *adc, unsigned int reg)
+@@ -85,6 +86,7 @@ static u32 get_adc_step_bit(struct tiadc_device *adc_dev, int chan)
+ static void tiadc_step_config(struct iio_dev *indio_dev)
+ {
+ 	struct tiadc_device *adc_dev = iio_priv(indio_dev);
++	struct device *dev = adc_dev->mfd_tscadc->dev;
+ 	unsigned int stepconfig;
+ 	int i, steps = 0;
+ 
+@@ -98,20 +100,47 @@ static void tiadc_step_config(struct iio_dev *indio_dev)
+ 	 * needs to be given to ADC to digitalize data.
+ 	 */
+ 
+-	if (iio_buffer_enabled(indio_dev))
+-		stepconfig = STEPCONFIG_AVG_16 | STEPCONFIG_FIFO1
+-					| STEPCONFIG_MODE_SWCNT;
+-	else
+-		stepconfig = STEPCONFIG_AVG_16 | STEPCONFIG_FIFO1;
+ 
+ 	for (i = 0; i < adc_dev->channels; i++) {
+ 		int chan;
+ 
+ 		chan = adc_dev->channel_line[i];
++
++		if (adc_dev->step_avg[i] > STEPCONFIG_AVG_16) {
++			dev_warn(dev, "chan %d step_avg truncating to %d\n",
++				 chan, STEPCONFIG_AVG_16);
++			adc_dev->step_avg[i] = STEPCONFIG_AVG_16;
++		}
++
++		if (adc_dev->step_avg[i])
++			stepconfig =
++			STEPCONFIG_AVG(ffs(adc_dev->step_avg[i]) - 1) |
++			STEPCONFIG_FIFO1;
++		else
++			stepconfig = STEPCONFIG_FIFO1;
++
++		if (iio_buffer_enabled(indio_dev))
++			stepconfig |= STEPCONFIG_MODE_SWCNT;
++
+ 		tiadc_writel(adc_dev, REG_STEPCONFIG(steps),
+ 				stepconfig | STEPCONFIG_INP(chan));
++
++		if (adc_dev->open_delay[i] > STEPDELAY_OPEN_MASK) {
++			dev_warn(dev, "chan %d open delay truncating to 0x3FFFF\n",
++				 chan);
++			adc_dev->open_delay[i] = STEPDELAY_OPEN_MASK;
++		}
++
++		if (adc_dev->sample_delay[i] > 0xFF) {
++			dev_warn(dev, "chan %d sample delay truncating to 0xFF\n",
++				 chan);
++			adc_dev->sample_delay[i] = 0xFF;
++		}
++
+ 		tiadc_writel(adc_dev, REG_STEPDELAY(steps),
+-				STEPCONFIG_OPENDLY);
++				STEPDELAY_OPEN(adc_dev->open_delay[i]) |
++				STEPDELAY_SAMPLE(adc_dev->sample_delay[i]));
++
+ 		adc_dev->channel_step[i] = steps;
+ 		steps++;
+ 	}
+@@ -407,9 +436,22 @@ static int tiadc_parse_dt(struct platform_device *pdev,
+ 
+ 	of_property_for_each_u32(node, "ti,adc-channels", prop, cur, val) {
+ 		adc_dev->channel_line[channels] = val;
++
++		/* Set Default values for optional DT parameters */
++		adc_dev->open_delay[channels] = STEPCONFIG_OPENDLY;
++		adc_dev->sample_delay[channels] = STEPCONFIG_SAMPLEDLY;
++		adc_dev->step_avg[channels] = 16;
++
+ 		channels++;
+ 	}
+ 
++	of_property_read_u32_array(node, "ti,chan-step-avg",
++				   adc_dev->step_avg, channels);
++	of_property_read_u32_array(node, "ti,chan-step-opendelay",
++				   adc_dev->open_delay, channels);
++	of_property_read_u32_array(node, "ti,chan-step-sampledelay",
++				   adc_dev->sample_delay, channels);
++
+ 	adc_dev->channels = channels;
+ 	return 0;
+ }
+-- 
+1.9.1
