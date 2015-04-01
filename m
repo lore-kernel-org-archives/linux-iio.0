@@ -1,12 +1,12 @@
 Return-Path: <cristina.opriceana@gmail.com>
-Message-ID: <1427889004.6503.1.camel@Inspiron>
+Message-ID: <1427889464.6503.2.camel@Inspiron>
 Subject: Re: [PATCH 2/2] iio: light: ltr501: Powerdown device on error
 From: Cristina Opriceana <cristina.opriceana@gmail.com>
 To: Daniel Baluta <daniel.baluta@gmail.com>
 Cc: Jonathan Cameron <jic23@kernel.org>, outreachy-kernel@googlegroups.com,
 	"linux-iio@vger.kernel.org"
 	 <linux-iio@vger.kernel.org>
-Date: Wed, 01 Apr 2015 14:50:04 +0300
+Date: Wed, 01 Apr 2015 14:57:44 +0300
 In-Reply-To: <CAEnQRZAVb_70+Fyj+PiXLQ3ShZTomafE3ZEnCFUEkhQnb8ERYg@mail.gmail.com>
 References: <cover.1427797741.git.cristina.opriceana@gmail.com>
 	 <1abedb2004323a23e8dd120abf761f3488c8e9f6.1427797741.git.cristina.opriceana@gmail.com>
@@ -41,15 +41,15 @@ On Mi, 2015-04-01 at 14:46 +0300, Daniel Baluta wrote:
 > > +               data->ps_contr & ~LTR501_CONTR_ACTIVE);
 > > +}
 > > +
-> 
-> While at it please also fix the alignment for ltr501_write_contr
-> parameters. Don't forget
+
+> Don't forget
 > to mention this in the commit message. When running checkpatch.pl
 > please use --strict parameter.
-> 
+
+Okay, I'll make a v2. Ignore my previous question.
+
+Thanks,
+Cristina
+
 > thanks,
 > Daniel.
-
-Another patch would be fine or should I send a v2?
-
-Cristina
