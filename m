@@ -1,23 +1,25 @@
 Return-Path: <sathyanarayanan.kuppuswamy@linux.intel.com>
-Message-ID: <551C2E23.2080400@linux.intel.com>
-Date: Wed, 01 Apr 2015 10:42:59 -0700
+Message-ID: <551C2D58.2040902@linux.intel.com>
+Date: Wed, 01 Apr 2015 10:39:36 -0700
 From: sathyanarayanan kuppuswamy <sathyanarayanan.kuppuswamy@linux.intel.com>
 Reply-To: sathyanarayanan.kuppuswamy@linux.intel.com
 MIME-Version: 1.0
-To: Daniel Baluta <daniel.baluta@intel.com>
+To: Daniel Baluta <daniel.baluta@gmail.com>
 CC: Jonathan Cameron <jic23@kernel.org>,
  Peter Meerwald <pmeerw@pmeerw.net>,
  "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
  Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
 Subject: Re: [PATCH v1 1/1] iio: ltr301: Add support for ltr301
-References: <cover.1427861152.git.sathyanarayanan.kuppuswamy@linux.intel.com>	<f807f1dedd46ef414e5b5160b4d5c8574ac5a2a7.1427861152.git.sathyanarayanan.kuppuswamy@linux.intel.com> <CAEnQRZBUS6LDLJUMWafVV4hs9kwovkSqD1Tg9XJA-ZkG3zuCyw@mail.gmail.com>
-In-Reply-To: <CAEnQRZBUS6LDLJUMWafVV4hs9kwovkSqD1Tg9XJA-ZkG3zuCyw@mail.gmail.com>
+References: <cover.1427861152.git.sathyanarayanan.kuppuswamy@linux.intel.com>	<f807f1dedd46ef414e5b5160b4d5c8574ac5a2a7.1427861152.git.sathyanarayanan.kuppuswamy@linux.intel.com> <CAEnQRZDJn2X0kWg4od2LMHVDu4kLmBjV9jJTu+GFqR86HDKMgw@mail.gmail.com>
+In-Reply-To: <CAEnQRZDJn2X0kWg4od2LMHVDu4kLmBjV9jJTu+GFqR86HDKMgw@mail.gmail.com>
 Content-Type: text/plain; charset=utf-8; format=flowed
 List-ID: <linux-iio@vger.kernel.org>
 
 Hi Daniel,
 
-On 04/01/2015 08:34 AM, Daniel Baluta wrote:
+Thanks for the review comments.
+
+On 04/01/2015 08:10 AM, Daniel Baluta wrote:
 > On Wed, Apr 1, 2015 at 7:06 AM, Kuppuswamy Sathyanarayanan
 > <sathyanarayanan.kuppuswamy@linux.intel.com> wrote:
 >> Added support for Liteon 301 Ambient light sensor. Since
@@ -28,30 +30,61 @@ On 04/01/2015 08:34 AM, Daniel Baluta wrote:
 >>
 >> LTR501 - ALS + Proximity combo
 >> LTR301 - ALS sensor.
+> As I'm adding support for LTR559 sensor, we should agree
+> on what's the best way to this.
+>
+> I suggest we should add a ltr501_chip_info for each chip type as
+> done in [1]
+Can you give me the link for your patch set ? If its just chip id , then 
+there is no
+need for a special structure for it. But if you have more data to be 
+stored then it
+would make sense.
+>
+>>   static int ltr501_write_contr(struct i2c_client *client, u8 als_val, u8 ps_val)
+>>   {
+>>          int ret = i2c_smbus_write_byte_data(client, LTR501_ALS_CONTR, als_val);
+>> @@ -347,6 +377,7 @@ static int ltr501_probe(struct i2c_client *client,
+>>          data = iio_priv(indio_dev);
+>>          i2c_set_clientdata(client, indio_dev);
+>>          data->client = client;
+>> +       data->chip_id = id->driver_data;
+> id can be NULL here if enumerated via ACPI.
+I will fix it.
+>
+>>          mutex_init(&data->lock_als);
+>>          mutex_init(&data->lock_ps);
 >>
->> Following are the data sheets for both devices:
+>> @@ -357,12 +388,24 @@ static int ltr501_probe(struct i2c_client *client,
+>>                  return -ENODEV;
 >>
->> http://optoelectronics.liteon.com/upload/download/DS86-2013-0004/S_110_LTR-303ALS-01_DS_V1.pdf
+>>          indio_dev->dev.parent = &client->dev;
+>> -       indio_dev->info = &ltr501_info;
+>> -       indio_dev->channels = ltr501_channels;
+>>          indio_dev->num_channels = ARRAY_SIZE(ltr501_channels);
+>>          indio_dev->name = LTR501_DRV_NAME;
+> Name should be taken via id->name or ACPI.
+Agree. But it needs be fixed by a separate patch.
+>
+>>          indio_dev->modes = INDIO_DIRECT_MODE;
 >>
->> http://optoelectronics.liteon.com/upload/download/DS86-2012-0006/S_110_LTR-501ALS-01_PrelimDS_ver1[1].pdf
-> One more thing. The datasheet you posted is for LTR303 not LTR301.
-> Which chip are you adding support for?
-No. I posted link for the wrong data sheet. I will fix it once I find a 
-proper link.
-
-But LTR301 is register compatible with LTR501. I have verified it once 
-again.
+>> +       switch (data->chip_id) {
+>> +       case LTR301:
+>> +               indio_dev->info = &ltr301_info;
+>> +               indio_dev->channels = ltr301_channels;
+>> +               break;
+>> +       case LTR501:
+>> +               indio_dev->info = &ltr501_info;
+>> +               indio_dev->channels = ltr501_channels;
+>> +               break;
+>> +       default:
+>> +               pr_warn("ltr chip invalid\n");
+> We do have  dev struct here, so we should use dev_warn.
+ok. I will fix it.
 >
-> If indeed the datasheet link is correct, then although LTR303 and
-> LTR501 are register compatbile at
-> a first glance I spotted at least one difference.
->
-> The ALS Control register is not the same.
->
-> (e.g ALS Gain uses 1 bit for LTR501 and 3 bits for LTR303).
->
-> thanks,
 > Daniel.
+>
+> [1]  https://lkml.org/lkml/2015/3/31/198
 >
 
 -- 
