@@ -1,110 +1,67 @@
-Return-Path: <sathyanarayanan.kuppuswamy@linux.intel.com>
-Message-ID: <551C41C0.2050609@linux.intel.com>
-Date: Wed, 01 Apr 2015 12:06:40 -0700
-From: sathyanarayanan kuppuswamy <sathyanarayanan.kuppuswamy@linux.intel.com>
-Reply-To: sathyanarayanan.kuppuswamy@linux.intel.com
+Return-Path: <daniel.baluta@gmail.com>
 MIME-Version: 1.0
-To: Lars-Peter Clausen <lars@metafoo.de>,
- Daniel Baluta <daniel.baluta@gmail.com>
-CC: Jonathan Cameron <jic23@kernel.org>,
- Peter Meerwald <pmeerw@pmeerw.net>,
- "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
- Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-Subject: Re: [PATCH v1 2/3] iio: ltr501: Add interrupt rate control support
-References: <cover.1427856701.git.sathyanarayanan.kuppuswamy@linux.intel.com>	<212b45fac712e84a3cf0bc5955def7d1b683a6bd.1427856701.git.sathyanarayanan.kuppuswamy@linux.intel.com>	<CAEnQRZC=GtB7r=QG7DkDJOFz8bBQ-V+VD-DNkVG50-LubLMr8w@mail.gmail.com>	<551C030E.1090309@metafoo.de> <CAEnQRZCsUiH_+GGxqPpLUDHVh_iu6O1QNTH5xdZuKojG11QZFQ@mail.gmail.com> <551C0B95.9080802@metafoo.de> <551C2EC4.1050208@linux.intel.com> <551C2F63.50609@metafoo.de>
-In-Reply-To: <551C2F63.50609@metafoo.de>
-Content-Type: text/plain; charset=utf-8; format=flowed
+Sender: daniel.baluta@gmail.com
+In-Reply-To: <551C2E23.2080400@linux.intel.com>
+References: <cover.1427861152.git.sathyanarayanan.kuppuswamy@linux.intel.com>
+	<f807f1dedd46ef414e5b5160b4d5c8574ac5a2a7.1427861152.git.sathyanarayanan.kuppuswamy@linux.intel.com>
+	<CAEnQRZBUS6LDLJUMWafVV4hs9kwovkSqD1Tg9XJA-ZkG3zuCyw@mail.gmail.com>
+	<551C2E23.2080400@linux.intel.com>
+Date: Wed, 1 Apr 2015 20:54:07 +0300
+Message-ID: <CAEnQRZC0f=BC27Lo8Y2gGpyQWg+oWobRDqECB5AsFy0w2fDYYQ@mail.gmail.com>
+Subject: Re: [PATCH v1 1/1] iio: ltr301: Add support for ltr301
+From: Daniel Baluta <daniel.baluta@intel.com>
+To: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
+Cc: Daniel Baluta <daniel.baluta@intel.com>, Jonathan Cameron <jic23@kernel.org>,
+	Peter Meerwald <pmeerw@pmeerw.net>, "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Content-Type: text/plain; charset=UTF-8
 List-ID: <linux-iio@vger.kernel.org>
 
-
-
-On 04/01/2015 10:48 AM, Lars-Peter Clausen wrote:
-> On 04/01/2015 07:45 PM, sathyanarayanan kuppuswamy wrote:
+On Wed, Apr 1, 2015 at 8:42 PM, sathyanarayanan kuppuswamy
+<sathyanarayanan.kuppuswamy@linux.intel.com> wrote:
+> Hi Daniel,
+>
+> On 04/01/2015 08:34 AM, Daniel Baluta wrote:
 >>
->>
->> On 04/01/2015 08:15 AM, Lars-Peter Clausen wrote:
->>> On 04/01/2015 05:02 PM, Daniel Baluta wrote:
->>>> On Wed, Apr 1, 2015 at 5:39 PM, Lars-Peter Clausen 
->>>> <lars@metafoo.de> wrote:
->>>>> On 04/01/2015 04:04 PM, Daniel Baluta wrote:
->>>>> [...]
->>>>>>
->>>>>>
->>>>>>> +static const struct iio_chan_spec_ext_info ltr501_ext_info[] = {
->>>>>>> +       {
->>>>>>> +               .name = "intr_persist",
->>>>>>> +               .read = ltr501_read_intr_prst,
->>>>>>> +               .write = ltr501_write_intr_prst,
->>>>>>> +               .shared = IIO_SHARED_BY_TYPE,
->>>>>>> +       },
->>>>>>> +       {},
->>>>>>> +};
->>>>>>> +
->>>>>>
->>>>>> Would be nice to standardize persistence attribute
->>>>>> (IIO_CHAN_INFO_PERSISTENCE).
->>>>>
->>>>>
->>>>> If I understand the behavior correctly it causes that the event 
->>>>> needs to be
->>>>> triggered at least n times before the event is reported by the 
->>>>> chip. In my
->>>>> opinion 'persistence' is not a good term for that. I'm not sure 
->>>>> what a
->>>>> better term is but I think it should go more in the direction of 
->>>>> ratelimit
->>>>> or something.
->>>>
->>>> I've seen this term used for many devices:
->>>>
->>>> *  TSL25911 ambient light sensor [1]
->>>>
->>>> [ One set of thresholds can be configured to trigger an interrupt 
->>>> only when
->>>>   the ambient light exceeds them for a configurable amount of time
->>>> (persistence)
->>>> ]
->>>>
->>>> * TAOS TCS34725 ambient light sensor [2]
->>>> [
->>>> The interrupt persistence filter allows the user to define the number
->>>> of consecutive
->>>>   out-of-threshold events necessary before generating an interrupt.
->>>> ]
->>>>
->>>> * Avago SAPDS-9950, Sensortek STK3310
->>>>
->>>> I think the TSL25911 datasheet best describes this parameter, as the
->>>> amount of time
->>>> that ambient light should exceed a threshold until an interrupt is
->>>> generated.
+>> On Wed, Apr 1, 2015 at 7:06 AM, Kuppuswamy Sathyanarayanan
+>> <sathyanarayanan.kuppuswamy@linux.intel.com> wrote:
 >>>
->>> Ok, that makes more sense. I misunderstood the initial description 
->>> as that
->>> the signal would have to go first above the threshold then below the
->>> threshold, and this for a number of times. Whereas it needs to 
->>> exceed the
->>> threshold for a certain amount of time before the event is 
->>> triggered. If
->>> it goes below the threshold before the persistence interval no event is
->>> triggered and the counter is reset.
+>>> Added support for Liteon 301 Ambient light sensor. Since
+>>> LTR301 and LTR501 are register compatible(and even have same
+>>> part id), LTR501 driver has been extended to support both
+>>> devices. LTR501 is similar to LTR301 in ALS sensing, But the
+>>> only difference is, LTR501 also supports proximity sensing.
+>>>
+>>> LTR501 - ALS + Proximity combo
+>>> LTR301 - ALS sensor.
+>>>
+>>> Following are the data sheets for both devices:
+>>>
+>>>
+>>> http://optoelectronics.liteon.com/upload/download/DS86-2013-0004/S_110_LTR-303ALS-01_DS_V1.pdf
+>>>
+>>>
+>>> http://optoelectronics.liteon.com/upload/download/DS86-2012-0006/S_110_LTR-501ALS-01_PrelimDS_ver1[1].pdf
 >>
->> Yes, it needs to cross the threshold n number of times before a event is
->> generated.
+>> One more thing. The datasheet you posted is for LTR303 not LTR301.
+>> Which chip are you adding support for?
 >
-> Wait. It needs to cross the threshold or it needs to stay above the 
-> threshold?
-Following is the logic for this chip.
+> No. I posted link for the wrong data sheet. I will fix it once I find a
+> proper link.
 
-If ( data > Upper_threshold or data  < Lower_threshold)
-     generate_event()
->
-> -- 
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
->
+Oh, then it's all right.
 
--- 
-Sathyanarayanan Kuppuswamy
-Android kernel developer
+Here is the link for my patchset:
+
+https://lkml.org/lkml/2015/3/31/197
+
+I guess you can take my first patch:
+* iio: light: ltr501: Fix alignment to match open parenthesis
+
+add to your patchset and rebase your changes on it.
+
+Then when I'll receive the LTR501 device I will rebase my other patch
+on your changes.
+
+thanks,
+Daniel.
