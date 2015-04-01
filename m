@@ -1,60 +1,89 @@
-Return-Path: <daniel.baluta@gmail.com>
+Return-Path: <jic23@jic23.retrosnub.co.uk>
+In-Reply-To: <551C0B95.9080802@metafoo.de>
+References: <cover.1427856701.git.sathyanarayanan.kuppuswamy@linux.intel.com> <212b45fac712e84a3cf0bc5955def7d1b683a6bd.1427856701.git.sathyanarayanan.kuppuswamy@linux.intel.com> <CAEnQRZC=GtB7r=QG7DkDJOFz8bBQ-V+VD-DNkVG50-LubLMr8w@mail.gmail.com> <551C030E.1090309@metafoo.de> <CAEnQRZCsUiH_+GGxqPpLUDHVh_iu6O1QNTH5xdZuKojG11QZFQ@mail.gmail.com> <551C0B95.9080802@metafoo.de>
 MIME-Version: 1.0
-Sender: daniel.baluta@gmail.com
-In-Reply-To: <55169621.3080101@kernel.org>
-References: <1427302832-9336-1-git-send-email-daniel.baluta@intel.com>
-	<1427302832-9336-4-git-send-email-daniel.baluta@intel.com>
-	<alpine.DEB.2.02.1503251817280.30570@pmeerw.net>
-	<CAEnQRZA6Y2GcNqi7UT5ipcHRPvA_tOh+Eqd4-v8tdQ0BaaPiRQ@mail.gmail.com>
-	<55169621.3080101@kernel.org>
-Date: Tue, 31 Mar 2015 17:33:08 +0300
-Message-ID: <CAEnQRZCepDiv5g92NS1NmyM+OUs7Yt1WgdtZW6KJKrVgopG3qw@mail.gmail.com>
-Subject: Re: [PATCH 3/3] iio: Documentation: Add initial documentaton for IIO
-From: Daniel Baluta <daniel.baluta@intel.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Daniel Baluta <daniel.baluta@intel.com>, Peter Meerwald <pmeerw@pmeerw.net>,
-	Joel Becker <jlbec@evilplan.org>, Lars-Peter Clausen <lars@metafoo.de>, Hartmut Knaack <knaack.h@gmx.de>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-	"octavian.purdila@intel.com" <octavian.purdila@intel.com>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain;
+ charset=UTF-8
+Subject: Re: [PATCH v1 2/3] iio: ltr501: Add interrupt rate control support
+From: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
+Date: Wed, 01 Apr 2015 21:19:51 +0100
+To: Lars-Peter Clausen <lars@metafoo.de>,Daniel Baluta <daniel.baluta@gmail.com>
+CC: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>,Jonathan Cameron <jic23@kernel.org>,Peter Meerwald <pmeerw@pmeerw.net>,"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Message-ID: <E734E069-A67B-417E-8A42-4F9F99969CD9@jic23.retrosnub.co.uk>
 List-ID: <linux-iio@vger.kernel.org>
 
-On Sat, Mar 28, 2015 at 1:53 PM, Jonathan Cameron <jic23@kernel.org> wrote:
-> On 25/03/15 19:28, Daniel Baluta wrote:
->> On Wed, Mar 25, 2015 at 7:22 PM, Peter Meerwald <pmeerw@pmeerw.net> wrote:
->>> On Wed, 25 Mar 2015, Daniel Baluta wrote:
->>>
->>>> This file wants to be a starting point document for anyone wanting
->>>> to use IIO configfs support or adding new IIO configfs functionality.
->>>
->>> typos below; I'm just trying to understand what's going on...
->>
->> Hi Peter,
->>
->> Thanks a lot for your time. I agree with all your comments for this patch
->> and will fix in v2.
->> <snip>
->>
->>>> +* IIO on IIO drivers
->>>
->>> ??
->>
->> I will add more details about this. I was trying to describe the IIO
->> elements that
->> would make sense to be configured via configfs.
->>
->> Have a look at Jonathan's email:
->>
->> http://marc.info/?l=linux-iio&m=142693832028677&w=2
->>
->> thanks,
->> Daniel.
->>
-> Might be premature / confusing to put those in the help file!
-> If anyone cares about our motivation for the structure here
-> they can dig out the email threads!
 
-Agree. Thanks Jonathan!
 
-Daniel.
+On 1 April 2015 16:15:33 BST, Lars-Peter Clausen <lars@metafoo.de> wrote:
+>On 04/01/2015 05:02 PM, Daniel Baluta wrote:
+>> On Wed, Apr 1, 2015 at 5:39 PM, Lars-Peter Clausen <lars@metafoo.de>
+>wrote:
+>>> On 04/01/2015 04:04 PM, Daniel Baluta wrote:
+>>> [...]
+>>>>
+>>>>
+>>>>> +static const struct iio_chan_spec_ext_info ltr501_ext_info[] = {
+>>>>> +       {
+>>>>> +               .name = "intr_persist",
+>>>>> +               .read = ltr501_read_intr_prst,
+>>>>> +               .write = ltr501_write_intr_prst,
+>>>>> +               .shared = IIO_SHARED_BY_TYPE,
+>>>>> +       },
+>>>>> +       {},
+>>>>> +};
+>>>>> +
+>>>>
+>>>> Would be nice to standardize persistence attribute
+>>>> (IIO_CHAN_INFO_PERSISTENCE).
+>>>
+>>>
+>>> If I understand the behavior correctly it causes that the event
+>needs to be
+>>> triggered at least n times before the event is reported by the chip.
+>In my
+>>> opinion 'persistence' is not a good term for that. I'm not sure what
+>a
+>>> better term is but I think it should go more in the direction of
+>ratelimit
+>>> or something.
+>>
+>> I've seen this term used for many devices:
+>>
+>> *  TSL25911 ambient light sensor [1]
+>>
+>> [ One set of thresholds can be configured to trigger an interrupt
+>only when
+>>   the ambient light exceeds them for a configurable amount of time
+>(persistence)
+>> ]
+>>
+>> * TAOS TCS34725 ambient light sensor [2]
+>> [
+>> The interrupt persistence filter allows the user to define the number
+>> of consecutive
+>>   out-of-threshold events necessary before generating an interrupt.
+>> ]
+>>
+>> * Avago SAPDS-9950, Sensortek STK3310
+>>
+>> I think the TSL25911 datasheet best describes this parameter, as the
+>> amount of time
+>> that ambient light should exceed a threshold until an interrupt is
+>generated.
+>
+>Ok, that makes more sense. I misunderstood the initial description as
+>that 
+>the signal would have to go first above the threshold then below the 
+>threshold, and this for a number of times. Whereas it needs to exceed
+>the 
+>threshold for a certain amount of time before the event is triggered.
+>If it 
+>goes below the threshold before the persistence interval no event is 
+>triggered and the counter is reset.
+
+See ABI docs for _period.
+This is indeed very common...
+
+
+-- 
+Sent from my Android device with K-9 Mail. Please excuse my brevity.
