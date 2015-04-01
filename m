@@ -1,76 +1,78 @@
-Return-Path: <daniel.baluta@gmail.com>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from smtp-out-023.synserver.de ([212.40.185.23]:1133 "EHLO
+	smtp-out-023.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751702AbbDAPPx (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 1 Apr 2015 11:15:53 -0400
+Message-ID: <551C0B95.9080802@metafoo.de>
+Date: Wed, 01 Apr 2015 17:15:33 +0200
+From: Lars-Peter Clausen <lars@metafoo.de>
 MIME-Version: 1.0
-In-Reply-To: <f807f1dedd46ef414e5b5160b4d5c8574ac5a2a7.1427861152.git.sathyanarayanan.kuppuswamy@linux.intel.com>
-References: <cover.1427861152.git.sathyanarayanan.kuppuswamy@linux.intel.com>
-	<f807f1dedd46ef414e5b5160b4d5c8574ac5a2a7.1427861152.git.sathyanarayanan.kuppuswamy@linux.intel.com>
-Date: Wed, 1 Apr 2015 18:10:02 +0300
-Message-ID: <CAEnQRZDJn2X0kWg4od2LMHVDu4kLmBjV9jJTu+GFqR86HDKMgw@mail.gmail.com>
-Subject: Re: [PATCH v1 1/1] iio: ltr301: Add support for ltr301
-From: Daniel Baluta <daniel.baluta@gmail.com>
-To: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
-Cc: Jonathan Cameron <jic23@kernel.org>, Peter Meerwald <pmeerw@pmeerw.net>,
+To: Daniel Baluta <daniel.baluta@gmail.com>
+CC: Kuppuswamy Sathyanarayanan
+	<sathyanarayanan.kuppuswamy@linux.intel.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
 	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
 	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-Content-Type: text/plain; charset=UTF-8
-List-ID: <linux-iio@vger.kernel.org>
+Subject: Re: [PATCH v1 2/3] iio: ltr501: Add interrupt rate control support
+References: <cover.1427856701.git.sathyanarayanan.kuppuswamy@linux.intel.com>	<212b45fac712e84a3cf0bc5955def7d1b683a6bd.1427856701.git.sathyanarayanan.kuppuswamy@linux.intel.com>	<CAEnQRZC=GtB7r=QG7DkDJOFz8bBQ-V+VD-DNkVG50-LubLMr8w@mail.gmail.com>	<551C030E.1090309@metafoo.de> <CAEnQRZCsUiH_+GGxqPpLUDHVh_iu6O1QNTH5xdZuKojG11QZFQ@mail.gmail.com>
+In-Reply-To: <CAEnQRZCsUiH_+GGxqPpLUDHVh_iu6O1QNTH5xdZuKojG11QZFQ@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Wed, Apr 1, 2015 at 7:06 AM, Kuppuswamy Sathyanarayanan
-<sathyanarayanan.kuppuswamy@linux.intel.com> wrote:
-> Added support for Liteon 301 Ambient light sensor. Since
-> LTR301 and LTR501 are register compatible(and even have same
-> part id), LTR501 driver has been extended to support both
-> devices. LTR501 is similar to LTR301 in ALS sensing, But the
-> only difference is, LTR501 also supports proximity sensing.
+On 04/01/2015 05:02 PM, Daniel Baluta wrote:
+> On Wed, Apr 1, 2015 at 5:39 PM, Lars-Peter Clausen <lars@metafoo.de> wrote:
+>> On 04/01/2015 04:04 PM, Daniel Baluta wrote:
+>> [...]
+>>>
+>>>
+>>>> +static const struct iio_chan_spec_ext_info ltr501_ext_info[] = {
+>>>> +       {
+>>>> +               .name = "intr_persist",
+>>>> +               .read = ltr501_read_intr_prst,
+>>>> +               .write = ltr501_write_intr_prst,
+>>>> +               .shared = IIO_SHARED_BY_TYPE,
+>>>> +       },
+>>>> +       {},
+>>>> +};
+>>>> +
+>>>
+>>> Would be nice to standardize persistence attribute
+>>> (IIO_CHAN_INFO_PERSISTENCE).
+>>
+>>
+>> If I understand the behavior correctly it causes that the event needs to be
+>> triggered at least n times before the event is reported by the chip. In my
+>> opinion 'persistence' is not a good term for that. I'm not sure what a
+>> better term is but I think it should go more in the direction of ratelimit
+>> or something.
 >
-> LTR501 - ALS + Proximity combo
-> LTR301 - ALS sensor.
-
-As I'm adding support for LTR559 sensor, we should agree
-on what's the best way to this.
-
-I suggest we should add a ltr501_chip_info for each chip type as
-done in [1]
-
->  static int ltr501_write_contr(struct i2c_client *client, u8 als_val, u8 ps_val)
->  {
->         int ret = i2c_smbus_write_byte_data(client, LTR501_ALS_CONTR, als_val);
-> @@ -347,6 +377,7 @@ static int ltr501_probe(struct i2c_client *client,
->         data = iio_priv(indio_dev);
->         i2c_set_clientdata(client, indio_dev);
->         data->client = client;
-> +       data->chip_id = id->driver_data;
-
-id can be NULL here if enumerated via ACPI.
-
->         mutex_init(&data->lock_als);
->         mutex_init(&data->lock_ps);
+> I've seen this term used for many devices:
 >
-> @@ -357,12 +388,24 @@ static int ltr501_probe(struct i2c_client *client,
->                 return -ENODEV;
+> *  TSL25911 ambient light sensor [1]
 >
->         indio_dev->dev.parent = &client->dev;
-> -       indio_dev->info = &ltr501_info;
-> -       indio_dev->channels = ltr501_channels;
->         indio_dev->num_channels = ARRAY_SIZE(ltr501_channels);
->         indio_dev->name = LTR501_DRV_NAME;
-
-Name should be taken via id->name or ACPI.
-
->         indio_dev->modes = INDIO_DIRECT_MODE;
+> [ One set of thresholds can be configured to trigger an interrupt only when
+>   the ambient light exceeds them for a configurable amount of time (persistence)
+> ]
 >
-> +       switch (data->chip_id) {
-> +       case LTR301:
-> +               indio_dev->info = &ltr301_info;
-> +               indio_dev->channels = ltr301_channels;
-> +               break;
-> +       case LTR501:
-> +               indio_dev->info = &ltr501_info;
-> +               indio_dev->channels = ltr501_channels;
-> +               break;
-> +       default:
-> +               pr_warn("ltr chip invalid\n");
-We do have  dev struct here, so we should use dev_warn.
+> * TAOS TCS34725 ambient light sensor [2]
+> [
+> The interrupt persistence filter allows the user to define the number
+> of consecutive
+>   out-of-threshold events necessary before generating an interrupt.
+> ]
+>
+> * Avago SAPDS-9950, Sensortek STK3310
+>
+> I think the TSL25911 datasheet best describes this parameter, as the
+> amount of time
+> that ambient light should exceed a threshold until an interrupt is generated.
 
-Daniel.
+Ok, that makes more sense. I misunderstood the initial description as that 
+the signal would have to go first above the threshold then below the 
+threshold, and this for a number of times. Whereas it needs to exceed the 
+threshold for a certain amount of time before the event is triggered. If it 
+goes below the threshold before the persistence interval no event is 
+triggered and the counter is reset.
 
-[1]  https://lkml.org/lkml/2015/3/31/198
