@@ -1,83 +1,167 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-wi0-f173.google.com ([209.85.212.173]:34482 "EHLO
-	mail-wi0-f173.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752536AbbDALCN (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 1 Apr 2015 07:02:13 -0400
-Received: by wixo5 with SMTP id o5so27027854wix.1
-        for <linux-iio@vger.kernel.org>; Wed, 01 Apr 2015 04:02:12 -0700 (PDT)
-Date: Wed, 1 Apr 2015 14:01:11 +0300
-From: Cristina Opriceana <cristina.opriceana@gmail.com>
-To: outreachy-kernel@googlegroups.com
-Cc: linux-iio@vger.kernel.org, outreachy-kernel@googlegroups.com,
-	daniel.baluta@gmail.com
-Subject: [PATCH 1/2] iio: magnetometer: mag3110: Place driver on standby on
- error
-Message-ID: <33355f963dc3956b6b75c6915b1e3f616c4411c1.1427797741.git.cristina.opriceana@gmail.com>
-References: <cover.1427797741.git.cristina.opriceana@gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <cover.1427797741.git.cristina.opriceana@gmail.com>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <sathyanarayanan.kuppuswamy@linux.intel.com>
+From: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
+To: jic23@kernel.org,
+	pmeerw@pmeerw.net
+Cc: linux-iio@vger.kernel.org,
+	srinivas.pandruvada@linux.intel.com,
+	sathyanarayanan.kuppuswamy@linux.intel.com
+Subject: [PATCH v1 1/1] iio: ltr301: Add support for ltr301
+Date: Tue, 31 Mar 2015 21:06:58 -0700
+Message-Id: <f807f1dedd46ef414e5b5160b4d5c8574ac5a2a7.1427861152.git.sathyanarayanan.kuppuswamy@linux.intel.com>
+In-Reply-To: <cover.1427861152.git.sathyanarayanan.kuppuswamy@linux.intel.com>
+References: <cover.1427861152.git.sathyanarayanan.kuppuswamy@linux.intel.com>
+In-Reply-To: <cover.1427861152.git.sathyanarayanan.kuppuswamy@linux.intel.com>
+References: <cover.1427861152.git.sathyanarayanan.kuppuswamy@linux.intel.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-Place driver on standby mode on error in order to prevent wasting
-power. Move standby function above to be seen by the new call.
+Added support for Liteon 301 Ambient light sensor. Since
+LTR301 and LTR501 are register compatible(and even have same
+part id), LTR501 driver has been extended to support both
+devices. LTR501 is similar to LTR301 in ALS sensing, But the
+only difference is, LTR501 also supports proximity sensing.
 
-Signed-off-by: Cristina Opriceana <cristina.opriceana@gmail.com>
+LTR501 - ALS + Proximity combo
+LTR301 - ALS sensor.
+
+Following are the data sheets for both devices:
+
+http://optoelectronics.liteon.com/upload/download/DS86-2013-0004/S_110_LTR-303ALS-01_DS_V1.pdf
+
+http://optoelectronics.liteon.com/upload/download/DS86-2012-0006/S_110_LTR-501ALS-01_PrelimDS_ver1[1].pdf
+
+Signed-off-by: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
 ---
- drivers/iio/magnetometer/mag3110.c | 18 ++++++++++--------
- 1 file changed, 10 insertions(+), 8 deletions(-)
+ drivers/iio/light/Kconfig  |  2 +-
+ drivers/iio/light/ltr501.c | 50 +++++++++++++++++++++++++++++++++++++++++++---
+ 2 files changed, 48 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/iio/magnetometer/mag3110.c b/drivers/iio/magnetometer/mag3110.c
-index e3106b4..261d517 100644
---- a/drivers/iio/magnetometer/mag3110.c
-+++ b/drivers/iio/magnetometer/mag3110.c
-@@ -321,6 +321,12 @@ static const struct iio_info mag3110_info = {
+diff --git a/drivers/iio/light/Kconfig b/drivers/iio/light/Kconfig
+index a224afd..4b2ec51 100644
+--- a/drivers/iio/light/Kconfig
++++ b/drivers/iio/light/Kconfig
+@@ -159,7 +159,7 @@ config LTR501
+ 	select IIO_TRIGGERED_BUFFER
+ 	help
+ 	 If you say yes here you get support for the Lite-On LTR-501ALS-01
+-	 ambient light and proximity sensor.
++	 ambient light and proximity sensor or LTR301 Ambient light sensor.
  
- static const unsigned long mag3110_scan_masks[] = {0x7, 0xf, 0};
+ 	 This driver can also be built as a module.  If so, the module
+          will be called ltr501.
+diff --git a/drivers/iio/light/ltr501.c b/drivers/iio/light/ltr501.c
+index 62b7072..c113a23 100644
+--- a/drivers/iio/light/ltr501.c
++++ b/drivers/iio/light/ltr501.c
+@@ -45,10 +45,17 @@
  
-+static int mag3110_standby(struct mag3110_data *data)
-+{
-+	return i2c_smbus_write_byte_data(data->client, MAG3110_CTRL_REG1,
-+		data->ctrl_reg1 & ~MAG3110_CTRL_AC);
-+}
+ #define LTR501_PS_DATA_MASK 0x7ff
+ 
++enum ltr_chipset {
++	LTR301,
++	LTR501,
++	LTR_MAX_CHIPS /* this must be last */
++};
 +
- static int mag3110_probe(struct i2c_client *client,
- 			 const struct i2c_device_id *id)
+ struct ltr501_data {
+ 	struct i2c_client *client;
+ 	struct mutex lock_als, lock_ps;
+ 	u8 als_contr, ps_contr;
++	u8 chip_id;
+ };
+ 
+ static int ltr501_drdy(struct ltr501_data *data, u8 drdy_mask)
+@@ -124,6 +131,13 @@ static const struct iio_chan_spec ltr501_channels[] = {
+ 	IIO_CHAN_SOFT_TIMESTAMP(3),
+ };
+ 
++static const struct iio_chan_spec ltr301_channels[] = {
++	LTR501_INTENSITY_CHANNEL(0, LTR501_ALS_DATA0, IIO_MOD_LIGHT_BOTH, 0),
++	LTR501_INTENSITY_CHANNEL(1, LTR501_ALS_DATA1, IIO_MOD_LIGHT_IR,
++		BIT(IIO_CHAN_INFO_SCALE)),
++	IIO_CHAN_SOFT_TIMESTAMP(3),
++};
++
+ static const int ltr501_ps_gain[4][2] = {
+ 	{1, 0}, {0, 250000}, {0, 125000}, {0, 62500}
+ };
+@@ -244,10 +258,19 @@ static struct attribute *ltr501_attributes[] = {
+ 	NULL
+ };
+ 
++static struct attribute *ltr301_attributes[] = {
++	&iio_const_attr_in_intensity_scale_available.dev_attr.attr,
++	NULL
++};
++
+ static const struct attribute_group ltr501_attribute_group = {
+ 	.attrs = ltr501_attributes,
+ };
+ 
++static const struct attribute_group ltr301_attribute_group = {
++	.attrs = ltr301_attributes,
++};
++
+ static const struct iio_info ltr501_info = {
+ 	.read_raw = ltr501_read_raw,
+ 	.write_raw = ltr501_write_raw,
+@@ -255,6 +278,13 @@ static const struct iio_info ltr501_info = {
+ 	.driver_module = THIS_MODULE,
+ };
+ 
++static const struct iio_info ltr301_info = {
++	.read_raw = ltr501_read_raw,
++	.write_raw = ltr501_write_raw,
++	.attrs = &ltr301_attribute_group,
++	.driver_module = THIS_MODULE,
++};
++
+ static int ltr501_write_contr(struct i2c_client *client, u8 als_val, u8 ps_val)
  {
-@@ -360,12 +366,12 @@ static int mag3110_probe(struct i2c_client *client,
- 	ret = i2c_smbus_write_byte_data(client, MAG3110_CTRL_REG2,
- 		MAG3110_CTRL_AUTO_MRST_EN);
+ 	int ret = i2c_smbus_write_byte_data(client, LTR501_ALS_CONTR, als_val);
+@@ -347,6 +377,7 @@ static int ltr501_probe(struct i2c_client *client,
+ 	data = iio_priv(indio_dev);
+ 	i2c_set_clientdata(client, indio_dev);
+ 	data->client = client;
++	data->chip_id = id->driver_data;
+ 	mutex_init(&data->lock_als);
+ 	mutex_init(&data->lock_ps);
+ 
+@@ -357,12 +388,24 @@ static int ltr501_probe(struct i2c_client *client,
+ 		return -ENODEV;
+ 
+ 	indio_dev->dev.parent = &client->dev;
+-	indio_dev->info = &ltr501_info;
+-	indio_dev->channels = ltr501_channels;
+ 	indio_dev->num_channels = ARRAY_SIZE(ltr501_channels);
+ 	indio_dev->name = LTR501_DRV_NAME;
+ 	indio_dev->modes = INDIO_DIRECT_MODE;
+ 
++	switch (data->chip_id) {
++	case LTR301:
++		indio_dev->info = &ltr301_info;
++		indio_dev->channels = ltr301_channels;
++		break;
++	case LTR501:
++		indio_dev->info = &ltr501_info;
++		indio_dev->channels = ltr501_channels;
++		break;
++	default:
++		pr_warn("ltr chip invalid\n");
++		return -ENODEV;
++	}
++
+ 	ret = ltr501_init(data);
  	if (ret < 0)
--		return ret;
-+		goto standby_on_error;
+ 		return ret;
+@@ -422,7 +465,8 @@ static int ltr501_resume(struct device *dev)
+ static SIMPLE_DEV_PM_OPS(ltr501_pm_ops, ltr501_suspend, ltr501_resume);
  
- 	ret = iio_triggered_buffer_setup(indio_dev, NULL,
- 		mag3110_trigger_handler, NULL);
- 	if (ret < 0)
--		return ret;
-+		goto standby_on_error;
- 
- 	ret = iio_device_register(indio_dev);
- 	if (ret < 0)
-@@ -374,15 +380,11 @@ static int mag3110_probe(struct i2c_client *client,
- 
- buffer_cleanup:
- 	iio_triggered_buffer_cleanup(indio_dev);
-+standby_on_error:
-+	mag3110_standby(iio_priv(indio_dev));
- 	return ret;
- }
- 
--static int mag3110_standby(struct mag3110_data *data)
--{
--	return i2c_smbus_write_byte_data(data->client, MAG3110_CTRL_REG1,
--		data->ctrl_reg1 & ~MAG3110_CTRL_AC);
--}
--
- static int mag3110_remove(struct i2c_client *client)
- {
- 	struct iio_dev *indio_dev = i2c_get_clientdata(client);
+ static const struct i2c_device_id ltr501_id[] = {
+-	{ "ltr501", 0 },
++	{ "ltr301", LTR301 },
++	{ "ltr501", LTR501 },
+ 	{ }
+ };
+ MODULE_DEVICE_TABLE(i2c, ltr501_id);
 -- 
 1.9.1
-
