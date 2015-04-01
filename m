@@ -1,200 +1,73 @@
-Return-Path: <antoine.tenart@free-electrons.com>
-Date: Wed, 1 Apr 2015 15:06:08 +0200
-From: Antoine Tenart <antoine.tenart@free-electrons.com>
-To: Peter Meerwald <pmeerw@pmeerw.net>
-Cc: Antoine Tenart <antoine.tenart@free-electrons.com>,
-	sebastian.hesselbarth@gmail.com, jic23@kernel.org, knaack.h@gmx.de,
-	lars@metafoo.de, zmxu@marvell.com, jszhang@marvell.com,
-	yrliao@marvell.com, linux-iio@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/4] iio: adc: add support for Berlin
-Message-ID: <20150401130608.GB10772@kwain>
-References: <1426858565-31053-1-git-send-email-antoine.tenart@free-electrons.com>
- <1426858565-31053-2-git-send-email-antoine.tenart@free-electrons.com>
- <alpine.DEB.2.02.1503201819010.21628@pmeerw.net>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-wi0-f182.google.com ([209.85.212.182]:37609 "EHLO
+	mail-wi0-f182.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752929AbbDAOEa (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 1 Apr 2015 10:04:30 -0400
+Received: by wiaa2 with SMTP id a2so67832336wia.0
+        for <linux-iio@vger.kernel.org>; Wed, 01 Apr 2015 07:04:28 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-In-Reply-To: <alpine.DEB.2.02.1503201819010.21628@pmeerw.net>
-List-ID: <linux-iio@vger.kernel.org>
+In-Reply-To: <212b45fac712e84a3cf0bc5955def7d1b683a6bd.1427856701.git.sathyanarayanan.kuppuswamy@linux.intel.com>
+References: <cover.1427856701.git.sathyanarayanan.kuppuswamy@linux.intel.com>
+	<212b45fac712e84a3cf0bc5955def7d1b683a6bd.1427856701.git.sathyanarayanan.kuppuswamy@linux.intel.com>
+Date: Wed, 1 Apr 2015 17:04:28 +0300
+Message-ID: <CAEnQRZC=GtB7r=QG7DkDJOFz8bBQ-V+VD-DNkVG50-LubLMr8w@mail.gmail.com>
+Subject: Re: [PATCH v1 2/3] iio: ltr501: Add interrupt rate control support
+From: Daniel Baluta <daniel.baluta@gmail.com>
+To: Kuppuswamy Sathyanarayanan
+	<sathyanarayanan.kuppuswamy@linux.intel.com>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Content-Type: text/plain; charset=UTF-8
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Peter,
-
-On Fri, Mar 20, 2015 at 06:43:15PM +0100, Peter Meerwald wrote:
+On Wed, Apr 1, 2015 at 5:55 AM, Kuppuswamy Sathyanarayanan
+<sathyanarayanan.kuppuswamy@linux.intel.com> wrote:
+> Added rate control support for ALS and proximity
+> threshold interrupts.
 >
-> probably these regmap_read() / _write() pairs could be MACRO()'d away 
-> somehow
+> Setting <n> to ALS intr_persist sysfs node would
+> generate interrupt whenever ALS data cross either
+> upper or lower threshold limits <n> number of times.
+> Similarly setting <m> to proximity intr_persist sysfs
+> node would genere interrupt whenever proximity data falls
+> outside threshold limit <m> number of times.
+>
 
-Sure.
+<snip>
 
-> 
-> the prefix SYSCTL prefix is unexpected, couldn't you use BERLIN_ or 
-> something?
+> +static ssize_t ltr501_read_intr_prst(struct iio_dev *indio_dev,
+> +                                  uintptr_t private,
+> +                                  const struct iio_chan_spec *chan,
+> +                                  char *buf)
+> +{
+> +       struct ltr501_data *data = iio_priv(indio_dev);
+> +       int ret = -EINVAL;
+> +
+> +       switch (chan->type) {
+> +       case IIO_INTENSITY:
+> +               mutex_lock(&data->lock_als);
+> +               ret = i2c_smbus_read_byte_data(data->client, LTR501_INTR_PRST);
+> +               mutex_unlock(&data->lock_als);
 
-I'll use BERLIN2_ instead of SYSCTL_
+I am not sure I understand why is the mutex needed here? AFAIK I2C transactions
+are serialized.
 
-> 
-> > +#define SYSCTL_SM_CTRL				0x14
-> > +#define  SYSCTL_SM_CTRL_SM_SOC_INT		BIT(1)
-> 
-> whitespace issue?
+<snip>
 
-I added a whitespace to put the bit definitions of a register together,
-so that the reading is easier.
+> +static const struct iio_chan_spec_ext_info ltr501_ext_info[] = {
+> +       {
+> +               .name = "intr_persist",
+> +               .read = ltr501_read_intr_prst,
+> +               .write = ltr501_write_intr_prst,
+> +               .shared = IIO_SHARED_BY_TYPE,
+> +       },
+> +       {},
+> +};
+> +
+Would be nice to standardize persistence attribute (IIO_CHAN_INFO_PERSISTENCE).
 
-> 
-> > +#define  SYSCTL_SM_CTRL_SOC_SM_INT		BIT(2)
-> > +#define  SYSCTL_SM_CTRL_ADC_SEL(x)		(BIT(x) << 5)	/* 0-15 */
-> > +#define  SYSCTL_SM_CTRL_ADC_SEL_MASK		(0xf << 5)
-> > +#define  SYSCTL_SM_CTRL_ADC_POWER		BIT(9)
-> > +#define  SYSCTL_SM_CTRL_ADC_CLKSEL_DIV2		(0x0 << 10)
-> > +#define  SYSCTL_SM_CTRL_ADC_CLKSEL_DIV3		(0x1 << 10)
-> > +#define  SYSCTL_SM_CTRL_ADC_CLKSEL_DIV4		(0x2 << 10)
-> > +#define  SYSCTL_SM_CTRL_ADC_CLKSEL_DIV8		(0x3 << 10)
-> > +#define  SYSCTL_SM_CTRL_ADC_CLKSEL_MASK		(0x3 << 10)
-> > +#define  SYSCTL_SM_CTRL_ADC_START		BIT(12)
-> > +#define  SYSCTL_SM_CTRL_ADC_RESET		BIT(13)
-> > +#define  SYSCTL_SM_CTRL_ADC_BANDGAP_RDY		BIT(14)
-> > +#define  SYSCTL_SM_CTRL_ADC_CONT_SINGLE		(0x0 << 15)
-> > +#define  SYSCTL_SM_CTRL_ADC_CONT_CONTINUOUS	(0x1 << 15)
-> > +#define  SYSCTL_SM_CTRL_ADC_BUFFER_EN		BIT(16)
-> > +#define  SYSCTL_SM_CTRL_ADC_VREF_EXT		(0x0 << 17)
-> > +#define  SYSCTL_SM_CTRL_ADC_VREF_INT		(0x1 << 17)
-> > +#define  SYSCTL_SM_CTRL_ADC_ROTATE		BIT(19)
-> > +#define  SYSCTL_SM_CTRL_TSEN_EN			BIT(20)
-> > +#define  SYSCTL_SM_CTRL_TSEN_CLK_SEL_125	(0x0 << 21)	/* 1.25 MHz */
-> > +#define  SYSCTL_SM_CTRL_TSEN_CLK_SEL_250	(0x1 << 21)	/* 2.5 MHz */
-> > +#define  SYSCTL_SM_CTRL_TSEN_MODE_0_125		(0x0 << 22)	/* 0-125 C */
-> > +#define  SYSCTL_SM_CTRL_TSEN_MODE_10_50		(0x1 << 22)	/* 10-50 C */
-
-> > +		{							\
-> > +			.channel	= n,				\
-> > +			.datasheet_name	= "channel"#n,			\
-> > +			.type		= t,				\
-> > +			.indexed	= 1,				\
-> > +			.scan_index	= n,				\
-> > +			.scan_type	= {				\
-> > +				.sign		= 'u',			\
-> > +				.realbits	= 64,			\
-> > +				.storagebits	= 64,			\
-> > +			},						\
-> 
-> the data read is not 64 bit I think
-> 
-> the driver does not seem to support buffered reads, so scan_type and 
-> scan_index can be removed
-
-OK.
-
-> > +			.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),	\
-> > +		}
-> > +
-> > +#define N_CHANNELS		8
-> 
-> not prefixed; would be good if you could do with ARRAY_SIZE over 
-> _adc_channels instead
-
-OK.
-
-> 
-> > +	BERLIN2_ADC_CHANNEL(0, IIO_VOLTAGE),	/* external input */
-> > +	BERLIN2_ADC_CHANNEL(1, IIO_VOLTAGE),	/* external input */
-> > +	BERLIN2_ADC_CHANNEL(2, IIO_VOLTAGE),	/* external input */
-> > +	BERLIN2_ADC_CHANNEL(3, IIO_VOLTAGE),	/* external input */
-> > +	BERLIN2_ADC_CHANNEL(4, IIO_VOLTAGE),	/* reserved */
-> > +	BERLIN2_ADC_CHANNEL(5, IIO_VOLTAGE),	/* reserved */
-> > +	BERLIN2_ADC_CHANNEL(6, IIO_TEMP),	/* temperature sensor */
-> 
-> the temperature channel is not indexed (there is only one)
-
-I'll update.
-
-> 
-> > +	BERLIN2_ADC_CHANNEL(7, IIO_VOLTAGE),	/* reserved */
-> > +	{					/* timestamp */
-> 
-> 
-> use IIO_CHAN_SOFT_TIMESTAMP(N_CHANNELS) here
-
-Oh, nice! I'll update.
-
-> > +
-> > +	switch (mask) {
-> > +	case IIO_CHAN_INFO_RAW:
-> > +		if (chan->type == IIO_VOLTAGE) {
-> > +			*val = berlin2_adc_read(idev, chan->channel);
-> > +			if (*val < 0)
-> > +				return *val;
-> 
-> is this milli-Volts?
-
-Good question. I think so, but I do not have much information about
-the !tsen channels.
-
-> 
-> > +
-> > +			return IIO_VAL_INT;
-> > +		} else if (chan->type == IIO_TEMP) {
-> > +			temp = berlin2_adc_tsen_read(idev);
-> > +			if (temp < 0)
-> > +				return temp;
-> > +
-> > +			if (temp > 2047)
-> > +				temp = -(4096 - temp);
-> > +
-> > +			/* Convert to Celsius */
-> > +			*val = (temp * 100) / 264 - 270;
-> 
-> use SCALE and OFFSET IIO_CHAN_INFO_s to that the temperature can be 
-> interpreted as milli-Celsius (or use _PROCESSED, not _RAW)
-
-I'll fix that.
-
-> > +
-> > +static int berlin2_adc_probe(struct platform_device *pdev)
-> > +{
-> > +	struct iio_dev *idev;
-> 
-> people prefer indio_dev instead of idev
-
-OK.
-
-> 
-> > +	struct berlin2_adc_priv *priv;
-> > +	struct device_node *parent_np = of_get_parent(pdev->dev.of_node);
-> > +	int ret, val;
-> > +
-> > +	idev = iio_device_alloc(sizeof(struct berlin2_adc_priv));
-> 
-> devm_iio_device_alloc?
-
-Yep, that's better.
-
-> > +
-> > +	ret = iio_device_register(idev);
-> 
-> devm_iio_device_register?
-
-Ditto.
-
-> 
-> > +	if (ret) {
-> > +		dev_err(&pdev->dev,  "Failed to register the IIO device: %d\n",
-> > +			ret);
-> 
-> probably not the most useful error msg and about the only logging; drop 
-> it?
-> 
-> and just do 
-> return devm_iio_device_register(idev);
-
-OK.
-
-
-Thanks for the review!
-
-Antoine
-
--- 
-Antoine Ténart, Free Electrons
-Embedded Linux, Kernel and Android engineering
-http://free-electrons.com
+thanks,
+Daniel.
