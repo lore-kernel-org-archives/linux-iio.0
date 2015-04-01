@@ -1,6 +1,6 @@
 Return-Path: <sathyanarayanan.kuppuswamy@linux.intel.com>
-Message-ID: <551C2D58.2040902@linux.intel.com>
-Date: Wed, 01 Apr 2015 10:39:36 -0700
+Message-ID: <551C2BD0.4060707@linux.intel.com>
+Date: Wed, 01 Apr 2015 10:33:04 -0700
 From: sathyanarayanan kuppuswamy <sathyanarayanan.kuppuswamy@linux.intel.com>
 Reply-To: sathyanarayanan.kuppuswamy@linux.intel.com
 MIME-Version: 1.0
@@ -9,82 +9,65 @@ CC: Jonathan Cameron <jic23@kernel.org>,
  Peter Meerwald <pmeerw@pmeerw.net>,
  "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
  Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-Subject: Re: [PATCH v1 1/1] iio: ltr301: Add support for ltr301
-References: <cover.1427861152.git.sathyanarayanan.kuppuswamy@linux.intel.com>	<f807f1dedd46ef414e5b5160b4d5c8574ac5a2a7.1427861152.git.sathyanarayanan.kuppuswamy@linux.intel.com> <CAEnQRZDJn2X0kWg4od2LMHVDu4kLmBjV9jJTu+GFqR86HDKMgw@mail.gmail.com>
-In-Reply-To: <CAEnQRZDJn2X0kWg4od2LMHVDu4kLmBjV9jJTu+GFqR86HDKMgw@mail.gmail.com>
+Subject: Re: [PATCH v1 2/3] iio: ltr501: Add interrupt rate control support
+References: <cover.1427856701.git.sathyanarayanan.kuppuswamy@linux.intel.com>	<212b45fac712e84a3cf0bc5955def7d1b683a6bd.1427856701.git.sathyanarayanan.kuppuswamy@linux.intel.com> <CAEnQRZC=GtB7r=QG7DkDJOFz8bBQ-V+VD-DNkVG50-LubLMr8w@mail.gmail.com>
+In-Reply-To: <CAEnQRZC=GtB7r=QG7DkDJOFz8bBQ-V+VD-DNkVG50-LubLMr8w@mail.gmail.com>
 Content-Type: text/plain; charset=utf-8; format=flowed
 List-ID: <linux-iio@vger.kernel.org>
 
-Hi Daniel,
 
-Thanks for the review comments.
 
-On 04/01/2015 08:10 AM, Daniel Baluta wrote:
-> On Wed, Apr 1, 2015 at 7:06 AM, Kuppuswamy Sathyanarayanan
+On 04/01/2015 07:04 AM, Daniel Baluta wrote:
+> On Wed, Apr 1, 2015 at 5:55 AM, Kuppuswamy Sathyanarayanan
 > <sathyanarayanan.kuppuswamy@linux.intel.com> wrote:
->> Added support for Liteon 301 Ambient light sensor. Since
->> LTR301 and LTR501 are register compatible(and even have same
->> part id), LTR501 driver has been extended to support both
->> devices. LTR501 is similar to LTR301 in ALS sensing, But the
->> only difference is, LTR501 also supports proximity sensing.
+>> Added rate control support for ALS and proximity
+>> threshold interrupts.
 >>
->> LTR501 - ALS + Proximity combo
->> LTR301 - ALS sensor.
-> As I'm adding support for LTR559 sensor, we should agree
-> on what's the best way to this.
->
-> I suggest we should add a ltr501_chip_info for each chip type as
-> done in [1]
-Can you give me the link for your patch set ? If its just chip id , then 
-there is no
-need for a special structure for it. But if you have more data to be 
-stored then it
-would make sense.
->
->>   static int ltr501_write_contr(struct i2c_client *client, u8 als_val, u8 ps_val)
->>   {
->>          int ret = i2c_smbus_write_byte_data(client, LTR501_ALS_CONTR, als_val);
->> @@ -347,6 +377,7 @@ static int ltr501_probe(struct i2c_client *client,
->>          data = iio_priv(indio_dev);
->>          i2c_set_clientdata(client, indio_dev);
->>          data->client = client;
->> +       data->chip_id = id->driver_data;
-> id can be NULL here if enumerated via ACPI.
-I will fix it.
->
->>          mutex_init(&data->lock_als);
->>          mutex_init(&data->lock_ps);
+>> Setting <n> to ALS intr_persist sysfs node would
+>> generate interrupt whenever ALS data cross either
+>> upper or lower threshold limits <n> number of times.
+>> Similarly setting <m> to proximity intr_persist sysfs
+>> node would genere interrupt whenever proximity data falls
+>> outside threshold limit <m> number of times.
 >>
->> @@ -357,12 +388,24 @@ static int ltr501_probe(struct i2c_client *client,
->>                  return -ENODEV;
->>
->>          indio_dev->dev.parent = &client->dev;
->> -       indio_dev->info = &ltr501_info;
->> -       indio_dev->channels = ltr501_channels;
->>          indio_dev->num_channels = ARRAY_SIZE(ltr501_channels);
->>          indio_dev->name = LTR501_DRV_NAME;
-> Name should be taken via id->name or ACPI.
-Agree. But it needs be fixed by a separate patch.
+> <snip>
 >
->>          indio_dev->modes = INDIO_DIRECT_MODE;
->>
->> +       switch (data->chip_id) {
->> +       case LTR301:
->> +               indio_dev->info = &ltr301_info;
->> +               indio_dev->channels = ltr301_channels;
->> +               break;
->> +       case LTR501:
->> +               indio_dev->info = &ltr501_info;
->> +               indio_dev->channels = ltr501_channels;
->> +               break;
->> +       default:
->> +               pr_warn("ltr chip invalid\n");
-> We do have  dev struct here, so we should use dev_warn.
-ok. I will fix it.
+>> +static ssize_t ltr501_read_intr_prst(struct iio_dev *indio_dev,
+>> +                                  uintptr_t private,
+>> +                                  const struct iio_chan_spec *chan,
+>> +                                  char *buf)
+>> +{
+>> +       struct ltr501_data *data = iio_priv(indio_dev);
+>> +       int ret = -EINVAL;
+>> +
+>> +       switch (chan->type) {
+>> +       case IIO_INTENSITY:
+>> +               mutex_lock(&data->lock_als);
+>> +               ret = i2c_smbus_read_byte_data(data->client, LTR501_INTR_PRST);
+>> +               mutex_unlock(&data->lock_als);
+> I am not sure I understand why is the mutex needed here? AFAIK I2C transactions
+> are serialized.
+That's mutex is to protect the ALS register updates. I want it 
+serialized so that no data can be read when we are changing the control 
+settings.
 >
+> <snip>
+>
+>> +static const struct iio_chan_spec_ext_info ltr501_ext_info[] = {
+>> +       {
+>> +               .name = "intr_persist",
+>> +               .read = ltr501_read_intr_prst,
+>> +               .write = ltr501_write_intr_prst,
+>> +               .shared = IIO_SHARED_BY_TYPE,
+>> +       },
+>> +       {},
+>> +};
+>> +
+> Would be nice to standardize persistence attribute (IIO_CHAN_INFO_PERSISTENCE).
+Agreed. I will work on it.
+>
+> thanks,
 > Daniel.
->
-> [1]  https://lkml.org/lkml/2015/3/31/198
 >
 
 -- 
