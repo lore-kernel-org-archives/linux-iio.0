@@ -1,80 +1,47 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-wi0-f175.google.com ([209.85.212.175]:37554 "EHLO
-	mail-wi0-f175.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751695AbbDAPvX (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 1 Apr 2015 11:51:23 -0400
-Received: by wiaa2 with SMTP id a2so71981230wia.0
-        for <linux-iio@vger.kernel.org>; Wed, 01 Apr 2015 08:51:22 -0700 (PDT)
-Date: Wed, 1 Apr 2015 18:50:17 +0300
-From: Cristina Opriceana <cristina.opriceana@gmail.com>
-To: outreachy-kernel@googlegroups.com
-Cc: outreachy-kernel@googlegroups.com, linux-iio@vger.kernel.org
-Subject: [PATCH v2] iio: light: ltr501: Powerdown device on error
-Message-ID: <ba26e935b4fce83d6463762491960f0e6e13f498.1427903144.git.cristina.opriceana@gmail.com>
+Return-Path: <daniel.baluta@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Sender: daniel.baluta@gmail.com
+In-Reply-To: <f807f1dedd46ef414e5b5160b4d5c8574ac5a2a7.1427861152.git.sathyanarayanan.kuppuswamy@linux.intel.com>
+References: <cover.1427861152.git.sathyanarayanan.kuppuswamy@linux.intel.com>
+	<f807f1dedd46ef414e5b5160b4d5c8574ac5a2a7.1427861152.git.sathyanarayanan.kuppuswamy@linux.intel.com>
+Date: Wed, 1 Apr 2015 18:34:46 +0300
+Message-ID: <CAEnQRZBUS6LDLJUMWafVV4hs9kwovkSqD1Tg9XJA-ZkG3zuCyw@mail.gmail.com>
+Subject: Re: [PATCH v1 1/1] iio: ltr301: Add support for ltr301
+From: Daniel Baluta <daniel.baluta@intel.com>
+To: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
+Cc: Jonathan Cameron <jic23@kernel.org>, Peter Meerwald <pmeerw@pmeerw.net>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Content-Type: text/plain; charset=UTF-8
+List-ID: <linux-iio@vger.kernel.org>
 
-Power down device when an error occurs  in order to avoid wasting
-power. Move powerdown function up to be seen by the new call and
-align parameters for the ltr501_write_contr() call.
+On Wed, Apr 1, 2015 at 7:06 AM, Kuppuswamy Sathyanarayanan
+<sathyanarayanan.kuppuswamy@linux.intel.com> wrote:
+> Added support for Liteon 301 Ambient light sensor. Since
+> LTR301 and LTR501 are register compatible(and even have same
+> part id), LTR501 driver has been extended to support both
+> devices. LTR501 is similar to LTR301 in ALS sensing, But the
+> only difference is, LTR501 also supports proximity sensing.
+>
+> LTR501 - ALS + Proximity combo
+> LTR301 - ALS sensor.
+>
+> Following are the data sheets for both devices:
+>
+> http://optoelectronics.liteon.com/upload/download/DS86-2013-0004/S_110_LTR-303ALS-01_DS_V1.pdf
+>
+> http://optoelectronics.liteon.com/upload/download/DS86-2012-0006/S_110_LTR-501ALS-01_PrelimDS_ver1[1].pdf
 
-Signed-off-by: Cristina Opriceana <cristina.opriceana@gmail.com>
----
-Changes in v2:
- - align parameters in the ltr501_write_contr() function call
- - update commit message to include this change
+One more thing. The datasheet you posted is for LTR303 not LTR301.
+Which chip are you adding support for?
 
- drivers/iio/light/ltr501.c | 18 ++++++++++--------
- 1 file changed, 10 insertions(+), 8 deletions(-)
+If indeed the datasheet link is correct, then although LTR303 and
+LTR501 are register compatbile at
+a first glance I spotted at least one difference.
 
-diff --git a/drivers/iio/light/ltr501.c b/drivers/iio/light/ltr501.c
-index 62b7072..78b8783 100644
---- a/drivers/iio/light/ltr501.c
-+++ b/drivers/iio/light/ltr501.c
-@@ -333,6 +333,13 @@ static int ltr501_init(struct ltr501_data *data)
- 		data->ps_contr);
- }
- 
-+static int ltr501_powerdown(struct ltr501_data *data)
-+{
-+	return ltr501_write_contr(data->client,
-+				  data->als_contr & ~LTR501_CONTR_ACTIVE,
-+				  data->ps_contr & ~LTR501_CONTR_ACTIVE);
-+}
-+
- static int ltr501_probe(struct i2c_client *client,
- 			  const struct i2c_device_id *id)
- {
-@@ -370,7 +377,7 @@ static int ltr501_probe(struct i2c_client *client,
- 	ret = iio_triggered_buffer_setup(indio_dev, NULL,
- 		ltr501_trigger_handler, NULL);
- 	if (ret)
--		return ret;
-+		goto powerdown_on_error;
- 
- 	ret = iio_device_register(indio_dev);
- 	if (ret)
-@@ -380,16 +387,11 @@ static int ltr501_probe(struct i2c_client *client,
- 
- error_unreg_buffer:
- 	iio_triggered_buffer_cleanup(indio_dev);
-+powerdown_on_error:
-+	ltr501_powerdown(data);
- 	return ret;
- }
- 
--static int ltr501_powerdown(struct ltr501_data *data)
--{
--	return ltr501_write_contr(data->client,
--		data->als_contr & ~LTR501_CONTR_ACTIVE,
--		data->ps_contr & ~LTR501_CONTR_ACTIVE);
--}
--
- static int ltr501_remove(struct i2c_client *client)
- {
- 	struct iio_dev *indio_dev = i2c_get_clientdata(client);
--- 
-1.9.1
+The ALS Control register is not the same.
 
+(e.g ALS Gain uses 1 bit for LTR501 and 3 bits for LTR303).
+
+thanks,
+Daniel.
