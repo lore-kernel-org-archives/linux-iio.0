@@ -12,46 +12,32 @@ Cc: Antoine Tenart <antoine.tenart@free-electrons.com>,
 	linux-iio@vger.kernel.org,
 	linux-arm-kernel@lists.infradead.org,
 	linux-kernel@vger.kernel.org
-Subject: [PATCH v2 0/4] ARM: berlin: ADC support
-Date: Fri,  3 Apr 2015 15:06:45 +0200
-Message-Id: <1428066409-30392-1-git-send-email-antoine.tenart@free-electrons.com>
+Subject: [PATCH v2 4/4] ARM: berlin: enable the ADC on the BG2Q DMP
+Date: Fri,  3 Apr 2015 15:06:49 +0200
+Message-Id: <1428066409-30392-5-git-send-email-antoine.tenart@free-electrons.com>
+In-Reply-To: <1428066409-30392-1-git-send-email-antoine.tenart@free-electrons.com>
+References: <1428066409-30392-1-git-send-email-antoine.tenart@free-electrons.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-Hi,
+An ADC node is now available in the BG2Q SoC device tree. Enable it on
+the BG2Q DMP board.
 
-The Berlin ADC provides 8 channels, with one connected to a temperature
-sensor. The temperature sensor has its own registers and both the ADC
-and the temperature sensor need to be configured when using it.
+Signed-off-by: Antoine Tenart <antoine.tenart@free-electrons.com>
+---
+ arch/arm/boot/dts/berlin2q-marvell-dmp.dts | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-This series is based on the two Berlin controllers rework series:
-- https://lkml.org/lkml/2015/3/6/511
-- https://lkml.org/lkml/2015/3/6/535
-
-Antoine
-
-Changes since v1:
-        - updated to use regmap_update_bits()
-        - fixed mixed berlin/berlin2 and some prefixes
-        - reworked channel definitions
-        - moved to IIO_CHAN_INFO_PROCESSED for the tsen
-        - fixed some typos
-        - cosmetic changes
-
-Antoine Tenart (4):
-  iio: adc: add support for Berlin
-  Documentation: bindings: document the Berlin ADC driver
-  ARM: berlin: add an ADC node for the BG2Q
-  ARM: berlin: enable the ADC on the BG2Q DMP
-
- .../devicetree/bindings/iio/adc/berlin2_adc.txt    |  19 ++
- arch/arm/boot/dts/berlin2q-marvell-dmp.dts         |   4 +
- arch/arm/boot/dts/berlin2q.dtsi                    |   8 +
- drivers/iio/adc/Kconfig                            |   7 +
- drivers/iio/adc/Makefile                           |   1 +
- drivers/iio/adc/berlin2-adc.c                      | 379 +++++++++++++++++++++
- 6 files changed, 418 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/iio/adc/berlin2_adc.txt
- create mode 100644 drivers/iio/adc/berlin2-adc.c
-
+diff --git a/arch/arm/boot/dts/berlin2q-marvell-dmp.dts b/arch/arm/boot/dts/berlin2q-marvell-dmp.dts
+index a98ac1bd8f65..a6de0039e5bc 100644
+--- a/arch/arm/boot/dts/berlin2q-marvell-dmp.dts
++++ b/arch/arm/boot/dts/berlin2q-marvell-dmp.dts
+@@ -112,3 +112,7 @@
+ &sata_phy {
+ 	status = "okay";
+ };
++
++&adc {
++	status = "okay";
++};
 -- 
 2.3.4
