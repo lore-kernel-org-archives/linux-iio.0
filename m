@@ -1,86 +1,109 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga11.intel.com ([192.55.52.93]:32294 "EHLO mga11.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1754156AbbDHPrp convert rfc822-to-8bit (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 8 Apr 2015 11:47:45 -0400
-From: "Tirdea, Irina" <irina.tirdea@intel.com>
-To: Hartmut Knaack <knaack.h@gmx.de>
-CC: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"Baluta, Daniel" <daniel.baluta@intel.com>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	Jonathan Cameron <jic23@kernel.org>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"Tirdea, Irina" <irina.tirdea@intel.com>
-Subject: RE: [PATCH v3 3/3] iio: add driver for Freescale MMA9553
-Date: Wed, 8 Apr 2015 15:47:40 +0000
-Message-ID: <1F3AC3675D538145B1661F571FE1805F19A4E15F@irsmsx105.ger.corp.intel.com>
-References: <1422384114-23392-1-git-send-email-irina.tirdea@intel.com>
- <1422384114-23392-4-git-send-email-irina.tirdea@intel.com>
- <5520710D.7000003@gmx.de>
- <1F3AC3675D538145B1661F571FE1805F19A4D5C1@irsmsx105.ger.corp.intel.com>
-In-Reply-To: <1F3AC3675D538145B1661F571FE1805F19A4D5C1@irsmsx105.ger.corp.intel.com>
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <vlad.dogaru@intel.com>
+From: Vlad Dogaru <vlad.dogaru@intel.com>
+To: jic23@kernel.org,
+	linux-iio@vger.kernel.org
+Cc: srinivas.pandruvada@linux.intel.com,
+	daniel.baluta@intel.com,
+	adriana.reus@intel.com,
+	Vlad Dogaru <vlad.dogaru@intel.com>
+Subject: [PATCH] iio: accel: kxcjk1013: allow using an external trigger
+Date: Fri,  3 Apr 2015 15:03:02 +0300
+Message-Id: <1428062582-3092-1-git-send-email-vlad.dogaru@intel.com>
+List-ID: <linux-iio@vger.kernel.org>
 
+In its present state, the driver mandates that its buffer only be
+triggered by one of the device's own triggers (data ready or any
+motion).  This is not always desirable, for example because the
+interrupt pins may not be wired in.
 
+Patch the driver to be able to accept using an external trigger, such as
+one based on hrtimer.  When using such a trigger, we need to ensure that
+the device is powered on when the buffer is started.  We do that by
+setting setup_ops for the buffer.
 
-> -----Original Message-----
-> From: linux-iio-owner@vger.kernel.org [mailto:linux-iio-owner@vger.kernel.org] On Behalf Of Tirdea, Irina
-> Sent: 06 April, 2015 17:33
-> To: Hartmut Knaack; Jonathan Cameron; linux-iio@vger.kernel.org
-> Cc: linux-kernel@vger.kernel.org; Baluta, Daniel; Lars-Peter Clausen; Peter Meerwald
-> Subject: RE: [PATCH v3 3/3] iio: add driver for Freescale MMA9553
-> 
-> 
-> 
-> > -----Original Message-----
-> > From: Hartmut Knaack [mailto:knaack.h@gmx.de]
-> > Sent: 05 April, 2015 2:18
-> > To: Tirdea, Irina; Jonathan Cameron; linux-iio@vger.kernel.org
-> > Cc: linux-kernel@vger.kernel.org; Baluta, Daniel; Lars-Peter Clausen; Peter Meerwald
-> > Subject: Re: [PATCH v3 3/3] iio: add driver for Freescale MMA9553
-> >
-> > Irina Tirdea schrieb am 27.01.2015 um 19:41:
-> > > Add support for Freescale MMA9553L Intelligent Pedometer Platform.
-> > >
-> > > The following functionalities are supported:
-> > >  - step counter (counts the number of steps using a HW register)
-> > >  - step detector (generates an iio event at every step the user takes)
-> > >  - activity recognition (rest, walking, jogging, running)
-> > >  - speed
-> > >  - calories
-> > >  - distance
-> > >
-<snip>
-> > > +static int mma9553_read_activity_stepcnt(struct mma9553_data *data,
-> > > +					 u8 *activity, u16 *stepcnt)
-> > > +{
-> > > +	u32 status_stepcnt;
-> > > +	u16 status;
-> > > +	int ret;
-> > > +
-> > > +	ret = mma9551_read_status_words(data->client, MMA9551_APPID_PEDOMETER,
-> > > +					MMA9553_REG_STATUS, sizeof(u32),
-> > > +					(u16 *) &status_stepcnt);
-> > > +	if (ret < 0) {
-> > > +		dev_err(&data->client->dev,
-> > > +			"error reading status and stepcnt\n");
-> > > +		return ret;
-> > > +	}
-> > > +
-> >
-> > I think this could be done a bit simpler by using u16 buf[2] instead of
-> > status_stepcnt (making status obsolete). That's what it would boil down
-> > to:
-> > 	*activity = mma9553_get_bits(buf[0], MMA9553_MASK_STATUS_ACTIVITY);
-> > 	*stepcnt = buf[1];
-> >
-> That does look more simple. Will change it accordingly.
-This does not only look more simple, it actually fixes an endianness bug on big endian hosts.
-Thanks for the suggestion!
+Signed-off-by: Vlad Dogaru <vlad.dogaru@intel.com>
+---
 
-Irina
-<snip>
+I used the hrtimer-based trigger patches that Daniel sent earlier this week to
+test these changes.
+
+ drivers/iio/accel/kxcjk-1013.c | 38 +++++++++++++++++++++++---------------
+ 1 file changed, 23 insertions(+), 15 deletions(-)
+
+diff --git a/drivers/iio/accel/kxcjk-1013.c b/drivers/iio/accel/kxcjk-1013.c
+index a98b5d2..7ae1bdb 100644
+--- a/drivers/iio/accel/kxcjk-1013.c
++++ b/drivers/iio/accel/kxcjk-1013.c
+@@ -875,15 +875,18 @@ static int kxcjk1013_write_event_config(struct iio_dev *indio_dev,
+ 	return 0;
+ }
+ 
+-static int kxcjk1013_validate_trigger(struct iio_dev *indio_dev,
+-				      struct iio_trigger *trig)
++static int kxcjk1013_buffer_preenable(struct iio_dev *indio_dev)
+ {
+ 	struct kxcjk1013_data *data = iio_priv(indio_dev);
+ 
+-	if (data->dready_trig != trig && data->motion_trig != trig)
+-		return -EINVAL;
++	return kxcjk1013_set_power_state(data, true);
++}
+ 
+-	return 0;
++static int kxcjk1013_buffer_postdisable(struct iio_dev *indio_dev)
++{
++	struct kxcjk1013_data *data = iio_priv(indio_dev);
++
++	return kxcjk1013_set_power_state(data, false);
+ }
+ 
+ static IIO_CONST_ATTR_SAMP_FREQ_AVAIL(
+@@ -935,6 +938,13 @@ static const struct iio_chan_spec kxcjk1013_channels[] = {
+ 	IIO_CHAN_SOFT_TIMESTAMP(3),
+ };
+ 
++static const struct iio_buffer_setup_ops kxcjk1013_buffer_setup_ops = {
++	.preenable		= kxcjk1013_buffer_preenable,
++	.postenable		= iio_triggered_buffer_postenable,
++	.postdisable		= kxcjk1013_buffer_postdisable,
++	.predisable		= iio_triggered_buffer_predisable,
++};
++
+ static const struct iio_info kxcjk1013_info = {
+ 	.attrs			= &kxcjk1013_attrs_group,
+ 	.read_raw		= kxcjk1013_read_raw,
+@@ -943,7 +953,6 @@ static const struct iio_info kxcjk1013_info = {
+ 	.write_event_value	= kxcjk1013_write_event,
+ 	.write_event_config	= kxcjk1013_write_event_config,
+ 	.read_event_config	= kxcjk1013_read_event_config,
+-	.validate_trigger	= kxcjk1013_validate_trigger,
+ 	.driver_module		= THIS_MODULE,
+ };
+ 
+@@ -1276,16 +1285,15 @@ static int kxcjk1013_probe(struct i2c_client *client,
+ 			data->motion_trig = NULL;
+ 			goto err_trigger_unregister;
+ 		}
++	}
+ 
+-		ret = iio_triggered_buffer_setup(indio_dev,
+-						&iio_pollfunc_store_time,
+-						kxcjk1013_trigger_handler,
+-						NULL);
+-		if (ret < 0) {
+-			dev_err(&client->dev,
+-					"iio triggered buffer setup failed\n");
+-			goto err_trigger_unregister;
+-		}
++	ret = iio_triggered_buffer_setup(indio_dev,
++					 &iio_pollfunc_store_time,
++					 kxcjk1013_trigger_handler,
++					 &kxcjk1013_buffer_setup_ops);
++	if (ret < 0) {
++		dev_err(&client->dev, "iio triggered buffer setup failed\n");
++		goto err_trigger_unregister;
+ 	}
+ 
+ 	ret = iio_device_register(indio_dev);
+-- 
+1.9.1
