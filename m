@@ -1,102 +1,55 @@
-Return-Path: <irina.tirdea@intel.com>
-From: Irina Tirdea <irina.tirdea@intel.com>
-To: Jonathan Cameron <jic23@kernel.org>,
-	linux-iio@vger.kernel.org,
-	Hartmut Knaack <knaack.h@gmx.de>
-Cc: linux-kernel@vger.kernel.org,
-	Irina Tirdea <irina.tirdea@intel.com>
-Subject: [PATCH 2/8] iio: accel: mma9553: use unsigned counters
-Date: Wed,  8 Apr 2015 17:37:31 +0300
-Message-Id: <1428503857-9081-3-git-send-email-irina.tirdea@intel.com>
-In-Reply-To: <1428503857-9081-1-git-send-email-irina.tirdea@intel.com>
-References: <1428503857-9081-1-git-send-email-irina.tirdea@intel.com>
+Return-Path: <sathyanarayanan.kuppuswamy@linux.intel.com>
+Message-ID: <55242295.2090908@linux.intel.com>
+Date: Tue, 07 Apr 2015 11:31:49 -0700
+From: sathyanarayanan kuppuswamy <sathyanarayanan.kuppuswamy@linux.intel.com>
+Reply-To: sathyanarayanan.kuppuswamy@linux.intel.com
+MIME-Version: 1.0
+To: Daniel Baluta <daniel.baluta@intel.com>
+CC: Jonathan Cameron <jic23@kernel.org>,
+ Peter Meerwald <pmeerw@pmeerw.net>,
+ "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+ Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Subject: Re: [PATCH v2 3/4] iio: ltr501: Add interrupt rate control support
+References: <cover.1427945689.git.sathyanarayanan.kuppuswamy@linux.intel.com>	<01dd6c5e1f73bc2b1a170d750e7e81ca92171ce6.1427945689.git.sathyanarayanan.kuppuswamy@linux.intel.com> <CAEnQRZCbbiS=-0SJKBuT5BOtjRAsDuYSyUeOL=tj=xNg=ECxkA@mail.gmail.com>
+In-Reply-To: <CAEnQRZCbbiS=-0SJKBuT5BOtjRAsDuYSyUeOL=tj=xNg=ECxkA@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
 List-ID: <linux-iio@vger.kernel.org>
 
-Use unsigned counters instead of signed when all the
-possible values are positive.
 
-Signed-off-by: Irina Tirdea <irina.tirdea@intel.com>
-Suggested-by: Hartmut Knaack <knaack.h@gmx.de>
----
- drivers/iio/accel/mma9551_core.c | 11 +++++------
- drivers/iio/accel/mma9553.c      |  8 ++++----
- 2 files changed, 9 insertions(+), 10 deletions(-)
 
-diff --git a/drivers/iio/accel/mma9551_core.c b/drivers/iio/accel/mma9551_core.c
-index 54b3ae6..438cfed 100644
---- a/drivers/iio/accel/mma9551_core.c
-+++ b/drivers/iio/accel/mma9551_core.c
-@@ -387,8 +387,8 @@ EXPORT_SYMBOL(mma9551_read_status_word);
- int mma9551_read_config_words(struct i2c_client *client, u8 app_id,
- 			     u16 reg, u8 len, u16 *buf)
- {
--	int ret, i;
--	int len_words = len / sizeof(u16);
-+	int ret;
-+	u8 i, len_words = len / sizeof(u16);
- 	__be16 be_buf[MMA9551_MAX_MAILBOX_DATA_REGS];
- 
- 	ret = mma9551_transfer(client, app_id, MMA9551_CMD_READ_CONFIG,
-@@ -422,8 +422,8 @@ EXPORT_SYMBOL(mma9551_read_config_words);
- int mma9551_read_status_words(struct i2c_client *client, u8 app_id,
- 			      u16 reg, u8 len, u16 *buf)
- {
--	int ret, i;
--	int len_words = len / sizeof(u16);
-+	int ret;
-+	u8 i, len_words = len / sizeof(u16);
- 	__be16 be_buf[MMA9551_MAX_MAILBOX_DATA_REGS];
- 
- 	ret = mma9551_transfer(client, app_id, MMA9551_CMD_READ_STATUS,
-@@ -457,8 +457,7 @@ EXPORT_SYMBOL(mma9551_read_status_words);
- int mma9551_write_config_words(struct i2c_client *client, u8 app_id,
- 			       u16 reg, u8 len, u16 *buf)
- {
--	int i;
--	int len_words = len / sizeof(u16);
-+	u8 i, len_words = len / sizeof(u16);
- 	__be16 be_buf[MMA9551_MAX_MAILBOX_DATA_REGS];
- 
- 	for (i = 0; i < len_words; i++)
-diff --git a/drivers/iio/accel/mma9553.c b/drivers/iio/accel/mma9553.c
-index d095f81..9cfedb5 100644
---- a/drivers/iio/accel/mma9553.c
-+++ b/drivers/iio/accel/mma9553.c
-@@ -184,7 +184,7 @@ struct mma9553_data {
- 	struct mutex mutex;
- 	struct mma9553_conf_regs conf;
- 	struct mma9553_event events[MMA9553_EVENTS_INFO_SIZE];
--	int num_events;
-+	u8 num_events;
- 	u8 gpio_bitnum;
- 	/*
- 	 * This is used for all features that depend on step count:
-@@ -225,7 +225,7 @@ static enum iio_modifier mma9553_activity_to_mod(enum activity_level activity)
- 
- static void mma9553_init_events(struct mma9553_data *data)
- {
--	int i;
-+	u8 i;
- 
- 	data->num_events = MMA9553_EVENTS_INFO_SIZE;
- 	for (i = 0; i < data->num_events; i++) {
-@@ -239,7 +239,7 @@ static struct mma9553_event *mma9553_get_event(struct mma9553_data *data,
- 					       enum iio_modifier mod,
- 					       enum iio_event_direction dir)
- {
--	int i;
-+	u8 i;
- 
- 	for (i = 0; i < data->num_events; i++)
- 		if (data->events[i].info->type == type &&
-@@ -254,7 +254,7 @@ static bool mma9553_is_any_event_enabled(struct mma9553_data *data,
- 					 bool check_type,
- 					 enum iio_chan_type type)
- {
--	int i;
-+	u8 i;
- 
- 	for (i = 0; i < data->num_events; i++)
- 		if ((check_type && data->events[i].info->type == type &&
+On 04/07/2015 03:36 AM, Daniel Baluta wrote:
+> On Thu, Apr 2, 2015 at 6:51 AM, Kuppuswamy Sathyanarayanan
+> <sathyanarayanan.kuppuswamy@linux.intel.com> wrote:
+>> Added rate control support for ALS and proximity
+>> threshold interrupts.
+>>
+>> Setting <n> to ALS intr_persist sysfs node would
+>> generate interrupt whenever ALS data cross either
+>> upper or lower threshold limits <n> number of times.
+>> Similarly setting <m> to proximity intr_persist sysfs
+>> node would genere interrupt whenever proximity data falls
+>> outside threshold limit <m> number of times.
+>
+> Hi Sathya,
+>
+> We might have a problem here because _period attribute should
+> be in seconds.
+Thanks Daniel. I missed the units representation in the ABI doc. I work 
+on creating a new ABI for representing the interrupt persistence and 
+modify this patch to support it.
+>
+> See:
+>
+> http://lxr.free-electrons.com/source/Documentation/ABI/testing/sysfs-bus-iio#L785
+>
+> thanks,
+> Daniel.
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+>
+
 -- 
-1.9.1
+Sathyanarayanan Kuppuswamy
+Android kernel developer
