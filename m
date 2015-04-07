@@ -1,55 +1,141 @@
-Return-Path: <sathyanarayanan.kuppuswamy@linux.intel.com>
-Message-ID: <55242295.2090908@linux.intel.com>
-Date: Tue, 07 Apr 2015 11:31:49 -0700
-From: sathyanarayanan kuppuswamy <sathyanarayanan.kuppuswamy@linux.intel.com>
-Reply-To: sathyanarayanan.kuppuswamy@linux.intel.com
-MIME-Version: 1.0
-To: Daniel Baluta <daniel.baluta@intel.com>
-CC: Jonathan Cameron <jic23@kernel.org>,
- Peter Meerwald <pmeerw@pmeerw.net>,
- "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
- Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-Subject: Re: [PATCH v2 3/4] iio: ltr501: Add interrupt rate control support
-References: <cover.1427945689.git.sathyanarayanan.kuppuswamy@linux.intel.com>	<01dd6c5e1f73bc2b1a170d750e7e81ca92171ce6.1427945689.git.sathyanarayanan.kuppuswamy@linux.intel.com> <CAEnQRZCbbiS=-0SJKBuT5BOtjRAsDuYSyUeOL=tj=xNg=ECxkA@mail.gmail.com>
-In-Reply-To: <CAEnQRZCbbiS=-0SJKBuT5BOtjRAsDuYSyUeOL=tj=xNg=ECxkA@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
+Return-Path: <harald@ccbib.org>
+From: Harald Geyer <harald@ccbib.org>
+To: Jonathan Cameron <jic23@kernel.org>,
+	John Stultz <john.stultz@linaro.org>,
+	Thomas Gleixner <tglx@linutronix.de>
+Cc: Richard Weinberger <richard@nod.at>,
+	linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Harald Geyer <harald@ccbib.org>
+Subject: [PATCHv2 2/2] iio: dht11: Use new function ktime_get_resolution_ns()
+Date: Tue,  7 Apr 2015 11:12:36 +0000
+Message-Id: <1428405156-6761-3-git-send-email-harald@ccbib.org>
+In-Reply-To: <1428405156-6761-1-git-send-email-harald@ccbib.org>
+References: <1428405156-6761-1-git-send-email-harald@ccbib.org>
 List-ID: <linux-iio@vger.kernel.org>
 
+This cleans up the most ugly workaround in this driver. There are no
+functional changes yet in the decoding algorithm, but we improve the
+following things:
+ * Get rid of spurious warning messages on systems with fast HRTIMER.
+ * If the clock is not fast enough for decoding to work, we give
+   up immediately.
+ * In that case we return EAGAIN instead of EIO, so it's easier to
+   discriminate causes of failure.
 
+Returning EAGAIN is somewhat controversial: It's technically correct
+as a faster clock might become available. OTOH once all clocks are
+enabled this is a permanent error. There is no ECLOCKTOOSLOW error
+code.
 
-On 04/07/2015 03:36 AM, Daniel Baluta wrote:
-> On Thu, Apr 2, 2015 at 6:51 AM, Kuppuswamy Sathyanarayanan
-> <sathyanarayanan.kuppuswamy@linux.intel.com> wrote:
->> Added rate control support for ALS and proximity
->> threshold interrupts.
->>
->> Setting <n> to ALS intr_persist sysfs node would
->> generate interrupt whenever ALS data cross either
->> upper or lower threshold limits <n> number of times.
->> Similarly setting <m> to proximity intr_persist sysfs
->> node would genere interrupt whenever proximity data falls
->> outside threshold limit <m> number of times.
->
-> Hi Sathya,
->
-> We might have a problem here because _period attribute should
-> be in seconds.
-Thanks Daniel. I missed the units representation in the ABI doc. I work 
-on creating a new ABI for representing the interrupt persistence and 
-modify this patch to support it.
->
-> See:
->
-> http://lxr.free-electrons.com/source/Documentation/ABI/testing/sysfs-bus-iio#L785
->
-> thanks,
-> Daniel.
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
->
+Signed-off-by: Harald Geyer <harald@ccbib.org>
+---
+changes since V1:
+call ktime_get_xxx() functions directly instead of using the wrappers
+of the iio subsystem.
 
+ drivers/iio/humidity/dht11.c |   42 ++++++++++++++++++++++--------------------
+ 1 files changed, 22 insertions(+), 20 deletions(-)
+
+diff --git a/drivers/iio/humidity/dht11.c b/drivers/iio/humidity/dht11.c
+index 7d79a1a..4cb25dc 100644
+--- a/drivers/iio/humidity/dht11.c
++++ b/drivers/iio/humidity/dht11.c
+@@ -33,6 +33,7 @@
+ #include <linux/delay.h>
+ #include <linux/gpio.h>
+ #include <linux/of_gpio.h>
++#include <linux/timekeeping.h>
+ 
+ #include <linux/iio/iio.h>
+ 
+@@ -87,23 +88,11 @@ static unsigned char dht11_decode_byte(int *timing, int threshold)
+ 	return ret;
+ }
+ 
+-static int dht11_decode(struct dht11 *dht11, int offset)
++static int dht11_decode(struct dht11 *dht11, int offset, int timeres)
+ {
+-	int i, t, timing[DHT11_BITS_PER_READ], threshold,
+-		timeres = DHT11_SENSOR_RESPONSE;
++	int i, t, timing[DHT11_BITS_PER_READ], threshold;
+ 	unsigned char temp_int, temp_dec, hum_int, hum_dec, checksum;
+ 
+-	/* Calculate timestamp resolution */
+-	for (i = 1; i < dht11->num_edges; ++i) {
+-		t = dht11->edges[i].ts - dht11->edges[i-1].ts;
+-		if (t > 0 && t < timeres)
+-			timeres = t;
+-	}
+-	if (2*timeres > DHT11_DATA_BIT_HIGH) {
+-		pr_err("dht11: timeresolution %d too bad for decoding\n",
+-			timeres);
+-		return -EIO;
+-	}
+ 	threshold = DHT11_DATA_BIT_HIGH / timeres;
+ 	if (DHT11_DATA_BIT_LOW/timeres + 1 >= threshold)
+ 		pr_err("dht11: WARNING: decoding ambiguous\n");
+@@ -126,7 +115,7 @@ static int dht11_decode(struct dht11 *dht11, int offset)
+ 	if (((hum_int + hum_dec + temp_int + temp_dec) & 0xff) != checksum)
+ 		return -EIO;
+ 
+-	dht11->timestamp = iio_get_time_ns();
++	dht11->timestamp = ktime_get_real_ns();
+ 	if (hum_int < 20) {  /* DHT22 */
+ 		dht11->temperature = (((temp_int & 0x7f) << 8) + temp_dec) *
+ 					((temp_int & 0x80) ? -100 : 100);
+@@ -154,7 +143,7 @@ static irqreturn_t dht11_handle_irq(int irq, void *data)
+ 
+ 	/* TODO: Consider making the handler safe for IRQ sharing */
+ 	if (dht11->num_edges < DHT11_EDGES_PER_READ && dht11->num_edges >= 0) {
+-		dht11->edges[dht11->num_edges].ts = iio_get_time_ns();
++		dht11->edges[dht11->num_edges].ts = ktime_get_real_ns();
+ 		dht11->edges[dht11->num_edges++].value =
+ 						gpio_get_value(dht11->gpio);
+ 
+@@ -170,10 +159,22 @@ static int dht11_read_raw(struct iio_dev *iio_dev,
+ 			int *val, int *val2, long m)
+ {
+ 	struct dht11 *dht11 = iio_priv(iio_dev);
+-	int ret;
++	int ret, timeres;
+ 
+ 	mutex_lock(&dht11->lock);
+-	if (dht11->timestamp + DHT11_DATA_VALID_TIME < iio_get_time_ns()) {
++	if (dht11->timestamp + DHT11_DATA_VALID_TIME < ktime_get_real_ns()) {
++		timeres = ktime_get_resolution_ns();
++		if (DHT11_DATA_BIT_HIGH < 2*timeres) {
++			dev_err(dht11->dev, "timeresolution %dns too low\n",
++						timeres);
++			/* In theory a better clock could become available
++			 * at some point ... and there is no error code
++			 * that really fits better.
++			 */
++			ret = -EAGAIN;
++			goto err;
++		}
++
+ 		reinit_completion(&dht11->completion);
+ 
+ 		dht11->num_edges = 0;
+@@ -208,7 +209,8 @@ static int dht11_read_raw(struct iio_dev *iio_dev,
+ 		ret = dht11_decode(dht11,
+ 				dht11->num_edges == DHT11_EDGES_PER_READ ?
+ 					DHT11_EDGES_PREAMBLE :
+-					DHT11_EDGES_PREAMBLE - 2);
++					DHT11_EDGES_PREAMBLE - 2,
++				timeres);
+ 		if (ret)
+ 			goto err;
+ 	}
+@@ -274,7 +276,7 @@ static int dht11_probe(struct platform_device *pdev)
+ 		return -EINVAL;
+ 	}
+ 
+-	dht11->timestamp = iio_get_time_ns() - DHT11_DATA_VALID_TIME - 1;
++	dht11->timestamp = ktime_get_real_ns() - DHT11_DATA_VALID_TIME - 1;
+ 	dht11->num_edges = -1;
+ 
+ 	platform_set_drvdata(pdev, iio);
 -- 
-Sathyanarayanan Kuppuswamy
-Android kernel developer
+1.7.2.5
