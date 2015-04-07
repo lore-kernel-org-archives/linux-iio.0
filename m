@@ -7,135 +7,74 @@ Cc: Richard Weinberger <richard@nod.at>,
 	linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
 	Harald Geyer <harald@ccbib.org>
-Subject: [PATCHv2 2/2] iio: dht11: Use new function ktime_get_resolution_ns()
-Date: Tue,  7 Apr 2015 11:12:36 +0000
-Message-Id: <1428405156-6761-3-git-send-email-harald@ccbib.org>
+Subject: [PATCHv2 1/2] timekeeping: Provide new API to get the current time resolution
+Date: Tue,  7 Apr 2015 11:12:35 +0000
+Message-Id: <1428405156-6761-2-git-send-email-harald@ccbib.org>
 In-Reply-To: <1428405156-6761-1-git-send-email-harald@ccbib.org>
 References: <1428405156-6761-1-git-send-email-harald@ccbib.org>
 List-ID: <linux-iio@vger.kernel.org>
 
-This cleans up the most ugly workaround in this driver. There are no
-functional changes yet in the decoding algorithm, but we improve the
-following things:
- * Get rid of spurious warning messages on systems with fast HRTIMER.
- * If the clock is not fast enough for decoding to work, we give
-   up immediately.
- * In that case we return EAGAIN instead of EIO, so it's easier to
-   discriminate causes of failure.
+This patch series introduces a new function
+u32 ktime_get_resolution_ns(void)
+which allows to clean up some driver code.
 
-Returning EAGAIN is somewhat controversial: It's technically correct
-as a faster clock might become available. OTOH once all clocks are
-enabled this is a permanent error. There is no ECLOCKTOOSLOW error
-code.
+In particular the IIO subsystem has a function to provide timestamps for
+events but no means to get their resolution. So currently the dht11 driver
+tries to guess the resolution in a rather messy and convoluted way. We
+can do much better with the new code.
+
+This API is not designed to be exposed to user space.
+
+This has been tested on i386, sunxi and mxs.
 
 Signed-off-by: Harald Geyer <harald@ccbib.org>
 ---
 changes since V1:
-call ktime_get_xxx() functions directly instead of using the wrappers
-of the iio subsystem.
+Improved commit message.
 
- drivers/iio/humidity/dht11.c |   42 ++++++++++++++++++++++--------------------
- 1 files changed, 22 insertions(+), 20 deletions(-)
+ include/linux/timekeeping.h |    1 +
+ kernel/time/timekeeping.c   |   17 +++++++++++++++++
+ 2 files changed, 18 insertions(+), 0 deletions(-)
 
-diff --git a/drivers/iio/humidity/dht11.c b/drivers/iio/humidity/dht11.c
-index 7d79a1a..4cb25dc 100644
---- a/drivers/iio/humidity/dht11.c
-+++ b/drivers/iio/humidity/dht11.c
-@@ -33,6 +33,7 @@
- #include <linux/delay.h>
- #include <linux/gpio.h>
- #include <linux/of_gpio.h>
-+#include <linux/timekeeping.h>
+diff --git a/include/linux/timekeeping.h b/include/linux/timekeeping.h
+index 3eaae47..983b61e 100644
+--- a/include/linux/timekeeping.h
++++ b/include/linux/timekeeping.h
+@@ -163,6 +163,7 @@ extern ktime_t ktime_get(void);
+ extern ktime_t ktime_get_with_offset(enum tk_offsets offs);
+ extern ktime_t ktime_mono_to_any(ktime_t tmono, enum tk_offsets offs);
+ extern ktime_t ktime_get_raw(void);
++extern u32 ktime_get_resolution_ns(void);
  
- #include <linux/iio/iio.h>
- 
-@@ -87,23 +88,11 @@ static unsigned char dht11_decode_byte(int *timing, int threshold)
- 	return ret;
+ /**
+  * ktime_get_real - get the real (wall-) time in ktime_t format
+diff --git a/kernel/time/timekeeping.c b/kernel/time/timekeeping.c
+index 91db941..8efd964 100644
+--- a/kernel/time/timekeeping.c
++++ b/kernel/time/timekeeping.c
+@@ -586,6 +586,23 @@ ktime_t ktime_get(void)
  }
+ EXPORT_SYMBOL_GPL(ktime_get);
  
--static int dht11_decode(struct dht11 *dht11, int offset)
-+static int dht11_decode(struct dht11 *dht11, int offset, int timeres)
- {
--	int i, t, timing[DHT11_BITS_PER_READ], threshold,
--		timeres = DHT11_SENSOR_RESPONSE;
-+	int i, t, timing[DHT11_BITS_PER_READ], threshold;
- 	unsigned char temp_int, temp_dec, hum_int, hum_dec, checksum;
- 
--	/* Calculate timestamp resolution */
--	for (i = 1; i < dht11->num_edges; ++i) {
--		t = dht11->edges[i].ts - dht11->edges[i-1].ts;
--		if (t > 0 && t < timeres)
--			timeres = t;
--	}
--	if (2*timeres > DHT11_DATA_BIT_HIGH) {
--		pr_err("dht11: timeresolution %d too bad for decoding\n",
--			timeres);
--		return -EIO;
--	}
- 	threshold = DHT11_DATA_BIT_HIGH / timeres;
- 	if (DHT11_DATA_BIT_LOW/timeres + 1 >= threshold)
- 		pr_err("dht11: WARNING: decoding ambiguous\n");
-@@ -126,7 +115,7 @@ static int dht11_decode(struct dht11 *dht11, int offset)
- 	if (((hum_int + hum_dec + temp_int + temp_dec) & 0xff) != checksum)
- 		return -EIO;
- 
--	dht11->timestamp = iio_get_time_ns();
-+	dht11->timestamp = ktime_get_real_ns();
- 	if (hum_int < 20) {  /* DHT22 */
- 		dht11->temperature = (((temp_int & 0x7f) << 8) + temp_dec) *
- 					((temp_int & 0x80) ? -100 : 100);
-@@ -154,7 +143,7 @@ static irqreturn_t dht11_handle_irq(int irq, void *data)
- 
- 	/* TODO: Consider making the handler safe for IRQ sharing */
- 	if (dht11->num_edges < DHT11_EDGES_PER_READ && dht11->num_edges >= 0) {
--		dht11->edges[dht11->num_edges].ts = iio_get_time_ns();
-+		dht11->edges[dht11->num_edges].ts = ktime_get_real_ns();
- 		dht11->edges[dht11->num_edges++].value =
- 						gpio_get_value(dht11->gpio);
- 
-@@ -170,10 +159,22 @@ static int dht11_read_raw(struct iio_dev *iio_dev,
- 			int *val, int *val2, long m)
- {
- 	struct dht11 *dht11 = iio_priv(iio_dev);
--	int ret;
-+	int ret, timeres;
- 
- 	mutex_lock(&dht11->lock);
--	if (dht11->timestamp + DHT11_DATA_VALID_TIME < iio_get_time_ns()) {
-+	if (dht11->timestamp + DHT11_DATA_VALID_TIME < ktime_get_real_ns()) {
-+		timeres = ktime_get_resolution_ns();
-+		if (DHT11_DATA_BIT_HIGH < 2*timeres) {
-+			dev_err(dht11->dev, "timeresolution %dns too low\n",
-+						timeres);
-+			/* In theory a better clock could become available
-+			 * at some point ... and there is no error code
-+			 * that really fits better.
-+			 */
-+			ret = -EAGAIN;
-+			goto err;
-+		}
++u32 ktime_get_resolution_ns(void)
++{
++	struct timekeeper *tk = &tk_core.timekeeper;
++	unsigned int seq;
++	u32 nsecs;
 +
- 		reinit_completion(&dht11->completion);
- 
- 		dht11->num_edges = 0;
-@@ -208,7 +209,8 @@ static int dht11_read_raw(struct iio_dev *iio_dev,
- 		ret = dht11_decode(dht11,
- 				dht11->num_edges == DHT11_EDGES_PER_READ ?
- 					DHT11_EDGES_PREAMBLE :
--					DHT11_EDGES_PREAMBLE - 2);
-+					DHT11_EDGES_PREAMBLE - 2,
-+				timeres);
- 		if (ret)
- 			goto err;
- 	}
-@@ -274,7 +276,7 @@ static int dht11_probe(struct platform_device *pdev)
- 		return -EINVAL;
- 	}
- 
--	dht11->timestamp = iio_get_time_ns() - DHT11_DATA_VALID_TIME - 1;
-+	dht11->timestamp = ktime_get_real_ns() - DHT11_DATA_VALID_TIME - 1;
- 	dht11->num_edges = -1;
- 
- 	platform_set_drvdata(pdev, iio);
++	WARN_ON(timekeeping_suspended);
++
++	do {
++		seq = read_seqcount_begin(&tk_core.seq);
++		nsecs = tk->tkr.mult >> tk->tkr.shift;
++	} while (read_seqcount_retry(&tk_core.seq, seq));
++
++	return nsecs;
++}
++EXPORT_SYMBOL_GPL(ktime_get_resolution_ns);
++
+ static ktime_t *offsets[TK_OFFS_MAX] = {
+ 	[TK_OFFS_REAL]	= &tk_core.timekeeper.offs_real,
+ 	[TK_OFFS_BOOT]	= &tk_core.timekeeper.offs_boot,
 -- 
 1.7.2.5
