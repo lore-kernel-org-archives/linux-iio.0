@@ -1,40 +1,41 @@
-Return-Path: <harald@ccbib.org>
-From: Harald Geyer <harald@ccbib.org>
-To: Jonathan Cameron <jic23@kernel.org>,
-	John Stultz <john.stultz@linaro.org>,
-	Thomas Gleixner <tglx@linutronix.de>
-Cc: Richard Weinberger <richard@nod.at>,
-	linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Harald Geyer <harald@ccbib.org>
-Subject: [PATCHv2 0/2] Provide new API to get the current time resolution
-Date: Tue,  7 Apr 2015 11:12:34 +0000
-Message-Id: <1428405156-6761-1-git-send-email-harald@ccbib.org>
+Return-Path: <daniel.baluta@gmail.com>
+MIME-Version: 1.0
+Sender: daniel.baluta@gmail.com
+In-Reply-To: <01dd6c5e1f73bc2b1a170d750e7e81ca92171ce6.1427945689.git.sathyanarayanan.kuppuswamy@linux.intel.com>
+References: <cover.1427945689.git.sathyanarayanan.kuppuswamy@linux.intel.com>
+	<01dd6c5e1f73bc2b1a170d750e7e81ca92171ce6.1427945689.git.sathyanarayanan.kuppuswamy@linux.intel.com>
+Date: Tue, 7 Apr 2015 13:36:31 +0300
+Message-ID: <CAEnQRZCbbiS=-0SJKBuT5BOtjRAsDuYSyUeOL=tj=xNg=ECxkA@mail.gmail.com>
+Subject: Re: [PATCH v2 3/4] iio: ltr501: Add interrupt rate control support
+From: Daniel Baluta <daniel.baluta@intel.com>
+To: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
+Cc: Jonathan Cameron <jic23@kernel.org>, Peter Meerwald <pmeerw@pmeerw.net>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Content-Type: text/plain; charset=UTF-8
 List-ID: <linux-iio@vger.kernel.org>
 
-Hi,
+On Thu, Apr 2, 2015 at 6:51 AM, Kuppuswamy Sathyanarayanan
+<sathyanarayanan.kuppuswamy@linux.intel.com> wrote:
+> Added rate control support for ALS and proximity
+> threshold interrupts.
+>
+> Setting <n> to ALS intr_persist sysfs node would
+> generate interrupt whenever ALS data cross either
+> upper or lower threshold limits <n> number of times.
+> Similarly setting <m> to proximity intr_persist sysfs
+> node would genere interrupt whenever proximity data falls
+> outside threshold limit <m> number of times.
 
-this patch series introduces a new kernel internal API to get the
-current time resolution. The first patch adds the implementation and
-the second patch updates an example driver to show the possible code
-simplification.
 
-If patches 1 and 2 can't go in via the same tree, I'll resend patch 2
-with more cleanup patches to dth11.c later -- the main goal for now is,
-to get the new code for timekeeping reviewed and merged.
+Hi Sathya,
 
-changes since V1:
-* dropped patch for adding wrapper code to the iio framework
-* improved commit messages
+We might have a problem here because _period attribute should
+be in seconds.
 
-Harald Geyer (2):
-  timekeeping: Provide new API to get the current time resolution
-  iio: dht11: Use new function ktime_get_resolution_ns()
+See:
 
- drivers/iio/humidity/dht11.c |   42 ++++++++++++++++++++++--------------------
- include/linux/timekeeping.h  |    1 +
- kernel/time/timekeeping.c    |   17 +++++++++++++++++
- 3 files changed, 40 insertions(+), 20 deletions(-)
+http://lxr.free-electrons.com/source/Documentation/ABI/testing/sysfs-bus-iio#L785
 
--- 
-1.7.2.5
+thanks,
+Daniel.
