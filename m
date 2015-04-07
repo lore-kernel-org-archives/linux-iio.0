@@ -1,112 +1,86 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail2.br-automation.com ([213.33.116.61]:54279 "EHLO
-	mail2.br-automation.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753173AbbDGMpX (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 7 Apr 2015 08:45:23 -0400
-To: vigneshr@ti.com
-Cc: linux-iio@vger.kernel.org
+Received: from a.ns.miles-group.at ([95.130.255.143]:65276 "EHLO radon.swed.at"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1753744AbbDGWaz (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Tue, 7 Apr 2015 18:30:55 -0400
+Message-ID: <55245A9A.5070606@nod.at>
+Date: Wed, 08 Apr 2015 00:30:50 +0200
+From: Richard Weinberger <richard@nod.at>
 MIME-Version: 1.0
-Subject: WG: Fwd: [PATCH 0/2] iio: ti_am335x_adc: Add optional DT properties for
- tscadc
-Message-ID: <OFCCCE244B.567EF252-ONC1257E20.00437D81-C1257E20.0044B1E0@br-automation.com>
-From: Hannes Petermaier <Hannes.Petermaier@br-automation.com>
-Date: Tue, 7 Apr 2015 14:30:19 +0200
-Content-Type: text/plain; charset="US-ASCII"
+To: Harald Geyer <harald@ccbib.org>,
+	Jonathan Cameron <jic23@kernel.org>,
+	John Stultz <john.stultz@linaro.org>,
+	Thomas Gleixner <tglx@linutronix.de>
+CC: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCHv2 1/2] timekeeping: Provide new API to get the current
+ time resolution
+References: <1428405156-6761-1-git-send-email-harald@ccbib.org> <1428405156-6761-2-git-send-email-harald@ccbib.org>
+In-Reply-To: <1428405156-6761-2-git-send-email-harald@ccbib.org>
+Content-Type: text/plain; charset=iso-8859-15
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Hi Vignesh,
+Am 07.04.2015 um 13:12 schrieb Harald Geyer:
+> This patch series introduces a new function
+> u32 ktime_get_resolution_ns(void)
+> which allows to clean up some driver code.
+> 
+> In particular the IIO subsystem has a function to provide timestamps for
+> events but no means to get their resolution. So currently the dht11 driver
+> tries to guess the resolution in a rather messy and convoluted way. We
+> can do much better with the new code.
+> 
+> This API is not designed to be exposed to user space.
+> 
+> This has been tested on i386, sunxi and mxs.
+> 
+> Signed-off-by: Harald Geyer <harald@ccbib.org>
+> ---
+> changes since V1:
+> Improved commit message.
+> 
+>  include/linux/timekeeping.h |    1 +
+>  kernel/time/timekeeping.c   |   17 +++++++++++++++++
+>  2 files changed, 18 insertions(+), 0 deletions(-)
+> 
+> diff --git a/include/linux/timekeeping.h b/include/linux/timekeeping.h
+> index 3eaae47..983b61e 100644
+> --- a/include/linux/timekeeping.h
+> +++ b/include/linux/timekeeping.h
+> @@ -163,6 +163,7 @@ extern ktime_t ktime_get(void);
+>  extern ktime_t ktime_get_with_offset(enum tk_offsets offs);
+>  extern ktime_t ktime_mono_to_any(ktime_t tmono, enum tk_offsets offs);
+>  extern ktime_t ktime_get_raw(void);
+> +extern u32 ktime_get_resolution_ns(void);
+>  
+>  /**
+>   * ktime_get_real - get the real (wall-) time in ktime_t format
+> diff --git a/kernel/time/timekeeping.c b/kernel/time/timekeeping.c
+> index 91db941..8efd964 100644
+> --- a/kernel/time/timekeeping.c
+> +++ b/kernel/time/timekeeping.c
+> @@ -586,6 +586,23 @@ ktime_t ktime_get(void)
+>  }
+>  EXPORT_SYMBOL_GPL(ktime_get);
+>  
+> +u32 ktime_get_resolution_ns(void)
+> +{
+> +	struct timekeeper *tk = &tk_core.timekeeper;
+> +	unsigned int seq;
+> +	u32 nsecs;
+> +
+> +	WARN_ON(timekeeping_suspended);
+> +
+> +	do {
+> +		seq = read_seqcount_begin(&tk_core.seq);
+> +		nsecs = tk->tkr.mult >> tk->tkr.shift;
+> +	} while (read_seqcount_retry(&tk_core.seq, seq));
+> +
+> +	return nsecs;
+> +}
+> +EXPORT_SYMBOL_GPL(ktime_get_resolution_ns);
 
-would it be possible to add some more channel-specific settings ?
+Hmm, isn't this ktime_get_raw_ns()?
 
-It would be nice to have allmost full control to the STEPCONFIGx register.
-
-At least we need to write the bits
-
-SEL_RFM_SWC_1_0
-SEL_INM_SWC_3_0 
-SEL_RFP_SWC_2_0 
-
-In the current mainline version only (SEL_INP_SWC_3_0) is written.
-So for the other bits "0" is value is used, for my point of view this is 
-not correct.
-
-For example if we want to read a value from AIN5 the negative pin from adc 
-is muxed allways to AIN0.
-In fact i can readout heavy jitter even if AIN5 is connected to ground - 
-after setting up negative adc pin within code (to use REFN)  the readout 
-value is 0 as expected without nameable jitter.
-If i short AIN0 also to ground, jitter is also eliminated.
-
-Maybe this is also some fault of TI SoC ... in normal case somebody could 
-expect, that negative adc pin is equal even the Diff_CNTRL bit isn't set - 
-but in practice it isn't.
-
-Also actually it isn't possible to make some accurate measurement due to 
-the fact that allways VDDA_ADC is used as positive reference.
-
-So it would be nice to have control around this bits.
-Whats your opinion around that?
-
-best regards,
-Hannes
------ Forwarded by Hannes Petermaier/Eggelsberg/AT/B&R on 07.04.2015 14:17 
------
-
-From:   Johannes Pointner <johannes.pointner@gmail.com>
-To:     hannes.petermaier@br-automation.com
-Date:   07.04.2015 13:58
-Subject:        Fwd: [PATCH 0/2] iio: ti_am335x_adc: Add optional DT 
-properties for tscadc
-
-
-
----------- Forwarded message ----------
-From: Vignesh R <vigneshr@ti.com>
-Date: 2015-03-31 13:12 GMT+02:00
-Subject: [PATCH 0/2] iio: ti_am335x_adc: Add optional DT properties for 
-tscadc
-To: Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>,
-Mark Rutland <mark.rutland@arm.com>, Ian Campbell
-<ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>,
-Jonathan Cameron <jic23@kernel.org>
-Cc: Hartmut Knaack <knaack.h@gmx.de>, Lars-Peter Clausen
-<lars@metafoo.de>, Peter Meerwald <pmeerw@pmeerw.net>, Dmitry Torokhov
-<dmitry.torokhov@gmail.com>, Karol Wrona <k.wrona@samsung.com>, Jan
-Kardell <jan.kardell@telliq.com>, devicetree@vger.kernel.org,
-linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-fcooper@ti.com, Vignesh R <vigneshr@ti.com>
-
-
-
-Hi,
-
-This patch adds optional DT properties for tscadc to set open delay,
-sample delay and number of averages per sample for each adc channel.
-Open delay, sample delay and averaging are some of the parameters that
-affect the sampling rate and accuracy of the tscadc. Decreasing delays
-and averaging helps to achieve higher sampling rates, while increasing
-this parameters provides greater accuracy. Hence, this patch provides DT
-properties to set the initial values for delays and number of averages
-per sample. User space control via sysfs can be added later.
-
-
-Vignesh R (2):
-  iio: adc: ti_am335x_adc: refactor DT parsing into a function
-  iio: adc: ti_am335x_adc: make sample delay, open delay, averaging DT
-    parameters
-
- .../bindings/input/touchscreen/ti-tsc-adc.txt      | 24 +++++++
- drivers/iio/adc/ti_am335x_adc.c                    | 83 
-+++++++++++++++++-----
- 2 files changed, 91 insertions(+), 16 deletions(-)
-
---
-1.9.1
-
---
-To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
-
-
+Thanks,
+//richard
