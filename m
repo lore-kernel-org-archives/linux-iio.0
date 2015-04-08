@@ -1,63 +1,30 @@
-Return-Path: <sathyanarayanan.kuppuswamy@linux.intel.com>
-From: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
-To: jic23@kernel.org,
-	pmeerw@pmeerw.net
-Cc: linux-iio@vger.kernel.org,
-	srinivas.pandruvada@linux.intel.com,
-	Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
-Subject: [PATCH v3 1/6] iio: core : events ABI for specifying interrupt persistence
-Date: Wed,  8 Apr 2015 17:06:05 -0700
-Message-Id: <907f499ed208f06ed51b05403c82423dce64319e.1428537814.git.sathyanarayanan.kuppuswamy@linux.intel.com>
-In-Reply-To: <cover.1428537814.git.sathyanarayanan.kuppuswamy@linux.intel.com>
-References: <cover.1428537814.git.sathyanarayanan.kuppuswamy@linux.intel.com>
-In-Reply-To: <cover.1428537814.git.sathyanarayanan.kuppuswamy@linux.intel.com>
-References: <cover.1428537814.git.sathyanarayanan.kuppuswamy@linux.intel.com>
+Return-Path: <vlad.dogaru@intel.com>
+Date: Wed, 8 Apr 2015 18:30:34 +0300
+From: Vlad Dogaru <vlad.dogaru@intel.com>
+To: Irina Tirdea <irina.tirdea@intel.com>
+Cc: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>
+Subject: Re: [PATCH] iio: pressure: bmp280: fix temp compensation
+Message-ID: <20150408153034.GA23781@vdogaru>
+References: <1428506772-23710-1-git-send-email-irina.tirdea@intel.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <1428506772-23710-1-git-send-email-irina.tirdea@intel.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-This iio sysfs ABI defines a way to specify interrupt
-persistence filter value for threshold based interrupts.
+On Wed, Apr 08, 2015 at 06:26:12PM +0300, Irina Tirdea wrote:
+> Temperature reads on bmp280 device always return 0,
+> due to a missing step in the compensation formula
+> (data->tfine is never initialized).
+> 
+> Initialize data->tfine value so we get correct
+> temperature and pressure values.
+> 
+> Signed-off-by: Irina Tirdea <irina.tirdea@intel.com>
 
-Example:
+Reviewed-by: Vlad Dogaru <vlad.dogaru@intel.com>
 
-What: /sys/.../events/in_intensity0_thresh_persistence
-What: /sys/.../events/in_proximity0_thresh_persistence
+Nice catch, this must have been lost during a refactoring.
 
-Currently, we don't have any way to specify the persistence
-filter value in iio event framework. Many drivers use channel
-ext info to work around this issue. This patch adds this option
-to event info list.
-
-Added IIO_EV_INFO_PERSISTENCE and corresponding string.
-
-Signed-off-by: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
----
- drivers/iio/industrialio-event.c | 1 +
- include/linux/iio/types.h        | 1 +
- 2 files changed, 2 insertions(+)
-
-diff --git a/drivers/iio/industrialio-event.c b/drivers/iio/industrialio-event.c
-index a4b3970..7bd55b7 100644
---- a/drivers/iio/industrialio-event.c
-+++ b/drivers/iio/industrialio-event.c
-@@ -211,6 +211,7 @@ static const char * const iio_ev_info_text[] = {
- 	[IIO_EV_INFO_VALUE] = "value",
- 	[IIO_EV_INFO_HYSTERESIS] = "hysteresis",
- 	[IIO_EV_INFO_PERIOD] = "period",
-+	[IIO_EV_INFO_PERSISTENCE] = "persistence",
- };
- 
- static enum iio_event_direction iio_ev_attr_dir(struct iio_dev_attr *attr)
-diff --git a/include/linux/iio/types.h b/include/linux/iio/types.h
-index 580ed5b..5240dc6 100644
---- a/include/linux/iio/types.h
-+++ b/include/linux/iio/types.h
-@@ -86,6 +86,7 @@ enum iio_event_info {
- 	IIO_EV_INFO_VALUE,
- 	IIO_EV_INFO_HYSTERESIS,
- 	IIO_EV_INFO_PERIOD,
-+	IIO_EV_INFO_PERSISTENCE,
- };
- 
- enum iio_event_direction {
--- 
-1.9.1
+Thanks,
+Vlad
