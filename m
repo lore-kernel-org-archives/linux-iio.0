@@ -1,203 +1,214 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:52879 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755396AbbDIOTo (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 9 Apr 2015 10:19:44 -0400
-Message-ID: <55268A7C.1050307@kernel.org>
-Date: Thu, 09 Apr 2015 15:19:40 +0100
-From: Jonathan Cameron <jic23@kernel.org>
+Return-Path: <sathyanarayanan.kuppuswamy@intel.com>
+From: "Kuppuswamy, Sathyanarayanan" <sathyanarayanan.kuppuswamy@intel.com>
+To: "Baluta, Daniel" <daniel.baluta@intel.com>, "jic23@kernel.org"
+	<jic23@kernel.org>
+CC: "knaack.h@gmx.de" <knaack.h@gmx.de>, "lars@metafoo.de" <lars@metafoo.de>,
+	"pmeerw@pmeerw.net" <pmeerw@pmeerw.net>, "linux-iio@vger.kernel.org"
+	<linux-iio@vger.kernel.org>, "linux-kernel@vger.kernel.org"
+	<linux-kernel@vger.kernel.org>
+Subject: RE: [PATCH] iio: light: ltr501: Fix alignment to match open
+ parenthesis
+Date: Thu, 9 Apr 2015 14:51:54 +0000
+Message-ID: <EF0FAAD101DE534CAD726F2BFBA868D34264B683@ORSMSX113.amr.corp.intel.com>
+References: <1428589067-3582-1-git-send-email-daniel.baluta@intel.com>
+In-Reply-To: <1428589067-3582-1-git-send-email-daniel.baluta@intel.com>
+Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
-To: Vignesh R <vigneshr@ti.com>, Rob Herring <robh+dt@kernel.org>,
-	Pawel Moll <pawel.moll@arm.com>,
-	Mark Rutland <mark.rutland@arm.com>,
-	Ian Campbell <ijc+devicetree@hellion.org.uk>,
-	Kumar Gala <galak@codeaurora.org>
-CC: Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-	Karol Wrona <k.wrona@samsung.com>,
-	Jan Kardell <jan.kardell@telliq.com>,
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-iio@vger.kernel.org, fcooper@ti.com
-Subject: Re: [PATCH 2/2] iio: adc: ti_am335x_adc: make sample delay, open
- delay, averaging DT parameters
-References: <1427800357-21680-1-git-send-email-vigneshr@ti.com> <1427800357-21680-3-git-send-email-vigneshr@ti.com>
-In-Reply-To: <1427800357-21680-3-git-send-email-vigneshr@ti.com>
-Content-Type: text/plain; charset=windows-1252
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+List-ID: <linux-iio@vger.kernel.org>
 
-On 31/03/15 12:12, Vignesh R wrote:
-> Add optional DT properties to set open delay, sample delay and number
-> of averages per sample for each adc step. Open delay, sample delay
-> and averaging are some of the parameters that affect the sampling rate
-> and accuracy of the sample. Making these parameters configurable via
-> DT will help in balancing speed vs accuracy.
-> 
-> Signed-off-by: Vignesh R <vigneshr@ti.com>
-All looks fine to me, but I would ideally like a devicetree
-ack on this one.
+Hi Daniel,
 
-Jonathan
-> ---
->  .../bindings/input/touchscreen/ti-tsc-adc.txt      | 24 ++++++++++
->  drivers/iio/adc/ti_am335x_adc.c                    | 54 +++++++++++++++++++---
->  2 files changed, 72 insertions(+), 6 deletions(-)
-> 
-> diff --git a/Documentation/devicetree/bindings/input/touchscreen/ti-tsc-adc.txt b/Documentation/devicetree/bindings/input/touchscreen/ti-tsc-adc.txt
-> index 6c4fb34823d3..8aafbe87f0eb 100644
-> --- a/Documentation/devicetree/bindings/input/touchscreen/ti-tsc-adc.txt
-> +++ b/Documentation/devicetree/bindings/input/touchscreen/ti-tsc-adc.txt
-> @@ -42,6 +42,27 @@ Optional properties:
->  			 hardware knob for adjusting the amount of "settling
->  			 time".
->  
-> +- child "adc"
-> +	ti,chan-step-opendelay: List of open delays for each channel of
-> +				ADC in the order of ti,adc-channels. The
-> +				value corresponds to the number of ADC
-> +				clock cycles to wait after applying the
-> +				step configuration registers and before
-> +				sending the start of ADC conversion.
-> +				Maximum value is 0x3FFFF.
-> +       ti,chan-step-sampledelay: List of sample delays for each channel
-> +				  of ADC in the order of ti,adc-channels.
-> +				  The value corresponds to the number of
-> +				  ADC clock cycles to sample (to hold
-> +				  start of conversion high).
-> +				  Maximum value is 0xFF.
-> +       ti,chan-step-avg: Number of averages to be performed for each
-> +			  channel of ADC. If average is 16 then input
-> +			  is sampled 16 times and averaged to get more
-> +			  accurate value. This increases the time taken
-> +			  by ADC to generate a sample. Valid range is 0
-> +			  average to 16 averages. Maximum value is 16.
-> +
->  Example:
->  	tscadc: tscadc@44e0d000 {
->  		compatible = "ti,am3359-tscadc";
-> @@ -55,5 +76,8 @@ Example:
->  
->  		adc {
->  			ti,adc-channels = <4 5 6 7>;
-> +			ti,chan-step-opendelay = <0x098 0x3ffff 0x098 0x0>;
-> +			ti,chan-step-sampledelay = <0xff 0x0 0xf 0x0>;
-> +			ti,chan-step-avg = <16 2 4 8>;
->  		};
->  	}
-> diff --git a/drivers/iio/adc/ti_am335x_adc.c b/drivers/iio/adc/ti_am335x_adc.c
-> index 2f818405ffbe..5ee597b4a1af 100644
-> --- a/drivers/iio/adc/ti_am335x_adc.c
-> +++ b/drivers/iio/adc/ti_am335x_adc.c
-> @@ -37,6 +37,7 @@ struct tiadc_device {
->  	u8 channel_step[8];
->  	int buffer_en_ch_steps;
->  	u16 data[8];
-> +	u32 open_delay[8], sample_delay[8], step_avg[8];
->  };
->  
->  static unsigned int tiadc_readl(struct tiadc_device *adc, unsigned int reg)
-> @@ -85,6 +86,7 @@ static u32 get_adc_step_bit(struct tiadc_device *adc_dev, int chan)
->  static void tiadc_step_config(struct iio_dev *indio_dev)
->  {
->  	struct tiadc_device *adc_dev = iio_priv(indio_dev);
-> +	struct device *dev = adc_dev->mfd_tscadc->dev;
->  	unsigned int stepconfig;
->  	int i, steps = 0;
->  
-> @@ -98,20 +100,47 @@ static void tiadc_step_config(struct iio_dev *indio_dev)
->  	 * needs to be given to ADC to digitalize data.
->  	 */
->  
-> -	if (iio_buffer_enabled(indio_dev))
-> -		stepconfig = STEPCONFIG_AVG_16 | STEPCONFIG_FIFO1
-> -					| STEPCONFIG_MODE_SWCNT;
-> -	else
-> -		stepconfig = STEPCONFIG_AVG_16 | STEPCONFIG_FIFO1;
->  
->  	for (i = 0; i < adc_dev->channels; i++) {
->  		int chan;
->  
->  		chan = adc_dev->channel_line[i];
-> +
-> +		if (adc_dev->step_avg[i] > STEPCONFIG_AVG_16) {
-> +			dev_warn(dev, "chan %d step_avg truncating to %d\n",
-> +				 chan, STEPCONFIG_AVG_16);
-> +			adc_dev->step_avg[i] = STEPCONFIG_AVG_16;
-> +		}
-> +
-> +		if (adc_dev->step_avg[i])
-> +			stepconfig =
-> +			STEPCONFIG_AVG(ffs(adc_dev->step_avg[i]) - 1) |
-> +			STEPCONFIG_FIFO1;
-> +		else
-> +			stepconfig = STEPCONFIG_FIFO1;
-> +
-> +		if (iio_buffer_enabled(indio_dev))
-> +			stepconfig |= STEPCONFIG_MODE_SWCNT;
-> +
->  		tiadc_writel(adc_dev, REG_STEPCONFIG(steps),
->  				stepconfig | STEPCONFIG_INP(chan));
-> +
-> +		if (adc_dev->open_delay[i] > STEPDELAY_OPEN_MASK)alue corresponds to the number of ADC
-> +				clock cycles to wait after applying the
-> +				step configuration registers and before
-> +				sending the start of ADC conversion.
-> +				Maximum value is 0x3FFFF.
-> +       ti,chan-step-sampledelay: List of sample delays for each channel
-> +				  of ADC in the order of ti,adc-channels.
-> +				  The value corresponds to the number of
-> +				  ADC clock cycles to sample (to hold
-> +				  start of conversion high).
-> +				  Maximum value is 0xFF.
-> +       ti,chan-step-avg: Number of averages to be performed for each
-> +			  channel of ADC. If average is 16 then input
-> +			  is sampled 16 times and averaged to get more
-> +			  accurate value. This increases the time taken
-> +			  by ADC to generate a sample. Valid range is 0
-> +			  average to 16 averages. Maximum value is 16. {
-> +			dev_warn(dev, "chan %d open delay truncating to 0x3FFFF\n",
-> +				 chan);
-> +			adc_dev->open_delay[i] = STEPDELAY_OPEN_MASK;
-> +		}
-> +
-> +		if (adc_dev->sample_delay[i] > 0xFF) {
-> +			dev_warn(dev, "chan %d sample delay truncating to 0xFF\n",
-> +				 chan);
-> +			adc_dev->sample_delay[i] = 0xFF;
-> +		}
-> +
->  		tiadc_writel(adc_dev, REG_STEPDELAY(steps),
-> -				STEPCONFIG_OPENDLY);
-> +				STEPDELAY_OPEN(adc_dev->open_delay[i]) |
-> +				STEPDELAY_SAMPLE(adc_dev->sample_delay[i]));
-> +
->  		adc_dev->channel_step[i] = steps;
->  		steps++;
->  	}
-> @@ -407,9 +436,22 @@ static int tiadc_parse_dt(struct platform_device *pdev,
->  
->  	of_property_for_each_u32(node, "ti,adc-channels", prop, cur, val) {
->  		adc_dev->channel_line[channels] = val;
-> +
-> +		/* Set Default values for optional DT parameters */
-> +		adc_dev->open_delay[channels] = STEPCONFIG_OPENDLY;
-> +		adc_dev->sample_delay[channels] = STEPCONFIG_SAMPLEDLY;
-> +		adc_dev->step_avg[channels] = 16;
-> +
->  		channels++;
->  	}
->  
-> +	of_property_read_u32_array(node, "ti,chan-step-avg",
-> +				   adc_dev->step_avg, channels);
-> +	of_property_read_u32_array(node, "ti,chan-step-opendelay",
-> +				   adc_dev->open_delay, channels);
-> +	of_property_read_u32_array(node, "ti,chan-step-sampledelay",
-> +				   adc_dev->sample_delay, channels);
-> +
->  	adc_dev->channels = channels;
->  	return 0;
->  }
-> 
+You have asked me to include this patch in my LTR501 patch set. I have alre=
+ady sent few versions of my patch set with your patch. Do you want to submi=
+t it again separately?
 
+--
+Sathyanarayanan KN
+
+-----Original Message-----
+From: Baluta, Daniel=20
+Sent: Thursday, April 09, 2015 7:18 AM
+To: jic23@kernel.org
+Cc: knaack.h@gmx.de; lars@metafoo.de; pmeerw@pmeerw.net; Baluta, Daniel; li=
+nux-iio@vger.kernel.org; linux-kernel@vger.kernel.org; Kuppuswamy, Sathyana=
+rayanan
+Subject: [PATCH] iio: light: ltr501: Fix alignment to match open parenthesi=
+s
+
+This makes ltr501 code consistent with the coding style adopted for the new=
+ drivers added to IIO.
+We prepare the path for adding support for LTR559 chip.
+
+Reported by checkpatch.pl
+
+Signed-off-by: Daniel Baluta <daniel.baluta@intel.com>
+---
+Changes since v1:
+	* rebased on top of 1ca510b0ea6 ("iio: light: ltr501: Powerdown device on =
+error")
+	* separated from path series related to LTR559 support because there are s=
+till things
+	to do there: http://marc.info/?l=3Dlinux-kernel&m=3D142779827617036&w=3D2
+
+ drivers/iio/light/ltr501.c | 42 +++++++++++++++++++++++-------------------
+ 1 file changed, 23 insertions(+), 19 deletions(-)
+
+diff --git a/drivers/iio/light/ltr501.c b/drivers/iio/light/ltr501.c index =
+78b8783..f208c98 100644
+--- a/drivers/iio/light/ltr501.c
++++ b/drivers/iio/light/ltr501.c
+@@ -58,7 +58,7 @@ static int ltr501_drdy(struct ltr501_data *data, u8 drdy_=
+mask)
+=20
+ 	while (tries--) {
+ 		ret =3D i2c_smbus_read_byte_data(data->client,
+-			LTR501_ALS_PS_STATUS);
++					       LTR501_ALS_PS_STATUS);
+ 		if (ret < 0)
+ 			return ret;
+ 		if ((ret & drdy_mask) =3D=3D drdy_mask)
+@@ -77,7 +77,8 @@ static int ltr501_read_als(struct ltr501_data *data, __le=
+16 buf[2])
+ 		return ret;
+ 	/* always read both ALS channels in given order */
+ 	return i2c_smbus_read_i2c_block_data(data->client,
+-		LTR501_ALS_DATA1, 2 * sizeof(__le16), (u8 *) buf);
++					     LTR501_ALS_DATA1,
++					     2 * sizeof(__le16), (u8 *)buf);
+ }
+=20
+ static int ltr501_read_ps(struct ltr501_data *data) @@ -107,7 +108,7 @@ st=
+atic int ltr501_read_ps(struct ltr501_data *data)  static const struct iio_=
+chan_spec ltr501_channels[] =3D {
+ 	LTR501_INTENSITY_CHANNEL(0, LTR501_ALS_DATA0, IIO_MOD_LIGHT_BOTH, 0),
+ 	LTR501_INTENSITY_CHANNEL(1, LTR501_ALS_DATA1, IIO_MOD_LIGHT_IR,
+-		BIT(IIO_CHAN_INFO_SCALE)),
++				 BIT(IIO_CHAN_INFO_SCALE)),
+ 	{
+ 		.type =3D IIO_PROXIMITY,
+ 		.address =3D LTR501_PS_DATA,
+@@ -129,8 +130,8 @@ static const int ltr501_ps_gain[4][2] =3D {  };
+=20
+ static int ltr501_read_raw(struct iio_dev *indio_dev,
+-				struct iio_chan_spec const *chan,
+-				int *val, int *val2, long mask)
++			   struct iio_chan_spec const *chan,
++			   int *val, int *val2, long mask)
+ {
+ 	struct ltr501_data *data =3D iio_priv(indio_dev);
+ 	__le16 buf[2];
+@@ -149,7 +150,7 @@ static int ltr501_read_raw(struct iio_dev *indio_dev,
+ 			if (ret < 0)
+ 				return ret;
+ 			*val =3D le16_to_cpu(chan->address =3D=3D LTR501_ALS_DATA1 ?
+-				buf[0] : buf[1]);
++					   buf[0] : buf[1]);
+ 			return IIO_VAL_INT;
+ 		case IIO_PROXIMITY:
+ 			mutex_lock(&data->lock_ps);
+@@ -199,8 +200,8 @@ static int ltr501_get_ps_gain_index(int val, int val2) =
+ }
+=20
+ static int ltr501_write_raw(struct iio_dev *indio_dev,
+-			       struct iio_chan_spec const *chan,
+-			       int val, int val2, long mask)
++			    struct iio_chan_spec const *chan,
++			    int val, int val2, long mask)
+ {
+ 	struct ltr501_data *data =3D iio_priv(indio_dev);
+ 	int i;
+@@ -219,7 +220,8 @@ static int ltr501_write_raw(struct iio_dev *indio_dev,
+ 			else
+ 				return -EINVAL;
+ 			return i2c_smbus_write_byte_data(data->client,
+-				LTR501_ALS_CONTR, data->als_contr);
++							 LTR501_ALS_CONTR,
++							 data->als_contr);
+ 		case IIO_PROXIMITY:
+ 			i =3D ltr501_get_ps_gain_index(val, val2);
+ 			if (i < 0)
+@@ -227,7 +229,8 @@ static int ltr501_write_raw(struct iio_dev *indio_dev,
+ 			data->ps_contr &=3D ~LTR501_CONTR_PS_GAIN_MASK;
+ 			data->ps_contr |=3D i << LTR501_CONTR_PS_GAIN_SHIFT;
+ 			return i2c_smbus_write_byte_data(data->client,
+-				LTR501_PS_CONTR, data->ps_contr);
++							 LTR501_PS_CONTR,
++							 data->ps_contr);
+ 		default:
+ 			return -EINVAL;
+ 		}
+@@ -279,7 +282,7 @@ static irqreturn_t ltr501_trigger_handler(int irq, void=
+ *p)
+=20
+ 	/* figure out which data needs to be ready */
+ 	if (test_bit(0, indio_dev->active_scan_mask) ||
+-		test_bit(1, indio_dev->active_scan_mask))
++	    test_bit(1, indio_dev->active_scan_mask))
+ 		mask |=3D LTR501_STATUS_ALS_RDY;
+ 	if (test_bit(2, indio_dev->active_scan_mask))
+ 		mask |=3D LTR501_STATUS_PS_RDY;
+@@ -290,7 +293,9 @@ static irqreturn_t ltr501_trigger_handler(int irq, void=
+ *p)
+=20
+ 	if (mask & LTR501_STATUS_ALS_RDY) {
+ 		ret =3D i2c_smbus_read_i2c_block_data(data->client,
+-			LTR501_ALS_DATA1, sizeof(als_buf), (u8 *) als_buf);
++						    LTR501_ALS_DATA1,
++						    sizeof(als_buf),
++						    (u8 *)als_buf);
+ 		if (ret < 0)
+ 			return ret;
+ 		if (test_bit(0, indio_dev->active_scan_mask)) @@ -306,8 +311,7 @@ static=
+ irqreturn_t ltr501_trigger_handler(int irq, void *p)
+ 		buf[j++] =3D ret & LTR501_PS_DATA_MASK;
+ 	}
+=20
+-	iio_push_to_buffers_with_timestamp(indio_dev, buf,
+-		iio_get_time_ns());
++	iio_push_to_buffers_with_timestamp(indio_dev, buf, iio_get_time_ns());
+=20
+ done:
+ 	iio_trigger_notify_done(indio_dev->trig);
+@@ -330,7 +334,7 @@ static int ltr501_init(struct ltr501_data *data)
+ 	data->ps_contr =3D ret | LTR501_CONTR_ACTIVE;
+=20
+ 	return ltr501_write_contr(data->client, data->als_contr,
+-		data->ps_contr);
++				  data->ps_contr);
+ }
+=20
+ static int ltr501_powerdown(struct ltr501_data *data) @@ -341,7 +345,7 @@ =
+static int ltr501_powerdown(struct ltr501_data *data)  }
+=20
+ static int ltr501_probe(struct i2c_client *client,
+-			  const struct i2c_device_id *id)
++			const struct i2c_device_id *id)
+ {
+ 	struct ltr501_data *data;
+ 	struct iio_dev *indio_dev;
+@@ -375,7 +379,7 @@ static int ltr501_probe(struct i2c_client *client,
+ 		return ret;
+=20
+ 	ret =3D iio_triggered_buffer_setup(indio_dev, NULL,
+-		ltr501_trigger_handler, NULL);
++					 ltr501_trigger_handler, NULL);
+ 	if (ret)
+ 		goto powerdown_on_error;
+=20
+@@ -407,14 +411,14 @@ static int ltr501_remove(struct i2c_client *client)  =
+static int ltr501_suspend(struct device *dev)  {
+ 	struct ltr501_data *data =3D iio_priv(i2c_get_clientdata(
+-		to_i2c_client(dev)));
++					    to_i2c_client(dev)));
+ 	return ltr501_powerdown(data);
+ }
+=20
+ static int ltr501_resume(struct device *dev)  {
+ 	struct ltr501_data *data =3D iio_priv(i2c_get_clientdata(
+-		to_i2c_client(dev)));
++					    to_i2c_client(dev)));
+=20
+ 	return ltr501_write_contr(data->client, data->als_contr,
+ 		data->ps_contr);
+--
+1.9.1
