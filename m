@@ -1,362 +1,80 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:54401 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S932663AbbDISMi (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 9 Apr 2015 14:12:38 -0400
-Message-ID: <5526C112.1090609@kernel.org>
-Date: Thu, 09 Apr 2015 19:12:34 +0100
-From: Jonathan Cameron <jic23@kernel.org>
+Received: from mga03.intel.com ([134.134.136.65]:4991 "EHLO mga03.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1754234AbbDIW06 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Thu, 9 Apr 2015 18:26:58 -0400
+Message-ID: <5526FCB8.3000903@linux.intel.com>
+Date: Thu, 09 Apr 2015 15:27:04 -0700
+From: sathyanarayanan kuppuswamy
+	<sathyanarayanan.kuppuswamy@linux.intel.com>
+Reply-To: sathyanarayanan.kuppuswamy@linux.intel.com
 MIME-Version: 1.0
-To: Daniel Baluta <daniel.baluta@intel.com>
-CC: jlbec@evilplan.org, lars@metafoo.de, knaack.h@gmx.de,
-	linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-	octavian.purdila@intel.com, pebolle@tiscali.nl,
-	patrick.porlan@intel.com, adriana.reus@intel.com
-Subject: Re: [PATCH v3 1/3] iio: configfs: Add configfs support to IIO
-References: <1428329889-18335-1-git-send-email-daniel.baluta@intel.com> <1428329889-18335-2-git-send-email-daniel.baluta@intel.com> <5526B398.8050806@kernel.org> <5526B9AB.4060700@kernel.org>
-In-Reply-To: <5526B9AB.4060700@kernel.org>
-Content-Type: text/plain; charset=windows-1252
+To: Jonathan Cameron <jic23@kernel.org>,
+	Daniel Baluta <daniel.baluta@intel.com>
+CC: Peter Meerwald <pmeerw@pmeerw.net>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Subject: Re: [PATCH v4 1/1] iio: ltr301: Add support for ltr301
+References: <cover.1428372691.git.sathyanarayanan.kuppuswamy@linux.intel.com>	<f944512157939827cd6f06b29bb3d1181692e9c1.1428372691.git.sathyanarayanan.kuppuswamy@linux.intel.com>	<552650FB.6000107@kernel.org> <CAEnQRZDje3kaJE+LHPi0NnGDFY3oRuY2Ewrvj4NCzwzypdyS+w@mail.gmail.com> <5526817C.8080608@kernel.org>
+In-Reply-To: <5526817C.8080608@kernel.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 09/04/15 18:40, Jonathan Cameron wrote:
-> On 09/04/15 18:15, Jonathan Cameron wrote:
->> On 06/04/15 15:18, Daniel Baluta wrote:
->>> This module is the core of IIO configfs. It creates the "iio" subsystem under
->>> configfs mount point root, with one default group for "triggers".
->>>
->>> It offers basic interface for registering software trigger types. Next patches
->>> will add "hrtimer" and "sysfs" trigger types. To add a new trigger type we must
->>> create a new kernel module which implements iio_configfs_trigger.h interface.
->>>
->>> See Documentation/iio/iio_configfs.txt for more details on how configfs
->>> support for IIO works.
->>>
->>> Signed-off-by: Daniel Baluta <daniel.baluta@intel.com>
->> Looks good and is actually a fair bit simpler than I expected which is nice!
->> As an ideal aim, I'd like there to be no need for the core to have any
->> idea what triggers exist and can be registered (beyond preventing naming
->> clashes etc). Actually, not much would be needed to implement that I think, just
->> using a list and looking up in it (we aren't on a particularly fast path so
->> don't need anything clever) instead of a simple array.  A touch of locking
->> probably to avoid two many simultaneous users of that list...
->>
->> Hmm. having read through the patches, are we fundamentally limited to having to
->> specify the entire directory structure before bringing up configfs?
-> As I read more on this, I think the definition of a 'subsystem' in configfs is
-> very restricted. It means a tight group of devices sharing a prior
-> known interface with no ability to add extras later.
-> It's sort of like the difference between a class and a bus in sysfs (but more limited
-> actually that's a rubbish analogy).  Thus either we have to do as here
-> and have the core know all about everything it might want to setup in advance
-> of registering the iio configfs subsystem or we need to make a whole load of
-> different configfs subsystems. Basically boils down to one per module.  We lose
-> the grouping convenience of the current structure but gain in separation.
-> 
-> So option 1 we have effectively to predefine anything that might turn up
-> in a module...
-> 
-> /config/iio/triggers/hrtimer/instance1/..
-> /config/iio/triggers/sysfs/instance2/..
-> /config/iio/virtualdevs/hwmon/iiohwmoninstance1/..
-> /config/iio/virtualdevs/input/iioinputinstance1/..
-> /config/iio/maps/channelmapisntance1/.. 
-> etc (actually fine for the maps as they are coming from the core anyway
-> and will be known in advance)
-> 
-> Option 2 we have complete flexibility as its down to the relevant drivers
-> 
-> /config/iio-trigger-hrtimer/instance/..
-> /config/iio-trigger-sysfs/instance/..
-> /config/iio-virtual-hwmon/instance/..
-> /config/iio-virtual-input/instance/..
-> 
-> but we lose the grouping by directory which is a conceptual shame.
-> 
-> Am I missing something important here?  (pretty new to configfs!)
-> 
-> Just for others not familiar with IIO who might read this. We have a number
-> of userspace created elements but each type is provided by a different module,
-> hence it's a real pain having to have them all defined at configfs subsystem
-> initialization as it adds tight coupling we don't otherwise have!
-
-For reference of others the usb gadget code is a good example of how to handle
-these sort of cross dependencies..
-
-the approach used for function drivers there would give us the cleaner option of
-
-/config/iio/triggers/hrtimer-instance1
-/config/iio/triggers/hrtimer-instance2
-/config/iio/triggers/sysfs-instance1
-/config/iio/virtualdevs/hwmon-instance1
-etc
 
 
-> 
-> J
->>
->>> ---
+On 04/09/2015 06:41 AM, Jonathan Cameron wrote:
+> On 09/04/15 13:20, Daniel Baluta wrote:
+>> On Thu, Apr 9, 2015 at 1:14 PM, Jonathan Cameron <jic23@kernel.org> wrote:
+>>> On 07/04/15 03:16, Kuppuswamy Sathyanarayanan wrote:
+>>>> Added support for Liteon 301 Ambient light sensor. Since
+>>>> LTR-301 and LTR-501 are register compatible(and even have same
+>>>> part id), LTR-501 driver has been extended to support both
+>>>> devices. LTR-501 is similar to LTR-301 in ALS sensing, But the
+>>>> only difference is, LTR-501 also supports proximity sensing.
+>>>>
+>>>> LTR-501 - ALS + Proximity combo
+>>>> LTR-301 - ALS sensor.
+>>>>
+>>>> Signed-off-by: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
+>>> Patch naming convention
+>>> iio:<name of driver>: Add support for ltr301
+>>> so here would be
+>>> iio:ltr501:Add support for ltr301.
 >>>
->>> Changes since v2:
->>> 	* Fix build errors by compiling industrialio-configfs.ko 
->>> 	as a separate module, as reported by Paul.
+>>> Otherwise, looks good to me.  A comment inline that it might
+>>> make sense to introduced a ltr501_chip info structure and use
+>>> static const struct ltr501_chip_info[2] = {
+>>> [LTR301] = {
+>>>         .info = ...
+>>>         ....
+>>>         },
+>>> [LTR501] = {
+>>> }};
 >>>
->>> Changes since v1:
->>> 	* addressed feedback from v1:
->>> 		* https://lkml.org/lkml/2015/3/25/647
->>> 	* create a directory per trigger type
->>> 	* removed activate and type attributes
->>> 	
->>>  drivers/iio/Kconfig                      |   8 ++
->>>  drivers/iio/Makefile                     |   1 +
->>>  drivers/iio/industrialio-configfs.c      | 127 +++++++++++++++++++++++++++++++
->>>  include/linux/iio/iio_configfs_trigger.h |  40 ++++++++++
->>>  4 files changed, 176 insertions(+)
->>>  create mode 100644 drivers/iio/industrialio-configfs.c
->>>  create mode 100644 include/linux/iio/iio_configfs_trigger.h
+>>> That way you make all the truely constant data apparently constant
+>>> and loose the switch statement. It makes for an easier to review / simpler
+>>> driver in the long run.
 >>>
->>> diff --git a/drivers/iio/Kconfig b/drivers/iio/Kconfig
->>> index 4011eff..41d5863 100644
->>> --- a/drivers/iio/Kconfig
->>> +++ b/drivers/iio/Kconfig
->>> @@ -18,6 +18,14 @@ config IIO_BUFFER
->>>  	  Provide core support for various buffer based data
->>>  	  acquisition methods.
->>>  
->>> +config IIO_CONFIGFS
->>> +	tristate "Enable IIO configuration via configfs"
->>> +	select CONFIGFS_FS
->>> +	help
->>> +	  This allows configuring various IIO bits through configfs
->>> +	  (e.g. software triggers). For more info see
->>> +	  Documentation/iio/iio_configfs.txt.
->>> +
->>>  if IIO_BUFFER
->>>  
->>>  config IIO_BUFFER_CB
->>> diff --git a/drivers/iio/Makefile b/drivers/iio/Makefile
->>> index 698afc2..72e85c42 100644
->>> --- a/drivers/iio/Makefile
->>> +++ b/drivers/iio/Makefile
->>> @@ -8,6 +8,7 @@ industrialio-$(CONFIG_IIO_BUFFER) += industrialio-buffer.o
->>>  industrialio-$(CONFIG_IIO_TRIGGER) += industrialio-trigger.o
->>>  industrialio-$(CONFIG_IIO_BUFFER_CB) += buffer_cb.o
->>>  
->>> +obj-$(CONFIG_IIO_CONFIGFS) += industrialio-configfs.o
->>>  obj-$(CONFIG_IIO_TRIGGERED_BUFFER) += industrialio-triggered-buffer.o
->>>  obj-$(CONFIG_IIO_KFIFO_BUF) += kfifo_buf.o
->>>  
->>> diff --git a/drivers/iio/industrialio-configfs.c b/drivers/iio/industrialio-configfs.c
->>> new file mode 100644
->>> index 0000000..d8ffd76
->>> --- /dev/null
->>> +++ b/drivers/iio/industrialio-configfs.c
->>> @@ -0,0 +1,127 @@
->>> +/*
->>> + * Industrial I/O configfs bits
->>> + *
->>> + * Copyright (c) 2015 Intel Corporation
->>> + *
->>> + * This program is free software; you can redistribute it and/or modify it
->>> + * under the terms of the GNU General Public License version 2 as published by
->>> + * the Free Software Foundation.
->>> + */
->>> +
->>> +#include <linux/configfs.h>
->>> +#include <linux/module.h>
->>> +#include <linux/init.h>
->>> +#include <linux/kmod.h>
->>> +#include <linux/slab.h>
->>> +
->>> +#include <linux/iio/iio.h>
->>> +#include <linux/iio/iio_configfs_trigger.h>
->>> +
->>> +static struct iio_configfs_trigger_type *trigger_types[IIO_TRIGGER_TYPE_MAX];
->>> +static DEFINE_RWLOCK(trigger_types_lock);
->>> +
->>> +int register_configfs_trigger(struct iio_configfs_trigger_type *t)
->>> +{
->>> +	int index = t->type;
->>> +	int ret = 0;
->>> +
->>> +	if (index < 0 || index >= IIO_TRIGGER_TYPE_MAX)
->>> +		return -EINVAL;
->>> +
->>> +	write_lock(&trigger_types_lock);
->>> +	if (trigger_types[index])
->>> +		ret = -EBUSY;
->>> +	else
->>> +		trigger_types[index] = t;
->>> +	write_unlock(&trigger_types_lock);
->>> +
->>> +	return ret;
->>> +}
->>> +EXPORT_SYMBOL(register_configfs_trigger);
->>> +
->>> +int unregister_configfs_trigger(struct iio_configfs_trigger_type *t)
->>> +{
->>> +	int index = t->type;
->>> +
->>> +	if (index < 0 || index >= IIO_TRIGGER_TYPE_MAX)
->>> +		return -EINVAL;
->>> +
->>> +	write_lock(&trigger_types_lock);
->>> +	trigger_types[index] = NULL;
->>> +	write_unlock(&trigger_types_lock);
->>> +
->>> +	return 0;
->>> +}
->>> +EXPORT_SYMBOL(unregister_configfs_trigger);
->>> +
->>> +static
->>> +struct iio_configfs_trigger_type *iio_get_configfs_trigger_type(int type)
->>> +{
->>> +	struct iio_configfs_trigger_type *t;
->>> +
->>> +	if (type < 0 || type >= IIO_TRIGGER_TYPE_MAX)
->>> +		return ERR_PTR(-EINVAL);
->>> +
->>> +	read_lock(&trigger_types_lock);
->>> +	t = trigger_types[type];
->>> +	if (t && !try_module_get(t->owner))
->>> +		t = NULL;
->>> +	read_unlock(&trigger_types_lock);
->>> +
->>> +	return t;
->>> +}
->>> +
->>> +static struct config_group *iio_triggers_default_groups[] = {
->>> +	NULL
->>> +};
->>> +
->>> +static struct config_item_type iio_triggers_group_type = {
->>> +	.ct_owner       = THIS_MODULE,
->>> +};
->>> +
->>> +static struct config_group iio_triggers_group = {
->>> +	.cg_item = {
->>> +		.ci_namebuf = "triggers",
->>> +		.ci_type = &iio_triggers_group_type,
->>> +	},
->>> +	.default_groups = iio_triggers_default_groups,
->>> +};
->>> +
->>> +static struct config_group *iio_root_default_groups[] = {
->>> +	&iio_triggers_group,
->>> +	NULL
->>> +};
->>> +
->>> +static struct config_item_type iio_root_group_type = {
->>> +	.ct_owner       = THIS_MODULE,
->>> +};
->>> +
->>> +static struct configfs_subsystem iio_configfs_subsys = {
->>> +	.su_group = {
->>> +		.cg_item = {
->>> +			.ci_namebuf = "iio",
->>> +			.ci_type = &iio_root_group_type,
->>> +		},
->>> +		.default_groups = iio_root_default_groups,
->>> +	},
->>> +	.su_mutex = __MUTEX_INITIALIZER(iio_configfs_subsys.su_mutex),
->>> +};
->>> +
->>> +static int __init iio_configfs_init(void)
->>> +{
->>> +	config_group_init(&iio_triggers_group);
->>> +	config_group_init(&iio_configfs_subsys.su_group);
->>> +
->>> +	return configfs_register_subsystem(&iio_configfs_subsys);
->>> +}
->>> +module_init(iio_configfs_init);
->>> +
->>> +static void __exit iio_configfs_exit(void)
->>> +{
->>> +	configfs_unregister_subsystem(&iio_configfs_subsys);
->>> +}
->>> +module_exit(iio_configfs_exit);
->>> +
->>> +MODULE_AUTHOR("Daniel Baluta <daniel.baluta@intel.com>");
->>> +MODULE_DESCRIPTION("Industrial I/O configfs support");
->>> +MODULE_LICENSE("GPL v2");
->>> diff --git a/include/linux/iio/iio_configfs_trigger.h b/include/linux/iio/iio_configfs_trigger.h
->>> new file mode 100644
->>> index 0000000..75e76f2
->>> --- /dev/null
->>> +++ b/include/linux/iio/iio_configfs_trigger.h
->>> @@ -0,0 +1,40 @@
->>> +#ifndef __IIO_CONFIGFS_TRIGGER
->>> +#define __IIO_CONFIGFS_TRIGGER
->>> +
->>> +#include <linux/device.h>
->>> +#include <linux/iio/iio.h>
->>> +#include <linux/module.h>
->>> +
->>> +#define module_iio_configfs_trigger_driver(__iio_configfs_trigger) \
->>> +	module_driver(__iio_configfs_trigger, register_configfs_trigger, \
->>> +		      unregister_configfs_trigger)
->>> +
->>> +enum {
->> Is this enum actually needed as such? If we can avoid explicit need
->> to list triggers in one place it would be nice.
+>>> I haven't checked but this is probably what Daniel was suggesting in
+>>> his review for v1 of this patch.
+>> Hi Sathya,
 >>
->> As I understand it, the point of this is to allow allocating of various
->> arrays for easy lookup etc.  How about we switch over to a list and
->> lookup based on magic provided by the trigger? (string or address most likely).
->>> +	IIO_TRIGGER_TYPE_MAX,
->>> +};
->>> +
->>> +struct iio_configfs_trigger_ops;
->>> +
->>> +struct iio_configfs_trigger_type {
->>> +	int type;
->>> +	struct module *owner;
->>> +	struct iio_configfs_trigger_ops *trigger_ops;
->>> +};
->>> +
->>> +struct iio_configfs_trigger_info {
->>> +	char *name;
->>> +	struct iio_trigger *trigger;
->>> +	struct iio_configfs_trigger_type *trigger_type;
->>> +};
->>> +
->>> +struct iio_configfs_trigger_ops {
->> I wonder if we can make these more flexible from the start because
->> avoiding churn in callbacks is always nice as us ensuring we have
->> a manageable number in the long run!  Also we might want to play
->> the 'fixed point' games we play elsewhere in IIO to allow us to have
->> a very wide range of precisions.
->> enum iio_configfs_trigger_paramtype = {
->>      delay,
->> };
+>> I think the best approach to get this merged in would be for you
+>> to rebase your ltr301 patches on my patches for ltr559.
 >>
->> As a final thought, we have standardised on sampling_frequency elsewhere in
->> IIO (largely based on that was what the first few device used) so perhaps
->> we can use that here as well instead of delay?
+>> http://marc.info/?l=linux-kernel&m=142779827617036&w=2
 >>
->> int (*get_parameter)(struct iio_configfs_trigger_info *, enum iio_configfs_triger_paramtype param, unsigned long *);
+> yes, that would make a lot of sense.
+
+Ok. I will rebase my patch on top of your patch.
+>> Let me know if you have any questions.
 >>
->>> +	int (*get_delay)(struct iio_configfs_trigger_info *, unsigned long *);
->>> +	int (*set_delay)(struct iio_configfs_trigger_info *, unsigned long);
->>> +	int (*probe)(struct iio_configfs_trigger_info *);
->>> +	int (*remove)(struct iio_configfs_trigger_info *);
->>> +};
->>> +
->>> +int register_configfs_trigger(struct iio_configfs_trigger_type *);
->>> +int unregister_configfs_trigger(struct iio_configfs_trigger_type *);
->>> +
->>> +#endif /* __IIO_CONFIGFS_TRIGGER */
->>>
+>> Daniel.
 >>
->> --
->> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
->> the body of a message to majordomo@vger.kernel.org
->> More majordomo info at  http://vger.kernel.org/majordomo-info.html
->>
-> 
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> 
+>
+
+-- 
+Sathyanarayanan Kuppuswamy
+Android kernel developer
 
