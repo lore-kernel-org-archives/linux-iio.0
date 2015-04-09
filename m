@@ -4,192 +4,204 @@ To: jic23@kernel.org,
 	pmeerw@pmeerw.net
 Cc: linux-iio@vger.kernel.org,
 	srinivas.pandruvada@linux.intel.com,
-	Daniel Baluta <daniel.baluta@intel.com>
-Subject: [PATCH v3 3/6] iio: light: ltr501: Fix alignment to match open parenthesis
-Date: Wed,  8 Apr 2015 17:06:07 -0700
-Message-Id: <611988d4fe10b4983084c006121bdbaa91e0e7d2.1428537814.git.sathyanarayanan.kuppuswamy@linux.intel.com>
+	Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
+Subject: [PATCH v3 5/6] iio: ltr501: Add interrupt rate control support
+Date: Wed,  8 Apr 2015 17:06:09 -0700
+Message-Id: <7c41c43719bd0672124d216a9f1d3188523e5977.1428537814.git.sathyanarayanan.kuppuswamy@linux.intel.com>
 In-Reply-To: <cover.1428537814.git.sathyanarayanan.kuppuswamy@linux.intel.com>
 References: <cover.1428537814.git.sathyanarayanan.kuppuswamy@linux.intel.com>
 In-Reply-To: <cover.1428537814.git.sathyanarayanan.kuppuswamy@linux.intel.com>
 References: <cover.1428537814.git.sathyanarayanan.kuppuswamy@linux.intel.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-From: Daniel Baluta <daniel.baluta@intel.com>
+Added rate control support for ALS and proximity
+threshold interrupts.
 
-This makes ltr501 code consistent with the coding style adopted
-for the new drivers added to IIO.
-We prepare the path for adding support for LTR559 chip.
+Setting <n> to ALS intr_persist sysfs node would
+generate interrupt whenever ALS data cross either
+upper or lower threshold limits <n> number of times.
+Similarly setting <m> to proximity intr_persist sysfs
+node would genere interrupt whenever proximity data falls
+outside threshold limit <m> number of times.
 
-Reported by checkpatch.pl
-
-Signed-off-by: Daniel Baluta <daniel.baluta@intel.com>
+Signed-off-by: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
 ---
- drivers/iio/light/ltr501.c | 46 +++++++++++++++++++++++++---------------------
- 1 file changed, 25 insertions(+), 21 deletions(-)
+ drivers/iio/light/ltr501.c | 121 +++++++++++++++++++++++++++++++++++++++++++--
+ 1 file changed, 117 insertions(+), 4 deletions(-)
 
 diff --git a/drivers/iio/light/ltr501.c b/drivers/iio/light/ltr501.c
-index 62b7072..883855a 100644
+index 8672962..1b314f3 100644
 --- a/drivers/iio/light/ltr501.c
 +++ b/drivers/iio/light/ltr501.c
-@@ -58,7 +58,7 @@ static int ltr501_drdy(struct ltr501_data *data, u8 drdy_mask)
+@@ -39,6 +39,7 @@
+ #define LTR501_PS_THRESH_LOW 0x92 /* 11 bit, ps lower threshold */
+ #define LTR501_ALS_THRESH_UP 0x97 /* 16 bit, ALS upper threshold */
+ #define LTR501_ALS_THRESH_LOW 0x99 /* 16 bit, ALS lower threshold */
++#define LTR501_INTR_PRST 0x9e /* ps thresh, als thresh */
  
- 	while (tries--) {
- 		ret = i2c_smbus_read_byte_data(data->client,
--			LTR501_ALS_PS_STATUS);
-+					       LTR501_ALS_PS_STATUS);
- 		if (ret < 0)
- 			return ret;
- 		if ((ret & drdy_mask) == drdy_mask)
-@@ -77,7 +77,8 @@ static int ltr501_read_als(struct ltr501_data *data, __le16 buf[2])
- 		return ret;
- 	/* always read both ALS channels in given order */
- 	return i2c_smbus_read_i2c_block_data(data->client,
--		LTR501_ALS_DATA1, 2 * sizeof(__le16), (u8 *) buf);
-+					     LTR501_ALS_DATA1,
-+					     2 * sizeof(__le16), (u8 *)buf);
+ #define LTR501_ALS_CONTR_SW_RESET BIT(2)
+ #define LTR501_CONTR_PS_GAIN_MASK (BIT(3) | BIT(2))
+@@ -65,6 +66,9 @@
+ #define LTR501_INTR_MODE_ALS BIT(1)
+ #define LTR501_INTR_MODE_ALS_PS 3
+ 
++#define LTR501_INTR_PRST_ALS_MASK 0x0f
++#define LTR501_INTR_PRST_PS_MASK 0xf0
++
+ #define LTR501_PS_DATA_MASK 0x7ff
+ #define LTR501_PS_THRESH_MASK 0x7ff
+ #define LTR501_ALS_THRESH_MASK 0xffff
+@@ -127,6 +131,70 @@ static int ltr501_read_ps(struct ltr501_data *data)
+ 	return i2c_smbus_read_word_data(data->client, LTR501_PS_DATA);
  }
  
- static int ltr501_read_ps(struct ltr501_data *data)
-@@ -107,7 +108,7 @@ static int ltr501_read_ps(struct ltr501_data *data)
- static const struct iio_chan_spec ltr501_channels[] = {
- 	LTR501_INTENSITY_CHANNEL(0, LTR501_ALS_DATA0, IIO_MOD_LIGHT_BOTH, 0),
- 	LTR501_INTENSITY_CHANNEL(1, LTR501_ALS_DATA1, IIO_MOD_LIGHT_IR,
--		BIT(IIO_CHAN_INFO_SCALE)),
-+				 BIT(IIO_CHAN_INFO_SCALE)),
++static int ltr501_read_intr_prst(struct iio_dev *indio_dev,
++				 const struct iio_chan_spec *chan,
++				 int *val)
++{
++	struct ltr501_data *data = iio_priv(indio_dev);
++	int ret = -EINVAL;
++
++	switch (chan->type) {
++	case IIO_INTENSITY:
++		mutex_lock(&data->lock_als);
++		ret = i2c_smbus_read_byte_data(data->client, LTR501_INTR_PRST);
++		mutex_unlock(&data->lock_als);
++		if (ret >= 0)
++			*val = ret & LTR501_INTR_PRST_ALS_MASK;
++		break;
++	case IIO_PROXIMITY:
++		mutex_lock(&data->lock_ps);
++		ret = i2c_smbus_read_byte_data(data->client, LTR501_INTR_PRST);
++		mutex_unlock(&data->lock_ps);
++		if (ret >= 0)
++			*val = (ret & LTR501_INTR_PRST_PS_MASK) >> 4;
++		break;
++	default:
++		break;
++	}
++
++	return ret < 0 ? ret : IIO_VAL_INT;
++}
++
++static int ltr501_write_intr_prst(struct iio_dev *indio_dev,
++				  const struct iio_chan_spec *chan,
++				  u8 new_val)
++{
++	struct ltr501_data *data = iio_priv(indio_dev);
++	int ret = -EINVAL;
++
++	ret = i2c_smbus_read_byte_data(data->client, LTR501_INTR_PRST);
++	if (ret < 0)
++		return ret;
++
++	switch (chan->type) {
++	case IIO_INTENSITY:
++		mutex_lock(&data->lock_als);
++		new_val = (ret & ~LTR501_INTR_PRST_ALS_MASK) |
++				(new_val & LTR501_INTR_PRST_ALS_MASK);
++		ret = i2c_smbus_write_byte_data(data->client,
++						LTR501_INTR_PRST, new_val);
++		mutex_unlock(&data->lock_als);
++		break;
++	case IIO_PROXIMITY:
++		mutex_lock(&data->lock_ps);
++		new_val = (ret & ~LTR501_INTR_PRST_PS_MASK) |
++				((new_val << 4) & LTR501_INTR_PRST_PS_MASK);
++		ret = i2c_smbus_write_byte_data(data->client,
++						LTR501_INTR_PRST, new_val);
++		mutex_unlock(&data->lock_ps);
++		break;
++	default:
++		break;
++	}
++
++	return ret;
++}
++
+ static const struct iio_event_spec ltr501_als_event_spec[] = {
  	{
- 		.type = IIO_PROXIMITY,
- 		.address = LTR501_PS_DATA,
-@@ -129,8 +130,8 @@ static const int ltr501_ps_gain[4][2] = {
+ 		.type = IIO_EV_TYPE_THRESH,
+@@ -141,7 +209,8 @@ static const struct iio_event_spec ltr501_als_event_spec[] = {
+ 	{
+ 		.type = IIO_EV_TYPE_THRESH,
+ 		.dir = IIO_EV_DIR_EITHER,
+-		.mask_separate = BIT(IIO_EV_INFO_ENABLE),
++		.mask_separate = BIT(IIO_EV_INFO_ENABLE) |
++				 BIT(IIO_EV_INFO_PERSISTENCE),
+ 	},
+ 
+ };
+@@ -160,7 +229,8 @@ static const struct iio_event_spec ltr501_pxs_event_spec[] = {
+ 	{
+ 		.type = IIO_EV_TYPE_THRESH,
+ 		.dir = IIO_EV_DIR_EITHER,
+-		.mask_separate = BIT(IIO_EV_INFO_ENABLE),
++		.mask_separate = BIT(IIO_EV_INFO_ENABLE) |
++				 BIT(IIO_EV_INFO_PERSISTENCE),
+ 	},
  };
  
- static int ltr501_read_raw(struct iio_dev *indio_dev,
--				struct iio_chan_spec const *chan,
--				int *val, int *val2, long mask)
-+			   struct iio_chan_spec const *chan,
-+			   int *val, int *val2, long mask)
- {
- 	struct ltr501_data *data = iio_priv(indio_dev);
- 	__le16 buf[2];
-@@ -149,7 +150,7 @@ static int ltr501_read_raw(struct iio_dev *indio_dev,
- 			if (ret < 0)
- 				return ret;
- 			*val = le16_to_cpu(chan->address == LTR501_ALS_DATA1 ?
--				buf[0] : buf[1]);
-+					   buf[0] : buf[1]);
- 			return IIO_VAL_INT;
- 		case IIO_PROXIMITY:
- 			mutex_lock(&data->lock_ps);
-@@ -199,8 +200,8 @@ static int ltr501_get_ps_gain_index(int val, int val2)
+@@ -423,6 +493,49 @@ static int ltr501_write_thresh(struct iio_dev *indio_dev,
+ 	return ret < 0 ? ret : IIO_VAL_INT;
  }
  
- static int ltr501_write_raw(struct iio_dev *indio_dev,
--			       struct iio_chan_spec const *chan,
--			       int val, int val2, long mask)
-+			    struct iio_chan_spec const *chan,
-+			    int val, int val2, long mask)
- {
- 	struct ltr501_data *data = iio_priv(indio_dev);
- 	int i;
-@@ -219,7 +220,8 @@ static int ltr501_write_raw(struct iio_dev *indio_dev,
- 			else
- 				return -EINVAL;
- 			return i2c_smbus_write_byte_data(data->client,
--				LTR501_ALS_CONTR, data->als_contr);
-+							 LTR501_ALS_CONTR,
-+							 data->als_contr);
- 		case IIO_PROXIMITY:
- 			i = ltr501_get_ps_gain_index(val, val2);
- 			if (i < 0)
-@@ -227,7 +229,8 @@ static int ltr501_write_raw(struct iio_dev *indio_dev,
- 			data->ps_contr &= ~LTR501_CONTR_PS_GAIN_MASK;
- 			data->ps_contr |= i << LTR501_CONTR_PS_GAIN_SHIFT;
- 			return i2c_smbus_write_byte_data(data->client,
--				LTR501_PS_CONTR, data->ps_contr);
-+							 LTR501_PS_CONTR,
-+							 data->ps_contr);
- 		default:
- 			return -EINVAL;
- 		}
-@@ -279,7 +282,7 @@ static irqreturn_t ltr501_trigger_handler(int irq, void *p)
- 
- 	/* figure out which data needs to be ready */
- 	if (test_bit(0, indio_dev->active_scan_mask) ||
--		test_bit(1, indio_dev->active_scan_mask))
-+	    test_bit(1, indio_dev->active_scan_mask))
- 		mask |= LTR501_STATUS_ALS_RDY;
- 	if (test_bit(2, indio_dev->active_scan_mask))
- 		mask |= LTR501_STATUS_PS_RDY;
-@@ -290,7 +293,9 @@ static irqreturn_t ltr501_trigger_handler(int irq, void *p)
- 
- 	if (mask & LTR501_STATUS_ALS_RDY) {
- 		ret = i2c_smbus_read_i2c_block_data(data->client,
--			LTR501_ALS_DATA1, sizeof(als_buf), (u8 *) als_buf);
-+						    LTR501_ALS_DATA1,
-+						    sizeof(als_buf),
-+						    (u8 *)als_buf);
- 		if (ret < 0)
- 			return ret;
- 		if (test_bit(0, indio_dev->active_scan_mask))
-@@ -306,8 +311,7 @@ static irqreturn_t ltr501_trigger_handler(int irq, void *p)
- 		buf[j++] = ret & LTR501_PS_DATA_MASK;
- 	}
- 
--	iio_push_to_buffers_with_timestamp(indio_dev, buf,
--		iio_get_time_ns());
-+	iio_push_to_buffers_with_timestamp(indio_dev, buf, iio_get_time_ns());
- 
- done:
- 	iio_trigger_notify_done(indio_dev->trig);
-@@ -330,11 +334,11 @@ static int ltr501_init(struct ltr501_data *data)
- 	data->ps_contr = ret | LTR501_CONTR_ACTIVE;
- 
- 	return ltr501_write_contr(data->client, data->als_contr,
--		data->ps_contr);
-+				  data->ps_contr);
- }
- 
- static int ltr501_probe(struct i2c_client *client,
--			  const struct i2c_device_id *id)
-+			const struct i2c_device_id *id)
- {
- 	struct ltr501_data *data;
- 	struct iio_dev *indio_dev;
-@@ -368,7 +372,7 @@ static int ltr501_probe(struct i2c_client *client,
- 		return ret;
- 
- 	ret = iio_triggered_buffer_setup(indio_dev, NULL,
--		ltr501_trigger_handler, NULL);
-+					 ltr501_trigger_handler, NULL);
- 	if (ret)
- 		return ret;
- 
-@@ -386,8 +390,8 @@ error_unreg_buffer:
- static int ltr501_powerdown(struct ltr501_data *data)
- {
- 	return ltr501_write_contr(data->client,
--		data->als_contr & ~LTR501_CONTR_ACTIVE,
--		data->ps_contr & ~LTR501_CONTR_ACTIVE);
-+				  data->als_contr & ~LTR501_CONTR_ACTIVE,
-+				  data->ps_contr & ~LTR501_CONTR_ACTIVE);
- }
- 
- static int ltr501_remove(struct i2c_client *client)
-@@ -405,14 +409,14 @@ static int ltr501_remove(struct i2c_client *client)
- static int ltr501_suspend(struct device *dev)
- {
- 	struct ltr501_data *data = iio_priv(i2c_get_clientdata(
--		to_i2c_client(dev)));
-+					    to_i2c_client(dev)));
- 	return ltr501_powerdown(data);
- }
- 
- static int ltr501_resume(struct device *dev)
- {
- 	struct ltr501_data *data = iio_priv(i2c_get_clientdata(
--		to_i2c_client(dev)));
-+					    to_i2c_client(dev)));
- 
- 	return ltr501_write_contr(data->client, data->als_contr,
- 		data->ps_contr);
++static int ltr501_read_event(struct iio_dev *indio_dev,
++			     const struct iio_chan_spec *chan,
++			     enum iio_event_type type,
++			     enum iio_event_direction dir,
++			     enum iio_event_info info,
++			     int *val, int *val2)
++{
++	*val2 = 0;
++
++	switch (info) {
++	case IIO_EV_INFO_VALUE:
++		return ltr501_read_thresh(indio_dev, chan, type, dir,
++					  info, val, val2);
++	case IIO_EV_INFO_PERSISTENCE:
++		return ltr501_read_intr_prst(indio_dev, chan, val);
++	default:
++		return -EINVAL;
++	}
++
++	return IIO_VAL_INT;
++}
++
++static int ltr501_write_event(struct iio_dev *indio_dev,
++			      const struct iio_chan_spec *chan,
++			      enum iio_event_type type,
++			      enum iio_event_direction dir,
++			      enum iio_event_info info,
++			      int val, int val2)
++{
++	switch (info) {
++	case IIO_EV_INFO_VALUE:
++		return ltr501_write_thresh(indio_dev, chan, type, dir,
++					   info, val, val2);
++	case IIO_EV_INFO_PERSISTENCE:
++		return ltr501_write_intr_prst(indio_dev, chan, val);
++	default:
++		return -EINVAL;
++	}
++
++	return 0;
++}
++
++
+ static int ltr501_read_event_config(struct iio_dev *indio_dev,
+ 		const struct iio_chan_spec *chan,
+ 		enum iio_event_type type,
+@@ -502,8 +615,8 @@ static const struct iio_info ltr501_info = {
+ 	.read_raw = ltr501_read_raw,
+ 	.write_raw = ltr501_write_raw,
+ 	.attrs = &ltr501_attribute_group,
+-	.read_event_value	= &ltr501_read_thresh,
+-	.write_event_value	= &ltr501_write_thresh,
++	.read_event_value	= &ltr501_read_event,
++	.write_event_value	= &ltr501_write_event,
+ 	.read_event_config	= &ltr501_read_event_config,
+ 	.write_event_config	= &ltr501_write_event_config,
+ 	.driver_module = THIS_MODULE,
 -- 
 1.9.1
