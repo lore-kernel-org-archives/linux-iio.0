@@ -1,128 +1,459 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga02.intel.com ([134.134.136.20]:57459 "EHLO mga02.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1754048AbbDIRDc (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Thu, 9 Apr 2015 13:03:32 -0400
-Date: Thu, 9 Apr 2015 10:02:15 -0700
-From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: IIO <linux-iio@vger.kernel.org>,
-	LKML <linux-kernel@vger.kernel.org>,
-	Lee Jones <lee.jones@linaro.org>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Aaron Lu <aaron.lu@intel.com>,
-	Todd Brandt <todd.e.brandt@linux.intel.com>
-Subject: Re: [PATCH v2] iio/axp288_adc: add missing channel info mask
-Message-ID: <20150409100215.5264f990@icelake>
-In-Reply-To: <55267C39.5050707@kernel.org>
-References: <1428345500-27672-1-git-send-email-jacob.jun.pan@linux.intel.com>
-	<55267C39.5050707@kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:53971 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752459AbbDIRJh (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 9 Apr 2015 13:09:37 -0400
+Message-ID: <5526B24D.1010701@kernel.org>
+Date: Thu, 09 Apr 2015 18:09:33 +0100
+From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+To: Daniel Baluta <daniel.baluta@intel.com>
+CC: jlbec@evilplan.org, lars@metafoo.de, knaack.h@gmx.de,
+	linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
+	octavian.purdila@intel.com, pebolle@tiscali.nl,
+	patrick.porlan@intel.com, adriana.reus@intel.com
+Subject: Re: [PATCH v3 2/3] iio: trigger: Add support for highres timer trigger
+ type
+References: <1428329889-18335-1-git-send-email-daniel.baluta@intel.com> <1428329889-18335-3-git-send-email-daniel.baluta@intel.com>
+In-Reply-To: <1428329889-18335-3-git-send-email-daniel.baluta@intel.com>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Thu, 09 Apr 2015 14:18:49 +0100
-Jonathan Cameron <jic23@kernel.org> wrote:
-
-> On 06/04/15 19:38, Jacob Pan wrote:
-> > Commit 65de7654d39c70c2b ("iio: iio: Fix iio_channel_read return if
-> > channel havn't info") added a check for valid info masks.
-> > 
-> > This patch adds missing channel info masks for all ADC channels.
-> > Otherwise, iio_read_channel_raw() would return -EINVAL when called
-> > by consumer drivers.
-> > 
-> > Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
+On 06/04/15 15:18, Daniel Baluta wrote:
+> This patch adds a new trigger type - the high resoluton timer ("hrtimer")
+> under /config/iio/triggers/ and also creates a module that implements hrtimer
+> trigger type functionality.
 > 
-> This makes me a little nervous. Why did we have the separate raw and
-> processed paths in the read_raw function in the first place?
+> A new IIO trigger is allocated when a new directory is created under
+> /config/iio/triggers/. The name of the trigger is the same as the dir
+> name. Each trigger will have a "delay" attribute representing the delay
+> between two successive IIO trigger_poll calls.
+Cool ;)
 > 
-Good point, I failed to explain that the reason to have separate raw and
-processed was that the raw channels happened to need some special
-processing in axp288_adc_set_ts(), since I have added a check for
-address:
-	/* channels other than GPADC do not need to switch TS pin */
-	if (address != AXP288_GP_ADC_H)
-		return 0;
-
-we no longer need special case the channels based on RAW flag. Thinking
-back it was kind of an abuse.
-
-> Also this changes the exposed userspace ABI by dropping those
-> processed attributes that already exist..
+> Signed-off-by: Marten Svanfeldt <marten@intuitiveaerial.com>
+> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+> Signed-off-by: Daniel Baluta <daniel.baluta@intel.com>
+I'd ideally have liked the break up of the patches to be slightly different.
+There is stuff in here that would have made more sense in the first patch
+as it isn't specific to this particular trigger.
+> ---
+> Changes since v2: 
+> 	* none
+> Changes since v1:
+> 	* replaced sampling_frequency with delay to make the in kernel
+> 	processing easier
+Then along comes me an suggests going back again ;)  Make your case...
+> 	* implemented hrtimer driver using the new API proposed in patch 1
 > 
-I don't know the current users outside what we develop internally. What
-is your suggestion?
+>  drivers/iio/industrialio-configfs.c      | 164 +++++++++++++++++++++++++++++++
+>  drivers/iio/trigger/Kconfig              |   9 ++
+>  drivers/iio/trigger/Makefile             |   2 +
+>  drivers/iio/trigger/iio-trig-hrtimer.c   | 154 +++++++++++++++++++++++++++++
+>  include/linux/iio/iio_configfs_trigger.h |   1 +
+>  5 files changed, 330 insertions(+)
+>  create mode 100644 drivers/iio/trigger/iio-trig-hrtimer.c
+> 
+> diff --git a/drivers/iio/industrialio-configfs.c b/drivers/iio/industrialio-configfs.c
+> index d8ffd76..a0e5d24 100644
+> --- a/drivers/iio/industrialio-configfs.c
+> +++ b/drivers/iio/industrialio-configfs.c
+> @@ -71,7 +71,170 @@ struct iio_configfs_trigger_type *iio_get_configfs_trigger_type(int type)
+>  	return t;
+>  }
+>  
+> +struct iio_trigger_item {
+> +	struct config_item item;
+> +	struct iio_configfs_trigger_info *trigger_info;
+> +};
+> +
+> +static
+> +inline struct iio_trigger_item *to_iio_trigger_item(struct config_item *item)
+> +{
+> +	if (!item)
+> +		return NULL;
+> +	return container_of(item, struct iio_trigger_item, item);
+> +}
+> +
+> +CONFIGFS_ATTR_STRUCT(iio_trigger_item);
+> +
+> +#define IIO_TRIGGER_ITEM_ATTR(_name, _mode, _show, _store) \
+> +struct iio_trigger_item_attribute iio_trigger_item_attr_##_name = \
+> +	__CONFIGFS_ATTR(_name, _mode, _show, _store)
+> +
+> +static
+> +ssize_t iio_trigger_item_get_delay(struct iio_trigger_item *item, char *page)
+> +{
+> +	unsigned long delay;
+> +	int ret;
+> +
+> +	struct iio_configfs_trigger_type *t = item->trigger_info->trigger_type;
+> +
+> +	ret = t->trigger_ops->get_delay(item->trigger_info, &delay);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	return snprintf(page, PAGE_SIZE, "%lu\n", delay);
+> +}
+> +
+> +static
+> +ssize_t iio_trigger_item_set_delay(struct iio_trigger_item *item,
+> +				   const char *page,
+> +				   size_t count)
+> +{
+> +	int ret;
+> +	unsigned long delay;
+> +	struct iio_configfs_trigger_type *t = item->trigger_info->trigger_type;
+> +
+> +	ret = kstrtoul(page, 10, &delay);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	ret = t->trigger_ops->set_delay(item->trigger_info, delay);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	return count;
+> +}
+> +
+> +IIO_TRIGGER_ITEM_ATTR(delay, S_IRUGO | S_IWUSR,
+> +		      iio_trigger_item_get_delay,
+> +		      iio_trigger_item_set_delay);
+> +
+> +static struct configfs_attribute *iio_trigger_item_attrs[] = {
+> +	&iio_trigger_item_attr_delay.attr,
+> +	NULL
+> +};
+> +
+> +CONFIGFS_ATTR_OPS(iio_trigger_item);
+> +
+> +static struct configfs_item_operations iio_trigger_item_ops = {
+> +	.show_attribute = iio_trigger_item_attr_show,
+> +	.store_attribute = iio_trigger_item_attr_store,
+> +};
+So everything down to here would have fitted a little better in the previous
+patch to my mind.
 
-> Jonathan
-> > ---
-> >  drivers/iio/adc/axp288_adc.c | 12 ++++++------
-> >  1 file changed, 6 insertions(+), 6 deletions(-)
-> > 
-> > diff --git a/drivers/iio/adc/axp288_adc.c
-> > b/drivers/iio/adc/axp288_adc.c index 08bcfb0..56008a8 100644
-> > --- a/drivers/iio/adc/axp288_adc.c
-> > +++ b/drivers/iio/adc/axp288_adc.c
-> > @@ -53,39 +53,42 @@ static const struct iio_chan_spec const
-> > axp288_adc_channels[] = { .channel = 0,
-> >  		.address = AXP288_TS_ADC_H,
-> >  		.datasheet_name = "TS_PIN",
-> > +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
-> >  	}, {
-> >  		.indexed = 1,
-> >  		.type = IIO_TEMP,
-> >  		.channel = 1,
-> >  		.address = AXP288_PMIC_ADC_H,
-> >  		.datasheet_name = "PMIC_TEMP",
-> > +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
-> >  	}, {
-> >  		.indexed = 1,
-> >  		.type = IIO_TEMP,
-> >  		.channel = 2,
-> >  		.address = AXP288_GP_ADC_H,
-> >  		.datasheet_name = "GPADC",
-> > +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
-> >  	}, {
-> >  		.indexed = 1,
-> >  		.type = IIO_CURRENT,
-> >  		.channel = 3,
-> >  		.address = AXP20X_BATT_CHRG_I_H,
-> >  		.datasheet_name = "BATT_CHG_I",
-> > -		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED),
-> > +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
-> >  	}, {
-> >  		.indexed = 1,
-> >  		.type = IIO_CURRENT,
-> >  		.channel = 4,
-> >  		.address = AXP20X_BATT_DISCHRG_I_H,
-> >  		.datasheet_name = "BATT_DISCHRG_I",
-> > -		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED),
-> > +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
-> >  	}, {
-> >  		.indexed = 1,
-> >  		.type = IIO_VOLTAGE,
-> >  		.channel = 5,
-> >  		.address = AXP20X_BATT_V_H,
-> >  		.datasheet_name = "BATT_V",
-> > -		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED),
-> > +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
-> >  	},
-> >  };
-> >  
-> > @@ -151,9 +154,6 @@ static int axp288_adc_read_raw(struct iio_dev
-> > *indio_dev, chan->address))
-> >  			dev_err(&indio_dev->dev, "TS pin
-> > restore\n"); break;
-> > -	case IIO_CHAN_INFO_PROCESSED:
-> > -		ret = axp288_adc_read_channel(val, chan->address,
-> > info->regmap);
-> > -		break;
-> >  	default:
-> >  		ret = -EINVAL;
-> >  	}
-> > 
+> +
+> +static struct config_item_type iio_trigger_item_type;
+> +
+
+Why is this hrtimer specific?  Only one real place that I can see...
+I think we need to get that element out into the hrtimer module rather than
+here.  A utility function doing most of this makes sense in the core
+but not the hrtimer bit.
+
+> +static struct config_item *iio_hrtimer_make_item(struct config_group *group,
+> +						 const char *name)
+> +{
+> +	struct iio_trigger_item *trigger_item;
+> +	struct iio_configfs_trigger_info *trigger_info;
+> +	struct iio_configfs_trigger_type *trigger_type;
+> +	int ret;
+> +
+> +	trigger_item = kzalloc(sizeof(*trigger_item), GFP_KERNEL);
+> +	if (!trigger_item)
+> +		return ERR_PTR(-ENOMEM);
+> +	trigger_info = kzalloc(sizeof(*trigger_info), GFP_KERNEL);
+> +	if (!trigger_info) {
+> +		ret = -ENOMEM;
+> +		goto out_free_trigger_item;
+> +	}
+> +
+> +	trigger_info->name = kstrdup(name, GFP_KERNEL);
+> +	if (!trigger_info->name) {
+> +		ret = -ENOMEM;
+> +		goto out_free_trigger_info;
+> +	}
+> +
+> +	trigger_type = iio_get_configfs_trigger_type(IIO_TRIGGER_TYPE_HRTIMER);
+> +	if (!trigger_type) {
+> +		pr_err("Unable to get hrtimer trigger!\n");
+> +		ret = -ENODEV;
+> +		goto out_free_trigger_name;
+> +	}
+> +	ret = trigger_type->trigger_ops->probe(trigger_info);
+> +	if (ret < 0)
+> +		goto out_error_module_put;
+> +
+> +	trigger_info->trigger_type = trigger_type;
+> +	trigger_item->trigger_info = trigger_info;
+> +
+> +	config_item_init_type_name(&trigger_item->item, name,
+> +				   &iio_trigger_item_type);
+> +
+> +	return &trigger_item->item;
+> +out_error_module_put:
+> +	module_put(trigger_type->owner);
+> +out_free_trigger_name:
+> +	kfree(trigger_info->name);
+> +out_free_trigger_info:
+> +	kfree(trigger_info);
+> +out_free_trigger_item:
+> +	kfree(trigger_item);
+> +	return ERR_PTR(ret);
+> +}
+> +
+This one is no way at all hrtimer specific that I can see!
+> +static void iio_hrtimer_drop_item(struct config_group *group,
+> +				  struct config_item *item)
+> +{
+> +	struct iio_trigger_item *trigger_item;
+> +	struct iio_configfs_trigger_type *trigger_type;
+> +
+> +	trigger_item = container_of(item, struct iio_trigger_item, item);
+> +	trigger_type = trigger_item->trigger_info->trigger_type;
+> +
+> +	trigger_type->trigger_ops->remove(trigger_item->trigger_info);
+> +	module_put(trigger_type->owner);
+> +	kfree(trigger_item->trigger_info->name);
+> +	kfree(trigger_item->trigger_info);
+> +	kfree(trigger_item);
+> +}
+> +
+> +static struct configfs_group_operations iio_triggers_hrtimer_group_ops = {
+So to make the separation clean we need to create this object dynamically or pass
+it through from the hrtimer trigger module.
+> +	.make_item = iio_hrtimer_make_item,
+> +	.drop_item = iio_hrtimer_drop_item,
+> +};
+> +
+> +static struct config_item_type iio_trigger_item_type = {
+> +	.ct_owner	= THIS_MODULE,
+> +	.ct_item_ops	= &iio_trigger_item_ops,
+> +	.ct_attrs	= iio_trigger_item_attrs,
+> +};
+> +
+> +static struct config_item_type iio_triggers_hrtimer_type = {
+> +	.ct_owner	= THIS_MODULE,
+> +	.ct_group_ops	= &iio_triggers_hrtimer_group_ops,
+> +};
+So this one also needs to come from the hrtimer module.
+> +
+> +static struct config_group iio_triggers_hrtimer_group = {
+> +	.cg_item = {
+> +		.ci_namebuf = "hrtimer",
+> +		.ci_type = &iio_triggers_hrtimer_type,
+> +	},
+> +};
+> +
+>  static struct config_group *iio_triggers_default_groups[] = {
+> +	&iio_triggers_hrtimer_group,
+>  	NULL
+>  };
+>  
+> @@ -109,6 +272,7 @@ static struct configfs_subsystem iio_configfs_subsys = {
+>  
+>  static int __init iio_configfs_init(void)
+>  {
+> +	config_group_init(&iio_triggers_hrtimer_group);
+ahh... We have to do the init in this order? No dynamic creation later?
+>  	config_group_init(&iio_triggers_group);
+>  	config_group_init(&iio_configfs_subsys.su_group);
+>  
+> diff --git a/drivers/iio/trigger/Kconfig b/drivers/iio/trigger/Kconfig
+> index 7999612..e21688e 100644
+> --- a/drivers/iio/trigger/Kconfig
+> +++ b/drivers/iio/trigger/Kconfig
+> @@ -5,6 +5,15 @@
+>  
+>  menu "Triggers - standalone"
+>  
+> +config IIO_HRTIMER_TRIGGER
+> +	tristate "High resolution timer trigger"
+> +	depends on IIO_CONFIGFS
+> +	help
+> +	  Provides a frequency based IIO trigger using hrtimers.
+> +
+> +	  To compile this driver as a module, choose M here: the
+> +	  module will be called iio-trig-hrtimer.
+> +
+>  config IIO_INTERRUPT_TRIGGER
+>  	tristate "Generic interrupt trigger"
+>  	help
+> diff --git a/drivers/iio/trigger/Makefile b/drivers/iio/trigger/Makefile
+> index 0694dae..fe06eb5 100644
+> --- a/drivers/iio/trigger/Makefile
+> +++ b/drivers/iio/trigger/Makefile
+> @@ -3,5 +3,7 @@
+>  #
+>  
+>  # When adding new entries keep the list in alphabetical order
+> +
+> +obj-$(CONFIG_IIO_HRTIMER_TRIGGER) += iio-trig-hrtimer.o
+>  obj-$(CONFIG_IIO_INTERRUPT_TRIGGER) += iio-trig-interrupt.o
+>  obj-$(CONFIG_IIO_SYSFS_TRIGGER) += iio-trig-sysfs.o
+> diff --git a/drivers/iio/trigger/iio-trig-hrtimer.c b/drivers/iio/trigger/iio-trig-hrtimer.c
+> new file mode 100644
+> index 0000000..0acde8d
+> --- /dev/null
+> +++ b/drivers/iio/trigger/iio-trig-hrtimer.c
+> @@ -0,0 +1,154 @@
+> +/**
+> + * The industrial I/O periodic hrtimer trigger driver
+> + *
+> + * Copyright (C) Intuitive Aerial AB
+> + * Written by Marten Svanfeldt, marten@intuitiveaerial.com
+> + * Copyright (C) 2012, Analog Device Inc.
+> + *	Author: Lars-Peter Clausen <lars@metafoo.de>
+> + *
+> + * This program is free software; you can redistribute it and/or modify it
+> + * under the terms of the GNU General Public License version 2 as published by
+> + * the Free Software Foundation.
+> + *
+> + */
+> +#include <linux/kernel.h>
+> +#include <linux/slab.h>
+> +#include <linux/hrtimer.h>
+> +
+> +#include <linux/iio/iio.h>
+> +#include <linux/iio/trigger.h>
+> +#include <linux/iio/iio_configfs_trigger.h>
+> +
+> +/* default delay in ns (100Hz) */
+> +#define HRTIMER_TRIGGER_DEFAULT_DELAY 100000000
+> +
+> +struct iio_hrtimer_trig_info {
+> +	struct iio_configfs_trigger_info *trigger_info;
+> +	struct hrtimer timer;
+> +	unsigned long delay;
+> +};
+> +
+> +static enum hrtimer_restart iio_trig_hrtimer_trig(struct hrtimer *timer)
+> +{
+> +	struct iio_hrtimer_trig_info *trig_info;
+> +
+> +	trig_info = container_of(timer, struct iio_hrtimer_trig_info, timer);
+> +
+> +	hrtimer_forward_now(timer, ns_to_ktime(trig_info->delay));
+> +	iio_trigger_poll(trig_info->trigger_info->trigger);
+> +
+> +	return HRTIMER_RESTART;
+> +}
+> +
+> +static int iio_trig_hrtimer_set_state(struct iio_trigger *trig, bool state)
+> +{
+> +	struct iio_hrtimer_trig_info *trig_info;
+> +
+> +	trig_info = iio_trigger_get_drvdata(trig);
+> +
+> +	if (state)
+> +		hrtimer_start(&trig_info->timer, ns_to_ktime(trig_info->delay),
+> +			      HRTIMER_MODE_REL);
+> +	else
+> +		hrtimer_cancel(&trig_info->timer);
+> +
+> +	return 0;
+> +}
+> +
+> +int iio_trig_hrtimer_get_delay(struct iio_configfs_trigger_info *t,
+> +			       unsigned long *delay)
+> +{
+> +	struct iio_hrtimer_trig_info *trig_info;
+> +
+> +	trig_info = iio_trigger_get_drvdata(t->trigger);
+> +	*delay = trig_info->delay;
+> +
+> +	return 0;
+> +}
+> +
+> +int iio_trig_hrtimer_set_delay(struct iio_configfs_trigger_info *t,
+> +			       unsigned long delay)
+> +{
+> +	struct iio_hrtimer_trig_info *trig_info;
+> +
+> +	trig_info = iio_trigger_get_drvdata(t->trigger);
+> +
+> +	if (!delay)
+> +		return -EINVAL;
+> +
+> +	trig_info->delay = delay;
+> +
+> +	return 0;
+> +}
+> +
+> +static const struct iio_trigger_ops iio_hrtimer_trigger_ops = {
+> +	.owner = THIS_MODULE,
+> +	.set_trigger_state = iio_trig_hrtimer_set_state,
+> +};
+> +
+> +static int iio_trig_hrtimer_probe(struct iio_configfs_trigger_info *t)
+> +{
+> +	struct iio_hrtimer_trig_info *trig_info;
+> +	int ret;
+> +
+> +	trig_info = kzalloc(sizeof(*trig_info), GFP_KERNEL);
+> +	if (!trig_info)
+> +		return -ENOMEM;
+> +
+> +	trig_info->trigger_info = t;
+> +
+> +	t->trigger = iio_trigger_alloc("%s", t->name);
+> +	if (!t->trigger)
+> +		return -ENOMEM;
+> +
+> +	iio_trigger_set_drvdata(t->trigger, trig_info);
+> +	t->trigger->ops = &iio_hrtimer_trigger_ops;
+> +
+> +	hrtimer_init(&trig_info->timer, CLOCK_MONOTONIC, HRTIMER_MODE_REL);
+> +	trig_info->timer.function = iio_trig_hrtimer_trig;
+> +
+> +	trig_info->delay = HRTIMER_TRIGGER_DEFAULT_DELAY;
+> +
+> +	ret = iio_trigger_register(t->trigger);
+> +	if (ret)
+> +		goto err_free_trigger;
+> +
+> +	return 0;
+> +err_free_trigger:
+> +	iio_trigger_free(t->trigger);
+> +
+> +	return ret;
+> +}
+> +
+> +static int iio_trig_hrtimer_remove(struct iio_configfs_trigger_info *t)
+> +{
+> +	struct iio_hrtimer_trig_info *trig_info;
+> +
+> +	trig_info = iio_trigger_get_drvdata(t->trigger);
+> +
+> +	iio_trigger_unregister(t->trigger);
+> +	hrtimer_cancel(&trig_info->timer);
+> +	iio_trigger_free(t->trigger);
+> +
+> +	return 0;
+> +}
+> +
+> +struct iio_configfs_trigger_ops hrtimer_trigger_ops = {
+> +	.get_delay	= iio_trig_hrtimer_get_delay,
+> +	.set_delay	= iio_trig_hrtimer_set_delay,
+> +	.probe		= iio_trig_hrtimer_probe,
+> +	.remove		= iio_trig_hrtimer_remove,
+> +};
+> +
+> +struct iio_configfs_trigger_type iio_configfs_hrtimer = {
+> +	.type = IIO_TRIGGER_TYPE_HRTIMER,
+> +	.owner = THIS_MODULE,
+> +	.trigger_ops = &hrtimer_trigger_ops,
+> +};
+> +
+> +module_iio_configfs_trigger_driver(iio_configfs_hrtimer);
+> +
+> +MODULE_AUTHOR("Marten Svanfeldt <marten@intuitiveaerial.com>");
+> +MODULE_AUTHOR("Daniel Baluta <daniel.baluta@intel.com>");
+> +MODULE_DESCRIPTION("Periodic hrtimer trigger for the IIO subsystem");
+> +MODULE_LICENSE("GPL v2");
+> diff --git a/include/linux/iio/iio_configfs_trigger.h b/include/linux/iio/iio_configfs_trigger.h
+> index 75e76f2..6233733 100644
+> --- a/include/linux/iio/iio_configfs_trigger.h
+> +++ b/include/linux/iio/iio_configfs_trigger.h
+> @@ -10,6 +10,7 @@
+>  		      unregister_configfs_trigger)
+>  
+>  enum {
+> +	IIO_TRIGGER_TYPE_HRTIMER = 0,
+>  	IIO_TRIGGER_TYPE_MAX,
+>  };
+>  
 > 
 
-[Jacob Pan]
