@@ -1,105 +1,192 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:52823 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753001AbbDIOOB (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 9 Apr 2015 10:14:01 -0400
-Message-ID: <55268925.7000005@kernel.org>
-Date: Thu, 09 Apr 2015 15:13:57 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-MIME-Version: 1.0
-To: Vignesh R <vigneshr@ti.com>, Rob Herring <robh+dt@kernel.org>,
-	Pawel Moll <pawel.moll@arm.com>,
-	Mark Rutland <mark.rutland@arm.com>,
-	Ian Campbell <ijc+devicetree@hellion.org.uk>,
-	Kumar Gala <galak@codeaurora.org>
-CC: Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-	Karol Wrona <k.wrona@samsung.com>,
-	Jan Kardell <jan.kardell@telliq.com>,
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-iio@vger.kernel.org, fcooper@ti.com
-Subject: Re: [PATCH 1/2] iio: adc: ti_am335x_adc: refactor DT parsing into
- a function
-References: <1427800357-21680-1-git-send-email-vigneshr@ti.com> <1427800357-21680-2-git-send-email-vigneshr@ti.com>
-In-Reply-To: <1427800357-21680-2-git-send-email-vigneshr@ti.com>
-Content-Type: text/plain; charset=windows-1252
+Received: from mga01.intel.com ([192.55.52.88]:43768 "EHLO mga01.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1755157AbbDIOQe (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Thu, 9 Apr 2015 10:16:34 -0400
+From: Daniel Baluta <daniel.baluta@intel.com>
+To: jic23@kernel.org
+Cc: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
+	daniel.baluta@intel.com, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org, sathyanarayanan.kuppuswamy@intel.com
+Subject: [PATCH] iio: light: ltr501: Fix alignment to match open parenthesis
+Date: Thu,  9 Apr 2015 17:17:47 +0300
+Message-Id: <1428589067-3582-1-git-send-email-daniel.baluta@intel.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 31/03/15 12:12, Vignesh R wrote:
-> Refactor DT parsing into a separate function from probe() to
-> help addition of more DT parameters later.
-> 
-> No functional changes.
-> 
-> Signed-off-by: Vignesh R <vigneshr@ti.com>
-Clearly going to need this whatever the outcome of the second patch being
-reviewed.
+This makes ltr501 code consistent with the coding style adopted
+for the new drivers added to IIO.
+We prepare the path for adding support for LTR559 chip.
 
-Applied to the togreg branch of iio.git - initially pushed out as testing
-for the autobuilders to play with it.
+Reported by checkpatch.pl
 
-Thanks,
+Signed-off-by: Daniel Baluta <daniel.baluta@intel.com>
+---
+Changes since v1:
+	* rebased on top of 1ca510b0ea6 ("iio: light: ltr501: Powerdown device on error")
+	* separated from path series related to LTR559 support because there are still things
+	to do there: http://marc.info/?l=linux-kernel&m=142779827617036&w=2
 
-Jonathan
-> ---
->  drivers/iio/adc/ti_am335x_adc.c | 29 +++++++++++++++++++----------
->  1 file changed, 19 insertions(+), 10 deletions(-)
-> 
-> diff --git a/drivers/iio/adc/ti_am335x_adc.c b/drivers/iio/adc/ti_am335x_adc.c
-> index 2e5cc4409f78..2f818405ffbe 100644
-> --- a/drivers/iio/adc/ti_am335x_adc.c
-> +++ b/drivers/iio/adc/ti_am335x_adc.c
-> @@ -396,16 +396,30 @@ static const struct iio_info tiadc_info = {
->  	.driver_module = THIS_MODULE,
->  };
->  
-> +static int tiadc_parse_dt(struct platform_device *pdev,
-> +			  struct tiadc_device *adc_dev)
-> +{
-> +	struct device_node *node = pdev->dev.of_node;
-> +	struct property *prop;
-> +	const __be32 *cur;
-> +	int channels = 0;
-> +	u32 val;
-> +
-> +	of_property_for_each_u32(node, "ti,adc-channels", prop, cur, val) {
-> +		adc_dev->channel_line[channels] = val;
-> +		channels++;
-> +	}
-> +
-> +	adc_dev->channels = channels;
-> +	return 0;
-> +}
-> +
->  static int tiadc_probe(struct platform_device *pdev)
->  {
->  	struct iio_dev		*indio_dev;
->  	struct tiadc_device	*adc_dev;
->  	struct device_node	*node = pdev->dev.of_node;
-> -	struct property		*prop;
-> -	const __be32		*cur;
->  	int			err;
-> -	u32			val;
-> -	int			channels = 0;
->  
->  	if (!node) {
->  		dev_err(&pdev->dev, "Could not find valid DT data.\n");
-> @@ -421,12 +435,7 @@ static int tiadc_probe(struct platform_device *pdev)
->  	adc_dev = iio_priv(indio_dev);
->  
->  	adc_dev->mfd_tscadc = ti_tscadc_dev_get(pdev);
-> -
-> -	of_property_for_each_u32(node, "ti,adc-channels", prop, cur, val) {
-> -		adc_dev->channel_line[channels] = val;
-> -		channels++;
-> -	}
-> -	adc_dev->channels = channels;
-> +	tiadc_parse_dt(pdev, adc_dev);
->  
->  	indio_dev->dev.parent = &pdev->dev;
->  	indio_dev->name = dev_name(&pdev->dev);
-> 
+ drivers/iio/light/ltr501.c | 42 +++++++++++++++++++++++-------------------
+ 1 file changed, 23 insertions(+), 19 deletions(-)
+
+diff --git a/drivers/iio/light/ltr501.c b/drivers/iio/light/ltr501.c
+index 78b8783..f208c98 100644
+--- a/drivers/iio/light/ltr501.c
++++ b/drivers/iio/light/ltr501.c
+@@ -58,7 +58,7 @@ static int ltr501_drdy(struct ltr501_data *data, u8 drdy_mask)
+ 
+ 	while (tries--) {
+ 		ret = i2c_smbus_read_byte_data(data->client,
+-			LTR501_ALS_PS_STATUS);
++					       LTR501_ALS_PS_STATUS);
+ 		if (ret < 0)
+ 			return ret;
+ 		if ((ret & drdy_mask) == drdy_mask)
+@@ -77,7 +77,8 @@ static int ltr501_read_als(struct ltr501_data *data, __le16 buf[2])
+ 		return ret;
+ 	/* always read both ALS channels in given order */
+ 	return i2c_smbus_read_i2c_block_data(data->client,
+-		LTR501_ALS_DATA1, 2 * sizeof(__le16), (u8 *) buf);
++					     LTR501_ALS_DATA1,
++					     2 * sizeof(__le16), (u8 *)buf);
+ }
+ 
+ static int ltr501_read_ps(struct ltr501_data *data)
+@@ -107,7 +108,7 @@ static int ltr501_read_ps(struct ltr501_data *data)
+ static const struct iio_chan_spec ltr501_channels[] = {
+ 	LTR501_INTENSITY_CHANNEL(0, LTR501_ALS_DATA0, IIO_MOD_LIGHT_BOTH, 0),
+ 	LTR501_INTENSITY_CHANNEL(1, LTR501_ALS_DATA1, IIO_MOD_LIGHT_IR,
+-		BIT(IIO_CHAN_INFO_SCALE)),
++				 BIT(IIO_CHAN_INFO_SCALE)),
+ 	{
+ 		.type = IIO_PROXIMITY,
+ 		.address = LTR501_PS_DATA,
+@@ -129,8 +130,8 @@ static const int ltr501_ps_gain[4][2] = {
+ };
+ 
+ static int ltr501_read_raw(struct iio_dev *indio_dev,
+-				struct iio_chan_spec const *chan,
+-				int *val, int *val2, long mask)
++			   struct iio_chan_spec const *chan,
++			   int *val, int *val2, long mask)
+ {
+ 	struct ltr501_data *data = iio_priv(indio_dev);
+ 	__le16 buf[2];
+@@ -149,7 +150,7 @@ static int ltr501_read_raw(struct iio_dev *indio_dev,
+ 			if (ret < 0)
+ 				return ret;
+ 			*val = le16_to_cpu(chan->address == LTR501_ALS_DATA1 ?
+-				buf[0] : buf[1]);
++					   buf[0] : buf[1]);
+ 			return IIO_VAL_INT;
+ 		case IIO_PROXIMITY:
+ 			mutex_lock(&data->lock_ps);
+@@ -199,8 +200,8 @@ static int ltr501_get_ps_gain_index(int val, int val2)
+ }
+ 
+ static int ltr501_write_raw(struct iio_dev *indio_dev,
+-			       struct iio_chan_spec const *chan,
+-			       int val, int val2, long mask)
++			    struct iio_chan_spec const *chan,
++			    int val, int val2, long mask)
+ {
+ 	struct ltr501_data *data = iio_priv(indio_dev);
+ 	int i;
+@@ -219,7 +220,8 @@ static int ltr501_write_raw(struct iio_dev *indio_dev,
+ 			else
+ 				return -EINVAL;
+ 			return i2c_smbus_write_byte_data(data->client,
+-				LTR501_ALS_CONTR, data->als_contr);
++							 LTR501_ALS_CONTR,
++							 data->als_contr);
+ 		case IIO_PROXIMITY:
+ 			i = ltr501_get_ps_gain_index(val, val2);
+ 			if (i < 0)
+@@ -227,7 +229,8 @@ static int ltr501_write_raw(struct iio_dev *indio_dev,
+ 			data->ps_contr &= ~LTR501_CONTR_PS_GAIN_MASK;
+ 			data->ps_contr |= i << LTR501_CONTR_PS_GAIN_SHIFT;
+ 			return i2c_smbus_write_byte_data(data->client,
+-				LTR501_PS_CONTR, data->ps_contr);
++							 LTR501_PS_CONTR,
++							 data->ps_contr);
+ 		default:
+ 			return -EINVAL;
+ 		}
+@@ -279,7 +282,7 @@ static irqreturn_t ltr501_trigger_handler(int irq, void *p)
+ 
+ 	/* figure out which data needs to be ready */
+ 	if (test_bit(0, indio_dev->active_scan_mask) ||
+-		test_bit(1, indio_dev->active_scan_mask))
++	    test_bit(1, indio_dev->active_scan_mask))
+ 		mask |= LTR501_STATUS_ALS_RDY;
+ 	if (test_bit(2, indio_dev->active_scan_mask))
+ 		mask |= LTR501_STATUS_PS_RDY;
+@@ -290,7 +293,9 @@ static irqreturn_t ltr501_trigger_handler(int irq, void *p)
+ 
+ 	if (mask & LTR501_STATUS_ALS_RDY) {
+ 		ret = i2c_smbus_read_i2c_block_data(data->client,
+-			LTR501_ALS_DATA1, sizeof(als_buf), (u8 *) als_buf);
++						    LTR501_ALS_DATA1,
++						    sizeof(als_buf),
++						    (u8 *)als_buf);
+ 		if (ret < 0)
+ 			return ret;
+ 		if (test_bit(0, indio_dev->active_scan_mask))
+@@ -306,8 +311,7 @@ static irqreturn_t ltr501_trigger_handler(int irq, void *p)
+ 		buf[j++] = ret & LTR501_PS_DATA_MASK;
+ 	}
+ 
+-	iio_push_to_buffers_with_timestamp(indio_dev, buf,
+-		iio_get_time_ns());
++	iio_push_to_buffers_with_timestamp(indio_dev, buf, iio_get_time_ns());
+ 
+ done:
+ 	iio_trigger_notify_done(indio_dev->trig);
+@@ -330,7 +334,7 @@ static int ltr501_init(struct ltr501_data *data)
+ 	data->ps_contr = ret | LTR501_CONTR_ACTIVE;
+ 
+ 	return ltr501_write_contr(data->client, data->als_contr,
+-		data->ps_contr);
++				  data->ps_contr);
+ }
+ 
+ static int ltr501_powerdown(struct ltr501_data *data)
+@@ -341,7 +345,7 @@ static int ltr501_powerdown(struct ltr501_data *data)
+ }
+ 
+ static int ltr501_probe(struct i2c_client *client,
+-			  const struct i2c_device_id *id)
++			const struct i2c_device_id *id)
+ {
+ 	struct ltr501_data *data;
+ 	struct iio_dev *indio_dev;
+@@ -375,7 +379,7 @@ static int ltr501_probe(struct i2c_client *client,
+ 		return ret;
+ 
+ 	ret = iio_triggered_buffer_setup(indio_dev, NULL,
+-		ltr501_trigger_handler, NULL);
++					 ltr501_trigger_handler, NULL);
+ 	if (ret)
+ 		goto powerdown_on_error;
+ 
+@@ -407,14 +411,14 @@ static int ltr501_remove(struct i2c_client *client)
+ static int ltr501_suspend(struct device *dev)
+ {
+ 	struct ltr501_data *data = iio_priv(i2c_get_clientdata(
+-		to_i2c_client(dev)));
++					    to_i2c_client(dev)));
+ 	return ltr501_powerdown(data);
+ }
+ 
+ static int ltr501_resume(struct device *dev)
+ {
+ 	struct ltr501_data *data = iio_priv(i2c_get_clientdata(
+-		to_i2c_client(dev)));
++					    to_i2c_client(dev)));
+ 
+ 	return ltr501_write_contr(data->client, data->als_contr,
+ 		data->ps_contr);
+-- 
+1.9.1
 
