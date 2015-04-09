@@ -1,77 +1,89 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga03.intel.com ([134.134.136.65]:4991 "EHLO mga03.intel.com"
+Received: from mga11.intel.com ([192.55.52.93]:60911 "EHLO mga11.intel.com"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1754234AbbDIW06 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Thu, 9 Apr 2015 18:26:58 -0400
-Message-ID: <5526FCB8.3000903@linux.intel.com>
-Date: Thu, 09 Apr 2015 15:27:04 -0700
+	id S1753471AbbDIW2V (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Thu, 9 Apr 2015 18:28:21 -0400
+Message-ID: <5526FCFF.5090800@linux.intel.com>
+Date: Thu, 09 Apr 2015 15:28:15 -0700
 From: sathyanarayanan kuppuswamy
 	<sathyanarayanan.kuppuswamy@linux.intel.com>
 Reply-To: sathyanarayanan.kuppuswamy@linux.intel.com
 MIME-Version: 1.0
-To: Jonathan Cameron <jic23@kernel.org>,
-	Daniel Baluta <daniel.baluta@intel.com>
-CC: Peter Meerwald <pmeerw@pmeerw.net>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-Subject: Re: [PATCH v4 1/1] iio: ltr301: Add support for ltr301
-References: <cover.1428372691.git.sathyanarayanan.kuppuswamy@linux.intel.com>	<f944512157939827cd6f06b29bb3d1181692e9c1.1428372691.git.sathyanarayanan.kuppuswamy@linux.intel.com>	<552650FB.6000107@kernel.org> <CAEnQRZDje3kaJE+LHPi0NnGDFY3oRuY2Ewrvj4NCzwzypdyS+w@mail.gmail.com> <5526817C.8080608@kernel.org>
-In-Reply-To: <5526817C.8080608@kernel.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
+To: Daniel Baluta <daniel.baluta@intel.com>,
+	Jonathan Cameron <jic23@kernel.org>
+CC: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+	"Kuppuswamy, Sathyanarayanan" <sathyanarayanan.kuppuswamy@intel.com>
+Subject: Re: [RFC PATCH 2/2] iio: light: Add support for LTR559 chip
+References: <1427798235-29602-1-git-send-email-daniel.baluta@intel.com> <1427798235-29602-3-git-send-email-daniel.baluta@intel.com> <552680FF.3060604@kernel.org> <5526823A.6070404@intel.com>
+In-Reply-To: <5526823A.6070404@intel.com>
+Content-Type: text/plain; charset=windows-1252; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
 
 
-On 04/09/2015 06:41 AM, Jonathan Cameron wrote:
-> On 09/04/15 13:20, Daniel Baluta wrote:
->> On Thu, Apr 9, 2015 at 1:14 PM, Jonathan Cameron <jic23@kernel.org> wrote:
->>> On 07/04/15 03:16, Kuppuswamy Sathyanarayanan wrote:
->>>> Added support for Liteon 301 Ambient light sensor. Since
->>>> LTR-301 and LTR-501 are register compatible(and even have same
->>>> part id), LTR-501 driver has been extended to support both
->>>> devices. LTR-501 is similar to LTR-301 in ALS sensing, But the
->>>> only difference is, LTR-501 also supports proximity sensing.
->>>>
->>>> LTR-501 - ALS + Proximity combo
->>>> LTR-301 - ALS sensor.
->>>>
->>>> Signed-off-by: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
->>> Patch naming convention
->>> iio:<name of driver>: Add support for ltr301
->>> so here would be
->>> iio:ltr501:Add support for ltr301.
+On 04/09/2015 06:44 AM, Daniel Baluta wrote:
+>
+>
+> On 04/09/2015 04:39 PM, Jonathan Cameron wrote:
+>> On 31/03/15 11:37, Daniel Baluta wrote:
+>>> This device is register compatible with LTR501, with a minor 
+>>> difference for
+>>> ALS control register as showed below:
 >>>
->>> Otherwise, looks good to me.  A comment inline that it might
->>> make sense to introduced a ltr501_chip info structure and use
->>> static const struct ltr501_chip_info[2] = {
->>> [LTR301] = {
->>>         .info = ...
->>>         ....
->>>         },
->>> [LTR501] = {
->>> }};
+>>> ALS Control register for LTR501:
 >>>
->>> That way you make all the truely constant data apparently constant
->>> and loose the switch statement. It makes for an easier to review / simpler
->>> driver in the long run.
+>>>      7      6      5      4      3      2      1      0
+>>> +------+------+------+------+------+------+------+------+
+>>> |                           |      |      |             |
+>>> |        Reserved           | Gain |  SW  |    ALS Mode |
+>>> |                           |      | Reset|             |
+>>> +------+------+------+------+------+------+------+------+
 >>>
->>> I haven't checked but this is probably what Daniel was suggesting in
->>> his review for v1 of this patch.
->> Hi Sathya,
->>
->> I think the best approach to get this merged in would be for you
->> to rebase your ltr301 patches on my patches for ltr559.
->>
->> http://marc.info/?l=linux-kernel&m=142779827617036&w=2
->>
-> yes, that would make a lot of sense.
+>>> ALS Control register for LTR559:
+>>>
+>>>      7      6      5      4      3      2      1      0
+>>> +------+------+------+------+------+------+------+------+
+>>> |                    |                    |      |      |
+>>> |     Reserved       |        Gain        |  SW  | ALS  |
+>>> |                    |                    | Reset| Mode |
+>>> +------+------+------+------+------+------+------+------+
+>>>
+>>> We handle this difference by introducing ltr501_chip_info.
+>>>
+>>> Datasheet for LTR559 is at:
+>>> http://optoelectronics.liteon.com/upload/download/DS86-2013-0003/S_110_LTR-559ALS-01_DS_V1.pdf 
+>>>
+>>>
+>>> Signed-off-by: Daniel Baluta <daniel.baluta@intel.com>
+>> Looks good to me.  Let us know when you've tested it ;)
+>> Anyhow, one comment inline.  It 'think' you can end up with a device 
+>> probing
+>> succesfully with no known name...
+>
+> Good point.
+>
+> thanks,
+> Daniel.
+>
+> <snip>
+>
+>>> -    indio_dev->name = LTR501_DRV_NAME;
+>>> +    indio_dev->name = name;
+>> Can name still be NULL?  Needs a default value that makes sense.
+>>>       indio_dev->modes = INDIO_DIRECT_MODE;
+>
+> I will fix this and sync with Sathya for the LTR301 support.
 
-Ok. I will rebase my patch on top of your patch.
->> Let me know if you have any questions.
->>
->> Daniel.
->>
+I will send you the re-based LTR301 patch. Please add it your patch set.
+>
+> thanks,
+> Daniel.
+> -- 
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
 >
 
 -- 
