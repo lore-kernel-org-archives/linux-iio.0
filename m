@@ -1,88 +1,107 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:52422 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:52443 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753055AbbDINPt (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 9 Apr 2015 09:15:49 -0400
-Message-ID: <55267B84.4040206@kernel.org>
-Date: Thu, 09 Apr 2015 14:15:48 +0100
+	with ESMTP id S1753235AbbDINSv (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 9 Apr 2015 09:18:51 -0400
+Message-ID: <55267C39.5050707@kernel.org>
+Date: Thu, 09 Apr 2015 14:18:49 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Daniel Baluta <daniel.baluta@intel.com>,
-	Roberta Dobrescu <roberta.dobrescu@gmail.com>
-CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>,
+To: Jacob Pan <jacob.jun.pan@linux.intel.com>,
+	IIO <linux-iio@vger.kernel.org>
+CC: LKML <linux-kernel@vger.kernel.org>,
+	Lee Jones <lee.jones@linaro.org>,
 	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>
-Subject: Re: [PATCH] tools: iio: Add iio targets in tools Makefile
-References: <1427571788-2909-1-git-send-email-roberta.dobrescu@gmail.com> <CAEnQRZC4X5_-uAViGdzt+6JT+cQzQHu1VGggP3b6zhBhjbKBTA@mail.gmail.com>
-In-Reply-To: <CAEnQRZC4X5_-uAViGdzt+6JT+cQzQHu1VGggP3b6zhBhjbKBTA@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Aaron Lu <aaron.lu@intel.com>,
+	Todd Brandt <todd.e.brandt@linux.intel.com>
+Subject: Re: [PATCH v2] iio/axp288_adc: add missing channel info mask
+References: <1428345500-27672-1-git-send-email-jacob.jun.pan@linux.intel.com>
+In-Reply-To: <1428345500-27672-1-git-send-email-jacob.jun.pan@linux.intel.com>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 06/04/15 15:44, Daniel Baluta wrote:
-> On Sat, Mar 28, 2015 at 9:43 PM, Roberta Dobrescu
-> <roberta.dobrescu@gmail.com> wrote:
->> This patch adds targets for building and cleaning iio tools to tools/Makefile.
->> To build iio tools from the toplevel kernel directory one should call:
->>
->> $ make -C tools iio
->>
->> and for cleaning it
->>
->> $ make -C tools iio_clean
->>
->> Signed-off-by: Roberta Dobrescu <roberta.dobrescu@gmail.com>
+On 06/04/15 19:38, Jacob Pan wrote:
+> Commit 65de7654d39c70c2b ("iio: iio: Fix iio_channel_read return if
+> channel havn't info") added a check for valid info masks.
 > 
-> Reviewed-by: Daniel Baluta <daniel.baluta@intel.com>
+> This patch adds missing channel info masks for all ADC channels.
+> Otherwise, iio_read_channel_raw() would return -EINVAL when called
+> by consumer drivers.
 > 
-Applied to the togreg branch of iio.git - initially pushed out as testing.
+> Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
 
-Thanks,
+This makes me a little nervous. Why did we have the separate raw and
+processed paths in the read_raw function in the first place?
+
+Also this changes the exposed userspace ABI by dropping those processed
+attributes that already exist..
 
 Jonathan
->> ---
->>  tools/Makefile | 7 ++++---
->>  1 file changed, 4 insertions(+), 3 deletions(-)
->>
->> diff --git a/tools/Makefile b/tools/Makefile
->> index 9a617ad..79463b0 100644
->> --- a/tools/Makefile
->> +++ b/tools/Makefile
->> @@ -8,6 +8,7 @@ help:
->>         @echo '  cpupower   - a tool for all things x86 CPU power'
->>         @echo '  firewire   - the userspace part of nosy, an IEEE-1394 traffic sniffer'
->>         @echo '  hv         - tools used when in Hyper-V clients'
->> +       @echo '  iio        - IIO tools'
->>         @echo '  lguest     - a minimal 32-bit x86 hypervisor'
->>         @echo '  perf       - Linux performance measurement and analysis tool'
->>         @echo '  selftests  - various kernel selftests'
->> @@ -41,7 +42,7 @@ acpi: FORCE
->>  cpupower: FORCE
->>         $(call descend,power/$@)
->>
->> -cgroup firewire hv guest usb virtio vm net: FORCE
->> +cgroup firewire hv guest usb virtio vm net iio: FORCE
->>         $(call descend,$@)
->>
->>  liblockdep: FORCE
->> @@ -91,7 +92,7 @@ acpi_clean:
->>  cpupower_clean:
->>         $(call descend,power/cpupower,clean)
->>
->> -cgroup_clean hv_clean firewire_clean lguest_clean usb_clean virtio_clean vm_clean net_clean:
->> +cgroup_clean hv_clean firewire_clean lguest_clean usb_clean virtio_clean vm_clean net_clean iio_clean:
->>         $(call descend,$(@:_clean=),clean)
->>
->>  liblockdep_clean:
->> @@ -114,6 +115,6 @@ tmon_clean:
->>
->>  clean: acpi_clean cgroup_clean cpupower_clean hv_clean firewire_clean lguest_clean \
->>                 perf_clean selftests_clean turbostat_clean usb_clean virtio_clean \
->> -               vm_clean net_clean x86_energy_perf_policy_clean tmon_clean
->> +               vm_clean net_clean iio_clean x86_energy_perf_policy_clean tmon_clean
->>
->>  .PHONY: FORCE
->> --
->> 1.9.1
+> ---
+>  drivers/iio/adc/axp288_adc.c | 12 ++++++------
+>  1 file changed, 6 insertions(+), 6 deletions(-)
+> 
+> diff --git a/drivers/iio/adc/axp288_adc.c b/drivers/iio/adc/axp288_adc.c
+> index 08bcfb0..56008a8 100644
+> --- a/drivers/iio/adc/axp288_adc.c
+> +++ b/drivers/iio/adc/axp288_adc.c
+> @@ -53,39 +53,42 @@ static const struct iio_chan_spec const axp288_adc_channels[] = {
+>  		.channel = 0,
+>  		.address = AXP288_TS_ADC_H,
+>  		.datasheet_name = "TS_PIN",
+> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
+>  	}, {
+>  		.indexed = 1,
+>  		.type = IIO_TEMP,
+>  		.channel = 1,
+>  		.address = AXP288_PMIC_ADC_H,
+>  		.datasheet_name = "PMIC_TEMP",
+> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
+>  	}, {
+>  		.indexed = 1,
+>  		.type = IIO_TEMP,
+>  		.channel = 2,
+>  		.address = AXP288_GP_ADC_H,
+>  		.datasheet_name = "GPADC",
+> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
+>  	}, {
+>  		.indexed = 1,
+>  		.type = IIO_CURRENT,
+>  		.channel = 3,
+>  		.address = AXP20X_BATT_CHRG_I_H,
+>  		.datasheet_name = "BATT_CHG_I",
+> -		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED),
+> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
+>  	}, {
+>  		.indexed = 1,
+>  		.type = IIO_CURRENT,
+>  		.channel = 4,
+>  		.address = AXP20X_BATT_DISCHRG_I_H,
+>  		.datasheet_name = "BATT_DISCHRG_I",
+> -		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED),
+> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
+>  	}, {
+>  		.indexed = 1,
+>  		.type = IIO_VOLTAGE,
+>  		.channel = 5,
+>  		.address = AXP20X_BATT_V_H,
+>  		.datasheet_name = "BATT_V",
+> -		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED),
+> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
+>  	},
+>  };
+>  
+> @@ -151,9 +154,6 @@ static int axp288_adc_read_raw(struct iio_dev *indio_dev,
+>  						chan->address))
+>  			dev_err(&indio_dev->dev, "TS pin restore\n");
+>  		break;
+> -	case IIO_CHAN_INFO_PROCESSED:
+> -		ret = axp288_adc_read_channel(val, chan->address, info->regmap);
+> -		break;
+>  	default:
+>  		ret = -EINVAL;
+>  	}
+> 
 
