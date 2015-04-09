@@ -1,339 +1,145 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:54187 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:54261 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752459AbbDIRlD (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 9 Apr 2015 13:41:03 -0400
-Message-ID: <5526B9AB.4060700@kernel.org>
-Date: Thu, 09 Apr 2015 18:40:59 +0100
+	with ESMTP id S1752459AbbDIRub (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 9 Apr 2015 13:50:31 -0400
+Message-ID: <5526BBE4.1040003@kernel.org>
+Date: Thu, 09 Apr 2015 18:50:28 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Daniel Baluta <daniel.baluta@intel.com>
-CC: jlbec@evilplan.org, lars@metafoo.de, knaack.h@gmx.de,
-	linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-	octavian.purdila@intel.com, pebolle@tiscali.nl,
-	patrick.porlan@intel.com, adriana.reus@intel.com
-Subject: Re: [PATCH v3 1/3] iio: configfs: Add configfs support to IIO
-References: <1428329889-18335-1-git-send-email-daniel.baluta@intel.com> <1428329889-18335-2-git-send-email-daniel.baluta@intel.com> <5526B398.8050806@kernel.org>
-In-Reply-To: <5526B398.8050806@kernel.org>
+To: Jacob Pan <jacob.jun.pan@linux.intel.com>
+CC: IIO <linux-iio@vger.kernel.org>,
+	LKML <linux-kernel@vger.kernel.org>,
+	Lee Jones <lee.jones@linaro.org>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Aaron Lu <aaron.lu@intel.com>,
+	Todd Brandt <todd.e.brandt@linux.intel.com>
+Subject: Re: [PATCH v2] iio/axp288_adc: add missing channel info mask
+References: <1428345500-27672-1-git-send-email-jacob.jun.pan@linux.intel.com>	<55267C39.5050707@kernel.org> <20150409100215.5264f990@icelake>
+In-Reply-To: <20150409100215.5264f990@icelake>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 09/04/15 18:15, Jonathan Cameron wrote:
-> On 06/04/15 15:18, Daniel Baluta wrote:
->> This module is the core of IIO configfs. It creates the "iio" subsystem under
->> configfs mount point root, with one default group for "triggers".
->>
->> It offers basic interface for registering software trigger types. Next patches
->> will add "hrtimer" and "sysfs" trigger types. To add a new trigger type we must
->> create a new kernel module which implements iio_configfs_trigger.h interface.
->>
->> See Documentation/iio/iio_configfs.txt for more details on how configfs
->> support for IIO works.
->>
->> Signed-off-by: Daniel Baluta <daniel.baluta@intel.com>
-> Looks good and is actually a fair bit simpler than I expected which is nice!
-> As an ideal aim, I'd like there to be no need for the core to have any
-> idea what triggers exist and can be registered (beyond preventing naming
-> clashes etc). Actually, not much would be needed to implement that I think, just
-> using a list and looking up in it (we aren't on a particularly fast path so
-> don't need anything clever) instead of a simple array.  A touch of locking
-> probably to avoid two many simultaneous users of that list...
+On 09/04/15 18:02, Jacob Pan wrote:
+> On Thu, 09 Apr 2015 14:18:49 +0100
+> Jonathan Cameron <jic23@kernel.org> wrote:
 > 
-> Hmm. having read through the patches, are we fundamentally limited to having to
-> specify the entire directory structure before bringing up configfs?
-As I read more on this, I think the definition of a 'subsystem' in configfs is
-very restricted. It means a tight group of devices sharing a prior
-known interface with no ability to add extras later.
-It's sort of like the difference between a class and a bus in sysfs (but more limited
-actually that's a rubbish analogy).  Thus either we have to do as here
-and have the core know all about everything it might want to setup in advance
-of registering the iio configfs subsystem or we need to make a whole load of
-different configfs subsystems. Basically boils down to one per module.  We lose
-the grouping convenience of the current structure but gain in separation.
-
-So option 1 we have effectively to predefine anything that might turn up
-in a module...
-
-/config/iio/triggers/hrtimer/instance1/..
-/config/iio/triggers/sysfs/instance2/..
-/config/iio/virtualdevs/hwmon/iiohwmoninstance1/..
-/config/iio/virtualdevs/input/iioinputinstance1/..
-/config/iio/maps/channelmapisntance1/.. 
-etc (actually fine for the maps as they are coming from the core anyway
-and will be known in advance)
-
-Option 2 we have complete flexibility as its down to the relevant drivers
-
-/config/iio-trigger-hrtimer/instance/..
-/config/iio-trigger-sysfs/instance/..
-/config/iio-virtual-hwmon/instance/..
-/config/iio-virtual-input/instance/..
-
-but we lose the grouping by directory which is a conceptual shame.
-
-Am I missing something important here?  (pretty new to configfs!)
-
-Just for others not familiar with IIO who might read this. We have a number
-of userspace created elements but each type is provided by a different module,
-hence it's a real pain having to have them all defined at configfs subsystem
-initialization as it adds tight coupling we don't otherwise have!
-
-J
-> 
->> ---
+>> On 06/04/15 19:38, Jacob Pan wrote:
+>>> Commit 65de7654d39c70c2b ("iio: iio: Fix iio_channel_read return if
+>>> channel havn't info") added a check for valid info masks.
+>>>
+>>> This patch adds missing channel info masks for all ADC channels.
+>>> Otherwise, iio_read_channel_raw() would return -EINVAL when called
+>>> by consumer drivers.
+>>>
+>>> Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
 >>
->> Changes since v2:
->> 	* Fix build errors by compiling industrialio-configfs.ko 
->> 	as a separate module, as reported by Paul.
+>> This makes me a little nervous. Why did we have the separate raw and
+>> processed paths in the read_raw function in the first place?
 >>
->> Changes since v1:
->> 	* addressed feedback from v1:
->> 		* https://lkml.org/lkml/2015/3/25/647
->> 	* create a directory per trigger type
->> 	* removed activate and type attributes
->> 	
->>  drivers/iio/Kconfig                      |   8 ++
->>  drivers/iio/Makefile                     |   1 +
->>  drivers/iio/industrialio-configfs.c      | 127 +++++++++++++++++++++++++++++++
->>  include/linux/iio/iio_configfs_trigger.h |  40 ++++++++++
->>  4 files changed, 176 insertions(+)
->>  create mode 100644 drivers/iio/industrialio-configfs.c
->>  create mode 100644 include/linux/iio/iio_configfs_trigger.h
+> Good point, I failed to explain that the reason to have separate raw and
+> processed was that the raw channels happened to need some special
+> processing in axp288_adc_set_ts(), since I have added a check for
+> address:
+> 	/* channels other than GPADC do not need to switch TS pin */
+> 	if (address != AXP288_GP_ADC_H)
+> 		return 0;
+> 
+> we no longer need special case the channels based on RAW flag. Thinking
+> back it was kind of an abuse.
+> 
+>> Also this changes the exposed userspace ABI by dropping those
+>> processed attributes that already exist..
 >>
->> diff --git a/drivers/iio/Kconfig b/drivers/iio/Kconfig
->> index 4011eff..41d5863 100644
->> --- a/drivers/iio/Kconfig
->> +++ b/drivers/iio/Kconfig
->> @@ -18,6 +18,14 @@ config IIO_BUFFER
->>  	  Provide core support for various buffer based data
->>  	  acquisition methods.
->>  
->> +config IIO_CONFIGFS
->> +	tristate "Enable IIO configuration via configfs"
->> +	select CONFIGFS_FS
->> +	help
->> +	  This allows configuring various IIO bits through configfs
->> +	  (e.g. software triggers). For more info see
->> +	  Documentation/iio/iio_configfs.txt.
->> +
->>  if IIO_BUFFER
->>  
->>  config IIO_BUFFER_CB
->> diff --git a/drivers/iio/Makefile b/drivers/iio/Makefile
->> index 698afc2..72e85c42 100644
->> --- a/drivers/iio/Makefile
->> +++ b/drivers/iio/Makefile
->> @@ -8,6 +8,7 @@ industrialio-$(CONFIG_IIO_BUFFER) += industrialio-buffer.o
->>  industrialio-$(CONFIG_IIO_TRIGGER) += industrialio-trigger.o
->>  industrialio-$(CONFIG_IIO_BUFFER_CB) += buffer_cb.o
->>  
->> +obj-$(CONFIG_IIO_CONFIGFS) += industrialio-configfs.o
->>  obj-$(CONFIG_IIO_TRIGGERED_BUFFER) += industrialio-triggered-buffer.o
->>  obj-$(CONFIG_IIO_KFIFO_BUF) += kfifo_buf.o
->>  
->> diff --git a/drivers/iio/industrialio-configfs.c b/drivers/iio/industrialio-configfs.c
->> new file mode 100644
->> index 0000000..d8ffd76
->> --- /dev/null
->> +++ b/drivers/iio/industrialio-configfs.c
->> @@ -0,0 +1,127 @@
->> +/*
->> + * Industrial I/O configfs bits
->> + *
->> + * Copyright (c) 2015 Intel Corporation
->> + *
->> + * This program is free software; you can redistribute it and/or modify it
->> + * under the terms of the GNU General Public License version 2 as published by
->> + * the Free Software Foundation.
->> + */
->> +
->> +#include <linux/configfs.h>
->> +#include <linux/module.h>
->> +#include <linux/init.h>
->> +#include <linux/kmod.h>
->> +#include <linux/slab.h>
->> +
->> +#include <linux/iio/iio.h>
->> +#include <linux/iio/iio_configfs_trigger.h>
->> +
->> +static struct iio_configfs_trigger_type *trigger_types[IIO_TRIGGER_TYPE_MAX];
->> +static DEFINE_RWLOCK(trigger_types_lock);
->> +
->> +int register_configfs_trigger(struct iio_configfs_trigger_type *t)
->> +{
->> +	int index = t->type;
->> +	int ret = 0;
->> +
->> +	if (index < 0 || index >= IIO_TRIGGER_TYPE_MAX)
->> +		return -EINVAL;
->> +
->> +	write_lock(&trigger_types_lock);
->> +	if (trigger_types[index])
->> +		ret = -EBUSY;
->> +	else
->> +		trigger_types[index] = t;
->> +	write_unlock(&trigger_types_lock);
->> +
->> +	return ret;
->> +}
->> +EXPORT_SYMBOL(register_configfs_trigger);
->> +
->> +int unregister_configfs_trigger(struct iio_configfs_trigger_type *t)
->> +{
->> +	int index = t->type;
->> +
->> +	if (index < 0 || index >= IIO_TRIGGER_TYPE_MAX)
->> +		return -EINVAL;
->> +
->> +	write_lock(&trigger_types_lock);
->> +	trigger_types[index] = NULL;
->> +	write_unlock(&trigger_types_lock);
->> +
->> +	return 0;
->> +}
->> +EXPORT_SYMBOL(unregister_configfs_trigger);
->> +
->> +static
->> +struct iio_configfs_trigger_type *iio_get_configfs_trigger_type(int type)
->> +{
->> +	struct iio_configfs_trigger_type *t;
->> +
->> +	if (type < 0 || type >= IIO_TRIGGER_TYPE_MAX)
->> +		return ERR_PTR(-EINVAL);
->> +
->> +	read_lock(&trigger_types_lock);
->> +	t = trigger_types[type];
->> +	if (t && !try_module_get(t->owner))
->> +		t = NULL;
->> +	read_unlock(&trigger_types_lock);
->> +
->> +	return t;
->> +}
->> +
->> +static struct config_group *iio_triggers_default_groups[] = {
->> +	NULL
->> +};
->> +
->> +static struct config_item_type iio_triggers_group_type = {
->> +	.ct_owner       = THIS_MODULE,
->> +};
->> +
->> +static struct config_group iio_triggers_group = {
->> +	.cg_item = {
->> +		.ci_namebuf = "triggers",
->> +		.ci_type = &iio_triggers_group_type,
->> +	},
->> +	.default_groups = iio_triggers_default_groups,
->> +};
->> +
->> +static struct config_group *iio_root_default_groups[] = {
->> +	&iio_triggers_group,
->> +	NULL
->> +};
->> +
->> +static struct config_item_type iio_root_group_type = {
->> +	.ct_owner       = THIS_MODULE,
->> +};
->> +
->> +static struct configfs_subsystem iio_configfs_subsys = {
->> +	.su_group = {
->> +		.cg_item = {
->> +			.ci_namebuf = "iio",
->> +			.ci_type = &iio_root_group_type,
->> +		},
->> +		.default_groups = iio_root_default_groups,
->> +	},
->> +	.su_mutex = __MUTEX_INITIALIZER(iio_configfs_subsys.su_mutex),
->> +};
->> +
->> +static int __init iio_configfs_init(void)
->> +{
->> +	config_group_init(&iio_triggers_group);
->> +	config_group_init(&iio_configfs_subsys.su_group);
->> +
->> +	return configfs_register_subsystem(&iio_configfs_subsys);
->> +}
->> +module_init(iio_configfs_init);
->> +
->> +static void __exit iio_configfs_exit(void)
->> +{
->> +	configfs_unregister_subsystem(&iio_configfs_subsys);
->> +}
->> +module_exit(iio_configfs_exit);
->> +
->> +MODULE_AUTHOR("Daniel Baluta <daniel.baluta@intel.com>");
->> +MODULE_DESCRIPTION("Industrial I/O configfs support");
->> +MODULE_LICENSE("GPL v2");
->> diff --git a/include/linux/iio/iio_configfs_trigger.h b/include/linux/iio/iio_configfs_trigger.h
->> new file mode 100644
->> index 0000000..75e76f2
->> --- /dev/null
->> +++ b/include/linux/iio/iio_configfs_trigger.h
->> @@ -0,0 +1,40 @@
->> +#ifndef __IIO_CONFIGFS_TRIGGER
->> +#define __IIO_CONFIGFS_TRIGGER
->> +
->> +#include <linux/device.h>
->> +#include <linux/iio/iio.h>
->> +#include <linux/module.h>
->> +
->> +#define module_iio_configfs_trigger_driver(__iio_configfs_trigger) \
->> +	module_driver(__iio_configfs_trigger, register_configfs_trigger, \
->> +		      unregister_configfs_trigger)
->> +
->> +enum {
-> Is this enum actually needed as such? If we can avoid explicit need
-> to list triggers in one place it would be nice.
+> I don't know the current users outside what we develop internally. What
+> is your suggestion?
+Lets go for it on the basis of it is 'fixing' your abuse of the ABI ;)
+Then any users should long ago have complained about it anyway
+(did I say that?) We'll take the age old approach. If no one notices we
+broke the ABI then it's fine.
+
+Have applied to the fixes-togreg branch of iio.git with the description
+updated to indicate it also fixes the ABI abuse ;)
+
+Anyhow, won't go now until after the merge window anyway I'm afraid.
+Marked for stable as well.
+
+Thanks,
+
+Jonathan
 > 
-> As I understand it, the point of this is to allow allocating of various
-> arrays for easy lookup etc.  How about we switch over to a list and
-> lookup based on magic provided by the trigger? (string or address most likely).
->> +	IIO_TRIGGER_TYPE_MAX,
->> +};
->> +
->> +struct iio_configfs_trigger_ops;
->> +
->> +struct iio_configfs_trigger_type {
->> +	int type;
->> +	struct module *owner;
->> +	struct iio_configfs_trigger_ops *trigger_ops;
->> +};
->> +
->> +struct iio_configfs_trigger_info {
->> +	char *name;
->> +	struct iio_trigger *trigger;
->> +	struct iio_configfs_trigger_type *trigger_type;
->> +};
->> +
->> +struct iio_configfs_trigger_ops {
-> I wonder if we can make these more flexible from the start because
-> avoiding churn in callbacks is always nice as us ensuring we have
-> a manageable number in the long run!  Also we might want to play
-> the 'fixed point' games we play elsewhere in IIO to allow us to have
-> a very wide range of precisions.
-> enum iio_configfs_trigger_paramtype = {
->      delay,
-> };
-> 
-> As a final thought, we have standardised on sampling_frequency elsewhere in
-> IIO (largely based on that was what the first few device used) so perhaps
-> we can use that here as well instead of delay?
-> 
-> int (*get_parameter)(struct iio_configfs_trigger_info *, enum iio_configfs_triger_paramtype param, unsigned long *);
-> 
->> +	int (*get_delay)(struct iio_configfs_trigger_info *, unsigned long *);
->> +	int (*set_delay)(struct iio_configfs_trigger_info *, unsigned long);
->> +	int (*probe)(struct iio_configfs_trigger_info *);
->> +	int (*remove)(struct iio_configfs_trigger_info *);
->> +};
->> +
->> +int register_configfs_trigger(struct iio_configfs_trigger_type *);
->> +int unregister_configfs_trigger(struct iio_configfs_trigger_type *);
->> +
->> +#endif /* __IIO_CONFIGFS_TRIGGER */
+>> Jonathan
+>>> ---
+>>>  drivers/iio/adc/axp288_adc.c | 12 ++++++------
+>>>  1 file changed, 6 insertions(+), 6 deletions(-)
+>>>
+>>> diff --git a/drivers/iio/adc/axp288_adc.c
+>>> b/drivers/iio/adc/axp288_adc.c index 08bcfb0..56008a8 100644
+>>> --- a/drivers/iio/adc/axp288_adc.c
+>>> +++ b/drivers/iio/adc/axp288_adc.c
+>>> @@ -53,39 +53,42 @@ static const struct iio_chan_spec const
+>>> axp288_adc_channels[] = { .channel = 0,
+>>>  		.address = AXP288_TS_ADC_H,
+>>>  		.datasheet_name = "TS_PIN",
+>>> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
+>>>  	}, {
+>>>  		.indexed = 1,
+>>>  		.type = IIO_TEMP,
+>>>  		.channel = 1,
+>>>  		.address = AXP288_PMIC_ADC_H,
+>>>  		.datasheet_name = "PMIC_TEMP",
+>>> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
+>>>  	}, {
+>>>  		.indexed = 1,
+>>>  		.type = IIO_TEMP,
+>>>  		.channel = 2,
+>>>  		.address = AXP288_GP_ADC_H,
+>>>  		.datasheet_name = "GPADC",
+>>> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
+>>>  	}, {
+>>>  		.indexed = 1,
+>>>  		.type = IIO_CURRENT,
+>>>  		.channel = 3,
+>>>  		.address = AXP20X_BATT_CHRG_I_H,
+>>>  		.datasheet_name = "BATT_CHG_I",
+>>> -		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED),
+>>> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
+>>>  	}, {
+>>>  		.indexed = 1,
+>>>  		.type = IIO_CURRENT,
+>>>  		.channel = 4,
+>>>  		.address = AXP20X_BATT_DISCHRG_I_H,
+>>>  		.datasheet_name = "BATT_DISCHRG_I",
+>>> -		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED),
+>>> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
+>>>  	}, {
+>>>  		.indexed = 1,
+>>>  		.type = IIO_VOLTAGE,
+>>>  		.channel = 5,
+>>>  		.address = AXP20X_BATT_V_H,
+>>>  		.datasheet_name = "BATT_V",
+>>> -		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED),
+>>> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
+>>>  	},
+>>>  };
+>>>  
+>>> @@ -151,9 +154,6 @@ static int axp288_adc_read_raw(struct iio_dev
+>>> *indio_dev, chan->address))
+>>>  			dev_err(&indio_dev->dev, "TS pin
+>>> restore\n"); break;
+>>> -	case IIO_CHAN_INFO_PROCESSED:
+>>> -		ret = axp288_adc_read_channel(val, chan->address,
+>>> info->regmap);
+>>> -		break;
+>>>  	default:
+>>>  		ret = -EINVAL;
+>>>  	}
+>>>
 >>
 > 
+> [Jacob Pan]
 > --
 > To unsubscribe from this list: send the line "unsubscribe linux-iio" in
 > the body of a message to majordomo@vger.kernel.org
