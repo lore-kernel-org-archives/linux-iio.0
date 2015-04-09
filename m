@@ -1,10 +1,10 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:52700 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:52711 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751445AbbDIN6c (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 9 Apr 2015 09:58:32 -0400
-Message-ID: <5526857E.6010500@kernel.org>
-Date: Thu, 09 Apr 2015 14:58:22 +0100
+	with ESMTP id S1751831AbbDIOAL (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 9 Apr 2015 10:00:11 -0400
+Message-ID: <552685E9.2090704@kernel.org>
+Date: Thu, 09 Apr 2015 15:00:09 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
 To: Antoine Tenart <antoine.tenart@free-electrons.com>,
@@ -13,472 +13,51 @@ To: Antoine Tenart <antoine.tenart@free-electrons.com>,
 CC: zmxu@marvell.com, jszhang@marvell.com, yrliao@marvell.com,
 	linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
 	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 1/4] iio: adc: add support for Berlin
-References: <1428066409-30392-1-git-send-email-antoine.tenart@free-electrons.com> <1428066409-30392-2-git-send-email-antoine.tenart@free-electrons.com>
-In-Reply-To: <1428066409-30392-2-git-send-email-antoine.tenart@free-electrons.com>
+Subject: Re: [PATCH v2 2/4] Documentation: bindings: document the Berlin ADC
+ driver
+References: <1428066409-30392-1-git-send-email-antoine.tenart@free-electrons.com> <1428066409-30392-3-git-send-email-antoine.tenart@free-electrons.com>
+In-Reply-To: <1428066409-30392-3-git-send-email-antoine.tenart@free-electrons.com>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
 On 03/04/15 14:06, Antoine Tenart wrote:
-> This patch adds the support of the Berlin ADC, available on Berlin SoCs.
-> This ADC has 8 channels available, with one connected to a temperature
-> sensor.
-> 
-> The particularity here, is that the temperature sensor connected to the
-> ADC has its own registers, and both the ADC and the temperature sensor
-> must be configured when using it.
+> Following the addition of a Berlin ADC driver, this patch adds the
+> corresponding bindings documentation.
 > 
 > Signed-off-by: Antoine Tenart <antoine.tenart@free-electrons.com>
-Few bits and bobs inline.  However, big one is that you've gotten
-confused on how the devm managed allocations work....
-Also a lot of care is needed with using devm_iio_device_register.
-It only makes sense in really simple devices where there really is nothing
-to do on device removal...
+About as straightfoward as they come.
 
+Acked-by: Jonathan Cameron <jic23@kernel.org>
 > ---
->  drivers/iio/adc/Kconfig       |   7 +
->  drivers/iio/adc/Makefile      |   1 +
->  drivers/iio/adc/berlin2-adc.c | 379 ++++++++++++++++++++++++++++++++++++++++++
->  3 files changed, 387 insertions(+)
->  create mode 100644 drivers/iio/adc/berlin2-adc.c
+>  .../devicetree/bindings/iio/adc/berlin2_adc.txt       | 19 +++++++++++++++++++
+>  1 file changed, 19 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/iio/adc/berlin2_adc.txt
 > 
-> diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
-> index 202daf889be2..92cc40fd5e71 100644
-> --- a/drivers/iio/adc/Kconfig
-> +++ b/drivers/iio/adc/Kconfig
-> @@ -135,6 +135,13 @@ config AXP288_ADC
->  	  device. Depending on platform configuration, this general purpose ADC can
->  	  be used for sampling sensors such as thermal resistors.
->  
-> +config BERLIN2_ADC
-> +	tristate "Marvell Berlin2 ADC driver"
-> +	depends on ARCH_BERLIN
-> +	help
-> +	  Marvell Berlin2 ADC driver. This ADC has 8 channels, with one used for
-> +	  temperature measurement.
-> +
->  config CC10001_ADC
->  	tristate "Cosmic Circuits 10001 ADC driver"
->  	depends on HAS_IOMEM || HAVE_CLK || REGULATOR
-> diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
-> index 0315af640866..2b6dadaf7714 100644
-> --- a/drivers/iio/adc/Makefile
-> +++ b/drivers/iio/adc/Makefile
-> @@ -15,6 +15,7 @@ obj-$(CONFIG_AD7887) += ad7887.o
->  obj-$(CONFIG_AD799X) += ad799x.o
->  obj-$(CONFIG_AT91_ADC) += at91_adc.o
->  obj-$(CONFIG_AXP288_ADC) += axp288_adc.o
-> +obj-$(CONFIG_BERLIN2_ADC) += berlin2-adc.o
->  obj-$(CONFIG_CC10001_ADC) += cc10001_adc.o
->  obj-$(CONFIG_EXYNOS_ADC) += exynos_adc.o
->  obj-$(CONFIG_LP8788_ADC) += lp8788_adc.o
-> diff --git a/drivers/iio/adc/berlin2-adc.c b/drivers/iio/adc/berlin2-adc.c
+> diff --git a/Documentation/devicetree/bindings/iio/adc/berlin2_adc.txt b/Documentation/devicetree/bindings/iio/adc/berlin2_adc.txt
 > new file mode 100644
-> index 000000000000..cd21fefc403e
+> index 000000000000..908334c6b07f
 > --- /dev/null
-> +++ b/drivers/iio/adc/berlin2-adc.c
-> @@ -0,0 +1,379 @@
-> +/*
-> + * Marvell Berlin2 ADC driver
-> + *
-> + * Copyright (C) 2015 Marvell Technology Group Ltd.
-> + *
-> + * Antoine Tenart <antoine.tenart@free-electrons.com>
-> + *
-> + * This file is licensed under the terms of the GNU General Public
-> + * License version 2. This program is licensed "as is" without any
-> + * warranty of any kind, whether express or implied.
-> + */
+> +++ b/Documentation/devicetree/bindings/iio/adc/berlin2_adc.txt
+> @@ -0,0 +1,19 @@
+> +* Berlin Analog to Digital Converter (ADC)
 > +
-> +#include <linux/iio/iio.h>
-> +#include <linux/iio/driver.h>
-> +#include <linux/iio/machine.h>
-> +#include <linux/interrupt.h>
-> +#include <linux/kernel.h>
-> +#include <linux/module.h>
-> +#include <linux/platform_device.h>
-> +#include <linux/slab.h>
-> +#include <linux/mfd/syscon.h>
-> +#include <linux/regmap.h>
-> +#include <linux/sched.h>
-> +#include <linux/wait.h>
+> +The Berlin ADC has 8 channels, with one connected to a temperature sensor.
+> +It is part of the system controller register set. The ADC node should be a
+> +sub-node of the system controller node.
 > +
-> +#define BERLIN2_SM_CTRL				0x14
-> +#define  BERLIN2_SM_CTRL_SM_SOC_INT		BIT(1)
-> +#define  BERLIN2_SM_CTRL_SOC_SM_INT		BIT(2)
-> +#define  BERLIN2_SM_CTRL_ADC_SEL(x)		(BIT(x) << 5)	/* 0-15 */
-> +#define  BERLIN2_SM_CTRL_ADC_SEL_MASK		(0xf << 5)
-> +#define  BERLIN2_SM_CTRL_ADC_POWER		BIT(9)
-> +#define  BERLIN2_SM_CTRL_ADC_CLKSEL_DIV2	(0x0 << 10)
-> +#define  BERLIN2_SM_CTRL_ADC_CLKSEL_DIV3	(0x1 << 10)
-> +#define  BERLIN2_SM_CTRL_ADC_CLKSEL_DIV4	(0x2 << 10)
-> +#define  BERLIN2_SM_CTRL_ADC_CLKSEL_DIV8	(0x3 << 10)
-> +#define  BERLIN2_SM_CTRL_ADC_CLKSEL_MASK	(0x3 << 10)
-> +#define  BERLIN2_SM_CTRL_ADC_START		BIT(12)
-> +#define  BERLIN2_SM_CTRL_ADC_RESET		BIT(13)
-> +#define  BERLIN2_SM_CTRL_ADC_BANDGAP_RDY	BIT(14)
-> +#define  BERLIN2_SM_CTRL_ADC_CONT_SINGLE	(0x0 << 15)
-> +#define  BERLIN2_SM_CTRL_ADC_CONT_CONTINUOUS	(0x1 << 15)
-> +#define  BERLIN2_SM_CTRL_ADC_BUFFER_EN		BIT(16)
-> +#define  BERLIN2_SM_CTRL_ADC_VREF_EXT		(0x0 << 17)
-> +#define  BERLIN2_SM_CTRL_ADC_VREF_INT		(0x1 << 17)
-> +#define  BERLIN2_SM_CTRL_ADC_ROTATE		BIT(19)
-> +#define  BERLIN2_SM_CTRL_TSEN_EN		BIT(20)
-> +#define  BERLIN2_SM_CTRL_TSEN_CLK_SEL_125	(0x0 << 21)	/* 1.25 MHz */
-> +#define  BERLIN2_SM_CTRL_TSEN_CLK_SEL_250	(0x1 << 21)	/* 2.5 MHz */
-> +#define  BERLIN2_SM_CTRL_TSEN_MODE_0_125	(0x0 << 22)	/* 0-125 C */
-> +#define  BERLIN2_SM_CTRL_TSEN_MODE_10_50	(0x1 << 22)	/* 10-50 C */
-> +#define  BERLIN2_SM_CTRL_TSEN_RESET		BIT(29)
-> +#define BERLIN2_SM_ADC_DATA			0x20
-> +#define  BERLIN2_SM_ADC_MASK			0x3ff
-> +#define BERLIN2_SM_ADC_STATUS			0x1c
-> +#define  BERLIN2_SM_ADC_STATUS_DATA_RDY(x)	BIT(x)		/* 0-15 */
-> +#define  BERLIN2_SM_ADC_STATUS_DATA_RDY_MASK	0xf
-> +#define  BERLIN2_SM_ADC_STATUS_INT_EN(x)	(BIT(x) << 16)	/* 0-15 */
-> +#define  BERLIN2_SM_ADC_STATUS_INT_EN_MASK	(0xf << 16)
-> +#define BERLIN2_SM_TSEN_STATUS			0x24
-> +#define  BERLIN2_SM_TSEN_STATUS_DATA_RDY	BIT(0)
-> +#define  BERLIN2_SM_TSEN_STATUS_INT_EN		BIT(1)
-> +#define BERLIN2_SM_TSEN_DATA			0x28
-> +#define  BERLIN2_SM_TSEN_MASK			0xfff
-> +#define BERLIN2_SM_TSEN_CTRL			0x74
-> +#define  BERLIN2_SM_TSEN_CTRL_START		BIT(8)
-> +#define  BERLIN2_SM_TSEN_CTRL_SETTLING_4	(0x0 << 21)	/* 4 us */
-> +#define  BERLIN2_SM_TSEN_CTRL_SETTLING_12	(0x1 << 21)	/* 12 us */
-> +#define  BERLIN2_SM_TSEN_CTRL_SETTLING_MASK	(0x1 << 21)
-> +#define  BERLIN2_SM_TSEN_CTRL_TRIM(x)		((x) << 22)
-> +#define  BERLIN2_SM_TSEN_CTRL_TRIM_MASK		(0xf << 22)
+> +Required properties:
+> +- compatible: must be "marvell,berlin2-adc"
+> +- interrupts: the interrupts for the ADC and the temperature sensor
+> +- interrupt-names: should be "adc" and "tsen"
 > +
-> +struct berlin2_adc_priv {
-> +	struct regmap		*regmap;
-> +	struct mutex		lock;
-> +	wait_queue_head_t	wq;
-> +	int			irq;
-> +	int			tsen_irq;
-> +	bool			data_available;
-> +	int			data;
+> +Example:
+> +
+> +adc: adc {
+> +	compatible = "marvell,berlin2-adc";
+> +	interrupt-parent = <&sic>;
+> +	interrupts = <12>, <14>;
+> +	interrupt-names = "adc", "tsen";
 > +};
-> +
-> +#define BERLIN2_ADC_CHANNEL(n, t)					\
-> +		{							\
-> +			.channel	= n,				\
-> +			.datasheet_name	= "channel"#n,			\
-> +			.type		= t,				\
-> +			.indexed	= 1,				\
-> +			.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),	\
-> +		}
-> +
-> +static struct iio_chan_spec berlin2_adc_channels[] = {
-> +	BERLIN2_ADC_CHANNEL(0, IIO_VOLTAGE),	/* external input */
-> +	BERLIN2_ADC_CHANNEL(1, IIO_VOLTAGE),	/* external input */
-> +	BERLIN2_ADC_CHANNEL(2, IIO_VOLTAGE),	/* external input */
-> +	BERLIN2_ADC_CHANNEL(3, IIO_VOLTAGE),	/* external input */
-> +	BERLIN2_ADC_CHANNEL(4, IIO_VOLTAGE),	/* reserved */
-> +	BERLIN2_ADC_CHANNEL(5, IIO_VOLTAGE),	/* reserved */
-> +	{					/* temperature sensor */
-> +		.channel		= 6,
-> +		.datasheet_name		= "channel6",
-> +		.type			= IIO_TEMP,
-> +		.indexed		= 0,
-> +		.info_mask_separate	= BIT(IIO_CHAN_INFO_PROCESSED),
-> +	},
-> +	BERLIN2_ADC_CHANNEL(7, IIO_VOLTAGE),	/* reserved */
-> +	IIO_CHAN_SOFT_TIMESTAMP(8),		/* timestamp */
-> +};
-> +#define BERLIN2_N_CHANNELS	ARRAY_SIZE(berlin2_adc_channels)
-> +
-> +static int berlin2_adc_read(struct iio_dev *indio_dev, int channel)
-> +{
-> +	struct berlin2_adc_priv *priv = iio_priv(indio_dev);
-> +	int data, ret;
-> +
-> +	mutex_lock(&priv->lock);
-> +
-> +	/* Configure the ADC */
-> +	regmap_update_bits(priv->regmap, BERLIN2_SM_CTRL,
-> +			BERLIN2_SM_CTRL_ADC_RESET | BERLIN2_SM_CTRL_ADC_SEL_MASK
-> +			| BERLIN2_SM_CTRL_ADC_START,
-> +			BERLIN2_SM_CTRL_ADC_SEL(channel) | BERLIN2_SM_CTRL_ADC_START);
-> +
-> +	/* Enable the interrupts */
-> +	regmap_write(priv->regmap, BERLIN2_SM_ADC_STATUS,
-> +			BERLIN2_SM_ADC_STATUS_INT_EN(channel));
-> +
-> +	ret = wait_event_interruptible_timeout(priv->wq, priv->data_available,
-> +			msecs_to_jiffies(1000));
-> +
-> +	/* Disable the interrupts */
-> +	regmap_update_bits(priv->regmap, BERLIN2_SM_ADC_STATUS,
-> +			BERLIN2_SM_ADC_STATUS_INT_EN(channel), 0);
-> +
-> +	if (ret == 0)
-> +		ret = -ETIMEDOUT;
-> +	if (ret < 0) {
-> +		mutex_unlock(&priv->lock);
-> +		return ret;
-> +	}
-> +
-> +	regmap_update_bits(priv->regmap, BERLIN2_SM_CTRL,
-> +			BERLIN2_SM_CTRL_ADC_START, 0);
-> +
-> +	data = priv->data;
-> +	priv->data = -1;
-> +	priv->data_available = false;
-> +
-> +	mutex_unlock(&priv->lock);
-> +
-> +	return data;
-> +}
-> +
-> +static int berlin2_adc_tsen_read(struct iio_dev *indio_dev)
-> +{
-> +	struct berlin2_adc_priv *priv = iio_priv(indio_dev);
-> +	int data, ret;
-> +
-> +	mutex_lock(&priv->lock);
-> +
-> +	/* Configure the ADC */
-> +	regmap_update_bits(priv->regmap, BERLIN2_SM_CTRL,
-> +			BERLIN2_SM_CTRL_TSEN_RESET | BERLIN2_SM_CTRL_ADC_ROTATE,
-> +			BERLIN2_SM_CTRL_ADC_ROTATE);
-> +
-> +	/* Configure the temperature sensor */
-> +	regmap_update_bits(priv->regmap, BERLIN2_SM_TSEN_CTRL,
-> +			BERLIN2_SM_TSEN_CTRL_TRIM_MASK | BERLIN2_SM_TSEN_CTRL_SETTLING_MASK
-> +			| BERLIN2_SM_TSEN_CTRL_START,
-> +			BERLIN2_SM_TSEN_CTRL_TRIM(3) | BERLIN2_SM_TSEN_CTRL_SETTLING_12
-> +			| BERLIN2_SM_TSEN_CTRL_START);
-> +
-> +	/* Enable interrupts */
-> +	regmap_write(priv->regmap, BERLIN2_SM_TSEN_STATUS,
-> +			BERLIN2_SM_TSEN_STATUS_INT_EN);
-Is there a possible race here?  Depends on whether this is a level interrupt
-or an edge triggered one... Would probably expect this just before the
-call to start the read.
-> +
-> +	ret = wait_event_interruptible_timeout(priv->wq, priv->data_available,
-> +			msecs_to_jiffies(1000));
-> +
-> +	/* Disable interrupts */
-> +	regmap_update_bits(priv->regmap, BERLIN2_SM_TSEN_STATUS,
-> +			BERLIN2_SM_TSEN_STATUS_INT_EN, 0);
-> +
-> +	if (ret == 0)
-> +		ret = -ETIMEDOUT;
-> +	if (ret < 0) {
-> +		mutex_unlock(&priv->lock);
-> +		return ret;
-> +	}
-> +
-> +	regmap_update_bits(priv->regmap, BERLIN2_SM_TSEN_CTRL,
-> +			BERLIN2_SM_TSEN_CTRL_START, 0);
-> +
-> +	data = priv->data;
-> +	priv->data = -1;
-> +	priv->data_available = false;
-> +
-> +	mutex_unlock(&priv->lock);
-> +
-> +	return data;
-> +}
-> +
-> +static int berlin2_adc_read_raw(struct iio_dev *indio_dev,
-> +		struct iio_chan_spec const *chan, int *val, int *val2,
-> +		long mask)
-> +{
-> +	int temp;
-> +
-> +	switch (mask) {
-> +	case IIO_CHAN_INFO_RAW:
-> +		if (chan->type != IIO_VOLTAGE)
-> +			return -EINVAL;
-> +
-> +		*val = berlin2_adc_read(indio_dev, chan->channel);
-> +		if (*val < 0)
-> +			return *val;
-> +
-> +		return IIO_VAL_INT;
-> +	case IIO_CHAN_INFO_PROCESSED:
-> +		if (chan->type != IIO_TEMP)
-> +			return -EINVAL;
-> +
-> +		temp = berlin2_adc_tsen_read(indio_dev);
-> +		if (temp < 0)
-> +			return temp;
-> +
-> +		if (temp > 2047)
-> +			temp = -(4096 - temp);
-> +
-> +		/* Convert to Celsius */
-> +		*val = (temp * 100) / 264 - 270;
-> +		return IIO_VAL_INT;
-> +	default:
-> +		break;
-> +	}
-> +
-> +	return -EINVAL;
-> +}
-> +
-> +static irqreturn_t berlin2_adc_irq(int irq, void *private)
-> +{
-> +	struct iio_dev *indio_dev = private;
-> +	struct berlin2_adc_priv *priv = iio_priv(indio_dev);
-> +	unsigned val;
-> +
-> +	regmap_read(priv->regmap, BERLIN2_SM_ADC_STATUS, &val);
-> +	if (val & BERLIN2_SM_ADC_STATUS_DATA_RDY_MASK) {
-> +		regmap_read(priv->regmap, BERLIN2_SM_ADC_DATA, &priv->data);
-> +		priv->data &= BERLIN2_SM_ADC_MASK;
-> +
-> +		val &= ~BERLIN2_SM_ADC_STATUS_DATA_RDY_MASK;
-> +		regmap_write(priv->regmap, BERLIN2_SM_ADC_STATUS, val);
-> +
-> +		priv->data_available = true;
-> +		wake_up_interruptible(&priv->wq);
-> +	}
-> +
-> +	return IRQ_HANDLED;
-> +}
-> +
-> +static irqreturn_t berlin2_adc_tsen_irq(int irq, void *private)
-> +{
-> +	struct iio_dev *indio_dev = private;
-> +	struct berlin2_adc_priv *priv = iio_priv(indio_dev);
-I'd roll the above two lines into one.
-struct berlin2_adc_priv *priv = iio_priv(private);
-
-> +	unsigned val;
-> +
-> +	regmap_read(priv->regmap, BERLIN2_SM_TSEN_STATUS, &val);
-> +	if (val & BERLIN2_SM_TSEN_STATUS_DATA_RDY) {
-> +		regmap_read(priv->regmap, BERLIN2_SM_TSEN_DATA, &priv->data);
-> +		priv->data &= BERLIN2_SM_TSEN_MASK;
-> +
-> +		val &= ~BERLIN2_SM_TSEN_STATUS_DATA_RDY;
-> +		regmap_write(priv->regmap, BERLIN2_SM_TSEN_STATUS, val);
-> +
-> +		priv->data_available = true;
-> +		wake_up_interruptible(&priv->wq);
-> +	}
-> +
-> +	return IRQ_HANDLED;
-> +}
-> +
-> +static const struct iio_info berlin2_adc_info = {
-> +	.driver_module	= THIS_MODULE,
-> +	.read_raw	= berlin2_adc_read_raw,
-> +};
-> +
-> +static int berlin2_adc_probe(struct platform_device *pdev)
-> +{
-> +	struct iio_dev *indio_dev;
-> +	struct berlin2_adc_priv *priv;
-> +	struct device_node *parent_np = of_get_parent(pdev->dev.of_node);
-> +	int ret;
-> +
-> +	indio_dev = devm_iio_device_alloc(&pdev->dev,
-> +					  sizeof(struct berlin2_adc_priv));
-> +	if (!indio_dev)
-> +		return -ENOMEM;
-> +
-> +	priv = iio_priv(indio_dev);
-> +	platform_set_drvdata(pdev, indio_dev);
-> +
-> +	priv->regmap = syscon_node_to_regmap(parent_np);
-> +	of_node_put(parent_np);
-> +	if (IS_ERR(priv->regmap))
-> +		return PTR_ERR(priv->regmap);
-> +
-> +	priv->irq = platform_get_irq_byname(pdev, "adc");
-> +	if (priv->irq < 0)
-> +		return -ENODEV;
-> +
-> +	priv->tsen_irq = platform_get_irq_byname(pdev, "tsen");
-> +	if (priv->tsen_irq < 0)
-> +		return -ENODEV;
-> +
-> +	ret = devm_request_irq(&pdev->dev, priv->irq, berlin2_adc_irq, 0,
-> +			pdev->dev.driver->name, indio_dev);
-> +	if (ret)
-> +		return ret;
-> +
-> +	ret = devm_request_irq(&pdev->dev, priv->tsen_irq, berlin2_adc_tsen_irq,
-> +			0, pdev->dev.driver->name, indio_dev);
-> +	if (ret)
-> +		return ret;
-> +
-> +	init_waitqueue_head(&priv->wq);
-> +	mutex_init(&priv->lock);
-> +
-> +	indio_dev->dev.parent = &pdev->dev;
-> +	indio_dev->name = dev_name(&pdev->dev);
-> +	indio_dev->modes = INDIO_DIRECT_MODE;
-> +	indio_dev->info = &berlin2_adc_info;
-> +
-> +	indio_dev->num_channels = BERLIN2_N_CHANNELS;
-> +	indio_dev->channels = berlin2_adc_channels;
-> +
-> +	/* Power up the ADC */
-> +	regmap_update_bits(priv->regmap, BERLIN2_SM_CTRL,
-> +			BERLIN2_SM_CTRL_ADC_POWER, BERLIN2_SM_CTRL_ADC_POWER);
-> +
-> +	return devm_iio_device_register(&pdev->dev, indio_dev);
-you are mixing devm requests with explicit removes in the remove.
-You are going to get double frees.
-
-You'll also want to catch any errors from iio_device_register and power down
-the device (via the regmap call) if the register fails.
-
-> +}
-> +
-> +static int berlin2_adc_remove(struct platform_device *pdev)
-> +{
-> +	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
-> +	struct berlin2_adc_priv *priv = iio_priv(indio_dev);
-> +
-> +	iio_device_unregister(indio_dev);
-As you used devm_iio_device_register you don't need to explicitly unregister.
-However...
-> +
-> +	/* Power down the ADC */
-> +	regmap_update_bits(priv->regmap, BERLIN2_SM_CTRL,
-> +			BERLIN2_SM_CTRL_ADC_POWER, 0);
-If you do use the devm register above then the userspace access to the
-hardware will only be removed AFTER the regmap_update_bits here. Hence
-there will be a nasty window.  I would suggest not using the
-devm_iio_device_register but rather iio_device_register and then keep
-the explicit unregister here.
-
-> +
-> +	free_irq(priv->irq, indio_dev);
-> +	free_irq(priv->tsen_irq, indio_dev);
-> +
-> +	iio_device_free(indio_dev);
-You used devm versions of the irq requests and iio_device alloc.  These
-frees should not be here and will result in a double free.
-> +
-> +	return 0;
-> +}
-> +
-> +static const struct of_device_id berlin2_adc_match[] = {
-> +	{ .compatible = "marvell,berlin2-adc", },
-> +	{ },
-> +};
-> +MODULE_DEVICE_TABLE(of, berlin2q_adc_match);
-> +
-> +static struct platform_driver berlin2_adc_driver = {
-> +	.driver	= {
-> +		.name		= "berlin2-adc",
-> +		.of_match_table	= berlin2_adc_match,
-> +	},
-> +	.probe	= berlin2_adc_probe,
-> +	.remove	= berlin2_adc_remove,
-> +};
-> +module_platform_driver(berlin2_adc_driver);
-> +
-> +MODULE_AUTHOR("Antoine Tenart <antoine.tenart@free-electrons.com>");
-> +MODULE_DESCRIPTION("Marvell Berlin2 ADC driver");
-> +MODULE_LICENSE("GPL v2");
 > 
 
