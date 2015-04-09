@@ -1,129 +1,197 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga14.intel.com ([192.55.52.115]:3375 "EHLO mga14.intel.com"
+Received: from mga14.intel.com ([192.55.52.115]:10632 "EHLO mga14.intel.com"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1754027AbbDIWe5 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Thu, 9 Apr 2015 18:34:57 -0400
-Message-ID: <5526FE97.8070705@linux.intel.com>
-Date: Thu, 09 Apr 2015 15:35:03 -0700
+	id S1754226AbbDIXbN (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Thu, 9 Apr 2015 19:31:13 -0400
+Message-ID: <55270BAD.7030509@linux.intel.com>
+Date: Thu, 09 Apr 2015 16:30:53 -0700
 From: sathyanarayanan kuppuswamy
 	<sathyanarayanan.kuppuswamy@linux.intel.com>
 Reply-To: sathyanarayanan.kuppuswamy@linux.intel.com
 MIME-Version: 1.0
-To: Jonathan Cameron <jic23@kernel.org>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Daniel Baluta <daniel.baluta@gmail.com>
-CC: Peter Meerwald <pmeerw@pmeerw.net>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-Subject: Re: [PATCH v1 2/3] iio: ltr501: Add interrupt rate control support
-References: <cover.1427856701.git.sathyanarayanan.kuppuswamy@linux.intel.com>	<212b45fac712e84a3cf0bc5955def7d1b683a6bd.1427856701.git.sathyanarayanan.kuppuswamy@linux.intel.com>	<CAEnQRZC=GtB7r=QG7DkDJOFz8bBQ-V+VD-DNkVG50-LubLMr8w@mail.gmail.com>	<551C030E.1090309@metafoo.de> <CAEnQRZCsUiH_+GGxqPpLUDHVh_iu6O1QNTH5xdZuKojG11QZFQ@mail.gmail.com> <551C0B95.9080802@metafoo.de> <551C2EC4.1050208@linux.intel.com> <551C2F63.50609@metafoo.de> <551C41C0.2050609@linux.intel.com> <551C4562.9030607@linux.intel.com> <55265195.9080100@kernel.org>
-In-Reply-To: <55265195.9080100@kernel.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
+To: Jonathan Cameron <jic23@kernel.org>, pmeerw@pmeerw.net
+CC: linux-iio@vger.kernel.org, srinivas.pandruvada@linux.intel.com
+Subject: Re: [PATCH v3 2/6] iio: documentation: Add ABI info for iio event
+ persistence filter
+References: <cover.1428537814.git.sathyanarayanan.kuppuswamy@linux.intel.com> <d6ed572de5978b1ab44f0bd72432b8eeeac0b321.1428537814.git.sathyanarayanan.kuppuswamy@linux.intel.com> <5526556A.1080609@kernel.org>
+In-Reply-To: <5526556A.1080609@kernel.org>
+Content-Type: text/plain; charset=windows-1252; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Comments inline.
 
-On 04/09/2015 03:16 AM, Jonathan Cameron wrote:
-> On 01/04/15 20:22, sathyanarayanan kuppuswamy wrote:
+
+On 04/09/2015 03:33 AM, Jonathan Cameron wrote:
+> On 09/04/15 01:06, Kuppuswamy Sathyanarayanan wrote:
+>> Add ABI info for iio event persistence filter.
 >>
->> On 04/01/2015 12:06 PM, sathyanarayanan kuppuswamy wrote:
->>>
->>> On 04/01/2015 10:48 AM, Lars-Peter Clausen wrote:
->>>> On 04/01/2015 07:45 PM, sathyanarayanan kuppuswamy wrote:
->>>>>
->>>>> On 04/01/2015 08:15 AM, Lars-Peter Clausen wrote:
->>>>>> On 04/01/2015 05:02 PM, Daniel Baluta wrote:
->>>>>>> On Wed, Apr 1, 2015 at 5:39 PM, Lars-Peter Clausen <lars@metafoo.de> wrote:
->>>>>>>> On 04/01/2015 04:04 PM, Daniel Baluta wrote:
->>>>>>>> [...]
->>>>>>>>>
->>>>>>>>>> +static const struct iio_chan_spec_ext_info ltr501_ext_info[] = {
->>>>>>>>>> +       {
->>>>>>>>>> +               .name = "intr_persist",
->>>>>>>>>> +               .read = ltr501_read_intr_prst,
->>>>>>>>>> +               .write = ltr501_write_intr_prst,
->>>>>>>>>> +               .shared = IIO_SHARED_BY_TYPE,
->>>>>>>>>> +       },
->>>>>>>>>> +       {},
->>>>>>>>>> +};
->>>>>>>>>> +
->>>>>>>>> Would be nice to standardize persistence attribute
->>>>>>>>> (IIO_CHAN_INFO_PERSISTENCE).
->>>>>>>>
->>>>>>>> If I understand the behavior correctly it causes that the event needs to be
->>>>>>>> triggered at least n times before the event is reported by the chip. In my
->>>>>>>> opinion 'persistence' is not a good term for that. I'm not sure what a
->>>>>>>> better term is but I think it should go more in the direction of ratelimit
->>>>>>>> or something.
->>>>>>> I've seen this term used for many devices:
->>>>>>>
->>>>>>> *  TSL25911 ambient light sensor [1]
->>>>>>>
->>>>>>> [ One set of thresholds can be configured to trigger an interrupt only when
->>>>>>>    the ambient light exceeds them for a configurable amount of time
->>>>>>> (persistence)
->>>>>>> ]
->>>>>>>
->>>>>>> * TAOS TCS34725 ambient light sensor [2]
->>>>>>> [
->>>>>>> The interrupt persistence filter allows the user to define the number
->>>>>>> of consecutive
->>>>>>>    out-of-threshold events necessary before generating an interrupt.
->>>>>>> ]
->>>>>>>
->>>>>>> * Avago SAPDS-9950, Sensortek STK3310
->>>>>>>
->>>>>>> I think the TSL25911 datasheet best describes this parameter, as the
->>>>>>> amount of time
->>>>>>> that ambient light should exceed a threshold until an interrupt is
->>>>>>> generated.
->>>>>> Ok, that makes more sense. I misunderstood the initial description as that
->>>>>> the signal would have to go first above the threshold then below the
->>>>>> threshold, and this for a number of times. Whereas it needs to exceed the
->>>>>> threshold for a certain amount of time before the event is triggered. If
->>>>>> it goes below the threshold before the persistence interval no event is
->>>>>> triggered and the counter is reset.
->>>>> Yes, it needs to cross the threshold n number of times before a event is
->>>>> generated.
->>>> Wait. It needs to cross the threshold or it needs to stay above the threshold?
->>> Following is the logic for this chip.
->>>
->>> If ( data > Upper_threshold or data  < Lower_threshold)
->>>      generate_event()
->> Missed to add <n> times logic
+>> Setting <n> to persistence filter would need atleast
+>> <n> data values outside the upper/lower threshold
+>> limits before generating an interrupt.
 >>
->> If ( data > Upper_threshold or data  < Lower_threshold) {
->>      increment_count;
->>      if (count >= n) {
->>          generate_event()
->>          reset_count()
->>      }
->> }
+>> Signed-off-by: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
+>> ---
+>>   Documentation/ABI/testing/sysfs-bus-iio | 82 +++++++++++++++++++++++++++++++++
+>>   1 file changed, 82 insertions(+)
 >>
-> So level rather than edge triggered.  Definitely what we put _period
-> in for in the first place.  Admittedly persistence might have been a better
-> name, but too late now! (dratted ABI compatibility)
+>> diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
+>> index 9a70c31..590b1d4 100644
+>> --- a/Documentation/ABI/testing/sysfs-bus-iio
+>> +++ b/Documentation/ABI/testing/sysfs-bus-iio
+>> @@ -856,6 +856,88 @@ Description:
+>>   		met before an event is generated. If direction is not
+>>   		specified then this period applies to both directions.
+>>   
+> Please don't mass document cases unless they are actually in use.  These should
+> get added as and when they become so.  Often a particular type of event
+> characteristic is actually only implemented on a small subset of channel types
+> (where it makes sense).
+IMO, persistence filter can be applied for all these cases. But if you 
+think its better to
+add ABI for what we currently use then I will leave only ALS/proxmity 
+related ABI's here.
+
++What:		/sys/.../events/in_intensity0_thresh_persistence
++What:		/sys/.../events/in_proximity0_thresh_persistence
+
+>> +What:		/sys/.../events/in_accel_x_thresh_rising_persistence
+>> +What:		/sys/.../events/in_accel_x_thresh_falling_persistence
+>> +hat:		/sys/.../events/in_accel_x_roc_rising_persistence
+>> +What:		/sys/.../events/in_accel_x_roc_falling_persistence
+>> +What:		/sys/.../events/in_accel_y_thresh_rising_persistence
+>> +What:		/sys/.../events/in_accel_y_thresh_falling_persistence
+>> +What:		/sys/.../events/in_accel_y_roc_rising_persistence
+>> +What:		/sys/.../events/in_accel_y_roc_falling_persistence
+>> +What:		/sys/.../events/in_accel_z_thresh_rising_persistence
+>> +What:		/sys/.../events/in_accel_z_thresh_falling_persistence
+>> +What:		/sys/.../events/in_accel_z_roc_rising_persistence
+>> +What:		/sys/.../events/in_accel_z_roc_falling_persistence
+>> +What:		/sys/.../events/in_anglvel_x_thresh_rising_persistence
+>> +What:		/sys/.../events/in_anglvel_x_thresh_falling_persistence
+>> +What:		/sys/.../events/in_anglvel_x_roc_rising_persistence
+>> +What:		/sys/.../events/in_anglvel_x_roc_falling_persistence
+>> +What:		/sys/.../events/in_anglvel_y_thresh_rising_persistence
+>> +What:		/sys/.../events/in_anglvel_y_thresh_falling_persistence
+>> +What:		/sys/.../events/in_anglvel_y_roc_rising_persistence
+>> +What:		/sys/.../events/in_anglvel_y_roc_falling_persistence
+>> +What:		/sys/.../events/in_anglvel_z_thresh_rising_persistence
+>> +What:		/sys/.../events/in_anglvel_z_thresh_falling_persistence
+>> +What:		/sys/.../events/in_anglvel_z_roc_rising_persistence
+>> +What:		/sys/.../events/in_anglvel_z_roc_falling_persistence
+>> +What:		/sys/.../events/in_magn_x_thresh_rising_persistence
+>> +What:		/sys/.../events/in_magn_x_thresh_falling_persistence
+>> +What:		/sys/.../events/in_magn_x_roc_rising_persistence
+>> +What:		/sys/.../events/in_magn_x_roc_falling_persistence
+>> +What:		/sys/.../events/in_magn_y_thresh_rising_persistence
+>> +What:		/sys/.../events/in_magn_y_thresh_falling_persistence
+>> +What:		/sys/.../events/in_magn_y_roc_rising_persistence
+>> +What:		/sys/.../events/in_magn_y_roc_falling_persistence
+>> +What:		/sys/.../events/in_magn_z_thresh_rising_persistence
+>> +What:		/sys/.../events/in_magn_z_thresh_falling_persistence
+>> +What:		/sys/.../events/in_magn_z_roc_rising_persistence
+>> +What:		/sys/.../events/in_magn_z_roc_falling_persistence
+>> +What:		/sys/.../events/in_rot_from_north_magnetic_thresh_rising_persistence
+>> +What:		/sys/.../events/in_rot_from_north_magnetic_thresh_falling_persistence
+>> +What:		/sys/.../events/in_rot_from_north_magnetic_roc_rising_persistence
+>> +What:		/sys/.../events/in_rot_from_north_magnetic_roc_falling_persistence
+>> +What:		/sys/.../events/in_rot_from_north_true_thresh_rising_persistence
+>> +What:		/sys/.../events/in_rot_from_north_true_thresh_falling_persistence
+>> +What:		/sys/.../events/in_rot_from_north_true_roc_rising_persistence
+>> +What:		/sys/.../events/in_rot_from_north_true_roc_falling_persistence
+>> +What:		/sys/.../events/in_rot_from_north_magnetic_tilt_comp_thresh_rising_persistence
+>> +What:		/sys/.../events/in_rot_from_north_magnetic_tilt_comp_thresh_falling_persistence
+>> +What:		/sys/.../events/in_rot_from_north_magnetic_tilt_comp_roc_rising_persistence
+>> +What:		/sys/.../events/in_rot_from_north_magnetic_tilt_comp_roc_falling_persistence
+>> +What:		/sys/.../events/in_rot_from_north_true_tilt_comp_thresh_rising_persistence
+>> +What:		/sys/.../events/in_rot_from_north_true_tilt_comp_thresh_falling_persistence
+>> +What:		/sys/.../events/in_rot_from_north_true_tilt_comp_roc_rising_persistence
+>> +What:		/sys/.../events/in_rot_from_north_true_tilt_comp_roc_falling_persistence
+>> +What:		/sys/.../events/in_voltageY_supply_thresh_rising_persistence
+>> +What:		/sys/.../events/in_voltageY_supply_thresh_falling_persistence
+>> +What:		/sys/.../events/in_voltageY_supply_roc_rising_persistence
+>> +What:		/sys/.../events/in_voltageY_supply_roc_falling_persistence
+>> +What:		/sys/.../events/in_voltageY_thresh_rising_persistence
+>> +What:		/sys/.../events/in_voltageY_thresh_falling_persistence
+>> +What:		/sys/.../events/in_voltageY_roc_rising_persistence
+>> +What:		/sys/.../events/in_voltageY_roc_falling_persistence
+>> +What:		/sys/.../events/in_tempY_thresh_rising_persistence
+>> +What:		/sys/.../events/in_tempY_thresh_falling_persistence
+>> +What:		/sys/.../events/in_tempY_roc_rising_persistence
+>> +What:		/sys/.../events/in_tempY_roc_falling_persistence
+>> +What:		/sys/.../events/in_accel_x&y&z_mag_falling_persistence
+>> +What:		/sys/.../events/in_intensity0_thresh_persistence
+>> +What:		/sys/.../events/in_proximity0_thresh_persistence
+>> +What:		/sys/.../events/in_activity_still_thresh_rising_persistence
+>> +What:		/sys/.../events/in_activity_still_thresh_falling_persistence
+>> +What:		/sys/.../events/in_activity_walking_thresh_rising_persistence
+>> +What:		/sys/.../events/in_activity_walking_thresh_falling_persistence
+>> +What:		/sys/.../events/in_activity_jogging_thresh_rising_persistence
+>> +What:		/sys/.../events/in_activity_jogging_thresh_falling_persistence
+>> +What:		/sys/.../events/in_activity_running_thresh_rising_persistence
+>> +What:		/sys/.../events/in_activity_running_thresh_falling_persistence
+>> +KernelVersion:	4.0
+>> +Contact:	linux-iio@vger.kernel.org
+>> +Description:
+>> +		Number of times an event should occur before generating an
+>> +		interrupt. Persistence filter value can be applied for both
+>> +		rising/falling threshold based interrupts.
+> This still needs clarification as reading the discussion I'm still a little unsure
+> what the condition is.  I don't think Lars' original query ever got cleanly answered
+Sorry for being unclear. Even in this case, the use case is "number of 
+consecutive" measurement data
+outside the range.
 >
-> J
-But we cannot use period for this use case. According to _period ABI 
-description,
-It specifies the period of time for which the condition must be true for 
-getting a
-valid event. But here, we are checking for number of times a condition 
-must be
-true for generating a valid event.
+> Taking just the upper threshold...
+> The interpretations I can think of are:
+>
+> 1) tsl2591 use case (maps directly to period with the sampling frequency taken into
+> account).
+>   - Too much light for N ALS cycling samples.  If it drops below the threshold
+>     the count is reset.
+> the tcs part that Daniel referenced is also this use case.
+I agree that it can be mapped to _period if you take the sampling 
+frequency into account. But if you do that then it becomes dependent on 
+integration time ( for ALS case). Since _period is calculated based on 
+frequency, each time you change _integration_time then internally you 
+need to change the _period value to keep the ratio constant. Also you 
+need to consider what happens if your frequency > period. I think this 
+makes is bit complicated.
 
-Description:
-                 Period of time (in seconds) for which the condition must be
-                 met before an event is generated. If direction is not
-                 specified then this period applies to both directions.
+Don't you think its better to add another representation instead of 
+trying to fit it in existing ABI's ?
 
->>>> -- 
->>>> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
->>>> the body of a message to majordomo@vger.kernel.org
->>>> More majordomo info at http://vger.kernel.org/majordomo-info.html
->>>>
+Following are the persistence filter descriptions from data sheets of 
+tsl2591 and ltr501.
+
+LTR501: " The INTERRUPT PERSIST register controls the N number of times 
+the measurement data is outside the range defined by the upper and lower 
+threshold limits before asserting the INT".
+TSL2591: " The Interrupt persistence filter sets the number of 
+consecutive out-of-range ALS cycles necessary to generate an interrupt"
+
+>
+> 2) A new option which doesn't take account of the signal dropping below the threshold.
+>     So a count of number of times above the threshold.
+>   i.e. On each cycle, if over threshold, increment N.
+>        Evaluate if N is greater than 'persistence' then trigger an event.
+>    Why this would ever make sense on a light sensor is beyond me ;)  but there
+>    we are.  We have a related abi for in_steps_change_value, which fires
+>    an event, only every N steps.  It doesn't really adapt to this case though.
+>
+>    The name persistence is definitely misleading if this is what the liteon parts
+>    do as that definitely implies case 1).
+>
+> Welcome to my life, bludgeoning what appears to new ABI into what we already have!
+> (not a lot of point in standardized ABI otherwise!)
+>
+> Jonathan
+>
+>
+>> +
+>>   What:		/sys/.../events/in_activity_still_thresh_rising_en
+>>   What:		/sys/.../events/in_activity_still_thresh_falling_en
+>>   What:		/sys/.../events/in_activity_walking_thresh_rising_en
+>>
 >
 
 -- 
