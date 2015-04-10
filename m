@@ -1,123 +1,110 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-wg0-f46.google.com ([74.125.82.46]:35118 "EHLO
-	mail-wg0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S934346AbbDJNu1 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 10 Apr 2015 09:50:27 -0400
-MIME-Version: 1.0
-In-Reply-To: <5526C112.1090609@kernel.org>
-References: <1428329889-18335-1-git-send-email-daniel.baluta@intel.com>
-	<1428329889-18335-2-git-send-email-daniel.baluta@intel.com>
-	<5526B398.8050806@kernel.org>
-	<5526B9AB.4060700@kernel.org>
-	<5526C112.1090609@kernel.org>
-Date: Fri, 10 Apr 2015 16:50:25 +0300
-Message-ID: <CAEnQRZBdzmn20_hZoM-OF2sbxKD8Ecknh-u=w7JcT_EA0UoRng@mail.gmail.com>
-Subject: Re: [PATCH v3 1/3] iio: configfs: Add configfs support to IIO
-From: Daniel Baluta <daniel.baluta@intel.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Daniel Baluta <daniel.baluta@intel.com>,
-	Joel Becker <jlbec@evilplan.org>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"octavian.purdila@intel.com" <octavian.purdila@intel.com>,
-	Paul Bolle <pebolle@tiscali.nl>, patrick.porlan@intel.com,
-	adriana.reus@intel.com
-Content-Type: text/plain; charset=UTF-8
+Received: from mga03.intel.com ([134.134.136.65]:65272 "EHLO mga03.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1754506AbbDJPhc (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Fri, 10 Apr 2015 11:37:32 -0400
+Message-ID: <1428680164.13005.11.camel@spandruv-DESK3.jf.intel.com>
+Subject: Re: [PATCH v3 1/2] HID: HID Sensor: Custom and Generic sensor
+ support
+From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+To: Jiri Kosina <jkosina@suse.cz>
+Cc: jic23@kernel.org, linux-input@vger.kernel.org,
+	linux-iio@vger.kernel.org
+Date: Fri, 10 Apr 2015 08:36:04 -0700
+In-Reply-To: <alpine.LNX.2.00.1504101200510.26287@pobox.suse.cz>
+References: <1426888728-9344-1-git-send-email-srinivas.pandruvada@linux.intel.com>
+	 <1426888728-9344-2-git-send-email-srinivas.pandruvada@linux.intel.com>
+	 <alpine.LNX.2.00.1504101200510.26287@pobox.suse.cz>
+Content-Type: text/plain; charset="UTF-8"
+Mime-Version: 1.0
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Thu, Apr 9, 2015 at 9:12 PM, Jonathan Cameron <jic23@kernel.org> wrote:
-> On 09/04/15 18:40, Jonathan Cameron wrote:
->> On 09/04/15 18:15, Jonathan Cameron wrote:
->>> On 06/04/15 15:18, Daniel Baluta wrote:
->>>> This module is the core of IIO configfs. It creates the "iio" subsystem under
->>>> configfs mount point root, with one default group for "triggers".
->>>>
->>>> It offers basic interface for registering software trigger types. Next patches
->>>> will add "hrtimer" and "sysfs" trigger types. To add a new trigger type we must
->>>> create a new kernel module which implements iio_configfs_trigger.h interface.
->>>>
->>>> See Documentation/iio/iio_configfs.txt for more details on how configfs
->>>> support for IIO works.
->>>>
->>>> Signed-off-by: Daniel Baluta <daniel.baluta@intel.com>
->>> Looks good and is actually a fair bit simpler than I expected which is nice!
->>> As an ideal aim, I'd like there to be no need for the core to have any
->>> idea what triggers exist and can be registered (beyond preventing naming
->>> clashes etc). Actually, not much would be needed to implement that I think, just
->>> using a list and looking up in it (we aren't on a particularly fast path so
->>> don't need anything clever) instead of a simple array.  A touch of locking
->>> probably to avoid two many simultaneous users of that list...
->>>
->>> Hmm. having read through the patches, are we fundamentally limited to having to
->>> specify the entire directory structure before bringing up configfs?
->> As I read more on this, I think the definition of a 'subsystem' in configfs is
->> very restricted. It means a tight group of devices sharing a prior
->> known interface with no ability to add extras later.
+On Fri, 2015-04-10 at 12:03 +0200, Jiri Kosina wrote: 
+> On Fri, 20 Mar 2015, Srinivas Pandruvada wrote:
+> B
+> > HID Sensor Spec defines two usage ids for custom sensors
+> > HID_USAGE_SENSOR_TYPE_OTHER_CUSTOM (0x09, 0xE1)
+> > HID_USAGE_SENSOR_TYPE_OTHER_GENERIC(0x09, 0xE2)
+> > In addition the standard also defines usage ids for custom fields.
+> > The purpose of these sensors is to extend the functionality or provide a
+> > way to obfuscate the data being communicated by a sensor. Without knowing the
+> > mapping between the data and its encapsulated form, it is difficult for
+> > an driver to determine what data is being communicated by the sensor.
+> > This allows some differentiating use cases, where vendor can provide applications.
+> > Since these can't be represented by standard sensor interfaces like IIO,
+> > we present these as fields with
+> > - type (input/output)
+> > - units
+> > - min/max
+> > - get/set value
+> > In addition an dev interface to transfer report events. Details about this
+> > interface is described in /Documentation/hid/hid-sensor.txt.
+> > Manufacturers should not use these ids for any standard sensors, otherwise
+> > the the product/vendor id can be added to black list.
+> > 
+> > Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+> [ ... snip ... ]
+> > +static int hid_sensor_custom_add_attributes(struct hid_sensor_custom
+> > +								*sensor_inst)
+> > +{
+> > +	struct hid_sensor_hub_device *hsdev = sensor_inst->hsdev;
+> > +	struct hid_device *hdev = hsdev->hdev;
+> > +	int ret = -1;
+> > +	int i, j;
+> > +
+> > +	for (j = 0; j < HID_REPORT_TYPES; ++j) {
+> > +		if (j == HID_OUTPUT_REPORT)
+> > +			continue;
+> > +
+> > +		ret = hid_sensor_custom_add_fields(sensor_inst,
+> > +						   &hdev->report_enum[j], j);
+> > +		if (ret)
+> > +			return ret;
+> > +
+> > +	}
+> > +
+> > +	/* Create sysfs attributes */
+> > +	for (i = 0; i < sensor_inst->sensor_field_count; ++i) {
+> > +		j = 0;
+> > +		while (j < HID_CUSTOM_TOTAL_ATTRS &&
+> > +		       hid_custom_attrs[j].name) {
+> > +			struct device_attribute *device_attr;
+> > +
+> > +			device_attr = &sensor_inst->fields[i].sd_attrs[j];
+> > +
+> > +			snprintf((char *)&sensor_inst->fields[i].attr_name[j],
+> > +				 HID_CUSTOM_NAME_LENGTH, "%s-%s",
+> > +				 sensor_inst->fields[i].group_name,
+> > +				 hid_custom_attrs[j].name);
+> > +			sysfs_attr_init(device_attr->dev_attr.attr);
+> 
+> This is wrong -- struct device_attribute doesn't have 'dev_attr' field.
+> 
+> The fix would be trivial, but given the fact that this means that your 
+> patch hasn't been even compile-tested, I'd like to ask for proper 
+> resubmission of code you've actually tested.
+You found a bug. But it doesn't mean that this is not tested (I submit
+100+ patches each cycle related to power and thermal, so this is just a
+honest mistake).
+This is even tested by ST Micro developer.
+The issue is
+sysfs_attr_init() is ignored unless CONFIG_DEBUG_LOCK_ALLOC is defined.
+I use Fedora, Ubuntu and Android builds, none of which defined this
+symbol. So it slipped away.
 
-It looked fairly easy for me to add new attributes to an existing
-interface. But this
-is also my first experience with configfs.
+So this is a bug, I will resubmit this.
 
->> It's sort of like the difference between a class and a bus in sysfs (but more limited
->> actually that's a rubbish analogy).  Thus either we have to do as here
->> and have the core know all about everything it might want to setup in advance
->> of registering the iio configfs subsystem or we need to make a whole load of
->> different configfs subsystems. Basically boils down to one per module.  We lose
->> the grouping convenience of the current structure but gain in separation.
->>
->> So option 1 we have effectively to predefine anything that might turn up
->> in a module...
->>
->> /config/iio/triggers/hrtimer/instance1/..
->> /config/iio/triggers/sysfs/instance2/..
->> /config/iio/virtualdevs/hwmon/iiohwmoninstance1/..
->> /config/iio/virtualdevs/input/iioinputinstance1/..
->> /config/iio/maps/channelmapisntance1/..
->> etc (actually fine for the maps as they are coming from the core anyway
->> and will be known in advance)
+Thanks,
+Srinivas
 
-We predefine the files that would appear inside instace1/instance2. But we
-do not predefine the instances. Also, we can easaily add new attributes for
-a given type of trigger type ("hrtimer", "sysfs", etc).
 
-These instances directories would be created with mkdir.
 
->>
->> Option 2 we have complete flexibility as its down to the relevant drivers
->>
->> /config/iio-trigger-hrtimer/instance/..
->> /config/iio-trigger-sysfs/instance/..
->> /config/iio-virtual-hwmon/instance/..
->> /config/iio-virtual-input/instance/..
->>
->> but we lose the grouping by directory which is a conceptual shame.
->>
->> Am I missing something important here?  (pretty new to configfs!)
+> 
+> Thanks,
+> 
+> -- 
+> Jiri Kosina
+> SUSE Labs
 
-Not sure exactly :), also my first experience with configs. But I woul prefer
-option 1.
 
->>
->> Just for others not familiar with IIO who might read this. We have a number
->> of userspace created elements but each type is provided by a different module,
->> hence it's a real pain having to have them all defined at configfs subsystem
->> initialization as it adds tight coupling we don't otherwise have!
->
-> For reference of others the usb gadget code is a good example of how to handle
-> these sort of cross dependencies..
->
-> the approach used for function drivers there would give us the cleaner option of
->
-> /config/iio/triggers/hrtimer-instance1
-> /config/iio/triggers/hrtimer-instance2
-> /config/iio/triggers/sysfs-instance1
-> /config/iio/virtualdevs/hwmon-instance1
-> etc
-
-I will look again at the gadget code, this was also my source of inspiration
-since there are not so many users of configfs.
-
-Daniel.
