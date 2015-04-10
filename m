@@ -1,16 +1,17 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-wi0-f175.google.com ([209.85.212.175]:32807 "EHLO
-	mail-wi0-f175.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S964852AbbDJNnS (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 10 Apr 2015 09:43:18 -0400
+Received: from mail-wg0-f46.google.com ([74.125.82.46]:35118 "EHLO
+	mail-wg0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S934346AbbDJNu1 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 10 Apr 2015 09:50:27 -0400
 MIME-Version: 1.0
-In-Reply-To: <5526B464.8000502@kernel.org>
+In-Reply-To: <5526C112.1090609@kernel.org>
 References: <1428329889-18335-1-git-send-email-daniel.baluta@intel.com>
 	<1428329889-18335-2-git-send-email-daniel.baluta@intel.com>
-	<CAEnQRZAijAtRdqke5tP-DFL8ROvnzimBEbHwr1=JxhAaqoCndw@mail.gmail.com>
-	<5526B464.8000502@kernel.org>
-Date: Fri, 10 Apr 2015 16:43:16 +0300
-Message-ID: <CAEnQRZA=pSm5DV6PzZ9zQ7W+d_Q9esn6X9cmOOdymNFu8sCyug@mail.gmail.com>
+	<5526B398.8050806@kernel.org>
+	<5526B9AB.4060700@kernel.org>
+	<5526C112.1090609@kernel.org>
+Date: Fri, 10 Apr 2015 16:50:25 +0300
+Message-ID: <CAEnQRZBdzmn20_hZoM-OF2sbxKD8Ecknh-u=w7JcT_EA0UoRng@mail.gmail.com>
 Subject: Re: [PATCH v3 1/3] iio: configfs: Add configfs support to IIO
 From: Daniel Baluta <daniel.baluta@intel.com>
 To: Jonathan Cameron <jic23@kernel.org>
@@ -27,93 +28,96 @@ Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Thu, Apr 9, 2015 at 8:18 PM, Jonathan Cameron <jic23@kernel.org> wrote:
-> On 08/04/15 14:30, Daniel Baluta wrote:
->> On Mon, Apr 6, 2015 at 5:18 PM, Daniel Baluta <daniel.baluta@intel.com> wrote:
->>> This module is the core of IIO configfs. It creates the "iio" subsystem under
->>> configfs mount point root, with one default group for "triggers".
+On Thu, Apr 9, 2015 at 9:12 PM, Jonathan Cameron <jic23@kernel.org> wrote:
+> On 09/04/15 18:40, Jonathan Cameron wrote:
+>> On 09/04/15 18:15, Jonathan Cameron wrote:
+>>> On 06/04/15 15:18, Daniel Baluta wrote:
+>>>> This module is the core of IIO configfs. It creates the "iio" subsystem under
+>>>> configfs mount point root, with one default group for "triggers".
+>>>>
+>>>> It offers basic interface for registering software trigger types. Next patches
+>>>> will add "hrtimer" and "sysfs" trigger types. To add a new trigger type we must
+>>>> create a new kernel module which implements iio_configfs_trigger.h interface.
+>>>>
+>>>> See Documentation/iio/iio_configfs.txt for more details on how configfs
+>>>> support for IIO works.
+>>>>
+>>>> Signed-off-by: Daniel Baluta <daniel.baluta@intel.com>
+>>> Looks good and is actually a fair bit simpler than I expected which is nice!
+>>> As an ideal aim, I'd like there to be no need for the core to have any
+>>> idea what triggers exist and can be registered (beyond preventing naming
+>>> clashes etc). Actually, not much would be needed to implement that I think, just
+>>> using a list and looking up in it (we aren't on a particularly fast path so
+>>> don't need anything clever) instead of a simple array.  A touch of locking
+>>> probably to avoid two many simultaneous users of that list...
 >>>
->>> It offers basic interface for registering software trigger types. Next patches
->>> will add "hrtimer" and "sysfs" trigger types. To add a new trigger type we must
->>> create a new kernel module which implements iio_configfs_trigger.h interface.
->>>
->>> See Documentation/iio/iio_configfs.txt for more details on how configfs
->>> support for IIO works.
->>>
->>> Signed-off-by: Daniel Baluta <daniel.baluta@intel.com>
->>
->> Hi all,
->>
->> I also need your feedback on the following problem.
->>
->> We would like to be able to create hrtimer triggers from within
->> a kernel module. There are cases where we don't have an interrupt
->> pin or the interrupt pin is not connected, and we would like
->> that applications to run unmodified with these types of sensors too.
-> A reasonable aim perhaps, as opposed to locally implemented polling
-> all over the place (which should definitely not happen).
+>>> Hmm. having read through the patches, are we fundamentally limited to having to
+>>> specify the entire directory structure before bringing up configfs?
+>> As I read more on this, I think the definition of a 'subsystem' in configfs is
+>> very restricted. It means a tight group of devices sharing a prior
+>> known interface with no ability to add extras later.
 
-Yes, exactly! :)
+It looked fairly easy for me to add new attributes to an existing
+interface. But this
+is also my first experience with configfs.
 
+>> It's sort of like the difference between a class and a bus in sysfs (but more limited
+>> actually that's a rubbish analogy).  Thus either we have to do as here
+>> and have the core know all about everything it might want to setup in advance
+>> of registering the iio configfs subsystem or we need to make a whole load of
+>> different configfs subsystems. Basically boils down to one per module.  We lose
+>> the grouping convenience of the current structure but gain in separation.
+>>
+>> So option 1 we have effectively to predefine anything that might turn up
+>> in a module...
+>>
+>> /config/iio/triggers/hrtimer/instance1/..
+>> /config/iio/triggers/sysfs/instance2/..
+>> /config/iio/virtualdevs/hwmon/iiohwmoninstance1/..
+>> /config/iio/virtualdevs/input/iioinputinstance1/..
+>> /config/iio/maps/channelmapisntance1/..
+>> etc (actually fine for the maps as they are coming from the core anyway
+>> and will be known in advance)
+
+We predefine the files that would appear inside instace1/instance2. But we
+do not predefine the instances. Also, we can easaily add new attributes for
+a given type of trigger type ("hrtimer", "sysfs", etc).
+
+These instances directories would be created with mkdir.
+
+>>
+>> Option 2 we have complete flexibility as its down to the relevant drivers
+>>
+>> /config/iio-trigger-hrtimer/instance/..
+>> /config/iio-trigger-sysfs/instance/..
+>> /config/iio-virtual-hwmon/instance/..
+>> /config/iio-virtual-input/instance/..
+>>
+>> but we lose the grouping by directory which is a conceptual shame.
+>>
+>> Am I missing something important here?  (pretty new to configfs!)
+
+Not sure exactly :), also my first experience with configs. But I woul prefer
+option 1.
+
+>>
+>> Just for others not familiar with IIO who might read this. We have a number
+>> of userspace created elements but each type is provided by a different module,
+>> hence it's a real pain having to have them all defined at configfs subsystem
+>> initialization as it adds tight coupling we don't otherwise have!
 >
-> An alternative the zio guys used was to create timer
-> based triggers on the fly purely based on them being requested
-> (with an appropriate name IIRC)...  Doesn't quite solve your
-> problem though as still needs userspace changes.
->>
->> We will split the current design into 3 parts:
->>
->> (1) IIO trigger handling generic part, which offers an API
->>      to register/unregister/get a reference to a trigger type
->>
->> (2) IIO configfs part that gets a reference to a trigger type and
->> handles user requests to create/destroy a trigger.
->>
->> (3) IIO hrtimer driver that use the API at (1) for registering
->> / deregistering a trigger type.
->>
->> Then, each driver in the case that it doesn't have a "real" trigger,
->> will get a reference to a "hrtimer" trigger type and create
->> a new "hrtimer" trigger.
->>
->> Does this look good to you? This could be easily done from
->> userspace, but we will need to modify our userspace applications.
-> My initial thought is this really is a job for userspace, as should
-> be in most cases connecting up the device specific trigger as well
-> (as it's not always the right thing to use).
+> For reference of others the usb gadget code is a good example of how to handle
+> these sort of cross dependencies..
 >
-> In the general case it is far from obvious that an hrtimer is the
-> right option.  Many usecases would be better off with a sysfs trigger
-> or even running off a different interrupt based trigger entirely.
->>
->> Also, handling sampling_frequency/delay would be transparent to
->> applications if we provide this in kernel API.
-> Not really as sampling frequency in this case should only be an
-> attribute of the trigger, not the device.  We only really allow
-> it for the device rather than always the triggers on the basis
-> that it has impacts on other device elements (events etc).
-
-Well, if the trigger is directly created from the driver then we will
-have a reference to a function that sets its delay.
-
-Each time the user sets the sampling frequency for the device
-with hit write_raw and there on IIO_CHAN_INFO_SAMP_FREQ
-case we also call set_delay(). Thus we always have have device
-sampling frequency in sync with trigger delay.
-
-I know this sounds crazy :) and I don't like it. I am not sure how
-to guarantee that device frequency is always in sync with trigger
-delay.
-
+> the approach used for function drivers there would give us the cleaner option of
 >
-> Now sensible userspace ought to search for the trigger sysfs
-> directory and look there as well.
->
-> I suppose if there is an awful lot of demand for this function
-> we could add a control knob somewhere that would set a 'default
-> trigger type' to be created for buffered devices that haven't
-> provided their own...  I'm not overly keen though.
->>
+> /config/iio/triggers/hrtimer-instance1
+> /config/iio/triggers/hrtimer-instance2
+> /config/iio/triggers/sysfs-instance1
+> /config/iio/virtualdevs/hwmon-instance1
+> etc
 
-This functionality would be very nice and useful, lets see if we can
-find some elegant way to do it.
+I will look again at the gadget code, this was also my source of inspiration
+since there are not so many users of configfs.
+
+Daniel.
