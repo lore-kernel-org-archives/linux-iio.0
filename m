@@ -1,247 +1,59 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:58153 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:58179 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752088AbbDJGNN (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 10 Apr 2015 02:13:13 -0400
-In-Reply-To: <55270BAD.7030509@linux.intel.com>
-References: <cover.1428537814.git.sathyanarayanan.kuppuswamy@linux.intel.com> <d6ed572de5978b1ab44f0bd72432b8eeeac0b321.1428537814.git.sathyanarayanan.kuppuswamy@linux.intel.com> <5526556A.1080609@kernel.org> <55270BAD.7030509@linux.intel.com>
+	with ESMTP id S1751300AbbDJGT6 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 10 Apr 2015 02:19:58 -0400
+In-Reply-To: <CALwa49st7A1zSdCmy8Sq8KgAMXiGJySdpoxALTUNEubgvXqyWg@mail.gmail.com>
+References: <CALwa49vRGN_VaJ147PVF8Cf+8vnBotWVh7hmxLj=jaAba5QTTw@mail.gmail.com> <5526BD63.3080509@kernel.org> <CALwa49st7A1zSdCmy8Sq8KgAMXiGJySdpoxALTUNEubgvXqyWg@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain;
  charset=UTF-8
-Subject: Re: [PATCH v3 2/6] iio: documentation: Add ABI info for iio event persistence filter
+Subject: Re: Regarding generic_buffer.c Application for Android
 From: Jonathan Cameron <jic23@kernel.org>
-Date: Fri, 10 Apr 2015 07:13:05 +0100
-To: sathyanarayanan.kuppuswamy@linux.intel.com, pmeerw@pmeerw.net
-CC: linux-iio@vger.kernel.org, srinivas.pandruvada@linux.intel.com
-Message-ID: <F660340F-1A42-44D4-8E30-FF58B629B39E@kernel.org>
+Date: Fri, 10 Apr 2015 07:19:53 +0100
+To: "s.rawat" <imsaurabhrawat@gmail.com>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Message-ID: <9B863FBE-8332-47EB-8E6C-C8943EF5D185@kernel.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
 
 
-On 10 April 2015 00:30:53 BST, sathyanarayanan kuppuswamy <sathyanarayanan.kuppuswamy@linux.intel.com> wrote:
->
->
->On 04/09/2015 03:33 AM, Jonathan Cameron wrote:
->> On 09/04/15 01:06, Kuppuswamy Sathyanarayanan wrote:
->>> Add ABI info for iio event persistence filter.
->>>
->>> Setting <n> to persistence filter would need atleast
->>> <n> data values outside the upper/lower threshold
->>> limits before generating an interrupt.
->>>
->>> Signed-off-by: Kuppuswamy Sathyanarayanan
-><sathyanarayanan.kuppuswamy@linux.intel.com>
->>> ---
->>>   Documentation/ABI/testing/sysfs-bus-iio | 82
->+++++++++++++++++++++++++++++++++
->>>   1 file changed, 82 insertions(+)
->>>
->>> diff --git a/Documentation/ABI/testing/sysfs-bus-iio
->b/Documentation/ABI/testing/sysfs-bus-iio
->>> index 9a70c31..590b1d4 100644
->>> --- a/Documentation/ABI/testing/sysfs-bus-iio
->>> +++ b/Documentation/ABI/testing/sysfs-bus-iio
->>> @@ -856,6 +856,88 @@ Description:
->>>   		met before an event is generated. If direction is not
->>>   		specified then this period applies to both directions.
->>>   
->> Please don't mass document cases unless they are actually in use. 
->These should
->> get added as and when they become so.  Often a particular type of
->event
->> characteristic is actually only implemented on a small subset of
->channel types
->> (where it makes sense).
->IMO, persistence filter can be applied for all these cases. 
-Sure it can, but we try to only document ABI when it is use rather than bulk adding it.
-That keeps us from getting unmanageably large doc changes when a
- new type is added.
-Pitty there is no neat wildcard type format for these docs!
->But if you 
->think its better to
->add ABI for what we currently use then I will leave only ALS/proxmity 
->related ABI's here.
->
->+What:		/sys/.../events/in_intensity0_thresh_persistence
->+What:		/sys/.../events/in_proximity0_thresh_persistence
->
->>> +What:		/sys/.../events/in_accel_x_thresh_rising_persistence
->>> +What:		/sys/.../events/in_accel_x_thresh_falling_persistence
->>> +hat:		/sys/.../events/in_accel_x_roc_rising_persistence
->>> +What:		/sys/.../events/in_accel_x_roc_falling_persistence
->>> +What:		/sys/.../events/in_accel_y_thresh_rising_persistence
->>> +What:		/sys/.../events/in_accel_y_thresh_falling_persistence
->>> +What:		/sys/.../events/in_accel_y_roc_rising_persistence
->>> +What:		/sys/.../events/in_accel_y_roc_falling_persistence
->>> +What:		/sys/.../events/in_accel_z_thresh_rising_persistence
->>> +What:		/sys/.../events/in_accel_z_thresh_falling_persistence
->>> +What:		/sys/.../events/in_accel_z_roc_rising_persistence
->>> +What:		/sys/.../events/in_accel_z_roc_falling_persistence
->>> +What:		/sys/.../events/in_anglvel_x_thresh_rising_persistence
->>> +What:		/sys/.../events/in_anglvel_x_thresh_falling_persistence
->>> +What:		/sys/.../events/in_anglvel_x_roc_rising_persistence
->>> +What:		/sys/.../events/in_anglvel_x_roc_falling_persistence
->>> +What:		/sys/.../events/in_anglvel_y_thresh_rising_persistence
->>> +What:		/sys/.../events/in_anglvel_y_thresh_falling_persistence
->>> +What:		/sys/.../events/in_anglvel_y_roc_rising_persistence
->>> +What:		/sys/.../events/in_anglvel_y_roc_falling_persistence
->>> +What:		/sys/.../events/in_anglvel_z_thresh_rising_persistence
->>> +What:		/sys/.../events/in_anglvel_z_thresh_falling_persistence
->>> +What:		/sys/.../events/in_anglvel_z_roc_rising_persistence
->>> +What:		/sys/.../events/in_anglvel_z_roc_falling_persistence
->>> +What:		/sys/.../events/in_magn_x_thresh_rising_persistence
->>> +What:		/sys/.../events/in_magn_x_thresh_falling_persistence
->>> +What:		/sys/.../events/in_magn_x_roc_rising_persistence
->>> +What:		/sys/.../events/in_magn_x_roc_falling_persistence
->>> +What:		/sys/.../events/in_magn_y_thresh_rising_persistence
->>> +What:		/sys/.../events/in_magn_y_thresh_falling_persistence
->>> +What:		/sys/.../events/in_magn_y_roc_rising_persistence
->>> +What:		/sys/.../events/in_magn_y_roc_falling_persistence
->>> +What:		/sys/.../events/in_magn_z_thresh_rising_persistence
->>> +What:		/sys/.../events/in_magn_z_thresh_falling_persistence
->>> +What:		/sys/.../events/in_magn_z_roc_rising_persistence
->>> +What:		/sys/.../events/in_magn_z_roc_falling_persistence
->>>
->+What:		/sys/.../events/in_rot_from_north_magnetic_thresh_rising_persistence
->>>
->+What:		/sys/.../events/in_rot_from_north_magnetic_thresh_falling_persistence
->>>
->+What:		/sys/.../events/in_rot_from_north_magnetic_roc_rising_persistence
->>>
->+What:		/sys/.../events/in_rot_from_north_magnetic_roc_falling_persistence
->>>
->+What:		/sys/.../events/in_rot_from_north_true_thresh_rising_persistence
->>>
->+What:		/sys/.../events/in_rot_from_north_true_thresh_falling_persistence
->>>
->+What:		/sys/.../events/in_rot_from_north_true_roc_rising_persistence
->>>
->+What:		/sys/.../events/in_rot_from_north_true_roc_falling_persistence
->>>
->+What:		/sys/.../events/in_rot_from_north_magnetic_tilt_comp_thresh_rising_persistence
->>>
->+What:		/sys/.../events/in_rot_from_north_magnetic_tilt_comp_thresh_falling_persistence
->>>
->+What:		/sys/.../events/in_rot_from_north_magnetic_tilt_comp_roc_rising_persistence
->>>
->+What:		/sys/.../events/in_rot_from_north_magnetic_tilt_comp_roc_falling_persistence
->>>
->+What:		/sys/.../events/in_rot_from_north_true_tilt_comp_thresh_rising_persistence
->>>
->+What:		/sys/.../events/in_rot_from_north_true_tilt_comp_thresh_falling_persistence
->>>
->+What:		/sys/.../events/in_rot_from_north_true_tilt_comp_roc_rising_persistence
->>>
->+What:		/sys/.../events/in_rot_from_north_true_tilt_comp_roc_falling_persistence
->>> +What:		/sys/.../events/in_voltageY_supply_thresh_rising_persistence
->>>
->+What:		/sys/.../events/in_voltageY_supply_thresh_falling_persistence
->>> +What:		/sys/.../events/in_voltageY_supply_roc_rising_persistence
->>> +What:		/sys/.../events/in_voltageY_supply_roc_falling_persistence
->>> +What:		/sys/.../events/in_voltageY_thresh_rising_persistence
->>> +What:		/sys/.../events/in_voltageY_thresh_falling_persistence
->>> +What:		/sys/.../events/in_voltageY_roc_rising_persistence
->>> +What:		/sys/.../events/in_voltageY_roc_falling_persistence
->>> +What:		/sys/.../events/in_tempY_thresh_rising_persistence
->>> +What:		/sys/.../events/in_tempY_thresh_falling_persistence
->>> +What:		/sys/.../events/in_tempY_roc_rising_persistence
->>> +What:		/sys/.../events/in_tempY_roc_falling_persistence
->>> +What:		/sys/.../events/in_accel_x&y&z_mag_falling_persistence
->>> +What:		/sys/.../events/in_intensity0_thresh_persistence
->>> +What:		/sys/.../events/in_proximity0_thresh_persistence
->>> +What:		/sys/.../events/in_activity_still_thresh_rising_persistence
->>> +What:		/sys/.../events/in_activity_still_thresh_falling_persistence
->>>
->+What:		/sys/.../events/in_activity_walking_thresh_rising_persistence
->>>
->+What:		/sys/.../events/in_activity_walking_thresh_falling_persistence
->>>
->+What:		/sys/.../events/in_activity_jogging_thresh_rising_persistence
->>>
->+What:		/sys/.../events/in_activity_jogging_thresh_falling_persistence
->>>
->+What:		/sys/.../events/in_activity_running_thresh_rising_persistence
->>>
->+What:		/sys/.../events/in_activity_running_thresh_falling_persistence
->>> +KernelVersion:	4.0
->>> +Contact:	linux-iio@vger.kernel.org
->>> +Description:
->>> +		Number of times an event should occur before generating an
->>> +		interrupt. Persistence filter value can be applied for both
->>> +		rising/falling threshold based interrupts.
->> This still needs clarification as reading the discussion I'm still a
->little unsure
->> what the condition is.  I don't think Lars' original query ever got
->cleanly answered
->Sorry for being unclear. Even in this case, the use case is "number of 
->consecutive" measurement data
->outside the range.
+On 10 April 2015 05:18:56 BST, "s.rawat" <imsaurabhrawat@gmail.com> wrote:
+>On Thu, Apr 9, 2015 at 11:26 PM, Jonathan Cameron <jic23@kernel.org>
+>wrote:
+>> Not as such. However it is certainly curious that you have them
+>missing.
+>> These provide direct sysfs access to the accelerations.
 >>
->> Taking just the upper threshold...
->> The interpretations I can think of are:
+>> We did at one point make it a requirement for the iio_chan_spec to
+>explicitly include the IIO_CHAN_INFO_RAW bit
+>> rather than using the prior separate callbacks for that.  Perhaps it
+>is missing in your driver?
 >>
->> 1) tsl2591 use case (maps directly to period with the sampling
->frequency taken into
->> account).
->>   - Too much light for N ALS cycling samples.  If it drops below the
->threshold
->>     the count is reset.
->> the tcs part that Daniel referenced is also this use case.
->I agree that it can be mapped to _period if you take the sampling 
->frequency into account. But if you do that then it becomes dependent on
->
->integration time ( for ALS case). Since _period is calculated based on 
->frequency, each time you change _integration_time then internally you 
->need to change the _period value to keep the ratio constant. Also you 
->need to consider what happens if your frequency > period. I think this 
->makes is bit complicated.
->
->Don't you think its better to add another representation instead of 
->trying to fit it in existing ABI's ?
->
->Following are the persistence filter descriptions from data sheets of 
->tsl2591 and ltr501.
->
->LTR501: " The INTERRUPT PERSIST register controls the N number of times
->
->the measurement data is outside the range defined by the upper and
->lower 
->threshold limits before asserting the INT".
->TSL2591: " The Interrupt persistence filter sets the number of 
->consecutive out-of-range ALS cycles necessary to generate an interrupt"
->
->>
->> 2) A new option which doesn't take account of the signal dropping
->below the threshold.
->>     So a count of number of times above the threshold.
->>   i.e. On each cycle, if over threshold, increment N.
->>        Evaluate if N is greater than 'persistence' then trigger an
->event.
->>    Why this would ever make sense on a light sensor is beyond me ;) 
->but there
->>    we are.  We have a related abi for in_steps_change_value, which
->fires
->>    an event, only every N steps.  It doesn't really adapt to this
->case though.
->>
->>    The name persistence is definitely misleading if this is what the
->liteon parts
->>    do as that definitely implies case 1).
->>
->> Welcome to my life, bludgeoning what appears to new ABI into what we
->already have!
->> (not a lot of point in standardized ABI otherwise!)
->>
->> Jonathan
->>
->>
->>> +
->>>   What:		/sys/.../events/in_activity_still_thresh_rising_en
->>>   What:		/sys/.../events/in_activity_still_thresh_falling_en
->>>   What:		/sys/.../events/in_activity_walking_thresh_rising_en
->>>
->>
+>> What is the actual driver in question?
+>The acutal driver is accel,gyro and magn.OK,i agree this is not a
+>mandatory requirement for the generic_buffer app to work.
+>The illegal termination of the application is due to the changes I
+>have done in the build_channel_array for function  seekdir(dp, 0).I
+>found that I can compile/test the app safely using arm tool chain or
+>gcc but when I am trying to compile the application using ndk(native
+>android tool chain ) I get errors for undefined references for these
+>functions below :
+>seekdir()
+Hit google
+http://pubs.opengroup.org/onlinepubs/009695399/functions/seekdir.html
+So for POSIX compliance they are optional.
+>be16toh()
+https://code.google.com/p/android/issues/detail?id=41769 suggest at least older android uses betoh16.
+
+>le16toh()
+>Are these functions portable?
+>and on cross-compiling with x86 tool chain for x86 32 bit platform I
+>get errors for missing headers unistd.h ,dirent.h,etc. I guess
+>unistd.h are the part of libc which may not be present in the tool
+>chain I am using.Is that the reason?
+Possibly...
 
 -- 
 Sent from my Android device with K-9 Mail. Please excuse my brevity.
