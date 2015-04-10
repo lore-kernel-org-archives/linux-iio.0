@@ -1,8 +1,8 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:58047 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:58153 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753615AbbDJF6O (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 10 Apr 2015 01:58:14 -0400
+	with ESMTP id S1752088AbbDJGNN (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 10 Apr 2015 02:13:13 -0400
 In-Reply-To: <55270BAD.7030509@linux.intel.com>
 References: <cover.1428537814.git.sathyanarayanan.kuppuswamy@linux.intel.com> <d6ed572de5978b1ab44f0bd72432b8eeeac0b321.1428537814.git.sathyanarayanan.kuppuswamy@linux.intel.com> <5526556A.1080609@kernel.org> <55270BAD.7030509@linux.intel.com>
 MIME-Version: 1.0
@@ -10,10 +10,10 @@ Content-Type: text/plain;
  charset=UTF-8
 Subject: Re: [PATCH v3 2/6] iio: documentation: Add ABI info for iio event persistence filter
 From: Jonathan Cameron <jic23@kernel.org>
-Date: Fri, 10 Apr 2015 06:58:07 +0100
+Date: Fri, 10 Apr 2015 07:13:05 +0100
 To: sathyanarayanan.kuppuswamy@linux.intel.com, pmeerw@pmeerw.net
 CC: linux-iio@vger.kernel.org, srinivas.pandruvada@linux.intel.com
-Message-ID: <89459E86-2FB9-4AC1-AF90-8C742C18D000@kernel.org>
+Message-ID: <F660340F-1A42-44D4-8E30-FF58B629B39E@kernel.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
@@ -53,7 +53,12 @@ On 10 April 2015 00:30:53 BST, sathyanarayanan kuppuswamy <sathyanarayanan.kuppu
 >> characteristic is actually only implemented on a small subset of
 >channel types
 >> (where it makes sense).
->IMO, persistence filter can be applied for all these cases. But if you 
+>IMO, persistence filter can be applied for all these cases. 
+Sure it can, but we try to only document ABI when it is use rather than bulk adding it.
+That keeps us from getting unmanageably large doc changes when a
+ new type is added.
+Pitty there is no neat wildcard type format for these docs!
+>But if you 
 >think its better to
 >add ABI for what we currently use then I will leave only ALS/proxmity 
 >related ABI's here.
@@ -191,22 +196,9 @@ On 10 April 2015 00:30:53 BST, sathyanarayanan kuppuswamy <sathyanarayanan.kuppu
 >need to change the _period value to keep the ratio constant. Also you 
 >need to consider what happens if your frequency > period. I think this 
 >makes is bit complicated.
-
-Indeed. Such is life. This isn't the first such case and it won't be the last where
- the driver becomes more complex to conform to the existing ABI.
-
-
 >
 >Don't you think its better to add another representation instead of 
 >trying to fit it in existing ABI's ?
-No
-This is a common situation. All over the place we have cases where changing one
- abi element effects the value of another.
-We cope with it to provide a consistent
- and minimal interface to userspace.
-Where the sampling frequency is directly
- controlled it is perfectly acceptable to not automatically adjust the period.
-We frequently rely on the rule that userspce must check all attrs if it changes any.
 >
 >Following are the persistence filter descriptions from data sheets of 
 >tsl2591 and ltr501.
