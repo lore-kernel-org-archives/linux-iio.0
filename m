@@ -1,187 +1,89 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga11.intel.com ([192.55.52.93]:45863 "EHLO mga11.intel.com"
+Received: from cantor2.suse.de ([195.135.220.15]:46487 "EHLO mx2.suse.de"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1755219AbbDJJ60 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Fri, 10 Apr 2015 05:58:26 -0400
-Date: Fri, 10 Apr 2015 02:58:22 -0700
-From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: IIO <linux-iio@vger.kernel.org>,
-	LKML <linux-kernel@vger.kernel.org>,
-	Lee Jones <lee.jones@linaro.org>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Aaron Lu <aaron.lu@intel.com>,
-	Todd Brandt <todd.e.brandt@linux.intel.com>
-Subject: Re: [PATCH v2] iio/axp288_adc: add missing channel info mask
-Message-ID: <20150410025822.48e1ab0e@ultegra>
-In-Reply-To: <5526BC4C.2000507@kernel.org>
-References: <1428345500-27672-1-git-send-email-jacob.jun.pan@linux.intel.com>
-	<55267C39.5050707@kernel.org>
-	<20150409100215.5264f990@icelake>
-	<5526BBE4.1040003@kernel.org>
-	<5526BC4C.2000507@kernel.org>
+	id S932161AbbDJKDG (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Fri, 10 Apr 2015 06:03:06 -0400
+Date: Fri, 10 Apr 2015 12:03:03 +0200 (CEST)
+From: Jiri Kosina <jkosina@suse.cz>
+To: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+cc: jic23@kernel.org, linux-input@vger.kernel.org,
+	linux-iio@vger.kernel.org
+Subject: Re: [PATCH v3 1/2] HID: HID Sensor: Custom and Generic sensor
+ support
+In-Reply-To: <1426888728-9344-2-git-send-email-srinivas.pandruvada@linux.intel.com>
+Message-ID: <alpine.LNX.2.00.1504101200510.26287@pobox.suse.cz>
+References: <1426888728-9344-1-git-send-email-srinivas.pandruvada@linux.intel.com> <1426888728-9344-2-git-send-email-srinivas.pandruvada@linux.intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: TEXT/PLAIN; charset=US-ASCII
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Thu, 09 Apr 2015 18:52:12 +0100
-Jonathan Cameron <jic23@kernel.org> wrote:
-
-> On 09/04/15 18:50, Jonathan Cameron wrote:
-> > On 09/04/15 18:02, Jacob Pan wrote:
-> >> On Thu, 09 Apr 2015 14:18:49 +0100
-> >> Jonathan Cameron <jic23@kernel.org> wrote:
-> >>
-> >>> On 06/04/15 19:38, Jacob Pan wrote:
-> >>>> Commit 65de7654d39c70c2b ("iio: iio: Fix iio_channel_read return
-> >>>> if channel havn't info") added a check for valid info masks.
-> >>>>
-> >>>> This patch adds missing channel info masks for all ADC channels.
-> >>>> Otherwise, iio_read_channel_raw() would return -EINVAL when
-> >>>> called by consumer drivers.
-> >>>>
-> >>>> Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
-> >>>
-> >>> This makes me a little nervous. Why did we have the separate raw
-> >>> and processed paths in the read_raw function in the first place?
-> >>>
-> >> Good point, I failed to explain that the reason to have separate
-> >> raw and processed was that the raw channels happened to need some
-> >> special processing in axp288_adc_set_ts(), since I have added a
-> >> check for address:
-> >> 	/* channels other than GPADC do not need to switch TS pin
-> >> */ if (address != AXP288_GP_ADC_H)
-> >> 		return 0;
-> >>
-> >> we no longer need special case the channels based on RAW flag.
-> >> Thinking back it was kind of an abuse.
-> >>
-> >>> Also this changes the exposed userspace ABI by dropping those
-> >>> processed attributes that already exist..
-> >>>
-> >> I don't know the current users outside what we develop internally.
-> >> What is your suggestion?
-> > Lets go for it on the basis of it is 'fixing' your abuse of the
-> > ABI ;) Then any users should long ago have complained about it
-> > anyway (did I say that?) We'll take the age old approach. If no one
-> > notices we broke the ABI then it's fine.
-> > 
-> > Have applied to the fixes-togreg branch of iio.git with the
-> > description updated to indicate it also fixes the ABI abuse ;)
-> > 
-> > Anyhow, won't go now until after the merge window anyway I'm afraid.
-> > Marked for stable as well.
-> > 
-> Forgot to say. If it causes any breakage, we simply put back the
-> incorrect processed version as well.  That might then cause breakage
-> for any in kernel consumers however as they will use that in
-> preference to the raw version IIRC.
-> > Thanks,
-> > 
-Good to know. Thanks a lot.
-Perhaps I missed it in the kernel, I wish there were more
-comments/documentation on the enum to explain its use case for hw
-provided data format, and implication for sysfs abi etc.
-
-enum iio_chan_info_enum {
-	IIO_CHAN_INFO_RAW = 0,
-	IIO_CHAN_INFO_PROCESSED,
-...
-
-
-}
-> > Jonathan
-> >>
-> >>> Jonathan
-> >>>> ---
-> >>>>  drivers/iio/adc/axp288_adc.c | 12 ++++++------
-> >>>>  1 file changed, 6 insertions(+), 6 deletions(-)
-> >>>>
-> >>>> diff --git a/drivers/iio/adc/axp288_adc.c
-> >>>> b/drivers/iio/adc/axp288_adc.c index 08bcfb0..56008a8 100644
-> >>>> --- a/drivers/iio/adc/axp288_adc.c
-> >>>> +++ b/drivers/iio/adc/axp288_adc.c
-> >>>> @@ -53,39 +53,42 @@ static const struct iio_chan_spec const
-> >>>> axp288_adc_channels[] = { .channel = 0,
-> >>>>  		.address = AXP288_TS_ADC_H,
-> >>>>  		.datasheet_name = "TS_PIN",
-> >>>> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
-> >>>>  	}, {
-> >>>>  		.indexed = 1,
-> >>>>  		.type = IIO_TEMP,
-> >>>>  		.channel = 1,
-> >>>>  		.address = AXP288_PMIC_ADC_H,
-> >>>>  		.datasheet_name = "PMIC_TEMP",
-> >>>> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
-> >>>>  	}, {
-> >>>>  		.indexed = 1,
-> >>>>  		.type = IIO_TEMP,
-> >>>>  		.channel = 2,
-> >>>>  		.address = AXP288_GP_ADC_H,
-> >>>>  		.datasheet_name = "GPADC",
-> >>>> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
-> >>>>  	}, {
-> >>>>  		.indexed = 1,
-> >>>>  		.type = IIO_CURRENT,
-> >>>>  		.channel = 3,
-> >>>>  		.address = AXP20X_BATT_CHRG_I_H,
-> >>>>  		.datasheet_name = "BATT_CHG_I",
-> >>>> -		.info_mask_separate =
-> >>>> BIT(IIO_CHAN_INFO_PROCESSED),
-> >>>> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
-> >>>>  	}, {
-> >>>>  		.indexed = 1,
-> >>>>  		.type = IIO_CURRENT,
-> >>>>  		.channel = 4,
-> >>>>  		.address = AXP20X_BATT_DISCHRG_I_H,
-> >>>>  		.datasheet_name = "BATT_DISCHRG_I",
-> >>>> -		.info_mask_separate =
-> >>>> BIT(IIO_CHAN_INFO_PROCESSED),
-> >>>> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
-> >>>>  	}, {
-> >>>>  		.indexed = 1,
-> >>>>  		.type = IIO_VOLTAGE,
-> >>>>  		.channel = 5,
-> >>>>  		.address = AXP20X_BATT_V_H,
-> >>>>  		.datasheet_name = "BATT_V",
-> >>>> -		.info_mask_separate =
-> >>>> BIT(IIO_CHAN_INFO_PROCESSED),
-> >>>> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
-> >>>>  	},
-> >>>>  };
-> >>>>  
-> >>>> @@ -151,9 +154,6 @@ static int axp288_adc_read_raw(struct iio_dev
-> >>>> *indio_dev, chan->address))
-> >>>>  			dev_err(&indio_dev->dev, "TS pin
-> >>>> restore\n"); break;
-> >>>> -	case IIO_CHAN_INFO_PROCESSED:
-> >>>> -		ret = axp288_adc_read_channel(val,
-> >>>> chan->address, info->regmap);
-> >>>> -		break;
-> >>>>  	default:
-> >>>>  		ret = -EINVAL;
-> >>>>  	}
-> >>>>
-> >>>
-> >>
-> >> [Jacob Pan]
-> >> --
-> >> To unsubscribe from this list: send the line "unsubscribe
-> >> linux-iio" in the body of a message to majordomo@vger.kernel.org
-> >> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> >>
-> > 
-> > --
-> > To unsubscribe from this list: send the line "unsubscribe
-> > linux-iio" in the body of a message to majordomo@vger.kernel.org
-> > More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> > 
+On Fri, 20 Mar 2015, Srinivas Pandruvada wrote:
+B
+> HID Sensor Spec defines two usage ids for custom sensors
+> HID_USAGE_SENSOR_TYPE_OTHER_CUSTOM (0x09, 0xE1)
+> HID_USAGE_SENSOR_TYPE_OTHER_GENERIC(0x09, 0xE2)
+> In addition the standard also defines usage ids for custom fields.
+> The purpose of these sensors is to extend the functionality or provide a
+> way to obfuscate the data being communicated by a sensor. Without knowing the
+> mapping between the data and its encapsulated form, it is difficult for
+> an driver to determine what data is being communicated by the sensor.
+> This allows some differentiating use cases, where vendor can provide applications.
+> Since these can't be represented by standard sensor interfaces like IIO,
+> we present these as fields with
+> - type (input/output)
+> - units
+> - min/max
+> - get/set value
+> In addition an dev interface to transfer report events. Details about this
+> interface is described in /Documentation/hid/hid-sensor.txt.
+> Manufacturers should not use these ids for any standard sensors, otherwise
+> the the product/vendor id can be added to black list.
 > 
+> Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+[ ... snip ... ]
+> +static int hid_sensor_custom_add_attributes(struct hid_sensor_custom
+> +								*sensor_inst)
+> +{
+> +	struct hid_sensor_hub_device *hsdev = sensor_inst->hsdev;
+> +	struct hid_device *hdev = hsdev->hdev;
+> +	int ret = -1;
+> +	int i, j;
+> +
+> +	for (j = 0; j < HID_REPORT_TYPES; ++j) {
+> +		if (j == HID_OUTPUT_REPORT)
+> +			continue;
+> +
+> +		ret = hid_sensor_custom_add_fields(sensor_inst,
+> +						   &hdev->report_enum[j], j);
+> +		if (ret)
+> +			return ret;
+> +
+> +	}
+> +
+> +	/* Create sysfs attributes */
+> +	for (i = 0; i < sensor_inst->sensor_field_count; ++i) {
+> +		j = 0;
+> +		while (j < HID_CUSTOM_TOTAL_ATTRS &&
+> +		       hid_custom_attrs[j].name) {
+> +			struct device_attribute *device_attr;
+> +
+> +			device_attr = &sensor_inst->fields[i].sd_attrs[j];
+> +
+> +			snprintf((char *)&sensor_inst->fields[i].attr_name[j],
+> +				 HID_CUSTOM_NAME_LENGTH, "%s-%s",
+> +				 sensor_inst->fields[i].group_name,
+> +				 hid_custom_attrs[j].name);
+> +			sysfs_attr_init(device_attr->dev_attr.attr);
 
+This is wrong -- struct device_attribute doesn't have 'dev_attr' field.
 
+The fix would be trivial, but given the fact that this means that your 
+patch hasn't been even compile-tested, I'd like to ask for proper 
+resubmission of code you've actually tested.
 
+Thanks,
 
 -- 
-Jacob Pan
+Jiri Kosina
+SUSE Labs
