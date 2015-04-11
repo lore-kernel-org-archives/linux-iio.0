@@ -1,231 +1,298 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga14.intel.com ([192.55.52.115]:2641 "EHLO mga14.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S932695AbbDKA7t (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Fri, 10 Apr 2015 20:59:49 -0400
-From: Kuppuswamy Sathyanarayanan
-	<sathyanarayanan.kuppuswamy@linux.intel.com>
-To: jic23@kernel.org, pmeerw@pmeerw.net
-Cc: daniel.baluta@intel.com, linux-iio@vger.kernel.org,
-	srinivas.pandruvada@linux.intel.com,
-	sathyanarayanan.kuppuswamy@linux.intel.com
-Subject: [PATCH v6 1/1] iio: ltr501: Add support for ltr301
-Date: Fri, 10 Apr 2015 17:59:50 -0700
-Message-Id: <c0bfd1b4f763e166eec1b6a1d8585cd0fca37de5.1428713872.git.sathyanarayanan.kuppuswamy@linux.intel.com>
-In-Reply-To: <cover.1428713872.git.sathyanarayanan.kuppuswamy@linux.intel.com>
-References: <cover.1428713872.git.sathyanarayanan.kuppuswamy@linux.intel.com>
-In-Reply-To: <cover.1428713872.git.sathyanarayanan.kuppuswamy@linux.intel.com>
-References: <cover.1428713872.git.sathyanarayanan.kuppuswamy@linux.intel.com>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:41401 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754856AbbDKSjY (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 11 Apr 2015 14:39:24 -0400
+Message-ID: <55296A38.3000101@kernel.org>
+Date: Sat, 11 Apr 2015 19:38:48 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+MIME-Version: 1.0
+To: sathyanarayanan.kuppuswamy@linux.intel.com, pmeerw@pmeerw.net
+CC: linux-iio@vger.kernel.org, srinivas.pandruvada@linux.intel.com
+Subject: Re: [PATCH v3 2/6] iio: documentation: Add ABI info for iio event
+ persistence filter
+References: <cover.1428537814.git.sathyanarayanan.kuppuswamy@linux.intel.com> <d6ed572de5978b1ab44f0bd72432b8eeeac0b321.1428537814.git.sathyanarayanan.kuppuswamy@linux.intel.com> <5526556A.1080609@kernel.org> <55270BAD.7030509@linux.intel.com> <89459E86-2FB9-4AC1-AF90-8C742C18D000@kernel.org> <55281BE4.4040208@linux.intel.com>
+In-Reply-To: <55281BE4.4040208@linux.intel.com>
+Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Added support for Liteon 301 Ambient light sensor. Since
-LTR-301 and LTR-501 are register compatible(and even have same
-part id), LTR-501 driver has been extended to support both
-devices. LTR-501 is similar to LTR-301 in ALS sensing, But the
-only difference is, LTR-501 also supports proximity sensing.
+On 10/04/15 19:52, sathyanarayanan kuppuswamy wrote:
+> 
+> Hi Jonathan,
+> 
+> Thanks for the comments. Comments inline.
+Hi again,
+> 
+> On 04/09/2015 10:58 PM, Jonathan Cameron wrote:
+>>
+>> On 10 April 2015 00:30:53 BST, sathyanarayanan kuppuswamy <sathyanarayanan.kuppuswamy@linux.intel.com> wrote:
+>>>
+>>> On 04/09/2015 03:33 AM, Jonathan Cameron wrote:
+>>>> On 09/04/15 01:06, Kuppuswamy Sathyanarayanan wrote:
+>>>>> Add ABI info for iio event persistence filter.
+>>>>>
+>>>>> Setting <n> to persistence filter would need atleast
+>>>>> <n> data values outside the upper/lower threshold
+>>>>> limits before generating an interrupt.
+>>>>>
+>>>>> Signed-off-by: Kuppuswamy Sathyanarayanan
+>>> <sathyanarayanan.kuppuswamy@linux.intel.com>
+>>>>> ---
+>>>>>    Documentation/ABI/testing/sysfs-bus-iio | 82
+>>> +++++++++++++++++++++++++++++++++
+>>>>>    1 file changed, 82 insertions(+)
+>>>>>
+>>>>> diff --git a/Documentation/ABI/testing/sysfs-bus-iio
+>>> b/Documentation/ABI/testing/sysfs-bus-iio
+>>>>> index 9a70c31..590b1d4 100644
+>>>>> --- a/Documentation/ABI/testing/sysfs-bus-iio
+>>>>> +++ b/Documentation/ABI/testing/sysfs-bus-iio
+>>>>> @@ -856,6 +856,88 @@ Description:
+>>>>>            met before an event is generated. If direction is not
+>>>>>            specified then this period applies to both directions.
+>>>>>    
+>>>> Please don't mass document cases unless they are actually in use.
+>>> These should
+>>>> get added as and when they become so.  Often a particular type of
+>>> event
+>>>> characteristic is actually only implemented on a small subset of
+>>> channel types
+>>>> (where it makes sense).
+>>> IMO, persistence filter can be applied for all these cases. But if you
+>>> think its better to
+>>> add ABI for what we currently use then I will leave only ALS/proxmity
+>>> related ABI's here.
+>>>
+>>> +What:        /sys/.../events/in_intensity0_thresh_persistence
+>>> +What:        /sys/.../events/in_proximity0_thresh_persistence
+>>>
+>>>>> +What:        /sys/.../events/in_accel_x_thresh_rising_persistence
+>>>>> +What:        /sys/.../events/in_accel_x_thresh_falling_persistence
+>>>>> +hat:        /sys/.../events/in_accel_x_roc_rising_persistence
+>>>>> +What:        /sys/.../events/in_accel_x_roc_falling_persistence
+>>>>> +What:        /sys/.../events/in_accel_y_thresh_rising_persistence
+>>>>> +What:        /sys/.../events/in_accel_y_thresh_falling_persistence
+>>>>> +What:        /sys/.../events/in_accel_y_roc_rising_persistence
+>>>>> +What:        /sys/.../events/in_accel_y_roc_falling_persistence
+>>>>> +What:        /sys/.../events/in_accel_z_thresh_rising_persistence
+>>>>> +What:        /sys/.../events/in_accel_z_thresh_falling_persistence
+>>>>> +What:        /sys/.../events/in_accel_z_roc_rising_persistence
+>>>>> +What:        /sys/.../events/in_accel_z_roc_falling_persistence
+>>>>> +What:        /sys/.../events/in_anglvel_x_thresh_rising_persistence
+>>>>> +What:        /sys/.../events/in_anglvel_x_thresh_falling_persistence
+>>>>> +What:        /sys/.../events/in_anglvel_x_roc_rising_persistence
+>>>>> +What:        /sys/.../events/in_anglvel_x_roc_falling_persistence
+>>>>> +What:        /sys/.../events/in_anglvel_y_thresh_rising_persistence
+>>>>> +What:        /sys/.../events/in_anglvel_y_thresh_falling_persistence
+>>>>> +What:        /sys/.../events/in_anglvel_y_roc_rising_persistence
+>>>>> +What:        /sys/.../events/in_anglvel_y_roc_falling_persistence
+>>>>> +What:        /sys/.../events/in_anglvel_z_thresh_rising_persistence
+>>>>> +What:        /sys/.../events/in_anglvel_z_thresh_falling_persistence
+>>>>> +What:        /sys/.../events/in_anglvel_z_roc_rising_persistence
+>>>>> +What:        /sys/.../events/in_anglvel_z_roc_falling_persistence
+>>>>> +What:        /sys/.../events/in_magn_x_thresh_rising_persistence
+>>>>> +What:        /sys/.../events/in_magn_x_thresh_falling_persistence
+>>>>> +What:        /sys/.../events/in_magn_x_roc_rising_persistence
+>>>>> +What:        /sys/.../events/in_magn_x_roc_falling_persistence
+>>>>> +What:        /sys/.../events/in_magn_y_thresh_rising_persistence
+>>>>> +What:        /sys/.../events/in_magn_y_thresh_falling_persistence
+>>>>> +What:        /sys/.../events/in_magn_y_roc_rising_persistence
+>>>>> +What:        /sys/.../events/in_magn_y_roc_falling_persistence
+>>>>> +What:        /sys/.../events/in_magn_z_thresh_rising_persistence
+>>>>> +What:        /sys/.../events/in_magn_z_thresh_falling_persistence
+>>>>> +What:        /sys/.../events/in_magn_z_roc_rising_persistence
+>>>>> +What:        /sys/.../events/in_magn_z_roc_falling_persistence
+>>>>>
+>>> +What:        /sys/.../events/in_rot_from_north_magnetic_thresh_rising_persistence
+>>> +What:        /sys/.../events/in_rot_from_north_magnetic_thresh_falling_persistence
+>>> +What:        /sys/.../events/in_rot_from_north_magnetic_roc_rising_persistence
+>>> +What:        /sys/.../events/in_rot_from_north_magnetic_roc_falling_persistence
+>>> +What:        /sys/.../events/in_rot_from_north_true_thresh_rising_persistence
+>>> +What:        /sys/.../events/in_rot_from_north_true_thresh_falling_persistence
+>>> +What:        /sys/.../events/in_rot_from_north_true_roc_rising_persistence
+>>> +What:        /sys/.../events/in_rot_from_north_true_roc_falling_persistence
+>>> +What:        /sys/.../events/in_rot_from_north_magnetic_tilt_comp_thresh_rising_persistence
+>>> +What:        /sys/.../events/in_rot_from_north_magnetic_tilt_comp_thresh_falling_persistence
+>>> +What:        /sys/.../events/in_rot_from_north_magnetic_tilt_comp_roc_rising_persistence
+>>> +What:        /sys/.../events/in_rot_from_north_magnetic_tilt_comp_roc_falling_persistence
+>>> +What:        /sys/.../events/in_rot_from_north_true_tilt_comp_thresh_rising_persistence
+>>> +What:        /sys/.../events/in_rot_from_north_true_tilt_comp_thresh_falling_persistence
+>>> +What:        /sys/.../events/in_rot_from_north_true_tilt_comp_roc_rising_persistence
+>>> +What:        /sys/.../events/in_rot_from_north_true_tilt_comp_roc_falling_persistence
+>>>>> +What:        /sys/.../events/in_voltageY_supply_thresh_rising_persistence
+>>>>>
+>>> +What:        /sys/.../events/in_voltageY_supply_thresh_falling_persistence
+>>>>> +What:        /sys/.../events/in_voltageY_supply_roc_rising_persistence
+>>>>> +What:        /sys/.../events/in_voltageY_supply_roc_falling_persistence
+>>>>> +What:        /sys/.../events/in_voltageY_thresh_rising_persistence
+>>>>> +What:        /sys/.../events/in_voltageY_thresh_falling_persistence
+>>>>> +What:        /sys/.../events/in_voltageY_roc_rising_persistence
+>>>>> +What:        /sys/.../events/in_voltageY_roc_falling_persistence
+>>>>> +What:        /sys/.../events/in_tempY_thresh_rising_persistence
+>>>>> +What:        /sys/.../events/in_tempY_thresh_falling_persistence
+>>>>> +What:        /sys/.../events/in_tempY_roc_rising_persistence
+>>>>> +What:        /sys/.../events/in_tempY_roc_falling_persistence
+>>>>> +What:        /sys/.../events/in_accel_x&y&z_mag_falling_persistence
+>>>>> +What:        /sys/.../events/in_intensity0_thresh_persistence
+>>>>> +What:        /sys/.../events/in_proximity0_thresh_persistence
+>>>>> +What:        /sys/.../events/in_activity_still_thresh_rising_persistence
+>>>>> +What:        /sys/.../events/in_activity_still_thresh_falling_persistence
+>>>>>
+>>> +What:        /sys/.../events/in_activity_walking_thresh_rising_persistence
+>>> +What:        /sys/.../events/in_activity_walking_thresh_falling_persistence
+>>> +What:        /sys/.../events/in_activity_jogging_thresh_rising_persistence
+>>> +What:        /sys/.../events/in_activity_jogging_thresh_falling_persistence
+>>> +What:        /sys/.../events/in_activity_running_thresh_rising_persistence
+>>> +What:        /sys/.../events/in_activity_running_thresh_falling_persistence
+>>>>> +KernelVersion:    4.0
+>>>>> +Contact:    linux-iio@vger.kernel.org
+>>>>> +Description:
+>>>>> +        Number of times an event should occur before generating an
+>>>>> +        interrupt. Persistence filter value can be applied for both
+>>>>> +        rising/falling threshold based interrupts.
+>>>> This still needs clarification as reading the discussion I'm still a
+>>> little unsure
+>>>> what the condition is.  I don't think Lars' original query ever got
+>>> cleanly answered
+>>> Sorry for being unclear. Even in this case, the use case is "number of
+>>> consecutive" measurement data
+>>> outside the range.
+>>>> Taking just the upper threshold...
+>>>> The interpretations I can think of are:
+>>>>
+>>>> 1) tsl2591 use case (maps directly to period with the sampling
+>>> frequency taken into
+>>>> account).
+>>>>    - Too much light for N ALS cycling samples.  If it drops below the
+>>> threshold
+>>>>      the count is reset.
+>>>> the tcs part that Daniel referenced is also this use case.
+>>> I agree that it can be mapped to _period if you take the sampling
+>>> frequency into account. But if you do that then it becomes dependent on
+>>>
+>>> integration time ( for ALS case). Since _period is calculated based on
+>>> frequency, each time you change _integration_time then internally you
+>>> need to change the _period value to keep the ratio constant. Also you
+>>> need to consider what happens if your frequency > period. I think this
+>>> makes is bit complicated.
+>> Indeed. Such is life. This isn't the first such case and it won't be the last where
+>>   the driver becomes more complex to conform to the existing ABI.
+> If its just the driver complexity then I would completely agree with
+> you. My concern is, we are expecting the user to consider these
+> factors before changing the value on either frequency/period.
+Think of likely usecases for persistence. It's about avoiding getting
+too many events for light level changes.  Two reasons for this
+1) Wastes power and time on processor handling them.
+2) Userspace will end up doing dumb things like changing screen brightness
+in response to ever event.
 
-LTR-501 - ALS + Proximity combo
-LTR-301 - ALS sensor.
+Conceptually both of these want a time / frequency based control, not
+one that is dependent on the number of times the device happens to
+sample the sensor.
 
-Signed-off-by: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
----
- drivers/iio/light/Kconfig  |  2 +-
- drivers/iio/light/ltr501.c | 99 +++++++++++++++++++++++++++++++++-------------
- 2 files changed, 72 insertions(+), 29 deletions(-)
+So if you put your persistence measurement in and the integration time
+is changing regularly, then all you have done is to move the problem
+into userspace which will have to constant change the persistence value
+instead.
 
-diff --git a/drivers/iio/light/Kconfig b/drivers/iio/light/Kconfig
-index a224afd..215e4a3 100644
---- a/drivers/iio/light/Kconfig
-+++ b/drivers/iio/light/Kconfig
-@@ -159,7 +159,7 @@ config LTR501
- 	select IIO_TRIGGERED_BUFFER
- 	help
- 	 If you say yes here you get support for the Lite-On LTR-501ALS-01
--	 ambient light and proximity sensor.
-+	 ambient light and proximity sensor or LTR-301 ambient light sensor.
- 
- 	 This driver can also be built as a module.  If so, the module
-          will be called ltr501.
-diff --git a/drivers/iio/light/ltr501.c b/drivers/iio/light/ltr501.c
-index 5939cda..4945405 100644
---- a/drivers/iio/light/ltr501.c
-+++ b/drivers/iio/light/ltr501.c
-@@ -50,6 +50,7 @@
- enum {
- 	ltr501 = 0,
- 	ltr559,
-+	ltr301,
- };
- 
- struct ltr501_gain {
-@@ -96,6 +97,8 @@ struct ltr501_chip_info {
- 	u8 als_mode_active;
- 	u8 als_gain_mask;
- 	u8 als_gain_shift;
-+	struct iio_chan_spec const *channels;
-+	const struct iio_info *info;
- };
- 
- struct ltr501_data {
-@@ -105,29 +108,6 @@ struct ltr501_data {
- 	u8 als_contr, ps_contr;
- };
- 
--static struct ltr501_chip_info ltr501_chip_info_tbl[] = {
--	[ltr501] = {
--		.chip_id = 0x08,
--		.als_gain = ltr501_als_gain_tbl,
--		.als_gain_tbl_size = ARRAY_SIZE(ltr501_als_gain_tbl),
--		.ps_gain = ltr501_ps_gain_tbl,
--		.ps_gain_tbl_size = ARRAY_SIZE(ltr501_ps_gain_tbl),
--		.als_mode_active = BIT(0) | BIT(1),
--		.als_gain_mask = BIT(3),
--		.als_gain_shift = 3,
--	},
--	[ltr559] = {
--		.chip_id = 0x09,
--		.als_gain = ltr559_als_gain_tbl,
--		.als_gain_tbl_size = ARRAY_SIZE(ltr559_als_gain_tbl),
--		.ps_gain = ltr559_ps_gain_tbl,
--		.ps_gain_tbl_size = ARRAY_SIZE(ltr559_ps_gain_tbl),
--		.als_mode_active = BIT(1),
--		.als_gain_mask = BIT(2) | BIT(3) | BIT(4),
--		.als_gain_shift = 2,
--	},
--};
--
- static int ltr501_drdy(struct ltr501_data *data, u8 drdy_mask)
- {
- 	int tries = 100;
-@@ -202,6 +182,13 @@ static const struct iio_chan_spec ltr501_channels[] = {
- 	IIO_CHAN_SOFT_TIMESTAMP(3),
- };
- 
-+static const struct iio_chan_spec ltr301_channels[] = {
-+	LTR501_INTENSITY_CHANNEL(0, LTR501_ALS_DATA0, IIO_MOD_LIGHT_BOTH, 0),
-+	LTR501_INTENSITY_CHANNEL(1, LTR501_ALS_DATA1, IIO_MOD_LIGHT_IR,
-+				 BIT(IIO_CHAN_INFO_SCALE)),
-+	IIO_CHAN_SOFT_TIMESTAMP(2),
-+};
-+
- static int ltr501_read_raw(struct iio_dev *indio_dev,
- 			   struct iio_chan_spec const *chan,
- 			   int *val, int *val2, long mask)
-@@ -367,10 +354,19 @@ static struct attribute *ltr501_attributes[] = {
- 	NULL
- };
- 
-+static struct attribute *ltr301_attributes[] = {
-+	&iio_dev_attr_in_intensity_scale_available.dev_attr.attr,
-+	NULL
-+};
-+
- static const struct attribute_group ltr501_attribute_group = {
- 	.attrs = ltr501_attributes,
- };
- 
-+static const struct attribute_group ltr301_attribute_group = {
-+	.attrs = ltr301_attributes,
-+};
-+
- static const struct iio_info ltr501_info = {
- 	.read_raw = ltr501_read_raw,
- 	.write_raw = ltr501_write_raw,
-@@ -378,6 +374,50 @@ static const struct iio_info ltr501_info = {
- 	.driver_module = THIS_MODULE,
- };
- 
-+static const struct iio_info ltr301_info = {
-+	.read_raw = ltr501_read_raw,
-+	.write_raw = ltr501_write_raw,
-+	.attrs = &ltr301_attribute_group,
-+	.driver_module = THIS_MODULE,
-+};
-+
-+static struct ltr501_chip_info ltr501_chip_info_tbl[] = {
-+	[ltr501] = {
-+		.chip_id = 0x08,
-+		.als_gain = ltr501_als_gain_tbl,
-+		.als_gain_tbl_size = ARRAY_SIZE(ltr501_als_gain_tbl),
-+		.ps_gain = ltr501_ps_gain_tbl,
-+		.ps_gain_tbl_size = ARRAY_SIZE(ltr501_ps_gain_tbl),
-+		.als_mode_active = BIT(0) | BIT(1),
-+		.als_gain_mask = BIT(3),
-+		.als_gain_shift = 3,
-+		.info = &ltr501_info,
-+		.channels = ltr501_channels,
-+	},
-+	[ltr559] = {
-+		.chip_id = 0x09,
-+		.als_gain = ltr559_als_gain_tbl,
-+		.als_gain_tbl_size = ARRAY_SIZE(ltr559_als_gain_tbl),
-+		.ps_gain = ltr559_ps_gain_tbl,
-+		.ps_gain_tbl_size = ARRAY_SIZE(ltr559_ps_gain_tbl),
-+		.als_mode_active = BIT(1),
-+		.als_gain_mask = BIT(2) | BIT(3) | BIT(4),
-+		.als_gain_shift = 2,
-+		.info = &ltr501_info,
-+		.channels = ltr501_channels,
-+	},
-+	[ltr301] = {
-+		.chip_id = 0x08,
-+		.als_gain = ltr501_als_gain_tbl,
-+		.als_gain_tbl_size = ARRAY_SIZE(ltr501_als_gain_tbl),
-+		.als_mode_active = BIT(0) | BIT(1),
-+		.als_gain_mask = BIT(3),
-+		.als_gain_shift = 3,
-+		.info = &ltr301_info,
-+		.channels = ltr301_channels,
-+	},
-+};
-+
- static int ltr501_write_contr(struct i2c_client *client, u8 als_val, u8 ps_val)
- {
- 	int ret = i2c_smbus_write_byte_data(client, LTR501_ALS_CONTR, als_val);
-@@ -463,7 +503,7 @@ static int ltr501_probe(struct i2c_client *client,
- 	struct ltr501_data *data;
- 	struct iio_dev *indio_dev;
- 	const char *name = NULL;
--	int chip_id = 0;
-+	int chip_id;
- 	int ret;
- 
- 	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
-@@ -476,10 +516,12 @@ static int ltr501_probe(struct i2c_client *client,
- 	mutex_init(&data->lock_als);
- 	mutex_init(&data->lock_ps);
- 
-+	/* TODO: Add condition for ACPI */
- 	if (id) {
--		name = id->name;
-+		name = id->name ? id->name : LTR501_DRV_NAME;
- 		chip_id = id->driver_data;
--	}
-+	} else
-+		return -ENODEV;
- 
- 	data->chip_info = &ltr501_chip_info_tbl[chip_id];
- 
-@@ -490,8 +532,8 @@ static int ltr501_probe(struct i2c_client *client,
- 		return -ENODEV;
- 
- 	indio_dev->dev.parent = &client->dev;
--	indio_dev->info = &ltr501_info;
--	indio_dev->channels = ltr501_channels;
-+	indio_dev->info = data->chip_info->info;
-+	indio_dev->channels = data->chip_info->channels;
- 	indio_dev->num_channels = ARRAY_SIZE(ltr501_channels);
- 	indio_dev->name = name;
- 	indio_dev->modes = INDIO_DIRECT_MODE;
-@@ -557,6 +599,7 @@ static SIMPLE_DEV_PM_OPS(ltr501_pm_ops, ltr501_suspend, ltr501_resume);
- static const struct i2c_device_id ltr501_id[] = {
- 	{ "ltr501", ltr501},
- 	{ "ltr559", ltr559},
-+	{ "ltr301", ltr301 },
- 	{ }
- };
- MODULE_DEVICE_TABLE(i2c, ltr501_id);
--- 
-1.9.1
+The point I am trying to make is the complexity and predictability
+argument swings both ways.
+> 
+> If this dependency is due to the hardware then it would make sense
+> for expecting the user to follow them. But here we are creating a
+> logical dependency between persistence and sampling frequency to
+> avoid the software complexity.
+It is due to hardware. The hardware could have exposed this as
+a time based element.  It chose not to because of a hardware 
+design decision. 
+
+We have numerous cases of this - often devices have a sampling frequency
+that is based on number of clock cycles of some supplied clock.  Or a
+low pass filter that is based on the number of sampling cycles, just
+like your persistence.  We define these in terms of time, because
+we had to choose to either do it in samples, or in time and userspace
+is far more interested (most of the time) in the time based one.
+Honestly most users of sensors, couldn't care less what the sampling
+frequency is, they care how often (in units of time) they get their update.
+
+> 
+> If you read the data sheet, there is no relation between persistence
+> and sampling frequency. But when using the interfaces, the user
+> should understand the ABI dependency created in software.
+Exactly so we are calling it period.  It is related to the
+datasheet defined persistence by being multiplied persistence
+by the sampling frequency. 
+
+What I don't want is a random mixture of period and persistence based
+on the way it was documented in datasheets.  These are the same thing.
+The only difference is the unit (at a given setting).
+Honestly the term persistence is
+well defined as being i
+>From an ABI point of view, we couldn't care less what the underlying
+hardware is doing, what we care about is not have two interfaces for
+the same thing. Period is there, it is defined and in use, so that
+is what we are going to stick with
+
+Yes it's painful. I've written a good amount of code myself
+to deal with unifying the different approaches different hardware
+takes to a given problem. It's fiddly but what is the point of
+a unified interface if we don't put the work in to keep it
+consistent.
+
+Sorry, this is one of the main roles of a maintainer:
+Keeping expose ABI consistent and minimal.
+
+Jonathan
+>>
+>>> Don't you think its better to add another representation instead of
+>>> trying to fit it in existing ABI's ?
+>> No
+>> This is a common situation. All over the place we have cases where changing one
+>>   abi element effects the value of another.
+>> We cope with it to provide a consistent
+>>   and minimal interface to userspace.
+>> Where the sampling frequency is directly
+>>   controlled it is perfectly acceptable to not automatically adjust the period.
+>> We frequently rely on the rule that userspce must check all attrs if it changes any.
+>>> Following are the persistence filter descriptions from data sheets of
+>>> tsl2591 and ltr501.
+>>>
+>>> LTR501: " The INTERRUPT PERSIST register controls the N number of times
+>>>
+>>> the measurement data is outside the range defined by the upper and
+>>> lower
+>>> threshold limits before asserting the INT".
+>>> TSL2591: " The Interrupt persistence filter sets the number of
+>>> consecutive out-of-range ALS cycles necessary to generate an interrupt"
+>>>
+>>>> 2) A new option which doesn't take account of the signal dropping
+>>> below the threshold.
+>>>>      So a count of number of times above the threshold.
+>>>>    i.e. On each cycle, if over threshold, increment N.
+>>>>         Evaluate if N is greater than 'persistence' then trigger an
+>>> event.
+>>>>     Why this would ever make sense on a light sensor is beyond me ;)
+>>> but there
+>>>>     we are.  We have a related abi for in_steps_change_value, which
+>>> fires
+>>>>     an event, only every N steps.  It doesn't really adapt to this
+>>> case though.
+>>>>     The name persistence is definitely misleading if this is what the
+>>> liteon parts
+>>>>     do as that definitely implies case 1).
+>>>>
+>>>> Welcome to my life, bludgeoning what appears to new ABI into what we
+>>> already have!
+>>>> (not a lot of point in standardized ABI otherwise!)
+>>>>
+>>>> Jonathan
+>>>>
+>>>>
+>>>>> +
+>>>>>    What:        /sys/.../events/in_activity_still_thresh_rising_en
+>>>>>    What:        /sys/.../events/in_activity_still_thresh_falling_en
+>>>>>    What:        /sys/.../events/in_activity_walking_thresh_rising_en
+>>>>>
+> 
 
