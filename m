@@ -1,337 +1,569 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pd0-f171.google.com ([209.85.192.171]:35852 "EHLO
-	mail-pd0-f171.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755458AbbDKUJE (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 11 Apr 2015 16:09:04 -0400
-Received: by pdea3 with SMTP id a3so60237729pde.3
-        for <linux-iio@vger.kernel.org>; Sat, 11 Apr 2015 13:09:04 -0700 (PDT)
-From: Dmitry Eremin-Solenikov <dbaryshkov@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>,
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:46602 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751713AbbDLPki (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 12 Apr 2015 11:40:38 -0400
+Message-ID: <552A91F1.70504@kernel.org>
+Date: Sun, 12 Apr 2015 16:40:33 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+MIME-Version: 1.0
+To: Daniel Baluta <daniel.baluta@intel.com>
+CC: Joel Becker <jlbec@evilplan.org>,
 	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>
-Cc: linux-iio@vger.kernel.org
-Subject: [PATCH v2] iio: add m62332 DAC driver
-Date: Sat, 11 Apr 2015 23:08:45 +0300
-Message-Id: <1428782925-15377-1-git-send-email-dbaryshkov@gmail.com>
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	"octavian.purdila@intel.com" <octavian.purdila@intel.com>,
+	Paul Bolle <pebolle@tiscali.nl>, patrick.porlan@intel.com,
+	adriana.reus@intel.com
+Subject: Re: [PATCH v3 2/3] iio: trigger: Add support for highres timer trigger
+ type
+References: <1428329889-18335-1-git-send-email-daniel.baluta@intel.com>	<1428329889-18335-3-git-send-email-daniel.baluta@intel.com>	<5526B24D.1010701@kernel.org> <CAEnQRZDQM0UM2f=LcCAMpwZqGgNo8JKLw+CJL9wz2Fq3zx35bQ@mail.gmail.com>
+In-Reply-To: <CAEnQRZDQM0UM2f=LcCAMpwZqGgNo8JKLw+CJL9wz2Fq3zx35bQ@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-m62332 is a simple 2-channel DAC used on several Sharp Zaurus boards to
-control LCD voltage, backlight and sound. The driver use regulators to
-control the reference voltage and enabling/disabling the DAC.
+On 10/04/15 10:02, Daniel Baluta wrote:
+> On Thu, Apr 9, 2015 at 8:09 PM, Jonathan Cameron <jic23@kernel.org> wrote:
+>> On 06/04/15 15:18, Daniel Baluta wrote:
+>>> This patch adds a new trigger type - the high resoluton timer ("hrtimer")
+>>> under /config/iio/triggers/ and also creates a module that implements hrtimer
+>>> trigger type functionality.
+>>>
+>>> A new IIO trigger is allocated when a new directory is created under
+>>> /config/iio/triggers/. The name of the trigger is the same as the dir
+>>> name. Each trigger will have a "delay" attribute representing the delay
+>>> between two successive IIO trigger_poll calls.
+>> Cool ;)
+>>>
+>>> Signed-off-by: Marten Svanfeldt <marten@intuitiveaerial.com>
+>>> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+>>> Signed-off-by: Daniel Baluta <daniel.baluta@intel.com>
+>> I'd ideally have liked the break up of the patches to be slightly different.
+>> There is stuff in here that would have made more sense in the first patch
+>> as it isn't specific to this particular trigger.
+> 
+> Yes :), this was my first thought too (implemented in v1), but then I wanted
+> to make a complete example on how to add a new trigger type.
+I can see where you are coming from, but really think we need to
+make it so there is less of each trigger implementation in the core.
+Preferably none!
+> 
+> People implementing a new trigger type will find this patch very useful.
+> 
+> Anyhow, I have no objection on this. Can be fixed.
+>>> ---
+>>> Changes since v2:
+>>>       * none
+>>> Changes since v1:
+>>>       * replaced sampling_frequency with delay to make the in kernel
+>>>       processing easier
+>> Then along comes me an suggests going back again ;)  Make your case...
+> 
+> Initial hrtimer trigger implementation was limited to using integer sampling
+> frequencies. Adding "rational" frequencies (e.g 12.5 Hz) and converting them
+> back to hrtimer trigger delay  would add some complex calculation in the kernel
+> with the possibility of losing precision.
+> 
+> Besides that, for most devices sampling_frequencies (Hz) attribute is natural
+> because this is what the devices expose in its registers, while the timers
+> API uses delays (nsec).
+> 
+> Here is how I see the usage of device's sampling_frequency and trigger's
+> delay (this should be kept in sync)
+> 
+> User application reads device's sampling_frequency and then based on that
+> it sets trigger's delay to 1/sampling_frequency -- all of that happening in user
+> space where floating point is easy :).
+I'm not keen on the flipping backwards and forwards going on here.  To my
+mind the two should be the same.
 
-Signed-off-by: Dmitry Eremin-Solenikov <dbaryshkov@gmail.com>
----
-This patch most probably targets 4.2, rather than 4.1.
-Changes since v1:
- - dropped jiffies.h include
- - changed types of structure members
- - simplified the controls for regulator
- - added a mutex to protect data
- - check return codes in m62332_probe
- - syntax/whitespace changes
+I'm a little unclear on when we'd actually hit your example and whether
+this is the right approach if we do.
 
- drivers/iio/dac/Kconfig  |  10 ++
- drivers/iio/dac/Makefile |   1 +
- drivers/iio/dac/m62332.c | 255 +++++++++++++++++++++++++++++++++++++++++++++++
- 3 files changed, 266 insertions(+)
- create mode 100644 drivers/iio/dac/m62332.c
+The usual case for using a 'software' trigger is for devices with no
+sampling clock of their own.  So devices with a 'sample now' signal
+(be this an explicit one or a case where the device samples using the
+bus clock to drive the adc).
 
-diff --git a/drivers/iio/dac/Kconfig b/drivers/iio/dac/Kconfig
-index 2236ea2..2ede061 100644
---- a/drivers/iio/dac/Kconfig
-+++ b/drivers/iio/dac/Kconfig
-@@ -142,6 +142,16 @@ config AD7303
- 	  To compile this driver as module choose M here: the module will be called
- 	  ad7303.
- 
-+config M62332
-+	tristate "Mitsubishi M62332 DAC driver"
-+	depends on I2C
-+	help
-+	  If you say yes here you get support for the Mitsubishi M62332
-+	  (I2C 8-Bit DACs with rail-to-rail outputs).
-+
-+	  This driver can also be built as a module.  If so, the module
-+	  will be called m62332.
-+
- config MAX517
- 	tristate "Maxim MAX517/518/519 DAC driver"
- 	depends on I2C
-diff --git a/drivers/iio/dac/Makefile b/drivers/iio/dac/Makefile
-index 52be7e1..63ae056 100644
---- a/drivers/iio/dac/Makefile
-+++ b/drivers/iio/dac/Makefile
-@@ -16,6 +16,7 @@ obj-$(CONFIG_AD5764) += ad5764.o
- obj-$(CONFIG_AD5791) += ad5791.o
- obj-$(CONFIG_AD5686) += ad5686.o
- obj-$(CONFIG_AD7303) += ad7303.o
-+obj-$(CONFIG_M62332) += m62332.o
- obj-$(CONFIG_MAX517) += max517.o
- obj-$(CONFIG_MAX5821) += max5821.o
- obj-$(CONFIG_MCP4725) += mcp4725.o
-diff --git a/drivers/iio/dac/m62332.c b/drivers/iio/dac/m62332.c
-new file mode 100644
-index 0000000..395274c
---- /dev/null
-+++ b/drivers/iio/dac/m62332.c
-@@ -0,0 +1,255 @@
-+/*
-+ *  m62332.c - Support for Mitsubishi m62332 DAC
-+ *
-+ *  Copyright (c) 2014 Dmitry Eremin-Solenikov
-+ *
-+ *  Based on max517 driver:
-+ *  Copyright (C) 2010, 2011 Roland Stigge <stigge@antcom.de>
-+ *
-+ *  This program is free software; you can redistribute it and/or modify
-+ *  it under the terms of the GNU General Public License as published by
-+ *  the Free Software Foundation; either version 2 of the License, or
-+ *  (at your option) any later version.
-+ *
-+ *  This program is distributed in the hope that it will be useful,
-+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
-+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-+ *  GNU General Public License for more details.
-+ */
-+
-+#include <linux/module.h>
-+#include <linux/slab.h>
-+#include <linux/i2c.h>
-+#include <linux/err.h>
-+
-+#include <linux/iio/iio.h>
-+#include <linux/iio/driver.h>
-+
-+#include <linux/regulator/consumer.h>
-+
-+struct m62332_data {
-+	struct i2c_client	*client;
-+	int			vref_mv;
-+	struct regulator	*vcc;
-+	struct mutex		mutex;
-+	u8			raw[2];
-+#ifdef CONFIG_PM_SLEEP
-+	u8			save[2];
-+#endif
-+};
-+
-+static int m62332_set_value(struct iio_dev *indio_dev,
-+	u8 val, int channel)
-+{
-+	struct m62332_data *data = iio_priv(indio_dev);
-+	struct i2c_client *client = data->client;
-+	u8 outbuf[2];
-+	int res = 0;
-+
-+	if (val == data->raw[channel])
-+		return 0;
-+
-+	outbuf[0] = channel;
-+	outbuf[1] = val;
-+
-+	mutex_lock(&data->mutex);
-+
-+	if (val)
-+		res = regulator_enable(data->vcc);
-+	if (res)
-+		goto out;
-+
-+	res = i2c_master_send(client, outbuf, 2);
-+	if (res >= 0 && res != 2)
-+		res = -EIO;
-+	if (res < 0)
-+		goto out;
-+
-+	data->raw[channel] = val;
-+
-+	if (!val)
-+		regulator_disable(data->vcc);
-+
-+	mutex_unlock(&data->mutex);
-+
-+	return 0;
-+
-+out:
-+	mutex_unlock(&data->mutex);
-+
-+	return res;
-+}
-+
-+static int m62332_read_raw(struct iio_dev *indio_dev,
-+			   struct iio_chan_spec const *chan,
-+			   int *val,
-+			   int *val2,
-+			   long m)
-+{
-+	struct m62332_data *data = iio_priv(indio_dev);
-+
-+	switch (m) {
-+	case IIO_CHAN_INFO_SCALE:
-+		/* Corresponds to Vref / 2^(bits) */
-+		*val = data->vref_mv;
-+		*val2 = 8;
-+		return IIO_VAL_FRACTIONAL_LOG2;
-+	case IIO_CHAN_INFO_RAW:
-+		*val = data->raw[chan->channel];
-+		return IIO_VAL_INT;
-+	default:
-+		return -EINVAL;
-+	}
-+}
-+
-+static int m62332_write_raw(struct iio_dev *indio_dev,
-+			    struct iio_chan_spec const *chan,
-+			    int val,
-+			    int val2,
-+			    long mask)
-+{
-+	int ret;
-+
-+	switch (mask) {
-+	case IIO_CHAN_INFO_RAW:
-+		if (val < 0 || val > 255)
-+			return -EINVAL;
-+
-+		ret = m62332_set_value(indio_dev, val, chan->channel);
-+		break;
-+	default:
-+		ret = -EINVAL;
-+		break;
-+	}
-+
-+	return ret;
-+}
-+
-+#ifdef CONFIG_PM_SLEEP
-+static int m62332_suspend(struct device *dev)
-+{
-+	struct iio_dev *indio_dev = i2c_get_clientdata(to_i2c_client(dev));
-+	struct m62332_data *data = iio_priv(indio_dev);
-+	int ret;
-+
-+	data->save[0] = data->raw[0];
-+	data->save[1] = data->raw[1];
-+
-+	ret = m62332_set_value(indio_dev, 0, 0);
-+	if (ret < 0)
-+		return ret;
-+
-+	return m62332_set_value(indio_dev, 0, 1);
-+}
-+
-+static int m62332_resume(struct device *dev)
-+{
-+	struct iio_dev *indio_dev = i2c_get_clientdata(to_i2c_client(dev));
-+	struct m62332_data *data = iio_priv(indio_dev);
-+	int ret;
-+
-+	ret = m62332_set_value(indio_dev, data->save[0], 0);
-+	if (ret < 0)
-+		return ret;
-+
-+	return m62332_set_value(indio_dev, data->save[1], 1);
-+}
-+
-+static SIMPLE_DEV_PM_OPS(m62332_pm_ops, m62332_suspend, m62332_resume);
-+#define M62332_PM_OPS (&m62332_pm_ops)
-+#else
-+#define M62332_PM_OPS NULL
-+#endif
-+
-+static const struct iio_info m62332_info = {
-+	.read_raw = m62332_read_raw,
-+	.write_raw = m62332_write_raw,
-+	.driver_module = THIS_MODULE,
-+};
-+
-+#define M62332_CHANNEL(chan) {				\
-+	.type = IIO_VOLTAGE,				\
-+	.indexed = 1,					\
-+	.output = 1,					\
-+	.channel = (chan),				\
-+	.datasheet_name = "CH" #chan,			\
-+	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |	\
-+		BIT(IIO_CHAN_INFO_SCALE),		\
-+}
-+
-+static const struct iio_chan_spec m62332_channels[] = {
-+	M62332_CHANNEL(0),
-+	M62332_CHANNEL(1)
-+};
-+
-+static int m62332_probe(struct i2c_client *client,
-+			const struct i2c_device_id *id)
-+{
-+	struct m62332_data *data;
-+	struct iio_dev *indio_dev;
-+	int ret;
-+
-+	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
-+	if (!indio_dev)
-+		return -ENOMEM;
-+	data = iio_priv(indio_dev);
-+	i2c_set_clientdata(client, indio_dev);
-+	data->client = client;
-+
-+	mutex_init(&data->mutex);
-+
-+	data->vcc = devm_regulator_get(&client->dev, "VCC");
-+	if (IS_ERR(data->vcc))
-+		return PTR_ERR(data->vcc);
-+
-+	/* establish that the iio_dev is a child of the i2c device */
-+	indio_dev->dev.parent = &client->dev;
-+
-+	indio_dev->num_channels = 2;
-+	indio_dev->channels = m62332_channels;
-+	indio_dev->modes = INDIO_DIRECT_MODE;
-+	indio_dev->info = &m62332_info;
-+
-+	data->vref_mv = regulator_get_voltage(data->vcc) / 1000; /* mV */
-+
-+	ret = iio_map_array_register(indio_dev, client->dev.platform_data);
-+	if (ret < 0)
-+		return ret;
-+
-+	ret = iio_device_register(indio_dev);
-+	if (ret == 0)
-+		return 0;
-+
-+	iio_map_array_unregister(indio_dev);
-+	return ret;
-+}
-+
-+static int m62332_remove(struct i2c_client *client)
-+{
-+	struct iio_dev *indio_dev = i2c_get_clientdata(client);
-+
-+	iio_device_unregister(indio_dev);
-+	iio_map_array_unregister(indio_dev);
-+	return 0;
-+}
-+
-+static const struct i2c_device_id m62332_id[] = {
-+	{ "m62332", },
-+	{ }
-+};
-+MODULE_DEVICE_TABLE(i2c, m62332_id);
-+
-+static struct i2c_driver m62332_driver = {
-+	.driver = {
-+		.name	= "m62332",
-+		.pm	= M62332_PM_OPS,
-+	},
-+	.probe		= m62332_probe,
-+	.remove		= m62332_remove,
-+	.id_table	= m62332_id,
-+};
-+module_i2c_driver(m62332_driver);
-+
-+MODULE_AUTHOR("Dmitry Eremin-Solenikov");
-+MODULE_DESCRIPTION("M62332 8-bit DAC");
-+MODULE_LICENSE("GPL v2");
--- 
-2.1.4
+So here you are dealing with devices that would actually have a dataready
+type signal, but it's not exposed? Any attempt to match sampling is just
+destined to go wrong.  If you want to guarantee getting all the data you'll
+have to over sample, probably by a significant degree given that you'll
+have some variation in any software trigger.
+
+In most (possibly) all devices there is a software means of reading whether
+their is new data available.  I'd suggest in this case we do actually need
+to move the polling logic into the driver.  It simply doesn't
+make sense to use the generic timer to do it as we won't sample ever time.
+
+Hence you'll end up with a trigger that has an underlying 'hidden' poll
+of the device and only fires when there is new data available - much cleaner
+interface to userspace and reliable data capture without repeat samples
+and all the mess that will entail.
+> 
+>>>       * implemented hrtimer driver using the new API proposed in patch 1
+>>>
+>>>  drivers/iio/industrialio-configfs.c      | 164 +++++++++++++++++++++++++++++++
+>>>  drivers/iio/trigger/Kconfig              |   9 ++
+>>>  drivers/iio/trigger/Makefile             |   2 +
+>>>  drivers/iio/trigger/iio-trig-hrtimer.c   | 154 +++++++++++++++++++++++++++++
+>>>  include/linux/iio/iio_configfs_trigger.h |   1 +
+>>>  5 files changed, 330 insertions(+)
+>>>  create mode 100644 drivers/iio/trigger/iio-trig-hrtimer.c
+>>>
+>>> diff --git a/drivers/iio/industrialio-configfs.c b/drivers/iio/industrialio-configfs.c
+>>> index d8ffd76..a0e5d24 100644
+>>> --- a/drivers/iio/industrialio-configfs.c
+>>> +++ b/drivers/iio/industrialio-configfs.c
+>>> @@ -71,7 +71,170 @@ struct iio_configfs_trigger_type *iio_get_configfs_trigger_type(int type)
+>>>       return t;
+>>>  }
+>>>
+>>> +struct iio_trigger_item {
+>>> +     struct config_item item;
+>>> +     struct iio_configfs_trigger_info *trigger_info;
+>>> +};
+>>> +
+>>> +static
+>>> +inline struct iio_trigger_item *to_iio_trigger_item(struct config_item *item)
+>>> +{
+>>> +     if (!item)
+>>> +             return NULL;
+>>> +     return container_of(item, struct iio_trigger_item, item);
+>>> +}
+>>> +
+>>> +CONFIGFS_ATTR_STRUCT(iio_trigger_item);
+>>> +
+>>> +#define IIO_TRIGGER_ITEM_ATTR(_name, _mode, _show, _store) \
+>>> +struct iio_trigger_item_attribute iio_trigger_item_attr_##_name = \
+>>> +     __CONFIGFS_ATTR(_name, _mode, _show, _store)
+>>> +
+>>> +static
+>>> +ssize_t iio_trigger_item_get_delay(struct iio_trigger_item *item, char *page)
+>>> +{
+>>> +     unsigned long delay;
+>>> +     int ret;
+>>> +
+>>> +     struct iio_configfs_trigger_type *t = item->trigger_info->trigger_type;
+>>> +
+>>> +     ret = t->trigger_ops->get_delay(item->trigger_info, &delay);
+>>> +     if (ret < 0)
+>>> +             return ret;
+>>> +
+>>> +     return snprintf(page, PAGE_SIZE, "%lu\n", delay);
+>>> +}
+>>> +
+>>> +static
+>>> +ssize_t iio_trigger_item_set_delay(struct iio_trigger_item *item,
+>>> +                                const char *page,
+>>> +                                size_t count)
+>>> +{
+>>> +     int ret;
+>>> +     unsigned long delay;
+>>> +     struct iio_configfs_trigger_type *t = item->trigger_info->trigger_type;
+>>> +
+>>> +     ret = kstrtoul(page, 10, &delay);
+>>> +     if (ret < 0)
+>>> +             return ret;
+>>> +
+>>> +     ret = t->trigger_ops->set_delay(item->trigger_info, delay);
+>>> +     if (ret < 0)
+>>> +             return ret;
+>>> +
+>>> +     return count;
+>>> +}
+>>> +
+>>> +IIO_TRIGGER_ITEM_ATTR(delay, S_IRUGO | S_IWUSR,
+>>> +                   iio_trigger_item_get_delay,
+>>> +                   iio_trigger_item_set_delay);
+>>> +
+>>> +static struct configfs_attribute *iio_trigger_item_attrs[] = {
+>>> +     &iio_trigger_item_attr_delay.attr,
+>>> +     NULL
+>>> +};
+>>> +
+>>> +CONFIGFS_ATTR_OPS(iio_trigger_item);
+>>> +
+>>> +static struct configfs_item_operations iio_trigger_item_ops = {
+>>> +     .show_attribute = iio_trigger_item_attr_show,
+>>> +     .store_attribute = iio_trigger_item_attr_store,
+>>> +};
+>> So everything down to here would have fitted a little better in the previous
+>> patch to my mind.
+> 
+> ok. As said above, one way of doing this would be to start with
+> an empty configfs support than build new trigger types on top
+> of it.
+> 
+>>
+>>> +
+>>> +static struct config_item_type iio_trigger_item_type;
+>>> +
+>>
+>> Why is this hrtimer specific?  Only one real place that I can see...
+>> I think we need to get that element out into the hrtimer module rather than
+>> here.  A utility function doing most of this makes sense in the core
+>> but not the hrtimer bit.
+> 
+> ok.
+> 
+>>
+>>> +static struct config_item *iio_hrtimer_make_item(struct config_group *group,
+>>> +                                              const char *name)
+>>> +{
+>>> +     struct iio_trigger_item *trigger_item;
+>>> +     struct iio_configfs_trigger_info *trigger_info;
+>>> +     struct iio_configfs_trigger_type *trigger_type;
+>>> +     int ret;
+>>> +
+>>> +     trigger_item = kzalloc(sizeof(*trigger_item), GFP_KERNEL);
+>>> +     if (!trigger_item)
+>>> +             return ERR_PTR(-ENOMEM);
+>>> +     trigger_info = kzalloc(sizeof(*trigger_info), GFP_KERNEL);
+>>> +     if (!trigger_info) {
+>>> +             ret = -ENOMEM;
+>>> +             goto out_free_trigger_item;
+>>> +     }
+>>> +
+>>> +     trigger_info->name = kstrdup(name, GFP_KERNEL);
+>>> +     if (!trigger_info->name) {
+>>> +             ret = -ENOMEM;
+>>> +             goto out_free_trigger_info;
+>>> +     }
+>>> +
+>>> +     trigger_type = iio_get_configfs_trigger_type(IIO_TRIGGER_TYPE_HRTIMER);
+>>> +     if (!trigger_type) {
+>>> +             pr_err("Unable to get hrtimer trigger!\n");
+>>> +             ret = -ENODEV;
+>>> +             goto out_free_trigger_name;
+>>> +     }
+>>> +     ret = trigger_type->trigger_ops->probe(trigger_info);
+>>> +     if (ret < 0)
+>>> +             goto out_error_module_put;
+>>> +
+>>> +     trigger_info->trigger_type = trigger_type;
+>>> +     trigger_item->trigger_info = trigger_info;
+>>> +
+>>> +     config_item_init_type_name(&trigger_item->item, name,
+>>> +                                &iio_trigger_item_type);
+>>> +
+>>> +     return &trigger_item->item;
+>>> +out_error_module_put:
+>>> +     module_put(trigger_type->owner);
+>>> +out_free_trigger_name:
+>>> +     kfree(trigger_info->name);
+>>> +out_free_trigger_info:
+>>> +     kfree(trigger_info);
+>>> +out_free_trigger_item:
+>>> +     kfree(trigger_item);
+>>> +     return ERR_PTR(ret);
+>>> +}
+>>> +
+>> This one is no way at all hrtimer specific that I can see!
+> 
+> Well, here we register the iio_trigger_item_type, which has the
+> "iio_trigger_item_attrs" attributes field.
+Yeah, a slight exageration on my part there ;)
+> 
+> If a new trigger type has a different set of attributes then
+> iio_trigger_item_type
+> would need a different instance.
+> 
+> But I see now how "iio_hrtimer_make_item" needs to be made generic.
+cool
+> 
+>>> +static void iio_hrtimer_drop_item(struct config_group *group,
+>>> +                               struct config_item *item)
+>>> +{
+>>> +     struct iio_trigger_item *trigger_item;
+>>> +     struct iio_configfs_trigger_type *trigger_type;
+>>> +
+>>> +     trigger_item = container_of(item, struct iio_trigger_item, item);
+>>> +     trigger_type = trigger_item->trigger_info->trigger_type;
+>>> +
+>>> +     trigger_type->trigger_ops->remove(trigger_item->trigger_info);
+>>> +     module_put(trigger_type->owner);
+>>> +     kfree(trigger_item->trigger_info->name);
+>>> +     kfree(trigger_item->trigger_info);
+>>> +     kfree(trigger_item);
+>>> +}
+>>> +
+>>> +static struct configfs_group_operations iio_triggers_hrtimer_group_ops = {
+>> So to make the separation clean we need to create this object dynamically or pass
+>> it through from the hrtimer trigger module.
+>>> +     .make_item = iio_hrtimer_make_item,
+>>> +     .drop_item = iio_hrtimer_drop_item,
+>>> +};
+>>> +
+>>> +static struct config_item_type iio_trigger_item_type = {
+>>> +     .ct_owner       = THIS_MODULE,
+>>> +     .ct_item_ops    = &iio_trigger_item_ops,
+>>> +     .ct_attrs       = iio_trigger_item_attrs,
+>>> +};
+>>> +
+>>> +static struct config_item_type iio_triggers_hrtimer_type = {
+>>> +     .ct_owner       = THIS_MODULE,
+>>> +     .ct_group_ops   = &iio_triggers_hrtimer_group_ops,
+>>> +};
+>> So this one also needs to come from the hrtimer module.
+> 
+> Hmm. I would also like that hrtimer module to be independent of
+> configfs stuff. For example, one could use hrtimer trigger from within
+> the kernel without even the need of iio configfs support to be compiled
+> in.
+> 
+> I will try to see if this is possible and also address your comment.
+> 
+>>> +
+>>> +static struct config_group iio_triggers_hrtimer_group = {
+>>> +     .cg_item = {
+>>> +             .ci_namebuf = "hrtimer",
+>>> +             .ci_type = &iio_triggers_hrtimer_type,
+>>> +     },
+>>> +};
+>>> +
+>>>  static struct config_group *iio_triggers_default_groups[] = {
+>>> +     &iio_triggers_hrtimer_group,
+>>>       NULL
+>>>  };
+>>>
+>>> @@ -109,6 +272,7 @@ static struct configfs_subsystem iio_configfs_subsys = {
+>>>
+>>>  static int __init iio_configfs_init(void)
+>>>  {
+>>> +     config_group_init(&iio_triggers_hrtimer_group);
+>> ahh... We have to do the init in this order? No dynamic creation later?
+> 
+> This can be done. But I'm not sure we really want this.
+> 
+> Now "hrtimer" is just a default group so that it automagically
+> appears in /config/iio/triggers/ when the configfs is mounted.
+> 
+> If we want this to be dynamically created later then some userspace
+> application should be aware of the "hrtimer" trigger type existence
+> and create the hrtimer directory at some point.
+See the tricks used in the usb gadget driver to solve an equivalent
+issue.  There the core has no knowledge at all of what the different
+function drivers are called or do.  That's what we want to be aiming for.
+> 
+>>>       config_group_init(&iio_triggers_group);
+>>>       config_group_init(&iio_configfs_subsys.su_group);
+>>>
+>>> diff --git a/drivers/iio/trigger/Kconfig b/drivers/iio/trigger/Kconfig
+>>> index 7999612..e21688e 100644
+>>> --- a/drivers/iio/trigger/Kconfig
+>>> +++ b/drivers/iio/trigger/Kconfig
+>>> @@ -5,6 +5,15 @@
+>>>
+>>>  menu "Triggers - standalone"
+>>>
+>>> +config IIO_HRTIMER_TRIGGER
+>>> +     tristate "High resolution timer trigger"
+>>> +     depends on IIO_CONFIGFS
+>>> +     help
+>>> +       Provides a frequency based IIO trigger using hrtimers.
+>>> +
+>>> +       To compile this driver as a module, choose M here: the
+>>> +       module will be called iio-trig-hrtimer.
+>>> +
+>>>  config IIO_INTERRUPT_TRIGGER
+>>>       tristate "Generic interrupt trigger"
+>>>       help
+>>> diff --git a/drivers/iio/trigger/Makefile b/drivers/iio/trigger/Makefile
+>>> index 0694dae..fe06eb5 100644
+>>> --- a/drivers/iio/trigger/Makefile
+>>> +++ b/drivers/iio/trigger/Makefile
+>>> @@ -3,5 +3,7 @@
+>>>  #
+>>>
+>>>  # When adding new entries keep the list in alphabetical order
+>>> +
+>>> +obj-$(CONFIG_IIO_HRTIMER_TRIGGER) += iio-trig-hrtimer.o
+>>>  obj-$(CONFIG_IIO_INTERRUPT_TRIGGER) += iio-trig-interrupt.o
+>>>  obj-$(CONFIG_IIO_SYSFS_TRIGGER) += iio-trig-sysfs.o
+>>> diff --git a/drivers/iio/trigger/iio-trig-hrtimer.c b/drivers/iio/trigger/iio-trig-hrtimer.c
+>>> new file mode 100644
+>>> index 0000000..0acde8d
+>>> --- /dev/null
+>>> +++ b/drivers/iio/trigger/iio-trig-hrtimer.c
+>>> @@ -0,0 +1,154 @@
+>>> +/**
+>>> + * The industrial I/O periodic hrtimer trigger driver
+>>> + *
+>>> + * Copyright (C) Intuitive Aerial AB
+>>> + * Written by Marten Svanfeldt, marten@intuitiveaerial.com
+>>> + * Copyright (C) 2012, Analog Device Inc.
+>>> + *   Author: Lars-Peter Clausen <lars@metafoo.de>
+>>> + *
+>>> + * This program is free software; you can redistribute it and/or modify it
+>>> + * under the terms of the GNU General Public License version 2 as published by
+>>> + * the Free Software Foundation.
+>>> + *
+>>> + */
+>>> +#include <linux/kernel.h>
+>>> +#include <linux/slab.h>
+>>> +#include <linux/hrtimer.h>
+>>> +
+>>> +#include <linux/iio/iio.h>
+>>> +#include <linux/iio/trigger.h>
+>>> +#include <linux/iio/iio_configfs_trigger.h>
+>>> +
+>>> +/* default delay in ns (100Hz) */
+>>> +#define HRTIMER_TRIGGER_DEFAULT_DELAY 100000000
+>>> +
+>>> +struct iio_hrtimer_trig_info {
+>>> +     struct iio_configfs_trigger_info *trigger_info;
+>>> +     struct hrtimer timer;
+>>> +     unsigned long delay;
+>>> +};
+>>> +
+>>> +static enum hrtimer_restart iio_trig_hrtimer_trig(struct hrtimer *timer)
+>>> +{
+>>> +     struct iio_hrtimer_trig_info *trig_info;
+>>> +
+>>> +     trig_info = container_of(timer, struct iio_hrtimer_trig_info, timer);
+>>> +
+>>> +     hrtimer_forward_now(timer, ns_to_ktime(trig_info->delay));
+>>> +     iio_trigger_poll(trig_info->trigger_info->trigger);
+>>> +
+>>> +     return HRTIMER_RESTART;
+>>> +}
+>>> +
+>>> +static int iio_trig_hrtimer_set_state(struct iio_trigger *trig, bool state)
+>>> +{
+>>> +     struct iio_hrtimer_trig_info *trig_info;
+>>> +
+>>> +     trig_info = iio_trigger_get_drvdata(trig);
+>>> +
+>>> +     if (state)
+>>> +             hrtimer_start(&trig_info->timer, ns_to_ktime(trig_info->delay),
+>>> +                           HRTIMER_MODE_REL);
+>>> +     else
+>>> +             hrtimer_cancel(&trig_info->timer);
+>>> +
+>>> +     return 0;
+>>> +}
+>>> +
+>>> +int iio_trig_hrtimer_get_delay(struct iio_configfs_trigger_info *t,
+>>> +                            unsigned long *delay)
+>>> +{
+>>> +     struct iio_hrtimer_trig_info *trig_info;
+>>> +
+>>> +     trig_info = iio_trigger_get_drvdata(t->trigger);
+>>> +     *delay = trig_info->delay;
+>>> +
+>>> +     return 0;
+>>> +}
+>>> +
+>>> +int iio_trig_hrtimer_set_delay(struct iio_configfs_trigger_info *t,
+>>> +                            unsigned long delay)
+>>> +{
+>>> +     struct iio_hrtimer_trig_info *trig_info;
+>>> +
+>>> +     trig_info = iio_trigger_get_drvdata(t->trigger);
+>>> +
+>>> +     if (!delay)
+>>> +             return -EINVAL;
+>>> +
+>>> +     trig_info->delay = delay;
+>>> +
+>>> +     return 0;
+>>> +}
+>>> +
+>>> +static const struct iio_trigger_ops iio_hrtimer_trigger_ops = {
+>>> +     .owner = THIS_MODULE,
+>>> +     .set_trigger_state = iio_trig_hrtimer_set_state,
+>>> +};
+>>> +
+>>> +static int iio_trig_hrtimer_probe(struct iio_configfs_trigger_info *t)
+>>> +{
+>>> +     struct iio_hrtimer_trig_info *trig_info;
+>>> +     int ret;
+>>> +
+>>> +     trig_info = kzalloc(sizeof(*trig_info), GFP_KERNEL);
+>>> +     if (!trig_info)
+>>> +             return -ENOMEM;
+>>> +
+>>> +     trig_info->trigger_info = t;
+>>> +
+>>> +     t->trigger = iio_trigger_alloc("%s", t->name);
+>>> +     if (!t->trigger)
+>>> +             return -ENOMEM;
+>>> +
+>>> +     iio_trigger_set_drvdata(t->trigger, trig_info);
+>>> +     t->trigger->ops = &iio_hrtimer_trigger_ops;
+>>> +
+>>> +     hrtimer_init(&trig_info->timer, CLOCK_MONOTONIC, HRTIMER_MODE_REL);
+>>> +     trig_info->timer.function = iio_trig_hrtimer_trig;
+>>> +
+>>> +     trig_info->delay = HRTIMER_TRIGGER_DEFAULT_DELAY;
+>>> +
+>>> +     ret = iio_trigger_register(t->trigger);
+>>> +     if (ret)
+>>> +             goto err_free_trigger;
+>>> +
+>>> +     return 0;
+>>> +err_free_trigger:
+>>> +     iio_trigger_free(t->trigger);
+>>> +
+>>> +     return ret;
+>>> +}
+>>> +
+>>> +static int iio_trig_hrtimer_remove(struct iio_configfs_trigger_info *t)
+>>> +{
+>>> +     struct iio_hrtimer_trig_info *trig_info;
+>>> +
+>>> +     trig_info = iio_trigger_get_drvdata(t->trigger);
+>>> +
+>>> +     iio_trigger_unregister(t->trigger);
+>>> +     hrtimer_cancel(&trig_info->timer);
+>>> +     iio_trigger_free(t->trigger);
+>>> +
+>>> +     return 0;
+>>> +}
+>>> +
+>>> +struct iio_configfs_trigger_ops hrtimer_trigger_ops = {
+>>> +     .get_delay      = iio_trig_hrtimer_get_delay,
+>>> +     .set_delay      = iio_trig_hrtimer_set_delay,
+>>> +     .probe          = iio_trig_hrtimer_probe,
+>>> +     .remove         = iio_trig_hrtimer_remove,
+>>> +};
+>>> +
+>>> +struct iio_configfs_trigger_type iio_configfs_hrtimer = {
+>>> +     .type = IIO_TRIGGER_TYPE_HRTIMER,
+>>> +     .owner = THIS_MODULE,
+>>> +     .trigger_ops = &hrtimer_trigger_ops,
+>>> +};
+>>> +
+>>> +module_iio_configfs_trigger_driver(iio_configfs_hrtimer);
+>>> +
+>>> +MODULE_AUTHOR("Marten Svanfeldt <marten@intuitiveaerial.com>");
+>>> +MODULE_AUTHOR("Daniel Baluta <daniel.baluta@intel.com>");
+>>> +MODULE_DESCRIPTION("Periodic hrtimer trigger for the IIO subsystem");
+>>> +MODULE_LICENSE("GPL v2");
+>>> diff --git a/include/linux/iio/iio_configfs_trigger.h b/include/linux/iio/iio_configfs_trigger.h
+>>> index 75e76f2..6233733 100644
+>>> --- a/include/linux/iio/iio_configfs_trigger.h
+>>> +++ b/include/linux/iio/iio_configfs_trigger.h
+>>> @@ -10,6 +10,7 @@
+>>>                     unregister_configfs_trigger)
+>>>
+>>>  enum {
+>>> +     IIO_TRIGGER_TYPE_HRTIMER = 0,
+>>>       IIO_TRIGGER_TYPE_MAX,
+>>>  };
+>>>
+>>>
+>>
+> 
+> Thanks a lot for your valuable feedback Jonathan :).
+> 
+> Daniel.
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> 
 
