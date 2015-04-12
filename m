@@ -1,356 +1,627 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:46735 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:46763 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751476AbbDLQEx (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 12 Apr 2015 12:04:53 -0400
-Message-ID: <552A97A2.2020501@kernel.org>
-Date: Sun, 12 Apr 2015 17:04:50 +0100
+	with ESMTP id S1751687AbbDLQI7 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 12 Apr 2015 12:08:59 -0400
+Message-ID: <552A9897.3030503@kernel.org>
+Date: Sun, 12 Apr 2015 17:08:55 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Dmitry Eremin-Solenikov <dbaryshkov@gmail.com>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>
+To: Vlad Dogaru <vlad.dogaru@intel.com>
 CC: linux-iio@vger.kernel.org
-Subject: Re: [PATCH v2] iio: add m62332 DAC driver
-References: <1428782925-15377-1-git-send-email-dbaryshkov@gmail.com>
-In-Reply-To: <1428782925-15377-1-git-send-email-dbaryshkov@gmail.com>
+Subject: Re: [PATCH 2/6] iio: sx9500: optimize power usage
+References: <1428065254-6444-1-git-send-email-vlad.dogaru@intel.com> <1428065254-6444-3-git-send-email-vlad.dogaru@intel.com> <5526A876.8040108@kernel.org> <20150410103658.GB11961@vdogaru>
+In-Reply-To: <20150410103658.GB11961@vdogaru>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 11/04/15 21:08, Dmitry Eremin-Solenikov wrote:
-> m62332 is a simple 2-channel DAC used on several Sharp Zaurus boards to
-> control LCD voltage, backlight and sound. The driver use regulators to
-> control the reference voltage and enabling/disabling the DAC.
+On 10/04/15 11:36, Vlad Dogaru wrote:
+> On Thu, Apr 09, 2015 at 05:27:34PM +0100, Jonathan Cameron wrote:
+>> On 03/04/15 13:47, Vlad Dogaru wrote:
+>>> In the interest of lowering power usage, we only activate the proximity
+>>> channels and interrupts that we are currently using.
+>>>
+>>> For raw reads, we activate the corresponding channel and the data ready
+>>> interrupt and wait for the interrupt to trigger.  Thus, it is no longer
+>>> optional to register an irq.
+>> This change bothers me.  We may well have people with the device that
+>> don't have the interrupt wired and if they are already using the driver
+>> then we have a resulting regression.
+>>
+>> Any chance we could have an alternative of a registering polling or similar
+>> to identify when the interrupt would have occured?
 > 
-> Signed-off-by: Dmitry Eremin-Solenikov <dbaryshkov@gmail.com>
-Looks good to me. Couple of little nits inline.
-Just stuff to slightly improve reability (I'm a very lazy reviewer
-so want to always make my job as easy as possible!)
-
-Peter might well want to take another look as well and given time
-in the cycle (missed 4.1) we have loads of time.
-
-Jonathan
-
-> ---
-> This patch most probably targets 4.2, rather than 4.1.
-> Changes since v1:
->  - dropped jiffies.h include
->  - changed types of structure members
->  - simplified the controls for regulator
->  - added a mutex to protect data
->  - check return codes in m62332_probe
->  - syntax/whitespace changes
+> Sure, I have a patch queued up that calls msleep instead of waiting for
+> an interrupt if one is not available.
+Cool.
 > 
->  drivers/iio/dac/Kconfig  |  10 ++
->  drivers/iio/dac/Makefile |   1 +
->  drivers/iio/dac/m62332.c | 255 +++++++++++++++++++++++++++++++++++++++++++++++
->  3 files changed, 266 insertions(+)
->  create mode 100644 drivers/iio/dac/m62332.c
+> But I'm not exactly sure which patches I should resend.  You mentioned
+> you applied some of the series, but I can't find anything in testing or
+> togreg.
+Sorry, had to run out and forgot to push out when I got back later.
+Testing should now be up to date.
 > 
-> diff --git a/drivers/iio/dac/Kconfig b/drivers/iio/dac/Kconfig
-> index 2236ea2..2ede061 100644
-> --- a/drivers/iio/dac/Kconfig
-> +++ b/drivers/iio/dac/Kconfig
-> @@ -142,6 +142,16 @@ config AD7303
->  	  To compile this driver as module choose M here: the module will be called
->  	  ad7303.
->  
-> +config M62332
-> +	tristate "Mitsubishi M62332 DAC driver"
-> +	depends on I2C
-> +	help
-> +	  If you say yes here you get support for the Mitsubishi M62332
-> +	  (I2C 8-Bit DACs with rail-to-rail outputs).
-> +
-> +	  This driver can also be built as a module.  If so, the module
-> +	  will be called m62332.
-> +
->  config MAX517
->  	tristate "Maxim MAX517/518/519 DAC driver"
->  	depends on I2C
-> diff --git a/drivers/iio/dac/Makefile b/drivers/iio/dac/Makefile
-> index 52be7e1..63ae056 100644
-> --- a/drivers/iio/dac/Makefile
-> +++ b/drivers/iio/dac/Makefile
-> @@ -16,6 +16,7 @@ obj-$(CONFIG_AD5764) += ad5764.o
->  obj-$(CONFIG_AD5791) += ad5791.o
->  obj-$(CONFIG_AD5686) += ad5686.o
->  obj-$(CONFIG_AD7303) += ad7303.o
-> +obj-$(CONFIG_M62332) += m62332.o
->  obj-$(CONFIG_MAX517) += max517.o
->  obj-$(CONFIG_MAX5821) += max5821.o
->  obj-$(CONFIG_MCP4725) += mcp4725.o
-> diff --git a/drivers/iio/dac/m62332.c b/drivers/iio/dac/m62332.c
-> new file mode 100644
-> index 0000000..395274c
-> --- /dev/null
-> +++ b/drivers/iio/dac/m62332.c
-> @@ -0,0 +1,255 @@
-> +/*
-> + *  m62332.c - Support for Mitsubishi m62332 DAC
-> + *
-> + *  Copyright (c) 2014 Dmitry Eremin-Solenikov
-> + *
-> + *  Based on max517 driver:
-> + *  Copyright (C) 2010, 2011 Roland Stigge <stigge@antcom.de>
-> + *
-> + *  This program is free software; you can redistribute it and/or modify
-> + *  it under the terms of the GNU General Public License as published by
-> + *  the Free Software Foundation; either version 2 of the License, or
-> + *  (at your option) any later version.
-> + *
-> + *  This program is distributed in the hope that it will be useful,
-> + *  but WITHOUT ANY WARRANTY; without even the implied warranty of
-> + *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-> + *  GNU General Public License for more details.
-> + */
-> +
-> +#include <linux/module.h>
-> +#include <linux/slab.h>
-> +#include <linux/i2c.h>
-> +#include <linux/err.h>
-> +
-> +#include <linux/iio/iio.h>
-> +#include <linux/iio/driver.h>
-> +
-> +#include <linux/regulator/consumer.h>
-> +
-> +struct m62332_data {
-> +	struct i2c_client	*client;
-> +	int			vref_mv;
-> +	struct regulator	*vcc;
-> +	struct mutex		mutex;
-> +	u8			raw[2];
-> +#ifdef CONFIG_PM_SLEEP
-> +	u8			save[2];
-> +#endif
-> +};
-> +
-> +static int m62332_set_value(struct iio_dev *indio_dev,
-> +	u8 val, int channel)
-> +{
-> +	struct m62332_data *data = iio_priv(indio_dev);
-> +	struct i2c_client *client = data->client;
-> +	u8 outbuf[2];
-> +	int res = 0;
-> +
-> +	if (val == data->raw[channel])
-> +		return 0;
-> +
-> +	outbuf[0] = channel;
-> +	outbuf[1] = val;
-> +
-> +	mutex_lock(&data->mutex);
-> +
-> +	if (val)
-> +		res = regulator_enable(data->vcc);
-> +	if (res)
-> +		goto out;
-> +
-> +	res = i2c_master_send(client, outbuf, 2);
-> +	if (res >= 0 && res != 2)
-> +		res = -EIO;
-> +	if (res < 0)
-> +		goto out;
-> +
-> +	data->raw[channel] = val;
-> +
-> +	if (!val)
-> +		regulator_disable(data->vcc);
-> +
-> +	mutex_unlock(&data->mutex);
-> +
-> +	return 0;
-> +
-> +out:
-> +	mutex_unlock(&data->mutex);
-> +
-> +	return res;
-> +}
-> +
-> +static int m62332_read_raw(struct iio_dev *indio_dev,
-> +			   struct iio_chan_spec const *chan,
-> +			   int *val,
-> +			   int *val2,
-> +			   long m)
-> +{
-> +	struct m62332_data *data = iio_priv(indio_dev);
-> +
-> +	switch (m) {
-> +	case IIO_CHAN_INFO_SCALE:
-> +		/* Corresponds to Vref / 2^(bits) */
-> +		*val = data->vref_mv;
-> +		*val2 = 8;
-> +		return IIO_VAL_FRACTIONAL_LOG2;
-> +	case IIO_CHAN_INFO_RAW:
-> +		*val = data->raw[chan->channel];
-> +		return IIO_VAL_INT;
-> +	default:
-> +		return -EINVAL;
-> +	}
-> +}
-> +
-> +static int m62332_write_raw(struct iio_dev *indio_dev,
-> +			    struct iio_chan_spec const *chan,
-> +			    int val,
-> +			    int val2,
-> +			    long mask)
-> +{
-> +	int ret;
-> +
-> +	switch (mask) {
-> +	case IIO_CHAN_INFO_RAW:
-> +		if (val < 0 || val > 255)
-> +			return -EINVAL;
-> +
-> +		ret = m62332_set_value(indio_dev, val, chan->channel);
-> +		break;
-> +	default:
-> +		ret = -EINVAL;
-> +		break;
-> +	}
-> +
-> +	return ret;
-> +}
-> +
-> +#ifdef CONFIG_PM_SLEEP
-> +static int m62332_suspend(struct device *dev)
-> +{
-> +	struct iio_dev *indio_dev = i2c_get_clientdata(to_i2c_client(dev));
-> +	struct m62332_data *data = iio_priv(indio_dev);
-> +	int ret;
-> +
-> +	data->save[0] = data->raw[0];
-> +	data->save[1] = data->raw[1];
-> +
-> +	ret = m62332_set_value(indio_dev, 0, 0);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	return m62332_set_value(indio_dev, 0, 1);
-> +}
-> +
-> +static int m62332_resume(struct device *dev)
-> +{
-> +	struct iio_dev *indio_dev = i2c_get_clientdata(to_i2c_client(dev));
-> +	struct m62332_data *data = iio_priv(indio_dev);
-> +	int ret;
-> +
-> +	ret = m62332_set_value(indio_dev, data->save[0], 0);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	return m62332_set_value(indio_dev, data->save[1], 1);
-> +}
-> +
-> +static SIMPLE_DEV_PM_OPS(m62332_pm_ops, m62332_suspend, m62332_resume);
-> +#define M62332_PM_OPS (&m62332_pm_ops)
-> +#else
-> +#define M62332_PM_OPS NULL
-> +#endif
-> +
-> +static const struct iio_info m62332_info = {
-> +	.read_raw = m62332_read_raw,
-> +	.write_raw = m62332_write_raw,
-> +	.driver_module = THIS_MODULE,
-> +};
-> +
-> +#define M62332_CHANNEL(chan) {				\
-> +	.type = IIO_VOLTAGE,				\
-> +	.indexed = 1,					\
-> +	.output = 1,					\
-> +	.channel = (chan),				\
-> +	.datasheet_name = "CH" #chan,			\
-> +	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |	\
-> +		BIT(IIO_CHAN_INFO_SCALE),		\
-> +}
-> +
-> +static const struct iio_chan_spec m62332_channels[] = {
-> +	M62332_CHANNEL(0),
-> +	M62332_CHANNEL(1)
-> +};
-> +
-> +static int m62332_probe(struct i2c_client *client,
-> +			const struct i2c_device_id *id)
-> +{
-> +	struct m62332_data *data;
-> +	struct iio_dev *indio_dev;
-> +	int ret;
-> +
-> +	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
-> +	if (!indio_dev)
-> +		return -ENOMEM;
-> +	data = iio_priv(indio_dev);
-> +	i2c_set_clientdata(client, indio_dev);
-> +	data->client = client;
-> +
-> +	mutex_init(&data->mutex);
-> +
-> +	data->vcc = devm_regulator_get(&client->dev, "VCC");
-> +	if (IS_ERR(data->vcc))
-> +		return PTR_ERR(data->vcc);
-> +
-> +	/* establish that the iio_dev is a child of the i2c device */
-> +	indio_dev->dev.parent = &client->dev;
-> +
-> +	indio_dev->num_channels = 2;
-While true, I'd presonally prefer ARRAY_SIZE(m622...) as then whilst
-reviewing there is no need to check.
-
-> +	indio_dev->channels = m62332_channels;
-> +	indio_dev->modes = INDIO_DIRECT_MODE;
-> +	indio_dev->info = &m62332_info;
-> +
-> +	data->vref_mv = regulator_get_voltage(data->vcc) / 1000; /* mV */
-> +
-> +	ret = iio_map_array_register(indio_dev, client->dev.platform_data);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	ret = iio_device_register(indio_dev);
-> +	if (ret == 0)
-> +		return 0;
-This briefly had me confused. I'd much rather have the error case
-result in a local return (or a goto if you prefer.  I read this as
-you were always unregistering the map which seemed very odd.
-Just a case of making it really easy to read!
-
-> +
-> +	iio_map_array_unregister(indio_dev);
-> +	return ret;
-> +}
-> +
-> +static int m62332_remove(struct i2c_client *client)
-> +{
-> +	struct iio_dev *indio_dev = i2c_get_clientdata(client);
-> +
-> +	iio_device_unregister(indio_dev);
-> +	iio_map_array_unregister(indio_dev);
-> +	return 0;
-> +}
-> +
-> +static const struct i2c_device_id m62332_id[] = {
-> +	{ "m62332", },
-> +	{ }
-> +};
-> +MODULE_DEVICE_TABLE(i2c, m62332_id);
-> +
-> +static struct i2c_driver m62332_driver = {
-> +	.driver = {
-> +		.name	= "m62332",
-> +		.pm	= M62332_PM_OPS,
-> +	},
-> +	.probe		= m62332_probe,
-> +	.remove		= m62332_remove,
-> +	.id_table	= m62332_id,
-> +};
-> +module_i2c_driver(m62332_driver);
-> +
-> +MODULE_AUTHOR("Dmitry Eremin-Solenikov");
-> +MODULE_DESCRIPTION("M62332 8-bit DAC");
-> +MODULE_LICENSE("GPL v2");
+> Or am i confused and you would rather I resent the whole series?
+> 
+>>
+>>>
+>>> The following types of usage patterns may overlap:
+>>>
+>>> * raw proximity reads (need a single data ready interrupt)
+>> We often avoid this complexity by just failing raw reads when
+>> the buffer is running but the solution you have here is pretty
+>> elegant.
+>>> * trigger usage (needs data ready interrupts as long as active)
+>>> * proximity events (need near/far interrupts)
+>>> * triggered buffer reads (don't need any interrupts, but are usually
+>>> coupled with our own trigger.
+>>
+>> An alternative, perhaps more standard method, would be to handle this via
+>> an interrupt chip and let that infrastructure be responisble for the
+>> underlying real interrupts. I'm not sure which approach would be more
+>> complex though so perhaps, though I'd have gone that way, what you have
+>> here is the best way...
+>>
+>>>
+>>> To mitigate all possible patterns, we implement usage counting for all
+>>> the resources used: data ready interrupts, near/far interrupts and
+>>> individual channels.
+>>>
+>>> The device enters sleep mode as documented in the data sheet when its
+>>> buffer, trigger and events are disabled, and no raw reads are currently
+>>> running.
+>>>
+>>> Because of this new usage pattern, it is important that we give the
+>>> device a chance to perform an initial compensation for all its channels
+>>> at probe time.
+>>>
+>>> Signed-off-by: Vlad Dogaru <vlad.dogaru@intel.com>
+>>> ---
+>>>  drivers/iio/proximity/sx9500.c | 376 +++++++++++++++++++++++++++++++++--------
+>>>  1 file changed, 302 insertions(+), 74 deletions(-)
+>>>
+>>> diff --git a/drivers/iio/proximity/sx9500.c b/drivers/iio/proximity/sx9500.c
+>>> index f62d0b6..94c56f3 100644
+>>> --- a/drivers/iio/proximity/sx9500.c
+>>> +++ b/drivers/iio/proximity/sx9500.c
+>>> @@ -19,6 +19,7 @@
+>>>  #include <linux/gpio/consumer.h>
+>>>  #include <linux/regmap.h>
+>>>  #include <linux/pm.h>
+>>> +#include <linux/delay.h>
+>>>  
+>>>  #include <linux/iio/iio.h>
+>>>  #include <linux/iio/buffer.h>
+>>> @@ -74,6 +75,7 @@
+>>>  #define SX9500_CONVDONE_IRQ		BIT(3)
+>>>  
+>>>  #define SX9500_PROXSTAT_SHIFT		4
+>>> +#define SX9500_COMPSTAT_MASK		GENMASK(3, 0)
+>>>  
+>>>  #define SX9500_NUM_CHANNELS		4
+>>>  
+>>> @@ -92,6 +94,9 @@ struct sx9500_data {
+>>>  	u16 *buffer;
+>>>  	/* Remember enabled channels and sample rate during suspend. */
+>>>  	unsigned int suspend_ctrl0;
+>>> +	struct completion completion;
+>>> +	int data_rdy_users, close_far_users;
+>>> +	int channel_users[SX9500_NUM_CHANNELS];
+>>>  };
+>>>  
+>>>  static const struct iio_event_spec sx9500_events[] = {
+>>> @@ -194,7 +199,67 @@ static const struct regmap_config sx9500_regmap_config = {
+>>>  	.volatile_table = &sx9500_volatile_regs,
+>>>  };
+>>>  
+>>> -static int sx9500_read_proximity(struct sx9500_data *data,
+>>> +static int sx9500_inc_users(struct sx9500_data *data, int *counter,
+>>> +			    unsigned int reg, unsigned int bitmask)
+>>> +{
+>>> +	(*counter)++;
+>>> +	if (*counter != 1)
+>>> +		/* Bit is already active, nothing to do. */
+>>> +		return 0;
+>>> +
+>>> +	return regmap_update_bits(data->regmap, reg, bitmask, bitmask);
+>>> +}
+>>> +
+>>> +static int sx9500_dec_users(struct sx9500_data *data, int *counter,
+>>> +			    unsigned int reg, unsigned int bitmask)
+>>> +{
+>>> +	(*counter)--;
+>>> +	if (*counter != 0)
+>>> +		/* There are more users, do not deactivate. */
+>>> +		return 0;
+>>> +
+>>> +	return regmap_update_bits(data->regmap, reg, bitmask, 0);
+>>> +}
+>>> +
+>>> +static int sx9500_inc_chan_users(struct sx9500_data *data, int chan)
+>>> +{
+>>> +	return sx9500_inc_users(data, &data->channel_users[chan],
+>>> +				SX9500_REG_PROX_CTRL0, BIT(chan));
+>>> +}
+>>> +
+>>> +static int sx9500_dec_chan_users(struct sx9500_data *data, int chan)
+>>> +{
+>>> +	return sx9500_dec_users(data, &data->channel_users[chan],
+>>> +				SX9500_REG_PROX_CTRL0, BIT(chan));
+>>> +}
+>>> +
+>>> +static int sx9500_inc_data_rdy_users(struct sx9500_data *data)
+>>> +{
+>>> +	return sx9500_inc_users(data, &data->data_rdy_users,
+>>> +				SX9500_REG_IRQ_MSK, SX9500_CONVDONE_IRQ);
+>>> +}
+>>> +
+>>> +static int sx9500_dec_data_rdy_users(struct sx9500_data *data)
+>>> +{
+>>> +	return sx9500_dec_users(data, &data->data_rdy_users,
+>>> +				SX9500_REG_IRQ_MSK, SX9500_CONVDONE_IRQ);
+>>> +}
+>>> +
+>>> +static int sx9500_inc_close_far_users(struct sx9500_data *data)
+>>> +{
+>>> +	return sx9500_inc_users(data, &data->close_far_users,
+>>> +				SX9500_REG_IRQ_MSK,
+>>> +				SX9500_CLOSE_IRQ | SX9500_FAR_IRQ);
+>>> +}
+>>> +
+>>> +static int sx9500_dec_close_far_users(struct sx9500_data *data)
+>>> +{
+>>> +	return sx9500_dec_users(data, &data->close_far_users,
+>>> +				SX9500_REG_IRQ_MSK,
+>>> +				SX9500_CLOSE_IRQ | SX9500_FAR_IRQ);
+>>> +}
+>>> +
+>>> +static int sx9500_read_prox_data(struct sx9500_data *data,
+>>>  				 const struct iio_chan_spec *chan,
+>>>  				 int *val)
+>>>  {
+>>> @@ -203,15 +268,66 @@ static int sx9500_read_proximity(struct sx9500_data *data,
+>>>  
+>>>  	ret = regmap_write(data->regmap, SX9500_REG_SENSOR_SEL, chan->channel);
+>>>  	if (ret < 0)
+>>> -		return ret;
+>>> +		goto out;
+>>>  
+>>>  	ret = regmap_bulk_read(data->regmap, SX9500_REG_USE_MSB, &regval, 2);
+>>>  	if (ret < 0)
+>>> -		return ret;
+>>> +		goto out;
+>>>  
+>>>  	*val = 32767 - (s16)be16_to_cpu(regval);
+>>> +	ret = IIO_VAL_INT;
+>>> +
+>>> +out:
+>>> +	return ret;
+>>> +}
+>>> +
+>>> +static int sx9500_read_proximity(struct sx9500_data *data,
+>>> +				 const struct iio_chan_spec *chan,
+>>> +				 int *val)
+>>> +{
+>>> +	int ret;
+>>> +
+>>> +	mutex_lock(&data->mutex);
+>>> +
+>>> +	ret = sx9500_inc_chan_users(data, chan->channel);
+>>> +	if (ret < 0)
+>>> +		goto out;
+>>> +
+>>> +	ret = sx9500_inc_data_rdy_users(data);
+>>> +	if (ret < 0)
+>>> +		goto out_dec_chan;
+>>> +
+>>> +	mutex_unlock(&data->mutex);
+>>> +
+>>> +	ret = wait_for_completion_interruptible(&data->completion);
+>>> +	if (ret < 0)
+>>> +		return ret;
+>>>  
+>>> -	return IIO_VAL_INT;
+>>> +	mutex_lock(&data->mutex);
+>>> +
+>>> +	ret = sx9500_read_prox_data(data, chan, val);
+>>> +	if (ret < 0)
+>>> +		goto out;
+>>> +
+>>> +	ret = sx9500_dec_chan_users(data, chan->channel);
+>>> +	if (ret < 0)
+>>> +		goto out;
+>>> +
+>>> +	ret = sx9500_dec_data_rdy_users(data);
+>>> +	if (ret < 0)
+>>> +		goto out;
+>>> +
+>>> +	ret = IIO_VAL_INT;
+>>> +
+>>> +	goto out;
+>>> +
+>>> +out_dec_chan:
+>>> +	sx9500_dec_chan_users(data, chan->channel);
+>>> +out:
+>>> +	mutex_unlock(&data->mutex);
+>>> +	reinit_completion(&data->completion);
+>>> +
+>>> +	return ret;
+>>>  }
+>>>  
+>>>  static int sx9500_read_samp_freq(struct sx9500_data *data,
+>>> @@ -239,7 +355,6 @@ static int sx9500_read_raw(struct iio_dev *indio_dev,
+>>>  			   int *val, int *val2, long mask)
+>>>  {
+>>>  	struct sx9500_data *data = iio_priv(indio_dev);
+>>> -	int ret;
+>>>  
+>>>  	switch (chan->type) {
+>>>  	case IIO_PROXIMITY:
+>>> @@ -247,10 +362,7 @@ static int sx9500_read_raw(struct iio_dev *indio_dev,
+>>>  		case IIO_CHAN_INFO_RAW:
+>>>  			if (iio_buffer_enabled(indio_dev))
+>>>  				return -EBUSY;
+>>> -			mutex_lock(&data->mutex);
+>>> -			ret = sx9500_read_proximity(data, chan, val);
+>>> -			mutex_unlock(&data->mutex);
+>>> -			return ret;
+>>> +			return sx9500_read_proximity(data, chan, val);
+>>>  		case IIO_CHAN_INFO_SAMP_FREQ:
+>>>  			return sx9500_read_samp_freq(data, val, val2);
+>>>  		default:
+>>> @@ -321,28 +433,16 @@ static irqreturn_t sx9500_irq_handler(int irq, void *private)
+>>>  	return IRQ_WAKE_THREAD;
+>>>  }
+>>>  
+>>> -static irqreturn_t sx9500_irq_thread_handler(int irq, void *private)
+>>> +static void sx9500_push_events(struct iio_dev *indio_dev)
+>>>  {
+>>> -	struct iio_dev *indio_dev = private;
+>>> -	struct sx9500_data *data = iio_priv(indio_dev);
+>>>  	int ret;
+>>>  	unsigned int val, chan;
+>>> -
+>>> -	mutex_lock(&data->mutex);
+>>> -
+>>> -	ret = regmap_read(data->regmap, SX9500_REG_IRQ_SRC, &val);
+>>> -	if (ret < 0) {
+>>> -		dev_err(&data->client->dev, "i2c transfer error in irq\n");
+>>> -		goto out;
+>>> -	}
+>>> -
+>>> -	if (!(val & (SX9500_CLOSE_IRQ | SX9500_FAR_IRQ)))
+>>> -		goto out;
+>>> +	struct sx9500_data *data = iio_priv(indio_dev);
+>>>  
+>>>  	ret = regmap_read(data->regmap, SX9500_REG_STAT, &val);
+>>>  	if (ret < 0) {
+>>>  		dev_err(&data->client->dev, "i2c transfer error in irq\n");
+>>> -		goto out;
+>>> +		return;
+>>>  	}
+>>>  
+>>>  	val >>= SX9500_PROXSTAT_SHIFT;
+>>> @@ -357,15 +457,34 @@ static irqreturn_t sx9500_irq_thread_handler(int irq, void *private)
+>>>  			/* No change on this channel. */
+>>>  			continue;
+>>>  
+>>> -		dir = new_prox ? IIO_EV_DIR_FALLING :
+>>> -			IIO_EV_DIR_RISING;
+>>> -		ev = IIO_UNMOD_EVENT_CODE(IIO_PROXIMITY,
+>>> -					  chan,
+>>> -					  IIO_EV_TYPE_THRESH,
+>>> -					  dir);
+>>> +		dir = new_prox ? IIO_EV_DIR_FALLING : IIO_EV_DIR_RISING;
+>>> +		ev = IIO_UNMOD_EVENT_CODE(IIO_PROXIMITY, chan,
+>>> +					  IIO_EV_TYPE_THRESH, dir);
+>>>  		iio_push_event(indio_dev, ev, iio_get_time_ns());
+>>>  		data->prox_stat[chan] = new_prox;
+>>>  	}
+>>> +}
+>>> +
+>>> +static irqreturn_t sx9500_irq_thread_handler(int irq, void *private)
+>>> +{
+>>> +	struct iio_dev *indio_dev = private;
+>>> +	struct sx9500_data *data = iio_priv(indio_dev);
+>>> +	int ret;
+>>> +	unsigned int val;
+>>> +
+>>> +	mutex_lock(&data->mutex);
+>>> +
+>>> +	ret = regmap_read(data->regmap, SX9500_REG_IRQ_SRC, &val);
+>>> +	if (ret < 0) {
+>>> +		dev_err(&data->client->dev, "i2c transfer error in irq\n");
+>>> +		goto out;
+>>> +	}
+>>> +
+>>> +	if (val & (SX9500_CLOSE_IRQ | SX9500_FAR_IRQ))
+>>> +		sx9500_push_events(indio_dev);
+>>> +
+>>> +	if (val & SX9500_CONVDONE_IRQ)
+>>> +		complete_all(&data->completion);
+>>>  
+>>>  out:
+>>>  	mutex_unlock(&data->mutex);
+>>> @@ -394,9 +513,7 @@ static int sx9500_write_event_config(struct iio_dev *indio_dev,
+>>>  				     int state)
+>>>  {
+>>>  	struct sx9500_data *data = iio_priv(indio_dev);
+>>> -	int ret, i;
+>>> -	bool any_active = false;
+>>> -	unsigned int irqmask;
+>>> +	int ret;
+>>>  
+>>>  	if (chan->type != IIO_PROXIMITY || type != IIO_EV_TYPE_THRESH ||
+>>>  	    dir != IIO_EV_DIR_EITHER)
+>>> @@ -404,24 +521,32 @@ static int sx9500_write_event_config(struct iio_dev *indio_dev,
+>>>  
+>>>  	mutex_lock(&data->mutex);
+>>>  
+>>> -	data->event_enabled[chan->channel] = state;
+>>> +	if (state == 1) {
+>> Is if (state) not sufficient?
+>>> +		ret = sx9500_inc_chan_users(data, chan->channel);
+>>> +		if (ret < 0)
+>>> +			goto out_unlock;
+>>> +		ret = sx9500_inc_close_far_users(data);
+>>> +		if (ret < 0)
+>>> +			goto out_undo_chan;
+>>> +	} else {
+>>> +		ret = sx9500_dec_chan_users(data, chan->channel);
+>>> +		if (ret < 0)
+>>> +			goto out_unlock;
+>>> +		ret = sx9500_dec_close_far_users(data);
+>>> +		if (ret < 0)
+>>> +			goto out_undo_chan;
+>>> +	}
+>>>  
+>>> -	for (i = 0; i < SX9500_NUM_CHANNELS; i++)
+>>> -		if (data->event_enabled[i]) {
+>>> -			any_active = true;
+>>> -			break;
+>>> -		}
+>>> +	data->event_enabled[chan->channel] = state;
+>>> +	goto out_unlock;
+>>>  
+>>> -	irqmask = SX9500_CLOSE_IRQ | SX9500_FAR_IRQ;
+>>> -	if (any_active)
+>>> -		ret = regmap_update_bits(data->regmap, SX9500_REG_IRQ_MSK,
+>>> -					 irqmask, irqmask);
+>>> +out_undo_chan:
+>>> +	if (state == 1)
+>>> +		sx9500_dec_chan_users(data, chan->channel);
+>>>  	else
+>>> -		ret = regmap_update_bits(data->regmap, SX9500_REG_IRQ_MSK,
+>>> -					 irqmask, 0);
+>>> -
+>>> +		sx9500_inc_chan_users(data, chan->channel);
+>>> +out_unlock:
+>>>  	mutex_unlock(&data->mutex);
+>>> -
+>>>  	return ret;
+>>>  }
+>>>  
+>>> @@ -472,12 +597,16 @@ static int sx9500_set_trigger_state(struct iio_trigger *trig,
+>>>  
+>>>  	mutex_lock(&data->mutex);
+>>>  
+>>> -	ret = regmap_update_bits(data->regmap, SX9500_REG_IRQ_MSK,
+>>> -				 SX9500_CONVDONE_IRQ,
+>>> -				 state ? SX9500_CONVDONE_IRQ : 0);
+>>> -	if (ret == 0)
+>>> -		data->trigger_enabled = state;
+>>> +	if (state)
+>>> +		ret = sx9500_inc_data_rdy_users(data);
+>>> +	else
+>>> +		ret = sx9500_dec_data_rdy_users(data);
+>>> +	if (ret < 0)
+>>> +		goto out;
+>>> +
+>>> +	data->trigger_enabled = state;
+>>>  
+>>> +out:
+>>>  	mutex_unlock(&data->mutex);
+>>>  
+>>>  	return ret;
+>>> @@ -499,7 +628,7 @@ static irqreturn_t sx9500_trigger_handler(int irq, void *private)
+>>>  
+>>>  	for_each_set_bit(bit, indio_dev->buffer->scan_mask,
+>>>  			 indio_dev->masklength) {
+>>> -		ret = sx9500_read_proximity(data, &indio_dev->channels[bit],
+>>> +		ret = sx9500_read_prox_data(data, &indio_dev->channels[bit],
+>>>  					    &val);
+>>>  		if (ret < 0)
+>>>  			goto out;
+>>> @@ -518,6 +647,62 @@ out:
+>>>  	return IRQ_HANDLED;
+>>>  }
+>>>  
+>>> +static int sx9500_buffer_preenable(struct iio_dev *indio_dev)
+>>> +{
+>>> +	struct sx9500_data *data = iio_priv(indio_dev);
+>>> +	int ret, i;
+>>> +
+>>> +	mutex_lock(&data->mutex);
+>>> +
+>>> +	for (i = 0; i < SX9500_NUM_CHANNELS; i++)
+>>> +		if (test_bit(i, indio_dev->active_scan_mask)) {
+>>> +			ret = sx9500_inc_chan_users(data, i);
+>>> +			if (ret)
+>>> +				break;
+>>> +		}
+>>> +
+>>> +	if (ret)
+>>> +		for (i = i - 1; i >= 0; i--)
+>>> +			if (test_bit(i, indio_dev->active_scan_mask))
+>>> +				sx9500_dec_chan_users(data, i);
+>>> +
+>>> +	mutex_unlock(&data->mutex);
+>>> +
+>>> +	return ret;
+>>> +}
+>>> +
+>>> +static int sx9500_buffer_predisable(struct iio_dev *indio_dev)
+>>> +{
+>>> +	struct sx9500_data *data = iio_priv(indio_dev);
+>>> +	int ret, i;
+>>> +
+>>> +	iio_triggered_buffer_predisable(indio_dev);
+>>> +
+>>> +	mutex_lock(&data->mutex);
+>>> +
+>>> +	for (i = 0; i < SX9500_NUM_CHANNELS; i++)
+>>> +		if (test_bit(i, indio_dev->active_scan_mask)) {
+>>> +			ret = sx9500_dec_chan_users(data, i);
+>>> +			if (ret)
+>>> +				break;
+>>> +		}
+>>> +
+>>> +	if (ret)
+>>> +		for (i = i - 1; i >= 0; i--)
+>>> +			if (test_bit(i, indio_dev->active_scan_mask))
+>>> +				sx9500_inc_chan_users(data, i);
+>>> +
+>>> +	mutex_unlock(&data->mutex);
+>>> +
+>>> +	return ret;
+>>> +}
+>>> +
+>>> +static const struct iio_buffer_setup_ops sx9500_buffer_setup_ops = {
+>>> +	.preenable = sx9500_buffer_preenable,
+>>> +	.postenable = iio_triggered_buffer_postenable,
+>>> +	.predisable = sx9500_buffer_predisable,
+>>> +};
+>>> +
+>>>  struct sx9500_reg_default {
+>>>  	u8 reg;
+>>>  	u8 def;
+>>> @@ -573,11 +758,44 @@ static const struct sx9500_reg_default sx9500_default_regs[] = {
+>>>  	},
+>>>  	{
+>>>  		.reg = SX9500_REG_PROX_CTRL0,
+>>> -		/* Scan period: 30ms, all sensors enabled. */
+>>> -		.def = 0x0f,
+>>> +		/* Scan period: 30ms, all sensors disabled. */
+>>> +		.def = 0x00,
+>>>  	},
+>>>  };
+>>>  
+>>> +/* Activate all channels and perform an initial compensation. */
+>>> +static int sx9500_init_compensation(struct iio_dev *indio_dev)
+>>> +{
+>>> +	struct sx9500_data *data = iio_priv(indio_dev);
+>>> +	int i, ret;
+>>> +	unsigned int val;
+>>> +
+>>> +	ret = regmap_update_bits(data->regmap, SX9500_REG_PROX_CTRL0,
+>>> +				 GENMASK(SX9500_NUM_CHANNELS, 0),
+>>> +				 GENMASK(SX9500_NUM_CHANNELS, 0));
+>>> +	if (ret < 0)
+>>> +		return ret;
+>>> +
+>>> +	for (i = 10; i >= 0; i--) {
+>>> +		usleep_range(10000, 20000);
+>>> +		ret = regmap_read(data->regmap, SX9500_REG_STAT, &val);
+>>> +		if (ret < 0)
+>>> +			goto out;
+>>> +		if (!(val & SX9500_COMPSTAT_MASK))
+>>> +			break;
+>>> +	}
+>>> +
+>>> +	if (i < 0) {
+>>> +		dev_err(&data->client->dev, "initial compensation timed out");
+>>> +		ret = -ETIMEDOUT;
+>>> +	}
+>>> +
+>>> +out:
+>>> +	regmap_update_bits(data->regmap, SX9500_REG_PROX_CTRL0,
+>>> +			   GENMASK(SX9500_NUM_CHANNELS, 0), 0);
+>>> +	return ret;
+>>> +}
+>>> +
+>>>  static int sx9500_init_device(struct iio_dev *indio_dev)
+>>>  {
+>>>  	struct sx9500_data *data = iio_priv(indio_dev);
+>>> @@ -605,6 +823,10 @@ static int sx9500_init_device(struct iio_dev *indio_dev)
+>>>  			return ret;
+>>>  	}
+>>>  
+>>> +	ret = sx9500_init_compensation(indio_dev);
+>>> +	if (ret < 0)
+>>> +		return ret;
+>>> +
+>>>  	return 0;
+>>>  }
+>>>  
+>>> @@ -652,6 +874,7 @@ static int sx9500_probe(struct i2c_client *client,
+>>>  	data = iio_priv(indio_dev);
+>>>  	data->client = client;
+>>>  	mutex_init(&data->mutex);
+>>> +	init_completion(&data->completion);
+>>>  	data->trigger_enabled = false;
+>>>  
+>>>  	data->regmap = devm_regmap_init_i2c(client, &sx9500_regmap_config);
+>>> @@ -671,30 +894,35 @@ static int sx9500_probe(struct i2c_client *client,
+>>>  	if (client->irq <= 0)
+>>>  		client->irq = sx9500_gpio_probe(client, data);
+>>>  
+>>> -	if (client->irq > 0) {
+>>> -		ret = devm_request_threaded_irq(&client->dev, client->irq,
+>>> -				sx9500_irq_handler, sx9500_irq_thread_handler,
+>>> -				IRQF_TRIGGER_FALLING | IRQF_ONESHOT,
+>>> -				SX9500_IRQ_NAME, indio_dev);
+>>> -		if (ret < 0)
+>>> -			return ret;
+>>> +	if (client->irq <= 0) {
+>>> +		dev_err(&client->dev, "no valid irq found\n");
+>>> +		return -EINVAL;
+>>> +	}
+>>> +
+>>> +	ret = devm_request_threaded_irq(&client->dev, client->irq,
+>>> +					sx9500_irq_handler,
+>>> +					sx9500_irq_thread_handler,
+>>> +					IRQF_TRIGGER_FALLING | IRQF_ONESHOT,
+>>> +					SX9500_IRQ_NAME, indio_dev);
+>>> +	if (ret < 0)
+>>> +		return ret;
+>>>  
+>>> -		data->trig = devm_iio_trigger_alloc(&client->dev,
+>>> -				"%s-dev%d", indio_dev->name, indio_dev->id);
+>>> -		if (!data->trig)
+>>> -			return -ENOMEM;
+>>> +	data->trig = devm_iio_trigger_alloc(&client->dev, "%s-dev%d",
+>>> +					    indio_dev->name, indio_dev->id);
+>>> +	if (!data->trig)
+>>> +		return -ENOMEM;
+>>>  
+>>> -		data->trig->dev.parent = &client->dev;
+>>> -		data->trig->ops = &sx9500_trigger_ops;
+>>> -		iio_trigger_set_drvdata(data->trig, indio_dev);
+>>> +	data->trig->dev.parent = &client->dev;
+>>> +	data->trig->ops = &sx9500_trigger_ops;
+>>> +	iio_trigger_set_drvdata(data->trig, indio_dev);
+>>>  
+>>> -		ret = iio_trigger_register(data->trig);
+>>> -		if (ret)
+>>> -			return ret;
+>>> -	}
+>>> +	ret = iio_trigger_register(data->trig);
+>>> +	if (ret)
+>>> +		return ret;
+>>>  
+>>>  	ret = iio_triggered_buffer_setup(indio_dev, NULL,
+>>> -					 sx9500_trigger_handler, NULL);
+>>> +					 sx9500_trigger_handler,
+>>> +					 &sx9500_buffer_setup_ops);
+>>>  	if (ret < 0)
+>>>  		goto out_trigger_unregister;
+>>>  
+>>>
+>>
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
 > 
 
