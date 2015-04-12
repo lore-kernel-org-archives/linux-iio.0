@@ -1,78 +1,95 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
 Received: from mga03.intel.com ([134.134.136.65]:61664 "EHLO mga03.intel.com"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751598AbbDLRJc (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Sun, 12 Apr 2015 13:09:32 -0400
+	id S1751901AbbDLRJd (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Sun, 12 Apr 2015 13:09:33 -0400
 From: Vlad Dogaru <vlad.dogaru@intel.com>
 To: jic23@kernel.org, linux-iio@vger.kernel.org
 Cc: Vlad Dogaru <vlad.dogaru@intel.com>
-Subject: [PATCH v3 2/3] iio: sx9500: refactor GPIO interrupt code
-Date: Sun, 12 Apr 2015 20:09:20 +0300
-Message-Id: <1428858561-27994-3-git-send-email-vlad.dogaru@intel.com>
+Subject: [PATCH v3 3/3] iio: sx9500: add GPIO reset pin
+Date: Sun, 12 Apr 2015 20:09:21 +0300
+Message-Id: <1428858561-27994-4-git-send-email-vlad.dogaru@intel.com>
 In-Reply-To: <1428858561-27994-1-git-send-email-vlad.dogaru@intel.com>
 References: <1428858561-27994-1-git-send-email-vlad.dogaru@intel.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
+If a GPIO reset pin is listed in ACPI or Device Tree, use it to reset
+the device on initialization.
+
 Signed-off-by: Vlad Dogaru <vlad.dogaru@intel.com>
 ---
- drivers/iio/proximity/sx9500.c | 27 ++++++++++-----------------
- 1 file changed, 10 insertions(+), 17 deletions(-)
+ drivers/iio/proximity/sx9500.c | 22 ++++++++++++++++++++--
+ 1 file changed, 20 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/iio/proximity/sx9500.c b/drivers/iio/proximity/sx9500.c
-index f0f65a7..72efbbc 100644
+index 72efbbc..a32fa2e 100644
 --- a/drivers/iio/proximity/sx9500.c
 +++ b/drivers/iio/proximity/sx9500.c
-@@ -859,30 +859,24 @@ static int sx9500_init_device(struct iio_dev *indio_dev)
- 	return 0;
- }
+@@ -33,6 +33,7 @@
+ #define SX9500_IRQ_NAME			"sx9500_event"
  
--static int sx9500_gpio_probe(struct i2c_client *client,
--			     struct sx9500_data *data)
-+static void sx9500_gpio_probe(struct i2c_client *client,
-+			      struct sx9500_data *data)
- {
- 	struct device *dev;
- 	struct gpio_desc *gpio;
--	int ret;
+ #define SX9500_GPIO_INT			"interrupt"
++#define SX9500_GPIO_RESET		"reset"
  
- 	if (!client)
--		return -EINVAL;
-+		return;
+ /* Register definitions. */
+ #define SX9500_REG_IRQ_SRC		0x00
+@@ -85,6 +86,7 @@ struct sx9500_data {
+ 	struct i2c_client *client;
+ 	struct iio_trigger *trig;
+ 	struct regmap *regmap;
++	struct gpio_desc *gpiod_rst;
+ 	/*
+ 	 * Last reading of the proximity status for each channel.  We
+ 	 * only send an event to user space when this changes.
+@@ -831,6 +833,13 @@ static int sx9500_init_device(struct iio_dev *indio_dev)
+ 	int ret, i;
+ 	unsigned int val;
  
- 	dev = &client->dev;
- 
--	/* data ready gpio interrupt pin */
--	gpio = devm_gpiod_get_index(dev, SX9500_GPIO_NAME, 0, GPIOD_IN);
--	if (IS_ERR(gpio)) {
--		dev_err(dev, "acpi gpio get index failed\n");
--		return PTR_ERR(gpio);
-+	if (client->irq <= 0) {
-+		gpio = devm_gpiod_get_index(dev, SX9500_GPIO_INT, 0, GPIOD_IN);
-+		if (IS_ERR(gpio))
-+			dev_err(dev, "gpio get irq failed\n");
-+		else
-+			client->irq = gpiod_to_irq(gpio);
++	if (data->gpiod_rst) {
++		gpiod_set_value_cansleep(data->gpiod_rst, 0);
++		usleep_range(1000, 2000);
++		gpiod_set_value_cansleep(data->gpiod_rst, 1);
++		usleep_range(1000, 2000);
++	}
++
+ 	ret = regmap_write(data->regmap, SX9500_REG_IRQ_MSK, 0);
+ 	if (ret < 0)
+ 		return ret;
+@@ -877,6 +886,13 @@ static void sx9500_gpio_probe(struct i2c_client *client,
+ 		else
+ 			client->irq = gpiod_to_irq(gpio);
  	}
--
--	ret = gpiod_to_irq(gpio);
--
--	dev_dbg(dev, "GPIO resource, no:%d irq:%d\n", desc_to_gpio(gpio), ret);
--
--	return ret;
++
++	data->gpiod_rst = devm_gpiod_get_index(dev, SX9500_GPIO_RESET,
++					       0, GPIOD_OUT_HIGH);
++	if (IS_ERR(data->gpiod_rst)) {
++		dev_warn(dev, "gpio get reset pin failed\n");
++		data->gpiod_rst = NULL;
++	}
  }
  
  static int sx9500_probe(struct i2c_client *client,
-@@ -916,8 +910,7 @@ static int sx9500_probe(struct i2c_client *client,
- 	indio_dev->modes = INDIO_DIRECT_MODE;
- 	i2c_set_clientdata(client, indio_dev);
+@@ -900,8 +916,6 @@ static int sx9500_probe(struct i2c_client *client,
+ 	if (IS_ERR(data->regmap))
+ 		return PTR_ERR(data->regmap);
  
--	if (client->irq <= 0)
--		client->irq = sx9500_gpio_probe(client, data);
-+	sx9500_gpio_probe(client, data);
+-	sx9500_init_device(indio_dev);
+-
+ 	indio_dev->dev.parent = &client->dev;
+ 	indio_dev->name = SX9500_DRIVER_NAME;
+ 	indio_dev->channels = sx9500_channels;
+@@ -912,6 +926,10 @@ static int sx9500_probe(struct i2c_client *client,
  
+ 	sx9500_gpio_probe(client, data);
+ 
++	ret = sx9500_init_device(indio_dev);
++	if (ret < 0)
++		return ret;
++
  	if (client->irq <= 0)
  		dev_warn(&client->dev, "no valid irq found\n");
+ 	else {
 -- 
 1.9.1
 
