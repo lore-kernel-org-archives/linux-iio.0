@@ -1,135 +1,356 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:46710 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:46735 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751476AbbDLP7Z (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 12 Apr 2015 11:59:25 -0400
-Message-ID: <552A965B.7030108@kernel.org>
-Date: Sun, 12 Apr 2015 16:59:23 +0100
+	with ESMTP id S1751476AbbDLQEx (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 12 Apr 2015 12:04:53 -0400
+Message-ID: <552A97A2.2020501@kernel.org>
+Date: Sun, 12 Apr 2015 17:04:50 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Daniel Baluta <daniel.baluta@intel.com>
-CC: Joel Becker <jlbec@evilplan.org>,
-	Lars-Peter Clausen <lars@metafoo.de>,
+To: Dmitry Eremin-Solenikov <dbaryshkov@gmail.com>,
 	Hartmut Knaack <knaack.h@gmx.de>,
-	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"octavian.purdila@intel.com" <octavian.purdila@intel.com>,
-	Paul Bolle <pebolle@tiscali.nl>, patrick.porlan@intel.com,
-	adriana.reus@intel.com
-Subject: Re: [PATCH v3 1/3] iio: configfs: Add configfs support to IIO
-References: <1428329889-18335-1-git-send-email-daniel.baluta@intel.com>	<1428329889-18335-2-git-send-email-daniel.baluta@intel.com>	<CAEnQRZAijAtRdqke5tP-DFL8ROvnzimBEbHwr1=JxhAaqoCndw@mail.gmail.com>	<5526B464.8000502@kernel.org> <CAEnQRZA=pSm5DV6PzZ9zQ7W+d_Q9esn6X9cmOOdymNFu8sCyug@mail.gmail.com>
-In-Reply-To: <CAEnQRZA=pSm5DV6PzZ9zQ7W+d_Q9esn6X9cmOOdymNFu8sCyug@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>
+CC: linux-iio@vger.kernel.org
+Subject: Re: [PATCH v2] iio: add m62332 DAC driver
+References: <1428782925-15377-1-git-send-email-dbaryshkov@gmail.com>
+In-Reply-To: <1428782925-15377-1-git-send-email-dbaryshkov@gmail.com>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 10/04/15 14:43, Daniel Baluta wrote:
-> On Thu, Apr 9, 2015 at 8:18 PM, Jonathan Cameron <jic23@kernel.org> wrote:
->> On 08/04/15 14:30, Daniel Baluta wrote:
->>> On Mon, Apr 6, 2015 at 5:18 PM, Daniel Baluta <daniel.baluta@intel.com> wrote:
->>>> This module is the core of IIO configfs. It creates the "iio" subsystem under
->>>> configfs mount point root, with one default group for "triggers".
->>>>
->>>> It offers basic interface for registering software trigger types. Next patches
->>>> will add "hrtimer" and "sysfs" trigger types. To add a new trigger type we must
->>>> create a new kernel module which implements iio_configfs_trigger.h interface.
->>>>
->>>> See Documentation/iio/iio_configfs.txt for more details on how configfs
->>>> support for IIO works.
->>>>
->>>> Signed-off-by: Daniel Baluta <daniel.baluta@intel.com>
->>>
->>> Hi all,
->>>
->>> I also need your feedback on the following problem.
->>>
->>> We would like to be able to create hrtimer triggers from within
->>> a kernel module. There are cases where we don't have an interrupt
->>> pin or the interrupt pin is not connected, and we would like
->>> that applications to run unmodified with these types of sensors too.
->> A reasonable aim perhaps, as opposed to locally implemented polling
->> all over the place (which should definitely not happen).
+On 11/04/15 21:08, Dmitry Eremin-Solenikov wrote:
+> m62332 is a simple 2-channel DAC used on several Sharp Zaurus boards to
+> control LCD voltage, backlight and sound. The driver use regulators to
+> control the reference voltage and enabling/disabling the DAC.
 > 
-> Yes, exactly! :)
-I'm actually beginning to have my doubts about whether my initial
-response here was right.  Given your use cases and the complexity
-of matching frequencies, I think you are almost always better
-off implementing it in the drivers themselves (which can decide
-if there is new data or not).
-> 
->>
->> An alternative the zio guys used was to create timer
->> based triggers on the fly purely based on them being requested
->> (with an appropriate name IIRC)...  Doesn't quite solve your
->> problem though as still needs userspace changes.
->>>
->>> We will split the current design into 3 parts:
->>>
->>> (1) IIO trigger handling generic part, which offers an API
->>>      to register/unregister/get a reference to a trigger type
->>>
->>> (2) IIO configfs part that gets a reference to a trigger type and
->>> handles user requests to create/destroy a trigger.
->>>
->>> (3) IIO hrtimer driver that use the API at (1) for registering
->>> / deregistering a trigger type.
->>>
->>> Then, each driver in the case that it doesn't have a "real" trigger,
->>> will get a reference to a "hrtimer" trigger type and create
->>> a new "hrtimer" trigger.
->>>
->>> Does this look good to you? This could be easily done from
->>> userspace, but we will need to modify our userspace applications.
->> My initial thought is this really is a job for userspace, as should
->> be in most cases connecting up the device specific trigger as well
->> (as it's not always the right thing to use).
->>
->> In the general case it is far from obvious that an hrtimer is the
->> right option.  Many usecases would be better off with a sysfs trigger
->> or even running off a different interrupt based trigger entirely.
->>>
->>> Also, handling sampling_frequency/delay would be transparent to
->>> applications if we provide this in kernel API.
->> Not really as sampling frequency in this case should only be an
->> attribute of the trigger, not the device.  We only really allow
->> it for the device rather than always the triggers on the basis
->> that it has impacts on other device elements (events etc).
-> 
-> Well, if the trigger is directly created from the driver then we will
-> have a reference to a function that sets its delay.
-> 
-> Each time the user sets the sampling frequency for the device
-> with hit write_raw and there on IIO_CHAN_INFO_SAMP_FREQ
-> case we also call set_delay(). Thus we always have have device
-> sampling frequency in sync with trigger delay.
-> 
-> I know this sounds crazy :) and I don't like it. I am not sure how
-> to guarantee that device frequency is always in sync with trigger
-> delay.
-You can't that I can see.  Hence you've convinced me this is a bad
-idea.
-> 
->>
->> Now sensible userspace ought to search for the trigger sysfs
->> directory and look there as well.
->>
->> I suppose if there is an awful lot of demand for this function
->> we could add a control knob somewhere that would set a 'default
->> trigger type' to be created for buffered devices that haven't
->> provided their own...  I'm not overly keen though.
->>>
-> 
-> This functionality would be very nice and useful, lets see if we can
-> find some elegant way to do it.
-I think this may well still be worth having, just not for your
-particular case.  It would be useful for the devices that have
-a 'sample now' signal of some type that allows the trigger to
-control when they are sampling (and hence always match perfectly!)
+> Signed-off-by: Dmitry Eremin-Solenikov <dbaryshkov@gmail.com>
+Looks good to me. Couple of little nits inline.
+Just stuff to slightly improve reability (I'm a very lazy reviewer
+so want to always make my job as easy as possible!)
 
-J
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+Peter might well want to take another look as well and given time
+in the cycle (missed 4.1) we have loads of time.
+
+Jonathan
+
+> ---
+> This patch most probably targets 4.2, rather than 4.1.
+> Changes since v1:
+>  - dropped jiffies.h include
+>  - changed types of structure members
+>  - simplified the controls for regulator
+>  - added a mutex to protect data
+>  - check return codes in m62332_probe
+>  - syntax/whitespace changes
+> 
+>  drivers/iio/dac/Kconfig  |  10 ++
+>  drivers/iio/dac/Makefile |   1 +
+>  drivers/iio/dac/m62332.c | 255 +++++++++++++++++++++++++++++++++++++++++++++++
+>  3 files changed, 266 insertions(+)
+>  create mode 100644 drivers/iio/dac/m62332.c
+> 
+> diff --git a/drivers/iio/dac/Kconfig b/drivers/iio/dac/Kconfig
+> index 2236ea2..2ede061 100644
+> --- a/drivers/iio/dac/Kconfig
+> +++ b/drivers/iio/dac/Kconfig
+> @@ -142,6 +142,16 @@ config AD7303
+>  	  To compile this driver as module choose M here: the module will be called
+>  	  ad7303.
+>  
+> +config M62332
+> +	tristate "Mitsubishi M62332 DAC driver"
+> +	depends on I2C
+> +	help
+> +	  If you say yes here you get support for the Mitsubishi M62332
+> +	  (I2C 8-Bit DACs with rail-to-rail outputs).
+> +
+> +	  This driver can also be built as a module.  If so, the module
+> +	  will be called m62332.
+> +
+>  config MAX517
+>  	tristate "Maxim MAX517/518/519 DAC driver"
+>  	depends on I2C
+> diff --git a/drivers/iio/dac/Makefile b/drivers/iio/dac/Makefile
+> index 52be7e1..63ae056 100644
+> --- a/drivers/iio/dac/Makefile
+> +++ b/drivers/iio/dac/Makefile
+> @@ -16,6 +16,7 @@ obj-$(CONFIG_AD5764) += ad5764.o
+>  obj-$(CONFIG_AD5791) += ad5791.o
+>  obj-$(CONFIG_AD5686) += ad5686.o
+>  obj-$(CONFIG_AD7303) += ad7303.o
+> +obj-$(CONFIG_M62332) += m62332.o
+>  obj-$(CONFIG_MAX517) += max517.o
+>  obj-$(CONFIG_MAX5821) += max5821.o
+>  obj-$(CONFIG_MCP4725) += mcp4725.o
+> diff --git a/drivers/iio/dac/m62332.c b/drivers/iio/dac/m62332.c
+> new file mode 100644
+> index 0000000..395274c
+> --- /dev/null
+> +++ b/drivers/iio/dac/m62332.c
+> @@ -0,0 +1,255 @@
+> +/*
+> + *  m62332.c - Support for Mitsubishi m62332 DAC
+> + *
+> + *  Copyright (c) 2014 Dmitry Eremin-Solenikov
+> + *
+> + *  Based on max517 driver:
+> + *  Copyright (C) 2010, 2011 Roland Stigge <stigge@antcom.de>
+> + *
+> + *  This program is free software; you can redistribute it and/or modify
+> + *  it under the terms of the GNU General Public License as published by
+> + *  the Free Software Foundation; either version 2 of the License, or
+> + *  (at your option) any later version.
+> + *
+> + *  This program is distributed in the hope that it will be useful,
+> + *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+> + *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+> + *  GNU General Public License for more details.
+> + */
+> +
+> +#include <linux/module.h>
+> +#include <linux/slab.h>
+> +#include <linux/i2c.h>
+> +#include <linux/err.h>
+> +
+> +#include <linux/iio/iio.h>
+> +#include <linux/iio/driver.h>
+> +
+> +#include <linux/regulator/consumer.h>
+> +
+> +struct m62332_data {
+> +	struct i2c_client	*client;
+> +	int			vref_mv;
+> +	struct regulator	*vcc;
+> +	struct mutex		mutex;
+> +	u8			raw[2];
+> +#ifdef CONFIG_PM_SLEEP
+> +	u8			save[2];
+> +#endif
+> +};
+> +
+> +static int m62332_set_value(struct iio_dev *indio_dev,
+> +	u8 val, int channel)
+> +{
+> +	struct m62332_data *data = iio_priv(indio_dev);
+> +	struct i2c_client *client = data->client;
+> +	u8 outbuf[2];
+> +	int res = 0;
+> +
+> +	if (val == data->raw[channel])
+> +		return 0;
+> +
+> +	outbuf[0] = channel;
+> +	outbuf[1] = val;
+> +
+> +	mutex_lock(&data->mutex);
+> +
+> +	if (val)
+> +		res = regulator_enable(data->vcc);
+> +	if (res)
+> +		goto out;
+> +
+> +	res = i2c_master_send(client, outbuf, 2);
+> +	if (res >= 0 && res != 2)
+> +		res = -EIO;
+> +	if (res < 0)
+> +		goto out;
+> +
+> +	data->raw[channel] = val;
+> +
+> +	if (!val)
+> +		regulator_disable(data->vcc);
+> +
+> +	mutex_unlock(&data->mutex);
+> +
+> +	return 0;
+> +
+> +out:
+> +	mutex_unlock(&data->mutex);
+> +
+> +	return res;
+> +}
+> +
+> +static int m62332_read_raw(struct iio_dev *indio_dev,
+> +			   struct iio_chan_spec const *chan,
+> +			   int *val,
+> +			   int *val2,
+> +			   long m)
+> +{
+> +	struct m62332_data *data = iio_priv(indio_dev);
+> +
+> +	switch (m) {
+> +	case IIO_CHAN_INFO_SCALE:
+> +		/* Corresponds to Vref / 2^(bits) */
+> +		*val = data->vref_mv;
+> +		*val2 = 8;
+> +		return IIO_VAL_FRACTIONAL_LOG2;
+> +	case IIO_CHAN_INFO_RAW:
+> +		*val = data->raw[chan->channel];
+> +		return IIO_VAL_INT;
+> +	default:
+> +		return -EINVAL;
+> +	}
+> +}
+> +
+> +static int m62332_write_raw(struct iio_dev *indio_dev,
+> +			    struct iio_chan_spec const *chan,
+> +			    int val,
+> +			    int val2,
+> +			    long mask)
+> +{
+> +	int ret;
+> +
+> +	switch (mask) {
+> +	case IIO_CHAN_INFO_RAW:
+> +		if (val < 0 || val > 255)
+> +			return -EINVAL;
+> +
+> +		ret = m62332_set_value(indio_dev, val, chan->channel);
+> +		break;
+> +	default:
+> +		ret = -EINVAL;
+> +		break;
+> +	}
+> +
+> +	return ret;
+> +}
+> +
+> +#ifdef CONFIG_PM_SLEEP
+> +static int m62332_suspend(struct device *dev)
+> +{
+> +	struct iio_dev *indio_dev = i2c_get_clientdata(to_i2c_client(dev));
+> +	struct m62332_data *data = iio_priv(indio_dev);
+> +	int ret;
+> +
+> +	data->save[0] = data->raw[0];
+> +	data->save[1] = data->raw[1];
+> +
+> +	ret = m62332_set_value(indio_dev, 0, 0);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	return m62332_set_value(indio_dev, 0, 1);
+> +}
+> +
+> +static int m62332_resume(struct device *dev)
+> +{
+> +	struct iio_dev *indio_dev = i2c_get_clientdata(to_i2c_client(dev));
+> +	struct m62332_data *data = iio_priv(indio_dev);
+> +	int ret;
+> +
+> +	ret = m62332_set_value(indio_dev, data->save[0], 0);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	return m62332_set_value(indio_dev, data->save[1], 1);
+> +}
+> +
+> +static SIMPLE_DEV_PM_OPS(m62332_pm_ops, m62332_suspend, m62332_resume);
+> +#define M62332_PM_OPS (&m62332_pm_ops)
+> +#else
+> +#define M62332_PM_OPS NULL
+> +#endif
+> +
+> +static const struct iio_info m62332_info = {
+> +	.read_raw = m62332_read_raw,
+> +	.write_raw = m62332_write_raw,
+> +	.driver_module = THIS_MODULE,
+> +};
+> +
+> +#define M62332_CHANNEL(chan) {				\
+> +	.type = IIO_VOLTAGE,				\
+> +	.indexed = 1,					\
+> +	.output = 1,					\
+> +	.channel = (chan),				\
+> +	.datasheet_name = "CH" #chan,			\
+> +	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |	\
+> +		BIT(IIO_CHAN_INFO_SCALE),		\
+> +}
+> +
+> +static const struct iio_chan_spec m62332_channels[] = {
+> +	M62332_CHANNEL(0),
+> +	M62332_CHANNEL(1)
+> +};
+> +
+> +static int m62332_probe(struct i2c_client *client,
+> +			const struct i2c_device_id *id)
+> +{
+> +	struct m62332_data *data;
+> +	struct iio_dev *indio_dev;
+> +	int ret;
+> +
+> +	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
+> +	if (!indio_dev)
+> +		return -ENOMEM;
+> +	data = iio_priv(indio_dev);
+> +	i2c_set_clientdata(client, indio_dev);
+> +	data->client = client;
+> +
+> +	mutex_init(&data->mutex);
+> +
+> +	data->vcc = devm_regulator_get(&client->dev, "VCC");
+> +	if (IS_ERR(data->vcc))
+> +		return PTR_ERR(data->vcc);
+> +
+> +	/* establish that the iio_dev is a child of the i2c device */
+> +	indio_dev->dev.parent = &client->dev;
+> +
+> +	indio_dev->num_channels = 2;
+While true, I'd presonally prefer ARRAY_SIZE(m622...) as then whilst
+reviewing there is no need to check.
+
+> +	indio_dev->channels = m62332_channels;
+> +	indio_dev->modes = INDIO_DIRECT_MODE;
+> +	indio_dev->info = &m62332_info;
+> +
+> +	data->vref_mv = regulator_get_voltage(data->vcc) / 1000; /* mV */
+> +
+> +	ret = iio_map_array_register(indio_dev, client->dev.platform_data);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	ret = iio_device_register(indio_dev);
+> +	if (ret == 0)
+> +		return 0;
+This briefly had me confused. I'd much rather have the error case
+result in a local return (or a goto if you prefer.  I read this as
+you were always unregistering the map which seemed very odd.
+Just a case of making it really easy to read!
+
+> +
+> +	iio_map_array_unregister(indio_dev);
+> +	return ret;
+> +}
+> +
+> +static int m62332_remove(struct i2c_client *client)
+> +{
+> +	struct iio_dev *indio_dev = i2c_get_clientdata(client);
+> +
+> +	iio_device_unregister(indio_dev);
+> +	iio_map_array_unregister(indio_dev);
+> +	return 0;
+> +}
+> +
+> +static const struct i2c_device_id m62332_id[] = {
+> +	{ "m62332", },
+> +	{ }
+> +};
+> +MODULE_DEVICE_TABLE(i2c, m62332_id);
+> +
+> +static struct i2c_driver m62332_driver = {
+> +	.driver = {
+> +		.name	= "m62332",
+> +		.pm	= M62332_PM_OPS,
+> +	},
+> +	.probe		= m62332_probe,
+> +	.remove		= m62332_remove,
+> +	.id_table	= m62332_id,
+> +};
+> +module_i2c_driver(m62332_driver);
+> +
+> +MODULE_AUTHOR("Dmitry Eremin-Solenikov");
+> +MODULE_DESCRIPTION("M62332 8-bit DAC");
+> +MODULE_LICENSE("GPL v2");
 > 
 
