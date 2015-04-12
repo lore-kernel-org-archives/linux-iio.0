@@ -1,193 +1,238 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:46783 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:46804 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751592AbbDLQLq (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 12 Apr 2015 12:11:46 -0400
-Message-ID: <552A993F.7090607@kernel.org>
-Date: Sun, 12 Apr 2015 17:11:43 +0100
+	with ESMTP id S1751606AbbDLQRL (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 12 Apr 2015 12:17:11 -0400
+Message-ID: <552A9A85.6030108@kernel.org>
+Date: Sun, 12 Apr 2015 17:17:09 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Jacob Pan <jacob.jun.pan@linux.intel.com>
-CC: IIO <linux-iio@vger.kernel.org>,
-	LKML <linux-kernel@vger.kernel.org>,
-	Lee Jones <lee.jones@linaro.org>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Aaron Lu <aaron.lu@intel.com>,
-	Todd Brandt <todd.e.brandt@linux.intel.com>
-Subject: Re: [PATCH v2] iio/axp288_adc: add missing channel info mask
-References: <1428345500-27672-1-git-send-email-jacob.jun.pan@linux.intel.com>	<55267C39.5050707@kernel.org>	<20150409100215.5264f990@icelake>	<5526BBE4.1040003@kernel.org>	<5526BC4C.2000507@kernel.org> <20150410025822.48e1ab0e@ultegra>
-In-Reply-To: <20150410025822.48e1ab0e@ultegra>
+To: Kuppuswamy Sathyanarayanan
+	<sathyanarayanan.kuppuswamy@linux.intel.com>, pmeerw@pmeerw.net
+CC: daniel.baluta@intel.com, linux-iio@vger.kernel.org,
+	srinivas.pandruvada@linux.intel.com
+Subject: Re: [PATCH v6 1/1] iio: ltr501: Add support for ltr301
+References: <cover.1428713872.git.sathyanarayanan.kuppuswamy@linux.intel.com> <c0bfd1b4f763e166eec1b6a1d8585cd0fca37de5.1428713872.git.sathyanarayanan.kuppuswamy@linux.intel.com>
+In-Reply-To: <c0bfd1b4f763e166eec1b6a1d8585cd0fca37de5.1428713872.git.sathyanarayanan.kuppuswamy@linux.intel.com>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 10/04/15 10:58, Jacob Pan wrote:
-> On Thu, 09 Apr 2015 18:52:12 +0100
-> Jonathan Cameron <jic23@kernel.org> wrote:
+On 11/04/15 01:59, Kuppuswamy Sathyanarayanan wrote:
+> Added support for Liteon 301 Ambient light sensor. Since
+> LTR-301 and LTR-501 are register compatible(and even have same
+> part id), LTR-501 driver has been extended to support both
+> devices. LTR-501 is similar to LTR-301 in ALS sensing, But the
+> only difference is, LTR-501 also supports proximity sensing.
 > 
->> On 09/04/15 18:50, Jonathan Cameron wrote:
->>> On 09/04/15 18:02, Jacob Pan wrote:
->>>> On Thu, 09 Apr 2015 14:18:49 +0100
->>>> Jonathan Cameron <jic23@kernel.org> wrote:
->>>>
->>>>> On 06/04/15 19:38, Jacob Pan wrote:
->>>>>> Commit 65de7654d39c70c2b ("iio: iio: Fix iio_channel_read return
->>>>>> if channel havn't info") added a check for valid info masks.
->>>>>>
->>>>>> This patch adds missing channel info masks for all ADC channels.
->>>>>> Otherwise, iio_read_channel_raw() would return -EINVAL when
->>>>>> called by consumer drivers.
->>>>>>
->>>>>> Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
->>>>>
->>>>> This makes me a little nervous. Why did we have the separate raw
->>>>> and processed paths in the read_raw function in the first place?
->>>>>
->>>> Good point, I failed to explain that the reason to have separate
->>>> raw and processed was that the raw channels happened to need some
->>>> special processing in axp288_adc_set_ts(), since I have added a
->>>> check for address:
->>>> 	/* channels other than GPADC do not need to switch TS pin
->>>> */ if (address != AXP288_GP_ADC_H)
->>>> 		return 0;
->>>>
->>>> we no longer need special case the channels based on RAW flag.
->>>> Thinking back it was kind of an abuse.
->>>>
->>>>> Also this changes the exposed userspace ABI by dropping those
->>>>> processed attributes that already exist..
->>>>>
->>>> I don't know the current users outside what we develop internally.
->>>> What is your suggestion?
->>> Lets go for it on the basis of it is 'fixing' your abuse of the
->>> ABI ;) Then any users should long ago have complained about it
->>> anyway (did I say that?) We'll take the age old approach. If no one
->>> notices we broke the ABI then it's fine.
->>>
->>> Have applied to the fixes-togreg branch of iio.git with the
->>> description updated to indicate it also fixes the ABI abuse ;)
->>>
->>> Anyhow, won't go now until after the merge window anyway I'm afraid.
->>> Marked for stable as well.
->>>
->> Forgot to say. If it causes any breakage, we simply put back the
->> incorrect processed version as well.  That might then cause breakage
->> for any in kernel consumers however as they will use that in
->> preference to the raw version IIRC.
->>> Thanks,
->>>
-> Good to know. Thanks a lot.
-> Perhaps I missed it in the kernel, I wish there were more
-> comments/documentation on the enum to explain its use case for hw
-> provided data format, and implication for sysfs abi etc.
+> LTR-501 - ALS + Proximity combo
+> LTR-301 - ALS sensor.
 > 
-> enum iio_chan_info_enum {
-> 	IIO_CHAN_INFO_RAW = 0,
-> 	IIO_CHAN_INFO_PROCESSED,
-> ...
-Hmm. More docs almost always good, sadly no one ever gets
-round to keeping them up to date.
+> Signed-off-by: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
+Looks good to me.  Will either pick this up with Daniel's final series
+(trivial bits outstanding there) or separately if he doesn't pick it up.
+After his has gone in obviously!
 
-The sysfs side of things fairly neatly lines up with the ABI
-docs, but I guess we could have more examples.  Example wise
-we do have the dummy driver to illustrate most of the usage.
-/Documentation/ABI/testing/sysfs-bus-iio
-/drivers/staging/iio/simple_dummy*
+Should I miss it by accident (it's been known to happen, particularly if
+a large delay happens for some reason :( then feel free to poke me!
 
-J
+Jonathan
+> ---
+>  drivers/iio/light/Kconfig  |  2 +-
+>  drivers/iio/light/ltr501.c | 99 +++++++++++++++++++++++++++++++++-------------
+>  2 files changed, 72 insertions(+), 29 deletions(-)
 > 
-> 
-> }
->>> Jonathan
->>>>
->>>>> Jonathan
->>>>>> ---
->>>>>>  drivers/iio/adc/axp288_adc.c | 12 ++++++------
->>>>>>  1 file changed, 6 insertions(+), 6 deletions(-)
->>>>>>
->>>>>> diff --git a/drivers/iio/adc/axp288_adc.c
->>>>>> b/drivers/iio/adc/axp288_adc.c index 08bcfb0..56008a8 100644
->>>>>> --- a/drivers/iio/adc/axp288_adc.c
->>>>>> +++ b/drivers/iio/adc/axp288_adc.c
->>>>>> @@ -53,39 +53,42 @@ static const struct iio_chan_spec const
->>>>>> axp288_adc_channels[] = { .channel = 0,
->>>>>>  		.address = AXP288_TS_ADC_H,
->>>>>>  		.datasheet_name = "TS_PIN",
->>>>>> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
->>>>>>  	}, {
->>>>>>  		.indexed = 1,
->>>>>>  		.type = IIO_TEMP,
->>>>>>  		.channel = 1,
->>>>>>  		.address = AXP288_PMIC_ADC_H,
->>>>>>  		.datasheet_name = "PMIC_TEMP",
->>>>>> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
->>>>>>  	}, {
->>>>>>  		.indexed = 1,
->>>>>>  		.type = IIO_TEMP,
->>>>>>  		.channel = 2,
->>>>>>  		.address = AXP288_GP_ADC_H,
->>>>>>  		.datasheet_name = "GPADC",
->>>>>> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
->>>>>>  	}, {
->>>>>>  		.indexed = 1,
->>>>>>  		.type = IIO_CURRENT,
->>>>>>  		.channel = 3,
->>>>>>  		.address = AXP20X_BATT_CHRG_I_H,
->>>>>>  		.datasheet_name = "BATT_CHG_I",
->>>>>> -		.info_mask_separate =
->>>>>> BIT(IIO_CHAN_INFO_PROCESSED),
->>>>>> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
->>>>>>  	}, {
->>>>>>  		.indexed = 1,
->>>>>>  		.type = IIO_CURRENT,
->>>>>>  		.channel = 4,
->>>>>>  		.address = AXP20X_BATT_DISCHRG_I_H,
->>>>>>  		.datasheet_name = "BATT_DISCHRG_I",
->>>>>> -		.info_mask_separate =
->>>>>> BIT(IIO_CHAN_INFO_PROCESSED),
->>>>>> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
->>>>>>  	}, {
->>>>>>  		.indexed = 1,
->>>>>>  		.type = IIO_VOLTAGE,
->>>>>>  		.channel = 5,
->>>>>>  		.address = AXP20X_BATT_V_H,
->>>>>>  		.datasheet_name = "BATT_V",
->>>>>> -		.info_mask_separate =
->>>>>> BIT(IIO_CHAN_INFO_PROCESSED),
->>>>>> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
->>>>>>  	},
->>>>>>  };
->>>>>>  
->>>>>> @@ -151,9 +154,6 @@ static int axp288_adc_read_raw(struct iio_dev
->>>>>> *indio_dev, chan->address))
->>>>>>  			dev_err(&indio_dev->dev, "TS pin
->>>>>> restore\n"); break;
->>>>>> -	case IIO_CHAN_INFO_PROCESSED:
->>>>>> -		ret = axp288_adc_read_channel(val,
->>>>>> chan->address, info->regmap);
->>>>>> -		break;
->>>>>>  	default:
->>>>>>  		ret = -EINVAL;
->>>>>>  	}
->>>>>>
->>>>>
->>>>
->>>> [Jacob Pan]
->>>> --
->>>> To unsubscribe from this list: send the line "unsubscribe
->>>> linux-iio" in the body of a message to majordomo@vger.kernel.org
->>>> More majordomo info at  http://vger.kernel.org/majordomo-info.html
->>>>
->>>
->>> --
->>> To unsubscribe from this list: send the line "unsubscribe
->>> linux-iio" in the body of a message to majordomo@vger.kernel.org
->>> More majordomo info at  http://vger.kernel.org/majordomo-info.html
->>>
->>
-> 
-> 
-> 
+> diff --git a/drivers/iio/light/Kconfig b/drivers/iio/light/Kconfig
+> index a224afd..215e4a3 100644
+> --- a/drivers/iio/light/Kconfig
+> +++ b/drivers/iio/light/Kconfig
+> @@ -159,7 +159,7 @@ config LTR501
+>  	select IIO_TRIGGERED_BUFFER
+>  	help
+>  	 If you say yes here you get support for the Lite-On LTR-501ALS-01
+> -	 ambient light and proximity sensor.
+> +	 ambient light and proximity sensor or LTR-301 ambient light sensor.
+>  
+>  	 This driver can also be built as a module.  If so, the module
+>           will be called ltr501.
+> diff --git a/drivers/iio/light/ltr501.c b/drivers/iio/light/ltr501.c
+> index 5939cda..4945405 100644
+> --- a/drivers/iio/light/ltr501.c
+> +++ b/drivers/iio/light/ltr501.c
+> @@ -50,6 +50,7 @@
+>  enum {
+>  	ltr501 = 0,
+>  	ltr559,
+> +	ltr301,
+>  };
+>  
+>  struct ltr501_gain {
+> @@ -96,6 +97,8 @@ struct ltr501_chip_info {
+>  	u8 als_mode_active;
+>  	u8 als_gain_mask;
+>  	u8 als_gain_shift;
+> +	struct iio_chan_spec const *channels;
+> +	const struct iio_info *info;
+>  };
+>  
+>  struct ltr501_data {
+> @@ -105,29 +108,6 @@ struct ltr501_data {
+>  	u8 als_contr, ps_contr;
+>  };
+>  
+> -static struct ltr501_chip_info ltr501_chip_info_tbl[] = {
+> -	[ltr501] = {
+> -		.chip_id = 0x08,
+> -		.als_gain = ltr501_als_gain_tbl,
+> -		.als_gain_tbl_size = ARRAY_SIZE(ltr501_als_gain_tbl),
+> -		.ps_gain = ltr501_ps_gain_tbl,
+> -		.ps_gain_tbl_size = ARRAY_SIZE(ltr501_ps_gain_tbl),
+> -		.als_mode_active = BIT(0) | BIT(1),
+> -		.als_gain_mask = BIT(3),
+> -		.als_gain_shift = 3,
+> -	},
+> -	[ltr559] = {
+> -		.chip_id = 0x09,
+> -		.als_gain = ltr559_als_gain_tbl,
+> -		.als_gain_tbl_size = ARRAY_SIZE(ltr559_als_gain_tbl),
+> -		.ps_gain = ltr559_ps_gain_tbl,
+> -		.ps_gain_tbl_size = ARRAY_SIZE(ltr559_ps_gain_tbl),
+> -		.als_mode_active = BIT(1),
+> -		.als_gain_mask = BIT(2) | BIT(3) | BIT(4),
+> -		.als_gain_shift = 2,
+> -	},
+> -};
+> -
+>  static int ltr501_drdy(struct ltr501_data *data, u8 drdy_mask)
+>  {
+>  	int tries = 100;
+> @@ -202,6 +182,13 @@ static const struct iio_chan_spec ltr501_channels[] = {
+>  	IIO_CHAN_SOFT_TIMESTAMP(3),
+>  };
+>  
+> +static const struct iio_chan_spec ltr301_channels[] = {
+> +	LTR501_INTENSITY_CHANNEL(0, LTR501_ALS_DATA0, IIO_MOD_LIGHT_BOTH, 0),
+> +	LTR501_INTENSITY_CHANNEL(1, LTR501_ALS_DATA1, IIO_MOD_LIGHT_IR,
+> +				 BIT(IIO_CHAN_INFO_SCALE)),
+> +	IIO_CHAN_SOFT_TIMESTAMP(2),
+> +};
+> +
+>  static int ltr501_read_raw(struct iio_dev *indio_dev,
+>  			   struct iio_chan_spec const *chan,
+>  			   int *val, int *val2, long mask)
+> @@ -367,10 +354,19 @@ static struct attribute *ltr501_attributes[] = {
+>  	NULL
+>  };
+>  
+> +static struct attribute *ltr301_attributes[] = {
+> +	&iio_dev_attr_in_intensity_scale_available.dev_attr.attr,
+> +	NULL
+> +};
+> +
+>  static const struct attribute_group ltr501_attribute_group = {
+>  	.attrs = ltr501_attributes,
+>  };
+>  
+> +static const struct attribute_group ltr301_attribute_group = {
+> +	.attrs = ltr301_attributes,
+> +};
+> +
+>  static const struct iio_info ltr501_info = {
+>  	.read_raw = ltr501_read_raw,
+>  	.write_raw = ltr501_write_raw,
+> @@ -378,6 +374,50 @@ static const struct iio_info ltr501_info = {
+>  	.driver_module = THIS_MODULE,
+>  };
+>  
+> +static const struct iio_info ltr301_info = {
+> +	.read_raw = ltr501_read_raw,
+> +	.write_raw = ltr501_write_raw,
+> +	.attrs = &ltr301_attribute_group,
+> +	.driver_module = THIS_MODULE,
+> +};
+> +
+> +static struct ltr501_chip_info ltr501_chip_info_tbl[] = {
+> +	[ltr501] = {
+> +		.chip_id = 0x08,
+> +		.als_gain = ltr501_als_gain_tbl,
+> +		.als_gain_tbl_size = ARRAY_SIZE(ltr501_als_gain_tbl),
+> +		.ps_gain = ltr501_ps_gain_tbl,
+> +		.ps_gain_tbl_size = ARRAY_SIZE(ltr501_ps_gain_tbl),
+> +		.als_mode_active = BIT(0) | BIT(1),
+> +		.als_gain_mask = BIT(3),
+> +		.als_gain_shift = 3,
+> +		.info = &ltr501_info,
+> +		.channels = ltr501_channels,
+> +	},
+> +	[ltr559] = {
+> +		.chip_id = 0x09,
+> +		.als_gain = ltr559_als_gain_tbl,
+> +		.als_gain_tbl_size = ARRAY_SIZE(ltr559_als_gain_tbl),
+> +		.ps_gain = ltr559_ps_gain_tbl,
+> +		.ps_gain_tbl_size = ARRAY_SIZE(ltr559_ps_gain_tbl),
+> +		.als_mode_active = BIT(1),
+> +		.als_gain_mask = BIT(2) | BIT(3) | BIT(4),
+> +		.als_gain_shift = 2,
+> +		.info = &ltr501_info,
+> +		.channels = ltr501_channels,
+> +	},
+> +	[ltr301] = {
+> +		.chip_id = 0x08,
+> +		.als_gain = ltr501_als_gain_tbl,
+> +		.als_gain_tbl_size = ARRAY_SIZE(ltr501_als_gain_tbl),
+> +		.als_mode_active = BIT(0) | BIT(1),
+> +		.als_gain_mask = BIT(3),
+> +		.als_gain_shift = 3,
+> +		.info = &ltr301_info,
+> +		.channels = ltr301_channels,
+> +	},
+> +};
+> +
+>  static int ltr501_write_contr(struct i2c_client *client, u8 als_val, u8 ps_val)
+>  {
+>  	int ret = i2c_smbus_write_byte_data(client, LTR501_ALS_CONTR, als_val);
+> @@ -463,7 +503,7 @@ static int ltr501_probe(struct i2c_client *client,
+>  	struct ltr501_data *data;
+>  	struct iio_dev *indio_dev;
+>  	const char *name = NULL;
+> -	int chip_id = 0;
+> +	int chip_id;
+>  	int ret;
+>  
+>  	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
+> @@ -476,10 +516,12 @@ static int ltr501_probe(struct i2c_client *client,
+>  	mutex_init(&data->lock_als);
+>  	mutex_init(&data->lock_ps);
+>  
+> +	/* TODO: Add condition for ACPI */
+>  	if (id) {
+> -		name = id->name;
+> +		name = id->name ? id->name : LTR501_DRV_NAME;
+>  		chip_id = id->driver_data;
+> -	}
+> +	} else
+> +		return -ENODEV;
+>  
+>  	data->chip_info = &ltr501_chip_info_tbl[chip_id];
+>  
+> @@ -490,8 +532,8 @@ static int ltr501_probe(struct i2c_client *client,
+>  		return -ENODEV;
+>  
+>  	indio_dev->dev.parent = &client->dev;
+> -	indio_dev->info = &ltr501_info;
+> -	indio_dev->channels = ltr501_channels;
+> +	indio_dev->info = data->chip_info->info;
+> +	indio_dev->channels = data->chip_info->channels;
+>  	indio_dev->num_channels = ARRAY_SIZE(ltr501_channels);
+>  	indio_dev->name = name;
+>  	indio_dev->modes = INDIO_DIRECT_MODE;
+> @@ -557,6 +599,7 @@ static SIMPLE_DEV_PM_OPS(ltr501_pm_ops, ltr501_suspend, ltr501_resume);
+>  static const struct i2c_device_id ltr501_id[] = {
+>  	{ "ltr501", ltr501},
+>  	{ "ltr559", ltr559},
+> +	{ "ltr301", ltr301 },
+>  	{ }
+>  };
+>  MODULE_DEVICE_TABLE(i2c, ltr501_id);
 > 
 
