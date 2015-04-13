@@ -6,74 +6,46 @@ To: Jonathan Cameron <jic23@kernel.org>,
 Cc: linux-kernel@vger.kernel.org,
 	Vlad Dogaru <vlad.dogaru@intel.com>,
 	Irina Tirdea <irina.tirdea@intel.com>
-Subject: [PATCH v2 03/17] iio: accel: mma9551_core: prevent buffer overrun
-Date: Mon, 13 Apr 2015 18:40:50 +0300
-Message-Id: <1428939664-12503-4-git-send-email-irina.tirdea@intel.com>
+Subject: [PATCH v2 02/17] iio: accel: mma9553: check input value for activity period
+Date: Mon, 13 Apr 2015 18:40:49 +0300
+Message-Id: <1428939664-12503-3-git-send-email-irina.tirdea@intel.com>
 In-Reply-To: <1428939664-12503-1-git-send-email-irina.tirdea@intel.com>
 References: <1428939664-12503-1-git-send-email-irina.tirdea@intel.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-The mma9551 functions that read/write word arrays from the
-device have a limit for the buffer size given by the device
-specifications.
+When setting the activity period, the value introduced by
+the user in sysfs is not checked for validity.
 
-Check that the requested buffer length is within required limits
-when transferring word arrays. This will prevent buffer overrun
-in the mma9551_read/write_*_words functions and also in the
-mma9551_transfer call when writing into the MBOX response/request
-structure.
+Add a boundary check so that only allowed values are
+reported as successfully written to device.
 
 Signed-off-by: Irina Tirdea <irina.tirdea@intel.com>
 Reported-by: Hartmut Knaack <knaack.h@gmx.de>
 ---
- drivers/iio/accel/mma9551_core.c | 21 ++++++++++++++++++---
- 1 file changed, 18 insertions(+), 3 deletions(-)
+ drivers/iio/accel/mma9553.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/drivers/iio/accel/mma9551_core.c b/drivers/iio/accel/mma9551_core.c
-index 7f55a6d..c6d5a3a 100644
---- a/drivers/iio/accel/mma9551_core.c
-+++ b/drivers/iio/accel/mma9551_core.c
-@@ -389,7 +389,12 @@ int mma9551_read_config_words(struct i2c_client *client, u8 app_id,
- {
- 	int ret, i;
- 	int len_words = len / sizeof(u16);
--	__be16 be_buf[MMA9551_MAX_MAILBOX_DATA_REGS];
-+	__be16 be_buf[MMA9551_MAX_MAILBOX_DATA_REGS / 2];
-+
-+	if (len_words > ARRAY_SIZE(be_buf)) {
-+		dev_err(&client->dev, "Invalid buffer size %d\n", len);
-+		return -EINVAL;
-+	}
+diff --git a/drivers/iio/accel/mma9553.c b/drivers/iio/accel/mma9553.c
+index 607dbfc..03120fb 100644
+--- a/drivers/iio/accel/mma9553.c
++++ b/drivers/iio/accel/mma9553.c
+@@ -54,6 +54,7 @@
+ #define MMA9553_MASK_CONF_STEPCOALESCE		GENMASK(7, 0)
  
- 	ret = mma9551_transfer(client, app_id, MMA9551_CMD_READ_CONFIG,
- 			       reg, NULL, 0, (u8 *) be_buf, len);
-@@ -424,7 +429,12 @@ int mma9551_read_status_words(struct i2c_client *client, u8 app_id,
- {
- 	int ret, i;
- 	int len_words = len / sizeof(u16);
--	__be16 be_buf[MMA9551_MAX_MAILBOX_DATA_REGS];
-+	__be16 be_buf[MMA9551_MAX_MAILBOX_DATA_REGS / 2];
-+
-+	if (len_words > ARRAY_SIZE(be_buf)) {
-+		dev_err(&client->dev, "Invalid buffer size %d\n", len);
-+		return -EINVAL;
-+	}
+ #define MMA9553_REG_CONF_ACTTHD			0x0E
++#define MMA9553_MAX_ACTTHD			GENMASK(15, 0)
  
- 	ret = mma9551_transfer(client, app_id, MMA9551_CMD_READ_STATUS,
- 			       reg, NULL, 0, (u8 *) be_buf, len);
-@@ -459,7 +469,12 @@ int mma9551_write_config_words(struct i2c_client *client, u8 app_id,
- {
- 	int i;
- 	int len_words = len / sizeof(u16);
--	__be16 be_buf[MMA9551_MAX_MAILBOX_DATA_REGS];
-+	__be16 be_buf[(MMA9551_MAX_MAILBOX_DATA_REGS - 1) / 2];
-+
-+	if (len_words > ARRAY_SIZE(be_buf)) {
-+		dev_err(&client->dev, "Invalid buffer size %d\n", len);
-+		return -EINVAL;
-+	}
- 
- 	for (i = 0; i < len_words; i++)
- 		be_buf[i] = cpu_to_be16(buf[i]);
+ /* Pedometer status registers (R-only) */
+ #define MMA9553_REG_STATUS			0x00
+@@ -869,6 +870,9 @@ static int mma9553_write_event_value(struct iio_dev *indio_dev,
+ 	case IIO_EV_INFO_PERIOD:
+ 		switch (chan->type) {
+ 		case IIO_ACTIVITY:
++			if (val < 0 || val > MMA9553_ACTIVITY_THD_TO_SEC(
++			    MMA9553_MAX_ACTTHD))
++				return -EINVAL;
+ 			mutex_lock(&data->mutex);
+ 			ret = mma9553_set_config(data, MMA9553_REG_CONF_ACTTHD,
+ 						 &data->conf.actthd,
 -- 
 1.9.1
