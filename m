@@ -6,47 +6,39 @@ To: Jonathan Cameron <jic23@kernel.org>,
 Cc: linux-kernel@vger.kernel.org,
 	Vlad Dogaru <vlad.dogaru@intel.com>,
 	Irina Tirdea <irina.tirdea@intel.com>
-Subject: [PATCH v2 06/17] iio: accel: mma9551_core: typo fix in RSC APP ID
-Date: Mon, 13 Apr 2015 18:40:53 +0300
-Message-Id: <1428939664-12503-7-git-send-email-irina.tirdea@intel.com>
+Subject: [PATCH v2 04/17] iio: accel: mma9553: add enable channel for activity
+Date: Mon, 13 Apr 2015 18:40:51 +0300
+Message-Id: <1428939664-12503-5-git-send-email-irina.tirdea@intel.com>
 In-Reply-To: <1428939664-12503-1-git-send-email-irina.tirdea@intel.com>
 References: <1428939664-12503-1-git-send-email-irina.tirdea@intel.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-Fix typo in Reset/Suspend/Clear Application ID definition.
+Since we need to specifically power on the device if used
+in polling mode, we have an enable channel for each type
+(step count, distance, speed, calories, etc.).
+
+Add also an enable channel for activity, so it can also
+be polled independently of events or other channels.
 
 Signed-off-by: Irina Tirdea <irina.tirdea@intel.com>
-Reported-by: Hartmut Knaack <knaack.h@gmx.de>
+Reported-by: Daniel Baluta <daniel.baluta@intel.com>
 ---
- drivers/iio/accel/mma9551_core.c | 2 +-
- drivers/iio/accel/mma9551_core.h | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+ drivers/iio/accel/mma9553.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/iio/accel/mma9551_core.c b/drivers/iio/accel/mma9551_core.c
-index efe09a3..2fd2a99 100644
---- a/drivers/iio/accel/mma9551_core.c
-+++ b/drivers/iio/accel/mma9551_core.c
-@@ -800,7 +800,7 @@ EXPORT_SYMBOL(mma9551_read_accel_scale);
-  */
- int mma9551_app_reset(struct i2c_client *client, u32 app_mask)
- {
--	return mma9551_write_config_byte(client, MMA9551_APPID_RCS,
-+	return mma9551_write_config_byte(client, MMA9551_APPID_RSC,
- 					 MMA9551_RSC_RESET +
- 					 MMA9551_RSC_OFFSET(app_mask),
- 					 MMA9551_RSC_VAL(app_mask));
-diff --git a/drivers/iio/accel/mma9551_core.h b/drivers/iio/accel/mma9551_core.h
-index edaa56b..79939e4 100644
---- a/drivers/iio/accel/mma9551_core.h
-+++ b/drivers/iio/accel/mma9551_core.h
-@@ -22,7 +22,7 @@
- #define MMA9551_APPID_TILT		0x0B
- #define MMA9551_APPID_SLEEP_WAKE	0x12
- #define MMA9551_APPID_PEDOMETER	        0x15
--#define MMA9551_APPID_RCS		0x17
-+#define MMA9551_APPID_RSC		0x17
- #define MMA9551_APPID_NONE		0xff
- 
- /* Reset/Suspend/Clear application app masks */
+diff --git a/drivers/iio/accel/mma9553.c b/drivers/iio/accel/mma9553.c
+index 03120fb..365a109 100644
+--- a/drivers/iio/accel/mma9553.c
++++ b/drivers/iio/accel/mma9553.c
+@@ -972,7 +972,8 @@ static const struct iio_chan_spec_ext_info mma9553_ext_info[] = {
+ 	.modified = 1,							\
+ 	.channel2 = _chan2,						\
+ 	.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED),		\
+-	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_CALIBHEIGHT),	\
++	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_CALIBHEIGHT) |	\
++				    BIT(IIO_CHAN_INFO_ENABLE),		\
+ 	.event_spec = mma9553_activity_events,				\
+ 	.num_event_specs = ARRAY_SIZE(mma9553_activity_events),		\
+ 	.ext_info = mma9553_ext_info,					\
 -- 
 1.9.1
