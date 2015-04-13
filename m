@@ -1,67 +1,105 @@
-Return-Path: <irina.tirdea@intel.com>
-From: "Tirdea, Irina" <irina.tirdea@intel.com>
-To: Jonathan Cameron <jic23@kernel.org>, "linux-iio@vger.kernel.org"
-	<linux-iio@vger.kernel.org>, Hartmut Knaack <knaack.h@gmx.de>
-CC: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH 0/8] Fixes for the mma9553 driver
-Date: Mon, 13 Apr 2015 13:42:22 +0000
-Message-ID: <1F3AC3675D538145B1661F571FE1805F19A4F59D@irsmsx105.ger.corp.intel.com>
-References: <1428503857-9081-1-git-send-email-irina.tirdea@intel.com>
- <55265ECB.5020500@kernel.org>
-In-Reply-To: <55265ECB.5020500@kernel.org>
-Content-Type: text/plain; charset="us-ascii"
+Return-Path: <imsaurabhrawat@gmail.com>
 MIME-Version: 1.0
+In-Reply-To: <B74F5E0D-FE1C-422F-9D2E-985137E684E7@jic23.retrosnub.co.uk>
+References: <CALwa49vRGN_VaJ147PVF8Cf+8vnBotWVh7hmxLj=jaAba5QTTw@mail.gmail.com>
+ <5526BD63.3080509@kernel.org> <CALwa49st7A1zSdCmy8Sq8KgAMXiGJySdpoxALTUNEubgvXqyWg@mail.gmail.com>
+ <9B863FBE-8332-47EB-8E6C-C8943EF5D185@kernel.org> <CALwa49us7JVeYYga7fJxMx0=EbyLMuaAASGhU8=9AWYV2u96uQ@mail.gmail.com>
+ <B74F5E0D-FE1C-422F-9D2E-985137E684E7@jic23.retrosnub.co.uk>
+From: "s.rawat" <imsaurabhrawat@gmail.com>
+Date: Mon, 13 Apr 2015 15:21:34 +0530
+Message-ID: <CALwa49t1z_CFW4j-p6g0UUwk_pD9i2Ep+U7W3nNXtGOkdqZaug@mail.gmail.com>
+Subject: Re: Regarding generic_buffer.c Application for Android
+To: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Content-Type: multipart/alternative; boundary=047d7ba976c871233c051398103e
 List-ID: <linux-iio@vger.kernel.org>
 
+--047d7ba976c871233c051398103e
+Content-Type: text/plain; charset=UTF-8
 
++closedir(dp)
++dp = opendir(scan_el_dir);
 
-> -----Original Message-----
-> From: linux-iio-owner@vger.kernel.org [mailto:linux-iio-owner@vger.kernel=
-.org] On Behalf Of Jonathan Cameron
-> Sent: 09 April, 2015 14:13
-> To: Tirdea, Irina; linux-iio@vger.kernel.org; Hartmut Knaack
-> Cc: linux-kernel@vger.kernel.org
-> Subject: Re: [PATCH 0/8] Fixes for the mma9553 driver
->=20
-> On 08/04/15 15:37, Irina Tirdea wrote:
-> > This is a set of follow-up patches for the mma9553 driver that fixes
-> > some issues as suggested by Hartmut.
+This seems to work fine.But sometimes polling accel throws error : failed
+to open /dev/iio:device0
+
+On Mon, Apr 13, 2015 at 11:56 AM, Jonathan Cameron <
+jic23@jic23.retrosnub.co.uk> wrote:
+
+>
+>
+> On 13 April 2015 04:40:17 BST, "s.rawat" <imsaurabhrawat@gmail.com> wrote:
+> >On Fri, Apr 10, 2015 at 11:49 AM, Jonathan Cameron <jic23@kernel.org>
+> >wrote:
+> >> Hit google
+> >> http://pubs.opengroup.org/onlinepubs/009695399/functions/seekdir.html
+> >> So for POSIX compliance they are optional.
 > >
-> > I have also added the enable channel for activity as suggested by Danie=
-l.
+> >You mean seekdir(dp, 0); in function inline int
+> >build_channel_array(...) is optional?If I comment it, will it have no
+> >effect? This function is called inside main() of generic_buffer.c and
+> >I cant get it compiled with the tool chain I have.Is there any
+> >alternate code I can replace it with if it is Not Optional?
+> The functionality is not optional. There is no obligation for the
+> operating system to implement seekdir.
+>
+> Here equivalent is probably to close and reopen the directory.
 > >
-> > Irina Tirdea (8):
-> >   iio: accel: mma9553: coding style fixes
-> >   iio: accel: mma9553: use unsigned counters
-> >   iio: accel: mma9553: fix gpio bitnum init value
-> >   iio: accel: mma9553: refactor mma9553_read_activity_stepcnt
-> >   iio: accel: mma9553: refactor mma9553_read_raw
-> >   iio: accel: mma9553: check input value for activity period
-> >   iio: accel: mma9551_core: prevent buffer overrun
-> >   iio: accel: mma9553: add enable channel for activity
+> >I can take care of le16toh/be16toh.
 > >
-> >  drivers/iio/accel/mma9551_core.c |  58 ++++++----
-> >  drivers/iio/accel/mma9551_core.h |   2 +-
-> >  drivers/iio/accel/mma9553.c      | 227 +++++++++++++++++--------------=
---------
-> >  3 files changed, 136 insertions(+), 151 deletions(-)
-> >
-> Hi Irina,
-Hi Jonathan,
->=20
-> We've missed the merge window, so these are going to mostly hit one cycle
-> after the original driver posting.
->=20
-> As such can you reorder the patches to pull all the bug fixes to the begi=
-nning
-> as they can go into 4.1 whereas the style fixes etc will go into 4.2
+> >Thanks and Rgds,
+> >S
+>
 > --
+> Sent from my Android device with K-9 Mail. Please excuse my brevity.
+>
 
-Sure, I'll reorder the series and send v2.
+--047d7ba976c871233c051398103e
+Content-Type: text/html; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-Thanks,
-Irina
+<div dir=3D"ltr"><div class=3D"gmail_extra" style=3D"font-size:13px"><div c=
+lass=3D"gmail_extra">+closedir(dp)</div><div class=3D"gmail_extra">+dp =3D =
+opendir(scan_el_dir);</div></div><br style=3D"font-size:13px"><span style=
+=3D"font-size:13px">This seems to work fine.But sometimes polling accel thr=
+ows error : failed to open /dev/iio:device0=C2=A0</span><br></div><div clas=
+s=3D"gmail_extra"><br><div class=3D"gmail_quote">On Mon, Apr 13, 2015 at 11=
+:56 AM, Jonathan Cameron <span dir=3D"ltr">&lt;<a href=3D"mailto:jic23@jic2=
+3.retrosnub.co.uk" target=3D"_blank">jic23@jic23.retrosnub.co.uk</a>&gt;</s=
+pan> wrote:<br><blockquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex=
+;border-left:1px #ccc solid;padding-left:1ex"><div class=3D"HOEnZb"><div cl=
+ass=3D"h5"><br>
+<br>
+On 13 April 2015 04:40:17 BST, &quot;s.rawat&quot; &lt;<a href=3D"mailto:im=
+saurabhrawat@gmail.com">imsaurabhrawat@gmail.com</a>&gt; wrote:<br>
+&gt;On Fri, Apr 10, 2015 at 11:49 AM, Jonathan Cameron &lt;<a href=3D"mailt=
+o:jic23@kernel.org">jic23@kernel.org</a>&gt;<br>
+&gt;wrote:<br>
+&gt;&gt; Hit google<br>
+&gt;&gt; <a href=3D"http://pubs.opengroup.org/onlinepubs/009695399/function=
+s/seekdir.html" target=3D"_blank">http://pubs.opengroup.org/onlinepubs/0096=
+95399/functions/seekdir.html</a><br>
+&gt;&gt; So for POSIX compliance they are optional.<br>
+&gt;<br>
+&gt;You mean seekdir(dp, 0); in function inline int<br>
+&gt;build_channel_array(...) is optional?If I comment it, will it have no<b=
+r>
+&gt;effect? This function is called inside main() of generic_buffer.c and<b=
+r>
+&gt;I cant get it compiled with the tool chain I have.Is there any<br>
+&gt;alternate code I can replace it with if it is Not Optional?<br>
+</div></div>The functionality is not optional. There is no obligation for t=
+he operating system to implement seekdir.<br>
+<br>
+Here equivalent is probably to close and reopen the directory.<br>
+<span class=3D"im HOEnZb">&gt;<br>
+&gt;I can take care of le16toh/be16toh.<br>
+&gt;<br>
+&gt;Thanks and Rgds,<br>
+&gt;S<br>
+<br>
+</span><div class=3D"HOEnZb"><div class=3D"h5">--<br>
+Sent from my Android device with K-9 Mail. Please excuse my brevity.<br>
+</div></div></blockquote></div><br></div>
 
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+--047d7ba976c871233c051398103e--
