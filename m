@@ -6,46 +6,58 @@ To: Jonathan Cameron <jic23@kernel.org>,
 Cc: linux-kernel@vger.kernel.org,
 	Vlad Dogaru <vlad.dogaru@intel.com>,
 	Irina Tirdea <irina.tirdea@intel.com>
-Subject: [PATCH v2 02/17] iio: accel: mma9553: check input value for activity period
-Date: Mon, 13 Apr 2015 18:40:49 +0300
-Message-Id: <1428939664-12503-3-git-send-email-irina.tirdea@intel.com>
+Subject: [PATCH v2 01/17] iio: accel: mma9553: fix endianness issue when reading status
+Date: Mon, 13 Apr 2015 18:40:48 +0300
+Message-Id: <1428939664-12503-2-git-send-email-irina.tirdea@intel.com>
 In-Reply-To: <1428939664-12503-1-git-send-email-irina.tirdea@intel.com>
 References: <1428939664-12503-1-git-send-email-irina.tirdea@intel.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-When setting the activity period, the value introduced by
-the user in sysfs is not checked for validity.
+Refactor code for simplicity and clarity.
 
-Add a boundary check so that only allowed values are
-reported as successfully written to device.
+This also fixes an endianness issue with the original code.
+When reading multiple registers, the received buffer of
+16-bytes words is little endian (status, step count). On
+big endian machines, casting them to u32 would result in
+reversed order in the buffer (step count, status) leading
+to incorrect values for step count and activity.
 
 Signed-off-by: Irina Tirdea <irina.tirdea@intel.com>
 Reported-by: Hartmut Knaack <knaack.h@gmx.de>
 ---
- drivers/iio/accel/mma9553.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/iio/accel/mma9553.c | 11 ++++-------
+ 1 file changed, 4 insertions(+), 7 deletions(-)
 
 diff --git a/drivers/iio/accel/mma9553.c b/drivers/iio/accel/mma9553.c
-index 607dbfc..03120fb 100644
+index 2df1af7..607dbfc 100644
 --- a/drivers/iio/accel/mma9553.c
 +++ b/drivers/iio/accel/mma9553.c
-@@ -54,6 +54,7 @@
- #define MMA9553_MASK_CONF_STEPCOALESCE		GENMASK(7, 0)
+@@ -316,22 +316,19 @@ static int mma9553_set_config(struct mma9553_data *data, u16 reg,
+ static int mma9553_read_activity_stepcnt(struct mma9553_data *data,
+ 					 u8 *activity, u16 *stepcnt)
+ {
+-	u32 status_stepcnt;
+-	u16 status;
++	u16 buf[2];
+ 	int ret;
  
- #define MMA9553_REG_CONF_ACTTHD			0x0E
-+#define MMA9553_MAX_ACTTHD			GENMASK(15, 0)
+ 	ret = mma9551_read_status_words(data->client, MMA9551_APPID_PEDOMETER,
+-					MMA9553_REG_STATUS, sizeof(u32),
+-					(u16 *) &status_stepcnt);
++					MMA9553_REG_STATUS, sizeof(u32), buf);
+ 	if (ret < 0) {
+ 		dev_err(&data->client->dev,
+ 			"error reading status and stepcnt\n");
+ 		return ret;
+ 	}
  
- /* Pedometer status registers (R-only) */
- #define MMA9553_REG_STATUS			0x00
-@@ -869,6 +870,9 @@ static int mma9553_write_event_value(struct iio_dev *indio_dev,
- 	case IIO_EV_INFO_PERIOD:
- 		switch (chan->type) {
- 		case IIO_ACTIVITY:
-+			if (val < 0 || val > MMA9553_ACTIVITY_THD_TO_SEC(
-+			    MMA9553_MAX_ACTTHD))
-+				return -EINVAL;
- 			mutex_lock(&data->mutex);
- 			ret = mma9553_set_config(data, MMA9553_REG_CONF_ACTTHD,
- 						 &data->conf.actthd,
+-	status = status_stepcnt & MMA9553_MASK_CONF_WORD;
+-	*activity = mma9553_get_bits(status, MMA9553_MASK_STATUS_ACTIVITY);
+-	*stepcnt = status_stepcnt >> 16;
++	*activity = mma9553_get_bits(buf[0], MMA9553_MASK_STATUS_ACTIVITY);
++	*stepcnt = buf[1];
+ 
+ 	return 0;
+ }
 -- 
 1.9.1
