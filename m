@@ -1,45 +1,50 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:49894 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751402AbbDMG1V (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 13 Apr 2015 02:27:21 -0400
-In-Reply-To: <CALwa49us7JVeYYga7fJxMx0=EbyLMuaAASGhU8=9AWYV2u96uQ@mail.gmail.com>
-References: <CALwa49vRGN_VaJ147PVF8Cf+8vnBotWVh7hmxLj=jaAba5QTTw@mail.gmail.com> <5526BD63.3080509@kernel.org> <CALwa49st7A1zSdCmy8Sq8KgAMXiGJySdpoxALTUNEubgvXqyWg@mail.gmail.com> <9B863FBE-8332-47EB-8E6C-C8943EF5D185@kernel.org> <CALwa49us7JVeYYga7fJxMx0=EbyLMuaAASGhU8=9AWYV2u96uQ@mail.gmail.com>
+Return-Path: <imsaurabhrawat@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain;
- charset=UTF-8
+In-Reply-To: <B74F5E0D-FE1C-422F-9D2E-985137E684E7@jic23.retrosnub.co.uk>
+References: <CALwa49vRGN_VaJ147PVF8Cf+8vnBotWVh7hmxLj=jaAba5QTTw@mail.gmail.com>
+ <5526BD63.3080509@kernel.org> <CALwa49st7A1zSdCmy8Sq8KgAMXiGJySdpoxALTUNEubgvXqyWg@mail.gmail.com>
+ <9B863FBE-8332-47EB-8E6C-C8943EF5D185@kernel.org> <CALwa49us7JVeYYga7fJxMx0=EbyLMuaAASGhU8=9AWYV2u96uQ@mail.gmail.com>
+ <B74F5E0D-FE1C-422F-9D2E-985137E684E7@jic23.retrosnub.co.uk>
+From: "s.rawat" <imsaurabhrawat@gmail.com>
+Date: Mon, 13 Apr 2015 15:19:09 +0530
+Message-ID: <CALwa49vgNAY3zGPnUZ+dnB0i_RrD_q99UuONvxObLaT3a+yu1Q@mail.gmail.com>
 Subject: Re: Regarding generic_buffer.c Application for Android
-From: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
-Date: Mon, 13 Apr 2015 07:26:52 +0100
-To: "s.rawat" <imsaurabhrawat@gmail.com>,
-	Jonathan Cameron <jic23@kernel.org>
-CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Message-ID: <B74F5E0D-FE1C-422F-9D2E-985137E684E7@jic23.retrosnub.co.uk>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+To: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Content-Type: multipart/alternative; boundary=f46d04428084c821ea0513980781
+List-ID: <linux-iio@vger.kernel.org>
 
+--f46d04428084c821ea0513980781
+Content-Type: text/plain; charset=UTF-8
 
+On Mon, Apr 13, 2015 at 11:56 AM, Jonathan Cameron <
+jic23@jic23.retrosnub.co.uk> wrote:
 
-On 13 April 2015 04:40:17 BST, "s.rawat" <imsaurabhrawat@gmail.com> wrote:
->On Fri, Apr 10, 2015 at 11:49 AM, Jonathan Cameron <jic23@kernel.org>
->wrote:
->> Hit google
->> http://pubs.opengroup.org/onlinepubs/009695399/functions/seekdir.html
->> So for POSIX compliance they are optional.
+> Here equivalent is probably to close and reopen the directory.
 >
->You mean seekdir(dp, 0); in function inline int
->build_channel_array(...) is optional?If I comment it, will it have no
->effect? This function is called inside main() of generic_buffer.c and
->I cant get it compiled with the tool chain I have.Is there any
->alternate code I can replace it with if it is Not Optional?
-The functionality is not optional. There is no obligation for the operating system to implement seekdir.
++closedir(dp)
++dp = opendir(scan_el_dir);
 
-Here equivalent is probably to close and reopen the directory.
->
->I can take care of le16toh/be16toh.
->
->Thanks and Rgds,
->S
+This seems to work fine.But sometimes polling accel throws error : failed
+to open /dev/iio:device0 .
 
--- 
-Sent from my Android device with K-9 Mail. Please excuse my brevity.
+--f46d04428084c821ea0513980781
+Content-Type: text/html; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+
+<div dir=3D"ltr"><div class=3D"gmail_extra"><br><div class=3D"gmail_quote">=
+On Mon, Apr 13, 2015 at 11:56 AM, Jonathan Cameron <span dir=3D"ltr">&lt;<a=
+ href=3D"mailto:jic23@jic23.retrosnub.co.uk" target=3D"_blank">jic23@jic23.=
+retrosnub.co.uk</a>&gt;</span> wrote:<br><blockquote class=3D"gmail_quote" =
+style=3D"margin:0px 0px 0px 0.8ex;border-left-width:1px;border-left-color:r=
+gb(204,204,204);border-left-style:solid;padding-left:1ex"><div id=3D":3j4" =
+class=3D"" style=3D"overflow:hidden">Here equivalent is probably to close a=
+nd reopen the directory.<div class=3D""><div id=3D":3m2" class=3D"" tabinde=
+x=3D"0"></div></div></div></blockquote></div><div class=3D"gmail_extra"><di=
+v class=3D"gmail_extra" style=3D"font-size:13px">+closedir(dp)</div><div cl=
+ass=3D"gmail_extra" style=3D"font-size:13px">+dp =3D opendir(scan_el_dir);<=
+/div></div><br>This seems to work fine.But sometimes polling accel throws e=
+rror : failed to open /dev/iio:device0 .</div></div>
+
+--f46d04428084c821ea0513980781--
