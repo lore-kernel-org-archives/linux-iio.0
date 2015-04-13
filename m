@@ -6,106 +6,246 @@ To: Jonathan Cameron <jic23@kernel.org>,
 Cc: linux-kernel@vger.kernel.org,
 	Vlad Dogaru <vlad.dogaru@intel.com>,
 	Irina Tirdea <irina.tirdea@intel.com>
-Subject: [PATCH v2 17/17] iio: accel: mma9553: use unsigned counters
-Date: Mon, 13 Apr 2015 18:41:04 +0300
-Message-Id: <1428939664-12503-18-git-send-email-irina.tirdea@intel.com>
+Subject: [PATCH v2 15/17] iio: accel: mma9553: fix alignment issues
+Date: Mon, 13 Apr 2015 18:41:02 +0300
+Message-Id: <1428939664-12503-16-git-send-email-irina.tirdea@intel.com>
 In-Reply-To: <1428939664-12503-1-git-send-email-irina.tirdea@intel.com>
 References: <1428939664-12503-1-git-send-email-irina.tirdea@intel.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-Use unsigned counters instead of signed when all the
-possible values are positive.
+Fix code alignment and wrap parameters.
+Fix issues reported by checkpatch.pl --strict.
 
 Signed-off-by: Irina Tirdea <irina.tirdea@intel.com>
 Suggested-by: Hartmut Knaack <knaack.h@gmx.de>
 ---
- drivers/iio/accel/mma9551_core.c | 12 +++++++-----
- drivers/iio/accel/mma9553.c      |  8 ++++----
- 2 files changed, 11 insertions(+), 9 deletions(-)
+ drivers/iio/accel/mma9551_core.c |  8 ++---
+ drivers/iio/accel/mma9551_core.h |  6 ++--
+ drivers/iio/accel/mma9553.c      | 76 +++++++++++++++++++---------------------
+ 3 files changed, 43 insertions(+), 47 deletions(-)
 
 diff --git a/drivers/iio/accel/mma9551_core.c b/drivers/iio/accel/mma9551_core.c
-index c34c5ce..44b8243 100644
+index 583660b..c34c5ce 100644
 --- a/drivers/iio/accel/mma9551_core.c
 +++ b/drivers/iio/accel/mma9551_core.c
-@@ -115,8 +115,8 @@ struct mma9551_version_info {
- 
- static int mma9551_transfer(struct i2c_client *client,
- 			    u8 app_id, u8 command, u16 offset,
--			    u8 *inbytes, int num_inbytes,
--			    u8 *outbytes, int num_outbytes)
-+			    u8 *inbytes, u8 num_inbytes,
-+			    u8 *outbytes, u8 num_outbytes)
+@@ -297,7 +297,7 @@ EXPORT_SYMBOL(mma9551_read_status_byte);
+  * Returns: 0 on success, negative value on failure.
+  */
+ int mma9551_read_config_word(struct i2c_client *client, u8 app_id,
+-			    u16 reg, u16 *val)
++			     u16 reg, u16 *val)
  {
- 	struct mma9551_mbox_request req;
- 	struct mma9551_mbox_response rsp;
-@@ -387,7 +387,8 @@ EXPORT_SYMBOL(mma9551_read_status_word);
+ 	int ret;
+ 	__be16 v;
+@@ -328,12 +328,12 @@ EXPORT_SYMBOL(mma9551_read_config_word);
+  * Returns: 0 on success, negative value on failure.
+  */
+ int mma9551_write_config_word(struct i2c_client *client, u8 app_id,
+-			     u16 reg, u16 val)
++			      u16 reg, u16 val)
+ {
+ 	__be16 v = cpu_to_be16(val);
+ 
+ 	return mma9551_transfer(client, app_id, MMA9551_CMD_WRITE_CONFIG, reg,
+-				(u8 *) &v, 2, NULL, 0);
++				(u8 *)&v, 2, NULL, 0);
+ }
+ EXPORT_SYMBOL(mma9551_write_config_word);
+ 
+@@ -385,7 +385,7 @@ EXPORT_SYMBOL(mma9551_read_status_word);
+  * Returns: 0 on success, negative value on failure.
+  */
  int mma9551_read_config_words(struct i2c_client *client, u8 app_id,
- 			      u16 reg, u8 len, u16 *buf)
+-			     u16 reg, u8 len, u16 *buf)
++			      u16 reg, u8 len, u16 *buf)
  {
--	int ret, i;
-+	int ret;
-+	u8 i;
+ 	int ret, i;
  	__be16 be_buf[MMA9551_MAX_MAILBOX_DATA_REGS / 2];
- 
- 	if (len > ARRAY_SIZE(be_buf)) {
-@@ -426,7 +427,8 @@ EXPORT_SYMBOL(mma9551_read_config_words);
+diff --git a/drivers/iio/accel/mma9551_core.h b/drivers/iio/accel/mma9551_core.h
+index 79939e4..5e88e64 100644
+--- a/drivers/iio/accel/mma9551_core.h
++++ b/drivers/iio/accel/mma9551_core.h
+@@ -53,13 +53,13 @@ int mma9551_write_config_byte(struct i2c_client *client, u8 app_id,
+ int mma9551_read_status_byte(struct i2c_client *client, u8 app_id,
+ 			     u16 reg, u8 *val);
+ int mma9551_read_config_word(struct i2c_client *client, u8 app_id,
+-			    u16 reg, u16 *val);
++			     u16 reg, u16 *val);
+ int mma9551_write_config_word(struct i2c_client *client, u8 app_id,
+-			     u16 reg, u16 val);
++			      u16 reg, u16 val);
+ int mma9551_read_status_word(struct i2c_client *client, u8 app_id,
+ 			     u16 reg, u16 *val);
+ int mma9551_read_config_words(struct i2c_client *client, u8 app_id,
+-			     u16 reg, u8 len, u16 *buf);
++			      u16 reg, u8 len, u16 *buf);
  int mma9551_read_status_words(struct i2c_client *client, u8 app_id,
- 			      u16 reg, u8 len, u16 *buf)
- {
--	int ret, i;
-+	int ret;
-+	u8 i;
- 	__be16 be_buf[MMA9551_MAX_MAILBOX_DATA_REGS / 2];
- 
- 	if (len > ARRAY_SIZE(be_buf)) {
-@@ -465,7 +467,7 @@ EXPORT_SYMBOL(mma9551_read_status_words);
+ 			      u16 reg, u8 len, u16 *buf);
  int mma9551_write_config_words(struct i2c_client *client, u8 app_id,
- 			       u16 reg, u8 len, u16 *buf)
- {
--	int i;
-+	u8 i;
- 	__be16 be_buf[(MMA9551_MAX_MAILBOX_DATA_REGS - 1) / 2];
- 
- 	if (len > ARRAY_SIZE(be_buf)) {
 diff --git a/drivers/iio/accel/mma9553.c b/drivers/iio/accel/mma9553.c
-index a605280..ad587ec 100644
+index 06c8707..08f28c3 100644
 --- a/drivers/iio/accel/mma9553.c
 +++ b/drivers/iio/accel/mma9553.c
-@@ -189,7 +189,7 @@ struct mma9553_data {
- 	struct mutex mutex;
- 	struct mma9553_conf_regs conf;
- 	struct mma9553_event events[MMA9553_EVENTS_INFO_SIZE];
--	int num_events;
-+	u8 num_events;
- 	u8 gpio_bitnum;
+@@ -343,10 +343,10 @@ static int mma9553_conf_gpio(struct mma9553_data *data)
+ 	struct mma9553_event *ev_step_detect;
+ 	bool activity_enabled;
+ 
+-	activity_enabled =
+-	    mma9553_is_any_event_enabled(data, true, IIO_ACTIVITY);
+-	ev_step_detect =
+-	    mma9553_get_event(data, IIO_STEPS, IIO_NO_MOD, IIO_EV_DIR_NONE);
++	activity_enabled = mma9553_is_any_event_enabled(data, true,
++							IIO_ACTIVITY);
++	ev_step_detect = mma9553_get_event(data, IIO_STEPS, IIO_NO_MOD,
++					   IIO_EV_DIR_NONE);
+ 
  	/*
- 	 * This is used for all features that depend on step count:
-@@ -230,7 +230,7 @@ static enum iio_modifier mma9553_activity_to_mod(enum activity_level activity)
+ 	 * If both step detector and activity are enabled, use the MRGFL bit.
+@@ -372,9 +372,8 @@ static int mma9553_conf_gpio(struct mma9553_data *data)
+ 			return ret;
+ 	}
  
- static void mma9553_init_events(struct mma9553_data *data)
+-	ret = mma9551_gpio_config(data->client,
+-				  MMA9553_DEFAULT_GPIO_PIN,
+-				  appid, bitnum, MMA9553_DEFAULT_GPIO_POLARITY);
++	ret = mma9551_gpio_config(data->client, MMA9553_DEFAULT_GPIO_PIN, appid,
++				  bitnum, MMA9553_DEFAULT_GPIO_POLARITY);
+ 	if (ret < 0)
+ 		return ret;
+ 	data->gpio_bitnum = bitnum;
+@@ -395,18 +394,16 @@ static int mma9553_init(struct mma9553_data *data)
+ 	 * a device identification command to differentiate the MMA9553L
+ 	 * from the MMA9550L.
+ 	 */
+-	ret =
+-	    mma9551_read_config_words(data->client, MMA9551_APPID_PEDOMETER,
+-				      MMA9553_REG_CONF_SLEEPMIN,
+-				      sizeof(data->conf) / sizeof(u16),
+-				      (u16 *)&data->conf);
++	ret = mma9551_read_config_words(data->client, MMA9551_APPID_PEDOMETER,
++					MMA9553_REG_CONF_SLEEPMIN,
++					sizeof(data->conf) / sizeof(u16),
++					(u16 *)&data->conf);
+ 	if (ret < 0) {
+ 		dev_err(&data->client->dev,
+ 			"failed to read configuration registers\n");
+ 		return ret;
+ 	}
+ 
+-
+ 	/* Reset GPIO */
+ 	data->gpio_bitnum = MMA9553_MAX_BITNUM;
+ 	ret = mma9553_conf_gpio(data);
+@@ -421,19 +418,18 @@ static int mma9553_init(struct mma9553_data *data)
+ 	data->conf.sleepmin = MMA9553_DEFAULT_SLEEPMIN;
+ 	data->conf.sleepmax = MMA9553_DEFAULT_SLEEPMAX;
+ 	data->conf.sleepthd = MMA9553_DEFAULT_SLEEPTHD;
+-	data->conf.config =
+-	    mma9553_set_bits(data->conf.config, 1, MMA9553_MASK_CONF_CONFIG);
++	data->conf.config = mma9553_set_bits(data->conf.config, 1,
++					     MMA9553_MASK_CONF_CONFIG);
+ 	/*
+ 	 * Clear the activity debounce counter when the activity level changes,
+ 	 * so that the confidence level applies for any activity level.
+ 	 */
+ 	data->conf.config = mma9553_set_bits(data->conf.config, 1,
+ 					     MMA9553_MASK_CONF_ACT_DBCNTM);
+-	ret =
+-	    mma9551_write_config_words(data->client, MMA9551_APPID_PEDOMETER,
+-				       MMA9553_REG_CONF_SLEEPMIN,
+-				       sizeof(data->conf) / sizeof(u16),
+-				       (u16 *)&data->conf);
++	ret = mma9551_write_config_words(data->client, MMA9551_APPID_PEDOMETER,
++					 MMA9553_REG_CONF_SLEEPMIN,
++					 sizeof(data->conf) / sizeof(u16),
++					 (u16 *)&data->conf);
+ 	if (ret < 0) {
+ 		dev_err(&data->client->dev,
+ 			"failed to write configuration registers\n");
+@@ -570,7 +566,7 @@ static int mma9553_read_raw(struct iio_dev *indio_dev,
+ 		return IIO_VAL_INT;
+ 	case IIO_CHAN_INFO_CALIBHEIGHT:
+ 		tmp = mma9553_get_bits(data->conf.height_weight,
+-					MMA9553_MASK_CONF_HEIGHT);
++				       MMA9553_MASK_CONF_HEIGHT);
+ 		*val = tmp / 100;	/* cm to m */
+ 		*val2 = (tmp % 100) * 10000;
+ 		return IIO_VAL_INT_PLUS_MICRO;
+@@ -722,7 +718,6 @@ static int mma9553_read_event_config(struct iio_dev *indio_dev,
+ 				     enum iio_event_type type,
+ 				     enum iio_event_direction dir)
  {
--	int i;
-+	u8 i;
+-
+ 	struct mma9553_data *data = iio_priv(indio_dev);
+ 	struct mma9553_event *event;
  
- 	data->num_events = MMA9553_EVENTS_INFO_SIZE;
- 	for (i = 0; i < data->num_events; i++) {
-@@ -244,7 +244,7 @@ static struct mma9553_event *mma9553_get_event(struct mma9553_data *data,
- 					       enum iio_modifier mod,
- 					       enum iio_event_direction dir)
- {
--	int i;
-+	u8 i;
+@@ -1029,22 +1024,22 @@ static irqreturn_t mma9553_event_handler(int irq, void *private)
+ 		return IRQ_HANDLED;
+ 	}
  
- 	for (i = 0; i < data->num_events; i++)
- 		if (data->events[i].info->type == type &&
-@@ -259,7 +259,7 @@ static bool mma9553_is_any_event_enabled(struct mma9553_data *data,
- 					 bool check_type,
- 					 enum iio_chan_type type)
- {
--	int i;
-+	u8 i;
+-	ev_prev_activity =
+-	    mma9553_get_event(data, IIO_ACTIVITY,
+-			      mma9553_activity_to_mod(data->activity),
+-			      IIO_EV_DIR_FALLING);
+-	ev_activity =
+-	    mma9553_get_event(data, IIO_ACTIVITY,
+-			      mma9553_activity_to_mod(activity),
+-			      IIO_EV_DIR_RISING);
+-	ev_step_detect =
+-	    mma9553_get_event(data, IIO_STEPS, IIO_NO_MOD, IIO_EV_DIR_NONE);
++	ev_prev_activity = mma9553_get_event(data, IIO_ACTIVITY,
++					     mma9553_activity_to_mod(
++					     data->activity),
++					     IIO_EV_DIR_FALLING);
++	ev_activity = mma9553_get_event(data, IIO_ACTIVITY,
++					mma9553_activity_to_mod(activity),
++					IIO_EV_DIR_RISING);
++	ev_step_detect = mma9553_get_event(data, IIO_STEPS, IIO_NO_MOD,
++					   IIO_EV_DIR_NONE);
  
- 	for (i = 0; i < data->num_events; i++)
- 		if ((check_type && data->events[i].info->type == type &&
+ 	if (ev_step_detect->enabled && (stepcnt != data->stepcnt)) {
+ 		data->stepcnt = stepcnt;
+ 		iio_push_event(indio_dev,
+ 			       IIO_EVENT_CODE(IIO_STEPS, 0, IIO_NO_MOD,
+-			       IIO_EV_DIR_NONE, IIO_EV_TYPE_CHANGE, 0, 0, 0),
++					      IIO_EV_DIR_NONE,
++					      IIO_EV_TYPE_CHANGE, 0, 0, 0),
+ 			       data->timestamp);
+ 	}
+ 
+@@ -1054,17 +1049,19 @@ static irqreturn_t mma9553_event_handler(int irq, void *private)
+ 		if (ev_prev_activity && ev_prev_activity->enabled)
+ 			iio_push_event(indio_dev,
+ 				       IIO_EVENT_CODE(IIO_ACTIVITY, 0,
+-				       ev_prev_activity->info->mod,
+-				       IIO_EV_DIR_FALLING,
+-				       IIO_EV_TYPE_THRESH, 0, 0, 0),
++						    ev_prev_activity->info->mod,
++						    IIO_EV_DIR_FALLING,
++						    IIO_EV_TYPE_THRESH, 0, 0,
++						    0),
+ 				       data->timestamp);
+ 
+ 		if (ev_activity && ev_activity->enabled)
+ 			iio_push_event(indio_dev,
+ 				       IIO_EVENT_CODE(IIO_ACTIVITY, 0,
+-				       ev_activity->info->mod,
+-				       IIO_EV_DIR_RISING,
+-				       IIO_EV_TYPE_THRESH, 0, 0, 0),
++						      ev_activity->info->mod,
++						      IIO_EV_DIR_RISING,
++						      IIO_EV_TYPE_THRESH, 0, 0,
++						      0),
+ 				       data->timestamp);
+ 	}
+ 	mutex_unlock(&data->mutex);
+@@ -1159,7 +1156,6 @@ static int mma9553_probe(struct i2c_client *client,
+ 				client->irq);
+ 			goto out_poweroff;
+ 		}
+-
+ 	}
+ 
+ 	ret = iio_device_register(indio_dev);
 -- 
 1.9.1
