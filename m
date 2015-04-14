@@ -1,34 +1,33 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga14.intel.com ([192.55.52.115]:46362 "EHLO mga14.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S932104AbbDNVzt (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Tue, 14 Apr 2015 17:55:49 -0400
+Return-Path: <srinivas.pandruvada@linux.intel.com>
 From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-To: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
+To: jic23@kernel.org,
+	knaack.h@gmx.de,
+	lars@metafoo.de,
 	pmeerw@pmeerw.net
 Cc: linux-iio@vger.kernel.org,
 	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-Subject: [PATCH] iio: pressure: hid-sensor-press: Fix modifier
-Date: Tue, 14 Apr 2015 14:54:18 -0700
-Message-Id: <1429048458-5379-1-git-send-email-srinivas.pandruvada@linux.intel.com>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Subject: [PATCH] iio: light: hid-sensor-prox: Fix modifier
+Date: Tue, 14 Apr 2015 14:53:22 -0700
+Message-Id: <1429048402-5311-1-git-send-email-srinivas.pandruvada@linux.intel.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-Fix "null" in the raw attribute and scan elements.
+Currently in_proximity_(null)_raw is getting presented as raw sysfs
+attribute. Same with the scan_elements.
+The modifier doesn't apply to this channel.
 
 Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
 ---
- drivers/iio/pressure/hid-sensor-press.c | 2 --
+ drivers/iio/light/hid-sensor-prox.c | 2 --
  1 file changed, 2 deletions(-)
 
-diff --git a/drivers/iio/pressure/hid-sensor-press.c b/drivers/iio/pressure/hid-sensor-press.c
-index 7bb8d4c..3cf0bd6 100644
---- a/drivers/iio/pressure/hid-sensor-press.c
-+++ b/drivers/iio/pressure/hid-sensor-press.c
-@@ -47,8 +47,6 @@ struct press_state {
- static const struct iio_chan_spec press_channels[] = {
+diff --git a/drivers/iio/light/hid-sensor-prox.c b/drivers/iio/light/hid-sensor-prox.c
+index 91ecc46..dc618b4 100644
+--- a/drivers/iio/light/hid-sensor-prox.c
++++ b/drivers/iio/light/hid-sensor-prox.c
+@@ -43,8 +43,6 @@ struct prox_state {
+ static const struct iio_chan_spec prox_channels[] = {
  	{
- 		.type = IIO_PRESSURE,
+ 		.type = IIO_PROXIMITY,
 -		.modified = 1,
 -		.channel2 = IIO_NO_MOD,
  		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
@@ -36,4 +35,3 @@ index 7bb8d4c..3cf0bd6 100644
  		BIT(IIO_CHAN_INFO_SCALE) |
 -- 
 2.1.0
-
