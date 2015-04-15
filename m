@@ -1,8 +1,4 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mout1.freenet.de ([195.4.92.91]:40532 "EHLO mout1.freenet.de"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1754634AbbDOT16 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Wed, 15 Apr 2015 15:27:58 -0400
+Return-Path: <thomas.betker@freenet.de>
 From: Thomas Betker <thomas.betker@freenet.de>
 To: linux-iio@vger.kernel.org
 Cc: Jonathan Cameron <jic23@kernel.org>,
@@ -10,41 +6,34 @@ Cc: Jonathan Cameron <jic23@kernel.org>,
 	Michal Simek <michal.simek@xilinx.com>,
 	=?UTF-8?q?S=C3=B6ren=20Brinkmann?= <soren.brinkmann@xilinx.com>,
 	Thomas Betker <thomas.betker@rohde-schwarz.com>
-Subject: [PATCH 1/5] iio: adc: xilinx: Fix register addresses
-Date: Wed, 15 Apr 2015 21:11:47 +0200
-Message-Id: <1429125111-2926-2-git-send-email-thomas.betker@freenet.de>
+Subject: [PATCH 2/5] iio: adc: xilinx: Fix "vccaux" channel .address
+Date: Wed, 15 Apr 2015 21:11:48 +0200
+Message-Id: <1429125111-2926-3-git-send-email-thomas.betker@freenet.de>
 In-Reply-To: <1429125111-2926-1-git-send-email-thomas.betker@freenet.de>
 References: <1429125111-2926-1-git-send-email-thomas.betker@freenet.de>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+List-ID: <linux-iio@vger.kernel.org>
 
 From: Thomas Betker <thomas.betker@rohde-schwarz.com>
 
-Define the register addresses for MIN_VCCPINT, MIN_VCCPAUX, MIN_VCCO_DDR
-correctly.
+For the "vccaux" channel, read the VCCAUX register, not VCCINT.
 
 Signed-off-by: Thomas Betker <thomas.betker@rohde-schwarz.com>
 ---
- drivers/iio/adc/xilinx-xadc.h |    6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/iio/adc/xilinx-xadc-core.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/iio/adc/xilinx-xadc.h b/drivers/iio/adc/xilinx-xadc.h
-index c7487e8..54adc50 100644
---- a/drivers/iio/adc/xilinx-xadc.h
-+++ b/drivers/iio/adc/xilinx-xadc.h
-@@ -145,9 +145,9 @@ static inline int xadc_write_adc_reg(struct xadc *xadc, unsigned int reg,
- #define XADC_REG_MAX_VCCPINT	0x28
- #define XADC_REG_MAX_VCCPAUX	0x29
- #define XADC_REG_MAX_VCCO_DDR	0x2a
--#define XADC_REG_MIN_VCCPINT	0x2b
--#define XADC_REG_MIN_VCCPAUX	0x2c
--#define XADC_REG_MIN_VCCO_DDR	0x2d
-+#define XADC_REG_MIN_VCCPINT	0x2c
-+#define XADC_REG_MIN_VCCPAUX	0x2d
-+#define XADC_REG_MIN_VCCO_DDR	0x2e
- 
- #define XADC_REG_CONF0		0x40
- #define XADC_REG_CONF1		0x41
+diff --git a/drivers/iio/adc/xilinx-xadc-core.c b/drivers/iio/adc/xilinx-xadc-core.c
+index a221f73..0ad7b50 100644
+--- a/drivers/iio/adc/xilinx-xadc-core.c
++++ b/drivers/iio/adc/xilinx-xadc-core.c
+@@ -1008,7 +1008,7 @@ static const struct iio_event_spec xadc_voltage_events[] = {
+ static const struct iio_chan_spec xadc_channels[] = {
+ 	XADC_CHAN_TEMP(0, 8, XADC_REG_TEMP),
+ 	XADC_CHAN_VOLTAGE(0, 9, XADC_REG_VCCINT, "vccint", true),
+-	XADC_CHAN_VOLTAGE(1, 10, XADC_REG_VCCINT, "vccaux", true),
++	XADC_CHAN_VOLTAGE(1, 10, XADC_REG_VCCAUX, "vccaux", true),
+ 	XADC_CHAN_VOLTAGE(2, 14, XADC_REG_VCCBRAM, "vccbram", true),
+ 	XADC_CHAN_VOLTAGE(3, 5, XADC_REG_VCCPINT, "vccpint", true),
+ 	XADC_CHAN_VOLTAGE(4, 6, XADC_REG_VCCPAUX, "vccpaux", true),
 -- 
 1.7.9.5
-
