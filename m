@@ -1,16 +1,15 @@
 Return-Path: <daniel.baluta@gmail.com>
 MIME-Version: 1.0
 Sender: daniel.baluta@gmail.com
-In-Reply-To: <552A91F1.70504@kernel.org>
+In-Reply-To: <552A9570.1020800@kernel.org>
 References: <1428329889-18335-1-git-send-email-daniel.baluta@intel.com>
-	<1428329889-18335-3-git-send-email-daniel.baluta@intel.com>
-	<5526B24D.1010701@kernel.org>
-	<CAEnQRZDQM0UM2f=LcCAMpwZqGgNo8JKLw+CJL9wz2Fq3zx35bQ@mail.gmail.com>
-	<552A91F1.70504@kernel.org>
-Date: Wed, 15 Apr 2015 18:33:03 +0300
-Message-ID: <CAEnQRZAD0pT+Na3+SZDbpD-QSt5dpYx_BWQ2XZ2_aF94JhgggA@mail.gmail.com>
-Subject: Re: [PATCH v3 2/3] iio: trigger: Add support for highres timer
- trigger type
+	<1428329889-18335-2-git-send-email-daniel.baluta@intel.com>
+	<5526B398.8050806@kernel.org>
+	<CAEnQRZBUZSRekmcNtJhWfEUzbZiNVQB6Pxn=67TCoJkU_5DySg@mail.gmail.com>
+	<552A9570.1020800@kernel.org>
+Date: Wed, 15 Apr 2015 18:17:33 +0300
+Message-ID: <CAEnQRZBzOgnUf1oxF70TTwF-1WKOFpuKo=0zEprVeDMBdc-PAw@mail.gmail.com>
+Subject: Re: [PATCH v3 1/3] iio: configfs: Add configfs support to IIO
 From: Daniel Baluta <daniel.baluta@intel.com>
 To: Jonathan Cameron <jic23@kernel.org>
 Cc: Daniel Baluta <daniel.baluta@intel.com>, Joel Becker <jlbec@evilplan.org>,
@@ -22,116 +21,57 @@ Cc: Daniel Baluta <daniel.baluta@intel.com>, Joel Becker <jlbec@evilplan.org>,
 Content-Type: text/plain; charset=UTF-8
 List-ID: <linux-iio@vger.kernel.org>
 
-On Sun, Apr 12, 2015 at 6:40 PM, Jonathan Cameron <jic23@kernel.org> wrote:
-> On 10/04/15 10:02, Daniel Baluta wrote:
->> On Thu, Apr 9, 2015 at 8:09 PM, Jonathan Cameron <jic23@kernel.org> wrote:
+On Sun, Apr 12, 2015 at 6:55 PM, Jonathan Cameron <jic23@kernel.org> wrote:
+> On 10/04/15 12:08, Daniel Baluta wrote:
+>> On Thu, Apr 9, 2015 at 8:15 PM, Jonathan Cameron <jic23@kernel.org> wrote:
 >>> On 06/04/15 15:18, Daniel Baluta wrote:
->>>> This patch adds a new trigger type - the high resoluton timer ("hrtimer")
->>>> under /config/iio/triggers/ and also creates a module that implements hrtimer
->>>> trigger type functionality.
+>>>> This module is the core of IIO configfs. It creates the "iio" subsystem under
+>>>> configfs mount point root, with one default group for "triggers".
 >>>>
->>>> A new IIO trigger is allocated when a new directory is created under
->>>> /config/iio/triggers/. The name of the trigger is the same as the dir
->>>> name. Each trigger will have a "delay" attribute representing the delay
->>>> between two successive IIO trigger_poll calls.
->>> Cool ;)
+>>>> It offers basic interface for registering software trigger types. Next patches
+>>>> will add "hrtimer" and "sysfs" trigger types. To add a new trigger type we must
+>>>> create a new kernel module which implements iio_configfs_trigger.h interface.
 >>>>
->>>> Signed-off-by: Marten Svanfeldt <marten@intuitiveaerial.com>
->>>> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+>>>> See Documentation/iio/iio_configfs.txt for more details on how configfs
+>>>> support for IIO works.
+>>>>
 >>>> Signed-off-by: Daniel Baluta <daniel.baluta@intel.com>
->>> I'd ideally have liked the break up of the patches to be slightly different.
->>> There is stuff in here that would have made more sense in the first patch
->>> as it isn't specific to this particular trigger.
+>>> Looks good and is actually a fair bit simpler than I expected which is nice!
+>>> As an ideal aim, I'd like there to be no need for the core to have any
+>>> idea what triggers exist and can be registered (beyond preventing naming
+>>> clashes etc). Actually, not much would be needed to implement that I think, just
+>>> using a list and looking up in it (we aren't on a particularly fast path so
+>>> don't need anything clever) instead of a simple array.  A touch of locking
+>>> probably to avoid two many simultaneous users of that list...
 >>
->> Yes :), this was my first thought too (implemented in v1), but then I wanted
->> to make a complete example on how to add a new trigger type.
-> I can see where you are coming from, but really think we need to
-> make it so there is less of each trigger implementation in the core.
-> Preferably none!
+>> Good point. Will do.
 >>
->> People implementing a new trigger type will find this patch very useful.
+>> I will create a list holding the list with the registered trigger types using
+>> the trigger type name as the searching key (e.g. : "hrtimer", "sysfs").
 >>
->> Anyhow, I have no objection on this. Can be fixed.
->>>> ---
->>>> Changes since v2:
->>>>       * none
->>>> Changes since v1:
->>>>       * replaced sampling_frequency with delay to make the in kernel
->>>>       processing easier
->>> Then along comes me an suggests going back again ;)  Make your case...
+>>>
+>>> Hmm. having read through the patches, are we fundamentally limited to having to
+>>> specify the entire directory structure before bringing up configfs?
 >>
->> Initial hrtimer trigger implementation was limited to using integer sampling
->> frequencies. Adding "rational" frequencies (e.g 12.5 Hz) and converting them
->> back to hrtimer trigger delay  would add some complex calculation in the kernel
->> with the possibility of losing precision.
+>> AFAIK, directories can be created in two ways:
 >>
->> Besides that, for most devices sampling_frequencies (Hz) attribute is natural
->> because this is what the devices expose in its registers, while the timers
->> API uses delays (nsec).
+>> *  as default groups registered at iio trigger configfs init time.
+>> *  when userspace applications call mkdir.
 >>
->> Here is how I see the usage of device's sampling_frequency and trigger's
->> delay (this should be kept in sync)
->>
->> User application reads device's sampling_frequency and then based on that
->> it sets trigger's delay to 1/sampling_frequency -- all of that happening in user
->> space where floating point is easy :).
-> I'm not keen on the flipping backwards and forwards going on here.  To my
-> mind the two should be the same.
-
-I see. So it shouldn't be any direct relation between device
-sampling_frequency and
-trigger sampling_frequency.
-
-Now, I'm afraid that users will get confused about this naming and they'll
-try to keep both of them in sync.
-
-To sum up, I will also use sampling_frequency also for triggers and
-make sure this is
-well documented. Not sure if supporting rational frequencies will
-bring any benefit
-(e.g 12.5), since we won't be able to match the exact sampling
-frequency of the device.
-
+>> So, unless we agree that userspace applications should be aware of IIO
+>> trigger types and manually call mkdir /config/iio/triggers/hrtimer (for example)
+>> we are limited to specifying the entire directory structure in the IIO
+>> configs module.
+> That's my understanding as well and the reason the usb gadget stuff
+> uses <type>-instancename instead of type/instancename
 >
-> I'm a little unclear on when we'd actually hit your example and whether
-> this is the right approach if we do.
+> At the moment I think we will need to go the same way.
+> Of course from the point of view of what userspace needs to know
+> it's actually the same as
 >
-> The usual case for using a 'software' trigger is for devices with no
-> sampling clock of their own.  So devices with a 'sample now' signal
-> (be this an explicit one or a case where the device samples using the
-> bus clock to drive the adc).
->
-> So here you are dealing with devices that would actually have a dataready
-> type signal, but it's not exposed? Any attempt to match sampling is just
-> destined to go wrong.  If you want to guarantee getting all the data you'll
-> have to over sample, probably by a significant degree given that you'll
-> have some variation in any software trigger.
+> mkdir hrtimer
+> cd hrtime
+> mkdir instancename
+> though so perhaps we should just do that.
 
-There are devices which do not have an interrupt pin (by design).
-Also, there are
-cases where is not possible to know if new data is ready. You'll just
-have to read it
-and compare it with previous values to really figure out if it's new.
-
->
-> In most (possibly) all devices there is a software means of reading whether
-> their is new data available.  I'd suggest in this case we do actually need
-> to move the polling logic into the driver.  It simply doesn't
-> make sense to use the generic timer to do it as we won't sample ever time.
-
-It makes some sense because we want to have a generic way of support
-triggered buffers
-without having to modify the driver to use polling.
-
->
-> Hence you'll end up with a trigger that has an underlying 'hidden' poll
-> of the device and only fires when there is new data available - much cleaner
-> interface to userspace and reliable data capture without repeat samples
-> and all the mess that will entail.
->>
-
-I agree here that the interface to userspace will be cleaner in this
-case (in fact the user
-doesn't have to do anything).  But the amount of work needed for the user
-in case we use generic trigger described above should be negligible compared
-to the amount of work needed to implement polling in every driver.
+Ok, I see your point here. I will try to send a new version with this in mind.
