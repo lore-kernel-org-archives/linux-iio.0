@@ -1,135 +1,80 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ns.pmeerw.net ([84.19.176.92]:37992 "EHLO pmeerw.net"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1754486AbbDOUjo (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Wed, 15 Apr 2015 16:39:44 -0400
-From: Peter Meerwald <pmeerw@pmeerw.net>
-To: linux-iio@vger.kernel.org
-Cc: jic23@kernel.org, Peter Meerwald <pmeerw@pmeerw.net>
-Subject: [PATCH] iio:tsl2563: Use tsl2563_ prefix for driver's functions
-Date: Wed, 15 Apr 2015 22:39:37 +0200
-Message-Id: <1429130378-19941-2-git-send-email-pmeerw@pmeerw.net>
-In-Reply-To: <1429130378-19941-1-git-send-email-pmeerw@pmeerw.net>
-References: <1429130378-19941-1-git-send-email-pmeerw@pmeerw.net>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:41198 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751848AbbDOUyT (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 15 Apr 2015 16:54:19 -0400
+Message-ID: <552ECFF8.2070501@kernel.org>
+Date: Wed, 15 Apr 2015 21:54:16 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+MIME-Version: 1.0
+To: Thomas Betker <thomas.betker@freenet.de>, linux-iio@vger.kernel.org
+CC: Lars-Peter Clausen <lars@metafoo.de>,
+	Michal Simek <michal.simek@xilinx.com>,
+	=?windows-1252?Q?S=F6ren_Brinkmann?= <soren.brinkmann@xilinx.com>,
+	Thomas Betker <thomas.betker@rohde-schwarz.com>
+Subject: Re: [Patch 0/5] iio: adc: xilinx: Fix some minor issues
+References: <1429125111-2926-1-git-send-email-thomas.betker@freenet.de>
+In-Reply-To: <1429125111-2926-1-git-send-email-thomas.betker@freenet.de>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-just cleanup, no functional change
+On 15/04/15 20:11, Thomas Betker wrote:
+> This patch series fixes some issues found by tests on our Zynq-7020 
+> board; the issues usually result in incorrect voltage readings:
+> 
+> [1/5] iio: adc: xilinx: Fix register addresses
+> [2/5] iio: adc: xilinx: Fix "vccaux" channel .address
+> [3/5] iio: adc: xilinx: Fix VREFP scale
+> [4/5] iio: adc: xilinx: Fix VREFN sign
+> [5/5] iio: adc: xilinx: Set .datasheet_name instead of .extend_name
+> 
+> About [1]: The register addresses in question are currently not used by 
+> the driver, but we do use them for extended tests. (I might provide a 
+> patch to support lowest/highest values another time; see also [5].)
+> 
+> About [3], [4]: The transfer functions for VREFP and VREFN are 
+> 	vrefp = unsigned(code) * 3.0 / 4096
+> 	vrefn = signed(code) * 1.0 / 4096
+> I know it's not consistent, but that's what UG480 says ... VREFP = 1.25 
+> definitely needs the factor 3.0 to get reasonable values (a factor 1.0 
+> will never get you more than 1.0V). As for VREFN = 0V, we did actually 
+> see negative values on our boards.
+> 
+> About [5]: This may be a matter of debate on the IIO list, but I didn't 
+> get the impression that extensions are intended to be used that way.
+>     .extend_name = "vccint" means that the sysfs node names are 
+> in_voltage0_vccint_raw/_scale, which is a bit unexpected. I would 
+> rather see them called just in_voltage0_*, and reserve extensions for 
+> things like in_voltage0_lowest_* and in_voltage0_highest_* (MIN_VCCINT, 
+> MAX_VCCINT) -- that's what we do in our project.
+It was always intended for labelling of channels with well defined
+purposes.  That is ones that are hard wired to something rather than
+simply exposed for general purpose use.  I'm guessing vccint is
+the internal supply voltage, in which case that was pretty much
+the intended use.
 
-Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
----
- drivers/iio/light/tsl2563.c | 32 ++++++++++++++++----------------
- 1 file changed, 16 insertions(+), 16 deletions(-)
+The datasheet name is only really there for binding consumers to individual
+channels.  The thought being that you'd probably be sat there with a circuit
+diagram in front of you specifying what is connected to which precise pin
+of the ADC...
 
-diff --git a/drivers/iio/light/tsl2563.c b/drivers/iio/light/tsl2563.c
-index 94daa9f..8166944 100644
---- a/drivers/iio/light/tsl2563.c
-+++ b/drivers/iio/light/tsl2563.c
-@@ -240,7 +240,7 @@ static int tsl2563_read_id(struct tsl2563_chip *chip, u8 *id)
-  * convert between normalized values and HW values obtained using given
-  * timing and gain settings.
-  */
--static int adc_shiftbits(u8 timing)
-+static int tsl2563_adc_shiftbits(u8 timing)
- {
- 	int shift = 0;
- 
-@@ -263,9 +263,9 @@ static int adc_shiftbits(u8 timing)
- }
- 
- /* Convert a HW ADC value to normalized scale. */
--static u32 normalize_adc(u16 adc, u8 timing)
-+static u32 tsl2563_normalize_adc(u16 adc, u8 timing)
- {
--	return adc << adc_shiftbits(timing);
-+	return adc << tsl2563_adc_shiftbits(timing);
- }
- 
- static void tsl2563_wait_adc(struct tsl2563_chip *chip)
-@@ -350,8 +350,8 @@ static int tsl2563_get_adc(struct tsl2563_chip *chip)
- 		retry = tsl2563_adjust_gainlevel(chip, adc0);
- 	}
- 
--	chip->data0 = normalize_adc(adc0, chip->gainlevel->gaintime);
--	chip->data1 = normalize_adc(adc1, chip->gainlevel->gaintime);
-+	chip->data0 = tsl2563_normalize_adc(adc0, chip->gainlevel->gaintime);
-+	chip->data1 = tsl2563_normalize_adc(adc1, chip->gainlevel->gaintime);
- 
- 	if (!chip->int_enabled)
- 		schedule_delayed_work(&chip->poweroff_work, 5 * HZ);
-@@ -361,13 +361,13 @@ out:
- 	return ret;
- }
- 
--static inline int calib_to_sysfs(u32 calib)
-+static inline int tsl2563_calib_to_sysfs(u32 calib)
- {
- 	return (int) (((calib * CALIB_BASE_SYSFS) +
- 		       CALIB_FRAC_HALF) >> CALIB_FRAC_BITS);
- }
- 
--static inline u32 calib_from_sysfs(int value)
-+static inline u32 tsl2563_calib_from_sysfs(int value)
- {
- 	return (((u32) value) << CALIB_FRAC_BITS) / CALIB_BASE_SYSFS;
- }
-@@ -426,7 +426,7 @@ static const struct tsl2563_lux_coeff lux_table[] = {
- };
- 
- /* Convert normalized, scaled ADC values to lux. */
--static unsigned int adc_to_lux(u32 adc0, u32 adc1)
-+static unsigned int tsl2563_adc_to_lux(u32 adc0, u32 adc1)
- {
- 	const struct tsl2563_lux_coeff *lp = lux_table;
- 	unsigned long ratio, lux, ch0 = adc0, ch1 = adc1;
-@@ -442,7 +442,7 @@ static unsigned int adc_to_lux(u32 adc0, u32 adc1)
- }
- 
- /* Apply calibration coefficient to ADC count. */
--static u32 calib_adc(u32 adc, u32 calib)
-+static u32 tsl2563_calib_adc(u32 adc, u32 calib)
- {
- 	unsigned long scaled = adc;
- 
-@@ -463,9 +463,9 @@ static int tsl2563_write_raw(struct iio_dev *indio_dev,
- 	if (mask != IIO_CHAN_INFO_CALIBSCALE)
- 		return -EINVAL;
- 	if (chan->channel2 == IIO_MOD_LIGHT_BOTH)
--		chip->calib0 = calib_from_sysfs(val);
-+		chip->calib0 = tsl2563_calib_from_sysfs(val);
- 	else if (chan->channel2 == IIO_MOD_LIGHT_IR)
--		chip->calib1 = calib_from_sysfs(val);
-+		chip->calib1 = tsl2563_calib_from_sysfs(val);
- 	else
- 		return -EINVAL;
- 
-@@ -491,11 +491,11 @@ static int tsl2563_read_raw(struct iio_dev *indio_dev,
- 			ret = tsl2563_get_adc(chip);
- 			if (ret)
- 				goto error_ret;
--			calib0 = calib_adc(chip->data0, chip->calib0) *
-+			calib0 = tsl2563_calib_adc(chip->data0, chip->calib0) *
- 				chip->cover_comp_gain;
--			calib1 = calib_adc(chip->data1, chip->calib1) *
-+			calib1 = tsl2563_calib_adc(chip->data1, chip->calib1) *
- 				chip->cover_comp_gain;
--			*val = adc_to_lux(calib0, calib1);
-+			*val = tsl2563_adc_to_lux(calib0, calib1);
- 			ret = IIO_VAL_INT;
- 			break;
- 		case IIO_INTENSITY:
-@@ -515,9 +515,9 @@ static int tsl2563_read_raw(struct iio_dev *indio_dev,
- 
- 	case IIO_CHAN_INFO_CALIBSCALE:
- 		if (chan->channel2 == IIO_MOD_LIGHT_BOTH)
--			*val = calib_to_sysfs(chip->calib0);
-+			*val = tsl2563_calib_to_sysfs(chip->calib0);
- 		else
--			*val = calib_to_sysfs(chip->calib1);
-+			*val = tsl2563_calib_to_sysfs(chip->calib1);
- 		ret = IIO_VAL_INT;
- 		break;
- 	default:
--- 
-1.9.1
+So I think the original approach is more in keeping with the intent.
+
+The lowest/highest versions are interesting. Right now, the extended name
+is the only way to specify them, but somehow it feels like we ought
+to have something better.... We could treat them as a filter or simply
+another aspect of the channel (like _scale etc), but that's also a little
+ugly. Will think about this and see if anyone else has a better suggestion!
+
+>     Note that .extend_name = "vccint", "vccaux", ... also has the side 
+> effect of creating the sysfs nodes vccint_sampling_frequency, 
+> vccaux_sampling_frequency, ... [due to .info_mask_shared_by_all = 
+> BIT(IIO_CHAN_INFO_SAMP_FREQ)], which is probably not desired.
+This last one sounds like a bug and definitely isn't the intended result!
+The extended name should be ignored for shared_by values.
+> 
+> Best regards,
+> Thomas Betker
+> 
 
