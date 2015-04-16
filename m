@@ -1,59 +1,41 @@
-Return-Path: <jic23@jic23.retrosnub.co.uk>
-References: <BN1PR0301MB0612F81FA6EDAADE705E39CEE2E40@BN1PR0301MB0612.namprd03.prod.outlook.com>
-In-Reply-To: <BN1PR0301MB0612F81FA6EDAADE705E39CEE2E40@BN1PR0301MB0612.namprd03.prod.outlook.com>
-From: jic23@jic23.retrosnub.co.uk
-To: "utkarsh.gupta@freescale.com" <utkarsh.gupta@freescale.com>
-Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-  "Fabio.Estevam@freescale.com" <Fabio.Estevam@freescale.com>, "Jonathan
-  Cameron" <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
-  "Lars-Peter Clausen" <lars@metafoo.de>, Peter Meerwald
-  <pmeerw@pmeerw.net>
-Subject: Re: Advice needed on combination sensor driver implementation
-Date: Thu, 16 Apr 2015 12:51:11 +0100
-Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Message-Id: <20150416115111.613FC405F1@saturn.retrosnub.co.uk>
+Return-Path: <robert.dolca@intel.com>
+From: Robert Dolca <robert.dolca@intel.com>
+To: linux-iio@vger.kernel.org,
+	Jonathan Cameron <jic23@kernel.org>
+Cc: linux-kernel@vger.kernel.org,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Robert Dolca <robert.dolca@intel.com>,
+	Denis CIOCCA <denis.ciocca@st.com>
+Subject: [PATCH RFC 3/3] iio: Use with iio_trigger_register_with_dev to register trigger
+Date: Thu, 16 Apr 2015 12:01:08 +0300
+Message-Id: <1429174868-11953-4-git-send-email-robert.dolca@intel.com>
+In-Reply-To: <1429174868-11953-1-git-send-email-robert.dolca@intel.com>
+References: <1429174868-11953-1-git-send-email-robert.dolca@intel.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-utkarsh.gupta@freescale.com writes: 
+The trigger registered by the driver has the main purpose to be used
+with this driver so it should be linked to the IIO device. This
+way the user space applications can find the connection between them.
 
-> Hello, 
-> 
-> I am looking at implementing FXOS8700 driver, which consists of an accelerometer and magnetometer, into the linux kernel 4.0. This device can function independently as accel and magnetometer however it has been recommended to implement it as one driver in order to achieve consistency and synchronized functionality of both modules. 
-> 
-> Please advice on whether this driver could be implemented as accel_magnetometer combined driver in a separate folder in iio? Or should this be implemented as separate accel and magnetometer modules in their corresponding existing folders in iio?
+Signed-off-by: Robert Dolca <robert.dolca@intel.com>
+---
+ drivers/iio/common/st_sensors/st_sensors_trigger.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Hi, Just been reading the datasheet over lunch.  This is a bit more
-interesting than the usual approach of simply putting two bits of silicon
-into one package, and the two sensors are tightly coupled. 
-
-As such it's similar to the full IMUs such as the ADIS16400 and similar. 
-
-Anyhow, definitely a unified driver. Location wise, I'm tempted to suggest
-we rename the IMU directory as 'combined' or something similar and drop
-all properly integrated multiple sensor devices in there. 
-
-Note that things like the HID sensors have independent sampling rates and
-timing for the different parts (they really are a bunch of sensors shoved
-in a box) so there we do the whole separated drivers thing. 
-
-
-There are certainly a few interesting corners on this chip, such as its
-event based fifo filling.  We've seen that before in impact sensors, but
-don't yet have it well supported. 
-
-The fact that the fifo only covers the acceleration channels will make
-that side of things a little trickier than normal.  We probably want
-a means to make this apparent to userspace, but you'll have to disable
-the fifo and read directly if the magnetometer channels are enabled. 
-
-Anyhow, looking forward to seeing the driver! 
-
-Jonathan
->  
-> 
-> Thanks & Regards,
-> Utkarsh Gupta - B45806
-> Software Apps Engineer
-> Freescale Semiconductors 
-> 
+diff --git a/drivers/iio/common/st_sensors/st_sensors_trigger.c b/drivers/iio/common/st_sensors/st_sensors_trigger.c
+index 8d8ca6f..6681a7d 100644
+--- a/drivers/iio/common/st_sensors/st_sensors_trigger.c
++++ b/drivers/iio/common/st_sensors/st_sensors_trigger.c
+@@ -44,7 +44,7 @@ int st_sensors_allocate_trigger(struct iio_dev *indio_dev,
+ 	sdata->trig->ops = trigger_ops;
+ 	sdata->trig->dev.parent = sdata->dev;
+ 
+-	err = iio_trigger_register(sdata->trig);
++	err = iio_trigger_register_with_dev(indio_dev, sdata->trig);
+ 	if (err < 0) {
+ 		dev_err(&indio_dev->dev, "failed to register iio trigger.\n");
+ 		goto iio_trigger_register_error;
+-- 
+1.9.1
