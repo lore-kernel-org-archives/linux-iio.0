@@ -1,85 +1,63 @@
-Return-Path: <robert.dolca@intel.com>
-From: Robert Dolca <robert.dolca@intel.com>
-To: linux-iio@vger.kernel.org,
-	Jonathan Cameron <jic23@kernel.org>
-Cc: linux-kernel@vger.kernel.org,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	Robert Dolca <robert.dolca@intel.com>,
-	Denis CIOCCA <denis.ciocca@st.com>
-Subject: [PATCH RFC 2/3] iio: Improve iio_trigger_register_with_dev to register trigger after device
-Date: Thu, 16 Apr 2015 12:01:07 +0300
-Message-Id: <1429174868-11953-3-git-send-email-robert.dolca@intel.com>
-In-Reply-To: <1429174868-11953-1-git-send-email-robert.dolca@intel.com>
-References: <1429174868-11953-1-git-send-email-robert.dolca@intel.com>
+Return-Path: <Thomas.Betker@rohde-schwarz.com>
+In-Reply-To: <552ECFF8.2070501@kernel.org>
+References: <1429125111-2926-1-git-send-email-thomas.betker@freenet.de> <552ECFF8.2070501@kernel.org>
+To: jic23@kernel.org
+Cc: Lars-Peter Clausen <lars@metafoo.de>, linux-iio@vger.kernel.org, Michal Simek <michal.simek@xilinx.com>, =?ISO-8859-1?Q?S=F6ren_Brinkmann?= <soren.brinkmann@xilinx.com>
+MIME-Version: 1.0
+Subject: Re: [Patch 0/5] iio: adc: xilinx: Fix some minor issues
+From: Thomas.Betker@rohde-schwarz.com
+Message-ID: <OF5342D15E.A4BDD05D-ONC1257E29.00294BA0-C1257E29.002B4FCC@rohde-schwarz.com>
+Date: Thu, 16 Apr 2015 09:53:01 +0200
+Content-Type: text/plain; charset="US-ASCII"
 List-ID: <linux-iio@vger.kernel.org>
 
-Until now calling iio_trigger_register_with_dev after registering the IIO device
-added the trigger to the device's trigger list and saved a reference to the
-device in the trigger's struct but it did not create the symlink.
+Hello Jonathan:
 
-In order to know if the device was registered or not this patch adds a flag
-in the dev_iio struct and checks it when iio_trigger_register_with_dev is
-called.
+> > About [5]: This may be a matter of debate on the IIO list, but I 
+didn't 
+> > get the impression that extensions are intended to be used that way.
+> >     .extend_name = "vccint" means that the sysfs node names are 
+> > in_voltage0_vccint_raw/_scale, which is a bit unexpected. I would 
+> > rather see them called just in_voltage0_*, and reserve extensions for 
+> > things like in_voltage0_lowest_* and in_voltage0_highest_* 
+(MIN_VCCINT, 
+> > MAX_VCCINT) -- that's what we do in our project.
+> 
+> It was always intended for labelling of channels with well defined
+> purposes.  That is ones that are hard wired to something rather than
+> simply exposed for general purpose use.  I'm guessing vccint is
+> the internal supply voltage, in which case that was pretty much
+> the intended use.
+> 
+> The datasheet name is only really there for binding consumers to 
+individual
+> channels.  The thought being that you'd probably be sat there with a 
+circuit
+> diagram in front of you specifying what is connected to which precise 
+pin
+> of the ADC...
+> 
+> So I think the original approach is more in keeping with the intent.
 
-Signed-off-by: Robert Dolca <robert.dolca@intel.com>
----
- drivers/iio/industrialio-core.c    | 4 ++++
- drivers/iio/industrialio-trigger.c | 6 ++++++
- include/linux/iio/iio.h            | 1 +
- 3 files changed, 11 insertions(+)
+Okay, got it. It means that our application needs to remember that it's 
+sometimes voltage%d_%s instead of just voltage%d, but we can do that.
 
-diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
-index 94bcd54..04862a4 100644
---- a/drivers/iio/industrialio-core.c
-+++ b/drivers/iio/industrialio-core.c
-@@ -1233,6 +1233,8 @@ int iio_device_register(struct iio_dev *indio_dev)
- 			goto error_cdev_del;
- 	}
- 
-+	indio_dev->registered = true;
-+
- 	return 0;
- error_cdev_del:
- 	cdev_del(&indio_dev->chrdev);
-@@ -1281,6 +1283,8 @@ void iio_device_unregister(struct iio_dev *indio_dev)
- 	mutex_unlock(&indio_dev->info_exist_lock);
- 
- 	iio_buffer_free_sysfs_and_mask(indio_dev);
-+
-+	indio_dev->registered = false;
- }
- EXPORT_SYMBOL(iio_device_unregister);
- 
-diff --git a/drivers/iio/industrialio-trigger.c b/drivers/iio/industrialio-trigger.c
-index cebdd10..d4118fe 100644
---- a/drivers/iio/industrialio-trigger.c
-+++ b/drivers/iio/industrialio-trigger.c
-@@ -69,6 +69,12 @@ int iio_trigger_register_with_dev(struct iio_dev *indio_dev,
- 	trig_info->indio_dev = indio_dev;
- 	list_add(&trig_info->indio_dev_list, &indio_dev->triggers);
- 
-+	if (indio_dev->registered) {
-+		ret = iio_trigger_link(trig_info);
-+		if (ret < 0)
-+			goto error;
-+	}
-+
- 	return 0;
- error:
- 	return ret;
-diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
-index 9ff54ef..3f704ae 100644
---- a/include/linux/iio/iio.h
-+++ b/include/linux/iio/iio.h
-@@ -496,6 +496,7 @@ struct iio_dev {
- 	unsigned			cached_reg_addr;
- #endif
- 	struct list_head		triggers;
-+	bool				registered;
- };
- 
- const struct iio_chan_spec
--- 
-1.9.1
+> The lowest/highest versions are interesting. Right now, the extended 
+name
+> is the only way to specify them, but somehow it feels like we ought
+> to have something better.... We could treat them as a filter or simply
+> another aspect of the channel (like _scale etc), but that's also a 
+little
+> ugly. Will think about this and see if anyone else has a better 
+suggestion!
+
+With hwmon, we would have inX_input, inX_lowest, inX_highest (in fact, we 
+had, as Xilinx XADC used to be hwmon -- just to explain where I'm coming 
+from). So it made sense to me to use .extended_name = "lowest" to have 
+in_voltageX_lowest_raw/_scale in addition to in_voltageX_raw/_scale (same 
+index X). I understand that I may have read too much into the IIO code 
+here, though, and if there's a better way to do this, I will gladly use 
+it.
+
+Best regards,
+Thomas Betker
