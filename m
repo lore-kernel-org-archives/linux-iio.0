@@ -1,33 +1,42 @@
-Return-Path: <daniel.baluta@intel.com>
-From: Daniel Baluta <daniel.baluta@intel.com>
-To: jic23@kernel.org
-Cc: knaack.h@gmx.de,
-	lars@metafoo.de,
-	pmeerw@pmeerw.net,
-	daniel.baluta@intel.com,
-	linux-kernel@vger.kernel.org,
-	linux-iio@vger.kernel.org
-Subject: [PATCH 0/3] Introduce support for MMC35240 magnetic sensor
-Date: Wed, 15 Apr 2015 14:02:03 +0300
-Message-Id: <1429095726-10055-1-git-send-email-daniel.baluta@intel.com>
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from ns.pmeerw.net ([84.19.176.92]:50476 "EHLO pmeerw.net"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1753260AbbDPH4w (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Thu, 16 Apr 2015 03:56:52 -0400
+Date: Thu, 16 Apr 2015 09:56:49 +0200 (CEST)
+From: Peter Meerwald <pmeerw@pmeerw.net>
+To: "utkarsh.gupta@freescale.com" <utkarsh.gupta@freescale.com>
+cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	"Fabio.Estevam@freescale.com" <Fabio.Estevam@freescale.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>
+Subject: Re: Advice needed on combination sensor driver implementation
+In-Reply-To: <BN1PR0301MB0612F81FA6EDAADE705E39CEE2E40@BN1PR0301MB0612.namprd03.prod.outlook.com>
+Message-ID: <alpine.DEB.2.02.1504160952410.18538@pmeerw.net>
+References: <BN1PR0301MB0612F81FA6EDAADE705E39CEE2E40@BN1PR0301MB0612.namprd03.prod.outlook.com>
+MIME-Version: 1.0
+Content-Type: TEXT/PLAIN; charset=US-ASCII
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-This adds support for Memsic's MMC35240 magnetometer. The sensor does
-not offer an interrupt line for data ready so for the moment we only
-expose raw readings via sysfs interface.
+Hello,
 
-This patchset also adds ACPI and Power Management support.
+> Please advice on whether this driver could be implemented as 
+> accel_magnetometer combined driver in a separate folder in iio? Or should 
+> this be implemented as separate accel and magnetometer modules in their 
+> corresponding existing folders in iio?
 
-Daniel Baluta (3):
-  iio: magnetometer: Add support for MEMSIC MMC35240 sensor
-  iio: magnetometer: mmc35240: Add PM sleep support
-  iio: magnetometer: Add ACPI support for MMC35240
+we already have many combined sensors, e.g. temperature and pressure 
+sensors; actually many sensors offer a temperature channel for calibration
 
- drivers/iio/magnetometer/Kconfig    |  11 +
- drivers/iio/magnetometer/Makefile   |   1 +
- drivers/iio/magnetometer/mmc35240.c | 519 ++++++++++++++++++++++++++++++++++++
- 3 files changed, 531 insertions(+)
- create mode 100644 drivers/iio/magnetometer/mmc35240.c
+I'd just stick the driver under accel/ (because accel/ is shorter than 
+magnetometer/ :) and have it implement accelerometer and magnetometer 
+channels
+
+regards, p.
 
 -- 
-1.9.1
+
+Peter Meerwald
++43-664-2444418 (mobile)
