@@ -1,57 +1,56 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga01.intel.com ([192.55.52.88]:38878 "EHLO mga01.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1753444AbbDPI0U (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Thu, 16 Apr 2015 04:26:20 -0400
-Message-ID: <552F7295.7000602@intel.com>
-Date: Thu, 16 Apr 2015 11:28:05 +0300
-From: Daniel Baluta <daniel.baluta@intel.com>
-MIME-Version: 1.0
-To: Peter Meerwald <pmeerw@pmeerw.net>, linux-iio@vger.kernel.org
-CC: jic23@kernel.org
-Subject: Re: [PATCH] iio:tcs4531: Fix leftover TCS3472_ prefix in tsl4531
- driver
-References: <1429130378-19941-1-git-send-email-pmeerw@pmeerw.net>
-In-Reply-To: <1429130378-19941-1-git-send-email-pmeerw@pmeerw.net>
-Content-Type: text/plain; charset=windows-1252; format=flowed
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <robert.dolca@intel.com>
+From: Robert Dolca <robert.dolca@intel.com>
+To: linux-iio@vger.kernel.org,
+	Jonathan Cameron <jic23@kernel.org>
+Cc: linux-kernel@vger.kernel.org,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Robert Dolca <robert.dolca@intel.com>,
+	Denis CIOCCA <denis.ciocca@st.com>
+Subject: [PATCH RFC 0/3] Add IIO trigger symlink in iio:device0/trigger/
+Date: Thu, 16 Apr 2015 12:01:05 +0300
+Message-Id: <1429174868-11953-1-git-send-email-robert.dolca@intel.com>
+List-ID: <linux-iio@vger.kernel.org>
 
+Currently the user space applications write the trigger name in the
+current_trigger file. The user space application should know what trigger to
+use. The association can be manually configured or can be "detected" based
+on the trigger's name if the triggers name has the device's index in the name
+or any other custom and unstandard convention.
 
+This issue is being fixed by these patches. They create a symlink in the
+device's trigger folder for all triggers registered by the device.
 
-On 04/15/2015 11:39 PM, Peter Meerwald wrote:
-> just cleanup, no functional change
+/ # ls -l /sys/bus/iio/devices/iio:device0/trigger/
+total 0
+-rw-r--r--    1 root     root          4096 Apr 16 08:33 current_trigger
+lrwxrwxrwx    1 root     root             0 Apr 16 08:33 trigger0 -> ../../trigg
+er0
 
-Commit message tag should be now "iio: tsl4531: ". Other than that
-it looks good to me.
+This way the user space application can know what triggers were registered by
+the device.
 
+The 1st patch adds the main functionality (creating symlink if the trigger was
+registered before the device was registered).
 
->
-> Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
-> ---
->   drivers/iio/light/tsl4531.c | 10 +++++-----
->   1 file changed, 5 insertions(+), 5 deletions(-)
->
-> diff --git a/drivers/iio/light/tsl4531.c b/drivers/iio/light/tsl4531.c
-> index 0763b86..63c26e2 100644
-> --- a/drivers/iio/light/tsl4531.c
-> +++ b/drivers/iio/light/tsl4531.c
-> @@ -24,12 +24,12 @@
->
->   #define TSL4531_DRV_NAME "tsl4531"
->
-> -#define TCS3472_COMMAND BIT(7)
-> +#define TSL4531_COMMAND BIT(7)
->
-> -#define TSL4531_CONTROL (TCS3472_COMMAND | 0x00)
-> -#define TSL4531_CONFIG (TCS3472_COMMAND | 0x01)
-> -#define TSL4531_DATA (TCS3472_COMMAND | 0x04)
-> -#define TSL4531_ID (TCS3472_COMMAND | 0x0a)
-> +#define TSL4531_CONTROL (TSL4531_COMMAND | 0x00)
-> +#define TSL4531_CONFIG (TSL4531_COMMAND | 0x01)
-> +#define TSL4531_DATA (TSL4531_COMMAND | 0x04)
-> +#define TSL4531_ID (TSL4531_COMMAND | 0x0a)
->
->   /* operating modes in control register */
->   #define TSL4531_MODE_POWERDOWN 0x00
->
+The 2nd patch improves the functionality allowing to register a trigger after
+the IIO device was registered and the symlink is being created.
+
+In the final patch there is an example on how to use this new API.
+
+Robert Dolca (3):
+  iio: Add symlink to triggers in the devoce's trigger folder
+  iio: Improve iio_trigger_register_with_dev to register trigger after
+    device
+  iio: Use with iio_trigger_register_with_dev to register trigger
+
+ drivers/iio/common/st_sensors/st_sensors_trigger.c |  2 +-
+ drivers/iio/industrialio-core.c                    | 24 ++++++++
+ drivers/iio/industrialio-trigger.c                 | 70 ++++++++++++++++++++++
+ include/linux/iio/iio.h                            |  2 +
+ include/linux/iio/trigger.h                        | 24 ++++++++
+ 5 files changed, 121 insertions(+), 1 deletion(-)
+
+-- 
+1.9.1
