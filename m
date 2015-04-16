@@ -1,45 +1,73 @@
-Return-Path: <srinivas.pandruvada@linux.intel.com>
-Message-ID: <1429199662.24805.40.camel@spandruv-DESK3.jf.intel.com>
-Subject: Re: [PATCH] iio: light: hid-sensor-prox: Fix modifier
-From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-To: Daniel Baluta <daniel.baluta@intel.com>
-Cc: Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen
-	 <lars@metafoo.de>, Peter Meerwald <pmeerw@pmeerw.net>,
-	"linux-iio@vger.kernel.org"
-	 <linux-iio@vger.kernel.org>
-Date: Thu, 16 Apr 2015 08:54:22 -0700
-In-Reply-To: <CAEnQRZAxAWnQ_sGestwJ+NsHxCN=DqUHAjVhZpM04pWj3eQNgw@mail.gmail.com>
-References: 
-	<1429048402-5311-1-git-send-email-srinivas.pandruvada@linux.intel.com>
-	 <CAEnQRZAxAWnQ_sGestwJ+NsHxCN=DqUHAjVhZpM04pWj3eQNgw@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Mime-Version: 1.0
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-bn1bon0113.outbound.protection.outlook.com ([157.56.111.113]:44482
+	"EHLO na01-bn1-obe.outbound.protection.outlook.com"
+	rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+	id S1752100AbbDPRIz (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Thu, 16 Apr 2015 13:08:55 -0400
+From: "utkarsh.gupta@freescale.com" <utkarsh.gupta@freescale.com>
+To: "jic23@jic23.retrosnub.co.uk" <jic23@jic23.retrosnub.co.uk>
+CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	"Fabio.Estevam@freescale.com" <Fabio.Estevam@freescale.com>,
+	"Jonathan Cameron" <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	"Lars-Peter Clausen" <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>
+Subject: RE: Advice needed on combination sensor driver implementation
+Date: Thu, 16 Apr 2015 17:08:52 +0000
+Message-ID: <BN1PR0301MB06124A868E41EF084F858439E2E40@BN1PR0301MB0612.namprd03.prod.outlook.com>
+References: <BN1PR0301MB0612F81FA6EDAADE705E39CEE2E40@BN1PR0301MB0612.namprd03.prod.outlook.com>
+ <20150416115111.613FC405F1@saturn.retrosnub.co.uk>
+In-Reply-To: <20150416115111.613FC405F1@saturn.retrosnub.co.uk>
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Wed, 2015-04-15 at 15:01 +0300, Daniel Baluta wrote: 
-> On Wed, Apr 15, 2015 at 12:53 AM, Srinivas Pandruvada
-> <srinivas.pandruvada@linux.intel.com> wrote:
-> > Currently in_proximity_(null)_raw is getting presented as raw sysfs
-> > attribute. Same with the scan_elements.
-> > The modifier doesn't apply to this channel.
-> >
-> > Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-> > ---
-> 
-> Would be also nice to add a line like this:
-> 
-> Fixes COMMIT_ID ("Commit subject")
-> 
-> in order for stable teams to pick this up.
-We can add tag
-Cc: stable@vger.kernel.org
-
-Usually Jonathan copies after his merge.
-
-Thanks,
-Srinivas
-
-> 
-> thanks,
-> Daniel.
+SGVsbG8gSm9uYXRoYW4sDQoNClRoYW5rIHlvdSBmb3IgeW91ciBzdWdnZXN0aW9uLiBBcyBwZXIg
+eW91ciBzdWdnZXN0aW9uIEkgYW0gZ29pbmcgdG8gc3RhcnQgaW4gYSBkaXJlY3RvcnkgY2FsbGVk
+IGRyaXZlcnMvaWlvL2NvbWJpbmF0ZWQgb3IgY29tYm8uIElmIGluIGxhdGVyIHN0YWdlcyBpdCBp
+cyBkZWNpZGVkIHRvIGluY2x1ZGUgYWxsIHRoZSBpbnRlZ3JhdGVkIG11bHRpcGxlIHNlbnNvcnMg
+aW50byBvbmUgZm9sZGVyLCB0aGlzIGZvbGRlciBjb3VsZCBiZSB1c2VkLg0KDQpUaGFua3MgJiBS
+ZWdhcmRzLA0KVXRrYXJzaCBHdXB0YSDigJMgQjQ1ODA2DQpTb2Z0d2FyZSBBcHBzIEVuZ2luZWVy
+DQpGcmVlc2NhbGUgU2VtaWNvbmR1Y3RvcnMNCg0KLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0N
+CkZyb206IGppYzIzQGppYzIzLnJldHJvc251Yi5jby51ayBbbWFpbHRvOmppYzIzQGppYzIzLnJl
+dHJvc251Yi5jby51a10gDQpTZW50OiBUaHVyc2RheSwgQXByaWwgMTYsIDIwMTUgNjo1MSBBTQ0K
+VG86IEd1cHRhIFV0a2Fyc2gtQjQ1ODA2DQpDYzogbGludXgtaWlvQHZnZXIua2VybmVsLm9yZzsg
+RXN0ZXZhbSBGYWJpby1SNDk0OTY7IEpvbmF0aGFuIENhbWVyb247IEhhcnRtdXQgS25hYWNrOyBM
+YXJzLVBldGVyIENsYXVzZW47IFBldGVyIE1lZXJ3YWxkDQpTdWJqZWN0OiBSZTogQWR2aWNlIG5l
+ZWRlZCBvbiBjb21iaW5hdGlvbiBzZW5zb3IgZHJpdmVyIGltcGxlbWVudGF0aW9uDQoNCnV0a2Fy
+c2guZ3VwdGFAZnJlZXNjYWxlLmNvbSB3cml0ZXM6IA0KDQo+IEhlbGxvLA0KPiANCj4gSSBhbSBs
+b29raW5nIGF0IGltcGxlbWVudGluZyBGWE9TODcwMCBkcml2ZXIsIHdoaWNoIGNvbnNpc3RzIG9m
+IGFuIGFjY2VsZXJvbWV0ZXIgYW5kIG1hZ25ldG9tZXRlciwgaW50byB0aGUgbGludXgga2VybmVs
+IDQuMC4gVGhpcyBkZXZpY2UgY2FuIGZ1bmN0aW9uIGluZGVwZW5kZW50bHkgYXMgYWNjZWwgYW5k
+IG1hZ25ldG9tZXRlciBob3dldmVyIGl0IGhhcyBiZWVuIHJlY29tbWVuZGVkIHRvIGltcGxlbWVu
+dCBpdCBhcyBvbmUgZHJpdmVyIGluIG9yZGVyIHRvIGFjaGlldmUgY29uc2lzdGVuY3kgYW5kIHN5
+bmNocm9uaXplZCBmdW5jdGlvbmFsaXR5IG9mIGJvdGggbW9kdWxlcy4gDQo+IA0KPiBQbGVhc2Ug
+YWR2aWNlIG9uIHdoZXRoZXIgdGhpcyBkcml2ZXIgY291bGQgYmUgaW1wbGVtZW50ZWQgYXMgYWNj
+ZWxfbWFnbmV0b21ldGVyIGNvbWJpbmVkIGRyaXZlciBpbiBhIHNlcGFyYXRlIGZvbGRlciBpbiBp
+aW8/IE9yIHNob3VsZCB0aGlzIGJlIGltcGxlbWVudGVkIGFzIHNlcGFyYXRlIGFjY2VsIGFuZCBt
+YWduZXRvbWV0ZXIgbW9kdWxlcyBpbiB0aGVpciBjb3JyZXNwb25kaW5nIGV4aXN0aW5nIGZvbGRl
+cnMgaW4gaWlvPw0KDQpIaSwgSnVzdCBiZWVuIHJlYWRpbmcgdGhlIGRhdGFzaGVldCBvdmVyIGx1
+bmNoLiAgVGhpcyBpcyBhIGJpdCBtb3JlIGludGVyZXN0aW5nIHRoYW4gdGhlIHVzdWFsIGFwcHJv
+YWNoIG9mIHNpbXBseSBwdXR0aW5nIHR3byBiaXRzIG9mIHNpbGljb24gaW50byBvbmUgcGFja2Fn
+ZSwgYW5kIHRoZSB0d28gc2Vuc29ycyBhcmUgdGlnaHRseSBjb3VwbGVkLiANCg0KQXMgc3VjaCBp
+dCdzIHNpbWlsYXIgdG8gdGhlIGZ1bGwgSU1VcyBzdWNoIGFzIHRoZSBBRElTMTY0MDAgYW5kIHNp
+bWlsYXIuIA0KDQpBbnlob3csIGRlZmluaXRlbHkgYSB1bmlmaWVkIGRyaXZlci4gTG9jYXRpb24g
+d2lzZSwgSSdtIHRlbXB0ZWQgdG8gc3VnZ2VzdCB3ZSByZW5hbWUgdGhlIElNVSBkaXJlY3Rvcnkg
+YXMgJ2NvbWJpbmVkJyBvciBzb21ldGhpbmcgc2ltaWxhciBhbmQgZHJvcCBhbGwgcHJvcGVybHkg
+aW50ZWdyYXRlZCBtdWx0aXBsZSBzZW5zb3IgZGV2aWNlcyBpbiB0aGVyZS4gDQoNCk5vdGUgdGhh
+dCB0aGluZ3MgbGlrZSB0aGUgSElEIHNlbnNvcnMgaGF2ZSBpbmRlcGVuZGVudCBzYW1wbGluZyBy
+YXRlcyBhbmQgdGltaW5nIGZvciB0aGUgZGlmZmVyZW50IHBhcnRzICh0aGV5IHJlYWxseSBhcmUg
+YSBidW5jaCBvZiBzZW5zb3JzIHNob3ZlZCBpbiBhIGJveCkgc28gdGhlcmUgd2UgZG8gdGhlIHdo
+b2xlIHNlcGFyYXRlZCBkcml2ZXJzIHRoaW5nLiANCg0KDQpUaGVyZSBhcmUgY2VydGFpbmx5IGEg
+ZmV3IGludGVyZXN0aW5nIGNvcm5lcnMgb24gdGhpcyBjaGlwLCBzdWNoIGFzIGl0cyBldmVudCBi
+YXNlZCBmaWZvIGZpbGxpbmcuICBXZSd2ZSBzZWVuIHRoYXQgYmVmb3JlIGluIGltcGFjdCBzZW5z
+b3JzLCBidXQgZG9uJ3QgeWV0IGhhdmUgaXQgd2VsbCBzdXBwb3J0ZWQuIA0KDQpUaGUgZmFjdCB0
+aGF0IHRoZSBmaWZvIG9ubHkgY292ZXJzIHRoZSBhY2NlbGVyYXRpb24gY2hhbm5lbHMgd2lsbCBt
+YWtlIHRoYXQgc2lkZSBvZiB0aGluZ3MgYSBsaXR0bGUgdHJpY2tpZXIgdGhhbiBub3JtYWwuICBX
+ZSBwcm9iYWJseSB3YW50IGEgbWVhbnMgdG8gbWFrZSB0aGlzIGFwcGFyZW50IHRvIHVzZXJzcGFj
+ZSwgYnV0IHlvdSdsbCBoYXZlIHRvIGRpc2FibGUgdGhlIGZpZm8gYW5kIHJlYWQgZGlyZWN0bHkg
+aWYgdGhlIG1hZ25ldG9tZXRlciBjaGFubmVscyBhcmUgZW5hYmxlZC4gDQoNCkFueWhvdywgbG9v
+a2luZyBmb3J3YXJkIHRvIHNlZWluZyB0aGUgZHJpdmVyISANCg0KSm9uYXRoYW4NCj4gIA0KPiAN
+Cj4gVGhhbmtzICYgUmVnYXJkcywNCj4gVXRrYXJzaCBHdXB0YSAtIEI0NTgwNg0KPiBTb2Z0d2Fy
+ZSBBcHBzIEVuZ2luZWVyDQo+IEZyZWVzY2FsZSBTZW1pY29uZHVjdG9ycw0KPiANCg==
