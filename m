@@ -1,154 +1,59 @@
-Return-Path: <roberta.dobrescu@gmail.com>
-From: Roberta Dobrescu <roberta.dobrescu@gmail.com>
-To: linux-iio@vger.kernel.org
-Cc: jic23@kernel.org,
-	knaack.h@gmx.de,
-	lars@metafoo.de,
-	pmeerw@pmeerw.net,
-	daniel.baluta@intel.com,
-	Roberta Dobrescu <roberta.dobrescu@gmail.com>
-Subject: [PATCH v2 1/3] staging: iio: light: isl29018: Remove non-standard sysfs attributes
-Date: Thu, 16 Apr 2015 22:20:57 +0300
-Message-Id: <1429212059-13010-2-git-send-email-roberta.dobrescu@gmail.com>
-In-Reply-To: <1429212059-13010-1-git-send-email-roberta.dobrescu@gmail.com>
-References: <1429212059-13010-1-git-send-email-roberta.dobrescu@gmail.com>
+Return-Path: <jic23@jic23.retrosnub.co.uk>
+References: <BN1PR0301MB0612F81FA6EDAADE705E39CEE2E40@BN1PR0301MB0612.namprd03.prod.outlook.com>
+In-Reply-To: <BN1PR0301MB0612F81FA6EDAADE705E39CEE2E40@BN1PR0301MB0612.namprd03.prod.outlook.com>
+From: jic23@jic23.retrosnub.co.uk
+To: "utkarsh.gupta@freescale.com" <utkarsh.gupta@freescale.com>
+Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+  "Fabio.Estevam@freescale.com" <Fabio.Estevam@freescale.com>, "Jonathan
+  Cameron" <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
+  "Lars-Peter Clausen" <lars@metafoo.de>, Peter Meerwald
+  <pmeerw@pmeerw.net>
+Subject: Re: Advice needed on combination sensor driver implementation
+Date: Thu, 16 Apr 2015 12:51:11 +0100
+Mime-Version: 1.0
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Message-Id: <20150416115111.613FC405F1@saturn.retrosnub.co.uk>
 List-ID: <linux-iio@vger.kernel.org>
 
-This patch removes non-standard sysfs attributes range, range_available,
-adc_resolution and adc_resolution_available. It also removes the
-corresponding show and store functions.
+utkarsh.gupta@freescale.com writes: 
 
-This is in preparation for using standard IIO attributes in order to move
-the code out of staging.
+> Hello, 
+> 
+> I am looking at implementing FXOS8700 driver, which consists of an accelerometer and magnetometer, into the linux kernel 4.0. This device can function independently as accel and magnetometer however it has been recommended to implement it as one driver in order to achieve consistency and synchronized functionality of both modules. 
+> 
+> Please advice on whether this driver could be implemented as accel_magnetometer combined driver in a separate folder in iio? Or should this be implemented as separate accel and magnetometer modules in their corresponding existing folders in iio?
 
-Signed-off-by: Roberta Dobrescu <roberta.dobrescu@gmail.com>
----
- drivers/staging/iio/light/isl29018.c | 94 ------------------------------------
- 1 file changed, 94 deletions(-)
+Hi, Just been reading the datasheet over lunch.  This is a bit more
+interesting than the usual approach of simply putting two bits of silicon
+into one package, and the two sensors are tightly coupled. 
 
-diff --git a/drivers/staging/iio/light/isl29018.c b/drivers/staging/iio/light/isl29018.c
-index a348918..d3d0611 100644
---- a/drivers/staging/iio/light/isl29018.c
-+++ b/drivers/staging/iio/light/isl29018.c
-@@ -230,87 +230,6 @@ static int isl29018_read_proximity_ir(struct isl29018_chip *chip, int scheme,
- }
- 
- /* Sysfs interface */
--/* range */
--static ssize_t show_range(struct device *dev,
--			struct device_attribute *attr, char *buf)
--{
--	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
--	struct isl29018_chip *chip = iio_priv(indio_dev);
--
--	return sprintf(buf, "%u\n", chip->range);
--}
--
--static ssize_t store_range(struct device *dev,
--		struct device_attribute *attr, const char *buf, size_t count)
--{
--	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
--	struct isl29018_chip *chip = iio_priv(indio_dev);
--	int status;
--	unsigned long lval;
--	unsigned int new_range;
--
--	if (kstrtoul(buf, 10, &lval))
--		return -EINVAL;
--
--	if (!(lval == 1000UL || lval == 4000UL ||
--			lval == 16000UL || lval == 64000UL)) {
--		dev_err(dev, "The range is not supported\n");
--		return -EINVAL;
--	}
--
--	mutex_lock(&chip->lock);
--	status = isl29018_set_range(chip, lval, &new_range);
--	if (status < 0) {
--		mutex_unlock(&chip->lock);
--		dev_err(dev,
--			"Error in setting max range with err %d\n", status);
--		return status;
--	}
--	chip->range = new_range;
--	mutex_unlock(&chip->lock);
--
--	return count;
--}
--
--/* resolution */
--static ssize_t show_resolution(struct device *dev,
--			struct device_attribute *attr, char *buf)
--{
--	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
--	struct isl29018_chip *chip = iio_priv(indio_dev);
--
--	return sprintf(buf, "%u\n", chip->adc_bit);
--}
--
--static ssize_t store_resolution(struct device *dev,
--		struct device_attribute *attr, const char *buf, size_t count)
--{
--	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
--	struct isl29018_chip *chip = iio_priv(indio_dev);
--	int status;
--	unsigned int val;
--	unsigned int new_adc_bit;
--
--	if (kstrtouint(buf, 10, &val))
--		return -EINVAL;
--	if (!(val == 4 || val == 8 || val == 12 || val == 16)) {
--		dev_err(dev, "The resolution is not supported\n");
--		return -EINVAL;
--	}
--
--	mutex_lock(&chip->lock);
--	status = isl29018_set_resolution(chip, val, &new_adc_bit);
--	if (status < 0) {
--		mutex_unlock(&chip->lock);
--		dev_err(dev, "Error in setting resolution\n");
--		return status;
--	}
--	chip->adc_bit = new_adc_bit;
--	mutex_unlock(&chip->lock);
--
--	return count;
--}
--
- /* proximity scheme */
- static ssize_t show_prox_infrared_suppression(struct device *dev,
- 			struct device_attribute *attr, char *buf)
-@@ -447,11 +366,6 @@ static const struct iio_chan_spec isl29023_channels[] = {
- 	ISL29018_IR_CHANNEL,
- };
- 
--static IIO_DEVICE_ATTR(range, S_IRUGO | S_IWUSR, show_range, store_range, 0);
--static IIO_CONST_ATTR(range_available, "1000 4000 16000 64000");
--static IIO_CONST_ATTR(adc_resolution_available, "4 8 12 16");
--static IIO_DEVICE_ATTR(adc_resolution, S_IRUGO | S_IWUSR,
--					show_resolution, store_resolution, 0);
- static IIO_DEVICE_ATTR(proximity_on_chip_ambient_infrared_suppression,
- 					S_IRUGO | S_IWUSR,
- 					show_prox_infrared_suppression,
-@@ -460,19 +374,11 @@ static IIO_DEVICE_ATTR(proximity_on_chip_ambient_infrared_suppression,
- #define ISL29018_DEV_ATTR(name) (&iio_dev_attr_##name.dev_attr.attr)
- #define ISL29018_CONST_ATTR(name) (&iio_const_attr_##name.dev_attr.attr)
- static struct attribute *isl29018_attributes[] = {
--	ISL29018_DEV_ATTR(range),
--	ISL29018_CONST_ATTR(range_available),
--	ISL29018_DEV_ATTR(adc_resolution),
--	ISL29018_CONST_ATTR(adc_resolution_available),
- 	ISL29018_DEV_ATTR(proximity_on_chip_ambient_infrared_suppression),
- 	NULL
- };
- 
- static struct attribute *isl29023_attributes[] = {
--	ISL29018_DEV_ATTR(range),
--	ISL29018_CONST_ATTR(range_available),
--	ISL29018_DEV_ATTR(adc_resolution),
--	ISL29018_CONST_ATTR(adc_resolution_available),
- 	NULL
- };
- 
--- 
-1.9.1
+As such it's similar to the full IMUs such as the ADIS16400 and similar. 
+
+Anyhow, definitely a unified driver. Location wise, I'm tempted to suggest
+we rename the IMU directory as 'combined' or something similar and drop
+all properly integrated multiple sensor devices in there. 
+
+Note that things like the HID sensors have independent sampling rates and
+timing for the different parts (they really are a bunch of sensors shoved
+in a box) so there we do the whole separated drivers thing. 
+
+
+There are certainly a few interesting corners on this chip, such as its
+event based fifo filling.  We've seen that before in impact sensors, but
+don't yet have it well supported. 
+
+The fact that the fifo only covers the acceleration channels will make
+that side of things a little trickier than normal.  We probably want
+a means to make this apparent to userspace, but you'll have to disable
+the fifo and read directly if the magnetometer channels are enabled. 
+
+Anyhow, looking forward to seeing the driver! 
+
+Jonathan
+>  
+> 
+> Thanks & Regards,
+> Utkarsh Gupta - B45806
+> Software Apps Engineer
+> Freescale Semiconductors 
+> 
