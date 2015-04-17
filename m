@@ -13,69 +13,28 @@ Cc: linux-kernel@vger.kernel.org,
 	Ian Campbell <ijc+devicetree@hellion.org.uk>,
 	Kumar Gala <galak@codeaurora.org>,
 	Irina Tirdea <irina.tirdea@intel.com>
-Subject: [PATCH 1/3] iio: core: Introduce IIO_CHAN_INFO_CALIBREPETITIONS
-Date: Fri, 17 Apr 2015 13:50:28 +0300
-Message-Id: <1429267830-13681-2-git-send-email-irina.tirdea@intel.com>
-In-Reply-To: <1429267830-13681-1-git-send-email-irina.tirdea@intel.com>
-References: <1429267830-13681-1-git-send-email-irina.tirdea@intel.com>
+Subject: [PATCH 0/3] Add support for BMC150 magnetometer
+Date: Fri, 17 Apr 2015 13:50:27 +0300
+Message-Id: <1429267830-13681-1-git-send-email-irina.tirdea@intel.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-Some magnetometers can perform a number of repetitions in HW
-for each measurement to increase accuracy. One example is
-Bosch BMC150:
-http://ae-bst.resource.bosch.com/media/products/dokumente/bmc150/BST-BMC150-DS000-04.pdf.
+This adds support for Bosch BMC150 magnetometer.
 
-Introduce an interface to set the number of repetitions
-for these devices.
+Irina Tirdea (3):
+  iio: core: Introduce IIO_CHAN_INFO_CALIBREPETITIONS
+  iio: magn: Add support for BMC150 magnetometer
+  iio: magn: bmc150_magn: Add devicetree binding documentation
 
-Signed-off-by: Irina Tirdea <irina.tirdea@intel.com>
----
- Documentation/ABI/testing/sysfs-bus-iio | 10 ++++++++++
- drivers/iio/industrialio-core.c         |  1 +
- include/linux/iio/iio.h                 |  1 +
- 3 files changed, 12 insertions(+)
+ Documentation/ABI/testing/sysfs-bus-iio            |   10 +
+ .../bindings/iio/magnetometer/bmc150_magn.txt      |   20 +
+ drivers/iio/industrialio-core.c                    |    1 +
+ drivers/iio/magnetometer/Kconfig                   |   14 +
+ drivers/iio/magnetometer/Makefile                  |    2 +
+ drivers/iio/magnetometer/bmc150_magn.c             | 1060 ++++++++++++++++++++
+ include/linux/iio/iio.h                            |    1 +
+ 7 files changed, 1108 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/magnetometer/bmc150_magn.txt
+ create mode 100644 drivers/iio/magnetometer/bmc150_magn.c
 
-diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
-index 866b4ec..74c1444 100644
---- a/Documentation/ABI/testing/sysfs-bus-iio
-+++ b/Documentation/ABI/testing/sysfs-bus-iio
-@@ -1375,3 +1375,13 @@ Description:
- 		The emissivity ratio of the surface in the field of view of the
- 		contactless temperature sensor.  Emissivity varies from 0 to 1,
- 		with 1 being the emissivity of a black body.
-+
-+What:		/sys/bus/iio/devices/iio:deviceX/in_magn_x_calibrepetitions
-+What:		/sys/bus/iio/devices/iio:deviceX/in_magn_y_calibrepetitions
-+What:		/sys/bus/iio/devices/iio:deviceX/in_magn_z_calibrepetitions
-+KernelVersion:	4.2
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+		Hardware applied number of repetitions for acquiring one
-+		data point. The HW will do <type>[_name]_calibrepetitions
-+		measurements and return the average value as output data.
-diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
-index 7c98bc1..9e0da7f 100644
---- a/drivers/iio/industrialio-core.c
-+++ b/drivers/iio/industrialio-core.c
-@@ -129,6 +129,7 @@ static const char * const iio_chan_info_postfix[] = {
- 	[IIO_CHAN_INFO_DEBOUNCE_COUNT] = "debounce_count",
- 	[IIO_CHAN_INFO_DEBOUNCE_TIME] = "debounce_time",
- 	[IIO_CHAN_INFO_CALIBEMISSIVITY] = "calibemissivity",
-+	[IIO_CHAN_INFO_CALIBREPETITIONS] = "calibrepetitions",
- };
- 
- /**
-diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
-index b1e46ae..07fbfb2 100644
---- a/include/linux/iio/iio.h
-+++ b/include/linux/iio/iio.h
-@@ -44,6 +44,7 @@ enum iio_chan_info_enum {
- 	IIO_CHAN_INFO_DEBOUNCE_COUNT,
- 	IIO_CHAN_INFO_DEBOUNCE_TIME,
- 	IIO_CHAN_INFO_CALIBEMISSIVITY,
-+	IIO_CHAN_INFO_CALIBREPETITIONS,
- };
- 
- enum iio_shared_by {
 -- 
 1.9.1
