@@ -1,178 +1,63 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mout.gmx.net ([212.227.15.15]:53120 "EHLO mout.gmx.net"
+Received: from mga09.intel.com ([134.134.136.24]:28347 "EHLO mga09.intel.com"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1752176AbbDQVrq (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Fri, 17 Apr 2015 17:47:46 -0400
-Message-ID: <55317F75.6010908@gmx.de>
-Date: Fri, 17 Apr 2015 23:47:33 +0200
-From: Hartmut Knaack <knaack.h@gmx.de>
-MIME-Version: 1.0
-To: Martin Fuzzey <mfuzzey@parkeon.com>, linux-iio@vger.kernel.org,
-	Jonathan Cameron <jic23@kernel.org>
-Subject: Re: [PATCH 6/9] iio: mma8452: Add support for transient event
- debouncing
-References: <20150219141553.27001.18825.stgit@localhost> <20150219141606.27001.12648.stgit@localhost>
-In-Reply-To: <20150219141606.27001.12648.stgit@localhost>
-Content-Type: text/plain; charset=UTF-8
+	id S1750978AbbDRFPi (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Sat, 18 Apr 2015 01:15:38 -0400
+From: Kuppuswamy Sathyanarayanan
+	<sathyanarayanan.kuppuswamy@linux.intel.com>
+To: jic23@kernel.org, pmeerw@pmeerw.net
+Cc: linux-iio@vger.kernel.org, srinivas.pandruvada@linux.intel.com,
+	sathyanarayanan.kuppuswamy@linux.intel.com
+Subject: [PATCH v4 5/5] iio: ltr501: Add ACPI enumeration support
+Date: Fri, 17 Apr 2015 22:15:14 -0700
+Message-Id: <d205113dd16bb95f4ffea04e268bc4ea24e78a16.1429326499.git.sathyanarayanan.kuppuswamy@linux.intel.com>
+In-Reply-To: <cover.1429326499.git.sathyanarayanan.kuppuswamy@linux.intel.com>
+References: <cover.1429326499.git.sathyanarayanan.kuppuswamy@linux.intel.com>
+In-Reply-To: <cover.1429326499.git.sathyanarayanan.kuppuswamy@linux.intel.com>
+References: <cover.1429326499.git.sathyanarayanan.kuppuswamy@linux.intel.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Martin Fuzzey schrieb am 19.02.2015 um 15:16:
-> Allow the debouce counter for transient events to be configured
-> using the sysfs attribute events/in_accel_thresh_rising_period
-> 
+Added ACPI enumeration support for LTR501 chip.
 
-The same issue about parameter alignment applies here as well. Besides, I put
-some comments inline.
+Signed-off-by: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
+---
+ drivers/iio/light/ltr501.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
-> Signed-off-by: Martin Fuzzey <mfuzzey@parkeon.com>
-> ---
->  drivers/iio/accel/mma8452.c |   74 +++++++++++++++++++++++++++++++++++++------
->  1 file changed, 64 insertions(+), 10 deletions(-)
-> 
-> diff --git a/drivers/iio/accel/mma8452.c b/drivers/iio/accel/mma8452.c
-> index d44044f..b7f13dd 100644
-> --- a/drivers/iio/accel/mma8452.c
-> +++ b/drivers/iio/accel/mma8452.c
-> @@ -129,6 +129,12 @@ static int mma8452_get_int_plus_micros_index(const int (*vals)[2], int n,
->  	return -EINVAL;
->  }
->  
-> +static int mma8452_get_odr_index(struct mma8452_data *data)
-What about u8 as return type, since data->ctrl_reg1 is u8, too?
-
-> +{
-> +	return (data->ctrl_reg1 & MMA8452_CTRL_DR_MASK) >>
-> +			MMA8452_CTRL_DR_SHIFT;
-> +}
-> +
->  static const int mma8452_samp_freq[8][2] = {
->  	{800, 0}, {400, 0}, {200, 0}, {100, 0}, {50, 0}, {12, 500000},
->  	{6, 250000}, {1, 560000}
-> @@ -144,6 +150,18 @@ static const int mma8452_scales[3][2] = {
->  	{0, 9577}, {0, 19154}, {0, 38307}
->  };
->  
-> +/* Datasheet table 35  (step time vs sample frequency) */
-> +static const int mma8452_transient_time_step_us[8] = {
-This could be unsigned.
-
-> +	1250,
-> +	2500,
-> +	5000,
-> +	10000,
-> +	20000,
-> +	20000,
-> +	20000,
-> +	20000
-> +};
-> +
->  static ssize_t mma8452_show_samp_freq_avail(struct device *dev,
->  				struct device_attribute *attr, char *buf)
->  {
-> @@ -203,8 +221,7 @@ static int mma8452_read_raw(struct iio_dev *indio_dev,
->  		*val2 = mma8452_scales[i][1];
->  		return IIO_VAL_INT_PLUS_MICRO;
->  	case IIO_CHAN_INFO_SAMP_FREQ:
-> -		i = (data->ctrl_reg1 & MMA8452_CTRL_DR_MASK) >>
-> -			MMA8452_CTRL_DR_SHIFT;
-> +		i = mma8452_get_odr_index(data);
->  		*val = mma8452_samp_freq[i][0];
->  		*val2 = mma8452_samp_freq[i][1];
->  		return IIO_VAL_INT_PLUS_MICRO;
-> @@ -300,15 +317,33 @@ static int mma8452_read_thresh(struct iio_dev *indio_dev,
->  	int *val2)
->  {
->  	struct mma8452_data *data = iio_priv(indio_dev);
-> -	int ret;
-> +	int ret, us;
->  
-> -	ret = i2c_smbus_read_byte_data(data->client, MMA8452_TRANSIENT_THS);
-> -	if (ret < 0)
-> -		return ret;
-> +	switch (info) {
-> +	case IIO_EV_INFO_VALUE:
-> +		ret = i2c_smbus_read_byte_data(data->client,
-> +						MMA8452_TRANSIENT_THS);
-> +		if (ret < 0)
-> +			return ret;
-> +
-> +		*val = ret & 0x7f;
-> +		return IIO_VAL_INT;
->  
-> -	*val = ret & 0x7f;
-> +	case IIO_EV_INFO_PERIOD:
-> +		ret = i2c_smbus_read_byte_data(data->client,
-> +						MMA8452_TRANSIENT_COUNT);
-> +		if (ret < 0)
-> +			return ret;
-> +
-> +		us = ret * mma8452_transient_time_step_us[
-> +				mma8452_get_odr_index(data)];
-> +		*val = us / USEC_PER_SEC;
-> +		*val2 = us % USEC_PER_SEC;
-> +		return IIO_VAL_INT_PLUS_MICRO;
-You could make use of core calculations and also make us obsolete:
-		*val = ret * mma8452_transient_time_step_us[
-						mma8452_get_odr_index(data)];
-		*val2 = USEC_PER_SEC;
-		return IIO_VAL_FRACTIONAL;
-
->  
-> -	return IIO_VAL_INT;
-> +	default:
-> +		return -EINVAL;
-> +	}
->  }
->  
->  static int mma8452_write_thresh(struct iio_dev *indio_dev,
-> @@ -317,8 +352,26 @@ static int mma8452_write_thresh(struct iio_dev *indio_dev,
->  	int val2)
->  {
->  	struct mma8452_data *data = iio_priv(indio_dev);
-> +	int steps;
->  
-> -	return mma8452_change_config(data, MMA8452_TRANSIENT_THS, val & 0x7f);
-> +	switch (info) {
-> +	case IIO_EV_INFO_VALUE:
-> +		return mma8452_change_config(data,
-> +			MMA8452_TRANSIENT_THS, val & 0x7f);
-Instead of masking val into the right range, better do a boundary check and
-report an error on failure?
-
-> +
-> +	case IIO_EV_INFO_PERIOD:
-> +		steps = (val * USEC_PER_SEC + val2) /
-> +				mma8452_transient_time_step_us[
-> +					mma8452_get_odr_index(data)];
-> +
-> +		if (steps > 0xff)
-Use something like MMA8452_TRANSIENT_COUNT_MASK instead of magic number?
-
-> +			return -EINVAL;
-> +
-> +		return mma8452_change_config(data,
-> +				MMA8452_TRANSIENT_COUNT, steps);
-> +	default:
-> +		return -EINVAL;
-> +	}
->  }
->  
->  static int mma8452_read_event_config(struct iio_dev *indio_dev,
-> @@ -457,7 +510,8 @@ static const struct iio_event_spec mma8452_transient_event[] = {
->  		.dir = IIO_EV_DIR_RISING,
->  		.mask_separate = BIT(IIO_EV_INFO_ENABLE),
->  		.mask_shared_by_type = BIT(IIO_EV_INFO_VALUE) |
-> -					BIT(IIO_EV_INFO_HIGH_PASS_FILTER_3DB),
-> +					BIT(IIO_EV_INFO_HIGH_PASS_FILTER_3DB) |
-> +					BIT(IIO_EV_INFO_PERIOD),
->  	},
->  };
->  
-> 
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> 
+diff --git a/drivers/iio/light/ltr501.c b/drivers/iio/light/ltr501.c
+index d635ff4..214fb95 100644
+--- a/drivers/iio/light/ltr501.c
++++ b/drivers/iio/light/ltr501.c
+@@ -17,6 +17,7 @@
+ #include <linux/err.h>
+ #include <linux/delay.h>
+ #include <linux/regmap.h>
++#include <linux/acpi.h>
+ 
+ #include <linux/iio/iio.h>
+ #include <linux/iio/events.h>
+@@ -1225,6 +1226,12 @@ static int ltr501_resume(struct device *dev)
+ 
+ static SIMPLE_DEV_PM_OPS(ltr501_pm_ops, ltr501_suspend, ltr501_resume);
+ 
++static const struct acpi_device_id ltr_acpi_match[] = {
++	{"LTER0501", 0},
++	{ },
++};
++MODULE_DEVICE_TABLE(acpi, ltr_acpi_match);
++
+ static const struct i2c_device_id ltr501_id[] = {
+ 	{ "ltr501", 0 },
+ 	{ }
+@@ -1235,6 +1242,7 @@ static struct i2c_driver ltr501_driver = {
+ 	.driver = {
+ 		.name   = LTR501_DRV_NAME,
+ 		.pm	= &ltr501_pm_ops,
++		.acpi_match_table = ACPI_PTR(ltr_acpi_match),
+ 		.owner  = THIS_MODULE,
+ 	},
+ 	.probe  = ltr501_probe,
+-- 
+1.9.1
 
