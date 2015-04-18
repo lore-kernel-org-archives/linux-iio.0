@@ -1,81 +1,99 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:60818 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:60860 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750741AbbDRQlP (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 18 Apr 2015 12:41:15 -0400
-Message-ID: <55328926.20509@kernel.org>
-Date: Sat, 18 Apr 2015 17:41:10 +0100
+	with ESMTP id S1752355AbbDRQrS (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 18 Apr 2015 12:47:18 -0400
+Message-ID: <55328A92.9020807@kernel.org>
+Date: Sat, 18 Apr 2015 17:47:14 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: "Ivan T. Ivanov" <ivan.ivanov@linaro.org>
-CC: Stanimir Varbanov <svarbanov@mm-sol.com>,
-	Hartmut Knaack <knaack.h@gmx.de>,
+To: Irina Tirdea <irina.tirdea@intel.com>, linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org
+CC: linux-kernel@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>,
 	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org
-Subject: Re: [PATCH] iio: adc: spmi-vadc: Fix overflow in output value normalization
-References: <1429282268-30501-1-git-send-email-ivan.ivanov@linaro.org>
-In-Reply-To: <1429282268-30501-1-git-send-email-ivan.ivanov@linaro.org>
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Rob Herring <robh+dt@kernel.org>,
+	Pawel Moll <pawel.moll@arm.com>,
+	Mark Rutland <mark.rutland@arm.com>,
+	Ian Campbell <ijc+devicetree@hellion.org.uk>,
+	Kumar Gala <galak@codeaurora.org>
+Subject: Re: [PATCH 1/3] iio: core: Introduce IIO_CHAN_INFO_CALIBREPETITIONS
+References: <1429267830-13681-1-git-send-email-irina.tirdea@intel.com> <1429267830-13681-2-git-send-email-irina.tirdea@intel.com>
+In-Reply-To: <1429267830-13681-2-git-send-email-irina.tirdea@intel.com>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 17/04/15 15:51, Ivan T. Ivanov wrote:
-> With 'dx' equal to 0.625V and 15 bit ADC, calculations overflow
-> when difference against GND is ~20% of the ADC range. Fix this.
+On 17/04/15 11:50, Irina Tirdea wrote:
+> Some magnetometers can perform a number of repetitions in HW
+> for each measurement to increase accuracy. One example is
+> Bosch BMC150:
+> http://ae-bst.resource.bosch.com/media/products/dokumente/bmc150/BST-BMC150-DS000-04.pdf.
 > 
-> Signed-off-by: Ivan T. Ivanov <ivan.ivanov@linaro.org>
-Applied to the fixes-togreg branch of iio.git and marked for stable.
-
-Thanks,
-
-Jonathan
->
+> Introduce an interface to set the number of repetitions
+> for these devices.
+> 
+> Signed-off-by: Irina Tirdea <irina.tirdea@intel.com>
 > ---
->  drivers/iio/adc/qcom-spmi-vadc.c | 7 ++++---
->  1 file changed, 4 insertions(+), 3 deletions(-)
+>  Documentation/ABI/testing/sysfs-bus-iio | 10 ++++++++++
+>  drivers/iio/industrialio-core.c         |  1 +
+>  include/linux/iio/iio.h                 |  1 +
+>  3 files changed, 12 insertions(+)
 > 
-> diff --git a/drivers/iio/adc/qcom-spmi-vadc.c b/drivers/iio/adc/qcom-spmi-vadc.c
-> index 3211729..0c4618b 100644
-> --- a/drivers/iio/adc/qcom-spmi-vadc.c
-> +++ b/drivers/iio/adc/qcom-spmi-vadc.c
-> @@ -18,6 +18,7 @@
->  #include <linux/iio/iio.h>
->  #include <linux/interrupt.h>
->  #include <linux/kernel.h>
-> +#include <linux/math64.h>
->  #include <linux/module.h>
->  #include <linux/of.h>
->  #include <linux/platform_device.h>
-> @@ -471,11 +472,11 @@ static s32 vadc_calibrate(struct vadc_priv *vadc,
->  			  const struct vadc_channel_prop *prop, u16 adc_code)
->  {
->  	const struct vadc_prescale_ratio *prescale;
-> -	s32 voltage;
-> +	s64 voltage;
-> 
->  	voltage = adc_code - vadc->graph[prop->calibration].gnd;
->  	voltage *= vadc->graph[prop->calibration].dx;
-> -	voltage = voltage / vadc->graph[prop->calibration].dy;
-> +	voltage = div64_s64(voltage, vadc->graph[prop->calibration].dy);
-> 
->  	if (prop->calibration == VADC_CALIB_ABSOLUTE)
->  		voltage += vadc->graph[prop->calibration].dx;
-> @@ -487,7 +488,7 @@ static s32 vadc_calibrate(struct vadc_priv *vadc,
-> 
->  	voltage = voltage * prescale->den;
-> 
-> -	return voltage / prescale->num;
-> +	return div64_s64(voltage, prescale->num);
->  }
-> 
->  static int vadc_decimation_from_dt(u32 value)
-> --
-> 1.9.1
-> 
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
+> index 866b4ec..74c1444 100644
+> --- a/Documentation/ABI/testing/sysfs-bus-iio
+> +++ b/Documentation/ABI/testing/sysfs-bus-iio
+> @@ -1375,3 +1375,13 @@ Description:
+>  		The emissivity ratio of the surface in the field of view of the
+>  		contactless temperature sensor.  Emissivity varies from 0 to 1,
+>  		with 1 being the emissivity of a black body.
+> +
+> +What:		/sys/bus/iio/devices/iio:deviceX/in_magn_x_calibrepetitions
+> +What:		/sys/bus/iio/devices/iio:deviceX/in_magn_y_calibrepetitions
+> +What:		/sys/bus/iio/devices/iio:deviceX/in_magn_z_calibrepetitions
+> +KernelVersion:	4.2
+> +Contact:	linux-iio@vger.kernel.org
+> +Description:
+> +		Hardware applied number of repetitions for acquiring one
+> +		data point. The HW will do <type>[_name]_calibrepetitions
+> +		measurements and return the average value as output data.
+This is an interesting way of naming what is often referred to as oversampling.
+I'd like to get some other opinions on naming before we go with the ABI for this..
+
+We do have one driver in staging exporting oversampling_ratio which is probably
+the same thing, but that ABI was never standardized so I have no problem with
+ignoring that one case.  A couple of other drivers provide oversampling control
+via platform data.   We must make sure we give a sensible default for this.
+
+There is also the interesting question of whether sampling_frequency applies
+before or after this...  I'd argue after, but again would like more opinions
+before we dictate that.  However, whatever we choose should definitely be
+documented here!
+
+> diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+> index 7c98bc1..9e0da7f 100644
+> --- a/drivers/iio/industrialio-core.c
+> +++ b/drivers/iio/industrialio-core.c
+> @@ -129,6 +129,7 @@ static const char * const iio_chan_info_postfix[] = {
+>  	[IIO_CHAN_INFO_DEBOUNCE_COUNT] = "debounce_count",
+>  	[IIO_CHAN_INFO_DEBOUNCE_TIME] = "debounce_time",
+>  	[IIO_CHAN_INFO_CALIBEMISSIVITY] = "calibemissivity",
+> +	[IIO_CHAN_INFO_CALIBREPETITIONS] = "calibrepetitions",
+>  };
+>  
+>  /**
+> diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
+> index b1e46ae..07fbfb2 100644
+> --- a/include/linux/iio/iio.h
+> +++ b/include/linux/iio/iio.h
+> @@ -44,6 +44,7 @@ enum iio_chan_info_enum {
+>  	IIO_CHAN_INFO_DEBOUNCE_COUNT,
+>  	IIO_CHAN_INFO_DEBOUNCE_TIME,
+>  	IIO_CHAN_INFO_CALIBEMISSIVITY,
+> +	IIO_CHAN_INFO_CALIBREPETITIONS,
+>  };
+>  
+>  enum iio_shared_by {
 > 
 
