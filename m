@@ -1,49 +1,105 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-wg0-f49.google.com ([74.125.82.49]:32917 "EHLO
-	mail-wg0-f49.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751701AbbDRTOu (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 18 Apr 2015 15:14:50 -0400
-Received: by wgin8 with SMTP id n8so142059824wgi.0
-        for <linux-iio@vger.kernel.org>; Sat, 18 Apr 2015 12:14:49 -0700 (PDT)
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:33466 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751701AbbDRTQd (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 18 Apr 2015 15:16:33 -0400
+Message-ID: <5532AD90.2020300@kernel.org>
+Date: Sat, 18 Apr 2015 20:16:32 +0100
+From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-In-Reply-To: <CAD56B7fZW3Y07ghhrz-ymz+xE-=4oNyZr3FEvX+NhLHn1KWdOw@mail.gmail.com>
-References: <CAD56B7fZW3Y07ghhrz-ymz+xE-=4oNyZr3FEvX+NhLHn1KWdOw@mail.gmail.com>
-Date: Sat, 18 Apr 2015 22:14:49 +0300
-Message-ID: <CAEnQRZC4D2Kc_udhmDs9kg14R9MSvocRkPEOa8zTxE+MV=d62w@mail.gmail.com>
-Subject: Re: trigger question
-From: Daniel Baluta <daniel.baluta@intel.com>
-To: Paul Thomas <pthomas8589@gmail.com>
-Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Content-Type: text/plain; charset=UTF-8
+To: Vlad Dogaru <vlad.dogaru@intel.com>, linux-iio@vger.kernel.org
+Subject: Re: [PATCH v3 3/3] iio: sx9500: add GPIO reset pin
+References: <1428858561-27994-1-git-send-email-vlad.dogaru@intel.com> <1428858561-27994-4-git-send-email-vlad.dogaru@intel.com>
+In-Reply-To: <1428858561-27994-4-git-send-email-vlad.dogaru@intel.com>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Fri, Apr 17, 2015 at 11:57 PM, Paul Thomas <pthomas8589@gmail.com> wrote:
-> Hello, I would like to setup an iio_interrupt_trigger. I see the the
-> actual request_irq happens in iio_interrupt_trigger_probe. What is a
-> good example of a driver using this?
->
+On 12/04/15 18:09, Vlad Dogaru wrote:
+> If a GPIO reset pin is listed in ACPI or Device Tree, use it to reset
+> the device on initialization.
+> 
+> Signed-off-by: Vlad Dogaru <vlad.dogaru@intel.com>
+Applied.  Thanks for this series.  The power optimization patch
+in particular raised some questions in my mind about whether there
+is a better way to handle these inter dependencies between different
+uses of a channel.  No particular ideas yet though :)
 
-Good question. AFAIK there is no driver directly using iio_interrupt_trigger.
+Anyhow, in the togreg branch, initially pushed out as testing to
+see what I've missed today.
 
-> I take it that, if I have a GPIO pin setup as an interrupt from
-> userspace, there is no way to add the trigger from userspace in a way
-> similar to 'iio_sysfs_trigger/add_trigger'?
+J
+> ---
+>  drivers/iio/proximity/sx9500.c | 22 ++++++++++++++++++++--
+>  1 file changed, 20 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/iio/proximity/sx9500.c b/drivers/iio/proximity/sx9500.c
+> index 72efbbc..a32fa2e 100644
+> --- a/drivers/iio/proximity/sx9500.c
+> +++ b/drivers/iio/proximity/sx9500.c
+> @@ -33,6 +33,7 @@
+>  #define SX9500_IRQ_NAME			"sx9500_event"
+>  
+>  #define SX9500_GPIO_INT			"interrupt"
+> +#define SX9500_GPIO_RESET		"reset"
+>  
+>  /* Register definitions. */
+>  #define SX9500_REG_IRQ_SRC		0x00
+> @@ -85,6 +86,7 @@ struct sx9500_data {
+>  	struct i2c_client *client;
+>  	struct iio_trigger *trig;
+>  	struct regmap *regmap;
+> +	struct gpio_desc *gpiod_rst;
+>  	/*
+>  	 * Last reading of the proximity status for each channel.  We
+>  	 * only send an event to user space when this changes.
+> @@ -831,6 +833,13 @@ static int sx9500_init_device(struct iio_dev *indio_dev)
+>  	int ret, i;
+>  	unsigned int val;
+>  
+> +	if (data->gpiod_rst) {
+> +		gpiod_set_value_cansleep(data->gpiod_rst, 0);
+> +		usleep_range(1000, 2000);
+> +		gpiod_set_value_cansleep(data->gpiod_rst, 1);
+> +		usleep_range(1000, 2000);
+> +	}
+> +
+>  	ret = regmap_write(data->regmap, SX9500_REG_IRQ_MSK, 0);
+>  	if (ret < 0)
+>  		return ret;
+> @@ -877,6 +886,13 @@ static void sx9500_gpio_probe(struct i2c_client *client,
+>  		else
+>  			client->irq = gpiod_to_irq(gpio);
+>  	}
+> +
+> +	data->gpiod_rst = devm_gpiod_get_index(dev, SX9500_GPIO_RESET,
+> +					       0, GPIOD_OUT_HIGH);
+> +	if (IS_ERR(data->gpiod_rst)) {
+> +		dev_warn(dev, "gpio get reset pin failed\n");
+> +		data->gpiod_rst = NULL;
+> +	}
+>  }
+>  
+>  static int sx9500_probe(struct i2c_client *client,
+> @@ -900,8 +916,6 @@ static int sx9500_probe(struct i2c_client *client,
+>  	if (IS_ERR(data->regmap))
+>  		return PTR_ERR(data->regmap);
+>  
+> -	sx9500_init_device(indio_dev);
+> -
+>  	indio_dev->dev.parent = &client->dev;
+>  	indio_dev->name = SX9500_DRIVER_NAME;
+>  	indio_dev->channels = sx9500_channels;
+> @@ -912,6 +926,10 @@ static int sx9500_probe(struct i2c_client *client,
+>  
+>  	sx9500_gpio_probe(client, data);
+>  
+> +	ret = sx9500_init_device(indio_dev);
+> +	if (ret < 0)
+> +		return ret;
+> +
+>  	if (client->irq <= 0)
+>  		dev_warn(&client->dev, "no valid irq found\n");
+>  	else {
+> 
 
-You could use this trigger from user space by writing:
-
-echo irqtrigX > /sys/bus/iio/iio:device0/trigger/current_trigger
-
-The problem is GPIO irq setup. iio-trig-interrupt uses platform data to receive
-the IRQ number to associate with the irqtrigger.
-
-Could you tell use more about what exactly to you want to achieve? :).
-
-If you don't really need a hardware interrupt to be the event source
-for your trigger
-you can use the IIO hrtimer patches. The work is still on going here:
-
-https://lkml.org/lkml/2015/4/6/113
-
-thanks,
-Daniel.
