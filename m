@@ -1,48 +1,52 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:33380 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:33394 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754159AbbDRS7K (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 18 Apr 2015 14:59:10 -0400
-Message-ID: <5532A97A.4090201@kernel.org>
-Date: Sat, 18 Apr 2015 19:59:06 +0100
+	with ESMTP id S1754445AbbDRTCr (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 18 Apr 2015 15:02:47 -0400
+Message-ID: <5532AA55.3040609@kernel.org>
+Date: Sat, 18 Apr 2015 20:02:45 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Vlad Dogaru <vlad.dogaru@intel.com>, linux-iio@vger.kernel.org
-Subject: Re: [PATCH 3/6] iio: sx9500: rename GPIO interrupt pin
-References: <1428065254-6444-1-git-send-email-vlad.dogaru@intel.com> <1428065254-6444-4-git-send-email-vlad.dogaru@intel.com>
-In-Reply-To: <1428065254-6444-4-git-send-email-vlad.dogaru@intel.com>
+To: Karol Wrona <k.wrona@samsung.com>, linux-iio@vger.kernel.org
+CC: linux-kernel@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Karol Wrona <wrona.vy@gmail.com>
+Subject: Re: [PATCH] iio: common: ssp_sensors: Fix uninitialized warning for
+ timestamp
+References: <1429176624-19223-1-git-send-email-k.wrona@samsung.com>
+In-Reply-To: <1429176624-19223-1-git-send-email-k.wrona@samsung.com>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 03/04/15 13:47, Vlad Dogaru wrote:
-> Signed-off-by: Vlad Dogaru <vlad.dogaru@intel.com>
-For some reason I missed this before... 
-> ---
->  drivers/iio/proximity/sx9500.c | 3 ++-
->  1 file changed, 2 insertions(+), 1 deletion(-)
+On 16/04/15 10:30, Karol Wrona wrote:
+> calculated_time variable caused warning as uninitialized.  It was not harmful
+> because it was evaluated in the path in which was used later but it is to
+> satisfy the checkers.
 > 
-> diff --git a/drivers/iio/proximity/sx9500.c b/drivers/iio/proximity/sx9500.c
-> index 94c56f3..13b174c 100644
-> --- a/drivers/iio/proximity/sx9500.c
-> +++ b/drivers/iio/proximity/sx9500.c
-> @@ -31,7 +31,8 @@
->  
->  #define SX9500_DRIVER_NAME		"sx9500"
->  #define SX9500_IRQ_NAME			"sx9500_event"
-> -#define SX9500_GPIO_NAME		"sx9500_gpio"
-> +
-> +#define SX9500_GPIO_INT			"interrupt"
-You've changed the define as well as the name that broke the build so
-I've changed it back again as a fix-up for this patch.
+> Signed-off-by: Karol Wrona <k.wrona@samsung.com>
+Dumb compiler. It's a false positive and as the function is an inline in the header,
+it should be able to tell. 
 
-Your v3 patch 2 will uses the new name... I might fix it up
-to change the name of the define there if I'm happy with the
-rest of that patch.
+What compiler is spitting out the warning?
 
-J
+> ---
+>  drivers/iio/common/ssp_sensors/ssp_iio.c |    2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/iio/common/ssp_sensors/ssp_iio.c b/drivers/iio/common/ssp_sensors/ssp_iio.c
+> index a3ae165..16180e6 100644
+> --- a/drivers/iio/common/ssp_sensors/ssp_iio.c
+> +++ b/drivers/iio/common/ssp_sensors/ssp_iio.c
+> @@ -80,7 +80,7 @@ int ssp_common_process_data(struct iio_dev *indio_dev, void *buf,
+>  			    unsigned int len, int64_t timestamp)
+>  {
+>  	__le32 time;
+> -	int64_t calculated_time;
+> +	int64_t calculated_time = 0;
+>  	struct ssp_sensor_data *spd = iio_priv(indio_dev);
 >  
->  /* Register definitions. */
->  #define SX9500_REG_IRQ_SRC		0x00
+>  	if (indio_dev->scan_bytes == 0)
 > 
 
