@@ -1,183 +1,66 @@
-Return-Path: <sathyanarayanan.kuppuswamy@linux.intel.com>
-From: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
-To: jic23@kernel.org,
-	pmeerw@pmeerw.net
-Cc: linux-iio@vger.kernel.org,
-	srinivas.pandruvada@linux.intel.com,
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mga02.intel.com ([134.134.136.20]:3456 "EHLO mga02.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751136AbbDSJKK (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Sun, 19 Apr 2015 05:10:10 -0400
+From: Kuppuswamy Sathyanarayanan
+	<sathyanarayanan.kuppuswamy@linux.intel.com>
+To: jic23@kernel.org, pmeerw@pmeerw.net
+Cc: linux-iio@vger.kernel.org, srinivas.pandruvada@linux.intel.com,
 	sathyanarayanan.kuppuswamy@linux.intel.com
-Subject: [PATCH v5 2/5] iio: ltr501: Add integration time support
-Date: Sun, 19 Apr 2015 02:10:01 -0700
-Message-Id: <d30093a19faa74ad8092169105309a535ef59e04.1429433882.git.sathyanarayanan.kuppuswamy@linux.intel.com>
-In-Reply-To: <cover.1429433882.git.sathyanarayanan.kuppuswamy@linux.intel.com>
-References: <cover.1429433882.git.sathyanarayanan.kuppuswamy@linux.intel.com>
-In-Reply-To: <cover.1429433882.git.sathyanarayanan.kuppuswamy@linux.intel.com>
-References: <cover.1429433882.git.sathyanarayanan.kuppuswamy@linux.intel.com>
-List-ID: <linux-iio@vger.kernel.org>
+Subject: [PATCH v5 0/5] Added LTR501 Interrupt support
+Date: Sun, 19 Apr 2015 02:09:59 -0700
+Message-Id: <cover.1429433882.git.sathyanarayanan.kuppuswamy@linux.intel.com>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Added support to modify and read ALS integration time.
+This patchset adds Integration time, sampling frequency, interrupt
+and acpi enumeration support for LTR-501 chip.
 
-Signed-off-by: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
----
- drivers/iio/light/ltr501.c | 90 +++++++++++++++++++++++++++++++++++++++++++++-
- 1 file changed, 89 insertions(+), 1 deletion(-)
+Please let me know your review comments.
 
-diff --git a/drivers/iio/light/ltr501.c b/drivers/iio/light/ltr501.c
-index e2f7354..8092604 100644
---- a/drivers/iio/light/ltr501.c
-+++ b/drivers/iio/light/ltr501.c
-@@ -28,6 +28,7 @@
- 
- #define LTR501_ALS_CONTR 0x80 /* ALS operation mode, SW reset */
- #define LTR501_PS_CONTR 0x81 /* PS operation mode */
-+#define LTR501_ALS_MEAS_RATE 0x85 /* ALS integ time, measurement rate*/
- #define LTR501_PART_ID 0x86
- #define LTR501_MANUFAC_ID 0x87
- #define LTR501_ALS_DATA1 0x88 /* 16-bit, little endian */
-@@ -49,11 +50,17 @@
- 
- #define LTR501_REGMAP_NAME "ltr501_regmap"
- 
-+static const int int_time_mapping[] = {100000, 50000, 200000, 400000};
-+
-+static const struct reg_field reg_field_it =
-+				REG_FIELD(LTR501_ALS_MEAS_RATE, 3, 4);
-+
- struct ltr501_data {
- 	struct i2c_client *client;
- 	struct mutex lock_als, lock_ps;
- 	u8 als_contr, ps_contr;
- 	struct regmap *regmap;
-+	struct regmap_field *reg_it;
- };
- 
- static int ltr501_drdy(struct ltr501_data *data, u8 drdy_mask)
-@@ -74,6 +81,58 @@ static int ltr501_drdy(struct ltr501_data *data, u8 drdy_mask)
- 	return -EIO;
- }
- 
-+static int ltr501_set_it_time(struct ltr501_data *data, int it)
-+{
-+	int ret, i, index = -1, status;
-+
-+	for (i = 0; i < ARRAY_SIZE(int_time_mapping); i++) {
-+		if (int_time_mapping[i] == it) {
-+			index = i;
-+			break;
-+		}
-+	}
-+	/* Make sure integ time index is valid */
-+	if (index < 0)
-+		return -EINVAL;
-+
-+	ret = regmap_read(data->regmap, LTR501_ALS_CONTR, &status);
-+	if (ret < 0)
-+		return ret;
-+
-+	if (status & LTR501_CONTR_ALS_GAIN_MASK) {
-+		/*
-+		 * 200 ms and 400 ms integ time can only be
-+		 * used in dynamic range 1
-+		 */
-+		if (index > 1)
-+			return -EINVAL;
-+	} else
-+		/* 50 ms integ time can only be used in dynamic range 2 */
-+		if (index == 1)
-+			return -EINVAL;
-+
-+	return regmap_field_write(data->reg_it, index);
-+}
-+
-+/* read int time in micro seconds */
-+static int ltr501_read_it_time(struct ltr501_data *data, int *val, int *val2)
-+{
-+	int ret, index;
-+
-+	ret = regmap_field_read(data->reg_it, &index);
-+	if (ret < 0)
-+		return ret;
-+
-+	/* Make sure integ time index is valid */
-+	if (index < 0 || index >= ARRAY_SIZE(int_time_mapping))
-+		return -EINVAL;
-+
-+	*val2 = int_time_mapping[index];
-+	*val = 0;
-+
-+	return IIO_VAL_INT_PLUS_MICRO;
-+}
-+
- static int ltr501_read_als(struct ltr501_data *data, __le16 buf[2])
- {
- 	int ret;
-@@ -121,7 +180,8 @@ static int ltr501_read_ps(struct ltr501_data *data)
- static const struct iio_chan_spec ltr501_channels[] = {
- 	LTR501_INTENSITY_CHANNEL(0, LTR501_ALS_DATA0, IIO_MOD_LIGHT_BOTH, 0),
- 	LTR501_INTENSITY_CHANNEL(1, LTR501_ALS_DATA1, IIO_MOD_LIGHT_IR,
--				 BIT(IIO_CHAN_INFO_SCALE)),
-+				 BIT(IIO_CHAN_INFO_SCALE) |
-+				 BIT(IIO_CHAN_INFO_INT_TIME)),
- 	{
- 		.type = IIO_PROXIMITY,
- 		.address = LTR501_PS_DATA,
-@@ -196,6 +256,13 @@ static int ltr501_read_raw(struct iio_dev *indio_dev,
- 		default:
- 			return -EINVAL;
- 		}
-+	case IIO_CHAN_INFO_INT_TIME:
-+		switch (chan->type) {
-+		case IIO_INTENSITY:
-+			return ltr501_read_it_time(data, val, val2);
-+		default:
-+			return -EINVAL;
-+		}
- 	}
- 	return -EINVAL;
- }
-@@ -246,16 +313,30 @@ static int ltr501_write_raw(struct iio_dev *indio_dev,
- 		default:
- 			return -EINVAL;
- 		}
-+	case IIO_CHAN_INFO_INT_TIME:
-+		switch (chan->type) {
-+		case IIO_INTENSITY:
-+			if (val != 0)
-+				return -EINVAL;
-+			mutex_lock(&data->lock_als);
-+			i = ltr501_set_it_time(data, val2);
-+			mutex_unlock(&data->lock_als);
-+			return i;
-+		default:
-+			return -EINVAL;
-+		}
- 	}
- 	return -EINVAL;
- }
- 
- static IIO_CONST_ATTR(in_proximity_scale_available, "1 0.25 0.125 0.0625");
- static IIO_CONST_ATTR(in_intensity_scale_available, "1 0.005");
-+static IIO_CONST_ATTR_INT_TIME_AVAIL("0.05 0.1 0.2 0.4");
- 
- static struct attribute *ltr501_attributes[] = {
- 	&iio_const_attr_in_proximity_scale_available.dev_attr.attr,
- 	&iio_const_attr_in_intensity_scale_available.dev_attr.attr,
-+	&iio_const_attr_integration_time_available.dev_attr.attr,
- 	NULL
- };
- 
-@@ -404,6 +485,13 @@ static int ltr501_probe(struct i2c_client *client,
- 	mutex_init(&data->lock_als);
- 	mutex_init(&data->lock_ps);
- 
-+	data->reg_it = devm_regmap_field_alloc(&client->dev, regmap,
-+					       reg_field_it);
-+	if (IS_ERR(data->reg_it)) {
-+		dev_err(&client->dev, "Integ time reg field init failed.\n");
-+		return PTR_ERR(data->reg_it);
-+	}
-+
- 	ret = regmap_read(data->regmap, LTR501_PART_ID, &partid);
- 	if (ret < 0)
- 		return ret;
+v1:
+1. Added support to enable ALS & PS intterupts based 
+   on threshold settings.
+2. Added support to control intrrupt rate.
+3. Added acpi enumeration support.
+
+v2:
+1. Removed persistance attribute from ext_channel and
+   added support for IIO_EV_INFO_PERIOD.
+2. Rebased my patches on top of Daniel's alignment fix.
+
+v3:
+1. Added a new ABI to define threshold interrupt persistence
+   filter value.
+2. Added Documentation for persistence filter iio ABI
+3. Used IIO_EV_INFO_PERSISTENCE instead of IIO_EV_INFO_PERIOD
+   in ltr501 driver.
+
+v4:
+1. Added regmap support to handle register bitwise updates easily.
+2. Added support to change integration time from user code.
+3. Modified threshold interrupt persistence code to use IIO_EV_INFO_PERIOD
+   values.
+4. Added support to change sampling frequency from user code
+5. Addressed Jonathan's comments
+
+v5:
+1. Added const qualifier for sampling table, it table & reg_field
+   variables.
+2. Rebased patches on top of Daniel's checkpatch fix.
+3. Renamed rate variable to sampling_period.
+
+Kuppuswamy Sathyanarayanan (5):
+  iio: ltr501: Add regmap support.
+  iio: ltr501: Add integration time support
+  iio: ltr501: Add interrupt support
+  iio: ltr501: Add interrupt rate control support
+  iio: ltr501: Add ACPI enumeration support
+
+ drivers/iio/light/ltr501.c | 945 ++++++++++++++++++++++++++++++++++++++++++---
+ 1 file changed, 895 insertions(+), 50 deletions(-)
+
 -- 
 1.9.1
+
