@@ -1,67 +1,103 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-wg0-f41.google.com ([74.125.82.41]:32845 "EHLO
-	mail-wg0-f41.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754556AbbDTKei (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 20 Apr 2015 06:34:38 -0400
-Received: by wgin8 with SMTP id n8so173691114wgi.0
-        for <linux-iio@vger.kernel.org>; Mon, 20 Apr 2015 03:34:37 -0700 (PDT)
-MIME-Version: 1.0
-In-Reply-To: <CALwa49sxO+iH4qsZEtjF5mhMn2MumLFhyEan1_bG-SUGX9f92w@mail.gmail.com>
-References: <CALwa49vRGN_VaJ147PVF8Cf+8vnBotWVh7hmxLj=jaAba5QTTw@mail.gmail.com>
- <5526BD63.3080509@kernel.org> <CALwa49st7A1zSdCmy8Sq8KgAMXiGJySdpoxALTUNEubgvXqyWg@mail.gmail.com>
- <9B863FBE-8332-47EB-8E6C-C8943EF5D185@kernel.org> <CALwa49us7JVeYYga7fJxMx0=EbyLMuaAASGhU8=9AWYV2u96uQ@mail.gmail.com>
- <B74F5E0D-FE1C-422F-9D2E-985137E684E7@jic23.retrosnub.co.uk> <CALwa49sxO+iH4qsZEtjF5mhMn2MumLFhyEan1_bG-SUGX9f92w@mail.gmail.com>
-From: "s.rawat" <imsaurabhrawat@gmail.com>
-Date: Mon, 20 Apr 2015 16:04:16 +0530
-Message-ID: <CALwa49sr6j7igjMSY+Pcn2KzTaVf3qd6JRjPvFjV8DkxS=fMuQ@mail.gmail.com>
-Subject: Re: Regarding generic_buffer.c Application for Android
-To: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
+Received: from mout.kundenserver.de ([212.227.17.13]:54802 "EHLO
+	mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754548AbbDTL5k (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 20 Apr 2015 07:57:40 -0400
+From: Alban Bedel <alban.bedel@avionic-design.de>
+To: linux-iio@vger.kernel.org
 Cc: Jonathan Cameron <jic23@kernel.org>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Content-Type: text/plain; charset=UTF-8
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Linus Walleij <linus.walleij@linaro.org>,
+	Denis CIOCCA <denis.ciocca@st.com>,
+	Alban Bedel <alban.bedel@avionic-design.de>,
+	Lee Jones <lee.jones@linaro.org>,
+	Robert Dolca <robert.dolca@intel.com>,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH] iio:st_sensors: Fix oops when probing SPI devices
+Date: Mon, 20 Apr 2015 13:57:18 +0200
+Message-Id: <1429531038-20225-1-git-send-email-alban.bedel@avionic-design.de>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-After I allow  the device to go into sleep(pressing power button once)
-and then run  the generic_buffer app and then make the device wake-up
-the app works fine.I don't know if going into the sleep and waking it
-up does some sort of reset to the application variables or file
-descriptor.
+In SPI mode the transfer buffer is locked with a mutex. However this
+mutex is only initilized after the probe, but some transfer needs to
+be done in the probe.
 
-On Mon, Apr 13, 2015 at 3:35 PM, s.rawat <imsaurabhrawat@gmail.com> wrote:
-> +closedir(dp)
-> +dp = opendir(scan_el_dir);
->
-> This seems to work fine.But sometimes polling accel throws error :
-> failed to open /dev/iio:device0 .
->
-> sorry for reposts : Changed the browser.Was not able to send in "Plain
-> text mode"
->
-> On Mon, Apr 13, 2015 at 11:56 AM, Jonathan Cameron
-> <jic23@jic23.retrosnub.co.uk> wrote:
->>
->>
->> On 13 April 2015 04:40:17 BST, "s.rawat" <imsaurabhrawat@gmail.com> wrote:
->>>On Fri, Apr 10, 2015 at 11:49 AM, Jonathan Cameron <jic23@kernel.org>
->>>wrote:
->>>> Hit google
->>>> http://pubs.opengroup.org/onlinepubs/009695399/functions/seekdir.html
->>>> So for POSIX compliance they are optional.
->>>
->>>You mean seekdir(dp, 0); in function inline int
->>>build_channel_array(...) is optional?If I comment it, will it have no
->>>effect? This function is called inside main() of generic_buffer.c and
->>>I cant get it compiled with the tool chain I have.Is there any
->>>alternate code I can replace it with if it is Not Optional?
->> The functionality is not optional. There is no obligation for the operating system to implement seekdir.
->>
->> Here equivalent is probably to close and reopen the directory.
->>>
->>>I can take care of le16toh/be16toh.
->>>
->>>Thanks and Rgds,
->>>S
->>
->> --
->> Sent from my Android device with K-9 Mail. Please excuse my brevity.
+To fix this bug we move the mutex initialization at the beginning of
+the device probe.
+
+Signed-off-by: Alban Bedel <alban.bedel@avionic-design.de>
+---
+ drivers/iio/accel/st_accel_core.c               | 1 +
+ drivers/iio/common/st_sensors/st_sensors_core.c | 2 --
+ drivers/iio/gyro/st_gyro_core.c                 | 1 +
+ drivers/iio/magnetometer/st_magn_core.c         | 1 +
+ drivers/iio/pressure/st_pressure_core.c         | 1 +
+ 5 files changed, 4 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/iio/accel/st_accel_core.c b/drivers/iio/accel/st_accel_core.c
+index 58d1d13..211b132 100644
+--- a/drivers/iio/accel/st_accel_core.c
++++ b/drivers/iio/accel/st_accel_core.c
+@@ -546,6 +546,7 @@ int st_accel_common_probe(struct iio_dev *indio_dev)
+ 
+ 	indio_dev->modes = INDIO_DIRECT_MODE;
+ 	indio_dev->info = &accel_info;
++	mutex_init(&adata->tb.buf_lock);
+ 
+ 	st_sensors_power_enable(indio_dev);
+ 
+diff --git a/drivers/iio/common/st_sensors/st_sensors_core.c b/drivers/iio/common/st_sensors/st_sensors_core.c
+index edd13d2..8dd0477 100644
+--- a/drivers/iio/common/st_sensors/st_sensors_core.c
++++ b/drivers/iio/common/st_sensors/st_sensors_core.c
+@@ -304,8 +304,6 @@ int st_sensors_init_sensor(struct iio_dev *indio_dev,
+ 	struct st_sensors_platform_data *of_pdata;
+ 	int err = 0;
+ 
+-	mutex_init(&sdata->tb.buf_lock);
+-
+ 	/* If OF/DT pdata exists, it will take precedence of anything else */
+ 	of_pdata = st_sensors_of_probe(indio_dev->dev.parent, pdata);
+ 	if (of_pdata)
+diff --git a/drivers/iio/gyro/st_gyro_core.c b/drivers/iio/gyro/st_gyro_core.c
+index 21395f2..ffe9664 100644
+--- a/drivers/iio/gyro/st_gyro_core.c
++++ b/drivers/iio/gyro/st_gyro_core.c
+@@ -400,6 +400,7 @@ int st_gyro_common_probe(struct iio_dev *indio_dev)
+ 
+ 	indio_dev->modes = INDIO_DIRECT_MODE;
+ 	indio_dev->info = &gyro_info;
++	mutex_init(&gdata->tb.buf_lock);
+ 
+ 	st_sensors_power_enable(indio_dev);
+ 
+diff --git a/drivers/iio/magnetometer/st_magn_core.c b/drivers/iio/magnetometer/st_magn_core.c
+index 8ade473..2e56f81 100644
+--- a/drivers/iio/magnetometer/st_magn_core.c
++++ b/drivers/iio/magnetometer/st_magn_core.c
+@@ -369,6 +369,7 @@ int st_magn_common_probe(struct iio_dev *indio_dev)
+ 
+ 	indio_dev->modes = INDIO_DIRECT_MODE;
+ 	indio_dev->info = &magn_info;
++	mutex_init(&mdata->tb.buf_lock);
+ 
+ 	st_sensors_power_enable(indio_dev);
+ 
+diff --git a/drivers/iio/pressure/st_pressure_core.c b/drivers/iio/pressure/st_pressure_core.c
+index 97baf40d..e881fa6 100644
+--- a/drivers/iio/pressure/st_pressure_core.c
++++ b/drivers/iio/pressure/st_pressure_core.c
+@@ -417,6 +417,7 @@ int st_press_common_probe(struct iio_dev *indio_dev)
+ 
+ 	indio_dev->modes = INDIO_DIRECT_MODE;
+ 	indio_dev->info = &press_info;
++	mutex_init(&press_data->tb.buf_lock);
+ 
+ 	st_sensors_power_enable(indio_dev);
+ 
+-- 
+2.3.5
+
