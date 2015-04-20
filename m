@@ -1,61 +1,48 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga14.intel.com ([192.55.52.115]:28322 "EHLO mga14.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1755294AbbDTOBI (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Mon, 20 Apr 2015 10:01:08 -0400
+Received: from mail-wi0-f176.google.com ([209.85.212.176]:36742 "EHLO
+	mail-wi0-f176.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754788AbbDTOZO (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 20 Apr 2015 10:25:14 -0400
+Received: by wizk4 with SMTP id k4so101565236wiz.1
+        for <linux-iio@vger.kernel.org>; Mon, 20 Apr 2015 07:25:13 -0700 (PDT)
+MIME-Version: 1.0
+In-Reply-To: <CAD56B7d9jstrFeXRsg8g__YHFBy6CRuQSm97G4Onh0yFgssYnA@mail.gmail.com>
+References: <CAD56B7fZW3Y07ghhrz-ymz+xE-=4oNyZr3FEvX+NhLHn1KWdOw@mail.gmail.com>
+	<CAEnQRZC4D2Kc_udhmDs9kg14R9MSvocRkPEOa8zTxE+MV=d62w@mail.gmail.com>
+	<CAD56B7d9jstrFeXRsg8g__YHFBy6CRuQSm97G4Onh0yFgssYnA@mail.gmail.com>
+Date: Mon, 20 Apr 2015 17:25:12 +0300
+Message-ID: <CAEnQRZD3GBUEi3Yp5DFd84i+eeBv-wkhC422EkDzdScb1MP=-A@mail.gmail.com>
+Subject: Re: trigger question
 From: Daniel Baluta <daniel.baluta@intel.com>
-To: jic23@kernel.org
-Cc: jlbec@evilplan.org, lars@metafoo.de, knaack.h@gmx.de,
-	linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-	octavian.purdila@intel.com, pebolle@tiscali.nl,
-	patrick.porlan@intel.com, adriana.reus@intel.com,
-	constantin.musca@intel.com, marten@intuitiveaerial.com
-Subject: [PATCH v4 0/4] Add initial configfs support for IIO
-Date: Mon, 20 Apr 2015 17:02:39 +0300
-Message-Id: <1429538563-23430-1-git-send-email-daniel.baluta@intel.com>
+To: Paul Thomas <pthomas8589@gmail.com>
+Cc: Daniel Baluta <daniel.baluta@intel.com>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-This patchset introduces IIO software triggers, offers a way of configuring
-them via configfs and adds the IIO hrtimer based interrupt source to be used
-with software triggers.
+On Mon, Apr 20, 2015 at 4:05 PM, Paul Thomas <pthomas8589@gmail.com> wrote:
+> On Sat, Apr 18, 2015 at 3:14 PM, Daniel Baluta <daniel.baluta@intel.com> wrote:
+>> On Fri, Apr 17, 2015 at 11:57 PM, Paul Thomas <pthomas8589@gmail.com> wrote:
+>>> Hello, I would like to setup an iio_interrupt_trigger. I see the the
+>>> actual request_irq happens in iio_interrupt_trigger_probe. What is a
+>>> good example of a driver using this?
+>>>
+>>
+>> Good question. AFAIK there is no driver directly using iio_interrupt_trigger.
+>>
+>>> I take it that, if I have a GPIO pin setup as an interrupt from
+>>> userspace, there is no way to add the trigger from userspace in a way
+>>> similar to 'iio_sysfs_trigger/add_trigger'?
+>>
+>> You could use this trigger from user space by writing:
+>>
+>> echo irqtrigX > /sys/bus/iio/iio:device0/trigger/current_trigger
+> You mean after I've loaded an iio_interrupt_trigger and can see
+> irqtrigX in /sys/bus/iio/devices right? (I tried it just now without
+> that, and current_trigger is just blank after 'echo irqtrigX') Which
+> means I need a proper struct platform_device setup? Looking through
+> Documentation/driver-model/platform.txt I see a platform_device is
+> normally loaded with platform_device_register.
 
-The arhitecture is now split in 3 parts, to remove all IIO trigger specific
-parts from IIO configfs core:
-
-(1) IIO software triggers - are independent of configfs.
-(2) IIO configfs - offers a generic way of creating IIO objects. So far we can
-	create software triggers.
-(3) IIO hrtimer trigger - is the first interrupt source for software triggers
-	(with syfs to follow). Each trigger type can implement its own set of
-	attributes.
-
-Changes since v3:
-	* addressed comments from Jonathan for previous version
-	* https://lkml.org/lkml/2015/4/6/111
- 
-Daniel Baluta (4):
-  iio: core: Introduce IIO software triggers
-  iio: core: Introduce IIO configfs support
-  iio: trigger: Introduce IIO hrtimer based trigger
-  iio: Documentation: Add IIO configfs documentation
-
- Documentation/iio/iio_configfs.txt     |  67 +++++++++++
- drivers/iio/Kconfig                    |  16 +++
- drivers/iio/Makefile                   |   2 +
- drivers/iio/industrialio-configfs.c    | 117 +++++++++++++++++++
- drivers/iio/industrialio-sw-trigger.c  | 111 ++++++++++++++++++
- drivers/iio/trigger/Kconfig            |   9 ++
- drivers/iio/trigger/Makefile           |   2 +
- drivers/iio/trigger/iio-trig-hrtimer.c | 201 +++++++++++++++++++++++++++++++++
- include/linux/iio/sw_trigger.h         |  50 ++++++++
- 9 files changed, 575 insertions(+)
- create mode 100644 Documentation/iio/iio_configfs.txt
- create mode 100644 drivers/iio/industrialio-configfs.c
- create mode 100644 drivers/iio/industrialio-sw-trigger.c
- create mode 100644 drivers/iio/trigger/iio-trig-hrtimer.c
- create mode 100644 include/linux/iio/sw_trigger.h
-
--- 
-1.9.1
-
+Yes.
