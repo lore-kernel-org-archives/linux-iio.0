@@ -1,103 +1,46 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mout.kundenserver.de ([212.227.17.13]:54802 "EHLO
-	mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754548AbbDTL5k (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 20 Apr 2015 07:57:40 -0400
-From: Alban Bedel <alban.bedel@avionic-design.de>
-To: linux-iio@vger.kernel.org
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	Linus Walleij <linus.walleij@linaro.org>,
-	Denis CIOCCA <denis.ciocca@st.com>,
-	Alban Bedel <alban.bedel@avionic-design.de>,
-	Lee Jones <lee.jones@linaro.org>,
-	Robert Dolca <robert.dolca@intel.com>,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH] iio:st_sensors: Fix oops when probing SPI devices
-Date: Mon, 20 Apr 2015 13:57:18 +0200
-Message-Id: <1429531038-20225-1-git-send-email-alban.bedel@avionic-design.de>
+Received: from mail-vn0-f47.google.com ([209.85.216.47]:36300 "EHLO
+	mail-vn0-f47.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752464AbbDTNFs (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 20 Apr 2015 09:05:48 -0400
+Received: by vnbf62 with SMTP id f62so30462994vnb.3
+        for <linux-iio@vger.kernel.org>; Mon, 20 Apr 2015 06:05:47 -0700 (PDT)
+MIME-Version: 1.0
+In-Reply-To: <CAEnQRZC4D2Kc_udhmDs9kg14R9MSvocRkPEOa8zTxE+MV=d62w@mail.gmail.com>
+References: <CAD56B7fZW3Y07ghhrz-ymz+xE-=4oNyZr3FEvX+NhLHn1KWdOw@mail.gmail.com>
+	<CAEnQRZC4D2Kc_udhmDs9kg14R9MSvocRkPEOa8zTxE+MV=d62w@mail.gmail.com>
+Date: Mon, 20 Apr 2015 09:05:47 -0400
+Message-ID: <CAD56B7d9jstrFeXRsg8g__YHFBy6CRuQSm97G4Onh0yFgssYnA@mail.gmail.com>
+Subject: Re: trigger question
+From: Paul Thomas <pthomas8589@gmail.com>
+To: Daniel Baluta <daniel.baluta@intel.com>
+Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-In SPI mode the transfer buffer is locked with a mutex. However this
-mutex is only initilized after the probe, but some transfer needs to
-be done in the probe.
+On Sat, Apr 18, 2015 at 3:14 PM, Daniel Baluta <daniel.baluta@intel.com> wrote:
+> On Fri, Apr 17, 2015 at 11:57 PM, Paul Thomas <pthomas8589@gmail.com> wrote:
+>> Hello, I would like to setup an iio_interrupt_trigger. I see the the
+>> actual request_irq happens in iio_interrupt_trigger_probe. What is a
+>> good example of a driver using this?
+>>
+>
+> Good question. AFAIK there is no driver directly using iio_interrupt_trigger.
+>
+>> I take it that, if I have a GPIO pin setup as an interrupt from
+>> userspace, there is no way to add the trigger from userspace in a way
+>> similar to 'iio_sysfs_trigger/add_trigger'?
+>
+> You could use this trigger from user space by writing:
+>
+> echo irqtrigX > /sys/bus/iio/iio:device0/trigger/current_trigger
+You mean after I've loaded an iio_interrupt_trigger and can see
+irqtrigX in /sys/bus/iio/devices right? (I tried it just now without
+that, and current_trigger is just blank after 'echo irqtrigX') Which
+means I need a proper struct platform_device setup? Looking through
+Documentation/driver-model/platform.txt I see a platform_device is
+normally loaded with platform_device_register.
 
-To fix this bug we move the mutex initialization at the beginning of
-the device probe.
-
-Signed-off-by: Alban Bedel <alban.bedel@avionic-design.de>
----
- drivers/iio/accel/st_accel_core.c               | 1 +
- drivers/iio/common/st_sensors/st_sensors_core.c | 2 --
- drivers/iio/gyro/st_gyro_core.c                 | 1 +
- drivers/iio/magnetometer/st_magn_core.c         | 1 +
- drivers/iio/pressure/st_pressure_core.c         | 1 +
- 5 files changed, 4 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/iio/accel/st_accel_core.c b/drivers/iio/accel/st_accel_core.c
-index 58d1d13..211b132 100644
---- a/drivers/iio/accel/st_accel_core.c
-+++ b/drivers/iio/accel/st_accel_core.c
-@@ -546,6 +546,7 @@ int st_accel_common_probe(struct iio_dev *indio_dev)
- 
- 	indio_dev->modes = INDIO_DIRECT_MODE;
- 	indio_dev->info = &accel_info;
-+	mutex_init(&adata->tb.buf_lock);
- 
- 	st_sensors_power_enable(indio_dev);
- 
-diff --git a/drivers/iio/common/st_sensors/st_sensors_core.c b/drivers/iio/common/st_sensors/st_sensors_core.c
-index edd13d2..8dd0477 100644
---- a/drivers/iio/common/st_sensors/st_sensors_core.c
-+++ b/drivers/iio/common/st_sensors/st_sensors_core.c
-@@ -304,8 +304,6 @@ int st_sensors_init_sensor(struct iio_dev *indio_dev,
- 	struct st_sensors_platform_data *of_pdata;
- 	int err = 0;
- 
--	mutex_init(&sdata->tb.buf_lock);
--
- 	/* If OF/DT pdata exists, it will take precedence of anything else */
- 	of_pdata = st_sensors_of_probe(indio_dev->dev.parent, pdata);
- 	if (of_pdata)
-diff --git a/drivers/iio/gyro/st_gyro_core.c b/drivers/iio/gyro/st_gyro_core.c
-index 21395f2..ffe9664 100644
---- a/drivers/iio/gyro/st_gyro_core.c
-+++ b/drivers/iio/gyro/st_gyro_core.c
-@@ -400,6 +400,7 @@ int st_gyro_common_probe(struct iio_dev *indio_dev)
- 
- 	indio_dev->modes = INDIO_DIRECT_MODE;
- 	indio_dev->info = &gyro_info;
-+	mutex_init(&gdata->tb.buf_lock);
- 
- 	st_sensors_power_enable(indio_dev);
- 
-diff --git a/drivers/iio/magnetometer/st_magn_core.c b/drivers/iio/magnetometer/st_magn_core.c
-index 8ade473..2e56f81 100644
---- a/drivers/iio/magnetometer/st_magn_core.c
-+++ b/drivers/iio/magnetometer/st_magn_core.c
-@@ -369,6 +369,7 @@ int st_magn_common_probe(struct iio_dev *indio_dev)
- 
- 	indio_dev->modes = INDIO_DIRECT_MODE;
- 	indio_dev->info = &magn_info;
-+	mutex_init(&mdata->tb.buf_lock);
- 
- 	st_sensors_power_enable(indio_dev);
- 
-diff --git a/drivers/iio/pressure/st_pressure_core.c b/drivers/iio/pressure/st_pressure_core.c
-index 97baf40d..e881fa6 100644
---- a/drivers/iio/pressure/st_pressure_core.c
-+++ b/drivers/iio/pressure/st_pressure_core.c
-@@ -417,6 +417,7 @@ int st_press_common_probe(struct iio_dev *indio_dev)
- 
- 	indio_dev->modes = INDIO_DIRECT_MODE;
- 	indio_dev->info = &press_info;
-+	mutex_init(&press_data->tb.buf_lock);
- 
- 	st_sensors_power_enable(indio_dev);
- 
--- 
-2.3.5
-
+thanks,
+Paul
