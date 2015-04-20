@@ -1,57 +1,44 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-wi0-f178.google.com ([209.85.212.178]:34196 "EHLO
-	mail-wi0-f178.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751340AbbDTO3I (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 20 Apr 2015 10:29:08 -0400
-Received: by wicmx19 with SMTP id mx19so41424878wic.1
-        for <linux-iio@vger.kernel.org>; Mon, 20 Apr 2015 07:29:07 -0700 (PDT)
+Received: from smtp-out-074.synserver.de ([212.40.185.74]:1027 "EHLO
+	smtp-out-074.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754457AbbDTPGm (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 20 Apr 2015 11:06:42 -0400
+Message-ID: <55351604.4000808@metafoo.de>
+Date: Mon, 20 Apr 2015 17:06:44 +0200
+From: Lars-Peter Clausen <lars@metafoo.de>
 MIME-Version: 1.0
-In-Reply-To: <CAEnQRZD3GBUEi3Yp5DFd84i+eeBv-wkhC422EkDzdScb1MP=-A@mail.gmail.com>
-References: <CAD56B7fZW3Y07ghhrz-ymz+xE-=4oNyZr3FEvX+NhLHn1KWdOw@mail.gmail.com>
-	<CAEnQRZC4D2Kc_udhmDs9kg14R9MSvocRkPEOa8zTxE+MV=d62w@mail.gmail.com>
-	<CAD56B7d9jstrFeXRsg8g__YHFBy6CRuQSm97G4Onh0yFgssYnA@mail.gmail.com>
-	<CAEnQRZD3GBUEi3Yp5DFd84i+eeBv-wkhC422EkDzdScb1MP=-A@mail.gmail.com>
-Date: Mon, 20 Apr 2015 17:29:07 +0300
-Message-ID: <CAEnQRZAhdLCFAKv4Oackga_UGE1qamcdBTjLBCFxMavkAGj6Rw@mail.gmail.com>
-Subject: Re: trigger question
-From: Daniel Baluta <daniel.baluta@intel.com>
-To: Daniel Baluta <daniel.baluta@intel.com>
-Cc: Paul Thomas <pthomas8589@gmail.com>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Content-Type: text/plain; charset=UTF-8
+To: Ezequiel Garcia <ezequiel.garcia@imgtec.com>,
+	Jonathan Cameron <jic23@kernel.org>
+CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Subject: Re: Module get needed for iio_channel_get and friends
+References: <552EC350.2000506@imgtec.com>
+In-Reply-To: <552EC350.2000506@imgtec.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Mon, Apr 20, 2015 at 5:25 PM, Daniel Baluta <daniel.baluta@intel.com> wrote:
-> On Mon, Apr 20, 2015 at 4:05 PM, Paul Thomas <pthomas8589@gmail.com> wrote:
->> On Sat, Apr 18, 2015 at 3:14 PM, Daniel Baluta <daniel.baluta@intel.com> wrote:
->>> On Fri, Apr 17, 2015 at 11:57 PM, Paul Thomas <pthomas8589@gmail.com> wrote:
->>>> Hello, I would like to setup an iio_interrupt_trigger. I see the the
->>>> actual request_irq happens in iio_interrupt_trigger_probe. What is a
->>>> good example of a driver using this?
->>>>
->>>
->>> Good question. AFAIK there is no driver directly using iio_interrupt_trigger.
->>>
->>>> I take it that, if I have a GPIO pin setup as an interrupt from
->>>> userspace, there is no way to add the trigger from userspace in a way
->>>> similar to 'iio_sysfs_trigger/add_trigger'?
->>>
->>> You could use this trigger from user space by writing:
->>>
->>> echo irqtrigX > /sys/bus/iio/iio:device0/trigger/current_trigger
->> You mean after I've loaded an iio_interrupt_trigger and can see
->> irqtrigX in /sys/bus/iio/devices right? (I tried it just now without
->> that, and current_trigger is just blank after 'echo irqtrigX') Which
->> means I need a proper struct platform_device setup? Looking through
->> Documentation/driver-model/platform.txt I see a platform_device is
->> normally loaded with platform_device_register.
+On 04/15/2015 10:00 PM, Ezequiel Garcia wrote:
+> Jonathan, Lars:
 >
-> Yes.
+> I've noticed that iio_channel_{get, get_all} don't call try_module_get
+> on the module associated to the indio_dev.
+>
+> This means that an IIO driver can be removed while having a consumer for
+> any of its channels.
 
-You can also have a look at drivers/iio/accel/kxcjk-1013.c
-in kxcjk1013_gpio_probe and see how to convert an GPIO
-pin index to an IRQ number then hack iio-interrupt-trigger
-to use this instead of platform device.
+The device can still be unbound from the driver, even if you pin the module. 
+E.g. device hot-unplug.
 
-Daniel.
+>
+> If each channel can have a completely different indio_dev, this means we
+> need to increase the refcount of the module on each indio_dev, right?
+>
+
+I think we already handle this correctly. The device ref-count is 
+incremented when a channel is requested. This means even when the device is 
+unbound from the driver it will stay around until the channel is freed and 
+the final reference is dropped. At the same time we set the info field of 
+the IIO device to NULL when the driver is unbound from the driver and in 
+iio_write_channel_raw() return -ENODEV when the info field is NULL.
+
+- Lars
