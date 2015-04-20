@@ -1,62 +1,66 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-vn0-f52.google.com ([209.85.216.52]:33396 "EHLO
-	mail-vn0-f52.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751137AbbDTBBl (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 19 Apr 2015 21:01:41 -0400
-Received: by vnbf1 with SMTP id f1so29594188vnb.0
-        for <linux-iio@vger.kernel.org>; Sun, 19 Apr 2015 18:01:40 -0700 (PDT)
+Received: from mail02.rohde-schwarz.com ([80.246.32.97]:58720 "EHLO
+	mail02.rohde-schwarz.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751350AbbDTIeT (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 20 Apr 2015 04:34:19 -0400
+In-Reply-To: <5532AFE6.5080407@kernel.org>
+References: <1429125111-2926-1-git-send-email-thomas.betker@freenet.de> <552ECFF8.2070501@kernel.org> <OF5342D15E.A4BDD05D-ONC1257E29.00294BA0-C1257E29.002B4FCC@rohde-schwarz.com> <5532AFE6.5080407@kernel.org>
+To: jic23@kernel.org
+Cc: Lars-Peter Clausen <lars@metafoo.de>, linux-iio@vger.kernel.org,
+	Michal Simek <michal.simek@xilinx.com>,
+	=?ISO-8859-1?Q?S=F6ren_Brinkmann?= <soren.brinkmann@xilinx.com>
 MIME-Version: 1.0
-In-Reply-To: <CAEnQRZC4D2Kc_udhmDs9kg14R9MSvocRkPEOa8zTxE+MV=d62w@mail.gmail.com>
-References: <CAD56B7fZW3Y07ghhrz-ymz+xE-=4oNyZr3FEvX+NhLHn1KWdOw@mail.gmail.com>
-	<CAEnQRZC4D2Kc_udhmDs9kg14R9MSvocRkPEOa8zTxE+MV=d62w@mail.gmail.com>
-Date: Sun, 19 Apr 2015 21:01:40 -0400
-Message-ID: <CAD56B7dE31xYq-iqx4Vf7_bmQqnZSxv+jK8Mm9iMJhwC-Q5PXw@mail.gmail.com>
-Subject: Re: trigger question
-From: Paul Thomas <pthomas8589@gmail.com>
-To: Daniel Baluta <daniel.baluta@intel.com>
-Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Content-Type: text/plain; charset=UTF-8
+Subject: Re: [Patch 0/5] iio: adc: xilinx: Fix some minor issues
+From: Thomas.Betker@rohde-schwarz.com
+Message-ID: <OF9318C068.0B4E8F22-ONC1257E2D.002AD90B-C1257E2D.002F1441@rohde-schwarz.com>
+Date: Mon, 20 Apr 2015 10:34:10 +0200
+Content-Type: text/plain; charset="US-ASCII"
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Sat, Apr 18, 2015 at 3:14 PM, Daniel Baluta <daniel.baluta@intel.com> wrote:
-> On Fri, Apr 17, 2015 at 11:57 PM, Paul Thomas <pthomas8589@gmail.com> wrote:
->> Hello, I would like to setup an iio_interrupt_trigger. I see the the
->> actual request_irq happens in iio_interrupt_trigger_probe. What is a
->> good example of a driver using this?
->>
->
-> Good question. AFAIK there is no driver directly using iio_interrupt_trigger.
->
->> I take it that, if I have a GPIO pin setup as an interrupt from
->> userspace, there is no way to add the trigger from userspace in a way
->> similar to 'iio_sysfs_trigger/add_trigger'?
->
-> You could use this trigger from user space by writing:
->
-> echo irqtrigX > /sys/bus/iio/iio:device0/trigger/current_trigger
-Great thanks! I'll try this tomorrow.
+Hello Jonathan:
 
->
-> The problem is GPIO irq setup. iio-trig-interrupt uses platform data to receive
-> the IRQ number to associate with the irqtrigger.
->
-> Could you tell use more about what exactly to you want to achieve? :).
-Really it's just a data ready interrupt. So with the irqtrigX that's
-all I need to test, but for the actual driver I was thinking the GPIO
-interrupt would be part of the device tree, but even though
-configuring the GPIO pin from sysfs is OK, I'm not too clear how this
-would look in the device tree.
+> > With hwmon, we would have inX_input, inX_lowest, inX_highest (in fact, 
+we 
+> > had, as Xilinx XADC used to be hwmon -- just to explain where I'm 
+coming 
+> > from). So it made sense to me to use .extended_name = "lowest" to have 
 
->
-> If you don't really need a hardware interrupt to be the event source
-> for your trigger
-> you can use the IIO hrtimer patches. The work is still on going here:
->
-> https://lkml.org/lkml/2015/4/6/113
-I saw that, it looks cool. It this case I think it would double the
-interrupts, the hrtimer could start the conversion, but then you'd
-still have to wait for the data to be ready.
+> > in_voltageX_lowest_raw/_scale in addition to in_voltageX_raw/_scale 
+(same 
+> > index X). I understand that I may have read too much into the IIO code 
 
-thanks,
-Paul
+> > here, though, and if there's a better way to do this, I will gladly 
+use 
+> > it.
+> Hmm, we could as new info_mask elements (like _raw, _scale etc).
+> The nasty corner case is that we might also read them as part of a 
+buffer
+> read.  To do that they will need to be separate 'channels' in their own
+> right. 
+> 
+> I'm not entirely sure right now if you can distinguish channels purely 
+on
+> the basis of extended name (and different scan index values), but that
+> might work, though would be a bit ugly.  There is certainly no 
+fundamental
+> reason you can't do this..
+
+Oh my, it seems I have been a bit unclear here. In my implementation, 
+lowest/highest *are* actually separate channels, with their own _raw and 
+_scale. The Xilinx XADC controller has separate registers such as 
+MIN_VCCINT and MAX_VCCINT in addition to VCCINT, and it was fairly 
+straightforward to extend the existing channel set this way.
+
+So lowest/highest is orthogonal to raw/scale (which made it tempting to 
+use .extend_name). lowest/highest use the same .channel index as the 
+standard channel (so we have a group in_temp0_raw/_scale, 
+in_temp0_lowest_raw/_scale, in_temp0_highest_raw/_scale), but their own 
+.scan_index (as that has to be unique).
+
+Perhaps we should just use .extend_name = "vccint", "vccint_lowest", 
+"vccint_highest"? (And NULL, "lowest", "highest" for channels which do not 
+have a hard-wired purpose.)
+
+Best regards,
+Thomas Betker
