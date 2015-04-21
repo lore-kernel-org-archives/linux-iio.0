@@ -1,14 +1,13 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga03.intel.com ([134.134.136.65]:58995 "EHLO mga03.intel.com"
+Received: from mga09.intel.com ([134.134.136.24]:44876 "EHLO mga09.intel.com"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S933549AbbDUQXr (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Tue, 21 Apr 2015 12:23:47 -0400
-Message-ID: <50554.10.252.192.198.1429633391.squirrel@linux.intel.com>
-In-Reply-To: <1429632660-8716-3-git-send-email-daniel.baluta@intel.com>
+	id S934084AbbDUQYu (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Tue, 21 Apr 2015 12:24:50 -0400
+Message-ID: <50561.10.252.192.198.1429633463.squirrel@linux.intel.com>
+In-Reply-To: <1429632660-8716-1-git-send-email-daniel.baluta@intel.com>
 References: <1429632660-8716-1-git-send-email-daniel.baluta@intel.com>
-    <1429632660-8716-3-git-send-email-daniel.baluta@intel.com>
-Date: Tue, 21 Apr 2015 09:23:11 -0700 (PDT)
-Subject: Re: [PATCH v8 2/2] iio: ltr501: Add support for ltr301 chip
+Date: Tue, 21 Apr 2015 09:24:23 -0700 (PDT)
+Subject: Re: [PATCH v8 0/2] Add support for LTR-301 and LTR-559 sensors
 From: "Kuppuswamy Sathyanarayanan"
 	<sathyanarayanan.kuppuswamy@linux.intel.com>
 To: "Daniel Baluta" <daniel.baluta@intel.com>
@@ -21,214 +20,61 @@ Content-Type: text/plain; charset=US-ASCII
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Hi Jonathan,
 
-Please don't push this patchset until I test it. I will let you know once
-I am done.
+> This patchset adds support for LiteOn LTR301 ambient light sensor
+> and LTR559 ambient light and proximity sensor.
+>
+> I will just leave this here if Sathya needs to push support for LTR-301.
+> Minimal tested. I will be back in few days with more testing.
 
-> Added support for Liteon 301 Ambient light sensor. Since
-> LTR-301 and LTR-501 are register compatible(and even have same
-> part id), LTR-501 driver has been extended to support both
-> devices. LTR-501 is similar to LTR-301 in ALS sensing, But the
-> only difference is, LTR-501 also supports proximity sensing.
+Thanks Daniel. I will let you know once I am done with testing.
 >
-> LTR-501 - ALS + Proximity combo
-> LTR-301 - ALS sensor.
+> v8:
 >
-> Signed-off-by: Kuppuswamy Sathyanarayanan
-> <sathyanarayanan.kuppuswamy@linux.intel.com>
-> Signed-off-by: Daniel Baluta <daniel.baluta@intel.com>
-> ---
->  drivers/iio/light/Kconfig  |  2 +-
->  drivers/iio/light/ltr501.c | 76
-> +++++++++++++++++++++++++++++++++++++++++++---
->  2 files changed, 73 insertions(+), 5 deletions(-)
+> 1. Rebased on the latest linux-iio testing branch.
 >
-> diff --git a/drivers/iio/light/Kconfig b/drivers/iio/light/Kconfig
-> index 16a0ba1..a437bad 100644
-> --- a/drivers/iio/light/Kconfig
-> +++ b/drivers/iio/light/Kconfig
-> @@ -170,7 +170,7 @@ config LTR501
->  	help
->  	 If you say yes here you get support for the Lite-On LTR-501ALS-01
->  	 ambient light and proximity sensor. This driver also supports LTR-559
-> -	 ALS/PS sensor.
-> +	 ALS/PS or LTR-301 ALS sensors.
+> v7:
+> 1. Rebase LTR-301 on top of LTR-559 and merged the patches into a single
+> patchset
+> 2. Moved ltr501_chip_info_tbl below ltr501_info in patch 1 in order
+> to make patch 2 changes look natural. :)
+> 3. Moved "else" branch of id check from patch 2 to patch 1. Now it is no
+> longer possible to have a NULL name after this check. If id is not NULL
+> than id->name is one of ltr501_id already defined strings.
 >
->  	 This driver can also be built as a module.  If so, the module
->           will be called ltr501.
-> diff --git a/drivers/iio/light/ltr501.c b/drivers/iio/light/ltr501.c
-> index 92da514..ca4bf47 100644
-> --- a/drivers/iio/light/ltr501.c
-> +++ b/drivers/iio/light/ltr501.c
-> @@ -93,6 +93,7 @@ struct ltr501_samp_table {
->  enum {
->  	ltr501 = 0,
->  	ltr559,
-> +	ltr301,
->  };
+> v6:
+> 1. Changed the title in commit log
 >
->  struct ltr501_gain {
-> @@ -139,6 +140,10 @@ struct ltr501_chip_info {
->  	u8 als_mode_active;
->  	u8 als_gain_mask;
->  	u8 als_gain_shift;
-> +	struct iio_chan_spec const *channels;
-> +	const int no_channels;
-> +	const struct iio_info *info;
-> +	const struct iio_info *info_no_irq;
->  };
+> v5:
+> 1. Rebased this patch on top of Daniel's LTR559 patchset
+>    (http://marc.info/?l=linux-kernel&m=142779827617036&w=2)
+> 2. Added info and channel members to chip_info struture.
 >
->  struct ltr501_data {
-> @@ -570,6 +575,18 @@ static const struct iio_chan_spec ltr501_channels[] =
-> {
->  	IIO_CHAN_SOFT_TIMESTAMP(3),
->  };
+> v4:
+> 1. Addressed minor comments from Peter Meerwald
+> 2. Changed invalid chip id errno from ENOSYS to ENODEV
+> 3. Fixed channel id index number
+> 4. Removed unused variable.
 >
-> +static const struct iio_chan_spec ltr301_channels[] = {
-> +	LTR501_INTENSITY_CHANNEL(0, LTR501_ALS_DATA0, IIO_MOD_LIGHT_BOTH, 0,
-> +				 ltr501_als_event_spec,
-> +				 ARRAY_SIZE(ltr501_als_event_spec)),
-> +	LTR501_INTENSITY_CHANNEL(1, LTR501_ALS_DATA1, IIO_MOD_LIGHT_IR,
-> +				 BIT(IIO_CHAN_INFO_SCALE) |
-> +				 BIT(IIO_CHAN_INFO_INT_TIME) |
-> +				 BIT(IIO_CHAN_INFO_SAMP_FREQ),
-> +				 NULL, 0),
-> +	IIO_CHAN_SOFT_TIMESTAMP(2),
-> +};
-> +
->  static int ltr501_read_raw(struct iio_dev *indio_dev,
->  			   struct iio_chan_spec const *chan,
->  			   int *val, int *val2, long mask)
-> @@ -1040,10 +1057,21 @@ static struct attribute *ltr501_attributes[] = {
->  	NULL
->  };
+> v3:
+> 1. Sent v2 before by mistake. So sending the final version of v2 as v3.
 >
-> +static struct attribute *ltr301_attributes[] = {
-> +	&iio_dev_attr_in_intensity_scale_available.dev_attr.attr,
-> +	&iio_const_attr_integration_time_available.dev_attr.attr,
-> +	&iio_const_attr_sampling_frequency_available.dev_attr.attr,
-> +	NULL
-> +};
-> +
->  static const struct attribute_group ltr501_attribute_group = {
->  	.attrs = ltr501_attributes,
->  };
+> v2:
+> 1. Handled device id NULL case in probe
+> 2. Changed pr_warn to dev_warn
 >
-> +static const struct attribute_group ltr301_attribute_group = {
-> +	.attrs = ltr301_attributes,
-> +};
-> +
->  static const struct iio_info ltr501_info_no_irq = {
->  	.read_raw = ltr501_read_raw,
->  	.write_raw = ltr501_write_raw,
-> @@ -1062,6 +1090,24 @@ static const struct iio_info ltr501_info = {
->  	.driver_module = THIS_MODULE,
->  };
+> v1:
+> Extended LTR501 driver to support both LTR301 and LTR501 device.
 >
-> +static const struct iio_info ltr301_info_no_irq = {
-> +	.read_raw = ltr501_read_raw,
-> +	.write_raw = ltr501_write_raw,
-> +	.attrs = &ltr301_attribute_group,
-> +	.driver_module = THIS_MODULE,
-> +};
-> +
-> +static const struct iio_info ltr301_info = {
-> +	.read_raw = ltr501_read_raw,
-> +	.write_raw = ltr501_write_raw,
-> +	.attrs = &ltr301_attribute_group,
-> +	.read_event_value	= &ltr501_read_event,
-> +	.write_event_value	= &ltr501_write_event,
-> +	.read_event_config	= &ltr501_read_event_config,
-> +	.write_event_config	= &ltr501_write_event_config,
-> +	.driver_module = THIS_MODULE,
-> +};
-> +
->  static struct ltr501_chip_info ltr501_chip_info_tbl[] = {
->  	[ltr501] = {
->  		.partid = 0x08,
-> @@ -1072,6 +1118,10 @@ static struct ltr501_chip_info
-> ltr501_chip_info_tbl[] = {
->  		.als_mode_active = BIT(0) | BIT(1),
->  		.als_gain_mask = BIT(3),
->  		.als_gain_shift = 3,
-> +		.info = &ltr501_info,
-> +		.info_no_irq = &ltr501_info_no_irq,
-> +		.channels = ltr501_channels,
-> +		.no_channels = ARRAY_SIZE(ltr501_channels),
->  	},
->  	[ltr559] = {
->  		.partid = 0x09,
-> @@ -1082,6 +1132,22 @@ static struct ltr501_chip_info
-> ltr501_chip_info_tbl[] = {
->  		.als_mode_active = BIT(1),
->  		.als_gain_mask = BIT(2) | BIT(3) | BIT(4),
->  		.als_gain_shift = 2,
-> +		.info = &ltr501_info,
-> +		.info_no_irq = &ltr501_info_no_irq,
-> +		.channels = ltr501_channels,
-> +		.no_channels = ARRAY_SIZE(ltr501_channels),
-> +	},
-> +	[ltr301] = {
-> +		.partid = 0x08,
-> +		.als_gain = ltr501_als_gain_tbl,
-> +		.als_gain_tbl_size = ARRAY_SIZE(ltr501_als_gain_tbl),
-> +		.als_mode_active = BIT(0) | BIT(1),
-> +		.als_gain_mask = BIT(3),
-> +		.als_gain_shift = 3,
-> +		.info = &ltr301_info,
-> +		.info_no_irq = &ltr301_info_no_irq,
-> +		.channels = ltr301_channels,
-> +		.no_channels = ARRAY_SIZE(ltr301_channels),
->  	},
->  };
+> Daniel Baluta (2):
+>   iio: ltr501: Add support for ltr559 chip
+>   iio: ltr501: Add support for ltr301 chip
 >
-> @@ -1338,8 +1404,9 @@ static int ltr501_probe(struct i2c_client *client,
->  		return -ENODEV;
+>  drivers/iio/light/Kconfig  |   3 +-
+>  drivers/iio/light/ltr501.c | 290
+> +++++++++++++++++++++++++++++++++++++++------
+>  2 files changed, 256 insertions(+), 37 deletions(-)
 >
->  	indio_dev->dev.parent = &client->dev;
-> -	indio_dev->channels = ltr501_channels;
-> -	indio_dev->num_channels = ARRAY_SIZE(ltr501_channels);
-> +	indio_dev->info = data->chip_info->info;
-> +	indio_dev->channels = data->chip_info->channels;
-> +	indio_dev->num_channels = data->chip_info->no_channels;
->  	indio_dev->name = name;
->  	indio_dev->modes = INDIO_DIRECT_MODE;
->
-> @@ -1348,7 +1415,6 @@ static int ltr501_probe(struct i2c_client *client,
->  		return ret;
->
->  	if (client->irq > 0) {
-> -		indio_dev->info = &ltr501_info;
->  		ret = devm_request_threaded_irq(&client->dev, client->irq,
->  						NULL, ltr501_interrupt_handler,
->  						IRQF_TRIGGER_FALLING |
-> @@ -1361,7 +1427,7 @@ static int ltr501_probe(struct i2c_client *client,
->  			return ret;
->  		}
->  	} else {
-> -		indio_dev->info = &ltr501_info_no_irq;
-> +		indio_dev->info = data->chip_info->info_no_irq;
->  	}
->
->  	ret = iio_triggered_buffer_setup(indio_dev, NULL,
-> @@ -1416,6 +1482,7 @@ static SIMPLE_DEV_PM_OPS(ltr501_pm_ops,
-> ltr501_suspend, ltr501_resume);
->  static const struct acpi_device_id ltr_acpi_match[] = {
->  	{"LTER0501", ltr501},
->  	{"LTER0559", ltr559},
-> +	{"LTER0301", ltr301},
->  	{ },
->  };
->  MODULE_DEVICE_TABLE(acpi, ltr_acpi_match);
-> @@ -1423,6 +1490,7 @@ MODULE_DEVICE_TABLE(acpi, ltr_acpi_match);
->  static const struct i2c_device_id ltr501_id[] = {
->  	{ "ltr501", ltr501},
->  	{ "ltr559", ltr559},
-> +	{ "ltr301", ltr301},
->  	{ }
->  };
->  MODULE_DEVICE_TABLE(i2c, ltr501_id);
 > --
 > 1.9.1
 >
