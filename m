@@ -1,253 +1,391 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:56988 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753058AbbDURza (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 21 Apr 2015 13:55:30 -0400
-In-Reply-To: <50554.10.252.192.198.1429633391.squirrel@linux.intel.com>
-References: <1429632660-8716-1-git-send-email-daniel.baluta@intel.com> <1429632660-8716-3-git-send-email-daniel.baluta@intel.com> <50554.10.252.192.198.1429633391.squirrel@linux.intel.com>
-MIME-Version: 1.0
-Content-Type: text/plain;
- charset=UTF-8
-Subject: Re: [PATCH v8 2/2] iio: ltr501: Add support for ltr301 chip
-From: Jonathan Cameron <jic23@kernel.org>
-Date: Tue, 21 Apr 2015 18:55:27 +0100
-To: sathyanarayanan.kuppuswamy@linux.intel.com,
-	Daniel Baluta <daniel.baluta@intel.com>
-CC: pmeerw@pmeerw.net, linux-iio@vger.kernel.org,
-	srinivas.pandruvada@linux.intel.com, daniel.baluta@intel.com
-Message-ID: <3D80C5F9-94E9-4BD1-B909-8951CA31579E@kernel.org>
+Received: from mail-la0-f52.google.com ([209.85.215.52]:36820 "EHLO
+	mail-la0-f52.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755539AbbDUSsw (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 21 Apr 2015 14:48:52 -0400
+From: Tomasz Duszynski <tduszyns@gmail.com>
+To: jic23@kernel.org
+Cc: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
+	tduszyns@gmail.com, linux-kernel@vger.kernel.org,
+	linux-iio@vger.kernel.org
+Subject: [PATCH] iio: light: add support for ROHM BH1710/BH1715/BH1721/BH1750/BH1751 ambient light sensors
+Date: Tue, 21 Apr 2015 20:43:42 +0200
+Message-Id: <1429641822-2007-1-git-send-email-tduszyns@gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
+Add support for ROHM BH1710/BH1715/BH1721/BH1750/BH1751 ambient light
+sensors.
 
+Signed-off-by: Tomasz Duszynski <tduszyns@gmail.com>
+---
+ drivers/iio/light/Kconfig  |  10 ++
+ drivers/iio/light/Makefile |   1 +
+ drivers/iio/light/bh1750.c | 322 +++++++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 333 insertions(+)
+ create mode 100644 drivers/iio/light/bh1750.c
 
-On 21 April 2015 17:23:11 BST, Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com> wrote:
->Hi Jonathan,
->
->Please don't push this patchset until I test it. I will let you know
->once
->I am done.
-Sure. Doubt I will get any time before the weekend anyway!
->
->> Added support for Liteon 301 Ambient light sensor. Since
->> LTR-301 and LTR-501 are register compatible(and even have same
->> part id), LTR-501 driver has been extended to support both
->> devices. LTR-501 is similar to LTR-301 in ALS sensing, But the
->> only difference is, LTR-501 also supports proximity sensing.
->>
->> LTR-501 - ALS + Proximity combo
->> LTR-301 - ALS sensor.
->>
->> Signed-off-by: Kuppuswamy Sathyanarayanan
->> <sathyanarayanan.kuppuswamy@linux.intel.com>
->> Signed-off-by: Daniel Baluta <daniel.baluta@intel.com>
->> ---
->>  drivers/iio/light/Kconfig  |  2 +-
->>  drivers/iio/light/ltr501.c | 76
->> +++++++++++++++++++++++++++++++++++++++++++---
->>  2 files changed, 73 insertions(+), 5 deletions(-)
->>
->> diff --git a/drivers/iio/light/Kconfig b/drivers/iio/light/Kconfig
->> index 16a0ba1..a437bad 100644
->> --- a/drivers/iio/light/Kconfig
->> +++ b/drivers/iio/light/Kconfig
->> @@ -170,7 +170,7 @@ config LTR501
->>  	help
->>  	 If you say yes here you get support for the Lite-On LTR-501ALS-01
->>  	 ambient light and proximity sensor. This driver also supports
->LTR-559
->> -	 ALS/PS sensor.
->> +	 ALS/PS or LTR-301 ALS sensors.
->>
->>  	 This driver can also be built as a module.  If so, the module
->>           will be called ltr501.
->> diff --git a/drivers/iio/light/ltr501.c b/drivers/iio/light/ltr501.c
->> index 92da514..ca4bf47 100644
->> --- a/drivers/iio/light/ltr501.c
->> +++ b/drivers/iio/light/ltr501.c
->> @@ -93,6 +93,7 @@ struct ltr501_samp_table {
->>  enum {
->>  	ltr501 = 0,
->>  	ltr559,
->> +	ltr301,
->>  };
->>
->>  struct ltr501_gain {
->> @@ -139,6 +140,10 @@ struct ltr501_chip_info {
->>  	u8 als_mode_active;
->>  	u8 als_gain_mask;
->>  	u8 als_gain_shift;
->> +	struct iio_chan_spec const *channels;
->> +	const int no_channels;
->> +	const struct iio_info *info;
->> +	const struct iio_info *info_no_irq;
->>  };
->>
->>  struct ltr501_data {
->> @@ -570,6 +575,18 @@ static const struct iio_chan_spec
->ltr501_channels[] =
->> {
->>  	IIO_CHAN_SOFT_TIMESTAMP(3),
->>  };
->>
->> +static const struct iio_chan_spec ltr301_channels[] = {
->> +	LTR501_INTENSITY_CHANNEL(0, LTR501_ALS_DATA0, IIO_MOD_LIGHT_BOTH,
->0,
->> +				 ltr501_als_event_spec,
->> +				 ARRAY_SIZE(ltr501_als_event_spec)),
->> +	LTR501_INTENSITY_CHANNEL(1, LTR501_ALS_DATA1, IIO_MOD_LIGHT_IR,
->> +				 BIT(IIO_CHAN_INFO_SCALE) |
->> +				 BIT(IIO_CHAN_INFO_INT_TIME) |
->> +				 BIT(IIO_CHAN_INFO_SAMP_FREQ),
->> +				 NULL, 0),
->> +	IIO_CHAN_SOFT_TIMESTAMP(2),
->> +};
->> +
->>  static int ltr501_read_raw(struct iio_dev *indio_dev,
->>  			   struct iio_chan_spec const *chan,
->>  			   int *val, int *val2, long mask)
->> @@ -1040,10 +1057,21 @@ static struct attribute *ltr501_attributes[]
->= {
->>  	NULL
->>  };
->>
->> +static struct attribute *ltr301_attributes[] = {
->> +	&iio_dev_attr_in_intensity_scale_available.dev_attr.attr,
->> +	&iio_const_attr_integration_time_available.dev_attr.attr,
->> +	&iio_const_attr_sampling_frequency_available.dev_attr.attr,
->> +	NULL
->> +};
->> +
->>  static const struct attribute_group ltr501_attribute_group = {
->>  	.attrs = ltr501_attributes,
->>  };
->>
->> +static const struct attribute_group ltr301_attribute_group = {
->> +	.attrs = ltr301_attributes,
->> +};
->> +
->>  static const struct iio_info ltr501_info_no_irq = {
->>  	.read_raw = ltr501_read_raw,
->>  	.write_raw = ltr501_write_raw,
->> @@ -1062,6 +1090,24 @@ static const struct iio_info ltr501_info = {
->>  	.driver_module = THIS_MODULE,
->>  };
->>
->> +static const struct iio_info ltr301_info_no_irq = {
->> +	.read_raw = ltr501_read_raw,
->> +	.write_raw = ltr501_write_raw,
->> +	.attrs = &ltr301_attribute_group,
->> +	.driver_module = THIS_MODULE,
->> +};
->> +
->> +static const struct iio_info ltr301_info = {
->> +	.read_raw = ltr501_read_raw,
->> +	.write_raw = ltr501_write_raw,
->> +	.attrs = &ltr301_attribute_group,
->> +	.read_event_value	= &ltr501_read_event,
->> +	.write_event_value	= &ltr501_write_event,
->> +	.read_event_config	= &ltr501_read_event_config,
->> +	.write_event_config	= &ltr501_write_event_config,
->> +	.driver_module = THIS_MODULE,
->> +};
->> +
->>  static struct ltr501_chip_info ltr501_chip_info_tbl[] = {
->>  	[ltr501] = {
->>  		.partid = 0x08,
->> @@ -1072,6 +1118,10 @@ static struct ltr501_chip_info
->> ltr501_chip_info_tbl[] = {
->>  		.als_mode_active = BIT(0) | BIT(1),
->>  		.als_gain_mask = BIT(3),
->>  		.als_gain_shift = 3,
->> +		.info = &ltr501_info,
->> +		.info_no_irq = &ltr501_info_no_irq,
->> +		.channels = ltr501_channels,
->> +		.no_channels = ARRAY_SIZE(ltr501_channels),
->>  	},
->>  	[ltr559] = {
->>  		.partid = 0x09,
->> @@ -1082,6 +1132,22 @@ static struct ltr501_chip_info
->> ltr501_chip_info_tbl[] = {
->>  		.als_mode_active = BIT(1),
->>  		.als_gain_mask = BIT(2) | BIT(3) | BIT(4),
->>  		.als_gain_shift = 2,
->> +		.info = &ltr501_info,
->> +		.info_no_irq = &ltr501_info_no_irq,
->> +		.channels = ltr501_channels,
->> +		.no_channels = ARRAY_SIZE(ltr501_channels),
->> +	},
->> +	[ltr301] = {
->> +		.partid = 0x08,
->> +		.als_gain = ltr501_als_gain_tbl,
->> +		.als_gain_tbl_size = ARRAY_SIZE(ltr501_als_gain_tbl),
->> +		.als_mode_active = BIT(0) | BIT(1),
->> +		.als_gain_mask = BIT(3),
->> +		.als_gain_shift = 3,
->> +		.info = &ltr301_info,
->> +		.info_no_irq = &ltr301_info_no_irq,
->> +		.channels = ltr301_channels,
->> +		.no_channels = ARRAY_SIZE(ltr301_channels),
->>  	},
->>  };
->>
->> @@ -1338,8 +1404,9 @@ static int ltr501_probe(struct i2c_client
->*client,
->>  		return -ENODEV;
->>
->>  	indio_dev->dev.parent = &client->dev;
->> -	indio_dev->channels = ltr501_channels;
->> -	indio_dev->num_channels = ARRAY_SIZE(ltr501_channels);
->> +	indio_dev->info = data->chip_info->info;
->> +	indio_dev->channels = data->chip_info->channels;
->> +	indio_dev->num_channels = data->chip_info->no_channels;
->>  	indio_dev->name = name;
->>  	indio_dev->modes = INDIO_DIRECT_MODE;
->>
->> @@ -1348,7 +1415,6 @@ static int ltr501_probe(struct i2c_client
->*client,
->>  		return ret;
->>
->>  	if (client->irq > 0) {
->> -		indio_dev->info = &ltr501_info;
->>  		ret = devm_request_threaded_irq(&client->dev, client->irq,
->>  						NULL, ltr501_interrupt_handler,
->>  						IRQF_TRIGGER_FALLING |
->> @@ -1361,7 +1427,7 @@ static int ltr501_probe(struct i2c_client
->*client,
->>  			return ret;
->>  		}
->>  	} else {
->> -		indio_dev->info = &ltr501_info_no_irq;
->> +		indio_dev->info = data->chip_info->info_no_irq;
->>  	}
->>
->>  	ret = iio_triggered_buffer_setup(indio_dev, NULL,
->> @@ -1416,6 +1482,7 @@ static SIMPLE_DEV_PM_OPS(ltr501_pm_ops,
->> ltr501_suspend, ltr501_resume);
->>  static const struct acpi_device_id ltr_acpi_match[] = {
->>  	{"LTER0501", ltr501},
->>  	{"LTER0559", ltr559},
->> +	{"LTER0301", ltr301},
->>  	{ },
->>  };
->>  MODULE_DEVICE_TABLE(acpi, ltr_acpi_match);
->> @@ -1423,6 +1490,7 @@ MODULE_DEVICE_TABLE(acpi, ltr_acpi_match);
->>  static const struct i2c_device_id ltr501_id[] = {
->>  	{ "ltr501", ltr501},
->>  	{ "ltr559", ltr559},
->> +	{ "ltr301", ltr301},
->>  	{ }
->>  };
->>  MODULE_DEVICE_TABLE(i2c, ltr501_id);
->> --
->> 1.9.1
->>
->> --
->> To unsubscribe from this list: send the line "unsubscribe linux-iio"
->in
->> the body of a message to majordomo@vger.kernel.org
->> More majordomo info at  http://vger.kernel.org/majordomo-info.html
->>
-
+diff --git a/drivers/iio/light/Kconfig b/drivers/iio/light/Kconfig
+index 5a3237b..9fb79ca 100644
+--- a/drivers/iio/light/Kconfig
++++ b/drivers/iio/light/Kconfig
+@@ -37,6 +37,16 @@ config APDS9300
+ 	 To compile this driver as a module, choose M here: the
+ 	 module will be called apds9300.
+ 
++config BH1750
++	tristate "BH1750 ambient light sensor"
++	depends on I2C
++	help
++	 Say Y here to build support for the BH1710, BH1715, BH1721,
++	 BH1750, BH1751 ambient light sensors.
++
++	 To compile this driver as a module, choose M here: the module will
++	 be called bh1750.
++
+ config CM32181
+ 	depends on I2C
+ 	tristate "CM32181 driver"
+diff --git a/drivers/iio/light/Makefile b/drivers/iio/light/Makefile
+index 74656c1..1a13184 100644
+--- a/drivers/iio/light/Makefile
++++ b/drivers/iio/light/Makefile
+@@ -6,6 +6,7 @@
+ obj-$(CONFIG_ADJD_S311)		+= adjd_s311.o
+ obj-$(CONFIG_AL3320A)		+= al3320a.o
+ obj-$(CONFIG_APDS9300)		+= apds9300.o
++obj-$(CONFIG_BH1750)		+= bh1750.o
+ obj-$(CONFIG_CM32181)		+= cm32181.o
+ obj-$(CONFIG_CM36651)		+= cm36651.o
+ obj-$(CONFIG_GP2AP020A00F)	+= gp2ap020a00f.o
+diff --git a/drivers/iio/light/bh1750.c b/drivers/iio/light/bh1750.c
+new file mode 100644
+index 0000000..83b5413
+--- /dev/null
++++ b/drivers/iio/light/bh1750.c
+@@ -0,0 +1,322 @@
++/*
++ * ROHM BH1710/BH1715/BH1721/BH1750/BH1751 ambient light sensor driver
++ *
++ * Copyright (c) Tomasz Duszynski <tduszyns@gmail.com>
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License version 2 as
++ * published by the Free Software Foundation.
++ *
++ * Data sheets:
++ *  http://rohmfs.rohm.com/en/products/databook/datasheet/ic/sensor/light/bh1710fvc-e.pdf
++ *  http://rohmfs.rohm.com/en/products/databook/datasheet/ic/sensor/light/bh1715fvc-e.pdf
++ *  http://rohmfs.rohm.com/en/products/databook/datasheet/ic/sensor/light/bh1721fvc-e.pdf
++ *  http://rohmfs.rohm.com/en/products/databook/datasheet/ic/sensor/light/bh1750fvi-e.pdf
++ *  http://rohmfs.rohm.com/en/products/databook/datasheet/ic/sensor/light/bh1751fvi-e.pdf
++ *
++ * 7-bit I2C slave addresses:
++ *  0x23 (ADDR pin low)
++ *  0x5C (ADDR pin high)
++ *
++ */
++
++#include <linux/delay.h>
++#include <linux/i2c.h>
++#include <linux/iio/iio.h>
++#include <linux/iio/sysfs.h>
++#include <linux/module.h>
++
++#define BH1750_POWER_DOWN		0x00
++#define BH1750_H_RES_MODE		0x10 /* auto-mode for BH1721 */
++#define BH1750_CHANGE_INT_TIME_H_BIT	0x40
++#define BH1750_CHANGE_INT_TIME_L_BIT	0x60
++
++enum {
++	BH1710,
++	BH1715,
++	BH1721,
++	BH1750,
++	BH1751
++};
++
++struct bh1750_chip_info {
++	int id;
++	int mtreg_min;
++	int mtreg_max;
++	int mtreg_default;
++	int mtreg_to_usec;
++	int mtreg_to_scale;
++};
++
++struct bh1750_data {
++	struct i2c_client *client;
++	struct mutex lock;
++	const struct bh1750_chip_info *chip_info;
++	u16 mtreg;
++};
++
++static const struct bh1750_chip_info chip_info_tbl[] = {
++	[BH1710] = { BH1710, 140, 1022, 300, 400,  4000 },
++	[BH1715] = { BH1715, 31,  254,  69,  1740, 17391 },
++	[BH1721] = { BH1721, 140, 1020, 300, 400,  4000 },
++	[BH1750] = { BH1750, 31,  254,  69,  1740, 17391 },
++	[BH1751] = { BH1751, 31,  254,  69,  1740, 17391 }
++};
++
++static int bh1750_change_int_time(struct bh1750_data *data, int usec)
++{
++	int ret, val;
++	u8 low = 0, high = 0;
++	const struct bh1750_chip_info *chip_info = data->chip_info;
++
++	if ((usec % chip_info->mtreg_to_usec) != 0)
++		return -EINVAL;
++
++	val = usec / chip_info->mtreg_to_usec;
++	if (val < chip_info->mtreg_min || val > chip_info->mtreg_max)
++		return -EINVAL;
++
++	switch (chip_info->id) {
++	case BH1710:
++		low = val & 0x001F;
++		high = (val & 0x03E0) >> 5;
++		break;
++	case BH1721:
++		low = val & 0x0010;
++		high = (val & 0x03E0) >> 5;
++	case BH1715:
++	case BH1750:
++	case BH1751:
++		low = val & 0x001F;
++		high = (val & 0x00E0) >> 5;
++		break;
++	}
++
++	ret = i2c_smbus_write_byte(data->client, BH1750_POWER_DOWN);
++	if (ret < 0)
++		return ret;
++
++	ret = i2c_smbus_write_byte(data->client,
++				   BH1750_CHANGE_INT_TIME_H_BIT | high);
++	if (ret < 0)
++		return ret;
++
++	ret = i2c_smbus_write_byte(data->client,
++				   BH1750_CHANGE_INT_TIME_L_BIT | low);
++	if (ret < 0)
++		return ret;
++
++	data->mtreg = val;
++
++	return i2c_smbus_write_byte(data->client, BH1750_H_RES_MODE);
++}
++
++static int bh1750_read_raw(struct iio_dev *indio_dev,
++			   struct iio_chan_spec const *chan,
++			   int *val, int *val2, long mask)
++{
++	u16 result;
++	int ret, tmp;
++	unsigned long delay;
++	struct bh1750_data *data = iio_priv(indio_dev);
++	const struct bh1750_chip_info *chip_info = data->chip_info;
++
++	switch (mask) {
++	case IIO_CHAN_INFO_RAW:
++		switch (chan->type) {
++		case IIO_INTENSITY:
++			delay = chip_info->mtreg_to_usec * data->mtreg;
++			mutex_lock(&data->lock);
++			usleep_range(delay, delay + 20000);
++			ret = i2c_master_recv(data->client,
++					      (char *)&result, 2);
++			mutex_unlock(&data->lock);
++			if (ret < 0)
++				return ret;
++
++			*val = swab16(result);
++			return IIO_VAL_INT;
++		default:
++			return -EINVAL;
++		}
++	case IIO_CHAN_INFO_SCALE:
++		tmp = chip_info->mtreg_to_scale * data->mtreg;
++		*val = tmp / 1000000;
++		*val2 = tmp % 1000000;
++		return IIO_VAL_INT_PLUS_MICRO;
++	case IIO_CHAN_INFO_INT_TIME:
++		*val = 0;
++		*val2 = chip_info->mtreg_to_usec * data->mtreg;
++		return IIO_VAL_INT_PLUS_MICRO;
++	default:
++		return -EINVAL;
++	}
++}
++
++static int bh1750_write_raw(struct iio_dev *indio_dev,
++			    struct iio_chan_spec const *chan,
++			    int val, int val2, long mask)
++{
++	int ret;
++	struct bh1750_data *data = iio_priv(indio_dev);
++
++	switch (mask) {
++	case IIO_CHAN_INFO_INT_TIME:
++		if (val != 0)
++			return -EINVAL;
++
++		mutex_lock(&data->lock);
++		ret = bh1750_change_int_time(data, val2);
++		mutex_unlock(&data->lock);
++		return ret;
++	default:
++		return -EINVAL;
++	}
++}
++
++static ssize_t bh1750_show_int_time_available(struct device *dev,
++		struct device_attribute *attr, char *buf)
++{
++	int i, inc;
++	size_t len = 0;
++	struct bh1750_data *data = iio_priv(dev_to_iio_dev(dev));
++	const struct bh1750_chip_info *chip_info = data->chip_info;
++
++	switch (chip_info->id) {
++	case BH1710:
++	case BH1721:
++		/* All values won't fit into one page, so display every
++		 * second one. By doing so step size is increased
++		 * from 0.4ms to 0.8ms.*/
++		inc = 2;
++		break;
++	default:
++		inc = 1;
++		break;
++	}
++
++	for (i = chip_info->mtreg_min; i <= chip_info->mtreg_max; i += inc)
++		len += scnprintf(buf + len, PAGE_SIZE - len, "0.%06d ",
++				 i * chip_info->mtreg_to_usec);
++
++	buf[len - 1] = '\n';
++
++	return len;
++}
++
++static IIO_DEV_ATTR_INT_TIME_AVAIL(bh1750_show_int_time_available);
++
++static struct attribute *bh1750_attributes[] = {
++	&iio_dev_attr_integration_time_available.dev_attr.attr,
++	NULL,
++};
++
++static struct attribute_group bh1750_attribute_group = {
++	.attrs = bh1750_attributes,
++};
++
++static const struct iio_info bh1750_info = {
++	.driver_module = THIS_MODULE,
++	.attrs = &bh1750_attribute_group,
++	.read_raw = bh1750_read_raw,
++	.write_raw = bh1750_write_raw,
++};
++
++static const struct iio_chan_spec bh1750_channels[] = {
++	{
++		.type = IIO_INTENSITY,
++		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
++				      BIT(IIO_CHAN_INFO_SCALE) |
++				      BIT(IIO_CHAN_INFO_INT_TIME)
++	}
++};
++
++static int bh1750_probe(struct i2c_client *client,
++			const struct i2c_device_id *id)
++{
++	int ret, usec;
++	struct bh1750_data *data;
++	struct iio_dev *indio_dev;
++
++	if (!i2c_check_functionality(client->adapter, I2C_FUNC_I2C |
++				I2C_FUNC_SMBUS_WRITE_BYTE))
++		return -ENODEV;
++
++	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
++	if (!indio_dev)
++		return -ENOMEM;
++
++	data = iio_priv(indio_dev);
++	i2c_set_clientdata(client, indio_dev);
++	data->client = client;
++	data->chip_info = &chip_info_tbl[id->driver_data];
++
++	usec = data->chip_info->mtreg_to_usec * data->chip_info->mtreg_default;
++	ret = bh1750_change_int_time(data, usec);
++	if (ret < 0)
++		return ret;
++
++	mutex_init(&data->lock);
++	indio_dev->dev.parent = &client->dev;
++	indio_dev->info = &bh1750_info;
++	indio_dev->name = id->name;
++	indio_dev->channels = bh1750_channels;
++	indio_dev->num_channels = ARRAY_SIZE(bh1750_channels);
++	indio_dev->modes = INDIO_DIRECT_MODE;
++
++	return devm_iio_device_register(&client->dev, indio_dev);
++}
++
++#ifdef CONFIG_PM_SLEEP
++static int bh1750_suspend(struct device *dev)
++{
++	int ret;
++	struct bh1750_data *data =
++		iio_priv(i2c_get_clientdata(to_i2c_client(dev)));
++
++	mutex_lock(&data->lock);
++	ret = i2c_smbus_write_byte(data->client, BH1750_POWER_DOWN);
++	mutex_unlock(&data->lock);
++
++	return ret;
++}
++
++static int bh1750_resume(struct device *dev)
++{
++	struct bh1750_data *data =
++		iio_priv(i2c_get_clientdata(to_i2c_client(dev)));
++
++	return i2c_smbus_write_byte(data->client, BH1750_H_RES_MODE);
++}
++
++static SIMPLE_DEV_PM_OPS(bh1750_pm_ops, bh1750_suspend, bh1750_resume);
++#define BH1750_PM_OPS (&bh1750_pm_ops)
++#else
++#define BH1750_PM_OPS NULL
++#endif
++
++static const struct i2c_device_id bh1750_id[] = {
++	{ "bh1710", BH1710 },
++	{ "bh1715", BH1715 },
++	{ "bh1721", BH1721 },
++	{ "bh1750", BH1750 },
++	{ "bh1751", BH1751 },
++	{ }
++};
++MODULE_DEVICE_TABLE(i2c, bh1750_id);
++
++static struct i2c_driver bh1750_driver = {
++	.driver = {
++		.name = "bh1750",
++		.owner = THIS_MODULE,
++		.pm = BH1750_PM_OPS,
++	},
++	.probe = bh1750_probe,
++	.id_table = bh1750_id,
++
++};
++module_i2c_driver(bh1750_driver);
++
++MODULE_AUTHOR("Tomasz Duszynski <tduszyns@gmail.com>");
++MODULE_DESCRIPTION("ROHM BH1710/BH1715/BH1721/BH1750/BH1751 als driver");
++MODULE_LICENSE("GPL v2");
 -- 
-Sent from my Android device with K-9 Mail. Please excuse my brevity.
+2.3.5
+
