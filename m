@@ -1,409 +1,68 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
 Received: from mga02.intel.com ([134.134.136.20]:13925 "EHLO mga02.intel.com"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S932214AbbDUQJN (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Tue, 21 Apr 2015 12:09:13 -0400
+	id S1755527AbbDUQJJ (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Tue, 21 Apr 2015 12:09:09 -0400
 From: Daniel Baluta <daniel.baluta@intel.com>
 To: sathyanarayanan.kuppuswamy@linux.intel.com, jic23@kernel.org
 Cc: pmeerw@pmeerw.net, linux-iio@vger.kernel.org,
 	srinivas.pandruvada@linux.intel.com, daniel.baluta@intel.com
-Subject: [PATCH v8 1/2] iio: ltr501: Add support for ltr559 chip
-Date: Tue, 21 Apr 2015 19:10:59 +0300
-Message-Id: <1429632660-8716-2-git-send-email-daniel.baluta@intel.com>
-In-Reply-To: <1429632660-8716-1-git-send-email-daniel.baluta@intel.com>
-References: <1429632660-8716-1-git-send-email-daniel.baluta@intel.com>
+Subject: [PATCH v8 0/2] Add support for LTR-301 and LTR-559 sensors
+Date: Tue, 21 Apr 2015 19:10:58 +0300
+Message-Id: <1429632660-8716-1-git-send-email-daniel.baluta@intel.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-This device is register compatible with LTR501, with a minor difference for
-ALS control register as showed below:
+This patchset adds support for LiteOn LTR301 ambient light sensor
+and LTR559 ambient light and proximity sensor.
 
-ALS Control register for LTR501:
+I will just leave this here if Sathya needs to push support for LTR-301.
+Minimal tested. I will be back in few days with more testing.
 
-    7      6      5      4      3      2      1      0
-+------+------+------+------+------+------+------+------+
-|                           |      |      |             |
-|        Reserved           | Gain |  SW  |    ALS Mode |
-|                           |      | Reset|             |
-+------+------+------+------+------+------+------+------+
+v8:
 
-ALS Control register for LTR559:
+1. Rebased on the latest linux-iio testing branch.
 
-    7      6      5      4      3      2      1      0
-+------+------+------+------+------+------+------+------+
-|                    |                    |      |      |
-|     Reserved       |        Gain        |  SW  | ALS  |
-|                    |                    | Reset| Mode |
-+------+------+------+------+------+------+------+------+
+v7:
+1. Rebase LTR-301 on top of LTR-559 and merged the patches into a single patchset
+2. Moved ltr501_chip_info_tbl below ltr501_info in patch 1 in order
+to make patch 2 changes look natural. :)
+3. Moved "else" branch of id check from patch 2 to patch 1. Now it is no
+longer possible to have a NULL name after this check. If id is not NULL
+than id->name is one of ltr501_id already defined strings.
 
-We handle this difference by introducing ltr501_chip_info.
+v6:
+1. Changed the title in commit log
 
-Datasheet for LTR559 is at:
-http://optoelectronics.liteon.com/upload/download/DS86-2013-0003/S_110_LTR-559ALS-01_DS_V1.pdf
+v5:
+1. Rebased this patch on top of Daniel's LTR559 patchset
+   (http://marc.info/?l=linux-kernel&m=142779827617036&w=2)
+2. Added info and channel members to chip_info struture.
 
-Signed-off-by: Daniel Baluta <daniel.baluta@intel.com>
----
+v4:
+1. Addressed minor comments from Peter Meerwald
+2. Changed invalid chip id errno from ENOSYS to ENODEV
+3. Fixed channel id index number
+4. Removed unused variable.
+
+v3:
+1. Sent v2 before by mistake. So sending the final version of v2 as v3.
+
+v2:
+1. Handled device id NULL case in probe
+2. Changed pr_warn to dev_warn
+
+v1:
+Extended LTR501 driver to support both LTR301 and LTR501 device.
+
+Daniel Baluta (2):
+  iio: ltr501: Add support for ltr559 chip
+  iio: ltr501: Add support for ltr301 chip
+
  drivers/iio/light/Kconfig  |   3 +-
- drivers/iio/light/ltr501.c | 218 ++++++++++++++++++++++++++++++++++++++-------
- 2 files changed, 186 insertions(+), 35 deletions(-)
+ drivers/iio/light/ltr501.c | 290 +++++++++++++++++++++++++++++++++++++++------
+ 2 files changed, 256 insertions(+), 37 deletions(-)
 
-diff --git a/drivers/iio/light/Kconfig b/drivers/iio/light/Kconfig
-index 01a1a16..16a0ba1 100644
---- a/drivers/iio/light/Kconfig
-+++ b/drivers/iio/light/Kconfig
-@@ -169,7 +169,8 @@ config LTR501
- 	select IIO_TRIGGERED_BUFFER
- 	help
- 	 If you say yes here you get support for the Lite-On LTR-501ALS-01
--	 ambient light and proximity sensor.
-+	 ambient light and proximity sensor. This driver also supports LTR-559
-+	 ALS/PS sensor.
- 
- 	 This driver can also be built as a module.  If so, the module
-          will be called ltr501.
-diff --git a/drivers/iio/light/ltr501.c b/drivers/iio/light/ltr501.c
-index 0162e86..92da514 100644
---- a/drivers/iio/light/ltr501.c
-+++ b/drivers/iio/light/ltr501.c
-@@ -88,9 +88,63 @@ struct ltr501_samp_table {
- 	int time_val; /* repetition rate in micro seconds */
- };
- 
-+#define LTR501_RESERVED_GAIN -1
-+
-+enum {
-+	ltr501 = 0,
-+	ltr559,
-+};
-+
-+struct ltr501_gain {
-+	int scale;
-+	int uscale;
-+};
-+
-+static struct ltr501_gain ltr501_als_gain_tbl[] = {
-+	{1, 0},
-+	{0, 5000},
-+};
-+
-+static struct ltr501_gain ltr559_als_gain_tbl[] = {
-+	{1, 0},
-+	{0, 500000},
-+	{0, 250000},
-+	{0, 125000},
-+	{LTR501_RESERVED_GAIN, LTR501_RESERVED_GAIN},
-+	{LTR501_RESERVED_GAIN, LTR501_RESERVED_GAIN},
-+	{0, 20000},
-+	{0, 10000},
-+};
-+
-+static struct ltr501_gain ltr501_ps_gain_tbl[] = {
-+	{1, 0},
-+	{0, 250000},
-+	{0, 125000},
-+	{0, 62500},
-+};
-+
-+static struct ltr501_gain ltr559_ps_gain_tbl[] = {
-+	{0, 62500}, /* x16 gain */
-+	{0, 31250}, /* x32 gain */
-+	{0, 15625}, /* bits X1 are for x64 gain */
-+	{0, 15624},
-+};
-+
-+struct ltr501_chip_info {
-+	u8 partid;
-+	struct ltr501_gain *als_gain;
-+	int als_gain_tbl_size;
-+	struct ltr501_gain *ps_gain;
-+	int ps_gain_tbl_size;
-+	u8 als_mode_active;
-+	u8 als_gain_mask;
-+	u8 als_gain_shift;
-+};
-+
- struct ltr501_data {
- 	struct i2c_client *client;
- 	struct mutex lock_als, lock_ps;
-+	struct ltr501_chip_info *chip_info;
- 	u8 als_contr, ps_contr;
- 	int als_period, ps_period; /* period in micro seconds */
- 	struct regmap *regmap;
-@@ -516,10 +570,6 @@ static const struct iio_chan_spec ltr501_channels[] = {
- 	IIO_CHAN_SOFT_TIMESTAMP(3),
- };
- 
--static const int ltr501_ps_gain[4][2] = {
--	{1, 0}, {0, 250000}, {0, 125000}, {0, 62500}
--};
--
- static int ltr501_read_raw(struct iio_dev *indio_dev,
- 			   struct iio_chan_spec const *chan,
- 			   int *val, int *val2, long mask)
-@@ -557,19 +607,16 @@ static int ltr501_read_raw(struct iio_dev *indio_dev,
- 	case IIO_CHAN_INFO_SCALE:
- 		switch (chan->type) {
- 		case IIO_INTENSITY:
--			if (data->als_contr & LTR501_CONTR_ALS_GAIN_MASK) {
--				*val = 0;
--				*val2 = 5000;
--				return IIO_VAL_INT_PLUS_MICRO;
--			}
--			*val = 1;
--			*val2 = 0;
--			return IIO_VAL_INT;
-+			i = (data->als_contr & data->chip_info->als_gain_mask)
-+			     >> data->chip_info->als_gain_shift;
-+			*val = data->chip_info->als_gain[i].scale;
-+			*val2 = data->chip_info->als_gain[i].uscale;
-+			return IIO_VAL_INT_PLUS_MICRO;
- 		case IIO_PROXIMITY:
- 			i = (data->ps_contr & LTR501_CONTR_PS_GAIN_MASK) >>
- 				LTR501_CONTR_PS_GAIN_SHIFT;
--			*val = ltr501_ps_gain[i][0];
--			*val2 = ltr501_ps_gain[i][1];
-+			*val = data->chip_info->ps_gain[i].scale;
-+			*val2 = data->chip_info->ps_gain[i].uscale;
- 			return IIO_VAL_INT_PLUS_MICRO;
- 		default:
- 			return -EINVAL;
-@@ -594,12 +641,13 @@ static int ltr501_read_raw(struct iio_dev *indio_dev,
- 	return -EINVAL;
- }
- 
--static int ltr501_get_ps_gain_index(int val, int val2)
-+static int ltr501_get_gain_index(struct ltr501_gain *gain, int size,
-+				 int val, int val2)
- {
- 	int i;
- 
--	for (i = 0; i < ARRAY_SIZE(ltr501_ps_gain); i++)
--		if (val == ltr501_ps_gain[i][0] && val2 == ltr501_ps_gain[i][1])
-+	for (i = 0; i < size; i++)
-+		if (val == gain[i].scale && val2 == gain[i].uscale)
- 			return i;
- 
- 	return -1;
-@@ -611,6 +659,7 @@ static int ltr501_write_raw(struct iio_dev *indio_dev,
- {
- 	struct ltr501_data *data = iio_priv(indio_dev);
- 	int i, ret, freq_val, freq_val2;
-+	struct ltr501_chip_info *info = data->chip_info;
- 
- 	if (iio_buffer_enabled(indio_dev))
- 		return -EBUSY;
-@@ -619,17 +668,21 @@ static int ltr501_write_raw(struct iio_dev *indio_dev,
- 	case IIO_CHAN_INFO_SCALE:
- 		switch (chan->type) {
- 		case IIO_INTENSITY:
--			if (val == 0 && val2 == 5000)
--				data->als_contr |= LTR501_CONTR_ALS_GAIN_MASK;
--			else if (val == 1 && val2 == 0)
--				data->als_contr &= ~LTR501_CONTR_ALS_GAIN_MASK;
--			else
-+			i = ltr501_get_gain_index(info->als_gain,
-+						  info->als_gain_tbl_size,
-+						  val, val2);
-+			if (i < 0)
- 				return -EINVAL;
- 
-+			data->als_contr &= ~info->als_gain_mask;
-+			data->als_contr |= i << info->als_gain_shift;
-+
- 			return regmap_write(data->regmap, LTR501_ALS_CONTR,
- 					    data->als_contr);
- 		case IIO_PROXIMITY:
--			i = ltr501_get_ps_gain_index(val, val2);
-+			i = ltr501_get_gain_index(info->ps_gain,
-+						  info->ps_gain_tbl_size,
-+						  val, val2);
- 			if (i < 0)
- 				return -EINVAL;
- 			data->ps_contr &= ~LTR501_CONTR_PS_GAIN_MASK;
-@@ -927,14 +980,61 @@ static int ltr501_write_event_config(struct iio_dev *indio_dev,
- 	return -EINVAL;
- }
- 
--static IIO_CONST_ATTR(in_proximity_scale_available, "1 0.25 0.125 0.0625");
--static IIO_CONST_ATTR(in_intensity_scale_available, "1 0.005");
-+static ssize_t ltr501_show_proximity_scale_avail(struct device *dev,
-+						 struct device_attribute *attr,
-+						 char *buf)
-+{
-+	struct ltr501_data *data = iio_priv(dev_to_iio_dev(dev));
-+	struct ltr501_chip_info *info = data->chip_info;
-+	ssize_t len = 0;
-+	int i;
-+
-+	for (i = 0; i < info->ps_gain_tbl_size; i++) {
-+		if (info->ps_gain[i].scale == LTR501_RESERVED_GAIN)
-+			continue;
-+		len += scnprintf(buf + len, PAGE_SIZE - len, "%d.%06d ",
-+				 info->ps_gain[i].scale,
-+				 info->ps_gain[i].uscale);
-+	}
-+
-+	buf[len - 1] = '\n';
-+
-+	return len;
-+}
-+
-+static ssize_t ltr501_show_intensity_scale_avail(struct device *dev,
-+						 struct device_attribute *attr,
-+						 char *buf)
-+{
-+	struct ltr501_data *data = iio_priv(dev_to_iio_dev(dev));
-+	struct ltr501_chip_info *info = data->chip_info;
-+	ssize_t len = 0;
-+	int i;
-+
-+	for (i = 0; i < info->als_gain_tbl_size; i++) {
-+		if (info->als_gain[i].scale == LTR501_RESERVED_GAIN)
-+			continue;
-+		len += scnprintf(buf + len, PAGE_SIZE - len, "%d.%06d ",
-+				 info->als_gain[i].scale,
-+				 info->als_gain[i].uscale);
-+	}
-+
-+	buf[len - 1] = '\n';
-+
-+	return len;
-+}
-+
- static IIO_CONST_ATTR_INT_TIME_AVAIL("0.05 0.1 0.2 0.4");
- static IIO_CONST_ATTR_SAMP_FREQ_AVAIL("20 10 5 2 1 0.5");
- 
-+static IIO_DEVICE_ATTR(in_proximity_scale_available, S_IRUGO,
-+		       ltr501_show_proximity_scale_avail, NULL, 0);
-+static IIO_DEVICE_ATTR(in_intensity_scale_available, S_IRUGO,
-+		       ltr501_show_intensity_scale_avail, NULL, 0);
-+
- static struct attribute *ltr501_attributes[] = {
--	&iio_const_attr_in_proximity_scale_available.dev_attr.attr,
--	&iio_const_attr_in_intensity_scale_available.dev_attr.attr,
-+	&iio_dev_attr_in_proximity_scale_available.dev_attr.attr,
-+	&iio_dev_attr_in_intensity_scale_available.dev_attr.attr,
- 	&iio_const_attr_integration_time_available.dev_attr.attr,
- 	&iio_const_attr_sampling_frequency_available.dev_attr.attr,
- 	NULL
-@@ -962,6 +1062,29 @@ static const struct iio_info ltr501_info = {
- 	.driver_module = THIS_MODULE,
- };
- 
-+static struct ltr501_chip_info ltr501_chip_info_tbl[] = {
-+	[ltr501] = {
-+		.partid = 0x08,
-+		.als_gain = ltr501_als_gain_tbl,
-+		.als_gain_tbl_size = ARRAY_SIZE(ltr501_als_gain_tbl),
-+		.ps_gain = ltr501_ps_gain_tbl,
-+		.ps_gain_tbl_size = ARRAY_SIZE(ltr501_ps_gain_tbl),
-+		.als_mode_active = BIT(0) | BIT(1),
-+		.als_gain_mask = BIT(3),
-+		.als_gain_shift = 3,
-+	},
-+	[ltr559] = {
-+		.partid = 0x09,
-+		.als_gain = ltr559_als_gain_tbl,
-+		.als_gain_tbl_size = ARRAY_SIZE(ltr559_als_gain_tbl),
-+		.ps_gain = ltr559_ps_gain_tbl,
-+		.ps_gain_tbl_size = ARRAY_SIZE(ltr559_ps_gain_tbl),
-+		.als_mode_active = BIT(1),
-+		.als_gain_mask = BIT(2) | BIT(3) | BIT(4),
-+		.als_gain_shift = 2,
-+	},
-+};
-+
- static int ltr501_write_contr(struct ltr501_data *data, u8 als_val, u8 ps_val)
- {
- 	int ret;
-@@ -1062,7 +1185,7 @@ static int ltr501_init(struct ltr501_data *data)
- 	if (ret < 0)
- 		return ret;
- 
--	data->als_contr = status | LTR501_CONTR_ACTIVE;
-+	data->als_contr = ret | data->chip_info->als_mode_active;
- 
- 	ret = regmap_read(data->regmap, LTR501_PS_CONTR, &status);
- 	if (ret < 0)
-@@ -1105,17 +1228,30 @@ static struct regmap_config ltr501_regmap_config = {
- 
- static int ltr501_powerdown(struct ltr501_data *data)
- {
--	return ltr501_write_contr(data, data->als_contr & ~LTR501_CONTR_ACTIVE,
-+	return ltr501_write_contr(data, data->als_contr &
-+				  ~data->chip_info->als_mode_active,
- 				  data->ps_contr & ~LTR501_CONTR_ACTIVE);
- }
- 
-+static const char *ltr501_match_acpi_device(struct device *dev, int *chip_idx)
-+{
-+	const struct acpi_device_id *id;
-+
-+	id = acpi_match_device(dev->driver->acpi_match_table, dev);
-+	if (!id)
-+		return NULL;
-+	*chip_idx = id->driver_data;
-+	return dev_name(dev);
-+}
-+
- static int ltr501_probe(struct i2c_client *client,
- 			const struct i2c_device_id *id)
- {
- 	struct ltr501_data *data;
- 	struct iio_dev *indio_dev;
- 	struct regmap *regmap;
--	int ret, partid;
-+	int ret, partid, chip_idx = 0;
-+	const char *name = NULL;
- 
- 	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
- 	if (!indio_dev)
-@@ -1186,13 +1322,25 @@ static int ltr501_probe(struct i2c_client *client,
- 	ret = regmap_read(data->regmap, LTR501_PART_ID, &partid);
- 	if (ret < 0)
- 		return ret;
--	if ((partid >> 4) != 0x8)
-+
-+	if (id) {
-+		name = id->name;
-+		chip_idx = id->driver_data;
-+	} else  if (ACPI_HANDLE(&client->dev)) {
-+		name = ltr501_match_acpi_device(&client->dev, &chip_idx);
-+	} else {
-+		return -ENODEV;
-+	}
-+
-+	data->chip_info = &ltr501_chip_info_tbl[chip_idx];
-+
-+	if ((partid >> 4) != data->chip_info->partid)
- 		return -ENODEV;
- 
- 	indio_dev->dev.parent = &client->dev;
- 	indio_dev->channels = ltr501_channels;
- 	indio_dev->num_channels = ARRAY_SIZE(ltr501_channels);
--	indio_dev->name = LTR501_DRV_NAME;
-+	indio_dev->name = name;
- 	indio_dev->modes = INDIO_DIRECT_MODE;
- 
- 	ret = ltr501_init(data);
-@@ -1266,13 +1414,15 @@ static int ltr501_resume(struct device *dev)
- static SIMPLE_DEV_PM_OPS(ltr501_pm_ops, ltr501_suspend, ltr501_resume);
- 
- static const struct acpi_device_id ltr_acpi_match[] = {
--	{"LTER0501", 0},
-+	{"LTER0501", ltr501},
-+	{"LTER0559", ltr559},
- 	{ },
- };
- MODULE_DEVICE_TABLE(acpi, ltr_acpi_match);
- 
- static const struct i2c_device_id ltr501_id[] = {
--	{ "ltr501", 0 },
-+	{ "ltr501", ltr501},
-+	{ "ltr559", ltr559},
- 	{ }
- };
- MODULE_DEVICE_TABLE(i2c, ltr501_id);
 -- 
 1.9.1
 
