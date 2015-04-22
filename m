@@ -1,10 +1,10 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:37904 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:37942 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1757905AbbDVVAt (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 22 Apr 2015 17:00:49 -0400
-Message-ID: <55380BFD.4060401@kernel.org>
-Date: Wed, 22 Apr 2015 22:00:45 +0100
+	with ESMTP id S1754169AbbDVVHB (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 22 Apr 2015 17:07:01 -0400
+Message-ID: <55380D71.3040205@kernel.org>
+Date: Wed, 22 Apr 2015 22:06:57 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
 To: "Tirdea, Irina" <irina.tirdea@intel.com>,
@@ -18,120 +18,1222 @@ CC: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
 	Pawel Moll <pawel.moll@arm.com>,
 	Mark Rutland <mark.rutland@arm.com>,
 	Ian Campbell <ijc+devicetree@hellion.org.uk>,
-	Kumar Gala <galak@codeaurora.org>
-Subject: Re: [PATCH 1/3] iio: core: Introduce IIO_CHAN_INFO_CALIBREPETITIONS
-References: <1429267830-13681-1-git-send-email-irina.tirdea@intel.com> <1429267830-13681-2-git-send-email-irina.tirdea@intel.com> <55328A92.9020807@kernel.org> <1F3AC3675D538145B1661F571FE1805F19A5B355@irsmsx105.ger.corp.intel.com>
-In-Reply-To: <1F3AC3675D538145B1661F571FE1805F19A5B355@irsmsx105.ger.corp.intel.com>
+	Kumar Gala <galak@codeaurora.org>,
+	Mark Brown <broonie@kernel.org>
+Subject: Re: [PATCH 2/3] iio: magn: Add support for BMC150 magnetometer
+References: <1429267830-13681-1-git-send-email-irina.tirdea@intel.com> <1429267830-13681-3-git-send-email-irina.tirdea@intel.com> <55329D45.2080001@kernel.org> <1F3AC3675D538145B1661F571FE1805F19A5B393@irsmsx105.ger.corp.intel.com>
+In-Reply-To: <1F3AC3675D538145B1661F571FE1805F19A5B393@irsmsx105.ger.corp.intel.com>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 22/04/15 12:33, Tirdea, Irina wrote:
+On 22/04/15 13:45, Tirdea, Irina wrote:
 > 
 > 
 >> -----Original Message-----
 >> From: Jonathan Cameron [mailto:jic23@kernel.org]
->> Sent: 18 April, 2015 19:47
+>> Sent: 18 April, 2015 21:07
 >> To: Tirdea, Irina; linux-iio@vger.kernel.org; devicetree@vger.kernel.org
 >> Cc: linux-kernel@vger.kernel.org; Hartmut Knaack; Lars-Peter Clausen; Peter Meerwald; Rob Herring; Pawel Moll; Mark Rutland; Ian
 >> Campbell; Kumar Gala
->> Subject: Re: [PATCH 1/3] iio: core: Introduce IIO_CHAN_INFO_CALIBREPETITIONS
+>> Subject: Re: [PATCH 2/3] iio: magn: Add support for BMC150 magnetometer
 >>
 >> On 17/04/15 11:50, Irina Tirdea wrote:
->>> Some magnetometers can perform a number of repetitions in HW
->>> for each measurement to increase accuracy. One example is
->>> Bosch BMC150:
+>>> Add support for the Bosh BMC150 Magnetometer.
+>>> The specification can be downloaded from:
 >>> http://ae-bst.resource.bosch.com/media/products/dokumente/bmc150/BST-BMC150-DS000-04.pdf.
+>>> The chip contains both an accelerometer and a magnetometer.
+>>> This patch adds support only for the magnetometer part.
 >>>
->>> Introduce an interface to set the number of repetitions
->>> for these devices.
+>>> The temperature compensation formulas are based on bmm050_api.c
+>>> authored by contact@bosch.sensortec.com.
 >>>
 >>> Signed-off-by: Irina Tirdea <irina.tirdea@intel.com>
+>> Generally looks good, but a few odd bits and pieces...
+> 
+> Thanks for the review, Jonathan!
+> 
+>> Quite a few places you use regmap_update_bits to write with a mask of 0xFF
+>> which seems odd..
+>>
+> The idea there is to not do unnecessary i2c_reads/writes if the value does not change:
+> regmap_update_bits will check the cached value and only do the i2c transfer if the value 
+> did not change.
+Odd that regmap_write doesn't check the cache as well, or that we don't have a cleaner
+means of doing this but fair enough. Cc'd Mark Brown in case he has any views on this.
+>  
+>> Various other bits inline.
 >>> ---
->>>  Documentation/ABI/testing/sysfs-bus-iio | 10 ++++++++++
->>>  drivers/iio/industrialio-core.c         |  1 +
->>>  include/linux/iio/iio.h                 |  1 +
->>>  3 files changed, 12 insertions(+)
+>>>  drivers/iio/magnetometer/Kconfig       |   14 +
+>>>  drivers/iio/magnetometer/Makefile      |    2 +
+>>>  drivers/iio/magnetometer/bmc150_magn.c | 1060 ++++++++++++++++++++++++++++++++
+>>>  3 files changed, 1076 insertions(+)
+>>>  create mode 100644 drivers/iio/magnetometer/bmc150_magn.c
 >>>
->>> diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
->>> index 866b4ec..74c1444 100644
->>> --- a/Documentation/ABI/testing/sysfs-bus-iio
->>> +++ b/Documentation/ABI/testing/sysfs-bus-iio
->>> @@ -1375,3 +1375,13 @@ Description:
->>>  		The emissivity ratio of the surface in the field of view of the
->>>  		contactless temperature sensor.  Emissivity varies from 0 to 1,
->>>  		with 1 being the emissivity of a black body.
+>>> diff --git a/drivers/iio/magnetometer/Kconfig b/drivers/iio/magnetometer/Kconfig
+>>> index a5d6de7..008baca 100644
+>>> --- a/drivers/iio/magnetometer/Kconfig
+>>> +++ b/drivers/iio/magnetometer/Kconfig
+>>> @@ -76,4 +76,18 @@ config IIO_ST_MAGN_SPI_3AXIS
+>>>  	depends on IIO_ST_MAGN_3AXIS
+>>>  	depends on IIO_ST_SENSORS_SPI
+>>>
+>>> +config BMC150_MAGN
+>>> +	tristate "Bosch BMC150 Magnetometer Driver"
+>>> +	depends on I2C
+>>> +	select IIO_BUFFER
+>>> +	select IIO_TRIGGERED_BUFFER
+>>> +	help
+>>> +	  Say yes here to build support for the BMC150 magnetometer.
 >>> +
->>> +What:		/sys/bus/iio/devices/iio:deviceX/in_magn_x_calibrepetitions
->>> +What:		/sys/bus/iio/devices/iio:deviceX/in_magn_y_calibrepetitions
->>> +What:		/sys/bus/iio/devices/iio:deviceX/in_magn_z_calibrepetitions
->>> +KernelVersion:	4.2
->>> +Contact:	linux-iio@vger.kernel.org
->>> +Description:
->>> +		Hardware applied number of repetitions for acquiring one
->>> +		data point. The HW will do <type>[_name]_calibrepetitions
->>> +		measurements and return the average value as output data.
->> This is an interesting way of naming what is often referred to as oversampling.
->> I'd like to get some other opinions on naming before we go with the ABI for this..
->>
->> We do have one driver in staging exporting oversampling_ratio which is probably
->> the same thing, but that ABI was never standardized so I have no problem with
->> ignoring that one case.  A couple of other drivers provide oversampling control
->> via platform data.   We must make sure we give a sensible default for this.
->>
-> I didn't know about the oversampling_ratio. I used "repetitions" because Bosch calls them so
-> in the datasheet.
-> However, I think oversampling_ratio is a better name since it suggests a
-> connection with sampling. I will change it to oversampling_ratio in v2 and then
-> wait for more opinions on this.
-> 
->> There is also the interesting question of whether sampling_frequency applies
->> before or after this...  I'd argue after, but again would like more opinions
->> before we dictate that.  However, whatever we choose should definitely be
->> documented here!
->>
-> The HW sees the sampling_frequency as the frequency the user sees, so it does not take into
-> account the oversampling_ratio: each value resulted after oversampling_ratio repetitions is
-> considered one sample for the sampling_frequency. However, I am not sure how other
-> devices handle this so more opinions on this would be useful.
-That description works for me. Put something like this in the docs and
-hopefully we will be consistent across devices.
-> 
-> Looking more into the oversampling ratio from BMC150, seems there are some
-> sampling limitations I missed the first time: when setting a certain value for x/y/z repetitions,
-> not all sampling rates are available.  I am going to fix this in v2 by not allowing invalid
-> sampling rates once a certain value for oversampling_ratio is set.
-Cool. As long as you update sampling_frequency_available that's fine.
-
-J
-> 
-> Thanks,
-> Irina
-> 
->>> diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
->>> index 7c98bc1..9e0da7f 100644
->>> --- a/drivers/iio/industrialio-core.c
->>> +++ b/drivers/iio/industrialio-core.c
->>> @@ -129,6 +129,7 @@ static const char * const iio_chan_info_postfix[] = {
->>>  	[IIO_CHAN_INFO_DEBOUNCE_COUNT] = "debounce_count",
->>>  	[IIO_CHAN_INFO_DEBOUNCE_TIME] = "debounce_time",
->>>  	[IIO_CHAN_INFO_CALIBEMISSIVITY] = "calibemissivity",
->>> +	[IIO_CHAN_INFO_CALIBREPETITIONS] = "calibrepetitions",
->>>  };
+>>> +	  Currently this only supports the device via an i2c interface.
+>>> +
+>>> +	  This is a combo module with both accelerometer and magnetometer.
+>>> +	  This driver is only implementing magnetometer part, which has
+>>> +	  its own address and register map.
+>>> +
+>>>  endmenu
+>>> diff --git a/drivers/iio/magnetometer/Makefile b/drivers/iio/magnetometer/Makefile
+>>> index 0f5d3c9..e2c3459 100644
+>>> --- a/drivers/iio/magnetometer/Makefile
+>>> +++ b/drivers/iio/magnetometer/Makefile
+>>> @@ -13,3 +13,5 @@ st_magn-$(CONFIG_IIO_BUFFER) += st_magn_buffer.o
 >>>
->>>  /**
->>> diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
->>> index b1e46ae..07fbfb2 100644
->>> --- a/include/linux/iio/iio.h
->>> +++ b/include/linux/iio/iio.h
->>> @@ -44,6 +44,7 @@ enum iio_chan_info_enum {
->>>  	IIO_CHAN_INFO_DEBOUNCE_COUNT,
->>>  	IIO_CHAN_INFO_DEBOUNCE_TIME,
->>>  	IIO_CHAN_INFO_CALIBEMISSIVITY,
->>> +	IIO_CHAN_INFO_CALIBREPETITIONS,
->>>  };
->>>
->>>  enum iio_shared_by {
+>>>  obj-$(CONFIG_IIO_ST_MAGN_I2C_3AXIS) += st_magn_i2c.o
+>>>  obj-$(CONFIG_IIO_ST_MAGN_SPI_3AXIS) += st_magn_spi.o
+>>> +
+>>> +obj-$(CONFIG_BMC150_MAGN) += bmc150_magn.o
+>>> diff --git a/drivers/iio/magnetometer/bmc150_magn.c b/drivers/iio/magnetometer/bmc150_magn.c
+>>> new file mode 100644
+>>> index 0000000..e970a0c
+>>> --- /dev/null
+>>> +++ b/drivers/iio/magnetometer/bmc150_magn.c
+>>> @@ -0,0 +1,1060 @@
+>>> +/*
+>>> + * Bosch BMC150 three-axis magnetic field sensor driver
+>>> + *
+>>> + * Copyright (c) 2015, Intel Corporation.
+>>> + *
+>>> + * This code is based on bmm050_api.c authored by contact@bosch.sensortec.com:
+>>> + *
+>>> + * (C) Copyright 2011~2014 Bosch Sensortec GmbH All Rights Reserved
+>>> + *
+>>> + * This program is free software; you can redistribute it and/or modify it
+>>> + * under the terms and conditions of the GNU General Public License,
+>>> + * version 2, as published by the Free Software Foundation.
+>>> + *
+>>> + * This program is distributed in the hope it will be useful, but WITHOUT
+>>> + * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+>>> + * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+>>> + * more details.
+>>> + */
+>>> +
+>>> +#include <linux/module.h>
+>>> +#include <linux/i2c.h>
+>>> +#include <linux/interrupt.h>
+>>> +#include <linux/delay.h>
+>>> +#include <linux/slab.h>
+>>> +#include <linux/acpi.h>
+>>> +#include <linux/gpio/consumer.h>
+>>> +#include <linux/pm.h>
+>>> +#include <linux/pm_runtime.h>
+>>> +#include <linux/iio/iio.h>
+>>> +#include <linux/iio/sysfs.h>
+>>> +#include <linux/iio/buffer.h>
+>>> +#include <linux/iio/events.h>
+>>> +#include <linux/iio/trigger.h>
+>>> +#include <linux/iio/trigger_consumer.h>
+>>> +#include <linux/iio/triggered_buffer.h>
+>>> +#include <linux/regmap.h>
+>>> +
+>>> +#define BMC150_MAGN_DRV_NAME			"bmc150_magn"
+>>> +#define BMC150_MAGN_IRQ_NAME			"bmc150_magn_event"
+>>> +#define BMC150_MAGN_GPIO_INT			"interrupt"
+>>> +
+>>> +#define BMC150_MAGN_REG_CHIP_ID			0x40
+>>> +#define BMC150_MAGN_CHIP_ID_VAL			0x32
+>>> +
+>>> +#define BMC150_MAGN_REG_X_L			0x42
+>>> +#define BMC150_MAGN_REG_X_M			0x43
+>>> +#define BMC150_MAGN_REG_Y_L			0x44
+>>> +#define BMC150_MAGN_REG_Y_M			0x45
+>>> +#define BMC150_MAGN_SHIFT_XY_L			3
+>>> +#define BMC150_MAGN_REG_Z_L			0x46
+>>> +#define BMC150_MAGN_REG_Z_M			0x47
+>>> +#define BMC150_MAGN_SHIFT_Z_L			1
+>>> +#define BMC150_MAGN_REG_RHALL_L			0x48
+>>> +#define BMC150_MAGN_REG_RHALL_M			0x49
+>>> +#define BMC150_MAGN_SHIFT_RHALL_L		2
+>>> +
+>>> +#define BMC150_MAGN_REG_INT_STATUS		0x4A
+>>> +
+>>> +#define BMC150_MAGN_REG_POWER			0x4B
+>>> +#define BMC150_MAGN_MASK_POWER_CTL		BIT(0)
+>>> +
+>>> +#define BMC150_MAGN_REG_OPMODE_ODR		0x4C
+>>> +#define BMC150_MAGN_MASK_OPMODE			GENMASK(2, 1)
+>>> +#define BMC150_MAGN_SHIFT_OPMODE		1
+>>> +#define BMC150_MAGN_MODE_NORMAL			0x00
+>>> +#define BMC150_MAGN_MODE_FORCED			0x01
+>>> +#define BMC150_MAGN_MODE_SLEEP			0x03
+>>> +#define BMC150_MAGN_MASK_ODR			GENMASK(5, 3)
+>>> +#define BMC150_MAGN_SHIFT_ODR			3
+>>> +
+>>> +#define BMC150_MAGN_REG_INT			0x4D
+>>> +
+>>> +#define BMC150_MAGN_REG_INT_DRDY		0x4E
+>>> +#define BMC150_MAGN_MASK_DRDY_EN		BIT(7)
+>>> +#define BMC150_MAGN_SHIFT_DRDY_EN		7
+>>> +#define BMC150_MAGN_MASK_DRDY_INT3		BIT(6)
+>>> +#define BMC150_MAGN_MASK_DRDY_Z_EN		BIT(5)
+>>> +#define BMC150_MAGN_MASK_DRDY_Y_EN		BIT(4)
+>>> +#define BMC150_MAGN_MASK_DRDY_X_EN		BIT(3)
+>>> +#define BMC150_MAGN_MASK_DRDY_DR_POLARITY	BIT(2)
+>>> +#define BMC150_MAGN_MASK_DRDY_LATCHING		BIT(1)
+>>> +#define BMC150_MAGN_MASK_DRDY_INT3_POLARITY	BIT(0)
+>>> +
+>>> +#define BMC150_MAGN_REG_LOW_THRESH		0x4F
+>>> +#define BMC150_MAGN_REG_HIGH_THRESH		0x50
+>>> +#define BMC150_MAGN_REG_REP_XY			0x51
+>>> +#define BMC150_MAGN_REG_REP_Z			0x52
+>>> +
+>>> +#define BMC150_MAGN_REG_TRIM_START		0x5D
+>>> +#define BMC150_MAGN_REG_TRIM_END		0x71
+>>> +
+>>> +#define BMC150_MAGN_XY_OVERFLOW_VAL		-4096
+>>> +#define BMC150_MAGN_Z_OVERFLOW_VAL		-16384
+>>> +
+>>> +/* Time from SUSPEND to SLEEP */
+>>> +#define BMC150_MAGN_START_UP_TIME_MS		3
+>>> +
+>>> +#define BMC150_MAGN_AUTO_SUSPEND_DELAY_MS	2000
+>>> +
+>>> +#define BMC150_MAGN_REGVAL_TO_REPXY(regval) (((regval) * 2) + 1)
+>>> +#define BMC150_MAGN_REGVAL_TO_REPZ(regval) ((regval) + 1)
+>>> +#define BMC150_MAGN_REPXY_TO_REGVAL(rep) (((rep) - 1) / 2)
+>>> +#define BMC150_MAGN_REPZ_TO_REGVAL(rep) ((rep) - 1)
+>>> +
+>>> +enum bmc150_magn_axis {
+>>> +	AXIS_X,
+>>> +	AXIS_Y,
+>>> +	AXIS_Z,
+>>> +	RHALL,
+>>> +	AXIS_XYZ_MAX = RHALL,
+>>> +	AXIS_XYZR_MAX,
+>>> +};
+>>> +
+>>> +enum bmc150_magn_power_modes {
+>>> +	BMC150_MAGN_POWER_MODE_SUSPEND,
+>>> +	BMC150_MAGN_POWER_MODE_SLEEP,
+>>> +	BMC150_MAGN_POWER_MODE_NORMAL,
+>>> +};
+>>> +
+>>> +struct bmc150_magn_trim_regs {
+>>> +	s8 x1;
+>>> +	s8 y1;
+>>> +	__le16 reserved1;
+>>> +	u8 reserved2;
+>>> +	__le16 z4;
+>>> +	s8 x2;
+>>> +	s8 y2;
+>>> +	__le16 reserved3;
+>>> +	__le16 z2;
+>>> +	__le16 z1;
+>>> +	__le16 xyz1;
+>>> +	__le16 z3;
+>>> +	s8 xy2;
+>>> +	u8 xy1;
+>>> +} __packed;
+>>> +
+>>> +struct bmc150_magn_data {
+>>> +	struct i2c_client *client;
+>>> +	/*
+>>> +	 * 1. Protect this structure.
+>>> +	 * 2. Serialize sequences that power on/off the device and access HW.
+>>> +	 */
+>>> +	struct mutex mutex;
+>>> +	struct regmap *regmap;
+>>> +	s32 *buffer;
+>>> +	struct iio_trigger *dready_trig;
+>>> +	bool dready_trigger_on;
+>>> +};
+>>> +
+>>> +static const struct {
+>>> +	int freq;
+>>> +	u8 reg_val;
+>>> +} bmc150_magn_samp_freq_table[] = { {10, 0x00},
+>>> +				    {2, 0x01},
+>>> +				    {6, 0x02},
+>>> +				    {8, 0x03},
+>>> +				    {15, 0x04},
+>>> +				    {20, 0x05},
+>>> +				    {25, 0x06},
+>>> +				    {30, 0x07} };
+>>> +
+>>> +enum bmc150_magn_presets {
+>>> +	LOW_POWER_PRESET,
+>>> +	REGULAR_PRESET,
+>>> +	ENHANCED_REGULAR_PRESET,
+>>> +	HIGH_ACCURACY_PRESET
+>>> +};
+>>> +
+>>> +static const struct bmc150_magn_preset {
+>>> +	u8 rep_xy;
+>>> +	u8 rep_z;
+>>> +	u8 odr;
+>>> +} bmc150_magn_presets_table[] = {
+>>> +	[LOW_POWER_PRESET] = {3, 3, 10},
+>>> +	[REGULAR_PRESET] =  {9, 15, 10},
+>>> +	[ENHANCED_REGULAR_PRESET] =  {15, 27, 10},
+>>> +	[HIGH_ACCURACY_PRESET] =  {47, 83, 20},
+>>> +};
+>>> +
+>>> +#define BMC150_MAGN_DEFAULT_PRESET REGULAR_PRESET
+>>> +
+>>> +static bool bmc150_magn_is_writeable_reg(struct device *dev, unsigned int reg)
+>>> +{
+>>> +	switch (reg) {
+>>> +	case BMC150_MAGN_REG_POWER:
+>>> +	case BMC150_MAGN_REG_OPMODE_ODR:
+>>> +	case BMC150_MAGN_REG_INT:
+>>> +	case BMC150_MAGN_REG_INT_DRDY:
+>>> +	case BMC150_MAGN_REG_LOW_THRESH:
+>>> +	case BMC150_MAGN_REG_HIGH_THRESH:
+>>> +	case BMC150_MAGN_REG_REP_XY:
+>>> +	case BMC150_MAGN_REG_REP_Z:
+>>> +		return true;
+>>> +	default:
+>>> +		return false;
+>>> +	};
+>>> +}
+>>> +
+>>> +static bool bmc150_magn_is_volatile_reg(struct device *dev, unsigned int reg)
+>>> +{
+>>> +	switch (reg) {
+>>> +	case BMC150_MAGN_REG_X_L:
+>>> +	case BMC150_MAGN_REG_X_M:
+>>> +	case BMC150_MAGN_REG_Y_L:
+>>> +	case BMC150_MAGN_REG_Y_M:
+>>> +	case BMC150_MAGN_REG_Z_L:
+>>> +	case BMC150_MAGN_REG_Z_M:
+>>> +	case BMC150_MAGN_REG_RHALL_L:
+>>> +	case BMC150_MAGN_REG_RHALL_M:
+>>> +	case BMC150_MAGN_REG_INT_STATUS:
+>>> +		return true;
+>>> +	default:
+>>> +		return false;
+>>> +	}
+>>> +}
+>>> +
+>>> +static const struct regmap_config bmc150_magn_regmap_config = {
+>>> +	.reg_bits = 8,
+>>> +	.val_bits = 8,
+>>> +
+>>> +	.max_register = BMC150_MAGN_REG_TRIM_END,
+>>> +	.cache_type = REGCACHE_RBTREE,
+>>> +
+>>> +	.writeable_reg = bmc150_magn_is_writeable_reg,
+>>> +	.volatile_reg = bmc150_magn_is_volatile_reg,
+>>> +};
+>>> +
+>> Why bother with this? It's only called in one place and then with a constant so you'll
+>> always get the top option.
+> 
+> Indeed. I thought I will have multiple usages, but now it does not make sense anymore.
+> I will remove it and use usleep_range instead.
+> 
+>>> +static void bmc150_magn_sleep(int sleep_time_ms)
+>>> +{
+>>> +	if (sleep_time_ms < 20)
+>>> +		usleep_range(sleep_time_ms * 1000, 20000);
+>>> +	else
+>>> +		msleep_interruptible(sleep_time_ms);
+>>> +}
+>>> +
+>>> +static int bmc150_magn_set_power_mode(struct bmc150_magn_data *data,
+>>> +				      enum bmc150_magn_power_modes mode,
+>>> +				      bool state)
+>>> +{
+>>> +	int ret;
+>>> +
+>>> +	switch (mode) {
+>>> +	case BMC150_MAGN_POWER_MODE_SUSPEND:
+>>> +		ret = regmap_update_bits(data->regmap, BMC150_MAGN_REG_POWER,
+>>> +					 BMC150_MAGN_MASK_POWER_CTL, !state);
+>>> +		if (ret < 0)
+>>> +			return ret;
+>>> +		bmc150_magn_sleep(BMC150_MAGN_START_UP_TIME_MS);
+>>> +		return 0;
+>>> +	case BMC150_MAGN_POWER_MODE_SLEEP:
+>>> +		return regmap_update_bits(data->regmap,
+>>> +					  BMC150_MAGN_REG_OPMODE_ODR,
+>>> +					  BMC150_MAGN_MASK_OPMODE,
+>>> +					  BMC150_MAGN_MODE_SLEEP <<
+>>> +					  BMC150_MAGN_SHIFT_OPMODE);
+>>> +	case BMC150_MAGN_POWER_MODE_NORMAL:
+>>> +		return regmap_update_bits(data->regmap,
+>>> +					  BMC150_MAGN_REG_OPMODE_ODR,
+>>> +					  BMC150_MAGN_MASK_OPMODE,
+>>> +					  BMC150_MAGN_MODE_NORMAL <<
+>>> +					  BMC150_MAGN_SHIFT_OPMODE);
+>>> +	}
+>>> +
+>>> +	return -EINVAL;
+>>> +}
+>>> +
+>>> +static int bmc150_magn_set_power_state(struct bmc150_magn_data *data, bool on)
+>>> +{
+>>> +#ifdef CONFIG_PM
+>>> +	int ret;
+>>> +
+>>> +	if (on) {
+>>> +		ret = pm_runtime_get_sync(&data->client->dev);
+>>> +	} else {
+>>> +		pm_runtime_mark_last_busy(&data->client->dev);
+>>> +		ret = pm_runtime_put_autosuspend(&data->client->dev);
+>>> +	}
+>>> +
+>>> +	if (ret < 0) {
+>>> +		dev_err(&data->client->dev,
+>>> +			"failed to change power state to %d\n", on);
+>>> +		if (on)
+>>> +			pm_runtime_put_noidle(&data->client->dev);
+>>> +
+>>> +		return ret;
+>>> +	}
+>>> +#endif
+>>> +
+>>> +	return 0;
+>>> +}
+>>> +
+>>> +static int bmc150_magn_get_odr(struct bmc150_magn_data *data, int *val)
+>>> +{
+>>> +	int ret, reg_val;
+>>> +	u8 i, odr_val;
+>>> +
+>>> +	ret = regmap_read(data->regmap, BMC150_MAGN_REG_OPMODE_ODR, &reg_val);
+>>> +	if (ret < 0)
+>>> +		return ret;
+>>> +	odr_val = (reg_val & BMC150_MAGN_MASK_ODR) >> BMC150_MAGN_SHIFT_ODR;
+>>> +
+>>> +	for (i = 0; i < ARRAY_SIZE(bmc150_magn_samp_freq_table); i++)
+>>> +		if (bmc150_magn_samp_freq_table[i].reg_val == odr_val) {
+>>> +			*val = bmc150_magn_samp_freq_table[i].freq;
+>>> +			return 0;
+>>> +		}
+>>> +
+>>> +	return -EINVAL;
+>>> +}
+>>> +
+>>> +static int bmc150_magn_set_odr(struct bmc150_magn_data *data, int val)
+>>> +{
+>>> +	int ret;
+>>> +	u8 i;
+>>> +
+>>> +	for (i = 0; i < ARRAY_SIZE(bmc150_magn_samp_freq_table); i++) {
+>>> +		if (bmc150_magn_samp_freq_table[i].freq == val) {
+>>> +			ret = regmap_update_bits(data->regmap,
+>>> +						 BMC150_MAGN_REG_OPMODE_ODR,
+>>> +						 BMC150_MAGN_MASK_ODR,
+>>> +						 bmc150_magn_samp_freq_table[i].
+>>> +						 reg_val <<
+>>> +						 BMC150_MAGN_SHIFT_ODR);
+>>> +			if (ret < 0)
+>>> +				return ret;
+>>> +			return 0;
+>>> +		}
+>>> +	}
+>>> +
+>>> +	return -EINVAL;
+>>> +}
+>>> +
+>>> +static s32 bmc150_magn_compensate_x(struct bmc150_magn_trim_regs *tregs, s16 x,
+>>> +				    u16 rhall)
+>>> +{
+>>> +	s16 val;
+>>> +	u16 xyz1 = le16_to_cpu(tregs->xyz1);
+>>> +
+>>> +	if (x == BMC150_MAGN_XY_OVERFLOW_VAL)
+>>> +		return S32_MIN;
+>>> +
+>>> +	if (!rhall)
+>>> +		rhall = xyz1;
+>>> +
+>>> +	val = ((s16)(((u16)((((s32)xyz1) << 14) / rhall)) - ((u16)0x4000)));
+>>> +	val = ((s16)((((s32)x) * ((((((((s32)tregs->xy2) * ((((s32)val) *
+>>> +	      ((s32)val)) >> 7)) + (((s32)val) *
+>>> +	      ((s32)(((s16)tregs->xy1) << 7)))) >> 9) + ((s32)0x100000)) *
+>>> +	      ((s32)(((s16)tregs->x2) + ((s16)0xA0)))) >> 12)) >> 13)) +
+>>> +	      (((s16)tregs->x1) << 3);
+>>> +
+>>> +	return (s32)val;
+>>> +}
+>>> +
+>>> +static s32 bmc150_magn_compensate_y(struct bmc150_magn_trim_regs *tregs, s16 y,
+>>> +				    u16 rhall)
+>>> +{
+>>> +	s16 val;
+>>> +	u16 xyz1 = le16_to_cpu(tregs->xyz1);
+>>> +
+>>> +	if (y == BMC150_MAGN_XY_OVERFLOW_VAL)
+>>> +		return S32_MIN;
+>>> +
+>>> +	if (!rhall)
+>>> +		rhall = xyz1;
+>>> +
+>>> +	val = ((s16)(((u16)((((s32)xyz1) << 14) / rhall)) - ((u16)0x4000)));
+>>> +	val = ((s16)((((s32)y) * ((((((((s32)tregs->xy2) * ((((s32)val) *
+>>> +	      ((s32)val)) >> 7)) + (((s32)val) *
+>>> +	      ((s32)(((s16)tregs->xy1) << 7)))) >> 9) + ((s32)0x100000)) *
+>>> +	      ((s32)(((s16)tregs->y2) + ((s16)0xA0)))) >> 12)) >> 13)) +
+>>> +	      (((s16)tregs->y1) << 3);
+>>> +
+>>> +	return (s32)val;
+>>> +}
+>>> +
+>>> +static s32 bmc150_magn_compensate_z(struct bmc150_magn_trim_regs *tregs, s16 z,
+>>> +				    u16 rhall)
+>>> +{
+>>> +	s32 val;
+>>> +	u16 xyz1 = le16_to_cpu(tregs->xyz1);
+>>> +	u16 z1 = le16_to_cpu(tregs->z1);
+>>> +	s16 z2 = le16_to_cpu(tregs->z2);
+>>> +	s16 z3 = le16_to_cpu(tregs->z3);
+>>> +	s16 z4 = le16_to_cpu(tregs->z4);
+>>> +
+>>> +	if (z == BMC150_MAGN_Z_OVERFLOW_VAL)
+>>> +		return S32_MIN;
+>>> +
+>>> +	val = (((((s32)(z - z4)) << 15) - ((((s32)z3) * ((s32)(((s16)rhall) -
+>>> +	      ((s16)xyz1)))) >> 2)) / (z2 + ((s16)(((((s32)z1) *
+>>> +	      ((((s16)rhall) << 1))) + (1 << 15)) >> 16))));
+>>> +
+>>> +	return val;
+>>> +}
+>>> +
+>>> +static int bmc150_magn_read_xyz(struct bmc150_magn_data *data, s32 *buffer)
+>>> +{
+>>> +	int ret;
+>>> +	__le16 values[AXIS_XYZR_MAX];
+>>> +	s16 raw_x, raw_y, raw_z;
+>>> +	u16 rhall;
+>>> +	struct bmc150_magn_trim_regs tregs;
+>>> +
+>>> +	ret = regmap_bulk_read(data->regmap, BMC150_MAGN_REG_X_L,
+>>> +			       values, sizeof(values));
+>>> +	if (ret < 0)
+>>> +		return ret;
+>>> +
+>>> +	raw_x = (s16)le16_to_cpu(values[AXIS_X]) >> BMC150_MAGN_SHIFT_XY_L;
+>>> +	raw_y = (s16)le16_to_cpu(values[AXIS_Y]) >> BMC150_MAGN_SHIFT_XY_L;
+>>> +	raw_z = (s16)le16_to_cpu(values[AXIS_Z]) >> BMC150_MAGN_SHIFT_Z_L;
+>>> +	rhall = le16_to_cpu(values[RHALL]) >> BMC150_MAGN_SHIFT_RHALL_L;
+>>> +
+>>> +	ret = regmap_bulk_read(data->regmap, BMC150_MAGN_REG_TRIM_START,
+>>> +			       &tregs, sizeof(tregs));
+>>> +	if (ret < 0)
+>>> +		return ret;
+>>> +
+>>> +	buffer[AXIS_X] = bmc150_magn_compensate_x(&tregs, raw_x, rhall);
+>>> +	buffer[AXIS_Y] = bmc150_magn_compensate_y(&tregs, raw_y, rhall);
+>>> +	buffer[AXIS_Z] = bmc150_magn_compensate_z(&tregs, raw_z, rhall);
+>>> +
+>>> +	return 0;
+>>> +}
+>>> +
+>>> +static int bmc150_magn_read_raw(struct iio_dev *indio_dev,
+>>> +				struct iio_chan_spec const *chan,
+>>> +				int *val, int *val2, long mask)
+>>> +{
+>>> +	struct bmc150_magn_data *data = iio_priv(indio_dev);
+>>> +	int ret, tmp;
+>>> +	s32 values[AXIS_XYZ_MAX];
+>>> +
+>>> +	switch (mask) {
+>>> +	case IIO_CHAN_INFO_RAW:
+>>> +		if (iio_buffer_enabled(indio_dev))
+>>> +			return -EBUSY;
+>>> +		mutex_lock(&data->mutex);
+>>> +
+>>> +		ret = bmc150_magn_set_power_state(data, true);
+>>> +		if (ret < 0)
+>> You just returned with the mutex held...  Check the other places this might happen please.
+> Oops... Seems I missed the unlock twice in this function. Thanks for catching this!
+> 
+>>> +			return ret;
+>>> +
+>>> +		ret = bmc150_magn_read_xyz(data, values);
+>>> +		if (ret < 0) {
+>>> +			bmc150_magn_set_power_state(data, false);
+>>> +			mutex_unlock(&data->mutex);
+>>> +			return ret;
+>>> +		}
+>>> +		*val = values[chan->scan_index];
+>>> +
+>>> +		ret = bmc150_magn_set_power_state(data, false);
+>>> +		if (ret < 0)
+>>> +			return ret;
+>>> +
+>>> +		mutex_unlock(&data->mutex);
+>>> +		return IIO_VAL_INT;
+>>> +	case IIO_CHAN_INFO_SCALE:
+>>> +		/*
+>>> +		 * The API/driver performs an off-chip temperature
+>>> +		 * compensation and outputs x/y/z magnetic field data in
+>>> +		 * 16 LSB/uT to the upper application layer.
+>>> +		 */
+>>> +		*val = 0;
+>>> +		*val2 = 625;
+>>> +		return IIO_VAL_INT_PLUS_MICRO;
+>>> +	case IIO_CHAN_INFO_SAMP_FREQ:
+>>> +		ret = bmc150_magn_get_odr(data, val);
+>>> +		if (ret < 0)
+>>> +			return ret;
+>>> +		return IIO_VAL_INT;
+>>> +	case IIO_CHAN_INFO_CALIBREPETITIONS:
+>>> +		switch (chan->channel2) {
+>>> +		case IIO_MOD_X:
+>>> +		case IIO_MOD_Y:
+>>> +			ret = regmap_read(data->regmap, BMC150_MAGN_REG_REP_XY,
+>>> +					  &tmp);
+>>> +			if (ret < 0)
+>>> +				return ret;
+>>> +			*val = BMC150_MAGN_REGVAL_TO_REPXY(tmp);
+>>> +			return IIO_VAL_INT;
+>>> +		case IIO_MOD_Z:
+>>> +			ret = regmap_read(data->regmap, BMC150_MAGN_REG_REP_Z,
+>>> +					  &tmp);
+>>> +			if (ret < 0)
+>>> +				return ret;
+>>> +			*val = BMC150_MAGN_REGVAL_TO_REPZ(tmp);
+>>> +			return IIO_VAL_INT;
+>>> +		default:
+>>> +			return -EINVAL;
+>>> +		}
+>>> +	default:
+>>> +		return -EINVAL;
+>>> +	}
+>>> +}
+>>> +
+>>> +static int bmc150_magn_write_raw(struct iio_dev *indio_dev,
+>>> +				 struct iio_chan_spec const *chan,
+>>> +				 int val, int val2, long mask)
+>>> +{
+>>> +	struct bmc150_magn_data *data = iio_priv(indio_dev);
+>>> +	int ret;
+>>> +
+>>> +	switch (mask) {
+>>> +	case IIO_CHAN_INFO_SAMP_FREQ:
+>>> +		mutex_lock(&data->mutex);
+>>> +		ret = bmc150_magn_set_odr(data, val);
+>>> +		mutex_unlock(&data->mutex);
+>>> +		return ret;
+>>> +	case IIO_CHAN_INFO_CALIBREPETITIONS:
+>>> +		switch (chan->channel2) {
+>>> +		case IIO_MOD_X:
+>>> +		case IIO_MOD_Y:
+>>> +			if (val < 1 || val > 511)
+>>> +				return -EINVAL;
+>>> +			return regmap_update_bits(data->regmap,
+>>> +						  BMC150_MAGN_REG_REP_XY,
+>>> +						  0xFF,
+>>> +						  BMC150_MAGN_REPXY_TO_REGVAL
+>>> +						  (val));
+>>> +		case IIO_MOD_Z:
+>>> +			if (val < 1 || val > 256)
+>>> +				return -EINVAL;
+>>> +			return regmap_update_bits(data->regmap,
+>>> +						  BMC150_MAGN_REG_REP_Z,
+>>> +						  0xFF,
+>>> +						  BMC150_MAGN_REPZ_TO_REGVAL
+>>> +						  (val));
+>>> +		default:
+>>> +			return -EINVAL;
+>>> +		}
+>>> +	default:
+>>> +		return -EINVAL;
+>>> +	}
+>>> +}
+>>> +
+>>> +static int bmc150_magn_validate_trigger(struct iio_dev *indio_dev,
+>>> +					struct iio_trigger *trig)
+>>> +{
+>>> +	struct bmc150_magn_data *data = iio_priv(indio_dev);
+>>> +
+>>> +	if (data->dready_trig != trig)
+>>> +		return -EINVAL;
+>>> +
+>>> +	return 0;
+>>> +}
+>>> +
+>>> +static int bmc150_magn_update_scan_mode(struct iio_dev *indio_dev,
+>>> +					const unsigned long *scan_mask)
+>>> +{
+>>> +	struct bmc150_magn_data *data = iio_priv(indio_dev);
+>>> +
+>>> +	mutex_lock(&data->mutex);
+>>> +	kfree(data->buffer);
+>>> +	data->buffer = kzalloc(indio_dev->scan_bytes, GFP_KERNEL);
+>> Call be cynical, but how large can this buffer get?
+>>
+>> I'd just allocate it as part of data in the first place then you
+>> can drop this function entirely and don't have to clean it up
+>> separately.
+> With all channels enabled it is 24 bytes. I'll allocate it with data.
+> 
+>>> +	mutex_unlock(&data->mutex);
+>>> +
+>>> +	if (!data->buffer)
+>>> +		return -ENOMEM;
+>>> +
+>>> +	return 0;
+>>> +}
+>>> +
+>>> +static IIO_CONST_ATTR_SAMP_FREQ_AVAIL("2 6 8 10 15 20 25 30");
+>>> +
+>>> +static struct attribute *bmc150_magn_attributes[] = {
+>>> +	&iio_const_attr_sampling_frequency_available.dev_attr.attr,
+>>> +	NULL,
+>>> +};
+>>> +
+>>> +static const struct attribute_group bmc150_magn_attrs_group = {
+>>> +	.attrs = bmc150_magn_attributes,
+>>> +};
+>>> +
+>>> +#define BMC150_MAGN_CHANNEL(_axis) {					\
+>>> +	.type = IIO_MAGN,						\
+>>> +	.modified = 1,							\
+>>> +	.channel2 = IIO_MOD_##_axis,					\
+>>> +	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |			\
+>>> +			      BIT(IIO_CHAN_INFO_CALIBREPETITIONS),	\
+>>> +	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SAMP_FREQ) |	\
+>>> +				    BIT(IIO_CHAN_INFO_SCALE),		\
+>>> +	.scan_index = AXIS_##_axis,					\
+>>> +	.scan_type = {							\
+>>> +		.sign = 's',						\
+>>> +		.realbits = 32,						\
+>>> +		.storagebits = 32,					\
+>>> +		.shift = 0,						\
+>>> +		.endianness = IIO_LE					\
+>>> +	},								\
+>>> +}
+>>> +
+>>> +static const struct iio_chan_spec bmc150_magn_channels[] = {
+>>> +	BMC150_MAGN_CHANNEL(X),
+>>> +	BMC150_MAGN_CHANNEL(Y),
+>>> +	BMC150_MAGN_CHANNEL(Z),
+>>> +	IIO_CHAN_SOFT_TIMESTAMP(3),
+>>> +};
+>>> +
+>>> +static const struct iio_info bmc150_magn_info = {
+>>> +	.attrs = &bmc150_magn_attrs_group,
+>>> +	.read_raw = bmc150_magn_read_raw,
+>>> +	.write_raw = bmc150_magn_write_raw,
+>>> +	.validate_trigger = bmc150_magn_validate_trigger,
+>>> +	.update_scan_mode = bmc150_magn_update_scan_mode,
+>>> +	.driver_module = THIS_MODULE,
+>>> +};
+>>> +
+>>> +static const unsigned long bmc150_magn_scan_masks[] = {0x07, 0};
+>>> +
+>>> +static irqreturn_t bmc150_magn_trigger_handler(int irq, void *p)
+>>> +{
+>>> +	struct iio_poll_func *pf = p;
+>>> +	struct iio_dev *indio_dev = pf->indio_dev;
+>>> +	struct bmc150_magn_data *data = iio_priv(indio_dev);
+>>> +	int ret;
+>>> +
+>>> +	mutex_lock(&data->mutex);
+>>> +	ret = bmc150_magn_read_xyz(data, data->buffer);
+>>> +	mutex_unlock(&data->mutex);
+>>> +	if (ret < 0)
+>>> +		goto err;
+>>> +
+>>> +	iio_push_to_buffers_with_timestamp(indio_dev, data->buffer,
+>>> +					   pf->timestamp);
+>>> +
+>>> +err:
+>>> +	iio_trigger_notify_done(data->dready_trig);
+>>> +
+>>> +	return IRQ_HANDLED;
+>>> +}
+>>> +
+>>> +static int bmc150_magn_init(struct bmc150_magn_data *data)
+>>> +{
+>>> +	int ret, chip_id;
+>>> +	struct bmc150_magn_preset preset;
+>>> +	struct bmc150_magn_trim_regs tregs;
+>>> +
+>>> +	ret = bmc150_magn_set_power_mode(data, BMC150_MAGN_POWER_MODE_SUSPEND,
+>>> +					 false);
+>>> +	if (ret < 0) {
+>>> +		dev_err(&data->client->dev,
+>>> +			"Failed to bring up device from suspend mode\n");
+>>> +		return ret;
+>>> +	}
+>>> +
+>>> +	ret = regmap_read(data->regmap, BMC150_MAGN_REG_CHIP_ID, &chip_id);
+>>> +	if (ret < 0) {
+>>> +		dev_err(&data->client->dev, "Failed reading chip id\n");
+>>> +		goto err_poweroff;
+>>> +	}
+>>> +	if (chip_id != BMC150_MAGN_CHIP_ID_VAL) {
+>>> +		dev_err(&data->client->dev, "Invalid chip id 0x%x\n", ret);
+>>> +		ret = -ENODEV;
+>>> +		goto err_poweroff;
+>>> +	}
+>>> +	dev_dbg(&data->client->dev, "Chip id %x\n", ret);
+>>> +
+>>> +	preset = bmc150_magn_presets_table[BMC150_MAGN_DEFAULT_PRESET];
+>>> +	ret = bmc150_magn_set_odr(data, preset.odr);
+>>> +	if (ret < 0) {
+>>> +		dev_err(&data->client->dev, "Failed to set ODR to %d\n",
+>>> +			preset.odr);
+>>> +		goto err_poweroff;
+>>> +	}
+>>> +
+>>> +	ret = regmap_update_bits(data->regmap,
+>>> +				 BMC150_MAGN_REG_REP_XY,
+>>> +				 0xFF,
+>>> +				 BMC150_MAGN_REPXY_TO_REGVAL(preset.rep_xy));
+>>> +	if (ret < 0) {
+>>> +		dev_err(&data->client->dev, "Failed to set REP XY to %d\n",
+>>> +			preset.rep_xy);
+>>> +		goto err_poweroff;
+>>> +	}
+>>> +
+>>> +	ret = regmap_update_bits(data->regmap,
+>>> +				 BMC150_MAGN_REG_REP_Z,
+>>> +				 0xFF,
+>> Umm. With a mask of 0xFF are we not just setting the whole register?  In which
+>> case why use update_bits?   regmap_write instead...
+> 
+> I am using regmap_update_bits because it also checks if the value actually changed.
+> I could use regmap_write here instead, since we are initializing the driver, but
+> I would keep regmap_update_bits where the value is updated by the user (so we don't
+> do the i2c transfer if the value did not change).
+> 
+>>> +				 BMC150_MAGN_REPZ_TO_REGVAL(preset.rep_z));
+>>> +	if (ret < 0) {
+>>> +		dev_err(&data->client->dev, "Failed to set REP Z to %d\n",
+>>> +			preset.rep_z);
+>>> +		goto err_poweroff;
+>>> +	}
+>>> +
+>>> +	/* Cache trim registers in regmap. */
+>> A little ugly. Is there no way of asking regmap to fill it's cache for certain registers?
+>> Actually as I read it having taken a quick look, regcache_hw_init will read all your registers
+>> given you haven't provided defaults.  Hence this will be cached already..
+> Unfortunately it does not work in this case.
+> In the current implementation the registers are not cached because num_reg_defaults_raw is not set.
+> After setting num_reg_defaults_raw, regcache_hw_init will read all registers starting from register
+> 0, but bmc150 magn starts its register map at register 0x40. I am not sure yet how to force a different
+> stat register value or how to cache the registers in another way.
+> 
+> I will remove the regmap_bulk_read for now, so the actual transfer will be done when the first interrupt
+> is handled. I will look further into this and come with a follow-up patch when I find a better solution.
+Mark - any suggestions?
+> 
+>>> +	ret = regmap_bulk_read(data->regmap, BMC150_MAGN_REG_TRIM_START,
+>>> +			       &tregs, sizeof(tregs));
+>>> +	if (ret < 0) {
+>>> +		dev_err(&data->client->dev, "Failed to read trim registers\n");
+>>> +		goto err_poweroff;
+>>> +	}
+>>> +
+>>> +	ret = bmc150_magn_set_power_mode(data, BMC150_MAGN_POWER_MODE_NORMAL,
+>>> +					 true);
+>>> +	if (ret < 0) {
+>>> +		dev_err(&data->client->dev, "Failed to power on device\n");
+>>> +		goto err_poweroff;
+>>> +	}
+>>> +
+>>> +	return 0;
+>>> +
+>>> +err_poweroff:
+>>> +	bmc150_magn_set_power_mode(data, BMC150_MAGN_POWER_MODE_SUSPEND, true);
+>>> +	return ret;
+>>> +}
+>>> +
+>>> +static int bmc150_magn_reset_intr(struct bmc150_magn_data *data)
+>>> +{
+>>> +	int tmp;
+>>> +
+>>> +	/*
+>>> +	 * Data Ready (DRDY) is always cleared after
+>>> +	 * readout of data registers ends.
+>>> +	 */
+>>> +	return regmap_read(data->regmap, BMC150_MAGN_REG_X_L, &tmp);
+>> Good to see this here.  Often people don't bother on the basis
+>> of course the driver has already read the data register!
+>> (which it might not have done if the trigger is being used by another
+>> device).
+>>> +}
+>>> +
+>>> +static int bmc150_magn_trig_try_reen(struct iio_trigger *trig)
+>>> +{
+>>> +	struct iio_dev *indio_dev = iio_trigger_get_drvdata(trig);
+>>> +	struct bmc150_magn_data *data = iio_priv(indio_dev);
+>>> +	int ret;
+>>> +
+>>> +	if (!data->dready_trigger_on)
+>>> +		return 0;
+>>> +
+>>> +	mutex_lock(&data->mutex);
+>>> +	ret = bmc150_magn_reset_intr(data);
+>>> +	mutex_unlock(&data->mutex);
+>>> +
+>>> +	return ret;
+>>> +}
+>>> +
+>>> +static int bmc150_magn_data_rdy_trigger_set_state(struct iio_trigger *trig,
+>>> +						  bool state)
+>>> +{
+>>> +	struct iio_dev *indio_dev = iio_trigger_get_drvdata(trig);
+>>> +	struct bmc150_magn_data *data = iio_priv(indio_dev);
+>>> +	int ret = 0;
+>>> +
+>>> +	mutex_lock(&data->mutex);
+>>> +	if (state == data->dready_trigger_on)
+>>> +		goto err_unlock;
+>>> +
+>>> +	ret = bmc150_magn_set_power_state(data, state);
+>>> +	if (ret < 0)
+>>> +		goto err_unlock;
+>>> +
+>>> +	ret = regmap_update_bits(data->regmap, BMC150_MAGN_REG_INT_DRDY,
+>>> +				 BMC150_MAGN_MASK_DRDY_EN,
+>>> +				 state << BMC150_MAGN_SHIFT_DRDY_EN);
+>>> +	if (ret < 0)
+>>> +		goto err_poweroff;
+>>> +
+>>> +	data->dready_trigger_on = state;
+>>> +
+>>> +	if (state) {
+>>> +		ret = bmc150_magn_reset_intr(data);
+>>> +		if (ret < 0)
+>>> +			goto err_poweroff;
+>>> +	}
+>>> +	mutex_unlock(&data->mutex);
+>>> +
+>>> +	return 0;
+>>> +
+>>> +err_poweroff:
+>>> +	bmc150_magn_set_power_state(data, false);
+>>> +err_unlock:
+>>> +	mutex_unlock(&data->mutex);
+>>> +	return ret;
+>>> +}
+>>> +
+>>> +static const struct iio_trigger_ops bmc150_magn_trigger_ops = {
+>>> +	.set_trigger_state = bmc150_magn_data_rdy_trigger_set_state,
+>>> +	.try_reenable = bmc150_magn_trig_try_reen,
+>>> +	.owner = THIS_MODULE,
+>>> +};
+>>> +
+>>> +static int bmc150_magn_gpio_probe(struct i2c_client *client)
+>>> +{
+>>> +	struct device *dev;
+>>> +	struct gpio_desc *gpio;
+>>> +	int ret;
+>>> +
+>>> +	if (!client)
+>>> +		return -EINVAL;
+>>> +
+>>> +	dev = &client->dev;
+>>> +
+>>> +	/* data ready GPIO interrupt pin */
+>>> +	gpio = devm_gpiod_get_index(dev, BMC150_MAGN_GPIO_INT, 0);
+>>> +	if (IS_ERR(gpio)) {
+>>> +		dev_err(dev, "ACPI GPIO get index failed\n");
+>>> +		return PTR_ERR(gpio);
+>>> +	}
+>>> +
+>>> +	ret = gpiod_direction_input(gpio);
+>>> +	if (ret)
+>>> +		return ret;
+>>> +
+>>> +	ret = gpiod_to_irq(gpio);
+>>> +
+>>> +	dev_dbg(dev, "GPIO resource, no:%d irq:%d\n", desc_to_gpio(gpio), ret);
+>>> +
+>>> +	return ret;
+>>> +}
+>>> +
+>>> +static const char *bmc150_magn_match_acpi_device(struct device *dev)
+>>> +{
+>>> +	const struct acpi_device_id *id;
+>>> +
+>>> +	id = acpi_match_device(dev->driver->acpi_match_table, dev);
+>>> +	if (!id)
+>>> +		return NULL;
+>>> +
+>>> +	return dev_name(dev);
+>>> +}
+>>> +
+>>> +static int bmc150_magn_probe(struct i2c_client *client,
+>>> +			     const struct i2c_device_id *id)
+>>> +{
+>>> +	struct bmc150_magn_data *data;
+>>> +	struct iio_dev *indio_dev;
+>>> +	const char *name = NULL;
+>>> +	int ret;
+>>> +
+>>> +	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
+>>> +	if (!indio_dev)
+>>> +		return -ENOMEM;
+>>> +
+>>> +	data = iio_priv(indio_dev);
+>>> +	i2c_set_clientdata(client, indio_dev);
+>>> +	data->client = client;
+>>> +
+>>> +	if (id)
+>>> +		name = id->name;
+>>> +	else if (ACPI_HANDLE(&client->dev))
+>>> +		name = bmc150_magn_match_acpi_device(&client->dev);
+>>> +	else
+>>> +		return -ENOSYS;
+>>> +
+>>> +	mutex_init(&data->mutex);
+>>> +	data->regmap = devm_regmap_init_i2c(client, &bmc150_magn_regmap_config);
+>>> +	if (IS_ERR(data->regmap)) {
+>>> +		dev_err(&client->dev, "Failed to allocate register map\n");
+>>> +		return PTR_ERR(data->regmap);
+>>> +	}
+>>> +
+>>> +	ret = bmc150_magn_init(data);
+>>> +	if (ret < 0)
+>>> +		return ret;
+>>> +
+>>> +	indio_dev->dev.parent = &client->dev;
+>>> +	indio_dev->channels = bmc150_magn_channels;
+>>> +	indio_dev->num_channels = ARRAY_SIZE(bmc150_magn_channels);
+>>> +	indio_dev->available_scan_masks = bmc150_magn_scan_masks;
+>>> +	indio_dev->name = name;
+>>> +	indio_dev->modes = INDIO_DIRECT_MODE;
+>>> +	indio_dev->info = &bmc150_magn_info;
+>>> +
+>>> +	if (client->irq <= 0)
+>>> +		client->irq = bmc150_magn_gpio_probe(client);
+>>> +
+>>> +	if (client->irq > 0) {
+>>> +		data->dready_trig = devm_iio_trigger_alloc(&client->dev,
+>>> +							   "%s-dev%d",
+>>> +							   indio_dev->name,
+>>> +							   indio_dev->id);
+>>> +		if (!data->dready_trig) {
+>>> +			ret = -ENOMEM;
+>>> +			dev_err(&client->dev, "iio trigger alloc failed\n");
+>>> +			goto err_poweroff;
+>>> +		}
+>>> +
+>>> +		data->dready_trig->dev.parent = &client->dev;
+>>> +		data->dready_trig->ops = &bmc150_magn_trigger_ops;
+>>> +		iio_trigger_set_drvdata(data->dready_trig, indio_dev);
+>>> +		ret = iio_trigger_register(data->dready_trig);
+>>> +		if (ret) {
+>>> +			dev_err(&client->dev, "iio trigger register failed\n");
+>>> +			goto err_poweroff;
+>>> +		}
+>>> +
+>>> +		ret = iio_triggered_buffer_setup(indio_dev,
+>>> +						 &iio_pollfunc_store_time,
+>>> +						 bmc150_magn_trigger_handler,
+>>> +						 NULL);
+>>> +		if (ret < 0) {
+>>> +			dev_err(&client->dev,
+>>> +				"iio triggered buffer setup failed\n");
+>>> +			goto err_trigger_unregister;
+>>> +		}
+>>> +
+>>> +		ret = devm_request_threaded_irq(&client->dev, client->irq,
+>>> +					     iio_trigger_generic_data_rdy_poll,
+>>> +					     NULL,
+>>> +					     IRQF_TRIGGER_RISING | IRQF_ONESHOT,
+>>> +					     BMC150_MAGN_IRQ_NAME,
+>>> +					     data->dready_trig);
+>>> +		if (ret < 0) {
+>>> +			dev_err(&client->dev, "request irq %d failed\n",
+>>> +				client->irq);
+>>> +			goto err_buffer_cleanup;
+>>> +		}
+>>> +	}
+>>> +
+>>> +	ret = iio_device_register(indio_dev);
+>>> +	if (ret < 0) {
+>>> +		dev_err(&client->dev, "unable to register iio device\n");
+>>> +		goto err_buffer_cleanup;
+>>> +	}
+>>> +
+>>> +	ret = pm_runtime_set_active(&client->dev);
+>>> +	if (ret)
+>>> +		goto err_iio_unregister;
+>>> +
+>>> +	pm_runtime_enable(&client->dev);
+>>> +	pm_runtime_set_autosuspend_delay(&client->dev,
+>>> +					 BMC150_MAGN_AUTO_SUSPEND_DELAY_MS);
+>>> +	pm_runtime_use_autosuspend(&client->dev);
+>>> +
+>>> +	dev_dbg(&indio_dev->dev, "Registered device %s\n", name);
+>>> +
+>>> +	return 0;
+>>> +
+>>> +err_iio_unregister:
+>>> +	iio_device_unregister(indio_dev);
+>>> +err_buffer_cleanup:
+>>
+>> Hmm. There is an issue with this being obviously correct.
+>> The unwind ordering different from setup.
+>> Because you have devm_request_threaded_irq calls they will unwind only after these
+>> calls, but should occur before.
+>> Now it probaby makes no difference, but it does fail the obviously correct test.
+>>
+>> It's also the case in the remove.  I'd be inclined not to use the devm versin
+>> of the irq request, but do it explicitly. This one comes up a lot and much like
+>> the devm_iio_register_device call it's only really a good idea if everything
+>> is managed.  In mixed cases, I'd avoid it.
+>>
+> I agree. I will use request_threaded_irq instead.
+> 
+>> Maybe I'm just being overly fussy...
+>>
+>>> +	if (data->dready_trig)
+>>> +		iio_triggered_buffer_cleanup(indio_dev);
+>>> +err_trigger_unregister:
+>>> +	if (data->dready_trig)
+>>> +		iio_trigger_unregister(data->dready_trig);
+>>> +err_poweroff:
+>>> +	bmc150_magn_set_power_mode(data, BMC150_MAGN_POWER_MODE_SUSPEND, true);
+>>> +	return ret;
+>>> +}
+>>> +
+>>> +static int bmc150_magn_remove(struct i2c_client *client)
+>>> +{
+>>> +	struct iio_dev *indio_dev = i2c_get_clientdata(client);
+>>> +	struct bmc150_magn_data *data = iio_priv(indio_dev);
+>>> +
+>>> +	pm_runtime_disable(&client->dev);
+>>> +	pm_runtime_set_suspended(&client->dev);
+>>> +	pm_runtime_put_noidle(&client->dev);
+>>> +
+>>> +	iio_device_unregister(indio_dev);
+>>> +
+>>> +	if (data->dready_trig) {
+>>> +		iio_triggered_buffer_cleanup(indio_dev);
+>>> +		iio_trigger_unregister(data->dready_trig);
+>>> +	}
+>> As mentioned above, this clean up isn't needed if you simply
+>> always make data->buffer the largest size it can ever be.
+> Yes, I will remove this after allocating the data->buffer with data.
+>>> +	kfree(data->buffer);
+>>> +
+>>> +	mutex_lock(&data->mutex);
+>>> +	bmc150_magn_set_power_mode(data, BMC150_MAGN_POWER_MODE_SUSPEND, true);
+>>> +	mutex_unlock(&data->mutex);
+>>> +
+>>> +	return 0;
+>>> +}
+>>> +
+>>> +#ifdef CONFIG_PM
+>>> +static int bmc150_magn_runtime_suspend(struct device *dev)
+>>> +{
+>>> +	struct iio_dev *indio_dev = i2c_get_clientdata(to_i2c_client(dev));
+>>> +	struct bmc150_magn_data *data = iio_priv(indio_dev);
+>>> +	int ret;
+>>> +
+>>> +	mutex_lock(&data->mutex);
+>>> +	ret = bmc150_magn_set_power_mode(data, BMC150_MAGN_POWER_MODE_SLEEP,
+>>> +					 true);
+>>> +	mutex_unlock(&data->mutex);
+>>> +	if (ret < 0) {
+>>> +		dev_err(&data->client->dev, "powering off device failed\n");
+>>> +		return -EAGAIN;
+>>> +	}
+>>> +
+>>> +	return 0;
+>>> +}
+>>> +
+>>> +static int bmc150_magn_runtime_resume(struct device *dev)
+>>> +{
+>>> +	struct iio_dev *indio_dev = i2c_get_clientdata(to_i2c_client(dev));
+>>> +	struct bmc150_magn_data *data = iio_priv(indio_dev);
+>>> +
+>>> +	return bmc150_magn_set_power_mode(data, BMC150_MAGN_POWER_MODE_NORMAL,
+>>> +					  true);
+>>> +}
+>>> +#endif
+>>> +
+>>> +#ifdef CONFIG_PM_SLEEP
+>>> +static int bmc150_magn_suspend(struct device *dev)
+>>> +{
+>>> +	struct iio_dev *indio_dev = i2c_get_clientdata(to_i2c_client(dev));
+>>> +	struct bmc150_magn_data *data = iio_priv(indio_dev);
+>>> +	int ret;
+>>> +
+>>> +	mutex_lock(&data->mutex);
+>>> +	ret = bmc150_magn_set_power_mode(data, BMC150_MAGN_POWER_MODE_SLEEP,
+>>> +					 true);
+>>> +	mutex_unlock(&data->mutex);
+>>> +
+>>> +	return ret;
+>>> +}
+>>> +
+>>> +static int bmc150_magn_resume(struct device *dev)
+>>> +{
+>>> +	struct iio_dev *indio_dev = i2c_get_clientdata(to_i2c_client(dev));
+>>> +	struct bmc150_magn_data *data = iio_priv(indio_dev);
+>>> +	int ret;
+>>> +
+>>> +	mutex_lock(&data->mutex);
+>>> +	ret = bmc150_magn_set_power_mode(data, BMC150_MAGN_POWER_MODE_NORMAL,
+>>> +					 true);
+>>> +	mutex_unlock(&data->mutex);
+>>> +
+>>> +	return ret;
+>>> +}
+>>> +#endif
+>>> +
+>>> +static const struct dev_pm_ops bmc150_magn_pm_ops = {
+>>> +	SET_SYSTEM_SLEEP_PM_OPS(bmc150_magn_suspend, bmc150_magn_resume)
+>>> +	SET_RUNTIME_PM_OPS(bmc150_magn_runtime_suspend,
+>>> +			   bmc150_magn_runtime_resume, NULL)
+>>> +};
+>>> +
+>>> +static const struct acpi_device_id bmc150_magn_acpi_match[] = {
+>>> +	{"BMC150B", 0},
+>>> +	{},
+>>> +};
+>> nitpick, no blank line here. Tends to directly associate the structure
+>> with the following macro which is visually nice..
+> Sure, I will remove all blank lines you mentioned.
+>>> +
+>>> +MODULE_DEVICE_TABLE(acpi, bmc150_magn_acpi_match);
+>>> +
+>>> +static const struct i2c_device_id bmc150_magn_id[] = {
+>>> +	{"bmc150_magn", 0},
+>>> +	{},
+>>> +};
+>> Nitpick, no blank line.
+>>> +
+>>> +MODULE_DEVICE_TABLE(i2c, bmc150_magn_id);
+>>> +
+>>> +static struct i2c_driver bmc150_magn_driver = {
+>>> +	.driver = {
+>>> +		   .name = BMC150_MAGN_DRV_NAME,
+>>> +		   .acpi_match_table = ACPI_PTR(bmc150_magn_acpi_match),
+>>> +		   .pm = &bmc150_magn_pm_ops,
+>>> +		   },
+>>> +	.probe = bmc150_magn_probe,
+>>> +	.remove = bmc150_magn_remove,
+>>> +	.id_table = bmc150_magn_id,
+>>> +};
+>> Nitpick. I'd not bother with the blank line here.
+>>> +
+>>> +module_i2c_driver(bmc150_magn_driver);
+>>> +
+>>> +MODULE_AUTHOR("Irina Tirdea <irina.tirdea@intel.com>");
+>>> +MODULE_LICENSE("GPL v2");
+>>> +MODULE_DESCRIPTION("BMC150 magnetometer driver");
 >>>
 > 
 > --
