@@ -1,459 +1,185 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-lb0-f173.google.com ([209.85.217.173]:34878 "EHLO
-	mail-lb0-f173.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751974AbbDVRlM (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 22 Apr 2015 13:41:12 -0400
-Date: Wed, 22 Apr 2015 19:36:00 +0200
-From: tduszyns@gmail.com
-To: Peter Meerwald <pmeerw@pmeerw.net>
-Cc: Tomasz Duszynski <tduszyns@gmail.com>, jic23@kernel.org,
-	knaack.h@gmx.de, lars@metafoo.de, linux-kernel@vger.kernel.org,
-	linux-iio@vger.kernel.org
-Subject: Re: [PATCH] iio: light: add support for ROHM
- BH1710/BH1715/BH1721/BH1750/BH1751 ambient light sensors
-Message-ID: <20150422173600.GA8715@Arch.lan>
-References: <1429641822-2007-1-git-send-email-tduszyns@gmail.com>
- <alpine.DEB.2.02.1504221029470.31638@pmeerw.net>
+Received: from mail-wg0-f53.google.com ([74.125.82.53]:35770 "EHLO
+	mail-wg0-f53.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752404AbbDVUeM (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 22 Apr 2015 16:34:12 -0400
+Received: by wgyo15 with SMTP id o15so259438522wgy.2
+        for <linux-iio@vger.kernel.org>; Wed, 22 Apr 2015 13:34:10 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-In-Reply-To: <alpine.DEB.2.02.1504221029470.31638@pmeerw.net>
+In-Reply-To: <5532B0C4.30803@kernel.org>
+References: <1428329889-18335-1-git-send-email-daniel.baluta@intel.com>
+	<1428329889-18335-2-git-send-email-daniel.baluta@intel.com>
+	<CAEnQRZAijAtRdqke5tP-DFL8ROvnzimBEbHwr1=JxhAaqoCndw@mail.gmail.com>
+	<5526B464.8000502@kernel.org>
+	<CAEnQRZA=pSm5DV6PzZ9zQ7W+d_Q9esn6X9cmOOdymNFu8sCyug@mail.gmail.com>
+	<552A965B.7030108@kernel.org>
+	<CAE1zotLWDGdb57sG8W_i7Lzq5aZb2cnCo9tCD_NhRQE03eRXyA@mail.gmail.com>
+	<552ED97E.1090009@kernel.org>
+	<CAE1zotLjK=rjY3SWZ3npBVUoKiwHTyOw10js=t4iYbqLie7JKw@mail.gmail.com>
+	<5532B0C4.30803@kernel.org>
+Date: Wed, 22 Apr 2015 13:34:10 -0700
+Message-ID: <CAE1zotLjU7M8ASAzQy7uP5bJvcRGVhuHjxN+NjYnKOyaKXdScw@mail.gmail.com>
+Subject: Re: [PATCH v3 1/3] iio: configfs: Add configfs support to IIO
+From: Octavian Purdila <octavian.purdila@intel.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Daniel Baluta <daniel.baluta@intel.com>,
+	Joel Becker <jlbec@evilplan.org>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	Paul Bolle <pebolle@tiscali.nl>,
+	Patrick Porlan <patrick.porlan@intel.com>,
+	Adriana Reus <adriana.reus@intel.com>
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Wed, Apr 22, 2015 at 10:49:21AM +0200, Peter Meerwald wrote:
-> On Tue, 21 Apr 2015, Tomasz Duszynski wrote:
+On Sat, Apr 18, 2015 at 12:30 PM, Jonathan Cameron <jic23@kernel.org> wrote:
 >
-> > Add support for ROHM BH1710/BH1715/BH1721/BH1750/BH1751 ambient light
-> > sensors.
->
-> nice, some comments inline
->
-> > Signed-off-by: Tomasz Duszynski <tduszyns@gmail.com>
-> > ---
-> >  drivers/iio/light/Kconfig  |  10 ++
-> >  drivers/iio/light/Makefile |   1 +
-> >  drivers/iio/light/bh1750.c | 322 +++++++++++++++++++++++++++++++++++++++++++++
-> >  3 files changed, 333 insertions(+)
-> >  create mode 100644 drivers/iio/light/bh1750.c
+> On 15/04/15 23:15, Octavian Purdila wrote:
+> > On Wed, Apr 15, 2015 at 2:34 PM, Jonathan Cameron <jic23@kernel.org> wrote:
+> >> On 15/04/15 21:58, Octavian Purdila wrote:
+> >>> On Sun, Apr 12, 2015 at 8:59 AM, Jonathan Cameron <jic23@kernel.org> wrote:
+> >>>> On 10/04/15 14:43, Daniel Baluta wrote:
+> >>>>> On Thu, Apr 9, 2015 at 8:18 PM, Jonathan Cameron <jic23@kernel.org> wrote:
+> >>>>>> On 08/04/15 14:30, Daniel Baluta wrote:
+> >>>>>>> On Mon, Apr 6, 2015 at 5:18 PM, Daniel Baluta <daniel.baluta@intel.com> wrote:
+> >>>>>>>> This module is the core of IIO configfs. It creates the "iio" subsystem under
+> >>>>>>>> configfs mount point root, with one default group for "triggers".
+> >>>>>>>>
+> >>>>>>>> It offers basic interface for registering software trigger types. Next patches
+> >>>>>>>> will add "hrtimer" and "sysfs" trigger types. To add a new trigger type we must
+> >>>>>>>> create a new kernel module which implements iio_configfs_trigger.h interface.
+> >>>>>>>>
+> >>>>>>>> See Documentation/iio/iio_configfs.txt for more details on how configfs
+> >>>>>>>> support for IIO works.
+> >>>>>>>>
+> >>>>>>>> Signed-off-by: Daniel Baluta <daniel.baluta@intel.com>
+> >>>>>>>
+> >>>>>>> Hi all,
+> >>>>>>>
+> >>>>>>> I also need your feedback on the following problem.
+> >>>>>>>
+> >>>>>>> We would like to be able to create hrtimer triggers from within
+> >>>>>>> a kernel module. There are cases where we don't have an interrupt
+> >>>>>>> pin or the interrupt pin is not connected, and we would like
+> >>>>>>> that applications to run unmodified with these types of sensors too.
+> >>>>>> A reasonable aim perhaps, as opposed to locally implemented polling
+> >>>>>> all over the place (which should definitely not happen).
+> >>>>>
+> >>>>> Yes, exactly! :)
+> >>>> I'm actually beginning to have my doubts about whether my initial
+> >>>> response here was right.  Given your use cases and the complexity
+> >>>> of matching frequencies, I think you are almost always better
+> >>>> off implementing it in the drivers themselves (which can decide
+> >>>> if there is new data or not).
+> >>>
+> >>> I agree. Although I think having some helper functions in IIO core
+> >>> should help keep the driver modifications to a minimum.
+> >>>
+> >>>>>
+> >>>>>>
+> >>>>>> An alternative the zio guys used was to create timer
+> >>>>>> based triggers on the fly purely based on them being requested
+> >>>>>> (with an appropriate name IIRC)...  Doesn't quite solve your
+> >>>>>> problem though as still needs userspace changes.
+> >>>>>>>
+> >>>>>>> We will split the current design into 3 parts:
+> >>>>>>>
+> >>>>>>> (1) IIO trigger handling generic part, which offers an API
+> >>>>>>>      to register/unregister/get a reference to a trigger type
+> >>>>>>>
+> >>>>>>> (2) IIO configfs part that gets a reference to a trigger type and
+> >>>>>>> handles user requests to create/destroy a trigger.
+> >>>>>>>
+> >>>>>>> (3) IIO hrtimer driver that use the API at (1) for registering
+> >>>>>>> / deregistering a trigger type.
+> >>>>>>>
+> >>>>>>> Then, each driver in the case that it doesn't have a "real" trigger,
+> >>>>>>> will get a reference to a "hrtimer" trigger type and create
+> >>>>>>> a new "hrtimer" trigger.
+> >>>>>>>
+> >>>>>>> Does this look good to you? This could be easily done from
+> >>>>>>> userspace, but we will need to modify our userspace applications.
+> >>>>>> My initial thought is this really is a job for userspace, as should
+> >>>>>> be in most cases connecting up the device specific trigger as well
+> >>>>>> (as it's not always the right thing to use).
+> >>>>>>
+> >>>>>> In the general case it is far from obvious that an hrtimer is the
+> >>>>>> right option.  Many usecases would be better off with a sysfs trigger
+> >>>>>> or even running off a different interrupt based trigger entirely.
+> >>>>>>>
+> >>>>>>> Also, handling sampling_frequency/delay would be transparent to
+> >>>>>>> applications if we provide this in kernel API.
+> >>>>>> Not really as sampling frequency in this case should only be an
+> >>>>>> attribute of the trigger, not the device.  We only really allow
+> >>>>>> it for the device rather than always the triggers on the basis
+> >>>>>> that it has impacts on other device elements (events etc).
+> >>>>>
+> >>>>> Well, if the trigger is directly created from the driver then we will
+> >>>>> have a reference to a function that sets its delay.
+> >>>>>
+> >>>>> Each time the user sets the sampling frequency for the device
+> >>>>> with hit write_raw and there on IIO_CHAN_INFO_SAMP_FREQ
+> >>>>> case we also call set_delay(). Thus we always have have device
+> >>>>> sampling frequency in sync with trigger delay.
+> >>>>>
+> >>>>> I know this sounds crazy :) and I don't like it. I am not sure how
+> >>>>> to guarantee that device frequency is always in sync with trigger
+> >>>>> delay.
+> >>>> You can't that I can see.  Hence you've convinced me this is a bad
+> >>>> idea.
+> >>>
+> >>> I agree we can't accurately synchronize the device frequency with the
+> >>> trigger frequency, but I think we can get it do a good enough level. I
+> >>> also see no difference in accuracy in doing it from userspace or from
+> >>> the driver itself.
+> >>>
+> >>> Why do you think it is a bad idea to synchronize the trigger sample
+> >>> frequency from the device sample frequency handler? I think that if we
+> >>> want to provide the hrtimer trigger from the driver itself, we should
+> >>> do this as well, otherwise there is no real gain to userspace.
+> >>>
+> >> You will get beating problems.  So once in a while you'll either miss
+> >> a reading or you'll get a bonus one.
+> >>
+> >> The point about doing it in the driver is that you actually poll at a
+> >> higher frequency, but only fire a trigger if there is something there
+> >> (by reading the dataready register or equivalent).
+> >>
+> >> Thus your trigger acts more or less the same as a wired interrupt.
+> >> You can't do this with an external hrtimer trigger.
 > >
-> > diff --git a/drivers/iio/light/Kconfig b/drivers/iio/light/Kconfig
-> > index 5a3237b..9fb79ca 100644
-> > --- a/drivers/iio/light/Kconfig
-> > +++ b/drivers/iio/light/Kconfig
-> > @@ -37,6 +37,16 @@ config APDS9300
-> >  	 To compile this driver as a module, choose M here: the
-> >  	 module will be called apds9300.
+> > Polling will have a large impact on power. I know that some people
+> > will care more about saving power and that is why I think its worth
+> > having the external hrtimer trigger option.
 > >
-> > +config BH1750
-> > +	tristate "BH1750 ambient light sensor"
-> > +	depends on I2C
-> > +	help
-> > +	 Say Y here to build support for the BH1710, BH1715, BH1721,
-> > +	 BH1750, BH1751 ambient light sensors.
-> > +
-> > +	 To compile this driver as a module, choose M here: the module will
-> > +	 be called bh1750.
-> > +
-> >  config CM32181
-> >  	depends on I2C
-> >  	tristate "CM32181 driver"
-> > diff --git a/drivers/iio/light/Makefile b/drivers/iio/light/Makefile
-> > index 74656c1..1a13184 100644
-> > --- a/drivers/iio/light/Makefile
-> > +++ b/drivers/iio/light/Makefile
-> > @@ -6,6 +6,7 @@
-> >  obj-$(CONFIG_ADJD_S311)		+= adjd_s311.o
-> >  obj-$(CONFIG_AL3320A)		+= al3320a.o
-> >  obj-$(CONFIG_APDS9300)		+= apds9300.o
-> > +obj-$(CONFIG_BH1750)		+= bh1750.o
-> >  obj-$(CONFIG_CM32181)		+= cm32181.o
-> >  obj-$(CONFIG_CM36651)		+= cm36651.o
-> >  obj-$(CONFIG_GP2AP020A00F)	+= gp2ap020a00f.o
-> > diff --git a/drivers/iio/light/bh1750.c b/drivers/iio/light/bh1750.c
-> > new file mode 100644
-> > index 0000000..83b5413
-> > --- /dev/null
-> > +++ b/drivers/iio/light/bh1750.c
-> > @@ -0,0 +1,322 @@
-> > +/*
-> > + * ROHM BH1710/BH1715/BH1721/BH1750/BH1751 ambient light sensor driver
-> > + *
-> > + * Copyright (c) Tomasz Duszynski <tduszyns@gmail.com>
-> > + *
-> > + * This program is free software; you can redistribute it and/or modify
-> > + * it under the terms of the GNU General Public License version 2 as
-> > + * published by the Free Software Foundation.
-> > + *
-> > + * Data sheets:
-> > + *  http://rohmfs.rohm.com/en/products/databook/datasheet/ic/sensor/light/bh1710fvc-e.pdf
-> > + *  http://rohmfs.rohm.com/en/products/databook/datasheet/ic/sensor/light/bh1715fvc-e.pdf
-> > + *  http://rohmfs.rohm.com/en/products/databook/datasheet/ic/sensor/light/bh1721fvc-e.pdf
-> > + *  http://rohmfs.rohm.com/en/products/databook/datasheet/ic/sensor/light/bh1750fvi-e.pdf
-> > + *  http://rohmfs.rohm.com/en/products/databook/datasheet/ic/sensor/light/bh1751fvi-e.pdf
-> > + *
-> > + * 7-bit I2C slave addresses:
-> > + *  0x23 (ADDR pin low)
-> > + *  0x5C (ADDR pin high)
-> > + *
-> > + */
-> > +
-> > +#include <linux/delay.h>
-> > +#include <linux/i2c.h>
-> > +#include <linux/iio/iio.h>
-> > +#include <linux/iio/sysfs.h>
-> > +#include <linux/module.h>
-> > +
-> > +#define BH1750_POWER_DOWN		0x00
-> > +#define BH1750_H_RES_MODE		0x10 /* auto-mode for BH1721 */
-> > +#define BH1750_CHANGE_INT_TIME_H_BIT	0x40
-> > +#define BH1750_CHANGE_INT_TIME_L_BIT	0x60
-> > +
-> > +enum {
-> > +	BH1710,
-> > +	BH1715,
-> > +	BH1721,
-> > +	BH1750,
-> > +	BH1751
-> > +};
-> > +
-> > +struct bh1750_chip_info {
-> > +	int id;
+> Two different use cases...
 >
-> why is the id stored in chip_info?
-> the point of the chip_info table is to avoid switch blocks in the driver;
-> I suggest to move remaining chip-dependent values to the table and drop
-> the id
+> Either you are interested in 'faking' the data ready signal, in which case polling
+> is the way to go as nothing else will get you there.  Note that ranged sleeps can be
+> used to limit the power usage pain.
 >
-OK.
-> > +	int mtreg_min;
-> > +	int mtreg_max;
-> > +	int mtreg_default;
->
-> u16, these are values stored in an u16 register
->
-Right. Will fix that.
-> > +	int mtreg_to_usec;
-> > +	int mtreg_to_scale;
-> > +};
-> > +
-> > +struct bh1750_data {
-> > +	struct i2c_client *client;
-> > +	struct mutex lock;
-> > +	const struct bh1750_chip_info *chip_info;
-> > +	u16 mtreg;
-> > +};
-> > +
-> > +static const struct bh1750_chip_info chip_info_tbl[] = {
-> > +	[BH1710] = { BH1710, 140, 1022, 300, 400,  4000 },
-> > +	[BH1715] = { BH1715, 31,  254,  69,  1740, 17391 },
-> > +	[BH1721] = { BH1721, 140, 1020, 300, 400,  4000 },
-> > +	[BH1750] = { BH1750, 31,  254,  69,  1740, 17391 },
-> > +	[BH1751] = { BH1751, 31,  254,  69,  1740, 17391 }
-> > +};
-> > +
-> > +static int bh1750_change_int_time(struct bh1750_data *data, int usec)
-> > +{
-> > +	int ret, val;
-> > +	u8 low = 0, high = 0;
->
-> initialization not needed, low/high should always be set
->
-The idea was to make gcc stop complaining that some values
-can be uninitialized. Will change that in next patch.
-> > +	const struct bh1750_chip_info *chip_info = data->chip_info;
-> > +
-> > +	if ((usec % chip_info->mtreg_to_usec) != 0)
-> > +		return -EINVAL;
-> > +
-> > +	val = usec / chip_info->mtreg_to_usec;
-> > +	if (val < chip_info->mtreg_min || val > chip_info->mtreg_max)
-> > +		return -EINVAL;
-> > +
-> > +	switch (chip_info->id) {
-> > +	case BH1710:
-> > +		low = val & 0x001F;
-> > +		high = (val & 0x03E0) >> 5;
-> > +		break;
-> > +	case BH1721:
-> > +		low = val & 0x0010;
-> > +		high = (val & 0x03E0) >> 5;
->
-> break missing?
->
-Right.
-> > +	case BH1715:
-> > +	case BH1750:
-> > +	case BH1751:
-> > +		low = val & 0x001F;
-> > +		high = (val & 0x00E0) >> 5;
-> > +		break;
-> > +	}
-> > +
-> > +	ret = i2c_smbus_write_byte(data->client, BH1750_POWER_DOWN);
-> > +	if (ret < 0)
-> > +		return ret;
-> > +
-> > +	ret = i2c_smbus_write_byte(data->client,
-> > +				   BH1750_CHANGE_INT_TIME_H_BIT | high);
-> > +	if (ret < 0)
-> > +		return ret;
-> > +
-> > +	ret = i2c_smbus_write_byte(data->client,
-> > +				   BH1750_CHANGE_INT_TIME_L_BIT | low);
-> > +	if (ret < 0)
-> > +		return ret;
-> > +
-> > +	data->mtreg = val;
-> > +
-> > +	return i2c_smbus_write_byte(data->client, BH1750_H_RES_MODE);
-> > +}
-> > +
-> > +static int bh1750_read_raw(struct iio_dev *indio_dev,
-> > +			   struct iio_chan_spec const *chan,
-> > +			   int *val, int *val2, long mask)
-> > +{
-> > +	u16 result;
-> > +	int ret, tmp;
-> > +	unsigned long delay;
-> > +	struct bh1750_data *data = iio_priv(indio_dev);
-> > +	const struct bh1750_chip_info *chip_info = data->chip_info;
-> > +
-> > +	switch (mask) {
-> > +	case IIO_CHAN_INFO_RAW:
-> > +		switch (chan->type) {
-> > +		case IIO_INTENSITY:
-> > +			delay = chip_info->mtreg_to_usec * data->mtreg;
-> > +			mutex_lock(&data->lock);
-> > +			usleep_range(delay, delay + 20000);
->
-> the driver uses continuous mode and there is no data-ready flag
->
-> why not using one time mode?, I think this would better fit in what other
-> drivers are doing
->
-One time mode is not supported by all chips. It was just easier to use
-mode that fits all. Anyway, I will rethink that part.
-> > +			ret = i2c_master_recv(data->client,
-> > +					      (char *)&result, 2);
->
-> almost all drivers use i2c_smbus_read_word_xxx() -- is there a reason not
-> to?
->
-Yes. In BH17xx case you address device and then read two bytes with
-measurement result - no sending additional command in between.
-> > +			mutex_unlock(&data->lock);
-> > +			if (ret < 0)
-> > +				return ret;
-> > +
-> > +			*val = swab16(result);
-> > +			return IIO_VAL_INT;
-> > +		default:
-> > +			return -EINVAL;
-> > +		}
-> > +	case IIO_CHAN_INFO_SCALE:
-> > +		tmp = chip_info->mtreg_to_scale * data->mtreg;
->
-> use the variable delay as above; the same computation is done in every
-> switch case
->
-OK.
-> > +		*val = tmp / 1000000;
-> > +		*val2 = tmp % 1000000;
-> > +		return IIO_VAL_INT_PLUS_MICRO;
-> > +	case IIO_CHAN_INFO_INT_TIME:
-> > +		*val = 0;
-> > +		*val2 = chip_info->mtreg_to_usec * data->mtreg;
-> > +		return IIO_VAL_INT_PLUS_MICRO;
-> > +	default:
-> > +		return -EINVAL;
-> > +	}
-> > +}
-> > +
-> > +static int bh1750_write_raw(struct iio_dev *indio_dev,
-> > +			    struct iio_chan_spec const *chan,
-> > +			    int val, int val2, long mask)
-> > +{
-> > +	int ret;
-> > +	struct bh1750_data *data = iio_priv(indio_dev);
-> > +
-> > +	switch (mask) {
-> > +	case IIO_CHAN_INFO_INT_TIME:
-> > +		if (val != 0)
-> > +			return -EINVAL;
-> > +
-> > +		mutex_lock(&data->lock);
-> > +		ret = bh1750_change_int_time(data, val2);
-> > +		mutex_unlock(&data->lock);
-> > +		return ret;
-> > +	default:
-> > +		return -EINVAL;
-> > +	}
-> > +}
-> > +
-> > +static ssize_t bh1750_show_int_time_available(struct device *dev,
-> > +		struct device_attribute *attr, char *buf)
-> > +{
-> > +	int i, inc;
-> > +	size_t len = 0;
-> > +	struct bh1750_data *data = iio_priv(dev_to_iio_dev(dev));
-> > +	const struct bh1750_chip_info *chip_info = data->chip_info;
-> > +
-> > +	switch (chip_info->id) {
-> > +	case BH1710:
-> > +	case BH1721:
-> > +		/* All values won't fit into one page, so display every
-> > +		 * second one. By doing so step size is increased
-> > +		 * from 0.4ms to 0.8ms.*/
->
-> multi-line comment style?;
-> missing space before */
->
-Right.
-> > +		inc = 2;
-> > +		break;
-> > +	default:
-> > +		inc = 1;
-> > +		break;
-> > +	}
-> > +
-> > +	for (i = chip_info->mtreg_min; i <= chip_info->mtreg_max; i += inc)
-> > +		len += scnprintf(buf + len, PAGE_SIZE - len, "0.%06d ",
-> > +				 i * chip_info->mtreg_to_usec);
-> > +
-> > +	buf[len - 1] = '\n';
-> > +
-> > +	return len;
-> > +}
-> > +
-> > +static IIO_DEV_ATTR_INT_TIME_AVAIL(bh1750_show_int_time_available);
-> > +
-> > +static struct attribute *bh1750_attributes[] = {
-> > +	&iio_dev_attr_integration_time_available.dev_attr.attr,
-> > +	NULL,
-> > +};
-> > +
-> > +static struct attribute_group bh1750_attribute_group = {
-> > +	.attrs = bh1750_attributes,
-> > +};
-> > +
-> > +static const struct iio_info bh1750_info = {
-> > +	.driver_module = THIS_MODULE,
-> > +	.attrs = &bh1750_attribute_group,
-> > +	.read_raw = bh1750_read_raw,
-> > +	.write_raw = bh1750_write_raw,
-> > +};
-> > +
-> > +static const struct iio_chan_spec bh1750_channels[] = {
-> > +	{
-> > +		.type = IIO_INTENSITY,
-> > +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
-> > +				      BIT(IIO_CHAN_INFO_SCALE) |
-> > +				      BIT(IIO_CHAN_INFO_INT_TIME)
-> > +	}
-> > +};
-> > +
-> > +static int bh1750_probe(struct i2c_client *client,
-> > +			const struct i2c_device_id *id)
-> > +{
-> > +	int ret, usec;
-> > +	struct bh1750_data *data;
-> > +	struct iio_dev *indio_dev;
-> > +
-> > +	if (!i2c_check_functionality(client->adapter, I2C_FUNC_I2C |
-> > +				I2C_FUNC_SMBUS_WRITE_BYTE))
-> > +		return -ENODEV;
-> > +
-> > +	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
-> > +	if (!indio_dev)
-> > +		return -ENOMEM;
-> > +
-> > +	data = iio_priv(indio_dev);
-> > +	i2c_set_clientdata(client, indio_dev);
-> > +	data->client = client;
-> > +	data->chip_info = &chip_info_tbl[id->driver_data];
-> > +
-> > +	usec = data->chip_info->mtreg_to_usec * data->chip_info->mtreg_default;
-> > +	ret = bh1750_change_int_time(data, usec);
-> > +	if (ret < 0)
-> > +		return ret;
-> > +
-> > +	mutex_init(&data->lock);
-> > +	indio_dev->dev.parent = &client->dev;
-> > +	indio_dev->info = &bh1750_info;
-> > +	indio_dev->name = id->name;
-> > +	indio_dev->channels = bh1750_channels;
-> > +	indio_dev->num_channels = ARRAY_SIZE(bh1750_channels);
-> > +	indio_dev->modes = INDIO_DIRECT_MODE;
-> > +
-> > +	return devm_iio_device_register(&client->dev, indio_dev);
->
-> chip should probably be powered down if this fails; or use one-time mode
->
-OK.
-> > +}
-> > +
-> > +#ifdef CONFIG_PM_SLEEP
-> > +static int bh1750_suspend(struct device *dev)
-> > +{
-> > +	int ret;
-> > +	struct bh1750_data *data =
-> > +		iio_priv(i2c_get_clientdata(to_i2c_client(dev)));
-> > +
-> > +	mutex_lock(&data->lock);
-> > +	ret = i2c_smbus_write_byte(data->client, BH1750_POWER_DOWN);
-> > +	mutex_unlock(&data->lock);
-> > +
-> > +	return ret;
-> > +}
-> > +
-> > +static int bh1750_resume(struct device *dev)
-> > +{
-> > +	struct bh1750_data *data =
-> > +		iio_priv(i2c_get_clientdata(to_i2c_client(dev)));
-> > +
-> > +	return i2c_smbus_write_byte(data->client, BH1750_H_RES_MODE);
-> > +}
-> > +
-> > +static SIMPLE_DEV_PM_OPS(bh1750_pm_ops, bh1750_suspend, bh1750_resume);
-> > +#define BH1750_PM_OPS (&bh1750_pm_ops)
-> > +#else
-> > +#define BH1750_PM_OPS NULL
-> > +#endif
-> > +
-> > +static const struct i2c_device_id bh1750_id[] = {
-> > +	{ "bh1710", BH1710 },
-> > +	{ "bh1715", BH1715 },
-> > +	{ "bh1721", BH1721 },
-> > +	{ "bh1750", BH1750 },
-> > +	{ "bh1751", BH1751 },
-> > +	{ }
-> > +};
-> > +MODULE_DEVICE_TABLE(i2c, bh1750_id);
-> > +
-> > +static struct i2c_driver bh1750_driver = {
-> > +	.driver = {
-> > +		.name = "bh1750",
-> > +		.owner = THIS_MODULE,
-> > +		.pm = BH1750_PM_OPS,
-> > +	},
->
-> .remove to power down
->
-OK.
-> > +	.probe = bh1750_probe,
-> > +	.id_table = bh1750_id,
-> > +
-> > +};
-> > +module_i2c_driver(bh1750_driver);
-> > +
-> > +MODULE_AUTHOR("Tomasz Duszynski <tduszyns@gmail.com>");
-> > +MODULE_DESCRIPTION("ROHM BH1710/BH1715/BH1721/BH1750/BH1751 als driver");
-> > +MODULE_LICENSE("GPL v2");
-> >
->
-> --
->
-> Peter Meerwald
-> +43-664-2444418 (mobile)
 
-Thanks for review!
+Sure, but ranged sleeps will use a hrtimer anyway :) And because of
+that we have no guarantee that we will not miss data.
+
+> or you are interested in much lower frequency sampling in which case you use
+> an hrtimer trigger, but run it at way below the sample rate.  You will always
+> get new data, but there is no control of when exactly that data was grabbed
+> and you will loose samples.
+>
+> The first was what I thought we were discussing...
+>
+> Any attempt to synchronize timing is a non starter as it will beat as any two
+> similar frequencies will so you will loose data.
+>
+
+Maybe synchronizing is a too stronger word here. What I meant was that
+when the device sampling frequency is changed to also change the
+hrtimer interval too (basically to 1/freq).
+
+Yes, we will occasionally loose data but it is the best we can do if
+we don't have the interrupt available. Fully polling will waste too
+much power and ranged sleeps can still lead to missing samples.
