@@ -1,43 +1,83 @@
-Return-Path: <varkabhadram@gmail.com>
-From: Varka Bhadram <varkabhadram@gmail.com>
-To: devicetree@vger.kernel.org,
-	linux-iio@vger.kernel.org
-Cc: jic23@kernel.org,
-	Varka Bhadram <varkab@cdac.in>
-Subject: [PATCH iio] imu: inv_mpu6050: adds device tree bindings
-Date: Fri, 24 Apr 2015 14:53:07 +0530
-Message-Id: <1429867387-10219-1-git-send-email-varkab@cdac.in>
+Return-Path: <irina.tirdea@intel.com>
+From: Irina Tirdea <irina.tirdea@intel.com>
+To: Jonathan Cameron <jic23@kernel.org>,
+	linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Rob Herring <robh+dt@kernel.org>,
+	Pawel Moll <pawel.moll@arm.com>,
+	Mark Rutland <mark.rutland@arm.com>,
+	Ian Campbell <ijc+devicetree@hellion.org.uk>,
+	Kumar Gala <galak@codeaurora.org>,
+	Irina Tirdea <irina.tirdea@intel.com>
+Subject: [PATCH v2 3/4] iio: core: Introduce IIO_CHAN_INFO_OVERSAMPLING_RATIO
+Date: Thu, 23 Apr 2015 21:34:07 +0300
+Message-Id: <1429814048-22808-4-git-send-email-irina.tirdea@intel.com>
+In-Reply-To: <1429814048-22808-1-git-send-email-irina.tirdea@intel.com>
+References: <1429814048-22808-1-git-send-email-irina.tirdea@intel.com>
 List-ID: <linux-iio@vger.kernel.org>
 
+Some magnetometers can perform a number of repetitions in HW
+for each measurement to increase accuracy. One example is
+Bosch BMC150:
+http://ae-bst.resource.bosch.com/media/products/dokumente/bmc150/BST-BMC150-DS000-04.pdf.
 
-Signed-off-by: Varka Bhadram <varkab@cdac.in>
+Introduce an interface to set the oversampling ratio
+for these devices.
+
+Signed-off-by: Irina Tirdea <irina.tirdea@intel.com>
 ---
- .../devicetree/bindings/iio/imu/inv_mpu6050.txt    |   17 +++++++++++++++++
- 1 file changed, 17 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/iio/imu/inv_mpu6050.txt
+ Documentation/ABI/testing/sysfs-bus-iio | 12 ++++++++++++
+ drivers/iio/industrialio-core.c         |  1 +
+ include/linux/iio/iio.h                 |  1 +
+ 3 files changed, 14 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/iio/imu/inv_mpu6050.txt b/Documentation/devicetree/bindings/iio/imu/inv_mpu6050.txt
-new file mode 100644
-index 0000000..e4d8f1c
---- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/imu/inv_mpu6050.txt
-@@ -0,0 +1,17 @@
-+InvenSense MPU-6050 Six-Axis (Gyro + Accelerometer) MEMS MotionTracking Device
+diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
+index 866b4ec..e46c71f 100644
+--- a/Documentation/ABI/testing/sysfs-bus-iio
++++ b/Documentation/ABI/testing/sysfs-bus-iio
+@@ -1375,3 +1375,15 @@ Description:
+ 		The emissivity ratio of the surface in the field of view of the
+ 		contactless temperature sensor.  Emissivity varies from 0 to 1,
+ 		with 1 being the emissivity of a black body.
 +
-+http://www.invensense.com/mems/gyro/mpu6050.html
-+
-+Required properties:
-+ - compatible : should be "invensense,mpu6050"
-+ - reg : the I2C address of the sensor
-+ - interrupt-parent : should be the phandle for the interrupt controller
-+ - interrupts : interrupt mapping for GPIO IRQ
-+
-+Example:
-+	mpu6050@68 {
-+		compatible = "invensense,mpu6050";
-+		reg = <0x68>;
-+		interrupt-parent = <&gpio1>;
-+		interrupts = <18 1>;
-+	};
++What:		/sys/bus/iio/devices/iio:deviceX/in_magn_x_oversampling_ratio
++What:		/sys/bus/iio/devices/iio:deviceX/in_magn_y_oversampling_ratio
++What:		/sys/bus/iio/devices/iio:deviceX/in_magn_z_oversampling_ratio
++KernelVersion:	4.2
++Contact:	linux-iio@vger.kernel.org
++Description:
++		Hardware applied number of measurements for acquiring one
++		data point. The HW will do <type>[_name]_oversampling_ratio
++		measurements and return the average value as output data. Each
++		value resulted from <type>[_name]_oversampling_ratio measurements
++		is considered as one sample for <type>[_name]_sampling_frequency.
+diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+index 7c98bc1..dfa81db 100644
+--- a/drivers/iio/industrialio-core.c
++++ b/drivers/iio/industrialio-core.c
+@@ -129,6 +129,7 @@ static const char * const iio_chan_info_postfix[] = {
+ 	[IIO_CHAN_INFO_DEBOUNCE_COUNT] = "debounce_count",
+ 	[IIO_CHAN_INFO_DEBOUNCE_TIME] = "debounce_time",
+ 	[IIO_CHAN_INFO_CALIBEMISSIVITY] = "calibemissivity",
++	[IIO_CHAN_INFO_OVERSAMPLING_RATIO] = "oversampling_ratio",
+ };
+ 
+ /**
+diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
+index b1e46ae..058441d 100644
+--- a/include/linux/iio/iio.h
++++ b/include/linux/iio/iio.h
+@@ -44,6 +44,7 @@ enum iio_chan_info_enum {
+ 	IIO_CHAN_INFO_DEBOUNCE_COUNT,
+ 	IIO_CHAN_INFO_DEBOUNCE_TIME,
+ 	IIO_CHAN_INFO_CALIBEMISSIVITY,
++	IIO_CHAN_INFO_OVERSAMPLING_RATIO,
+ };
+ 
+ enum iio_shared_by {
 -- 
-1.7.9.5
+1.9.1
