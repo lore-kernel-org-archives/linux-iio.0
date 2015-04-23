@@ -1,118 +1,105 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mx07-00178001.pphosted.com ([62.209.51.94]:40379 "EHLO
-	mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1756412AbbDWDFE (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 22 Apr 2015 23:05:04 -0400
-Message-ID: <55386144.70605@st.com>
-Date: Thu, 23 Apr 2015 11:04:36 +0800
-From: Denis Ciocca <denis.ciocca@st.com>
+Received: from mail-wg0-f54.google.com ([74.125.82.54]:34631 "EHLO
+	mail-wg0-f54.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1756546AbbDWHaK (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 23 Apr 2015 03:30:10 -0400
 MIME-Version: 1.0
-To: Alban Bedel <alban.bedel@avionic-design.de>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-CC: Jonathan Cameron <jic23@kernel.org>,
+In-Reply-To: <1429641822-2007-1-git-send-email-tduszyns@gmail.com>
+References: <1429641822-2007-1-git-send-email-tduszyns@gmail.com>
+Date: Thu, 23 Apr 2015 10:30:09 +0300
+Message-ID: <CAEnQRZBNMZTT7oB8xV+NU1gJg9FJXi_gqJivt3X1hkDhrtkcAA@mail.gmail.com>
+Subject: Re: [PATCH] iio: light: add support for ROHM BH1710/BH1715/BH1721/BH1750/BH1751
+ ambient light sensors
+From: Daniel Baluta <daniel.baluta@gmail.com>
+To: Tomasz Duszynski <tduszyns@gmail.com>
+Cc: Jonathan Cameron <jic23@kernel.org>,
 	Hartmut Knaack <knaack.h@gmx.de>,
 	Lars-Peter Clausen <lars@metafoo.de>,
 	Peter Meerwald <pmeerw@pmeerw.net>,
-	Linus Walleij <linus.walleij@linaro.org>,
-	Lee Jones <lee.jones@linaro.org>,
-	Robert Dolca <robert.dolca@intel.com>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] iio:st_sensors: Fix oops when probing SPI devices
-References: <1429531038-20225-1-git-send-email-alban.bedel@avionic-design.de>
-In-Reply-To: <1429531038-20225-1-git-send-email-alban.bedel@avionic-design.de>
-Content-Type: text/plain; charset="windows-1252"; format=flowed
+	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Hi Alban,
-
-after several months I'm finally back. I already did this patch, but I 
-had no time to submit. Thanks to your support it is ok for me!
-
-We need to propagate also the patch to fix previous kernel versions...
-
-Acked-by: Denis Ciocca <denis.ciocca@st.com>
-
-
-Denis
-
-
-On 04/20/2015 07:57 PM, Alban Bedel wrote:
-> In SPI mode the transfer buffer is locked with a mutex. However this
-> mutex is only initilized after the probe, but some transfer needs to
-> be done in the probe.
+On Tue, Apr 21, 2015 at 9:43 PM, Tomasz Duszynski <tduszyns@gmail.com> wrote:
+> Add support for ROHM BH1710/BH1715/BH1721/BH1750/BH1751 ambient light
+> sensors.
 >
-> To fix this bug we move the mutex initialization at the beginning of
-> the device probe.
->
-> Signed-off-by: Alban Bedel <alban.bedel@avionic-design.de>
+> Signed-off-by: Tomasz Duszynski <tduszyns@gmail.com>
 > ---
->   drivers/iio/accel/st_accel_core.c               | 1 +
->   drivers/iio/common/st_sensors/st_sensors_core.c | 2 --
->   drivers/iio/gyro/st_gyro_core.c                 | 1 +
->   drivers/iio/magnetometer/st_magn_core.c         | 1 +
->   drivers/iio/pressure/st_pressure_core.c         | 1 +
->   5 files changed, 4 insertions(+), 2 deletions(-)
+>  drivers/iio/light/Kconfig  |  10 ++
+>  drivers/iio/light/Makefile |   1 +
+>  drivers/iio/light/bh1750.c | 322 +++++++++++++++++++++++++++++++++++++++++++++
+>  3 files changed, 333 insertions(+)
+>  create mode 100644 drivers/iio/light/bh1750.c
 >
-> diff --git a/drivers/iio/accel/st_accel_core.c b/drivers/iio/accel/st_accel_core.c
-> index 58d1d13..211b132 100644
-> --- a/drivers/iio/accel/st_accel_core.c
-> +++ b/drivers/iio/accel/st_accel_core.c
-> @@ -546,6 +546,7 @@ int st_accel_common_probe(struct iio_dev *indio_dev)
->   
->   	indio_dev->modes = INDIO_DIRECT_MODE;
->   	indio_dev->info = &accel_info;
-> +	mutex_init(&adata->tb.buf_lock);
->   
->   	st_sensors_power_enable(indio_dev);
->   
-> diff --git a/drivers/iio/common/st_sensors/st_sensors_core.c b/drivers/iio/common/st_sensors/st_sensors_core.c
-> index edd13d2..8dd0477 100644
-> --- a/drivers/iio/common/st_sensors/st_sensors_core.c
-> +++ b/drivers/iio/common/st_sensors/st_sensors_core.c
-> @@ -304,8 +304,6 @@ int st_sensors_init_sensor(struct iio_dev *indio_dev,
->   	struct st_sensors_platform_data *of_pdata;
->   	int err = 0;
->   
-> -	mutex_init(&sdata->tb.buf_lock);
-> -
->   	/* If OF/DT pdata exists, it will take precedence of anything else */
->   	of_pdata = st_sensors_of_probe(indio_dev->dev.parent, pdata);
->   	if (of_pdata)
-> diff --git a/drivers/iio/gyro/st_gyro_core.c b/drivers/iio/gyro/st_gyro_core.c
-> index 21395f2..ffe9664 100644
-> --- a/drivers/iio/gyro/st_gyro_core.c
-> +++ b/drivers/iio/gyro/st_gyro_core.c
-> @@ -400,6 +400,7 @@ int st_gyro_common_probe(struct iio_dev *indio_dev)
->   
->   	indio_dev->modes = INDIO_DIRECT_MODE;
->   	indio_dev->info = &gyro_info;
-> +	mutex_init(&gdata->tb.buf_lock);
->   
->   	st_sensors_power_enable(indio_dev);
->   
-> diff --git a/drivers/iio/magnetometer/st_magn_core.c b/drivers/iio/magnetometer/st_magn_core.c
-> index 8ade473..2e56f81 100644
-> --- a/drivers/iio/magnetometer/st_magn_core.c
-> +++ b/drivers/iio/magnetometer/st_magn_core.c
-> @@ -369,6 +369,7 @@ int st_magn_common_probe(struct iio_dev *indio_dev)
->   
->   	indio_dev->modes = INDIO_DIRECT_MODE;
->   	indio_dev->info = &magn_info;
-> +	mutex_init(&mdata->tb.buf_lock);
->   
->   	st_sensors_power_enable(indio_dev);
->   
-> diff --git a/drivers/iio/pressure/st_pressure_core.c b/drivers/iio/pressure/st_pressure_core.c
-> index 97baf40d..e881fa6 100644
-> --- a/drivers/iio/pressure/st_pressure_core.c
-> +++ b/drivers/iio/pressure/st_pressure_core.c
-> @@ -417,6 +417,7 @@ int st_press_common_probe(struct iio_dev *indio_dev)
->   
->   	indio_dev->modes = INDIO_DIRECT_MODE;
->   	indio_dev->info = &press_info;
-> +	mutex_init(&press_data->tb.buf_lock);
->   
->   	st_sensors_power_enable(indio_dev);
->   
+> diff --git a/drivers/iio/light/Kconfig b/drivers/iio/light/Kconfig
+> index 5a3237b..9fb79ca 100644
+> --- a/drivers/iio/light/Kconfig
+> +++ b/drivers/iio/light/Kconfig
+> @@ -37,6 +37,16 @@ config APDS9300
+>          To compile this driver as a module, choose M here: the
+>          module will be called apds9300.
+>
+> +config BH1750
+> +       tristate "BH1750 ambient light sensor"
 
+Better use ROHM BH1750 .. here.
+
+
+> +static const struct iio_chan_spec bh1750_channels[] = {
+> +       {
+> +               .type = IIO_INTENSITY,
+
+Shouldn't this be IIO_LIGHT channel type?
+
+Users will get illuminance after multiplying raw value with scale.
+
+> +               .info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
+> +                                     BIT(IIO_CHAN_INFO_SCALE) |
+> +                                     BIT(IIO_CHAN_INFO_INT_TIME)
+> +       }
+> +};
+> +
+> +static int bh1750_probe(struct i2c_client *client,
+> +                       const struct i2c_device_id *id)
+> +{
+> +       int ret, usec;
+> +       struct bh1750_data *data;
+> +       struct iio_dev *indio_dev;
+> +
+> +       if (!i2c_check_functionality(client->adapter, I2C_FUNC_I2C |
+> +                               I2C_FUNC_SMBUS_WRITE_BYTE))
+> +               return -ENODEV;
+> +
+> +       indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
+> +       if (!indio_dev)
+> +               return -ENOMEM;
+> +
+> +       data = iio_priv(indio_dev);
+> +       i2c_set_clientdata(client, indio_dev);
+> +       data->client = client;
+> +       data->chip_info = &chip_info_tbl[id->driver_data];
+> +
+> +       usec = data->chip_info->mtreg_to_usec * data->chip_info->mtreg_default;
+> +       ret = bh1750_change_int_time(data, usec);
+> +       if (ret < 0)
+> +               return ret;
+> +
+> +       mutex_init(&data->lock);
+> +       indio_dev->dev.parent = &client->dev;
+> +       indio_dev->info = &bh1750_info;
+> +       indio_dev->name = id->name;
+> +       indio_dev->channels = bh1750_channels;
+> +       indio_dev->num_channels = ARRAY_SIZE(bh1750_channels);
+> +       indio_dev->modes = INDIO_DIRECT_MODE;
+> +
+> +       return devm_iio_device_register(&client->dev, indio_dev);
+
+You need also to add a remove function where the chip is powered down. Then
+you shouldn't use devm_iio_device_register here, because you need to control
+the order of chip powerdown/ device unregister operations at remove.
+
+thanks,
+Daniel.
