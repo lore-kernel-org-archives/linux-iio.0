@@ -1,57 +1,64 @@
-Return-Path: <tiberiu.a.breana@intel.com>
-From: Tiberiu Breana <tiberiu.a.breana@intel.com>
-To: linux-iio@vger.kernel.org
-Cc: Jonathan Cameron <jic23@kernel.org>
-Subject: [PATCH v2 0/2] Add support for Sensortek STK3310
-Date: Fri, 24 Apr 2015 16:46:37 +0300
-Message-Id: <1429883199-28201-1-git-send-email-tiberiu.a.breana@intel.com>
+Return-Path: <k.wrona@samsung.com>
+Message-id: <553A2499.30501@samsung.com>
+Date: Fri, 24 Apr 2015 13:10:17 +0200
+From: Karol Wrona <k.wrona@samsung.com>
+MIME-version: 1.0
+To: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>,
+ Lars-Peter Clausen <lars@metafoo.de>, Peter Meerwald <pmeerw@pmeerw.net>,
+ Karol Wrona <wrona.vy@gmail.com>
+Subject: Re: [PATCH] iio: common: ssp_sensors: Fix uninitialized warning for
+ timestamp
+References: <1429176624-19223-1-git-send-email-k.wrona@samsung.com>
+ <5532AA55.3040609@kernel.org>
+In-reply-to: <5532AA55.3040609@kernel.org>
+Content-type: text/plain; charset=windows-1252
 List-ID: <linux-iio@vger.kernel.org>
 
-These patches include an iio driver for the Sensortek STK3310
-ambient light and proximity sensor. The STK3311 model is also
-supported.
-
-Datasheet:
-http://www.datasheetspdf.com/datasheet/STK3310.html
-
-Patches are as following:
-
-1. basic functionality:
-- raw readings of light and proximity data
-- configuration of parameters like gain and integration time
-- power management
-
-2. interrupt support:
-- interrupt support for proximity events
-- enabling/disabling interrupts (events) via sysfs
-- setting proximity thresholds
-
-Changes since v1:
-- addressed Jonathan's comments
-- replaced devm_iio_device_register w/ iio_device_register
-- merged power management patch into patch 1
-- replaced the cache table with a regmap that now handles all
-  parameter and interrupt configurations
-- removed the set_cfg function along with enums and defines
-  that were no longer needed
-- fixed IT values exposed to userspace
-- removed the reset_psint function and moved its functionality
-  to the event handler
-- added an irq_handler to capture  more accurate event timestamps
-
-Regards,
-Tiberiu
+On 04/18/2015 09:02 PM, Jonathan Cameron wrote:
+> On 16/04/15 10:30, Karol Wrona wrote:
+>> calculated_time variable caused warning as uninitialized.  It was not harmful
+>> because it was evaluated in the path in which was used later but it is to
+>> satisfy the checkers.
+>>
+>> Signed-off-by: Karol Wrona <k.wrona@samsung.com>
+> Dumb compiler. It's a false positive and as the function is an inline in the header,
+> it should be able to tell. 
+> 
+> What compiler is spitting out the warning?
 
 
-Tiberiu Breana (2):
-  iio: light: Add support for Sensortek STK3310
-  iio: light: Add threshold interrupt support for STK3310
+You should have krobot complain in the mail.
+Subject: "include/linux/iio/buffer.h:142:32: warning: 'calculated_time'
+may be used uninitialized in this function"
 
- drivers/iio/light/Kconfig   |  11 +
- drivers/iio/light/Makefile  |   1 +
- drivers/iio/light/stk3310.c | 780 ++++++++++++++++++++++++++++++++++++++++++++
- 3 files changed, 792 insertions(+)
- create mode 100644 drivers/iio/light/stk3310.c
+This was sh compiler. I suppose that we can treat it as false warning.
+It will complain whenever the variable will stay uninitialized even if
+not used in such path.
 
--- 
-1.9.1
+
+> 
+>> ---
+>>  drivers/iio/common/ssp_sensors/ssp_iio.c |    2 +-
+>>  1 file changed, 1 insertion(+), 1 deletion(-)
+>>
+>> diff --git a/drivers/iio/common/ssp_sensors/ssp_iio.c b/drivers/iio/common/ssp_sensors/ssp_iio.c
+>> index a3ae165..16180e6 100644
+>> --- a/drivers/iio/common/ssp_sensors/ssp_iio.c
+>> +++ b/drivers/iio/common/ssp_sensors/ssp_iio.c
+>> @@ -80,7 +80,7 @@ int ssp_common_process_data(struct iio_dev *indio_dev, void *buf,
+>>  			    unsigned int len, int64_t timestamp)
+>>  {
+>>  	__le32 time;
+>> -	int64_t calculated_time;
+>> +	int64_t calculated_time = 0;
+>>  	struct ssp_sensor_data *spd = iio_priv(indio_dev);
+>>  
+>>  	if (indio_dev->scan_bytes == 0)
+>>
+> 
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> 
