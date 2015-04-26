@@ -1,231 +1,166 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:42982 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:43068 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752689AbbDZTj1 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 26 Apr 2015 15:39:27 -0400
-Message-ID: <553D3EED.7030108@kernel.org>
-Date: Sun, 26 Apr 2015 20:39:25 +0100
+	with ESMTP id S1751080AbbDZTqI (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 26 Apr 2015 15:46:08 -0400
+Message-ID: <553D407D.5030904@kernel.org>
+Date: Sun, 26 Apr 2015 20:46:05 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Daniel Baluta <daniel.baluta@intel.com>
-CC: Joel Becker <jlbec@evilplan.org>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"octavian.purdila@intel.com" <octavian.purdila@intel.com>,
-	Paul Bolle <pebolle@tiscali.nl>, patrick.porlan@intel.com,
-	adriana.reus@intel.com, constantin.musca@intel.com,
-	marten@intuitiveaerial.com
-Subject: Re: [PATCH v4 2/4] iio: core: Introduce IIO configfs support
-References: <1429538563-23430-1-git-send-email-daniel.baluta@intel.com>	<1429538563-23430-3-git-send-email-daniel.baluta@intel.com>	<553D3BE4.8030108@kernel.org> <CAEnQRZCa-h9o--2aRXiXHwy9e2xbKENfKk-Xqy9GF5qExud+cg@mail.gmail.com>
-In-Reply-To: <CAEnQRZCa-h9o--2aRXiXHwy9e2xbKENfKk-Xqy9GF5qExud+cg@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
+To: Roberta Dobrescu <roberta.dobrescu@gmail.com>,
+	linux-iio@vger.kernel.org
+CC: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
+	daniel.baluta@intel.com
+Subject: Re: [PATCH v2 1/3] staging: iio: light: isl29018: Remove non-standard
+ sysfs attributes
+References: <1429212059-13010-1-git-send-email-roberta.dobrescu@gmail.com> <1429212059-13010-2-git-send-email-roberta.dobrescu@gmail.com>
+In-Reply-To: <1429212059-13010-2-git-send-email-roberta.dobrescu@gmail.com>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 26/04/15 20:36, Daniel Baluta wrote:
-> On Sun, Apr 26, 2015 at 10:26 PM, Jonathan Cameron <jic23@kernel.org> wrote:
->> On 20/04/15 15:02, Daniel Baluta wrote:
->>> This creates an IIO configfs subystem named "iio", with a default "triggers"
->>> group.
->>>
->>> Triggers group is used for handling software triggers. To create a new software
->>> trigger one must create a directory inside the trigger directory.
->>>
->>> Software trigger name MUST follow the following convention:
->>>       * <trigger-type>-<trigger-name>
->>> Where:
->>>       * <trigger_type>, specifies the interrupt source (e.g: hrtimer)
->>>       * <trigger-name>, specifies the IIO device trigger name
->>>
->>> Failing to follow this convention will result in an directory creation error.
->>>
->>> E.g, assuming that hrtimer trigger type is registered with IIO software
->>> trigger core:
->>>
->>> $ mkdir /config/iio/triggers/hrtimer-instance1
->>>
->>> Signed-off-by: Daniel Baluta <daniel.baluta@intel.com>
->> Looks good. Couple of little comments inline.
->>
->> Jonathan
->>> ---
->>>  drivers/iio/Kconfig                 |   8 +++
->>>  drivers/iio/Makefile                |   1 +
->>>  drivers/iio/industrialio-configfs.c | 117 ++++++++++++++++++++++++++++++++++++
->>>  3 files changed, 126 insertions(+)
->>>  create mode 100644 drivers/iio/industrialio-configfs.c
->>>
->>> diff --git a/drivers/iio/Kconfig b/drivers/iio/Kconfig
->>> index de7f1d9..c310156 100644
->>> --- a/drivers/iio/Kconfig
->>> +++ b/drivers/iio/Kconfig
->>> @@ -18,6 +18,14 @@ config IIO_BUFFER
->>>         Provide core support for various buffer based data
->>>         acquisition methods.
->>>
->>> +config IIO_CONFIGFS
->>> +     tristate "Enable IIO configuration via configfs"
->>> +     select CONFIGFS_FS
->>> +     help
->>> +       This allows configuring various IIO bits through configfs
->>> +       (e.g. software triggers). For more info see
->>> +       Documentation/iio/iio_configfs.txt.
->>> +
->>>  if IIO_BUFFER
->>>
->>>  config IIO_BUFFER_CB
->>> diff --git a/drivers/iio/Makefile b/drivers/iio/Makefile
->>> index df87975..31aead3 100644
->>> --- a/drivers/iio/Makefile
->>> +++ b/drivers/iio/Makefile
->>> @@ -10,6 +10,7 @@ industrialio-$(CONFIG_IIO_SW_TRIGGER) += industrialio-sw-trigger.o
->>>  industrialio-$(CONFIG_IIO_BUFFER_CB) += buffer_cb.o
->>>
->>>  obj-$(CONFIG_IIO_TRIGGERED_BUFFER) += industrialio-triggered-buffer.o
->>> +obj-$(CONFIG_IIO_CONFIGFS) += industrialio-configfs.o
->>>  obj-$(CONFIG_IIO_KFIFO_BUF) += kfifo_buf.o
->>>
->>>  obj-y += accel/
->>> diff --git a/drivers/iio/industrialio-configfs.c b/drivers/iio/industrialio-configfs.c
->>> new file mode 100644
->>> index 0000000..0361434
->>> --- /dev/null
->>> +++ b/drivers/iio/industrialio-configfs.c
->>> @@ -0,0 +1,117 @@
->>> +/*
->>> + * Industrial I/O configfs bits
->>> + *
->>> + * Copyright (c) 2015 Intel Corporation
->>> + *
->>> + * This program is free software; you can redistribute it and/or modify it
->>> + * under the terms of the GNU General Public License version 2 as published by
->>> + * the Free Software Foundation.
->>> + */
->>> +
->>> +#include <linux/configfs.h>
->>> +#include <linux/module.h>
->>> +#include <linux/init.h>
->>> +#include <linux/kmod.h>
->>> +#include <linux/slab.h>
->>> +
->>> +#include <linux/iio/iio.h>
->>> +#include <linux/iio/sw_trigger.h>
->>> +
->>> +#define MAX_NAME_LEN 32
->> Strikes me as perhaps a little short given we want to allow 'almost' arbitary names for the triggers.
+On 16/04/15 20:20, Roberta Dobrescu wrote:
+> This patch removes non-standard sysfs attributes range, range_available,
+> adc_resolution and adc_resolution_available. It also removes the
+> corresponding show and store functions.
 > 
-> We are anyhow, limited by the configfs name len here.
+> This is in preparation for using standard IIO attributes in order to move
+> the code out of staging.
 > 
-> http://lxr.linux.no/linux+v3.19.1/include/linux/configfs.h#L47
+> Signed-off-by: Roberta Dobrescu <roberta.dobrescu@gmail.com>
+Applied to the togreg branch of iio.git.  Initially pushed out as testing for
+the autobuilders to play with it.
+
+Thanks,
+
+Jonathan
+> ---
+>  drivers/staging/iio/light/isl29018.c | 94 ------------------------------------
+>  1 file changed, 94 deletions(-)
 > 
-Fair enough. Missed that.
-> 
->>> +
->>> +static struct config_group *trigger_make_group(struct config_group *group,
->>> +                                            const char *name)
->>> +{
->>> +     char *type_name;
->>> +     char *trigger_name;
->>> +     char buf[MAX_NAME_LEN];
->>> +     struct iio_sw_trigger *t;
->>> +
->>> +     snprintf(buf, MAX_NAME_LEN, "%s", name);
->>> +
->>> +     /* group name should have the form <trigger-type>-<trigger-name> */
->>> +     type_name = buf;
->>> +     trigger_name = strchr(buf, '-');
->>> +     if (!trigger_name) {
->>> +             pr_err("Unable to locate '-' in %s. Use <type>-<name>.\n", buf);
->>> +             return ERR_PTR(-EINVAL);
->>> +     }
->>> +
->>> +     /* replace - with \0, this nicely separates the two strings */
->>> +     *trigger_name = '\0';
->> Dirty trick, but I like it.
-> 
-> Me too, I borrowed it from the usb gadget code. :)
-> 
->>> +     trigger_name++;
->>> +
->>> +     t = iio_sw_trigger_create(type_name, trigger_name);
->>> +     if (IS_ERR(t))
->>> +             return ERR_CAST(t);
->>> +
->>> +     config_item_set_name(&t->group.cg_item, name);
->>> +
->>> +     return &t->group;
->>> +}
->>> +
->>> +static void trigger_drop_group(struct config_group *group,
->>> +                            struct config_item *item)
->>> +{
->>> +     struct iio_sw_trigger *t = to_iio_sw_trigger(item);
->>> +
->>> +     if (t)
->>> +             iio_sw_trigger_destroy(t);
->>> +     config_item_put(item);
->>> +}
->>> +
->>> +static struct configfs_group_operations triggers_ops = {
->>> +     .make_group     = &trigger_make_group,
->>> +     .drop_item      = &trigger_drop_group,
->>> +};
->>> +
->>> +static struct config_item_type iio_triggers_group_type = {
->>> +     .ct_group_ops = &triggers_ops,
->>> +     .ct_owner       = THIS_MODULE,
->>> +};
->>> +
->>> +static struct config_group iio_triggers_group = {
->>> +     .cg_item = {
->>> +             .ci_namebuf = "triggers",
->>> +             .ci_type = &iio_triggers_group_type,
->>> +     },
->>> +};
->>> +
->>> +static struct config_group *iio_root_default_groups[] = {
->>> +     &iio_triggers_group,
->>> +     NULL
->>> +};
->>> +
->>> +static struct config_item_type iio_root_group_type = {
->>> +     .ct_owner       = THIS_MODULE,
->>> +};
->>> +
->>> +static struct configfs_subsystem iio_configfs_subsys = {
->>> +     .su_group = {
->>> +             .cg_item = {
->>> +                     .ci_namebuf = "iio",
->>> +                     .ci_type = &iio_root_group_type,
->>> +             },
->>> +             .default_groups = iio_root_default_groups,
->>> +     },
->>> +     .su_mutex = __MUTEX_INITIALIZER(iio_configfs_subsys.su_mutex),
->>> +};
->>> +
->>> +static int __init iio_configfs_init(void)
->>> +{
->>> +     config_group_init(&iio_triggers_group);
->>> +     config_group_init(&iio_configfs_subsys.su_group);
->>> +
->>> +     return configfs_register_subsystem(&iio_configfs_subsys);
->>> +}
->>> +module_init(iio_configfs_init);
->>> +
->>> +static void __exit iio_configfs_exit(void)
->>> +{
->>> +     configfs_unregister_subsystem(&iio_configfs_subsys);
->>> +}
->>> +module_exit(iio_configfs_exit);
->>> +
->>> +MODULE_AUTHOR("Daniel Baluta <daniel.baluta@intel.com>");
->>> +MODULE_DESCRIPTION("Industrial I/O configfs support");
->>> +MODULE_LICENSE("GPL v2");
-> 
-> 
-> thanks,
-> Daniel.
+> diff --git a/drivers/staging/iio/light/isl29018.c b/drivers/staging/iio/light/isl29018.c
+> index a348918..d3d0611 100644
+> --- a/drivers/staging/iio/light/isl29018.c
+> +++ b/drivers/staging/iio/light/isl29018.c
+> @@ -230,87 +230,6 @@ static int isl29018_read_proximity_ir(struct isl29018_chip *chip, int scheme,
+>  }
+>  
+>  /* Sysfs interface */
+> -/* range */
+> -static ssize_t show_range(struct device *dev,
+> -			struct device_attribute *attr, char *buf)
+> -{
+> -	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+> -	struct isl29018_chip *chip = iio_priv(indio_dev);
+> -
+> -	return sprintf(buf, "%u\n", chip->range);
+> -}
+> -
+> -static ssize_t store_range(struct device *dev,
+> -		struct device_attribute *attr, const char *buf, size_t count)
+> -{
+> -	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+> -	struct isl29018_chip *chip = iio_priv(indio_dev);
+> -	int status;
+> -	unsigned long lval;
+> -	unsigned int new_range;
+> -
+> -	if (kstrtoul(buf, 10, &lval))
+> -		return -EINVAL;
+> -
+> -	if (!(lval == 1000UL || lval == 4000UL ||
+> -			lval == 16000UL || lval == 64000UL)) {
+> -		dev_err(dev, "The range is not supported\n");
+> -		return -EINVAL;
+> -	}
+> -
+> -	mutex_lock(&chip->lock);
+> -	status = isl29018_set_range(chip, lval, &new_range);
+> -	if (status < 0) {
+> -		mutex_unlock(&chip->lock);
+> -		dev_err(dev,
+> -			"Error in setting max range with err %d\n", status);
+> -		return status;
+> -	}
+> -	chip->range = new_range;
+> -	mutex_unlock(&chip->lock);
+> -
+> -	return count;
+> -}
+> -
+> -/* resolution */
+> -static ssize_t show_resolution(struct device *dev,
+> -			struct device_attribute *attr, char *buf)
+> -{
+> -	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+> -	struct isl29018_chip *chip = iio_priv(indio_dev);
+> -
+> -	return sprintf(buf, "%u\n", chip->adc_bit);
+> -}
+> -
+> -static ssize_t store_resolution(struct device *dev,
+> -		struct device_attribute *attr, const char *buf, size_t count)
+> -{
+> -	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+> -	struct isl29018_chip *chip = iio_priv(indio_dev);
+> -	int status;
+> -	unsigned int val;
+> -	unsigned int new_adc_bit;
+> -
+> -	if (kstrtouint(buf, 10, &val))
+> -		return -EINVAL;
+> -	if (!(val == 4 || val == 8 || val == 12 || val == 16)) {
+> -		dev_err(dev, "The resolution is not supported\n");
+> -		return -EINVAL;
+> -	}
+> -
+> -	mutex_lock(&chip->lock);
+> -	status = isl29018_set_resolution(chip, val, &new_adc_bit);
+> -	if (status < 0) {
+> -		mutex_unlock(&chip->lock);
+> -		dev_err(dev, "Error in setting resolution\n");
+> -		return status;
+> -	}
+> -	chip->adc_bit = new_adc_bit;
+> -	mutex_unlock(&chip->lock);
+> -
+> -	return count;
+> -}
+> -
+>  /* proximity scheme */
+>  static ssize_t show_prox_infrared_suppression(struct device *dev,
+>  			struct device_attribute *attr, char *buf)
+> @@ -447,11 +366,6 @@ static const struct iio_chan_spec isl29023_channels[] = {
+>  	ISL29018_IR_CHANNEL,
+>  };
+>  
+> -static IIO_DEVICE_ATTR(range, S_IRUGO | S_IWUSR, show_range, store_range, 0);
+> -static IIO_CONST_ATTR(range_available, "1000 4000 16000 64000");
+> -static IIO_CONST_ATTR(adc_resolution_available, "4 8 12 16");
+> -static IIO_DEVICE_ATTR(adc_resolution, S_IRUGO | S_IWUSR,
+> -					show_resolution, store_resolution, 0);
+>  static IIO_DEVICE_ATTR(proximity_on_chip_ambient_infrared_suppression,
+>  					S_IRUGO | S_IWUSR,
+>  					show_prox_infrared_suppression,
+> @@ -460,19 +374,11 @@ static IIO_DEVICE_ATTR(proximity_on_chip_ambient_infrared_suppression,
+>  #define ISL29018_DEV_ATTR(name) (&iio_dev_attr_##name.dev_attr.attr)
+>  #define ISL29018_CONST_ATTR(name) (&iio_const_attr_##name.dev_attr.attr)
+>  static struct attribute *isl29018_attributes[] = {
+> -	ISL29018_DEV_ATTR(range),
+> -	ISL29018_CONST_ATTR(range_available),
+> -	ISL29018_DEV_ATTR(adc_resolution),
+> -	ISL29018_CONST_ATTR(adc_resolution_available),
+>  	ISL29018_DEV_ATTR(proximity_on_chip_ambient_infrared_suppression),
+>  	NULL
+>  };
+>  
+>  static struct attribute *isl29023_attributes[] = {
+> -	ISL29018_DEV_ATTR(range),
+> -	ISL29018_CONST_ATTR(range_available),
+> -	ISL29018_DEV_ATTR(adc_resolution),
+> -	ISL29018_CONST_ATTR(adc_resolution_available),
+>  	NULL
+>  };
+>  
 > 
 
