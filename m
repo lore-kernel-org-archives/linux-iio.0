@@ -1,400 +1,335 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:43139 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:43277 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751199AbbDZTvp (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 26 Apr 2015 15:51:45 -0400
-Message-ID: <553D41CC.6070702@kernel.org>
-Date: Sun, 26 Apr 2015 20:51:40 +0100
+	with ESMTP id S1750746AbbDZUNO (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 26 Apr 2015 16:13:14 -0400
+Message-ID: <553D46D6.4030303@kernel.org>
+Date: Sun, 26 Apr 2015 21:13:10 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Roberta Dobrescu <roberta.dobrescu@gmail.com>,
-	linux-iio@vger.kernel.org
-CC: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
-	daniel.baluta@intel.com, Rhyland Klein <rklein@nvidia.com>
-Subject: Re: [PATCH v2 3/3] staging: iio: light: isl29018: Use standard sysfs
- attributes for scale and integration time
-References: <1429212059-13010-1-git-send-email-roberta.dobrescu@gmail.com> <1429212059-13010-4-git-send-email-roberta.dobrescu@gmail.com>
-In-Reply-To: <1429212059-13010-4-git-send-email-roberta.dobrescu@gmail.com>
+To: Daniel Baluta <daniel.baluta@intel.com>, octavian.purdila@intel.com
+CC: srinivas.pandruvada@linux.intel.com, linux-iio@vger.kernel.org
+Subject: Re: [RFC PATCH] iio: accel: kxcjk1013: Use polling when IRQ is not
+ available
+References: <1429806615-25167-1-git-send-email-daniel.baluta@intel.com>
+In-Reply-To: <1429806615-25167-1-git-send-email-daniel.baluta@intel.com>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 16/04/15 20:20, Roberta Dobrescu wrote:
-> This patch refactors the isl29018 driver code in order to use standard
-> sysfs attributes for scale and integration time.
+On 23/04/15 17:30, Daniel Baluta wrote:
+Hi Daniel, very nearly run out of time for linux stuff today (bed time story to be read
+in 5 mins!)
+
+Anyhow a few quick comments.
+
+> This sets up a delayed work with polling period depending on
+> device's sampling rate and it's a faster alternative to user
+> sysfs attributes polling.
 > 
-> ISL29018 light sensor uses four ranges and four ADC's resolutions
-> which influence the calculated lux. Adc resolution is strongly
-> connected to integration time and range should be controlled by scale.
-> 
-> This patch introduces the usage of integration time and scale instead
-> of adc resolution and range.
-> 
-> Signed-off-by: Roberta Dobrescu <roberta.dobrescu@gmail.com>
-Looks good to me,  Applied to the togreg branch of iio.git - initially pushed out
-as testing.
-
-cc'd Rhyland though not heard from him for quite a while.
-
-Rhyland, if you are still interested in this driver, give me a shout and I can
-hold these patches back until you get a chance to look at them.
-
-Sorry, forgot to cc you earlier in the discussion!
-
-Jonathan
-
+> Signed-off-by: Daniel Baluta <daniel.baluta@intel.com>
 > ---
->  drivers/staging/iio/light/isl29018.c | 224 +++++++++++++++++++++++++++--------
->  1 file changed, 175 insertions(+), 49 deletions(-)
+> This is just an RFC to see if we are on the same page in the problem
+> of using an IIO triggered buffer even if we don't have an interrupt
+> source.
 > 
-> diff --git a/drivers/staging/iio/light/isl29018.c b/drivers/staging/iio/light/isl29018.c
-> index ffc3d1b..435d417 100644
-> --- a/drivers/staging/iio/light/isl29018.c
-> +++ b/drivers/staging/iio/light/isl29018.c
-> @@ -66,6 +66,39 @@
->  #define ISL29035_BOUT_SHIFT		0x07
->  #define ISL29035_BOUT_MASK		(0x01 << ISL29035_BOUT_SHIFT)
+> In my opinion the cleanest and less error prone solution is to use
+> an external hrtimer based trigger as implemented in this patchseries:
+> 
+> * https://lkml.org/lkml/2015/4/20/319
+> 
+> We tested this and it fits our needs, it also has the advantage that
+> we don't have to modify the drivers.
+> 
+> Jonathan, proposed that each driver should internally poll for the status
+> of the device and read data when available.
+> 
+> * https://lkml.org/lkml/2015/4/15/575
+> 
+> This is exactly the functionality introduced by this patch. Sure we can factor
+> out some of these functions in the IIO core, but as it is right now this patch
+> is intrusive and I'm not sure it covers all corner cases.
+
+It's not all that intrusive!
+
+> 
+> One thing that I want to bring into discussion is that polling the status of
+> data ready it is somehow useless. Polling at a rate near to sampling frequency
+> data will always be ready. Testes showed that 98% of time the poll handler
+> found the DRDY bit set, thus making the I2C transaction useless. Also, by using
+> this approach we cannot offer poll intervals smaller than 1ms.
+I have no problem with using the infrastructure of the high resolution timer
+trigger (actually you could use ranges to reduce how often it 'ticks') just
+with the exposing incorrect triggering / data buffering interactions to userspace.
+> 
+
+ If we are having a data ready trigger, to my mind
+it needs to correspond exactly with the data.  We can't have either missing or extra
+fires.  As such we actually need to check for new data a fair bit more often than
+we expect it.
+
+Nasty corners that can occur if we get too close to the right frequency are:
+
+1) We run slightly too slow and outright miss a sample.
+2) We run slightly too fast and manage to get two copies of a sample.  If we are
+driving more than one sensor off this trigger and try to align the data afterwards
+we will end up with nasty slippage.  Time stamps 'might' allow us to recover but its
+far from ideal.
+
+3) We get a mashup of one 'scan' and the next 'scan'. This occurs because we are
+reading from a sensor without double buffering when it is grabbing new data.
+(I'll ignore the dumbass sensor option where we can actually get bytes from
+ different readings as those are uncommon).
+Thus we can have a large temporal difference between when say our x and y axis
+of an accelerometer are measured.  This doesn't sound bad, but consider someone
+picking up their flat tablet and putting it on a nice vertical stand.
+G moves - a lot.  That could leave us with either double the expected acceleration
+or 0 acceleration (free fall detection).  Either will leave any event detection
+code in a mess.
+
+
+To avoid the above, if we assume reading the data is near instantaneous we need
+to ensure we always sample well clear of the end points.  Simple solution
+is to look for new data at 2x the expected sampling rate.
+
+Now, I'm not totally (remain to be convinced) against having an option to
+try and save power by 'guessing' when to sample.  I'm just against it being the
+normal option.   We need the normal option to behave (as far as userspace
+is concerned) exactly as if the interrupt wire was there, not nearly the same.
+(slightly stretching a point as obviously timestamps are going to be wrong
+unless we check for new data incredibly often).
+
+
+> What do you think? :)
+Not bad actually :)
+> 
+>  drivers/iio/accel/kxcjk-1013.c | 145 ++++++++++++++++++++++++++++++++---------
+>  1 file changed, 113 insertions(+), 32 deletions(-)
+> 
+> diff --git a/drivers/iio/accel/kxcjk-1013.c b/drivers/iio/accel/kxcjk-1013.c
+> index df6f5d7..08b3abe 100644
+> --- a/drivers/iio/accel/kxcjk-1013.c
+> +++ b/drivers/iio/accel/kxcjk-1013.c
+> @@ -76,6 +76,9 @@
 >  
-> +#define ISL29018_INT_TIME_AVAIL		"0.090000 0.005630 0.000351 0.000021"
-> +#define ISL29023_INT_TIME_AVAIL		"0.090000 0.005600 0.000352 0.000022"
-> +#define ISL29035_INT_TIME_AVAIL		"0.105000 0.006500 0.000410 0.000025"
+>  #define KXCJK1013_SLEEP_DELAY_MS	2000
+>  
+> +#define KXCJK1013_REG_INT_SRC1_BIT_WUFS	BIT(0)
+> +#define KXCJK1013_REG_INT_SRC1_BIT_DRDY	BIT(4)
 > +
-> +static const char * const int_time_avail[] = {
-> +	ISL29018_INT_TIME_AVAIL,
-> +	ISL29023_INT_TIME_AVAIL,
-> +	ISL29035_INT_TIME_AVAIL,
-> +};
+>  #define KXCJK1013_REG_INT_SRC2_BIT_ZP	BIT(0)
+>  #define KXCJK1013_REG_INT_SRC2_BIT_ZN	BIT(1)
+>  #define KXCJK1013_REG_INT_SRC2_BIT_YP	BIT(2)
+> @@ -109,6 +112,11 @@ struct kxcjk1013_data {
+>  	int64_t timestamp;
+>  	enum kx_chipset chipset;
+>  	bool is_smo8500_device;
 > +
-> +enum isl29018_int_time {
-> +	ISL29018_INT_TIME_16,
-> +	ISL29018_INT_TIME_12,
-> +	ISL29018_INT_TIME_8,
-> +	ISL29018_INT_TIME_4,
-> +};
-> +
-> +static const unsigned int isl29018_int_utimes[3][4] = {
-> +	{90000, 5630, 351, 21},
-> +	{90000, 5600, 352, 22},
-> +	{105000, 6500, 410, 25},
-> +};
-> +
-> +static const struct isl29018_scale {
-> +	unsigned int scale;
-> +	unsigned int uscale;
-> +} isl29018_scales[4][4] = {
-> +	{ {0, 15258}, {0, 61035}, {0, 244140}, {0, 976562} },
-> +	{ {0, 244140}, {0, 976562}, {3, 906250}, {15, 625000} },
-> +	{ {3, 906250}, {15, 625000}, {62, 500000}, {250, 0} },
-> +	{ {62, 500000}, {250, 0}, {1000, 0}, {4000, 0} }
-> +};
-> +
->  struct isl29018_chip {
->  	struct device		*dev;
->  	struct regmap		*regmap;
-> @@ -73,51 +106,75 @@ struct isl29018_chip {
->  	int			type;
->  	unsigned int		calibscale;
->  	unsigned int		ucalibscale;
-> -	unsigned int		range;
-> -	unsigned int		adc_bit;
-> +	unsigned int		int_time;
-> +	struct isl29018_scale	scale;
->  	int			prox_scheme;
->  	bool			suspended;
+> +	/* used for polling dataready when no IRQ is available */
+> +	struct delayed_work work;
+> +	unsigned int poll_interval;
+> +	bool use_poll;
 >  };
 >  
-> -static int isl29018_set_range(struct isl29018_chip *chip, unsigned long range,
-> -		unsigned int *new_range)
-> +static int isl29018_set_integration_time(struct isl29018_chip *chip,
-> +					 unsigned int utime)
->  {
-> -	static const unsigned long supp_ranges[] = {1000, 4000, 16000, 64000};
-> -	int i;
-> -
-> -	for (i = 0; i < ARRAY_SIZE(supp_ranges); ++i) {
-> -		if (range <= supp_ranges[i]) {
-> -			*new_range = (unsigned int)supp_ranges[i];
-> +	int i, ret;
-> +	unsigned int int_time, new_int_time;
-> +	struct isl29018_scale new_scale;
+>  enum kxcjk1013_axis {
+> @@ -215,6 +223,8 @@ static const struct {
+>  				 {800, 0, 0x06},
+>  				 {1600, 0, 0x06} };
+>  
+> +static int kxcjk1013_setup_pollinterval(struct kxcjk1013_data *data);
 > +
-> +	for (i = 0; i < ARRAY_SIZE(isl29018_int_utimes[chip->type]); ++i) {
-> +		if (utime == isl29018_int_utimes[chip->type][i]) {
-> +			new_int_time = i;
-> +			new_scale = isl29018_scales[new_int_time][0];
->  			break;
->  		}
->  	}
+>  static int kxcjk1013_set_mode(struct kxcjk1013_data *data,
+>  			      enum kxcjk1013_mode mode)
+>  {
+> @@ -333,6 +343,10 @@ static int kxcjk1013_chip_init(struct kxcjk1013_data *data)
 >  
-> -	if (i >= ARRAY_SIZE(supp_ranges))
-> +	if (i >= ARRAY_SIZE(isl29018_int_utimes[chip->type]))
->  		return -EINVAL;
+>  	data->odr_bits = ret;
 >  
-> -	return regmap_update_bits(chip->regmap, ISL29018_REG_ADD_COMMANDII,
-> -			COMMANDII_RANGE_MASK, i << COMMANDII_RANGE_SHIFT);
-> +	ret = regmap_update_bits(chip->regmap, ISL29018_REG_ADD_COMMANDII,
-> +				 COMMANDII_RESOLUTION_MASK,
-> +				 i << COMMANDII_RESOLUTION_SHIFT);
+> +	ret = kxcjk1013_setup_pollinterval(data);
 > +	if (ret < 0)
 > +		return ret;
 > +
-> +	/* keep the same range when integration time changes */
-> +	int_time = chip->int_time;
-> +	for (i = 0; i < ARRAY_SIZE(isl29018_scales[int_time]); ++i) {
-> +		if (chip->scale.scale == isl29018_scales[int_time][i].scale &&
-> +		    chip->scale.uscale == isl29018_scales[int_time][i].uscale) {
-> +			chip->scale = isl29018_scales[new_int_time][i];
-> +			break;
-> +		}
-> +	}
-> +	chip->int_time = new_int_time;
-> +
-> +	return 0;
+>  	/* Set up INT polarity */
+>  	ret = i2c_smbus_read_byte_data(data->client, KXCJK1013_REG_INT_CTRL1);
+>  	if (ret < 0) {
+> @@ -376,6 +390,15 @@ static int kxcjk1013_get_startup_times(struct kxcjk1013_data *data)
 >  }
+>  #endif
 >  
-> -static int isl29018_set_resolution(struct isl29018_chip *chip,
-> -			unsigned long adcbit, unsigned int *conf_adc_bit)
-> +static int isl29018_set_scale(struct isl29018_chip *chip, int scale, int uscale)
+> +void kxcjk1013_setup_delayed_work(struct kxcjk1013_data *data, bool on)
+> +{
+> +	if (on)
+> +		schedule_delayed_work(&data->work,
+> +				      msecs_to_jiffies(data->poll_interval));
+> +	else
+> +		cancel_delayed_work(&data->work);
+> +}
+> +
+>  static int kxcjk1013_set_power_state(struct kxcjk1013_data *data, bool on)
 >  {
-> -	static const unsigned long supp_adcbit[] = {16, 12, 8, 4};
-> -	int i;
-> +	int i, ret;
-> +	struct isl29018_scale new_scale;
->  
-> -	for (i = 0; i < ARRAY_SIZE(supp_adcbit); ++i) {
-> -		if (adcbit >= supp_adcbit[i]) {
-> -			*conf_adc_bit = (unsigned int)supp_adcbit[i];
-> +	for (i = 0; i < ARRAY_SIZE(isl29018_scales[chip->int_time]); ++i) {
-> +		if (scale == isl29018_scales[chip->int_time][i].scale &&
-> +		    uscale == isl29018_scales[chip->int_time][i].uscale) {
-> +			new_scale = isl29018_scales[chip->int_time][i];
->  			break;
->  		}
+>  #ifdef CONFIG_PM
+> @@ -395,6 +418,8 @@ static int kxcjk1013_set_power_state(struct kxcjk1013_data *data, bool on)
+>  		return ret;
 >  	}
+>  #endif
+> +	if (data->use_poll)
+> +		kxcjk1013_setup_delayed_work(data, on);
 >  
-> -	if (i >= ARRAY_SIZE(supp_adcbit))
-> +	if (i >= ARRAY_SIZE(isl29018_scales[chip->int_time]))
->  		return -EINVAL;
+>  	return 0;
+>  }
+> @@ -603,6 +628,10 @@ static int kxcjk1013_set_odr(struct kxcjk1013_data *data, int val, int val2)
 >  
-> -	return regmap_update_bits(chip->regmap, ISL29018_REG_ADD_COMMANDII,
-> -			COMMANDII_RESOLUTION_MASK,
-> -			i << COMMANDII_RESOLUTION_SHIFT);
-> +	ret = regmap_update_bits(chip->regmap, ISL29018_REG_ADD_COMMANDII,
-> +				 COMMANDII_RANGE_MASK,
-> +				 i << COMMANDII_RANGE_SHIFT);
+>  	data->odr_bits = odr_bits;
+>  
+> +	ret = kxcjk1013_setup_pollinterval(data);
 > +	if (ret < 0)
 > +		return ret;
 > +
-> +	chip->scale = new_scale;
+>  	odr_bits = kxcjk1013_convert_wake_odr_to_bit(val, val2);
+>  	if (odr_bits < 0)
+>  		return odr_bits;
+> @@ -638,6 +667,26 @@ static int kxcjk1013_get_odr(struct kxcjk1013_data *data, int *val, int *val2)
+>  	return -EINVAL;
+>  }
+>  
+> +/*
+> + * get an approximation of poll interval based on sampling frequency
+> + */
+> +static int kxcjk1013_setup_pollinterval(struct kxcjk1013_data *data)
+> +{
+> +	int val, val2;
+> +	int ret;
+> +
+> +	ret = kxcjk1013_get_odr(data, &val, &val2);
+> +	if (ret < 0)
+> +		return ret;
+> +	if (val2)
+> +		val++;
+> +
+> +	data->poll_interval = MSEC_PER_SEC / val;
+> +	pr_info("Poll interval is %d\n", data->poll_interval);
 > +
 > +	return 0;
->  }
->  
->  static int isl29018_read_sensor_input(struct isl29018_chip *chip, int mode)
-> @@ -156,22 +213,17 @@ static int isl29018_read_sensor_input(struct isl29018_chip *chip, int mode)
->  static int isl29018_read_lux(struct isl29018_chip *chip, int *lux)
->  {
->  	int lux_data;
-> -	unsigned int data_x_range, lux_unshifted;
-> +	unsigned int data_x_range;
->  
->  	lux_data = isl29018_read_sensor_input(chip, COMMMAND1_OPMODE_ALS_ONCE);
->  
->  	if (lux_data < 0)
->  		return lux_data;
->  
-> -	/* To support fractional scaling, separate the unshifted lux
-> -	 * into two calculations: int scaling and micro-scaling.
-> -	 * ucalibscale ranges from 0-999999, so about 20 bits.  Split
-> -	 * the /1,000,000 in two to reduce the risk of over/underflow.
-> -	 */
-> -	data_x_range = lux_data * chip->range;
-> -	lux_unshifted = data_x_range * chip->calibscale;
-> -	lux_unshifted += data_x_range / 1000 * chip->ucalibscale / 1000;
-> -	*lux = lux_unshifted >> chip->adc_bit;
-> +	data_x_range = lux_data * chip->scale.scale +
-> +		       lux_data * chip->scale.uscale / 1000000;
-> +	*lux = data_x_range * chip->calibscale +
-> +	       data_x_range * chip->ucalibscale / 1000000;
->  
->  	return 0;
->  }
-> @@ -229,7 +281,39 @@ static int isl29018_read_proximity_ir(struct isl29018_chip *chip, int scheme,
->  	return 0;
->  }
->  
-> -/* Sysfs interface */
-> +static ssize_t show_scale_available(struct device *dev,
-> +			struct device_attribute *attr, char *buf)
-> +{
-> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
-> +	struct isl29018_chip *chip = iio_priv(indio_dev);
-> +	int i, len = 0;
-> +
-> +	for (i = 0; i < ARRAY_SIZE(isl29018_scales[chip->int_time]); ++i)
-> +		len += sprintf(buf + len, "%d.%06d ",
-> +			       isl29018_scales[chip->int_time][i].scale,
-> +			       isl29018_scales[chip->int_time][i].uscale);
-> +
-> +	buf[len - 1] = '\n';
-> +
-> +	return len;
 > +}
 > +
-> +static ssize_t show_int_time_available(struct device *dev,
-> +			struct device_attribute *attr, char *buf)
-> +{
-> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
-> +	struct isl29018_chip *chip = iio_priv(indio_dev);
-> +	int i, len = 0;
-> +
-> +	for (i = 0; i < ARRAY_SIZE(isl29018_int_utimes[chip->type]); ++i)
-> +		len += sprintf(buf + len, "0.%06d ",
-> +			       isl29018_int_utimes[chip->type][i]);
-> +
-> +	buf[len - 1] = '\n';
-> +
-> +	return len;
-> +}
-> +
->  /* proximity scheme */
->  static ssize_t show_prox_infrared_suppression(struct device *dev,
->  			struct device_attribute *attr, char *buf)
-> @@ -276,11 +360,26 @@ static int isl29018_write_raw(struct iio_dev *indio_dev,
->  	int ret = -EINVAL;
->  
->  	mutex_lock(&chip->lock);
-> -	if (mask == IIO_CHAN_INFO_CALIBSCALE && chan->type == IIO_LIGHT) {
-> -		chip->calibscale = val;
-> -		/* With no write_raw_get_fmt(), val2 is a MICRO fraction. */
-> -		chip->ucalibscale = val2;
-> -		ret = 0;
-> +	switch (mask) {
-> +	case IIO_CHAN_INFO_CALIBSCALE:
-> +		if (chan->type == IIO_LIGHT) {
-> +			chip->calibscale = val;
-> +			chip->ucalibscale = val2;
-> +			ret = 0;
-> +		}
-> +		break;
-> +	case IIO_CHAN_INFO_INT_TIME:
-> +		if (chan->type == IIO_LIGHT)
-> +			if (val != 0)
-> +				return -EINVAL;
-> +			ret = isl29018_set_integration_time(chip, val2);
-> +		break;
-> +	case IIO_CHAN_INFO_SCALE:
-> +		if (chan->type == IIO_LIGHT)
-> +			ret = isl29018_set_scale(chip, val, val2);
-> +		break;
-> +	default:
-> +		break;
->  	}
->  	mutex_unlock(&chip->lock);
->  
-> @@ -321,6 +420,20 @@ static int isl29018_read_raw(struct iio_dev *indio_dev,
->  		if (!ret)
->  			ret = IIO_VAL_INT;
->  		break;
-> +	case IIO_CHAN_INFO_INT_TIME:
-> +		if (chan->type == IIO_LIGHT) {
-> +			*val = 0;
-> +			*val2 = isl29018_int_utimes[chip->type][chip->int_time];
-> +			ret = IIO_VAL_INT_PLUS_MICRO;
-> +		}
-> +		break;
-> +	case IIO_CHAN_INFO_SCALE:
-> +		if (chan->type == IIO_LIGHT) {
-> +			*val = chip->scale.scale;
-> +			*val2 = chip->scale.uscale;
-> +			ret = IIO_VAL_INT_PLUS_MICRO;
-> +		}
-> +		break;
->  	case IIO_CHAN_INFO_CALIBSCALE:
->  		if (chan->type == IIO_LIGHT) {
->  			*val = chip->calibscale;
-> @@ -340,7 +453,9 @@ static int isl29018_read_raw(struct iio_dev *indio_dev,
->  	.indexed = 1,							\
->  	.channel = 0,							\
->  	.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED) |		\
-> -	BIT(IIO_CHAN_INFO_CALIBSCALE),					\
-> +	BIT(IIO_CHAN_INFO_CALIBSCALE) |					\
-> +	BIT(IIO_CHAN_INFO_SCALE) |					\
-> +	BIT(IIO_CHAN_INFO_INT_TIME),					\
+>  static int kxcjk1013_get_acc_reg(struct kxcjk1013_data *data, int axis)
+>  {
+>  	u8 reg = KXCJK1013_REG_XOUT_L + axis * 2;
+> @@ -1147,6 +1196,34 @@ static irqreturn_t kxcjk1013_data_rdy_trig_poll(int irq, void *private)
+>  		return IRQ_HANDLED;
 >  }
 >  
->  #define ISL29018_IR_CHANNEL {						\
-> @@ -366,19 +481,27 @@ static const struct iio_chan_spec isl29023_channels[] = {
->  	ISL29018_IR_CHANNEL,
->  };
->  
-> +static IIO_DEVICE_ATTR(in_illuminance_integration_time_available, S_IRUGO,
-> +		       show_int_time_available, NULL, 0);
-> +static IIO_DEVICE_ATTR(in_illuminance_scale_available, S_IRUGO,
-> +		      show_scale_available, NULL, 0);
->  static IIO_DEVICE_ATTR(proximity_on_chip_ambient_infrared_suppression,
->  					S_IRUGO | S_IWUSR,
->  					show_prox_infrared_suppression,
->  					store_prox_infrared_suppression, 0);
->  
->  #define ISL29018_DEV_ATTR(name) (&iio_dev_attr_##name.dev_attr.attr)
-> -#define ISL29018_CONST_ATTR(name) (&iio_const_attr_##name.dev_attr.attr)
+> +static void kxcjk1013_poll_handler(struct work_struct *work)
+> +{
+> +	struct kxcjk1013_data *data;
+> +	struct iio_dev *indio_dev;
+> +	struct delayed_work *delay = to_delayed_work(work);
+> +	int ret;
 > +
->  static struct attribute *isl29018_attributes[] = {
-> +	ISL29018_DEV_ATTR(in_illuminance_scale_available),
-> +	ISL29018_DEV_ATTR(in_illuminance_integration_time_available),
->  	ISL29018_DEV_ATTR(proximity_on_chip_ambient_infrared_suppression),
->  	NULL
->  };
+> +	data = container_of(delay, struct kxcjk1013_data, work);
+> +	indio_dev = iio_priv_to_dev(data);
+> +
+> +	data->timestamp = iio_get_time_ns();
+> +	ret = i2c_smbus_read_byte_data(data->client, KXCJK1013_REG_INT_SRC1);
+> +	if (ret < 0) {
+> +		dev_err(&data->client->dev, "Error reading reg_ctrl1\n");
+> +		return;
+> +	}
+> +
+> +	if (data->dready_trigger_on && (ret & KXCJK1013_REG_INT_SRC1_BIT_DRDY))
+> +		irq_wake_thread(indio_dev->pollfunc->irq, indio_dev);
+> +
+> +	if (data->motion_trigger_on && (ret & KXCJK1013_REG_INT_SRC1_BIT_WUFS))
+> +		irq_wake_thread(indio_dev->pollfunc->irq, indio_dev);
+> +
+> +
+> +	schedule_delayed_work(&data->work,
+> +			      msecs_to_jiffies(data->poll_interval));
+> +}
+> +
+
+>  static const char *kxcjk1013_match_acpi_device(struct device *dev,
+>  					       enum kx_chipset *chipset,
+>  					       bool *is_smo8500_device)
+> @@ -1249,42 +1326,46 @@ static int kxcjk1013_probe(struct i2c_client *client,
+>  						indio_dev);
+>  		if (ret)
+>  			goto err_poweroff;
+> +	} else {
+> +		INIT_DELAYED_WORK(&data->work, kxcjk1013_poll_handler);
+> +		data->use_poll = true;
+> +	}
+So everything from here down is actually a simplification :)
 >  
->  static struct attribute *isl29023_attributes[] = {
-> +	ISL29018_DEV_ATTR(in_illuminance_scale_available),
-> +	ISL29018_DEV_ATTR(in_illuminance_integration_time_available),
->  	NULL
->  };
->  
-> @@ -422,8 +545,6 @@ enum {
->  static int isl29018_chip_init(struct isl29018_chip *chip)
->  {
->  	int status;
-> -	unsigned int new_adc_bit;
-> -	unsigned int new_range;
->  
->  	if (chip->type == isl29035) {
->  		status = isl29035_detect(chip);
-> @@ -472,14 +593,19 @@ static int isl29018_chip_init(struct isl29018_chip *chip)
->  	usleep_range(1000, 2000);	/* per data sheet, page 10 */
->  
->  	/* set defaults */
-> -	status = isl29018_set_range(chip, chip->range, &new_range);
-> +	status = isl29018_set_scale(chip, chip->scale.scale,
-> +				    chip->scale.uscale);
->  	if (status < 0) {
->  		dev_err(chip->dev, "Init of isl29018 fails\n");
->  		return status;
->  	}
->  
-> -	status = isl29018_set_resolution(chip, chip->adc_bit,
-> -						&new_adc_bit);
-> +	status = isl29018_set_integration_time(chip,
-> +			isl29018_int_utimes[chip->type][chip->int_time]);
-> +	if (status < 0) {
-> +		dev_err(chip->dev, "Init of isl29018 fails\n");
-> +		return status;
+> -		data->dready_trig = devm_iio_trigger_alloc(&client->dev,
+> -							   "%s-dev%d",
+> -							   indio_dev->name,
+> -							   indio_dev->id);
+> -		if (!data->dready_trig) {
+> -			ret = -ENOMEM;
+> -			goto err_poweroff;
+> -		}
+> +	data->dready_trig = devm_iio_trigger_alloc(&client->dev,
+> +						   "%s-dev%d",
+> +						   indio_dev->name,
+> +						   indio_dev->id);
+> +	if (!data->dready_trig) {
+> +		ret = -ENOMEM;
+> +		goto err_poweroff;
 > +	}
 >  
->  	return 0;
->  }
-> @@ -609,8 +735,8 @@ static int isl29018_probe(struct i2c_client *client,
->  	chip->type = dev_id;
->  	chip->calibscale = 1;
->  	chip->ucalibscale = 0;
-> -	chip->range = 1000;
-> -	chip->adc_bit = 16;
-> +	chip->int_time = ISL29018_INT_TIME_16;
-> +	chip->scale = isl29018_scales[chip->int_time][0];
->  	chip->suspended = false;
+> -		data->motion_trig = devm_iio_trigger_alloc(&client->dev,
+> -							  "%s-any-motion-dev%d",
+> -							  indio_dev->name,
+> -							  indio_dev->id);
+> -		if (!data->motion_trig) {
+> -			ret = -ENOMEM;
+> -			goto err_poweroff;
+> -		}
+> +	data->motion_trig = devm_iio_trigger_alloc(&client->dev,
+> +						  "%s-any-motion-dev%d",
+> +						  indio_dev->name,
+> +						  indio_dev->id);
+> +	if (!data->motion_trig) {
 >  
->  	chip->regmap = devm_regmap_init_i2c(client,
+> -		data->dready_trig->dev.parent = &client->dev;
+> -		data->dready_trig->ops = &kxcjk1013_trigger_ops;
+> -		iio_trigger_set_drvdata(data->dready_trig, indio_dev);
+> -		indio_dev->trig = data->dready_trig;
+> -		iio_trigger_get(indio_dev->trig);
+> -		ret = iio_trigger_register(data->dready_trig);
+> -		if (ret)
+> -			goto err_poweroff;
+> +		ret = -ENOMEM;
+> +		goto err_poweroff;
+> +	}
+>  
+> -		data->motion_trig->dev.parent = &client->dev;
+> -		data->motion_trig->ops = &kxcjk1013_trigger_ops;
+> -		iio_trigger_set_drvdata(data->motion_trig, indio_dev);
+> -		ret = iio_trigger_register(data->motion_trig);
+> -		if (ret) {
+> -			data->motion_trig = NULL;
+> -			goto err_trigger_unregister;
+> -		}
+> +	data->dready_trig->dev.parent = &client->dev;
+> +	data->dready_trig->ops = &kxcjk1013_trigger_ops;
+> +	iio_trigger_set_drvdata(data->dready_trig, indio_dev);
+> +	indio_dev->trig = data->dready_trig;
+> +	iio_trigger_get(indio_dev->trig);
+> +	ret = iio_trigger_register(data->dready_trig);
+> +	if (ret)
+> +		goto err_poweroff;
+> +
+> +	data->motion_trig->dev.parent = &client->dev;
+> +	data->motion_trig->ops = &kxcjk1013_trigger_ops;
+> +	iio_trigger_set_drvdata(data->motion_trig, indio_dev);
+> +	ret = iio_trigger_register(data->motion_trig);
+> +	if (ret) {
+> +		data->motion_trig = NULL;
+> +		goto err_trigger_unregister;
+>  	}
+>  
+>  	ret = iio_triggered_buffer_setup(indio_dev,
 > 
 
