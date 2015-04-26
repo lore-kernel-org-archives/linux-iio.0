@@ -1,646 +1,418 @@
-Return-Path: <pmeerw@pmeerw.net>
-Date: Fri, 24 Apr 2015 18:41:17 +0200 (CEST)
-From: Peter Meerwald <pmeerw@pmeerw.net>
-To: Tiberiu Breana <tiberiu.a.breana@intel.com>
-cc: linux-iio@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>
-Subject: Re: [PATCH v2 1/2] iio: light: Add support for Sensortek STK3310
-In-Reply-To: <1429883199-28201-2-git-send-email-tiberiu.a.breana@intel.com>
-Message-ID: <alpine.DEB.2.02.1504241811570.12515@pmeerw.net>
-References: <1429883199-28201-1-git-send-email-tiberiu.a.breana@intel.com> <1429883199-28201-2-git-send-email-tiberiu.a.breana@intel.com>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:41237 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752074AbbDZPzX (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 26 Apr 2015 11:55:23 -0400
+Message-ID: <553D0A65.9050002@kernel.org>
+Date: Sun, 26 Apr 2015 16:55:17 +0100
+From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
-List-ID: <linux-iio@vger.kernel.org>
+To: Daniel Baluta <daniel.baluta@intel.com>,
+	sathyanarayanan.kuppuswamy@linux.intel.com
+CC: pmeerw@pmeerw.net, linux-iio@vger.kernel.org,
+	srinivas.pandruvada@linux.intel.com
+Subject: Re: [PATCH v8 1/2] iio: ltr501: Add support for ltr559 chip
+References: <1429632660-8716-1-git-send-email-daniel.baluta@intel.com> <1429632660-8716-2-git-send-email-daniel.baluta@intel.com>
+In-Reply-To: <1429632660-8716-2-git-send-email-daniel.baluta@intel.com>
+Content-Type: text/plain; charset=windows-1252
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-
-> Minimal implementation of an IIO driver for the Sensortek
-> STK3310 ambient light and proximity sensor. The STK3311
-> model is also supported.
+On 21/04/15 17:10, Daniel Baluta wrote:
+> This device is register compatible with LTR501, with a minor difference for
+> ALS control register as showed below:
 > 
-> Includes:
-> - ACPI support;
-> - read_raw and write_raw;
-> - reading and setting configuration parameters for gain/scale
->   and integration time for both ALS and PS.
-> - power management
+> ALS Control register for LTR501:
+> 
+>     7      6      5      4      3      2      1      0
+> +------+------+------+------+------+------+------+------+
+> |                           |      |      |             |
+> |        Reserved           | Gain |  SW  |    ALS Mode |
+> |                           |      | Reset|             |
+> +------+------+------+------+------+------+------+------+
+> 
+> ALS Control register for LTR559:
+> 
+>     7      6      5      4      3      2      1      0
+> +------+------+------+------+------+------+------+------+
+> |                    |                    |      |      |
+> |     Reserved       |        Gain        |  SW  | ALS  |
+> |                    |                    | Reset| Mode |
+> +------+------+------+------+------+------+------+------+
+> 
+> We handle this difference by introducing ltr501_chip_info.
+> 
+> Datasheet for LTR559 is at:
+> http://optoelectronics.liteon.com/upload/download/DS86-2013-0003/S_110_LTR-559ALS-01_DS_V1.pdf
+> 
+> Signed-off-by: Daniel Baluta <daniel.baluta@intel.com>
+Applied to the togreg branch of iio.git - initially pushed out as testing for
+the autobuilders to play with it.
 
-please find my comments below
- 
-> Signed-off-by: Tiberiu Breana <tiberiu.a.breana@intel.com>
+Thanks,
+
+J
 > ---
->  drivers/iio/light/Kconfig   |  11 +
->  drivers/iio/light/Makefile  |   1 +
->  drivers/iio/light/stk3310.c | 508 ++++++++++++++++++++++++++++++++++++++++++++
->  3 files changed, 520 insertions(+)
->  create mode 100644 drivers/iio/light/stk3310.c
+>  drivers/iio/light/Kconfig  |   3 +-
+>  drivers/iio/light/ltr501.c | 218 ++++++++++++++++++++++++++++++++++++++-------
+>  2 files changed, 186 insertions(+), 35 deletions(-)
 > 
 > diff --git a/drivers/iio/light/Kconfig b/drivers/iio/light/Kconfig
-> index 01a1a16..096129d 100644
+> index 01a1a16..16a0ba1 100644
 > --- a/drivers/iio/light/Kconfig
 > +++ b/drivers/iio/light/Kconfig
-> @@ -174,6 +174,17 @@ config LTR501
+> @@ -169,7 +169,8 @@ config LTR501
+>  	select IIO_TRIGGERED_BUFFER
+>  	help
+>  	 If you say yes here you get support for the Lite-On LTR-501ALS-01
+> -	 ambient light and proximity sensor.
+> +	 ambient light and proximity sensor. This driver also supports LTR-559
+> +	 ALS/PS sensor.
+>  
 >  	 This driver can also be built as a module.  If so, the module
 >           will be called ltr501.
+> diff --git a/drivers/iio/light/ltr501.c b/drivers/iio/light/ltr501.c
+> index 0162e86..92da514 100644
+> --- a/drivers/iio/light/ltr501.c
+> +++ b/drivers/iio/light/ltr501.c
+> @@ -88,9 +88,63 @@ struct ltr501_samp_table {
+>  	int time_val; /* repetition rate in micro seconds */
+>  };
 >  
-> +config STK3310
-> +	tristate "STK3310 ALS and proximity sensor"
-> +	depends on I2C
-> +	help
-> +	 Say yes here to get support for the Sensortek STK3310 ambient light
-> +	 and proximity sensor. The STK3311 model is also supported by this
-> +	 driver.
+> +#define LTR501_RESERVED_GAIN -1
 > +
-> +	 Choosing M will build the driver as a module. If so, the module
-> +	 will be called stk3310.
-> +
->  config TCS3414
->  	tristate "TAOS TCS3414 digital color sensor"
->  	depends on I2C
-> diff --git a/drivers/iio/light/Makefile b/drivers/iio/light/Makefile
-> index ad7c30f..90e7fd2 100644
-> --- a/drivers/iio/light/Makefile
-> +++ b/drivers/iio/light/Makefile
-> @@ -18,6 +18,7 @@ obj-$(CONFIG_JSA1212)		+= jsa1212.o
->  obj-$(CONFIG_SENSORS_LM3533)	+= lm3533-als.o
->  obj-$(CONFIG_LTR501)		+= ltr501.o
->  obj-$(CONFIG_SENSORS_TSL2563)	+= tsl2563.o
-> +obj-$(CONFIG_STK3310)          += stk3310.o
->  obj-$(CONFIG_TCS3414)		+= tcs3414.o
->  obj-$(CONFIG_TCS3472)		+= tcs3472.o
->  obj-$(CONFIG_TSL4531)		+= tsl4531.o
-> diff --git a/drivers/iio/light/stk3310.c b/drivers/iio/light/stk3310.c
-> new file mode 100644
-> index 0000000..825a65a
-> --- /dev/null
-> +++ b/drivers/iio/light/stk3310.c
-> @@ -0,0 +1,508 @@
-> +/**
-> + * Sensortek STK3310/STK3311 Ambient Light and Proximity Sensor
-> + *
-> + * Copyright (c) 2015, Intel Corporation.
-> + *
-> + * This file is subject to the terms and conditions of version 2 of
-> + * the GNU General Public License. See the file COPYING in the main
-> + * directory of this archive for more details.
-> + *
-> + * IIO driver for STK3310/STK3311. 7-bit I2C address: 0x48.
-> + */
-> +
-> +#include <linux/acpi.h>
-> +#include <linux/i2c.h>
-> +#include <linux/kernel.h>
-> +#include <linux/module.h>
-> +#include <linux/regmap.h>
-> +#include <linux/iio/iio.h>
-> +#include <linux/iio/sysfs.h>
-> +
-> +#define STK3310_REG_STATE			0x00
-> +#define STK3310_REG_PSCTRL			0x01
-> +#define STK3310_REG_ALSCTRL			0x02
-> +#define STK3310_REG_PS_DATA_MSB			0x11
-> +#define STK3310_REG_PS_DATA_LSB			0x12
-> +#define STK3310_REG_ALS_DATA_MSB		0x13
-> +#define STK3310_REG_ALS_DATA_LSB		0x14
-> +#define STK3310_REG_ID				0x3E
-> +#define STK3310_MAX_REG				0x80
-> +
-> +#define STK3310_STATE_EN_PS			0x01
-> +#define STK3310_STATE_EN_ALS			0x02
-> +#define STK3310_STATE_STANDBY			0x00
-> +
-> +#define STK3310_CHIP_ID_VAL			0x13
-> +#define STK3311_CHIP_ID_VAL			0x1D
-> +#define STK3310_PS_MAX_VAL			0xffff
-
-probably 0xFFFF to have all-uppercase hex constants everywhere
-
-> +
-> +#define STK3310_SCALE_AVAILABLE			"6.4 1.6 0.4 0.1"
-> +
-> +#define STK3310_DRIVER_NAME			"stk3310"
-> +#define STK3310_REGMAP_NAME			"stk3310_regmap"
-> +
-> +static const struct reg_field reg_field_state =
-
-stk3310_ prefix
-
-> +				REG_FIELD(STK3310_REG_STATE, 0, 2);
-> +static const struct reg_field reg_field_als_gain =
-> +				REG_FIELD(STK3310_REG_ALSCTRL, 4, 5);
-> +static const struct reg_field reg_field_ps_gain =
-> +				REG_FIELD(STK3310_REG_PSCTRL, 4, 5);
-> +static const struct reg_field reg_field_als_it =
-> +				REG_FIELD(STK3310_REG_ALSCTRL, 0, 3);
-> +static const struct reg_field reg_field_ps_it =
-> +				REG_FIELD(STK3310_REG_PSCTRL, 0, 3);
-> +
-> +/*
-> + * Maximum PS values with regard to scale. Used to export the 'inverse'
-> + * PS value (high values for far objects, low values for near objects).
-> + */
-> +static const int stk3310_ps_max[4] = {
-> +	STK3310_PS_MAX_VAL / 64,
-> +	STK3310_PS_MAX_VAL / 16,
-> +	STK3310_PS_MAX_VAL /  4,
-> +	STK3310_PS_MAX_VAL,
+> +enum {
+> +	ltr501 = 0,
+> +	ltr559,
 > +};
 > +
-> +static const int stk3310_scale_table[][2] = {
-> +	{6, 400000}, {1, 600000}, {0, 400000}, {0, 100000}
+> +struct ltr501_gain {
+> +	int scale;
+> +	int uscale;
 > +};
 > +
-> +/* Integration time in seconds, microseconds */
-> +static const int stk3310_it_table[][2] = {
-> +	{0, 185},	{0, 370},	{0, 741},	{0, 1480},
-> +	{0, 2960},	{0, 5920},	{0, 11840},	{0, 23680},
-> +	{0, 47360},	{0, 94720},	{0, 189440},	{0, 378880},
-> +	{0, 757760},	{1, 515520},	{3, 31040},	{6, 62080},
+> +static struct ltr501_gain ltr501_als_gain_tbl[] = {
+> +	{1, 0},
+> +	{0, 5000},
 > +};
 > +
-> +struct stk3310_data {
-> +	struct i2c_client *client;
-> +	struct mutex lock;
-> +	bool als_enabled;
-> +	bool ps_enabled;
-> +	struct regmap *regmap;
-> +	struct regmap_field *reg_state;
-> +	struct regmap_field *reg_als_gain;
-> +	struct regmap_field *reg_ps_gain;
-> +	struct regmap_field *reg_als_it;
-> +	struct regmap_field *reg_ps_it;
+> +static struct ltr501_gain ltr559_als_gain_tbl[] = {
+> +	{1, 0},
+> +	{0, 500000},
+> +	{0, 250000},
+> +	{0, 125000},
+> +	{LTR501_RESERVED_GAIN, LTR501_RESERVED_GAIN},
+> +	{LTR501_RESERVED_GAIN, LTR501_RESERVED_GAIN},
+> +	{0, 20000},
+> +	{0, 10000},
 > +};
 > +
-> +static const struct iio_chan_spec stk3310_channels[] = {
-> +	{
-> +		.channel = 0,
-
-no need for channel number, the channels have distinct names due to their 
-type
-
-> +		.type = IIO_LIGHT,
-> +		.info_mask_separate =
-> +			BIT(IIO_CHAN_INFO_RAW) |
-> +			BIT(IIO_CHAN_INFO_SCALE) |
-> +			BIT(IIO_CHAN_INFO_INT_TIME),
-> +	},
-> +	{
-> +		.channel = 1,
-> +		.type = IIO_PROXIMITY,
-> +		.info_mask_separate =
-> +			BIT(IIO_CHAN_INFO_RAW) |
-> +			BIT(IIO_CHAN_INFO_SCALE) |
-> +			BIT(IIO_CHAN_INFO_INT_TIME),
-> +	}
+> +static struct ltr501_gain ltr501_ps_gain_tbl[] = {
+> +	{1, 0},
+> +	{0, 250000},
+> +	{0, 125000},
+> +	{0, 62500},
 > +};
 > +
-> +static ssize_t stk3310_get_it_vals(struct device *dev,
-> +				   struct device_attribute *attr, char *buf)
+> +static struct ltr501_gain ltr559_ps_gain_tbl[] = {
+> +	{0, 62500}, /* x16 gain */
+> +	{0, 31250}, /* x32 gain */
+> +	{0, 15625}, /* bits X1 are for x64 gain */
+> +	{0, 15624},
+> +};
+> +
+> +struct ltr501_chip_info {
+> +	u8 partid;
+> +	struct ltr501_gain *als_gain;
+> +	int als_gain_tbl_size;
+> +	struct ltr501_gain *ps_gain;
+> +	int ps_gain_tbl_size;
+> +	u8 als_mode_active;
+> +	u8 als_gain_mask;
+> +	u8 als_gain_shift;
+> +};
+> +
+>  struct ltr501_data {
+>  	struct i2c_client *client;
+>  	struct mutex lock_als, lock_ps;
+> +	struct ltr501_chip_info *chip_info;
+>  	u8 als_contr, ps_contr;
+>  	int als_period, ps_period; /* period in micro seconds */
+>  	struct regmap *regmap;
+> @@ -516,10 +570,6 @@ static const struct iio_chan_spec ltr501_channels[] = {
+>  	IIO_CHAN_SOFT_TIMESTAMP(3),
+>  };
+>  
+> -static const int ltr501_ps_gain[4][2] = {
+> -	{1, 0}, {0, 250000}, {0, 125000}, {0, 62500}
+> -};
+> -
+>  static int ltr501_read_raw(struct iio_dev *indio_dev,
+>  			   struct iio_chan_spec const *chan,
+>  			   int *val, int *val2, long mask)
+> @@ -557,19 +607,16 @@ static int ltr501_read_raw(struct iio_dev *indio_dev,
+>  	case IIO_CHAN_INFO_SCALE:
+>  		switch (chan->type) {
+>  		case IIO_INTENSITY:
+> -			if (data->als_contr & LTR501_CONTR_ALS_GAIN_MASK) {
+> -				*val = 0;
+> -				*val2 = 5000;
+> -				return IIO_VAL_INT_PLUS_MICRO;
+> -			}
+> -			*val = 1;
+> -			*val2 = 0;
+> -			return IIO_VAL_INT;
+> +			i = (data->als_contr & data->chip_info->als_gain_mask)
+> +			     >> data->chip_info->als_gain_shift;
+> +			*val = data->chip_info->als_gain[i].scale;
+> +			*val2 = data->chip_info->als_gain[i].uscale;
+> +			return IIO_VAL_INT_PLUS_MICRO;
+>  		case IIO_PROXIMITY:
+>  			i = (data->ps_contr & LTR501_CONTR_PS_GAIN_MASK) >>
+>  				LTR501_CONTR_PS_GAIN_SHIFT;
+> -			*val = ltr501_ps_gain[i][0];
+> -			*val2 = ltr501_ps_gain[i][1];
+> +			*val = data->chip_info->ps_gain[i].scale;
+> +			*val2 = data->chip_info->ps_gain[i].uscale;
+>  			return IIO_VAL_INT_PLUS_MICRO;
+>  		default:
+>  			return -EINVAL;
+> @@ -594,12 +641,13 @@ static int ltr501_read_raw(struct iio_dev *indio_dev,
+>  	return -EINVAL;
+>  }
+>  
+> -static int ltr501_get_ps_gain_index(int val, int val2)
+> +static int ltr501_get_gain_index(struct ltr501_gain *gain, int size,
+> +				 int val, int val2)
+>  {
+>  	int i;
+>  
+> -	for (i = 0; i < ARRAY_SIZE(ltr501_ps_gain); i++)
+> -		if (val == ltr501_ps_gain[i][0] && val2 == ltr501_ps_gain[i][1])
+> +	for (i = 0; i < size; i++)
+> +		if (val == gain[i].scale && val2 == gain[i].uscale)
+>  			return i;
+>  
+>  	return -1;
+> @@ -611,6 +659,7 @@ static int ltr501_write_raw(struct iio_dev *indio_dev,
+>  {
+>  	struct ltr501_data *data = iio_priv(indio_dev);
+>  	int i, ret, freq_val, freq_val2;
+> +	struct ltr501_chip_info *info = data->chip_info;
+>  
+>  	if (iio_buffer_enabled(indio_dev))
+>  		return -EBUSY;
+> @@ -619,17 +668,21 @@ static int ltr501_write_raw(struct iio_dev *indio_dev,
+>  	case IIO_CHAN_INFO_SCALE:
+>  		switch (chan->type) {
+>  		case IIO_INTENSITY:
+> -			if (val == 0 && val2 == 5000)
+> -				data->als_contr |= LTR501_CONTR_ALS_GAIN_MASK;
+> -			else if (val == 1 && val2 == 0)
+> -				data->als_contr &= ~LTR501_CONTR_ALS_GAIN_MASK;
+> -			else
+> +			i = ltr501_get_gain_index(info->als_gain,
+> +						  info->als_gain_tbl_size,
+> +						  val, val2);
+> +			if (i < 0)
+>  				return -EINVAL;
+>  
+> +			data->als_contr &= ~info->als_gain_mask;
+> +			data->als_contr |= i << info->als_gain_shift;
+> +
+>  			return regmap_write(data->regmap, LTR501_ALS_CONTR,
+>  					    data->als_contr);
+>  		case IIO_PROXIMITY:
+> -			i = ltr501_get_ps_gain_index(val, val2);
+> +			i = ltr501_get_gain_index(info->ps_gain,
+> +						  info->ps_gain_tbl_size,
+> +						  val, val2);
+>  			if (i < 0)
+>  				return -EINVAL;
+>  			data->ps_contr &= ~LTR501_CONTR_PS_GAIN_MASK;
+> @@ -927,14 +980,61 @@ static int ltr501_write_event_config(struct iio_dev *indio_dev,
+>  	return -EINVAL;
+>  }
+>  
+> -static IIO_CONST_ATTR(in_proximity_scale_available, "1 0.25 0.125 0.0625");
+> -static IIO_CONST_ATTR(in_intensity_scale_available, "1 0.005");
+> +static ssize_t ltr501_show_proximity_scale_avail(struct device *dev,
+> +						 struct device_attribute *attr,
+> +						 char *buf)
 > +{
+> +	struct ltr501_data *data = iio_priv(dev_to_iio_dev(dev));
+> +	struct ltr501_chip_info *info = data->chip_info;
+> +	ssize_t len = 0;
 > +	int i;
-> +	int len;
 > +
-> +	for (i = 0, len = 0; i < ARRAY_SIZE(stk3310_it_table); i++) {
+> +	for (i = 0; i < info->ps_gain_tbl_size; i++) {
+> +		if (info->ps_gain[i].scale == LTR501_RESERVED_GAIN)
+> +			continue;
 > +		len += scnprintf(buf + len, PAGE_SIZE - len, "%d.%06d ",
-> +				stk3310_it_table[i][0],
-> +				stk3310_it_table[i][1]);
+> +				 info->ps_gain[i].scale,
+> +				 info->ps_gain[i].uscale);
 > +	}
+> +
 > +	buf[len - 1] = '\n';
 > +
 > +	return len;
 > +}
 > +
-> +static IIO_CONST_ATTR(in_illuminance_scale_available, STK3310_SCALE_AVAILABLE);
-> +
-> +static IIO_DEVICE_ATTR(in_illuminance_integration_time_available,
-
-these should be IIO_CONST_ATTR() as well?
-
-> +		       S_IRUGO, stk3310_get_it_vals, NULL, 0);
-> +
-> +static IIO_DEVICE_ATTR(in_proximity_integration_time_available,
-> +		       S_IRUGO, stk3310_get_it_vals, NULL, 0);
-> +
-> +static struct attribute *stk3310_attributes[] = {
-> +	&iio_const_attr_in_illuminance_scale_available.dev_attr.attr,
-> +	&iio_dev_attr_in_illuminance_integration_time_available.dev_attr.attr,
-
-where is proximity_scale_available?
-
-> +	&iio_dev_attr_in_proximity_integration_time_available.dev_attr.attr,
-> +	NULL,
-> +};
-> +
-> +static const struct attribute_group stk3310_attribute_group = {
-> +	.attrs = stk3310_attributes
-> +};
-> +
-> +static int stk3310_get_index(const int table[][2], int table_size,
-
-this function appears over and over in IIO... maybe have a generic one?
-
-> +			     int val, int val2)
+> +static ssize_t ltr501_show_intensity_scale_avail(struct device *dev,
+> +						 struct device_attribute *attr,
+> +						 char *buf)
 > +{
+> +	struct ltr501_data *data = iio_priv(dev_to_iio_dev(dev));
+> +	struct ltr501_chip_info *info = data->chip_info;
+> +	ssize_t len = 0;
 > +	int i;
 > +
-> +	for (i = 0; i < table_size; i++) {
-> +		if (val == table[i][0] && val2 == table[i][1])
-> +			return i;
+> +	for (i = 0; i < info->als_gain_tbl_size; i++) {
+> +		if (info->als_gain[i].scale == LTR501_RESERVED_GAIN)
+> +			continue;
+> +		len += scnprintf(buf + len, PAGE_SIZE - len, "%d.%06d ",
+> +				 info->als_gain[i].scale,
+> +				 info->als_gain[i].uscale);
 > +	}
 > +
-> +	return -EINVAL;
+> +	buf[len - 1] = '\n';
+> +
+> +	return len;
 > +}
 > +
-> +static int stk3310_read_raw(struct iio_dev *indio_dev,
-> +			    struct iio_chan_spec const *chan,
-> +			    int *val, int *val2, long mask)
-> +{
-> +	u8 reg;
-> +	u16 buf;
-> +	unsigned int index;
-> +	struct stk3310_data *data = iio_priv(indio_dev);
-> +	struct i2c_client *client = data->client;
+>  static IIO_CONST_ATTR_INT_TIME_AVAIL("0.05 0.1 0.2 0.4");
+>  static IIO_CONST_ATTR_SAMP_FREQ_AVAIL("20 10 5 2 1 0.5");
+>  
+> +static IIO_DEVICE_ATTR(in_proximity_scale_available, S_IRUGO,
+> +		       ltr501_show_proximity_scale_avail, NULL, 0);
+> +static IIO_DEVICE_ATTR(in_intensity_scale_available, S_IRUGO,
+> +		       ltr501_show_intensity_scale_avail, NULL, 0);
 > +
-> +	switch (chan->type) {
-
-this block makes only sense for _INFO_RAW and should be moved there
-
-> +	case IIO_LIGHT:
-> +		reg = STK3310_REG_ALS_DATA_MSB;
-> +		break;
-> +	case IIO_PROXIMITY:
-> +		reg = STK3310_REG_PS_DATA_MSB;
-> +		break;
-> +	default:
-> +		return -EINVAL;
-> +	}
-> +
-> +	switch (mask) {
-> +	case IIO_CHAN_INFO_RAW:
-> +		mutex_lock(&data->lock);
-> +		regmap_bulk_read(data->regmap, reg, &buf, 2);
-
-regmap_bulk_read() returns an integer, let's check that...
-
-> +		if (buf < 0) {
-
-buf is u16, how can the be < 0?
-
-> +			dev_err(&client->dev, "register read failed\n");
-> +			mutex_unlock(&data->lock);
-> +			return buf;
-> +		}
-> +		*val = swab16(buf);
-> +		if (chan->type == IIO_PROXIMITY) {
-> +			/*
-> +			 * Invert the proximity data so we return low values
-> +			 * for close objects and high values for far ones.
-> +			 */
-
-it would/should be _PROCESSED then due to the inversion?
-
-other drivers report proximity such that close objects have high values 
-and far objects have low values -- it is a reflection value really; I'd 
-rather fix that in the documentation
-
-> +			regmap_field_read(data->reg_ps_gain, &index);
-> +			*val = stk3310_ps_max[index] - *val;
-> +		}
-> +		mutex_unlock(&data->lock);
-> +		return IIO_VAL_INT;
-> +	case IIO_CHAN_INFO_INT_TIME:
-> +		if (chan->type == IIO_LIGHT)
-> +			regmap_field_read(data->reg_als_it, &index);
-> +		else
-> +			regmap_field_read(data->reg_ps_it, &index);
-> +		*val = stk3310_it_table[index][0];
-> +		*val2 = stk3310_it_table[index][1];
-> +		return IIO_VAL_INT_PLUS_MICRO;
-> +	case IIO_CHAN_INFO_SCALE:
-> +		if (chan->type == IIO_LIGHT)
-> +			regmap_field_read(data->reg_als_gain, &index);
-> +		else
-> +			regmap_field_read(data->reg_ps_gain, &index);
-> +		*val = stk3310_scale_table[index][0];
-> +		*val2 = stk3310_scale_table[index][1];
-> +		return IIO_VAL_INT_PLUS_MICRO;
-> +	}
-> +
-> +	return -EINVAL;
-> +}
-> +
-> +static int stk3310_write_raw(struct iio_dev *indio_dev,
-> +			     struct iio_chan_spec const *chan,
-> +			     int val, int val2, long mask)
-> +{
-> +	int ret;
-> +	unsigned int index;
-> +	struct stk3310_data *data = iio_priv(indio_dev);
-> +
-> +	if (chan->type != IIO_LIGHT && chan->type != IIO_PROXIMITY)
-> +		return -EINVAL;
-
-most drivers don't check the channel type and assume that chan points to 
-one of the channels registered
-
-> +
-> +	switch (mask) {
-> +	case IIO_CHAN_INFO_INT_TIME:
-> +		index = stk3310_get_index(stk3310_it_table,
-> +					  ARRAY_SIZE(stk3310_it_table),
-> +					  val, val2);
-> +		if (index < 0)
-> +			return -EINVAL;
-> +		mutex_lock(&data->lock);
-> +		if (chan->type == IIO_LIGHT)
-> +			ret = regmap_field_write(data->reg_als_it, index);
-> +		else
-> +			ret = regmap_field_write(data->reg_ps_it, index);
-> +		if (ret < 0)
-> +			dev_err(&data->client->dev,
-> +					"sensor configuration failed\n");
-> +		mutex_unlock(&data->lock);
-> +		return ret;
-> +
-> +	case IIO_CHAN_INFO_SCALE:
-> +		index = stk3310_get_index(stk3310_scale_table,
-> +					  ARRAY_SIZE(stk3310_scale_table),
-> +					  val, val2);
-> +		if (index < 0)
-> +			return -EINVAL;
-> +		mutex_lock(&data->lock);
-> +		if (chan->type == IIO_LIGHT)
-> +			ret = regmap_field_write(data->reg_als_gain, index);
-> +		else
-> +			ret = regmap_field_write(data->reg_ps_gain, index);
-> +		if (ret < 0)
-> +			dev_err(&data->client->dev,
-> +					"sensor configuration failed\n");
-> +		mutex_unlock(&data->lock);
-> +		return ret;
-> +	}
-> +
-> +	return -EINVAL;
-> +}
-> +
-> +static const struct iio_info stk3310_info = {
-> +	.driver_module		= THIS_MODULE,
-> +	.read_raw		= stk3310_read_raw,
-> +	.write_raw		= stk3310_write_raw,
-> +	.attrs			= &stk3310_attribute_group,
+>  static struct attribute *ltr501_attributes[] = {
+> -	&iio_const_attr_in_proximity_scale_available.dev_attr.attr,
+> -	&iio_const_attr_in_intensity_scale_available.dev_attr.attr,
+> +	&iio_dev_attr_in_proximity_scale_available.dev_attr.attr,
+> +	&iio_dev_attr_in_intensity_scale_available.dev_attr.attr,
+>  	&iio_const_attr_integration_time_available.dev_attr.attr,
+>  	&iio_const_attr_sampling_frequency_available.dev_attr.attr,
+>  	NULL
+> @@ -962,6 +1062,29 @@ static const struct iio_info ltr501_info = {
+>  	.driver_module = THIS_MODULE,
+>  };
+>  
+> +static struct ltr501_chip_info ltr501_chip_info_tbl[] = {
+> +	[ltr501] = {
+> +		.partid = 0x08,
+> +		.als_gain = ltr501_als_gain_tbl,
+> +		.als_gain_tbl_size = ARRAY_SIZE(ltr501_als_gain_tbl),
+> +		.ps_gain = ltr501_ps_gain_tbl,
+> +		.ps_gain_tbl_size = ARRAY_SIZE(ltr501_ps_gain_tbl),
+> +		.als_mode_active = BIT(0) | BIT(1),
+> +		.als_gain_mask = BIT(3),
+> +		.als_gain_shift = 3,
+> +	},
+> +	[ltr559] = {
+> +		.partid = 0x09,
+> +		.als_gain = ltr559_als_gain_tbl,
+> +		.als_gain_tbl_size = ARRAY_SIZE(ltr559_als_gain_tbl),
+> +		.ps_gain = ltr559_ps_gain_tbl,
+> +		.ps_gain_tbl_size = ARRAY_SIZE(ltr559_ps_gain_tbl),
+> +		.als_mode_active = BIT(1),
+> +		.als_gain_mask = BIT(2) | BIT(3) | BIT(4),
+> +		.als_gain_shift = 2,
+> +	},
 > +};
 > +
-> +static int stk3310_set_state(struct stk3310_data *data, u8 state)
+>  static int ltr501_write_contr(struct ltr501_data *data, u8 als_val, u8 ps_val)
+>  {
+>  	int ret;
+> @@ -1062,7 +1185,7 @@ static int ltr501_init(struct ltr501_data *data)
+>  	if (ret < 0)
+>  		return ret;
+>  
+> -	data->als_contr = status | LTR501_CONTR_ACTIVE;
+> +	data->als_contr = ret | data->chip_info->als_mode_active;
+>  
+>  	ret = regmap_read(data->regmap, LTR501_PS_CONTR, &status);
+>  	if (ret < 0)
+> @@ -1105,17 +1228,30 @@ static struct regmap_config ltr501_regmap_config = {
+>  
+>  static int ltr501_powerdown(struct ltr501_data *data)
+>  {
+> -	return ltr501_write_contr(data, data->als_contr & ~LTR501_CONTR_ACTIVE,
+> +	return ltr501_write_contr(data, data->als_contr &
+> +				  ~data->chip_info->als_mode_active,
+>  				  data->ps_contr & ~LTR501_CONTR_ACTIVE);
+>  }
+>  
+> +static const char *ltr501_match_acpi_device(struct device *dev, int *chip_idx)
 > +{
-> +	int ret;
-> +	struct i2c_client *client = data->client;
+> +	const struct acpi_device_id *id;
 > +
-> +	/* 3-bit state; 0b100 is not supported. */
-> +	if (state < 0 || state > 7 || state == 4)
-
-state is u8, can't be negative
-
-> +		return -EINVAL;
-> +
-> +	mutex_lock(&data->lock);
-> +	ret = regmap_field_write(data->reg_state, state);
-> +	if (ret < 0) {
-> +		dev_err(&client->dev, "failed to change sensor state\n");
-> +	/* Don't reset the 'enabled' flags if we're going in standby */
-
-move the comment to the block where it belongs to
-
-> +	} else if (state != STK3310_STATE_STANDBY) {
-> +		data->ps_enabled  = !!(state & 0x01);
-> +		data->als_enabled = !!(state & 0x02);
-> +	}
-> +	mutex_unlock(&data->lock);
-> +
-> +	return ret;
+> +	id = acpi_match_device(dev->driver->acpi_match_table, dev);
+> +	if (!id)
+> +		return NULL;
+> +	*chip_idx = id->driver_data;
+> +	return dev_name(dev);
 > +}
 > +
-> +static int stk3310_init(struct iio_dev *indio_dev)
-> +{
-> +	int ret;
-> +	int chipid;
-> +	u8 state;
-> +	struct stk3310_data *data = iio_priv(indio_dev);
-> +	struct i2c_client *client = data->client;
+>  static int ltr501_probe(struct i2c_client *client,
+>  			const struct i2c_device_id *id)
+>  {
+>  	struct ltr501_data *data;
+>  	struct iio_dev *indio_dev;
+>  	struct regmap *regmap;
+> -	int ret, partid;
+> +	int ret, partid, chip_idx = 0;
+> +	const char *name = NULL;
+>  
+>  	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
+>  	if (!indio_dev)
+> @@ -1186,13 +1322,25 @@ static int ltr501_probe(struct i2c_client *client,
+>  	ret = regmap_read(data->regmap, LTR501_PART_ID, &partid);
+>  	if (ret < 0)
+>  		return ret;
+> -	if ((partid >> 4) != 0x8)
 > +
-> +	regmap_read(data->regmap, STK3310_REG_ID, &chipid);
-> +	if (chipid != STK3310_CHIP_ID_VAL &&
-> +	    chipid != STK3311_CHIP_ID_VAL) {
-> +		dev_err(&client->dev, "invalid chip id: 0x%x\n", chipid);
+> +	if (id) {
+> +		name = id->name;
+> +		chip_idx = id->driver_data;
+> +	} else  if (ACPI_HANDLE(&client->dev)) {
+> +		name = ltr501_match_acpi_device(&client->dev, &chip_idx);
+> +	} else {
 > +		return -ENODEV;
 > +	}
 > +
-> +	state = STK3310_STATE_EN_ALS | STK3310_STATE_EN_PS;
-> +	ret = stk3310_set_state(data, state);
-> +	if (ret < 0)
-> +		dev_err(&client->dev, "failed to enable sensor");
+> +	data->chip_info = &ltr501_chip_info_tbl[chip_idx];
 > +
-> +	return ret;
-> +}
-> +
-> +static bool stk3310_is_volatile_reg(struct device *dev, unsigned int reg)
-> +{
-> +	switch (reg) {
-> +	case STK3310_REG_ALS_DATA_MSB:
-> +	case STK3310_REG_ALS_DATA_LSB:
-> +	case STK3310_REG_PS_DATA_LSB:
-> +	case STK3310_REG_PS_DATA_MSB:
-> +		return true;
-> +	default:
-> +		return false;
-> +	}
-> +}
-> +
-> +static struct regmap_config stk3310_regmap_config = {
-> +	.name = STK3310_REGMAP_NAME,
-> +	.reg_bits = 8,
-> +	.val_bits = 8,
-> +	.max_register = STK3310_MAX_REG,
-> +	.cache_type = REGCACHE_RBTREE,
-> +	.volatile_reg = stk3310_is_volatile_reg,
-> +};
-> +
-> +static int stk3310_regmap_init(struct stk3310_data *data)
-> +{
-> +	struct regmap *regmap;
-> +	struct i2c_client *client;
-> +
-> +	client = data->client;
-> +	regmap = devm_regmap_init_i2c(client, &stk3310_regmap_config);
-> +	if (IS_ERR(regmap)) {
-> +		dev_err(&client->dev, "regmap initialization failed.\n");
-> +		return PTR_ERR(regmap);
-> +	}
-> +	data->regmap = regmap;
-> +
-
-code below is clumsy; many lines for little effect, maybe a helper 
-function/macro?
-
-> +	data->reg_state = devm_regmap_field_alloc(&client->dev, regmap,
-> +			reg_field_state);
-> +	if (IS_ERR(data->reg_state)) {
-> +		dev_err(&client->dev, "reg field alloc failed.\n");
-> +		return PTR_ERR(data->reg_state);
-> +	}
-> +
-> +	data->reg_als_gain = devm_regmap_field_alloc(&client->dev, regmap,
-> +			reg_field_als_gain);
-> +	if (IS_ERR(data->reg_als_gain)) {
-> +		dev_err(&client->dev, "reg field alloc failed.\n");
-> +		return PTR_ERR(data->reg_als_gain);
-> +	}
-> +
-> +	data->reg_ps_gain = devm_regmap_field_alloc(&client->dev, regmap,
-> +			reg_field_ps_gain);
-> +	if (IS_ERR(data->reg_ps_gain)) {
-> +		dev_err(&client->dev, "reg field alloc failed.\n");
-> +		return PTR_ERR(data->reg_ps_gain);
-> +	}
-> +
-> +	data->reg_als_it = devm_regmap_field_alloc(&client->dev, regmap,
-> +			reg_field_als_it);
-> +	if (IS_ERR(data->reg_als_it)) {
-> +		dev_err(&client->dev, "reg field alloc failed.\n");
-> +		return PTR_ERR(data->reg_als_it);
-> +	}
-> +
-> +	data->reg_ps_it = devm_regmap_field_alloc(&client->dev, regmap,
-> +			reg_field_ps_it);
-> +	if (IS_ERR(data->reg_ps_it)) {
-> +		dev_err(&client->dev, "reg field alloc failed.\n");
-> +		return PTR_ERR(data->reg_ps_it);
-> +	}
-> +
-> +	return 0;
-> +}
-> +
-> +static int stk3310_probe(struct i2c_client *client,
-> +			 const struct i2c_device_id *id)
-> +{
-> +	int ret;
-> +	struct iio_dev *indio_dev;
-> +	struct stk3310_data *data;
-> +
-> +	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
-> +	if (!indio_dev) {
-> +		dev_err(&client->dev, "iio allocation failed!\n");
-> +		return -ENOMEM;
-> +	}
-> +
-> +	data = iio_priv(indio_dev);
-> +	data->client = client;
-> +	i2c_set_clientdata(client, indio_dev);
-> +	mutex_init(&data->lock);
-> +
-> +	ret = stk3310_regmap_init(data);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	indio_dev->dev.parent = &client->dev;
-> +	indio_dev->info = &stk3310_info;
-> +	indio_dev->name = STK3310_DRIVER_NAME;
-> +	indio_dev->modes = INDIO_DIRECT_MODE;
-> +	indio_dev->channels = stk3310_channels;
-> +	indio_dev->num_channels = ARRAY_SIZE(stk3310_channels);
-> +
-> +	ret = stk3310_init(indio_dev);
-> +	if (ret < 0) {
-> +		dev_err(&client->dev, "sensor initialization failed\n");
-
-we already printed a error message in stk3310_init()...
-
-> +		return ret;
-> +	}
-> +
-> +	ret = iio_device_register(indio_dev);
-> +	if (ret < 0) {
-> +		dev_err(&client->dev, "device_register failed\n");
-> +		stk3310_set_state(data, STK3310_STATE_STANDBY);
-> +	}
-> +
-> +	return ret;
-> +}
-> +
-> +static int stk3310_remove(struct i2c_client *client)
-> +{
-> +	struct iio_dev *indio_dev = i2c_get_clientdata(client);
-> +
-> +	iio_device_unregister(indio_dev);
-> +	return stk3310_set_state(iio_priv(indio_dev), STK3310_STATE_STANDBY);
-> +}
-> +
-> +#ifdef CONFIG_PM_SLEEP
-> +static int stk3310_suspend(struct device *dev)
-> +{
-> +	struct stk3310_data *data;
-> +
-> +	data = iio_priv(i2c_get_clientdata(to_i2c_client(dev)));
-> +
-> +	return stk3310_set_state(data, STK3310_STATE_STANDBY);
-> +}
-> +
-> +static int stk3310_resume(struct device *dev)
-> +{
-> +	int state = 0;
-> +	struct stk3310_data *data;
-> +
-> +	data = iio_priv(i2c_get_clientdata(to_i2c_client(dev)));
-> +	if (data->ps_enabled)
-> +		state |= STK3310_STATE_EN_PS;
-> +	if (data->als_enabled)
-> +		state |= STK3310_STATE_EN_ALS;
-> +
-> +	return stk3310_set_state(data, state);
-> +}
-> +
-> +static SIMPLE_DEV_PM_OPS(stk3310_pm_ops, stk3310_suspend, stk3310_resume);
-> +
-> +#define STK3310_PM_OPS (&stk3310_pm_ops)
-> +#else
-> +#define STK3310_PM_OPS NULL
-> +#endif
-> +
-> +static const struct i2c_device_id stk3310_i2c_id[] = {
-> +	{"STK3310", 0},
-> +	{"STK3311", 0},
-
-if there is no software-visible difference, I'd rather not distinguish the 
-IDs; otherwise, you could/should check that the ID here matches the ID 
-returned from the device
-
-> +	{}
-> +};
-> +
-> +static const struct acpi_device_id stk3310_acpi_id[] = {
-> +	{"STK3310", 0},
-> +	{"STK3311", 0},
-> +	{}
-> +};
-> +
-> +MODULE_DEVICE_TABLE(acpi, stk3310_acpi_id);
-> +
-> +static struct i2c_driver stk3310_driver = {
-> +	.driver = {
-> +		.name = "stk3310",
-> +		.pm = STK3310_PM_OPS,
-> +		.acpi_match_table = ACPI_PTR(stk3310_acpi_id),
-> +	},
-> +	.probe =            stk3310_probe,
-> +	.remove =           stk3310_remove,
-> +	.id_table =         stk3310_i2c_id,
-> +};
-> +
-> +module_i2c_driver(stk3310_driver);
-> +
-> +MODULE_AUTHOR("Tiberiu Breana <tiberiu.a.breana@intel.com>");
-> +MODULE_DESCRIPTION("STK3310 Ambient Light and Proximity Sensor driver");
-> +MODULE_LICENSE("GPL v2");
+> +	if ((partid >> 4) != data->chip_info->partid)
+>  		return -ENODEV;
+>  
+>  	indio_dev->dev.parent = &client->dev;
+>  	indio_dev->channels = ltr501_channels;
+>  	indio_dev->num_channels = ARRAY_SIZE(ltr501_channels);
+> -	indio_dev->name = LTR501_DRV_NAME;
+> +	indio_dev->name = name;
+>  	indio_dev->modes = INDIO_DIRECT_MODE;
+>  
+>  	ret = ltr501_init(data);
+> @@ -1266,13 +1414,15 @@ static int ltr501_resume(struct device *dev)
+>  static SIMPLE_DEV_PM_OPS(ltr501_pm_ops, ltr501_suspend, ltr501_resume);
+>  
+>  static const struct acpi_device_id ltr_acpi_match[] = {
+> -	{"LTER0501", 0},
+> +	{"LTER0501", ltr501},
+> +	{"LTER0559", ltr559},
+>  	{ },
+>  };
+>  MODULE_DEVICE_TABLE(acpi, ltr_acpi_match);
+>  
+>  static const struct i2c_device_id ltr501_id[] = {
+> -	{ "ltr501", 0 },
+> +	{ "ltr501", ltr501},
+> +	{ "ltr559", ltr559},
+>  	{ }
+>  };
+>  MODULE_DEVICE_TABLE(i2c, ltr501_id);
 > 
 
--- 
-
-Peter Meerwald
-+43-664-2444418 (mobile)
