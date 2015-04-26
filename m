@@ -1,185 +1,176 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:42602 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:42696 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752155AbbDZSxr (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 26 Apr 2015 14:53:47 -0400
-Message-ID: <553D3439.50802@kernel.org>
-Date: Sun, 26 Apr 2015 19:53:45 +0100
+	with ESMTP id S1752423AbbDZTEo (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 26 Apr 2015 15:04:44 -0400
+Message-ID: <553D36C9.3070004@kernel.org>
+Date: Sun, 26 Apr 2015 20:04:41 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
 To: Irina Tirdea <irina.tirdea@intel.com>, linux-iio@vger.kernel.org,
 	Hartmut Knaack <knaack.h@gmx.de>
 CC: linux-kernel@vger.kernel.org, Vlad Dogaru <vlad.dogaru@intel.com>
-Subject: Re: [PATCH v2 13/17] iio: accel: mma9553: refactor mma9553_read_raw
-References: <1428939664-12503-1-git-send-email-irina.tirdea@intel.com> <1428939664-12503-14-git-send-email-irina.tirdea@intel.com>
-In-Reply-To: <1428939664-12503-14-git-send-email-irina.tirdea@intel.com>
+Subject: Re: [PATCH v2 14/17] iio: accel: mma9551_core: use size in words
+ for word buffers
+References: <1428939664-12503-1-git-send-email-irina.tirdea@intel.com> <1428939664-12503-15-git-send-email-irina.tirdea@intel.com>
+In-Reply-To: <1428939664-12503-15-git-send-email-irina.tirdea@intel.com>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
 On 13/04/15 16:41, Irina Tirdea wrote:
-> Refactor code for simplicity and clarity.
+> Change the prototype for the mma9551_read/write_*_words functions
+> to receive the length of the buffer in words (instead of bytes) since
+> we are using a word buffer. This will prevent users from sending an
+> odd number of bytes for a word array.
 > 
 > Signed-off-by: Irina Tirdea <irina.tirdea@intel.com>
-> Suggested-by: Hartmut Knaack <knaack.h@gmx.de>
-Applied.
+Lots of merge issues by this point in the series so I'll hold this one at
+least until the fixes filter through.
+
+Remind me if I seem to have forgotten (it wouldn't be the first time :)
+
+Jonathan
 > ---
->  drivers/iio/accel/mma9553.c | 101 +++++++++++++++-----------------------------
->  1 file changed, 33 insertions(+), 68 deletions(-)
+>  drivers/iio/accel/mma9551_core.c | 27 ++++++++++++---------------
+>  drivers/iio/accel/mma9553.c      |  9 ++++++---
+>  2 files changed, 18 insertions(+), 18 deletions(-)
 > 
+> diff --git a/drivers/iio/accel/mma9551_core.c b/drivers/iio/accel/mma9551_core.c
+> index 2fd2a99..583660b 100644
+> --- a/drivers/iio/accel/mma9551_core.c
+> +++ b/drivers/iio/accel/mma9551_core.c
+> @@ -373,7 +373,7 @@ EXPORT_SYMBOL(mma9551_read_status_word);
+>   * @client:	I2C client
+>   * @app_id:	Application ID
+>   * @reg:	Application register
+> - * @len:	Length of array to read in bytes
+> + * @len:	Length of array to read (in words)
+>   * @buf:	Array of words to read
+>   *
+>   * Read multiple configuration registers (word-sized registers).
+> @@ -388,20 +388,19 @@ int mma9551_read_config_words(struct i2c_client *client, u8 app_id,
+>  			     u16 reg, u8 len, u16 *buf)
+>  {
+>  	int ret, i;
+> -	int len_words = len / sizeof(u16);
+>  	__be16 be_buf[MMA9551_MAX_MAILBOX_DATA_REGS / 2];
+>  
+> -	if (len_words > ARRAY_SIZE(be_buf)) {
+> +	if (len > ARRAY_SIZE(be_buf)) {
+>  		dev_err(&client->dev, "Invalid buffer size %d\n", len);
+>  		return -EINVAL;
+>  	}
+>  
+>  	ret = mma9551_transfer(client, app_id, MMA9551_CMD_READ_CONFIG,
+> -			       reg, NULL, 0, (u8 *) be_buf, len);
+> +			       reg, NULL, 0, (u8 *)be_buf, len * sizeof(u16));
+>  	if (ret < 0)
+>  		return ret;
+>  
+> -	for (i = 0; i < len_words; i++)
+> +	for (i = 0; i < len; i++)
+>  		buf[i] = be16_to_cpu(be_buf[i]);
+>  
+>  	return 0;
+> @@ -413,7 +412,7 @@ EXPORT_SYMBOL(mma9551_read_config_words);
+>   * @client:	I2C client
+>   * @app_id:	Application ID
+>   * @reg:	Application register
+> - * @len:	Length of array to read in bytes
+> + * @len:	Length of array to read (in words)
+>   * @buf:	Array of words to read
+>   *
+>   * Read multiple status registers (word-sized registers).
+> @@ -428,20 +427,19 @@ int mma9551_read_status_words(struct i2c_client *client, u8 app_id,
+>  			      u16 reg, u8 len, u16 *buf)
+>  {
+>  	int ret, i;
+> -	int len_words = len / sizeof(u16);
+>  	__be16 be_buf[MMA9551_MAX_MAILBOX_DATA_REGS / 2];
+>  
+> -	if (len_words > ARRAY_SIZE(be_buf)) {
+> +	if (len > ARRAY_SIZE(be_buf)) {
+>  		dev_err(&client->dev, "Invalid buffer size %d\n", len);
+>  		return -EINVAL;
+>  	}
+>  
+>  	ret = mma9551_transfer(client, app_id, MMA9551_CMD_READ_STATUS,
+> -			       reg, NULL, 0, (u8 *) be_buf, len);
+> +			       reg, NULL, 0, (u8 *)be_buf, len * sizeof(u16));
+>  	if (ret < 0)
+>  		return ret;
+>  
+> -	for (i = 0; i < len_words; i++)
+> +	for (i = 0; i < len; i++)
+>  		buf[i] = be16_to_cpu(be_buf[i]);
+>  
+>  	return 0;
+> @@ -453,7 +451,7 @@ EXPORT_SYMBOL(mma9551_read_status_words);
+>   * @client:	I2C client
+>   * @app_id:	Application ID
+>   * @reg:	Application register
+> - * @len:	Length of array to write in bytes
+> + * @len:	Length of array to write (in words)
+>   * @buf:	Array of words to write
+>   *
+>   * Write multiple configuration registers (word-sized registers).
+> @@ -468,19 +466,18 @@ int mma9551_write_config_words(struct i2c_client *client, u8 app_id,
+>  			       u16 reg, u8 len, u16 *buf)
+>  {
+>  	int i;
+> -	int len_words = len / sizeof(u16);
+>  	__be16 be_buf[(MMA9551_MAX_MAILBOX_DATA_REGS - 1) / 2];
+>  
+> -	if (len_words > ARRAY_SIZE(be_buf)) {
+> +	if (len > ARRAY_SIZE(be_buf)) {
+>  		dev_err(&client->dev, "Invalid buffer size %d\n", len);
+>  		return -EINVAL;
+>  	}
+>  
+> -	for (i = 0; i < len_words; i++)
+> +	for (i = 0; i < len; i++)
+>  		be_buf[i] = cpu_to_be16(buf[i]);
+>  
+>  	return mma9551_transfer(client, app_id, MMA9551_CMD_WRITE_CONFIG,
+> -				reg, (u8 *) be_buf, len, NULL, 0);
+> +				reg, (u8 *)be_buf, len * sizeof(u16), NULL, 0);
+>  }
+>  EXPORT_SYMBOL(mma9551_write_config_words);
+>  
 > diff --git a/drivers/iio/accel/mma9553.c b/drivers/iio/accel/mma9553.c
-> index 5755977..8bfc618 100644
+> index 8bfc618..06c8707 100644
 > --- a/drivers/iio/accel/mma9553.c
 > +++ b/drivers/iio/accel/mma9553.c
-> @@ -440,6 +440,32 @@ static int mma9553_init(struct mma9553_data *data)
->  	return mma9551_set_device_state(data->client, true);
->  }
->  
-> +static int mma9553_read_status_word(struct mma9553_data *data, u16 reg,
-> +				    u16 *tmp)
-> +{
-> +	bool powered_on;
-> +	int ret;
-> +
-> +	/*
-> +	 * The HW only counts steps and other dependent
-> +	 * parameters (speed, distance, calories, activity)
-> +	 * if power is on (from enabling an event or the
-> +	 * step counter).
-> +	 */
-> +	powered_on = mma9553_is_any_event_enabled(data, false, 0) ||
-> +		     data->stepcnt_enabled;
-> +	if (!powered_on) {
-> +		dev_err(&data->client->dev, "No channels enabled\n");
-> +		return -EINVAL;
-> +	}
-> +
-> +	mutex_lock(&data->mutex);
-> +	ret = mma9551_read_status_word(data->client, MMA9551_APPID_PEDOMETER,
-> +				       reg, tmp);
-> +	mutex_unlock(&data->mutex);
-> +	return ret;
-> +}
-> +
->  static int mma9553_read_raw(struct iio_dev *indio_dev,
->  			    struct iio_chan_spec const *chan,
->  			    int *val, int *val2, long mask)
-> @@ -448,70 +474,30 @@ static int mma9553_read_raw(struct iio_dev *indio_dev,
+> @@ -322,7 +322,8 @@ static int mma9553_read_activity_stepcnt(struct mma9553_data *data,
 >  	int ret;
->  	u16 tmp;
->  	u8 activity;
-> -	bool powered_on;
 >  
->  	switch (mask) {
->  	case IIO_CHAN_INFO_PROCESSED:
->  		switch (chan->type) {
->  		case IIO_STEPS:
-> -			/*
-> -			 * The HW only counts steps and other dependent
-> -			 * parameters (speed, distance, calories, activity)
-> -			 * if power is on (from enabling an event or the
-> -			 * step counter).
-> -			 */
-> -			powered_on =
-> -			    mma9553_is_any_event_enabled(data, false, 0) ||
-> -			    data->stepcnt_enabled;
-> -			if (!powered_on) {
-> -				dev_err(&data->client->dev,
-> -					"No channels enabled\n");
-> -				return -EINVAL;
-> -			}
-> -			mutex_lock(&data->mutex);
-> -			ret = mma9551_read_status_word(data->client,
-> -						       MMA9551_APPID_PEDOMETER,
-> +			ret = mma9553_read_status_word(data,
->  						       MMA9553_REG_STEPCNT,
->  						       &tmp);
-> -			mutex_unlock(&data->mutex);
->  			if (ret < 0)
->  				return ret;
->  			*val = tmp;
->  			return IIO_VAL_INT;
->  		case IIO_DISTANCE:
-> -			powered_on =
-> -			    mma9553_is_any_event_enabled(data, false, 0) ||
-> -			    data->stepcnt_enabled;
-> -			if (!powered_on) {
-> -				dev_err(&data->client->dev,
-> -					"No channels enabled\n");
-> -				return -EINVAL;
-> -			}
-> -			mutex_lock(&data->mutex);
-> -			ret = mma9551_read_status_word(data->client,
-> -						       MMA9551_APPID_PEDOMETER,
-> +			ret = mma9553_read_status_word(data,
->  						       MMA9553_REG_DISTANCE,
->  						       &tmp);
-> -			mutex_unlock(&data->mutex);
->  			if (ret < 0)
->  				return ret;
->  			*val = tmp;
->  			return IIO_VAL_INT;
->  		case IIO_ACTIVITY:
-> -			powered_on =
-> -			    mma9553_is_any_event_enabled(data, false, 0) ||
-> -			    data->stepcnt_enabled;
-> -			if (!powered_on) {
-> -				dev_err(&data->client->dev,
-> -					"No channels enabled\n");
-> -				return -EINVAL;
-> -			}
-> -			mutex_lock(&data->mutex);
-> -			ret = mma9551_read_status_word(data->client,
-> -						       MMA9551_APPID_PEDOMETER,
-> +			ret = mma9553_read_status_word(data,
->  						       MMA9553_REG_STATUS,
->  						       &tmp);
-> -			mutex_unlock(&data->mutex);
->  			if (ret < 0)
->  				return ret;
->  
-> @@ -536,38 +522,17 @@ static int mma9553_read_raw(struct iio_dev *indio_dev,
->  		case IIO_VELOCITY:	/* m/h */
->  			if (chan->channel2 != IIO_MOD_ROOT_SUM_SQUARED_X_Y_Z)
->  				return -EINVAL;
-> -			powered_on =
-> -			    mma9553_is_any_event_enabled(data, false, 0) ||
-> -			    data->stepcnt_enabled;
-> -			if (!powered_on) {
-> -				dev_err(&data->client->dev,
-> -					"No channels enabled\n");
-> -				return -EINVAL;
-> -			}
-> -			mutex_lock(&data->mutex);
-> -			ret = mma9551_read_status_word(data->client,
-> -						       MMA9551_APPID_PEDOMETER,
-> -						       MMA9553_REG_SPEED, &tmp);
-> -			mutex_unlock(&data->mutex);
-> +			ret = mma9553_read_status_word(data,
-> +						       MMA9553_REG_SPEED,
-> +						       &tmp);
->  			if (ret < 0)
->  				return ret;
->  			*val = tmp;
->  			return IIO_VAL_INT;
->  		case IIO_ENERGY:	/* Cal or kcal */
-> -			powered_on =
-> -			    mma9553_is_any_event_enabled(data, false, 0) ||
-> -			    data->stepcnt_enabled;
-> -			if (!powered_on) {
-> -				dev_err(&data->client->dev,
-> -					"No channels enabled\n");
-> -				return -EINVAL;
-> -			}
-> -			mutex_lock(&data->mutex);
-> -			ret = mma9551_read_status_word(data->client,
-> -						       MMA9551_APPID_PEDOMETER,
-> +			ret = mma9553_read_status_word(data,
->  						       MMA9553_REG_CALORIES,
->  						       &tmp);
-> -			mutex_unlock(&data->mutex);
->  			if (ret < 0)
->  				return ret;
->  			*val = tmp;
+>  	ret = mma9551_read_status_words(data->client, MMA9551_APPID_PEDOMETER,
+> -					MMA9553_REG_STATUS, sizeof(u32), buf);
+> +					MMA9553_REG_STATUS, ARRAY_SIZE(buf),
+> +					buf);
+>  	if (ret < 0) {
+>  		dev_err(&data->client->dev,
+>  			"error reading status and stepcnt\n");
+> @@ -397,7 +398,8 @@ static int mma9553_init(struct mma9553_data *data)
+>  	ret =
+>  	    mma9551_read_config_words(data->client, MMA9551_APPID_PEDOMETER,
+>  				      MMA9553_REG_CONF_SLEEPMIN,
+> -				      sizeof(data->conf), (u16 *) &data->conf);
+> +				      sizeof(data->conf) / sizeof(u16),
+> +				      (u16 *)&data->conf);
+>  	if (ret < 0) {
+>  		dev_err(&data->client->dev,
+>  			"failed to read configuration registers\n");
+> @@ -430,7 +432,8 @@ static int mma9553_init(struct mma9553_data *data)
+>  	ret =
+>  	    mma9551_write_config_words(data->client, MMA9551_APPID_PEDOMETER,
+>  				       MMA9553_REG_CONF_SLEEPMIN,
+> -				       sizeof(data->conf), (u16 *) &data->conf);
+> +				       sizeof(data->conf) / sizeof(u16),
+> +				       (u16 *)&data->conf);
+>  	if (ret < 0) {
+>  		dev_err(&data->client->dev,
+>  			"failed to write configuration registers\n");
 > 
 
