@@ -1,248 +1,115 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:41884 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:41921 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750914AbbDZRXR (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 26 Apr 2015 13:23:17 -0400
-Message-ID: <553D1F03.3010708@kernel.org>
-Date: Sun, 26 Apr 2015 18:23:15 +0100
+	with ESMTP id S1751231AbbDZRZ2 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 26 Apr 2015 13:25:28 -0400
+Message-ID: <553D1F85.9090801@kernel.org>
+Date: Sun, 26 Apr 2015 18:25:25 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Irina Tirdea <irina.tirdea@intel.com>, linux-iio@vger.kernel.org,
-	devicetree@vger.kernel.org
-CC: linux-kernel@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>,
+To: Denis Ciocca <denis.ciocca@st.com>,
+	Alban Bedel <alban.bedel@avionic-design.de>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+CC: Hartmut Knaack <knaack.h@gmx.de>,
 	Lars-Peter Clausen <lars@metafoo.de>,
 	Peter Meerwald <pmeerw@pmeerw.net>,
-	Rob Herring <robh+dt@kernel.org>,
-	Pawel Moll <pawel.moll@arm.com>,
-	Mark Rutland <mark.rutland@arm.com>,
-	Ian Campbell <ijc+devicetree@hellion.org.uk>,
-	Kumar Gala <galak@codeaurora.org>
-Subject: Re: [PATCH v2 4/4] iio: magn: bmc150_magn: add oversampling ratio
-References: <1429814048-22808-1-git-send-email-irina.tirdea@intel.com> <1429814048-22808-5-git-send-email-irina.tirdea@intel.com>
-In-Reply-To: <1429814048-22808-5-git-send-email-irina.tirdea@intel.com>
+	Linus Walleij <linus.walleij@linaro.org>,
+	Lee Jones <lee.jones@linaro.org>,
+	Robert Dolca <robert.dolca@intel.com>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] iio:st_sensors: Fix oops when probing SPI devices
+References: <1429531038-20225-1-git-send-email-alban.bedel@avionic-design.de> <55386144.70605@st.com>
+In-Reply-To: <55386144.70605@st.com>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 23/04/15 19:34, Irina Tirdea wrote:
-> Export the oversampling ratio so that the user can change the
-> number of repetions for x/y/z axis.
+On 23/04/15 04:04, Denis Ciocca wrote:
+> Hi Alban,
 > 
-> The sampling frequency is limited by the oversampling ratio.
-> The available sampling frequencies might change depending
-> on the values of oversampling_ratio.
+> after several months I'm finally back. I already did this patch, but I had no time to submit. Thanks to your support it is ok for me!
 > 
-> The specification can be downloaded from:
-> http://ae-bst.resource.bosch.com/media/products/dokumente/bmc150/BST-BMC150-DS000-04.pdf.
+Welcome back ;)
+> We need to propagate also the patch to fix previous kernel versions...
 > 
-> Signed-off-by: Irina Tirdea <irina.tirdea@intel.com>
-Also looks good to me.   As it's new ABI I'm keen to let this sit
-a while longer and see if anyone objects (doubt they will, but you never
-know).
+> Acked-by: Denis Ciocca <denis.ciocca@st.com>
+> 
+Applied to the fixes-togreg branch of iio.git and marked for stable.
 
 Jonathan
-> ---
->  drivers/iio/magnetometer/bmc150_magn.c | 133 ++++++++++++++++++++++++++++++++-
->  1 file changed, 129 insertions(+), 4 deletions(-)
 > 
-> diff --git a/drivers/iio/magnetometer/bmc150_magn.c b/drivers/iio/magnetometer/bmc150_magn.c
-> index b8e4c90..c3f9447 100644
-> --- a/drivers/iio/magnetometer/bmc150_magn.c
-> +++ b/drivers/iio/magnetometer/bmc150_magn.c
-> @@ -146,6 +146,7 @@ struct bmc150_magn_data {
->  	s32 buffer[6];
->  	struct iio_trigger *dready_trig;
->  	bool dready_trigger_on;
-> +	int max_odr;
->  };
->  
->  static const struct {
-> @@ -323,6 +324,43 @@ static int bmc150_magn_set_odr(struct bmc150_magn_data *data, int val)
->  	return -EINVAL;
->  }
->  
-> +static int bmc150_magn_set_max_odr(struct bmc150_magn_data *data, int rep_xy,
-> +				   int rep_z, int odr)
-> +{
-> +	int ret, reg_val, max_odr;
-> +
-> +	if (rep_xy <= 0) {
-> +		ret = regmap_read(data->regmap, BMC150_MAGN_REG_REP_XY,
-> +				  &reg_val);
-> +		if (ret < 0)
-> +			return ret;
-> +		rep_xy = BMC150_MAGN_REGVAL_TO_REPXY(reg_val);
-> +	}
-> +	if (rep_z <= 0) {
-> +		ret = regmap_read(data->regmap, BMC150_MAGN_REG_REP_Z,
-> +				  &reg_val);
-> +		if (ret < 0)
-> +			return ret;
-> +		rep_z = BMC150_MAGN_REGVAL_TO_REPZ(reg_val);
-> +	}
-> +	if (odr <= 0) {
-> +		ret = bmc150_magn_get_odr(data, &odr);
-> +		if (ret < 0)
-> +			return ret;
-> +	}
-> +	/* the maximum selectable read-out frequency from datasheet */
-> +	max_odr = 1000000 / (145 * rep_xy + 500 * rep_z + 980);
-> +	if (odr > max_odr) {
-> +		dev_err(&data->client->dev,
-> +			"Can't set oversampling with sampling freq %d\n",
-> +			odr);
-> +		return -EINVAL;
-> +	}
-> +	data->max_odr = max_odr;
-> +
-> +	return 0;
-> +}
-> +
->  static s32 bmc150_magn_compensate_x(struct bmc150_magn_trim_regs *tregs, s16 x,
->  				    u16 rhall)
->  {
-> @@ -422,7 +460,7 @@ static int bmc150_magn_read_raw(struct iio_dev *indio_dev,
->  				int *val, int *val2, long mask)
->  {
->  	struct bmc150_magn_data *data = iio_priv(indio_dev);
-> -	int ret;
-> +	int ret, tmp;
->  	s32 values[AXIS_XYZ_MAX];
->  
->  	switch (mask) {
-> @@ -467,6 +505,26 @@ static int bmc150_magn_read_raw(struct iio_dev *indio_dev,
->  		if (ret < 0)
->  			return ret;
->  		return IIO_VAL_INT;
-> +	case IIO_CHAN_INFO_OVERSAMPLING_RATIO:
-> +		switch (chan->channel2) {
-> +		case IIO_MOD_X:
-> +		case IIO_MOD_Y:
-> +			ret = regmap_read(data->regmap, BMC150_MAGN_REG_REP_XY,
-> +					  &tmp);
-> +			if (ret < 0)
-> +				return ret;
-> +			*val = BMC150_MAGN_REGVAL_TO_REPXY(tmp);
-> +			return IIO_VAL_INT;
-> +		case IIO_MOD_Z:
-> +			ret = regmap_read(data->regmap, BMC150_MAGN_REG_REP_Z,
-> +					  &tmp);
-> +			if (ret < 0)
-> +				return ret;
-> +			*val = BMC150_MAGN_REGVAL_TO_REPZ(tmp);
-> +			return IIO_VAL_INT;
-> +		default:
-> +			return -EINVAL;
-> +		}
->  	default:
->  		return -EINVAL;
->  	}
-> @@ -481,10 +539,50 @@ static int bmc150_magn_write_raw(struct iio_dev *indio_dev,
->  
->  	switch (mask) {
->  	case IIO_CHAN_INFO_SAMP_FREQ:
-> +		if (val > data->max_odr)
-> +			return -EINVAL;
->  		mutex_lock(&data->mutex);
->  		ret = bmc150_magn_set_odr(data, val);
->  		mutex_unlock(&data->mutex);
->  		return ret;
-> +	case IIO_CHAN_INFO_OVERSAMPLING_RATIO:
-> +		switch (chan->channel2) {
-> +		case IIO_MOD_X:
-> +		case IIO_MOD_Y:
-> +			if (val < 1 || val > 511)
-> +				return -EINVAL;
-> +			mutex_lock(&data->mutex);
-> +			ret = bmc150_magn_set_max_odr(data, val, 0, 0);
-> +			if (ret < 0) {
-> +				mutex_unlock(&data->mutex);
-> +				return ret;
-> +			}
-> +			ret = regmap_update_bits(data->regmap,
-> +						 BMC150_MAGN_REG_REP_XY,
-> +						 0xFF,
-> +						 BMC150_MAGN_REPXY_TO_REGVAL
-> +						 (val));
-> +			mutex_unlock(&data->mutex);
-> +			return ret;
-> +		case IIO_MOD_Z:
-> +			if (val < 1 || val > 256)
-> +				return -EINVAL;
-> +			mutex_lock(&data->mutex);
-> +			ret = bmc150_magn_set_max_odr(data, 0, val, 0);
-> +			if (ret < 0) {
-> +				mutex_unlock(&data->mutex);
-> +				return ret;
-> +			}
-> +			ret = regmap_update_bits(data->regmap,
-> +						 BMC150_MAGN_REG_REP_Z,
-> +						 0xFF,
-> +						 BMC150_MAGN_REPZ_TO_REGVAL
-> +						 (val));
-> +			mutex_unlock(&data->mutex);
-> +			return ret;
-> +		default:
-> +			return -EINVAL;
-> +		}
->  	default:
->  		return -EINVAL;
->  	}
-> @@ -501,10 +599,31 @@ static int bmc150_magn_validate_trigger(struct iio_dev *indio_dev,
->  	return 0;
->  }
->  
-> -static IIO_CONST_ATTR_SAMP_FREQ_AVAIL("2 6 8 10 15 20 25 30");
-> +static ssize_t bmc150_magn_show_samp_freq_avail(struct device *dev,
-> +						struct device_attribute *attr,
-> +						char *buf)
-> +{
-> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
-> +	struct bmc150_magn_data *data = iio_priv(indio_dev);
-> +	size_t len = 0;
-> +	u8 i;
-> +
-> +	for (i = 0; i < ARRAY_SIZE(bmc150_magn_samp_freq_table); i++) {
-> +		if (bmc150_magn_samp_freq_table[i].freq > data->max_odr)
-> +			break;
-> +		len += scnprintf(buf + len, PAGE_SIZE - len, "%d ",
-> +				 bmc150_magn_samp_freq_table[i].freq);
-> +	}
-> +	/* replace last space with a newline */
-> +	buf[len - 1] = '\n';
-> +
-> +	return len;
-> +}
-> +
-> +static IIO_DEV_ATTR_SAMP_FREQ_AVAIL(bmc150_magn_show_samp_freq_avail);
->  
->  static struct attribute *bmc150_magn_attributes[] = {
-> -	&iio_const_attr_sampling_frequency_available.dev_attr.attr,
-> +	&iio_dev_attr_sampling_frequency_available.dev_attr.attr,
->  	NULL,
->  };
->  
-> @@ -516,7 +635,8 @@ static const struct attribute_group bmc150_magn_attrs_group = {
->  	.type = IIO_MAGN,						\
->  	.modified = 1,							\
->  	.channel2 = IIO_MOD_##_axis,					\
-> -	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),			\
-> +	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |			\
-> +			      BIT(IIO_CHAN_INFO_OVERSAMPLING_RATIO),	\
->  	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SAMP_FREQ) |	\
->  				    BIT(IIO_CHAN_INFO_SCALE),		\
->  	.scan_index = AXIS_##_axis,					\
-> @@ -617,6 +737,11 @@ static int bmc150_magn_init(struct bmc150_magn_data *data)
->  		goto err_poweroff;
->  	}
->  
-> +	ret = bmc150_magn_set_max_odr(data, preset.rep_xy, preset.rep_z,
-> +				      preset.odr);
-> +	if (ret < 0)
-> +		goto err_poweroff;
-> +
->  	ret = bmc150_magn_set_power_mode(data, BMC150_MAGN_POWER_MODE_NORMAL,
->  					 true);
->  	if (ret < 0) {
+> Denis
 > 
+> 
+> On 04/20/2015 07:57 PM, Alban Bedel wrote:
+>> In SPI mode the transfer buffer is locked with a mutex. However this
+>> mutex is only initilized after the probe, but some transfer needs to
+>> be done in the probe.
+>>
+>> To fix this bug we move the mutex initialization at the beginning of
+>> the device probe.
+>>
+>> Signed-off-by: Alban Bedel <alban.bedel@avionic-design.de>
+>> ---
+>>   drivers/iio/accel/st_accel_core.c               | 1 +
+>>   drivers/iio/common/st_sensors/st_sensors_core.c | 2 --
+>>   drivers/iio/gyro/st_gyro_core.c                 | 1 +
+>>   drivers/iio/magnetometer/st_magn_core.c         | 1 +
+>>   drivers/iio/pressure/st_pressure_core.c         | 1 +
+>>   5 files changed, 4 insertions(+), 2 deletions(-)
+>>
+>> diff --git a/drivers/iio/accel/st_accel_core.c b/drivers/iio/accel/st_accel_core.c
+>> index 58d1d13..211b132 100644
+>> --- a/drivers/iio/accel/st_accel_core.c
+>> +++ b/drivers/iio/accel/st_accel_core.c
+>> @@ -546,6 +546,7 @@ int st_accel_common_probe(struct iio_dev *indio_dev)
+>>         indio_dev->modes = INDIO_DIRECT_MODE;
+>>       indio_dev->info = &accel_info;
+>> +    mutex_init(&adata->tb.buf_lock);
+>>         st_sensors_power_enable(indio_dev);
+>>   diff --git a/drivers/iio/common/st_sensors/st_sensors_core.c b/drivers/iio/common/st_sensors/st_sensors_core.c
+>> index edd13d2..8dd0477 100644
+>> --- a/drivers/iio/common/st_sensors/st_sensors_core.c
+>> +++ b/drivers/iio/common/st_sensors/st_sensors_core.c
+>> @@ -304,8 +304,6 @@ int st_sensors_init_sensor(struct iio_dev *indio_dev,
+>>       struct st_sensors_platform_data *of_pdata;
+>>       int err = 0;
+>>   -    mutex_init(&sdata->tb.buf_lock);
+>> -
+>>       /* If OF/DT pdata exists, it will take precedence of anything else */
+>>       of_pdata = st_sensors_of_probe(indio_dev->dev.parent, pdata);
+>>       if (of_pdata)
+>> diff --git a/drivers/iio/gyro/st_gyro_core.c b/drivers/iio/gyro/st_gyro_core.c
+>> index 21395f2..ffe9664 100644
+>> --- a/drivers/iio/gyro/st_gyro_core.c
+>> +++ b/drivers/iio/gyro/st_gyro_core.c
+>> @@ -400,6 +400,7 @@ int st_gyro_common_probe(struct iio_dev *indio_dev)
+>>         indio_dev->modes = INDIO_DIRECT_MODE;
+>>       indio_dev->info = &gyro_info;
+>> +    mutex_init(&gdata->tb.buf_lock);
+>>         st_sensors_power_enable(indio_dev);
+>>   diff --git a/drivers/iio/magnetometer/st_magn_core.c b/drivers/iio/magnetometer/st_magn_core.c
+>> index 8ade473..2e56f81 100644
+>> --- a/drivers/iio/magnetometer/st_magn_core.c
+>> +++ b/drivers/iio/magnetometer/st_magn_core.c
+>> @@ -369,6 +369,7 @@ int st_magn_common_probe(struct iio_dev *indio_dev)
+>>         indio_dev->modes = INDIO_DIRECT_MODE;
+>>       indio_dev->info = &magn_info;
+>> +    mutex_init(&mdata->tb.buf_lock);
+>>         st_sensors_power_enable(indio_dev);
+>>   diff --git a/drivers/iio/pressure/st_pressure_core.c b/drivers/iio/pressure/st_pressure_core.c
+>> index 97baf40d..e881fa6 100644
+>> --- a/drivers/iio/pressure/st_pressure_core.c
+>> +++ b/drivers/iio/pressure/st_pressure_core.c
+>> @@ -417,6 +417,7 @@ int st_press_common_probe(struct iio_dev *indio_dev)
+>>         indio_dev->modes = INDIO_DIRECT_MODE;
+>>       indio_dev->info = &press_info;
+>> +    mutex_init(&press_data->tb.buf_lock);
+>>         st_sensors_power_enable(indio_dev);
+>>   
+> 
+> -- 
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
 
