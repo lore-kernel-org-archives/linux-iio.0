@@ -1,455 +1,261 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:42719 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:42812 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751184AbbDZTH0 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 26 Apr 2015 15:07:26 -0400
-Message-ID: <553D376B.8000301@kernel.org>
-Date: Sun, 26 Apr 2015 20:07:23 +0100
+	with ESMTP id S1751077AbbDZTVH (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 26 Apr 2015 15:21:07 -0400
+Message-ID: <553D3A9F.9030902@kernel.org>
+Date: Sun, 26 Apr 2015 20:21:03 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: tduszyns@gmail.com
-CC: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
-	linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org
-Subject: Re: [PATCH v2] iio: light: add support for ROHM BH1710/BH1715/BH1721/BH1750/BH1751
- ambient light sensors
-References: <1429971529-5226-1-git-send-email-tduszyns@gmail.com> <553D173A.4030508@kernel.org> <20150426184136.GA5459@Arch.lan>
-In-Reply-To: <20150426184136.GA5459@Arch.lan>
-Content-Type: text/plain; charset=utf-8
+To: Daniel Baluta <daniel.baluta@intel.com>
+CC: jlbec@evilplan.org, lars@metafoo.de, knaack.h@gmx.de,
+	linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
+	octavian.purdila@intel.com, pebolle@tiscali.nl,
+	patrick.porlan@intel.com, adriana.reus@intel.com,
+	constantin.musca@intel.com, marten@intuitiveaerial.com
+Subject: Re: [PATCH v4 1/4] iio: core: Introduce IIO software triggers
+References: <1429538563-23430-1-git-send-email-daniel.baluta@intel.com> <1429538563-23430-2-git-send-email-daniel.baluta@intel.com>
+In-Reply-To: <1429538563-23430-2-git-send-email-daniel.baluta@intel.com>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 26/04/15 19:41, tduszyns@gmail.com wrote:
-> On Sun, Apr 26, 2015 at 05:50:02PM +0100, Jonathan Cameron wrote:
->> On 25/04/15 15:18, Tomasz Duszynski wrote:
->>> Add support for ROHM BH1710/BH1715/BH1721/BH1750/BH1751 ambient light
->>> sensors.
->>>
->>> Signed-off-by: Tomasz Duszynski <tduszyns@gmail.com>
->> On query on why we no longer have a resume function... Otherwise
->> looks pretty good to me (couple of other comments inline.)
->>
->> Jonathan
->>> ---
->>>  Changes in v2:
->>>  	- Store chip-dependent values in chip_info structure
->>> 	- Add bh1750_remove to power down chip (necessary for BH1721)
->>> 	- Use one time mode for chips that have support for that
->>> 	- Use IIO_LIGHT instead of IIO_INTENSITY for channel type
->>>
->>>  drivers/iio/light/Kconfig  |  10 ++
->>>  drivers/iio/light/Makefile |   1 +
->>>  drivers/iio/light/bh1750.c | 329 +++++++++++++++++++++++++++++++++++++++++++++
->>>  3 files changed, 340 insertions(+)
->>>  create mode 100644 drivers/iio/light/bh1750.c
->>>
->>> diff --git a/drivers/iio/light/Kconfig b/drivers/iio/light/Kconfig
->>> index 5a3237b..ebc578a 100644
->>> --- a/drivers/iio/light/Kconfig
->>> +++ b/drivers/iio/light/Kconfig
->>> @@ -37,6 +37,16 @@ config APDS9300
->>>  	 To compile this driver as a module, choose M here: the
->>>  	 module will be called apds9300.
->>>
->>> +config BH1750
->>> +	tristate "ROHM BH1750 ambient light sensor"
->>> +	depends on I2C
->>> +	help
->>> +	 Say Y here to build support for the ROHM BH1710, BH1715, BH1721,
->>> +	 BH1750, BH1751 ambient light sensors.
->>> +
->>> +	 To compile this driver as a module, choose M here: the module will
->>> +	 be called bh1750.
->>> +
->>>  config CM32181
->>>  	depends on I2C
->>>  	tristate "CM32181 driver"
->>> diff --git a/drivers/iio/light/Makefile b/drivers/iio/light/Makefile
->>> index 74656c1..1a13184 100644
->>> --- a/drivers/iio/light/Makefile
->>> +++ b/drivers/iio/light/Makefile
->>> @@ -6,6 +6,7 @@
->>>  obj-$(CONFIG_ADJD_S311)		+= adjd_s311.o
->>>  obj-$(CONFIG_AL3320A)		+= al3320a.o
->>>  obj-$(CONFIG_APDS9300)		+= apds9300.o
->>> +obj-$(CONFIG_BH1750)		+= bh1750.o
->>>  obj-$(CONFIG_CM32181)		+= cm32181.o
->>>  obj-$(CONFIG_CM36651)		+= cm36651.o
->>>  obj-$(CONFIG_GP2AP020A00F)	+= gp2ap020a00f.o
->>> diff --git a/drivers/iio/light/bh1750.c b/drivers/iio/light/bh1750.c
->>> new file mode 100644
->>> index 0000000..3b051ef
->>> --- /dev/null
->>> +++ b/drivers/iio/light/bh1750.c
->>> @@ -0,0 +1,329 @@
->>> +/*
->>> + * ROHM BH1710/BH1715/BH1721/BH1750/BH1751 ambient light sensor driver
->>> + *
->>> + * Copyright (c) Tomasz Duszynski <tduszyns@gmail.com>
->>> + *
->>> + * This program is free software; you can redistribute it and/or modify
->>> + * it under the terms of the GNU General Public License version 2 as
->>> + * published by the Free Software Foundation.
->>> + *
->>> + * Data sheets:
->>> + *  http://rohmfs.rohm.com/en/products/databook/datasheet/ic/sensor/light/bh1710fvc-e.pdf
->>> + *  http://rohmfs.rohm.com/en/products/databook/datasheet/ic/sensor/light/bh1715fvc-e.pdf
->>> + *  http://rohmfs.rohm.com/en/products/databook/datasheet/ic/sensor/light/bh1721fvc-e.pdf
->>> + *  http://rohmfs.rohm.com/en/products/databook/datasheet/ic/sensor/light/bh1750fvi-e.pdf
->>> + *  http://rohmfs.rohm.com/en/products/databook/datasheet/ic/sensor/light/bh1751fvi-e.pdf
->>> + *
->>> + * 7-bit I2C slave addresses:
->>> + *  0x23 (ADDR pin low)
->>> + *  0x5C (ADDR pin high)
->>> + *
->>> + */
->>> +
->>> +#include <linux/delay.h>
->>> +#include <linux/i2c.h>
->>> +#include <linux/iio/iio.h>
->>> +#include <linux/iio/sysfs.h>
->>> +#include <linux/module.h>
->>> +
->>> +#define BH1750_POWER_DOWN		0x00
->>> +#define BH1750_ONT_TIME_H_RES_MODE	0x20 /* auto-mode for BH1721 */
->>> +#define BH1750_CHANGE_INT_TIME_H_BIT	0x40
->>> +#define BH1750_CHANGE_INT_TIME_L_BIT	0x60
->>> +
->>> +enum {
->>> +	BH1710,
->>> +	BH1715,
->>> +	BH1721,
->>> +	BH1750,
->>> +	BH1751
->>> +};
->>> +
->>> +struct bh1750_chip_info {
->>> +	u16 mtreg_min;
->>> +	u16 mtreg_max;
->>> +	u16 mtreg_default;
->>> +	int mtreg_to_usec;
->>> +	int mtreg_to_scale;
->>> +
->>> +	/*
->>> +	 * For BH1710/BH1721 all possible integration time values won't fit
->>> +	 * into one page so displaying is limited to every second one.
->>> +	 * Note, that user can still write proper values which were not
->>> +	 * listed.
->>> +	 */
->>> +	int inc;
->>> +
->>> +	u16 int_time_low_mask;
->>> +	u16 int_time_high_mask;
->>> +};
->>> +
->>> +struct bh1750_data {
->>> +	struct i2c_client *client;
->>> +	struct mutex lock;
->>> +	const struct bh1750_chip_info *chip_info;
->>> +	u16 mtreg;
->>> +};
->>> +
->> Small point, but I'd have this array just after the structure definition
->> to allow that to act as the documentation for which variable is which
->> in here. Otherwise I'd be inclined to suggest the use of c99 assignments
->> to make this easy to check (uses a lot more lines!)
->>
-> OK.
->> Given there looks to be a high level of compatibility in here
->> (i.e. BH1715, BH1750 and BM1751 are identical?) you could use
->> just one entry and have that reflected in the i2c device id table.
->> It isn't a large enough set of repeats that I actually care either
->> way however!
-> OK.
->>> +static const struct bh1750_chip_info bh1750_chip_info_tbl[] = {
->>> +	[BH1710] = { 140, 1022, 300, 400,  4000,  2, 0x001F, 0x03E0 },
->>> +	[BH1715] = { 31,  254,  69,  1740, 17391, 1, 0x001F, 0x00E0 },
->>> +	[BH1721] = { 140, 1020, 300, 400,  4000,  2, 0x0010, 0x03E0 },
->>> +	[BH1750] = { 31,  254,  69,  1740, 17391, 1, 0x001F, 0x00E0 },
->>> +	[BH1751] = { 31,  254,  69,  1740, 17391, 1, 0x001F, 0x00E0 }
->>> +};
->>> +
->>> +static int bh1750_change_int_time(struct bh1750_data *data, int usec)
->>> +{
->>> +	int ret;
->>> +	u16 val;
->>> +	u8 regval;
->>> +	const struct bh1750_chip_info *chip_info = data->chip_info;
->>> +
->>> +	if ((usec % chip_info->mtreg_to_usec) != 0)
->>> +		return -EINVAL;
->>> +
->>> +	val = usec / chip_info->mtreg_to_usec;
->>> +	if (val < chip_info->mtreg_min || val > chip_info->mtreg_max)
->>> +		return -EINVAL;
->>> +
->>> +	ret = i2c_smbus_write_byte(data->client, BH1750_POWER_DOWN);
->>> +	if (ret < 0)
->>> +		return ret;
->>> +
->>> +	regval = (val & chip_info->int_time_high_mask) >> 5;
->>> +	ret = i2c_smbus_write_byte(data->client,
->>> +				   BH1750_CHANGE_INT_TIME_H_BIT | regval);
->>> +	if (ret < 0)
->>> +		return ret;
->>> +
->>> +	regval = val & chip_info->int_time_low_mask;
->>> +	ret = i2c_smbus_write_byte(data->client,
->>> +				   BH1750_CHANGE_INT_TIME_L_BIT | regval);
->>> +	if (ret < 0)
->>> +		return ret;
->>> +
->>> +	data->mtreg = val;
->>> +
->>> +	return 0;
->>> +}
->>> +
->>> +static int bh1750_read(struct bh1750_data *data, int *val)
->>> +{
->>> +	int ret;
->>> +	u16 result;
->>> +	const struct bh1750_chip_info *chip_info = data->chip_info;
->>> +	unsigned long delay = chip_info->mtreg_to_usec * data->mtreg;
->>> +
->>> +	ret = i2c_smbus_write_byte(data->client, BH1750_ONT_TIME_H_RES_MODE);
->>> +	if (ret < 0)
->>> +		return ret;
->>> +
->>> +	usleep_range(delay + 15000, delay + 40000);
->>> +
->>> +	ret = i2c_master_recv(data->client, (char *)&result, 2);
->>> +	if (ret < 0)
->>> +		return ret;
->>> +
->>> +	*val = swab16(result);
->>> +
->>> +	return 0;
->>> +}
->>> +
->>> +static int bh1750_read_raw(struct iio_dev *indio_dev,
->>> +			   struct iio_chan_spec const *chan,
->>> +			   int *val, int *val2, long mask)
->>> +{
->>> +	int ret, tmp;
->>> +	struct bh1750_data *data = iio_priv(indio_dev);
->>> +	const struct bh1750_chip_info *chip_info = data->chip_info;
->>> +
->>> +	switch (mask) {
->>> +	case IIO_CHAN_INFO_RAW:
->>> +		switch (chan->type) {
->>> +		case IIO_LIGHT:
->>> +			mutex_lock(&data->lock);
->>> +			ret = bh1750_read(data, val);
->>> +			mutex_unlock(&data->lock);
->>> +			if (ret < 0)
->>> +				return ret;
->>> +
->>> +			return IIO_VAL_INT;
->>> +		default:
->>> +			return -EINVAL;
->>> +		}
->>> +	case IIO_CHAN_INFO_SCALE:
->>> +		tmp = chip_info->mtreg_to_scale * data->mtreg;
->>> +		*val = tmp / 1000000;
->>> +		*val2 = tmp % 1000000;
->>> +		return IIO_VAL_INT_PLUS_MICRO;
->>> +	case IIO_CHAN_INFO_INT_TIME:
->>> +		*val = 0;
->>> +		*val2 = chip_info->mtreg_to_usec * data->mtreg;
->>> +		return IIO_VAL_INT_PLUS_MICRO;
->>> +	default:
->>> +		return -EINVAL;
->>> +	}
->>> +}
->>> +
->>> +static int bh1750_write_raw(struct iio_dev *indio_dev,
->>> +			    struct iio_chan_spec const *chan,
->>> +			    int val, int val2, long mask)
->>> +{
->>> +	int ret;
->>> +	struct bh1750_data *data = iio_priv(indio_dev);
->>> +
->>> +	switch (mask) {
->>> +	case IIO_CHAN_INFO_INT_TIME:
->>> +		if (val != 0)
->>> +			return -EINVAL;
->>> +
->>> +		mutex_lock(&data->lock);
->>> +		ret = bh1750_change_int_time(data, val2);
->>> +		mutex_unlock(&data->lock);
->>> +		return ret;
->>> +	default:
->>> +		return -EINVAL;
->>> +	}
->>> +}
->>> +
->>> +static ssize_t bh1750_show_int_time_available(struct device *dev,
->>> +		struct device_attribute *attr, char *buf)
->>> +{
->>> +	int i;
->>> +	size_t len = 0;
->>> +	struct bh1750_data *data = iio_priv(dev_to_iio_dev(dev));
->>> +	const struct bh1750_chip_info *chip_info = data->chip_info;
->>> +
->>> +	for (i = chip_info->mtreg_min; i <= chip_info->mtreg_max; i += chip_info->inc)
->>> +		len += scnprintf(buf + len, PAGE_SIZE - len, "0.%06d ",
->>> +				 chip_info->mtreg_to_usec * i);
->>> +
->>> +	buf[len - 1] = '\n';
->>> +
->>> +	return len;
->>> +}
->>> +
->>> +static IIO_DEV_ATTR_INT_TIME_AVAIL(bh1750_show_int_time_available);
->>> +
->>> +static struct attribute *bh1750_attributes[] = {
->>> +	&iio_dev_attr_integration_time_available.dev_attr.attr,
->>> +	NULL,
->>> +};
->>> +
->>> +static struct attribute_group bh1750_attribute_group = {
->>> +	.attrs = bh1750_attributes,
->>> +};
->>> +
->>> +static const struct iio_info bh1750_info = {
->>> +	.driver_module = THIS_MODULE,
->>> +	.attrs = &bh1750_attribute_group,
->>> +	.read_raw = bh1750_read_raw,
->>> +	.write_raw = bh1750_write_raw,
->>> +};
->>> +
->>> +static const struct iio_chan_spec bh1750_channels[] = {
->>> +	{
->>> +		.type = IIO_LIGHT,
->>> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
->>> +				      BIT(IIO_CHAN_INFO_SCALE) |
->>> +				      BIT(IIO_CHAN_INFO_INT_TIME)
->>> +	}
->>> +};
->>> +
->>> +static int bh1750_probe(struct i2c_client *client,
->>> +			const struct i2c_device_id *id)
->>> +{
->>> +	int ret, usec;
->>> +	struct bh1750_data *data;
->>> +	struct iio_dev *indio_dev;
->>> +
->>> +	if (!i2c_check_functionality(client->adapter, I2C_FUNC_I2C |
->>> +				I2C_FUNC_SMBUS_WRITE_BYTE))
->>> +		return -ENODEV;
->>> +
->>> +	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
->>> +	if (!indio_dev)
->>> +		return -ENOMEM;
->>> +
->>> +	data = iio_priv(indio_dev);
->>> +	i2c_set_clientdata(client, indio_dev);
->>> +	data->client = client;
->>> +	data->chip_info = &bh1750_chip_info_tbl[id->driver_data];
->>> +
->>> +	usec = data->chip_info->mtreg_to_usec * data->chip_info->mtreg_default;
->>> +	ret = bh1750_change_int_time(data, usec);
->>> +	if (ret < 0)
->>> +		return ret;
->>> +
->>> +	mutex_init(&data->lock);
->>> +	indio_dev->dev.parent = &client->dev;
->>> +	indio_dev->info = &bh1750_info;
->>> +	indio_dev->name = id->name;
->>> +	indio_dev->channels = bh1750_channels;
->>> +	indio_dev->num_channels = ARRAY_SIZE(bh1750_channels);
->>> +	indio_dev->modes = INDIO_DIRECT_MODE;
->>> +
->>> +	return iio_device_register(indio_dev);
->>> +}
->>> +
->>> +static int bh1750_remove(struct i2c_client *client)
->>> +{
->>> +	struct iio_dev *indio_dev = i2c_get_clientdata(client);
->>> +	struct bh1750_data *data = iio_priv(indio_dev);
->>> +
->>> +	iio_device_unregister(indio_dev);
->>> +
->>> +	mutex_lock(&data->lock);
->>> +	i2c_smbus_write_byte(client, BH1750_POWER_DOWN);
->>> +	mutex_unlock(&data->lock);
->>> +
->>> +	return 0;
->>> +}
->>> +
->>> +#ifdef CONFIG_PM_SLEEP
->>> +static int bh1750_suspend(struct device *dev)
->>> +{
->>> +	int ret;
->>> +	struct bh1750_data *data =
->>> +		iio_priv(i2c_get_clientdata(to_i2c_client(dev)));
->>> +
->>> +	mutex_lock(&data->lock);
->>> +	ret = i2c_smbus_write_byte(data->client, BH1750_POWER_DOWN);
->>> +	mutex_unlock(&data->lock);
->>> +
->>> +	return ret;
->>> +}
->> silly question.... When does it make sense to have a suspend but
->> no resume?
->>
->> You had one in V1...
-> Yes, because in V1 all sensors were configured to work in continous mode.
->>
->> Either the chip is always powering up before and then down after reading,
->> in which case what is the suspend for?  Or... It's not and you probably
->> need that resume.
-> Right, as long as sensor works in one time mode it obviously doesn't make
-> sense to have either suspend or resume.
+On 20/04/15 15:02, Daniel Baluta wrote:
+> A software trigger associates an IIO device trigger with a software
+> interrupt source (e.g: timer, sysfs). This patch adds the generic
+> infrastructure for handling software triggers.
 > 
-> The problem is with BH1721 which only supports continous mode. And if
-> one wants to change from continous to power down request for that
-> has to be sent. That's the reason why I left suspend.
-Ah. So it sort of ignores the attempt to move to the one time read
-mode in the read function.
+> Software interrupts sources are kept in a iio_trigger_types_list and
+> registered separately when the associated kernel module is loaded.
 > 
-> Resume is not necessary as this is already done by bh1750_read()
-> next time user reads new data. Note that one time measurement command
-> causes BH1721 to enter continous auto mode.
-Thanks for the explanation.  Could you add a few comments to this
-effect (one here and one in the read function) so that future readers
-of the code don't get confused (i.e. me when I've forgotten all about this!)
->>> +
->>> +static SIMPLE_DEV_PM_OPS(bh1750_pm_ops, bh1750_suspend, NULL);
->>> +#define BH1750_PM_OPS (&bh1750_pm_ops)
->>> +#else
->>> +#define BH1750_PM_OPS NULL
->>> +#endif
->>> +
->>> +static const struct i2c_device_id bh1750_id[] = {
->>> +	{ "bh1710", BH1710 },
->>> +	{ "bh1715", BH1715 },
->>> +	{ "bh1721", BH1721 },
->>> +	{ "bh1750", BH1750 },
->>> +	{ "bh1751", BH1751 },
->>> +	{ }
->>> +};
->>> +MODULE_DEVICE_TABLE(i2c, bh1750_id);
->>> +
->>> +static struct i2c_driver bh1750_driver = {
->>> +	.driver = {
->>> +		.name = "bh1750",
->>> +		.owner = THIS_MODULE,
->>> +		.pm = BH1750_PM_OPS,
->>> +	},
->>> +	.probe = bh1750_probe,
->>> +	.remove = bh1750_remove,
->>> +	.id_table = bh1750_id,
->>> +
->>> +};
->>> +module_i2c_driver(bh1750_driver);
->>> +
->>> +MODULE_AUTHOR("Tomasz Duszynski <tduszyns@gmail.com>");
->>> +MODULE_DESCRIPTION("ROHM BH1710/BH1715/BH1721/BH1750/BH1751 als driver");
->>> +MODULE_LICENSE("GPL v2");
->>> --
->>> 2.3.6
->>>
->>
-> Thanks for review!
+> Software triggers can be created directly from drivers or from user
+> space via configfs interface.
+> 
+> Signed-off-by: Daniel Baluta <daniel.baluta@intel.com>
+Looks sensible.
+My only real question is if the rwlock is justified (vs a mutex).
+
+> ---
+>  drivers/iio/Kconfig                   |   8 +++
+>  drivers/iio/Makefile                  |   1 +
+>  drivers/iio/industrialio-sw-trigger.c | 111 ++++++++++++++++++++++++++++++++++
+>  include/linux/iio/sw_trigger.h        |  50 +++++++++++++++
+>  4 files changed, 170 insertions(+)
+>  create mode 100644 drivers/iio/industrialio-sw-trigger.c
+>  create mode 100644 include/linux/iio/sw_trigger.h
+> 
+> diff --git a/drivers/iio/Kconfig b/drivers/iio/Kconfig
+> index 4011eff..de7f1d9 100644
+> --- a/drivers/iio/Kconfig
+> +++ b/drivers/iio/Kconfig
+> @@ -58,6 +58,14 @@ config IIO_CONSUMERS_PER_TRIGGER
+>  	This value controls the maximum number of consumers that a
+>  	given trigger may handle. Default is 2.
+>  
+> +config IIO_SW_TRIGGER
+> +	bool "Enable software triggers support"
+> +	depends on IIO_TRIGGER
+> +	help
+> +	 Provides IIO core support for software triggers. A software
+> +	 trigger can be created via configfs or directly by a driver
+> +	 using the API provided.
+> +
+>  source "drivers/iio/accel/Kconfig"
+>  source "drivers/iio/adc/Kconfig"
+>  source "drivers/iio/amplifiers/Kconfig"
+> diff --git a/drivers/iio/Makefile b/drivers/iio/Makefile
+> index 698afc2..df87975 100644
+> --- a/drivers/iio/Makefile
+> +++ b/drivers/iio/Makefile
+> @@ -6,6 +6,7 @@ obj-$(CONFIG_IIO) += industrialio.o
+>  industrialio-y := industrialio-core.o industrialio-event.o inkern.o
+>  industrialio-$(CONFIG_IIO_BUFFER) += industrialio-buffer.o
+>  industrialio-$(CONFIG_IIO_TRIGGER) += industrialio-trigger.o
+> +industrialio-$(CONFIG_IIO_SW_TRIGGER) += industrialio-sw-trigger.o
+>  industrialio-$(CONFIG_IIO_BUFFER_CB) += buffer_cb.o
+>  
+>  obj-$(CONFIG_IIO_TRIGGERED_BUFFER) += industrialio-triggered-buffer.o
+> diff --git a/drivers/iio/industrialio-sw-trigger.c b/drivers/iio/industrialio-sw-trigger.c
+> new file mode 100644
+> index 0000000..567c675
+> --- /dev/null
+> +++ b/drivers/iio/industrialio-sw-trigger.c
+> @@ -0,0 +1,111 @@
+> +/*
+> + * The Industrial I/O core, software trigger functions
+> + *
+> + * Copyright (c) 2015 Intel Corporation
+> + *
+> + * This program is free software; you can redistribute it and/or modify it
+> + * under the terms of the GNU General Public License version 2 as published by
+> + * the Free Software Foundation.
+> + */
+> +
+> +#include <linux/module.h>
+> +#include <linux/init.h>
+> +#include <linux/kmod.h>
+> +#include <linux/list.h>
+> +#include <linux/slab.h>
+> +
+> +#include <linux/iio/sw_trigger.h>
+> +
+> +static LIST_HEAD(iio_trigger_types_list);
+> +static DEFINE_RWLOCK(iio_trigger_types_lock);
+Can see the logic, but I'm not totally convinced a rwlock is necessary.
+We don't actually create new ones terribly often...
+> +
+> +static
+> +struct iio_sw_trigger_type *iio_find_sw_trigger_type(char *name, unsigned len)
+> +{
+> +	struct iio_sw_trigger_type *t = NULL, *iter;
+> +
+> +	list_for_each_entry(iter, &iio_trigger_types_list, list)
+> +		if (!strncmp(iter->name, name, len)) {
+> +			t = iter;
+> +			break;
+> +		}
+> +
+> +	return t;
+> +}
+> +
+> +int iio_register_sw_trigger_type(struct iio_sw_trigger_type *t)
+> +{
+> +	struct iio_sw_trigger_type *iter;
+> +	int ret = 0;
+> +
+> +	write_lock(&iio_trigger_types_lock);
+> +	iter = iio_find_sw_trigger_type(t->name, strlen(t->name));
+> +	if (iter)
+> +		ret = -EBUSY;
+Rather than EAGAIN?  Could also do the magic attempt to autoload the
+module that the usb gadget driver does (though add that as a later
+feature rather than in this first posting I think to keep complexity
+of patch manageable).
+> +	else
+> +		list_add_tail(&t->list, &iio_trigger_types_list);
+> +	write_unlock(&iio_trigger_types_lock);
+nitpick :) blank line here.
+> +	return ret;
+> +}
+> +EXPORT_SYMBOL(iio_register_sw_trigger_type);
+> +
+> +int iio_unregister_sw_trigger_type(struct iio_sw_trigger_type *t)
+> +{
+> +	struct iio_sw_trigger_type *iter;
+> +	int ret = 0;
+> +
+> +	write_lock(&iio_trigger_types_lock);
+> +	iter = iio_find_sw_trigger_type(t->name, strlen(t->name));
+> +	if (!iter)
+> +		ret = -EINVAL;
+> +	else
+> +		list_del(&t->list);
+> +	write_unlock(&iio_trigger_types_lock);
+> +
+> +	return ret;
+> +}
+> +EXPORT_SYMBOL(iio_unregister_sw_trigger_type);
+> +
+> +static
+> +struct iio_sw_trigger_type *iio_get_sw_trigger_type(char *name)
+> +{
+> +	struct iio_sw_trigger_type *t;
+> +
+> +	read_lock(&iio_trigger_types_lock);
+> +	t = iio_find_sw_trigger_type(name, strlen(name));
+> +	if (t && !try_module_get(t->owner))
+> +		t = NULL;
+> +	read_unlock(&iio_trigger_types_lock);
+> +
+> +	return t;
+> +}
+> +
+> +struct iio_sw_trigger *iio_sw_trigger_create(char *type, char *name)
+> +{
+> +	struct iio_sw_trigger *t;
+> +	struct iio_sw_trigger_type *tt;
+I like the brief variable names (perfectly clear so not actually being
+sarcastic ;))
+> +
+> +	tt = iio_get_sw_trigger_type(type);
+> +	if (!tt) {
+> +		pr_err("Invalid trigger type: %s\n", type);
+> +		return ERR_PTR(-EINVAL);
+> +	}
+> +	t = tt->ops->probe(name);
+> +	if (IS_ERR(t))
+> +		goto out_module_put;
+> +
+> +	return t;
+> +out_module_put:
+> +	module_put(tt->owner);
+> +	return t;
+> +}
+> +EXPORT_SYMBOL(iio_sw_trigger_create);
+> +
+> +void iio_sw_trigger_destroy(struct iio_sw_trigger *t)
+> +{
+> +	struct iio_sw_trigger_type *tt = t->trigger_type;
+> +
+> +	tt->ops->remove(t);
+> +	module_put(tt->owner);
+> +}
+> +EXPORT_SYMBOL(iio_sw_trigger_destroy);
+> diff --git a/include/linux/iio/sw_trigger.h b/include/linux/iio/sw_trigger.h
+> new file mode 100644
+> index 0000000..2e6659b
+> --- /dev/null
+> +++ b/include/linux/iio/sw_trigger.h
+> @@ -0,0 +1,50 @@
+> +#ifndef __IIO_SW_TRIGGER
+> +#define __IIO_SW_TRIGGER
+> +
+> +#include <linux/module.h>
+> +#include <linux/device.h>
+> +#include <linux/iio/iio.h>
+> +#include <linux/configfs.h>
+> +
+> +#define module_iio_sw_trigger_driver(__iio_sw_trigger_type) \
+> +	module_driver(__iio_sw_trigger_type, iio_register_sw_trigger_type, \
+> +		      iio_unregister_sw_trigger_type)
+> +
+> +struct iio_sw_trigger_ops;
+> +
+> +struct iio_sw_trigger_type {
+> +	char *name;
+> +	struct module *owner;
+> +	struct iio_sw_trigger_ops *ops;
+> +	struct list_head list;
+> +};
+> +
+> +struct iio_sw_trigger {
+> +	struct iio_trigger *trigger;
+> +	struct iio_sw_trigger_type *trigger_type;
+> +#ifdef CONFIG_CONFIGFS_FS
+> +	struct config_group group;
+> +#endif
+> +};
+> +
+> +struct iio_sw_trigger_ops {
+> +	struct iio_sw_trigger* (*probe)(const char *);
+> +	int (*remove)(struct iio_sw_trigger *);
+> +};
+> +
+> +int iio_register_sw_trigger_type(struct iio_sw_trigger_type *);
+> +int iio_unregister_sw_trigger_type(struct iio_sw_trigger_type *);
+> +
+> +struct iio_sw_trigger *iio_sw_trigger_create(char *, char *);
+> +void iio_sw_trigger_destroy(struct iio_sw_trigger *);
+> +
+> +#ifdef CONFIG_CONFIGFS_FS
+> +static inline
+> +struct iio_sw_trigger *to_iio_sw_trigger(struct config_item *item)
+> +{
+> +	return container_of(to_config_group(item), struct iio_sw_trigger,
+> +			    group);
+> +}
+> +#endif
+> +
+> +#endif /* __IIO_SW_TRIGGER */
 > 
 
