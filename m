@@ -1,51 +1,43 @@
-Return-Path: <tiberiu.a.breana@intel.com>
-From: Tiberiu Breana <tiberiu.a.breana@intel.com>
-To: linux-iio@vger.kernel.org
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	Peter Meerwald <pmeerw@pmeerw.net>
-Subject: [PATCH v3 0/2] Add support for Sensortek STK3310
-Date: Mon, 27 Apr 2015 18:33:59 +0300
-Message-Id: <1430148841-30947-1-git-send-email-tiberiu.a.breana@intel.com>
+Return-Path: <octavian.purdila@intel.com>
+From: Octavian Purdila <octavian.purdila@intel.com>
+To: jic23@kernel.org
+Cc: lars@metafoo.de,
+	pmeerw@pmeerw.net,
+	robert.moore@intel.com,
+	rafael.j.wysocki@intel.com,
+	lenb@kernel.org,
+	linux-api@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	linux-iio@vger.kernel.org,
+	linux-acpi@vger.kernel.org,
+	Octavian Purdila <octavian.purdila@intel.com>
+Subject: [RFC PATCH 2/3] ACPICA: Add _PLD front and back panel constants
+Date: Mon, 27 Apr 2015 18:01:47 +0300
+Message-Id: <1430146908-27919-3-git-send-email-octavian.purdila@intel.com>
+In-Reply-To: <1430146908-27919-1-git-send-email-octavian.purdila@intel.com>
+References: <1430146908-27919-1-git-send-email-octavian.purdila@intel.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-These patches include an iio driver for the Sensortek STK3310
-ambient light and proximity sensor. The STK3311 model is also
-supported.
+Signed-off-by: Octavian Purdila <octavian.purdila@intel.com>
+---
+ include/acpi/acbuffer.h | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-Datasheet:
-http://www.datasheetspdf.com/datasheet/STK3310.html
-
-Patches are as following:
-
-1. basic functionality:
-- raw readings of light and proximity data
-- configuration of parameters like gain and integration time
-- power management
-
-2. interrupt support:
-- interrupt support for proximity events
-- enabling/disabling interrupts (events) via sysfs
-- setting proximity thresholds
-
-Changes since v2:
-- addressed Peter's comments
-- changed integration_time_available's type to IIO_CONST_ATTR
-- added scale_available attribute for proximity
-- removed the stk3310_get_it_vals function
-- added the STK3310_REGFIELD macro to reduce source code size
-
-Regards,
-Tiberiu
-
-Tiberiu Breana (2):
-  iio: light: Add support for Sensortek STK3310
-  iio: light: Add threshold interrupt support for STK3310
-
- drivers/iio/light/Kconfig   |  11 +
- drivers/iio/light/Makefile  |   1 +
- drivers/iio/light/stk3310.c | 722 ++++++++++++++++++++++++++++++++++++++++++++
- 3 files changed, 734 insertions(+)
- create mode 100644 drivers/iio/light/stk3310.c
-
+diff --git a/include/acpi/acbuffer.h b/include/acpi/acbuffer.h
+index 6b040f4..2be0270 100644
+--- a/include/acpi/acbuffer.h
++++ b/include/acpi/acbuffer.h
+@@ -139,6 +139,11 @@ struct acpi_pld_info {
+ 	u16 horizontal_offset;
+ };
+ 
++enum {
++	ACPI_PLD_PANEL_FRONT = 4,
++	ACPI_PLD_PANEL_BACK
++};
++
+ /*
+  * Macros to:
+  *     1) Convert a _PLD buffer to internal struct acpi_pld_info format - ACPI_PLD_GET*
 -- 
 1.9.1
