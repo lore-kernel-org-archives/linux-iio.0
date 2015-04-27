@@ -1,82 +1,80 @@
-Return-Path: <octavian.purdila@intel.com>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mga11.intel.com ([192.55.52.93]:10038 "EHLO mga11.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S932900AbbD0PCr (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Mon, 27 Apr 2015 11:02:47 -0400
 From: Octavian Purdila <octavian.purdila@intel.com>
 To: jic23@kernel.org
-Cc: lars@metafoo.de,
-	pmeerw@pmeerw.net,
-	robert.moore@intel.com,
-	rafael.j.wysocki@intel.com,
-	lenb@kernel.org,
-	linux-api@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	linux-iio@vger.kernel.org,
-	linux-acpi@vger.kernel.org,
+Cc: lars@metafoo.de, pmeerw@pmeerw.net, robert.moore@intel.com,
+	rafael.j.wysocki@intel.com, lenb@kernel.org,
+	linux-api@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-iio@vger.kernel.org, linux-acpi@vger.kernel.org,
 	Octavian Purdila <octavian.purdila@intel.com>
-Subject: [RFC PATCH 3/3] iio: derive the mounting matrix from ACPI _PLD objects
-Date: Mon, 27 Apr 2015 18:01:48 +0300
-Message-Id: <1430146908-27919-4-git-send-email-octavian.purdila@intel.com>
+Subject: [RFC PATCH 1/3] iio: export mounting matrix information
+Date: Mon, 27 Apr 2015 18:01:46 +0300
+Message-Id: <1430146908-27919-2-git-send-email-octavian.purdila@intel.com>
 In-Reply-To: <1430146908-27919-1-git-send-email-octavian.purdila@intel.com>
 References: <1430146908-27919-1-git-send-email-octavian.purdila@intel.com>
-List-ID: <linux-iio@vger.kernel.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-This patch derives the mounting matrix for a particular IIO device
-based ont the ACPI _PLD information. Note that if mounting matrix is
-defined in the device properties it overrieds the _PLD information.
+Export a new sysfs attribute that describes the placement of the
+sensor on the device in the form of a mounting matrix so that
+userspace can do the required correction to get accurate data:
+
+corrected X = MM[0] * X + MM[1] Y + MM[2] * Z
+corrected Y = MM[3] * X + MM[4] Y + MM[5] * Z
+corrected Z = MM[6] * X + MM[7] Y + MM[8] * Z
+
+This information is read from the device properties of the parent of
+the IIO device.
 
 Signed-off-by: Octavian Purdila <octavian.purdila@intel.com>
 ---
- drivers/iio/industrialio-core.c | 51 +++++++++++++++++++++++++++++++++++++++++
- include/linux/iio/iio.h         | 46 +++++++++++++++++++++++++++++++++++++
- 2 files changed, 97 insertions(+)
+ Documentation/ABI/testing/sysfs-bus-iio | 11 +++++++++
+ drivers/iio/industrialio-core.c         | 42 +++++++++++++++++++++++++++++++++
+ include/linux/iio/iio.h                 |  9 +++++++
+ 3 files changed, 62 insertions(+)
 
+diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
+index 866b4ec..d36476e 100644
+--- a/Documentation/ABI/testing/sysfs-bus-iio
++++ b/Documentation/ABI/testing/sysfs-bus-iio
+@@ -1375,3 +1375,14 @@ Description:
+ 		The emissivity ratio of the surface in the field of view of the
+ 		contactless temperature sensor.  Emissivity varies from 0 to 1,
+ 		with 1 being the emissivity of a black body.
++
++What:		/sys/bus/iio/devices/iio:deviceX/mounting_matrix
++KernelVersion:	4.2
++Contact:	linux-iio@vger.kernel.org
++Description:
++		A list of 9 floating point values that describes the
++		transformation needed to account for the way the sensor has been
++		placed on the PCB:
++		corrected X = MM[0] * X + MM[1] Y + MM[2] * Z
++		corrected Y = MM[3] * X + MM[4] Y + MM[5] * Z
++		corrected Z = MM[6] * X + MM[7] Y + MM[8] * Z
 diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
-index 9000c53..90ee58a 100644
+index 7c98bc1..9000c53 100644
 --- a/drivers/iio/industrialio-core.c
 +++ b/drivers/iio/industrialio-core.c
-@@ -31,6 +31,7 @@
- #include <linux/iio/sysfs.h>
- #include <linux/iio/events.h>
- #include <linux/iio/buffer.h>
-+#include <linux/acpi.h>
- 
- /* IDA to assign each registered device a unique id */
- static DEFINE_IDA(iio_ida);
-@@ -871,6 +872,53 @@ static ssize_t iio_show_dev_name(struct device *dev,
+@@ -871,6 +871,45 @@ static ssize_t iio_show_dev_name(struct device *dev,
  
  static DEVICE_ATTR(name, S_IRUGO, iio_show_dev_name, NULL);
  
-+#if IS_ENABLED(CONFIG_ACPI)
-+static bool iio_get_mounting_matrix_acpi(struct iio_dev *indio_dev)
++static bool iio_get_mounting_matrix(struct iio_dev *indio_dev)
 +{
-+	acpi_handle h = ACPI_HANDLE(indio_dev->dev.parent);
-+	struct acpi_pld_info *info;
++	int i, err;
 +
-+	if (ACPI_SUCCESS(acpi_get_physical_device_location(h, &info))) {
-+		IIO_MM_SET(indio_dev->mounting_matrix, X, X, 1, 0);
-+		IIO_MM_SET(indio_dev->mounting_matrix, Y, Y, 1, 0);
-+		IIO_MM_SET(indio_dev->mounting_matrix, Z, Z, 1, 0);
++	err = device_property_read_u32_array(&indio_dev->dev, "mounting-matrix",
++					     indio_dev->mounting_matrix, 9);
++	if (!err) {
++		int *mm = indio_dev->mounting_matrix;
 +
-+		/* Chip placed on the back panel ; negate x and z */
-+		if (info->panel == ACPI_PLD_PANEL_BACK) {
-+			IIO_MM_MUL(indio_dev->mounting_matrix, X, X, -1, 0);
-+			IIO_MM_MUL(indio_dev->mounting_matrix, Z, Z, -1, 0);
-+		}
-+
-+		switch (info->rotation) {
-+		case 2:
-+			/* 90 deg clockwise: negate y then swap x,y */
-+			IIO_MM_MUL(indio_dev->mounting_matrix, Y, Y, -1, 0);
-+			IIO_MM_SWAP(indio_dev->mounting_matrix, X, Y);
-+			break;
-+		case 4:
-+			/* Upside down: negate x and y */
-+			IIO_MM_MUL(indio_dev->mounting_matrix, X, X, -1, 0);
-+			IIO_MM_MUL(indio_dev->mounting_matrix, Y, Y, -1, 0);
-+			break;
-+		case 6:
-+			/* 90 deg counter clockwise: negate x then swap x,y */
-+			IIO_MM_MUL(indio_dev->mounting_matrix, X, X, -1, 0);
-+			IIO_MM_SWAP(indio_dev->mounting_matrix, X, Y);
-+			break;
++		for (i = IIO_MM_SIZE - 2; i > 0; i -= 2) {
++			mm[i] = mm[i / 2];
++			mm[i + 1] = 0;
 +		}
 +
 +		return true;
@@ -84,82 +82,73 @@ index 9000c53..90ee58a 100644
 +
 +	return false;
 +}
-+#else
-+static bool iio_get_mounting_matrix_acpi(struct iio_dev *indio_dev)
++
++static ssize_t iio_show_mounting_matrix(struct device *dev,
++					struct device_attribute *attr,
++					char *buf)
 +{
-+	return false;
++	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
++	char *tmp = buf;
++	int i;
++
++	for (i = 0; i < IIO_MM_SIZE; i += 2) {
++		tmp += iio_format_value(tmp, IIO_VAL_INT_PLUS_MICRO, 2,
++					&indio_dev->mounting_matrix[i]);
++		if (((i + 2) / 2) % 3)
++			tmp[-1] = ' ';
++	}
++	return tmp - buf;
 +}
-+#endif
 +
- static bool iio_get_mounting_matrix(struct iio_dev *indio_dev)
++static DEVICE_ATTR(mounting_matrix, S_IRUGO, iio_show_mounting_matrix, NULL);
++
+ static int iio_device_register_sysfs(struct iio_dev *indio_dev)
  {
- 	int i, err;
-@@ -888,6 +936,9 @@ static bool iio_get_mounting_matrix(struct iio_dev *indio_dev)
- 		return true;
- 	}
+ 	int i, ret = 0, attrcount, attrn, attrcount_orig = 0;
+@@ -920,6 +959,9 @@ static int iio_device_register_sysfs(struct iio_dev *indio_dev)
+ 		indio_dev->chan_attr_group.attrs[attrn++] = &p->dev_attr.attr;
+ 	if (indio_dev->name)
+ 		indio_dev->chan_attr_group.attrs[attrn++] = &dev_attr_name.attr;
++	if (iio_get_mounting_matrix(indio_dev))
++		indio_dev->chan_attr_group.attrs[attrn++] =
++			&dev_attr_mounting_matrix.attr;
  
-+	if (ACPI_HANDLE(indio_dev->dev.parent))
-+		return iio_get_mounting_matrix_acpi(indio_dev);
-+
- 	return false;
- }
- 
+ 	indio_dev->groups[indio_dev->groupcounter++] =
+ 		&indio_dev->chan_attr_group;
 diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
-index c1fa852..feb7813 100644
+index b1e46ae..c1fa852 100644
 --- a/include/linux/iio/iio.h
 +++ b/include/linux/iio/iio.h
-@@ -436,6 +436,52 @@ struct iio_buffer_setup_ops {
+@@ -434,6 +434,8 @@ struct iio_buffer_setup_ops {
+ 				   const unsigned long *scan_mask);
+ };
  
- #define IIO_MM_SIZE		18
- 
-+enum {
-+	IIO_MM_XX0,
-+	IIO_MM_XX1,
-+	IIO_MM_XY0,
-+	IIO_MM_XY1,
-+	IIO_MM_XZ0,
-+	IIO_MM_XZ1,
-+	IIO_MM_YX0,
-+	IIO_MM_YX1,
-+	IIO_MM_YY0,
-+	IIO_MM_YY1,
-+	IIO_MM_YZ0,
-+	IIO_MM_YZ1,
-+	IIO_MM_ZX0,
-+	IIO_MM_ZX1,
-+	IIO_MM_ZY0,
-+	IIO_MM_ZY1,
-+	IIO_MM_ZZ0,
-+	IIO_MM_ZZ1,
-+};
-+
-+#define IIO_MM_SET(mm, a, b, val0, val1)	\
-+	do {					\
-+		mm[IIO_MM_##a##b##0] = val0;	\
-+		mm[IIO_MM_##a##b##1] = val1;	\
-+	} while (0)				\
-+
-+#define IIO_MM_MUL(mm, a, b, val0, val1)	\
-+	do {					\
-+		mm[IIO_MM_##a##b##0] *= val0;	\
-+		mm[IIO_MM_##a##b##0] *= val1;	\
-+	} while (0)				\
-+
-+#define IIO_MM_SWAP(mm, x, y)					\
-+	do {							\
-+		int tmp;					\
-+								\
-+		tmp = mm[IIO_MM_##x##x##0];			\
-+		mm[IIO_MM_##x##x##0] = mm[IIO_MM_##y##y##0];	\
-+		mm[IIO_MM_##y##y##0] = tmp;			\
-+								\
-+		tmp = mm[IIO_MM_##x##x##1];			\
-+		mm[IIO_MM_##x##x##1] = mm[IIO_MM_##y##y##1];	\
-+		mm[IIO_MM_##y##y##1] = tmp;			\
-+	} while (0)						\
++#define IIO_MM_SIZE		18
 +
  /**
   * struct iio_dev - industrial I/O device
   * @id:			[INTERN] used to identify device internally
+@@ -469,6 +471,12 @@ struct iio_buffer_setup_ops {
+  * @groups:		[INTERN] attribute groups
+  * @groupcounter:	[INTERN] index of next attribute group
+  * @flags:		[INTERN] file ops related flags including busy flag.
++ * @mounting_matrix:	[INTERN] the mounting matrix is a series of 9
++ *			IIO_VAL_INT_PLUS_MICRO pairs that describes the
++ *			transformation needed to account for the way the sensor
++ *			has been placed on the PCB. See the mounting_matrix
++ *			entry in Documentation/ABI/testing/sysfs-bus-iio about
++ *			details of the transformation operations.
+  * @debugfs_dentry:	[INTERN] device specific debugfs dentry.
+  * @cached_reg_addr:	[INTERN] cached register address for debugfs reads.
+  */
+@@ -509,6 +517,7 @@ struct iio_dev {
+ 	int				groupcounter;
+ 
+ 	unsigned long			flags;
++	int				mounting_matrix[IIO_MM_SIZE];
+ #if defined(CONFIG_DEBUG_FS)
+ 	struct dentry			*debugfs_dentry;
+ 	unsigned			cached_reg_addr;
 -- 
 1.9.1
+
