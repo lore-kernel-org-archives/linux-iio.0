@@ -1,62 +1,81 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mout.gmx.net ([212.227.17.22]:61317 "EHLO mout.gmx.net"
+Received: from bear.ext.ti.com ([192.94.94.41]:60110 "EHLO bear.ext.ti.com"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1750788AbbDZVuT (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Sun, 26 Apr 2015 17:50:19 -0400
-Message-ID: <553D5D90.30403@gmx.de>
-Date: Sun, 26 Apr 2015 23:50:08 +0200
-From: Hartmut Knaack <knaack.h@gmx.de>
+	id S932705AbbD0OuK (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Mon, 27 Apr 2015 10:50:10 -0400
+Message-ID: <553E4C78.8000100@ti.com>
+Date: Mon, 27 Apr 2015 09:49:28 -0500
+From: Dan Murphy <dmurphy@ti.com>
 MIME-Version: 1.0
-To: Irina Tirdea <irina.tirdea@intel.com>,
-	Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org
-CC: linux-kernel@vger.kernel.org, Vlad Dogaru <vlad.dogaru@intel.com>
-Subject: Re: [PATCH v2 00/17] Fixes for the mma9553 driver
-References: <1428939664-12503-1-git-send-email-irina.tirdea@intel.com>
-In-Reply-To: <1428939664-12503-1-git-send-email-irina.tirdea@intel.com>
-Content-Type: text/plain; charset=US-ASCII
+To: Jonathan Cameron <jic23@kernel.org>, <linux-iio@vger.kernel.org>
+Subject: Re: [PATCH 2/3] iio: bindings: Add TI afe4403 heart monitor documentation
+References: <1429720331-1900-1-git-send-email-dmurphy@ti.com> <1429720331-1900-3-git-send-email-dmurphy@ti.com> <553D20CA.7090107@kernel.org>
+In-Reply-To: <553D20CA.7090107@kernel.org>
+Content-Type: text/plain; charset="windows-1252"
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Irina Tirdea schrieb am 13.04.2015 um 17:40:
-> This is a set of follow-up patches for the mma9553 driver that fixes
-> issues as suggested by Hartmut and Daniel.
-> 
+Jpnathan
 
-Finally, I got around to this series. Looks good to me.
-Thanks,
+On 04/26/2015 12:30 PM, Jonathan Cameron wrote:
+> On 22/04/15 17:32, Dan Murphy wrote:
+>> Add the TI afe4403 heart monitor device tree
+>> binding documentation.  heart_monitors directory
+>> created under iio.
+>>
+>> Signed-off-by: Dan Murphy <dmurphy@ti.com>
+>> ---
+>>  .../bindings/iio/heart_monitor/ti_afe4403.txt      | 26 ++++++++++++++++++++++
+>>  1 file changed, 26 insertions(+)
+>>  create mode 100644 Documentation/devicetree/bindings/iio/heart_monitor/ti_afe4403.txt
+>>
+>> diff --git a/Documentation/devicetree/bindings/iio/heart_monitor/ti_afe4403.txt b/Documentation/devicetree/bindings/iio/heart_monitor/ti_afe4403.txt
+>> new file mode 100644
+>> index 0000000..b196b17
+>> --- /dev/null
+>> +++ b/Documentation/devicetree/bindings/iio/heart_monitor/ti_afe4403.txt
+>> @@ -0,0 +1,26 @@
+>> +* Texas Instruments - AFE4403 Heart rate and Pulse Oximeter
+>> +
+>> +The device consists of a low-noise receiver channel
+>> +with an integrated analog-to-digital converter (ADC),
+>> +an LED transmit section, and diagnostics for sensor and LED fault detection.
+>> +
+>> +Required properties:
+>> +  - compatible: Must contain "ti,afe4403".
+>> +  - ste-gpio: GPIO for the spi control line
+> This gpio needs more info here.  From description it sounds like a chip select
+> and those obviously don't need to be specified at driver level.
 
-Hartmut
+It is a chip select line.  There was an issue with this from the device side.
+I will need to dig this up again and remember why I did this.
 
-> Changes in v2:
->  - split some of the the v1 patches into smaller patches
-> as suggested by Jonathan
->  - reordered the series to have bug fixes first followed by style fixes
->  - use Reported-by for bug fixes
->  - added more fixes for issues detected by checkpatch.pl --strict
-> 
-> Irina Tirdea (17):
->   iio: accel: mma9553: fix endianness issue when reading status
->   iio: accel: mma9553: check input value for activity period
->   iio: accel: mma9551_core: prevent buffer overrun
->   iio: accel: mma9553: add enable channel for activity
->   iio: accel: mma9551_core: wrong doc fixes
->   iio: accel: mma9551_core: typo fix in RSC APP ID
->   iio: accel: mma9553: check for error in reading initial activity and
->     stepcnt
->   iio: accel: mma9553: return 0 as indication of success
->   iio: accel: mma9553: comment and error message fixes
->   iio: accel: mma9553: use GENMASK
->   iio: accel: mma9553: prefix naming fixes
->   iio: accel: mma9553: fix gpio bitnum init value
->   iio: accel: mma9553: refactor mma9553_read_raw
->   iio: accel: mma9551_core: use size in words for word buffers
->   iio: accel: mma9553: fix alignment issues
->   iio: accel: mma9553: document use of mutex
->   iio: accel: mma9553: use unsigned counters
-> 
->  drivers/iio/accel/mma9551_core.c |  70 ++++++-----
->  drivers/iio/accel/mma9551_core.h |   8 +-
->  drivers/iio/accel/mma9553.c      | 253 ++++++++++++++++++---------------------
->  3 files changed, 160 insertions(+), 171 deletions(-)
-> 
+Maybe I can remove it.
+
+Dan
+
+
+>> +  - data-ready-gpio: GPIO interrupt when the afe4403 has data
+>> +  - led-supply: Chip supply to the device
+>> +
+>> +Optional properties:
+>> +  - reset-gpio: GPIO used to reset the device via HW
+>> +
+>> +Example:
+>> +
+>> +&heart_rate {
+>> +	compatible = "ti,afe4403";
+>> +	ste-gpio = <&gpio1 29 GPIO_ACTIVE_HIGH>;
+>> +	data-ready-gpio = <&gpio1 28 GPIO_ACTIVE_HIGH>;
+>> +	led-supply = <&vbat>;
+>> +};
+>> +
+>> +Technical Datasheet:
+>> +http://www.ti.com/product/AFE4403/datasheet
+>>
+
+
+-- 
+------------------
+Dan Murphy
 
