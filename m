@@ -1,426 +1,354 @@
 Return-Path: <pmeerw@pmeerw.net>
-Date: Mon, 27 Apr 2015 23:28:32 +0200 (CEST)
+Date: Mon, 27 Apr 2015 20:55:23 +0200 (CEST)
 From: Peter Meerwald <pmeerw@pmeerw.net>
-To: Tomasz Duszynski <tduszyns@gmail.com>
-cc: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
-    linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org
-Subject: Re: [PATCH v3] iio: light: add support for ROHM BH1710/BH1715/BH1721/BH1750/BH1751
- ambient light sensors
-In-Reply-To: <1430155127-16898-1-git-send-email-tduszyns@gmail.com>
-Message-ID: <alpine.DEB.2.02.1504272107180.16708@pmeerw.net>
-References: <1430155127-16898-1-git-send-email-tduszyns@gmail.com>
+To: Dmitry Eremin-Solenikov <dbaryshkov@gmail.com>
+cc: Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
+    Lars-Peter Clausen <lars@metafoo.de>, linux-iio@vger.kernel.org
+Subject: Re: [PATCH v3] iio: add m62332 DAC driver
+In-Reply-To: <1430156261-12742-1-git-send-email-dbaryshkov@gmail.com>
+Message-ID: <alpine.DEB.2.02.1504272045300.16708@pmeerw.net>
+References: <1430156261-12742-1-git-send-email-dbaryshkov@gmail.com>
 MIME-Version: 1.0
 Content-Type: TEXT/PLAIN; charset=US-ASCII
 List-ID: <linux-iio@vger.kernel.org>
 
 
-> Add support for ROHM BH1710/BH1715/BH1721/BH1750/BH1751 ambient light
-> sensors.
+> m62332 is a simple 2-channel DAC used on several Sharp Zaurus boards to
+> control LCD voltage, backlight and sound. The driver use regulators to
+> control the reference voltage and enabling/disabling the DAC.
 
 some minor comments below
  
-> Signed-off-by: Tomasz Duszynski <tduszyns@gmail.com>
+> Signed-off-by: Dmitry Eremin-Solenikov <dbaryshkov@gmail.com>
 > ---
->  Changes in v3:
->  	- Do some code cleanup
-> 	- Add comments to clarify non-intuitive driver parts
-> 	- Return proper scale value [lx / count] to userspace. In previous
-> 	  patches scale inverse was returned.
+> Changes since v2:
+>  * Added M62332_CHANNELS to be used instead of magic value 2
+>  * Changed the probe funciton handles error cases
 > 
->  Changes in v2:
->  	- Store chip-dependent values in chip_info structure
-> 	- Add bh1750_remove to power down chip (necessary for BH1721)
-> 	- Use one time mode for chips that have support for that
-> 	- Use IIO_LIGHT instead of IIO_INTENSITY for channel type
+>  drivers/iio/dac/Kconfig  |  10 ++
+>  drivers/iio/dac/Makefile |   1 +
+>  drivers/iio/dac/m62332.c | 261 +++++++++++++++++++++++++++++++++++++++++++++++
+>  3 files changed, 272 insertions(+)
+>  create mode 100644 drivers/iio/dac/m62332.c
 > 
->  drivers/iio/light/Kconfig  |  10 ++
->  drivers/iio/light/Makefile |   1 +
->  drivers/iio/light/bh1750.c | 334 +++++++++++++++++++++++++++++++++++++++++++++
->  3 files changed, 345 insertions(+)
->  create mode 100644 drivers/iio/light/bh1750.c
-> 
-> diff --git a/drivers/iio/light/Kconfig b/drivers/iio/light/Kconfig
-> index 5a3237b..ebc578a 100644
-> --- a/drivers/iio/light/Kconfig
-> +++ b/drivers/iio/light/Kconfig
-> @@ -37,6 +37,16 @@ config APDS9300
->  	 To compile this driver as a module, choose M here: the
->  	 module will be called apds9300.
-> 
-> +config BH1750
-> +	tristate "ROHM BH1750 ambient light sensor"
+> diff --git a/drivers/iio/dac/Kconfig b/drivers/iio/dac/Kconfig
+> index 13471a7..e701e28 100644
+> --- a/drivers/iio/dac/Kconfig
+> +++ b/drivers/iio/dac/Kconfig
+> @@ -142,6 +142,16 @@ config AD7303
+>  	  To compile this driver as module choose M here: the module will be called
+>  	  ad7303.
+>  
+> +config M62332
+> +	tristate "Mitsubishi M62332 DAC driver"
 > +	depends on I2C
 > +	help
-> +	 Say Y here to build support for the ROHM BH1710, BH1715, BH1721,
-> +	 BH1750, BH1751 ambient light sensors.
+> +	  If you say yes here you get support for the Mitsubishi M62332
+> +	  (I2C 8-Bit DACs with rail-to-rail outputs).
 > +
-> +	 To compile this driver as a module, choose M here: the module will
-> +	 be called bh1750.
+> +	  This driver can also be built as a module.  If so, the module
+> +	  will be called m62332.
 > +
->  config CM32181
+>  config MAX517
+>  	tristate "Maxim MAX517/518/519/520/521 DAC driver"
 >  	depends on I2C
->  	tristate "CM32181 driver"
-> diff --git a/drivers/iio/light/Makefile b/drivers/iio/light/Makefile
-> index 74656c1..1a13184 100644
-> --- a/drivers/iio/light/Makefile
-> +++ b/drivers/iio/light/Makefile
-> @@ -6,6 +6,7 @@
->  obj-$(CONFIG_ADJD_S311)		+= adjd_s311.o
->  obj-$(CONFIG_AL3320A)		+= al3320a.o
->  obj-$(CONFIG_APDS9300)		+= apds9300.o
-> +obj-$(CONFIG_BH1750)		+= bh1750.o
->  obj-$(CONFIG_CM32181)		+= cm32181.o
->  obj-$(CONFIG_CM36651)		+= cm36651.o
->  obj-$(CONFIG_GP2AP020A00F)	+= gp2ap020a00f.o
-> diff --git a/drivers/iio/light/bh1750.c b/drivers/iio/light/bh1750.c
+> diff --git a/drivers/iio/dac/Makefile b/drivers/iio/dac/Makefile
+> index 52be7e1..63ae056 100644
+> --- a/drivers/iio/dac/Makefile
+> +++ b/drivers/iio/dac/Makefile
+> @@ -16,6 +16,7 @@ obj-$(CONFIG_AD5764) += ad5764.o
+>  obj-$(CONFIG_AD5791) += ad5791.o
+>  obj-$(CONFIG_AD5686) += ad5686.o
+>  obj-$(CONFIG_AD7303) += ad7303.o
+> +obj-$(CONFIG_M62332) += m62332.o
+>  obj-$(CONFIG_MAX517) += max517.o
+>  obj-$(CONFIG_MAX5821) += max5821.o
+>  obj-$(CONFIG_MCP4725) += mcp4725.o
+> diff --git a/drivers/iio/dac/m62332.c b/drivers/iio/dac/m62332.c
 > new file mode 100644
-> index 0000000..9635a45
+> index 0000000..2dc6712
 > --- /dev/null
-> +++ b/drivers/iio/light/bh1750.c
-> @@ -0,0 +1,334 @@
+> +++ b/drivers/iio/dac/m62332.c
+> @@ -0,0 +1,261 @@
 > +/*
-> + * ROHM BH1710/BH1715/BH1721/BH1750/BH1751 ambient light sensor driver
+> + *  m62332.c - Support for Mitsubishi m62332 DAC
 > + *
-> + * Copyright (c) Tomasz Duszynski <tduszyns@gmail.com>
+> + *  Copyright (c) 2014 Dmitry Eremin-Solenikov
 > + *
-> + * This program is free software; you can redistribute it and/or modify
-> + * it under the terms of the GNU General Public License version 2 as
-> + * published by the Free Software Foundation.
+> + *  Based on max517 driver:
+> + *  Copyright (C) 2010, 2011 Roland Stigge <stigge@antcom.de>
 > + *
-> + * Data sheets:
-> + *  http://rohmfs.rohm.com/en/products/databook/datasheet/ic/sensor/light/bh1710fvc-e.pdf
-> + *  http://rohmfs.rohm.com/en/products/databook/datasheet/ic/sensor/light/bh1715fvc-e.pdf
-> + *  http://rohmfs.rohm.com/en/products/databook/datasheet/ic/sensor/light/bh1721fvc-e.pdf
-> + *  http://rohmfs.rohm.com/en/products/databook/datasheet/ic/sensor/light/bh1750fvi-e.pdf
-> + *  http://rohmfs.rohm.com/en/products/databook/datasheet/ic/sensor/light/bh1751fvi-e.pdf
+> + *  This program is free software; you can redistribute it and/or modify
+> + *  it under the terms of the GNU General Public License as published by
+> + *  the Free Software Foundation; either version 2 of the License, or
+> + *  (at your option) any later version.
 > + *
-> + * 7-bit I2C slave addresses:
-> + *  0x23 (ADDR pin low)
-> + *  0x5C (ADDR pin high)
-> + *
+> + *  This program is distributed in the hope that it will be useful,
+> + *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+> + *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+> + *  GNU General Public License for more details.
 > + */
 > +
-> +#include <linux/delay.h>
-> +#include <linux/i2c.h>
-> +#include <linux/iio/iio.h>
-> +#include <linux/iio/sysfs.h>
 > +#include <linux/module.h>
+> +#include <linux/slab.h>
+> +#include <linux/i2c.h>
+> +#include <linux/err.h>
 > +
-> +#define BH1750_POWER_DOWN		0x00
-> +#define BH1750_ONE_TIME_H_RES_MODE	0x20 /* auto-mode for BH1721 */
-> +#define BH1750_CHANGE_INT_TIME_H_BIT	0x40
-> +#define BH1750_CHANGE_INT_TIME_L_BIT	0x60
+> +#include <linux/iio/iio.h>
+> +#include <linux/iio/driver.h>
 > +
-> +enum {
-> +	BH1710,
-> +	BH1721,
-> +	BH1750,
+> +#include <linux/regulator/consumer.h>
+> +
+> +#define M62332_CHANNELS 2
+> +
+> +struct m62332_data {
+> +	struct i2c_client	*client;
+> +	u16			vref_mv;
+> +	struct regulator	*vcc;
+> +	struct mutex		mutex;
+> +	u8			raw[M62332_CHANNELS];
+> +#ifdef CONFIG_PM_SLEEP
+> +	u8			save[M62332_CHANNELS];
+> +#endif
 > +};
 > +
-> +struct bh1750_chip_info;
-> +struct bh1750_data {
-> +	struct i2c_client *client;
-> +	struct mutex lock;
-> +	const struct bh1750_chip_info *chip_info;
-> +	u16 mtreg;
-> +};
-> +
-> +struct bh1750_chip_info {
-> +	u16 mtreg_min;
-> +	u16 mtreg_max;
-> +	u16 mtreg_default;
-> +	int mtreg_to_usec;
-> +	int mtreg_to_scale;
-> +
-> +	/*
-> +	 * For BH1710/BH1721 all possible integration time values won't fit
-> +	 * into one page so displaying is limited to every second one.
-> +	 * Note, that user can still write proper values which were not
-> +	 * listed.
-> +	 */
-> +	int inc;
-> +
-> +	u16 int_time_low_mask;
-> +	u16 int_time_high_mask;
-> +}
-> +
-> +static const bh1750_chip_info_tbl[] = {
-> +	[BH1710] = { 140, 1022, 300, 400,  250000000, 2, 0x001F, 0x03E0 },
-> +	[BH1721] = { 140, 1020, 300, 400,  250000000, 2, 0x0010, 0x03E0 },
-> +	[BH1750] = { 31,  254,  69,  1740, 57500000,  1, 0x001F, 0x00E0 },
-> +};
-> +
-> +static int bh1750_change_int_time(struct bh1750_data *data, int usec)
+> +static int m62332_set_value(struct iio_dev *indio_dev,
+> +	u8 val, int channel)
 > +{
-> +	int ret;
-> +	u16 val;
-> +	u8 regval;
-> +	const struct bh1750_chip_info *chip_info = data->chip_info;
+> +	struct m62332_data *data = iio_priv(indio_dev);
+> +	struct i2c_client *client = data->client;
+> +	u8 outbuf[2];
+> +	int res = 0;
 > +
-> +	if ((usec % chip_info->mtreg_to_usec) != 0)
-> +		return -EINVAL;
+> +	if (val == data->raw[channel])
+> +		return 0;
 > +
-> +	val = usec / chip_info->mtreg_to_usec;
-> +	if (val < chip_info->mtreg_min || val > chip_info->mtreg_max)
-> +		return -EINVAL;
+> +	outbuf[0] = channel;
+> +	outbuf[1] = val;
 > +
-> +	ret = i2c_smbus_write_byte(data->client, BH1750_POWER_DOWN);
-> +	if (ret < 0)
-> +		return ret;
+> +	mutex_lock(&data->mutex);
 > +
-> +	regval = (val & chip_info->int_time_high_mask) >> 5;
-> +	ret = i2c_smbus_write_byte(data->client,
-> +				   BH1750_CHANGE_INT_TIME_H_BIT | regval);
-> +	if (ret < 0)
-> +		return ret;
+> +	if (val)
+> +		res = regulator_enable(data->vcc);
+> +	if (res)
+> +		goto out;
+
+I would find it marginally clearer to do
+if (val) {
+  res = regulator_enable(..);
+  if (res)
+    goto out;
+}
+and leave res uninitialized (feel free to ignore)
+
 > +
-> +	regval = val & chip_info->int_time_low_mask;
-> +	ret = i2c_smbus_write_byte(data->client,
-> +				   BH1750_CHANGE_INT_TIME_L_BIT | regval);
-> +	if (ret < 0)
-> +		return ret;
+> +	res = i2c_master_send(client, outbuf, 2);
+> +	if (res >= 0 && res != 2)
+> +		res = -EIO;
+> +	if (res < 0)
+> +		goto out;
 > +
-> +	data->mtreg = val;
+> +	data->raw[channel] = val;
+> +
+> +	if (!val)
+> +		regulator_disable(data->vcc);
+> +
+> +	mutex_unlock(&data->mutex);
 > +
 > +	return 0;
+> +
+> +out:
+> +	mutex_unlock(&data->mutex);
+> +
+> +	return res;
 > +}
 > +
-> +static int bh1750_read(struct bh1750_data *data, int *val)
-> +{
-> +	int ret;
-> +	u16 result;
-> +	const struct bh1750_chip_info *chip_info = data->chip_info;
-> +	unsigned long delay = chip_info->mtreg_to_usec * data->mtreg;
-> +
-> +	/*
-> +	 * BH1721 will enter continuous auto mode on receiving this command.
-
-maybe drop 'auto'?
-
-> +	 * Note, that this eliminates need for bh1750_resume().
-> +	 */
-> +	ret = i2c_smbus_write_byte(data->client, BH1750_ONE_TIME_H_RES_MODE);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	usleep_range(delay + 15000, delay + 40000);
-> +
-> +	ret = i2c_master_recv(data->client, (char *)&result, 2);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	*val = swab16(result);
-
-I think be16_to_cpu() would be much clearer;
-is swab16() correct on big-endian machines?
-
-> +
-> +	return 0;
-> +}
-> +
-> +static int bh1750_read_raw(struct iio_dev *indio_dev,
+> +static int m62332_read_raw(struct iio_dev *indio_dev,
 > +			   struct iio_chan_spec const *chan,
-> +			   int *val, int *val2, long mask)
+> +			   int *val,
+> +			   int *val2,
+> +			   long m)
 > +{
-> +	int ret, tmp;
-> +	struct bh1750_data *data = iio_priv(indio_dev);
-> +	const struct bh1750_chip_info *chip_info = data->chip_info;
+> +	struct m62332_data *data = iio_priv(indio_dev);
+> +
+> +	switch (m) {
+> +	case IIO_CHAN_INFO_SCALE:
+> +		/* Corresponds to Vref / 2^(bits) */
+> +		*val = data->vref_mv;
+> +		*val2 = 8;
+> +		return IIO_VAL_FRACTIONAL_LOG2;
+> +	case IIO_CHAN_INFO_RAW:
+> +		*val = data->raw[chan->channel];
+> +		return IIO_VAL_INT;
+> +	default:
+> +		break;
+> +	}
+> +	return -EINVAL;
+> +}
+> +
+> +static int m62332_write_raw(struct iio_dev *indio_dev,
+> +	struct iio_chan_spec const *chan, int val, int val2, long mask)
+> +{
+> +	int ret;
 > +
 > +	switch (mask) {
 > +	case IIO_CHAN_INFO_RAW:
-> +		switch (chan->type) {
-> +		case IIO_LIGHT:
-> +			mutex_lock(&data->lock);
-> +			ret = bh1750_read(data, val);
-> +			mutex_unlock(&data->lock);
-> +			if (ret < 0)
-> +				return ret;
-> +
-> +			return IIO_VAL_INT;
-> +		default:
-> +			return -EINVAL;
-> +		}
-> +	case IIO_CHAN_INFO_SCALE:
-> +		tmp = chip_info->mtreg_to_scale / data->mtreg;
-> +		*val = tmp / 1000000;
-> +		*val2 = tmp % 1000000;
-> +		return IIO_VAL_INT_PLUS_MICRO;
-> +	case IIO_CHAN_INFO_INT_TIME:
-> +		*val = 0;
-> +		*val2 = chip_info->mtreg_to_usec * data->mtreg;
-> +		return IIO_VAL_INT_PLUS_MICRO;
-> +	default:
-> +		return -EINVAL;
-> +	}
-> +}
-> +
-> +static int bh1750_write_raw(struct iio_dev *indio_dev,
-> +			    struct iio_chan_spec const *chan,
-> +			    int val, int val2, long mask)
-> +{
-> +	int ret;
-> +	struct bh1750_data *data = iio_priv(indio_dev);
-> +
-> +	switch (mask) {
-> +	case IIO_CHAN_INFO_INT_TIME:
-> +		if (val != 0)
+
+see write_raw_get_fmt, the default is IIO_VAL_INT_PLUS_MICRO; probably you 
+want to overwrite that function to return IIO_VAL_INT
+
+or at least check val2 == 0
+
+> +		if (val < 0 || val > 255)
 > +			return -EINVAL;
 > +
-> +		mutex_lock(&data->lock);
-> +		ret = bh1750_change_int_time(data, val2);
-> +		mutex_unlock(&data->lock);
-> +		return ret;
+> +		ret = m62332_set_value(indio_dev, val, chan->channel);
+> +		break;
 > +	default:
-> +		return -EINVAL;
+> +		ret = -EINVAL;
+> +		break;
 > +	}
-> +}
-> +
-> +static ssize_t bh1750_show_int_time_available(struct device *dev,
-> +		struct device_attribute *attr, char *buf)
-> +{
-> +	int i;
-> +	size_t len = 0;
-> +	struct bh1750_data *data = iio_priv(dev_to_iio_dev(dev));
-> +	const struct bh1750_chip_info *chip_info = data->chip_info;
-> +
-> +	for (i = chip_info->mtreg_min; i <= chip_info->mtreg_max; i += chip_info->inc)
-> +		len += scnprintf(buf + len, PAGE_SIZE - len, "0.%06d ",
-> +				 chip_info->mtreg_to_usec * i);
-> +
-> +	buf[len - 1] = '\n';
-> +
-> +	return len;
-> +}
-> +
-> +static IIO_DEV_ATTR_INT_TIME_AVAIL(bh1750_show_int_time_available);
-> +
-> +static struct attribute *bh1750_attributes[] = {
-> +	&iio_dev_attr_integration_time_available.dev_attr.attr,
-> +	NULL,
-> +};
-> +
-> +static struct attribute_group bh1750_attribute_group = {
-> +	.attrs = bh1750_attributes,
-> +};
-> +
-> +static const struct iio_info bh1750_info = {
-> +	.driver_module = THIS_MODULE,
-> +	.attrs = &bh1750_attribute_group,
-> +	.read_raw = bh1750_read_raw,
-> +	.write_raw = bh1750_write_raw,
-> +};
-> +
-> +static const struct iio_chan_spec bh1750_channels[] = {
-> +	{
-> +		.type = IIO_LIGHT,
-> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
-> +				      BIT(IIO_CHAN_INFO_SCALE) |
-> +				      BIT(IIO_CHAN_INFO_INT_TIME)
-> +	}
-> +};
-> +
-> +static int bh1750_probe(struct i2c_client *client,
-> +			const struct i2c_device_id *id)
-> +{
-> +	int ret, usec;
-> +	struct bh1750_data *data;
-> +	struct iio_dev *indio_dev;
-> +
-> +	if (!i2c_check_functionality(client->adapter, I2C_FUNC_I2C |
-> +				I2C_FUNC_SMBUS_WRITE_BYTE))
-> +		return -ENODEV;
-> +
-> +	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
-> +	if (!indio_dev)
-> +		return -ENOMEM;
-> +
-> +	data = iio_priv(indio_dev);
-> +	i2c_set_clientdata(client, indio_dev);
-> +	data->client = client;
-> +	data->chip_info = &bh1750_chip_info_tbl[id->driver_data];
-> +
-> +	usec = data->chip_info->mtreg_to_usec * data->chip_info->mtreg_default;
-> +	ret = bh1750_change_int_time(data, usec);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	mutex_init(&data->lock);
-> +	indio_dev->dev.parent = &client->dev;
-> +	indio_dev->info = &bh1750_info;
-> +	indio_dev->name = id->name;
-> +	indio_dev->channels = bh1750_channels;
-> +	indio_dev->num_channels = ARRAY_SIZE(bh1750_channels);
-> +	indio_dev->modes = INDIO_DIRECT_MODE;
-> +
-> +	return iio_device_register(indio_dev);
-> +}
-> +
-> +static int bh1750_remove(struct i2c_client *client)
-> +{
-> +	struct iio_dev *indio_dev = i2c_get_clientdata(client);
-> +	struct bh1750_data *data = iio_priv(indio_dev);
-> +
-> +	iio_device_unregister(indio_dev);
-> +
-> +	mutex_lock(&data->lock);
-> +	i2c_smbus_write_byte(client, BH1750_POWER_DOWN);
-> +	mutex_unlock(&data->lock);
-> +
-> +	return 0;
-> +}
-> +
-> +#ifdef CONFIG_PM_SLEEP
-> +static int bh1750_suspend(struct device *dev)
-> +{
-> +	int ret;
-> +	struct bh1750_data *data =
-> +		iio_priv(i2c_get_clientdata(to_i2c_client(dev)));
-> +
-> +	/*
-> +	 * This is mainly for BH1721 which doesn't enter power down
-> +	 * mode automatically.
-> +	 */
-> +	mutex_lock(&data->lock);
-> +	ret = i2c_smbus_write_byte(data->client, BH1750_POWER_DOWN);
-> +	mutex_unlock(&data->lock);
 > +
 > +	return ret;
 > +}
 > +
-> +static SIMPLE_DEV_PM_OPS(bh1750_pm_ops, bh1750_suspend, NULL);
-> +#define BH1750_PM_OPS (&bh1750_pm_ops)
+> +#ifdef CONFIG_PM_SLEEP
+> +static int m62332_suspend(struct device *dev)
+> +{
+> +	struct i2c_client *client = to_i2c_client(dev);
+> +	struct iio_dev *indio_dev = i2c_get_clientdata(client);
+> +	struct m62332_data *data = iio_priv(indio_dev);
+> +	int ret;
+> +
+> +	data->save[0] = data->raw[0];
+> +	data->save[1] = data->raw[1];
+> +
+> +	ret = m62332_set_value(indio_dev, 0, 0);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	return m62332_set_value(indio_dev, 0, 1);
+> +}
+> +
+> +static int m62332_resume(struct device *dev)
+> +{
+> +	struct i2c_client *client = to_i2c_client(dev);
+> +	struct iio_dev *indio_dev = i2c_get_clientdata(client);
+> +	struct m62332_data *data = iio_priv(indio_dev);
+> +	int ret;
+> +
+> +	ret = m62332_set_value(indio_dev, data->save[0], 0);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	return m62332_set_value(indio_dev, data->save[1], 1);
+> +}
+> +
+> +static SIMPLE_DEV_PM_OPS(m62332_pm_ops, m62332_suspend, m62332_resume);
+> +#define M62332_PM_OPS (&m62332_pm_ops)
 > +#else
-> +#define BH1750_PM_OPS NULL
+> +#define M62332_PM_OPS NULL
 > +#endif
 > +
-> +static const struct i2c_device_id bh1750_id[] = {
-> +	{ "bh1710", BH1710 },
-> +	{ "bh1715", BH1750 },
-> +	{ "bh1721", BH1721 },
-> +	{ "bh1750", BH1750 },
-> +	{ "bh1751", BH1750 },
+> +static const struct iio_info m62332_info = {
+> +	.read_raw = m62332_read_raw,
+> +	.write_raw = m62332_write_raw,
+> +	.driver_module = THIS_MODULE,
+> +};
+> +
+> +#define M62332_CHANNEL(chan) {				\
+> +	.type = IIO_VOLTAGE,				\
+> +	.indexed = 1,					\
+> +	.output = 1,					\
+> +	.channel = (chan),				\
+> +	.datasheet_name = "CH" #chan,			\
+> +	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |	\
+> +		BIT(IIO_CHAN_INFO_SCALE),		\
+> +}
+> +
+> +static const struct iio_chan_spec m62332_channels[M62332_CHANNELS] = {
+> +	M62332_CHANNEL(0),
+> +	M62332_CHANNEL(1)
+> +};
+> +
+> +static int m62332_probe(struct i2c_client *client,
+> +			const struct i2c_device_id *id)
+> +{
+> +	struct m62332_data *data;
+> +	struct iio_dev *indio_dev;
+> +	int ret;
+> +
+> +	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
+> +	if (!indio_dev)
+> +		return -ENOMEM;
+> +	data = iio_priv(indio_dev);
+> +	i2c_set_clientdata(client, indio_dev);
+> +	data->client = client;
+> +
+> +	mutex_init(&data->mutex);
+> +
+> +	data->vcc = devm_regulator_get(&client->dev, "VCC");
+> +	if (IS_ERR(data->vcc))
+> +		return PTR_ERR(data->vcc);
+> +
+> +	/* establish that the iio_dev is a child of the i2c device */
+> +	indio_dev->dev.parent = &client->dev;
+> +
+> +	indio_dev->num_channels = M62332_CHANNELS;
+> +	indio_dev->channels = m62332_channels;
+> +	indio_dev->modes = INDIO_DIRECT_MODE;
+> +	indio_dev->info = &m62332_info;
+> +
+> +	data->vref_mv = regulator_get_voltage(data->vcc) / 1000; /* mV */
+
+regulator_get_voltage() may return an error value
+
+> +
+> +	ret = iio_map_array_register(indio_dev, client->dev.platform_data);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	ret = iio_device_register(indio_dev);
+> +	if (ret < 0)
+> +		goto err;
+> +
+> +	return 0;
+> +
+> +err:
+> +	iio_map_array_unregister(indio_dev);
+> +	return ret;
+> +}
+> +
+> +static int m62332_remove(struct i2c_client *client)
+> +{
+> +	struct iio_dev *indio_dev = i2c_get_clientdata(client);
+> +
+> +	iio_device_unregister(indio_dev);
+> +	iio_map_array_unregister(indio_dev);
+> +
+> +	return 0;
+> +}
+> +
+> +static const struct i2c_device_id m62332_id[] = {
+> +	{ "m62332", },
 > +	{ }
 > +};
-> +MODULE_DEVICE_TABLE(i2c, bh1750_id);
+> +MODULE_DEVICE_TABLE(i2c, m62332_id);
 > +
-> +static struct i2c_driver bh1750_driver = {
+> +static struct i2c_driver m62332_driver = {
 > +	.driver = {
-> +		.name = "bh1750",
-> +		.owner = THIS_MODULE,
-> +		.pm = BH1750_PM_OPS,
+> +		.name	= "m62332",
+> +		.pm	= M62332_PM_OPS,
 > +	},
-> +	.probe = bh1750_probe,
-> +	.remove = bh1750_remove,
-> +	.id_table = bh1750_id,
-> +
+> +	.probe		= m62332_probe,
+> +	.remove		= m62332_remove,
+> +	.id_table	= m62332_id,
 > +};
-> +module_i2c_driver(bh1750_driver);
+> +module_i2c_driver(m62332_driver);
 > +
-> +MODULE_AUTHOR("Tomasz Duszynski <tduszyns@gmail.com>");
-> +MODULE_DESCRIPTION("ROHM BH1710/BH1715/BH1721/BH1750/BH1751 als driver");
+> +MODULE_AUTHOR("Dmitry Eremin-Solenikov");
+> +MODULE_DESCRIPTION("M62332 8-bit DAC");
 > +MODULE_LICENSE("GPL v2");
-> --
-> 2.3.6
 > 
 
 -- 
