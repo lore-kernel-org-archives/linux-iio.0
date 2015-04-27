@@ -1,81 +1,44 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from bear.ext.ti.com ([192.94.94.41]:60110 "EHLO bear.ext.ti.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S932705AbbD0OuK (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Mon, 27 Apr 2015 10:50:10 -0400
-Message-ID: <553E4C78.8000100@ti.com>
-Date: Mon, 27 Apr 2015 09:49:28 -0500
-From: Dan Murphy <dmurphy@ti.com>
+Received: from mail-wg0-f51.google.com ([74.125.82.51]:36364 "EHLO
+	mail-wg0-f51.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753001AbbD0Py4 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 27 Apr 2015 11:54:56 -0400
+Received: by wgen6 with SMTP id n6so120801184wge.3
+        for <linux-iio@vger.kernel.org>; Mon, 27 Apr 2015 08:54:55 -0700 (PDT)
 MIME-Version: 1.0
-To: Jonathan Cameron <jic23@kernel.org>, <linux-iio@vger.kernel.org>
-Subject: Re: [PATCH 2/3] iio: bindings: Add TI afe4403 heart monitor documentation
-References: <1429720331-1900-1-git-send-email-dmurphy@ti.com> <1429720331-1900-3-git-send-email-dmurphy@ti.com> <553D20CA.7090107@kernel.org>
-In-Reply-To: <553D20CA.7090107@kernel.org>
-Content-Type: text/plain; charset="windows-1252"
+In-Reply-To: <64714.10.254.87.235.1430149342.squirrel@linux.intel.com>
+References: <1430146908-27919-1-git-send-email-octavian.purdila@intel.com>
+	<1430146908-27919-4-git-send-email-octavian.purdila@intel.com>
+	<64714.10.254.87.235.1430149342.squirrel@linux.intel.com>
+Date: Mon, 27 Apr 2015 18:54:54 +0300
+Message-ID: <CAE1zot+YKTPmVbG-_fNRy-E_VCcqq1VE78H3PMSMb5HvsBheQw@mail.gmail.com>
+Subject: Re: [RFC PATCH 3/3] iio: derive the mounting matrix from ACPI _PLD objects
+From: Octavian Purdila <octavian.purdila@intel.com>
+To: sathyanarayanan.kuppuswamy@linux.intel.com
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Robert Moore <robert.moore@intel.com>,
+	Rafael J Wysocki <rafael.j.wysocki@intel.com>,
+	lenb@kernel.org, linux-api@vger.kernel.org,
+	lkml <linux-kernel@vger.kernel.org>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	"linux-acpi@vger.kernel.org" <linux-acpi@vger.kernel.org>
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Jpnathan
+On Mon, Apr 27, 2015 at 6:42 PM, Kuppuswamy Sathyanarayanan
+<sathyanarayanan.kuppuswamy@linux.intel.com> wrote:
+> Since Acpi framework already exports this info to user space, Why not do
+> this derivation in user space code ? Why do we need new ABI, if the same
+> can be derived from existing one.
+>
 
-On 04/26/2015 12:30 PM, Jonathan Cameron wrote:
-> On 22/04/15 17:32, Dan Murphy wrote:
->> Add the TI afe4403 heart monitor device tree
->> binding documentation.  heart_monitors directory
->> created under iio.
->>
->> Signed-off-by: Dan Murphy <dmurphy@ti.com>
->> ---
->>  .../bindings/iio/heart_monitor/ti_afe4403.txt      | 26 ++++++++++++++++++++++
->>  1 file changed, 26 insertions(+)
->>  create mode 100644 Documentation/devicetree/bindings/iio/heart_monitor/ti_afe4403.txt
->>
->> diff --git a/Documentation/devicetree/bindings/iio/heart_monitor/ti_afe4403.txt b/Documentation/devicetree/bindings/iio/heart_monitor/ti_afe4403.txt
->> new file mode 100644
->> index 0000000..b196b17
->> --- /dev/null
->> +++ b/Documentation/devicetree/bindings/iio/heart_monitor/ti_afe4403.txt
->> @@ -0,0 +1,26 @@
->> +* Texas Instruments - AFE4403 Heart rate and Pulse Oximeter
->> +
->> +The device consists of a low-noise receiver channel
->> +with an integrated analog-to-digital converter (ADC),
->> +an LED transmit section, and diagnostics for sensor and LED fault detection.
->> +
->> +Required properties:
->> +  - compatible: Must contain "ti,afe4403".
->> +  - ste-gpio: GPIO for the spi control line
-> This gpio needs more info here.  From description it sounds like a chip select
-> and those obviously don't need to be specified at driver level.
+The ABI was added in the previous patch so that we can present the
+sensor orientation information to userspace even in the case of device
+tree.
 
-It is a chip select line.  There was an issue with this from the device side.
-I will need to dig this up again and remember why I did this.
-
-Maybe I can remove it.
-
-Dan
-
-
->> +  - data-ready-gpio: GPIO interrupt when the afe4403 has data
->> +  - led-supply: Chip supply to the device
->> +
->> +Optional properties:
->> +  - reset-gpio: GPIO used to reset the device via HW
->> +
->> +Example:
->> +
->> +&heart_rate {
->> +	compatible = "ti,afe4403";
->> +	ste-gpio = <&gpio1 29 GPIO_ACTIVE_HIGH>;
->> +	data-ready-gpio = <&gpio1 28 GPIO_ACTIVE_HIGH>;
->> +	led-supply = <&vbat>;
->> +};
->> +
->> +Technical Datasheet:
->> +http://www.ti.com/product/AFE4403/datasheet
->>
-
-
--- 
-------------------
-Dan Murphy
-
+The purpose of this patch is to provide a consistent ABI to userspace,
+i.e. to avoid doing one thing in the ACPI case and another thing in
+the case of device tree.
