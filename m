@@ -1,44 +1,56 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-wg0-f51.google.com ([74.125.82.51]:36364 "EHLO
-	mail-wg0-f51.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753001AbbD0Py4 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 27 Apr 2015 11:54:56 -0400
-Received: by wgen6 with SMTP id n6so120801184wge.3
-        for <linux-iio@vger.kernel.org>; Mon, 27 Apr 2015 08:54:55 -0700 (PDT)
+Received: from hqemgate14.nvidia.com ([216.228.121.143]:9591 "EHLO
+	hqemgate14.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751803AbbD0QD7 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 27 Apr 2015 12:03:59 -0400
+Message-ID: <553E5DEE.5020001@nvidia.com>
+Date: Mon, 27 Apr 2015 12:03:58 -0400
+From: Rhyland Klein <rklein@nvidia.com>
 MIME-Version: 1.0
-In-Reply-To: <64714.10.254.87.235.1430149342.squirrel@linux.intel.com>
-References: <1430146908-27919-1-git-send-email-octavian.purdila@intel.com>
-	<1430146908-27919-4-git-send-email-octavian.purdila@intel.com>
-	<64714.10.254.87.235.1430149342.squirrel@linux.intel.com>
-Date: Mon, 27 Apr 2015 18:54:54 +0300
-Message-ID: <CAE1zot+YKTPmVbG-_fNRy-E_VCcqq1VE78H3PMSMb5HvsBheQw@mail.gmail.com>
-Subject: Re: [RFC PATCH 3/3] iio: derive the mounting matrix from ACPI _PLD objects
-From: Octavian Purdila <octavian.purdila@intel.com>
-To: sathyanarayanan.kuppuswamy@linux.intel.com
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	Robert Moore <robert.moore@intel.com>,
-	Rafael J Wysocki <rafael.j.wysocki@intel.com>,
-	lenb@kernel.org, linux-api@vger.kernel.org,
-	lkml <linux-kernel@vger.kernel.org>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"linux-acpi@vger.kernel.org" <linux-acpi@vger.kernel.org>
-Content-Type: text/plain; charset=UTF-8
+To: Jonathan Cameron <jic23@kernel.org>,
+	Roberta Dobrescu <roberta.dobrescu@gmail.com>,
+	<linux-iio@vger.kernel.org>
+CC: <knaack.h@gmx.de>, <lars@metafoo.de>, <pmeerw@pmeerw.net>,
+	<daniel.baluta@intel.com>
+Subject: Re: [PATCH v2 3/3] staging: iio: light: isl29018: Use standard sysfs
+ attributes for scale and integration time
+References: <1429212059-13010-1-git-send-email-roberta.dobrescu@gmail.com> <1429212059-13010-4-git-send-email-roberta.dobrescu@gmail.com> <553D41CC.6070702@kernel.org>
+In-Reply-To: <553D41CC.6070702@kernel.org>
+Content-Type: text/plain; charset="windows-1252"
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Mon, Apr 27, 2015 at 6:42 PM, Kuppuswamy Sathyanarayanan
-<sathyanarayanan.kuppuswamy@linux.intel.com> wrote:
-> Since Acpi framework already exports this info to user space, Why not do
-> this derivation in user space code ? Why do we need new ABI, if the same
-> can be derived from existing one.
->
+On 4/26/2015 3:51 PM, Jonathan Cameron wrote:
+> On 16/04/15 20:20, Roberta Dobrescu wrote:
+>> This patch refactors the isl29018 driver code in order to use standard
+>> sysfs attributes for scale and integration time.
+>>
+>> ISL29018 light sensor uses four ranges and four ADC's resolutions
+>> which influence the calculated lux. Adc resolution is strongly
+>> connected to integration time and range should be controlled by scale.
+>>
+>> This patch introduces the usage of integration time and scale instead
+>> of adc resolution and range.
+>>
+>> Signed-off-by: Roberta Dobrescu <roberta.dobrescu@gmail.com>
+> Looks good to me,  Applied to the togreg branch of iio.git - initially pushed out
+> as testing.
+> 
+> cc'd Rhyland though not heard from him for quite a while.
+> 
+> Rhyland, if you are still interested in this driver, give me a shout and I can
+> hold these patches back until you get a chance to look at them.
+> 
+> Sorry, forgot to cc you earlier in the discussion!
+> 
+> Jonathan
+> 
 
-The ABI was added in the previous patch so that we can present the
-sensor orientation information to userspace even in the case of device
-tree.
+Its fine, don't hold up patches on my account. I haven't looked at this
+in a while, so don't gate on me :)
 
-The purpose of this patch is to provide a consistent ABI to userspace,
-i.e. to avoid doing one thing in the ACPI case and another thing in
-the case of device tree.
+-rhyland
+
+
+-- 
+nvpublic
