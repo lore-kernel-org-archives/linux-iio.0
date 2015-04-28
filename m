@@ -1,62 +1,62 @@
-Return-Path: <jic23@jic23.retrosnub.co.uk>
-In-Reply-To: <553EFEFA.5010708@gmail.com>
-References: <1429867387-10219-1-git-send-email-varkab@cdac.in> <553EFEFA.5010708@gmail.com>
+Return-Path: <octavian.purdila@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain;
- charset=UTF-8
-Subject: Re: [PATCH iio] imu: inv_mpu6050: adds device tree bindings
-From: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
-Date: Tue, 28 Apr 2015 06:52:35 +0100
-To: Varka Bhadram <varkabhadram@gmail.com>,devicetree@vger.kernel.org,linux-iio@vger.kernel.org
-CC: jic23@kernel.org,Varka Bhadram <varkab@cdac.in>
-Message-ID: <15AC68F4-8C11-4A4A-9F28-411A037E1844@jic23.retrosnub.co.uk>
+In-Reply-To: <553EB0B3.5000707@linux.intel.com>
+References: <1430146908-27919-1-git-send-email-octavian.purdila@intel.com>
+	<1430146908-27919-4-git-send-email-octavian.purdila@intel.com>
+	<64714.10.254.87.235.1430149342.squirrel@linux.intel.com>
+	<CAE1zot+YKTPmVbG-_fNRy-E_VCcqq1VE78H3PMSMb5HvsBheQw@mail.gmail.com>
+	<553EB0B3.5000707@linux.intel.com>
+Date: Tue, 28 Apr 2015 05:23:03 +0300
+Message-ID: <CAE1zot+fusrvow+s2+CmoctcSD=c2BxoSyd2b=7MBv-pg68A+Q@mail.gmail.com>
+Subject: Re: [RFC PATCH 3/3] iio: derive the mounting matrix from ACPI _PLD objects
+From: Octavian Purdila <octavian.purdila@intel.com>
+To: sathyanarayanan.kuppuswamy@linux.intel.com
+Cc: Jonathan Cameron <jic23@kernel.org>, Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>, Robert Moore <robert.moore@intel.com>,
+	Rafael J Wysocki <rafael.j.wysocki@intel.com>, lenb@kernel.org, linux-api@vger.kernel.org,
+	lkml <linux-kernel@vger.kernel.org>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	"linux-acpi@vger.kernel.org" <linux-acpi@vger.kernel.org>,
+	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Content-Type: text/plain; charset=UTF-8
 List-ID: <linux-iio@vger.kernel.org>
 
-
-
-On 28 April 2015 04:31:06 BST, Varka Bhadram <varkabhadram@gmail.com> wrote:
->On 04/24/2015 02:53 PM, Varka Bhadram wrote:
+On Tue, Apr 28, 2015 at 12:57 AM, sathyanarayanan kuppuswamy
+<sathyanarayanan.kuppuswamy@linux.intel.com> wrote:
+> Hi
 >
->> Signed-off-by: Varka Bhadram <varkab@cdac.in>
->> ---
->>  .../devicetree/bindings/iio/imu/inv_mpu6050.txt    |   17
->+++++++++++++++++
->>  1 file changed, 17 insertions(+)
->>  create mode 100644
->Documentation/devicetree/bindings/iio/imu/inv_mpu6050.txt
+> On 04/27/2015 08:54 AM, Octavian Purdila wrote:
 >>
->> diff --git
->a/Documentation/devicetree/bindings/iio/imu/inv_mpu6050.txt
->b/Documentation/devicetree/bindings/iio/imu/inv_mpu6050.txt
->> new file mode 100644
->> index 0000000..e4d8f1c
->> --- /dev/null
->> +++ b/Documentation/devicetree/bindings/iio/imu/inv_mpu6050.txt
->> @@ -0,0 +1,17 @@
->> +InvenSense MPU-6050 Six-Axis (Gyro + Accelerometer) MEMS
->MotionTracking Device
->> +
->> +http://www.invensense.com/mems/gyro/mpu6050.html
->> +
->> +Required properties:
->> + - compatible : should be "invensense,mpu6050"
->> + - reg : the I2C address of the sensor
->> + - interrupt-parent : should be the phandle for the interrupt
->controller
->> + - interrupts : interrupt mapping for GPIO IRQ
->> +
->> +Example:
->> +	mpu6050@68 {
->> +		compatible = "invensense,mpu6050";
->> +		reg = <0x68>;
->> +		interrupt-parent = <&gpio1>;
->> +		interrupts = <18 1>;
->> +	};
+>> On Mon, Apr 27, 2015 at 6:42 PM, Kuppuswamy Sathyanarayanan
+>> <sathyanarayanan.kuppuswamy@linux.intel.com> wrote:
+>>>
+>>> Since Acpi framework already exports this info to user space, Why not do
+>>> this derivation in user space code ? Why do we need new ABI, if the same
+>>> can be derived from existing one.
+>>>
+>> The ABI was added in the previous patch so that we can present the
+>> sensor orientation information to userspace even in the case of device
+>> tree.
 >
->Ping..?
+> If the main reason for implementing a new ABI is to support DT platforms,
+> Why not implement a version of _PLD for device tree ? Don't you think it
+> would be much better than adding a new ABI to export redundant information ?
+>
 
-Device tree bindings. Either need a device tree back or 3 weeks to pass before I can
- take them. Looks fine to me! Could cross ref the interrupts binding doc....
+IMO the mounting matrix is more consistent with the IIO ABIs. Although
+I have no issue with repicating _PLD for device tree if people agree
+that it is better.
 
--- 
-Sent from my Android device with K-9 Mail. Please excuse my brevity.
+> Also the location information of the device is not just specific to iio
+> drivers. You should consider that we would have similar requirements for
+> devices implemented as input or platform drivers.
+
+The upstream standard for those sensors where the orientation matters
+(accelerometer, gyro, compass) is IIO.
+
+Granted, there are other device types for which the orientation
+information may be useful (e.g. camera). However the actual
+interpretation and action to be taken is different for each subsystem
+(e.g. in the camera case do the correction via V4L2_CID_HFLIP /
+V4L2_CID_VFLIP) so I think it is better to expose it at the subsystem
+level in a way consistent with the subsystem's ABIs.
