@@ -1,47 +1,62 @@
-Return-Path: <roberta.dobrescu@gmail.com>
-From: Roberta Dobrescu <roberta.dobrescu@gmail.com>
-To: linux-iio@vger.kernel.org
-Cc: jic23@kernel.org,
-	knaack.h@gmx.de,
-	lars@metafoo.de,
-	pmeerw@pmeerw.net,
-	daniel.baluta@intel.com,
-	dan.carpenter@oracle.com,
-	kbuild@01.org,
-	Roberta Dobrescu <roberta.dobrescu@gmail.com>
-Subject: [PATCH] staging: iio: light: isl29018: Add missing mutex_unlock on error path
-Date: Tue, 28 Apr 2015 20:09:27 +0300
-Message-Id: <1430240967-2459-1-git-send-email-roberta.dobrescu@gmail.com>
+Return-Path: <jic23@jic23.retrosnub.co.uk>
+In-Reply-To: <553EFEFA.5010708@gmail.com>
+References: <1429867387-10219-1-git-send-email-varkab@cdac.in> <553EFEFA.5010708@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain;
+ charset=UTF-8
+Subject: Re: [PATCH iio] imu: inv_mpu6050: adds device tree bindings
+From: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
+Date: Tue, 28 Apr 2015 06:52:35 +0100
+To: Varka Bhadram <varkabhadram@gmail.com>,devicetree@vger.kernel.org,linux-iio@vger.kernel.org
+CC: jic23@kernel.org,Varka Bhadram <varkab@cdac.in>
+Message-ID: <15AC68F4-8C11-4A4A-9F28-411A037E1844@jic23.retrosnub.co.uk>
 List-ID: <linux-iio@vger.kernel.org>
 
-This patch fixes the following warning:
 
-drivers/staging/iio/light/isl29018.c:386 isl29018_write_raw() warn:
-inconsistent returns 'mutex:&chip->lock'.
- Locked on:   line 374
- Unlocked on: line 386
 
-Signed-off-by: Roberta Dobrescu <roberta.dobrescu@gmail.com>
-Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
----
- drivers/staging/iio/light/isl29018.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+On 28 April 2015 04:31:06 BST, Varka Bhadram <varkabhadram@gmail.com> wrote:
+>On 04/24/2015 02:53 PM, Varka Bhadram wrote:
+>
+>> Signed-off-by: Varka Bhadram <varkab@cdac.in>
+>> ---
+>>  .../devicetree/bindings/iio/imu/inv_mpu6050.txt    |   17
+>+++++++++++++++++
+>>  1 file changed, 17 insertions(+)
+>>  create mode 100644
+>Documentation/devicetree/bindings/iio/imu/inv_mpu6050.txt
+>>
+>> diff --git
+>a/Documentation/devicetree/bindings/iio/imu/inv_mpu6050.txt
+>b/Documentation/devicetree/bindings/iio/imu/inv_mpu6050.txt
+>> new file mode 100644
+>> index 0000000..e4d8f1c
+>> --- /dev/null
+>> +++ b/Documentation/devicetree/bindings/iio/imu/inv_mpu6050.txt
+>> @@ -0,0 +1,17 @@
+>> +InvenSense MPU-6050 Six-Axis (Gyro + Accelerometer) MEMS
+>MotionTracking Device
+>> +
+>> +http://www.invensense.com/mems/gyro/mpu6050.html
+>> +
+>> +Required properties:
+>> + - compatible : should be "invensense,mpu6050"
+>> + - reg : the I2C address of the sensor
+>> + - interrupt-parent : should be the phandle for the interrupt
+>controller
+>> + - interrupts : interrupt mapping for GPIO IRQ
+>> +
+>> +Example:
+>> +	mpu6050@68 {
+>> +		compatible = "invensense,mpu6050";
+>> +		reg = <0x68>;
+>> +		interrupt-parent = <&gpio1>;
+>> +		interrupts = <18 1>;
+>> +	};
+>
+>Ping..?
 
-diff --git a/drivers/staging/iio/light/isl29018.c b/drivers/staging/iio/light/isl29018.c
-index 435d417..08ca9a4 100644
---- a/drivers/staging/iio/light/isl29018.c
-+++ b/drivers/staging/iio/light/isl29018.c
-@@ -370,8 +370,10 @@ static int isl29018_write_raw(struct iio_dev *indio_dev,
- 		break;
- 	case IIO_CHAN_INFO_INT_TIME:
- 		if (chan->type == IIO_LIGHT)
--			if (val != 0)
-+			if (val != 0) {
-+				mutex_unlock(&chip->lock);
- 				return -EINVAL;
-+			}
- 			ret = isl29018_set_integration_time(chip, val2);
- 		break;
- 	case IIO_CHAN_INFO_SCALE:
+Device tree bindings. Either need a device tree back or 3 weeks to pass before I can
+ take them. Looks fine to me! Could cross ref the interrupts binding doc....
+
 -- 
-1.9.1
+Sent from my Android device with K-9 Mail. Please excuse my brevity.
