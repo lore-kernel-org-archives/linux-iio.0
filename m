@@ -13,48 +13,40 @@ Cc: linux-kernel@vger.kernel.org,
 	Ian Campbell <ijc+devicetree@hellion.org.uk>,
 	Kumar Gala <galak@codeaurora.org>,
 	Irina Tirdea <irina.tirdea@intel.com>
-Subject: [PATCH v3 2/4] iio: magn: bmc150_magn: Add devicetree binding documentation
-Date: Wed, 29 Apr 2015 21:16:38 +0300
-Message-Id: <1430331400-25528-3-git-send-email-irina.tirdea@intel.com>
-In-Reply-To: <1430331400-25528-1-git-send-email-irina.tirdea@intel.com>
-References: <1430331400-25528-1-git-send-email-irina.tirdea@intel.com>
+Subject: [PATCH v3 0/4] Add support for BMC150 magnetometer
+Date: Wed, 29 Apr 2015 21:16:36 +0300
+Message-Id: <1430331400-25528-1-git-send-email-irina.tirdea@intel.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-Add binding documentation for Bosch BMC150 magnetometer.
+This is the third version for adding support for Bosch BMC150
+magnetometer. It contains fixes suggested by Jonathan.
 
-Signed-off-by: Irina Tirdea <irina.tirdea@intel.com>
----
- .../bindings/iio/magnetometer/bmc150_magn.txt      | 22 ++++++++++++++++++++++
- 1 file changed, 22 insertions(+)
+Changes in v3:
+ - a couple of small fixes suggested by Jonathan
+
+Changes in v2:
+ - renamed IIO_CHAN_INFO_CALIBREPETITIONS to IIO_CHAN_INFO_OVERSAMPLING_RATIO
+ - split the main patch in two patches: one that adds main functionality and
+another that adds oversampling_ratio
+ - fixed driver code and device tree bindings according to Jonathan's review
+ - updated the available sampling frequencies depending on oversampling_ratio
+
+Irina Tirdea (4):
+  iio: magn: Add support for BMC150 magnetometer
+  iio: magn: bmc150_magn: Add devicetree binding documentation
+  iio: core: Introduce IIO_CHAN_INFO_OVERSAMPLING_RATIO
+  iio: magn: bmc150_magn: add oversampling ratio
+
+ Documentation/ABI/testing/sysfs-bus-iio            |   12 +
+ .../bindings/iio/magnetometer/bmc150_magn.txt      |   22 +
+ drivers/iio/industrialio-core.c                    |    1 +
+ drivers/iio/magnetometer/Kconfig                   |   14 +
+ drivers/iio/magnetometer/Makefile                  |    2 +
+ drivers/iio/magnetometer/bmc150_magn.c             | 1109 ++++++++++++++++++++
+ include/linux/iio/iio.h                            |    1 +
+ 7 files changed, 1161 insertions(+)
  create mode 100644 Documentation/devicetree/bindings/iio/magnetometer/bmc150_magn.txt
+ create mode 100644 drivers/iio/magnetometer/bmc150_magn.c
 
-diff --git a/Documentation/devicetree/bindings/iio/magnetometer/bmc150_magn.txt b/Documentation/devicetree/bindings/iio/magnetometer/bmc150_magn.txt
-new file mode 100644
-index 0000000..9f263b7
---- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/magnetometer/bmc150_magn.txt
-@@ -0,0 +1,22 @@
-+* Bosch BMC150 magnetometer sensor
-+
-+http://ae-bst.resource.bosch.com/media/products/dokumente/bmc150/BST-BMC150-DS000-04.pdf
-+
-+Required properties:
-+
-+  - compatible : should be "bosch,bmc150_magn"
-+  - reg : the I2C address of the magnetometer
-+
-+Optional properties:
-+
-+  - interrupt-parent : phandle to the parent interrupt controller
-+  - interrupts : interrupt mapping for GPIO IRQ
-+
-+Example:
-+
-+bmc150_magn@12 {
-+        compatible = "bosch,bmc150_magn";
-+        reg = <0x12>;
-+        interrupt-parent = <&gpio1>;
-+        interrupts = <0 1>;
-+};
 -- 
 1.9.1
