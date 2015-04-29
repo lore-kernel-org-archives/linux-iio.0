@@ -4,35 +4,34 @@ To: linux-iio@vger.kernel.org
 Cc: Antonio Ospite <ao2@ao2.it>,
 	Jonathan Cameron <jic23@kernel.org>,
 	Bastien Nocera <hadess@hadess.net>
-Subject: [PATCH 1/3] iio: accel: kxcjk-1013: add the "KXCJ9000" ACPI id
-Date: Wed, 29 Apr 2015 11:01:49 +0200
-Message-Id: <1430298111-20127-2-git-send-email-ao2@ao2.it>
-In-Reply-To: <1430298111-20127-1-git-send-email-ao2@ao2.it>
-References: <1430298111-20127-1-git-send-email-ao2@ao2.it>
+Subject: [PATCH 0/3] iio: accel: kxcjk-1013: new ACPI id and misc cleanups
+Date: Wed, 29 Apr 2015 11:01:48 +0200
+Message-Id: <1430298111-20127-1-git-send-email-ao2@ao2.it>
 List-ID: <linux-iio@vger.kernel.org>
 
-This id has been seen in the DSTD for the Teclast X98 Air 3G tablet
-based on Intel Bay Trail.
+Hi,
 
-Signed-off-by: Antonio Ospite <ao2@ao2.it>
-Cc: Jonathan Cameron <jic23@kernel.org>
-Cc: Bastien Nocera <hadess@hadess.net>
-Cc: linux-iio@vger.kernel.org
----
- drivers/iio/accel/kxcjk-1013.c | 1 +
- 1 file changed, 1 insertion(+)
+with this set I am adding a new ACPI id to kxcjk-1013 and proposing some
+minor cleanups.
 
-diff --git a/drivers/iio/accel/kxcjk-1013.c b/drivers/iio/accel/kxcjk-1013.c
-index 51da369..5b7a860 100644
---- a/drivers/iio/accel/kxcjk-1013.c
-+++ b/drivers/iio/accel/kxcjk-1013.c
-@@ -1418,6 +1418,7 @@ static const struct dev_pm_ops kxcjk1013_pm_ops = {
- static const struct acpi_device_id kx_acpi_match[] = {
- 	{"KXCJ1013", KXCJK1013},
- 	{"KXCJ1008", KXCJ91008},
-+	{"KXCJ9000", KXCJ91008},
- 	{"KXTJ1009", KXTJ21009},
- 	{"SMO8500",  KXCJ91008},
- 	{ },
+CC-ing Bastien because he added the is_smo8500_device flag which
+I propose to rename in patch 2.
+
+Thanks,
+   Antonio
+
+Antonio Ospite (3):
+  iio: accel: kxcjk-1013: add the "KXCJ9000" ACPI id
+  iio: accel: kxcjk-1013: rename is_smo8500_device to polling_mode
+  iio: accel: kxcjk-1013: add some blank lines for readability
+
+ drivers/iio/accel/kxcjk-1013.c | 14 +++++++++-----
+ 1 file changed, 9 insertions(+), 5 deletions(-)
+
 -- 
-2.1.4
+Antonio Ospite
+http://ao2.it
+
+A: Because it messes up the order in which people normally read text.
+   See http://en.wikipedia.org/wiki/Posting_style
+Q: Why is top-posting such a bad thing?
