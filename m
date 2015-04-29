@@ -1,335 +1,83 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:43277 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750746AbbDZUNO (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 26 Apr 2015 16:13:14 -0400
-Message-ID: <553D46D6.4030303@kernel.org>
-Date: Sun, 26 Apr 2015 21:13:10 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-MIME-Version: 1.0
-To: Daniel Baluta <daniel.baluta@intel.com>, octavian.purdila@intel.com
-CC: srinivas.pandruvada@linux.intel.com, linux-iio@vger.kernel.org
-Subject: Re: [RFC PATCH] iio: accel: kxcjk1013: Use polling when IRQ is not
- available
-References: <1429806615-25167-1-git-send-email-daniel.baluta@intel.com>
-In-Reply-To: <1429806615-25167-1-git-send-email-daniel.baluta@intel.com>
-Content-Type: text/plain; charset=windows-1252
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <irina.tirdea@intel.com>
+From: Irina Tirdea <irina.tirdea@intel.com>
+To: Jonathan Cameron <jic23@kernel.org>,
+	linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Rob Herring <robh+dt@kernel.org>,
+	Pawel Moll <pawel.moll@arm.com>,
+	Mark Rutland <mark.rutland@arm.com>,
+	Ian Campbell <ijc+devicetree@hellion.org.uk>,
+	Kumar Gala <galak@codeaurora.org>,
+	Irina Tirdea <irina.tirdea@intel.com>
+Subject: [PATCH v3 3/4] iio: core: Introduce IIO_CHAN_INFO_OVERSAMPLING_RATIO
+Date: Wed, 29 Apr 2015 21:16:39 +0300
+Message-Id: <1430331400-25528-4-git-send-email-irina.tirdea@intel.com>
+In-Reply-To: <1430331400-25528-1-git-send-email-irina.tirdea@intel.com>
+References: <1430331400-25528-1-git-send-email-irina.tirdea@intel.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-On 23/04/15 17:30, Daniel Baluta wrote:
-Hi Daniel, very nearly run out of time for linux stuff today (bed time story to be read
-in 5 mins!)
+Some magnetometers can perform a number of repetitions in HW
+for each measurement to increase accuracy. One example is
+Bosch BMC150:
+http://ae-bst.resource.bosch.com/media/products/dokumente/bmc150/BST-BMC150-DS000-04.pdf.
 
-Anyhow a few quick comments.
+Introduce an interface to set the oversampling ratio
+for these devices.
 
-> This sets up a delayed work with polling period depending on
-> device's sampling rate and it's a faster alternative to user
-> sysfs attributes polling.
-> 
-> Signed-off-by: Daniel Baluta <daniel.baluta@intel.com>
-> ---
-> This is just an RFC to see if we are on the same page in the problem
-> of using an IIO triggered buffer even if we don't have an interrupt
-> source.
-> 
-> In my opinion the cleanest and less error prone solution is to use
-> an external hrtimer based trigger as implemented in this patchseries:
-> 
-> * https://lkml.org/lkml/2015/4/20/319
-> 
-> We tested this and it fits our needs, it also has the advantage that
-> we don't have to modify the drivers.
-> 
-> Jonathan, proposed that each driver should internally poll for the status
-> of the device and read data when available.
-> 
-> * https://lkml.org/lkml/2015/4/15/575
-> 
-> This is exactly the functionality introduced by this patch. Sure we can factor
-> out some of these functions in the IIO core, but as it is right now this patch
-> is intrusive and I'm not sure it covers all corner cases.
+Signed-off-by: Irina Tirdea <irina.tirdea@intel.com>
+---
+ Documentation/ABI/testing/sysfs-bus-iio | 12 ++++++++++++
+ drivers/iio/industrialio-core.c         |  1 +
+ include/linux/iio/iio.h                 |  1 +
+ 3 files changed, 14 insertions(+)
 
-It's not all that intrusive!
-
-> 
-> One thing that I want to bring into discussion is that polling the status of
-> data ready it is somehow useless. Polling at a rate near to sampling frequency
-> data will always be ready. Testes showed that 98% of time the poll handler
-> found the DRDY bit set, thus making the I2C transaction useless. Also, by using
-> this approach we cannot offer poll intervals smaller than 1ms.
-I have no problem with using the infrastructure of the high resolution timer
-trigger (actually you could use ranges to reduce how often it 'ticks') just
-with the exposing incorrect triggering / data buffering interactions to userspace.
-> 
-
- If we are having a data ready trigger, to my mind
-it needs to correspond exactly with the data.  We can't have either missing or extra
-fires.  As such we actually need to check for new data a fair bit more often than
-we expect it.
-
-Nasty corners that can occur if we get too close to the right frequency are:
-
-1) We run slightly too slow and outright miss a sample.
-2) We run slightly too fast and manage to get two copies of a sample.  If we are
-driving more than one sensor off this trigger and try to align the data afterwards
-we will end up with nasty slippage.  Time stamps 'might' allow us to recover but its
-far from ideal.
-
-3) We get a mashup of one 'scan' and the next 'scan'. This occurs because we are
-reading from a sensor without double buffering when it is grabbing new data.
-(I'll ignore the dumbass sensor option where we can actually get bytes from
- different readings as those are uncommon).
-Thus we can have a large temporal difference between when say our x and y axis
-of an accelerometer are measured.  This doesn't sound bad, but consider someone
-picking up their flat tablet and putting it on a nice vertical stand.
-G moves - a lot.  That could leave us with either double the expected acceleration
-or 0 acceleration (free fall detection).  Either will leave any event detection
-code in a mess.
-
-
-To avoid the above, if we assume reading the data is near instantaneous we need
-to ensure we always sample well clear of the end points.  Simple solution
-is to look for new data at 2x the expected sampling rate.
-
-Now, I'm not totally (remain to be convinced) against having an option to
-try and save power by 'guessing' when to sample.  I'm just against it being the
-normal option.   We need the normal option to behave (as far as userspace
-is concerned) exactly as if the interrupt wire was there, not nearly the same.
-(slightly stretching a point as obviously timestamps are going to be wrong
-unless we check for new data incredibly often).
-
-
-> What do you think? :)
-Not bad actually :)
-> 
->  drivers/iio/accel/kxcjk-1013.c | 145 ++++++++++++++++++++++++++++++++---------
->  1 file changed, 113 insertions(+), 32 deletions(-)
-> 
-> diff --git a/drivers/iio/accel/kxcjk-1013.c b/drivers/iio/accel/kxcjk-1013.c
-> index df6f5d7..08b3abe 100644
-> --- a/drivers/iio/accel/kxcjk-1013.c
-> +++ b/drivers/iio/accel/kxcjk-1013.c
-> @@ -76,6 +76,9 @@
->  
->  #define KXCJK1013_SLEEP_DELAY_MS	2000
->  
-> +#define KXCJK1013_REG_INT_SRC1_BIT_WUFS	BIT(0)
-> +#define KXCJK1013_REG_INT_SRC1_BIT_DRDY	BIT(4)
-> +
->  #define KXCJK1013_REG_INT_SRC2_BIT_ZP	BIT(0)
->  #define KXCJK1013_REG_INT_SRC2_BIT_ZN	BIT(1)
->  #define KXCJK1013_REG_INT_SRC2_BIT_YP	BIT(2)
-> @@ -109,6 +112,11 @@ struct kxcjk1013_data {
->  	int64_t timestamp;
->  	enum kx_chipset chipset;
->  	bool is_smo8500_device;
-> +
-> +	/* used for polling dataready when no IRQ is available */
-> +	struct delayed_work work;
-> +	unsigned int poll_interval;
-> +	bool use_poll;
->  };
->  
->  enum kxcjk1013_axis {
-> @@ -215,6 +223,8 @@ static const struct {
->  				 {800, 0, 0x06},
->  				 {1600, 0, 0x06} };
->  
-> +static int kxcjk1013_setup_pollinterval(struct kxcjk1013_data *data);
-> +
->  static int kxcjk1013_set_mode(struct kxcjk1013_data *data,
->  			      enum kxcjk1013_mode mode)
->  {
-> @@ -333,6 +343,10 @@ static int kxcjk1013_chip_init(struct kxcjk1013_data *data)
->  
->  	data->odr_bits = ret;
->  
-> +	ret = kxcjk1013_setup_pollinterval(data);
-> +	if (ret < 0)
-> +		return ret;
-> +
->  	/* Set up INT polarity */
->  	ret = i2c_smbus_read_byte_data(data->client, KXCJK1013_REG_INT_CTRL1);
->  	if (ret < 0) {
-> @@ -376,6 +390,15 @@ static int kxcjk1013_get_startup_times(struct kxcjk1013_data *data)
->  }
->  #endif
->  
-> +void kxcjk1013_setup_delayed_work(struct kxcjk1013_data *data, bool on)
-> +{
-> +	if (on)
-> +		schedule_delayed_work(&data->work,
-> +				      msecs_to_jiffies(data->poll_interval));
-> +	else
-> +		cancel_delayed_work(&data->work);
-> +}
-> +
->  static int kxcjk1013_set_power_state(struct kxcjk1013_data *data, bool on)
->  {
->  #ifdef CONFIG_PM
-> @@ -395,6 +418,8 @@ static int kxcjk1013_set_power_state(struct kxcjk1013_data *data, bool on)
->  		return ret;
->  	}
->  #endif
-> +	if (data->use_poll)
-> +		kxcjk1013_setup_delayed_work(data, on);
->  
->  	return 0;
->  }
-> @@ -603,6 +628,10 @@ static int kxcjk1013_set_odr(struct kxcjk1013_data *data, int val, int val2)
->  
->  	data->odr_bits = odr_bits;
->  
-> +	ret = kxcjk1013_setup_pollinterval(data);
-> +	if (ret < 0)
-> +		return ret;
-> +
->  	odr_bits = kxcjk1013_convert_wake_odr_to_bit(val, val2);
->  	if (odr_bits < 0)
->  		return odr_bits;
-> @@ -638,6 +667,26 @@ static int kxcjk1013_get_odr(struct kxcjk1013_data *data, int *val, int *val2)
->  	return -EINVAL;
->  }
->  
-> +/*
-> + * get an approximation of poll interval based on sampling frequency
-> + */
-> +static int kxcjk1013_setup_pollinterval(struct kxcjk1013_data *data)
-> +{
-> +	int val, val2;
-> +	int ret;
-> +
-> +	ret = kxcjk1013_get_odr(data, &val, &val2);
-> +	if (ret < 0)
-> +		return ret;
-> +	if (val2)
-> +		val++;
-> +
-> +	data->poll_interval = MSEC_PER_SEC / val;
-> +	pr_info("Poll interval is %d\n", data->poll_interval);
-> +
-> +	return 0;
-> +}
-> +
->  static int kxcjk1013_get_acc_reg(struct kxcjk1013_data *data, int axis)
->  {
->  	u8 reg = KXCJK1013_REG_XOUT_L + axis * 2;
-> @@ -1147,6 +1196,34 @@ static irqreturn_t kxcjk1013_data_rdy_trig_poll(int irq, void *private)
->  		return IRQ_HANDLED;
->  }
->  
-> +static void kxcjk1013_poll_handler(struct work_struct *work)
-> +{
-> +	struct kxcjk1013_data *data;
-> +	struct iio_dev *indio_dev;
-> +	struct delayed_work *delay = to_delayed_work(work);
-> +	int ret;
-> +
-> +	data = container_of(delay, struct kxcjk1013_data, work);
-> +	indio_dev = iio_priv_to_dev(data);
-> +
-> +	data->timestamp = iio_get_time_ns();
-> +	ret = i2c_smbus_read_byte_data(data->client, KXCJK1013_REG_INT_SRC1);
-> +	if (ret < 0) {
-> +		dev_err(&data->client->dev, "Error reading reg_ctrl1\n");
-> +		return;
-> +	}
-> +
-> +	if (data->dready_trigger_on && (ret & KXCJK1013_REG_INT_SRC1_BIT_DRDY))
-> +		irq_wake_thread(indio_dev->pollfunc->irq, indio_dev);
-> +
-> +	if (data->motion_trigger_on && (ret & KXCJK1013_REG_INT_SRC1_BIT_WUFS))
-> +		irq_wake_thread(indio_dev->pollfunc->irq, indio_dev);
-> +
-> +
-> +	schedule_delayed_work(&data->work,
-> +			      msecs_to_jiffies(data->poll_interval));
-> +}
-> +
-
->  static const char *kxcjk1013_match_acpi_device(struct device *dev,
->  					       enum kx_chipset *chipset,
->  					       bool *is_smo8500_device)
-> @@ -1249,42 +1326,46 @@ static int kxcjk1013_probe(struct i2c_client *client,
->  						indio_dev);
->  		if (ret)
->  			goto err_poweroff;
-> +	} else {
-> +		INIT_DELAYED_WORK(&data->work, kxcjk1013_poll_handler);
-> +		data->use_poll = true;
-> +	}
-So everything from here down is actually a simplification :)
->  
-> -		data->dready_trig = devm_iio_trigger_alloc(&client->dev,
-> -							   "%s-dev%d",
-> -							   indio_dev->name,
-> -							   indio_dev->id);
-> -		if (!data->dready_trig) {
-> -			ret = -ENOMEM;
-> -			goto err_poweroff;
-> -		}
-> +	data->dready_trig = devm_iio_trigger_alloc(&client->dev,
-> +						   "%s-dev%d",
-> +						   indio_dev->name,
-> +						   indio_dev->id);
-> +	if (!data->dready_trig) {
-> +		ret = -ENOMEM;
-> +		goto err_poweroff;
-> +	}
->  
-> -		data->motion_trig = devm_iio_trigger_alloc(&client->dev,
-> -							  "%s-any-motion-dev%d",
-> -							  indio_dev->name,
-> -							  indio_dev->id);
-> -		if (!data->motion_trig) {
-> -			ret = -ENOMEM;
-> -			goto err_poweroff;
-> -		}
-> +	data->motion_trig = devm_iio_trigger_alloc(&client->dev,
-> +						  "%s-any-motion-dev%d",
-> +						  indio_dev->name,
-> +						  indio_dev->id);
-> +	if (!data->motion_trig) {
->  
-> -		data->dready_trig->dev.parent = &client->dev;
-> -		data->dready_trig->ops = &kxcjk1013_trigger_ops;
-> -		iio_trigger_set_drvdata(data->dready_trig, indio_dev);
-> -		indio_dev->trig = data->dready_trig;
-> -		iio_trigger_get(indio_dev->trig);
-> -		ret = iio_trigger_register(data->dready_trig);
-> -		if (ret)
-> -			goto err_poweroff;
-> +		ret = -ENOMEM;
-> +		goto err_poweroff;
-> +	}
->  
-> -		data->motion_trig->dev.parent = &client->dev;
-> -		data->motion_trig->ops = &kxcjk1013_trigger_ops;
-> -		iio_trigger_set_drvdata(data->motion_trig, indio_dev);
-> -		ret = iio_trigger_register(data->motion_trig);
-> -		if (ret) {
-> -			data->motion_trig = NULL;
-> -			goto err_trigger_unregister;
-> -		}
-> +	data->dready_trig->dev.parent = &client->dev;
-> +	data->dready_trig->ops = &kxcjk1013_trigger_ops;
-> +	iio_trigger_set_drvdata(data->dready_trig, indio_dev);
-> +	indio_dev->trig = data->dready_trig;
-> +	iio_trigger_get(indio_dev->trig);
-> +	ret = iio_trigger_register(data->dready_trig);
-> +	if (ret)
-> +		goto err_poweroff;
-> +
-> +	data->motion_trig->dev.parent = &client->dev;
-> +	data->motion_trig->ops = &kxcjk1013_trigger_ops;
-> +	iio_trigger_set_drvdata(data->motion_trig, indio_dev);
-> +	ret = iio_trigger_register(data->motion_trig);
-> +	if (ret) {
-> +		data->motion_trig = NULL;
-> +		goto err_trigger_unregister;
->  	}
->  
->  	ret = iio_triggered_buffer_setup(indio_dev,
-> 
-
+diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
+index 866b4ec..e46c71f 100644
+--- a/Documentation/ABI/testing/sysfs-bus-iio
++++ b/Documentation/ABI/testing/sysfs-bus-iio
+@@ -1375,3 +1375,15 @@ Description:
+ 		The emissivity ratio of the surface in the field of view of the
+ 		contactless temperature sensor.  Emissivity varies from 0 to 1,
+ 		with 1 being the emissivity of a black body.
++
++What:		/sys/bus/iio/devices/iio:deviceX/in_magn_x_oversampling_ratio
++What:		/sys/bus/iio/devices/iio:deviceX/in_magn_y_oversampling_ratio
++What:		/sys/bus/iio/devices/iio:deviceX/in_magn_z_oversampling_ratio
++KernelVersion:	4.2
++Contact:	linux-iio@vger.kernel.org
++Description:
++		Hardware applied number of measurements for acquiring one
++		data point. The HW will do <type>[_name]_oversampling_ratio
++		measurements and return the average value as output data. Each
++		value resulted from <type>[_name]_oversampling_ratio measurements
++		is considered as one sample for <type>[_name]_sampling_frequency.
+diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+index 7c98bc1..dfa81db 100644
+--- a/drivers/iio/industrialio-core.c
++++ b/drivers/iio/industrialio-core.c
+@@ -129,6 +129,7 @@ static const char * const iio_chan_info_postfix[] = {
+ 	[IIO_CHAN_INFO_DEBOUNCE_COUNT] = "debounce_count",
+ 	[IIO_CHAN_INFO_DEBOUNCE_TIME] = "debounce_time",
+ 	[IIO_CHAN_INFO_CALIBEMISSIVITY] = "calibemissivity",
++	[IIO_CHAN_INFO_OVERSAMPLING_RATIO] = "oversampling_ratio",
+ };
+ 
+ /**
+diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
+index b1e46ae..058441d 100644
+--- a/include/linux/iio/iio.h
++++ b/include/linux/iio/iio.h
+@@ -44,6 +44,7 @@ enum iio_chan_info_enum {
+ 	IIO_CHAN_INFO_DEBOUNCE_COUNT,
+ 	IIO_CHAN_INFO_DEBOUNCE_TIME,
+ 	IIO_CHAN_INFO_CALIBEMISSIVITY,
++	IIO_CHAN_INFO_OVERSAMPLING_RATIO,
+ };
+ 
+ enum iio_shared_by {
+-- 
+1.9.1
