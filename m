@@ -1,65 +1,35 @@
-Return-Path: <gabriele.mzt@gmail.com>
-From: Gabriele Mazzotta <gabriele.mzt@gmail.com>
-To: Marek Vasut <marex@denx.de>
-Cc: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net, marxin.liska@gmail.com, rui.zhang@intel.com, linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org
-Subject: Re: [PATCH] iio: acpi: Add ACPI0008 Ambient Light Sensor
-Date: Wed, 29 Apr 2015 17:36:32 +0200
-Message-ID: <1724765.vloEsYdA9s@xps13>
-In-Reply-To: <201504291633.18558.marex@denx.de>
-References: <1430306845-7117-1-git-send-email-gabriele.mzt@gmail.com> <1625165.pchJQFHZZe@xps13> <201504291633.18558.marex@denx.de>
+Return-Path: <daniel.baluta@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+In-Reply-To: <20150429130132.27d00577390a4f0e37fbe1c9@ao2.it>
+References: <1430298111-20127-1-git-send-email-ao2@ao2.it>
+	<1430298111-20127-2-git-send-email-ao2@ao2.it>
+	<1430303320.2525.95.camel@hadess.net>
+	<20150429130132.27d00577390a4f0e37fbe1c9@ao2.it>
+Date: Wed, 29 Apr 2015 18:11:00 +0300
+Message-ID: <CAEnQRZD1aRJ8kr4xv8zWwopt_d2WJZOApnUihQbmvYiH68493g@mail.gmail.com>
+Subject: Re: [PATCH 1/3] iio: accel: kxcjk-1013: add the "KXCJ9000" ACPI id
+From: Daniel Baluta <daniel.baluta@gmail.com>
+To: Antonio Ospite <ao2@ao2.it>
+Cc: Bastien Nocera <hadess@hadess.net>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>, Jonathan Cameron <jic23@kernel.org>
+Content-Type: text/plain; charset=UTF-8
 List-ID: <linux-iio@vger.kernel.org>
 
-On Wednesday 29 April 2015 16:33:18 Marek Vasut wrote:
-> On Wednesday, April 29, 2015 at 01:51:21 PM, Gabriele Mazzotta wrote:
-> > On Wednesday 29 April 2015 13:27:25 Gabriele Mazzotta wrote:
-> > > Add basic implementation of the ACPI0008 Ambient Light Sensor driver.
-> > > This driver currently supports only the ALI property, yet is ready to
-> > > be easily extended to handle ALC, ALT, ALP ones as well.
-> > > 
-> > > Signed-off-by: Martin Liska <marxin.liska@gmail.com>
-> > > Signed-off-by: Marek Vasut <marex@denx.de>
-> > > Signed-off-by: Gabriele Mazzotta <gabriele.mzt@gmail.com>
-> > > Cc: Zhang Rui <rui.zhang@intel.com>
-> > > ---
-> > > This continues http://marc.info/?t=140163463200002
-> > > 
-> > > I've made few adjustments over the original patch:
-> > >  - Code aligned with 4.1-rc1 and cleaned up
-> > >  - Use signed integers to store values: sensors report 32bit signed
-> > >  
-> > >    values. In particular, -1 is reported when the current reading
-> > >    is above the supported range of sensitivity.
-> > > 
-> > > Most of the changes are just a consequence of the changes in the
-> > > iio subsystem.
-> > > 
-> > > Gabriele
-> > 
-> > I'm sorry, I've just noticed that I haven't changed the value of
-> > realbits in acpi_als_channels. This makes me wonder what would be the
-> > proper value, given that this is a generic driver and all the
-> > information I have are those in the ACPI specification (which states
-> > what I reported here above).
-> > 
-> > Should I just set realbits to 32?
-> 
-> I believe the ALS reports only 16bit signel value, no ?
-> My observation with a strong coherent light source is that
-> the saturated sensor reported 0xffff .
+On Wed, Apr 29, 2015 at 2:01 PM, Antonio Ospite <ao2@ao2.it> wrote:
+> On Wed, 29 Apr 2015 12:28:40 +0200
+> Bastien Nocera <hadess@hadess.net> wrote:
+>
+>> On Wed, 2015-04-29 at 11:01 +0200, Antonio Ospite wrote:
+>> > This id has been seen in the DSTD for the Teclast X98 Air 3G tablet
+>>
+>> DSDT.
+>
+> Right. Thanks :)
+>
+> Jonathan, let me know if you want me to resend or if you plan to amend
+> the commit message yourself.
 
-Probably it's the same for me. I couldn't get to the point where
-ALI reports 0xffff, just really close, I will have to try with some
-stronger lights. However, looking at my ACPI table, I can see that
-the value returned by _ALI is just the composition of two 8 bits
-variables put side by side, so yes, I can say that even on my system
-it's a 16bit value.
+Please resend.
 
-The problem here is that I'm not sure we can assume this as true in
-general since the ACPI specification doesn't say anything.
-
-Gabriele
-
-> Best regards,
-> Marek Vasut
+thanks,
+Daniel.
