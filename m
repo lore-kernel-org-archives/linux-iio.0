@@ -1,35 +1,53 @@
 Return-Path: <daniel.baluta@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <20150429130132.27d00577390a4f0e37fbe1c9@ao2.it>
+In-Reply-To: <1430298111-20127-3-git-send-email-ao2@ao2.it>
 References: <1430298111-20127-1-git-send-email-ao2@ao2.it>
-	<1430298111-20127-2-git-send-email-ao2@ao2.it>
-	<1430303320.2525.95.camel@hadess.net>
-	<20150429130132.27d00577390a4f0e37fbe1c9@ao2.it>
-Date: Wed, 29 Apr 2015 18:11:00 +0300
-Message-ID: <CAEnQRZD1aRJ8kr4xv8zWwopt_d2WJZOApnUihQbmvYiH68493g@mail.gmail.com>
-Subject: Re: [PATCH 1/3] iio: accel: kxcjk-1013: add the "KXCJ9000" ACPI id
+	<1430298111-20127-3-git-send-email-ao2@ao2.it>
+Date: Wed, 29 Apr 2015 18:08:41 +0300
+Message-ID: <CAEnQRZANgZM8in1WS_22Lcpf2oG_8aLO80p__=6CFJBbW2rHKA@mail.gmail.com>
+Subject: Re: [PATCH 2/3] iio: accel: kxcjk-1013: rename is_smo8500_device to polling_mode
 From: Daniel Baluta <daniel.baluta@gmail.com>
 To: Antonio Ospite <ao2@ao2.it>
-Cc: Bastien Nocera <hadess@hadess.net>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>, Jonathan Cameron <jic23@kernel.org>
+Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>, Jonathan Cameron <jic23@kernel.org>,
+	Bastien Nocera <hadess@hadess.net>
 Content-Type: text/plain; charset=UTF-8
 List-ID: <linux-iio@vger.kernel.org>
 
-On Wed, Apr 29, 2015 at 2:01 PM, Antonio Ospite <ao2@ao2.it> wrote:
-> On Wed, 29 Apr 2015 12:28:40 +0200
-> Bastien Nocera <hadess@hadess.net> wrote:
+On Wed, Apr 29, 2015 at 12:01 PM, Antonio Ospite <ao2@ao2.it> wrote:
+> The purpose of the variable is to remember when an interrupt cannot be
+> requested and hence the driver must work in polling mode, so tell that
+> instead of mentioning the specific case when this is needed.
 >
->> On Wed, 2015-04-29 at 11:01 +0200, Antonio Ospite wrote:
->> > This id has been seen in the DSTD for the Teclast X98 Air 3G tablet
->>
->> DSDT.
+> This makes the variable name to be still meaningful when some other
+> devices requiring this show up.
 >
-> Right. Thanks :)
+> Signed-off-by: Antonio Ospite <ao2@ao2.it>
+> Cc: Jonathan Cameron <jic23@kernel.org>
+> Cc: Bastien Nocera <hadess@hadess.net>
+> Cc: linux-iio@vger.kernel.org
+> ---
+>  drivers/iio/accel/kxcjk-1013.c | 10 +++++-----
+>  1 file changed, 5 insertions(+), 5 deletions(-)
 >
-> Jonathan, let me know if you want me to resend or if you plan to amend
-> the commit message yourself.
+> diff --git a/drivers/iio/accel/kxcjk-1013.c b/drivers/iio/accel/kxcjk-1013.c
+> index 5b7a860..eccec0e 100644
+> --- a/drivers/iio/accel/kxcjk-1013.c
+> +++ b/drivers/iio/accel/kxcjk-1013.c
+> @@ -108,7 +108,7 @@ struct kxcjk1013_data {
+>         bool motion_trigger_on;
+>         int64_t timestamp;
+>         enum kx_chipset chipset;
+> -       bool is_smo8500_device;
+> +       bool polling_mode;
 
-Please resend.
+I would prefer to call this field use_poll, as introduced in:
+
+http://marc.info/?l=linux-iio&m=142980650422289&w=2
+
+Also use_poll its it's a better suggestion on the type than polling_mode.
+
+Other than that the patch looks good.
+
 
 thanks,
 Daniel.
