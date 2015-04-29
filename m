@@ -1,77 +1,375 @@
-Return-Path: <dmurphy@ti.com>
-Message-ID: <5540E21F.1080302@ti.com>
-Date: Wed, 29 Apr 2015 08:52:31 -0500
-From: Dan Murphy <dmurphy@ti.com>
+Return-Path: <mfuzzey@parkeon.com>
+Message-ID: <5540D422.6070204@parkeon.com>
+Date: Wed, 29 Apr 2015 14:52:50 +0200
+From: Martin Fuzzey <mfuzzey@parkeon.com>
 MIME-Version: 1.0
-To: Jonathan Cameron <jic23@kernel.org>, <linux-iio@vger.kernel.org>
-Subject: Re: [PATCH 3/3] iio: heart_monitor: Add TI afe4403 heart monitor
-References: <1429720331-1900-1-git-send-email-dmurphy@ti.com> <1429720331-1900-4-git-send-email-dmurphy@ti.com> <553D3091.7010900@kernel.org>
-In-Reply-To: <553D3091.7010900@kernel.org>
-Content-Type: text/plain; charset="windows-1252"
+To: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
+ Peter Meerwald <pmeerw@pmeerw.net>
+Subject: Re: [PATCH 4/9] iio: mma8452: Basic support for transient events.
+References: <20150219141553.27001.18825.stgit@localhost> <20150219141602.27001.51592.stgit@localhost> <54EDBF33.1060309@kernel.org>
+In-Reply-To: <54EDBF33.1060309@kernel.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
 List-ID: <linux-iio@vger.kernel.org>
 
-Jonathan
+On 25/02/15 13:25, Jonathan Cameron wrote:
+> On 19/02/15 14:16, Martin Fuzzey wrote:
+>> The event is triggered when the highpass filtered absolute acceleration
+>> exceeds the threshold.
+>>
+>> Signed-off-by: Martin Fuzzey <mfuzzey@parkeon.com>
+> you in_accel_transient_scale isn't documented.
+> Why do we need this naming at all?
+> Ah. It's not clear this is just the event rather than the underlying channel.
 
-On 04/26/2015 01:38 PM, Jonathan Cameron wrote:
-> On 22/04/15 17:32, Dan Murphy wrote:
->> Add the TI afe4403 heart rate monitor.
->> This device detects reflected LED
->> wave length fluctuations and presents an ADC
->> value to the user space to be converted to a
->> heart rate.
->>
->> Data sheet located here:
->> http://www.ti.com/product/AFE4403/datasheet
->>
->> Signed-off-by: Dan Murphy <dmurphy@ti.com>
-> Hi Dan,
+Sorry, not understanding you here.
+
+Are you saying it's not clear in the documentation (which is the next 
+patch "iio: doc: Describe scale attributes for event thresholds" that 
+you've already applied) or in the code?
+
+The code is:
+/*
+  * Threshold is configured in fixed 8G/127 steps regardless of
+  * currently selected scale for measurement.
+  */
+static IIO_CONST_ATTR_NAMED(accel_transient_scale, in_accel_scale, 
+"0.617742");
+
+static struct attribute *mma8452_event_attributes[] = {
+     &iio_const_attr_accel_transient_scale.dev_attr.attr,
+     NULL,
+};
+
+static struct attribute_group mma8452_event_attribute_group = {
+     .attrs = mma8452_event_attributes,
+     .name = "events",
+};
+
+#define MMA8452_CHANNEL(axis, idx) { \
+     .type = IIO_ACCEL, \
+...
+     .num_event_specs = ARRAY_SIZE(mma8452_transient_event), \
+}
+
+
+That seems fairly clear to me.
+
+> Perhaps, make it an event parameter instead... e.g. add scale to the ev_info
+> array like we do for hysteresis etc.
+
+But doing that would create a read/write attribute in sysfs whereas the 
+above code creates a read only attribute and makes it clear that the 
+attribute is a constant through the use of IIO_CONST_ATTR_NAMED
+
+Once this is sorted out I'll send another (hopefully last) respin with 
+the remaining remarks fixed.
+
+Regards,
+
+Martin
+
+> Otherwise, looks good to me.
 >
-> Good to see this coming back again!
->
-> Anyhow, various comments inline, but the biggest issue is the ABI usage.
-> Please take a long hard look at the ABI docs (Documentation/ABI/test/sysfs-bus-iio*) and the use that is being made of them here.  This doesn't conform to
-> the ABI in a number of places and there is no documentation to imply that
-> it is creating new ABI.
->
-> There are 4 input channels here Ambient1, Ambient2, led1 and led2.
-> We also have a two differential channels - though as these are seperated in
-> time it's just (I think) for convenience.
->
-> These can then feed back to ambient cancellation DACs thus hopefully giving
-> just the nice led signals an allowing measurement of Pleth (which is what
-> we are aiming for?)
-> So two output DAC channels, use extended name to say what they are.
-> out_voltage0_ambientcancelation (perhaps...)  OR... Perhaps it would
-> be preferable to treat this as a caliboffset to the input channels.
-> (I think I prefer this second option).
->
-> Your other channels allow manipulation of the signal chain - I think these
-> pretty much boil down to gains of one type or another?  If we don't have
-> a suitable ABI element for all of them then propose it, but they don't
-> look like output channels to me.
->
-> You do have LED controls however which might be representable as output
-> channels, but they need to be more clearly described than below.
->
-> One big issue here is that this isn't actually pulse measurement device
-> at all. It's measuring the pleth signal (photoplethysmography - which here
-> is just a light intensity measure - I think!) which can via 'magic' be used
-> to derive a pulse.  That's not a problem, but the channel types aren't
-> going to include heart_rate as that's not output from the device.
+> Again, Peter's input would be good.
 >
 >> ---
->>  drivers/iio/Kconfig                 |   1 +
->>  drivers/iio/Makefile                |   1 +
->>  drivers/iio/heart_monitor/Kconfig   |  19 +
->>  drivers/iio/heart_monitor/Makefile  |   6 +
->>  drivers/iio/heart_monitor/afe4403.c | 702 ++++++++++++++++++++++++++++++++++++
-
-I am thinking of changing the directory to health as opposed to heart_monitor.
-
-Thoughts?
-
-<snip>
-
--- 
-------------------
-Dan Murphy
+>>   drivers/iio/accel/mma8452.c |  212 +++++++++++++++++++++++++++++++++++++++++++
+>>   1 file changed, 211 insertions(+), 1 deletion(-)
+>>
+>> diff --git a/drivers/iio/accel/mma8452.c b/drivers/iio/accel/mma8452.c
+>> index c46df4e..d44044f 100644
+>> --- a/drivers/iio/accel/mma8452.c
+>> +++ b/drivers/iio/accel/mma8452.c
+>> @@ -9,7 +9,7 @@
+>>    *
+>>    * 7-bit I2C slave address 0x1c/0x1d (pin selectable)
+>>    *
+>> - * TODO: interrupt, thresholding, orientation / freefall events, autosleep
+>> + * TODO: orientation / freefall events, autosleep
+>>    */
+>>   
+>>   #include <linux/module.h>
+>> @@ -19,20 +19,33 @@
+>>   #include <linux/iio/trigger_consumer.h>
+>>   #include <linux/iio/buffer.h>
+>>   #include <linux/iio/triggered_buffer.h>
+>> +#include <linux/iio/events.h>
+>>   #include <linux/delay.h>
+>>   
+>>   #define MMA8452_STATUS 0x00
+>>   #define MMA8452_OUT_X 0x01 /* MSB first, 12-bit  */
+>>   #define MMA8452_OUT_Y 0x03
+>>   #define MMA8452_OUT_Z 0x05
+>> +#define MMA8452_INT_SRC 0x0c
+>>   #define MMA8452_WHO_AM_I 0x0d
+>>   #define MMA8452_DATA_CFG 0x0e
+>> +#define MMA8452_TRANSIENT_CFG 0x1d
+>> +#define MMA8452_TRANSIENT_CFG_ELE		BIT(4)
+>> +#define MMA8452_TRANSIENT_CFG_CHAN_MASK(chan)	(BIT(1) << chan)
+>> +#define MMA8452_TRANSIENT_SRC 0x1e
+>> +#define MMA8452_TRANSIENT_SRC_XTRANSE		BIT(1)
+>> +#define MMA8452_TRANSIENT_SRC_YTRANSE		BIT(3)
+>> +#define MMA8452_TRANSIENT_SRC_ZTRANSE		BIT(5)
+>> +#define MMA8452_TRANSIENT_THS 0x1f
+>> +#define MMA8452_TRANSIENT_COUNT 0x20
+>>   #define MMA8452_OFF_X 0x2f
+>>   #define MMA8452_OFF_Y 0x30
+>>   #define MMA8452_OFF_Z 0x31
+>>   #define MMA8452_CTRL_REG1 0x2a
+>>   #define MMA8452_CTRL_REG2 0x2b
+>>   #define MMA8452_CTRL_REG2_RST		BIT(6)
+>> +#define MMA8452_CTRL_REG4 0x2d
+>> +#define MMA8452_CTRL_REG5 0x2e
+>>   
+>>   #define MMA8452_MAX_REG 0x31
+>>   
+>> @@ -48,6 +61,13 @@
+>>   #define MMA8452_DATA_CFG_FS_4G 1
+>>   #define MMA8452_DATA_CFG_FS_8G 2
+>>   
+>> +#define MMA8452_INT_DRDY	BIT(0)
+>> +#define MMA8452_INT_FF_MT	BIT(2)
+>> +#define MMA8452_INT_PULSE	BIT(3)
+>> +#define MMA8452_INT_LNDPRT	BIT(4)
+>> +#define MMA8452_INT_TRANS	BIT(5)
+>> +#define MMA8452_INT_ASLP	BIT(7)
+>> +
+>>   #define MMA8452_DEVICE_ID 0x2a
+>>   
+>>   struct mma8452_data {
+>> @@ -274,6 +294,121 @@ static int mma8452_write_raw(struct iio_dev *indio_dev,
+>>   	}
+>>   }
+>>   
+>> +static int mma8452_read_thresh(struct iio_dev *indio_dev,
+>> +	const struct iio_chan_spec *chan, enum iio_event_type type,
+>> +	enum iio_event_direction dir, enum iio_event_info info, int *val,
+>> +	int *val2)
+>> +{
+>> +	struct mma8452_data *data = iio_priv(indio_dev);
+>> +	int ret;
+>> +
+>> +	ret = i2c_smbus_read_byte_data(data->client, MMA8452_TRANSIENT_THS);
+>> +	if (ret < 0)
+>> +		return ret;
+>> +
+>> +	*val = ret & 0x7f;
+>> +
+>> +	return IIO_VAL_INT;
+>> +}
+>> +
+>> +static int mma8452_write_thresh(struct iio_dev *indio_dev,
+>> +	const struct iio_chan_spec *chan, enum iio_event_type type,
+>> +	enum iio_event_direction dir, enum iio_event_info info, int val,
+>> +	int val2)
+>> +{
+>> +	struct mma8452_data *data = iio_priv(indio_dev);
+>> +
+>> +	return mma8452_change_config(data, MMA8452_TRANSIENT_THS, val & 0x7f);
+>> +}
+>> +
+>> +static int mma8452_read_event_config(struct iio_dev *indio_dev,
+>> +	const struct iio_chan_spec *chan, enum iio_event_type type,
+>> +	enum iio_event_direction dir)
+>> +{
+>> +	struct mma8452_data *data = iio_priv(indio_dev);
+>> +	int ret;
+>> +
+>> +	ret = i2c_smbus_read_byte_data(data->client, MMA8452_TRANSIENT_CFG);
+>> +	if (ret < 0)
+>> +		return ret;
+>> +
+>> +	return ret & MMA8452_TRANSIENT_CFG_CHAN_MASK(chan->scan_index) ? 1 : 0;
+>> +}
+>> +
+>> +static int mma8452_write_event_config(struct iio_dev *indio_dev,
+>> +	const struct iio_chan_spec *chan, enum iio_event_type type,
+>> +	enum iio_event_direction dir, int state)
+>> +{
+>> +	struct mma8452_data *data = iio_priv(indio_dev);
+>> +	int val;
+>> +
+>> +	val = i2c_smbus_read_byte_data(data->client, MMA8452_TRANSIENT_CFG);
+>> +	if (val < 0)
+>> +		return val;
+>> +
+>> +	if (state)
+>> +		val |= MMA8452_TRANSIENT_CFG_CHAN_MASK(chan->scan_index);
+>> +	else
+>> +		val &= ~MMA8452_TRANSIENT_CFG_CHAN_MASK(chan->scan_index);
+>> +
+>> +	val |= MMA8452_TRANSIENT_CFG_ELE;
+>> +
+>> +	return mma8452_change_config(data, MMA8452_TRANSIENT_CFG, val);
+>> +}
+>> +
+>> +static void mma8452_transient_interrupt(struct iio_dev *indio_dev)
+>> +{
+>> +	struct mma8452_data *data = iio_priv(indio_dev);
+>> +	s64 ts = iio_get_time_ns();
+>> +	int src;
+>> +
+>> +	src = i2c_smbus_read_byte_data(data->client, MMA8452_TRANSIENT_SRC);
+>> +	if (src < 0)
+>> +		return;
+>> +
+>> +	if (src & MMA8452_TRANSIENT_SRC_XTRANSE)
+>> +		iio_push_event(indio_dev, IIO_MOD_EVENT_CODE(IIO_ACCEL,
+>> +							0,
+>> +							IIO_MOD_X,
+>> +							IIO_EV_TYPE_THRESH,
+>> +							IIO_EV_DIR_RISING),
+>> +							ts);
+>> +
+>> +	if (src & MMA8452_TRANSIENT_SRC_YTRANSE)
+>> +		iio_push_event(indio_dev, IIO_MOD_EVENT_CODE(IIO_ACCEL,
+>> +							0,
+>> +							IIO_MOD_Y,
+>> +							IIO_EV_TYPE_THRESH,
+>> +							IIO_EV_DIR_RISING),
+>> +							ts);
+>> +
+>> +	if (src & MMA8452_TRANSIENT_SRC_ZTRANSE)
+>> +		iio_push_event(indio_dev, IIO_MOD_EVENT_CODE(IIO_ACCEL,
+>> +							0,
+>> +							IIO_MOD_Z,
+>> +							IIO_EV_TYPE_THRESH,
+>> +							IIO_EV_DIR_RISING),
+>> +							ts);
+>> +}
+>> +
+>> +static irqreturn_t mma8452_interrupt(int irq, void *p)
+>> +{
+>> +	struct iio_dev *indio_dev = p;
+>> +	struct mma8452_data *data = iio_priv(indio_dev);
+>> +	int src;
+>> +
+>> +	src = i2c_smbus_read_byte_data(data->client, MMA8452_INT_SRC);
+>> +	if (src < 0)
+>> +		return IRQ_NONE;
+>> +
+>> +	if (src & MMA8452_INT_TRANS) {
+>> +		mma8452_transient_interrupt(indio_dev);
+>> +		return IRQ_HANDLED;
+>> +	}
+>> +
+>> +	return IRQ_NONE;
+>> +}
+>> +
+>>   static irqreturn_t mma8452_trigger_handler(int irq, void *p)
+>>   {
+>>   	struct iio_poll_func *pf = p;
+>> @@ -316,6 +451,32 @@ static int mma8452_reg_access_dbg(struct iio_dev *indio_dev,
+>>   	return ret;
+>>   }
+>>   
+>> +static const struct iio_event_spec mma8452_transient_event[] = {
+>> +	{
+>> +		.type = IIO_EV_TYPE_THRESH,
+>> +		.dir = IIO_EV_DIR_RISING,
+>> +		.mask_separate = BIT(IIO_EV_INFO_ENABLE),
+>> +		.mask_shared_by_type = BIT(IIO_EV_INFO_VALUE) |
+>> +					BIT(IIO_EV_INFO_HIGH_PASS_FILTER_3DB),
+>> +	},
+>> +};
+>> +
+>> +/**
+>> + * Threshold is configured in fixed 8G/127 steps regardless of
+>> + * currently selected scale for measurement.
+>> + */
+>> +static IIO_CONST_ATTR_NAMED(accel_transient_scale, in_accel_scale, "0.617742");
+>> +
+>> +static struct attribute *mma8452_event_attributes[] = {
+>> +	&iio_const_attr_accel_transient_scale.dev_attr.attr,
+>> +	NULL,
+>> +};
+>> +
+>> +static struct attribute_group mma8452_event_attribute_group = {
+>> +	.attrs = mma8452_event_attributes,
+>> +	.name = "events",
+>> +};
+>> +
+>>   #define MMA8452_CHANNEL(axis, idx) { \
+>>   	.type = IIO_ACCEL, \
+>>   	.modified = 1, \
+>> @@ -332,6 +493,8 @@ static int mma8452_reg_access_dbg(struct iio_dev *indio_dev,
+>>   		.shift = 4, \
+>>   		.endianness = IIO_BE, \
+>>   	}, \
+>> +	.event_spec = mma8452_transient_event, \
+>> +	.num_event_specs = ARRAY_SIZE(mma8452_transient_event), \
+>>   }
+>>   
+>>   static const struct iio_chan_spec mma8452_channels[] = {
+>> @@ -355,6 +518,11 @@ static const struct iio_info mma8452_info = {
+>>   	.attrs = &mma8452_group,
+>>   	.read_raw = &mma8452_read_raw,
+>>   	.write_raw = &mma8452_write_raw,
+>> +	.event_attrs = &mma8452_event_attribute_group,
+>> +	.read_event_value = &mma8452_read_thresh,
+>> +	.write_event_value = &mma8452_write_thresh,
+>> +	.read_event_config = &mma8452_read_event_config,
+>> +	.write_event_config = &mma8452_write_event_config,
+>>   	.debugfs_reg_access = &mma8452_reg_access_dbg,
+>>   	.driver_module = THIS_MODULE,
+>>   };
+>> @@ -425,6 +593,37 @@ static int mma8452_probe(struct i2c_client *client,
+>>   	if (ret < 0)
+>>   		return ret;
+>>   
+>> +	/*
+>> +	 * By default set transient threshold to max to avoid events if
+>> +	 * enabling without configuring threshold
+>> +	 */
+>> +	ret = i2c_smbus_write_byte_data(client, MMA8452_TRANSIENT_THS, 0x7f);
+>> +	if (ret < 0)
+>> +		return ret;
+>> +
+>> +	if (client->irq) {
+>> +		/*
+>> +		 * Although we enable the transient interrupt source once and
+>> +		 * for all here the transient event detection itself is not
+>> +		 * enabled until userspace asks for it by
+>> +		 * mma8452_write_event_config()
+>> +		 */
+>> +		int supported_interrupts = MMA8452_INT_TRANS;
+>> +
+>> +		/* Assume wired to INT1 pin */
+>> +		ret = i2c_smbus_write_byte_data(client,
+>> +						MMA8452_CTRL_REG5,
+>> +						supported_interrupts);
+>> +		if (ret < 0)
+>> +			return ret;
+>> +
+>> +		ret = i2c_smbus_write_byte_data(client,
+>> +						MMA8452_CTRL_REG4,
+>> +						supported_interrupts);
+>> +		if (ret < 0)
+>> +			return ret;
+>> +	}
+>> +
+>>   	data->ctrl_reg1 = MMA8452_CTRL_ACTIVE |
+>>   		(MMA8452_CTRL_DR_DEFAULT << MMA8452_CTRL_DR_SHIFT);
+>>   	ret = i2c_smbus_write_byte_data(client, MMA8452_CTRL_REG1,
+>> @@ -437,9 +636,20 @@ static int mma8452_probe(struct i2c_client *client,
+>>   	if (ret < 0)
+>>   		return ret;
+>>   
+>> +	if (client->irq) {
+>> +		ret = devm_request_threaded_irq(&client->dev,
+>> +						client->irq,
+>> +						NULL, mma8452_interrupt,
+>> +						IRQF_TRIGGER_LOW | IRQF_ONESHOT,
+>> +						client->name, indio_dev);
+>> +		if (ret)
+>> +			goto buffer_cleanup;
+>> +	}
+>> +
+>>   	ret = iio_device_register(indio_dev);
+>>   	if (ret < 0)
+>>   		goto buffer_cleanup;
+>> +
+>>   	return 0;
+>>   
+>>   buffer_cleanup:
+>>
