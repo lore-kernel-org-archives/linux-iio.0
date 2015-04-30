@@ -1,50 +1,67 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from lb1-smtp-cloud2.xs4all.net ([194.109.24.21]:51595 "EHLO
-	lb1-smtp-cloud2.xs4all.net" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1750839AbbD3Udv (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 30 Apr 2015 16:33:51 -0400
-Message-ID: <1430426026.2187.5.camel@x220>
-Subject: Re: [PATCH] iio: acpi: Add ACPI0008 Ambient Light Sensor
-From: Paul Bolle <pebolle@tiscali.nl>
-To: Gabriele Mazzotta <gabriele.mzt@gmail.com>
-Cc: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
-	pmeerw@pmeerw.net, marxin.liska@gmail.com, marex@denx.de,
-	rui.zhang@intel.com, linux-kernel@vger.kernel.org,
-	linux-iio@vger.kernel.org
-Date: Thu, 30 Apr 2015 22:33:46 +0200
-In-Reply-To: <1430306845-7117-1-git-send-email-gabriele.mzt@gmail.com>
-References: <1430306845-7117-1-git-send-email-gabriele.mzt@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Mime-Version: 1.0
+Received: from mail-la0-f51.google.com ([209.85.215.51]:33827 "EHLO
+	mail-la0-f51.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750710AbbD3NQP (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 30 Apr 2015 09:16:15 -0400
+Received: by laat2 with SMTP id t2so43927998laa.1
+        for <linux-iio@vger.kernel.org>; Thu, 30 Apr 2015 06:16:14 -0700 (PDT)
+From: Linus Walleij <linus.walleij@linaro.org>
+To: Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>, linux-iio@vger.kernel.org,
+	Denis CIOCCA <denis.ciocca@st.com>
+Cc: Lee Jones <lee.jones@linaro.org>,
+	Linus Walleij <linus.walleij@linaro.org>
+Subject: [PATCH 02/10] iio: st_sensors: make interrupt optional
+Date: Thu, 30 Apr 2015 15:15:47 +0200
+Message-Id: <1430399755-26475-2-git-send-email-linus.walleij@linaro.org>
+In-Reply-To: <1430399755-26475-1-git-send-email-linus.walleij@linaro.org>
+References: <1430399755-26475-1-git-send-email-linus.walleij@linaro.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Just a nit: a license mismatch.
+Some sensors such as magnetometers and pressure sensors doesn't
+have interrupts at all, and thus no DRDY setting applies. Make
+the assignment of an interrupt optional, and do not call
+st_sensors_set_drdy_int_pin() if there is no drdy (data ready)
+pin specified.
 
-On Wed, 2015-04-29 at 13:27 +0200, Gabriele Mazzotta wrote:
-> --- /dev/null
-> +++ b/drivers/iio/light/acpi-als.c
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+---
+ drivers/iio/common/st_sensors/st_sensors_core.c | 12 +++++++++++-
+ 1 file changed, 11 insertions(+), 1 deletion(-)
 
-> + * This program is free software; you can redistribute it and/or modify it
-> + * under the terms and conditions of the GNU General Public License,
-> + * version 2, as published by the Free Software Foundation.
-> + *
-> + * This program is distributed in the hope it will be useful, but WITHOUT
-> + * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-> + * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
-> + * more details.
-> + *
-> + * You should have received a copy of the GNU General Public License
-> + * along with this program. If not, see <http://www.gnu.org/licenses/>.
-
-This states the license is GPL v2.
-
-> +MODULE_LICENSE("GPL");
-
-And, according to include/linux/module.h, this states the license is GPL
-v2 or later. So I think either the comment at the top of this file or
-the ident used in the MODULE_LICENSE() macro should be changed.
-
-
-Paul Bolle
+diff --git a/drivers/iio/common/st_sensors/st_sensors_core.c b/drivers/iio/common/st_sensors/st_sensors_core.c
+index edd13d2b4121..5a01093b29a2 100644
+--- a/drivers/iio/common/st_sensors/st_sensors_core.c
++++ b/drivers/iio/common/st_sensors/st_sensors_core.c
+@@ -245,6 +245,16 @@ static int st_sensors_set_drdy_int_pin(struct iio_dev *indio_dev,
+ {
+ 	struct st_sensor_data *sdata = iio_priv(indio_dev);
+ 
++	/* Sensor does not support interrupts */
++	if (sdata->sensor_settings->drdy_irq.addr == 0) {
++		if (pdata->drdy_int_pin)
++			dev_info(&indio_dev->dev,
++				 "DRDY on pin INT%d specified, but sensor "
++				 "does not support interrupts\n",
++				 pdata->drdy_int_pin);
++		return 0;
++	}
++
+ 	switch (pdata->drdy_int_pin) {
+ 	case 1:
+ 		if (sdata->sensor_settings->drdy_irq.mask_int1 == 0) {
+@@ -285,7 +295,7 @@ static struct st_sensors_platform_data *st_sensors_of_probe(struct device *dev,
+ 	if (!of_property_read_u32(np, "st,drdy-int-pin", &val) && (val <= 2))
+ 		pdata->drdy_int_pin = (u8) val;
+ 	else
+-		pdata->drdy_int_pin = defdata ? defdata->drdy_int_pin : 1;
++		pdata->drdy_int_pin = defdata ? defdata->drdy_int_pin : 0;
+ 
+ 	return pdata;
+ }
+-- 
+1.9.3
 
