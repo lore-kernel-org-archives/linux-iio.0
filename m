@@ -1,56 +1,53 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:47095 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751372AbbD3U4R (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 30 Apr 2015 16:56:17 -0400
-Message-ID: <554296EE.5030705@kernel.org>
-Date: Thu, 30 Apr 2015 21:56:14 +0100
-From: Jonathan Cameron <jic23@kernel.org>
+Return-Path: <marex@denx.de>
+From: Marek Vasut <marex@denx.de>
+To: Paul Bolle <pebolle@tiscali.nl>
+Subject: Re: [PATCH] iio: acpi: Add ACPI0008 Ambient Light Sensor
+Date: Thu, 30 Apr 2015 22:58:24 +0200
+Cc: Gabriele Mazzotta <gabriele.mzt@gmail.com>,
+ jic23@kernel.org,
+ knaack.h@gmx.de,
+ lars@metafoo.de,
+ pmeerw@pmeerw.net,
+ marxin.liska@gmail.com,
+ rui.zhang@intel.com,
+ linux-kernel@vger.kernel.org,
+ linux-iio@vger.kernel.org
+References: <1430306845-7117-1-git-send-email-gabriele.mzt@gmail.com> <1430426026.2187.5.camel@x220>
+In-Reply-To: <1430426026.2187.5.camel@x220>
 MIME-Version: 1.0
-To: Roberta Dobrescu <roberta.dobrescu@gmail.com>,
-	linux-iio@vger.kernel.org
-CC: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
-	daniel.baluta@intel.com, dan.carpenter@oracle.com, kbuild@01.org
-Subject: Re: [PATCH] staging: iio: light: isl29018: Add missing mutex_unlock
- on error path
-References: <1430240967-2459-1-git-send-email-roberta.dobrescu@gmail.com>
-In-Reply-To: <1430240967-2459-1-git-send-email-roberta.dobrescu@gmail.com>
-Content-Type: text/plain; charset=windows-1252
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: Text/Plain;
+  charset="us-ascii"
+Message-Id: <201504302258.24154.marex@denx.de>
+List-ID: <linux-iio@vger.kernel.org>
 
-On 28/04/15 18:09, Roberta Dobrescu wrote:
-> This patch fixes the following warning:
+On Thursday, April 30, 2015 at 10:33:46 PM, Paul Bolle wrote:
+> Just a nit: a license mismatch.
 > 
-> drivers/staging/iio/light/isl29018.c:386 isl29018_write_raw() warn:
-> inconsistent returns 'mutex:&chip->lock'.
->  Locked on:   line 374
->  Unlocked on: line 386
+> On Wed, 2015-04-29 at 13:27 +0200, Gabriele Mazzotta wrote:
+> > --- /dev/null
+> > +++ b/drivers/iio/light/acpi-als.c
+> > 
+> > + * This program is free software; you can redistribute it and/or modify
+> > it + * under the terms and conditions of the GNU General Public License,
+> > + * version 2, as published by the Free Software Foundation.
+> > + *
+> > + * This program is distributed in the hope it will be useful, but
+> > WITHOUT + * ANY WARRANTY; without even the implied warranty of
+> > MERCHANTABILITY or + * FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+> > General Public License for + * more details.
+> > + *
+> > + * You should have received a copy of the GNU General Public License
+> > + * along with this program. If not, see <http://www.gnu.org/licenses/>.
 > 
-> Signed-off-by: Roberta Dobrescu <roberta.dobrescu@gmail.com>
-> Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
-I applied this as a fixup rather than a separate patch.
+> This states the license is GPL v2.
+> 
+> > +MODULE_LICENSE("GPL");
+> 
+> And, according to include/linux/module.h, this states the license is GPL
+> v2 or later. So I think either the comment at the top of this file or
+> the ident used in the MODULE_LICENSE() macro should be changed.
 
-Anyhow, new testing and togreg branches should have this fixed.
-> ---
->  drivers/staging/iio/light/isl29018.c | 4 +++-
->  1 file changed, 3 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/staging/iio/light/isl29018.c b/drivers/staging/iio/light/isl29018.c
-> index 435d417..08ca9a4 100644
-> --- a/drivers/staging/iio/light/isl29018.c
-> +++ b/drivers/staging/iio/light/isl29018.c
-> @@ -370,8 +370,10 @@ static int isl29018_write_raw(struct iio_dev *indio_dev,
->  		break;
->  	case IIO_CHAN_INFO_INT_TIME:
->  		if (chan->type == IIO_LIGHT)
-> -			if (val != 0)
-> +			if (val != 0) {
-> +				mutex_unlock(&chip->lock);
->  				return -EINVAL;
-> +			}
->  			ret = isl29018_set_integration_time(chip, val2);
->  		break;
->  	case IIO_CHAN_INFO_SCALE:
-> 
+I'm OK with v2+ or later .
 
+Best regards,
+Marek Vasut
