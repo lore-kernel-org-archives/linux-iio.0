@@ -1,60 +1,42 @@
-Return-Path: <ao2@ao2.it>
-Date: Thu, 30 Apr 2015 17:15:51 +0200
-From: Antonio Ospite <ao2@ao2.it>
-To: Bastien Nocera <hadess@hadess.net>
-Cc: Daniel Baluta <daniel.baluta@gmail.com>, "linux-iio@vger.kernel.org"
- <linux-iio@vger.kernel.org>, Jonathan Cameron <jic23@kernel.org>
-Subject: Re: [PATCH 2/3] iio: accel: kxcjk-1013: rename is_smo8500_device to
- polling_mode
-Message-Id: <20150430171551.02627d4ea8b22126c8a0f2be@ao2.it>
+Return-Path: <daniel.baluta@gmail.com>
+MIME-Version: 1.0
+Sender: daniel.baluta@gmail.com
 In-Reply-To: <1430404069.2525.112.camel@hadess.net>
 References: <1430298111-20127-1-git-send-email-ao2@ao2.it>
 	<1430298111-20127-3-git-send-email-ao2@ao2.it>
 	<CAEnQRZANgZM8in1WS_22Lcpf2oG_8aLO80p__=6CFJBbW2rHKA@mail.gmail.com>
 	<20150430162552.f42e3caa42a44a7e04204d8e@ao2.it>
 	<1430404069.2525.112.camel@hadess.net>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Date: Thu, 30 Apr 2015 18:05:22 +0300
+Message-ID: <CAEnQRZBr4qq-JQ7OJ5iQb8d5B5MutiwdB-6HYLoDppByVX_xFg@mail.gmail.com>
+Subject: Re: [PATCH 2/3] iio: accel: kxcjk-1013: rename is_smo8500_device to polling_mode
+From: Daniel Baluta <daniel.baluta@intel.com>
+To: Bastien Nocera <hadess@hadess.net>
+Cc: Antonio Ospite <ao2@ao2.it>, "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	Jonathan Cameron <jic23@kernel.org>
+Content-Type: text/plain; charset=UTF-8
 List-ID: <linux-iio@vger.kernel.org>
 
-On Thu, 30 Apr 2015 16:27:49 +0200
-Bastien Nocera <hadess@hadess.net> wrote:
-
+On Thu, Apr 30, 2015 at 5:27 PM, Bastien Nocera <hadess@hadess.net> wrote:
 > On Thu, 2015-04-30 at 16:25 +0200, Antonio Ospite wrote:
-> > It was mainly to prevent error messages being printed in the logs 
-> > when
-> > trying to getting a gpio descriptor, is that correct Bastien?
-> 
+>> It was mainly to prevent error messages being printed in the logs
+>> when
+>> trying to getting a gpio descriptor, is that correct Bastien?
+>
 > Actually, to prevent it failing to init the driver altogether.
 
-Then I am afraid I am failing to follow the code (4.1-rc1), from what
-I read:
+This is not true :).
 
-  - is_smo8500_device is only used in kxcjk1013_gpio_probe() to make it
-    return -ENOTSUPP; i.e. client->irq = -ENOTSUPP;
+I agree with Antonio :), this is just a hack to avoid this error message:
 
-  - when client->irq < 0 (even after kxcjk1013_gpio_probe), the driver
-    does not request an interrupt  and does not set up triggers but it
-    can still finish initialization.
+""acpi gpio get index failed"
 
-So it looks to me that is_smo8500_device just prevents
-devm_gpiod_get_index() from being called, but even if it was called it
-(or gpiod_to_irq) should return an error.
+The initial patch introducing is_smo8500_device shouldn't have been
+merged from start :) but it was Jonathan's decision :).
 
-Mmh, maybe the problem is "just" in checking the return value of
-devm_gpiod_get_index() in kxcjk1013_gpio_probe(), maybe it's NULL in
-your case and that was causing your original problem; BTW if it is NULL
-then desc_to_gpio() in the debug print will Oops after commit b457f5.
+See: http://marc.info/?l=linux-iio&m=141520240809938&w=2
 
-I'll double check and get back to you.
+I think dropping patch 2/3 is the best option for now.
 
-Ciao,
-   Antonio
-
--- 
-Antonio Ospite
-http://ao2.it
-
-A: Because it messes up the order in which people normally read text.
-   See http://en.wikipedia.org/wiki/Posting_style
-Q: Why is top-posting such a bad thing?
+thanks,
+Daniel.
