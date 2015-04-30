@@ -1,51 +1,50 @@
-Return-Path: <marex@denx.de>
-From: Marek Vasut <marex@denx.de>
-To: Gabriele Mazzotta <gabriele.mzt@gmail.com>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from lb1-smtp-cloud2.xs4all.net ([194.109.24.21]:51595 "EHLO
+	lb1-smtp-cloud2.xs4all.net" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1750839AbbD3Udv (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 30 Apr 2015 16:33:51 -0400
+Message-ID: <1430426026.2187.5.camel@x220>
 Subject: Re: [PATCH] iio: acpi: Add ACPI0008 Ambient Light Sensor
-Date: Thu, 30 Apr 2015 11:44:36 +0200
-Cc: jic23@kernel.org,
- knaack.h@gmx.de,
- lars@metafoo.de,
- pmeerw@pmeerw.net,
- marxin.liska@gmail.com,
- rui.zhang@intel.com,
- linux-kernel@vger.kernel.org,
- linux-iio@vger.kernel.org
-References: <1430306845-7117-1-git-send-email-gabriele.mzt@gmail.com> <201504291633.18558.marex@denx.de> <1724765.vloEsYdA9s@xps13>
-In-Reply-To: <1724765.vloEsYdA9s@xps13>
-MIME-Version: 1.0
-Content-Type: Text/Plain;
-  charset="us-ascii"
-Message-Id: <201504301144.36641.marex@denx.de>
-List-ID: <linux-iio@vger.kernel.org>
+From: Paul Bolle <pebolle@tiscali.nl>
+To: Gabriele Mazzotta <gabriele.mzt@gmail.com>
+Cc: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
+	pmeerw@pmeerw.net, marxin.liska@gmail.com, marex@denx.de,
+	rui.zhang@intel.com, linux-kernel@vger.kernel.org,
+	linux-iio@vger.kernel.org
+Date: Thu, 30 Apr 2015 22:33:46 +0200
+In-Reply-To: <1430306845-7117-1-git-send-email-gabriele.mzt@gmail.com>
+References: <1430306845-7117-1-git-send-email-gabriele.mzt@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Mime-Version: 1.0
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Wednesday, April 29, 2015 at 05:36:32 PM, Gabriele Mazzotta wrote:
-[...]
-> > > I'm sorry, I've just noticed that I haven't changed the value of
-> > > realbits in acpi_als_channels. This makes me wonder what would be the
-> > > proper value, given that this is a generic driver and all the
-> > > information I have are those in the ACPI specification (which states
-> > > what I reported here above).
-> > > 
-> > > Should I just set realbits to 32?
-> > 
-> > I believe the ALS reports only 16bit signel value, no ?
-> > My observation with a strong coherent light source is that
-> > the saturated sensor reported 0xffff .
-> 
-> Probably it's the same for me. I couldn't get to the point where
-> ALI reports 0xffff, just really close, I will have to try with some
-> stronger lights. However, looking at my ACPI table, I can see that
-> the value returned by _ALI is just the composition of two 8 bits
-> variables put side by side, so yes, I can say that even on my system
-> it's a 16bit value.
+Just a nit: a license mismatch.
 
-What kind of hardware are you testing this on ?
+On Wed, 2015-04-29 at 13:27 +0200, Gabriele Mazzotta wrote:
+> --- /dev/null
+> +++ b/drivers/iio/light/acpi-als.c
 
-> The problem here is that I'm not sure we can assume this as true in
-> general since the ACPI specification doesn't say anything.
+> + * This program is free software; you can redistribute it and/or modify it
+> + * under the terms and conditions of the GNU General Public License,
+> + * version 2, as published by the Free Software Foundation.
+> + *
+> + * This program is distributed in the hope it will be useful, but WITHOUT
+> + * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+> + * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+> + * more details.
+> + *
+> + * You should have received a copy of the GNU General Public License
+> + * along with this program. If not, see <http://www.gnu.org/licenses/>.
 
-Maybe someone more knowledgable can speak up.
+This states the license is GPL v2.
 
-Best regards,
-Marek Vasut
+> +MODULE_LICENSE("GPL");
+
+And, according to include/linux/module.h, this states the license is GPL
+v2 or later. So I think either the comment at the top of this file or
+the ident used in the MODULE_LICENSE() macro should be changed.
+
+
+Paul Bolle
+
