@@ -1,10 +1,10 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-la0-f44.google.com ([209.85.215.44]:36182 "EHLO
-	mail-la0-f44.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750955AbbD3NQo (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 30 Apr 2015 09:16:44 -0400
-Received: by lagv1 with SMTP id v1so43862659lag.3
-        for <linux-iio@vger.kernel.org>; Thu, 30 Apr 2015 06:16:43 -0700 (PDT)
+Received: from mail-lb0-f172.google.com ([209.85.217.172]:34334 "EHLO
+	mail-lb0-f172.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750955AbbD3NQr (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 30 Apr 2015 09:16:47 -0400
+Received: by lbcga7 with SMTP id ga7so44265110lbc.1
+        for <linux-iio@vger.kernel.org>; Thu, 30 Apr 2015 06:16:46 -0700 (PDT)
 From: Linus Walleij <linus.walleij@linaro.org>
 To: Jonathan Cameron <jic23@kernel.org>,
 	Hartmut Knaack <knaack.h@gmx.de>,
@@ -13,60 +13,94 @@ To: Jonathan Cameron <jic23@kernel.org>,
 	Denis CIOCCA <denis.ciocca@st.com>
 Cc: Lee Jones <lee.jones@linaro.org>,
 	Linus Walleij <linus.walleij@linaro.org>
-Subject: [PATCH 08/10] ARM: ux500: fix lsm303dlh magnetometer compat string
-Date: Thu, 30 Apr 2015 15:15:53 +0200
-Message-Id: <1430399755-26475-8-git-send-email-linus.walleij@linaro.org>
+Subject: [PATCH 09/10] ARM: ux500: assign the sensor trigger IRQs
+Date: Thu, 30 Apr 2015 15:15:54 +0200
+Message-Id: <1430399755-26475-9-git-send-email-linus.walleij@linaro.org>
 In-Reply-To: <1430399755-26475-1-git-send-email-linus.walleij@linaro.org>
 References: <1430399755-26475-1-git-send-email-linus.walleij@linaro.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-The magnetometer found on the Ux500 TVK and Snowball boards
-is a LSM303DLH not a LSM303DLM, small differences but still
-different. Put in the right compatible strings and things start
-working smoothly.
+The ST sensors on the Ux500 boards were not utilizing the IRQs
+for data ready sample triggers. Enable this by assigning the
+right GPIO lines and interrupt lines (when the GPIO lines are
+used for IRQs) to the accelerometer, gyro and magnetometer
+sensors.
 
 Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
 ---
 Jonathan: This will be merged through the ARM SoC tree if
 found OK. Do not merge to the IIO tree.
 ---
- arch/arm/boot/dts/ste-href-tvk1281618.dtsi | 4 ++--
- arch/arm/boot/dts/ste-snowball.dts         | 4 ++--
- 2 files changed, 4 insertions(+), 4 deletions(-)
+ arch/arm/boot/dts/ste-href-tvk1281618.dtsi |  3 +++
+ arch/arm/boot/dts/ste-snowball.dts         | 19 +++++++++++++++++++
+ 2 files changed, 22 insertions(+)
 
 diff --git a/arch/arm/boot/dts/ste-href-tvk1281618.dtsi b/arch/arm/boot/dts/ste-href-tvk1281618.dtsi
-index 062c6aae3afa..0eeb4d4b5202 100644
+index 0eeb4d4b5202..0e1c96943d47 100644
 --- a/arch/arm/boot/dts/ste-href-tvk1281618.dtsi
 +++ b/arch/arm/boot/dts/ste-href-tvk1281618.dtsi
-@@ -100,9 +100,9 @@
+@@ -99,6 +99,9 @@
+ 				vddio-supply = <&db8500_vsmps2_reg>;
  				pinctrl-names = "default";
  				pinctrl-0 = <&accel_tvk_mode>;
++				interrupt-parent = <&gpio2>;
++				interrupts = <18 IRQ_TYPE_EDGE_RISING>,
++					     <19 IRQ_TYPE_EDGE_RISING>;
  			};
--			lsm303dlm@1e {
-+			lsm303dlh@1e {
+ 			lsm303dlh@1e {
  				/* Magnetometer */
--				compatible = "st,lsm303dlm-magn";
-+				compatible = "st,lsm303dlh-magn";
- 				reg = <0x1e>;
- 				vdd-supply = <&ab8500_ldo_aux1_reg>;
- 				vddio-supply = <&db8500_vsmps2_reg>;
 diff --git a/arch/arm/boot/dts/ste-snowball.dts b/arch/arm/boot/dts/ste-snowball.dts
-index 1bc84ebdccaa..e2a7417777f9 100644
+index e2a7417777f9..9edadc37719f 100644
 --- a/arch/arm/boot/dts/ste-snowball.dts
 +++ b/arch/arm/boot/dts/ste-snowball.dts
-@@ -263,9 +263,9 @@
+@@ -262,6 +262,9 @@
+ 				vddio-supply = <&db8500_vsmps2_reg>;
  				pinctrl-names = "default";
  				pinctrl-0 = <&accel_snowball_mode>;
++				interrupt-parent = <&gpio5>;
++				interrupts = <3 IRQ_TYPE_EDGE_RISING>, /* INT1 */
++					     <4 IRQ_TYPE_EDGE_RISING>; /* INT2 */
  			};
--			lsm303dlm@1e {
-+			lsm303dlh@1e {
+ 			lsm303dlh@1e {
  				/* Magnetometer */
--				compatible = "st,lsm303dlm-magn";
-+				compatible = "st,lsm303dlh-magn";
- 				reg = <0x1e>;
+@@ -271,6 +274,7 @@
+ 				vddio-supply = <&db8500_vsmps2_reg>;
+ 				pinctrl-names = "default";
+ 				pinctrl-0 = <&magneto_snowball_mode>;
++				gpios = <&gpio5 5 0x4>; /* DRDY line */
+ 			};
+ 			l3g4200d@68 {
+ 				/* Gyroscope */
+@@ -279,6 +283,11 @@
+ 				reg = <0x68>;
  				vdd-supply = <&ab8500_ldo_aux1_reg>;
  				vddio-supply = <&db8500_vsmps2_reg>;
++				pinctrl-names = "default";
++				pinctrl-0 = <&gyro_snowball_mode>;
++				gpios = <&gpio5 6 0x4>; /* DRDY line */
++				interrupt-parent = <&gpio5>;
++				interrupts = <9 IRQ_TYPE_EDGE_RISING>; /* INT1 */
+ 			};
+ 			lsp001wm@5c {
+ 				/* Barometer/pressure sensor */
+@@ -489,6 +498,16 @@
+ 					};
+ 				};
+ 			};
++			gyro {
++				gyro_snowball_mode: gyro_snowball {
++					snowball_cfg1 {
++						pins =
++						"GPIO166_A22", /* DRDY */
++						"GPIO169_D22"; /* INT */
++						ste,config = <&gpio_in_pu>;
++					};
++				};
++			};
+ 			magnetometer {
+ 				magneto_snowball_mode: magneto_snowball {
+ 					snowball_cfg1 {
 -- 
 1.9.3
 
