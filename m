@@ -1,106 +1,81 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-lb0-f175.google.com ([209.85.217.175]:32943 "EHLO
-	mail-lb0-f175.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750895AbbD3NQw (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 30 Apr 2015 09:16:52 -0400
-Received: by lbbzk7 with SMTP id zk7so44315104lbb.0
-        for <linux-iio@vger.kernel.org>; Thu, 30 Apr 2015 06:16:51 -0700 (PDT)
-From: Linus Walleij <linus.walleij@linaro.org>
-To: Jonathan Cameron <jic23@kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>, linux-iio@vger.kernel.org,
-	Denis CIOCCA <denis.ciocca@st.com>
-Cc: Lee Jones <lee.jones@linaro.org>,
-	Linus Walleij <linus.walleij@linaro.org>
-Subject: [PATCH 10/10] ARM: ux500: add the sensors to the STUIB board
-Date: Thu, 30 Apr 2015 15:15:55 +0200
-Message-Id: <1430399755-26475-10-git-send-email-linus.walleij@linaro.org>
-In-Reply-To: <1430399755-26475-1-git-send-email-linus.walleij@linaro.org>
-References: <1430399755-26475-1-git-send-email-linus.walleij@linaro.org>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <ao2@ao2.it>
+Date: Thu, 30 Apr 2015 16:25:52 +0200
+From: Antonio Ospite <ao2@ao2.it>
+To: Daniel Baluta <daniel.baluta@gmail.com>
+Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>, Jonathan
+ Cameron <jic23@kernel.org>, Bastien Nocera <hadess@hadess.net>
+Subject: Re: [PATCH 2/3] iio: accel: kxcjk-1013: rename is_smo8500_device to
+ polling_mode
+Message-Id: <20150430162552.f42e3caa42a44a7e04204d8e@ao2.it>
+In-Reply-To: <CAEnQRZANgZM8in1WS_22Lcpf2oG_8aLO80p__=6CFJBbW2rHKA@mail.gmail.com>
+References: <1430298111-20127-1-git-send-email-ao2@ao2.it>
+	<1430298111-20127-3-git-send-email-ao2@ao2.it>
+	<CAEnQRZANgZM8in1WS_22Lcpf2oG_8aLO80p__=6CFJBbW2rHKA@mail.gmail.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+List-ID: <linux-iio@vger.kernel.org>
 
-This adds the device tree data for the LIS331DL and the
-AK8974 magnetometer to the STUIB board device tree include
-file.
+On Wed, 29 Apr 2015 18:08:41 +0300
+Daniel Baluta <daniel.baluta@gmail.com> wrote:
 
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
----
-Jonathan: This will be merged through the ARM SoC tree if
-found OK. Do not merge to the IIO tree.
----
- arch/arm/boot/dts/ste-href-stuib.dtsi | 50 +++++++++++++++++++++++++++++++++++
- 1 file changed, 50 insertions(+)
+> On Wed, Apr 29, 2015 at 12:01 PM, Antonio Ospite <ao2@ao2.it> wrote:
+> > The purpose of the variable is to remember when an interrupt cannot be
+> > requested and hence the driver must work in polling mode, so tell that
+> > instead of mentioning the specific case when this is needed.
+> >
+> > This makes the variable name to be still meaningful when some other
+> > devices requiring this show up.
+> >
+> > Signed-off-by: Antonio Ospite <ao2@ao2.it>
+> > Cc: Jonathan Cameron <jic23@kernel.org>
+> > Cc: Bastien Nocera <hadess@hadess.net>
+> > Cc: linux-iio@vger.kernel.org
+> > ---
+> >  drivers/iio/accel/kxcjk-1013.c | 10 +++++-----
+> >  1 file changed, 5 insertions(+), 5 deletions(-)
+> >
+> > diff --git a/drivers/iio/accel/kxcjk-1013.c b/drivers/iio/accel/kxcjk-1013.c
+> > index 5b7a860..eccec0e 100644
+> > --- a/drivers/iio/accel/kxcjk-1013.c
+> > +++ b/drivers/iio/accel/kxcjk-1013.c
+> > @@ -108,7 +108,7 @@ struct kxcjk1013_data {
+> >         bool motion_trigger_on;
+> >         int64_t timestamp;
+> >         enum kx_chipset chipset;
+> > -       bool is_smo8500_device;
+> > +       bool polling_mode;
+> 
+> I would prefer to call this field use_poll, as introduced in:
+>
+> http://marc.info/?l=linux-iio&m=142980650422289&w=2
+>
 
-diff --git a/arch/arm/boot/dts/ste-href-stuib.dtsi b/arch/arm/boot/dts/ste-href-stuib.dtsi
-index 7d4f8184c522..78b75256c638 100644
---- a/arch/arm/boot/dts/ste-href-stuib.dtsi
-+++ b/arch/arm/boot/dts/ste-href-stuib.dtsi
-@@ -77,6 +77,34 @@
- 			};
- 		};
- 
-+		/* Sensors mounted on this board variant */
-+		i2c@80128000 {
-+			lis331dl@1c {
-+				/* Accelerometer */
-+				compatible = "st,lis331dl-accel";
-+				st,drdy-int-pin = <1>;
-+				reg = <0x1c>;
-+				vdd-supply = <&ab8500_ldo_aux1_reg>;
-+				vddio-supply = <&db8500_vsmps2_reg>;
-+				pinctrl-names = "default";
-+				pinctrl-0 = <&accel_stuib_mode>;
-+				interrupt-parent = <&gpio2>;
-+				interrupts = <18 IRQ_TYPE_EDGE_RISING>,
-+					     <19 IRQ_TYPE_EDGE_RISING>;
-+			};
-+			ak8974@0f {
-+				/* Magnetometer */
-+				compatible = "asahi-kasei,ak8974";
-+				reg = <0x0f>;
-+				vdd-supply = <&ab8500_ldo_aux1_reg>;
-+				vddio-supply = <&db8500_vsmps2_reg>;
-+				pinctrl-names = "default";
-+				pinctrl-0 = <&magneto_stuib_mode>;
-+				interrupt-parent = <&gpio1>;
-+				interrupts = <0 IRQ_TYPE_EDGE_RISING>;
-+			};
-+		};
-+
- 		i2c@80110000 {
- 			bu21013_tp@5c {
- 				compatible = "rohm,bu21013_tp";
-@@ -116,6 +144,28 @@
- 					};
- 				};
- 			};
-+			accelerometer {
-+				accel_stuib_mode: accel_stuib {
-+					/* Accelerometer interrupt lines 1 & 2 */
-+					stuib_cfg {
-+						pins = "GPIO82_C1", "GPIO83_D3";
-+						ste,config = <&gpio_in_pu>;
-+					};
-+				};
-+			};
-+			magnetometer {
-+				magneto_stuib_mode: magneto_stuib {
-+					/* Magnetometer uses GPIO 31 and 32, pull these up/down respectively */
-+					stuib_cfg1 {
-+						pins = "GPIO31_V3";
-+						ste,config = <&gpio_in_pu>;
-+					};
-+					stuib_cfg2 {
-+						pins = "GPIO32_V2";
-+						ste,config = <&gpio_in_pd>;
-+					};
-+				};
-+			};
- 		};
- 	};
- };
+Looking at it again I realize that the current meaning  of
+is_smo8500_device is more like "gpio interrupt not available" rather
+than an explicit indication to use polling mode, which right now is a
+userspace thing anyway.
+
+It was mainly to prevent error messages being printed in the logs when
+trying to getting a gpio descriptor, is that correct Bastien?
+
+> Also use_poll its it's a better suggestion on the type than polling_mode.
+> 
+
+Agreed, polling_mode was not the best name.
+
+How about we drop this patch 2/3 altogether for now and I just resend 1
+and 3?
+
+Renaming (or even removing) is_smo8500_device can be re-evaluated when
+use_poll gets added.
+
+Thanks,
+   Antonio
+
 -- 
-1.9.3
+Antonio Ospite
+http://ao2.it
 
+A: Because it messes up the order in which people normally read text.
+   See http://en.wikipedia.org/wiki/Posting_style
+Q: Why is top-posting such a bad thing?
