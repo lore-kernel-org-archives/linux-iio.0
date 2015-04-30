@@ -1,75 +1,56 @@
-Return-Path: <pmeerw@pmeerw.net>
-Date: Thu, 30 Apr 2015 16:56:51 +0200 (CEST)
-From: Peter Meerwald <pmeerw@pmeerw.net>
-To: Linus Walleij <linus.walleij@linaro.org>
-cc: Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
-    Lars-Peter Clausen <lars@metafoo.de>, linux-iio@vger.kernel.org,
-    Denis CIOCCA <denis.ciocca@st.com>, Lee Jones <lee.jones@linaro.org>
-Subject: Re: [PATCH 06/10] iio: st_accel: support 8bit channel data
-In-Reply-To: <1430399755-26475-6-git-send-email-linus.walleij@linaro.org>
-Message-ID: <alpine.DEB.2.02.1504301637070.4190@pmeerw.net>
-References: <1430399755-26475-1-git-send-email-linus.walleij@linaro.org> <1430399755-26475-6-git-send-email-linus.walleij@linaro.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:47095 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751372AbbD3U4R (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 30 Apr 2015 16:56:17 -0400
+Message-ID: <554296EE.5030705@kernel.org>
+Date: Thu, 30 Apr 2015 21:56:14 +0100
+From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
-List-ID: <linux-iio@vger.kernel.org>
+To: Roberta Dobrescu <roberta.dobrescu@gmail.com>,
+	linux-iio@vger.kernel.org
+CC: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
+	daniel.baluta@intel.com, dan.carpenter@oracle.com, kbuild@01.org
+Subject: Re: [PATCH] staging: iio: light: isl29018: Add missing mutex_unlock
+ on error path
+References: <1430240967-2459-1-git-send-email-roberta.dobrescu@gmail.com>
+In-Reply-To: <1430240967-2459-1-git-send-email-roberta.dobrescu@gmail.com>
+Content-Type: text/plain; charset=windows-1252
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Hello,
+On 28/04/15 18:09, Roberta Dobrescu wrote:
+> This patch fixes the following warning:
+> 
+> drivers/staging/iio/light/isl29018.c:386 isl29018_write_raw() warn:
+> inconsistent returns 'mutex:&chip->lock'.
+>  Locked on:   line 374
+>  Unlocked on: line 386
+> 
+> Signed-off-by: Roberta Dobrescu <roberta.dobrescu@gmail.com>
+> Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
+I applied this as a fixup rather than a separate patch.
 
-> Some sensors like the LIS331DL only support 8bit data by a single
-> register per axis. These utilize the MSB byte. Make it possible
-> to register these apropriately.
-
-this doesn't seem right;
-
-st_accel_8bit_channels is just added, but not used; this probably results 
-in a warning
-
-the start address, ST_ACCEL_DEFAULT_OUT_X_L_ADDR, is +1 to read just the 
-MSB byte; but the storage size is still 16bit
-
-the actual read is done in st_sensors_get_buffer_element(); with special 
-case handling for the reads depending on the number of channels
-
-I think either the _ADDR should not be +1 or the storage_bits should be 8, 
-but not both
-
-p.
-
-> Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+Anyhow, new testing and togreg branches should have this fixed.
 > ---
->  drivers/iio/accel/st_accel_core.c | 16 ++++++++++++++++
->  1 file changed, 16 insertions(+)
+>  drivers/staging/iio/light/isl29018.c | 4 +++-
+>  1 file changed, 3 insertions(+), 1 deletion(-)
 > 
-> diff --git a/drivers/iio/accel/st_accel_core.c b/drivers/iio/accel/st_accel_core.c
-> index 58d1d13d552a..689a9f360e7c 100644
-> --- a/drivers/iio/accel/st_accel_core.c
-> +++ b/drivers/iio/accel/st_accel_core.c
-> @@ -153,6 +153,22 @@
->  #define ST_ACCEL_4_IG1_EN_MASK			0x08
->  #define ST_ACCEL_4_MULTIREAD_BIT		true
->  
-> +static const struct iio_chan_spec st_accel_8bit_channels[] = {
-> +	ST_SENSORS_LSM_CHANNELS(IIO_ACCEL,
-> +			BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_SCALE),
-> +			ST_SENSORS_SCAN_X, 1, IIO_MOD_X, 's', IIO_LE, 8, 16,
-> +			ST_ACCEL_DEFAULT_OUT_X_L_ADDR+1),
-> +	ST_SENSORS_LSM_CHANNELS(IIO_ACCEL,
-> +			BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_SCALE),
-> +			ST_SENSORS_SCAN_Y, 1, IIO_MOD_Y, 's', IIO_LE, 8, 16,
-> +			ST_ACCEL_DEFAULT_OUT_Y_L_ADDR+1),
-> +	ST_SENSORS_LSM_CHANNELS(IIO_ACCEL,
-> +			BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_SCALE),
-> +			ST_SENSORS_SCAN_Z, 1, IIO_MOD_Z, 's', IIO_LE, 8, 16,
-> +			ST_ACCEL_DEFAULT_OUT_Z_L_ADDR+1),
-> +	IIO_CHAN_SOFT_TIMESTAMP(3)
-> +};
-> +
->  static const struct iio_chan_spec st_accel_12bit_channels[] = {
->  	ST_SENSORS_LSM_CHANNELS(IIO_ACCEL,
->  			BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_SCALE),
+> diff --git a/drivers/staging/iio/light/isl29018.c b/drivers/staging/iio/light/isl29018.c
+> index 435d417..08ca9a4 100644
+> --- a/drivers/staging/iio/light/isl29018.c
+> +++ b/drivers/staging/iio/light/isl29018.c
+> @@ -370,8 +370,10 @@ static int isl29018_write_raw(struct iio_dev *indio_dev,
+>  		break;
+>  	case IIO_CHAN_INFO_INT_TIME:
+>  		if (chan->type == IIO_LIGHT)
+> -			if (val != 0)
+> +			if (val != 0) {
+> +				mutex_unlock(&chip->lock);
+>  				return -EINVAL;
+> +			}
+>  			ret = isl29018_set_integration_time(chip, val2);
+>  		break;
+>  	case IIO_CHAN_INFO_SCALE:
 > 
 
--- 
-
-Peter Meerwald
-+43-664-2444418 (mobile)
