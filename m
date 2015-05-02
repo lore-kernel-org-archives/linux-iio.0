@@ -1,40 +1,44 @@
-Return-Path: <k.kozlowski.k@gmail.com>
-From: Krzysztof Kozlowski <k.kozlowski.k@gmail.com>
-To: Lars-Peter Clausen <lars@metafoo.de>,
-	Michael Hennerich <Michael.Hennerich@analog.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	linux-iio@vger.kernel.org,
-	devel@driverdev.osuosl.org,
-	linux-kernel@vger.kernel.org
-Cc: Krzysztof Kozlowski <k.kozlowski.k@gmail.com>
-Subject: [PATCH] staging: iio: ad7606_par: Constify platform_device_id
-Date: Sat,  2 May 2015 00:43:22 +0900
-Message-Id: <1430495002-31057-1-git-send-email-k.kozlowski.k@gmail.com>
+Return-Path: <jic23@kernel.org>
+From: Jonathan Cameron <jic23@kernel.org>
+To: linux-iio@vger.kernel.org
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>,
+	Daniel Baluta <daniel.baluta@intel.com>
+Subject: [PATCH] iio:light:ltr501 bug in parameter sanity check.
+Date: Sat,  2 May 2015 11:25:48 +0100
+Message-Id: <1430562348-27802-1-git-send-email-jic23@kernel.org>
 List-ID: <linux-iio@vger.kernel.org>
 
-The platform_device_id is not modified by the driver and core uses it as
-const.
+Clearly the intent was to error if the value was not 0 or 1.
+As implemented we have (A != 0 || A != 1) which is always true
+as A is never both 0 and 1 at the same time.
 
-Signed-off-by: Krzysztof Kozlowski <k.kozlowski.k@gmail.com>
+As the autobuilder suggested, && makes more sense for this error
+check.
+
+Reported-by: kbuild test robot <fengguang.wu@intel.com>
+Cc: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
+Cc: Daniel Baluta <daniel.baluta@intel.com>
+Signed-off-by: Jonathan Cameron <jic23@kernel.org>
 ---
- drivers/staging/iio/adc/ad7606_par.c | 2 +-
+This is obvious enough that I'll probably apply it shortly whether or
+not I get Acks.  However, Acks always good!
+
+drivers/iio/light/ltr501.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/staging/iio/adc/ad7606_par.c b/drivers/staging/iio/adc/ad7606_par.c
-index 9e24b4d4455f..1d48ae381d16 100644
---- a/drivers/staging/iio/adc/ad7606_par.c
-+++ b/drivers/staging/iio/adc/ad7606_par.c
-@@ -119,7 +119,7 @@ static const struct dev_pm_ops ad7606_pm_ops = {
- #define AD7606_PAR_PM_OPS NULL
- #endif  /* CONFIG_PM */
+diff --git a/drivers/iio/light/ltr501.c b/drivers/iio/light/ltr501.c
+index ca4bf470a332..280eff19b872 100644
+--- a/drivers/iio/light/ltr501.c
++++ b/drivers/iio/light/ltr501.c
+@@ -976,7 +976,7 @@ static int ltr501_write_event_config(struct iio_dev *indio_dev,
+ 	int ret;
  
--static struct platform_device_id ad7606_driver_ids[] = {
-+static const struct platform_device_id ad7606_driver_ids[] = {
- 	{
- 		.name		= "ad7606-8",
- 		.driver_data	= ID_AD7606_8,
+ 	/* only 1 and 0 are valid inputs */
+-	if (state != 1  || state != 0)
++	if (state != 1  && state != 0)
+ 		return -EINVAL;
+ 
+ 	switch (chan->type) {
 -- 
-2.1.4
+2.3.5
