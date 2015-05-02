@@ -1,53 +1,60 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp-out-084.synserver.de ([212.40.185.84]:1062 "EHLO
-	smtp-out-080.synserver.de" rhost-flags-OK-OK-OK-FAIL)
-	by vger.kernel.org with ESMTP id S1751601AbbEBRsw (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 2 May 2015 13:48:52 -0400
-Message-ID: <55450E00.6050403@metafoo.de>
-Date: Sat, 02 May 2015 19:48:48 +0200
-From: Lars-Peter Clausen <lars@metafoo.de>
+Received: from mail-wi0-f175.google.com ([209.85.212.175]:37122 "EHLO
+	mail-wi0-f175.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750791AbbEBSyW (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 2 May 2015 14:54:22 -0400
+Received: by widdi4 with SMTP id di4so75024779wid.0
+        for <linux-iio@vger.kernel.org>; Sat, 02 May 2015 11:54:21 -0700 (PDT)
 MIME-Version: 1.0
-To: Krzysztof Kozlowski <k.kozlowski.k@gmail.com>,
-	Michael Hennerich <Michael.Hennerich@analog.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] staging: iio: ad7606_par: Constify platform_device_id
-References: <1430495002-31057-1-git-send-email-k.kozlowski.k@gmail.com>
-In-Reply-To: <1430495002-31057-1-git-send-email-k.kozlowski.k@gmail.com>
-Content-Type: text/plain; charset=windows-1252; format=flowed
+In-Reply-To: <1430564705-31119-1-git-send-email-jic23@kernel.org>
+References: <1430564705-31119-1-git-send-email-jic23@kernel.org>
+Date: Sat, 2 May 2015 21:54:21 +0300
+Message-ID: <CAEnQRZAHSqssqmqSWSm4NYB5854um28MjsFPoBC5DkrJRySVzA@mail.gmail.com>
+Subject: Re: [PATCH] staging:iio:light: Add some missing brackets to make sure
+ code works as intended. Note this is not a bug due to the fact the region
+ cannot be reached without the sanity check passing. The autobuilder reported
+ it as missaligned code which is kind of true as well.
+From: Daniel Baluta <daniel.baluta@gmail.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	Roberta Dobrescu <roberta.dobrescu@gmail.com>
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 05/01/2015 05:43 PM, Krzysztof Kozlowski wrote:
-> The platform_device_id is not modified by the driver and core uses it as
-> const.
->
-> Signed-off-by: Krzysztof Kozlowski <k.kozlowski.k@gmail.com>
+This looks good to me. Anyhow, we need a newline somewhere in the
+commit subject.
 
-Acked-by: Lars-Peter Clausen <lars@metafoo.de>
-
-Thanks.
-
+On Sat, May 2, 2015 at 2:05 PM, Jonathan Cameron <jic23@kernel.org> wrote:
+> Signed-off-by: Jonathan Cameron <jic23@kernel.org>
+> Cc: Roberta Dobrescu <roberta.dobrescu@gmail.com>
 > ---
->   drivers/staging/iio/adc/ad7606_par.c | 2 +-
->   1 file changed, 1 insertion(+), 1 deletion(-)
+>  drivers/staging/iio/light/isl29018.c | 3 ++-
+>  1 file changed, 2 insertions(+), 1 deletion(-)
 >
-> diff --git a/drivers/staging/iio/adc/ad7606_par.c b/drivers/staging/iio/adc/ad7606_par.c
-> index 9e24b4d4455f..1d48ae381d16 100644
-> --- a/drivers/staging/iio/adc/ad7606_par.c
-> +++ b/drivers/staging/iio/adc/ad7606_par.c
-> @@ -119,7 +119,7 @@ static const struct dev_pm_ops ad7606_pm_ops = {
->   #define AD7606_PAR_PM_OPS NULL
->   #endif  /* CONFIG_PM */
+> diff --git a/drivers/staging/iio/light/isl29018.c b/drivers/staging/iio/light/isl29018.c
+> index 08ca9a4172e3..e646c5d24004 100644
+> --- a/drivers/staging/iio/light/isl29018.c
+> +++ b/drivers/staging/iio/light/isl29018.c
+> @@ -369,12 +369,13 @@ static int isl29018_write_raw(struct iio_dev *indio_dev,
+>                 }
+>                 break;
+>         case IIO_CHAN_INFO_INT_TIME:
+> -               if (chan->type == IIO_LIGHT)
+> +               if (chan->type == IIO_LIGHT) {
+>                         if (val != 0) {
+>                                 mutex_unlock(&chip->lock);
+>                                 return -EINVAL;
+>                         }
+>                         ret = isl29018_set_integration_time(chip, val2);
+> +               }
+>                 break;
+>         case IIO_CHAN_INFO_SCALE:
+>                 if (chan->type == IIO_LIGHT)
+> --
+> 2.3.5
 >
-> -static struct platform_device_id ad7606_driver_ids[] = {
-> +static const struct platform_device_id ad7606_driver_ids[] = {
->   	{
->   		.name		= "ad7606-8",
->   		.driver_data	= ID_AD7606_8,
->
-
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
