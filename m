@@ -1,39 +1,48 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp205.alice.it ([82.57.200.101]:2649 "EHLO smtp205.alice.it"
+Received: from mga02.intel.com ([134.134.136.20]:22003 "EHLO mga02.intel.com"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751976AbbEDJNL (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Mon, 4 May 2015 05:13:11 -0400
-From: Antonio Ospite <ao2@ao2.it>
-To: linux-iio@vger.kernel.org
-Cc: Daniel Baluta <daniel.baluta@gmail.com>,
-	Antonio Ospite <ao2@ao2.it>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Bastien Nocera <hadess@hadess.net>
-Subject: [PATCHv2 0/2] iio: accel: kxcjk-1013: new ACPI id and
-Date: Mon,  4 May 2015 11:13:02 +0200
-Message-Id: <1430730785-17833-1-git-send-email-ao2@ao2.it>
+	id S1751871AbbEDJNf (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Mon, 4 May 2015 05:13:35 -0400
+Date: Mon, 4 May 2015 12:13:33 +0300
+From: Vlad Dogaru <vlad.dogaru@intel.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: linux-iio@vger.kernel.org
+Subject: Re: [PATCH] iio:prox:sx9500 trivial simplification of return path in
+ init function.
+Message-ID: <20150504091332.GB31334@vdogaru>
+References: <1430562582-27932-1-git-send-email-jic23@kernel.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <1430562582-27932-1-git-send-email-jic23@kernel.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Hi,
+On Sat, May 02, 2015 at 11:29:42AM +0100, Jonathan Cameron wrote:
+> Signed-off-by: Jonathan Cameron <jic23@kernel.org>
+> Reported-by: kbuild test robot <fengguang.wu@intel.com>
+> Cc: Vlad Dogaru <vlad.dogaru@intel.com>
+> ---
+>  drivers/iio/proximity/sx9500.c | 4 +---
+>  1 file changed, 1 insertion(+), 3 deletions(-)
 
-compared to the v1 I fixed the typo (s/DSTD/DSDT/) in patch 1 and
-dropped the renaming of is_smo8500_device.
+Not sure if changes like this need a review, but this looks good to me.
 
-Thanks,
-   Antonio
-
-Antonio Ospite (2):
-  iio: accel: kxcjk-1013: add the "KXCJ9000" ACPI id
-  iio: accel: kxcjk-1013: add some blank lines for readability
-
- drivers/iio/accel/kxcjk-1013.c | 4 ++++
- 1 file changed, 4 insertions(+)
-
--- 
-Antonio Ospite
-http://ao2.it
-
-A: Because it messes up the order in which people normally read text.
-   See http://en.wikipedia.org/wiki/Posting_style
-Q: Why is top-posting such a bad thing?
+> diff --git a/drivers/iio/proximity/sx9500.c b/drivers/iio/proximity/sx9500.c
+> index f1e9d734b6b6..323de9510ba5 100644
+> --- a/drivers/iio/proximity/sx9500.c
+> +++ b/drivers/iio/proximity/sx9500.c
+> @@ -860,10 +860,8 @@ static int sx9500_init_device(struct iio_dev *indio_dev)
+>  	}
+>  
+>  	ret = sx9500_init_compensation(indio_dev);
+> -	if (ret < 0)
+> -		return ret;
+>  
+> -	return 0;
+> +	return ret;
+>  }
+>  
+>  static void sx9500_gpio_probe(struct i2c_client *client,
+> -- 
+> 2.3.5
+> 
