@@ -1,6 +1,6 @@
 Return-Path: <lars@metafoo.de>
-Message-ID: <5547D266.3040507@metafoo.de>
-Date: Mon, 04 May 2015 22:11:18 +0200
+Message-ID: <5547CF8A.9060609@metafoo.de>
+Date: Mon, 04 May 2015 21:59:06 +0200
 From: Lars-Peter Clausen <lars@metafoo.de>
 MIME-Version: 1.0
 To: Daniel Baluta <daniel.baluta@intel.com>, jic23@kernel.org
@@ -8,233 +8,82 @@ CC: jlbec@evilplan.org, knaack.h@gmx.de, linux-kernel@vger.kernel.org,
  linux-iio@vger.kernel.org, octavian.purdila@intel.com,
  pebolle@tiscali.nl, patrick.porlan@intel.com, adriana.reus@intel.com,
  constantin.musca@intel.com, marten@intuitiveaerial.com
-Subject: Re: [PATCH v5 1/4] iio: core: Introduce IIO software triggers
-References: <1430736604-22119-1-git-send-email-daniel.baluta@intel.com> <1430736604-22119-2-git-send-email-daniel.baluta@intel.com>
-In-Reply-To: <1430736604-22119-2-git-send-email-daniel.baluta@intel.com>
+Subject: Re: [PATCH v5 2/4] iio: core: Introduce IIO configfs support
+References: <1430736604-22119-1-git-send-email-daniel.baluta@intel.com> <1430736604-22119-3-git-send-email-daniel.baluta@intel.com>
+In-Reply-To: <1430736604-22119-3-git-send-email-daniel.baluta@intel.com>
 Content-Type: text/plain; charset=windows-1252; format=flowed
 List-ID: <linux-iio@vger.kernel.org>
 
 On 05/04/2015 12:50 PM, Daniel Baluta wrote:
-> A software trigger associates an IIO device trigger with a software
-> interrupt source (e.g: timer, sysfs). This patch adds the generic
-> infrastructure for handling software triggers.
+> This creates an IIO configfs subystem named "iio", with a default "triggers"
+> group.
 >
-> Software interrupts sources are kept in a iio_trigger_types_list and
-> registered separately when the associated kernel module is loaded.
+> Triggers group is used for handling software triggers. To create a new software
+> trigger one must create a directory inside the trigger directory.
 >
-> Software triggers can be created directly from drivers or from user
-> space via configfs interface.
+> Software trigger name MUST follow the following convention:
+> 	* <trigger-type>-<trigger-name>
+> Where:
+> 	* <trigger_type>, specifies the interrupt source (e.g: hrtimer)
+> 	* <trigger-name>, specifies the IIO device trigger name
 >
-> Signed-off-by: Daniel Baluta <daniel.baluta@intel.com>
-> ---
->   drivers/iio/Kconfig                   |   8 +++
->   drivers/iio/Makefile                  |   1 +
->   drivers/iio/industrialio-sw-trigger.c | 112 ++++++++++++++++++++++++++++++++++
->   include/linux/iio/sw_trigger.h        |  60 ++++++++++++++++++
->   4 files changed, 181 insertions(+)
->   create mode 100644 drivers/iio/industrialio-sw-trigger.c
->   create mode 100644 include/linux/iio/sw_trigger.h
+> Failing to follow this convention will result in an directory creation error.
 >
-> diff --git a/drivers/iio/Kconfig b/drivers/iio/Kconfig
-> index 4011eff..de7f1d9 100644
-> --- a/drivers/iio/Kconfig
-> +++ b/drivers/iio/Kconfig
-> @@ -58,6 +58,14 @@ config IIO_CONSUMERS_PER_TRIGGER
->   	This value controls the maximum number of consumers that a
->   	given trigger may handle. Default is 2.
+> E.g, assuming that hrtimer trigger type is registered with IIO software
+> trigger core:
 >
-> +config IIO_SW_TRIGGER
-> +	bool "Enable software triggers support"
-> +	depends on IIO_TRIGGER
-> +	help
-> +	 Provides IIO core support for software triggers. A software
-> +	 trigger can be created via configfs or directly by a driver
-> +	 using the API provided.
-> +
->   source "drivers/iio/accel/Kconfig"
->   source "drivers/iio/adc/Kconfig"
->   source "drivers/iio/amplifiers/Kconfig"
-> diff --git a/drivers/iio/Makefile b/drivers/iio/Makefile
-> index 698afc2..df87975 100644
-> --- a/drivers/iio/Makefile
-> +++ b/drivers/iio/Makefile
-> @@ -6,6 +6,7 @@ obj-$(CONFIG_IIO) += industrialio.o
->   industrialio-y := industrialio-core.o industrialio-event.o inkern.o
->   industrialio-$(CONFIG_IIO_BUFFER) += industrialio-buffer.o
->   industrialio-$(CONFIG_IIO_TRIGGER) += industrialio-trigger.o
-> +industrialio-$(CONFIG_IIO_SW_TRIGGER) += industrialio-sw-trigger.o
->   industrialio-$(CONFIG_IIO_BUFFER_CB) += buffer_cb.o
+> $ mkdir /config/iio/triggers/hrtimer-instance1
 >
->   obj-$(CONFIG_IIO_TRIGGERED_BUFFER) += industrialio-triggered-buffer.o
-> diff --git a/drivers/iio/industrialio-sw-trigger.c b/drivers/iio/industrialio-sw-trigger.c
-> new file mode 100644
-> index 0000000..f22aa63
-> --- /dev/null
-> +++ b/drivers/iio/industrialio-sw-trigger.c
-> @@ -0,0 +1,112 @@
-> +/*
-> + * The Industrial I/O core, software trigger functions
-> + *
-> + * Copyright (c) 2015 Intel Corporation
-> + *
-> + * This program is free software; you can redistribute it and/or modify it
-> + * under the terms of the GNU General Public License version 2 as published by
-> + * the Free Software Foundation.
-> + */
-> +
-> +#include <linux/module.h>
-> +#include <linux/init.h>
-> +#include <linux/kmod.h>
-> +#include <linux/list.h>
-> +#include <linux/slab.h>
-> +
-> +#include <linux/iio/sw_trigger.h>
-> +
-> +static LIST_HEAD(iio_trigger_types_list);
-> +static DEFINE_RWLOCK(iio_trigger_types_lock);
-> +
-> +static
-> +struct iio_sw_trigger_type *iio_find_sw_trigger_type(char *name, unsigned len)
 
-const char *name, there are a couple of other places where char * should be 
-const char * below as well.
+Nice, short and clean. Looks pretty good. It's a bit of a shame that we 
+can't have a per type directory, but if that's how configfs works I guess 
+there is not much choice.
 
+[...]
+> +static struct config_group *trigger_make_group(struct config_group *group,
+> +					       const char *name)
 > +{
-> +	struct iio_sw_trigger_type *t = NULL, *iter;
-> +
-> +	list_for_each_entry(iter, &iio_trigger_types_list, list)
-> +		if (!strncmp(iter->name, name, len)) {
-> +			t = iter;
-> +			break;
-> +		}
-> +
-> +	return t;
-> +}
-> +
-> +int iio_register_sw_trigger_type(struct iio_sw_trigger_type *t)
-
-Kernel doc would be nice for the public API
-
-> +{
-> +	struct iio_sw_trigger_type *iter;
-> +	int ret = 0;
-> +
-> +	write_lock(&iio_trigger_types_lock);
-> +	iter = iio_find_sw_trigger_type(t->name, strlen(t->name));
-> +	if (iter)
-> +		ret = -EBUSY;
-> +	else
-> +		list_add_tail(&t->list, &iio_trigger_types_list);
-> +	write_unlock(&iio_trigger_types_lock);
-> +
-> +	return ret;
-> +}
-> +EXPORT_SYMBOL(iio_register_sw_trigger_type);
-> +
-> +int iio_unregister_sw_trigger_type(struct iio_sw_trigger_type *t)
-
-I'd make the return type void. Either it is not registered and unregister is 
-a noop, or it is registered and it will be successfully unregistered. Either 
-way the operation won't fail.
-
-> +{
-> +	struct iio_sw_trigger_type *iter;
-> +	int ret = 0;
-> +
-> +	write_lock(&iio_trigger_types_lock);
-> +	iter = iio_find_sw_trigger_type(t->name, strlen(t->name));
-
-Not sure if we need this. unregister should never be called without register 
-succeeding before.
-
-> +	if (!iter)
-> +		ret = -EINVAL;
-> +	else
-> +		list_del(&t->list);
-> +	write_unlock(&iio_trigger_types_lock);
-> +
-> +	return ret;
-> +}
-> +EXPORT_SYMBOL(iio_unregister_sw_trigger_type);
-> +
-> +static
-> +struct iio_sw_trigger_type *iio_get_sw_trigger_type(char *name)
-> +{
-> +	struct iio_sw_trigger_type *t;
-> +
-> +	read_lock(&iio_trigger_types_lock);
-> +	t = iio_find_sw_trigger_type(name, strlen(name));
-> +	if (t && !try_module_get(t->owner))
-> +		t = NULL;
-> +	read_unlock(&iio_trigger_types_lock);
-> +
-> +	return t;
-> +}
-> +
-> +struct iio_sw_trigger *iio_sw_trigger_create(char *type, char *name)
-> +{
+> +	char *type_name;
+> +	char *trigger_name;
+> +	char buf[MAX_NAME_LEN];
 > +	struct iio_sw_trigger *t;
-> +	struct iio_sw_trigger_type *tt;
 > +
-> +	tt = iio_get_sw_trigger_type(type);
-> +	if (!tt) {
-> +		pr_err("Invalid trigger type: %s\n", type);
+> +	snprintf(buf, MAX_NAME_LEN, "%s", name);
+> +
+> +	/* group name should have the form <trigger-type>-<trigger-name> */
+> +	type_name = buf;
+> +	trigger_name = strchr(buf, '-');
+> +	if (!trigger_name) {
+> +		pr_err("Unable to locate '-' in %s. Use <type>-<name>.\n", buf);
+
+Do we want to print this side channel message? Makes it pretty easy to spam 
+the kernel log with a rouge application.
+
 > +		return ERR_PTR(-EINVAL);
 > +	}
-> +	t = tt->ops->probe(name);
+> +
+> +	/* replace - with \0, this nicely separates the two strings */
+> +	*trigger_name = '\0';
+> +	trigger_name++;
+> +
+> +	t = iio_sw_trigger_create(type_name, trigger_name);
 > +	if (IS_ERR(t))
-> +		goto out_module_put;
+> +		return ERR_CAST(t);
 > +
-> +	return t;
-> +out_module_put:
-> +	module_put(tt->owner);
-> +	return t;
+> +	config_item_set_name(&t->group.cg_item, name);
+> +
+> +	return &t->group;
 > +}
-> +EXPORT_SYMBOL(iio_sw_trigger_create);
-[...]
-> +struct iio_sw_trigger_type {
-> +	char *name;
-
-const
-
-> +	struct module *owner;
-> +	struct iio_sw_trigger_ops *ops;
-
-const
-
-> +	struct list_head list;
-> +};
 > +
-> +struct iio_sw_trigger {
-> +	struct iio_trigger *trigger;
-> +	struct iio_sw_trigger_type *trigger_type;
-> +#ifdef CONFIG_CONFIGFS_FS
-> +	struct config_group group;
-> +#endif
-
-The configfs specific bits should go into patch 2.
-
-> +};
-> +
-> +struct iio_sw_trigger_ops {
-> +	struct iio_sw_trigger* (*probe)(const char *);
-> +	int (*remove)(struct iio_sw_trigger *);
-> +};
-> +
-> +int iio_register_sw_trigger_type(struct iio_sw_trigger_type *);
-> +int iio_unregister_sw_trigger_type(struct iio_sw_trigger_type *);
-> +
-> +struct iio_sw_trigger *iio_sw_trigger_create(char *, char *);
-> +void iio_sw_trigger_destroy(struct iio_sw_trigger *);
-> +
-> +#ifdef CONFIG_CONFIGFS_FS
-> +static inline
-> +struct iio_sw_trigger *to_iio_sw_trigger(struct config_item *item)
+> +static void trigger_drop_group(struct config_group *group,
+> +			       struct config_item *item)
 > +{
-> +	return container_of(to_config_group(item), struct iio_sw_trigger,
-> +			    group);
-> +}
-> +#endif
+> +	struct iio_sw_trigger *t = to_iio_sw_trigger(item);
 > +
-> +#endif /* __IIO_SW_TRIGGER */
->
+> +	if (t)
+
+t will never be NULL.
+
+> +		iio_sw_trigger_destroy(t);
+> +	config_item_put(item);
+> +}
