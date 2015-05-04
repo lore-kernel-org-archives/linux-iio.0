@@ -1,55 +1,133 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-wi0-f173.google.com ([209.85.212.173]:35666 "EHLO
-	mail-wi0-f173.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752469AbbEDKuq (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 4 May 2015 06:50:46 -0400
-Received: by widdi4 with SMTP id di4so116654971wid.0
-        for <linux-iio@vger.kernel.org>; Mon, 04 May 2015 03:50:45 -0700 (PDT)
-MIME-Version: 1.0
-In-Reply-To: <1430730785-17833-2-git-send-email-ao2@ao2.it>
-References: <1430730785-17833-1-git-send-email-ao2@ao2.it>
-	<1430730785-17833-2-git-send-email-ao2@ao2.it>
-Date: Mon, 4 May 2015 13:50:45 +0300
-Message-ID: <CAEnQRZC6J267=Q8Dbu1X4U5pgH4pP5XKbHkk-uW=rk9yrK-xOA@mail.gmail.com>
-Subject: Re: [PATCHv2 1/2] iio: accel: kxcjk-1013: add the "KXCJ9000" ACPI id
-From: Daniel Baluta <daniel.baluta@gmail.com>
-To: Antonio Ospite <ao2@ao2.it>
-Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Bastien Nocera <hadess@hadess.net>
-Content-Type: text/plain; charset=UTF-8
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <daniel.baluta@intel.com>
+From: Daniel Baluta <daniel.baluta@intel.com>
+To: jic23@kernel.org
+Cc: jlbec@evilplan.org,
+	lars@metafoo.de,
+	knaack.h@gmx.de,
+	linux-kernel@vger.kernel.org,
+	linux-iio@vger.kernel.org,
+	octavian.purdila@intel.com,
+	pebolle@tiscali.nl,
+	patrick.porlan@intel.com,
+	adriana.reus@intel.com,
+	constantin.musca@intel.com,
+	marten@intuitiveaerial.com,
+	daniel.baluta@intel.com
+Subject: [PATCH v5 4/4] iio: Documentation: Add IIO configfs documentation
+Date: Mon,  4 May 2015 13:50:04 +0300
+Message-Id: <1430736604-22119-5-git-send-email-daniel.baluta@intel.com>
+In-Reply-To: <1430736604-22119-1-git-send-email-daniel.baluta@intel.com>
+References: <1430736604-22119-1-git-send-email-daniel.baluta@intel.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-On Mon, May 4, 2015 at 12:13 PM, Antonio Ospite <ao2@ao2.it> wrote:
-> This id has been seen in the DSDT of the Teclast X98 Air 3G tablet based
-> on Intel Bay Trail.
->
-> Signed-off-by: Antonio Ospite <ao2@ao2.it>
-> Cc: Jonathan Cameron <jic23@kernel.org>
-> Cc: Bastien Nocera <hadess@hadess.net>
-> Cc: linux-iio@vger.kernel.org
+Signed-off-by: Daniel Baluta <daniel.baluta@intel.com>
+---
+ Documentation/ABI/testing/configfs-iio | 26 ++++++++++++++
+ Documentation/iio/iio_configfs.txt     | 63 ++++++++++++++++++++++++++++++++++
+ 2 files changed, 89 insertions(+)
+ create mode 100644 Documentation/ABI/testing/configfs-iio
+ create mode 100644 Documentation/iio/iio_configfs.txt
 
-Looks good to me.
-
-Reviewed-by: Daniel Baluta <daniel.baluta@intel.com>
-
-> ---
->  drivers/iio/accel/kxcjk-1013.c | 1 +
->  1 file changed, 1 insertion(+)
->
-> diff --git a/drivers/iio/accel/kxcjk-1013.c b/drivers/iio/accel/kxcjk-1013.c
-> index 51da369..5b7a860 100644
-> --- a/drivers/iio/accel/kxcjk-1013.c
-> +++ b/drivers/iio/accel/kxcjk-1013.c
-> @@ -1418,6 +1418,7 @@ static const struct dev_pm_ops kxcjk1013_pm_ops = {
->  static const struct acpi_device_id kx_acpi_match[] = {
->         {"KXCJ1013", KXCJK1013},
->         {"KXCJ1008", KXCJ91008},
-> +       {"KXCJ9000", KXCJ91008},
->         {"KXTJ1009", KXTJ21009},
->         {"SMO8500",  KXCJ91008},
->         { },
-> --
-> 2.1.4
->
+diff --git a/Documentation/ABI/testing/configfs-iio b/Documentation/ABI/testing/configfs-iio
+new file mode 100644
+index 0000000..a143135
+--- /dev/null
++++ b/Documentation/ABI/testing/configfs-iio
+@@ -0,0 +1,26 @@
++What:		/config/iio
++Date:		May 2015
++KernelVersion:	4.2
++Contact:	linux-iio@vger.kernel.org
++Description:
++		This represents Industrial IO configuration entry point
++		directory. It contains sub-groups corresponding to IIO
++		objects.
++
++What:		/config/iio/triggers
++Date:		May 2015
++KernelVersion:	4.2
++Description:
++		Industrial IO software triggers directory.
++
++What:		/config/iio/triggers/hrtimer-name
++Date:		May 2015
++KernelVersion:	4.2
++Description:
++		High resolution timer instance.
++
++What:		/config/iio/triggers/hrtimer-name/sampling_frequency
++Date:		May 2015
++KernelVersion:	4.2
++Description:
++		Sampling frequency for this hrtimer instance.
+diff --git a/Documentation/iio/iio_configfs.txt b/Documentation/iio/iio_configfs.txt
+new file mode 100644
+index 0000000..456f7a5
+--- /dev/null
++++ b/Documentation/iio/iio_configfs.txt
+@@ -0,0 +1,63 @@
++Industrial IIO configfs support
++
++1. Overview
++
++Configfs is a filesystem-based manager of kernel objects. IIO uses some
++objects that could be easily configured using configfs (e.g.: devices,
++triggers).
++
++See Documentation/filesystems/configfs/configfs.txt for more information
++about how configfs works.
++
++2. Usage
++
++In order to use configfs support in IIO we need to select it at compile
++time via CONFIG_IIO_CONFIGFS config option.
++
++Then, mount the configfs filesystem (usually under /config directory):
++
++$ mkdir /config
++$ mount -t configfs none /config
++
++At this point, all default IIO groups will be created and can be accessed
++under /config/iio. Next chapters will describe available IIO configuration
++objects.
++
++3. Software triggers
++
++One of the IIO default configfs groups is the "triggers" groups. It is
++automagically accessible when the configfs is mounted and can be found
++under /config/iio/triggers.
++
++Software triggers are created under /config/iio/triggers directory. A sofware
++trigger name MUST be of the following form:
++	* <trigger-type>-<trigger-name>:
++Where:
++	* <trigger-type>, specifies the interrupt source (e.g: hrtimer)
++	* <trigger-name>, spefcifies the IIO device trigger name
++
++We support now to following interrupt sources (trigger types):
++	* hrtimer, uses high resolution timers as interrupt source
++
++3.1 Software triggers creation and destruction
++
++As simply as:
++
++$ mkdir /config/triggers/<trigger-type>-<trigger-name>
++$ rmdir /config/triggers/<trigger-type>-<trigger-name>
++e.g:
++
++$ mkdir /config/triggers/hrtimer-instance1
++$ rmdir /config/triggers/hrtimer-instance1
++
++Each trigger can have one or more attributes specific to the trigger type.
++
++3.2 "hrtimer" trigger types attributes
++
++"hrtimer" trigger type has only one attribute:
++
++$ ls /config/triggers/hrtimer-instance1
++sampling_frequency
++
++sampling_frequency - represents the period in Hz between two consecutive
++iio_trigger_poll calls. By default it is set to 100Hz.
+-- 
+1.9.1
