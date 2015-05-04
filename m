@@ -1,101 +1,240 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:47021 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752115AbbEDQj7 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 4 May 2015 12:39:59 -0400
-Message-ID: <5547A0D5.3000006@kernel.org>
-Date: Mon, 04 May 2015 17:39:49 +0100
-From: Jonathan Cameron <jic23@kernel.org>
+Return-Path: <lars@metafoo.de>
+Message-ID: <5547D266.3040507@metafoo.de>
+Date: Mon, 04 May 2015 22:11:18 +0200
+From: Lars-Peter Clausen <lars@metafoo.de>
 MIME-Version: 1.0
-To: Linus Walleij <linus.walleij@linaro.org>,
-	Peter Meerwald <pmeerw@pmeerw.net>
-CC: Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	Denis CIOCCA <denis.ciocca@st.com>,
-	Lee Jones <lee.jones@linaro.org>
-Subject: Re: [PATCH 06/10] iio: st_accel: support 8bit channel data
-References: <1430399755-26475-1-git-send-email-linus.walleij@linaro.org>	<1430399755-26475-6-git-send-email-linus.walleij@linaro.org>	<alpine.DEB.2.02.1504301637070.4190@pmeerw.net> <CACRpkdacUZfKkQz0XfXm4cqU+8B5TR8ZqJhXVzCTMcU+1EB2mA@mail.gmail.com>
-In-Reply-To: <CACRpkdacUZfKkQz0XfXm4cqU+8B5TR8ZqJhXVzCTMcU+1EB2mA@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+To: Daniel Baluta <daniel.baluta@intel.com>, jic23@kernel.org
+CC: jlbec@evilplan.org, knaack.h@gmx.de, linux-kernel@vger.kernel.org,
+ linux-iio@vger.kernel.org, octavian.purdila@intel.com,
+ pebolle@tiscali.nl, patrick.porlan@intel.com, adriana.reus@intel.com,
+ constantin.musca@intel.com, marten@intuitiveaerial.com
+Subject: Re: [PATCH v5 1/4] iio: core: Introduce IIO software triggers
+References: <1430736604-22119-1-git-send-email-daniel.baluta@intel.com> <1430736604-22119-2-git-send-email-daniel.baluta@intel.com>
+In-Reply-To: <1430736604-22119-2-git-send-email-daniel.baluta@intel.com>
+Content-Type: text/plain; charset=windows-1252; format=flowed
+List-ID: <linux-iio@vger.kernel.org>
 
-On 04/05/15 13:11, Linus Walleij wrote:
-> On Thu, Apr 30, 2015 at 4:56 PM, Peter Meerwald <pmeerw@pmeerw.net> wrote:
->>
->>> Some sensors like the LIS331DL only support 8bit data by a single
->>> register per axis. These utilize the MSB byte. Make it possible
->>> to register these apropriately.
->>
->> this doesn't seem right;
->>
->> st_accel_8bit_channels is just added, but not used; this probably results
->> in a warning
-> 
-> Yes the actual LIS331DL patch adding support for this sensor is
-> 7/11, the next patch in the series.
-> 
->> the start address, ST_ACCEL_DEFAULT_OUT_X_L_ADDR, is +1 to read just the
->> MSB byte; but the storage size is still 16bit
-> 
-> So in the LIS331DL datasheet page 29 & 30.
-> http://www.st.com/st-web-ui/static/active/en/resource/technical/document/datasheet/CD00172345.pdf
-> 
-> It is clear that registers 0x29, 0x2b and 0x2d contain
-> 8-bit values of X,Y,Z respectively and 0x28, 0x2a and 0x2c
-> are unused.
-> 
-> Since ST_ACCEL_DEFAULT_OUT_X_L_ADDR is 0x28, it
-> is clear that ST choose to put the 8bit data into the MSB
-> for this sensor. So when reading 8bit sensors we need to
-> read MSB, and discard LSB.
-> 
-> +       ST_SENSORS_LSM_CHANNELS(IIO_ACCEL,
-> +                       BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_SCALE),
-> +                       ST_SENSORS_SCAN_X, 1, IIO_MOD_X, 's', IIO_LE, 8, 16,
-> +                       ST_ACCEL_DEFAULT_OUT_X_L_ADDR+1),
-> 
->> the actual read is done in st_sensors_get_buffer_element(); with special
->> case handling for the reads depending on the number of channels
-> 
-> Not getting this, I traced around the code. When I cat in_accel_x_raw
-> in sysfs the read happens in
-> st_sensors_read_axis_data() called from st_sensors_read_info_raw().
-> It reads correctly from 0x29, 0x2b and 0x2d as desired.
-> 
-> Same if I turn on buffered I/O.
-> 
-> Do I have to use buffered I/O *and* triggers to go down
-> the execution path you point out? How do I do that from
-> sysfs (no clue really)? Do I need a special testprogram?
-Yup. It's in the trigger handler.  The generic_buffer.c
-test app (now under tools/iio) should do the job for testing
-this. The purpose of that one is to act as an example
-of the chardev (buffered) interface and as documentation
-as the docs always got out of date when we kept them seperately.
-(yeah I'm lazy).
+On 05/04/2015 12:50 PM, Daniel Baluta wrote:
+> A software trigger associates an IIO device trigger with a software
+> interrupt source (e.g: timer, sysfs). This patch adds the generic
+> infrastructure for handling software triggers.
+>
+> Software interrupts sources are kept in a iio_trigger_types_list and
+> registered separately when the associated kernel module is loaded.
+>
+> Software triggers can be created directly from drivers or from user
+> space via configfs interface.
+>
+> Signed-off-by: Daniel Baluta <daniel.baluta@intel.com>
+> ---
+>   drivers/iio/Kconfig                   |   8 +++
+>   drivers/iio/Makefile                  |   1 +
+>   drivers/iio/industrialio-sw-trigger.c | 112 ++++++++++++++++++++++++++++++++++
+>   include/linux/iio/sw_trigger.h        |  60 ++++++++++++++++++
+>   4 files changed, 181 insertions(+)
+>   create mode 100644 drivers/iio/industrialio-sw-trigger.c
+>   create mode 100644 include/linux/iio/sw_trigger.h
+>
+> diff --git a/drivers/iio/Kconfig b/drivers/iio/Kconfig
+> index 4011eff..de7f1d9 100644
+> --- a/drivers/iio/Kconfig
+> +++ b/drivers/iio/Kconfig
+> @@ -58,6 +58,14 @@ config IIO_CONSUMERS_PER_TRIGGER
+>   	This value controls the maximum number of consumers that a
+>   	given trigger may handle. Default is 2.
+>
+> +config IIO_SW_TRIGGER
+> +	bool "Enable software triggers support"
+> +	depends on IIO_TRIGGER
+> +	help
+> +	 Provides IIO core support for software triggers. A software
+> +	 trigger can be created via configfs or directly by a driver
+> +	 using the API provided.
+> +
+>   source "drivers/iio/accel/Kconfig"
+>   source "drivers/iio/adc/Kconfig"
+>   source "drivers/iio/amplifiers/Kconfig"
+> diff --git a/drivers/iio/Makefile b/drivers/iio/Makefile
+> index 698afc2..df87975 100644
+> --- a/drivers/iio/Makefile
+> +++ b/drivers/iio/Makefile
+> @@ -6,6 +6,7 @@ obj-$(CONFIG_IIO) += industrialio.o
+>   industrialio-y := industrialio-core.o industrialio-event.o inkern.o
+>   industrialio-$(CONFIG_IIO_BUFFER) += industrialio-buffer.o
+>   industrialio-$(CONFIG_IIO_TRIGGER) += industrialio-trigger.o
+> +industrialio-$(CONFIG_IIO_SW_TRIGGER) += industrialio-sw-trigger.o
+>   industrialio-$(CONFIG_IIO_BUFFER_CB) += buffer_cb.o
+>
+>   obj-$(CONFIG_IIO_TRIGGERED_BUFFER) += industrialio-triggered-buffer.o
+> diff --git a/drivers/iio/industrialio-sw-trigger.c b/drivers/iio/industrialio-sw-trigger.c
+> new file mode 100644
+> index 0000000..f22aa63
+> --- /dev/null
+> +++ b/drivers/iio/industrialio-sw-trigger.c
+> @@ -0,0 +1,112 @@
+> +/*
+> + * The Industrial I/O core, software trigger functions
+> + *
+> + * Copyright (c) 2015 Intel Corporation
+> + *
+> + * This program is free software; you can redistribute it and/or modify it
+> + * under the terms of the GNU General Public License version 2 as published by
+> + * the Free Software Foundation.
+> + */
+> +
+> +#include <linux/module.h>
+> +#include <linux/init.h>
+> +#include <linux/kmod.h>
+> +#include <linux/list.h>
+> +#include <linux/slab.h>
+> +
+> +#include <linux/iio/sw_trigger.h>
+> +
+> +static LIST_HEAD(iio_trigger_types_list);
+> +static DEFINE_RWLOCK(iio_trigger_types_lock);
+> +
+> +static
+> +struct iio_sw_trigger_type *iio_find_sw_trigger_type(char *name, unsigned len)
 
->From a quick look, I'd say storage_bits should be 8.  Then
-it will just read one byte rather than the correct one and the next
-address up (which might be 0, but in theory might not be for some sensor).
+const char *name, there are a couple of other places where char * should be 
+const char * below as well.
 
-> 
->> I think either the _ADDR should not be +1 or the storage_bits should be 8,
->> but not both
-> 
-> But this works :/
-> 
-> The raw values I get seem correct.
-> 
-> I'm suspicious on the scale values though, they don't even
-> trigger a read from the register.
-> 
-> Yours,
-> Linus Walleij
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> 
+> +{
+> +	struct iio_sw_trigger_type *t = NULL, *iter;
+> +
+> +	list_for_each_entry(iter, &iio_trigger_types_list, list)
+> +		if (!strncmp(iter->name, name, len)) {
+> +			t = iter;
+> +			break;
+> +		}
+> +
+> +	return t;
+> +}
+> +
+> +int iio_register_sw_trigger_type(struct iio_sw_trigger_type *t)
 
+Kernel doc would be nice for the public API
+
+> +{
+> +	struct iio_sw_trigger_type *iter;
+> +	int ret = 0;
+> +
+> +	write_lock(&iio_trigger_types_lock);
+> +	iter = iio_find_sw_trigger_type(t->name, strlen(t->name));
+> +	if (iter)
+> +		ret = -EBUSY;
+> +	else
+> +		list_add_tail(&t->list, &iio_trigger_types_list);
+> +	write_unlock(&iio_trigger_types_lock);
+> +
+> +	return ret;
+> +}
+> +EXPORT_SYMBOL(iio_register_sw_trigger_type);
+> +
+> +int iio_unregister_sw_trigger_type(struct iio_sw_trigger_type *t)
+
+I'd make the return type void. Either it is not registered and unregister is 
+a noop, or it is registered and it will be successfully unregistered. Either 
+way the operation won't fail.
+
+> +{
+> +	struct iio_sw_trigger_type *iter;
+> +	int ret = 0;
+> +
+> +	write_lock(&iio_trigger_types_lock);
+> +	iter = iio_find_sw_trigger_type(t->name, strlen(t->name));
+
+Not sure if we need this. unregister should never be called without register 
+succeeding before.
+
+> +	if (!iter)
+> +		ret = -EINVAL;
+> +	else
+> +		list_del(&t->list);
+> +	write_unlock(&iio_trigger_types_lock);
+> +
+> +	return ret;
+> +}
+> +EXPORT_SYMBOL(iio_unregister_sw_trigger_type);
+> +
+> +static
+> +struct iio_sw_trigger_type *iio_get_sw_trigger_type(char *name)
+> +{
+> +	struct iio_sw_trigger_type *t;
+> +
+> +	read_lock(&iio_trigger_types_lock);
+> +	t = iio_find_sw_trigger_type(name, strlen(name));
+> +	if (t && !try_module_get(t->owner))
+> +		t = NULL;
+> +	read_unlock(&iio_trigger_types_lock);
+> +
+> +	return t;
+> +}
+> +
+> +struct iio_sw_trigger *iio_sw_trigger_create(char *type, char *name)
+> +{
+> +	struct iio_sw_trigger *t;
+> +	struct iio_sw_trigger_type *tt;
+> +
+> +	tt = iio_get_sw_trigger_type(type);
+> +	if (!tt) {
+> +		pr_err("Invalid trigger type: %s\n", type);
+> +		return ERR_PTR(-EINVAL);
+> +	}
+> +	t = tt->ops->probe(name);
+> +	if (IS_ERR(t))
+> +		goto out_module_put;
+> +
+> +	return t;
+> +out_module_put:
+> +	module_put(tt->owner);
+> +	return t;
+> +}
+> +EXPORT_SYMBOL(iio_sw_trigger_create);
+[...]
+> +struct iio_sw_trigger_type {
+> +	char *name;
+
+const
+
+> +	struct module *owner;
+> +	struct iio_sw_trigger_ops *ops;
+
+const
+
+> +	struct list_head list;
+> +};
+> +
+> +struct iio_sw_trigger {
+> +	struct iio_trigger *trigger;
+> +	struct iio_sw_trigger_type *trigger_type;
+> +#ifdef CONFIG_CONFIGFS_FS
+> +	struct config_group group;
+> +#endif
+
+The configfs specific bits should go into patch 2.
+
+> +};
+> +
+> +struct iio_sw_trigger_ops {
+> +	struct iio_sw_trigger* (*probe)(const char *);
+> +	int (*remove)(struct iio_sw_trigger *);
+> +};
+> +
+> +int iio_register_sw_trigger_type(struct iio_sw_trigger_type *);
+> +int iio_unregister_sw_trigger_type(struct iio_sw_trigger_type *);
+> +
+> +struct iio_sw_trigger *iio_sw_trigger_create(char *, char *);
+> +void iio_sw_trigger_destroy(struct iio_sw_trigger *);
+> +
+> +#ifdef CONFIG_CONFIGFS_FS
+> +static inline
+> +struct iio_sw_trigger *to_iio_sw_trigger(struct config_item *item)
+> +{
+> +	return container_of(to_config_group(item), struct iio_sw_trigger,
+> +			    group);
+> +}
+> +#endif
+> +
+> +#endif /* __IIO_SW_TRIGGER */
+>
