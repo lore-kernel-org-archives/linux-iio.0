@@ -1,172 +1,96 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:46784 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:46776 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751555AbbEDQGm (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 4 May 2015 12:06:42 -0400
-Message-ID: <55475710.9050707@kernel.org>
-Date: Mon, 04 May 2015 12:25:04 +0100
+	with ESMTP id S1751251AbbEDQGk (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 4 May 2015 12:06:40 -0400
+Message-ID: <554756C2.5070407@kernel.org>
+Date: Mon, 04 May 2015 12:23:46 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Octavian Purdila <octavian.purdila@intel.com>
-CC: lars@metafoo.de, pmeerw@pmeerw.net, robert.moore@intel.com,
-	rafael.j.wysocki@intel.com, lenb@kernel.org,
-	linux-api@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-iio@vger.kernel.org, linux-acpi@vger.kernel.org
-Subject: Re: [RFC PATCH 1/3] iio: export mounting matrix information
-References: <1430146908-27919-1-git-send-email-octavian.purdila@intel.com> <1430146908-27919-2-git-send-email-octavian.purdila@intel.com>
-In-Reply-To: <1430146908-27919-2-git-send-email-octavian.purdila@intel.com>
-Content-Type: text/plain; charset=windows-1252
+To: Octavian Purdila <octavian.purdila@intel.com>,
+	sathyanarayanan.kuppuswamy@linux.intel.com
+CC: Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Robert Moore <robert.moore@intel.com>,
+	Rafael J Wysocki <rafael.j.wysocki@intel.com>,
+	lenb@kernel.org, linux-api@vger.kernel.org,
+	lkml <linux-kernel@vger.kernel.org>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	"linux-acpi@vger.kernel.org" <linux-acpi@vger.kernel.org>,
+	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+	Dmitry Torokhov <dtor@mail.ru>,
+	"linux-input@vger.kernel.org" <linux-input@vger.kernel.org>
+Subject: Re: [RFC PATCH 3/3] iio: derive the mounting matrix from ACPI _PLD
+ objects
+References: <1430146908-27919-1-git-send-email-octavian.purdila@intel.com>	<1430146908-27919-4-git-send-email-octavian.purdila@intel.com>	<64714.10.254.87.235.1430149342.squirrel@linux.intel.com>	<CAE1zot+YKTPmVbG-_fNRy-E_VCcqq1VE78H3PMSMb5HvsBheQw@mail.gmail.com>	<553EB0B3.5000707@linux.intel.com> <CAE1zot+fusrvow+s2+CmoctcSD=c2BxoSyd2b=7MBv-pg68A+Q@mail.gmail.com>
+In-Reply-To: <CAE1zot+fusrvow+s2+CmoctcSD=c2BxoSyd2b=7MBv-pg68A+Q@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 27/04/15 16:01, Octavian Purdila wrote:
-> Export a new sysfs attribute that describes the placement of the
-> sensor on the device in the form of a mounting matrix so that
-> userspace can do the required correction to get accurate data:
+On 28/04/15 03:23, Octavian Purdila wrote:
+> On Tue, Apr 28, 2015 at 12:57 AM, sathyanarayanan kuppuswamy
+> <sathyanarayanan.kuppuswamy@linux.intel.com> wrote:
+>> Hi
+>>
+>> On 04/27/2015 08:54 AM, Octavian Purdila wrote:
+>>>
+>>> On Mon, Apr 27, 2015 at 6:42 PM, Kuppuswamy Sathyanarayanan
+>>> <sathyanarayanan.kuppuswamy@linux.intel.com> wrote:
+>>>>
+>>>> Since Acpi framework already exports this info to user space, Why not do
+>>>> this derivation in user space code ? Why do we need new ABI, if the same
+>>>> can be derived from existing one.
+>>>>
+>>> The ABI was added in the previous patch so that we can present the
+>>> sensor orientation information to userspace even in the case of device
+>>> tree.
+>>
+>> If the main reason for implementing a new ABI is to support DT platforms,
+>> Why not implement a version of _PLD for device tree ? Don't you think it
+>> would be much better than adding a new ABI to export redundant information ?
+>>
 > 
-> corrected X = MM[0] * X + MM[1] Y + MM[2] * Z
-> corrected Y = MM[3] * X + MM[4] Y + MM[5] * Z
-> corrected Z = MM[6] * X + MM[7] Y + MM[8] * Z
+> IMO the mounting matrix is more consistent with the IIO ABIs. Although
+> I have no issue with repicating _PLD for device tree if people agree
+> that it is better.
 > 
-> This information is read from the device properties of the parent of
-> the IIO device.
+>> Also the location information of the device is not just specific to iio
+>> drivers. You should consider that we would have similar requirements for
+>> devices implemented as input or platform drivers.
 > 
-> Signed-off-by: Octavian Purdila <octavian.purdila@intel.com>
-Hmm.  This could be done with existing code and a new info_mask element.
-The disadvantage is you'd have to change the read_raw to read_raw_multi
-callback, but that's hardly a big job.  If I could be bothered, I'd
-move the whole subsystem over and drop read_raw entirely.
+> The upstream standard for those sensors where the orientation matters
+> (accelerometer, gyro, compass) is IIO.
+It's probably worth pull Dmitry in on this conversation as well (and maybe
+the input list). cc'd.
 
-It was introduced precisely for this sort of element.
+For reference of those who haven't seen this before.  The question here is about
+exposing the sensor mounting matrix ( orientation of the sensor frame of reference
+relative to some 'magic' orientation - probably the PCB )
 
-As I mentioned deeper in the thread.  If we are going to introduce a mounting
-matrix, I'd prefer a version that includes translation.  It might not matter
-to many devices but it has mattered a lot to me in the past and doesn't hurt
-others that much (I used to write papers on how to estimate this stuff
-from black box devices).
-> ---
->  Documentation/ABI/testing/sysfs-bus-iio | 11 +++++++++
->  drivers/iio/industrialio-core.c         | 42 +++++++++++++++++++++++++++++++++
->  include/linux/iio/iio.h                 |  9 +++++++
->  3 files changed, 62 insertions(+)
+Note I'd also throw in here that I'd argue for a combined R T matrix
+e.g. [R T] so as to cover cases where we care about the position as well as the
+orientation relative to some reference point.  A class case in point would
+be rotation measurement from offset accelerometers.
+
+Could go with a full projective geometry matrix, but probably better to keep it
+in some base scale e.g.
+[R   T]
+[000 1]
+but not bother exporting the 000 1 as it'll always be the same.
+
+
+Note I've written this email whilst without net access (free wifi at
+Stansted airport is rubbish!) so haven't checked out the existing ACPI ABI.
+Will try and remember to do this when I get a moment with working internet.
+
+Jonathan  
 > 
-> diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
-> index 866b4ec..d36476e 100644
-> --- a/Documentation/ABI/testing/sysfs-bus-iio
-> +++ b/Documentation/ABI/testing/sysfs-bus-iio
-> @@ -1375,3 +1375,14 @@ Description:
->  		The emissivity ratio of the surface in the field of view of the
->  		contactless temperature sensor.  Emissivity varies from 0 to 1,
->  		with 1 being the emissivity of a black body.
-> +
-> +What:		/sys/bus/iio/devices/iio:deviceX/mounting_matrix
-> +KernelVersion:	4.2
-> +Contact:	linux-iio@vger.kernel.org
-> +Description:
-> +		A list of 9 floating point values that describes the
-> +		transformation needed to account for the way the sensor has been
-> +		placed on the PCB:
-> +		corrected X = MM[0] * X + MM[1] Y + MM[2] * Z
-> +		corrected Y = MM[3] * X + MM[4] Y + MM[5] * Z
-> +		corrected Z = MM[6] * X + MM[7] Y + MM[8] * Z
-> diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
-> index 7c98bc1..9000c53 100644
-> --- a/drivers/iio/industrialio-core.c
-> +++ b/drivers/iio/industrialio-core.c
-> @@ -871,6 +871,45 @@ static ssize_t iio_show_dev_name(struct device *dev,
->  
->  static DEVICE_ATTR(name, S_IRUGO, iio_show_dev_name, NULL);
->  
-> +static bool iio_get_mounting_matrix(struct iio_dev *indio_dev)
-> +{
-> +	int i, err;
-> +
-> +	err = device_property_read_u32_array(&indio_dev->dev, "mounting-matrix",
-> +					     indio_dev->mounting_matrix, 9);
-> +	if (!err) {
-> +		int *mm = indio_dev->mounting_matrix;
-> +
-> +		for (i = IIO_MM_SIZE - 2; i > 0; i -= 2) {
-> +			mm[i] = mm[i / 2];
-> +			mm[i + 1] = 0;
-> +		}
-> +
-> +		return true;
-> +	}
-> +
-> +	return false;
-> +}
-> +
-> +static ssize_t iio_show_mounting_matrix(struct device *dev,
-> +					struct device_attribute *attr,
-> +					char *buf)
-> +{
-> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
-> +	char *tmp = buf;
-> +	int i;
-> +
-> +	for (i = 0; i < IIO_MM_SIZE; i += 2) {
-> +		tmp += iio_format_value(tmp, IIO_VAL_INT_PLUS_MICRO, 2,
-> +					&indio_dev->mounting_matrix[i]);
-> +		if (((i + 2) / 2) % 3)
-Hmm. if (i != 8) should also do the job with slightly less feedling of
-magic..
-> +			tmp[-1] = ' ';
-> +	}
-> +	return tmp - buf;
-> +}
-> +
-> +static DEVICE_ATTR(mounting_matrix, S_IRUGO, iio_show_mounting_matrix, NULL);
-> +
->  static int iio_device_register_sysfs(struct iio_dev *indio_dev)
->  {
->  	int i, ret = 0, attrcount, attrn, attrcount_orig = 0;
-> @@ -920,6 +959,9 @@ static int iio_device_register_sysfs(struct iio_dev *indio_dev)
->  		indio_dev->chan_attr_group.attrs[attrn++] = &p->dev_attr.attr;
->  	if (indio_dev->name)
->  		indio_dev->chan_attr_group.attrs[attrn++] = &dev_attr_name.attr;
-> +	if (iio_get_mounting_matrix(indio_dev))
-> +		indio_dev->chan_attr_group.attrs[attrn++] =
-> +			&dev_attr_mounting_matrix.attr;
->  
->  	indio_dev->groups[indio_dev->groupcounter++] =
->  		&indio_dev->chan_attr_group;
-> diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
-> index b1e46ae..c1fa852 100644
-> --- a/include/linux/iio/iio.h
-> +++ b/include/linux/iio/iio.h
-> @@ -434,6 +434,8 @@ struct iio_buffer_setup_ops {
->  				   const unsigned long *scan_mask);
->  };
->  
-> +#define IIO_MM_SIZE		18
-> +
->  /**
->   * struct iio_dev - industrial I/O device
->   * @id:			[INTERN] used to identify device internally
-> @@ -469,6 +471,12 @@ struct iio_buffer_setup_ops {
->   * @groups:		[INTERN] attribute groups
->   * @groupcounter:	[INTERN] index of next attribute group
->   * @flags:		[INTERN] file ops related flags including busy flag.
-Hmm. No absolute need to have this new data in the iio_dev.  I'd do it
-via the read_raw_multi callback, though this will require converting read_raw
-over to that more flexible version.
-> + * @mounting_matrix:	[INTERN] the mounting matrix is a series of 9
-> + *			IIO_VAL_INT_PLUS_MICRO pairs that describes the
-> + *			transformation needed to account for the way the sensor
-> + *			has been placed on the PCB. See the mounting_matrix
-> + *			entry in Documentation/ABI/testing/sysfs-bus-iio about
-> + *			details of the transformation operations.
->   * @debugfs_dentry:	[INTERN] device specific debugfs dentry.
->   * @cached_reg_addr:	[INTERN] cached register address for debugfs reads.
->   */
-> @@ -509,6 +517,7 @@ struct iio_dev {
->  	int				groupcounter;
->  
->  	unsigned long			flags;
-> +	int				mounting_matrix[IIO_MM_SIZE];
->  #if defined(CONFIG_DEBUG_FS)
->  	struct dentry			*debugfs_dentry;
->  	unsigned			cached_reg_addr;
+> Granted, there are other device types for which the orientation
+> information may be useful (e.g. camera). However the actual
+> interpretation and action to be taken is different for each subsystem
+> (e.g. in the camera case do the correction via V4L2_CID_HFLIP /
+> V4L2_CID_VFLIP) so I think it is better to expose it at the subsystem
+> level in a way consistent with the subsystem's ABIs.
 > 
 
