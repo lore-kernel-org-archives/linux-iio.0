@@ -1,87 +1,192 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-ob0-f173.google.com ([209.85.214.173]:34410 "EHLO
-	mail-ob0-f173.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752051AbbEDMLW (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 4 May 2015 08:11:22 -0400
-Received: by obfe9 with SMTP id e9so104318126obf.1
-        for <linux-iio@vger.kernel.org>; Mon, 04 May 2015 05:11:21 -0700 (PDT)
+Return-Path: <octavian.purdila@intel.com>
 MIME-Version: 1.0
-In-Reply-To: <alpine.DEB.2.02.1504301637070.4190@pmeerw.net>
-References: <1430399755-26475-1-git-send-email-linus.walleij@linaro.org>
-	<1430399755-26475-6-git-send-email-linus.walleij@linaro.org>
-	<alpine.DEB.2.02.1504301637070.4190@pmeerw.net>
-Date: Mon, 4 May 2015 14:11:21 +0200
-Message-ID: <CACRpkdacUZfKkQz0XfXm4cqU+8B5TR8ZqJhXVzCTMcU+1EB2mA@mail.gmail.com>
-Subject: Re: [PATCH 06/10] iio: st_accel: support 8bit channel data
-From: Linus Walleij <linus.walleij@linaro.org>
-To: Peter Meerwald <pmeerw@pmeerw.net>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	Denis CIOCCA <denis.ciocca@st.com>,
-	Lee Jones <lee.jones@linaro.org>
+In-Reply-To: <5547846F.50604@metafoo.de>
+References: <1430306340-5026-1-git-send-email-octavian.purdila@intel.com>
+	<1430306340-5026-3-git-send-email-octavian.purdila@intel.com>
+	<55450C9E.4060409@metafoo.de>
+	<CAE1zotKDQjQS70tY0NS6536pjmKW8mbH_p+2aOv0kM0075hgkA@mail.gmail.com>
+	<5547846F.50604@metafoo.de>
+Date: Mon, 4 May 2015 18:36:41 +0300
+Message-ID: <CAE1zot+sRtJTqnZDqjQOezVk7vTd8y0XBZUA=C2-MYYs4P5qLg@mail.gmail.com>
+Subject: Re: [RFC PATCH 2/3] iio: allow better control for flushing the
+ hardware fifo
+From: Octavian Purdila <octavian.purdila@intel.com>
+To: Lars-Peter Clausen <lars@metafoo.de>
+Cc: Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>, "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	lkml <linux-kernel@vger.kernel.org>, Adriana Reus <adriana.reus@intel.com>,
+	linux-api@vger.kernel.org
 Content-Type: text/plain; charset=UTF-8
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+List-ID: <linux-iio@vger.kernel.org>
 
-On Thu, Apr 30, 2015 at 4:56 PM, Peter Meerwald <pmeerw@pmeerw.net> wrote:
+On Mon, May 4, 2015 at 5:38 PM, Lars-Peter Clausen <lars@metafoo.de> wrote:
+> On 05/03/2015 08:11 AM, Octavian Purdila wrote:
+>>
+>> On Sat, May 2, 2015 at 8:42 PM, Lars-Peter Clausen <lars@metafoo.de>
+>> wrote:
+>>>
+>>> On 04/29/2015 01:18 PM, Octavian Purdila wrote:
+>>>>
+>>>>
+>>>> Some applications need to be able to flush [1] the hardware fifo of
+>>>> the device and to receive events of when that happened [2] so that it
+>>>> can ignore stale data.
+>>>>
+>>>> This patch adds a new event (IIO_EV_TYPE_HWFIFO_FLUSHED) that should
+>>>> be sent to userspace when a flush has been completed. The application
+>>>> will be able to identify which are the samples to ignore based on the
+>>>> timestamp of the event.
+>>>>
+>>>> To allow applications to accurately generate a hardware fifo flush on
+>>>> demand, this patch also adds a new sysfs entry that triggers a
+>>>> hardware fifo flush when written to.
+>>>>
+>>>> [1]
+>>>>
+>>>> https://source.android.com/devices/sensors/hal-interface.html#flush_sensor
+>>>> [2]
+>>>>
+>>>> https://source.android.com/devices/sensors/hal-interface.html#metadata_flush_complete_events
+>>>
+>>>
+>>>
+>>> Since there is no asynchronous queue for commands to be executed in IIO
+>>> adding a asynchronous completion event doesn't make too much sense. This
+>>> is
+>>> something that needs to be handled at the HAL level.
+>>>
+>>> The HAL needs to have a queue of commands that need to be executed where
+>>> new
+>>> events can be added asynchronously, then has a loop which goes through
+>>> the
+>>> commands in the queue and executes them, and once executed generated the
+>>> appropriate completion event.
+>>>
+>>
+>> Hi Lars,
+>>
+>> Thanks for the review.
+>>
+>> We can't do this at the HAL level because the needed information is
+>> only available at the HAL level. At the HAL level each received sample
+>> from the driver is converted to an event. When doing a flush the HAL
+>> must add a special event (flush complete) after the last sample in the
+>> hardware fifo. But the HAL does not know how many samples are in the
+>> hardware fifo, how many are in the device buffer, etc.
 >
->> Some sensors like the LIS331DL only support 8bit data by a single
->> register per axis. These utilize the MSB byte. Make it possible
->> to register these apropriately.
 >
-> this doesn't seem right;
+> Ok, so that's what you need the timestamp for I presume? So the signature of
+> the of the sync function is basically.
 >
-> st_accel_8bit_channels is just added, but not used; this probably results
-> in a warning
+> timestamp sync(device)
+>
+> where timestamp is greater or equal to the timestamp of all samples before
+> the sync and smaller or equal to all samples after the sync.
+>
 
-Yes the actual LIS331DL patch adding support for this sensor is
-7/11, the next patch in the series.
+Yes that is the idea, although the implementation is that we need to
+insert an Android flush_complete event right before the event with the
+timestamp strictly greater then the timestamp of the IIO fifo flushed
+event.
 
-> the start address, ST_ACCEL_DEFAULT_OUT_X_L_ADDR, is +1 to read just the
-> MSB byte; but the storage size is still 16bit
 
-So in the LIS331DL datasheet page 29 & 30.
-http://www.st.com/st-web-ui/static/active/en/resource/technical/document/datasheet/CD00172345.pdf
+> What your implementation does is implement a synchronous API to flush the
+> FIFO but delivers the result of the operation asynchronously via a rather
+> arbitrary delivery mechanism. That is in my opinion not a good API/ABI and
+> might even have some race condition issues.
+>
+> If you do a flush, then read as much data as available you know that this
+> data is from before the flush and any data read at a later point is after
+> the flush.
+>
 
-It is clear that registers 0x29, 0x2b and 0x2d contain
-8-bit values of X,Y,Z respectively and 0x28, 0x2a and 0x2c
-are unused.
+We tried something similar (read in a loop until -EGAIN was received)
+but run into issue where we needed to cycle a lot to get the -EAGAIN
+at high sample frequencies and our guess was that read() is taking
+more then the time to receive a new sample.
 
-Since ST_ACCEL_DEFAULT_OUT_X_L_ADDR is 0x28, it
-is clear that ST choose to put the 8bit data into the MSB
-for this sensor. So when reading 8bit sensors we need to
-read MSB, and discard LSB.
+But if we modify the non-blocking case to flush the fifo even when the
+available data is non-zero and we have requested more than what is
+available I think we can avoid that issue. We'll try that and I'll get
+back with more datapoints.
 
-+       ST_SENSORS_LSM_CHANNELS(IIO_ACCEL,
-+                       BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_SCALE),
-+                       ST_SENSORS_SCAN_X, 1, IIO_MOD_X, 's', IIO_LE, 8, 16,
-+                       ST_ACCEL_DEFAULT_OUT_X_L_ADDR+1),
-
-> the actual read is done in st_sensors_get_buffer_element(); with special
-> case handling for the reads depending on the number of channels
-
-Not getting this, I traced around the code. When I cat in_accel_x_raw
-in sysfs the read happens in
-st_sensors_read_axis_data() called from st_sensors_read_info_raw().
-It reads correctly from 0x29, 0x2b and 0x2d as desired.
-
-Same if I turn on buffered I/O.
-
-Do I have to use buffered I/O *and* triggers to go down
-the execution path you point out? How do I do that from
-sysfs (no clue really)? Do I need a special testprogram?
-
-> I think either the _ADDR should not be +1 or the storage_bits should be 8,
-> but not both
-
-But this works :/
-
-The raw values I get seem correct.
-
-I'm suspicious on the scale values though, they don't even
-trigger a read from the register.
-
-Yours,
-Linus Walleij
+>>
+>>>
+>>> I really wish that document would specify what is actually meant by
+>>> flush.
+>>> Copy the FIFO content to a software buffer or discard the FIFO content.
+>>>
+>>
+>> It does say: "... and flushes the FIFO; those events are delivered as
+>> usual (i.e.: as if the maximum reporting latency had expired) ..."
+>>
+>
+> Missed that, thanks.
+>
+>
+>>>
+>>>>
+>>>> Signed-off-by: Octavian Purdila <octavian.purdila@intel.com>
+>>>> ---
+>>>>    Documentation/ABI/testing/sysfs-bus-iio | 11 +++++++++++
+>>>>    include/linux/iio/sysfs.h               |  3 +++
+>>>>    include/uapi/linux/iio/types.h          |  1 +
+>>>>    3 files changed, 15 insertions(+)
+>>>>
+>>>> diff --git a/Documentation/ABI/testing/sysfs-bus-iio
+>>>> b/Documentation/ABI/testing/sysfs-bus-iio
+>>>> index 866b4ec..bb4d8de 100644
+>>>> --- a/Documentation/ABI/testing/sysfs-bus-iio
+>>>> +++ b/Documentation/ABI/testing/sysfs-bus-iio
+>>>> @@ -1375,3 +1375,14 @@ Description:
+>>>>                  The emissivity ratio of the surface in the field of
+>>>> view
+>>>> of the
+>>>>                  contactless temperature sensor.  Emissivity varies from
+>>>> 0
+>>>> to 1,
+>>>>                  with 1 being the emissivity of a black body.
+>>>> +
+>>>> +What:          /sys/bus/iio/devices/iio:deviceX/buffer/hwfifo_flush
+>>>> +KernelVersion: 4.2
+>>>> +Contact:       linux-iio@vger.kernel.org
+>>>> +Description:
+>>>> +               Write only entry that accepts a single strictly positive
+>>>> integer
+>>>> +               specifying the number of samples to flush from the
+>>>> hardware fifo
+>>>> +               to the device buffer. When the flush is completed an
+>>>> +               IIO_EV_TYPE_HWFIFO_FLUSHED event is generated. The event
+>>>> has the
+>>>> +               timestamp equal with the timestamp of last sample that
+>>>> was
+>>>> +               flushed from the hardware fifo.
+>>>
+>>>
+>>>
+>>> I'd prefer this to be handled through the normal read() API rather than
+>>> having a side channel for it. Big question is how though. We could
+>>> specify
+>>> that reading in O_NONBLOCK mode will always read data if it is available
+>>> and
+>>> not only if it is above the watermark threshold.
+>>
+>>
+>> Do you mean to try and flush when the available data in the device
+>> buffer is less then the requested size? That should work and hopefully
+>> the ABI change does not matter since the hwfifo stuff has not been
+>> released yet.
+>
+>
+> Basically only let poll() and blocking read() block when not enough data is
+> available. But for non-blocking read return as much data as possible if data
+> is available.
+>
+>>
+>> I prefer the explicit flush though. I think it is better to have the
+>> ABIs clearly visible instead of being buried in the details.
+>>
+>
+> Yea, it's a bit tricky. What should be used for this sysfs, IOCTL, read()...
+>
+> - Lars
