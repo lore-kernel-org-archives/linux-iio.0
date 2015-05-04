@@ -1,259 +1,172 @@
-Return-Path: <daniel.baluta@intel.com>
-From: Daniel Baluta <daniel.baluta@intel.com>
-To: jic23@kernel.org
-Cc: jlbec@evilplan.org,
-	lars@metafoo.de,
-	knaack.h@gmx.de,
-	linux-kernel@vger.kernel.org,
-	linux-iio@vger.kernel.org,
-	octavian.purdila@intel.com,
-	pebolle@tiscali.nl,
-	patrick.porlan@intel.com,
-	adriana.reus@intel.com,
-	constantin.musca@intel.com,
-	marten@intuitiveaerial.com,
-	daniel.baluta@intel.com
-Subject: [PATCH v5 1/4] iio: core: Introduce IIO software triggers
-Date: Mon,  4 May 2015 13:50:01 +0300
-Message-Id: <1430736604-22119-2-git-send-email-daniel.baluta@intel.com>
-In-Reply-To: <1430736604-22119-1-git-send-email-daniel.baluta@intel.com>
-References: <1430736604-22119-1-git-send-email-daniel.baluta@intel.com>
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:46784 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751555AbbEDQGm (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 4 May 2015 12:06:42 -0400
+Message-ID: <55475710.9050707@kernel.org>
+Date: Mon, 04 May 2015 12:25:04 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+MIME-Version: 1.0
+To: Octavian Purdila <octavian.purdila@intel.com>
+CC: lars@metafoo.de, pmeerw@pmeerw.net, robert.moore@intel.com,
+	rafael.j.wysocki@intel.com, lenb@kernel.org,
+	linux-api@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-iio@vger.kernel.org, linux-acpi@vger.kernel.org
+Subject: Re: [RFC PATCH 1/3] iio: export mounting matrix information
+References: <1430146908-27919-1-git-send-email-octavian.purdila@intel.com> <1430146908-27919-2-git-send-email-octavian.purdila@intel.com>
+In-Reply-To: <1430146908-27919-2-git-send-email-octavian.purdila@intel.com>
+Content-Type: text/plain; charset=windows-1252
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-A software trigger associates an IIO device trigger with a software
-interrupt source (e.g: timer, sysfs). This patch adds the generic
-infrastructure for handling software triggers.
+On 27/04/15 16:01, Octavian Purdila wrote:
+> Export a new sysfs attribute that describes the placement of the
+> sensor on the device in the form of a mounting matrix so that
+> userspace can do the required correction to get accurate data:
+> 
+> corrected X = MM[0] * X + MM[1] Y + MM[2] * Z
+> corrected Y = MM[3] * X + MM[4] Y + MM[5] * Z
+> corrected Z = MM[6] * X + MM[7] Y + MM[8] * Z
+> 
+> This information is read from the device properties of the parent of
+> the IIO device.
+> 
+> Signed-off-by: Octavian Purdila <octavian.purdila@intel.com>
+Hmm.  This could be done with existing code and a new info_mask element.
+The disadvantage is you'd have to change the read_raw to read_raw_multi
+callback, but that's hardly a big job.  If I could be bothered, I'd
+move the whole subsystem over and drop read_raw entirely.
 
-Software interrupts sources are kept in a iio_trigger_types_list and
-registered separately when the associated kernel module is loaded.
+It was introduced precisely for this sort of element.
 
-Software triggers can be created directly from drivers or from user
-space via configfs interface.
+As I mentioned deeper in the thread.  If we are going to introduce a mounting
+matrix, I'd prefer a version that includes translation.  It might not matter
+to many devices but it has mattered a lot to me in the past and doesn't hurt
+others that much (I used to write papers on how to estimate this stuff
+from black box devices).
+> ---
+>  Documentation/ABI/testing/sysfs-bus-iio | 11 +++++++++
+>  drivers/iio/industrialio-core.c         | 42 +++++++++++++++++++++++++++++++++
+>  include/linux/iio/iio.h                 |  9 +++++++
+>  3 files changed, 62 insertions(+)
+> 
+> diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
+> index 866b4ec..d36476e 100644
+> --- a/Documentation/ABI/testing/sysfs-bus-iio
+> +++ b/Documentation/ABI/testing/sysfs-bus-iio
+> @@ -1375,3 +1375,14 @@ Description:
+>  		The emissivity ratio of the surface in the field of view of the
+>  		contactless temperature sensor.  Emissivity varies from 0 to 1,
+>  		with 1 being the emissivity of a black body.
+> +
+> +What:		/sys/bus/iio/devices/iio:deviceX/mounting_matrix
+> +KernelVersion:	4.2
+> +Contact:	linux-iio@vger.kernel.org
+> +Description:
+> +		A list of 9 floating point values that describes the
+> +		transformation needed to account for the way the sensor has been
+> +		placed on the PCB:
+> +		corrected X = MM[0] * X + MM[1] Y + MM[2] * Z
+> +		corrected Y = MM[3] * X + MM[4] Y + MM[5] * Z
+> +		corrected Z = MM[6] * X + MM[7] Y + MM[8] * Z
+> diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+> index 7c98bc1..9000c53 100644
+> --- a/drivers/iio/industrialio-core.c
+> +++ b/drivers/iio/industrialio-core.c
+> @@ -871,6 +871,45 @@ static ssize_t iio_show_dev_name(struct device *dev,
+>  
+>  static DEVICE_ATTR(name, S_IRUGO, iio_show_dev_name, NULL);
+>  
+> +static bool iio_get_mounting_matrix(struct iio_dev *indio_dev)
+> +{
+> +	int i, err;
+> +
+> +	err = device_property_read_u32_array(&indio_dev->dev, "mounting-matrix",
+> +					     indio_dev->mounting_matrix, 9);
+> +	if (!err) {
+> +		int *mm = indio_dev->mounting_matrix;
+> +
+> +		for (i = IIO_MM_SIZE - 2; i > 0; i -= 2) {
+> +			mm[i] = mm[i / 2];
+> +			mm[i + 1] = 0;
+> +		}
+> +
+> +		return true;
+> +	}
+> +
+> +	return false;
+> +}
+> +
+> +static ssize_t iio_show_mounting_matrix(struct device *dev,
+> +					struct device_attribute *attr,
+> +					char *buf)
+> +{
+> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+> +	char *tmp = buf;
+> +	int i;
+> +
+> +	for (i = 0; i < IIO_MM_SIZE; i += 2) {
+> +		tmp += iio_format_value(tmp, IIO_VAL_INT_PLUS_MICRO, 2,
+> +					&indio_dev->mounting_matrix[i]);
+> +		if (((i + 2) / 2) % 3)
+Hmm. if (i != 8) should also do the job with slightly less feedling of
+magic..
+> +			tmp[-1] = ' ';
+> +	}
+> +	return tmp - buf;
+> +}
+> +
+> +static DEVICE_ATTR(mounting_matrix, S_IRUGO, iio_show_mounting_matrix, NULL);
+> +
+>  static int iio_device_register_sysfs(struct iio_dev *indio_dev)
+>  {
+>  	int i, ret = 0, attrcount, attrn, attrcount_orig = 0;
+> @@ -920,6 +959,9 @@ static int iio_device_register_sysfs(struct iio_dev *indio_dev)
+>  		indio_dev->chan_attr_group.attrs[attrn++] = &p->dev_attr.attr;
+>  	if (indio_dev->name)
+>  		indio_dev->chan_attr_group.attrs[attrn++] = &dev_attr_name.attr;
+> +	if (iio_get_mounting_matrix(indio_dev))
+> +		indio_dev->chan_attr_group.attrs[attrn++] =
+> +			&dev_attr_mounting_matrix.attr;
+>  
+>  	indio_dev->groups[indio_dev->groupcounter++] =
+>  		&indio_dev->chan_attr_group;
+> diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
+> index b1e46ae..c1fa852 100644
+> --- a/include/linux/iio/iio.h
+> +++ b/include/linux/iio/iio.h
+> @@ -434,6 +434,8 @@ struct iio_buffer_setup_ops {
+>  				   const unsigned long *scan_mask);
+>  };
+>  
+> +#define IIO_MM_SIZE		18
+> +
+>  /**
+>   * struct iio_dev - industrial I/O device
+>   * @id:			[INTERN] used to identify device internally
+> @@ -469,6 +471,12 @@ struct iio_buffer_setup_ops {
+>   * @groups:		[INTERN] attribute groups
+>   * @groupcounter:	[INTERN] index of next attribute group
+>   * @flags:		[INTERN] file ops related flags including busy flag.
+Hmm. No absolute need to have this new data in the iio_dev.  I'd do it
+via the read_raw_multi callback, though this will require converting read_raw
+over to that more flexible version.
+> + * @mounting_matrix:	[INTERN] the mounting matrix is a series of 9
+> + *			IIO_VAL_INT_PLUS_MICRO pairs that describes the
+> + *			transformation needed to account for the way the sensor
+> + *			has been placed on the PCB. See the mounting_matrix
+> + *			entry in Documentation/ABI/testing/sysfs-bus-iio about
+> + *			details of the transformation operations.
+>   * @debugfs_dentry:	[INTERN] device specific debugfs dentry.
+>   * @cached_reg_addr:	[INTERN] cached register address for debugfs reads.
+>   */
+> @@ -509,6 +517,7 @@ struct iio_dev {
+>  	int				groupcounter;
+>  
+>  	unsigned long			flags;
+> +	int				mounting_matrix[IIO_MM_SIZE];
+>  #if defined(CONFIG_DEBUG_FS)
+>  	struct dentry			*debugfs_dentry;
+>  	unsigned			cached_reg_addr;
+> 
 
-Signed-off-by: Daniel Baluta <daniel.baluta@intel.com>
----
- drivers/iio/Kconfig                   |   8 +++
- drivers/iio/Makefile                  |   1 +
- drivers/iio/industrialio-sw-trigger.c | 112 ++++++++++++++++++++++++++++++++++
- include/linux/iio/sw_trigger.h        |  60 ++++++++++++++++++
- 4 files changed, 181 insertions(+)
- create mode 100644 drivers/iio/industrialio-sw-trigger.c
- create mode 100644 include/linux/iio/sw_trigger.h
-
-diff --git a/drivers/iio/Kconfig b/drivers/iio/Kconfig
-index 4011eff..de7f1d9 100644
---- a/drivers/iio/Kconfig
-+++ b/drivers/iio/Kconfig
-@@ -58,6 +58,14 @@ config IIO_CONSUMERS_PER_TRIGGER
- 	This value controls the maximum number of consumers that a
- 	given trigger may handle. Default is 2.
- 
-+config IIO_SW_TRIGGER
-+	bool "Enable software triggers support"
-+	depends on IIO_TRIGGER
-+	help
-+	 Provides IIO core support for software triggers. A software
-+	 trigger can be created via configfs or directly by a driver
-+	 using the API provided.
-+
- source "drivers/iio/accel/Kconfig"
- source "drivers/iio/adc/Kconfig"
- source "drivers/iio/amplifiers/Kconfig"
-diff --git a/drivers/iio/Makefile b/drivers/iio/Makefile
-index 698afc2..df87975 100644
---- a/drivers/iio/Makefile
-+++ b/drivers/iio/Makefile
-@@ -6,6 +6,7 @@ obj-$(CONFIG_IIO) += industrialio.o
- industrialio-y := industrialio-core.o industrialio-event.o inkern.o
- industrialio-$(CONFIG_IIO_BUFFER) += industrialio-buffer.o
- industrialio-$(CONFIG_IIO_TRIGGER) += industrialio-trigger.o
-+industrialio-$(CONFIG_IIO_SW_TRIGGER) += industrialio-sw-trigger.o
- industrialio-$(CONFIG_IIO_BUFFER_CB) += buffer_cb.o
- 
- obj-$(CONFIG_IIO_TRIGGERED_BUFFER) += industrialio-triggered-buffer.o
-diff --git a/drivers/iio/industrialio-sw-trigger.c b/drivers/iio/industrialio-sw-trigger.c
-new file mode 100644
-index 0000000..f22aa63
---- /dev/null
-+++ b/drivers/iio/industrialio-sw-trigger.c
-@@ -0,0 +1,112 @@
-+/*
-+ * The Industrial I/O core, software trigger functions
-+ *
-+ * Copyright (c) 2015 Intel Corporation
-+ *
-+ * This program is free software; you can redistribute it and/or modify it
-+ * under the terms of the GNU General Public License version 2 as published by
-+ * the Free Software Foundation.
-+ */
-+
-+#include <linux/module.h>
-+#include <linux/init.h>
-+#include <linux/kmod.h>
-+#include <linux/list.h>
-+#include <linux/slab.h>
-+
-+#include <linux/iio/sw_trigger.h>
-+
-+static LIST_HEAD(iio_trigger_types_list);
-+static DEFINE_RWLOCK(iio_trigger_types_lock);
-+
-+static
-+struct iio_sw_trigger_type *iio_find_sw_trigger_type(char *name, unsigned len)
-+{
-+	struct iio_sw_trigger_type *t = NULL, *iter;
-+
-+	list_for_each_entry(iter, &iio_trigger_types_list, list)
-+		if (!strncmp(iter->name, name, len)) {
-+			t = iter;
-+			break;
-+		}
-+
-+	return t;
-+}
-+
-+int iio_register_sw_trigger_type(struct iio_sw_trigger_type *t)
-+{
-+	struct iio_sw_trigger_type *iter;
-+	int ret = 0;
-+
-+	write_lock(&iio_trigger_types_lock);
-+	iter = iio_find_sw_trigger_type(t->name, strlen(t->name));
-+	if (iter)
-+		ret = -EBUSY;
-+	else
-+		list_add_tail(&t->list, &iio_trigger_types_list);
-+	write_unlock(&iio_trigger_types_lock);
-+
-+	return ret;
-+}
-+EXPORT_SYMBOL(iio_register_sw_trigger_type);
-+
-+int iio_unregister_sw_trigger_type(struct iio_sw_trigger_type *t)
-+{
-+	struct iio_sw_trigger_type *iter;
-+	int ret = 0;
-+
-+	write_lock(&iio_trigger_types_lock);
-+	iter = iio_find_sw_trigger_type(t->name, strlen(t->name));
-+	if (!iter)
-+		ret = -EINVAL;
-+	else
-+		list_del(&t->list);
-+	write_unlock(&iio_trigger_types_lock);
-+
-+	return ret;
-+}
-+EXPORT_SYMBOL(iio_unregister_sw_trigger_type);
-+
-+static
-+struct iio_sw_trigger_type *iio_get_sw_trigger_type(char *name)
-+{
-+	struct iio_sw_trigger_type *t;
-+
-+	read_lock(&iio_trigger_types_lock);
-+	t = iio_find_sw_trigger_type(name, strlen(name));
-+	if (t && !try_module_get(t->owner))
-+		t = NULL;
-+	read_unlock(&iio_trigger_types_lock);
-+
-+	return t;
-+}
-+
-+struct iio_sw_trigger *iio_sw_trigger_create(char *type, char *name)
-+{
-+	struct iio_sw_trigger *t;
-+	struct iio_sw_trigger_type *tt;
-+
-+	tt = iio_get_sw_trigger_type(type);
-+	if (!tt) {
-+		pr_err("Invalid trigger type: %s\n", type);
-+		return ERR_PTR(-EINVAL);
-+	}
-+	t = tt->ops->probe(name);
-+	if (IS_ERR(t))
-+		goto out_module_put;
-+
-+	return t;
-+out_module_put:
-+	module_put(tt->owner);
-+	return t;
-+}
-+EXPORT_SYMBOL(iio_sw_trigger_create);
-+
-+void iio_sw_trigger_destroy(struct iio_sw_trigger *t)
-+{
-+	struct iio_sw_trigger_type *tt = t->trigger_type;
-+
-+	tt->ops->remove(t);
-+	module_put(tt->owner);
-+}
-+EXPORT_SYMBOL(iio_sw_trigger_destroy);
-diff --git a/include/linux/iio/sw_trigger.h b/include/linux/iio/sw_trigger.h
-new file mode 100644
-index 0000000..4b41e3e
---- /dev/null
-+++ b/include/linux/iio/sw_trigger.h
-@@ -0,0 +1,60 @@
-+/*
-+ * Industrial I/O software trigger interface
-+ *
-+ * Copyright (c) 2015 Intel Corporation
-+ *
-+ * This program is free software; you can redistribute it and/or modify it
-+ * under the terms of the GNU General Public License version 2 as published by
-+ * the Free Software Foundation.
-+ */
-+
-+#ifndef __IIO_SW_TRIGGER
-+#define __IIO_SW_TRIGGER
-+
-+#include <linux/module.h>
-+#include <linux/device.h>
-+#include <linux/iio/iio.h>
-+#include <linux/configfs.h>
-+
-+#define module_iio_sw_trigger_driver(__iio_sw_trigger_type) \
-+	module_driver(__iio_sw_trigger_type, iio_register_sw_trigger_type, \
-+		      iio_unregister_sw_trigger_type)
-+
-+struct iio_sw_trigger_ops;
-+
-+struct iio_sw_trigger_type {
-+	char *name;
-+	struct module *owner;
-+	struct iio_sw_trigger_ops *ops;
-+	struct list_head list;
-+};
-+
-+struct iio_sw_trigger {
-+	struct iio_trigger *trigger;
-+	struct iio_sw_trigger_type *trigger_type;
-+#ifdef CONFIG_CONFIGFS_FS
-+	struct config_group group;
-+#endif
-+};
-+
-+struct iio_sw_trigger_ops {
-+	struct iio_sw_trigger* (*probe)(const char *);
-+	int (*remove)(struct iio_sw_trigger *);
-+};
-+
-+int iio_register_sw_trigger_type(struct iio_sw_trigger_type *);
-+int iio_unregister_sw_trigger_type(struct iio_sw_trigger_type *);
-+
-+struct iio_sw_trigger *iio_sw_trigger_create(char *, char *);
-+void iio_sw_trigger_destroy(struct iio_sw_trigger *);
-+
-+#ifdef CONFIG_CONFIGFS_FS
-+static inline
-+struct iio_sw_trigger *to_iio_sw_trigger(struct config_item *item)
-+{
-+	return container_of(to_config_group(item), struct iio_sw_trigger,
-+			    group);
-+}
-+#endif
-+
-+#endif /* __IIO_SW_TRIGGER */
--- 
-1.9.1
