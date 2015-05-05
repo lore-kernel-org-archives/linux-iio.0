@@ -1,167 +1,66 @@
-Return-Path: <daniel.baluta@gmail.com>
+Return-Path: <linus.walleij@linaro.org>
 MIME-Version: 1.0
-In-Reply-To: <b7a69555f210e3c9565da13dbfb71c89dbb1013b.1430519716.git.sathyanarayanan.kuppuswamy@linux.intel.com>
-References: <b7a69555f210e3c9565da13dbfb71c89dbb1013b.1430519716.git.sathyanarayanan.kuppuswamy@linux.intel.com>
-Date: Tue, 5 May 2015 16:12:09 +0300
-Message-ID: <CAEnQRZCP-mZ9BdEuAUHT6c-aWu43bGBQ1nzjJcXn3w1aeiSz+Q@mail.gmail.com>
-Subject: Re: [PATCH v1 1/1] iio: ltr501: Add light channel support
-From: Daniel Baluta <daniel.baluta@gmail.com>
-To: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
-Cc: Jonathan Cameron <jic23@kernel.org>, Peter Meerwald <pmeerw@pmeerw.net>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
-	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+In-Reply-To: <CACRpkdZu9SF8XdQnCkHDMNX-J=nB9hdE1SBEspoStDzpCDyOPA@mail.gmail.com>
+References: <1430399755-26475-1-git-send-email-linus.walleij@linaro.org>
+	<1430399755-26475-6-git-send-email-linus.walleij@linaro.org>
+	<alpine.DEB.2.02.1504301637070.4190@pmeerw.net>
+	<CACRpkdacUZfKkQz0XfXm4cqU+8B5TR8ZqJhXVzCTMcU+1EB2mA@mail.gmail.com>
+	<5547A0D5.3000006@kernel.org>
+	<CACRpkdZu9SF8XdQnCkHDMNX-J=nB9hdE1SBEspoStDzpCDyOPA@mail.gmail.com>
+Date: Tue, 5 May 2015 14:41:41 +0200
+Message-ID: <CACRpkdaU8SeKe_dSf1f4HEhZtN=M+gR3JN5pMeq6Ovp=E2b2iw@mail.gmail.com>
+Subject: Re: [PATCH 06/10] iio: st_accel: support 8bit channel data
+From: Linus Walleij <linus.walleij@linaro.org>
+To: Jonathan Cameron <jic23@kernel.org>, busybox@busybox.net,
+	Denys Vlasenko <vda.linux@googlemail.com>
+Cc: Peter Meerwald <pmeerw@pmeerw.net>, Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>, "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	Denis CIOCCA <denis.ciocca@st.com>, Lee Jones <lee.jones@linaro.org>
 Content-Type: text/plain; charset=UTF-8
 List-ID: <linux-iio@vger.kernel.org>
 
-On Sat, May 2, 2015 at 1:39 AM, Kuppuswamy Sathyanarayanan
-<sathyanarayanan.kuppuswamy@linux.intel.com> wrote:
-> Added support to calculate lux value from visible
-> and IR spectrum adc count values. Also added IIO_LIGHT
-> channel to enable user read the lux value directly
-> from device using illuminance input ABI.
->
-> Signed-off-by: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
+Looping in busybox people.
 
-Reviewed-by: Daniel Baluta <daniel.baluta@intel.com>
+On Tue, May 5, 2015 at 2:22 PM, Linus Walleij <linus.walleij@linaro.org> wrote:
+> On Mon, May 4, 2015 at 6:39 PM, Jonathan Cameron <jic23@kernel.org> wrote:
+>
+>> The generic_buffer.c
+>> test app (now under tools/iio) should do the job for testing
+>> this. The purpose of that one is to act as an example
+>> of the chardev (buffered) interface and as documentation
+>> as the docs always got out of date when we kept them seperately.
+>> (yeah I'm lazy).
+>
+> Aha and that test app like iio_event_monitor needs proper
+> device creation in /dev/iio:device0 etc ...
+>
+> And then I notice that busybox' mdev doesn't really auto-create
+> devices for anything else than what appears below
+> /sys/class/*, /sys/bus/* is not scanned for device, yippie-ay.
+>
+> I wonder how people solve this for IIO on stripped-down
+> systems, static devices?
+>
+> Is mdev even doing the right thing by just looking under
+> /sys/class?
 
-> ---
->  drivers/iio/light/ltr501.c | 71 +++++++++++++++++++++++++++++++++++++++++-----
->  1 file changed, 64 insertions(+), 7 deletions(-)
->
-> diff --git a/drivers/iio/light/ltr501.c b/drivers/iio/light/ltr501.c
-> index ca4bf47..242cf20 100644
-> --- a/drivers/iio/light/ltr501.c
-> +++ b/drivers/iio/light/ltr501.c
-> @@ -66,6 +66,9 @@
->
->  #define LTR501_REGMAP_NAME "ltr501_regmap"
->
-> +#define LTR501_LUX_CONV(vis_coeff, vis_data, ir_coeff, ir_data) \
-> +                       ((vis_coeff * vis_data) - (ir_coeff * ir_data))
-> +
->  static const int int_time_mapping[] = {100000, 50000, 200000, 400000};
->
->  static const struct reg_field reg_field_it =
-> @@ -298,6 +301,29 @@ static int ltr501_ps_read_samp_period(struct ltr501_data *data, int *val)
->         return IIO_VAL_INT;
->  }
->
-> +/* IR and visible spectrum coeff's are given in data sheet */
-> +static unsigned long ltr501_calculate_lux(u16 vis_data, u16 ir_data)
-> +{
-> +       unsigned long ratio, lux;
-> +
-> +       if (vis_data == 0)
-> +               return 0;
-> +
-> +       /* multiply numerator by 100 to avoid handling ratio < 1 */
-> +       ratio = DIV_ROUND_UP(ir_data * 100, ir_data + vis_data);
-> +
-> +       if (ratio < 45)
-> +               lux = LTR501_LUX_CONV(1774, vis_data, -1105, ir_data);
-> +       else if (ratio >= 45 && ratio < 64)
-> +               lux = LTR501_LUX_CONV(3772, vis_data, 1336, ir_data);
-> +       else if (ratio >= 64 && ratio < 85)
-> +               lux = LTR501_LUX_CONV(1690, vis_data, 169, ir_data);
-> +       else
-> +               lux = 0;
-> +
-> +       return lux / 1000;
-> +}
-> +
->  static int ltr501_drdy(struct ltr501_data *data, u8 drdy_mask)
->  {
->         int tries = 100;
-> @@ -548,11 +574,24 @@ static const struct iio_event_spec ltr501_pxs_event_spec[] = {
->         .num_event_specs = _evsize,\
->  }
->
-> +#define LTR501_LIGHT_CHANNEL(_idx) { \
-> +       .type = IIO_LIGHT, \
-> +       .info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED), \
-> +       .scan_index = 0, \
-> +       .scan_type = { \
-> +               .sign = 'u', \
-> +               .realbits = 16, \
-> +               .storagebits = 16, \
-> +               .endianness = IIO_CPU, \
-> +       }, \
-> +}
-> +
->  static const struct iio_chan_spec ltr501_channels[] = {
-> -       LTR501_INTENSITY_CHANNEL(0, LTR501_ALS_DATA0, IIO_MOD_LIGHT_BOTH, 0,
-> +       LTR501_LIGHT_CHANNEL(0),
-> +       LTR501_INTENSITY_CHANNEL(1, LTR501_ALS_DATA0, IIO_MOD_LIGHT_BOTH, 0,
->                                  ltr501_als_event_spec,
->                                  ARRAY_SIZE(ltr501_als_event_spec)),
-> -       LTR501_INTENSITY_CHANNEL(1, LTR501_ALS_DATA1, IIO_MOD_LIGHT_IR,
-> +       LTR501_INTENSITY_CHANNEL(2, LTR501_ALS_DATA1, IIO_MOD_LIGHT_IR,
->                                  BIT(IIO_CHAN_INFO_SCALE) |
->                                  BIT(IIO_CHAN_INFO_INT_TIME) |
->                                  BIT(IIO_CHAN_INFO_SAMP_FREQ),
-> @@ -562,7 +601,7 @@ static const struct iio_chan_spec ltr501_channels[] = {
->                 .address = LTR501_PS_DATA,
->                 .info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
->                         BIT(IIO_CHAN_INFO_SCALE),
-> -               .scan_index = 2,
-> +               .scan_index = 3,
->                 .scan_type = {
->                         .sign = 'u',
->                         .realbits = 11,
-> @@ -572,19 +611,20 @@ static const struct iio_chan_spec ltr501_channels[] = {
->                 .event_spec = ltr501_pxs_event_spec,
->                 .num_event_specs = ARRAY_SIZE(ltr501_pxs_event_spec),
->         },
-> -       IIO_CHAN_SOFT_TIMESTAMP(3),
-> +       IIO_CHAN_SOFT_TIMESTAMP(4),
->  };
->
->  static const struct iio_chan_spec ltr301_channels[] = {
-> -       LTR501_INTENSITY_CHANNEL(0, LTR501_ALS_DATA0, IIO_MOD_LIGHT_BOTH, 0,
-> +       LTR501_LIGHT_CHANNEL(0),
-> +       LTR501_INTENSITY_CHANNEL(1, LTR501_ALS_DATA0, IIO_MOD_LIGHT_BOTH, 0,
->                                  ltr501_als_event_spec,
->                                  ARRAY_SIZE(ltr501_als_event_spec)),
-> -       LTR501_INTENSITY_CHANNEL(1, LTR501_ALS_DATA1, IIO_MOD_LIGHT_IR,
-> +       LTR501_INTENSITY_CHANNEL(2, LTR501_ALS_DATA1, IIO_MOD_LIGHT_IR,
->                                  BIT(IIO_CHAN_INFO_SCALE) |
->                                  BIT(IIO_CHAN_INFO_INT_TIME) |
->                                  BIT(IIO_CHAN_INFO_SAMP_FREQ),
->                                  NULL, 0),
-> -       IIO_CHAN_SOFT_TIMESTAMP(2),
-> +       IIO_CHAN_SOFT_TIMESTAMP(3),
->  };
->
->  static int ltr501_read_raw(struct iio_dev *indio_dev,
-> @@ -596,6 +636,23 @@ static int ltr501_read_raw(struct iio_dev *indio_dev,
->         int ret, i;
->
->         switch (mask) {
-> +       case IIO_CHAN_INFO_PROCESSED:
-> +               if (iio_buffer_enabled(indio_dev))
-> +                       return -EBUSY;
-> +
-> +               switch (chan->type) {
-> +               case IIO_LIGHT:
-> +                       mutex_lock(&data->lock_als);
-> +                       ret = ltr501_read_als(data, buf);
-> +                       mutex_unlock(&data->lock_als);
-> +                       if (ret < 0)
-> +                               return ret;
-> +                       *val = ltr501_calculate_lux(le16_to_cpu(buf[1]),
-> +                                                   le16_to_cpu(buf[0]));
-> +                       return IIO_VAL_INT;
-> +               default:
-> +                       return -EINVAL;
-> +               }
->         case IIO_CHAN_INFO_RAW:
->                 if (iio_buffer_enabled(indio_dev))
->                         return -EBUSY;
-> --
-> 1.9.1
->
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+Typically the following patch to mdev.c makes the devices
+appear:
+
+                recursive_action("/sys/class",
+                        ACTION_RECURSE | ACTION_FOLLOWLINKS,
+                        fileAction, dirAction, temp, 0);
++               recursive_action("/sys/bus/iio",
++                       ACTION_RECURSE | ACTION_FOLLOWLINKS,
++                       fileAction, dirAction, temp, 0);
+
+That is not just a little bit annoying. Who is doing the wrong thing?
+
+* Busybox does the wrong thing by just inspecting
+  /sys/class for coldplug mdev -s
+
+* IIO does the wrong thing by not registering a class
+  device (I think Greg said he doesn't like these...)
+
+Yours,
+Linus Walleij
