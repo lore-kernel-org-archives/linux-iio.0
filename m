@@ -1,47 +1,40 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.ispras.ru ([83.149.199.45]:48392 "EHLO mail.ispras.ru"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1750868AbbEFVs5 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Wed, 6 May 2015 17:48:57 -0400
-From: Alexey Khoroshilov <khoroshilov@ispras.ru>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Alexey Khoroshilov <khoroshilov@ispras.ru>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org, ldv-project@linuxtesting.org
-Subject: [PATCH] iio: hid-sensors: Fix memory leak on failure path in hid_prox_probe()
-Date: Thu,  7 May 2015 00:48:44 +0300
-Message-Id: <1430948924-4756-1-git-send-email-khoroshilov@ispras.ru>
+Received: from skprod3.natinst.com ([130.164.80.24]:42005 "EHLO ni.com"
+	rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+	id S1750930AbbEFSfG (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Wed, 6 May 2015 14:35:06 -0400
+Message-ID: <554A5ED6.3070505@ni.com>
+Date: Wed, 06 May 2015 13:35:02 -0500
+From: Xander Huff <xander.huff@ni.com>
+MIME-Version: 1.0
+To: lars@metafoo.de
+CC: Jaeden Amero <jaeden.amero@ni.com>, Josh Cartwright <joshc@ni.com>,
+	Joseph Hershberger <joseph.hershberger@ni.com>,
+	linux-iio@vger.kernel.org
+Subject: Re: XADC values read from VAUX0-15 are consistently ~10% less than
+ they should be
+References: <5549401A.4080800@ni.com>
+In-Reply-To: <5549401A.4080800@ni.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-If prox_parse_report() fails, memory allocated for channels is not
-deallocated, since it is still in local variable channels
-while kfree() is called with indio_dev->channels.
+On 5/5/2015 5:11 PM, Xander Huff wrote:
+> Hi Lars,
+>
+> I've been working on transitioning one of our hardware devices over from using
+> the out-of-tree hwmon driver that Xilinx used to provide to the xadc driver you
+> added upstream, but I've been having trouble accessing our connected auxiliary
+> channels. I've found that for all channels I've tested, after multiplying the
+> raw value by the scale value (0.244140625), the resulting mVs are always about
+> 10 percent less than what we expect them to be. (2.9V instead of 3.3V, 5.4V
+> instead of 6V, etc.). I'm interested in any tips you may have on how to debug
+> this issue.
+Nevermind, it turns out I had somehow transcribed the scale value incorrectly 
+for my testing. After modifying my test to directly use the scale values from 
+our target, the resulting voltages came out as expected
 
-Found by Linux Driver Verification project (linuxtesting.org).
-
-Signed-off-by: Alexey Khoroshilov <khoroshilov@ispras.ru>
----
- drivers/iio/light/hid-sensor-prox.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/iio/light/hid-sensor-prox.c b/drivers/iio/light/hid-sensor-prox.c
-index 91ecc46ffeaa..d0d188108a11 100644
---- a/drivers/iio/light/hid-sensor-prox.c
-+++ b/drivers/iio/light/hid-sensor-prox.c
-@@ -281,8 +281,9 @@ static int hid_prox_probe(struct platform_device *pdev)
- 	ret = prox_parse_report(pdev, hsdev, channels,
- 				HID_USAGE_SENSOR_PROX, prox_state);
- 	if (ret) {
-+		kfree(channels);
- 		dev_err(&pdev->dev, "failed to setup attributes\n");
--		goto error_free_dev_mem;
-+		return ret;
- 	}
- 
- 	indio_dev->channels = channels;
 -- 
-1.9.1
-
+Xander Huff
+Staff Software Engineer
+National Instruments
