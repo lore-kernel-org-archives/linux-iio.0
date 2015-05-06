@@ -1,32 +1,58 @@
-Return-Path: <festevam@gmail.com>
+Return-Path: <khoroshilov@ispras.ru>
+Message-ID: <554A923F.2040205@ispras.ru>
+Date: Thu, 07 May 2015 01:14:23 +0300
+From: Alexey Khoroshilov <khoroshilov@ispras.ru>
 MIME-Version: 1.0
-In-Reply-To: <554A923F.2040205@ispras.ru>
-References: <1430948924-4756-1-git-send-email-khoroshilov@ispras.ru>
-	<CAOMZO5AC=SUdXh6+np_2c3vqaKjpk-rZcR_baJ3-e+qt=dxx9w@mail.gmail.com>
-	<554A923F.2040205@ispras.ru>
-Date: Wed, 6 May 2015 19:32:42 -0300
-Message-ID: <CAOMZO5C-Hv=oE4gb32OssGhH-5S4mwOLnwL1HEjCEZ82akSeRg@mail.gmail.com>
-Subject: Re: [PATCH] iio: hid-sensors: Fix memory leak on failure path in hid_prox_probe()
-From: Fabio Estevam <festevam@gmail.com>
-To: Alexey Khoroshilov <khoroshilov@ispras.ru>
-Cc: Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>, Peter Meerwald <pmeerw@pmeerw.net>, linux-iio@vger.kernel.org,
-	linux-kernel <linux-kernel@vger.kernel.org>, ldv-project@linuxtesting.org
-Content-Type: text/plain; charset=UTF-8
+To: Fabio Estevam <festevam@gmail.com>
+CC: Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
+ Lars-Peter Clausen <lars@metafoo.de>,
+ Peter Meerwald <pmeerw@pmeerw.net>, linux-iio@vger.kernel.org,
+ linux-kernel <linux-kernel@vger.kernel.org>,
+ ldv-project@linuxtesting.org
+Subject: Re: [PATCH] iio: hid-sensors: Fix memory leak on failure path in
+ hid_prox_probe()
+References: <1430948924-4756-1-git-send-email-khoroshilov@ispras.ru> <CAOMZO5AC=SUdXh6+np_2c3vqaKjpk-rZcR_baJ3-e+qt=dxx9w@mail.gmail.com>
+In-Reply-To: <CAOMZO5AC=SUdXh6+np_2c3vqaKjpk-rZcR_baJ3-e+qt=dxx9w@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
 List-ID: <linux-iio@vger.kernel.org>
 
-On Wed, May 6, 2015 at 7:14 PM, Alexey Khoroshilov
-<khoroshilov@ispras.ru> wrote:
+On 07.05.2015 01:00, Fabio Estevam wrote:
+> On Wed, May 6, 2015 at 6:48 PM, Alexey Khoroshilov
+> <khoroshilov@ispras.ru> wrote:
+>> If prox_parse_report() fails, memory allocated for channels is not
+>> deallocated, since it is still in local variable channels
+>> while kfree() is called with indio_dev->channels.
+>>
+>> Found by Linux Driver Verification project (linuxtesting.org).
+>>
+>> Signed-off-by: Alexey Khoroshilov <khoroshilov@ispras.ru>
+>> ---
+>>  drivers/iio/light/hid-sensor-prox.c | 3 ++-
+>>  1 file changed, 2 insertions(+), 1 deletion(-)
+>>
+>> diff --git a/drivers/iio/light/hid-sensor-prox.c b/drivers/iio/light/hid-sensor-prox.c
+>> index 91ecc46ffeaa..d0d188108a11 100644
+>> --- a/drivers/iio/light/hid-sensor-prox.c
+>> +++ b/drivers/iio/light/hid-sensor-prox.c
+>> @@ -281,8 +281,9 @@ static int hid_prox_probe(struct platform_device *pdev)
+>>         ret = prox_parse_report(pdev, hsdev, channels,
+>>                                 HID_USAGE_SENSOR_PROX, prox_state);
+>>         if (ret) {
+>> +               kfree(channels);
+>>                 dev_err(&pdev->dev, "failed to setup attributes\n");
+>> -               goto error_free_dev_mem;
+>> +               return ret;
+> 
+> Then the other calls to error_free_dev_mem will also miss to call
+> 'kfree(channels)'.
+> 
 
-> Not exactly. Other calls are after
->   indio_dev->channels = channels;
-> So,
-> error_free_dev_mem:
->         kfree(indio_dev->channels);
-> works for them well.
+Not exactly. Other calls are after
+  indio_dev->channels = channels;
+So,
+error_free_dev_mem:
+	kfree(indio_dev->channels);
+works for them well.
 
-indio_dev is allocated using devm_ , so you don't need to free it.
-
-Your patch is not correct because you only  kfree(channels) in the
-prox_parse_report() error case, but you missed the other subsequent
-functions.
+--
+Alexey
