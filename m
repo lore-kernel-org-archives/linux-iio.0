@@ -1,565 +1,955 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:46193 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:46201 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751870AbbEGXdn (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 7 May 2015 19:33:43 -0400
-Message-ID: <554BE9D0.9090908@kernel.org>
-Date: Thu, 07 May 2015 23:40:16 +0100
+	with ESMTP id S1751998AbbEGXds (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 7 May 2015 19:33:48 -0400
+Message-ID: <554BEC70.2060406@kernel.org>
+Date: Thu, 07 May 2015 23:51:28 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Tiberiu Breana <tiberiu.a.breana@intel.com>,
-	linux-iio@vger.kernel.org
-CC: Peter Meerwald <pmeerw@pmeerw.net>
-Subject: Re: [PATCH v3 1/2] iio: light: Add support for Sensortek STK3310
-References: <1430148841-30947-1-git-send-email-tiberiu.a.breana@intel.com> <1430148841-30947-2-git-send-email-tiberiu.a.breana@intel.com>
-In-Reply-To: <1430148841-30947-2-git-send-email-tiberiu.a.breana@intel.com>
+To: Dan Murphy <dmurphy@ti.com>, linux-iio@vger.kernel.org
+Subject: Re: [PATCH 3/3] iio: heart_monitor: Add TI afe4403 heart monitor
+References: <1429720331-1900-1-git-send-email-dmurphy@ti.com> <1429720331-1900-4-git-send-email-dmurphy@ti.com> <553D3091.7010900@kernel.org> <5540CE3A.1000605@ti.com>
+In-Reply-To: <5540CE3A.1000605@ti.com>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 27/04/15 16:34, Tiberiu Breana wrote:
-> Minimal implementation of an IIO driver for the Sensortek
-> STK3310 ambient light and proximity sensor. The STK3311
-> model is also supported.
+On 29/04/15 13:27, Dan Murphy wrote:
+> Honathan
 > 
-> Includes:
-> - ACPI support;
-> - read_raw and write_raw;
-> - reading and setting configuration parameters for gain/scale
->   and integration time for both ALS and PS.
-> - power management
+> Again thanks for the review!
 > 
-> Signed-off-by: Tiberiu Breana <tiberiu.a.breana@intel.com>
-A couple of trivial comments inline.  None are major enough
-to warant another spin of the patch though, so applied to the
-togreg branch of iio.git  This will get pushed out as testing
-sometime soonish (travelling).
+> On 04/26/2015 01:38 PM, Jonathan Cameron wrote:
+>> On 22/04/15 17:32, Dan Murphy wrote:
+>>> Add the TI afe4403 heart rate monitor.
+>>> This device detects reflected LED
+>>> wave length fluctuations and presents an ADC
+>>> value to the user space to be converted to a
+>>> heart rate.
+>>>
+>>> Data sheet located here:
+>>> http://www.ti.com/product/AFE4403/datasheet
+>>>
+>>> Signed-off-by: Dan Murphy <dmurphy@ti.com>
+>> Hi Dan,
+>>
+>> Good to see this coming back again!
+>>
+>> Anyhow, various comments inline, but the biggest issue is the ABI usage.
+>> Please take a long hard look at the ABI docs (Documentation/ABI/test/sysfs-bus-iio*) and the use that is being made of them here.  This doesn't conform to
+>> the ABI in a number of places and there is no documentation to imply that
+>> it is creating new ABI.
+>>
+>> There are 4 input channels here Ambient1, Ambient2, led1 and led2.
+>> We also have a two differential channels - though as these are seperated in
+>> time it's just (I think) for convenience.
+>>
+>> These can then feed back to ambient cancellation DACs thus hopefully giving
+>> just the nice led signals an allowing measurement of Pleth (which is what
+>> we are aiming for?)
+>> So two output DAC channels, use extended name to say what they are.
+>> out_voltage0_ambientcancelation (perhaps...)  OR... Perhaps it would
+>> be preferable to treat this as a caliboffset to the input channels.
+>> (I think I prefer this second option).
+>>
+>> Your other channels allow manipulation of the signal chain - I think these
+>> pretty much boil down to gains of one type or another?  If we don't have
+>> a suitable ABI element for all of them then propose it, but they don't
+>> look like output channels to me.
+>>
+>> You do have LED controls however which might be representable as output
+>> channels, but they need to be more clearly described than below.
+>>
+>> One big issue here is that this isn't actually pulse measurement device
+>> at all. It's measuring the pleth signal (photoplethysmography - which here
+>> is just a light intensity measure - I think!) which can via 'magic' be used
+>> to derive a pulse.  That's not a problem, but the channel types aren't
+>> going to include heart_rate as that's not output from the device.
+>>
+>>> ---
+>>>  drivers/iio/Kconfig                 |   1 +
+>>>  drivers/iio/Makefile                |   1 +
+>>>  drivers/iio/heart_monitor/Kconfig   |  19 +
+>>>  drivers/iio/heart_monitor/Makefile  |   6 +
+>>>  drivers/iio/heart_monitor/afe4403.c | 702 ++++++++++++++++++++++++++++++++++++
+>>>  5 files changed, 729 insertions(+)
+>>>  create mode 100644 drivers/iio/heart_monitor/Kconfig
+>>>  create mode 100644 drivers/iio/heart_monitor/Makefile
+>>>  create mode 100644 drivers/iio/heart_monitor/afe4403.c
+>>>
+>>> diff --git a/drivers/iio/Kconfig b/drivers/iio/Kconfig
+>>> index 4011eff..7d13ef7 100644
+>>> --- a/drivers/iio/Kconfig
+>>> +++ b/drivers/iio/Kconfig
+>>> @@ -65,6 +65,7 @@ source "drivers/iio/common/Kconfig"
+>>>  source "drivers/iio/dac/Kconfig"
+>>>  source "drivers/iio/frequency/Kconfig"
+>>>  source "drivers/iio/gyro/Kconfig"
+>>> +source "drivers/iio/heart_monitor/Kconfig"
+>>>  source "drivers/iio/humidity/Kconfig"
+>>>  source "drivers/iio/imu/Kconfig"
+>>>  source "drivers/iio/light/Kconfig"
+>>> diff --git a/drivers/iio/Makefile b/drivers/iio/Makefile
+>>> index 698afc2..4372442 100644
+>>> --- a/drivers/iio/Makefile
+>>> +++ b/drivers/iio/Makefile
+>>> @@ -18,6 +18,7 @@ obj-y += common/
+>>>  obj-y += dac/
+>>>  obj-y += gyro/
+>>>  obj-y += frequency/
+>>> +obj-y += heart_monitor/
+>>>  obj-y += humidity/
+>>>  obj-y += imu/
+>>>  obj-y += light/
+>>> diff --git a/drivers/iio/heart_monitor/Kconfig b/drivers/iio/heart_monitor/Kconfig
+>>> new file mode 100644
+>>> index 0000000..fbe4bd4
+>>> --- /dev/null
+>>> +++ b/drivers/iio/heart_monitor/Kconfig
+>>> @@ -0,0 +1,19 @@
+>>> +#
+>>> +# Heart Rate Monitor drivers
+>>> +#
+>>> +# When adding new entries keep the list in alphabetical order
+>>> +
+>>> +menu "Heart Rate Monitors"
+>>> +
+>>> +config AFE4403
+>>> +	tristate "TI AFE4403 Heart Rate Monitor"
+>>> +	depends on SPI_MASTER
+>>> +	select IIO_BUFFER
+>>> +	help
+>>> +	  Say yes to choose the Texas Instruments AFE4403
+>>> +	  heart rate monitor and low-cost pulse oximeter.
+>>> +
+>>> +	  To compile this driver as a module, choose M here: the
+>>> +	  module will be called afe4403 heart rate monitor and
+>>> +	  low-cost pulse oximeter.
+>>> +endmenu
+>>> diff --git a/drivers/iio/heart_monitor/Makefile b/drivers/iio/heart_monitor/Makefile
+>>> new file mode 100644
+>>> index 0000000..77cc5c5
+>>> --- /dev/null
+>>> +++ b/drivers/iio/heart_monitor/Makefile
+>>> @@ -0,0 +1,6 @@
+>>> +#
+>>> +# Makefile for IIO Heart Rate Monitor drivers
+>>> +#
+>>> +
+>>> +# When adding new entries keep the list in alphabetical order
+>>> +obj-$(CONFIG_AFE4403) += afe4403.o
+>>> diff --git a/drivers/iio/heart_monitor/afe4403.c b/drivers/iio/heart_monitor/afe4403.c
+>>> new file mode 100644
+>>> index 0000000..1b77670
+>>> --- /dev/null
+>>> +++ b/drivers/iio/heart_monitor/afe4403.c
+>>> @@ -0,0 +1,702 @@
+>>> +/*
+>>> + * AFE4403 Heart Rate Monitors and Low-Cost Pulse Oximeters
+>>> + *
+>>> + * Author: Dan Murphy <dmurphy@ti.com>
+>>> + *
+>>> + * Copyright: (C) 2015 Texas Instruments, Inc.
+>>> + *
+>>> + * This program is free software; you can redistribute it and/or modify
+>>> + * it under the terms of the GNU General Public License version 2 as
+>>> + * published by the Free Software Foundation.
+>>> + *
+>>> + * This program is distributed in the hope that it will be useful, but
+>>> + * WITHOUT ANY WARRANTY; without even the implied warranty of
+>>> + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+>>> + * General Public License for more details.
+>>> + */
+>>> +
+>>> +#include <linux/device.h>
+>>> +#include <linux/delay.h>
+>>> +#include <linux/err.h>
+>>> +#include <linux/interrupt.h>
+>>> +#include <linux/kernel.h>
+>>> +#include <linux/module.h>
+>>> +#include <linux/of_gpio.h>
+>>> +#include <linux/spi/spi.h>
+>>> +#include <linux/slab.h>
+>>> +#include <linux/sysfs.h>
+>>> +#include <linux/regulator/consumer.h>
+>>> +
+>>> +#include <linux/iio/iio.h>
+>>> +#include <linux/iio/sysfs.h>
+>>> +#include <linux/iio/events.h>
+>>> +
+>>> +#define AFE4403_CONTROL0		0x00
+>>> +#define AFE4403_LED2STC			0x01
+>>> +#define AFE4403_LED2ENDC		0x02
+>>> +#define AFE4403_LED2LEDSTC		0x03
+>>> +#define AFE4403_LED2LEDENDC		0x04
+>>> +#define AFE4403_ALED2STC		0x05
+>>> +#define AFE4403_ALED2ENDC		0x06
+>>> +#define AFE4403_LED1STC			0x07
+>>> +#define AFE4403_LED1ENDC		0x08
+>>> +#define AFE4403_LED1LEDSTC		0x09
+>>> +#define AFE4403_LED1LEDENDC		0x0a
+>>> +#define AFE4403_ALED1STC		0x0b
+>>> +#define AFE4403_ALED1ENDC		0x0c
+>>> +#define AFE4403_LED2CONVST		0x0d
+>>> +#define AFE4403_LED2CONVEND		0x0e
+>>> +#define AFE4403_ALED2CONVST		0x0f
+>>> +#define AFE4403_ALED2CONVEND	0x10
+>>> +#define AFE4403_LED1CONVST		0x11
+>>> +#define AFE4403_LED1CONVEND		0x12
+>>> +#define AFE4403_ALED1CONVST		0x13
+>>> +#define AFE4403_ALED1CONVEND	0x14
+>>> +#define AFE4403_ADCRSTSTCT0		0x15
+>>> +#define AFE4403_ADCRSTENDCT0	0x16
+>>> +#define AFE4403_ADCRSTSTCT1		0x17
+>>> +#define AFE4403_ADCRSTENDCT1	0x18
+>>> +#define AFE4403_ADCRSTSTCT2		0x19
+>>> +#define AFE4403_ADCRSTENDCT2	0x1a
+>>> +#define AFE4403_ADCRSTSTCT3		0x1b
+>>> +#define AFE4403_ADCRSTENDCT3	0x1c
+>>> +#define AFE4403_PRPCOUNT		0x1d
+>>> +#define AFE4403_CONTROL1		0x1e
+>>> +#define AFE4403_SPARE1			0x1f
+>>> +#define AFE4403_TIAGAIN			0x20
+>>> +#define AFE4403_TIA_AMB_GAIN	0x21
+>>> +#define AFE4403_LEDCNTRL		0x22
+>>> +#define AFE4403_CONTROL2		0x23
+>>> +#define AFE4403_SPARE2			0x24
+>>> +#define AFE4403_SPARE3			0x25
+>>> +#define AFE4403_SPARE4			0x26
+>>> +#define AFE4403_ALARM			0x29
+>>> +#define AFE4403_LED2VAL			0x2A
+>>> +#define AFE4403_ALED2VAL		0x2B
+>>> +#define AFE4403_LED1VAL			0x2C
+>>> +#define AFE4403_ALED1VAL		0x2D
+>>> +#define AFE4403_LED2_ALED2VAL	0x2E
+>>> +#define AFE4403_LED1_ALED1VAL	0x2F
+>>> +#define AFE4403_DIAG			0x30
+>>> +#define AFE4403_CONTROL3		0x31
+>>> +#define AFE4403_PDNCYCLESTC		0x32
+>>> +#define AFE4403_PDNCYCLEENDC	0x33
+>>> +
+>>> +#define AFE4403_SPI_ON			0x0
+>>> +#define AFE4403_SPI_OFF			0x1
+>>> +
+>>> +#define AFE4403_SPI_READ		BIT(0)
+>>> +#define AFE4403_SW_RESET		BIT(3)
+>>> +#define AFE4403_PWR_DWN			BIT(0)
+>>> +
+>>> +static DEFINE_MUTEX(afe4403_mutex);
+>>> +
+>>> +/**
+>>> + * struct afe4403_data
+>>> + * @indio_dev - IIO device structure
+>>> + * @spi - SPI device pointer the driver is attached to
+>>> + * @mutex - Read/Write mutex
+>>> + * @regulator - Pointer to the regulator for the IC
+>>> + * @ste_gpio - SPI serial interface enable line
+>>> + * @data_gpio - Interrupt GPIO when AFE data is ready
+>>> + * @reset_gpio - Hard wire GPIO reset line
+>>> + * @timestamp - Timestamp of the IRQ event
+>>> + * @state - Current state of the IC.
+>>> + * @buff - Data buffer containing the 6 LED values and DIAG
+>>> + * @irq - AFE4403 interrupt number
+>>> +**/
+>>> +struct afe4403_data {
+>>> +	struct iio_dev *indio_dev;
+>>> +	struct spi_device *spi;
+>>> +	struct mutex mutex;
+>>> +	struct regulator *regulator;
+>>> +	struct gpio_desc *ste_gpio;
+>>> +	struct gpio_desc *data_gpio;
+>>> +	struct gpio_desc *reset_gpio;
+>>> +	int64_t timestamp;
+>>> +	bool state;
+>>> +	int buff[7];
+>>> +	int irq;
+>>> +};
+>>> +
+>>> +enum afe4403_reg_id {
+>>> +	LED1VAL,
+>>> +	ALED1VAL,
+>>> +	LED2VAL,
+>>> +	ALED2VAL,
+>>> +	LED2_ALED2VAL,
+>>> +	LED1_ALED1VAL,
+>>> +	DIAG,
+>>> +	TIAGAIN,
+>>> +	TIA_AMB_GAIN,
+>>> +	LEDCNTRL,
+>>> +	CONTROL3,
+>>> +};
+>>> +
+>>> +static const struct iio_event_spec afe4403_event = {
+>>> +	.type = IIO_EV_TYPE_MAG,
+>>> +	.dir = IIO_EV_DIR_NONE,
+>>> +	.mask_separate = BIT(IIO_EV_INFO_VALUE) |
+>>> +			BIT(IIO_EV_INFO_ENABLE),
+>>> +};
+>>> +
+>>> +#define AFE4403_WRITE_FREQ_CHAN(index, name) { \
+>>> +	.type = IIO_HEARTRATE,		\
+>>> +	.indexed = 1,				\
+>>> +	.channel = index,			\
+>>> +	.datasheet_name = name, \
+>>> +	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),	\
+>>> +	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_FREQUENCY), \
+>>> +	.scan_index = index,		\
+>>> +	.scan_type = {				\
+>>> +		.sign = 'u',			\
+>>> +		.realbits = 24,			\
+>>> +		.storagebits = 32,		\
+>>> +		.endianness = IIO_BE		\
+>>> +	}, \
+>>> +}
+>>> +
+>>> +#define AFE4403_WRITE_BIAS_CHAN(index, name) { \
+>>> +	.type = IIO_HEARTRATE,		\
+>>> +	.indexed = 1,				\
+>>> +	.channel = index,			\
+>>> +	.datasheet_name = name, \
+>>> +	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),	\
+>>> +	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_HARDWAREGAIN), \
+>>> +	.scan_index = index,		\
+>>> +	.scan_type = {				\
+>>> +		.sign = 'u',			\
+>>> +		.realbits = 24,			\
+>>> +		.storagebits = 32,		\
+>>> +		.endianness = IIO_BE		\
+>>> +	}, \
+>>> +}
+>>> +
+>>> +#define AFE4403_READ_CHAN(index, name) { \
+>>> +	.type = IIO_HEARTRATE,		\
+>> These really aren't heart rate channels.  They are values that
+>> can be used to work out the heart rate, but not directly or on
+>> their own.
+> 
+> True.  These are, as you pointed out LED values that can be expressed that
+> way from the readable channels.
+> 
+>>> +	.indexed = 1,				\
+>>> +	.channel = index,			\
+>>> +	.datasheet_name = name, \
+>>> +	.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED) | \
+>>> +			      BIT(IIO_CHAN_INFO_RAW),	\
+>> It's very rarely correct to have both processed and raw.  Processed
+>> means we are in the documented units for the type. Here bpm.
+>> _raw means we aren't and need to apply scale and offset
+>> (which may possible not be known).
+> 
+> OK.  I did not realized that was the definition of processed
+> 
+>>> +	.scan_index = index,		\
+>>> +	.scan_type = {				\
+>>> +		.sign = 'u',			\
+>>> +		.realbits = 24,			\
+>>> +		.storagebits = 32,		\
+>>> +		.endianness = IIO_BE		\
+>>> +	}, \
+>>> +	.event_spec = &afe4403_event,		\
+>>> +	.num_event_specs = 1,			\
+>>> +}
+>>> +
+>>> +static const struct iio_chan_spec afe4403_channels[] = {
+>>> +	/* Read only values from the IC */
+>>> +	AFE4403_READ_CHAN(LED1VAL, "LED1VAL"),
+>> This is a light intensity sample. Hence type should probably be IIO_INTENSITY,
+>> probably using an extended_name to specify it is with the led on.
+>>> +	AFE4403_READ_CHAN(ALED1VAL, "ALED1VAL"),
+>> This is the ambient light intensity so again type should be IIO_INTENSITY though
+>> ambient is usually assumed so may or may not make sense to have an extended
+>> name specifying it is abient.
+>>
+>>> +	AFE4403_READ_CHAN(LED2VAL, "LED2VAL"),
+>>> +	AFE4403_READ_CHAN(ALED2VAL, "ALED2VAL"),
+>>> +	AFE4403_READ_CHAN(LED2_ALED2VAL, "LED2_ALED2"),
+>> I think these are differential channel signals?  Might be a little fiddly
+>> as we don't suport more than one extended name.  Still these are differential
+>> channels and should be specified as such.  Guess we need to allow an
+>> additional extended name to have in_intensity1_led-intensity1_ambient_raw
+>> or similar.  Easy enough to add to the core, though may be worth proposing
+>> the interface as an ABI documentation entry first.
+>>
+>>
+>>> +	AFE4403_READ_CHAN(LED1_ALED1VAL, "LED1_ALED1"),
+>>> +	AFE4403_READ_CHAN(DIAG, "DIAG"),
+>> This is not a channel at all but rather a nasty way of getting direct
+>> access to a register.  Do not do this.  If you want direct access then
+>> debugfs only.  If it makes sense to read this during normal operation then
+>> the driver should be using the individual elements and exposing them as
+>> sensible.
+> 
+> This will actually be removed in v2.  This is not needed in production only in
+> product development.
+> 
+>>> +
+>>> +	/* Required writing for calibration */
+>>> +	AFE4403_WRITE_BIAS_CHAN(TIAGAIN, "TIAGAIN"),
+>> This is a register with several different things in it.  You need
+>> to break this up and wrap it up in normal abi elements.  It's not
+>> a channel so don't pretend it is. 
+>>> +	AFE4403_WRITE_BIAS_CHAN(TIA_AMB_GAIN, "TIA_AMB_GAIN"),
+>>> +	AFE4403_WRITE_BIAS_CHAN(LEDCNTRL, "LEDCNTRL"),
+>>> +	AFE4403_WRITE_FREQ_CHAN(CONTROL3, "CONTROL3"),
+>> These are also not channels. Don't pretend they are.  If you have
+>> an element that you don't know how to support (there will probably
+>> be some looking at the docs!) then just ask about that element rather
+>> than abusing interfaces like this.
+> 
+> I will create dev attributes for these.
+> 
+>>> +};
+>>> +
+>>> +/**
+>>> + * Per section 8.5 of the data sheet the SPI interface enable
+>>> + * line needs to be pulled and held low throughout the
+>>> + * data reads and writes.
+>>> +*/
+>>> +static int afe4403_read(struct afe4403_data *afe4403, u8 reg,
+>>> +		unsigned int *data)
+>>> +{
+>>> +	int ret;
+>>> +
+>>> +	mutex_lock(&afe4403_mutex);
+>>> +
+>>> +	gpiod_set_value(afe4403->ste_gpio, 0);
+>>> +	ret = spi_write_then_read(afe4403->spi, (u8 *)&reg, 1, (u8 *)data, 3);
+>>> +	gpiod_set_value(afe4403->ste_gpio, 1);
+>>> +
+>>> +	mutex_unlock(&afe4403_mutex);
+>>> +	return ret;
+>>> +};
+>>> +
+>>> +static int afe4403_write(struct afe4403_data *afe4403, u8 reg,
+>>> +		unsigned int data)
+>>> +{
+>>> +	int ret;
+>>> +	u8 tx[4] = {0x0, 0x0, 0x0, 0x0};
+>>> +
+>>> +	mutex_lock(&afe4403_mutex);
+>>> +
+>>> +	/* Enable write to the device */
+>>> +	tx[0] = AFE4403_CONTROL0;
+>>> +	tx[3] = 0x0;
+>>> +	gpiod_set_value(afe4403->ste_gpio, 0);
+>>> +	ret = spi_write(afe4403->spi, (u8 *)tx, 4);
+>>> +	if (ret)
+>>> +		goto out;
+>>> +	gpiod_set_value(afe4403->ste_gpio, 1);
+>>> +
+>>> +	tx[0] = reg;
+>>> +	tx[1] = (data & 0x0f0000) >> 16;
+>>> +	tx[2] = (data & 0x00ff00) >> 8;
+>>> +	tx[3] = data & 0xff;
+>>> +	gpiod_set_value(afe4403->ste_gpio, 0);
+>>> +	ret = spi_write(afe4403->spi, (u8 *)tx, 4);
+>>> +	if (ret)
+>>> +		goto out;
+>>> +
+>>> +	gpiod_set_value(afe4403->ste_gpio, 1);
+>>> +
+>>> +	/* Re-Enable reading from the device */
+>>> +	tx[0] = AFE4403_CONTROL0;
+>>> +	tx[1] = 0x0;
+>>> +	tx[2] = 0x0;
+>>> +	tx[3] = AFE4403_SPI_READ;
+>>> +	gpiod_set_value(afe4403->ste_gpio, 0);
+>>> +	ret = spi_write(afe4403->spi, (u8 *)tx, 4);
+>>> +
+>>> +out:
+>>> +	gpiod_set_value(afe4403->ste_gpio, 1);
+>>> +	mutex_unlock(&afe4403_mutex);
+>>> +	return ret;
+>>> +};
+>>> +
+>>> +static int afe4403_write_raw(struct iio_dev *indio_dev,
+>>> +			     struct iio_chan_spec const *chan,
+>>> +			     int val, int val2, long mask)
+>>> +{
+>>> +	struct afe4403_data *data = iio_priv(indio_dev);
+>>> +	u8 reg;
+>>> +
+>>> +	if (chan->channel >= ARRAY_SIZE(afe4403_channels))
+>>> +		return -EINVAL;
+>>> +
+>>> +	switch (mask) {
+>>> +	case IIO_CHAN_INFO_RAW:
+>>> +		if (chan->channel == TIAGAIN)
+>>> +			reg = AFE4403_TIAGAIN;
+>>> +		else if (chan->channel == TIA_AMB_GAIN)
+>>> +			reg = AFE4403_TIA_AMB_GAIN;
+>>> +		else if (chan->channel == LEDCNTRL)
+>>> +			reg = AFE4403_LEDCNTRL;
+>>> +		else if (chan->channel == CONTROL3)
+>>> +			reg = AFE4403_CONTROL3;
+>>> +		else
+>>> +			return -EINVAL;
+>>> +		break;
+>>> +	case IIO_CHAN_INFO_HARDWAREGAIN:
+>> some of these registers are the same as those used for _raw.
+>> I don't see any extraction of different elements...
+> 
+> This will be removed
+> 
+>>> +		if (chan->channel == TIAGAIN)
+>>> +			reg = AFE4403_TIAGAIN;
+>>> +		else if (chan->channel == TIA_AMB_GAIN)
+>>> +			reg = AFE4403_TIA_AMB_GAIN;
+>>> +		else if (chan->channel == LEDCNTRL)
+>>> +			reg = AFE4403_LEDCNTRL;
+>>> +		else
+>>> +			return -EINVAL;
+>>> +
+>>> +		break;
+>>> +	case IIO_CHAN_INFO_FREQUENCY:
+>>> +		if (chan->channel == CONTROL3)
+>>> +			reg = AFE4403_CONTROL3;
+>>> +		else
+>>> +			return -EINVAL;
+>>> +		break;
+>>> +	default:
+>>> +		return -EINVAL;
+>>> +	}
+>>> +
+>>> +	return afe4403_write(data, reg, val);
+>>> +}
+>>> +
+>>> +static int afe4403_read_raw(struct iio_dev *indio_dev,
+>>> +			    struct iio_chan_spec const *chan,
+>>> +			    int *val, int *val2, long mask)
+>>> +{
+>>> +	struct afe4403_data *data = iio_priv(indio_dev);
+>>> +
+>>> +	if (iio_buffer_enabled(indio_dev))
+>>> +			return -EBUSY;
+>>> +
+>>> +	if (chan->channel > ARRAY_SIZE(afe4403_channels))
+>>> +		return -EINVAL;
+>>> +
+>>> +	switch (mask) {
+>>> +	case IIO_CHAN_INFO_RAW:
+>>> +	case IIO_CHAN_INFO_PROCESSED:
+>>> +		*val = data->buff[chan->channel];
+>> So this is reading from a cache.  What filled the cache?
+> 
+> Will be removed
+> 
+>>> +		return IIO_VAL_INT;
+>>> +	default:
+>>> +		return -EINVAL;
+>>> +	}
+>>> +}
+>>> +
+>>> +static int afe4403_write_event(struct iio_dev *indio_dev,
+>>> +				     const struct iio_chan_spec *chan,
+>>> +				     enum iio_event_type type,
+>>> +				     enum iio_event_direction dir,
+>>> +				     int state)
+>>> +{
+>>> +	struct afe4403_data *afe4403 = iio_priv(indio_dev);
+>>> +	int ret;
+>>> +	unsigned int control_val;
+>>> +
+>>> +	ret = afe4403_read(afe4403, AFE4403_CONTROL2, &control_val);
+>>> +	if (ret)
+>>> +		return ret;
+>>> +
+>>> +	if (state)
+>>> +		control_val &= ~AFE4403_PWR_DWN;
+>>> +	else
+>>> +		control_val |= AFE4403_PWR_DWN;
+>>> +
+>>> +	ret = afe4403_write(afe4403, AFE4403_CONTROL2, control_val);
+>>> +	if (ret)
+>>> +		return ret;
+>>> +
+>>> +	afe4403->state = state;
+>>> +
+>>> +	return 0;
+>>> +}
+>>> +
+>>> +static int afe4403_read_event_value(struct iio_dev *iio,
+>>> +			const struct iio_chan_spec *chan,
+>>> +			enum iio_event_type type,
+>>> +			enum iio_event_direction dir,
+>>> +			enum iio_event_info info,
+>>> +			int *val, int *val2)
+>>> +{
+>>> +	struct afe4403_data *afe4403 = iio_priv(iio);
+>>> +	int ret, reg;
+>>> +
+>>> +	if (chan->channel == LED1VAL)
+>>> +		reg = AFE4403_LED1VAL;
+>>> +	else if (chan->channel == ALED1VAL)
+>>> +		reg = AFE4403_ALED1VAL;
+>>> +	else if (chan->channel == LED2VAL)
+>>> +		reg = AFE4403_LED2VAL;
+>>> +	else if (chan->channel == ALED2VAL)
+>>> +		reg = AFE4403_ALED2VAL;
+>>> +	else if (chan->channel == LED2_ALED2VAL)
+>>> +		reg = AFE4403_LED2_ALED2VAL;
+>>> +	else if (chan->channel == LED1_ALED1VAL)
+>>> +		reg = AFE4403_LED1_ALED1VAL;
+>>> +	else if (chan->channel == DIAG)
+>>> +		reg = AFE4403_DIAG;
+>> Constant look up table to avoid the if else chain.
+>>
+>> Also wha tare you actually querying here?  These don't immediately
+>> look liek they have anything to do with events.
+> 
+> The interrupt event is singular from the device and designates that a measurement is complete for the
+> above signals (except DIAG which will go away anyway).
+> The user space then has the ability to read any of these values.
+> 
+> The above if..else was an attempt to match registers to the channels but I guess that can be done via
+> a look up table as well.  That would be easier to update in the future.
+> 
+> 
+>>> +	else
+>>> +		return -EINVAL;
+>>> +
+>>> +	ret = afe4403_read(afe4403, reg, &afe4403->buff[chan->channel]);
+>>> +	if (ret)
+>>> +		goto done;
+>>> +
+>>> +	*val = afe4403->buff[chan->channel];
+>>> +	*val2 = 0;
+>>> +	ret = IIO_VAL_INT;
+>>> +done:
+>>> +	return ret;
+>>> +}
+>>> +
+>>> +static int afe4403_debugfs_reg_access(struct iio_dev *indio_dev,
+>>> +				      unsigned reg, unsigned writeval,
+>>> +				      unsigned *readval)
+>>> +{
+>>> +	struct afe4403_data *afe4403 = iio_priv(indio_dev);
+>>> +	int ret;
+>>> +
+>>> +	if (reg < AFE4403_CONTROL0 || reg > AFE4403_PDNCYCLEENDC)
+>>> +		return -EINVAL;
+>>> +
+>>> +	if (readval != NULL) {
+>>> +		ret = afe4403_read(afe4403, reg, readval);
+>>> +		if (ret)
+>>> +			return ret;
+>>> +	} else if (writeval < 0) {
+>>> +		ret = afe4403_write(afe4403, reg, writeval);
+>>> +		if (ret)
+>>> +			return ret;
+>>> +	} else {
+>>> +		ret = -EINVAL;
+>>> +	}
+>>> +
+>>> +	return ret;
+>>> +}
+>>> +
+>>> +static const struct iio_info afe4403_iio_info = {
+>>> +	.read_raw = &afe4403_read_raw,
+>>> +	.write_raw = &afe4403_write_raw,
+>>> +	.read_event_value = &afe4403_read_event_value,
+>>> +	.write_event_config = &afe4403_write_event,
+>>> +	.debugfs_reg_access = &afe4403_debugfs_reg_access,
+>>> +	.driver_module = THIS_MODULE,
+>>> +};
+>>> +
+>>> +static irqreturn_t afe4403_event_handler(int irq, void *private)
+>>> +{
+>>> +	struct iio_dev *indio_dev = private;
+>>> +	struct afe4403_data *afe4403 = iio_priv(indio_dev);
+>>> +
+>>> +	afe4403->timestamp = iio_get_time_ns();
+>>> +
+>>> +	iio_push_event(indio_dev, IIO_UNMOD_EVENT_CODE(IIO_HEARTRATE,
+>>> +							0,
+>>> +							IIO_EV_TYPE_CHANGE,
+>>> +							IIO_EV_DIR_EITHER),
+>>> +							afe4403->timestamp);
+>> nitpick.  Ideally a blank line here to keep with kernel coding style
+>> conventions.
+> 
+> Missed this
+> 
+>>> +	return IRQ_HANDLED;
+>>> +}
+>>> +
+>>> +struct afe4403_reg {
+>>> +	uint8_t reg;
+>>> +	u32 value;
+>>> +} afe4403_init_regs[] = {
+>> This is a lot of magic numbers. If at all possible please break them
+>> up into constituent parts where relevant. It acts as convenient
+>> documentation and makes typos in here less likely.
+>> Admitedly this doesn't actually apply to that many of these!
+>> Hmm. Might be worth padding these out to 24 bits for consistency with
+>> the documented register size.
+> 
+> OK.  I will define these but I am going to pull these defines with the registers
+> into a header file.  The next part I have to submit will share almost 95% of the registers and
+> bit definitions with only a few changes.
+Just a thought, but if it's that similar, why not share a driver and avoid other repetition?
+> 
+> I will define these as AFE440x and where the registers are specific I will define per the part.
+Convention on this is often to just prefix them with the first part that was supported
+(bit like driver naming where you name the driver after the first part that was supported).
+Avoids the issue where the naming becomes inaccurate due to new devices.
 
-Thanks,
+Anyhow, sounds like you have this all under control. Looking forward to the next version!
 
 Jonathan
-> ---
->  drivers/iio/light/Kconfig   |  11 ++
->  drivers/iio/light/Makefile  |   1 +
->  drivers/iio/light/stk3310.c | 471 ++++++++++++++++++++++++++++++++++++++++++++
->  3 files changed, 483 insertions(+)
->  create mode 100644 drivers/iio/light/stk3310.c
 > 
-> diff --git a/drivers/iio/light/Kconfig b/drivers/iio/light/Kconfig
-> index a437bad..3d7bafa 100644
-> --- a/drivers/iio/light/Kconfig
-> +++ b/drivers/iio/light/Kconfig
-> @@ -175,6 +175,17 @@ config LTR501
->  	 This driver can also be built as a module.  If so, the module
->           will be called ltr501.
->  
-> +config STK3310
-> +	tristate "STK3310 ALS and proximity sensor"
-> +	depends on I2C
-> +	help
-> +	 Say yes here to get support for the Sensortek STK3310 ambient light
-> +	 and proximity sensor. The STK3311 model is also supported by this
-> +	 driver.
-> +
-> +	 Choosing M will build the driver as a module. If so, the module
-> +	 will be called stk3310.
-> +
->  config TCS3414
->  	tristate "TAOS TCS3414 digital color sensor"
->  	depends on I2C
-> diff --git a/drivers/iio/light/Makefile b/drivers/iio/light/Makefile
-> index ad7c30f..90e7fd2 100644
-> --- a/drivers/iio/light/Makefile
-> +++ b/drivers/iio/light/Makefile
-> @@ -18,6 +18,7 @@ obj-$(CONFIG_JSA1212)		+= jsa1212.o
->  obj-$(CONFIG_SENSORS_LM3533)	+= lm3533-als.o
->  obj-$(CONFIG_LTR501)		+= ltr501.o
->  obj-$(CONFIG_SENSORS_TSL2563)	+= tsl2563.o
-> +obj-$(CONFIG_STK3310)          += stk3310.o
->  obj-$(CONFIG_TCS3414)		+= tcs3414.o
->  obj-$(CONFIG_TCS3472)		+= tcs3472.o
->  obj-$(CONFIG_TSL4531)		+= tsl4531.o
-> diff --git a/drivers/iio/light/stk3310.c b/drivers/iio/light/stk3310.c
-> new file mode 100644
-> index 0000000..0f8c450
-> --- /dev/null
-> +++ b/drivers/iio/light/stk3310.c
-> @@ -0,0 +1,471 @@
-> +/**
-> + * Sensortek STK3310/STK3311 Ambient Light and Proximity Sensor
-> + *
-> + * Copyright (c) 2015, Intel Corporation.
-> + *
-> + * This file is subject to the terms and conditions of version 2 of
-> + * the GNU General Public License. See the file COPYING in the main
-> + * directory of this archive for more details.
-> + *
-> + * IIO driver for STK3310/STK3311. 7-bit I2C address: 0x48.
-> + */
-> +
-> +#include <linux/acpi.h>
-> +#include <linux/i2c.h>
-> +#include <linux/kernel.h>
-> +#include <linux/module.h>
-> +#include <linux/regmap.h>
-> +#include <linux/iio/iio.h>
-> +#include <linux/iio/sysfs.h>
-> +
-> +#define STK3310_REG_STATE			0x00
-> +#define STK3310_REG_PSCTRL			0x01
-> +#define STK3310_REG_ALSCTRL			0x02
-> +#define STK3310_REG_PS_DATA_MSB			0x11
-> +#define STK3310_REG_PS_DATA_LSB			0x12
-> +#define STK3310_REG_ALS_DATA_MSB		0x13
-> +#define STK3310_REG_ALS_DATA_LSB		0x14
-> +#define STK3310_REG_ID				0x3E
-> +#define STK3310_MAX_REG				0x80
-> +
-> +#define STK3310_STATE_EN_PS			0x01
-> +#define STK3310_STATE_EN_ALS			0x02
-> +#define STK3310_STATE_STANDBY			0x00
-> +
-> +#define STK3310_CHIP_ID_VAL			0x13
-> +#define STK3311_CHIP_ID_VAL			0x1D
-> +#define STK3310_PS_MAX_VAL			0xFFFF
-> +
-> +#define STK3310_DRIVER_NAME			"stk3310"
-> +#define STK3310_REGMAP_NAME			"stk3310_regmap"
-> +
-> +#define STK3310_SCALE_AVAILABLE			"6.4 1.6 0.4 0.1"
-> +
-> +#define STK3310_IT_AVAILABLE \
-> +	"0.000185 0.000370 0.000741 0.001480 0.002960 0.005920 0.011840 " \
-> +	"0.023680 0.047360 0.094720 0.189440 0.378880 0.757760 1.515520 " \
-> +	"3.031040 6.062080"
-> +
-> +#define STK3310_REGFIELD(name)						    \
-> +	do {								    \
-> +		data->reg_##name =					    \
-> +			devm_regmap_field_alloc(&client->dev, regmap,	    \
-> +				stk3310_reg_field_##name);		    \
-> +		if (IS_ERR(data->reg_##name)) {				    \
-> +			dev_err(&client->dev, "reg field alloc failed.\n"); \
-> +			return PTR_ERR(data->reg_##name);		    \
-> +		}							    \
-> +	} while (0)
-> +
-> +static const struct reg_field stk3310_reg_field_state =
-> +				REG_FIELD(STK3310_REG_STATE, 0, 2);
-> +static const struct reg_field stk3310_reg_field_als_gain =
-> +				REG_FIELD(STK3310_REG_ALSCTRL, 4, 5);
-> +static const struct reg_field stk3310_reg_field_ps_gain =
-> +				REG_FIELD(STK3310_REG_PSCTRL, 4, 5);
-> +static const struct reg_field stk3310_reg_field_als_it =
-> +				REG_FIELD(STK3310_REG_ALSCTRL, 0, 3);
-> +static const struct reg_field stk3310_reg_field_ps_it =
-> +				REG_FIELD(STK3310_REG_PSCTRL, 0, 3);
-> +
-> +/*
-> + * Maximum PS values with regard to scale. Used to export the 'inverse'
-> + * PS value (high values for far objects, low values for near objects).
-> + */
-> +static const int stk3310_ps_max[4] = {
-> +	STK3310_PS_MAX_VAL / 64,
-> +	STK3310_PS_MAX_VAL / 16,
-> +	STK3310_PS_MAX_VAL /  4,
-> +	STK3310_PS_MAX_VAL,
-> +};
-> +
-> +static const int stk3310_scale_table[][2] = {
-> +	{6, 400000}, {1, 600000}, {0, 400000}, {0, 100000}
-> +};
-> +
-> +/* Integration time in seconds, microseconds */
-> +static const int stk3310_it_table[][2] = {
-> +	{0, 185},	{0, 370},	{0, 741},	{0, 1480},
-> +	{0, 2960},	{0, 5920},	{0, 11840},	{0, 23680},
-> +	{0, 47360},	{0, 94720},	{0, 189440},	{0, 378880},
-> +	{0, 757760},	{1, 515520},	{3, 31040},	{6, 62080},
-> +};
-> +
-> +struct stk3310_data {
-> +	struct i2c_client *client;
-> +	struct mutex lock;
-> +	bool als_enabled;
-> +	bool ps_enabled;
-> +	struct regmap *regmap;
-> +	struct regmap_field *reg_state;
-> +	struct regmap_field *reg_als_gain;
-> +	struct regmap_field *reg_ps_gain;
-> +	struct regmap_field *reg_als_it;
-> +	struct regmap_field *reg_ps_it;
-> +};
-> +
-> +static const struct iio_chan_spec stk3310_channels[] = {
-> +	{
-> +		.type = IIO_LIGHT,
-> +		.info_mask_separate =
-> +			BIT(IIO_CHAN_INFO_RAW) |
-> +			BIT(IIO_CHAN_INFO_SCALE) |
-> +			BIT(IIO_CHAN_INFO_INT_TIME),
-> +	},
-> +	{
-> +		.type = IIO_PROXIMITY,
-> +		.info_mask_separate =
-> +			BIT(IIO_CHAN_INFO_RAW) |
-> +			BIT(IIO_CHAN_INFO_SCALE) |
-> +			BIT(IIO_CHAN_INFO_INT_TIME),
-> +	}
-> +};
-> +
-> +static IIO_CONST_ATTR(in_illuminance_scale_available, STK3310_SCALE_AVAILABLE);
-> +
-> +static IIO_CONST_ATTR(in_proximity_scale_available, STK3310_SCALE_AVAILABLE);
-> +
-> +static IIO_CONST_ATTR(in_illuminance_integration_time_available,
-> +		      STK3310_IT_AVAILABLE);
-> +
-> +static IIO_CONST_ATTR(in_proximity_integration_time_available,
-> +		      STK3310_IT_AVAILABLE);
-> +
-> +static struct attribute *stk3310_attributes[] = {
-> +	&iio_const_attr_in_illuminance_scale_available.dev_attr.attr,
-> +	&iio_const_attr_in_proximity_scale_available.dev_attr.attr,
-> +	&iio_const_attr_in_illuminance_integration_time_available.dev_attr.attr,
-> +	&iio_const_attr_in_proximity_integration_time_available.dev_attr.attr,
-> +	NULL,
-> +};
-> +
-> +static const struct attribute_group stk3310_attribute_group = {
-> +	.attrs = stk3310_attributes
-> +};
-> +
-> +static int stk3310_get_index(const int table[][2], int table_size,
-> +			     int val, int val2)
-> +{
-> +	int i;
-> +
-> +	for (i = 0; i < table_size; i++) {
-> +		if (val == table[i][0] && val2 == table[i][1])
-> +			return i;
-> +	}
-> +
-> +	return -EINVAL;
-> +}
-> +
-> +static int stk3310_read_raw(struct iio_dev *indio_dev,
-> +			    struct iio_chan_spec const *chan,
-> +			    int *val, int *val2, long mask)
-> +{
-> +	u8 reg;
-> +	u16 buf;
-> +	int ret;
-> +	unsigned int index;
-> +	struct stk3310_data *data = iio_priv(indio_dev);
-> +	struct i2c_client *client = data->client;
-> +
-> +	switch (mask) {
-> +	case IIO_CHAN_INFO_RAW:
-> +		if (chan->type == IIO_LIGHT)
-> +			reg = STK3310_REG_ALS_DATA_MSB;
-> +		else if (chan->type == IIO_PROXIMITY)
-> +			reg = STK3310_REG_PS_DATA_MSB;
-> +		else
-> +			return -EINVAL;
-> +		mutex_lock(&data->lock);
-> +		ret = regmap_bulk_read(data->regmap, reg, &buf, 2);
-> +		if (ret < 0) {
-> +			dev_err(&client->dev, "register read failed\n");
-> +			mutex_unlock(&data->lock);
-> +			return ret;
-> +		}
-> +		*val = swab16(buf);
-> +		if (chan->type == IIO_PROXIMITY) {
-> +			/*
-> +			 * Invert the proximity data so we return low values
-> +			 * for close objects and high values for far ones.
-> +			 */
-> +			regmap_field_read(data->reg_ps_gain, &index);
-> +			*val = stk3310_ps_max[index] - *val;
-> +		}
-> +		mutex_unlock(&data->lock);
-> +		return IIO_VAL_INT;
-> +	case IIO_CHAN_INFO_INT_TIME:
-> +		if (chan->type == IIO_LIGHT)
-> +			regmap_field_read(data->reg_als_it, &index);
-> +		else
-> +			regmap_field_read(data->reg_ps_it, &index);
-> +		*val = stk3310_it_table[index][0];
-> +		*val2 = stk3310_it_table[index][1];
-> +		return IIO_VAL_INT_PLUS_MICRO;
-> +	case IIO_CHAN_INFO_SCALE:
-> +		if (chan->type == IIO_LIGHT)
-> +			regmap_field_read(data->reg_als_gain, &index);
-> +		else
-> +			regmap_field_read(data->reg_ps_gain, &index);
-> +		*val = stk3310_scale_table[index][0];
-> +		*val2 = stk3310_scale_table[index][1];
-> +		return IIO_VAL_INT_PLUS_MICRO;
-> +	}
-> +
-> +	return -EINVAL;
-> +}
-> +
-> +static int stk3310_write_raw(struct iio_dev *indio_dev,
-> +			     struct iio_chan_spec const *chan,
-> +			     int val, int val2, long mask)
-> +{
-> +	int ret;
-> +	unsigned int index;
-> +	struct stk3310_data *data = iio_priv(indio_dev);
-> +
-> +	switch (mask) {
-> +	case IIO_CHAN_INFO_INT_TIME:
-> +		index = stk3310_get_index(stk3310_it_table,
-> +					  ARRAY_SIZE(stk3310_it_table),
-> +					  val, val2);
-> +		if (index < 0)
-> +			return -EINVAL;
-> +		mutex_lock(&data->lock);
-> +		if (chan->type == IIO_LIGHT)
-> +			ret = regmap_field_write(data->reg_als_it, index);
-> +		else
-> +			ret = regmap_field_write(data->reg_ps_it, index);
-> +		if (ret < 0)
-> +			dev_err(&data->client->dev,
-> +					"sensor configuration failed\n");
-> +		mutex_unlock(&data->lock);
-> +		return ret;
-> +
-> +	case IIO_CHAN_INFO_SCALE:
-> +		index = stk3310_get_index(stk3310_scale_table,
-> +					  ARRAY_SIZE(stk3310_scale_table),
-> +					  val, val2);
-> +		if (index < 0)
-> +			return -EINVAL;
-> +		mutex_lock(&data->lock);
-> +		if (chan->type == IIO_LIGHT)
-> +			ret = regmap_field_write(data->reg_als_gain, index);
-> +		else
-> +			ret = regmap_field_write(data->reg_ps_gain, index);
-> +		if (ret < 0)
-> +			dev_err(&data->client->dev,
-> +					"sensor configuration failed\n");
-> +		mutex_unlock(&data->lock);
-> +		return ret;
-> +	}
-> +
-> +	return -EINVAL;
-> +}
-> +
-> +static const struct iio_info stk3310_info = {
-> +	.driver_module		= THIS_MODULE,
-> +	.read_raw		= stk3310_read_raw,
-> +	.write_raw		= stk3310_write_raw,
-> +	.attrs			= &stk3310_attribute_group,
-> +};
-> +
-> +static int stk3310_set_state(struct stk3310_data *data, u8 state)
-> +{
-> +	int ret;
-> +	struct i2c_client *client = data->client;
-> +
-> +	/* 3-bit state; 0b100 is not supported. */
-> +	if (state > 7 || state == 4)
-> +		return -EINVAL;
-> +
-> +	mutex_lock(&data->lock);
-> +	ret = regmap_field_write(data->reg_state, state);
-> +	if (ret < 0) {
-> +		dev_err(&client->dev, "failed to change sensor state\n");
-> +	} else if (state != STK3310_STATE_STANDBY) {
-> +		/* Don't reset the 'enabled' flags if we're going in standby */
-For clarity I'd have been tempted to waste a bit of space and have
-ps_enabled_prestandy or something like that so as to have kept a single
-meaning for these variables, whatever the state.
-> +		data->ps_enabled  = !!(state & 0x01);
-> +		data->als_enabled = !!(state & 0x02);
-> +	}
-> +	mutex_unlock(&data->lock);
-> +
-> +	return ret;
-> +}
-> +
-> +static int stk3310_init(struct iio_dev *indio_dev)
-> +{
-> +	int ret;
-> +	int chipid;
-> +	u8 state;
-> +	struct stk3310_data *data = iio_priv(indio_dev);
-> +	struct i2c_client *client = data->client;
-> +
-> +	regmap_read(data->regmap, STK3310_REG_ID, &chipid);
-> +	if (chipid != STK3310_CHIP_ID_VAL &&
-> +	    chipid != STK3311_CHIP_ID_VAL) {
-> +		dev_err(&client->dev, "invalid chip id: 0x%x\n", chipid);
-> +		return -ENODEV;
-> +	}
-> +
-> +	state = STK3310_STATE_EN_ALS | STK3310_STATE_EN_PS;
-> +	ret = stk3310_set_state(data, state);
-> +	if (ret < 0)
-> +		dev_err(&client->dev, "failed to enable sensor");
-> +
-> +	return ret;
-> +}
-> +
-> +static bool stk3310_is_volatile_reg(struct device *dev, unsigned int reg)
-> +{
-> +	switch (reg) {
-> +	case STK3310_REG_ALS_DATA_MSB:
-> +	case STK3310_REG_ALS_DATA_LSB:
-> +	case STK3310_REG_PS_DATA_LSB:
-> +	case STK3310_REG_PS_DATA_MSB:
-> +		return true;
-> +	default:
-> +		return false;
-> +	}
-> +}
-> +
-> +static struct regmap_config stk3310_regmap_config = {
-> +	.name = STK3310_REGMAP_NAME,
-> +	.reg_bits = 8,
-> +	.val_bits = 8,
-> +	.max_register = STK3310_MAX_REG,
-> +	.cache_type = REGCACHE_RBTREE,
-> +	.volatile_reg = stk3310_is_volatile_reg,
-> +};
-> +
-> +static int stk3310_regmap_init(struct stk3310_data *data)
-> +{
-> +	struct regmap *regmap;
-> +	struct i2c_client *client;
-> +
-> +	client = data->client;
-> +	regmap = devm_regmap_init_i2c(client, &stk3310_regmap_config);
-> +	if (IS_ERR(regmap)) {
-> +		dev_err(&client->dev, "regmap initialization failed.\n");
-> +		return PTR_ERR(regmap);
-> +	}
-> +	data->regmap = regmap;
-> +
-> +	STK3310_REGFIELD(state);
-This is nice and neat and tidy - rather feels like regmap would benefit
-from an array of fields allocator but this is a good alternative.
-> +	STK3310_REGFIELD(als_gain);
-> +	STK3310_REGFIELD(ps_gain);
-> +	STK3310_REGFIELD(als_it);
-> +	STK3310_REGFIELD(ps_it);
-> +
-> +	return 0;
-> +}
-> +
-> +static int stk3310_probe(struct i2c_client *client,
-> +			 const struct i2c_device_id *id)
-> +{
-> +	int ret;
-> +	struct iio_dev *indio_dev;
-> +	struct stk3310_data *data;
-> +
-> +	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
-> +	if (!indio_dev) {
-> +		dev_err(&client->dev, "iio allocation failed!\n");
-> +		return -ENOMEM;
-> +	}
-> +
-> +	data = iio_priv(indio_dev);
-> +	data->client = client;
-> +	i2c_set_clientdata(client, indio_dev);
-> +	mutex_init(&data->lock);
-> +
-> +	ret = stk3310_regmap_init(data);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	indio_dev->dev.parent = &client->dev;
-> +	indio_dev->info = &stk3310_info;
-> +	indio_dev->name = STK3310_DRIVER_NAME;
-> +	indio_dev->modes = INDIO_DIRECT_MODE;
-> +	indio_dev->channels = stk3310_channels;
-> +	indio_dev->num_channels = ARRAY_SIZE(stk3310_channels);
-> +
-> +	ret = stk3310_init(indio_dev);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	ret = iio_device_register(indio_dev);
-> +	if (ret < 0) {
-> +		dev_err(&client->dev, "device_register failed\n");
-> +		stk3310_set_state(data, STK3310_STATE_STANDBY);
-> +	}
-> +
-> +	return ret;
-> +}
-> +
-> +static int stk3310_remove(struct i2c_client *client)
-> +{
-> +	struct iio_dev *indio_dev = i2c_get_clientdata(client);
-> +
-> +	iio_device_unregister(indio_dev);
-> +	return stk3310_set_state(iio_priv(indio_dev), STK3310_STATE_STANDBY);
-> +}
-> +
-> +#ifdef CONFIG_PM_SLEEP
-> +static int stk3310_suspend(struct device *dev)
-> +{
-> +	struct stk3310_data *data;
-> +
-> +	data = iio_priv(i2c_get_clientdata(to_i2c_client(dev)));
-> +
-> +	return stk3310_set_state(data, STK3310_STATE_STANDBY);
-> +}
-> +
-> +static int stk3310_resume(struct device *dev)
-> +{
-> +	int state = 0;
-> +	struct stk3310_data *data;
-> +
-> +	data = iio_priv(i2c_get_clientdata(to_i2c_client(dev)));
-> +	if (data->ps_enabled)
-> +		state |= STK3310_STATE_EN_PS;
-> +	if (data->als_enabled)
-> +		state |= STK3310_STATE_EN_ALS;
-> +
-> +	return stk3310_set_state(data, state);
-> +}
-> +
-> +static SIMPLE_DEV_PM_OPS(stk3310_pm_ops, stk3310_suspend, stk3310_resume);
-> +
-> +#define STK3310_PM_OPS (&stk3310_pm_ops)
-> +#else
-> +#define STK3310_PM_OPS NULL
-> +#endif
-> +
-> +static const struct i2c_device_id stk3310_i2c_id[] = {
-> +	{"STK3310", 0},
-> +	{"STK3311", 0},
-> +	{}
-> +};
-> +
-> +static const struct acpi_device_id stk3310_acpi_id[] = {
-> +	{"STK3310", 0},
-> +	{"STK3311", 0},
-> +	{}
-> +};
-> +
-> +MODULE_DEVICE_TABLE(acpi, stk3310_acpi_id);
-> +
-> +static struct i2c_driver stk3310_driver = {
-> +	.driver = {
-> +		.name = "stk3310",
-> +		.pm = STK3310_PM_OPS,
-> +		.acpi_match_table = ACPI_PTR(stk3310_acpi_id),
-> +	},
-> +	.probe =            stk3310_probe,
-> +	.remove =           stk3310_remove,
-> +	.id_table =         stk3310_i2c_id,
-> +};
-> +
-> +module_i2c_driver(stk3310_driver);
-> +
-> +MODULE_AUTHOR("Tiberiu Breana <tiberiu.a.breana@intel.com>");
-> +MODULE_DESCRIPTION("STK3310 Ambient Light and Proximity Sensor driver");
-> +MODULE_LICENSE("GPL v2");
+> 
+>>> +	{ AFE4403_LED2STC,  0x0820},
+>>> +	{ AFE4403_LED2ENDC, 0x0f9e },
+>>> +	{ AFE4403_LED2LEDSTC, 0x07d0 },
+>>> +	{ AFE4403_LED2LEDENDC, 0x0f9f },
+>>> +	{ AFE4403_ALED2STC, 0x0050 },
+>>> +	{ AFE4403_ALED2ENDC, 0x07ce },
+>>> +	{ AFE4403_LED1STC, 0xc350 },
+>>> +	{ AFE4403_LED1ENDC, 0xc350 },
+>>> +	{ AFE4403_LED1LEDSTC, 0xc350 },
+>>> +	{ AFE4403_LED1LEDENDC, 0xc350 },
+>>> +	{ AFE4403_ALED1STC, 0x0ff0 },
+>>> +	{ AFE4403_ALED1ENDC, 0x176e },
+>>> +	{ AFE4403_LED2CONVST, 0x1775 },
+>>> +	{ AFE4403_LED2CONVEND, 0x1f3f },
+>>> +	{ AFE4403_ALED2CONVST, 0x1f45 },
+>>> +	{ AFE4403_ALED2CONVEND, 0x270f },
+>>> +	{ AFE4403_LED1CONVST, 0x2715 },
+>>> +	{ AFE4403_LED1CONVEND, 0x2edf },
+>>> +	{ AFE4403_ALED1CONVST, 0x2ee5 },
+>>> +	{ AFE4403_ALED1CONVEND, 0x36af },
+>>> +	{ AFE4403_ADCRSTSTCT0, 0x1770 },
+>>> +	{ AFE4403_ADCRSTENDCT0, 0x1774 },
+>>> +	{ AFE4403_ADCRSTSTCT1, 0x1f40 },
+>>> +	{ AFE4403_ADCRSTENDCT1, 0x1f44 },
+>>> +	{ AFE4403_ADCRSTSTCT2, 0x2710 },
+>>> +	{ AFE4403_ADCRSTENDCT2, 0x2714 },
+>>> +	{ AFE4403_ADCRSTSTCT3, 0x2ee0 },
+>>> +	{ AFE4403_ADCRSTENDCT3, 0x2ee4 },
+>>> +	{ AFE4403_PRPCOUNT, 0x09c3f },
+>>> +	{ AFE4403_CONTROL1, 0x0107 },
+>>> +	{ AFE4403_TIAGAIN, 0x8006 },
+>>> +	{ AFE4403_TIA_AMB_GAIN, 0x06 },
+>> This one is a good example of where splitting it up would be useful.
+> 
+> Same as above.
+>>> +	{ AFE4403_LEDCNTRL, 0x11414 },
+>>> +	{ AFE4403_CONTROL2, 0x20001 },
+>>> +};
+>>> +
+>>> +static int afe4403_init(struct afe4403_data *afe4403)
+>>> +{
+>>> +	int ret, i, reg_count;
+>>> +
+>>> +	/* Hard reset the device needs to be held for 1ms per data sheet */
+>>> +	if (afe4403->reset_gpio) {
+>>> +		gpiod_set_value(afe4403->reset_gpio, 0);
+>>> +		udelay(1000);
+>>> +		gpiod_set_value(afe4403->reset_gpio, 1);
+>>> +	} else {
+>>> +		/* Soft reset the device */
+>>> +		ret = afe4403_write(afe4403, AFE4403_CONTROL0,
+>>> +				AFE4403_SW_RESET);
+>>> +		if (ret)
+>>> +			return ret;
+>>> +	}
+>>> +
+>>> +	reg_count = ARRAY_SIZE(afe4403_init_regs) / sizeof(afe4403_init_regs[0]);
+>>> +	for (i = 0; i < reg_count; i++) {
+>>> +		ret = afe4403_write(afe4403, afe4403_init_regs[i].reg,
+>>> +					afe4403_init_regs[i].value);
+>>> +		if (ret)
+>>> +			return ret;
+>>> +	}
+>>> +
+>>> +	return ret;
+>>> +};
+>>> +
+>>> +static int afe4403_spi_probe(struct spi_device *spi)
+>>> +{
+>>> +	struct afe4403_data *afe4403;
+>>> +	struct iio_dev *indio_dev;
+>>> +	int ret;
+>>> +
+>>> +	indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*afe4403));
+>>> +	if (indio_dev == NULL) {
+>>> +		dev_err(&spi->dev, "Failed to allocate iio device\n");
+>>> +		return -ENOMEM;
+>>> +	}
+>>> +
+>>> +	spi_set_drvdata(spi, indio_dev);
+>>> +
+>>> +	afe4403 = iio_priv(indio_dev);
+>>> +	afe4403->spi = spi;
+>>> +
+>>> +	indio_dev->dev.parent = &spi->dev;
+>>> +	indio_dev->name = "afe4403";
+>>> +	indio_dev->info = &afe4403_iio_info;
+>>> +	indio_dev->modes = INDIO_DIRECT_MODE;
+>>> +	indio_dev->channels = afe4403_channels;
+>>> +	indio_dev->num_channels = ARRAY_SIZE(afe4403_channels);
+>>> +
+>>> +	afe4403->ste_gpio = devm_gpiod_get(&spi->dev, "ste");
+>>> +	if (IS_ERR(afe4403->ste_gpio)) {
+>>> +		ret = PTR_ERR(afe4403->ste_gpio);
+>>> +		dev_err(&spi->dev, "Failed to allocate ste gpio\n");
+>>> +		afe4403->ste_gpio = NULL;
+>>> +		return ret;
+>>> +	}
+>>> +
+>>> +	gpiod_direction_output(afe4403->ste_gpio, 1);
+>>> +
+>>> +	afe4403->data_gpio = devm_gpiod_get(&spi->dev, "data-ready");
+>>> +	if (IS_ERR(afe4403->data_gpio)) {
+>>> +		ret = PTR_ERR(afe4403->data_gpio);
+>>> +		if (ret != -ENOENT) {
+>>> +			dev_err(&spi->dev,
+>>> +				"Failed to allocate data_ready gpio\n");
+>>> +			return ret;
+>>> +		}
+>>> +		afe4403->data_gpio = NULL;
+>>> +	} else {
+>>> +		gpiod_direction_input(afe4403->data_gpio);
+>>> +		afe4403->irq = gpiod_to_irq(afe4403->data_gpio);
+>>> +	}
+>>> +
+>>> +	afe4403->reset_gpio = devm_gpiod_get(&spi->dev, "reset");
+>>> +	if (IS_ERR(afe4403->reset_gpio)) {
+>>> +		ret = PTR_ERR(afe4403->reset_gpio);
+>>> +		if (ret != -ENOENT) {
+>>> +			dev_err(&spi->dev, "Failed to allocate reset gpio\n");
+>>> +			return ret;
+>>> +		}
+>>> +		afe4403->reset_gpio = NULL;
+>>> +	} else {
+>>> +		gpiod_direction_output(afe4403->reset_gpio, 1);
+>>> +	}
+>>> +
+>>> +	afe4403->regulator = devm_regulator_get(&spi->dev, "led");
+>>> +	if (IS_ERR(afe4403->regulator)) {
+>>> +		ret = PTR_ERR(afe4403->regulator);
+>>> +		dev_err(&spi->dev,
+>>> +			"unable to get regulator, error: %d\n", ret);
+>>> +		return ret;
+>>> +	}
+>>> +	if (afe4403->irq > 0) {
+>>> +		ret = devm_request_threaded_irq(&spi->dev, afe4403->irq,
+>>> +					   NULL,
+>>> +					   afe4403_event_handler,
+>>> +					   IRQF_TRIGGER_FALLING | IRQF_ONESHOT,
+>>> +					   "afe4403 int",
+>>> +					   indio_dev);
+>>> +		if (ret) {
+>>> +			dev_err(&spi->dev, "unable to request IRQ\n");
+>>> +			goto probe_error;
+>>> +		}
+>>> +	}
+>>> +
+>>> +	ret = devm_iio_device_register(&spi->dev, indio_dev);
+>>> +	if (ret < 0)
+>>> +		goto probe_error;
+>>> +
+>>> +	ret = afe4403_init(afe4403);
+>>> +	if (ret) {
+>>> +		dev_err(&spi->dev, "Failed to init device\n");
+>>> +		goto probe_error;
+>>> +	}
+>>> +
+>>> +	return 0;
+>>> +
+>>> +probe_error:
+>>> +	return ret;
+>>> +}
+>>> +
+>>> +static int afe4403_spi_remove(struct spi_device *spi)
+>>> +{
+>>> +	struct afe4403_data *afe4403 = dev_get_drvdata(&spi->dev);
+>>> +
+>>> +	if (!IS_ERR(afe4403->regulator))
+>>> +		regulator_disable(afe4403->regulator);
+>> With this ordering you have turned the power off before disabling the
+>> userspace interface.  Don't use the devm_ form of iio_device_register then
+>> explicitly use a iio_device_unregister before your power off.
+>>> +
+>>> +	return 0;
+>>> +}
+>>> +
+>>> +#ifdef CONFIG_PM_SLEEP
+>>> +static int afe4403_suspend(struct device *dev)
+>>> +{
+>>> +	struct afe4403_data *afe4403 = dev_get_drvdata(dev);
+>>> +	int ret = 0;
+>>> +
+>>> +	ret = afe4403_write(afe4403, AFE4403_CONTROL2, AFE4403_PWR_DWN);
+>>> +	if (ret)
+>>> +		goto out;
+>>> +
+>>> +	ret = regulator_disable(afe4403->regulator);
+>>> +	if (ret)
+>>> +		dev_err(dev, "Failed to disable regulator\n");
+>>> +
+>>> +out:
+>>> +	return ret;
+>>> +}
+>>> +
+>>> +static int afe4403_resume(struct device *dev)
+>>> +{
+>>> +	struct afe4403_data *afe4403 = dev_get_drvdata(dev);
+>>> +	int ret = 0;
+>>> +
+>>> +	if (afe4403->state) {
+>>> +		ret = afe4403_write(afe4403, AFE4403_CONTROL2,
+>>> +				~AFE4403_PWR_DWN);
+>>> +		if (ret)
+>>> +			goto out;
+>>> +	}
+>>> +	ret = regulator_enable(afe4403->regulator);
+>>> +	if (ret)
+>>> +		dev_err(dev, "Failed to disable regulator\n");
+>>> +
+>>> +out:
+>>> +	return ret;
+>>> +}
+>>> +
+>>> +static SIMPLE_DEV_PM_OPS(afe4403_pm_ops, afe4403_suspend, afe4403_resume);
+>>> +#define AFE4403_PM_OPS (&afe4403_pm_ops)
+>>> +#else
+>>> +#define AFE4403_PM_OPS NULL
+>>> +#endif
+>>> +
+>>> +#if IS_ENABLED(CONFIG_OF)
+>>> +static const struct of_device_id afe4403_of_match[] = {
+>>> +	{ .compatible = "ti,afe4403", },
+>>> +	{}
+>>> +};
+>>> +MODULE_DEVICE_TABLE(of, afe4403_of_match);
+>>> +#endif
+>>> +
+>>> +static const struct spi_device_id afe4403_id[] = {
+>>> +	{"afe4403", 0},
+>>> +	{},
+>>> +};
+>>> +MODULE_DEVICE_TABLE(spi, afe4403_id);
+>>> +
+>>> +static struct spi_driver afe4403_spi_driver = {
+>>> +	.driver = {
+>>> +		.name = "afe4403",
+>>> +		.owner = THIS_MODULE,
+>>> +		.of_match_table = of_match_ptr(afe4403_of_match),
+>>> +		.pm	= AFE4403_PM_OPS,
+>>> +	},
+>>> +	.probe = afe4403_spi_probe,
+>>> +	.remove = afe4403_spi_remove,
+>>> +	.id_table = afe4403_id,
+>>> +};
+>>> +module_spi_driver(afe4403_spi_driver);
+>>> +
+>>> +MODULE_AUTHOR("Dan Murphy <dmurphy@ti.com>");
+>>> +MODULE_DESCRIPTION("TI AFE4403 Heart Rate and Pulse Oximeter");
+>>> +MODULE_LICENSE("GPL");
+>>>
+> 
 > 
 
