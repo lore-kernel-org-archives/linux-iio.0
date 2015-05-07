@@ -1,81 +1,65 @@
-Return-Path: <daniel.baluta@gmail.com>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:46191 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751862AbbEGXdn (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 7 May 2015 19:33:43 -0400
+Message-ID: <554BE9A5.305@kernel.org>
+Date: Thu, 07 May 2015 23:39:33 +0100
+From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-Sender: daniel.baluta@gmail.com
-In-Reply-To: <554B2E22.10807@kernel.org>
-References: <1430736604-22119-1-git-send-email-daniel.baluta@intel.com>
-	<1430736604-22119-4-git-send-email-daniel.baluta@intel.com>
-	<5547CE60.5000300@metafoo.de>
-	<0944C1CC-6F9C-49C5-8195-994413B68680@kernel.org>
-	<554A4065.8050101@intel.com>
-	<554A4C6B.10703@kernel.org>
-	<CAEnQRZACZS=hC13rp7Ft_W8+2EYjLjddCOLr_=mbuKpj56=qqA@mail.gmail.com>
-	<554B2E22.10807@kernel.org>
-Date: Thu, 7 May 2015 13:26:36 +0300
-Message-ID: <CAEnQRZD8x+oxmsPsg_kJTSFVOZDKiwCrzHw0eZ172xCK3S9MZQ@mail.gmail.com>
-Subject: Re: [PATCH v5 3/4] iio: trigger: Introduce IIO hrtimer based trigger
-From: Daniel Baluta <daniel.baluta@intel.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Daniel Baluta <daniel.baluta@intel.com>, Lars-Peter Clausen <lars@metafoo.de>,
-	Joel Becker <jlbec@evilplan.org>, Hartmut Knaack <knaack.h@gmx.de>,
-	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"octavian.purdila@intel.com" <octavian.purdila@intel.com>, Paul Bolle <pebolle@tiscali.nl>,
-	patrick.porlan@intel.com, adriana.reus@intel.com, constantin.musca@intel.com,
-	marten@intuitiveaerial.com
-Content-Type: text/plain; charset=UTF-8
-List-ID: <linux-iio@vger.kernel.org>
+To: Lars-Peter Clausen <lars@metafoo.de>,
+	Krzysztof Kozlowski <k.kozlowski.k@gmail.com>,
+	Michael Hennerich <Michael.Hennerich@analog.com>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] staging: iio: ad7606_par: Constify platform_device_id
+References: <1430495002-31057-1-git-send-email-k.kozlowski.k@gmail.com> <55450E00.6050403@metafoo.de>
+In-Reply-To: <55450E00.6050403@metafoo.de>
+Content-Type: text/plain; charset=windows-1252
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Thu, May 7, 2015 at 12:19 PM, Jonathan Cameron <jic23@kernel.org> wrote:
-> On 06/05/15 18:37, Daniel Baluta wrote:
->> On Wed, May 6, 2015 at 8:16 PM, Jonathan Cameron <jic23@kernel.org> wrote:
->>> On 06/05/15 17:25, Daniel Baluta wrote:
->>>>
->>>>
->>>> On 05/05/2015 04:51 PM, Jonathan Cameron wrote:
->>>>>
->>>>>
->>>>> On 4 May 2015 20:54:08 GMT+01:00, Lars-Peter Clausen <lars@metafoo.de> wrote:
->>>>>> On 05/04/2015 12:50 PM, Daniel Baluta wrote:
->>>>>> [...]
->>>>>>> +IIO_HRTIMER_INFO_ATTR(sampling_frequency, S_IRUGO | S_IWUSR,
->>>>>>> +              iio_hrtimer_info_show_sampling_frequency,
->>>>>>> +              iio_hrtimer_info_store_sampling_frequency);
->>>>>>
->>>>>> I wonder if the sampling frequency should be configurable the regular
->>>>>> IIO
->>>>>> API, just like any other IIO device. But things like min/max sampling
->>>>>> frequency should be configured in configfs.
->>>>> Would have to be in the trigger dir rather than device... Makes sense to put it there.
->>>>> Limits on it here seem like a sensible idea.
->>>>
->>>> But then each trigger will have sampling_frequency right? This is not what we want.
->>> I'm confused now.  Why not?  Each hrtimer trigger created in configfs should have
->>> it's own sampling frequency should it not?
+On 02/05/15 18:48, Lars-Peter Clausen wrote:
+> On 05/01/2015 05:43 PM, Krzysztof Kozlowski wrote:
+>> The platform_device_id is not modified by the driver and core uses it as
+>> const.
 >>
->> I was referring to triggers in general, not just hrtimer triggers.
->>
->> But I see now that we can set trig->dev.groups to point to our
->> specific attributes. This
->> should work.
->>
->> Anyhow, I'm not convinced that sampling_frequency should be configured
->> from sysfs.
->> We create the trigger from configfs:
->>
->> $ mkdir /config/triggers/hrtimer-instance0
->>
->> Then, likely we have to do something like this:
->>
->> $ echo 100 > /sys/bus/iio/trigger7/sampling_frequency
->>
->> How is the user application going to know which is the exact directory
->> for hrtimer-instance0 ?
->>
->> Daniel.
->>
-> Find it by name like we normally do?
+>> Signed-off-by: Krzysztof Kozlowski <k.kozlowski.k@gmail.com>
+> 
+> Acked-by: Lars-Peter Clausen <lars@metafoo.de>
+> 
+> Thanks.
+Applied to the togreg branch of iio.git which will be pushed out as
+testing sometime soonish...
 
-Ok :). I will move this to sysfs and send v6.
+Thanks,
 
-thanks,
-Daniel.
+Jonathan
+> 
+>> ---
+>>   drivers/staging/iio/adc/ad7606_par.c | 2 +-
+>>   1 file changed, 1 insertion(+), 1 deletion(-)
+>>
+>> diff --git a/drivers/staging/iio/adc/ad7606_par.c b/drivers/staging/iio/adc/ad7606_par.c
+>> index 9e24b4d4455f..1d48ae381d16 100644
+>> --- a/drivers/staging/iio/adc/ad7606_par.c
+>> +++ b/drivers/staging/iio/adc/ad7606_par.c
+>> @@ -119,7 +119,7 @@ static const struct dev_pm_ops ad7606_pm_ops = {
+>>   #define AD7606_PAR_PM_OPS NULL
+>>   #endif  /* CONFIG_PM */
+>>
+>> -static struct platform_device_id ad7606_driver_ids[] = {
+>> +static const struct platform_device_id ad7606_driver_ids[] = {
+>>       {
+>>           .name        = "ad7606-8",
+>>           .driver_data    = ID_AD7606_8,
+>>
+> 
+> -- 
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+
