@@ -1,260 +1,68 @@
-Return-Path: <daniel.baluta@intel.com>
-From: Daniel Baluta <daniel.baluta@intel.com>
-To: jic23@kernel.org
-Cc: lars@metafoo.de,
-	jlbec@evilplan.org,
-	knaack.h@gmx.de,
-	linux-kernel@vger.kernel.org,
-	linux-iio@vger.kernel.org,
-	octavian.purdila@intel.com,
-	pebolle@tiscali.nl,
-	patrick.porlan@intel.com,
-	adriana.reus@intel.com,
-	constantin.musca@intel.com,
-	marten@intuitiveaerial.com,
-	daniel.baluta@intel.com
-Subject: [PATCH v6 1/4] iio: core: Introduce IIO software triggers
-Date: Fri,  8 May 2015 16:33:42 +0300
-Message-Id: <1431092025-14355-2-git-send-email-daniel.baluta@intel.com>
-In-Reply-To: <1431092025-14355-1-git-send-email-daniel.baluta@intel.com>
-References: <1431092025-14355-1-git-send-email-daniel.baluta@intel.com>
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-ie0-f181.google.com ([209.85.223.181]:34799 "EHLO
+	mail-ie0-f181.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750843AbbEGXsS (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 7 May 2015 19:48:18 -0400
+Date: Thu, 7 May 2015 18:48:17 -0500
+From: Michael Welling <mwelling@ieee.org>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
+	san@rosetechnology.dk, linux-kernel@vger.kernel.org,
+	linux-iio@vger.kernel.org
+Subject: Re: [PATCH v2] iio: mcp320x: Fix occasional incorrect readings
+Message-ID: <20150507234817.GA24969@deathray>
+References: <1430930957-14588-1-git-send-email-mwelling@ieee.org>
+ <554B3ABB.7050306@kernel.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <554B3ABB.7050306@kernel.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-A software trigger associates an IIO device trigger with a software
-interrupt source (e.g: timer, sysfs). This patch adds the generic
-infrastructure for handling software triggers.
+On Thu, May 07, 2015 at 11:13:15AM +0100, Jonathan Cameron wrote:
+> On 06/05/15 17:49, Michael Welling wrote:
+> > Without the cacheline alignment, the readings will occasionally incorrectly
+> > return 0.
+> > 
+> > Signed-off-by: Michael Welling <mwelling@ieee.org>
+> Applied to the fixes-togreg branch of iio.git.  Not sure
+> when I'll be able to push this out publicly as travelling
+> / working nights and generally having a silly week.
+> 
+> J
 
-Software interrupts sources are kept in a iio_trigger_types_list and
-registered separately when the associated kernel module is loaded.
+Thanks.
 
-Software triggers can be created directly from drivers or from user
-space via configfs interface.
+Appearently code can be silly too:
+https://lkml.org/lkml/2015/5/7/879
 
-Signed-off-by: Daniel Baluta <daniel.baluta@intel.com>
----
- drivers/iio/Kconfig                   |   8 +++
- drivers/iio/Makefile                  |   1 +
- drivers/iio/industrialio-sw-trigger.c | 115 ++++++++++++++++++++++++++++++++++
- include/linux/iio/sw_trigger.h        |  58 +++++++++++++++++
- 4 files changed, 182 insertions(+)
- create mode 100644 drivers/iio/industrialio-sw-trigger.c
- create mode 100644 include/linux/iio/sw_trigger.h
-
-diff --git a/drivers/iio/Kconfig b/drivers/iio/Kconfig
-index 4011eff..de7f1d9 100644
---- a/drivers/iio/Kconfig
-+++ b/drivers/iio/Kconfig
-@@ -58,6 +58,14 @@ config IIO_CONSUMERS_PER_TRIGGER
- 	This value controls the maximum number of consumers that a
- 	given trigger may handle. Default is 2.
- 
-+config IIO_SW_TRIGGER
-+	bool "Enable software triggers support"
-+	depends on IIO_TRIGGER
-+	help
-+	 Provides IIO core support for software triggers. A software
-+	 trigger can be created via configfs or directly by a driver
-+	 using the API provided.
-+
- source "drivers/iio/accel/Kconfig"
- source "drivers/iio/adc/Kconfig"
- source "drivers/iio/amplifiers/Kconfig"
-diff --git a/drivers/iio/Makefile b/drivers/iio/Makefile
-index 698afc2..df87975 100644
---- a/drivers/iio/Makefile
-+++ b/drivers/iio/Makefile
-@@ -6,6 +6,7 @@ obj-$(CONFIG_IIO) += industrialio.o
- industrialio-y := industrialio-core.o industrialio-event.o inkern.o
- industrialio-$(CONFIG_IIO_BUFFER) += industrialio-buffer.o
- industrialio-$(CONFIG_IIO_TRIGGER) += industrialio-trigger.o
-+industrialio-$(CONFIG_IIO_SW_TRIGGER) += industrialio-sw-trigger.o
- industrialio-$(CONFIG_IIO_BUFFER_CB) += buffer_cb.o
- 
- obj-$(CONFIG_IIO_TRIGGERED_BUFFER) += industrialio-triggered-buffer.o
-diff --git a/drivers/iio/industrialio-sw-trigger.c b/drivers/iio/industrialio-sw-trigger.c
-new file mode 100644
-index 0000000..fa1ec51
---- /dev/null
-+++ b/drivers/iio/industrialio-sw-trigger.c
-@@ -0,0 +1,115 @@
-+/*
-+ * The Industrial I/O core, software trigger functions
-+ *
-+ * Copyright (c) 2015 Intel Corporation
-+ *
-+ * This program is free software; you can redistribute it and/or modify it
-+ * under the terms of the GNU General Public License version 2 as published by
-+ * the Free Software Foundation.
-+ */
-+
-+#include <linux/module.h>
-+#include <linux/init.h>
-+#include <linux/kmod.h>
-+#include <linux/list.h>
-+#include <linux/slab.h>
-+
-+#include <linux/iio/sw_trigger.h>
-+
-+static LIST_HEAD(iio_trigger_types_list);
-+static DEFINE_RWLOCK(iio_trigger_types_lock);
-+
-+static
-+struct iio_sw_trigger_type *__iio_find_sw_trigger_type(const char *name,
-+						       unsigned len)
-+{
-+	struct iio_sw_trigger_type *t = NULL, *iter;
-+
-+	list_for_each_entry(iter, &iio_trigger_types_list, list)
-+		if (!strncmp(iter->name, name, len)) {
-+			t = iter;
-+			break;
-+		}
-+
-+	return t;
-+}
-+
-+int iio_register_sw_trigger_type(struct iio_sw_trigger_type *t)
-+{
-+	struct iio_sw_trigger_type *iter;
-+	int ret = 0;
-+
-+	write_lock(&iio_trigger_types_lock);
-+	iter = __iio_find_sw_trigger_type(t->name, strlen(t->name));
-+	if (iter)
-+		ret = -EBUSY;
-+	else
-+		list_add_tail(&t->list, &iio_trigger_types_list);
-+	write_unlock(&iio_trigger_types_lock);
-+
-+	return ret;
-+}
-+EXPORT_SYMBOL(iio_register_sw_trigger_type);
-+
-+int iio_unregister_sw_trigger_type(struct iio_sw_trigger_type *t)
-+{
-+	struct iio_sw_trigger_type *iter;
-+	int ret = 0;
-+
-+	write_lock(&iio_trigger_types_lock);
-+	iter = __iio_find_sw_trigger_type(t->name, strlen(t->name));
-+	if (!iter)
-+		ret = -EINVAL;
-+	else
-+		list_del(&t->list);
-+	write_unlock(&iio_trigger_types_lock);
-+
-+	return ret;
-+}
-+EXPORT_SYMBOL(iio_unregister_sw_trigger_type);
-+
-+static
-+struct iio_sw_trigger_type *iio_get_sw_trigger_type(const char *name)
-+{
-+	struct iio_sw_trigger_type *t;
-+
-+	read_lock(&iio_trigger_types_lock);
-+	t = __iio_find_sw_trigger_type(name, strlen(name));
-+	if (t && !try_module_get(t->owner))
-+		t = NULL;
-+	read_unlock(&iio_trigger_types_lock);
-+
-+	return t;
-+}
-+
-+struct iio_sw_trigger *iio_sw_trigger_create(const char *type, const char *name)
-+{
-+	struct iio_sw_trigger *t;
-+	struct iio_sw_trigger_type *tt;
-+
-+	tt = iio_get_sw_trigger_type(type);
-+	if (!tt) {
-+		pr_err("Invalid trigger type: %s\n", type);
-+		return ERR_PTR(-EINVAL);
-+	}
-+	t = tt->ops->probe(name);
-+	if (IS_ERR(t))
-+		goto out_module_put;
-+
-+	t->trigger_type = tt;
-+
-+	return t;
-+out_module_put:
-+	module_put(tt->owner);
-+	return t;
-+}
-+EXPORT_SYMBOL(iio_sw_trigger_create);
-+
-+void iio_sw_trigger_destroy(struct iio_sw_trigger *t)
-+{
-+	struct iio_sw_trigger_type *tt = t->trigger_type;
-+
-+	tt->ops->remove(t);
-+	module_put(tt->owner);
-+}
-+EXPORT_SYMBOL(iio_sw_trigger_destroy);
-diff --git a/include/linux/iio/sw_trigger.h b/include/linux/iio/sw_trigger.h
-new file mode 100644
-index 0000000..2771a25
---- /dev/null
-+++ b/include/linux/iio/sw_trigger.h
-@@ -0,0 +1,58 @@
-+/*
-+ * Industrial I/O software trigger interface
-+ *
-+ * Copyright (c) 2015 Intel Corporation
-+ *
-+ * This program is free software; you can redistribute it and/or modify it
-+ * under the terms of the GNU General Public License version 2 as published by
-+ * the Free Software Foundation.
-+ */
-+
-+#ifndef __IIO_SW_TRIGGER
-+#define __IIO_SW_TRIGGER
-+
-+#include <linux/module.h>
-+#include <linux/device.h>
-+#include <linux/iio/iio.h>
-+
-+#define module_iio_sw_trigger_driver(__iio_sw_trigger_type) \
-+	module_driver(__iio_sw_trigger_type, iio_register_sw_trigger_type, \
-+		      iio_unregister_sw_trigger_type)
-+
-+struct iio_sw_trigger_ops;
-+
-+struct iio_sw_trigger_type {
-+	const char *name;
-+	struct module *owner;
-+	const struct iio_sw_trigger_ops *ops;
-+	struct list_head list;
-+};
-+
-+struct iio_sw_trigger {
-+	struct iio_trigger *trigger;
-+	struct iio_sw_trigger_type *trigger_type;
-+};
-+
-+struct iio_sw_trigger_ops {
-+	struct iio_sw_trigger* (*probe)(const char *);
-+	int (*remove)(struct iio_sw_trigger *);
-+};
-+
-+/**
-+ * iio_register_sw_trigger_type() - register a software trigger type
-+ *
-+ * @tt: software trigger type to be registered
-+ */
-+int iio_register_sw_trigger_type(struct iio_sw_trigger_type *tt);
-+
-+/**
-+ * iio_unregister_sw_trigger_type() - unregister a software trigger type
-+ *
-+ * @tt: software trigger type to be unregistered
-+ */
-+int iio_unregister_sw_trigger_type(struct iio_sw_trigger_type *tt);
-+
-+struct iio_sw_trigger *iio_sw_trigger_create(const char *, const char *);
-+void iio_sw_trigger_destroy(struct iio_sw_trigger *);
-+
-+#endif /* __IIO_SW_TRIGGER */
--- 
-1.9.1
+> > ---
+> > 
+> > v2: Moved buffers to the end of the mcp320x struct per suggestion to keep
+> > them on their own cacheline.
+> > 
+> >  drivers/iio/adc/mcp320x.c |    6 +++---
+> >  1 file changed, 3 insertions(+), 3 deletions(-)
+> > 
+> > diff --git a/drivers/iio/adc/mcp320x.c b/drivers/iio/adc/mcp320x.c
+> > index efbfd12..8d9c9b9 100644
+> > --- a/drivers/iio/adc/mcp320x.c
+> > +++ b/drivers/iio/adc/mcp320x.c
+> > @@ -60,12 +60,12 @@ struct mcp320x {
+> >  	struct spi_message msg;
+> >  	struct spi_transfer transfer[2];
+> >  
+> > -	u8 tx_buf;
+> > -	u8 rx_buf[2];
+> > -
+> >  	struct regulator *reg;
+> >  	struct mutex lock;
+> >  	const struct mcp320x_chip_info *chip_info;
+> > +
+> > +	u8 tx_buf ____cacheline_aligned;
+> > +	u8 rx_buf[2];
+> >  };
+> >  
+> >  static int mcp320x_channel_to_tx_data(int device_index,
+> > 
+> 
