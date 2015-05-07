@@ -5,9 +5,9 @@ To: <linux-iio@vger.kernel.org>, Jonathan Cameron <jic23@kernel.org>,
 CC: Naidu Tellapati <naidu.tellapati@imgtec.com>, James Hartley
 	<james.hartley@imgtec.com>, <phani.movva@imgtec.com>, Ezequiel Garcia
 	<ezequiel.garcia@imgtec.com>
-Subject: [PATCH 1/5] iio: adc: cc10001: Fix the channel number mapping
-Date: Thu, 7 May 2015 18:22:17 -0300
-Message-ID: <1431033741-1088-2-git-send-email-ezequiel.garcia@imgtec.com>
+Subject: [PATCH 4/5] iio: adc: cc10001: Add delay before setting START bit
+Date: Thu, 7 May 2015 18:22:20 -0300
+Message-ID: <1431033741-1088-5-git-send-email-ezequiel.garcia@imgtec.com>
 In-Reply-To: <1431033741-1088-1-git-send-email-ezequiel.garcia@imgtec.com>
 References: <1431033741-1088-1-git-send-email-ezequiel.garcia@imgtec.com>
 MIME-Version: 1.0
@@ -16,117 +16,28 @@ List-ID: <linux-iio@vger.kernel.org>
 
 From: Naidu Tellapati <naidu.tellapati@imgtec.com>
 
-When some of the ADC channels are reserved for remote CPUs,
-the scan index and the corresponding channel number doesn't
-match. This leads to convesion on the incorrect channel during
-triggered capture.
-
-Fix this by using a scan index to channel mapping encoded
-in the iio_chan_spec for this purpose while starting conversion
-on a particular ADC channel in trigger handler.
-
-Also, the channel_map is not really used anywhere but in probe(), so
-no need to keep track of it. Remove it from device structure.
-
-While here, add 1 to number of channels to register timestamp channel
-with the IIO core.
+According to hardware team there should be some delay after
+setting channel number, start mode and before setting START.
+Add a one microsecond delay for this purpose.
 
 Fixes: 1664f6a5b0c8 ("iio: adc: Cosmic Circuits 10001 ADC driver")
 Signed-off-by: Naidu Tellapati <naidu.tellapati@imgtec.com>
 Signed-off-by: Ezequiel Garcia <ezequiel.garcia@imgtec.com>
 ---
- drivers/iio/adc/cc10001_adc.c | 24 +++++++++++++-----------
- 1 file changed, 13 insertions(+), 11 deletions(-)
+ drivers/iio/adc/cc10001_adc.c | 1 +
+ 1 file changed, 1 insertion(+)
 
 diff --git a/drivers/iio/adc/cc10001_adc.c b/drivers/iio/adc/cc10001_adc.c
-index 51e2a83..357e6c2 100644
+index 5302bbb..10c734d 100644
 --- a/drivers/iio/adc/cc10001_adc.c
 +++ b/drivers/iio/adc/cc10001_adc.c
-@@ -62,7 +62,6 @@ struct cc10001_adc_device {
- 	u16 *buf;
+@@ -102,6 +102,7 @@ static void cc10001_adc_start(struct cc10001_adc_device *adc_dev,
+ 	val = (channel & CC10001_ADC_CH_MASK) | CC10001_ADC_MODE_SINGLE_CONV;
+ 	cc10001_adc_write_reg(adc_dev, CC10001_ADC_CONFIG, val);
  
- 	struct mutex lock;
--	unsigned long channel_map;
- 	unsigned int start_delay_ns;
- 	unsigned int eoc_delay_ns;
- };
-@@ -129,6 +128,7 @@ static irqreturn_t cc10001_adc_trigger_h(int irq, void *p)
- 	struct iio_dev *indio_dev;
- 	unsigned int delay_ns;
- 	unsigned int channel;
-+	unsigned int scan_idx;
- 	bool sample_invalid;
- 	u16 *data;
- 	int i;
-@@ -150,9 +150,10 @@ static irqreturn_t cc10001_adc_trigger_h(int irq, void *p)
- 
- 	i = 0;
- 	sample_invalid = false;
--	for_each_set_bit(channel, indio_dev->active_scan_mask,
-+	for_each_set_bit(scan_idx, indio_dev->active_scan_mask,
- 				  indio_dev->masklength) {
- 
-+		channel = indio_dev->channels[scan_idx].channel;
- 		cc10001_adc_start(adc_dev, channel);
- 
- 		data[i] = cc10001_adc_poll_done(indio_dev, channel, delay_ns);
-@@ -255,22 +256,22 @@ static const struct iio_info cc10001_adc_info = {
- 	.update_scan_mode = &cc10001_update_scan_mode,
- };
- 
--static int cc10001_adc_channel_init(struct iio_dev *indio_dev)
-+static int cc10001_adc_channel_init(struct iio_dev *indio_dev,
-+				    unsigned long channel_map)
- {
--	struct cc10001_adc_device *adc_dev = iio_priv(indio_dev);
- 	struct iio_chan_spec *chan_array, *timestamp;
- 	unsigned int bit, idx = 0;
- 
--	indio_dev->num_channels = bitmap_weight(&adc_dev->channel_map,
--						CC10001_ADC_NUM_CHANNELS);
-+	indio_dev->num_channels = bitmap_weight(&channel_map,
-+						CC10001_ADC_NUM_CHANNELS) + 1;
- 
--	chan_array = devm_kcalloc(&indio_dev->dev, indio_dev->num_channels + 1,
-+	chan_array = devm_kcalloc(&indio_dev->dev, indio_dev->num_channels,
- 				  sizeof(struct iio_chan_spec),
- 				  GFP_KERNEL);
- 	if (!chan_array)
- 		return -ENOMEM;
- 
--	for_each_set_bit(bit, &adc_dev->channel_map, CC10001_ADC_NUM_CHANNELS) {
-+	for_each_set_bit(bit, &channel_map, CC10001_ADC_NUM_CHANNELS) {
- 		struct iio_chan_spec *chan = &chan_array[idx];
- 
- 		chan->type = IIO_VOLTAGE;
-@@ -305,6 +306,7 @@ static int cc10001_adc_probe(struct platform_device *pdev)
- 	unsigned long adc_clk_rate;
- 	struct resource *res;
- 	struct iio_dev *indio_dev;
-+	unsigned long channel_map;
- 	int ret;
- 
- 	indio_dev = devm_iio_device_alloc(&pdev->dev, sizeof(*adc_dev));
-@@ -313,9 +315,9 @@ static int cc10001_adc_probe(struct platform_device *pdev)
- 
- 	adc_dev = iio_priv(indio_dev);
- 
--	adc_dev->channel_map = GENMASK(CC10001_ADC_NUM_CHANNELS - 1, 0);
-+	channel_map = GENMASK(CC10001_ADC_NUM_CHANNELS - 1, 0);
- 	if (!of_property_read_u32(node, "adc-reserved-channels", &ret))
--		adc_dev->channel_map &= ~ret;
-+		channel_map &= ~ret;
- 
- 	adc_dev->reg = devm_regulator_get(&pdev->dev, "vref");
- 	if (IS_ERR(adc_dev->reg))
-@@ -361,7 +363,7 @@ static int cc10001_adc_probe(struct platform_device *pdev)
- 	adc_dev->start_delay_ns = adc_dev->eoc_delay_ns * CC10001_WAIT_CYCLES;
- 
- 	/* Setup the ADC channels available on the device */
--	ret = cc10001_adc_channel_init(indio_dev);
-+	ret = cc10001_adc_channel_init(indio_dev, channel_map);
- 	if (ret < 0)
- 		goto err_disable_clk;
- 
++	udelay(1);
+ 	val = cc10001_adc_read_reg(adc_dev, CC10001_ADC_CONFIG);
+ 	val = val | CC10001_ADC_START_CONV;
+ 	cc10001_adc_write_reg(adc_dev, CC10001_ADC_CONFIG, val);
 -- 
 2.3.3
