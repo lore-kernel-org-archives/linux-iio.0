@@ -1,10 +1,10 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:46214 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:46220 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751952AbbEGXdw (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 7 May 2015 19:33:52 -0400
-Message-ID: <554BEF0A.2040805@kernel.org>
-Date: Fri, 08 May 2015 00:02:34 +0100
+	with ESMTP id S1752107AbbEGXdx (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 7 May 2015 19:33:53 -0400
+Message-ID: <554BEF5C.40400@kernel.org>
+Date: Fri, 08 May 2015 00:03:56 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
 To: Daniel Baluta <daniel.baluta@gmail.com>,
@@ -38,12 +38,5 @@ On 29/04/15 16:11, Daniel Baluta wrote:
 > thanks,
 > Daniel.
 > 
-Sorry, missed this thread entirely and pull request has gone out.
-I'd have changed this if it was still in testing, but the moment
-it hits the public togreg branch, typos in commit messages are
-not a reason to rebase (so tough luck it'll probably be in the
-git log forever :)
-
-(there are loads of typos in there so don't worry about it :)
-
-Jonathan
+Ignore my last email. I applied the fixed version without ever seeing
+this thread :)
