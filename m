@@ -1,78 +1,204 @@
-Return-Path: <lars@metafoo.de>
-Message-ID: <554BAE42.1050702@metafoo.de>
-Date: Thu, 07 May 2015 20:26:10 +0200
-From: Lars-Peter Clausen <lars@metafoo.de>
-MIME-Version: 1.0
-To: Daniel Baluta <daniel.baluta@intel.com>,
- Jonathan Cameron <jic23@kernel.org>
-CC: Joel Becker <jlbec@evilplan.org>, Hartmut Knaack <knaack.h@gmx.de>,
- Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
- "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
- "octavian.purdila@intel.com" <octavian.purdila@intel.com>,
- Paul Bolle <pebolle@tiscali.nl>, patrick.porlan@intel.com,
- adriana.reus@intel.com, constantin.musca@intel.com,
- marten@intuitiveaerial.com
-Subject: Re: [PATCH v5 3/4] iio: trigger: Introduce IIO hrtimer based trigger
-References: <1430736604-22119-1-git-send-email-daniel.baluta@intel.com>	<1430736604-22119-4-git-send-email-daniel.baluta@intel.com>	<5547CE60.5000300@metafoo.de>	<0944C1CC-6F9C-49C5-8195-994413B68680@kernel.org>	<554A4065.8050101@intel.com>	<554A4C6B.10703@kernel.org>	<CAEnQRZACZS=hC13rp7Ft_W8+2EYjLjddCOLr_=mbuKpj56=qqA@mail.gmail.com>	<554B2E22.10807@kernel.org> <CAEnQRZD8x+oxmsPsg_kJTSFVOZDKiwCrzHw0eZ172xCK3S9MZQ@mail.gmail.com>
-In-Reply-To: <CAEnQRZD8x+oxmsPsg_kJTSFVOZDKiwCrzHw0eZ172xCK3S9MZQ@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from skprod2.natinst.com ([130.164.80.23]:43049 "EHLO ni.com"
+	rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+	id S1751225AbbEGPiy (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Thu, 7 May 2015 11:38:54 -0400
+From: Xander Huff <xander.huff@ni.com>
+To: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
+	pmeerw@pmeerw.net
+Cc: michal.simek@xilinx.com, soren.brinkmann@xilinx.com,
+	linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	linux-rt-users@vger.kernel.org, ben.shelton@ni.com,
+	joe.hershberger@ni.com, joshc@ni.com,
+	Xander Huff <xander.huff@ni.com>
+Subject: [PATCH] iio: adc: xilinx-xadc: Convert to raw spinlock
+Date: Thu, 7 May 2015 10:38:10 -0500
+Message-Id: <1431013090-18996-1-git-send-email-xander.huff@ni.com>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On 05/07/2015 12:26 PM, Daniel Baluta wrote:
-> On Thu, May 7, 2015 at 12:19 PM, Jonathan Cameron <jic23@kernel.org> wrote:
->> On 06/05/15 18:37, Daniel Baluta wrote:
->>> On Wed, May 6, 2015 at 8:16 PM, Jonathan Cameron <jic23@kernel.org> wrote:
->>>> On 06/05/15 17:25, Daniel Baluta wrote:
->>>>>
->>>>>
->>>>> On 05/05/2015 04:51 PM, Jonathan Cameron wrote:
->>>>>>
->>>>>>
->>>>>> On 4 May 2015 20:54:08 GMT+01:00, Lars-Peter Clausen <lars@metafoo.de> wrote:
->>>>>>> On 05/04/2015 12:50 PM, Daniel Baluta wrote:
->>>>>>> [...]
->>>>>>>> +IIO_HRTIMER_INFO_ATTR(sampling_frequency, S_IRUGO | S_IWUSR,
->>>>>>>> +              iio_hrtimer_info_show_sampling_frequency,
->>>>>>>> +              iio_hrtimer_info_store_sampling_frequency);
->>>>>>>
->>>>>>> I wonder if the sampling frequency should be configurable the regular
->>>>>>> IIO
->>>>>>> API, just like any other IIO device. But things like min/max sampling
->>>>>>> frequency should be configured in configfs.
->>>>>> Would have to be in the trigger dir rather than device... Makes sense to put it there.
->>>>>> Limits on it here seem like a sensible idea.
->>>>>
->>>>> But then each trigger will have sampling_frequency right? This is not what we want.
->>>> I'm confused now.  Why not?  Each hrtimer trigger created in configfs should have
->>>> it's own sampling frequency should it not?
->>>
->>> I was referring to triggers in general, not just hrtimer triggers.
->>>
->>> But I see now that we can set trig->dev.groups to point to our
->>> specific attributes. This
->>> should work.
->>>
->>> Anyhow, I'm not convinced that sampling_frequency should be configured
->>> from sysfs.
->>> We create the trigger from configfs:
->>>
->>> $ mkdir /config/triggers/hrtimer-instance0
->>>
->>> Then, likely we have to do something like this:
->>>
->>> $ echo 100 > /sys/bus/iio/trigger7/sampling_frequency
->>>
->>> How is the user application going to know which is the exact directory
->>> for hrtimer-instance0 ?
->>>
->>> Daniel.
->>>
->> Find it by name like we normally do?
->
-> Ok :). I will move this to sysfs and send v6.
+The driver currently registers a pair of irq handlers using
+request_threaded_irq(), however the synchronization mechanism
+between the hardirq and the threadedirq handler is a regular spinlock.
 
-If you add the min/max properties you could still control the frequency via 
-configfs by setting min and max to the same. In that case the sysfs property 
-would merely inform applications about the currently selected frequency.
+Unfortunately, this breaks PREEMPT_RT builds, where a spinlock can
+sleep, and is thus not able to be acquired from a hardirq handler.
+Because the set of operations performed under the spinlock is already
+minimal and bounded, it is a suitable candidate for being a raw_spinlock.
 
-- Lars
+This patch should not impact behavior on !PREEMPT_RT builds.
+
+Signed-off-by: Xander Huff <xander.huff@ni.com>
+Reviewed-by: Joe Hershberger <joe.hershberger@ni.com>
+Reviewed-by: Ben Shelton <ben.shelton@ni.com>
+Reviewed-by: Josh Cartwright <joshc@ni.com>
+---
+ drivers/iio/adc/xilinx-xadc-core.c | 34 +++++++++++++++++-----------------
+ drivers/iio/adc/xilinx-xadc.h      |  2 +-
+ 2 files changed, 18 insertions(+), 18 deletions(-)
+
+diff --git a/drivers/iio/adc/xilinx-xadc-core.c b/drivers/iio/adc/xilinx-xadc-core.c
+index a221f73..4bdf03b 100644
+--- a/drivers/iio/adc/xilinx-xadc-core.c
++++ b/drivers/iio/adc/xilinx-xadc-core.c
+@@ -163,7 +163,7 @@ static int xadc_zynq_write_adc_reg(struct xadc *xadc, unsigned int reg,
+ 	uint32_t tmp;
+ 	int ret;
+ 
+-	spin_lock_irq(&xadc->lock);
++	raw_spin_lock_irq(&xadc->lock);
+ 	xadc_zynq_update_intmsk(xadc, XADC_ZYNQ_INT_DFIFO_GTH,
+ 			XADC_ZYNQ_INT_DFIFO_GTH);
+ 
+@@ -177,7 +177,7 @@ static int xadc_zynq_write_adc_reg(struct xadc *xadc, unsigned int reg,
+ 	xadc_write_reg(xadc, XADC_ZYNQ_REG_CFG, tmp);
+ 
+ 	xadc_zynq_update_intmsk(xadc, XADC_ZYNQ_INT_DFIFO_GTH, 0);
+-	spin_unlock_irq(&xadc->lock);
++	raw_spin_unlock_irq(&xadc->lock);
+ 
+ 	ret = wait_for_completion_interruptible_timeout(&xadc->completion, HZ);
+ 	if (ret == 0)
+@@ -200,7 +200,7 @@ static int xadc_zynq_read_adc_reg(struct xadc *xadc, unsigned int reg,
+ 	cmd[0] = XADC_ZYNQ_CMD(XADC_ZYNQ_CMD_READ, reg, 0);
+ 	cmd[1] = XADC_ZYNQ_CMD(XADC_ZYNQ_CMD_NOP, 0, 0);
+ 
+-	spin_lock_irq(&xadc->lock);
++	raw_spin_lock_irq(&xadc->lock);
+ 	xadc_zynq_update_intmsk(xadc, XADC_ZYNQ_INT_DFIFO_GTH,
+ 			XADC_ZYNQ_INT_DFIFO_GTH);
+ 	xadc_zynq_drain_fifo(xadc);
+@@ -213,7 +213,7 @@ static int xadc_zynq_read_adc_reg(struct xadc *xadc, unsigned int reg,
+ 	xadc_write_reg(xadc, XADC_ZYNQ_REG_CFG, tmp);
+ 
+ 	xadc_zynq_update_intmsk(xadc, XADC_ZYNQ_INT_DFIFO_GTH, 0);
+-	spin_unlock_irq(&xadc->lock);
++	raw_spin_unlock_irq(&xadc->lock);
+ 	ret = wait_for_completion_interruptible_timeout(&xadc->completion, HZ);
+ 	if (ret == 0)
+ 		ret = -EIO;
+@@ -252,7 +252,7 @@ static void xadc_zynq_unmask_worker(struct work_struct *work)
+ 
+ 	misc_sts &= XADC_ZYNQ_INT_ALARM_MASK;
+ 
+-	spin_lock_irq(&xadc->lock);
++	raw_spin_lock_irq(&xadc->lock);
+ 
+ 	/* Clear those bits which are not active anymore */
+ 	unmask = (xadc->zynq_masked_alarm ^ misc_sts) & xadc->zynq_masked_alarm;
+@@ -266,7 +266,7 @@ static void xadc_zynq_unmask_worker(struct work_struct *work)
+ 
+ 	xadc_zynq_update_intmsk(xadc, 0, 0);
+ 
+-	spin_unlock_irq(&xadc->lock);
++	raw_spin_unlock_irq(&xadc->lock);
+ 
+ 	/* if still pending some alarm re-trigger the timer */
+ 	if (xadc->zynq_masked_alarm) {
+@@ -281,10 +281,10 @@ static irqreturn_t xadc_zynq_threaded_interrupt_handler(int irq, void *devid)
+ 	struct xadc *xadc = iio_priv(indio_dev);
+ 	unsigned int alarm;
+ 
+-	spin_lock_irq(&xadc->lock);
++	raw_spin_lock_irq(&xadc->lock);
+ 	alarm = xadc->zynq_alarm;
+ 	xadc->zynq_alarm = 0;
+-	spin_unlock_irq(&xadc->lock);
++	raw_spin_unlock_irq(&xadc->lock);
+ 
+ 	xadc_handle_events(indio_dev, xadc_zynq_transform_alarm(alarm));
+ 
+@@ -309,7 +309,7 @@ static irqreturn_t xadc_zynq_interrupt_handler(int irq, void *devid)
+ 	if (!status)
+ 		return IRQ_NONE;
+ 
+-	spin_lock(&xadc->lock);
++	raw_spin_lock(&xadc->lock);
+ 
+ 	xadc_write_reg(xadc, XADC_ZYNQ_REG_INTSTS, status);
+ 
+@@ -330,7 +330,7 @@ static irqreturn_t xadc_zynq_interrupt_handler(int irq, void *devid)
+ 		xadc_zynq_update_intmsk(xadc, 0, 0);
+ 		ret = IRQ_WAKE_THREAD;
+ 	}
+-	spin_unlock(&xadc->lock);
++	raw_spin_unlock(&xadc->lock);
+ 
+ 	return ret;
+ }
+@@ -419,7 +419,7 @@ static void xadc_zynq_update_alarm(struct xadc *xadc, unsigned int alarm)
+ 	/* Move OT to bit 7 */
+ 	alarm = ((alarm & 0x08) << 4) | ((alarm & 0xf0) >> 1) | (alarm & 0x07);
+ 
+-	spin_lock_irqsave(&xadc->lock, flags);
++	raw_spin_lock_irqsave(&xadc->lock, flags);
+ 
+ 	/* Clear previous interrupts if any. */
+ 	xadc_read_reg(xadc, XADC_ZYNQ_REG_INTSTS, &status);
+@@ -428,7 +428,7 @@ static void xadc_zynq_update_alarm(struct xadc *xadc, unsigned int alarm)
+ 	xadc_zynq_update_intmsk(xadc, XADC_ZYNQ_INT_ALARM_MASK,
+ 		~alarm & XADC_ZYNQ_INT_ALARM_MASK);
+ 
+-	spin_unlock_irqrestore(&xadc->lock, flags);
++	raw_spin_unlock_irqrestore(&xadc->lock, flags);
+ }
+ 
+ static const struct xadc_ops xadc_zynq_ops = {
+@@ -520,12 +520,12 @@ static void xadc_axi_update_alarm(struct xadc *xadc, unsigned int alarm)
+ 	alarm = ((alarm & 0x07) << 1) | ((alarm & 0x08) >> 3) |
+ 			((alarm & 0xf0) << 6);
+ 
+-	spin_lock_irqsave(&xadc->lock, flags);
++	raw_spin_lock_irqsave(&xadc->lock, flags);
+ 	xadc_read_reg(xadc, XADC_AXI_REG_IPIER, &val);
+ 	val &= ~XADC_AXI_INT_ALARM_MASK;
+ 	val |= alarm;
+ 	xadc_write_reg(xadc, XADC_AXI_REG_IPIER, val);
+-	spin_unlock_irqrestore(&xadc->lock, flags);
++	raw_spin_unlock_irqrestore(&xadc->lock, flags);
+ }
+ 
+ static unsigned long xadc_axi_get_dclk(struct xadc *xadc)
+@@ -674,7 +674,7 @@ static int xadc_trigger_set_state(struct iio_trigger *trigger, bool state)
+ 		xadc->trigger = NULL;
+ 	}
+ 
+-	spin_lock_irqsave(&xadc->lock, flags);
++	raw_spin_lock_irqsave(&xadc->lock, flags);
+ 	xadc_read_reg(xadc, XADC_AXI_REG_IPIER, &val);
+ 	xadc_write_reg(xadc, XADC_AXI_REG_IPISR, val & XADC_AXI_INT_EOS);
+ 	if (state)
+@@ -682,7 +682,7 @@ static int xadc_trigger_set_state(struct iio_trigger *trigger, bool state)
+ 	else
+ 		val &= ~XADC_AXI_INT_EOS;
+ 	xadc_write_reg(xadc, XADC_AXI_REG_IPIER, val);
+-	spin_unlock_irqrestore(&xadc->lock, flags);
++	raw_spin_unlock_irqrestore(&xadc->lock, flags);
+ 
+ err_out:
+ 	mutex_unlock(&xadc->mutex);
+@@ -1175,7 +1175,7 @@ static int xadc_probe(struct platform_device *pdev)
+ 	xadc->ops = id->data;
+ 	init_completion(&xadc->completion);
+ 	mutex_init(&xadc->mutex);
+-	spin_lock_init(&xadc->lock);
++	raw_spin_lock_init(&xadc->lock);
+ 	INIT_DELAYED_WORK(&xadc->zynq_unmask_work, xadc_zynq_unmask_worker);
+ 
+ 	mem = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+diff --git a/drivers/iio/adc/xilinx-xadc.h b/drivers/iio/adc/xilinx-xadc.h
+index c7487e8..d945e25 100644
+--- a/drivers/iio/adc/xilinx-xadc.h
++++ b/drivers/iio/adc/xilinx-xadc.h
+@@ -66,7 +66,7 @@ struct xadc {
+ 	struct delayed_work zynq_unmask_work;
+ 
+ 	struct mutex mutex;
+-	spinlock_t lock;
++	raw_spinlock_t lock;
+ 
+ 	struct completion completion;
+ };
+-- 
+1.9.1
+
