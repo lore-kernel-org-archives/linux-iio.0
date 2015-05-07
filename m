@@ -1,89 +1,122 @@
-Return-Path: <srinivas.pandruvada@linux.intel.com>
-Message-ID: <1431035479.2450.9.camel@spandruv-DESK3.jf.intel.com>
-Subject: Re: [PATCH v2] iio: light: hid-sensor-prox: Fix memory leak in
- probe()/remove()
-From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-To: Fabio Estevam <fabio.estevam@freescale.com>
-Cc: jic23@kernel.org, khoroshilov@ispras.ru, daniel.baluta@intel.com,
-	linux-iio@vger.kernel.org
-Date: Thu, 07 May 2015 14:51:19 -0700
-In-Reply-To: <1431007798-20807-1-git-send-email-fabio.estevam@freescale.com>
-References: <1431007798-20807-1-git-send-email-fabio.estevam@freescale.com>
-Content-Type: text/plain; charset="UTF-8"
-Mime-Version: 1.0
+Return-Path: <Ezequiel.Garcia@imgtec.com>
+From: Ezequiel Garcia <ezequiel.garcia@imgtec.com>
+To: <linux-iio@vger.kernel.org>, Jonathan Cameron <jic23@kernel.org>,
+	Lars-Peter Clausen <lars@metafoo.de>
+CC: Naidu Tellapati <naidu.tellapati@imgtec.com>, James Hartley
+	<james.hartley@imgtec.com>, <phani.movva@imgtec.com>, Ezequiel Garcia
+	<ezequiel.garcia@imgtec.com>
+Subject: [PATCH 5/5] iio: adc: cc10001: Power-up the ADC at probe time when used remotely
+Date: Thu, 7 May 2015 18:24:02 -0300
+Message-ID: <1431033842-1149-1-git-send-email-ezequiel.garcia@imgtec.com>
+MIME-Version: 1.0
+Content-Type: text/plain
 List-ID: <linux-iio@vger.kernel.org>
 
-On Thu, 2015-05-07 at 11:09 -0300, Fabio Estevam wrote:
-> 'channels' is allocated via kmemdup, so we need to free it after its usage.
-> 
-> This way we fix the memory leak in both probe and remove paths.
-> 
-> Also, as 'indio_dev' is allocated via devm_iio_device_alloc(), so there is
-> no need to call kfree for it.
-Where is the kfree for indio_dev..?
-> 
-> Reported-by: Alexey Khoroshilov <khoroshilov@ispras.ru>
-> Signed-off-by: Fabio Estevam <fabio.estevam@freescale.com>
-> ---
-> Changes since v1:
-> - Always call kfree(channel) after its usage.
-> 
->  drivers/iio/light/hid-sensor-prox.c | 14 ++++++--------
->  1 file changed, 6 insertions(+), 8 deletions(-)
-> 
-> diff --git a/drivers/iio/light/hid-sensor-prox.c b/drivers/iio/light/hid-sensor-prox.c
-> index 91ecc46..00ce0f6 100644
-> --- a/drivers/iio/light/hid-sensor-prox.c
-> +++ b/drivers/iio/light/hid-sensor-prox.c
-> @@ -278,16 +278,17 @@ static int hid_prox_probe(struct platform_device *pdev)
->  		return -ENOMEM;
->  	}
->  
-> +	indio_dev->channels = channels;
-> +
->  	ret = prox_parse_report(pdev, hsdev, channels,
->  				HID_USAGE_SENSOR_PROX, prox_state);
-> +	kfree(channels);
-You are freeing channels so indio_dev->channels will point to junk.
-This will be passed to iio_device_register..
->  	if (ret) {
->  		dev_err(&pdev->dev, "failed to setup attributes\n");
-> -		goto error_free_dev_mem;
-> +		return ret;
->  	}
->  
-> -	indio_dev->channels = channels;
-> -	indio_dev->num_channels =
-> -				ARRAY_SIZE(prox_channels);
-> +	indio_dev->num_channels = ARRAY_SIZE(prox_channels);
->  	indio_dev->dev.parent = &pdev->dev;
->  	indio_dev->info = &prox_info;
->  	indio_dev->name = name;
-> @@ -297,7 +298,7 @@ static int hid_prox_probe(struct platform_device *pdev)
->  		NULL, NULL);
->  	if (ret) {
->  		dev_err(&pdev->dev, "failed to initialize trigger buffer\n");
-> -		goto error_free_dev_mem;
-> +		return ret;
->  	}
->  	atomic_set(&prox_state->common_attributes.data_ready, 0);
->  	ret = hid_sensor_setup_trigger(indio_dev, name,
-> @@ -331,8 +332,6 @@ error_remove_trigger:
->  	hid_sensor_remove_trigger(&prox_state->common_attributes);
->  error_unreg_buffer_funcs:
->  	iio_triggered_buffer_cleanup(indio_dev);
-> -error_free_dev_mem:
-> -	kfree(indio_dev->channels);
-This is required.
->  	return ret;
->  }
->  
-> @@ -347,7 +346,6 @@ static int hid_prox_remove(struct platform_device *pdev)
->  	iio_device_unregister(indio_dev);
->  	hid_sensor_remove_trigger(&prox_state->common_attributes);
->  	iio_triggered_buffer_cleanup(indio_dev);
-> -	kfree(indio_dev->channels);
->  This is required..
+From: Naidu Tellapati <naidu.tellapati@imgtec.com>
 
->  	return 0;
->  }
+The ADC is typically shared with remote CPUs not running Linux.
+However, there is only one register to power-up/power-down. Remote CPUs
+aren't able to power-up the ADC, and rely in Linux doing it instead.
+
+This commit uses the adc-reserved-channels devicetree property to
+distinguish shared usage. In this case, the ADC is powered up at
+probe time.
+
+If the ADC is used only by the CPU running Linux, power-up/down
+at runtime, only when neeeded.
+
+Signed-off-by: Naidu Tellapati <naidu.tellapati@imgtec.com>
+Signed-off-by: Ezequiel Garcia <ezequiel.garcia@imgtec.com>
+---
+ drivers/iio/adc/cc10001_adc.c | 26 +++++++++++++++++++++-----
+ 1 file changed, 21 insertions(+), 5 deletions(-)
+
+diff --git a/drivers/iio/adc/cc10001_adc.c b/drivers/iio/adc/cc10001_adc.c
+index 10c734d..7d1b2ae 100644
+--- a/drivers/iio/adc/cc10001_adc.c
++++ b/drivers/iio/adc/cc10001_adc.c
+@@ -62,6 +62,7 @@ struct cc10001_adc_device {
+ 	struct regulator *reg;
+ 	u16 *buf;
+ 
++	bool shared;
+ 	struct mutex lock;
+ 	unsigned int start_delay_ns;
+ 	unsigned int eoc_delay_ns;
+@@ -155,7 +156,8 @@ static irqreturn_t cc10001_adc_trigger_h(int irq, void *p)
+ 
+ 	mutex_lock(&adc_dev->lock);
+ 
+-	cc10001_adc_power_up(adc_dev);
++	if (!adc_dev->shared)
++		cc10001_adc_power_up(adc_dev);
+ 
+ 	/* Calculate delay step for eoc and sampled data */
+ 	delay_ns = adc_dev->eoc_delay_ns / CC10001_MAX_POLL_COUNT;
+@@ -179,7 +181,8 @@ static irqreturn_t cc10001_adc_trigger_h(int irq, void *p)
+ 	}
+ 
+ done:
+-	cc10001_adc_power_down(adc_dev);
++	if (!adc_dev->shared)
++		cc10001_adc_power_down(adc_dev);
+ 
+ 	mutex_unlock(&adc_dev->lock);
+ 
+@@ -198,7 +201,8 @@ static u16 cc10001_adc_read_raw_voltage(struct iio_dev *indio_dev,
+ 	unsigned int delay_ns;
+ 	u16 val;
+ 
+-	cc10001_adc_power_up(adc_dev);
++	if (!adc_dev->shared)
++		cc10001_adc_power_up(adc_dev);
+ 
+ 	/* Calculate delay step for eoc and sampled data */
+ 	delay_ns = adc_dev->eoc_delay_ns / CC10001_MAX_POLL_COUNT;
+@@ -207,7 +211,8 @@ static u16 cc10001_adc_read_raw_voltage(struct iio_dev *indio_dev,
+ 
+ 	val = cc10001_adc_poll_done(indio_dev, chan->channel, delay_ns);
+ 
+-	cc10001_adc_power_down(adc_dev);
++	if (!adc_dev->shared)
++		cc10001_adc_power_down(adc_dev);
+ 
+ 	return val;
+ }
+@@ -324,8 +329,10 @@ static int cc10001_adc_probe(struct platform_device *pdev)
+ 	adc_dev = iio_priv(indio_dev);
+ 
+ 	channel_map = GENMASK(CC10001_ADC_NUM_CHANNELS - 1, 0);
+-	if (!of_property_read_u32(node, "adc-reserved-channels", &ret))
++	if (!of_property_read_u32(node, "adc-reserved-channels", &ret)) {
++		adc_dev->shared = true;
+ 		channel_map &= ~ret;
++	}
+ 
+ 	adc_dev->reg = devm_regulator_get(&pdev->dev, "vref");
+ 	if (IS_ERR(adc_dev->reg))
+@@ -370,6 +377,14 @@ static int cc10001_adc_probe(struct platform_device *pdev)
+ 	adc_dev->eoc_delay_ns = NSEC_PER_SEC / adc_clk_rate;
+ 	adc_dev->start_delay_ns = adc_dev->eoc_delay_ns * CC10001_WAIT_CYCLES;
+ 
++	/*
++	 * There is only one register to power-up/power-down the AUX ADC.
++	 * If the ADC is shared among multiple CPUs, always power it up here.
++	 * If the ADC is used only by the MIPS, power-up/power-down at runtime.
++	 */
++	if (adc_dev->shared)
++		cc10001_adc_power_up(adc_dev);
++
+ 	/* Setup the ADC channels available on the device */
+ 	ret = cc10001_adc_channel_init(indio_dev, channel_map);
+ 	if (ret < 0)
+@@ -404,6 +419,7 @@ static int cc10001_adc_remove(struct platform_device *pdev)
+ 	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
+ 	struct cc10001_adc_device *adc_dev = iio_priv(indio_dev);
+ 
++	cc10001_adc_power_down(adc_dev);
+ 	iio_device_unregister(indio_dev);
+ 	iio_triggered_buffer_cleanup(indio_dev);
+ 	clk_disable_unprepare(adc_dev->adc_clk);
+-- 
+2.3.3
