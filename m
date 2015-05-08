@@ -1,72 +1,52 @@
-Return-Path: <jic23@jic23.retrosnub.co.uk>
-References: <1430930957-14588-1-git-send-email-mwelling@ieee.org>
-            <554B3ABB.7050306@kernel.org>
-            <20150507234817.GA24969@deathray>
-In-Reply-To: <20150507234817.GA24969@deathray>
-From: jic23@jic23.retrosnub.co.uk
-To: Michael Welling <mwelling@ieee.org>
-Cc: Jonathan Cameron <jic23@kernel.org>, knaack.h@gmx.de,
-  lars@metafoo.de, pmeerw@pmeerw.net, san@rosetechnology.dk,
-  linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org
-Subject: Re: [PATCH v2] iio: mcp320x: Fix occasional incorrect readings
-Date: Fri, 08 May 2015 11:54:58 +0100
-Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Message-Id: <20150508105458.6ABDE4086D@saturn.retrosnub.co.uk>
+Return-Path: <daniel.baluta@gmail.com>
+MIME-Version: 1.0
+Sender: daniel.baluta@gmail.com
+In-Reply-To: <553D19A5.1030101@kernel.org>
+References: <1429891112-11888-1-git-send-email-daniel.baluta@intel.com>
+	<553D19A5.1030101@kernel.org>
+Date: Fri, 8 May 2015 14:29:15 +0300
+Message-ID: <CAEnQRZCAZFT1zQimyTARJDBcnvMHCWJZEixJtX3femS2NMEeww@mail.gmail.com>
+Subject: Re: [PATCH v2 0/3] Introduce support for MMC35240 magnetic sensor
+From: Daniel Baluta <daniel.baluta@intel.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Daniel Baluta <daniel.baluta@intel.com>, Peter Meerwald <pmeerw@pmeerw.net>,
+	Hartmut Knaack <knaack.h@gmx.de>, Lars-Peter Clausen <lars@metafoo.de>,
+	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Content-Type: text/plain; charset=UTF-8
 List-ID: <linux-iio@vger.kernel.org>
 
-Michael Welling writes: 
+On Sun, Apr 26, 2015 at 8:00 PM, Jonathan Cameron <jic23@kernel.org> wrote:
+> On 24/04/15 16:58, Daniel Baluta wrote:
+>> This adds support for Memsic's MMC35240 magnetometer. The sensor does
+>> not offer an interrupt line for data ready so for the moment we only
+>> expose raw readings via sysfs interface.
+>>
+>> This patchset also adds ACPI and Power Management support.
+>>
+>> Changes since v1:
+>>       * fixed nits reported by Peter and Jonathan
+>>       * https://lkml.org/lkml/2015/4/15/186
+>>
+>> Daniel Baluta (3):
+>>   iio: magnetometer: Add support for MEMSIC MMC35240 sensor
+>>   iio: magnetometer: mmc35240: Add PM sleep support
+>>   iio: magnetometer: Add ACPI support for MMC35240
+>>
+>>  drivers/iio/magnetometer/Kconfig    |  11 +
+>>  drivers/iio/magnetometer/Makefile   |   1 +
+>>  drivers/iio/magnetometer/mmc35240.c | 511 ++++++++++++++++++++++++++++++++++++
+>>  3 files changed, 523 insertions(+)
+>>  create mode 100644 drivers/iio/magnetometer/mmc35240.c
+>>
+> I'm happy with the whole series.  Will leave it a few days though to
+> give Peter time to take another look if he wants (or anyone else
+> who feels like it!)
+>
+> Hopefully I'll manage a quick catch up session sometime mid week
+> as only getting to this stuff on Saturday's is leaving me with quite
+> a backlog at the moment!
 
-> On Thu, May 07, 2015 at 11:13:15AM +0100, Jonathan Cameron wrote:
->> On 06/05/15 17:49, Michael Welling wrote:
->> > Without the cacheline alignment, the readings will occasionally incorrectly
->> > return 0.
->> > 
->> > Signed-off-by: Michael Welling <mwelling@ieee.org>
->> Applied to the fixes-togreg branch of iio.git.  Not sure
->> when I'll be able to push this out publicly as travelling
->> / working nights and generally having a silly week. 
->> 
->> J
-> 
-> Thanks. 
-> 
-> Appearently code can be silly too:
-> https://lkml.org/lkml/2015/5/7/879
-*laughs*.  Hmm. 8.56pm. Chances are Mark was a beer or two down ;) 
+Slow poke on this one :).
 
-> 
->> > ---
->> > 
->> > v2: Moved buffers to the end of the mcp320x struct per suggestion to keep
->> > them on their own cacheline.
->> > 
->> >  drivers/iio/adc/mcp320x.c |    6 +++---
->> >  1 file changed, 3 insertions(+), 3 deletions(-)
->> > 
->> > diff --git a/drivers/iio/adc/mcp320x.c b/drivers/iio/adc/mcp320x.c
->> > index efbfd12..8d9c9b9 100644
->> > --- a/drivers/iio/adc/mcp320x.c
->> > +++ b/drivers/iio/adc/mcp320x.c
->> > @@ -60,12 +60,12 @@ struct mcp320x {
->> >  	struct spi_message msg;
->> >  	struct spi_transfer transfer[2];
->> >  
->> > -	u8 tx_buf;
->> > -	u8 rx_buf[2];
->> > -
->> >  	struct regulator *reg;
->> >  	struct mutex lock;
->> >  	const struct mcp320x_chip_info *chip_info;
->> > +
->> > +	u8 tx_buf ____cacheline_aligned;
->> > +	u8 rx_buf[2];
->> >  };
->> >  
->> >  static int mcp320x_channel_to_tx_data(int device_index,
->> >  
->> 
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+Daniel.
