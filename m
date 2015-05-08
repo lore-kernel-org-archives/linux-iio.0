@@ -1,91 +1,127 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:52530 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:52507 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753615AbbEHSaU (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 8 May 2015 14:30:20 -0400
-Message-ID: <554CC35B.2050609@kernel.org>
-Date: Fri, 08 May 2015 10:08:27 -0400
+	with ESMTP id S1752841AbbEHSaQ (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 8 May 2015 14:30:16 -0400
+Message-ID: <554CBBDA.6040202@kernel.org>
+Date: Fri, 08 May 2015 09:36:26 -0400
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Daniel Baluta <daniel.baluta@intel.com>, pmeerw@pmeerw.net
-CC: knaack.h@gmx.de, lars@metafoo.de, linux-kernel@vger.kernel.org,
-	linux-iio@vger.kernel.org
-Subject: Re: [PATCH v2 2/3] iio: magnetometer: mmc35240: Add PM sleep support
-References: <1429891112-11888-1-git-send-email-daniel.baluta@intel.com> <1429891112-11888-3-git-send-email-daniel.baluta@intel.com>
-In-Reply-To: <1429891112-11888-3-git-send-email-daniel.baluta@intel.com>
+To: Ezequiel Garcia <ezequiel.garcia@imgtec.com>,
+	linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>
+CC: Naidu Tellapati <naidu.tellapati@imgtec.com>,
+	James Hartley <james.hartley@imgtec.com>,
+	phani.movva@imgtec.com
+Subject: Re: [PATCH 2/5] iio: adc: cc10001: Fix incorrect use of power-up/power-down
+ register
+References: <1431033741-1088-1-git-send-email-ezequiel.garcia@imgtec.com> <1431033741-1088-3-git-send-email-ezequiel.garcia@imgtec.com>
+In-Reply-To: <1431033741-1088-3-git-send-email-ezequiel.garcia@imgtec.com>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 24/04/15 11:58, Daniel Baluta wrote:
-> We rely on regmap to save the state of the registers at suspend,
-> and then we do an explicit sync at resume.
+On 07/05/15 17:22, Ezequiel Garcia wrote:
+> From: Naidu Tellapati <naidu.tellapati@imgtec.com>
 > 
-> Signed-off-by: Daniel Baluta <daniel.baluta@intel.com>
-Applied
+> At present we are incorrectly setting the register to 0x1 to power up
+> the ADC. Since it is an active high power down register, we need to set
+> the register to 0x0 to actually power up. Conversely, writing 0x1 to the
+> register powers it down.
+> 
+> This commit adds a couple of helpers to make the code clearer and then
+> use them to do the power-up/power-down properly.
+> 
+> Fixes: 1664f6a5b0c8 ("iio: adc: Cosmic Circuits 10001 ADC driver")
+> Signed-off-by: Naidu Tellapati <naidu.tellapati@imgtec.com>
+> Signed-off-by: Ezequiel Garcia <ezequiel.garcia@imgtec.com>
+Applied to the fixes-togreg branch of iio.git.
+Thanks,
+
+Jonathan
 > ---
->  drivers/iio/magnetometer/mmc35240.c | 35 +++++++++++++++++++++++++++++++++++
->  1 file changed, 35 insertions(+)
+>  drivers/iio/adc/cc10001_adc.c | 35 +++++++++++++++++++++--------------
+>  1 file changed, 21 insertions(+), 14 deletions(-)
 > 
-> diff --git a/drivers/iio/magnetometer/mmc35240.c b/drivers/iio/magnetometer/mmc35240.c
-> index beefebc..7a52c3e 100644
-> --- a/drivers/iio/magnetometer/mmc35240.c
-> +++ b/drivers/iio/magnetometer/mmc35240.c
-> @@ -17,6 +17,7 @@
->  #include <linux/i2c.h>
->  #include <linux/delay.h>
->  #include <linux/regmap.h>
-> +#include <linux/pm.h>
+> diff --git a/drivers/iio/adc/cc10001_adc.c b/drivers/iio/adc/cc10001_adc.c
+> index 357e6c2..cf6c6fb 100644
+> --- a/drivers/iio/adc/cc10001_adc.c
+> +++ b/drivers/iio/adc/cc10001_adc.c
+> @@ -35,8 +35,9 @@
+>  #define CC10001_ADC_EOC_SET		BIT(0)
 >  
->  #include <linux/iio/iio.h>
->  #include <linux/iio/sysfs.h>
-> @@ -447,6 +448,39 @@ static int mmc35240_probe(struct i2c_client *client,
->  	return devm_iio_device_register(&client->dev, indio_dev);
+>  #define CC10001_ADC_CHSEL_SAMPLED	0x0c
+> -#define CC10001_ADC_POWER_UP		0x10
+> -#define CC10001_ADC_POWER_UP_SET	BIT(0)
+> +#define CC10001_ADC_POWER_DOWN		0x10
+> +#define CC10001_ADC_POWER_DOWN_SET	BIT(0)
+> +
+>  #define CC10001_ADC_DEBUG		0x14
+>  #define CC10001_ADC_DATA_COUNT		0x20
+>  
+> @@ -78,6 +79,20 @@ static inline u32 cc10001_adc_read_reg(struct cc10001_adc_device *adc_dev,
+>  	return readl(adc_dev->reg_base + reg);
 >  }
 >  
-> +#ifdef CONFIG_PM_SLEEP
-> +static int mmc35240_suspend(struct device *dev)
+> +static void cc10001_adc_power_up(struct cc10001_adc_device *adc_dev)
 > +{
-> +	struct iio_dev *indio_dev = i2c_get_clientdata(to_i2c_client(dev));
-> +	struct mmc35240_data *data = iio_priv(indio_dev);
+> +	cc10001_adc_write_reg(adc_dev, CC10001_ADC_POWER_DOWN,
+> +			      ~CC10001_ADC_POWER_DOWN_SET);
 > +
-> +	regcache_cache_only(data->regmap, true);
-> +
-> +	return 0;
+> +	ndelay(adc_dev->start_delay_ns);
 > +}
 > +
-> +static int mmc35240_resume(struct device *dev)
+> +static void cc10001_adc_power_down(struct cc10001_adc_device *adc_dev)
 > +{
-> +	struct iio_dev *indio_dev = i2c_get_clientdata(to_i2c_client(dev));
-> +	struct mmc35240_data *data = iio_priv(indio_dev);
-> +	int ret;
-> +
-> +	regcache_mark_dirty(data->regmap);
-> +	ret = regcache_sync_region(data->regmap, MMC35240_REG_CTRL0,
-> +				   MMC35240_REG_CTRL1);
-> +	if (ret < 0)
-> +		dev_err(dev, "Failed to restore control registers\n");
-> +
-> +	regcache_cache_only(data->regmap, false);
-> +
-> +	return 0;
+> +	cc10001_adc_write_reg(adc_dev, CC10001_ADC_POWER_DOWN,
+> +			      CC10001_ADC_POWER_DOWN_SET);
 > +}
-> +#endif
 > +
-> +static const struct dev_pm_ops mmc35240_pm_ops = {
-> +	SET_SYSTEM_SLEEP_PM_OPS(mmc35240_suspend, mmc35240_resume)
-> +};
-> +
->  static const struct i2c_device_id mmc35240_id[] = {
->  	{"MMC35240", 0},
->  	{}
-> @@ -456,6 +490,7 @@ MODULE_DEVICE_TABLE(i2c, mmc35240_id);
->  static struct i2c_driver mmc35240_driver = {
->  	.driver = {
->  		.name = MMC35240_DRV_NAME,
-> +		.pm = &mmc35240_pm_ops,
->  	},
->  	.probe		= mmc35240_probe,
->  	.id_table	= mmc35240_id,
+>  static void cc10001_adc_start(struct cc10001_adc_device *adc_dev,
+>  			      unsigned int channel)
+>  {
+> @@ -139,11 +154,7 @@ static irqreturn_t cc10001_adc_trigger_h(int irq, void *p)
+>  
+>  	mutex_lock(&adc_dev->lock);
+>  
+> -	cc10001_adc_write_reg(adc_dev, CC10001_ADC_POWER_UP,
+> -			      CC10001_ADC_POWER_UP_SET);
+> -
+> -	/* Wait for 8 (6+2) clock cycles before activating START */
+> -	ndelay(adc_dev->start_delay_ns);
+> +	cc10001_adc_power_up(adc_dev);
+>  
+>  	/* Calculate delay step for eoc and sampled data */
+>  	delay_ns = adc_dev->eoc_delay_ns / CC10001_MAX_POLL_COUNT;
+> @@ -167,7 +178,7 @@ static irqreturn_t cc10001_adc_trigger_h(int irq, void *p)
+>  	}
+>  
+>  done:
+> -	cc10001_adc_write_reg(adc_dev, CC10001_ADC_POWER_UP, 0);
+> +	cc10001_adc_power_down(adc_dev);
+>  
+>  	mutex_unlock(&adc_dev->lock);
+>  
+> @@ -186,11 +197,7 @@ static u16 cc10001_adc_read_raw_voltage(struct iio_dev *indio_dev,
+>  	unsigned int delay_ns;
+>  	u16 val;
+>  
+> -	cc10001_adc_write_reg(adc_dev, CC10001_ADC_POWER_UP,
+> -			      CC10001_ADC_POWER_UP_SET);
+> -
+> -	/* Wait for 8 (6+2) clock cycles before activating START */
+> -	ndelay(adc_dev->start_delay_ns);
+> +	cc10001_adc_power_up(adc_dev);
+>  
+>  	/* Calculate delay step for eoc and sampled data */
+>  	delay_ns = adc_dev->eoc_delay_ns / CC10001_MAX_POLL_COUNT;
+> @@ -199,7 +206,7 @@ static u16 cc10001_adc_read_raw_voltage(struct iio_dev *indio_dev,
+>  
+>  	val = cc10001_adc_poll_done(indio_dev, chan->channel, delay_ns);
+>  
+> -	cc10001_adc_write_reg(adc_dev, CC10001_ADC_POWER_UP, 0);
+> +	cc10001_adc_power_down(adc_dev);
+>  
+>  	return val;
+>  }
 > 
 
