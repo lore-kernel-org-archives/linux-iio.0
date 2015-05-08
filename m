@@ -1,60 +1,142 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:52543 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:52504 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S932072AbbEHSaX (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 8 May 2015 14:30:23 -0400
-Message-ID: <554CCD46.1040106@kernel.org>
-Date: Fri, 08 May 2015 10:50:46 -0400
+	with ESMTP id S1751733AbbEHSaQ (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 8 May 2015 14:30:16 -0400
+Message-ID: <554CBBC7.8000405@kernel.org>
+Date: Fri, 08 May 2015 09:36:07 -0400
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Daniel Baluta <daniel.baluta@intel.com>,
-	Linus Walleij <linus.walleij@linaro.org>,
-	linux-iio@vger.kernel.org
-CC: Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	Denis CIOCCA <denis.ciocca@st.com>,
-	Lee Jones <lee.jones@linaro.org>
-Subject: Re: [PATCH] iio: make tools more cross-compilation friendly
-References: <1430815332-26812-1-git-send-email-linus.walleij@linaro.org> <55489EC7.7070301@intel.com>
-In-Reply-To: <55489EC7.7070301@intel.com>
+To: Ezequiel Garcia <ezequiel.garcia@imgtec.com>,
+	linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>
+CC: Naidu Tellapati <naidu.tellapati@imgtec.com>,
+	James Hartley <james.hartley@imgtec.com>,
+	phani.movva@imgtec.com
+Subject: Re: [PATCH 1/5] iio: adc: cc10001: Fix the channel number mapping
+References: <1431033741-1088-1-git-send-email-ezequiel.garcia@imgtec.com> <1431033741-1088-2-git-send-email-ezequiel.garcia@imgtec.com>
+In-Reply-To: <1431033741-1088-2-git-send-email-ezequiel.garcia@imgtec.com>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 05/05/15 06:43, Daniel Baluta wrote:
+On 07/05/15 17:22, Ezequiel Garcia wrote:
+> From: Naidu Tellapati <naidu.tellapati@imgtec.com>
 > 
+> When some of the ADC channels are reserved for remote CPUs,
+> the scan index and the corresponding channel number doesn't
+> match. This leads to convesion on the incorrect channel during
+> triggered capture.
 > 
-> On 05/05/2015 11:42 AM, Linus Walleij wrote:
->> When cross-compiling the IIO tools we need to opportunity to
->> specify a cross compiler prefix and some extra CFLAGS. This
->> patch enables this in the same way as for other stuff in
->> tools.
->>
->> Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+> Fix this by using a scan index to channel mapping encoded
+> in the iio_chan_spec for this purpose while starting conversion
+> on a particular ADC channel in trigger handler.
 > 
-> Acked-by: Daniel Baluta <daniel.baluta@intel.com>
-Applied to the togreg branch of iio.git
-
-Thanks,
+> Also, the channel_map is not really used anywhere but in probe(), so
+> no need to keep track of it. Remove it from device structure.
+> 
+> While here, add 1 to number of channels to register timestamp channel
+> with the IIO core.
+> 
+> Fixes: 1664f6a5b0c8 ("iio: adc: Cosmic Circuits 10001 ADC driver")
+> Signed-off-by: Naidu Tellapati <naidu.tellapati@imgtec.com>
+> Signed-off-by: Ezequiel Garcia <ezequiel.garcia@imgtec.com>
+Applied to the fixes-togreg branch. Will probably send onwards sometime
+this weekend.
 
 Jonathan
+> ---
+>  drivers/iio/adc/cc10001_adc.c | 24 +++++++++++++-----------
+>  1 file changed, 13 insertions(+), 11 deletions(-)
 > 
->> ---
->>   tools/iio/Makefile | 4 ++--
->>   1 file changed, 2 insertions(+), 2 deletions(-)
->>
->> diff --git a/tools/iio/Makefile b/tools/iio/Makefile
->> index bf7ae6d6612a..3a7a54f59713 100644
->> --- a/tools/iio/Makefile
->> +++ b/tools/iio/Makefile
->> @@ -1,5 +1,5 @@
->> -CC = gcc
->> -CFLAGS = -Wall -g -D_GNU_SOURCE
->> +CC = $(CROSS_COMPILE)gcc
->> +CFLAGS += -Wall -g -D_GNU_SOURCE
->>
->>   all: iio_event_monitor lsiio generic_buffer
->>
->>
+> diff --git a/drivers/iio/adc/cc10001_adc.c b/drivers/iio/adc/cc10001_adc.c
+> index 51e2a83..357e6c2 100644
+> --- a/drivers/iio/adc/cc10001_adc.c
+> +++ b/drivers/iio/adc/cc10001_adc.c
+> @@ -62,7 +62,6 @@ struct cc10001_adc_device {
+>  	u16 *buf;
+>  
+>  	struct mutex lock;
+> -	unsigned long channel_map;
+>  	unsigned int start_delay_ns;
+>  	unsigned int eoc_delay_ns;
+>  };
+> @@ -129,6 +128,7 @@ static irqreturn_t cc10001_adc_trigger_h(int irq, void *p)
+>  	struct iio_dev *indio_dev;
+>  	unsigned int delay_ns;
+>  	unsigned int channel;
+> +	unsigned int scan_idx;
+>  	bool sample_invalid;
+>  	u16 *data;
+>  	int i;
+> @@ -150,9 +150,10 @@ static irqreturn_t cc10001_adc_trigger_h(int irq, void *p)
+>  
+>  	i = 0;
+>  	sample_invalid = false;
+> -	for_each_set_bit(channel, indio_dev->active_scan_mask,
+> +	for_each_set_bit(scan_idx, indio_dev->active_scan_mask,
+>  				  indio_dev->masklength) {
+>  
+> +		channel = indio_dev->channels[scan_idx].channel;
+>  		cc10001_adc_start(adc_dev, channel);
+>  
+>  		data[i] = cc10001_adc_poll_done(indio_dev, channel, delay_ns);
+> @@ -255,22 +256,22 @@ static const struct iio_info cc10001_adc_info = {
+>  	.update_scan_mode = &cc10001_update_scan_mode,
+>  };
+>  
+> -static int cc10001_adc_channel_init(struct iio_dev *indio_dev)
+> +static int cc10001_adc_channel_init(struct iio_dev *indio_dev,
+> +				    unsigned long channel_map)
+>  {
+> -	struct cc10001_adc_device *adc_dev = iio_priv(indio_dev);
+>  	struct iio_chan_spec *chan_array, *timestamp;
+>  	unsigned int bit, idx = 0;
+>  
+> -	indio_dev->num_channels = bitmap_weight(&adc_dev->channel_map,
+> -						CC10001_ADC_NUM_CHANNELS);
+> +	indio_dev->num_channels = bitmap_weight(&channel_map,
+> +						CC10001_ADC_NUM_CHANNELS) + 1;
+>  
+> -	chan_array = devm_kcalloc(&indio_dev->dev, indio_dev->num_channels + 1,
+> +	chan_array = devm_kcalloc(&indio_dev->dev, indio_dev->num_channels,
+>  				  sizeof(struct iio_chan_spec),
+>  				  GFP_KERNEL);
+>  	if (!chan_array)
+>  		return -ENOMEM;
+>  
+> -	for_each_set_bit(bit, &adc_dev->channel_map, CC10001_ADC_NUM_CHANNELS) {
+> +	for_each_set_bit(bit, &channel_map, CC10001_ADC_NUM_CHANNELS) {
+>  		struct iio_chan_spec *chan = &chan_array[idx];
+>  
+>  		chan->type = IIO_VOLTAGE;
+> @@ -305,6 +306,7 @@ static int cc10001_adc_probe(struct platform_device *pdev)
+>  	unsigned long adc_clk_rate;
+>  	struct resource *res;
+>  	struct iio_dev *indio_dev;
+> +	unsigned long channel_map;
+>  	int ret;
+>  
+>  	indio_dev = devm_iio_device_alloc(&pdev->dev, sizeof(*adc_dev));
+> @@ -313,9 +315,9 @@ static int cc10001_adc_probe(struct platform_device *pdev)
+>  
+>  	adc_dev = iio_priv(indio_dev);
+>  
+> -	adc_dev->channel_map = GENMASK(CC10001_ADC_NUM_CHANNELS - 1, 0);
+> +	channel_map = GENMASK(CC10001_ADC_NUM_CHANNELS - 1, 0);
+>  	if (!of_property_read_u32(node, "adc-reserved-channels", &ret))
+> -		adc_dev->channel_map &= ~ret;
+> +		channel_map &= ~ret;
+>  
+>  	adc_dev->reg = devm_regulator_get(&pdev->dev, "vref");
+>  	if (IS_ERR(adc_dev->reg))
+> @@ -361,7 +363,7 @@ static int cc10001_adc_probe(struct platform_device *pdev)
+>  	adc_dev->start_delay_ns = adc_dev->eoc_delay_ns * CC10001_WAIT_CYCLES;
+>  
+>  	/* Setup the ADC channels available on the device */
+> -	ret = cc10001_adc_channel_init(indio_dev);
+> +	ret = cc10001_adc_channel_init(indio_dev, channel_map);
+>  	if (ret < 0)
+>  		goto err_disable_clk;
+>  
+> 
 
