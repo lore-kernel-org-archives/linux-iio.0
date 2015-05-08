@@ -1,334 +1,434 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:52554 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:52549 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S932164AbbEHSaZ (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 8 May 2015 14:30:25 -0400
-Message-ID: <554CCF15.1040701@kernel.org>
-Date: Fri, 08 May 2015 10:58:29 -0400
+	with ESMTP id S932137AbbEHSaY (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 8 May 2015 14:30:24 -0400
+Message-ID: <554CCE59.4000903@kernel.org>
+Date: Fri, 08 May 2015 10:55:21 -0400
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Gabriele Mazzotta <gabriele.mzt@gmail.com>
+To: Tomasz Duszynski <tduszyns@gmail.com>
 CC: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
-	marxin.liska@gmail.com, marex@denx.de, rui.zhang@intel.com,
 	linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org
-Subject: Re: [PATCH v9] iio: acpi: Add support for ACPI0008 Ambient Light
- Sensor
-References: <1430569857-31386-1-git-send-email-gabriele.mzt@gmail.com>
-In-Reply-To: <1430569857-31386-1-git-send-email-gabriele.mzt@gmail.com>
+Subject: Re: [PATCH v4] iio: light: add support for ROHM BH1710/BH1715/BH1721/BH1750/BH1751
+ ambient light sensors
+References: <1430678241-19651-1-git-send-email-tduszyns@gmail.com>
+In-Reply-To: <1430678241-19651-1-git-send-email-tduszyns@gmail.com>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 02/05/15 08:30, Gabriele Mazzotta wrote:
-> This driver adds the initial support for the ACPI Ambient Light Sensor
-> as defined in Section 9.2 of the ACPI specification (Revision 5.0) [1].
+On 03/05/15 14:37, Tomasz Duszynski wrote:
+> Add support for ROHM BH1710/BH1715/BH1721/BH1750/BH1751 ambient light
+> sensors.
 > 
-> Sensors complying with the standard are exposed as ACPI devices with
-> ACPI0008 as hardware ID and provide standard methods by which the OS
-> can query properties of the ambient light environment the system is
-> currently operating in.
-> 
-> This driver currently allows only to get the current ambient light
-> illuminance reading through the _ALI method, but is ready to be
-> extended extended to handle _ALC, _ALT and _ALP as well.
-> 
-> [1] http://www.acpi.info/DOWNLOADS/ACPIspec50.pdf
-> 
-> Signed-off-by: Martin Liska <marxin.liska@gmail.com>
-> Signed-off-by: Marek Vasut <marex@denx.de>
-> Signed-off-by: Gabriele Mazzotta <gabriele.mzt@gmail.com>
-> Cc: Zhang Rui <rui.zhang@intel.com>
-Sorry, one last point inline that I missed before!
+> Signed-off-by: Tomasz Duszynski <tduszyns@gmail.com>
+Applied to the togreg branch of iio.git which will be pushed out as testing
+when I have an internet connection that does more than https...
 
-(just noticed it when taking a last glance before applying the patch).
-
-Jonathan
+Anyhow, nice driver, thanks!
 > ---
-> Changes since v8:
->  - Set realbits to 32
->  - Fix license mismatch (using GPL v2 or later)
->  - Drop iio_device_unregister() in favor of devm_iio_device_register()
+>  Changes in v4:
+>  	- Minor changes in module documentation
+> 	- Use be16_to_cpu instead of swab16 for clarity
 > 
->  drivers/iio/light/Kconfig    |  12 +++
->  drivers/iio/light/Makefile   |   1 +
->  drivers/iio/light/acpi-als.c | 232 +++++++++++++++++++++++++++++++++++++++++++
->  3 files changed, 245 insertions(+)
->  create mode 100644 drivers/iio/light/acpi-als.c
+>  Changes in v3:
+>  	- Do some code cleanup
+> 	- Add comments to clarify non-intuitive driver parts
+> 	- Return proper scale value [lx / count] to userspace. In previous
+> 	  patches scale inverse was returned.
+> 
+>  Changes in v2:
+>  	- Store chip-dependent values in chip_info structure
+> 	- Add bh1750_remove to power down chip (necessary for BH1721)
+> 	- Use one time mode for chips that have support for that
+> 	- Use IIO_LIGHT instead of IIO_INTENSITY for channel type
+> 
+>  drivers/iio/light/Kconfig  |  10 ++
+>  drivers/iio/light/Makefile |   1 +
+>  drivers/iio/light/bh1750.c | 334 +++++++++++++++++++++++++++++++++++++++++++++
+>  3 files changed, 345 insertions(+)
+>  create mode 100644 drivers/iio/light/bh1750.c
 > 
 > diff --git a/drivers/iio/light/Kconfig b/drivers/iio/light/Kconfig
-> index 01a1a16..898b2b5 100644
+> index 5a3237b..ebc578a 100644
 > --- a/drivers/iio/light/Kconfig
 > +++ b/drivers/iio/light/Kconfig
-> @@ -5,6 +5,18 @@
->  
->  menu "Light sensors"
->  
-> +config ACPI_ALS
-> +	tristate "ACPI Ambient Light Sensor"
-> +	depends on ACPI
-> +	select IIO_TRIGGERED_BUFFER
-> +	select IIO_KFIFO_BUF
+> @@ -37,6 +37,16 @@ config APDS9300
+>  	 To compile this driver as a module, choose M here: the
+>  	 module will be called apds9300.
+> 
+> +config BH1750
+> +	tristate "ROHM BH1750 ambient light sensor"
+> +	depends on I2C
 > +	help
-> +	 Say Y here if you want to build a driver for the ACPI0008
-> +	 Ambient Light Sensor.
+> +	 Say Y here to build support for the ROHM BH1710, BH1715, BH1721,
+> +	 BH1750, BH1751 ambient light sensors.
 > +
 > +	 To compile this driver as a module, choose M here: the module will
-> +	 be called acpi-als.
+> +	 be called bh1750.
 > +
->  config ADJD_S311
->  	tristate "ADJD-S311-CR999 digital color sensor"
->  	select IIO_BUFFER
+>  config CM32181
+>  	depends on I2C
+>  	tristate "CM32181 driver"
 > diff --git a/drivers/iio/light/Makefile b/drivers/iio/light/Makefile
-> index ad7c30f..d9aad52a 100644
+> index 74656c1..1a13184 100644
 > --- a/drivers/iio/light/Makefile
 > +++ b/drivers/iio/light/Makefile
-> @@ -3,6 +3,7 @@
->  #
->  
->  # When adding new entries keep the list in alphabetical order
-> +obj-$(CONFIG_ACPI_ALS)		+= acpi-als.o
+> @@ -6,6 +6,7 @@
 >  obj-$(CONFIG_ADJD_S311)		+= adjd_s311.o
 >  obj-$(CONFIG_AL3320A)		+= al3320a.o
 >  obj-$(CONFIG_APDS9300)		+= apds9300.o
-> diff --git a/drivers/iio/light/acpi-als.c b/drivers/iio/light/acpi-als.c
+> +obj-$(CONFIG_BH1750)		+= bh1750.o
+>  obj-$(CONFIG_CM32181)		+= cm32181.o
+>  obj-$(CONFIG_CM36651)		+= cm36651.o
+>  obj-$(CONFIG_GP2AP020A00F)	+= gp2ap020a00f.o
+> diff --git a/drivers/iio/light/bh1750.c b/drivers/iio/light/bh1750.c
 > new file mode 100644
-> index 0000000..9839c9a
+> index 0000000..564c2b3
 > --- /dev/null
-> +++ b/drivers/iio/light/acpi-als.c
-> @@ -0,0 +1,232 @@
+> +++ b/drivers/iio/light/bh1750.c
+> @@ -0,0 +1,334 @@
 > +/*
-> + * ACPI Ambient Light Sensor Driver
+> + * ROHM BH1710/BH1715/BH1721/BH1750/BH1751 ambient light sensor driver
 > + *
-> + * Based on ALS driver:
-> + * Copyright (C) 2009 Zhang Rui <rui.zhang@intel.com>
+> + * Copyright (c) Tomasz Duszynski <tduszyns@gmail.com>
 > + *
-> + * Rework for IIO subsystem:
-> + * Copyright (C) 2012-2013 Martin Liska <marxin.liska@gmail.com>
+> + * This program is free software; you can redistribute it and/or modify
+> + * it under the terms of the GNU General Public License version 2 as
+> + * published by the Free Software Foundation.
 > + *
-> + * Final cleanup and debugging:
-> + * Copyright (C) 2013-2014 Marek Vasut <marex@denx.de>
-> + * Copyright (C) 2015 Gabriele Mazzotta <gabriele.mzt@gmail.com>
+> + * Data sheets:
+> + *  http://rohmfs.rohm.com/en/products/databook/datasheet/ic/sensor/light/bh1710fvc-e.pdf
+> + *  http://rohmfs.rohm.com/en/products/databook/datasheet/ic/sensor/light/bh1715fvc-e.pdf
+> + *  http://rohmfs.rohm.com/en/products/databook/datasheet/ic/sensor/light/bh1721fvc-e.pdf
+> + *  http://rohmfs.rohm.com/en/products/databook/datasheet/ic/sensor/light/bh1750fvi-e.pdf
+> + *  http://rohmfs.rohm.com/en/products/databook/datasheet/ic/sensor/light/bh1751fvi-e.pdf
 > + *
-> + * This program is free software; you can redistribute it and/or modify it
-> + * under the terms of the GNU General Public License as published by the
-> + * Free Software Foundation; either version 2 of the License, or (at your
-> + * option) any later version.
+> + * 7-bit I2C slave addresses:
+> + *  0x23 (ADDR pin low)
+> + *  0x5C (ADDR pin high)
 > + *
-> + * This program is distributed in the hope that it will be useful, but
-> + * WITHOUT ANY WARRANTY; without even the implied warranty of
-> + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-> + * General Public License for more details.
-> + *
-> + * You should have received a copy of the GNU General Public License along
-> + * with this program; if not, write to the Free Software Foundation, Inc.,
-> + * 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 > + */
 > +
-> +#include <linux/module.h>
-> +#include <linux/acpi.h>
-> +#include <linux/err.h>
-> +#include <linux/mutex.h>
-> +
+> +#include <linux/delay.h>
+> +#include <linux/i2c.h>
 > +#include <linux/iio/iio.h>
-> +#include <linux/iio/buffer.h>
-> +#include <linux/iio/kfifo_buf.h>
+> +#include <linux/iio/sysfs.h>
+> +#include <linux/module.h>
 > +
-> +#define ACPI_ALS_CLASS			"als"
-> +#define ACPI_ALS_DEVICE_NAME		"acpi-als"
-> +#define ACPI_ALS_NOTIFY_ILLUMINANCE	0x80
+> +#define BH1750_POWER_DOWN		0x00
+> +#define BH1750_ONE_TIME_H_RES_MODE	0x20 /* auto-mode for BH1721 */
+> +#define BH1750_CHANGE_INT_TIME_H_BIT	0x40
+> +#define BH1750_CHANGE_INT_TIME_L_BIT	0x60
 > +
-> +ACPI_MODULE_NAME("acpi-als");
-> +
-> +/*
-> + * So far, there's only one channel in here, but the specification for
-> + * ACPI0008 says there can be more to what the block can report. Like
-> + * chromaticity and such. We are ready for incoming additions!
-> + */
-> +static const struct iio_chan_spec acpi_als_channels[] = {
-> +	{
-> +		.type		= IIO_LIGHT,
-> +		.scan_type	= {
-> +			.sign		= 's',
-> +			.realbits	= 32,
-> +			.storagebits	= 32,
-> +		},
-> +		.info_mask_separate	= BIT(IIO_CHAN_INFO_RAW),
-> +	},
+> +enum {
+> +	BH1710,
+> +	BH1721,
+> +	BH1750,
 > +};
 > +
-> +/*
-> + * The event buffer contains timestamp and all the data from
-> + * the ACPI0008 block. There are multiple, but so far we only
-> + * support _ALI (illuminance). Once someone adds new channels
-> + * to acpi_als_channels[], the evt_buffer below will grow
-> + * automatically.
-> + */
-> +#define EVT_NR_SOURCES		ARRAY_SIZE(acpi_als_channels)
-> +#define EVT_BUFFER_SIZE		\
-> +	(sizeof(s64) + (EVT_NR_SOURCES * sizeof(s32)))
-> +
-> +struct acpi_als {
-> +	struct acpi_device	*device;
-> +	struct mutex		lock;
-> +
-> +	s32			evt_buffer[EVT_BUFFER_SIZE];
+> +struct bh1750_chip_info;
+> +struct bh1750_data {
+> +	struct i2c_client *client;
+> +	struct mutex lock;
+> +	const struct bh1750_chip_info *chip_info;
+> +	u16 mtreg;
 > +};
 > +
-> +/*
-> + * All types of properties the ACPI0008 block can report. The ALI, ALC, ALT
-> + * and ALP can all be handled by als_read_value() below, while the ALR is
-> + * special.
-> + *
-> + * The _ALR property returns tables that can be used to fine-tune the values
-> + * reported by the other props based on the particular hardware type and it's
-> + * location (it contains tables for "rainy", "bright inhouse lighting" etc.).
-> + *
-> + * So far, we support only ALI (illuminance).
-> + */
-> +#define ACPI_ALS_ILLUMINANCE	"_ALI"
-> +#define ACPI_ALS_CHROMATICITY	"_ALC"
-> +#define ACPI_ALS_COLOR_TEMP	"_ALT"
-> +#define ACPI_ALS_POLLING	"_ALP"
-> +#define ACPI_ALS_TABLES		"_ALR"
+> +struct bh1750_chip_info {
+> +	u16 mtreg_min;
+> +	u16 mtreg_max;
+> +	u16 mtreg_default;
+> +	int mtreg_to_usec;
+> +	int mtreg_to_scale;
 > +
-> +static int als_read_value(struct acpi_als *als, char *prop, s32 *val)
+> +	/*
+> +	 * For BH1710/BH1721 all possible integration time values won't fit
+> +	 * into one page so displaying is limited to every second one.
+> +	 * Note, that user can still write proper values which were not
+> +	 * listed.
+> +	 */
+> +	int inc;
+> +
+> +	u16 int_time_low_mask;
+> +	u16 int_time_high_mask;
+> +}
+> +
+> +static const bh1750_chip_info_tbl[] = {
+> +	[BH1710] = { 140, 1022, 300, 400,  250000000, 2, 0x001F, 0x03E0 },
+> +	[BH1721] = { 140, 1020, 300, 400,  250000000, 2, 0x0010, 0x03E0 },
+> +	[BH1750] = { 31,  254,  69,  1740, 57500000,  1, 0x001F, 0x00E0 },
+> +};
+> +
+> +static int bh1750_change_int_time(struct bh1750_data *data, int usec)
 > +{
-> +	unsigned long long temp_val;
-> +	acpi_status status;
+> +	int ret;
+> +	u16 val;
+> +	u8 regval;
+> +	const struct bh1750_chip_info *chip_info = data->chip_info;
 > +
-> +	status = acpi_evaluate_integer(als->device->handle, prop, NULL,
-> +				       &temp_val);
+> +	if ((usec % chip_info->mtreg_to_usec) != 0)
+> +		return -EINVAL;
 > +
-> +	if (ACPI_FAILURE(status)) {
-> +		ACPI_EXCEPTION((AE_INFO, status, "Error reading ALS %s", prop));
-> +		return -EIO;
-> +	}
+> +	val = usec / chip_info->mtreg_to_usec;
+> +	if (val < chip_info->mtreg_min || val > chip_info->mtreg_max)
+> +		return -EINVAL;
 > +
-> +	*val = temp_val;
+> +	ret = i2c_smbus_write_byte(data->client, BH1750_POWER_DOWN);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	regval = (val & chip_info->int_time_high_mask) >> 5;
+> +	ret = i2c_smbus_write_byte(data->client,
+> +				   BH1750_CHANGE_INT_TIME_H_BIT | regval);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	regval = val & chip_info->int_time_low_mask;
+> +	ret = i2c_smbus_write_byte(data->client,
+> +				   BH1750_CHANGE_INT_TIME_L_BIT | regval);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	data->mtreg = val;
 > +
 > +	return 0;
 > +}
 > +
-> +static void acpi_als_notify(struct acpi_device *device, u32 event)
+> +static int bh1750_read(struct bh1750_data *data, int *val)
 > +{
-> +	struct iio_dev *indio_dev = acpi_driver_data(device);
-> +	struct acpi_als *als = iio_priv(indio_dev);
-> +	s32 *buffer = als->evt_buffer;
-> +	s64 time_ns = iio_get_time_ns();
-> +	s32 val;
 > +	int ret;
+> +	__be16 result;
+> +	const struct bh1750_chip_info *chip_info = data->chip_info;
+> +	unsigned long delay = chip_info->mtreg_to_usec * data->mtreg;
 > +
-> +	mutex_lock(&als->lock);
-> +
-> +	memset(buffer, 0, EVT_BUFFER_SIZE);
-> +
-> +	switch (event) {
-> +	case ACPI_ALS_NOTIFY_ILLUMINANCE:
-> +		ret = als_read_value(als, ACPI_ALS_ILLUMINANCE, &val);
-> +		if (ret < 0)
-> +			goto out;
-> +		*buffer++ = val;
-> +		break;
-> +	default:
-> +		/* Unhandled event */
-> +		dev_dbg(&device->dev, "Unhandled ACPI ALS event (%08x)!\n",
-> +			event);
-> +		goto out;
-> +	}
-> +
-> +	iio_push_to_buffers_with_timestamp(indio_dev,
-> +					   (u8 *)als->evt_buffer, time_ns);
-Why the u8* cast, the function takes a void * so there is no need to cast it.
-
-> +
-> +out:
-> +	mutex_unlock(&als->lock);
-> +}
-> +
-> +static int acpi_als_read_raw(struct iio_dev *indio_dev,
-> +			     struct iio_chan_spec const *chan, int *val,
-> +			     int *val2, long mask)
-> +{
-> +	struct acpi_als *als = iio_priv(indio_dev);
-> +	s32 temp_val;
-> +	int ret;
-> +
-> +	if (mask != IIO_CHAN_INFO_RAW)
-> +		return -EINVAL;
-> +
-> +	/* we support only illumination (_ALI) so far. */
-> +	if (chan->type != IIO_LIGHT)
-> +		return -EINVAL;
-> +
-> +	ret = als_read_value(als, ACPI_ALS_ILLUMINANCE, &temp_val);
+> +	/*
+> +	 * BH1721 will enter continuous mode on receiving this command.
+> +	 * Note, that this eliminates need for bh1750_resume().
+> +	 */
+> +	ret = i2c_smbus_write_byte(data->client, BH1750_ONE_TIME_H_RES_MODE);
 > +	if (ret < 0)
 > +		return ret;
 > +
-> +	*val = temp_val;
+> +	usleep_range(delay + 15000, delay + 40000);
 > +
-> +	return IIO_VAL_INT;
+> +	ret = i2c_master_recv(data->client, (char *)&result, 2);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	*val = be16_to_cpu(result);
+> +
+> +	return 0;
 > +}
 > +
-> +static const struct iio_info acpi_als_info = {
-> +	.driver_module		= THIS_MODULE,
-> +	.read_raw		= acpi_als_read_raw,
+> +static int bh1750_read_raw(struct iio_dev *indio_dev,
+> +			   struct iio_chan_spec const *chan,
+> +			   int *val, int *val2, long mask)
+> +{
+> +	int ret, tmp;
+> +	struct bh1750_data *data = iio_priv(indio_dev);
+> +	const struct bh1750_chip_info *chip_info = data->chip_info;
+> +
+> +	switch (mask) {
+> +	case IIO_CHAN_INFO_RAW:
+> +		switch (chan->type) {
+> +		case IIO_LIGHT:
+> +			mutex_lock(&data->lock);
+> +			ret = bh1750_read(data, val);
+> +			mutex_unlock(&data->lock);
+> +			if (ret < 0)
+> +				return ret;
+> +
+> +			return IIO_VAL_INT;
+> +		default:
+> +			return -EINVAL;
+> +		}
+> +	case IIO_CHAN_INFO_SCALE:
+> +		tmp = chip_info->mtreg_to_scale / data->mtreg;
+> +		*val = tmp / 1000000;
+> +		*val2 = tmp % 1000000;
+> +		return IIO_VAL_INT_PLUS_MICRO;
+> +	case IIO_CHAN_INFO_INT_TIME:
+> +		*val = 0;
+> +		*val2 = chip_info->mtreg_to_usec * data->mtreg;
+> +		return IIO_VAL_INT_PLUS_MICRO;
+> +	default:
+> +		return -EINVAL;
+> +	}
+> +}
+> +
+> +static int bh1750_write_raw(struct iio_dev *indio_dev,
+> +			    struct iio_chan_spec const *chan,
+> +			    int val, int val2, long mask)
+> +{
+> +	int ret;
+> +	struct bh1750_data *data = iio_priv(indio_dev);
+> +
+> +	switch (mask) {
+> +	case IIO_CHAN_INFO_INT_TIME:
+> +		if (val != 0)
+> +			return -EINVAL;
+> +
+> +		mutex_lock(&data->lock);
+> +		ret = bh1750_change_int_time(data, val2);
+> +		mutex_unlock(&data->lock);
+> +		return ret;
+> +	default:
+> +		return -EINVAL;
+> +	}
+> +}
+> +
+> +static ssize_t bh1750_show_int_time_available(struct device *dev,
+> +		struct device_attribute *attr, char *buf)
+> +{
+> +	int i;
+> +	size_t len = 0;
+> +	struct bh1750_data *data = iio_priv(dev_to_iio_dev(dev));
+> +	const struct bh1750_chip_info *chip_info = data->chip_info;
+> +
+> +	for (i = chip_info->mtreg_min; i <= chip_info->mtreg_max; i += chip_info->inc)
+> +		len += scnprintf(buf + len, PAGE_SIZE - len, "0.%06d ",
+> +				 chip_info->mtreg_to_usec * i);
+> +
+> +	buf[len - 1] = '\n';
+> +
+> +	return len;
+> +}
+> +
+> +static IIO_DEV_ATTR_INT_TIME_AVAIL(bh1750_show_int_time_available);
+> +
+> +static struct attribute *bh1750_attributes[] = {
+> +	&iio_dev_attr_integration_time_available.dev_attr.attr,
+> +	NULL,
 > +};
 > +
-> +static int acpi_als_add(struct acpi_device *device)
-> +{
-> +	struct acpi_als *als;
-> +	struct iio_dev *indio_dev;
-> +	struct iio_buffer *buffer;
+> +static struct attribute_group bh1750_attribute_group = {
+> +	.attrs = bh1750_attributes,
+> +};
 > +
-> +	indio_dev = devm_iio_device_alloc(&device->dev, sizeof(*als));
+> +static const struct iio_info bh1750_info = {
+> +	.driver_module = THIS_MODULE,
+> +	.attrs = &bh1750_attribute_group,
+> +	.read_raw = bh1750_read_raw,
+> +	.write_raw = bh1750_write_raw,
+> +};
+> +
+> +static const struct iio_chan_spec bh1750_channels[] = {
+> +	{
+> +		.type = IIO_LIGHT,
+> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
+> +				      BIT(IIO_CHAN_INFO_SCALE) |
+> +				      BIT(IIO_CHAN_INFO_INT_TIME)
+> +	}
+> +};
+> +
+> +static int bh1750_probe(struct i2c_client *client,
+> +			const struct i2c_device_id *id)
+> +{
+> +	int ret, usec;
+> +	struct bh1750_data *data;
+> +	struct iio_dev *indio_dev;
+> +
+> +	if (!i2c_check_functionality(client->adapter, I2C_FUNC_I2C |
+> +				I2C_FUNC_SMBUS_WRITE_BYTE))
+> +		return -ENODEV;
+> +
+> +	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
 > +	if (!indio_dev)
 > +		return -ENOMEM;
 > +
-> +	als = iio_priv(indio_dev);
+> +	data = iio_priv(indio_dev);
+> +	i2c_set_clientdata(client, indio_dev);
+> +	data->client = client;
+> +	data->chip_info = &bh1750_chip_info_tbl[id->driver_data];
 > +
-> +	device->driver_data = indio_dev;
-> +	als->device = device;
-> +	mutex_init(&als->lock);
+> +	usec = data->chip_info->mtreg_to_usec * data->chip_info->mtreg_default;
+> +	ret = bh1750_change_int_time(data, usec);
+> +	if (ret < 0)
+> +		return ret;
 > +
-> +	indio_dev->name = ACPI_ALS_DEVICE_NAME;
-> +	indio_dev->dev.parent = &device->dev;
-> +	indio_dev->info = &acpi_als_info;
-> +	indio_dev->modes = INDIO_BUFFER_SOFTWARE;
-> +	indio_dev->channels = acpi_als_channels;
-> +	indio_dev->num_channels = ARRAY_SIZE(acpi_als_channels);
+> +	mutex_init(&data->lock);
+> +	indio_dev->dev.parent = &client->dev;
+> +	indio_dev->info = &bh1750_info;
+> +	indio_dev->name = id->name;
+> +	indio_dev->channels = bh1750_channels;
+> +	indio_dev->num_channels = ARRAY_SIZE(bh1750_channels);
+> +	indio_dev->modes = INDIO_DIRECT_MODE;
 > +
-> +	buffer = devm_iio_kfifo_allocate(&device->dev);
-> +	if (!buffer)
-> +		return -ENOMEM;
-> +
-> +	iio_device_attach_buffer(indio_dev, buffer);
-> +
-> +	return devm_iio_device_register(&device->dev, indio_dev);
+> +	return iio_device_register(indio_dev);
 > +}
 > +
-> +static const struct acpi_device_id acpi_als_device_ids[] = {
-> +	{"ACPI0008", 0},
-> +	{},
+> +static int bh1750_remove(struct i2c_client *client)
+> +{
+> +	struct iio_dev *indio_dev = i2c_get_clientdata(client);
+> +	struct bh1750_data *data = iio_priv(indio_dev);
+> +
+> +	iio_device_unregister(indio_dev);
+> +
+> +	mutex_lock(&data->lock);
+> +	i2c_smbus_write_byte(client, BH1750_POWER_DOWN);
+> +	mutex_unlock(&data->lock);
+> +
+> +	return 0;
+> +}
+> +
+> +#ifdef CONFIG_PM_SLEEP
+> +static int bh1750_suspend(struct device *dev)
+> +{
+> +	int ret;
+> +	struct bh1750_data *data =
+> +		iio_priv(i2c_get_clientdata(to_i2c_client(dev)));
+> +
+> +	/*
+> +	 * This is mainly for BH1721 which doesn't enter power down
+> +	 * mode automatically.
+> +	 */
+> +	mutex_lock(&data->lock);
+> +	ret = i2c_smbus_write_byte(data->client, BH1750_POWER_DOWN);
+> +	mutex_unlock(&data->lock);
+> +
+> +	return ret;
+> +}
+> +
+> +static SIMPLE_DEV_PM_OPS(bh1750_pm_ops, bh1750_suspend, NULL);
+> +#define BH1750_PM_OPS (&bh1750_pm_ops)
+> +#else
+> +#define BH1750_PM_OPS NULL
+> +#endif
+> +
+> +static const struct i2c_device_id bh1750_id[] = {
+> +	{ "bh1710", BH1710 },
+> +	{ "bh1715", BH1750 },
+> +	{ "bh1721", BH1721 },
+> +	{ "bh1750", BH1750 },
+> +	{ "bh1751", BH1750 },
+> +	{ }
 > +};
+> +MODULE_DEVICE_TABLE(i2c, bh1750_id);
 > +
-> +MODULE_DEVICE_TABLE(acpi, acpi_als_device_ids);
-> +
-> +static struct acpi_driver acpi_als_driver = {
-> +	.name	= "acpi_als",
-> +	.class	= ACPI_ALS_CLASS,
-> +	.ids	= acpi_als_device_ids,
-> +	.ops = {
-> +		.add	= acpi_als_add,
-> +		.notify	= acpi_als_notify,
+> +static struct i2c_driver bh1750_driver = {
+> +	.driver = {
+> +		.name = "bh1750",
+> +		.owner = THIS_MODULE,
+> +		.pm = BH1750_PM_OPS,
 > +	},
+> +	.probe = bh1750_probe,
+> +	.remove = bh1750_remove,
+> +	.id_table = bh1750_id,
+> +
 > +};
+> +module_i2c_driver(bh1750_driver);
 > +
-> +module_acpi_driver(acpi_als_driver);
-> +
-> +MODULE_AUTHOR("Zhang Rui <rui.zhang@intel.com>");
-> +MODULE_AUTHOR("Martin Liska <marxin.liska@gmail.com>");
-> +MODULE_AUTHOR("Marek Vasut <marex@denx.de>");
-> +MODULE_DESCRIPTION("ACPI Ambient Light Sensor Driver");
-> +MODULE_LICENSE("GPL");
+> +MODULE_AUTHOR("Tomasz Duszynski <tduszyns@gmail.com>");
+> +MODULE_DESCRIPTION("ROHM BH1710/BH1715/BH1721/BH1750/BH1751 als driver");
+> +MODULE_LICENSE("GPL v2");
+> --
+> 2.3.6
+> 
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
 > 
 
