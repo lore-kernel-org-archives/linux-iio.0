@@ -1,62 +1,122 @@
-Return-Path: <jic23@jic23.retrosnub.co.uk>
-References: <1429891112-11888-1-git-send-email-daniel.baluta@intel.com>
-            <553D19A5.1030101@kernel.org>
-            <CAEnQRZCAZFT1zQimyTARJDBcnvMHCWJZEixJtX3femS2NMEeww@mail.gmail.com>
-In-Reply-To: <CAEnQRZCAZFT1zQimyTARJDBcnvMHCWJZEixJtX3femS2NMEeww@mail.gmail.com>
-From: jic23@jic23.retrosnub.co.uk
-To: Daniel Baluta <daniel.baluta@intel.com>
-Cc: Jonathan Cameron <jic23@kernel.org>, Peter Meerwald
-  <pmeerw@pmeerw.net>, Hartmut Knaack <knaack.h@gmx.de>, Lars-Peter
-  Clausen <lars@metafoo.de>, Linux Kernel Mailing List
-  <linux-kernel@vger.kernel.org>, "linux-iio@vger.kernel.org"
-  <linux-iio@vger.kernel.org>
-Subject: Re: [PATCH v2 0/3] Introduce support for MMC35240 magnetic sensor
-Date: Fri, 08 May 2015 15:04:04 +0100
-Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Message-Id: <20150508140404.94F4140876@saturn.retrosnub.co.uk>
+Return-Path: <daniel.baluta@intel.com>
+From: Daniel Baluta <daniel.baluta@intel.com>
+To: jic23@kernel.org
+Cc: lars@metafoo.de,
+	jlbec@evilplan.org,
+	knaack.h@gmx.de,
+	linux-kernel@vger.kernel.org,
+	linux-iio@vger.kernel.org,
+	octavian.purdila@intel.com,
+	pebolle@tiscali.nl,
+	patrick.porlan@intel.com,
+	adriana.reus@intel.com,
+	constantin.musca@intel.com,
+	marten@intuitiveaerial.com,
+	daniel.baluta@intel.com
+Subject: [PATCH v6 4/4] iio: Documentation: Add IIO configfs documentation
+Date: Fri,  8 May 2015 16:33:45 +0300
+Message-Id: <1431092025-14355-5-git-send-email-daniel.baluta@intel.com>
+In-Reply-To: <1431092025-14355-1-git-send-email-daniel.baluta@intel.com>
+References: <1431092025-14355-1-git-send-email-daniel.baluta@intel.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-Daniel Baluta writes: 
+Signed-off-by: Daniel Baluta <daniel.baluta@intel.com>
+---
+ Documentation/ABI/testing/configfs-iio | 20 ++++++++++++
+ Documentation/iio/iio_configfs.txt     | 58 ++++++++++++++++++++++++++++++++++
+ 2 files changed, 78 insertions(+)
+ create mode 100644 Documentation/ABI/testing/configfs-iio
+ create mode 100644 Documentation/iio/iio_configfs.txt
 
-> On Sun, Apr 26, 2015 at 8:00 PM, Jonathan Cameron <jic23@kernel.org> wrote:
->> On 24/04/15 16:58, Daniel Baluta wrote:
->>> This adds support for Memsic's MMC35240 magnetometer. The sensor does
->>> not offer an interrupt line for data ready so for the moment we only
->>> expose raw readings via sysfs interface. 
->>>
->>> This patchset also adds ACPI and Power Management support. 
->>>
->>> Changes since v1:
->>>       * fixed nits reported by Peter and Jonathan
->>>       * https://lkml.org/lkml/2015/4/15/186 
->>>
->>> Daniel Baluta (3):
->>>   iio: magnetometer: Add support for MEMSIC MMC35240 sensor
->>>   iio: magnetometer: mmc35240: Add PM sleep support
->>>   iio: magnetometer: Add ACPI support for MMC35240 
->>>
->>>  drivers/iio/magnetometer/Kconfig    |  11 +
->>>  drivers/iio/magnetometer/Makefile   |   1 +
->>>  drivers/iio/magnetometer/mmc35240.c | 511 ++++++++++++++++++++++++++++++++++++
->>>  3 files changed, 523 insertions(+)
->>>  create mode 100644 drivers/iio/magnetometer/mmc35240.c 
->>>
->> I'm happy with the whole series.  Will leave it a few days though to
->> give Peter time to take another look if he wants (or anyone else
->> who feels like it!) 
->>
->> Hopefully I'll manage a quick catch up session sometime mid week
->> as only getting to this stuff on Saturday's is leaving me with quite
->> a backlog at the moment!
-> 
-> Slow poke on this one :).
-That sounds painful. 
-
-Anyhow applied it now, but only have webmail at the mo as on a strange
-network that doesn't restrict https connections at all but blocks everything
-else. Will be a dump when I get to the airport in a few hours. 
-
-Jonathan
-> 
-> Daniel.
+diff --git a/Documentation/ABI/testing/configfs-iio b/Documentation/ABI/testing/configfs-iio
+new file mode 100644
+index 0000000..28ad893
+--- /dev/null
++++ b/Documentation/ABI/testing/configfs-iio
+@@ -0,0 +1,20 @@
++What:		/config/iio
++Date:		May 2015
++KernelVersion:	4.2
++Contact:	linux-iio@vger.kernel.org
++Description:
++		This represents Industrial IO configuration entry point
++		directory. It contains sub-groups corresponding to IIO
++		objects.
++
++What:		/config/iio/triggers
++Date:		May 2015
++KernelVersion:	4.2
++Description:
++		Industrial IO software triggers directory.
++
++What:		/config/iio/triggers/hrtimer-name
++Date:		May 2015
++KernelVersion:	4.2
++Description:
++		High resolution timer instance.
+diff --git a/Documentation/iio/iio_configfs.txt b/Documentation/iio/iio_configfs.txt
+new file mode 100644
+index 0000000..3c8014a
+--- /dev/null
++++ b/Documentation/iio/iio_configfs.txt
+@@ -0,0 +1,58 @@
++Industrial IIO configfs support
++
++1. Overview
++
++Configfs is a filesystem-based manager of kernel objects. IIO uses some
++objects that could be easily configured using configfs (e.g.: devices,
++triggers).
++
++See Documentation/filesystems/configfs/configfs.txt for more information
++about how configfs works.
++
++2. Usage
++
++In order to use configfs support in IIO we need to select it at compile
++time via CONFIG_IIO_CONFIGFS config option.
++
++Then, mount the configfs filesystem (usually under /config directory):
++
++$ mkdir /config
++$ mount -t configfs none /config
++
++At this point, all default IIO groups will be created and can be accessed
++under /config/iio. Next chapters will describe available IIO configuration
++objects.
++
++3. Software triggers
++
++One of the IIO default configfs groups is the "triggers" groups. It is
++automagically accessible when the configfs is mounted and can be found
++under /config/iio/triggers.
++
++Software triggers are created under /config/iio/triggers directory. A sofware
++trigger name MUST be of the following form:
++	* <trigger-type>-<trigger-name>:
++Where:
++	* <trigger-type>, specifies the interrupt source (e.g: hrtimer)
++	* <trigger-name>, spefcifies the IIO device trigger name
++
++We support now to following interrupt sources (trigger types):
++	* hrtimer, uses high resolution timers as interrupt source
++
++3.1 Software triggers creation and destruction
++
++As simply as:
++
++$ mkdir /config/triggers/<trigger-type>-<trigger-name>
++$ rmdir /config/triggers/<trigger-type>-<trigger-name>
++e.g:
++
++$ mkdir /config/triggers/hrtimer-instance1
++$ rmdir /config/triggers/hrtimer-instance1
++
++Each trigger can have one or more attributes specific to the trigger type.
++
++3.2 "hrtimer" trigger types attributes
++
++"hrtimer" trigger type doesn't have any configurable attribute from /config dir.
++It does introduce the sampling_frequency attribute to trigger directory.
+-- 
+1.9.1
