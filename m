@@ -1,186 +1,84 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga02.intel.com ([134.134.136.20]:48640 "EHLO mga02.intel.com"
+Received: from mga03.intel.com ([134.134.136.65]:24177 "EHLO mga03.intel.com"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751762AbbEHAVz (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Thu, 7 May 2015 20:21:55 -0400
-Message-ID: <554C0194.4060502@linux.intel.com>
-Date: Thu, 07 May 2015 17:21:40 -0700
-From: sathyanarayanan kuppuswamy
-	<sathyanarayanan.kuppuswamy@linux.intel.com>
-Reply-To: sathyanarayanan.kuppuswamy@linux.intel.com
-MIME-Version: 1.0
-To: Jonathan Cameron <jic23@kernel.org>, pmeerw@pmeerw.net
-CC: linux-iio@vger.kernel.org, srinivas.pandruvada@linux.intel.com,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v1 1/1] iio: ltr501: Add light channel support
-References: <b7a69555f210e3c9565da13dbfb71c89dbb1013b.1430519716.git.sathyanarayanan.kuppuswamy@linux.intel.com> <554BEAD5.7050206@kernel.org>
-In-Reply-To: <554BEAD5.7050206@kernel.org>
-Content-Type: text/plain; charset=windows-1252; format=flowed
+	id S1751384AbbEHAZA (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Thu, 7 May 2015 20:25:00 -0400
+Message-ID: <1431044598.11262.0.camel@spandruv-DESK3.jf.intel.com>
+Subject: Re: [PATCH v3] iio: light: hid-sensor-prox: Fix memory leak in
+ probe()
+From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+To: Fabio Estevam <festevam@gmail.com>
+Cc: jic23@kernel.org, khoroshilov@ispras.ru, daniel.baluta@intel.com,
+	linux-iio@vger.kernel.org,
+	Fabio Estevam <fabio.estevam@freescale.com>
+Date: Thu, 07 May 2015 17:23:18 -0700
+In-Reply-To: <1431041524-14113-1-git-send-email-festevam@gmail.com>
+References: <1431041524-14113-1-git-send-email-festevam@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Mime-Version: 1.0
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Hi Jonathan,
+On Thu, 2015-05-07 at 20:32 -0300, Fabio Estevam wrote:
+> From: Fabio Estevam <fabio.estevam@freescale.com>
+> 
+> 'channels' is allocated via kmemdup and it is never freed.
+> 
+> Use 'indio_dev->channels' directly instead, so that we avoid such
+> memory leak problem.
+> 
+> Cc: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+> Reported-by: Alexey Khoroshilov <khoroshilov@ispras.ru>
+> Signed-off-by: Fabio Estevam <fabio.estevam@freescale.com>
 
-On 05/07/2015 03:44 PM, Jonathan Cameron wrote:
-> On 01/05/15 23:39, Kuppuswamy Sathyanarayanan wrote:
->> Added support to calculate lux value from visible
->> and IR spectrum adc count values. Also added IIO_LIGHT
->> channel to enable user read the lux value directly
->> from device using illuminance input ABI.
->>
->> Signed-off-by: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
-> something odd going on here.
-> you have changed the scan_index values, but not modified the trigger
-> handler to deal with the change.  Note these only have relevant in
-> buffered mode.  If you want this to only be exposed via sysfs, that
-> is fine (and perhaps reasonable) then set the scan_index to -1 (iirc)
-> and leave the other channels alone.
-Thanks for the review. Yes, I agree that scan_index change is not
-required for this feature. I intended to just add the raw read support
-for this channel.
->
-> Jonathan
->> ---
->>   drivers/iio/light/ltr501.c | 71 +++++++++++++++++++++++++++++++++++++++++-----
->>   1 file changed, 64 insertions(+), 7 deletions(-)
->>
->> diff --git a/drivers/iio/light/ltr501.c b/drivers/iio/light/ltr501.c
->> index ca4bf47..242cf20 100644
->> --- a/drivers/iio/light/ltr501.c
->> +++ b/drivers/iio/light/ltr501.c
->> @@ -66,6 +66,9 @@
->>   
->>   #define LTR501_REGMAP_NAME "ltr501_regmap"
->>   
->> +#define LTR501_LUX_CONV(vis_coeff, vis_data, ir_coeff, ir_data) \
->> +			((vis_coeff * vis_data) - (ir_coeff * ir_data))
->> +
->>   static const int int_time_mapping[] = {100000, 50000, 200000, 400000};
->>   
->>   static const struct reg_field reg_field_it =
->> @@ -298,6 +301,29 @@ static int ltr501_ps_read_samp_period(struct ltr501_data *data, int *val)
->>   	return IIO_VAL_INT;
->>   }
->>   
->> +/* IR and visible spectrum coeff's are given in data sheet */
->> +static unsigned long ltr501_calculate_lux(u16 vis_data, u16 ir_data)
->> +{
->> +	unsigned long ratio, lux;
->> +
->> +	if (vis_data == 0)
->> +		return 0;
->> +
->> +	/* multiply numerator by 100 to avoid handling ratio < 1 */
->> +	ratio = DIV_ROUND_UP(ir_data * 100, ir_data + vis_data);
->> +
->> +	if (ratio < 45)
->> +		lux = LTR501_LUX_CONV(1774, vis_data, -1105, ir_data);
->> +	else if (ratio >= 45 && ratio < 64)
->> +		lux = LTR501_LUX_CONV(3772, vis_data, 1336, ir_data);
->> +	else if (ratio >= 64 && ratio < 85)
->> +		lux = LTR501_LUX_CONV(1690, vis_data, 169, ir_data);
->> +	else
->> +		lux = 0;
->> +
->> +	return lux / 1000;
->> +}
->> +
->>   static int ltr501_drdy(struct ltr501_data *data, u8 drdy_mask)
->>   {
->>   	int tries = 100;
->> @@ -548,11 +574,24 @@ static const struct iio_event_spec ltr501_pxs_event_spec[] = {
->>   	.num_event_specs = _evsize,\
->>   }
->>   
->> +#define LTR501_LIGHT_CHANNEL(_idx) { \
->> +	.type = IIO_LIGHT, \
->> +	.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED), \
->> +	.scan_index = 0, \
->> +	.scan_type = { \
->> +		.sign = 'u', \
->> +		.realbits = 16, \
->> +		.storagebits = 16, \
->> +		.endianness = IIO_CPU, \
->> +	}, \
->> +}
->> +
->>   static const struct iio_chan_spec ltr501_channels[] = {
->> -	LTR501_INTENSITY_CHANNEL(0, LTR501_ALS_DATA0, IIO_MOD_LIGHT_BOTH, 0,
->> +	LTR501_LIGHT_CHANNEL(0),
->> +	LTR501_INTENSITY_CHANNEL(1, LTR501_ALS_DATA0, IIO_MOD_LIGHT_BOTH, 0,
->>   				 ltr501_als_event_spec,
->>   				 ARRAY_SIZE(ltr501_als_event_spec)),
->> -	LTR501_INTENSITY_CHANNEL(1, LTR501_ALS_DATA1, IIO_MOD_LIGHT_IR,
->> +	LTR501_INTENSITY_CHANNEL(2, LTR501_ALS_DATA1, IIO_MOD_LIGHT_IR,
->>   				 BIT(IIO_CHAN_INFO_SCALE) |
->>   				 BIT(IIO_CHAN_INFO_INT_TIME) |
->>   				 BIT(IIO_CHAN_INFO_SAMP_FREQ),
->> @@ -562,7 +601,7 @@ static const struct iio_chan_spec ltr501_channels[] = {
->>   		.address = LTR501_PS_DATA,
->>   		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
->>   			BIT(IIO_CHAN_INFO_SCALE),
->> -		.scan_index = 2,
->> +		.scan_index = 3,
->>   		.scan_type = {
->>   			.sign = 'u',
->>   			.realbits = 11,
->> @@ -572,19 +611,20 @@ static const struct iio_chan_spec ltr501_channels[] = {
->>   		.event_spec = ltr501_pxs_event_spec,
->>   		.num_event_specs = ARRAY_SIZE(ltr501_pxs_event_spec),
->>   	},
->> -	IIO_CHAN_SOFT_TIMESTAMP(3),
->> +	IIO_CHAN_SOFT_TIMESTAMP(4),
->>   };
->>   
->>   static const struct iio_chan_spec ltr301_channels[] = {
->> -	LTR501_INTENSITY_CHANNEL(0, LTR501_ALS_DATA0, IIO_MOD_LIGHT_BOTH, 0,
->> +	LTR501_LIGHT_CHANNEL(0),
->> +	LTR501_INTENSITY_CHANNEL(1, LTR501_ALS_DATA0, IIO_MOD_LIGHT_BOTH, 0,
->>   				 ltr501_als_event_spec,
->>   				 ARRAY_SIZE(ltr501_als_event_spec)),
->> -	LTR501_INTENSITY_CHANNEL(1, LTR501_ALS_DATA1, IIO_MOD_LIGHT_IR,
->> +	LTR501_INTENSITY_CHANNEL(2, LTR501_ALS_DATA1, IIO_MOD_LIGHT_IR,
->>   				 BIT(IIO_CHAN_INFO_SCALE) |
->>   				 BIT(IIO_CHAN_INFO_INT_TIME) |
->>   				 BIT(IIO_CHAN_INFO_SAMP_FREQ),
->>   				 NULL, 0),
->> -	IIO_CHAN_SOFT_TIMESTAMP(2),
->> +	IIO_CHAN_SOFT_TIMESTAMP(3),
->>   };
->>   
->>   static int ltr501_read_raw(struct iio_dev *indio_dev,
->> @@ -596,6 +636,23 @@ static int ltr501_read_raw(struct iio_dev *indio_dev,
->>   	int ret, i;
->>   
->>   	switch (mask) {
->> +	case IIO_CHAN_INFO_PROCESSED:
->> +		if (iio_buffer_enabled(indio_dev))
->> +			return -EBUSY;
->> +
->> +		switch (chan->type) {
->> +		case IIO_LIGHT:
->> +			mutex_lock(&data->lock_als);
->> +			ret = ltr501_read_als(data, buf);
->> +			mutex_unlock(&data->lock_als);
->> +			if (ret < 0)
->> +				return ret;
->> +			*val = ltr501_calculate_lux(le16_to_cpu(buf[1]),
->> +						    le16_to_cpu(buf[0]));
->> +			return IIO_VAL_INT;
->> +		default:
->> +			return -EINVAL;
->> +		}
->>   	case IIO_CHAN_INFO_RAW:
->>   		if (iio_buffer_enabled(indio_dev))
->>   			return -EBUSY;
->>
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
->
+Reviewed-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
 
--- 
-Sathyanarayanan Kuppuswamy
-Android kernel developer
+> ---
+> Build-tested only. 
+> 
+> Changes since v2:
+> - Get rid of the channels and use indio_dev->channels instead.
+> 
+>  drivers/iio/light/hid-sensor-prox.c | 10 +++++-----
+>  1 file changed, 5 insertions(+), 5 deletions(-)
+> 
+> diff --git a/drivers/iio/light/hid-sensor-prox.c b/drivers/iio/light/hid-sensor-prox.c
+> index 91ecc46..124a8f8 100644
+> --- a/drivers/iio/light/hid-sensor-prox.c
+> +++ b/drivers/iio/light/hid-sensor-prox.c
+> @@ -253,7 +253,6 @@ static int hid_prox_probe(struct platform_device *pdev)
+>  	struct iio_dev *indio_dev;
+>  	struct prox_state *prox_state;
+>  	struct hid_sensor_hub_device *hsdev = pdev->dev.platform_data;
+> -	struct iio_chan_spec *channels;
+>  
+>  	indio_dev = devm_iio_device_alloc(&pdev->dev,
+>  				sizeof(struct prox_state));
+> @@ -272,20 +271,21 @@ static int hid_prox_probe(struct platform_device *pdev)
+>  		return ret;
+>  	}
+>  
+> -	channels = kmemdup(prox_channels, sizeof(prox_channels), GFP_KERNEL);
+> -	if (!channels) {
+> +	indio_dev->channels = kmemdup(prox_channels, sizeof(prox_channels),
+> +				      GFP_KERNEL);
+> +	if (!indio_dev->channels) {
+>  		dev_err(&pdev->dev, "failed to duplicate channels\n");
+>  		return -ENOMEM;
+>  	}
+>  
+> -	ret = prox_parse_report(pdev, hsdev, channels,
+> +	ret = prox_parse_report(pdev, hsdev,
+> +				(struct iio_chan_spec *)indio_dev->channels,
+>  				HID_USAGE_SENSOR_PROX, prox_state);
+>  	if (ret) {
+>  		dev_err(&pdev->dev, "failed to setup attributes\n");
+>  		goto error_free_dev_mem;
+>  	}
+>  
+> -	indio_dev->channels = channels;
+>  	indio_dev->num_channels =
+>  				ARRAY_SIZE(prox_channels);
+>  	indio_dev->dev.parent = &pdev->dev;
+
 
