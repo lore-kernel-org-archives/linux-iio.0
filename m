@@ -1,85 +1,62 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:52515 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753577AbbEHSaS (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 8 May 2015 14:30:18 -0400
-Message-ID: <554CC064.7020209@kernel.org>
-Date: Fri, 08 May 2015 09:55:48 -0400
-From: Jonathan Cameron <jic23@kernel.org>
-MIME-Version: 1.0
-To: Fabio Estevam <festevam@gmail.com>
-CC: khoroshilov@ispras.ru, daniel.baluta@intel.com,
-	linux-iio@vger.kernel.org, srinivas.pandruvada@linux.intel.com,
-	Fabio Estevam <fabio.estevam@freescale.com>
-Subject: Re: [PATCH v3] iio: light: hid-sensor-prox: Fix memory leak in probe()
-References: <1431041524-14113-1-git-send-email-festevam@gmail.com>
-In-Reply-To: <1431041524-14113-1-git-send-email-festevam@gmail.com>
-Content-Type: text/plain; charset=windows-1252
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <jic23@jic23.retrosnub.co.uk>
+References: <1429891112-11888-1-git-send-email-daniel.baluta@intel.com>
+            <553D19A5.1030101@kernel.org>
+            <CAEnQRZCAZFT1zQimyTARJDBcnvMHCWJZEixJtX3femS2NMEeww@mail.gmail.com>
+In-Reply-To: <CAEnQRZCAZFT1zQimyTARJDBcnvMHCWJZEixJtX3femS2NMEeww@mail.gmail.com>
+From: jic23@jic23.retrosnub.co.uk
+To: Daniel Baluta <daniel.baluta@intel.com>
+Cc: Jonathan Cameron <jic23@kernel.org>, Peter Meerwald
+  <pmeerw@pmeerw.net>, Hartmut Knaack <knaack.h@gmx.de>, Lars-Peter
+  Clausen <lars@metafoo.de>, Linux Kernel Mailing List
+  <linux-kernel@vger.kernel.org>, "linux-iio@vger.kernel.org"
+  <linux-iio@vger.kernel.org>
+Subject: Re: [PATCH v2 0/3] Introduce support for MMC35240 magnetic sensor
+Date: Fri, 08 May 2015 15:04:04 +0100
+Mime-Version: 1.0
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Message-Id: <20150508140404.94F4140876@saturn.retrosnub.co.uk>
+List-ID: <linux-iio@vger.kernel.org>
 
-On 07/05/15 19:32, Fabio Estevam wrote:
-> From: Fabio Estevam <fabio.estevam@freescale.com>
-> 
-> 'channels' is allocated via kmemdup and it is never freed.
-> 
-> Use 'indio_dev->channels' directly instead, so that we avoid such
-> memory leak problem.
-> 
-> Cc: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-> Reported-by: Alexey Khoroshilov <khoroshilov@ispras.ru>
-> Signed-off-by: Fabio Estevam <fabio.estevam@freescale.com>
-Applied to the fixes-togreg branch of iio.git
+Daniel Baluta writes: 
 
-Thanks,
+> On Sun, Apr 26, 2015 at 8:00 PM, Jonathan Cameron <jic23@kernel.org> wrote:
+>> On 24/04/15 16:58, Daniel Baluta wrote:
+>>> This adds support for Memsic's MMC35240 magnetometer. The sensor does
+>>> not offer an interrupt line for data ready so for the moment we only
+>>> expose raw readings via sysfs interface. 
+>>>
+>>> This patchset also adds ACPI and Power Management support. 
+>>>
+>>> Changes since v1:
+>>>       * fixed nits reported by Peter and Jonathan
+>>>       * https://lkml.org/lkml/2015/4/15/186 
+>>>
+>>> Daniel Baluta (3):
+>>>   iio: magnetometer: Add support for MEMSIC MMC35240 sensor
+>>>   iio: magnetometer: mmc35240: Add PM sleep support
+>>>   iio: magnetometer: Add ACPI support for MMC35240 
+>>>
+>>>  drivers/iio/magnetometer/Kconfig    |  11 +
+>>>  drivers/iio/magnetometer/Makefile   |   1 +
+>>>  drivers/iio/magnetometer/mmc35240.c | 511 ++++++++++++++++++++++++++++++++++++
+>>>  3 files changed, 523 insertions(+)
+>>>  create mode 100644 drivers/iio/magnetometer/mmc35240.c 
+>>>
+>> I'm happy with the whole series.  Will leave it a few days though to
+>> give Peter time to take another look if he wants (or anyone else
+>> who feels like it!) 
+>>
+>> Hopefully I'll manage a quick catch up session sometime mid week
+>> as only getting to this stuff on Saturday's is leaving me with quite
+>> a backlog at the moment!
+> 
+> Slow poke on this one :).
+That sounds painful. 
+
+Anyhow applied it now, but only have webmail at the mo as on a strange
+network that doesn't restrict https connections at all but blocks everything
+else. Will be a dump when I get to the airport in a few hours. 
 
 Jonathan
-> ---
-> Build-tested only. 
 > 
-> Changes since v2:
-> - Get rid of the channels and use indio_dev->channels instead.
-> 
->  drivers/iio/light/hid-sensor-prox.c | 10 +++++-----
->  1 file changed, 5 insertions(+), 5 deletions(-)
-> 
-> diff --git a/drivers/iio/light/hid-sensor-prox.c b/drivers/iio/light/hid-sensor-prox.c
-> index 91ecc46..124a8f8 100644
-> --- a/drivers/iio/light/hid-sensor-prox.c
-> +++ b/drivers/iio/light/hid-sensor-prox.c
-> @@ -253,7 +253,6 @@ static int hid_prox_probe(struct platform_device *pdev)
->  	struct iio_dev *indio_dev;
->  	struct prox_state *prox_state;
->  	struct hid_sensor_hub_device *hsdev = pdev->dev.platform_data;
-> -	struct iio_chan_spec *channels;
->  
->  	indio_dev = devm_iio_device_alloc(&pdev->dev,
->  				sizeof(struct prox_state));
-> @@ -272,20 +271,21 @@ static int hid_prox_probe(struct platform_device *pdev)
->  		return ret;
->  	}
->  
-> -	channels = kmemdup(prox_channels, sizeof(prox_channels), GFP_KERNEL);
-> -	if (!channels) {
-> +	indio_dev->channels = kmemdup(prox_channels, sizeof(prox_channels),
-> +				      GFP_KERNEL);
-> +	if (!indio_dev->channels) {
->  		dev_err(&pdev->dev, "failed to duplicate channels\n");
->  		return -ENOMEM;
->  	}
->  
-> -	ret = prox_parse_report(pdev, hsdev, channels,
-> +	ret = prox_parse_report(pdev, hsdev,
-> +				(struct iio_chan_spec *)indio_dev->channels,
->  				HID_USAGE_SENSOR_PROX, prox_state);
->  	if (ret) {
->  		dev_err(&pdev->dev, "failed to setup attributes\n");
->  		goto error_free_dev_mem;
->  	}
->  
-> -	indio_dev->channels = channels;
->  	indio_dev->num_channels =
->  				ARRAY_SIZE(prox_channels);
->  	indio_dev->dev.parent = &pdev->dev;
-> 
-
+> Daniel.
