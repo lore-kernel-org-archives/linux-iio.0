@@ -1,84 +1,72 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga03.intel.com ([134.134.136.65]:24177 "EHLO mga03.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751384AbbEHAZA (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Thu, 7 May 2015 20:25:00 -0400
-Message-ID: <1431044598.11262.0.camel@spandruv-DESK3.jf.intel.com>
-Subject: Re: [PATCH v3] iio: light: hid-sensor-prox: Fix memory leak in
- probe()
-From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-To: Fabio Estevam <festevam@gmail.com>
-Cc: jic23@kernel.org, khoroshilov@ispras.ru, daniel.baluta@intel.com,
-	linux-iio@vger.kernel.org,
-	Fabio Estevam <fabio.estevam@freescale.com>
-Date: Thu, 07 May 2015 17:23:18 -0700
-In-Reply-To: <1431041524-14113-1-git-send-email-festevam@gmail.com>
-References: <1431041524-14113-1-git-send-email-festevam@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+Return-Path: <jic23@jic23.retrosnub.co.uk>
+References: <1430930957-14588-1-git-send-email-mwelling@ieee.org>
+            <554B3ABB.7050306@kernel.org>
+            <20150507234817.GA24969@deathray>
+In-Reply-To: <20150507234817.GA24969@deathray>
+From: jic23@jic23.retrosnub.co.uk
+To: Michael Welling <mwelling@ieee.org>
+Cc: Jonathan Cameron <jic23@kernel.org>, knaack.h@gmx.de,
+  lars@metafoo.de, pmeerw@pmeerw.net, san@rosetechnology.dk,
+  linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org
+Subject: Re: [PATCH v2] iio: mcp320x: Fix occasional incorrect readings
+Date: Fri, 08 May 2015 11:54:58 +0100
 Mime-Version: 1.0
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Message-Id: <20150508105458.6ABDE4086D@saturn.retrosnub.co.uk>
+List-ID: <linux-iio@vger.kernel.org>
 
-On Thu, 2015-05-07 at 20:32 -0300, Fabio Estevam wrote:
-> From: Fabio Estevam <fabio.estevam@freescale.com>
-> 
-> 'channels' is allocated via kmemdup and it is never freed.
-> 
-> Use 'indio_dev->channels' directly instead, so that we avoid such
-> memory leak problem.
-> 
-> Cc: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-> Reported-by: Alexey Khoroshilov <khoroshilov@ispras.ru>
-> Signed-off-by: Fabio Estevam <fabio.estevam@freescale.com>
+Michael Welling writes: 
 
-Reviewed-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-
-> ---
-> Build-tested only. 
+> On Thu, May 07, 2015 at 11:13:15AM +0100, Jonathan Cameron wrote:
+>> On 06/05/15 17:49, Michael Welling wrote:
+>> > Without the cacheline alignment, the readings will occasionally incorrectly
+>> > return 0.
+>> > 
+>> > Signed-off-by: Michael Welling <mwelling@ieee.org>
+>> Applied to the fixes-togreg branch of iio.git.  Not sure
+>> when I'll be able to push this out publicly as travelling
+>> / working nights and generally having a silly week. 
+>> 
+>> J
 > 
-> Changes since v2:
-> - Get rid of the channels and use indio_dev->channels instead.
+> Thanks. 
 > 
->  drivers/iio/light/hid-sensor-prox.c | 10 +++++-----
->  1 file changed, 5 insertions(+), 5 deletions(-)
+> Appearently code can be silly too:
+> https://lkml.org/lkml/2015/5/7/879
+*laughs*.  Hmm. 8.56pm. Chances are Mark was a beer or two down ;) 
+
 > 
-> diff --git a/drivers/iio/light/hid-sensor-prox.c b/drivers/iio/light/hid-sensor-prox.c
-> index 91ecc46..124a8f8 100644
-> --- a/drivers/iio/light/hid-sensor-prox.c
-> +++ b/drivers/iio/light/hid-sensor-prox.c
-> @@ -253,7 +253,6 @@ static int hid_prox_probe(struct platform_device *pdev)
->  	struct iio_dev *indio_dev;
->  	struct prox_state *prox_state;
->  	struct hid_sensor_hub_device *hsdev = pdev->dev.platform_data;
-> -	struct iio_chan_spec *channels;
->  
->  	indio_dev = devm_iio_device_alloc(&pdev->dev,
->  				sizeof(struct prox_state));
-> @@ -272,20 +271,21 @@ static int hid_prox_probe(struct platform_device *pdev)
->  		return ret;
->  	}
->  
-> -	channels = kmemdup(prox_channels, sizeof(prox_channels), GFP_KERNEL);
-> -	if (!channels) {
-> +	indio_dev->channels = kmemdup(prox_channels, sizeof(prox_channels),
-> +				      GFP_KERNEL);
-> +	if (!indio_dev->channels) {
->  		dev_err(&pdev->dev, "failed to duplicate channels\n");
->  		return -ENOMEM;
->  	}
->  
-> -	ret = prox_parse_report(pdev, hsdev, channels,
-> +	ret = prox_parse_report(pdev, hsdev,
-> +				(struct iio_chan_spec *)indio_dev->channels,
->  				HID_USAGE_SENSOR_PROX, prox_state);
->  	if (ret) {
->  		dev_err(&pdev->dev, "failed to setup attributes\n");
->  		goto error_free_dev_mem;
->  	}
->  
-> -	indio_dev->channels = channels;
->  	indio_dev->num_channels =
->  				ARRAY_SIZE(prox_channels);
->  	indio_dev->dev.parent = &pdev->dev;
-
-
+>> > ---
+>> > 
+>> > v2: Moved buffers to the end of the mcp320x struct per suggestion to keep
+>> > them on their own cacheline.
+>> > 
+>> >  drivers/iio/adc/mcp320x.c |    6 +++---
+>> >  1 file changed, 3 insertions(+), 3 deletions(-)
+>> > 
+>> > diff --git a/drivers/iio/adc/mcp320x.c b/drivers/iio/adc/mcp320x.c
+>> > index efbfd12..8d9c9b9 100644
+>> > --- a/drivers/iio/adc/mcp320x.c
+>> > +++ b/drivers/iio/adc/mcp320x.c
+>> > @@ -60,12 +60,12 @@ struct mcp320x {
+>> >  	struct spi_message msg;
+>> >  	struct spi_transfer transfer[2];
+>> >  
+>> > -	u8 tx_buf;
+>> > -	u8 rx_buf[2];
+>> > -
+>> >  	struct regulator *reg;
+>> >  	struct mutex lock;
+>> >  	const struct mcp320x_chip_info *chip_info;
+>> > +
+>> > +	u8 tx_buf ____cacheline_aligned;
+>> > +	u8 rx_buf[2];
+>> >  };
+>> >  
+>> >  static int mcp320x_channel_to_tx_data(int device_index,
+>> >  
+>> 
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
