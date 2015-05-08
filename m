@@ -1,125 +1,85 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:46178 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:52515 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751675AbbEGXdl (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 7 May 2015 19:33:41 -0400
-Message-ID: <554B4093.9080207@kernel.org>
-Date: Thu, 07 May 2015 11:38:11 +0100
+	with ESMTP id S1753577AbbEHSaS (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 8 May 2015 14:30:18 -0400
+Message-ID: <554CC064.7020209@kernel.org>
+Date: Fri, 08 May 2015 09:55:48 -0400
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Geert Uytterhoeven <geert@linux-m68k.org>,
-	Linus Walleij <linus.walleij@linaro.org>,
-	Alexandre Courbot <gnurou@gmail.com>,
-	Arnd Bergmann <arnd@arndb.de>
-CC: linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-iio@vger.kernel.org, devel@driverdev.osuosl.org
-Subject: Re: [PATCH 20/27] Staging: iio: Allow compile test of GPIO consumers
- if !GPIOLIB
-References: <1430836404-15513-1-git-send-email-geert@linux-m68k.org> <1430843563-18615-1-git-send-email-geert@linux-m68k.org> <1430843563-18615-20-git-send-email-geert@linux-m68k.org>
-In-Reply-To: <1430843563-18615-20-git-send-email-geert@linux-m68k.org>
+To: Fabio Estevam <festevam@gmail.com>
+CC: khoroshilov@ispras.ru, daniel.baluta@intel.com,
+	linux-iio@vger.kernel.org, srinivas.pandruvada@linux.intel.com,
+	Fabio Estevam <fabio.estevam@freescale.com>
+Subject: Re: [PATCH v3] iio: light: hid-sensor-prox: Fix memory leak in probe()
+References: <1431041524-14113-1-git-send-email-festevam@gmail.com>
+In-Reply-To: <1431041524-14113-1-git-send-email-festevam@gmail.com>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 05/05/15 17:32, Geert Uytterhoeven wrote:
-> The GPIO subsystem provides dummy GPIO consumer functions if GPIOLIB is
-> not enabled. Hence drivers that depend on GPIOLIB, but use GPIO consumer
-> functionality only, can still be compiled if GPIOLIB is not enabled.
+On 07/05/15 19:32, Fabio Estevam wrote:
+> From: Fabio Estevam <fabio.estevam@freescale.com>
 > 
-> Relax the dependency on GPIOLIB if COMPILE_TEST is enabled, where
-> appropriate.
+> 'channels' is allocated via kmemdup and it is never freed.
 > 
-> Signed-off-by: Geert Uytterhoeven <geert@linux-m68k.org>
-> Cc: Jonathan Cameron <jic23@kernel.org>
-> Cc: linux-iio@vger.kernel.org
-> Cc: devel@driverdev.osuosl.org
-Applied to the togreg branch of iio.git - to be pushed out as testing
-'soonish'.
+> Use 'indio_dev->channels' directly instead, so that we avoid such
+> memory leak problem.
+> 
+> Cc: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+> Reported-by: Alexey Khoroshilov <khoroshilov@ispras.ru>
+> Signed-off-by: Fabio Estevam <fabio.estevam@freescale.com>
+Applied to the fixes-togreg branch of iio.git
+
+Thanks,
+
+Jonathan
 > ---
->  drivers/staging/iio/accel/Kconfig    | 2 +-
->  drivers/staging/iio/adc/Kconfig      | 6 +++---
->  drivers/staging/iio/addac/Kconfig    | 2 +-
->  drivers/staging/iio/resolver/Kconfig | 4 ++--
->  4 files changed, 7 insertions(+), 7 deletions(-)
+> Build-tested only. 
 > 
-> diff --git a/drivers/staging/iio/accel/Kconfig b/drivers/staging/iio/accel/Kconfig
-> index 07b7ffa00ab53c86..fa67da9408b6b3b7 100644
-> --- a/drivers/staging/iio/accel/Kconfig
-> +++ b/drivers/staging/iio/accel/Kconfig
-> @@ -79,7 +79,7 @@ config LIS3L02DQ
->  	depends on SPI
->  	select IIO_TRIGGER if IIO_BUFFER
->  	depends on !IIO_BUFFER || IIO_KFIFO_BUF
-> -	depends on GPIOLIB
-> +	depends on GPIOLIB || COMPILE_TEST
->  	help
->  	  Say Y here to build SPI support for the ST microelectronics
->  	  accelerometer. The driver supplies direct access via sysfs files
-> diff --git a/drivers/staging/iio/adc/Kconfig b/drivers/staging/iio/adc/Kconfig
-> index d0016ce6e65840e6..94ae4232ee773497 100644
-> --- a/drivers/staging/iio/adc/Kconfig
-> +++ b/drivers/staging/iio/adc/Kconfig
-> @@ -5,7 +5,7 @@ menu "Analog to digital converters"
+> Changes since v2:
+> - Get rid of the channels and use indio_dev->channels instead.
+> 
+>  drivers/iio/light/hid-sensor-prox.c | 10 +++++-----
+>  1 file changed, 5 insertions(+), 5 deletions(-)
+> 
+> diff --git a/drivers/iio/light/hid-sensor-prox.c b/drivers/iio/light/hid-sensor-prox.c
+> index 91ecc46..124a8f8 100644
+> --- a/drivers/iio/light/hid-sensor-prox.c
+> +++ b/drivers/iio/light/hid-sensor-prox.c
+> @@ -253,7 +253,6 @@ static int hid_prox_probe(struct platform_device *pdev)
+>  	struct iio_dev *indio_dev;
+>  	struct prox_state *prox_state;
+>  	struct hid_sensor_hub_device *hsdev = pdev->dev.platform_data;
+> -	struct iio_chan_spec *channels;
 >  
->  config AD7606
->  	tristate "Analog Devices AD7606 ADC driver"
-> -	depends on GPIOLIB
-> +	depends on GPIOLIB || COMPILE_TEST
->  	select IIO_BUFFER
->  	select IIO_TRIGGERED_BUFFER
->  	help
-> @@ -39,7 +39,7 @@ config AD7606_IFACE_SPI
->  config AD7780
->  	tristate "Analog Devices AD7780 and similar ADCs driver"
->  	depends on SPI
-> -	depends on GPIOLIB
-> +	depends on GPIOLIB || COMPILE_TEST
->  	select AD_SIGMA_DELTA
->  	help
->  	  Say yes here to build support for Analog Devices AD7170, AD7171,
-> @@ -52,7 +52,7 @@ config AD7780
->  config AD7816
->  	tristate "Analog Devices AD7816/7/8 temperature sensor and ADC driver"
->  	depends on SPI
-> -	depends on GPIOLIB
-> +	depends on GPIOLIB || COMPILE_TEST
->  	help
->  	  Say yes here to build support for Analog Devices AD7816/7/8
->  	  temperature sensors and ADC.
-> diff --git a/drivers/staging/iio/addac/Kconfig b/drivers/staging/iio/addac/Kconfig
-> index 0ed7e13e2283edb0..ba18b8432d9cce6e 100644
-> --- a/drivers/staging/iio/addac/Kconfig
-> +++ b/drivers/staging/iio/addac/Kconfig
-> @@ -5,7 +5,7 @@ menu "Analog digital bi-direction converters"
+>  	indio_dev = devm_iio_device_alloc(&pdev->dev,
+>  				sizeof(struct prox_state));
+> @@ -272,20 +271,21 @@ static int hid_prox_probe(struct platform_device *pdev)
+>  		return ret;
+>  	}
 >  
->  config ADT7316
->  	tristate "Analog Devices ADT7316/7/8 ADT7516/7/9 temperature sensor, ADC and DAC driver"
-> -	depends on GPIOLIB
-> +	depends on GPIOLIB || COMPILE_TEST
->  	help
->  	  Say yes here to build support for Analog Devices ADT7316, ADT7317, ADT7318
->  	  and ADT7516, ADT7517, ADT7519 temperature sensors, ADC and DAC.
-> diff --git a/drivers/staging/iio/resolver/Kconfig b/drivers/staging/iio/resolver/Kconfig
-> index c7a742ec122727b0..1c7e2860d6b75d56 100644
-> --- a/drivers/staging/iio/resolver/Kconfig
-> +++ b/drivers/staging/iio/resolver/Kconfig
-> @@ -16,7 +16,7 @@ config AD2S90
->  config AD2S1200
->  	tristate "Analog Devices ad2s1200/ad2s1205 driver"
->  	depends on SPI
-> -	depends on GPIOLIB
-> +	depends on GPIOLIB || COMPILE_TEST
->  	help
->  	  Say yes here to build support for Analog Devices spi resolver
->  	  to digital converters, ad2s1200 and ad2s1205, provides direct access
-> @@ -28,7 +28,7 @@ config AD2S1200
->  config AD2S1210
->  	tristate "Analog Devices ad2s1210 driver"
->  	depends on SPI
-> -	depends on GPIOLIB
-> +	depends on GPIOLIB || COMPILE_TEST
->  	help
->  	  Say yes here to build support for Analog Devices spi resolver
->  	  to digital converters, ad2s1210, provides direct access via sysfs.
+> -	channels = kmemdup(prox_channels, sizeof(prox_channels), GFP_KERNEL);
+> -	if (!channels) {
+> +	indio_dev->channels = kmemdup(prox_channels, sizeof(prox_channels),
+> +				      GFP_KERNEL);
+> +	if (!indio_dev->channels) {
+>  		dev_err(&pdev->dev, "failed to duplicate channels\n");
+>  		return -ENOMEM;
+>  	}
+>  
+> -	ret = prox_parse_report(pdev, hsdev, channels,
+> +	ret = prox_parse_report(pdev, hsdev,
+> +				(struct iio_chan_spec *)indio_dev->channels,
+>  				HID_USAGE_SENSOR_PROX, prox_state);
+>  	if (ret) {
+>  		dev_err(&pdev->dev, "failed to setup attributes\n");
+>  		goto error_free_dev_mem;
+>  	}
+>  
+> -	indio_dev->channels = channels;
+>  	indio_dev->num_channels =
+>  				ARRAY_SIZE(prox_channels);
+>  	indio_dev->dev.parent = &pdev->dev;
 > 
 
