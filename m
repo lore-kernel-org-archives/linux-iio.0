@@ -1,93 +1,69 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:52643 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:52659 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S932104AbbEHSlR (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 8 May 2015 14:41:17 -0400
-Message-ID: <554D0347.9000903@kernel.org>
-Date: Fri, 08 May 2015 14:41:11 -0400
+	with ESMTP id S1752809AbbEHSnX (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 8 May 2015 14:43:23 -0400
+Message-ID: <554D03C2.8030106@kernel.org>
+Date: Fri, 08 May 2015 14:43:14 -0400
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Daniel Baluta <daniel.baluta@intel.com>
-CC: lars@metafoo.de, jlbec@evilplan.org, knaack.h@gmx.de,
-	linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-	octavian.purdila@intel.com, pebolle@tiscali.nl,
-	patrick.porlan@intel.com, adriana.reus@intel.com,
-	constantin.musca@intel.com, marten@intuitiveaerial.com
-Subject: Re: [PATCH v6 0/4] Add initial configfs support for IIO
-References: <1431092025-14355-1-git-send-email-daniel.baluta@intel.com>
-In-Reply-To: <1431092025-14355-1-git-send-email-daniel.baluta@intel.com>
+To: Xander Huff <xander.huff@ni.com>, robh+dt@kernel.org,
+	pawel.moll@arm.com, mark.rutland@arm.com,
+	ijc+devicetree@hellion.org.uk, galak@codeaurora.org
+CC: michal.simek@xilinx.com, soren.brinkmann@xilinx.com,
+	knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
+	devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	linux-iio@vger.kernel.org, ben.shelton@ni.com, joshc@ni.com,
+	joe.hershberger@ni.com
+Subject: Re: [PATCH 1/2] devicetree: xilinx-xadc: Add optional xlnx,extend-name
+ property
+References: <1431038644-41600-1-git-send-email-xander.huff@ni.com>
+In-Reply-To: <1431038644-41600-1-git-send-email-xander.huff@ni.com>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 08/05/15 09:33, Daniel Baluta wrote:
-> This patchset introduces IIO software triggers, offers a way of configuring
-> them via configfs and adds the IIO hrtimer based interrupt source to be used
-> with software triggers.
+On 07/05/15 18:44, Xander Huff wrote:
+> To better facilitate user-mode access to optional aux channels, allow
+> device trees to specify a custom extended name for defined channels.
 > 
-> The arhitecture is now split in 3 parts, to remove all IIO trigger specific
-> parts from IIO configfs core:
-> 
-> (1) IIO software triggers - are independent of configfs.
-> (2) IIO configfs - offers a generic way of creating IIO objects. So far we can
-> 	create software triggers.
-> (3) IIO hrtimer trigger - is the first interrupt source for software triggers
-> 	(with syfs to follow). Each trigger type can implement its own set of
-> 	attributes.
-I'm happy with the whole series, but given Lars' involvement would like to
-give him a bit of time for another look / reviewed-by / acked-by or similar.
+> Signed-off-by: Xander Huff <xander.huff@ni.com>
+> Reviewed-by: Joe Hershberger <joe.hershberger@ni.com>
+> Reviewed-by: Josh Cartwright <joshc@ni.com>
+> --
+> Natinst-ReviewBoard-ID: 97119
+Interesting idea. I'd like to let this sit for a fair while to see what
+comments it gets.  If it makes sense for this driver, it probably makes
+sense for a lot of others.  As such we may well want to have a general
+binding for this, rather than one for just this part.
 
-Obviously comments from anyone else welcome as well.
+Thanks,
 
-Now all we need to do is all the other uses for configfs that we've
-discussed in earlier threads :) Easy really ;)
+Jonathan
+> ---
+>  Documentation/devicetree/bindings/iio/adc/xilinx-xadc.txt | 3 +++
+>  1 file changed, 3 insertions(+)
 > 
-> Changes since v5: (after Lars comments)
-> 	* the most important change is that we moved sampling_frequency attribute
-> 	from configfs to trigger's directory in /sys.
-> 	* couple of const added to strings
-> 	* documentation to public API in sw_trigger.h
-> 	* replace pr_err with WARN_ONCE in trigger_make_group to avoid spamming
-> 	kernel log, but without leaving user clueless in case of errors.
-> 	* we still need to decide if we get a real gain by adding min/max limits
-> 	for sampling frequency in /config dir. Anyhow, this can be done in a later
-> 	patch.
-> 	* fix race in hrtimer_remove
-> 
-> Changes since v4:
-> 	* patch 1/4
-> 		- fixed "new line" nit in industrialio-sw-trigger.c
-> 		- added license header in sw_trigger.ho
-> 	* patch 2/4
-> 		- none
-> 	* patch 3/4 
-> 		- none
-> 	* patch 4/4
-> 		- removed "Further work" chapter in iio_configfs.txt
-> 		- added configfs-iio file in Documentation/ABI/testing
-> 
-> Daniel Baluta (4):
->   iio: core: Introduce IIO software triggers
->   iio: core: Introduce IIO configfs support
->   iio: trigger: Introduce IIO hrtimer based trigger
->   iio: Documentation: Add IIO configfs documentation
-> 
->  Documentation/ABI/testing/configfs-iio |  20 ++++
->  Documentation/iio/iio_configfs.txt     |  58 ++++++++++
->  drivers/iio/Kconfig                    |  16 +++
->  drivers/iio/Makefile                   |   2 +
->  drivers/iio/industrialio-configfs.c    | 117 ++++++++++++++++++++
->  drivers/iio/industrialio-sw-trigger.c  | 115 +++++++++++++++++++
->  drivers/iio/trigger/Kconfig            |  10 ++
->  drivers/iio/trigger/Makefile           |   2 +
->  drivers/iio/trigger/iio-trig-hrtimer.c | 194 +++++++++++++++++++++++++++++++++
->  include/linux/iio/sw_trigger.h         |  85 +++++++++++++++
->  10 files changed, 619 insertions(+)
->  create mode 100644 Documentation/ABI/testing/configfs-iio
->  create mode 100644 Documentation/iio/iio_configfs.txt
->  create mode 100644 drivers/iio/industrialio-configfs.c
->  create mode 100644 drivers/iio/industrialio-sw-trigger.c
->  create mode 100644 drivers/iio/trigger/iio-trig-hrtimer.c
->  create mode 100644 include/linux/iio/sw_trigger.h
+> diff --git a/Documentation/devicetree/bindings/iio/adc/xilinx-xadc.txt b/Documentation/devicetree/bindings/iio/adc/xilinx-xadc.txt
+> index d71258e..4c5a60b 100644
+> --- a/Documentation/devicetree/bindings/iio/adc/xilinx-xadc.txt
+> +++ b/Documentation/devicetree/bindings/iio/adc/xilinx-xadc.txt
+> @@ -68,6 +68,8 @@ Optional properties:
+>  			  Note each channel number should only be used at most
+>  			  once.
+>  		Optional properties:
+> +			* xlnx,extend-name: Custom extended name for the
+> +			  channel.
+>  			* xlnx,bipolar: If set the channel is used in bipolar
+>  			  mode.
+>  
+> @@ -107,6 +109,7 @@ Examples:
+>  			#size-cells = <0>;
+>  			channel@0 {
+>  				reg = <0>;
+> +				xlnx,extend-name = "vin_v";
+>  				xlnx,bipolar;
+>  			};
+>  		};
 > 
 
