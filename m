@@ -1,69 +1,25 @@
 Return-Path: <dmurphy@ti.com>
 From: Dan Murphy <dmurphy@ti.com>
 To: <linux-iio@vger.kernel.org>
-CC: <jic23@kernel.org>, Dan Murphy <dmurphy@ti.com>
-Subject: [PATCH v2 1/3] iio: heart_monitors: Add an event for heart rate monitors
-Date: Mon, 11 May 2015 15:05:24 -0500
-Message-ID: <1431374726-23383-2-git-send-email-dmurphy@ti.com>
-In-Reply-To: <1431374726-23383-1-git-send-email-dmurphy@ti.com>
-References: <1431374726-23383-1-git-send-email-dmurphy@ti.com>
+CC: <jic23@kernel.org>
+Subject: Heart Rate monitors v2
+Date: Mon, 11 May 2015 15:05:23 -0500
+Message-ID: <1431374726-23383-1-git-send-email-dmurphy@ti.com>
 MIME-Version: 1.0
 Content-Type: text/plain
 List-ID: <linux-iio@vger.kernel.org>
 
-Add an event for heart rate monitors to signal an event
-once a heart rate measurement has been completed.
+Hi
 
-Signed-off-by: Dan Murphy <dmurphy@ti.com>
----
- drivers/iio/industrialio-core.c | 1 +
- include/uapi/linux/iio/types.h  | 1 +
- tools/iio/iio_event_monitor.c   | 2 ++
- 3 files changed, 4 insertions(+)
+Wanted to add a cover letter.  This series has been completely
+reworked per v1 comments and previous RFC comments.  Since this
+driver has been ripped up I won't even start with detailing out
+the changes I have made.
 
-diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
-index 4df97f6..b7b3817 100644
---- a/drivers/iio/industrialio-core.c
-+++ b/drivers/iio/industrialio-core.c
-@@ -75,6 +75,7 @@ static const char * const iio_chan_type_name_spec[] = {
- 	[IIO_ENERGY] = "energy",
- 	[IIO_DISTANCE] = "distance",
- 	[IIO_VELOCITY] = "velocity",
-+	[IIO_HEARTRATE] = "heartrate",
- };
- 
- static const char * const iio_modifier_names[] = {
-diff --git a/include/uapi/linux/iio/types.h b/include/uapi/linux/iio/types.h
-index 5c46019..b5e8c2f 100644
---- a/include/uapi/linux/iio/types.h
-+++ b/include/uapi/linux/iio/types.h
-@@ -35,6 +35,7 @@ enum iio_chan_type {
- 	IIO_ENERGY,
- 	IIO_DISTANCE,
- 	IIO_VELOCITY,
-+	IIO_HEARTRATE,
- };
- 
- enum iio_modifier {
-diff --git a/tools/iio/iio_event_monitor.c b/tools/iio/iio_event_monitor.c
-index 427c271..b2cc544 100644
---- a/tools/iio/iio_event_monitor.c
-+++ b/tools/iio/iio_event_monitor.c
-@@ -51,6 +51,7 @@ static const char * const iio_chan_type_name_spec[] = {
- 	[IIO_HUMIDITYRELATIVE] = "humidityrelative",
- 	[IIO_ACTIVITY] = "activity",
- 	[IIO_STEPS] = "steps",
-+	[IIO_HEARTRATE] = "heartrate",
- };
- 
- static const char * const iio_ev_type_text[] = {
-@@ -130,6 +131,7 @@ static bool event_is_known(struct iio_event_data *event)
- 	case IIO_HUMIDITYRELATIVE:
- 	case IIO_ACTIVITY:
- 	case IIO_STEPS:
-+	case IIO_HEARTRATE:
- 		break;
- 	default:
- 		return false;
--- 
-1.9.1
+I have decided to rename the directory to "health" to try to 
+encompass any and all health devices beyond heart monitors.
+
+I do have another driver done for a new part that will be sent
+once we get the ABI's figured out for the 4403.
+
+Dan
