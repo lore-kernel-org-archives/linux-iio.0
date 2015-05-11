@@ -2,56 +2,68 @@ Return-Path: <dmurphy@ti.com>
 From: Dan Murphy <dmurphy@ti.com>
 To: <linux-iio@vger.kernel.org>
 CC: <jic23@kernel.org>, Dan Murphy <dmurphy@ti.com>
-Subject: [PATCH v2 2/3] iio: bindings: Add TI afe4403 heart monitor documentation
-Date: Mon, 11 May 2015 15:05:25 -0500
-Message-ID: <1431374726-23383-3-git-send-email-dmurphy@ti.com>
+Subject: [PATCH v2 1/3] iio: heart_monitors: Add an event for heart rate monitors
+Date: Mon, 11 May 2015 15:05:24 -0500
+Message-ID: <1431374726-23383-2-git-send-email-dmurphy@ti.com>
 In-Reply-To: <1431374726-23383-1-git-send-email-dmurphy@ti.com>
 References: <1431374726-23383-1-git-send-email-dmurphy@ti.com>
 MIME-Version: 1.0
 Content-Type: text/plain
 List-ID: <linux-iio@vger.kernel.org>
 
-Add the TI afe4403 heart monitor device tree
-binding documentation.  health directory
-created under iio.
+Add an event for heart rate monitors to signal an event
+once a heart rate measurement has been completed.
 
 Signed-off-by: Dan Murphy <dmurphy@ti.com>
 ---
- .../devicetree/bindings/iio/health/ti_afe4403.txt  | 26 ++++++++++++++++++++++
- 1 file changed, 26 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/iio/health/ti_afe4403.txt
+ drivers/iio/industrialio-core.c | 1 +
+ include/uapi/linux/iio/types.h  | 1 +
+ tools/iio/iio_event_monitor.c   | 2 ++
+ 3 files changed, 4 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/iio/health/ti_afe4403.txt b/Documentation/devicetree/bindings/iio/health/ti_afe4403.txt
-new file mode 100644
-index 0000000..b196b17
---- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/health/ti_afe4403.txt
-@@ -0,0 +1,26 @@
-+* Texas Instruments - AFE4403 Heart rate and Pulse Oximeter
-+
-+The device consists of a low-noise receiver channel
-+with an integrated analog-to-digital converter (ADC),
-+an LED transmit section, and diagnostics for sensor and LED fault detection.
-+
-+Required properties:
-+  - compatible: Must contain "ti,afe4403".
-+  - ste-gpio: GPIO for the spi control line
-+  - data-ready-gpio: GPIO interrupt when the afe4403 has data
-+  - led-supply: Chip supply to the device
-+
-+Optional properties:
-+  - reset-gpio: GPIO used to reset the device via HW
-+
-+Example:
-+
-+&heart_rate {
-+	compatible = "ti,afe4403";
-+	ste-gpio = <&gpio1 29 GPIO_ACTIVE_HIGH>;
-+	data-ready-gpio = <&gpio1 28 GPIO_ACTIVE_HIGH>;
-+	led-supply = <&vbat>;
-+};
-+
-+Technical Datasheet:
-+http://www.ti.com/product/AFE4403/datasheet
+diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+index 4df97f6..b7b3817 100644
+--- a/drivers/iio/industrialio-core.c
++++ b/drivers/iio/industrialio-core.c
+@@ -75,6 +75,7 @@ static const char * const iio_chan_type_name_spec[] = {
+ 	[IIO_ENERGY] = "energy",
+ 	[IIO_DISTANCE] = "distance",
+ 	[IIO_VELOCITY] = "velocity",
++	[IIO_HEARTRATE] = "heartrate",
+ };
+ 
+ static const char * const iio_modifier_names[] = {
+diff --git a/include/uapi/linux/iio/types.h b/include/uapi/linux/iio/types.h
+index 5c46019..b5e8c2f 100644
+--- a/include/uapi/linux/iio/types.h
++++ b/include/uapi/linux/iio/types.h
+@@ -35,6 +35,7 @@ enum iio_chan_type {
+ 	IIO_ENERGY,
+ 	IIO_DISTANCE,
+ 	IIO_VELOCITY,
++	IIO_HEARTRATE,
+ };
+ 
+ enum iio_modifier {
+diff --git a/tools/iio/iio_event_monitor.c b/tools/iio/iio_event_monitor.c
+index 427c271..b2cc544 100644
+--- a/tools/iio/iio_event_monitor.c
++++ b/tools/iio/iio_event_monitor.c
+@@ -51,6 +51,7 @@ static const char * const iio_chan_type_name_spec[] = {
+ 	[IIO_HUMIDITYRELATIVE] = "humidityrelative",
+ 	[IIO_ACTIVITY] = "activity",
+ 	[IIO_STEPS] = "steps",
++	[IIO_HEARTRATE] = "heartrate",
+ };
+ 
+ static const char * const iio_ev_type_text[] = {
+@@ -130,6 +131,7 @@ static bool event_is_known(struct iio_event_data *event)
+ 	case IIO_HUMIDITYRELATIVE:
+ 	case IIO_ACTIVITY:
+ 	case IIO_STEPS:
++	case IIO_HEARTRATE:
+ 		break;
+ 	default:
+ 		return false;
 -- 
 1.9.1
