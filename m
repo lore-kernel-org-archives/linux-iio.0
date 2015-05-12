@@ -1,104 +1,143 @@
-Return-Path: <daniel.baluta@gmail.com>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:54562 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753719AbbELTCA (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 12 May 2015 15:02:00 -0400
+Message-ID: <55524E27.5020909@kernel.org>
+Date: Tue, 12 May 2015 20:01:59 +0100
+From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-Sender: daniel.baluta@gmail.com
-In-Reply-To: <554D0347.9000903@kernel.org>
-References: <1431092025-14355-1-git-send-email-daniel.baluta@intel.com>
-	<554D0347.9000903@kernel.org>
-Date: Mon, 11 May 2015 10:31:44 +0300
-Message-ID: <CAEnQRZCMkXYv6XO2dG7MRP0XEQm4A5t2zPHWiSdeR=X-9C=CaQ@mail.gmail.com>
-Subject: Re: [PATCH v6 0/4] Add initial configfs support for IIO
-From: Daniel Baluta <daniel.baluta@intel.com>
-To: Jonathan Cameron <jic23@kernel.org>, Lars-Peter Clausen <lars@metafoo.de>
-Cc: Daniel Baluta <daniel.baluta@intel.com>, Joel Becker <jlbec@evilplan.org>,
-	Hartmut Knaack <knaack.h@gmx.de>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"octavian.purdila@intel.com" <octavian.purdila@intel.com>, Paul Bolle <pebolle@tiscali.nl>,
-	patrick.porlan@intel.com, adriana.reus@intel.com, constantin.musca@intel.com,
-	marten@intuitiveaerial.com
-Content-Type: text/plain; charset=UTF-8
-List-ID: <linux-iio@vger.kernel.org>
+To: Greg KH <gregkh@linuxfoundation.org>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Subject: Re: [PULL] IIO fixes for the 4.1 cycle, round 1.
+References: <554FBBE9.4030106@kernel.org>
+In-Reply-To: <554FBBE9.4030106@kernel.org>
+Content-Type: text/plain; charset=utf-8
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Fri, May 8, 2015 at 9:41 PM, Jonathan Cameron <jic23@kernel.org> wrote:
-> On 08/05/15 09:33, Daniel Baluta wrote:
->> This patchset introduces IIO software triggers, offers a way of configuring
->> them via configfs and adds the IIO hrtimer based interrupt source to be used
->> with software triggers.
->>
->> The arhitecture is now split in 3 parts, to remove all IIO trigger specific
->> parts from IIO configfs core:
->>
->> (1) IIO software triggers - are independent of configfs.
->> (2) IIO configfs - offers a generic way of creating IIO objects. So far we can
->>       create software triggers.
->> (3) IIO hrtimer trigger - is the first interrupt source for software triggers
->>       (with syfs to follow). Each trigger type can implement its own set of
->>       attributes.
-> I'm happy with the whole series, but given Lars' involvement would like to
-> give him a bit of time for another look / reviewed-by / acked-by or similar.
->
-> Obviously comments from anyone else welcome as well.
->
-> Now all we need to do is all the other uses for configfs that we've
-> discussed in earlier threads :) Easy really ;)
+Hi Greg,
 
-Agree. :)
+We have a fix for one of these fixes, so please ignore this I'll apply that as a fixup
+and then send you a fresh pull request.  sorry for the noise.
 
-The important thing now is to get Acked-by/Reviewed-by on the interface because
-once accepted this cannot be changed.
+Jonathan
 
-For the rest of the code we can send patches later.
-
->>
->> Changes since v5: (after Lars comments)
->>       * the most important change is that we moved sampling_frequency attribute
->>       from configfs to trigger's directory in /sys.
->>       * couple of const added to strings
->>       * documentation to public API in sw_trigger.h
->>       * replace pr_err with WARN_ONCE in trigger_make_group to avoid spamming
->>       kernel log, but without leaving user clueless in case of errors.
->>       * we still need to decide if we get a real gain by adding min/max limits
->>       for sampling frequency in /config dir. Anyhow, this can be done in a later
->>       patch.
->>       * fix race in hrtimer_remove
->>
->> Changes since v4:
->>       * patch 1/4
->>               - fixed "new line" nit in industrialio-sw-trigger.c
->>               - added license header in sw_trigger.h o
->>       * patch 2/4
->>               - none
->>       * patch 3/4
->>               - none
->>       * patch 4/4
->>               - removed "Further work" chapter in iio_configfs.txt
->>               - added configfs-iio file in Documentation/ABI/testing
->>
->> Daniel Baluta (4):
->>   iio: core: Introduce IIO software triggers
->>   iio: core: Introduce IIO configfs support
->>   iio: trigger: Introduce IIO hrtimer based trigger
->>   iio: Documentation: Add IIO configfs documentation
->>
->>  Documentation/ABI/testing/configfs-iio |  20 ++++
->>  Documentation/iio/iio_configfs.txt     |  58 ++++++++++
->>  drivers/iio/Kconfig                    |  16 +++
->>  drivers/iio/Makefile                   |   2 +
->>  drivers/iio/industrialio-configfs.c    | 117 ++++++++++++++++++++
->>  drivers/iio/industrialio-sw-trigger.c  | 115 +++++++++++++++++++
->>  drivers/iio/trigger/Kconfig            |  10 ++
->>  drivers/iio/trigger/Makefile           |   2 +
->>  drivers/iio/trigger/iio-trig-hrtimer.c | 194 +++++++++++++++++++++++++++++++++
->>  include/linux/iio/sw_trigger.h         |  85 +++++++++++++++
->>  10 files changed, 619 insertions(+)
->>  create mode 100644 Documentation/ABI/testing/configfs-iio
->>  create mode 100644 Documentation/iio/iio_configfs.txt
->>  create mode 100644 drivers/iio/industrialio-configfs.c
->>  create mode 100644 drivers/iio/industrialio-sw-trigger.c
->>  create mode 100644 drivers/iio/trigger/iio-trig-hrtimer.c
->>  create mode 100644 include/linux/iio/sw_trigger.h
->>
->
+On 10/05/15 21:13, Jonathan Cameron wrote:
+> The following changes since commit c610f7f772aa06ae2bd8e5ace87cde4d90f70198:
+> 
+>   Merge 4.0-rc7 into staging-next (2015-04-07 11:03:02 +0200)
+> 
+> are available in the git repository at:
+> 
+>   git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git tags/iio-fixes-for-4.1a
+> 
+> for you to fetch changes up to 54b8e12ecddafabd0fc1e9a720e5a00907e2c28b:
+> 
+>   iio: light: hid-sensor-prox: Fix memory leak in probe() (2015-05-08 09:54:52 -0400)
+> 
+> ----------------------------------------------------------------
+> The usual mixed bag of fixes for IIO in the 4.1 cycle.
+> 
+> One core fix
+> 
+> * Set updated for a iio kfifo was incorrectly set to false during a failed
+>   update, resulting in atttempts to repeat the failed operation appearing
+>   to succeed.
+> 
+> This time I've decided to list the driver fixes in alphabetical order rather
+> than 'randomly'.
+> 
+> * axp288_adc - a recent change added a check for valid info masks when
+>   reading channels from consumer drivers.
+> * bmp280 - temperature compensation was failing to read the tfine value, hence
+>   causing a temperature of 0 to always be returned and incorrect presure
+>   measurements.
+> * cc10001 - Fix channel number mapping when some channels are reserved for
+>   remote CPUs. Fix an issue with the use of the power-up/power-down register
+>   (basically wrong polarity). Fix an issue due to the missinterpretting the
+>   return value from regulator_get_voltage. Add a delay before the start bit
+>   as recommended for the hardware to avoid data corruption.
+> * hid pressure - fix channel spec of modfiied, but no modifier (which makes no
+>   sense!)
+> * hid proximity - fix channel spec of modified, but no modifier (which makes
+>   no sense!). Fix a memory leak in the probe function.
+> * mcp320x - occasional incorrect readings on dma using spi busses due to
+>   cacheline corruption. Fixed by forcing ___cacheline_aligned for the buffers.
+> * mma9551 - buffer overrun fix (miss specified maximum length of buffers)
+> * mma9553 - endian fix on status message. Add an enable element for activity
+>   channel. Input checking for activity period to avoid rather unpredictable
+>   results.
+> * spmi-vadc - fix an overflow in the output value normalization seen on some
+>   boards.
+> * st-snesors - oops due to use of a mutex that is not yet initialized during
+>   probe.
+> * xilinx adc - Some wrong register addresses, a wrong address for vccaux
+>   channel, incorrect scale on VREFP and incorrect sign on VREFN.
+> 
+> ----------------------------------------------------------------
+> Alban Bedel (1):
+>       iio:st_sensors: Fix oops when probing SPI devices
+> 
+> Fabio Estevam (1):
+>       iio: light: hid-sensor-prox: Fix memory leak in probe()
+> 
+> Gabriele Mazzotta (1):
+>       iio: kfifo: Set update_needed to false only if a buffer was allocated
+> 
+> Irina Tirdea (5):
+>       iio: pressure: bmp280: fix temp compensation
+>       iio: accel: mma9553: fix endianness issue when reading status
+>       iio: accel: mma9551_core: prevent buffer overrun
+>       iio: accel: mma9553: add enable channel for activity
+>       iio: accel: mma9553: check input value for activity period
+> 
+> Ivan T. Ivanov (1):
+>       iio: adc: spmi-vadc: Fix overflow in output value normalization
+> 
+> Jacob Pan (1):
+>       iio/axp288_adc: add missing channel info mask
+> 
+> Michael Welling (1):
+>       iio: mcp320x: Fix occasional incorrect readings
+> 
+> Naidu Tellapati (4):
+>       iio: adc: cc10001: Fix the channel number mapping
+>       iio: adc: cc10001: Fix incorrect use of power-up/power-down register
+>       iio: adc: cc10001: Fix regulator_get_voltage() return value check
+>       iio: adc: cc10001: Add delay before setting START bit
+> 
+> Srinivas Pandruvada (2):
+>       iio: light: hid-sensor-prox: Fix modifier
+>       iio: pressure: hid-sensor-press: Fix modifier
+> 
+> Thomas Betker (4):
+>       iio: adc: xilinx: Fix register addresses
+>       iio: adc: xilinx: Fix "vccaux" channel .address
+>       iio: adc: xilinx: Fix VREFP scale
+>       iio: adc: xilinx: Fix VREFN sign
+> 
+>  drivers/iio/accel/mma9551_core.c                | 21 +++++++--
+>  drivers/iio/accel/mma9553.c                     | 18 +++----
+>  drivers/iio/accel/st_accel_core.c               |  1 +
+>  drivers/iio/adc/axp288_adc.c                    | 12 ++---
+>  drivers/iio/adc/cc10001_adc.c                   | 62 ++++++++++++++-----------
+>  drivers/iio/adc/mcp320x.c                       |  6 +--
+>  drivers/iio/adc/qcom-spmi-vadc.c                |  7 +--
+>  drivers/iio/adc/xilinx-xadc-core.c              |  5 +-
+>  drivers/iio/adc/xilinx-xadc.h                   |  6 +--
+>  drivers/iio/common/st_sensors/st_sensors_core.c |  2 -
+>  drivers/iio/gyro/st_gyro_core.c                 |  1 +
+>  drivers/iio/kfifo_buf.c                         |  3 +-
+>  drivers/iio/light/hid-sensor-prox.c             | 12 ++---
+>  drivers/iio/magnetometer/st_magn_core.c         |  1 +
+>  drivers/iio/pressure/bmp280.c                   |  1 +
+>  drivers/iio/pressure/hid-sensor-press.c         |  2 -
+>  drivers/iio/pressure/st_pressure_core.c         |  1 +
+>  17 files changed, 95 insertions(+), 66 deletions(-)
 > --
 > To unsubscribe from this list: send the line "unsubscribe linux-iio" in
 > the body of a message to majordomo@vger.kernel.org
 > More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> 
+
