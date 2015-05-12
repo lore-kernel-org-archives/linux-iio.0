@@ -1,76 +1,29 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga09.intel.com ([134.134.136.24]:32302 "EHLO mga09.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1753791AbbELU5G (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Tue, 12 May 2015 16:57:06 -0400
-Message-ID: <5552690E.3060006@linux.intel.com>
-Date: Tue, 12 May 2015 13:56:46 -0700
-From: sathyanarayanan kuppuswamy
-	<sathyanarayanan.kuppuswamy@linux.intel.com>
-Reply-To: sathyanarayanan.kuppuswamy@linux.intel.com
+Received: from 19pmail.ess.barracuda.com ([64.235.154.231]:55251 "EHLO
+	19pmail.ess.barracuda.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S933666AbbELXYA convert rfc822-to-8bit (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 12 May 2015 19:24:00 -0400
+From: Greg Wilson-Lindberg <GWilson@sakuraus.com>
+To: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Date: Tue, 12 May 2015 16:23:43 -0700
+Subject: BBB touch screen and ADC interactions
+Message-ID: <782E3A02C2EB2347BEA6DEA69DC7AB86021D3C87CFA4@sfamail.SAKURAUS.LOCAL>
+Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
-To: Dan Carpenter <dan.carpenter@oracle.com>
-CC: linux-iio@vger.kernel.org
-Subject: Re: iio: ltr501: Add interrupt support
-References: <20150512180941.GD5672@mwanda>
-In-Reply-To: <20150512180941.GD5672@mwanda>
-Content-Type: text/plain; charset=windows-1252; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Hi
+Hello all,
+I've got a problem with the BeagleBone Black ti_am335x_tsc, ti_am335x_adc & ti_am335x_tsadc drivers, and Jonathan Cameron suggested that I reach out to this list to see if any one here has any insight to my problem.
+ 
+I'm using a BBB running a Debian Jessie build with the 3.14.40 ti kernel by Robert C. Nelson. I've got it hooked up to a touch screen and I would like to also be able to use some of the remaining adc channels.
+ 
+As soon as I try to read any of the remaining channels the touch screen locks up. I've tried catting them from /sys/bus/iio/devices/iio:device0/in_voltageX_raw, using the generic_buffer program provided by the kernel, and using the Analog Devices libiio library. In all cases, I get the same results, adc values that look reasonable, but the touch screen stops responding.
+ 
+I've asked on the TI support forum if they could help with this problem, but their response was that they only supported the TI SDK.
+ 
+Can any of you tell me if the current iio subsystem will work correctly with the ti touch screen and adc drivers? 
 
-On 05/12/2015 11:09 AM, Dan Carpenter wrote:
-> Hello Kuppuswamy Sathyanarayanan,
->
-> The patch 7ac702b3144b: "iio: ltr501: Add interrupt support" from Apr
-> 19, 2015, leads to the following static checker warning:
->
-> 	drivers/iio/light/ltr501.c:869 ltr501_write_thresh()
-> 	info: ignoring unreachable code.
->
-> drivers/iio/light/ltr501.c
->     867          case IIO_PROXIMITY:
->     868                  switch (dir) {
->     869                  if (val > LTR501_PS_THRESH_MASK)
->     870                          return -EINVAL;
->
-> Probably this code should be outside of this switch (dir) statement?
-Agreed. I will send a patch with fix soon.
->
->     871                  case IIO_EV_DIR_RISING:
->     872                          mutex_lock(&data->lock_ps);
->     873                          ret = regmap_bulk_write(data->regmap,
->     874                                                  LTR501_PS_THRESH_UP,
->     875                                                  &val, 2);
->     876                          mutex_unlock(&data->lock_ps);
->     877                          return ret;
->     878                  case IIO_EV_DIR_FALLING:
->     879                          mutex_lock(&data->lock_ps);
->     880                          ret = regmap_bulk_write(data->regmap,
->     881                                                  LTR501_PS_THRESH_LOW,
->     882                                                  &val, 2);
->     883                          mutex_unlock(&data->lock_ps);
->     884                          return ret;
->     885                  default:
->     886                          return -EINVAL;
->     887                  }
->     888          default:
->     889                  return -EINVAL;
->     890          }
->     891
->     892          return -EINVAL;
->     893  }
->
-> regards,
-> dan carpenter
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
->
-
--- 
-Sathyanarayanan Kuppuswamy
-Android kernel developer
-
+Greg Wilson-Lindberg
+Sakura Finetek
+310-783-5075
