@@ -1,174 +1,96 @@
-Return-Path: <vlad.dogaru@intel.com>
-From: Vlad Dogaru <vlad.dogaru@intel.com>
-To: jic23@kernel.org,
-	octavian.purdila@intel.com,
-	linux-iio@vger.kernel.org
-Cc: Vlad Dogaru <vlad.dogaru@intel.com>
-Subject: [PATCH] iio: accel: bmc150: decouple buffer and triggers
-Date: Tue, 12 May 2015 17:03:24 +0300
-Message-Id: <1431439404-30001-1-git-send-email-vlad.dogaru@intel.com>
+Return-Path: <daniel.baluta@gmail.com>
+MIME-Version: 1.0
+In-Reply-To: <1429174868-11953-3-git-send-email-robert.dolca@intel.com>
+References: <1429174868-11953-1-git-send-email-robert.dolca@intel.com>
+	<1429174868-11953-3-git-send-email-robert.dolca@intel.com>
+Date: Tue, 12 May 2015 16:46:54 +0300
+Message-ID: <CAEnQRZD4g=qoP8sGzW1ZA3nP4M_2wKu=CCDVTZ6vh-2p=fvk3w@mail.gmail.com>
+Subject: Re: [PATCH RFC 2/3] iio: Improve iio_trigger_register_with_dev to
+ register trigger after device
+From: Daniel Baluta <daniel.baluta@gmail.com>
+To: Robert Dolca <robert.dolca@intel.com>
+Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>, Jonathan Cameron <jic23@kernel.org>,
+	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>, Peter Meerwald <pmeerw@pmeerw.net>, Denis CIOCCA <denis.ciocca@st.com>
+Content-Type: text/plain; charset=UTF-8
 List-ID: <linux-iio@vger.kernel.org>
 
-If the interrupt pins are not available, we should still be able to use
-the buffer with an external trigger.  However, we won't be able to use
-the hardware fifo since we have no means of signalling when the
-watermark is reached.
+On Thu, Apr 16, 2015 at 12:01 PM, Robert Dolca <robert.dolca@intel.com> wrote:
+> Until now calling iio_trigger_register_with_dev after registering the IIO device
+> added the trigger to the device's trigger list and saved a reference to the
+> device in the trigger's struct but it did not create the symlink.
+>
+> In order to know if the device was registered or not this patch adds a flag
+> in the dev_iio struct and checks it when iio_trigger_register_with_dev is
+> called.
 
-I also added a comment to indicate that the timestamps in
-bmc150_accel_data are only used for hardware fifo, since initially I was
-confused about duplication with pf->timestamp.
+I don't think we should care about this. In order for the symlink to be created
+the driver should call the right sequence of functions.
 
-Signed-off-by: Vlad Dogaru <vlad.dogaru@intel.com>
----
- drivers/iio/accel/bmc150-accel.c | 55 +++++++++++++++++++++++++---------------
- 1 file changed, 35 insertions(+), 20 deletions(-)
-
-diff --git a/drivers/iio/accel/bmc150-accel.c b/drivers/iio/accel/bmc150-accel.c
-index 73e8773..4e70f51 100644
---- a/drivers/iio/accel/bmc150-accel.c
-+++ b/drivers/iio/accel/bmc150-accel.c
-@@ -196,7 +196,7 @@ struct bmc150_accel_data {
- 	u32 slope_thres;
- 	u32 range;
- 	int ev_enable_state;
--	int64_t timestamp, old_timestamp;
-+	int64_t timestamp, old_timestamp; /* Only used in hw fifo mode. */
- 	const struct bmc150_accel_chip_info *chip_info;
- };
- 
-@@ -1183,7 +1183,6 @@ static const struct iio_info bmc150_accel_info = {
- 	.write_event_value	= bmc150_accel_write_event,
- 	.write_event_config	= bmc150_accel_write_event_config,
- 	.read_event_config	= bmc150_accel_read_event_config,
--	.validate_trigger	= bmc150_accel_validate_trigger,
- 	.driver_module		= THIS_MODULE,
- };
- 
-@@ -1222,7 +1221,7 @@ static irqreturn_t bmc150_accel_trigger_handler(int irq, void *p)
- 	mutex_unlock(&data->mutex);
- 
- 	iio_push_to_buffers_with_timestamp(indio_dev, data->buffer,
--					   data->timestamp);
-+					   pf->timestamp);
- err_read:
- 	iio_trigger_notify_done(indio_dev->trig);
- 
-@@ -1535,6 +1534,13 @@ static int bmc150_accel_fifo_set_mode(struct bmc150_accel_data *data)
- 	return ret;
- }
- 
-+static int bmc150_accel_buffer_preenable(struct iio_dev *indio_dev)
-+{
-+	struct bmc150_accel_data *data = iio_priv(indio_dev);
-+
-+	return bmc150_accel_set_power_state(data, true);
-+}
-+
- static int bmc150_accel_buffer_postenable(struct iio_dev *indio_dev)
- {
- 	struct bmc150_accel_data *data = iio_priv(indio_dev);
-@@ -1591,9 +1597,18 @@ out:
- 	return 0;
- }
- 
-+static int bmc150_accel_buffer_postdisable(struct iio_dev *indio_dev)
-+{
-+	struct bmc150_accel_data *data = iio_priv(indio_dev);
-+
-+	return bmc150_accel_set_power_state(data, false);
-+}
-+
- static const struct iio_buffer_setup_ops bmc150_accel_buffer_ops = {
-+	.preenable = bmc150_accel_buffer_preenable,
- 	.postenable = bmc150_accel_buffer_postenable,
- 	.predisable = bmc150_accel_buffer_predisable,
-+	.postdisable = bmc150_accel_buffer_postdisable,
- };
- 
- static int bmc150_accel_probe(struct i2c_client *client,
-@@ -1636,6 +1651,15 @@ static int bmc150_accel_probe(struct i2c_client *client,
- 	indio_dev->modes = INDIO_DIRECT_MODE;
- 	indio_dev->info = &bmc150_accel_info;
- 
-+	ret = iio_triggered_buffer_setup(indio_dev,
-+					 &iio_pollfunc_store_time,
-+					 bmc150_accel_trigger_handler,
-+					 &bmc150_accel_buffer_ops);
-+	if (ret < 0) {
-+		dev_err(&client->dev, "Failed: iio triggered buffer setup\n");
-+		return ret;
-+	}
-+
- 	if (client->irq < 0)
- 		client->irq = bmc150_accel_gpio_probe(client, data);
- 
-@@ -1648,7 +1672,7 @@ static int bmc150_accel_probe(struct i2c_client *client,
- 						BMC150_ACCEL_IRQ_NAME,
- 						indio_dev);
- 		if (ret)
--			return ret;
-+			goto err_buffer_cleanup;
- 
- 		/*
- 		 * Set latched mode interrupt. While certain interrupts are
-@@ -1661,24 +1685,14 @@ static int bmc150_accel_probe(struct i2c_client *client,
- 					     BMC150_ACCEL_INT_MODE_LATCH_RESET);
- 		if (ret < 0) {
- 			dev_err(&data->client->dev, "Error writing reg_int_rst_latch\n");
--			return ret;
-+			goto err_buffer_cleanup;
- 		}
- 
- 		bmc150_accel_interrupts_setup(indio_dev, data);
- 
- 		ret = bmc150_accel_triggers_setup(indio_dev, data);
- 		if (ret)
--			return ret;
--
--		ret = iio_triggered_buffer_setup(indio_dev,
--						 &iio_pollfunc_store_time,
--						 bmc150_accel_trigger_handler,
--						 &bmc150_accel_buffer_ops);
--		if (ret < 0) {
--			dev_err(&client->dev,
--				"Failed: iio triggered buffer setup\n");
--			goto err_trigger_unregister;
--		}
-+			goto err_buffer_cleanup;
- 
- 		if (i2c_check_functionality(client->adapter, I2C_FUNC_I2C) ||
- 		    i2c_check_functionality(client->adapter,
-@@ -1692,7 +1706,7 @@ static int bmc150_accel_probe(struct i2c_client *client,
- 	ret = iio_device_register(indio_dev);
- 	if (ret < 0) {
- 		dev_err(&client->dev, "Unable to register iio device\n");
--		goto err_buffer_cleanup;
-+		goto err_trigger_unregister;
- 	}
- 
- 	ret = pm_runtime_set_active(&client->dev);
-@@ -1708,11 +1722,10 @@ static int bmc150_accel_probe(struct i2c_client *client,
- 
- err_iio_unregister:
- 	iio_device_unregister(indio_dev);
--err_buffer_cleanup:
--	if (indio_dev->pollfunc)
--		iio_triggered_buffer_cleanup(indio_dev);
- err_trigger_unregister:
- 	bmc150_accel_unregister_triggers(data, BMC150_ACCEL_TRIGGERS - 1);
-+err_buffer_cleanup:
-+	iio_triggered_buffer_cleanup(indio_dev);
- 
- 	return ret;
- }
-@@ -1730,6 +1743,8 @@ static int bmc150_accel_remove(struct i2c_client *client)
- 
- 	bmc150_accel_unregister_triggers(data, BMC150_ACCEL_TRIGGERS - 1);
- 
-+	iio_triggered_buffer_cleanup(indio_dev);
-+
- 	mutex_lock(&data->mutex);
- 	bmc150_accel_set_mode(data, BMC150_ACCEL_SLEEP_MODE_DEEP_SUSPEND, 0);
- 	mutex_unlock(&data->mutex);
--- 
-1.9.1
+>
+> Signed-off-by: Robert Dolca <robert.dolca@intel.com>
+> ---
+>  drivers/iio/industrialio-core.c    | 4 ++++
+>  drivers/iio/industrialio-trigger.c | 6 ++++++
+>  include/linux/iio/iio.h            | 1 +
+>  3 files changed, 11 insertions(+)
+>
+> diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+> index 94bcd54..04862a4 100644
+> --- a/drivers/iio/industrialio-core.c
+> +++ b/drivers/iio/industrialio-core.c
+> @@ -1233,6 +1233,8 @@ int iio_device_register(struct iio_dev *indio_dev)
+>                         goto error_cdev_del;
+>         }
+>
+> +       indio_dev->registered = true;
+> +
+>         return 0;
+>  error_cdev_del:
+>         cdev_del(&indio_dev->chrdev);
+> @@ -1281,6 +1283,8 @@ void iio_device_unregister(struct iio_dev *indio_dev)
+>         mutex_unlock(&indio_dev->info_exist_lock);
+>
+>         iio_buffer_free_sysfs_and_mask(indio_dev);
+> +
+> +       indio_dev->registered = false;
+>  }
+>  EXPORT_SYMBOL(iio_device_unregister);
+>
+> diff --git a/drivers/iio/industrialio-trigger.c b/drivers/iio/industrialio-trigger.c
+> index cebdd10..d4118fe 100644
+> --- a/drivers/iio/industrialio-trigger.c
+> +++ b/drivers/iio/industrialio-trigger.c
+> @@ -69,6 +69,12 @@ int iio_trigger_register_with_dev(struct iio_dev *indio_dev,
+>         trig_info->indio_dev = indio_dev;
+>         list_add(&trig_info->indio_dev_list, &indio_dev->triggers);
+>
+> +       if (indio_dev->registered) {
+> +               ret = iio_trigger_link(trig_info);
+> +               if (ret < 0)
+> +                       goto error;
+> +       }
+> +
+>         return 0;
+>  error:
+>         return ret;
+> diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
+> index 9ff54ef..3f704ae 100644
+> --- a/include/linux/iio/iio.h
+> +++ b/include/linux/iio/iio.h
+> @@ -496,6 +496,7 @@ struct iio_dev {
+>         unsigned                        cached_reg_addr;
+>  #endif
+>         struct list_head                triggers;
+> +       bool                            registered;
+>  };
+>
+>  const struct iio_chan_spec
+> --
+> 1.9.1
+>
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-kernel" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> Please read the FAQ at  http://www.tux.org/lkml/
