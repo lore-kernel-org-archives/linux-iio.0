@@ -1,531 +1,157 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:54778 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S933804AbbELTo2 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 12 May 2015 15:44:28 -0400
-Message-ID: <55525816.5000103@kernel.org>
-Date: Tue, 12 May 2015 20:44:22 +0100
-From: Jonathan Cameron <jic23@kernel.org>
+Received: from mga09.intel.com ([134.134.136.24]:38293 "EHLO mga09.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1753753AbbELUvs (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Tue, 12 May 2015 16:51:48 -0400
+From: "Pandruvada, Srinivas" <srinivas.pandruvada@intel.com>
+To: "Purdila, Octavian" <octavian.purdila@intel.com>
+CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	"jic23@kernel.org" <jic23@kernel.org>,
+	"Dogaru, Vlad" <vlad.dogaru@intel.com>
+Subject: Re: [PATCH] iio: accel: bmc150: decouple buffer and triggers
+Date: Tue, 12 May 2015 20:51:43 +0000
+Message-ID: <1431463799.11262.40.camel@spandruv-DESK3.jf.intel.com>
+References: <1431439404-30001-1-git-send-email-vlad.dogaru@intel.com>
+	 <CAE1zotKFejC4bL5EEE-568oXgCzwtvOa9SpeWdW=jJcfPnb4vA@mail.gmail.com>
+In-Reply-To: <CAE1zotKFejC4bL5EEE-568oXgCzwtvOa9SpeWdW=jJcfPnb4vA@mail.gmail.com>
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-To: Hartmut Knaack <knaack.h@gmx.de>,
-	Roberta Dobrescu <roberta.dobrescu@gmail.com>,
-	linux-iio@vger.kernel.org
-CC: daniel.baluta@intel.com, octavian.purdila@intel.com,
-	lars@metafoo.de, pmeerw@pmeerw.net
-Subject: Re: [PATCH 3/5] iio: Move iio userspace applications out of staging
-References: <1424940567-24877-1-git-send-email-roberta.dobrescu@gmail.com> <1424940567-24877-4-git-send-email-roberta.dobrescu@gmail.com> <55455BF6.1040307@gmx.de>
-In-Reply-To: <55455BF6.1040307@gmx.de>
-Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 03/05/15 00:21, Hartmut Knaack wrote:
-> Roberta Dobrescu schrieb am 26.02.2015 um 09:49:
->> This patch moves iio userspace applications out of staging, to tools/iio/
->> and adds a Makefile in order to compile them easily. It also adds tools/iio/
->> to MAINTAINERS file.
->>
-> 
-> Finally, I managed to have a close look on this one, and there seems quite a
-> lot of work left, which preferably should have been done in staging. I'll
-> send a series to cover some issues asap. Anyway, during review, there were
-> some questions rising, please find them inline (mainly addressed to Jonathan,
-> as he commited most of the code in the first place).
-Hohum.  Can I remember any of this? err...   I'll pretend to be me nearly
-5 years ago (though some of this code well predates that!)  I can't remember
-what I did last week sometimes ;)
-
-oh dear, I'm embarrassed.  I should have actually looked at this a fresh
-rather than being lazy.
-
-Thanks Hartmut!
-> 
-> [...]
-> 
->> +/**
->> + * process_scan() - print out the values in SI units
->> + * @data:		pointer to the start of the scan
->> + * @channels:		information about the channels. Note
->> + *  size_from_channelarray must have been called first to fill the
->> + *  location offsets.
->> + * @num_channels:	number of channels
->> + **/
->> +void process_scan(char *data,
->> +		  struct iio_channel_info *channels,
->> +		  int num_channels)
->> +{
->> +	int k;
->> +
->> +	for (k = 0; k < num_channels; k++)
->> +		switch (channels[k].bytes) {
->> +			/* only a few cases implemented so far */
->> +		case 2:
->> +			print2byte(*(uint16_t *)(data + channels[k].location),
->> +				   &channels[k]);
->> +			break;
->> +		case 4:
->> +			if (!channels[k].is_signed) {
->> +				uint32_t val = *(uint32_t *)
->> +					(data + channels[k].location);
->> +				printf("%05f ", ((float)val +
->> +						 channels[k].offset)*
->> +				       channels[k].scale);
->> +
->> +			}
->> +			break;
->> +		case 8:
->> +			if (channels[k].is_signed) {
->> +				int64_t val = *(int64_t *)
->> +					(data +
->> +					 channels[k].location);
->> +				if ((val >> channels[k].bits_used) & 1)
-> 
-> Is this supposed to check for negative values? My understanding is, that the
-> sign bit is inside those bits_used, so after shifting them all out, only some
-> random bits could be left over.
-hmm. Git blame places the blame for this one on Peter. Unfortunately he
-just tidied up the formatting. I concur, this is garbage.  I guess the intent
-was sign extension.  I don't think we have yet had a non 8 byte channel
-using 8 byte storage, so probably no one noticed (though I suspect shifting
-an 8 byte number 8 bytes to the right is probably undefined behaviour).
-
-
-Anyhow, 
-> 
->> +					val = (val & channels[k].mask) |
->> +						~channels[k].mask;
-> 
-> What is the purpose of this? Looks a bit like a sign extension, but not really.
-It's horrible, but should do sign extension if the above actually read the
-sign.  If negative fill all bits above the sign bit.  Mind you the & mask
-is pointless unless we have a shift, and as you observe we don't handle
-that anyway.
-> 
->> +				/* special case for timestamp */
->> +				if (channels[k].scale == 1.0f &&
->> +				    channels[k].offset == 0.0f)
->> +					printf("%" PRId64 " ", val);
->> +				else
->> +					printf("%05f ", ((float)val +
->> +							 channels[k].offset)*
->> +					       channels[k].scale);
->> +			}
-> 
-> Is there a certain purpose, that no shift gets applied to either the 4 bytes
-> as well as the 8 bytes values?
-Bug - or perhaps missing feature?
-
-> And what about signed 4 byte values and unsigned 8 byte values?
-No one ever noticed them ;)  Unfortunately, anyone who has a gp2ap020a00f
-and is using the buffered reads does have an unsigned 32bit channel. oops.
-> 
->> +			break;
->> +		default:
->> +			break;
->> +		}
->> +	printf("\n");
->> +}
->> +
->> +int main(int argc, char **argv)
->> +{
->> +	unsigned long num_loops = 2;
->> +	unsigned long timedelay = 1000000;
->> +	unsigned long buf_len = 128;
->> +
->> +	int ret, c, i, j, toread;
->> +	int fp;
->> +
->> +	int num_channels;
->> +	char *trigger_name = NULL, *device_name = NULL;
->> +	char *dev_dir_name, *buf_dir_name;
->> +
->> +	int datardytrigger = 1;
->> +	char *data;
->> +	ssize_t read_size;
->> +	int dev_num, trig_num;
->> +	char *buffer_access;
->> +	int scan_size;
->> +	int noevents = 0;
->> +	int notrigger = 0;
->> +	char *dummy;
->> +
->> +	struct iio_channel_info *channels;
->> +
->> +	while ((c = getopt(argc, argv, "l:w:c:et:n:g")) != -1) {
->> +		switch (c) {
->> +		case 'n':
->> +			device_name = optarg;
->> +			break;
->> +		case 't':
->> +			trigger_name = optarg;
->> +			datardytrigger = 0;
->> +			break;
->> +		case 'e':
->> +			noevents = 1;
->> +			break;
->> +		case 'c':
->> +			num_loops = strtoul(optarg, &dummy, 10);
->> +			break;
->> +		case 'w':
->> +			timedelay = strtoul(optarg, &dummy, 10);
->> +			break;
->> +		case 'l':
->> +			buf_len = strtoul(optarg, &dummy, 10);
->> +			break;
->> +		case 'g':
->> +			notrigger = 1;
->> +			break;
->> +		case '?':
->> +			return -1;
->> +		}
->> +	}
->> +
->> +	if (device_name == NULL)
->> +		return -1;
->> +
->> +	/* Find the device requested */
->> +	dev_num = find_type_by_name(device_name, "iio:device");
->> +	if (dev_num < 0) {
->> +		printf("Failed to find the %s\n", device_name);
->> +		ret = -ENODEV;
->> +		goto error_ret;
->> +	}
->> +	printf("iio device number being used is %d\n", dev_num);
->> +
->> +	asprintf(&dev_dir_name, "%siio:device%d", iio_dir, dev_num);
->> +
->> +	if (!notrigger) {
->> +		if (trigger_name == NULL) {
->> +			/*
->> +			 * Build the trigger name. If it is device associated
->> +			 * its name is <device_name>_dev[n] where n matches
->> +			 * the device number found above.
->> +			 */
->> +			ret = asprintf(&trigger_name,
->> +				       "%s-dev%d", device_name, dev_num);
->> +			if (ret < 0) {
->> +				ret = -ENOMEM;
->> +				goto error_ret;
->> +			}
->> +		}
->> +
->> +		/* Verify the trigger exists */
->> +		trig_num = find_type_by_name(trigger_name, "trigger");
->> +		if (trig_num < 0) {
->> +			printf("Failed to find the trigger %s\n", trigger_name);
->> +			ret = -ENODEV;
->> +			goto error_free_triggername;
->> +		}
->> +		printf("iio trigger number being used is %d\n", trig_num);
->> +	} else
->> +		printf("trigger-less mode selected\n");
->> +
->> +	/*
->> +	 * Parse the files in scan_elements to identify what channels are
->> +	 * present
->> +	 */
->> +	ret = build_channel_array(dev_dir_name, &channels, &num_channels);
->> +	if (ret) {
->> +		printf("Problem reading scan element information\n");
->> +		printf("diag %s\n", dev_dir_name);
->> +		goto error_free_triggername;
->> +	}
->> +
->> +	/*
->> +	 * Construct the directory name for the associated buffer.
->> +	 * As we know that the lis3l02dq has only one buffer this may
->> +	 * be built rather than found.
->> +	 */
->> +	ret = asprintf(&buf_dir_name,
->> +		       "%siio:device%d/buffer", iio_dir, dev_num);
->> +	if (ret < 0) {
->> +		ret = -ENOMEM;
->> +		goto error_free_triggername;
->> +	}
->> +
->> +	if (!notrigger) {
->> +		printf("%s %s\n", dev_dir_name, trigger_name);
->> +		/* Set the device trigger to be the data ready trigger found
->> +		 * above */
->> +		ret = write_sysfs_string_and_verify("trigger/current_trigger",
->> +						    dev_dir_name,
->> +						    trigger_name);
->> +		if (ret < 0) {
->> +			printf("Failed to write current_trigger file\n");
->> +			goto error_free_buf_dir_name;
->> +		}
->> +	}
->> +
->> +	/* Setup ring buffer parameters */
->> +	ret = write_sysfs_int("length", buf_dir_name, buf_len);
->> +	if (ret < 0)
->> +		goto error_free_buf_dir_name;
->> +
->> +	/* Enable the buffer */
->> +	ret = write_sysfs_int("enable", buf_dir_name, 1);
->> +	if (ret < 0)
->> +		goto error_free_buf_dir_name;
->> +	scan_size = size_from_channelarray(channels, num_channels);
->> +	data = malloc(scan_size*buf_len);
->> +	if (!data) {
->> +		ret = -ENOMEM;
->> +		goto error_free_buf_dir_name;
->> +	}
->> +
->> +	ret = asprintf(&buffer_access, "/dev/iio:device%d", dev_num);
->> +	if (ret < 0) {
->> +		ret = -ENOMEM;
->> +		goto error_free_data;
->> +	}
->> +
->> +	/* Attempt to open non blocking the access dev */
->> +	fp = open(buffer_access, O_RDONLY | O_NONBLOCK);
->> +	if (fp == -1) { /* If it isn't there make the node */
-> 
-> Is this comment supposed to be a TODO, or what node is meant here?
-TODO... (I think, given it is probably talking about cases where mknod is
-needed).
-> 
->> +		printf("Failed to open %s\n", buffer_access);
->> +		ret = -errno;
->> +		goto error_free_buffer_access;
->> +	}
->> +
->> +	/* Wait for events 10 times */
-> 
-> I don't exactly see those 10 times happening. Is this comment obsolete
-> or a TODO?
-It used to be 10? (probably)  Hmm. I should probably actually read this code
-once in a while.  Clearly rubbish. Drop the comment.
-> 
->> +	for (j = 0; j < num_loops; j++) {
->> +		if (!noevents) {
->> +			struct pollfd pfd = {
->> +				.fd = fp,
->> +				.events = POLLIN,
->> +			};
->> +
->> +			poll(&pfd, 1, -1);
->> +			toread = buf_len;
->> +
->> +		} else {
->> +			usleep(timedelay);
->> +			toread = 64;
->> +		}
->> +
->> +		read_size = read(fp,
->> +				 data,
->> +				 toread*scan_size);
->> +		if (read_size < 0) {
->> +			if (errno == -EAGAIN) {
->> +				printf("nothing available\n");
->> +				continue;
->> +			} else
->> +				break;
->> +		}
->> +		for (i = 0; i < read_size/scan_size; i++)
->> +			process_scan(data + scan_size*i,
->> +				     channels,
->> +				     num_channels);
->> +	}
->> +
->> +	/* Stop the buffer */
->> +	ret = write_sysfs_int("enable", buf_dir_name, 0);
->> +	if (ret < 0)
->> +		goto error_close_buffer_access;
->> +
->> +	if (!notrigger)
->> +		/* Disconnect the trigger - just write a dummy name. */
->> +		write_sysfs_string("trigger/current_trigger",
->> +				   dev_dir_name, "NULL");
->> +
->> +error_close_buffer_access:
->> +	close(fp);
->> +error_free_data:
->> +	free(data);
->> +error_free_buffer_access:
->> +	free(buffer_access);
->> +error_free_buf_dir_name:
->> +	free(buf_dir_name);
->> +error_free_triggername:
->> +	if (datardytrigger)
->> +		free(trigger_name);
->> +error_ret:
->> +	return ret;
->> +}
-> 
-> [...]
-> 
->> +/**
->> + * find_type_by_name() - function to match top level types by name
->> + * @name: top level type instance name
->> + * @type: the type of top level instance being sort
->> + *
->> + * Typical types this is used for are device and trigger.
->> + **/
->> +int find_type_by_name(const char *name, const char *type)
->> +{
->> +	const struct dirent *ent;
->> +	int number, numstrlen;
->> +
->> +	FILE *nameFile;
->> +	DIR *dp;
->> +	char thisname[IIO_MAX_NAME_LENGTH];
->> +	char *filename;
->> +
->> +	dp = opendir(iio_dir);
->> +	if (dp == NULL) {
->> +		printf("No industrialio devices available\n");
->> +		return -ENODEV;
->> +	}
->> +
->> +	while (ent = readdir(dp), ent != NULL) {
->> +		if (strcmp(ent->d_name, ".") != 0 &&
->> +			strcmp(ent->d_name, "..") != 0 &&
->> +			strlen(ent->d_name) > strlen(type) &&
-> 
-> Shouldn't that be
-> 			strlen(ent->d_name) >= strlen(type) &&
-> or why would the left one have to be bigger than the right one?
-Needs to have a number of some sort after the type name so at least
-one more character needed. (I think).  This function could certainly
-do with better documentation given I can't immediately see what it is
-actually doing...
-> 
->> +			strncmp(ent->d_name, type, strlen(type)) == 0) {
->> +			numstrlen = sscanf(ent->d_name + strlen(type),
->> +					   "%d",
->> +					   &number);
->> +			/* verify the next character is not a colon */
->> +			if (strncmp(ent->d_name + strlen(type) + numstrlen,
->> +					":",
->> +					1) != 0) {
->> +				filename = malloc(strlen(iio_dir)
->> +						+ strlen(type)
->> +						+ numstrlen
->> +						+ 6);
->> +				if (filename == NULL) {
->> +					closedir(dp);
->> +					return -ENOMEM;
->> +				}
->> +				sprintf(filename, "%s%s%d/name",
->> +					iio_dir,
->> +					type,
->> +					number);
->> +				nameFile = fopen(filename, "r");
->> +				if (!nameFile) {
->> +					free(filename);
->> +					continue;
->> +				}
->> +				free(filename);
->> +				fscanf(nameFile, "%s", thisname);
->> +				fclose(nameFile);
->> +				if (strcmp(name, thisname) == 0) {
->> +					closedir(dp);
->> +					return number;
->> +				}
->> +			}
->> +		}
->> +	}
->> +	closedir(dp);
->> +	return -ENODEV;
->> +}
-> 
-> [...]
-> 
-> Should this function be defined static?
-yes and a few similar ones.
->> +int _write_sysfs_string(char *filename, char *basedir, char *val, int verify)
->> +{
->> +	int ret = 0;
->> +	FILE  *sysfsfp;
->> +	char *temp = malloc(strlen(basedir) + strlen(filename) + 2);
->> +
->> +	if (temp == NULL) {
->> +		printf("Memory allocation failed\n");
->> +		return -ENOMEM;
->> +	}
->> +	sprintf(temp, "%s/%s", basedir, filename);
->> +	sysfsfp = fopen(temp, "w");
->> +	if (sysfsfp == NULL) {
->> +		printf("Could not open %s\n", temp);
->> +		ret = -errno;
->> +		goto error_free;
->> +	}
->> +	fprintf(sysfsfp, "%s", val);
->> +	fclose(sysfsfp);
->> +	if (verify) {
->> +		sysfsfp = fopen(temp, "r");
->> +		if (sysfsfp == NULL) {
->> +			printf("could not open file to verify\n");
->> +			ret = -errno;
->> +			goto error_free;
->> +		}
->> +		fscanf(sysfsfp, "%s", temp);
->> +		fclose(sysfsfp);
->> +		if (strcmp(temp, val) != 0) {
->> +			printf("Possible failure in string write of %s "
->> +				"Should be %s "
->> +				"written to %s\%s\n",
->> +				temp,
->> +				val,
->> +				basedir,
->> +				filename);
->> +			ret = -1;
->> +		}
->> +	}
->> +error_free:
->> +	free(temp);
->> +
->> +	return ret;
->> +}
-> 
-> [...]
-> 
->> +++ b/tools/iio/lsiio.c
-> [...]
->> +int main(int argc, char **argv)
->> +{
->> +	int c, err = 0;
->> +
->> +	while ((c = getopt(argc, argv, "d:D:v")) != EOF) {
-> 
-> What are d and D used for? Should they be implemented or dropped?
-dropped
-> 
->> +		switch (c) {
->> +		case 'v':
->> +			verblevel++;
->> +			break;
->> +
->> +		case '?':
->> +		default:
->> +			err++;
->> +			break;
->> +		}
->> +	}
->> +	if (err || argc > optind) {
->> +		fprintf(stderr, "Usage: lsiio [options]...\n"
->> +			"List industrial I/O devices\n"
->> +			"  -v, --verbose\n"
->> +			"      Increase verbosity (may be given multiple times)\n"
->> +			);
->> +		exit(1);
->> +	}
->> +
->> +	dump_devices();
->> +
->> +	return 0;
->> +}
->>
-> 
-> Thanks,
-> 
-> Hartmut
-> 
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> 
-
+T24gVHVlLCAyMDE1LTA1LTEyIGF0IDE5OjE3ICswMzAwLCBPY3RhdmlhbiBQdXJkaWxhIHdyb3Rl
+Og0KPiBPbiBUdWUsIE1heSAxMiwgMjAxNSBhdCA1OjAzIFBNLCBWbGFkIERvZ2FydSA8dmxhZC5k
+b2dhcnVAaW50ZWwuY29tPiB3cm90ZToNCj4gPg0KPiA+IElmIHRoZSBpbnRlcnJ1cHQgcGlucyBh
+cmUgbm90IGF2YWlsYWJsZSwgd2Ugc2hvdWxkIHN0aWxsIGJlIGFibGUgdG8gdXNlDQo+ID4gdGhl
+IGJ1ZmZlciB3aXRoIGFuIGV4dGVybmFsIHRyaWdnZXIuICBIb3dldmVyLCB3ZSB3b24ndCBiZSBh
+YmxlIHRvIHVzZQ0KPiA+IHRoZSBoYXJkd2FyZSBmaWZvIHNpbmNlIHdlIGhhdmUgbm8gbWVhbnMg
+b2Ygc2lnbmFsbGluZyB3aGVuIHRoZQ0KPiA+IHdhdGVybWFyayBpcyByZWFjaGVkLg0KPiA+DQo+
+ID4gSSBhbHNvIGFkZGVkIGEgY29tbWVudCB0byBpbmRpY2F0ZSB0aGF0IHRoZSB0aW1lc3RhbXBz
+IGluDQo+ID4gYm1jMTUwX2FjY2VsX2RhdGEgYXJlIG9ubHkgdXNlZCBmb3IgaGFyZHdhcmUgZmlm
+bywgc2luY2UgaW5pdGlhbGx5IEkgd2FzDQo+ID4gY29uZnVzZWQgYWJvdXQgZHVwbGljYXRpb24g
+d2l0aCBwZi0+dGltZXN0YW1wLg0KPiA+DQo+ID4gU2lnbmVkLW9mZi1ieTogVmxhZCBEb2dhcnUg
+PHZsYWQuZG9nYXJ1QGludGVsLmNvbT4NCj4gDQo+IFNyaW5pdmFzIGNhbiB5b3UgYWxzbyBwbGVh
+c2UgdGFrZSBhIGxvb2s/DQo+IA0KPiBUaGUgdGltZXN0YW1wIG5vdyBoYXMgYSBzbGlnaHQgZGVs
+YXkgKHdlIHRha2UgaW4gdGhlIHBvbGwgaXJxIGhhbmRsZXINCj4gaW5zdGVhZCBvZiB0aGUgaXJx
+IGhhbmRsZXIpIGJ1dCBJIHRoaW5rIHRoYXQgaXMgbmVnbGlnaWJsZSwgc286DQpUaGlzIHNob3Vs
+ZCBiZSBmaW5lLg0KUmV2aWV3ZWQtYnk6IFNyaW5pdmFzIFBhbmRydXZhZGEgPHNyaW5pdmFzLnBh
+bmRydXZhZGFAbGludXguaW50ZWwuY29tPg0KPiANCj4gUmV2aWV3ZWQtYnk6IE9jdGF2aWFuIFB1
+cmRpbGEgPG9jdGF2aWFuLnB1cmRpbGFAaW50ZWwuY29tPg0KPiANCj4gPiAtLS0NCj4gPiAgZHJp
+dmVycy9paW8vYWNjZWwvYm1jMTUwLWFjY2VsLmMgfCA1NSArKysrKysrKysrKysrKysrKysrKysr
+KysrLS0tLS0tLS0tLS0tLS0tDQo+ID4gIDEgZmlsZSBjaGFuZ2VkLCAzNSBpbnNlcnRpb25zKCsp
+LCAyMCBkZWxldGlvbnMoLSkNCj4gPg0KPiA+IGRpZmYgLS1naXQgYS9kcml2ZXJzL2lpby9hY2Nl
+bC9ibWMxNTAtYWNjZWwuYyBiL2RyaXZlcnMvaWlvL2FjY2VsL2JtYzE1MC1hY2NlbC5jDQo+ID4g
+aW5kZXggNzNlODc3My4uNGU3MGY1MSAxMDA2NDQNCj4gPiAtLS0gYS9kcml2ZXJzL2lpby9hY2Nl
+bC9ibWMxNTAtYWNjZWwuYw0KPiA+ICsrKyBiL2RyaXZlcnMvaWlvL2FjY2VsL2JtYzE1MC1hY2Nl
+bC5jDQo+ID4gQEAgLTE5Niw3ICsxOTYsNyBAQCBzdHJ1Y3QgYm1jMTUwX2FjY2VsX2RhdGEgew0K
+PiA+ICAgICAgICAgdTMyIHNsb3BlX3RocmVzOw0KPiA+ICAgICAgICAgdTMyIHJhbmdlOw0KPiA+
+ICAgICAgICAgaW50IGV2X2VuYWJsZV9zdGF0ZTsNCj4gPiAtICAgICAgIGludDY0X3QgdGltZXN0
+YW1wLCBvbGRfdGltZXN0YW1wOw0KPiA+ICsgICAgICAgaW50NjRfdCB0aW1lc3RhbXAsIG9sZF90
+aW1lc3RhbXA7IC8qIE9ubHkgdXNlZCBpbiBodyBmaWZvIG1vZGUuICovDQo+ID4gICAgICAgICBj
+b25zdCBzdHJ1Y3QgYm1jMTUwX2FjY2VsX2NoaXBfaW5mbyAqY2hpcF9pbmZvOw0KPiA+ICB9Ow0K
+PiA+DQo+ID4gQEAgLTExODMsNyArMTE4Myw2IEBAIHN0YXRpYyBjb25zdCBzdHJ1Y3QgaWlvX2lu
+Zm8gYm1jMTUwX2FjY2VsX2luZm8gPSB7DQo+ID4gICAgICAgICAud3JpdGVfZXZlbnRfdmFsdWUg
+ICAgICA9IGJtYzE1MF9hY2NlbF93cml0ZV9ldmVudCwNCj4gPiAgICAgICAgIC53cml0ZV9ldmVu
+dF9jb25maWcgICAgID0gYm1jMTUwX2FjY2VsX3dyaXRlX2V2ZW50X2NvbmZpZywNCj4gPiAgICAg
+ICAgIC5yZWFkX2V2ZW50X2NvbmZpZyAgICAgID0gYm1jMTUwX2FjY2VsX3JlYWRfZXZlbnRfY29u
+ZmlnLA0KPiA+IC0gICAgICAgLnZhbGlkYXRlX3RyaWdnZXIgICAgICAgPSBibWMxNTBfYWNjZWxf
+dmFsaWRhdGVfdHJpZ2dlciwNCj4gPiAgICAgICAgIC5kcml2ZXJfbW9kdWxlICAgICAgICAgID0g
+VEhJU19NT0RVTEUsDQo+ID4gIH07DQo+ID4NCj4gPiBAQCAtMTIyMiw3ICsxMjIxLDcgQEAgc3Rh
+dGljIGlycXJldHVybl90IGJtYzE1MF9hY2NlbF90cmlnZ2VyX2hhbmRsZXIoaW50IGlycSwgdm9p
+ZCAqcCkNCj4gPiAgICAgICAgIG11dGV4X3VubG9jaygmZGF0YS0+bXV0ZXgpOw0KPiA+DQo+ID4g
+ICAgICAgICBpaW9fcHVzaF90b19idWZmZXJzX3dpdGhfdGltZXN0YW1wKGluZGlvX2RldiwgZGF0
+YS0+YnVmZmVyLA0KPiA+IC0gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICBkYXRhLT50aW1lc3RhbXApOw0KPiA+ICsgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICBwZi0+dGltZXN0YW1wKTsNCj4gPiAgZXJyX3JlYWQ6DQo+ID4gICAgICAgICBp
+aW9fdHJpZ2dlcl9ub3RpZnlfZG9uZShpbmRpb19kZXYtPnRyaWcpOw0KPiA+DQo+ID4gQEAgLTE1
+MzUsNiArMTUzNCwxMyBAQCBzdGF0aWMgaW50IGJtYzE1MF9hY2NlbF9maWZvX3NldF9tb2RlKHN0
+cnVjdCBibWMxNTBfYWNjZWxfZGF0YSAqZGF0YSkNCj4gPiAgICAgICAgIHJldHVybiByZXQ7DQo+
+ID4gIH0NCj4gPg0KPiA+ICtzdGF0aWMgaW50IGJtYzE1MF9hY2NlbF9idWZmZXJfcHJlZW5hYmxl
+KHN0cnVjdCBpaW9fZGV2ICppbmRpb19kZXYpDQo+ID4gK3sNCj4gPiArICAgICAgIHN0cnVjdCBi
+bWMxNTBfYWNjZWxfZGF0YSAqZGF0YSA9IGlpb19wcml2KGluZGlvX2Rldik7DQo+ID4gKw0KPiA+
+ICsgICAgICAgcmV0dXJuIGJtYzE1MF9hY2NlbF9zZXRfcG93ZXJfc3RhdGUoZGF0YSwgdHJ1ZSk7
+DQo+ID4gK30NCj4gPiArDQo+ID4gIHN0YXRpYyBpbnQgYm1jMTUwX2FjY2VsX2J1ZmZlcl9wb3N0
+ZW5hYmxlKHN0cnVjdCBpaW9fZGV2ICppbmRpb19kZXYpDQo+ID4gIHsNCj4gPiAgICAgICAgIHN0
+cnVjdCBibWMxNTBfYWNjZWxfZGF0YSAqZGF0YSA9IGlpb19wcml2KGluZGlvX2Rldik7DQo+ID4g
+QEAgLTE1OTEsOSArMTU5NywxOCBAQCBvdXQ6DQo+ID4gICAgICAgICByZXR1cm4gMDsNCj4gPiAg
+fQ0KPiA+DQo+ID4gK3N0YXRpYyBpbnQgYm1jMTUwX2FjY2VsX2J1ZmZlcl9wb3N0ZGlzYWJsZShz
+dHJ1Y3QgaWlvX2RldiAqaW5kaW9fZGV2KQ0KPiA+ICt7DQo+ID4gKyAgICAgICBzdHJ1Y3QgYm1j
+MTUwX2FjY2VsX2RhdGEgKmRhdGEgPSBpaW9fcHJpdihpbmRpb19kZXYpOw0KPiA+ICsNCj4gPiAr
+ICAgICAgIHJldHVybiBibWMxNTBfYWNjZWxfc2V0X3Bvd2VyX3N0YXRlKGRhdGEsIGZhbHNlKTsN
+Cj4gPiArfQ0KPiA+ICsNCj4gPiAgc3RhdGljIGNvbnN0IHN0cnVjdCBpaW9fYnVmZmVyX3NldHVw
+X29wcyBibWMxNTBfYWNjZWxfYnVmZmVyX29wcyA9IHsNCj4gPiArICAgICAgIC5wcmVlbmFibGUg
+PSBibWMxNTBfYWNjZWxfYnVmZmVyX3ByZWVuYWJsZSwNCj4gPiAgICAgICAgIC5wb3N0ZW5hYmxl
+ID0gYm1jMTUwX2FjY2VsX2J1ZmZlcl9wb3N0ZW5hYmxlLA0KPiA+ICAgICAgICAgLnByZWRpc2Fi
+bGUgPSBibWMxNTBfYWNjZWxfYnVmZmVyX3ByZWRpc2FibGUsDQo+ID4gKyAgICAgICAucG9zdGRp
+c2FibGUgPSBibWMxNTBfYWNjZWxfYnVmZmVyX3Bvc3RkaXNhYmxlLA0KPiA+ICB9Ow0KPiA+DQo+
+ID4gIHN0YXRpYyBpbnQgYm1jMTUwX2FjY2VsX3Byb2JlKHN0cnVjdCBpMmNfY2xpZW50ICpjbGll
+bnQsDQo+ID4gQEAgLTE2MzYsNiArMTY1MSwxNSBAQCBzdGF0aWMgaW50IGJtYzE1MF9hY2NlbF9w
+cm9iZShzdHJ1Y3QgaTJjX2NsaWVudCAqY2xpZW50LA0KPiA+ICAgICAgICAgaW5kaW9fZGV2LT5t
+b2RlcyA9IElORElPX0RJUkVDVF9NT0RFOw0KPiA+ICAgICAgICAgaW5kaW9fZGV2LT5pbmZvID0g
+JmJtYzE1MF9hY2NlbF9pbmZvOw0KPiA+DQo+ID4gKyAgICAgICByZXQgPSBpaW9fdHJpZ2dlcmVk
+X2J1ZmZlcl9zZXR1cChpbmRpb19kZXYsDQo+ID4gKyAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAmaWlvX3BvbGxmdW5jX3N0b3JlX3RpbWUsDQo+ID4gKyAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICBibWMxNTBfYWNjZWxfdHJpZ2dlcl9oYW5kbGVy
+LA0KPiA+ICsgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgJmJtYzE1MF9h
+Y2NlbF9idWZmZXJfb3BzKTsNCj4gPiArICAgICAgIGlmIChyZXQgPCAwKSB7DQo+ID4gKyAgICAg
+ICAgICAgICAgIGRldl9lcnIoJmNsaWVudC0+ZGV2LCAiRmFpbGVkOiBpaW8gdHJpZ2dlcmVkIGJ1
+ZmZlciBzZXR1cFxuIik7DQo+ID4gKyAgICAgICAgICAgICAgIHJldHVybiByZXQ7DQo+ID4gKyAg
+ICAgICB9DQo+ID4gKw0KPiA+ICAgICAgICAgaWYgKGNsaWVudC0+aXJxIDwgMCkNCj4gPiAgICAg
+ICAgICAgICAgICAgY2xpZW50LT5pcnEgPSBibWMxNTBfYWNjZWxfZ3Bpb19wcm9iZShjbGllbnQs
+IGRhdGEpOw0KPiA+DQo+ID4gQEAgLTE2NDgsNyArMTY3Miw3IEBAIHN0YXRpYyBpbnQgYm1jMTUw
+X2FjY2VsX3Byb2JlKHN0cnVjdCBpMmNfY2xpZW50ICpjbGllbnQsDQo+ID4gICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgQk1DMTUwX0FDQ0VMX0lSUV9OQU1F
+LA0KPiA+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIGlu
+ZGlvX2Rldik7DQo+ID4gICAgICAgICAgICAgICAgIGlmIChyZXQpDQo+ID4gLSAgICAgICAgICAg
+ICAgICAgICAgICAgcmV0dXJuIHJldDsNCj4gPiArICAgICAgICAgICAgICAgICAgICAgICBnb3Rv
+IGVycl9idWZmZXJfY2xlYW51cDsNCj4gPg0KPiA+ICAgICAgICAgICAgICAgICAvKg0KPiA+ICAg
+ICAgICAgICAgICAgICAgKiBTZXQgbGF0Y2hlZCBtb2RlIGludGVycnVwdC4gV2hpbGUgY2VydGFp
+biBpbnRlcnJ1cHRzIGFyZQ0KPiA+IEBAIC0xNjYxLDI0ICsxNjg1LDE0IEBAIHN0YXRpYyBpbnQg
+Ym1jMTUwX2FjY2VsX3Byb2JlKHN0cnVjdCBpMmNfY2xpZW50ICpjbGllbnQsDQo+ID4gICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgQk1DMTUwX0FDQ0VMX0lOVF9N
+T0RFX0xBVENIX1JFU0VUKTsNCj4gPiAgICAgICAgICAgICAgICAgaWYgKHJldCA8IDApIHsNCj4g
+PiAgICAgICAgICAgICAgICAgICAgICAgICBkZXZfZXJyKCZkYXRhLT5jbGllbnQtPmRldiwgIkVy
+cm9yIHdyaXRpbmcgcmVnX2ludF9yc3RfbGF0Y2hcbiIpOw0KPiA+IC0gICAgICAgICAgICAgICAg
+ICAgICAgIHJldHVybiByZXQ7DQo+ID4gKyAgICAgICAgICAgICAgICAgICAgICAgZ290byBlcnJf
+YnVmZmVyX2NsZWFudXA7DQo+ID4gICAgICAgICAgICAgICAgIH0NCj4gPg0KPiA+ICAgICAgICAg
+ICAgICAgICBibWMxNTBfYWNjZWxfaW50ZXJydXB0c19zZXR1cChpbmRpb19kZXYsIGRhdGEpOw0K
+PiA+DQo+ID4gICAgICAgICAgICAgICAgIHJldCA9IGJtYzE1MF9hY2NlbF90cmlnZ2Vyc19zZXR1
+cChpbmRpb19kZXYsIGRhdGEpOw0KPiA+ICAgICAgICAgICAgICAgICBpZiAocmV0KQ0KPiA+IC0g
+ICAgICAgICAgICAgICAgICAgICAgIHJldHVybiByZXQ7DQo+ID4gLQ0KPiA+IC0gICAgICAgICAg
+ICAgICByZXQgPSBpaW9fdHJpZ2dlcmVkX2J1ZmZlcl9zZXR1cChpbmRpb19kZXYsDQo+ID4gLSAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICZpaW9fcG9sbGZ1
+bmNfc3RvcmVfdGltZSwNCj4gPiAtICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgYm1jMTUwX2FjY2VsX3RyaWdnZXJfaGFuZGxlciwNCj4gPiAtICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgJmJtYzE1MF9hY2NlbF9idWZm
+ZXJfb3BzKTsNCj4gPiAtICAgICAgICAgICAgICAgaWYgKHJldCA8IDApIHsNCj4gPiAtICAgICAg
+ICAgICAgICAgICAgICAgICBkZXZfZXJyKCZjbGllbnQtPmRldiwNCj4gPiAtICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICJGYWlsZWQ6IGlpbyB0cmlnZ2VyZWQgYnVmZmVyIHNldHVwXG4i
+KTsNCj4gPiAtICAgICAgICAgICAgICAgICAgICAgICBnb3RvIGVycl90cmlnZ2VyX3VucmVnaXN0
+ZXI7DQo+ID4gLSAgICAgICAgICAgICAgIH0NCj4gPiArICAgICAgICAgICAgICAgICAgICAgICBn
+b3RvIGVycl9idWZmZXJfY2xlYW51cDsNCj4gPg0KPiA+ICAgICAgICAgICAgICAgICBpZiAoaTJj
+X2NoZWNrX2Z1bmN0aW9uYWxpdHkoY2xpZW50LT5hZGFwdGVyLCBJMkNfRlVOQ19JMkMpIHx8DQo+
+ID4gICAgICAgICAgICAgICAgICAgICBpMmNfY2hlY2tfZnVuY3Rpb25hbGl0eShjbGllbnQtPmFk
+YXB0ZXIsDQo+ID4gQEAgLTE2OTIsNyArMTcwNiw3IEBAIHN0YXRpYyBpbnQgYm1jMTUwX2FjY2Vs
+X3Byb2JlKHN0cnVjdCBpMmNfY2xpZW50ICpjbGllbnQsDQo+ID4gICAgICAgICByZXQgPSBpaW9f
+ZGV2aWNlX3JlZ2lzdGVyKGluZGlvX2Rldik7DQo+ID4gICAgICAgICBpZiAocmV0IDwgMCkgew0K
+PiA+ICAgICAgICAgICAgICAgICBkZXZfZXJyKCZjbGllbnQtPmRldiwgIlVuYWJsZSB0byByZWdp
+c3RlciBpaW8gZGV2aWNlXG4iKTsNCj4gPiAtICAgICAgICAgICAgICAgZ290byBlcnJfYnVmZmVy
+X2NsZWFudXA7DQo+ID4gKyAgICAgICAgICAgICAgIGdvdG8gZXJyX3RyaWdnZXJfdW5yZWdpc3Rl
+cjsNCj4gPiAgICAgICAgIH0NCj4gPg0KPiA+ICAgICAgICAgcmV0ID0gcG1fcnVudGltZV9zZXRf
+YWN0aXZlKCZjbGllbnQtPmRldik7DQo+ID4gQEAgLTE3MDgsMTEgKzE3MjIsMTAgQEAgc3RhdGlj
+IGludCBibWMxNTBfYWNjZWxfcHJvYmUoc3RydWN0IGkyY19jbGllbnQgKmNsaWVudCwNCj4gPg0K
+PiA+ICBlcnJfaWlvX3VucmVnaXN0ZXI6DQo+ID4gICAgICAgICBpaW9fZGV2aWNlX3VucmVnaXN0
+ZXIoaW5kaW9fZGV2KTsNCj4gPiAtZXJyX2J1ZmZlcl9jbGVhbnVwOg0KPiA+IC0gICAgICAgaWYg
+KGluZGlvX2Rldi0+cG9sbGZ1bmMpDQo+ID4gLSAgICAgICAgICAgICAgIGlpb190cmlnZ2VyZWRf
+YnVmZmVyX2NsZWFudXAoaW5kaW9fZGV2KTsNCj4gPiAgZXJyX3RyaWdnZXJfdW5yZWdpc3RlcjoN
+Cj4gPiAgICAgICAgIGJtYzE1MF9hY2NlbF91bnJlZ2lzdGVyX3RyaWdnZXJzKGRhdGEsIEJNQzE1
+MF9BQ0NFTF9UUklHR0VSUyAtIDEpOw0KPiA+ICtlcnJfYnVmZmVyX2NsZWFudXA6DQo+ID4gKyAg
+ICAgICBpaW9fdHJpZ2dlcmVkX2J1ZmZlcl9jbGVhbnVwKGluZGlvX2Rldik7DQo+ID4NCj4gPiAg
+ICAgICAgIHJldHVybiByZXQ7DQo+ID4gIH0NCj4gPiBAQCAtMTczMCw2ICsxNzQzLDggQEAgc3Rh
+dGljIGludCBibWMxNTBfYWNjZWxfcmVtb3ZlKHN0cnVjdCBpMmNfY2xpZW50ICpjbGllbnQpDQo+
+ID4NCj4gPiAgICAgICAgIGJtYzE1MF9hY2NlbF91bnJlZ2lzdGVyX3RyaWdnZXJzKGRhdGEsIEJN
+QzE1MF9BQ0NFTF9UUklHR0VSUyAtIDEpOw0KPiA+DQo+ID4gKyAgICAgICBpaW9fdHJpZ2dlcmVk
+X2J1ZmZlcl9jbGVhbnVwKGluZGlvX2Rldik7DQo+ID4gKw0KPiA+ICAgICAgICAgbXV0ZXhfbG9j
+aygmZGF0YS0+bXV0ZXgpOw0KPiA+ICAgICAgICAgYm1jMTUwX2FjY2VsX3NldF9tb2RlKGRhdGEs
+IEJNQzE1MF9BQ0NFTF9TTEVFUF9NT0RFX0RFRVBfU1VTUEVORCwgMCk7DQo+ID4gICAgICAgICBt
+dXRleF91bmxvY2soJmRhdGEtPm11dGV4KTsNCj4gPiAtLQ0KPiA+IDEuOS4xDQo+ID4NCg0K
