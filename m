@@ -1,107 +1,174 @@
-Return-Path: <mfuzzey@parkeon.com>
-Message-ID: <55520AD8.5070100@parkeon.com>
-Date: Tue, 12 May 2015 16:14:48 +0200
-From: Martin Fuzzey <mfuzzey@parkeon.com>
-MIME-Version: 1.0
-To: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
- Peter Meerwald <pmeerw@pmeerw.net>
-Subject: Re: [PATCH 4/9] iio: mma8452: Basic support for transient events.
-References: <20150219141553.27001.18825.stgit@localhost> <20150219141602.27001.51592.stgit@localhost> <54EDBF33.1060309@kernel.org> <5540D422.6070204@parkeon.com> <554CC0EE.2060009@kernel.org>
-In-Reply-To: <554CC0EE.2060009@kernel.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
+Return-Path: <vlad.dogaru@intel.com>
+From: Vlad Dogaru <vlad.dogaru@intel.com>
+To: jic23@kernel.org,
+	octavian.purdila@intel.com,
+	linux-iio@vger.kernel.org
+Cc: Vlad Dogaru <vlad.dogaru@intel.com>
+Subject: [PATCH] iio: accel: bmc150: decouple buffer and triggers
+Date: Tue, 12 May 2015 17:03:24 +0300
+Message-Id: <1431439404-30001-1-git-send-email-vlad.dogaru@intel.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-On 08/05/15 15:58, Jonathan Cameron wrote:
-> On 29/04/15 08:52, Martin Fuzzey wrote:
->> On 25/02/15 13:25, Jonathan Cameron wrote:
->>> On 19/02/15 14:16, Martin Fuzzey wrote:
->>>> The event is triggered when the highpass filtered absolute acceleration
->>>> exceeds the threshold.
->>>>
->>>> Signed-off-by: Martin Fuzzey <mfuzzey@parkeon.com>
->>> you in_accel_transient_scale isn't documented.
->>> Why do we need this naming at all?
->>> Ah. It's not clear this is just the event rather than the underlying channel.
->> Sorry, not understanding you here.
->>
->> Are you saying it's not clear in the documentation (which is the next
->> patch "iio: doc: Describe scale attributes for event thresholds" that
->> you've already applied) or in the code?
-> oops, I suspect I didn't like the naming of the attribute being somewhat
-> ambiguous.
->
-> Also, whilst the next patch is documentation, it doesn't seem to include
-> this particular attribute...
+If the interrupt pins are not available, we should still be able to use
+the buffer with an external trigger.  However, we won't be able to use
+the hardware fifo since we have no means of signalling when the
+watermark is reached.
 
-Ah, I think you are confusing the attribute name and the local variable 
-name.
-in_accel_transient_scale is just the local variable name.
+I also added a comment to indicate that the timestamps in
+bmc150_accel_data are only used for hardware fifo, since initially I was
+confused about duplication with pf->timestamp.
 
-The attribute name is events/in_accel_scale and that is documented in 
-the patch you have already merged.
+Signed-off-by: Vlad Dogaru <vlad.dogaru@intel.com>
+---
+ drivers/iio/accel/bmc150-accel.c | 55 +++++++++++++++++++++++++---------------
+ 1 file changed, 35 insertions(+), 20 deletions(-)
 
-
-$ git show d1bd4867b0959d5221dc528ccf60c8534aae865d
-commit d1bd4867b0959d5221dc528ccf60c8534aae865d
-Author: Martin Fuzzey <mfuzzey@parkeon.com>
-Date:   Thu Feb 19 15:16:04 2015 +0100
-
-     iio: doc: Describe scale attributes for event thresholds
-
-     Signed-off-by: Martin Fuzzey <mfuzzey@parkeon.com>
-     Signed-off-by: Jonathan Cameron <jic23@kernel.org>
-
-diff --git a/Documentation/ABI/testing/sysfs-bus-iio 
-b/Documentation/ABI/testing/sysfs-bus-iio
-index 9a70c31..9230709 100644
---- a/Documentation/ABI/testing/sysfs-bus-iio
-+++ b/Documentation/ABI/testing/sysfs-bus-iio
-@@ -661,6 +661,24 @@ Description:
-                 value is in raw device units or in processed units (as _raw
-                 and _input do on sysfs direct channel read attributes).
-
-+What:          /sys/.../events/in_accel_scale
-...
-
-
->> The code is:
->> /*
->>   * Threshold is configured in fixed 8G/127 steps regardless of
->>   * currently selected scale for measurement.
->>   */
->> static IIO_CONST_ATTR_NAMED(accel_transient_scale, in_accel_scale, "0.617742");
->>
->> static struct attribute *mma8452_event_attributes[] = {
->>      &iio_const_attr_accel_transient_scale.dev_attr.attr,
->>      NULL,
->> };
->>
->> static struct attribute_group mma8452_event_attribute_group = {
->>      .attrs = mma8452_event_attributes,
->>      .name = "events",
->> };
->>
->> #define MMA8452_CHANNEL(axis, idx) { \
->>      .type = IIO_ACCEL, \
->> ...
->>      .num_event_specs = ARRAY_SIZE(mma8452_transient_event), \
->> }
->>
->>
->> That seems fairly clear to me.
->>
->>> Perhaps, make it an event parameter instead... e.g. add scale to the ev_info
->>> array like we do for hysteresis etc.
->> But doing that would create a read/write attribute in sysfs whereas the above code creates a read only attribute and makes it clear that the attribute is a constant through the use of IIO_CONST_ATTR_NAMED
->>
->> Once this is sorted out I'll send another (hopefully last) respin with the remaining remarks fixed.
->>
->> Regards,
->>
->> Martin
->>
->>> Otherwise, looks good to me.
->>>
->>> Again, Peter's input would be good.
->>>
->>>
+diff --git a/drivers/iio/accel/bmc150-accel.c b/drivers/iio/accel/bmc150-accel.c
+index 73e8773..4e70f51 100644
+--- a/drivers/iio/accel/bmc150-accel.c
++++ b/drivers/iio/accel/bmc150-accel.c
+@@ -196,7 +196,7 @@ struct bmc150_accel_data {
+ 	u32 slope_thres;
+ 	u32 range;
+ 	int ev_enable_state;
+-	int64_t timestamp, old_timestamp;
++	int64_t timestamp, old_timestamp; /* Only used in hw fifo mode. */
+ 	const struct bmc150_accel_chip_info *chip_info;
+ };
+ 
+@@ -1183,7 +1183,6 @@ static const struct iio_info bmc150_accel_info = {
+ 	.write_event_value	= bmc150_accel_write_event,
+ 	.write_event_config	= bmc150_accel_write_event_config,
+ 	.read_event_config	= bmc150_accel_read_event_config,
+-	.validate_trigger	= bmc150_accel_validate_trigger,
+ 	.driver_module		= THIS_MODULE,
+ };
+ 
+@@ -1222,7 +1221,7 @@ static irqreturn_t bmc150_accel_trigger_handler(int irq, void *p)
+ 	mutex_unlock(&data->mutex);
+ 
+ 	iio_push_to_buffers_with_timestamp(indio_dev, data->buffer,
+-					   data->timestamp);
++					   pf->timestamp);
+ err_read:
+ 	iio_trigger_notify_done(indio_dev->trig);
+ 
+@@ -1535,6 +1534,13 @@ static int bmc150_accel_fifo_set_mode(struct bmc150_accel_data *data)
+ 	return ret;
+ }
+ 
++static int bmc150_accel_buffer_preenable(struct iio_dev *indio_dev)
++{
++	struct bmc150_accel_data *data = iio_priv(indio_dev);
++
++	return bmc150_accel_set_power_state(data, true);
++}
++
+ static int bmc150_accel_buffer_postenable(struct iio_dev *indio_dev)
+ {
+ 	struct bmc150_accel_data *data = iio_priv(indio_dev);
+@@ -1591,9 +1597,18 @@ out:
+ 	return 0;
+ }
+ 
++static int bmc150_accel_buffer_postdisable(struct iio_dev *indio_dev)
++{
++	struct bmc150_accel_data *data = iio_priv(indio_dev);
++
++	return bmc150_accel_set_power_state(data, false);
++}
++
+ static const struct iio_buffer_setup_ops bmc150_accel_buffer_ops = {
++	.preenable = bmc150_accel_buffer_preenable,
+ 	.postenable = bmc150_accel_buffer_postenable,
+ 	.predisable = bmc150_accel_buffer_predisable,
++	.postdisable = bmc150_accel_buffer_postdisable,
+ };
+ 
+ static int bmc150_accel_probe(struct i2c_client *client,
+@@ -1636,6 +1651,15 @@ static int bmc150_accel_probe(struct i2c_client *client,
+ 	indio_dev->modes = INDIO_DIRECT_MODE;
+ 	indio_dev->info = &bmc150_accel_info;
+ 
++	ret = iio_triggered_buffer_setup(indio_dev,
++					 &iio_pollfunc_store_time,
++					 bmc150_accel_trigger_handler,
++					 &bmc150_accel_buffer_ops);
++	if (ret < 0) {
++		dev_err(&client->dev, "Failed: iio triggered buffer setup\n");
++		return ret;
++	}
++
+ 	if (client->irq < 0)
+ 		client->irq = bmc150_accel_gpio_probe(client, data);
+ 
+@@ -1648,7 +1672,7 @@ static int bmc150_accel_probe(struct i2c_client *client,
+ 						BMC150_ACCEL_IRQ_NAME,
+ 						indio_dev);
+ 		if (ret)
+-			return ret;
++			goto err_buffer_cleanup;
+ 
+ 		/*
+ 		 * Set latched mode interrupt. While certain interrupts are
+@@ -1661,24 +1685,14 @@ static int bmc150_accel_probe(struct i2c_client *client,
+ 					     BMC150_ACCEL_INT_MODE_LATCH_RESET);
+ 		if (ret < 0) {
+ 			dev_err(&data->client->dev, "Error writing reg_int_rst_latch\n");
+-			return ret;
++			goto err_buffer_cleanup;
+ 		}
+ 
+ 		bmc150_accel_interrupts_setup(indio_dev, data);
+ 
+ 		ret = bmc150_accel_triggers_setup(indio_dev, data);
+ 		if (ret)
+-			return ret;
+-
+-		ret = iio_triggered_buffer_setup(indio_dev,
+-						 &iio_pollfunc_store_time,
+-						 bmc150_accel_trigger_handler,
+-						 &bmc150_accel_buffer_ops);
+-		if (ret < 0) {
+-			dev_err(&client->dev,
+-				"Failed: iio triggered buffer setup\n");
+-			goto err_trigger_unregister;
+-		}
++			goto err_buffer_cleanup;
+ 
+ 		if (i2c_check_functionality(client->adapter, I2C_FUNC_I2C) ||
+ 		    i2c_check_functionality(client->adapter,
+@@ -1692,7 +1706,7 @@ static int bmc150_accel_probe(struct i2c_client *client,
+ 	ret = iio_device_register(indio_dev);
+ 	if (ret < 0) {
+ 		dev_err(&client->dev, "Unable to register iio device\n");
+-		goto err_buffer_cleanup;
++		goto err_trigger_unregister;
+ 	}
+ 
+ 	ret = pm_runtime_set_active(&client->dev);
+@@ -1708,11 +1722,10 @@ static int bmc150_accel_probe(struct i2c_client *client,
+ 
+ err_iio_unregister:
+ 	iio_device_unregister(indio_dev);
+-err_buffer_cleanup:
+-	if (indio_dev->pollfunc)
+-		iio_triggered_buffer_cleanup(indio_dev);
+ err_trigger_unregister:
+ 	bmc150_accel_unregister_triggers(data, BMC150_ACCEL_TRIGGERS - 1);
++err_buffer_cleanup:
++	iio_triggered_buffer_cleanup(indio_dev);
+ 
+ 	return ret;
+ }
+@@ -1730,6 +1743,8 @@ static int bmc150_accel_remove(struct i2c_client *client)
+ 
+ 	bmc150_accel_unregister_triggers(data, BMC150_ACCEL_TRIGGERS - 1);
+ 
++	iio_triggered_buffer_cleanup(indio_dev);
++
+ 	mutex_lock(&data->mutex);
+ 	bmc150_accel_set_mode(data, BMC150_ACCEL_SLEEP_MODE_DEEP_SUSPEND, 0);
+ 	mutex_unlock(&data->mutex);
+-- 
+1.9.1
