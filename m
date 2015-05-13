@@ -1,130 +1,85 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:57102 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751005AbbEMGBo (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 13 May 2015 02:01:44 -0400
-Message-ID: <5552E8C5.4040203@kernel.org>
-Date: Wed, 13 May 2015 07:01:41 +0100
-From: Jonathan Cameron <jic23@kernel.org>
+Received: from smtp-out-159.synserver.de ([212.40.185.159]:1058 "EHLO
+	smtp-out-159.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751954AbbEMH2Y (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 13 May 2015 03:28:24 -0400
+Message-ID: <5552FD16.9050306@metafoo.de>
+Date: Wed, 13 May 2015 09:28:22 +0200
+From: Lars-Peter Clausen <lars@metafoo.de>
 MIME-Version: 1.0
-To: Greg KH <gregkh@linuxfoundation.org>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Subject: [PULL] IIO fixes for the 4.1 cycle, round 1 - take 2
-Content-Type: text/plain; charset=utf-8
+To: Jonathan Cameron <jic23@kernel.org>,
+	Robert Dolca <robert.dolca@intel.com>,
+	linux-iio@vger.kernel.org
+CC: linux-kernel@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Denis CIOCCA <denis.ciocca@st.com>
+Subject: Re: [PATCH RFC 1/3] iio: Add symlink to triggers in the device's
+ trigger folder
+References: <1429174868-11953-1-git-send-email-robert.dolca@intel.com> <1429174868-11953-2-git-send-email-robert.dolca@intel.com> <554CD236.4000404@kernel.org> <555230B0.3050700@metafoo.de> <55524F4C.90604@kernel.org>
+In-Reply-To: <55524F4C.90604@kernel.org>
+Content-Type: text/plain; charset=windows-1252; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-The following changes since commit c610f7f772aa06ae2bd8e5ace87cde4d90f70198:
+On 05/12/2015 09:06 PM, Jonathan Cameron wrote:
+> On 12/05/15 17:56, Lars-Peter Clausen wrote:
+>> On 05/08/2015 05:11 PM, Jonathan Cameron wrote:
+>>> On 16/04/15 05:01, Robert Dolca wrote:
+>>>> This patch adds a new function called iio_trigger_register_with_dev
+>>>> which is a wrapper for iio_trigger_register. Besides the iio_trigger
+>>>> struct this function requires iio_dev struct. It adds the trigger in
+>>>> the device's trigger list and saves a reference to the device in the
+>>>> trigger's struct.
+>>>>
+>>>> When the device is registered, in the trigger folder of the device
+>>>> (where current_trigger file resides) a symlink is being created for
+>>>> each trigger that was registered width iio_trigger_register_with_dev.
+>>>>
+>>>>    # ls -l /sys/bus/iio/devices/iio:device0/trigger/
+>>>> total 0
+>>>> -rw-r--r--    1 root     root          4096 Apr 16 08:33 current_trigger
+>>>> lrwxrwxrwx    1 root     root             0 Apr 16 08:33 trigger0 -> ../../trigg
+>>>> er0
+>>>>
+>>>> This should be used for device specific triggers. Doing this the user space
+>>>> applications can figure out what if the trigger registered by a specific device
+>>>> and what should they write in the current_trigger file. Currently some
+>>>> applications rely on the trigger name and this does not always work.
+>>>>
+>>>> This implementation assumes that the trigger is registered before the device is
+>>>> registered. If the order is not this the symlink will not be created but
+>>>> everything else will work as before.
+>>>>
+>>>> Signed-off-by: Robert Dolca <robert.dolca@intel.com>
+>>> I was rather hoping we'd get a few more comments on this.
+>>> In principle I like the idea, but it's new ABI and does make life
+>>> a tiny bit more complex, so what do people think?
+>>>
+>>> Few trivial code comments inline.
+>>
+>> I don't think it adds more information. Both the trigger and the
+>> device get registered for the same parent device, so you can already
+>> easily find the trigger for a device by going to the parent device
+>> and taking a look at the triggers registered by the parent device.
+> I had the same thought. The question is whether the slightly gain in
+> simplicity for userspace is worth it...  I'm undecided at the moment.
 
-  Merge 4.0-rc7 into staging-next (2015-04-07 11:03:02 +0200)
+As you may have guessed by now I'm always quite conservative when it comes 
+to introducing new ABI. Simply because we have to maintain it forever, the 
+less stuff to maintain forever the better.
 
-are available in the git repository at:
+Hence I think all new ABI needs a compelling reason, e.g. like a improvement 
+in performance. And of course this patch slightly simplifies things, but in 
+my opinion not enough to justify a ABI extension. We can always find ways to 
+simplify the interface, but the metric for ABI should be whether the 
+simplification actually matters. In this case I don't think it does, finding 
+the trigger for a device is not really hot-path. The amount of time saved 
+will be disappear in the noise.
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git tags/iio-fixes-for-4.1a-take2
+And in my opinion applications shouldn't directly use the low-level ABI but 
+rather use middle-ware libraries/frameworks, like e.g. libiio, and that's 
+where you'd hide the complexities of a operation.
 
-for you to fetch changes up to f0828ba96d02d4d4b197c531b34c662ee3c928df:
+- Lars
 
-  iio: light: hid-sensor-prox: Fix memory leak in probe() (2015-05-12 20:01:13 +0100)
 
-----------------------------------------------------------------
-The usual mixed bag of fixes for IIO in the 4.1 cycle.
-
-Second version of this pull request as a small fix to a fix turned
-up before Greg pulled it for a cc10001 patch near the top of the tree.
-
-One core fix
-
-* Set updated for a iio kfifo was incorrectly set to false during a failed
-  update, resulting in atttempts to repeat the failed operation appearing
-  to succeed.
-
-This time I've decided to list the driver fixes in alphabetical order rather
-than 'randomly'.
-
-* axp288_adc - a recent change added a check for valid info masks when
-  reading channels from consumer drivers.
-* bmp280 - temperature compensation was failing to read the tfine value, hence
-  causing a temperature of 0 to always be returned and incorrect presure
-  measurements.
-* cc10001 - Fix channel number mapping when some channels are reserved for
-  remote CPUs. Fix an issue with the use of the power-up/power-down register
-  (basically wrong polarity). Fix an issue due to the missinterpretting the
-  return value from regulator_get_voltage. Add a delay before the start bit
-  as recommended for the hardware to avoid data corruption.
-* hid pressure - fix channel spec of modfiied, but no modifier (which makes no
-  sense!)
-* hid proximity - fix channel spec of modified, but no modifier (which makes
-  no sense!). Fix a memory leak in the probe function.
-* mcp320x - occasional incorrect readings on dma using spi busses due to
-  cacheline corruption. Fixed by forcing ___cacheline_aligned for the buffers.
-* mma9551 - buffer overrun fix (miss specified maximum length of buffers)
-* mma9553 - endian fix on status message. Add an enable element for activity
-  channel. Input checking for activity period to avoid rather unpredictable
-  results.
-* spmi-vadc - fix an overflow in the output value normalization seen on some
-  boards.
-* st-snesors - oops due to use of a mutex that is not yet initialized during
-  probe.
-* xilinx adc - Some wrong register addresses, a wrong address for vccaux
-  channel, incorrect scale on VREFP and incorrect sign on VREFN.
-
-----------------------------------------------------------------
-Alban Bedel (1):
-      iio:st_sensors: Fix oops when probing SPI devices
-
-Fabio Estevam (1):
-      iio: light: hid-sensor-prox: Fix memory leak in probe()
-
-Gabriele Mazzotta (1):
-      iio: kfifo: Set update_needed to false only if a buffer was allocated
-
-Irina Tirdea (5):
-      iio: pressure: bmp280: fix temp compensation
-      iio: accel: mma9553: fix endianness issue when reading status
-      iio: accel: mma9551_core: prevent buffer overrun
-      iio: accel: mma9553: add enable channel for activity
-      iio: accel: mma9553: check input value for activity period
-
-Ivan T. Ivanov (1):
-      iio: adc: spmi-vadc: Fix overflow in output value normalization
-
-Jacob Pan (1):
-      iio/axp288_adc: add missing channel info mask
-
-Michael Welling (1):
-      iio: mcp320x: Fix occasional incorrect readings
-
-Naidu Tellapati (4):
-      iio: adc: cc10001: Fix the channel number mapping
-      iio: adc: cc10001: Fix incorrect use of power-up/power-down register
-      iio: adc: cc10001: Fix regulator_get_voltage() return value check
-      iio: adc: cc10001: Add delay before setting START bit
-
-Srinivas Pandruvada (2):
-      iio: light: hid-sensor-prox: Fix modifier
-      iio: pressure: hid-sensor-press: Fix modifier
-
-Thomas Betker (4):
-      iio: adc: xilinx: Fix register addresses
-      iio: adc: xilinx: Fix "vccaux" channel .address
-      iio: adc: xilinx: Fix VREFP scale
-      iio: adc: xilinx: Fix VREFN sign
-
- drivers/iio/accel/mma9551_core.c                | 21 +++++++--
- drivers/iio/accel/mma9553.c                     | 18 ++++----
- drivers/iio/accel/st_accel_core.c               |  1 +
- drivers/iio/adc/axp288_adc.c                    | 12 ++---
- drivers/iio/adc/cc10001_adc.c                   | 60 ++++++++++++++-----------
- drivers/iio/adc/mcp320x.c                       |  6 +--
- drivers/iio/adc/qcom-spmi-vadc.c                |  7 +--
- drivers/iio/adc/xilinx-xadc-core.c              |  5 ++-
- drivers/iio/adc/xilinx-xadc.h                   |  6 +--
- drivers/iio/common/st_sensors/st_sensors_core.c |  2 -
- drivers/iio/gyro/st_gyro_core.c                 |  1 +
- drivers/iio/kfifo_buf.c                         |  3 +-
- drivers/iio/light/hid-sensor-prox.c             | 12 +++--
- drivers/iio/magnetometer/st_magn_core.c         |  1 +
- drivers/iio/pressure/bmp280.c                   |  1 +
- drivers/iio/pressure/hid-sensor-press.c         |  2 -
- drivers/iio/pressure/st_pressure_core.c         |  1 +
- 17 files changed, 93 insertions(+), 66 deletions(-)
