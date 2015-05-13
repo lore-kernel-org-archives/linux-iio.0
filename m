@@ -1,115 +1,85 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp-out-163.synserver.de ([212.40.185.163]:1047 "EHLO
-	smtp-out-163.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752183AbbEMSJZ (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 13 May 2015 14:09:25 -0400
-Message-ID: <55539353.4050702@metafoo.de>
-Date: Wed, 13 May 2015 20:09:23 +0200
-From: Lars-Peter Clausen <lars@metafoo.de>
-MIME-Version: 1.0
-To: Robert Dolca <robert.dolca@gmail.com>,
-	Jonathan Cameron <jic23@kernel.org>
-CC: Robert Dolca <robert.dolca@intel.com>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	Denis CIOCCA <denis.ciocca@st.com>
-Subject: Re: [PATCH RFC 1/3] iio: Add symlink to triggers in the device's
- trigger folder
-References: <1429174868-11953-1-git-send-email-robert.dolca@intel.com> <1429174868-11953-2-git-send-email-robert.dolca@intel.com> <554CD236.4000404@kernel.org> <555230B0.3050700@metafoo.de> <55524F4C.90604@kernel.org> <5552FD16.9050306@metafoo.de> <55538D1A.80500@kernel.org> <CAFPB+YdgLBo8zfTYgxGm=_n7cxdUTpzK92HekMiHOH=d5t_vcw@mail.gmail.com> <5553927F.2090804@metafoo.de>
-In-Reply-To: <5553927F.2090804@metafoo.de>
-Content-Type: text/plain; charset=utf-8; format=flowed
+Received: from mga02.intel.com ([134.134.136.20]:9339 "EHLO mga02.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S933676AbbEMSxc (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Wed, 13 May 2015 14:53:32 -0400
+Message-ID: <1431543107.11262.77.camel@spandruv-DESK3.jf.intel.com>
+Subject: Re: [PATCH v3 1/6] iio: accel: hid-sensor-accel-3d: Fix memory leak
+ in probe()
+From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+To: Fabio Estevam <festevam@gmail.com>
+Cc: jic23@kernel.org, linux-iio@vger.kernel.org,
+	Fabio Estevam <fabio.estevam@freescale.com>
+Date: Wed, 13 May 2015 11:51:47 -0700
+In-Reply-To: <1431540374-3168-1-git-send-email-festevam@gmail.com>
+References: <1431540374-3168-1-git-send-email-festevam@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Mime-Version: 1.0
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 05/13/2015 08:05 PM, Lars-Peter Clausen wrote:
-> On 05/13/2015 08:03 PM, Robert Dolca wrote:
->> On Wed, May 13, 2015 at 8:42 PM, Jonathan Cameron <jic23@kernel.org> wrote:
->>>
->>> On 13/05/15 08:28, Lars-Peter Clausen wrote:
->>>> On 05/12/2015 09:06 PM, Jonathan Cameron wrote:
->>>>> On 12/05/15 17:56, Lars-Peter Clausen wrote:
->>>>>> On 05/08/2015 05:11 PM, Jonathan Cameron wrote:
->>>>>>> On 16/04/15 05:01, Robert Dolca wrote:
->>>>>>>> This patch adds a new function called iio_trigger_register_with_dev
->>>>>>>> which is a wrapper for iio_trigger_register. Besides the iio_trigger
->>>>>>>> struct this function requires iio_dev struct. It adds the trigger in
->>>>>>>> the device's trigger list and saves a reference to the device in the
->>>>>>>> trigger's struct.
->>>>>>>>
->>>>>>>> When the device is registered, in the trigger folder of the device
->>>>>>>> (where current_trigger file resides) a symlink is being created for
->>>>>>>> each trigger that was registered width iio_trigger_register_with_dev.
->>>>>>>>
->>>>>>>>     # ls -l /sys/bus/iio/devices/iio:device0/trigger/
->>>>>>>> total 0
->>>>>>>> -rw-r--r--    1 root     root          4096 Apr 16 08:33
->>>>>>>> current_trigger
->>>>>>>> lrwxrwxrwx    1 root     root             0 Apr 16 08:33 trigger0 ->
->>>>>>>> ../../trigg
->>>>>>>> er0
->>>>>>>>
->>>>>>>> This should be used for device specific triggers. Doing this the
->>>>>>>> user space
->>>>>>>> applications can figure out what if the trigger registered by a
->>>>>>>> specific device
->>>>>>>> and what should they write in the current_trigger file. Currently some
->>>>>>>> applications rely on the trigger name and this does not always work.
->>>>>>>>
->>>>>>>> This implementation assumes that the trigger is registered before
->>>>>>>> the device is
->>>>>>>> registered. If the order is not this the symlink will not be created
->>>>>>>> but
->>>>>>>> everything else will work as before.
->>>>>>>>
->>>>>>>> Signed-off-by: Robert Dolca <robert.dolca@intel.com>
->>>>>>> I was rather hoping we'd get a few more comments on this.
->>>>>>> In principle I like the idea, but it's new ABI and does make life
->>>>>>> a tiny bit more complex, so what do people think?
->>>>>>>
->>>>>>> Few trivial code comments inline.
->>>>>>
->>>>>> I don't think it adds more information. Both the trigger and the
->>>>>> device get registered for the same parent device, so you can already
->>>>>> easily find the trigger for a device by going to the parent device
->>>>>> and taking a look at the triggers registered by the parent device.
->>>>> I had the same thought. The question is whether the slightly gain in
->>>>> simplicity for userspace is worth it...  I'm undecided at the moment.
->>>>
->>>> As you may have guessed by now I'm always quite conservative when it
->>>> comes to introducing new ABI. Simply because we have to maintain it
->>>> forever, the less stuff to maintain forever the better.
->>>>
->>>> Hence I think all new ABI needs a compelling reason, e.g. like a
->>>> improvement in performance. And of course this patch slightly
->>>> simplifies things, but in my opinion not enough to justify a ABI
->>>> extension. We can always find ways to simplify the interface, but the
->>>> metric for ABI should be whether the simplification actually matters.
->>>> In this case I don't think it does, finding the trigger for a device
->>>> is not really hot-path. The amount of time saved will be disappear in
->>>> the noise.
->>>>
->>>> And in my opinion applications shouldn't directly use the low-level
->>>> ABI but rather use middle-ware libraries/frameworks, like e.g.
->>>> libiio, and that's where you'd hide the complexities of a operation.
->>>>
->>>> - Lars
->>> I'll go with Lars response on this one.  Not worth the hassle.
->>> That's the nature of an RFC of course!
->>>
->>> Jonathan
->>
->> Would it be acceptable to add the symlinks without adding a new API?
->> When a trigger is registered you could use the common parent to get a
->> pointer to the iio_dev and then create the symlink. This is a little
->> bit complicated but I think it can be done.
->
-> The concerns are with the symlink and with he symlink only. Adding new API
-> inside the kernel is generally not as much of a problem as external ABI.
+On Wed, 2015-05-13 at 15:06 -0300, Fabio Estevam wrote:
+> From: Fabio Estevam <fabio.estevam@freescale.com>
+> 
+> 'channels' is allocated via kmemdup and it is never freed in the
+> subsequent error paths.
+> 
+> Use 'indio_dev->channels' directly instead, so that we avoid such
+> memory leak problem.
+> 
+> Signed-off-by: Fabio Estevam <fabio.estevam@freescale.com>
+Reviewed-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+> ---
+> Build-tested only.
+> 
+> Changes since v2:
+> - Properly align "accel_3d_parse_report(" in multiple lines
+> Changes since v1:
+> - Make clear in the commit log that the proble only occurs in the error
+> paths
+> 
+>  drivers/iio/accel/hid-sensor-accel-3d.c | 13 ++++++-------
+>  1 file changed, 6 insertions(+), 7 deletions(-)
+> 
+> diff --git a/drivers/iio/accel/hid-sensor-accel-3d.c b/drivers/iio/accel/hid-sensor-accel-3d.c
+> index 2b4fad6..b933957 100644
+> --- a/drivers/iio/accel/hid-sensor-accel-3d.c
+> +++ b/drivers/iio/accel/hid-sensor-accel-3d.c
+> @@ -299,7 +299,6 @@ static int hid_accel_3d_probe(struct platform_device *pdev)
+>  	struct iio_dev *indio_dev;
+>  	struct accel_3d_state *accel_state;
+>  	struct hid_sensor_hub_device *hsdev = pdev->dev.platform_data;
+> -	struct iio_chan_spec *channels;
+>  
+>  	indio_dev = devm_iio_device_alloc(&pdev->dev,
+>  					  sizeof(struct accel_3d_state));
+> @@ -320,21 +319,21 @@ static int hid_accel_3d_probe(struct platform_device *pdev)
+>  		return ret;
+>  	}
+>  
+> -	channels = kmemdup(accel_3d_channels, sizeof(accel_3d_channels),
+> -			   GFP_KERNEL);
+> -	if (!channels) {
+> +	indio_dev->channels = kmemdup(accel_3d_channels,
+> +				      sizeof(accel_3d_channels), GFP_KERNEL);
+> +	if (!indio_dev->channels) {
+>  		dev_err(&pdev->dev, "failed to duplicate channels\n");
+>  		return -ENOMEM;
+>  	}
+>  
+> -	ret = accel_3d_parse_report(pdev, hsdev, channels,
+> -					HID_USAGE_SENSOR_ACCEL_3D, accel_state);
+> +	ret = accel_3d_parse_report(pdev, hsdev,
+> +				    (struct iio_chan_spec *)indio_dev->channels,
+> +				    HID_USAGE_SENSOR_ACCEL_3D, accel_state);
+>  	if (ret) {
+>  		dev_err(&pdev->dev, "failed to setup attributes\n");
+>  		goto error_free_dev_mem;
+>  	}
+>  
+> -	indio_dev->channels = channels;
+>  	indio_dev->num_channels = ARRAY_SIZE(accel_3d_channels);
+>  	indio_dev->dev.parent = &pdev->dev;
+>  	indio_dev->info = &accel_3d_info;
 
-Sorry, I should have added you can easily find out which triggers and which 
-devices belong together by basically doing a dirname `readlink 
-/sys/bus/iio/devices/X`. Those that are at the same place in the global 
-hierarchy belong to the same device.
 
