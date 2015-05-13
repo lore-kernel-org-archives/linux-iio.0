@@ -1,85 +1,214 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp-out-159.synserver.de ([212.40.185.159]:1058 "EHLO
-	smtp-out-159.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751954AbbEMH2Y (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 13 May 2015 03:28:24 -0400
-Message-ID: <5552FD16.9050306@metafoo.de>
-Date: Wed, 13 May 2015 09:28:22 +0200
-From: Lars-Peter Clausen <lars@metafoo.de>
+Received: from arroyo.ext.ti.com ([192.94.94.40]:44472 "EHLO arroyo.ext.ti.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1753696AbbEMHnJ (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Wed, 13 May 2015 03:43:09 -0400
+Message-ID: <5553006B.1050306@ti.com>
+Date: Wed, 13 May 2015 13:12:35 +0530
+From: Vignesh R <vigneshr@ti.com>
 MIME-Version: 1.0
 To: Jonathan Cameron <jic23@kernel.org>,
-	Robert Dolca <robert.dolca@intel.com>,
-	linux-iio@vger.kernel.org
-CC: linux-kernel@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>,
+	Rob Herring <robh+dt@kernel.org>,
+	Pawel Moll <pawel.moll@arm.com>,
+	Mark Rutland <mark.rutland@arm.com>,
+	Ian Campbell <ijc+devicetree@hellion.org.uk>,
+	Kumar Gala <galak@codeaurora.org>
+CC: Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
 	Peter Meerwald <pmeerw@pmeerw.net>,
-	Denis CIOCCA <denis.ciocca@st.com>
-Subject: Re: [PATCH RFC 1/3] iio: Add symlink to triggers in the device's
- trigger folder
-References: <1429174868-11953-1-git-send-email-robert.dolca@intel.com> <1429174868-11953-2-git-send-email-robert.dolca@intel.com> <554CD236.4000404@kernel.org> <555230B0.3050700@metafoo.de> <55524F4C.90604@kernel.org>
-In-Reply-To: <55524F4C.90604@kernel.org>
-Content-Type: text/plain; charset=windows-1252; format=flowed
+	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+	Karol Wrona <k.wrona@samsung.com>,
+	Jan Kardell <jan.kardell@telliq.com>,
+	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	"Cooper Jr., Franklin" <fcooper@ti.com>
+Subject: Re: [PATCH 2/2] iio: adc: ti_am335x_adc: make sample delay, open
+ delay, averaging DT parameters
+References: <1427800357-21680-1-git-send-email-vigneshr@ti.com> <1427800357-21680-3-git-send-email-vigneshr@ti.com> <55268A7C.1050307@kernel.org>
+In-Reply-To: <55268A7C.1050307@kernel.org>
+Content-Type: text/plain; charset="windows-1252"
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 05/12/2015 09:06 PM, Jonathan Cameron wrote:
-> On 12/05/15 17:56, Lars-Peter Clausen wrote:
->> On 05/08/2015 05:11 PM, Jonathan Cameron wrote:
->>> On 16/04/15 05:01, Robert Dolca wrote:
->>>> This patch adds a new function called iio_trigger_register_with_dev
->>>> which is a wrapper for iio_trigger_register. Besides the iio_trigger
->>>> struct this function requires iio_dev struct. It adds the trigger in
->>>> the device's trigger list and saves a reference to the device in the
->>>> trigger's struct.
->>>>
->>>> When the device is registered, in the trigger folder of the device
->>>> (where current_trigger file resides) a symlink is being created for
->>>> each trigger that was registered width iio_trigger_register_with_dev.
->>>>
->>>>    # ls -l /sys/bus/iio/devices/iio:device0/trigger/
->>>> total 0
->>>> -rw-r--r--    1 root     root          4096 Apr 16 08:33 current_trigger
->>>> lrwxrwxrwx    1 root     root             0 Apr 16 08:33 trigger0 -> ../../trigg
->>>> er0
->>>>
->>>> This should be used for device specific triggers. Doing this the user space
->>>> applications can figure out what if the trigger registered by a specific device
->>>> and what should they write in the current_trigger file. Currently some
->>>> applications rely on the trigger name and this does not always work.
->>>>
->>>> This implementation assumes that the trigger is registered before the device is
->>>> registered. If the order is not this the symlink will not be created but
->>>> everything else will work as before.
->>>>
->>>> Signed-off-by: Robert Dolca <robert.dolca@intel.com>
->>> I was rather hoping we'd get a few more comments on this.
->>> In principle I like the idea, but it's new ABI and does make life
->>> a tiny bit more complex, so what do people think?
->>>
->>> Few trivial code comments inline.
+
+
+On Thursday 09 April 2015 07:49 PM, Jonathan Cameron wrote:
+> On 31/03/15 12:12, Vignesh R wrote:
+>> Add optional DT properties to set open delay, sample delay and number
+>> of averages per sample for each adc step. Open delay, sample delay
+>> and averaging are some of the parameters that affect the sampling rate
+>> and accuracy of the sample. Making these parameters configurable via
+>> DT will help in balancing speed vs accuracy.
 >>
->> I don't think it adds more information. Both the trigger and the
->> device get registered for the same parent device, so you can already
->> easily find the trigger for a device by going to the parent device
->> and taking a look at the triggers registered by the parent device.
-> I had the same thought. The question is whether the slightly gain in
-> simplicity for userspace is worth it...  I'm undecided at the moment.
+>> Signed-off-by: Vignesh R <vigneshr@ti.com>
+> All looks fine to me, but I would ideally like a devicetree
+> ack on this one.
+> 
+> Jonathan
 
-As you may have guessed by now I'm always quite conservative when it comes 
-to introducing new ABI. Simply because we have to maintain it forever, the 
-less stuff to maintain forever the better.
+Gentle ping...
 
-Hence I think all new ABI needs a compelling reason, e.g. like a improvement 
-in performance. And of course this patch slightly simplifies things, but in 
-my opinion not enough to justify a ABI extension. We can always find ways to 
-simplify the interface, but the metric for ABI should be whether the 
-simplification actually matters. In this case I don't think it does, finding 
-the trigger for a device is not really hot-path. The amount of time saved 
-will be disappear in the noise.
-
-And in my opinion applications shouldn't directly use the low-level ABI but 
-rather use middle-ware libraries/frameworks, like e.g. libiio, and that's 
-where you'd hide the complexities of a operation.
-
-- Lars
-
-
+Regards
+Vignesh
+>> ---
+>>  .../bindings/input/touchscreen/ti-tsc-adc.txt      | 24 ++++++++++
+>>  drivers/iio/adc/ti_am335x_adc.c                    | 54 +++++++++++++++++++---
+>>  2 files changed, 72 insertions(+), 6 deletions(-)
+>>
+>> diff --git a/Documentation/devicetree/bindings/input/touchscreen/ti-tsc-adc.txt b/Documentation/devicetree/bindings/input/touchscreen/ti-tsc-adc.txt
+>> index 6c4fb34823d3..8aafbe87f0eb 100644
+>> --- a/Documentation/devicetree/bindings/input/touchscreen/ti-tsc-adc.txt
+>> +++ b/Documentation/devicetree/bindings/input/touchscreen/ti-tsc-adc.txt
+>> @@ -42,6 +42,27 @@ Optional properties:
+>>  			 hardware knob for adjusting the amount of "settling
+>>  			 time".
+>>  
+>> +- child "adc"
+>> +	ti,chan-step-opendelay: List of open delays for each channel of
+>> +				ADC in the order of ti,adc-channels. The
+>> +				value corresponds to the number of ADC
+>> +				clock cycles to wait after applying the
+>> +				step configuration registers and before
+>> +				sending the start of ADC conversion.
+>> +				Maximum value is 0x3FFFF.
+>> +       ti,chan-step-sampledelay: List of sample delays for each channel
+>> +				  of ADC in the order of ti,adc-channels.
+>> +				  The value corresponds to the number of
+>> +				  ADC clock cycles to sample (to hold
+>> +				  start of conversion high).
+>> +				  Maximum value is 0xFF.
+>> +       ti,chan-step-avg: Number of averages to be performed for each
+>> +			  channel of ADC. If average is 16 then input
+>> +			  is sampled 16 times and averaged to get more
+>> +			  accurate value. This increases the time taken
+>> +			  by ADC to generate a sample. Valid range is 0
+>> +			  average to 16 averages. Maximum value is 16.
+>> +
+>>  Example:
+>>  	tscadc: tscadc@44e0d000 {
+>>  		compatible = "ti,am3359-tscadc";
+>> @@ -55,5 +76,8 @@ Example:
+>>  
+>>  		adc {
+>>  			ti,adc-channels = <4 5 6 7>;
+>> +			ti,chan-step-opendelay = <0x098 0x3ffff 0x098 0x0>;
+>> +			ti,chan-step-sampledelay = <0xff 0x0 0xf 0x0>;
+>> +			ti,chan-step-avg = <16 2 4 8>;
+>>  		};
+>>  	}
+>> diff --git a/drivers/iio/adc/ti_am335x_adc.c b/drivers/iio/adc/ti_am335x_adc.c
+>> index 2f818405ffbe..5ee597b4a1af 100644
+>> --- a/drivers/iio/adc/ti_am335x_adc.c
+>> +++ b/drivers/iio/adc/ti_am335x_adc.c
+>> @@ -37,6 +37,7 @@ struct tiadc_device {
+>>  	u8 channel_step[8];
+>>  	int buffer_en_ch_steps;
+>>  	u16 data[8];
+>> +	u32 open_delay[8], sample_delay[8], step_avg[8];
+>>  };
+>>  
+>>  static unsigned int tiadc_readl(struct tiadc_device *adc, unsigned int reg)
+>> @@ -85,6 +86,7 @@ static u32 get_adc_step_bit(struct tiadc_device *adc_dev, int chan)
+>>  static void tiadc_step_config(struct iio_dev *indio_dev)
+>>  {
+>>  	struct tiadc_device *adc_dev = iio_priv(indio_dev);
+>> +	struct device *dev = adc_dev->mfd_tscadc->dev;
+>>  	unsigned int stepconfig;
+>>  	int i, steps = 0;
+>>  
+>> @@ -98,20 +100,47 @@ static void tiadc_step_config(struct iio_dev *indio_dev)
+>>  	 * needs to be given to ADC to digitalize data.
+>>  	 */
+>>  
+>> -	if (iio_buffer_enabled(indio_dev))
+>> -		stepconfig = STEPCONFIG_AVG_16 | STEPCONFIG_FIFO1
+>> -					| STEPCONFIG_MODE_SWCNT;
+>> -	else
+>> -		stepconfig = STEPCONFIG_AVG_16 | STEPCONFIG_FIFO1;
+>>  
+>>  	for (i = 0; i < adc_dev->channels; i++) {
+>>  		int chan;
+>>  
+>>  		chan = adc_dev->channel_line[i];
+>> +
+>> +		if (adc_dev->step_avg[i] > STEPCONFIG_AVG_16) {
+>> +			dev_warn(dev, "chan %d step_avg truncating to %d\n",
+>> +				 chan, STEPCONFIG_AVG_16);
+>> +			adc_dev->step_avg[i] = STEPCONFIG_AVG_16;
+>> +		}
+>> +
+>> +		if (adc_dev->step_avg[i])
+>> +			stepconfig =
+>> +			STEPCONFIG_AVG(ffs(adc_dev->step_avg[i]) - 1) |
+>> +			STEPCONFIG_FIFO1;
+>> +		else
+>> +			stepconfig = STEPCONFIG_FIFO1;
+>> +
+>> +		if (iio_buffer_enabled(indio_dev))
+>> +			stepconfig |= STEPCONFIG_MODE_SWCNT;
+>> +
+>>  		tiadc_writel(adc_dev, REG_STEPCONFIG(steps),
+>>  				stepconfig | STEPCONFIG_INP(chan));
+>> +
+>> +		if (adc_dev->open_delay[i] > STEPDELAY_OPEN_MASK)alue corresponds to the number of ADC
+>> +				clock cycles to wait after applying the
+>> +				step configuration registers and before
+>> +				sending the start of ADC conversion.
+>> +				Maximum value is 0x3FFFF.
+>> +       ti,chan-step-sampledelay: List of sample delays for each channel
+>> +				  of ADC in the order of ti,adc-channels.
+>> +				  The value corresponds to the number of
+>> +				  ADC clock cycles to sample (to hold
+>> +				  start of conversion high).
+>> +				  Maximum value is 0xFF.
+>> +       ti,chan-step-avg: Number of averages to be performed for each
+>> +			  channel of ADC. If average is 16 then input
+>> +			  is sampled 16 times and averaged to get more
+>> +			  accurate value. This increases the time taken
+>> +			  by ADC to generate a sample. Valid range is 0
+>> +			  average to 16 averages. Maximum value is 16. {
+>> +			dev_warn(dev, "chan %d open delay truncating to 0x3FFFF\n",
+>> +				 chan);
+>> +			adc_dev->open_delay[i] = STEPDELAY_OPEN_MASK;
+>> +		}
+>> +
+>> +		if (adc_dev->sample_delay[i] > 0xFF) {
+>> +			dev_warn(dev, "chan %d sample delay truncating to 0xFF\n",
+>> +				 chan);
+>> +			adc_dev->sample_delay[i] = 0xFF;
+>> +		}
+>> +
+>>  		tiadc_writel(adc_dev, REG_STEPDELAY(steps),
+>> -				STEPCONFIG_OPENDLY);
+>> +				STEPDELAY_OPEN(adc_dev->open_delay[i]) |
+>> +				STEPDELAY_SAMPLE(adc_dev->sample_delay[i]));
+>> +
+>>  		adc_dev->channel_step[i] = steps;
+>>  		steps++;
+>>  	}
+>> @@ -407,9 +436,22 @@ static int tiadc_parse_dt(struct platform_device *pdev,
+>>  
+>>  	of_property_for_each_u32(node, "ti,adc-channels", prop, cur, val) {
+>>  		adc_dev->channel_line[channels] = val;
+>> +
+>> +		/* Set Default values for optional DT parameters */
+>> +		adc_dev->open_delay[channels] = STEPCONFIG_OPENDLY;
+>> +		adc_dev->sample_delay[channels] = STEPCONFIG_SAMPLEDLY;
+>> +		adc_dev->step_avg[channels] = 16;
+>> +
+>>  		channels++;
+>>  	}
+>>  
+>> +	of_property_read_u32_array(node, "ti,chan-step-avg",
+>> +				   adc_dev->step_avg, channels);
+>> +	of_property_read_u32_array(node, "ti,chan-step-opendelay",
+>> +				   adc_dev->open_delay, channels);
+>> +	of_property_read_u32_array(node, "ti,chan-step-sampledelay",
+>> +				   adc_dev->sample_delay, channels);
+>> +
+>>  	adc_dev->channels = channels;
+>>  	return 0;
+>>  }
+>>
+> 
