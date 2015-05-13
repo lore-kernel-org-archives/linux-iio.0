@@ -1,214 +1,126 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from arroyo.ext.ti.com ([192.94.94.40]:44472 "EHLO arroyo.ext.ti.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1753696AbbEMHnJ (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Wed, 13 May 2015 03:43:09 -0400
-Message-ID: <5553006B.1050306@ti.com>
-Date: Wed, 13 May 2015 13:12:35 +0530
-From: Vignesh R <vigneshr@ti.com>
+Return-Path: <mfuzzey@parkeon.com>
+Subject: [PATCH V4 3/7] iio: core: add high pass filter attributes
+To: Peter Meerwald <pmeerw@pmeerw.net>, Jonathan Cameron <jic23@kernel.org>
+From: Martin Fuzzey <mfuzzey@parkeon.com>
+Cc: linux-iio@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>
+Date: Wed, 13 May 2015 12:26:42 +0200
+Message-ID: <20150513102642.27803.258.stgit@localhost>
+In-Reply-To: <20150513102635.27803.99054.stgit@localhost>
+References: <20150513102635.27803.99054.stgit@localhost>
 MIME-Version: 1.0
-To: Jonathan Cameron <jic23@kernel.org>,
-	Rob Herring <robh+dt@kernel.org>,
-	Pawel Moll <pawel.moll@arm.com>,
-	Mark Rutland <mark.rutland@arm.com>,
-	Ian Campbell <ijc+devicetree@hellion.org.uk>,
-	Kumar Gala <galak@codeaurora.org>
-CC: Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-	Karol Wrona <k.wrona@samsung.com>,
-	Jan Kardell <jan.kardell@telliq.com>,
-	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"Cooper Jr., Franklin" <fcooper@ti.com>
-Subject: Re: [PATCH 2/2] iio: adc: ti_am335x_adc: make sample delay, open
- delay, averaging DT parameters
-References: <1427800357-21680-1-git-send-email-vigneshr@ti.com> <1427800357-21680-3-git-send-email-vigneshr@ti.com> <55268A7C.1050307@kernel.org>
-In-Reply-To: <55268A7C.1050307@kernel.org>
-Content-Type: text/plain; charset="windows-1252"
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain; charset="utf-8"
+List-ID: <linux-iio@vger.kernel.org>
 
+Add a high pass filter attribute for measurements
+(like the existing low pass)
 
+Also add both high and low pass attibutes for events.
 
-On Thursday 09 April 2015 07:49 PM, Jonathan Cameron wrote:
-> On 31/03/15 12:12, Vignesh R wrote:
->> Add optional DT properties to set open delay, sample delay and number
->> of averages per sample for each adc step. Open delay, sample delay
->> and averaging are some of the parameters that affect the sampling rate
->> and accuracy of the sample. Making these parameters configurable via
->> DT will help in balancing speed vs accuracy.
->>
->> Signed-off-by: Vignesh R <vigneshr@ti.com>
-> All looks fine to me, but I would ideally like a devicetree
-> ack on this one.
-> 
-> Jonathan
+Signed-off-by: Martin Fuzzey <mfuzzey@parkeon.com>
+---
+ Documentation/ABI/testing/sysfs-bus-iio |   30 ++++++++++++++++++++++++++++++
+ drivers/iio/industrialio-core.c         |    2 ++
+ drivers/iio/industrialio-event.c        |    2 ++
+ include/linux/iio/iio.h                 |    1 +
+ include/linux/iio/types.h               |    2 ++
+ 5 files changed, 37 insertions(+)
 
-Gentle ping...
-
-Regards
-Vignesh
->> ---
->>  .../bindings/input/touchscreen/ti-tsc-adc.txt      | 24 ++++++++++
->>  drivers/iio/adc/ti_am335x_adc.c                    | 54 +++++++++++++++++++---
->>  2 files changed, 72 insertions(+), 6 deletions(-)
->>
->> diff --git a/Documentation/devicetree/bindings/input/touchscreen/ti-tsc-adc.txt b/Documentation/devicetree/bindings/input/touchscreen/ti-tsc-adc.txt
->> index 6c4fb34823d3..8aafbe87f0eb 100644
->> --- a/Documentation/devicetree/bindings/input/touchscreen/ti-tsc-adc.txt
->> +++ b/Documentation/devicetree/bindings/input/touchscreen/ti-tsc-adc.txt
->> @@ -42,6 +42,27 @@ Optional properties:
->>  			 hardware knob for adjusting the amount of "settling
->>  			 time".
->>  
->> +- child "adc"
->> +	ti,chan-step-opendelay: List of open delays for each channel of
->> +				ADC in the order of ti,adc-channels. The
->> +				value corresponds to the number of ADC
->> +				clock cycles to wait after applying the
->> +				step configuration registers and before
->> +				sending the start of ADC conversion.
->> +				Maximum value is 0x3FFFF.
->> +       ti,chan-step-sampledelay: List of sample delays for each channel
->> +				  of ADC in the order of ti,adc-channels.
->> +				  The value corresponds to the number of
->> +				  ADC clock cycles to sample (to hold
->> +				  start of conversion high).
->> +				  Maximum value is 0xFF.
->> +       ti,chan-step-avg: Number of averages to be performed for each
->> +			  channel of ADC. If average is 16 then input
->> +			  is sampled 16 times and averaged to get more
->> +			  accurate value. This increases the time taken
->> +			  by ADC to generate a sample. Valid range is 0
->> +			  average to 16 averages. Maximum value is 16.
->> +
->>  Example:
->>  	tscadc: tscadc@44e0d000 {
->>  		compatible = "ti,am3359-tscadc";
->> @@ -55,5 +76,8 @@ Example:
->>  
->>  		adc {
->>  			ti,adc-channels = <4 5 6 7>;
->> +			ti,chan-step-opendelay = <0x098 0x3ffff 0x098 0x0>;
->> +			ti,chan-step-sampledelay = <0xff 0x0 0xf 0x0>;
->> +			ti,chan-step-avg = <16 2 4 8>;
->>  		};
->>  	}
->> diff --git a/drivers/iio/adc/ti_am335x_adc.c b/drivers/iio/adc/ti_am335x_adc.c
->> index 2f818405ffbe..5ee597b4a1af 100644
->> --- a/drivers/iio/adc/ti_am335x_adc.c
->> +++ b/drivers/iio/adc/ti_am335x_adc.c
->> @@ -37,6 +37,7 @@ struct tiadc_device {
->>  	u8 channel_step[8];
->>  	int buffer_en_ch_steps;
->>  	u16 data[8];
->> +	u32 open_delay[8], sample_delay[8], step_avg[8];
->>  };
->>  
->>  static unsigned int tiadc_readl(struct tiadc_device *adc, unsigned int reg)
->> @@ -85,6 +86,7 @@ static u32 get_adc_step_bit(struct tiadc_device *adc_dev, int chan)
->>  static void tiadc_step_config(struct iio_dev *indio_dev)
->>  {
->>  	struct tiadc_device *adc_dev = iio_priv(indio_dev);
->> +	struct device *dev = adc_dev->mfd_tscadc->dev;
->>  	unsigned int stepconfig;
->>  	int i, steps = 0;
->>  
->> @@ -98,20 +100,47 @@ static void tiadc_step_config(struct iio_dev *indio_dev)
->>  	 * needs to be given to ADC to digitalize data.
->>  	 */
->>  
->> -	if (iio_buffer_enabled(indio_dev))
->> -		stepconfig = STEPCONFIG_AVG_16 | STEPCONFIG_FIFO1
->> -					| STEPCONFIG_MODE_SWCNT;
->> -	else
->> -		stepconfig = STEPCONFIG_AVG_16 | STEPCONFIG_FIFO1;
->>  
->>  	for (i = 0; i < adc_dev->channels; i++) {
->>  		int chan;
->>  
->>  		chan = adc_dev->channel_line[i];
->> +
->> +		if (adc_dev->step_avg[i] > STEPCONFIG_AVG_16) {
->> +			dev_warn(dev, "chan %d step_avg truncating to %d\n",
->> +				 chan, STEPCONFIG_AVG_16);
->> +			adc_dev->step_avg[i] = STEPCONFIG_AVG_16;
->> +		}
->> +
->> +		if (adc_dev->step_avg[i])
->> +			stepconfig =
->> +			STEPCONFIG_AVG(ffs(adc_dev->step_avg[i]) - 1) |
->> +			STEPCONFIG_FIFO1;
->> +		else
->> +			stepconfig = STEPCONFIG_FIFO1;
->> +
->> +		if (iio_buffer_enabled(indio_dev))
->> +			stepconfig |= STEPCONFIG_MODE_SWCNT;
->> +
->>  		tiadc_writel(adc_dev, REG_STEPCONFIG(steps),
->>  				stepconfig | STEPCONFIG_INP(chan));
->> +
->> +		if (adc_dev->open_delay[i] > STEPDELAY_OPEN_MASK)alue corresponds to the number of ADC
->> +				clock cycles to wait after applying the
->> +				step configuration registers and before
->> +				sending the start of ADC conversion.
->> +				Maximum value is 0x3FFFF.
->> +       ti,chan-step-sampledelay: List of sample delays for each channel
->> +				  of ADC in the order of ti,adc-channels.
->> +				  The value corresponds to the number of
->> +				  ADC clock cycles to sample (to hold
->> +				  start of conversion high).
->> +				  Maximum value is 0xFF.
->> +       ti,chan-step-avg: Number of averages to be performed for each
->> +			  channel of ADC. If average is 16 then input
->> +			  is sampled 16 times and averaged to get more
->> +			  accurate value. This increases the time taken
->> +			  by ADC to generate a sample. Valid range is 0
->> +			  average to 16 averages. Maximum value is 16. {
->> +			dev_warn(dev, "chan %d open delay truncating to 0x3FFFF\n",
->> +				 chan);
->> +			adc_dev->open_delay[i] = STEPDELAY_OPEN_MASK;
->> +		}
->> +
->> +		if (adc_dev->sample_delay[i] > 0xFF) {
->> +			dev_warn(dev, "chan %d sample delay truncating to 0xFF\n",
->> +				 chan);
->> +			adc_dev->sample_delay[i] = 0xFF;
->> +		}
->> +
->>  		tiadc_writel(adc_dev, REG_STEPDELAY(steps),
->> -				STEPCONFIG_OPENDLY);
->> +				STEPDELAY_OPEN(adc_dev->open_delay[i]) |
->> +				STEPDELAY_SAMPLE(adc_dev->sample_delay[i]));
->> +
->>  		adc_dev->channel_step[i] = steps;
->>  		steps++;
->>  	}
->> @@ -407,9 +436,22 @@ static int tiadc_parse_dt(struct platform_device *pdev,
->>  
->>  	of_property_for_each_u32(node, "ti,adc-channels", prop, cur, val) {
->>  		adc_dev->channel_line[channels] = val;
->> +
->> +		/* Set Default values for optional DT parameters */
->> +		adc_dev->open_delay[channels] = STEPCONFIG_OPENDLY;
->> +		adc_dev->sample_delay[channels] = STEPCONFIG_SAMPLEDLY;
->> +		adc_dev->step_avg[channels] = 16;
->> +
->>  		channels++;
->>  	}
->>  
->> +	of_property_read_u32_array(node, "ti,chan-step-avg",
->> +				   adc_dev->step_avg, channels);
->> +	of_property_read_u32_array(node, "ti,chan-step-opendelay",
->> +				   adc_dev->open_delay, channels);
->> +	of_property_read_u32_array(node, "ti,chan-step-sampledelay",
->> +				   adc_dev->sample_delay, channels);
->> +
->>  	adc_dev->channels = channels;
->>  	return 0;
->>  }
->>
-> 
+diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
+index 3befcb1..ef1f11e 100644
+--- a/Documentation/ABI/testing/sysfs-bus-iio
++++ b/Documentation/ABI/testing/sysfs-bus-iio
+@@ -420,6 +420,16 @@ Description:
+ 		to the underlying data channel, then this parameter
+ 		gives the 3dB frequency of the filter in Hz.
+ 
++What:		/sys/.../in_accel_filter_high_pass_3db_frequency
++What:		/sys/.../in_anglvel_filter_high_pass_3db_frequency
++What:		/sys/.../in_magn_filter_high_pass_3db_frequency
++KernelVersion:	4.2
++Contact:	linux-iio@vger.kernel.org
++Description:
++		If a known or controllable high pass filter is applied
++		to the underlying data channel, then this parameter
++		gives the 3dB frequency of the filter in Hz.
++
+ What:		/sys/bus/iio/devices/iio:deviceX/out_voltageY_raw
+ What:		/sys/bus/iio/devices/iio:deviceX/out_altvoltageY_raw
+ KernelVersion:	2.6.37
+@@ -880,6 +890,26 @@ Description:
+ 		met before an event is generated. If direction is not
+ 		specified then this period applies to both directions.
+ 
++What:		/sys/.../events/in_accel_thresh_rising_low_pass_filter_3db
++What:		/sys/.../events/in_anglvel_thresh_rising_low_pass_filter_3db
++What:		/sys/.../events/in_magn_thresh_rising_low_pass_filter_3db
++KernelVersion:	4.2
++Contact:	linux-iio@vger.kernel.org
++Description:
++		If a low pass filter can be applied to the event generation
++		this property gives its 3db frequency in Hz.
++		A value of zero disables the filter.
++
++What:		/sys/.../events/in_accel_thresh_rising_high_pass_filter_3db
++What:		/sys/.../events/in_anglvel_thresh_rising_high_pass_filter_3db
++What:		/sys/.../events/in_magn_thresh_rising_high_pass_filter_3db
++KernelVersion:	4.2
++Contact:	linux-iio@vger.kernel.org
++Description:
++		If a high pass filter can be applied to the event generation
++		this property gives its 3db frequency in Hz.
++		A value of zero disables the filter.
++
+ What:		/sys/.../events/in_activity_still_thresh_rising_en
+ What:		/sys/.../events/in_activity_still_thresh_falling_en
+ What:		/sys/.../events/in_activity_walking_thresh_rising_en
+diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+index 4df97f6..6c8730e 100644
+--- a/drivers/iio/industrialio-core.c
++++ b/drivers/iio/industrialio-core.c
+@@ -117,6 +117,8 @@ static const char * const iio_chan_info_postfix[] = {
+ 	[IIO_CHAN_INFO_AVERAGE_RAW] = "mean_raw",
+ 	[IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY]
+ 	= "filter_low_pass_3db_frequency",
++	[IIO_CHAN_INFO_HIGH_PASS_FILTER_3DB_FREQUENCY]
++	= "filter_high_pass_3db_frequency",
+ 	[IIO_CHAN_INFO_SAMP_FREQ] = "sampling_frequency",
+ 	[IIO_CHAN_INFO_FREQUENCY] = "frequency",
+ 	[IIO_CHAN_INFO_PHASE] = "phase",
+diff --git a/drivers/iio/industrialio-event.c b/drivers/iio/industrialio-event.c
+index a99692b..894d813 100644
+--- a/drivers/iio/industrialio-event.c
++++ b/drivers/iio/industrialio-event.c
+@@ -211,6 +211,8 @@ static const char * const iio_ev_info_text[] = {
+ 	[IIO_EV_INFO_VALUE] = "value",
+ 	[IIO_EV_INFO_HYSTERESIS] = "hysteresis",
+ 	[IIO_EV_INFO_PERIOD] = "period",
++	[IIO_EV_INFO_HIGH_PASS_FILTER_3DB] = "high_pass_filter_3db",
++	[IIO_EV_INFO_LOW_PASS_FILTER_3DB] = "low_pass_filter_3db",
+ };
+ 
+ static enum iio_event_direction iio_ev_attr_dir(struct iio_dev_attr *attr)
+diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
+index d86b753..1d6c15e 100644
+--- a/include/linux/iio/iio.h
++++ b/include/linux/iio/iio.h
+@@ -32,6 +32,7 @@ enum iio_chan_info_enum {
+ 	IIO_CHAN_INFO_QUADRATURE_CORRECTION_RAW,
+ 	IIO_CHAN_INFO_AVERAGE_RAW,
+ 	IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY,
++	IIO_CHAN_INFO_HIGH_PASS_FILTER_3DB_FREQUENCY,
+ 	IIO_CHAN_INFO_SAMP_FREQ,
+ 	IIO_CHAN_INFO_FREQUENCY,
+ 	IIO_CHAN_INFO_PHASE,
+diff --git a/include/linux/iio/types.h b/include/linux/iio/types.h
+index 942b6de..32b5795 100644
+--- a/include/linux/iio/types.h
++++ b/include/linux/iio/types.h
+@@ -17,6 +17,8 @@ enum iio_event_info {
+ 	IIO_EV_INFO_VALUE,
+ 	IIO_EV_INFO_HYSTERESIS,
+ 	IIO_EV_INFO_PERIOD,
++	IIO_EV_INFO_HIGH_PASS_FILTER_3DB,
++	IIO_EV_INFO_LOW_PASS_FILTER_3DB,
+ };
+ 
+ #define IIO_VAL_INT 1
