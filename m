@@ -1,291 +1,227 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:34408 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:34435 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S932687AbbEMRcK (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 13 May 2015 13:32:10 -0400
-Message-ID: <55538A93.5060004@kernel.org>
-Date: Wed, 13 May 2015 18:32:03 +0100
+	with ESMTP id S933578AbbEMRiM (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 13 May 2015 13:38:12 -0400
+Message-ID: <55538BFF.5010401@kernel.org>
+Date: Wed, 13 May 2015 18:38:07 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Lars-Peter Clausen <lars@metafoo.de>,
-	Daniel Baluta <daniel.baluta@intel.com>
-CC: Joel Becker <jlbec@evilplan.org>, Hartmut Knaack <knaack.h@gmx.de>,
-	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+To: Vignesh R <vigneshr@ti.com>, Rob Herring <robh+dt@kernel.org>,
+	Pawel Moll <pawel.moll@arm.com>,
+	Mark Rutland <mark.rutland@arm.com>,
+	Ian Campbell <ijc+devicetree@hellion.org.uk>,
+	Kumar Gala <galak@codeaurora.org>
+CC: Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+	Karol Wrona <k.wrona@samsung.com>,
+	Jan Kardell <jan.kardell@telliq.com>,
+	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
 	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	Paul Bolle <pebolle@tiscali.nl>, constantin.musca@intel.com,
-	marten@intuitiveaerial.com
-Subject: Re: [PATCH v6 0/4] Add initial configfs support for IIO
-References: <CAEnQRZCMkXYv6XO2dG7MRP0XEQm4A5t2zPHWiSdeR=X-9C=CaQ@mail.gmail.com> <1431515641-19984-1-git-send-email-lars@metafoo.de>
-In-Reply-To: <1431515641-19984-1-git-send-email-lars@metafoo.de>
+	"Cooper Jr., Franklin" <fcooper@ti.com>
+Subject: Re: [PATCH 2/2] iio: adc: ti_am335x_adc: make sample delay, open
+ delay, averaging DT parameters
+References: <1427800357-21680-1-git-send-email-vigneshr@ti.com> <1427800357-21680-3-git-send-email-vigneshr@ti.com> <55268A7C.1050307@kernel.org> <5553006B.1050306@ti.com>
+In-Reply-To: <5553006B.1050306@ti.com>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 13/05/15 12:14, Lars-Peter Clausen wrote:
-> Hi,
+On 13/05/15 08:42, Vignesh R wrote:
 > 
-> I'd like to go back to the issue of having one folder per trigger type and
-> create triggers for a type in their respective folder.
 > 
-> I'm not convinced that it is an intentional design restriction of configfs
-> that we can't do this, but rather a case of it not being implemented
-> because nobody needed it so far.
+> On Thursday 09 April 2015 07:49 PM, Jonathan Cameron wrote:
+>> On 31/03/15 12:12, Vignesh R wrote:
+>>> Add optional DT properties to set open delay, sample delay and number
+>>> of averages per sample for each adc step. Open delay, sample delay
+>>> and averaging are some of the parameters that affect the sampling rate
+>>> and accuracy of the sample. Making these parameters configurable via
+>>> DT will help in balancing speed vs accuracy.
+>>>
+>>> Signed-off-by: Vignesh R <vigneshr@ti.com>
+>> All looks fine to me, but I would ideally like a devicetree
+>> ack on this one.
+>>
+>> Jonathan
 > 
-> See the proof-of-concept patch below. With this we get one sub-folder per
-> trigger type in /config/iio/triggers. It's not complete and doesn't do
-> proper locking yet and also unregister is not yet implemented but it shows
-> the concept how it could be done.
-> 
-> I'm not saying that we definitely should go down that road, but it feels
-> cleaner to me. And another advantage is that it is discoverable which types
-> of triggers are available. Thoughts? 
-Nice iff it doesn't break from the intent of configfs.  I know both Daniel and
-I looked for how to do this before taking the non directory based approach that
-the usbgadget driver took.  
+> Gentle ping...
+Thanks. Had forgotten about this one.  Ah well, no device tree response...
 
-What you loose is the possibility for auto probing modules based on trigger naming
-(equivalent of what the usbgadget driver does).  I undecided on whether we would
-want to do that anyway.
+Applied to the togreg branch of iio.git, initially pushed out as testing.
 
-Joel, it's your filesystem.  Is doing this acceptable to you?
+Thanks,
+
+Jonathan
 > 
-> - Lars
-> 
-> ---
->  drivers/iio/industrialio-configfs.c   | 43 ++++++++++++++++++-----------------
->  drivers/iio/industrialio-sw-trigger.c | 12 ++++++----
->  fs/configfs/dir.c                     | 28 +++++++++++++++++++++--
->  include/linux/configfs.h              |  4 ++++
->  include/linux/iio/sw_trigger.h        | 19 ++++++++++++++++
->  5 files changed, 79 insertions(+), 27 deletions(-)
-> 
-> diff --git a/drivers/iio/industrialio-configfs.c b/drivers/iio/industrialio-configfs.c
-> index daf318c..c1fa14f 100644
-> --- a/drivers/iio/industrialio-configfs.c
-> +++ b/drivers/iio/industrialio-configfs.c
-> @@ -22,27 +22,9 @@
->  static struct config_group *trigger_make_group(struct config_group *group,
->  					       const char *name)
->  {
-> -	char *type_name;
-> -	char *trigger_name;
-> -	char buf[MAX_NAME_LEN];
->  	struct iio_sw_trigger *t;
->  
-> -	snprintf(buf, MAX_NAME_LEN, "%s", name);
-> -
-> -	/* group name should have the form <trigger-type>-<trigger-name> */
-> -	type_name = buf;
-> -	trigger_name = strchr(buf, '-');
-> -	if (!trigger_name) {
-> -		WARN_ONCE(1, "Unable to locate '-' in %s. Use <type>-<name>.\n",
-> -			  buf);
-> -		return ERR_PTR(-EINVAL);
-> -	}
-> -
-> -	/* replace - with \0, this nicely separates the two strings */
-> -	*trigger_name = '\0';
-> -	trigger_name++;
-> -
-> -	t = iio_sw_trigger_create(type_name, trigger_name);
-> +	t = iio_sw_trigger_create(group->cg_item.ci_name, name);
->  	if (IS_ERR(t))
->  		return ERR_CAST(t);
->  
-> @@ -60,13 +42,17 @@ static void trigger_drop_group(struct config_group *group,
->  	config_item_put(item);
->  }
->  
-> -static struct configfs_group_operations triggers_ops = {
-> +static struct configfs_group_operations trigger_ops = {
->  	.make_group	= &trigger_make_group,
->  	.drop_item	= &trigger_drop_group,
->  };
->  
-> +static struct config_item_type iio_trigger_group_type = {
-> +	.ct_group_ops = &trigger_ops,
-> +	.ct_owner       = THIS_MODULE,
-> +};
-> +
->  static struct config_item_type iio_triggers_group_type = {
-> -	.ct_group_ops = &triggers_ops,
->  	.ct_owner       = THIS_MODULE,
->  };
->  
-> @@ -97,6 +83,21 @@ static struct configfs_subsystem iio_configfs_subsys = {
->  	.su_mutex = __MUTEX_INITIALIZER(iio_configfs_subsys.su_mutex),
->  };
->  
-> +int iio_sw_trigger_type_configs_register(struct iio_sw_trigger_type *tt)
-> +{
-> +	config_group_init_type_name(&tt->group, tt->name,
-> +		&iio_trigger_group_type);
-> +
-> +	return configfs_register_group(&iio_triggers_group, &tt->group);
-> +}
-> +EXPORT_SYMBOL_GPL(iio_sw_trigger_type_configs_register);
-> +
-> +void iio_sw_trigger_type_configs_unregister(struct iio_sw_trigger_type *tt)
-> +{
-> +	configfs_unregister_group(&tt->group);
-> +}
-> +EXPORT_SYMBOL_GPL(iio_sw_trigger_type_configs_unregister);
-> +
->  static int __init iio_configfs_init(void)
->  {
->  	config_group_init(&iio_triggers_group);
-> diff --git a/drivers/iio/industrialio-sw-trigger.c b/drivers/iio/industrialio-sw-trigger.c
-> index fa1ec51..312c33c 100644
-> --- a/drivers/iio/industrialio-sw-trigger.c
-> +++ b/drivers/iio/industrialio-sw-trigger.c
-> @@ -41,10 +41,12 @@ int iio_register_sw_trigger_type(struct iio_sw_trigger_type *t)
->  
->  	write_lock(&iio_trigger_types_lock);
->  	iter = __iio_find_sw_trigger_type(t->name, strlen(t->name));
-> -	if (iter)
-> +	if (iter) {
->  		ret = -EBUSY;
-> -	else
-> +	} else {
->  		list_add_tail(&t->list, &iio_trigger_types_list);
-> +		iio_sw_trigger_type_configs_register(t);
-> +	}
->  	write_unlock(&iio_trigger_types_lock);
->  
->  	return ret;
-> @@ -58,10 +60,12 @@ int iio_unregister_sw_trigger_type(struct iio_sw_trigger_type *t)
->  
->  	write_lock(&iio_trigger_types_lock);
->  	iter = __iio_find_sw_trigger_type(t->name, strlen(t->name));
-> -	if (!iter)
-> +	if (!iter) {
->  		ret = -EINVAL;
-> -	else
-> +	} else {
-> +		iio_sw_trigger_type_configs_unregister(t);
->  		list_del(&t->list);
-> +	}
->  	write_unlock(&iio_trigger_types_lock);
->  
->  	return ret;
-> diff --git a/fs/configfs/dir.c b/fs/configfs/dir.c
-> index c9c298b..0e2e0e6 100644
-> --- a/fs/configfs/dir.c
-> +++ b/fs/configfs/dir.c
-> @@ -659,7 +659,7 @@ static void detach_groups(struct config_group *group)
->   * try using vfs_mkdir.  Just a thought.
->   */
->  static int create_default_group(struct config_group *parent_group,
-> -				struct config_group *group)
-> +				struct config_group *group, struct dentry **dentry)
->  {
->  	int ret;
->  	struct configfs_dirent *sd;
-> @@ -679,6 +679,8 @@ static int create_default_group(struct config_group *parent_group,
->  		if (!ret) {
->  			sd = child->d_fsdata;
->  			sd->s_type |= CONFIGFS_USET_DEFAULT;
-> +			if (dentry)
-> +				*dentry = child;
->  		} else {
->  			BUG_ON(child->d_inode);
->  			d_drop(child);
-> @@ -699,7 +701,7 @@ static int populate_groups(struct config_group *group)
->  		for (i = 0; group->default_groups[i]; i++) {
->  			new_group = group->default_groups[i];
->  
-> -			ret = create_default_group(group, new_group);
-> +			ret = create_default_group(group, new_group, NULL);
->  			if (ret) {
->  				detach_groups(group);
->  				break;
-> @@ -1644,6 +1646,28 @@ const struct file_operations configfs_dir_operations = {
->  	.iterate	= configfs_readdir,
->  };
->  
-> +int configfs_register_group(struct config_group *parent_group,
-> +	struct config_group *group)
-> +{
-> +	struct dentry *dentry;
-> +	int ret;
-> +
-> +	link_group(parent_group, group);
-> +
-> +	ret = create_default_group(parent_group, group, &dentry);
-> +	if (ret == 0)
-> +		configfs_dir_set_ready(dentry->d_fsdata);
-> +
-> +	return ret;
-> +}
-> +EXPORT_SYMBOL(configfs_register_group);
-> +
-> +void configfs_unregister_group(struct config_group *group)
-> +{
-> +	/* TODO */
-> +}
-> +EXPORT_SYMBOL(configfs_unregister_group);
-> +
->  int configfs_register_subsystem(struct configfs_subsystem *subsys)
->  {
->  	int err;
-> diff --git a/include/linux/configfs.h b/include/linux/configfs.h
-> index 34025df..a641bea 100644
-> --- a/include/linux/configfs.h
-> +++ b/include/linux/configfs.h
-> @@ -252,6 +252,10 @@ static inline struct configfs_subsystem *to_configfs_subsystem(struct config_gro
->  int configfs_register_subsystem(struct configfs_subsystem *subsys);
->  void configfs_unregister_subsystem(struct configfs_subsystem *subsys);
->  
-> +int configfs_register_group(struct config_group *parent_group,
-> +	struct config_group *group);
-> +void configfs_unregister_group(struct config_group *group);
-> +
->  /* These functions can sleep and can alloc with GFP_KERNEL */
->  /* WARNING: These cannot be called underneath configfs callbacks!! */
->  int configfs_depend_item(struct configfs_subsystem *subsys, struct config_item *target);
-> diff --git a/include/linux/iio/sw_trigger.h b/include/linux/iio/sw_trigger.h
-> index 87803c7..5551a11 100644
-> --- a/include/linux/iio/sw_trigger.h
-> +++ b/include/linux/iio/sw_trigger.h
-> @@ -27,6 +27,10 @@ struct iio_sw_trigger_type {
->  	struct module *owner;
->  	const struct iio_sw_trigger_ops *ops;
->  	struct list_head list;
-> +#ifdef CONFIG_CONFIGFS_FS
-> +	struct config_group group;
-> +#endif
-> +
->  };
->  
->  struct iio_sw_trigger {
-> @@ -60,6 +64,10 @@ struct iio_sw_trigger *iio_sw_trigger_create(const char *, const char *);
->  void iio_sw_trigger_destroy(struct iio_sw_trigger *);
->  
->  #ifdef CONFIG_CONFIGFS_FS
-> +
-> +int iio_sw_trigger_type_configs_register(struct iio_sw_trigger_type *tt);
-> +void iio_sw_trigger_type_configs_unregister(struct iio_sw_trigger_type *tt);
-> +
->  static inline
->  struct iio_sw_trigger *to_iio_sw_trigger(struct config_item *item)
->  {
-> @@ -75,6 +83,17 @@ void iio_config_group_init_type_name(struct config_group *group,
->  	config_group_init_type_name(group, name, type);
->  }
->  #else
-> +static inline int iio_sw_trigger_type_configs_register(
-> +	struct iio_sw_trigger_type *tt)
-> +{
-> +	return 0;
-> +}
-> +
-> +static inline void iio_sw_trigger_type_configs_unregister(
-> +	struct iio_sw_trigger_type *tt)
-> +{
-> +}
-> +
->  static inline
->  void iio_config_group_init_type_name(struct config_group *group,
->  				     const char *name,
+> Regards
+> Vignesh
+>>> ---
+>>>  .../bindings/input/touchscreen/ti-tsc-adc.txt      | 24 ++++++++++
+>>>  drivers/iio/adc/ti_am335x_adc.c                    | 54 +++++++++++++++++++---
+>>>  2 files changed, 72 insertions(+), 6 deletions(-)
+>>>
+>>> diff --git a/Documentation/devicetree/bindings/input/touchscreen/ti-tsc-adc.txt b/Documentation/devicetree/bindings/input/touchscreen/ti-tsc-adc.txt
+>>> index 6c4fb34823d3..8aafbe87f0eb 100644
+>>> --- a/Documentation/devicetree/bindings/input/touchscreen/ti-tsc-adc.txt
+>>> +++ b/Documentation/devicetree/bindings/input/touchscreen/ti-tsc-adc.txt
+>>> @@ -42,6 +42,27 @@ Optional properties:
+>>>  			 hardware knob for adjusting the amount of "settling
+>>>  			 time".
+>>>  
+>>> +- child "adc"
+>>> +	ti,chan-step-opendelay: List of open delays for each channel of
+>>> +				ADC in the order of ti,adc-channels. The
+>>> +				value corresponds to the number of ADC
+>>> +				clock cycles to wait after applying the
+>>> +				step configuration registers and before
+>>> +				sending the start of ADC conversion.
+>>> +				Maximum value is 0x3FFFF.
+>>> +       ti,chan-step-sampledelay: List of sample delays for each channel
+>>> +				  of ADC in the order of ti,adc-channels.
+>>> +				  The value corresponds to the number of
+>>> +				  ADC clock cycles to sample (to hold
+>>> +				  start of conversion high).
+>>> +				  Maximum value is 0xFF.
+>>> +       ti,chan-step-avg: Number of averages to be performed for each
+>>> +			  channel of ADC. If average is 16 then input
+>>> +			  is sampled 16 times and averaged to get more
+>>> +			  accurate value. This increases the time taken
+>>> +			  by ADC to generate a sample. Valid range is 0
+>>> +			  average to 16 averages. Maximum value is 16.
+>>> +
+>>>  Example:
+>>>  	tscadc: tscadc@44e0d000 {
+>>>  		compatible = "ti,am3359-tscadc";
+>>> @@ -55,5 +76,8 @@ Example:
+>>>  
+>>>  		adc {
+>>>  			ti,adc-channels = <4 5 6 7>;
+>>> +			ti,chan-step-opendelay = <0x098 0x3ffff 0x098 0x0>;
+>>> +			ti,chan-step-sampledelay = <0xff 0x0 0xf 0x0>;
+>>> +			ti,chan-step-avg = <16 2 4 8>;
+>>>  		};
+>>>  	}
+>>> diff --git a/drivers/iio/adc/ti_am335x_adc.c b/drivers/iio/adc/ti_am335x_adc.c
+>>> index 2f818405ffbe..5ee597b4a1af 100644
+>>> --- a/drivers/iio/adc/ti_am335x_adc.c
+>>> +++ b/drivers/iio/adc/ti_am335x_adc.c
+>>> @@ -37,6 +37,7 @@ struct tiadc_device {
+>>>  	u8 channel_step[8];
+>>>  	int buffer_en_ch_steps;
+>>>  	u16 data[8];
+>>> +	u32 open_delay[8], sample_delay[8], step_avg[8];
+>>>  };
+>>>  
+>>>  static unsigned int tiadc_readl(struct tiadc_device *adc, unsigned int reg)
+>>> @@ -85,6 +86,7 @@ static u32 get_adc_step_bit(struct tiadc_device *adc_dev, int chan)
+>>>  static void tiadc_step_config(struct iio_dev *indio_dev)
+>>>  {
+>>>  	struct tiadc_device *adc_dev = iio_priv(indio_dev);
+>>> +	struct device *dev = adc_dev->mfd_tscadc->dev;
+>>>  	unsigned int stepconfig;
+>>>  	int i, steps = 0;
+>>>  
+>>> @@ -98,20 +100,47 @@ static void tiadc_step_config(struct iio_dev *indio_dev)
+>>>  	 * needs to be given to ADC to digitalize data.
+>>>  	 */
+>>>  
+>>> -	if (iio_buffer_enabled(indio_dev))
+>>> -		stepconfig = STEPCONFIG_AVG_16 | STEPCONFIG_FIFO1
+>>> -					| STEPCONFIG_MODE_SWCNT;
+>>> -	else
+>>> -		stepconfig = STEPCONFIG_AVG_16 | STEPCONFIG_FIFO1;
+>>>  
+>>>  	for (i = 0; i < adc_dev->channels; i++) {
+>>>  		int chan;
+>>>  
+>>>  		chan = adc_dev->channel_line[i];
+>>> +
+>>> +		if (adc_dev->step_avg[i] > STEPCONFIG_AVG_16) {
+>>> +			dev_warn(dev, "chan %d step_avg truncating to %d\n",
+>>> +				 chan, STEPCONFIG_AVG_16);
+>>> +			adc_dev->step_avg[i] = STEPCONFIG_AVG_16;
+>>> +		}
+>>> +
+>>> +		if (adc_dev->step_avg[i])
+>>> +			stepconfig =
+>>> +			STEPCONFIG_AVG(ffs(adc_dev->step_avg[i]) - 1) |
+>>> +			STEPCONFIG_FIFO1;
+>>> +		else
+>>> +			stepconfig = STEPCONFIG_FIFO1;
+>>> +
+>>> +		if (iio_buffer_enabled(indio_dev))
+>>> +			stepconfig |= STEPCONFIG_MODE_SWCNT;
+>>> +
+>>>  		tiadc_writel(adc_dev, REG_STEPCONFIG(steps),
+>>>  				stepconfig | STEPCONFIG_INP(chan));
+>>> +
+>>> +		if (adc_dev->open_delay[i] > STEPDELAY_OPEN_MASK)alue corresponds to the number of ADC
+>>> +				clock cycles to wait after applying the
+>>> +				step configuration registers and before
+>>> +				sending the start of ADC conversion.
+>>> +				Maximum value is 0x3FFFF.
+>>> +       ti,chan-step-sampledelay: List of sample delays for each channel
+>>> +				  of ADC in the order of ti,adc-channels.
+>>> +				  The value corresponds to the number of
+>>> +				  ADC clock cycles to sample (to hold
+>>> +				  start of conversion high).
+>>> +				  Maximum value is 0xFF.
+>>> +       ti,chan-step-avg: Number of averages to be performed for each
+>>> +			  channel of ADC. If average is 16 then input
+>>> +			  is sampled 16 times and averaged to get more
+>>> +			  accurate value. This increases the time taken
+>>> +			  by ADC to generate a sample. Valid range is 0
+>>> +			  average to 16 averages. Maximum value is 16. {
+>>> +			dev_warn(dev, "chan %d open delay truncating to 0x3FFFF\n",
+>>> +				 chan);
+>>> +			adc_dev->open_delay[i] = STEPDELAY_OPEN_MASK;
+>>> +		}
+>>> +
+>>> +		if (adc_dev->sample_delay[i] > 0xFF) {
+>>> +			dev_warn(dev, "chan %d sample delay truncating to 0xFF\n",
+>>> +				 chan);
+>>> +			adc_dev->sample_delay[i] = 0xFF;
+>>> +		}
+>>> +
+>>>  		tiadc_writel(adc_dev, REG_STEPDELAY(steps),
+>>> -				STEPCONFIG_OPENDLY);
+>>> +				STEPDELAY_OPEN(adc_dev->open_delay[i]) |
+>>> +				STEPDELAY_SAMPLE(adc_dev->sample_delay[i]));
+>>> +
+>>>  		adc_dev->channel_step[i] = steps;
+>>>  		steps++;
+>>>  	}
+>>> @@ -407,9 +436,22 @@ static int tiadc_parse_dt(struct platform_device *pdev,
+>>>  
+>>>  	of_property_for_each_u32(node, "ti,adc-channels", prop, cur, val) {
+>>>  		adc_dev->channel_line[channels] = val;
+>>> +
+>>> +		/* Set Default values for optional DT parameters */
+>>> +		adc_dev->open_delay[channels] = STEPCONFIG_OPENDLY;
+>>> +		adc_dev->sample_delay[channels] = STEPCONFIG_SAMPLEDLY;
+>>> +		adc_dev->step_avg[channels] = 16;
+>>> +
+>>>  		channels++;
+>>>  	}
+>>>  
+>>> +	of_property_read_u32_array(node, "ti,chan-step-avg",
+>>> +				   adc_dev->step_avg, channels);
+>>> +	of_property_read_u32_array(node, "ti,chan-step-opendelay",
+>>> +				   adc_dev->open_delay, channels);
+>>> +	of_property_read_u32_array(node, "ti,chan-step-sampledelay",
+>>> +				   adc_dev->sample_delay, channels);
+>>> +
+>>>  	adc_dev->channels = channels;
+>>>  	return 0;
+>>>  }
+>>>
+>>
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
 > 
 
