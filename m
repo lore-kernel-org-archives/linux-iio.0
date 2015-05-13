@@ -1,63 +1,130 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-ig0-f175.google.com ([209.85.213.175]:36142 "EHLO
-	mail-ig0-f175.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S964896AbbEMBLk (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 12 May 2015 21:11:40 -0400
-Received: by igbpi8 with SMTP id pi8so125468213igb.1
-        for <linux-iio@vger.kernel.org>; Tue, 12 May 2015 18:11:39 -0700 (PDT)
-Date: Tue, 12 May 2015 20:11:37 -0500
-From: Michael Welling <mwelling@ieee.org>
-To: Greg Wilson-Lindberg <GWilson@sakuraus.com>
-Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Subject: Re: BBB touch screen and ADC interactions
-Message-ID: <20150513011137.GA23255@deathray>
-References: <782E3A02C2EB2347BEA6DEA69DC7AB86021D3C87CFA4@sfamail.SAKURAUS.LOCAL>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:57102 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751005AbbEMGBo (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 13 May 2015 02:01:44 -0400
+Message-ID: <5552E8C5.4040203@kernel.org>
+Date: Wed, 13 May 2015 07:01:41 +0100
+From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <782E3A02C2EB2347BEA6DEA69DC7AB86021D3C87CFA4@sfamail.SAKURAUS.LOCAL>
+To: Greg KH <gregkh@linuxfoundation.org>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Subject: [PULL] IIO fixes for the 4.1 cycle, round 1 - take 2
+Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Tue, May 12, 2015 at 04:23:43PM -0700, Greg Wilson-Lindberg wrote:
-> Hello all,
-> I've got a problem with the BeagleBone Black ti_am335x_tsc, ti_am335x_adc & ti_am335x_tsadc drivers, and Jonathan Cameron suggested that I reach out to this list to see if any one here has any insight to my problem.
->  
-> I'm using a BBB running a Debian Jessie build with the 3.14.40 ti kernel by Robert C. Nelson. I've got it hooked up to a touch screen and I would like to also be able to use some of the remaining adc channels.
->  
-> As soon as I try to read any of the remaining channels the touch screen locks up. I've tried catting them from /sys/bus/iio/devices/iio:device0/in_voltageX_raw, using the generic_buffer program provided by the kernel, and using the Analog Devices libiio library. In all cases, I get the same results, adc values that look reasonable, but the touch screen stops responding.
->
+The following changes since commit c610f7f772aa06ae2bd8e5ace87cde4d90f70198:
 
-Does the touchscreen freeze indefinitely or does it come back after ADC sampling
-is stopped?
-  
-> I've asked on the TI support forum if they could help with this problem, but their response was that they only supported the TI SDK.
->  
-> Can any of you tell me if the current iio subsystem will work correctly with the ti touch screen and adc drivers? 
->
+  Merge 4.0-rc7 into staging-next (2015-04-07 11:03:02 +0200)
 
-I have been working on porting Linux to a device that uses the AM335x and have
-noticed that the drivers has undergone many changes recently. I am now using 
-a 4.0 kernel and am able to sample the ADC and use the touchscreen
-simultaneously.
+are available in the git repository at:
 
-When sampling the ADC you will notice that the touchscreen is less responsive
-but it does not freeze. The responsiveness comes back when ADC sampling stops.
+  git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git tags/iio-fixes-for-4.1a-take2
 
-One thing that I have noticed recently is that when using ts_calibrate or
-ts_test the screen will register touch releases repeatedly without touching
-the screen.
+for you to fetch changes up to f0828ba96d02d4d4b197c531b34c662ee3c928df:
 
-I have a workaround patch but have not attempted to push it upstream yet.
+  iio: light: hid-sensor-prox: Fix memory leak in probe() (2015-05-12 20:01:13 +0100)
 
-So it won't freeze the touchscreen completely after sampling ADCs but you
-still may notice some quirks.
+----------------------------------------------------------------
+The usual mixed bag of fixes for IIO in the 4.1 cycle.
 
-The best way to find out is building the new kernel and trying it out.
+Second version of this pull request as a small fix to a fix turned
+up before Greg pulled it for a cc10001 patch near the top of the tree.
 
-> Greg Wilson-Lindberg
-> Sakura Finetek
-> 310-783-5075
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+One core fix
+
+* Set updated for a iio kfifo was incorrectly set to false during a failed
+  update, resulting in atttempts to repeat the failed operation appearing
+  to succeed.
+
+This time I've decided to list the driver fixes in alphabetical order rather
+than 'randomly'.
+
+* axp288_adc - a recent change added a check for valid info masks when
+  reading channels from consumer drivers.
+* bmp280 - temperature compensation was failing to read the tfine value, hence
+  causing a temperature of 0 to always be returned and incorrect presure
+  measurements.
+* cc10001 - Fix channel number mapping when some channels are reserved for
+  remote CPUs. Fix an issue with the use of the power-up/power-down register
+  (basically wrong polarity). Fix an issue due to the missinterpretting the
+  return value from regulator_get_voltage. Add a delay before the start bit
+  as recommended for the hardware to avoid data corruption.
+* hid pressure - fix channel spec of modfiied, but no modifier (which makes no
+  sense!)
+* hid proximity - fix channel spec of modified, but no modifier (which makes
+  no sense!). Fix a memory leak in the probe function.
+* mcp320x - occasional incorrect readings on dma using spi busses due to
+  cacheline corruption. Fixed by forcing ___cacheline_aligned for the buffers.
+* mma9551 - buffer overrun fix (miss specified maximum length of buffers)
+* mma9553 - endian fix on status message. Add an enable element for activity
+  channel. Input checking for activity period to avoid rather unpredictable
+  results.
+* spmi-vadc - fix an overflow in the output value normalization seen on some
+  boards.
+* st-snesors - oops due to use of a mutex that is not yet initialized during
+  probe.
+* xilinx adc - Some wrong register addresses, a wrong address for vccaux
+  channel, incorrect scale on VREFP and incorrect sign on VREFN.
+
+----------------------------------------------------------------
+Alban Bedel (1):
+      iio:st_sensors: Fix oops when probing SPI devices
+
+Fabio Estevam (1):
+      iio: light: hid-sensor-prox: Fix memory leak in probe()
+
+Gabriele Mazzotta (1):
+      iio: kfifo: Set update_needed to false only if a buffer was allocated
+
+Irina Tirdea (5):
+      iio: pressure: bmp280: fix temp compensation
+      iio: accel: mma9553: fix endianness issue when reading status
+      iio: accel: mma9551_core: prevent buffer overrun
+      iio: accel: mma9553: add enable channel for activity
+      iio: accel: mma9553: check input value for activity period
+
+Ivan T. Ivanov (1):
+      iio: adc: spmi-vadc: Fix overflow in output value normalization
+
+Jacob Pan (1):
+      iio/axp288_adc: add missing channel info mask
+
+Michael Welling (1):
+      iio: mcp320x: Fix occasional incorrect readings
+
+Naidu Tellapati (4):
+      iio: adc: cc10001: Fix the channel number mapping
+      iio: adc: cc10001: Fix incorrect use of power-up/power-down register
+      iio: adc: cc10001: Fix regulator_get_voltage() return value check
+      iio: adc: cc10001: Add delay before setting START bit
+
+Srinivas Pandruvada (2):
+      iio: light: hid-sensor-prox: Fix modifier
+      iio: pressure: hid-sensor-press: Fix modifier
+
+Thomas Betker (4):
+      iio: adc: xilinx: Fix register addresses
+      iio: adc: xilinx: Fix "vccaux" channel .address
+      iio: adc: xilinx: Fix VREFP scale
+      iio: adc: xilinx: Fix VREFN sign
+
+ drivers/iio/accel/mma9551_core.c                | 21 +++++++--
+ drivers/iio/accel/mma9553.c                     | 18 ++++----
+ drivers/iio/accel/st_accel_core.c               |  1 +
+ drivers/iio/adc/axp288_adc.c                    | 12 ++---
+ drivers/iio/adc/cc10001_adc.c                   | 60 ++++++++++++++-----------
+ drivers/iio/adc/mcp320x.c                       |  6 +--
+ drivers/iio/adc/qcom-spmi-vadc.c                |  7 +--
+ drivers/iio/adc/xilinx-xadc-core.c              |  5 ++-
+ drivers/iio/adc/xilinx-xadc.h                   |  6 +--
+ drivers/iio/common/st_sensors/st_sensors_core.c |  2 -
+ drivers/iio/gyro/st_gyro_core.c                 |  1 +
+ drivers/iio/kfifo_buf.c                         |  3 +-
+ drivers/iio/light/hid-sensor-prox.c             | 12 +++--
+ drivers/iio/magnetometer/st_magn_core.c         |  1 +
+ drivers/iio/pressure/bmp280.c                   |  1 +
+ drivers/iio/pressure/hid-sensor-press.c         |  2 -
+ drivers/iio/pressure/st_pressure_core.c         |  1 +
+ 17 files changed, 93 insertions(+), 66 deletions(-)
