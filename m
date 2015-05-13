@@ -1,134 +1,62 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga03.intel.com ([134.134.136.65]:54321 "EHLO mga03.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S933840AbbEMNaW (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Wed, 13 May 2015 09:30:22 -0400
-From: Vlad Dogaru <vlad.dogaru@intel.com>
-To: jic23@kernel.org, srinivas.pandruvada@linux.intel.com,
-	irina.tirdea@intel.com, octavian.purdila@intel.com,
-	linux-iio@vger.kernel.org
-Cc: adriana.reus@intel.com, Vlad Dogaru <vlad.dogaru@intel.com>
-Subject: [PATCH 2/2] iio: gyro: bmg160: decouple buffer and triggers
-Date: Wed, 13 May 2015 16:30:09 +0300
-Message-Id: <1431523809-13824-3-git-send-email-vlad.dogaru@intel.com>
-In-Reply-To: <1431523809-13824-1-git-send-email-vlad.dogaru@intel.com>
-References: <1431523809-13824-1-git-send-email-vlad.dogaru@intel.com>
+Received: from smtp-out-163.synserver.de ([212.40.185.163]:1103 "EHLO
+	smtp-out-163.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S933967AbbEMOE5 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 13 May 2015 10:04:57 -0400
+From: Lars-Peter Clausen <lars@metafoo.de>
+To: Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>
+Cc: linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>
+Subject: [PATCH 0/8] iio: Refactor __iio_update_buffers()
+Date: Wed, 13 May 2015 16:04:43 +0200
+Message-Id: <1431525891-19285-1-git-send-email-lars@metafoo.de>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Make it possible to use buffering with an external trigger, such as one
-based on sysfs or hrtimer.
+__iio_update_buffers() is quite the beast, it does quite a few different
+things and has a couple of separate error paths due to this. This series
+refactors the function starting with moving the configuration verification
+out of the configuration path itself. This means we can verify that the
+configuration will be accepted before we make any changes to the device and
+don't have to implement rollback functionality. The function is also broken
+down into a couple of smaller helper function each which only a single
+error path. This should hopefully make it easier to comprehend what is
+going on. The last step of the refactoring process is to make sure that we
+always leave the device in a sane and consistent state even if we encounter
+a fatal error. This allows to potentially recover from the fatal error and
+will also make sure that we don't trigger unexpected behavior in drivers.
 
-Signed-off-by: Vlad Dogaru <vlad.dogaru@intel.com>
----
- drivers/iio/gyro/bmg160.c | 56 +++++++++++++++++++++++++++--------------------
- 1 file changed, 32 insertions(+), 24 deletions(-)
+The main motivation for this series to get __iio_update_buffers() ready for
+future extension like the ones that are needed to support DMA buffer
+support as well as better support for hardware buffer support.
 
-diff --git a/drivers/iio/gyro/bmg160.c b/drivers/iio/gyro/bmg160.c
-index d36af62..460bf71 100644
---- a/drivers/iio/gyro/bmg160.c
-+++ b/drivers/iio/gyro/bmg160.c
-@@ -737,17 +737,6 @@ static int bmg160_write_event_config(struct iio_dev *indio_dev,
- 	return 0;
- }
- 
--static int bmg160_validate_trigger(struct iio_dev *indio_dev,
--				   struct iio_trigger *trig)
--{
--	struct bmg160_data *data = iio_priv(indio_dev);
--
--	if (data->dready_trig != trig && data->motion_trig != trig)
--		return -EINVAL;
--
--	return 0;
--}
--
- static IIO_CONST_ATTR_SAMP_FREQ_AVAIL("100 200 400 1000 2000");
- 
- static IIO_CONST_ATTR(in_anglvel_scale_available,
-@@ -809,7 +798,6 @@ static const struct iio_info bmg160_info = {
- 	.write_event_value	= bmg160_write_event,
- 	.write_event_config	= bmg160_write_event_config,
- 	.read_event_config	= bmg160_read_event_config,
--	.validate_trigger	= bmg160_validate_trigger,
- 	.driver_module		= THIS_MODULE,
- };
- 
-@@ -984,6 +972,27 @@ static irqreturn_t bmg160_data_rdy_trig_poll(int irq, void *private)
- 
- }
- 
-+static int bmg160_buffer_preenable(struct iio_dev *indio_dev)
-+{
-+	struct bmg160_data *data = iio_priv(indio_dev);
-+
-+	return bmg160_set_power_state(data, true);
-+}
-+
-+static int bmg160_buffer_postdisable(struct iio_dev *indio_dev)
-+{
-+	struct bmg160_data *data = iio_priv(indio_dev);
-+
-+	return bmg160_set_power_state(data, false);
-+}
-+
-+static const struct iio_buffer_setup_ops bmg160_buffer_setup_ops = {
-+	.preenable = bmg160_buffer_preenable,
-+	.postenable = iio_triggered_buffer_postenable,
-+	.predisable = iio_triggered_buffer_predisable,
-+	.postdisable = bmg160_buffer_postdisable,
-+};
-+
- static int bmg160_gpio_probe(struct i2c_client *client,
- 			     struct bmg160_data *data)
- 
-@@ -1100,16 +1109,16 @@ static int bmg160_probe(struct i2c_client *client,
- 			data->motion_trig = NULL;
- 			goto err_trigger_unregister;
- 		}
-+	}
- 
--		ret = iio_triggered_buffer_setup(indio_dev,
--						 iio_pollfunc_store_time,
--						 bmg160_trigger_handler,
--						 NULL);
--		if (ret < 0) {
--			dev_err(&client->dev,
--				"iio triggered buffer setup failed\n");
--			goto err_trigger_unregister;
--		}
-+	ret = iio_triggered_buffer_setup(indio_dev,
-+					 iio_pollfunc_store_time,
-+					 bmg160_trigger_handler,
-+					 &bmg160_buffer_setup_ops);
-+	if (ret < 0) {
-+		dev_err(&client->dev,
-+			"iio triggered buffer setup failed\n");
-+		goto err_trigger_unregister;
- 	}
- 
- 	ret = iio_device_register(indio_dev);
-@@ -1132,8 +1141,7 @@ static int bmg160_probe(struct i2c_client *client,
- err_iio_unregister:
- 	iio_device_unregister(indio_dev);
- err_buffer_cleanup:
--	if (data->dready_trig)
--		iio_triggered_buffer_cleanup(indio_dev);
-+	iio_triggered_buffer_cleanup(indio_dev);
- err_trigger_unregister:
- 	if (data->dready_trig)
- 		iio_trigger_unregister(data->dready_trig);
-@@ -1153,9 +1161,9 @@ static int bmg160_remove(struct i2c_client *client)
- 	pm_runtime_put_noidle(&client->dev);
- 
- 	iio_device_unregister(indio_dev);
-+	iio_triggered_buffer_cleanup(indio_dev);
- 
- 	if (data->dready_trig) {
--		iio_triggered_buffer_cleanup(indio_dev);
- 		iio_trigger_unregister(data->dready_trig);
- 		iio_trigger_unregister(data->motion_trig);
- 	}
+The last patch in this series is not meant to be applied, but it implements
+some simple random error injecting into the various error paths of
+__iio_update_buffers(). This was used to test the patch series for
+regressions and to make sure that we can indeed recover from fatal errors
+now.
+
+- Lars
+
+Lars-Peter Clausen (8):
+  iio: Replace printk in __iio_update_buffers with dev_dbg
+  iio: __iio_update_buffers: Slightly refactor scan mask memory
+    management
+  iio: __iio_update_buffers: Perform request_update() only for new
+    buffers
+  iio: __iio_update_buffers: Update mode before preenable/after
+    postdisable
+  iio: __iio_update_buffers: Verify configuration before starting to
+    apply it
+  iio: __iio_update_buffers: Split enable and disable path into helper
+    functions
+  iio: __iio_update_buffers: Leave device in sane state on error
+  DO NOT APPLY! __iio_update_buffers error path testing
+
+ drivers/iio/industrialio-buffer.c | 364 ++++++++++++++++++++++++--------------
+ 1 file changed, 229 insertions(+), 135 deletions(-)
+
 -- 
-1.9.1
+1.8.0
 
