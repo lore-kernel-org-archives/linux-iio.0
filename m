@@ -1,155 +1,280 @@
-Return-Path: <mfuzzey@parkeon.com>
-Subject: [PATCH V4 5/7] iio: mma8452: Add support for transient event
- debouncing
-To: Peter Meerwald <pmeerw@pmeerw.net>, Jonathan Cameron <jic23@kernel.org>
-From: Martin Fuzzey <mfuzzey@parkeon.com>
-Cc: linux-iio@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>
-Date: Wed, 13 May 2015 12:26:46 +0200
-Message-ID: <20150513102646.27803.61387.stgit@localhost>
-In-Reply-To: <20150513102635.27803.99054.stgit@localhost>
-References: <20150513102635.27803.99054.stgit@localhost>
-MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from smtp-out-163.synserver.de ([212.40.185.163]:1073 "EHLO
+	smtp-out-163.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753559AbbEMLOI (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 13 May 2015 07:14:08 -0400
+From: Lars-Peter Clausen <lars@metafoo.de>
+To: Daniel Baluta <daniel.baluta@intel.com>,
+	Jonathan Cameron <jic23@kernel.org>
+Cc: Joel Becker <jlbec@evilplan.org>, Hartmut Knaack <knaack.h@gmx.de>,
+	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	Paul Bolle <pebolle@tiscali.nl>, constantin.musca@intel.com,
+	marten@intuitiveaerial.com, Lars-Peter Clausen <lars@metafoo.de>
+Subject: Re: [PATCH v6 0/4] Add initial configfs support for IIO
+Date: Wed, 13 May 2015 13:14:01 +0200
+Message-Id: <1431515641-19984-1-git-send-email-lars@metafoo.de>
+In-Reply-To: <CAEnQRZCMkXYv6XO2dG7MRP0XEQm4A5t2zPHWiSdeR=X-9C=CaQ@mail.gmail.com>
+References: <CAEnQRZCMkXYv6XO2dG7MRP0XEQm4A5t2zPHWiSdeR=X-9C=CaQ@mail.gmail.com>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Allow the debouce counter for transient events to be configured
-using the sysfs attribute events/in_accel_thresh_rising_period
+Hi,
 
-Signed-off-by: Martin Fuzzey <mfuzzey@parkeon.com>
+I'd like to go back to the issue of having one folder per trigger type and
+create triggers for a type in their respective folder.
+
+I'm not convinced that it is an intentional design restriction of configfs
+that we can't do this, but rather a case of it not being implemented
+because nobody needed it so far.
+
+See the proof-of-concept patch below. With this we get one sub-folder per
+trigger type in /config/iio/triggers. It's not complete and doesn't do
+proper locking yet and also unregister is not yet implemented but it shows
+the concept how it could be done.
+
+I'm not saying that we definitely should go down that road, but it feels
+cleaner to me. And another advantage is that it is discoverable which types
+of triggers are available. Thoughts? 
+
+- Lars
+
 ---
- drivers/iio/accel/mma8452.c |   76 +++++++++++++++++++++++++++++++++++++------
- 1 file changed, 65 insertions(+), 11 deletions(-)
+ drivers/iio/industrialio-configfs.c   | 43 ++++++++++++++++++-----------------
+ drivers/iio/industrialio-sw-trigger.c | 12 ++++++----
+ fs/configfs/dir.c                     | 28 +++++++++++++++++++++--
+ include/linux/configfs.h              |  4 ++++
+ include/linux/iio/sw_trigger.h        | 19 ++++++++++++++++
+ 5 files changed, 79 insertions(+), 27 deletions(-)
 
-diff --git a/drivers/iio/accel/mma8452.c b/drivers/iio/accel/mma8452.c
-index 2e8f72d..196dc42 100644
---- a/drivers/iio/accel/mma8452.c
-+++ b/drivers/iio/accel/mma8452.c
-@@ -38,6 +38,7 @@
- #define MMA8452_TRANSIENT_SRC_ZTRANSE		BIT(5)
- #define MMA8452_TRANSIENT_THS 0x1f
- #define MMA8452_TRANSIENT_THS_MASK	0x7f
-+#define MMA8452_TRANSIENT_COUNT 0x20
- #define MMA8452_OFF_X 0x2f
- #define MMA8452_OFF_Y 0x30
- #define MMA8452_OFF_Z 0x31
-@@ -124,6 +125,12 @@ static int mma8452_get_int_plus_micros_index(const int (*vals)[2], int n,
- 	return -EINVAL;
+diff --git a/drivers/iio/industrialio-configfs.c b/drivers/iio/industrialio-configfs.c
+index daf318c..c1fa14f 100644
+--- a/drivers/iio/industrialio-configfs.c
++++ b/drivers/iio/industrialio-configfs.c
+@@ -22,27 +22,9 @@
+ static struct config_group *trigger_make_group(struct config_group *group,
+ 					       const char *name)
+ {
+-	char *type_name;
+-	char *trigger_name;
+-	char buf[MAX_NAME_LEN];
+ 	struct iio_sw_trigger *t;
+ 
+-	snprintf(buf, MAX_NAME_LEN, "%s", name);
+-
+-	/* group name should have the form <trigger-type>-<trigger-name> */
+-	type_name = buf;
+-	trigger_name = strchr(buf, '-');
+-	if (!trigger_name) {
+-		WARN_ONCE(1, "Unable to locate '-' in %s. Use <type>-<name>.\n",
+-			  buf);
+-		return ERR_PTR(-EINVAL);
+-	}
+-
+-	/* replace - with \0, this nicely separates the two strings */
+-	*trigger_name = '\0';
+-	trigger_name++;
+-
+-	t = iio_sw_trigger_create(type_name, trigger_name);
++	t = iio_sw_trigger_create(group->cg_item.ci_name, name);
+ 	if (IS_ERR(t))
+ 		return ERR_CAST(t);
+ 
+@@ -60,13 +42,17 @@ static void trigger_drop_group(struct config_group *group,
+ 	config_item_put(item);
  }
  
-+static int mma8452_get_odr_index(struct mma8452_data *data)
-+{
-+	return (data->ctrl_reg1 & MMA8452_CTRL_DR_MASK) >>
-+			MMA8452_CTRL_DR_SHIFT;
-+}
-+
- static const int mma8452_samp_freq[8][2] = {
- 	{800, 0}, {400, 0}, {200, 0}, {100, 0}, {50, 0}, {12, 500000},
- 	{6, 250000}, {1, 560000}
-@@ -139,6 +146,18 @@ static const int mma8452_scales[3][2] = {
- 	{0, 9577}, {0, 19154}, {0, 38307}
+-static struct configfs_group_operations triggers_ops = {
++static struct configfs_group_operations trigger_ops = {
+ 	.make_group	= &trigger_make_group,
+ 	.drop_item	= &trigger_drop_group,
  };
  
-+/* Datasheet table 35  (step time vs sample frequency) */
-+static const int mma8452_transient_time_step_us[8] = {
-+	1250,
-+	2500,
-+	5000,
-+	10000,
-+	20000,
-+	20000,
-+	20000,
-+	20000
++static struct config_item_type iio_trigger_group_type = {
++	.ct_group_ops = &trigger_ops,
++	.ct_owner       = THIS_MODULE,
 +};
 +
- static ssize_t mma8452_show_samp_freq_avail(struct device *dev,
- 				struct device_attribute *attr, char *buf)
- {
-@@ -198,8 +217,7 @@ static int mma8452_read_raw(struct iio_dev *indio_dev,
- 		*val2 = mma8452_scales[i][1];
- 		return IIO_VAL_INT_PLUS_MICRO;
- 	case IIO_CHAN_INFO_SAMP_FREQ:
--		i = (data->ctrl_reg1 & MMA8452_CTRL_DR_MASK) >>
--			MMA8452_CTRL_DR_SHIFT;
-+		i = mma8452_get_odr_index(data);
- 		*val = mma8452_samp_freq[i][0];
- 		*val2 = mma8452_samp_freq[i][1];
- 		return IIO_VAL_INT_PLUS_MICRO;
-@@ -297,15 +315,33 @@ static int mma8452_read_thresh(struct iio_dev *indio_dev,
- 			       int *val, int *val2)
- {
- 	struct mma8452_data *data = iio_priv(indio_dev);
--	int ret;
-+	int ret, us;
- 
--	ret = i2c_smbus_read_byte_data(data->client, MMA8452_TRANSIENT_THS);
--	if (ret < 0)
--		return ret;
-+	switch (info) {
-+	case IIO_EV_INFO_VALUE:
-+		ret = i2c_smbus_read_byte_data(data->client,
-+					       MMA8452_TRANSIENT_THS);
-+		if (ret < 0)
-+			return ret;
-+
-+		*val = ret & MMA8452_TRANSIENT_THS_MASK;
-+		return IIO_VAL_INT;
- 
--	*val = ret & MMA8452_TRANSIENT_THS_MASK;
-+	case IIO_EV_INFO_PERIOD:
-+		ret = i2c_smbus_read_byte_data(data->client,
-+					       MMA8452_TRANSIENT_COUNT);
-+		if (ret < 0)
-+			return ret;
-+
-+		us = ret * mma8452_transient_time_step_us[
-+				mma8452_get_odr_index(data)];
-+		*val = us / USEC_PER_SEC;
-+		*val2 = us % USEC_PER_SEC;
-+		return IIO_VAL_INT_PLUS_MICRO;
- 
--	return IIO_VAL_INT;
-+	default:
-+		return -EINVAL;
-+	}
- }
- 
- static int mma8452_write_thresh(struct iio_dev *indio_dev,
-@@ -316,9 +352,26 @@ static int mma8452_write_thresh(struct iio_dev *indio_dev,
- 				int val, int val2)
- {
- 	struct mma8452_data *data = iio_priv(indio_dev);
-+	int steps;
- 
--	return mma8452_change_config(data, MMA8452_TRANSIENT_THS,
--				     val & MMA8452_TRANSIENT_THS_MASK);
-+	switch (info) {
-+	case IIO_EV_INFO_VALUE:
-+		return mma8452_change_config(data, MMA8452_TRANSIENT_THS,
-+					     val & MMA8452_TRANSIENT_THS_MASK);
-+
-+	case IIO_EV_INFO_PERIOD:
-+		steps = (val * USEC_PER_SEC + val2) /
-+				mma8452_transient_time_step_us[
-+					mma8452_get_odr_index(data)];
-+
-+		if (steps > 0xff)
-+			return -EINVAL;
-+
-+		return mma8452_change_config(data, MMA8452_TRANSIENT_COUNT,
-+					     steps);
-+	default:
-+		return -EINVAL;
-+	}
- }
- 
- static int mma8452_read_event_config(struct iio_dev *indio_dev,
-@@ -457,7 +510,8 @@ static const struct iio_event_spec mma8452_transient_event[] = {
- 		.dir = IIO_EV_DIR_RISING,
- 		.mask_separate = BIT(IIO_EV_INFO_ENABLE),
- 		.mask_shared_by_type = BIT(IIO_EV_INFO_VALUE) |
--					BIT(IIO_EV_INFO_HIGH_PASS_FILTER_3DB),
-+					BIT(IIO_EV_INFO_HIGH_PASS_FILTER_3DB) |
-+					BIT(IIO_EV_INFO_PERIOD),
- 	},
+ static struct config_item_type iio_triggers_group_type = {
+-	.ct_group_ops = &triggers_ops,
+ 	.ct_owner       = THIS_MODULE,
  };
  
+@@ -97,6 +83,21 @@ static struct configfs_subsystem iio_configfs_subsys = {
+ 	.su_mutex = __MUTEX_INITIALIZER(iio_configfs_subsys.su_mutex),
+ };
+ 
++int iio_sw_trigger_type_configs_register(struct iio_sw_trigger_type *tt)
++{
++	config_group_init_type_name(&tt->group, tt->name,
++		&iio_trigger_group_type);
++
++	return configfs_register_group(&iio_triggers_group, &tt->group);
++}
++EXPORT_SYMBOL_GPL(iio_sw_trigger_type_configs_register);
++
++void iio_sw_trigger_type_configs_unregister(struct iio_sw_trigger_type *tt)
++{
++	configfs_unregister_group(&tt->group);
++}
++EXPORT_SYMBOL_GPL(iio_sw_trigger_type_configs_unregister);
++
+ static int __init iio_configfs_init(void)
+ {
+ 	config_group_init(&iio_triggers_group);
+diff --git a/drivers/iio/industrialio-sw-trigger.c b/drivers/iio/industrialio-sw-trigger.c
+index fa1ec51..312c33c 100644
+--- a/drivers/iio/industrialio-sw-trigger.c
++++ b/drivers/iio/industrialio-sw-trigger.c
+@@ -41,10 +41,12 @@ int iio_register_sw_trigger_type(struct iio_sw_trigger_type *t)
+ 
+ 	write_lock(&iio_trigger_types_lock);
+ 	iter = __iio_find_sw_trigger_type(t->name, strlen(t->name));
+-	if (iter)
++	if (iter) {
+ 		ret = -EBUSY;
+-	else
++	} else {
+ 		list_add_tail(&t->list, &iio_trigger_types_list);
++		iio_sw_trigger_type_configs_register(t);
++	}
+ 	write_unlock(&iio_trigger_types_lock);
+ 
+ 	return ret;
+@@ -58,10 +60,12 @@ int iio_unregister_sw_trigger_type(struct iio_sw_trigger_type *t)
+ 
+ 	write_lock(&iio_trigger_types_lock);
+ 	iter = __iio_find_sw_trigger_type(t->name, strlen(t->name));
+-	if (!iter)
++	if (!iter) {
+ 		ret = -EINVAL;
+-	else
++	} else {
++		iio_sw_trigger_type_configs_unregister(t);
+ 		list_del(&t->list);
++	}
+ 	write_unlock(&iio_trigger_types_lock);
+ 
+ 	return ret;
+diff --git a/fs/configfs/dir.c b/fs/configfs/dir.c
+index c9c298b..0e2e0e6 100644
+--- a/fs/configfs/dir.c
++++ b/fs/configfs/dir.c
+@@ -659,7 +659,7 @@ static void detach_groups(struct config_group *group)
+  * try using vfs_mkdir.  Just a thought.
+  */
+ static int create_default_group(struct config_group *parent_group,
+-				struct config_group *group)
++				struct config_group *group, struct dentry **dentry)
+ {
+ 	int ret;
+ 	struct configfs_dirent *sd;
+@@ -679,6 +679,8 @@ static int create_default_group(struct config_group *parent_group,
+ 		if (!ret) {
+ 			sd = child->d_fsdata;
+ 			sd->s_type |= CONFIGFS_USET_DEFAULT;
++			if (dentry)
++				*dentry = child;
+ 		} else {
+ 			BUG_ON(child->d_inode);
+ 			d_drop(child);
+@@ -699,7 +701,7 @@ static int populate_groups(struct config_group *group)
+ 		for (i = 0; group->default_groups[i]; i++) {
+ 			new_group = group->default_groups[i];
+ 
+-			ret = create_default_group(group, new_group);
++			ret = create_default_group(group, new_group, NULL);
+ 			if (ret) {
+ 				detach_groups(group);
+ 				break;
+@@ -1644,6 +1646,28 @@ const struct file_operations configfs_dir_operations = {
+ 	.iterate	= configfs_readdir,
+ };
+ 
++int configfs_register_group(struct config_group *parent_group,
++	struct config_group *group)
++{
++	struct dentry *dentry;
++	int ret;
++
++	link_group(parent_group, group);
++
++	ret = create_default_group(parent_group, group, &dentry);
++	if (ret == 0)
++		configfs_dir_set_ready(dentry->d_fsdata);
++
++	return ret;
++}
++EXPORT_SYMBOL(configfs_register_group);
++
++void configfs_unregister_group(struct config_group *group)
++{
++	/* TODO */
++}
++EXPORT_SYMBOL(configfs_unregister_group);
++
+ int configfs_register_subsystem(struct configfs_subsystem *subsys)
+ {
+ 	int err;
+diff --git a/include/linux/configfs.h b/include/linux/configfs.h
+index 34025df..a641bea 100644
+--- a/include/linux/configfs.h
++++ b/include/linux/configfs.h
+@@ -252,6 +252,10 @@ static inline struct configfs_subsystem *to_configfs_subsystem(struct config_gro
+ int configfs_register_subsystem(struct configfs_subsystem *subsys);
+ void configfs_unregister_subsystem(struct configfs_subsystem *subsys);
+ 
++int configfs_register_group(struct config_group *parent_group,
++	struct config_group *group);
++void configfs_unregister_group(struct config_group *group);
++
+ /* These functions can sleep and can alloc with GFP_KERNEL */
+ /* WARNING: These cannot be called underneath configfs callbacks!! */
+ int configfs_depend_item(struct configfs_subsystem *subsys, struct config_item *target);
+diff --git a/include/linux/iio/sw_trigger.h b/include/linux/iio/sw_trigger.h
+index 87803c7..5551a11 100644
+--- a/include/linux/iio/sw_trigger.h
++++ b/include/linux/iio/sw_trigger.h
+@@ -27,6 +27,10 @@ struct iio_sw_trigger_type {
+ 	struct module *owner;
+ 	const struct iio_sw_trigger_ops *ops;
+ 	struct list_head list;
++#ifdef CONFIG_CONFIGFS_FS
++	struct config_group group;
++#endif
++
+ };
+ 
+ struct iio_sw_trigger {
+@@ -60,6 +64,10 @@ struct iio_sw_trigger *iio_sw_trigger_create(const char *, const char *);
+ void iio_sw_trigger_destroy(struct iio_sw_trigger *);
+ 
+ #ifdef CONFIG_CONFIGFS_FS
++
++int iio_sw_trigger_type_configs_register(struct iio_sw_trigger_type *tt);
++void iio_sw_trigger_type_configs_unregister(struct iio_sw_trigger_type *tt);
++
+ static inline
+ struct iio_sw_trigger *to_iio_sw_trigger(struct config_item *item)
+ {
+@@ -75,6 +83,17 @@ void iio_config_group_init_type_name(struct config_group *group,
+ 	config_group_init_type_name(group, name, type);
+ }
+ #else
++static inline int iio_sw_trigger_type_configs_register(
++	struct iio_sw_trigger_type *tt)
++{
++	return 0;
++}
++
++static inline void iio_sw_trigger_type_configs_unregister(
++	struct iio_sw_trigger_type *tt)
++{
++}
++
+ static inline
+ void iio_config_group_init_type_name(struct config_group *group,
+ 				     const char *name,
+-- 
+1.8.0
+
