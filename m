@@ -1,227 +1,55 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:34435 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:34456 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S933578AbbEMRiM (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 13 May 2015 13:38:12 -0400
-Message-ID: <55538BFF.5010401@kernel.org>
-Date: Wed, 13 May 2015 18:38:07 +0100
+	with ESMTP id S1753602AbbEMRkx (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 13 May 2015 13:40:53 -0400
+Message-ID: <55538CA3.2050806@kernel.org>
+Date: Wed, 13 May 2015 18:40:51 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Vignesh R <vigneshr@ti.com>, Rob Herring <robh+dt@kernel.org>,
-	Pawel Moll <pawel.moll@arm.com>,
-	Mark Rutland <mark.rutland@arm.com>,
-	Ian Campbell <ijc+devicetree@hellion.org.uk>,
-	Kumar Gala <galak@codeaurora.org>
-CC: Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-	Karol Wrona <k.wrona@samsung.com>,
-	Jan Kardell <jan.kardell@telliq.com>,
-	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"Cooper Jr., Franklin" <fcooper@ti.com>
-Subject: Re: [PATCH 2/2] iio: adc: ti_am335x_adc: make sample delay, open
- delay, averaging DT parameters
-References: <1427800357-21680-1-git-send-email-vigneshr@ti.com> <1427800357-21680-3-git-send-email-vigneshr@ti.com> <55268A7C.1050307@kernel.org> <5553006B.1050306@ti.com>
-In-Reply-To: <5553006B.1050306@ti.com>
-Content-Type: text/plain; charset=windows-1252
+To: linux-iio@vger.kernel.org
+CC: =?UTF-8?B?Vmlhbm5leSBsZSBDbMOpbWVudCBkZSBTYWludC1NYXJjcQ==?=
+	<vianney.leclement@essensium.com>,
+	Peter Meerwald <pmeerw@pmeerw.net>
+Subject: Re: [PATCH] iio:temp:mlx90614 trivial drop of unnecessary ret return
+ from write_raw.
+References: <1430562902-28068-1-git-send-email-jic23@kernel.org>
+In-Reply-To: <1430562902-28068-1-git-send-email-jic23@kernel.org>
+Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 13/05/15 08:42, Vignesh R wrote:
+On 02/05/15 11:35, Jonathan Cameron wrote:
+> This is mostly part of an effort to clean out our current warnings
+> and make the autobuilder build reports more useful.
 > 
+> Still a worthwhile if trivial cleanup!
 > 
-> On Thursday 09 April 2015 07:49 PM, Jonathan Cameron wrote:
->> On 31/03/15 12:12, Vignesh R wrote:
->>> Add optional DT properties to set open delay, sample delay and number
->>> of averages per sample for each adc step. Open delay, sample delay
->>> and averaging are some of the parameters that affect the sampling rate
->>> and accuracy of the sample. Making these parameters configurable via
->>> DT will help in balancing speed vs accuracy.
->>>
->>> Signed-off-by: Vignesh R <vigneshr@ti.com>
->> All looks fine to me, but I would ideally like a devicetree
->> ack on this one.
->>
->> Jonathan
-> 
-> Gentle ping...
-Thanks. Had forgotten about this one.  Ah well, no device tree response...
-
-Applied to the togreg branch of iio.git, initially pushed out as testing.
-
-Thanks,
+> Signed-off-by: Jonathan Cameron <jic23@kernel.org>
+> Reported-by: kbuild test robot <fengguang.wu@intel.com>
+> Cc: Vianney le Clément de Saint-Marcq <vianney.leclement@essensium.com>
+> Cc: Peter Meerwald <pmeerw@pmeerw.net>
+Applied to the togreg branch of iio.git - pushed out as testing.
 
 Jonathan
+> ---
+>  drivers/iio/temperature/mlx90614.c | 4 +---
+>  1 file changed, 1 insertion(+), 3 deletions(-)
 > 
-> Regards
-> Vignesh
->>> ---
->>>  .../bindings/input/touchscreen/ti-tsc-adc.txt      | 24 ++++++++++
->>>  drivers/iio/adc/ti_am335x_adc.c                    | 54 +++++++++++++++++++---
->>>  2 files changed, 72 insertions(+), 6 deletions(-)
->>>
->>> diff --git a/Documentation/devicetree/bindings/input/touchscreen/ti-tsc-adc.txt b/Documentation/devicetree/bindings/input/touchscreen/ti-tsc-adc.txt
->>> index 6c4fb34823d3..8aafbe87f0eb 100644
->>> --- a/Documentation/devicetree/bindings/input/touchscreen/ti-tsc-adc.txt
->>> +++ b/Documentation/devicetree/bindings/input/touchscreen/ti-tsc-adc.txt
->>> @@ -42,6 +42,27 @@ Optional properties:
->>>  			 hardware knob for adjusting the amount of "settling
->>>  			 time".
->>>  
->>> +- child "adc"
->>> +	ti,chan-step-opendelay: List of open delays for each channel of
->>> +				ADC in the order of ti,adc-channels. The
->>> +				value corresponds to the number of ADC
->>> +				clock cycles to wait after applying the
->>> +				step configuration registers and before
->>> +				sending the start of ADC conversion.
->>> +				Maximum value is 0x3FFFF.
->>> +       ti,chan-step-sampledelay: List of sample delays for each channel
->>> +				  of ADC in the order of ti,adc-channels.
->>> +				  The value corresponds to the number of
->>> +				  ADC clock cycles to sample (to hold
->>> +				  start of conversion high).
->>> +				  Maximum value is 0xFF.
->>> +       ti,chan-step-avg: Number of averages to be performed for each
->>> +			  channel of ADC. If average is 16 then input
->>> +			  is sampled 16 times and averaged to get more
->>> +			  accurate value. This increases the time taken
->>> +			  by ADC to generate a sample. Valid range is 0
->>> +			  average to 16 averages. Maximum value is 16.
->>> +
->>>  Example:
->>>  	tscadc: tscadc@44e0d000 {
->>>  		compatible = "ti,am3359-tscadc";
->>> @@ -55,5 +76,8 @@ Example:
->>>  
->>>  		adc {
->>>  			ti,adc-channels = <4 5 6 7>;
->>> +			ti,chan-step-opendelay = <0x098 0x3ffff 0x098 0x0>;
->>> +			ti,chan-step-sampledelay = <0xff 0x0 0xf 0x0>;
->>> +			ti,chan-step-avg = <16 2 4 8>;
->>>  		};
->>>  	}
->>> diff --git a/drivers/iio/adc/ti_am335x_adc.c b/drivers/iio/adc/ti_am335x_adc.c
->>> index 2f818405ffbe..5ee597b4a1af 100644
->>> --- a/drivers/iio/adc/ti_am335x_adc.c
->>> +++ b/drivers/iio/adc/ti_am335x_adc.c
->>> @@ -37,6 +37,7 @@ struct tiadc_device {
->>>  	u8 channel_step[8];
->>>  	int buffer_en_ch_steps;
->>>  	u16 data[8];
->>> +	u32 open_delay[8], sample_delay[8], step_avg[8];
->>>  };
->>>  
->>>  static unsigned int tiadc_readl(struct tiadc_device *adc, unsigned int reg)
->>> @@ -85,6 +86,7 @@ static u32 get_adc_step_bit(struct tiadc_device *adc_dev, int chan)
->>>  static void tiadc_step_config(struct iio_dev *indio_dev)
->>>  {
->>>  	struct tiadc_device *adc_dev = iio_priv(indio_dev);
->>> +	struct device *dev = adc_dev->mfd_tscadc->dev;
->>>  	unsigned int stepconfig;
->>>  	int i, steps = 0;
->>>  
->>> @@ -98,20 +100,47 @@ static void tiadc_step_config(struct iio_dev *indio_dev)
->>>  	 * needs to be given to ADC to digitalize data.
->>>  	 */
->>>  
->>> -	if (iio_buffer_enabled(indio_dev))
->>> -		stepconfig = STEPCONFIG_AVG_16 | STEPCONFIG_FIFO1
->>> -					| STEPCONFIG_MODE_SWCNT;
->>> -	else
->>> -		stepconfig = STEPCONFIG_AVG_16 | STEPCONFIG_FIFO1;
->>>  
->>>  	for (i = 0; i < adc_dev->channels; i++) {
->>>  		int chan;
->>>  
->>>  		chan = adc_dev->channel_line[i];
->>> +
->>> +		if (adc_dev->step_avg[i] > STEPCONFIG_AVG_16) {
->>> +			dev_warn(dev, "chan %d step_avg truncating to %d\n",
->>> +				 chan, STEPCONFIG_AVG_16);
->>> +			adc_dev->step_avg[i] = STEPCONFIG_AVG_16;
->>> +		}
->>> +
->>> +		if (adc_dev->step_avg[i])
->>> +			stepconfig =
->>> +			STEPCONFIG_AVG(ffs(adc_dev->step_avg[i]) - 1) |
->>> +			STEPCONFIG_FIFO1;
->>> +		else
->>> +			stepconfig = STEPCONFIG_FIFO1;
->>> +
->>> +		if (iio_buffer_enabled(indio_dev))
->>> +			stepconfig |= STEPCONFIG_MODE_SWCNT;
->>> +
->>>  		tiadc_writel(adc_dev, REG_STEPCONFIG(steps),
->>>  				stepconfig | STEPCONFIG_INP(chan));
->>> +
->>> +		if (adc_dev->open_delay[i] > STEPDELAY_OPEN_MASK)alue corresponds to the number of ADC
->>> +				clock cycles to wait after applying the
->>> +				step configuration registers and before
->>> +				sending the start of ADC conversion.
->>> +				Maximum value is 0x3FFFF.
->>> +       ti,chan-step-sampledelay: List of sample delays for each channel
->>> +				  of ADC in the order of ti,adc-channels.
->>> +				  The value corresponds to the number of
->>> +				  ADC clock cycles to sample (to hold
->>> +				  start of conversion high).
->>> +				  Maximum value is 0xFF.
->>> +       ti,chan-step-avg: Number of averages to be performed for each
->>> +			  channel of ADC. If average is 16 then input
->>> +			  is sampled 16 times and averaged to get more
->>> +			  accurate value. This increases the time taken
->>> +			  by ADC to generate a sample. Valid range is 0
->>> +			  average to 16 averages. Maximum value is 16. {
->>> +			dev_warn(dev, "chan %d open delay truncating to 0x3FFFF\n",
->>> +				 chan);
->>> +			adc_dev->open_delay[i] = STEPDELAY_OPEN_MASK;
->>> +		}
->>> +
->>> +		if (adc_dev->sample_delay[i] > 0xFF) {
->>> +			dev_warn(dev, "chan %d sample delay truncating to 0xFF\n",
->>> +				 chan);
->>> +			adc_dev->sample_delay[i] = 0xFF;
->>> +		}
->>> +
->>>  		tiadc_writel(adc_dev, REG_STEPDELAY(steps),
->>> -				STEPCONFIG_OPENDLY);
->>> +				STEPDELAY_OPEN(adc_dev->open_delay[i]) |
->>> +				STEPDELAY_SAMPLE(adc_dev->sample_delay[i]));
->>> +
->>>  		adc_dev->channel_step[i] = steps;
->>>  		steps++;
->>>  	}
->>> @@ -407,9 +436,22 @@ static int tiadc_parse_dt(struct platform_device *pdev,
->>>  
->>>  	of_property_for_each_u32(node, "ti,adc-channels", prop, cur, val) {
->>>  		adc_dev->channel_line[channels] = val;
->>> +
->>> +		/* Set Default values for optional DT parameters */
->>> +		adc_dev->open_delay[channels] = STEPCONFIG_OPENDLY;
->>> +		adc_dev->sample_delay[channels] = STEPCONFIG_SAMPLEDLY;
->>> +		adc_dev->step_avg[channels] = 16;
->>> +
->>>  		channels++;
->>>  	}
->>>  
->>> +	of_property_read_u32_array(node, "ti,chan-step-avg",
->>> +				   adc_dev->step_avg, channels);
->>> +	of_property_read_u32_array(node, "ti,chan-step-opendelay",
->>> +				   adc_dev->open_delay, channels);
->>> +	of_property_read_u32_array(node, "ti,chan-step-sampledelay",
->>> +				   adc_dev->sample_delay, channels);
->>> +
->>>  	adc_dev->channels = channels;
->>>  	return 0;
->>>  }
->>>
->>
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> diff --git a/drivers/iio/temperature/mlx90614.c b/drivers/iio/temperature/mlx90614.c
+> index b2d3b56f1260..cb2e8ad8bfdc 100644
+> --- a/drivers/iio/temperature/mlx90614.c
+> +++ b/drivers/iio/temperature/mlx90614.c
+> @@ -254,9 +254,7 @@ static int mlx90614_write_raw(struct iio_dev *indio_dev,
+>  		mutex_unlock(&data->lock);
+>  		mlx90614_power_put(data);
+>  
+> -		if (ret < 0)
+> -			return ret;
+> -		return 0;
+> +		return ret;
+>  	default:
+>  		return -EINVAL;
+>  	}
 > 
 
