@@ -1,95 +1,114 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp-out-168.synserver.de ([212.40.185.168]:1078 "EHLO
-	smtp-out-168.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S934400AbbEOPSp (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 15 May 2015 11:18:45 -0400
-From: Lars-Peter Clausen <lars@metafoo.de>
-To: Jonathan Cameron <jic23@kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>
-Cc: linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH 5/5] iio: adis16400: Fix burst transfer for adis16448
-Date: Fri, 15 May 2015 17:18:38 +0200
-Message-Id: <1431703118-32676-6-git-send-email-lars@metafoo.de>
-In-Reply-To: <1431703118-32676-1-git-send-email-lars@metafoo.de>
-References: <1431703118-32676-1-git-send-email-lars@metafoo.de>
+Received: from mga14.intel.com ([192.55.52.115]:61452 "EHLO mga14.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1754516AbbEORmf (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Fri, 15 May 2015 13:42:35 -0400
+From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+To: jic23@kernel.org
+Cc: linux-iio@vger.kernel.org,
+	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Subject: [PATCH] HID: hid-sensor-hub: Optimize suspend/resume time
+Date: Fri, 15 May 2015 10:40:43 -0700
+Message-Id: <1431711643-1326-1-git-send-email-srinivas.pandruvada@linux.intel.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-The adis16448, unlike the other chips in this family, in addition to the
-hardware channels also sends out the DIAG_STAT register in burst mode
-before them. Handle that case by skipping over the first 2 bytes before we
-pass the received data to the buffer.
+When system suspend is issued, the pm core issues resume call for all
+run time suspended devices. This is required for some devices to
+continue suspend.
+For sensor hub we don't need to runtime resume devices and then suspend.
+So when the system suspend is in progress, ignore call to power up
+the sensors. This has a significant impact on suspend/resume performance.
 
-Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
-Fixes: 76ada52f7f5d ("iio:adis16400: Add support for the adis16448")
+Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
 ---
- drivers/iio/imu/adis16400.h        |  1 +
- drivers/iio/imu/adis16400_buffer.c | 10 +++++++++-
- drivers/iio/imu/adis16400_core.c   |  3 ++-
- 3 files changed, 12 insertions(+), 2 deletions(-)
+ .../iio/common/hid-sensors/hid-sensor-trigger.c    | 31 ++++++++++++++++++++++
+ include/linux/hid-sensor-hub.h                     |  2 ++
+ 2 files changed, 33 insertions(+)
 
-diff --git a/drivers/iio/imu/adis16400.h b/drivers/iio/imu/adis16400.h
-index 1e8fd2e..73b189c 100644
---- a/drivers/iio/imu/adis16400.h
-+++ b/drivers/iio/imu/adis16400.h
-@@ -139,6 +139,7 @@
- #define ADIS16400_NO_BURST		BIT(1)
- #define ADIS16400_HAS_SLOW_MODE		BIT(2)
- #define ADIS16400_HAS_SERIAL_NUMBER	BIT(3)
-+#define ADIS16400_BURST_DIAG_STAT	BIT(4)
+diff --git a/drivers/iio/common/hid-sensors/hid-sensor-trigger.c b/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
+index 610fc98..d9170d2 100644
+--- a/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
++++ b/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
+@@ -23,6 +23,7 @@
+ #include <linux/irq.h>
+ #include <linux/slab.h>
+ #include <linux/delay.h>
++#include <linux/suspend.h>
+ #include <linux/hid-sensor-hub.h>
+ #include <linux/iio/iio.h>
+ #include <linux/iio/trigger.h>
+@@ -36,6 +37,9 @@ static int _hid_sensor_power_state(struct hid_sensor_common *st, bool state)
+ 	s32 poll_value = 0;
  
- struct adis16400_state;
- 
-diff --git a/drivers/iio/imu/adis16400_buffer.c b/drivers/iio/imu/adis16400_buffer.c
-index 629ae84..90c24a2 100644
---- a/drivers/iio/imu/adis16400_buffer.c
-+++ b/drivers/iio/imu/adis16400_buffer.c
-@@ -29,6 +29,8 @@ int adis16400_update_scan_mode(struct iio_dev *indio_dev,
- 
- 	/* All but the timestamp channel */
- 	burst_length = (indio_dev->num_channels - 1) * sizeof(u16);
-+	if (st->variant->flags & ADIS16400_BURST_DIAG_STAT)
-+		burst_length += sizeof(u16);
- 
- 	adis->xfer = kcalloc(2, sizeof(*adis->xfer), GFP_KERNEL);
- 	if (!adis->xfer)
-@@ -63,6 +65,7 @@ irqreturn_t adis16400_trigger_handler(int irq, void *p)
- 	struct adis16400_state *st = iio_priv(indio_dev);
- 	struct adis *adis = &st->adis;
- 	u32 old_speed_hz = st->adis.spi->max_speed_hz;
-+	void *buffer;
- 	int ret;
- 
- 	if (!adis->buffer)
-@@ -83,7 +86,12 @@ irqreturn_t adis16400_trigger_handler(int irq, void *p)
- 		spi_setup(st->adis.spi);
- 	}
- 
--	iio_push_to_buffers_with_timestamp(indio_dev, adis->buffer,
-+	if (st->variant->flags & ADIS16400_BURST_DIAG_STAT)
-+		buffer = adis->buffer + sizeof(u16);
-+	else
-+		buffer = adis->buffer;
+ 	if (state) {
++		if (atomic_read(&st->suspend_in_progress))
++			return 0;
 +
-+	iio_push_to_buffers_with_timestamp(indio_dev, buffer,
- 		pf->timestamp);
+ 		if (sensor_hub_device_open(st->hsdev))
+ 			return -EIO;
  
- 	iio_trigger_notify_done(indio_dev->trig);
-diff --git a/drivers/iio/imu/adis16400_core.c b/drivers/iio/imu/adis16400_core.c
-index 7b06e058..2fd68f22 100644
---- a/drivers/iio/imu/adis16400_core.c
-+++ b/drivers/iio/imu/adis16400_core.c
-@@ -778,7 +778,8 @@ static struct adis16400_chip_info adis16400_chips[] = {
- 		.channels = adis16448_channels,
- 		.num_channels = ARRAY_SIZE(adis16448_channels),
- 		.flags = ADIS16400_HAS_PROD_ID |
--				ADIS16400_HAS_SERIAL_NUMBER,
-+				ADIS16400_HAS_SERIAL_NUMBER |
-+				ADIS16400_BURST_DIAG_STAT,
- 		.gyro_scale_micro = IIO_DEGREE_TO_RAD(10000), /* 0.01 deg/s */
- 		.accel_scale_micro = IIO_G_TO_M_S_2(833), /* 1/1200 g */
- 		.temp_scale_nano = 73860000, /* 0.07386 C */
+@@ -113,6 +117,28 @@ int hid_sensor_power_state(struct hid_sensor_common *st, bool state)
+ #endif
+ }
+ 
++static int hid_sensor_pm_notifier(struct notifier_block *nb, unsigned long val,
++				  void *ptr)
++{
++	struct hid_sensor_common *common =
++			container_of(nb, struct hid_sensor_common, pm_nb);
++
++	switch (val) {
++	case PM_HIBERNATION_PREPARE:
++	case PM_SUSPEND_PREPARE:
++		atomic_set(&common->suspend_in_progress, 1);
++		break;
++	case PM_POST_HIBERNATION:
++	case PM_POST_SUSPEND:
++	case PM_POST_RESTORE:
++		atomic_set(&common->suspend_in_progress, 0);
++		break;
++	default:
++		break;
++	}
++	return 0;
++}
++
+ static int hid_sensor_data_rdy_trigger_set_state(struct iio_trigger *trig,
+ 						bool state)
+ {
+@@ -121,6 +147,7 @@ static int hid_sensor_data_rdy_trigger_set_state(struct iio_trigger *trig,
+ 
+ void hid_sensor_remove_trigger(struct hid_sensor_common *attrb)
+ {
++	unregister_pm_notifier(&attrb->pm_nb);
+ 	iio_trigger_unregister(attrb->trigger);
+ 	iio_trigger_free(attrb->trigger);
+ }
+@@ -168,6 +195,10 @@ int hid_sensor_setup_trigger(struct iio_dev *indio_dev, const char *name,
+ 					 3000);
+ 	pm_runtime_use_autosuspend(&attrb->pdev->dev);
+ 
++	atomic_set(&attrb->suspend_in_progress, 0);
++	attrb->pm_nb.notifier_call = hid_sensor_pm_notifier;
++	register_pm_notifier(&attrb->pm_nb);
++
+ 	return ret;
+ error_unreg_trigger:
+ 	iio_trigger_unregister(trig);
+diff --git a/include/linux/hid-sensor-hub.h b/include/linux/hid-sensor-hub.h
+index 0042bf3..e38c72a 100644
+--- a/include/linux/hid-sensor-hub.h
++++ b/include/linux/hid-sensor-hub.h
+@@ -230,6 +230,8 @@ struct hid_sensor_common {
+ 	struct platform_device *pdev;
+ 	unsigned usage_id;
+ 	atomic_t data_ready;
++	atomic_t suspend_in_progress;
++	struct notifier_block pm_nb;
+ 	struct iio_trigger *trigger;
+ 	struct hid_sensor_hub_attribute_info poll;
+ 	struct hid_sensor_hub_attribute_info report_state;
 -- 
-1.8.0
+1.9.3
 
