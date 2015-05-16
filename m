@@ -1,124 +1,48 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga11.intel.com ([192.55.52.93]:2822 "EHLO mga11.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S2992469AbbEPBXw (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Fri, 15 May 2015 21:23:52 -0400
-From: Kuppuswamy Sathyanarayanan
-	<sathyanarayanan.kuppuswamy@linux.intel.com>
-To: jic23@kernel.org, pmeerw@pmeerw.net
-Cc: srinivas.pandruvada@linux.intel.com,
-	sathyanarayanan.kuppuswamy@linux.intel.com,
-	linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org
-Subject: [PATCH v3 1/1] iio: ltr501: Add light channel support
-Date: Fri, 15 May 2015 18:23:21 -0700
-Message-Id: <f4066a7d7a406922a115696c130b5f4de11b3923.1431738526.git.sathyanarayanan.kuppuswamy@linux.intel.com>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:52999 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752912AbbEPJ4f (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 16 May 2015 05:56:35 -0400
+Message-ID: <55571450.3060903@kernel.org>
+Date: Sat, 16 May 2015 10:56:32 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+MIME-Version: 1.0
+To: Lars-Peter Clausen <lars@metafoo.de>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>
+CC: linux-iio@vger.kernel.org
+Subject: Re: [PATCH 1/5] iio: adis16400: Report pressure channel scale
+References: <1431703118-32676-1-git-send-email-lars@metafoo.de> <1431703118-32676-2-git-send-email-lars@metafoo.de>
+In-Reply-To: <1431703118-32676-2-git-send-email-lars@metafoo.de>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Added support to calculate lux value from visible
-and IR spectrum adc count values. Also added IIO_LIGHT
-channel to enable user read the lux value directly
-from device using illuminance input ABI.
-
-Signed-off-by: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
----
- drivers/iio/light/ltr501.c | 51 ++++++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 51 insertions(+)
-
-v2: Changed scan index of light channel to -1
-v3: Removed scan type info from light channel
-
-diff --git a/drivers/iio/light/ltr501.c b/drivers/iio/light/ltr501.c
-index ca4bf47..d7245c6 100644
---- a/drivers/iio/light/ltr501.c
-+++ b/drivers/iio/light/ltr501.c
-@@ -66,6 +66,9 @@
- 
- #define LTR501_REGMAP_NAME "ltr501_regmap"
- 
-+#define LTR501_LUX_CONV(vis_coeff, vis_data, ir_coeff, ir_data) \
-+			((vis_coeff * vis_data) - (ir_coeff * ir_data))
-+
- static const int int_time_mapping[] = {100000, 50000, 200000, 400000};
- 
- static const struct reg_field reg_field_it =
-@@ -298,6 +301,29 @@ static int ltr501_ps_read_samp_period(struct ltr501_data *data, int *val)
- 	return IIO_VAL_INT;
- }
- 
-+/* IR and visible spectrum coeff's are given in data sheet */
-+static unsigned long ltr501_calculate_lux(u16 vis_data, u16 ir_data)
-+{
-+	unsigned long ratio, lux;
-+
-+	if (vis_data == 0)
-+		return 0;
-+
-+	/* multiply numerator by 100 to avoid handling ratio < 1 */
-+	ratio = DIV_ROUND_UP(ir_data * 100, ir_data + vis_data);
-+
-+	if (ratio < 45)
-+		lux = LTR501_LUX_CONV(1774, vis_data, -1105, ir_data);
-+	else if (ratio >= 45 && ratio < 64)
-+		lux = LTR501_LUX_CONV(3772, vis_data, 1336, ir_data);
-+	else if (ratio >= 64 && ratio < 85)
-+		lux = LTR501_LUX_CONV(1690, vis_data, 169, ir_data);
-+	else
-+		lux = 0;
-+
-+	return lux / 1000;
-+}
-+
- static int ltr501_drdy(struct ltr501_data *data, u8 drdy_mask)
- {
- 	int tries = 100;
-@@ -548,7 +574,14 @@ static const struct iio_event_spec ltr501_pxs_event_spec[] = {
- 	.num_event_specs = _evsize,\
- }
- 
-+#define LTR501_LIGHT_CHANNEL() { \
-+	.type = IIO_LIGHT, \
-+	.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED), \
-+	.scan_index = -1, \
-+}
-+
- static const struct iio_chan_spec ltr501_channels[] = {
-+	LTR501_LIGHT_CHANNEL(),
- 	LTR501_INTENSITY_CHANNEL(0, LTR501_ALS_DATA0, IIO_MOD_LIGHT_BOTH, 0,
- 				 ltr501_als_event_spec,
- 				 ARRAY_SIZE(ltr501_als_event_spec)),
-@@ -576,6 +609,7 @@ static const struct iio_chan_spec ltr501_channels[] = {
- };
- 
- static const struct iio_chan_spec ltr301_channels[] = {
-+	LTR501_LIGHT_CHANNEL(),
- 	LTR501_INTENSITY_CHANNEL(0, LTR501_ALS_DATA0, IIO_MOD_LIGHT_BOTH, 0,
- 				 ltr501_als_event_spec,
- 				 ARRAY_SIZE(ltr501_als_event_spec)),
-@@ -596,6 +630,23 @@ static int ltr501_read_raw(struct iio_dev *indio_dev,
- 	int ret, i;
- 
- 	switch (mask) {
-+	case IIO_CHAN_INFO_PROCESSED:
-+		if (iio_buffer_enabled(indio_dev))
-+			return -EBUSY;
-+
-+		switch (chan->type) {
-+		case IIO_LIGHT:
-+			mutex_lock(&data->lock_als);
-+			ret = ltr501_read_als(data, buf);
-+			mutex_unlock(&data->lock_als);
-+			if (ret < 0)
-+				return ret;
-+			*val = ltr501_calculate_lux(le16_to_cpu(buf[1]),
-+						    le16_to_cpu(buf[0]));
-+			return IIO_VAL_INT;
-+		default:
-+			return -EINVAL;
-+		}
- 	case IIO_CHAN_INFO_RAW:
- 		if (iio_buffer_enabled(indio_dev))
- 			return -EBUSY;
--- 
-1.9.1
+On 15/05/15 16:18, Lars-Peter Clausen wrote:
+> Add the scale for the pressure channel, which is currently missing.
+> 
+> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+> Fixes: 76ada52f7f5d ("iio:adis16400: Add support for the adis16448")
+Applied to the fixes branch of iio.git and marked for stable.
+> ---
+>  drivers/iio/imu/adis16400_core.c | 5 +++++
+>  1 file changed, 5 insertions(+)
+> 
+> diff --git a/drivers/iio/imu/adis16400_core.c b/drivers/iio/imu/adis16400_core.c
+> index fa795dc..8de6427 100644
+> --- a/drivers/iio/imu/adis16400_core.c
+> +++ b/drivers/iio/imu/adis16400_core.c
+> @@ -405,6 +405,11 @@ static int adis16400_read_raw(struct iio_dev *indio_dev,
+>  			*val = st->variant->temp_scale_nano / 1000000;
+>  			*val2 = (st->variant->temp_scale_nano % 1000000);
+>  			return IIO_VAL_INT_PLUS_MICRO;
+> +		case IIO_PRESSURE:
+> +			/* 20 uBar = 0.002kPascal */
+> +			*val = 0;
+> +			*val2 = 2000;
+> +			return IIO_VAL_INT_PLUS_MICRO;
+>  		default:
+>  			return -EINVAL;
+>  		}
+> 
 
