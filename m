@@ -1,108 +1,141 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:59064 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:59080 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752545AbbEQJZy (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 17 May 2015 05:25:54 -0400
-Message-ID: <55585E9E.8060404@kernel.org>
-Date: Sun, 17 May 2015 10:25:50 +0100
+	with ESMTP id S1752563AbbEQJ14 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 17 May 2015 05:27:56 -0400
+Message-ID: <55585F1B.3060601@kernel.org>
+Date: Sun, 17 May 2015 10:27:55 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
 To: Vlad Dogaru <vlad.dogaru@intel.com>,
 	srinivas.pandruvada@linux.intel.com, irina.tirdea@intel.com,
 	octavian.purdila@intel.com, linux-iio@vger.kernel.org
 CC: adriana.reus@intel.com
-Subject: Re: [PATCH 1/2] iio: gyro: bmg160: remove redundant field
-References: <1431523809-13824-1-git-send-email-vlad.dogaru@intel.com> <1431523809-13824-2-git-send-email-vlad.dogaru@intel.com>
-In-Reply-To: <1431523809-13824-2-git-send-email-vlad.dogaru@intel.com>
+Subject: Re: [PATCH 2/2] iio: gyro: bmg160: decouple buffer and triggers
+References: <1431523809-13824-1-git-send-email-vlad.dogaru@intel.com> <1431523809-13824-3-git-send-email-vlad.dogaru@intel.com>
+In-Reply-To: <1431523809-13824-3-git-send-email-vlad.dogaru@intel.com>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
 On 13/05/15 14:30, Vlad Dogaru wrote:
-> Replace the 'timestamp' field in struct bmg160_data with the identically
-> named field in iio_poll_func and with calls to iio_get_time_ns().
-> 
-> The reported timestamps may be slightly different, but the advantage is
-> that we no longer assume that the buffer of bmg160 is triggered by its
-> own trigger.
+> Make it possible to use buffering with an external trigger, such as one
+> based on sysfs or hrtimer.
 > 
 > Signed-off-by: Vlad Dogaru <vlad.dogaru@intel.com>
-Your patch message rather undersells the advantages of this change but otherwise
-a good change to make.  The timing difference will probably be very very small.
-
-Applied to the togreg branch of iio.git - initially pushed out as testing
-for the autobuilders to play with it.
-
 Thanks,
+
+Glad to see these sort of restrictions being relaxed.
 
 Jonathan
 > ---
->  drivers/iio/gyro/bmg160.c | 13 +++++--------
->  1 file changed, 5 insertions(+), 8 deletions(-)
+>  drivers/iio/gyro/bmg160.c | 56 +++++++++++++++++++++++++++--------------------
+>  1 file changed, 32 insertions(+), 24 deletions(-)
 > 
 > diff --git a/drivers/iio/gyro/bmg160.c b/drivers/iio/gyro/bmg160.c
-> index 4415f55..d36af62 100644
+> index d36af62..460bf71 100644
 > --- a/drivers/iio/gyro/bmg160.c
 > +++ b/drivers/iio/gyro/bmg160.c
-> @@ -108,7 +108,6 @@ struct bmg160_data {
->  	int slope_thres;
->  	bool dready_trigger_on;
->  	bool motion_trigger_on;
-> -	int64_t timestamp;
+> @@ -737,17 +737,6 @@ static int bmg160_write_event_config(struct iio_dev *indio_dev,
+>  	return 0;
+>  }
+>  
+> -static int bmg160_validate_trigger(struct iio_dev *indio_dev,
+> -				   struct iio_trigger *trig)
+> -{
+> -	struct bmg160_data *data = iio_priv(indio_dev);
+> -
+> -	if (data->dready_trig != trig && data->motion_trig != trig)
+> -		return -EINVAL;
+> -
+> -	return 0;
+> -}
+> -
+>  static IIO_CONST_ATTR_SAMP_FREQ_AVAIL("100 200 400 1000 2000");
+>  
+>  static IIO_CONST_ATTR(in_anglvel_scale_available,
+> @@ -809,7 +798,6 @@ static const struct iio_info bmg160_info = {
+>  	.write_event_value	= bmg160_write_event,
+>  	.write_event_config	= bmg160_write_event_config,
+>  	.read_event_config	= bmg160_read_event_config,
+> -	.validate_trigger	= bmg160_validate_trigger,
+>  	.driver_module		= THIS_MODULE,
 >  };
 >  
->  enum bmg160_axis {
-> @@ -835,7 +834,7 @@ static irqreturn_t bmg160_trigger_handler(int irq, void *p)
->  	mutex_unlock(&data->mutex);
+> @@ -984,6 +972,27 @@ static irqreturn_t bmg160_data_rdy_trig_poll(int irq, void *private)
 >  
->  	iio_push_to_buffers_with_timestamp(indio_dev, data->buffer,
-> -					   data->timestamp);
-> +					   pf->timestamp);
->  err:
->  	iio_trigger_notify_done(indio_dev->trig);
+>  }
 >  
-> @@ -938,21 +937,21 @@ static irqreturn_t bmg160_event_handler(int irq, void *private)
->  							IIO_MOD_X,
->  							IIO_EV_TYPE_ROC,
->  							dir),
-> -							data->timestamp);
-> +							iio_get_time_ns());
->  	if (ret & BMG160_ANY_MOTION_BIT_Y)
->  		iio_push_event(indio_dev, IIO_MOD_EVENT_CODE(IIO_ANGL_VEL,
->  							0,
->  							IIO_MOD_Y,
->  							IIO_EV_TYPE_ROC,
->  							dir),
-> -							data->timestamp);
-> +							iio_get_time_ns());
->  	if (ret & BMG160_ANY_MOTION_BIT_Z)
->  		iio_push_event(indio_dev, IIO_MOD_EVENT_CODE(IIO_ANGL_VEL,
->  							0,
->  							IIO_MOD_Z,
->  							IIO_EV_TYPE_ROC,
->  							dir),
-> -							data->timestamp);
-> +							iio_get_time_ns());
+> +static int bmg160_buffer_preenable(struct iio_dev *indio_dev)
+> +{
+> +	struct bmg160_data *data = iio_priv(indio_dev);
+> +
+> +	return bmg160_set_power_state(data, true);
+> +}
+> +
+> +static int bmg160_buffer_postdisable(struct iio_dev *indio_dev)
+> +{
+> +	struct bmg160_data *data = iio_priv(indio_dev);
+> +
+> +	return bmg160_set_power_state(data, false);
+> +}
+> +
+> +static const struct iio_buffer_setup_ops bmg160_buffer_setup_ops = {
+> +	.preenable = bmg160_buffer_preenable,
+> +	.postenable = iio_triggered_buffer_postenable,
+> +	.predisable = iio_triggered_buffer_predisable,
+> +	.postdisable = bmg160_buffer_postdisable,
+> +};
+> +
+>  static int bmg160_gpio_probe(struct i2c_client *client,
+>  			     struct bmg160_data *data)
 >  
->  ack_intr_status:
->  	if (!data->dready_trigger_on) {
-> @@ -973,8 +972,6 @@ static irqreturn_t bmg160_data_rdy_trig_poll(int irq, void *private)
->  	struct iio_dev *indio_dev = private;
->  	struct bmg160_data *data = iio_priv(indio_dev);
->  
-> -	data->timestamp = iio_get_time_ns();
-> -
->  	if (data->dready_trigger_on)
->  		iio_trigger_poll(data->dready_trig);
->  	else if (data->motion_trigger_on)
-> @@ -1105,7 +1102,7 @@ static int bmg160_probe(struct i2c_client *client,
+> @@ -1100,16 +1109,16 @@ static int bmg160_probe(struct i2c_client *client,
+>  			data->motion_trig = NULL;
+>  			goto err_trigger_unregister;
 >  		}
+> +	}
 >  
->  		ret = iio_triggered_buffer_setup(indio_dev,
-> -						 NULL,
-> +						 iio_pollfunc_store_time,
->  						 bmg160_trigger_handler,
->  						 NULL);
->  		if (ret < 0) {
+> -		ret = iio_triggered_buffer_setup(indio_dev,
+> -						 iio_pollfunc_store_time,
+> -						 bmg160_trigger_handler,
+> -						 NULL);
+> -		if (ret < 0) {
+> -			dev_err(&client->dev,
+> -				"iio triggered buffer setup failed\n");
+> -			goto err_trigger_unregister;
+> -		}
+> +	ret = iio_triggered_buffer_setup(indio_dev,
+> +					 iio_pollfunc_store_time,
+> +					 bmg160_trigger_handler,
+> +					 &bmg160_buffer_setup_ops);
+> +	if (ret < 0) {
+> +		dev_err(&client->dev,
+> +			"iio triggered buffer setup failed\n");
+> +		goto err_trigger_unregister;
+>  	}
+>  
+>  	ret = iio_device_register(indio_dev);
+> @@ -1132,8 +1141,7 @@ static int bmg160_probe(struct i2c_client *client,
+>  err_iio_unregister:
+>  	iio_device_unregister(indio_dev);
+>  err_buffer_cleanup:
+> -	if (data->dready_trig)
+> -		iio_triggered_buffer_cleanup(indio_dev);
+> +	iio_triggered_buffer_cleanup(indio_dev);
+>  err_trigger_unregister:
+>  	if (data->dready_trig)
+>  		iio_trigger_unregister(data->dready_trig);
+> @@ -1153,9 +1161,9 @@ static int bmg160_remove(struct i2c_client *client)
+>  	pm_runtime_put_noidle(&client->dev);
+>  
+>  	iio_device_unregister(indio_dev);
+> +	iio_triggered_buffer_cleanup(indio_dev);
+>  
+>  	if (data->dready_trig) {
+> -		iio_triggered_buffer_cleanup(indio_dev);
+>  		iio_trigger_unregister(data->dready_trig);
+>  		iio_trigger_unregister(data->motion_trig);
+>  	}
 > 
 
