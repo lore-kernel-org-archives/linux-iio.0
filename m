@@ -1,399 +1,365 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:58791 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:58820 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753003AbbEQIbq (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 17 May 2015 04:31:46 -0400
-Message-ID: <555851EE.1020707@kernel.org>
-Date: Sun, 17 May 2015 09:31:42 +0100
+	with ESMTP id S1752344AbbEQIja (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 17 May 2015 04:39:30 -0400
+Message-ID: <555853BF.5010806@kernel.org>
+Date: Sun, 17 May 2015 09:39:27 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Tiberiu Breana <tiberiu.a.breana@intel.com>,
-	linux-iio@vger.kernel.org
-CC: Peter Meerwald <pmeerw@pmeerw.net>
-Subject: Re: [PATCH] iio: accel: Add support for Sensortek STK8BA50
-References: <1431694885-4164-1-git-send-email-tiberiu.a.breana@intel.com>
-In-Reply-To: <1431694885-4164-1-git-send-email-tiberiu.a.breana@intel.com>
+To: Dmitry Eremin-Solenikov <dbaryshkov@gmail.com>
+CC: Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>, linux-iio@vger.kernel.org
+Subject: Re: [PATCH v4] iio: add m62332 DAC driver
+References: <1431613276-13496-1-git-send-email-dbaryshkov@gmail.com>
+In-Reply-To: <1431613276-13496-1-git-send-email-dbaryshkov@gmail.com>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 15/05/15 14:01, Tiberiu Breana wrote:
-> Minimal implementation of an IIO driver for the Sensortek
-> STK8BA50 3-axis accelerometer. Datasheet:
-> http://szgsensor.com/uploads/soft/141229/STK8BA50%D2%E5%BC%CE.pdf
+On 14/05/15 15:21, Dmitry Eremin-Solenikov wrote:
+> m62332 is a simple 2-channel DAC used on several Sharp Zaurus boards to
+> control LCD voltage, backlight and sound. The driver use regulators to
+> control the reference voltage and enabling/disabling the DAC.
 > 
-> Includes:
-> - ACPI support;
-> - read_raw for x,y,z axes;
-> - reading and setting the scale (range) parameter.
-> - power management
-> 
-> Signed-off-by: Tiberiu Breana <tiberiu.a.breana@intel.com>
-A couple more little points inline to add to the one's Peter raised.
+> Signed-off-by: Dmitry Eremin-Solenikov <dbaryshkov@gmail.com>
+Looks good to me.
+
+Applied to the togreg branch of iio.git - initially pushed out as
+testing for the autobuilders to play with it.
+
+I'd still like to clean up the write_raw function to handle more
+types, but it's not critical for this driver!
 
 Jonathan
+
+p.s. Whilst it is still only pushed out as testing, I'm happy to
+add acks / reviewed-bys.  I tend to try and move things along on
+weekends as I rarely get more than the odd hour during the week these
+days, but that can lead to me applying versions with minor changes
+without letting them sit on the list very long!
 > ---
->  drivers/iio/accel/Kconfig    |  11 ++
->  drivers/iio/accel/Makefile   |   2 +
->  drivers/iio/accel/stk8ba50.c | 312 +++++++++++++++++++++++++++++++++++++++++++
->  3 files changed, 325 insertions(+)
->  create mode 100644 drivers/iio/accel/stk8ba50.c
 > 
-> diff --git a/drivers/iio/accel/Kconfig b/drivers/iio/accel/Kconfig
-> index 7c9a9a9..059e119 100644
-> --- a/drivers/iio/accel/Kconfig
-> +++ b/drivers/iio/accel/Kconfig
-> @@ -136,4 +136,15 @@ config MMA9553
+> Changes since v3:
+> 
+>  * Use IIO_CHAN_INFO_OFFSET to represent DAC output more precisely
+>  * Handle regulator_get_voltage() error
+>  * Minor changes in m62332_set_value()
+> 
+>  drivers/iio/dac/Kconfig  |  10 ++
+>  drivers/iio/dac/Makefile |   1 +
+>  drivers/iio/dac/m62332.c | 269 +++++++++++++++++++++++++++++++++++++++++++++++
+>  3 files changed, 280 insertions(+)
+>  create mode 100644 drivers/iio/dac/m62332.c
+> 
+> diff --git a/drivers/iio/dac/Kconfig b/drivers/iio/dac/Kconfig
+> index 13471a7..e701e28 100644
+> --- a/drivers/iio/dac/Kconfig
+> +++ b/drivers/iio/dac/Kconfig
+> @@ -142,6 +142,16 @@ config AD7303
+>  	  To compile this driver as module choose M here: the module will be called
+>  	  ad7303.
 >  
->  	  To compile this driver as a module, choose M here: the module
->  	  will be called mma9553.
-> +
-> +config STK8BA50
-> +	tristate "Sensortek STK8BA50 3-Axis Accelerometer Driver"
+> +config M62332
+> +	tristate "Mitsubishi M62332 DAC driver"
 > +	depends on I2C
 > +	help
-> +	  Say yes here to get support for the Sensortek STK8BA50 3-axis
-> +	  accelerometer.
+> +	  If you say yes here you get support for the Mitsubishi M62332
+> +	  (I2C 8-Bit DACs with rail-to-rail outputs).
 > +
-> +	  Choosing M will build the driver as a module. If so, the module
-> +	  will be called stk8ba50.
+> +	  This driver can also be built as a module.  If so, the module
+> +	  will be called m62332.
 > +
->  endmenu
-> diff --git a/drivers/iio/accel/Makefile b/drivers/iio/accel/Makefile
-> index 99d89e4..339d80c 100644
-> --- a/drivers/iio/accel/Makefile
-> +++ b/drivers/iio/accel/Makefile
-> @@ -14,6 +14,8 @@ obj-$(CONFIG_MMA9551_CORE)	+= mma9551_core.o
->  obj-$(CONFIG_MMA9551)		+= mma9551.o
->  obj-$(CONFIG_MMA9553)		+= mma9553.o
->  
-> +obj-$(CONFIG_STK8BA50)		+= stk8ba50.o
-> +
->  obj-$(CONFIG_IIO_SSP_SENSORS_COMMONS) += ssp_accel_sensor.o
->  
->  obj-$(CONFIG_IIO_ST_ACCEL_3AXIS) += st_accel.o
-> diff --git a/drivers/iio/accel/stk8ba50.c b/drivers/iio/accel/stk8ba50.c
+>  config MAX517
+>  	tristate "Maxim MAX517/518/519/520/521 DAC driver"
+>  	depends on I2C
+> diff --git a/drivers/iio/dac/Makefile b/drivers/iio/dac/Makefile
+> index 52be7e1..63ae056 100644
+> --- a/drivers/iio/dac/Makefile
+> +++ b/drivers/iio/dac/Makefile
+> @@ -16,6 +16,7 @@ obj-$(CONFIG_AD5764) += ad5764.o
+>  obj-$(CONFIG_AD5791) += ad5791.o
+>  obj-$(CONFIG_AD5686) += ad5686.o
+>  obj-$(CONFIG_AD7303) += ad7303.o
+> +obj-$(CONFIG_M62332) += m62332.o
+>  obj-$(CONFIG_MAX517) += max517.o
+>  obj-$(CONFIG_MAX5821) += max5821.o
+>  obj-$(CONFIG_MCP4725) += mcp4725.o
+> diff --git a/drivers/iio/dac/m62332.c b/drivers/iio/dac/m62332.c
 > new file mode 100644
-> index 0000000..663c0fd
+> index 0000000..c23d7fa
 > --- /dev/null
-> +++ b/drivers/iio/accel/stk8ba50.c
-> @@ -0,0 +1,312 @@
-> +/**
-> + * Sensortek STK8BA50 3-Axis Accelerometer
-> + *
-> + * Copyright (c) 2015, Intel Corporation.
-> + *
-> + * This file is subject to the terms and conditions of version 2 of
-> + * the GNU General Public License. See the file COPYING in the main
-> + * directory of this archive for more details.
-> + *
-> + * STK8BA50 7-bit I2C address: 0x18.
-> + */
-> +
-> +#include <linux/acpi.h>
-> +#include <linux/i2c.h>
-> +#include <linux/kernel.h>
-> +#include <linux/module.h>
-> +#include <linux/iio/iio.h>
-> +#include <linux/iio/sysfs.h>
-> +
-> +#define STK8BA50_REG_XOUT			0x02
-> +#define STK8BA50_REG_YOUT			0x04
-> +#define STK8BA50_REG_ZOUT			0x06
-> +#define STK8BA50_REG_RANGE			0x0F
-> +#define STK8BA50_REG_POWMODE			0x11
-> +#define STK8BA50_REG_SWRST			0x14
-> +
-> +#define STK8BA50_MODE_NORMAL			0
-> +#define STK8BA50_MODE_SUSPEND			1
-> +#define STK8BA50_MODE_MASK			0x80
-> +#define STK8BA50_MODE_SHIFT			7
-> +#define STK8BA50_LSB_MASK			0xC000
-> +#define STK8BA50_MSB_MASK			0x00FF
-> +#define STK8BA50_LSB_SHIFT			14
-> +#define STK8BA50_MSB_SHIFT			2
-> +#define STK8BA50_RESET_CMD			0xB6
-> +
-> +#define STK8BA50_DRIVER_NAME			"stk8ba50"
-> +
-> +#define STK8BA50_SCALE_AVAIL			"0.0384 0.0767 0.1534 0.3069"
-> +
+> +++ b/drivers/iio/dac/m62332.c
+> @@ -0,0 +1,269 @@
 > +/*
-> + * The accelerometer has four measurement ranges:
-> + * +/-2g; +/-4g; +/-8g; +/-16g
+> + *  m62332.c - Support for Mitsubishi m62332 DAC
 > + *
-> + * Acceleration values are 10-bit, 2's complement.
-> + * Scales are calculated as following:
+> + *  Copyright (c) 2014 Dmitry Eremin-Solenikov
 > + *
-> + * scale1 = (2 + 2) * 9.81 / (2^10 - 1)   = 0.0384
-> + * scale2 = (4 + 4) * 9.81 / (2^10 - 1)   = 0.0767
-> + * etc.
+> + *  Based on max517 driver:
+> + *  Copyright (C) 2010, 2011 Roland Stigge <stigge@antcom.de>
 > + *
-> + * Scales are stored in this format:
-> + * { <register value>, <scale value> }
-> + * Locally the range is stored as a table index.
+> + *  This program is free software; you can redistribute it and/or modify
+> + *  it under the terms of the GNU General Public License as published by
+> + *  the Free Software Foundation; either version 2 of the License, or
+> + *  (at your option) any later version.
+> + *
+> + *  This program is distributed in the hope that it will be useful,
+> + *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+> + *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+> + *  GNU General Public License for more details.
 > + */
-> +static const int stk8ba50_scale_table[][2] = {
-> +	{3, 38400}, {5, 76700}, {8, 153400}, {12, 306900}
+> +
+> +#include <linux/module.h>
+> +#include <linux/slab.h>
+> +#include <linux/i2c.h>
+> +#include <linux/err.h>
+> +
+> +#include <linux/iio/iio.h>
+> +#include <linux/iio/driver.h>
+> +
+> +#include <linux/regulator/consumer.h>
+> +
+> +#define M62332_CHANNELS 2
+> +
+> +struct m62332_data {
+> +	struct i2c_client	*client;
+> +	u16			vref_mv;
+> +	struct regulator	*vcc;
+> +	struct mutex		mutex;
+> +	u8			raw[M62332_CHANNELS];
+> +#ifdef CONFIG_PM_SLEEP
+> +	u8			save[M62332_CHANNELS];
+> +#endif
 > +};
 > +
-> +struct stk8ba50_data {
-> +	struct i2c_client *client;
-> +	struct mutex lock;
-> +	int range;
-> +};
-> +
-> +#define STK8BA50_ACCEL_CHANNEL(reg, axis) {			\
-> +	.type = IIO_ACCEL,					\
-> +	.address = reg,						\
-> +	.modified = 1,						\
-> +	.channel2 = IIO_MOD_##axis,				\
-> +	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),		\
-> +	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),	\
-> +}
-> +
-> +static const struct iio_chan_spec stk8ba50_channels[] = {
-> +	STK8BA50_ACCEL_CHANNEL(STK8BA50_REG_XOUT, X),
-> +	STK8BA50_ACCEL_CHANNEL(STK8BA50_REG_YOUT, Y),
-> +	STK8BA50_ACCEL_CHANNEL(STK8BA50_REG_ZOUT, Z),
-> +};
-> +
-> +static IIO_CONST_ATTR(in_accel_scale_available, STK8BA50_SCALE_AVAIL);
-> +
-> +static struct attribute *stk8ba50_attributes[] = {
-> +	&iio_const_attr_in_accel_scale_available.dev_attr.attr,
-> +	NULL,
-> +};
-> +
-> +static const struct attribute_group stk8ba50_attribute_group = {
-> +	.attrs = stk8ba50_attributes
-> +};
-> +
-> +static int stk8ba50_read_accel(struct stk8ba50_data *data, u8 reg)
+> +static int m62332_set_value(struct iio_dev *indio_dev,
+> +	u8 val, int channel)
 > +{
-> +	int ret;
-> +	u8 lsb;
-> +	u8 msb;
+> +	struct m62332_data *data = iio_priv(indio_dev);
 > +	struct i2c_client *client = data->client;
+> +	u8 outbuf[2];
+> +	int res;
 > +
-> +	ret = i2c_smbus_read_word_swapped(client, reg);
-> +	if (ret < 0) {
-> +		dev_err(&client->dev, "register read failed\n");
-> +		return ret;
+> +	if (val == data->raw[channel])
+> +		return 0;
+> +
+> +	outbuf[0] = channel;
+> +	outbuf[1] = val;
+> +
+> +	mutex_lock(&data->mutex);
+> +
+> +	if (val) {
+> +		res = regulator_enable(data->vcc);
+> +		if (res)
+> +			goto out;
 > +	}
 > +
-> +	lsb = (ret & STK8BA50_LSB_MASK) >> STK8BA50_LSB_SHIFT;
-> +	msb = ret & STK8BA50_MSB_MASK;
-> +	ret = (msb << STK8BA50_MSB_SHIFT) | lsb;
+> +	res = i2c_master_send(client, outbuf, 2);
+> +	if (res >= 0 && res != 2)
+> +		res = -EIO;
+> +	if (res < 0)
+> +		goto out;
 > +
-> +	return sign_extend32(ret, 9);
+> +	data->raw[channel] = val;
+> +
+> +	if (!val)
+> +		regulator_disable(data->vcc);
+> +
+> +	mutex_unlock(&data->mutex);
+> +
+> +	return 0;
+> +
+> +out:
+> +	mutex_unlock(&data->mutex);
+> +
+> +	return res;
 > +}
 > +
-> +static int stk8ba50_read_raw(struct iio_dev *indio_dev,
-> +			     struct iio_chan_spec const *chan,
-> +			     int *val, int *val2, long mask)
+> +static int m62332_read_raw(struct iio_dev *indio_dev,
+> +			   struct iio_chan_spec const *chan,
+> +			   int *val,
+> +			   int *val2,
+> +			   long m)
 > +{
-> +	struct stk8ba50_data *data = iio_priv(indio_dev);
+> +	struct m62332_data *data = iio_priv(indio_dev);
 > +
-> +	if (chan->type != IIO_ACCEL)
-> +		return -EINVAL;
+> +	switch (m) {
+> +	case IIO_CHAN_INFO_SCALE:
+> +		/* Corresponds to Vref / 2^(bits) */
+> +		*val = data->vref_mv;
+> +		*val2 = 8;
+> +		return IIO_VAL_FRACTIONAL_LOG2;
+> +	case IIO_CHAN_INFO_RAW:
+> +		*val = data->raw[chan->channel];
+> +		return IIO_VAL_INT;
+> +	case IIO_CHAN_INFO_OFFSET:
+> +		*val = 1;
+> +		return IIO_VAL_INT;
+> +	default:
+> +		break;
+> +	}
+> +	return -EINVAL;
+> +}
+> +
+> +static int m62332_write_raw(struct iio_dev *indio_dev,
+> +	struct iio_chan_spec const *chan, int val, int val2, long mask)
+> +{
+> +	int ret;
 > +
 > +	switch (mask) {
 > +	case IIO_CHAN_INFO_RAW:
-> +		mutex_lock(&data->lock);
-> +		*val = stk8ba50_read_accel(data, chan->address);
-> +		mutex_unlock(&data->lock);
-> +		return IIO_VAL_INT;
-> +	case IIO_CHAN_INFO_SCALE:
-> +		*val = 0;
-> +		*val2 = stk8ba50_scale_table[data->range][1];
-Where is data->range initialized?  It's set in write_raw, but that
-might well never have been called before we read this.
-Now it might be that the device defaults to 0, but to make this obvious
-I'd explicitly set this somewhere and add a comment to that effect.
-> +		return IIO_VAL_INT_PLUS_MICRO;
+> +		if (val < 0 || val > 255)
+> +			return -EINVAL;
+> +
+> +		ret = m62332_set_value(indio_dev, val, chan->channel);
+> +		break;
+> +	default:
+> +		ret = -EINVAL;
+> +		break;
 > +	}
 > +
-> +	return -EINVAL;
+> +	return ret;
 > +}
 > +
-> +static int stk8ba50_write_raw(struct iio_dev *indio_dev,
-> +			     struct iio_chan_spec const *chan,
-> +			     int val, int val2, long mask)
+> +#ifdef CONFIG_PM_SLEEP
+> +static int m62332_suspend(struct device *dev)
 > +{
+> +	struct i2c_client *client = to_i2c_client(dev);
+> +	struct iio_dev *indio_dev = i2c_get_clientdata(client);
+> +	struct m62332_data *data = iio_priv(indio_dev);
 > +	int ret;
-> +	int i;
-> +	int index = -1;
-> +	struct stk8ba50_data *data = iio_priv(indio_dev);
 > +
-> +	switch (mask) {
-> +	case IIO_CHAN_INFO_SCALE:
-> +		if (val != 0)
-> +			return -EINVAL;
+> +	data->save[0] = data->raw[0];
+> +	data->save[1] = data->raw[1];
 > +
-> +		for (i = 0; i < ARRAY_SIZE(stk8ba50_scale_table); i++)
-> +			if (val2 == stk8ba50_scale_table[i][1]) {
-> +				index = i;
-> +				break;
-> +			}
-> +		if (index < 0)
-> +			return -EINVAL;
-> +
-> +		ret = i2c_smbus_write_byte_data(data->client,
-> +				STK8BA50_REG_RANGE,
-> +				stk8ba50_scale_table[index][0]);
-> +		if (ret < 0)
-> +			dev_err(&data->client->dev,
-> +					"failed to set measurement range\n");
-> +		else
-> +			data->range = index;
-> +
+> +	ret = m62332_set_value(indio_dev, 0, 0);
+> +	if (ret < 0)
 > +		return ret;
-> +	}
 > +
-> +	return -EINVAL;
+> +	return m62332_set_value(indio_dev, 0, 1);
 > +}
 > +
-> +static const struct iio_info stk8ba50_info = {
-> +	.driver_module		= THIS_MODULE,
-> +	.read_raw		= stk8ba50_read_raw,
-> +	.write_raw		= stk8ba50_write_raw,
-> +	.attrs			= &stk8ba50_attribute_group,
+> +static int m62332_resume(struct device *dev)
+> +{
+> +	struct i2c_client *client = to_i2c_client(dev);
+> +	struct iio_dev *indio_dev = i2c_get_clientdata(client);
+> +	struct m62332_data *data = iio_priv(indio_dev);
+> +	int ret;
+> +
+> +	ret = m62332_set_value(indio_dev, data->save[0], 0);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	return m62332_set_value(indio_dev, data->save[1], 1);
+> +}
+> +
+> +static SIMPLE_DEV_PM_OPS(m62332_pm_ops, m62332_suspend, m62332_resume);
+> +#define M62332_PM_OPS (&m62332_pm_ops)
+> +#else
+> +#define M62332_PM_OPS NULL
+> +#endif
+> +
+> +static const struct iio_info m62332_info = {
+> +	.read_raw = m62332_read_raw,
+> +	.write_raw = m62332_write_raw,
+> +	.driver_module = THIS_MODULE,
 > +};
 > +
-> +static int stk8ba50_set_mode(struct stk8ba50_data *data, u8 mode)
-> +{
-> +	int ret;
-> +	u8 masked_reg;
-> +	struct i2c_client *client = data->client;
-> +
-> +	if (mode > 1)
-> +		return -EINVAL;
-> +
-> +	ret = i2c_smbus_read_byte_data(client, STK8BA50_REG_POWMODE);
-> +	if (ret < 0)
-> +		goto exit_err;
-> +
-> +	masked_reg = ret & (~STK8BA50_MODE_MASK);
-> +	masked_reg |= mode >> STK8BA50_MODE_SHIFT;
-> +
-> +	ret = i2c_smbus_write_byte_data(client, STK8BA50_REG_POWMODE,
-> +					masked_reg);
-> +	if (ret < 0)
-> +		goto exit_err;
-> +
-> +	return ret;
-> +
-> +exit_err:
-> +	dev_err(&client->dev, "failed to change sensor mode\n");
-> +	return ret;
+> +#define M62332_CHANNEL(chan) {				\
+> +	.type = IIO_VOLTAGE,				\
+> +	.indexed = 1,					\
+> +	.output = 1,					\
+> +	.channel = (chan),				\
+> +	.datasheet_name = "CH" #chan,			\
+> +	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |	\
+> +		BIT(IIO_CHAN_INFO_SCALE) |		\
+> +		BIT(IIO_CHAN_INFO_OFFSET),		\
 > +}
 > +
-> +static int stk8ba50_probe(struct i2c_client *client,
-> +			  const struct i2c_device_id *id)
+> +static const struct iio_chan_spec m62332_channels[M62332_CHANNELS] = {
+> +	M62332_CHANNEL(0),
+> +	M62332_CHANNEL(1)
+> +};
+> +
+> +static int m62332_probe(struct i2c_client *client,
+> +			const struct i2c_device_id *id)
 > +{
-> +	int ret;
+> +	struct m62332_data *data;
 > +	struct iio_dev *indio_dev;
-> +	struct stk8ba50_data *data;
+> +	int ret;
 > +
 > +	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
-> +	if (!indio_dev) {
-> +		dev_err(&client->dev, "iio allocation failed!\n");
+> +	if (!indio_dev)
 > +		return -ENOMEM;
-> +	}
-> +
 > +	data = iio_priv(indio_dev);
-> +	data->client = client;
 > +	i2c_set_clientdata(client, indio_dev);
-> +	mutex_init(&data->lock);
+> +	data->client = client;
 > +
+> +	mutex_init(&data->mutex);
+> +
+> +	data->vcc = devm_regulator_get(&client->dev, "VCC");
+> +	if (IS_ERR(data->vcc))
+> +		return PTR_ERR(data->vcc);
+> +
+> +	/* establish that the iio_dev is a child of the i2c device */
 > +	indio_dev->dev.parent = &client->dev;
-> +	indio_dev->info = &stk8ba50_info;
-> +	indio_dev->name = STK8BA50_DRIVER_NAME;
-> +	indio_dev->modes = INDIO_DIRECT_MODE;
-> +	indio_dev->channels = stk8ba50_channels;
-> +	indio_dev->num_channels = ARRAY_SIZE(stk8ba50_channels);
 > +
-> +	/* Reset all registers on startup */
-> +	ret = i2c_smbus_write_byte_data(client,
-> +			STK8BA50_REG_SWRST, STK8BA50_RESET_CMD);
-> +	if (ret < 0) {
-> +		dev_err(&client->dev, "failed to reset sensor\n");
+> +	indio_dev->num_channels = M62332_CHANNELS;
+> +	indio_dev->channels = m62332_channels;
+> +	indio_dev->modes = INDIO_DIRECT_MODE;
+> +	indio_dev->info = &m62332_info;
+> +
+> +	ret = regulator_get_voltage(data->vcc);
+> +	if (ret < 0)
 > +		return ret;
-> +	}
+> +	data->vref_mv = ret / 1000; /* mV */
+> +
+> +	ret = iio_map_array_register(indio_dev, client->dev.platform_data);
+> +	if (ret < 0)
+> +		return ret;
 > +
 > +	ret = iio_device_register(indio_dev);
-> +	if (ret < 0) {
-> +		dev_err(&client->dev, "device_register failed\n");
-> +		stk8ba50_set_mode(data, STK8BA50_MODE_SUSPEND);
-> +	}
+> +	if (ret < 0)
+> +		goto err;
 > +
+> +	return 0;
+> +
+> +err:
+> +	iio_map_array_unregister(indio_dev);
 > +	return ret;
 > +}
 > +
-> +static int stk8ba50_remove(struct i2c_client *client)
+> +static int m62332_remove(struct i2c_client *client)
 > +{
 > +	struct iio_dev *indio_dev = i2c_get_clientdata(client);
 > +
 > +	iio_device_unregister(indio_dev);
+> +	iio_map_array_unregister(indio_dev);
 > +
-> +	return stk8ba50_set_mode(iio_priv(indio_dev), STK8BA50_MODE_SUSPEND);
+> +	return 0;
 > +}
 > +
-> +#ifdef CONFIG_PM_SLEEP
-> +static int stk8ba50_suspend(struct device *dev)
-> +{
-> +	struct stk8ba50_data *data;
-> +
-> +	data = iio_priv(i2c_get_clientdata(to_i2c_client(dev)));
-> +
-> +	return stk8ba50_set_mode(data, STK8BA50_MODE_SUSPEND);
-> +}
-> +
-> +static int stk8ba50_resume(struct device *dev)
-> +{
-> +	struct stk8ba50_data *data;
-> +
-> +	data = iio_priv(i2c_get_clientdata(to_i2c_client(dev)));
-> +
-> +	return stk8ba50_set_mode(data, STK8BA50_MODE_NORMAL);
-> +}
-> +
-> +static SIMPLE_DEV_PM_OPS(stk8ba50_pm_ops, stk8ba50_suspend, stk8ba50_resume);
-> +
-> +#define STK8BA50_PM_OPS (&stk8ba50_pm_ops)
-> +#else
-> +#define STK8BA50_PM_OPS NULL
-> +#endif
-> +
-> +static const struct i2c_device_id stk8ba50_i2c_id[] = {
-> +	{"STK8BA50", 0},
-IIRC the convention is lower case for i2c device names.
-> +	{}
+> +static const struct i2c_device_id m62332_id[] = {
+> +	{ "m62332", },
+> +	{ }
 > +};
+> +MODULE_DEVICE_TABLE(i2c, m62332_id);
 > +
-> +static const struct acpi_device_id stk8ba50_acpi_id[] = {
-> +	{"STK8BA50", 0},
-> +	{}
-> +};
-> +
-> +MODULE_DEVICE_TABLE(acpi, stk8ba50_acpi_id);
-> +
-> +static struct i2c_driver stk8ba50_driver = {
+> +static struct i2c_driver m62332_driver = {
 > +	.driver = {
-> +		.name = "stk8ba50",
-> +		.pm = STK8BA50_PM_OPS,
-> +		.acpi_match_table = ACPI_PTR(stk8ba50_acpi_id),
+> +		.name	= "m62332",
+> +		.pm	= M62332_PM_OPS,
 > +	},
-> +	.probe =            stk8ba50_probe,
-> +	.remove =           stk8ba50_remove,
-> +	.id_table =         stk8ba50_i2c_id,
+> +	.probe		= m62332_probe,
+> +	.remove		= m62332_remove,
+> +	.id_table	= m62332_id,
 > +};
+> +module_i2c_driver(m62332_driver);
 > +
-> +module_i2c_driver(stk8ba50_driver);
-> +
-> +MODULE_AUTHOR("Tiberiu Breana <tiberiu.a.breana@intel.com>");
-> +MODULE_DESCRIPTION("STK8BA50 3-Axis Accelerometer driver");
+> +MODULE_AUTHOR("Dmitry Eremin-Solenikov");
+> +MODULE_DESCRIPTION("M62332 8-bit DAC");
 > +MODULE_LICENSE("GPL v2");
 > 
 
