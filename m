@@ -1,94 +1,131 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:58693 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:58726 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752174AbbEQIKw (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 17 May 2015 04:10:52 -0400
-Message-ID: <55584D0B.8010900@kernel.org>
-Date: Sun, 17 May 2015 09:10:51 +0100
+	with ESMTP id S1752851AbbEQIOn (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 17 May 2015 04:14:43 -0400
+Message-ID: <55584DF1.9060908@kernel.org>
+Date: Sun, 17 May 2015 09:14:41 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
-	Fabio Estevam <festevam@gmail.com>
-CC: linux-iio@vger.kernel.org,
-	Fabio Estevam <fabio.estevam@freescale.com>
-Subject: Re: [PATCH v3 2/6] iio: gyro: hid-sensor-gyro-3d: Fix memory leak
- in probe()
-References: <1431540374-3168-1-git-send-email-festevam@gmail.com>	 <1431540374-3168-2-git-send-email-festevam@gmail.com> <1431543143.11262.78.camel@spandruv-DESK3.jf.intel.com>
-In-Reply-To: <1431543143.11262.78.camel@spandruv-DESK3.jf.intel.com>
-Content-Type: text/plain; charset=utf-8
+To: Kuppuswamy Sathyanarayanan
+	<sathyanarayanan.kuppuswamy@linux.intel.com>, pmeerw@pmeerw.net
+CC: srinivas.pandruvada@linux.intel.com, linux-kernel@vger.kernel.org,
+	linux-iio@vger.kernel.org
+Subject: Re: [PATCH v3 1/1] iio: ltr501: Add light channel support
+References: <f4066a7d7a406922a115696c130b5f4de11b3923.1431738526.git.sathyanarayanan.kuppuswamy@linux.intel.com>
+In-Reply-To: <f4066a7d7a406922a115696c130b5f4de11b3923.1431738526.git.sathyanarayanan.kuppuswamy@linux.intel.com>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 13/05/15 19:52, Srinivas Pandruvada wrote:
-> On Wed, 2015-05-13 at 15:06 -0300, Fabio Estevam wrote:
->> From: Fabio Estevam <fabio.estevam@freescale.com>
->>
->> 'channels' is allocated via kmemdup and it is never freed in the
->> subsequent error paths.
->>
->> Use 'indio_dev->channels' directly instead, so that we avoid such
->> memory leak problem.
->>
->> Signed-off-by: Fabio Estevam <fabio.estevam@freescale.com>
-> Reviewed-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-Applied.
->> ---
->> Build-tested only.
->>
->> Changes since v2:
->> - None
->> Changes since v1:
->> - Make clear in the commit log that the proble only occurs in the error
->> paths
->>
->>  drivers/iio/gyro/hid-sensor-gyro-3d.c | 13 ++++++-------
->>  1 file changed, 6 insertions(+), 7 deletions(-)
->>
->> diff --git a/drivers/iio/gyro/hid-sensor-gyro-3d.c b/drivers/iio/gyro/hid-sensor-gyro-3d.c
->> index b5883b6..7b60b58 100644
->> --- a/drivers/iio/gyro/hid-sensor-gyro-3d.c
->> +++ b/drivers/iio/gyro/hid-sensor-gyro-3d.c
->> @@ -298,7 +298,6 @@ static int hid_gyro_3d_probe(struct platform_device *pdev)
->>  	struct iio_dev *indio_dev;
->>  	struct gyro_3d_state *gyro_state;
->>  	struct hid_sensor_hub_device *hsdev = pdev->dev.platform_data;
->> -	struct iio_chan_spec *channels;
->>  
->>  	indio_dev = devm_iio_device_alloc(&pdev->dev, sizeof(*gyro_state));
->>  	if (!indio_dev)
->> @@ -317,21 +316,21 @@ static int hid_gyro_3d_probe(struct platform_device *pdev)
->>  		return ret;
->>  	}
->>  
->> -	channels = kmemdup(gyro_3d_channels, sizeof(gyro_3d_channels),
->> -			   GFP_KERNEL);
->> -	if (!channels) {
->> +	indio_dev->channels = kmemdup(gyro_3d_channels,
->> +				      sizeof(gyro_3d_channels), GFP_KERNEL);
->> +	if (!indio_dev->channels) {
->>  		dev_err(&pdev->dev, "failed to duplicate channels\n");
->>  		return -ENOMEM;
->>  	}
->>  
->> -	ret = gyro_3d_parse_report(pdev, hsdev, channels,
->> -					HID_USAGE_SENSOR_GYRO_3D, gyro_state);
->> +	ret = gyro_3d_parse_report(pdev, hsdev,
->> +				   (struct iio_chan_spec *)indio_dev->channels,
->> +				   HID_USAGE_SENSOR_GYRO_3D, gyro_state);
->>  	if (ret) {
->>  		dev_err(&pdev->dev, "failed to setup attributes\n");
->>  		goto error_free_dev_mem;
->>  	}
->>  
->> -	indio_dev->channels = channels;
->>  	indio_dev->num_channels = ARRAY_SIZE(gyro_3d_channels);
->>  	indio_dev->dev.parent = &pdev->dev;
->>  	indio_dev->info = &gyro_3d_info;
+On 16/05/15 02:23, Kuppuswamy Sathyanarayanan wrote:
+> Added support to calculate lux value from visible
+> and IR spectrum adc count values. Also added IIO_LIGHT
+> channel to enable user read the lux value directly
+> from device using illuminance input ABI.
 > 
+> Signed-off-by: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
+Applied to the togreg branch of iio.git - initially pushed out as testing for
+the autobuilders to play with it.
+
+Jonathan
+> ---
+>  drivers/iio/light/ltr501.c | 51 ++++++++++++++++++++++++++++++++++++++++++++++
+>  1 file changed, 51 insertions(+)
 > 
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> v2: Changed scan index of light channel to -1
+> v3: Removed scan type info from light channel
+> 
+> diff --git a/drivers/iio/light/ltr501.c b/drivers/iio/light/ltr501.c
+> index ca4bf47..d7245c6 100644
+> --- a/drivers/iio/light/ltr501.c
+> +++ b/drivers/iio/light/ltr501.c
+> @@ -66,6 +66,9 @@
+>  
+>  #define LTR501_REGMAP_NAME "ltr501_regmap"
+>  
+> +#define LTR501_LUX_CONV(vis_coeff, vis_data, ir_coeff, ir_data) \
+> +			((vis_coeff * vis_data) - (ir_coeff * ir_data))
+> +
+>  static const int int_time_mapping[] = {100000, 50000, 200000, 400000};
+>  
+>  static const struct reg_field reg_field_it =
+> @@ -298,6 +301,29 @@ static int ltr501_ps_read_samp_period(struct ltr501_data *data, int *val)
+>  	return IIO_VAL_INT;
+>  }
+>  
+> +/* IR and visible spectrum coeff's are given in data sheet */
+> +static unsigned long ltr501_calculate_lux(u16 vis_data, u16 ir_data)
+> +{
+> +	unsigned long ratio, lux;
+> +
+> +	if (vis_data == 0)
+> +		return 0;
+> +
+> +	/* multiply numerator by 100 to avoid handling ratio < 1 */
+> +	ratio = DIV_ROUND_UP(ir_data * 100, ir_data + vis_data);
+> +
+> +	if (ratio < 45)
+> +		lux = LTR501_LUX_CONV(1774, vis_data, -1105, ir_data);
+> +	else if (ratio >= 45 && ratio < 64)
+> +		lux = LTR501_LUX_CONV(3772, vis_data, 1336, ir_data);
+> +	else if (ratio >= 64 && ratio < 85)
+> +		lux = LTR501_LUX_CONV(1690, vis_data, 169, ir_data);
+> +	else
+> +		lux = 0;
+> +
+> +	return lux / 1000;
+> +}
+> +
+>  static int ltr501_drdy(struct ltr501_data *data, u8 drdy_mask)
+>  {
+>  	int tries = 100;
+> @@ -548,7 +574,14 @@ static const struct iio_event_spec ltr501_pxs_event_spec[] = {
+>  	.num_event_specs = _evsize,\
+>  }
+>  
+> +#define LTR501_LIGHT_CHANNEL() { \
+> +	.type = IIO_LIGHT, \
+> +	.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED), \
+> +	.scan_index = -1, \
+> +}
+> +
+>  static const struct iio_chan_spec ltr501_channels[] = {
+> +	LTR501_LIGHT_CHANNEL(),
+>  	LTR501_INTENSITY_CHANNEL(0, LTR501_ALS_DATA0, IIO_MOD_LIGHT_BOTH, 0,
+>  				 ltr501_als_event_spec,
+>  				 ARRAY_SIZE(ltr501_als_event_spec)),
+> @@ -576,6 +609,7 @@ static const struct iio_chan_spec ltr501_channels[] = {
+>  };
+>  
+>  static const struct iio_chan_spec ltr301_channels[] = {
+> +	LTR501_LIGHT_CHANNEL(),
+>  	LTR501_INTENSITY_CHANNEL(0, LTR501_ALS_DATA0, IIO_MOD_LIGHT_BOTH, 0,
+>  				 ltr501_als_event_spec,
+>  				 ARRAY_SIZE(ltr501_als_event_spec)),
+> @@ -596,6 +630,23 @@ static int ltr501_read_raw(struct iio_dev *indio_dev,
+>  	int ret, i;
+>  
+>  	switch (mask) {
+> +	case IIO_CHAN_INFO_PROCESSED:
+> +		if (iio_buffer_enabled(indio_dev))
+> +			return -EBUSY;
+> +
+> +		switch (chan->type) {
+> +		case IIO_LIGHT:
+> +			mutex_lock(&data->lock_als);
+> +			ret = ltr501_read_als(data, buf);
+> +			mutex_unlock(&data->lock_als);
+> +			if (ret < 0)
+> +				return ret;
+> +			*val = ltr501_calculate_lux(le16_to_cpu(buf[1]),
+> +						    le16_to_cpu(buf[0]));
+> +			return IIO_VAL_INT;
+> +		default:
+> +			return -EINVAL;
+> +		}
+>  	case IIO_CHAN_INFO_RAW:
+>  		if (iio_buffer_enabled(indio_dev))
+>  			return -EBUSY;
 > 
 
