@@ -1,209 +1,108 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:59038 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:59064 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752419AbbEQJWd (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 17 May 2015 05:22:33 -0400
-Message-ID: <55585DD8.70604@kernel.org>
-Date: Sun, 17 May 2015 10:22:32 +0100
+	with ESMTP id S1752545AbbEQJZy (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 17 May 2015 05:25:54 -0400
+Message-ID: <55585E9E.8060404@kernel.org>
+Date: Sun, 17 May 2015 10:25:50 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Lars-Peter Clausen <lars@metafoo.de>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>
-CC: linux-iio@vger.kernel.org
-Subject: Re: [PATCH 7/8] iio: __iio_update_buffers: Leave device in sane state
- on error
-References: <1431525891-19285-1-git-send-email-lars@metafoo.de> <1431525891-19285-8-git-send-email-lars@metafoo.de>
-In-Reply-To: <1431525891-19285-8-git-send-email-lars@metafoo.de>
+To: Vlad Dogaru <vlad.dogaru@intel.com>,
+	srinivas.pandruvada@linux.intel.com, irina.tirdea@intel.com,
+	octavian.purdila@intel.com, linux-iio@vger.kernel.org
+CC: adriana.reus@intel.com
+Subject: Re: [PATCH 1/2] iio: gyro: bmg160: remove redundant field
+References: <1431523809-13824-1-git-send-email-vlad.dogaru@intel.com> <1431523809-13824-2-git-send-email-vlad.dogaru@intel.com>
+In-Reply-To: <1431523809-13824-2-git-send-email-vlad.dogaru@intel.com>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 13/05/15 15:04, Lars-Peter Clausen wrote:
-> Currently when something goes wrong at some step when disabling the buffers
-> we immediately abort. This has the effect that the enable/disable calls are
-> no longer balanced. So make sure that even if one step in the disable
-> sequence fails the other steps are still executed.
+On 13/05/15 14:30, Vlad Dogaru wrote:
+> Replace the 'timestamp' field in struct bmg160_data with the identically
+> named field in iio_poll_func and with calls to iio_get_time_ns().
 > 
-> The other issue is that when either enable or disable fails buffers that
-> were active at that time stay active while the device itself is disabled.
-> This leaves things in a inconsistent state and can cause unbalanced
-> enable/disable calls. Furthermore when enable fails we restore the old scan
-> mask, but still keeps things disabled.
+> The reported timestamps may be slightly different, but the advantage is
+> that we no longer assume that the buffer of bmg160 is triggered by its
+> own trigger.
 > 
-> Given that verification of the configuration was performed earlier and it
-> is valid at the point where we try to enable/disable the most likely reason
-> of failure is a communication failure with the device or maybe a
-> out-of-memory situation. There is not really a good recovery strategy in
-> such a case, so it makes sense to leave the device disabled, but we should
-> still leave it in a consistent state.
-> 
-> What the patch does if disable/enable fails is to deactivate all buffers
-> and make sure that the device will be in the same state as if all buffers
-> had been manually disabled.
-> 
-This is always a fun corner as you are quite right in observing there
-is no right answer. Now you have the only incorrect setup cases separated
-out, all the roll back stuff makes no sense as you observe. 
+> Signed-off-by: Vlad Dogaru <vlad.dogaru@intel.com>
+Your patch message rather undersells the advantages of this change but otherwise
+a good change to make.  The timing difference will probably be very very small.
 
-So I guess this is the best option.  Though, a userspace app is going to
-have to take a very dim view of hardware reliability to actually bother
-retrying the buffer bring ups. It'll have to notice that stuff that was
-previously running fine is now disabled which is nasty.
+Applied to the togreg branch of iio.git - initially pushed out as testing
+for the autobuilders to play with it.
+
+Thanks,
 
 Jonathan
-> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
 > ---
->  drivers/iio/industrialio-buffer.c | 79 ++++++++++++++++++++++-----------------
->  1 file changed, 44 insertions(+), 35 deletions(-)
+>  drivers/iio/gyro/bmg160.c | 13 +++++--------
+>  1 file changed, 5 insertions(+), 8 deletions(-)
 > 
-> diff --git a/drivers/iio/industrialio-buffer.c b/drivers/iio/industrialio-buffer.c
-> index dd04e35..3a11a2a 100644
-> --- a/drivers/iio/industrialio-buffer.c
-> +++ b/drivers/iio/industrialio-buffer.c
-> @@ -539,6 +539,15 @@ static void iio_buffer_deactivate(struct iio_buffer *buffer)
->  	iio_buffer_put(buffer);
->  }
+> diff --git a/drivers/iio/gyro/bmg160.c b/drivers/iio/gyro/bmg160.c
+> index 4415f55..d36af62 100644
+> --- a/drivers/iio/gyro/bmg160.c
+> +++ b/drivers/iio/gyro/bmg160.c
+> @@ -108,7 +108,6 @@ struct bmg160_data {
+>  	int slope_thres;
+>  	bool dready_trigger_on;
+>  	bool motion_trigger_on;
+> -	int64_t timestamp;
+>  };
 >  
-> +static void iio_buffer_deactivate_all(struct iio_dev *indio_dev)
-> +{
-> +	struct iio_buffer *buffer, *_buffer;
-> +
-> +	list_for_each_entry_safe(buffer, _buffer,
-> +			&indio_dev->buffer_list, buffer_list)
-> +		iio_buffer_deactivate(buffer);
-> +}
-> +
->  static void iio_buffer_update_bytes_per_datum(struct iio_dev *indio_dev,
->  	struct iio_buffer *buffer)
->  {
-> @@ -663,27 +672,37 @@ static int iio_verify_update(struct iio_dev *indio_dev,
+>  enum bmg160_axis {
+> @@ -835,7 +834,7 @@ static irqreturn_t bmg160_trigger_handler(int irq, void *p)
+>  	mutex_unlock(&data->mutex);
 >  
->  static int iio_disable_buffers(struct iio_dev *indio_dev)
->  {
-> -	int ret;
-> +	int ret = 0;
-> +	int ret2;
+>  	iio_push_to_buffers_with_timestamp(indio_dev, data->buffer,
+> -					   data->timestamp);
+> +					   pf->timestamp);
+>  err:
+>  	iio_trigger_notify_done(indio_dev->trig);
 >  
->  	/* Wind down existing buffers - iff there are any */
->  	if (list_empty(&indio_dev->buffer_list))
->  		return 0;
+> @@ -938,21 +937,21 @@ static irqreturn_t bmg160_event_handler(int irq, void *private)
+>  							IIO_MOD_X,
+>  							IIO_EV_TYPE_ROC,
+>  							dir),
+> -							data->timestamp);
+> +							iio_get_time_ns());
+>  	if (ret & BMG160_ANY_MOTION_BIT_Y)
+>  		iio_push_event(indio_dev, IIO_MOD_EVENT_CODE(IIO_ANGL_VEL,
+>  							0,
+>  							IIO_MOD_Y,
+>  							IIO_EV_TYPE_ROC,
+>  							dir),
+> -							data->timestamp);
+> +							iio_get_time_ns());
+>  	if (ret & BMG160_ANY_MOTION_BIT_Z)
+>  		iio_push_event(indio_dev, IIO_MOD_EVENT_CODE(IIO_ANGL_VEL,
+>  							0,
+>  							IIO_MOD_Z,
+>  							IIO_EV_TYPE_ROC,
+>  							dir),
+> -							data->timestamp);
+> +							iio_get_time_ns());
 >  
-> +	/*
-> +	 * If things go wrong at some step in disable we still need to continue
-> +	 * to perform the other steps, otherwise we leave the device in a
-> +	 * inconsistent state. We return the error code for the first error we
-> +	 * encountered.
-> +	 */
-> +
->  	if (indio_dev->setup_ops->predisable) {
-> -		ret = indio_dev->setup_ops->predisable(indio_dev);
-> -		if (ret)
-> -			return ret;
-> +		ret2 = indio_dev->setup_ops->predisable(indio_dev);
-> +		if (ret2 && !ret)
-> +			ret = ret2;
->  	}
+>  ack_intr_status:
+>  	if (!data->dready_trigger_on) {
+> @@ -973,8 +972,6 @@ static irqreturn_t bmg160_data_rdy_trig_poll(int irq, void *private)
+>  	struct iio_dev *indio_dev = private;
+>  	struct bmg160_data *data = iio_priv(indio_dev);
 >  
->  	if (indio_dev->setup_ops->postdisable) {
->  		ret = indio_dev->setup_ops->postdisable(indio_dev);
-> -		if (ret)
-> -			return ret;
-> +		if (ret2 && !ret)
-> +			ret = ret2;
->  	}
->  
->  	indio_dev->currentmode = INDIO_DIRECT_MODE;
-> +	iio_free_scan_mask(indio_dev, indio_dev->active_scan_mask);
-> +	indio_dev->active_scan_mask = NULL;
->  
-> -	return 0;
-> +	return ret;
->  }
->  
->  static int iio_enable_buffers(struct iio_dev *indio_dev,
-> @@ -745,9 +764,8 @@ static int __iio_update_buffers(struct iio_dev *indio_dev,
->  		       struct iio_buffer *insert_buffer,
->  		       struct iio_buffer *remove_buffer)
->  {
-> -	int ret;
-> -	const unsigned long *old_mask;
->  	struct iio_device_config new_config;
-> +	int ret;
->  
->  	ret = iio_verify_update(indio_dev, insert_buffer, remove_buffer,
->  		&new_config);
-> @@ -760,15 +778,9 @@ static int __iio_update_buffers(struct iio_dev *indio_dev,
->  			goto err_free_config;
->  	}
->  
-> -	/* Keep a copy of current setup to allow roll back */
-> -	old_mask = indio_dev->active_scan_mask;
-> -	indio_dev->active_scan_mask = NULL;
+> -	data->timestamp = iio_get_time_ns();
 > -
->  	ret = iio_disable_buffers(indio_dev);
-> -	if (ret) {
-> -		iio_free_scan_mask(indio_dev, old_mask);
-> -		goto err_free_config;
-> -	}
-> +	if (ret)
-> +		goto err_deactivate_all;
+>  	if (data->dready_trigger_on)
+>  		iio_trigger_poll(data->dready_trig);
+>  	else if (data->motion_trigger_on)
+> @@ -1105,7 +1102,7 @@ static int bmg160_probe(struct i2c_client *client,
+>  		}
 >  
->  	if (remove_buffer)
->  		iio_buffer_deactivate(remove_buffer);
-> @@ -776,22 +788,26 @@ static int __iio_update_buffers(struct iio_dev *indio_dev,
->  		iio_buffer_activate(indio_dev, insert_buffer);
->  
->  	/* If no buffers in list, we are done */
-> -	if (list_empty(&indio_dev->buffer_list)) {
-> -		iio_free_scan_mask(indio_dev, old_mask);
-> +	if (list_empty(&indio_dev->buffer_list))
->  		return 0;
-> -	}
->  
->  	ret = iio_enable_buffers(indio_dev, &new_config);
-> -	if (ret) {
-> -		if (insert_buffer)
-> -			iio_buffer_deactivate(insert_buffer);
-> -		indio_dev->active_scan_mask = old_mask;
-> -		goto err_free_config;
-> -	}
-> +	if (ret)
-> +		goto err_deactivate_all;
->  
-> -	iio_free_scan_mask(indio_dev, old_mask);
->  	return 0;
->  
-> +err_deactivate_all:
-> +	/*
-> +	 * We've already verified that the config is valid earlier. If things go
-> +	 * wrong in either enable or disable the most likely reason is an IO
-> +	 * error from the device. In this case there is no good recovery
-> +	 * strategy. Just make sure to disable everything and leave the device
-> +	 * in a sane state.  With a bit of luck the device might come back to
-> +	 * life again later and userspace can try again.
-> +	 */
-> +	iio_buffer_deactivate_all(indio_dev);
-> +
->  err_free_config:
->  	iio_free_scan_mask(indio_dev, new_config.scan_mask);
->  	return ret;
-> @@ -837,15 +853,8 @@ EXPORT_SYMBOL_GPL(iio_update_buffers);
->  
->  void iio_disable_all_buffers(struct iio_dev *indio_dev)
->  {
-> -	struct iio_buffer *buffer, *_buffer;
-> -
->  	iio_disable_buffers(indio_dev);
-> -	iio_free_scan_mask(indio_dev, indio_dev->active_scan_mask);
-> -	indio_dev->active_scan_mask = NULL;
-> -
-> -	list_for_each_entry_safe(buffer, _buffer,
-> -			&indio_dev->buffer_list, buffer_list)
-> -		iio_buffer_deactivate(buffer);
-> +	iio_buffer_deactivate_all(indio_dev);
->  }
->  
->  static ssize_t iio_buffer_store_enable(struct device *dev,
+>  		ret = iio_triggered_buffer_setup(indio_dev,
+> -						 NULL,
+> +						 iio_pollfunc_store_time,
+>  						 bmg160_trigger_handler,
+>  						 NULL);
+>  		if (ret < 0) {
 > 
 
