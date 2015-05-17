@@ -1,211 +1,208 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:59229 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:59247 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752596AbbEQJzn (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 17 May 2015 05:55:43 -0400
-Message-ID: <5558659C.4060807@kernel.org>
-Date: Sun, 17 May 2015 10:55:40 +0100
+	with ESMTP id S1752584AbbEQJ6T (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 17 May 2015 05:58:19 -0400
+Message-ID: <55586639.20409@kernel.org>
+Date: Sun, 17 May 2015 10:58:17 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Martin Fuzzey <mfuzzey@parkeon.com>,
-	Peter Meerwald <pmeerw@pmeerw.net>
-CC: linux-iio@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>
-Subject: Re: [PATCH V4 7/7] iio: mma8452: Add support for interrupt driven
- triggers.
-References: <20150513102635.27803.99054.stgit@localhost> <20150513102650.27803.25835.stgit@localhost>
-In-Reply-To: <20150513102650.27803.25835.stgit@localhost>
+To: "Pandruvada, Srinivas" <srinivas.pandruvada@intel.com>,
+	"Purdila, Octavian" <octavian.purdila@intel.com>
+CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	"Dogaru, Vlad" <vlad.dogaru@intel.com>
+Subject: Re: [PATCH] iio: accel: bmc150: decouple buffer and triggers
+References: <1431439404-30001-1-git-send-email-vlad.dogaru@intel.com>	 <CAE1zotKFejC4bL5EEE-568oXgCzwtvOa9SpeWdW=jJcfPnb4vA@mail.gmail.com> <1431463799.11262.40.camel@spandruv-DESK3.jf.intel.com>
+In-Reply-To: <1431463799.11262.40.camel@spandruv-DESK3.jf.intel.com>
 Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 13/05/15 11:26, Martin Fuzzey wrote:
-> Implement interrupt driven trigger for data ready.
-> This allows more efficient access to the sample data.
+On 12/05/15 21:51, Pandruvada, Srinivas wrote:
+> On Tue, 2015-05-12 at 19:17 +0300, Octavian Purdila wrote:
+>> On Tue, May 12, 2015 at 5:03 PM, Vlad Dogaru <vlad.dogaru@intel.com> wrote:
+>>>
+>>> If the interrupt pins are not available, we should still be able to use
+>>> the buffer with an external trigger.  However, we won't be able to use
+>>> the hardware fifo since we have no means of signalling when the
+>>> watermark is reached.
+>>>
+>>> I also added a comment to indicate that the timestamps in
+>>> bmc150_accel_data are only used for hardware fifo, since initially I was
+>>> confused about duplication with pf->timestamp.
+>>>
+>>> Signed-off-by: Vlad Dogaru <vlad.dogaru@intel.com>
+>>
+>> Srinivas can you also please take a look?
+>>
+>> The timestamp now has a slight delay (we take in the poll irq handler
+>> instead of the irq handler) but I think that is negligible, so:
+> This should be fine.
+Should be very small as it's a very short chain of function calls later.
+Applied to the togreg branch of iio.git.
+
+Thanks,
+
+Jonathan
+> Reviewed-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+>>
+>> Reviewed-by: Octavian Purdila <octavian.purdila@intel.com>
+>>
+>>> ---
+>>>  drivers/iio/accel/bmc150-accel.c | 55 +++++++++++++++++++++++++---------------
+>>>  1 file changed, 35 insertions(+), 20 deletions(-)
+>>>
+>>> diff --git a/drivers/iio/accel/bmc150-accel.c b/drivers/iio/accel/bmc150-accel.c
+>>> index 73e8773..4e70f51 100644
+>>> --- a/drivers/iio/accel/bmc150-accel.c
+>>> +++ b/drivers/iio/accel/bmc150-accel.c
+>>> @@ -196,7 +196,7 @@ struct bmc150_accel_data {
+>>>         u32 slope_thres;
+>>>         u32 range;
+>>>         int ev_enable_state;
+>>> -       int64_t timestamp, old_timestamp;
+>>> +       int64_t timestamp, old_timestamp; /* Only used in hw fifo mode. */
+>>>         const struct bmc150_accel_chip_info *chip_info;
+>>>  };
+>>>
+>>> @@ -1183,7 +1183,6 @@ static const struct iio_info bmc150_accel_info = {
+>>>         .write_event_value      = bmc150_accel_write_event,
+>>>         .write_event_config     = bmc150_accel_write_event_config,
+>>>         .read_event_config      = bmc150_accel_read_event_config,
+>>> -       .validate_trigger       = bmc150_accel_validate_trigger,
+>>>         .driver_module          = THIS_MODULE,
+>>>  };
+>>>
+>>> @@ -1222,7 +1221,7 @@ static irqreturn_t bmc150_accel_trigger_handler(int irq, void *p)
+>>>         mutex_unlock(&data->mutex);
+>>>
+>>>         iio_push_to_buffers_with_timestamp(indio_dev, data->buffer,
+>>> -                                          data->timestamp);
+>>> +                                          pf->timestamp);
+>>>  err_read:
+>>>         iio_trigger_notify_done(indio_dev->trig);
+>>>
+>>> @@ -1535,6 +1534,13 @@ static int bmc150_accel_fifo_set_mode(struct bmc150_accel_data *data)
+>>>         return ret;
+>>>  }
+>>>
+>>> +static int bmc150_accel_buffer_preenable(struct iio_dev *indio_dev)
+>>> +{
+>>> +       struct bmc150_accel_data *data = iio_priv(indio_dev);
+>>> +
+>>> +       return bmc150_accel_set_power_state(data, true);
+>>> +}
+>>> +
+>>>  static int bmc150_accel_buffer_postenable(struct iio_dev *indio_dev)
+>>>  {
+>>>         struct bmc150_accel_data *data = iio_priv(indio_dev);
+>>> @@ -1591,9 +1597,18 @@ out:
+>>>         return 0;
+>>>  }
+>>>
+>>> +static int bmc150_accel_buffer_postdisable(struct iio_dev *indio_dev)
+>>> +{
+>>> +       struct bmc150_accel_data *data = iio_priv(indio_dev);
+>>> +
+>>> +       return bmc150_accel_set_power_state(data, false);
+>>> +}
+>>> +
+>>>  static const struct iio_buffer_setup_ops bmc150_accel_buffer_ops = {
+>>> +       .preenable = bmc150_accel_buffer_preenable,
+>>>         .postenable = bmc150_accel_buffer_postenable,
+>>>         .predisable = bmc150_accel_buffer_predisable,
+>>> +       .postdisable = bmc150_accel_buffer_postdisable,
+>>>  };
+>>>
+>>>  static int bmc150_accel_probe(struct i2c_client *client,
+>>> @@ -1636,6 +1651,15 @@ static int bmc150_accel_probe(struct i2c_client *client,
+>>>         indio_dev->modes = INDIO_DIRECT_MODE;
+>>>         indio_dev->info = &bmc150_accel_info;
+>>>
+>>> +       ret = iio_triggered_buffer_setup(indio_dev,
+>>> +                                        &iio_pollfunc_store_time,
+>>> +                                        bmc150_accel_trigger_handler,
+>>> +                                        &bmc150_accel_buffer_ops);
+>>> +       if (ret < 0) {
+>>> +               dev_err(&client->dev, "Failed: iio triggered buffer setup\n");
+>>> +               return ret;
+>>> +       }
+>>> +
+>>>         if (client->irq < 0)
+>>>                 client->irq = bmc150_accel_gpio_probe(client, data);
+>>>
+>>> @@ -1648,7 +1672,7 @@ static int bmc150_accel_probe(struct i2c_client *client,
+>>>                                                 BMC150_ACCEL_IRQ_NAME,
+>>>                                                 indio_dev);
+>>>                 if (ret)
+>>> -                       return ret;
+>>> +                       goto err_buffer_cleanup;
+>>>
+>>>                 /*
+>>>                  * Set latched mode interrupt. While certain interrupts are
+>>> @@ -1661,24 +1685,14 @@ static int bmc150_accel_probe(struct i2c_client *client,
+>>>                                              BMC150_ACCEL_INT_MODE_LATCH_RESET);
+>>>                 if (ret < 0) {
+>>>                         dev_err(&data->client->dev, "Error writing reg_int_rst_latch\n");
+>>> -                       return ret;
+>>> +                       goto err_buffer_cleanup;
+>>>                 }
+>>>
+>>>                 bmc150_accel_interrupts_setup(indio_dev, data);
+>>>
+>>>                 ret = bmc150_accel_triggers_setup(indio_dev, data);
+>>>                 if (ret)
+>>> -                       return ret;
+>>> -
+>>> -               ret = iio_triggered_buffer_setup(indio_dev,
+>>> -                                                &iio_pollfunc_store_time,
+>>> -                                                bmc150_accel_trigger_handler,
+>>> -                                                &bmc150_accel_buffer_ops);
+>>> -               if (ret < 0) {
+>>> -                       dev_err(&client->dev,
+>>> -                               "Failed: iio triggered buffer setup\n");
+>>> -                       goto err_trigger_unregister;
+>>> -               }
+>>> +                       goto err_buffer_cleanup;
+>>>
+>>>                 if (i2c_check_functionality(client->adapter, I2C_FUNC_I2C) ||
+>>>                     i2c_check_functionality(client->adapter,
+>>> @@ -1692,7 +1706,7 @@ static int bmc150_accel_probe(struct i2c_client *client,
+>>>         ret = iio_device_register(indio_dev);
+>>>         if (ret < 0) {
+>>>                 dev_err(&client->dev, "Unable to register iio device\n");
+>>> -               goto err_buffer_cleanup;
+>>> +               goto err_trigger_unregister;
+>>>         }
+>>>
+>>>         ret = pm_runtime_set_active(&client->dev);
+>>> @@ -1708,11 +1722,10 @@ static int bmc150_accel_probe(struct i2c_client *client,
+>>>
+>>>  err_iio_unregister:
+>>>         iio_device_unregister(indio_dev);
+>>> -err_buffer_cleanup:
+>>> -       if (indio_dev->pollfunc)
+>>> -               iio_triggered_buffer_cleanup(indio_dev);
+>>>  err_trigger_unregister:
+>>>         bmc150_accel_unregister_triggers(data, BMC150_ACCEL_TRIGGERS - 1);
+>>> +err_buffer_cleanup:
+>>> +       iio_triggered_buffer_cleanup(indio_dev);
+>>>
+>>>         return ret;
+>>>  }
+>>> @@ -1730,6 +1743,8 @@ static int bmc150_accel_remove(struct i2c_client *client)
+>>>
+>>>         bmc150_accel_unregister_triggers(data, BMC150_ACCEL_TRIGGERS - 1);
+>>>
+>>> +       iio_triggered_buffer_cleanup(indio_dev);
+>>> +
+>>>         mutex_lock(&data->mutex);
+>>>         bmc150_accel_set_mode(data, BMC150_ACCEL_SLEEP_MODE_DEEP_SUSPEND, 0);
+>>>         mutex_unlock(&data->mutex);
+>>> --
+>>> 1.9.1
+>>>
 > 
-> Signed-off-by: Martin Fuzzey <mfuzzey@parkeon.com>
-> ---
->  drivers/iio/accel/mma8452.c |   85 ++++++++++++++++++++++++++++++++++++++++---
->  1 file changed, 79 insertions(+), 6 deletions(-)
-> 
-> diff --git a/drivers/iio/accel/mma8452.c b/drivers/iio/accel/mma8452.c
-> index 5f2977f..e568d34 100644
-> --- a/drivers/iio/accel/mma8452.c
-> +++ b/drivers/iio/accel/mma8452.c
-> @@ -18,6 +18,8 @@
->  #include <linux/iio/sysfs.h>
->  #include <linux/iio/trigger_consumer.h>
->  #include <linux/iio/buffer.h>
-> +#include <linux/iio/trigger.h>
-> +#include <linux/iio/trigger_consumer.h>
->  #include <linux/iio/triggered_buffer.h>
->  #include <linux/iio/events.h>
->  #include <linux/delay.h>
-> @@ -66,6 +68,7 @@
->  #define MMA8452_DATA_CFG_FS_8G 2
->  #define MMA8452_DATA_CFG_HPF_MASK BIT(4)
->  
-> +#define MMA8452_INT_DRDY	BIT(0)
->  #define MMA8452_INT_TRANS	BIT(5)
->  
->  #define MMA8452_DEVICE_ID 0x2a
-> @@ -577,18 +580,24 @@ static irqreturn_t mma8452_interrupt(int irq, void *p)
->  {
->  	struct iio_dev *indio_dev = p;
->  	struct mma8452_data *data = iio_priv(indio_dev);
-> +	int ret = IRQ_NONE;
->  	int src;
->  
->  	src = i2c_smbus_read_byte_data(data->client, MMA8452_INT_SRC);
->  	if (src < 0)
->  		return IRQ_NONE;
->  
-> +	if (src & MMA8452_INT_DRDY) {
-> +		iio_trigger_poll_chained(indio_dev->trig);
-Hmm. The issue with trigger_poll_chained is that it heavily restricts
-the uses that can be made of the trigger by other devices. The top
-half handler is never actually called as a result.
-
-Given the whole point of the triggers stuff is to allow generic
-use of triggers where possible, we need to ensure that if a device
-is allowed to use a trigger, it always looks like a direct interrupt.
-
-Two options for how to prevent odd things happening as a result:
-1) Add a validate device callback to the trigger - that will prevent
-it from being used for any other device.
-2) irq_work_queues - see drivers/iio/light/gp2ap020a00f.c or the
-sysfs trigger for how to do this.
-
-> +		ret = IRQ_HANDLED;
-> +	}
-> +
->  	if (src & MMA8452_INT_TRANS) {
->  		mma8452_transient_interrupt(indio_dev);
-> -		return IRQ_HANDLED;
-> +		ret = IRQ_HANDLED;
->  	}
->  
-> -	return IRQ_NONE;
-> +	return ret;
->  }
->  
->  static irqreturn_t mma8452_trigger_handler(int irq, void *p)
-> @@ -714,6 +723,60 @@ static const struct iio_info mma8452_info = {
->  
->  static const unsigned long mma8452_scan_masks[] = {0x7, 0};
->  
-> +static int mma8452_data_rdy_trigger_set_state(struct iio_trigger *trig,
-> +					      bool state)
-> +{
-> +	struct iio_dev *indio_dev = iio_trigger_get_drvdata(trig);
-> +	struct mma8452_data *data = iio_priv(indio_dev);
-> +	int reg;
-> +
-> +	reg = i2c_smbus_read_byte_data(data->client, MMA8452_CTRL_REG4);
-> +	if (reg < 0)
-> +		return reg;
-> +
-> +	if (state)
-> +		reg |= MMA8452_INT_DRDY;
-> +	else
-> +		reg &= ~MMA8452_INT_DRDY;
-> +
-> +	return mma8452_change_config(data, MMA8452_CTRL_REG4, reg);
-> +}
-> +
-> +static const struct iio_trigger_ops mma8452_trigger_ops = {
-> +	.set_trigger_state = mma8452_data_rdy_trigger_set_state,
-> +	.owner = THIS_MODULE,
-> +};
-> +
-> +static int mma8452_trigger_setup(struct iio_dev *indio_dev)
-> +{
-> +	struct mma8452_data *data = iio_priv(indio_dev);
-> +	struct iio_trigger *trig;
-> +	int ret;
-> +
-> +	trig = devm_iio_trigger_alloc(&data->client->dev, "%s-dev%d",
-> +				      indio_dev->name,
-> +				      indio_dev->id);
-> +	if (!trig)
-> +		return -ENOMEM;
-> +
-> +	trig->dev.parent = &data->client->dev;
-> +	trig->ops = &mma8452_trigger_ops;
-> +	iio_trigger_set_drvdata(trig, indio_dev);
-> +
-> +	ret = iio_trigger_register(trig);
-> +	if (ret)
-> +		return ret;
-> +
-> +	indio_dev->trig = trig;
-> +	return 0;
-> +}
-> +
-> +static void mma8452_trigger_cleanup(struct iio_dev *indio_dev)
-> +{
-> +	if (indio_dev->trig)
-> +		iio_trigger_unregister(indio_dev->trig);
-> +}
-> +
->  static int mma8452_reset(struct i2c_client *client)
->  {
->  	int i;
-> @@ -794,7 +857,8 @@ static int mma8452_probe(struct i2c_client *client,
->  		 * enabled until userspace asks for it by
->  		 * mma8452_write_event_config()
->  		 */
-> -		int supported_interrupts = MMA8452_INT_TRANS;
-> +		int supported_interrupts = MMA8452_INT_DRDY | MMA8452_INT_TRANS;
-> +		int enabled_interrupts = MMA8452_INT_TRANS;
->  
->  		/* Assume wired to INT1 pin */
->  		ret = i2c_smbus_write_byte_data(client,
-> @@ -805,7 +869,11 @@ static int mma8452_probe(struct i2c_client *client,
->  
->  		ret = i2c_smbus_write_byte_data(client,
->  						MMA8452_CTRL_REG4,
-> -						supported_interrupts);
-> +						enabled_interrupts);
-> +		if (ret < 0)
-> +			return ret;
-> +
-> +		ret = mma8452_trigger_setup(indio_dev);
->  		if (ret < 0)
->  			return ret;
->  	}
-> @@ -815,12 +883,12 @@ static int mma8452_probe(struct i2c_client *client,
->  	ret = i2c_smbus_write_byte_data(client, MMA8452_CTRL_REG1,
->  					data->ctrl_reg1);
->  	if (ret < 0)
-> -		return ret;
-> +		goto trigger_cleanup;
->  
->  	ret = iio_triggered_buffer_setup(indio_dev, NULL,
->  		mma8452_trigger_handler, NULL);
->  	if (ret < 0)
-> -		return ret;
-> +		goto trigger_cleanup;
->  
->  	if (client->irq) {
->  		ret = devm_request_threaded_irq(&client->dev,
-> @@ -840,6 +908,10 @@ static int mma8452_probe(struct i2c_client *client,
->  
->  buffer_cleanup:
->  	iio_triggered_buffer_cleanup(indio_dev);
-> +
-> +trigger_cleanup:
-> +	mma8452_trigger_cleanup(indio_dev);
-> +
->  	return ret;
->  }
->  
-> @@ -849,6 +921,7 @@ static int mma8452_remove(struct i2c_client *client)
->  
->  	iio_device_unregister(indio_dev);
->  	iio_triggered_buffer_cleanup(indio_dev);
-> +	mma8452_trigger_cleanup(indio_dev);
->  	mma8452_standby(iio_priv(indio_dev));
->  
->  	return 0;
+> N�����r��y���b�X��ǧv�^�)޺{.n�+����{��*"��^n�r���z���h����&���G���h�(�階�ݢj"���m�����z�ޖ���f���h���~�mml==
 > 
 
