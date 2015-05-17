@@ -1,78 +1,136 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:59114 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:59127 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752577AbbEQJb0 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 17 May 2015 05:31:26 -0400
-Message-ID: <55585FEC.4060906@kernel.org>
-Date: Sun, 17 May 2015 10:31:24 +0100
+	with ESMTP id S1752577AbbEQJc5 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 17 May 2015 05:32:57 -0400
+Message-ID: <55586047.9060502@kernel.org>
+Date: Sun, 17 May 2015 10:32:55 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
 To: Martin Fuzzey <mfuzzey@parkeon.com>,
 	Peter Meerwald <pmeerw@pmeerw.net>
 CC: linux-iio@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>
-Subject: Re: [PATCH V4 2/7] iio: mma8452: Add access to registers via DebugFS
-References: <20150513102635.27803.99054.stgit@localhost> <20150513102640.27803.39257.stgit@localhost>
-In-Reply-To: <20150513102640.27803.39257.stgit@localhost>
+Subject: Re: [PATCH V4 3/7] iio: core: add high pass filter attributes
+References: <20150513102635.27803.99054.stgit@localhost> <20150513102642.27803.258.stgit@localhost>
+In-Reply-To: <20150513102642.27803.258.stgit@localhost>
 Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
 On 13/05/15 11:26, Martin Fuzzey wrote:
-> Signed-off-by: Martin Fuzzey <mfuzzey@parkeon.com>
-applied.
-> ---
->  drivers/iio/accel/mma8452.c |   25 +++++++++++++++++++++++++
->  1 file changed, 25 insertions(+)
+> Add a high pass filter attribute for measurements
+> (like the existing low pass)
 > 
-> diff --git a/drivers/iio/accel/mma8452.c b/drivers/iio/accel/mma8452.c
-> index 001a7db..877ce29 100644
-> --- a/drivers/iio/accel/mma8452.c
-> +++ b/drivers/iio/accel/mma8452.c
-> @@ -34,6 +34,8 @@
->  #define MMA8452_CTRL_REG2 0x2b
->  #define MMA8452_CTRL_REG2_RST		BIT(6)
+> Also add both high and low pass attibutes for events.
+> 
+> Signed-off-by: Martin Fuzzey <mfuzzey@parkeon.com>
+Applied, thanks (typo above corrected though ;)
+> ---
+>  Documentation/ABI/testing/sysfs-bus-iio |   30 ++++++++++++++++++++++++++++++
+>  drivers/iio/industrialio-core.c         |    2 ++
+>  drivers/iio/industrialio-event.c        |    2 ++
+>  include/linux/iio/iio.h                 |    1 +
+>  include/linux/iio/types.h               |    2 ++
+>  5 files changed, 37 insertions(+)
+> 
+> diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
+> index 3befcb1..ef1f11e 100644
+> --- a/Documentation/ABI/testing/sysfs-bus-iio
+> +++ b/Documentation/ABI/testing/sysfs-bus-iio
+> @@ -420,6 +420,16 @@ Description:
+>  		to the underlying data channel, then this parameter
+>  		gives the 3dB frequency of the filter in Hz.
 >  
-> +#define MMA8452_MAX_REG 0x31
+> +What:		/sys/.../in_accel_filter_high_pass_3db_frequency
+> +What:		/sys/.../in_anglvel_filter_high_pass_3db_frequency
+> +What:		/sys/.../in_magn_filter_high_pass_3db_frequency
+> +KernelVersion:	4.2
+> +Contact:	linux-iio@vger.kernel.org
+> +Description:
+> +		If a known or controllable high pass filter is applied
+> +		to the underlying data channel, then this parameter
+> +		gives the 3dB frequency of the filter in Hz.
 > +
->  #define MMA8452_STATUS_DRDY (BIT(2) | BIT(1) | BIT(0))
+>  What:		/sys/bus/iio/devices/iio:deviceX/out_voltageY_raw
+>  What:		/sys/bus/iio/devices/iio:deviceX/out_altvoltageY_raw
+>  KernelVersion:	2.6.37
+> @@ -880,6 +890,26 @@ Description:
+>  		met before an event is generated. If direction is not
+>  		specified then this period applies to both directions.
 >  
->  #define MMA8452_CTRL_DR_MASK (BIT(5) | BIT(4) | BIT(3))
-> @@ -292,6 +294,28 @@ done:
->  	return IRQ_HANDLED;
->  }
->  
-> +static int mma8452_reg_access_dbg(struct iio_dev *indio_dev,
-> +				  unsigned reg, unsigned writeval,
-> +				  unsigned *readval)
-> +{
-> +	int ret;
-> +	struct mma8452_data *data = iio_priv(indio_dev);
+> +What:		/sys/.../events/in_accel_thresh_rising_low_pass_filter_3db
+> +What:		/sys/.../events/in_anglvel_thresh_rising_low_pass_filter_3db
+> +What:		/sys/.../events/in_magn_thresh_rising_low_pass_filter_3db
+> +KernelVersion:	4.2
+> +Contact:	linux-iio@vger.kernel.org
+> +Description:
+> +		If a low pass filter can be applied to the event generation
+> +		this property gives its 3db frequency in Hz.
+> +		A value of zero disables the filter.
 > +
-> +	if (reg > MMA8452_MAX_REG)
-> +		return -EINVAL;
+> +What:		/sys/.../events/in_accel_thresh_rising_high_pass_filter_3db
+> +What:		/sys/.../events/in_anglvel_thresh_rising_high_pass_filter_3db
+> +What:		/sys/.../events/in_magn_thresh_rising_high_pass_filter_3db
+> +KernelVersion:	4.2
+> +Contact:	linux-iio@vger.kernel.org
+> +Description:
+> +		If a high pass filter can be applied to the event generation
+> +		this property gives its 3db frequency in Hz.
+> +		A value of zero disables the filter.
 > +
-> +	if (!readval)
-> +		return mma8452_change_config(data, reg, writeval);
-> +
-> +	ret = i2c_smbus_read_byte_data(data->client, reg);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	*readval = ret;
-> +
-> +	return 0;
-> +}
-> +
->  #define MMA8452_CHANNEL(axis, idx) { \
->  	.type = IIO_ACCEL, \
->  	.modified = 1, \
-> @@ -331,6 +355,7 @@ static const struct iio_info mma8452_info = {
->  	.attrs = &mma8452_group,
->  	.read_raw = &mma8452_read_raw,
->  	.write_raw = &mma8452_write_raw,
-> +	.debugfs_reg_access = &mma8452_reg_access_dbg,
->  	.driver_module = THIS_MODULE,
+>  What:		/sys/.../events/in_activity_still_thresh_rising_en
+>  What:		/sys/.../events/in_activity_still_thresh_falling_en
+>  What:		/sys/.../events/in_activity_walking_thresh_rising_en
+> diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+> index 4df97f6..6c8730e 100644
+> --- a/drivers/iio/industrialio-core.c
+> +++ b/drivers/iio/industrialio-core.c
+> @@ -117,6 +117,8 @@ static const char * const iio_chan_info_postfix[] = {
+>  	[IIO_CHAN_INFO_AVERAGE_RAW] = "mean_raw",
+>  	[IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY]
+>  	= "filter_low_pass_3db_frequency",
+> +	[IIO_CHAN_INFO_HIGH_PASS_FILTER_3DB_FREQUENCY]
+> +	= "filter_high_pass_3db_frequency",
+>  	[IIO_CHAN_INFO_SAMP_FREQ] = "sampling_frequency",
+>  	[IIO_CHAN_INFO_FREQUENCY] = "frequency",
+>  	[IIO_CHAN_INFO_PHASE] = "phase",
+> diff --git a/drivers/iio/industrialio-event.c b/drivers/iio/industrialio-event.c
+> index a99692b..894d813 100644
+> --- a/drivers/iio/industrialio-event.c
+> +++ b/drivers/iio/industrialio-event.c
+> @@ -211,6 +211,8 @@ static const char * const iio_ev_info_text[] = {
+>  	[IIO_EV_INFO_VALUE] = "value",
+>  	[IIO_EV_INFO_HYSTERESIS] = "hysteresis",
+>  	[IIO_EV_INFO_PERIOD] = "period",
+> +	[IIO_EV_INFO_HIGH_PASS_FILTER_3DB] = "high_pass_filter_3db",
+> +	[IIO_EV_INFO_LOW_PASS_FILTER_3DB] = "low_pass_filter_3db",
 >  };
 >  
+>  static enum iio_event_direction iio_ev_attr_dir(struct iio_dev_attr *attr)
+> diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
+> index d86b753..1d6c15e 100644
+> --- a/include/linux/iio/iio.h
+> +++ b/include/linux/iio/iio.h
+> @@ -32,6 +32,7 @@ enum iio_chan_info_enum {
+>  	IIO_CHAN_INFO_QUADRATURE_CORRECTION_RAW,
+>  	IIO_CHAN_INFO_AVERAGE_RAW,
+>  	IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY,
+> +	IIO_CHAN_INFO_HIGH_PASS_FILTER_3DB_FREQUENCY,
+>  	IIO_CHAN_INFO_SAMP_FREQ,
+>  	IIO_CHAN_INFO_FREQUENCY,
+>  	IIO_CHAN_INFO_PHASE,
+> diff --git a/include/linux/iio/types.h b/include/linux/iio/types.h
+> index 942b6de..32b5795 100644
+> --- a/include/linux/iio/types.h
+> +++ b/include/linux/iio/types.h
+> @@ -17,6 +17,8 @@ enum iio_event_info {
+>  	IIO_EV_INFO_VALUE,
+>  	IIO_EV_INFO_HYSTERESIS,
+>  	IIO_EV_INFO_PERIOD,
+> +	IIO_EV_INFO_HIGH_PASS_FILTER_3DB,
+> +	IIO_EV_INFO_LOW_PASS_FILTER_3DB,
+>  };
+>  
+>  #define IIO_VAL_INT 1
 > 
 
