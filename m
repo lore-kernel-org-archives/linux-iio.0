@@ -1,64 +1,42 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-wg0-f68.google.com ([74.125.82.68]:34968 "EHLO
-	mail-wg0-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754103AbbERQGx (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 18 May 2015 12:06:53 -0400
-Message-ID: <555A0E19.10807@gmail.com>
-Date: Mon, 18 May 2015 18:06:49 +0200
-From: Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>
-To: Antoine Tenart <antoine.tenart@free-electrons.com>,
-	jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
-	pmeerw@pmeerw.net
-CC: zmxu@marvell.com, jszhang@marvell.com, yrliao@marvell.com,
-	linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+Received: from mga02.intel.com ([134.134.136.20]:26832 "EHLO mga02.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S932155AbbERQYR (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Mon, 18 May 2015 12:24:17 -0400
+From: Daniel Baluta <daniel.baluta@intel.com>
+To: jic23@kernel.org, srinivas.pandruvada@linux.intel.com
+Cc: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
+	daniel.baluta@intel.com, linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v5 3/3] ARM: berlin: add an ADC node for the BG2Q
-References: <1431940760-23896-1-git-send-email-antoine.tenart@free-electrons.com> <1431940760-23896-4-git-send-email-antoine.tenart@free-electrons.com>
-In-Reply-To: <1431940760-23896-4-git-send-email-antoine.tenart@free-electrons.com>
-Content-Type: text/plain; charset=windows-1252; format=flowed
+Subject: [RFC PATCH 0/2] Introduce PM runtime helper functions
+Date: Mon, 18 May 2015 19:25:26 +0300
+Message-Id: <1431966328-11058-1-git-send-email-daniel.baluta@intel.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 18.05.2015 11:19, Antoine Tenart wrote:
-> This patch adds the ADC node for the Berlin BG2Q, using the newly added
-> Berlin IIO ADC driver.
->
-> Signed-off-by: Antoine Tenart <antoine.tenart@free-electrons.com>
-> ---
->   arch/arm/boot/dts/berlin2q.dtsi | 7 +++++++
->   1 file changed, 7 insertions(+)
->
-> diff --git a/arch/arm/boot/dts/berlin2q.dtsi b/arch/arm/boot/dts/berlin2q.dtsi
-> index 187d056f7ad2..97c7e19e3ec6 100644
-> --- a/arch/arm/boot/dts/berlin2q.dtsi
-> +++ b/arch/arm/boot/dts/berlin2q.dtsi
-> @@ -565,6 +565,13 @@
->   						function = "twsi3";
->   					};
->   				};
-> +
-> +				adc: adc {
-> +					compatible = "marvell,berlin2-adc";
-> +					interrupt-parent = <&sic>;
+Working on a new driver I noticed that there is a fair amount of duplicate
+code for adding PM runtime support.
 
-Antoine,
+First patch refactors the PM runtime support in a new header
+ <linux/iio/pm_runtime> introducing functions for setup/cleanup and
+set power state.
 
-a side note on the interrupt-parent property above:
+Second patch modifies the KXCJK-1013 driver to use the newly created API. If
+this is ok follow up patches will modify the rest of the drivers.
 
-The parent simple-bus node already contains that property. If you
-remove the property here, don't the interrupt routines go up the
-hierarchy until they find an interrupt-parent set?
+There is a small difference for hid-sensors where the setup sequence additionally
+calls pm_suspend_ignore_children. This is taken care of by introducing a 3rd
+parameter to iio_pm_runtime_setup.
 
-So, is it safe to get rid of the extra interrupt-parent property on
-the adc node?
+Daniel Baluta (2):
+  iio: pm_runtime: Introduce PM runtime helper functions
+  iio: accel: kxcjk1013: Use the new IIO pm runtime helpers
 
-Sebastian
+ drivers/iio/accel/kxcjk-1013.c | 56 ++++++++++---------------------------
+ include/linux/iio/pm_runtime.h | 63 ++++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 77 insertions(+), 42 deletions(-)
+ create mode 100644 include/linux/iio/pm_runtime.h
 
-> +					interrupts = <12>, <14>;
-> +					interrupt-names = "adc", "tsen";
-> +				};
->   			};
->
->   			sic: interrupt-controller@e000 {
->
+-- 
+1.9.1
 
