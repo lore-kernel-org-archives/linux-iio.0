@@ -1,167 +1,55 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-wi0-f196.google.com ([209.85.212.196]:35954 "EHLO
-	mail-wi0-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753126AbbERSYM (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 18 May 2015 14:24:12 -0400
+Received: from www.linutronix.de ([62.245.132.108]:51272 "EHLO
+	Galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751142AbbERVRe (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 18 May 2015 17:17:34 -0400
+Date: Mon, 18 May 2015 23:17:28 +0200
+From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+To: Xander Huff <xander.huff@ni.com>
+Cc: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
+	pmeerw@pmeerw.net, michal.simek@xilinx.com,
+	soren.brinkmann@xilinx.com, linux-iio@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	linux-rt-users@vger.kernel.org, ben.shelton@ni.com,
+	joe.hershberger@ni.com, joshc@ni.com
+Subject: Re: [PATCH] iio: adc: xilinx-xadc: Convert to raw spinlock
+Message-ID: <20150518211728.GC4275@linutronix.de>
+References: <1431013090-18996-1-git-send-email-xander.huff@ni.com>
+ <20150514171038.GG13442@linutronix.de>
+ <55552570.5050407@ni.com>
 MIME-Version: 1.0
-In-Reply-To: <alpine.DEB.2.02.1505181910460.29269@pmeerw.net>
-References: <1431966328-11058-1-git-send-email-daniel.baluta@intel.com>
-	<1431966328-11058-2-git-send-email-daniel.baluta@intel.com>
-	<alpine.DEB.2.02.1505181910460.29269@pmeerw.net>
-Date: Mon, 18 May 2015 21:24:10 +0300
-Message-ID: <CAEnQRZBgsrRUb0-pkHHQth3apppRPA=XehKZHWdkjfJ=iqLSCQ@mail.gmail.com>
-Subject: Re: [RFC PATCH 1/2] iio: pm_runtime: Introduce PM runtime helper functions
-From: Daniel Baluta <daniel.baluta@intel.com>
-To: Peter Meerwald <pmeerw@pmeerw.net>, linux-pm@vger.kernel.org,
-	Lars-Peter Clausen <lars@metafoo.de>
-Cc: Daniel Baluta <daniel.baluta@intel.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=utf-8
+In-Reply-To: <55552570.5050407@ni.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Adding linux-pm people since Lars suggested that the changes should be
-in the PM core.
+* Xander Huff | 2015-05-14 17:45:04 [-0500]:
 
-I agree, that these changes are not "awfully" IIO specific but no
-other subsystem uses
-this pattern for configuration. In fact iio_pm_runtime_setup can be
-done in many more
-other ways depending on functionality needed.
+>With no other processes running, I got the following results after a
+>couple of hours on one of our devices:
+>
+>admin@Xander-roboRIO:~# cyclictest -S -m -p 98
+># /dev/cpu_dma_latency set to 0us
+>policy: fifo: loadavg: 0.01 0.07 0.12 1/176 1473
+>
+>T: 0 ( 1373) P:98 I:1000 C:6503872 Min:      9 Act:   13 Avg:   13 Max:      51
+>T: 1 ( 1374) P:98 I:1500 C:4335914 Min:      9 Act:   12 Avg:   13 Max:      49
+>
+>With a VI reading all default handles (raw, offset, scale,
+>sampling_frequency) in /sys/bus/iio/devices/iio:device0 constantly in
+>a while loop, I got the following results after a couple hours on the
+>same device:
+>
+>admin@Xander-roboRIO:~# cyclictest -S -m -p 98
+># /dev/cpu_dma_latency set to 0us
+>policy: fifo: loadavg: 6.93 7.30 7.47 3/182 1530
+>
+>T: 0 ( 1487) P:98 I:1000 C:4497008 Min:     11 Act:   20 Avg:   21 Max:      69
+>T: 1 ( 1488) P:98 I:1500 C:2998005 Min:     11 Act:   20 Avg:   22 Max:      59
 
-On Mon, May 18, 2015 at 8:34 PM, Peter Meerwald <pmeerw@pmeerw.net> wrote:
-> On Mon, 18 May 2015, Daniel Baluta wrote:
->
->> We need this in order to avoid reimplementing the same functions each time
->> we add PM runtime support in a driver.
->
-> comments below
->
->> Simple grep shows the following users:
->>       * accel/mma9551.c
->>       * accel/mmc9553.c
->>       * accel/kxcjk1013.c
->>       * accel/bmc150-accel.c
->>       * gyro/bmg160.c
->>       * imu/kmx61.c
->>       * common/hid-sensors.
->>
->> Signed-off-by: Daniel Baluta <daniel.baluta@intel.com>
->> ---
->>  include/linux/iio/pm_runtime.h | 63 ++++++++++++++++++++++++++++++++++++++++++
->>  1 file changed, 63 insertions(+)
->>  create mode 100644 include/linux/iio/pm_runtime.h
->>
->> diff --git a/include/linux/iio/pm_runtime.h b/include/linux/iio/pm_runtime.h
->> new file mode 100644
->> index 0000000..dc2bca7
->> --- /dev/null
->> +++ b/include/linux/iio/pm_runtime.h
->> @@ -0,0 +1,63 @@
->> +/*
->> + * Industrial I/O runtime PM helper functions
->> + *
->> + * Copyright (c) 2015, Intel Corporation.
->> + *
->> + * This file is subject to the terms and conditions of version 2 of
->> + * the GNU General Public License.  See the file COPYING in the main
->> + * directory of this archive for more details.
->> + *
->> + */
->> +#ifndef __IIO_PM_RUNTIME
->> +#define __IIO_PM_RUNTIME
->> +
->> +#include <linux/pm_runtime.h>
->> +
->> +static inline int iio_pm_runtime_setup(struct device *dev, int delay,
->> +                                    bool ignore_children)
->> +{
->> +     int ret;
->> +
->> +     ret = pm_runtime_set_active(dev);
->> +     if (ret)
->
-> just noting: should this be (ret) or (ret < 0)?
->
-> pm_runtime_get_sync() below may return negative, 0, and positive
-> pm_runtime_set_active() seems to return negative or 0
->
-> documentation doesn't tell... wondering if (ret < 0) would be safer here?
+So there is an increase. And there is even a for-loop and I don't know
+how deep it is nested. Anyway, do you think it is worth it or would it
+be better to get rid of the raw-locks and simply push everything into
+threaded context?
 
-I think this check is correct, I also found the same check in
-power/pm2301_charger.c:1116. But there is no problem to add if (ret < 0)
-it looks safer.
-
->
->> +             return ret;
->> +
->> +     pm_suspend_ignore_children(dev, ignore_children);
->> +     pm_runtime_enable(dev);
->> +     pm_runtime_set_autosuspend_delay(dev, delay);
->> +     pm_runtime_use_autosuspend(dev);
->> +
->> +     return 0;
->> +}
->> +
->> +static inline void iio_pm_runtime_cleanup(struct device *dev)
->> +{
->> +     pm_runtime_disable(dev);
->> +     pm_runtime_set_suspended(dev);
->> +     pm_runtime_put_noidle(dev);
->> +}
->> +
->> +static inline int iio_pm_runtime_set_power(struct device *dev, bool on)
->
-> why a static inline function in a header file?
-> these functions do not seem to be performance critical and are substantial
-> enough in size to avoid copying the code to every driver
-
-I know about this, but I was trying to avoid another .config option
-that each IIO driver should select when implementing runtime pm support.
-
-I can change this.
-
->
->> +{
->> +#ifdef CONFIG_PM
->> +     int ret;
->> +
->> +     if (on)
->> +             ret = pm_runtime_get_sync(dev);
->> +     else {
->> +             pm_runtime_mark_last_busy(dev);
->> +             ret = pm_runtime_put_autosuspend(dev);
->> +     }
->> +
->> +     if (ret < 0) {
->> +             dev_err(dev, "Failed: iio_set_power_state for %d\n", on);
->
-> the error message doesn't match the function name, the text, 'for %d', is
-> not very clear
-
-Correct. Thanks for spotting this!
->
->> +             if (on)
->> +                     pm_runtime_put_noidle(dev);
->> +
->> +             return ret;
->> +     }
->> +#endif
->> +     return 0;
->> +}
->> +
->> +#endif /* __IIO_PM_RUNTIME */
->>
->
-> --
->
-> Peter Meerwald
-> +43-664-2444418 (mobile)
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+Sebastian
