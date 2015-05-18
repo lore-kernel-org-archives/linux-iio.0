@@ -1,64 +1,72 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-wi0-f176.google.com ([209.85.212.176]:34923 "EHLO
-	mail-wi0-f176.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751495AbbERIRk (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 18 May 2015 04:17:40 -0400
-Received: by wicmx19 with SMTP id mx19so68726514wic.0
-        for <linux-iio@vger.kernel.org>; Mon, 18 May 2015 01:17:38 -0700 (PDT)
-Message-ID: <5559A020.9020105@parkeon.com>
-Date: Mon, 18 May 2015 10:17:36 +0200
-From: Martin Fuzzey <mfuzzey@parkeon.com>
-MIME-Version: 1.0
-To: Jonathan Cameron <jic23@kernel.org>,
-	Peter Meerwald <pmeerw@pmeerw.net>
-CC: linux-iio@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>
-Subject: Re: [PATCH V4 6/7] iio: mma8452: Add highpass filter configuration.
-References: <20150513102635.27803.99054.stgit@localhost> <20150513102648.27803.92023.stgit@localhost> <555863FF.1040203@kernel.org>
-In-Reply-To: <555863FF.1040203@kernel.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
+Received: from down.free-electrons.com ([37.187.137.238]:46463 "EHLO
+	mail.free-electrons.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S1752540AbbERJTX (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 18 May 2015 05:19:23 -0400
+From: Antoine Tenart <antoine.tenart@free-electrons.com>
+To: sebastian.hesselbarth@gmail.com, jic23@kernel.org, knaack.h@gmx.de,
+	lars@metafoo.de, pmeerw@pmeerw.net
+Cc: Antoine Tenart <antoine.tenart@free-electrons.com>,
+	zmxu@marvell.com, jszhang@marvell.com, yrliao@marvell.com,
+	linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH v5 0/3] ARM: berlin: ADC support
+Date: Mon, 18 May 2015 11:19:17 +0200
+Message-Id: <1431940760-23896-1-git-send-email-antoine.tenart@free-electrons.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 17/05/15 11:48, Jonathan Cameron wrote:
-> On 13/05/15 11:26, Martin Fuzzey wrote:
->> Allow the cutoff frequency of the high pass filter to be configured.
->>
->> Signed-off-by: Martin Fuzzey <mfuzzey@parkeon.com>
-> Oops, I missed in patch 4 that you'd added the event_spec entry for the highpass
-> filter but not the support to actually read it (which is here).
-Ah true, good catch
+Hi,
 
-> I'll back out back to patch 4.  Could you repost with that sorted out.
-ok
+The Berlin ADC provides 8 channels, with one connected to a temperature
+sensor. The temperature sensor has its own registers and both the ADC
+and the temperature sensor need to be configured when using it.
 
-> Also, if (as I think is happening here) we have a filter applied to all
-> the data that is read from a channel (including it's events) then we normally
-> only have the attribute for the iio_chan_spec rather than the event spec
-> as well.
->
-> Anything that is in the parent directory is also assumed to apply to the
-> event directory if not overridden (by it being in both) as we could have
-> a pipeline in the device with seperate filters for the event detector and
-> the main data flow (not true here?)
->
-> Hence, please drop the event version unless I have missunderstood what
-> you are doing with the hardware.
->
-> It's fine to leave the abi docs in place however as they are correct even
-> if we don't normally introduced them until there is a driver using them.
+This series is based on the two Berlin controllers rework series:
+- https://lkml.org/lkml/2015/3/6/511
+- https://lkml.org/lkml/2015/3/6/535
 
-The hardware has one filter and two enable bits (one for the data and 
-one for the event)
-It is thus possible to read unfiltered data but have the filter applied 
-for the events.
+Antoine
 
-We discussed this in revision 2 of the series.
-https://www.marc.info/?l=linux-iio&m=140803621414813&w=2
+Changes sinve v4:
+	- fixed MODULE_DEVICE_TABLE which was using an unknown
+	  of_device_id table
 
-I thought we agreed in the above discussion to represent this as two 3db 
-frequencies with 0 meaning disable.
-I did that for V3 of the series.
+Changes since v3:
+        - removed irq members from the berlin2_adc_priv struct
+        - stopped setting the data member to -1
+        - converted the temperature returned to milli Celsius
 
+Changes since v2:
+        - took care of double free issues
+        - always enable the ADC in the device tree as there is no gated
+          clock
+        - moved the interrupt enable code before the channel reading
+          function
+        - cosmetic changes
 
-Martin
+Changes since v1:
+        - updated to use regmap_update_bits()
+        - fixed mixed berlin/berlin2 and some prefixes
+        - reworked channel definitions
+        - moved to IIO_CHAN_INFO_PROCESSED for the tsen
+        - fixed some typos
+        - cosmetic changes
+
+Antoine Tenart (3):
+  iio: adc: add support for Berlin
+  Documentation: bindings: document the Berlin ADC driver
+  ARM: berlin: add an ADC node for the BG2Q
+
+ .../devicetree/bindings/iio/adc/berlin2_adc.txt    |  19 ++
+ arch/arm/boot/dts/berlin2q.dtsi                    |   7 +
+ drivers/iio/adc/Kconfig                            |   7 +
+ drivers/iio/adc/Makefile                           |   1 +
+ drivers/iio/adc/berlin2-adc.c                      | 378 +++++++++++++++++++++
+ 5 files changed, 412 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/adc/berlin2_adc.txt
+ create mode 100644 drivers/iio/adc/berlin2-adc.c
+
+-- 
+2.4.0
 
