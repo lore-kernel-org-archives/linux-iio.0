@@ -1,203 +1,36 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ns.pmeerw.net ([84.19.176.92]:49756 "EHLO pmeerw.net"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1750980AbbESRca (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Tue, 19 May 2015 13:32:30 -0400
-Date: Tue, 19 May 2015 19:32:28 +0200 (CEST)
-From: Peter Meerwald <pmeerw@pmeerw.net>
-To: Lars-Peter Clausen <lars@metafoo.de>
-cc: Jonathan Cameron <jic23@kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>, linux-iio@vger.kernel.org
-Subject: Re: [PATCH] iio: Add I/Q modifiers
-In-Reply-To: <1432052790-26458-1-git-send-email-lars@metafoo.de>
-Message-ID: <alpine.DEB.2.02.1505191929300.10820@pmeerw.net>
-References: <1432052790-26458-1-git-send-email-lars@metafoo.de>
+Received: from smtp-out-050.synserver.de ([212.40.185.50]:1104 "EHLO
+	smtp-out-023.synserver.de" rhost-flags-OK-OK-OK-FAIL)
+	by vger.kernel.org with ESMTP id S1752446AbbESRxs (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 19 May 2015 13:53:48 -0400
+Message-ID: <555B78A3.2030202@metafoo.de>
+Date: Tue, 19 May 2015 19:53:39 +0200
+From: Lars-Peter Clausen <lars@metafoo.de>
 MIME-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
+To: Xander Huff <xander.huff@ni.com>, robh+dt@kernel.org,
+	pawel.moll@arm.com, mark.rutland@arm.com,
+	ijc+devicetree@hellion.org.uk, galak@codeaurora.org
+CC: michal.simek@xilinx.com, soren.brinkmann@xilinx.com,
+	jic23@kernel.org, knaack.h@gmx.de, pmeerw@pmeerw.net,
+	devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	linux-iio@vger.kernel.org, ben.shelton@ni.com, joshc@ni.com,
+	joe.hershberger@ni.com
+Subject: Re: [PATCH 2/2] iio: adc: xilinx-xadc: Add xlnx,extend-name as an
+ optional argument for aux channels
+References: <1431038644-41600-1-git-send-email-xander.huff@ni.com> <1431038644-41600-2-git-send-email-xander.huff@ni.com>
+In-Reply-To: <1431038644-41600-2-git-send-email-xander.huff@ni.com>
+Content-Type: text/plain; charset=windows-1252; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Tue, 19 May 2015, Lars-Peter Clausen wrote:
+On 05/08/2015 12:44 AM, Xander Huff wrote:
+> To better facilitate user-mode access to optional aux channels, allow
+> device trees to specify a custom extended name for defined channels.
 
-> I/Q modifiers can be used to denote signals which are represented by a
-> in-phase and a quadrature component.
-> 
-> The ABI documentation describes the I and Q modifiers for current and
-> voltage channels for now as those will be the most likely users.
+Hi,
 
-comments below
- 
-> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
-> ---
->  Documentation/ABI/testing/sysfs-bus-iio | 46 +++++++++++++++++++++++++++++++++
->  drivers/iio/industrialio-core.c         |  2 ++
->  include/uapi/linux/iio/types.h          |  2 ++
->  3 files changed, 50 insertions(+)
-> 
-> diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
-> index f66262c..85a8e05 100644
-> --- a/Documentation/ABI/testing/sysfs-bus-iio
-> +++ b/Documentation/ABI/testing/sysfs-bus-iio
-> @@ -71,6 +71,8 @@ Description:
->  
->  What:		/sys/bus/iio/devices/iio:deviceX/in_voltageY_raw
->  What:		/sys/bus/iio/devices/iio:deviceX/in_voltageY_supply_raw
-> +What:		/sys/bus/iio/devices/iio:deviceX/in_voltageY_i_raw
-> +What:		/sys/bus/iio/devices/iio:deviceX/in_voltageY_q_raw
->  KernelVersion:	2.6.35
->  Contact:	linux-iio@vger.kernel.org
->  Description:
-> @@ -81,6 +83,11 @@ Description:
->  		unique to allow association with event codes. Units after
->  		application of scale and offset are millivolts.
->  
-> +		Channels with a 'i' and 'q' modifiers always exists in pairs and both
+'extend-name' is kind of a IIO specific term. I think a better name in the 
+devicetree context would be 'label'. That's used everywhere else when giving 
+a short description string to a node.
 
-spelling, perhaps:
-"Channels with 'i' and 'q' modifiers always exist in pairs and "...
-drop 'a', exists -> exist
-
-> +		channels refer to the same signal. The 'i' channel contains the in-phase
-> +		component of the signal while the 'q' channel contains the quadrature
-> +		component.
-> +
->  What:		/sys/bus/iio/devices/iio:deviceX/in_voltageY-voltageZ_raw
->  KernelVersion:	2.6.35
->  Contact:	linux-iio@vger.kernel.org
-> @@ -246,8 +253,16 @@ What:		/sys/bus/iio/devices/iio:deviceX/in_accel_y_offset
->  What:		/sys/bus/iio/devices/iio:deviceX/in_accel_z_offset
->  What:		/sys/bus/iio/devices/iio:deviceX/in_voltageY_offset
->  What:		/sys/bus/iio/devices/iio:deviceX/in_voltage_offset
-> +What:		/sys/bus/iio/devices/iio:deviceX/in_voltageY_i_offset
-> +What:		/sys/bus/iio/devices/iio:deviceX/in_voltageY_q_offset
-> +What:		/sys/bus/iio/devices/iio:deviceX/in_voltage_q_offset
-> +What:		/sys/bus/iio/devices/iio:deviceX/in_voltage_i_offset
->  What:		/sys/bus/iio/devices/iio:deviceX/in_currentY_offset
->  What:		/sys/bus/iio/devices/iio:deviceX/in_current_offset
-> +What:		/sys/bus/iio/devices/iio:deviceX/in_currentY_i_offset
-> +What:		/sys/bus/iio/devices/iio:deviceX/in_currentY_q_offset
-> +What:		/sys/bus/iio/devices/iio:deviceX/in_current_q_offset
-> +What:		/sys/bus/iio/devices/iio:deviceX/in_current_i_offset
->  What:		/sys/bus/iio/devices/iio:deviceX/in_tempY_offset
->  What:		/sys/bus/iio/devices/iio:deviceX/in_temp_offset
->  What:		/sys/bus/iio/devices/iio:deviceX/in_pressureY_offset
-> @@ -273,14 +288,22 @@ Description:
->  		to the _raw output.
->  
->  What:		/sys/bus/iio/devices/iio:deviceX/in_voltageY_scale
-> +What:		/sys/bus/iio/devices/iio:deviceX/in_voltageY_i_scale
-> +What:		/sys/bus/iio/devices/iio:deviceX/in_voltageY_q_scale
->  What:		/sys/bus/iio/devices/iio:deviceX/in_voltageY_supply_scale
->  What:		/sys/bus/iio/devices/iio:deviceX/in_voltage_scale
-> +What:		/sys/bus/iio/devices/iio:deviceX/in_voltage_i_scale
-> +What:		/sys/bus/iio/devices/iio:deviceX/in_voltage_q_scale
->  What:		/sys/bus/iio/devices/iio:deviceX/in_voltage-voltage_scale
->  What:		/sys/bus/iio/devices/iio:deviceX/out_voltageY_scale
->  What:		/sys/bus/iio/devices/iio:deviceX/out_altvoltageY_scale
->  What:		/sys/bus/iio/devices/iio:deviceX/in_currentY_scale
->  What:		/sys/bus/iio/devices/iio:deviceX/in_currentY_supply_scale
->  What:		/sys/bus/iio/devices/iio:deviceX/in_current_scale
-> +What:		/sys/bus/iio/devices/iio:deviceX/in_currentY_i_scale
-> +What:		/sys/bus/iio/devices/iio:deviceX/in_currentY_q_scale
-> +What:		/sys/bus/iio/devices/iio:deviceX/in_current_i_scale
-> +What:		/sys/bus/iio/devices/iio:deviceX/in_current_q_scale
->  What:		/sys/bus/iio/devices/iio:deviceX/in_accel_scale
->  What:		/sys/bus/iio/devices/iio:deviceX/in_accel_peak_scale
->  What:		/sys/bus/iio/devices/iio:deviceX/in_anglvel_scale
-> @@ -328,6 +351,10 @@ Description:
->  
->  What		/sys/bus/iio/devices/iio:deviceX/in_voltageY_calibscale
->  What		/sys/bus/iio/devices/iio:deviceX/in_voltageY_supply_calibscale
-> +What		/sys/bus/iio/devices/iio:deviceX/in_voltageY_i_calibscale
-> +What		/sys/bus/iio/devices/iio:deviceX/in_voltageY_q_calibscale
-> +What		/sys/bus/iio/devices/iio:deviceX/in_voltage_i_calibscale
-> +What		/sys/bus/iio/devices/iio:deviceX/in_voltage_q_calibscale
->  What		/sys/bus/iio/devices/iio:deviceX/in_voltage_calibscale
->  What		/sys/bus/iio/devices/iio:deviceX/in_accel_x_calibscale
->  What		/sys/bus/iio/devices/iio:deviceX/in_accel_y_calibscale
-> @@ -1046,6 +1073,10 @@ What:		/sys/.../iio:deviceX/scan_elements/in_timestamp_en
->  What:		/sys/.../iio:deviceX/scan_elements/in_voltageY_supply_en
->  What:		/sys/.../iio:deviceX/scan_elements/in_voltageY_en
->  What:		/sys/.../iio:deviceX/scan_elements/in_voltageY-voltageZ_en
-> +What:		/sys/.../iio:deviceX/scan_elements/in_voltageY_i_en
-> +What:		/sys/.../iio:deviceX/scan_elements/in_voltageY_q_en
-> +What:		/sys/.../iio:deviceX/scan_elements/in_voltage_i_en
-> +What:		/sys/.../iio:deviceX/scan_elements/in_voltage_q_en
->  What:		/sys/.../iio:deviceX/scan_elements/in_incli_x_en
->  What:		/sys/.../iio:deviceX/scan_elements/in_incli_y_en
->  What:		/sys/.../iio:deviceX/scan_elements/in_pressureY_en
-> @@ -1064,6 +1095,10 @@ What:		/sys/.../iio:deviceX/scan_elements/in_incli_type
->  What:		/sys/.../iio:deviceX/scan_elements/in_voltageY_type
->  What:		/sys/.../iio:deviceX/scan_elements/in_voltage_type
->  What:		/sys/.../iio:deviceX/scan_elements/in_voltageY_supply_type
-> +What:		/sys/.../iio:deviceX/scan_elements/in_voltageY_i_type
-> +What:		/sys/.../iio:deviceX/scan_elements/in_voltageY_q_type
-> +What:		/sys/.../iio:deviceX/scan_elements/in_voltage_i_type
-> +What:		/sys/.../iio:deviceX/scan_elements/in_voltage_q_type
->  What:		/sys/.../iio:deviceX/scan_elements/in_timestamp_type
->  What:		/sys/.../iio:deviceX/scan_elements/in_pressureY_type
->  What:		/sys/.../iio:deviceX/scan_elements/in_pressure_type
-> @@ -1101,6 +1136,10 @@ Description:
->  
->  What:		/sys/.../iio:deviceX/scan_elements/in_voltageY_index
->  What:		/sys/.../iio:deviceX/scan_elements/in_voltageY_supply_index
-> +What:		/sys/.../iio:deviceX/scan_elements/in_voltageY_i_index
-> +What:		/sys/.../iio:deviceX/scan_elements/in_voltageY_q_index
-> +What:		/sys/.../iio:deviceX/scan_elements/in_voltage_i_index
-> +What:		/sys/.../iio:deviceX/scan_elements/in_voltage_q_index
->  What:		/sys/.../iio:deviceX/scan_elements/in_accel_x_index
->  What:		/sys/.../iio:deviceX/scan_elements/in_accel_y_index
->  What:		/sys/.../iio:deviceX/scan_elements/in_accel_z_index
-> @@ -1260,6 +1299,8 @@ Description:
->  		or without compensation from tilt sensors.
->  
->  What:		/sys/bus/iio/devices/iio:deviceX/in_currentX_raw
-> +What:		/sys/bus/iio/devices/iio:deviceX/in_currentX_i_raw
-> +What:		/sys/bus/iio/devices/iio:deviceX/in_currentX_q_raw
->  KernelVersion:	3.18
->  Contact:	linux-iio@vger.kernel.org
->  Description:
-> @@ -1268,6 +1309,11 @@ Description:
->  		present, output should be considered as processed with the
->  		unit in milliamps.
->  
-> +		Channels with a 'i' and 'q' modifiers always exists in pairs and both
-> +		channels refer to the same signal. The 'i' channel contains the in-phase
-> +		component of the signal while the 'q' channel contains the quadrature
-> +		component.
-> +
->  What:		/sys/.../iio:deviceX/in_energy_en
->  What:		/sys/.../iio:deviceX/in_distance_en
->  What:		/sys/.../iio:deviceX/in_velocity_sqrt(x^2+y^2+z^2)_en
-> diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
-> index 9688a88..3524b0d 100644
-> --- a/drivers/iio/industrialio-core.c
-> +++ b/drivers/iio/industrialio-core.c
-> @@ -101,6 +101,8 @@ static const char * const iio_modifier_names[] = {
->  	[IIO_MOD_WALKING] = "walking",
->  	[IIO_MOD_STILL] = "still",
->  	[IIO_MOD_ROOT_SUM_SQUARED_X_Y_Z] = "sqrt(x^2+y^2+z^2)",
-> +	[IIO_MOD_I] = "i",
-> +	[IIO_MOD_Q] = "q",
->  };
->  
->  /* relies on pairs of these shared then separate */
-> diff --git a/include/uapi/linux/iio/types.h b/include/uapi/linux/iio/types.h
-> index 5c46019..2f8b117 100644
-> --- a/include/uapi/linux/iio/types.h
-> +++ b/include/uapi/linux/iio/types.h
-> @@ -70,6 +70,8 @@ enum iio_modifier {
->  	IIO_MOD_WALKING,
->  	IIO_MOD_STILL,
->  	IIO_MOD_ROOT_SUM_SQUARED_X_Y_Z,
-> +	IIO_MOD_I,
-> +	IIO_MOD_Q,
->  };
->  
->  enum iio_event_type {
-> 
-
--- 
-
-Peter Meerwald
-+43-664-2444418 (mobile)
+- Lars
