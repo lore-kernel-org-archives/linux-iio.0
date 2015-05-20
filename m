@@ -1,50 +1,78 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from skprod3.natinst.com ([130.164.80.24]:59145 "EHLO ni.com"
-	rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-	id S1752552AbbETPXd (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Wed, 20 May 2015 11:23:33 -0400
-From: Xander Huff <xander.huff@ni.com>
-To: lars@metafoo.de, robh+dt@kernel.org, pawel.moll@arm.com,
-	mark.rutland@arm.com, ijc+devicetree@hellion.org.uk,
-	galak@codeaurora.org
-Cc: michal.simek@xilinx.com, soren.brinkmann@xilinx.com,
-	jic23@kernel.org, knaack.h@gmx.de, pmeerw@pmeerw.net,
-	devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-	linux-iio@vger.kernel.org, ben.shelton@ni.com, joshc@ni.com,
-	joe.hershberger@ni.com, Xander Huff <xander.huff@ni.com>
-Subject: [PATCH v2 2/2] iio: adc: xilinx-xadc: Add label as an optional argument for aux channels
-Date: Wed, 20 May 2015 10:22:32 -0500
-Message-Id: <1432135352-29848-2-git-send-email-xander.huff@ni.com>
-In-Reply-To: <1432135352-29848-1-git-send-email-xander.huff@ni.com>
-References: <555B78A3.2030202@metafoo.de>
- <1432135352-29848-1-git-send-email-xander.huff@ni.com>
+Received: from 19pmail.ess.barracuda.com ([64.235.150.244]:40808 "EHLO
+	19pmail.ess.barracuda.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751774AbbETVyy convert rfc822-to-8bit (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 20 May 2015 17:54:54 -0400
+From: Greg Wilson-Lindberg <GWilson@sakuraus.com>
+To: Michael Welling <mwelling@ieee.org>
+CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Date: Wed, 20 May 2015 14:54:35 -0700
+Subject: RE: BBB touch screen and ADC interactions
+Message-ID: <782E3A02C2EB2347BEA6DEA69DC7AB86021D3C87D53C@sfamail.SAKURAUS.LOCAL>
+References: <782E3A02C2EB2347BEA6DEA69DC7AB86021D3C87CFA4@sfamail.SAKURAUS.LOCAL>
+ <20150513011137.GA23255@deathray>
+ <782E3A02C2EB2347BEA6DEA69DC7AB86021D3C87D113@sfamail.SAKURAUS.LOCAL>
+ <20150519230932.GA15718@deathray>
+ <782E3A02C2EB2347BEA6DEA69DC7AB86021D3C87D46F@sfamail.SAKURAUS.LOCAL>
+ <F4A1ABDE-E030-405D-A0BB-A4CD80E9F84F@ieee.org>
+ <782E3A02C2EB2347BEA6DEA69DC7AB86021D3C87D47E@sfamail.SAKURAUS.LOCAL>
+ <20150520003435.GA16055@deathray>
+In-Reply-To: <20150520003435.GA16055@deathray>
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-To better facilitate user-mode access to optional aux channels, allow
-device trees to specify a custom label for defined channels.
+Hi Michael,
+I've applied your patch and the mouse clicks now work mostly, and I even saw one touch screen click that worked.
 
-Signed-off-by: Xander Huff <xander.huff@ni.com>
-Reviewed-by: Joe Hershberger <joe.hershberger@ni.com>
-Reviewed-by: Josh Cartwright <joshc@ni.com>
----
- drivers/iio/adc/xilinx-xadc-core.c | 3 +++
- 1 file changed, 3 insertions(+)
+I only need to read the ADC infrequently so I guess I'll set it up to enable when I need to read the ADC and then disable again.
 
-diff --git a/drivers/iio/adc/xilinx-xadc-core.c b/drivers/iio/adc/xilinx-xadc-core.c
-index ce93bd8..bda4241 100644
---- a/drivers/iio/adc/xilinx-xadc-core.c
-+++ b/drivers/iio/adc/xilinx-xadc-core.c
-@@ -1119,6 +1119,9 @@ static int xadc_parse_dt(struct iio_dev *indio_dev, struct device_node *np,
- 			if (ret || reg > 16)
- 				continue;
- 
-+			of_property_read_string(child, "label",
-+						&chan->extend_name);
-+
- 			if (of_property_read_bool(child, "xlnx,bipolar"))
- 				chan->scan_type.sign = 's';
- 
--- 
-1.9.1
+Do you know if I can set up the context, device and channels and then just enable the channels, do the scan, and then disable the channels until I need them again, without tearing down the channels, device and context?
 
+Regards,
+Greg
+
+
+> -----Original Message-----
+> From: Michael Welling [mailto:mwelling79@gmail.com] On Behalf 
+> Of Michael Welling
+> Sent: Tuesday, May 19, 2015 5:35 PM
+> To: Greg Wilson-Lindberg
+> Cc: linux-iio@vger.kernel.org
+> Subject: Re: BBB touch screen and ADC interactions
+> 
+> On Tue, May 19, 2015 at 05:16:46PM -0700, Greg Wilson-Lindberg wrote:
+> > 
+> > I would be happy to test the patch, better than what I was 
+> going to try.
+> > 
+> > -Greg
+> 
+> Below is the simple workaround patch that I used to eliminate 
+> the repeated release events that were occurring without 
+> touching the screen.
+> 
+> See if it helps.
+> 
+> diff --git a/drivers/input/touchscreen/ti_am335x_tsc.c 
+> b/drivers/input/touchscreen/ti_am335x_tsc.c
+> index 191a1b8..f876097 100644
+> --- a/drivers/input/touchscreen/ti_am335x_tsc.c
+> +++ b/drivers/input/touchscreen/ti_am335x_tsc.c
+> @@ -281,13 +281,11 @@ static irqreturn_t titsc_irq(int irq, void *dev)
+>  	if (status & IRQENB_PENUP) {
+>  		fsm = titsc_readl(ts_dev, REG_ADCFSM);
+>  		if (fsm == ADCFSM_STEPID) {
+> -			ts_dev->pen_down = false;
+>  			input_report_key(input_dev, BTN_TOUCH, 0);
+>  			input_report_abs(input_dev, ABS_PRESSURE, 0);
+>  			input_sync(input_dev);
+> -		} else {
+> -			ts_dev->pen_down = true;
+>  		}
+> +		ts_dev->pen_down = false;
+>  		irqclr |= IRQENB_PENUP;
+>  	}
+>  
+> 
