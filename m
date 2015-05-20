@@ -1,118 +1,56 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from 19pmail.ess.barracuda.com ([64.235.150.244]:32852 "EHLO
-	19pmail.ess.barracuda.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751268AbbETARF convert rfc822-to-8bit (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 19 May 2015 20:17:05 -0400
-From: Greg Wilson-Lindberg <GWilson@sakuraus.com>
-To: "mwelling@ieee.org" <mwelling@ieee.org>
-CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Date: Tue, 19 May 2015 17:16:46 -0700
-Subject: RE: BBB touch screen and ADC interactions
-Message-ID: <782E3A02C2EB2347BEA6DEA69DC7AB86021D3C87D47E@sfamail.SAKURAUS.LOCAL>
+Received: from mail-ig0-f175.google.com ([209.85.213.175]:36113 "EHLO
+	mail-ig0-f175.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751065AbbETAeo (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 19 May 2015 20:34:44 -0400
+Received: by igbpi8 with SMTP id pi8so90008816igb.1
+        for <linux-iio@vger.kernel.org>; Tue, 19 May 2015 17:34:44 -0700 (PDT)
+Date: Tue, 19 May 2015 19:34:35 -0500
+From: Michael Welling <mwelling@ieee.org>
+To: Greg Wilson-Lindberg <GWilson@sakuraus.com>
+Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Subject: Re: BBB touch screen and ADC interactions
+Message-ID: <20150520003435.GA16055@deathray>
 References: <782E3A02C2EB2347BEA6DEA69DC7AB86021D3C87CFA4@sfamail.SAKURAUS.LOCAL>
  <20150513011137.GA23255@deathray>
  <782E3A02C2EB2347BEA6DEA69DC7AB86021D3C87D113@sfamail.SAKURAUS.LOCAL>
  <20150519230932.GA15718@deathray>
  <782E3A02C2EB2347BEA6DEA69DC7AB86021D3C87D46F@sfamail.SAKURAUS.LOCAL>
  <F4A1ABDE-E030-405D-A0BB-A4CD80E9F84F@ieee.org>
-In-Reply-To: <F4A1ABDE-E030-405D-A0BB-A4CD80E9F84F@ieee.org>
-Content-Type: text/plain; charset="us-ascii"
+ <782E3A02C2EB2347BEA6DEA69DC7AB86021D3C87D47E@sfamail.SAKURAUS.LOCAL>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <782E3A02C2EB2347BEA6DEA69DC7AB86021D3C87D47E@sfamail.SAKURAUS.LOCAL>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Hi Michael,
+On Tue, May 19, 2015 at 05:16:46PM -0700, Greg Wilson-Lindberg wrote:
+> 
+> I would be happy to test the patch, better than what I was going to try.
+> 
+> -Greg
 
-> -----Original Message-----
-> From: Michael Welling [mailto:mwelling79@gmail.com] On Behalf 
-> Of mwelling@ieee.org
-> Sent: Tuesday, May 19, 2015 5:14 PM
-> To: Greg Wilson-Lindberg
-> Cc: linux-iio@vger.kernel.org
-> Subject: RE: BBB touch screen and ADC interactions
-> 
-> 
-> 
-> On May 19, 2015 6:56:37 PM CDT, Greg Wilson-Lindberg 
-> <GWilson@sakuraus.com> wrote:
-> >Hi Michael,
-> >
-> >> -----Original Message-----
-> >> From: Michael Welling [mailto:mwelling79@gmail.com] On Behalf Of 
-> >> Michael Welling
-> >> Sent: Tuesday, May 19, 2015 4:30 PM
-> >> To: Greg Wilson-Lindberg
-> >> Cc: linux-iio@vger.kernel.org
-> >> Subject: Re: BBB touch screen and ADC interactions
-> >> 
-> >> On Thu, May 14, 2015 at 10:00:14AM -0700, Greg 
-> Wilson-Lindberg wrote:
-> >> > 
-> >> > I'll try out a new (4.0 - 4.1) kernel, but we are using QT
-> >> to generate a GUI and I don't know if the graphics that we 
-> need have 
-> >> been ported to the mainline yet.  I guess I'll find out 
-> the hard way.
-> >> >
-> >> 
-> >> Have you had any luck getting the new kernel to work?
-> >> 
-> >> I would like to know if you are experiencing the unexpected 
-> >> release events that I experienced with the touchscreen.
-> >> 
-> >
-> >I just got  the 4.1 kernel working today. Our application is running
-> >just fine, so all of the QT stuff is working.
-> >
-> >I found that when running my IIO ADC read program on the 4.1 kernel,
-> >not only do I lose the touch screen, but mouse clicks stop 
-> working, and
-> >the cursor periodically jumps.
-> 
-> This seems to be the same issue that I was experiencing.
-> 
-> I can forward the workaround patch when I get back to my PC.
-> 
-> >
-> >I also figured out that I wasn't disabling the channels when my ADC
-> >program exited. When I got it to properly exit and disable 
-> the IIO ADC
-> >channels, the mouse started working again.
-> >
-> >I then booted back to a 3.14 kernel and while the touch screen stops
-> >working while I am reading the ADC channels, the mouse still works
-> >normally, and the touch screen starts working again when the IIO
-> >program exits.
-> >
-> >It appears, for me at least, that the 4.1 kernel is not an 
-> improvement.
-> >
-> >I don't need fast reads on the ADC, I may be able to get away with
-> >enabling the ADC channels, reading some values, and disabling them
-> >again every once in a while.  I guess I'll have to try that.
-> 
-> I have been working on a qt demo that reads the adc and 
-> displays a graph while the touchscreen is enabled. The 
-> workaround patch must be necessary. 
-> 
-> Would you like to the workaround patch?
+Below is the simple workaround patch that I used to eliminate the repeated
+release events that were occurring without touching the screen.
 
-I would be happy to test the patch, better than what I was going to try.
+See if it helps.
 
--Greg
-> 
-> We can make a formal patch if it works for you.
-> 
-> >
-> >- Greg
-> >
-> >> -Michael
-> >>  
-> >> > Thanks for the information,
-> >> > 
-> >> > Greg
-> >> 
-> 
-> -- 
-> Sent from my Android device with K-9 Mail. Please excuse my brevity.
-> 
+diff --git a/drivers/input/touchscreen/ti_am335x_tsc.c b/drivers/input/touchscreen/ti_am335x_tsc.c
+index 191a1b8..f876097 100644
+--- a/drivers/input/touchscreen/ti_am335x_tsc.c
++++ b/drivers/input/touchscreen/ti_am335x_tsc.c
+@@ -281,13 +281,11 @@ static irqreturn_t titsc_irq(int irq, void *dev)
+ 	if (status & IRQENB_PENUP) {
+ 		fsm = titsc_readl(ts_dev, REG_ADCFSM);
+ 		if (fsm == ADCFSM_STEPID) {
+-			ts_dev->pen_down = false;
+ 			input_report_key(input_dev, BTN_TOUCH, 0);
+ 			input_report_abs(input_dev, ABS_PRESSURE, 0);
+ 			input_sync(input_dev);
+-		} else {
+-			ts_dev->pen_down = true;
+ 		}
++		ts_dev->pen_down = false;
+ 		irqclr |= IRQENB_PENUP;
+ 	}
+ 
