@@ -1,56 +1,47 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-ig0-f175.google.com ([209.85.213.175]:36113 "EHLO
-	mail-ig0-f175.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751065AbbETAeo (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 19 May 2015 20:34:44 -0400
-Received: by igbpi8 with SMTP id pi8so90008816igb.1
-        for <linux-iio@vger.kernel.org>; Tue, 19 May 2015 17:34:44 -0700 (PDT)
-Date: Tue, 19 May 2015 19:34:35 -0500
-From: Michael Welling <mwelling@ieee.org>
-To: Greg Wilson-Lindberg <GWilson@sakuraus.com>
-Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Subject: Re: BBB touch screen and ADC interactions
-Message-ID: <20150520003435.GA16055@deathray>
-References: <782E3A02C2EB2347BEA6DEA69DC7AB86021D3C87CFA4@sfamail.SAKURAUS.LOCAL>
- <20150513011137.GA23255@deathray>
- <782E3A02C2EB2347BEA6DEA69DC7AB86021D3C87D113@sfamail.SAKURAUS.LOCAL>
- <20150519230932.GA15718@deathray>
- <782E3A02C2EB2347BEA6DEA69DC7AB86021D3C87D46F@sfamail.SAKURAUS.LOCAL>
- <F4A1ABDE-E030-405D-A0BB-A4CD80E9F84F@ieee.org>
- <782E3A02C2EB2347BEA6DEA69DC7AB86021D3C87D47E@sfamail.SAKURAUS.LOCAL>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <782E3A02C2EB2347BEA6DEA69DC7AB86021D3C87D47E@sfamail.SAKURAUS.LOCAL>
+Received: from mail-pa0-f44.google.com ([209.85.220.44]:35995 "EHLO
+	mail-pa0-f44.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751272AbbETAx0 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 19 May 2015 20:53:26 -0400
+Received: by pabts4 with SMTP id ts4so45942958pab.3
+        for <linux-iio@vger.kernel.org>; Tue, 19 May 2015 17:53:25 -0700 (PDT)
+Message-ID: <1432083200.7013.0.camel@ingics.com>
+Subject: [PATCH] iio: adc: twl6030-gpadc: Fix modalias
+From: Axel Lin <axel.lin@ingics.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Oleksandr Kozaruk <oleksandr.kozaruk@ti.com>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Date: Wed, 20 May 2015 08:53:20 +0800
+Content-Type: text/plain; charset="UTF-8"
+Mime-Version: 1.0
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Tue, May 19, 2015 at 05:16:46PM -0700, Greg Wilson-Lindberg wrote:
-> 
-> I would be happy to test the patch, better than what I was going to try.
-> 
-> -Greg
+Remove extra space between platform prefix and DRIVER_NAME in MODULE_ALIAS.
 
-Below is the simple workaround patch that I used to eliminate the repeated
-release events that were occurring without touching the screen.
+Signed-off-by: Axel Lin <axel.lin@ingics.com>
+---
+ drivers/iio/adc/twl6030-gpadc.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-See if it helps.
-
-diff --git a/drivers/input/touchscreen/ti_am335x_tsc.c b/drivers/input/touchscreen/ti_am335x_tsc.c
-index 191a1b8..f876097 100644
---- a/drivers/input/touchscreen/ti_am335x_tsc.c
-+++ b/drivers/input/touchscreen/ti_am335x_tsc.c
-@@ -281,13 +281,11 @@ static irqreturn_t titsc_irq(int irq, void *dev)
- 	if (status & IRQENB_PENUP) {
- 		fsm = titsc_readl(ts_dev, REG_ADCFSM);
- 		if (fsm == ADCFSM_STEPID) {
--			ts_dev->pen_down = false;
- 			input_report_key(input_dev, BTN_TOUCH, 0);
- 			input_report_abs(input_dev, ABS_PRESSURE, 0);
- 			input_sync(input_dev);
--		} else {
--			ts_dev->pen_down = true;
- 		}
-+		ts_dev->pen_down = false;
- 		irqclr |= IRQENB_PENUP;
- 	}
+diff --git a/drivers/iio/adc/twl6030-gpadc.c b/drivers/iio/adc/twl6030-gpadc.c
+index 89d8aa1..df12c57 100644
+--- a/drivers/iio/adc/twl6030-gpadc.c
++++ b/drivers/iio/adc/twl6030-gpadc.c
+@@ -1001,7 +1001,7 @@ static struct platform_driver twl6030_gpadc_driver = {
  
+ module_platform_driver(twl6030_gpadc_driver);
+ 
+-MODULE_ALIAS("platform: " DRIVER_NAME);
++MODULE_ALIAS("platform:" DRIVER_NAME);
+ MODULE_AUTHOR("Balaji T K <balajitk@ti.com>");
+ MODULE_AUTHOR("Graeme Gregory <gg@slimlogic.co.uk>");
+ MODULE_AUTHOR("Oleksandr Kozaruk <oleksandr.kozaruk@ti.com");
+-- 
+2.1.0
+
+
+
