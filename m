@@ -1,303 +1,649 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ns.pmeerw.net ([84.19.176.92]:56908 "EHLO pmeerw.net"
+Received: from mga02.intel.com ([134.134.136.20]:30426 "EHLO mga02.intel.com"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1752120AbbEVI0I (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Fri, 22 May 2015 04:26:08 -0400
-Date: Fri, 22 May 2015 10:26:06 +0200 (CEST)
-From: Peter Meerwald <pmeerw@pmeerw.net>
-To: Kevin Tsai <ktsai@capellamicro.com>
-cc: Jonathan Cameron <jic23@kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Joe Perches <joe@perches.com>,
-	Daniel Baluta <daniel.baluta@intel.com>,
+	id S1756418AbbEVMev (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Fri, 22 May 2015 08:34:51 -0400
+From: Daniel Baluta <daniel.baluta@intel.com>
+To: jic23@kernel.org, pmeerw@pmeerw.net, knaack.h@gmx.de,
+	lars@metafoo.de, linux-kernel@vger.kernel.org,
 	linux-iio@vger.kernel.org
-Subject: Re: [PATCH 6/6] iio: light: Updated Vishay Capella cm32181 ambient
- light sensor driver.
-In-Reply-To: <1432268380-7302-6-git-send-email-ktsai@capellamicro.com>
-Message-ID: <alpine.DEB.2.02.1505221014490.3605@pmeerw.net>
-References: <1432268380-7302-1-git-send-email-ktsai@capellamicro.com> <1432268380-7302-6-git-send-email-ktsai@capellamicro.com>
-MIME-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
+Cc: daniel.baluta@intel.com
+Subject: [PATCH] iio: light: Add support for ROHM RPR0521 sensor
+Date: Fri, 22 May 2015 15:36:03 +0300
+Message-Id: <1432298163-18806-1-git-send-email-daniel.baluta@intel.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Thu, 21 May 2015, Kevin Tsai wrote:
+This patch adds support for ROHM RPR0521 ambient light and proximity
+sensor. It offers raw readings for intensity and proximity.
 
-> - Added Interrupt support.
+Signed-off-by: Daniel Baluta <daniel.baluta@intel.com>
+---
+ drivers/iio/light/Kconfig   |  11 +
+ drivers/iio/light/Makefile  |   1 +
+ drivers/iio/light/rpr0521.c | 579 ++++++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 591 insertions(+)
+ create mode 100644 drivers/iio/light/rpr0521.c
 
-minor comments below
-
-> 
-> Signed-off-by: Kevin Tsai <ktsai@capellamicro.com>
-> ---
->  drivers/iio/light/cm32181.c | 156 +++++++++++++++++++++++++++++++++++++++++++-
->  1 file changed, 153 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/iio/light/cm32181.c b/drivers/iio/light/cm32181.c
-> index b7abd46..1ae32a0 100644
-> --- a/drivers/iio/light/cm32181.c
-> +++ b/drivers/iio/light/cm32181.c
-> @@ -47,6 +47,10 @@
->  /* ALS_WL register */
->  #define CM32181_ALS_WL_DEFAULT		0x0000
->  
-> +/* STATUS register */
-> +#define CM32181_STATUS_ALS_IF_L		BIT(15)
-> +#define CM32181_STATUS_ALS_IF_H		BIT(14)
-> +
->  /* Software parameters */
->  #define CM32181_HW_ID			0x81
->  #define CM32181_MLUX_PER_BIT		5	/* ALS_SM=01 IT=800ms */
-> @@ -122,7 +126,8 @@ void cm32181_parse_dt(struct cm32181_chip *chip)
->  	if (!of_property_read_u32(dn, "capella,mlux_per_bit", &temp_val))
->  		als_info->mlux_per_bit = (int)temp_val;
->  	if (!of_property_read_u32(dn, "capella,thd_percent", &temp_val))
-> -		als_info->thd_percent = (int)temp_val;
-> +		if (((int)temp_val >= 0) && ((int)temp_val < 100))
-> +			als_info->thd_percent = (int)temp_val;
->  }
->  #endif
->  
-> @@ -173,6 +178,63 @@ static int cm32181_reg_init(struct cm32181_chip *chip)
->  }
->  
->  /**
-> + * cm32181_interrupt() - enable/disable interrupt
-> + * @chip:       pointer of struct cm32181_chip
-
-the argument is named cm32181
-
-please check that arguments in kerneldoc comments match the implementation 
-everythere
-
-> + * @ int_en:	truen for enable; false for disable
-
-truen -> true
-there is an extra space after @
-
-> + *
-> + * Enable/disable interrupt mode
-> + *
-> + * Return: 0 for success; otherwise for error code.
-> + */
-> +static int cm32181_interrupt(struct cm32181_chip *cm32181, bool int_en)
-> +{
-> +	int ret;
-> +
-> +	mutex_lock(&cm32181->lock);
-> +	if (int_en)
-> +		cm32181->conf_regs[CM32181_REG_ADDR_CMD] |=
-> +			CM32181_CMD_ALS_INT_EN;
-> +	else
-> +		cm32181->conf_regs[CM32181_REG_ADDR_CMD] &=
-> +			~CM32181_CMD_ALS_INT_EN;
-> +
-> +	ret = i2c_smbus_write_word_data(cm32181->client,
-> +			CM32181_REG_ADDR_CMD,
-> +			cm32181->conf_regs[CM32181_REG_ADDR_CMD]);
-> +	mutex_unlock(&cm32181->lock);
-> +	return ret;
-> +}
-> +
-> +static irqreturn_t cm32181_irq_handler(int irq, void *data)
-> +{
-> +	struct iio_dev *indio_dev = data;
-> +	struct cm32181_chip *cm32181 = iio_priv(indio_dev);
-> +	struct i2c_client *client = cm32181->client;
-> +	int ret;
-> +	u64 ev_code;
-> +
-> +	ret = i2c_smbus_read_word_data(cm32181->client,
-> +			CM32181_REG_ADDR_STATUS);
-> +	if (ret < 0) {
-> +		dev_err(&client->dev,
-> +			"%s: Data read failed: %d\n", __func__, ret);
-> +		return IRQ_NONE;
-> +	}
-> +
-> +	if (!(ret & (CM32181_STATUS_ALS_IF_H | CM32181_STATUS_ALS_IF_L)))
-> +		return IRQ_NONE;
-> +
-> +	ev_code = IIO_UNMOD_EVENT_CODE(IIO_LIGHT,
-> +				0,
-> +				IIO_EV_TYPE_THRESH,
-> +				IIO_EV_DIR_EITHER);
-> +
-> +	iio_push_event(indio_dev, ev_code, iio_get_time_ns());
-> +
-> +	return IRQ_HANDLED;
-> +}
-> +
-> +/**
->   * cm32181_read_als_it() - Get sensor integration time
->   * @chip:	pointer of struct cm32181_chip
->   * @val:	pointer of int to load the integration (sec)
-> @@ -242,6 +304,51 @@ static int cm32181_write_als_it(struct cm32181_chip *chip, int val, int val2)
->  }
->  
->  /**
-> + * cm32181_ials_read() - read ALS raw data
-
-ials?
-
-> + * @chip:       pointer of struct cm32181_chip
-> + *
-> + * Read the ALS raw data and update the interrupt threshold windows.
-> + *
-> + * Return: Positive value is ALS raw data, otherwise is error code.
-> + */
-> +static int cm32181_als_read(struct cm32181_chip *chip)
-> +{
-> +	struct i2c_client *client = chip->client;
-> +	struct cm32181_als_info *als_info = chip->als_info;
-> +	u16 als, wh, wl, delta;
-> +	int ret;
-> +
-> +	ret = i2c_smbus_read_word_data(client, CM32181_REG_ADDR_ALS);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	als = (u16)ret;
-
-the cast is not neccessary
-
-> +
-> +	if (als_info->thd_percent) {
-> +		delta = als * als_info->thd_percent / 100;
-> +		if (delta < 3)
-> +			delta = 3;
-> +		wh = (als + delta > 0xFFFF) ? 0xFFFF : (als + delta);
-> +		wl = (als < delta) ? 0 : (als - delta);
-> +
-> +		ret = i2c_smbus_write_word_data(client,
-> +			CM32181_REG_ADDR_ALS_WH, wh);
-> +		if (ret < 0)
-> +			return ret;
-> +		chip->conf_regs[CM32181_REG_ADDR_ALS_WH] = wh;
-> +
-> +		ret = i2c_smbus_write_word_data(client,
-> +			CM32181_REG_ADDR_ALS_WL, wl);
-> +		if (ret < 0)
-> +			return ret;
-> +		chip->conf_regs[CM32181_REG_ADDR_ALS_WL] = wl;
-> +		ret = als;
-> +	}
-> +
-> +	return ret;
-> +}
-> +
-> +/**
->   * cm32181_get_lux() - report current lux value
->   * @chip:	pointer of struct cm32181_chip
->   *
-> @@ -252,7 +359,6 @@ static int cm32181_write_als_it(struct cm32181_chip *chip, int val, int val2)
->   */
->  static int cm32181_get_lux(struct cm32181_chip *chip)
->  {
-> -	struct i2c_client *client = chip->client;
->  	struct cm32181_als_info *als_info = chip->als_info;
->  	int ret;
->  	int val, val2;
-> @@ -268,7 +374,7 @@ static int cm32181_get_lux(struct cm32181_chip *chip)
->  	lux *= als_info->mlux_per_bit_base_it;
->  	lux = div_u64(lux, als_it);
->  
-> -	ret = i2c_smbus_read_word_data(client, CM32181_REG_ADDR_ALS);
-> +	ret = cm32181_als_read(chip);
->  	if (ret < 0)
->  		return ret;
->  
-> @@ -350,6 +456,15 @@ static ssize_t cm32181_get_it_available(struct device *dev,
->  	return len + scnprintf(buf + len, PAGE_SIZE - len, "\n");
->  }
->  
-> +static const struct iio_event_spec cm32181_event_spec[] = {
-> +	{
-> +		.type = IIO_EV_TYPE_THRESH,
-> +		.dir = IIO_EV_DIR_EITHER,
-> +		.mask_separate = BIT(IIO_EV_INFO_VALUE) |
-> +				BIT(IIO_EV_INFO_ENABLE),
-> +	}
-> +};
-> +
->  static const struct iio_chan_spec cm32181_channels[] = {
->  	{
->  		.type = IIO_LIGHT,
-> @@ -357,6 +472,8 @@ static const struct iio_chan_spec cm32181_channels[] = {
->  			BIT(IIO_CHAN_INFO_PROCESSED) |
->  			BIT(IIO_CHAN_INFO_CALIBSCALE) |
->  			BIT(IIO_CHAN_INFO_INT_TIME),
-> +		.event_spec = cm32181_event_spec,
-> +		.num_event_specs = ARRAY_SIZE(cm32181_event_spec),
->  	}
->  };
->  
-> @@ -383,6 +500,7 @@ static int cm32181_probe(struct i2c_client *client,
->  			const struct i2c_device_id *id)
->  {
->  	struct cm32181_chip *chip;
-> +	struct cm32181_als_info *als_info;
->  	struct iio_dev *indio_dev;
->  	int ret;
->  
-> @@ -412,11 +530,35 @@ static int cm32181_probe(struct i2c_client *client,
->  		return ret;
->  	}
->  
-> +	als_info = chip->als_info;
-> +	if (als_info->thd_percent && client->irq) {
-> +		ret = request_threaded_irq(client->irq, NULL,
-> +					cm32181_irq_handler,
-> +					IRQF_TRIGGER_LOW | IRQF_ONESHOT,
-> +					indio_dev->name, indio_dev);
-> +		if (ret < 0) {
-> +			dev_err(&client->dev, "%s: request irq failed\n",
-> +				__func__);
-> +			return ret;
-> +		}
-> +
-> +		ret = cm32181_interrupt(chip, true);
-> +		if (ret) {
-> +			als_info->thd_percent = 0;
-> +			dev_err(&client->dev,
-> +				"%s: failed to enable interrupt\n", __func__);
-> +		}
-> +	} else {
-> +		als_info->thd_percent = 0;	/* Polling Mode */
-> +	}
-> +
->  	ret = devm_iio_device_register(&client->dev, indio_dev);
->  	if (ret) {
->  		dev_err(&client->dev,
->  			"%s: regist device failed\n",
->  			__func__);
-> +		if (als_info->thd_percent)
-> +			free_irq(client->irq, indio_dev);
->  		return ret;
->  	}
->  
-> @@ -425,9 +567,17 @@ static int cm32181_probe(struct i2c_client *client,
->  
->  static int cm32181_remove(struct i2c_client *client)
->  {
-> +	struct iio_dev *indio_dev = i2c_get_clientdata(client);
-> +	struct cm32181_chip *chip = iio_priv(indio_dev);
-> +	struct cm32181_als_info *als_info = chip->als_info;
-> +
-> +	cm32181_interrupt(chip, false);
->  	i2c_smbus_write_word_data(client, CM32181_REG_ADDR_CMD,
->  		CM32181_CMD_ALS_DISABLE);
->  
-> +	if (als_info->thd_percent)
-> +		free_irq(client->irq, indio_dev);
-> +
->  	return 0;
->  }
->  
-> 
-
+diff --git a/drivers/iio/light/Kconfig b/drivers/iio/light/Kconfig
+index e6198b7..cbc4677 100644
+--- a/drivers/iio/light/Kconfig
++++ b/drivers/iio/light/Kconfig
+@@ -168,6 +168,17 @@ config JSA1212
+ 	 To compile this driver as a module, choose M here:
+ 	 the module will be called jsa1212.
+ 
++config RPR0521
++	tristate "ROHM RPR0521 ALS and proximity sensor driver"
++	depends on I2C
++	select REGMAP_I2C
++	help
++	 Say Y here if you want to build support for ROHM's RPR0521
++	 ambient light and proximity sensor device.
++
++	 To compile this driver as a module, choose M here:
++	 the module will be called rpr0521.
++
+ config SENSORS_LM3533
+ 	tristate "LM3533 ambient light sensor"
+ 	depends on MFD_LM3533
+diff --git a/drivers/iio/light/Makefile b/drivers/iio/light/Makefile
+index e2d50fd..66fc2fd 100644
+--- a/drivers/iio/light/Makefile
++++ b/drivers/iio/light/Makefile
+@@ -17,6 +17,7 @@ obj-$(CONFIG_HID_SENSOR_ALS)	+= hid-sensor-als.o
+ obj-$(CONFIG_HID_SENSOR_PROX)	+= hid-sensor-prox.o
+ obj-$(CONFIG_ISL29125)		+= isl29125.o
+ obj-$(CONFIG_JSA1212)		+= jsa1212.o
++obj-$(CONFIG_RPR0521)		+= rpr0521.o
+ obj-$(CONFIG_SENSORS_LM3533)	+= lm3533-als.o
+ obj-$(CONFIG_LTR501)		+= ltr501.o
+ obj-$(CONFIG_SENSORS_TSL2563)	+= tsl2563.o
+diff --git a/drivers/iio/light/rpr0521.c b/drivers/iio/light/rpr0521.c
+new file mode 100644
+index 0000000..9d3d312
+--- /dev/null
++++ b/drivers/iio/light/rpr0521.c
+@@ -0,0 +1,579 @@
++/*
++ * RPR-0521 ROHM Ambient Light and Proximity Sensor
++ *
++ * Copyright (c) 2015, Intel Corporation.
++ *
++ * This file is subject to the terms and conditions of version 2 of
++ * the GNU General Public License.  See the file COPYING in the main
++ * directory of this archive for more details.
++ *
++ * IIO driver for RPR-0521RS (7-bit I2C slave address 0x38).
++ *
++ * TODO: illuminance channel, PM support, buffer
++ */
++
++#include <linux/module.h>
++#include <linux/init.h>
++#include <linux/i2c.h>
++#include <linux/regmap.h>
++#include <linux/delay.h>
++#include <linux/acpi.h>
++
++#include <linux/iio/iio.h>
++#include <linux/iio/sysfs.h>
++#include <linux/pm_runtime.h>
++
++#define RPR0521_REG_SYSTEM_CTRL		0x40
++#define RPR0521_REG_MODE_CTRL		0x41
++#define RPR0521_REG_ALS_CTRL		0x42
++#define RPR0521_REG_PXS_CTRL		0x43
++#define RPR0521_REG_PXS_DATA		0x44 /* 16-bit, little endian */
++#define RPR0521_REG_ALS_DATA0		0x46 /* 16-bit, little endian */
++#define RPR0521_REG_ALS_DATA1		0x48 /* 16-bit, little endian */
++#define RPR0521_REG_ID			0x92
++
++#define RPR0521_MODE_ALS_MASK		BIT(7)
++#define RPR0521_MODE_PXS_MASK		BIT(6)
++#define RPR0521_MODE_MEAS_TIME_MASK	GENMASK(3, 0)
++#define RPR0521_ALS_DATA0_GAIN_MASK	(BIT(4) | BIT(5))
++#define RPR0521_ALS_DATA0_GAIN_SHIFT	4
++#define RPR0521_ALS_DATA1_GAIN_MASK	(BIT(2) | BIT(3))
++#define RPR0521_ALS_DATA1_GAIN_SHIFT	2
++#define RPR0521_PXS_GAIN_MASK		(BIT(4) | BIT(5))
++#define RPR0521_PXS_GAIN_SHIFT		4
++
++#define RPR0521_MODE_ALS_ENABLE		BIT(7)
++#define RPR0521_MODE_ALS_DISABLE	0x00
++#define RPR0521_MODE_PXS_ENABLE		BIT(6)
++#define RPR0521_MODE_PXS_DISABLE	0x00
++
++#define RPR0521_PXS_MAX_VAL		(BIT(13) - 1)
++#define RPR0521_MANUFACT_ID		0xE0
++#define RPR0521_DEFAULT_MEAS_TIME	0x06 /* ALS - 100ms, PXS - 100ms */
++
++#define RPR0521_DRV_NAME		"RPR0521"
++#define RPR0521_REGMAP_NAME		"rpr0521_regmap"
++
++#define RPR0521_SLEEP_DELAY_MS	2000
++
++int rpr0521_als_gain[4] = {1, 2, 64, 128};
++int rpr0521_pxs_gain[3] = {1, 2, 4};
++
++enum rpr0521_channel {
++	RPR0521_CHAN_ALS_DATA0,
++	RPR0521_CHAN_ALS_DATA1,
++	RPR0521_CHAN_PXS,
++};
++
++int rpr0521_data_reg[] = {
++	[RPR0521_CHAN_ALS_DATA0] = RPR0521_REG_ALS_DATA0,
++	[RPR0521_CHAN_ALS_DATA1] = RPR0521_REG_ALS_DATA1,
++	[RPR0521_CHAN_PXS] = RPR0521_REG_PXS_DATA,
++};
++
++struct rpr0521_gain_info {
++	u8 reg;
++	u8 mask;
++	u8 shift;
++	int *gain;
++	int size;
++} rpr0521_gain[] = {
++	[RPR0521_CHAN_ALS_DATA0] = {
++		.reg	= RPR0521_REG_ALS_CTRL,
++		.mask	= RPR0521_ALS_DATA0_GAIN_MASK,
++		.shift	= RPR0521_ALS_DATA0_GAIN_SHIFT,
++		.gain	= rpr0521_als_gain,
++		.size	= ARRAY_SIZE(rpr0521_als_gain),
++	},
++	[RPR0521_CHAN_ALS_DATA1] = {
++		.reg	= RPR0521_REG_ALS_CTRL,
++		.mask	= RPR0521_ALS_DATA1_GAIN_MASK,
++		.shift	= RPR0521_ALS_DATA1_GAIN_SHIFT,
++		.gain	= rpr0521_als_gain,
++		.size	= ARRAY_SIZE(rpr0521_als_gain),
++	},
++	[RPR0521_CHAN_PXS] = {
++		.reg	= RPR0521_REG_PXS_CTRL,
++		.mask	= RPR0521_PXS_GAIN_MASK,
++		.shift	= RPR0521_PXS_GAIN_SHIFT,
++		.gain	= rpr0521_pxs_gain,
++		.size	= ARRAY_SIZE(rpr0521_pxs_gain),
++	},
++};
++
++struct rpr0521_data {
++	struct i2c_client *client;
++
++	/* protect device params updates (e.g state, gain) */
++	struct mutex lock;
++
++	/* device active status */
++	bool als_dev_en;
++	bool pxs_dev_en;
++
++	/* optimize runtime pm ops - enable device only if needed */
++	bool als_ps_need_en;
++	bool pxs_ps_need_en;
++
++	struct regmap *regmap;
++};
++
++static const struct iio_chan_spec rpr0521_channels[] = {
++	{
++		.type = IIO_INTENSITY,
++		.modified = 1,
++		.address = RPR0521_CHAN_ALS_DATA0,
++		.channel2 = IIO_MOD_LIGHT_BOTH,
++		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
++			BIT(IIO_CHAN_INFO_CALIBSCALE),
++	},
++	{
++		.type = IIO_INTENSITY,
++		.modified = 1,
++		.address = RPR0521_CHAN_ALS_DATA1,
++		.channel2 = IIO_MOD_LIGHT_IR,
++		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
++			BIT(IIO_CHAN_INFO_CALIBSCALE),
++	},
++	{
++		.type = IIO_PROXIMITY,
++		.address = RPR0521_CHAN_PXS,
++		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
++			BIT(IIO_CHAN_INFO_CALIBSCALE),
++	}
++};
++
++static int rpr0521_als_enable(struct rpr0521_data *data, u8 status)
++{
++	int ret;
++
++	ret = regmap_update_bits(data->regmap, RPR0521_REG_MODE_CTRL,
++				 RPR0521_MODE_ALS_MASK,
++				 status);
++	if (ret < 0)
++		return ret;
++
++	data->als_dev_en = true;
++
++	return 0;
++}
++
++static int rpr0521_pxs_enable(struct rpr0521_data *data, u8 status)
++{
++	int ret;
++
++	ret = regmap_update_bits(data->regmap, RPR0521_REG_MODE_CTRL,
++				 RPR0521_MODE_PXS_MASK,
++				 status);
++	if (ret < 0)
++		return ret;
++
++	data->pxs_dev_en = true;
++
++	return 0;
++}
++
++static int rpr0521_set_power_state(struct rpr0521_data *data, bool on,
++				   u8 device_mask)
++{
++#ifdef CONFIG_PM
++	int ret;
++	u8 update_mask = 0;
++
++	if (device_mask & RPR0521_MODE_ALS_MASK) {
++		if (on && !data->als_ps_need_en && data->pxs_dev_en)
++			update_mask |= RPR0521_MODE_ALS_MASK;
++		else
++			data->als_ps_need_en = on;
++	}
++
++	if (device_mask & RPR0521_MODE_PXS_MASK) {
++		if (on && !data->pxs_ps_need_en && data->als_dev_en)
++			update_mask |= RPR0521_MODE_PXS_MASK;
++		else
++			data->pxs_ps_need_en = on;
++	}
++
++	ret = regmap_update_bits(data->regmap, RPR0521_REG_MODE_CTRL,
++				 update_mask, update_mask);
++	if (ret < 0)
++		return ret;
++
++	if (on) {
++		ret = pm_runtime_get_sync(&data->client->dev);
++	} else {
++		pm_runtime_mark_last_busy(&data->client->dev);
++		ret = pm_runtime_put_autosuspend(&data->client->dev);
++	}
++	if (ret < 0) {
++		dev_err(&data->client->dev,
++			"Failed: rpr0521_set_power_state for %d, ret %d\n",
++			on, ret);
++		if (on)
++			pm_runtime_put_noidle(&data->client->dev);
++
++		return ret;
++	}
++#endif
++	return 0;
++}
++
++int rpr0521_get_gain_index(int *gainv, int size, int gain)
++{
++	int i;
++
++	for (i = 0; i < size; i++)
++		if (gain == gainv[i])
++			return i;
++	return -EINVAL;
++}
++
++int rpr0521_get_gain(struct rpr0521_data *data, int chan, int *val)
++{
++	int ret, reg, idx;
++
++	ret = regmap_read(data->regmap, rpr0521_gain[chan].reg, &reg);
++	if (ret < 0)
++		return ret;
++
++	idx = (rpr0521_gain[chan].mask & reg) >> rpr0521_gain[chan].shift;
++	*val = rpr0521_gain[chan].gain[idx];
++
++	return 0;
++}
++
++int rpr0521_set_gain(struct rpr0521_data *data, int chan, int val)
++{
++	int idx;
++
++	idx = rpr0521_get_gain_index(rpr0521_gain[chan].gain,
++				     rpr0521_gain[chan].size, val);
++	if (idx < 0)
++		return idx;
++
++	return regmap_update_bits(data->regmap, rpr0521_gain[chan].reg,
++				  rpr0521_gain[chan].mask,
++				  idx << rpr0521_gain[chan].shift);
++}
++
++static int rpr0521_read_raw(struct iio_dev *indio_dev,
++			    struct iio_chan_spec const *chan, int *val,
++			    int *val2, long mask)
++{
++	struct rpr0521_data *data = iio_priv(indio_dev);
++	int ret;
++	u8 device_mask;
++	__le16 raw_data;
++
++	switch (mask) {
++	case IIO_CHAN_INFO_RAW:
++		switch (chan->type) {
++		case IIO_INTENSITY:
++			device_mask = RPR0521_MODE_ALS_MASK;
++			break;
++		case IIO_PROXIMITY:
++			device_mask = RPR0521_MODE_PXS_MASK;
++			break;
++		default:
++			return -EINVAL;
++		}
++		mutex_lock(&data->lock);
++		ret = rpr0521_set_power_state(data, true, device_mask);
++		if (ret < 0) {
++			mutex_unlock(&data->lock);
++			return ret;
++		}
++
++		ret = regmap_bulk_read(data->regmap,
++				       rpr0521_data_reg[chan->address],
++				       &raw_data, 2);
++		if (ret < 0) {
++			rpr0521_set_power_state(data, false, device_mask);
++			mutex_unlock(&data->lock);
++			return ret;
++		}
++
++		ret = rpr0521_set_power_state(data, false, device_mask);
++		mutex_unlock(&data->lock);
++		if (ret < 0)
++			return ret;
++
++		*val = le16_to_cpu(raw_data);
++		/*
++		 * proximity uses 12 bits, with bits 7:4 of PXS MSB DATA
++		 * being always zero. Also, proximity MUST be exposed as
++		 * a distance with lower values for closer objects.
++		 */
++		if (chan->type == IIO_PROXIMITY)
++			*val = RPR0521_PXS_MAX_VAL - *val;
++
++		return IIO_VAL_INT;
++	case IIO_CHAN_INFO_CALIBSCALE:
++		mutex_lock(&data->lock);
++		ret = rpr0521_get_gain(data, chan->address, val);
++		mutex_unlock(&data->lock);
++		if (ret < 0)
++			return ret;
++
++		return IIO_VAL_INT;
++	default:
++		return -EINVAL;
++	}
++}
++
++static int rpr0521_write_raw(struct iio_dev *indio_dev,
++			     struct iio_chan_spec const *chan, int val,
++			     int val2, long mask)
++{
++	struct rpr0521_data *data = iio_priv(indio_dev);
++	int ret;
++
++	switch (mask) {
++	case IIO_CHAN_INFO_CALIBSCALE:
++		mutex_lock(&data->lock);
++		ret = rpr0521_set_gain(data, chan->address, val);
++		mutex_unlock(&data->lock);
++
++		return ret;
++	default:
++		return -EINVAL;
++	}
++}
++
++static IIO_CONST_ATTR(in_intensity_calibscale_available, "1 2 64 128");
++static IIO_CONST_ATTR(in_proximity_calibscale_available, "1 2 4");
++
++static struct attribute *rpr0521_attributes[] = {
++	&iio_const_attr_in_intensity_calibscale_available.dev_attr.attr,
++	&iio_const_attr_in_proximity_calibscale_available.dev_attr.attr,
++	NULL
++};
++
++static const struct attribute_group rpr0521_attribute_group = {
++	.attrs = rpr0521_attributes,
++};
++
++static const struct iio_info rpr0521_info = {
++	.driver_module	= THIS_MODULE,
++	.read_raw	= rpr0521_read_raw,
++	.write_raw	= rpr0521_write_raw,
++	.attrs		= &rpr0521_attribute_group,
++};
++
++static int rpr0521_init(struct rpr0521_data *data)
++{
++	int ret;
++	int id;
++
++	ret = regmap_read(data->regmap, RPR0521_REG_ID, &id);
++	if (ret < 0) {
++		dev_err(&data->client->dev, "Failed to read REG_ID register\n");
++		return ret;
++	}
++
++	if (id != RPR0521_MANUFACT_ID) {
++		dev_err(&data->client->dev, "Wrong id, got %x expected %x\n",
++			id, RPR0521_MANUFACT_ID);
++		return -ENODEV;
++	}
++
++	/* set default measurement time - 100 ms for both ALS and PS */
++	ret = regmap_update_bits(data->regmap, RPR0521_REG_MODE_CTRL,
++				 RPR0521_MODE_MEAS_TIME_MASK,
++				 RPR0521_DEFAULT_MEAS_TIME);
++	if (ret) {
++		pr_err("regmap_update bits returned %d\n", ret);
++		return ret;
++	}
++
++	ret = rpr0521_als_enable(data, RPR0521_MODE_ALS_ENABLE);
++	if (ret < 0)
++		return ret;
++	ret = rpr0521_pxs_enable(data, RPR0521_MODE_PXS_ENABLE);
++	if (ret < 0)
++		return ret;
++
++	return 0;
++}
++
++static int rpr0521_poweroff(struct rpr0521_data *data)
++{
++	int ret;
++
++	ret = regmap_update_bits(data->regmap, RPR0521_REG_MODE_CTRL,
++				 RPR0521_MODE_ALS_MASK |
++				 RPR0521_MODE_PXS_MASK,
++				 0x00);
++	if (ret < 0)
++		return ret;
++
++	data->als_dev_en = false;
++	data->pxs_dev_en = false;
++
++	return 0;
++}
++
++static bool rpr0521_is_volatile_reg(struct device *dev, unsigned int reg)
++{
++	switch (reg) {
++	case RPR0521_REG_MODE_CTRL:
++	case RPR0521_REG_ALS_CTRL:
++	case RPR0521_REG_PXS_CTRL:
++		return false;
++	default:
++		return true;
++	}
++}
++
++static const struct regmap_config rpr0521_regmap_config = {
++	.name		= RPR0521_REGMAP_NAME,
++
++	.reg_bits	= 8,
++	.val_bits	= 8,
++
++	.max_register	= RPR0521_REG_ID,
++	.cache_type	= REGCACHE_RBTREE,
++	.volatile_reg	= rpr0521_is_volatile_reg,
++};
++
++static int rpr0521_probe(struct i2c_client *client,
++			 const struct i2c_device_id *id)
++{
++	struct rpr0521_data *data;
++	struct iio_dev *indio_dev;
++	struct regmap *regmap;
++	int ret;
++
++	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
++	if (!indio_dev)
++		return -ENOMEM;
++
++	regmap = devm_regmap_init_i2c(client, &rpr0521_regmap_config);
++	if (IS_ERR(regmap)) {
++		dev_err(&client->dev, "Regmap init failed!\n");
++		return PTR_ERR(regmap);
++	}
++
++	data = iio_priv(indio_dev);
++	i2c_set_clientdata(client, indio_dev);
++	data->client = client;
++	data->regmap = regmap;
++
++	mutex_init(&data->lock);
++
++	indio_dev->dev.parent = &client->dev;
++	indio_dev->info = &rpr0521_info;
++	indio_dev->name = RPR0521_DRV_NAME;
++	indio_dev->channels = rpr0521_channels;
++	indio_dev->num_channels = ARRAY_SIZE(rpr0521_channels);
++	indio_dev->modes = INDIO_DIRECT_MODE;
++
++	ret = rpr0521_init(data);
++	if (ret < 0) {
++		dev_err(&client->dev, "rpr0521 chip init failed\n");
++		return ret;
++	}
++	ret = iio_device_register(indio_dev);
++	if (ret < 0)
++		return ret;
++
++	ret = pm_runtime_set_active(&client->dev);
++	if (ret < 0)
++		goto err_iio_unregister;
++
++	pm_runtime_enable(&client->dev);
++	pm_runtime_set_autosuspend_delay(&client->dev, RPR0521_SLEEP_DELAY_MS);
++	pm_runtime_use_autosuspend(&client->dev);
++
++	return 0;
++err_iio_unregister:
++	iio_device_unregister(indio_dev);
++	return ret;
++}
++
++static int rpr0521_remove(struct i2c_client *client)
++{
++	struct iio_dev *indio_dev = i2c_get_clientdata(client);
++
++	pm_runtime_disable(&client->dev);
++	pm_runtime_set_suspended(&client->dev);
++	pm_runtime_put_noidle(&client->dev);
++
++	iio_device_unregister(indio_dev);
++	rpr0521_poweroff(iio_priv(indio_dev));
++
++	return 0;
++}
++
++#ifdef CONFIG_PM
++static int rpr0521_runtime_suspend(struct device *dev)
++{
++	struct iio_dev *indio_dev = i2c_get_clientdata(to_i2c_client(dev));
++	struct rpr0521_data *data = iio_priv(indio_dev);
++	int ret;
++
++	mutex_lock(&data->lock);
++	ret = rpr0521_poweroff(data);
++	mutex_unlock(&data->lock);
++
++	return ret;
++}
++
++static int rpr0521_runtime_resume(struct device *dev)
++{
++	struct iio_dev *indio_dev = i2c_get_clientdata(to_i2c_client(dev));
++	struct rpr0521_data *data = iio_priv(indio_dev);
++	int ret;
++
++	if (data->als_ps_need_en) {
++		ret = rpr0521_als_enable(data, RPR0521_MODE_ALS_ENABLE);
++		if (ret < 0)
++			return ret;
++		data->als_ps_need_en = false;
++	}
++
++	if (data->pxs_ps_need_en) {
++		ret = rpr0521_pxs_enable(data, RPR0521_MODE_PXS_ENABLE);
++		if (ret < 0)
++			return ret;
++		data->pxs_ps_need_en = false;
++	}
++
++	return 0;
++}
++#endif
++
++static const struct dev_pm_ops rpr0521_pm_ops = {
++	SET_RUNTIME_PM_OPS(rpr0521_runtime_suspend,
++			   rpr0521_runtime_resume, NULL)
++};
++
++static const struct acpi_device_id rpr0521_acpi_match[] = {
++	{"RPR0521", 0},
++	{ }
++};
++MODULE_DEVICE_TABLE(acpi, rpr0521_acpi_match);
++
++static const struct i2c_device_id rpr0521_id[] = {
++	{"rpr0521", 0},
++	{ }
++};
++
++MODULE_DEVICE_TABLE(i2c, rpr0521_id);
++
++static struct i2c_driver rpr0521_driver = {
++	.driver = {
++		.name	= RPR0521_DRV_NAME,
++		.pm	= &rpr0521_pm_ops,
++		.acpi_match_table = ACPI_PTR(rpr0521_acpi_match),
++	},
++	.probe		= rpr0521_probe,
++	.remove		= rpr0521_remove,
++	.id_table	= rpr0521_id,
++};
++
++module_i2c_driver(rpr0521_driver);
++
++MODULE_AUTHOR("Daniel Baluta <daniel.baluta@intel.com>");
++MODULE_DESCRIPTION("RPR0521 ROHM Ambient Light and Proximity Sensor driver");
++MODULE_LICENSE("GPL v2");
 -- 
+1.9.1
 
-Peter Meerwald
-+43-664-2444418 (mobile)
