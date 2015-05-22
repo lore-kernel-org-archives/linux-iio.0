@@ -1,17 +1,23 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtprelay0223.hostedemail.com ([216.40.44.223]:60835 "EHLO
-	smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
-	by vger.kernel.org with ESMTP id S1750732AbbEVEsG (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 22 May 2015 00:48:06 -0400
-Received: from smtprelay.hostedemail.com (10.5.19.251.rfc1918.com [10.5.19.251])
-	by smtpgrave06.hostedemail.com (Postfix) with ESMTP id C71DF172B7F
-	for <linux-iio@vger.kernel.org>; Fri, 22 May 2015 04:39:13 +0000 (UTC)
-Message-ID: <1432269543.29657.7.camel@perches.com>
+Received: from mail-wg0-f42.google.com ([74.125.82.42]:33529 "EHLO
+	mail-wg0-f42.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751456AbbEVG5O (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 22 May 2015 02:57:14 -0400
+MIME-Version: 1.0
+In-Reply-To: <20150522015615.GA3320@kroah.com>
+References: <1432254645-5349-1-git-send-email-ktsai@capellamicro.com>
+	<20150522015615.GA3320@kroah.com>
+Date: Fri, 22 May 2015 09:57:12 +0300
+Message-ID: <CAEnQRZBxX-YxU1u8PuE_8ApBpsEOU9XenFyhbKUbmTW4RzO+=w@mail.gmail.com>
 Subject: Re: [PATCH 1/6] iio: light: Updated Vishay Capella cm32181 ambient
- light sensor driver.
-From: Joe Perches <joe@perches.com>
-To: Kevin Tsai <ktsai@capellamicro.com>
-Cc: Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>,
+ light sensor driver. - Renamed company name. - Removed cm32181_reg. - Removed
+ white space. - Removed unused include files. - Updated macro definitions. -
+ Renamed cm32181_chip pointer to chip.
+From: Daniel Baluta <daniel.baluta@intel.com>
+To: Greg KH <gregkh@linuxfoundation.org>
+Cc: Kevin Tsai <ktsai@capellamicro.com>,
+	Rob Herring <robh+dt@kernel.org>,
+	Pawel Moll <pawel.moll@arm.com>,
 	Mark Rutland <mark.rutland@arm.com>,
 	Ian Campbell <ijc+devicetree@hellion.org.uk>,
 	Kumar Gala <galak@codeaurora.org>,
@@ -20,28 +26,43 @@ Cc: Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>,
 	Lars-Peter Clausen <lars@metafoo.de>,
 	Peter Meerwald <pmeerw@pmeerw.net>,
 	Andrew Morton <akpm@linux-foundation.org>,
-	Greg KH <gregkh@linuxfoundation.org>,
 	"David S. Miller" <davem@davemloft.net>,
 	Mauro Carvalho Chehab <mchehab@osg.samsung.com>,
-	Arnd Bergmann <arnd@arndb.de>,
+	Arnd Bergmann <arnd@arndb.de>, Joe Perches <joe@perches.com>,
 	Jingoo Han <jingoohan1@gmail.com>,
 	Daniel Baluta <daniel.baluta@intel.com>,
 	Roberta Dobrescu <roberta.dobrescu@gmail.com>,
 	Kuppuswamy Sathyanarayanan
 	<sathyanarayanan.kuppuswamy@linux.intel.com>,
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-iio@vger.kernel.org
-Date: Thu, 21 May 2015 21:39:03 -0700
-In-Reply-To: <1432268380-7302-1-git-send-email-ktsai@capellamicro.com>
-References: <1432268380-7302-1-git-send-email-ktsai@capellamicro.com>
-Content-Type: text/plain; charset="ISO-8859-1"
-Mime-Version: 1.0
+	devicetree@vger.kernel.org,
+	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-(meh, bad mousing sent the first reply too soon)
+On Fri, May 22, 2015 at 4:56 AM, Greg KH <gregkh@linuxfoundation.org> wrote:
+> On Thu, May 21, 2015 at 05:30:40PM -0700, Kevin Tsai wrote:
+>> Signed-off-by: Kevin Tsai <ktsai@capellamicro.com>
+>> ---
+>
+> Your whole changelog ended up in the Subject line :(
 
-It'd also be better if this series had a cover letter
-so that could be replied to and added as a merge header
-instead of having to ack/nack individual patches.
+Hi Kevin,
 
+Few comments:
+
+1) Please also add a cover letter. Use --cover-letter parameter of git
+format-patch.
+2) Please create a patch for each logical change. Your current 1/6
+patch should be
+split in several small patches:
+ * 1/6 iio: light: cm32181: Update company name
+ * 2/6 iio: light: cm32181: Remove unused include files
+ * etc.
+3) Please use specific wordings for commit subject. A subject like this:
+
+"Updated Vishay Capella cm32181 ambient light sensor driver" doesn't say much.
+
+thanks,
+Daniel.
