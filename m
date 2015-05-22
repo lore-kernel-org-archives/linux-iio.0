@@ -1,55 +1,51 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:45344 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1161013AbbEVSDd (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 22 May 2015 14:03:33 -0400
-Message-ID: <555F6F73.3010703@kernel.org>
-Date: Fri, 22 May 2015 19:03:31 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-MIME-Version: 1.0
-To: Octavian Purdila <octavian.purdila@intel.com>
-CC: Tiberiu Breana <tiberiu.a.breana@intel.com>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	Peter Meerwald <pmeerw@pmeerw.net>
-Subject: Re: [PATCH v3 2/2] iio: light: Add threshold interrupt support for
- STK3310
-References: <1430148841-30947-1-git-send-email-tiberiu.a.breana@intel.com>	<1430148841-30947-3-git-send-email-tiberiu.a.breana@intel.com>	<554B3F05.1010600@kernel.org> <CAE1zot+hMJAGr8xstZJTe_Doh=C+2Veruyo+S4Or7Y3n=gdbCQ@mail.gmail.com> <555F6D4D.5060508@kernel.org>
-In-Reply-To: <555F6D4D.5060508@kernel.org>
+Received: from mail-pa0-f50.google.com ([209.85.220.50]:36482 "EHLO
+	mail-pa0-f50.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1756901AbbEVScC convert rfc822-to-8bit (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 22 May 2015 14:32:02 -0400
+Received: by paza2 with SMTP id a2so16605422paz.3
+        for <linux-iio@vger.kernel.org>; Fri, 22 May 2015 11:32:02 -0700 (PDT)
+From: Oliver King-Smith <oliverks@elementalsemi.com>
 Content-Type: text/plain; charset=utf-8
+Subject: Back porting bmg160 driver to 3.10.9 kernel
+Message-Id: <435F7C92-8E78-4BF9-8477-2032CE54AD04@elementalsemi.com>
+Date: Fri, 22 May 2015 11:31:58 -0700
+To: linux-iio@vger.kernel.org, Rich.Surprenant@nuvation.com
+Mime-Version: 1.0 (Mac OS X Mail 8.2 \(2098\))
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 22/05/15 18:54, Jonathan Cameron wrote:
-> On 20/05/15 10:46, Octavian Purdila wrote:
->> On Thu, May 7, 2015 at 1:31 PM, Jonathan Cameron <jic23@kernel.org> wrote:
->>>
->>> On 27/04/15 16:34, Tiberiu Breana wrote:
->>>> Added interrupt support for proximity threshold events
->>>> to the stk3310 driver.
->>> I've not objection to the split, but also wouldn't have minded having
->>> this in the original driver split (just in case you are doing it to make
->>> reviewing easier - in this sort of thing it makes little difference!)
->>>>
->>>> Signed-off-by: Tiberiu Breana <tiberiu.a.breana@intel.com>
->>> Again, nice patch.  My only comment below is about the fact I should
->>> find out what happened to the thoughts about moving the gpio/interrupt
->>> setup code into ACPI to avoid having the same 10 lines in every driver.
->>>
->>
->> Mika send another version of the patch set and it was accepted and
->> merged into the GPIO tree:
->>
->> https://lkml.org/lkml/2015/5/6/281
-> Cool.  Once that has worked it's way through yets
-let us
-> have a general cleanup of the cut and paste versions we have throughout
-> IIO.  Anyone want to take this on?
-> 
-> Jonathan
-> 
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> 
+I am trying to back port the bmg160 driver to the 3.10.9 kernel to work on an Android 4.4.x device.
+
+The API for in ii_info has changed quite a bit between the 3.18 and the 3.10 kernel.  So this function won’t compile
+
+static int bmg160_read_event(struct iio_dev *indio_dev,
+                             const struct iio_chan_spec *chan,
+                             enum iio_event_type type,
+                             enum iio_event_direction dir,
+                             enum iio_event_info info,
+                             int *val, int *val2)
+{
+        struct bmg160_data *data = iio_priv(indio_dev);
+
+        *val2 = 0;
+        switch (info) {
+        case IIO_EV_INFO_VALUE:
+                *val = data->slope_thres & BMG160_SLOPE_THRES_MASK;
+                break;
+        default:
+                return -EINVAL;
+        }
+
+        return IIO_VAL_INT;
+}
+
+The 3.10 prototype for this function is
+        int (*read_event_value)(struct iio_dev *indio_dev,
+                                u64 event_code,
+                                int *val);
+
+My question is what does IIO_EV_INFO_VALUE map to in the old event_code in the 3.10.9 kernel
+
+Oliver
 
