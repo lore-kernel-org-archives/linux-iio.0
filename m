@@ -1,8 +1,8 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp104.biz.mail.bf1.yahoo.com ([98.139.221.63]:22297 "EHLO
+Received: from smtp104.biz.mail.bf1.yahoo.com ([98.139.221.63]:22348 "EHLO
 	smtp104.biz.mail.bf1.yahoo.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S932217AbbEVE1a (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 22 May 2015 00:27:30 -0400
+	by vger.kernel.org with ESMTP id S964788AbbEVE1u (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 22 May 2015 00:27:50 -0400
 From: Kevin Tsai <ktsai@capellamicro.com>
 To: Kevin Tsai <ktsai@capellamicro.com>,
 	Rob Herring <robh+dt@kernel.org>,
@@ -26,124 +26,266 @@ To: Kevin Tsai <ktsai@capellamicro.com>,
 	<sathyanarayanan.kuppuswamy@linux.intel.com>
 Cc: devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
 	linux-iio@vger.kernel.org
-Subject: [PATCH 2/6] iio: light: Updated Vishay Capella cm32181 ambient light sensor driver.
-Date: Thu, 21 May 2015 21:19:36 -0700
-Message-Id: <1432268380-7302-2-git-send-email-ktsai@capellamicro.com>
+Subject: [PATCH 6/6] iio: light: Updated Vishay Capella cm32181 ambient light sensor driver.
+Date: Thu, 21 May 2015 21:19:40 -0700
+Message-Id: <1432268380-7302-6-git-send-email-ktsai@capellamicro.com>
 In-Reply-To: <1432268380-7302-1-git-send-email-ktsai@capellamicro.com>
 References: <1432268380-7302-1-git-send-email-ktsai@capellamicro.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-- Added cm32181_als_info structure.
+- Added Interrupt support.
 
 Signed-off-by: Kevin Tsai <ktsai@capellamicro.com>
 ---
- drivers/iio/light/cm32181.c | 42 +++++++++++++++++++++++++++++++++---------
- 1 file changed, 33 insertions(+), 9 deletions(-)
+ drivers/iio/light/cm32181.c | 156 +++++++++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 153 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/iio/light/cm32181.c b/drivers/iio/light/cm32181.c
-index 0491d73..6b11145 100644
+index b7abd46..1ae32a0 100644
 --- a/drivers/iio/light/cm32181.c
 +++ b/drivers/iio/light/cm32181.c
-@@ -48,6 +48,7 @@
+@@ -47,6 +47,10 @@
+ /* ALS_WL register */
  #define CM32181_ALS_WL_DEFAULT		0x0000
  
++/* STATUS register */
++#define CM32181_STATUS_ALS_IF_L		BIT(15)
++#define CM32181_STATUS_ALS_IF_H		BIT(14)
++
  /* Software parameters */
-+#define CM32181_HW_ID			0x81
+ #define CM32181_HW_ID			0x81
  #define CM32181_MLUX_PER_BIT		5	/* ALS_SM=01 IT=800ms */
- #define CM32181_MLUX_PER_BIT_BASE_IT	800000	/* Based on IT=800ms */
- #define	CM32181_CALIBSCALE_DEFAULT	1000
-@@ -58,11 +59,31 @@ static const int als_it_bits[] = {12, 8, 0, 1, 2, 3};
- static const int als_it_value[] = {25000, 50000, 100000, 200000, 400000,
- 	800000};
+@@ -122,7 +126,8 @@ void cm32181_parse_dt(struct cm32181_chip *chip)
+ 	if (!of_property_read_u32(dn, "capella,mlux_per_bit", &temp_val))
+ 		als_info->mlux_per_bit = (int)temp_val;
+ 	if (!of_property_read_u32(dn, "capella,thd_percent", &temp_val))
+-		als_info->thd_percent = (int)temp_val;
++		if (((int)temp_val >= 0) && ((int)temp_val < 100))
++			als_info->thd_percent = (int)temp_val;
+ }
+ #endif
  
-+struct cm32181_als_info {
-+	u8 hw_id;
-+	u16 reg_cmd;
-+	u16 reg_als_wh;
-+	u16 reg_als_wl;
-+	int calibscale;
-+	int mlux_per_bit;
-+	int mlux_per_bit_base_it;
-+};
-+
-+static struct cm32181_als_info cm32181_als_info_default = {
-+	.hw_id = CM32181_HW_ID,
-+	.reg_cmd = CM32181_CMD_DEFAULT,
-+	.reg_als_wh = CM32181_ALS_WH_DEFAULT,
-+	.reg_als_wl = CM32181_ALS_WL_DEFAULT,
-+	.calibscale = CM32181_CALIBSCALE_DEFAULT,
-+	.mlux_per_bit = CM32181_MLUX_PER_BIT,
-+	.mlux_per_bit_base_it = CM32181_MLUX_PER_BIT_BASE_IT,
-+};
-+
- struct cm32181_chip {
- 	struct i2c_client *client;
- 	struct mutex lock;
-+	struct cm32181_als_info *als_info;
- 	u16 conf_regs[CM32181_CONF_REG_NUM];
--	int calibscale;
- };
+@@ -173,6 +178,63 @@ static int cm32181_reg_init(struct cm32181_chip *chip)
+ }
  
  /**
-@@ -76,22 +97,25 @@ struct cm32181_chip {
- static int cm32181_reg_init(struct cm32181_chip *chip)
- {
- 	struct i2c_client *client = chip->client;
-+	struct cm32181_als_info *als_info;
- 	int i;
- 	s32 ret;
- 
-+	chip->als_info = &cm32181_als_info_default;
-+	als_info = chip->als_info;
++ * cm32181_interrupt() - enable/disable interrupt
++ * @chip:       pointer of struct cm32181_chip
++ * @ int_en:	truen for enable; false for disable
++ *
++ * Enable/disable interrupt mode
++ *
++ * Return: 0 for success; otherwise for error code.
++ */
++static int cm32181_interrupt(struct cm32181_chip *cm32181, bool int_en)
++{
++	int ret;
 +
- 	ret = i2c_smbus_read_word_data(client, CM32181_REG_ADDR_ID);
++	mutex_lock(&cm32181->lock);
++	if (int_en)
++		cm32181->conf_regs[CM32181_REG_ADDR_CMD] |=
++			CM32181_CMD_ALS_INT_EN;
++	else
++		cm32181->conf_regs[CM32181_REG_ADDR_CMD] &=
++			~CM32181_CMD_ALS_INT_EN;
++
++	ret = i2c_smbus_write_word_data(cm32181->client,
++			CM32181_REG_ADDR_CMD,
++			cm32181->conf_regs[CM32181_REG_ADDR_CMD]);
++	mutex_unlock(&cm32181->lock);
++	return ret;
++}
++
++static irqreturn_t cm32181_irq_handler(int irq, void *data)
++{
++	struct iio_dev *indio_dev = data;
++	struct cm32181_chip *cm32181 = iio_priv(indio_dev);
++	struct i2c_client *client = cm32181->client;
++	int ret;
++	u64 ev_code;
++
++	ret = i2c_smbus_read_word_data(cm32181->client,
++			CM32181_REG_ADDR_STATUS);
++	if (ret < 0) {
++		dev_err(&client->dev,
++			"%s: Data read failed: %d\n", __func__, ret);
++		return IRQ_NONE;
++	}
++
++	if (!(ret & (CM32181_STATUS_ALS_IF_H | CM32181_STATUS_ALS_IF_L)))
++		return IRQ_NONE;
++
++	ev_code = IIO_UNMOD_EVENT_CODE(IIO_LIGHT,
++				0,
++				IIO_EV_TYPE_THRESH,
++				IIO_EV_DIR_EITHER);
++
++	iio_push_event(indio_dev, ev_code, iio_get_time_ns());
++
++	return IRQ_HANDLED;
++}
++
++/**
+  * cm32181_read_als_it() - Get sensor integration time
+  * @chip:	pointer of struct cm32181_chip
+  * @val:	pointer of int to load the integration (sec)
+@@ -242,6 +304,51 @@ static int cm32181_write_als_it(struct cm32181_chip *chip, int val, int val2)
+ }
+ 
+ /**
++ * cm32181_ials_read() - read ALS raw data
++ * @chip:       pointer of struct cm32181_chip
++ *
++ * Read the ALS raw data and update the interrupt threshold windows.
++ *
++ * Return: Positive value is ALS raw data, otherwise is error code.
++ */
++static int cm32181_als_read(struct cm32181_chip *chip)
++{
++	struct i2c_client *client = chip->client;
++	struct cm32181_als_info *als_info = chip->als_info;
++	u16 als, wh, wl, delta;
++	int ret;
++
++	ret = i2c_smbus_read_word_data(client, CM32181_REG_ADDR_ALS);
++	if (ret < 0)
++		return ret;
++
++	als = (u16)ret;
++
++	if (als_info->thd_percent) {
++		delta = als * als_info->thd_percent / 100;
++		if (delta < 3)
++			delta = 3;
++		wh = (als + delta > 0xFFFF) ? 0xFFFF : (als + delta);
++		wl = (als < delta) ? 0 : (als - delta);
++
++		ret = i2c_smbus_write_word_data(client,
++			CM32181_REG_ADDR_ALS_WH, wh);
++		if (ret < 0)
++			return ret;
++		chip->conf_regs[CM32181_REG_ADDR_ALS_WH] = wh;
++
++		ret = i2c_smbus_write_word_data(client,
++			CM32181_REG_ADDR_ALS_WL, wl);
++		if (ret < 0)
++			return ret;
++		chip->conf_regs[CM32181_REG_ADDR_ALS_WL] = wl;
++		ret = als;
++	}
++
++	return ret;
++}
++
++/**
+  * cm32181_get_lux() - report current lux value
+  * @chip:	pointer of struct cm32181_chip
+  *
+@@ -252,7 +359,6 @@ static int cm32181_write_als_it(struct cm32181_chip *chip, int val, int val2)
+  */
+ static int cm32181_get_lux(struct cm32181_chip *chip)
+ {
+-	struct i2c_client *client = chip->client;
+ 	struct cm32181_als_info *als_info = chip->als_info;
+ 	int ret;
+ 	int val, val2;
+@@ -268,7 +374,7 @@ static int cm32181_get_lux(struct cm32181_chip *chip)
+ 	lux *= als_info->mlux_per_bit_base_it;
+ 	lux = div_u64(lux, als_it);
+ 
+-	ret = i2c_smbus_read_word_data(client, CM32181_REG_ADDR_ALS);
++	ret = cm32181_als_read(chip);
  	if (ret < 0)
  		return ret;
  
- 	/* check device ID */
--	if ((ret & 0xFF) != 0x81)
-+	if ((ret & 0xFF) != als_info->hw_id)
- 		return -ENODEV;
+@@ -350,6 +456,15 @@ static ssize_t cm32181_get_it_available(struct device *dev,
+ 	return len + scnprintf(buf + len, PAGE_SIZE - len, "\n");
+ }
  
- 	/* Default Values */
--	chip->conf_regs[CM32181_REG_ADDR_CMD] = CM32181_CMD_DEFAULT;
--	chip->conf_regs[CM32181_REG_ADDR_ALS_WH] = CM32181_ALS_WH_DEFAULT;
--	chip->conf_regs[CM32181_REG_ADDR_ALS_WL] = CM32181_ALS_WL_DEFAULT;
--	chip->calibscale = CM32181_CALIBSCALE_DEFAULT;
-+	chip->conf_regs[CM32181_REG_ADDR_CMD] = als_info->reg_cmd;
-+	chip->conf_regs[CM32181_REG_ADDR_ALS_WH] = als_info->reg_als_wh;
-+	chip->conf_regs[CM32181_REG_ADDR_ALS_WL] = als_info->reg_als_wl;
++static const struct iio_event_spec cm32181_event_spec[] = {
++	{
++		.type = IIO_EV_TYPE_THRESH,
++		.dir = IIO_EV_DIR_EITHER,
++		.mask_separate = BIT(IIO_EV_INFO_VALUE) |
++				BIT(IIO_EV_INFO_ENABLE),
++	}
++};
++
+ static const struct iio_chan_spec cm32181_channels[] = {
+ 	{
+ 		.type = IIO_LIGHT,
+@@ -357,6 +472,8 @@ static const struct iio_chan_spec cm32181_channels[] = {
+ 			BIT(IIO_CHAN_INFO_PROCESSED) |
+ 			BIT(IIO_CHAN_INFO_CALIBSCALE) |
+ 			BIT(IIO_CHAN_INFO_INT_TIME),
++		.event_spec = cm32181_event_spec,
++		.num_event_specs = ARRAY_SIZE(cm32181_event_spec),
+ 	}
+ };
  
- 	/* Initialize registers*/
- 	for (i = 0; i < CM32181_CONF_REG_NUM; i++) {
-@@ -197,7 +221,7 @@ static int cm32181_get_lux(struct cm32181_chip *chip)
+@@ -383,6 +500,7 @@ static int cm32181_probe(struct i2c_client *client,
+ 			const struct i2c_device_id *id)
+ {
+ 	struct cm32181_chip *chip;
++	struct cm32181_als_info *als_info;
+ 	struct iio_dev *indio_dev;
+ 	int ret;
+ 
+@@ -412,11 +530,35 @@ static int cm32181_probe(struct i2c_client *client,
  		return ret;
+ 	}
  
- 	lux *= ret;
--	lux *= chip->calibscale;
-+	lux *= chip->als_info->calibscale;
- 	lux /= CM32181_CALIBSCALE_RESOLUTION;
- 	lux /= MLUX_PER_LUX;
++	als_info = chip->als_info;
++	if (als_info->thd_percent && client->irq) {
++		ret = request_threaded_irq(client->irq, NULL,
++					cm32181_irq_handler,
++					IRQF_TRIGGER_LOW | IRQF_ONESHOT,
++					indio_dev->name, indio_dev);
++		if (ret < 0) {
++			dev_err(&client->dev, "%s: request irq failed\n",
++				__func__);
++			return ret;
++		}
++
++		ret = cm32181_interrupt(chip, true);
++		if (ret) {
++			als_info->thd_percent = 0;
++			dev_err(&client->dev,
++				"%s: failed to enable interrupt\n", __func__);
++		}
++	} else {
++		als_info->thd_percent = 0;	/* Polling Mode */
++	}
++
+ 	ret = devm_iio_device_register(&client->dev, indio_dev);
+ 	if (ret) {
+ 		dev_err(&client->dev,
+ 			"%s: regist device failed\n",
+ 			__func__);
++		if (als_info->thd_percent)
++			free_irq(client->irq, indio_dev);
+ 		return ret;
+ 	}
  
-@@ -222,7 +246,7 @@ static int cm32181_read_raw(struct iio_dev *indio_dev,
- 		*val = ret;
- 		return IIO_VAL_INT;
- 	case IIO_CHAN_INFO_CALIBSCALE:
--		*val = chip->calibscale;
-+		*val = chip->als_info->calibscale;
- 		return IIO_VAL_INT;
- 	case IIO_CHAN_INFO_INT_TIME:
- 		*val = 0;
-@@ -242,7 +266,7 @@ static int cm32181_write_raw(struct iio_dev *indio_dev,
+@@ -425,9 +567,17 @@ static int cm32181_probe(struct i2c_client *client,
  
- 	switch (mask) {
- 	case IIO_CHAN_INFO_CALIBSCALE:
--		chip->calibscale = val;
-+		chip->als_info->calibscale = val;
- 		return val;
- 	case IIO_CHAN_INFO_INT_TIME:
- 		ret = cm32181_write_als_it(chip, val2);
+ static int cm32181_remove(struct i2c_client *client)
+ {
++	struct iio_dev *indio_dev = i2c_get_clientdata(client);
++	struct cm32181_chip *chip = iio_priv(indio_dev);
++	struct cm32181_als_info *als_info = chip->als_info;
++
++	cm32181_interrupt(chip, false);
+ 	i2c_smbus_write_word_data(client, CM32181_REG_ADDR_CMD,
+ 		CM32181_CMD_ALS_DISABLE);
+ 
++	if (als_info->thd_percent)
++		free_irq(client->irq, indio_dev);
++
+ 	return 0;
+ }
+ 
 -- 
 1.8.3.1
 
