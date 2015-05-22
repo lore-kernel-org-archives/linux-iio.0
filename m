@@ -1,47 +1,63 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:45290 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:45316 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1756676AbbEVRy1 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 22 May 2015 13:54:27 -0400
-Message-ID: <555F6D4D.5060508@kernel.org>
-Date: Fri, 22 May 2015 18:54:21 +0100
+	with ESMTP id S1945931AbbEVR6F (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 22 May 2015 13:58:05 -0400
+Message-ID: <555F6E2B.5060904@kernel.org>
+Date: Fri, 22 May 2015 18:58:03 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Octavian Purdila <octavian.purdila@intel.com>
-CC: Tiberiu Breana <tiberiu.a.breana@intel.com>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+To: Martin Fuzzey <mfuzzey@parkeon.com>,
 	Peter Meerwald <pmeerw@pmeerw.net>
-Subject: Re: [PATCH v3 2/2] iio: light: Add threshold interrupt support for
- STK3310
-References: <1430148841-30947-1-git-send-email-tiberiu.a.breana@intel.com>	<1430148841-30947-3-git-send-email-tiberiu.a.breana@intel.com>	<554B3F05.1010600@kernel.org> <CAE1zot+hMJAGr8xstZJTe_Doh=C+2Veruyo+S4Or7Y3n=gdbCQ@mail.gmail.com>
-In-Reply-To: <CAE1zot+hMJAGr8xstZJTe_Doh=C+2Veruyo+S4Or7Y3n=gdbCQ@mail.gmail.com>
+CC: linux-iio@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>
+Subject: Re: [PATCH V4 6/7] iio: mma8452: Add highpass filter configuration.
+References: <20150513102635.27803.99054.stgit@localhost> <20150513102648.27803.92023.stgit@localhost> <555863FF.1040203@kernel.org> <5559A020.9020105@parkeon.com>
+In-Reply-To: <5559A020.9020105@parkeon.com>
 Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 20/05/15 10:46, Octavian Purdila wrote:
-> On Thu, May 7, 2015 at 1:31 PM, Jonathan Cameron <jic23@kernel.org> wrote:
->>
->> On 27/04/15 16:34, Tiberiu Breana wrote:
->>> Added interrupt support for proximity threshold events
->>> to the stk3310 driver.
->> I've not objection to the split, but also wouldn't have minded having
->> this in the original driver split (just in case you are doing it to make
->> reviewing easier - in this sort of thing it makes little difference!)
+On 18/05/15 09:17, Martin Fuzzey wrote:
+> On 17/05/15 11:48, Jonathan Cameron wrote:
+>> On 13/05/15 11:26, Martin Fuzzey wrote:
+>>> Allow the cutoff frequency of the high pass filter to be configured.
 >>>
->>> Signed-off-by: Tiberiu Breana <tiberiu.a.breana@intel.com>
->> Again, nice patch.  My only comment below is about the fact I should
->> find out what happened to the thoughts about moving the gpio/interrupt
->> setup code into ACPI to avoid having the same 10 lines in every driver.
+>>> Signed-off-by: Martin Fuzzey <mfuzzey@parkeon.com>
+>> Oops, I missed in patch 4 that you'd added the event_spec entry for the highpass
+>> filter but not the support to actually read it (which is here).
+> Ah true, good catch
+> 
+>> I'll back out back to patch 4.  Could you repost with that sorted out.
+> ok
+> 
+>> Also, if (as I think is happening here) we have a filter applied to all
+>> the data that is read from a channel (including it's events) then we normally
+>> only have the attribute for the iio_chan_spec rather than the event spec
+>> as well.
 >>
+>> Anything that is in the parent directory is also assumed to apply to the
+>> event directory if not overridden (by it being in both) as we could have
+>> a pipeline in the device with seperate filters for the event detector and
+>> the main data flow (not true here?)
+>>
+>> Hence, please drop the event version unless I have missunderstood what
+>> you are doing with the hardware.
+>>
+>> It's fine to leave the abi docs in place however as they are correct even
+>> if we don't normally introduced them until there is a driver using them.
 > 
-> Mika send another version of the patch set and it was accepted and
-> merged into the GPIO tree:
+> The hardware has one filter and two enable bits (one for the data and one for the event)
+> It is thus possible to read unfiltered data but have the filter applied for the events.
 > 
-> https://lkml.org/lkml/2015/5/6/281
-Cool.  Once that has worked it's way through yets
-have a general cleanup of the cut and paste versions we have throughout
-IIO.  Anyone want to take this on?
+> We discussed this in revision 2 of the series.
+> https://www.marc.info/?l=linux-iio&m=140803621414813&w=2
+> 
+> I thought we agreed in the above discussion to represent this as two 3db frequencies with 0 meaning disable.
+> I did that for V3 of the series.
+> 
+Hmm.  thought I'd replied to this from my phone the other day..
+Just in case that never went anywhere, this is fine and just
+my memory failing me!  
 
 Jonathan
 
