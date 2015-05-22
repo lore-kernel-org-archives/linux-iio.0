@@ -1,12 +1,17 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp104.biz.mail.bf1.yahoo.com ([98.139.221.63]:22304 "EHLO
-	smtp104.biz.mail.bf1.yahoo.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1756164AbbEVE1f (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 22 May 2015 00:27:35 -0400
-From: Kevin Tsai <ktsai@capellamicro.com>
-To: Kevin Tsai <ktsai@capellamicro.com>,
-	Rob Herring <robh+dt@kernel.org>,
-	Pawel Moll <pawel.moll@arm.com>,
+Received: from smtprelay0200.hostedemail.com ([216.40.44.200]:57316 "EHLO
+	smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
+	by vger.kernel.org with ESMTP id S1750970AbbEVEnA (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 22 May 2015 00:43:00 -0400
+Received: from smtprelay.hostedemail.com (10.5.19.251.rfc1918.com [10.5.19.251])
+	by smtpgrave04.hostedemail.com (Postfix) with ESMTP id 81251B1968
+	for <linux-iio@vger.kernel.org>; Fri, 22 May 2015 04:37:04 +0000 (UTC)
+Message-ID: <1432269418.29657.5.camel@perches.com>
+Subject: Re: [PATCH 1/6] iio: light: Updated Vishay Capella cm32181 ambient
+ light sensor driver.
+From: Joe Perches <joe@perches.com>
+To: Kevin Tsai <ktsai@capellamicro.com>
+Cc: Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>,
 	Mark Rutland <mark.rutland@arm.com>,
 	Ian Campbell <ijc+devicetree@hellion.org.uk>,
 	Kumar Gala <galak@codeaurora.org>,
@@ -18,100 +23,42 @@ To: Kevin Tsai <ktsai@capellamicro.com>,
 	Greg KH <gregkh@linuxfoundation.org>,
 	"David S. Miller" <davem@davemloft.net>,
 	Mauro Carvalho Chehab <mchehab@osg.samsung.com>,
-	Arnd Bergmann <arnd@arndb.de>, Joe Perches <joe@perches.com>,
+	Arnd Bergmann <arnd@arndb.de>,
 	Jingoo Han <jingoohan1@gmail.com>,
 	Daniel Baluta <daniel.baluta@intel.com>,
 	Roberta Dobrescu <roberta.dobrescu@gmail.com>,
 	Kuppuswamy Sathyanarayanan
-	<sathyanarayanan.kuppuswamy@linux.intel.com>
-Cc: devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+	<sathyanarayanan.kuppuswamy@linux.intel.com>,
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
 	linux-iio@vger.kernel.org
-Subject: [PATCH 3/6] iio: light: Updated Vishay Capella cm32181 ambient light sensor driver.
-Date: Thu, 21 May 2015 21:19:37 -0700
-Message-Id: <1432268380-7302-3-git-send-email-ktsai@capellamicro.com>
+Date: Thu, 21 May 2015 21:36:58 -0700
 In-Reply-To: <1432268380-7302-1-git-send-email-ktsai@capellamicro.com>
 References: <1432268380-7302-1-git-send-email-ktsai@capellamicro.com>
+Content-Type: text/plain; charset="ISO-8859-1"
+Mime-Version: 1.0
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-- Added Power Management support.
-- Added driver remove routine.
+On Thu, 2015-05-21 at 21:19 -0700, Kevin Tsai wrote:
+> - Renamed company name.
+> - Removed cm32181_reg.
+> - Removed white space.
+> - Removed unused include files.
+> - Updated macro definitions.
+> - Renamed cm32181_chip pointer to chip.
 
-Signed-off-by: Kevin Tsai <ktsai@capellamicro.com>
----
- drivers/iio/light/cm32181.c | 44 ++++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 44 insertions(+)
+Hi Kevin,
 
-diff --git a/drivers/iio/light/cm32181.c b/drivers/iio/light/cm32181.c
-index 6b11145..9bc3e1f 100644
---- a/drivers/iio/light/cm32181.c
-+++ b/drivers/iio/light/cm32181.c
-@@ -370,11 +370,51 @@ static int cm32181_probe(struct i2c_client *client,
- 	return 0;
- }
- 
-+static int cm32181_remove(struct i2c_client *client)
-+{
-+	i2c_smbus_write_word_data(client, CM32181_REG_ADDR_CMD,
-+		CM32181_CMD_ALS_DISABLE);
-+
-+	return 0;
-+}
-+
- static const struct i2c_device_id cm32181_id[] = {
- 	{ "cm32181", 0 },
- 	{ }
- };
- 
-+#ifdef CONFIG_PM_SLEEP
-+static int cm32181_suspend(struct device *dev)
-+{
-+	struct iio_dev *indio_dev = i2c_get_clientdata(to_i2c_client(dev));
-+	struct cm32181_chip *chip = iio_priv(indio_dev);
-+	struct i2c_client *client = chip->client;
-+	int ret;
-+
-+	ret = i2c_smbus_write_word_data(client, CM32181_REG_ADDR_CMD,
-+					CM32181_CMD_ALS_DISABLE);
-+
-+	return ret;
-+}
-+
-+static int cm32181_resume(struct device *dev)
-+{
-+	struct iio_dev *indio_dev = i2c_get_clientdata(to_i2c_client(dev));
-+	struct cm32181_chip *chip = iio_priv(indio_dev);
-+	struct i2c_client *client = chip->client;
-+	int ret;
-+
-+	chip->conf_regs[CM32181_REG_ADDR_CMD] &= ~CM32181_CMD_ALS_DISABLE;
-+	ret = i2c_smbus_write_word_data(client, CM32181_REG_ADDR_CMD,
-+				chip->conf_regs[CM32181_REG_ADDR_CMD]);
-+
-+	return ret;
-+}
-+
-+static const struct dev_pm_ops cm32181_pm_ops = {
-+	SET_SYSTEM_SLEEP_PM_OPS(cm32181_suspend, cm32181_resume)};
-+#endif
-+
- MODULE_DEVICE_TABLE(i2c, cm32181_id);
- 
- static const struct of_device_id cm32181_of_match[] = {
-@@ -387,9 +427,13 @@ static struct i2c_driver cm32181_driver = {
- 		.name	= "cm32181",
- 		.of_match_table = of_match_ptr(cm32181_of_match),
- 		.owner	= THIS_MODULE,
-+#ifdef CONFIG_PM_SLEEP
-+		.pm     = &cm32181_pm_ops,
-+#endif
- 	},
- 	.id_table	= cm32181_id,
- 	.probe		= cm32181_probe,
-+	.remove		= cm32181_remove,
- };
- 
- module_i2c_driver(cm32181_driver);
--- 
-1.8.3.1
+Please don't use the same title for multiple patches.
+
+It'd be better if these 6 patches were titled something like
+
+1/6	cm32181: Neatening
+2/6	cm32181: Add cm32181_als_info
+3/6:	cm32181: Add power management support
+4/6:	cm32181: Add and use cm32181_als_it_scale
+5/6:	cm32181: Add device tree support
+6/6:	cm32181: Add interrupt suppor
+
+It's
 
