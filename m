@@ -1,12 +1,12 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtprelay0200.hostedemail.com ([216.40.44.200]:57316 "EHLO
+Received: from smtprelay0223.hostedemail.com ([216.40.44.223]:60835 "EHLO
 	smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
-	by vger.kernel.org with ESMTP id S1750970AbbEVEnA (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 22 May 2015 00:43:00 -0400
+	by vger.kernel.org with ESMTP id S1750732AbbEVEsG (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 22 May 2015 00:48:06 -0400
 Received: from smtprelay.hostedemail.com (10.5.19.251.rfc1918.com [10.5.19.251])
-	by smtpgrave04.hostedemail.com (Postfix) with ESMTP id 81251B1968
-	for <linux-iio@vger.kernel.org>; Fri, 22 May 2015 04:37:04 +0000 (UTC)
-Message-ID: <1432269418.29657.5.camel@perches.com>
+	by smtpgrave06.hostedemail.com (Postfix) with ESMTP id C71DF172B7F
+	for <linux-iio@vger.kernel.org>; Fri, 22 May 2015 04:39:13 +0000 (UTC)
+Message-ID: <1432269543.29657.7.camel@perches.com>
 Subject: Re: [PATCH 1/6] iio: light: Updated Vishay Capella cm32181 ambient
  light sensor driver.
 From: Joe Perches <joe@perches.com>
@@ -31,7 +31,7 @@ Cc: Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>,
 	<sathyanarayanan.kuppuswamy@linux.intel.com>,
 	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
 	linux-iio@vger.kernel.org
-Date: Thu, 21 May 2015 21:36:58 -0700
+Date: Thu, 21 May 2015 21:39:03 -0700
 In-Reply-To: <1432268380-7302-1-git-send-email-ktsai@capellamicro.com>
 References: <1432268380-7302-1-git-send-email-ktsai@capellamicro.com>
 Content-Type: text/plain; charset="ISO-8859-1"
@@ -39,26 +39,9 @@ Mime-Version: 1.0
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Thu, 2015-05-21 at 21:19 -0700, Kevin Tsai wrote:
-> - Renamed company name.
-> - Removed cm32181_reg.
-> - Removed white space.
-> - Removed unused include files.
-> - Updated macro definitions.
-> - Renamed cm32181_chip pointer to chip.
+(meh, bad mousing sent the first reply too soon)
 
-Hi Kevin,
-
-Please don't use the same title for multiple patches.
-
-It'd be better if these 6 patches were titled something like
-
-1/6	cm32181: Neatening
-2/6	cm32181: Add cm32181_als_info
-3/6:	cm32181: Add power management support
-4/6:	cm32181: Add and use cm32181_als_it_scale
-5/6:	cm32181: Add device tree support
-6/6:	cm32181: Add interrupt suppor
-
-It's
+It'd also be better if this series had a cover letter
+so that could be replied to and added as a merge header
+instead of having to ack/nack individual patches.
 
