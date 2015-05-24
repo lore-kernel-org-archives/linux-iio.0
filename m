@@ -1,42 +1,42 @@
-Return-Path: <lars@metafoo.de>
-Message-ID: <55643F20.4080306@metafoo.de>
-Date: Tue, 26 May 2015 11:38:40 +0200
-From: Lars-Peter Clausen <lars@metafoo.de>
-MIME-Version: 1.0
-To: Jonathan Cameron <jic23@kernel.org>, Xander Huff <xander.huff@ni.com>,
- robh+dt@kernel.org, pawel.moll@arm.com, mark.rutland@arm.com,
- ijc+devicetree@hellion.org.uk, galak@codeaurora.org
-CC: michal.simek@xilinx.com, soren.brinkmann@xilinx.com, knaack.h@gmx.de,
- pmeerw@pmeerw.net, devicetree@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org, linux-iio@vger.kernel.org,
- ben.shelton@ni.com, joshc@ni.com, joe.hershberger@ni.com
-Subject: Re: [PATCH 2/2] iio: adc: xilinx-xadc: Add xlnx,extend-name as an
- optional argument for aux channels
-References: <1431038644-41600-1-git-send-email-xander.huff@ni.com> <1431038644-41600-2-git-send-email-xander.huff@ni.com> <555B78A3.2030202@metafoo.de> <55606340.1090403@kernel.org>
-In-Reply-To: <55606340.1090403@kernel.org>
-Content-Type: text/plain; charset=windows-1252; format=flowed
+Return-Path: <festevam@gmail.com>
+From: Fabio Estevam <festevam@gmail.com>
+To: jic23@kernel.org
+Cc: linux-iio@vger.kernel.org,
+	Fabio Estevam <fabio.estevam@freescale.com>
+Subject: [PATCH] iio: twl4030-madc: Pass the IRQF_ONESHOT flag
+Date: Sun, 24 May 2015 17:39:04 -0300
+Message-Id: <1432499944-10395-1-git-send-email-festevam@gmail.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-On 05/23/2015 01:23 PM, Jonathan Cameron wrote:
-> On 19/05/15 18:53, Lars-Peter Clausen wrote:
->> On 05/08/2015 12:44 AM, Xander Huff wrote:
->>> To better facilitate user-mode access to optional aux channels, allow
->>> device trees to specify a custom extended name for defined channels.
->>
->> Hi,
->>
->> 'extend-name' is kind of a IIO specific term. I think a better name in the devicetree context would be 'label'. That's used everywhere else when giving a short description string to a node.
->>
-> Hi Lars,
->
-> What do you think of the general idea?  I'm unconvinced we want to do this in channel naming.
-> Perhaps we want an additional attribute giving access to this sort of 'semantic' information?
+From: Fabio Estevam <fabio.estevam@freescale.com>
 
-I'm not convinced about it either. My gut feeling is that this is not the 
-right approach, but I don't really have any better ideas at the moment.
+Since commit 1c6c69525b40 ("genirq: Reject bogus threaded irq requests")
+threaded IRQs without a primary handler need to be requested with
+IRQF_ONESHOT, otherwise the request will fail.
 
-Xander can you give a short description of how this information will be used 
-by an application? Would having a label property for the channel also work 
-for you (e.g. in_voltage0_label)?
+So pass the IRQF_ONESHOT flag in this case.
 
-- Lars
+The semantic patch that makes this change is available
+in scripts/coccinelle/misc/irqf_oneshot.cocci.
+
+Signed-off-by: Fabio Estevam <fabio.estevam@freescale.com>
+---
+ drivers/iio/adc/twl4030-madc.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/iio/adc/twl4030-madc.c b/drivers/iio/adc/twl4030-madc.c
+index 94c5f05..4caecbe 100644
+--- a/drivers/iio/adc/twl4030-madc.c
++++ b/drivers/iio/adc/twl4030-madc.c
+@@ -835,7 +835,8 @@ static int twl4030_madc_probe(struct platform_device *pdev)
+ 	irq = platform_get_irq(pdev, 0);
+ 	ret = devm_request_threaded_irq(&pdev->dev, irq, NULL,
+ 				   twl4030_madc_threaded_irq_handler,
+-				   IRQF_TRIGGER_RISING, "twl4030_madc", madc);
++				   IRQF_TRIGGER_RISING | IRQF_ONESHOT,
++				   "twl4030_madc", madc);
+ 	if (ret) {
+ 		dev_err(&pdev->dev, "could not request irq\n");
+ 		goto err_i2c;
+-- 
+1.9.1
