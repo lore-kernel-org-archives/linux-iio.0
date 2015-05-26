@@ -1,40 +1,47 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-ie0-f175.google.com ([209.85.223.175]:33034 "EHLO
-	mail-ie0-f175.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750845AbbEZRnM (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 26 May 2015 13:43:12 -0400
-Received: by iebgx4 with SMTP id gx4so97770851ieb.0
-        for <linux-iio@vger.kernel.org>; Tue, 26 May 2015 10:43:12 -0700 (PDT)
-Date: Tue, 26 May 2015 12:42:55 -0500
-From: Michael Welling <mwelling@ieee.org>
-To: Greg Wilson-Lindberg <GWilson@sakuraus.com>
-Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Subject: Re: BBB touch screen and ADC interactions
-Message-ID: <20150526174255.GA7739@deathray>
-References: <782E3A02C2EB2347BEA6DEA69DC7AB86021D3C87D113@sfamail.SAKURAUS.LOCAL>
- <20150519230932.GA15718@deathray>
- <782E3A02C2EB2347BEA6DEA69DC7AB86021D3C87D46F@sfamail.SAKURAUS.LOCAL>
- <F4A1ABDE-E030-405D-A0BB-A4CD80E9F84F@ieee.org>
- <782E3A02C2EB2347BEA6DEA69DC7AB86021D3C87D47E@sfamail.SAKURAUS.LOCAL>
- <20150520003435.GA16055@deathray>
- <782E3A02C2EB2347BEA6DEA69DC7AB86021D3C87D53C@sfamail.SAKURAUS.LOCAL>
- <20150520221417.GA21017@deathray>
- <782E3A02C2EB2347BEA6DEA69DC7AB86021D3C87D549@sfamail.SAKURAUS.LOCAL>
- <20150520230409.GA21360@deathray>
+Return-Path: <Ezequiel.Garcia@imgtec.com>
+Message-ID: <556474C2.7020600@imgtec.com>
+Date: Tue, 26 May 2015 10:27:30 -0300
+From: Ezequiel Garcia <ezequiel.garcia@imgtec.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <20150520230409.GA21360@deathray>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+To: Jonathan Cameron <jic23@kernel.org>, <linux-iio@vger.kernel.org>,
+	Lars-Peter Clausen <lars@metafoo.de>
+CC: Naidu Tellapati <naidu.tellapati@imgtec.com>, James Hartley
+	<james.hartley@imgtec.com>, <phani.movva@imgtec.com>
+Subject: Re: [PATCH 5/5] iio: adc: cc10001: Power-up the ADC at probe time
+ when used remotely
+References: <1431033842-1149-1-git-send-email-ezequiel.garcia@imgtec.com> <554CBD24.3060205@kernel.org>
+In-Reply-To: <554CBD24.3060205@kernel.org>
+Content-Type: text/plain; charset="windows-1252"
+List-ID: <linux-iio@vger.kernel.org>
 
-On Wed, May 20, 2015 at 06:04:09PM -0500, Michael Welling wrote:
 
-> It should.
 
-Greg,
+On 05/08/2015 10:41 AM, Jonathan Cameron wrote:
+> On 07/05/15 17:24, Ezequiel Garcia wrote:
+>> From: Naidu Tellapati <naidu.tellapati@imgtec.com>
+>>
+>> The ADC is typically shared with remote CPUs not running Linux.
+>> However, there is only one register to power-up/power-down. Remote CPUs
+>> aren't able to power-up the ADC, and rely in Linux doing it instead.
+>>
+>> This commit uses the adc-reserved-channels devicetree property to
+>> distinguish shared usage. In this case, the ADC is powered up at
+>> probe time.
+>>
+>> If the ADC is used only by the CPU running Linux, power-up/down
+>> at runtime, only when neeeded.
+>>
+>> Signed-off-by: Naidu Tellapati <naidu.tellapati@imgtec.com>
+>> Signed-off-by: Ezequiel Garcia <ezequiel.garcia@imgtec.com>
+> Seems sensible to me, but as you observe it's not a fix as such, so
+> will hold this until the other patches have propagated through to
+> the togreg tree.
+> 
+> Feel free to remind me if I seem to have forgotten!
+> 
 
-Have you had any success using the buffer enable/disable mechanism?
+Ping.
 
-Regards,
-
-Michael
+Thanks!
+-- 
+Ezequiel
