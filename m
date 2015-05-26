@@ -1,95 +1,68 @@
-Return-Path: <mwelling79@gmail.com>
-Sender: Michael Welling <mwelling79@gmail.com>
-Date: Tue, 26 May 2015 15:53:10 -0500
-From: Michael Welling <mwelling@ieee.org>
-To: Felipe Balbi <balbi@ti.com>
-Cc: "Franklin Cooper Jr." <fcooper@ti.com>, dmitry.torokhov@gmail.com,
-	vigneshr@ti.com, bgriffis@ti.com, jic23@kernel.org,
-	wsa@the-dreams.de, linux-input@vger.kernel.org,
-	GWilson@sakuraus.com, linux-iio@vger.kernel.org
-Subject: Re: AM335x touchscreen issues
-Message-ID: <20150526205310.GA2104@deathray>
-References: <20150526181157.GA8009@deathray>
- <20150526183713.GU26599@saruman.tx.rr.com>
+Return-Path: <xander.huff@ni.com>
+Message-ID: <5564C417.3010707@ni.com>
+Date: Tue, 26 May 2015 14:05:59 -0500
+From: Xander Huff <xander.huff@ni.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <20150526183713.GU26599@saruman.tx.rr.com>
+To: Lars-Peter Clausen <lars@metafoo.de>, Jonathan Cameron <jic23@kernel.org>,
+        robh+dt@kernel.org, pawel.moll@arm.com, mark.rutland@arm.com,
+        ijc+devicetree@hellion.org.uk, galak@codeaurora.org
+CC: michal.simek@xilinx.com, soren.brinkmann@xilinx.com, knaack.h@gmx.de,
+        pmeerw@pmeerw.net, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-iio@vger.kernel.org,
+        ben.shelton@ni.com, joshc@ni.com, joe.hershberger@ni.com
+Subject: Re: [PATCH 2/2] iio: adc: xilinx-xadc: Add xlnx,extend-name as an
+ optional argument for aux channels
+References: <1431038644-41600-1-git-send-email-xander.huff@ni.com> <1431038644-41600-2-git-send-email-xander.huff@ni.com> <555B78A3.2030202@metafoo.de> <55606340.1090403@kernel.org> <55643F20.4080306@metafoo.de>
+In-Reply-To: <55643F20.4080306@metafoo.de>
+Content-Type: text/plain; charset=windows-1252; format=flowed
 List-ID: <linux-iio@vger.kernel.org>
 
-On Tue, May 26, 2015 at 01:37:13PM -0500, Felipe Balbi wrote:
-> Hi,
-> 
-> On Tue, May 26, 2015 at 01:11:57PM -0500, Michael Welling wrote:
-> > Greetings,
-> > 
-> > I have been porting Linux to a new AM3554 based SoM and have found issues
-> > with the touchscreen reporting touch releases repeatedly to userspace
-> > without actually touching the screen when running ts_calibrate, ts_test
-> > or other graphical touchscreen applications.
-> > 
-> > This started happening after updating pulling recent changes.
-> 
-> Can you bisect and find the offending commit ? Which recent changes are
-> you talking about ?
+On 5/26/2015 4:38 AM, Lars-Peter Clausen wrote:
+> On 05/23/2015 01:23 PM, Jonathan Cameron wrote:
+>> On 19/05/15 18:53, Lars-Peter Clausen wrote:
+>>> On 05/08/2015 12:44 AM, Xander Huff wrote:
+>>>> To better facilitate user-mode access to optional aux channels, allow
+>>>> device trees to specify a custom extended name for defined channels.
+>>>
+>>> Hi,
+>>>
+>>> 'extend-name' is kind of a IIO specific term. I think a better name in the
+>>> devicetree context would be 'label'. That's used everywhere else when giving
+>>> a short description string to a node.
+>>>
+>> Hi Lars,
+>>
+>> What do you think of the general idea?  I'm unconvinced we want to do this in
+>> channel naming.
+>> Perhaps we want an additional attribute giving access to this sort of
+>> 'semantic' information?
+>
+> I'm not convinced about it either. My gut feeling is that this is not the right
+> approach, but I don't really have any better ideas at the moment.
+>
+> Xander can you give a short description of how this information will be used by
+> an application? Would having a label property for the channel also work for you
+> (e.g. in_voltage0_label)?
+>
+> - Lars
+>
+We use 10 of the optional aux channels available in the XADC and have them wired 
+up to specific power supplies. For example, channel 9 is connected to the 
+current of a 6V power supply and channel 12 is connected to the voltage of that 
+same supply, channel 4 is connected to the current of a 3.3V power supply and 
+channel 5 is connected to its voltage.
 
-Sorry that it took so long to find the offending commit, it appears that
-the issue occurs on my 4.3" display but not on my 7" display. I first
-performed the git bisect on the 7" display which ended up being fruitless.
+Without adding extended names to distinguish these aux channels, the handles 
+available inside /sys/bus/iio/devices/[device] are generic: in_voltage10_raw, 
+in_voltage10_scale, for example. If I added the label 'user5v_v', then these 
+handles would be in_voltage10_user5v_v_raw and in_voltage10_user5v_v_scale. This 
+makes it a lot easier to get started and let the handles describe themselves, 
+rather than having to look up which channels are connected to which things.
 
-Then I switched over the the 4.3" display and found the commit which starts
-having the issue.
+As far as using 'label' instead of 'extend-name', that's fine with me. I've 
+already sent out a v2 using 'label' instead.
 
-michael@deathray:~/projects/linux/linux-torvalds$ git bisect start HEAD v3.18 -- drivers/input/touchscreen/ti_am335x_tsc.c
-.
-.
-michael@deathray:~/projects/linux/linux-torvalds$ git bisect bad
-344d635b9a41b19837ccf8083a99ea688027019c is the first bad commit
-commit 344d635b9a41b19837ccf8083a99ea688027019c
-Author: Brad Griffis <bgriffis@ti.com>
-Date:   Tue Feb 3 11:44:12 2015 -0800
-
-    Input: ti_am335x_tsc - remove udelay in interrupt handler
-    
-    TSC interrupt handler had udelay to avoid reporting of false pen-up
-    interrupt to user space. This patch implements workaround suggesting in
-    Advisory 1.0.31 of silicon errata for am335x, thus eliminating udelay and
-    touchscreen lag. This also improves performance of touchscreen and
-    eliminates sudden jump of cursor at touch release.
-    
-    IDLECONFIG and CHARGECONFIG registers are to be configured with same values
-    in order to eliminate false pen-up events. This workaround may result in
-    false pen-down to be detected, hence considerable charge step delay needs
-    to be added. The charge delay is set to 0xB000 (in terms of ADC clock
-    cycles) by default.
-    
-    TSC steps are disabled at the end of every sampling cycle and EOS bit is
-    set. Once the EOS bit is set, the TSC steps need to be re-enabled to begin
-    next sampling cycle.
-    
-    Signed-off-by: Brad Griffis <bgriffis@ti.com>
-    [vigneshr@ti.com: Ported the patch from v3.12 to v3.19rc1]
-    Signed-off-by: Vignesh R <vigneshr@ti.com>
-    Signed-off-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
-
-Hope this sheds some light.
-
-> 
-> > It has also been confirmed to be happening on the beagle bone black:
-> > http://www.spinics.net/lists/linux-iio/msg18580.html
-> > 
-> > If you look further into this thread you will see a workaround patch that
-> > I came up with:
-> > http://www.spinics.net/lists/linux-iio/msg18583.html
-> > 
-> > Though this fix stops the reported events in userspace, interrupts are
-> > still occuring repeatedly.
-> > 
-> > Does anyone have any suggestions beyond what I have done to remedy this
-> > issue?
-> 
-> yeah, it sounds similar to what Franklin has been working on.
-> 
-> Franklin, any comments ?
-> 
-> -- 
-> balbi
+-- 
+Xander Huff
+Staff Software Engineer
+National Instruments
