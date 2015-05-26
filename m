@@ -8,58 +8,82 @@ To: jic23@kernel.org,
 	driverdev-devel@linuxdriverproject.org,
 	linux-iio@vger.kernel.org
 Cc: Vladimirs Ambrosovs <rodriguez.twister@gmail.com>
-Subject: [PATCH 2/2] staging: iio_simple_dummy: zero check param 
-Date: Wed, 27 May 2015 01:19:58 +0300
-Message-Id: <1432678798-22903-2-git-send-email-rodriguez.twister@gmail.com>
-In-Reply-To: <1432678798-22903-1-git-send-email-rodriguez.twister@gmail.com>
-References: <1432678798-22903-1-git-send-email-rodriguez.twister@gmail.com>
+Subject: [PATCH 1/2] staging: iio_simple_dummy: fix init
+Date: Wed, 27 May 2015 01:19:57 +0300
+Message-Id: <1432678798-22903-1-git-send-email-rodriguez.twister@gmail.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-Check for zero was added to the module parameter "instances" to
-avoid the allocation of array of zero values. Although it is a valid call,
-we don't want to allocate ZERO_SIZE_PTR, so need to disallow this case.
-The type of variables which are compared to "instances" were also changed
-to unsigned int so that no compiler complaints occur.
+This patch fixes the init function for the iio_simple_dummy driver.
+The main issues were absence of kfree for the allocated array, and no
+devices being removed in case the probe function fails, running in a loop.
+
+The iio_dummy_remove function was also changed:
+	* The return value was changed to void
+	* The check for return value of iio_simple_dummy_events_unregister()
+The reason for this changes is that, as per implementation,
+events_unregister function always returns 0, so we are safe not to check
+return value. As a result the return value for iio_dummy_remove function
+becomes useless as well, hence return value type change.
 
 Signed-off-by: Vladimirs Ambrosovs <rodriguez.twister@gmail.com>
 ---
- drivers/staging/iio/iio_simple_dummy.c | 9 +++++----
- 1 file changed, 5 insertions(+), 4 deletions(-)
+ drivers/staging/iio/iio_simple_dummy.c | 24 +++++++++++++++---------
+ 1 file changed, 15 insertions(+), 9 deletions(-)
 
 diff --git a/drivers/staging/iio/iio_simple_dummy.c b/drivers/staging/iio/iio_simple_dummy.c
-index 88fbb4f..2744a1b 100644
+index b47bf9f..88fbb4f 100644
 --- a/drivers/staging/iio/iio_simple_dummy.c
 +++ b/drivers/staging/iio/iio_simple_dummy.c
-@@ -30,7 +30,7 @@
-  * dummy devices are registered.
+@@ -665,9 +665,8 @@ error_ret:
+  *
+  * Parameters follow those of iio_dummy_probe for buses.
   */
- static unsigned instances = 1;
--module_param(instances, int, 0);
-+module_param(instances, uint, 0);
- 
- /* Pointer array used to fake bus elements */
- static struct iio_dev **iio_dummy_devs;
-@@ -706,9 +706,10 @@ static void iio_dummy_remove(int index)
-  */
- static __init int iio_dummy_init(void)
+-static int iio_dummy_remove(int index)
++static void iio_dummy_remove(int index)
  {
--	int i, ret;
-+	unsigned int i;
-+	int ret;
+-	int ret;
+ 	/*
+ 	 * Get a pointer to the device instance iio_dev structure
+ 	 * from the bus subsystem. E.g.
+@@ -685,15 +684,14 @@ static int iio_dummy_remove(int index)
+ 	/* Buffered capture related cleanup */
+ 	iio_simple_dummy_unconfigure_buffer(indio_dev);
  
--	if (instances > 10) {
-+	if (instances == 0 || instances > 10) {
- 		instances = 1;
- 		return -EINVAL;
+-	ret = iio_simple_dummy_events_unregister(indio_dev);
+-	if (ret)
+-		goto error_ret;
++	/*
++	 * Tidy up interrupt handling
++	 * Always returns 0, so not checking for return value
++	 */
++	iio_simple_dummy_events_unregister(indio_dev);
+ 
+ 	/* Free all structures */
+ 	iio_device_free(indio_dev);
+-
+-error_ret:
+-	return ret;
+ }
+ 
+ /**
+@@ -722,9 +720,17 @@ static __init int iio_dummy_init(void)
+ 	for (i = 0; i < instances; i++) {
+ 		ret = iio_dummy_probe(i);
+ 		if (ret < 0)
+-			return ret;
++			goto error_probe;
  	}
-@@ -742,7 +743,7 @@ module_init(iio_dummy_init);
-  */
- static __exit void iio_dummy_exit(void)
- {
--	int i;
-+	unsigned int i;
+ 	return 0;
++
++error_probe:
++	/* Free devices registered before error */
++	while (i--)
++		iio_dummy_remove(i);
++
++	kfree(iio_dummy_devs);
++	return ret;
+ }
+ module_init(iio_dummy_init);
  
- 	for (i = 0; i < instances; i++)
- 		iio_dummy_remove(i);
 -- 
 2.4.1
