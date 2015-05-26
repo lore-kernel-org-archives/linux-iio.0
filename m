@@ -1,68 +1,82 @@
-Return-Path: <xander.huff@ni.com>
-Message-ID: <5564C417.3010707@ni.com>
-Date: Tue, 26 May 2015 14:05:59 -0500
-From: Xander Huff <xander.huff@ni.com>
+Return-Path: <balbi@ti.com>
+Date: Tue, 26 May 2015 13:37:13 -0500
+From: Felipe Balbi <balbi@ti.com>
+To: Michael Welling <mwelling@ieee.org>,
+        "Franklin Cooper Jr." <fcooper@ti.com>
+CC: <dmitry.torokhov@gmail.com>, <vigneshr@ti.com>, <bgriffis@ti.com>,
+        <jic23@kernel.org>, <wsa@the-dreams.de>, <balbi@ti.com>,
+        <linux-input@vger.kernel.org>, <GWilson@sakuraus.com>,
+        <linux-iio@vger.kernel.org>
+Subject: Re: AM335x touchscreen issues
+Message-ID: <20150526183713.GU26599@saruman.tx.rr.com>
+Reply-To: <balbi@ti.com>
+References: <20150526181157.GA8009@deathray>
 MIME-Version: 1.0
-To: Lars-Peter Clausen <lars@metafoo.de>, Jonathan Cameron <jic23@kernel.org>,
-        robh+dt@kernel.org, pawel.moll@arm.com, mark.rutland@arm.com,
-        ijc+devicetree@hellion.org.uk, galak@codeaurora.org
-CC: michal.simek@xilinx.com, soren.brinkmann@xilinx.com, knaack.h@gmx.de,
-        pmeerw@pmeerw.net, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-iio@vger.kernel.org,
-        ben.shelton@ni.com, joshc@ni.com, joe.hershberger@ni.com
-Subject: Re: [PATCH 2/2] iio: adc: xilinx-xadc: Add xlnx,extend-name as an
- optional argument for aux channels
-References: <1431038644-41600-1-git-send-email-xander.huff@ni.com> <1431038644-41600-2-git-send-email-xander.huff@ni.com> <555B78A3.2030202@metafoo.de> <55606340.1090403@kernel.org> <55643F20.4080306@metafoo.de>
-In-Reply-To: <55643F20.4080306@metafoo.de>
-Content-Type: text/plain; charset=windows-1252; format=flowed
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="HzaOE8X7KzPzAQEl"
+In-Reply-To: <20150526181157.GA8009@deathray>
 List-ID: <linux-iio@vger.kernel.org>
 
-On 5/26/2015 4:38 AM, Lars-Peter Clausen wrote:
-> On 05/23/2015 01:23 PM, Jonathan Cameron wrote:
->> On 19/05/15 18:53, Lars-Peter Clausen wrote:
->>> On 05/08/2015 12:44 AM, Xander Huff wrote:
->>>> To better facilitate user-mode access to optional aux channels, allow
->>>> device trees to specify a custom extended name for defined channels.
->>>
->>> Hi,
->>>
->>> 'extend-name' is kind of a IIO specific term. I think a better name in the
->>> devicetree context would be 'label'. That's used everywhere else when giving
->>> a short description string to a node.
->>>
->> Hi Lars,
->>
->> What do you think of the general idea?  I'm unconvinced we want to do this in
->> channel naming.
->> Perhaps we want an additional attribute giving access to this sort of
->> 'semantic' information?
->
-> I'm not convinced about it either. My gut feeling is that this is not the right
-> approach, but I don't really have any better ideas at the moment.
->
-> Xander can you give a short description of how this information will be used by
-> an application? Would having a label property for the channel also work for you
-> (e.g. in_voltage0_label)?
->
-> - Lars
->
-We use 10 of the optional aux channels available in the XADC and have them wired 
-up to specific power supplies. For example, channel 9 is connected to the 
-current of a 6V power supply and channel 12 is connected to the voltage of that 
-same supply, channel 4 is connected to the current of a 3.3V power supply and 
-channel 5 is connected to its voltage.
+--HzaOE8X7KzPzAQEl
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Without adding extended names to distinguish these aux channels, the handles 
-available inside /sys/bus/iio/devices/[device] are generic: in_voltage10_raw, 
-in_voltage10_scale, for example. If I added the label 'user5v_v', then these 
-handles would be in_voltage10_user5v_v_raw and in_voltage10_user5v_v_scale. This 
-makes it a lot easier to get started and let the handles describe themselves, 
-rather than having to look up which channels are connected to which things.
+Hi,
 
-As far as using 'label' instead of 'extend-name', that's fine with me. I've 
-already sent out a v2 using 'label' instead.
+On Tue, May 26, 2015 at 01:11:57PM -0500, Michael Welling wrote:
+> Greetings,
+>=20
+> I have been porting Linux to a new AM3554 based SoM and have found issues
+> with the touchscreen reporting touch releases repeatedly to userspace
+> without actually touching the screen when running ts_calibrate, ts_test
+> or other graphical touchscreen applications.
+>=20
+> This started happening after updating pulling recent changes.
 
--- 
-Xander Huff
-Staff Software Engineer
-National Instruments
+Can you bisect and find the offending commit ? Which recent changes are
+you talking about ?
+
+> It has also been confirmed to be happening on the beagle bone black:
+> http://www.spinics.net/lists/linux-iio/msg18580.html
+>=20
+> If you look further into this thread you will see a workaround patch that
+> I came up with:
+> http://www.spinics.net/lists/linux-iio/msg18583.html
+>=20
+> Though this fix stops the reported events in userspace, interrupts are
+> still occuring repeatedly.
+>=20
+> Does anyone have any suggestions beyond what I have done to remedy this
+> issue?
+
+yeah, it sounds similar to what Franklin has been working on.
+
+Franklin, any comments ?
+
+--=20
+balbi
+
+--HzaOE8X7KzPzAQEl
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
+
+iQIcBAEBAgAGBQJVZL1ZAAoJEIaOsuA1yqREpzMP/jf4N28wlJZZnumBt1h24BSr
+aXluQr8polMMXV15xi1oyNvPi8ZyCC2CLaIw2N2EsHqCWVkGq9e3qTwxkKZKFnqi
+JC355NoddOCz/Mggif02zIOCfG+7eMzor+A1Tw1PP4RO0nydLmjZqzxAtdeQuauT
+woO2PHjZZbjEzMoPHKadzG0Yu/2kiMt56Owq7venmFvl30zv89S7PjAnmeVaITak
+Ga/o3dEECiOpkHM6Y//R0qG0V+sIPRpitvJSPN7XKjQkQ6gPFcqHzW9nvkk6H8aV
+Z1HYHBPAI4FJSVk8WoSNO2sPn+DRK1VgqfMNx/dQ1NnBFV08FSkX9xmx8K93ojle
+Te/LqigCFdMFB2UvLqOKqTUZdRka2BDiOqAfK+T7/ULJ60zHNOKuoz19uCp6OzUg
+aVB6YvG41Dcm9pbQQKtUnNFnLS3Qz3aG1Ottl8RwKVmmuZJI6Evdo7LjMUVCMdoB
+uBFqhyNxshrUbR5hM2W3vzU6buFO+xoh/DWGY0Ljk+XRY9zBHa41btgy2G3s3psh
+P11IHmnJizxw6D8oLV1rfh9+VlTI2m6KUGRQw05PZKsV3AGqpjH72GzA2Wqu7gKy
+NR/1XEL6zXWH/lJftQ9QC0mwH09K+5nAEudZBVnvtkSNqZGWN5nj7nQ6Zqp2723g
+Lpg/4q8yWAdOnYh8E643
+=/YPt
+-----END PGP SIGNATURE-----
+
+--HzaOE8X7KzPzAQEl--
