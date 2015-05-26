@@ -1,47 +1,42 @@
-Return-Path: <Ezequiel.Garcia@imgtec.com>
-Message-ID: <556474C2.7020600@imgtec.com>
-Date: Tue, 26 May 2015 10:27:30 -0300
-From: Ezequiel Garcia <ezequiel.garcia@imgtec.com>
+Return-Path: <lars@metafoo.de>
+Message-ID: <55643F20.4080306@metafoo.de>
+Date: Tue, 26 May 2015 11:38:40 +0200
+From: Lars-Peter Clausen <lars@metafoo.de>
 MIME-Version: 1.0
-To: Jonathan Cameron <jic23@kernel.org>, <linux-iio@vger.kernel.org>,
-	Lars-Peter Clausen <lars@metafoo.de>
-CC: Naidu Tellapati <naidu.tellapati@imgtec.com>, James Hartley
-	<james.hartley@imgtec.com>, <phani.movva@imgtec.com>
-Subject: Re: [PATCH 5/5] iio: adc: cc10001: Power-up the ADC at probe time
- when used remotely
-References: <1431033842-1149-1-git-send-email-ezequiel.garcia@imgtec.com> <554CBD24.3060205@kernel.org>
-In-Reply-To: <554CBD24.3060205@kernel.org>
-Content-Type: text/plain; charset="windows-1252"
+To: Jonathan Cameron <jic23@kernel.org>, Xander Huff <xander.huff@ni.com>,
+ robh+dt@kernel.org, pawel.moll@arm.com, mark.rutland@arm.com,
+ ijc+devicetree@hellion.org.uk, galak@codeaurora.org
+CC: michal.simek@xilinx.com, soren.brinkmann@xilinx.com, knaack.h@gmx.de,
+ pmeerw@pmeerw.net, devicetree@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org, linux-iio@vger.kernel.org,
+ ben.shelton@ni.com, joshc@ni.com, joe.hershberger@ni.com
+Subject: Re: [PATCH 2/2] iio: adc: xilinx-xadc: Add xlnx,extend-name as an
+ optional argument for aux channels
+References: <1431038644-41600-1-git-send-email-xander.huff@ni.com> <1431038644-41600-2-git-send-email-xander.huff@ni.com> <555B78A3.2030202@metafoo.de> <55606340.1090403@kernel.org>
+In-Reply-To: <55606340.1090403@kernel.org>
+Content-Type: text/plain; charset=windows-1252; format=flowed
 List-ID: <linux-iio@vger.kernel.org>
 
-
-
-On 05/08/2015 10:41 AM, Jonathan Cameron wrote:
-> On 07/05/15 17:24, Ezequiel Garcia wrote:
->> From: Naidu Tellapati <naidu.tellapati@imgtec.com>
+On 05/23/2015 01:23 PM, Jonathan Cameron wrote:
+> On 19/05/15 18:53, Lars-Peter Clausen wrote:
+>> On 05/08/2015 12:44 AM, Xander Huff wrote:
+>>> To better facilitate user-mode access to optional aux channels, allow
+>>> device trees to specify a custom extended name for defined channels.
 >>
->> The ADC is typically shared with remote CPUs not running Linux.
->> However, there is only one register to power-up/power-down. Remote CPUs
->> aren't able to power-up the ADC, and rely in Linux doing it instead.
+>> Hi,
 >>
->> This commit uses the adc-reserved-channels devicetree property to
->> distinguish shared usage. In this case, the ADC is powered up at
->> probe time.
+>> 'extend-name' is kind of a IIO specific term. I think a better name in the devicetree context would be 'label'. That's used everywhere else when giving a short description string to a node.
 >>
->> If the ADC is used only by the CPU running Linux, power-up/down
->> at runtime, only when neeeded.
->>
->> Signed-off-by: Naidu Tellapati <naidu.tellapati@imgtec.com>
->> Signed-off-by: Ezequiel Garcia <ezequiel.garcia@imgtec.com>
-> Seems sensible to me, but as you observe it's not a fix as such, so
-> will hold this until the other patches have propagated through to
-> the togreg tree.
-> 
-> Feel free to remind me if I seem to have forgotten!
-> 
+> Hi Lars,
+>
+> What do you think of the general idea?  I'm unconvinced we want to do this in channel naming.
+> Perhaps we want an additional attribute giving access to this sort of 'semantic' information?
 
-Ping.
+I'm not convinced about it either. My gut feeling is that this is not the 
+right approach, but I don't really have any better ideas at the moment.
 
-Thanks!
--- 
-Ezequiel
+Xander can you give a short description of how this information will be used 
+by an application? Would having a label property for the channel also work 
+for you (e.g. in_voltage0_label)?
+
+- Lars
