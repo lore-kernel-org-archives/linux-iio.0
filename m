@@ -1,28 +1,51 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from 19pmail.ess.barracuda.com ([64.235.154.231]:50299 "EHLO
-	19pmail.ess.barracuda.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751472AbbE0ARd convert rfc822-to-8bit (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 26 May 2015 20:17:33 -0400
-From: Greg Wilson-Lindberg <GWilson@sakuraus.com>
-To: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Date: Tue, 26 May 2015 17:17:08 -0700
-Subject: TI tsadc sample frequency question
-Message-ID: <782E3A02C2EB2347BEA6DEA69DC7AB86021D3C87D7AB@sfamail.SAKURAUS.LOCAL>
-Content-Type: text/plain; charset="us-ascii"
+Received: from bear.ext.ti.com ([192.94.94.41]:44047 "EHLO bear.ext.ti.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1750745AbbE0EGt (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Wed, 27 May 2015 00:06:49 -0400
+Message-ID: <556542CB.80106@ti.com>
+Date: Wed, 27 May 2015 09:36:35 +0530
+From: Vignesh R <vigneshr@ti.com>
 MIME-Version: 1.0
+To: Michael Welling <mwelling@ieee.org>,
+	"Cooper Jr., Franklin" <fcooper@ti.com>
+CC: "Griffis, Brad" <bgriffis@ti.com>, "Balbi, Felipe" <balbi@ti.com>,
+	"dmitry.torokhov@gmail.com" <dmitry.torokhov@gmail.com>,
+	"jic23@kernel.org" <jic23@kernel.org>,
+	"wsa@the-dreams.de" <wsa@the-dreams.de>,
+	"linux-input@vger.kernel.org" <linux-input@vger.kernel.org>,
+	"GWilson@sakuraus.com" <GWilson@sakuraus.com>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Subject: Re: AM335x touchscreen issues
+References: <20150526181157.GA8009@deathray> <20150526183713.GU26599@saruman.tx.rr.com> <20150526205310.GA2104@deathray> <8F29D6B095ED194EA1980491A5E029710C89C445@DFLE08.ent.ti.com> <20150526212851.GA12224@deathray> <8F29D6B095ED194EA1980491A5E029710C89C4E0@DFLE08.ent.ti.com> <912A29987EAE174BA6CF187D7CDFA9CE270A8C43@DLEE08.ent.ti.com> <20150526215049.GC12224@deathray> <8F29D6B095ED194EA1980491A5E029710C89C70D@DFLE08.ent.ti.com> <20150526230649.GB24948@deathray>
+In-Reply-To: <20150526230649.GB24948@deathray>
+Content-Type: text/plain; charset="windows-1252"
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-This probably falls closer to a stupid user question, but I can't seem to find it addressed in any of the documentation that I have found so far.
+Hi Michael,
 
-As a partial work around for the TS TSADC problems that are being discussed in another thread I'm enabling a buffer for a short time, pulling the samples, and disabling the buffer. I'm trying to understand the number of samples that will actually be collected during the time that I have the buffer enabled.
+On Wednesday 27 May 2015 04:36 AM, Michael Welling wrote:
+> On Tue, May 26, 2015 at 10:31:32PM +0000, Cooper Jr., Franklin wrote:
+>>
 
-I'm currently enabling the buffer for 0.1 seconds, according to the mfd/ti_am335x_tsadc.h file a single sample takes 116us to process, so 6 samples (4 ts + 2 adc) should take 696us, or ~1436 sample sets per second, or ~143 samples per 0.1 seconds.
+[snip]
 
-No matter what size I set the buffer to, I get that number of samples back. So even though I should only be able to collect ~143 samples, if I set the buffer size to 256, I get 256 samples back.
+> 
+> Perhaps there is coupling between the LCD lines and the ADC lines?
 
-Is there some way (low overhead preferable) to reset the buffer so that I only get the samples that have been collected in the time that the buffer has been enabled? Or is there some way to figure out what the number of samples are the I would get back in some time period, so I can set the buffer size accordingly?
- 
-Greg Wilson-Lindberg
-Sakura Finetek
-310-783-5075
+On Beaglebone Black with BB-View 4.3" Cape from Farnell, the LCD lines
+and TSCADC lines are placed close to one another, hence the analog
+signals are affected by digital LCD signals, leading to above issue.
+
+This was reported when I submitted the patches in question. Please see
+http://thread.gmane.org/gmane.linux.kernel.iio/14710/focus=121321
+http://thread.gmane.org/gmane.linux.kernel.iio/14710/focus=15242
+
+I did document this in my cover letter. Please see
+http://thread.gmane.org/gmane.linux.kernel.iio/15583
+
+I think its the same issue that you are facing.
+
+Regards
+Vignesh
