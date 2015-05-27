@@ -1,71 +1,112 @@
-Return-Path: <mwelling79@gmail.com>
-Sender: Michael Welling <mwelling79@gmail.com>
-Date: Wed, 27 May 2015 12:29:30 -0500
-From: Michael Welling <mwelling@ieee.org>
-To: Vignesh R <vigneshr@ti.com>
-Cc: "Cooper Jr., Franklin" <fcooper@ti.com>,
-	"Griffis, Brad" <bgriffis@ti.com>, "Balbi, Felipe" <balbi@ti.com>,
-	"dmitry.torokhov@gmail.com" <dmitry.torokhov@gmail.com>,
-	"jic23@kernel.org" <jic23@kernel.org>,
-	"wsa@the-dreams.de" <wsa@the-dreams.de>,
-	"linux-input@vger.kernel.org" <linux-input@vger.kernel.org>,
-	"GWilson@sakuraus.com" <GWilson@sakuraus.com>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Subject: Re: AM335x touchscreen issues
-Message-ID: <20150527172930.GA13992@deathray>
-References: <20150526183713.GU26599@saruman.tx.rr.com>
- <20150526205310.GA2104@deathray>
- <8F29D6B095ED194EA1980491A5E029710C89C445@DFLE08.ent.ti.com>
- <20150526212851.GA12224@deathray>
- <8F29D6B095ED194EA1980491A5E029710C89C4E0@DFLE08.ent.ti.com>
- <912A29987EAE174BA6CF187D7CDFA9CE270A8C43@DLEE08.ent.ti.com>
- <20150526215049.GC12224@deathray>
- <8F29D6B095ED194EA1980491A5E029710C89C70D@DFLE08.ent.ti.com>
- <20150526230649.GB24948@deathray>
- <556542CB.80106@ti.com>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-la0-f53.google.com ([209.85.215.53]:35599 "EHLO
+	mail-la0-f53.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751660AbbE0WMs (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 27 May 2015 18:12:48 -0400
+Received: by labko7 with SMTP id ko7so14368017lab.2
+        for <linux-iio@vger.kernel.org>; Wed, 27 May 2015 15:12:46 -0700 (PDT)
+Date: Thu, 28 May 2015 01:12:40 +0300
+From: Vladimirs Ambrosovs <rodriguez.twister@gmail.com>
+To: Dan Carpenter <dan.carpenter@oracle.com>
+Cc: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
+	pmeerw@pmeerw.net, gregkh@linuxfoundation.org,
+	driverdev-devel@linuxdriverproject.org, linux-iio@vger.kernel.org
+Subject: Re: [PATCH 2/2] staging: iio_simple_dummy: zero check param
+Message-ID: <20150527221240.GA23081@gmail.com>
+References: <1432678798-22903-1-git-send-email-rodriguez.twister@gmail.com>
+ <1432678798-22903-2-git-send-email-rodriguez.twister@gmail.com>
+ <20150527082507.GO11588@mwanda>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <556542CB.80106@ti.com>
-List-ID: <linux-iio@vger.kernel.org>
+In-Reply-To: <20150527082507.GO11588@mwanda>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Wed, May 27, 2015 at 09:36:35AM +0530, Vignesh R wrote:
-> Hi Michael,
+On Wed, May 27, 2015 at 11:25:07AM +0300, Dan Carpenter wrote:
+> On Wed, May 27, 2015 at 01:19:58AM +0300, Vladimirs Ambrosovs wrote:
+> > Check for zero was added to the module parameter "instances" to
+> > avoid the allocation of array of zero values. Although it is a valid call,
+> > we don't want to allocate ZERO_SIZE_PTR, so need to disallow this case.
+> > The type of variables which are compared to "instances" were also changed
+> > to unsigned int so that no compiler complaints occur.
 > 
-> On Wednesday 27 May 2015 04:36 AM, Michael Welling wrote:
-> > On Tue, May 26, 2015 at 10:31:32PM +0000, Cooper Jr., Franklin wrote:
-> >>
+> Which compiler is that?
 > 
-> [snip]
+> You should get a different compiler if you compiler complains about
+> stupid stuff like that.  Making everything unsigned int is a common
+> cause of problems.  I fixed or reported several of those bugs yesterday.
 > 
+> "instances" should be unsigned int, though, you're correct about that.
+> 
+Mine is fine - not complaining ;). 
+
+Got your point, although, in some cases, I think, these warnings not a
+stupid stuff, and could get some junior out of trouble.
+
+But anyway, will keep in mind to stay away from unsigned ints. 
 > > 
-> > Perhaps there is coupling between the LCD lines and the ADC lines?
+> > Signed-off-by: Vladimirs Ambrosovs <rodriguez.twister@gmail.com>
+> > ---
+> >  drivers/staging/iio/iio_simple_dummy.c | 9 +++++----
+> >  1 file changed, 5 insertions(+), 4 deletions(-)
+> > 
+> > diff --git a/drivers/staging/iio/iio_simple_dummy.c b/drivers/staging/iio/iio_simple_dummy.c
+> > index 88fbb4f..2744a1b 100644
+> > --- a/drivers/staging/iio/iio_simple_dummy.c
+> > +++ b/drivers/staging/iio/iio_simple_dummy.c
+> > @@ -30,7 +30,7 @@
+> >   * dummy devices are registered.
+> >   */
+> >  static unsigned instances = 1;
+> > -module_param(instances, int, 0);
+> > +module_param(instances, uint, 0);
+> >  
+> >  /* Pointer array used to fake bus elements */
+> >  static struct iio_dev **iio_dummy_devs;
+> > @@ -706,9 +706,10 @@ static void iio_dummy_remove(int index)
+> >   */
+> >  static __init int iio_dummy_init(void)
+> >  {
+> > -	int i, ret;
+> > +	unsigned int i;
+> > +	int ret;
 > 
-> On Beaglebone Black with BB-View 4.3" Cape from Farnell, the LCD lines
-> and TSCADC lines are placed close to one another, hence the analog
-> signals are affected by digital LCD signals, leading to above issue.
+> No.
 > 
-> This was reported when I submitted the patches in question. Please see
-> http://thread.gmane.org/gmane.linux.kernel.iio/14710/focus=121321
-> http://thread.gmane.org/gmane.linux.kernel.iio/14710/focus=15242
+> >  
+> > -	if (instances > 10) {
+> > +	if (instances == 0 || instances > 10) {
+> >  		instances = 1;
+> >  		return -EINVAL;
 > 
-> I did document this in my cover letter. Please see
-> http://thread.gmane.org/gmane.linux.kernel.iio/15583
+> Allocating zero size arrays is a totally valid thing the kernel and it
+> doesn't cause a problem unless there are other existing serious bugs in
+> the code.  In this case instances == 0 is fine.
 > 
-> I think its the same issue that you are facing.
+Sorry, got a bit confused - is it fine to be in the code, or the 0
+value is valid, and shouldn't be checked for? The idea behind this
+change was not the allocation of zero size array, but the
+use of the module with 0 instances. However, maybe that actually
+addresses some usecase, so probably would be better to leave it as it
+was before.
 
-Sounds like it.
-
-The threads above mention adding decoupling capacitors to the ADC lines.
-
-Is this the suggested workaround for the workaround?
-
-Isn't the capacitor only needed on the ADC0 line to avoid the unwanted
-trigger?
-
-Please advise.
-
-I wish I saw this before spending a whole bunch of time debugging.
-Perhaps some annotation in the driver would help people in the future.
+> Setting "instances = 1" is bogus though.
 > 
-> Regards
-> Vignesh
+> >  	}
+> > @@ -742,7 +743,7 @@ module_init(iio_dummy_init);
+> >   */
+> >  static __exit void iio_dummy_exit(void)
+> >  {
+> > -	int i;
+> > +	unsigned int i;
+> 
+> No.
+> 
+> regards,
+> dan carpenter
+> 
+
+Thanks for all the comments. Will send out the updated patches soon.
+
+BR,
+Vladimirs
