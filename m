@@ -1,42 +1,28 @@
-Return-Path: <festevam@gmail.com>
-From: Fabio Estevam <festevam@gmail.com>
-To: jic23@kernel.org
-Cc: linux-iio@vger.kernel.org,
-	Fabio Estevam <fabio.estevam@freescale.com>
-Subject: [PATCH] iio: twl4030-madc: Pass the IRQF_ONESHOT flag
-Date: Sun, 24 May 2015 17:39:04 -0300
-Message-Id: <1432499944-10395-1-git-send-email-festevam@gmail.com>
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from 19pmail.ess.barracuda.com ([64.235.154.231]:50299 "EHLO
+	19pmail.ess.barracuda.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751472AbbE0ARd convert rfc822-to-8bit (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 26 May 2015 20:17:33 -0400
+From: Greg Wilson-Lindberg <GWilson@sakuraus.com>
+To: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Date: Tue, 26 May 2015 17:17:08 -0700
+Subject: TI tsadc sample frequency question
+Message-ID: <782E3A02C2EB2347BEA6DEA69DC7AB86021D3C87D7AB@sfamail.SAKURAUS.LOCAL>
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-From: Fabio Estevam <fabio.estevam@freescale.com>
+This probably falls closer to a stupid user question, but I can't seem to find it addressed in any of the documentation that I have found so far.
 
-Since commit 1c6c69525b40 ("genirq: Reject bogus threaded irq requests")
-threaded IRQs without a primary handler need to be requested with
-IRQF_ONESHOT, otherwise the request will fail.
+As a partial work around for the TS TSADC problems that are being discussed in another thread I'm enabling a buffer for a short time, pulling the samples, and disabling the buffer. I'm trying to understand the number of samples that will actually be collected during the time that I have the buffer enabled.
 
-So pass the IRQF_ONESHOT flag in this case.
+I'm currently enabling the buffer for 0.1 seconds, according to the mfd/ti_am335x_tsadc.h file a single sample takes 116us to process, so 6 samples (4 ts + 2 adc) should take 696us, or ~1436 sample sets per second, or ~143 samples per 0.1 seconds.
 
-The semantic patch that makes this change is available
-in scripts/coccinelle/misc/irqf_oneshot.cocci.
+No matter what size I set the buffer to, I get that number of samples back. So even though I should only be able to collect ~143 samples, if I set the buffer size to 256, I get 256 samples back.
 
-Signed-off-by: Fabio Estevam <fabio.estevam@freescale.com>
----
- drivers/iio/adc/twl4030-madc.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/iio/adc/twl4030-madc.c b/drivers/iio/adc/twl4030-madc.c
-index 94c5f05..4caecbe 100644
---- a/drivers/iio/adc/twl4030-madc.c
-+++ b/drivers/iio/adc/twl4030-madc.c
-@@ -835,7 +835,8 @@ static int twl4030_madc_probe(struct platform_device *pdev)
- 	irq = platform_get_irq(pdev, 0);
- 	ret = devm_request_threaded_irq(&pdev->dev, irq, NULL,
- 				   twl4030_madc_threaded_irq_handler,
--				   IRQF_TRIGGER_RISING, "twl4030_madc", madc);
-+				   IRQF_TRIGGER_RISING | IRQF_ONESHOT,
-+				   "twl4030_madc", madc);
- 	if (ret) {
- 		dev_err(&pdev->dev, "could not request irq\n");
- 		goto err_i2c;
--- 
-1.9.1
+Is there some way (low overhead preferable) to reset the buffer so that I only get the samples that have been collected in the time that the buffer has been enabled? Or is there some way to figure out what the number of samples are the I would get back in some time period, so I can set the buffer size accordingly?
+ 
+Greg Wilson-Lindberg
+Sakura Finetek
+310-783-5075
