@@ -18,41 +18,46 @@ Cc: knaack.h@gmx.de,
 	linux-arm-kernel@lists.infradead.org,
 	linux-kernel@vger.kernel.org,
 	Stefan Agner <stefan@agner.ch>
-Subject: [PATCH v5 0/2] iio: adc: vf610: respect ADC clocking limitations
-Date: Wed, 27 May 2015 14:47:50 +0200
-Message-Id: <1432730872-14325-1-git-send-email-stefan@agner.ch>
+Subject: [PATCH v5 2/2] ARM: dts: add property for maximum ADC clock frequencies
+Date: Wed, 27 May 2015 14:47:52 +0200
+Message-Id: <1432730872-14325-3-git-send-email-stefan@agner.ch>
+In-Reply-To: <1432730872-14325-1-git-send-email-stefan@agner.ch>
+References: <1432730872-14325-1-git-send-email-stefan@agner.ch>
 List-ID: <linux-iio@vger.kernel.org>
 
-This revision is basically the same as v4, just some wording
-improvements. I would appriciate an Ack for the device tree part.
-The clock limit values are defined in the data sheet and could
-be different per SoC, hence descirbe the hardware limitation...
+The ADC clock frequency is limited depending on modes used. Add
+device tree property which allow to set the mode used and the
+maximum frequency ratings for the instance. These allows to
+set the ADC clock to a frequency which is within specification
+according to the actual mode used.
 
-Changes since v4:
-- Remove fussy english
-- Drop "iio: adc: vf610: use ADC clock within specification" since
-  that patch is already applied
+Acked-by: Fugang Duan <B38611@freescale.com>
+Signed-off-by: Stefan Agner <stefan@agner.ch>
+---
+ arch/arm/boot/dts/vfxxx.dtsi | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-Changes since v3:
-- Move device tree bindings to driver changes
-
-Changes since v2:
-- Add sysfs ABI documentation
-- Fix commit message spelling errors
-
-Changes since v1:
-- Use ext_info for conversion mode
-
-Stefan Agner (2):
-  iio: adc: vf610: implement configurable conversion modes
-  ARM: dts: add property for maximum ADC clock frequencies
-
- Documentation/ABI/testing/sysfs-bus-iio-vf610      |   7 +
- .../devicetree/bindings/iio/adc/vf610-adc.txt      |   9 ++
- arch/arm/boot/dts/vfxxx.dtsi                       |   4 +
- drivers/iio/adc/vf610_adc.c                        | 146 +++++++++++++++------
- 4 files changed, 124 insertions(+), 42 deletions(-)
- create mode 100644 Documentation/ABI/testing/sysfs-bus-iio-vf610
-
+diff --git a/arch/arm/boot/dts/vfxxx.dtsi b/arch/arm/boot/dts/vfxxx.dtsi
+index a29c7ce..c6609bd 100644
+--- a/arch/arm/boot/dts/vfxxx.dtsi
++++ b/arch/arm/boot/dts/vfxxx.dtsi
+@@ -189,6 +189,8 @@
+ 				clocks = <&clks VF610_CLK_ADC0>;
+ 				clock-names = "adc";
+ 				status = "disabled";
++				fsl,adck-max-frequency = <30000000>, <40000000>,
++							<20000000>;
+ 			};
+ 
+ 			wdoga5: wdog@4003e000 {
+@@ -387,6 +389,8 @@
+ 				clocks = <&clks VF610_CLK_ADC1>;
+ 				clock-names = "adc";
+ 				status = "disabled";
++				fsl,adck-max-frequency = <30000000>, <40000000>,
++							<20000000>;
+ 			};
+ 
+ 			esdhc1: esdhc@400b2000 {
 -- 
 2.4.1
