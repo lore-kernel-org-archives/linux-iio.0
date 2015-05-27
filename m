@@ -1,50 +1,84 @@
-Return-Path: <tiberiu.a.breana@intel.com>
-From: "Breana, Tiberiu A" <tiberiu.a.breana@intel.com>
-To: Dan Carpenter <dan.carpenter@oracle.com>, Jonathan Cameron
-	<jic23@kernel.org>
-CC: Hartmut Knaack <knaack.h@gmx.de>, Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>, "linux-iio@vger.kernel.org"
-	<linux-iio@vger.kernel.org>, "kernel-janitors@vger.kernel.org"
-	<kernel-janitors@vger.kernel.org>
-Subject: RE: [patch] iio: light: signedness bug in stk3310_write_raw()
-Date: Wed, 27 May 2015 09:10:26 +0000
-Message-ID: <4586F61A4A291F4DA44D32824E7C0F4022142F80@IRSMSX109.ger.corp.intel.com>
-References: <20150527082425.GB19423@mwanda>
-In-Reply-To: <20150527082425.GB19423@mwanda>
-Content-Type: text/plain; charset="us-ascii"
+Return-Path: <dan.carpenter@oracle.com>
+Date: Wed, 27 May 2015 11:25:07 +0300
+From: Dan Carpenter <dan.carpenter@oracle.com>
+To: Vladimirs Ambrosovs <rodriguez.twister@gmail.com>
+Cc: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
+        gregkh@linuxfoundation.org, driverdev-devel@linuxdriverproject.org,
+        linux-iio@vger.kernel.org
+Subject: Re: [PATCH 2/2] staging: iio_simple_dummy: zero check param
+Message-ID: <20150527082507.GO11588@mwanda>
+References: <1432678798-22903-1-git-send-email-rodriguez.twister@gmail.com>
+ <1432678798-22903-2-git-send-email-rodriguez.twister@gmail.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <1432678798-22903-2-git-send-email-rodriguez.twister@gmail.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-> From: Dan Carpenter [mailto:dan.carpenter@oracle.com]
-> Sent: Wednesday, May 27, 2015 11:24 AM
-> To: Jonathan Cameron
-> Cc: Hartmut Knaack; Lars-Peter Clausen; Peter Meerwald; Breana, Tiberiu A=
-;
-> linux-iio@vger.kernel.org; kernel-janitors@vger.kernel.org
-> Subject: [patch] iio: light: signedness bug in stk3310_write_raw()
->=20
-> "index" needs to be signed for the error handling to work.
->=20
+On Wed, May 27, 2015 at 01:19:58AM +0300, Vladimirs Ambrosovs wrote:
+> Check for zero was added to the module parameter "instances" to
+> avoid the allocation of array of zero values. Although it is a valid call,
+> we don't want to allocate ZERO_SIZE_PTR, so need to disallow this case.
+> The type of variables which are compared to "instances" were also changed
+> to unsigned int so that no compiler complaints occur.
 
-Thanks for this. I don't know how it slipped by our reviews.
+Which compiler is that?
 
-Reviewed-by: Tiberiu Breana <tiberiu.a.breana@intel.com>
+You should get a different compiler if you compiler complains about
+stupid stuff like that.  Making everything unsigned int is a common
+cause of problems.  I fixed or reported several of those bugs yesterday.
 
-> Fixes: be9e6229d676 ('iio: light: Add support for Sensortek STK3310')
-> Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
->=20
-> diff --git a/drivers/iio/light/stk3310.c b/drivers/iio/light/stk3310.c in=
-dex
-> e79b9d8..fee4297 100644
-> --- a/drivers/iio/light/stk3310.c
-> +++ b/drivers/iio/light/stk3310.c
-> @@ -370,7 +370,7 @@ static int stk3310_write_raw(struct iio_dev
-> *indio_dev,
->  			     int val, int val2, long mask)
+"instances" should be unsigned int, though, you're correct about that.
+
+> 
+> Signed-off-by: Vladimirs Ambrosovs <rodriguez.twister@gmail.com>
+> ---
+>  drivers/staging/iio/iio_simple_dummy.c | 9 +++++----
+>  1 file changed, 5 insertions(+), 4 deletions(-)
+> 
+> diff --git a/drivers/staging/iio/iio_simple_dummy.c b/drivers/staging/iio/iio_simple_dummy.c
+> index 88fbb4f..2744a1b 100644
+> --- a/drivers/staging/iio/iio_simple_dummy.c
+> +++ b/drivers/staging/iio/iio_simple_dummy.c
+> @@ -30,7 +30,7 @@
+>   * dummy devices are registered.
+>   */
+>  static unsigned instances = 1;
+> -module_param(instances, int, 0);
+> +module_param(instances, uint, 0);
+>  
+>  /* Pointer array used to fake bus elements */
+>  static struct iio_dev **iio_dummy_devs;
+> @@ -706,9 +706,10 @@ static void iio_dummy_remove(int index)
+>   */
+>  static __init int iio_dummy_init(void)
 >  {
->  	int ret;
-> -	unsigned int index;
-> +	int index;
->  	struct stk3310_data *data =3D iio_priv(indio_dev);
->=20
->  	switch (mask) {
+> -	int i, ret;
+> +	unsigned int i;
+> +	int ret;
+
+No.
+
+>  
+> -	if (instances > 10) {
+> +	if (instances == 0 || instances > 10) {
+>  		instances = 1;
+>  		return -EINVAL;
+
+Allocating zero size arrays is a totally valid thing the kernel and it
+doesn't cause a problem unless there are other existing serious bugs in
+the code.  In this case instances == 0 is fine.
+
+Setting "instances = 1" is bogus though.
+
+>  	}
+> @@ -742,7 +743,7 @@ module_init(iio_dummy_init);
+>   */
+>  static __exit void iio_dummy_exit(void)
+>  {
+> -	int i;
+> +	unsigned int i;
+
+No.
+
+regards,
+dan carpenter
