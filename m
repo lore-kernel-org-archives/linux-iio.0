@@ -1,53 +1,71 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-wg0-f50.google.com ([74.125.82.50]:36384 "EHLO
-	mail-wg0-f50.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752576AbbE0Ihr (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 27 May 2015 04:37:47 -0400
+Return-Path: <mwelling79@gmail.com>
+Sender: Michael Welling <mwelling79@gmail.com>
+Date: Wed, 27 May 2015 12:29:30 -0500
+From: Michael Welling <mwelling@ieee.org>
+To: Vignesh R <vigneshr@ti.com>
+Cc: "Cooper Jr., Franklin" <fcooper@ti.com>,
+	"Griffis, Brad" <bgriffis@ti.com>, "Balbi, Felipe" <balbi@ti.com>,
+	"dmitry.torokhov@gmail.com" <dmitry.torokhov@gmail.com>,
+	"jic23@kernel.org" <jic23@kernel.org>,
+	"wsa@the-dreams.de" <wsa@the-dreams.de>,
+	"linux-input@vger.kernel.org" <linux-input@vger.kernel.org>,
+	"GWilson@sakuraus.com" <GWilson@sakuraus.com>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Subject: Re: AM335x touchscreen issues
+Message-ID: <20150527172930.GA13992@deathray>
+References: <20150526183713.GU26599@saruman.tx.rr.com>
+ <20150526205310.GA2104@deathray>
+ <8F29D6B095ED194EA1980491A5E029710C89C445@DFLE08.ent.ti.com>
+ <20150526212851.GA12224@deathray>
+ <8F29D6B095ED194EA1980491A5E029710C89C4E0@DFLE08.ent.ti.com>
+ <912A29987EAE174BA6CF187D7CDFA9CE270A8C43@DLEE08.ent.ti.com>
+ <20150526215049.GC12224@deathray>
+ <8F29D6B095ED194EA1980491A5E029710C89C70D@DFLE08.ent.ti.com>
+ <20150526230649.GB24948@deathray>
+ <556542CB.80106@ti.com>
 MIME-Version: 1.0
-In-Reply-To: <20150527082052.GA19423@mwanda>
-References: <20150527082052.GA19423@mwanda>
-Date: Wed, 27 May 2015 11:37:45 +0300
-Message-ID: <CAEnQRZDZFSQ0E7_JUrx6CsSF6erg+USDAJyMFhhhz=Brbk-VPg@mail.gmail.com>
-Subject: Re: [patch] iio: magnetometer: correct a harmless off by one check
-From: Daniel Baluta <daniel.baluta@intel.com>
-To: Dan Carpenter <dan.carpenter@oracle.com>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	Daniel Baluta <daniel.baluta@intel.com>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	kernel-janitors@vger.kernel.org
-Content-Type: text/plain; charset=UTF-8
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <556542CB.80106@ti.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-On Wed, May 27, 2015 at 11:20 AM, Dan Carpenter
-<dan.carpenter@oracle.com> wrote:
-> The line before limits i to 0-3 so the existing code works fine but the
-> check is still off by one and >= is intended instead of >.
->
-> Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+On Wed, May 27, 2015 at 09:36:35AM +0530, Vignesh R wrote:
+> Hi Michael,
+> 
+> On Wednesday 27 May 2015 04:36 AM, Michael Welling wrote:
+> > On Tue, May 26, 2015 at 10:31:32PM +0000, Cooper Jr., Franklin wrote:
+> >>
+> 
+> [snip]
+> 
+> > 
+> > Perhaps there is coupling between the LCD lines and the ADC lines?
+> 
+> On Beaglebone Black with BB-View 4.3" Cape from Farnell, the LCD lines
+> and TSCADC lines are placed close to one another, hence the analog
+> signals are affected by digital LCD signals, leading to above issue.
+> 
+> This was reported when I submitted the patches in question. Please see
+> http://thread.gmane.org/gmane.linux.kernel.iio/14710/focus=121321
+> http://thread.gmane.org/gmane.linux.kernel.iio/14710/focus=15242
+> 
+> I did document this in my cover letter. Please see
+> http://thread.gmane.org/gmane.linux.kernel.iio/15583
+> 
+> I think its the same issue that you are facing.
 
-Good catch.
+Sounds like it.
 
-Reviewed-by: Daniel Baluta <daniel.baluta@intel.com>
+The threads above mention adding decoupling capacitors to the ADC lines.
 
->
-> diff --git a/drivers/iio/magnetometer/mmc35240.c b/drivers/iio/magnetometer/mmc35240.c
-> index aa6e25d..c71392c 100644
-> --- a/drivers/iio/magnetometer/mmc35240.c
-> +++ b/drivers/iio/magnetometer/mmc35240.c
-> @@ -308,7 +308,7 @@ static int mmc35240_read_raw(struct iio_dev *indio_dev,
->                         return ret;
->
->                 i = (reg & MMC35240_CTRL1_BW_MASK) >> MMC35240_CTRL1_BW_SHIFT;
-> -               if (i < 0 || i > ARRAY_SIZE(mmc35240_samp_freq))
-> +               if (i < 0 || i >= ARRAY_SIZE(mmc35240_samp_freq))
->                         return -EINVAL;
->
->                 *val = mmc35240_samp_freq[i];
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+Is this the suggested workaround for the workaround?
+
+Isn't the capacitor only needed on the ADC0 line to avoid the unwanted
+trigger?
+
+Please advise.
+
+I wish I saw this before spending a whole bunch of time debugging.
+Perhaps some annotation in the driver would help people in the future.
+> 
+> Regards
+> Vignesh
