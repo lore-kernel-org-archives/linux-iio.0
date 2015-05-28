@@ -1,59 +1,44 @@
-Return-Path: <lars@metafoo.de>
-From: Lars-Peter Clausen <lars@metafoo.de>
-To: Jonathan Cameron <jic23@kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>
+Return-Path: <marek.belisko@gmail.com>
+Sender: Belisko Marek <marek.belisko@gmail.com>
+From: Marek Belisko <marek@goldelico.com>
+To: jic23@kernel.org
 Cc: linux-iio@vger.kernel.org,
-	Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH 1/3] iio: Always compute masklength
-Date: Fri, 29 May 2015 18:14:20 +0200
-Message-Id: <1432916062-15195-2-git-send-email-lars@metafoo.de>
-In-Reply-To: <1432916062-15195-1-git-send-email-lars@metafoo.de>
-References: <1432916062-15195-1-git-send-email-lars@metafoo.de>
+	linux-kernel@vger.kernel.org,
+	hns@goldelico.com,
+	Marek Belisko <marek@goldelico.com>
+Subject: [PATCH 2/2] iio: adc: twl4030_madc: Fix description of twl4030_madc_set_current_generator()
+Date: Thu, 28 May 2015 21:50:19 +0200
+Message-Id: <1432842619-7251-2-git-send-email-marek@goldelico.com>
+In-Reply-To: <1432842619-7251-1-git-send-email-marek@goldelico.com>
+References: <1432842619-7251-1-git-send-email-marek@goldelico.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-Even if no userspace consumer buffer is attached to the IIO device at
-registration we still need to compute the masklength, since it is possible
-that a in-kernel consumer buffer is going to get attached to the device at
-a later point.
+From: "H. Nikolaus Schaller" <hns@goldelico.com>
 
-Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+The @chan parameter can be 0 or 1 and not a bit mask. Fix wrong description.
+
+Signed-off-by: H. Nikolaus Schaller <hns@goldelico.com>
+Signed-off-by: Marek Belisko <marek@goldelico.com>
 ---
- drivers/iio/industrialio-buffer.c | 15 +++++++++------
- 1 file changed, 9 insertions(+), 6 deletions(-)
+ drivers/iio/adc/twl4030-madc.c | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/iio/industrialio-buffer.c b/drivers/iio/industrialio-buffer.c
-index 1129125..a72db00 100644
---- a/drivers/iio/industrialio-buffer.c
-+++ b/drivers/iio/industrialio-buffer.c
-@@ -968,6 +968,15 @@ int iio_buffer_alloc_sysfs_and_mask(struct iio_dev *indio_dev)
- 	int ret, i, attrn, attrcount, attrcount_orig = 0;
- 	const struct iio_chan_spec *channels;
- 
-+	channels = indio_dev->channels;
-+	if (channels) {
-+		int ml = indio_dev->masklength;
-+
-+		for (i = 0; i < indio_dev->num_channels; i++)
-+			ml = max(ml, channels[i].scan_index + 1);
-+		indio_dev->masklength = ml;
-+	}
-+
- 	if (!buffer)
- 		return 0;
- 
-@@ -1011,12 +1020,6 @@ int iio_buffer_alloc_sysfs_and_mask(struct iio_dev *indio_dev)
- 			if (channels[i].scan_index < 0)
- 				continue;
- 
--			/* Establish necessary mask length */
--			if (channels[i].scan_index >
--			    (int)indio_dev->masklength - 1)
--				indio_dev->masklength
--					= channels[i].scan_index + 1;
--
- 			ret = iio_buffer_add_channel_sysfs(indio_dev,
- 							 &channels[i]);
- 			if (ret < 0)
+diff --git a/drivers/iio/adc/twl4030-madc.c b/drivers/iio/adc/twl4030-madc.c
+index 6d2d429..06f4792 100644
+--- a/drivers/iio/adc/twl4030-madc.c
++++ b/drivers/iio/adc/twl4030-madc.c
+@@ -662,10 +662,8 @@ EXPORT_SYMBOL_GPL(twl4030_get_madc_conversion);
+  *
+  * @madc:	pointer to twl4030_madc_data struct
+  * @chan:	can be one of the two values:
+- *		TWL4030_BCI_ITHEN
+- *		Enables bias current for main battery type reading
+- *		TWL4030_BCI_TYPEN
+- *		Enables bias current for main battery temperature sensing
++ *		0 - Enables bias current for main battery type reading
++ *		1 - Enables bias current for main battery temperature sensing
+  * @on:		enable or disable chan.
+  *
+  * Function to enable or disable bias current for
 -- 
-2.1.4
+1.9.1
