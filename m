@@ -1,108 +1,41 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga11.intel.com ([192.55.52.93]:49093 "EHLO mga11.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751529AbbE1PTi (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Thu, 28 May 2015 11:19:38 -0400
-From: "Pandruvada, Srinivas" <srinivas.pandruvada@intel.com>
-To: "jic23@kernel.org" <jic23@kernel.org>
-CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Subject: Re: [PATCH] HID: hid-sensor-hub: Optimize suspend/resume time
-Date: Thu, 28 May 2015 15:19:36 +0000
-Message-ID: <1432826263.7111.19.camel@spandruv-DESK3.jf.intel.com>
-References: <1431711643-1326-1-git-send-email-srinivas.pandruvada@linux.intel.com>
-	 <55584FCB.7090408@kernel.org>
-	 <1431962722.11262.117.camel@spandruv-DESK3.jf.intel.com>
-In-Reply-To: <1431962722.11262.117.camel@spandruv-DESK3.jf.intel.com>
-Content-Type: text/plain; charset="utf-8"
-MIME-Version: 1.0
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <marek.belisko@gmail.com>
+Sender: Belisko Marek <marek.belisko@gmail.com>
+From: Marek Belisko <marek@goldelico.com>
+To: jic23@kernel.org
+Cc: linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	hns@goldelico.com,
+	Marek Belisko <marek@goldelico.com>
+Subject: [PATCH 1/2] iio: adc: twl4030_madc: Fix calculation of the temperature sense current
+Date: Thu, 28 May 2015 21:50:18 +0200
+Message-Id: <1432842619-7251-1-git-send-email-marek@goldelico.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-T24gTW9uLCAyMDE1LTA1LTE4IGF0IDA4OjI1IC0wNzAwLCBTcmluaXZhcyBQYW5kcnV2YWRhIHdy
-b3RlOg0KPiBPbiBTdW4sIDIwMTUtMDUtMTcgYXQgMDk6MjIgKzAxMDAsIEpvbmF0aGFuIENhbWVy
-b24gd3JvdGU6DQo+ID4gT24gMTUvMDUvMTUgMTg6NDAsIFNyaW5pdmFzIFBhbmRydXZhZGEgd3Jv
-dGU6DQo+ID4gPiBXaGVuIHN5c3RlbSBzdXNwZW5kIGlzIGlzc3VlZCwgdGhlIHBtIGNvcmUgaXNz
-dWVzIHJlc3VtZSBjYWxsIGZvciBhbGwNCj4gPiA+IHJ1biB0aW1lIHN1c3BlbmRlZCBkZXZpY2Vz
-LiBUaGlzIGlzIHJlcXVpcmVkIGZvciBzb21lIGRldmljZXMgdG8NCj4gPiA+IGNvbnRpbnVlIHN1
-c3BlbmQuDQo+ID4gPiBGb3Igc2Vuc29yIGh1YiB3ZSBkb24ndCBuZWVkIHRvIHJ1bnRpbWUgcmVz
-dW1lIGRldmljZXMgYW5kIHRoZW4gc3VzcGVuZC4NCj4gPiA+IFNvIHdoZW4gdGhlIHN5c3RlbSBz
-dXNwZW5kIGlzIGluIHByb2dyZXNzLCBpZ25vcmUgY2FsbCB0byBwb3dlciB1cA0KPiA+ID4gdGhl
-IHNlbnNvcnMuIFRoaXMgaGFzIGEgc2lnbmlmaWNhbnQgaW1wYWN0IG9uIHN1c3BlbmQvcmVzdW1l
-IHBlcmZvcm1hbmNlLg0KPiA+ID4gDQo+ID4gPiBTaWduZWQtb2ZmLWJ5OiBTcmluaXZhcyBQYW5k
-cnV2YWRhIDxzcmluaXZhcy5wYW5kcnV2YWRhQGxpbnV4LmludGVsLmNvbT4NCj4gPiBIaSBTcmlu
-aXZhcywNCj4gSGkgSm9uYXRoYW4sDQo+ID4gDQo+ID4gVGhpcyBpc24ndCBhbiBhcmVhIEkga25v
-dyBtdWNoIGFib3V0IGFuZCBhbSBhIGxpdHRsZSB1bmxpa2VseSB0byBnZXQgdGltZSB0bw0KPiA+
-IGRpZyBpbnRvIGluIHRoZSBuZXh0IGZldyBkYXlzLiBBIHF1aWNrIGdyZXAgZGlkbid0IHRocm93
-IHVwIGxvdHMgb2Ygb3RoZXINCj4gPiBkcml2ZXJzIGRvaW5nIHRoaXMsIHNvIGlzIHRoZXJlIHBy
-ZWNlZGVuY2Ugc29tZXdoZXJlPw0KPiA+IA0KVGhlcmUgYXJlIHNvbWUgaXNzdWUgaW4gTGludXgg
-UE0gZG9tYWluLCB3aGljaCBwcmV2ZW50cyB1c2luZyBzb21lDQptZWNoYW5pc20gdG8gcHJldmVu
-dCBydW50aW1lIHJlc3VtZSBhbmQgcmVndWxhciByZXN1bWUgZm9yIHRoaXMgZGV2aWNlLg0KQWxz
-byBzaW5jZSBpaW8gZGV2aWNlcyBoYXMgdHJpZ2dlciBkZXZpY2VzIGFzIGNoaWxkcmVuIHdoaWNo
-IGRvbid0IGhhdmUNClBNIGNhbGxiYWNrcywgdGhlIFBNIGNvcmUgcmVzZXRzIHNvbWUgZmxhZ3Mu
-DQpJIGFtIHdvcmtpbmcgd2l0aCBSYWZhZWwgdG8gYWRkcmVzcyBpc3N1ZXMgaW4gY29yZSBmaXJz
-dCwgdGhlbiBJIGNhbg0KY29tZSB1cCB3aXRoIHNvbWUgYWx0ZXJuYXRpdmUgc29sdXRpb24uDQoN
-ClRoYW5rcywNClNyaW5pdmFzDQoNCg0KPiBXZSBhcmUgdHJ5aW5nIHRyeWluZyB0byBzdWJtaXQg
-cGF0Y2ggZm9yIHNpbWlsYXIgZm9yIHVzYiB4aGNpLCB3aGljaCBoYXMNCj4gdGhlIHNhbWUgaXNz
-dWUgd2l0aCB0aGUgZGVsYXkuIA0KPiBMZXQgbWUgY2hlY2sgd2l0aCBSYWZhZWwgdG8gc2VlIGlm
-IEkgaGF2ZSBzb21lIGJldHRlciBvcHRpb24uIE1heSBiZSB3ZQ0KPiBuZWVkIHNvbWUgc3VwcG9y
-dCBpbiBQTSBjb3JlLg0KPiANCj4gVGhhbmtzLA0KPiBTcmluaXZhcw0KPiANCj4gPiBKb25hdGhh
-bg0KPiA+ID4gLS0tDQo+ID4gPiAgLi4uL2lpby9jb21tb24vaGlkLXNlbnNvcnMvaGlkLXNlbnNv
-ci10cmlnZ2VyLmMgICAgfCAzMSArKysrKysrKysrKysrKysrKysrKysrDQo+ID4gPiAgaW5jbHVk
-ZS9saW51eC9oaWQtc2Vuc29yLWh1Yi5oICAgICAgICAgICAgICAgICAgICAgfCAgMiArKw0KPiA+
-ID4gIDIgZmlsZXMgY2hhbmdlZCwgMzMgaW5zZXJ0aW9ucygrKQ0KPiA+ID4gDQo+ID4gPiBkaWZm
-IC0tZ2l0IGEvZHJpdmVycy9paW8vY29tbW9uL2hpZC1zZW5zb3JzL2hpZC1zZW5zb3ItdHJpZ2dl
-ci5jIGIvZHJpdmVycy9paW8vY29tbW9uL2hpZC1zZW5zb3JzL2hpZC1zZW5zb3ItdHJpZ2dlci5j
-DQo+ID4gPiBpbmRleCA2MTBmYzk4Li5kOTE3MGQyIDEwMDY0NA0KPiA+ID4gLS0tIGEvZHJpdmVy
-cy9paW8vY29tbW9uL2hpZC1zZW5zb3JzL2hpZC1zZW5zb3ItdHJpZ2dlci5jDQo+ID4gPiArKysg
-Yi9kcml2ZXJzL2lpby9jb21tb24vaGlkLXNlbnNvcnMvaGlkLXNlbnNvci10cmlnZ2VyLmMNCj4g
-PiA+IEBAIC0yMyw2ICsyMyw3IEBADQo+ID4gPiAgI2luY2x1ZGUgPGxpbnV4L2lycS5oPg0KPiA+
-ID4gICNpbmNsdWRlIDxsaW51eC9zbGFiLmg+DQo+ID4gPiAgI2luY2x1ZGUgPGxpbnV4L2RlbGF5
-Lmg+DQo+ID4gPiArI2luY2x1ZGUgPGxpbnV4L3N1c3BlbmQuaD4NCj4gPiA+ICAjaW5jbHVkZSA8
-bGludXgvaGlkLXNlbnNvci1odWIuaD4NCj4gPiA+ICAjaW5jbHVkZSA8bGludXgvaWlvL2lpby5o
-Pg0KPiA+ID4gICNpbmNsdWRlIDxsaW51eC9paW8vdHJpZ2dlci5oPg0KPiA+ID4gQEAgLTM2LDYg
-KzM3LDkgQEAgc3RhdGljIGludCBfaGlkX3NlbnNvcl9wb3dlcl9zdGF0ZShzdHJ1Y3QgaGlkX3Nl
-bnNvcl9jb21tb24gKnN0LCBib29sIHN0YXRlKQ0KPiA+ID4gIAlzMzIgcG9sbF92YWx1ZSA9IDA7
-DQo+ID4gPiAgDQo+ID4gPiAgCWlmIChzdGF0ZSkgew0KPiA+ID4gKwkJaWYgKGF0b21pY19yZWFk
-KCZzdC0+c3VzcGVuZF9pbl9wcm9ncmVzcykpDQo+ID4gPiArCQkJcmV0dXJuIDA7DQo+ID4gPiAr
-DQo+ID4gPiAgCQlpZiAoc2Vuc29yX2h1Yl9kZXZpY2Vfb3BlbihzdC0+aHNkZXYpKQ0KPiA+ID4g
-IAkJCXJldHVybiAtRUlPOw0KPiA+ID4gIA0KPiA+ID4gQEAgLTExMyw2ICsxMTcsMjggQEAgaW50
-IGhpZF9zZW5zb3JfcG93ZXJfc3RhdGUoc3RydWN0IGhpZF9zZW5zb3JfY29tbW9uICpzdCwgYm9v
-bCBzdGF0ZSkNCj4gPiA+ICAjZW5kaWYNCj4gPiA+ICB9DQo+ID4gPiAgDQo+ID4gPiArc3RhdGlj
-IGludCBoaWRfc2Vuc29yX3BtX25vdGlmaWVyKHN0cnVjdCBub3RpZmllcl9ibG9jayAqbmIsIHVu
-c2lnbmVkIGxvbmcgdmFsLA0KPiA+ID4gKwkJCQkgIHZvaWQgKnB0cikNCj4gPiA+ICt7DQo+ID4g
-PiArCXN0cnVjdCBoaWRfc2Vuc29yX2NvbW1vbiAqY29tbW9uID0NCj4gPiA+ICsJCQljb250YWlu
-ZXJfb2YobmIsIHN0cnVjdCBoaWRfc2Vuc29yX2NvbW1vbiwgcG1fbmIpOw0KPiA+ID4gKw0KPiA+
-ID4gKwlzd2l0Y2ggKHZhbCkgew0KPiA+ID4gKwljYXNlIFBNX0hJQkVSTkFUSU9OX1BSRVBBUkU6
-DQo+ID4gPiArCWNhc2UgUE1fU1VTUEVORF9QUkVQQVJFOg0KPiA+ID4gKwkJYXRvbWljX3NldCgm
-Y29tbW9uLT5zdXNwZW5kX2luX3Byb2dyZXNzLCAxKTsNCj4gPiA+ICsJCWJyZWFrOw0KPiA+ID4g
-KwljYXNlIFBNX1BPU1RfSElCRVJOQVRJT046DQo+ID4gPiArCWNhc2UgUE1fUE9TVF9TVVNQRU5E
-Og0KPiA+ID4gKwljYXNlIFBNX1BPU1RfUkVTVE9SRToNCj4gPiA+ICsJCWF0b21pY19zZXQoJmNv
-bW1vbi0+c3VzcGVuZF9pbl9wcm9ncmVzcywgMCk7DQo+ID4gPiArCQlicmVhazsNCj4gPiA+ICsJ
-ZGVmYXVsdDoNCj4gPiA+ICsJCWJyZWFrOw0KPiA+ID4gKwl9DQo+ID4gPiArCXJldHVybiAwOw0K
-PiA+ID4gK30NCj4gPiA+ICsNCj4gPiA+ICBzdGF0aWMgaW50IGhpZF9zZW5zb3JfZGF0YV9yZHlf
-dHJpZ2dlcl9zZXRfc3RhdGUoc3RydWN0IGlpb190cmlnZ2VyICp0cmlnLA0KPiA+ID4gIAkJCQkJ
-CWJvb2wgc3RhdGUpDQo+ID4gPiAgew0KPiA+ID4gQEAgLTEyMSw2ICsxNDcsNyBAQCBzdGF0aWMg
-aW50IGhpZF9zZW5zb3JfZGF0YV9yZHlfdHJpZ2dlcl9zZXRfc3RhdGUoc3RydWN0IGlpb190cmln
-Z2VyICp0cmlnLA0KPiA+ID4gIA0KPiA+ID4gIHZvaWQgaGlkX3NlbnNvcl9yZW1vdmVfdHJpZ2dl
-cihzdHJ1Y3QgaGlkX3NlbnNvcl9jb21tb24gKmF0dHJiKQ0KPiA+ID4gIHsNCj4gPiA+ICsJdW5y
-ZWdpc3Rlcl9wbV9ub3RpZmllcigmYXR0cmItPnBtX25iKTsNCj4gPiA+ICAJaWlvX3RyaWdnZXJf
-dW5yZWdpc3RlcihhdHRyYi0+dHJpZ2dlcik7DQo+ID4gPiAgCWlpb190cmlnZ2VyX2ZyZWUoYXR0
-cmItPnRyaWdnZXIpOw0KPiA+ID4gIH0NCj4gPiA+IEBAIC0xNjgsNiArMTk1LDEwIEBAIGludCBo
-aWRfc2Vuc29yX3NldHVwX3RyaWdnZXIoc3RydWN0IGlpb19kZXYgKmluZGlvX2RldiwgY29uc3Qg
-Y2hhciAqbmFtZSwNCj4gPiA+ICAJCQkJCSAzMDAwKTsNCj4gPiA+ICAJcG1fcnVudGltZV91c2Vf
-YXV0b3N1c3BlbmQoJmF0dHJiLT5wZGV2LT5kZXYpOw0KPiA+ID4gIA0KPiA+ID4gKwlhdG9taWNf
-c2V0KCZhdHRyYi0+c3VzcGVuZF9pbl9wcm9ncmVzcywgMCk7DQo+ID4gPiArCWF0dHJiLT5wbV9u
-Yi5ub3RpZmllcl9jYWxsID0gaGlkX3NlbnNvcl9wbV9ub3RpZmllcjsNCj4gPiA+ICsJcmVnaXN0
-ZXJfcG1fbm90aWZpZXIoJmF0dHJiLT5wbV9uYik7DQo+ID4gPiArDQo+ID4gPiAgCXJldHVybiBy
-ZXQ7DQo+ID4gPiAgZXJyb3JfdW5yZWdfdHJpZ2dlcjoNCj4gPiA+ICAJaWlvX3RyaWdnZXJfdW5y
-ZWdpc3Rlcih0cmlnKTsNCj4gPiA+IGRpZmYgLS1naXQgYS9pbmNsdWRlL2xpbnV4L2hpZC1zZW5z
-b3ItaHViLmggYi9pbmNsdWRlL2xpbnV4L2hpZC1zZW5zb3ItaHViLmgNCj4gPiA+IGluZGV4IDAw
-NDJiZjMuLmUzOGM3MmEgMTAwNjQ0DQo+ID4gPiAtLS0gYS9pbmNsdWRlL2xpbnV4L2hpZC1zZW5z
-b3ItaHViLmgNCj4gPiA+ICsrKyBiL2luY2x1ZGUvbGludXgvaGlkLXNlbnNvci1odWIuaA0KPiA+
-ID4gQEAgLTIzMCw2ICsyMzAsOCBAQCBzdHJ1Y3QgaGlkX3NlbnNvcl9jb21tb24gew0KPiA+ID4g
-IAlzdHJ1Y3QgcGxhdGZvcm1fZGV2aWNlICpwZGV2Ow0KPiA+ID4gIAl1bnNpZ25lZCB1c2FnZV9p
-ZDsNCj4gPiA+ICAJYXRvbWljX3QgZGF0YV9yZWFkeTsNCj4gPiA+ICsJYXRvbWljX3Qgc3VzcGVu
-ZF9pbl9wcm9ncmVzczsNCj4gPiA+ICsJc3RydWN0IG5vdGlmaWVyX2Jsb2NrIHBtX25iOw0KPiA+
-ID4gIAlzdHJ1Y3QgaWlvX3RyaWdnZXIgKnRyaWdnZXI7DQo+ID4gPiAgCXN0cnVjdCBoaWRfc2Vu
-c29yX2h1Yl9hdHRyaWJ1dGVfaW5mbyBwb2xsOw0KPiA+ID4gIAlzdHJ1Y3QgaGlkX3NlbnNvcl9o
-dWJfYXR0cmlidXRlX2luZm8gcmVwb3J0X3N0YXRlOw0KPiA+ID4gDQo+ID4gDQo+IA0KDQo=
+From: "H. Nikolaus Schaller" <hns@goldelico.com>
+
+The bit mask to read the setting of the constant current source
+for measuring the NTC voltage was the wrong one. Since default
+value is initialized to the lowest level (000 = 10uA) the difference
+was probably never noticed in practice.
+
+Signed-off-by: H. Nikolaus Schaller <hns@goldelico.com>
+Signed-off-by: Marek Belisko <marek@goldelico.com>
+---
+ drivers/iio/adc/twl4030-madc.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/iio/adc/twl4030-madc.c b/drivers/iio/adc/twl4030-madc.c
+index 94c5f05..6d2d429 100644
+--- a/drivers/iio/adc/twl4030-madc.c
++++ b/drivers/iio/adc/twl4030-madc.c
+@@ -235,7 +235,7 @@ static int twl4030battery_temperature(int raw_volt)
+ 	if (ret < 0)
+ 		return ret;
+ 
+-	curr = ((val & TWL4030_BCI_ITHEN) + 1) * 10;
++	curr = ((val & TWL4030_BCI_ITHSENS) + 1) * 10;
+ 	/* Getting and calculating the thermistor resistance in ohms */
+ 	res = volt * 1000 / curr;
+ 	/* calculating temperature */
+-- 
+1.9.1
