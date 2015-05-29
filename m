@@ -6,45 +6,26 @@ To: jic23@kernel.org,
 	gregkh@linuxfoundation.org
 Cc: cristina.opriceana@gmail.com,
 	driverdev-devel@linuxdriverproject.org,
-	linux-iio@vger.kernel.org,
-	Vladimirs Ambrosovs <rodriguez.twister@gmail.com>
-Subject: [PATCH v2 1/3] staging: iio_simple_dummy: fix init function
-Date: Sat, 30 May 2015 00:45:21 +0300
-Message-Id: <1432935923-28928-2-git-send-email-rodriguez.twister@gmail.com>
-In-Reply-To: <1432935923-28928-1-git-send-email-rodriguez.twister@gmail.com>
-References: <1432935923-28928-1-git-send-email-rodriguez.twister@gmail.com>
+	linux-iio@vger.kernel.org
+Subject: [PATCH v2 0/3] staging: iio_simple_dummy: minor driver fixes
+Date: Sat, 30 May 2015 00:45:20 +0300
+Message-Id: <1432935923-28928-1-git-send-email-rodriguez.twister@gmail.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-This patch fixes the init function for the iio_simple_dummy driver.
-The main issues were absence of kfree for the allocated array, and no
-devices being removed in case the probe function fails, running in a loop.
+v2 Fixed the code as per the comments from version 1:
+	* Removed unnecessary comments
+	* Fixed the label name to address label location
+	* Changed the type of functions, which always return 0 to void
 
-Signed-off-by: Vladimirs Ambrosovs <rodriguez.twister@gmail.com>
----
- drivers/staging/iio/iio_simple_dummy.c | 9 ++++++++-
- 1 file changed, 8 insertions(+), 1 deletion(-)
+Vladimirs Ambrosovs (3):
+  staging: iio_simple_dummy: fix init function
+  staging: iio_simple_dummy: fix return types
+  staging: iio_simple_dummy: fix module_param type
 
-diff --git a/drivers/staging/iio/iio_simple_dummy.c b/drivers/staging/iio/iio_simple_dummy.c
-index b47bf9f..d0a9963 100644
---- a/drivers/staging/iio/iio_simple_dummy.c
-+++ b/drivers/staging/iio/iio_simple_dummy.c
-@@ -722,9 +722,16 @@ static __init int iio_dummy_init(void)
- 	for (i = 0; i < instances; i++) {
- 		ret = iio_dummy_probe(i);
- 		if (ret < 0)
--			return ret;
-+			goto error_remove_devs;
- 	}
- 	return 0;
-+
-+error_remove_devs:
-+	while (i--)
-+		iio_dummy_remove(i);
-+
-+	kfree(iio_dummy_devs);
-+	return ret;
- }
- module_init(iio_dummy_init);
- 
+ drivers/staging/iio/iio_dummy_evgen.c         |  4 +---
+ drivers/staging/iio/iio_simple_dummy.c        | 21 +++++++++++----------
+ drivers/staging/iio/iio_simple_dummy_events.c |  4 +---
+ 3 files changed, 13 insertions(+), 16 deletions(-)
+
 -- 
 2.4.1
