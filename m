@@ -1,41 +1,90 @@
-Return-Path: <marek.belisko@gmail.com>
-Sender: Belisko Marek <marek.belisko@gmail.com>
-From: Marek Belisko <marek@goldelico.com>
-To: jic23@kernel.org
-Cc: linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	hns@goldelico.com,
-	Marek Belisko <marek@goldelico.com>
-Subject: [PATCH 1/2] iio: adc: twl4030_madc: Fix calculation of the temperature sense current
-Date: Thu, 28 May 2015 21:50:18 +0200
-Message-Id: <1432842619-7251-1-git-send-email-marek@goldelico.com>
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from smtp102.biz.mail.bf1.yahoo.com ([98.139.221.61]:36125 "EHLO
+	smtp102.biz.mail.bf1.yahoo.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1752712AbbE2IET (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 29 May 2015 04:04:19 -0400
+From: Kevin Tsai <ktsai@capellamicro.com>
+To: Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Irina Tirdea <irina.tirdea@intel.com>,
+	Daniel Baluta <daniel.baluta@intel.com>,
+	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+	Reyad Attiyat <reyad.attiyat@gmail.com>,
+	Kevin Tsai <ktsai@capellamicro.com>
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-api@vger.kernel.org
+Subject: [PATCH 1/1] iio: Add iio_mod_light_uva, iio_mod_light_uvb, and iio_mod_light_uvc.
+Date: Fri, 29 May 2015 01:04:43 -0700
+Message-Id: <1432886683-7467-1-git-send-email-ktsai@capellamicro.com>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-From: "H. Nikolaus Schaller" <hns@goldelico.com>
+Add Ultraviolet(UV) support:
+UVA: 315 ~ 400 nm
+UVB: 280 ~ 315 nm
+UVC: 100 ~ 280 nm
 
-The bit mask to read the setting of the constant current source
-for measuring the NTC voltage was the wrong one. Since default
-value is initialized to the lowest level (000 = 10uA) the difference
-was probably never noticed in practice.
-
-Signed-off-by: H. Nikolaus Schaller <hns@goldelico.com>
-Signed-off-by: Marek Belisko <marek@goldelico.com>
+Signed-off-by: Kevin Tsai <ktsai@capellamicro.com>
 ---
- drivers/iio/adc/twl4030-madc.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/iio/industrialio-core.c | 3 +++
+ include/uapi/linux/iio/types.h  | 3 +++
+ tools/iio/iio_event_monitor.c   | 6 ++++++
+ 3 files changed, 12 insertions(+)
 
-diff --git a/drivers/iio/adc/twl4030-madc.c b/drivers/iio/adc/twl4030-madc.c
-index 94c5f05..6d2d429 100644
---- a/drivers/iio/adc/twl4030-madc.c
-+++ b/drivers/iio/adc/twl4030-madc.c
-@@ -235,7 +235,7 @@ static int twl4030battery_temperature(int raw_volt)
- 	if (ret < 0)
- 		return ret;
+diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+index 3524b0d..ecbdd1e 100644
+--- a/drivers/iio/industrialio-core.c
++++ b/drivers/iio/industrialio-core.c
+@@ -89,6 +89,9 @@ static const char * const iio_modifier_names[] = {
+ 	[IIO_MOD_LIGHT_RED] = "red",
+ 	[IIO_MOD_LIGHT_GREEN] = "green",
+ 	[IIO_MOD_LIGHT_BLUE] = "blue",
++	[IIO_MOD_LIGHT_UVA] = "uva",
++	[IIO_MOD_LIGHT_UVB] = "uvb",
++	[IIO_MOD_LIGHT_UVC] = "uvc",
+ 	[IIO_MOD_QUATERNION] = "quaternion",
+ 	[IIO_MOD_TEMP_AMBIENT] = "ambient",
+ 	[IIO_MOD_TEMP_OBJECT] = "object",
+diff --git a/include/uapi/linux/iio/types.h b/include/uapi/linux/iio/types.h
+index 2f8b117..5c99090 100644
+--- a/include/uapi/linux/iio/types.h
++++ b/include/uapi/linux/iio/types.h
+@@ -72,6 +72,9 @@ enum iio_modifier {
+ 	IIO_MOD_ROOT_SUM_SQUARED_X_Y_Z,
+ 	IIO_MOD_I,
+ 	IIO_MOD_Q,
++	IIO_MOD_LIGHT_UVA,
++	IIO_MOD_LIGHT_UVB,
++	IIO_MOD_LIGHT_UVC,
+ };
  
--	curr = ((val & TWL4030_BCI_ITHEN) + 1) * 10;
-+	curr = ((val & TWL4030_BCI_ITHSENS) + 1) * 10;
- 	/* Getting and calculating the thermistor resistance in ohms */
- 	res = volt * 1000 / curr;
- 	/* calculating temperature */
+ enum iio_event_type {
+diff --git a/tools/iio/iio_event_monitor.c b/tools/iio/iio_event_monitor.c
+index 427c271..46dd27f 100644
+--- a/tools/iio/iio_event_monitor.c
++++ b/tools/iio/iio_event_monitor.c
+@@ -88,6 +88,9 @@ static const char * const iio_modifier_names[] = {
+ 	[IIO_MOD_LIGHT_RED] = "red",
+ 	[IIO_MOD_LIGHT_GREEN] = "green",
+ 	[IIO_MOD_LIGHT_BLUE] = "blue",
++	[IIO_MOD_LIGHT_UVA] = "uva",
++	[IIO_MOD_LIGHT_UVB] = "uvb",
++	[IIO_MOD_LIGHT_UVC] = "uvc",
+ 	[IIO_MOD_QUATERNION] = "quaternion",
+ 	[IIO_MOD_TEMP_AMBIENT] = "ambient",
+ 	[IIO_MOD_TEMP_OBJECT] = "object",
+@@ -156,6 +159,9 @@ static bool event_is_known(struct iio_event_data *event)
+ 	case IIO_MOD_LIGHT_RED:
+ 	case IIO_MOD_LIGHT_GREEN:
+ 	case IIO_MOD_LIGHT_BLUE:
++	case IIO_MOD_LIGHT_UVA:
++	case IIO_MOD_LIGHT_UVB:
++	case IIO_MOD_LIGHT_UVC:
+ 	case IIO_MOD_QUATERNION:
+ 	case IIO_MOD_TEMP_AMBIENT:
+ 	case IIO_MOD_TEMP_OBJECT:
 -- 
-1.9.1
+1.8.3.1
+
