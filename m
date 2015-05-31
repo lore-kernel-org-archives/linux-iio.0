@@ -7,114 +7,126 @@ Cc: Jonathan Cameron <jic23@kernel.org>,
 	Roberta Dobrescu <roberta.dobrescu@gmail.com>,
 	Daniel Baluta <daniel.baluta@intel.com>,
 	Irina Tirdea <irina.tirdea@intel.com>
-Subject: [PATCH 32/32] tools:iio: rename variables
-Date: Sun, 31 May 2015 14:40:38 +0200
-Message-Id: <1dba5c29995b2d2a4728d036de6e8f17a5f56b22.1433072539.git.knaack.h@gmx.de>
-In-Reply-To: <99c4e55ff043684b4a34888d4a982ac19cba891a.1433072539.git.knaack.h@gmx.de>
-References: <99c4e55ff043684b4a34888d4a982ac19cba891a.1433072539.git.knaack.h@gmx.de>
+Subject: [PATCH 30/32] tools:iio:iio_utils: pass strings as const
+Date: Sun, 31 May 2015 14:40:36 +0200
+Message-Id: <99c4e55ff043684b4a34888d4a982ac19cba891a.1433072539.git.knaack.h@gmx.de>
 In-Reply-To: <cover.1433072539.git.knaack.h@gmx.de>
 References: <cover.1433072539.git.knaack.h@gmx.de>
 List-ID: <linux-iio@vger.kernel.org>
 
-Use more appropriate/common variable names:
-  * namepf instead of nameFile in iio_utils.c
-  * ret instead of retval in lsiio.c
+Mark strings, which are not supposed to be changed (basedir, filename,
+value), as const in function parameters.
 
 Signed-off-by: Hartmut Knaack <knaack.h@gmx.de>
 ---
- tools/iio/iio_utils.c | 10 +++++-----
- tools/iio/lsiio.c     | 28 ++++++++++++++--------------
- 2 files changed, 19 insertions(+), 19 deletions(-)
+ tools/iio/iio_utils.c | 22 +++++++++++++---------
+ tools/iio/iio_utils.h | 15 +++++++++------
+ 2 files changed, 22 insertions(+), 15 deletions(-)
 
 diff --git a/tools/iio/iio_utils.c b/tools/iio/iio_utils.c
-index 4eac11a..8fb3214 100644
+index dfee1a3..ec9ab7f 100644
 --- a/tools/iio/iio_utils.c
 +++ b/tools/iio/iio_utils.c
-@@ -561,7 +561,7 @@ int find_type_by_name(const char *name, const char *type)
- 	const struct dirent *ent;
- 	int number, numstrlen, ret;
+@@ -634,7 +634,8 @@ error_close_dir:
+ 	return ret;
+ }
  
--	FILE *nameFile;
-+	FILE *namefp;
- 	DIR *dp;
- 	char thisname[IIO_MAX_NAME_LENGTH];
- 	char *filename;
-@@ -607,20 +607,20 @@ int find_type_by_name(const char *name, const char *type)
- 					goto error_close_dir;
- 				}
- 
--				nameFile = fopen(filename, "r");
--				if (!nameFile) {
-+				namefp = fopen(filename, "r");
-+				if (!namefp) {
- 					free(filename);
- 					continue;
- 				}
- 
- 				free(filename);
- 				errno = 0;
--				if (fscanf(nameFile, "%s", thisname) != 1) {
-+				if (fscanf(namefp, "%s", thisname) != 1) {
- 					ret = errno ? -errno : -ENODATA;
- 					goto error_close_dir;
- 				}
- 
--				if (fclose(nameFile)) {
-+				if (fclose(namefp)) {
- 					ret = -errno;
- 					goto error_close_dir;
- 				}
-diff --git a/tools/iio/lsiio.c b/tools/iio/lsiio.c
-index f5b3bd0..7f432a5 100644
---- a/tools/iio/lsiio.c
-+++ b/tools/iio/lsiio.c
-@@ -61,16 +61,16 @@ static int dump_one_device(const char *dev_dir_name)
+-static int _write_sysfs_int(char *filename, char *basedir, int val, int verify)
++static int _write_sysfs_int(const char *filename, const char *basedir, int val,
++			    int verify)
  {
- 	char name[IIO_MAX_NAME_LENGTH];
- 	int dev_idx;
--	int retval;
-+	int ret;
- 
--	retval = sscanf(dev_dir_name + strlen(iio_dir) + strlen(type_device),
--			"%i", &dev_idx);
--	if (retval != 1)
-+	ret = sscanf(dev_dir_name + strlen(iio_dir) + strlen(type_device), "%i",
-+		     &dev_idx);
-+	if (ret != 1)
- 		return -EINVAL;
- 
--	retval = read_sysfs_string("name", dev_dir_name, name);
--	if (retval)
--		return retval;
-+	ret = read_sysfs_string("name", dev_dir_name, name);
-+	if (ret)
-+		return ret;
- 
- 	printf("Device %03d: %s\n", dev_idx, name);
- 
-@@ -84,16 +84,16 @@ static int dump_one_trigger(const char *dev_dir_name)
+ 	int ret = 0;
+ 	FILE *sysfsfp;
+@@ -707,7 +708,7 @@ error_free:
+  *
+  * Returns a value >= 0 on success, otherwise a negative error code.
+  **/
+-int write_sysfs_int(char *filename, char *basedir, int val)
++int write_sysfs_int(const char *filename, const char *basedir, int val)
  {
- 	char name[IIO_MAX_NAME_LENGTH];
- 	int dev_idx;
--	int retval;
-+	int ret;
+ 	return _write_sysfs_int(filename, basedir, val, 0);
+ }
+@@ -721,13 +722,14 @@ int write_sysfs_int(char *filename, char *basedir, int val)
+  *
+  * Returns a value >= 0 on success, otherwise a negative error code.
+  **/
+-int write_sysfs_int_and_verify(char *filename, char *basedir, int val)
++int write_sysfs_int_and_verify(const char *filename, const char *basedir,
++			       int val)
+ {
+ 	return _write_sysfs_int(filename, basedir, val, 1);
+ }
  
--	retval = sscanf(dev_dir_name + strlen(iio_dir) + strlen(type_trigger),
--			"%i", &dev_idx);
--	if (retval != 1)
-+	ret = sscanf(dev_dir_name + strlen(iio_dir) + strlen(type_trigger),
-+		     "%i", &dev_idx);
-+	if (ret != 1)
- 		return -EINVAL;
+-static int _write_sysfs_string(char *filename, char *basedir, char *val,
+-			       int verify)
++static int _write_sysfs_string(const char *filename, const char *basedir,
++			       const char *val, int verify)
+ {
+ 	int ret = 0;
+ 	FILE  *sysfsfp;
+@@ -805,7 +807,8 @@ error_free:
+  *
+  * Returns a value >= 0 on success, otherwise a negative error code.
+  **/
+-int write_sysfs_string_and_verify(char *filename, char *basedir, char *val)
++int write_sysfs_string_and_verify(const char *filename, const char *basedir,
++				  const char *val)
+ {
+ 	return _write_sysfs_string(filename, basedir, val, 1);
+ }
+@@ -818,7 +821,8 @@ int write_sysfs_string_and_verify(char *filename, char *basedir, char *val)
+  *
+  * Returns a value >= 0 on success, otherwise a negative error code.
+  **/
+-int write_sysfs_string(char *filename, char *basedir, char *val)
++int write_sysfs_string(const char *filename, const char *basedir,
++		       const char *val)
+ {
+ 	return _write_sysfs_string(filename, basedir, val, 0);
+ }
+@@ -831,7 +835,7 @@ int write_sysfs_string(char *filename, char *basedir, char *val)
+  * Returns the read integer value >= 0 on success, otherwise a negative error
+  * code.
+  **/
+-int read_sysfs_posint(char *filename, char *basedir)
++int read_sysfs_posint(const char *filename, const char *basedir)
+ {
+ 	int ret;
+ 	FILE  *sysfsfp;
+@@ -875,7 +879,7 @@ error_free:
+  *
+  * Returns a value >= 0 on success, otherwise a negative error code.
+  **/
+-int read_sysfs_float(char *filename, char *basedir, float *val)
++int read_sysfs_float(const char *filename, const char *basedir, float *val)
+ {
+ 	int ret = 0;
+ 	FILE  *sysfsfp;
+diff --git a/tools/iio/iio_utils.h b/tools/iio/iio_utils.h
+index e5eb46a..379eed9 100644
+--- a/tools/iio/iio_utils.h
++++ b/tools/iio/iio_utils.h
+@@ -63,12 +63,15 @@ void bsort_channel_array_by_index(struct iio_channel_info **ci_array, int cnt);
+ int build_channel_array(const char *device_dir,
+ 						struct iio_channel_info **ci_array, int *counter);
+ int find_type_by_name(const char *name, const char *type);
+-int write_sysfs_int(char *filename, char *basedir, int val);
+-int write_sysfs_int_and_verify(char *filename, char *basedir, int val);
+-int write_sysfs_string_and_verify(char *filename, char *basedir, char *val);
+-int write_sysfs_string(char *filename, char *basedir, char *val);
+-int read_sysfs_posint(char *filename, char *basedir);
+-int read_sysfs_float(char *filename, char *basedir, float *val);
++int write_sysfs_int(const char *filename, const char *basedir, int val);
++int write_sysfs_int_and_verify(const char *filename, const char *basedir,
++			       int val);
++int write_sysfs_string_and_verify(const char *filename, const char *basedir,
++				  const char *val);
++int write_sysfs_string(const char *filename, const char *basedir,
++		       const char *val);
++int read_sysfs_posint(const char *filename, const char *basedir);
++int read_sysfs_float(const char *filename, const char *basedir, float *val);
+ int read_sysfs_string(const char *filename, const char *basedir, char *str);
  
--	retval = read_sysfs_string("name", dev_dir_name, name);
--	if (retval)
--		return retval;
-+	ret = read_sysfs_string("name", dev_dir_name, name);
-+	if (ret)
-+		return ret;
- 
- 	printf("Trigger %03d: %s\n", dev_idx, name);
- 
+ #endif /* _IIO_UTILS_H_ */
 -- 
 2.3.6
