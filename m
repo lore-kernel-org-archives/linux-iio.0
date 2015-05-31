@@ -7,35 +7,34 @@ Cc: Jonathan Cameron <jic23@kernel.org>,
 	Roberta Dobrescu <roberta.dobrescu@gmail.com>,
 	Daniel Baluta <daniel.baluta@intel.com>,
 	Irina Tirdea <irina.tirdea@intel.com>
-Subject: [PATCH 07/32] tools:iio:lsiio: add closedir before exit
-Date: Sun, 31 May 2015 14:39:47 +0200
-Message-Id: <9fc774508b30727ae7576cbc4cae11fa6bfcd93b.1433072539.git.knaack.h@gmx.de>
+Subject: [PATCH 03/32] tools:iio:iio_utils: free scan_el_dir on exit
+Date: Sun, 31 May 2015 14:39:43 +0200
+Message-Id: <86123bc570f6eff3b6a0a033cc17a296b3107d45.1433072539.git.knaack.h@gmx.de>
 In-Reply-To: <cover.1433072539.git.knaack.h@gmx.de>
 References: <cover.1433072539.git.knaack.h@gmx.de>
 In-Reply-To: <cover.1433072539.git.knaack.h@gmx.de>
 References: <cover.1433072539.git.knaack.h@gmx.de>
 List-ID: <linux-iio@vger.kernel.org>
 
-In dump_channels() the DIR *dp was left open on exit. Close it and check
-for errors.
+In the error path, the string scan_el_dir got freed, while it was missing when
+build_channel_array() finished without errors.
 
 Signed-off-by: Hartmut Knaack <knaack.h@gmx.de>
 ---
- tools/iio/lsiio.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ tools/iio/iio_utils.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/tools/iio/lsiio.c b/tools/iio/lsiio.c
-index c585440..65a2385 100644
---- a/tools/iio/lsiio.c
-+++ b/tools/iio/lsiio.c
-@@ -56,7 +56,7 @@ static int dump_channels(const char *dev_dir_name)
- 			printf("   %-10s\n", ent->d_name);
- 		}
+diff --git a/tools/iio/iio_utils.c b/tools/iio/iio_utils.c
+index 6f64521..f879ad7 100644
+--- a/tools/iio/iio_utils.c
++++ b/tools/iio/iio_utils.c
+@@ -403,6 +403,7 @@ int build_channel_array(const char *device_dir,
+ 	}
  
--	return 0;
-+	return (closedir(dp) == -1) ? -errno : 0;
- }
+ 	closedir(dp);
++	free(scan_el_dir);
+ 	/* reorder so that the array is in index order */
+ 	bsort_channel_array_by_index(ci_array, *counter);
  
- static int dump_one_device(const char *dev_dir_name)
 -- 
 2.3.6
