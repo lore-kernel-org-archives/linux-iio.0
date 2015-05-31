@@ -7,142 +7,140 @@ Cc: Jonathan Cameron <jic23@kernel.org>,
 	Roberta Dobrescu <roberta.dobrescu@gmail.com>,
 	Daniel Baluta <daniel.baluta@intel.com>,
 	Irina Tirdea <irina.tirdea@intel.com>
-Subject: [PATCH 29/32] tools:iio: rework program parameters
-Date: Sun, 31 May 2015 14:40:22 +0200
-Message-Id: <cd3645ea3071573bbdc97304943ed16f5b712d6f.1433072539.git.knaack.h@gmx.de>
+Subject: [PATCH 24/32] tools:iio: return values directly
+Date: Sun, 31 May 2015 14:40:17 +0200
+Message-Id: <82581f631ab07a233d24f07f7e706de34ed6ecbd.1433072539.git.knaack.h@gmx.de>
 In-Reply-To: <6915cdc58104e623ad388787b9069337f1950614.1433072539.git.knaack.h@gmx.de>
 References: <6915cdc58104e623ad388787b9069337f1950614.1433072539.git.knaack.h@gmx.de>
 In-Reply-To: <cover.1433072539.git.knaack.h@gmx.de>
 References: <cover.1433072539.git.knaack.h@gmx.de>
 List-ID: <linux-iio@vger.kernel.org>
 
-In generic_buffer.c: sort program parameters alphabetically and provide
-		     usage information
-In lsiio.c: drop unused parameters
+Return directly, if no common cleanup is required.
 
 Signed-off-by: Hartmut Knaack <knaack.h@gmx.de>
 ---
- tools/iio/generic_buffer.c | 55 ++++++++++++++++++++++++++++++----------------
- tools/iio/lsiio.c          |  6 ++---
- 2 files changed, 38 insertions(+), 23 deletions(-)
+ tools/iio/generic_buffer.c    |  5 ++---
+ tools/iio/iio_event_monitor.c |  5 ++---
+ tools/iio/iio_utils.c         | 27 ++++++++++++---------------
+ 3 files changed, 16 insertions(+), 21 deletions(-)
 
 diff --git a/tools/iio/generic_buffer.c b/tools/iio/generic_buffer.c
-index f17b168..c546852 100644
+index 2f48843..f17b168 100644
 --- a/tools/iio/generic_buffer.c
 +++ b/tools/iio/generic_buffer.c
-@@ -168,6 +168,19 @@ void process_scan(char *data,
- 	printf("\n");
+@@ -238,8 +238,7 @@ int main(int argc, char **argv)
+ 	dev_num = find_type_by_name(device_name, "iio:device");
+ 	if (dev_num < 0) {
+ 		printf("Failed to find the %s\n", device_name);
+-		ret = dev_num;
+-		goto error_ret;
++		return dev_num;
+ 	}
+ 	printf("iio device number being used is %d\n", dev_num);
+ 
+@@ -410,6 +409,6 @@ error_free_triggername:
+ 		free(trigger_name);
+ error_free_dev_dir_name:
+ 	free(dev_dir_name);
+-error_ret:
++
+ 	return ret;
+ }
+diff --git a/tools/iio/iio_event_monitor.c b/tools/iio/iio_event_monitor.c
+index ecee8ac..17c27bf 100644
+--- a/tools/iio/iio_event_monitor.c
++++ b/tools/iio/iio_event_monitor.c
+@@ -258,8 +258,7 @@ int main(int argc, char **argv)
+ 			device_name, dev_num);
+ 		ret = asprintf(&chrdev_name, "/dev/iio:device%d", dev_num);
+ 		if (ret < 0) {
+-			ret = -ENOMEM;
+-			goto error_ret;
++			return -ENOMEM;
+ 		}
+ 	} else {
+ 		/* If we can't find a IIO device by name assume device_name is a
+@@ -317,6 +316,6 @@ int main(int argc, char **argv)
+ 
+ error_free_chrdev_name:
+ 	free(chrdev_name);
+-error_ret:
++
+ 	return ret;
+ }
+diff --git a/tools/iio/iio_utils.c b/tools/iio/iio_utils.c
+index 5d5831d..0524725 100644
+--- a/tools/iio/iio_utils.c
++++ b/tools/iio/iio_utils.c
+@@ -107,10 +107,9 @@ int iioutils_get_type(unsigned *is_signed,
+ 	const struct dirent *ent;
+ 
+ 	ret = asprintf(&scan_el_dir, FORMAT_SCAN_ELEMENTS_DIR, device_dir);
+-	if (ret < 0) {
+-		ret = -ENOMEM;
+-		goto error_ret;
+-	}
++	if (ret < 0)
++		return -ENOMEM;
++
+ 	ret = asprintf(&builtname, FORMAT_TYPE_FILE, name);
+ 	if (ret < 0) {
+ 		ret = -ENOMEM;
+@@ -202,7 +201,7 @@ error_free_builtname:
+ 	free(builtname);
+ error_free_scan_el_dir:
+ 	free(scan_el_dir);
+-error_ret:
++
+ 	return ret;
  }
  
-+void print_usage(void)
-+{
-+	printf("Usage: generic_buffer [options]...\n"
-+	       "Capture, convert and output data from IIO device buffer\n"
-+	       "  -c <n>     Do n conversions\n"
-+	       "  -e         Disable wait for event (new data)\n"
-+	       "  -g         Use trigger-less mode\n"
-+	       "  -l <n>     Set buffer length to n samples\n"
-+	       "  -n <name>  Set device name (mandatory)\n"
-+	       "  -t <name>  Set trigger name\n"
-+	       "  -w <n>     Set delay between reads in us (event-less mode)\n");
-+}
+@@ -230,10 +229,9 @@ int iioutils_get_param_float(float *output,
+ 	const struct dirent *ent;
+ 
+ 	ret = asprintf(&builtname, "%s_%s", name, param_name);
+-	if (ret < 0) {
+-		ret = -ENOMEM;
+-		goto error_ret;
+-	}
++	if (ret < 0)
++		return -ENOMEM;
 +
- int main(int argc, char **argv)
- {
- 	unsigned long num_loops = 2;
-@@ -193,29 +206,19 @@ int main(int argc, char **argv)
+ 	ret = asprintf(&builtname_generic,
+ 		       "%s_%s", generic_name, param_name);
+ 	if (ret < 0) {
+@@ -277,7 +275,7 @@ error_free_builtname_generic:
+ 	free(builtname_generic);
+ error_free_builtname:
+ 	free(builtname);
+-error_ret:
++
+ 	return ret;
+ }
  
- 	struct iio_channel_info *channels;
+@@ -326,10 +324,9 @@ int build_channel_array(const char *device_dir,
  
--	while ((c = getopt(argc, argv, "l:w:c:et:n:g")) != -1) {
-+	while ((c = getopt(argc, argv, "c:egl:n:t:w:")) != -1) {
- 		switch (c) {
--		case 'n':
--			device_name = optarg;
--			break;
--		case 't':
--			trigger_name = optarg;
--			datardytrigger = 0;
--			break;
--		case 'e':
--			noevents = 1;
--			break;
- 		case 'c':
- 			errno = 0;
- 			num_loops = strtoul(optarg, &dummy, 10);
- 			if (errno)
- 				return -errno;
- 			break;
--		case 'w':
--			errno = 0;
--			timedelay = strtoul(optarg, &dummy, 10);
--			if (errno)
--				return -errno;
-+		case 'e':
-+			noevents = 1;
-+			break;
-+		case 'g':
-+			notrigger = 1;
- 			break;
- 		case 'l':
- 			errno = 0;
-@@ -223,16 +226,30 @@ int main(int argc, char **argv)
- 			if (errno)
- 				return -errno;
- 			break;
--		case 'g':
--			notrigger = 1;
-+		case 'n':
-+			device_name = optarg;
-+			break;
-+		case 't':
-+			trigger_name = optarg;
-+			datardytrigger = 0;
-+			break;
-+		case 'w':
-+			errno = 0;
-+			timedelay = strtoul(optarg, &dummy, 10);
-+			if (errno)
-+				return -errno;
- 			break;
- 		case '?':
-+			print_usage();
- 			return -1;
- 		}
- 	}
+ 	*counter = 0;
+ 	ret = asprintf(&scan_el_dir, FORMAT_SCAN_ELEMENTS_DIR, device_dir);
+-	if (ret < 0) {
+-		ret = -ENOMEM;
+-		goto error_ret;
+-	}
++	if (ret < 0)
++		return -ENOMEM;
++
+ 	dp = opendir(scan_el_dir);
+ 	if (dp == NULL) {
+ 		ret = -errno;
+@@ -526,7 +523,7 @@ error_close_dir:
  
--	if (device_name == NULL)
-+	if (device_name == NULL) {
-+		printf("Device name not set\n");
-+		print_usage();
- 		return -1;
-+	}
- 
- 	/* Find the device requested */
- 	dev_num = find_type_by_name(device_name, "iio:device");
-diff --git a/tools/iio/lsiio.c b/tools/iio/lsiio.c
-index b1089ad..b59ee17 100644
---- a/tools/iio/lsiio.c
-+++ b/tools/iio/lsiio.c
-@@ -164,7 +164,7 @@ int main(int argc, char **argv)
- {
- 	int c, err = 0;
- 
--	while ((c = getopt(argc, argv, "d:D:v")) != EOF) {
-+	while ((c = getopt(argc, argv, "v")) != EOF) {
- 		switch (c) {
- 		case 'v':
- 			verblevel++;
-@@ -179,9 +179,7 @@ int main(int argc, char **argv)
- 	if (err || argc > optind) {
- 		fprintf(stderr, "Usage: lsiio [options]...\n"
- 			"List industrial I/O devices\n"
--			"  -v, --verbose\n"
--			"      Increase verbosity (may be given multiple times)\n"
--			);
-+			"  -v  Increase verbosity (may be given multiple times)\n");
- 		exit(1);
- 	}
+ error_free_name:
+ 	free(scan_el_dir);
+-error_ret:
++
+ 	return ret;
+ }
  
 -- 
 2.3.6
