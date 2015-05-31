@@ -7,54 +7,40 @@ Cc: Jonathan Cameron <jic23@kernel.org>,
 	Roberta Dobrescu <roberta.dobrescu@gmail.com>,
 	Daniel Baluta <daniel.baluta@intel.com>,
 	Irina Tirdea <irina.tirdea@intel.com>
-Subject: [PATCH 05/32] tools:iio:iio_utils: fix allocation handling
-Date: Sun, 31 May 2015 14:39:45 +0200
-Message-Id: <acd603a02e641c09eff81c07a012a44a95b3d5f6.1433072539.git.knaack.h@gmx.de>
+Subject: [PATCH 01/32] tools:iio:generic_buffer: fix order of freeing data
+Date: Sun, 31 May 2015 14:39:41 +0200
+Message-Id: <106ad3c604e57db622bd4a274a4429b25b5af1bd.1433072539.git.knaack.h@gmx.de>
 In-Reply-To: <cover.1433072539.git.knaack.h@gmx.de>
 References: <cover.1433072539.git.knaack.h@gmx.de>
 In-Reply-To: <cover.1433072539.git.knaack.h@gmx.de>
 References: <cover.1433072539.git.knaack.h@gmx.de>
 List-ID: <linux-iio@vger.kernel.org>
 
-In build_channel_array(), count needs to be decreased in more places since
-current->name and current->generic_name would be freed on the error path,
-although they have not been allocated, yet.
-This also requires to free current->name, when it is allocated, but
-current->generic_name is not yet allocated.
+data gets allocated before buffer_access, so it should be freed in reverse
+order. Otherwise, if allocating buffer_access fails, an attempt to free it
+would be taken, which should not happen.
 
 Signed-off-by: Hartmut Knaack <knaack.h@gmx.de>
 ---
- tools/iio/iio_utils.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ tools/iio/generic_buffer.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/tools/iio/iio_utils.c b/tools/iio/iio_utils.c
-index 6daf98f..1c0ca2f 100644
---- a/tools/iio/iio_utils.c
-+++ b/tools/iio/iio_utils.c
-@@ -334,6 +334,7 @@ int build_channel_array(const char *device_dir,
- 			if (sysfsfp == NULL) {
- 				free(filename);
- 				ret = -errno;
-+				count--;
- 				goto error_cleanup_array;
- 			}
- 			fscanf(sysfsfp, "%i", &current_enabled);
-@@ -353,6 +354,7 @@ int build_channel_array(const char *device_dir,
- 			if (current->name == NULL) {
- 				free(filename);
- 				ret = -ENOMEM;
-+				count--;
- 				goto error_cleanup_array;
- 			}
- 			/* Get the generic and specific name elements */
-@@ -360,6 +362,8 @@ int build_channel_array(const char *device_dir,
- 						     &current->generic_name);
- 			if (ret) {
- 				free(filename);
-+				free(current->name);
-+				count--;
- 				goto error_cleanup_array;
- 			}
- 			ret = asprintf(&filename,
+diff --git a/tools/iio/generic_buffer.c b/tools/iio/generic_buffer.c
+index f805493..15f2a40 100644
+--- a/tools/iio/generic_buffer.c
++++ b/tools/iio/generic_buffer.c
+@@ -345,10 +345,10 @@ int main(int argc, char **argv)
+ 
+ error_close_buffer_access:
+ 	close(fp);
+-error_free_data:
+-	free(data);
+ error_free_buffer_access:
+ 	free(buffer_access);
++error_free_data:
++	free(data);
+ error_free_buf_dir_name:
+ 	free(buf_dir_name);
+ error_free_triggername:
 -- 
 2.3.6
