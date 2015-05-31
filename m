@@ -7,125 +7,61 @@ Cc: Jonathan Cameron <jic23@kernel.org>,
 	Roberta Dobrescu <roberta.dobrescu@gmail.com>,
 	Daniel Baluta <daniel.baluta@intel.com>,
 	Irina Tirdea <irina.tirdea@intel.com>
-Subject: [PATCH 22/32] tools:iio:lsiio: add error handling
-Date: Sun, 31 May 2015 14:40:15 +0200
-Message-Id: <29c8e3159f3b5fc3fac7bee3b624eb57e1adf2d7.1433072539.git.knaack.h@gmx.de>
+Subject: [PATCH 25/32] tools:iio:iio_event_monitor: refactor events output
+Date: Sun, 31 May 2015 14:40:18 +0200
+Message-Id: <a8ecccf5a12d1ebbf0a5ee22d15fc3c1f7d0ff88.1433072539.git.knaack.h@gmx.de>
 In-Reply-To: <6915cdc58104e623ad388787b9069337f1950614.1433072539.git.knaack.h@gmx.de>
 References: <6915cdc58104e623ad388787b9069337f1950614.1433072539.git.knaack.h@gmx.de>
 In-Reply-To: <cover.1433072539.git.knaack.h@gmx.de>
 References: <cover.1433072539.git.knaack.h@gmx.de>
 List-ID: <linux-iio@vger.kernel.org>
 
-Add error handling to calls which can indicate a major problem by
-returning an error code.
-This also involves to change the type of dump_devices() from void to int.
+Refactor the code in print_event() to reduce code duplication and better
+reflect that the type is output unconditionally, as well as cascade the
+dependency of the diff-channel. Saves a few lines of code, as well.
 
 Signed-off-by: Hartmut Knaack <knaack.h@gmx.de>
 ---
- tools/iio/lsiio.c | 44 ++++++++++++++++++++++++++++++++------------
- 1 file changed, 32 insertions(+), 12 deletions(-)
+ tools/iio/iio_event_monitor.c | 24 ++++++++++--------------
+ 1 file changed, 10 insertions(+), 14 deletions(-)
 
-diff --git a/tools/iio/lsiio.c b/tools/iio/lsiio.c
-index daa6c53..b1089ad 100644
---- a/tools/iio/lsiio.c
-+++ b/tools/iio/lsiio.c
-@@ -69,7 +69,10 @@ static int dump_one_device(const char *dev_dir_name)
- 			"%i", &dev_idx);
- 	if (retval != 1)
- 		return -EINVAL;
--	read_sysfs_string("name", dev_dir_name, name);
-+	retval = read_sysfs_string("name", dev_dir_name, name);
-+	if (retval)
-+		return retval;
-+
- 	printf("Device %03d: %s\n", dev_idx, name);
- 
- 	if (verblevel >= VERBLEVEL_SENSORS)
-@@ -87,20 +90,24 @@ static int dump_one_trigger(const char *dev_dir_name)
- 			"%i", &dev_idx);
- 	if (retval != 1)
- 		return -EINVAL;
--	read_sysfs_string("name", dev_dir_name, name);
-+	retval = read_sysfs_string("name", dev_dir_name, name);
-+	if (retval)
-+		return retval;
-+
- 	printf("Trigger %03d: %s\n", dev_idx, name);
- 	return 0;
- }
- 
--static void dump_devices(void)
-+static int dump_devices(void)
- {
- 	const struct dirent *ent;
-+	int ret;
- 	DIR *dp;
- 
- 	dp = opendir(iio_dir);
- 	if (dp == NULL) {
- 		printf("No industrial I/O devices available\n");
--		return;
-+		return -ENODEV;
+diff --git a/tools/iio/iio_event_monitor.c b/tools/iio/iio_event_monitor.c
+index 17c27bf..8e682a7 100644
+--- a/tools/iio/iio_event_monitor.c
++++ b/tools/iio/iio_event_monitor.c
+@@ -213,23 +213,19 @@ static void print_event(struct iio_event_data *event)
+ 		return;
  	}
  
- 	while (ent = readdir(dp), ent != NULL) {
-@@ -109,11 +116,16 @@ static void dump_devices(void)
+-	printf("Event: time: %lld, ", event->timestamp);
++	printf("Event: time: %lld, type: %s", event->timestamp,
++	       iio_chan_type_name_spec[type]);
  
- 			if (asprintf(&dev_dir_name, "%s%s", iio_dir,
- 				     ent->d_name) < 0) {
--				printf("Memory allocation failed\n");
-+				ret = -ENOMEM;
-+				goto error_close_dir;
-+			}
-+
-+			ret = dump_one_device(dev_dir_name);
-+			if (ret) {
-+				free(dev_dir_name);
- 				goto error_close_dir;
- 			}
+-	if (mod != IIO_NO_MOD) {
+-		printf("type: %s(%s), ",
+-			iio_chan_type_name_spec[type],
+-			iio_modifier_names[mod]);
+-	} else {
+-		printf("type: %s, ",
+-			iio_chan_type_name_spec[type]);
+-	}
++	if (mod != IIO_NO_MOD)
++		printf("(%s)", iio_modifier_names[mod]);
  
--			dump_one_device(dev_dir_name);
- 			free(dev_dir_name);
- 			if (verblevel >= VERBLEVEL_SENSORS)
- 				printf("\n");
-@@ -126,16 +138,26 @@ static void dump_devices(void)
+-	if (diff && chan >= 0 && chan2 >= 0)
+-		printf("channel: %d-%d, ", chan, chan2);
+-	else if (chan >= 0)
+-		printf("channel: %d, ", chan);
++	if (chan >= 0) {
++		printf(", channel: %d", chan);
++		if (diff && chan2 >= 0)
++			printf("-%d", chan2);
++	}
  
- 			if (asprintf(&dev_dir_name, "%s%s", iio_dir,
- 				     ent->d_name) < 0) {
--				printf("Memory allocation failed\n");
-+				ret = -ENOMEM;
-+				goto error_close_dir;
-+			}
-+
-+			ret = dump_one_trigger(dev_dir_name);
-+			if (ret) {
-+				free(dev_dir_name);
- 				goto error_close_dir;
- 			}
+-	printf("evtype: %s", iio_ev_type_text[ev_type]);
++	printf(", evtype: %s", iio_ev_type_text[ev_type]);
  
--			dump_one_trigger(dev_dir_name);
- 			free(dev_dir_name);
- 		}
- 	}
-+	return (closedir(dp) == -1) ? -errno : 0;
-+
- error_close_dir:
--	closedir(dp);
-+	if (closedir(dp) == -1)
-+		perror("dump_devices(): Failed to close directory");
-+
-+	return ret;
- }
- 
- int main(int argc, char **argv)
-@@ -163,7 +185,5 @@ int main(int argc, char **argv)
- 		exit(1);
- 	}
- 
--	dump_devices();
--
--	return 0;
-+	return dump_devices();
- }
+ 	if (dir != IIO_EV_DIR_NONE)
+ 		printf(", direction: %s", iio_ev_dir_text[dir]);
 -- 
 2.3.6
