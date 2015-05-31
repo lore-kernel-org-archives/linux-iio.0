@@ -1,40 +1,58 @@
-Return-Path: <vladimir.barinov@cogentembedded.com>
-From: Vladimir Barinov <vladimir.barinov@cogentembedded.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:35697 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751628AbbFAVQo (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 1 Jun 2015 17:16:44 -0400
+Message-ID: <556B3330.3020906@kernel.org>
+Date: Sun, 31 May 2015 17:13:36 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+MIME-Version: 1.0
+To: Hartmut Knaack <knaack.h@gmx.de>, linux-iio@vger.kernel.org
+CC: Lars-Peter Clausen <lars@metafoo.de>,
 	Peter Meerwald <pmeerw@pmeerw.net>,
-	Rob Herring <robh+dt@kernel.org>,
-	Pawel Moll <pawel.moll@arm.com>,
-	Mark Rutland <mark.rutland@arm.com>,
-	Ian Campbell <ijc+devicetree@hellion.org.uk>,
-	Kumar Gala <galak@codeaurora.org>,
-	linux-kernel@vger.kernel.org,
-	linux-iio@vger.kernel.org,
-	devicetree@vger.kernel.org
-Subject: [PATCH 0/3] iio: adc: hi-843x: Add Holt HI-8435/8436/8437 descrete ADC
-Date: Mon,  1 Jun 2015 15:17:53 +0300
-Message-Id: <1433161073-21967-1-git-send-email-vladimir.barinov@cogentembedded.com>
-List-ID: <linux-iio@vger.kernel.org>
+	Roberta Dobrescu <roberta.dobrescu@gmail.com>,
+	Daniel Baluta <daniel.baluta@intel.com>,
+	Irina Tirdea <irina.tirdea@intel.com>
+Subject: Re: [PATCH 01/32] tools:iio:generic_buffer: fix order of freeing
+ data
+References: <cover.1433072539.git.knaack.h@gmx.de> <106ad3c604e57db622bd4a274a4429b25b5af1bd.1433072539.git.knaack.h@gmx.de>
+In-Reply-To: <106ad3c604e57db622bd4a274a4429b25b5af1bd.1433072539.git.knaack.h@gmx.de>
+Content-Type: text/plain; charset=windows-1252
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Hello,
+On 31/05/15 13:39, Hartmut Knaack wrote:
+> data gets allocated before buffer_access, so it should be freed in reverse
+> order. Otherwise, if allocating buffer_access fails, an attempt to free it
+> would be taken, which should not happen.
+> 
+> Signed-off-by: Hartmut Knaack <knaack.h@gmx.de>
+Applied to the togreg branch of iio.git which will get pushed out as
+testing when I'm on a sensible net connection.
 
-This adds the folowing:
-- Holt descrete ADC driver for HI-8435/8436/8437 chips
-- Add vendor prefix
-- Document DT bindings
+An unplanned work trip for the next few days (hopefully not longer).
 
-Vladimir Barinov (3):
-[1/3] iio: adc: hi-843x: Holt HI-8435/8436/8437 descrete ADC
-[2/3] dt: Add vendor prefix 'holt'
-[3/3] dt: Document Holt descrete ADC bindings
+Jonathan
+> ---
+>  tools/iio/generic_buffer.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+> 
+> diff --git a/tools/iio/generic_buffer.c b/tools/iio/generic_buffer.c
+> index f805493..15f2a40 100644
+> --- a/tools/iio/generic_buffer.c
+> +++ b/tools/iio/generic_buffer.c
+> @@ -345,10 +345,10 @@ int main(int argc, char **argv)
+>  
+>  error_close_buffer_access:
+>  	close(fp);
+> -error_free_data:
+> -	free(data);
+>  error_free_buffer_access:
+>  	free(buffer_access);
+> +error_free_data:
+> +	free(data);
+>  error_free_buf_dir_name:
+>  	free(buf_dir_name);
+>  error_free_triggername:
+> 
 
----
-This patchset is against the 'kernel/git/torvalds/linux.git' repo.
-
- Documentation/devicetree/bindings/iio/adc/hi-843x.txt |   27 
- Documentation/devicetree/bindings/vendor-prefixes.txt |    1 
- drivers/iio/adc/Kconfig                               |   12 
- drivers/iio/adc/Makefile                              |    1 
- drivers/iio/adc/hi-843x.c                             |  777 ++++++++++++++++++
- 5 files changed, 818 insertions(+)
