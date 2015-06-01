@@ -1,63 +1,117 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:35841 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:35857 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754111AbbFAVRL (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 1 Jun 2015 17:17:11 -0400
-Message-ID: <556C809A.7000504@kernel.org>
-Date: Mon, 01 Jun 2015 16:56:10 +0100
+	with ESMTP id S1754101AbbFAVRK (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 1 Jun 2015 17:17:10 -0400
+Message-ID: <556C3546.4020300@kernel.org>
+Date: Mon, 01 Jun 2015 11:34:46 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Daniel Baluta <daniel.baluta@intel.com>,
-	Dan Carpenter <dan.carpenter@oracle.com>
-CC: Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	kernel-janitors@vger.kernel.org
-Subject: Re: [patch] iio: magnetometer: correct a harmless off by one check
-References: <20150527082052.GA19423@mwanda> <CAEnQRZDZFSQ0E7_JUrx6CsSF6erg+USDAJyMFhhhz=Brbk-VPg@mail.gmail.com>
-In-Reply-To: <CAEnQRZDZFSQ0E7_JUrx6CsSF6erg+USDAJyMFhhhz=Brbk-VPg@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
+To: Lars-Peter Clausen <lars@metafoo.de>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>
+CC: linux-iio@vger.kernel.org
+Subject: Re: [PATCH 3/3] iio: Require strict scan mask matching in hardware
+ mode
+References: <1432916062-15195-1-git-send-email-lars@metafoo.de> <1432916062-15195-4-git-send-email-lars@metafoo.de>
+In-Reply-To: <1432916062-15195-4-git-send-email-lars@metafoo.de>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 27/05/15 09:37, Daniel Baluta wrote:
-> On Wed, May 27, 2015 at 11:20 AM, Dan Carpenter
-> <dan.carpenter@oracle.com> wrote:
->> The line before limits i to 0-3 so the existing code works fine but the
->> check is still off by one and >= is intended instead of >.
->>
->> Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+On 29/05/15 17:14, Lars-Peter Clausen wrote:
+> In hardware mode we can not use the software demuxer, this means that the
+> selected scan mask needs to match one of the available scan masks exactly.
 > 
-> Good catch.
+> It also means that all attached buffers need to use the same scan mask.
+> Given that when operating in hardware mode there is typically only a single
+> buffer attached to the device this not an issue. Add a sanity check to make
+> sure that only a single buffer is attached in hardware mode nevertheless.
 > 
-> Reviewed-by: Daniel Baluta <daniel.baluta@intel.com>
-Applied to the togreg branch of iio.git - initially pushed out as
-testing when I have a network that does anything other than https.
+That pretty much sums up why devices supporting only hardware buffers
+are probably not going to be a long term feature!
+Mind you for fast devices we may want to allow forced bypassing of the
+demux (i.e. a hardware buffer).
 
-J
+Out of curiosity is this series a precursor to another hardware buffered
+device or just a useful intellectual exercise?
+
+
+Applied. 
+> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+
+> ---
+>  drivers/iio/industrialio-buffer.c | 25 ++++++++++++++++++++-----
+>  1 file changed, 20 insertions(+), 5 deletions(-)
 > 
->>
->> diff --git a/drivers/iio/magnetometer/mmc35240.c b/drivers/iio/magnetometer/mmc35240.c
->> index aa6e25d..c71392c 100644
->> --- a/drivers/iio/magnetometer/mmc35240.c
->> +++ b/drivers/iio/magnetometer/mmc35240.c
->> @@ -308,7 +308,7 @@ static int mmc35240_read_raw(struct iio_dev *indio_dev,
->>                         return ret;
->>
->>                 i = (reg & MMC35240_CTRL1_BW_MASK) >> MMC35240_CTRL1_BW_SHIFT;
->> -               if (i < 0 || i > ARRAY_SIZE(mmc35240_samp_freq))
->> +               if (i < 0 || i >= ARRAY_SIZE(mmc35240_samp_freq))
->>                         return -EINVAL;
->>
->>                 *val = mmc35240_samp_freq[i];
->> --
->> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
->> the body of a message to majordomo@vger.kernel.org
->> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> diff --git a/drivers/iio/industrialio-buffer.c b/drivers/iio/industrialio-buffer.c
+> index 4250e97..e174fcc 100644
+> --- a/drivers/iio/industrialio-buffer.c
+> +++ b/drivers/iio/industrialio-buffer.c
+> @@ -239,13 +239,19 @@ static ssize_t iio_scan_el_show(struct device *dev,
+>  /* Note NULL used as error indicator as it doesn't make sense. */
+>  static const unsigned long *iio_scan_mask_match(const unsigned long *av_masks,
+>  					  unsigned int masklength,
+> -					  const unsigned long *mask)
+> +					  const unsigned long *mask,
+> +					  bool strict)
+>  {
+>  	if (bitmap_empty(mask, masklength))
+>  		return NULL;
+>  	while (*av_masks) {
+> -		if (bitmap_subset(mask, av_masks, masklength))
+> -			return av_masks;
+> +		if (strict) {
+> +			if (bitmap_equal(mask, av_masks, masklength))
+> +				return av_masks;
+> +		} else {
+> +			if (bitmap_subset(mask, av_masks, masklength))
+> +				return av_masks;
+> +		}
+>  		av_masks += BITS_TO_LONGS(masklength);
+>  	}
+>  	return NULL;
+> @@ -295,7 +301,7 @@ static int iio_scan_mask_set(struct iio_dev *indio_dev,
+>  	if (indio_dev->available_scan_masks) {
+>  		mask = iio_scan_mask_match(indio_dev->available_scan_masks,
+>  					   indio_dev->masklength,
+> -					   trialmask);
+> +					   trialmask, false);
+>  		if (!mask)
+>  			goto err_invalid_mask;
+>  	}
+> @@ -602,6 +608,7 @@ static int iio_verify_update(struct iio_dev *indio_dev,
+>  {
+>  	unsigned long *compound_mask;
+>  	const unsigned long *scan_mask;
+> +	bool strict_scanmask = false;
+>  	struct iio_buffer *buffer;
+>  	bool scan_timestamp;
+>  	unsigned int modes;
+> @@ -631,7 +638,14 @@ static int iio_verify_update(struct iio_dev *indio_dev,
+>  	if ((modes & INDIO_BUFFER_TRIGGERED) && indio_dev->trig) {
+>  		config->mode = INDIO_BUFFER_TRIGGERED;
+>  	} else if (modes & INDIO_BUFFER_HARDWARE) {
+> +		/*
+> +		 * Keep things simple for now and only allow a single buffer to
+> +		 * be connected in hardware mode.
+> +		 */
+> +		if (insert_buffer && !list_empty(&indio_dev->buffer_list))
+> +			return -EINVAL;
+>  		config->mode = INDIO_BUFFER_HARDWARE;
+> +		strict_scanmask = true;
+>  	} else if (modes & INDIO_BUFFER_SOFTWARE) {
+>  		config->mode = INDIO_BUFFER_SOFTWARE;
+>  	} else {
+> @@ -666,7 +680,8 @@ static int iio_verify_update(struct iio_dev *indio_dev,
+>  	if (indio_dev->available_scan_masks) {
+>  		scan_mask = iio_scan_mask_match(indio_dev->available_scan_masks,
+>  				    indio_dev->masklength,
+> -				    compound_mask);
+> +				    compound_mask,
+> +				    strict_scanmask);
+>  		kfree(compound_mask);
+>  		if (scan_mask == NULL)
+>  			return -EINVAL;
 > 
 
