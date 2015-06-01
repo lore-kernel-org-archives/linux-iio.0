@@ -1,10 +1,10 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:35762 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:35767 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753726AbbFAVRA (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 1 Jun 2015 17:17:00 -0400
-Message-ID: <556C0BD8.6040301@kernel.org>
-Date: Mon, 01 Jun 2015 08:38:00 +0100
+	with ESMTP id S1753918AbbFAVRB (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 1 Jun 2015 17:17:01 -0400
+Message-ID: <556C0C50.2040505@kernel.org>
+Date: Mon, 01 Jun 2015 08:40:00 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
 To: Hartmut Knaack <knaack.h@gmx.de>, linux-iio@vger.kernel.org
@@ -13,43 +13,143 @@ CC: Lars-Peter Clausen <lars@metafoo.de>,
 	Roberta Dobrescu <roberta.dobrescu@gmail.com>,
 	Daniel Baluta <daniel.baluta@intel.com>,
 	Irina Tirdea <irina.tirdea@intel.com>
-Subject: Re: [PATCH 28/32] tools:iio:iio_utils: initialize count during declaration
-References: <6915cdc58104e623ad388787b9069337f1950614.1433072539.git.knaack.h@gmx.de> <fe981c1a50daa8bd7aef36061cccdd376894fda0.1433072539.git.knaack.h@gmx.de>
-In-Reply-To: <fe981c1a50daa8bd7aef36061cccdd376894fda0.1433072539.git.knaack.h@gmx.de>
+Subject: Re: [PATCH 29/32] tools:iio: rework program parameters
+References: <6915cdc58104e623ad388787b9069337f1950614.1433072539.git.knaack.h@gmx.de> <cd3645ea3071573bbdc97304943ed16f5b712d6f.1433072539.git.knaack.h@gmx.de>
+In-Reply-To: <cd3645ea3071573bbdc97304943ed16f5b712d6f.1433072539.git.knaack.h@gmx.de>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
 On 31/05/15 13:40, Hartmut Knaack wrote:
-> In build_channel_array(), count can be initialized already during variable
-> declaration.
+> In generic_buffer.c: sort program parameters alphabetically and provide
+> 		     usage information
+> In lsiio.c: drop unused parameters
 > 
 > Signed-off-by: Hartmut Knaack <knaack.h@gmx.de>
 Applied.
+
 > ---
->  tools/iio/iio_utils.c | 3 +--
->  1 file changed, 1 insertion(+), 2 deletions(-)
+>  tools/iio/generic_buffer.c | 55 ++++++++++++++++++++++++++++++----------------
+>  tools/iio/lsiio.c          |  6 ++---
+>  2 files changed, 38 insertions(+), 23 deletions(-)
 > 
-> diff --git a/tools/iio/iio_utils.c b/tools/iio/iio_utils.c
-> index 7c0abb3..dfee1a3 100644
-> --- a/tools/iio/iio_utils.c
-> +++ b/tools/iio/iio_utils.c
-> @@ -312,7 +312,7 @@ int build_channel_array(const char *device_dir,
+> diff --git a/tools/iio/generic_buffer.c b/tools/iio/generic_buffer.c
+> index f17b168..c546852 100644
+> --- a/tools/iio/generic_buffer.c
+> +++ b/tools/iio/generic_buffer.c
+> @@ -168,6 +168,19 @@ void process_scan(char *data,
+>  	printf("\n");
+>  }
+>  
+> +void print_usage(void)
+> +{
+> +	printf("Usage: generic_buffer [options]...\n"
+> +	       "Capture, convert and output data from IIO device buffer\n"
+> +	       "  -c <n>     Do n conversions\n"
+> +	       "  -e         Disable wait for event (new data)\n"
+> +	       "  -g         Use trigger-less mode\n"
+> +	       "  -l <n>     Set buffer length to n samples\n"
+> +	       "  -n <name>  Set device name (mandatory)\n"
+> +	       "  -t <name>  Set trigger name\n"
+> +	       "  -w <n>     Set delay between reads in us (event-less mode)\n");
+> +}
+> +
+>  int main(int argc, char **argv)
 >  {
->  	DIR *dp;
->  	FILE *sysfsfp;
-> -	int count, i;
-> +	int count = 0, i;
->  	struct iio_channel_info *current;
->  	int ret;
->  	const struct dirent *ent;
-> @@ -370,7 +370,6 @@ int build_channel_array(const char *device_dir,
->  		goto error_close_dir;
+>  	unsigned long num_loops = 2;
+> @@ -193,29 +206,19 @@ int main(int argc, char **argv)
+>  
+>  	struct iio_channel_info *channels;
+>  
+> -	while ((c = getopt(argc, argv, "l:w:c:et:n:g")) != -1) {
+> +	while ((c = getopt(argc, argv, "c:egl:n:t:w:")) != -1) {
+>  		switch (c) {
+> -		case 'n':
+> -			device_name = optarg;
+> -			break;
+> -		case 't':
+> -			trigger_name = optarg;
+> -			datardytrigger = 0;
+> -			break;
+> -		case 'e':
+> -			noevents = 1;
+> -			break;
+>  		case 'c':
+>  			errno = 0;
+>  			num_loops = strtoul(optarg, &dummy, 10);
+>  			if (errno)
+>  				return -errno;
+>  			break;
+> -		case 'w':
+> -			errno = 0;
+> -			timedelay = strtoul(optarg, &dummy, 10);
+> -			if (errno)
+> -				return -errno;
+> +		case 'e':
+> +			noevents = 1;
+> +			break;
+> +		case 'g':
+> +			notrigger = 1;
+>  			break;
+>  		case 'l':
+>  			errno = 0;
+> @@ -223,16 +226,30 @@ int main(int argc, char **argv)
+>  			if (errno)
+>  				return -errno;
+>  			break;
+> -		case 'g':
+> -			notrigger = 1;
+> +		case 'n':
+> +			device_name = optarg;
+> +			break;
+> +		case 't':
+> +			trigger_name = optarg;
+> +			datardytrigger = 0;
+> +			break;
+> +		case 'w':
+> +			errno = 0;
+> +			timedelay = strtoul(optarg, &dummy, 10);
+> +			if (errno)
+> +				return -errno;
+>  			break;
+>  		case '?':
+> +			print_usage();
+>  			return -1;
+>  		}
 >  	}
->  	seekdir(dp, 0);
-> -	count = 0;
->  	while (ent = readdir(dp), ent != NULL) {
->  		if (strcmp(ent->d_name + strlen(ent->d_name) - strlen("_en"),
->  			   "_en") == 0) {
+>  
+> -	if (device_name == NULL)
+> +	if (device_name == NULL) {
+> +		printf("Device name not set\n");
+> +		print_usage();
+>  		return -1;
+> +	}
+>  
+>  	/* Find the device requested */
+>  	dev_num = find_type_by_name(device_name, "iio:device");
+> diff --git a/tools/iio/lsiio.c b/tools/iio/lsiio.c
+> index b1089ad..b59ee17 100644
+> --- a/tools/iio/lsiio.c
+> +++ b/tools/iio/lsiio.c
+> @@ -164,7 +164,7 @@ int main(int argc, char **argv)
+>  {
+>  	int c, err = 0;
+>  
+> -	while ((c = getopt(argc, argv, "d:D:v")) != EOF) {
+> +	while ((c = getopt(argc, argv, "v")) != EOF) {
+>  		switch (c) {
+>  		case 'v':
+>  			verblevel++;
+> @@ -179,9 +179,7 @@ int main(int argc, char **argv)
+>  	if (err || argc > optind) {
+>  		fprintf(stderr, "Usage: lsiio [options]...\n"
+>  			"List industrial I/O devices\n"
+> -			"  -v, --verbose\n"
+> -			"      Increase verbosity (may be given multiple times)\n"
+> -			);
+> +			"  -v  Increase verbosity (may be given multiple times)\n");
+>  		exit(1);
+>  	}
+>  
 > 
 
