@@ -1,69 +1,50 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:35850 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:35841 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754009AbbFAVRH (ORCPT
+	with ESMTP id S1754001AbbFAVRH (ORCPT
 	<rfc822;linux-iio@vger.kernel.org>); Mon, 1 Jun 2015 17:17:07 -0400
-Message-ID: <556C33D7.7090703@kernel.org>
-Date: Mon, 01 Jun 2015 11:28:39 +0100
+Message-ID: <556C3290.3040605@kernel.org>
+Date: Mon, 01 Jun 2015 11:23:12 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Lars-Peter Clausen <lars@metafoo.de>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>
-CC: linux-iio@vger.kernel.org
-Subject: Re: [PATCH 1/3] iio: Always compute masklength
-References: <1432916062-15195-1-git-send-email-lars@metafoo.de> <1432916062-15195-2-git-send-email-lars@metafoo.de>
-In-Reply-To: <1432916062-15195-2-git-send-email-lars@metafoo.de>
+To: Vladimirs Ambrosovs <rodriguez.twister@gmail.com>,
+	sudipm.mukherjee@gmail.com, daniel.baluta@intel.com,
+	dan.carpenter@oracle.com, gregkh@linuxfoundation.org
+CC: cristina.opriceana@gmail.com,
+	driverdev-devel@linuxdriverproject.org, linux-iio@vger.kernel.org
+Subject: Re: [PATCH v3 3/3] staging: iio_simple_dummy: fix module_param type
+References: <1432974017-24547-1-git-send-email-rodriguez.twister@gmail.com> <1432974017-24547-4-git-send-email-rodriguez.twister@gmail.com>
+In-Reply-To: <1432974017-24547-4-git-send-email-rodriguez.twister@gmail.com>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 29/05/15 17:14, Lars-Peter Clausen wrote:
-> Even if no userspace consumer buffer is attached to the IIO device at
-> registration we still need to compute the masklength, since it is possible
-> that a in-kernel consumer buffer is going to get attached to the device at
-> a later point.
+On 30/05/15 09:20, Vladimirs Ambrosovs wrote:
+> Fix the module_param "instances" type to uint, since the variable type
+> holding the value is unsigned.
 > 
-> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
-Not sure we actually have this condition as of yet, but I guess it 'might'
-occur.  Certainly would be good to allow for IIO devices without an
-IIO 'front end' in the future.
+> Signed-off-by: Vladimirs Ambrosovs <rodriguez.twister@gmail.com>
+Applied to the togreg branch of iio.git - which will get pushed
+out as testing in a few days. Or just possibly tonight if the hotel
+network is working well and I can remember my password :)
+
+Jonathan
 > ---
->  drivers/iio/industrialio-buffer.c | 15 +++++++++------
->  1 file changed, 9 insertions(+), 6 deletions(-)
+>  drivers/staging/iio/iio_simple_dummy.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 > 
-> diff --git a/drivers/iio/industrialio-buffer.c b/drivers/iio/industrialio-buffer.c
-> index 1129125..a72db00 100644
-> --- a/drivers/iio/industrialio-buffer.c
-> +++ b/drivers/iio/industrialio-buffer.c
-> @@ -968,6 +968,15 @@ int iio_buffer_alloc_sysfs_and_mask(struct iio_dev *indio_dev)
->  	int ret, i, attrn, attrcount, attrcount_orig = 0;
->  	const struct iio_chan_spec *channels;
+> diff --git a/drivers/staging/iio/iio_simple_dummy.c b/drivers/staging/iio/iio_simple_dummy.c
+> index dc9482c7..1629a8a 100644
+> --- a/drivers/staging/iio/iio_simple_dummy.c
+> +++ b/drivers/staging/iio/iio_simple_dummy.c
+> @@ -30,7 +30,7 @@
+>   * dummy devices are registered.
+>   */
+>  static unsigned instances = 1;
+> -module_param(instances, int, 0);
+> +module_param(instances, uint, 0);
 >  
-> +	channels = indio_dev->channels;
-> +	if (channels) {
-> +		int ml = indio_dev->masklength;
-> +
-> +		for (i = 0; i < indio_dev->num_channels; i++)
-> +			ml = max(ml, channels[i].scan_index + 1);
-> +		indio_dev->masklength = ml;
-> +	}
-> +
->  	if (!buffer)
->  		return 0;
->  
-> @@ -1011,12 +1020,6 @@ int iio_buffer_alloc_sysfs_and_mask(struct iio_dev *indio_dev)
->  			if (channels[i].scan_index < 0)
->  				continue;
->  
-> -			/* Establish necessary mask length */
-> -			if (channels[i].scan_index >
-> -			    (int)indio_dev->masklength - 1)
-> -				indio_dev->masklength
-> -					= channels[i].scan_index + 1;
-> -
->  			ret = iio_buffer_add_channel_sysfs(indio_dev,
->  							 &channels[i]);
->  			if (ret < 0)
+>  /* Pointer array used to fake bus elements */
+>  static struct iio_dev **iio_dummy_devs;
 > 
 
