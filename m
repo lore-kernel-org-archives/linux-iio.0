@@ -12,53 +12,31 @@ Cc: Hartmut Knaack <knaack.h@gmx.de>,
 	linux-kernel@vger.kernel.org,
 	linux-iio@vger.kernel.org,
 	devicetree@vger.kernel.org
-Subject: [PATCH 3/3] dt: Document Holt descrete ADC bindings
-Date: Mon,  1 Jun 2015 15:20:52 +0300
-Message-Id: <1433161252-22122-1-git-send-email-vladimir.barinov@cogentembedded.com>
+Subject: [PATCH 2/3] dt: Add vendor prefix 'holt'
+Date: Mon,  1 Jun 2015 15:20:37 +0300
+Message-Id: <1433161237-22078-1-git-send-email-vladimir.barinov@cogentembedded.com>
 In-Reply-To: <1433161073-21967-1-git-send-email-vladimir.barinov@cogentembedded.com>
 References: <1433161073-21967-1-git-send-email-vladimir.barinov@cogentembedded.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-These bindings can be used to register Holt HI-8435/8436/8437 descrete ADC
+Add Holt Integrated Circuits, Inc. to the list of device tree vendor prefixes
 
 Signed-off-by: Vladimir Barinov <vladimir.barinov@cogentembedded.com>
 ---
- .../devicetree/bindings/iio/adc/hi-843x.txt        | 27 ++++++++++++++++++++++
- 1 file changed, 27 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/iio/adc/hi-843x.txt
+ Documentation/devicetree/bindings/vendor-prefixes.txt | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/Documentation/devicetree/bindings/iio/adc/hi-843x.txt b/Documentation/devicetree/bindings/iio/adc/hi-843x.txt
-new file mode 100644
-index 0000000..872e801
---- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/adc/hi-843x.txt
-@@ -0,0 +1,27 @@
-+Holt Integrated Circuits HI-8435/8436/8437 discrete ADC bindings
-+
-+Required properties:
-+ - compatible: Should be "holt,hi-8435" or "holt,hi-8436" or "holt,hi-8437"
-+ - reg: spi chip select number for the device
-+
-+Recommended properties:
-+ - spi-max-frequency: Definition as per
-+		Documentation/devicetree/bindings/spi/spi-bus.txt
-+
-+Optional properties:
-+ - holt,mr-gpio: GPIO used for controlling the MR (chip reset) pin
-+ - holt,debounce-soft: enable software debounce at startup
-+ - holt,debounce-soft-delay: software debounce interval in milliseconds
-+
-+Example:
-+adc@0 {
-+	compatible = "holt,hi-8435";
-+	reg = <0>;
-+
-+	holt,mr-gpio = <&gpio6 1 0>;
-+
-+	holt,debounce-soft;
-+	holt,debounce-soft-delay = <100>;
-+
-+	spi-max-frequency = <1000000>;
-+};
+diff --git a/Documentation/devicetree/bindings/vendor-prefixes.txt b/Documentation/devicetree/bindings/vendor-prefixes.txt
+index 8033919..7101f400 100644
+--- a/Documentation/devicetree/bindings/vendor-prefixes.txt
++++ b/Documentation/devicetree/bindings/vendor-prefixes.txt
+@@ -93,6 +93,7 @@ haoyu	Haoyu Microelectronic Co. Ltd.
+ himax	Himax Technologies, Inc.
+ hisilicon	Hisilicon Limited.
+ hit	Hitachi Ltd.
++holt	Holt Integrated Circuits, Inc.
+ honeywell	Honeywell
+ hp	Hewlett Packard
+ i2se	I2SE GmbH
 -- 
 1.9.1
