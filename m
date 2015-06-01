@@ -1,24 +1,92 @@
-Return-Path: <len.brown@intel.com>
-From: "Brown, Len" <len.brown@intel.com>
-To: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
-	"jic23@kernel.org" <jic23@kernel.org>
-CC: "rjw@rjwysocki.net" <rjw@rjwysocki.net>, "linux-iio@vger.kernel.org"
-	<linux-iio@vger.kernel.org>
-Subject: RE: [PATCH v1] hid-sensor: Fix suspend/resume delay
-Date: Tue, 2 Jun 2015 06:21:55 +0000
-Message-ID: <1A7043D5F58CCB44A599DFD55ED4C948468918E0@fmsmsx115.amr.corp.intel.com>
+Return-Path: <srinivas.pandruvada@linux.intel.com>
+From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+To: jic23@kernel.org
+Cc: rjw@rjwysocki.net,
+	len.brown@intel.com,
+	linux-iio@vger.kernel.org,
+	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Subject: [PATCH v1] hid-sensor: Fix suspend/resume delay
+Date: Mon,  1 Jun 2015 16:36:27 -0700
+Message-Id: <1433201787-22290-2-git-send-email-srinivas.pandruvada@linux.intel.com>
+In-Reply-To: <1433201787-22290-1-git-send-email-srinivas.pandruvada@linux.intel.com>
 References: <1433201787-22290-1-git-send-email-srinivas.pandruvada@linux.intel.com>
- <1433201787-22290-2-git-send-email-srinivas.pandruvada@linux.intel.com>
-In-Reply-To: <1433201787-22290-2-git-send-email-srinivas.pandruvada@linux.intel.com>
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
 List-ID: <linux-iio@vger.kernel.org>
 
-This regression increased the resume time on my Dell XPS11 laptop by 8 seco=
-nds.
-This patch makes that regression go away.
+By default all the sensors are runtime suspended state (lowest power
+state). During Linux suspend process, all the run time suspended
+devices are resumed and then suspended. This caused all sensors to
+power up and introduced delay in suspend time, when we introduced
+runtime PM for HID sensors. The opposite process happens during resume
+process.
+To fix this, we do powerup process of the sensors only when the request
+is issued from user (raw or tiggerred). In this way when runtime,
+resume calls for powerup it will simply return as this will not match
+user requested state.
 
-I assume that this is targeted for .stable?
+Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+---
+ drivers/iio/common/hid-sensors/hid-sensor-trigger.c | 11 ++++++++++-
+ include/linux/hid-sensor-hub.h                      |  1 +
+ 2 files changed, 11 insertions(+), 1 deletion(-)
 
-thanks,
-Tested-by: Len Brown <len.brown@intel.com>
+diff --git a/drivers/iio/common/hid-sensors/hid-sensor-trigger.c b/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
+index 610fc98..5955110 100644
+--- a/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
++++ b/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
+@@ -36,6 +36,8 @@ static int _hid_sensor_power_state(struct hid_sensor_common *st, bool state)
+ 	s32 poll_value = 0;
+ 
+ 	if (state) {
++		if (!atomic_read(&st->user_requested_state))
++			return 0;
+ 		if (sensor_hub_device_open(st->hsdev))
+ 			return -EIO;
+ 
+@@ -52,8 +54,12 @@ static int _hid_sensor_power_state(struct hid_sensor_common *st, bool state)
+ 
+ 		poll_value = hid_sensor_read_poll_value(st);
+ 	} else {
+-		if (!atomic_dec_and_test(&st->data_ready))
++		int val;
++
++		val = atomic_dec_if_positive(&st->data_ready);
++		if (val < 0)
+ 			return 0;
++
+ 		sensor_hub_device_close(st->hsdev);
+ 		state_val = hid_sensor_get_usage_index(st->hsdev,
+ 			st->power_state.report_id,
+@@ -92,9 +98,11 @@ EXPORT_SYMBOL(hid_sensor_power_state);
+ 
+ int hid_sensor_power_state(struct hid_sensor_common *st, bool state)
+ {
++
+ #ifdef CONFIG_PM
+ 	int ret;
+ 
++	atomic_set(&st->user_requested_state, state);
+ 	if (state)
+ 		ret = pm_runtime_get_sync(&st->pdev->dev);
+ 	else {
+@@ -109,6 +117,7 @@ int hid_sensor_power_state(struct hid_sensor_common *st, bool state)
+ 
+  	return 0;
+ #else
++	atomic_set(&st->user_requested_state, state);
+ 	return _hid_sensor_power_state(st, state);
+ #endif
+ }
+diff --git a/include/linux/hid-sensor-hub.h b/include/linux/hid-sensor-hub.h
+index 0042bf3..c02b5ce 100644
+--- a/include/linux/hid-sensor-hub.h
++++ b/include/linux/hid-sensor-hub.h
+@@ -230,6 +230,7 @@ struct hid_sensor_common {
+ 	struct platform_device *pdev;
+ 	unsigned usage_id;
+ 	atomic_t data_ready;
++	atomic_t user_requested_state;
+ 	struct iio_trigger *trigger;
+ 	struct hid_sensor_hub_attribute_info poll;
+ 	struct hid_sensor_hub_attribute_info report_state;
+-- 
+2.1.4
