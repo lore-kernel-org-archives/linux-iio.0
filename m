@@ -1,127 +1,63 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:35850 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:35841 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754108AbbFAVRK (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 1 Jun 2015 17:17:10 -0400
-Message-ID: <556C3667.9030203@kernel.org>
-Date: Mon, 01 Jun 2015 11:39:35 +0100
+	with ESMTP id S1754111AbbFAVRL (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 1 Jun 2015 17:17:11 -0400
+Message-ID: <556C809A.7000504@kernel.org>
+Date: Mon, 01 Jun 2015 16:56:10 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Peter Meerwald <pmeerw@pmeerw.net>,
-	Kevin Tsai <ktsai@capellamicro.com>
+To: Daniel Baluta <daniel.baluta@intel.com>,
+	Dan Carpenter <dan.carpenter@oracle.com>
 CC: Hartmut Knaack <knaack.h@gmx.de>,
 	Lars-Peter Clausen <lars@metafoo.de>,
-	Irina Tirdea <irina.tirdea@intel.com>,
-	Daniel Baluta <daniel.baluta@intel.com>,
-	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
-	Reyad Attiyat <reyad.attiyat@gmail.com>,
-	linux-iio@vger.kernel.org
-Subject: Re: [PATCH 1/1] iio: Add iio_mod_light_uva, iio_mod_light_uvb, and
- iio_mod_light_uvc.
-References: <1432886683-7467-1-git-send-email-ktsai@capellamicro.com> <alpine.DEB.2.02.1505291042520.16730@pmeerw.net>
-In-Reply-To: <alpine.DEB.2.02.1505291042520.16730@pmeerw.net>
-Content-Type: text/plain; charset=windows-1252
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	kernel-janitors@vger.kernel.org
+Subject: Re: [patch] iio: magnetometer: correct a harmless off by one check
+References: <20150527082052.GA19423@mwanda> <CAEnQRZDZFSQ0E7_JUrx6CsSF6erg+USDAJyMFhhhz=Brbk-VPg@mail.gmail.com>
+In-Reply-To: <CAEnQRZDZFSQ0E7_JUrx6CsSF6erg+USDAJyMFhhhz=Brbk-VPg@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 29/05/15 09:47, Peter Meerwald wrote:
-> On Fri, 29 May 2015, Kevin Tsai wrote:
-> 
->> Add Ultraviolet(UV) support:
->> UVA: 315 ~ 400 nm
->> UVB: 280 ~ 315 nm
->> UVC: 100 ~ 280 nm
-> 
-> for what sensor chip do you intend this addition?
-> 
-> I'm working on support for the Si1132 which exposes an UV Index measure, 
-> see http://www.silabs.com/Support%20Documents/TechnicalDocs/Si1132.pdf
-> 
-> I just want to bring it up so we can plan how to support UV...
-We did (long long ago in a galaxy far away) discuss a more general
-way of representing light sensors of all types...
-
-The thought was to have additional infomask elements describing
-the frequency range being detected.  It's irritating complex in
-many cases, but some rough limits (like 3db points or similar) 
-might be normally fine...
-
-We could still keep the types as a generic indicator, but include
-more specifics.
-
-E.g.
-
-in_intensity0_uva_raw
-in_intensity0_uva_min_wavelength
-in_intensity0_uva_max_wavelength
-with units in m (just to stretch our units system ;)
-
-So what other light sensors do people have access to?
-(I have x-ray ones :) though they are all analog.
-With and without various scintilators to make it
-more complex.
-
-Jonathan
->  
->> Signed-off-by: Kevin Tsai <ktsai@capellamicro.com>
->> ---
->>  drivers/iio/industrialio-core.c | 3 +++
->>  include/uapi/linux/iio/types.h  | 3 +++
->>  tools/iio/iio_event_monitor.c   | 6 ++++++
->>  3 files changed, 12 insertions(+)
+On 27/05/15 09:37, Daniel Baluta wrote:
+> On Wed, May 27, 2015 at 11:20 AM, Dan Carpenter
+> <dan.carpenter@oracle.com> wrote:
+>> The line before limits i to 0-3 so the existing code works fine but the
+>> check is still off by one and >= is intended instead of >.
 >>
->> diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
->> index 3524b0d..ecbdd1e 100644
->> --- a/drivers/iio/industrialio-core.c
->> +++ b/drivers/iio/industrialio-core.c
->> @@ -89,6 +89,9 @@ static const char * const iio_modifier_names[] = {
->>  	[IIO_MOD_LIGHT_RED] = "red",
->>  	[IIO_MOD_LIGHT_GREEN] = "green",
->>  	[IIO_MOD_LIGHT_BLUE] = "blue",
->> +	[IIO_MOD_LIGHT_UVA] = "uva",
->> +	[IIO_MOD_LIGHT_UVB] = "uvb",
->> +	[IIO_MOD_LIGHT_UVC] = "uvc",
->>  	[IIO_MOD_QUATERNION] = "quaternion",
->>  	[IIO_MOD_TEMP_AMBIENT] = "ambient",
->>  	[IIO_MOD_TEMP_OBJECT] = "object",
->> diff --git a/include/uapi/linux/iio/types.h b/include/uapi/linux/iio/types.h
->> index 2f8b117..5c99090 100644
->> --- a/include/uapi/linux/iio/types.h
->> +++ b/include/uapi/linux/iio/types.h
->> @@ -72,6 +72,9 @@ enum iio_modifier {
->>  	IIO_MOD_ROOT_SUM_SQUARED_X_Y_Z,
->>  	IIO_MOD_I,
->>  	IIO_MOD_Q,
->> +	IIO_MOD_LIGHT_UVA,
->> +	IIO_MOD_LIGHT_UVB,
->> +	IIO_MOD_LIGHT_UVC,
->>  };
->>  
->>  enum iio_event_type {
->> diff --git a/tools/iio/iio_event_monitor.c b/tools/iio/iio_event_monitor.c
->> index 427c271..46dd27f 100644
->> --- a/tools/iio/iio_event_monitor.c
->> +++ b/tools/iio/iio_event_monitor.c
->> @@ -88,6 +88,9 @@ static const char * const iio_modifier_names[] = {
->>  	[IIO_MOD_LIGHT_RED] = "red",
->>  	[IIO_MOD_LIGHT_GREEN] = "green",
->>  	[IIO_MOD_LIGHT_BLUE] = "blue",
->> +	[IIO_MOD_LIGHT_UVA] = "uva",
->> +	[IIO_MOD_LIGHT_UVB] = "uvb",
->> +	[IIO_MOD_LIGHT_UVC] = "uvc",
->>  	[IIO_MOD_QUATERNION] = "quaternion",
->>  	[IIO_MOD_TEMP_AMBIENT] = "ambient",
->>  	[IIO_MOD_TEMP_OBJECT] = "object",
->> @@ -156,6 +159,9 @@ static bool event_is_known(struct iio_event_data *event)
->>  	case IIO_MOD_LIGHT_RED:
->>  	case IIO_MOD_LIGHT_GREEN:
->>  	case IIO_MOD_LIGHT_BLUE:
->> +	case IIO_MOD_LIGHT_UVA:
->> +	case IIO_MOD_LIGHT_UVB:
->> +	case IIO_MOD_LIGHT_UVC:
->>  	case IIO_MOD_QUATERNION:
->>  	case IIO_MOD_TEMP_AMBIENT:
->>  	case IIO_MOD_TEMP_OBJECT:
+>> Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+> 
+> Good catch.
+> 
+> Reviewed-by: Daniel Baluta <daniel.baluta@intel.com>
+Applied to the togreg branch of iio.git - initially pushed out as
+testing when I have a network that does anything other than https.
+
+J
+> 
 >>
+>> diff --git a/drivers/iio/magnetometer/mmc35240.c b/drivers/iio/magnetometer/mmc35240.c
+>> index aa6e25d..c71392c 100644
+>> --- a/drivers/iio/magnetometer/mmc35240.c
+>> +++ b/drivers/iio/magnetometer/mmc35240.c
+>> @@ -308,7 +308,7 @@ static int mmc35240_read_raw(struct iio_dev *indio_dev,
+>>                         return ret;
+>>
+>>                 i = (reg & MMC35240_CTRL1_BW_MASK) >> MMC35240_CTRL1_BW_SHIFT;
+>> -               if (i < 0 || i > ARRAY_SIZE(mmc35240_samp_freq))
+>> +               if (i < 0 || i >= ARRAY_SIZE(mmc35240_samp_freq))
+>>                         return -EINVAL;
+>>
+>>                 *val = mmc35240_samp_freq[i];
+>> --
+>> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+>> the body of a message to majordomo@vger.kernel.org
+>> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
 > 
 
