@@ -1,10 +1,10 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:35762 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:35767 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753726AbbFAVQ5 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 1 Jun 2015 17:16:57 -0400
-Message-ID: <556C0AEA.1050507@kernel.org>
-Date: Mon, 01 Jun 2015 08:34:02 +0100
+	with ESMTP id S1753899AbbFAVQ6 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 1 Jun 2015 17:16:58 -0400
+Message-ID: <556C0B23.10204@kernel.org>
+Date: Mon, 01 Jun 2015 08:34:59 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
 To: Hartmut Knaack <knaack.h@gmx.de>, linux-iio@vger.kernel.org
@@ -13,140 +13,61 @@ CC: Lars-Peter Clausen <lars@metafoo.de>,
 	Roberta Dobrescu <roberta.dobrescu@gmail.com>,
 	Daniel Baluta <daniel.baluta@intel.com>,
 	Irina Tirdea <irina.tirdea@intel.com>
-Subject: Re: [PATCH 24/32] tools:iio: return values directly
-References: <6915cdc58104e623ad388787b9069337f1950614.1433072539.git.knaack.h@gmx.de> <82581f631ab07a233d24f07f7e706de34ed6ecbd.1433072539.git.knaack.h@gmx.de>
-In-Reply-To: <82581f631ab07a233d24f07f7e706de34ed6ecbd.1433072539.git.knaack.h@gmx.de>
+Subject: Re: [PATCH 25/32] tools:iio:iio_event_monitor: refactor events output
+References: <6915cdc58104e623ad388787b9069337f1950614.1433072539.git.knaack.h@gmx.de> <a8ecccf5a12d1ebbf0a5ee22d15fc3c1f7d0ff88.1433072539.git.knaack.h@gmx.de>
+In-Reply-To: <a8ecccf5a12d1ebbf0a5ee22d15fc3c1f7d0ff88.1433072539.git.knaack.h@gmx.de>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
 On 31/05/15 13:40, Hartmut Knaack wrote:
-> Return directly, if no common cleanup is required.
+> Refactor the code in print_event() to reduce code duplication and better
+> reflect that the type is output unconditionally, as well as cascade the
+> dependency of the diff-channel. Saves a few lines of code, as well.
 > 
 > Signed-off-by: Hartmut Knaack <knaack.h@gmx.de>
 Applied.
 > ---
->  tools/iio/generic_buffer.c    |  5 ++---
->  tools/iio/iio_event_monitor.c |  5 ++---
->  tools/iio/iio_utils.c         | 27 ++++++++++++---------------
->  3 files changed, 16 insertions(+), 21 deletions(-)
+>  tools/iio/iio_event_monitor.c | 24 ++++++++++--------------
+>  1 file changed, 10 insertions(+), 14 deletions(-)
 > 
-> diff --git a/tools/iio/generic_buffer.c b/tools/iio/generic_buffer.c
-> index 2f48843..f17b168 100644
-> --- a/tools/iio/generic_buffer.c
-> +++ b/tools/iio/generic_buffer.c
-> @@ -238,8 +238,7 @@ int main(int argc, char **argv)
->  	dev_num = find_type_by_name(device_name, "iio:device");
->  	if (dev_num < 0) {
->  		printf("Failed to find the %s\n", device_name);
-> -		ret = dev_num;
-> -		goto error_ret;
-> +		return dev_num;
->  	}
->  	printf("iio device number being used is %d\n", dev_num);
->  
-> @@ -410,6 +409,6 @@ error_free_triggername:
->  		free(trigger_name);
->  error_free_dev_dir_name:
->  	free(dev_dir_name);
-> -error_ret:
-> +
->  	return ret;
->  }
 > diff --git a/tools/iio/iio_event_monitor.c b/tools/iio/iio_event_monitor.c
-> index ecee8ac..17c27bf 100644
+> index 17c27bf..8e682a7 100644
 > --- a/tools/iio/iio_event_monitor.c
 > +++ b/tools/iio/iio_event_monitor.c
-> @@ -258,8 +258,7 @@ int main(int argc, char **argv)
->  			device_name, dev_num);
->  		ret = asprintf(&chrdev_name, "/dev/iio:device%d", dev_num);
->  		if (ret < 0) {
-> -			ret = -ENOMEM;
-> -			goto error_ret;
-> +			return -ENOMEM;
->  		}
->  	} else {
->  		/* If we can't find a IIO device by name assume device_name is a
-> @@ -317,6 +316,6 @@ int main(int argc, char **argv)
+> @@ -213,23 +213,19 @@ static void print_event(struct iio_event_data *event)
+>  		return;
+>  	}
 >  
->  error_free_chrdev_name:
->  	free(chrdev_name);
-> -error_ret:
-> +
->  	return ret;
->  }
-> diff --git a/tools/iio/iio_utils.c b/tools/iio/iio_utils.c
-> index 5d5831d..0524725 100644
-> --- a/tools/iio/iio_utils.c
-> +++ b/tools/iio/iio_utils.c
-> @@ -107,10 +107,9 @@ int iioutils_get_type(unsigned *is_signed,
->  	const struct dirent *ent;
+> -	printf("Event: time: %lld, ", event->timestamp);
+> +	printf("Event: time: %lld, type: %s", event->timestamp,
+> +	       iio_chan_type_name_spec[type]);
 >  
->  	ret = asprintf(&scan_el_dir, FORMAT_SCAN_ELEMENTS_DIR, device_dir);
-> -	if (ret < 0) {
-> -		ret = -ENOMEM;
-> -		goto error_ret;
+> -	if (mod != IIO_NO_MOD) {
+> -		printf("type: %s(%s), ",
+> -			iio_chan_type_name_spec[type],
+> -			iio_modifier_names[mod]);
+> -	} else {
+> -		printf("type: %s, ",
+> -			iio_chan_type_name_spec[type]);
 > -	}
-> +	if (ret < 0)
-> +		return -ENOMEM;
-> +
->  	ret = asprintf(&builtname, FORMAT_TYPE_FILE, name);
->  	if (ret < 0) {
->  		ret = -ENOMEM;
-> @@ -202,7 +201,7 @@ error_free_builtname:
->  	free(builtname);
->  error_free_scan_el_dir:
->  	free(scan_el_dir);
-> -error_ret:
-> +
->  	return ret;
->  }
+> +	if (mod != IIO_NO_MOD)
+> +		printf("(%s)", iio_modifier_names[mod]);
 >  
-> @@ -230,10 +229,9 @@ int iioutils_get_param_float(float *output,
->  	const struct dirent *ent;
+> -	if (diff && chan >= 0 && chan2 >= 0)
+> -		printf("channel: %d-%d, ", chan, chan2);
+> -	else if (chan >= 0)
+> -		printf("channel: %d, ", chan);
+> +	if (chan >= 0) {
+> +		printf(", channel: %d", chan);
+> +		if (diff && chan2 >= 0)
+> +			printf("-%d", chan2);
+> +	}
 >  
->  	ret = asprintf(&builtname, "%s_%s", name, param_name);
-> -	if (ret < 0) {
-> -		ret = -ENOMEM;
-> -		goto error_ret;
-> -	}
-> +	if (ret < 0)
-> +		return -ENOMEM;
-> +
->  	ret = asprintf(&builtname_generic,
->  		       "%s_%s", generic_name, param_name);
->  	if (ret < 0) {
-> @@ -277,7 +275,7 @@ error_free_builtname_generic:
->  	free(builtname_generic);
->  error_free_builtname:
->  	free(builtname);
-> -error_ret:
-> +
->  	return ret;
->  }
+> -	printf("evtype: %s", iio_ev_type_text[ev_type]);
+> +	printf(", evtype: %s", iio_ev_type_text[ev_type]);
 >  
-> @@ -326,10 +324,9 @@ int build_channel_array(const char *device_dir,
->  
->  	*counter = 0;
->  	ret = asprintf(&scan_el_dir, FORMAT_SCAN_ELEMENTS_DIR, device_dir);
-> -	if (ret < 0) {
-> -		ret = -ENOMEM;
-> -		goto error_ret;
-> -	}
-> +	if (ret < 0)
-> +		return -ENOMEM;
-> +
->  	dp = opendir(scan_el_dir);
->  	if (dp == NULL) {
->  		ret = -errno;
-> @@ -526,7 +523,7 @@ error_close_dir:
->  
->  error_free_name:
->  	free(scan_el_dir);
-> -error_ret:
-> +
->  	return ret;
->  }
->  
+>  	if (dir != IIO_EV_DIR_NONE)
+>  		printf(", direction: %s", iio_ev_dir_text[dir]);
 > 
 
