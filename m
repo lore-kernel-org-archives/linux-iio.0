@@ -1,200 +1,155 @@
 Return-Path: <mfuzzey@parkeon.com>
-Subject: [PATCH V5 7/7] iio: mma8452: Add support for interrupt driven
- triggers.
+Subject: [PATCH V5 5/7] iio: mma8452: Add support for transient event
+ debouncing
 To: Jonathan Cameron <jic23@kernel.org>
 From: Martin Fuzzey <mfuzzey@parkeon.com>
 Cc: linux-iio@vger.kernel.org
-Date: Mon, 01 Jun 2015 15:39:58 +0200
-Message-ID: <20150601133958.24925.16288.stgit@localhost>
+Date: Mon, 01 Jun 2015 15:39:54 +0200
+Message-ID: <20150601133954.24925.6468.stgit@localhost>
 In-Reply-To: <20150601133943.24925.83080.stgit@localhost>
 References: <20150601133943.24925.83080.stgit@localhost>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 List-ID: <linux-iio@vger.kernel.org>
 
-Implement interrupt driven trigger for data ready.
-This allows more efficient access to the sample data.
+Allow the debouce counter for transient events to be configured
+using the sysfs attribute events/in_accel_thresh_rising_period
 
 Signed-off-by: Martin Fuzzey <mfuzzey@parkeon.com>
 ---
- drivers/iio/accel/mma8452.c |   97 ++++++++++++++++++++++++++++++++++++++++---
- 1 file changed, 91 insertions(+), 6 deletions(-)
+ drivers/iio/accel/mma8452.c |   76 +++++++++++++++++++++++++++++++++++++------
+ 1 file changed, 65 insertions(+), 11 deletions(-)
 
 diff --git a/drivers/iio/accel/mma8452.c b/drivers/iio/accel/mma8452.c
-index 51ae751..e8e2077 100644
+index f30eb9b..7429df3 100644
 --- a/drivers/iio/accel/mma8452.c
 +++ b/drivers/iio/accel/mma8452.c
-@@ -18,6 +18,8 @@
- #include <linux/iio/sysfs.h>
- #include <linux/iio/trigger_consumer.h>
- #include <linux/iio/buffer.h>
-+#include <linux/iio/trigger.h>
-+#include <linux/iio/trigger_consumer.h>
- #include <linux/iio/triggered_buffer.h>
- #include <linux/iio/events.h>
- #include <linux/delay.h>
-@@ -66,6 +68,7 @@
- #define MMA8452_DATA_CFG_FS_8G 2
- #define MMA8452_DATA_CFG_HPF_MASK BIT(4)
- 
-+#define MMA8452_INT_DRDY	BIT(0)
- #define MMA8452_INT_TRANS	BIT(5)
- 
- #define MMA8452_DEVICE_ID 0x2a
-@@ -577,18 +580,24 @@ static irqreturn_t mma8452_interrupt(int irq, void *p)
- {
- 	struct iio_dev *indio_dev = p;
- 	struct mma8452_data *data = iio_priv(indio_dev);
-+	int ret = IRQ_NONE;
- 	int src;
- 
- 	src = i2c_smbus_read_byte_data(data->client, MMA8452_INT_SRC);
- 	if (src < 0)
- 		return IRQ_NONE;
- 
-+	if (src & MMA8452_INT_DRDY) {
-+		iio_trigger_poll_chained(indio_dev->trig);
-+		ret = IRQ_HANDLED;
-+	}
-+
- 	if (src & MMA8452_INT_TRANS) {
- 		mma8452_transient_interrupt(indio_dev);
--		return IRQ_HANDLED;
-+		ret = IRQ_HANDLED;
- 	}
- 
--	return IRQ_NONE;
-+	return ret;
+@@ -38,6 +38,7 @@
+ #define MMA8452_TRANSIENT_SRC_ZTRANSE		BIT(5)
+ #define MMA8452_TRANSIENT_THS 0x1f
+ #define MMA8452_TRANSIENT_THS_MASK	0x7f
++#define MMA8452_TRANSIENT_COUNT 0x20
+ #define MMA8452_OFF_X 0x2f
+ #define MMA8452_OFF_Y 0x30
+ #define MMA8452_OFF_Z 0x31
+@@ -124,6 +125,12 @@ static int mma8452_get_int_plus_micros_index(const int (*vals)[2], int n,
+ 	return -EINVAL;
  }
  
- static irqreturn_t mma8452_trigger_handler(int irq, void *p)
-@@ -714,6 +723,72 @@ static const struct iio_info mma8452_info = {
- 
- static const unsigned long mma8452_scan_masks[] = {0x7, 0};
- 
-+static int mma8452_data_rdy_trigger_set_state(struct iio_trigger *trig,
-+					      bool state)
++static int mma8452_get_odr_index(struct mma8452_data *data)
 +{
-+	struct iio_dev *indio_dev = iio_trigger_get_drvdata(trig);
-+	struct mma8452_data *data = iio_priv(indio_dev);
-+	int reg;
-+
-+	reg = i2c_smbus_read_byte_data(data->client, MMA8452_CTRL_REG4);
-+	if (reg < 0)
-+		return reg;
-+
-+	if (state)
-+		reg |= MMA8452_INT_DRDY;
-+	else
-+		reg &= ~MMA8452_INT_DRDY;
-+
-+	return mma8452_change_config(data, MMA8452_CTRL_REG4, reg);
++	return (data->ctrl_reg1 & MMA8452_CTRL_DR_MASK) >>
++			MMA8452_CTRL_DR_SHIFT;
 +}
 +
-+static int mma8452_validate_device(struct iio_trigger *trig,
-+				   struct iio_dev *indio_dev)
-+{
-+	struct iio_dev *indio = iio_trigger_get_drvdata(trig);
-+
-+	if (indio != indio_dev)
-+		return -EINVAL;
-+
-+	return 0;
-+}
-+
-+static const struct iio_trigger_ops mma8452_trigger_ops = {
-+	.set_trigger_state = mma8452_data_rdy_trigger_set_state,
-+	.validate_device = mma8452_validate_device,
-+	.owner = THIS_MODULE,
+ static const int mma8452_samp_freq[8][2] = {
+ 	{800, 0}, {400, 0}, {200, 0}, {100, 0}, {50, 0}, {12, 500000},
+ 	{6, 250000}, {1, 560000}
+@@ -139,6 +146,18 @@ static const int mma8452_scales[3][2] = {
+ 	{0, 9577}, {0, 19154}, {0, 38307}
+ };
+ 
++/* Datasheet table 35  (step time vs sample frequency) */
++static const int mma8452_transient_time_step_us[8] = {
++	1250,
++	2500,
++	5000,
++	10000,
++	20000,
++	20000,
++	20000,
++	20000
 +};
 +
-+static int mma8452_trigger_setup(struct iio_dev *indio_dev)
-+{
-+	struct mma8452_data *data = iio_priv(indio_dev);
-+	struct iio_trigger *trig;
-+	int ret;
-+
-+	trig = devm_iio_trigger_alloc(&data->client->dev, "%s-dev%d",
-+				      indio_dev->name,
-+				      indio_dev->id);
-+	if (!trig)
-+		return -ENOMEM;
-+
-+	trig->dev.parent = &data->client->dev;
-+	trig->ops = &mma8452_trigger_ops;
-+	iio_trigger_set_drvdata(trig, indio_dev);
-+
-+	ret = iio_trigger_register(trig);
-+	if (ret)
-+		return ret;
-+
-+	indio_dev->trig = trig;
-+	return 0;
-+}
-+
-+static void mma8452_trigger_cleanup(struct iio_dev *indio_dev)
-+{
-+	if (indio_dev->trig)
-+		iio_trigger_unregister(indio_dev->trig);
-+}
-+
- static int mma8452_reset(struct i2c_client *client)
+ static ssize_t mma8452_show_samp_freq_avail(struct device *dev,
+ 				struct device_attribute *attr, char *buf)
  {
- 	int i;
-@@ -794,7 +869,8 @@ static int mma8452_probe(struct i2c_client *client,
- 		 * enabled until userspace asks for it by
- 		 * mma8452_write_event_config()
- 		 */
--		int supported_interrupts = MMA8452_INT_TRANS;
-+		int supported_interrupts = MMA8452_INT_DRDY | MMA8452_INT_TRANS;
-+		int enabled_interrupts = MMA8452_INT_TRANS;
+@@ -198,8 +217,7 @@ static int mma8452_read_raw(struct iio_dev *indio_dev,
+ 		*val2 = mma8452_scales[i][1];
+ 		return IIO_VAL_INT_PLUS_MICRO;
+ 	case IIO_CHAN_INFO_SAMP_FREQ:
+-		i = (data->ctrl_reg1 & MMA8452_CTRL_DR_MASK) >>
+-			MMA8452_CTRL_DR_SHIFT;
++		i = mma8452_get_odr_index(data);
+ 		*val = mma8452_samp_freq[i][0];
+ 		*val2 = mma8452_samp_freq[i][1];
+ 		return IIO_VAL_INT_PLUS_MICRO;
+@@ -297,15 +315,33 @@ static int mma8452_read_thresh(struct iio_dev *indio_dev,
+ 			       int *val, int *val2)
+ {
+ 	struct mma8452_data *data = iio_priv(indio_dev);
+-	int ret;
++	int ret, us;
  
- 		/* Assume wired to INT1 pin */
- 		ret = i2c_smbus_write_byte_data(client,
-@@ -805,7 +881,11 @@ static int mma8452_probe(struct i2c_client *client,
- 
- 		ret = i2c_smbus_write_byte_data(client,
- 						MMA8452_CTRL_REG4,
--						supported_interrupts);
-+						enabled_interrupts);
+-	ret = i2c_smbus_read_byte_data(data->client, MMA8452_TRANSIENT_THS);
+-	if (ret < 0)
+-		return ret;
++	switch (info) {
++	case IIO_EV_INFO_VALUE:
++		ret = i2c_smbus_read_byte_data(data->client,
++					       MMA8452_TRANSIENT_THS);
 +		if (ret < 0)
 +			return ret;
 +
-+		ret = mma8452_trigger_setup(indio_dev);
- 		if (ret < 0)
- 			return ret;
- 	}
-@@ -815,12 +895,12 @@ static int mma8452_probe(struct i2c_client *client,
- 	ret = i2c_smbus_write_byte_data(client, MMA8452_CTRL_REG1,
- 					data->ctrl_reg1);
- 	if (ret < 0)
--		return ret;
-+		goto trigger_cleanup;
++		*val = ret & MMA8452_TRANSIENT_THS_MASK;
++		return IIO_VAL_INT;
  
- 	ret = iio_triggered_buffer_setup(indio_dev, NULL,
- 		mma8452_trigger_handler, NULL);
- 	if (ret < 0)
--		return ret;
-+		goto trigger_cleanup;
- 
- 	if (client->irq) {
- 		ret = devm_request_threaded_irq(&client->dev,
-@@ -840,6 +920,10 @@ static int mma8452_probe(struct i2c_client *client,
- 
- buffer_cleanup:
- 	iio_triggered_buffer_cleanup(indio_dev);
+-	*val = ret & MMA8452_TRANSIENT_THS_MASK;
++	case IIO_EV_INFO_PERIOD:
++		ret = i2c_smbus_read_byte_data(data->client,
++					       MMA8452_TRANSIENT_COUNT);
++		if (ret < 0)
++			return ret;
 +
-+trigger_cleanup:
-+	mma8452_trigger_cleanup(indio_dev);
-+
- 	return ret;
++		us = ret * mma8452_transient_time_step_us[
++				mma8452_get_odr_index(data)];
++		*val = us / USEC_PER_SEC;
++		*val2 = us % USEC_PER_SEC;
++		return IIO_VAL_INT_PLUS_MICRO;
+ 
+-	return IIO_VAL_INT;
++	default:
++		return -EINVAL;
++	}
  }
  
-@@ -849,6 +933,7 @@ static int mma8452_remove(struct i2c_client *client)
+ static int mma8452_write_thresh(struct iio_dev *indio_dev,
+@@ -316,9 +352,26 @@ static int mma8452_write_thresh(struct iio_dev *indio_dev,
+ 				int val, int val2)
+ {
+ 	struct mma8452_data *data = iio_priv(indio_dev);
++	int steps;
  
- 	iio_device_unregister(indio_dev);
- 	iio_triggered_buffer_cleanup(indio_dev);
-+	mma8452_trigger_cleanup(indio_dev);
- 	mma8452_standby(iio_priv(indio_dev));
+-	return mma8452_change_config(data, MMA8452_TRANSIENT_THS,
+-				     val & MMA8452_TRANSIENT_THS_MASK);
++	switch (info) {
++	case IIO_EV_INFO_VALUE:
++		return mma8452_change_config(data, MMA8452_TRANSIENT_THS,
++					     val & MMA8452_TRANSIENT_THS_MASK);
++
++	case IIO_EV_INFO_PERIOD:
++		steps = (val * USEC_PER_SEC + val2) /
++				mma8452_transient_time_step_us[
++					mma8452_get_odr_index(data)];
++
++		if (steps > 0xff)
++			return -EINVAL;
++
++		return mma8452_change_config(data, MMA8452_TRANSIENT_COUNT,
++					     steps);
++	default:
++		return -EINVAL;
++	}
+ }
  
- 	return 0;
+ static int mma8452_read_event_config(struct iio_dev *indio_dev,
+@@ -456,7 +509,8 @@ static const struct iio_event_spec mma8452_transient_event[] = {
+ 		.type = IIO_EV_TYPE_THRESH,
+ 		.dir = IIO_EV_DIR_RISING,
+ 		.mask_separate = BIT(IIO_EV_INFO_ENABLE),
+-		.mask_shared_by_type = BIT(IIO_EV_INFO_VALUE)
++		.mask_shared_by_type = BIT(IIO_EV_INFO_VALUE) |
++					BIT(IIO_EV_INFO_PERIOD)
+ 	},
+ };
+ 
