@@ -1,10 +1,10 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:35767 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:35762 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753918AbbFAVRB (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 1 Jun 2015 17:17:01 -0400
-Message-ID: <556C0C50.2040505@kernel.org>
-Date: Mon, 01 Jun 2015 08:40:00 +0100
+	with ESMTP id S1753726AbbFAVRC (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 1 Jun 2015 17:17:02 -0400
+Message-ID: <556C0C74.6050102@kernel.org>
+Date: Mon, 01 Jun 2015 08:40:36 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
 To: Hartmut Knaack <knaack.h@gmx.de>, linux-iio@vger.kernel.org
@@ -13,143 +13,128 @@ CC: Lars-Peter Clausen <lars@metafoo.de>,
 	Roberta Dobrescu <roberta.dobrescu@gmail.com>,
 	Daniel Baluta <daniel.baluta@intel.com>,
 	Irina Tirdea <irina.tirdea@intel.com>
-Subject: Re: [PATCH 29/32] tools:iio: rework program parameters
-References: <6915cdc58104e623ad388787b9069337f1950614.1433072539.git.knaack.h@gmx.de> <cd3645ea3071573bbdc97304943ed16f5b712d6f.1433072539.git.knaack.h@gmx.de>
-In-Reply-To: <cd3645ea3071573bbdc97304943ed16f5b712d6f.1433072539.git.knaack.h@gmx.de>
+Subject: Re: [PATCH 30/32] tools:iio:iio_utils: pass strings as const
+References: <cover.1433072539.git.knaack.h@gmx.de> <99c4e55ff043684b4a34888d4a982ac19cba891a.1433072539.git.knaack.h@gmx.de>
+In-Reply-To: <99c4e55ff043684b4a34888d4a982ac19cba891a.1433072539.git.knaack.h@gmx.de>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
 On 31/05/15 13:40, Hartmut Knaack wrote:
-> In generic_buffer.c: sort program parameters alphabetically and provide
-> 		     usage information
-> In lsiio.c: drop unused parameters
+> Mark strings, which are not supposed to be changed (basedir, filename,
+> value), as const in function parameters.
 > 
 > Signed-off-by: Hartmut Knaack <knaack.h@gmx.de>
 Applied.
-
 > ---
->  tools/iio/generic_buffer.c | 55 ++++++++++++++++++++++++++++++----------------
->  tools/iio/lsiio.c          |  6 ++---
->  2 files changed, 38 insertions(+), 23 deletions(-)
+>  tools/iio/iio_utils.c | 22 +++++++++++++---------
+>  tools/iio/iio_utils.h | 15 +++++++++------
+>  2 files changed, 22 insertions(+), 15 deletions(-)
 > 
-> diff --git a/tools/iio/generic_buffer.c b/tools/iio/generic_buffer.c
-> index f17b168..c546852 100644
-> --- a/tools/iio/generic_buffer.c
-> +++ b/tools/iio/generic_buffer.c
-> @@ -168,6 +168,19 @@ void process_scan(char *data,
->  	printf("\n");
+> diff --git a/tools/iio/iio_utils.c b/tools/iio/iio_utils.c
+> index dfee1a3..ec9ab7f 100644
+> --- a/tools/iio/iio_utils.c
+> +++ b/tools/iio/iio_utils.c
+> @@ -634,7 +634,8 @@ error_close_dir:
+>  	return ret;
 >  }
 >  
-> +void print_usage(void)
-> +{
-> +	printf("Usage: generic_buffer [options]...\n"
-> +	       "Capture, convert and output data from IIO device buffer\n"
-> +	       "  -c <n>     Do n conversions\n"
-> +	       "  -e         Disable wait for event (new data)\n"
-> +	       "  -g         Use trigger-less mode\n"
-> +	       "  -l <n>     Set buffer length to n samples\n"
-> +	       "  -n <name>  Set device name (mandatory)\n"
-> +	       "  -t <name>  Set trigger name\n"
-> +	       "  -w <n>     Set delay between reads in us (event-less mode)\n");
-> +}
-> +
->  int main(int argc, char **argv)
+> -static int _write_sysfs_int(char *filename, char *basedir, int val, int verify)
+> +static int _write_sysfs_int(const char *filename, const char *basedir, int val,
+> +			    int verify)
 >  {
->  	unsigned long num_loops = 2;
-> @@ -193,29 +206,19 @@ int main(int argc, char **argv)
->  
->  	struct iio_channel_info *channels;
->  
-> -	while ((c = getopt(argc, argv, "l:w:c:et:n:g")) != -1) {
-> +	while ((c = getopt(argc, argv, "c:egl:n:t:w:")) != -1) {
->  		switch (c) {
-> -		case 'n':
-> -			device_name = optarg;
-> -			break;
-> -		case 't':
-> -			trigger_name = optarg;
-> -			datardytrigger = 0;
-> -			break;
-> -		case 'e':
-> -			noevents = 1;
-> -			break;
->  		case 'c':
->  			errno = 0;
->  			num_loops = strtoul(optarg, &dummy, 10);
->  			if (errno)
->  				return -errno;
->  			break;
-> -		case 'w':
-> -			errno = 0;
-> -			timedelay = strtoul(optarg, &dummy, 10);
-> -			if (errno)
-> -				return -errno;
-> +		case 'e':
-> +			noevents = 1;
-> +			break;
-> +		case 'g':
-> +			notrigger = 1;
->  			break;
->  		case 'l':
->  			errno = 0;
-> @@ -223,16 +226,30 @@ int main(int argc, char **argv)
->  			if (errno)
->  				return -errno;
->  			break;
-> -		case 'g':
-> -			notrigger = 1;
-> +		case 'n':
-> +			device_name = optarg;
-> +			break;
-> +		case 't':
-> +			trigger_name = optarg;
-> +			datardytrigger = 0;
-> +			break;
-> +		case 'w':
-> +			errno = 0;
-> +			timedelay = strtoul(optarg, &dummy, 10);
-> +			if (errno)
-> +				return -errno;
->  			break;
->  		case '?':
-> +			print_usage();
->  			return -1;
->  		}
->  	}
->  
-> -	if (device_name == NULL)
-> +	if (device_name == NULL) {
-> +		printf("Device name not set\n");
-> +		print_usage();
->  		return -1;
-> +	}
->  
->  	/* Find the device requested */
->  	dev_num = find_type_by_name(device_name, "iio:device");
-> diff --git a/tools/iio/lsiio.c b/tools/iio/lsiio.c
-> index b1089ad..b59ee17 100644
-> --- a/tools/iio/lsiio.c
-> +++ b/tools/iio/lsiio.c
-> @@ -164,7 +164,7 @@ int main(int argc, char **argv)
+>  	int ret = 0;
+>  	FILE *sysfsfp;
+> @@ -707,7 +708,7 @@ error_free:
+>   *
+>   * Returns a value >= 0 on success, otherwise a negative error code.
+>   **/
+> -int write_sysfs_int(char *filename, char *basedir, int val)
+> +int write_sysfs_int(const char *filename, const char *basedir, int val)
 >  {
->  	int c, err = 0;
+>  	return _write_sysfs_int(filename, basedir, val, 0);
+>  }
+> @@ -721,13 +722,14 @@ int write_sysfs_int(char *filename, char *basedir, int val)
+>   *
+>   * Returns a value >= 0 on success, otherwise a negative error code.
+>   **/
+> -int write_sysfs_int_and_verify(char *filename, char *basedir, int val)
+> +int write_sysfs_int_and_verify(const char *filename, const char *basedir,
+> +			       int val)
+>  {
+>  	return _write_sysfs_int(filename, basedir, val, 1);
+>  }
 >  
-> -	while ((c = getopt(argc, argv, "d:D:v")) != EOF) {
-> +	while ((c = getopt(argc, argv, "v")) != EOF) {
->  		switch (c) {
->  		case 'v':
->  			verblevel++;
-> @@ -179,9 +179,7 @@ int main(int argc, char **argv)
->  	if (err || argc > optind) {
->  		fprintf(stderr, "Usage: lsiio [options]...\n"
->  			"List industrial I/O devices\n"
-> -			"  -v, --verbose\n"
-> -			"      Increase verbosity (may be given multiple times)\n"
-> -			);
-> +			"  -v  Increase verbosity (may be given multiple times)\n");
->  		exit(1);
->  	}
+> -static int _write_sysfs_string(char *filename, char *basedir, char *val,
+> -			       int verify)
+> +static int _write_sysfs_string(const char *filename, const char *basedir,
+> +			       const char *val, int verify)
+>  {
+>  	int ret = 0;
+>  	FILE  *sysfsfp;
+> @@ -805,7 +807,8 @@ error_free:
+>   *
+>   * Returns a value >= 0 on success, otherwise a negative error code.
+>   **/
+> -int write_sysfs_string_and_verify(char *filename, char *basedir, char *val)
+> +int write_sysfs_string_and_verify(const char *filename, const char *basedir,
+> +				  const char *val)
+>  {
+>  	return _write_sysfs_string(filename, basedir, val, 1);
+>  }
+> @@ -818,7 +821,8 @@ int write_sysfs_string_and_verify(char *filename, char *basedir, char *val)
+>   *
+>   * Returns a value >= 0 on success, otherwise a negative error code.
+>   **/
+> -int write_sysfs_string(char *filename, char *basedir, char *val)
+> +int write_sysfs_string(const char *filename, const char *basedir,
+> +		       const char *val)
+>  {
+>  	return _write_sysfs_string(filename, basedir, val, 0);
+>  }
+> @@ -831,7 +835,7 @@ int write_sysfs_string(char *filename, char *basedir, char *val)
+>   * Returns the read integer value >= 0 on success, otherwise a negative error
+>   * code.
+>   **/
+> -int read_sysfs_posint(char *filename, char *basedir)
+> +int read_sysfs_posint(const char *filename, const char *basedir)
+>  {
+>  	int ret;
+>  	FILE  *sysfsfp;
+> @@ -875,7 +879,7 @@ error_free:
+>   *
+>   * Returns a value >= 0 on success, otherwise a negative error code.
+>   **/
+> -int read_sysfs_float(char *filename, char *basedir, float *val)
+> +int read_sysfs_float(const char *filename, const char *basedir, float *val)
+>  {
+>  	int ret = 0;
+>  	FILE  *sysfsfp;
+> diff --git a/tools/iio/iio_utils.h b/tools/iio/iio_utils.h
+> index e5eb46a..379eed9 100644
+> --- a/tools/iio/iio_utils.h
+> +++ b/tools/iio/iio_utils.h
+> @@ -63,12 +63,15 @@ void bsort_channel_array_by_index(struct iio_channel_info **ci_array, int cnt);
+>  int build_channel_array(const char *device_dir,
+>  						struct iio_channel_info **ci_array, int *counter);
+>  int find_type_by_name(const char *name, const char *type);
+> -int write_sysfs_int(char *filename, char *basedir, int val);
+> -int write_sysfs_int_and_verify(char *filename, char *basedir, int val);
+> -int write_sysfs_string_and_verify(char *filename, char *basedir, char *val);
+> -int write_sysfs_string(char *filename, char *basedir, char *val);
+> -int read_sysfs_posint(char *filename, char *basedir);
+> -int read_sysfs_float(char *filename, char *basedir, float *val);
+> +int write_sysfs_int(const char *filename, const char *basedir, int val);
+> +int write_sysfs_int_and_verify(const char *filename, const char *basedir,
+> +			       int val);
+> +int write_sysfs_string_and_verify(const char *filename, const char *basedir,
+> +				  const char *val);
+> +int write_sysfs_string(const char *filename, const char *basedir,
+> +		       const char *val);
+> +int read_sysfs_posint(const char *filename, const char *basedir);
+> +int read_sysfs_float(const char *filename, const char *basedir, float *val);
+>  int read_sysfs_string(const char *filename, const char *basedir, char *str);
 >  
+>  #endif /* _IIO_UTILS_H_ */
 > 
 
