@@ -1,55 +1,51 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-wi0-f176.google.com ([209.85.212.176]:33116 "EHLO
-	mail-wi0-f176.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751717AbbFBUrk (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 2 Jun 2015 16:47:40 -0400
-Received: by wiwd19 with SMTP id d19so31506926wiw.0
-        for <linux-iio@vger.kernel.org>; Tue, 02 Jun 2015 13:47:39 -0700 (PDT)
-MIME-Version: 1.0
-In-Reply-To: <555F6D4D.5060508@kernel.org>
-References: <1430148841-30947-1-git-send-email-tiberiu.a.breana@intel.com>
-	<1430148841-30947-3-git-send-email-tiberiu.a.breana@intel.com>
-	<554B3F05.1010600@kernel.org>
-	<CAE1zot+hMJAGr8xstZJTe_Doh=C+2Veruyo+S4Or7Y3n=gdbCQ@mail.gmail.com>
-	<555F6D4D.5060508@kernel.org>
-Date: Tue, 2 Jun 2015 23:47:39 +0300
-Message-ID: <CAE1zot+-s9rmesdKu42=DxpbfQO2a4H0RgwD2xUyN1+DTZXPhw@mail.gmail.com>
-Subject: Re: [PATCH v3 2/2] iio: light: Add threshold interrupt support for STK3310
+Received: from mga01.intel.com ([192.55.52.88]:58523 "EHLO mga01.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751393AbbFBVet (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Tue, 2 Jun 2015 17:34:49 -0400
 From: Octavian Purdila <octavian.purdila@intel.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Tiberiu Breana <tiberiu.a.breana@intel.com>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	Peter Meerwald <pmeerw@pmeerw.net>
-Content-Type: text/plain; charset=UTF-8
+To: Linus Walleij <linus.walleij@linaro.org>
+Cc: Mika Westerberg <mika.westerberg@linux.intel.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Alessandro Zummo <a.zummo@towertech.it>,
+	Alexandre Belloni <alexandre.belloni@free-electrons.com>,
+	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+	linux-iio@vger.kernel.org, rtc-linux@googlegroups.com,
+	linux-kernel@vger.kernel.org,
+	Octavian Purdila <octavian.purdila@intel.com>
+Subject: [PATCH 0/2] change "client->irq >= 0" to "client->irq > 0"
+Date: Wed,  3 Jun 2015 00:34:11 +0300
+Message-Id: <1433280853-3988-1-git-send-email-octavian.purdila@intel.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Fri, May 22, 2015 at 8:54 PM, Jonathan Cameron <jic23@kernel.org> wrote:
->
-> On 20/05/15 10:46, Octavian Purdila wrote:
-> > On Thu, May 7, 2015 at 1:31 PM, Jonathan Cameron <jic23@kernel.org> wrote:
-> >>
-> >> On 27/04/15 16:34, Tiberiu Breana wrote:
-> >>> Added interrupt support for proximity threshold events
-> >>> to the stk3310 driver.
-> >> I've not objection to the split, but also wouldn't have minded having
-> >> this in the original driver split (just in case you are doing it to make
-> >> reviewing easier - in this sort of thing it makes little difference!)
-> >>>
-> >>> Signed-off-by: Tiberiu Breana <tiberiu.a.breana@intel.com>
-> >> Again, nice patch.  My only comment below is about the fact I should
-> >> find out what happened to the thoughts about moving the gpio/interrupt
-> >> setup code into ACPI to avoid having the same 10 lines in every driver.
-> >>
-> >
-> > Mika send another version of the patch set and it was accepted and
-> > merged into the GPIO tree:
-> >
-> > https://lkml.org/lkml/2015/5/6/281
-> Cool.  Once that has worked it's way through yets
-> have a general cleanup of the cut and paste versions we have throughout
-> IIO.  Anyone want to take this on?
->
+This fixes an issue introduces by commit dab472eb931b ("i2c / ACPI:
+Use 0 to indicate that device does not have interrupt assigned") where
+drivers will try to request IRQ 0 when no GpioInt is defined in ACPI.
 
-I have the patches ready and I will send them once Mika's patches
-makes it into iio-dev/testing.
+The same issue occurs when the device is instantiated via device tree
+with no IRQ, or from the i2c sysfs interface, even before the patch
+above.
+
+Linus, since the commit above was already merged in the GPIO tree,
+should these fixes be merged also via the GPIO tree (with ACKs from
+the others subsystem maintainers)?
+
+Octavian Purdila (2):
+  iio: change "client->irq >= 0" to "client->irq > 0"
+  rtc: change "client->irq >= 0" to "client->irq > 0"
+
+ drivers/iio/accel/bmc150-accel.c | 2 +-
+ drivers/iio/accel/kxcjk-1013.c   | 2 +-
+ drivers/iio/accel/mma9553.c      | 2 +-
+ drivers/iio/imu/kmx61.c          | 8 ++++----
+ drivers/rtc/rtc-ds1374.c         | 4 ++--
+ drivers/rtc/rtc-ds3232.c         | 2 +-
+ 6 files changed, 10 insertions(+), 10 deletions(-)
+
+-- 
+1.9.1
+
