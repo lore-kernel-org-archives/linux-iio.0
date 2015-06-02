@@ -1,63 +1,90 @@
-Return-Path: <jic23@jic23.retrosnub.co.uk>
-In-Reply-To: <CAE1zot+-s9rmesdKu42=DxpbfQO2a4H0RgwD2xUyN1+DTZXPhw@mail.gmail.com>
-References: <1430148841-30947-1-git-send-email-tiberiu.a.breana@intel.com> <1430148841-30947-3-git-send-email-tiberiu.a.breana@intel.com> <554B3F05.1010600@kernel.org> <CAE1zot+hMJAGr8xstZJTe_Doh=C+2Veruyo+S4Or7Y3n=gdbCQ@mail.gmail.com> <555F6D4D.5060508@kernel.org> <CAE1zot+-s9rmesdKu42=DxpbfQO2a4H0RgwD2xUyN1+DTZXPhw@mail.gmail.com>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from down.free-electrons.com ([37.187.137.238]:44205 "EHLO
+	mail.free-electrons.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S1751690AbbFBWyd (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 2 Jun 2015 18:54:33 -0400
+Date: Wed, 3 Jun 2015 00:54:06 +0200
+From: Alexandre Belloni <alexandre.belloni@free-electrons.com>
+To: Octavian Purdila <octavian.purdila@intel.com>
+Cc: Linus Walleij <linus.walleij@linaro.org>,
+	Mika Westerberg <mika.westerberg@linux.intel.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Alessandro Zummo <a.zummo@towertech.it>,
+	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+	linux-iio@vger.kernel.org, rtc-linux@googlegroups.com,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 2/2] rtc: change "client->irq >= 0" to "client->irq > 0"
+Message-ID: <20150602225406.GJ1715@piout.net>
+References: <1433280853-3988-1-git-send-email-octavian.purdila@intel.com>
+ <1433280853-3988-3-git-send-email-octavian.purdila@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain;
- charset=UTF-8
-Subject: Re: [PATCH v3 2/2] iio: light: Add threshold interrupt support for STK3310
-From: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
-Date: Tue, 02 Jun 2015 23:17:10 +0100
-To: Octavian Purdila <octavian.purdila@intel.com>,Jonathan Cameron <jic23@kernel.org>
-CC: Tiberiu Breana <tiberiu.a.breana@intel.com>,"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,Peter Meerwald <pmeerw@pmeerw.net>
-Message-ID: <C3FF4439-FE28-4F20-8FE3-C7202AD8B0AA@jic23.retrosnub.co.uk>
-List-ID: <linux-iio@vger.kernel.org>
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <1433280853-3988-3-git-send-email-octavian.purdila@intel.com>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
+Hi,
 
+On 03/06/2015 at 00:34:13 +0300, Octavian Purdila wrote :
+> Since commit dab472eb931b ("i2c / ACPI: Use 0 to indicate that device
 
-On 2 June 2015 21:47:39 BST, Octavian Purdila <octavian.purdila@intel.com> wrote:
->On Fri, May 22, 2015 at 8:54 PM, Jonathan Cameron <jic23@kernel.org>
->wrote:
->>
->> On 20/05/15 10:46, Octavian Purdila wrote:
->> > On Thu, May 7, 2015 at 1:31 PM, Jonathan Cameron <jic23@kernel.org>
->wrote:
->> >>
->> >> On 27/04/15 16:34, Tiberiu Breana wrote:
->> >>> Added interrupt support for proximity threshold events
->> >>> to the stk3310 driver.
->> >> I've not objection to the split, but also wouldn't have minded
->having
->> >> this in the original driver split (just in case you are doing it
->to make
->> >> reviewing easier - in this sort of thing it makes little
->difference!)
->> >>>
->> >>> Signed-off-by: Tiberiu Breana <tiberiu.a.breana@intel.com>
->> >> Again, nice patch.  My only comment below is about the fact I
->should
->> >> find out what happened to the thoughts about moving the
->gpio/interrupt
->> >> setup code into ACPI to avoid having the same 10 lines in every
->driver.
->> >>
->> >
->> > Mika send another version of the patch set and it was accepted and
->> > merged into the GPIO tree:
->> >
->> > https://lkml.org/lkml/2015/5/6/281
->> Cool.  Once that has worked it's way through yets
->> have a general cleanup of the cut and paste versions we have
->throughout
->> IIO.  Anyone want to take this on?
->>
->
->I have the patches ready and I will send them once Mika's patches
->makes it into iio-dev/testing.
-Cool!
+You can't reference that commit ID as Linus Torvalds didn't pull that
+patch yet.
 
-Thanks for doing this.
+I'd also prefer a more descriptive subject line.
 
-J
+> does not have interrupt assigned"), 0 is not a valid i2c client irq
+> anymore, so change all driver's checks accordingly.
+> 
+> Signed-off-by: Octavian Purdila <octavian.purdila@intel.com>
+> ---
+>  drivers/rtc/rtc-ds1374.c | 4 ++--
+>  drivers/rtc/rtc-ds3232.c | 2 +-
+>  2 files changed, 3 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/rtc/rtc-ds1374.c b/drivers/rtc/rtc-ds1374.c
+> index 167783f..592458c 100644
+> --- a/drivers/rtc/rtc-ds1374.c
+> +++ b/drivers/rtc/rtc-ds1374.c
+> @@ -689,7 +689,7 @@ static int ds1374_suspend(struct device *dev)
+>  {
+>  	struct i2c_client *client = to_i2c_client(dev);
+>  
+> -	if (client->irq >= 0 && device_may_wakeup(&client->dev))
+> +	if (client->irq > 0 && device_may_wakeup(&client->dev))
+>  		enable_irq_wake(client->irq);
+>  	return 0;
+>  }
+> @@ -698,7 +698,7 @@ static int ds1374_resume(struct device *dev)
+>  {
+>  	struct i2c_client *client = to_i2c_client(dev);
+>  
+> -	if (client->irq >= 0 && device_may_wakeup(&client->dev))
+> +	if (client->irq > 0 && device_may_wakeup(&client->dev))
+>  		disable_irq_wake(client->irq);
+>  	return 0;
+>  }
+> diff --git a/drivers/rtc/rtc-ds3232.c b/drivers/rtc/rtc-ds3232.c
+> index 7e48e53..f280dd1 100644
+> --- a/drivers/rtc/rtc-ds3232.c
+> +++ b/drivers/rtc/rtc-ds3232.c
+> @@ -443,7 +443,7 @@ static int ds3232_remove(struct i2c_client *client)
+>  {
+>  	struct ds3232 *ds3232 = i2c_get_clientdata(client);
+>  
+> -	if (client->irq >= 0) {
+> +	if (client->irq > 0) {
+>  		mutex_lock(&ds3232->mutex);
+>  		ds3232->exiting = 1;
+>  		mutex_unlock(&ds3232->mutex);
+> -- 
+> 1.9.1
+> 
 
 -- 
-Sent from my Android device with K-9 Mail. Please excuse my brevity.
+Alexandre Belloni, Free Electrons
+Embedded Linux, Kernel and Android engineering
+http://free-electrons.com
