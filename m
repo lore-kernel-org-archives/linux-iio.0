@@ -1,90 +1,74 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from down.free-electrons.com ([37.187.137.238]:44205 "EHLO
-	mail.free-electrons.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1751690AbbFBWyd (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 2 Jun 2015 18:54:33 -0400
-Date: Wed, 3 Jun 2015 00:54:06 +0200
-From: Alexandre Belloni <alexandre.belloni@free-electrons.com>
-To: Octavian Purdila <octavian.purdila@intel.com>
-Cc: Linus Walleij <linus.walleij@linaro.org>,
-	Mika Westerberg <mika.westerberg@linux.intel.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	Alessandro Zummo <a.zummo@towertech.it>,
-	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
-	linux-iio@vger.kernel.org, rtc-linux@googlegroups.com,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 2/2] rtc: change "client->irq >= 0" to "client->irq > 0"
-Message-ID: <20150602225406.GJ1715@piout.net>
-References: <1433280853-3988-1-git-send-email-octavian.purdila@intel.com>
- <1433280853-3988-3-git-send-email-octavian.purdila@intel.com>
+Received: from mail-ie0-f173.google.com ([209.85.223.173]:34127 "EHLO
+	mail-ie0-f173.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751094AbbFCFUN (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 3 Jun 2015 01:20:13 -0400
+Received: by iecwk5 with SMTP id wk5so4842927iec.1
+        for <linux-iio@vger.kernel.org>; Tue, 02 Jun 2015 22:20:13 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <1433280853-3988-3-git-send-email-octavian.purdila@intel.com>
+In-Reply-To: <556DF5D8.9080000@kernel.org>
+References: <CAKzfze8qX0WEKmHgBKKVvw-=mzFOUVSQnOXXxjUPdm=BafoYqA@mail.gmail.com>
+	<556DF5D8.9080000@kernel.org>
+Date: Tue, 2 Jun 2015 22:20:12 -0700
+Message-ID: <CAKzfze82kYZi6jxiQV_b+=-rQJzbYbO8-kb=2gMEZr=3xeSVEA@mail.gmail.com>
+Subject: Re: IIO_GESTURE proposal
+From: Matt Ranostay <mranostay@gmail.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Hi,
+On Tue, Jun 2, 2015 at 11:28 AM, Jonathan Cameron <jic23@kernel.org> wrote:
+> On 02/06/15 05:35, Matt Ranostay wrote:
+>> Jonathan,
+>>
+>> So I am currently planning on implementing a driver for the Avago
+>> APDS-9960 that has the typical ALS, RGBC, and proximity sensor
+>> components. But this part has a gesture function that uses 4 IR
+>> photodiodes aligned in a grid of UP-DOWN-LEFT-RIGHT that detect IR
+>> light reflection off an object, and in turn reports back the direction
+>> a hand or similar would make over the sensor.
+>>
+>> Now the data that is reported back is the intensity of each of the 4
+>> LEDs (UPLR) which then userspace can compute the velocity, and
+>> direction of the gesture. My question should some thing like this be
+>> using 4 IIO_INTENSITY channels or just one 32-bit value and new type
+>> of IIO_GESTURE?
+> Interesting device.
+>
+> Anyhow, my immediate reaction is that the single 32 bit value is effectively
+> device specific whereas breaking it up into 4 values makes it more generic.
+> (just wait for the predictable 8 led version to offer extra LEDs on the diagonals)
+>
+> The question that follows is how to make their relative positions / sensitive directions
+> apparent to userspace?
+>
+> I'd go for sensitive direction as the optics of different sensors may give very different
+> correspondences.
+>
+> So we 'could' do it with modifiers but how do we make them generic enough?
+> How about a a sensitive_direction type infomask element that gives an approximate
+> pointing vector? (using the read_raw_multi)
 
-On 03/06/2015 at 00:34:13 +0300, Octavian Purdila wrote :
-> Since commit dab472eb931b ("i2c / ACPI: Use 0 to indicate that device
+The latter seems more sane and functional. Would this just tell
+userspace the orientation that the sensor is mounted on a board? I
+would assume so since the LEDs are integrated on the sensor IC.
 
-You can't reference that commit ID as Linus Torvalds didn't pull that
-patch yet.
-
-I'd also prefer a more descriptive subject line.
-
-> does not have interrupt assigned"), 0 is not a valid i2c client irq
-> anymore, so change all driver's checks accordingly.
-> 
-> Signed-off-by: Octavian Purdila <octavian.purdila@intel.com>
-> ---
->  drivers/rtc/rtc-ds1374.c | 4 ++--
->  drivers/rtc/rtc-ds3232.c | 2 +-
->  2 files changed, 3 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/rtc/rtc-ds1374.c b/drivers/rtc/rtc-ds1374.c
-> index 167783f..592458c 100644
-> --- a/drivers/rtc/rtc-ds1374.c
-> +++ b/drivers/rtc/rtc-ds1374.c
-> @@ -689,7 +689,7 @@ static int ds1374_suspend(struct device *dev)
->  {
->  	struct i2c_client *client = to_i2c_client(dev);
->  
-> -	if (client->irq >= 0 && device_may_wakeup(&client->dev))
-> +	if (client->irq > 0 && device_may_wakeup(&client->dev))
->  		enable_irq_wake(client->irq);
->  	return 0;
->  }
-> @@ -698,7 +698,7 @@ static int ds1374_resume(struct device *dev)
->  {
->  	struct i2c_client *client = to_i2c_client(dev);
->  
-> -	if (client->irq >= 0 && device_may_wakeup(&client->dev))
-> +	if (client->irq > 0 && device_may_wakeup(&client->dev))
->  		disable_irq_wake(client->irq);
->  	return 0;
->  }
-> diff --git a/drivers/rtc/rtc-ds3232.c b/drivers/rtc/rtc-ds3232.c
-> index 7e48e53..f280dd1 100644
-> --- a/drivers/rtc/rtc-ds3232.c
-> +++ b/drivers/rtc/rtc-ds3232.c
-> @@ -443,7 +443,7 @@ static int ds3232_remove(struct i2c_client *client)
->  {
->  	struct ds3232 *ds3232 = i2c_get_clientdata(client);
->  
-> -	if (client->irq >= 0) {
-> +	if (client->irq > 0) {
->  		mutex_lock(&ds3232->mutex);
->  		ds3232->exiting = 1;
->  		mutex_unlock(&ds3232->mutex);
-> -- 
-> 1.9.1
-> 
-
--- 
-Alexandre Belloni, Free Electrons
-Embedded Linux, Kernel and Android engineering
-http://free-electrons.com
+>
+> Other suggestion welcome as I have only been considering this whilst navigating Dublin
+> airport and a few beers waiting for the plane.
+>
+> Jonathan
+>>
+>> Datasheet -> https://cdn.sparkfun.com/datasheets/Sensors/Proximity/apds9960.pdf
+>>
+>>
+>> Thanks,
+>>
+>> Matt Ranostay
+>>
+>
