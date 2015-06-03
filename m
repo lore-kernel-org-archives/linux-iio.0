@@ -1,142 +1,101 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ns.pmeerw.net ([84.19.176.92]:44062 "EHLO pmeerw.net"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1753142AbbFCIoN (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Wed, 3 Jun 2015 04:44:13 -0400
-Date: Wed, 3 Jun 2015 10:44:11 +0200 (CEST)
-From: Peter Meerwald <pmeerw@pmeerw.net>
-To: Daniel Baluta <daniel.baluta@intel.com>
-cc: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
-	linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org
-Subject: Re: [PATCH 3/6] iio: magnetometer: mmc35240: Fix broken processed
- value
-In-Reply-To: <1433320438-23870-4-git-send-email-daniel.baluta@intel.com>
-Message-ID: <alpine.DEB.2.02.1506031034580.18904@pmeerw.net>
-References: <1433320438-23870-1-git-send-email-daniel.baluta@intel.com> <1433320438-23870-4-git-send-email-daniel.baluta@intel.com>
+Received: from mail-la0-f45.google.com ([209.85.215.45]:34811 "EHLO
+	mail-la0-f45.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753299AbbFCI4U (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 3 Jun 2015 04:56:20 -0400
 MIME-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
+In-Reply-To: <CAEnQRZD1FNdW_3XZ13uane-VeHN9fVQue6z_j-3=3eYvgHNL9w@mail.gmail.com>
+References: <1432810354-24745-1-git-send-email-daniel.baluta@intel.com>
+	<alpine.DEB.2.02.1505281300180.30008@pmeerw.net>
+	<CAEnQRZDioRjc0nLLncYitkjW7QyC4z+Ha6VE82h2RUScyXFx-Q@mail.gmail.com>
+	<alpine.DEB.2.02.1505281507511.30008@pmeerw.net>
+	<CAEnQRZD1FNdW_3XZ13uane-VeHN9fVQue6z_j-3=3eYvgHNL9w@mail.gmail.com>
+Date: Wed, 3 Jun 2015 11:56:18 +0300
+Message-ID: <CAEnQRZAcXQUp4Y0PZQaoQBa_G-HvbnKg6J_HxAfwa_F51vqsxg@mail.gmail.com>
+Subject: Re: [PATCH v2] iio: light: Add support for ROHM RPR0521 sensor
+From: Daniel Baluta <daniel.baluta@intel.com>
+To: Daniel Baluta <daniel.baluta@intel.com>
+Cc: Peter Meerwald <pmeerw@pmeerw.net>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	Vlad Dogaru <vlad.dogaru@intel.com>,
+	Tiberiu Breana <tiberiu.a.breana@intel.com>
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Wed, 3 Jun 2015, Daniel Baluta wrote:
+On Thu, May 28, 2015 at 5:17 PM, Daniel Baluta <daniel.baluta@intel.com> wrote:
+> <snip>
+>
+>>> >> +static const struct iio_chan_spec rpr0521_channels[] = {
+>>> >> +     {
+>>> >> +             .type = IIO_INTENSITY,
+>>> >> +             .modified = 1,
+>>> >> +             .address = RPR0521_CHAN_ALS_DATA0,
+>>> >> +             .channel2 = IIO_MOD_LIGHT_BOTH,
+>>> >> +             .info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
+>>> >> +                     BIT(IIO_CHAN_INFO_CALIBSCALE),
+>>> >
+>>> > why CALIBSCALE and not SCALE?
+>>>
+>>> Because this is used to set/get gain, which is used by the hardware
+>>> to do proper scaling.
+>>>
+>>> AFAIK this should be calibscale.
+>>
+>> in sysfs-bus-iiof on CALIBSCALE: Hardware applied calibration scale factor
+>> (assumed to fix production inaccuracies).
+>>
+>> this doesn't seem applicable here, it is a gain factor controlling
+>> measurement resolution
+>
+> Ok, I see now and it makes sense :).
+>
+> # echo 1 > in_intensity_ir_calibscale
+> # cat in_intensity_ir_raw
+> 79
+> # echo 64 > in_intensity_ir_calibscale
+> # cat in_intensity_ir_raw
+> 5084
+>
+> The user should get the same value regardless of the gain :), and in the
+> above example for x64 gain it should have a 1/64 scale.
+>
+>
+> <snip>
+>
+>>> Or we can consider that the chan->type is always valid?
+>>
+>> I'd think so; you also assume that chan->address is valid
+>>
+>> I suggest to use chan->address to point to a table containing the
+>> address and the mask
+>
+> <snip>
+>
+>>> Which sensors? It means they do not agree with the ABI:
+>>>
+>>> http://lxr.free-electrons.com/source/Documentation/ABI/testing/sysfs-bus-iio#L1131
+>>
+>> that 'clarification' was added recently,
+>> 614e8842ddf5502f0e781f91695bfbc1e1e1d9b6 (with 3.18)
+>> "Proximity measurement .. by observing reflectivity"
+>>
+>> high proximity <-> high reflectivity -- this is the reality of what most
+>> sensors output (including yours)
+>>
+>> proximity and distance are opposite concepts;
+>> high proximity <-> low distance, and vice versa
+>>
+>> the distance part doesn't make sense in the ABI description
+>
+> At least sx9500 uses this convention and userspace applications rely on this.
 
-> The current computation for fractional part of the magnetic
-> field is broken. This patch fixes it by taking a different
-> approach. We expose the raw reading in mili Gauss (to avoid
-> rounding errors) with a scale of 0.001.
+OK, so wee need to agree on this part and to add a proper descriptor to the ABI.
 
-milli
+Jonathan, what do you say?
 
-comments below
-
-> 
-> Thus the final computation is done in userspace where floating
-> point operation are more relaxed.
-> 
-> Fixes: abeb6b1e7b ("iio: magnetometer: Add support for MEMSIC MMC35240")
-> Signed-off-by: Daniel Baluta <daniel.baluta@intel.com>
-> ---
->  drivers/iio/magnetometer/mmc35240.c | 43 +++++++++++++++++++++++--------------
->  1 file changed, 27 insertions(+), 16 deletions(-)
-> 
-> diff --git a/drivers/iio/magnetometer/mmc35240.c b/drivers/iio/magnetometer/mmc35240.c
-> index 9d62c53..c520117 100644
-> --- a/drivers/iio/magnetometer/mmc35240.c
-> +++ b/drivers/iio/magnetometer/mmc35240.c
-> @@ -113,8 +113,9 @@ static IIO_CONST_ATTR_SAMP_FREQ_AVAIL("100 200 333 666");
->  	.modified = 1, \
->  	.channel2 = IIO_MOD_ ## _axis, \
->  	.address = AXIS_ ## _axis, \
-> -	.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED), \
-> -	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SAMP_FREQ), \
-> +	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW), \
-> +	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SAMP_FREQ) |\
-
-probably a space before \
-
-> +			BIT(IIO_CHAN_INFO_SCALE),  \
->  }
->  
->  static const struct iio_chan_spec mmc35240_channels[] = {
-> @@ -241,9 +242,19 @@ static int mmc35240_read_measurement(struct mmc35240_data *data, __le16 buf[3])
->  				3 * sizeof(__le16));
->  }
->  
-> -static int mmc35240_raw_to_gauss(struct mmc35240_data *data, int index,
-> -				 __le16 buf[],
-> -				 int *val, int *val2)
-> +/**
-> + * mmc35240_raw_to_mgauss - convert raw readings to mili gauss. Also apply
-
-milli
-
-> +			    compensation for output value.
-> + *
-> + * @data: device private data
-> + * @index: axis index for which we want the conversion
-> + * @buf: raw data to be converted, 2 bytes in little endian format
-> + * @val: compensated output reading (unit is mili gauss)
-
-milli
-
-> + *
-> + * Returns: 0 in case of success, -EINVAL when @index is not valid
-> + */
-> +static int mmc35240_raw_to_mgauss(struct mmc35240_data *data, int index,
-> +				  __le16 buf[], int *val)
->  {
->  	int raw_x, raw_y, raw_z;
->  	int sens_x, sens_y, sens_z;
-> @@ -261,18 +272,15 @@ static int mmc35240_raw_to_gauss(struct mmc35240_data *data, int index,
->  
->  	switch (index) {
->  	case AXIS_X:
-> -		*val = (raw_x - nfo) / sens_x;
-> -		*val2 = ((raw_x - nfo) % sens_x) * 1000000;
-> +		*val = (raw_x - nfo) * 1000 / sens_x;
->  		break;
->  	case AXIS_Y:
-> -		*val = (raw_y - nfo) / sens_y - (raw_z - nfo) / sens_z;
-> -		*val2 = (((raw_y - nfo) % sens_y - (raw_z - nfo) % sens_z))
-> -			* 1000000;
-> +		*val = (raw_y - nfo) * 1000 / sens_y -
-> +			(raw_z - nfo)  * 1000 / sens_z;
->  		break;
->  	case AXIS_Z:
-> -		*val = (raw_y - nfo) / sens_y + (raw_z - nfo) / sens_z;
-> -		*val2 = (((raw_y - nfo) % sens_y + (raw_z - nfo) % sens_z))
-> -			* 1000000;
-> +		*val = (raw_y - nfo) * 1000 / sens_y +
-> +			(raw_z - nfo) * 1000 / sens_z;
->  		break;
->  	default:
->  		return -EINVAL;
-> @@ -290,16 +298,19 @@ static int mmc35240_read_raw(struct iio_dev *indio_dev,
->  	__le16 buf[3];
->  
->  	switch (mask) {
-> -	case IIO_CHAN_INFO_PROCESSED:
-> +	case IIO_CHAN_INFO_RAW:
->  		mutex_lock(&data->mutex);
->  		ret = mmc35240_read_measurement(data, buf);
->  		mutex_unlock(&data->mutex);
->  		if (ret < 0)
->  			return ret;
-> -		ret = mmc35240_raw_to_gauss(data, chan->address,
-> -					    buf, val, val2);
-> +		ret = mmc35240_raw_to_mgauss(data, chan->address, buf, val);
->  		if (ret < 0)
->  			return ret;
-> +		return IIO_VAL_INT;
-> +	case IIO_CHAN_INFO_SCALE:
-> +		*val = 0;
-> +		*val2 = 1000;
->  		return IIO_VAL_INT_PLUS_MICRO;
->  	case IIO_CHAN_INFO_SAMP_FREQ:
->  		mutex_lock(&data->mutex);
-> 
-
--- 
-
-Peter Meerwald
-+43-664-2444418 (mobile)
+Daniel.
