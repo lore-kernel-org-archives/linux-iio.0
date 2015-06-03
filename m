@@ -1,74 +1,78 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-ie0-f173.google.com ([209.85.223.173]:34127 "EHLO
-	mail-ie0-f173.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751094AbbFCFUN (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 3 Jun 2015 01:20:13 -0400
-Received: by iecwk5 with SMTP id wk5so4842927iec.1
-        for <linux-iio@vger.kernel.org>; Tue, 02 Jun 2015 22:20:13 -0700 (PDT)
-MIME-Version: 1.0
-In-Reply-To: <556DF5D8.9080000@kernel.org>
-References: <CAKzfze8qX0WEKmHgBKKVvw-=mzFOUVSQnOXXxjUPdm=BafoYqA@mail.gmail.com>
-	<556DF5D8.9080000@kernel.org>
-Date: Tue, 2 Jun 2015 22:20:12 -0700
-Message-ID: <CAKzfze82kYZi6jxiQV_b+=-rQJzbYbO8-kb=2gMEZr=3xeSVEA@mail.gmail.com>
-Subject: Re: IIO_GESTURE proposal
-From: Matt Ranostay <mranostay@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	Lars-Peter Clausen <lars@metafoo.de>,
+Received: from lb1-smtp-cloud3.xs4all.net ([194.109.24.22]:34917 "EHLO
+	lb1-smtp-cloud3.xs4all.net" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1751999AbbFCHGF (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 3 Jun 2015 03:06:05 -0400
+Message-ID: <1433315157.2361.100.camel@x220>
+Subject: Re: [PATCH 1/3] iio: adc: hi-843x: Holt HI-8435/8436/8437 descrete
+ ADC
+From: Paul Bolle <pebolle@tiscali.nl>
+To: Vladimir Barinov <vladimir.barinov@cogentembedded.com>
+Cc: Jonathan Cameron <jic23@kernel.org>,
 	Hartmut Knaack <knaack.h@gmx.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>
-Content-Type: text/plain; charset=UTF-8
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Rob Herring <robh+dt@kernel.org>,
+	Pawel Moll <pawel.moll@arm.com>,
+	Mark Rutland <mark.rutland@arm.com>,
+	Ian Campbell <ijc+devicetree@hellion.org.uk>,
+	Kumar Gala <galak@codeaurora.org>,
+	linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org
+Date: Wed, 03 Jun 2015 09:05:57 +0200
+In-Reply-To: <1433161211-22034-1-git-send-email-vladimir.barinov@cogentembedded.com>
+References: <1433161073-21967-1-git-send-email-vladimir.barinov@cogentembedded.com>
+	 <1433161211-22034-1-git-send-email-vladimir.barinov@cogentembedded.com>
+Content-Type: text/plain; charset="UTF-8"
+Mime-Version: 1.0
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Tue, Jun 2, 2015 at 11:28 AM, Jonathan Cameron <jic23@kernel.org> wrote:
-> On 02/06/15 05:35, Matt Ranostay wrote:
->> Jonathan,
->>
->> So I am currently planning on implementing a driver for the Avago
->> APDS-9960 that has the typical ALS, RGBC, and proximity sensor
->> components. But this part has a gesture function that uses 4 IR
->> photodiodes aligned in a grid of UP-DOWN-LEFT-RIGHT that detect IR
->> light reflection off an object, and in turn reports back the direction
->> a hand or similar would make over the sensor.
->>
->> Now the data that is reported back is the intensity of each of the 4
->> LEDs (UPLR) which then userspace can compute the velocity, and
->> direction of the gesture. My question should some thing like this be
->> using 4 IIO_INTENSITY channels or just one 32-bit value and new type
->> of IIO_GESTURE?
-> Interesting device.
->
-> Anyhow, my immediate reaction is that the single 32 bit value is effectively
-> device specific whereas breaking it up into 4 values makes it more generic.
-> (just wait for the predictable 8 led version to offer extra LEDs on the diagonals)
->
-> The question that follows is how to make their relative positions / sensitive directions
-> apparent to userspace?
->
-> I'd go for sensitive direction as the optics of different sensors may give very different
-> correspondences.
->
-> So we 'could' do it with modifiers but how do we make them generic enough?
-> How about a a sensitive_direction type infomask element that gives an approximate
-> pointing vector? (using the read_raw_multi)
+Just a nit, that I spotted while scanning for other issues.
 
-The latter seems more sane and functional. Would this just tell
-userspace the orientation that the sensor is mounted on a board? I
-would assume so since the LEDs are integrated on the sensor IC.
+On Mon, 2015-06-01 at 15:20 +0300, Vladimir Barinov wrote:
+> --- /dev/null
+> +++ b/drivers/iio/adc/hi-843x.c
 
->
-> Other suggestion welcome as I have only been considering this whilst navigating Dublin
-> airport and a few beers waiting for the plane.
->
-> Jonathan
->>
->> Datasheet -> https://cdn.sparkfun.com/datasheets/Sensors/Proximity/apds9960.pdf
->>
->>
->> Thanks,
->>
->> Matt Ranostay
->>
->
+> +ssize_t hi843x_debounce_soft_show(struct device *dev,
+> +				  struct device_attribute *attr, char *buf)
+> +{
+> +	[...]
+> +}
+>+
+>+[...]
+>+
+> +ssize_t hi843x_threshold_socval_store(struct device *dev,
+> +				      struct device_attribute *attr,
+> +				      const char *buf, size_t len)
+> +{
+> +	[...]
+> +}
+
+It seems all these *_show and *_store functions should be made static,
+right?
+
+> +static IIO_DEVICE_ATTR(debounce_soft, S_IRUGO | S_IWUSR,
+> +	hi843x_debounce_soft_show, hi843x_debounce_soft_store, 0);
+> +static IIO_DEVICE_ATTR(debounce_soft_delay, S_IRUGO | S_IWUSR,
+> +	hi843x_debounce_soft_delay_show, hi843x_debounce_soft_delay_store, 0);
+> +static IIO_DEVICE_ATTR(sensing_mode, S_IRUGO | S_IWUSR,
+> +	hi843x_sensing_mode_show, hi843x_sensing_mode_store, 0);
+> +static IIO_DEVICE_ATTR(test_enable, S_IRUGO | S_IWUSR,
+> +	hi843x_test_enable_show, hi843x_test_enable_store, 0);
+> +static IIO_DEVICE_ATTR(test_mode, S_IRUGO | S_IWUSR,
+> +	hi843x_test_mode_show, hi843x_test_mode_store, 0);
+> +static IIO_DEVICE_ATTR(threshold_gohys, S_IRUGO | S_IWUSR,
+> +	hi843x_threshold_gohys_show, hi843x_threshold_gohys_store, 0);
+> +static IIO_DEVICE_ATTR(threshold_gocval, S_IRUGO | S_IWUSR,
+> +	hi843x_threshold_gocval_show, hi843x_threshold_gocval_store, 0);
+> +static IIO_DEVICE_ATTR(threshold_sohys, S_IRUGO | S_IWUSR,
+> +	hi843x_threshold_sohys_show, hi843x_threshold_sohys_store, 0);
+> +static IIO_DEVICE_ATTR(threshold_socval, S_IRUGO | S_IWUSR,
+> +	hi843x_threshold_socval_show, hi843x_threshold_socval_store, 0);
+
+Thanks,
+
+
+Paul Bolle
+
