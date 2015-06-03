@@ -1,131 +1,48 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga14.intel.com ([192.55.52.115]:50023 "EHLO mga14.intel.com"
+Received: from mga14.intel.com ([192.55.52.115]:50026 "EHLO mga14.intel.com"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1753248AbbFCIcU (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Wed, 3 Jun 2015 04:32:20 -0400
+	id S1753186AbbFCIcS (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Wed, 3 Jun 2015 04:32:18 -0400
 From: Daniel Baluta <daniel.baluta@intel.com>
 To: jic23@kernel.org
 Cc: daniel.baluta@intel.com, pmeerw@pmeerw.net, knaack.h@gmx.de,
 	lars@metafoo.de, linux-kernel@vger.kernel.org,
 	linux-iio@vger.kernel.org
-Subject: [PATCH 6/6] iio: magnetometer: mmc35240: Add compensation for raw values
-Date: Wed,  3 Jun 2015 11:33:58 +0300
-Message-Id: <1433320438-23870-7-git-send-email-daniel.baluta@intel.com>
+Subject: [PATCH 5/6] iio: magnetometer: mmc35240: Fix sensitivity on z-axis
+Date: Wed,  3 Jun 2015 11:33:57 +0300
+Message-Id: <1433320438-23870-6-git-send-email-daniel.baluta@intel.com>
 In-Reply-To: <1433320438-23870-1-git-send-email-daniel.baluta@intel.com>
 References: <1433320438-23870-1-git-send-email-daniel.baluta@intel.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-This patch adds compensation formula to raw readings, borrowed
-from Memsic's input driver.
+Datasheet says (Page 2) that typical value for sensitivity
+for 16 bits mode on Z-axis is 770. Anyhow, looking at the
+input driver provided by Memsic the value for MMC35240 is
+1024.
 
+Also, testing shows that using 1024 for Z-axis senzitivity
+offers better results.
+
+Fixes: abeb6b1e7b ("iio: magnetometer: Add support for MEMSIC MMC35240")
 Signed-off-by: Daniel Baluta <daniel.baluta@intel.com>
 ---
- drivers/iio/magnetometer/mmc35240.c | 62 ++++++++++++++++++++++++++++++++++---
- 1 file changed, 58 insertions(+), 4 deletions(-)
+ drivers/iio/magnetometer/mmc35240.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/drivers/iio/magnetometer/mmc35240.c b/drivers/iio/magnetometer/mmc35240.c
-index 88be660..902ad59 100644
+index 35eb6fd..88be660 100644
 --- a/drivers/iio/magnetometer/mmc35240.c
 +++ b/drivers/iio/magnetometer/mmc35240.c
-@@ -58,6 +58,31 @@
- #define MMC35240_WAIT_CHARGE_PUMP	50000	/* us */
- #define MMC53240_WAIT_SET_RESET		1000	/* us */
- 
-+/*
-+ * Memsic OTP process code piece is put here for reference:
-+ *
-+ * #define OTP_CONVERT(REG)  ((float)((REG) >=32 ? (32 - (REG)) : (REG)) * 0.006
-+ * 1) For X axis, the COEFFICIENT is always 1.
-+ * 2) For Y axis, the COEFFICIENT is as below:
-+ *    f_OTP_matrix[4] = OTP_CONVERT(((reg_data[1] & 0x03) << 4) |
-+ *                                   (reg_data[2] >> 4)) + 1.0;
-+ * 3) For Z axis, the COEFFICIENT is as below:
-+ *    f_OTP_matrix[8] = (OTP_CONVERT(reg_data[3] & 0x3f) + 1) * 1.35;
-+ * We implemented the OTP logic into driver.
-+ */
-+
-+/* scale = 1000 here for Y otp */
-+#define OTP_CONVERT_Y(REG)	(((REG) >= 32 ? (32 - (REG)) : (REG)) * 6)
-+
-+/* 0.6 * 1.35 = 0.81, scale 10000 for Z otp */
-+#define OTP_CONVERT_Z(REG)	(((REG) >= 32 ? (32 - (REG)) : (REG)) * 81)
-+
-+#define X_COEFFICIENT(x)	(x)
-+#define Y_COEFFICIENT(y)	(y + 1000)
-+#define Z_COEFFICIENT(z)	(z + 13500)
-+
-+#define MMC35240_OTP_START_ADDR		0x1B
-+
- enum mmc35240_resolution {
- 	MMC35240_16_BITS_SLOW = 0, /* 100 Hz */
- 	MMC35240_16_BITS_FAST,     /* 200 Hz */
-@@ -102,6 +127,10 @@ struct mmc35240_data {
- 	struct mutex mutex;
- 	struct regmap *regmap;
- 	enum mmc35240_resolution res;
-+
-+	/* OTP compensation */
-+	int axis_coef[3];
-+	int axis_scale[3];
- };
- 
- static const int mmc35240_samp_freq[] = {100, 200, 333, 666};
-@@ -172,8 +201,9 @@ static int mmc35240_hw_set(struct mmc35240_data *data, bool set)
- 
- static int mmc35240_init(struct mmc35240_data *data)
- {
--	int ret;
-+	int ret, y_convert, z_convert;
- 	unsigned int reg_id;
-+	u8 otp_data[6];
- 
- 	ret = regmap_read(data->regmap, MMC35240_REG_ID, &reg_id);
- 	if (ret < 0) {
-@@ -197,9 +227,30 @@ static int mmc35240_init(struct mmc35240_data *data)
- 		return ret;
- 
- 	/* set default sampling frequency */
--	return regmap_update_bits(data->regmap, MMC35240_REG_CTRL1,
--				  MMC35240_CTRL1_BW_MASK,
--				  data->res << MMC35240_CTRL1_BW_SHIFT);
-+	ret = regmap_update_bits(data->regmap, MMC35240_REG_CTRL1,
-+				 MMC35240_CTRL1_BW_MASK,
-+				 data->res << MMC35240_CTRL1_BW_SHIFT);
-+	if (ret < 0)
-+		return ret;
-+
-+	ret = regmap_bulk_read(data->regmap, MMC35240_OTP_START_ADDR,
-+			       (u8 *)otp_data, sizeof(otp_data));
-+	if (ret < 0)
-+		return ret;
-+
-+	y_convert = OTP_CONVERT_Y(((otp_data[1] & 0x03) << 4) |
-+				  (otp_data[2] >> 4));
-+	z_convert = OTP_CONVERT_Z(otp_data[3] & 0x3f);
-+
-+	data->axis_coef[0] = X_COEFFICIENT(1);
-+	data->axis_coef[1] = Y_COEFFICIENT(y_convert);
-+	data->axis_coef[2] = Z_COEFFICIENT(z_convert);
-+
-+	data->axis_scale[0] = 1;
-+	data->axis_scale[1] = 1000;
-+	data->axis_scale[2] = 10000;
-+
-+	return 0;
- }
- 
- static int mmc35240_take_measurement(struct mmc35240_data *data)
-@@ -286,6 +337,9 @@ static int mmc35240_raw_to_mgauss(struct mmc35240_data *data, int index,
- 	default:
- 		return -EINVAL;
- 	}
-+	/* apply OTP compensation */
-+	*val = (*val) * data->axis_coef[index] / data->axis_scale[index];
-+
- 	return 0;
- }
- 
+@@ -77,7 +77,7 @@ static const struct {
+ } mmc35240_props_table[] = {
+ 	/* 16 bits, 100Hz ODR */
+ 	{
+-		{1024, 1024, 770},
++		{1024, 1024, 1024},
+ 		32768,
+ 	},
+ 	/* 16 bits, 200Hz ODR */
 -- 
 1.9.1
 
