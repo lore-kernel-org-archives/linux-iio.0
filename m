@@ -1,65 +1,56 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:42025 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754280AbbFBS2p (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 2 Jun 2015 14:28:45 -0400
-Message-ID: <556DF5D8.9080000@kernel.org>
-Date: Tue, 02 Jun 2015 19:28:40 +0100
-From: Jonathan Cameron <jic23@kernel.org>
+Received: from mail-wi0-f176.google.com ([209.85.212.176]:38076 "EHLO
+	mail-wi0-f176.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S933099AbbFCRF6 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 3 Jun 2015 13:05:58 -0400
+Received: by wibdt2 with SMTP id dt2so20831079wib.1
+        for <linux-iio@vger.kernel.org>; Wed, 03 Jun 2015 10:05:57 -0700 (PDT)
 MIME-Version: 1.0
-To: Matt Ranostay <mranostay@gmail.com>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	Lars-Peter Clausen <lars@metafoo.de>,
+In-Reply-To: <20150603110241.GK1715@piout.net>
+References: <1433280853-3988-1-git-send-email-octavian.purdila@intel.com>
+	<20150603110241.GK1715@piout.net>
+Date: Wed, 3 Jun 2015 20:05:56 +0300
+Message-ID: <CAE1zot+nb9dc=pUZBphf8yMKyUbNk98QTTcHsmy2b3677yzn+A@mail.gmail.com>
+Subject: Re: [PATCH 0/2] change "client->irq >= 0" to "client->irq > 0"
+From: Octavian Purdila <octavian.purdila@intel.com>
+To: Alexandre Belloni <alexandre.belloni@free-electrons.com>
+Cc: Linus Walleij <linus.walleij@linaro.org>,
+	Mika Westerberg <mika.westerberg@linux.intel.com>,
+	Jonathan Cameron <jic23@kernel.org>,
 	Hartmut Knaack <knaack.h@gmx.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>
-Subject: Re: IIO_GESTURE proposal
-References: <CAKzfze8qX0WEKmHgBKKVvw-=mzFOUVSQnOXXxjUPdm=BafoYqA@mail.gmail.com>
-In-Reply-To: <CAKzfze8qX0WEKmHgBKKVvw-=mzFOUVSQnOXXxjUPdm=BafoYqA@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Alessandro Zummo <a.zummo@towertech.it>,
+	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	rtc-linux@googlegroups.com, lkml <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 02/06/15 05:35, Matt Ranostay wrote:
-> Jonathan,
-> 
-> So I am currently planning on implementing a driver for the Avago
-> APDS-9960 that has the typical ALS, RGBC, and proximity sensor
-> components. But this part has a gesture function that uses 4 IR
-> photodiodes aligned in a grid of UP-DOWN-LEFT-RIGHT that detect IR
-> light reflection off an object, and in turn reports back the direction
-> a hand or similar would make over the sensor.
-> 
-> Now the data that is reported back is the intensity of each of the 4
-> LEDs (UPLR) which then userspace can compute the velocity, and
-> direction of the gesture. My question should some thing like this be
-> using 4 IIO_INTENSITY channels or just one 32-bit value and new type
-> of IIO_GESTURE?
-Interesting device.
+On Wed, Jun 3, 2015 at 2:02 PM, Alexandre Belloni
+<alexandre.belloni@free-electrons.com> wrote:
+> On 03/06/2015 at 00:34:11 +0300, Octavian Purdila wrote :
+>> This fixes an issue introduces by commit dab472eb931b ("i2c / ACPI:
+>> Use 0 to indicate that device does not have interrupt assigned") where
+>> drivers will try to request IRQ 0 when no GpioInt is defined in ACPI.
+>>
+>> The same issue occurs when the device is instantiated via device tree
+>> with no IRQ, or from the i2c sysfs interface, even before the patch
+>> above.
+>>
+>> Linus, since the commit above was already merged in the GPIO tree,
+>> should these fixes be merged also via the GPIO tree (with ACKs from
+>> the others subsystem maintainers)?
+>>
+>
+> Side question, has it been considered that IRQ 0 is valid on some
+> platform and that means i2c devices will not be able to be wired to that
+> IRQ anymore? Though, I don't think there are any existing design that
+> does so.
+>
 
-Anyhow, my immediate reaction is that the single 32 bit value is effectively
-device specific whereas breaking it up into 4 values makes it more generic.
-(just wait for the predictable 8 led version to offer extra LEDs on the diagonals)
+Device tree instantiation does not allow you to used IRQ 0 anyway. And
+here is what Linus said about this:
 
-The question that follows is how to make their relative positions / sensitive directions
-apparent to userspace?  
-
-I'd go for sensitive direction as the optics of different sensors may give very different
-correspondences.
-
-So we 'could' do it with modifiers but how do we make them generic enough?
-How about a a sensitive_direction type infomask element that gives an approximate
-pointing vector? (using the read_raw_multi)
-
-Other suggestion welcome as I have only been considering this whilst navigating Dublin
-airport and a few beers waiting for the plane.
-
-Jonathan
-> 
-> Datasheet -> https://cdn.sparkfun.com/datasheets/Sensors/Proximity/apds9960.pdf
-> 
-> 
-> Thanks,
-> 
-> Matt Ranostay
-> 
-
+http://yarchive.net/comp/linux/no_irq.html
