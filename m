@@ -1,14 +1,16 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from lb1-smtp-cloud3.xs4all.net ([194.109.24.22]:34917 "EHLO
-	lb1-smtp-cloud3.xs4all.net" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1751999AbbFCHGF (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 3 Jun 2015 03:06:05 -0400
-Message-ID: <1433315157.2361.100.camel@x220>
-Subject: Re: [PATCH 1/3] iio: adc: hi-843x: Holt HI-8435/8436/8437 descrete
- ADC
-From: Paul Bolle <pebolle@tiscali.nl>
-To: Vladimir Barinov <vladimir.barinov@cogentembedded.com>
-Cc: Jonathan Cameron <jic23@kernel.org>,
+Received: from mail-la0-f52.google.com ([209.85.215.52]:35184 "EHLO
+	mail-la0-f52.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752703AbbFCHqW (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 3 Jun 2015 03:46:22 -0400
+Received: by labko7 with SMTP id ko7so1538219lab.2
+        for <linux-iio@vger.kernel.org>; Wed, 03 Jun 2015 00:46:21 -0700 (PDT)
+Message-ID: <556EB0C9.2040606@cogentembedded.com>
+Date: Wed, 03 Jun 2015 10:46:17 +0300
+From: Vladimir Barinov <vladimir.barinov@cogentembedded.com>
+MIME-Version: 1.0
+To: Paul Bolle <pebolle@tiscali.nl>
+CC: Jonathan Cameron <jic23@kernel.org>,
 	Hartmut Knaack <knaack.h@gmx.de>,
 	Lars-Peter Clausen <lars@metafoo.de>,
 	Peter Meerwald <pmeerw@pmeerw.net>,
@@ -19,60 +21,39 @@ Cc: Jonathan Cameron <jic23@kernel.org>,
 	Kumar Gala <galak@codeaurora.org>,
 	linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
 	devicetree@vger.kernel.org
-Date: Wed, 03 Jun 2015 09:05:57 +0200
-In-Reply-To: <1433161211-22034-1-git-send-email-vladimir.barinov@cogentembedded.com>
-References: <1433161073-21967-1-git-send-email-vladimir.barinov@cogentembedded.com>
-	 <1433161211-22034-1-git-send-email-vladimir.barinov@cogentembedded.com>
-Content-Type: text/plain; charset="UTF-8"
-Mime-Version: 1.0
+Subject: Re: [PATCH 1/3] iio: adc: hi-843x: Holt HI-8435/8436/8437 descrete
+ ADC
+References: <1433161073-21967-1-git-send-email-vladimir.barinov@cogentembedded.com>	 <1433161211-22034-1-git-send-email-vladimir.barinov@cogentembedded.com> <1433315157.2361.100.camel@x220>
+In-Reply-To: <1433315157.2361.100.camel@x220>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Just a nit, that I spotted while scanning for other issues.
+Hi Paul,
 
-On Mon, 2015-06-01 at 15:20 +0300, Vladimir Barinov wrote:
-> --- /dev/null
-> +++ b/drivers/iio/adc/hi-843x.c
+On 03.06.2015 10:05, Paul Bolle wrote:
+> Just a nit, that I spotted while scanning for other issues.
+>
+> On Mon, 2015-06-01 at 15:20 +0300, Vladimir Barinov wrote:
+>> --- /dev/null
+>> +++ b/drivers/iio/adc/hi-843x.c
+>> +ssize_t hi843x_debounce_soft_show(struct device *dev,
+>> +				  struct device_attribute *attr, char *buf)
+>> +{
+>> +	[...]
+>> +}
+>> +
+>> +[...]
+>> +
+>> +ssize_t hi843x_threshold_socval_store(struct device *dev,
+>> +				      struct device_attribute *attr,
+>> +				      const char *buf, size_t len)
+>> +{
+>> +	[...]
+>> +}
+> It seems all these *_show and *_store functions should be made static,
+> right?
+Right. Thank you for pointing to this.
 
-> +ssize_t hi843x_debounce_soft_show(struct device *dev,
-> +				  struct device_attribute *attr, char *buf)
-> +{
-> +	[...]
-> +}
->+
->+[...]
->+
-> +ssize_t hi843x_threshold_socval_store(struct device *dev,
-> +				      struct device_attribute *attr,
-> +				      const char *buf, size_t len)
-> +{
-> +	[...]
-> +}
-
-It seems all these *_show and *_store functions should be made static,
-right?
-
-> +static IIO_DEVICE_ATTR(debounce_soft, S_IRUGO | S_IWUSR,
-> +	hi843x_debounce_soft_show, hi843x_debounce_soft_store, 0);
-> +static IIO_DEVICE_ATTR(debounce_soft_delay, S_IRUGO | S_IWUSR,
-> +	hi843x_debounce_soft_delay_show, hi843x_debounce_soft_delay_store, 0);
-> +static IIO_DEVICE_ATTR(sensing_mode, S_IRUGO | S_IWUSR,
-> +	hi843x_sensing_mode_show, hi843x_sensing_mode_store, 0);
-> +static IIO_DEVICE_ATTR(test_enable, S_IRUGO | S_IWUSR,
-> +	hi843x_test_enable_show, hi843x_test_enable_store, 0);
-> +static IIO_DEVICE_ATTR(test_mode, S_IRUGO | S_IWUSR,
-> +	hi843x_test_mode_show, hi843x_test_mode_store, 0);
-> +static IIO_DEVICE_ATTR(threshold_gohys, S_IRUGO | S_IWUSR,
-> +	hi843x_threshold_gohys_show, hi843x_threshold_gohys_store, 0);
-> +static IIO_DEVICE_ATTR(threshold_gocval, S_IRUGO | S_IWUSR,
-> +	hi843x_threshold_gocval_show, hi843x_threshold_gocval_store, 0);
-> +static IIO_DEVICE_ATTR(threshold_sohys, S_IRUGO | S_IWUSR,
-> +	hi843x_threshold_sohys_show, hi843x_threshold_sohys_store, 0);
-> +static IIO_DEVICE_ATTR(threshold_socval, S_IRUGO | S_IWUSR,
-> +	hi843x_threshold_socval_show, hi843x_threshold_socval_store, 0);
-
-Thanks,
-
-
-Paul Bolle
-
+Regards,
+Vladimir
