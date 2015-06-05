@@ -1,100 +1,141 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mout.kundenserver.de ([212.227.126.130]:50512 "EHLO
-	mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S932119AbbFDSpI (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 4 Jun 2015 14:45:08 -0400
-From: Stefan Wahren <stefan.wahren@i2se.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Hartmut Knaack <knaack.h@gmx.de>,
+Received: from smtp106.biz.mail.bf1.yahoo.com ([98.139.244.54]:24332 "EHLO
+	smtp106.biz.mail.bf1.yahoo.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S932314AbbFEBqS (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 4 Jun 2015 21:46:18 -0400
+From: Kevin Tsai <ktsai@capellamicro.com>
+To: Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>,
 	Lars-Peter Clausen <lars@metafoo.de>,
 	Peter Meerwald <pmeerw@pmeerw.net>,
-	Marek Vasut <marex@denx.de>,
-	=?UTF-8?q?Kristina=20Mart=C5=A1enko?=
-	<kristina.martsenko@gmail.com>,
-	Fabio Estevam <fabio.estevam@freescale.com>,
-	linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
-	Stefan Wahren <stefan.wahren@i2se.com>
-Subject: [PATCH] iio: mxs-lradc: add datasheet name for every usable channel
-Date: Thu,  4 Jun 2015 18:44:31 +0000
-Message-Id: <1433443471-16970-1-git-send-email-stefan.wahren@i2se.com>
+	Irina Tirdea <irina.tirdea@intel.com>,
+	Daniel Baluta <daniel.baluta@intel.com>,
+	Haneen Mohammed <hamohammed.sa@gmail.com>,
+	Darshana Padmadas <darshanapadmadas@gmail.com>,
+	Roberta Dobrescu <roberta.dobrescu@gmail.com>,
+	Vlad Dogaru <vlad.dogaru@intel.com>,
+	Reyad Attiyat <reyad.attiyat@gmail.com>,
+	Octavian Purdila <octavian.purdila@intel.com>,
+	Martin Fuzzey <mfuzzey@parkeon.com>,
+	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+	Kevin Tsai <ktsai@capellamicro.com>
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-api@vger.kernel.org
+Subject: [PATCH V2 1/1] iio: Add iio_mod_light_uva, iio_mod_light_uvb, and iio_mod_light_uvc.
+Date: Thu,  4 Jun 2015 18:47:51 -0700
+Message-Id: <1433468871-14351-1-git-send-email-ktsai@capellamicro.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-In order to provide a channel name to in kernel consumers add the
-datasheet names for every usable AD channel.
+Add Ultraviolet(UV) support:
+UVA: 315 ~ 400 nm
+UVB: 280 ~ 315 nm
+UVC: 100 ~ 280 nm
 
-Signed-off-by: Stefan Wahren <stefan.wahren@i2se.com>
+/sys/bus/iio/devices/iio:deviceX/in_intensity_uva_input
+/sys/bus/iio/devices/iio:deviceX/in_intensity_uvb_input
+/sys/bus/iio/devices/iio:deviceX/in_intensity_uvc_input
+The SI unit is "uW/mm^2".
+
+/sys/bus/iio/devices/iio:deviceX/in_intensity_uva_min_wavelength
+/sys/bus/iio/devices/iio:deviceX/in_intensity_uva_max_wavelength
+/sys/bus/iio/devices/iio:deviceX/in_intensity_uvb_min_wavelength
+/sys/bus/iio/devices/iio:deviceX/in_intensity_uvb_max_wavelength
+/sys/bus/iio/devices/iio:deviceX/in_intensity_uvc_min_wavelength
+/sys/bus/iio/devices/iio:deviceX/in_intensity_uvc_max_wavelength
+The SI unit is "nm".
+
+Signed-off-by: Kevin Tsai <ktsai@capellamicro.com>
 ---
- drivers/staging/iio/adc/mxs-lradc.c |   32 +++++++++++++++++---------------
- 1 file changed, 17 insertions(+), 15 deletions(-)
+ Documentation/ABI/testing/sysfs-bus-iio | 23 +++++++++++++++++++++++
+ drivers/iio/industrialio-core.c         |  3 +++
+ include/uapi/linux/iio/types.h          |  3 +++
+ tools/iio/iio_event_monitor.c           |  6 ++++++
+ 4 files changed, 35 insertions(+)
 
-diff --git a/drivers/staging/iio/adc/mxs-lradc.c b/drivers/staging/iio/adc/mxs-lradc.c
-index d7c5223..cafd6a0 100644
---- a/drivers/staging/iio/adc/mxs-lradc.c
-+++ b/drivers/staging/iio/adc/mxs-lradc.c
-@@ -1369,7 +1369,7 @@ static const struct iio_buffer_setup_ops mxs_lradc_buffer_ops = {
-  * Driver initialization
-  */
- 
--#define MXS_ADC_CHAN(idx, chan_type) {				\
-+#define MXS_ADC_CHAN(idx, chan_type, name) {			\
- 	.type = (chan_type),					\
- 	.indexed = 1,						\
- 	.scan_index = (idx),					\
-@@ -1382,17 +1382,18 @@ static const struct iio_buffer_setup_ops mxs_lradc_buffer_ops = {
- 		.realbits = LRADC_RESOLUTION,			\
- 		.storagebits = 32,				\
- 	},							\
-+	.datasheet_name = (name),				\
- }
- 
- static const struct iio_chan_spec mxs_lradc_chan_spec[] = {
--	MXS_ADC_CHAN(0, IIO_VOLTAGE),
--	MXS_ADC_CHAN(1, IIO_VOLTAGE),
--	MXS_ADC_CHAN(2, IIO_VOLTAGE),
--	MXS_ADC_CHAN(3, IIO_VOLTAGE),
--	MXS_ADC_CHAN(4, IIO_VOLTAGE),
--	MXS_ADC_CHAN(5, IIO_VOLTAGE),
--	MXS_ADC_CHAN(6, IIO_VOLTAGE),
--	MXS_ADC_CHAN(7, IIO_VOLTAGE),	/* VBATT */
-+	MXS_ADC_CHAN(0, IIO_VOLTAGE, "LRADC0"),
-+	MXS_ADC_CHAN(1, IIO_VOLTAGE, "LRADC1"),
-+	MXS_ADC_CHAN(2, IIO_VOLTAGE, "LRADC2"),
-+	MXS_ADC_CHAN(3, IIO_VOLTAGE, "LRADC3"),
-+	MXS_ADC_CHAN(4, IIO_VOLTAGE, "LRADC4"),
-+	MXS_ADC_CHAN(5, IIO_VOLTAGE, "LRADC5"),
-+	MXS_ADC_CHAN(6, IIO_VOLTAGE, "LRADC6"),
-+	MXS_ADC_CHAN(7, IIO_VOLTAGE, "VBATT"),
- 	/* Combined Temperature sensors */
- 	{
- 		.type = IIO_TEMP,
-@@ -1403,6 +1404,7 @@ static const struct iio_chan_spec mxs_lradc_chan_spec[] = {
- 				      BIT(IIO_CHAN_INFO_SCALE),
- 		.channel = 8,
- 		.scan_type = {.sign = 'u', .realbits = 18, .storagebits = 32,},
-+		.datasheet_name = "TEMP_DIE",
- 	},
- 	/* Hidden channel to keep indexes */
- 	{
-@@ -1411,12 +1413,12 @@ static const struct iio_chan_spec mxs_lradc_chan_spec[] = {
- 		.scan_index = -1,
- 		.channel = 9,
- 	},
--	MXS_ADC_CHAN(10, IIO_VOLTAGE),	/* VDDIO */
--	MXS_ADC_CHAN(11, IIO_VOLTAGE),	/* VTH */
--	MXS_ADC_CHAN(12, IIO_VOLTAGE),	/* VDDA */
--	MXS_ADC_CHAN(13, IIO_VOLTAGE),	/* VDDD */
--	MXS_ADC_CHAN(14, IIO_VOLTAGE),	/* VBG */
--	MXS_ADC_CHAN(15, IIO_VOLTAGE),	/* VDD5V */
-+	MXS_ADC_CHAN(10, IIO_VOLTAGE, "VDDIO"),
-+	MXS_ADC_CHAN(11, IIO_VOLTAGE, "VTH"),
-+	MXS_ADC_CHAN(12, IIO_VOLTAGE, "VDDA"),
-+	MXS_ADC_CHAN(13, IIO_VOLTAGE, "VDDD"),
-+	MXS_ADC_CHAN(14, IIO_VOLTAGE, "VBG"),
-+	MXS_ADC_CHAN(15, IIO_VOLTAGE, "VDD5V"),
+diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
+index bbed111..2960142 100644
+--- a/Documentation/ABI/testing/sysfs-bus-iio
++++ b/Documentation/ABI/testing/sysfs-bus-iio
+@@ -1463,3 +1463,26 @@ Description:
+ 		measurements and return the average value as output data. Each
+ 		value resulted from <type>[_name]_oversampling_ratio measurements
+ 		is considered as one sample for <type>[_name]_sampling_frequency.
++
++What:		/sys/.../iio:deviceX/in_intensity_uva[_input|_raw]
++What:		/sys/.../iio:deviceX/in_intensity_uvb[_input|_raw]
++What:		/sys/.../iio:deviceX/in_intensity_uvc[_input|_raw]
++KernelVersion:	4.1.1
++Description:
++		uva is the ultraviolet wavelength from 315nm to 400nm.
++		uvb is the ultraviolet wavelength from 280nm to 315nm.
++		uvc is the ultraviolet wavelength from 100nm to 280nm.
++		The SI unit is "uW/mm^2". Otherwise it should include _raw.
++
++What:		/sys/.../iio:deviceX/in_intensity_uva_min_wavelength
++What:		/sys/.../iio:deviceX/in_intensity_uva_max_wavelength
++What:		/sys/.../iio:deviceX/in_intensity_uvb_min_wavelength
++What:		/sys/.../iio:deviceX/in_intensity_uvb_max_wavelength
++What:		/sys/.../iio:deviceX/in_intensity_uvc_min_wavelength
++What:		/sys/.../iio:deviceX/in_intensity_uvc_max_wavelength
++KernelVersion:	4.1.1
++Description:
++		Sensor may not cover the whole uva/uvb/uvc channel. Add the
++		min/max wavelength properties to descript sensor range.
++		The SI unit is "nm".
++
+diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+index 3524b0d..ecbdd1e 100644
+--- a/drivers/iio/industrialio-core.c
++++ b/drivers/iio/industrialio-core.c
+@@ -89,6 +89,9 @@ static const char * const iio_modifier_names[] = {
+ 	[IIO_MOD_LIGHT_RED] = "red",
+ 	[IIO_MOD_LIGHT_GREEN] = "green",
+ 	[IIO_MOD_LIGHT_BLUE] = "blue",
++	[IIO_MOD_LIGHT_UVA] = "uva",
++	[IIO_MOD_LIGHT_UVB] = "uvb",
++	[IIO_MOD_LIGHT_UVC] = "uvc",
+ 	[IIO_MOD_QUATERNION] = "quaternion",
+ 	[IIO_MOD_TEMP_AMBIENT] = "ambient",
+ 	[IIO_MOD_TEMP_OBJECT] = "object",
+diff --git a/include/uapi/linux/iio/types.h b/include/uapi/linux/iio/types.h
+index 2f8b117..5c99090 100644
+--- a/include/uapi/linux/iio/types.h
++++ b/include/uapi/linux/iio/types.h
+@@ -72,6 +72,9 @@ enum iio_modifier {
+ 	IIO_MOD_ROOT_SUM_SQUARED_X_Y_Z,
+ 	IIO_MOD_I,
+ 	IIO_MOD_Q,
++	IIO_MOD_LIGHT_UVA,
++	IIO_MOD_LIGHT_UVB,
++	IIO_MOD_LIGHT_UVC,
  };
  
- static int mxs_lradc_hw_init(struct mxs_lradc *lradc)
+ enum iio_event_type {
+diff --git a/tools/iio/iio_event_monitor.c b/tools/iio/iio_event_monitor.c
+index 427c271..46dd27f 100644
+--- a/tools/iio/iio_event_monitor.c
++++ b/tools/iio/iio_event_monitor.c
+@@ -88,6 +88,9 @@ static const char * const iio_modifier_names[] = {
+ 	[IIO_MOD_LIGHT_RED] = "red",
+ 	[IIO_MOD_LIGHT_GREEN] = "green",
+ 	[IIO_MOD_LIGHT_BLUE] = "blue",
++	[IIO_MOD_LIGHT_UVA] = "uva",
++	[IIO_MOD_LIGHT_UVB] = "uvb",
++	[IIO_MOD_LIGHT_UVC] = "uvc",
+ 	[IIO_MOD_QUATERNION] = "quaternion",
+ 	[IIO_MOD_TEMP_AMBIENT] = "ambient",
+ 	[IIO_MOD_TEMP_OBJECT] = "object",
+@@ -156,6 +159,9 @@ static bool event_is_known(struct iio_event_data *event)
+ 	case IIO_MOD_LIGHT_RED:
+ 	case IIO_MOD_LIGHT_GREEN:
+ 	case IIO_MOD_LIGHT_BLUE:
++	case IIO_MOD_LIGHT_UVA:
++	case IIO_MOD_LIGHT_UVB:
++	case IIO_MOD_LIGHT_UVC:
+ 	case IIO_MOD_QUATERNION:
+ 	case IIO_MOD_TEMP_AMBIENT:
+ 	case IIO_MOD_TEMP_OBJECT:
 -- 
-1.7.9.5
+1.8.3.1
 
