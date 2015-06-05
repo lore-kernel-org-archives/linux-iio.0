@@ -1,45 +1,82 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mout.kundenserver.de ([212.227.17.13]:53855 "EHLO
-	mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S932478AbbFEN5J (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 5 Jun 2015 09:57:09 -0400
-Message-ID: <5571AAAF.8040409@i2se.com>
-Date: Fri, 05 Jun 2015 15:57:03 +0200
-From: Stefan Wahren <stefan.wahren@i2se.com>
-MIME-Version: 1.0
-To: Marek Vasut <marex@denx.de>
-CC: Jonathan Cameron <jic23@kernel.org>,
+Received: from mga11.intel.com ([192.55.52.93]:11507 "EHLO mga11.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1422677AbbFEOAd (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Fri, 5 Jun 2015 10:00:33 -0400
+From: Octavian Purdila <octavian.purdila@intel.com>
+To: Linus Walleij <linus.walleij@linaro.org>
+Cc: Mika Westerberg <mika.westerberg@linux.intel.com>,
+	Jonathan Cameron <jic23@kernel.org>,
 	Hartmut Knaack <knaack.h@gmx.de>,
 	Lars-Peter Clausen <lars@metafoo.de>,
 	Peter Meerwald <pmeerw@pmeerw.net>,
-	=?windows-1252?Q?Kristina_Mart=9Ae?= =?windows-1252?Q?nko?=
-	<kristina.martsenko@gmail.com>,
-	Fabio Estevam <fabio.estevam@freescale.com>,
-	linux-iio@vger.kernel.org, devel@driverdev.osuosl.org
-Subject: Re: [PATCH] iio: mxs-lradc: add datasheet name for every usable channel
-References: <1433443471-16970-1-git-send-email-stefan.wahren@i2se.com> <201506051543.09533.marex@denx.de>
-In-Reply-To: <201506051543.09533.marex@denx.de>
-Content-Type: text/plain; charset=windows-1252
+	Alessandro Zummo <a.zummo@towertech.it>,
+	Alexandre Belloni <alexandre.belloni@free-electrons.com>,
+	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+	linux-iio@vger.kernel.org, rtc-linux@googlegroups.com,
+	linux-kernel@vger.kernel.org,
+	Octavian Purdila <octavian.purdila@intel.com>
+Subject: [PATCH v3 2/2] rtc: fix drivers that consider 0 as a valid IRQ in client->irq
+Date: Fri,  5 Jun 2015 16:59:43 +0300
+Message-Id: <1433512783-8183-3-git-send-email-octavian.purdila@intel.com>
+In-Reply-To: <1433512783-8183-1-git-send-email-octavian.purdila@intel.com>
+References: <1433512783-8183-1-git-send-email-octavian.purdila@intel.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Am 05.06.2015 um 15:43 schrieb Marek Vasut:
-> On Thursday, June 04, 2015 at 08:44:31 PM, Stefan Wahren wrote:
->> In order to provide a channel name to in kernel consumers add the
->> datasheet names for every usable AD channel.
-> Hi!
->
-> Did you check those channel names for both MX28 and MX23? Note
-> that they do differ IIRC ;-)
+Since patch "i2c / ACPI: Use 0 to indicate that device does not have
+interrupt assigned" [1], 0 is not a valid i2c client irq anymore, so
+change all driver's checks accordingly.
 
-Sorry for being so stupid to rely on the comments.
+The same issue occurs when the device is instantiated via device tree
+with no IRQ, or from the i2c sysfs interface, even before the patch
+above.
 
-But do you agree to add datasheet names?
+[1] http://lkml.kernel.org/g/<1430908148-201129-3-git-send-email-mika.westerberg@linux.intel.com>
 
-Stefan
+Signed-off-by: Octavian Purdila <octavian.purdila@intel.com>
+Reviewed-by: Mika Westerberg <mika.westerberg@linux.intel.com>
+Acked-by: Alexandre Belloni <alexandre.belloni@free-electrons.com>
+---
+ drivers/rtc/rtc-ds1374.c | 4 ++--
+ drivers/rtc/rtc-ds3232.c | 2 +-
+ 2 files changed, 3 insertions(+), 3 deletions(-)
 
->
-> Best regards,
-> Marek Vasut
-
+diff --git a/drivers/rtc/rtc-ds1374.c b/drivers/rtc/rtc-ds1374.c
+index 167783f..592458c 100644
+--- a/drivers/rtc/rtc-ds1374.c
++++ b/drivers/rtc/rtc-ds1374.c
+@@ -689,7 +689,7 @@ static int ds1374_suspend(struct device *dev)
+ {
+ 	struct i2c_client *client = to_i2c_client(dev);
+ 
+-	if (client->irq >= 0 && device_may_wakeup(&client->dev))
++	if (client->irq > 0 && device_may_wakeup(&client->dev))
+ 		enable_irq_wake(client->irq);
+ 	return 0;
+ }
+@@ -698,7 +698,7 @@ static int ds1374_resume(struct device *dev)
+ {
+ 	struct i2c_client *client = to_i2c_client(dev);
+ 
+-	if (client->irq >= 0 && device_may_wakeup(&client->dev))
++	if (client->irq > 0 && device_may_wakeup(&client->dev))
+ 		disable_irq_wake(client->irq);
+ 	return 0;
+ }
+diff --git a/drivers/rtc/rtc-ds3232.c b/drivers/rtc/rtc-ds3232.c
+index 7e48e53..f280dd1 100644
+--- a/drivers/rtc/rtc-ds3232.c
++++ b/drivers/rtc/rtc-ds3232.c
+@@ -443,7 +443,7 @@ static int ds3232_remove(struct i2c_client *client)
+ {
+ 	struct ds3232 *ds3232 = i2c_get_clientdata(client);
+ 
+-	if (client->irq >= 0) {
++	if (client->irq > 0) {
+ 		mutex_lock(&ds3232->mutex);
+ 		ds3232->exiting = 1;
+ 		mutex_unlock(&ds3232->mutex);
+-- 
+1.9.1
 
