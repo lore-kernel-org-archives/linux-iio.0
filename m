@@ -1,163 +1,281 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:47739 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:47741 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750734AbbFGQUu (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 7 Jun 2015 12:20:50 -0400
-Message-ID: <55746F61.8050306@kernel.org>
-Date: Sun, 07 Jun 2015 17:20:49 +0100
+	with ESMTP id S1750831AbbFGQV0 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 7 Jun 2015 12:21:26 -0400
+Message-ID: <55746F85.3090807@kernel.org>
+Date: Sun, 07 Jun 2015 17:21:25 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
 To: Martin Fuzzey <mfuzzey@parkeon.com>
 CC: linux-iio@vger.kernel.org
-Subject: Re: [PATCH V5 5/7] iio: mma8452: Add support for transient event
- debouncing
-References: <20150601133943.24925.83080.stgit@localhost> <20150601133954.24925.6468.stgit@localhost>
-In-Reply-To: <20150601133954.24925.6468.stgit@localhost>
+Subject: Re: [PATCH V5 6/7] iio: mma8452: Add highpass filter configuration.
+References: <20150601133943.24925.83080.stgit@localhost> <20150601133956.24925.16117.stgit@localhost>
+In-Reply-To: <20150601133956.24925.16117.stgit@localhost>
 Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
 On 01/06/15 14:39, Martin Fuzzey wrote:
-> Allow the debouce counter for transient events to be configured
-> using the sysfs attribute events/in_accel_thresh_rising_period
+> Allow the cutoff frequency of the high pass filter to be configured.
 > 
 > Signed-off-by: Martin Fuzzey <mfuzzey@parkeon.com>
 Applied.
 > ---
->  drivers/iio/accel/mma8452.c |   76 +++++++++++++++++++++++++++++++++++++------
->  1 file changed, 65 insertions(+), 11 deletions(-)
+>  drivers/iio/accel/mma8452.c |  140 ++++++++++++++++++++++++++++++++++++++++++-
+>  1 file changed, 136 insertions(+), 4 deletions(-)
 > 
 > diff --git a/drivers/iio/accel/mma8452.c b/drivers/iio/accel/mma8452.c
-> index f30eb9b..7429df3 100644
+> index 7429df3..51ae751 100644
 > --- a/drivers/iio/accel/mma8452.c
 > +++ b/drivers/iio/accel/mma8452.c
-> @@ -38,6 +38,7 @@
->  #define MMA8452_TRANSIENT_SRC_ZTRANSE		BIT(5)
->  #define MMA8452_TRANSIENT_THS 0x1f
->  #define MMA8452_TRANSIENT_THS_MASK	0x7f
-> +#define MMA8452_TRANSIENT_COUNT 0x20
->  #define MMA8452_OFF_X 0x2f
->  #define MMA8452_OFF_Y 0x30
->  #define MMA8452_OFF_Z 0x31
-> @@ -124,6 +125,12 @@ static int mma8452_get_int_plus_micros_index(const int (*vals)[2], int n,
->  	return -EINVAL;
->  }
+> @@ -29,9 +29,12 @@
+>  #define MMA8452_INT_SRC 0x0c
+>  #define MMA8452_WHO_AM_I 0x0d
+>  #define MMA8452_DATA_CFG 0x0e
+> +#define MMA8452_HP_FILTER_CUTOFF 0x0f
+> +#define MMA8452_HP_FILTER_CUTOFF_SEL_MASK	(BIT(0) | BIT(1))
+>  #define MMA8452_TRANSIENT_CFG 0x1d
+>  #define MMA8452_TRANSIENT_CFG_ELE		BIT(4)
+>  #define MMA8452_TRANSIENT_CFG_CHAN(chan)	BIT(chan + 1)
+> +#define MMA8452_TRANSIENT_CFG_HPF_BYP		BIT(0)
+>  #define MMA8452_TRANSIENT_SRC 0x1e
+>  #define MMA8452_TRANSIENT_SRC_XTRANSE		BIT(1)
+>  #define MMA8452_TRANSIENT_SRC_YTRANSE		BIT(3)
+> @@ -61,6 +64,7 @@
+>  #define MMA8452_DATA_CFG_FS_2G 0
+>  #define MMA8452_DATA_CFG_FS_4G 1
+>  #define MMA8452_DATA_CFG_FS_8G 2
+> +#define MMA8452_DATA_CFG_HPF_MASK BIT(4)
 >  
-> +static int mma8452_get_odr_index(struct mma8452_data *data)
-> +{
-> +	return (data->ctrl_reg1 & MMA8452_CTRL_DR_MASK) >>
-> +			MMA8452_CTRL_DR_SHIFT;
-> +}
-> +
->  static const int mma8452_samp_freq[8][2] = {
->  	{800, 0}, {400, 0}, {200, 0}, {100, 0}, {50, 0}, {12, 500000},
->  	{6, 250000}, {1, 560000}
-> @@ -139,6 +146,18 @@ static const int mma8452_scales[3][2] = {
->  	{0, 9577}, {0, 19154}, {0, 38307}
+>  #define MMA8452_INT_TRANS	BIT(5)
+>  
+> @@ -158,6 +162,18 @@ static const int mma8452_transient_time_step_us[8] = {
+>  	20000
 >  };
 >  
-> +/* Datasheet table 35  (step time vs sample frequency) */
-> +static const int mma8452_transient_time_step_us[8] = {
-> +	1250,
-> +	2500,
-> +	5000,
-> +	10000,
-> +	20000,
-> +	20000,
-> +	20000,
-> +	20000
+> +/* Datasheet table 18 (normal mode) */
+> +static const int mma8452_hp_filter_cutoff[8][4][2] = {
+> +	{ {16, 0}, {8, 0}, {4, 0}, {2, 0} },		/* 800 Hz sample */
+> +	{ {16, 0}, {8, 0}, {4, 0}, {2, 0} },		/* 400 Hz sample */
+> +	{ {8, 0}, {4, 0}, {2, 0}, {1, 0} },		/* 200 Hz sample */
+> +	{ {4, 0}, {2, 0}, {1, 0}, {0, 500000} },	/* 100 Hz sample */
+> +	{ {2, 0}, {1, 0}, {0, 500000}, {0, 250000} },	/* 50 Hz sample */
+> +	{ {2, 0}, {1, 0}, {0, 500000}, {0, 250000} },	/* 12.5 Hz sample */
+> +	{ {2, 0}, {1, 0}, {0, 500000}, {0, 250000} },	/* 6.25 Hz sample */
+> +	{ {2, 0}, {1, 0}, {0, 500000}, {0, 250000} }	/* 1.56 Hz sample */
 > +};
 > +
 >  static ssize_t mma8452_show_samp_freq_avail(struct device *dev,
 >  				struct device_attribute *attr, char *buf)
 >  {
-> @@ -198,8 +217,7 @@ static int mma8452_read_raw(struct iio_dev *indio_dev,
->  		*val2 = mma8452_scales[i][1];
->  		return IIO_VAL_INT_PLUS_MICRO;
->  	case IIO_CHAN_INFO_SAMP_FREQ:
-> -		i = (data->ctrl_reg1 & MMA8452_CTRL_DR_MASK) >>
-> -			MMA8452_CTRL_DR_SHIFT;
-> +		i = mma8452_get_odr_index(data);
->  		*val = mma8452_samp_freq[i][0];
->  		*val2 = mma8452_samp_freq[i][1];
->  		return IIO_VAL_INT_PLUS_MICRO;
-> @@ -297,15 +315,33 @@ static int mma8452_read_thresh(struct iio_dev *indio_dev,
->  			       int *val, int *val2)
->  {
->  	struct mma8452_data *data = iio_priv(indio_dev);
-> -	int ret;
-> +	int ret, us;
->  
-> -	ret = i2c_smbus_read_byte_data(data->client, MMA8452_TRANSIENT_THS);
-> -	if (ret < 0)
-> -		return ret;
-> +	switch (info) {
-> +	case IIO_EV_INFO_VALUE:
-> +		ret = i2c_smbus_read_byte_data(data->client,
-> +					       MMA8452_TRANSIENT_THS);
-> +		if (ret < 0)
-> +			return ret;
-> +
-> +		*val = ret & MMA8452_TRANSIENT_THS_MASK;
-> +		return IIO_VAL_INT;
->  
-> -	*val = ret & MMA8452_TRANSIENT_THS_MASK;
-> +	case IIO_EV_INFO_PERIOD:
-> +		ret = i2c_smbus_read_byte_data(data->client,
-> +					       MMA8452_TRANSIENT_COUNT);
-> +		if (ret < 0)
-> +			return ret;
-> +
-> +		us = ret * mma8452_transient_time_step_us[
-> +				mma8452_get_odr_index(data)];
-> +		*val = us / USEC_PER_SEC;
-> +		*val2 = us % USEC_PER_SEC;
-> +		return IIO_VAL_INT_PLUS_MICRO;
->  
-> -	return IIO_VAL_INT;
-> +	default:
-> +		return -EINVAL;
-> +	}
+> @@ -172,9 +188,23 @@ static ssize_t mma8452_show_scale_avail(struct device *dev,
+>  		ARRAY_SIZE(mma8452_scales));
 >  }
 >  
->  static int mma8452_write_thresh(struct iio_dev *indio_dev,
-> @@ -316,9 +352,26 @@ static int mma8452_write_thresh(struct iio_dev *indio_dev,
+> +static ssize_t mma8452_show_hp_cutoff_avail(struct device *dev,
+> +					    struct device_attribute *attr,
+> +					    char *buf)
+> +{
+> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+> +	struct mma8452_data *data = iio_priv(indio_dev);
+> +	int i = mma8452_get_odr_index(data);
+> +
+> +	return mma8452_show_int_plus_micros(buf, mma8452_hp_filter_cutoff[i],
+> +		ARRAY_SIZE(mma8452_hp_filter_cutoff[0]));
+> +}
+> +
+>  static IIO_DEV_ATTR_SAMP_FREQ_AVAIL(mma8452_show_samp_freq_avail);
+>  static IIO_DEVICE_ATTR(in_accel_scale_available, S_IRUGO,
+>  	mma8452_show_scale_avail, NULL, 0);
+> +static IIO_DEVICE_ATTR(in_accel_filter_high_pass_3db_frequency_available,
+> +			S_IRUGO, mma8452_show_hp_cutoff_avail, NULL, 0);
+>  
+>  static int mma8452_get_samp_freq_index(struct mma8452_data *data,
+>  	int val, int val2)
+> @@ -190,6 +220,31 @@ static int mma8452_get_scale_index(struct mma8452_data *data,
+>  		ARRAY_SIZE(mma8452_scales), val, val2);
+>  }
+>  
+> +static int mma8452_get_hp_filter_index(struct mma8452_data *data,
+> +				       int val, int val2)
+> +{
+> +	int i = mma8452_get_odr_index(data);
+> +
+> +	return mma8452_get_int_plus_micros_index(mma8452_hp_filter_cutoff[i],
+> +		ARRAY_SIZE(mma8452_scales[0]), val, val2);
+> +}
+> +
+> +static int mma8452_read_hp_filter(struct mma8452_data *data, int *hz, int *uHz)
+> +{
+> +	int i, ret;
+> +
+> +	ret = i2c_smbus_read_byte_data(data->client, MMA8452_HP_FILTER_CUTOFF);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	i = mma8452_get_odr_index(data);
+> +	ret &= MMA8452_HP_FILTER_CUTOFF_SEL_MASK;
+> +	*hz = mma8452_hp_filter_cutoff[i][ret][0];
+> +	*uHz = mma8452_hp_filter_cutoff[i][ret][1];
+> +
+> +	return 0;
+> +}
+> +
+>  static int mma8452_read_raw(struct iio_dev *indio_dev,
+>  			    struct iio_chan_spec const *chan,
+>  			    int *val, int *val2, long mask)
+> @@ -228,6 +283,16 @@ static int mma8452_read_raw(struct iio_dev *indio_dev,
+>  			return ret;
+>  		*val = sign_extend32(ret, 7);
+>  		return IIO_VAL_INT;
+> +	case IIO_CHAN_INFO_HIGH_PASS_FILTER_3DB_FREQUENCY:
+> +		if (data->data_cfg & MMA8452_DATA_CFG_HPF_MASK) {
+> +			ret = mma8452_read_hp_filter(data, val, val2);
+> +			if (ret < 0)
+> +				return ret;
+> +		} else {
+> +			*val = 0;
+> +			*val2 = 0;
+> +		}
+> +		return IIO_VAL_INT_PLUS_MICRO;
+>  	}
+>  	return -EINVAL;
+>  }
+> @@ -269,12 +334,31 @@ fail:
+>  	return ret;
+>  }
+>  
+> +static int mma8452_set_hp_filter_frequency(struct mma8452_data *data,
+> +					   int val, int val2)
+> +{
+> +	int i, reg;
+> +
+> +	i = mma8452_get_hp_filter_index(data, val, val2);
+> +	if (i < 0)
+> +		return -EINVAL;
+> +
+> +	reg = i2c_smbus_read_byte_data(data->client,
+> +				       MMA8452_HP_FILTER_CUTOFF);
+> +	if (reg < 0)
+> +		return reg;
+> +	reg &= ~MMA8452_HP_FILTER_CUTOFF_SEL_MASK;
+> +	reg |= i;
+> +
+> +	return mma8452_change_config(data, MMA8452_HP_FILTER_CUTOFF, reg);
+> +}
+> +
+>  static int mma8452_write_raw(struct iio_dev *indio_dev,
+>  			     struct iio_chan_spec const *chan,
+>  			     int val, int val2, long mask)
+>  {
+>  	struct mma8452_data *data = iio_priv(indio_dev);
+> -	int i;
+> +	int i, ret;
+>  
+>  	if (iio_buffer_enabled(indio_dev))
+>  		return -EBUSY;
+> @@ -302,6 +386,19 @@ static int mma8452_write_raw(struct iio_dev *indio_dev,
+>  			return -EINVAL;
+>  		return mma8452_change_config(data, MMA8452_OFF_X +
+>  			chan->scan_index, val);
+> +
+> +	case IIO_CHAN_INFO_HIGH_PASS_FILTER_3DB_FREQUENCY:
+> +		if (val == 0 && val2 == 0) {
+> +			data->data_cfg &= ~MMA8452_DATA_CFG_HPF_MASK;
+> +		} else {
+> +			data->data_cfg |= MMA8452_DATA_CFG_HPF_MASK;
+> +			ret = mma8452_set_hp_filter_frequency(data, val, val2);
+> +			if (ret < 0)
+> +				return ret;
+> +		}
+> +		return mma8452_change_config(data, MMA8452_DATA_CFG,
+> +						data->data_cfg);
+> +
+>  	default:
+>  		return -EINVAL;
+>  	}
+> @@ -339,6 +436,22 @@ static int mma8452_read_thresh(struct iio_dev *indio_dev,
+>  		*val2 = us % USEC_PER_SEC;
+>  		return IIO_VAL_INT_PLUS_MICRO;
+>  
+> +	case IIO_EV_INFO_HIGH_PASS_FILTER_3DB:
+> +		ret = i2c_smbus_read_byte_data(data->client,
+> +					       MMA8452_TRANSIENT_CFG);
+> +		if (ret < 0)
+> +			return ret;
+> +
+> +		if (ret & MMA8452_TRANSIENT_CFG_HPF_BYP) {
+> +			*val = 0;
+> +			*val2 = 0;
+> +		} else {
+> +			ret = mma8452_read_hp_filter(data, val, val2);
+> +			if (ret < 0)
+> +				return ret;
+> +		}
+> +		return IIO_VAL_INT_PLUS_MICRO;
+> +
+>  	default:
+>  		return -EINVAL;
+>  	}
+> @@ -352,7 +465,7 @@ static int mma8452_write_thresh(struct iio_dev *indio_dev,
 >  				int val, int val2)
 >  {
 >  	struct mma8452_data *data = iio_priv(indio_dev);
-> +	int steps;
+> -	int steps;
+> +	int ret, reg, steps;
 >  
-> -	return mma8452_change_config(data, MMA8452_TRANSIENT_THS,
-> -				     val & MMA8452_TRANSIENT_THS_MASK);
-> +	switch (info) {
-> +	case IIO_EV_INFO_VALUE:
-> +		return mma8452_change_config(data, MMA8452_TRANSIENT_THS,
-> +					     val & MMA8452_TRANSIENT_THS_MASK);
-> +
-> +	case IIO_EV_INFO_PERIOD:
-> +		steps = (val * USEC_PER_SEC + val2) /
-> +				mma8452_transient_time_step_us[
-> +					mma8452_get_odr_index(data)];
-> +
-> +		if (steps > 0xff)
-> +			return -EINVAL;
-> +
-> +		return mma8452_change_config(data, MMA8452_TRANSIENT_COUNT,
-> +					     steps);
-> +	default:
-> +		return -EINVAL;
-> +	}
->  }
+>  	switch (info) {
+>  	case IIO_EV_INFO_VALUE:
+> @@ -369,6 +482,22 @@ static int mma8452_write_thresh(struct iio_dev *indio_dev,
 >  
->  static int mma8452_read_event_config(struct iio_dev *indio_dev,
-> @@ -456,7 +509,8 @@ static const struct iio_event_spec mma8452_transient_event[] = {
->  		.type = IIO_EV_TYPE_THRESH,
+>  		return mma8452_change_config(data, MMA8452_TRANSIENT_COUNT,
+>  					     steps);
+> +	case IIO_EV_INFO_HIGH_PASS_FILTER_3DB:
+> +		reg = i2c_smbus_read_byte_data(data->client,
+> +					       MMA8452_TRANSIENT_CFG);
+> +		if (reg < 0)
+> +			return reg;
+> +
+> +		if (val == 0 && val2 == 0) {
+> +			reg |= MMA8452_TRANSIENT_CFG_HPF_BYP;
+> +		} else {
+> +			reg &= ~MMA8452_TRANSIENT_CFG_HPF_BYP;
+> +			ret = mma8452_set_hp_filter_frequency(data, val, val2);
+> +			if (ret < 0)
+> +				return ret;
+> +		}
+> +		return mma8452_change_config(data, MMA8452_TRANSIENT_CFG, reg);
+> +
+>  	default:
+>  		return -EINVAL;
+>  	}
+> @@ -510,7 +639,8 @@ static const struct iio_event_spec mma8452_transient_event[] = {
 >  		.dir = IIO_EV_DIR_RISING,
 >  		.mask_separate = BIT(IIO_EV_INFO_ENABLE),
-> -		.mask_shared_by_type = BIT(IIO_EV_INFO_VALUE)
-> +		.mask_shared_by_type = BIT(IIO_EV_INFO_VALUE) |
-> +					BIT(IIO_EV_INFO_PERIOD)
+>  		.mask_shared_by_type = BIT(IIO_EV_INFO_VALUE) |
+> -					BIT(IIO_EV_INFO_PERIOD)
+> +					BIT(IIO_EV_INFO_PERIOD) |
+> +					BIT(IIO_EV_INFO_HIGH_PASS_FILTER_3DB)
 >  	},
+>  };
+>  
+> @@ -537,7 +667,8 @@ static struct attribute_group mma8452_event_attribute_group = {
+>  	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) | \
+>  		BIT(IIO_CHAN_INFO_CALIBBIAS), \
+>  	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SAMP_FREQ) | \
+> -		BIT(IIO_CHAN_INFO_SCALE), \
+> +		BIT(IIO_CHAN_INFO_SCALE) | \
+> +		BIT(IIO_CHAN_INFO_HIGH_PASS_FILTER_3DB_FREQUENCY), \
+>  	.scan_index = idx, \
+>  	.scan_type = { \
+>  		.sign = 's', \
+> @@ -560,6 +691,7 @@ static const struct iio_chan_spec mma8452_channels[] = {
+>  static struct attribute *mma8452_attributes[] = {
+>  	&iio_dev_attr_sampling_frequency_available.dev_attr.attr,
+>  	&iio_dev_attr_in_accel_scale_available.dev_attr.attr,
+> +	&iio_dev_attr_in_accel_filter_high_pass_3db_frequency_available.dev_attr.attr,
+>  	NULL
 >  };
 >  
 > 
