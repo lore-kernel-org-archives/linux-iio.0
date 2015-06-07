@@ -1,53 +1,53 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:47887 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:47914 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751117AbbFGQrG (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 7 Jun 2015 12:47:06 -0400
-Message-ID: <55747588.9000707@kernel.org>
-Date: Sun, 07 Jun 2015 17:47:04 +0100
+	with ESMTP id S1751042AbbFGQta (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 7 Jun 2015 12:49:30 -0400
+Message-ID: <55747616.1010901@kernel.org>
+Date: Sun, 07 Jun 2015 17:49:26 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Ezequiel Garcia <ezequiel.garcia@imgtec.com>,
-	linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>
-CC: Naidu Tellapati <naidu.tellapati@imgtec.com>,
-	James Hartley <james.hartley@imgtec.com>,
-	phani.movva@imgtec.com
-Subject: Re: [PATCH 5/5] iio: adc: cc10001: Power-up the ADC at probe time
- when used remotely
-References: <1431033842-1149-1-git-send-email-ezequiel.garcia@imgtec.com> <554CBD24.3060205@kernel.org> <556474C2.7020600@imgtec.com>
-In-Reply-To: <556474C2.7020600@imgtec.com>
+To: Xander Huff <xander.huff@ni.com>, lars@metafoo.de,
+	robh+dt@kernel.org, pawel.moll@arm.com, mark.rutland@arm.com,
+	ijc+devicetree@hellion.org.uk, galak@codeaurora.org
+CC: michal.simek@xilinx.com, soren.brinkmann@xilinx.com,
+	knaack.h@gmx.de, pmeerw@pmeerw.net, devicetree@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org, linux-iio@vger.kernel.org,
+	ben.shelton@ni.com, joshc@ni.com, joe.hershberger@ni.com
+Subject: Re: [PATCH v2 2/2] iio: adc: xilinx-xadc: Add label as an optional
+ argument for aux channels
+References: <555B78A3.2030202@metafoo.de> <1432135352-29848-1-git-send-email-xander.huff@ni.com> <1432135352-29848-2-git-send-email-xander.huff@ni.com>
+In-Reply-To: <1432135352-29848-2-git-send-email-xander.huff@ni.com>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 26/05/15 14:27, Ezequiel Garcia wrote:
+On 20/05/15 16:22, Xander Huff wrote:
+> To better facilitate user-mode access to optional aux channels, allow
+> device trees to specify a custom label for defined channels.
 > 
+> Signed-off-by: Xander Huff <xander.huff@ni.com>
+> Reviewed-by: Joe Hershberger <joe.hershberger@ni.com>
+> Reviewed-by: Josh Cartwright <joshc@ni.com>
+> ---
+>  drivers/iio/adc/xilinx-xadc-core.c | 3 +++
+>  1 file changed, 3 insertions(+)
 > 
-> On 05/08/2015 10:41 AM, Jonathan Cameron wrote:
->> On 07/05/15 17:24, Ezequiel Garcia wrote:
->>> From: Naidu Tellapati <naidu.tellapati@imgtec.com>
->>>
->>> The ADC is typically shared with remote CPUs not running Linux.
->>> However, there is only one register to power-up/power-down. Remote CPUs
->>> aren't able to power-up the ADC, and rely in Linux doing it instead.
->>>
->>> This commit uses the adc-reserved-channels devicetree property to
->>> distinguish shared usage. In this case, the ADC is powered up at
->>> probe time.
->>>
->>> If the ADC is used only by the CPU running Linux, power-up/down
->>> at runtime, only when neeeded.
->>>
->>> Signed-off-by: Naidu Tellapati <naidu.tellapati@imgtec.com>
->>> Signed-off-by: Ezequiel Garcia <ezequiel.garcia@imgtec.com>
->> Seems sensible to me, but as you observe it's not a fix as such, so
->> will hold this until the other patches have propagated through to
->> the togreg tree.
->>
->> Feel free to remind me if I seem to have forgotten!
->>
+> diff --git a/drivers/iio/adc/xilinx-xadc-core.c b/drivers/iio/adc/xilinx-xadc-core.c
+> index ce93bd8..bda4241 100644
+> --- a/drivers/iio/adc/xilinx-xadc-core.c
+> +++ b/drivers/iio/adc/xilinx-xadc-core.c
+> @@ -1119,6 +1119,9 @@ static int xadc_parse_dt(struct iio_dev *indio_dev, struct device_node *np,
+>  			if (ret || reg > 16)
+>  				continue;
+>  
+> +			of_property_read_string(child, "label",
+> +						&chan->extend_name);
+> +
+>  			if (of_property_read_bool(child, "xlnx,bipolar"))
+>  				chan->scan_type.sign = 's';
+>  
 > 
-> Ping.
-They haven't made it to the togreg tree yet!  Will pick up when I next
-go through a pull request...
-
+I think what Lars was suggesting was a change to the IIO side of this rather than
+just changing the device tree binding.  Perhaps an additional per channel attribute
+called _label which would allow for board specific labelling?
