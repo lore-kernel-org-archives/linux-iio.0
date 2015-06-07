@@ -1,10 +1,10 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:47695 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:47704 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751534AbbFGQNe (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 7 Jun 2015 12:13:34 -0400
-Message-ID: <55746DAC.8050303@kernel.org>
-Date: Sun, 07 Jun 2015 17:13:32 +0100
+	with ESMTP id S1750734AbbFGQOf (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 7 Jun 2015 12:14:35 -0400
+Message-ID: <55746DEA.5020409@kernel.org>
+Date: Sun, 07 Jun 2015 17:14:34 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
 To: Martin Fuzzey <mfuzzey@parkeon.com>
@@ -38,5 +38,4 @@ On 01/06/15 14:39, Martin Fuzzey wrote:
 > The first three patches have already been applied to -next but have
 > been resent, unchanged, in this series to keep it all together.
 > 
-Martin,  Please don't resend patches that have already been applied.
-It just confuses me ;)
+Even more confusing, where is patch 3?
