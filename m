@@ -1,50 +1,57 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:47762 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:47776 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751042AbbFGQXj (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 7 Jun 2015 12:23:39 -0400
-Message-ID: <5574700A.3010201@kernel.org>
-Date: Sun, 07 Jun 2015 17:23:38 +0100
+	with ESMTP id S1750831AbbFGQZh (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 7 Jun 2015 12:25:37 -0400
+Message-ID: <5574707F.6000109@kernel.org>
+Date: Sun, 07 Jun 2015 17:25:35 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Martin Fuzzey <mfuzzey@parkeon.com>
-CC: linux-iio@vger.kernel.org
-Subject: Re: [PATCH V5 0/7] iio: mma8452 enhancements
-References: <20150601133943.24925.83080.stgit@localhost> <55746DEA.5020409@kernel.org>
-In-Reply-To: <55746DEA.5020409@kernel.org>
-Content-Type: text/plain; charset=utf-8
+To: Marek Belisko <marek@goldelico.com>
+CC: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+	hns@goldelico.com
+Subject: Re: [PATCH 1/2] iio: adc: twl4030_madc: Fix calculation of the temperature
+ sense current
+References: <1432842619-7251-1-git-send-email-marek@goldelico.com>
+In-Reply-To: <1432842619-7251-1-git-send-email-marek@goldelico.com>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 07/06/15 17:14, Jonathan Cameron wrote:
-> On 01/06/15 14:39, Martin Fuzzey wrote:
->> This series adds some additional features to the mma8452 accelerometer driver
->> 	* debugfs register access
->> 	* transient threshold events
->> 	* highpass filter
->> 	* interrupt driven sampling (trigger)
->>
->> Attributes are added to the core for:
->> * highpass filter for readings
->> * both high and lowpass filters for events
->>
->> In addition a latent bug in the device initialisation is fixed.
->>
->> V5 changes:
->> 	* Moved event highpass filter event attribute declaration
->> 	 from patch 4 to 6 (to be with the implementation code)
->> 	* Added a validate_device function to prevent use of trigger
->> 	with other devices
->>
->> The first three patches have already been applied to -next but have
->> been resent, unchanged, in this series to keep it all together.
->>
-> Even more confusing, where is patch 3?
-Sorry, going mad and had a filter applied when I was looking for it and
-didn't realise.  One of those days!
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+On 28/05/15 20:50, Marek Belisko wrote:
+> From: "H. Nikolaus Schaller" <hns@goldelico.com>
+> 
+> The bit mask to read the setting of the constant current source
+> for measuring the NTC voltage was the wrong one. Since default
+> value is initialized to the lowest level (000 = 10uA) the difference
+> was probably never noticed in practice.
+I'm going to take that literally and apply it via the slow route on
+the basis that a bug no one noticed doesn't need fixing fast!
+> 
+> Signed-off-by: H. Nikolaus Schaller <hns@goldelico.com>
+> Signed-off-by: Marek Belisko <marek@goldelico.com>
+Applied to the togreg branch of iio.git - initially pushed out as
+testing for the autobuilders to play with it.
+
+Thanks,
+
+Jonathan
+> ---
+>  drivers/iio/adc/twl4030-madc.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/iio/adc/twl4030-madc.c b/drivers/iio/adc/twl4030-madc.c
+> index 94c5f05..6d2d429 100644
+> --- a/drivers/iio/adc/twl4030-madc.c
+> +++ b/drivers/iio/adc/twl4030-madc.c
+> @@ -235,7 +235,7 @@ static int twl4030battery_temperature(int raw_volt)
+>  	if (ret < 0)
+>  		return ret;
+>  
+> -	curr = ((val & TWL4030_BCI_ITHEN) + 1) * 10;
+> +	curr = ((val & TWL4030_BCI_ITHSENS) + 1) * 10;
+>  	/* Getting and calculating the thermistor resistance in ohms */
+>  	res = volt * 1000 / curr;
+>  	/* calculating temperature */
 > 
 
