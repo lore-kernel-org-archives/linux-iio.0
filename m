@@ -1,177 +1,158 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:48006 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:48104 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752221AbbFGRBB (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 7 Jun 2015 13:01:01 -0400
-Message-ID: <557478CC.4030806@kernel.org>
-Date: Sun, 07 Jun 2015 18:01:00 +0100
+	with ESMTP id S1750831AbbFGRRz (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 7 Jun 2015 13:17:55 -0400
+Message-ID: <55747CC0.1000803@kernel.org>
+Date: Sun, 07 Jun 2015 18:17:52 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Linus Walleij <linus.walleij@linaro.org>,
+To: Kevin Tsai <ktsai@capellamicro.com>,
 	Hartmut Knaack <knaack.h@gmx.de>,
 	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>, linux-iio@vger.kernel.org,
-	Denis CIOCCA <denis.ciocca@st.com>
-CC: Lee Jones <lee.jones@linaro.org>
-Subject: Re: [PATCH 2/2 v2] iio: st_accel: support the LIS331DL sensor
-References: <1432042638-26744-1-git-send-email-linus.walleij@linaro.org>
-In-Reply-To: <1432042638-26744-1-git-send-email-linus.walleij@linaro.org>
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Irina Tirdea <irina.tirdea@intel.com>,
+	Daniel Baluta <daniel.baluta@intel.com>,
+	Haneen Mohammed <hamohammed.sa@gmail.com>,
+	Darshana Padmadas <darshanapadmadas@gmail.com>,
+	Roberta Dobrescu <roberta.dobrescu@gmail.com>,
+	Vlad Dogaru <vlad.dogaru@intel.com>,
+	Reyad Attiyat <reyad.attiyat@gmail.com>,
+	Octavian Purdila <octavian.purdila@intel.com>,
+	Martin Fuzzey <mfuzzey@parkeon.com>,
+	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+CC: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-api@vger.kernel.org
+Subject: Re: [PATCH V2 1/1] iio: Add iio_mod_light_uva, iio_mod_light_uvb,
+ and iio_mod_light_uvc.
+References: <1433468871-14351-1-git-send-email-ktsai@capellamicro.com>
+In-Reply-To: <1433468871-14351-1-git-send-email-ktsai@capellamicro.com>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 19/05/15 14:37, Linus Walleij wrote:
-> This adds support for the LIS331DL sensor version. This is
-> a simple 8bit-only accelerometer.
+On 05/06/15 02:47, Kevin Tsai wrote:
+> Add Ultraviolet(UV) support:
+> UVA: 315 ~ 400 nm
+> UVB: 280 ~ 315 nm
+> UVC: 100 ~ 280 nm
 > 
-> Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
-Applied to the togreg branch of iio.git - pushed out as testing for
-the autobuilders to play with it.
-
-Dennis, if your ack covered this as well, then I can still add it
-until I push out properly.
-
-Thanks,
-
-Jonathan
-> ---
-> ChangeLog v1->v2:
-> - Change the full-scale sensitivity settings, apparently
->   this is the mg/digit setting multiplied by 1000, so
->   becomes microgram per digit, 18000 and 72000 respectively.
-> ---
->  .../devicetree/bindings/iio/st-sensors.txt         |  1 +
->  drivers/iio/accel/st_accel.h                       |  1 +
->  drivers/iio/accel/st_accel_core.c                  | 70 ++++++++++++++++++++++
->  drivers/iio/accel/st_accel_i2c.c                   |  4 ++
->  4 files changed, 76 insertions(+)
+> /sys/bus/iio/devices/iio:deviceX/in_intensity_uva_input
+> /sys/bus/iio/devices/iio:deviceX/in_intensity_uvb_input
+> /sys/bus/iio/devices/iio:deviceX/in_intensity_uvc_input
+> The SI unit is "uW/mm^2".
 > 
-> diff --git a/Documentation/devicetree/bindings/iio/st-sensors.txt b/Documentation/devicetree/bindings/iio/st-sensors.txt
-> index fb5e0c2d18b5..8a6be3bdf267 100644
-> --- a/Documentation/devicetree/bindings/iio/st-sensors.txt
-> +++ b/Documentation/devicetree/bindings/iio/st-sensors.txt
-> @@ -30,6 +30,7 @@ Accelerometers:
->  - st,lsm330d-accel
->  - st,lsm330dl-accel
->  - st,lsm330dlc-accel
-> +- st,lis331dl-accel
->  - st,lis331dlh-accel
->  - st,lsm303dl-accel
->  - st,lsm303dlm-accel
-> diff --git a/drivers/iio/accel/st_accel.h b/drivers/iio/accel/st_accel.h
-> index 7ee9724b1428..aa1001931d0c 100644
-> --- a/drivers/iio/accel/st_accel.h
-> +++ b/drivers/iio/accel/st_accel.h
-> @@ -20,6 +20,7 @@
->  #define LSM330D_ACCEL_DEV_NAME		"lsm330d_accel"
->  #define LSM330DL_ACCEL_DEV_NAME		"lsm330dl_accel"
->  #define LSM330DLC_ACCEL_DEV_NAME	"lsm330dlc_accel"
-> +#define LIS331DL_ACCEL_DEV_NAME		"lis331dl_accel"
->  #define LIS331DLH_ACCEL_DEV_NAME	"lis331dlh"
->  #define LSM303DL_ACCEL_DEV_NAME		"lsm303dl_accel"
->  #define LSM303DLH_ACCEL_DEV_NAME	"lsm303dlh_accel"
-> diff --git a/drivers/iio/accel/st_accel_core.c b/drivers/iio/accel/st_accel_core.c
-> index ad19fb4304df..970e9f904dde 100644
-> --- a/drivers/iio/accel/st_accel_core.c
-> +++ b/drivers/iio/accel/st_accel_core.c
-> @@ -153,6 +153,28 @@
->  #define ST_ACCEL_4_IG1_EN_MASK			0x08
->  #define ST_ACCEL_4_MULTIREAD_BIT		true
->  
-> +/* CUSTOM VALUES FOR SENSOR 5 */
-> +#define ST_ACCEL_5_WAI_EXP			0x3b
-> +#define ST_ACCEL_5_ODR_ADDR			0x20
-> +#define ST_ACCEL_5_ODR_MASK			0x80
-> +#define ST_ACCEL_5_ODR_AVL_100HZ_VAL		0x00
-> +#define ST_ACCEL_5_ODR_AVL_400HZ_VAL		0x01
-> +#define ST_ACCEL_5_PW_ADDR			0x20
-> +#define ST_ACCEL_5_PW_MASK			0x40
-> +#define ST_ACCEL_5_FS_ADDR			0x20
-> +#define ST_ACCEL_5_FS_MASK			0x20
-> +#define ST_ACCEL_5_FS_AVL_2_VAL			0X00
-> +#define ST_ACCEL_5_FS_AVL_8_VAL			0X01
-> +/* TODO: check these resulting gain settings, these are not in the datsheet */
-> +#define ST_ACCEL_5_FS_AVL_2_GAIN		IIO_G_TO_M_S_2(18000)
-> +#define ST_ACCEL_5_FS_AVL_8_GAIN		IIO_G_TO_M_S_2(72000)
-> +#define ST_ACCEL_5_DRDY_IRQ_ADDR		0x22
-> +#define ST_ACCEL_5_DRDY_IRQ_INT1_MASK		0x04
-> +#define ST_ACCEL_5_DRDY_IRQ_INT2_MASK		0x20
-> +#define ST_ACCEL_5_IG1_EN_ADDR			0x21
-> +#define ST_ACCEL_5_IG1_EN_MASK			0x08
-> +#define ST_ACCEL_5_MULTIREAD_BIT		false
+> /sys/bus/iio/devices/iio:deviceX/in_intensity_uva_min_wavelength
+> /sys/bus/iio/devices/iio:deviceX/in_intensity_uva_max_wavelength
+> /sys/bus/iio/devices/iio:deviceX/in_intensity_uvb_min_wavelength
+> /sys/bus/iio/devices/iio:deviceX/in_intensity_uvb_max_wavelength
+> /sys/bus/iio/devices/iio:deviceX/in_intensity_uvc_min_wavelength
+> /sys/bus/iio/devices/iio:deviceX/in_intensity_uvc_max_wavelength
+I'd flip these around so 
+in_intensity_uvc_wavelength_max etc
+
+Fits better with existing forms in the ABI (I think) and also will
+list them in a more useful order when the directory is sorted by name.
+
+Otherwise, I'd like to let this sit for others who work with light
+sensors to comment as ideally we'd extend this to visible wavelengths
+as well.
+> The SI unit is "nm".
+> 
+> Signed-off-by: Kevin Tsai <ktsai@capellamicro.com>
+
+> ---
+>  Documentation/ABI/testing/sysfs-bus-iio | 23 +++++++++++++++++++++++
+>  drivers/iio/industrialio-core.c         |  3 +++
+>  include/uapi/linux/iio/types.h          |  3 +++
+>  tools/iio/iio_event_monitor.c           |  6 ++++++
+>  4 files changed, 35 insertions(+)
+> 
+> diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
+> index bbed111..2960142 100644
+> --- a/Documentation/ABI/testing/sysfs-bus-iio
+> +++ b/Documentation/ABI/testing/sysfs-bus-iio
+> @@ -1463,3 +1463,26 @@ Description:
+>  		measurements and return the average value as output data. Each
+>  		value resulted from <type>[_name]_oversampling_ratio measurements
+>  		is considered as one sample for <type>[_name]_sampling_frequency.
 > +
->  static const struct iio_chan_spec st_accel_8bit_channels[] = {
->  	ST_SENSORS_LSM_CHANNELS(IIO_ACCEL,
->  			BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_SCALE),
-> @@ -470,6 +492,54 @@ static const struct st_sensor_settings st_accel_sensors_settings[] = {
->  		.multi_read_bit = ST_ACCEL_4_MULTIREAD_BIT,
->  		.bootime = 2, /* guess */
->  	},
-> +	{
-> +		.wai = ST_ACCEL_5_WAI_EXP,
-> +		.sensors_supported = {
-> +			[0] = LIS331DL_ACCEL_DEV_NAME,
-> +		},
-> +		.ch = (struct iio_chan_spec *)st_accel_8bit_channels,
-> +		.odr = {
-> +			.addr = ST_ACCEL_5_ODR_ADDR,
-> +			.mask = ST_ACCEL_5_ODR_MASK,
-> +			.odr_avl = {
-> +				{ 100, ST_ACCEL_5_ODR_AVL_100HZ_VAL },
-> +				{ 400, ST_ACCEL_5_ODR_AVL_400HZ_VAL, },
-> +			},
-> +		},
-> +		.pw = {
-> +			.addr = ST_ACCEL_5_PW_ADDR,
-> +			.mask = ST_ACCEL_5_PW_MASK,
-> +			.value_on = ST_SENSORS_DEFAULT_POWER_ON_VALUE,
-> +			.value_off = ST_SENSORS_DEFAULT_POWER_OFF_VALUE,
-> +		},
-> +		.enable_axis = {
-> +			.addr = ST_SENSORS_DEFAULT_AXIS_ADDR,
-> +			.mask = ST_SENSORS_DEFAULT_AXIS_MASK,
-> +		},
-> +		.fs = {
-> +			.addr = ST_ACCEL_5_FS_ADDR,
-> +			.mask = ST_ACCEL_5_FS_MASK,
-> +			.fs_avl = {
-> +				[0] = {
-> +					.num = ST_ACCEL_FS_AVL_2G,
-> +					.value = ST_ACCEL_5_FS_AVL_2_VAL,
-> +					.gain = ST_ACCEL_5_FS_AVL_2_GAIN,
-> +				},
-> +				[1] = {
-> +					.num = ST_ACCEL_FS_AVL_8G,
-> +					.value = ST_ACCEL_5_FS_AVL_8_VAL,
-> +					.gain = ST_ACCEL_5_FS_AVL_8_GAIN,
-> +				},
-> +			},
-> +		},
-> +		.drdy_irq = {
-> +			.addr = ST_ACCEL_5_DRDY_IRQ_ADDR,
-> +			.mask_int1 = ST_ACCEL_5_DRDY_IRQ_INT1_MASK,
-> +			.mask_int2 = ST_ACCEL_5_DRDY_IRQ_INT2_MASK,
-> +		},
-> +		.multi_read_bit = ST_ACCEL_5_MULTIREAD_BIT,
-> +		.bootime = 2, /* guess */
-> +	},
+> +What:		/sys/.../iio:deviceX/in_intensity_uva[_input|_raw]
+> +What:		/sys/.../iio:deviceX/in_intensity_uvb[_input|_raw]
+> +What:		/sys/.../iio:deviceX/in_intensity_uvc[_input|_raw]
+We have carefully killed off wild cards in the actual What lines as they make
+automated parsing of these files tricky.  So just list both options out longhand..
+> +KernelVersion:	4.1.1
+> +Description:
+> +		uva is the ultraviolet wavelength from 315nm to 400nm.
+> +		uvb is the ultraviolet wavelength from 280nm to 315nm.
+> +		uvc is the ultraviolet wavelength from 100nm to 280nm.
+> +		The SI unit is "uW/mm^2". Otherwise it should include _raw.
+> +
+> +What:		/sys/.../iio:deviceX/in_intensity_uva_min_wavelength
+> +What:		/sys/.../iio:deviceX/in_intensity_uva_max_wavelength
+> +What:		/sys/.../iio:deviceX/in_intensity_uvb_min_wavelength
+> +What:		/sys/.../iio:deviceX/in_intensity_uvb_max_wavelength
+> +What:		/sys/.../iio:deviceX/in_intensity_uvc_min_wavelength
+> +What:		/sys/.../iio:deviceX/in_intensity_uvc_max_wavelength
+> +KernelVersion:	4.1.1
+> +Description:
+> +		Sensor may not cover the whole uva/uvb/uvc channel. Add the
+> +		min/max wavelength properties to descript sensor range.
+describe
+> +		The SI unit is "nm".
+> +
+> diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+> index 3524b0d..ecbdd1e 100644
+> --- a/drivers/iio/industrialio-core.c
+> +++ b/drivers/iio/industrialio-core.c
+> @@ -89,6 +89,9 @@ static const char * const iio_modifier_names[] = {
+>  	[IIO_MOD_LIGHT_RED] = "red",
+>  	[IIO_MOD_LIGHT_GREEN] = "green",
+>  	[IIO_MOD_LIGHT_BLUE] = "blue",
+> +	[IIO_MOD_LIGHT_UVA] = "uva",
+> +	[IIO_MOD_LIGHT_UVB] = "uvb",
+> +	[IIO_MOD_LIGHT_UVC] = "uvc",
+>  	[IIO_MOD_QUATERNION] = "quaternion",
+>  	[IIO_MOD_TEMP_AMBIENT] = "ambient",
+>  	[IIO_MOD_TEMP_OBJECT] = "object",
+> diff --git a/include/uapi/linux/iio/types.h b/include/uapi/linux/iio/types.h
+> index 2f8b117..5c99090 100644
+> --- a/include/uapi/linux/iio/types.h
+> +++ b/include/uapi/linux/iio/types.h
+> @@ -72,6 +72,9 @@ enum iio_modifier {
+>  	IIO_MOD_ROOT_SUM_SQUARED_X_Y_Z,
+>  	IIO_MOD_I,
+>  	IIO_MOD_Q,
+> +	IIO_MOD_LIGHT_UVA,
+> +	IIO_MOD_LIGHT_UVB,
+> +	IIO_MOD_LIGHT_UVC,
 >  };
 >  
->  static int st_accel_read_raw(struct iio_dev *indio_dev,
-> diff --git a/drivers/iio/accel/st_accel_i2c.c b/drivers/iio/accel/st_accel_i2c.c
-> index 6b720c190b2d..d4ad72ca4a3d 100644
-> --- a/drivers/iio/accel/st_accel_i2c.c
-> +++ b/drivers/iio/accel/st_accel_i2c.c
-> @@ -49,6 +49,10 @@ static const struct of_device_id st_accel_of_match[] = {
->  		.data = LSM330DLC_ACCEL_DEV_NAME,
->  	},
->  	{
-> +		.compatible = "st,lis331dl-accel",
-> +		.data = LIS331DL_ACCEL_DEV_NAME,
-> +	},
-> +	{
->  		.compatible = "st,lis331dlh-accel",
->  		.data = LIS331DLH_ACCEL_DEV_NAME,
->  	},
+>  enum iio_event_type {
+> diff --git a/tools/iio/iio_event_monitor.c b/tools/iio/iio_event_monitor.c
+> index 427c271..46dd27f 100644
+> --- a/tools/iio/iio_event_monitor.c
+> +++ b/tools/iio/iio_event_monitor.c
+> @@ -88,6 +88,9 @@ static const char * const iio_modifier_names[] = {
+>  	[IIO_MOD_LIGHT_RED] = "red",
+>  	[IIO_MOD_LIGHT_GREEN] = "green",
+>  	[IIO_MOD_LIGHT_BLUE] = "blue",
+> +	[IIO_MOD_LIGHT_UVA] = "uva",
+> +	[IIO_MOD_LIGHT_UVB] = "uvb",
+> +	[IIO_MOD_LIGHT_UVC] = "uvc",
+>  	[IIO_MOD_QUATERNION] = "quaternion",
+>  	[IIO_MOD_TEMP_AMBIENT] = "ambient",
+>  	[IIO_MOD_TEMP_OBJECT] = "object",
+> @@ -156,6 +159,9 @@ static bool event_is_known(struct iio_event_data *event)
+>  	case IIO_MOD_LIGHT_RED:
+>  	case IIO_MOD_LIGHT_GREEN:
+>  	case IIO_MOD_LIGHT_BLUE:
+> +	case IIO_MOD_LIGHT_UVA:
+> +	case IIO_MOD_LIGHT_UVB:
+> +	case IIO_MOD_LIGHT_UVC:
+>  	case IIO_MOD_QUATERNION:
+>  	case IIO_MOD_TEMP_AMBIENT:
+>  	case IIO_MOD_TEMP_OBJECT:
 > 
 
