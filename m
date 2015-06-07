@@ -1,282 +1,216 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:47741 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:47761 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750831AbbFGQV0 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 7 Jun 2015 12:21:26 -0400
-Message-ID: <55746F85.3090807@kernel.org>
-Date: Sun, 07 Jun 2015 17:21:25 +0100
+	with ESMTP id S1751076AbbFGQWs (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 7 Jun 2015 12:22:48 -0400
+Message-ID: <55746FD6.7010704@kernel.org>
+Date: Sun, 07 Jun 2015 17:22:46 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
 To: Martin Fuzzey <mfuzzey@parkeon.com>
 CC: linux-iio@vger.kernel.org
-Subject: Re: [PATCH V5 6/7] iio: mma8452: Add highpass filter configuration.
-References: <20150601133943.24925.83080.stgit@localhost> <20150601133956.24925.16117.stgit@localhost>
-In-Reply-To: <20150601133956.24925.16117.stgit@localhost>
+Subject: Re: [PATCH V5 7/7] iio: mma8452: Add support for interrupt driven
+ triggers.
+References: <20150601133943.24925.83080.stgit@localhost> <20150601133958.24925.16288.stgit@localhost>
+In-Reply-To: <20150601133958.24925.16288.stgit@localhost>
 Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
 On 01/06/15 14:39, Martin Fuzzey wrote:
-> Allow the cutoff frequency of the high pass filter to be configured.
+> Implement interrupt driven trigger for data ready.
+> This allows more efficient access to the sample data.
 > 
 > Signed-off-by: Martin Fuzzey <mfuzzey@parkeon.com>
-Applied.
+The validate trigger is the easy way.  If anyone actually wants to do it
+the generic way they can always send patches ;)
+
+Applied to the togreg branch of iio.git - initially pushed out as testing.
+
+Thanks,
+
+Jonathan
 > ---
->  drivers/iio/accel/mma8452.c |  140 ++++++++++++++++++++++++++++++++++++++++++-
->  1 file changed, 136 insertions(+), 4 deletions(-)
+>  drivers/iio/accel/mma8452.c |   97 ++++++++++++++++++++++++++++++++++++++++---
+>  1 file changed, 91 insertions(+), 6 deletions(-)
 > 
 > diff --git a/drivers/iio/accel/mma8452.c b/drivers/iio/accel/mma8452.c
-> index 7429df3..51ae751 100644
+> index 51ae751..e8e2077 100644
 > --- a/drivers/iio/accel/mma8452.c
 > +++ b/drivers/iio/accel/mma8452.c
-> @@ -29,9 +29,12 @@
->  #define MMA8452_INT_SRC 0x0c
->  #define MMA8452_WHO_AM_I 0x0d
->  #define MMA8452_DATA_CFG 0x0e
-> +#define MMA8452_HP_FILTER_CUTOFF 0x0f
-> +#define MMA8452_HP_FILTER_CUTOFF_SEL_MASK	(BIT(0) | BIT(1))
->  #define MMA8452_TRANSIENT_CFG 0x1d
->  #define MMA8452_TRANSIENT_CFG_ELE		BIT(4)
->  #define MMA8452_TRANSIENT_CFG_CHAN(chan)	BIT(chan + 1)
-> +#define MMA8452_TRANSIENT_CFG_HPF_BYP		BIT(0)
->  #define MMA8452_TRANSIENT_SRC 0x1e
->  #define MMA8452_TRANSIENT_SRC_XTRANSE		BIT(1)
->  #define MMA8452_TRANSIENT_SRC_YTRANSE		BIT(3)
-> @@ -61,6 +64,7 @@
->  #define MMA8452_DATA_CFG_FS_2G 0
->  #define MMA8452_DATA_CFG_FS_4G 1
+> @@ -18,6 +18,8 @@
+>  #include <linux/iio/sysfs.h>
+>  #include <linux/iio/trigger_consumer.h>
+>  #include <linux/iio/buffer.h>
+> +#include <linux/iio/trigger.h>
+> +#include <linux/iio/trigger_consumer.h>
+>  #include <linux/iio/triggered_buffer.h>
+>  #include <linux/iio/events.h>
+>  #include <linux/delay.h>
+> @@ -66,6 +68,7 @@
 >  #define MMA8452_DATA_CFG_FS_8G 2
-> +#define MMA8452_DATA_CFG_HPF_MASK BIT(4)
+>  #define MMA8452_DATA_CFG_HPF_MASK BIT(4)
 >  
+> +#define MMA8452_INT_DRDY	BIT(0)
 >  #define MMA8452_INT_TRANS	BIT(5)
 >  
-> @@ -158,6 +162,18 @@ static const int mma8452_transient_time_step_us[8] = {
->  	20000
->  };
->  
-> +/* Datasheet table 18 (normal mode) */
-> +static const int mma8452_hp_filter_cutoff[8][4][2] = {
-> +	{ {16, 0}, {8, 0}, {4, 0}, {2, 0} },		/* 800 Hz sample */
-> +	{ {16, 0}, {8, 0}, {4, 0}, {2, 0} },		/* 400 Hz sample */
-> +	{ {8, 0}, {4, 0}, {2, 0}, {1, 0} },		/* 200 Hz sample */
-> +	{ {4, 0}, {2, 0}, {1, 0}, {0, 500000} },	/* 100 Hz sample */
-> +	{ {2, 0}, {1, 0}, {0, 500000}, {0, 250000} },	/* 50 Hz sample */
-> +	{ {2, 0}, {1, 0}, {0, 500000}, {0, 250000} },	/* 12.5 Hz sample */
-> +	{ {2, 0}, {1, 0}, {0, 500000}, {0, 250000} },	/* 6.25 Hz sample */
-> +	{ {2, 0}, {1, 0}, {0, 500000}, {0, 250000} }	/* 1.56 Hz sample */
-> +};
-> +
->  static ssize_t mma8452_show_samp_freq_avail(struct device *dev,
->  				struct device_attribute *attr, char *buf)
+>  #define MMA8452_DEVICE_ID 0x2a
+> @@ -577,18 +580,24 @@ static irqreturn_t mma8452_interrupt(int irq, void *p)
 >  {
-> @@ -172,9 +188,23 @@ static ssize_t mma8452_show_scale_avail(struct device *dev,
->  		ARRAY_SIZE(mma8452_scales));
+>  	struct iio_dev *indio_dev = p;
+>  	struct mma8452_data *data = iio_priv(indio_dev);
+> +	int ret = IRQ_NONE;
+>  	int src;
+>  
+>  	src = i2c_smbus_read_byte_data(data->client, MMA8452_INT_SRC);
+>  	if (src < 0)
+>  		return IRQ_NONE;
+>  
+> +	if (src & MMA8452_INT_DRDY) {
+> +		iio_trigger_poll_chained(indio_dev->trig);
+> +		ret = IRQ_HANDLED;
+> +	}
+> +
+>  	if (src & MMA8452_INT_TRANS) {
+>  		mma8452_transient_interrupt(indio_dev);
+> -		return IRQ_HANDLED;
+> +		ret = IRQ_HANDLED;
+>  	}
+>  
+> -	return IRQ_NONE;
+> +	return ret;
 >  }
 >  
-> +static ssize_t mma8452_show_hp_cutoff_avail(struct device *dev,
-> +					    struct device_attribute *attr,
-> +					    char *buf)
+>  static irqreturn_t mma8452_trigger_handler(int irq, void *p)
+> @@ -714,6 +723,72 @@ static const struct iio_info mma8452_info = {
+>  
+>  static const unsigned long mma8452_scan_masks[] = {0x7, 0};
+>  
+> +static int mma8452_data_rdy_trigger_set_state(struct iio_trigger *trig,
+> +					      bool state)
 > +{
-> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+> +	struct iio_dev *indio_dev = iio_trigger_get_drvdata(trig);
 > +	struct mma8452_data *data = iio_priv(indio_dev);
-> +	int i = mma8452_get_odr_index(data);
+> +	int reg;
 > +
-> +	return mma8452_show_int_plus_micros(buf, mma8452_hp_filter_cutoff[i],
-> +		ARRAY_SIZE(mma8452_hp_filter_cutoff[0]));
+> +	reg = i2c_smbus_read_byte_data(data->client, MMA8452_CTRL_REG4);
+> +	if (reg < 0)
+> +		return reg;
+> +
+> +	if (state)
+> +		reg |= MMA8452_INT_DRDY;
+> +	else
+> +		reg &= ~MMA8452_INT_DRDY;
+> +
+> +	return mma8452_change_config(data, MMA8452_CTRL_REG4, reg);
 > +}
 > +
->  static IIO_DEV_ATTR_SAMP_FREQ_AVAIL(mma8452_show_samp_freq_avail);
->  static IIO_DEVICE_ATTR(in_accel_scale_available, S_IRUGO,
->  	mma8452_show_scale_avail, NULL, 0);
-> +static IIO_DEVICE_ATTR(in_accel_filter_high_pass_3db_frequency_available,
-> +			S_IRUGO, mma8452_show_hp_cutoff_avail, NULL, 0);
->  
->  static int mma8452_get_samp_freq_index(struct mma8452_data *data,
->  	int val, int val2)
-> @@ -190,6 +220,31 @@ static int mma8452_get_scale_index(struct mma8452_data *data,
->  		ARRAY_SIZE(mma8452_scales), val, val2);
->  }
->  
-> +static int mma8452_get_hp_filter_index(struct mma8452_data *data,
-> +				       int val, int val2)
+> +static int mma8452_validate_device(struct iio_trigger *trig,
+> +				   struct iio_dev *indio_dev)
 > +{
-> +	int i = mma8452_get_odr_index(data);
+> +	struct iio_dev *indio = iio_trigger_get_drvdata(trig);
 > +
-> +	return mma8452_get_int_plus_micros_index(mma8452_hp_filter_cutoff[i],
-> +		ARRAY_SIZE(mma8452_scales[0]), val, val2);
-> +}
-> +
-> +static int mma8452_read_hp_filter(struct mma8452_data *data, int *hz, int *uHz)
-> +{
-> +	int i, ret;
-> +
-> +	ret = i2c_smbus_read_byte_data(data->client, MMA8452_HP_FILTER_CUTOFF);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	i = mma8452_get_odr_index(data);
-> +	ret &= MMA8452_HP_FILTER_CUTOFF_SEL_MASK;
-> +	*hz = mma8452_hp_filter_cutoff[i][ret][0];
-> +	*uHz = mma8452_hp_filter_cutoff[i][ret][1];
+> +	if (indio != indio_dev)
+> +		return -EINVAL;
 > +
 > +	return 0;
 > +}
 > +
->  static int mma8452_read_raw(struct iio_dev *indio_dev,
->  			    struct iio_chan_spec const *chan,
->  			    int *val, int *val2, long mask)
-> @@ -228,6 +283,16 @@ static int mma8452_read_raw(struct iio_dev *indio_dev,
->  			return ret;
->  		*val = sign_extend32(ret, 7);
->  		return IIO_VAL_INT;
-> +	case IIO_CHAN_INFO_HIGH_PASS_FILTER_3DB_FREQUENCY:
-> +		if (data->data_cfg & MMA8452_DATA_CFG_HPF_MASK) {
-> +			ret = mma8452_read_hp_filter(data, val, val2);
-> +			if (ret < 0)
-> +				return ret;
-> +		} else {
-> +			*val = 0;
-> +			*val2 = 0;
-> +		}
-> +		return IIO_VAL_INT_PLUS_MICRO;
->  	}
->  	return -EINVAL;
->  }
-> @@ -269,12 +334,31 @@ fail:
->  	return ret;
->  }
->  
-> +static int mma8452_set_hp_filter_frequency(struct mma8452_data *data,
-> +					   int val, int val2)
+> +static const struct iio_trigger_ops mma8452_trigger_ops = {
+> +	.set_trigger_state = mma8452_data_rdy_trigger_set_state,
+> +	.validate_device = mma8452_validate_device,
+> +	.owner = THIS_MODULE,
+> +};
+> +
+> +static int mma8452_trigger_setup(struct iio_dev *indio_dev)
 > +{
-> +	int i, reg;
+> +	struct mma8452_data *data = iio_priv(indio_dev);
+> +	struct iio_trigger *trig;
+> +	int ret;
 > +
-> +	i = mma8452_get_hp_filter_index(data, val, val2);
-> +	if (i < 0)
-> +		return -EINVAL;
+> +	trig = devm_iio_trigger_alloc(&data->client->dev, "%s-dev%d",
+> +				      indio_dev->name,
+> +				      indio_dev->id);
+> +	if (!trig)
+> +		return -ENOMEM;
 > +
-> +	reg = i2c_smbus_read_byte_data(data->client,
-> +				       MMA8452_HP_FILTER_CUTOFF);
-> +	if (reg < 0)
-> +		return reg;
-> +	reg &= ~MMA8452_HP_FILTER_CUTOFF_SEL_MASK;
-> +	reg |= i;
+> +	trig->dev.parent = &data->client->dev;
+> +	trig->ops = &mma8452_trigger_ops;
+> +	iio_trigger_set_drvdata(trig, indio_dev);
 > +
-> +	return mma8452_change_config(data, MMA8452_HP_FILTER_CUTOFF, reg);
+> +	ret = iio_trigger_register(trig);
+> +	if (ret)
+> +		return ret;
+> +
+> +	indio_dev->trig = trig;
+> +	return 0;
 > +}
 > +
->  static int mma8452_write_raw(struct iio_dev *indio_dev,
->  			     struct iio_chan_spec const *chan,
->  			     int val, int val2, long mask)
+> +static void mma8452_trigger_cleanup(struct iio_dev *indio_dev)
+> +{
+> +	if (indio_dev->trig)
+> +		iio_trigger_unregister(indio_dev->trig);
+> +}
+> +
+>  static int mma8452_reset(struct i2c_client *client)
 >  {
->  	struct mma8452_data *data = iio_priv(indio_dev);
-> -	int i;
-> +	int i, ret;
+>  	int i;
+> @@ -794,7 +869,8 @@ static int mma8452_probe(struct i2c_client *client,
+>  		 * enabled until userspace asks for it by
+>  		 * mma8452_write_event_config()
+>  		 */
+> -		int supported_interrupts = MMA8452_INT_TRANS;
+> +		int supported_interrupts = MMA8452_INT_DRDY | MMA8452_INT_TRANS;
+> +		int enabled_interrupts = MMA8452_INT_TRANS;
 >  
->  	if (iio_buffer_enabled(indio_dev))
->  		return -EBUSY;
-> @@ -302,6 +386,19 @@ static int mma8452_write_raw(struct iio_dev *indio_dev,
->  			return -EINVAL;
->  		return mma8452_change_config(data, MMA8452_OFF_X +
->  			chan->scan_index, val);
-> +
-> +	case IIO_CHAN_INFO_HIGH_PASS_FILTER_3DB_FREQUENCY:
-> +		if (val == 0 && val2 == 0) {
-> +			data->data_cfg &= ~MMA8452_DATA_CFG_HPF_MASK;
-> +		} else {
-> +			data->data_cfg |= MMA8452_DATA_CFG_HPF_MASK;
-> +			ret = mma8452_set_hp_filter_frequency(data, val, val2);
-> +			if (ret < 0)
-> +				return ret;
-> +		}
-> +		return mma8452_change_config(data, MMA8452_DATA_CFG,
-> +						data->data_cfg);
-> +
->  	default:
->  		return -EINVAL;
->  	}
-> @@ -339,6 +436,22 @@ static int mma8452_read_thresh(struct iio_dev *indio_dev,
->  		*val2 = us % USEC_PER_SEC;
->  		return IIO_VAL_INT_PLUS_MICRO;
+>  		/* Assume wired to INT1 pin */
+>  		ret = i2c_smbus_write_byte_data(client,
+> @@ -805,7 +881,11 @@ static int mma8452_probe(struct i2c_client *client,
 >  
-> +	case IIO_EV_INFO_HIGH_PASS_FILTER_3DB:
-> +		ret = i2c_smbus_read_byte_data(data->client,
-> +					       MMA8452_TRANSIENT_CFG);
+>  		ret = i2c_smbus_write_byte_data(client,
+>  						MMA8452_CTRL_REG4,
+> -						supported_interrupts);
+> +						enabled_interrupts);
 > +		if (ret < 0)
 > +			return ret;
 > +
-> +		if (ret & MMA8452_TRANSIENT_CFG_HPF_BYP) {
-> +			*val = 0;
-> +			*val2 = 0;
-> +		} else {
-> +			ret = mma8452_read_hp_filter(data, val, val2);
-> +			if (ret < 0)
-> +				return ret;
-> +		}
-> +		return IIO_VAL_INT_PLUS_MICRO;
-> +
->  	default:
->  		return -EINVAL;
+> +		ret = mma8452_trigger_setup(indio_dev);
+>  		if (ret < 0)
+>  			return ret;
 >  	}
-> @@ -352,7 +465,7 @@ static int mma8452_write_thresh(struct iio_dev *indio_dev,
->  				int val, int val2)
->  {
->  	struct mma8452_data *data = iio_priv(indio_dev);
-> -	int steps;
-> +	int ret, reg, steps;
+> @@ -815,12 +895,12 @@ static int mma8452_probe(struct i2c_client *client,
+>  	ret = i2c_smbus_write_byte_data(client, MMA8452_CTRL_REG1,
+>  					data->ctrl_reg1);
+>  	if (ret < 0)
+> -		return ret;
+> +		goto trigger_cleanup;
 >  
->  	switch (info) {
->  	case IIO_EV_INFO_VALUE:
-> @@ -369,6 +482,22 @@ static int mma8452_write_thresh(struct iio_dev *indio_dev,
+>  	ret = iio_triggered_buffer_setup(indio_dev, NULL,
+>  		mma8452_trigger_handler, NULL);
+>  	if (ret < 0)
+> -		return ret;
+> +		goto trigger_cleanup;
 >  
->  		return mma8452_change_config(data, MMA8452_TRANSIENT_COUNT,
->  					     steps);
-> +	case IIO_EV_INFO_HIGH_PASS_FILTER_3DB:
-> +		reg = i2c_smbus_read_byte_data(data->client,
-> +					       MMA8452_TRANSIENT_CFG);
-> +		if (reg < 0)
-> +			return reg;
+>  	if (client->irq) {
+>  		ret = devm_request_threaded_irq(&client->dev,
+> @@ -840,6 +920,10 @@ static int mma8452_probe(struct i2c_client *client,
+>  
+>  buffer_cleanup:
+>  	iio_triggered_buffer_cleanup(indio_dev);
 > +
-> +		if (val == 0 && val2 == 0) {
-> +			reg |= MMA8452_TRANSIENT_CFG_HPF_BYP;
-> +		} else {
-> +			reg &= ~MMA8452_TRANSIENT_CFG_HPF_BYP;
-> +			ret = mma8452_set_hp_filter_frequency(data, val, val2);
-> +			if (ret < 0)
-> +				return ret;
-> +		}
-> +		return mma8452_change_config(data, MMA8452_TRANSIENT_CFG, reg);
+> +trigger_cleanup:
+> +	mma8452_trigger_cleanup(indio_dev);
 > +
->  	default:
->  		return -EINVAL;
->  	}
-> @@ -510,7 +639,8 @@ static const struct iio_event_spec mma8452_transient_event[] = {
->  		.dir = IIO_EV_DIR_RISING,
->  		.mask_separate = BIT(IIO_EV_INFO_ENABLE),
->  		.mask_shared_by_type = BIT(IIO_EV_INFO_VALUE) |
-> -					BIT(IIO_EV_INFO_PERIOD)
-> +					BIT(IIO_EV_INFO_PERIOD) |
-> +					BIT(IIO_EV_INFO_HIGH_PASS_FILTER_3DB)
->  	},
->  };
+>  	return ret;
+>  }
 >  
-> @@ -537,7 +667,8 @@ static struct attribute_group mma8452_event_attribute_group = {
->  	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) | \
->  		BIT(IIO_CHAN_INFO_CALIBBIAS), \
->  	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SAMP_FREQ) | \
-> -		BIT(IIO_CHAN_INFO_SCALE), \
-> +		BIT(IIO_CHAN_INFO_SCALE) | \
-> +		BIT(IIO_CHAN_INFO_HIGH_PASS_FILTER_3DB_FREQUENCY), \
->  	.scan_index = idx, \
->  	.scan_type = { \
->  		.sign = 's', \
-> @@ -560,6 +691,7 @@ static const struct iio_chan_spec mma8452_channels[] = {
->  static struct attribute *mma8452_attributes[] = {
->  	&iio_dev_attr_sampling_frequency_available.dev_attr.attr,
->  	&iio_dev_attr_in_accel_scale_available.dev_attr.attr,
-> +	&iio_dev_attr_in_accel_filter_high_pass_3db_frequency_available.dev_attr.attr,
->  	NULL
->  };
+> @@ -849,6 +933,7 @@ static int mma8452_remove(struct i2c_client *client)
 >  
+>  	iio_device_unregister(indio_dev);
+>  	iio_triggered_buffer_cleanup(indio_dev);
+> +	mma8452_trigger_cleanup(indio_dev);
+>  	mma8452_standby(iio_priv(indio_dev));
+>  
+>  	return 0;
 > 
 
