@@ -1,105 +1,65 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from skprod3.natinst.com ([130.164.80.24]:40850 "EHLO ni.com"
+Received: from skprod2.natinst.com ([130.164.80.23]:56193 "EHLO ni.com"
 	rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-	id S1752100AbbFHNt6 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Mon, 8 Jun 2015 09:49:58 -0400
-Date: Mon, 8 Jun 2015 08:49:14 -0500
-From: Josh Cartwright <joshc@ni.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Xander Huff <xander.huff@ni.com>, lars@metafoo.de,
-	robh+dt@kernel.org, pawel.moll@arm.com, mark.rutland@arm.com,
-	ijc+devicetree@hellion.org.uk, galak@codeaurora.org,
-	michal.simek@xilinx.com, soren.brinkmann@xilinx.com,
-	knaack.h@gmx.de, pmeerw@pmeerw.net, devicetree@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org, linux-iio@vger.kernel.org,
-	ben.shelton@ni.com, joe.hershberger@ni.com
-Subject: Re: [PATCH v2 2/2] iio: adc: xilinx-xadc: Add label as an optional
- argument for aux channels
-Message-ID: <20150608134914.GF633@jcartwri.amer.corp.natinst.com>
-References: <555B78A3.2030202@metafoo.de>
- <1432135352-29848-1-git-send-email-xander.huff@ni.com>
- <1432135352-29848-2-git-send-email-xander.huff@ni.com>
- <55747616.1010901@kernel.org>
+	id S1752052AbbFHOpj (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Mon, 8 Jun 2015 10:45:39 -0400
+Message-ID: <5575AA65.20907@ni.com>
+Date: Mon, 08 Jun 2015 09:44:53 -0500
+From: Xander Huff <xander.huff@ni.com>
 MIME-Version: 1.0
-In-Reply-To: <55747616.1010901@kernel.org>
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="EVF5PPMfhYS0aIcm"
+To: Jonathan Cameron <jic23@kernel.org>,
+	Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+CC: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
+	michal.simek@xilinx.com, soren.brinkmann@xilinx.com,
+	linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	linux-rt-users@vger.kernel.org, ben.shelton@ni.com,
+	joe.hershberger@ni.com, joshc@ni.com
+Subject: Re: [PATCH] iio: adc: xilinx-xadc: Convert to raw spinlock
+References: <1431013090-18996-1-git-send-email-xander.huff@ni.com> <20150514171038.GG13442@linutronix.de> <55552570.5050407@ni.com> <20150518211728.GC4275@linutronix.de> <5574633F.7090004@kernel.org>
+In-Reply-To: <5574633F.7090004@kernel.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
+On 6/7/2015 10:29 AM, Jonathan Cameron wrote:
+> On 18/05/15 22:17, Sebastian Andrzej Siewior wrote:
+>> * Xander Huff | 2015-05-14 17:45:04 [-0500]:
+>>
+>>> With no other processes running, I got the following results after a
+>>> couple of hours on one of our devices:
+>>>
+>>> admin@Xander-roboRIO:~# cyclictest -S -m -p 98
+>>> # /dev/cpu_dma_latency set to 0us
+>>> policy: fifo: loadavg: 0.01 0.07 0.12 1/176 1473
+>>>
+>>> T: 0 ( 1373) P:98 I:1000 C:6503872 Min:      9 Act:   13 Avg:   13 Max:      51
+>>> T: 1 ( 1374) P:98 I:1500 C:4335914 Min:      9 Act:   12 Avg:   13 Max:      49
+>>>
+>>> With a VI reading all default handles (raw, offset, scale,
+>>> sampling_frequency) in /sys/bus/iio/devices/iio:device0 constantly in
+>>> a while loop, I got the following results after a couple hours on the
+>>> same device:
+>>>
+>>> admin@Xander-roboRIO:~# cyclictest -S -m -p 98
+>>> # /dev/cpu_dma_latency set to 0us
+>>> policy: fifo: loadavg: 6.93 7.30 7.47 3/182 1530
+>>>
+>>> T: 0 ( 1487) P:98 I:1000 C:4497008 Min:     11 Act:   20 Avg:   21 Max:      69
+>>> T: 1 ( 1488) P:98 I:1500 C:2998005 Min:     11 Act:   20 Avg:   22 Max:      59
+>>
+>> So there is an increase. And there is even a for-loop and I don't know
+>> how deep it is nested. Anyway, do you think it is worth it or would it
+>> be better to get rid of the raw-locks and simply push everything into
+>> threaded context?
+>>
+> Certainly seems likely to be a better way forward to me but I don't
+> really mind either way.
+>
+> J
+>
+We'll be giving Sebastian's suggestion a try, as time allows.
 
---EVF5PPMfhYS0aIcm
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-On Sun, Jun 07, 2015 at 05:49:26PM +0100, Jonathan Cameron wrote:
-> On 20/05/15 16:22, Xander Huff wrote:
-> > To better facilitate user-mode access to optional aux channels, allow
-> > device trees to specify a custom label for defined channels.
-> >=20
-> > Signed-off-by: Xander Huff <xander.huff@ni.com>
-> > Reviewed-by: Joe Hershberger <joe.hershberger@ni.com>
-> > Reviewed-by: Josh Cartwright <joshc@ni.com>
-> > ---
-> >  drivers/iio/adc/xilinx-xadc-core.c | 3 +++
-> >  1 file changed, 3 insertions(+)
-> >=20
-> > diff --git a/drivers/iio/adc/xilinx-xadc-core.c b/drivers/iio/adc/xilin=
-x-xadc-core.c
-> > index ce93bd8..bda4241 100644
-> > --- a/drivers/iio/adc/xilinx-xadc-core.c
-> > +++ b/drivers/iio/adc/xilinx-xadc-core.c
-> > @@ -1119,6 +1119,9 @@ static int xadc_parse_dt(struct iio_dev *indio_de=
-v, struct device_node *np,
-> >  			if (ret || reg > 16)
-> >  				continue;
-> > =20
-> > +			of_property_read_string(child, "label",
-> > +						&chan->extend_name);
-> > +
-> >  			if (of_property_read_bool(child, "xlnx,bipolar"))
-> >  				chan->scan_type.sign =3D 's';
-> > =20
-> >=20
-> I think what Lars was suggesting was a change to the IIO side of this rat=
-her than
-> just changing the device tree binding.
-
-I'm not so sure.  His observation was just that the typical name of
-these properties is 'label', which I think makes sense and is commonly
-used.
-
-Naming things is hard.
-
-Perhaps, though, an improvement may be made if we lifted this out of the
-xadc driver and moved it into the IIO core (I can't imagine that this
-driver is the only one representing each channel with a separate node in
-DT).
-
-> Perhaps an additional per channel attribute called _label which would
-> allow for board specific labelling?
-
-This would seem a bit odd in DT-land; if a user wanted a different label
-name for their board, they would just rename it in their device tree for
-that board.  Fortunately, with the structured dtsi include files, this
-is pretty painless to do.
-
-  Josh
-
---EVF5PPMfhYS0aIcm
-Content-Type: application/pgp-signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2
-
-iQEcBAABCAAGBQJVdZ1WAAoJEKp7ZBKwQFAryccIAJXt1Z85xK+Yk85eNjzJbcxr
-dDY9LlUmo8gmVdHQycMSUD2vPrZDtS95psBdzS0bNRoTmOaZCCXKn3sR/P4zKuVP
-aJS3SX67ojF38mDT6SBxRXtF0YqPdKw2bhlhN9wmdLwp9lgUnfBcE3yOtrCNlE1s
-D6C/+6IrI483gv6lCmyW2PYGxTps45rdGx7daNL6ea+HXkcyyg06XYCkhjZ3L+cQ
-b8oszq+O1O74GrV+RbKtWWZ5fB5KXXzguPzcljjTnWf4RAu9ysYfmmSW5bjFRa0/
-fXRYRWyqI87xCVDSPK3+xZAFetGh6pGwvDnYmqjxX8TwSeXVIuCCjZijwbJPRHI=
-=MicM
------END PGP SIGNATURE-----
-
---EVF5PPMfhYS0aIcm--
+-- 
+Xander Huff
+Staff Software Engineer
+National Instruments
