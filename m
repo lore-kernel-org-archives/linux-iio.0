@@ -1,199 +1,189 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:57444 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:57601 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751317AbbFHVWA (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 8 Jun 2015 17:22:00 -0400
-Message-ID: <55760773.9070406@kernel.org>
-Date: Mon, 08 Jun 2015 22:21:55 +0100
+	with ESMTP id S1753066AbbFHVwp (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 8 Jun 2015 17:52:45 -0400
+Message-ID: <55760EAA.4010200@kernel.org>
+Date: Mon, 08 Jun 2015 22:52:42 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Denis CIOCCA <denis.ciocca@st.com>
-CC: Linus Walleij <linus.walleij@linaro.org>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	Lee Jones <lee.jones@linaro.org>
-Subject: Re: [PATCH 2/2 v2] iio: st_accel: support the LIS331DL sensor
-References: <1432042638-26744-1-git-send-email-linus.walleij@linaro.org> <557478CC.4030806@kernel.org> <BABD4342-0FE3-4E2C-8308-74DD93F272D8@st.com>
-In-Reply-To: <BABD4342-0FE3-4E2C-8308-74DD93F272D8@st.com>
-Content-Type: text/plain; charset=windows-1252
+To: Greg KH <gregkh@linuxfoundation.org>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Subject: [PULL] IIO new drivers etc for the 4.2 cycle round 3
+Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 08/06/15 16:37, Denis CIOCCA wrote:
-> Hi Jonathan,
-> 
-> Yes my ack was for the all series...Sorry!
-> 
-> Acked-by: Denis Ciocca <denis.ciocca@st.com>
-> 
-Cool, added it.
+The following changes since commit 884ca45613c47efe4b0b1238f6ee677d74fe3419:
 
-Jonathan
-> Denis
-> 
-> Sent from my phone
-> 
->> On Jun 8, 2015, at 01:01, Jonathan Cameron <jic23@kernel.org> wrote:
->>
->>> On 19/05/15 14:37, Linus Walleij wrote:
->>> This adds support for the LIS331DL sensor version. This is
->>> a simple 8bit-only accelerometer.
->>>
->>> Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
->> Applied to the togreg branch of iio.git - pushed out as testing for
->> the autobuilders to play with it.
->>
->> Dennis, if your ack covered this as well, then I can still add it
->> until I push out properly.
->>
->> Thanks,
->>
->> Jonathan
->>> ---
->>> ChangeLog v1->v2:
->>> - Change the full-scale sensitivity settings, apparently
->>>  this is the mg/digit setting multiplied by 1000, so
->>>  becomes microgram per digit, 18000 and 72000 respectively.
->>> ---
->>> .../devicetree/bindings/iio/st-sensors.txt         |  1 +
->>> drivers/iio/accel/st_accel.h                       |  1 +
->>> drivers/iio/accel/st_accel_core.c                  | 70 ++++++++++++++++++++++
->>> drivers/iio/accel/st_accel_i2c.c                   |  4 ++
->>> 4 files changed, 76 insertions(+)
->>>
->>> diff --git a/Documentation/devicetree/bindings/iio/st-sensors.txt b/Documentation/devicetree/bindings/iio/st-sensors.txt
->>> index fb5e0c2d18b5..8a6be3bdf267 100644
->>> --- a/Documentation/devicetree/bindings/iio/st-sensors.txt
->>> +++ b/Documentation/devicetree/bindings/iio/st-sensors.txt
->>> @@ -30,6 +30,7 @@ Accelerometers:
->>> - st,lsm330d-accel
->>> - st,lsm330dl-accel
->>> - st,lsm330dlc-accel
->>> +- st,lis331dl-accel
->>> - st,lis331dlh-accel
->>> - st,lsm303dl-accel
->>> - st,lsm303dlm-accel
->>> diff --git a/drivers/iio/accel/st_accel.h b/drivers/iio/accel/st_accel.h
->>> index 7ee9724b1428..aa1001931d0c 100644
->>> --- a/drivers/iio/accel/st_accel.h
->>> +++ b/drivers/iio/accel/st_accel.h
->>> @@ -20,6 +20,7 @@
->>> #define LSM330D_ACCEL_DEV_NAME        "lsm330d_accel"
->>> #define LSM330DL_ACCEL_DEV_NAME        "lsm330dl_accel"
->>> #define LSM330DLC_ACCEL_DEV_NAME    "lsm330dlc_accel"
->>> +#define LIS331DL_ACCEL_DEV_NAME        "lis331dl_accel"
->>> #define LIS331DLH_ACCEL_DEV_NAME    "lis331dlh"
->>> #define LSM303DL_ACCEL_DEV_NAME        "lsm303dl_accel"
->>> #define LSM303DLH_ACCEL_DEV_NAME    "lsm303dlh_accel"
->>> diff --git a/drivers/iio/accel/st_accel_core.c b/drivers/iio/accel/st_accel_core.c
->>> index ad19fb4304df..970e9f904dde 100644
->>> --- a/drivers/iio/accel/st_accel_core.c
->>> +++ b/drivers/iio/accel/st_accel_core.c
->>> @@ -153,6 +153,28 @@
->>> #define ST_ACCEL_4_IG1_EN_MASK            0x08
->>> #define ST_ACCEL_4_MULTIREAD_BIT        true
->>>
->>> +/* CUSTOM VALUES FOR SENSOR 5 */
->>> +#define ST_ACCEL_5_WAI_EXP            0x3b
->>> +#define ST_ACCEL_5_ODR_ADDR            0x20
->>> +#define ST_ACCEL_5_ODR_MASK            0x80
->>> +#define ST_ACCEL_5_ODR_AVL_100HZ_VAL        0x00
->>> +#define ST_ACCEL_5_ODR_AVL_400HZ_VAL        0x01
->>> +#define ST_ACCEL_5_PW_ADDR            0x20
->>> +#define ST_ACCEL_5_PW_MASK            0x40
->>> +#define ST_ACCEL_5_FS_ADDR            0x20
->>> +#define ST_ACCEL_5_FS_MASK            0x20
->>> +#define ST_ACCEL_5_FS_AVL_2_VAL            0X00
->>> +#define ST_ACCEL_5_FS_AVL_8_VAL            0X01
->>> +/* TODO: check these resulting gain settings, these are not in the datsheet */
->>> +#define ST_ACCEL_5_FS_AVL_2_GAIN        IIO_G_TO_M_S_2(18000)
->>> +#define ST_ACCEL_5_FS_AVL_8_GAIN        IIO_G_TO_M_S_2(72000)
->>> +#define ST_ACCEL_5_DRDY_IRQ_ADDR        0x22
->>> +#define ST_ACCEL_5_DRDY_IRQ_INT1_MASK        0x04
->>> +#define ST_ACCEL_5_DRDY_IRQ_INT2_MASK        0x20
->>> +#define ST_ACCEL_5_IG1_EN_ADDR            0x21
->>> +#define ST_ACCEL_5_IG1_EN_MASK            0x08
->>> +#define ST_ACCEL_5_MULTIREAD_BIT        false
->>> +
->>> static const struct iio_chan_spec st_accel_8bit_channels[] = {
->>>    ST_SENSORS_LSM_CHANNELS(IIO_ACCEL,
->>>            BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_SCALE),
->>> @@ -470,6 +492,54 @@ static const struct st_sensor_settings st_accel_sensors_settings[] = {
->>>        .multi_read_bit = ST_ACCEL_4_MULTIREAD_BIT,
->>>        .bootime = 2, /* guess */
->>>    },
->>> +    {
->>> +        .wai = ST_ACCEL_5_WAI_EXP,
->>> +        .sensors_supported = {
->>> +            [0] = LIS331DL_ACCEL_DEV_NAME,
->>> +        },
->>> +        .ch = (struct iio_chan_spec *)st_accel_8bit_channels,
->>> +        .odr = {
->>> +            .addr = ST_ACCEL_5_ODR_ADDR,
->>> +            .mask = ST_ACCEL_5_ODR_MASK,
->>> +            .odr_avl = {
->>> +                { 100, ST_ACCEL_5_ODR_AVL_100HZ_VAL },
->>> +                { 400, ST_ACCEL_5_ODR_AVL_400HZ_VAL, },
->>> +            },
->>> +        },
->>> +        .pw = {
->>> +            .addr = ST_ACCEL_5_PW_ADDR,
->>> +            .mask = ST_ACCEL_5_PW_MASK,
->>> +            .value_on = ST_SENSORS_DEFAULT_POWER_ON_VALUE,
->>> +            .value_off = ST_SENSORS_DEFAULT_POWER_OFF_VALUE,
->>> +        },
->>> +        .enable_axis = {
->>> +            .addr = ST_SENSORS_DEFAULT_AXIS_ADDR,
->>> +            .mask = ST_SENSORS_DEFAULT_AXIS_MASK,
->>> +        },
->>> +        .fs = {
->>> +            .addr = ST_ACCEL_5_FS_ADDR,
->>> +            .mask = ST_ACCEL_5_FS_MASK,
->>> +            .fs_avl = {
->>> +                [0] = {
->>> +                    .num = ST_ACCEL_FS_AVL_2G,
->>> +                    .value = ST_ACCEL_5_FS_AVL_2_VAL,
->>> +                    .gain = ST_ACCEL_5_FS_AVL_2_GAIN,
->>> +                },
->>> +                [1] = {
->>> +                    .num = ST_ACCEL_FS_AVL_8G,
->>> +                    .value = ST_ACCEL_5_FS_AVL_8_VAL,
->>> +                    .gain = ST_ACCEL_5_FS_AVL_8_GAIN,
->>> +                },
->>> +            },
->>> +        },
->>> +        .drdy_irq = {
->>> +            .addr = ST_ACCEL_5_DRDY_IRQ_ADDR,
->>> +            .mask_int1 = ST_ACCEL_5_DRDY_IRQ_INT1_MASK,
->>> +            .mask_int2 = ST_ACCEL_5_DRDY_IRQ_INT2_MASK,
->>> +        },
->>> +        .multi_read_bit = ST_ACCEL_5_MULTIREAD_BIT,
->>> +        .bootime = 2, /* guess */
->>> +    },
->>> };
->>>
->>> static int st_accel_read_raw(struct iio_dev *indio_dev,
->>> diff --git a/drivers/iio/accel/st_accel_i2c.c b/drivers/iio/accel/st_accel_i2c.c
->>> index 6b720c190b2d..d4ad72ca4a3d 100644
->>> --- a/drivers/iio/accel/st_accel_i2c.c
->>> +++ b/drivers/iio/accel/st_accel_i2c.c
->>> @@ -49,6 +49,10 @@ static const struct of_device_id st_accel_of_match[] = {
->>>        .data = LSM330DLC_ACCEL_DEV_NAME,
->>>    },
->>>    {
->>> +        .compatible = "st,lis331dl-accel",
->>> +        .data = LIS331DL_ACCEL_DEV_NAME,
->>> +    },
->>> +    {
->>>        .compatible = "st,lis331dlh-accel",
->>>        .data = LIS331DLH_ACCEL_DEV_NAME,
->>>    },
->>
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> 
+  iio: accel: Add support for Sensortek STK8BA50 (2015-05-23 12:57:11 +0100)
 
+are available in the git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git tags/iio-for-v4.2c
+
+for you to fetch changes up to bbf5f037fad47e4affef6696aaf88a40b261e639:
+
+  iio: st_accel: support the LIS331DL sensor (2015-06-08 22:21:18 +0100)
+
+----------------------------------------------------------------
+Third round of new IIO drivers, cleanups and functionality for the 4.2 cycle.
+
+Given Linus announced a 4.8rc coming up, hopefully time for one more
+lot of IIO patches this cycle.  Some of these are actually
+improvements / fixes for patches earlier in the cycle.
+
+New device support
+* st_accel driver - support devices with 8 bit channels.
+
+Cleanup
+* A general cleanup of the iio tools under /tools/ from Hartmut.
+  I'm more than a little embarrassed by how bad some of these were! Are well,
+  much more refined and less bug prone now.
+  These cover lots of stuff like un-handled error returns, memory leaks as
+  well as general refactoring to tidy the code up.
+* iio_simple_dummy - fix memory leaks in the init functions, drop some
+  pointless error returns from functions that never generate errors and
+  make the module parameter explicitly unsigned.
+* More buffer handling reworks from Lars-Peter, this time targetting hardware
+  buffers (a little used corner that looks likely to get more use in the near
+  future). Specifically:
+  - Always compute the masklength as inkernel buffer users may need it.
+  - Add a means of labelling which buffer modes a given buffer implementation
+    supports.
+  - In the case of hardware buffers, require strict scan matching rather than
+    matching to a super set.  Currently the demux is bypassed by these drivers
+    (this may well not change for efficiency reasons) so allowing a superset
+    of channels to be selected would otherwise lead to more data than requested
+    confusing user space.
+
+Driver functionality improvements
+* mmc35240 - adds a compensation to the raw values as borrowed form Memsic's
+  own input driver.
+* mma8452
+  - event support
+  - event debouncing
+  - high  pass filter configuration
+  - triggers
+* vf610 - allow conversion mode to be adjusted
+
+Fixlets
+* mmc35240
+  - Off by one error that by coincidence had no real effect.
+  - i2c_device_name should be lowercase.
+  - Lack of null terminator at end of attributes array.
+  - Avoid computing the fractional part of the magnetic field by moving
+    the scaling into userspace where floating point is available to simplify
+    the maths.
+  - Use a smaller sleep before assuming the measurement is done.  This is
+    safe and improves the possible polling rate.
+  - Fix sensitivity on z-axis - datasheet disagrees with Memsic's releasedd
+    code and the value used in the code seems to be correct.
+* stk3310 - make a local variable signed to ensure error handling works.
+* twl4030
+  - fix calculation of the temperature sense current - bug unlikely
+    to have ever been noticed as the difference is small.
+  - Fix errors in descriptions.
+
+----------------------------------------------------------------
+Dan Carpenter (2):
+      iio: magnetometer: correct a harmless off by one check
+      iio: light: signedness bug in stk3310_write_raw()
+
+Daniel Baluta (6):
+      iio: magnetometer: mmc35240: i2c device name should be lower case
+      iio: magnetometer: mmc35240: NULL terminate attribute array
+      iio: magnetometer: mmc35240: Fix broken processed value
+      iio: magnetometer: mmc35240: Use a smaller sleep value
+      iio: magnetometer: mmc35240: Fix sensitivity on z-axis
+      iio: magnetometer: mmc35240: Add compensation for raw values
+
+H. Nikolaus Schaller (2):
+      iio: adc: twl4030_madc: Fix calculation of the temperature sense current
+      iio: adc: twl4030_madc: Fix description of twl4030_madc_set_current_generator()
+
+Hartmut Knaack (28):
+      tools:iio:generic_buffer: fix order of freeing data
+      tools:iio:generic_buffer: free dev_dir_name on exit
+      tools:iio:iio_utils: free scan_el_dir on exit
+      tools:iio: free channel-array completely
+      tools:iio:iio_utils: fix allocation handling
+      tools:iio:lsiio: add closedir before exit
+      tools:iio: save errno first
+      tools:iio:iio_event_monitor: save right errno
+      tools:iio:generic_buffer: fix check of errno
+      tools:iio:generic_buffer: pass up right error code
+      tools:iio:generic_buffer: sign-extend and shift data
+      tools:iio:iio_utils: check amount of matches
+      tools:iio:iio_utils: implement digit calculation
+      tools:iio:iio_utils: mark private function static
+      tools:iio: catch errors in string allocation
+      tools:iio:generic_buffer: catch errors for arguments conversion
+      tools:iio:generic_buffer: add error handling
+      tools:iio:iio_event_monitor: add error handling
+      tools:iio:iio_utils: add error handling
+      tools:iio:lsiio: add error handling
+      tools:iio:iio_utils: add missing documentation
+      tools:iio: return values directly
+      tools:iio:iio_event_monitor: refactor events output
+      tools:iio:iio_utils: refactor assignment of is_signed
+      tools:iio:iio_utils: move up reset of sysfsfp
+      tools:iio:iio_utils: initialize count during declaration
+      tools:iio: rework program parameters
+      tools:iio:iio_utils: pass strings as const
+
+Lars-Peter Clausen (3):
+      iio: Always compute masklength
+      iio: Specify supported modes for buffers
+      iio: Require strict scan mask matching in hardware mode
+
+Laurent Navet (1):
+      iio: buffer: remove unneeded test
+
+Linus Walleij (2):
+      iio: st_accel: support 8bit channel data
+      iio: st_accel: support the LIS331DL sensor
+
+Martin Fuzzey (4):
+      iio: mma8452: Basic support for transient events.
+      iio: mma8452: Add support for transient event debouncing
+      iio: mma8452: Add highpass filter configuration.
+      iio: mma8452: Add support for interrupt driven triggers.
+
+Stefan Agner (1):
+      iio: adc: vf610: implement configurable conversion modes
+
+Vladimirs Ambrosovs (3):
+      staging: iio_simple_dummy: fix init function
+      staging: iio_simple_dummy: fix return types
+      staging: iio_simple_dummy: fix module_param type
+
+ Documentation/ABI/testing/sysfs-bus-iio-vf610      |   7 +
+ .../devicetree/bindings/iio/adc/vf610-adc.txt      |   9 +
+ .../devicetree/bindings/iio/st-sensors.txt         |   1 +
+ drivers/iio/accel/mma8452.c                        | 495 ++++++++++++++++++++-
+ drivers/iio/accel/st_accel.h                       |   1 +
+ drivers/iio/accel/st_accel_core.c                  |  86 ++++
+ drivers/iio/accel/st_accel_i2c.c                   |   4 +
+ drivers/iio/adc/twl4030-madc.c                     |   8 +-
+ drivers/iio/adc/vf610_adc.c                        | 146 ++++--
+ drivers/iio/buffer_cb.c                            |   2 +
+ drivers/iio/common/st_sensors/st_sensors_core.c    |   4 +-
+ drivers/iio/industrialio-buffer.c                  |  60 ++-
+ drivers/iio/kfifo_buf.c                            |   2 +
+ drivers/iio/light/stk3310.c                        |   2 +-
+ drivers/iio/magnetometer/mmc35240.c                | 115 ++++-
+ drivers/staging/iio/accel/sca3000_ring.c           |   2 +
+ drivers/staging/iio/iio_dummy_evgen.c              |   4 +-
+ drivers/staging/iio/iio_dummy_evgen.h              |   2 +-
+ drivers/staging/iio/iio_simple_dummy.c             |  21 +-
+ drivers/staging/iio/iio_simple_dummy.h             |   8 +-
+ drivers/staging/iio/iio_simple_dummy_events.c      |   4 +-
+ include/linux/iio/buffer.h                         |   3 +
+ tools/iio/generic_buffer.c                         | 200 ++++++---
+ tools/iio/iio_event_monitor.c                      |  50 ++-
+ tools/iio/iio_utils.c                              | 469 +++++++++++++++----
+ tools/iio/iio_utils.h                              |  20 +-
+ tools/iio/lsiio.c                                  |  63 ++-
+ 27 files changed, 1471 insertions(+), 317 deletions(-)
+ create mode 100644 Documentation/ABI/testing/sysfs-bus-iio-vf610
