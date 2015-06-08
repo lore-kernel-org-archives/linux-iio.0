@@ -1,65 +1,191 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from skprod2.natinst.com ([130.164.80.23]:56193 "EHLO ni.com"
-	rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-	id S1752052AbbFHOpj (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Mon, 8 Jun 2015 10:45:39 -0400
-Message-ID: <5575AA65.20907@ni.com>
-Date: Mon, 08 Jun 2015 09:44:53 -0500
-From: Xander Huff <xander.huff@ni.com>
+Received: from mx08-00178001.pphosted.com ([91.207.212.93]:42357 "EHLO
+	mx08-00178001.pphosted.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1753153AbbFHPiH convert rfc822-to-8bit
+	(ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Mon, 8 Jun 2015 11:38:07 -0400
+From: Denis CIOCCA <denis.ciocca@st.com>
+To: Jonathan Cameron <jic23@kernel.org>
+CC: Linus Walleij <linus.walleij@linaro.org>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	Lee Jones <lee.jones@linaro.org>
+Date: Mon, 8 Jun 2015 17:37:52 +0200
+Subject: Re: [PATCH 2/2 v2] iio: st_accel: support the LIS331DL sensor
+Message-ID: <BABD4342-0FE3-4E2C-8308-74DD93F272D8@st.com>
+References: <1432042638-26744-1-git-send-email-linus.walleij@linaro.org>
+ <557478CC.4030806@kernel.org>
+In-Reply-To: <557478CC.4030806@kernel.org>
+Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
-To: Jonathan Cameron <jic23@kernel.org>,
-	Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-CC: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
-	michal.simek@xilinx.com, soren.brinkmann@xilinx.com,
-	linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-	linux-rt-users@vger.kernel.org, ben.shelton@ni.com,
-	joe.hershberger@ni.com, joshc@ni.com
-Subject: Re: [PATCH] iio: adc: xilinx-xadc: Convert to raw spinlock
-References: <1431013090-18996-1-git-send-email-xander.huff@ni.com> <20150514171038.GG13442@linutronix.de> <55552570.5050407@ni.com> <20150518211728.GC4275@linutronix.de> <5574633F.7090004@kernel.org>
-In-Reply-To: <5574633F.7090004@kernel.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 6/7/2015 10:29 AM, Jonathan Cameron wrote:
-> On 18/05/15 22:17, Sebastian Andrzej Siewior wrote:
->> * Xander Huff | 2015-05-14 17:45:04 [-0500]:
->>
->>> With no other processes running, I got the following results after a
->>> couple of hours on one of our devices:
->>>
->>> admin@Xander-roboRIO:~# cyclictest -S -m -p 98
->>> # /dev/cpu_dma_latency set to 0us
->>> policy: fifo: loadavg: 0.01 0.07 0.12 1/176 1473
->>>
->>> T: 0 ( 1373) P:98 I:1000 C:6503872 Min:      9 Act:   13 Avg:   13 Max:      51
->>> T: 1 ( 1374) P:98 I:1500 C:4335914 Min:      9 Act:   12 Avg:   13 Max:      49
->>>
->>> With a VI reading all default handles (raw, offset, scale,
->>> sampling_frequency) in /sys/bus/iio/devices/iio:device0 constantly in
->>> a while loop, I got the following results after a couple hours on the
->>> same device:
->>>
->>> admin@Xander-roboRIO:~# cyclictest -S -m -p 98
->>> # /dev/cpu_dma_latency set to 0us
->>> policy: fifo: loadavg: 6.93 7.30 7.47 3/182 1530
->>>
->>> T: 0 ( 1487) P:98 I:1000 C:4497008 Min:     11 Act:   20 Avg:   21 Max:      69
->>> T: 1 ( 1488) P:98 I:1500 C:2998005 Min:     11 Act:   20 Avg:   22 Max:      59
->>
->> So there is an increase. And there is even a for-loop and I don't know
->> how deep it is nested. Anyway, do you think it is worth it or would it
->> be better to get rid of the raw-locks and simply push everything into
->> threaded context?
->>
-> Certainly seems likely to be a better way forward to me but I don't
-> really mind either way.
->
-> J
->
-We'll be giving Sebastian's suggestion a try, as time allows.
+Hi Jonathan,
 
--- 
-Xander Huff
-Staff Software Engineer
-National Instruments
+Yes my ack was for the all series...Sorry!
+
+Acked-by: Denis Ciocca <denis.ciocca@st.com>
+
+Denis
+
+Sent from my phone
+
+> On Jun 8, 2015, at 01:01, Jonathan Cameron <jic23@kernel.org> wrote:
+> 
+>> On 19/05/15 14:37, Linus Walleij wrote:
+>> This adds support for the LIS331DL sensor version. This is
+>> a simple 8bit-only accelerometer.
+>> 
+>> Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+> Applied to the togreg branch of iio.git - pushed out as testing for
+> the autobuilders to play with it.
+> 
+> Dennis, if your ack covered this as well, then I can still add it
+> until I push out properly.
+> 
+> Thanks,
+> 
+> Jonathan
+>> ---
+>> ChangeLog v1->v2:
+>> - Change the full-scale sensitivity settings, apparently
+>>  this is the mg/digit setting multiplied by 1000, so
+>>  becomes microgram per digit, 18000 and 72000 respectively.
+>> ---
+>> .../devicetree/bindings/iio/st-sensors.txt         |  1 +
+>> drivers/iio/accel/st_accel.h                       |  1 +
+>> drivers/iio/accel/st_accel_core.c                  | 70 ++++++++++++++++++++++
+>> drivers/iio/accel/st_accel_i2c.c                   |  4 ++
+>> 4 files changed, 76 insertions(+)
+>> 
+>> diff --git a/Documentation/devicetree/bindings/iio/st-sensors.txt b/Documentation/devicetree/bindings/iio/st-sensors.txt
+>> index fb5e0c2d18b5..8a6be3bdf267 100644
+>> --- a/Documentation/devicetree/bindings/iio/st-sensors.txt
+>> +++ b/Documentation/devicetree/bindings/iio/st-sensors.txt
+>> @@ -30,6 +30,7 @@ Accelerometers:
+>> - st,lsm330d-accel
+>> - st,lsm330dl-accel
+>> - st,lsm330dlc-accel
+>> +- st,lis331dl-accel
+>> - st,lis331dlh-accel
+>> - st,lsm303dl-accel
+>> - st,lsm303dlm-accel
+>> diff --git a/drivers/iio/accel/st_accel.h b/drivers/iio/accel/st_accel.h
+>> index 7ee9724b1428..aa1001931d0c 100644
+>> --- a/drivers/iio/accel/st_accel.h
+>> +++ b/drivers/iio/accel/st_accel.h
+>> @@ -20,6 +20,7 @@
+>> #define LSM330D_ACCEL_DEV_NAME        "lsm330d_accel"
+>> #define LSM330DL_ACCEL_DEV_NAME        "lsm330dl_accel"
+>> #define LSM330DLC_ACCEL_DEV_NAME    "lsm330dlc_accel"
+>> +#define LIS331DL_ACCEL_DEV_NAME        "lis331dl_accel"
+>> #define LIS331DLH_ACCEL_DEV_NAME    "lis331dlh"
+>> #define LSM303DL_ACCEL_DEV_NAME        "lsm303dl_accel"
+>> #define LSM303DLH_ACCEL_DEV_NAME    "lsm303dlh_accel"
+>> diff --git a/drivers/iio/accel/st_accel_core.c b/drivers/iio/accel/st_accel_core.c
+>> index ad19fb4304df..970e9f904dde 100644
+>> --- a/drivers/iio/accel/st_accel_core.c
+>> +++ b/drivers/iio/accel/st_accel_core.c
+>> @@ -153,6 +153,28 @@
+>> #define ST_ACCEL_4_IG1_EN_MASK            0x08
+>> #define ST_ACCEL_4_MULTIREAD_BIT        true
+>> 
+>> +/* CUSTOM VALUES FOR SENSOR 5 */
+>> +#define ST_ACCEL_5_WAI_EXP            0x3b
+>> +#define ST_ACCEL_5_ODR_ADDR            0x20
+>> +#define ST_ACCEL_5_ODR_MASK            0x80
+>> +#define ST_ACCEL_5_ODR_AVL_100HZ_VAL        0x00
+>> +#define ST_ACCEL_5_ODR_AVL_400HZ_VAL        0x01
+>> +#define ST_ACCEL_5_PW_ADDR            0x20
+>> +#define ST_ACCEL_5_PW_MASK            0x40
+>> +#define ST_ACCEL_5_FS_ADDR            0x20
+>> +#define ST_ACCEL_5_FS_MASK            0x20
+>> +#define ST_ACCEL_5_FS_AVL_2_VAL            0X00
+>> +#define ST_ACCEL_5_FS_AVL_8_VAL            0X01
+>> +/* TODO: check these resulting gain settings, these are not in the datsheet */
+>> +#define ST_ACCEL_5_FS_AVL_2_GAIN        IIO_G_TO_M_S_2(18000)
+>> +#define ST_ACCEL_5_FS_AVL_8_GAIN        IIO_G_TO_M_S_2(72000)
+>> +#define ST_ACCEL_5_DRDY_IRQ_ADDR        0x22
+>> +#define ST_ACCEL_5_DRDY_IRQ_INT1_MASK        0x04
+>> +#define ST_ACCEL_5_DRDY_IRQ_INT2_MASK        0x20
+>> +#define ST_ACCEL_5_IG1_EN_ADDR            0x21
+>> +#define ST_ACCEL_5_IG1_EN_MASK            0x08
+>> +#define ST_ACCEL_5_MULTIREAD_BIT        false
+>> +
+>> static const struct iio_chan_spec st_accel_8bit_channels[] = {
+>>    ST_SENSORS_LSM_CHANNELS(IIO_ACCEL,
+>>            BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_SCALE),
+>> @@ -470,6 +492,54 @@ static const struct st_sensor_settings st_accel_sensors_settings[] = {
+>>        .multi_read_bit = ST_ACCEL_4_MULTIREAD_BIT,
+>>        .bootime = 2, /* guess */
+>>    },
+>> +    {
+>> +        .wai = ST_ACCEL_5_WAI_EXP,
+>> +        .sensors_supported = {
+>> +            [0] = LIS331DL_ACCEL_DEV_NAME,
+>> +        },
+>> +        .ch = (struct iio_chan_spec *)st_accel_8bit_channels,
+>> +        .odr = {
+>> +            .addr = ST_ACCEL_5_ODR_ADDR,
+>> +            .mask = ST_ACCEL_5_ODR_MASK,
+>> +            .odr_avl = {
+>> +                { 100, ST_ACCEL_5_ODR_AVL_100HZ_VAL },
+>> +                { 400, ST_ACCEL_5_ODR_AVL_400HZ_VAL, },
+>> +            },
+>> +        },
+>> +        .pw = {
+>> +            .addr = ST_ACCEL_5_PW_ADDR,
+>> +            .mask = ST_ACCEL_5_PW_MASK,
+>> +            .value_on = ST_SENSORS_DEFAULT_POWER_ON_VALUE,
+>> +            .value_off = ST_SENSORS_DEFAULT_POWER_OFF_VALUE,
+>> +        },
+>> +        .enable_axis = {
+>> +            .addr = ST_SENSORS_DEFAULT_AXIS_ADDR,
+>> +            .mask = ST_SENSORS_DEFAULT_AXIS_MASK,
+>> +        },
+>> +        .fs = {
+>> +            .addr = ST_ACCEL_5_FS_ADDR,
+>> +            .mask = ST_ACCEL_5_FS_MASK,
+>> +            .fs_avl = {
+>> +                [0] = {
+>> +                    .num = ST_ACCEL_FS_AVL_2G,
+>> +                    .value = ST_ACCEL_5_FS_AVL_2_VAL,
+>> +                    .gain = ST_ACCEL_5_FS_AVL_2_GAIN,
+>> +                },
+>> +                [1] = {
+>> +                    .num = ST_ACCEL_FS_AVL_8G,
+>> +                    .value = ST_ACCEL_5_FS_AVL_8_VAL,
+>> +                    .gain = ST_ACCEL_5_FS_AVL_8_GAIN,
+>> +                },
+>> +            },
+>> +        },
+>> +        .drdy_irq = {
+>> +            .addr = ST_ACCEL_5_DRDY_IRQ_ADDR,
+>> +            .mask_int1 = ST_ACCEL_5_DRDY_IRQ_INT1_MASK,
+>> +            .mask_int2 = ST_ACCEL_5_DRDY_IRQ_INT2_MASK,
+>> +        },
+>> +        .multi_read_bit = ST_ACCEL_5_MULTIREAD_BIT,
+>> +        .bootime = 2, /* guess */
+>> +    },
+>> };
+>> 
+>> static int st_accel_read_raw(struct iio_dev *indio_dev,
+>> diff --git a/drivers/iio/accel/st_accel_i2c.c b/drivers/iio/accel/st_accel_i2c.c
+>> index 6b720c190b2d..d4ad72ca4a3d 100644
+>> --- a/drivers/iio/accel/st_accel_i2c.c
+>> +++ b/drivers/iio/accel/st_accel_i2c.c
+>> @@ -49,6 +49,10 @@ static const struct of_device_id st_accel_of_match[] = {
+>>        .data = LSM330DLC_ACCEL_DEV_NAME,
+>>    },
+>>    {
+>> +        .compatible = "st,lis331dl-accel",
+>> +        .data = LIS331DL_ACCEL_DEV_NAME,
+>> +    },
+>> +    {
+>>        .compatible = "st,lis331dlh-accel",
+>>        .data = LIS331DLH_ACCEL_DEV_NAME,
+>>    },
+> 
