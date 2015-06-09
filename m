@@ -1,72 +1,459 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from relay3-d.mail.gandi.net ([217.70.183.195]:41676 "EHLO
-	relay3-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S933215AbbFIJyW (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 9 Jun 2015 05:54:22 -0400
-Message-ID: <1433843657.12204.18.camel@hadess.net>
-Subject: Re: Handling Controllers with Acc/Gyro/Mag via HID system
-From: Bastien Nocera <hadess@hadess.net>
-To: simon@mungewell.org
-Cc: linux-iio@vger.kernel.org, linux-input@vger.kernel.org,
-	Frank Praznik <frank.praznik@oh.rr.com>
-Date: Tue, 09 Jun 2015 11:54:17 +0200
-In-Reply-To: <02179134fef3a932cff19b793006f020.squirrel@mungewell.org>
-References: <02179134fef3a932cff19b793006f020.squirrel@mungewell.org>
-Content-Type: text/plain; charset="UTF-8"
-Mime-Version: 1.0
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <tiberiu.a.breana@intel.com>
+From: Tiberiu Breana <tiberiu.a.breana@intel.com>
+To: linux-iio@vger.kernel.org
+Cc: Jonathan Cameron <jic23@kernel.org>
+Subject: [PATCH] iio: accel: Add buffer mode for Sensortek STK8312
+Date: Tue,  9 Jun 2015 15:20:50 +0300
+Message-Id: <1433852450-18227-1-git-send-email-tiberiu.a.breana@intel.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-On Mon, 2015-06-08 at 22:38 -0400, simon@mungewell.org wrote:
-> > 
-> > Hi all,
-> > I'm in the process of fixing the HID descriptor for the PS3 Move
-> Controller. which has a particularly convoluted layout for it's
-> > Accelormeters, Gyros and Magnetometers involving 2 sets of data per 
-> > output
-> > report.
-> > https://github.com/nitsch/moveonpc/wiki/Input-report
-> 
-> > The plan is/was to massage the HID descriptor so the first set of
-> Accels/Gyro/Mag appear in a set a axis, as a simple way of getting to
-> this
-> > data.
-> 
-> [snip]
-> 
-> > Given that more controllers are coming with 'motion' controls, is 
-> > there a
-> > framework in place for unifying support?
-> 
-> A little more poking around has got me looking at the IIO subsystem, 
-> which
-> seems to be everything Accel/Gyro/Mag...
+Added triggered buffer mode support for the STK8312 accelerometer.
 
-The IIO subsystem's user-space API is awful, and root only. I said as
-much here:
-http://thread.gmane.org/gmane.linux.kernel.iio/14421
+Additional changes:
+- set_mode now sets operation mode directly, no longer masking
+  the register's previous value
+- read_accel now returns raw acceleration data instead of the
+  sign_extend32 value
+- read_raw will now enable/disable the sensor with each reading
 
-> I note that there are a few 'HID'ish things there too, although I'm 
-> not
-> sure whether they are useful to us, or just intended for connecting 
-> motion
-> devices via the HID bus and then onto IIO.
-> --
-> drivers/iio/accel/hid-sensor-accel-3d.c
-> drivers/iio/gyro/hid-sensor-gyro-3d.c
-> drivers/iio/magnetometer/hid-sensor-magn-3d.c
-> drivers/iio/orientation/hid-sensor-rotation.c
-> --
-> 
-> Does the idea of the drivers for the HID (gaming) controllers opening 
-> up a
-> connection to IIO system and pushing the Accel/Gyro/Mag values there
-> (rather than exposing them on the joystick interface) make sense?
-> 
-> Are there any examples of other devices doing this, so I can re-use 
-> the code?
+Signed-off-by: Tiberiu Breana <tiberiu.a.breana@intel.com>
+---
+ drivers/iio/accel/stk8312.c | 281 ++++++++++++++++++++++++++++++++++++++------
+ 1 file changed, 246 insertions(+), 35 deletions(-)
 
-I wrote this for accelerometers that are in tablets/convertibles:
-https://github.com/hadess/iio-sensor-proxy/
-
-
+diff --git a/drivers/iio/accel/stk8312.c b/drivers/iio/accel/stk8312.c
+index d211d9f3..12ad95e 100644
+--- a/drivers/iio/accel/stk8312.c
++++ b/drivers/iio/accel/stk8312.c
+@@ -11,16 +11,23 @@
+  */
+ 
+ #include <linux/acpi.h>
++#include <linux/gpio/consumer.h>
+ #include <linux/i2c.h>
++#include <linux/interrupt.h>
+ #include <linux/kernel.h>
+ #include <linux/module.h>
+ #include <linux/delay.h>
++#include <linux/iio/buffer.h>
+ #include <linux/iio/iio.h>
+ #include <linux/iio/sysfs.h>
++#include <linux/iio/trigger.h>
++#include <linux/iio/triggered_buffer.h>
++#include <linux/iio/trigger_consumer.h>
+ 
+ #define STK8312_REG_XOUT		0x00
+ #define STK8312_REG_YOUT		0x01
+ #define STK8312_REG_ZOUT		0x02
++#define STK8312_REG_INTSU		0x06
+ #define STK8312_REG_MODE		0x07
+ #define STK8312_REG_STH			0x13
+ #define STK8312_REG_RESET		0x20
+@@ -29,14 +36,17 @@
+ #define STK8312_REG_OTPDATA		0x3E
+ #define STK8312_REG_OTPCTRL		0x3F
+ 
+-#define STK8312_MODE_ACTIVE		1
+-#define STK8312_MODE_STANDBY		0
++#define STK8312_POWER_MASK		0x01
+ #define STK8312_MODE_MASK		0x01
++#define STK8312_DREADY_MASK		0x10
++#define STK8312_INT_MODE		0xC0
+ #define STK8312_RNG_MASK		0xC0
+ #define STK8312_RNG_SHIFT		6
+ #define STK8312_READ_RETRIES		16
+ 
+ #define STK8312_DRIVER_NAME		"stk8312"
++#define STK8312_GPIO			"stk8312_gpio"
++#define STK8312_IRQ_NAME		"stk8312_event"
+ 
+ /*
+  * The accelerometer has two measurement ranges:
+@@ -53,19 +63,27 @@ static const int stk8312_scale_table[][2] = {
+ 	{0, 461600}, {1, 231100}
+ };
+ 
+-#define STK8312_ACCEL_CHANNEL(reg, axis) {			\
++#define STK8312_ACCEL_CHANNEL(index, reg, axis) {		\
+ 	.type = IIO_ACCEL,					\
+ 	.address = reg,						\
+ 	.modified = 1,						\
+ 	.channel2 = IIO_MOD_##axis,				\
+ 	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),		\
+ 	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),	\
++	.scan_index = index,					\
++	.scan_type = {						\
++		.sign = 's',					\
++		.realbits = 8,					\
++		.storagebits = 8,				\
++		.endianness = IIO_CPU,				\
++	},							\
+ }
+ 
+ static const struct iio_chan_spec stk8312_channels[] = {
+-	STK8312_ACCEL_CHANNEL(STK8312_REG_XOUT, X),
+-	STK8312_ACCEL_CHANNEL(STK8312_REG_YOUT, Y),
+-	STK8312_ACCEL_CHANNEL(STK8312_REG_ZOUT, Z),
++	STK8312_ACCEL_CHANNEL(0, STK8312_REG_XOUT, X),
++	STK8312_ACCEL_CHANNEL(1, STK8312_REG_YOUT, Y),
++	STK8312_ACCEL_CHANNEL(2, STK8312_REG_ZOUT, Z),
++	IIO_CHAN_SOFT_TIMESTAMP(3),
+ };
+ 
+ struct stk8312_data {
+@@ -73,6 +91,9 @@ struct stk8312_data {
+ 	struct mutex lock;
+ 	int range;
+ 	u8 mode;
++	struct iio_trigger *dready_trig;
++	bool dready_trigger_on;
++	s8 buffer[11]; /* 3 x 8-bit channels + 64-bit timestamp */
+ };
+ 
+ static IIO_CONST_ATTR(in_accel_scale_available, STK8312_SCALE_AVAIL);
+@@ -130,31 +151,19 @@ exit_err:
+ static int stk8312_set_mode(struct stk8312_data *data, u8 mode)
+ {
+ 	int ret;
+-	u8 masked_reg;
+ 	struct i2c_client *client = data->client;
+ 
+-	if (mode > 1)
+-		return -EINVAL;
+-	else if (mode == data->mode)
++	if (mode == data->mode)
+ 		return 0;
+ 
+-	ret = i2c_smbus_read_byte_data(client, STK8312_REG_MODE);
+-	if (ret < 0) {
+-		dev_err(&client->dev, "failed to change sensor mode\n");
+-		return ret;
+-	}
+-	masked_reg = ret & (~STK8312_MODE_MASK);
+-	masked_reg |= mode;
+-
+-	ret = i2c_smbus_write_byte_data(client,
+-			STK8312_REG_MODE, masked_reg);
++	ret = i2c_smbus_write_byte_data(client, STK8312_REG_MODE, mode);
+ 	if (ret < 0) {
+ 		dev_err(&client->dev, "failed to change sensor mode\n");
+ 		return ret;
+ 	}
+ 
+ 	data->mode = mode;
+-	if (mode == STK8312_MODE_ACTIVE) {
++	if (mode & STK8312_POWER_MASK) {
+ 		/* Need to run OTP sequence before entering active mode */
+ 		usleep_range(1000, 5000);
+ 		ret = stk8312_otp_init(data);
+@@ -163,6 +172,50 @@ static int stk8312_set_mode(struct stk8312_data *data, u8 mode)
+ 	return ret;
+ }
+ 
++static int stk8312_set_interrupts(struct stk8312_data *data, u8 int_mask)
++{
++	int ret;
++	u8 mode;
++	struct i2c_client *client = data->client;
++
++	mode = data->mode;
++	/* We need to go in standby mode to modify registers */
++	ret = stk8312_set_mode(data, !STK8312_POWER_MASK);
++	if (ret < 0)
++		return ret;
++
++	ret = i2c_smbus_write_byte_data(client, STK8312_REG_INTSU, int_mask);
++	if (ret < 0)
++		dev_err(&client->dev, "failed to set interrupts\n");
++
++	return stk8312_set_mode(data, mode);
++}
++
++static int stk8312_data_rdy_trigger_set_state(struct iio_trigger *trig,
++					      bool state)
++{
++	struct iio_dev *indio_dev = iio_trigger_get_drvdata(trig);
++	struct stk8312_data *data = iio_priv(indio_dev);
++	int ret;
++
++	if (state)
++		ret = stk8312_set_interrupts(data, STK8312_DREADY_MASK);
++	else
++		ret = stk8312_set_interrupts(data, 0x00);
++
++	if (ret < 0)
++		dev_err(&data->client->dev, "failed to set trigger stare\n");
++	else
++		data->dready_trigger_on = state;
++
++	return ret;
++}
++
++static const struct iio_trigger_ops stk8312_trigger_ops = {
++	.set_trigger_state = stk8312_data_rdy_trigger_set_state,
++	.owner = THIS_MODULE,
++};
++
+ static int stk8312_set_range(struct stk8312_data *data, u8 range)
+ {
+ 	int ret;
+@@ -177,7 +230,7 @@ static int stk8312_set_range(struct stk8312_data *data, u8 range)
+ 
+ 	mode = data->mode;
+ 	/* We need to go in standby mode to modify registers */
+-	ret = stk8312_set_mode(data, STK8312_MODE_STANDBY);
++	ret = stk8312_set_mode(data, !STK8312_POWER_MASK);
+ 	if (ret < 0)
+ 		return ret;
+ 
+@@ -208,12 +261,10 @@ static int stk8312_read_accel(struct stk8312_data *data, u8 address)
+ 		return -EINVAL;
+ 
+ 	ret = i2c_smbus_read_byte_data(client, address);
+-	if (ret < 0) {
++	if (ret < 0)
+ 		dev_err(&client->dev, "register read failed\n");
+-		return ret;
+-	}
+ 
+-	return sign_extend32(ret, 7);
++	return ret;
+ }
+ 
+ static int stk8312_read_raw(struct iio_dev *indio_dev,
+@@ -221,14 +272,27 @@ static int stk8312_read_raw(struct iio_dev *indio_dev,
+ 			    int *val, int *val2, long mask)
+ {
+ 	struct stk8312_data *data = iio_priv(indio_dev);
+-
+-	if (chan->type != IIO_ACCEL)
+-		return -EINVAL;
++	int ret;
+ 
+ 	switch (mask) {
+ 	case IIO_CHAN_INFO_RAW:
++		if (iio_buffer_enabled(indio_dev))
++			return -EBUSY;
+ 		mutex_lock(&data->lock);
+-		*val = stk8312_read_accel(data, chan->address);
++		ret = stk8312_set_mode(data, data->mode | STK8312_POWER_MASK);
++		if (ret < 0) {
++			mutex_unlock(&data->lock);
++			return -EINVAL;
++		}
++		ret = stk8312_read_accel(data, chan->address);
++		if (ret < 0) {
++			stk8312_set_mode(data,
++					 data->mode & (~STK8312_POWER_MASK));
++			mutex_unlock(&data->lock);
++			return -EINVAL;
++		}
++		*val = sign_extend32(ret, 7);
++		stk8312_set_mode(data, data->mode & (~STK8312_POWER_MASK));
+ 		mutex_unlock(&data->lock);
+ 		return IIO_VAL_INT;
+ 	case IIO_CHAN_INFO_SCALE:
+@@ -277,6 +341,93 @@ static const struct iio_info stk8312_info = {
+ 	.attrs			= &stk8312_attribute_group,
+ };
+ 
++static irqreturn_t stk8312_trigger_handler(int irq, void *p)
++{
++	struct iio_poll_func *pf = p;
++	struct iio_dev *indio_dev = pf->indio_dev;
++	struct stk8312_data *data = iio_priv(indio_dev);
++	int bit, ret, i = 0;
++
++	mutex_lock(&data->lock);
++	for_each_set_bit(bit, indio_dev->active_scan_mask,
++			 indio_dev->masklength) {
++		ret = stk8312_read_accel(data, bit);
++		if (ret < 0) {
++			mutex_unlock(&data->lock);
++			goto err;
++		}
++		data->buffer[i++] = ret;
++	}
++	mutex_unlock(&data->lock);
++
++	iio_push_to_buffers_with_timestamp(indio_dev, data->buffer,
++					   pf->timestamp);
++err:
++	iio_trigger_notify_done(indio_dev->trig);
++
++	return IRQ_HANDLED;
++}
++
++static irqreturn_t stk8312_data_rdy_trig_poll(int irq, void *private)
++{
++	struct iio_dev *indio_dev = private;
++	struct stk8312_data *data = iio_priv(indio_dev);
++
++	if (data->dready_trigger_on)
++		iio_trigger_poll(data->dready_trig);
++
++	return IRQ_HANDLED;
++}
++
++static int stk8312_buffer_preenable(struct iio_dev *indio_dev)
++{
++	struct stk8312_data *data = iio_priv(indio_dev);
++
++	return stk8312_set_mode(data, data->mode | STK8312_POWER_MASK);
++}
++
++static int stk8312_buffer_postdisable(struct iio_dev *indio_dev)
++{
++	struct stk8312_data *data = iio_priv(indio_dev);
++
++	return stk8312_set_mode(data, data->mode & (~STK8312_POWER_MASK));
++}
++
++static const struct iio_buffer_setup_ops stk8312_buffer_setup_ops = {
++	.preenable   = stk8312_buffer_preenable,
++	.postenable  = iio_triggered_buffer_postenable,
++	.predisable  = iio_triggered_buffer_predisable,
++	.postdisable = stk8312_buffer_postdisable,
++};
++
++static int stk8312_gpio_probe(struct i2c_client *client)
++{
++	struct device *dev;
++	struct gpio_desc *gpio;
++	int ret;
++
++	if (!client)
++		return -EINVAL;
++
++	dev = &client->dev;
++
++	/* data ready gpio interrupt pin */
++	gpio = devm_gpiod_get_index(dev, STK8312_GPIO, 0);
++	if (IS_ERR(gpio)) {
++		dev_err(dev, "acpi gpio get index failed\n");
++		return PTR_ERR(gpio);
++	}
++
++	ret = gpiod_direction_input(gpio);
++	if (ret)
++		return ret;
++
++	ret = gpiod_to_irq(gpio);
++	dev_dbg(dev, "GPIO resource, no:%d irq:%d\n", desc_to_gpio(gpio), ret);
++
++	return ret;
++}
++
+ static int stk8312_probe(struct i2c_client *client,
+ 			 const struct i2c_device_id *id)
+ {
+@@ -312,26 +463,86 @@ static int stk8312_probe(struct i2c_client *client,
+ 	if (ret < 0)
+ 		return ret;
+ 
+-	ret = stk8312_set_mode(data, STK8312_MODE_ACTIVE);
++	ret = stk8312_set_mode(data, STK8312_INT_MODE | STK8312_POWER_MASK);
+ 	if (ret < 0)
+ 		return ret;
+ 
++	if (client->irq < 0)
++		client->irq = stk8312_gpio_probe(client);
++
++	if (client->irq >= 0) {
++		ret = devm_request_threaded_irq(&client->dev, client->irq,
++						stk8312_data_rdy_trig_poll,
++						NULL,
++						IRQF_TRIGGER_RISING |
++						IRQF_ONESHOT,
++						STK8312_IRQ_NAME,
++						indio_dev);
++		if (ret < 0) {
++			dev_err(&client->dev, "request irq %d failed\n",
++				client->irq);
++			goto err_power_off;
++		}
++
++		data->dready_trig = devm_iio_trigger_alloc(&client->dev,
++							   "%s-dev%d",
++							   indio_dev->name,
++							   indio_dev->id);
++		if (!data->dready_trig) {
++			ret = -ENOMEM;
++			goto err_power_off;
++		}
++
++		data->dready_trig->dev.parent = &client->dev;
++		data->dready_trig->ops = &stk8312_trigger_ops;
++		iio_trigger_set_drvdata(data->dready_trig, indio_dev);
++		ret = iio_trigger_register(data->dready_trig);
++		if (ret) {
++			dev_err(&client->dev, "iio trigger register failed\n");
++			goto err_power_off;
++		}
++	}
++
++	ret = iio_triggered_buffer_setup(indio_dev,
++					 iio_pollfunc_store_time,
++					 stk8312_trigger_handler,
++					 &stk8312_buffer_setup_ops);
++	if (ret < 0) {
++		dev_err(&client->dev, "iio triggered buffer setup failed\n");
++		goto err_trigger_unregister;
++	}
++
+ 	ret = iio_device_register(indio_dev);
+ 	if (ret < 0) {
+ 		dev_err(&client->dev, "device_register failed\n");
+-		stk8312_set_mode(data, STK8312_MODE_STANDBY);
++		goto err_buffer_cleanup;
+ 	}
+ 
+ 	return ret;
++
++err_buffer_cleanup:
++	iio_triggered_buffer_cleanup(indio_dev);
++err_trigger_unregister:
++	if (data->dready_trig)
++		iio_trigger_unregister(data->dready_trig);
++err_power_off:
++	stk8312_set_mode(data, !STK8312_POWER_MASK);
++	return ret;
+ }
+ 
+ static int stk8312_remove(struct i2c_client *client)
+ {
+ 	struct iio_dev *indio_dev = i2c_get_clientdata(client);
++	struct stk8312_data *data = iio_priv(indio_dev);
+ 
+ 	iio_device_unregister(indio_dev);
+ 
+-	return stk8312_set_mode(iio_priv(indio_dev), STK8312_MODE_STANDBY);
++	if (data->dready_trig) {
++		iio_triggered_buffer_cleanup(indio_dev);
++		iio_trigger_unregister(data->dready_trig);
++	}
++
++	return stk8312_set_mode(data, !STK8312_POWER_MASK);
+ }
+ 
+ #ifdef CONFIG_PM_SLEEP
+@@ -341,7 +552,7 @@ static int stk8312_suspend(struct device *dev)
+ 
+ 	data = iio_priv(i2c_get_clientdata(to_i2c_client(dev)));
+ 
+-	return stk8312_set_mode(data, STK8312_MODE_STANDBY);
++	return stk8312_set_mode(data, data->mode & (~STK8312_POWER_MASK));
+ }
+ 
+ static int stk8312_resume(struct device *dev)
+@@ -350,7 +561,7 @@ static int stk8312_resume(struct device *dev)
+ 
+ 	data = iio_priv(i2c_get_clientdata(to_i2c_client(dev)));
+ 
+-	return stk8312_set_mode(data, STK8312_MODE_ACTIVE);
++	return stk8312_set_mode(data, data->mode | STK8312_POWER_MASK);
+ }
+ 
+ static SIMPLE_DEV_PM_OPS(stk8312_pm_ops, stk8312_suspend, stk8312_resume);
+-- 
+1.9.1
