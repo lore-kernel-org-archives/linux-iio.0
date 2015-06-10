@@ -1,186 +1,105 @@
-Return-Path: <tiberiu.a.breana@intel.com>
-From: Tiberiu Breana <tiberiu.a.breana@intel.com>
-To: linux-iio@vger.kernel.org
-Cc: Jonathan Cameron <jic23@kernel.org>
-Subject: [PATCH v2] iio: accel: Add sampling rate support for STK8312
-Date: Wed, 10 Jun 2015 16:20:42 +0300
-Message-Id: <1433942442-23234-1-git-send-email-tiberiu.a.breana@intel.com>
+Return-Path: <daniel.baluta@gmail.com>
+MIME-Version: 1.0
+In-Reply-To: <1433938228-4272-1-git-send-email-tiberiu.a.breana@intel.com>
+References: <1433938228-4272-1-git-send-email-tiberiu.a.breana@intel.com>
+Date: Wed, 10 Jun 2015 15:44:56 +0300
+Message-ID: <CAEnQRZC6E3qxRefm6deX5uiGsfMEj3y8ncyvW5yJ2mN9xc9-Qg@mail.gmail.com>
+Subject: Re: [PATCH] iio: accel: STK8BA50: replace scale table with a struct
+From: Daniel Baluta <daniel.baluta@gmail.com>
+To: Tiberiu Breana <tiberiu.a.breana@intel.com>
+Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>, Jonathan Cameron <jic23@kernel.org>
+Content-Type: text/plain; charset=UTF-8
 List-ID: <linux-iio@vger.kernel.org>
 
-Added support for setting the STK8312 accelerometer's
-sampling rate.
+On Wed, Jun 10, 2015 at 3:10 PM, Tiberiu Breana
+<tiberiu.a.breana@intel.com> wrote:
+> Replaced the stk8ba50_scale_table with an identically named
+> struct in order to make the code a bit more readable.
 
-Signed-off-by: Tiberiu Breana <tiberiu.a.breana@intel.com>
----
-v2: replaced stk8312_samp_freq_table with a struct for better readability
----
- drivers/iio/accel/stk8312.c | 96 ++++++++++++++++++++++++++++++++++++++-------
- 1 file changed, 82 insertions(+), 14 deletions(-)
+If this depends on your previous  "iio: accel: Add sampling rate
+support for STK8BA50"
+patch, please send them together in a patch series. It will be easier
+to Jonathan to know
+the exact order to apply this.
 
-diff --git a/drivers/iio/accel/stk8312.c b/drivers/iio/accel/stk8312.c
-index 12ad95e..fdf2979 100644
---- a/drivers/iio/accel/stk8312.c
-+++ b/drivers/iio/accel/stk8312.c
-@@ -29,6 +29,7 @@
- #define STK8312_REG_ZOUT		0x02
- #define STK8312_REG_INTSU		0x06
- #define STK8312_REG_MODE		0x07
-+#define STK8312_REG_SR			0x08
- #define STK8312_REG_STH			0x13
- #define STK8312_REG_RESET		0x20
- #define STK8312_REG_AFECTRL		0x24
-@@ -41,6 +42,8 @@
- #define STK8312_DREADY_MASK		0x10
- #define STK8312_INT_MODE		0xC0
- #define STK8312_RNG_MASK		0xC0
-+#define STK8312_SR_MASK			0x07
-+#define STK8312_SR_400HZ_IDX		0
- #define STK8312_RNG_SHIFT		6
- #define STK8312_READ_RETRIES		16
- 
-@@ -63,20 +66,29 @@ static const int stk8312_scale_table[][2] = {
- 	{0, 461600}, {1, 231100}
- };
- 
--#define STK8312_ACCEL_CHANNEL(index, reg, axis) {		\
--	.type = IIO_ACCEL,					\
--	.address = reg,						\
--	.modified = 1,						\
--	.channel2 = IIO_MOD_##axis,				\
--	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),		\
--	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),	\
--	.scan_index = index,					\
--	.scan_type = {						\
--		.sign = 's',					\
--		.realbits = 8,					\
--		.storagebits = 8,				\
--		.endianness = IIO_CPU,				\
--	},							\
-+static const struct {
-+	u16 val;
-+	u32 val2;
-+} stk8312_samp_freq_table[] = {
-+	{400, 0}, {200, 0}, {100, 0}, {50, 0}, {25, 0},
-+	{12, 500000}, {6, 250000}, {3, 125000}
-+};
-+
-+#define STK8312_ACCEL_CHANNEL(index, reg, axis) {			\
-+	.type = IIO_ACCEL,						\
-+	.address = reg,							\
-+	.modified = 1,							\
-+	.channel2 = IIO_MOD_##axis,					\
-+	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),			\
-+	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE) |		\
-+				    BIT(IIO_CHAN_INFO_SAMP_FREQ),	\
-+	.scan_index = index,						\
-+	.scan_type = {							\
-+		.sign = 's',						\
-+		.realbits = 8,						\
-+		.storagebits = 8,					\
-+		.endianness = IIO_CPU,					\
-+	},								\
- }
- 
- static const struct iio_chan_spec stk8312_channels[] = {
-@@ -90,6 +102,7 @@ struct stk8312_data {
- 	struct i2c_client *client;
- 	struct mutex lock;
- 	int range;
-+	u8 sample_rate_idx;
- 	u8 mode;
- 	struct iio_trigger *dready_trig;
- 	bool dready_trigger_on;
-@@ -98,8 +111,11 @@ struct stk8312_data {
- 
- static IIO_CONST_ATTR(in_accel_scale_available, STK8312_SCALE_AVAIL);
- 
-+static IIO_CONST_ATTR_SAMP_FREQ_AVAIL("3.125 6.25 12.5 25 50 100 200 400");
-+
- static struct attribute *stk8312_attributes[] = {
- 	&iio_const_attr_in_accel_scale_available.dev_attr.attr,
-+	&iio_const_attr_sampling_frequency_available.dev_attr.attr,
- 	NULL,
- };
- 
-@@ -216,6 +232,39 @@ static const struct iio_trigger_ops stk8312_trigger_ops = {
- 	.owner = THIS_MODULE,
- };
- 
-+static int stk8312_set_sample_rate(struct stk8312_data *data, int rate)
-+{
-+	int ret;
-+	u8 masked_reg;
-+	u8 mode;
-+	struct i2c_client *client = data->client;
-+
-+	if (rate == data->sample_rate_idx)
-+		return 0;
-+
-+	mode = data->mode;
-+	/* We need to go in standby mode to modify registers */
-+	ret = stk8312_set_mode(data, !STK8312_POWER_MASK);
-+	if (ret < 0)
-+		return ret;
-+
-+	ret = i2c_smbus_read_byte_data(client, STK8312_REG_SR);
-+	if (ret < 0) {
-+		dev_err(&client->dev, "failed to set sampling rate\n");
-+		return ret;
-+	}
-+
-+	masked_reg = (ret & (~STK8312_SR_MASK)) | rate;
-+
-+	ret = i2c_smbus_write_byte_data(client, STK8312_REG_SR, masked_reg);
-+	if (ret < 0)
-+		dev_err(&client->dev, "failed to set sampling rate\n");
-+	else
-+		data->sample_rate_idx = rate;
-+
-+	return stk8312_set_mode(data, mode);
-+}
-+
- static int stk8312_set_range(struct stk8312_data *data, u8 range)
- {
- 	int ret;
-@@ -299,6 +348,10 @@ static int stk8312_read_raw(struct iio_dev *indio_dev,
- 		*val = stk8312_scale_table[data->range - 1][0];
- 		*val2 = stk8312_scale_table[data->range - 1][1];
- 		return IIO_VAL_INT_PLUS_MICRO;
-+	case IIO_CHAN_INFO_SAMP_FREQ:
-+		*val = stk8312_samp_freq_table[data->sample_rate_idx].val;
-+		*val2 = stk8312_samp_freq_table[data->sample_rate_idx].val2;
-+		return IIO_VAL_INT_PLUS_MICRO;
- 	}
- 
- 	return -EINVAL;
-@@ -329,6 +382,20 @@ static int stk8312_write_raw(struct iio_dev *indio_dev,
- 		mutex_unlock(&data->lock);
- 
- 		return ret;
-+	case IIO_CHAN_INFO_SAMP_FREQ:
-+		for (i = 0; i < ARRAY_SIZE(stk8312_samp_freq_table); i++)
-+			if (val == stk8312_samp_freq_table[i].val &&
-+			    val2 == stk8312_samp_freq_table[i].val2) {
-+				index = i;
-+				break;
-+			}
-+		if (index < 0)
-+			return -EINVAL;
-+		mutex_lock(&data->lock);
-+		ret = stk8312_set_sample_rate(data, index);
-+		mutex_unlock(&data->lock);
-+
-+		return ret;
- 	}
- 
- 	return -EINVAL;
-@@ -459,6 +526,7 @@ static int stk8312_probe(struct i2c_client *client,
- 		dev_err(&client->dev, "failed to reset sensor\n");
- 		return ret;
- 	}
-+	data->sample_rate_idx = STK8312_SR_400HZ_IDX;
- 	ret = stk8312_set_range(data, 1);
- 	if (ret < 0)
- 		return ret;
--- 
-1.9.1
+>
+> Signed-off-by: Tiberiu Breana <tiberiu.a.breana@intel.com>
+> ---
+> Please disregard the previous patch.
+> It slipped with a Change-Id and a 1/2 count.
+> ---
+>  drivers/iio/accel/stk8ba50.c | 14 +++++++++-----
+>  1 file changed, 9 insertions(+), 5 deletions(-)
+>
+> diff --git a/drivers/iio/accel/stk8ba50.c b/drivers/iio/accel/stk8ba50.c
+> index 30950c6..93de7d0 100644
+> --- a/drivers/iio/accel/stk8ba50.c
+> +++ b/drivers/iio/accel/stk8ba50.c
+> @@ -29,6 +29,7 @@
+>  #define STK8BA50_MODE_POWERBIT                 BIT(7)
+>  #define STK8BA50_DATA_SHIFT                    6
+>  #define STK8BA50_RESET_CMD                     0xB6
+> +#define STK8BA50_2G_RANGE_IDX                  0
+
+This seems unrelated to the current comit. Please send a separate patch for it.
+
+Remember that a patch should address a single logical change.
+
+>
+>  #define STK8BA50_DRIVER_NAME                   "stk8ba50"
+>
+> @@ -50,7 +51,10 @@
+>   *
+>   * Locally, the range is stored as a table index.
+>   */
+> -static const int stk8ba50_scale_table[][2] = {
+> +static const struct {
+> +       u8 reg_val;
+> +       u32 scale_val;
+> +} stk8ba50_scale_table[] = {
+>         {3, 38400}, {5, 76700}, {8, 153400}, {12, 306900}
+>  };
+>
+> @@ -114,7 +118,7 @@ static int stk8ba50_read_raw(struct iio_dev *indio_dev,
+>                 return IIO_VAL_INT;
+>         case IIO_CHAN_INFO_SCALE:
+>                 *val = 0;
+> -               *val2 = stk8ba50_scale_table[data->range][1];
+> +               *val2 = stk8ba50_scale_table[data->range].scale_val;
+>                 return IIO_VAL_INT_PLUS_MICRO;
+>         }
+>
+> @@ -136,7 +140,7 @@ static int stk8ba50_write_raw(struct iio_dev *indio_dev,
+>                         return -EINVAL;
+>
+>                 for (i = 0; i < ARRAY_SIZE(stk8ba50_scale_table); i++)
+> -                       if (val2 == stk8ba50_scale_table[i][1]) {
+> +                       if (val2 == stk8ba50_scale_table[i].scale_val) {
+>                                 index = i;
+>                                 break;
+>                         }
+> @@ -145,7 +149,7 @@ static int stk8ba50_write_raw(struct iio_dev *indio_dev,
+>
+>                 ret = i2c_smbus_write_byte_data(data->client,
+>                                 STK8BA50_REG_RANGE,
+> -                               stk8ba50_scale_table[index][0]);
+> +                               stk8ba50_scale_table[index].reg_val);
+>                 if (ret < 0)
+>                         dev_err(&data->client->dev,
+>                                         "failed to set measurement range\n");
+> @@ -226,7 +230,7 @@ static int stk8ba50_probe(struct i2c_client *client,
+>         }
+>
+>         /* The default range is +/-2g */
+> -       data->range = 0;
+> +       data->range = STK8BA50_2G_RANGE_IDX;
+>
+>         ret = iio_device_register(indio_dev);
+>         if (ret < 0) {
+> --
+> 1.9.1
+>
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
