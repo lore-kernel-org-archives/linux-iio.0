@@ -1,8 +1,8 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mout.gmx.net ([212.227.15.19]:63953 "EHLO mout.gmx.net"
+Received: from mout.gmx.net ([212.227.15.18]:62141 "EHLO mout.gmx.net"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1754314AbbFJTvs (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Wed, 10 Jun 2015 15:51:48 -0400
+	id S1754348AbbFJTvv (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Wed, 10 Jun 2015 15:51:51 -0400
 From: Hartmut Knaack <knaack.h@gmx.de>
 To: linux-iio@vger.kernel.org
 Cc: Jonathan Cameron <jic23@kernel.org>,
@@ -11,32 +11,40 @@ Cc: Jonathan Cameron <jic23@kernel.org>,
 	Roberta Dobrescu <roberta.dobrescu@gmail.com>,
 	Daniel Baluta <daniel.baluta@intel.com>,
 	Irina Tirdea <irina.tirdea@intel.com>
-Subject: [PATCH v2 0/3] iio-tools out-of-staging cleanup
-Date: Wed, 10 Jun 2015 21:51:18 +0200
-Message-Id: <cover.1433721755.git.knaack.h@gmx.de>
+Subject: [PATCH v2 1/3] tools:iio:iio_event_monitor: check if event is fully read
+Date: Wed, 10 Jun 2015 21:51:19 +0200
+Message-Id: <52e7c9b1da4e0918722cc993bd3b25287f342e55.1433721755.git.knaack.h@gmx.de>
+In-Reply-To: <cover.1433721755.git.knaack.h@gmx.de>
+References: <cover.1433721755.git.knaack.h@gmx.de>
+In-Reply-To: <cover.1433721755.git.knaack.h@gmx.de>
+References: <cover.1433721755.git.knaack.h@gmx.de>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Now that the iio-tools got moved out of staging, it is about time to
-improve code quality to common kernel level.
+Check that the read event is of the expected size.
 
-Changes in V2:
-	iio_event_monitor: change error handling in case of read-problems
-			   to abort the read loop, rather than just trying
-			   again.
+Signed-off-by: Hartmut Knaack <knaack.h@gmx.de>
+---
+ tools/iio/iio_event_monitor.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-Hartmut Knaack (3):
-  tools:iio:iio_event_monitor: check if event is fully read
-  tools:iio: adjust coding style
-  tools:iio: rename variables
-
- tools/iio/generic_buffer.c    |  46 +++++++++-------
- tools/iio/iio_event_monitor.c |  19 +++++--
- tools/iio/iio_utils.c         | 121 +++++++++++++++++++++++++-----------------
- tools/iio/iio_utils.h         |  15 +++---
- tools/iio/lsiio.c             |  43 ++++++++-------
- 5 files changed, 143 insertions(+), 101 deletions(-)
-
+diff --git a/tools/iio/iio_event_monitor.c b/tools/iio/iio_event_monitor.c
+index 016760e..2559fba 100644
+--- a/tools/iio/iio_event_monitor.c
++++ b/tools/iio/iio_event_monitor.c
+@@ -299,6 +299,12 @@ int main(int argc, char **argv)
+ 			}
+ 		}
+ 
++		if (ret != sizeof(event)) {
++			printf("Reading event failed!\n");
++			ret = -EIO;
++			break;
++		}
++
+ 		print_event(&event);
+ 	}
+ 
 -- 
 2.3.6
 
