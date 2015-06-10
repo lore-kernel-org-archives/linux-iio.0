@@ -1,187 +1,126 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga09.intel.com ([134.134.136.24]:37256 "EHLO mga09.intel.com"
+Received: from mout.gmx.net ([212.227.15.19]:61820 "EHLO mout.gmx.net"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1752483AbbFINKV (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Tue, 9 Jun 2015 09:10:21 -0400
-From: Tiberiu Breana <tiberiu.a.breana@intel.com>
+	id S1752659AbbFJTvr (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Wed, 10 Jun 2015 15:51:47 -0400
+From: Hartmut Knaack <knaack.h@gmx.de>
 To: linux-iio@vger.kernel.org
-Cc: Jonathan Cameron <jic23@kernel.org>
-Subject: [PATCH] iio: accel: Add sampling rate support for STK8312
-Date: Tue,  9 Jun 2015 16:10:26 +0300
-Message-Id: <1433855426-29060-1-git-send-email-tiberiu.a.breana@intel.com>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Roberta Dobrescu <roberta.dobrescu@gmail.com>,
+	Daniel Baluta <daniel.baluta@intel.com>,
+	Irina Tirdea <irina.tirdea@intel.com>
+Subject: [PATCH v2 3/3] tools:iio: rename variables
+Date: Wed, 10 Jun 2015 21:51:21 +0200
+Message-Id: <3156e5abb72a3d656b0912bf267f72f5002f8f79.1433721755.git.knaack.h@gmx.de>
+In-Reply-To: <cover.1433721755.git.knaack.h@gmx.de>
+References: <cover.1433721755.git.knaack.h@gmx.de>
+In-Reply-To: <cover.1433721755.git.knaack.h@gmx.de>
+References: <cover.1433721755.git.knaack.h@gmx.de>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Added support for setting the STK8312 accelerometer's
-sampling rate.
+Use more appropriate/common variable names:
+  * namepf instead of nameFile in iio_utils.c
+  * ret instead of retval in lsiio.c
 
-Signed-off-by: Tiberiu Breana <tiberiu.a.breana@intel.com>
+Signed-off-by: Hartmut Knaack <knaack.h@gmx.de>
 ---
- drivers/iio/accel/stk8312.c | 93 ++++++++++++++++++++++++++++++++++++++-------
- 1 file changed, 79 insertions(+), 14 deletions(-)
+ tools/iio/iio_utils.c | 10 +++++-----
+ tools/iio/lsiio.c     | 28 ++++++++++++++--------------
+ 2 files changed, 19 insertions(+), 19 deletions(-)
 
-diff --git a/drivers/iio/accel/stk8312.c b/drivers/iio/accel/stk8312.c
-index 12ad95e..a14c7ef 100644
---- a/drivers/iio/accel/stk8312.c
-+++ b/drivers/iio/accel/stk8312.c
-@@ -29,6 +29,7 @@
- #define STK8312_REG_ZOUT		0x02
- #define STK8312_REG_INTSU		0x06
- #define STK8312_REG_MODE		0x07
-+#define STK8312_REG_SR			0x08
- #define STK8312_REG_STH			0x13
- #define STK8312_REG_RESET		0x20
- #define STK8312_REG_AFECTRL		0x24
-@@ -41,6 +42,8 @@
- #define STK8312_DREADY_MASK		0x10
- #define STK8312_INT_MODE		0xC0
- #define STK8312_RNG_MASK		0xC0
-+#define STK8312_SR_MASK			0x07
-+#define STK8312_SR_400_IDX		0
- #define STK8312_RNG_SHIFT		6
- #define STK8312_READ_RETRIES		16
+diff --git a/tools/iio/iio_utils.c b/tools/iio/iio_utils.c
+index 4eac11a..8fb3214 100644
+--- a/tools/iio/iio_utils.c
++++ b/tools/iio/iio_utils.c
+@@ -561,7 +561,7 @@ int find_type_by_name(const char *name, const char *type)
+ 	const struct dirent *ent;
+ 	int number, numstrlen, ret;
  
-@@ -63,20 +66,26 @@ static const int stk8312_scale_table[][2] = {
- 	{0, 461600}, {1, 231100}
- };
+-	FILE *nameFile;
++	FILE *namefp;
+ 	DIR *dp;
+ 	char thisname[IIO_MAX_NAME_LENGTH];
+ 	char *filename;
+@@ -607,20 +607,20 @@ int find_type_by_name(const char *name, const char *type)
+ 					goto error_close_dir;
+ 				}
  
--#define STK8312_ACCEL_CHANNEL(index, reg, axis) {		\
--	.type = IIO_ACCEL,					\
--	.address = reg,						\
--	.modified = 1,						\
--	.channel2 = IIO_MOD_##axis,				\
--	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),		\
--	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),	\
--	.scan_index = index,					\
--	.scan_type = {						\
--		.sign = 's',					\
--		.realbits = 8,					\
--		.storagebits = 8,				\
--		.endianness = IIO_CPU,				\
--	},							\
-+static const int stk8312_samp_freq_table[][2] = {
-+	{400, 0}, {200, 0}, {100, 0}, {50, 0}, {25, 0},
-+	{12, 500000}, {6, 250000}, {3, 125000}
-+};
-+
-+#define STK8312_ACCEL_CHANNEL(index, reg, axis) {			\
-+	.type = IIO_ACCEL,						\
-+	.address = reg,							\
-+	.modified = 1,							\
-+	.channel2 = IIO_MOD_##axis,					\
-+	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),			\
-+	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE) |		\
-+				    BIT(IIO_CHAN_INFO_SAMP_FREQ),	\
-+	.scan_index = index,						\
-+	.scan_type = {							\
-+		.sign = 's',						\
-+		.realbits = 8,						\
-+		.storagebits = 8,					\
-+		.endianness = IIO_CPU,					\
-+	},								\
- }
+-				nameFile = fopen(filename, "r");
+-				if (!nameFile) {
++				namefp = fopen(filename, "r");
++				if (!namefp) {
+ 					free(filename);
+ 					continue;
+ 				}
  
- static const struct iio_chan_spec stk8312_channels[] = {
-@@ -90,6 +99,7 @@ struct stk8312_data {
- 	struct i2c_client *client;
- 	struct mutex lock;
- 	int range;
-+	u8 sample_rate_idx;
- 	u8 mode;
- 	struct iio_trigger *dready_trig;
- 	bool dready_trigger_on;
-@@ -98,8 +108,11 @@ struct stk8312_data {
+ 				free(filename);
+ 				errno = 0;
+-				if (fscanf(nameFile, "%s", thisname) != 1) {
++				if (fscanf(namefp, "%s", thisname) != 1) {
+ 					ret = errno ? -errno : -ENODATA;
+ 					goto error_close_dir;
+ 				}
  
- static IIO_CONST_ATTR(in_accel_scale_available, STK8312_SCALE_AVAIL);
- 
-+static IIO_CONST_ATTR_SAMP_FREQ_AVAIL("3.125 6.25 12.5 25 50 100 200 400");
-+
- static struct attribute *stk8312_attributes[] = {
- 	&iio_const_attr_in_accel_scale_available.dev_attr.attr,
-+	&iio_const_attr_sampling_frequency_available.dev_attr.attr,
- 	NULL,
- };
- 
-@@ -216,6 +229,39 @@ static const struct iio_trigger_ops stk8312_trigger_ops = {
- 	.owner = THIS_MODULE,
- };
- 
-+static int stk8312_set_sample_rate(struct stk8312_data *data, int rate)
-+{
-+	int ret;
-+	u8 masked_reg;
-+	u8 mode;
-+	struct i2c_client *client = data->client;
-+
-+	if (rate == data->sample_rate_idx)
-+		return 0;
-+
-+	mode = data->mode;
-+	/* We need to go in standby mode to modify registers */
-+	ret = stk8312_set_mode(data, !STK8312_POWER_MASK);
-+	if (ret < 0)
-+		return ret;
-+
-+	ret = i2c_smbus_read_byte_data(client, STK8312_REG_SR);
-+	if (ret < 0) {
-+		dev_err(&client->dev, "failed to set sampling rate\n");
-+		return ret;
-+	}
-+
-+	masked_reg = (ret & (~STK8312_SR_MASK)) | rate;
-+
-+	ret = i2c_smbus_write_byte_data(client, STK8312_REG_SR, masked_reg);
-+	if (ret < 0)
-+		dev_err(&client->dev, "failed to set sampling rate\n");
-+	else
-+		data->sample_rate_idx = rate;
-+
-+	return stk8312_set_mode(data, mode);
-+}
-+
- static int stk8312_set_range(struct stk8312_data *data, u8 range)
+-				if (fclose(nameFile)) {
++				if (fclose(namefp)) {
+ 					ret = -errno;
+ 					goto error_close_dir;
+ 				}
+diff --git a/tools/iio/lsiio.c b/tools/iio/lsiio.c
+index f5b3bd0..7f432a5 100644
+--- a/tools/iio/lsiio.c
++++ b/tools/iio/lsiio.c
+@@ -61,16 +61,16 @@ static int dump_one_device(const char *dev_dir_name)
  {
- 	int ret;
-@@ -299,6 +345,10 @@ static int stk8312_read_raw(struct iio_dev *indio_dev,
- 		*val = stk8312_scale_table[data->range - 1][0];
- 		*val2 = stk8312_scale_table[data->range - 1][1];
- 		return IIO_VAL_INT_PLUS_MICRO;
-+	case IIO_CHAN_INFO_SAMP_FREQ:
-+		*val = stk8312_samp_freq_table[data->sample_rate_idx][0];
-+		*val2 = stk8312_samp_freq_table[data->sample_rate_idx][1];
-+		return IIO_VAL_INT_PLUS_MICRO;
- 	}
+ 	char name[IIO_MAX_NAME_LENGTH];
+ 	int dev_idx;
+-	int retval;
++	int ret;
  
- 	return -EINVAL;
-@@ -329,6 +379,20 @@ static int stk8312_write_raw(struct iio_dev *indio_dev,
- 		mutex_unlock(&data->lock);
+-	retval = sscanf(dev_dir_name + strlen(iio_dir) + strlen(type_device),
+-			"%i", &dev_idx);
+-	if (retval != 1)
++	ret = sscanf(dev_dir_name + strlen(iio_dir) + strlen(type_device), "%i",
++		     &dev_idx);
++	if (ret != 1)
+ 		return -EINVAL;
  
- 		return ret;
-+	case IIO_CHAN_INFO_SAMP_FREQ:
-+		for (i = 0; i < ARRAY_SIZE(stk8312_samp_freq_table); i++)
-+			if (val == stk8312_samp_freq_table[i][0] &&
-+			    val2 == stk8312_samp_freq_table[i][1]) {
-+				index = i;
-+				break;
-+			}
-+		if (index < 0)
-+			return -EINVAL;
-+		mutex_lock(&data->lock);
-+		ret = stk8312_set_sample_rate(data, index);
-+		mutex_unlock(&data->lock);
-+
+-	retval = read_sysfs_string("name", dev_dir_name, name);
+-	if (retval)
+-		return retval;
++	ret = read_sysfs_string("name", dev_dir_name, name);
++	if (ret)
 +		return ret;
- 	}
  
- 	return -EINVAL;
-@@ -459,6 +523,7 @@ static int stk8312_probe(struct i2c_client *client,
- 		dev_err(&client->dev, "failed to reset sensor\n");
- 		return ret;
- 	}
-+	data->sample_rate_idx = STK8312_SR_400_IDX;
- 	ret = stk8312_set_range(data, 1);
- 	if (ret < 0)
- 		return ret;
+ 	printf("Device %03d: %s\n", dev_idx, name);
+ 
+@@ -84,16 +84,16 @@ static int dump_one_trigger(const char *dev_dir_name)
+ {
+ 	char name[IIO_MAX_NAME_LENGTH];
+ 	int dev_idx;
+-	int retval;
++	int ret;
+ 
+-	retval = sscanf(dev_dir_name + strlen(iio_dir) + strlen(type_trigger),
+-			"%i", &dev_idx);
+-	if (retval != 1)
++	ret = sscanf(dev_dir_name + strlen(iio_dir) + strlen(type_trigger),
++		     "%i", &dev_idx);
++	if (ret != 1)
+ 		return -EINVAL;
+ 
+-	retval = read_sysfs_string("name", dev_dir_name, name);
+-	if (retval)
+-		return retval;
++	ret = read_sysfs_string("name", dev_dir_name, name);
++	if (ret)
++		return ret;
+ 
+ 	printf("Trigger %03d: %s\n", dev_idx, name);
+ 
 -- 
-1.9.1
+2.3.6
 
