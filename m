@@ -1,189 +1,141 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:57601 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753066AbbFHVwp (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 8 Jun 2015 17:52:45 -0400
-Message-ID: <55760EAA.4010200@kernel.org>
-Date: Mon, 08 Jun 2015 22:52:42 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-MIME-Version: 1.0
-To: Greg KH <gregkh@linuxfoundation.org>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Subject: [PULL] IIO new drivers etc for the 4.2 cycle round 3
-Content-Type: text/plain; charset=utf-8
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <tiberiu.a.breana@intel.com>
+From: Tiberiu Breana <tiberiu.a.breana@intel.com>
+To: linux-iio@vger.kernel.org
+Cc: Jonathan Cameron <jic23@kernel.org>
+Subject: [PATCH 2/2] iio: accel: Add sampling rate support for STK8BA50
+Date: Wed, 10 Jun 2015 18:07:30 +0300
+Message-Id: <1433948850-29700-2-git-send-email-tiberiu.a.breana@intel.com>
+In-Reply-To: <1433948850-29700-1-git-send-email-tiberiu.a.breana@intel.com>
+References: <1433948850-29700-1-git-send-email-tiberiu.a.breana@intel.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-The following changes since commit 884ca45613c47efe4b0b1238f6ee677d74fe3419:
+Added support for setting the STK8BA50 accelerometer's
+sampling rate.
 
-  iio: accel: Add support for Sensortek STK8BA50 (2015-05-23 12:57:11 +0100)
+Signed-off-by: Tiberiu Breana <tiberiu.a.breana@intel.com>
+---
+v2: addressed Daniel's comments
+---
+ drivers/iio/accel/stk8ba50.c | 57 ++++++++++++++++++++++++++++++++++++++------
+ 1 file changed, 50 insertions(+), 7 deletions(-)
 
-are available in the git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git tags/iio-for-v4.2c
-
-for you to fetch changes up to bbf5f037fad47e4affef6696aaf88a40b261e639:
-
-  iio: st_accel: support the LIS331DL sensor (2015-06-08 22:21:18 +0100)
-
-----------------------------------------------------------------
-Third round of new IIO drivers, cleanups and functionality for the 4.2 cycle.
-
-Given Linus announced a 4.8rc coming up, hopefully time for one more
-lot of IIO patches this cycle.  Some of these are actually
-improvements / fixes for patches earlier in the cycle.
-
-New device support
-* st_accel driver - support devices with 8 bit channels.
-
-Cleanup
-* A general cleanup of the iio tools under /tools/ from Hartmut.
-  I'm more than a little embarrassed by how bad some of these were! Are well,
-  much more refined and less bug prone now.
-  These cover lots of stuff like un-handled error returns, memory leaks as
-  well as general refactoring to tidy the code up.
-* iio_simple_dummy - fix memory leaks in the init functions, drop some
-  pointless error returns from functions that never generate errors and
-  make the module parameter explicitly unsigned.
-* More buffer handling reworks from Lars-Peter, this time targetting hardware
-  buffers (a little used corner that looks likely to get more use in the near
-  future). Specifically:
-  - Always compute the masklength as inkernel buffer users may need it.
-  - Add a means of labelling which buffer modes a given buffer implementation
-    supports.
-  - In the case of hardware buffers, require strict scan matching rather than
-    matching to a super set.  Currently the demux is bypassed by these drivers
-    (this may well not change for efficiency reasons) so allowing a superset
-    of channels to be selected would otherwise lead to more data than requested
-    confusing user space.
-
-Driver functionality improvements
-* mmc35240 - adds a compensation to the raw values as borrowed form Memsic's
-  own input driver.
-* mma8452
-  - event support
-  - event debouncing
-  - high  pass filter configuration
-  - triggers
-* vf610 - allow conversion mode to be adjusted
-
-Fixlets
-* mmc35240
-  - Off by one error that by coincidence had no real effect.
-  - i2c_device_name should be lowercase.
-  - Lack of null terminator at end of attributes array.
-  - Avoid computing the fractional part of the magnetic field by moving
-    the scaling into userspace where floating point is available to simplify
-    the maths.
-  - Use a smaller sleep before assuming the measurement is done.  This is
-    safe and improves the possible polling rate.
-  - Fix sensitivity on z-axis - datasheet disagrees with Memsic's releasedd
-    code and the value used in the code seems to be correct.
-* stk3310 - make a local variable signed to ensure error handling works.
-* twl4030
-  - fix calculation of the temperature sense current - bug unlikely
-    to have ever been noticed as the difference is small.
-  - Fix errors in descriptions.
-
-----------------------------------------------------------------
-Dan Carpenter (2):
-      iio: magnetometer: correct a harmless off by one check
-      iio: light: signedness bug in stk3310_write_raw()
-
-Daniel Baluta (6):
-      iio: magnetometer: mmc35240: i2c device name should be lower case
-      iio: magnetometer: mmc35240: NULL terminate attribute array
-      iio: magnetometer: mmc35240: Fix broken processed value
-      iio: magnetometer: mmc35240: Use a smaller sleep value
-      iio: magnetometer: mmc35240: Fix sensitivity on z-axis
-      iio: magnetometer: mmc35240: Add compensation for raw values
-
-H. Nikolaus Schaller (2):
-      iio: adc: twl4030_madc: Fix calculation of the temperature sense current
-      iio: adc: twl4030_madc: Fix description of twl4030_madc_set_current_generator()
-
-Hartmut Knaack (28):
-      tools:iio:generic_buffer: fix order of freeing data
-      tools:iio:generic_buffer: free dev_dir_name on exit
-      tools:iio:iio_utils: free scan_el_dir on exit
-      tools:iio: free channel-array completely
-      tools:iio:iio_utils: fix allocation handling
-      tools:iio:lsiio: add closedir before exit
-      tools:iio: save errno first
-      tools:iio:iio_event_monitor: save right errno
-      tools:iio:generic_buffer: fix check of errno
-      tools:iio:generic_buffer: pass up right error code
-      tools:iio:generic_buffer: sign-extend and shift data
-      tools:iio:iio_utils: check amount of matches
-      tools:iio:iio_utils: implement digit calculation
-      tools:iio:iio_utils: mark private function static
-      tools:iio: catch errors in string allocation
-      tools:iio:generic_buffer: catch errors for arguments conversion
-      tools:iio:generic_buffer: add error handling
-      tools:iio:iio_event_monitor: add error handling
-      tools:iio:iio_utils: add error handling
-      tools:iio:lsiio: add error handling
-      tools:iio:iio_utils: add missing documentation
-      tools:iio: return values directly
-      tools:iio:iio_event_monitor: refactor events output
-      tools:iio:iio_utils: refactor assignment of is_signed
-      tools:iio:iio_utils: move up reset of sysfsfp
-      tools:iio:iio_utils: initialize count during declaration
-      tools:iio: rework program parameters
-      tools:iio:iio_utils: pass strings as const
-
-Lars-Peter Clausen (3):
-      iio: Always compute masklength
-      iio: Specify supported modes for buffers
-      iio: Require strict scan mask matching in hardware mode
-
-Laurent Navet (1):
-      iio: buffer: remove unneeded test
-
-Linus Walleij (2):
-      iio: st_accel: support 8bit channel data
-      iio: st_accel: support the LIS331DL sensor
-
-Martin Fuzzey (4):
-      iio: mma8452: Basic support for transient events.
-      iio: mma8452: Add support for transient event debouncing
-      iio: mma8452: Add highpass filter configuration.
-      iio: mma8452: Add support for interrupt driven triggers.
-
-Stefan Agner (1):
-      iio: adc: vf610: implement configurable conversion modes
-
-Vladimirs Ambrosovs (3):
-      staging: iio_simple_dummy: fix init function
-      staging: iio_simple_dummy: fix return types
-      staging: iio_simple_dummy: fix module_param type
-
- Documentation/ABI/testing/sysfs-bus-iio-vf610      |   7 +
- .../devicetree/bindings/iio/adc/vf610-adc.txt      |   9 +
- .../devicetree/bindings/iio/st-sensors.txt         |   1 +
- drivers/iio/accel/mma8452.c                        | 495 ++++++++++++++++++++-
- drivers/iio/accel/st_accel.h                       |   1 +
- drivers/iio/accel/st_accel_core.c                  |  86 ++++
- drivers/iio/accel/st_accel_i2c.c                   |   4 +
- drivers/iio/adc/twl4030-madc.c                     |   8 +-
- drivers/iio/adc/vf610_adc.c                        | 146 ++++--
- drivers/iio/buffer_cb.c                            |   2 +
- drivers/iio/common/st_sensors/st_sensors_core.c    |   4 +-
- drivers/iio/industrialio-buffer.c                  |  60 ++-
- drivers/iio/kfifo_buf.c                            |   2 +
- drivers/iio/light/stk3310.c                        |   2 +-
- drivers/iio/magnetometer/mmc35240.c                | 115 ++++-
- drivers/staging/iio/accel/sca3000_ring.c           |   2 +
- drivers/staging/iio/iio_dummy_evgen.c              |   4 +-
- drivers/staging/iio/iio_dummy_evgen.h              |   2 +-
- drivers/staging/iio/iio_simple_dummy.c             |  21 +-
- drivers/staging/iio/iio_simple_dummy.h             |   8 +-
- drivers/staging/iio/iio_simple_dummy_events.c      |   4 +-
- include/linux/iio/buffer.h                         |   3 +
- tools/iio/generic_buffer.c                         | 200 ++++++---
- tools/iio/iio_event_monitor.c                      |  50 ++-
- tools/iio/iio_utils.c                              | 469 +++++++++++++++----
- tools/iio/iio_utils.h                              |  20 +-
- tools/iio/lsiio.c                                  |  63 ++-
- 27 files changed, 1471 insertions(+), 317 deletions(-)
- create mode 100644 Documentation/ABI/testing/sysfs-bus-iio-vf610
+diff --git a/drivers/iio/accel/stk8ba50.c b/drivers/iio/accel/stk8ba50.c
+index 3302a3d..92229bd 100644
+--- a/drivers/iio/accel/stk8ba50.c
++++ b/drivers/iio/accel/stk8ba50.c
+@@ -21,6 +21,7 @@
+ #define STK8BA50_REG_YOUT			0x04
+ #define STK8BA50_REG_ZOUT			0x06
+ #define STK8BA50_REG_RANGE			0x0F
++#define STK8BA50_REG_BWSEL			0x10
+ #define STK8BA50_REG_POWMODE			0x11
+ #define STK8BA50_REG_SWRST			0x14
+ 
+@@ -29,6 +30,7 @@
+ #define STK8BA50_MODE_POWERBIT			BIT(7)
+ #define STK8BA50_DATA_SHIFT			6
+ #define STK8BA50_RESET_CMD			0xB6
++#define STK8BA50_SR_1792HZ_IDX			7
+ 
+ #define STK8BA50_DRIVER_NAME			"stk8ba50"
+ 
+@@ -57,19 +59,30 @@ static const struct {
+ 	{3, 38400}, {5, 76700}, {8, 153400}, {12, 306900}
+ };
+ 
++/* Sample rates are stored as { <register value>, <Hz value> } */
++static const struct {
++	u8 reg_val;
++	u16 samp_freq;
++} stk8ba50_samp_freq_table[] = {
++	{0x08, 14},  {0x09, 25},  {0x0A, 56},  {0x0B, 112},
++	{0x0C, 224}, {0x0D, 448}, {0x0E, 896}, {0x0F, 1792}
++};
++
+ struct stk8ba50_data {
+ 	struct i2c_client *client;
+ 	struct mutex lock;
+ 	int range;
++	u8 sample_rate_idx;
+ };
+ 
+-#define STK8BA50_ACCEL_CHANNEL(reg, axis) {			\
+-	.type = IIO_ACCEL,					\
+-	.address = reg,						\
+-	.modified = 1,						\
+-	.channel2 = IIO_MOD_##axis,				\
+-	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),		\
+-	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),	\
++#define STK8BA50_ACCEL_CHANNEL(reg, axis) {				\
++	.type = IIO_ACCEL,						\
++	.address = reg,							\
++	.modified = 1,							\
++	.channel2 = IIO_MOD_##axis,					\
++	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),			\
++	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),		\
++				    BIT(IIO_CHAN_INFO_SAMP_FREQ),	\
+ }
+ 
+ static const struct iio_chan_spec stk8ba50_channels[] = {
+@@ -80,8 +93,11 @@ static const struct iio_chan_spec stk8ba50_channels[] = {
+ 
+ static IIO_CONST_ATTR(in_accel_scale_available, STK8BA50_SCALE_AVAIL);
+ 
++static IIO_CONST_ATTR_SAMP_FREQ_AVAIL("14 25 56 112 224 448 896 1792");
++
+ static struct attribute *stk8ba50_attributes[] = {
+ 	&iio_const_attr_in_accel_scale_available.dev_attr.attr,
++	&iio_const_attr_sampling_frequency_available.dev_attr.attr,
+ 	NULL,
+ };
+ 
+@@ -119,6 +135,11 @@ static int stk8ba50_read_raw(struct iio_dev *indio_dev,
+ 		*val = 0;
+ 		*val2 = stk8ba50_scale_table[data->range].scale_val;
+ 		return IIO_VAL_INT_PLUS_MICRO;
++	case IIO_CHAN_INFO_SAMP_FREQ:
++		*val = stk8ba50_samp_freq_table
++				[data->sample_rate_idx].samp_freq;
++		*val2 = 0;
++		return IIO_VAL_INT;
+ 	}
+ 
+ 	return -EINVAL;
+@@ -156,6 +177,25 @@ static int stk8ba50_write_raw(struct iio_dev *indio_dev,
+ 			data->range = index;
+ 
+ 		return ret;
++	case IIO_CHAN_INFO_SAMP_FREQ:
++		for (i = 0; i < ARRAY_SIZE(stk8ba50_samp_freq_table); i++)
++			if (val == stk8ba50_samp_freq_table[i].samp_freq) {
++				index = i;
++				break;
++			}
++		if (index < 0)
++			return -EINVAL;
++
++		ret = i2c_smbus_write_byte_data(data->client,
++				STK8BA50_REG_BWSEL,
++				stk8ba50_samp_freq_table[index].reg_val);
++		if (ret < 0)
++			dev_err(&data->client->dev,
++					"failed to set sampling rate\n");
++		else
++			data->sample_rate_idx = index;
++
++		return ret;
+ 	}
+ 
+ 	return -EINVAL;
+@@ -231,6 +271,9 @@ static int stk8ba50_probe(struct i2c_client *client,
+ 	/* The default range is +/-2g */
+ 	data->range = 0;
+ 
++	/* The default sampling rate is 1792 Hz (maximum) */
++	data->sample_rate_idx = STK8BA50_SR_1792HZ_IDX;
++
+ 	ret = iio_device_register(indio_dev);
+ 	if (ret < 0) {
+ 		dev_err(&client->dev, "device_register failed\n");
+-- 
+1.9.1
