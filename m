@@ -1,61 +1,57 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-la0-f44.google.com ([209.85.215.44]:35459 "EHLO
-	mail-la0-f44.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752062AbbFJUQO (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 10 Jun 2015 16:16:14 -0400
-Received: by labko7 with SMTP id ko7so40392762lab.2
-        for <linux-iio@vger.kernel.org>; Wed, 10 Jun 2015 13:16:12 -0700 (PDT)
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:44394 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753204AbbFJUty (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 10 Jun 2015 16:49:54 -0400
+Message-ID: <5578A2EC.4030300@kernel.org>
+Date: Wed, 10 Jun 2015 21:49:48 +0100
+From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-In-Reply-To: <52e7c9b1da4e0918722cc993bd3b25287f342e55.1433721755.git.knaack.h@gmx.de>
-References: <cover.1433721755.git.knaack.h@gmx.de>
-	<52e7c9b1da4e0918722cc993bd3b25287f342e55.1433721755.git.knaack.h@gmx.de>
-Date: Wed, 10 Jun 2015 23:16:12 +0300
-Message-ID: <CAEnQRZALJLbyQ9e5_JVr5xi+kH+pEGfPDGisay+C=b0n9XJM8A@mail.gmail.com>
-Subject: Re: [PATCH v2 1/3] tools:iio:iio_event_monitor: check if event is
- fully read
-From: Daniel Baluta <daniel.baluta@intel.com>
-To: Hartmut Knaack <knaack.h@gmx.de>
-Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	Roberta Dobrescu <roberta.dobrescu@gmail.com>,
-	Daniel Baluta <daniel.baluta@intel.com>,
-	Irina Tirdea <irina.tirdea@intel.com>
-Content-Type: text/plain; charset=UTF-8
+To: Martin Kepplinger <martin.kepplinger@theobroma-systems.com>,
+	irina.tirdea@intel.com, daniel.baluta@intel.com
+CC: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: iio: what does in_accel_x_thresh_rising_en ?
+References: <55770E56.5070701@theobroma-systems.com>
+In-Reply-To: <55770E56.5070701@theobroma-systems.com>
+Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Wed, Jun 10, 2015 at 10:51 PM, Hartmut Knaack <knaack.h@gmx.de> wrote:
-> Check that the read event is of the expected size.
->
-> Signed-off-by: Hartmut Knaack <knaack.h@gmx.de>
-> ---
->  tools/iio/iio_event_monitor.c | 6 ++++++
->  1 file changed, 6 insertions(+)
->
-> diff --git a/tools/iio/iio_event_monitor.c b/tools/iio/iio_event_monitor.c
-> index 016760e..2559fba 100644
-> --- a/tools/iio/iio_event_monitor.c
-> +++ b/tools/iio/iio_event_monitor.c
-> @@ -299,6 +299,12 @@ int main(int argc, char **argv)
->                         }
->                 }
->
-> +               if (ret != sizeof(event)) {
-> +                       printf("Reading event failed!\n");
-> +                       ret = -EIO;
-> +                       break;
-> +               }
-> +
+On 09/06/15 17:03, Martin Kepplinger wrote:
+> hi
+> 
+> Is the in_accel_thresh_rising_value (or falling) threshold value signed
+> or unsigned?
+> 
+> In other words: Is a RISING event fired on an absolute growing value in
+> the positive range, and a FALLING event on an absolute growing value in
+> the negative acceleration range (< 0g)?
+> 
+> Or is a RISING event fired on a signed rising value, no matter if the
+> threshold is positive or negative, and a FALLING event on a decreasing
+> signed value, also when the threshold is positive?
+> 
+> thanks
+> 
+>                                 martin
+> 
+Hi Martin,
 
-For a test program this should be good enough, not sure if it does make sense
-to read until we get all data.
+The two relevant abi elements are:
+in_accel_thresh_rising_value and
+in_accel_mag_rising_value
+Once you know the second one exists then you can probably work out the
+meaning of thresh ;)
 
-Also, we should print the error at stderr.
+Thresh is the value, mag(nitude) is the absolute value, so if you get one
+that is thresh, then if the channel can go negative, negative values are
+definitely possible.  On an accelerometer, you can get either implemented.
+mag_rising is typically to allow motion detection, thresh_rising might
+be used to detect a change of orientation (put bounds around each axis
+at a particular point in time.
 
->                 print_event(&event);
->         }
+There are also roc (rate of change) type event detectors on some accelerometers.
 
-thanks,
-Daniel.
+Hope that clear the mud up ;)
+
+Jonathan
