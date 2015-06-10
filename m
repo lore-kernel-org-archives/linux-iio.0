@@ -2,18 +2,16 @@ Return-Path: <tiberiu.a.breana@intel.com>
 From: Tiberiu Breana <tiberiu.a.breana@intel.com>
 To: linux-iio@vger.kernel.org
 Cc: Jonathan Cameron <jic23@kernel.org>
-Subject: [PATCH] iio: accel: STK8BA50: replace scale table with a struct
-Date: Wed, 10 Jun 2015 15:10:28 +0300
-Message-Id: <1433938228-4272-1-git-send-email-tiberiu.a.breana@intel.com>
+Subject: [PATCH 1/2] iio: accel: STK8BA50: replace scale table with a struct
+Date: Wed, 10 Jun 2015 15:06:31 +0300
+Message-Id: <1433937991-4159-1-git-send-email-tiberiu.a.breana@intel.com>
 List-ID: <linux-iio@vger.kernel.org>
 
 Replaced the stk8ba50_scale_table with an identically named
 struct in order to make the code a bit more readable.
 
+Change-Id: Idb0d128db59a032cb25ebe6c7d99f2c07a010e40
 Signed-off-by: Tiberiu Breana <tiberiu.a.breana@intel.com>
----
-Please disregard the previous patch.
-It slipped with a Change-Id and a 1/2 count.
 ---
  drivers/iio/accel/stk8ba50.c | 14 +++++++++-----
  1 file changed, 9 insertions(+), 5 deletions(-)
