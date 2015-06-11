@@ -1,37 +1,25 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-lb0-f181.google.com ([209.85.217.181]:33087 "EHLO
-	mail-lb0-f181.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752939AbbFKMxz (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 11 Jun 2015 08:53:55 -0400
+Return-Path: <gregkh@linuxfoundation.org>
+Date: Thu, 11 Jun 2015 07:43:03 -0700
+From: Greg KH <gregkh@linuxfoundation.org>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Subject: Re: [PULL] IIO new drivers etc for the 4.2 cycle round 3
+Message-ID: <20150611144303.GA3505@kroah.com>
+References: <55760EAA.4010200@kernel.org>
 MIME-Version: 1.0
-In-Reply-To: <20150611120635.GA15709@Inspiron>
-References: <20150611120635.GA15709@Inspiron>
-Date: Thu, 11 Jun 2015 15:53:53 +0300
-Message-ID: <CAEnQRZAohOqQMfVPghEviY4kyCeT8JnuwpwKd63VhjwUPdsJLg@mail.gmail.com>
-Subject: Re: [PATCH] iio: Fix parameters in iio_triggered_buffer_setup
-From: Daniel Baluta <daniel.baluta@intel.com>
-To: Cristina Opriceana <cristina.opriceana@gmail.com>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-	Daniel Baluta <daniel.baluta@intel.com>,
-	"octavian.purdila@intel.com" <octavian.purdila@intel.com>
-Content-Type: text/plain; charset=UTF-8
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <55760EAA.4010200@kernel.org>
+List-ID: <linux-iio@vger.kernel.org>
 
-On Thu, Jun 11, 2015 at 3:06 PM, Cristina Opriceana
-<cristina.opriceana@gmail.com> wrote:
-> This patch renames the top half handler and the bottom half handler
-> of iio_triggered_buffer_setup() in accordance with their usage.
-> The names of the parameters were swapped, thus creating confusion.
->
-> Signed-off-by: Cristina Opriceana <cristina.opriceana@gmail.com>
+On Mon, Jun 08, 2015 at 10:52:42PM +0100, Jonathan Cameron wrote:
+> The following changes since commit 884ca45613c47efe4b0b1238f6ee677d74fe3419:
+> 
+>   iio: accel: Add support for Sensortek STK8BA50 (2015-05-23 12:57:11 +0100)
+> 
+> are available in the git repository at:
+> 
+>   git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git tags/iio-for-v4.2c
 
-Reviewed-by: Daniel Baluta <daniel.baluta@intel.com>
+Pulled and pushed out, thanks.
 
-Thanks Cristina!
-
-Daniel.
+greg k-h
