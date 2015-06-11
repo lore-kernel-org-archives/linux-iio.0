@@ -1,19 +1,21 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from host171.canaca.com ([67.55.55.225]:48689 "EHLO
+Received: from host171.canaca.com ([67.55.55.225]:42322 "EHLO
 	host171.canaca.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753064AbbFKOsc (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 11 Jun 2015 10:48:32 -0400
+	with ESMTP id S1751489AbbFKOyZ (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 11 Jun 2015 10:54:25 -0400
 From: Simon Wood <simon@mungewell.org>
-To: linux-input-owner@vger.kernel.org
+To: linux-input@vger.kernel.org
 Cc: Frank Praznik <frank.praznik@oh.rr.com>, linux-iio@vger.kernel.org,
 	Simon Wood <simon@mungewell.org>
 Subject: [RFC] HID: hid-sony: Add basic iio-subsystem reading of SixAxis Accelerometers
-Date: Thu, 11 Jun 2015 08:48:20 -0600
-Message-Id: <1434034100-4641-1-git-send-email-simon@mungewell.org>
+Date: Thu, 11 Jun 2015 08:54:18 -0600
+Message-Id: <1434034458-1968-1-git-send-email-simon@mungewell.org>
 In-Reply-To: <195dff9bd065db7e618280cb7c6eb5a9.squirrel@mungewell.org>
 References: <195dff9bd065db7e618280cb7c6eb5a9.squirrel@mungewell.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
+
+[resent as I screwed up addressing... sorry]
 
 This patch is a RFC/POC for the idea of using the iio-subsystem as the
 'proper' way to communicate the state of motion enabled controllers to
