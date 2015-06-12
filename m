@@ -1,104 +1,46 @@
-Return-Path: <knaack.h@gmx.de>
-Message-ID: <557BFF3C.1060101@gmx.de>
-Date: Sat, 13 Jun 2015 12:00:28 +0200
-From: Hartmut Knaack <knaack.h@gmx.de>
-MIME-Version: 1.0
-To: Daniel Baluta <daniel.baluta@intel.com>,
- Cristina Georgiana Opriceana <cristina.opriceana@gmail.com>
-CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
- Jonathan Cameron <jic23@kernel.org>,
- Lars-Peter Clausen <lars@metafoo.de>,
- Peter Meerwald <pmeerw@pmeerw.net>,
- Roberta Dobrescu <roberta.dobrescu@gmail.com>,
- Irina Tirdea <irina.tirdea@intel.com>
-Subject: Re: [PATCH v2 1/3] tools:iio:iio_event_monitor: check if
- event is fully read
-References: <cover.1433721755.git.knaack.h@gmx.de>	<52e7c9b1da4e0918722cc993bd3b25287f342e55.1433721755.git.knaack.h@gmx.de>	<CAEnQRZALJLbyQ9e5_JVr5xi+kH+pEGfPDGisay+C=b0n9XJM8A@mail.gmail.com>	<557BEB9D.2000800@gmx.de> <CAEnQRZBd-1YdFSkG9=3Zhh8K07VWte+2aEDL4ucDOjwtvjR_0Q@mail.gmail.com>
-In-Reply-To: <CAEnQRZBd-1YdFSkG9=3Zhh8K07VWte+2aEDL4ucDOjwtvjR_0Q@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
+Return-Path: <vlad.dogaru@intel.com>
+From: Vlad Dogaru <vlad.dogaru@intel.com>
+To: irina.tirdea@intel.com,
+	jic23@kernel.org,
+	linux-iio@vger.kernel.org
+Cc: Vlad Dogaru <vlad.dogaru@intel.com>
+Subject: [PATCH 2/2] iio: magn: bmc150: add support for bmc156
+Date: Fri, 12 Jun 2015 11:31:39 +0300
+Message-Id: <1434097899-13984-3-git-send-email-vlad.dogaru@intel.com>
+In-Reply-To: <1434097899-13984-1-git-send-email-vlad.dogaru@intel.com>
+References: <1434097899-13984-1-git-send-email-vlad.dogaru@intel.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-Daniel Baluta schrieb am 13.06.2015 um 10:46:
-> On Sat, Jun 13, 2015 at 11:36 AM, Hartmut Knaack <knaack.h@gmx.de> wrote:
->> Daniel Baluta schrieb am 10.06.2015 um 22:16:
->>> On Wed, Jun 10, 2015 at 10:51 PM, Hartmut Knaack <knaack.h@gmx.de> wrote:
->>>> Check that the read event is of the expected size.
->>>>
->>>> Signed-off-by: Hartmut Knaack <knaack.h@gmx.de>
->>>> ---
->>>>  tools/iio/iio_event_monitor.c | 6 ++++++
->>>>  1 file changed, 6 insertions(+)
->>>>
->>>> diff --git a/tools/iio/iio_event_monitor.c b/tools/iio/iio_event_monitor.c
->>>> index 016760e..2559fba 100644
->>>> --- a/tools/iio/iio_event_monitor.c
->>>> +++ b/tools/iio/iio_event_monitor.c
->>>> @@ -299,6 +299,12 @@ int main(int argc, char **argv)
->>>>                         }
->>>>                 }
->>>>
->>>> +               if (ret != sizeof(event)) {
->>>> +                       printf("Reading event failed!\n");
->>>> +                       ret = -EIO;
->>>> +                       break;
->>>> +               }
->>>> +
->>>
->>> For a test program this should be good enough, not sure if it does make sense
->>> to read until we get all data.
->>
->> Not sure, if I get your intention here. But as Jonathan suggested, something
->> went seriously wrong, if the sizes don't match here. Reading further, until
->> the desired size is reached could result in receiving the missing data, or
->> getting already partial data from the next event. I would leave it as is for
->> now and see if anyone ever gets this error. Then we can still dig deeper.
-> 
-> Ok.
-> 
->>
->>>
->>> Also, we should print the error at stderr.
->>>
->>
->> I basically agree on this one, but since the majority of the error messages
->> in this file are currently just printed to stdout, I would prefer to take it
->> as is (for consistency) and have a follow-up patch to send all error messages
->> to stderr.
-> 
-> I've also noticed this. So I agree with you, a follow up patch would be better.
-> 
-> Cristina can do this, if you haven't already started working on it.
-> 
+The BMC156 is a slightly less capable version of BMC150 which lacks
+support for magnetometer thresholds.  Since this driver does not support
+those anyway, adding support is trivial.
 
-Sounds good to me. I would have waited with such changes until this set got
-applied, anyway.
+Datasheet is available at
+https://ae-bst.resource.bosch.com/media/products/dokumente/bmc156_1/BST-BMC156-DS000-01.pdf
 
-> As a part of Outreachy Program [1] we are also investigating these user space
-> tools plus the IIO dummy driver which hopefully at the end it will be moved
-> out of staging.
-> 
+Signed-off-by: Vlad Dogaru <vlad.dogaru@intel.com>
+---
+ drivers/iio/magnetometer/bmc150_magn.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
->From my experience so far, I would regard it a good idea to chop up the
-workflow to get code out of staging:
-  - get all the changes you have in mind applied
-  - announce your intention to move it out in a reasonable time (2 weeks?), so
-    people who mind will feel pressured to have a look at the code and fix
-    issues in staging
-  - move out smoothly ;-)
-
-Also, making use of gits copy detection is a good idea to avoid huge patches,
-which basically just copy/move a file without changes. Makes the reviewers
-life much easier ;-)
-
-Thanks,
-Hartmut
-
-> 
-> Daniel.
-> 
-> [1] http://kernelnewbies.org/OutreachyIntro
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> 
+diff --git a/drivers/iio/magnetometer/bmc150_magn.c b/drivers/iio/magnetometer/bmc150_magn.c
+index a0e64f1..cd00271 100644
+--- a/drivers/iio/magnetometer/bmc150_magn.c
++++ b/drivers/iio/magnetometer/bmc150_magn.c
+@@ -1089,12 +1089,14 @@ static const struct dev_pm_ops bmc150_magn_pm_ops = {
+ 
+ static const struct acpi_device_id bmc150_magn_acpi_match[] = {
+ 	{"BMC150B", 0},
++	{"BMC156B", 0},
+ 	{},
+ };
+ MODULE_DEVICE_TABLE(acpi, bmc150_magn_acpi_match);
+ 
+ static const struct i2c_device_id bmc150_magn_id[] = {
+ 	{"bmc150_magn", 0},
++	{"bmc156_magn", 0},
+ 	{},
+ };
+ MODULE_DEVICE_TABLE(i2c, bmc150_magn_id);
+-- 
+1.9.1
