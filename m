@@ -1,50 +1,48 @@
-Return-Path: <daniel.baluta@intel.com>
-From: Daniel Baluta <daniel.baluta@intel.com>
-To: jic23@kernel.org,
-	pmeerw@pmeerw.net,
-	vlad.dogaru@intel.com,
-	tiberiu.a.breana@intel.com
-Cc: knaack.h@gmx.de,
-	lars@metafoo.de,
+Return-Path: <adriana.reus@intel.com>
+From: Adriana Reus <adriana.reus@intel.com>
+To: ggao@invensense.com,
+	jic23@kernel.org
+Cc: linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
-	linux-iio@vger.kernel.org
-Subject: [PATCH 1/2] iio: ABI: Clarify proximity output value
-Date: Thu, 11 Jun 2015 18:49:33 +0300
-Message-Id: <1434037774-22081-2-git-send-email-daniel.baluta@intel.com>
-In-Reply-To: <1434037774-22081-1-git-send-email-daniel.baluta@intel.com>
-References: <1434037774-22081-1-git-send-email-daniel.baluta@intel.com>
+	Adriana Reus <adriana.reus@intel.com>
+Subject: [PATCH 1/2] iio: inv-mpu: Export scale_available attributes
+Date: Fri, 12 Jun 2015 18:10:22 +0300
+Message-Id: <1434121823-26266-2-git-send-email-adriana.reus@intel.com>
+In-Reply-To: <1434121823-26266-1-git-send-email-adriana.reus@intel.com>
+References: <1434121823-26266-1-git-send-email-adriana.reus@intel.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-Current description for proximity measurement is ambiguous. While
-the first part says that proximity is measured by observing
-reflectivity, the second part incorrectly infers that reported values
-should behave like a distance.
+Export the available scales for accel and gyro in order
+to hint the user-space as to what are the available valid values.
 
-This is because of AS3935 lightning sensor which uses the proximity
-API, while not being a true proximity sensor.
-
-Fixes:  614e8842ddf ("iio: ABI: add clarification for proximity")
-Signed-off-by: Daniel Baluta <daniel.baluta@intel.com>
+Signed-off-by: Adriana Reus <adriana.reus@intel.com>
 ---
- Documentation/ABI/testing/sysfs-bus-iio | 6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
+ drivers/iio/imu/inv_mpu6050/inv_mpu_core.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
-index bbed111..70c9b1a 100644
---- a/Documentation/ABI/testing/sysfs-bus-iio
-+++ b/Documentation/ABI/testing/sysfs-bus-iio
-@@ -1234,10 +1234,8 @@ Description:
- 		object is near the sensor, usually be observing
- 		reflectivity of infrared or ultrasound emitted.
- 		Often these sensors are unit less and as such conversion
--		to SI units is not possible.  Where it is, the units should
--		be meters.  If such a conversion is not possible, the reported
--		values should behave in the same way as a distance, i.e. lower
--		values indicate something is closer to the sensor.
-+		to SI units is not possible. Higher proximity measurements
-+		indicate closer objects, and vice versa.
+diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
+index 17d4bb1..096e545 100644
+--- a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
++++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
+@@ -673,6 +673,10 @@ static const struct iio_chan_spec inv_mpu_channels[] = {
  
- What:		/sys/.../iio:deviceX/in_illuminance_input
- What:		/sys/.../iio:deviceX/in_illuminance_raw
+ /* constant IIO attribute */
+ static IIO_CONST_ATTR_SAMP_FREQ_AVAIL("10 20 50 100 200 500");
++static IIO_CONST_ATTR(in_anglvel_scale_available,
++					  "0.000133090 0.000266181 0.000532362 0.001064724");
++static IIO_CONST_ATTR(in_accel_scale_available,
++					  "0.000598 0.001196 0.002392 0.004785");
+ static IIO_DEV_ATTR_SAMP_FREQ(S_IRUGO | S_IWUSR, inv_fifo_rate_show,
+ 	inv_mpu6050_fifo_rate_store);
+ static IIO_DEVICE_ATTR(in_gyro_matrix, S_IRUGO, inv_attr_show, NULL,
+@@ -685,6 +689,8 @@ static struct attribute *inv_attributes[] = {
+ 	&iio_dev_attr_in_accel_matrix.dev_attr.attr,
+ 	&iio_dev_attr_sampling_frequency.dev_attr.attr,
+ 	&iio_const_attr_sampling_frequency_available.dev_attr.attr,
++	&iio_const_attr_in_accel_scale_available.dev_attr.attr,
++	&iio_const_attr_in_anglvel_scale_available.dev_attr.attr,
+ 	NULL,
+ };
+ 
 -- 
 1.9.1
