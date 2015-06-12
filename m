@@ -1,52 +1,28 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from relay3-d.mail.gandi.net ([217.70.183.195]:40736 "EHLO
-	relay3-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750927AbbFKPHj (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 11 Jun 2015 11:07:39 -0400
-Message-ID: <1434035254.5707.21.camel@hadess.net>
-Subject: Re: [RFC] HID: hid-sony: Add basic iio-subsystem reading of SixAxis
- Accelerometers
-From: Bastien Nocera <hadess@hadess.net>
-To: Simon Wood <simon@mungewell.org>
-Cc: linux-input@vger.kernel.org,
-	Frank Praznik <frank.praznik@oh.rr.com>,
-	linux-iio@vger.kernel.org
-Date: Thu, 11 Jun 2015 17:07:34 +0200
-In-Reply-To: <1434034458-1968-1-git-send-email-simon@mungewell.org>
-References: <195dff9bd065db7e618280cb7c6eb5a9.squirrel@mungewell.org>
-	 <1434034458-1968-1-git-send-email-simon@mungewell.org>
-Content-Type: text/plain; charset="UTF-8"
-Mime-Version: 1.0
+Received: from mga14.intel.com ([192.55.52.115]:30512 "EHLO mga14.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751056AbbFKPKA (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Thu, 11 Jun 2015 11:10:00 -0400
+From: Adriana Reus <adriana.reus@intel.com>
+To: ggao@invensense.com, jic23@kernel.org
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+	Adriana Reus <adriana.reus@intel.com>
+Subject: [PATCH 0/2] iio: inv-mpu: small scale fixes 
+Date: Fri, 12 Jun 2015 18:10:21 +0300
+Message-Id: <1434121823-26266-1-git-send-email-adriana.reus@intel.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Thu, 2015-06-11 at 08:54 -0600, Simon Wood wrote:
-> [resent as I screwed up addressing... sorry]
-> 
-> This patch is a RFC/POC for the idea of using the iio-subsystem as 
-> the
-> 'proper' way to communicate the state of motion enabled controllers 
-> to
-> the Linux internals.
-> 
-> I have started with the hid-sony driver, with support for the 
-> SixAxis's
-> 3 Accelerometers. Proper trigger/buffer support will follow shortly, 
-> along
-> with support for the DS4 and PSMove controllers (which have a much 
-> more
-> extensive set of motion hardware).
-> 
-> Once the sensor data is available (over iio) I envision that it will 
-> be
-> considerably easier to write motion tracking, flight control and AHRS
-> software in a consistant manner.
+This series exports available scales for inv-mpu6050 and also
+fixes the format for write channels.
 
-Given that the software reading from the sensors will need to be root,
-how will you send the data from those devices to the applications?
+Adriana Reus (2):
+  iio: inv-mpu: Export scale_available attributes
+  iio: inv-mpu: Specify the expected format/precision for write channels
 
-> Hopefully this will become the standard way of connecting 
-> controllers,
-> motion controls and head mounted displays.
+ drivers/iio/imu/inv_mpu6050/inv_mpu_core.c | 24 ++++++++++++++++++++++++
+ 1 file changed, 24 insertions(+)
 
+-- 
+1.9.1
 
