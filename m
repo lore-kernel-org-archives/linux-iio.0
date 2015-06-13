@@ -1,57 +1,104 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:44394 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753204AbbFJUty (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 10 Jun 2015 16:49:54 -0400
-Message-ID: <5578A2EC.4030300@kernel.org>
-Date: Wed, 10 Jun 2015 21:49:48 +0100
-From: Jonathan Cameron <jic23@kernel.org>
+Return-Path: <knaack.h@gmx.de>
+Message-ID: <557BFF3C.1060101@gmx.de>
+Date: Sat, 13 Jun 2015 12:00:28 +0200
+From: Hartmut Knaack <knaack.h@gmx.de>
 MIME-Version: 1.0
-To: Martin Kepplinger <martin.kepplinger@theobroma-systems.com>,
-	irina.tirdea@intel.com, daniel.baluta@intel.com
-CC: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: iio: what does in_accel_x_thresh_rising_en ?
-References: <55770E56.5070701@theobroma-systems.com>
-In-Reply-To: <55770E56.5070701@theobroma-systems.com>
-Content-Type: text/plain; charset=utf-8
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+To: Daniel Baluta <daniel.baluta@intel.com>,
+ Cristina Georgiana Opriceana <cristina.opriceana@gmail.com>
+CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+ Jonathan Cameron <jic23@kernel.org>,
+ Lars-Peter Clausen <lars@metafoo.de>,
+ Peter Meerwald <pmeerw@pmeerw.net>,
+ Roberta Dobrescu <roberta.dobrescu@gmail.com>,
+ Irina Tirdea <irina.tirdea@intel.com>
+Subject: Re: [PATCH v2 1/3] tools:iio:iio_event_monitor: check if
+ event is fully read
+References: <cover.1433721755.git.knaack.h@gmx.de>	<52e7c9b1da4e0918722cc993bd3b25287f342e55.1433721755.git.knaack.h@gmx.de>	<CAEnQRZALJLbyQ9e5_JVr5xi+kH+pEGfPDGisay+C=b0n9XJM8A@mail.gmail.com>	<557BEB9D.2000800@gmx.de> <CAEnQRZBd-1YdFSkG9=3Zhh8K07VWte+2aEDL4ucDOjwtvjR_0Q@mail.gmail.com>
+In-Reply-To: <CAEnQRZBd-1YdFSkG9=3Zhh8K07VWte+2aEDL4ucDOjwtvjR_0Q@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+List-ID: <linux-iio@vger.kernel.org>
 
-On 09/06/15 17:03, Martin Kepplinger wrote:
-> hi
+Daniel Baluta schrieb am 13.06.2015 um 10:46:
+> On Sat, Jun 13, 2015 at 11:36 AM, Hartmut Knaack <knaack.h@gmx.de> wrote:
+>> Daniel Baluta schrieb am 10.06.2015 um 22:16:
+>>> On Wed, Jun 10, 2015 at 10:51 PM, Hartmut Knaack <knaack.h@gmx.de> wrote:
+>>>> Check that the read event is of the expected size.
+>>>>
+>>>> Signed-off-by: Hartmut Knaack <knaack.h@gmx.de>
+>>>> ---
+>>>>  tools/iio/iio_event_monitor.c | 6 ++++++
+>>>>  1 file changed, 6 insertions(+)
+>>>>
+>>>> diff --git a/tools/iio/iio_event_monitor.c b/tools/iio/iio_event_monitor.c
+>>>> index 016760e..2559fba 100644
+>>>> --- a/tools/iio/iio_event_monitor.c
+>>>> +++ b/tools/iio/iio_event_monitor.c
+>>>> @@ -299,6 +299,12 @@ int main(int argc, char **argv)
+>>>>                         }
+>>>>                 }
+>>>>
+>>>> +               if (ret != sizeof(event)) {
+>>>> +                       printf("Reading event failed!\n");
+>>>> +                       ret = -EIO;
+>>>> +                       break;
+>>>> +               }
+>>>> +
+>>>
+>>> For a test program this should be good enough, not sure if it does make sense
+>>> to read until we get all data.
+>>
+>> Not sure, if I get your intention here. But as Jonathan suggested, something
+>> went seriously wrong, if the sizes don't match here. Reading further, until
+>> the desired size is reached could result in receiving the missing data, or
+>> getting already partial data from the next event. I would leave it as is for
+>> now and see if anyone ever gets this error. Then we can still dig deeper.
 > 
-> Is the in_accel_thresh_rising_value (or falling) threshold value signed
-> or unsigned?
+> Ok.
 > 
-> In other words: Is a RISING event fired on an absolute growing value in
-> the positive range, and a FALLING event on an absolute growing value in
-> the negative acceleration range (< 0g)?
+>>
+>>>
+>>> Also, we should print the error at stderr.
+>>>
+>>
+>> I basically agree on this one, but since the majority of the error messages
+>> in this file are currently just printed to stdout, I would prefer to take it
+>> as is (for consistency) and have a follow-up patch to send all error messages
+>> to stderr.
 > 
-> Or is a RISING event fired on a signed rising value, no matter if the
-> threshold is positive or negative, and a FALLING event on a decreasing
-> signed value, also when the threshold is positive?
+> I've also noticed this. So I agree with you, a follow up patch would be better.
 > 
-> thanks
+> Cristina can do this, if you haven't already started working on it.
 > 
->                                 martin
-> 
-Hi Martin,
 
-The two relevant abi elements are:
-in_accel_thresh_rising_value and
-in_accel_mag_rising_value
-Once you know the second one exists then you can probably work out the
-meaning of thresh ;)
+Sounds good to me. I would have waited with such changes until this set got
+applied, anyway.
 
-Thresh is the value, mag(nitude) is the absolute value, so if you get one
-that is thresh, then if the channel can go negative, negative values are
-definitely possible.  On an accelerometer, you can get either implemented.
-mag_rising is typically to allow motion detection, thresh_rising might
-be used to detect a change of orientation (put bounds around each axis
-at a particular point in time.
+> As a part of Outreachy Program [1] we are also investigating these user space
+> tools plus the IIO dummy driver which hopefully at the end it will be moved
+> out of staging.
+> 
 
-There are also roc (rate of change) type event detectors on some accelerometers.
+>From my experience so far, I would regard it a good idea to chop up the
+workflow to get code out of staging:
+  - get all the changes you have in mind applied
+  - announce your intention to move it out in a reasonable time (2 weeks?), so
+    people who mind will feel pressured to have a look at the code and fix
+    issues in staging
+  - move out smoothly ;-)
 
-Hope that clear the mud up ;)
+Also, making use of gits copy detection is a good idea to avoid huge patches,
+which basically just copy/move a file without changes. Makes the reviewers
+life much easier ;-)
 
-Jonathan
+Thanks,
+Hartmut
+
+> 
+> Daniel.
+> 
+> [1] http://kernelnewbies.org/OutreachyIntro
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> 
