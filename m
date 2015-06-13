@@ -1,81 +1,80 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from email.invensense.com ([12.199.206.106]:28056 "EHLO
-	email.invensense.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S964838AbbFKRhB convert rfc822-to-8bit (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 11 Jun 2015 13:37:01 -0400
-From: Ge Gao <GGao@invensense.com>
-To: Adriana Reus <adriana.reus@intel.com>,
-	"jic23@kernel.org" <jic23@kernel.org>
-CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH 2/2] iio: inv-mpu: Specify the expected format/precision
- for write channels
-Date: Thu, 11 Jun 2015 17:31:51 +0000
-Message-ID: <E7747D604FBC9F43A71AA431AFF4476299C52ADD@IUSEXCH01.invcorp.invensense.com>
-References: <1434121823-26266-1-git-send-email-adriana.reus@intel.com>
- <1434121823-26266-3-git-send-email-adriana.reus@intel.com>
-In-Reply-To: <1434121823-26266-3-git-send-email-adriana.reus@intel.com>
-Content-Type: text/plain; charset="us-ascii"
+Received: from mout.gmx.net ([212.227.17.20]:62217 "EHLO mout.gmx.net"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751126AbbFMIg5 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Sat, 13 Jun 2015 04:36:57 -0400
+Message-ID: <557BEB9D.2000800@gmx.de>
+Date: Sat, 13 Jun 2015 10:36:45 +0200
+From: Hartmut Knaack <knaack.h@gmx.de>
 MIME-Version: 1.0
+To: Daniel Baluta <daniel.baluta@intel.com>
+CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Roberta Dobrescu <roberta.dobrescu@gmail.com>,
+	Irina Tirdea <irina.tirdea@intel.com>
+Subject: Re: [PATCH v2 1/3] tools:iio:iio_event_monitor: check if
+ event is fully read
+References: <cover.1433721755.git.knaack.h@gmx.de>	<52e7c9b1da4e0918722cc993bd3b25287f342e55.1433721755.git.knaack.h@gmx.de> <CAEnQRZALJLbyQ9e5_JVr5xi+kH+pEGfPDGisay+C=b0n9XJM8A@mail.gmail.com>
+In-Reply-To: <CAEnQRZALJLbyQ9e5_JVr5xi+kH+pEGfPDGisay+C=b0n9XJM8A@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-These code looks good to me.
-Thanks.
+Daniel Baluta schrieb am 10.06.2015 um 22:16:
+> On Wed, Jun 10, 2015 at 10:51 PM, Hartmut Knaack <knaack.h@gmx.de> wrote:
+>> Check that the read event is of the expected size.
+>>
+>> Signed-off-by: Hartmut Knaack <knaack.h@gmx.de>
+>> ---
+>>  tools/iio/iio_event_monitor.c | 6 ++++++
+>>  1 file changed, 6 insertions(+)
+>>
+>> diff --git a/tools/iio/iio_event_monitor.c b/tools/iio/iio_event_monitor.c
+>> index 016760e..2559fba 100644
+>> --- a/tools/iio/iio_event_monitor.c
+>> +++ b/tools/iio/iio_event_monitor.c
+>> @@ -299,6 +299,12 @@ int main(int argc, char **argv)
+>>                         }
+>>                 }
+>>
+>> +               if (ret != sizeof(event)) {
+>> +                       printf("Reading event failed!\n");
+>> +                       ret = -EIO;
+>> +                       break;
+>> +               }
+>> +
+> 
+> For a test program this should be good enough, not sure if it does make sense
+> to read until we get all data.
 
-Best Regards,
+Not sure, if I get your intention here. But as Jonathan suggested, something
+went seriously wrong, if the sizes don't match here. Reading further, until
+the desired size is reached could result in receiving the missing data, or
+getting already partial data from the next event. I would leave it as is for
+now and see if anyone ever gets this error. Then we can still dig deeper.
 
-Ge GAO
+> 
+> Also, we should print the error at stderr.
+> 
 
+I basically agree on this one, but since the majority of the error messages
+in this file are currently just printed to stdout, I would prefer to take it
+as is (for consistency) and have a follow-up patch to send all error messages
+to stderr. 
 
------Original Message-----
-From: Adriana Reus [mailto:adriana.reus@intel.com] 
-Sent: Friday, June 12, 2015 8:10 AM
-To: Ge Gao; jic23@kernel.org
-Cc: linux-iio@vger.kernel.org; linux-kernel@vger.kernel.org; Adriana Reus
-Subject: [PATCH 2/2] iio: inv-mpu: Specify the expected format/precision for write channels
+Thanks for your input.
+Hartmut
 
-The gyroscope needs IIO_VAL_INT_PLUS_NANO for the scale channel and unless specified write returns MICRO by default.
-This needs to be properly specified so that write operations into scale have the expected behaviour.
-
-Signed-off-by: Adriana Reus <adriana.reus@intel.com>
----
- drivers/iio/imu/inv_mpu6050/inv_mpu_core.c | 18 ++++++++++++++++++
- 1 file changed, 18 insertions(+)
-
-diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-index 096e545..4de5374 100644
---- a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-+++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-@@ -431,6 +431,23 @@ static int inv_mpu6050_write_gyro_scale(struct inv_mpu6050_state *st, int val)
- 	return -EINVAL;
- }
- 
-+static int inv_write_raw_get_fmt(struct iio_dev *indio_dev,
-+				 struct iio_chan_spec const *chan, long mask) {
-+	switch (mask) {
-+	case IIO_CHAN_INFO_SCALE:
-+		switch (chan->type) {
-+		case IIO_ANGL_VEL:
-+			return IIO_VAL_INT_PLUS_NANO;
-+		default:
-+			return IIO_VAL_INT_PLUS_MICRO;
-+		}
-+	default:
-+		return IIO_VAL_INT_PLUS_MICRO;
-+	}
-+
-+	return -EINVAL;
-+}
- static int inv_mpu6050_write_accel_scale(struct inv_mpu6050_state *st, int val)  {
- 	int result, i;
-@@ -702,6 +719,7 @@ static const struct iio_info mpu_info = {
- 	.driver_module = THIS_MODULE,
- 	.read_raw = &inv_mpu6050_read_raw,
- 	.write_raw = &inv_mpu6050_write_raw,
-+	.write_raw_get_fmt = &inv_write_raw_get_fmt,
- 	.attrs = &inv_attribute_group,
- 	.validate_trigger = inv_mpu6050_validate_trigger,  };
---
-1.9.1
+>>                 print_event(&event);
+>>         }
+> 
+> thanks,
+> Daniel.
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> 
 
