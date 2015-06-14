@@ -1,314 +1,201 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:44586 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:44625 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751570AbbFNOx1 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 14 Jun 2015 10:53:27 -0400
-Message-ID: <557D9564.9090800@kernel.org>
-Date: Sun, 14 Jun 2015 15:53:24 +0100
+	with ESMTP id S1751524AbbFNPAm (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 14 Jun 2015 11:00:42 -0400
+Message-ID: <557D9717.7010204@kernel.org>
+Date: Sun, 14 Jun 2015 16:00:39 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Simon Wood <simon@mungewell.org>, linux-input@vger.kernel.org
-CC: Frank Praznik <frank.praznik@oh.rr.com>, linux-iio@vger.kernel.org
-Subject: Re: [RFC] HID: hid-sony: Add basic iio-subsystem reading of SixAxis
- Accelerometers
-References: <195dff9bd065db7e618280cb7c6eb5a9.squirrel@mungewell.org> <1434034458-1968-1-git-send-email-simon@mungewell.org>
-In-Reply-To: <1434034458-1968-1-git-send-email-simon@mungewell.org>
+To: "Tirdea, Irina" <irina.tirdea@intel.com>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>
+CC: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"Dogaru, Vlad" <vlad.dogaru@intel.com>
+Subject: Re: [PATCH v2 14/17] iio: accel: mma9551_core: use size in words
+ for word buffers
+References: <1428939664-12503-1-git-send-email-irina.tirdea@intel.com> <1428939664-12503-15-git-send-email-irina.tirdea@intel.com> <553D36C9.3070004@kernel.org> <1F3AC3675D538145B1661F571FE1805F19A5E887@irsmsx105.ger.corp.intel.com>
+In-Reply-To: <1F3AC3675D538145B1661F571FE1805F19A5E887@irsmsx105.ger.corp.intel.com>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 11/06/15 15:54, Simon Wood wrote:
-> [resent as I screwed up addressing... sorry]
+On 29/04/15 13:20, Tirdea, Irina wrote:
 > 
-> This patch is a RFC/POC for the idea of using the iio-subsystem as the
-> 'proper' way to communicate the state of motion enabled controllers to
-> the Linux internals.
-Sounds good to me.
 > 
-> I have started with the hid-sony driver, with support for the SixAxis's
-> 3 Accelerometers. Proper trigger/buffer support will follow shortly, along
-> with support for the DS4 and PSMove controllers (which have a much more
-> extensive set of motion hardware).
-Good stuff.
+>> -----Original Message-----
+>> From: Jonathan Cameron [mailto:jic23@kernel.org]
+>> Sent: 26 April, 2015 22:05
+>> To: Tirdea, Irina; linux-iio@vger.kernel.org; Hartmut Knaack
+>> Cc: linux-kernel@vger.kernel.org; Dogaru, Vlad
+>> Subject: Re: [PATCH v2 14/17] iio: accel: mma9551_core: use size in words for word buffers
+>>
+>> On 13/04/15 16:41, Irina Tirdea wrote:
+>>> Change the prototype for the mma9551_read/write_*_words functions
+>>> to receive the length of the buffer in words (instead of bytes) since
+>>> we are using a word buffer. This will prevent users from sending an
+>>> odd number of bytes for a word array.
+>>>
+>>> Signed-off-by: Irina Tirdea <irina.tirdea@intel.com>
+>> Lots of merge issues by this point in the series so I'll hold this one at
+>> least until the fixes filter through.
+>>
+>> Remind me if I seem to have forgotten (it wouldn't be the first time :)
+>>
+> Sure, I'll keep an eye on when the fixes will be merged in togreg branch.
 > 
-> Once the sensor data is available (over iio) I envision that it will be
-> considerably easier to write motion tracking, flight control and AHRS
-> software in a consistant manner.
-Cool :)  Clearly as Bastien has raised, depending on use case some generic
-userspace support to expose these to non root users might be needed.
-> 
-> Hopefully this will become the standard way of connecting controllers,
-> motion controls and head mounted displays.
-A few bits and bobs inline.
+They are there now, so applied to the togreg branch of iio.git, initially pushed
+out as testing for the autobuilders to play with it.
+
+Now looking at the merge window in 3 months time though to go upstream unfortunately.
+Sorry for the delay, been a busy couple of months!
 
 Jonathan
-> ---
->  drivers/hid/hid-sony.c | 175 +++++++++++++++++++++++++++++++++++++++++++++++++
-Hmm. This driver is already a substantial mash up of a number of different
-types of driver (as far as linux is concerned), with input, battery and led
-drivers.  Might be worth considering a more formal MFD approach as it'll
-break the driver up into a number of sub components that will then sit
-in the various subsystems in a cleaner fashion.
-Just a thought!
->  1 file changed, 175 insertions(+)
+> Thanks,
+> Irina
 > 
-> diff --git a/drivers/hid/hid-sony.c b/drivers/hid/hid-sony.c
-> index 6ca96ce..79afae6 100644
-> --- a/drivers/hid/hid-sony.c
-> +++ b/drivers/hid/hid-sony.c
-> @@ -36,6 +36,7 @@
->  #include <linux/list.h>
->  #include <linux/idr.h>
->  #include <linux/input/mt.h>
-> +#include <linux/iio/iio.h>
->  
->  #include "hid-ids.h"
->  
-> @@ -54,6 +55,7 @@
->  				DUALSHOCK4_CONTROLLER)
->  #define SONY_BATTERY_SUPPORT (SIXAXIS_CONTROLLER | DUALSHOCK4_CONTROLLER)
->  #define SONY_FF_SUPPORT (SIXAXIS_CONTROLLER | DUALSHOCK4_CONTROLLER)
-> +#define SONY_IIO_SUPPORT SIXAXIS_CONTROLLER
->  
->  #define MAX_LEDS 4
->  
-> @@ -835,6 +837,23 @@ struct sony_sc {
->  	__u8 led_delay_on[MAX_LEDS];
->  	__u8 led_delay_off[MAX_LEDS];
->  	__u8 led_count;
-> +
-> +#if IS_BUILTIN(CONFIG_IIO) || \
-> +	(IS_MODULE(CONFIG_IIO) && IS_MODULE(CONFIG_HID_SONY))
-> +	struct iio_dev *indio_dev;
-> +	__u16 last_acc[3];
-> +	__u16 last_gyro[3];
-> +};
-> +
-> +enum sony_iio_axis {
-> +	AXIS_X,
-> +	AXIS_Y,
-> +	AXIS_Z,
-> +};
-> +
-> +struct sony_iio {
-> +	struct sony_sc *sc;
-> +#endif
->  };
->  
->  static __u8 *sixaxis_fixup(struct hid_device *hdev, __u8 *rdesc,
-> @@ -1047,6 +1066,12 @@ static int sony_raw_event(struct hid_device *hdev, struct hid_report *report,
->  		swap(rd[45], rd[46]);
->  		swap(rd[47], rd[48]);
->  
-> +#if IS_BUILTIN(CONFIG_IIO) || \
-> +	(IS_MODULE(CONFIG_IIO) && IS_MODULE(CONFIG_HID_SONY))
-> +		sc->last_acc[0] = (rd[42] << 8) + rd[41];
-> +		sc->last_acc[1] = (rd[44] << 8) + rd[43];
-> +		sc->last_acc[2] = (rd[46] << 8) + rd[45];
-> +#endif
->  		sixaxis_parse_report(sc, rd, size);
->  	} else if (((sc->quirks & DUALSHOCK4_CONTROLLER_USB) && rd[0] == 0x01 &&
->  			size == 64) || ((sc->quirks & DUALSHOCK4_CONTROLLER_BT)
-> @@ -1769,6 +1794,136 @@ static void sony_battery_remove(struct sony_sc *sc)
->  	sc->battery_desc.name = NULL;
->  }
->  
-> +#if IS_BUILTIN(CONFIG_IIO) || \
-> +	(IS_MODULE(CONFIG_IIO) && IS_MODULE(CONFIG_HID_SONY))
-> +
-> +static int sony_iio_read_raw(struct iio_dev *indio_dev,
-> +			      struct iio_chan_spec const *chan,
-> +			      int *val, int *val2,
-> +			      long mask)
-> +{
-> +	struct sony_iio *data = iio_priv(indio_dev);
-I'd be tempted to have the sc as the local variable here as there
-is nothing else in sony_iio at the moment and it'll save you a few
-characters on every reference to it below.
-> +	int ret;
-> +	u32 temp;
-> +
-> +	switch (mask) {
-> +	case IIO_CHAN_INFO_RAW:
-> +		switch (chan->type) {
-> +		case IIO_ACCEL:
-> +			*val = data->sc->last_acc[chan->scan_index];
-You can use scan_index for this I suppose, but that's really meant for
-location in the buffer.  We have iio_chan->address for this sort of
-lookup index.  Now if they happen to be the same it doesn't really
-matter!
-
-Not sure whether it is better to use the last reading obtained, or
-wait for a new one to show up with a completion etc.
-> +			return IIO_VAL_INT;
-> +		case IIO_ANGL_VEL:
-> +			*val = data->sc->last_gyro[chan->scan_index];
-> +			return IIO_VAL_INT;
-> +		default:
-> +			return -EINVAL;
-> +		}
-> +	case IIO_CHAN_INFO_SCALE:
-> +		switch (chan->type) {
-If the scale really is 1 then don't export it.  Note the units would
-have to be in m/s^2 which seems unlikely though. I'm guessing this
-is a placeholder..
-
-> +		case IIO_ACCEL:
-> +			*val = 1;
-> +			return IIO_VAL_INT;
-> +		case IIO_ANGL_VEL:
-> +			*val = 1;
-> +			return IIO_VAL_INT;
-> +		default:
-> +			return -EINVAL;
-> +		}
-> +	case IIO_CHAN_INFO_OFFSET:
-> +		switch (chan->type) {
-> +		case IIO_ACCEL:
-Again, some unlikely values given after application of offset and scale
-the raw values are supposed to be in m/s^2 or radians/s
-> +			*val = 512;
-> +			return IIO_VAL_INT;
-> +		case IIO_ANGL_VEL:
-> +			*val = 512;
-> +			return IIO_VAL_INT;
-> +		default:
-> +			return -EINVAL;
-> +		}
-> +	}
-> +
-> +	return -EINVAL;
-> +}
-> +
-> +#define SONY_ACC_CHANNEL(_axis) {					\
-> +	.type = IIO_ACCEL,						\
-> +	.modified = 1,							\
-> +	.channel2 = IIO_MOD_##_axis,					\
-> +	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),			\
-> +	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE) |		\
-> +		BIT(IIO_CHAN_INFO_SCALE) |				\
-> +		BIT(IIO_CHAN_INFO_OFFSET),				\
-> +	.scan_index = AXIS_##_axis,					\
-> +}
-> +
-> +#define SONY_GYRO_CHANNEL(_axis) {					\
-> +	.type = IIO_ANGL_VEL,						\
-> +	.modified = 1,							\
-> +	.channel2 = IIO_MOD_##_axis,					\
-> +	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),			\
-> +	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE) |		\
-> +		BIT(IIO_CHAN_INFO_SCALE) |				\
-> +		BIT(IIO_CHAN_INFO_OFFSET),				\
-> +	.scan_index = AXIS_##_axis,					\
-> +}
-> +
-> +static const struct iio_chan_spec sony_sixaxis_channels[] = {
-> +	SONY_ACC_CHANNEL(X),
-> +	SONY_ACC_CHANNEL(Y),
-> +	SONY_ACC_CHANNEL(Z),
-No gyro channels yet?
-Just to note, if the gyro frequency etc is different from the accelerometer
-(pretty common) then you'll want to register two IIO devices rather than
-just the one so that the control and buffers are separate.
-
-> +};
-> +
-> +static const struct iio_info sony_iio_info = {
-> +	.read_raw = &sony_iio_read_raw,
-> +	.driver_module = THIS_MODULE,
-> +};
-> +
-> +static int sony_iio_probe(struct sony_sc *sc)
-> +{
-> +	struct hid_device *hdev = sc->hdev;
-> +	struct iio_dev *indio_dev;
-> +	struct sony_iio *data;
-> +	int ret;
-> +
-> +	indio_dev = iio_device_alloc(sizeof(*data));
-> +	if (!indio_dev)
-> +		return -ENOMEM;
-> +
-> +	sc->indio_dev = indio_dev;
-> +	data = iio_priv(indio_dev);
-> +	data->sc = sc;
-> +
-> +	indio_dev->dev.parent = &hdev->dev;
-> +	indio_dev->name = dev_name(&hdev->dev);
-> +	indio_dev->modes = INDIO_DIRECT_MODE;
-> +	indio_dev->info = &sony_iio_info;
-> +	indio_dev->channels = sony_sixaxis_channels;
-> +	indio_dev->num_channels = 3;
-I'd use array_size for this to avoid accidental bugs if the
-number of elements changes in future.
-> +
-> +	ret = iio_device_register(indio_dev);
-> +	if (ret < 0) {
-> +		hid_err(hdev, "Unable to register iio device\n");
-> +		goto error_iio_probe;
-> +	}
-> +	return 0;
-> +
-> +error_iio_probe:
-> +	kfree(indio_dev);
-> +	sc->indio_dev = NULL;
-> +	return ret;
-> +}
-> +
-> +static void sony_iio_remove(struct sony_sc *sc)
-> +{
-> +	if (!sc->indio_dev)
-> +		return;
-> +
-> +	iio_device_unregister(sc->indio_dev);
-> +	kfree(sc->indio_dev);
-> +	sc->indio_dev = NULL;
-> +}
-> +#endif
-> +
->  /*
->   * If a controller is plugged in via USB while already connected via Bluetooth
->   * it will show up as two devices. A global list of connected controllers and
-> @@ -2073,6 +2228,15 @@ static int sony_probe(struct hid_device *hdev, const struct hid_device_id *id)
->  		}
->  	}
->  
-> +#if IS_BUILTIN(CONFIG_IIO) || \
-> +	(IS_MODULE(CONFIG_IIO) && IS_MODULE(CONFIG_HID_SONY))
-> +	if (sc->quirks & SONY_IIO_SUPPORT) {
-> +		ret = sony_iio_probe(sc);
-> +		if (ret < 0)
-> +			goto err_stop;
-> +	}
-> +#endif
-> +
->  	if (sc->quirks & SONY_FF_SUPPORT) {
->  		ret = sony_init_ff(sc);
->  		if (ret < 0)
-> @@ -2087,6 +2251,11 @@ err_stop:
->  		sony_leds_remove(sc);
->  	if (sc->quirks & SONY_BATTERY_SUPPORT)
->  		sony_battery_remove(sc);
-> +#if IS_BUILTIN(CONFIG_IIO) || \
-> +	(IS_MODULE(CONFIG_IIO) && IS_MODULE(CONFIG_HID_SONY))
-> +	if (sc->quirks & SONY_IIO_SUPPORT)
-> +		sony_iio_remove(sc);
-> +#endif
->  	sony_cancel_work_sync(sc);
->  	kfree(sc->output_report_dmabuf);
->  	sony_remove_dev_list(sc);
-> @@ -2107,6 +2276,12 @@ static void sony_remove(struct hid_device *hdev)
->  		sony_battery_remove(sc);
->  	}
->  
-> +#if IS_BUILTIN(CONFIG_IIO) || \
-> +	(IS_MODULE(CONFIG_IIO) && IS_MODULE(CONFIG_HID_SONY))
-> +	if (sc->quirks & SONY_IIO_SUPPORT)
-> +		sony_iio_remove(sc);
-> +#endif
-> +
->  	sony_cancel_work_sync(sc);
->  
->  	kfree(sc->output_report_dmabuf);
+>> Jonathan
+>>> ---
+>>>  drivers/iio/accel/mma9551_core.c | 27 ++++++++++++---------------
+>>>  drivers/iio/accel/mma9553.c      |  9 ++++++---
+>>>  2 files changed, 18 insertions(+), 18 deletions(-)
+>>>
+>>> diff --git a/drivers/iio/accel/mma9551_core.c b/drivers/iio/accel/mma9551_core.c
+>>> index 2fd2a99..583660b 100644
+>>> --- a/drivers/iio/accel/mma9551_core.c
+>>> +++ b/drivers/iio/accel/mma9551_core.c
+>>> @@ -373,7 +373,7 @@ EXPORT_SYMBOL(mma9551_read_status_word);
+>>>   * @client:	I2C client
+>>>   * @app_id:	Application ID
+>>>   * @reg:	Application register
+>>> - * @len:	Length of array to read in bytes
+>>> + * @len:	Length of array to read (in words)
+>>>   * @buf:	Array of words to read
+>>>   *
+>>>   * Read multiple configuration registers (word-sized registers).
+>>> @@ -388,20 +388,19 @@ int mma9551_read_config_words(struct i2c_client *client, u8 app_id,
+>>>  			     u16 reg, u8 len, u16 *buf)
+>>>  {
+>>>  	int ret, i;
+>>> -	int len_words = len / sizeof(u16);
+>>>  	__be16 be_buf[MMA9551_MAX_MAILBOX_DATA_REGS / 2];
+>>>
+>>> -	if (len_words > ARRAY_SIZE(be_buf)) {
+>>> +	if (len > ARRAY_SIZE(be_buf)) {
+>>>  		dev_err(&client->dev, "Invalid buffer size %d\n", len);
+>>>  		return -EINVAL;
+>>>  	}
+>>>
+>>>  	ret = mma9551_transfer(client, app_id, MMA9551_CMD_READ_CONFIG,
+>>> -			       reg, NULL, 0, (u8 *) be_buf, len);
+>>> +			       reg, NULL, 0, (u8 *)be_buf, len * sizeof(u16));
+>>>  	if (ret < 0)
+>>>  		return ret;
+>>>
+>>> -	for (i = 0; i < len_words; i++)
+>>> +	for (i = 0; i < len; i++)
+>>>  		buf[i] = be16_to_cpu(be_buf[i]);
+>>>
+>>>  	return 0;
+>>> @@ -413,7 +412,7 @@ EXPORT_SYMBOL(mma9551_read_config_words);
+>>>   * @client:	I2C client
+>>>   * @app_id:	Application ID
+>>>   * @reg:	Application register
+>>> - * @len:	Length of array to read in bytes
+>>> + * @len:	Length of array to read (in words)
+>>>   * @buf:	Array of words to read
+>>>   *
+>>>   * Read multiple status registers (word-sized registers).
+>>> @@ -428,20 +427,19 @@ int mma9551_read_status_words(struct i2c_client *client, u8 app_id,
+>>>  			      u16 reg, u8 len, u16 *buf)
+>>>  {
+>>>  	int ret, i;
+>>> -	int len_words = len / sizeof(u16);
+>>>  	__be16 be_buf[MMA9551_MAX_MAILBOX_DATA_REGS / 2];
+>>>
+>>> -	if (len_words > ARRAY_SIZE(be_buf)) {
+>>> +	if (len > ARRAY_SIZE(be_buf)) {
+>>>  		dev_err(&client->dev, "Invalid buffer size %d\n", len);
+>>>  		return -EINVAL;
+>>>  	}
+>>>
+>>>  	ret = mma9551_transfer(client, app_id, MMA9551_CMD_READ_STATUS,
+>>> -			       reg, NULL, 0, (u8 *) be_buf, len);
+>>> +			       reg, NULL, 0, (u8 *)be_buf, len * sizeof(u16));
+>>>  	if (ret < 0)
+>>>  		return ret;
+>>>
+>>> -	for (i = 0; i < len_words; i++)
+>>> +	for (i = 0; i < len; i++)
+>>>  		buf[i] = be16_to_cpu(be_buf[i]);
+>>>
+>>>  	return 0;
+>>> @@ -453,7 +451,7 @@ EXPORT_SYMBOL(mma9551_read_status_words);
+>>>   * @client:	I2C client
+>>>   * @app_id:	Application ID
+>>>   * @reg:	Application register
+>>> - * @len:	Length of array to write in bytes
+>>> + * @len:	Length of array to write (in words)
+>>>   * @buf:	Array of words to write
+>>>   *
+>>>   * Write multiple configuration registers (word-sized registers).
+>>> @@ -468,19 +466,18 @@ int mma9551_write_config_words(struct i2c_client *client, u8 app_id,
+>>>  			       u16 reg, u8 len, u16 *buf)
+>>>  {
+>>>  	int i;
+>>> -	int len_words = len / sizeof(u16);
+>>>  	__be16 be_buf[(MMA9551_MAX_MAILBOX_DATA_REGS - 1) / 2];
+>>>
+>>> -	if (len_words > ARRAY_SIZE(be_buf)) {
+>>> +	if (len > ARRAY_SIZE(be_buf)) {
+>>>  		dev_err(&client->dev, "Invalid buffer size %d\n", len);
+>>>  		return -EINVAL;
+>>>  	}
+>>>
+>>> -	for (i = 0; i < len_words; i++)
+>>> +	for (i = 0; i < len; i++)
+>>>  		be_buf[i] = cpu_to_be16(buf[i]);
+>>>
+>>>  	return mma9551_transfer(client, app_id, MMA9551_CMD_WRITE_CONFIG,
+>>> -				reg, (u8 *) be_buf, len, NULL, 0);
+>>> +				reg, (u8 *)be_buf, len * sizeof(u16), NULL, 0);
+>>>  }
+>>>  EXPORT_SYMBOL(mma9551_write_config_words);
+>>>
+>>> diff --git a/drivers/iio/accel/mma9553.c b/drivers/iio/accel/mma9553.c
+>>> index 8bfc618..06c8707 100644
+>>> --- a/drivers/iio/accel/mma9553.c
+>>> +++ b/drivers/iio/accel/mma9553.c
+>>> @@ -322,7 +322,8 @@ static int mma9553_read_activity_stepcnt(struct mma9553_data *data,
+>>>  	int ret;
+>>>
+>>>  	ret = mma9551_read_status_words(data->client, MMA9551_APPID_PEDOMETER,
+>>> -					MMA9553_REG_STATUS, sizeof(u32), buf);
+>>> +					MMA9553_REG_STATUS, ARRAY_SIZE(buf),
+>>> +					buf);
+>>>  	if (ret < 0) {
+>>>  		dev_err(&data->client->dev,
+>>>  			"error reading status and stepcnt\n");
+>>> @@ -397,7 +398,8 @@ static int mma9553_init(struct mma9553_data *data)
+>>>  	ret =
+>>>  	    mma9551_read_config_words(data->client, MMA9551_APPID_PEDOMETER,
+>>>  				      MMA9553_REG_CONF_SLEEPMIN,
+>>> -				      sizeof(data->conf), (u16 *) &data->conf);
+>>> +				      sizeof(data->conf) / sizeof(u16),
+>>> +				      (u16 *)&data->conf);
+>>>  	if (ret < 0) {
+>>>  		dev_err(&data->client->dev,
+>>>  			"failed to read configuration registers\n");
+>>> @@ -430,7 +432,8 @@ static int mma9553_init(struct mma9553_data *data)
+>>>  	ret =
+>>>  	    mma9551_write_config_words(data->client, MMA9551_APPID_PEDOMETER,
+>>>  				       MMA9553_REG_CONF_SLEEPMIN,
+>>> -				       sizeof(data->conf), (u16 *) &data->conf);
+>>> +				       sizeof(data->conf) / sizeof(u16),
+>>> +				       (u16 *)&data->conf);
+>>>  	if (ret < 0) {
+>>>  		dev_err(&data->client->dev,
+>>>  			"failed to write configuration registers\n");
+>>>
 > 
 
