@@ -1,58 +1,77 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from metis.ext.pengutronix.de ([92.198.50.35]:42201 "EHLO
-	metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750715AbbFMTLw (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 13 Jun 2015 15:11:52 -0400
-Date: Sat, 13 Jun 2015 21:11:40 +0200
-From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
-	<u.kleine-koenig@pengutronix.de>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Tiberiu Breana <tiberiu.a.breana@intel.com>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>, kernel@pengutronix.de,
-	Alexandre Courbot <gnurou@gmail.com>,
-	Linus Walleij <linus.walleij@linaro.org>,
-	linux-iio@vger.kernel.org
-Subject: Re: [PATCH] iio: light: stk3310: use flags argument of devm_gpiod_get
-Message-ID: <20150613191140.GX18985@pengutronix.de>
-References: <1434095506-1581-1-git-send-email-u.kleine-koenig@pengutronix.de>
- <557C7125.3010606@kernel.org>
+Return-Path: <imrehg@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-In-Reply-To: <557C7125.3010606@kernel.org>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+In-Reply-To: <557C76D2.7030306@kernel.org>
+References: <1434010946-8118-1-git-send-email-imrehg@gmail.com> <557C76D2.7030306@kernel.org>
+From: Gergely Imreh <imrehg@gmail.com>
+Date: Sun, 14 Jun 2015 11:15:19 +0800
+Message-ID: <CAJ3iQcoKPi7vCO5c==DcwwNY6LEKJ+xPueELDC85XPVus0qf0A@mail.gmail.com>
+Subject: Re: [PATCH 1/1] iio:adc: XADC: Set offset explicitly to zero on
+ voltage channels
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: michal.simek@xilinx.com, linux-iio@vger.kernel.org,
+	Linux ARM Kernel <linux-arm-kernel@lists.infradead.org>, linux-kernel@vger.kernel.org,
+	ola@adapteva.com, Lars-Peter Clausen <lars@metafoo.de>
+Content-Type: text/plain; charset=UTF-8
+List-ID: <linux-iio@vger.kernel.org>
 
-Hello Jonathan,
+On 14 June 2015 at 02:30, Jonathan Cameron <jic23@kernel.org> wrote:
+> On 11/06/15 09:22, Gergely Imreh wrote:
+>> The Xilinx XADC driver has both a temperature channel and 8 voltage
+>> channels. The voltage channels have no offset, but actually were still
+>> set the same offset as the temperature channel. This did not cause
+>> problems in /sys/bus/iio/ but can cause problems with other drivers
+>> using iio data. For example iio-hwmon did return wrong voltage values
+>> because of the offset.
+>>
+>> Change tested with the Parallella board.
+>>
+>> Signed-off-by: Gergely Imreh <imrehg@gmail.com>
+> Well spotted on the bug, but I think we are better off fixing this at the
+> true source of the problem which is in drivers/iio/inkern.c
+> iio_convert_raw_to_processed_unlocked which does a call to
+> iio_channel_read(chan, &offset, NULL, IIO_CHAN_INFO_OFFSET) then uses
+> the error return to check if the offset parameter is available. It should
+> be checking that before making this call with a call to iio_channel_has_info.
+>
+> I don't suppose you could prepare a patch fixing that as you found the problem?
 
-On Sat, Jun 13, 2015 at 07:06:29PM +0100, Jonathan Cameron wrote:
-> On 12/06/15 08:51, Uwe Kleine-König wrote:
-> > Since 39b2bbe3d715 (gpio: add flags argument to gpiod_get*() functions)
-> > which appeared in v3.17-rc1, the gpiod_get* functions take an additional
-> > parameter that allows to specify direction and initial value for output.
-> > 
-> > Simplify driver accordingly. Furthermore this is one caller less that
-> > stops us making the flags argument to gpiod_get*() mandatory.
-> > 
-> > Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
-> Acked-by: Jonathan Cameron <jic23@kernel.org>
-> > ---
-> > Hello,
-> > 
-> > this patch applies to next and is only necessary on top of 3dd477acbdd1
-> > (iio: light: Add threshold interrupt support for STK3310) which
-> > currently sits in next.
-> > 
-> > Note I plan to make the flags parameter mandatory for 4.3. So unless
-> > this change gets into 4.2, would it be ok to let it go in via the gpio
-> > tree?
-> yes, that's fine.
-that means you won't take it for 4.2, right?
+I'll check it out, and send an updated patch! Thanks for the pointers
+to the core of the issue.
 
-Best regards
-Uwe
-
--- 
-Pengutronix e.K.                           | Uwe Kleine-König            |
-Industrial Linux Solutions                 | http://www.pengutronix.de/  |
+>
+> If not I can fix it up sometime if no one else beats me to it.
+>
+> Thanks
+>
+> Jonathan
+>> ---
+>>  drivers/iio/adc/xilinx-xadc-core.c | 14 +++++++++++---
+>>  1 file changed, 11 insertions(+), 3 deletions(-)
+>>
+>> diff --git a/drivers/iio/adc/xilinx-xadc-core.c b/drivers/iio/adc/xilinx-xadc-core.c
+>> index ab52be2..36efab7 100644
+>> --- a/drivers/iio/adc/xilinx-xadc-core.c
+>> +++ b/drivers/iio/adc/xilinx-xadc-core.c
+>> @@ -877,9 +877,17 @@ static int xadc_read_raw(struct iio_dev *indio_dev,
+>>                       return -EINVAL;
+>>               }
+>>       case IIO_CHAN_INFO_OFFSET:
+>> -             /* Only the temperature channel has an offset */
+>> -             *val = -((273150 << 12) / 503975);
+>> -             return IIO_VAL_INT;
+>> +             switch (chan->type) {
+>> +             case IIO_VOLTAGE:
+>> +                     *val = 0;
+>> +                     return IIO_VAL_INT;
+>> +             case IIO_TEMP:
+>> +                     /* Only the temperature channel has an offset */
+>> +                     *val = -((273150 << 12) / 503975);
+>> +                     return IIO_VAL_INT;
+>> +             default:
+>> +                     return -EINVAL;
+>> +             }
+>>       case IIO_CHAN_INFO_SAMP_FREQ:
+>>               ret = xadc_read_adc_reg(xadc, XADC_REG_CONF2, &val16);
+>>               if (ret)
+>>
+>
