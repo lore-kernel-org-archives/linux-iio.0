@@ -1,96 +1,61 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:43158 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:43185 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751194AbbFNLUf (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 14 Jun 2015 07:20:35 -0400
-Message-ID: <557D637F.8090206@kernel.org>
-Date: Sun, 14 Jun 2015 12:20:31 +0100
+	with ESMTP id S1750947AbbFNLWF (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 14 Jun 2015 07:22:05 -0400
+Message-ID: <557D63DC.4000005@kernel.org>
+Date: Sun, 14 Jun 2015 12:22:04 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Josh Cartwright <joshc@ni.com>
-CC: Xander Huff <xander.huff@ni.com>, lars@metafoo.de,
-	robh+dt@kernel.org, pawel.moll@arm.com, mark.rutland@arm.com,
-	ijc+devicetree@hellion.org.uk, galak@codeaurora.org,
-	michal.simek@xilinx.com, soren.brinkmann@xilinx.com,
-	knaack.h@gmx.de, pmeerw@pmeerw.net, devicetree@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org, linux-iio@vger.kernel.org,
-	ben.shelton@ni.com, joe.hershberger@ni.com
-Subject: Re: [PATCH v2 2/2] iio: adc: xilinx-xadc: Add label as an optional
- argument for aux channels
-References: <555B78A3.2030202@metafoo.de> <1432135352-29848-1-git-send-email-xander.huff@ni.com> <1432135352-29848-2-git-send-email-xander.huff@ni.com> <55747616.1010901@kernel.org> <20150608134914.GF633@jcartwri.amer.corp.natinst.com>
-In-Reply-To: <20150608134914.GF633@jcartwri.amer.corp.natinst.com>
+To: Ezequiel Garcia <ezequiel.garcia@imgtec.com>,
+	linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>
+CC: Naidu Tellapati <naidu.tellapati@imgtec.com>,
+	James Hartley <james.hartley@imgtec.com>,
+	phani.movva@imgtec.com
+Subject: Re: [PATCH 5/5] iio: adc: cc10001: Power-up the ADC at probe time
+ when used remotely
+References: <1431033842-1149-1-git-send-email-ezequiel.garcia@imgtec.com> <554CBD24.3060205@kernel.org> <556474C2.7020600@imgtec.com> <55747588.9000707@kernel.org>
+In-Reply-To: <55747588.9000707@kernel.org>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 08/06/15 14:49, Josh Cartwright wrote:
-> On Sun, Jun 07, 2015 at 05:49:26PM +0100, Jonathan Cameron wrote:
->> On 20/05/15 16:22, Xander Huff wrote:
->>> To better facilitate user-mode access to optional aux channels, allow
->>> device trees to specify a custom label for defined channels.
+On 07/06/15 17:47, Jonathan Cameron wrote:
+> On 26/05/15 14:27, Ezequiel Garcia wrote:
+>>
+>>
+>> On 05/08/2015 10:41 AM, Jonathan Cameron wrote:
+>>> On 07/05/15 17:24, Ezequiel Garcia wrote:
+>>>> From: Naidu Tellapati <naidu.tellapati@imgtec.com>
+>>>>
+>>>> The ADC is typically shared with remote CPUs not running Linux.
+>>>> However, there is only one register to power-up/power-down. Remote CPUs
+>>>> aren't able to power-up the ADC, and rely in Linux doing it instead.
+>>>>
+>>>> This commit uses the adc-reserved-channels devicetree property to
+>>>> distinguish shared usage. In this case, the ADC is powered up at
+>>>> probe time.
+>>>>
+>>>> If the ADC is used only by the CPU running Linux, power-up/down
+>>>> at runtime, only when neeeded.
+>>>>
+>>>> Signed-off-by: Naidu Tellapati <naidu.tellapati@imgtec.com>
+>>>> Signed-off-by: Ezequiel Garcia <ezequiel.garcia@imgtec.com>
+>>> Seems sensible to me, but as you observe it's not a fix as such, so
+>>> will hold this until the other patches have propagated through to
+>>> the togreg tree.
 >>>
->>> Signed-off-by: Xander Huff <xander.huff@ni.com>
->>> Reviewed-by: Joe Hershberger <joe.hershberger@ni.com>
->>> Reviewed-by: Josh Cartwright <joshc@ni.com>
->>> ---
->>>  drivers/iio/adc/xilinx-xadc-core.c | 3 +++
->>>  1 file changed, 3 insertions(+)
+>>> Feel free to remind me if I seem to have forgotten!
 >>>
->>> diff --git a/drivers/iio/adc/xilinx-xadc-core.c b/drivers/iio/adc/xilinx-xadc-core.c
->>> index ce93bd8..bda4241 100644
->>> --- a/drivers/iio/adc/xilinx-xadc-core.c
->>> +++ b/drivers/iio/adc/xilinx-xadc-core.c
->>> @@ -1119,6 +1119,9 @@ static int xadc_parse_dt(struct iio_dev *indio_dev, struct device_node *np,
->>>  			if (ret || reg > 16)
->>>  				continue;
->>>  
->>> +			of_property_read_string(child, "label",
->>> +						&chan->extend_name);
->>> +
->>>  			if (of_property_read_bool(child, "xlnx,bipolar"))
->>>  				chan->scan_type.sign = 's';
->>>  
->>>
->> I think what Lars was suggesting was a change to the IIO side of this rather than
->> just changing the device tree binding.
-> 
-> I'm not so sure.  His observation was just that the typical name of
-> these properties is 'label', which I think makes sense and is commonly
-> used.
-> 
-> Naming things is hard.
-> 
-> Perhaps, though, an improvement may be made if we lifted this out of the
-> xadc driver and moved it into the IIO core (I can't imagine that this
-> driver is the only one representing each channel with a separate node in
-> DT).
-> 
->> Perhaps an additional per channel attribute called _label which would
->> allow for board specific labelling?
-> 
-> This would seem a bit odd in DT-land; if a user wanted a different label
-> name for their board, they would just rename it in their device tree for
-> that board.  Fortunately, with the structured dtsi include files, this
-> is pretty painless to do.
-I don't really mind how it is done.  From a userspace point of view in IIO
-though I think these belong in their own attribute rather than in the naming
-of the attributes. The extended name stuff just makes for really hideous
-userspace code!
+>>
+>> Ping.
+> They haven't made it to the togreg tree yet!  Will pick up when I next
+> go through a pull request...
+Now they are there. Applied to the togreg branch of iio.git.
+Timing was rather against us this time, so this won't hit until the next
+merge cycle now.
 
-Hence you could use the device tree node naming to provide it, or some other
-means, but I'd like to have it provided to userspace as say
-
-in_voltage0_label which when read provides the name as a straightforward string.
-
-This would obviously want to be provided by the IIO core.
-
-As for moving the per channel DT node stuff into the IIO core, at this point
-there are a few drivers doing it, but far from all, so the best bet would be
-a utility function to help the drivers handle the manipulation rather than
-direct support in the core.
+Sorry about that, been a busy few months!
 
 Jonathan
-> 
->   Josh
-> 
 
