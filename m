@@ -1,63 +1,122 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:45057 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:45853 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751549AbbFNPzl (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 14 Jun 2015 11:55:41 -0400
-Message-ID: <557DA3FA.4050300@kernel.org>
-Date: Sun, 14 Jun 2015 16:55:38 +0100
+	with ESMTP id S1752034AbbFNR51 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 14 Jun 2015 13:57:27 -0400
+Message-ID: <557DC084.6090205@kernel.org>
+Date: Sun, 14 Jun 2015 18:57:24 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Lars-Peter Clausen <lars@metafoo.de>,
-	Gergely Imreh <imrehg@gmail.com>
-CC: michal.simek@xilinx.com, linux-iio@vger.kernel.org,
-	Linux ARM Kernel <linux-arm-kernel@lists.infradead.org>,
-	linux-kernel@vger.kernel.org, ola@adapteva.com
-Subject: Re: [PATCH 1/1] iio:adc: XADC: Set offset explicitly to zero on voltage
- channels
-References: <1434010946-8118-1-git-send-email-imrehg@gmail.com> <557C76D2.7030306@kernel.org> <CAJ3iQcoKPi7vCO5c==DcwwNY6LEKJ+xPueELDC85XPVus0qf0A@mail.gmail.com> <557DA18F.5090805@metafoo.de>
-In-Reply-To: <557DA18F.5090805@metafoo.de>
-Content-Type: text/plain; charset=utf-8
+To: simon@mungewell.org
+CC: linux-input@vger.kernel.org,
+	Frank Praznik <frank.praznik@oh.rr.com>,
+	linux-iio@vger.kernel.org,
+	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Subject: Re: [RFC] HID: hid-sony: Add basic iio-subsystem reading of SixAxis
+ Accelerometers
+References: <195dff9bd065db7e618280cb7c6eb5a9.squirrel@mungewell.org>    <1434034458-1968-1-git-send-email-simon@mungewell.org>    <557D9564.9090800@kernel.org> <d6702f5d19d2baea80132666fcf7654a.squirrel@mungewell.org>
+In-Reply-To: <d6702f5d19d2baea80132666fcf7654a.squirrel@mungewell.org>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 14/06/15 16:45, Lars-Peter Clausen wrote:
-> On 06/14/2015 05:15 AM, Gergely Imreh wrote:
->> On 14 June 2015 at 02:30, Jonathan Cameron <jic23@kernel.org> wrote:
->>> On 11/06/15 09:22, Gergely Imreh wrote:
->>>> The Xilinx XADC driver has both a temperature channel and 8 voltage
->>>> channels. The voltage channels have no offset, but actually were still
->>>> set the same offset as the temperature channel. This did not cause
->>>> problems in /sys/bus/iio/ but can cause problems with other drivers
->>>> using iio data. For example iio-hwmon did return wrong voltage values
->>>> because of the offset.
->>>>
->>>> Change tested with the Parallella board.
->>>>
->>>> Signed-off-by: Gergely Imreh <imrehg@gmail.com>
->>> Well spotted on the bug, but I think we are better off fixing this at the
->>> true source of the problem which is in drivers/iio/inkern.c
->>> iio_convert_raw_to_processed_unlocked which does a call to
->>> iio_channel_read(chan, &offset, NULL, IIO_CHAN_INFO_OFFSET) then uses
->>> the error return to check if the offset parameter is available. It should
->>> be checking that before making this call with a call to iio_channel_has_info.
->>>
->>> I don't suppose you could prepare a patch fixing that as you found the problem?
->>
->> I'll check it out, and send an updated patch! Thanks for the pointers
->> to the core of the issue.
+On 14/06/15 18:25, simon@mungewell.org wrote:
+> Thank you for your comments, I'm just getting started with IIO so it's all
+> good stuff...
 > 
-> The issue was already fixed a while ago, see this patch: 
-> http://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git/commit/?id=65de7654d39c70c2b942f801cea01590cf7e3458
->
->  Starting with that commit iio_channel_read() returns an error when
-> the attribute is not available, which causes
-> iio_convert_raw_to_processed_unlocked() to skip the offset if it is
-> not available.
+Srinivas, cc'd you as a few queries came up about the hid-sensors driver.
+(it's got me thoroughly confused ;(
+>>> +++++++++++++++++++++++++++++++++++++++++++++++++
+>> Hmm. This driver is already a substantial mash up of a number of different
+>> types of driver (as far as linux is concerned), with input, battery and
+>> led
+>> drivers.  Might be worth considering a more formal MFD approach as it'll
+>> break the driver up into a number of sub components that will then sit
+>> in the various subsystems in a cleaner fashion.
+>> Just a thought!
 > 
-oops.  Good spot. I'd completely forgotten about that and failed to spot
-the check when looking at the code yesterday.
+> Might be, but that sounds like more work ;-) If pushing some ideas around
+> prompts that, it can't be a bad thing.... right?
+> 
+>>> +	case IIO_CHAN_INFO_SCALE:
+>>> +		switch (chan->type) {
+>> If the scale really is 1 then don't export it.  Note the units would
+>> have to be in m/s^2 which seems unlikely though. I'm guessing this
+>> is a placeholder..
+> 
+> Yes place holder, different controllers (SixAxis, DS4 and PSMove) have
+> different values. In the far future I'd hope to use the per-device
+> calibration stored on the PSMove.
+> 
+> https://github.com/nitsch/moveonpc/wiki/Calibration-data
+> 
+>>> +static const struct iio_chan_spec sony_sixaxis_channels[] = {
+>>> +	SONY_ACC_CHANNEL(X),
+>>> +	SONY_ACC_CHANNEL(Y),
+>>> +	SONY_ACC_CHANNEL(Z),
+>> No gyro channels yet?
+>> Just to note, if the gyro frequency etc is different from the
+>> accelerometer
+>> (pretty common) then you'll want to register two IIO devices rather than
+>> just the one so that the control and buffers are separate.
+> 
+> I have a vague memory that the SixAxis has a 1-ch gyro but this is not
+> showing on hidraw (might be 'hidden' behind MultiTouch ID/Bug).
+> 
+> The DS4 has Accel/Gyros, and the PSMove has Accel/Gyro/Mag. I didn't
+> expose the mags over input/joystick axis as I didn't want to corrupt
+> stream the PSMoveAPI (it needs to be re-ordered) and it's unlikely anyone
+> would actually use via joystick.
+> 
+> The PSMove's report actually contains 2 frames assumed to be 1/2 sample
+> rate apart for the Accel/Gyro, but only one Mag reading.
+> 
+> 
+> 
+> I have further advanced the patch to include reading via buffer, but I'm
+> having trigger 'conceptual' problems getting my head around the HID device
+> issuing an interrupt when a input report is received. Looking at
+> iio_dummy_event and iios_sysfs for inspiration....
+You can skip the triggers.  It's not obligatory, you can push directly into a buffer.
+Triggers are nice for 'data ready' type signals (which is closest to what we
+have here) if you might want to hang other sensors off the timing (so read
+on demand ADCs etc.  They aren't actually 'required' as such.
 
-Glad you were keeping an eagle eye on things ;)
+Looking at the hid drivers I'm not entirely sure they are actually doing anything.
+(been a while since I looked at these in detail!).  Srinivas, perhaps you could help
+out with what's going on there?
 
-J
-> - Lars
+I can't find an iio_trigger_poll call so the trigger is neither used by the
+hid sensors drivers, not usable by anything else as far as I can see..
+Looks like it is used purely to get the device into the correct power state
+etc.  If so that stuff should be in the buffer preenable / postdisable not
+the trigger stuff.
+
+I get the feeling that this might all be a work around for a perceived need
+for a trigger (particularly in userspace app examples?) as it predates
+the am355x driver where we absolutely said they weren't required and the
+userspace demo changes that were made to support that.
+> 
+> On the assumption that there will be multiple devices (either same type or
+> with different HID drivers) all trying to issue triggers, we'd need to be
+> a little careful.
+> 
+> Is there a 'short-cut' we can use if a HID device is only required to
+> trigger itself (and not other iio devices)? ie. not need true interrupt
+> system.
+Yes, you can use the 'validate_trigger' and 'validate_device' callbacks to
+reject either other devices trying to use the trigger, or your device trying
+to use a different one.  Lots of drivers do this in the first place (as you
+point out it is a short cut to get things working) then if anyone cares
+relax the constraint later by making the true interrupt stuff work.
+
+
+> 
+> Simon.
+> 
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> 
+
