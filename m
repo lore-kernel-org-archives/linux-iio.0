@@ -1,200 +1,100 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:43056 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:43080 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751035AbbFNLJs (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 14 Jun 2015 07:09:48 -0400
-Message-ID: <557D60FB.9070306@kernel.org>
-Date: Sun, 14 Jun 2015 12:09:47 +0100
+	with ESMTP id S1751194AbbFNLML (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 14 Jun 2015 07:12:11 -0400
+Message-ID: <557D6184.90105@kernel.org>
+Date: Sun, 14 Jun 2015 12:12:04 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Tiberiu Breana <tiberiu.a.breana@intel.com>,
-	linux-iio@vger.kernel.org
-Subject: Re: [PATCH v2] iio: accel: Add sampling rate support for STK8312
-References: <1433942442-23234-1-git-send-email-tiberiu.a.breana@intel.com>
-In-Reply-To: <1433942442-23234-1-git-send-email-tiberiu.a.breana@intel.com>
+To: Stefan Agner <stefan@agner.ch>, Rob Herring <robherring2@gmail.com>
+CC: Shawn Guo <shawn.guo@linaro.org>, kernel@pengutronix.de,
+	knaack.h@gmx.de, Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Rob Herring <robh+dt@kernel.org>,
+	Pawel Moll <pawel.moll@arm.com>,
+	Mark Rutland <mark.rutland@arm.com>,
+	Ian Campbell <ijc+devicetree@hellion.org.uk>,
+	Kumar Gala <galak@codeaurora.org>,
+	Fugang Duan <B38611@freescale.com>, maitysanchayan@gmail.com,
+	devicetree@vger.kernel.org, linux-iio@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v5 1/2] iio: adc: vf610: implement configurable conversion
+ modes
+References: <1432730872-14325-1-git-send-email-stefan@agner.ch> <1432730872-14325-2-git-send-email-stefan@agner.ch> <CAL_JsqK0YxgJ-k8kSs6XQj9n3FSg4QBd-GdFEfcafH7Cm4NreQ@mail.gmail.com> <14d469dedae9de1ce519fe90401e526e@agner.ch>
+In-Reply-To: <14d469dedae9de1ce519fe90401e526e@agner.ch>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 10/06/15 14:20, Tiberiu Breana wrote:
-> Added support for setting the STK8312 accelerometer's
-> sampling rate.
+On 08/06/15 21:07, Stefan Agner wrote:
+> On 2015-06-08 19:49, Rob Herring wrote:
+>> On Wed, May 27, 2015 at 7:47 AM, Stefan Agner <stefan@agner.ch> wrote:
+>>> Support configurable conversion mode through sysfs. So far, the
+>>> mode used was low-power, which is enabled by default now. Beside
+>>> that, the modes normal and high-speed are selectable as well.
+>>>
+>>> Use the new device tree property which specifies the maximum ADC
+>>> conversion clock frequencies. Depending on the mode used, the
+>>> available resulting conversion frequency are calculated
+>>> dynamically.
+>>>
+>>> Acked-by: Fugang Duan <B38611@freescale.com>
+>>> Signed-off-by: Stefan Agner <stefan@agner.ch>
+>>> ---
+>>>  Documentation/ABI/testing/sysfs-bus-iio-vf610      |   7 +
+>>>  .../devicetree/bindings/iio/adc/vf610-adc.txt      |   9 ++
+>>>  drivers/iio/adc/vf610_adc.c                        | 146 +++++++++++++++------
+>>>  3 files changed, 120 insertions(+), 42 deletions(-)
+>>>  create mode 100644 Documentation/ABI/testing/sysfs-bus-iio-vf610
+>>>
+>>> diff --git a/Documentation/ABI/testing/sysfs-bus-iio-vf610 b/Documentation/ABI/testing/sysfs-bus-iio-vf610
+>>> new file mode 100644
+>>> index 0000000..ecbc1f4
+>>> --- /dev/null
+>>> +++ b/Documentation/ABI/testing/sysfs-bus-iio-vf610
+>>> @@ -0,0 +1,7 @@
+>>> +What:          /sys/bus/iio/devices/iio:deviceX/conversion_mode
+>>> +KernelVersion: 4.2
+>>> +Contact:       linux-iio@vger.kernel.org
+>>> +Description:
+>>> +               Specifies the hardware conversion mode used. The three
+>>> +               available modes are "normal", "high-speed" and "low-power",
+>>> +               where the last is the default mode.
+>>> diff --git a/Documentation/devicetree/bindings/iio/adc/vf610-adc.txt b/Documentation/devicetree/bindings/iio/adc/vf610-adc.txt
+>>> index 1a4a43d..3eb40e2 100644
+>>> --- a/Documentation/devicetree/bindings/iio/adc/vf610-adc.txt
+>>> +++ b/Documentation/devicetree/bindings/iio/adc/vf610-adc.txt
+>>> @@ -11,6 +11,13 @@ Required properties:
+>>>  - clock-names: Must contain "adc", matching entry in the clocks property.
+>>>  - vref-supply: The regulator supply ADC reference voltage.
+>>>
+>>> +Recommended properties:
+>>> +- fsl,adck-max-frequency: Maximum frequencies according to datasheets operating
+>>> +  requirements. Three values are required, depending on conversion mode:
+>>> +  - Frequency in normal mode (ADLPC=0, ADHSC=0)
+>>> +  - Frequency in high-speed mode (ADLPC=0, ADHSC=1)
+>>> +  - Frequency in low-power mode (ADLPC=1, ADHSC=0)
+>>
+>> Why is this "adck" rather than "adc"?
 > 
-> Signed-off-by: Tiberiu Breana <tiberiu.a.breana@intel.com>
-> ---
-> v2: replaced stk8312_samp_freq_table with a struct for better readability
-This doesn't apply so I am guessing it is meant to go after the trigger/ buffer
-patch. Please combine them in a single series for the next version.
-
-Jonathan
-> ---
->  drivers/iio/accel/stk8312.c | 96 ++++++++++++++++++++++++++++++++++++++-------
->  1 file changed, 82 insertions(+), 14 deletions(-)
+> That is the name of the clock according to the reference manual and data
+> sheet.
 > 
-> diff --git a/drivers/iio/accel/stk8312.c b/drivers/iio/accel/stk8312.c
-> index 12ad95e..fdf2979 100644
-> --- a/drivers/iio/accel/stk8312.c
-> +++ b/drivers/iio/accel/stk8312.c
-> @@ -29,6 +29,7 @@
->  #define STK8312_REG_ZOUT		0x02
->  #define STK8312_REG_INTSU		0x06
->  #define STK8312_REG_MODE		0x07
-> +#define STK8312_REG_SR			0x08
->  #define STK8312_REG_STH			0x13
->  #define STK8312_REG_RESET		0x20
->  #define STK8312_REG_AFECTRL		0x24
-> @@ -41,6 +42,8 @@
->  #define STK8312_DREADY_MASK		0x10
->  #define STK8312_INT_MODE		0xC0
->  #define STK8312_RNG_MASK		0xC0
-> +#define STK8312_SR_MASK			0x07
-> +#define STK8312_SR_400HZ_IDX		0
->  #define STK8312_RNG_SHIFT		6
->  #define STK8312_READ_RETRIES		16
->  
-> @@ -63,20 +66,29 @@ static const int stk8312_scale_table[][2] = {
->  	{0, 461600}, {1, 231100}
->  };
->  
-> -#define STK8312_ACCEL_CHANNEL(index, reg, axis) {		\
-> -	.type = IIO_ACCEL,					\
-> -	.address = reg,						\
-> -	.modified = 1,						\
-> -	.channel2 = IIO_MOD_##axis,				\
-> -	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),		\
-> -	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),	\
-> -	.scan_index = index,					\
-> -	.scan_type = {						\
-> -		.sign = 's',					\
-> -		.realbits = 8,					\
-> -		.storagebits = 8,				\
-> -		.endianness = IIO_CPU,				\
-> -	},							\
-> +static const struct {
-> +	u16 val;
-> +	u32 val2;
-> +} stk8312_samp_freq_table[] = {
-> +	{400, 0}, {200, 0}, {100, 0}, {50, 0}, {25, 0},
-> +	{12, 500000}, {6, 250000}, {3, 125000}
-> +};
-> +
-> +#define STK8312_ACCEL_CHANNEL(index, reg, axis) {			\
-> +	.type = IIO_ACCEL,						\
-> +	.address = reg,							\
-> +	.modified = 1,							\
-> +	.channel2 = IIO_MOD_##axis,					\
-> +	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),			\
-> +	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE) |		\
-> +				    BIT(IIO_CHAN_INFO_SAMP_FREQ),	\
-> +	.scan_index = index,						\
-> +	.scan_type = {							\
-> +		.sign = 's',						\
-> +		.realbits = 8,						\
-> +		.storagebits = 8,					\
-> +		.endianness = IIO_CPU,					\
-> +	},								\
->  }
->  
->  static const struct iio_chan_spec stk8312_channels[] = {
-> @@ -90,6 +102,7 @@ struct stk8312_data {
->  	struct i2c_client *client;
->  	struct mutex lock;
->  	int range;
-> +	u8 sample_rate_idx;
->  	u8 mode;
->  	struct iio_trigger *dready_trig;
->  	bool dready_trigger_on;
-> @@ -98,8 +111,11 @@ struct stk8312_data {
->  
->  static IIO_CONST_ATTR(in_accel_scale_available, STK8312_SCALE_AVAIL);
->  
-> +static IIO_CONST_ATTR_SAMP_FREQ_AVAIL("3.125 6.25 12.5 25 50 100 200 400");
-> +
->  static struct attribute *stk8312_attributes[] = {
->  	&iio_const_attr_in_accel_scale_available.dev_attr.attr,
-> +	&iio_const_attr_sampling_frequency_available.dev_attr.attr,
->  	NULL,
->  };
->  
-> @@ -216,6 +232,39 @@ static const struct iio_trigger_ops stk8312_trigger_ops = {
->  	.owner = THIS_MODULE,
->  };
->  
-> +static int stk8312_set_sample_rate(struct stk8312_data *data, int rate)
-> +{
-> +	int ret;
-> +	u8 masked_reg;
-> +	u8 mode;
-> +	struct i2c_client *client = data->client;
-> +
-> +	if (rate == data->sample_rate_idx)
-> +		return 0;
-> +
-> +	mode = data->mode;
-> +	/* We need to go in standby mode to modify registers */
-> +	ret = stk8312_set_mode(data, !STK8312_POWER_MASK);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	ret = i2c_smbus_read_byte_data(client, STK8312_REG_SR);
-> +	if (ret < 0) {
-> +		dev_err(&client->dev, "failed to set sampling rate\n");
-> +		return ret;
-> +	}
-> +
-> +	masked_reg = (ret & (~STK8312_SR_MASK)) | rate;
-> +
-> +	ret = i2c_smbus_write_byte_data(client, STK8312_REG_SR, masked_reg);
-> +	if (ret < 0)
-> +		dev_err(&client->dev, "failed to set sampling rate\n");
-> +	else
-> +		data->sample_rate_idx = rate;
-> +
-> +	return stk8312_set_mode(data, mode);
-> +}
-> +
->  static int stk8312_set_range(struct stk8312_data *data, u8 range)
->  {
->  	int ret;
-> @@ -299,6 +348,10 @@ static int stk8312_read_raw(struct iio_dev *indio_dev,
->  		*val = stk8312_scale_table[data->range - 1][0];
->  		*val2 = stk8312_scale_table[data->range - 1][1];
->  		return IIO_VAL_INT_PLUS_MICRO;
-> +	case IIO_CHAN_INFO_SAMP_FREQ:
-> +		*val = stk8312_samp_freq_table[data->sample_rate_idx].val;
-> +		*val2 = stk8312_samp_freq_table[data->sample_rate_idx].val2;
-> +		return IIO_VAL_INT_PLUS_MICRO;
->  	}
->  
->  	return -EINVAL;
-> @@ -329,6 +382,20 @@ static int stk8312_write_raw(struct iio_dev *indio_dev,
->  		mutex_unlock(&data->lock);
->  
->  		return ret;
-> +	case IIO_CHAN_INFO_SAMP_FREQ:
-> +		for (i = 0; i < ARRAY_SIZE(stk8312_samp_freq_table); i++)
-> +			if (val == stk8312_samp_freq_table[i].val &&
-> +			    val2 == stk8312_samp_freq_table[i].val2) {
-> +				index = i;
-> +				break;
-> +			}
-> +		if (index < 0)
-> +			return -EINVAL;
-> +		mutex_lock(&data->lock);
-> +		ret = stk8312_set_sample_rate(data, index);
-> +		mutex_unlock(&data->lock);
-> +
-> +		return ret;
->  	}
->  
->  	return -EINVAL;
-> @@ -459,6 +526,7 @@ static int stk8312_probe(struct i2c_client *client,
->  		dev_err(&client->dev, "failed to reset sensor\n");
->  		return ret;
->  	}
-> +	data->sample_rate_idx = STK8312_SR_400HZ_IDX;
->  	ret = stk8312_set_range(data, 1);
->  	if (ret < 0)
->  		return ret;
+>> How is this related to today's patch adding min-sample-time?
+> 
+> It is related in that this clock is the base to calculate the sampling
+> time, but otherwise not really related. Afaik, not respecting the
+> maximum clock frequency is probably more a issue for the SAR part of the
+> ADC.
+Rob, are you happy with Stefan's responses?
+> 
+> --
+> Stefan
+> 
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
 > 
 
