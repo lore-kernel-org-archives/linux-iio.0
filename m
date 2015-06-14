@@ -1,123 +1,50 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:44650 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751615AbbFNPE0 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 14 Jun 2015 11:04:26 -0400
-Message-ID: <557D97F2.8080603@kernel.org>
-Date: Sun, 14 Jun 2015 16:04:18 +0100
-From: Jonathan Cameron <jic23@kernel.org>
+Return-Path: <lars@metafoo.de>
+Message-ID: <557DA18F.5090805@metafoo.de>
+Date: Sun, 14 Jun 2015 17:45:19 +0200
+From: Lars-Peter Clausen <lars@metafoo.de>
 MIME-Version: 1.0
-To: Irina Tirdea <irina.tirdea@intel.com>, linux-iio@vger.kernel.org,
-	Hartmut Knaack <knaack.h@gmx.de>
-CC: linux-kernel@vger.kernel.org, Vlad Dogaru <vlad.dogaru@intel.com>
-Subject: Re: [PATCH v2 17/17] iio: accel: mma9553: use unsigned counters
-References: <1428939664-12503-1-git-send-email-irina.tirdea@intel.com> <1428939664-12503-18-git-send-email-irina.tirdea@intel.com>
-In-Reply-To: <1428939664-12503-18-git-send-email-irina.tirdea@intel.com>
-Content-Type: text/plain; charset=windows-1252
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+To: Gergely Imreh <imrehg@gmail.com>, Jonathan Cameron <jic23@kernel.org>
+CC: michal.simek@xilinx.com, linux-iio@vger.kernel.org,
+ Linux ARM Kernel <linux-arm-kernel@lists.infradead.org>,
+ linux-kernel@vger.kernel.org, ola@adapteva.com
+Subject: Re: [PATCH 1/1] iio:adc: XADC: Set offset explicitly to zero on voltage
+ channels
+References: <1434010946-8118-1-git-send-email-imrehg@gmail.com> <557C76D2.7030306@kernel.org> <CAJ3iQcoKPi7vCO5c==DcwwNY6LEKJ+xPueELDC85XPVus0qf0A@mail.gmail.com>
+In-Reply-To: <CAJ3iQcoKPi7vCO5c==DcwwNY6LEKJ+xPueELDC85XPVus0qf0A@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+List-ID: <linux-iio@vger.kernel.org>
 
-On 13/04/15 16:41, Irina Tirdea wrote:
-> Use unsigned counters instead of signed when all the
-> possible values are positive.
-> 
-> Signed-off-by: Irina Tirdea <irina.tirdea@intel.com>
-> Suggested-by: Hartmut Knaack <knaack.h@gmx.de>
-Hmm. I'm actually going to drop this one.  I'm not sure
-there is a significant gain to be had by using minimal
-sized integers as loop iterators.
+On 06/14/2015 05:15 AM, Gergely Imreh wrote:
+> On 14 June 2015 at 02:30, Jonathan Cameron <jic23@kernel.org> wrote:
+>> On 11/06/15 09:22, Gergely Imreh wrote:
+>>> The Xilinx XADC driver has both a temperature channel and 8 voltage
+>>> channels. The voltage channels have no offset, but actually were still
+>>> set the same offset as the temperature channel. This did not cause
+>>> problems in /sys/bus/iio/ but can cause problems with other drivers
+>>> using iio data. For example iio-hwmon did return wrong voltage values
+>>> because of the offset.
+>>>
+>>> Change tested with the Parallella board.
+>>>
+>>> Signed-off-by: Gergely Imreh <imrehg@gmail.com>
+>> Well spotted on the bug, but I think we are better off fixing this at the
+>> true source of the problem which is in drivers/iio/inkern.c
+>> iio_convert_raw_to_processed_unlocked which does a call to
+>> iio_channel_read(chan, &offset, NULL, IIO_CHAN_INFO_OFFSET) then uses
+>> the error return to check if the offset parameter is available. It should
+>> be checking that before making this call with a call to iio_channel_has_info.
+>>
+>> I don't suppose you could prepare a patch fixing that as you found the problem?
+>
+> I'll check it out, and send an updated patch! Thanks for the pointers
+> to the core of the issue.
 
-int is just fine.
+The issue was already fixed a while ago, see this patch:
+http://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git/commit/?id=65de7654d39c70c2b942f801cea01590cf7e3458
 
-Jonathan
-> ---
->  drivers/iio/accel/mma9551_core.c | 12 +++++++-----
->  drivers/iio/accel/mma9553.c      |  8 ++++----
->  2 files changed, 11 insertions(+), 9 deletions(-)
-> 
-> diff --git a/drivers/iio/accel/mma9551_core.c b/drivers/iio/accel/mma9551_core.c
-> index c34c5ce..44b8243 100644
-> --- a/drivers/iio/accel/mma9551_core.c
-> +++ b/drivers/iio/accel/mma9551_core.c
-> @@ -115,8 +115,8 @@ struct mma9551_version_info {
->  
->  static int mma9551_transfer(struct i2c_client *client,
->  			    u8 app_id, u8 command, u16 offset,
-> -			    u8 *inbytes, int num_inbytes,
-> -			    u8 *outbytes, int num_outbytes)
-> +			    u8 *inbytes, u8 num_inbytes,
-> +			    u8 *outbytes, u8 num_outbytes)
->  {
->  	struct mma9551_mbox_request req;
->  	struct mma9551_mbox_response rsp;
-> @@ -387,7 +387,8 @@ EXPORT_SYMBOL(mma9551_read_status_word);
->  int mma9551_read_config_words(struct i2c_client *client, u8 app_id,
->  			      u16 reg, u8 len, u16 *buf)
->  {
-> -	int ret, i;
-> +	int ret;
-> +	u8 i;
->  	__be16 be_buf[MMA9551_MAX_MAILBOX_DATA_REGS / 2];
->  
->  	if (len > ARRAY_SIZE(be_buf)) {
-> @@ -426,7 +427,8 @@ EXPORT_SYMBOL(mma9551_read_config_words);
->  int mma9551_read_status_words(struct i2c_client *client, u8 app_id,
->  			      u16 reg, u8 len, u16 *buf)
->  {
-> -	int ret, i;
-> +	int ret;
-> +	u8 i;
->  	__be16 be_buf[MMA9551_MAX_MAILBOX_DATA_REGS / 2];
->  
->  	if (len > ARRAY_SIZE(be_buf)) {
-> @@ -465,7 +467,7 @@ EXPORT_SYMBOL(mma9551_read_status_words);
->  int mma9551_write_config_words(struct i2c_client *client, u8 app_id,
->  			       u16 reg, u8 len, u16 *buf)
->  {
-> -	int i;
-> +	u8 i;
->  	__be16 be_buf[(MMA9551_MAX_MAILBOX_DATA_REGS - 1) / 2];
->  
->  	if (len > ARRAY_SIZE(be_buf)) {
-> diff --git a/drivers/iio/accel/mma9553.c b/drivers/iio/accel/mma9553.c
-> index a605280..ad587ec 100644
-> --- a/drivers/iio/accel/mma9553.c
-> +++ b/drivers/iio/accel/mma9553.c
-> @@ -189,7 +189,7 @@ struct mma9553_data {
->  	struct mutex mutex;
->  	struct mma9553_conf_regs conf;
->  	struct mma9553_event events[MMA9553_EVENTS_INFO_SIZE];
-> -	int num_events;
-> +	u8 num_events;
->  	u8 gpio_bitnum;
->  	/*
->  	 * This is used for all features that depend on step count:
-> @@ -230,7 +230,7 @@ static enum iio_modifier mma9553_activity_to_mod(enum activity_level activity)
->  
->  static void mma9553_init_events(struct mma9553_data *data)
->  {
-> -	int i;
-> +	u8 i;
->  
->  	data->num_events = MMA9553_EVENTS_INFO_SIZE;
->  	for (i = 0; i < data->num_events; i++) {
-> @@ -244,7 +244,7 @@ static struct mma9553_event *mma9553_get_event(struct mma9553_data *data,
->  					       enum iio_modifier mod,
->  					       enum iio_event_direction dir)
->  {
-> -	int i;
-> +	u8 i;
->  
->  	for (i = 0; i < data->num_events; i++)
->  		if (data->events[i].info->type == type &&
-> @@ -259,7 +259,7 @@ static bool mma9553_is_any_event_enabled(struct mma9553_data *data,
->  					 bool check_type,
->  					 enum iio_chan_type type)
->  {
-> -	int i;
-> +	u8 i;
->  
->  	for (i = 0; i < data->num_events; i++)
->  		if ((check_type && data->events[i].info->type == type &&
-> 
+Starting with that commit iio_channel_read() returns an error when the 
+attribute is not available, which causes 
+iio_convert_raw_to_processed_unlocked() to skip the offset if it is not 
+available.
 
+- Lars
