@@ -1,4 +1,8 @@
-Return-Path: <knaack.h@gmx.de>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mout.gmx.net ([212.227.15.19]:50749 "EHLO mout.gmx.net"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751933AbbFOVsm (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Mon, 15 Jun 2015 17:48:42 -0400
 From: Hartmut Knaack <knaack.h@gmx.de>
 To: linux-iio@vger.kernel.org
 Cc: Jonathan Cameron <jic23@kernel.org>,
@@ -7,18 +11,19 @@ Cc: Jonathan Cameron <jic23@kernel.org>,
 	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
 	Octavian Purdila <octavian.purdila@intel.com>,
 	Laurentiu Palcu <laurentiu.palcu@intel.com>
-Subject: [PATCH 2/3] iio:accel:bmc150-accel: make use of mask definition
-Date: Mon, 15 Jun 2015 23:48:25 +0200
-Message-Id: <a9a11f217224e458d8ffb2741b27f1ad92db1870.1434404216.git.knaack.h@gmx.de>
+Subject: [PATCH 1/3] iio:accel:bmc150-accel: fix counting direction
+Date: Mon, 15 Jun 2015 23:48:24 +0200
+Message-Id: <905a190eec730a8e31863e079a55029612784d93.1434404216.git.knaack.h@gmx.de>
 In-Reply-To: <cover.1434404216.git.knaack.h@gmx.de>
 References: <cover.1434404216.git.knaack.h@gmx.de>
 In-Reply-To: <cover.1434404216.git.knaack.h@gmx.de>
 References: <cover.1434404216.git.knaack.h@gmx.de>
-List-ID: <linux-iio@vger.kernel.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-BMC150_ACCEL_SLOPE_THRES_MASK was defined some time ago, but its 'magic'
-value got used instead in bmc150_accel_write_event(). Make use of it for
-improved readability.
+In bmc150_accel_unregister_triggers() triggers should be unregistered in
+reverse order of registration. Trigger registration starts with number 0,
+counting up. In consequence, trigger number needs to be count down here.
 
 Signed-off-by: Hartmut Knaack <knaack.h@gmx.de>
 ---
@@ -26,17 +31,18 @@ Signed-off-by: Hartmut Knaack <knaack.h@gmx.de>
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/drivers/iio/accel/bmc150-accel.c b/drivers/iio/accel/bmc150-accel.c
-index cc5a357..36a9cd5 100644
+index 4e70f51..cc5a357 100644
 --- a/drivers/iio/accel/bmc150-accel.c
 +++ b/drivers/iio/accel/bmc150-accel.c
-@@ -776,7 +776,7 @@ static int bmc150_accel_write_event(struct iio_dev *indio_dev,
+@@ -1464,7 +1464,7 @@ static void bmc150_accel_unregister_triggers(struct bmc150_accel_data *data,
+ {
+ 	int i;
  
- 	switch (info) {
- 	case IIO_EV_INFO_VALUE:
--		data->slope_thres = val & 0xFF;
-+		data->slope_thres = val & BMC150_ACCEL_SLOPE_THRES_MASK;
- 		break;
- 	case IIO_EV_INFO_PERIOD:
- 		data->slope_dur = val & BMC150_ACCEL_SLOPE_DUR_MASK;
+-	for (i = from; i >= 0; i++) {
++	for (i = from; i >= 0; i--) {
+ 		if (data->triggers[i].indio_trig) {
+ 			iio_trigger_unregister(data->triggers[i].indio_trig);
+ 			data->triggers[i].indio_trig = NULL;
 -- 
 2.3.6
+
