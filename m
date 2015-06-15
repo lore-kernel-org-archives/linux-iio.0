@@ -1,194 +1,53 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga14.intel.com ([192.55.52.115]:13612 "EHLO mga14.intel.com"
+Received: from mga03.intel.com ([134.134.136.65]:1340 "EHLO mga03.intel.com"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1752210AbbFONjM (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Mon, 15 Jun 2015 09:39:12 -0400
-From: Tiberiu Breana <tiberiu.a.breana@intel.com>
-To: linux-iio@vger.kernel.org
-Cc: Jonathan Cameron <jic23@kernel.org>
-Subject: [PATCH v2 2/2] iio: accel: Add sampling rate support for STK8312
-Date: Mon, 15 Jun 2015 16:39:33 +0300
-Message-Id: <1434375573-31876-2-git-send-email-tiberiu.a.breana@intel.com>
-In-Reply-To: <1434375573-31876-1-git-send-email-tiberiu.a.breana@intel.com>
-References: <1434375573-31876-1-git-send-email-tiberiu.a.breana@intel.com>
+	id S1754124AbbFOON6 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Mon, 15 Jun 2015 10:13:58 -0400
+From: Daniel Baluta <daniel.baluta@intel.com>
+To: jic23@kernel.org
+Cc: pmeerw@pmeerw.net, knaack.h@gmx.de, lars@metafoo.de,
+	linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
+	daniel.baluta@intel.com
+Subject: [PATCH] iio: magnetometer: mmc35240: Fix crash in pm suspend
+Date: Mon, 15 Jun 2015 17:16:10 +0300
+Message-Id: <1434377770-20156-1-git-send-email-daniel.baluta@intel.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Added support for setting the STK8312 accelerometer's
-sampling rate.
+We must set i2c client private data at probe in order to
+correctly retrieve it in pm suspend/resume, preventing
+the following crash:
 
-Signed-off-by: Tiberiu Breana <tiberiu.a.breana@intel.com>
----
-v2: replaced stk8312_samp_freq_table with a struct for better readability
----
- drivers/iio/accel/stk8312.c | 96 ++++++++++++++++++++++++++++++++++++++-------
- 1 file changed, 82 insertions(+), 14 deletions(-)
+[ 321.790582] PM: Syncing filesystems ... done.
+[ 322.364440] PM: Preparing system for mem sleep
+[ 322.400047] PM: Entering mem sleep
+[ 322.462178] BUG: unable to handle kernel NULL pointer dereference at 0000036c
+[ 322.469119] IP: [<80e0b3d2>] mmc35240_suspend+0x12/0x30
+[ 322.474291] *pdpt = 000000002fd6f001 *pde = 0000000000000000
+[ 322.479967] Oops: 0000 1 PREEMPT SMP
+[ 322.496516] task: a86d0df0 ti: a8766000 task.ti: a8766000
+[ 322.570744] Call Trace:
+[ 322.573217] [<80c0d2d1>] pm_generic_suspend+0x21/0x30
+[ 322.578284] [<80d042ab>] i2c_device_pm_suspend+0x1b/0x30
 
-diff --git a/drivers/iio/accel/stk8312.c b/drivers/iio/accel/stk8312.c
-index aba209b..1970875 100644
---- a/drivers/iio/accel/stk8312.c
-+++ b/drivers/iio/accel/stk8312.c
-@@ -29,6 +29,7 @@
- #define STK8312_REG_ZOUT		0x02
- #define STK8312_REG_INTSU		0x06
- #define STK8312_REG_MODE		0x07
-+#define STK8312_REG_SR			0x08
- #define STK8312_REG_STH			0x13
- #define STK8312_REG_RESET		0x20
- #define STK8312_REG_AFECTRL		0x24
-@@ -40,6 +41,8 @@
- #define STK8312_DREADY_BIT		0x10
- #define STK8312_INT_MODE		0xC0
- #define STK8312_RNG_MASK		0xC0
-+#define STK8312_SR_MASK			0x07
-+#define STK8312_SR_400HZ_IDX		0
- #define STK8312_RNG_SHIFT		6
- #define STK8312_READ_RETRIES		16
- 
-@@ -62,20 +65,29 @@ static const int stk8312_scale_table[][2] = {
- 	{0, 461600}, {1, 231100}
- };
- 
--#define STK8312_ACCEL_CHANNEL(index, reg, axis) {		\
--	.type = IIO_ACCEL,					\
--	.address = reg,						\
--	.modified = 1,						\
--	.channel2 = IIO_MOD_##axis,				\
--	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),		\
--	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),	\
--	.scan_index = index,					\
--	.scan_type = {						\
--		.sign = 's',					\
--		.realbits = 8,					\
--		.storagebits = 8,				\
--		.endianness = IIO_CPU,				\
--	},							\
-+static const struct {
-+	u16 val;
-+	u32 val2;
-+} stk8312_samp_freq_table[] = {
-+	{400, 0}, {200, 0}, {100, 0}, {50, 0}, {25, 0},
-+	{12, 500000}, {6, 250000}, {3, 125000}
-+};
-+
-+#define STK8312_ACCEL_CHANNEL(index, reg, axis) {			\
-+	.type = IIO_ACCEL,						\
-+	.address = reg,							\
-+	.modified = 1,							\
-+	.channel2 = IIO_MOD_##axis,					\
-+	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),			\
-+	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE) |		\
-+				    BIT(IIO_CHAN_INFO_SAMP_FREQ),	\
-+	.scan_index = index,						\
-+	.scan_type = {							\
-+		.sign = 's',						\
-+		.realbits = 8,						\
-+		.storagebits = 8,					\
-+		.endianness = IIO_CPU,					\
-+	},								\
- }
- 
- static const struct iio_chan_spec stk8312_channels[] = {
-@@ -89,6 +101,7 @@ struct stk8312_data {
- 	struct i2c_client *client;
- 	struct mutex lock;
- 	int range;
-+	u8 sample_rate_idx;
- 	u8 mode;
- 	struct iio_trigger *dready_trig;
- 	bool dready_trigger_on;
-@@ -97,8 +110,11 @@ struct stk8312_data {
- 
- static IIO_CONST_ATTR(in_accel_scale_available, STK8312_SCALE_AVAIL);
- 
-+static IIO_CONST_ATTR_SAMP_FREQ_AVAIL("3.125 6.25 12.5 25 50 100 200 400");
-+
- static struct attribute *stk8312_attributes[] = {
- 	&iio_const_attr_in_accel_scale_available.dev_attr.attr,
-+	&iio_const_attr_sampling_frequency_available.dev_attr.attr,
- 	NULL,
- };
- 
-@@ -217,6 +233,39 @@ static const struct iio_trigger_ops stk8312_trigger_ops = {
- 	.owner = THIS_MODULE,
- };
- 
-+static int stk8312_set_sample_rate(struct stk8312_data *data, int rate)
-+{
-+	int ret;
-+	u8 masked_reg;
-+	u8 mode;
-+	struct i2c_client *client = data->client;
-+
-+	if (rate == data->sample_rate_idx)
-+		return 0;
-+
-+	mode = data->mode;
-+	/* We need to go in standby mode to modify registers */
-+	ret = stk8312_set_mode(data, !STK8312_POWER_BIT);
-+	if (ret < 0)
-+		return ret;
-+
-+	ret = i2c_smbus_read_byte_data(client, STK8312_REG_SR);
-+	if (ret < 0) {
-+		dev_err(&client->dev, "failed to set sampling rate\n");
-+		return ret;
-+	}
-+
-+	masked_reg = (ret & (~STK8312_SR_MASK)) | rate;
-+
-+	ret = i2c_smbus_write_byte_data(client, STK8312_REG_SR, masked_reg);
-+	if (ret < 0)
-+		dev_err(&client->dev, "failed to set sampling rate\n");
-+	else
-+		data->sample_rate_idx = rate;
-+
-+	return stk8312_set_mode(data, mode);
-+}
-+
- static int stk8312_set_range(struct stk8312_data *data, u8 range)
- {
- 	int ret;
-@@ -300,6 +349,10 @@ static int stk8312_read_raw(struct iio_dev *indio_dev,
- 		*val = stk8312_scale_table[data->range - 1][0];
- 		*val2 = stk8312_scale_table[data->range - 1][1];
- 		return IIO_VAL_INT_PLUS_MICRO;
-+	case IIO_CHAN_INFO_SAMP_FREQ:
-+		*val = stk8312_samp_freq_table[data->sample_rate_idx].val;
-+		*val2 = stk8312_samp_freq_table[data->sample_rate_idx].val2;
-+		return IIO_VAL_INT_PLUS_MICRO;
+Fixes: 553a776b7 ("iio: magnetometer: mmc35240: Add PM sleep support")
+Signed-off-by: Daniel Baluta <daniel.baluta@intel.com>
+---
+ drivers/iio/magnetometer/mmc35240.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/drivers/iio/magnetometer/mmc35240.c b/drivers/iio/magnetometer/mmc35240.c
+index 7a2ea71..e89b059 100644
+--- a/drivers/iio/magnetometer/mmc35240.c
++++ b/drivers/iio/magnetometer/mmc35240.c
+@@ -496,6 +496,7 @@ static int mmc35240_probe(struct i2c_client *client,
  	}
  
- 	return -EINVAL;
-@@ -330,6 +383,20 @@ static int stk8312_write_raw(struct iio_dev *indio_dev,
- 		mutex_unlock(&data->lock);
- 
- 		return ret;
-+	case IIO_CHAN_INFO_SAMP_FREQ:
-+		for (i = 0; i < ARRAY_SIZE(stk8312_samp_freq_table); i++)
-+			if (val == stk8312_samp_freq_table[i].val &&
-+			    val2 == stk8312_samp_freq_table[i].val2) {
-+				index = i;
-+				break;
-+			}
-+		if (index < 0)
-+			return -EINVAL;
-+		mutex_lock(&data->lock);
-+		ret = stk8312_set_sample_rate(data, index);
-+		mutex_unlock(&data->lock);
-+
-+		return ret;
- 	}
- 
- 	return -EINVAL;
-@@ -460,6 +527,7 @@ static int stk8312_probe(struct i2c_client *client,
- 		dev_err(&client->dev, "failed to reset sensor\n");
- 		return ret;
- 	}
-+	data->sample_rate_idx = STK8312_SR_400HZ_IDX;
- 	ret = stk8312_set_range(data, 1);
- 	if (ret < 0)
- 		return ret;
+ 	data = iio_priv(indio_dev);
++	i2c_set_clientdata(client, indio_dev);
+ 	data->client = client;
+ 	data->regmap = regmap;
+ 	data->res = MMC35240_16_BITS_SLOW;
 -- 
 1.9.1
 
