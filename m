@@ -1,49 +1,113 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from metis.ext.pengutronix.de ([92.198.50.35]:56250 "EHLO
-	metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750887AbbFOIfQ (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 15 Jun 2015 04:35:16 -0400
-Date: Mon, 15 Jun 2015 10:35:06 +0200
-From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
-	<u.kleine-koenig@pengutronix.de>
-To: Linus Walleij <linus.walleij@linaro.org>
-Cc: Tiberiu Breana <tiberiu.a.breana@intel.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	Sascha Hauer <kernel@pengutronix.de>,
-	Alexandre Courbot <gnurou@gmail.com>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Subject: Re: [PATCH] iio: light: stk3310: use flags argument of devm_gpiod_get
-Message-ID: <20150615083506.GZ18985@pengutronix.de>
-References: <1434095506-1581-1-git-send-email-u.kleine-koenig@pengutronix.de>
- <CACRpkdaLUGyZEB0gK--s-H0t8NCw8JuKWHJgCzmx4H=pQJekFQ@mail.gmail.com>
+Received: from smtp-out-224.synserver.de ([212.40.185.224]:1089 "EHLO
+	smtp-out-224.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753861AbbFOLo6 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 15 Jun 2015 07:44:58 -0400
+Message-ID: <557EBAB6.6060809@metafoo.de>
+Date: Mon, 15 Jun 2015 13:44:54 +0200
+From: Lars-Peter Clausen <lars@metafoo.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-In-Reply-To: <CACRpkdaLUGyZEB0gK--s-H0t8NCw8JuKWHJgCzmx4H=pQJekFQ@mail.gmail.com>
+To: Jonathan Cameron <jic23@kernel.org>,
+	Octavian Purdila <octavian.purdila@intel.com>
+CC: Hartmut Knaack <knaack.h@gmx.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] iio: allow userspace to flush the hwfifo with non-blocking
+ reads
+References: <1433509007-5095-1-git-send-email-octavian.purdila@intel.com> <557D90AB.3000509@kernel.org>
+In-Reply-To: <557D90AB.3000509@kernel.org>
+Content-Type: text/plain; charset=windows-1252; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Hi Linus,
+On 06/14/2015 04:33 PM, Jonathan Cameron wrote:
+> On 05/06/15 13:56, Octavian Purdila wrote:
+>> This patch changes the semantics of non-blocking reads so that a
+>> hardware fifo flush is triggered if the available data in the device
+>> buffer is less then the requested size.
+>>
+>> This allows userspace to accurately generate hardware fifo flushes, by
+>> doing a non-blocking read with a size greater then the sum of the
+>> device buffer and hardware fifo size.
+>>
+>> Signed-off-by: Octavian Purdila <octavian.purdila@intel.com>
+> Hi Octavian,
+>
+> I'm personally happy with this approach, but would like Lars to have
+> a chance to take a look as he's been getting his hands a lot dirtier in
+> this area than I have recently!
 
-On Mon, Jun 15, 2015 at 10:16:46AM +0200, Linus Walleij wrote:
-> On Fri, Jun 12, 2015 at 9:51 AM, Uwe Kleine-König
-> <u.kleine-koenig@pengutronix.de> wrote:
-> 
-> > Note I plan to make the flags parameter mandatory for 4.3. So unless
-> > this change gets into 4.2, would it be ok to let it go in via the gpio
-> > tree?
-> 
-> Sounds like a plan. If you will have a patch set with the remaining
-> consumers fixed and then remove the non-flagged functions
-> on top, let's merge that into the GPIO tree for linux-next right after
-> the 4.2 merge window so we can terminate this task.
-That's exactly my plan.
+Looks good.
 
-Best regards
-Uwe
+Reviewed-by: Lars-Peter Clausen <lars@metafoo.de>
 
--- 
-Pengutronix e.K.                           | Uwe Kleine-König            |
-Industrial Linux Solutions                 | http://www.pengutronix.de/  |
+>
+> This seems a logical bit of API to me even without the desire to use it
+> to force a flush.  If we want whatever data is available now,
+> we want that data now, not when the fifo gets around to giving it to us!
+>
+> Feel free to poke me if this sits here uncommented upon for a few more
+> weeks!
+>
+> Jonathan
+>> ---
+>>
+>> This is the second iteration of the patch that allows userspace to
+>> accurately generate flush events. The first RFC patch set was
+>> discussed here:
+>>
+>> https://lkml.org/lkml/2015/4/29/202
+>>
+>>
+>>   drivers/iio/industrialio-buffer.c | 18 +++++++++---------
+>>   1 file changed, 9 insertions(+), 9 deletions(-)
+>>
+>> diff --git a/drivers/iio/industrialio-buffer.c b/drivers/iio/industrialio-buffer.c
+>> index df919f4..24085db 100644
+>> --- a/drivers/iio/industrialio-buffer.c
+>> +++ b/drivers/iio/industrialio-buffer.c
+>> @@ -71,8 +71,9 @@ static bool iio_buffer_ready(struct iio_dev *indio_dev, struct iio_buffer *buf,
+>>
+>>   	if (avail >= to_wait) {
+>>   		/* force a flush for non-blocking reads */
+>> -		if (!to_wait && !avail && to_flush)
+>> -			iio_buffer_flush_hwfifo(indio_dev, buf, to_flush);
+>> +		if (!to_wait && avail < to_flush)
+>> +			iio_buffer_flush_hwfifo(indio_dev, buf,
+>> +						to_flush - avail);
+>>   		return true;
+>>   	}
+>>
+>> @@ -100,8 +101,7 @@ ssize_t iio_buffer_read_first_n_outer(struct file *filp, char __user *buf,
+>>   	struct iio_dev *indio_dev = filp->private_data;
+>>   	struct iio_buffer *rb = indio_dev->buffer;
+>>   	size_t datum_size;
+>> -	size_t to_wait = 0;
+>> -	size_t to_read;
+>> +	size_t to_wait;
+>>   	int ret;
+>>
+>>   	if (!indio_dev->info)
+>> @@ -119,14 +119,14 @@ ssize_t iio_buffer_read_first_n_outer(struct file *filp, char __user *buf,
+>>   	if (!datum_size)
+>>   		return 0;
+>>
+>> -	to_read = min_t(size_t, n / datum_size, rb->watermark);
+>> -
+>> -	if (!(filp->f_flags & O_NONBLOCK))
+>> -		to_wait = to_read;
+>> +	if (filp->f_flags & O_NONBLOCK)
+>> +		to_wait = 0;
+>> +	else
+>> +		to_wait = min_t(size_t, n / datum_size, rb->watermark);
+>>
+>>   	do {
+>>   		ret = wait_event_interruptible(rb->pollq,
+>> -			iio_buffer_ready(indio_dev, rb, to_wait, to_read));
+>> +		      iio_buffer_ready(indio_dev, rb, to_wait, n / datum_size));
+>>   		if (ret)
+>>   			return ret;
+>>
+>>
+>
+
