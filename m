@@ -1,33 +1,30 @@
-Return-Path: <pmeerw@pmeerw.net>
-From: Peter Meerwald <pmeerw@pmeerw.net>
+Return-Path: <knaack.h@gmx.de>
+From: Hartmut Knaack <knaack.h@gmx.de>
 To: linux-iio@vger.kernel.org
-Cc: jic23@kernel.org,
-	Peter Meerwald <pmeerw@pmeerw.net>
-Subject: [PATCH] iio: pressure: Fix Measurement Specialties vendor name
-Date: Tue, 16 Jun 2015 21:27:03 +0200
-Message-Id: <1434482823-24065-1-git-send-email-pmeerw@pmeerw.net>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Kevin Tsai <ktsai@capellamicro.com>,
+	Daniel Baluta <daniel.baluta@intel.com>
+Subject: [PATCH 0/7] cm3323 fixes and cleanups
+Date: Wed, 17 Jun 2015 00:16:59 +0200
+Message-Id: <cover.1434492557.git.knaack.h@gmx.de>
 List-ID: <linux-iio@vger.kernel.org>
 
-Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
----
- drivers/iio/pressure/Kconfig | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+Some small fixes and cleanups.
 
-diff --git a/drivers/iio/pressure/Kconfig b/drivers/iio/pressure/Kconfig
-index fa62950..b13ea6f 100644
---- a/drivers/iio/pressure/Kconfig
-+++ b/drivers/iio/pressure/Kconfig
-@@ -53,9 +53,9 @@ config MPL3115
-           will be called mpl3115.
- 
- config MS5611
--	tristate "Measurement Specialities MS5611 pressure sensor driver"
-+	tristate "Measurement Specialties MS5611 pressure sensor driver"
- 	help
--	  Say Y here to build support for the Measurement Specialities
-+	  Say Y here to build support for the Measurement Specialties
- 	  MS5611 pressure and temperature sensor.
- 
- 	  To compile this driver as a module, choose M here: the module will
+Hartmut Knaack (7):
+  iio:light:cm3323: clear bitmask before set
+  iio:light:Kconfig: fix typo in description
+  iio:light:cm3323: pass up error value
+  iio:light:cm3323: drop barely used variable
+  iio:light:cm3323: replace unneeded variable
+  iio:light:cm3323: make use of GENMASK
+  iio:light:cm3323: add empty lines for code structure
+
+ drivers/iio/light/Kconfig  |  2 +-
+ drivers/iio/light/cm3323.c | 27 +++++++++++++++------------
+ 2 files changed, 16 insertions(+), 13 deletions(-)
+
 -- 
-1.9.1
+2.3.6
