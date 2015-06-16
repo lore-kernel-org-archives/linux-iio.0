@@ -6,56 +6,34 @@ Cc: Jonathan Cameron <jic23@kernel.org>,
 	Peter Meerwald <pmeerw@pmeerw.net>,
 	Kevin Tsai <ktsai@capellamicro.com>,
 	Daniel Baluta <daniel.baluta@intel.com>
-Subject: [PATCH 5/7] iio:light:cm3323: replace unneeded variable
-Date: Wed, 17 Jun 2015 00:17:04 +0200
-Message-Id: <63c03818b555d02d00697d4e245c3e95e81ea074.1434492557.git.knaack.h@gmx.de>
+Subject: [PATCH 6/7] iio:light:cm3323: make use of GENMASK
+Date: Wed, 17 Jun 2015 00:17:05 +0200
+Message-Id: <8c611cebe2127d183b8fbb748d084dfc3a333d2e.1434492557.git.knaack.h@gmx.de>
 In-Reply-To: <cover.1434492557.git.knaack.h@gmx.de>
 References: <cover.1434492557.git.knaack.h@gmx.de>
 In-Reply-To: <cover.1434492557.git.knaack.h@gmx.de>
 References: <cover.1434492557.git.knaack.h@gmx.de>
 List-ID: <linux-iio@vger.kernel.org>
 
-In cm3323_read_raw() i is used as return variable for the integration time
-index. The also existing return variable ret however is unused in this
-case, although appropriate. Replace i with ret and drop it.
+Use GENMASK to define the integration time bitmask.
 
 Signed-off-by: Hartmut Knaack <knaack.h@gmx.de>
 ---
- drivers/iio/light/cm3323.c | 12 ++++++------
- 1 file changed, 6 insertions(+), 6 deletions(-)
+ drivers/iio/light/cm3323.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/drivers/iio/light/cm3323.c b/drivers/iio/light/cm3323.c
-index 8945e0c..6bb75e7 100644
+index 6bb75e7..4f362d5 100644
 --- a/drivers/iio/light/cm3323.c
 +++ b/drivers/iio/light/cm3323.c
-@@ -153,7 +153,7 @@ static int cm3323_read_raw(struct iio_dev *indio_dev,
- 			   struct iio_chan_spec const *chan, int *val,
- 			   int *val2, long mask)
- {
--	int i, ret;
-+	int ret;
- 	struct cm3323_data *data = iio_priv(indio_dev);
+@@ -29,7 +29,7 @@
  
- 	switch (mask) {
-@@ -170,14 +170,14 @@ static int cm3323_read_raw(struct iio_dev *indio_dev,
- 		return IIO_VAL_INT;
- 	case IIO_CHAN_INFO_INT_TIME:
- 		mutex_lock(&data->mutex);
--		i = cm3323_get_it_bits(data);
--		if (i < 0) {
-+		ret = cm3323_get_it_bits(data);
-+		if (ret < 0) {
- 			mutex_unlock(&data->mutex);
--			return i;
-+			return ret;
- 		}
+ #define CM3323_CONF_SD_BIT	BIT(0) /* sensor disable */
+ #define CM3323_CONF_AF_BIT	BIT(1) /* auto/manual force mode */
+-#define CM3323_CONF_IT_MASK	(BIT(4) | BIT(5) | BIT(6))
++#define CM3323_CONF_IT_MASK	GENMASK(4, 6)
+ #define CM3323_CONF_IT_SHIFT	4
  
--		*val = cm3323_int_time[i].val;
--		*val2 = cm3323_int_time[i].val2;
-+		*val = cm3323_int_time[ret].val;
-+		*val2 = cm3323_int_time[ret].val2;
- 		mutex_unlock(&data->mutex);
- 
- 		return IIO_VAL_INT_PLUS_MICRO;
+ #define CM3323_INT_TIME_AVAILABLE "0.04 0.08 0.16 0.32 0.64 1.28"
 -- 
 2.3.6
