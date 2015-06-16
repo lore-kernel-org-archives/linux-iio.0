@@ -3,28 +3,31 @@ From: Peter Meerwald <pmeerw@pmeerw.net>
 To: linux-iio@vger.kernel.org
 Cc: jic23@kernel.org,
 	Peter Meerwald <pmeerw@pmeerw.net>
-Subject: [PATCH] iio: ABI: Fix typo in in_proximity_raw description
-Date: Tue, 16 Jun 2015 22:36:43 +0200
-Message-Id: <1434487003-7248-1-git-send-email-pmeerw@pmeerw.net>
+Subject: [PATCH] iio: pressure: Fix Measurement Specialties vendor name
+Date: Tue, 16 Jun 2015 21:27:03 +0200
+Message-Id: <1434482823-24065-1-git-send-email-pmeerw@pmeerw.net>
 List-ID: <linux-iio@vger.kernel.org>
 
 Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
 ---
- Documentation/ABI/testing/sysfs-bus-iio | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/iio/pressure/Kconfig | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
-index 3befcb1..7d909a4 100644
---- a/Documentation/ABI/testing/sysfs-bus-iio
-+++ b/Documentation/ABI/testing/sysfs-bus-iio
-@@ -1162,7 +1162,7 @@ KernelVersion:	3.4
- Contact:	linux-iio@vger.kernel.org
- Description:
- 		Proximity measurement indicating that some
--		object is near the sensor, usually be observing
-+		object is near the sensor, usually by observing
- 		reflectivity of infrared or ultrasound emitted.
- 		Often these sensors are unit less and as such conversion
- 		to SI units is not possible.  Where it is, the units should
+diff --git a/drivers/iio/pressure/Kconfig b/drivers/iio/pressure/Kconfig
+index fa62950..b13ea6f 100644
+--- a/drivers/iio/pressure/Kconfig
++++ b/drivers/iio/pressure/Kconfig
+@@ -53,9 +53,9 @@ config MPL3115
+           will be called mpl3115.
+ 
+ config MS5611
+-	tristate "Measurement Specialities MS5611 pressure sensor driver"
++	tristate "Measurement Specialties MS5611 pressure sensor driver"
+ 	help
+-	  Say Y here to build support for the Measurement Specialities
++	  Say Y here to build support for the Measurement Specialties
+ 	  MS5611 pressure and temperature sensor.
+ 
+ 	  To compile this driver as a module, choose M here: the module will
 -- 
 1.9.1
