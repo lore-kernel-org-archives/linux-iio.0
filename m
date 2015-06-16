@@ -1,44 +1,65 @@
-Return-Path: <pmeerw@pmeerw.net>
-Date: Wed, 17 Jun 2015 00:29:38 +0200 (CEST)
-From: Peter Meerwald <pmeerw@pmeerw.net>
-To: Hartmut Knaack <knaack.h@gmx.de>
-cc: linux-iio@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>,
-    Lars-Peter Clausen <lars@metafoo.de>, Kevin Tsai <ktsai@capellamicro.com>,
-    Daniel Baluta <daniel.baluta@intel.com>
-Subject: Re: [PATCH 6/7] iio:light:cm3323: make use of GENMASK
-In-Reply-To: <8c611cebe2127d183b8fbb748d084dfc3a333d2e.1434492557.git.knaack.h@gmx.de>
-Message-ID: <alpine.DEB.2.02.1506170027470.22088@pmeerw.net>
-References: <cover.1434492557.git.knaack.h@gmx.de> <8c611cebe2127d183b8fbb748d084dfc3a333d2e.1434492557.git.knaack.h@gmx.de>
-MIME-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
+Return-Path: <knaack.h@gmx.de>
+From: Hartmut Knaack <knaack.h@gmx.de>
+To: linux-iio@vger.kernel.org
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Kevin Tsai <ktsai@capellamicro.com>,
+	Daniel Baluta <daniel.baluta@intel.com>
+Subject: [PATCH 7/7] iio:light:cm3323: add empty lines for code structure
+Date: Wed, 17 Jun 2015 00:17:06 +0200
+Message-Id: <85963fe04c08265ef959962e9cbdd2a0969b6330.1434492557.git.knaack.h@gmx.de>
+In-Reply-To: <cover.1434492557.git.knaack.h@gmx.de>
+References: <cover.1434492557.git.knaack.h@gmx.de>
+In-Reply-To: <cover.1434492557.git.knaack.h@gmx.de>
+References: <cover.1434492557.git.knaack.h@gmx.de>
 List-ID: <linux-iio@vger.kernel.org>
 
+Add some empty lines to visually separate logical structure blocks, as
+after if-blocks or before regular returns.
 
-> Use GENMASK to define the integration time bitmask.
+Signed-off-by: Hartmut Knaack <knaack.h@gmx.de>
+---
+ drivers/iio/light/cm3323.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-Nack, should be GENMASK(6, 4) I think
+diff --git a/drivers/iio/light/cm3323.c b/drivers/iio/light/cm3323.c
+index 4f362d5..fbd841e 100644
+--- a/drivers/iio/light/cm3323.c
++++ b/drivers/iio/light/cm3323.c
+@@ -131,9 +131,11 @@ static int cm3323_set_it_bits(struct cm3323_data *data, int val, int val2)
+ 				return ret;
  
-> Signed-off-by: Hartmut Knaack <knaack.h@gmx.de>
-> ---
->  drivers/iio/light/cm3323.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/iio/light/cm3323.c b/drivers/iio/light/cm3323.c
-> index 6bb75e7..4f362d5 100644
-> --- a/drivers/iio/light/cm3323.c
-> +++ b/drivers/iio/light/cm3323.c
-> @@ -29,7 +29,7 @@
->  
->  #define CM3323_CONF_SD_BIT	BIT(0) /* sensor disable */
->  #define CM3323_CONF_AF_BIT	BIT(1) /* auto/manual force mode */
-> -#define CM3323_CONF_IT_MASK	(BIT(4) | BIT(5) | BIT(6))
-> +#define CM3323_CONF_IT_MASK	GENMASK(4, 6)
->  #define CM3323_CONF_IT_SHIFT	4
->  
->  #define CM3323_INT_TIME_AVAILABLE "0.04 0.08 0.16 0.32 0.64 1.28"
-> 
-
+ 			data->reg_conf = reg_conf;
++
+ 			return 0;
+ 		}
+ 	}
++
+ 	return -EINVAL;
+ }
+ 
+@@ -146,6 +148,7 @@ static int cm3323_get_it_bits(struct cm3323_data *data)
+ 
+ 	if (bits >= ARRAY_SIZE(cm3323_int_time))
+ 		return -EINVAL;
++
+ 	return bits;
+ }
+ 
+@@ -241,11 +244,13 @@ static int cm3323_probe(struct i2c_client *client,
+ 		dev_err(&client->dev, "cm3323 chip init failed\n");
+ 		return ret;
+ 	}
++
+ 	ret = iio_device_register(indio_dev);
+ 	if (ret < 0) {
+ 		dev_err(&client->dev, "failed to register iio dev\n");
+ 		goto err_init;
+ 	}
++
+ 	return 0;
+ err_init:
+ 	cm3323_disable(indio_dev);
 -- 
-
-Peter Meerwald
-+43-664-2444418 (mobile)
+2.3.6
