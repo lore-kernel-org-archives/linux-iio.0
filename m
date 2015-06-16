@@ -1,39 +1,38 @@
-Return-Path: <knaack.h@gmx.de>
-From: Hartmut Knaack <knaack.h@gmx.de>
-To: linux-iio@vger.kernel.org
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	Kevin Tsai <ktsai@capellamicro.com>,
-	Daniel Baluta <daniel.baluta@intel.com>
-Subject: [PATCH 2/7] iio:light:Kconfig: fix typo in description
-Date: Wed, 17 Jun 2015 00:17:01 +0200
-Message-Id: <56c6ad5c63292495b1dc3e3e78f626789ff4ea9f.1434492557.git.knaack.h@gmx.de>
-In-Reply-To: <cover.1434492557.git.knaack.h@gmx.de>
-References: <cover.1434492557.git.knaack.h@gmx.de>
-In-Reply-To: <cover.1434492557.git.knaack.h@gmx.de>
-References: <cover.1434492557.git.knaack.h@gmx.de>
+Return-Path: <daniel.baluta@gmail.com>
+MIME-Version: 1.0
+In-Reply-To: <1434487003-7248-1-git-send-email-pmeerw@pmeerw.net>
+References: <1434487003-7248-1-git-send-email-pmeerw@pmeerw.net>
+Date: Tue, 16 Jun 2015 23:57:41 +0300
+Message-ID: <CAEnQRZAwOBfLXuNG3qU8WbXrEfyhWAOvhZ6TxDLWnB_+4cEaBQ@mail.gmail.com>
+Subject: Re: [PATCH] iio: ABI: Fix typo in in_proximity_raw description
+From: Daniel Baluta <daniel.baluta@gmail.com>
+To: Peter Meerwald <pmeerw@pmeerw.net>
+Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>, Jonathan Cameron <jic23@kernel.org>
+Content-Type: text/plain; charset=UTF-8
 List-ID: <linux-iio@vger.kernel.org>
 
-Fix the typo in the module description for the CM3323.
+On Tue, Jun 16, 2015 at 11:36 PM, Peter Meerwald <pmeerw@pmeerw.net> wrote:
+> Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
 
-Signed-off-by: Hartmut Knaack <knaack.h@gmx.de>
----
- drivers/iio/light/Kconfig | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Oh, didn't see that :)
 
-diff --git a/drivers/iio/light/Kconfig b/drivers/iio/light/Kconfig
-index e6198b7..554f8ee 100644
---- a/drivers/iio/light/Kconfig
-+++ b/drivers/iio/light/Kconfig
-@@ -86,7 +86,7 @@ config CM3323
- 	depends on I2C
- 	tristate "Capella CM3323 color light sensor"
- 	help
--	 Say Y here if you want to build a driver for Capela CM3323
-+	 Say Y here if you want to build a driver for Capella CM3323
- 	 color sensor.
- 
- 	 To compile this driver as a module, choose M here: the module will
--- 
-2.3.6
+Reviewed-by: Daniel Baluta <daniel.baluta@intel.com>
+
+> ---
+>  Documentation/ABI/testing/sysfs-bus-iio | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
+> index 3befcb1..7d909a4 100644
+> --- a/Documentation/ABI/testing/sysfs-bus-iio
+> +++ b/Documentation/ABI/testing/sysfs-bus-iio
+> @@ -1162,7 +1162,7 @@ KernelVersion:    3.4
+>  Contact:       linux-iio@vger.kernel.org
+>  Description:
+>                 Proximity measurement indicating that some
+> -               object is near the sensor, usually be observing
+> +               object is near the sensor, usually by observing
+>                 reflectivity of infrared or ultrasound emitted.
+>                 Often these sensors are unit less and as such conversion
+>                 to SI units is not possible.  Where it is, the units should
+> --
