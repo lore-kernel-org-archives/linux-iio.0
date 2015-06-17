@@ -6,16 +6,17 @@ Cc: Jonathan Cameron <jic23@kernel.org>,
 	Peter Meerwald <pmeerw@pmeerw.net>,
 	Kevin Tsai <ktsai@capellamicro.com>,
 	Daniel Baluta <daniel.baluta@intel.com>
-Subject: [PATCH v2 6/7] iio:light:cm3323: make use of GENMASK
-Date: Thu, 18 Jun 2015 00:32:04 +0200
-Message-Id: <4c312fabbb090163d1b071e489441e3d02a842dd.1434578207.git.knaack.h@gmx.de>
+Subject: [PATCH v2 1/7] iio:light:cm3323: clear bitmask before set
+Date: Thu, 18 Jun 2015 00:31:59 +0200
+Message-Id: <e7cc60084a46aa75e4b35ac0695c5cf8f1d3984d.1434578207.git.knaack.h@gmx.de>
 In-Reply-To: <cover.1434578207.git.knaack.h@gmx.de>
 References: <cover.1434578207.git.knaack.h@gmx.de>
 In-Reply-To: <cover.1434578207.git.knaack.h@gmx.de>
 References: <cover.1434578207.git.knaack.h@gmx.de>
 List-ID: <linux-iio@vger.kernel.org>
 
-Use GENMASK to define the integration time bitmask.
+When setting the bits for integration time, the appropriate bitmask needs
+to be cleared first.
 
 Signed-off-by: Hartmut Knaack <knaack.h@gmx.de>
 ---
@@ -23,17 +24,17 @@ Signed-off-by: Hartmut Knaack <knaack.h@gmx.de>
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/drivers/iio/light/cm3323.c b/drivers/iio/light/cm3323.c
-index 2c49ec2..1fc9f78 100644
+index 869033e..a1d4905 100644
 --- a/drivers/iio/light/cm3323.c
 +++ b/drivers/iio/light/cm3323.c
-@@ -29,7 +29,7 @@
+@@ -123,7 +123,7 @@ static int cm3323_set_it_bits(struct cm3323_data *data, int val, int val2)
+ 	for (i = 0; i < ARRAY_SIZE(cm3323_int_time); i++) {
+ 		if (val == cm3323_int_time[i].val &&
+ 		    val2 == cm3323_int_time[i].val2) {
+-			reg_conf = data->reg_conf;
++			reg_conf = data->reg_conf & ~CM3323_CONF_IT_MASK;
+ 			reg_conf |= i << CM3323_CONF_IT_SHIFT;
  
- #define CM3323_CONF_SD_BIT	BIT(0) /* sensor disable */
- #define CM3323_CONF_AF_BIT	BIT(1) /* auto/manual force mode */
--#define CM3323_CONF_IT_MASK	(BIT(4) | BIT(5) | BIT(6))
-+#define CM3323_CONF_IT_MASK	GENMASK(6, 4)
- #define CM3323_CONF_IT_SHIFT	4
- 
- #define CM3323_INT_TIME_AVAILABLE "0.04 0.08 0.16 0.32 0.64 1.28"
+ 			ret = i2c_smbus_write_word_data(data->client,
 -- 
 2.3.6
