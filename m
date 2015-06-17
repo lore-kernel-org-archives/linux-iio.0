@@ -1,56 +1,44 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-lb0-f175.google.com ([209.85.217.175]:35247 "EHLO
-	mail-lb0-f175.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752637AbbFQKGs (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 17 Jun 2015 06:06:48 -0400
-Received: by lbbwc1 with SMTP id wc1so28184840lbb.2
-        for <linux-iio@vger.kernel.org>; Wed, 17 Jun 2015 03:06:46 -0700 (PDT)
+Return-Path: <daniel.baluta@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <bd2cf6c9af8c7b741cf0f544d273952976e6e07c.1434492557.git.knaack.h@gmx.de>
+Sender: daniel.baluta@gmail.com
+In-Reply-To: <56c6ad5c63292495b1dc3e3e78f626789ff4ea9f.1434492557.git.knaack.h@gmx.de>
 References: <cover.1434492557.git.knaack.h@gmx.de>
-	<bd2cf6c9af8c7b741cf0f544d273952976e6e07c.1434492557.git.knaack.h@gmx.de>
-Date: Wed, 17 Jun 2015 13:06:46 +0300
-Message-ID: <CAEnQRZDpZTwADuTqUMjoMrjBnu9vCU0Z8S7UR80zT8K72tiiVw@mail.gmail.com>
-Subject: Re: [PATCH 3/7] iio:light:cm3323: pass up error value
+	<56c6ad5c63292495b1dc3e3e78f626789ff4ea9f.1434492557.git.knaack.h@gmx.de>
+Date: Wed, 17 Jun 2015 13:05:57 +0300
+Message-ID: <CAEnQRZAwZxRgm6UXK+4eWqVtSt+o6bUbbK3FkKyOWSMj=ihxUQ@mail.gmail.com>
+Subject: Re: [PATCH 2/7] iio:light:Kconfig: fix typo in description
 From: Daniel Baluta <daniel.baluta@intel.com>
 To: Hartmut Knaack <knaack.h@gmx.de>
-Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	Kevin Tsai <ktsai@capellamicro.com>,
+Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>, Jonathan Cameron <jic23@kernel.org>,
+	Lars-Peter Clausen <lars@metafoo.de>, Peter Meerwald <pmeerw@pmeerw.net>, Kevin Tsai <ktsai@capellamicro.com>,
 	Daniel Baluta <daniel.baluta@intel.com>
 Content-Type: text/plain; charset=UTF-8
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+List-ID: <linux-iio@vger.kernel.org>
 
 On Wed, Jun 17, 2015 at 1:17 AM, Hartmut Knaack <knaack.h@gmx.de> wrote:
-> cm3323_get_it_bits() returns a valid error code, so pass it up in
-> cm3323_read_raw().
+> Fix the typo in the module description for the CM3323.
 >
 > Signed-off-by: Hartmut Knaack <knaack.h@gmx.de>
-
-Agree, it's better this way.
 
 Reviewed-by: Daniel Baluta <daniel.baluta@intel.com>
 
 > ---
->  drivers/iio/light/cm3323.c | 2 +-
+>  drivers/iio/light/Kconfig | 2 +-
 >  1 file changed, 1 insertion(+), 1 deletion(-)
 >
-> diff --git a/drivers/iio/light/cm3323.c b/drivers/iio/light/cm3323.c
-> index 1e6092a..f88a0ed 100644
-> --- a/drivers/iio/light/cm3323.c
-> +++ b/drivers/iio/light/cm3323.c
-> @@ -175,7 +175,7 @@ static int cm3323_read_raw(struct iio_dev *indio_dev,
->                 i = cm3323_get_it_bits(data);
->                 if (i < 0) {
->                         mutex_unlock(&data->mutex);
-> -                       return -EINVAL;
-> +                       return i;
->                 }
+> diff --git a/drivers/iio/light/Kconfig b/drivers/iio/light/Kconfig
+> index e6198b7..554f8ee 100644
+> --- a/drivers/iio/light/Kconfig
+> +++ b/drivers/iio/light/Kconfig
+> @@ -86,7 +86,7 @@ config CM3323
+>         depends on I2C
+>         tristate "Capella CM3323 color light sensor"
+>         help
+> -        Say Y here if you want to build a driver for Capela CM3323
+> +        Say Y here if you want to build a driver for Capella CM3323
+>          color sensor.
 >
->                 *val = cm3323_int_time[i].val;
+>          To compile this driver as a module, choose M here: the module will
 > --
 > 2.3.6
 >
