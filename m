@@ -6,35 +6,29 @@ Cc: Jonathan Cameron <jic23@kernel.org>,
 	Peter Meerwald <pmeerw@pmeerw.net>,
 	Kevin Tsai <ktsai@capellamicro.com>,
 	Daniel Baluta <daniel.baluta@intel.com>
-Subject: [PATCH v2 2/7] iio:light:Kconfig: fix typo in description
-Date: Thu, 18 Jun 2015 00:32:00 +0200
-Message-Id: <c2ee8106bc15a8b64782c9adb59dcaa6ee49d9a7.1434578207.git.knaack.h@gmx.de>
-In-Reply-To: <cover.1434578207.git.knaack.h@gmx.de>
-References: <cover.1434578207.git.knaack.h@gmx.de>
-In-Reply-To: <cover.1434578207.git.knaack.h@gmx.de>
-References: <cover.1434578207.git.knaack.h@gmx.de>
+Subject: [PATCH v2 0/7] cm3323 fixes and cleanups
+Date: Thu, 18 Jun 2015 00:31:58 +0200
+Message-Id: <cover.1434578207.git.knaack.h@gmx.de>
 List-ID: <linux-iio@vger.kernel.org>
 
-Fix the typo in the module description for the CM3323.
+Some small fixes and cleanups.
 
-Signed-off-by: Hartmut Knaack <knaack.h@gmx.de>
-Reviewed-by: Daniel Baluta <daniel.baluta@intel.com>
----
- drivers/iio/light/Kconfig | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Changes in V2:
+  - apply the integration time bitmask right
+  - fix order of GENMASK arguments as pointed out by Peter Meerwald
 
-diff --git a/drivers/iio/light/Kconfig b/drivers/iio/light/Kconfig
-index e6198b7..554f8ee 100644
---- a/drivers/iio/light/Kconfig
-+++ b/drivers/iio/light/Kconfig
-@@ -86,7 +86,7 @@ config CM3323
- 	depends on I2C
- 	tristate "Capella CM3323 color light sensor"
- 	help
--	 Say Y here if you want to build a driver for Capela CM3323
-+	 Say Y here if you want to build a driver for Capella CM3323
- 	 color sensor.
- 
- 	 To compile this driver as a module, choose M here: the module will
+Hartmut Knaack (7):
+  iio:light:cm3323: clear bitmask before set
+  iio:light:Kconfig: fix typo in description
+  iio:light:cm3323: pass up error value
+  iio:light:cm3323: drop barely used variable
+  iio:light:cm3323: replace unneeded variable
+  iio:light:cm3323: make use of GENMASK
+  iio:light:cm3323: add empty lines for code structure
+
+ drivers/iio/light/Kconfig  |  2 +-
+ drivers/iio/light/cm3323.c | 27 +++++++++++++++------------
+ 2 files changed, 16 insertions(+), 13 deletions(-)
+
 -- 
 2.3.6
