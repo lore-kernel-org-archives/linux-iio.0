@@ -1,12 +1,12 @@
 Return-Path: <daniel.baluta@gmail.com>
 MIME-Version: 1.0
 Sender: daniel.baluta@gmail.com
-In-Reply-To: <85963fe04c08265ef959962e9cbdd2a0969b6330.1434492557.git.knaack.h@gmx.de>
+In-Reply-To: <63c03818b555d02d00697d4e245c3e95e81ea074.1434492557.git.knaack.h@gmx.de>
 References: <cover.1434492557.git.knaack.h@gmx.de>
-	<85963fe04c08265ef959962e9cbdd2a0969b6330.1434492557.git.knaack.h@gmx.de>
-Date: Wed, 17 Jun 2015 13:17:47 +0300
-Message-ID: <CAEnQRZBMdAmL=HwXLqT5cRxBLQfkKorskz+JY7b3=temG_Wing@mail.gmail.com>
-Subject: Re: [PATCH 7/7] iio:light:cm3323: add empty lines for code structure
+	<63c03818b555d02d00697d4e245c3e95e81ea074.1434492557.git.knaack.h@gmx.de>
+Date: Wed, 17 Jun 2015 13:14:28 +0300
+Message-ID: <CAEnQRZC2ypA8tVFg61Sic5RiqXyiNhTYhGYds0JskPRcEy=_hA@mail.gmail.com>
+Subject: Re: [PATCH 5/7] iio:light:cm3323: replace unneeded variable
 From: Daniel Baluta <daniel.baluta@intel.com>
 To: Hartmut Knaack <knaack.h@gmx.de>
 Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>, Jonathan Cameron <jic23@kernel.org>,
@@ -16,53 +16,52 @@ Content-Type: text/plain; charset=UTF-8
 List-ID: <linux-iio@vger.kernel.org>
 
 On Wed, Jun 17, 2015 at 1:17 AM, Hartmut Knaack <knaack.h@gmx.de> wrote:
-> Add some empty lines to visually separate logical structure blocks, as
-> after if-blocks or before regular returns.
+> In cm3323_read_raw() i is used as return variable for the integration time
+> index. The also existing return variable ret however is unused in this
+> case, although appropriate. Replace i with ret and drop it.
 >
 > Signed-off-by: Hartmut Knaack <knaack.h@gmx.de>
 
+Fair enough.
+
 Reviewed-by: Daniel Baluta <daniel.baluta@intel.com>
 
+Are you using a tool for finding such situations? Or just code reading ? :)
+
 > ---
->  drivers/iio/light/cm3323.c | 5 +++++
->  1 file changed, 5 insertions(+)
+>  drivers/iio/light/cm3323.c | 12 ++++++------
+>  1 file changed, 6 insertions(+), 6 deletions(-)
 >
 > diff --git a/drivers/iio/light/cm3323.c b/drivers/iio/light/cm3323.c
-> index 4f362d5..fbd841e 100644
+> index 8945e0c..6bb75e7 100644
 > --- a/drivers/iio/light/cm3323.c
 > +++ b/drivers/iio/light/cm3323.c
-> @@ -131,9 +131,11 @@ static int cm3323_set_it_bits(struct cm3323_data *data, int val, int val2)
->                                 return ret;
+> @@ -153,7 +153,7 @@ static int cm3323_read_raw(struct iio_dev *indio_dev,
+>                            struct iio_chan_spec const *chan, int *val,
+>                            int *val2, long mask)
+>  {
+> -       int i, ret;
+> +       int ret;
+>         struct cm3323_data *data = iio_priv(indio_dev);
 >
->                         data->reg_conf = reg_conf;
-> +
->                         return 0;
+>         switch (mask) {
+> @@ -170,14 +170,14 @@ static int cm3323_read_raw(struct iio_dev *indio_dev,
+>                 return IIO_VAL_INT;
+>         case IIO_CHAN_INFO_INT_TIME:
+>                 mutex_lock(&data->mutex);
+> -               i = cm3323_get_it_bits(data);
+> -               if (i < 0) {
+> +               ret = cm3323_get_it_bits(data);
+> +               if (ret < 0) {
+>                         mutex_unlock(&data->mutex);
+> -                       return i;
+> +                       return ret;
 >                 }
->         }
-> +
->         return -EINVAL;
->  }
 >
-> @@ -146,6 +148,7 @@ static int cm3323_get_it_bits(struct cm3323_data *data)
+> -               *val = cm3323_int_time[i].val;
+> -               *val2 = cm3323_int_time[i].val2;
+> +               *val = cm3323_int_time[ret].val;
+> +               *val2 = cm3323_int_time[ret].val2;
+>                 mutex_unlock(&data->mutex);
 >
->         if (bits >= ARRAY_SIZE(cm3323_int_time))
->                 return -EINVAL;
-> +
->         return bits;
->  }
->
-> @@ -241,11 +244,13 @@ static int cm3323_probe(struct i2c_client *client,
->                 dev_err(&client->dev, "cm3323 chip init failed\n");
->                 return ret;
->         }
-> +
->         ret = iio_device_register(indio_dev);
->         if (ret < 0) {
->                 dev_err(&client->dev, "failed to register iio dev\n");
->                 goto err_init;
->         }
-> +
->         return 0;
->  err_init:
->         cm3323_disable(indio_dev);
-> --
+>                 return IIO_VAL_INT_PLUS_MICRO;
