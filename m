@@ -6,42 +6,35 @@ Cc: Jonathan Cameron <jic23@kernel.org>,
 	Peter Meerwald <pmeerw@pmeerw.net>,
 	Kevin Tsai <ktsai@capellamicro.com>,
 	Daniel Baluta <daniel.baluta@intel.com>
-Subject: [PATCH v2 4/7] iio:light:cm3323: drop barely used variable
-Date: Thu, 18 Jun 2015 00:32:02 +0200
-Message-Id: <d8183105e3281337e25dd485c59880d5911229dd.1434578207.git.knaack.h@gmx.de>
+Subject: [PATCH v2 2/7] iio:light:Kconfig: fix typo in description
+Date: Thu, 18 Jun 2015 00:32:00 +0200
+Message-Id: <c2ee8106bc15a8b64782c9adb59dcaa6ee49d9a7.1434578207.git.knaack.h@gmx.de>
 In-Reply-To: <cover.1434578207.git.knaack.h@gmx.de>
 References: <cover.1434578207.git.knaack.h@gmx.de>
 In-Reply-To: <cover.1434578207.git.knaack.h@gmx.de>
 References: <cover.1434578207.git.knaack.h@gmx.de>
 List-ID: <linux-iio@vger.kernel.org>
 
-In cm3323_disable() ret is just used to check for errors during I2C write.
-Consolidate the write and the check to save a variable and two lines of
-code.
+Fix the typo in the module description for the CM3323.
 
 Signed-off-by: Hartmut Knaack <knaack.h@gmx.de>
+Reviewed-by: Daniel Baluta <daniel.baluta@intel.com>
 ---
- drivers/iio/light/cm3323.c | 6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
+ drivers/iio/light/Kconfig | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/iio/light/cm3323.c b/drivers/iio/light/cm3323.c
-index feb4dbc..9cd7d2a 100644
---- a/drivers/iio/light/cm3323.c
-+++ b/drivers/iio/light/cm3323.c
-@@ -106,12 +106,10 @@ static int cm3323_init(struct iio_dev *indio_dev)
+diff --git a/drivers/iio/light/Kconfig b/drivers/iio/light/Kconfig
+index e6198b7..554f8ee 100644
+--- a/drivers/iio/light/Kconfig
++++ b/drivers/iio/light/Kconfig
+@@ -86,7 +86,7 @@ config CM3323
+ 	depends on I2C
+ 	tristate "Capella CM3323 color light sensor"
+ 	help
+-	 Say Y here if you want to build a driver for Capela CM3323
++	 Say Y here if you want to build a driver for Capella CM3323
+ 	 color sensor.
  
- static void cm3323_disable(struct iio_dev *indio_dev)
- {
--	int ret;
- 	struct cm3323_data *data = iio_priv(indio_dev);
- 
--	ret = i2c_smbus_write_word_data(data->client, CM3323_CMD_CONF,
--					CM3323_CONF_SD_BIT);
--	if (ret < 0)
-+	if (i2c_smbus_write_word_data(data->client, CM3323_CMD_CONF,
-+				      CM3323_CONF_SD_BIT) < 0)
- 		dev_err(&data->client->dev, "Error writing reg_conf\n");
- }
- 
+ 	 To compile this driver as a module, choose M here: the module will
 -- 
 2.3.6
