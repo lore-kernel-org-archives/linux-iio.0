@@ -1,123 +1,40 @@
-Return-Path: <lars@metafoo.de>
-Message-ID: <55831CF3.3070906@metafoo.de>
-Date: Thu, 18 Jun 2015 21:33:07 +0200
-From: Lars-Peter Clausen <lars@metafoo.de>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from host171.canaca.com ([67.55.55.225]:53650 "EHLO
+	host171.canaca.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752222AbbFRUxz (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 18 Jun 2015 16:53:55 -0400
+Message-ID: <6c946d3c9f99f1d4eb44294311078be5.squirrel@mungewell.org>
+In-Reply-To: <A077DCB2-204C-40BC-881D-83CAEF418A6C@kernel.org>
+References: <2d05200efc42012bd16be4dde0fad85d.squirrel@mungewell.org>
+    <A077DCB2-204C-40BC-881D-83CAEF418A6C@kernel.org>
+Date: Thu, 18 Jun 2015 16:53:53 -0400
+Subject: Re: ST driver - ad-hoc allocation of trigger interrupt
+From: simon@mungewell.org
+To: "Jonathan Cameron" <jic23@kernel.org>
+Cc: linux-iio@vger.kernel.org
 MIME-Version: 1.0
-To: Jonathan Cameron <jic23@kernel.org>,
- Vladimir Barinov <vladimir.barinov@cogentembedded.com>
-CC: Hartmut Knaack <knaack.h@gmx.de>, Peter Meerwald <pmeerw@pmeerw.net>,
- Rob Herring <robh+dt@kernel.org>,
- Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>,
- Ian Campbell <ijc+devicetree@hellion.org.uk>,
- Kumar Gala <galak@codeaurora.org>, linux-kernel@vger.kernel.org,
- linux-iio@vger.kernel.org, devicetree@vger.kernel.org
-Subject: Re: [PATCH 1/3] iio: adc: hi-843x: Holt HI-8435/8436/8437 descrete
- ADC
-References: <1433161073-21967-1-git-send-email-vladimir.barinov@cogentembedded.com> <1433161211-22034-1-git-send-email-vladimir.barinov@cogentembedded.com> <55746D35.1030409@kernel.org>
-In-Reply-To: <55746D35.1030409@kernel.org>
-Content-Type: text/plain; charset=windows-1252; format=flowed
-List-ID: <linux-iio@vger.kernel.org>
+Content-Type: text/plain; charset=US-ASCII
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On 06/07/2015 06:11 PM, Jonathan Cameron wrote:
-> On 01/06/15 13:20, Vladimir Barinov wrote:
->> Add Holt descrete ADC driver for HI-8435/8436/8437 chips
+
+>>The story of our attempt is documented here:
+>>https://groups.google.com/forum/?hl=en#!topic/richards-tech-user-forum/BjQpWjTmims
 >>
->> Signed-off-by: Vladimir Barinov <vladimir.barinov@cogentembedded.com>
-> Hmm. The main issue here is one man's discrete ADC is another man's
-> configurable general purpose input device.
-
-The term discrete ADC is a bit ambiguous and I'm not even sure if this is 
-the right term for this kind of device.
-
-I'd call this a threshold detector. The device seems to have two comparators 
-for each channel, one for the lower threshold, one for the upper threshold. 
-If the voltage level goes above the upper threshold a FF is set, if it goes 
-below the lower threshold the FF is cleared. Both transitions happen 
-asynchronously as soon has the signal is below/above the threshold. And 
-while converts a analog signal to digital one this is not what you typically 
-call a ADC.
-
+>>Any suggestions on how we can succeed?
 >
-> Anyhow, from an IIO point of view what we care about is consistent
-> userspace interface. A discrete ADC to userspace is definitely a generic
-> input, be it one with a configurable threshold level and other bells
-> and whistles.
->
-> Right now IIO does not have explicit support for digital I/O channels,
-> but it's been discussed many times before.  We do want some buy in from
-> the GPIO infrastructure guys though to avoid stepping on peoples toes!
-> Also I suspect we'd need an IIO to gpio bridge pretty soon as well
-> as the likelihood of someone using the gpios in an IIO device to save
-> themselves some pins on their soc is very high.
->
-> There are generic gpios on some of the IMUs and similar, but they have
-> always been ignored in drivers, or just handled by registering them as
-> a GPIO rather than through the buffered interfaces etc.  I suspect if
-> the core support was in place, there would be interesting in this
-> functionality.
->
-> Lars, you've looked at the demux stuff a lot more recently than I have.
-> One issue this driver raises is single bit channels. For those I think
-> we need to support 1 bit packing throughout.  How hard do you think it
-> would be?
-> (1 bit, 8 bit, 16 bit, 32 bit, 64 bit etc) rather than any more complex
-> packing.
+> Looks like you basically got there with the DT file at the end. Adhoc
+> arrangements
+>  like this are often done with device tree overlays (which can be added to
+> a
+>  running device). A quick Google suggests the raspberry pi uses these for
+> standard hats.
 
-Yea, good question. Would definitely need some changes to the core. But it 
-is also definitely something we should do. The current approach taken by 
-this driver is rather hackish and works around the limitations of the 
-framework. This is something that more often than not leads to long term issues.
+A little follow-up that you might like; Richard was able to get the IIO
+devices configured via Device Tree, even to the point of getting a full
+sensor fusion working to give pose and heading.
 
-We'd kind of need a mechanism to say that multiple channels are contained 
-within the same word. Maybe something like setting the same scan_index for 
-those channels but with different shift offsets could work?
+https://richardstechnotes.wordpress.com/2015/06/17/rteiioimu-driving-a-9-dof-imu-via-industrial-io-iio/
 
-So say storagebits is 8, realbits is 1 and shift is depending on the 
-position of the bit in the byte. All channels in the same byte would get the 
-same scan index.
+Simon.
 
-This could also be used to handle some of the devices which have additional 
-metadata status information in the otherwise unused bits in the result word.
-
-[...]
->> +#define HI843X_VOLTAGE_CHANNEL(num)				\
->> +	{							\
->> +		.type = IIO_VOLTAGE,				\
->> +		.indexed = 1,					\
->> +		.channel = num,					\
->> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),	\
->> +		.scan_index = num,				\
->> +		.scan_type = {					\
->> +			.sign = 'u',				\
->> +			.realbits = 1,				\
->> +			.storagebits = 8,			\
->> +		},						\
->> +	}
-> As commented at the start of this review. These are not voltage channels
-> as userspace understands them (I understand from a hardware point of
-> view where you are coming from but we have to care about what the software
-> using them cares about!)
->
-> These are digital signals and need to be treated as such.
-
-Exactly my thoughts as well.
-
->
-> I wonder if we want to take this oportunity to add 1 bit packing to the
-> demux etc in the IIO core so we can have tighter packing on these
-> values.  Shouldn't be too hard to do and we probably do want it if we are
-> going to support these sorts of devices.
->
-> Will take a bit of shuffling to pack the relevant channels together if only
-> a subset are enabled and to notice when no repacking at all is needed.
-> This will probably first one implementing in the core and pushing out into
-> the dummy driver to allow for testing of corner cases.
-
-Yeah, the bit shuffling gets quite cumbersome and potentially expensive. I 
-think we should try to avoid it if at least one of the channels in the same 
-bank is enabled all of them are read. And then let userspace figure out 
-which bits it wants to use.
-
-But how exactly is the typical expect usage of this device. Like how would a 
-userspace application use it? Is buffered mode where samples are taken in a 
-continuous mode something that is really needed?
