@@ -1,188 +1,194 @@
-Return-Path: <tiberiu.a.breana@intel.com>
-From: Tiberiu Breana <tiberiu.a.breana@intel.com>
-To: linux-iio@vger.kernel.org
-Cc: Jonathan Cameron <jic23@kernel.org>
-Subject: [PATCH v2 2/2] iio: accel: Add sampling rate support for STK8312
-Date: Thu, 18 Jun 2015 12:38:12 +0300
-Message-Id: <1434620292-1820-2-git-send-email-tiberiu.a.breana@intel.com>
-In-Reply-To: <1434620292-1820-1-git-send-email-tiberiu.a.breana@intel.com>
-References: <1434620292-1820-1-git-send-email-tiberiu.a.breana@intel.com>
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mga14.intel.com ([192.55.52.115]:56433 "EHLO mga14.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1753227AbbFRIJr convert rfc822-to-8bit (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 18 Jun 2015 04:09:47 -0400
+From: "Breana, Tiberiu A" <tiberiu.a.breana@intel.com>
+To: Peter Meerwald <pmeerw@pmeerw.net>
+CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Subject: RE: [PATCH] iio: light: STK3310: un-invert proximity values
+Date: Thu, 18 Jun 2015 08:09:43 +0000
+Message-ID: <4586F61A4A291F4DA44D32824E7C0F40221534F4@IRSMSX109.ger.corp.intel.com>
+References: <1434539393-1451-1-git-send-email-tiberiu.a.breana@intel.com>
+ <alpine.DEB.2.02.1506171516090.2489@pmeerw.net>
+In-Reply-To: <alpine.DEB.2.02.1506171516090.2489@pmeerw.net>
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Added support for setting the STK8312 accelerometer's
-sampling rate.
+> -----Original Message-----
+> From: Peter Meerwald [mailto:pmeerw@pmeerw.net]
+> Sent: Wednesday, June 17, 2015 4:18 PM
+> To: Breana, Tiberiu A
+> Cc: linux-iio@vger.kernel.org
+> Subject: Re: [PATCH] iio: light: STK3310: un-invert proximity values
+> 
+> 
+> > In accordance with the recent ABI changes, STK3310's proximity
+> > readings should be un-inversed in order to return low values for
+> > far-away objects and high values for close ones.
+> 
+> the patch does a lot more than it advertises in the text above; I think it needs
+> to be split up
+> 
+> thanks, p.
+> 
 
-Signed-off-by: Tiberiu Breana <tiberiu.a.breana@intel.com>
----
-v2: replaced stk8312_samp_freq_table with a struct for better readability
----
- drivers/iio/accel/stk8312.c | 96 ++++++++++++++++++++++++++++++++++++++-------
- 1 file changed, 82 insertions(+), 14 deletions(-)
+Peter, how would you see this patch split? A patch that deals with the raw readings and max values and another that switches the event types?
+Or should I rather just write a more detailed commit message?
 
-diff --git a/drivers/iio/accel/stk8312.c b/drivers/iio/accel/stk8312.c
-index a14ca61c..c2af039 100644
---- a/drivers/iio/accel/stk8312.c
-+++ b/drivers/iio/accel/stk8312.c
-@@ -29,6 +29,7 @@
- #define STK8312_REG_ZOUT		0x02
- #define STK8312_REG_INTSU		0x06
- #define STK8312_REG_MODE		0x07
-+#define STK8312_REG_SR			0x08
- #define STK8312_REG_STH			0x13
- #define STK8312_REG_RESET		0x20
- #define STK8312_REG_AFECTRL		0x24
-@@ -41,6 +42,8 @@
- #define STK8312_DREADY_BIT		0x10
- #define STK8312_INT_MODE		0xC0
- #define STK8312_RNG_MASK		0xC0
-+#define STK8312_SR_MASK			0x07
-+#define STK8312_SR_400HZ_IDX		0
- #define STK8312_RNG_SHIFT		6
- #define STK8312_READ_RETRIES		16
- 
-@@ -63,20 +66,29 @@ static const int stk8312_scale_table[][2] = {
- 	{0, 461600}, {1, 231100}
- };
- 
--#define STK8312_ACCEL_CHANNEL(index, reg, axis) {		\
--	.type = IIO_ACCEL,					\
--	.address = reg,						\
--	.modified = 1,						\
--	.channel2 = IIO_MOD_##axis,				\
--	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),		\
--	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),	\
--	.scan_index = index,					\
--	.scan_type = {						\
--		.sign = 's',					\
--		.realbits = 8,					\
--		.storagebits = 8,				\
--		.endianness = IIO_CPU,				\
--	},							\
-+static const struct {
-+	u16 val;
-+	u32 val2;
-+} stk8312_samp_freq_table[] = {
-+	{400, 0}, {200, 0}, {100, 0}, {50, 0}, {25, 0},
-+	{12, 500000}, {6, 250000}, {3, 125000}
-+};
-+
-+#define STK8312_ACCEL_CHANNEL(index, reg, axis) {			\
-+	.type = IIO_ACCEL,						\
-+	.address = reg,							\
-+	.modified = 1,							\
-+	.channel2 = IIO_MOD_##axis,					\
-+	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),			\
-+	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE) |		\
-+				    BIT(IIO_CHAN_INFO_SAMP_FREQ),	\
-+	.scan_index = index,						\
-+	.scan_type = {							\
-+		.sign = 's',						\
-+		.realbits = 8,						\
-+		.storagebits = 8,					\
-+		.endianness = IIO_CPU,					\
-+	},								\
- }
- 
- static const struct iio_chan_spec stk8312_channels[] = {
-@@ -90,6 +102,7 @@ struct stk8312_data {
- 	struct i2c_client *client;
- 	struct mutex lock;
- 	int range;
-+	u8 sample_rate_idx;
- 	u8 mode;
- 	struct iio_trigger *dready_trig;
- 	bool dready_trigger_on;
-@@ -98,8 +111,11 @@ struct stk8312_data {
- 
- static IIO_CONST_ATTR(in_accel_scale_available, STK8312_SCALE_AVAIL);
- 
-+static IIO_CONST_ATTR_SAMP_FREQ_AVAIL("3.125 6.25 12.5 25 50 100 200 400");
-+
- static struct attribute *stk8312_attributes[] = {
- 	&iio_const_attr_in_accel_scale_available.dev_attr.attr,
-+	&iio_const_attr_sampling_frequency_available.dev_attr.attr,
- 	NULL,
- };
- 
-@@ -218,6 +234,39 @@ static const struct iio_trigger_ops stk8312_trigger_ops = {
- 	.owner = THIS_MODULE,
- };
- 
-+static int stk8312_set_sample_rate(struct stk8312_data *data, int rate)
-+{
-+	int ret;
-+	u8 masked_reg;
-+	u8 mode;
-+	struct i2c_client *client = data->client;
-+
-+	if (rate == data->sample_rate_idx)
-+		return 0;
-+
-+	mode = data->mode;
-+	/* We need to go in standby mode to modify registers */
-+	ret = stk8312_set_mode(data, STK8312_MODE_STANDBY);
-+	if (ret < 0)
-+		return ret;
-+
-+	ret = i2c_smbus_read_byte_data(client, STK8312_REG_SR);
-+	if (ret < 0) {
-+		dev_err(&client->dev, "failed to set sampling rate\n");
-+		return ret;
-+	}
-+
-+	masked_reg = (ret & (~STK8312_SR_MASK)) | rate;
-+
-+	ret = i2c_smbus_write_byte_data(client, STK8312_REG_SR, masked_reg);
-+	if (ret < 0)
-+		dev_err(&client->dev, "failed to set sampling rate\n");
-+	else
-+		data->sample_rate_idx = rate;
-+
-+	return stk8312_set_mode(data, mode);
-+}
-+
- static int stk8312_set_range(struct stk8312_data *data, u8 range)
- {
- 	int ret;
-@@ -301,6 +350,10 @@ static int stk8312_read_raw(struct iio_dev *indio_dev,
- 		*val = stk8312_scale_table[data->range - 1][0];
- 		*val2 = stk8312_scale_table[data->range - 1][1];
- 		return IIO_VAL_INT_PLUS_MICRO;
-+	case IIO_CHAN_INFO_SAMP_FREQ:
-+		*val = stk8312_samp_freq_table[data->sample_rate_idx].val;
-+		*val2 = stk8312_samp_freq_table[data->sample_rate_idx].val2;
-+		return IIO_VAL_INT_PLUS_MICRO;
- 	}
- 
- 	return -EINVAL;
-@@ -331,6 +384,20 @@ static int stk8312_write_raw(struct iio_dev *indio_dev,
- 		mutex_unlock(&data->lock);
- 
- 		return ret;
-+	case IIO_CHAN_INFO_SAMP_FREQ:
-+		for (i = 0; i < ARRAY_SIZE(stk8312_samp_freq_table); i++)
-+			if (val == stk8312_samp_freq_table[i].val &&
-+			    val2 == stk8312_samp_freq_table[i].val2) {
-+				index = i;
-+				break;
-+			}
-+		if (index < 0)
-+			return -EINVAL;
-+		mutex_lock(&data->lock);
-+		ret = stk8312_set_sample_rate(data, index);
-+		mutex_unlock(&data->lock);
-+
-+		return ret;
- 	}
- 
- 	return -EINVAL;
-@@ -457,6 +524,7 @@ static int stk8312_probe(struct i2c_client *client,
- 		dev_err(&client->dev, "failed to reset sensor\n");
- 		return ret;
- 	}
-+	data->sample_rate_idx = STK8312_SR_400HZ_IDX;
- 	ret = stk8312_set_range(data, 1);
- 	if (ret < 0)
- 		return ret;
--- 
-1.9.1
+Thanks,
+Tiberiu
+
+> > Signed-off-by: Tiberiu Breana <tiberiu.a.breana@intel.com>
+> > ---
+> >  drivers/iio/light/stk3310.c | 53
+> > +++++++++++++++------------------------------
+> >  1 file changed, 17 insertions(+), 36 deletions(-)
+> >
+> > diff --git a/drivers/iio/light/stk3310.c b/drivers/iio/light/stk3310.c
+> > index fee4297..c1a2182 100644
+> > --- a/drivers/iio/light/stk3310.c
+> > +++ b/drivers/iio/light/stk3310.c
+> > @@ -43,7 +43,6 @@
+> >  #define STK3311_CHIP_ID_VAL			0x1D
+> >  #define STK3310_PSINT_EN			0x01
+> >  #define STK3310_PS_MAX_VAL			0xFFFF
+> > -#define STK3310_THRESH_MAX			0xFFFF
+> >
+> >  #define STK3310_DRIVER_NAME			"stk3310"
+> >  #define STK3310_REGMAP_NAME			"stk3310_regmap"
+> > @@ -84,15 +83,13 @@ static const struct reg_field
+> stk3310_reg_field_flag_psint =
+> >  				REG_FIELD(STK3310_REG_FLAG, 4, 4);  static
+> const struct reg_field
+> > stk3310_reg_field_flag_nf =
+> >  				REG_FIELD(STK3310_REG_FLAG, 0, 0);
+> > -/*
+> > - * Maximum PS values with regard to scale. Used to export the 'inverse'
+> > - * PS value (high values for far objects, low values for near objects).
+> > - */
+> > +
+> > +/* Estimate maximum proximity values with regard to measurement
+> > +scale. */
+> >  static const int stk3310_ps_max[4] = {
+> > -	STK3310_PS_MAX_VAL / 64,
+> > -	STK3310_PS_MAX_VAL / 16,
+> > -	STK3310_PS_MAX_VAL /  4,
+> > -	STK3310_PS_MAX_VAL,
+> > +	STK3310_PS_MAX_VAL / 640,
+> > +	STK3310_PS_MAX_VAL / 160,
+> > +	STK3310_PS_MAX_VAL /  40,
+> > +	STK3310_PS_MAX_VAL /  10
+> >  };
+> >
+> >  static const int stk3310_scale_table[][2] = { @@ -128,14 +125,14 @@
+> > static const struct iio_event_spec stk3310_events[] = {
+> >  	/* Proximity event */
+> >  	{
+> >  		.type = IIO_EV_TYPE_THRESH,
+> > -		.dir = IIO_EV_DIR_FALLING,
+> > +		.dir = IIO_EV_DIR_RISING,
+> >  		.mask_separate = BIT(IIO_EV_INFO_VALUE) |
+> >  				 BIT(IIO_EV_INFO_ENABLE),
+> >  	},
+> >  	/* Out-of-proximity event */
+> >  	{
+> >  		.type = IIO_EV_TYPE_THRESH,
+> > -		.dir = IIO_EV_DIR_RISING,
+> > +		.dir = IIO_EV_DIR_FALLING,
+> >  		.mask_separate = BIT(IIO_EV_INFO_VALUE) |
+> >  				 BIT(IIO_EV_INFO_ENABLE),
+> >  	},
+> > @@ -205,23 +202,16 @@ static int stk3310_read_event(struct iio_dev
+> *indio_dev,
+> >  	u8 reg;
+> >  	u16 buf;
+> >  	int ret;
+> > -	unsigned int index;
+> >  	struct stk3310_data *data = iio_priv(indio_dev);
+> >
+> >  	if (info != IIO_EV_INFO_VALUE)
+> >  		return -EINVAL;
+> >
+> > -	/*
+> > -	 * Only proximity interrupts are implemented at the moment.
+> > -	 * Since we're inverting proximity values, the sensor's 'high'
+> > -	 * threshold will become our 'low' threshold, associated with
+> > -	 * 'near' events. Similarly, the sensor's 'low' threshold will
+> > -	 * be our 'high' threshold, associated with 'far' events.
+> > -	 */
+> > +	/* Only proximity interrupts are implemented at the moment. */
+> >  	if (dir == IIO_EV_DIR_RISING)
+> > -		reg = STK3310_REG_THDL_PS;
+> > -	else if (dir == IIO_EV_DIR_FALLING)
+> >  		reg = STK3310_REG_THDH_PS;
+> > +	else if (dir == IIO_EV_DIR_FALLING)
+> > +		reg = STK3310_REG_THDL_PS;
+> >  	else
+> >  		return -EINVAL;
+> >
+> > @@ -232,8 +222,7 @@ static int stk3310_read_event(struct iio_dev
+> *indio_dev,
+> >  		dev_err(&data->client->dev, "register read failed\n");
+> >  		return ret;
+> >  	}
+> > -	regmap_field_read(data->reg_ps_gain, &index);
+> > -	*val = swab16(stk3310_ps_max[index] - buf);
+> > +	*val = swab16(buf);
+> >
+> >  	return IIO_VAL_INT;
+> >  }
+> > @@ -257,13 +246,13 @@ static int stk3310_write_event(struct iio_dev
+> *indio_dev,
+> >  		return -EINVAL;
+> >
+> >  	if (dir == IIO_EV_DIR_RISING)
+> > -		reg = STK3310_REG_THDL_PS;
+> > -	else if (dir == IIO_EV_DIR_FALLING)
+> >  		reg = STK3310_REG_THDH_PS;
+> > +	else if (dir == IIO_EV_DIR_FALLING)
+> > +		reg = STK3310_REG_THDL_PS;
+> >  	else
+> >  		return -EINVAL;
+> >
+> > -	buf = swab16(stk3310_ps_max[index] - val);
+> > +	buf = swab16(val);
+> >  	ret = regmap_bulk_write(data->regmap, reg, &buf, 2);
+> >  	if (ret < 0)
+> >  		dev_err(&client->dev, "failed to set PS threshold!\n"); @@ -
+> 334,14
+> > +323,6 @@ static int stk3310_read_raw(struct iio_dev *indio_dev,
+> >  			return ret;
+> >  		}
+> >  		*val = swab16(buf);
+> > -		if (chan->type == IIO_PROXIMITY) {
+> > -			/*
+> > -			 * Invert the proximity data so we return low values
+> > -			 * for close objects and high values for far ones.
+> > -			 */
+> > -			regmap_field_read(data->reg_ps_gain, &index);
+> > -			*val = stk3310_ps_max[index] - *val;
+> > -		}
+> >  		mutex_unlock(&data->lock);
+> >  		return IIO_VAL_INT;
+> >  	case IIO_CHAN_INFO_INT_TIME:
+> > @@ -581,8 +562,8 @@ static irqreturn_t stk3310_irq_event_handler(int
+> irq, void *private)
+> >  	}
+> >  	event = IIO_UNMOD_EVENT_CODE(IIO_PROXIMITY, 1,
+> >  				     IIO_EV_TYPE_THRESH,
+> > -				     (dir ? IIO_EV_DIR_RISING :
+> > -					    IIO_EV_DIR_FALLING));
+> > +				     (dir ? IIO_EV_DIR_FALLING :
+> > +					    IIO_EV_DIR_RISING));
+> >  	iio_push_event(indio_dev, event, data->timestamp);
+> >
+> >  	/* Reset the interrupt flag */
+> >
+> 
+> --
+> 
+> Peter Meerwald
+> +43-664-2444418 (mobile)
