@@ -1,55 +1,58 @@
-Return-Path: <lars@metafoo.de>
-Message-ID: <55841173.30506@metafoo.de>
-Date: Fri, 19 Jun 2015 14:56:19 +0200
-From: Lars-Peter Clausen <lars@metafoo.de>
-MIME-Version: 1.0
-To: jmfriedt@femto-st.fr, linux-iio@vger.kernel.org
-CC: Michael.Hennerich@analog.com, jic23@kernel.org, knaack.h@gmx.de,
- pmeerw@pmeerw.net
-Subject: Re: [PATCH 1/1] iio: DAC: ad5624r_spi: fix bit shift of output data
- value
-References: <1434718086-14722-1-git-send-email-jmfriedt@femto-st.fr>
-In-Reply-To: <1434718086-14722-1-git-send-email-jmfriedt@femto-st.fr>
-Content-Type: text/plain; charset=windows-1252; format=flowed
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mga09.intel.com ([134.134.136.24]:14772 "EHLO mga09.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1752054AbbFSOz7 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Fri, 19 Jun 2015 10:55:59 -0400
+From: Tiberiu Breana <tiberiu.a.breana@intel.com>
+To: linux-iio@vger.kernel.org
+Cc: Jonathan Cameron <jic23@kernel.org>
+Subject: [PATCH v2 1/2] iio: accel: STK8BA50: suspend sensor on init errors
+Date: Fri, 19 Jun 2015 17:56:37 +0300
+Message-Id: <1434725798-26223-1-git-send-email-tiberiu.a.breana@intel.com>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On 06/19/2015 02:48 PM, jmfriedt@femto-st.fr wrote:
-> From: JM Friedt <jmfriedt@femto-st.fr>
->
-> The value sent on the SPI bus is shifted by an erroneous number of bits. The shift
-> value was already computed in the iio_chan_spec structure and hence subtracting this
-> argument to 16 yields an erroneous data position in the SPI stream.
->
-> Signed-off-by: JM Friedt <jmfriedt@femto-st.fr>
+Put chip in 'suspend' mode in case something goes wrong
+during probe.
 
-Looks good, thanks.
+Signed-off-by: Tiberiu Breana <tiberiu.a.breana@intel.com>
+---
+no changes since v1
+---
+ drivers/iio/accel/stk8ba50.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
-Acked-by: Lars-Peter Clausen <lars@metafoo.de>
+diff --git a/drivers/iio/accel/stk8ba50.c b/drivers/iio/accel/stk8ba50.c
+index 92229bd..9836880 100644
+--- a/drivers/iio/accel/stk8ba50.c
++++ b/drivers/iio/accel/stk8ba50.c
+@@ -265,7 +265,7 @@ static int stk8ba50_probe(struct i2c_client *client,
+ 			STK8BA50_REG_SWRST, STK8BA50_RESET_CMD);
+ 	if (ret < 0) {
+ 		dev_err(&client->dev, "failed to reset sensor\n");
+-		return ret;
++		goto err_power_off;
+ 	}
+ 
+ 	/* The default range is +/-2g */
+@@ -277,10 +277,14 @@ static int stk8ba50_probe(struct i2c_client *client,
+ 	ret = iio_device_register(indio_dev);
+ 	if (ret < 0) {
+ 		dev_err(&client->dev, "device_register failed\n");
+-		stk8ba50_set_power(data, STK8BA50_MODE_SUSPEND);
++		goto err_power_off;
+ 	}
+ 
+ 	return ret;
++
++err_power_off:
++	stk8ba50_set_power(data, STK8BA50_MODE_SUSPEND);
++	return ret;
+ }
+ 
+ static int stk8ba50_remove(struct i2c_client *client)
+-- 
+1.9.1
 
-> ---
->   drivers/iio/dac/ad5624r_spi.c |    4 ++--
->   1 files changed, 2 insertions(+), 2 deletions(-)
->
-> diff --git a/drivers/iio/dac/ad5624r_spi.c b/drivers/iio/dac/ad5624r_spi.c
-> index 61bb9d4..e98428d 100644
-> --- a/drivers/iio/dac/ad5624r_spi.c
-> +++ b/drivers/iio/dac/ad5624r_spi.c
-> @@ -22,7 +22,7 @@
->   #include "ad5624r.h"
->
->   static int ad5624r_spi_write(struct spi_device *spi,
-> -			     u8 cmd, u8 addr, u16 val, u8 len)
-> +			     u8 cmd, u8 addr, u16 val, u8 shift)
->   {
->   	u32 data;
->   	u8 msg[3];
-> @@ -35,7 +35,7 @@ static int ad5624r_spi_write(struct spi_device *spi,
->   	 * 14-, 12-bit input code followed by 0, 2, or 4 don't care bits,
->   	 * for the AD5664R, AD5644R, and AD5624R, respectively.
->   	 */
-> -	data = (0 << 22) | (cmd << 19) | (addr << 16) | (val << (16 - len));
-> +	data = (0 << 22) | (cmd << 19) | (addr << 16) | (val << shift);
->   	msg[0] = data >> 16;
->   	msg[1] = data >> 8;
->   	msg[2] = data;
->
+--
+To unsubscribe from this list: send the line "unsubscribe linux-iio" in
