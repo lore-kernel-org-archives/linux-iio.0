@@ -1,50 +1,45 @@
-Return-Path: <jic23@jic23.retrosnub.co.uk>
-In-Reply-To: <6c946d3c9f99f1d4eb44294311078be5.squirrel@mungewell.org>
-References: <2d05200efc42012bd16be4dde0fad85d.squirrel@mungewell.org> <A077DCB2-204C-40BC-881D-83CAEF418A6C@kernel.org> <6c946d3c9f99f1d4eb44294311078be5.squirrel@mungewell.org>
-MIME-Version: 1.0
-Content-Type: text/plain;
- charset=UTF-8
-Subject: Re: ST driver - ad-hoc allocation of trigger interrupt
-From: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
-Date: Fri, 19 Jun 2015 17:29:51 +0100
-To: simon@mungewell.org,Jonathan Cameron <jic23@kernel.org>
-CC: linux-iio@vger.kernel.org
-Message-ID: <02C8D26D-1C35-4E76-A1A8-4232A457D55C@jic23.retrosnub.co.uk>
+Return-Path: <jmfriedt@femto-st.fr>
+From: jmfriedt@femto-st.fr
+To: linux-iio@vger.kernel.org
+Cc: lars@metafoo.de, Michael.Hennerich@analog.com, jic23@kernel.org,
+        knaack.h@gmx.de, pmeerw@pmeerw.net, JM Friedt <jmfriedt@femto-st.fr>
+Subject: [PATCH 1/1] iio: DAC: ad5624r_spi: fix bit shift of output data value
+Date: Fri, 19 Jun 2015 14:48:06 +0200
+Message-Id: <1434718086-14722-1-git-send-email-jmfriedt@femto-st.fr>
 List-ID: <linux-iio@vger.kernel.org>
 
+From: JM Friedt <jmfriedt@femto-st.fr>
 
+The value sent on the SPI bus is shifted by an erroneous number of bits. The shift
+value was already computed in the iio_chan_spec structure and hence subtracting this
+argument to 16 yields an erroneous data position in the SPI stream.
 
-On 18 June 2015 21:53:53 BST, simon@mungewell.org wrote:
->
->>>The story of our attempt is documented here:
->>>https://groups.google.com/forum/?hl=en#!topic/richards-tech-user-forum/BjQpWjTmims
->>>
->>>Any suggestions on how we can succeed?
->>
->> Looks like you basically got there with the DT file at the end. Adhoc
->> arrangements
->>  like this are often done with device tree overlays (which can be
->added to
->> a
->>  running device). A quick Google suggests the raspberry pi uses these
->for
->> standard hats.
->
->A little follow-up that you might like; Richard was able to get the IIO
->devices configured via Device Tree, even to the point of getting a full
->sensor fusion working to give pose and heading.
->
->https://richardstechnotes.wordpress.com/2015/06/17/rteiioimu-driving-a-9-dof-imu-via-industrial-io-iio/
->
->Simon.
-Nice.
+Signed-off-by: JM Friedt <jmfriedt@femto-st.fr>
+---
+ drivers/iio/dac/ad5624r_spi.c |    4 ++--
+ 1 files changed, 2 insertions(+), 2 deletions(-)
 
-Thanks for the heads up!
->
->--
->To unsubscribe from this list: send the line "unsubscribe linux-iio" in
->the body of a message to majordomo@vger.kernel.org
->More majordomo info at  http://vger.kernel.org/majordomo-info.html
-
+diff --git a/drivers/iio/dac/ad5624r_spi.c b/drivers/iio/dac/ad5624r_spi.c
+index 61bb9d4..e98428d 100644
+--- a/drivers/iio/dac/ad5624r_spi.c
++++ b/drivers/iio/dac/ad5624r_spi.c
+@@ -22,7 +22,7 @@
+ #include "ad5624r.h"
+ 
+ static int ad5624r_spi_write(struct spi_device *spi,
+-			     u8 cmd, u8 addr, u16 val, u8 len)
++			     u8 cmd, u8 addr, u16 val, u8 shift)
+ {
+ 	u32 data;
+ 	u8 msg[3];
+@@ -35,7 +35,7 @@ static int ad5624r_spi_write(struct spi_device *spi,
+ 	 * 14-, 12-bit input code followed by 0, 2, or 4 don't care bits,
+ 	 * for the AD5664R, AD5644R, and AD5624R, respectively.
+ 	 */
+-	data = (0 << 22) | (cmd << 19) | (addr << 16) | (val << (16 - len));
++	data = (0 << 22) | (cmd << 19) | (addr << 16) | (val << shift);
+ 	msg[0] = data >> 16;
+ 	msg[1] = data >> 8;
+ 	msg[2] = data;
 -- 
-Sent from my Android device with K-9 Mail. Please excuse my brevity.
+1.7.2.5
