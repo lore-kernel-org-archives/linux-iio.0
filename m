@@ -1,205 +1,87 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:42854 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752602AbbFUKHE (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 21 Jun 2015 06:07:04 -0400
-Message-ID: <55868CC6.8000605@kernel.org>
-Date: Sun, 21 Jun 2015 11:07:02 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-MIME-Version: 1.0
-To: "Breana, Tiberiu A" <tiberiu.a.breana@intel.com>,
-	Peter Meerwald <pmeerw@pmeerw.net>
-CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Subject: Re: [PATCH] iio: light: STK3310: un-invert proximity values
-References: <1434539393-1451-1-git-send-email-tiberiu.a.breana@intel.com> <alpine.DEB.2.02.1506171516090.2489@pmeerw.net> <4586F61A4A291F4DA44D32824E7C0F40221534F4@IRSMSX109.ger.corp.intel.com>
-In-Reply-To: <4586F61A4A291F4DA44D32824E7C0F40221534F4@IRSMSX109.ger.corp.intel.com>
-Content-Type: text/plain; charset=windows-1252
+Received: from mout.gmx.net ([212.227.17.20]:51561 "EHLO mout.gmx.net"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1752790AbbFUKQI (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Sun, 21 Jun 2015 06:16:08 -0400
+From: Hartmut Knaack <knaack.h@gmx.de>
+To: linux-iio@vger.kernel.org
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Ezequiel Garcia <ezequiel.garcia@imgtec.com>,
+	Naidu Tellapati <naidu.tellapati@imgtec.com>,
+	Phani Movva <Phani.Movva@imgtec.com>
+Subject: [PATCH 2/2] iio:adc:cc10001_adc: resort entry in Kconfig and Makefile
+Date: Sun, 21 Jun 2015 12:15:51 +0200
+Message-Id: <8b5a272b03bdf2c039edf722b8179690be8909de.1434844874.git.knaack.h@gmx.de>
+In-Reply-To: <cover.1434844874.git.knaack.h@gmx.de>
+References: <cover.1434844874.git.knaack.h@gmx.de>
+In-Reply-To: <cover.1434844874.git.knaack.h@gmx.de>
+References: <cover.1434844874.git.knaack.h@gmx.de>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 18/06/15 09:09, Breana, Tiberiu A wrote:
->> -----Original Message-----
->> From: Peter Meerwald [mailto:pmeerw@pmeerw.net]
->> Sent: Wednesday, June 17, 2015 4:18 PM
->> To: Breana, Tiberiu A
->> Cc: linux-iio@vger.kernel.org
->> Subject: Re: [PATCH] iio: light: STK3310: un-invert proximity values
->>
->>
->>> In accordance with the recent ABI changes, STK3310's proximity
->>> readings should be un-inversed in order to return low values for
->>> far-away objects and high values for close ones.
->>
->> the patch does a lot more than it advertises in the text above; I think it needs
->> to be split up
->>
->> thanks, p.
->>
-> 
-> Peter, how would you see this patch split? A patch that deals with the raw readings and max values and another that switches the event types?
-> Or should I rather just write a more detailed commit message?
-I think a small change to the commit message to detail that both the event directions
-and the actual returned values need to be flipped should do the job.
-> 
-> Thanks,
-> Tiberiu
-> 
->>> Signed-off-by: Tiberiu Breana <tiberiu.a.breana@intel.com>
->>> ---
->>>  drivers/iio/light/stk3310.c | 53
->>> +++++++++++++++------------------------------
->>>  1 file changed, 17 insertions(+), 36 deletions(-)
->>>
->>> diff --git a/drivers/iio/light/stk3310.c b/drivers/iio/light/stk3310.c
->>> index fee4297..c1a2182 100644
->>> --- a/drivers/iio/light/stk3310.c
->>> +++ b/drivers/iio/light/stk3310.c
->>> @@ -43,7 +43,6 @@
->>>  #define STK3311_CHIP_ID_VAL			0x1D
->>>  #define STK3310_PSINT_EN			0x01
->>>  #define STK3310_PS_MAX_VAL			0xFFFF
->>> -#define STK3310_THRESH_MAX			0xFFFF
->>>
->>>  #define STK3310_DRIVER_NAME			"stk3310"
->>>  #define STK3310_REGMAP_NAME			"stk3310_regmap"
->>> @@ -84,15 +83,13 @@ static const struct reg_field
->> stk3310_reg_field_flag_psint =
->>>  				REG_FIELD(STK3310_REG_FLAG, 4, 4);  static
->> const struct reg_field
->>> stk3310_reg_field_flag_nf =
->>>  				REG_FIELD(STK3310_REG_FLAG, 0, 0);
->>> -/*
->>> - * Maximum PS values with regard to scale. Used to export the 'inverse'
->>> - * PS value (high values for far objects, low values for near objects).
->>> - */
->>> +
->>> +/* Estimate maximum proximity values with regard to measurement
->>> +scale. */
->>>  static const int stk3310_ps_max[4] = {
->>> -	STK3310_PS_MAX_VAL / 64,
->>> -	STK3310_PS_MAX_VAL / 16,
->>> -	STK3310_PS_MAX_VAL /  4,
->>> -	STK3310_PS_MAX_VAL,
->>> +	STK3310_PS_MAX_VAL / 640,
->>> +	STK3310_PS_MAX_VAL / 160,
->>> +	STK3310_PS_MAX_VAL /  40,
->>> +	STK3310_PS_MAX_VAL /  10
->>>  };
->>>
->>>  static const int stk3310_scale_table[][2] = { @@ -128,14 +125,14 @@
->>> static const struct iio_event_spec stk3310_events[] = {
->>>  	/* Proximity event */
->>>  	{
->>>  		.type = IIO_EV_TYPE_THRESH,
->>> -		.dir = IIO_EV_DIR_FALLING,
->>> +		.dir = IIO_EV_DIR_RISING,
->>>  		.mask_separate = BIT(IIO_EV_INFO_VALUE) |
->>>  				 BIT(IIO_EV_INFO_ENABLE),
->>>  	},
->>>  	/* Out-of-proximity event */
->>>  	{
->>>  		.type = IIO_EV_TYPE_THRESH,
->>> -		.dir = IIO_EV_DIR_RISING,
->>> +		.dir = IIO_EV_DIR_FALLING,
->>>  		.mask_separate = BIT(IIO_EV_INFO_VALUE) |
->>>  				 BIT(IIO_EV_INFO_ENABLE),
->>>  	},
->>> @@ -205,23 +202,16 @@ static int stk3310_read_event(struct iio_dev
->> *indio_dev,
->>>  	u8 reg;
->>>  	u16 buf;
->>>  	int ret;
->>> -	unsigned int index;
->>>  	struct stk3310_data *data = iio_priv(indio_dev);
->>>
->>>  	if (info != IIO_EV_INFO_VALUE)
->>>  		return -EINVAL;
->>>
->>> -	/*
->>> -	 * Only proximity interrupts are implemented at the moment.
->>> -	 * Since we're inverting proximity values, the sensor's 'high'
->>> -	 * threshold will become our 'low' threshold, associated with
->>> -	 * 'near' events. Similarly, the sensor's 'low' threshold will
->>> -	 * be our 'high' threshold, associated with 'far' events.
->>> -	 */
->>> +	/* Only proximity interrupts are implemented at the moment. */
->>>  	if (dir == IIO_EV_DIR_RISING)
->>> -		reg = STK3310_REG_THDL_PS;
->>> -	else if (dir == IIO_EV_DIR_FALLING)
->>>  		reg = STK3310_REG_THDH_PS;
->>> +	else if (dir == IIO_EV_DIR_FALLING)
->>> +		reg = STK3310_REG_THDL_PS;
->>>  	else
->>>  		return -EINVAL;
->>>
->>> @@ -232,8 +222,7 @@ static int stk3310_read_event(struct iio_dev
->> *indio_dev,
->>>  		dev_err(&data->client->dev, "register read failed\n");
->>>  		return ret;
->>>  	}
->>> -	regmap_field_read(data->reg_ps_gain, &index);
->>> -	*val = swab16(stk3310_ps_max[index] - buf);
->>> +	*val = swab16(buf);
->>>
->>>  	return IIO_VAL_INT;
->>>  }
->>> @@ -257,13 +246,13 @@ static int stk3310_write_event(struct iio_dev
->> *indio_dev,
->>>  		return -EINVAL;
->>>
->>>  	if (dir == IIO_EV_DIR_RISING)
->>> -		reg = STK3310_REG_THDL_PS;
->>> -	else if (dir == IIO_EV_DIR_FALLING)
->>>  		reg = STK3310_REG_THDH_PS;
->>> +	else if (dir == IIO_EV_DIR_FALLING)
->>> +		reg = STK3310_REG_THDL_PS;
->>>  	else
->>>  		return -EINVAL;
->>>
->>> -	buf = swab16(stk3310_ps_max[index] - val);
->>> +	buf = swab16(val);
->>>  	ret = regmap_bulk_write(data->regmap, reg, &buf, 2);
->>>  	if (ret < 0)
->>>  		dev_err(&client->dev, "failed to set PS threshold!\n"); @@ -
->> 334,14
->>> +323,6 @@ static int stk3310_read_raw(struct iio_dev *indio_dev,
->>>  			return ret;
->>>  		}
->>>  		*val = swab16(buf);
->>> -		if (chan->type == IIO_PROXIMITY) {
->>> -			/*
->>> -			 * Invert the proximity data so we return low values
->>> -			 * for close objects and high values for far ones.
->>> -			 */
->>> -			regmap_field_read(data->reg_ps_gain, &index);
->>> -			*val = stk3310_ps_max[index] - *val;
->>> -		}
->>>  		mutex_unlock(&data->lock);
->>>  		return IIO_VAL_INT;
->>>  	case IIO_CHAN_INFO_INT_TIME:
->>> @@ -581,8 +562,8 @@ static irqreturn_t stk3310_irq_event_handler(int
->> irq, void *private)
->>>  	}
->>>  	event = IIO_UNMOD_EVENT_CODE(IIO_PROXIMITY, 1,
->>>  				     IIO_EV_TYPE_THRESH,
->>> -				     (dir ? IIO_EV_DIR_RISING :
->>> -					    IIO_EV_DIR_FALLING));
->>> +				     (dir ? IIO_EV_DIR_FALLING :
->>> +					    IIO_EV_DIR_RISING));
->>>  	iio_push_event(indio_dev, event, data->timestamp);
->>>
->>>  	/* Reset the interrupt flag */
->>>
->>
->> --
->>
->> Peter Meerwald
->> +43-664-2444418 (mobile)
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> 
+Move the entry for the CC 10001 ADC driver in Kconfig and Makefile up to
+maintain alphabetic order.
+
+Signed-off-by: Hartmut Knaack <knaack.h@gmx.de>
+---
+ drivers/iio/adc/Kconfig  | 18 +++++++++---------
+ drivers/iio/adc/Makefile |  2 +-
+ 2 files changed, 10 insertions(+), 10 deletions(-)
+
+diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+index eb0cd89..4790071 100644
+--- a/drivers/iio/adc/Kconfig
++++ b/drivers/iio/adc/Kconfig
+@@ -142,15 +142,6 @@ config BERLIN2_ADC
+ 	  Marvell Berlin2 ADC driver. This ADC has 8 channels, with one used for
+ 	  temperature measurement.
+ 
+-config DA9150_GPADC
+-	tristate "Dialog DA9150 GPADC driver support"
+-	depends on MFD_DA9150
+-	help
+-	  Say yes here to build support for Dialog DA9150 GPADC.
+-
+-	  This driver can also be built as a module. If chosen, the module name
+-	  will be da9150-gpadc.
+-
+ config CC10001_ADC
+ 	tristate "Cosmic Circuits 10001 ADC driver"
+ 	depends on HAS_IOMEM && HAVE_CLK && REGULATOR
+@@ -162,6 +153,15 @@ config CC10001_ADC
+ 	  This driver can also be built as a module. If so, the module will be
+ 	  called cc10001_adc.
+ 
++config DA9150_GPADC
++	tristate "Dialog DA9150 GPADC driver support"
++	depends on MFD_DA9150
++	help
++	  Say yes here to build support for Dialog DA9150 GPADC.
++
++	  This driver can also be built as a module. If chosen, the module name
++	  will be da9150-gpadc.
++
+ config EXYNOS_ADC
+ 	tristate "Exynos ADC driver support"
+ 	depends on ARCH_EXYNOS || ARCH_S3C24XX || ARCH_S3C64XX || (OF && COMPILE_TEST)
+diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
+index a096210..fa5723a 100644
+--- a/drivers/iio/adc/Makefile
++++ b/drivers/iio/adc/Makefile
+@@ -16,8 +16,8 @@ obj-$(CONFIG_AD799X) += ad799x.o
+ obj-$(CONFIG_AT91_ADC) += at91_adc.o
+ obj-$(CONFIG_AXP288_ADC) += axp288_adc.o
+ obj-$(CONFIG_BERLIN2_ADC) += berlin2-adc.o
+-obj-$(CONFIG_DA9150_GPADC) += da9150-gpadc.o
+ obj-$(CONFIG_CC10001_ADC) += cc10001_adc.o
++obj-$(CONFIG_DA9150_GPADC) += da9150-gpadc.o
+ obj-$(CONFIG_EXYNOS_ADC) += exynos_adc.o
+ obj-$(CONFIG_LP8788_ADC) += lp8788_adc.o
+ obj-$(CONFIG_MAX1027) += max1027.o
+-- 
+2.3.6
 
 --
 To unsubscribe from this list: send the line "unsubscribe linux-iio" in
