@@ -1,57 +1,70 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:43939 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:43949 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752117AbbFUNhi (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 21 Jun 2015 09:37:38 -0400
-Message-ID: <5586BE20.3010000@kernel.org>
-Date: Sun, 21 Jun 2015 14:37:36 +0100
+	with ESMTP id S1751246AbbFUNjD (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 21 Jun 2015 09:39:03 -0400
+Message-ID: <5586BE75.8090602@kernel.org>
+Date: Sun, 21 Jun 2015 14:39:01 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Daniel Baluta <daniel.baluta@gmail.com>,
-	Peter Meerwald <pmeerw@pmeerw.net>
-CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Subject: Re: [PATCH] iio: ABI: Fix typo in in_proximity_raw description
-References: <1434487003-7248-1-git-send-email-pmeerw@pmeerw.net> <CAEnQRZAwOBfLXuNG3qU8WbXrEfyhWAOvhZ6TxDLWnB_+4cEaBQ@mail.gmail.com>
-In-Reply-To: <CAEnQRZAwOBfLXuNG3qU8WbXrEfyhWAOvhZ6TxDLWnB_+4cEaBQ@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
+To: Peter Meerwald <pmeerw@pmeerw.net>,
+	Daniel Baluta <daniel.baluta@intel.com>
+CC: vlad.dogaru@intel.com, tiberiu.a.breana@intel.com, knaack.h@gmx.de,
+	lars@metafoo.de, linux-kernel@vger.kernel.org,
+	linux-iio@vger.kernel.org
+Subject: Re: [PATCH 1/2] iio: ABI: Clarify proximity output value
+References: <1434037774-22081-1-git-send-email-daniel.baluta@intel.com> <1434037774-22081-2-git-send-email-daniel.baluta@intel.com> <alpine.DEB.2.02.1506162234100.22088@pmeerw.net>
+In-Reply-To: <alpine.DEB.2.02.1506162234100.22088@pmeerw.net>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 16/06/15 21:57, Daniel Baluta wrote:
-> On Tue, Jun 16, 2015 at 11:36 PM, Peter Meerwald <pmeerw@pmeerw.net> wrote:
->> Signed-off-by: Peter Meerwald <pmeerw@pmeerw.net>
+On 16/06/15 21:41, Peter Meerwald wrote:
+> Hello,
 > 
-> Oh, didn't see that :)
+>> Current description for proximity measurement is ambiguous. While
+>> the first part says that proximity is measured by observing
+>> reflectivity, the second part incorrectly infers that reported values
+>> should behave like a distance.
+>>
+>> This is because of AS3935 lightning sensor which uses the proximity
+>> API, while not being a true proximity sensor.
 > 
-> Reviewed-by: Daniel Baluta <daniel.baluta@intel.com>
-Now that's awkward.  The original patch is working its
-way to stable, but this one definitely isn't worth sending
-that way.  Ah well, remind me to pick it up if I look like
-I've forgotten by the time the original change turns up in 
-my togreg branch.
+> Acked-by: Peter Meerwald <pmeerw@pmeerw.net>
+Thanks Peter, this will stand for the record on the mailing list, but
+now the patch is in a public (non testing tree) I'm not going to rebase
+to add it to the patch.
 
-Thanks,
+Sorry about that, but 3 days too late :(
 
 Jonathan
-> 
+>  
+>> Fixes:  614e8842ddf ("iio: ABI: add clarification for proximity")
+>> Signed-off-by: Daniel Baluta <daniel.baluta@intel.com>
 >> ---
->>  Documentation/ABI/testing/sysfs-bus-iio | 2 +-
->>  1 file changed, 1 insertion(+), 1 deletion(-)
+>>  Documentation/ABI/testing/sysfs-bus-iio | 6 ++----
+>>  1 file changed, 2 insertions(+), 4 deletions(-)
 >>
 >> diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
->> index 3befcb1..7d909a4 100644
+>> index bbed111..70c9b1a 100644
 >> --- a/Documentation/ABI/testing/sysfs-bus-iio
 >> +++ b/Documentation/ABI/testing/sysfs-bus-iio
->> @@ -1162,7 +1162,7 @@ KernelVersion:    3.4
->>  Contact:       linux-iio@vger.kernel.org
->>  Description:
->>                 Proximity measurement indicating that some
->> -               object is near the sensor, usually be observing
->> +               object is near the sensor, usually by observing
->>                 reflectivity of infrared or ultrasound emitted.
->>                 Often these sensors are unit less and as such conversion
->>                 to SI units is not possible.  Where it is, the units should
->> --
+>> @@ -1234,10 +1234,8 @@ Description:
+>>  		object is near the sensor, usually be observing
+> 
+>>  		reflectivity of infrared or ultrasound emitted.
+>>  		Often these sensors are unit less and as such conversion
+>> -		to SI units is not possible.  Where it is, the units should
+>> -		be meters.  If such a conversion is not possible, the reported
+>> -		values should behave in the same way as a distance, i.e. lower
+>> -		values indicate something is closer to the sensor.
+>> +		to SI units is not possible. Higher proximity measurements
+>> +		indicate closer objects, and vice versa.
+>>  
+>>  What:		/sys/.../iio:deviceX/in_illuminance_input
+>>  What:		/sys/.../iio:deviceX/in_illuminance_raw
+>>
+> 
 
 --
 To unsubscribe from this list: send the line "unsubscribe linux-iio" in
