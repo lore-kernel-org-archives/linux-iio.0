@@ -1,41 +1,63 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:42769 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:42825 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752416AbbFUJuO (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 21 Jun 2015 05:50:14 -0400
-Message-ID: <558688D3.9000101@kernel.org>
-Date: Sun, 21 Jun 2015 10:50:11 +0100
+	with ESMTP id S1751320AbbFUKBB (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 21 Jun 2015 06:01:01 -0400
+Message-ID: <55868B5A.1010604@kernel.org>
+Date: Sun, 21 Jun 2015 11:00:58 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Daniel Baluta <daniel.baluta@gmail.com>,
-	Tan Nguyen <tan.nqd@gmail.com>
-CC: Lars-Peter Clausen <lars@metafoo.de>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Subject: Re: [PATCH] iio/accel: fixed 1 coding style problem
-References: <1434771832-13305-1-git-send-email-tan.nqd@gmail.com> <CAEnQRZBFp48M8Q_kBKh_rqCdE_6Dci3NeuxLtHSX1aiKMAikaQ@mail.gmail.com>
-In-Reply-To: <CAEnQRZBFp48M8Q_kBKh_rqCdE_6Dci3NeuxLtHSX1aiKMAikaQ@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
+To: Tiberiu Breana <tiberiu.a.breana@intel.com>,
+	linux-iio@vger.kernel.org
+Subject: Re: [PATCH] tools: iio: Add single-byte case for generic_buffer
+References: <1434381469-4373-1-git-send-email-tiberiu.a.breana@intel.com>
+In-Reply-To: <1434381469-4373-1-git-send-email-tiberiu.a.breana@intel.com>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 21/06/15 10:47, Daniel Baluta wrote:
-> On Sat, Jun 20, 2015 at 6:43 AM, Tan Nguyen <tan.nqd@gmail.com> wrote:
->> Break line to fix "line over 80 characters" style problem.
->>
->> Signed-off-by: Tan Nguyen <tan.nqd@gmail.com>
+On 15/06/15 16:17, Tiberiu Breana wrote:
+> Some sensors export data in an 8-bit format.
+> Add a single-byte case for the generic_buffer tool so that
+> these sensors' buffer data can be visualized.
 > 
-> Hi Tan,
-> 
-> The code looks better as it is. I am not in favor of this change.
-> 
-> Daniel.
-Agreed.  Tan, always take the 80 character limit as a soft restriction.
-You need to look at the result and decide if it helps or hurts readability.
-Here it is not clear either way so we'll leave it as it currently is.
+> Signed-off-by: Tiberiu Breana <tiberiu.a.breana@intel.com>
+Hi Tiberiu,
 
-Thanks
+Please take a closer look at the other cases handled, you've missed
+application of the shift here and I'd also like you to cover the unsigned
+case. Probably worth having a print1byte helper to keep it inline with
+the other cases as well.
+
+I was amazed that this wasn't already there ;) Oh well, guess we don't
+actually have that many 8 bit of less devices or people aren't using
+my dumb test code (much improved by others) with them anyway ;)
 
 Jonathan
+> ---
+>  tools/iio/generic_buffer.c | 8 ++++++++
+>  1 file changed, 8 insertions(+)
+> 
+> diff --git a/tools/iio/generic_buffer.c b/tools/iio/generic_buffer.c
+> index f805493..0d438e3 100644
+> --- a/tools/iio/generic_buffer.c
+> +++ b/tools/iio/generic_buffer.c
+> @@ -103,6 +103,14 @@ void process_scan(char *data,
+>  	for (k = 0; k < num_channels; k++)
+>  		switch (channels[k].bytes) {
+>  			/* only a few cases implemented so far */
+> +		case 1:
+> +			if (channels[k].is_signed) {
+> +				int8_t val = *(int8_t *)
+> +					(data + channels[k].location);
+> +				printf("%05f ",
+> +					((float)val) * channels[k].scale);
+> +			}
+> +			break;
+>  		case 2:
+>  			print2byte(*(uint16_t *)(data + channels[k].location),
+>  				   &channels[k]);
+> 
 
 --
 To unsubscribe from this list: send the line "unsubscribe linux-iio" in
