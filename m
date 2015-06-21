@@ -1,203 +1,504 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp-out-068.synserver.de ([212.40.185.68]:1041 "EHLO
-	smtp-out-068.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752982AbbFUL3O (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 21 Jun 2015 07:29:14 -0400
-Message-ID: <5586A006.30308@metafoo.de>
-Date: Sun, 21 Jun 2015 13:29:10 +0200
-From: Lars-Peter Clausen <lars@metafoo.de>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:43634 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751639AbbFUMvb (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 21 Jun 2015 08:51:31 -0400
+Message-ID: <5586B350.4010104@kernel.org>
+Date: Sun, 21 Jun 2015 13:51:28 +0100
+From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Hartmut Knaack <knaack.h@gmx.de>, linux-iio@vger.kernel.org
-CC: Jonathan Cameron <jic23@kernel.org>,
-	Peter Meerwald <pmeerw@pmeerw.net>
-Subject: Re: [PATCH 1/1] iio:adc:Kconfig: rework help descriptions
-References: <1434881889-2908-1-git-send-email-knaack.h@gmx.de>
-In-Reply-To: <1434881889-2908-1-git-send-email-knaack.h@gmx.de>
-Content-Type: text/plain; charset=windows-1252; format=flowed
+To: Tiberiu Breana <tiberiu.a.breana@intel.com>,
+	linux-iio@vger.kernel.org
+Subject: Re: [PATCH v3 1/2] iio: accel: Add buffer mode for Sensortek STK8312
+References: <1434728066-11083-1-git-send-email-tiberiu.a.breana@intel.com>
+In-Reply-To: <1434728066-11083-1-git-send-email-tiberiu.a.breana@intel.com>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 06/21/2015 12:18 PM, Hartmut Knaack wrote:
-> Rework the help text of several ADCs to make sure that:
->    - the module name is mentioned, if the driver can be built as a module
->    - "If unsure, say N" messages are dropped
->    - right indentation is maintained
->
-> Signed-off-by: Hartmut Knaack <knaack.h@gmx.de>
+On 19/06/15 16:34, Tiberiu Breana wrote:
+> Added triggered buffer mode support for the STK8312 accelerometer.
+> 
+> Additional changes:
+> - set_mode now sets operation mode directly, no longer masking
+>   the register's previous value
+> - read_accel now returns raw acceleration data instead of the
+>   sign_extend32 value
+> - read_raw will now enable/disable the sensor with each reading
+> 
+> Signed-off-by: Tiberiu Breana <tiberiu.a.breana@intel.com>
+I wonder slightly whether the usecase of partial channels is common
+enough to warant handling it at all.  We could just leave it up
+to the demux in the core to handle it if requested (clearly that
+would then need available_scan_masks to be set). Still it's
+only a couple of lines of code, so lets leave it in there.
 
-Looks good. Thanks.
+Anyhow, one or two really minor bits left, mostly around that
+introduction of the bulk read.
 
-Acked-by: Lars-Peter Clausen <lars@metafoo.de>
+If we had been at a point in the cycle where rushing it through
+would make any difference I'd have taken this as it stands, but
+we aren't so v4 it is ;)
 
+Jonathan
 > ---
-> This patch is based on the cc10001_adc dependency and sort order fixes I
-> just submitted.
->
->   drivers/iio/adc/Kconfig | 48 ++++++++++++++++++++++++++++++++++++++----------
->   1 file changed, 38 insertions(+), 10 deletions(-)
->
-> diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
-> index 4790071..aee1e87 100644
-> --- a/drivers/iio/adc/Kconfig
-> +++ b/drivers/iio/adc/Kconfig
-> @@ -20,6 +20,9 @@ config AD7266
->   	  Say yes here to build support for Analog Devices AD7265 and AD7266
->   	  ADCs.
->
-> +	  To compile this driver as a module, choose M here: the module will be
-> +	  called ad7266.
-> +
->   config AD7291
->   	tristate "Analog Devices AD7291 ADC driver"
->   	depends on I2C
-> @@ -52,8 +55,6 @@ config AD7476
->   	  AD7277, AD7278, AD7475, AD7476, AD7477, AD7478, AD7466, AD7467, AD7468,
->   	  AD7495, AD7910, AD7920, AD7920 SPI analog to digital converters (ADC).
->
-> -	  If unsure, say N (but it's safe to say "Y").
+> v3:
+> - added a bulk read optimization for reading all channels at once
+> v2:
+> - addressed Jonathan's comments
+> - added the GPIOD_IN flag to devm_gpiod_get_index
+> ---
+>  drivers/iio/accel/stk8312.c | 301 ++++++++++++++++++++++++++++++++++++++------
+>  1 file changed, 266 insertions(+), 35 deletions(-)
+> 
+> diff --git a/drivers/iio/accel/stk8312.c b/drivers/iio/accel/stk8312.c
+> index d211d9f3..6762383 100644
+> --- a/drivers/iio/accel/stk8312.c
+> +++ b/drivers/iio/accel/stk8312.c
+> @@ -11,16 +11,23 @@
+>   */
+>  
+>  #include <linux/acpi.h>
+> +#include <linux/gpio/consumer.h>
+>  #include <linux/i2c.h>
+> +#include <linux/interrupt.h>
+>  #include <linux/kernel.h>
+>  #include <linux/module.h>
+>  #include <linux/delay.h>
+> +#include <linux/iio/buffer.h>
+>  #include <linux/iio/iio.h>
+>  #include <linux/iio/sysfs.h>
+> +#include <linux/iio/trigger.h>
+> +#include <linux/iio/triggered_buffer.h>
+> +#include <linux/iio/trigger_consumer.h>
+>  
+>  #define STK8312_REG_XOUT		0x00
+>  #define STK8312_REG_YOUT		0x01
+>  #define STK8312_REG_ZOUT		0x02
+> +#define STK8312_REG_INTSU		0x06
+>  #define STK8312_REG_MODE		0x07
+>  #define STK8312_REG_STH			0x13
+>  #define STK8312_REG_RESET		0x20
+> @@ -29,14 +36,19 @@
+>  #define STK8312_REG_OTPDATA		0x3E
+>  #define STK8312_REG_OTPCTRL		0x3F
+>  
+> -#define STK8312_MODE_ACTIVE		1
+> -#define STK8312_MODE_STANDBY		0
+> -#define STK8312_MODE_MASK		0x01
+> +#define STK8312_MODE_ACTIVE		0x01
+> +#define STK8312_MODE_STANDBY		0x00
+> +#define STK8312_DREADY_BIT		0x10
+> +#define STK8312_INT_MODE		0xC0
+>  #define STK8312_RNG_MASK		0xC0
+>  #define STK8312_RNG_SHIFT		6
+>  #define STK8312_READ_RETRIES		16
+> +#define STK8312_ALL_CHANNEL_MASK	7
+> +#define STK8312_ALL_CHANNEL_SIZE	3
+>  
+>  #define STK8312_DRIVER_NAME		"stk8312"
+> +#define STK8312_GPIO			"stk8312_gpio"
+> +#define STK8312_IRQ_NAME		"stk8312_event"
+>  
+>  /*
+>   * The accelerometer has two measurement ranges:
+> @@ -53,19 +65,27 @@ static const int stk8312_scale_table[][2] = {
+>  	{0, 461600}, {1, 231100}
+>  };
+>  
+> -#define STK8312_ACCEL_CHANNEL(reg, axis) {			\
+> +#define STK8312_ACCEL_CHANNEL(index, reg, axis) {		\
+>  	.type = IIO_ACCEL,					\
+>  	.address = reg,						\
+>  	.modified = 1,						\
+>  	.channel2 = IIO_MOD_##axis,				\
+>  	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),		\
+>  	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),	\
+> +	.scan_index = index,					\
+> +	.scan_type = {						\
+> +		.sign = 's',					\
+> +		.realbits = 8,					\
+> +		.storagebits = 8,				\
+> +		.endianness = IIO_CPU,				\
+> +	},							\
+>  }
+>  
+>  static const struct iio_chan_spec stk8312_channels[] = {
+> -	STK8312_ACCEL_CHANNEL(STK8312_REG_XOUT, X),
+> -	STK8312_ACCEL_CHANNEL(STK8312_REG_YOUT, Y),
+> -	STK8312_ACCEL_CHANNEL(STK8312_REG_ZOUT, Z),
+> +	STK8312_ACCEL_CHANNEL(0, STK8312_REG_XOUT, X),
+> +	STK8312_ACCEL_CHANNEL(1, STK8312_REG_YOUT, Y),
+> +	STK8312_ACCEL_CHANNEL(2, STK8312_REG_ZOUT, Z),
+> +	IIO_CHAN_SOFT_TIMESTAMP(3),
+>  };
+>  
+>  struct stk8312_data {
+> @@ -73,6 +93,9 @@ struct stk8312_data {
+>  	struct mutex lock;
+>  	int range;
+>  	u8 mode;
+> +	struct iio_trigger *dready_trig;
+> +	bool dready_trigger_on;
+> +	s8 buffer[16]; /* 3x8-bit channels + 5x8 padding + 64-bit timestamp */
+>  };
+>  
+>  static IIO_CONST_ATTR(in_accel_scale_available, STK8312_SCALE_AVAIL);
+> @@ -130,31 +153,19 @@ exit_err:
+>  static int stk8312_set_mode(struct stk8312_data *data, u8 mode)
+>  {
+>  	int ret;
+> -	u8 masked_reg;
+>  	struct i2c_client *client = data->client;
+>  
+> -	if (mode > 1)
+> -		return -EINVAL;
+> -	else if (mode == data->mode)
+> +	if (mode == data->mode)
+>  		return 0;
+>  
+> -	ret = i2c_smbus_read_byte_data(client, STK8312_REG_MODE);
+> -	if (ret < 0) {
+> -		dev_err(&client->dev, "failed to change sensor mode\n");
+> -		return ret;
+> -	}
+> -	masked_reg = ret & (~STK8312_MODE_MASK);
+> -	masked_reg |= mode;
 > -
->   	  To compile this driver as a module, choose M here: the
->   	  module will be called ad7476.
->
-> @@ -63,8 +64,7 @@ config AD7791
->   	select AD_SIGMA_DELTA
->   	help
->   	  Say yes here to build support for Analog Devices AD7787, AD7788, AD7789,
-> -	  AD7790 and AD7791 SPI analog to digital converters (ADC). If unsure, say
-> -	  N (but it is safe to say "Y").
-> +	  AD7790 and AD7791 SPI analog to digital converters (ADC).
->
->   	  To compile this driver as a module, choose M here: the module will be
->   	  called ad7791.
-> @@ -76,7 +76,6 @@ config AD7793
->   	help
->   	  Say yes here to build support for Analog Devices AD7785, AD7792, AD7793,
->   	  AD7794 and AD7795 SPI analog to digital converters (ADC).
-> -	  If unsure, say N (but it's safe to say "Y").
->
->   	  To compile this driver as a module, choose M here: the
->   	  module will be called AD7793.
-> @@ -89,7 +88,6 @@ config AD7887
->   	help
->   	  Say yes here to build support for Analog Devices
->   	  AD7887 SPI analog to digital converter (ADC).
-> -	  If unsure, say N (but it's safe to say "Y").
->
->   	  To compile this driver as a module, choose M here: the
->   	  module will be called ad7887.
-> @@ -117,6 +115,9 @@ config AD799X
->   	  i2c analog to digital converters (ADC). Provides direct access
->   	  via sysfs.
->
-> +	  To compile this driver as a module, choose M here: the module will be
-> +	  called ad799x.
+> -	ret = i2c_smbus_write_byte_data(client,
+> -			STK8312_REG_MODE, masked_reg);
+> +	ret = i2c_smbus_write_byte_data(client, STK8312_REG_MODE, mode);
+>  	if (ret < 0) {
+>  		dev_err(&client->dev, "failed to change sensor mode\n");
+>  		return ret;
+>  	}
+>  
+>  	data->mode = mode;
+> -	if (mode == STK8312_MODE_ACTIVE) {
+> +	if (mode & STK8312_MODE_ACTIVE) {
+>  		/* Need to run OTP sequence before entering active mode */
+>  		usleep_range(1000, 5000);
+>  		ret = stk8312_otp_init(data);
+> @@ -163,6 +174,52 @@ static int stk8312_set_mode(struct stk8312_data *data, u8 mode)
+>  	return ret;
+>  }
+>  
+> +static int stk8312_set_interrupts(struct stk8312_data *data, u8 int_mask)
+> +{
+> +	int ret;
+> +	u8 mode;
+> +	struct i2c_client *client = data->client;
 > +
->   config AT91_ADC
->   	tristate "Atmel AT91 ADC"
->   	depends on ARCH_AT91
-> @@ -127,6 +128,9 @@ config AT91_ADC
->   	help
->   	  Say yes here to build support for Atmel AT91 ADC.
->
-> +	  To compile this driver as a module, choose M here: the module will be
-> +	  called at91_adc.
+> +	mode = data->mode;
+> +	/* We need to go in standby mode to modify registers */
+> +	ret = stk8312_set_mode(data, STK8312_MODE_STANDBY);
+> +	if (ret < 0)
+> +		return ret;
 > +
->   config AXP288_ADC
->   	tristate "X-Powers AXP288 ADC driver"
->   	depends on MFD_AXP20X
-> @@ -135,6 +139,9 @@ config AXP288_ADC
->   	  device. Depending on platform configuration, this general purpose ADC can
->   	  be used for sampling sensors such as thermal resistors.
->
-> +	  To compile this driver as a module, choose M here: the module will be
-> +	  called axp288_adc.
+> +	ret = i2c_smbus_write_byte_data(client, STK8312_REG_INTSU, int_mask);
+> +	if (ret < 0)
+> +		dev_err(&client->dev, "failed to set interrupts\n");
 > +
->   config BERLIN2_ADC
->   	tristate "Marvell Berlin2 ADC driver"
->   	depends on ARCH_BERLIN
-> @@ -142,6 +149,9 @@ config BERLIN2_ADC
->   	  Marvell Berlin2 ADC driver. This ADC has 8 channels, with one used for
->   	  temperature measurement.
->
-> +	  To compile this driver as a module, choose M here: the module will be
-> +	  called berlin2-adc.
+> +	return stk8312_set_mode(data, mode);
+> +}
 > +
->   config CC10001_ADC
->   	tristate "Cosmic Circuits 10001 ADC driver"
->   	depends on HAS_IOMEM && HAVE_CLK && REGULATOR
-> @@ -170,12 +180,18 @@ config EXYNOS_ADC
->   	  of SoCs for drivers such as the touchscreen and hwmon to use to share
->   	  this resource.
->
-> +	  To compile this driver as a module, choose M here: the module will be
-> +	  called exynos_adc.
+> +static int stk8312_data_rdy_trigger_set_state(struct iio_trigger *trig,
+> +					      bool state)
+> +{
+> +	struct iio_dev *indio_dev = iio_trigger_get_drvdata(trig);
+> +	struct stk8312_data *data = iio_priv(indio_dev);
+> +	int ret;
 > +
->   config LP8788_ADC
->   	tristate "LP8788 ADC driver"
->   	depends on MFD_LP8788
->   	help
->   	  Say yes here to build support for TI LP8788 ADC.
->
-> +	  To compile this driver as a module, choose M here: the module will be
-> +	  called lp8788_adc.
+> +	if (state)
+> +		ret = stk8312_set_interrupts(data, STK8312_DREADY_BIT);
+> +	else
+> +		ret = stk8312_set_interrupts(data, 0x00);
 > +
->   config MAX1027
->   	tristate "Maxim max1027 ADC driver"
->   	depends on SPI
-> @@ -185,6 +201,9 @@ config MAX1027
->   	  Say yes here to build support for Maxim SPI ADC models
->   	  max1027, max1029 and max1031.
->
-> +	  To compile this driver as a module, choose M here: the module will be
-> +	  called max1027.
+> +	if (ret < 0) {
+> +		dev_err(&data->client->dev, "failed to set trigger state\n");
+> +		return ret;
+> +	}
 > +
->   config MAX1363
->   	tristate "Maxim max1363 ADC driver"
->   	depends on I2C
-> @@ -201,6 +220,9 @@ config MAX1363
->   	  max11646, max11647) Provides direct access via sysfs and buffered
->   	  data via the iio dev interface.
->
-> +	  To compile this driver as a module, choose M here: the module will be
-> +	  called max1363.
+> +	data->dready_trigger_on = state;
 > +
->   config MCP320X
->   	tristate "Microchip Technology MCP3x01/02/04/08"
->   	depends on SPI
-> @@ -309,15 +331,18 @@ config TI_AM335X_ADC
->   	  Say yes here to build support for Texas Instruments ADC
->   	  driver which is also a MFD client.
->
-> +	  To compile this driver as a module, choose M here: the module will be
-> +	  called ti_am335x_adc.
+> +	return ret;
+> +}
 > +
->   config TWL4030_MADC
->   	tristate "TWL4030 MADC (Monitoring A/D Converter)"
->   	depends on TWL4030_CORE
->   	help
-> -	This driver provides support for Triton TWL4030-MADC. The
-> -	driver supports both RT and SW conversion methods.
-> +	  This driver provides support for Triton TWL4030-MADC. The
-> +	  driver supports both RT and SW conversion methods.
->
-> -	This driver can also be built as a module. If so, the module will be
-> -	called twl4030-madc.
-> +	  This driver can also be built as a module. If so, the module will be
-> +	  called twl4030-madc.
->
->   config TWL6030_GPADC
->   	tristate "TWL6030 GPADC (General Purpose A/D Converter) Support"
-> @@ -350,6 +375,9 @@ config VIPERBOARD_ADC
->   	  Say yes here to access the ADC part of the Nano River
->   	  Technologies Viperboard.
->
-> +	  To compile this driver as a module, choose M here: the module will be
-> +	  called viperboard_adc.
+> +static const struct iio_trigger_ops stk8312_trigger_ops = {
+> +	.set_trigger_state = stk8312_data_rdy_trigger_set_state,
+> +	.owner = THIS_MODULE,
+> +};
 > +
->   config XILINX_XADC
->   	tristate "Xilinx XADC driver"
->   	depends on ARCH_ZYNQ || MICROBLAZE || COMPILE_TEST
->
+>  static int stk8312_set_range(struct stk8312_data *data, u8 range)
+>  {
+>  	int ret;
+> @@ -208,12 +265,10 @@ static int stk8312_read_accel(struct stk8312_data *data, u8 address)
+>  		return -EINVAL;
+>  
+>  	ret = i2c_smbus_read_byte_data(client, address);
+> -	if (ret < 0) {
+> +	if (ret < 0)
+>  		dev_err(&client->dev, "register read failed\n");
+> -		return ret;
+> -	}
+>  
+> -	return sign_extend32(ret, 7);
+> +	return ret;
+>  }
+>  
+>  static int stk8312_read_raw(struct iio_dev *indio_dev,
+> @@ -221,14 +276,27 @@ static int stk8312_read_raw(struct iio_dev *indio_dev,
+>  			    int *val, int *val2, long mask)
+>  {
+>  	struct stk8312_data *data = iio_priv(indio_dev);
+> -
+> -	if (chan->type != IIO_ACCEL)
+> -		return -EINVAL;
+> +	int ret;
+>  
+>  	switch (mask) {
+>  	case IIO_CHAN_INFO_RAW:
+> +		if (iio_buffer_enabled(indio_dev))
+> +			return -EBUSY;
+>  		mutex_lock(&data->lock);
+> -		*val = stk8312_read_accel(data, chan->address);
+> +		ret = stk8312_set_mode(data, data->mode | STK8312_MODE_ACTIVE);
+> +		if (ret < 0) {
+> +			mutex_unlock(&data->lock);
+> +			return -EINVAL;
+> +		}
+> +		ret = stk8312_read_accel(data, chan->address);
+> +		if (ret < 0) {
+> +			stk8312_set_mode(data,
+> +					 data->mode & (~STK8312_MODE_ACTIVE));
+> +			mutex_unlock(&data->lock);
+> +			return -EINVAL;
+> +		}
+> +		*val = sign_extend32(ret, 7);
+> +		stk8312_set_mode(data, data->mode & (~STK8312_MODE_ACTIVE));
+>  		mutex_unlock(&data->lock);
+>  		return IIO_VAL_INT;
+>  	case IIO_CHAN_INFO_SCALE:
+> @@ -277,6 +345,109 @@ static const struct iio_info stk8312_info = {
+>  	.attrs			= &stk8312_attribute_group,
+>  };
+>  
+> +static irqreturn_t stk8312_trigger_handler(int irq, void *p)
+> +{
+> +	struct iio_poll_func *pf = p;
+> +	struct iio_dev *indio_dev = pf->indio_dev;
+> +	struct stk8312_data *data = iio_priv(indio_dev);
+> +	int bit, ret, i = 0;
+> +	u8 buffer[STK8312_ALL_CHANNEL_SIZE];
+> +
+> +	mutex_lock(&data->lock);
+> +	/*
+> +	 * Do a bulk read if all channels are requested,
+> +	 * from 0x00 (XOUT) to 0x02 (ZOUT)
+> +	 */
+> +	if (*(indio_dev->active_scan_mask) == STK8312_ALL_CHANNEL_MASK) {
+> +		ret = i2c_smbus_read_i2c_block_data(data->client,
+> +						    STK8312_REG_XOUT,
+> +						    STK8312_ALL_CHANNEL_SIZE,
+> +						    buffer);
+> +		if (ret < STK8312_ALL_CHANNEL_SIZE) {
+> +			dev_err(&data->client->dev, "register read failed\n");
+> +			mutex_unlock(&data->lock);
+> +			goto err;
+> +		}
+> +		data->buffer[0] = buffer[0];
+> +		data->buffer[1] = buffer[1];
+> +		data->buffer[2] = buffer[2];
+Why the dance with a local buffer?  Could you not just put it straign in the data->buffer?
+> +	} else {
+> +		for_each_set_bit(bit, indio_dev->active_scan_mask,
+> +			   indio_dev->masklength) {
+> +			ret = stk8312_read_accel(data, bit);
+> +			if (ret < 0) {
+> +				mutex_unlock(&data->lock);
+> +				goto err;
+> +			}
+> +			data->buffer[i++] = ret;
+> +		}
+> +	}
+> +	mutex_unlock(&data->lock);
+> +
+> +	iio_push_to_buffers_with_timestamp(indio_dev, data->buffer,
+> +					   pf->timestamp);
+> +err:
+> +	iio_trigger_notify_done(indio_dev->trig);
+> +
+> +	return IRQ_HANDLED;
+> +}
+> +
+> +static irqreturn_t stk8312_data_rdy_trig_poll(int irq, void *private)
+> +{
+> +	struct iio_dev *indio_dev = private;
+> +	struct stk8312_data *data = iio_priv(indio_dev);
+> +
+> +	if (data->dready_trigger_on)
+> +		iio_trigger_poll(data->dready_trig);
+> +
+> +	return IRQ_HANDLED;
+> +}
+> +
+> +static int stk8312_buffer_preenable(struct iio_dev *indio_dev)
+> +{
+> +	struct stk8312_data *data = iio_priv(indio_dev);
+> +
+> +	return stk8312_set_mode(data, data->mode | STK8312_MODE_ACTIVE);
+> +}
+> +
+> +static int stk8312_buffer_postdisable(struct iio_dev *indio_dev)
+> +{
+> +	struct stk8312_data *data = iio_priv(indio_dev);
+> +
+> +	return stk8312_set_mode(data, data->mode & (~STK8312_MODE_ACTIVE));
+> +}
+> +
+> +static const struct iio_buffer_setup_ops stk8312_buffer_setup_ops = {
+> +	.preenable   = stk8312_buffer_preenable,
+> +	.postenable  = iio_triggered_buffer_postenable,
+> +	.predisable  = iio_triggered_buffer_predisable,
+> +	.postdisable = stk8312_buffer_postdisable,
+> +};
+> +
+> +static int stk8312_gpio_probe(struct i2c_client *client)
+> +{
+> +	struct device *dev;
+> +	struct gpio_desc *gpio;
+> +	int ret;
+> +
+> +	if (!client)
+> +		return -EINVAL;
+> +
+> +	dev = &client->dev;
+> +
+> +	/* data ready gpio interrupt pin */
+> +	gpio = devm_gpiod_get_index(dev, STK8312_GPIO, 0, GPIOD_IN);
+> +	if (IS_ERR(gpio)) {
+> +		dev_err(dev, "acpi gpio get index failed\n");
+> +		return PTR_ERR(gpio);
+> +	}
+> +
+> +	ret = gpiod_to_irq(gpio);
+> +	dev_dbg(dev, "GPIO resource, no:%d irq:%d\n", desc_to_gpio(gpio), ret);
+> +
+> +	return ret;
+> +}
+> +
+>  static int stk8312_probe(struct i2c_client *client,
+>  			 const struct i2c_device_id *id)
+>  {
+> @@ -312,26 +483,86 @@ static int stk8312_probe(struct i2c_client *client,
+>  	if (ret < 0)
+>  		return ret;
+>  
+> -	ret = stk8312_set_mode(data, STK8312_MODE_ACTIVE);
+> +	ret = stk8312_set_mode(data, STK8312_INT_MODE | STK8312_MODE_ACTIVE);
+>  	if (ret < 0)
+>  		return ret;
+>  
+> +	if (client->irq < 0)
+> +		client->irq = stk8312_gpio_probe(client);
+> +
+> +	if (client->irq >= 0) {
+> +		ret = devm_request_threaded_irq(&client->dev, client->irq,
+> +						stk8312_data_rdy_trig_poll,
+> +						NULL,
+> +						IRQF_TRIGGER_RISING |
+> +						IRQF_ONESHOT,
+> +						STK8312_IRQ_NAME,
+> +						indio_dev);
+> +		if (ret < 0) {
+> +			dev_err(&client->dev, "request irq %d failed\n",
+> +				client->irq);
+> +			goto err_power_off;
+> +		}
+> +
+> +		data->dready_trig = devm_iio_trigger_alloc(&client->dev,
+> +							   "%s-dev%d",
+> +							   indio_dev->name,
+> +							   indio_dev->id);
+> +		if (!data->dready_trig) {
+> +			ret = -ENOMEM;
+> +			goto err_power_off;
+> +		}
+> +
+> +		data->dready_trig->dev.parent = &client->dev;
+> +		data->dready_trig->ops = &stk8312_trigger_ops;
+> +		iio_trigger_set_drvdata(data->dready_trig, indio_dev);
+> +		ret = iio_trigger_register(data->dready_trig);
+> +		if (ret) {
+> +			dev_err(&client->dev, "iio trigger register failed\n");
+> +			goto err_power_off;
+> +		}
+> +	}
+> +
+> +	ret = iio_triggered_buffer_setup(indio_dev,
+> +					 iio_pollfunc_store_time,
+> +					 stk8312_trigger_handler,
+> +					 &stk8312_buffer_setup_ops);
+> +	if (ret < 0) {
+> +		dev_err(&client->dev, "iio triggered buffer setup failed\n");
+> +		goto err_trigger_unregister;
+> +	}
+> +
+>  	ret = iio_device_register(indio_dev);
+>  	if (ret < 0) {
+>  		dev_err(&client->dev, "device_register failed\n");
+> -		stk8312_set_mode(data, STK8312_MODE_STANDBY);
+> +		goto err_buffer_cleanup;
+>  	}
+>  
+>  	return ret;
+> +
+> +err_buffer_cleanup:
+> +	iio_triggered_buffer_cleanup(indio_dev);
+> +err_trigger_unregister:
+> +	if (data->dready_trig)
+> +		iio_trigger_unregister(data->dready_trig);
+> +err_power_off:
+> +	stk8312_set_mode(data, STK8312_MODE_STANDBY);
+> +	return ret;
+>  }
+>  
+>  static int stk8312_remove(struct i2c_client *client)
+>  {
+>  	struct iio_dev *indio_dev = i2c_get_clientdata(client);
+> +	struct stk8312_data *data = iio_priv(indio_dev);
+>  
+>  	iio_device_unregister(indio_dev);
+>  
+> -	return stk8312_set_mode(iio_priv(indio_dev), STK8312_MODE_STANDBY);
+> +	if (data->dready_trig) {
+> +		iio_triggered_buffer_cleanup(indio_dev);
+> +		iio_trigger_unregister(data->dready_trig);
+> +	}
+> +
+> +	return stk8312_set_mode(data, STK8312_MODE_STANDBY);
+>  }
+>  
+>  #ifdef CONFIG_PM_SLEEP
+> @@ -341,7 +572,7 @@ static int stk8312_suspend(struct device *dev)
+>  
+>  	data = iio_priv(i2c_get_clientdata(to_i2c_client(dev)));
+>  
+> -	return stk8312_set_mode(data, STK8312_MODE_STANDBY);
+> +	return stk8312_set_mode(data, data->mode & (~STK8312_MODE_ACTIVE));
+>  }
+>  
+>  static int stk8312_resume(struct device *dev)
+> @@ -350,7 +581,7 @@ static int stk8312_resume(struct device *dev)
+>  
+>  	data = iio_priv(i2c_get_clientdata(to_i2c_client(dev)));
+>  
+> -	return stk8312_set_mode(data, STK8312_MODE_ACTIVE);
+> +	return stk8312_set_mode(data, data->mode | STK8312_MODE_ACTIVE);
+>  }
+>  
+>  static SIMPLE_DEV_PM_OPS(stk8312_pm_ops, stk8312_suspend, stk8312_resume);
+> 
 
 --
 To unsubscribe from this list: send the line "unsubscribe linux-iio" in
