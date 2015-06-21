@@ -1,713 +1,581 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:44177 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:44420 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751246AbbFUOPM (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 21 Jun 2015 10:15:12 -0400
-Message-ID: <5586C6EE.1090500@kernel.org>
-Date: Sun, 21 Jun 2015 15:15:10 +0100
+	with ESMTP id S1753060AbbFUPKr (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 21 Jun 2015 11:10:47 -0400
+Message-ID: <5586D3F3.9040509@kernel.org>
+Date: Sun, 21 Jun 2015 16:10:43 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Daniel Baluta <daniel.baluta@intel.com>
-CC: pmeerw@pmeerw.net, knaack.h@gmx.de, lars@metafoo.de,
-	linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org
-Subject: Re: [PATCH v4] iio: light: Add support for ROHM RPR0521 sensor
-References: <1434534171-958-1-git-send-email-daniel.baluta@intel.com>
-In-Reply-To: <1434534171-958-1-git-send-email-daniel.baluta@intel.com>
-Content-Type: text/plain; charset=windows-1252
+To: Ludovic <ludovic.tancerel@maplehightech.com>, knaack.h@gmx.de,
+	pmeerw@pmeerw.net, William.Markezana@meas-spec.com,
+	linux-iio@vger.kernel.org
+Subject: Re: [PATCH v2] iio: ms5637: Add Measurement Specialties MS5637 support
+References: <1434644885-9037-1-git-send-email-ludovic.tancerel@maplehightech.com>
+In-Reply-To: <1434644885-9037-1-git-send-email-ludovic.tancerel@maplehightech.com>
+Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 17/06/15 10:42, Daniel Baluta wrote:
-> This patch adds support for ROHM RPR0521 ambient light and proximity
-> sensor. It offers raw readings for intensity and proximity.
+On 18/06/15 17:28, Ludovic wrote:
+> This a patch re-submission taking into account feebdack from Peter and Tomasz.
+> Thank you for your feedback
 > 
-> Signed-off-by: Daniel Baluta <daniel.baluta@intel.com>
-Looks good to me.
+> Ludovic
+> 
+> Signed-off-by: Ludovic <ludovic.tancerel@maplehightech.com>
+Hi Ludovic,
 
-Applied to the togreg branch of iio.git - initially pushed out as
-testing for the autobuilders to play with it.
+Firstly would you mind signing off with your whole name prior to the email
+address (convention in the kernel - if you have two or more names anyway ;)
 
+Looking pretty good, just a few bits and bobs inline. Mostly along the
+lines of ways of slightly cleaning up the code rather than anything
+fundamental.
 
+The one non trivial question is why the throttle on reading rate?
+
+Jonathan
 > ---
-> Changes since v3:
-> 	* use GENMASK instead BIT(x) | BIT(y)
-> 	* remove (now) unused RPR0521_PXS_MAX_VAL because of PXS ABI
-> 	  clarification
-> 	* remove get_gain_index function and directly code finding the index.
+>  drivers/iio/pressure/Kconfig  |   9 +
+>  drivers/iio/pressure/Makefile |   1 +
+>  drivers/iio/pressure/ms5637.c | 457 ++++++++++++++++++++++++++++++++++++++++++
+>  3 files changed, 467 insertions(+)
+>  create mode 100644 drivers/iio/pressure/ms5637.c
 > 
-> Other stuff:
-> 	* I preffered to keep the remgap implementation because it does look
-> 	  more clean to me. Also, it does have a nice feature of exporting
-> 	  registers for debug.
-If this reply is in response to my comments, I was always in favour of regmap!
-Just suggested (IIRC) that you might want to take it futher and use the
-support that regmap has for bit fields (hardly used anywhere currently) as it
-makes some of the shift and mask stuff a litle tiddier.
-> 	* didn't roll reg_desc and gain_info structure because the separation
-> 	  looked easier to understand.
-Fair enough!
-> 
->  drivers/iio/light/Kconfig   |  11 +
->  drivers/iio/light/Makefile  |   1 +
->  drivers/iio/light/rpr0521.c | 615 ++++++++++++++++++++++++++++++++++++++++++++
->  3 files changed, 627 insertions(+)
->  create mode 100644 drivers/iio/light/rpr0521.c
-> 
-> diff --git a/drivers/iio/light/Kconfig b/drivers/iio/light/Kconfig
-> index e6198b7..cbc4677 100644
-> --- a/drivers/iio/light/Kconfig
-> +++ b/drivers/iio/light/Kconfig
-> @@ -168,6 +168,17 @@ config JSA1212
->  	 To compile this driver as a module, choose M here:
->  	 the module will be called jsa1212.
+> diff --git a/drivers/iio/pressure/Kconfig b/drivers/iio/pressure/Kconfig
+> index fa62950..69675ef2 100644
+> --- a/drivers/iio/pressure/Kconfig
+> +++ b/drivers/iio/pressure/Kconfig
+> @@ -78,6 +78,15 @@ config MS5611_SPI
 >  
-> +config RPR0521
-> +	tristate "ROHM RPR0521 ALS and proximity sensor driver"
-> +	depends on I2C
-> +	select REGMAP_I2C
-> +	help
-> +	 Say Y here if you want to build support for ROHM's RPR0521
-> +	 ambient light and proximity sensor device.
+>  	  To compile this driver as a module, choose M here: the module will
+>  	  be called ms5611_spi.
+> +config MS5637
+> +        tristate "MS5637 pressure & temperature sensor"
+> +        depends on I2C
+> +        help
+> +          If you say yes here you get support for the Measurement Specialties
+> +          MS5637 pressure and temperature sensor.
 > +
-> +	 To compile this driver as a module, choose M here:
-> +	 the module will be called rpr0521.
-> +
->  config SENSORS_LM3533
->  	tristate "LM3533 ambient light sensor"
->  	depends on MFD_LM3533
-> diff --git a/drivers/iio/light/Makefile b/drivers/iio/light/Makefile
-> index e2d50fd..adf9723 100644
-> --- a/drivers/iio/light/Makefile
-> +++ b/drivers/iio/light/Makefile
-> @@ -19,6 +19,7 @@ obj-$(CONFIG_ISL29125)		+= isl29125.o
->  obj-$(CONFIG_JSA1212)		+= jsa1212.o
->  obj-$(CONFIG_SENSORS_LM3533)	+= lm3533-als.o
->  obj-$(CONFIG_LTR501)		+= ltr501.o
-> +obj-$(CONFIG_RPR0521)		+= rpr0521.o
->  obj-$(CONFIG_SENSORS_TSL2563)	+= tsl2563.o
->  obj-$(CONFIG_STK3310)          += stk3310.o
->  obj-$(CONFIG_TCS3414)		+= tcs3414.o
-> diff --git a/drivers/iio/light/rpr0521.c b/drivers/iio/light/rpr0521.c
+> +          This driver can also be built as a module. If so, the module will
+> +          be called ms5637.
+>  
+>  config IIO_ST_PRESS
+>  	tristate "STMicroelectronics pressure sensor Driver"
+> diff --git a/drivers/iio/pressure/Makefile b/drivers/iio/pressure/Makefile
+> index a4f98f8..46571c96 100644
+> --- a/drivers/iio/pressure/Makefile
+> +++ b/drivers/iio/pressure/Makefile
+> @@ -10,6 +10,7 @@ obj-$(CONFIG_MPL3115) += mpl3115.o
+>  obj-$(CONFIG_MS5611) += ms5611_core.o
+>  obj-$(CONFIG_MS5611_I2C) += ms5611_i2c.o
+>  obj-$(CONFIG_MS5611_SPI) += ms5611_spi.o
+> +obj-$(CONFIG_MS5637) += ms5637.o
+>  obj-$(CONFIG_IIO_ST_PRESS) += st_pressure.o
+>  st_pressure-y := st_pressure_core.o
+>  st_pressure-$(CONFIG_IIO_BUFFER) += st_pressure_buffer.o
+> diff --git a/drivers/iio/pressure/ms5637.c b/drivers/iio/pressure/ms5637.c
 > new file mode 100644
-> index 0000000..4b75bb0
+> index 0000000..bda7206
 > --- /dev/null
-> +++ b/drivers/iio/light/rpr0521.c
-> @@ -0,0 +1,615 @@
+> +++ b/drivers/iio/pressure/ms5637.c
+> @@ -0,0 +1,457 @@
 > +/*
-> + * RPR-0521 ROHM Ambient Light and Proximity Sensor
+> + * ms5637.c - Support for Measurement-Specialties ms5637
+> + *            pressure & temperature sensor
 > + *
-> + * Copyright (c) 2015, Intel Corporation.
+> + * Copyright (c) 2014 Measurement-Specialties
 > + *
-> + * This file is subject to the terms and conditions of version 2 of
-> + * the GNU General Public License.  See the file COPYING in the main
-> + * directory of this archive for more details.
+> + * Licensed under the GPL-2.
 > + *
-> + * IIO driver for RPR-0521RS (7-bit I2C slave address 0x38).
+> + * (7-bit I2C slave address 0x76)
 > + *
-> + * TODO: illuminance channel, PM support, buffer
 > + */
-> +
-> +#include <linux/module.h>
 > +#include <linux/init.h>
+> +#include <linux/device.h>
+> +#include <linux/kernel.h>
+> +#include <linux/stat.h>
+> +#include <linux/module.h>
 > +#include <linux/i2c.h>
-> +#include <linux/regmap.h>
-> +#include <linux/delay.h>
-> +#include <linux/acpi.h>
-> +
 > +#include <linux/iio/iio.h>
 > +#include <linux/iio/sysfs.h>
-> +#include <linux/pm_runtime.h>
+> +#include <linux/jiffies.h>
+> +#include <linux/delay.h>
+> +#include <linux/mutex.h>
 > +
-> +#define RPR0521_REG_SYSTEM_CTRL		0x40
-> +#define RPR0521_REG_MODE_CTRL		0x41
-> +#define RPR0521_REG_ALS_CTRL		0x42
-> +#define RPR0521_REG_PXS_CTRL		0x43
-> +#define RPR0521_REG_PXS_DATA		0x44 /* 16-bit, little endian */
-> +#define RPR0521_REG_ALS_DATA0		0x46 /* 16-bit, little endian */
-> +#define RPR0521_REG_ALS_DATA1		0x48 /* 16-bit, little endian */
-> +#define RPR0521_REG_ID			0x92
+> +/* MS5637 Commands */
+> +#define MS5637_RESET				0x1E
+> +#define MS5637_TEMPERATURE_CONVERSION_START	0x50
+> +#define MS5637_PRESSURE_CONVERSION_START	0x40
+> +#define MS5637_ADC_READ				0x00
+> +#define MS5637_PROM_READ			0xA0
+> +#define MS5637_PROM_ELEMENTS_NB                 7
 > +
-> +#define RPR0521_MODE_ALS_MASK		BIT(7)
-> +#define RPR0521_MODE_PXS_MASK		BIT(6)
-> +#define RPR0521_MODE_MEAS_TIME_MASK	GENMASK(3, 0)
-> +#define RPR0521_ALS_DATA0_GAIN_MASK	GENMASK(5, 4)
-> +#define RPR0521_ALS_DATA0_GAIN_SHIFT	4
-> +#define RPR0521_ALS_DATA1_GAIN_MASK	GENMASK(3, 2)
-> +#define RPR0521_ALS_DATA1_GAIN_SHIFT	2
-> +#define RPR0521_PXS_GAIN_MASK		GENMASK(5, 4)
-> +#define RPR0521_PXS_GAIN_SHIFT		4
+> +#define MS5637_CONVERSION_SLEEP(index)		\
+> +		usleep_range(ms5637_conversion_time[index],\
+> +		ms5637_conversion_time[index] + 3000)
+I'd be tempted to make this one a function rather than a macro then
+let the compiler inline it if it feels like it..
 > +
-> +#define RPR0521_MODE_ALS_ENABLE		BIT(7)
-> +#define RPR0521_MODE_ALS_DISABLE	0x00
-> +#define RPR0521_MODE_PXS_ENABLE		BIT(6)
-> +#define RPR0521_MODE_PXS_DISABLE	0x00
+> +static const u16 ms5637_conversion_time[6] = { 1000, 2000,
+> +					       3000, 5000,
+> +					       9000, 17000 };
 > +
-> +#define RPR0521_MANUFACT_ID		0xE0
-> +#define RPR0521_DEFAULT_MEAS_TIME	0x06 /* ALS - 100ms, PXS - 100ms */
+> +static const int ms5637_samp_freq[6][2]    = { {1800, 0}, {900, 0},
+> +					       {450, 0}, {225, 0},
+> +					       {112, 500000}, {56, 250000}
+> +					     };
+Although it is clearly duplicating data, I'd be tempted to have
+the available list as a const char * here (where it can be easily checked).
+Then you can drop a couple of functions and use the const attribute
+defintion.
+
 > +
-> +#define RPR0521_DRV_NAME		"RPR0521"
-> +#define RPR0521_REGMAP_NAME		"rpr0521_regmap"
-> +
-> +#define RPR0521_SLEEP_DELAY_MS	2000
-> +
-> +#define RPR0521_ALS_SCALE_AVAIL "0.007812 0.015625 0.5 1"
-> +#define RPR0521_PXS_SCALE_AVAIL "0.125 0.5 1"
-> +
-> +struct rpr0521_gain {
-> +	int scale;
-> +	int uscale;
-> +};
-> +
-> +static const struct rpr0521_gain rpr0521_als_gain[4] = {
-> +	{1, 0},		/* x1 */
-> +	{0, 500000},	/* x2 */
-> +	{0, 15625},	/* x64 */
-> +	{0, 7812},	/* x128 */
-> +};
-> +
-> +static const struct rpr0521_gain rpr0521_pxs_gain[3] = {
-> +	{1, 0},		/* x1 */
-> +	{0, 500000},	/* x2 */
-> +	{0, 125000},	/* x4 */
-> +};
-> +
-> +enum rpr0521_channel {
-> +	RPR0521_CHAN_ALS_DATA0,
-> +	RPR0521_CHAN_ALS_DATA1,
-> +	RPR0521_CHAN_PXS,
-> +};
-> +
-> +struct rpr0521_reg_desc {
-> +	u8 address;
-> +	u8 device_mask;
-> +};
-> +
-> +static const struct rpr0521_reg_desc rpr0521_data_reg[] = {
-> +	[RPR0521_CHAN_ALS_DATA0] = {
-> +		.address	= RPR0521_REG_ALS_DATA0,
-> +		.device_mask	= RPR0521_MODE_ALS_MASK,
-> +	},
-> +	[RPR0521_CHAN_ALS_DATA1] = {
-> +		.address	= RPR0521_REG_ALS_DATA1,
-> +		.device_mask	= RPR0521_MODE_ALS_MASK,
-> +	},
-> +	[RPR0521_CHAN_PXS]	= {
-> +		.address	= RPR0521_REG_PXS_DATA,
-> +		.device_mask	= RPR0521_MODE_PXS_MASK,
-> +	},
-> +};
-> +
-> +static const struct rpr0521_gain_info {
-> +	u8 reg;
-> +	u8 mask;
-> +	u8 shift;
-> +	const struct rpr0521_gain *gain;
-> +	int size;
-> +} rpr0521_gain[] = {
-> +	[RPR0521_CHAN_ALS_DATA0] = {
-> +		.reg	= RPR0521_REG_ALS_CTRL,
-> +		.mask	= RPR0521_ALS_DATA0_GAIN_MASK,
-> +		.shift	= RPR0521_ALS_DATA0_GAIN_SHIFT,
-> +		.gain	= rpr0521_als_gain,
-> +		.size	= ARRAY_SIZE(rpr0521_als_gain),
-> +	},
-> +	[RPR0521_CHAN_ALS_DATA1] = {
-> +		.reg	= RPR0521_REG_ALS_CTRL,
-> +		.mask	= RPR0521_ALS_DATA1_GAIN_MASK,
-> +		.shift	= RPR0521_ALS_DATA1_GAIN_SHIFT,
-> +		.gain	= rpr0521_als_gain,
-> +		.size	= ARRAY_SIZE(rpr0521_als_gain),
-> +	},
-> +	[RPR0521_CHAN_PXS] = {
-> +		.reg	= RPR0521_REG_PXS_CTRL,
-> +		.mask	= RPR0521_PXS_GAIN_MASK,
-> +		.shift	= RPR0521_PXS_GAIN_SHIFT,
-> +		.gain	= rpr0521_pxs_gain,
-> +		.size	= ARRAY_SIZE(rpr0521_pxs_gain),
-> +	},
-> +};
-> +
-> +struct rpr0521_data {
+> +struct ms5637_dev {
 > +	struct i2c_client *client;
-> +
-> +	/* protect device params updates (e.g state, gain) */
-> +	struct mutex lock;
-> +
-> +	/* device active status */
-> +	bool als_dev_en;
-> +	bool pxs_dev_en;
-> +
-> +	/* optimize runtime pm ops - enable device only if needed */
-> +	bool als_ps_need_en;
-> +	bool pxs_ps_need_en;
-> +
-> +	struct regmap *regmap;
+> +	struct mutex lock; /* Mutex protecting this data structure */
+> +	/* Added element for CRC computation */
+> +	u16 calibration_coeffs[MS5637_PROM_ELEMENTS_NB + 1];
+> +	unsigned long last_update;
+> +	int temperature;
+> +	unsigned int pressure;
+> +	u8 resolution_index;
 > +};
 > +
-> +static IIO_CONST_ATTR(in_intensity_scale_available, RPR0521_ALS_SCALE_AVAIL);
-> +static IIO_CONST_ATTR(in_proximity_scale_available, RPR0521_PXS_SCALE_AVAIL);
+> +static int ms5637_get_calibration_coeffs(struct ms5637_dev *dev_data,
+> +					 u8 index, u16 *word)
+> +{
+> +	int ret;
 > +
-> +static struct attribute *rpr0521_attributes[] = {
-> +	&iio_const_attr_in_intensity_scale_available.dev_attr.attr,
-> +	&iio_const_attr_in_proximity_scale_available.dev_attr.attr,
+> +	ret = i2c_smbus_read_word_swapped(dev_data->client,
+> +					  MS5637_PROM_READ + (index << 1));
+> +	if (ret < 0)
+> +		return ret;
+> +	*word = ret;
+Blank line here.
+> +	return 0;
+> +}
+> +
+> +static bool ms5637_crc_check(u16 *n_prom, u8 crc)
+> +{
+> +	unsigned int cnt, n_bit;
+> +	u16 n_rem, crc_read;
+> +
+> +	n_rem = 0x0000;
+> +	crc_read = n_prom[0];
+> +	n_prom[MS5637_PROM_ELEMENTS_NB] = 0;
+> +	n_prom[0] &= 0x0FFF;      /* Clear the CRC computation part */
+> +
+> +	for (cnt = 0; cnt < (MS5637_PROM_ELEMENTS_NB + 1) * 2; cnt++) {
+> +		if (cnt % 2 == 1)
+> +			n_rem ^= n_prom[cnt >> 1] & 0x00FF;
+> +		else
+> +			n_rem ^= n_prom[cnt >> 1] >> 8;
+> +
+> +		for (n_bit = 8; n_bit > 0; n_bit--) {
+> +			if (n_rem & 0x8000)
+> +				n_rem = (n_rem << 1) ^ 0x3000;
+> +			else
+> +				n_rem <<= 1;
+> +		}
+> +	}
+> +	n_rem >>= 12;
+> +	n_prom[0] = crc_read;
+blank line here.
+> +	return n_rem == crc;
+> +}
+> +
+> +static int ms5637_fill_calibration_coeffs(struct ms5637_dev *dev_data)
+> +{
+> +	int i, ret;
+> +
+> +	for (i = 0; i < MS5637_PROM_ELEMENTS_NB; i++) {
+> +		ret = ms5637_get_calibration_coeffs(
+> +					dev_data, i,
+> +					&dev_data->calibration_coeffs[i]);
+> +
+> +		if (ret < 0) {
+> +			dev_err(&dev_data->client->dev,
+> +				"Unable to get calibration coefficients at address %d\n",
+> +				i + 1);
+> +			return ret;
+> +		}
+> +
+> +		dev_dbg(&dev_data->client->dev, "Coeff %d : %d", i,
+> +			dev_data->calibration_coeffs[i]);
+> +	}
+> +
+> +	if ( ms5637_crc_check(
+> +		dev_data->calibration_coeffs,
+> +		(dev_data->calibration_coeffs[0] & 0xF000) >> 12) == false) {
+> +		dev_err(&dev_data->client->dev,
+> +			"Calibration coefficients crc check error\n");
+> +		return -ENODEV;
+> +	}
+> +	return 0;
+> +}
+> +
+> +static int ms5637_read_adc_value(struct ms5637_dev *dev_data, u32 *adc_value)
+> +{
+> +	int ret
+This is a fairly standard beast.  I'd use a u32 and just set it to zero
+before reading into the relevant address and using an endian conversion
+to sort out the ordering if needed.  That way if no endian conversion
+is needed it is all free ;)
+> +	u8 buf[3];
+> +
+> +	ret =
+> +	    i2c_smbus_read_i2c_block_data(dev_data->client, MS5637_ADC_READ, 3,
+> +					  buf);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	dev_dbg(&dev_data->client->dev, "ADC raw value : %x %x %x\n", buf[0],
+> +		buf[1], buf[2]);
+> +
+> +	*adc_value = (buf[0] << 16) + (buf[1] << 8) + buf[2];
+> +
+> +	return 0;
+> +}
+> +
+> +static int ms5637_conversion_and_read_adc(struct ms5637_dev *dev_data,
+> +					  u32 *t_adc, u32 *p_adc)
+> +{
+> +	int ret;
+> +
+> +	/* Trigger Temperature conversion */
+> +	ret = i2c_smbus_write_byte(dev_data->client,
+> +				   MS5637_TEMPERATURE_CONVERSION_START
+> +				   + dev_data->resolution_index * 2);
+> +	if (ret < 0)
+> +		return ret;
+> +	MS5637_CONVERSION_SLEEP(dev_data->resolution_index);
+> +
+> +	/* Retrieve ADC value */
+> +	ret = ms5637_read_adc_value(dev_data, t_adc);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	/* Trigger Pressure conversion */
+> +	ret = i2c_smbus_write_byte(dev_data->client,
+> +				   MS5637_PRESSURE_CONVERSION_START
+> +				   + dev_data->resolution_index * 2);
+> +	if (ret < 0)
+> +		return ret;
+> +	MS5637_CONVERSION_SLEEP(dev_data->resolution_index);
+> +
+> +	/* Retrieve ADC value */
+> +	ret = ms5637_read_adc_value(dev_data, p_adc);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	return 0;
+> +}
+> +
+> +static int ms5637_read_temperature_and_pressure(struct ms5637_dev *dev_data)
+> +{
+> +	int ret = 0;
+> +	u32 t_adc, p_adc;
+> +	s32 dt, temp;
+> +	s64 off, sens, t2, off2, sens2;
+> +
+> +	mutex_lock(&dev_data->lock);
+> +
+Why this throttle on frequency of reading?  If there is a reason
+add a comment saying why.
+> +	if (time_after(jiffies, dev_data->last_update + HZ / 2)) {
+> +		ret = ms5637_conversion_and_read_adc(dev_data, &t_adc, &p_adc);
+> +		if (ret < 0) {
+> +			dev_err(&dev_data->client->dev,
+> +				"Unable to make sensor adc conversion\n");
+> +			goto out;
+> +		}
+> +
+> +		dt = (s32)t_adc - (dev_data->calibration_coeffs[5] << 8);
+> +
+> +		/* Actual temperature = 2000 + dT * TEMPSENS */
+> +		temp =
+> +		    2000 + (((s64)dt * dev_data->calibration_coeffs[6]) >> 23);
+> +
+> +		/* Second order temperature compensation */
+> +		if (temp < 2000) {
+> +			s64 tmp = (s64)temp - 2000;
+> +
+> +			t2 = (3 * ((s64)dt * (s64)dt)) >> 33;
+> +			off2 = (61 * tmp * tmp) >> 4;
+> +			sens2 = (29 * tmp * tmp) >> 4;
+> +
+> +			if (temp < -1500) {
+> +				s64 tmp = (s64)temp + 1500;
+> +
+> +				off2 += 17 * tmp * tmp;
+> +				sens2 += 9 * tmp * tmp;
+> +			}
+> +		} else {
+> +			t2 = (5 * ((s64)dt * (s64)dt)) >> 38;
+> +			off2 = 0;
+> +			sens2 = 0;
+> +		}
+> +
+> +		/* OFF = OFF_T1 + TCO * dT */
+> +		off = (((s64)dev_data->calibration_coeffs[2]) << 17) +
+> +		    ((((s64)dev_data->calibration_coeffs[4]) * (s64)dt) >> 6);
+> +		off -= off2;
+> +
+> +		/* Sensitivity at actual temperature = SENS_T1 + TCS * dT */
+> +		sens = (((s64)dev_data->calibration_coeffs[1]) << 16)
+> +		    + (((s64)dev_data->calibration_coeffs[3] * dt) >> 7);
+> +		sens -= sens2;
+> +
+> +		/* Temperature compensated pressure = D1 * SENS - OFF */
+> +		dev_data->temperature = (temp - t2) * 10;
+> +		dev_data->pressure = (u32)(((((s64)p_adc * sens) >> 21)
+> +					     - off) >> 15);
+> +
+> +		dev_data->last_update = jiffies;
+> +	}
+> + out:
+> +	mutex_unlock(&dev_data->lock);
+> +
+> +	return ret >= 0 ? 0 : ret;
+I'd just make sure that ret is firmly defined to only be an error if
+negative then just return it directly.  (convention in the kernel is
+for only negative errors).
+> +}
+> +
+Again, this isn't complex enough or used enough to demand a utility function.
+
+> +static int ms5637_get_int_plus_micros_index(const int (*vals)[2], int n,
+> +					    int val, int val2)
+> +{
+> +	while (n-- > 0)
+> +		if (val == vals[n][0] && val2 == vals[n][1])
+> +			return n;
+> +	return -EINVAL;
+> +}
+> +
+Only used in one place. Roll this inline.  It's not complex enough
+that this little utilty function is needed.
+> +static int ms5637_get_samp_freq_index(struct ms5637_dev *dev_data,
+> +				      int val, int val2)
+> +{
+> +	return ms5637_get_int_plus_micros_index(ms5637_samp_freq,
+> +				ARRAY_SIZE(ms5637_samp_freq), val, val2);
+> +}
+> +
+> +static ssize_t ms5637_show_int_plus_micros(char *buf,
+> +					   const int (*vals)[2], int n)
+> +{
+> +	size_t len = 0;
+> +
+> +	while (n-- > 0)
+> +		len += scnprintf(buf + len, PAGE_SIZE - len,
+> +			"%d.%06d ", vals[n][0], vals[n][1]);
+> +
+> +	/* replace trailing space by newline */
+> +	buf[len - 1] = '\n';
+> +
+> +	return len;
+> +}
+> +
+> +static ssize_t ms5637_show_samp_freq_avail(struct device *dev,
+> +					   struct device_attribute *attr,
+> +					   char *buf)
+> +{
+> +	return ms5637_show_int_plus_micros(buf, ms5637_samp_freq,
+> +					   ARRAY_SIZE(ms5637_samp_freq));
+> +}
+> +
+> +static int ms5637_read_raw(struct iio_dev *indio_dev,
+> +			   struct iio_chan_spec const *channel, int *val,
+> +			   int *val2, long mask)
+> +{
+> +	int ret;
+> +	struct ms5637_dev *dev_data = iio_priv(indio_dev);
+> +
+> +	switch (mask) {
+> +	case IIO_CHAN_INFO_PROCESSED:
+> +		ret = ms5637_read_temperature_and_pressure(dev_data);
+> +		if (ret)
+> +			goto err;
+> +		switch (channel->type) {
+> +		case IIO_TEMP:	/* in °C */
+> +			*val = dev_data->temperature / 1000;
+> +			*val2 = (dev_data->temperature % 1000) * 1000;
+> +			break;
+> +		case IIO_PRESSURE:	/* in kPa */
+> +			*val = dev_data->pressure / 1000;
+> +			*val2 = (dev_data->pressure % 1000) * 1000;
+> +			break;
+> +		default:
+> +			return -EINVAL;
+> +		}
+> +		break;
+> +	case IIO_CHAN_INFO_SAMP_FREQ:
+> +		*val = ms5637_samp_freq[dev_data->resolution_index][0];
+> +		*val2 = ms5637_samp_freq[dev_data->resolution_index][1];
+> +		break;
+> +	default:
+> +		return -EINVAL;
+> +	}
+> +
+> +	return IIO_VAL_INT_PLUS_MICRO;
+I'd return directly from the various case statements.
+> + err:
+> +	dev_err(&indio_dev->dev, "Device read error\n");
+You only get here from one place.  Do this inline.
+> +	return ret;
+> +}
+> +
+> +static int ms5637_write_raw(struct iio_dev *indio_dev,
+> +			    struct iio_chan_spec const *chan,
+> +			    int val, int val2, long mask)
+> +{
+> +	struct ms5637_dev *dev_data = iio_priv(indio_dev);
+> +	int i;
+> +
+> +	switch (mask) {
+> +	case IIO_CHAN_INFO_SAMP_FREQ:
+> +		i = ms5637_get_samp_freq_index(dev_data, val, val2);
+> +		if (i < 0)
+> +			return -EINVAL;
+> +
+> +		dev_data->resolution_index = i;
+Nitpick of the day.  A blank line here would be perfect ;)
+> +		return 0;
+> +	default:
+> +		return -EINVAL;
+> +	}
+> +}
+> +
+> +static const struct iio_chan_spec ms5637_channels[] = {
+> +	{
+The indenting you are using here is somewhat unusual.  Give the
+entries another tab.
+> +	 .type = IIO_TEMP,
+> +	 .info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED),
+> +	 .info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SAMP_FREQ),
+> +	 },
+> +	{
+> +	 .type = IIO_PRESSURE,
+> +	 .info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED),
+> +	 .info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SAMP_FREQ),
+> +	 }
+> +};
+> +
+> +static IIO_DEV_ATTR_SAMP_FREQ_AVAIL(ms5637_show_samp_freq_avail);
+> +
+> +static struct attribute *ms5637_attributes[] = {
+> +	&iio_dev_attr_sampling_frequency_available.dev_attr.attr,
 > +	NULL,
 > +};
 > +
-> +static const struct attribute_group rpr0521_attribute_group = {
-> +	.attrs = rpr0521_attributes,
+> +static const struct attribute_group ms5637_attribute_group = {
+> +	.attrs = ms5637_attributes,
 > +};
 > +
-> +static const struct iio_chan_spec rpr0521_channels[] = {
-> +	{
-> +		.type = IIO_INTENSITY,
-> +		.modified = 1,
-> +		.address = RPR0521_CHAN_ALS_DATA0,
-> +		.channel2 = IIO_MOD_LIGHT_BOTH,
-> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
-> +			BIT(IIO_CHAN_INFO_SCALE),
-> +	},
-> +	{
-> +		.type = IIO_INTENSITY,
-> +		.modified = 1,
-> +		.address = RPR0521_CHAN_ALS_DATA1,
-> +		.channel2 = IIO_MOD_LIGHT_IR,
-> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
-> +			BIT(IIO_CHAN_INFO_SCALE),
-> +	},
-> +	{
-> +		.type = IIO_PROXIMITY,
-> +		.address = RPR0521_CHAN_PXS,
-> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
-> +			BIT(IIO_CHAN_INFO_SCALE),
-> +	}
+> +static const struct iio_info ms5637_info = {
+> +	.read_raw = ms5637_read_raw,
+> +	.write_raw = ms5637_write_raw,
+> +	.attrs = &ms5637_attribute_group,
+> +	.driver_module = THIS_MODULE,
 > +};
 > +
-> +static int rpr0521_als_enable(struct rpr0521_data *data, u8 status)
+> +static int ms5637_probe(struct i2c_client *client,
+> +			const struct i2c_device_id *id)
 > +{
+> +	struct ms5637_dev *dev_data;
+> +	struct iio_dev *indio_dev;
 > +	int ret;
 > +
-> +	ret = regmap_update_bits(data->regmap, RPR0521_REG_MODE_CTRL,
-> +				 RPR0521_MODE_ALS_MASK,
-> +				 status);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	data->als_dev_en = true;
-> +
-> +	return 0;
-> +}
-> +
-> +static int rpr0521_pxs_enable(struct rpr0521_data *data, u8 status)
-> +{
-> +	int ret;
-> +
-> +	ret = regmap_update_bits(data->regmap, RPR0521_REG_MODE_CTRL,
-> +				 RPR0521_MODE_PXS_MASK,
-> +				 status);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	data->pxs_dev_en = true;
-> +
-> +	return 0;
-> +}
-> +
-> +/**
-> + * rpr0521_set_power_state - handles runtime PM state and sensors enabled status
-> + *
-> + * @data: rpr0521 device private data
-> + * @on: state to be set for devices in @device_mask
-> + * @device_mask: bitmask specifying for which device we need to update @on state
-> + *
-> + * We rely on rpr0521_runtime_resume to enable our @device_mask devices, but
-> + * if (for example) PXS was enabled (pxs_dev_en = true) by a previous call to
-> + * rpr0521_runtime_resume and we want to enable ALS we MUST set ALS enable
-> + * bit of RPR0521_REG_MODE_CTRL here because rpr0521_runtime_resume will not
-> + * be called twice.
-> + */
-> +static int rpr0521_set_power_state(struct rpr0521_data *data, bool on,
-> +				   u8 device_mask)
-> +{
-> +#ifdef CONFIG_PM
-> +	int ret;
-> +	u8 update_mask = 0;
-> +
-> +	if (device_mask & RPR0521_MODE_ALS_MASK) {
-> +		if (on && !data->als_ps_need_en && data->pxs_dev_en)
-> +			update_mask |= RPR0521_MODE_ALS_MASK;
-> +		else
-> +			data->als_ps_need_en = on;
-> +	}
-> +
-> +	if (device_mask & RPR0521_MODE_PXS_MASK) {
-> +		if (on && !data->pxs_ps_need_en && data->als_dev_en)
-> +			update_mask |= RPR0521_MODE_PXS_MASK;
-> +		else
-> +			data->pxs_ps_need_en = on;
-> +	}
-> +
-> +	if (update_mask) {
-> +		ret = regmap_update_bits(data->regmap, RPR0521_REG_MODE_CTRL,
-> +					 update_mask, update_mask);
-> +		if (ret < 0)
-> +			return ret;
-> +	}
-> +
-> +	if (on) {
-> +		ret = pm_runtime_get_sync(&data->client->dev);
-> +	} else {
-> +		pm_runtime_mark_last_busy(&data->client->dev);
-> +		ret = pm_runtime_put_autosuspend(&data->client->dev);
-> +	}
-> +	if (ret < 0) {
-> +		dev_err(&data->client->dev,
-> +			"Failed: rpr0521_set_power_state for %d, ret %d\n",
-> +			on, ret);
-> +		if (on)
-> +			pm_runtime_put_noidle(&data->client->dev);
-> +
-> +		return ret;
-> +	}
-> +#endif
-> +	return 0;
-> +}
-> +
-> +static int rpr0521_get_gain(struct rpr0521_data *data, int chan,
-> +			    int *val, int *val2)
-> +{
-> +	int ret, reg, idx;
-> +
-> +	ret = regmap_read(data->regmap, rpr0521_gain[chan].reg, &reg);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	idx = (rpr0521_gain[chan].mask & reg) >> rpr0521_gain[chan].shift;
-> +	*val = rpr0521_gain[chan].gain[idx].scale;
-> +	*val2 = rpr0521_gain[chan].gain[idx].uscale;
-> +
-> +	return 0;
-> +}
-> +
-> +static int rpr0521_set_gain(struct rpr0521_data *data, int chan,
-> +			    int val, int val2)
-> +{
-> +	int i, idx = -EINVAL;
-> +
-> +	/* get gain index */
-> +	for (i = 0; i < rpr0521_gain[chan].size; i++)
-> +		if (val == rpr0521_gain[chan].gain[i].scale &&
-> +		    val2 == rpr0521_gain[chan].gain[i].uscale) {
-> +			idx = i;
-> +			break;
-> +		}
-> +
-> +	if (idx < 0)
-> +		return idx;
-> +
-> +	return regmap_update_bits(data->regmap, rpr0521_gain[chan].reg,
-> +				  rpr0521_gain[chan].mask,
-> +				  idx << rpr0521_gain[chan].shift);
-> +}
-> +
-> +static int rpr0521_read_raw(struct iio_dev *indio_dev,
-> +			    struct iio_chan_spec const *chan, int *val,
-> +			    int *val2, long mask)
-> +{
-> +	struct rpr0521_data *data = iio_priv(indio_dev);
-> +	int ret;
-> +	u8 device_mask;
-> +	__le16 raw_data;
-> +
-> +	switch (mask) {
-> +	case IIO_CHAN_INFO_RAW:
-> +		if (chan->type != IIO_INTENSITY && chan->type != IIO_PROXIMITY)
-> +			return -EINVAL;
-> +
-> +		device_mask = rpr0521_data_reg[chan->address].device_mask;
-> +
-> +		mutex_lock(&data->lock);
-> +		ret = rpr0521_set_power_state(data, true, device_mask);
-> +		if (ret < 0) {
-> +			mutex_unlock(&data->lock);
-> +			return ret;
-> +		}
-> +
-> +		ret = regmap_bulk_read(data->regmap,
-> +				       rpr0521_data_reg[chan->address].address,
-> +				       &raw_data, 2);
-> +		if (ret < 0) {
-> +			rpr0521_set_power_state(data, false, device_mask);
-> +			mutex_unlock(&data->lock);
-> +			return ret;
-> +		}
-> +
-> +		ret = rpr0521_set_power_state(data, false, device_mask);
-> +		mutex_unlock(&data->lock);
-> +		if (ret < 0)
-> +			return ret;
-> +
-> +		*val = le16_to_cpu(raw_data);
-> +
-> +		return IIO_VAL_INT;
-> +	case IIO_CHAN_INFO_SCALE:
-> +		mutex_lock(&data->lock);
-> +		ret = rpr0521_get_gain(data, chan->address, val, val2);
-> +		mutex_unlock(&data->lock);
-> +		if (ret < 0)
-> +			return ret;
-> +
-> +		return IIO_VAL_INT_PLUS_MICRO;
-> +	default:
-> +		return -EINVAL;
-> +	}
-> +}
-> +
-> +static int rpr0521_write_raw(struct iio_dev *indio_dev,
-> +			     struct iio_chan_spec const *chan, int val,
-> +			     int val2, long mask)
-> +{
-> +	struct rpr0521_data *data = iio_priv(indio_dev);
-> +	int ret;
-> +
-> +	switch (mask) {
-> +	case IIO_CHAN_INFO_SCALE:
-> +		mutex_lock(&data->lock);
-> +		ret = rpr0521_set_gain(data, chan->address, val, val2);
-> +		mutex_unlock(&data->lock);
-> +
-> +		return ret;
-> +	default:
-> +		return -EINVAL;
-> +	}
-> +}
-> +
-> +static const struct iio_info rpr0521_info = {
-> +	.driver_module	= THIS_MODULE,
-> +	.read_raw	= rpr0521_read_raw,
-> +	.write_raw	= rpr0521_write_raw,
-> +	.attrs		= &rpr0521_attribute_group,
-> +};
-> +
-> +static int rpr0521_init(struct rpr0521_data *data)
-> +{
-> +	int ret;
-> +	int id;
-> +
-> +	ret = regmap_read(data->regmap, RPR0521_REG_ID, &id);
-> +	if (ret < 0) {
-> +		dev_err(&data->client->dev, "Failed to read REG_ID register\n");
-> +		return ret;
-> +	}
-> +
-> +	if (id != RPR0521_MANUFACT_ID) {
-> +		dev_err(&data->client->dev, "Wrong id, got %x, expected %x\n",
-> +			id, RPR0521_MANUFACT_ID);
+The func parameter passed into i2c_check_functionality is a bitmap so
+do all these in one call.
+if (!i2c_check_functionality(client->adapter,
+                             I2C_FUNC_SMBUS_READ_WORD_DATA |
+			     I2C_FUNC_SMBUS_WRITE_BYTE |
+			     I2C_FUNC_SMBUS_READ_I2C_BLOCK)) {
+etc.
+
+> +	if (!i2c_check_functionality(client->adapter,
+> +				     I2C_FUNC_SMBUS_READ_WORD_DATA)) {
+> +		dev_err(&client->dev,
+> +			"Adapter does not support SMBus read word transactions\n");
 > +		return -ENODEV;
 > +	}
 > +
-> +	/* set default measurement time - 100 ms for both ALS and PS */
-> +	ret = regmap_update_bits(data->regmap, RPR0521_REG_MODE_CTRL,
-> +				 RPR0521_MODE_MEAS_TIME_MASK,
-> +				 RPR0521_DEFAULT_MEAS_TIME);
-> +	if (ret) {
-> +		pr_err("regmap_update_bits returned %d\n", ret);
-> +		return ret;
+> +	if (!i2c_check_functionality(client->adapter,
+> +				     I2C_FUNC_SMBUS_WRITE_BYTE)) {
+> +		dev_err(&client->dev,
+> +			"Adapter does not support SMBus write byte transactions\n");
+> +		return -ENODEV;
 > +	}
 > +
-> +	ret = rpr0521_als_enable(data, RPR0521_MODE_ALS_ENABLE);
-> +	if (ret < 0)
-> +		return ret;
-> +	ret = rpr0521_pxs_enable(data, RPR0521_MODE_PXS_ENABLE);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	return 0;
-> +}
-> +
-> +static int rpr0521_poweroff(struct rpr0521_data *data)
-> +{
-> +	int ret;
-> +
-> +	ret = regmap_update_bits(data->regmap, RPR0521_REG_MODE_CTRL,
-> +				 RPR0521_MODE_ALS_MASK |
-> +				 RPR0521_MODE_PXS_MASK,
-> +				 RPR0521_MODE_ALS_DISABLE |
-> +				 RPR0521_MODE_PXS_DISABLE);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	data->als_dev_en = false;
-> +	data->pxs_dev_en = false;
-> +
-> +	return 0;
-> +}
-> +
-> +static bool rpr0521_is_volatile_reg(struct device *dev, unsigned int reg)
-> +{
-> +	switch (reg) {
-> +	case RPR0521_REG_MODE_CTRL:
-> +	case RPR0521_REG_ALS_CTRL:
-> +	case RPR0521_REG_PXS_CTRL:
-> +		return false;
-> +	default:
-> +		return true;
+> +	if (!i2c_check_functionality(client->adapter,
+> +				     I2C_FUNC_SMBUS_READ_I2C_BLOCK)) {
+> +		dev_err(&client->dev,
+> +			"Adapter does not support SMBus read block transactions\n");
+> +		return -ENODEV;
 > +	}
-> +}
 > +
-> +static const struct regmap_config rpr0521_regmap_config = {
-> +	.name		= RPR0521_REGMAP_NAME,
-> +
-> +	.reg_bits	= 8,
-> +	.val_bits	= 8,
-> +
-> +	.max_register	= RPR0521_REG_ID,
-> +	.cache_type	= REGCACHE_RBTREE,
-> +	.volatile_reg	= rpr0521_is_volatile_reg,
-> +};
-> +
-> +static int rpr0521_probe(struct i2c_client *client,
-> +			 const struct i2c_device_id *id)
-> +{
-> +	struct rpr0521_data *data;
-> +	struct iio_dev *indio_dev;
-> +	struct regmap *regmap;
-> +	int ret;
-> +
-> +	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
+> +	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*dev_data));
 > +	if (!indio_dev)
 > +		return -ENOMEM;
 > +
-> +	regmap = devm_regmap_init_i2c(client, &rpr0521_regmap_config);
-> +	if (IS_ERR(regmap)) {
-> +		dev_err(&client->dev, "regmap_init failed!\n");
-> +		return PTR_ERR(regmap);
-> +	}
+> +	dev_data = iio_priv(indio_dev);
+> +	dev_data->client = client;
+> +	dev_data->resolution_index = 5;
+> +	dev_data->last_update = jiffies - HZ / 2;
+> +	mutex_init(&dev_data->lock);
 > +
-> +	data = iio_priv(indio_dev);
-> +	i2c_set_clientdata(client, indio_dev);
-> +	data->client = client;
-> +	data->regmap = regmap;
-> +
-> +	mutex_init(&data->lock);
-> +
+> +	indio_dev->info = &ms5637_info;
+> +	indio_dev->name = id->name;
 > +	indio_dev->dev.parent = &client->dev;
-> +	indio_dev->info = &rpr0521_info;
-> +	indio_dev->name = RPR0521_DRV_NAME;
-> +	indio_dev->channels = rpr0521_channels;
-> +	indio_dev->num_channels = ARRAY_SIZE(rpr0521_channels);
 > +	indio_dev->modes = INDIO_DIRECT_MODE;
+> +	indio_dev->channels = ms5637_channels;
+> +	indio_dev->num_channels = ARRAY_SIZE(ms5637_channels);
 > +
-> +	ret = rpr0521_init(data);
-> +	if (ret < 0) {
-> +		dev_err(&client->dev, "rpr0521 chip init failed\n");
+> +	i2c_set_clientdata(client, indio_dev);
+> +	ret = i2c_smbus_write_byte(client, MS5637_RESET);
+> +	if (ret < 0)
 > +		return ret;
-> +	}
-> +	ret = iio_device_register(indio_dev);
+> +	usleep_range(3000, 6000);
+> +
+> +	ret = ms5637_fill_calibration_coeffs(dev_data);
 > +	if (ret < 0)
 > +		return ret;
 > +
-> +	ret = pm_runtime_set_active(&client->dev);
+> +	ret = devm_iio_device_register(&client->dev, indio_dev);
 > +	if (ret < 0)
-> +		goto err_iio_unregister;
+> +		return ret;
 > +
-> +	pm_runtime_enable(&client->dev);
-> +	pm_runtime_set_autosuspend_delay(&client->dev, RPR0521_SLEEP_DELAY_MS);
-> +	pm_runtime_use_autosuspend(&client->dev);
-> +
-> +	return 0;
-> +
-> +err_iio_unregister:
-> +	iio_device_unregister(indio_dev);
-> +	return ret;
-> +}
-> +
-> +static int rpr0521_remove(struct i2c_client *client)
-> +{
-> +	struct iio_dev *indio_dev = i2c_get_clientdata(client);
-> +
-> +	pm_runtime_disable(&client->dev);
-> +	pm_runtime_set_suspended(&client->dev);
-> +	pm_runtime_put_noidle(&client->dev);
-> +
-> +	iio_device_unregister(indio_dev);
-> +	rpr0521_poweroff(iio_priv(indio_dev));
-> +
+> +	dev_dbg(&client->dev, "Driver initialization done");
+There are a lot of ways fo telling it is finsihed ;)  I'd drop this
+particular debug output from a driver just before submitting it.
+
 > +	return 0;
 > +}
 > +
-> +#ifdef CONFIG_PM
-> +static int rpr0521_runtime_suspend(struct device *dev)
-> +{
-> +	struct iio_dev *indio_dev = i2c_get_clientdata(to_i2c_client(dev));
-> +	struct rpr0521_data *data = iio_priv(indio_dev);
-> +	int ret;
-> +
-> +	/* disable channels and sets {als,pxs}_dev_en to false */
-> +	mutex_lock(&data->lock);
-> +	ret = rpr0521_poweroff(data);
-> +	mutex_unlock(&data->lock);
-> +
-> +	return ret;
-> +}
-> +
-> +static int rpr0521_runtime_resume(struct device *dev)
-> +{
-> +	struct iio_dev *indio_dev = i2c_get_clientdata(to_i2c_client(dev));
-> +	struct rpr0521_data *data = iio_priv(indio_dev);
-> +	int ret;
-> +
-> +	if (data->als_ps_need_en) {
-> +		ret = rpr0521_als_enable(data, RPR0521_MODE_ALS_ENABLE);
-> +		if (ret < 0)
-> +			return ret;
-> +		data->als_ps_need_en = false;
-> +	}
-> +
-> +	if (data->pxs_ps_need_en) {
-> +		ret = rpr0521_pxs_enable(data, RPR0521_MODE_PXS_ENABLE);
-> +		if (ret < 0)
-> +			return ret;
-> +		data->pxs_ps_need_en = false;
-> +	}
-> +
-> +	return 0;
-> +}
-> +#endif
-> +
-> +static const struct dev_pm_ops rpr0521_pm_ops = {
-> +	SET_RUNTIME_PM_OPS(rpr0521_runtime_suspend,
-> +			   rpr0521_runtime_resume, NULL)
+> +static const struct i2c_device_id ms5637_id[] = {
+> +	{"ms5637", 0},
+> +	{}
 > +};
 > +
-> +static const struct acpi_device_id rpr0521_acpi_match[] = {
-> +	{"RPR0521", 0},
-> +	{ }
-> +};
-> +MODULE_DEVICE_TABLE(acpi, rpr0521_acpi_match);
-> +
-> +static const struct i2c_device_id rpr0521_id[] = {
-> +	{"rpr0521", 0},
-> +	{ }
-> +};
-> +
-> +MODULE_DEVICE_TABLE(i2c, rpr0521_id);
-> +
-> +static struct i2c_driver rpr0521_driver = {
+> +static struct i2c_driver ms5637_driver = {
+> +	.probe = ms5637_probe,
+> +	.id_table = ms5637_id,
 > +	.driver = {
-> +		.name	= RPR0521_DRV_NAME,
-> +		.pm	= &rpr0521_pm_ops,
-> +		.acpi_match_table = ACPI_PTR(rpr0521_acpi_match),
-> +	},
-> +	.probe		= rpr0521_probe,
-> +	.remove		= rpr0521_remove,
-> +	.id_table	= rpr0521_id,
+> +		   .name = "ms5637",
+> +		   .owner = THIS_MODULE,
+> +		   },
 > +};
 > +
-> +module_i2c_driver(rpr0521_driver);
+> +module_i2c_driver(ms5637_driver);
 > +
-> +MODULE_AUTHOR("Daniel Baluta <daniel.baluta@intel.com>");
-> +MODULE_DESCRIPTION("RPR0521 ROHM Ambient Light and Proximity Sensor driver");
-> +MODULE_LICENSE("GPL v2");
+> +MODULE_LICENSE("GPL");
+> +MODULE_DESCRIPTION("Measurement-Specialties ms5637 temperature & pressure driver");
+> +MODULE_AUTHOR("William Markezana <william.markezana@meas-spec.com>");
+> +MODULE_AUTHOR("Ludovic Tancerel <ludovic.tancerel@maplehightech.com>");
 > 
 
 --
