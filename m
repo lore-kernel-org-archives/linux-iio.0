@@ -1,55 +1,64 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:43820 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:43830 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752602AbbFUNU5 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 21 Jun 2015 09:20:57 -0400
-Message-ID: <5586BA37.5020905@kernel.org>
-Date: Sun, 21 Jun 2015 14:20:55 +0100
+	with ESMTP id S1753598AbbFUNV7 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 21 Jun 2015 09:21:59 -0400
+Message-ID: <5586BA76.1050809@kernel.org>
+Date: Sun, 21 Jun 2015 14:21:58 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Hartmut Knaack <knaack.h@gmx.de>, linux-iio@vger.kernel.org
-CC: Lars-Peter Clausen <lars@metafoo.de>,
+To: Daniel Baluta <daniel.baluta@intel.com>,
+	Hartmut Knaack <knaack.h@gmx.de>
+CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	Lars-Peter Clausen <lars@metafoo.de>,
 	Peter Meerwald <pmeerw@pmeerw.net>,
-	Kevin Tsai <ktsai@capellamicro.com>,
-	Daniel Baluta <daniel.baluta@intel.com>
-Subject: Re: [PATCH v2 0/7] cm3323 fixes and cleanups
-References: <cover.1434578207.git.knaack.h@gmx.de> <5586B9E9.90904@kernel.org>
-In-Reply-To: <5586B9E9.90904@kernel.org>
-Content-Type: text/plain; charset=windows-1252
+	Kevin Tsai <ktsai@capellamicro.com>
+Subject: Re: [PATCH 4/7] iio:light:cm3323: drop barely used variable
+References: <cover.1434492557.git.knaack.h@gmx.de>	<942e9ba3437c35f946e6979ca63469941f81f289.1434492557.git.knaack.h@gmx.de> <CAEnQRZD0yUgHKgcQ3tmctfYTLVnAKh0y-9yEmZ=EMYprwc5HAw@mail.gmail.com>
+In-Reply-To: <CAEnQRZD0yUgHKgcQ3tmctfYTLVnAKh0y-9yEmZ=EMYprwc5HAw@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 21/06/15 14:19, Jonathan Cameron wrote:
-> On 17/06/15 23:31, Hartmut Knaack wrote:
->> Some small fixes and cleanups.
+On 17/06/15 11:09, Daniel Baluta wrote:
+> On Wed, Jun 17, 2015 at 1:17 AM, Hartmut Knaack <knaack.h@gmx.de> wrote:
+>> In cm3323_disable() ret is just used to check for errors during I2C write.
+>> Consolidate the write and the check to save a variable and two lines of
+>> code.
 >>
->> Changes in V2:
->>   - apply the integration time bitmask right
->>   - fix order of GENMASK arguments as pointed out by Peter Meerwald
->>
->> Hartmut Knaack (7):
->>   iio:light:cm3323: clear bitmask before set
->>   iio:light:Kconfig: fix typo in description
->>   iio:light:cm3323: pass up error value
->>   iio:light:cm3323: drop barely used variable
->>   iio:light:cm3323: replace unneeded variable
->>   iio:light:cm3323: make use of GENMASK
->>   iio:light:cm3323: add empty lines for code structure
->>
->>  drivers/iio/light/Kconfig  |  2 +-
->>  drivers/iio/light/cm3323.c | 27 +++++++++++++++------------
->>  2 files changed, 16 insertions(+), 13 deletions(-)
->>
-> This whole series looks good to me, but I'll let them sit
-> for Daniel to have a look as it's his driver.
-Or I could just check beyond patch 1 and see that he's already
-reviewed them in V1. oops.
+>> Signed-off-by: Hartmut Knaack <knaack.h@gmx.de>
 > 
-> Path 1 is clearly a bug fix, but the others can go the slow
-> route.
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> I don't really like this. It makes code harder to read.
 > 
+> Other opinions?
+> 
+I'm going to side with Daniel on this one...  Lets leave it as is.
+
+Jonathan
+>> ---
+>>  drivers/iio/light/cm3323.c | 6 ++----
+>>  1 file changed, 2 insertions(+), 4 deletions(-)
+>>
+>> diff --git a/drivers/iio/light/cm3323.c b/drivers/iio/light/cm3323.c
+>> index f88a0ed..8945e0c 100644
+>> --- a/drivers/iio/light/cm3323.c
+>> +++ b/drivers/iio/light/cm3323.c
+>> @@ -106,12 +106,10 @@ static int cm3323_init(struct iio_dev *indio_dev)
+>>
+>>  static void cm3323_disable(struct iio_dev *indio_dev)
+>>  {
+>> -       int ret;
+>>         struct cm3323_data *data = iio_priv(indio_dev);
+>>
+>> -       ret = i2c_smbus_write_word_data(data->client, CM3323_CMD_CONF,
+>> -                                       CM3323_CONF_SD_BIT);
+>> -       if (ret < 0)
+>> +       if (i2c_smbus_write_word_data(data->client, CM3323_CMD_CONF,
+>> +                                     CM3323_CONF_SD_BIT) < 0)
+>>                 dev_err(&data->client->dev, "Error writing reg_conf\n");
+>>  }
+>>
+>> --
 
 --
 To unsubscribe from this list: send the line "unsubscribe linux-iio" in
