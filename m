@@ -1,10 +1,10 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:43852 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:43863 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754600AbbFUNZU (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 21 Jun 2015 09:25:20 -0400
-Message-ID: <5586BB3E.3090504@kernel.org>
-Date: Sun, 21 Jun 2015 14:25:18 +0100
+	with ESMTP id S1753110AbbFUN0x (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 21 Jun 2015 09:26:53 -0400
+Message-ID: <5586BB9B.9030402@kernel.org>
+Date: Sun, 21 Jun 2015 14:26:51 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
 To: Hartmut Knaack <knaack.h@gmx.de>, linux-iio@vger.kernel.org
@@ -12,40 +12,40 @@ CC: Lars-Peter Clausen <lars@metafoo.de>,
 	Peter Meerwald <pmeerw@pmeerw.net>,
 	Kevin Tsai <ktsai@capellamicro.com>,
 	Daniel Baluta <daniel.baluta@intel.com>
-Subject: Re: [PATCH v2 1/7] iio:light:cm3323: clear bitmask before set
-References: <cover.1434578207.git.knaack.h@gmx.de> <e7cc60084a46aa75e4b35ac0695c5cf8f1d3984d.1434578207.git.knaack.h@gmx.de>
-In-Reply-To: <e7cc60084a46aa75e4b35ac0695c5cf8f1d3984d.1434578207.git.knaack.h@gmx.de>
+Subject: Re: [PATCH v2 2/7] iio:light:Kconfig: fix typo in description
+References: <cover.1434578207.git.knaack.h@gmx.de> <c2ee8106bc15a8b64782c9adb59dcaa6ee49d9a7.1434578207.git.knaack.h@gmx.de>
+In-Reply-To: <c2ee8106bc15a8b64782c9adb59dcaa6ee49d9a7.1434578207.git.knaack.h@gmx.de>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 17/06/15 23:31, Hartmut Knaack wrote:
-> When setting the bits for integration time, the appropriate bitmask needs
-> to be cleared first.
+On 17/06/15 23:32, Hartmut Knaack wrote:
+> Fix the typo in the module description for the CM3323.
 > 
 > Signed-off-by: Hartmut Knaack <knaack.h@gmx.de>
-Applied to the fixes-togreg branch of iio.git and marked for stable.
+> Reviewed-by: Daniel Baluta <daniel.baluta@intel.com>
+Applied to the togreg branch of iio.git
 
 Thanks,
 
 Jonathan
 > ---
->  drivers/iio/light/cm3323.c | 2 +-
+>  drivers/iio/light/Kconfig | 2 +-
 >  1 file changed, 1 insertion(+), 1 deletion(-)
 > 
-> diff --git a/drivers/iio/light/cm3323.c b/drivers/iio/light/cm3323.c
-> index 869033e..a1d4905 100644
-> --- a/drivers/iio/light/cm3323.c
-> +++ b/drivers/iio/light/cm3323.c
-> @@ -123,7 +123,7 @@ static int cm3323_set_it_bits(struct cm3323_data *data, int val, int val2)
->  	for (i = 0; i < ARRAY_SIZE(cm3323_int_time); i++) {
->  		if (val == cm3323_int_time[i].val &&
->  		    val2 == cm3323_int_time[i].val2) {
-> -			reg_conf = data->reg_conf;
-> +			reg_conf = data->reg_conf & ~CM3323_CONF_IT_MASK;
->  			reg_conf |= i << CM3323_CONF_IT_SHIFT;
+> diff --git a/drivers/iio/light/Kconfig b/drivers/iio/light/Kconfig
+> index e6198b7..554f8ee 100644
+> --- a/drivers/iio/light/Kconfig
+> +++ b/drivers/iio/light/Kconfig
+> @@ -86,7 +86,7 @@ config CM3323
+>  	depends on I2C
+>  	tristate "Capella CM3323 color light sensor"
+>  	help
+> -	 Say Y here if you want to build a driver for Capela CM3323
+> +	 Say Y here if you want to build a driver for Capella CM3323
+>  	 color sensor.
 >  
->  			ret = i2c_smbus_write_word_data(data->client,
+>  	 To compile this driver as a module, choose M here: the module will
 > 
 
 --
