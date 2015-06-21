@@ -1,72 +1,60 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:43714 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:43762 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751639AbbFUNEv (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 21 Jun 2015 09:04:51 -0400
-Message-ID: <5586B670.2020607@kernel.org>
-Date: Sun, 21 Jun 2015 14:04:48 +0100
+	with ESMTP id S1751825AbbFUNMT (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 21 Jun 2015 09:12:19 -0400
+Message-ID: <5586B831.3030702@kernel.org>
+Date: Sun, 21 Jun 2015 14:12:17 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Lars-Peter Clausen <lars@metafoo.de>, jmfriedt@femto-st.fr,
-	linux-iio@vger.kernel.org
-CC: Michael.Hennerich@analog.com, knaack.h@gmx.de, pmeerw@pmeerw.net
-Subject: Re: [PATCH 1/1] iio: DAC: ad5624r_spi: fix bit shift of output data
- value
-References: <1434718086-14722-1-git-send-email-jmfriedt@femto-st.fr> <55841173.30506@metafoo.de>
-In-Reply-To: <55841173.30506@metafoo.de>
+To: simon@mungewell.org
+CC: linux-input@vger.kernel.org,
+	Frank Praznik <frank.praznik@oh.rr.com>,
+	linux-iio@vger.kernel.org,
+	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Subject: Re: [RFC] HID: hid-sony: Add basic iio-subsystem reading of SixAxis
+ Accelerometers
+References: <195dff9bd065db7e618280cb7c6eb5a9.squirrel@mungewell.org>    <1434034458-1968-1-git-send-email-simon@mungewell.org>    <557D9564.9090800@kernel.org>    <d6702f5d19d2baea80132666fcf7654a.squirrel@mungewell.org>    <557DC084.6090205@kernel.org> <a740eca098128c7a830db825d7c0288c.squirrel@mungewell.org>
+In-Reply-To: <a740eca098128c7a830db825d7c0288c.squirrel@mungewell.org>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 19/06/15 13:56, Lars-Peter Clausen wrote:
-> On 06/19/2015 02:48 PM, jmfriedt@femto-st.fr wrote:
->> From: JM Friedt <jmfriedt@femto-st.fr>
->>
->> The value sent on the SPI bus is shifted by an erroneous number of bits. The shift
->> value was already computed in the iio_chan_spec structure and hence subtracting this
->> argument to 16 yields an erroneous data position in the SPI stream.
->>
->> Signed-off-by: JM Friedt <jmfriedt@femto-st.fr>
+On 18/06/15 07:15, simon@mungewell.org wrote:
 > 
-> Looks good, thanks.
+>>> I have further advanced the patch to include reading via buffer, but I'm
+>>> having trigger 'conceptual' problems getting my head around the HID
+>>> device
+>>> issuing an interrupt when a input report is received. Looking at
+>>> iio_dummy_event and iios_sysfs for inspiration....
+>> You can skip the triggers.  It's not obligatory, you can push directly
+>> into a buffer.
+>> Triggers are nice for 'data ready' type signals (which is closest to what
+>> we
+>> have here) if you might want to hang other sensors off the timing (so read
+>> on demand ADCs etc.  They aren't actually 'required' as such.
 > 
-> Acked-by: Lars-Peter Clausen <lars@metafoo.de>
-Applied to the fixes-togreg branch of iio.git and marked for stable.
-Note this won't go upstream now until after the merge window
-(so a couple of weeks at least).
+> After a bit of poking around I got the triggers working as well, I can
+> self trigger and even trigger another (iio-dummy) device.
+> 
+> However I couldn't trigger two devices at the same time from a single
+> trigger, is this normal for IIO?
+You should be able to.   Defaults limit it to 2 per trigger, 
+in Kconfig it is "Maximum number of consumers per trigger".
+Any chance that has the value 1 for your build?
 
-Thanks,
+Otherwise, if you can do a bit of debugging to find out where things
+get stuck, that would be great.  Can you bring up the buffers with the
+trigger attached or is it failing before that?
 
-Jonathan
+After that it would just be a case of chasing in your trigger driver to
+see if it gets reenabled correctly after the first trigger.
+
 > 
->> ---
->>   drivers/iio/dac/ad5624r_spi.c |    4 ++--
->>   1 files changed, 2 insertions(+), 2 deletions(-)
->>
->> diff --git a/drivers/iio/dac/ad5624r_spi.c b/drivers/iio/dac/ad5624r_spi.c
->> index 61bb9d4..e98428d 100644
->> --- a/drivers/iio/dac/ad5624r_spi.c
->> +++ b/drivers/iio/dac/ad5624r_spi.c
->> @@ -22,7 +22,7 @@
->>   #include "ad5624r.h"
->>
->>   static int ad5624r_spi_write(struct spi_device *spi,
->> -                 u8 cmd, u8 addr, u16 val, u8 len)
->> +                 u8 cmd, u8 addr, u16 val, u8 shift)
->>   {
->>       u32 data;
->>       u8 msg[3];
->> @@ -35,7 +35,7 @@ static int ad5624r_spi_write(struct spi_device *spi,
->>        * 14-, 12-bit input code followed by 0, 2, or 4 don't care bits,
->>        * for the AD5664R, AD5644R, and AD5624R, respectively.
->>        */
->> -    data = (0 << 22) | (cmd << 19) | (addr << 16) | (val << (16 - len));
->> +    data = (0 << 22) | (cmd << 19) | (addr << 16) | (val << shift);
->>       msg[0] = data >> 16;
->>       msg[1] = data >> 8;
->>       msg[2] = data;
->>
 > 
+> Next is a little code clean-up and I'll post what I have for some more
+> comments,
+Cool.
 
 --
 To unsubscribe from this list: send the line "unsubscribe linux-iio" in
