@@ -1,59 +1,38 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:44091 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751246AbbFUN5m (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 21 Jun 2015 09:57:42 -0400
-Message-ID: <5586C2D4.9090009@kernel.org>
-Date: Sun, 21 Jun 2015 14:57:40 +0100
-From: Jonathan Cameron <jic23@kernel.org>
+Return-Path: <daniel.baluta@gmail.com>
 MIME-Version: 1.0
-To: Vlad Dogaru <vlad.dogaru@intel.com>, irina.tirdea@intel.com,
-	linux-iio@vger.kernel.org
-Subject: Re: [PATCH 2/2] iio: magn: bmc150: add support for bmc156
-References: <1434097899-13984-1-git-send-email-vlad.dogaru@intel.com> <1434097899-13984-3-git-send-email-vlad.dogaru@intel.com>
-In-Reply-To: <1434097899-13984-3-git-send-email-vlad.dogaru@intel.com>
-Content-Type: text/plain; charset=windows-1252
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Sender: daniel.baluta@gmail.com
+In-Reply-To: <557D5562.8020209@kernel.org>
+References: <20150611120635.GA15709@Inspiron>
+	<557D5562.8020209@kernel.org>
+Date: Sun, 21 Jun 2015 16:57:43 +0300
+Message-ID: <CAEnQRZCHxqkLO5ox2em7guJdp3x-wyP9CZRC656HcZPcptNLCg@mail.gmail.com>
+Subject: Re: [PATCH] iio: Fix parameters in iio_triggered_buffer_setup
+From: Daniel Baluta <daniel.baluta@intel.com>
+To: Jonathan Cameron <jic23@kernel.org>, Lars-Peter Clausen <lars@metafoo.de>
+Cc: Cristina Opriceana <cristina.opriceana@gmail.com>, Peter Meerwald <pmeerw@pmeerw.net>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Daniel Baluta <daniel.baluta@intel.com>,
+	"octavian.purdila@intel.com" <octavian.purdila@intel.com>
+Content-Type: text/plain; charset=UTF-8
+List-ID: <linux-iio@vger.kernel.org>
 
-On 12/06/15 09:31, Vlad Dogaru wrote:
-> The BMC156 is a slightly less capable version of BMC150 which lacks
-> support for magnetometer thresholds.  Since this driver does not support
-> those anyway, adding support is trivial.
-> 
-> Datasheet is available at
-> https://ae-bst.resource.bosch.com/media/products/dokumente/bmc156_1/BST-BMC156-DS000-01.pdf
-> 
-> Signed-off-by: Vlad Dogaru <vlad.dogaru@intel.com>
-Applied,
+On Sun, Jun 14, 2015 at 1:20 PM, Jonathan Cameron <jic23@kernel.org> wrote:
+> On 11/06/15 13:06, Cristina Opriceana wrote:
+>> This patch renames the top half handler and the bottom half handler
+>> of iio_triggered_buffer_setup() in accordance with their usage.
+>> The names of the parameters were swapped, thus creating confusion.
+>>
+>> Signed-off-by: Cristina Opriceana <cristina.opriceana@gmail.com>
+> Good point.  This is definitely misleading.  I wonder if the _th naming
+> is a good idea anymore though given that the bottom half (in the traditional
+> sense) is now a thread based call and hence the th might be confusing?
+> Perhaps the h and thread naming used in the pollfunc code would be clearer?
+>
 
-Thanks,
+Sounds like a good idea. Cristina can prepare a patch for this.
 
-Jonathan
-> ---
->  drivers/iio/magnetometer/bmc150_magn.c | 2 ++
->  1 file changed, 2 insertions(+)
-> 
-> diff --git a/drivers/iio/magnetometer/bmc150_magn.c b/drivers/iio/magnetometer/bmc150_magn.c
-> index a0e64f1..cd00271 100644
-> --- a/drivers/iio/magnetometer/bmc150_magn.c
-> +++ b/drivers/iio/magnetometer/bmc150_magn.c
-> @@ -1089,12 +1089,14 @@ static const struct dev_pm_ops bmc150_magn_pm_ops = {
->  
->  static const struct acpi_device_id bmc150_magn_acpi_match[] = {
->  	{"BMC150B", 0},
-> +	{"BMC156B", 0},
->  	{},
->  };
->  MODULE_DEVICE_TABLE(acpi, bmc150_magn_acpi_match);
->  
->  static const struct i2c_device_id bmc150_magn_id[] = {
->  	{"bmc150_magn", 0},
-> +	{"bmc156_magn", 0},
->  	{},
->  };
->  MODULE_DEVICE_TABLE(i2c, bmc150_magn_id);
-> 
+> Lars, this bit was yours originally.  Any thoughts?
 
---
-To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+Lets wait for Lars thoughts on this.
+
+Daniel.
