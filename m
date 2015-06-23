@@ -1,230 +1,82 @@
-Return-Path: <irina.tirdea@intel.com>
-From: "Tirdea, Irina" <irina.tirdea@intel.com>
-To: Jonathan Cameron <jic23@kernel.org>, "linux-iio@vger.kernel.org"
-	<linux-iio@vger.kernel.org>, Hartmut Knaack <knaack.h@gmx.de>
-CC: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "Dogaru,
- Vlad" <vlad.dogaru@intel.com>
-Subject: RE: [PATCH v2 14/17] iio: accel: mma9551_core: use size in words
- for word buffers
-Date: Tue, 23 Jun 2015 14:17:18 +0000
-Message-ID: <1F3AC3675D538145B1661F571FE1805F2F0616F3@irsmsx105.ger.corp.intel.com>
-References: <1428939664-12503-1-git-send-email-irina.tirdea@intel.com>
- <1428939664-12503-15-git-send-email-irina.tirdea@intel.com>
- <553D36C9.3070004@kernel.org>
- <1F3AC3675D538145B1661F571FE1805F19A5E887@irsmsx105.ger.corp.intel.com>
- <557D9717.7010204@kernel.org>
-In-Reply-To: <557D9717.7010204@kernel.org>
-Content-Type: text/plain; charset="us-ascii"
+Return-Path: <cristina.opriceana@gmail.com>
+Date: Tue, 23 Jun 2015 16:34:19 +0300
+From: Cristina Opriceana <cristina.opriceana@gmail.com>
+To: jic23@kernel.org
+Cc: daniel.baluta@intel.com, octavian.purdila@intel.com, lars@metafoo.de,
+	pmeerw@pmeerw.net, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org, cristina.opriceana@gmail.com
+Subject: [PATCH v2] iio: Fix parameters in iio_triggered_buffer_setup
+Message-ID: <ad6b8f39a9861d58cbf4c753d1499675e1500bef.1435065212.git.cristina.opriceana@gmail.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
 List-ID: <linux-iio@vger.kernel.org>
 
+This patch renames the top half handler and the bottom half handler
+of iio_triggered_buffer_setup() in accordance with their usage.
+The bottom half has been renamed to reflect the fact that it is a
+thread based call, compliant with iio_alloc_pollfunc().
+The names of the parameters were swapped, thus creating confusion.
 
+Signed-off-by: Cristina Opriceana <cristina.opriceana@gmail.com>
+---
+Changes in v2:
+	- rename params in iio_triggered_buffer_setup() to h and thread
+	- make the commit message reflect the changes
+ drivers/iio/industrialio-triggered-buffer.c | 12 ++++++------
+ include/linux/iio/triggered_buffer.h        |  4 ++--
+ 2 files changed, 8 insertions(+), 8 deletions(-)
 
-> -----Original Message-----
-> From: Jonathan Cameron [mailto:jic23@kernel.org]
-> Sent: 14 June, 2015 18:01
-> To: Tirdea, Irina; linux-iio@vger.kernel.org; Hartmut Knaack
-> Cc: linux-kernel@vger.kernel.org; Dogaru, Vlad
-> Subject: Re: [PATCH v2 14/17] iio: accel: mma9551_core: use size in words=
- for word buffers
->=20
-> On 29/04/15 13:20, Tirdea, Irina wrote:
-> >
-> >
-> >> -----Original Message-----
-> >> From: Jonathan Cameron [mailto:jic23@kernel.org]
-> >> Sent: 26 April, 2015 22:05
-> >> To: Tirdea, Irina; linux-iio@vger.kernel.org; Hartmut Knaack
-> >> Cc: linux-kernel@vger.kernel.org; Dogaru, Vlad
-> >> Subject: Re: [PATCH v2 14/17] iio: accel: mma9551_core: use size in wo=
-rds for word buffers
-> >>
-> >> On 13/04/15 16:41, Irina Tirdea wrote:
-> >>> Change the prototype for the mma9551_read/write_*_words functions
-> >>> to receive the length of the buffer in words (instead of bytes) since
-> >>> we are using a word buffer. This will prevent users from sending an
-> >>> odd number of bytes for a word array.
-> >>>
-> >>> Signed-off-by: Irina Tirdea <irina.tirdea@intel.com>
-> >> Lots of merge issues by this point in the series so I'll hold this one=
- at
-> >> least until the fixes filter through.
-> >>
-> >> Remind me if I seem to have forgotten (it wouldn't be the first time :=
-)
-> >>
-> > Sure, I'll keep an eye on when the fixes will be merged in togreg branc=
-h.
-> >
-> They are there now, so applied to the togreg branch of iio.git, initially=
- pushed
-> out as testing for the autobuilders to play with it.
->=20
-> Now looking at the merge window in 3 months time though to go upstream un=
-fortunately.
-> Sorry for the delay, been a busy couple of months!
->=20
-No problem, thanks for keeping an eye on when the fixes got merged.
-
-Thanks,
-Irina
-
-> Jonathan
-> > Thanks,
-> > Irina
-> >
-> >> Jonathan
-> >>> ---
-> >>>  drivers/iio/accel/mma9551_core.c | 27 ++++++++++++---------------
-> >>>  drivers/iio/accel/mma9553.c      |  9 ++++++---
-> >>>  2 files changed, 18 insertions(+), 18 deletions(-)
-> >>>
-> >>> diff --git a/drivers/iio/accel/mma9551_core.c b/drivers/iio/accel/mma=
-9551_core.c
-> >>> index 2fd2a99..583660b 100644
-> >>> --- a/drivers/iio/accel/mma9551_core.c
-> >>> +++ b/drivers/iio/accel/mma9551_core.c
-> >>> @@ -373,7 +373,7 @@ EXPORT_SYMBOL(mma9551_read_status_word);
-> >>>   * @client:	I2C client
-> >>>   * @app_id:	Application ID
-> >>>   * @reg:	Application register
-> >>> - * @len:	Length of array to read in bytes
-> >>> + * @len:	Length of array to read (in words)
-> >>>   * @buf:	Array of words to read
-> >>>   *
-> >>>   * Read multiple configuration registers (word-sized registers).
-> >>> @@ -388,20 +388,19 @@ int mma9551_read_config_words(struct i2c_client=
- *client, u8 app_id,
-> >>>  			     u16 reg, u8 len, u16 *buf)
-> >>>  {
-> >>>  	int ret, i;
-> >>> -	int len_words =3D len / sizeof(u16);
-> >>>  	__be16 be_buf[MMA9551_MAX_MAILBOX_DATA_REGS / 2];
-> >>>
-> >>> -	if (len_words > ARRAY_SIZE(be_buf)) {
-> >>> +	if (len > ARRAY_SIZE(be_buf)) {
-> >>>  		dev_err(&client->dev, "Invalid buffer size %d\n", len);
-> >>>  		return -EINVAL;
-> >>>  	}
-> >>>
-> >>>  	ret =3D mma9551_transfer(client, app_id, MMA9551_CMD_READ_CONFIG,
-> >>> -			       reg, NULL, 0, (u8 *) be_buf, len);
-> >>> +			       reg, NULL, 0, (u8 *)be_buf, len * sizeof(u16));
-> >>>  	if (ret < 0)
-> >>>  		return ret;
-> >>>
-> >>> -	for (i =3D 0; i < len_words; i++)
-> >>> +	for (i =3D 0; i < len; i++)
-> >>>  		buf[i] =3D be16_to_cpu(be_buf[i]);
-> >>>
-> >>>  	return 0;
-> >>> @@ -413,7 +412,7 @@ EXPORT_SYMBOL(mma9551_read_config_words);
-> >>>   * @client:	I2C client
-> >>>   * @app_id:	Application ID
-> >>>   * @reg:	Application register
-> >>> - * @len:	Length of array to read in bytes
-> >>> + * @len:	Length of array to read (in words)
-> >>>   * @buf:	Array of words to read
-> >>>   *
-> >>>   * Read multiple status registers (word-sized registers).
-> >>> @@ -428,20 +427,19 @@ int mma9551_read_status_words(struct i2c_client=
- *client, u8 app_id,
-> >>>  			      u16 reg, u8 len, u16 *buf)
-> >>>  {
-> >>>  	int ret, i;
-> >>> -	int len_words =3D len / sizeof(u16);
-> >>>  	__be16 be_buf[MMA9551_MAX_MAILBOX_DATA_REGS / 2];
-> >>>
-> >>> -	if (len_words > ARRAY_SIZE(be_buf)) {
-> >>> +	if (len > ARRAY_SIZE(be_buf)) {
-> >>>  		dev_err(&client->dev, "Invalid buffer size %d\n", len);
-> >>>  		return -EINVAL;
-> >>>  	}
-> >>>
-> >>>  	ret =3D mma9551_transfer(client, app_id, MMA9551_CMD_READ_STATUS,
-> >>> -			       reg, NULL, 0, (u8 *) be_buf, len);
-> >>> +			       reg, NULL, 0, (u8 *)be_buf, len * sizeof(u16));
-> >>>  	if (ret < 0)
-> >>>  		return ret;
-> >>>
-> >>> -	for (i =3D 0; i < len_words; i++)
-> >>> +	for (i =3D 0; i < len; i++)
-> >>>  		buf[i] =3D be16_to_cpu(be_buf[i]);
-> >>>
-> >>>  	return 0;
-> >>> @@ -453,7 +451,7 @@ EXPORT_SYMBOL(mma9551_read_status_words);
-> >>>   * @client:	I2C client
-> >>>   * @app_id:	Application ID
-> >>>   * @reg:	Application register
-> >>> - * @len:	Length of array to write in bytes
-> >>> + * @len:	Length of array to write (in words)
-> >>>   * @buf:	Array of words to write
-> >>>   *
-> >>>   * Write multiple configuration registers (word-sized registers).
-> >>> @@ -468,19 +466,18 @@ int mma9551_write_config_words(struct i2c_clien=
-t *client, u8 app_id,
-> >>>  			       u16 reg, u8 len, u16 *buf)
-> >>>  {
-> >>>  	int i;
-> >>> -	int len_words =3D len / sizeof(u16);
-> >>>  	__be16 be_buf[(MMA9551_MAX_MAILBOX_DATA_REGS - 1) / 2];
-> >>>
-> >>> -	if (len_words > ARRAY_SIZE(be_buf)) {
-> >>> +	if (len > ARRAY_SIZE(be_buf)) {
-> >>>  		dev_err(&client->dev, "Invalid buffer size %d\n", len);
-> >>>  		return -EINVAL;
-> >>>  	}
-> >>>
-> >>> -	for (i =3D 0; i < len_words; i++)
-> >>> +	for (i =3D 0; i < len; i++)
-> >>>  		be_buf[i] =3D cpu_to_be16(buf[i]);
-> >>>
-> >>>  	return mma9551_transfer(client, app_id, MMA9551_CMD_WRITE_CONFIG,
-> >>> -				reg, (u8 *) be_buf, len, NULL, 0);
-> >>> +				reg, (u8 *)be_buf, len * sizeof(u16), NULL, 0);
-> >>>  }
-> >>>  EXPORT_SYMBOL(mma9551_write_config_words);
-> >>>
-> >>> diff --git a/drivers/iio/accel/mma9553.c b/drivers/iio/accel/mma9553.=
-c
-> >>> index 8bfc618..06c8707 100644
-> >>> --- a/drivers/iio/accel/mma9553.c
-> >>> +++ b/drivers/iio/accel/mma9553.c
-> >>> @@ -322,7 +322,8 @@ static int mma9553_read_activity_stepcnt(struct m=
-ma9553_data *data,
-> >>>  	int ret;
-> >>>
-> >>>  	ret =3D mma9551_read_status_words(data->client, MMA9551_APPID_PEDOM=
-ETER,
-> >>> -					MMA9553_REG_STATUS, sizeof(u32), buf);
-> >>> +					MMA9553_REG_STATUS, ARRAY_SIZE(buf),
-> >>> +					buf);
-> >>>  	if (ret < 0) {
-> >>>  		dev_err(&data->client->dev,
-> >>>  			"error reading status and stepcnt\n");
-> >>> @@ -397,7 +398,8 @@ static int mma9553_init(struct mma9553_data *data=
-)
-> >>>  	ret =3D
-> >>>  	    mma9551_read_config_words(data->client, MMA9551_APPID_PEDOMETER=
-,
-> >>>  				      MMA9553_REG_CONF_SLEEPMIN,
-> >>> -				      sizeof(data->conf), (u16 *) &data->conf);
-> >>> +				      sizeof(data->conf) / sizeof(u16),
-> >>> +				      (u16 *)&data->conf);
-> >>>  	if (ret < 0) {
-> >>>  		dev_err(&data->client->dev,
-> >>>  			"failed to read configuration registers\n");
-> >>> @@ -430,7 +432,8 @@ static int mma9553_init(struct mma9553_data *data=
-)
-> >>>  	ret =3D
-> >>>  	    mma9551_write_config_words(data->client, MMA9551_APPID_PEDOMETE=
-R,
-> >>>  				       MMA9553_REG_CONF_SLEEPMIN,
-> >>> -				       sizeof(data->conf), (u16 *) &data->conf);
-> >>> +				       sizeof(data->conf) / sizeof(u16),
-> >>> +				       (u16 *)&data->conf);
-> >>>  	if (ret < 0) {
-> >>>  		dev_err(&data->client->dev,
-> >>>  			"failed to write configuration registers\n");
-> >>>
-> >
+diff --git a/drivers/iio/industrialio-triggered-buffer.c b/drivers/iio/industrialio-triggered-buffer.c
+index 15a5341..4b2858b 100644
+--- a/drivers/iio/industrialio-triggered-buffer.c
++++ b/drivers/iio/industrialio-triggered-buffer.c
+@@ -24,8 +24,8 @@ static const struct iio_buffer_setup_ops iio_triggered_buffer_setup_ops = {
+ /**
+  * iio_triggered_buffer_setup() - Setup triggered buffer and pollfunc
+  * @indio_dev:		IIO device structure
+- * @pollfunc_bh:	Function which will be used as pollfunc bottom half
+- * @pollfunc_th:	Function which will be used as pollfunc top half
++ * @h:			Function which will be used as pollfunc top half
++ * @thread:		Function which will be used as pollfunc bottom half
+  * @setup_ops:		Buffer setup functions to use for this device.
+  *			If NULL the default setup functions for triggered
+  *			buffers will be used.
+@@ -42,8 +42,8 @@ static const struct iio_buffer_setup_ops iio_triggered_buffer_setup_ops = {
+  * iio_triggered_buffer_cleanup().
+  */
+ int iio_triggered_buffer_setup(struct iio_dev *indio_dev,
+-	irqreturn_t (*pollfunc_bh)(int irq, void *p),
+-	irqreturn_t (*pollfunc_th)(int irq, void *p),
++	irqreturn_t (*h)(int irq, void *p),
++	irqreturn_t (*thread)(int irq, void *p),
+ 	const struct iio_buffer_setup_ops *setup_ops)
+ {
+ 	struct iio_buffer *buffer;
+@@ -57,8 +57,8 @@ int iio_triggered_buffer_setup(struct iio_dev *indio_dev,
+ 
+ 	iio_device_attach_buffer(indio_dev, buffer);
+ 
+-	indio_dev->pollfunc = iio_alloc_pollfunc(pollfunc_bh,
+-						 pollfunc_th,
++	indio_dev->pollfunc = iio_alloc_pollfunc(h,
++						 thread,
+ 						 IRQF_ONESHOT,
+ 						 indio_dev,
+ 						 "%s_consumer%d",
+diff --git a/include/linux/iio/triggered_buffer.h b/include/linux/iio/triggered_buffer.h
+index c378ebe..f72f70d 100644
+--- a/include/linux/iio/triggered_buffer.h
++++ b/include/linux/iio/triggered_buffer.h
+@@ -7,8 +7,8 @@ struct iio_dev;
+ struct iio_buffer_setup_ops;
+ 
+ int iio_triggered_buffer_setup(struct iio_dev *indio_dev,
+-	irqreturn_t (*pollfunc_bh)(int irq, void *p),
+-	irqreturn_t (*pollfunc_th)(int irq, void *p),
++	irqreturn_t (*h)(int irq, void *p),
++	irqreturn_t (*thread)(int irq, void *p),
+ 	const struct iio_buffer_setup_ops *setup_ops);
+ void iio_triggered_buffer_cleanup(struct iio_dev *indio_dev);
+ 
+-- 
+1.9.1
