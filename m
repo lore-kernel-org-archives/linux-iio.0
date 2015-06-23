@@ -1,66 +1,90 @@
-Return-Path: <borneo.antonio@gmail.com>
-From: Antonio Borneo <borneo.antonio@gmail.com>
-To: Alan Ott <alan@signal11.us>,
-	Alexander Aring <alex.aring@gmail.com>,
-	alsa-devel@alsa-project.org,
-	Andrzej Hajda <a.hajda@samsung.com>,
-	devel@driverdev.osuosl.org,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jaroslav Kysela <perex@perex.cz>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Kalle Valo <kvalo@codeaurora.org>,
-	Karol Wrona <k.wrona@samsung.com>,
-	Kyungmin Park <kyungmin.park@samsung.com>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Liam Girdwood <lgirdwood@gmail.com>,
-	linux-iio@vger.kernel.org,
-	linux-media@vger.kernel.org,
-	linux-wireless@vger.kernel.org,
-	linux-wpan@vger.kernel.org,
-	Mark Brown <broonie@kernel.org>,
-	Mauro Carvalho Chehab <mchehab@osg.samsung.com>,
-	netdev@vger.kernel.org,
-	patches@opensource.wolfsonmicro.com,
-	Solomon Peachy <pizza@shaftnet.org>,
-	Takashi Iwai <tiwai@suse.de>,
-	Varka Bhadram <varkabhadram@gmail.com>
-Cc: Antonio Borneo <borneo.antonio@gmail.com>,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH 0/6] Remove redundant spi driver bus initialization
-Date: Tue, 23 Jun 2015 22:45:08 +0800
-Message-Id: <1435070714-24174-1-git-send-email-borneo.antonio@gmail.com>
+Return-Path: <robherring2@gmail.com>
+MIME-Version: 1.0
+In-Reply-To: <557D6184.90105@kernel.org>
+References: <1432730872-14325-1-git-send-email-stefan@agner.ch>
+ <1432730872-14325-2-git-send-email-stefan@agner.ch> <CAL_JsqK0YxgJ-k8kSs6XQj9n3FSg4QBd-GdFEfcafH7Cm4NreQ@mail.gmail.com>
+ <14d469dedae9de1ce519fe90401e526e@agner.ch> <557D6184.90105@kernel.org>
+From: Rob Herring <robherring2@gmail.com>
+Date: Tue, 23 Jun 2015 09:27:36 -0500
+Message-ID: <CAL_JsqLX88SFHPrAwaPMijW0_3mOge43FZ4Cw08WwdNVjZJ-WA@mail.gmail.com>
+Subject: Re: [PATCH v5 1/2] iio: adc: vf610: implement configurable conversion modes
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Stefan Agner <stefan@agner.ch>, Shawn Guo <shawn.guo@linaro.org>,
+	"kernel@pengutronix.de" <kernel@pengutronix.de>, knaack.h@gmx.de,
+	Lars-Peter Clausen <lars@metafoo.de>, Peter Meerwald <pmeerw@pmeerw.net>, Rob Herring <robh+dt@kernel.org>,
+	Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>,
+	Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>,
+	Fugang Duan <B38611@freescale.com>, Sanchayan Maity <maitysanchayan@gmail.com>,
+	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	"linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset=UTF-8
 List-ID: <linux-iio@vger.kernel.org>
 
-This cleanup was already completed between end 2011 and early 2012
-with a patch series from Lars-Peter Clausen:
-https://lkml.org/lkml/2011/11/24/190
+On Sun, Jun 14, 2015 at 6:12 AM, Jonathan Cameron <jic23@kernel.org> wrote:
+> On 08/06/15 21:07, Stefan Agner wrote:
+>> On 2015-06-08 19:49, Rob Herring wrote:
+>>> On Wed, May 27, 2015 at 7:47 AM, Stefan Agner <stefan@agner.ch> wrote:
+>>>> Support configurable conversion mode through sysfs. So far, the
+>>>> mode used was low-power, which is enabled by default now. Beside
+>>>> that, the modes normal and high-speed are selectable as well.
+>>>>
+>>>> Use the new device tree property which specifies the maximum ADC
+>>>> conversion clock frequencies. Depending on the mode used, the
+>>>> available resulting conversion frequency are calculated
+>>>> dynamically.
+>>>>
+>>>> Acked-by: Fugang Duan <B38611@freescale.com>
+>>>> Signed-off-by: Stefan Agner <stefan@agner.ch>
+>>>> ---
+>>>>  Documentation/ABI/testing/sysfs-bus-iio-vf610      |   7 +
+>>>>  .../devicetree/bindings/iio/adc/vf610-adc.txt      |   9 ++
+>>>>  drivers/iio/adc/vf610_adc.c                        | 146 +++++++++++++++------
+>>>>  3 files changed, 120 insertions(+), 42 deletions(-)
+>>>>  create mode 100644 Documentation/ABI/testing/sysfs-bus-iio-vf610
+>>>>
+>>>> diff --git a/Documentation/ABI/testing/sysfs-bus-iio-vf610 b/Documentation/ABI/testing/sysfs-bus-iio-vf610
+>>>> new file mode 100644
+>>>> index 0000000..ecbc1f4
+>>>> --- /dev/null
+>>>> +++ b/Documentation/ABI/testing/sysfs-bus-iio-vf610
+>>>> @@ -0,0 +1,7 @@
+>>>> +What:          /sys/bus/iio/devices/iio:deviceX/conversion_mode
+>>>> +KernelVersion: 4.2
+>>>> +Contact:       linux-iio@vger.kernel.org
+>>>> +Description:
+>>>> +               Specifies the hardware conversion mode used. The three
+>>>> +               available modes are "normal", "high-speed" and "low-power",
+>>>> +               where the last is the default mode.
+>>>> diff --git a/Documentation/devicetree/bindings/iio/adc/vf610-adc.txt b/Documentation/devicetree/bindings/iio/adc/vf610-adc.txt
+>>>> index 1a4a43d..3eb40e2 100644
+>>>> --- a/Documentation/devicetree/bindings/iio/adc/vf610-adc.txt
+>>>> +++ b/Documentation/devicetree/bindings/iio/adc/vf610-adc.txt
+>>>> @@ -11,6 +11,13 @@ Required properties:
+>>>>  - clock-names: Must contain "adc", matching entry in the clocks property.
+>>>>  - vref-supply: The regulator supply ADC reference voltage.
+>>>>
+>>>> +Recommended properties:
+>>>> +- fsl,adck-max-frequency: Maximum frequencies according to datasheets operating
+>>>> +  requirements. Three values are required, depending on conversion mode:
+>>>> +  - Frequency in normal mode (ADLPC=0, ADHSC=0)
+>>>> +  - Frequency in high-speed mode (ADLPC=0, ADHSC=1)
+>>>> +  - Frequency in low-power mode (ADLPC=1, ADHSC=0)
+>>>
+>>> Why is this "adck" rather than "adc"?
+>>
+>> That is the name of the clock according to the reference manual and data
+>> sheet.
+>>
+>>> How is this related to today's patch adding min-sample-time?
+>>
+>> It is related in that this clock is the base to calculate the sampling
+>> time, but otherwise not really related. Afaik, not respecting the
+>> maximum clock frequency is probably more a issue for the SAR part of the
+>> ADC.
+> Rob, are you happy with Stefan's responses?
 
-Later on new redundant initialization re-appeared here and there.
-Time to cleanup again.
+Yes, it is fine.
 
-And, yes, I'm lazy! I copy-paste the exact same commit message from
-Lars-Peter; only minor reformat to stay in 75 char/line and fix the
-name of spi_register_driver().
-
-Regards,
-Antonio
-
-Antonio Borneo (6):
-  ASoC: wm0010: Remove redundant spi driver bus initialization
-  iio: ssp_sensors: Remove redundant spi driver bus initialization
-  staging: mt29f_spinand: Remove redundant spi driver bus initialization
-  net: ieee802154: Remove redundant spi driver bus initialization
-  wireless: cw1200: Remove redundant spi driver bus initialization
-  [media] s5c73m3: Remove redundant spi driver bus initialization
-
- drivers/iio/common/ssp_sensors/ssp_dev.c      | 1 -
- drivers/media/i2c/s5c73m3/s5c73m3-spi.c       | 1 -
- drivers/net/ieee802154/cc2520.c               | 1 -
- drivers/net/ieee802154/mrf24j40.c             | 1 -
- drivers/net/wireless/cw1200/cw1200_spi.c      | 1 -
- drivers/staging/mt29f_spinand/mt29f_spinand.c | 1 -
- sound/soc/codecs/wm0010.c                     | 1 -
- 7 files changed, 7 deletions(-)
-
--- 
-2.4.4
+Rob
