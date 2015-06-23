@@ -1,43 +1,66 @@
 Return-Path: <borneo.antonio@gmail.com>
 From: Antonio Borneo <borneo.antonio@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>,
-	Lars-Peter Clausen <lars@metafoo.de>,
+To: Alan Ott <alan@signal11.us>,
+	Alexander Aring <alex.aring@gmail.com>,
+	alsa-devel@alsa-project.org,
+	Andrzej Hajda <a.hajda@samsung.com>,
+	devel@driverdev.osuosl.org,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jaroslav Kysela <perex@perex.cz>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Kalle Valo <kvalo@codeaurora.org>,
 	Karol Wrona <k.wrona@samsung.com>,
-	linux-iio@vger.kernel.org
+	Kyungmin Park <kyungmin.park@samsung.com>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Liam Girdwood <lgirdwood@gmail.com>,
+	linux-iio@vger.kernel.org,
+	linux-media@vger.kernel.org,
+	linux-wireless@vger.kernel.org,
+	linux-wpan@vger.kernel.org,
+	Mark Brown <broonie@kernel.org>,
+	Mauro Carvalho Chehab <mchehab@osg.samsung.com>,
+	netdev@vger.kernel.org,
+	patches@opensource.wolfsonmicro.com,
+	Solomon Peachy <pizza@shaftnet.org>,
+	Takashi Iwai <tiwai@suse.de>,
+	Varka Bhadram <varkabhadram@gmail.com>
 Cc: Antonio Borneo <borneo.antonio@gmail.com>,
 	linux-kernel@vger.kernel.org
-Subject: [PATCH 2/6] iio: ssp_sensors: Remove redundant spi driver bus initialization
-Date: Tue, 23 Jun 2015 22:52:28 +0800
-Message-Id: <1435071148-24453-1-git-send-email-borneo.antonio@gmail.com>
-In-Reply-To: <1435070714-24174-1-git-send-email-borneo.antonio@gmail.com>
-References: <1435070714-24174-1-git-send-email-borneo.antonio@gmail.com>
+Subject: [PATCH 0/6] Remove redundant spi driver bus initialization
+Date: Tue, 23 Jun 2015 22:45:08 +0800
+Message-Id: <1435070714-24174-1-git-send-email-borneo.antonio@gmail.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-In ancient times it was necessary to manually initialize the bus
-field of an spi_driver to spi_bus_type. These days this is done in
-spi_register_driver(), so we can drop the manual assignment.
+This cleanup was already completed between end 2011 and early 2012
+with a patch series from Lars-Peter Clausen:
+https://lkml.org/lkml/2011/11/24/190
 
-Signed-off-by: Antonio Borneo <borneo.antonio@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>
-To: Lars-Peter Clausen <lars@metafoo.de>
-To: Karol Wrona <k.wrona@samsung.com>
-To: linux-iio@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org
----
- drivers/iio/common/ssp_sensors/ssp_dev.c | 1 -
- 1 file changed, 1 deletion(-)
+Later on new redundant initialization re-appeared here and there.
+Time to cleanup again.
 
-diff --git a/drivers/iio/common/ssp_sensors/ssp_dev.c b/drivers/iio/common/ssp_sensors/ssp_dev.c
-index 9a40097..d338bb5 100644
---- a/drivers/iio/common/ssp_sensors/ssp_dev.c
-+++ b/drivers/iio/common/ssp_sensors/ssp_dev.c
-@@ -700,7 +700,6 @@ static struct spi_driver ssp_driver = {
- 	.remove = ssp_remove,
- 	.driver = {
- 		.pm = &ssp_pm_ops,
--		.bus = &spi_bus_type,
- 		.owner = THIS_MODULE,
- 		.of_match_table = of_match_ptr(ssp_of_match),
- 		.name = "sensorhub"
+And, yes, I'm lazy! I copy-paste the exact same commit message from
+Lars-Peter; only minor reformat to stay in 75 char/line and fix the
+name of spi_register_driver().
+
+Regards,
+Antonio
+
+Antonio Borneo (6):
+  ASoC: wm0010: Remove redundant spi driver bus initialization
+  iio: ssp_sensors: Remove redundant spi driver bus initialization
+  staging: mt29f_spinand: Remove redundant spi driver bus initialization
+  net: ieee802154: Remove redundant spi driver bus initialization
+  wireless: cw1200: Remove redundant spi driver bus initialization
+  [media] s5c73m3: Remove redundant spi driver bus initialization
+
+ drivers/iio/common/ssp_sensors/ssp_dev.c      | 1 -
+ drivers/media/i2c/s5c73m3/s5c73m3-spi.c       | 1 -
+ drivers/net/ieee802154/cc2520.c               | 1 -
+ drivers/net/ieee802154/mrf24j40.c             | 1 -
+ drivers/net/wireless/cw1200/cw1200_spi.c      | 1 -
+ drivers/staging/mt29f_spinand/mt29f_spinand.c | 1 -
+ sound/soc/codecs/wm0010.c                     | 1 -
+ 7 files changed, 7 deletions(-)
+
 -- 
 2.4.4
