@@ -1,52 +1,43 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from host171.canaca.com ([67.55.55.225]:52072 "EHLO
-	host171.canaca.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S932396AbbFXAai (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 23 Jun 2015 20:30:38 -0400
-From: Simon Wood <simon@mungewell.org>
-To: linux-input@vger.kernel.org
-Cc: Frank Praznik <frank.praznik@oh.rr.com>, linux-iio@vger.kernel.org
-Subject: [RFC_v2 0/4] HID: hid-sony: Add IIO Suport for Motion Controllers
-Date: Tue, 23 Jun 2015 18:30:26 -0600
-Message-Id: <1435105830-2297-1-git-send-email-simon@mungewell.org>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <borneo.antonio@gmail.com>
+From: Antonio Borneo <borneo.antonio@gmail.com>
+To: Jonathan Cameron <jic23@kernel.org>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Karol Wrona <k.wrona@samsung.com>,
+	linux-iio@vger.kernel.org
+Cc: Antonio Borneo <borneo.antonio@gmail.com>,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH 2/6] iio: ssp_sensors: Remove redundant spi driver bus initialization
+Date: Tue, 23 Jun 2015 22:52:28 +0800
+Message-Id: <1435071148-24453-1-git-send-email-borneo.antonio@gmail.com>
+In-Reply-To: <1435070714-24174-1-git-send-email-borneo.antonio@gmail.com>
+References: <1435070714-24174-1-git-send-email-borneo.antonio@gmail.com>
+List-ID: <linux-iio@vger.kernel.org>
 
+In ancient times it was necessary to manually initialize the bus
+field of an spi_driver to spi_bus_type. These days this is done in
+spi_register_driver(), so we can drop the manual assignment.
 
-This series of patches is a RFC for the idea of connecting motion capability
-controllers to the IIO subsystem, initially targeting the Sony SixAxis
-controller. In the future I hope that this can be used for sensor packs used
-in VR headset/devices.
+Signed-off-by: Antonio Borneo <borneo.antonio@gmail.com>
+To: Jonathan Cameron <jic23@kernel.org>
+To: Lars-Peter Clausen <lars@metafoo.de>
+To: Karol Wrona <k.wrona@samsung.com>
+To: linux-iio@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
+---
+ drivers/iio/common/ssp_sensors/ssp_dev.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-The advantage of the IIO subsystem is that the data is presented in SI units,
-although it is noted that the current API requires root level access - this is
-really a distribution requirement (UDEV rules can make '/dev/iiodevice0'
-accessible).
-
-The RFC is in 4 parts, split into logical steps:
-[PATCH 1/4] HID: hid-sony: Add basic IIO support for SixAxis Controller
-[PATCH 2/4] HID: hid-sony: Add IIO buffer support for SixAxis Controller
-[PATCH 3/4] HID: hid-sony: Add IIO trigger support for SixAxis Controller
-[PATCH 4/4] HID: hid-sony: Add IIO support for DualShock4 Controller
-
-The SixAxis contains accelerometers, the DS4 contains accelerometers and gyros.
-
-The next stage would be support the PS Move controller, which contains
-accelerometers, gyros and magnetometers.
-
-As an example of IIO usage I would point to RTIMULib, which recently showed
-a full 9-dof IMU fusion via IIO. (1)
-
-
-Known Bug:
-At present the 3rd patch introduces the issue that once loaded and a device
-connects, the module can not be unloaded (even after device disconnects).
-
-It seems that the refcount is being increased, but not decreased.
---
-$ cat /sys/module/hid_sony/refcnt 
-2
---
-
-
-(1) https://richardstechnotes.wordpress.com/2015/06/17/rteiioimu-driving-a-9-dof-imu-via-industrial-io-iio/
+diff --git a/drivers/iio/common/ssp_sensors/ssp_dev.c b/drivers/iio/common/ssp_sensors/ssp_dev.c
+index 9a40097..d338bb5 100644
+--- a/drivers/iio/common/ssp_sensors/ssp_dev.c
++++ b/drivers/iio/common/ssp_sensors/ssp_dev.c
+@@ -700,7 +700,6 @@ static struct spi_driver ssp_driver = {
+ 	.remove = ssp_remove,
+ 	.driver = {
+ 		.pm = &ssp_pm_ops,
+-		.bus = &spi_bus_type,
+ 		.owner = THIS_MODULE,
+ 		.of_match_table = of_match_ptr(ssp_of_match),
+ 		.name = "sensorhub"
+-- 
+2.4.4
