@@ -1,80 +1,119 @@
-Return-Path: <tiberiu.a.breana@intel.com>
-From: "Breana, Tiberiu A" <tiberiu.a.breana@intel.com>
-To: Jonathan Cameron <jic23@kernel.org>, "linux-iio@vger.kernel.org"
-	<linux-iio@vger.kernel.org>
-Subject: RE: [PATCH] iio: light: STK3310: un-invert proximity values
-Date: Wed, 24 Jun 2015 09:41:57 +0000
-Message-ID: <4586F61A4A291F4DA44D32824E7C0F402216B6EA@IRSMSX109.ger.corp.intel.com>
-References: <1434539393-1451-1-git-send-email-tiberiu.a.breana@intel.com>
- <55868C77.2060407@kernel.org>
-In-Reply-To: <55868C77.2060407@kernel.org>
-Content-Type: text/plain; charset="us-ascii"
+Return-Path: <vladimir.barinov@cogentembedded.com>
+Message-ID: <558A778C.40306@cogentembedded.com>
+Date: Wed, 24 Jun 2015 12:25:32 +0300
+From: Vladimir Barinov <vladimir.barinov@cogentembedded.com>
 MIME-Version: 1.0
+To: Jonathan Cameron <jic23@kernel.org>,
+ Lars-Peter Clausen <lars@metafoo.de>
+CC: Hartmut Knaack <knaack.h@gmx.de>, Peter Meerwald <pmeerw@pmeerw.net>,
+ Rob Herring <robh+dt@kernel.org>,
+ Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>,
+ Ian Campbell <ijc+devicetree@hellion.org.uk>,
+ Kumar Gala <galak@codeaurora.org>, linux-kernel@vger.kernel.org,
+ linux-iio@vger.kernel.org, devicetree@vger.kernel.org
+Subject: Re: [PATCH 1/3] iio: adc: hi-843x: Holt HI-8435/8436/8437 descrete
+ ADC
+References: <1433161073-21967-1-git-send-email-vladimir.barinov@cogentembedded.com> <1433161211-22034-1-git-send-email-vladimir.barinov@cogentembedded.com> <55746D35.1030409@kernel.org> <55831CF3.3070906@metafoo.de> <55833B1D.8000407@cogentembedded.com> <5586C6C0.8000307@kernel.org>
+In-Reply-To: <5586C6C0.8000307@kernel.org>
+Content-Type: text/plain; charset=windows-1252; format=flowed
 List-ID: <linux-iio@vger.kernel.org>
 
-> -----Original Message-----=0A=
-> From: Jonathan Cameron [mailto:jic23@kernel.org]=0A=
-> Sent: Sunday, June 21, 2015 1:06 PM=0A=
-> To: Breana, Tiberiu A; linux-iio@vger.kernel.org=0A=
-> Subject: Re: [PATCH] iio: light: STK3310: un-invert proximity values=0A=
-> =0A=
-> On 17/06/15 12:09, Tiberiu Breana wrote:=0A=
-> > In accordance with the recent ABI changes, STK3310's proximity=0A=
-> > readings should be un-inversed in order to return low values for=0A=
-> > far-away objects and high values for close ones.=0A=
-> >=0A=
-=0A=
-<snip>=0A=
-=0A=
-> > -/*=0A=
-> > - * Maximum PS values with regard to scale. Used to export the 'inverse=
-'=0A=
-> > - * PS value (high values for far objects, low values for near objects)=
-.=0A=
-> > - */=0A=
-> > +=0A=
-> > +/* Estimate maximum proximity values with regard to measurement=0A=
-> > +scale. */=0A=
-> >  static const int stk3310_ps_max[4] =3D {=0A=
-> > -	STK3310_PS_MAX_VAL / 64,=0A=
-> > -	STK3310_PS_MAX_VAL / 16,=0A=
-> > -	STK3310_PS_MAX_VAL /  4,=0A=
-> > -	STK3310_PS_MAX_VAL,=0A=
-> > +	STK3310_PS_MAX_VAL / 640,=0A=
-> > +	STK3310_PS_MAX_VAL / 160,=0A=
-> > +	STK3310_PS_MAX_VAL /  40,=0A=
-> > +	STK3310_PS_MAX_VAL /  10=0A=
-> >  };=0A=
-> What's this change about?  All uses of this array as present in this patc=
-h have=0A=
-> been removed.  It is used elsewhere for parameter sanity checking, but I=
-=0A=
-> can't follow why it now needs to be divided by 10.=0A=
-=0A=
-Indeed, these values are still used in _write_event for setting proximity i=
-nterrupt=0A=
-threshold values. Truth is, they should have been divided by 10 from the st=
-art,=0A=
-but since all values were relative to the pre-defined maximum values, it di=
-dn't=0A=
-really matter. I used the higher max values because the readings would=0A=
-sometimes go over the expected range (when I press down on the sensor with=
-=0A=
-my thumb), so the proximity readings became negative. But that shouldn't ha=
-ppen=0A=
-in the case of a real device, as the sensor is covered by at least a screen=
- layer.=0A=
-=0A=
-For the default scale of 0.1 real proximity readings max out at around 6500=
-,=0A=
-roughly a tenth of the maximum theoretical value, as expected. Now that we'=
-re=0A=
-using un-inverted measurements, we can't use the same reference values as=
-=0A=
-before - e.g. if the real maximum value is 6500, we can't allow setting a t=
-hreshold=0A=
-of 30000 - it will never be reached.=0A=
-If you think this change warrants a separate patch, I'll split it.=0A=
-=0A=
-Regards,=0A=
-Tiberiu=
+On 21.06.2015 17:14, Jonathan Cameron wrote:
+>>> I'd call this a threshold detector. The device seems to have two
+>>> comparators for each channel, one for the lower threshold, one for
+>>> the upper threshold. If the voltage level goes above the upper
+>>> threshold a FF is set, if it goes below the lower threshold the FF
+>>> is cleared. Both transitions happen asynchronously as soon has the
+>>> signal is below/above the threshold. And while converts a analog
+>>> signal to digital one this is not what you typically call a ADC.
+>> Should this be a separate/new directory in the drivers/iio/ for such driver?
+> Given we could in theory have comparators for any type of channel it probably doesn't
+> make sense to have a whole new directory.  Perhaps a section in the config.
+>> What the type of iio_chan_spec should I use instead of IIO_VOLTAGE?
+> I've been thinking about this.  Maybe we should use the same approach we already
+> use for 'computed' channel values such as root sum squared accelerations that turn
+> up occasionally and do this as a modifier.
+>
+> So the channel type would be voltage, but with the modifier comparator (shortening
+> it would just get confusing).  This also maps nicely to devices that offer both
+> normal adc channels and comparators on the same pin (if that ever happens!)
+>
+> Hence the attributes etc would be:
+> in_voltage0_comparator_raw
+>
+> Do you think that would be clear / flexible enough?
+yes
+>>>> I wonder if we want to take this oportunity to add 1 bit packing to the
+>>>> demux etc in the IIO core so we can have tighter packing on these
+>>>> values.  Shouldn't be too hard to do and we probably do want it if we are
+>>>> going to support these sorts of devices.
+>>>>
+>>>> Will take a bit of shuffling to pack the relevant channels together if only
+>>>> a subset are enabled and to notice when no repacking at all is needed.
+>>>> This will probably first one implementing in the core and pushing out into
+>>>> the dummy driver to allow for testing of corner cases.
+>>> Yeah, the bit shuffling gets quite cumbersome and potentially
+>>> expensive. I think we should try to avoid it if at least one of the
+>>> channels in the same bank is enabled all of them are read. And then
+>>> let userspace figure out which bits it wants to use.
+>>>
+>>> But how exactly is the typical expect usage of this device. Like
+>>> how would a userspace application use it? Is buffered mode where
+>>> samples are taken in a continuous mode something that is really
+>>> needed?
+>> I was expecting to use triggered buffer for this device:
+>> 1) setup threshold levels via sysfs
+>> 2) enable scan elements
+>> 3) setup trigger
+>> 4) grab data from triggered iio buffer like the
+>> tools/iio/generic_buffer.c does, f.e. ./generic_buffer -n hi-8435 -t
+>> irqtrig0 -l 100 -c 1000
+> Good, you are going about it the right way then.  Makes sense as this
+> is what you'd do for similar devices such as a logic analyzer.
+>> Actually I understand that I can just read manually the
+>> /sysfs/.../in_voltageXX_raw (or new/other name) values but using of
+>> iio generic irq trigger would be very good.
+> What is generating the interrupt?   Are we looking at a 'dataready'
+> type interrupt or some other pseudo (or actual) fixed frequency, or
+> are we talking an interrupt on the state of one of the inputs changing?
+>
+> If the second case, then an event based approach may make more sense
+> than using buffers.
+Actually it is a interrupt that should occur on the state change of one 
+of the inputs.
+
+But hi8435 chip does not have it's own dedicated/hardware interrupt line 
+for this purposes, so it
+requires any kind of polling (hardware from pwm/gpio, or s/w polling 
+inside the driver)
+
+Probably I'm not right by trying to use "iio irq trigger" from external 
+hardware line (like gpio/pwm)
+and I have to implement polling inside driver.
+
+Event based approach is good enough.
+>> About bits shuffling/separating. I do think we can use banks byte
+>> length for one iio channel instead of 1-bit length to avoid such
+>> complexity. Then let user space separate bank's channels by itself.
+> On high channel count devices this could get nasty quickly.
+>
+> I'd like to explore Lars' suggestion that we use shared scan_indexes
+> for a set of channels, and different shift / mask values.  I don't
+> think it would need any particularly substantial changes in kernel
+> and obviously only usespace code using this new type of device would
+> need to know about it.
+>
+> I'd relax the suggestion he made to have it always sample all channels
+> in a given scan index, to say that it can if it makes sense.  We won't
+> bother masking them out, but if it is quicker for the device to not read
+> those that aren't enabled, then it is up to the device whether it does.
+>
+> The issue is that if we let a device in now with the 8bits per bit
+> interface, we kind of commit to at least having userspace support that
+> long term which isn't nice (though not too bad I suppose as it is just
+> the least efficient case of what we are talking about doing anyway).
+>
+Ok, I see
+
+Regards,
+Vladimir
