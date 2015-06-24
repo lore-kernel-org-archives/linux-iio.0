@@ -1,162 +1,244 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from host171.canaca.com ([67.55.55.225]:52077 "EHLO
+Received: from host171.canaca.com ([67.55.55.225]:52073 "EHLO
 	host171.canaca.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S933554AbbFXAaj (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 23 Jun 2015 20:30:39 -0400
+	with ESMTP id S932416AbbFXAai (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 23 Jun 2015 20:30:38 -0400
 From: Simon Wood <simon@mungewell.org>
 To: linux-input@vger.kernel.org
 Cc: Frank Praznik <frank.praznik@oh.rr.com>, linux-iio@vger.kernel.org,
 	Simon Wood <simon@mungewell.org>
-Subject: [RFC_v2 3/4] HID: hid-sony: Add IIO trigger support for SixAxis Controller
-Date: Tue, 23 Jun 2015 18:30:29 -0600
-Message-Id: <1435105830-2297-4-git-send-email-simon@mungewell.org>
+Subject: [RFC_v2 1/4] HID: hid-sony: Add basic IIO support for SixAxis Controller
+Date: Tue, 23 Jun 2015 18:30:27 -0600
+Message-Id: <1435105830-2297-2-git-send-email-simon@mungewell.org>
 In-Reply-To: <1435105830-2297-1-git-send-email-simon@mungewell.org>
 References: <1435105830-2297-1-git-send-email-simon@mungewell.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
 ---
- drivers/hid/hid-sony.c | 71 ++++++++++++++++++++++++++++++++++++++++++++++++--
- 1 file changed, 69 insertions(+), 2 deletions(-)
+ drivers/hid/hid-sony.c | 153 ++++++++++++++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 152 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/hid/hid-sony.c b/drivers/hid/hid-sony.c
-index b7a7f0d..ce0526d 100644
+index 6ca96ce..c4686e3 100644
 --- a/drivers/hid/hid-sony.c
 +++ b/drivers/hid/hid-sony.c
-@@ -39,9 +39,11 @@
- #include <linux/iio/iio.h>
- #include <linux/iio/sysfs.h>
- #include <linux/iio/buffer.h>
-+#include <linux/iio/trigger.h>
- #include <linux/iio/trigger_consumer.h>
- #include <linux/iio/triggered_buffer.h>
- #include <linux/interrupt.h>
-+#include <linux/irq_work.h>
+@@ -36,6 +36,7 @@
+ #include <linux/list.h>
+ #include <linux/idr.h>
+ #include <linux/input/mt.h>
++#include <linux/iio/iio.h>
  
  #include "hid-ids.h"
  
-@@ -855,9 +857,14 @@ enum sony_iio_axis {
- 	AXIS_ACC_Z,
- };
+@@ -54,6 +55,7 @@
+ 				DUALSHOCK4_CONTROLLER)
+ #define SONY_BATTERY_SUPPORT (SIXAXIS_CONTROLLER | DUALSHOCK4_CONTROLLER)
+ #define SONY_FF_SUPPORT (SIXAXIS_CONTROLLER | DUALSHOCK4_CONTROLLER)
++#define SONY_IIO_SUPPORT SIXAXIS_CONTROLLER
  
-+static void sony_iio_trigger_work(struct irq_work *work);
-+
- struct sony_iio {
- 	struct sony_sc *sc;
-+	struct iio_trigger *trig;
-+
- 	u8 buff[16];		/* 3x 16-bit + padding + timestamp */
-+	struct irq_work work;
- #endif
- };
+ #define MAX_LEDS 4
  
-@@ -1076,6 +1083,13 @@ static int sony_raw_event(struct hid_device *hdev, struct hid_report *report,
- 		sc->last_data[AXIS_ACC_X] = (rd[42] << 8) + rd[41];
- 		sc->last_data[AXIS_ACC_Y] = (rd[44] << 8) + rd[43];
- 		sc->last_data[AXIS_ACC_Z] = (rd[46] << 8) + rd[45];
+@@ -835,6 +837,22 @@ struct sony_sc {
+ 	__u8 led_delay_on[MAX_LEDS];
+ 	__u8 led_delay_off[MAX_LEDS];
+ 	__u8 led_count;
 +
-+		if (sc->indio_dev) {
-+			struct sony_iio *data;
-+
-+			data = iio_priv(sc->indio_dev);
-+			sony_iio_trigger_work(&data->work);
-+		}
- #endif
- 		sixaxis_parse_report(sc, rd, size);
- 	} else if (((sc->quirks & DUALSHOCK4_CONTROLLER_USB) && rd[0] == 0x01 &&
-@@ -1869,6 +1883,28 @@ static const struct iio_info sony_iio_info = {
- 	.driver_module = THIS_MODULE,
- };
- 
-+static void sony_iio_trigger_work(struct irq_work *work)
-+{
-+	struct sony_iio *data = container_of(work, struct sony_iio, work);
-+
-+	iio_trigger_poll(data->trig);
-+}
-+
-+static ssize_t sony_iio_trigger_poll(struct device *dev,
-+		struct device_attribute *attr, const char *buf, size_t count)
-+{
-+	struct iio_trigger *trig = to_iio_trigger(dev);
-+	struct sony_iio *data = iio_trigger_get_drvdata(trig);
-+
-+	irq_work_queue(&data->work);
-+
-+	return count;
-+}
-+
-+static const struct iio_trigger_ops sony_iio_trigger_ops = {
-+	.owner = THIS_MODULE,
++#if IS_BUILTIN(CONFIG_IIO) || \
++	(IS_MODULE(CONFIG_IIO) && IS_MODULE(CONFIG_HID_SONY))
++	struct iio_dev *indio_dev;
++	__u16 last_data[3];
 +};
 +
- static irqreturn_t sony_iio_trigger_handler(int irq, void *p)
- {
- 	struct iio_poll_func *pf = p;
-@@ -1910,11 +1946,29 @@ static int sony_iio_probe(struct sony_sc *sc)
- 	indio_dev->channels = sony_sixaxis_channels;
- 	indio_dev->num_channels = ARRAY_SIZE(sony_sixaxis_channels);
++enum sony_iio_axis {
++	AXIS_ACC_X,
++	AXIS_ACC_Y,
++	AXIS_ACC_Z,
++};
++
++struct sony_iio {
++	struct sony_sc *sc;
++#endif
+ };
  
-+	data->trig = iio_trigger_alloc("%s-dev%d", indio_dev->name,
-+		indio_dev->id);
-+	if (!data->trig) {
-+		ret = -ENOMEM;
-+		goto err;
+ static __u8 *sixaxis_fixup(struct hid_device *hdev, __u8 *rdesc,
+@@ -843,7 +861,6 @@ static __u8 *sixaxis_fixup(struct hid_device *hdev, __u8 *rdesc,
+ 	*rsize = sizeof(sixaxis_rdesc);
+ 	return sixaxis_rdesc;
+ }
+-
+ static __u8 *ps3remote_fixup(struct hid_device *hdev, __u8 *rdesc,
+ 			     unsigned int *rsize)
+ {
+@@ -1047,6 +1064,12 @@ static int sony_raw_event(struct hid_device *hdev, struct hid_report *report,
+ 		swap(rd[45], rd[46]);
+ 		swap(rd[47], rd[48]);
+ 
++#if IS_BUILTIN(CONFIG_IIO) || \
++	(IS_MODULE(CONFIG_IIO) && IS_MODULE(CONFIG_HID_SONY))
++		sc->last_data[AXIS_ACC_X] = (rd[42] << 8) + rd[41];
++		sc->last_data[AXIS_ACC_Y] = (rd[44] << 8) + rd[43];
++		sc->last_data[AXIS_ACC_Z] = (rd[46] << 8) + rd[45];
++#endif
+ 		sixaxis_parse_report(sc, rd, size);
+ 	} else if (((sc->quirks & DUALSHOCK4_CONTROLLER_USB) && rd[0] == 0x01 &&
+ 			size == 64) || ((sc->quirks & DUALSHOCK4_CONTROLLER_BT)
+@@ -1769,6 +1792,114 @@ static void sony_battery_remove(struct sony_sc *sc)
+ 	sc->battery_desc.name = NULL;
+ }
+ 
++#if IS_BUILTIN(CONFIG_IIO) || \
++	(IS_MODULE(CONFIG_IIO) && IS_MODULE(CONFIG_HID_SONY))
++
++static int sony_iio_read_raw(struct iio_dev *indio_dev,
++			      struct iio_chan_spec const *chan,
++			      int *val, int *val2,
++			      long mask)
++{
++	struct sony_iio *data = iio_priv(indio_dev);
++
++	switch (mask) {
++	case IIO_CHAN_INFO_RAW:
++		switch (chan->type) {
++		case IIO_ACCEL:
++			*val = data->sc->last_data[chan->address];
++			return IIO_VAL_INT;
++		default:
++			return -EINVAL;
++		}
++	case IIO_CHAN_INFO_SCALE:
++		switch (chan->type) {
++		case IIO_ACCEL:
++			*val = 0;	/* 9.80665/117 = 0.084540086 */
++			*val2 = 84540;
++			return IIO_VAL_INT_PLUS_MICRO;
++		default:
++			return -EINVAL;
++		}
++	case IIO_CHAN_INFO_OFFSET:
++		switch (chan->type) {
++		case IIO_ACCEL:
++			*val = -512;
++			return IIO_VAL_INT;
++		default:
++			return -EINVAL;
++		}
 +	}
 +
-+	data->trig->dev.parent = &hdev->dev;
-+	data->trig->ops = &sony_iio_trigger_ops;
-+	iio_trigger_set_drvdata(data->trig, indio_dev);
-+	indio_dev->trig = iio_trigger_get(data->trig);
++	return -EINVAL;
++}
 +
-+	init_irq_work(&data->work, sony_iio_trigger_work);
++#define SONY_ACC_CHANNEL(_axis) {                                       \
++	.type = IIO_ACCEL,                                              \
++	.modified = 1,                                                  \
++	.channel2 = IIO_MOD_##_axis,                                    \
++	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),                   \
++	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE) |          \
++		BIT(IIO_CHAN_INFO_OFFSET),                              \
++	.address = AXIS_ACC_##_axis,                                    \
++}
 +
-+	ret = iio_trigger_register(data->trig);
-+	if (ret)
-+		goto err_trigger_free;
++static const struct iio_chan_spec sony_sixaxis_channels[] = {
++	SONY_ACC_CHANNEL(X),
++	SONY_ACC_CHANNEL(Y),
++	SONY_ACC_CHANNEL(Z),
++};
 +
- 	ret = iio_triggered_buffer_setup(indio_dev, NULL,
- 			sony_iio_trigger_handler, NULL);
- 	if (ret < 0) {
- 		dev_err(&hdev->dev, "unable to setup iio triggered buffer\n");
--		goto err;
-+		goto err_trigger_unregister;
++static const struct iio_info sony_iio_info = {
++	.read_raw = &sony_iio_read_raw,
++	.driver_module = THIS_MODULE,
++};
++
++static int sony_iio_probe(struct sony_sc *sc)
++{
++	struct hid_device *hdev = sc->hdev;
++	struct iio_dev *indio_dev;
++	struct sony_iio *data;
++	int ret;
++
++	indio_dev = iio_device_alloc(sizeof(*data));
++	if (!indio_dev)
++		return -ENOMEM;
++
++	sc->indio_dev = indio_dev;
++	data = iio_priv(indio_dev);
++	data->sc = sc;
++
++	indio_dev->dev.parent = &hdev->dev;
++	indio_dev->name = dev_name(&hdev->dev);
++	indio_dev->modes = INDIO_DIRECT_MODE;
++	indio_dev->info = &sony_iio_info;
++	indio_dev->channels = sony_sixaxis_channels;
++	indio_dev->num_channels = 3;
++
++	ret = iio_device_register(indio_dev);
++	if (ret < 0) {
++		hid_err(hdev, "Unable to register iio device\n");
++		goto err;
++	}
++	return 0;
++
++err:
++	kfree(indio_dev);
++	sc->indio_dev = NULL;
++	return ret;
++}
++
++static void sony_iio_remove(struct sony_sc *sc)
++{
++	if (!sc->indio_dev)
++		return;
++
++	iio_device_unregister(sc->indio_dev);
++	kfree(sc->indio_dev);
++	sc->indio_dev = NULL;
++}
++#endif
++
+ /*
+  * If a controller is plugged in via USB while already connected via Bluetooth
+  * it will show up as two devices. A global list of connected controllers and
+@@ -2073,6 +2204,15 @@ static int sony_probe(struct hid_device *hdev, const struct hid_device_id *id)
+ 		}
  	}
  
- 	ret = iio_device_register(indio_dev);
-@@ -1926,6 +1980,11 @@ static int sony_iio_probe(struct sony_sc *sc)
- 
- err_buffer_cleanup:
- 	iio_triggered_buffer_cleanup(indio_dev);
-+err_trigger_unregister:
-+	if (data->trig)
-+		iio_trigger_unregister(data->trig);
-+err_trigger_free:
-+	iio_trigger_free(data->trig);
- err:
- 	kfree(indio_dev);
- 	sc->indio_dev = NULL;
-@@ -1934,11 +1993,19 @@ err:
- 
- static void sony_iio_remove(struct sony_sc *sc)
- {
-+	struct sony_iio *data;
++#if IS_BUILTIN(CONFIG_IIO) || \
++	(IS_MODULE(CONFIG_IIO) && IS_MODULE(CONFIG_HID_SONY))
++	if (sc->quirks & SONY_IIO_SUPPORT) {
++		ret = sony_iio_probe(sc);
++		if (ret < 0)
++			goto err_stop;
++	}
++#endif
 +
- 	if (!sc->indio_dev)
- 		return;
+ 	if (sc->quirks & SONY_FF_SUPPORT) {
+ 		ret = sony_init_ff(sc);
+ 		if (ret < 0)
+@@ -2087,6 +2227,11 @@ err_stop:
+ 		sony_leds_remove(sc);
+ 	if (sc->quirks & SONY_BATTERY_SUPPORT)
+ 		sony_battery_remove(sc);
++#if IS_BUILTIN(CONFIG_IIO) || \
++	(IS_MODULE(CONFIG_IIO) && IS_MODULE(CONFIG_HID_SONY))
++	if (sc->quirks & SONY_IIO_SUPPORT)
++		sony_iio_remove(sc);
++#endif
+ 	sony_cancel_work_sync(sc);
+ 	kfree(sc->output_report_dmabuf);
+ 	sony_remove_dev_list(sc);
+@@ -2107,6 +2252,12 @@ static void sony_remove(struct hid_device *hdev)
+ 		sony_battery_remove(sc);
+ 	}
  
--	iio_device_unregister(sc->indio_dev);
-+	data = iio_priv(sc->indio_dev);
++#if IS_BUILTIN(CONFIG_IIO) || \
++	(IS_MODULE(CONFIG_IIO) && IS_MODULE(CONFIG_HID_SONY))
++	if (sc->quirks & SONY_IIO_SUPPORT)
++		sony_iio_remove(sc);
++#endif
 +
- 	iio_triggered_buffer_cleanup(sc->indio_dev);
-+	if (data->trig)
-+		iio_trigger_unregister(data->trig);
-+	iio_trigger_free(data->trig);
-+	iio_device_unregister(sc->indio_dev);
-+
- 	kfree(sc->indio_dev);
- 	sc->indio_dev = NULL;
- }
+ 	sony_cancel_work_sync(sc);
+ 
+ 	kfree(sc->output_report_dmabuf);
 -- 
 2.1.4
 
