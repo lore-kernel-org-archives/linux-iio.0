@@ -1,904 +1,191 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from arroyo.ext.ti.com ([192.94.94.40]:50970 "EHLO arroyo.ext.ti.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1752285AbbFXO6g (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Wed, 24 Jun 2015 10:58:36 -0400
-Received: from dflxv15.itg.ti.com ([128.247.5.124])
-	by arroyo.ext.ti.com (8.13.7/8.13.7) with ESMTP id t5OEwYOI020138
-	for <linux-iio@vger.kernel.org>; Wed, 24 Jun 2015 09:58:34 -0500
-Received: from DLEE71.ent.ti.com (dlee71.ent.ti.com [157.170.170.114])
-	by dflxv15.itg.ti.com (8.14.3/8.13.8) with ESMTP id t5OEwYGw031268
-	for <linux-iio@vger.kernel.org>; Wed, 24 Jun 2015 09:58:34 -0500
-From: Andreas Dannenberg <dannenberg@ti.com>
-To: <linux-iio@vger.kernel.org>
-CC: Andreas Dannenberg <dannenberg@ti.com>, Felipe Balbi <balbi@ti.com>
-Subject: [PATCH v2] iio: light: add support for TI's opt3001 light sensor
-Date: Wed, 24 Jun 2015 09:58:07 -0500
-Message-ID: <1435157887-13902-1-git-send-email-dannenberg@ti.com>
-MIME-Version: 1.0
-Content-Type: text/plain
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <tiberiu.a.breana@intel.com>
+From: Tiberiu Breana <tiberiu.a.breana@intel.com>
+To: linux-iio@vger.kernel.org
+Cc: Jonathan Cameron <jic23@kernel.org>
+Subject: [PATCH v5 2/2] iio: accel: Add sampling rate support for STK8312
+Date: Wed, 24 Jun 2015 17:01:49 +0300
+Message-Id: <1435154509-16865-2-git-send-email-tiberiu.a.breana@intel.com>
+In-Reply-To: <1435154509-16865-1-git-send-email-tiberiu.a.breana@intel.com>
+References: <1435154509-16865-1-git-send-email-tiberiu.a.breana@intel.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-TI's opt3001 light sensor is a simple and yet powerful
-little device. The device provides 99% IR rejection,
-automatic full-scale, very low power consumption and
-measurements from 0.01 to 83k lux.
+Added support for setting the STK8312 accelerometer's
+sampling rate.
 
-This patch adds support for that device using the IIO
-framework.
-
-See http://www.ti.com/product/opt3001 for more information.
-
-Signed-off-by: Felipe Balbi <balbi@ti.com>
-Signed-off-by: Andreas Dannenberg <dannenberg@ti.com>
+Signed-off-by: Tiberiu Breana <tiberiu.a.breana@intel.com>
 ---
-This is the second version of the patch with feedback
-incorporated and additional improvements made as follows:
+v5: no new changes
+v4: no new changes
+v3: no new changes
+v2: replaced stk8312_samp_freq_table with a struct for better readability
+---
+ drivers/iio/accel/stk8312.c | 96 ++++++++++++++++++++++++++++++++++++++-------
+ 1 file changed, 82 insertions(+), 14 deletions(-)
 
-* Fix restoring of IRQ mutex functionality in error case
-* Use managed IIO device alloc/registration
-* Add parenthesis to improve formula readability
-* Fix error message number formatting
-* Improve integration time parameter checks
-* Clean up redundant return value assignments
-* Fix broken lookup table algorithm
-* Fix duplicate lookup table entry
-* Disallow writing of negative event values
-
-The individual commits can be reviewed at:
-http://git.ti.com/cgit/cgit.cgi/ti-analog-linux-kernel/adannenb-analog.git/log/?h=opt3001
-
-Also (and I'm somewhat new to this), looks like I will need to provide
-DT binding documentation. I do have a working configuration I could
-document however while researching I found other drivers using a 
-.of_match_table element inside the struct i2c_driver to define a
-proper .compatible string. Is this something new/required for drivers?
-My driver doesn't do this yet but I can certainly update it.
-
- drivers/iio/light/Kconfig   |  10 +
- drivers/iio/light/Makefile  |   1 +
- drivers/iio/light/opt3001.c | 798 ++++++++++++++++++++++++++++++++++++++++++++
- 3 files changed, 809 insertions(+)
- create mode 100644 drivers/iio/light/opt3001.c
-
-diff --git a/drivers/iio/light/Kconfig b/drivers/iio/light/Kconfig
-index 01a1a16..665b182 100644
---- a/drivers/iio/light/Kconfig
-+++ b/drivers/iio/light/Kconfig
-@@ -186,6 +186,16 @@ config TCS3414
- 	 This driver can also be built as a module.  If so, the module
- 	 will be called tcs3414.
+diff --git a/drivers/iio/accel/stk8312.c b/drivers/iio/accel/stk8312.c
+index be58d66..c2bd144 100644
+--- a/drivers/iio/accel/stk8312.c
++++ b/drivers/iio/accel/stk8312.c
+@@ -29,6 +29,7 @@
+ #define STK8312_REG_ZOUT		0x02
+ #define STK8312_REG_INTSU		0x06
+ #define STK8312_REG_MODE		0x07
++#define STK8312_REG_SR			0x08
+ #define STK8312_REG_STH			0x13
+ #define STK8312_REG_RESET		0x20
+ #define STK8312_REG_AFECTRL		0x24
+@@ -41,6 +42,8 @@
+ #define STK8312_DREADY_BIT		0x10
+ #define STK8312_INT_MODE		0xC0
+ #define STK8312_RNG_MASK		0xC0
++#define STK8312_SR_MASK			0x07
++#define STK8312_SR_400HZ_IDX		0
+ #define STK8312_RNG_SHIFT		6
+ #define STK8312_READ_RETRIES		16
+ #define STK8312_ALL_CHANNEL_MASK	7
+@@ -65,20 +68,29 @@ static const int stk8312_scale_table[][2] = {
+ 	{0, 461600}, {1, 231100}
+ };
  
-+config OPT3001
-+	tristate "Texas Instruments OPT3001 Light Sensor"
-+	depends on I2C
-+	help
-+	  If you say Y or M here, you get support for Texas Instruments
-+	  OPT3001 Ambient Light Sensor.
-+
-+	  If built as a dynamically linked module, it will be called
-+	  opt3001.
-+
- config TCS3472
- 	tristate "TAOS TCS3472 color light-to-digital converter"
- 	depends on I2C
-diff --git a/drivers/iio/light/Makefile b/drivers/iio/light/Makefile
-index ad7c30f..a498631 100644
---- a/drivers/iio/light/Makefile
-+++ b/drivers/iio/light/Makefile
-@@ -17,6 +17,7 @@ obj-$(CONFIG_ISL29125)		+= isl29125.o
- obj-$(CONFIG_JSA1212)		+= jsa1212.o
- obj-$(CONFIG_SENSORS_LM3533)	+= lm3533-als.o
- obj-$(CONFIG_LTR501)		+= ltr501.o
-+obj-$(CONFIG_OPT3001)		+= opt3001.o
- obj-$(CONFIG_SENSORS_TSL2563)	+= tsl2563.o
- obj-$(CONFIG_TCS3414)		+= tcs3414.o
- obj-$(CONFIG_TCS3472)		+= tcs3472.o
-diff --git a/drivers/iio/light/opt3001.c b/drivers/iio/light/opt3001.c
-new file mode 100644
-index 0000000..a3bc3aa
---- /dev/null
-+++ b/drivers/iio/light/opt3001.c
-@@ -0,0 +1,798 @@
-+/**
-+ * opt3001.c - Texas Instruments OPT3001 Light Sensor
-+ *
-+ * Copyright (C) 2014 Texas Instruments Incorporated - http://www.ti.com
-+ *
-+ * Author: Andreas Dannenberg <dannenberg@ti.com>
-+ * Based on previous work from: Felipe Balbi <balbi@ti.com>
-+ *
-+ * This program is free software: you can redistribute it and/or modify it
-+ * under the terms of the GNU General Public License version 2 of the License
-+ * as published by the Free Software Foundation.
-+ *
-+ * This program is distributed in the hope that it will be useful, but WITHOUT
-+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-+ * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
-+ * more details.
-+ */
-+
-+#include <linux/bitops.h>
-+#include <linux/delay.h>
-+#include <linux/device.h>
-+#include <linux/i2c.h>
-+#include <linux/interrupt.h>
-+#include <linux/irq.h>
-+#include <linux/kernel.h>
-+#include <linux/module.h>
-+#include <linux/mutex.h>
-+#include <linux/slab.h>
-+#include <linux/types.h>
-+
-+#include <linux/iio/events.h>
-+#include <linux/iio/iio.h>
-+#include <linux/iio/sysfs.h>
-+
-+#define OPT3001_RESULT		0x00
-+#define OPT3001_CONFIGURATION	0x01
-+#define OPT3001_LOW_LIMIT	0x02
-+#define OPT3001_HIGH_LIMIT	0x03
-+#define OPT3001_MANUFACTURER_ID	0x7e
-+#define OPT3001_DEVICE_ID	0x7f
-+
-+#define OPT3001_CONFIGURATION_RN_MASK	(0xf << 12)
-+#define OPT3001_CONFIGURATION_RN_AUTO	(0xc << 12)
-+
-+#define OPT3001_CONFIGURATION_CT	BIT(11)
-+
-+#define OPT3001_CONFIGURATION_M_MASK	(3 << 9)
-+#define OPT3001_CONFIGURATION_M_SHUTDOWN (0 << 9)
-+#define OPT3001_CONFIGURATION_M_SINGLE	(1 << 9)
-+#define OPT3001_CONFIGURATION_M_CONTINUOUS (2 << 9) /* also 3 << 9 */
-+
-+#define OPT3001_CONFIGURATION_OVF	BIT(8)
-+#define OPT3001_CONFIGURATION_CRF	BIT(7)
-+#define OPT3001_CONFIGURATION_FH	BIT(6)
-+#define OPT3001_CONFIGURATION_FL	BIT(5)
-+#define OPT3001_CONFIGURATION_L		BIT(4)
-+#define OPT3001_CONFIGURATION_POL	BIT(3)
-+#define OPT3001_CONFIGURATION_ME	BIT(2)
-+
-+#define OPT3001_CONFIGURATION_FC_MASK	(3 << 0)
-+
-+/* The end-of-conversion enable is located in the low-limit register */
-+#define OPT3001_LOW_LIMIT_EOC_ENABLE	0xc000
-+
-+#define OPT3001_REG_EXPONENT(n)		((n) >> 12)
-+#define OPT3001_REG_MANTISSA(n)		((n) & 0xfff)
-+
-+/*
-+ * Time to wait for conversion result to be ready. The device datasheet
-+ * worst-case max value is 880ms. Add some slack to be on the safe side.
-+ */
-+#define OPT3001_RESULT_READY_TIMEOUT	msecs_to_jiffies(1000)
-+
-+struct opt3001 {
-+	struct i2c_client	*client;
-+	struct device		*dev;
-+
-+	struct mutex		lock;
-+	u16			ok_to_ignore_lock:1;
-+	u16			result_ready:1;
-+	wait_queue_head_t	result_ready_queue;
-+	u16			result;
-+
-+	u32			int_time;
-+	u32			mode;
-+
-+	u16			high_thresh_mantissa;
-+	u16			low_thresh_mantissa;
-+
-+	u8			high_thresh_exp;
-+	u8			low_thresh_exp;
+-#define STK8312_ACCEL_CHANNEL(index, reg, axis) {		\
+-	.type = IIO_ACCEL,					\
+-	.address = reg,						\
+-	.modified = 1,						\
+-	.channel2 = IIO_MOD_##axis,				\
+-	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),		\
+-	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),	\
+-	.scan_index = index,					\
+-	.scan_type = {						\
+-		.sign = 's',					\
+-		.realbits = 8,					\
+-		.storagebits = 8,				\
+-		.endianness = IIO_CPU,				\
+-	},							\
++static const struct {
++	u16 val;
++	u32 val2;
++} stk8312_samp_freq_table[] = {
++	{400, 0}, {200, 0}, {100, 0}, {50, 0}, {25, 0},
++	{12, 500000}, {6, 250000}, {3, 125000}
 +};
 +
-+struct opt3001_scale {
-+	int	val;
-+	int	val2;
-+};
++#define STK8312_ACCEL_CHANNEL(index, reg, axis) {			\
++	.type = IIO_ACCEL,						\
++	.address = reg,							\
++	.modified = 1,							\
++	.channel2 = IIO_MOD_##axis,					\
++	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),			\
++	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE) |		\
++				    BIT(IIO_CHAN_INFO_SAMP_FREQ),	\
++	.scan_index = index,						\
++	.scan_type = {							\
++		.sign = 's',						\
++		.realbits = 8,						\
++		.storagebits = 8,					\
++		.endianness = IIO_CPU,					\
++	},								\
+ }
+ 
+ static const struct iio_chan_spec stk8312_channels[] = {
+@@ -92,6 +104,7 @@ struct stk8312_data {
+ 	struct i2c_client *client;
+ 	struct mutex lock;
+ 	int range;
++	u8 sample_rate_idx;
+ 	u8 mode;
+ 	struct iio_trigger *dready_trig;
+ 	bool dready_trigger_on;
+@@ -100,8 +113,11 @@ struct stk8312_data {
+ 
+ static IIO_CONST_ATTR(in_accel_scale_available, STK8312_SCALE_AVAIL);
+ 
++static IIO_CONST_ATTR_SAMP_FREQ_AVAIL("3.125 6.25 12.5 25 50 100 200 400");
 +
-+static const struct opt3001_scale opt3001_scales[] = {
-+	{
-+		.val = 40,
-+		.val2 = 950000,
-+	},
-+	{
-+		.val = 81,
-+		.val2 = 900000,
-+	},
-+	{
-+		.val = 163,
-+		.val2 = 800000,
-+	},
-+	{
-+		.val = 327,
-+		.val2 = 600000,
-+	},
-+	{
-+		.val = 655,
-+		.val2 = 200000,
-+	},
-+	{
-+		.val = 1310,
-+		.val2 = 400000,
-+	},
-+	{
-+		.val = 2620,
-+		.val2 = 800000,
-+	},
-+	{
-+		.val = 5241,
-+		.val2 = 600000,
-+	},
-+	{
-+		.val = 10483,
-+		.val2 = 200000,
-+	},
-+	{
-+		.val = 20966,
-+		.val2 = 400000,
-+	},
-+	{
-+		.val = 83865,
-+		.val2 = 600000,
-+	},
-+};
-+
-+static int opt3001_find_scale(const struct opt3001 *opt, int val,
-+		int val2, u8 *exponent)
-+{
-+	int i;
-+
-+	for (i = 0; i < ARRAY_SIZE(opt3001_scales); i++) {
-+		const struct opt3001_scale *scale = &opt3001_scales[i];
-+
-+		/*
-+		 * Combine the integer and micro parts for comparison
-+		 * purposes. Use milli lux precision to avoid 32-bit integer
-+		 * overflows.
-+		 */
-+		if ((val * 1000 + val2 / 1000) <=
-+				(scale->val * 1000 + scale->val2 / 1000)) {
-+			*exponent = i;
-+			return 0;
-+		}
-+	}
-+
-+	return -EINVAL;
-+}
-+
-+static void opt3001_to_iio_ret(struct opt3001 *opt, u8 exponent,
-+		u16 mantissa, int *val, int *val2)
-+{
-+	int lux;
-+
-+	lux = 10 * (mantissa << exponent);
-+	*val = lux / 1000;
-+	*val2 = (lux - (*val * 1000)) * 1000;
-+}
-+
-+static void opt3001_set_mode(struct opt3001 *opt, u16 *reg, u16 mode)
-+{
-+	*reg &= ~OPT3001_CONFIGURATION_M_MASK;
-+	*reg |= mode;
-+	opt->mode = mode;
-+}
-+
-+static IIO_CONST_ATTR_INT_TIME_AVAIL("0.1 0.8");
-+
-+static struct attribute *opt3001_attributes[] = {
-+	&iio_const_attr_integration_time_available.dev_attr.attr,
-+	NULL
-+};
-+
-+static const struct attribute_group opt3001_attribute_group = {
-+	.attrs = opt3001_attributes,
-+};
-+
-+static const struct iio_event_spec opt3001_event_spec[] = {
-+	{
-+		.type = IIO_EV_TYPE_THRESH,
-+		.dir = IIO_EV_DIR_RISING,
-+		.mask_separate = BIT(IIO_EV_INFO_VALUE) |
-+			BIT(IIO_EV_INFO_ENABLE),
-+	},
-+	{
-+		.type = IIO_EV_TYPE_THRESH,
-+		.dir = IIO_EV_DIR_FALLING,
-+		.mask_separate = BIT(IIO_EV_INFO_VALUE) |
-+			BIT(IIO_EV_INFO_ENABLE),
-+	},
-+};
-+
-+static const struct iio_chan_spec opt3001_channels[] = {
-+	{
-+		.type = IIO_LIGHT,
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED) |
-+				BIT(IIO_CHAN_INFO_INT_TIME),
-+		.event_spec = opt3001_event_spec,
-+		.num_event_specs = ARRAY_SIZE(opt3001_event_spec),
-+	},
-+	IIO_CHAN_SOFT_TIMESTAMP(1),
-+};
-+
-+static int opt3001_get_lux(struct opt3001 *opt, int *val, int *val2)
+ static struct attribute *stk8312_attributes[] = {
+ 	&iio_const_attr_in_accel_scale_available.dev_attr.attr,
++	&iio_const_attr_sampling_frequency_available.dev_attr.attr,
+ 	NULL,
+ };
+ 
+@@ -220,6 +236,39 @@ static const struct iio_trigger_ops stk8312_trigger_ops = {
+ 	.owner = THIS_MODULE,
+ };
+ 
++static int stk8312_set_sample_rate(struct stk8312_data *data, int rate)
 +{
 +	int ret;
-+	u16 mantissa;
-+	u16 reg;
-+	u8 exponent;
-+	u16 value;
++	u8 masked_reg;
++	u8 mode;
++	struct i2c_client *client = data->client;
 +
-+	/*
-+	 * Enable the end-of-conversion interrupt mechanism. Note that doing
-+	 * so will overwrite the low-level limit value however we will restore
-+	 * this value later on.
-+	 */
-+	ret = i2c_smbus_write_word_swapped(opt->client, OPT3001_LOW_LIMIT,
-+			OPT3001_LOW_LIMIT_EOC_ENABLE);
-+	if (ret < 0) {
-+		dev_err(opt->dev, "failed to write register %02x\n",
-+				OPT3001_LOW_LIMIT);
-+		return ret;
-+	}
-+
-+	/* Reset data-ready indicator flag (will be set in the IRQ routine) */
-+	opt->result_ready = false;
-+
-+	/* Allow IRQ to access the device despite lock being set */
-+	opt->ok_to_ignore_lock = true;
-+
-+	/* Configure for single-conversion mode and start a new conversion */
-+	ret = i2c_smbus_read_word_swapped(opt->client, OPT3001_CONFIGURATION);
-+	if (ret < 0) {
-+		dev_err(opt->dev, "failed to read register %02x\n",
-+				OPT3001_CONFIGURATION);
-+		goto err;
-+	}
-+
-+	reg = ret;
-+	opt3001_set_mode(opt, &reg, OPT3001_CONFIGURATION_M_SINGLE);
-+
-+	ret = i2c_smbus_write_word_swapped(opt->client, OPT3001_CONFIGURATION,
-+			reg);
-+	if (ret < 0) {
-+		dev_err(opt->dev, "failed to write register %02x\n",
-+				OPT3001_CONFIGURATION);
-+		goto err;
-+	}
-+
-+	/* Wait for the IRQ to indicate the conversion is complete */
-+	ret = wait_event_timeout(opt->result_ready_queue, opt->result_ready,
-+			OPT3001_RESULT_READY_TIMEOUT);
-+
-+err:
-+	/* Disallow IRQ to access the device while lock is active */
-+	opt->ok_to_ignore_lock = false;
-+
-+	if (ret == 0)
-+		return -ETIMEDOUT;
-+	else if (ret < 0)
-+		return ret;
-+
-+	/*
-+	 * Disable the end-of-conversion interrupt mechanism by restoring the
-+	 * low-level limit value (clearing OPT3001_LOW_LIMIT_EOC_ENABLE). Note
-+	 * that selectively clearing those enable bits would affect the actual
-+	 * limit value due to bit-overlap and therefore can't be done.
-+	 */
-+	value = (opt->low_thresh_exp << 12) | opt->low_thresh_mantissa;
-+	ret = i2c_smbus_write_word_swapped(opt->client, OPT3001_LOW_LIMIT,
-+			value);
-+	if (ret < 0) {
-+		dev_err(opt->dev, "failed to write register %02x\n",
-+				OPT3001_LOW_LIMIT);
-+		return ret;
-+	}
-+
-+	exponent = OPT3001_REG_EXPONENT(opt->result);
-+	mantissa = OPT3001_REG_MANTISSA(opt->result);
-+
-+	opt3001_to_iio_ret(opt, exponent, mantissa, val, val2);
-+
-+	return IIO_VAL_INT_PLUS_MICRO;
-+}
-+
-+static int opt3001_get_int_time(struct opt3001 *opt, int *val, int *val2)
-+{
-+	*val = 0;
-+	*val2 = opt->int_time;
-+
-+	return IIO_VAL_INT_PLUS_MICRO;
-+}
-+
-+static int opt3001_set_int_time(struct opt3001 *opt, int time)
-+{
-+	int ret;
-+	u16 reg;
-+
-+	ret = i2c_smbus_read_word_swapped(opt->client, OPT3001_CONFIGURATION);
-+	if (ret < 0) {
-+		dev_err(opt->dev, "failed to read register %02x\n",
-+				OPT3001_CONFIGURATION);
-+		return ret;
-+	}
-+
-+	reg = ret;
-+
-+	switch (time) {
-+	case 100000:
-+		reg &= ~OPT3001_CONFIGURATION_CT;
-+		opt->int_time = 100000;
-+		break;
-+	case 800000:
-+		reg |= OPT3001_CONFIGURATION_CT;
-+		opt->int_time = 800000;
-+		break;
-+	default:
-+		return -EINVAL;
-+	}
-+
-+	return i2c_smbus_write_word_swapped(opt->client, OPT3001_CONFIGURATION,
-+			reg);
-+}
-+
-+static int opt3001_read_raw(struct iio_dev *iio,
-+		struct iio_chan_spec const *chan, int *val, int *val2,
-+		long mask)
-+{
-+	struct opt3001 *opt = iio_priv(iio);
-+	int ret;
-+
-+	if (opt->mode == OPT3001_CONFIGURATION_M_CONTINUOUS)
-+		return -EBUSY;
-+
-+	if (chan->type != IIO_LIGHT)
-+		return -EINVAL;
-+
-+	mutex_lock(&opt->lock);
-+
-+	switch (mask) {
-+	case IIO_CHAN_INFO_PROCESSED:
-+		ret = opt3001_get_lux(opt, val, val2);
-+		break;
-+	case IIO_CHAN_INFO_INT_TIME:
-+		ret = opt3001_get_int_time(opt, val, val2);
-+		break;
-+	default:
-+		ret = -EINVAL;
-+	}
-+
-+	mutex_unlock(&opt->lock);
-+
-+	return ret;
-+}
-+
-+static int opt3001_write_raw(struct iio_dev *iio,
-+		struct iio_chan_spec const *chan, int val, int val2,
-+		long mask)
-+{
-+	struct opt3001 *opt = iio_priv(iio);
-+	int ret;
-+
-+	if (opt->mode == OPT3001_CONFIGURATION_M_CONTINUOUS)
-+		return -EBUSY;
-+
-+	if (chan->type != IIO_LIGHT)
-+		return -EINVAL;
-+
-+	if (mask != IIO_CHAN_INFO_INT_TIME)
-+		return -EINVAL;
-+
-+	if (val != 0)
-+		return -EINVAL;
-+
-+	mutex_lock(&opt->lock);
-+	ret = opt3001_set_int_time(opt, val2);
-+	mutex_unlock(&opt->lock);
-+
-+	return ret;
-+}
-+
-+static int opt3001_read_event_value(struct iio_dev *iio,
-+		const struct iio_chan_spec *chan, enum iio_event_type type,
-+		enum iio_event_direction dir, enum iio_event_info info,
-+		int *val, int *val2)
-+{
-+	struct opt3001 *opt = iio_priv(iio);
-+	int ret = IIO_VAL_INT_PLUS_MICRO;
-+
-+	mutex_lock(&opt->lock);
-+
-+	switch (dir) {
-+	case IIO_EV_DIR_RISING:
-+		opt3001_to_iio_ret(opt, opt->high_thresh_exp,
-+				opt->high_thresh_mantissa, val, val2);
-+		break;
-+	case IIO_EV_DIR_FALLING:
-+		opt3001_to_iio_ret(opt, opt->low_thresh_exp,
-+				opt->low_thresh_mantissa, val, val2);
-+		break;
-+	default:
-+		ret = -EINVAL;
-+	}
-+
-+	mutex_unlock(&opt->lock);
-+
-+	return ret;
-+}
-+
-+static int opt3001_write_event_value(struct iio_dev *iio,
-+		const struct iio_chan_spec *chan, enum iio_event_type type,
-+		enum iio_event_direction dir, enum iio_event_info info,
-+		int val, int val2)
-+{
-+	struct opt3001 *opt = iio_priv(iio);
-+	int ret;
-+
-+	u16 mantissa;
-+	u16 value;
-+	u16 reg;
-+
-+	u8 exponent;
-+
-+	if (val < 0)
-+		return -EINVAL;
-+
-+	mutex_lock(&opt->lock);
-+
-+	ret = opt3001_find_scale(opt, val, val2, &exponent);
-+	if (ret < 0) {
-+		dev_err(opt->dev, "can't find scale for %d.%06u\n", val, val2);
-+		goto err;
-+	}
-+
-+	mantissa = (((val * 1000) + (val2 / 1000)) / 10) >> exponent;
-+	value = (exponent << 12) | mantissa;
-+
-+	switch (dir) {
-+	case IIO_EV_DIR_RISING:
-+		reg = OPT3001_HIGH_LIMIT;
-+		opt->high_thresh_mantissa = mantissa;
-+		opt->high_thresh_exp = exponent;
-+		break;
-+	case IIO_EV_DIR_FALLING:
-+		reg = OPT3001_LOW_LIMIT;
-+		opt->low_thresh_mantissa = mantissa;
-+		opt->low_thresh_exp = exponent;
-+		break;
-+	default:
-+		ret = -EINVAL;
-+		goto err;
-+	}
-+
-+	ret = i2c_smbus_write_word_swapped(opt->client, reg, value);
-+	if (ret < 0) {
-+		dev_err(opt->dev, "failed to write register %02x\n", reg);
-+		goto err;
-+	}
-+
-+err:
-+	mutex_unlock(&opt->lock);
-+
-+	return ret;
-+}
-+
-+static int opt3001_read_event_config(struct iio_dev *iio,
-+		const struct iio_chan_spec *chan, enum iio_event_type type,
-+		enum iio_event_direction dir)
-+{
-+	struct opt3001 *opt = iio_priv(iio);
-+
-+	return opt->mode == OPT3001_CONFIGURATION_M_CONTINUOUS;
-+}
-+
-+static int opt3001_write_event_config(struct iio_dev *iio,
-+		const struct iio_chan_spec *chan, enum iio_event_type type,
-+		enum iio_event_direction dir, int state)
-+{
-+	struct opt3001 *opt = iio_priv(iio);
-+	int ret;
-+	u16 mode;
-+	u16 reg;
-+
-+	if (state && opt->mode == OPT3001_CONFIGURATION_M_CONTINUOUS)
++	if (rate == data->sample_rate_idx)
 +		return 0;
 +
-+	if (!state && opt->mode == OPT3001_CONFIGURATION_M_SHUTDOWN)
-+		return 0;
++	mode = data->mode;
++	/* We need to go in standby mode to modify registers */
++	ret = stk8312_set_mode(data, STK8312_MODE_STANDBY);
++	if (ret < 0)
++		return ret;
 +
-+	mutex_lock(&opt->lock);
-+
-+	mode = state ? OPT3001_CONFIGURATION_M_CONTINUOUS
-+		: OPT3001_CONFIGURATION_M_SHUTDOWN;
-+
-+	ret = i2c_smbus_read_word_swapped(opt->client, OPT3001_CONFIGURATION);
++	ret = i2c_smbus_read_byte_data(client, STK8312_REG_SR);
 +	if (ret < 0) {
-+		dev_err(opt->dev, "failed to read register %02x\n",
-+				OPT3001_CONFIGURATION);
-+		goto err;
-+	}
-+
-+	reg = ret;
-+	opt3001_set_mode(opt, &reg, mode);
-+
-+	ret = i2c_smbus_write_word_swapped(opt->client, OPT3001_CONFIGURATION,
-+			reg);
-+	if (ret < 0) {
-+		dev_err(opt->dev, "failed to write register %02x\n",
-+				OPT3001_CONFIGURATION);
-+		goto err;
-+	}
-+
-+err:
-+	mutex_unlock(&opt->lock);
-+
-+	return ret;
-+}
-+
-+static const struct iio_info opt3001_info = {
-+	.driver_module = THIS_MODULE,
-+	.attrs = &opt3001_attribute_group,
-+	.read_raw = opt3001_read_raw,
-+	.write_raw = opt3001_write_raw,
-+	.read_event_value = opt3001_read_event_value,
-+	.write_event_value = opt3001_write_event_value,
-+	.read_event_config = opt3001_read_event_config,
-+	.write_event_config = opt3001_write_event_config,
-+};
-+
-+static int opt3001_read_id(struct opt3001 *opt)
-+{
-+	char manufacturer[2];
-+	u16 device_id;
-+	int ret;
-+
-+	ret = i2c_smbus_read_word_swapped(opt->client, OPT3001_MANUFACTURER_ID);
-+	if (ret < 0) {
-+		dev_err(opt->dev, "failed to read register %02x\n",
-+				OPT3001_MANUFACTURER_ID);
++		dev_err(&client->dev, "failed to set sampling rate\n");
 +		return ret;
 +	}
 +
-+	manufacturer[0] = ret >> 8;
-+	manufacturer[1] = ret & 0xff;
++	masked_reg = (ret & (~STK8312_SR_MASK)) | rate;
 +
-+	ret = i2c_smbus_read_word_swapped(opt->client, OPT3001_DEVICE_ID);
-+	if (ret < 0) {
-+		dev_err(opt->dev, "failed to read register %02x\n",
-+				OPT3001_DEVICE_ID);
-+		return ret;
-+	}
-+
-+	device_id = ret;
-+
-+	dev_info(opt->dev, "Found %c%c OPT%04x\n", manufacturer[0],
-+			manufacturer[1], device_id);
-+
-+	return 0;
-+}
-+
-+static int opt3001_configure(struct opt3001 *opt)
-+{
-+	int ret;
-+	u16 reg;
-+
-+	ret = i2c_smbus_read_word_swapped(opt->client, OPT3001_CONFIGURATION);
-+	if (ret < 0) {
-+		dev_err(opt->dev, "failed to read register %02x\n",
-+				OPT3001_CONFIGURATION);
-+		return ret;
-+	}
-+
-+	reg = ret;
-+
-+	/* Enable automatic full-scale setting mode */
-+	reg &= ~OPT3001_CONFIGURATION_RN_MASK;
-+	reg |= OPT3001_CONFIGURATION_RN_AUTO;
-+
-+	/* Reflect status of the device's integration time setting */
-+	if (reg & OPT3001_CONFIGURATION_CT)
-+		opt->int_time = 800000;
++	ret = i2c_smbus_write_byte_data(client, STK8312_REG_SR, masked_reg);
++	if (ret < 0)
++		dev_err(&client->dev, "failed to set sampling rate\n");
 +	else
-+		opt->int_time = 100000;
++		data->sample_rate_idx = rate;
 +
-+	/* Ensure device is in shutdown initially */
-+	opt3001_set_mode(opt, &reg, OPT3001_CONFIGURATION_M_SHUTDOWN);
-+
-+	/* Configure for latched window-style comparison operation */
-+	reg |= OPT3001_CONFIGURATION_L;
-+	reg &= ~OPT3001_CONFIGURATION_POL;
-+	reg &= ~OPT3001_CONFIGURATION_ME;
-+	reg &= ~OPT3001_CONFIGURATION_FC_MASK;
-+
-+	ret = i2c_smbus_write_word_swapped(opt->client, OPT3001_CONFIGURATION,
-+			reg);
-+	if (ret < 0) {
-+		dev_err(opt->dev, "failed to write register %02x\n",
-+				OPT3001_CONFIGURATION);
-+		return ret;
-+	}
-+
-+	ret = i2c_smbus_read_word_swapped(opt->client, OPT3001_LOW_LIMIT);
-+	if (ret < 0) {
-+		dev_err(opt->dev, "failed to read register %02x\n",
-+				OPT3001_LOW_LIMIT);
-+		return ret;
-+	}
-+
-+	opt->low_thresh_mantissa = OPT3001_REG_MANTISSA(ret);
-+	opt->low_thresh_exp = OPT3001_REG_EXPONENT(ret);
-+
-+	ret = i2c_smbus_read_word_swapped(opt->client, OPT3001_HIGH_LIMIT);
-+	if (ret < 0) {
-+		dev_err(opt->dev, "failed to read register %02x\n",
-+				OPT3001_HIGH_LIMIT);
-+		return ret;
-+	}
-+
-+	opt->high_thresh_mantissa = OPT3001_REG_MANTISSA(ret);
-+	opt->high_thresh_exp = OPT3001_REG_EXPONENT(ret);
-+
-+	return 0;
++	return stk8312_set_mode(data, mode);
 +}
 +
-+static irqreturn_t opt3001_irq(int irq, void *_iio)
-+{
-+	struct iio_dev *iio = _iio;
-+	struct opt3001 *opt = iio_priv(iio);
-+	int ret;
+ static int stk8312_set_range(struct stk8312_data *data, u8 range)
+ {
+ 	int ret;
+@@ -303,6 +352,10 @@ static int stk8312_read_raw(struct iio_dev *indio_dev,
+ 		*val = stk8312_scale_table[data->range - 1][0];
+ 		*val2 = stk8312_scale_table[data->range - 1][1];
+ 		return IIO_VAL_INT_PLUS_MICRO;
++	case IIO_CHAN_INFO_SAMP_FREQ:
++		*val = stk8312_samp_freq_table[data->sample_rate_idx].val;
++		*val2 = stk8312_samp_freq_table[data->sample_rate_idx].val2;
++		return IIO_VAL_INT_PLUS_MICRO;
+ 	}
+ 
+ 	return -EINVAL;
+@@ -333,6 +386,20 @@ static int stk8312_write_raw(struct iio_dev *indio_dev,
+ 		mutex_unlock(&data->lock);
+ 
+ 		return ret;
++	case IIO_CHAN_INFO_SAMP_FREQ:
++		for (i = 0; i < ARRAY_SIZE(stk8312_samp_freq_table); i++)
++			if (val == stk8312_samp_freq_table[i].val &&
++			    val2 == stk8312_samp_freq_table[i].val2) {
++				index = i;
++				break;
++			}
++		if (index < 0)
++			return -EINVAL;
++		mutex_lock(&data->lock);
++		ret = stk8312_set_sample_rate(data, index);
++		mutex_unlock(&data->lock);
 +
-+	if (!opt->ok_to_ignore_lock)
-+		mutex_lock(&opt->lock);
-+
-+	ret = i2c_smbus_read_word_swapped(opt->client, OPT3001_CONFIGURATION);
-+	if (ret < 0) {
-+		dev_err(opt->dev, "failed to read register %02x\n",
-+				OPT3001_CONFIGURATION);
-+		goto out;
-+	}
-+
-+	if ((ret & OPT3001_CONFIGURATION_M_MASK) ==
-+			OPT3001_CONFIGURATION_M_CONTINUOUS) {
-+		if (ret & OPT3001_CONFIGURATION_FH)
-+			iio_push_event(iio,
-+					IIO_UNMOD_EVENT_CODE(IIO_LIGHT, 0,
-+							IIO_EV_TYPE_THRESH,
-+							IIO_EV_DIR_RISING),
-+					iio_get_time_ns());
-+		if (ret & OPT3001_CONFIGURATION_FL)
-+			iio_push_event(iio,
-+					IIO_UNMOD_EVENT_CODE(IIO_LIGHT, 0,
-+							IIO_EV_TYPE_THRESH,
-+							IIO_EV_DIR_FALLING),
-+					iio_get_time_ns());
-+	} else if (ret & OPT3001_CONFIGURATION_CRF) {
-+		ret = i2c_smbus_read_word_swapped(opt->client, OPT3001_RESULT);
-+		if (ret < 0) {
-+			dev_err(opt->dev, "failed to read register %02x\n",
-+					OPT3001_RESULT);
-+			goto out;
-+		}
-+		opt->result = ret;
-+		opt->result_ready = true;
-+		wake_up(&opt->result_ready_queue);
-+	}
-+
-+out:
-+	if (!opt->ok_to_ignore_lock)
-+		mutex_unlock(&opt->lock);
-+
-+	return IRQ_HANDLED;
-+}
-+
-+static int opt3001_probe(struct i2c_client *client,
-+		const struct i2c_device_id *id)
-+{
-+	struct device *dev = &client->dev;
-+
-+	struct iio_dev *iio;
-+	struct opt3001 *opt;
-+	int irq = client->irq;
-+	int ret = -ENOMEM;
-+
-+	iio = devm_iio_device_alloc(dev, sizeof(*opt));
-+	if (!iio)
 +		return ret;
-+
-+	opt = iio_priv(iio);
-+	opt->client = client;
-+	opt->dev = dev;
-+
-+	mutex_init(&opt->lock);
-+	init_waitqueue_head(&opt->result_ready_queue);
-+	i2c_set_clientdata(client, iio);
-+
-+	ret = opt3001_read_id(opt);
-+	if (ret)
-+		return ret;
-+
-+	ret = opt3001_configure(opt);
-+	if (ret)
-+		return ret;
-+
-+	iio->name = client->name;
-+	iio->channels = opt3001_channels;
-+	iio->num_channels = ARRAY_SIZE(opt3001_channels);
-+	iio->dev.parent = dev;
-+	iio->modes = INDIO_DIRECT_MODE;
-+	iio->info = &opt3001_info;
-+
-+	ret = devm_iio_device_register(dev, iio);
-+	if (ret) {
-+		dev_err(dev, "failed to register IIO device\n");
-+		return ret;
-+	}
-+
-+	ret = request_threaded_irq(irq, NULL, opt3001_irq,
-+			IRQF_TRIGGER_FALLING | IRQF_ONESHOT,
-+			"opt3001", iio);
-+	if (ret) {
-+		dev_err(dev, "failed to request IRQ #%d\n", irq);
-+		return ret;
-+	}
-+
-+	return 0;
-+}
-+
-+static int opt3001_remove(struct i2c_client *client)
-+{
-+	struct iio_dev *iio = i2c_get_clientdata(client);
-+	struct opt3001 *opt = iio_priv(iio);
-+	int ret;
-+	u16 reg;
-+
-+	free_irq(client->irq, iio);
-+
-+	ret = i2c_smbus_read_word_swapped(opt->client, OPT3001_CONFIGURATION);
-+	if (ret < 0) {
-+		dev_err(opt->dev, "failed to read register %02x\n",
-+				OPT3001_CONFIGURATION);
-+		return ret;
-+	}
-+
-+	reg = ret;
-+	opt3001_set_mode(opt, &reg, OPT3001_CONFIGURATION_M_SHUTDOWN);
-+
-+	ret = i2c_smbus_write_word_swapped(opt->client, OPT3001_CONFIGURATION,
-+			reg);
-+	if (ret < 0) {
-+		dev_err(opt->dev, "failed to write register %02x\n",
-+				OPT3001_CONFIGURATION);
-+		return ret;
-+	}
-+
-+	return 0;
-+}
-+
-+static const struct i2c_device_id opt3001_id[] = {
-+	{ "opt3001", 0 },
-+	{ } /* Terminating Entry */
-+};
-+MODULE_DEVICE_TABLE(i2c, opt3001_id);
-+
-+static struct i2c_driver opt3001_driver = {
-+	.probe = opt3001_probe,
-+	.remove = opt3001_remove,
-+	.id_table = opt3001_id,
-+
-+	.driver = {
-+		.name = "opt3001",
-+		.owner = THIS_MODULE,
-+	},
-+};
-+
-+module_i2c_driver(opt3001_driver);
-+
-+MODULE_LICENSE("GPL v2");
-+MODULE_AUTHOR("Andreas Dannenberg <dannenberg@ti.com>");
-+MODULE_DESCRIPTION("Texas Instruments OPT3001 Light Sensor Driver");
+ 	}
+ 
+ 	return -EINVAL;
+@@ -479,6 +546,7 @@ static int stk8312_probe(struct i2c_client *client,
+ 		dev_err(&client->dev, "failed to reset sensor\n");
+ 		return ret;
+ 	}
++	data->sample_rate_idx = STK8312_SR_400HZ_IDX;
+ 	ret = stk8312_set_range(data, 1);
+ 	if (ret < 0)
+ 		return ret;
 -- 
 1.9.1
-
