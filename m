@@ -1,446 +1,80 @@
 Return-Path: <tiberiu.a.breana@intel.com>
-From: Tiberiu Breana <tiberiu.a.breana@intel.com>
-To: linux-iio@vger.kernel.org
-Cc: Jonathan Cameron <jic23@kernel.org>
-Subject: [PATCHi v4] iio: accel: Add trigger support for STK8BA50
-Date: Wed, 24 Jun 2015 16:54:46 +0300
-Message-Id: <1435154086-16300-1-git-send-email-tiberiu.a.breana@intel.com>
+From: "Breana, Tiberiu A" <tiberiu.a.breana@intel.com>
+To: Jonathan Cameron <jic23@kernel.org>, "linux-iio@vger.kernel.org"
+	<linux-iio@vger.kernel.org>
+Subject: RE: [PATCH] iio: light: STK3310: un-invert proximity values
+Date: Wed, 24 Jun 2015 09:41:57 +0000
+Message-ID: <4586F61A4A291F4DA44D32824E7C0F402216B6EA@IRSMSX109.ger.corp.intel.com>
+References: <1434539393-1451-1-git-send-email-tiberiu.a.breana@intel.com>
+ <55868C77.2060407@kernel.org>
+In-Reply-To: <55868C77.2060407@kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
 List-ID: <linux-iio@vger.kernel.org>
 
-Add data-ready interrupts and trigger support for STK8BA50.
-
-Additional changes:
-- read_accel now returns raw acceleration data instead of the
-  sign_extend32 value
-- read_raw will now enable/disable the sensor with each reading
-
-Change-Id: I9c2d7be4256b2dcc5546e4432308ea54f8004333
-Signed-off-by: Tiberiu Breana <tiberiu.a.breana@intel.com>
----
-v4:
-- iio_triggered_buffer_cleanup will now be called in _remove
-  unconditionally
-v3:
-- addressed Jonathan's comments
-- removed trigger_handler's local buffer, as it was unnecessary
-- replaced the switch in trigger_handler with a lookup table
-- cleaner approach for mutex_unlock in trigger_handler
-v2:
-- addressed Peter's comments
-- added chan_info's shift field
-- added an optimization to bulk read all accel channel data
-  with one i2c operation when requested
----
- drivers/iio/accel/stk8ba50.c | 296 +++++++++++++++++++++++++++++++++++++++----
- 1 file changed, 271 insertions(+), 25 deletions(-)
-
-diff --git a/drivers/iio/accel/stk8ba50.c b/drivers/iio/accel/stk8ba50.c
-index 9836880..16cee63 100644
---- a/drivers/iio/accel/stk8ba50.c
-+++ b/drivers/iio/accel/stk8ba50.c
-@@ -11,11 +11,17 @@
-  */
- 
- #include <linux/acpi.h>
-+#include <linux/gpio/consumer.h>
- #include <linux/i2c.h>
-+#include <linux/interrupt.h>
- #include <linux/kernel.h>
- #include <linux/module.h>
-+#include <linux/iio/buffer.h>
- #include <linux/iio/iio.h>
- #include <linux/iio/sysfs.h>
-+#include <linux/iio/trigger.h>
-+#include <linux/iio/triggered_buffer.h>
-+#include <linux/iio/trigger_consumer.h>
- 
- #define STK8BA50_REG_XOUT			0x02
- #define STK8BA50_REG_YOUT			0x04
-@@ -24,6 +30,8 @@
- #define STK8BA50_REG_BWSEL			0x10
- #define STK8BA50_REG_POWMODE			0x11
- #define STK8BA50_REG_SWRST			0x14
-+#define STK8BA50_REG_INTEN2			0x17
-+#define STK8BA50_REG_INTMAP2			0x1A
- 
- #define STK8BA50_MODE_NORMAL			0
- #define STK8BA50_MODE_SUSPEND			1
-@@ -31,8 +39,14 @@
- #define STK8BA50_DATA_SHIFT			6
- #define STK8BA50_RESET_CMD			0xB6
- #define STK8BA50_SR_1792HZ_IDX			7
-+#define STK8BA50_DREADY_INT_MASK		0x10
-+#define STK8BA50_DREADY_INT_MAP			0x81
-+#define STK8BA50_ALL_CHANNEL_MASK		7
-+#define STK8BA50_ALL_CHANNEL_SIZE		6
- 
- #define STK8BA50_DRIVER_NAME			"stk8ba50"
-+#define STK8BA50_GPIO				"stk8ba50_gpio"
-+#define STK8BA50_IRQ_NAME			"stk8ba50_event"
- 
- #define STK8BA50_SCALE_AVAIL			"0.0384 0.0767 0.1534 0.3069"
- 
-@@ -68,14 +82,29 @@ static const struct {
- 	{0x0C, 224}, {0x0D, 448}, {0x0E, 896}, {0x0F, 1792}
- };
- 
-+/* Used to map scan mask bits to their corresponding channel register. */
-+static const int stk8ba50_channel_table[] = {
-+	STK8BA50_REG_XOUT,
-+	STK8BA50_REG_YOUT,
-+	STK8BA50_REG_ZOUT
-+};
-+
- struct stk8ba50_data {
- 	struct i2c_client *client;
- 	struct mutex lock;
- 	int range;
- 	u8 sample_rate_idx;
-+	struct iio_trigger *dready_trig;
-+	bool dready_trigger_on;
-+	/*
-+	 * 3 x 16-bit channels (10-bit data, 6-bit padding) +
-+	 * 1 x 16 padding +
-+	 * 4 x 16 64-bit timestamp
-+	 */
-+	s16 buffer[8];
- };
- 
--#define STK8BA50_ACCEL_CHANNEL(reg, axis) {				\
-+#define STK8BA50_ACCEL_CHANNEL(index, reg, axis) {			\
- 	.type = IIO_ACCEL,						\
- 	.address = reg,							\
- 	.modified = 1,							\
-@@ -83,12 +112,21 @@ struct stk8ba50_data {
- 	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),			\
- 	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),		\
- 				    BIT(IIO_CHAN_INFO_SAMP_FREQ),	\
-+	.scan_index = index,						\
-+	.scan_type = {							\
-+		.sign = 's',						\
-+		.realbits = 10,						\
-+		.storagebits = 16,					\
-+		.shift = STK8BA50_DATA_SHIFT,				\
-+		.endianness = IIO_CPU,					\
-+	},								\
- }
- 
- static const struct iio_chan_spec stk8ba50_channels[] = {
--	STK8BA50_ACCEL_CHANNEL(STK8BA50_REG_XOUT, X),
--	STK8BA50_ACCEL_CHANNEL(STK8BA50_REG_YOUT, Y),
--	STK8BA50_ACCEL_CHANNEL(STK8BA50_REG_ZOUT, Z),
-+	STK8BA50_ACCEL_CHANNEL(0, STK8BA50_REG_XOUT, X),
-+	STK8BA50_ACCEL_CHANNEL(1, STK8BA50_REG_YOUT, Y),
-+	STK8BA50_ACCEL_CHANNEL(2, STK8BA50_REG_ZOUT, Z),
-+	IIO_CHAN_SOFT_TIMESTAMP(3),
- };
- 
- static IIO_CONST_ATTR(in_accel_scale_available, STK8BA50_SCALE_AVAIL);
-@@ -116,7 +154,61 @@ static int stk8ba50_read_accel(struct stk8ba50_data *data, u8 reg)
- 		return ret;
- 	}
- 
--	return sign_extend32(ret >> STK8BA50_DATA_SHIFT, 9);
-+	return ret;
-+}
-+
-+static int stk8ba50_data_rdy_trigger_set_state(struct iio_trigger *trig,
-+					       bool state)
-+{
-+	struct iio_dev *indio_dev = iio_trigger_get_drvdata(trig);
-+	struct stk8ba50_data *data = iio_priv(indio_dev);
-+	int ret;
-+
-+	if (state)
-+		ret = i2c_smbus_write_byte_data(data->client,
-+			STK8BA50_REG_INTEN2, STK8BA50_DREADY_INT_MASK);
-+	else
-+		ret = i2c_smbus_write_byte_data(data->client,
-+			STK8BA50_REG_INTEN2, 0x00);
-+
-+	if (ret < 0)
-+		dev_err(&data->client->dev, "failed to set trigger state\n");
-+	else
-+		data->dready_trigger_on = state;
-+
-+	return ret;
-+}
-+
-+static const struct iio_trigger_ops stk8ba50_trigger_ops = {
-+	.set_trigger_state = stk8ba50_data_rdy_trigger_set_state,
-+	.owner = THIS_MODULE,
-+};
-+
-+static int stk8ba50_set_power(struct stk8ba50_data *data, bool mode)
-+{
-+	int ret;
-+	u8 masked_reg;
-+	struct i2c_client *client = data->client;
-+
-+	ret = i2c_smbus_read_byte_data(client, STK8BA50_REG_POWMODE);
-+	if (ret < 0)
-+		goto exit_err;
-+
-+	if (mode)
-+		masked_reg = ret | STK8BA50_MODE_POWERBIT;
-+	else
-+		masked_reg = ret & (~STK8BA50_MODE_POWERBIT);
-+
-+	ret = i2c_smbus_write_byte_data(client, STK8BA50_REG_POWMODE,
-+					masked_reg);
-+	if (ret < 0)
-+		goto exit_err;
-+
-+	return ret;
-+
-+exit_err:
-+	dev_err(&client->dev, "failed to change sensor mode\n");
-+	return ret;
- }
- 
- static int stk8ba50_read_raw(struct iio_dev *indio_dev,
-@@ -124,11 +216,26 @@ static int stk8ba50_read_raw(struct iio_dev *indio_dev,
- 			     int *val, int *val2, long mask)
- {
- 	struct stk8ba50_data *data = iio_priv(indio_dev);
-+	int ret;
- 
- 	switch (mask) {
- 	case IIO_CHAN_INFO_RAW:
-+		if (iio_buffer_enabled(indio_dev))
-+			return -EBUSY;
- 		mutex_lock(&data->lock);
--		*val = stk8ba50_read_accel(data, chan->address);
-+		ret = stk8ba50_set_power(data, STK8BA50_MODE_NORMAL);
-+		if (ret < 0) {
-+			mutex_unlock(&data->lock);
-+			return -EINVAL;
-+		}
-+		ret = stk8ba50_read_accel(data, chan->address);
-+		if (ret < 0) {
-+			stk8ba50_set_power(data, STK8BA50_MODE_SUSPEND);
-+			mutex_unlock(&data->lock);
-+			return -EINVAL;
-+		}
-+		*val = sign_extend32(ret >> STK8BA50_DATA_SHIFT, 9);
-+		stk8ba50_set_power(data, STK8BA50_MODE_SUSPEND);
- 		mutex_unlock(&data->lock);
- 		return IIO_VAL_INT;
- 	case IIO_CHAN_INFO_SCALE:
-@@ -208,30 +315,100 @@ static const struct iio_info stk8ba50_info = {
- 	.attrs			= &stk8ba50_attribute_group,
- };
- 
--static int stk8ba50_set_power(struct stk8ba50_data *data, bool mode)
-+static irqreturn_t stk8ba50_trigger_handler(int irq, void *p)
-+{
-+	struct iio_poll_func *pf = p;
-+	struct iio_dev *indio_dev = pf->indio_dev;
-+	struct stk8ba50_data *data = iio_priv(indio_dev);
-+	int bit, ret, i = 0;
-+
-+	mutex_lock(&data->lock);
-+	/*
-+	 * Do a bulk read if all channels are requested,
-+	 * from 0x02 (XOUT1) to 0x07 (ZOUT2)
-+	 */
-+	if (*(indio_dev->active_scan_mask) == STK8BA50_ALL_CHANNEL_MASK) {
-+		ret = i2c_smbus_read_i2c_block_data(data->client,
-+						    STK8BA50_REG_XOUT,
-+						    STK8BA50_ALL_CHANNEL_SIZE,
-+						    (u8 *)data->buffer);
-+		if (ret < STK8BA50_ALL_CHANNEL_SIZE) {
-+			dev_err(&data->client->dev, "register read failed\n");
-+			goto err;
-+		}
-+	} else {
-+		for_each_set_bit(bit, indio_dev->active_scan_mask,
-+				 indio_dev->masklength) {
-+			ret = stk8ba50_read_accel(data,
-+						  stk8ba50_channel_table[bit]);
-+			if (ret < 0)
-+				goto err;
-+
-+			data->buffer[i++] = ret;
-+		}
-+	}
-+	iio_push_to_buffers_with_timestamp(indio_dev, data->buffer,
-+					   pf->timestamp);
-+err:
-+	mutex_unlock(&data->lock);
-+	iio_trigger_notify_done(indio_dev->trig);
-+
-+	return IRQ_HANDLED;
-+}
-+
-+static irqreturn_t stk8ba50_data_rdy_trig_poll(int irq, void *private)
- {
-+	struct iio_dev *indio_dev = private;
-+	struct stk8ba50_data *data = iio_priv(indio_dev);
-+
-+	if (data->dready_trigger_on)
-+		iio_trigger_poll(data->dready_trig);
-+
-+	return IRQ_HANDLED;
-+}
-+
-+static int stk8ba50_buffer_preenable(struct iio_dev *indio_dev)
-+{
-+	struct stk8ba50_data *data = iio_priv(indio_dev);
-+
-+	return stk8ba50_set_power(data, STK8BA50_MODE_NORMAL);
-+}
-+
-+static int stk8ba50_buffer_postdisable(struct iio_dev *indio_dev)
-+{
-+	struct stk8ba50_data *data = iio_priv(indio_dev);
-+
-+	return stk8ba50_set_power(data, STK8BA50_MODE_SUSPEND);
-+}
-+
-+static const struct iio_buffer_setup_ops stk8ba50_buffer_setup_ops = {
-+	.preenable   = stk8ba50_buffer_preenable,
-+	.postenable  = iio_triggered_buffer_postenable,
-+	.predisable  = iio_triggered_buffer_predisable,
-+	.postdisable = stk8ba50_buffer_postdisable,
-+};
-+
-+static int stk8ba50_gpio_probe(struct i2c_client *client)
-+{
-+	struct device *dev;
-+	struct gpio_desc *gpio;
- 	int ret;
--	u8 masked_reg;
--	struct i2c_client *client = data->client;
- 
--	ret = i2c_smbus_read_byte_data(client, STK8BA50_REG_POWMODE);
--	if (ret < 0)
--		goto exit_err;
-+	if (!client)
-+		return -EINVAL;
- 
--	if (mode)
--		masked_reg = ret | STK8BA50_MODE_POWERBIT;
--	else
--		masked_reg = ret & (~STK8BA50_MODE_POWERBIT);
-+	dev = &client->dev;
- 
--	ret = i2c_smbus_write_byte_data(client, STK8BA50_REG_POWMODE,
--					masked_reg);
--	if (ret < 0)
--		goto exit_err;
-+	/* data ready gpio interrupt pin */
-+	gpio = devm_gpiod_get_index(dev, STK8BA50_GPIO, 0, GPIOD_IN);
-+	if (IS_ERR(gpio)) {
-+		dev_err(dev, "acpi gpio get index failed\n");
-+		return PTR_ERR(gpio);
-+	}
- 
--	return ret;
-+	ret = gpiod_to_irq(gpio);
-+	dev_dbg(dev, "GPIO resource, no:%d irq:%d\n", desc_to_gpio(gpio), ret);
- 
--exit_err:
--	dev_err(&client->dev, "failed to change sensor mode\n");
- 	return ret;
- }
- 
-@@ -274,14 +451,78 @@ static int stk8ba50_probe(struct i2c_client *client,
- 	/* The default sampling rate is 1792 Hz (maximum) */
- 	data->sample_rate_idx = STK8BA50_SR_1792HZ_IDX;
- 
-+	/* Set up interrupts */
-+	ret = i2c_smbus_write_byte_data(client,
-+			STK8BA50_REG_INTEN2, STK8BA50_DREADY_INT_MASK);
-+	if (ret < 0) {
-+		dev_err(&client->dev, "failed to set up interrupts\n");
-+		goto err_power_off;
-+	}
-+	ret = i2c_smbus_write_byte_data(client,
-+			STK8BA50_REG_INTMAP2, STK8BA50_DREADY_INT_MAP);
-+	if (ret < 0) {
-+		dev_err(&client->dev, "failed to set up interrupts\n");
-+		goto err_power_off;
-+	}
-+
-+	if (client->irq < 0)
-+		client->irq = stk8ba50_gpio_probe(client);
-+
-+	if (client->irq >= 0) {
-+		ret = devm_request_threaded_irq(&client->dev, client->irq,
-+						stk8ba50_data_rdy_trig_poll,
-+						NULL,
-+						IRQF_TRIGGER_RISING |
-+						IRQF_ONESHOT,
-+						STK8BA50_IRQ_NAME,
-+						indio_dev);
-+		if (ret < 0) {
-+			dev_err(&client->dev, "request irq %d failed\n",
-+				client->irq);
-+			goto err_power_off;
-+		}
-+
-+		data->dready_trig = devm_iio_trigger_alloc(&client->dev,
-+							   "%s-dev%d",
-+							   indio_dev->name,
-+							   indio_dev->id);
-+		if (!data->dready_trig) {
-+			ret = -ENOMEM;
-+			goto err_power_off;
-+		}
-+
-+		data->dready_trig->dev.parent = &client->dev;
-+		data->dready_trig->ops = &stk8ba50_trigger_ops;
-+		iio_trigger_set_drvdata(data->dready_trig, indio_dev);
-+		ret = iio_trigger_register(data->dready_trig);
-+		if (ret) {
-+			dev_err(&client->dev, "iio trigger register failed\n");
-+			goto err_power_off;
-+		}
-+	}
-+
-+	ret = iio_triggered_buffer_setup(indio_dev,
-+					 iio_pollfunc_store_time,
-+					 stk8ba50_trigger_handler,
-+					 &stk8ba50_buffer_setup_ops);
-+	if (ret < 0) {
-+		dev_err(&client->dev, "iio triggered buffer setup failed\n");
-+		goto err_trigger_unregister;
-+	}
-+
- 	ret = iio_device_register(indio_dev);
- 	if (ret < 0) {
- 		dev_err(&client->dev, "device_register failed\n");
--		goto err_power_off;
-+		goto err_buffer_cleanup;
- 	}
- 
- 	return ret;
- 
-+err_buffer_cleanup:
-+	iio_triggered_buffer_cleanup(indio_dev);
-+err_trigger_unregister:
-+	if (data->dready_trig)
-+		iio_trigger_unregister(data->dready_trig);
- err_power_off:
- 	stk8ba50_set_power(data, STK8BA50_MODE_SUSPEND);
- 	return ret;
-@@ -290,10 +531,15 @@ err_power_off:
- static int stk8ba50_remove(struct i2c_client *client)
- {
- 	struct iio_dev *indio_dev = i2c_get_clientdata(client);
-+	struct stk8ba50_data *data = iio_priv(indio_dev);
- 
- 	iio_device_unregister(indio_dev);
-+	iio_triggered_buffer_cleanup(indio_dev);
-+
-+	if (data->dready_trig)
-+		iio_trigger_unregister(data->dready_trig);
- 
--	return stk8ba50_set_power(iio_priv(indio_dev), STK8BA50_MODE_SUSPEND);
-+	return stk8ba50_set_power(data, STK8BA50_MODE_SUSPEND);
- }
- 
- #ifdef CONFIG_PM_SLEEP
--- 
-1.9.1
+> -----Original Message-----=0A=
+> From: Jonathan Cameron [mailto:jic23@kernel.org]=0A=
+> Sent: Sunday, June 21, 2015 1:06 PM=0A=
+> To: Breana, Tiberiu A; linux-iio@vger.kernel.org=0A=
+> Subject: Re: [PATCH] iio: light: STK3310: un-invert proximity values=0A=
+> =0A=
+> On 17/06/15 12:09, Tiberiu Breana wrote:=0A=
+> > In accordance with the recent ABI changes, STK3310's proximity=0A=
+> > readings should be un-inversed in order to return low values for=0A=
+> > far-away objects and high values for close ones.=0A=
+> >=0A=
+=0A=
+<snip>=0A=
+=0A=
+> > -/*=0A=
+> > - * Maximum PS values with regard to scale. Used to export the 'inverse=
+'=0A=
+> > - * PS value (high values for far objects, low values for near objects)=
+.=0A=
+> > - */=0A=
+> > +=0A=
+> > +/* Estimate maximum proximity values with regard to measurement=0A=
+> > +scale. */=0A=
+> >  static const int stk3310_ps_max[4] =3D {=0A=
+> > -	STK3310_PS_MAX_VAL / 64,=0A=
+> > -	STK3310_PS_MAX_VAL / 16,=0A=
+> > -	STK3310_PS_MAX_VAL /  4,=0A=
+> > -	STK3310_PS_MAX_VAL,=0A=
+> > +	STK3310_PS_MAX_VAL / 640,=0A=
+> > +	STK3310_PS_MAX_VAL / 160,=0A=
+> > +	STK3310_PS_MAX_VAL /  40,=0A=
+> > +	STK3310_PS_MAX_VAL /  10=0A=
+> >  };=0A=
+> What's this change about?  All uses of this array as present in this patc=
+h have=0A=
+> been removed.  It is used elsewhere for parameter sanity checking, but I=
+=0A=
+> can't follow why it now needs to be divided by 10.=0A=
+=0A=
+Indeed, these values are still used in _write_event for setting proximity i=
+nterrupt=0A=
+threshold values. Truth is, they should have been divided by 10 from the st=
+art,=0A=
+but since all values were relative to the pre-defined maximum values, it di=
+dn't=0A=
+really matter. I used the higher max values because the readings would=0A=
+sometimes go over the expected range (when I press down on the sensor with=
+=0A=
+my thumb), so the proximity readings became negative. But that shouldn't ha=
+ppen=0A=
+in the case of a real device, as the sensor is covered by at least a screen=
+ layer.=0A=
+=0A=
+For the default scale of 0.1 real proximity readings max out at around 6500=
+,=0A=
+roughly a tenth of the maximum theoretical value, as expected. Now that we'=
+re=0A=
+using un-inverted measurements, we can't use the same reference values as=
+=0A=
+before - e.g. if the real maximum value is 6500, we can't allow setting a t=
+hreshold=0A=
+of 30000 - it will never be reached.=0A=
+If you think this change warrants a separate patch, I'll split it.=0A=
+=0A=
+Regards,=0A=
+Tiberiu=
