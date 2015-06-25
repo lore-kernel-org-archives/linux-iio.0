@@ -1,72 +1,625 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:39352 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752620AbbFXSUm (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 24 Jun 2015 14:20:42 -0400
-Message-ID: <558AF4F7.3090409@kernel.org>
-Date: Wed, 24 Jun 2015 19:20:39 +0100
-From: Jonathan Cameron <jic23@kernel.org>
+Return-Path: <sergei@s15v.net>
+Date: Thu, 25 Jun 2015 20:40:04 +0300
+From: Sergei Zviagintsev <sergei@s15v.net>
+To: Adriana Reus <adriana.reus@intel.com>
+Cc: jic23@kernel.org, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] iio: light: Add support for TXC PA12 als and proximity
+ sensor
+Message-ID: <20150625174004.GL3276@localhost.localdomain>
+References: <1435314562-12079-1-git-send-email-adriana.reus@intel.com>
 MIME-Version: 1.0
-To: Jeremy Trimble <jeremy.trimble@gmail.com>,
-	linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>,
-	Daniel Baluta <daniel.baluta@intel.com>
-Subject: Re: iio: Multiple iio_buffer per device
-References: <CAHYiM2+6wVqLsJTkBqXkumQRp272TMd7SYq4APnHDRDVu2CMGA@mail.gmail.com>
-In-Reply-To: <CAHYiM2+6wVqLsJTkBqXkumQRp272TMd7SYq4APnHDRDVu2CMGA@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <1435314562-12079-1-git-send-email-adriana.reus@intel.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-On 23/06/15 22:17, Jeremy Trimble wrote:
-> Hello all.
+Hi,
+
+I just was walking around and decided to look inside this driver :)
+I left some comments below.
+
+On Fri, Jun 26, 2015 at 01:29:22PM +0300, Adriana Reus wrote:
+   ^^^
+Your message came from future.
+
+> Add support for TXC PA12203001 als and proximity sensor.
+> Support for raw illuminance and proximity readings.
 > 
-> I've got some custom hardware that provides data in response to an
-> explicit request (or stream of such requests).  I'd like to use
-> iio_buffer to catch the data that is returned .  However, I'd also
-> like multiple users (i.e. multiple openers of the device) to be able
-> to be able to send requests to the device and each receive the results
-> into their own separate buffer.
+> Signed-off-by: Adriana Reus <adriana.reus@intel.com>
+> ---
+>  drivers/iio/light/Kconfig      |  11 +
+>  drivers/iio/light/Makefile     |   1 +
+>  drivers/iio/light/pa12203001.c | 501 +++++++++++++++++++++++++++++++++++++++++
+>  3 files changed, 513 insertions(+)
+>  create mode 100644 drivers/iio/light/pa12203001.c
 > 
-> I've implemented a system like this in the past through ad-hoc use of
-> mmap(), wrote my own userspace buffer interaction library (a la
-> libiio), and allowing requests to be submitted through ioctl().
-> However, I'd like to use iio_buffer here if possible, as it is more
-> widely-supported than my own one-off solution.
+> diff --git a/drivers/iio/light/Kconfig b/drivers/iio/light/Kconfig
+> index e6198b7..30fd835 100644
+> --- a/drivers/iio/light/Kconfig
+> +++ b/drivers/iio/light/Kconfig
+> @@ -198,6 +198,17 @@ config LTR501
+>  	 This driver can also be built as a module.  If so, the module
+>           will be called ltr501.
+>  
+> +config PA12203001
+> +        tristate "TXC PA12203001 light and proximity sensor"
+> +        depends on I2C
+> +        select REGMAP_I2C
+> +        help
+> +         If you say yes here you get support for the TXC PA12203001
+> +         ambient light and proximity sensor.
+> +
+> +         This driver can also be built as a module.  If so, the module
+> +         will be called pa12203001.
+> +
+>  config STK3310
+>  	tristate "STK3310 ALS and proximity sensor"
+>  	depends on I2C
+> diff --git a/drivers/iio/light/Makefile b/drivers/iio/light/Makefile
+> index e2d50fd..257fabd 100644
+> --- a/drivers/iio/light/Makefile
+> +++ b/drivers/iio/light/Makefile
+> @@ -19,6 +19,7 @@ obj-$(CONFIG_ISL29125)		+= isl29125.o
+>  obj-$(CONFIG_JSA1212)		+= jsa1212.o
+>  obj-$(CONFIG_SENSORS_LM3533)	+= lm3533-als.o
+>  obj-$(CONFIG_LTR501)		+= ltr501.o
+> +obj-$(CONFIG_PA12203001)	+= pa12203001.o
+>  obj-$(CONFIG_SENSORS_TSL2563)	+= tsl2563.o
+>  obj-$(CONFIG_STK3310)          += stk3310.o
+>  obj-$(CONFIG_TCS3414)		+= tcs3414.o
+> diff --git a/drivers/iio/light/pa12203001.c b/drivers/iio/light/pa12203001.c
+> new file mode 100644
+> index 0000000..03bee4c
+> --- /dev/null
+> +++ b/drivers/iio/light/pa12203001.c
+> @@ -0,0 +1,501 @@
+> +/*
+> + * Copyright (c) 2015 Intel Corporation
+> + *
+> + * Driver for TXC PA12203001 Proximity and Ambient Light Sensor.
+> + *
+> + * This program is free software; you can redistribute it and/or modify it
+> + * under the terms of the GNU General Public License version 2 as published by
+> + * the Free Software Foundation.
+> + * To do: Interrupt support.
+> + */
+> +
+> +#include <linux/kernel.h>
+> +#include <linux/module.h>
+> +#include <linux/acpi.h>
+> +#include <linux/delay.h>
+> +#include <linux/i2c.h>
+> +#include <linux/iio/iio.h>
+> +#include <linux/iio/sysfs.h>
+> +#include <linux/mutex.h>
+> +#include <linux/pm.h>
+> +#include <linux/pm_runtime.h>
+> +#include <linux/regmap.h>
+> +
+> +#define PA12203001_DRIVER_NAME	"pa12203001"
+> +
+> +#define PA12203001_REG_CFG0		0x00
+> +#define PA12203001_REG_CFG1		0x01
+> +#define PA12203001_REG_CFG2		0x02
+> +#define PA12203001_REG_CFG3		0x03
+> +
+> +#define PA12203001_REG_ADL		0x0b
+> +#define PA12203001_REG_PDH		0x0e
+> +
+> +#define PA12203001_REG_POFS		0x10
+> +#define PA12203001_REG_PSET		0x11
+> +
+> +#define PA12203001_ALS_EN_MASK		BIT(0)
+> +#define PA12203001_PX_EN_MASK		BIT(1)
+> +#define PA12203001_PX_NORMAL_MODE_MASK		(BIT(7) | BIT(6))
+> +#define PA12203001_AFSR_MASK		(BIT(5) | BIT(4))
+> +
+> +#define PA12203001_PSCAN			0x03
+> +
+> +/* als range 31000, ps, als disabled */
+> +#define PA12203001_REG_CFG0_DEFAULT		0x30
+> +
+> +/* led current: 100 mA */
+> +#define PA12203001_REG_CFG1_DEFAULT		0x10
+> +
+> +/* ps mode: normal, interrupts not active */
+> +#define PA12203001_REG_CFG2_DEFAULT		0xcc
+> +
+> +#define PA12203001_REG_CFG3_DEFAULT		0x00
+> +
+> +#define PA12203001_SLEEP_DELAY_MS		3000
+> +
+> +/* available scales: corresponding to [500, 4000, 7000, 31000]  lux */
+> +static const int pa12203001_scales[] = { 7629, 61036, 106813, 473029};
+> +
+> +struct pa12203001_data {
+> +	struct i2c_client *client;
+> +
+> +	/* protect device states */
+> +	struct mutex lock;
+> +
+> +	bool als_enabled;
+> +	bool px_enabled;
+> +	bool als_needs_enable;
+> +	bool px_needs_enable;
+> +
+> +	struct regmap *map;
+> +};
+> +
+> +static IIO_CONST_ATTR(in_illuminance_scale_available,
+> +		      "0.007629 0.061036 0.106813 0.473029");
+> +
+> +static struct attribute *pa12203001_attrs[] = {
+> +	&iio_const_attr_in_illuminance_scale_available.dev_attr.attr,
+> +	NULL
+> +};
+> +
+> +static const struct attribute_group pa12203001_attr_group = {
+> +	.attrs = pa12203001_attrs,
+> +};
+> +
+> +static const struct iio_chan_spec pa12203001_channels[] = {
+> +	{
+> +		.type = IIO_LIGHT,
+> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
+> +				      BIT(IIO_CHAN_INFO_SCALE),
+> +	},
+> +	{
+> +		.type = IIO_PROXIMITY,
+> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
+> +	}
+> +};
+> +
+> +static const struct regmap_range pa12203001_volatile_regs_ranges[] = {
+> +	regmap_reg_range(PA12203001_REG_ADL, PA12203001_REG_ADL + 1),
+> +	regmap_reg_range(PA12203001_REG_PDH, PA12203001_REG_PDH),
+> +};
+> +
+> +static const struct regmap_access_table pa12203001_volatile_regs = {
+> +	.yes_ranges = pa12203001_volatile_regs_ranges,
+> +	.n_yes_ranges = ARRAY_SIZE(pa12203001_volatile_regs_ranges),
+> +};
+> +
+> +static const struct regmap_config pa12203001_regmap_config = {
+> +	.reg_bits = 8,
+> +	.val_bits = 8,
+> +	.max_register = PA12203001_REG_PSET,
+> +	.cache_type = REGCACHE_RBTREE,
+> +	.volatile_table = &pa12203001_volatile_regs,
+> +};
+> +
+> +static inline int pa12203001_als_enable(struct pa12203001_data *data, u8 enable)
+> +{
+> +	int ret;
+> +
+> +	ret = regmap_update_bits(data->map, PA12203001_REG_CFG0,
+> +				 PA12203001_ALS_EN_MASK, enable);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	data->als_enabled = !!enable;
+> +	return 0;
+> +}
+> +
+> +static inline int pa12203001_px_enable(struct pa12203001_data *data, u8 enable)
+> +{
+> +	int ret;
+> +
+> +	ret = regmap_update_bits(data->map, PA12203001_REG_CFG0,
+> +				 PA12203001_PX_EN_MASK, enable);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	data->px_enabled = !!enable;
+> +	return 0;
+> +}
+> +
+> +static int pa12203001_set_power_state(struct pa12203001_data *data, bool on,
+> +				      u8 mask)
+> +{
+> +#ifdef CONFIG_PM
+> +	int ret;
+> +
+> +	mutex_lock(&data->lock);
+
+If tests below are false, then we are holding the lock with no reason.
+
+> +	if (on && (mask & PA12203001_ALS_EN_MASK)) {
+> +		if (data->px_enabled) {
+> +			ret = pa12203001_als_enable(data,
+> +						    PA12203001_ALS_EN_MASK);
+> +			if (ret < 0) {
+> +				mutex_unlock(&data->lock);
+> +				return ret;
+> +			}
+
+Use of `goto' would save two lines per exit point :)
+
+> +		} else {
+> +			data->als_needs_enable = true;
+> +		}
+> +	}
+> +
+> +	if (on && (mask & PA12203001_PX_EN_MASK)) {
+> +		if (data->als_enabled) {
+> +			ret = pa12203001_px_enable(data, PA12203001_PX_EN_MASK);
+> +			if (ret < 0) {
+> +				mutex_unlock(&data->lock);
+> +				return ret;
+> +			}
+> +		} else {
+> +			data->px_needs_enable = true;
+> +		}
+> +	}
+> +	mutex_unlock(&data->lock);
+> +
+> +	if (on) {
+> +		/* Get reference and resume */
+> +		ret = pm_runtime_get_sync(&data->client->dev);
+> +		if (ret < 0)
+> +			pm_runtime_put_noidle(&data->client->dev);
+> +
+> +	} else {
+> +		/*
+> +		 * Turning off - restart timer, drop reference
+> +		 * and setup autosuspend
+> +		*/
+> +		pm_runtime_mark_last_busy(&data->client->dev);
+> +		ret = pm_runtime_put_autosuspend(&data->client->dev);
+> +	}
+> +	return ret;
+> +
+> +#endif
+> +	return 0;
+> +}
+> +
+> +static int pa12203001_read_raw(struct iio_dev *indio_dev,
+> +			       struct iio_chan_spec const *chan, int *val,
+> +			       int *val2, long mask)
+> +{
+> +	struct pa12203001_data *data = iio_priv(indio_dev);
+> +	int ret;
+> +	u8 dev_mask;
+> +	unsigned int reg_byte;
+> +	__le16 reg_word;
+> +
+> +	switch (mask) {
+> +	case IIO_CHAN_INFO_RAW:
+> +		switch (chan->type) {
+> +		case IIO_LIGHT:
+> +			dev_mask = PA12203001_ALS_EN_MASK;
+> +			ret = pa12203001_set_power_state(data, true, dev_mask);
+> +			if (ret < 0)
+> +				return ret;
+> +			/*
+> +			 * ALS ADC value is stored in registers
+> +			 * PA12203001_REG_ADL and in PA12203001_REG_ADL + 1.
+> +			 */
+> +			ret = regmap_bulk_read(data->map, PA12203001_REG_ADL,
+> +					       &reg_word, 2);
+> +			if (ret < 0)
+> +				return ret;
+> +			*val = le16_to_cpu(reg_word);
+> +			ret = pa12203001_set_power_state(data, false, dev_mask);
+> +			if (ret < 0)
+> +				return ret;
+> +			break;
+> +		case IIO_PROXIMITY:
+> +			dev_mask = PA12203001_PX_EN_MASK;
+> +			ret = pa12203001_set_power_state(data, true, dev_mask);
+> +			if (ret < 0)
+> +				return ret;
+> +			ret = regmap_read(data->map, PA12203001_REG_PDH,
+> +					  &reg_byte);
+> +			if (ret < 0)
+> +				return ret;
+> +			*val = reg_byte;
+> +			ret = pa12203001_set_power_state(data, false, dev_mask);
+> +			if (ret < 0)
+> +				return ret;
+> +			break;
+> +		default:
+> +			ret = -EINVAL;
+> +			break;
+> +		}
+> +
+> +		return IIO_VAL_INT;
+> +	case IIO_CHAN_INFO_SCALE:
+> +		ret = regmap_read(data->map, PA12203001_REG_CFG0, &reg_byte);
+> +		if (ret < 0)
+> +			return ret;
+> +		*val = 0;
+> +		reg_byte = (reg_byte & PA12203001_AFSR_MASK);
+> +		*val2 = pa12203001_scales[reg_byte >> 4];
+> +		return IIO_VAL_INT_PLUS_MICRO;
+> +	default:
+> +		break;
+> +	}
+> +
+> +	return -EINVAL;
+> +}
+> +
+> +static int pa12203001_write_raw(struct iio_dev *indio_dev,
+> +				struct iio_chan_spec const *chan, int val,
+> +				int val2, long mask)
+> +{
+> +	struct pa12203001_data *data = iio_priv(indio_dev);
+> +	int i, ret;
+> +	unsigned int reg_byte;
+> +
+> +	switch (mask) {
+> +	case IIO_CHAN_INFO_SCALE:
+> +		ret = regmap_read(data->map, PA12203001_REG_CFG0, &reg_byte);
+> +		if (val != 0 || ret < 0)
+> +			return -EINVAL;
+> +		for (i = 0; i < ARRAY_SIZE(pa12203001_scales); i++) {
+> +			if (val2 == pa12203001_scales[i])
+> +				return regmap_update_bits(data->map,
+> +							  PA12203001_REG_CFG0,
+> +							  PA12203001_AFSR_MASK,
+> +							  (i << 4));
+> +		}
+> +	break;
+
+default case?
+
+> +	}
+> +
+> +	return -EINVAL;
+> +}
+> +
+> +static const struct iio_info pa12203001_info = {
+> +	.driver_module	= THIS_MODULE,
+> +	.read_raw = pa12203001_read_raw,
+> +	.write_raw = pa12203001_write_raw,
+> +	.attrs = &pa12203001_attr_group,
+> +};
+> +
+> +static int pa12203001_init(struct iio_dev *indio_dev)
+> +{
+> +	struct pa12203001_data *data = iio_priv(indio_dev);
+> +	int ret;
+> +
+> +	ret = regmap_write(data->map, PA12203001_REG_CFG0,
+> +			   PA12203001_REG_CFG0_DEFAULT);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	ret = regmap_write(data->map, PA12203001_REG_CFG1,
+> +			   PA12203001_REG_CFG1_DEFAULT);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	ret = regmap_write(data->map, PA12203001_REG_CFG2,
+> +			   PA12203001_REG_CFG2_DEFAULT);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	ret = regmap_write(data->map, PA12203001_REG_CFG3,
+> +			   PA12203001_REG_CFG3_DEFAULT);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	return regmap_write(data->map, PA12203001_REG_PSET,
+> +			    PA12203001_PSCAN);
+> +}
+
+Is the following acceptable?
+
+	struct {
+		u8 reg;
+		u8 val;
+	} regvals[] = { { PA12203001_REG_CFG, PA12203001_REG_CFG0_DEFAULT }, ... }; 
+
+	int i, ret;
+
+	for (i = 0; i < ARRAY_SIZE(regvals); i++) {
+		ret = regmap_write(data->map, regvals[i].reg, regvals[i].val);
+		if (ret < 0)
+			return ret;
+	}
+
+	return 0;
+
+> +
+> +static int pa12203001_power_on(struct iio_dev *indio_dev)
+> +{
+> +	struct pa12203001_data *data = iio_priv(indio_dev);
+> +	int ret;
+> +	u8 enable = 0xff;
+> +
+> +	mutex_lock(&data->lock);
+> +	ret = pa12203001_als_enable(data, enable);
+> +	if (ret < 0) {
+> +		mutex_unlock(&data->lock);
+> +		return ret;
+> +	}
+
+goto is pretty conventional here (ch. 7 CodingStyle)
+
+> +
+> +	ret = pa12203001_px_enable(data, enable);
+> +	if (ret < 0) {
+> +		mutex_unlock(&data->lock);
+> +		return ret;
+> +	}
+> +	mutex_unlock(&data->lock);
+> +	return 0;
+> +}
+> +
+> +static int pa12203001_power_off(struct iio_dev *indio_dev)
+> +{
+> +	struct pa12203001_data *data = iio_priv(indio_dev);
+> +	int ret;
+> +	u8 disable = 0x00;
+> +
+> +	mutex_lock(&data->lock);
+> +	ret = pa12203001_als_enable(data, disable);
+> +	if (ret < 0) {
+> +		mutex_unlock(&data->lock);
+> +		return ret;
+> +	}
+> +
+> +	ret = pa12203001_px_enable(data, disable);
+> +	if (ret < 0) {
+> +		mutex_unlock(&data->lock);
+> +		return ret;
+> +	}
+> +	mutex_unlock(&data->lock);
+> +	return 0;
+> +}
+
+If I see it correctly, the only difference between power_on and
+power_off functions is in one byte which is submitted to
+{als,px}_enable(). Isn't it better to merge them in the third function
+to reduce code duplication?
+
+> +
+> +static int pa12203001_probe(struct i2c_client *client,
+> +			    const struct i2c_device_id *id)
+> +{
+> +	struct pa12203001_data *data;
+> +	struct iio_dev *indio_dev;
+> +	int ret;
+> +
+> +	indio_dev = devm_iio_device_alloc(&client->dev,
+> +					  sizeof(struct pa12203001_data));
+> +	if (!indio_dev)
+> +		return -ENOMEM;
+> +
+> +	data = iio_priv(indio_dev);
+> +	i2c_set_clientdata(client, indio_dev);
+> +	data->client = client;
+> +
+> +	data->map = devm_regmap_init_i2c(client, &pa12203001_regmap_config);
+> +	if (IS_ERR(data->map))
+> +		return PTR_ERR(data->map);
+> +
+> +	mutex_init(&data->lock);
+> +
+> +	indio_dev->dev.parent = &client->dev;
+> +	indio_dev->info = &pa12203001_info;
+> +	indio_dev->name = PA12203001_DRIVER_NAME;
+> +	indio_dev->channels = pa12203001_channels;
+> +	indio_dev->num_channels = ARRAY_SIZE(pa12203001_channels);
+> +	indio_dev->modes = INDIO_DIRECT_MODE;
+> +
+> +	ret = pa12203001_init(indio_dev);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	ret = pa12203001_power_on(indio_dev);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	ret = pm_runtime_set_active(&client->dev);
+> +	if (ret < 0) {
+> +		pa12203001_power_off(indio_dev);
+> +		return ret;
+> +	}
+> +
+> +	pm_runtime_enable(&client->dev);
+> +	pm_runtime_set_autosuspend_delay(&client->dev,
+> +					 PA12203001_SLEEP_DELAY_MS);
+> +	pm_runtime_use_autosuspend(&client->dev);
+> +
+> +	return devm_iio_device_register(&client->dev, indio_dev);
+> +}
+> +
+> +static int pa12203001_remove(struct i2c_client *client)
+> +{
+> +	struct iio_dev *indio_dev = i2c_get_clientdata(client);
+
+We use additional var in this function to store device pointer, but do
+not use it in suspend(), resume() etc where more complicated
+constructions are used. Just for consistency :)
+
+> +
+> +	pm_runtime_disable(&client->dev);
+> +	pm_runtime_set_suspended(&client->dev);
+> +
+> +	return pa12203001_power_off(indio_dev);
+> +}
+> +
+> +#ifdef CONFIG_PM_SLEEP
+> +static int pa12203001_suspend(struct device *dev)
+> +{
+> +	return pa12203001_power_off(i2c_get_clientdata(to_i2c_client(dev)));
+> +}
+> +
+> +static int pa12203001_resume(struct device *dev)
+> +{
+> +	return pa12203001_power_on(i2c_get_clientdata(to_i2c_client(dev)));
+> +}
+> +#endif
+> +
+> +#ifdef CONFIG_PM
+> +static int pa12203001_runtime_suspend(struct device *dev)
+> +{
+> +	return pa12203001_power_off(i2c_get_clientdata(to_i2c_client(dev)));
+> +}
+> +
+> +static int pa12203001_runtime_resume(struct device *dev)
+> +{
+> +	struct pa12203001_data *data;
+> +
+> +	data = iio_priv(i2c_get_clientdata(to_i2c_client(dev)));
+> +
+> +	mutex_lock(&data->lock);
+> +	if (data->als_needs_enable) {
+> +		pa12203001_als_enable(data, PA12203001_ALS_EN_MASK);
+> +		data->als_needs_enable = false;
+> +	}
+> +	if (data->px_needs_enable) {
+> +		pa12203001_px_enable(data, PA12203001_PX_EN_MASK);
+> +		data->px_needs_enable = false;
+> +	}
+> +	mutex_unlock(&data->lock);
+> +	return 0;
+> +}
+> +#endif
+> +
+> +static const struct dev_pm_ops pa12203001_pm_ops = {
+> +	SET_SYSTEM_SLEEP_PM_OPS(pa12203001_suspend, pa12203001_resume)
+> +	SET_RUNTIME_PM_OPS(pa12203001_runtime_suspend,
+> +			   pa12203001_runtime_resume, NULL)
+> +};
+> +
+> +static const struct acpi_device_id pa12203001_acpi_match[] = {
+> +	{ "TXCPA122", 0},
+> +	{}
+> +};
+> +
+> +MODULE_DEVICE_TABLE(acpi, pa12203001_acpi_match);
+> +
+> +static const struct i2c_device_id pa12203001_id[] = {
+> +		{"txcpa122", 0},
+> +		{}
+> +};
+> +
+> +MODULE_DEVICE_TABLE(i2c, pa12203001_id);
+> +
+> +static struct i2c_driver pa12203001_driver = {
+> +	.driver = {
+> +		.name = PA12203001_DRIVER_NAME,
+> +		.pm = &pa12203001_pm_ops,
+> +		.acpi_match_table = ACPI_PTR(pa12203001_acpi_match),
+> +	},
+> +	.probe = pa12203001_probe,
+> +	.remove = pa12203001_remove,
+> +	.id_table = pa12203001_id,
+> +
+> +};
+> +module_i2c_driver(pa12203001_driver);
+> +
+> +MODULE_AUTHOR("Adriana Reus <adriana.reus@intel.com>");
+> +MODULE_DESCRIPTION("Driver for TXC PA12203001 Proximity and Light Sensor");
+> +MODULE_LICENSE("GPL v2");
+> -- 
+> 1.9.1
 > 
-> Are there any instances of multiple buffers being associated with an
-> IIO device (or such buffers being created on-the-fly)?  Has this kind
-> of idea ever been discussed before?
-There was a near case to this with one of the soc ADCs where we had
-a huge degree of flexibility.  I'm stretching back a way, but I think
-it might have been the mx28 driver... I fear it never got cleaned up/
-finished off.   You had the option to have up to 8ish
-different channel sequencers running in parallel.  The conclusion in
-discussions on that was that the only option would be to register
-multiple IIO devices from the driver.  Too much ABI is buffer or
-trigger linked to have it in a unified iio device.  Naturally the
-multiple iio_devices could all be handled by a single driver and
-parent device. 
-As for dynamic creation.. Traditionally (i.e. how we used to do it)
-in IIO we did this via magic attributes in sysfs.  This isn't a
-particularly clean or sensible way of doing things.  There has
-been recent work on adding a configfs interface for 'device' creation
-in IIO (for stuff like software triggers and also more complex elements
-such as bridge drivers to hwmon / input). We could add a 'drivers'
-directory to that (though things have gone quiet on those patches
-after we concluded some changes to configfs would make them better
-and those involved got busy) and allow for driver specific
-instantiation as you sound like you need.
-
-As far as I know yours is the first driver that supports effectively
-unlimited separate 'buffers' hence you get to tread new ground!
-
-We have (in theory) everything in place that would needed to support
-a single buffer being demultiplexed into a number of different buffers
-(though we don't have any means of creating them on the fly).  This
-doesn't really fit with your description though.
-
-Jonathan
-
-> 
-> Thanks.
-> -Jeremy Trimble
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-kernel" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> Please read the FAQ at  http://www.tux.org/lkml/
