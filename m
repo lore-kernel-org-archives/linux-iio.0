@@ -1,136 +1,565 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mout.gmx.net ([212.227.17.22]:57661 "EHLO mout.gmx.net"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1752027AbbFZLB5 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Fri, 26 Jun 2015 07:01:57 -0400
-Message-ID: <558D3116.5060906@gmx.de>
-Date: Fri, 26 Jun 2015 13:01:42 +0200
-From: Hartmut Knaack <knaack.h@gmx.de>
-MIME-Version: 1.0
-To: Vlad Dogaru <vlad.dogaru@intel.com>, jic23@kernel.org,
-	linux-iio@vger.kernel.org
-Subject: Re: [PATCH v3 1/3] iio: sx9500: optimize power usage
-References: <1428858561-27994-1-git-send-email-vlad.dogaru@intel.com> <1428858561-27994-2-git-send-email-vlad.dogaru@intel.com>
-In-Reply-To: <1428858561-27994-2-git-send-email-vlad.dogaru@intel.com>
-Content-Type: text/plain; charset=US-ASCII
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <adriana.reus@intel.com>
+From: Adriana Reus <adriana.reus@intel.com>
+To: jic23@kernel.org
+Cc: linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Adriana Reus <adriana.reus@intel.com>
+Subject: [PATCH] iio: light: Add support for TXC PA12 als and proximity sensor
+Date: Fri, 26 Jun 2015 13:29:22 +0300
+Message-Id: <1435314562-12079-1-git-send-email-adriana.reus@intel.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-Vlad Dogaru schrieb am 12.04.2015 um 19:09:
-> In the interest of lowering power usage, we only activate the proximity
-> channels and interrupts that we are currently using.
-> 
-> For raw reads, we activate the corresponding channel and the data ready
-> interrupt and wait for the interrupt to trigger.  If no interrupt is
-> available, we wait for the documented scan period, as specified in the
-> datasheet.
-> 
+Add support for TXC PA12203001 als and proximity sensor.
+Support for raw illuminance and proximity readings.
 
-Hi,
-I have a question inline, and also spotted a bug.
+Signed-off-by: Adriana Reus <adriana.reus@intel.com>
+---
+ drivers/iio/light/Kconfig      |  11 +
+ drivers/iio/light/Makefile     |   1 +
+ drivers/iio/light/pa12203001.c | 501 +++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 513 insertions(+)
+ create mode 100644 drivers/iio/light/pa12203001.c
 
-<...>
-
-> +static int sx9500_read_proximity(struct sx9500_data *data,
-> +				 const struct iio_chan_spec *chan,
-> +				 int *val)
-> +{
-> +	int ret;
-> +
-> +	mutex_lock(&data->mutex);
-> +
-> +	ret = sx9500_inc_chan_users(data, chan->channel);
-> +	if (ret < 0)
-> +		goto out;
-> +
-> +	ret = sx9500_inc_data_rdy_users(data);
-> +	if (ret < 0)
-> +		goto out_dec_chan;
-> +
-> +	mutex_unlock(&data->mutex);
-> +
-> +	if (data->client->irq > 0)
-> +		ret = wait_for_completion_interruptible(&data->completion);
-> +	else
-> +		ret = sx9500_wait_for_sample(data);
-> +
-> +	if (ret < 0)
-> +		return ret;
-
-If an error is encountered from here on, the device won't be able to enter
-a low power mode again, since you don't decrease the chan_users[chan] and
-data_rdy_users elements of sx9500_data. Is this intended?
-
-> +
-> +	mutex_lock(&data->mutex);
-> +
-> +	ret = sx9500_read_prox_data(data, chan, val);
-> +	if (ret < 0)
-> +		goto out;
-> +
-> +	ret = sx9500_dec_chan_users(data, chan->channel);
-> +	if (ret < 0)
-> +		goto out;
-> +
-> +	ret = sx9500_dec_data_rdy_users(data);
-> +	if (ret < 0)
-> +		goto out;
-> +
-> +	ret = IIO_VAL_INT;
-> +
-> +	goto out;
-> +
-> +out_dec_chan:
-> +	sx9500_dec_chan_users(data, chan->channel);
-> +out:
-> +	mutex_unlock(&data->mutex);
-> +	reinit_completion(&data->completion);
-> +
-> +	return ret;
->  }
-
-<...>
-
-  
-> +/* Activate all channels and perform an initial compensation. */
-> +static int sx9500_init_compensation(struct iio_dev *indio_dev)
-> +{
-> +	struct sx9500_data *data = iio_priv(indio_dev);
-> +	int i, ret;
-> +	unsigned int val;
-> +
-> +	ret = regmap_update_bits(data->regmap, SX9500_REG_PROX_CTRL0,
-> +				 GENMASK(SX9500_NUM_CHANNELS, 0),
-> +				 GENMASK(SX9500_NUM_CHANNELS, 0));
-
-This mask should just reach until SX9500_NUM_CHANNELS - 1. Right now it 
-messes with the lowest bit of SCANPERIOD. Why not define the channel mask
-with all other definitions and use a catchy name here?
-Thanks,
-
-Hartmut
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	for (i = 10; i >= 0; i--) {
-> +		usleep_range(10000, 20000);
-> +		ret = regmap_read(data->regmap, SX9500_REG_STAT, &val);
-> +		if (ret < 0)
-> +			goto out;
-> +		if (!(val & SX9500_COMPSTAT_MASK))
-> +			break;
-> +	}
-> +
-> +	if (i < 0) {
-> +		dev_err(&data->client->dev, "initial compensation timed out");
-> +		ret = -ETIMEDOUT;
-> +	}
-> +
-> +out:
-> +	regmap_update_bits(data->regmap, SX9500_REG_PROX_CTRL0,
-> +			   GENMASK(SX9500_NUM_CHANNELS, 0), 0);
-> +	return ret;
-> +}
-> +
-
-
+diff --git a/drivers/iio/light/Kconfig b/drivers/iio/light/Kconfig
+index e6198b7..30fd835 100644
+--- a/drivers/iio/light/Kconfig
++++ b/drivers/iio/light/Kconfig
+@@ -198,6 +198,17 @@ config LTR501
+ 	 This driver can also be built as a module.  If so, the module
+          will be called ltr501.
+ 
++config PA12203001
++        tristate "TXC PA12203001 light and proximity sensor"
++        depends on I2C
++        select REGMAP_I2C
++        help
++         If you say yes here you get support for the TXC PA12203001
++         ambient light and proximity sensor.
++
++         This driver can also be built as a module.  If so, the module
++         will be called pa12203001.
++
+ config STK3310
+ 	tristate "STK3310 ALS and proximity sensor"
+ 	depends on I2C
+diff --git a/drivers/iio/light/Makefile b/drivers/iio/light/Makefile
+index e2d50fd..257fabd 100644
+--- a/drivers/iio/light/Makefile
++++ b/drivers/iio/light/Makefile
+@@ -19,6 +19,7 @@ obj-$(CONFIG_ISL29125)		+= isl29125.o
+ obj-$(CONFIG_JSA1212)		+= jsa1212.o
+ obj-$(CONFIG_SENSORS_LM3533)	+= lm3533-als.o
+ obj-$(CONFIG_LTR501)		+= ltr501.o
++obj-$(CONFIG_PA12203001)	+= pa12203001.o
+ obj-$(CONFIG_SENSORS_TSL2563)	+= tsl2563.o
+ obj-$(CONFIG_STK3310)          += stk3310.o
+ obj-$(CONFIG_TCS3414)		+= tcs3414.o
+diff --git a/drivers/iio/light/pa12203001.c b/drivers/iio/light/pa12203001.c
+new file mode 100644
+index 0000000..03bee4c
+--- /dev/null
++++ b/drivers/iio/light/pa12203001.c
+@@ -0,0 +1,501 @@
++/*
++ * Copyright (c) 2015 Intel Corporation
++ *
++ * Driver for TXC PA12203001 Proximity and Ambient Light Sensor.
++ *
++ * This program is free software; you can redistribute it and/or modify it
++ * under the terms of the GNU General Public License version 2 as published by
++ * the Free Software Foundation.
++ * To do: Interrupt support.
++ */
++
++#include <linux/kernel.h>
++#include <linux/module.h>
++#include <linux/acpi.h>
++#include <linux/delay.h>
++#include <linux/i2c.h>
++#include <linux/iio/iio.h>
++#include <linux/iio/sysfs.h>
++#include <linux/mutex.h>
++#include <linux/pm.h>
++#include <linux/pm_runtime.h>
++#include <linux/regmap.h>
++
++#define PA12203001_DRIVER_NAME	"pa12203001"
++
++#define PA12203001_REG_CFG0		0x00
++#define PA12203001_REG_CFG1		0x01
++#define PA12203001_REG_CFG2		0x02
++#define PA12203001_REG_CFG3		0x03
++
++#define PA12203001_REG_ADL		0x0b
++#define PA12203001_REG_PDH		0x0e
++
++#define PA12203001_REG_POFS		0x10
++#define PA12203001_REG_PSET		0x11
++
++#define PA12203001_ALS_EN_MASK		BIT(0)
++#define PA12203001_PX_EN_MASK		BIT(1)
++#define PA12203001_PX_NORMAL_MODE_MASK		(BIT(7) | BIT(6))
++#define PA12203001_AFSR_MASK		(BIT(5) | BIT(4))
++
++#define PA12203001_PSCAN			0x03
++
++/* als range 31000, ps, als disabled */
++#define PA12203001_REG_CFG0_DEFAULT		0x30
++
++/* led current: 100 mA */
++#define PA12203001_REG_CFG1_DEFAULT		0x10
++
++/* ps mode: normal, interrupts not active */
++#define PA12203001_REG_CFG2_DEFAULT		0xcc
++
++#define PA12203001_REG_CFG3_DEFAULT		0x00
++
++#define PA12203001_SLEEP_DELAY_MS		3000
++
++/* available scales: corresponding to [500, 4000, 7000, 31000]  lux */
++static const int pa12203001_scales[] = { 7629, 61036, 106813, 473029};
++
++struct pa12203001_data {
++	struct i2c_client *client;
++
++	/* protect device states */
++	struct mutex lock;
++
++	bool als_enabled;
++	bool px_enabled;
++	bool als_needs_enable;
++	bool px_needs_enable;
++
++	struct regmap *map;
++};
++
++static IIO_CONST_ATTR(in_illuminance_scale_available,
++		      "0.007629 0.061036 0.106813 0.473029");
++
++static struct attribute *pa12203001_attrs[] = {
++	&iio_const_attr_in_illuminance_scale_available.dev_attr.attr,
++	NULL
++};
++
++static const struct attribute_group pa12203001_attr_group = {
++	.attrs = pa12203001_attrs,
++};
++
++static const struct iio_chan_spec pa12203001_channels[] = {
++	{
++		.type = IIO_LIGHT,
++		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
++				      BIT(IIO_CHAN_INFO_SCALE),
++	},
++	{
++		.type = IIO_PROXIMITY,
++		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
++	}
++};
++
++static const struct regmap_range pa12203001_volatile_regs_ranges[] = {
++	regmap_reg_range(PA12203001_REG_ADL, PA12203001_REG_ADL + 1),
++	regmap_reg_range(PA12203001_REG_PDH, PA12203001_REG_PDH),
++};
++
++static const struct regmap_access_table pa12203001_volatile_regs = {
++	.yes_ranges = pa12203001_volatile_regs_ranges,
++	.n_yes_ranges = ARRAY_SIZE(pa12203001_volatile_regs_ranges),
++};
++
++static const struct regmap_config pa12203001_regmap_config = {
++	.reg_bits = 8,
++	.val_bits = 8,
++	.max_register = PA12203001_REG_PSET,
++	.cache_type = REGCACHE_RBTREE,
++	.volatile_table = &pa12203001_volatile_regs,
++};
++
++static inline int pa12203001_als_enable(struct pa12203001_data *data, u8 enable)
++{
++	int ret;
++
++	ret = regmap_update_bits(data->map, PA12203001_REG_CFG0,
++				 PA12203001_ALS_EN_MASK, enable);
++	if (ret < 0)
++		return ret;
++
++	data->als_enabled = !!enable;
++	return 0;
++}
++
++static inline int pa12203001_px_enable(struct pa12203001_data *data, u8 enable)
++{
++	int ret;
++
++	ret = regmap_update_bits(data->map, PA12203001_REG_CFG0,
++				 PA12203001_PX_EN_MASK, enable);
++	if (ret < 0)
++		return ret;
++
++	data->px_enabled = !!enable;
++	return 0;
++}
++
++static int pa12203001_set_power_state(struct pa12203001_data *data, bool on,
++				      u8 mask)
++{
++#ifdef CONFIG_PM
++	int ret;
++
++	mutex_lock(&data->lock);
++	if (on && (mask & PA12203001_ALS_EN_MASK)) {
++		if (data->px_enabled) {
++			ret = pa12203001_als_enable(data,
++						    PA12203001_ALS_EN_MASK);
++			if (ret < 0) {
++				mutex_unlock(&data->lock);
++				return ret;
++			}
++		} else {
++			data->als_needs_enable = true;
++		}
++	}
++
++	if (on && (mask & PA12203001_PX_EN_MASK)) {
++		if (data->als_enabled) {
++			ret = pa12203001_px_enable(data, PA12203001_PX_EN_MASK);
++			if (ret < 0) {
++				mutex_unlock(&data->lock);
++				return ret;
++			}
++		} else {
++			data->px_needs_enable = true;
++		}
++	}
++	mutex_unlock(&data->lock);
++
++	if (on) {
++		/* Get reference and resume */
++		ret = pm_runtime_get_sync(&data->client->dev);
++		if (ret < 0)
++			pm_runtime_put_noidle(&data->client->dev);
++
++	} else {
++		/*
++		 * Turning off - restart timer, drop reference
++		 * and setup autosuspend
++		*/
++		pm_runtime_mark_last_busy(&data->client->dev);
++		ret = pm_runtime_put_autosuspend(&data->client->dev);
++	}
++	return ret;
++
++#endif
++	return 0;
++}
++
++static int pa12203001_read_raw(struct iio_dev *indio_dev,
++			       struct iio_chan_spec const *chan, int *val,
++			       int *val2, long mask)
++{
++	struct pa12203001_data *data = iio_priv(indio_dev);
++	int ret;
++	u8 dev_mask;
++	unsigned int reg_byte;
++	__le16 reg_word;
++
++	switch (mask) {
++	case IIO_CHAN_INFO_RAW:
++		switch (chan->type) {
++		case IIO_LIGHT:
++			dev_mask = PA12203001_ALS_EN_MASK;
++			ret = pa12203001_set_power_state(data, true, dev_mask);
++			if (ret < 0)
++				return ret;
++			/*
++			 * ALS ADC value is stored in registers
++			 * PA12203001_REG_ADL and in PA12203001_REG_ADL + 1.
++			 */
++			ret = regmap_bulk_read(data->map, PA12203001_REG_ADL,
++					       &reg_word, 2);
++			if (ret < 0)
++				return ret;
++			*val = le16_to_cpu(reg_word);
++			ret = pa12203001_set_power_state(data, false, dev_mask);
++			if (ret < 0)
++				return ret;
++			break;
++		case IIO_PROXIMITY:
++			dev_mask = PA12203001_PX_EN_MASK;
++			ret = pa12203001_set_power_state(data, true, dev_mask);
++			if (ret < 0)
++				return ret;
++			ret = regmap_read(data->map, PA12203001_REG_PDH,
++					  &reg_byte);
++			if (ret < 0)
++				return ret;
++			*val = reg_byte;
++			ret = pa12203001_set_power_state(data, false, dev_mask);
++			if (ret < 0)
++				return ret;
++			break;
++		default:
++			ret = -EINVAL;
++			break;
++		}
++
++		return IIO_VAL_INT;
++	case IIO_CHAN_INFO_SCALE:
++		ret = regmap_read(data->map, PA12203001_REG_CFG0, &reg_byte);
++		if (ret < 0)
++			return ret;
++		*val = 0;
++		reg_byte = (reg_byte & PA12203001_AFSR_MASK);
++		*val2 = pa12203001_scales[reg_byte >> 4];
++		return IIO_VAL_INT_PLUS_MICRO;
++	default:
++		break;
++	}
++
++	return -EINVAL;
++}
++
++static int pa12203001_write_raw(struct iio_dev *indio_dev,
++				struct iio_chan_spec const *chan, int val,
++				int val2, long mask)
++{
++	struct pa12203001_data *data = iio_priv(indio_dev);
++	int i, ret;
++	unsigned int reg_byte;
++
++	switch (mask) {
++	case IIO_CHAN_INFO_SCALE:
++		ret = regmap_read(data->map, PA12203001_REG_CFG0, &reg_byte);
++		if (val != 0 || ret < 0)
++			return -EINVAL;
++		for (i = 0; i < ARRAY_SIZE(pa12203001_scales); i++) {
++			if (val2 == pa12203001_scales[i])
++				return regmap_update_bits(data->map,
++							  PA12203001_REG_CFG0,
++							  PA12203001_AFSR_MASK,
++							  (i << 4));
++		}
++	break;
++	}
++
++	return -EINVAL;
++}
++
++static const struct iio_info pa12203001_info = {
++	.driver_module	= THIS_MODULE,
++	.read_raw = pa12203001_read_raw,
++	.write_raw = pa12203001_write_raw,
++	.attrs = &pa12203001_attr_group,
++};
++
++static int pa12203001_init(struct iio_dev *indio_dev)
++{
++	struct pa12203001_data *data = iio_priv(indio_dev);
++	int ret;
++
++	ret = regmap_write(data->map, PA12203001_REG_CFG0,
++			   PA12203001_REG_CFG0_DEFAULT);
++	if (ret < 0)
++		return ret;
++
++	ret = regmap_write(data->map, PA12203001_REG_CFG1,
++			   PA12203001_REG_CFG1_DEFAULT);
++	if (ret < 0)
++		return ret;
++
++	ret = regmap_write(data->map, PA12203001_REG_CFG2,
++			   PA12203001_REG_CFG2_DEFAULT);
++	if (ret < 0)
++		return ret;
++
++	ret = regmap_write(data->map, PA12203001_REG_CFG3,
++			   PA12203001_REG_CFG3_DEFAULT);
++	if (ret < 0)
++		return ret;
++
++	return regmap_write(data->map, PA12203001_REG_PSET,
++			    PA12203001_PSCAN);
++}
++
++static int pa12203001_power_on(struct iio_dev *indio_dev)
++{
++	struct pa12203001_data *data = iio_priv(indio_dev);
++	int ret;
++	u8 enable = 0xff;
++
++	mutex_lock(&data->lock);
++	ret = pa12203001_als_enable(data, enable);
++	if (ret < 0) {
++		mutex_unlock(&data->lock);
++		return ret;
++	}
++
++	ret = pa12203001_px_enable(data, enable);
++	if (ret < 0) {
++		mutex_unlock(&data->lock);
++		return ret;
++	}
++	mutex_unlock(&data->lock);
++	return 0;
++}
++
++static int pa12203001_power_off(struct iio_dev *indio_dev)
++{
++	struct pa12203001_data *data = iio_priv(indio_dev);
++	int ret;
++	u8 disable = 0x00;
++
++	mutex_lock(&data->lock);
++	ret = pa12203001_als_enable(data, disable);
++	if (ret < 0) {
++		mutex_unlock(&data->lock);
++		return ret;
++	}
++
++	ret = pa12203001_px_enable(data, disable);
++	if (ret < 0) {
++		mutex_unlock(&data->lock);
++		return ret;
++	}
++	mutex_unlock(&data->lock);
++	return 0;
++}
++
++static int pa12203001_probe(struct i2c_client *client,
++			    const struct i2c_device_id *id)
++{
++	struct pa12203001_data *data;
++	struct iio_dev *indio_dev;
++	int ret;
++
++	indio_dev = devm_iio_device_alloc(&client->dev,
++					  sizeof(struct pa12203001_data));
++	if (!indio_dev)
++		return -ENOMEM;
++
++	data = iio_priv(indio_dev);
++	i2c_set_clientdata(client, indio_dev);
++	data->client = client;
++
++	data->map = devm_regmap_init_i2c(client, &pa12203001_regmap_config);
++	if (IS_ERR(data->map))
++		return PTR_ERR(data->map);
++
++	mutex_init(&data->lock);
++
++	indio_dev->dev.parent = &client->dev;
++	indio_dev->info = &pa12203001_info;
++	indio_dev->name = PA12203001_DRIVER_NAME;
++	indio_dev->channels = pa12203001_channels;
++	indio_dev->num_channels = ARRAY_SIZE(pa12203001_channels);
++	indio_dev->modes = INDIO_DIRECT_MODE;
++
++	ret = pa12203001_init(indio_dev);
++	if (ret < 0)
++		return ret;
++
++	ret = pa12203001_power_on(indio_dev);
++	if (ret < 0)
++		return ret;
++
++	ret = pm_runtime_set_active(&client->dev);
++	if (ret < 0) {
++		pa12203001_power_off(indio_dev);
++		return ret;
++	}
++
++	pm_runtime_enable(&client->dev);
++	pm_runtime_set_autosuspend_delay(&client->dev,
++					 PA12203001_SLEEP_DELAY_MS);
++	pm_runtime_use_autosuspend(&client->dev);
++
++	return devm_iio_device_register(&client->dev, indio_dev);
++}
++
++static int pa12203001_remove(struct i2c_client *client)
++{
++	struct iio_dev *indio_dev = i2c_get_clientdata(client);
++
++	pm_runtime_disable(&client->dev);
++	pm_runtime_set_suspended(&client->dev);
++
++	return pa12203001_power_off(indio_dev);
++}
++
++#ifdef CONFIG_PM_SLEEP
++static int pa12203001_suspend(struct device *dev)
++{
++	return pa12203001_power_off(i2c_get_clientdata(to_i2c_client(dev)));
++}
++
++static int pa12203001_resume(struct device *dev)
++{
++	return pa12203001_power_on(i2c_get_clientdata(to_i2c_client(dev)));
++}
++#endif
++
++#ifdef CONFIG_PM
++static int pa12203001_runtime_suspend(struct device *dev)
++{
++	return pa12203001_power_off(i2c_get_clientdata(to_i2c_client(dev)));
++}
++
++static int pa12203001_runtime_resume(struct device *dev)
++{
++	struct pa12203001_data *data;
++
++	data = iio_priv(i2c_get_clientdata(to_i2c_client(dev)));
++
++	mutex_lock(&data->lock);
++	if (data->als_needs_enable) {
++		pa12203001_als_enable(data, PA12203001_ALS_EN_MASK);
++		data->als_needs_enable = false;
++	}
++	if (data->px_needs_enable) {
++		pa12203001_px_enable(data, PA12203001_PX_EN_MASK);
++		data->px_needs_enable = false;
++	}
++	mutex_unlock(&data->lock);
++	return 0;
++}
++#endif
++
++static const struct dev_pm_ops pa12203001_pm_ops = {
++	SET_SYSTEM_SLEEP_PM_OPS(pa12203001_suspend, pa12203001_resume)
++	SET_RUNTIME_PM_OPS(pa12203001_runtime_suspend,
++			   pa12203001_runtime_resume, NULL)
++};
++
++static const struct acpi_device_id pa12203001_acpi_match[] = {
++	{ "TXCPA122", 0},
++	{}
++};
++
++MODULE_DEVICE_TABLE(acpi, pa12203001_acpi_match);
++
++static const struct i2c_device_id pa12203001_id[] = {
++		{"txcpa122", 0},
++		{}
++};
++
++MODULE_DEVICE_TABLE(i2c, pa12203001_id);
++
++static struct i2c_driver pa12203001_driver = {
++	.driver = {
++		.name = PA12203001_DRIVER_NAME,
++		.pm = &pa12203001_pm_ops,
++		.acpi_match_table = ACPI_PTR(pa12203001_acpi_match),
++	},
++	.probe = pa12203001_probe,
++	.remove = pa12203001_remove,
++	.id_table = pa12203001_id,
++
++};
++module_i2c_driver(pa12203001_driver);
++
++MODULE_AUTHOR("Adriana Reus <adriana.reus@intel.com>");
++MODULE_DESCRIPTION("Driver for TXC PA12203001 Proximity and Light Sensor");
++MODULE_LICENSE("GPL v2");
+-- 
+1.9.1
