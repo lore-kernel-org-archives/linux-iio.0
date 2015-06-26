@@ -1,17 +1,35 @@
-Return-Path: <sergei@s15v.net>
-Date: Thu, 25 Jun 2015 20:40:04 +0300
-From: Sergei Zviagintsev <sergei@s15v.net>
-To: Adriana Reus <adriana.reus@intel.com>
-Cc: jic23@kernel.org, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iio: light: Add support for TXC PA12 als and proximity
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mga03.intel.com ([134.134.136.65]:15923 "EHLO mga03.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751680AbbFZIEf convert rfc822-to-8bit (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 26 Jun 2015 04:04:35 -0400
+From: "Reus, Adriana" <adriana.reus@intel.com>
+To: Sergei Zviagintsev <sergei@s15v.net>
+CC: "jic23@kernel.org" <jic23@kernel.org>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: RE: [PATCH] iio: light: Add support for TXC PA12 als and proximity
  sensor
-Message-ID: <20150625174004.GL3276@localhost.localdomain>
-References: <1435314562-12079-1-git-send-email-adriana.reus@intel.com>
+Date: Fri, 26 Jun 2015 08:04:32 +0000
+Message-ID: <C17146ECE1F15B42B06103E1CAC1C3B42A763503@IRSMSX102.ger.corp.intel.com>
+References: <1435314562-12079-1-git-send-email-adriana.reus@intel.com>,<20150625174004.GL3276@localhost.localdomain>
+In-Reply-To: <20150625174004.GL3276@localhost.localdomain>
+Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <1435314562-12079-1-git-send-email-adriana.reus@intel.com>
-List-ID: <linux-iio@vger.kernel.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
+
+Thank you for taking the time.
+I'll upload a new patch-set in the following days with the requested tidy-ups.
+
+Thanks,
+Adriana
+________________________________________
+From: Sergei Zviagintsev [sergei@s15v.net]
+Sent: Thursday, June 25, 2015 8:40 PM
+To: Reus, Adriana
+Cc: jic23@kernel.org; linux-iio@vger.kernel.org; linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] iio: light: Add support for TXC PA12 als and proximity sensor
 
 Hi,
 
@@ -21,10 +39,11 @@ I left some comments below.
 On Fri, Jun 26, 2015 at 01:29:22PM +0300, Adriana Reus wrote:
    ^^^
 Your message came from future.
+That's because i am a time traveler.
 
 > Add support for TXC PA12203001 als and proximity sensor.
 > Support for raw illuminance and proximity readings.
-> 
+>
 > Signed-off-by: Adriana Reus <adriana.reus@intel.com>
 > ---
 >  drivers/iio/light/Kconfig      |  11 +
@@ -32,15 +51,15 @@ Your message came from future.
 >  drivers/iio/light/pa12203001.c | 501 +++++++++++++++++++++++++++++++++++++++++
 >  3 files changed, 513 insertions(+)
 >  create mode 100644 drivers/iio/light/pa12203001.c
-> 
+>
 > diff --git a/drivers/iio/light/Kconfig b/drivers/iio/light/Kconfig
 > index e6198b7..30fd835 100644
 > --- a/drivers/iio/light/Kconfig
 > +++ b/drivers/iio/light/Kconfig
 > @@ -198,6 +198,17 @@ config LTR501
->  	 This driver can also be built as a module.  If so, the module
+>        This driver can also be built as a module.  If so, the module
 >           will be called ltr501.
->  
+>
 > +config PA12203001
 > +        tristate "TXC PA12203001 light and proximity sensor"
 > +        depends on I2C
@@ -53,20 +72,20 @@ Your message came from future.
 > +         will be called pa12203001.
 > +
 >  config STK3310
->  	tristate "STK3310 ALS and proximity sensor"
->  	depends on I2C
+>       tristate "STK3310 ALS and proximity sensor"
+>       depends on I2C
 > diff --git a/drivers/iio/light/Makefile b/drivers/iio/light/Makefile
 > index e2d50fd..257fabd 100644
 > --- a/drivers/iio/light/Makefile
 > +++ b/drivers/iio/light/Makefile
-> @@ -19,6 +19,7 @@ obj-$(CONFIG_ISL29125)		+= isl29125.o
->  obj-$(CONFIG_JSA1212)		+= jsa1212.o
->  obj-$(CONFIG_SENSORS_LM3533)	+= lm3533-als.o
->  obj-$(CONFIG_LTR501)		+= ltr501.o
-> +obj-$(CONFIG_PA12203001)	+= pa12203001.o
->  obj-$(CONFIG_SENSORS_TSL2563)	+= tsl2563.o
+> @@ -19,6 +19,7 @@ obj-$(CONFIG_ISL29125)              += isl29125.o
+>  obj-$(CONFIG_JSA1212)                += jsa1212.o
+>  obj-$(CONFIG_SENSORS_LM3533) += lm3533-als.o
+>  obj-$(CONFIG_LTR501)         += ltr501.o
+> +obj-$(CONFIG_PA12203001)     += pa12203001.o
+>  obj-$(CONFIG_SENSORS_TSL2563)        += tsl2563.o
 >  obj-$(CONFIG_STK3310)          += stk3310.o
->  obj-$(CONFIG_TCS3414)		+= tcs3414.o
+>  obj-$(CONFIG_TCS3414)                += tcs3414.o
 > diff --git a/drivers/iio/light/pa12203001.c b/drivers/iio/light/pa12203001.c
 > new file mode 100644
 > index 0000000..03bee4c
@@ -96,518 +115,521 @@ Your message came from future.
 > +#include <linux/pm_runtime.h>
 > +#include <linux/regmap.h>
 > +
-> +#define PA12203001_DRIVER_NAME	"pa12203001"
+> +#define PA12203001_DRIVER_NAME       "pa12203001"
 > +
-> +#define PA12203001_REG_CFG0		0x00
-> +#define PA12203001_REG_CFG1		0x01
-> +#define PA12203001_REG_CFG2		0x02
-> +#define PA12203001_REG_CFG3		0x03
+> +#define PA12203001_REG_CFG0          0x00
+> +#define PA12203001_REG_CFG1          0x01
+> +#define PA12203001_REG_CFG2          0x02
+> +#define PA12203001_REG_CFG3          0x03
 > +
-> +#define PA12203001_REG_ADL		0x0b
-> +#define PA12203001_REG_PDH		0x0e
+> +#define PA12203001_REG_ADL           0x0b
+> +#define PA12203001_REG_PDH           0x0e
 > +
-> +#define PA12203001_REG_POFS		0x10
-> +#define PA12203001_REG_PSET		0x11
+> +#define PA12203001_REG_POFS          0x10
+> +#define PA12203001_REG_PSET          0x11
 > +
-> +#define PA12203001_ALS_EN_MASK		BIT(0)
-> +#define PA12203001_PX_EN_MASK		BIT(1)
-> +#define PA12203001_PX_NORMAL_MODE_MASK		(BIT(7) | BIT(6))
-> +#define PA12203001_AFSR_MASK		(BIT(5) | BIT(4))
+> +#define PA12203001_ALS_EN_MASK               BIT(0)
+> +#define PA12203001_PX_EN_MASK                BIT(1)
+> +#define PA12203001_PX_NORMAL_MODE_MASK               (BIT(7) | BIT(6))
+> +#define PA12203001_AFSR_MASK         (BIT(5) | BIT(4))
 > +
-> +#define PA12203001_PSCAN			0x03
+> +#define PA12203001_PSCAN                     0x03
 > +
 > +/* als range 31000, ps, als disabled */
-> +#define PA12203001_REG_CFG0_DEFAULT		0x30
+> +#define PA12203001_REG_CFG0_DEFAULT          0x30
 > +
 > +/* led current: 100 mA */
-> +#define PA12203001_REG_CFG1_DEFAULT		0x10
+> +#define PA12203001_REG_CFG1_DEFAULT          0x10
 > +
 > +/* ps mode: normal, interrupts not active */
-> +#define PA12203001_REG_CFG2_DEFAULT		0xcc
+> +#define PA12203001_REG_CFG2_DEFAULT          0xcc
 > +
-> +#define PA12203001_REG_CFG3_DEFAULT		0x00
+> +#define PA12203001_REG_CFG3_DEFAULT          0x00
 > +
-> +#define PA12203001_SLEEP_DELAY_MS		3000
+> +#define PA12203001_SLEEP_DELAY_MS            3000
 > +
 > +/* available scales: corresponding to [500, 4000, 7000, 31000]  lux */
 > +static const int pa12203001_scales[] = { 7629, 61036, 106813, 473029};
 > +
 > +struct pa12203001_data {
-> +	struct i2c_client *client;
+> +     struct i2c_client *client;
 > +
-> +	/* protect device states */
-> +	struct mutex lock;
+> +     /* protect device states */
+> +     struct mutex lock;
 > +
-> +	bool als_enabled;
-> +	bool px_enabled;
-> +	bool als_needs_enable;
-> +	bool px_needs_enable;
+> +     bool als_enabled;
+> +     bool px_enabled;
+> +     bool als_needs_enable;
+> +     bool px_needs_enable;
 > +
-> +	struct regmap *map;
+> +     struct regmap *map;
 > +};
 > +
 > +static IIO_CONST_ATTR(in_illuminance_scale_available,
-> +		      "0.007629 0.061036 0.106813 0.473029");
+> +                   "0.007629 0.061036 0.106813 0.473029");
 > +
 > +static struct attribute *pa12203001_attrs[] = {
-> +	&iio_const_attr_in_illuminance_scale_available.dev_attr.attr,
-> +	NULL
+> +     &iio_const_attr_in_illuminance_scale_available.dev_attr.attr,
+> +     NULL
 > +};
 > +
 > +static const struct attribute_group pa12203001_attr_group = {
-> +	.attrs = pa12203001_attrs,
+> +     .attrs = pa12203001_attrs,
 > +};
 > +
 > +static const struct iio_chan_spec pa12203001_channels[] = {
-> +	{
-> +		.type = IIO_LIGHT,
-> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
-> +				      BIT(IIO_CHAN_INFO_SCALE),
-> +	},
-> +	{
-> +		.type = IIO_PROXIMITY,
-> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
-> +	}
+> +     {
+> +             .type = IIO_LIGHT,
+> +             .info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
+> +                                   BIT(IIO_CHAN_INFO_SCALE),
+> +     },
+> +     {
+> +             .type = IIO_PROXIMITY,
+> +             .info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
+> +     }
 > +};
 > +
 > +static const struct regmap_range pa12203001_volatile_regs_ranges[] = {
-> +	regmap_reg_range(PA12203001_REG_ADL, PA12203001_REG_ADL + 1),
-> +	regmap_reg_range(PA12203001_REG_PDH, PA12203001_REG_PDH),
+> +     regmap_reg_range(PA12203001_REG_ADL, PA12203001_REG_ADL + 1),
+> +     regmap_reg_range(PA12203001_REG_PDH, PA12203001_REG_PDH),
 > +};
 > +
 > +static const struct regmap_access_table pa12203001_volatile_regs = {
-> +	.yes_ranges = pa12203001_volatile_regs_ranges,
-> +	.n_yes_ranges = ARRAY_SIZE(pa12203001_volatile_regs_ranges),
+> +     .yes_ranges = pa12203001_volatile_regs_ranges,
+> +     .n_yes_ranges = ARRAY_SIZE(pa12203001_volatile_regs_ranges),
 > +};
 > +
 > +static const struct regmap_config pa12203001_regmap_config = {
-> +	.reg_bits = 8,
-> +	.val_bits = 8,
-> +	.max_register = PA12203001_REG_PSET,
-> +	.cache_type = REGCACHE_RBTREE,
-> +	.volatile_table = &pa12203001_volatile_regs,
+> +     .reg_bits = 8,
+> +     .val_bits = 8,
+> +     .max_register = PA12203001_REG_PSET,
+> +     .cache_type = REGCACHE_RBTREE,
+> +     .volatile_table = &pa12203001_volatile_regs,
 > +};
 > +
 > +static inline int pa12203001_als_enable(struct pa12203001_data *data, u8 enable)
 > +{
-> +	int ret;
+> +     int ret;
 > +
-> +	ret = regmap_update_bits(data->map, PA12203001_REG_CFG0,
-> +				 PA12203001_ALS_EN_MASK, enable);
-> +	if (ret < 0)
-> +		return ret;
+> +     ret = regmap_update_bits(data->map, PA12203001_REG_CFG0,
+> +                              PA12203001_ALS_EN_MASK, enable);
+> +     if (ret < 0)
+> +             return ret;
 > +
-> +	data->als_enabled = !!enable;
-> +	return 0;
+> +     data->als_enabled = !!enable;
+> +     return 0;
 > +}
 > +
 > +static inline int pa12203001_px_enable(struct pa12203001_data *data, u8 enable)
 > +{
-> +	int ret;
+> +     int ret;
 > +
-> +	ret = regmap_update_bits(data->map, PA12203001_REG_CFG0,
-> +				 PA12203001_PX_EN_MASK, enable);
-> +	if (ret < 0)
-> +		return ret;
+> +     ret = regmap_update_bits(data->map, PA12203001_REG_CFG0,
+> +                              PA12203001_PX_EN_MASK, enable);
+> +     if (ret < 0)
+> +             return ret;
 > +
-> +	data->px_enabled = !!enable;
-> +	return 0;
+> +     data->px_enabled = !!enable;
+> +     return 0;
 > +}
 > +
 > +static int pa12203001_set_power_state(struct pa12203001_data *data, bool on,
-> +				      u8 mask)
+> +                                   u8 mask)
 > +{
 > +#ifdef CONFIG_PM
-> +	int ret;
+> +     int ret;
 > +
-> +	mutex_lock(&data->lock);
+> +     mutex_lock(&data->lock);
 
 If tests below are false, then we are holding the lock with no reason.
-
-> +	if (on && (mask & PA12203001_ALS_EN_MASK)) {
-> +		if (data->px_enabled) {
-> +			ret = pa12203001_als_enable(data,
-> +						    PA12203001_ALS_EN_MASK);
-> +			if (ret < 0) {
-> +				mutex_unlock(&data->lock);
-> +				return ret;
-> +			}
+Yes, but only for the first if test. I can move it after to slightly optimize.
+> +     if (on && (mask & PA12203001_ALS_EN_MASK)) {
+> +             if (data->px_enabled) {
+> +                     ret = pa12203001_als_enable(data,
+> +                                                 PA12203001_ALS_EN_MASK);
+> +                     if (ret < 0) {
+> +                             mutex_unlock(&data->lock);
+> +                             return ret;
+> +                     }
 
 Use of `goto' would save two lines per exit point :)
+Will do
 
-> +		} else {
-> +			data->als_needs_enable = true;
-> +		}
-> +	}
+> +             } else {
+> +                     data->als_needs_enable = true;
+> +             }
+> +     }
 > +
-> +	if (on && (mask & PA12203001_PX_EN_MASK)) {
-> +		if (data->als_enabled) {
-> +			ret = pa12203001_px_enable(data, PA12203001_PX_EN_MASK);
-> +			if (ret < 0) {
-> +				mutex_unlock(&data->lock);
-> +				return ret;
-> +			}
-> +		} else {
-> +			data->px_needs_enable = true;
-> +		}
-> +	}
-> +	mutex_unlock(&data->lock);
+> +     if (on && (mask & PA12203001_PX_EN_MASK)) {
+> +             if (data->als_enabled) {
+> +                     ret = pa12203001_px_enable(data, PA12203001_PX_EN_MASK);
+> +                     if (ret < 0) {
+> +                             mutex_unlock(&data->lock);
+> +                             return ret;
+> +                     }
+> +             } else {
+> +                     data->px_needs_enable = true;
+> +             }
+> +     }
+> +     mutex_unlock(&data->lock);
 > +
-> +	if (on) {
-> +		/* Get reference and resume */
-> +		ret = pm_runtime_get_sync(&data->client->dev);
-> +		if (ret < 0)
-> +			pm_runtime_put_noidle(&data->client->dev);
+> +     if (on) {
+> +             /* Get reference and resume */
+> +             ret = pm_runtime_get_sync(&data->client->dev);
+> +             if (ret < 0)
+> +                     pm_runtime_put_noidle(&data->client->dev);
 > +
-> +	} else {
-> +		/*
-> +		 * Turning off - restart timer, drop reference
-> +		 * and setup autosuspend
-> +		*/
-> +		pm_runtime_mark_last_busy(&data->client->dev);
-> +		ret = pm_runtime_put_autosuspend(&data->client->dev);
-> +	}
-> +	return ret;
+> +     } else {
+> +             /*
+> +              * Turning off - restart timer, drop reference
+> +              * and setup autosuspend
+> +             */
+> +             pm_runtime_mark_last_busy(&data->client->dev);
+> +             ret = pm_runtime_put_autosuspend(&data->client->dev);
+> +     }
+> +     return ret;
 > +
 > +#endif
-> +	return 0;
+> +     return 0;
 > +}
 > +
 > +static int pa12203001_read_raw(struct iio_dev *indio_dev,
-> +			       struct iio_chan_spec const *chan, int *val,
-> +			       int *val2, long mask)
+> +                            struct iio_chan_spec const *chan, int *val,
+> +                            int *val2, long mask)
 > +{
-> +	struct pa12203001_data *data = iio_priv(indio_dev);
-> +	int ret;
-> +	u8 dev_mask;
-> +	unsigned int reg_byte;
-> +	__le16 reg_word;
+> +     struct pa12203001_data *data = iio_priv(indio_dev);
+> +     int ret;
+> +     u8 dev_mask;
+> +     unsigned int reg_byte;
+> +     __le16 reg_word;
 > +
-> +	switch (mask) {
-> +	case IIO_CHAN_INFO_RAW:
-> +		switch (chan->type) {
-> +		case IIO_LIGHT:
-> +			dev_mask = PA12203001_ALS_EN_MASK;
-> +			ret = pa12203001_set_power_state(data, true, dev_mask);
-> +			if (ret < 0)
-> +				return ret;
-> +			/*
-> +			 * ALS ADC value is stored in registers
-> +			 * PA12203001_REG_ADL and in PA12203001_REG_ADL + 1.
-> +			 */
-> +			ret = regmap_bulk_read(data->map, PA12203001_REG_ADL,
-> +					       &reg_word, 2);
-> +			if (ret < 0)
-> +				return ret;
-> +			*val = le16_to_cpu(reg_word);
-> +			ret = pa12203001_set_power_state(data, false, dev_mask);
-> +			if (ret < 0)
-> +				return ret;
-> +			break;
-> +		case IIO_PROXIMITY:
-> +			dev_mask = PA12203001_PX_EN_MASK;
-> +			ret = pa12203001_set_power_state(data, true, dev_mask);
-> +			if (ret < 0)
-> +				return ret;
-> +			ret = regmap_read(data->map, PA12203001_REG_PDH,
-> +					  &reg_byte);
-> +			if (ret < 0)
-> +				return ret;
-> +			*val = reg_byte;
-> +			ret = pa12203001_set_power_state(data, false, dev_mask);
-> +			if (ret < 0)
-> +				return ret;
-> +			break;
-> +		default:
-> +			ret = -EINVAL;
-> +			break;
-> +		}
+> +     switch (mask) {
+> +     case IIO_CHAN_INFO_RAW:
+> +             switch (chan->type) {
+> +             case IIO_LIGHT:
+> +                     dev_mask = PA12203001_ALS_EN_MASK;
+> +                     ret = pa12203001_set_power_state(data, true, dev_mask);
+> +                     if (ret < 0)
+> +                             return ret;
+> +                     /*
+> +                      * ALS ADC value is stored in registers
+> +                      * PA12203001_REG_ADL and in PA12203001_REG_ADL + 1.
+> +                      */
+> +                     ret = regmap_bulk_read(data->map, PA12203001_REG_ADL,
+> +                                            &reg_word, 2);
+> +                     if (ret < 0)
+> +                             return ret;
+> +                     *val = le16_to_cpu(reg_word);
+> +                     ret = pa12203001_set_power_state(data, false, dev_mask);
+> +                     if (ret < 0)
+> +                             return ret;
+> +                     break;
+> +             case IIO_PROXIMITY:
+> +                     dev_mask = PA12203001_PX_EN_MASK;
+> +                     ret = pa12203001_set_power_state(data, true, dev_mask);
+> +                     if (ret < 0)
+> +                             return ret;
+> +                     ret = regmap_read(data->map, PA12203001_REG_PDH,
+> +                                       &reg_byte);
+> +                     if (ret < 0)
+> +                             return ret;
+> +                     *val = reg_byte;
+> +                     ret = pa12203001_set_power_state(data, false, dev_mask);
+> +                     if (ret < 0)
+> +                             return ret;
+> +                     break;
+> +             default:
+> +                     ret = -EINVAL;
+> +                     break;
+> +             }
 > +
-> +		return IIO_VAL_INT;
-> +	case IIO_CHAN_INFO_SCALE:
-> +		ret = regmap_read(data->map, PA12203001_REG_CFG0, &reg_byte);
-> +		if (ret < 0)
-> +			return ret;
-> +		*val = 0;
-> +		reg_byte = (reg_byte & PA12203001_AFSR_MASK);
-> +		*val2 = pa12203001_scales[reg_byte >> 4];
-> +		return IIO_VAL_INT_PLUS_MICRO;
-> +	default:
-> +		break;
-> +	}
+> +             return IIO_VAL_INT;
+> +     case IIO_CHAN_INFO_SCALE:
+> +             ret = regmap_read(data->map, PA12203001_REG_CFG0, &reg_byte);
+> +             if (ret < 0)
+> +                     return ret;
+> +             *val = 0;
+> +             reg_byte = (reg_byte & PA12203001_AFSR_MASK);
+> +             *val2 = pa12203001_scales[reg_byte >> 4];
+> +             return IIO_VAL_INT_PLUS_MICRO;
+> +     default:
+> +             break;
+> +     }
 > +
-> +	return -EINVAL;
+> +     return -EINVAL;
 > +}
 > +
 > +static int pa12203001_write_raw(struct iio_dev *indio_dev,
-> +				struct iio_chan_spec const *chan, int val,
-> +				int val2, long mask)
+> +                             struct iio_chan_spec const *chan, int val,
+> +                             int val2, long mask)
 > +{
-> +	struct pa12203001_data *data = iio_priv(indio_dev);
-> +	int i, ret;
-> +	unsigned int reg_byte;
+> +     struct pa12203001_data *data = iio_priv(indio_dev);
+> +     int i, ret;
+> +     unsigned int reg_byte;
 > +
-> +	switch (mask) {
-> +	case IIO_CHAN_INFO_SCALE:
-> +		ret = regmap_read(data->map, PA12203001_REG_CFG0, &reg_byte);
-> +		if (val != 0 || ret < 0)
-> +			return -EINVAL;
-> +		for (i = 0; i < ARRAY_SIZE(pa12203001_scales); i++) {
-> +			if (val2 == pa12203001_scales[i])
-> +				return regmap_update_bits(data->map,
-> +							  PA12203001_REG_CFG0,
-> +							  PA12203001_AFSR_MASK,
-> +							  (i << 4));
-> +		}
-> +	break;
+> +     switch (mask) {
+> +     case IIO_CHAN_INFO_SCALE:
+> +             ret = regmap_read(data->map, PA12203001_REG_CFG0, &reg_byte);
+> +             if (val != 0 || ret < 0)
+> +                     return -EINVAL;
+> +             for (i = 0; i < ARRAY_SIZE(pa12203001_scales); i++) {
+> +                     if (val2 == pa12203001_scales[i])
+> +                             return regmap_update_bits(data->map,
+> +                                                       PA12203001_REG_CFG0,
+> +                                                       PA12203001_AFSR_MASK,
+> +                                                       (i << 4));
+> +             }
+> +     break;
 
 default case?
-
-> +	}
+default should fall through, I'll add the statement for style reasons though.
+> +     }
 > +
-> +	return -EINVAL;
+> +     return -EINVAL;
 > +}
 > +
 > +static const struct iio_info pa12203001_info = {
-> +	.driver_module	= THIS_MODULE,
-> +	.read_raw = pa12203001_read_raw,
-> +	.write_raw = pa12203001_write_raw,
-> +	.attrs = &pa12203001_attr_group,
+> +     .driver_module  = THIS_MODULE,
+> +     .read_raw = pa12203001_read_raw,
+> +     .write_raw = pa12203001_write_raw,
+> +     .attrs = &pa12203001_attr_group,
 > +};
 > +
 > +static int pa12203001_init(struct iio_dev *indio_dev)
 > +{
-> +	struct pa12203001_data *data = iio_priv(indio_dev);
-> +	int ret;
+> +     struct pa12203001_data *data = iio_priv(indio_dev);
+> +     int ret;
 > +
-> +	ret = regmap_write(data->map, PA12203001_REG_CFG0,
-> +			   PA12203001_REG_CFG0_DEFAULT);
-> +	if (ret < 0)
-> +		return ret;
+> +     ret = regmap_write(data->map, PA12203001_REG_CFG0,
+> +                        PA12203001_REG_CFG0_DEFAULT);
+> +     if (ret < 0)
+> +             return ret;
 > +
-> +	ret = regmap_write(data->map, PA12203001_REG_CFG1,
-> +			   PA12203001_REG_CFG1_DEFAULT);
-> +	if (ret < 0)
-> +		return ret;
+> +     ret = regmap_write(data->map, PA12203001_REG_CFG1,
+> +                        PA12203001_REG_CFG1_DEFAULT);
+> +     if (ret < 0)
+> +             return ret;
 > +
-> +	ret = regmap_write(data->map, PA12203001_REG_CFG2,
-> +			   PA12203001_REG_CFG2_DEFAULT);
-> +	if (ret < 0)
-> +		return ret;
+> +     ret = regmap_write(data->map, PA12203001_REG_CFG2,
+> +                        PA12203001_REG_CFG2_DEFAULT);
+> +     if (ret < 0)
+> +             return ret;
 > +
-> +	ret = regmap_write(data->map, PA12203001_REG_CFG3,
-> +			   PA12203001_REG_CFG3_DEFAULT);
-> +	if (ret < 0)
-> +		return ret;
+> +     ret = regmap_write(data->map, PA12203001_REG_CFG3,
+> +                        PA12203001_REG_CFG3_DEFAULT);
+> +     if (ret < 0)
+> +             return ret;
 > +
-> +	return regmap_write(data->map, PA12203001_REG_PSET,
-> +			    PA12203001_PSCAN);
+> +     return regmap_write(data->map, PA12203001_REG_PSET,
+> +                         PA12203001_PSCAN);
 > +}
 
 Is the following acceptable?
+I think so.
 
-	struct {
-		u8 reg;
-		u8 val;
-	} regvals[] = { { PA12203001_REG_CFG, PA12203001_REG_CFG0_DEFAULT }, ... }; 
+        struct {
+                u8 reg;
+                u8 val;
+        } regvals[] = { { PA12203001_REG_CFG, PA12203001_REG_CFG0_DEFAULT }, ... };
 
-	int i, ret;
+        int i, ret;
 
-	for (i = 0; i < ARRAY_SIZE(regvals); i++) {
-		ret = regmap_write(data->map, regvals[i].reg, regvals[i].val);
-		if (ret < 0)
-			return ret;
-	}
+        for (i = 0; i < ARRAY_SIZE(regvals); i++) {
+                ret = regmap_write(data->map, regvals[i].reg, regvals[i].val);
+                if (ret < 0)
+                        return ret;
+        }
 
-	return 0;
+        return 0;
 
 > +
 > +static int pa12203001_power_on(struct iio_dev *indio_dev)
 > +{
-> +	struct pa12203001_data *data = iio_priv(indio_dev);
-> +	int ret;
-> +	u8 enable = 0xff;
+> +     struct pa12203001_data *data = iio_priv(indio_dev);
+> +     int ret;
+> +     u8 enable = 0xff;
 > +
-> +	mutex_lock(&data->lock);
-> +	ret = pa12203001_als_enable(data, enable);
-> +	if (ret < 0) {
-> +		mutex_unlock(&data->lock);
-> +		return ret;
-> +	}
+> +     mutex_lock(&data->lock);
+> +     ret = pa12203001_als_enable(data, enable);
+> +     if (ret < 0) {
+> +             mutex_unlock(&data->lock);
+> +             return ret;
+> +     }
 
 goto is pretty conventional here (ch. 7 CodingStyle)
 
 > +
-> +	ret = pa12203001_px_enable(data, enable);
-> +	if (ret < 0) {
-> +		mutex_unlock(&data->lock);
-> +		return ret;
-> +	}
-> +	mutex_unlock(&data->lock);
-> +	return 0;
+> +     ret = pa12203001_px_enable(data, enable);
+> +     if (ret < 0) {
+> +             mutex_unlock(&data->lock);
+> +             return ret;
+> +     }
+> +     mutex_unlock(&data->lock);
+> +     return 0;
 > +}
 > +
 > +static int pa12203001_power_off(struct iio_dev *indio_dev)
 > +{
-> +	struct pa12203001_data *data = iio_priv(indio_dev);
-> +	int ret;
-> +	u8 disable = 0x00;
+> +     struct pa12203001_data *data = iio_priv(indio_dev);
+> +     int ret;
+> +     u8 disable = 0x00;
 > +
-> +	mutex_lock(&data->lock);
-> +	ret = pa12203001_als_enable(data, disable);
-> +	if (ret < 0) {
-> +		mutex_unlock(&data->lock);
-> +		return ret;
-> +	}
+> +     mutex_lock(&data->lock);
+> +     ret = pa12203001_als_enable(data, disable);
+> +     if (ret < 0) {
+> +             mutex_unlock(&data->lock);
+> +             return ret;
+> +     }
 > +
-> +	ret = pa12203001_px_enable(data, disable);
-> +	if (ret < 0) {
-> +		mutex_unlock(&data->lock);
-> +		return ret;
-> +	}
-> +	mutex_unlock(&data->lock);
-> +	return 0;
+> +     ret = pa12203001_px_enable(data, disable);
+> +     if (ret < 0) {
+> +             mutex_unlock(&data->lock);
+> +             return ret;
+> +     }
+> +     mutex_unlock(&data->lock);
+> +     return 0;
 > +}
 
 If I see it correctly, the only difference between power_on and
 power_off functions is in one byte which is submitted to
 {als,px}_enable(). Isn't it better to merge them in the third function
 to reduce code duplication?
+Will do 
 
 > +
 > +static int pa12203001_probe(struct i2c_client *client,
-> +			    const struct i2c_device_id *id)
+> +                         const struct i2c_device_id *id)
 > +{
-> +	struct pa12203001_data *data;
-> +	struct iio_dev *indio_dev;
-> +	int ret;
+> +     struct pa12203001_data *data;
+> +     struct iio_dev *indio_dev;
+> +     int ret;
 > +
-> +	indio_dev = devm_iio_device_alloc(&client->dev,
-> +					  sizeof(struct pa12203001_data));
-> +	if (!indio_dev)
-> +		return -ENOMEM;
+> +     indio_dev = devm_iio_device_alloc(&client->dev,
+> +                                       sizeof(struct pa12203001_data));
+> +     if (!indio_dev)
+> +             return -ENOMEM;
 > +
-> +	data = iio_priv(indio_dev);
-> +	i2c_set_clientdata(client, indio_dev);
-> +	data->client = client;
+> +     data = iio_priv(indio_dev);
+> +     i2c_set_clientdata(client, indio_dev);
+> +     data->client = client;
 > +
-> +	data->map = devm_regmap_init_i2c(client, &pa12203001_regmap_config);
-> +	if (IS_ERR(data->map))
-> +		return PTR_ERR(data->map);
+> +     data->map = devm_regmap_init_i2c(client, &pa12203001_regmap_config);
+> +     if (IS_ERR(data->map))
+> +             return PTR_ERR(data->map);
 > +
-> +	mutex_init(&data->lock);
+> +     mutex_init(&data->lock);
 > +
-> +	indio_dev->dev.parent = &client->dev;
-> +	indio_dev->info = &pa12203001_info;
-> +	indio_dev->name = PA12203001_DRIVER_NAME;
-> +	indio_dev->channels = pa12203001_channels;
-> +	indio_dev->num_channels = ARRAY_SIZE(pa12203001_channels);
-> +	indio_dev->modes = INDIO_DIRECT_MODE;
+> +     indio_dev->dev.parent = &client->dev;
+> +     indio_dev->info = &pa12203001_info;
+> +     indio_dev->name = PA12203001_DRIVER_NAME;
+> +     indio_dev->channels = pa12203001_channels;
+> +     indio_dev->num_channels = ARRAY_SIZE(pa12203001_channels);
+> +     indio_dev->modes = INDIO_DIRECT_MODE;
 > +
-> +	ret = pa12203001_init(indio_dev);
-> +	if (ret < 0)
-> +		return ret;
+> +     ret = pa12203001_init(indio_dev);
+> +     if (ret < 0)
+> +             return ret;
 > +
-> +	ret = pa12203001_power_on(indio_dev);
-> +	if (ret < 0)
-> +		return ret;
+> +     ret = pa12203001_power_on(indio_dev);
+> +     if (ret < 0)
+> +             return ret;
 > +
-> +	ret = pm_runtime_set_active(&client->dev);
-> +	if (ret < 0) {
-> +		pa12203001_power_off(indio_dev);
-> +		return ret;
-> +	}
+> +     ret = pm_runtime_set_active(&client->dev);
+> +     if (ret < 0) {
+> +             pa12203001_power_off(indio_dev);
+> +             return ret;
+> +     }
 > +
-> +	pm_runtime_enable(&client->dev);
-> +	pm_runtime_set_autosuspend_delay(&client->dev,
-> +					 PA12203001_SLEEP_DELAY_MS);
-> +	pm_runtime_use_autosuspend(&client->dev);
+> +     pm_runtime_enable(&client->dev);
+> +     pm_runtime_set_autosuspend_delay(&client->dev,
+> +                                      PA12203001_SLEEP_DELAY_MS);
+> +     pm_runtime_use_autosuspend(&client->dev);
 > +
-> +	return devm_iio_device_register(&client->dev, indio_dev);
+> +     return devm_iio_device_register(&client->dev, indio_dev);
 > +}
 > +
 > +static int pa12203001_remove(struct i2c_client *client)
 > +{
-> +	struct iio_dev *indio_dev = i2c_get_clientdata(client);
+> +     struct iio_dev *indio_dev = i2c_get_clientdata(client);
 
 We use additional var in this function to store device pointer, but do
 not use it in suspend(), resume() etc where more complicated
 constructions are used. Just for consistency :)
 
 > +
-> +	pm_runtime_disable(&client->dev);
-> +	pm_runtime_set_suspended(&client->dev);
+> +     pm_runtime_disable(&client->dev);
+> +     pm_runtime_set_suspended(&client->dev);
 > +
-> +	return pa12203001_power_off(indio_dev);
+> +     return pa12203001_power_off(indio_dev);
 > +}
 > +
 > +#ifdef CONFIG_PM_SLEEP
 > +static int pa12203001_suspend(struct device *dev)
 > +{
-> +	return pa12203001_power_off(i2c_get_clientdata(to_i2c_client(dev)));
+> +     return pa12203001_power_off(i2c_get_clientdata(to_i2c_client(dev)));
 > +}
 > +
 > +static int pa12203001_resume(struct device *dev)
 > +{
-> +	return pa12203001_power_on(i2c_get_clientdata(to_i2c_client(dev)));
+> +     return pa12203001_power_on(i2c_get_clientdata(to_i2c_client(dev)));
 > +}
 > +#endif
 > +
 > +#ifdef CONFIG_PM
 > +static int pa12203001_runtime_suspend(struct device *dev)
 > +{
-> +	return pa12203001_power_off(i2c_get_clientdata(to_i2c_client(dev)));
+> +     return pa12203001_power_off(i2c_get_clientdata(to_i2c_client(dev)));
 > +}
 > +
 > +static int pa12203001_runtime_resume(struct device *dev)
 > +{
-> +	struct pa12203001_data *data;
+> +     struct pa12203001_data *data;
 > +
-> +	data = iio_priv(i2c_get_clientdata(to_i2c_client(dev)));
+> +     data = iio_priv(i2c_get_clientdata(to_i2c_client(dev)));
 > +
-> +	mutex_lock(&data->lock);
-> +	if (data->als_needs_enable) {
-> +		pa12203001_als_enable(data, PA12203001_ALS_EN_MASK);
-> +		data->als_needs_enable = false;
-> +	}
-> +	if (data->px_needs_enable) {
-> +		pa12203001_px_enable(data, PA12203001_PX_EN_MASK);
-> +		data->px_needs_enable = false;
-> +	}
-> +	mutex_unlock(&data->lock);
-> +	return 0;
+> +     mutex_lock(&data->lock);
+> +     if (data->als_needs_enable) {
+> +             pa12203001_als_enable(data, PA12203001_ALS_EN_MASK);
+> +             data->als_needs_enable = false;
+> +     }
+> +     if (data->px_needs_enable) {
+> +             pa12203001_px_enable(data, PA12203001_PX_EN_MASK);
+> +             data->px_needs_enable = false;
+> +     }
+> +     mutex_unlock(&data->lock);
+> +     return 0;
 > +}
 > +#endif
 > +
 > +static const struct dev_pm_ops pa12203001_pm_ops = {
-> +	SET_SYSTEM_SLEEP_PM_OPS(pa12203001_suspend, pa12203001_resume)
-> +	SET_RUNTIME_PM_OPS(pa12203001_runtime_suspend,
-> +			   pa12203001_runtime_resume, NULL)
+> +     SET_SYSTEM_SLEEP_PM_OPS(pa12203001_suspend, pa12203001_resume)
+> +     SET_RUNTIME_PM_OPS(pa12203001_runtime_suspend,
+> +                        pa12203001_runtime_resume, NULL)
 > +};
 > +
 > +static const struct acpi_device_id pa12203001_acpi_match[] = {
-> +	{ "TXCPA122", 0},
-> +	{}
+> +     { "TXCPA122", 0},
+> +     {}
 > +};
 > +
 > +MODULE_DEVICE_TABLE(acpi, pa12203001_acpi_match);
 > +
 > +static const struct i2c_device_id pa12203001_id[] = {
-> +		{"txcpa122", 0},
-> +		{}
+> +             {"txcpa122", 0},
+> +             {}
 > +};
 > +
 > +MODULE_DEVICE_TABLE(i2c, pa12203001_id);
 > +
 > +static struct i2c_driver pa12203001_driver = {
-> +	.driver = {
-> +		.name = PA12203001_DRIVER_NAME,
-> +		.pm = &pa12203001_pm_ops,
-> +		.acpi_match_table = ACPI_PTR(pa12203001_acpi_match),
-> +	},
-> +	.probe = pa12203001_probe,
-> +	.remove = pa12203001_remove,
-> +	.id_table = pa12203001_id,
+> +     .driver = {
+> +             .name = PA12203001_DRIVER_NAME,
+> +             .pm = &pa12203001_pm_ops,
+> +             .acpi_match_table = ACPI_PTR(pa12203001_acpi_match),
+> +     },
+> +     .probe = pa12203001_probe,
+> +     .remove = pa12203001_remove,
+> +     .id_table = pa12203001_id,
 > +
 > +};
 > +module_i2c_driver(pa12203001_driver);
@@ -615,9 +637,9 @@ constructions are used. Just for consistency :)
 > +MODULE_AUTHOR("Adriana Reus <adriana.reus@intel.com>");
 > +MODULE_DESCRIPTION("Driver for TXC PA12203001 Proximity and Light Sensor");
 > +MODULE_LICENSE("GPL v2");
-> -- 
+> --
 > 1.9.1
-> 
+>
 > --
 > To unsubscribe from this list: send the line "unsubscribe linux-kernel" in
 > the body of a message to majordomo@vger.kernel.org
