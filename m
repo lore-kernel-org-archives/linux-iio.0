@@ -1,394 +1,213 @@
-Return-Path: <knaack.h@gmx.de>
-Message-ID: <558E6E1A.2060204@gmx.de>
-Date: Sat, 27 Jun 2015 11:34:18 +0200
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mout.gmx.net ([212.227.15.18]:49926 "EHLO mout.gmx.net"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1753440AbbF0NfX (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Sat, 27 Jun 2015 09:35:23 -0400
+Message-ID: <558EA68F.9090601@gmx.de>
+Date: Sat, 27 Jun 2015 15:35:11 +0200
 From: Hartmut Knaack <knaack.h@gmx.de>
 MIME-Version: 1.0
-To: Roberta Dobrescu <roberta.dobrescu@gmail.com>,
- linux-iio@vger.kernel.org
-CC: jic23@kernel.org, lars@metafoo.de, pmeerw@pmeerw.net,
- daniel.baluta@intel.com
-Subject: Re: [PATCH v2 3/3] staging: iio: light: isl29018: Use
- standard sysfs attributes for scale and integration time
-References: <1429212059-13010-1-git-send-email-roberta.dobrescu@gmail.com> <1429212059-13010-4-git-send-email-roberta.dobrescu@gmail.com>
-In-Reply-To: <1429212059-13010-4-git-send-email-roberta.dobrescu@gmail.com>
-Content-Type: text/plain; charset=ISO-8859-15
-List-ID: <linux-iio@vger.kernel.org>
+To: Kuppuswamy Sathyanarayanan
+	<sathyanarayanan.kuppuswamy@linux.intel.com>, jic23@kernel.org,
+	pmeerw@pmeerw.net
+CC: linux-iio@vger.kernel.org, srinivas.pandruvada@linux.intel.com
+Subject: Re: [PATCH v5 2/5] iio: ltr501: Add integration time support
+References: <cover.1429433882.git.sathyanarayanan.kuppuswamy@linux.intel.com> <d30093a19faa74ad8092169105309a535ef59e04.1429433882.git.sathyanarayanan.kuppuswamy@linux.intel.com>
+In-Reply-To: <d30093a19faa74ad8092169105309a535ef59e04.1429433882.git.sathyanarayanan.kuppuswamy@linux.intel.com>
+Content-Type: text/plain; charset=US-ASCII
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Roberta Dobrescu schrieb am 16.04.2015 um 21:20:
-> This patch refactors the isl29018 driver code in order to use standard
-> sysfs attributes for scale and integration time.
+Kuppuswamy Sathyanarayanan schrieb am 19.04.2015 um 11:10:
+> Added support to modify and read ALS integration time.
+
+Hi,
+maybe I checked the wrong datasheet [1], but I come to a different conclusion.
+Please see my comments inline.
+
+[1] http://optoelectronics.liteon.com/upload/download/DS86-2012-0006/S_110_LTR-501ALS-01_PrelimDS_ver1%5B1%5D.pdf
+
 > 
-> ISL29018 light sensor uses four ranges and four ADC's resolutions
-> which influence the calculated lux. Adc resolution is strongly
-> connected to integration time and range should be controlled by scale.
-> 
-> This patch introduces the usage of integration time and scale instead
-> of adc resolution and range.
-> 
-> Signed-off-by: Roberta Dobrescu <roberta.dobrescu@gmail.com>
+> Signed-off-by: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
 > ---
->  drivers/staging/iio/light/isl29018.c | 224 +++++++++++++++++++++++++++--------
->  1 file changed, 175 insertions(+), 49 deletions(-)
+>  drivers/iio/light/ltr501.c | 90 +++++++++++++++++++++++++++++++++++++++++++++-
+>  1 file changed, 89 insertions(+), 1 deletion(-)
 > 
-> diff --git a/drivers/staging/iio/light/isl29018.c b/drivers/staging/iio/light/isl29018.c
-> index ffc3d1b..435d417 100644
-> --- a/drivers/staging/iio/light/isl29018.c
-> +++ b/drivers/staging/iio/light/isl29018.c
-> @@ -66,6 +66,39 @@
->  #define ISL29035_BOUT_SHIFT		0x07
->  #define ISL29035_BOUT_MASK		(0x01 << ISL29035_BOUT_SHIFT)
+> diff --git a/drivers/iio/light/ltr501.c b/drivers/iio/light/ltr501.c
+> index e2f7354..8092604 100644
+> --- a/drivers/iio/light/ltr501.c
+> +++ b/drivers/iio/light/ltr501.c
+> @@ -28,6 +28,7 @@
 >  
-> +#define ISL29018_INT_TIME_AVAIL		"0.090000 0.005630 0.000351 0.000021"
-> +#define ISL29023_INT_TIME_AVAIL		"0.090000 0.005600 0.000352 0.000022"
-> +#define ISL29035_INT_TIME_AVAIL		"0.105000 0.006500 0.000410 0.000025"
-> +
-> +static const char * const int_time_avail[] = {
-> +	ISL29018_INT_TIME_AVAIL,
-> +	ISL29023_INT_TIME_AVAIL,
-> +	ISL29035_INT_TIME_AVAIL,
-> +};
-> +
+>  #define LTR501_ALS_CONTR 0x80 /* ALS operation mode, SW reset */
+>  #define LTR501_PS_CONTR 0x81 /* PS operation mode */
+> +#define LTR501_ALS_MEAS_RATE 0x85 /* ALS integ time, measurement rate*/
+>  #define LTR501_PART_ID 0x86
+>  #define LTR501_MANUFAC_ID 0x87
+>  #define LTR501_ALS_DATA1 0x88 /* 16-bit, little endian */
+> @@ -49,11 +50,17 @@
+>  
+>  #define LTR501_REGMAP_NAME "ltr501_regmap"
+>  
+> +static const int int_time_mapping[] = {100000, 50000, 200000, 400000};
 
-Hi Roberta,
-are you still working to get this one out of staging? You introduced here the
-int_time_avail array (missing prefix), although you don't make use of it down
-in show_int_time_available() (also missing prefix), where I would expect it to
-be used. So, what's the status? Do you intend to use this array later on, or
-can it be dropped?
-Just for completeness: show_scale_available also misses a prefix.
-Thanks,
+The prefix is missing at the instance above and below here.
 
-Hartmut
-
-> +enum isl29018_int_time {
-> +	ISL29018_INT_TIME_16,
-> +	ISL29018_INT_TIME_12,
-> +	ISL29018_INT_TIME_8,
-> +	ISL29018_INT_TIME_4,
-> +};
 > +
-> +static const unsigned int isl29018_int_utimes[3][4] = {
-> +	{90000, 5630, 351, 21},
-> +	{90000, 5600, 352, 22},
-> +	{105000, 6500, 410, 25},
-> +};
+> +static const struct reg_field reg_field_it =
+> +				REG_FIELD(LTR501_ALS_MEAS_RATE, 3, 4);
 > +
-> +static const struct isl29018_scale {
-> +	unsigned int scale;
-> +	unsigned int uscale;
-> +} isl29018_scales[4][4] = {
-> +	{ {0, 15258}, {0, 61035}, {0, 244140}, {0, 976562} },
-> +	{ {0, 244140}, {0, 976562}, {3, 906250}, {15, 625000} },
-> +	{ {3, 906250}, {15, 625000}, {62, 500000}, {250, 0} },
-> +	{ {62, 500000}, {250, 0}, {1000, 0}, {4000, 0} }
-> +};
-> +
->  struct isl29018_chip {
->  	struct device		*dev;
->  	struct regmap		*regmap;
-> @@ -73,51 +106,75 @@ struct isl29018_chip {
->  	int			type;
->  	unsigned int		calibscale;
->  	unsigned int		ucalibscale;
-> -	unsigned int		range;
-> -	unsigned int		adc_bit;
-> +	unsigned int		int_time;
-> +	struct isl29018_scale	scale;
->  	int			prox_scheme;
->  	bool			suspended;
+>  struct ltr501_data {
+>  	struct i2c_client *client;
+>  	struct mutex lock_als, lock_ps;
+>  	u8 als_contr, ps_contr;
+>  	struct regmap *regmap;
+> +	struct regmap_field *reg_it;
 >  };
 >  
-> -static int isl29018_set_range(struct isl29018_chip *chip, unsigned long range,
-> -		unsigned int *new_range)
-> +static int isl29018_set_integration_time(struct isl29018_chip *chip,
-> +					 unsigned int utime)
->  {
-> -	static const unsigned long supp_ranges[] = {1000, 4000, 16000, 64000};
-> -	int i;
-> -
-> -	for (i = 0; i < ARRAY_SIZE(supp_ranges); ++i) {
-> -		if (range <= supp_ranges[i]) {
-> -			*new_range = (unsigned int)supp_ranges[i];
-> +	int i, ret;
-> +	unsigned int int_time, new_int_time;
-> +	struct isl29018_scale new_scale;
-> +
-> +	for (i = 0; i < ARRAY_SIZE(isl29018_int_utimes[chip->type]); ++i) {
-> +		if (utime == isl29018_int_utimes[chip->type][i]) {
-> +			new_int_time = i;
-> +			new_scale = isl29018_scales[new_int_time][0];
->  			break;
->  		}
->  	}
+>  static int ltr501_drdy(struct ltr501_data *data, u8 drdy_mask)
+> @@ -74,6 +81,58 @@ static int ltr501_drdy(struct ltr501_data *data, u8 drdy_mask)
+>  	return -EIO;
+>  }
 >  
-> -	if (i >= ARRAY_SIZE(supp_ranges))
-> +	if (i >= ARRAY_SIZE(isl29018_int_utimes[chip->type]))
->  		return -EINVAL;
->  
-> -	return regmap_update_bits(chip->regmap, ISL29018_REG_ADD_COMMANDII,
-> -			COMMANDII_RANGE_MASK, i << COMMANDII_RANGE_SHIFT);
-> +	ret = regmap_update_bits(chip->regmap, ISL29018_REG_ADD_COMMANDII,
-> +				 COMMANDII_RESOLUTION_MASK,
-> +				 i << COMMANDII_RESOLUTION_SHIFT);
-> +	if (ret < 0)
-> +		return ret;
+> +static int ltr501_set_it_time(struct ltr501_data *data, int it)
+> +{
+> +	int ret, i, index = -1, status;
 > +
-> +	/* keep the same range when integration time changes */
-> +	int_time = chip->int_time;
-> +	for (i = 0; i < ARRAY_SIZE(isl29018_scales[int_time]); ++i) {
-> +		if (chip->scale.scale == isl29018_scales[int_time][i].scale &&
-> +		    chip->scale.uscale == isl29018_scales[int_time][i].uscale) {
-> +			chip->scale = isl29018_scales[new_int_time][i];
+> +	for (i = 0; i < ARRAY_SIZE(int_time_mapping); i++) {
+> +		if (int_time_mapping[i] == it) {
+> +			index = i;
 > +			break;
 > +		}
 > +	}
-> +	chip->int_time = new_int_time;
+> +	/* Make sure integ time index is valid */
+> +	if (index < 0)
+> +		return -EINVAL;
 > +
-> +	return 0;
->  }
->  
-> -static int isl29018_set_resolution(struct isl29018_chip *chip,
-> -			unsigned long adcbit, unsigned int *conf_adc_bit)
-> +static int isl29018_set_scale(struct isl29018_chip *chip, int scale, int uscale)
->  {
-> -	static const unsigned long supp_adcbit[] = {16, 12, 8, 4};
-> -	int i;
-> +	int i, ret;
-> +	struct isl29018_scale new_scale;
->  
-> -	for (i = 0; i < ARRAY_SIZE(supp_adcbit); ++i) {
-> -		if (adcbit >= supp_adcbit[i]) {
-> -			*conf_adc_bit = (unsigned int)supp_adcbit[i];
-> +	for (i = 0; i < ARRAY_SIZE(isl29018_scales[chip->int_time]); ++i) {
-> +		if (scale == isl29018_scales[chip->int_time][i].scale &&
-> +		    uscale == isl29018_scales[chip->int_time][i].uscale) {
-> +			new_scale = isl29018_scales[chip->int_time][i];
->  			break;
->  		}
->  	}
->  
-> -	if (i >= ARRAY_SIZE(supp_adcbit))
-> +	if (i >= ARRAY_SIZE(isl29018_scales[chip->int_time]))
->  		return -EINVAL;
->  
-> -	return regmap_update_bits(chip->regmap, ISL29018_REG_ADD_COMMANDII,
-> -			COMMANDII_RESOLUTION_MASK,
-> -			i << COMMANDII_RESOLUTION_SHIFT);
-> +	ret = regmap_update_bits(chip->regmap, ISL29018_REG_ADD_COMMANDII,
-> +				 COMMANDII_RANGE_MASK,
-> +				 i << COMMANDII_RANGE_SHIFT);
+> +	ret = regmap_read(data->regmap, LTR501_ALS_CONTR, &status);
 > +	if (ret < 0)
 > +		return ret;
 > +
-> +	chip->scale = new_scale;
+> +	if (status & LTR501_CONTR_ALS_GAIN_MASK) {
+
+According to the description on page 17, if ALS Gain is set Dynamic Range 1
+is selected. So, as mentioned on page 20, valid index values would be 0, 2
+and 3 (meaning invalid value is 1).
+
+> +		/*
+> +		 * 200 ms and 400 ms integ time can only be
+> +		 * used in dynamic range 1
+> +		 */
+> +		if (index > 1)
+> +			return -EINVAL;
+> +	} else
+
+Coding style guidelines prefer to put the else-part in {}, if the if-part
+is in {}.
+Anyway, my interpretation of the datasheet suggests that this part expects
+Dynamic Range 2 to be selected. Valid values are: 0 and 1 (invalid are 2
+and 3).
+
+Thanks,
+Hartmut
+
+> +		/* 50 ms integ time can only be used in dynamic range 2 */
+> +		if (index == 1)
+> +			return -EINVAL;
 > +
-> +	return 0;
->  }
->  
->  static int isl29018_read_sensor_input(struct isl29018_chip *chip, int mode)
-> @@ -156,22 +213,17 @@ static int isl29018_read_sensor_input(struct isl29018_chip *chip, int mode)
->  static int isl29018_read_lux(struct isl29018_chip *chip, int *lux)
+> +	return regmap_field_write(data->reg_it, index);
+> +}
+> +
+> +/* read int time in micro seconds */
+> +static int ltr501_read_it_time(struct ltr501_data *data, int *val, int *val2)
+> +{
+> +	int ret, index;
+> +
+> +	ret = regmap_field_read(data->reg_it, &index);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	/* Make sure integ time index is valid */
+> +	if (index < 0 || index >= ARRAY_SIZE(int_time_mapping))
+> +		return -EINVAL;
+> +
+> +	*val2 = int_time_mapping[index];
+> +	*val = 0;
+> +
+> +	return IIO_VAL_INT_PLUS_MICRO;
+> +}
+> +
+>  static int ltr501_read_als(struct ltr501_data *data, __le16 buf[2])
 >  {
->  	int lux_data;
-> -	unsigned int data_x_range, lux_unshifted;
-> +	unsigned int data_x_range;
->  
->  	lux_data = isl29018_read_sensor_input(chip, COMMMAND1_OPMODE_ALS_ONCE);
->  
->  	if (lux_data < 0)
->  		return lux_data;
->  
-> -	/* To support fractional scaling, separate the unshifted lux
-> -	 * into two calculations: int scaling and micro-scaling.
-> -	 * ucalibscale ranges from 0-999999, so about 20 bits.  Split
-> -	 * the /1,000,000 in two to reduce the risk of over/underflow.
-> -	 */
-> -	data_x_range = lux_data * chip->range;
-> -	lux_unshifted = data_x_range * chip->calibscale;
-> -	lux_unshifted += data_x_range / 1000 * chip->ucalibscale / 1000;
-> -	*lux = lux_unshifted >> chip->adc_bit;
-> +	data_x_range = lux_data * chip->scale.scale +
-> +		       lux_data * chip->scale.uscale / 1000000;
-> +	*lux = data_x_range * chip->calibscale +
-> +	       data_x_range * chip->ucalibscale / 1000000;
->  
->  	return 0;
->  }
-> @@ -229,7 +281,39 @@ static int isl29018_read_proximity_ir(struct isl29018_chip *chip, int scheme,
->  	return 0;
->  }
->  
-> -/* Sysfs interface */
-> +static ssize_t show_scale_available(struct device *dev,
-> +			struct device_attribute *attr, char *buf)
-> +{
-> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
-> +	struct isl29018_chip *chip = iio_priv(indio_dev);
-> +	int i, len = 0;
-> +
-> +	for (i = 0; i < ARRAY_SIZE(isl29018_scales[chip->int_time]); ++i)
-> +		len += sprintf(buf + len, "%d.%06d ",
-> +			       isl29018_scales[chip->int_time][i].scale,
-> +			       isl29018_scales[chip->int_time][i].uscale);
-> +
-> +	buf[len - 1] = '\n';
-> +
-> +	return len;
-> +}
-> +
-> +static ssize_t show_int_time_available(struct device *dev,
-> +			struct device_attribute *attr, char *buf)
-> +{
-> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
-> +	struct isl29018_chip *chip = iio_priv(indio_dev);
-> +	int i, len = 0;
-> +
-> +	for (i = 0; i < ARRAY_SIZE(isl29018_int_utimes[chip->type]); ++i)
-> +		len += sprintf(buf + len, "0.%06d ",
-> +			       isl29018_int_utimes[chip->type][i]);
-> +
-> +	buf[len - 1] = '\n';
-> +
-> +	return len;
-> +}
-> +
->  /* proximity scheme */
->  static ssize_t show_prox_infrared_suppression(struct device *dev,
->  			struct device_attribute *attr, char *buf)
-> @@ -276,11 +360,26 @@ static int isl29018_write_raw(struct iio_dev *indio_dev,
->  	int ret = -EINVAL;
->  
->  	mutex_lock(&chip->lock);
-> -	if (mask == IIO_CHAN_INFO_CALIBSCALE && chan->type == IIO_LIGHT) {
-> -		chip->calibscale = val;
-> -		/* With no write_raw_get_fmt(), val2 is a MICRO fraction. */
-> -		chip->ucalibscale = val2;
-> -		ret = 0;
-> +	switch (mask) {
-> +	case IIO_CHAN_INFO_CALIBSCALE:
-> +		if (chan->type == IIO_LIGHT) {
-> +			chip->calibscale = val;
-> +			chip->ucalibscale = val2;
-> +			ret = 0;
-> +		}
-> +		break;
+>  	int ret;
+> @@ -121,7 +180,8 @@ static int ltr501_read_ps(struct ltr501_data *data)
+>  static const struct iio_chan_spec ltr501_channels[] = {
+>  	LTR501_INTENSITY_CHANNEL(0, LTR501_ALS_DATA0, IIO_MOD_LIGHT_BOTH, 0),
+>  	LTR501_INTENSITY_CHANNEL(1, LTR501_ALS_DATA1, IIO_MOD_LIGHT_IR,
+> -				 BIT(IIO_CHAN_INFO_SCALE)),
+> +				 BIT(IIO_CHAN_INFO_SCALE) |
+> +				 BIT(IIO_CHAN_INFO_INT_TIME)),
+>  	{
+>  		.type = IIO_PROXIMITY,
+>  		.address = LTR501_PS_DATA,
+> @@ -196,6 +256,13 @@ static int ltr501_read_raw(struct iio_dev *indio_dev,
+>  		default:
+>  			return -EINVAL;
+>  		}
 > +	case IIO_CHAN_INFO_INT_TIME:
-> +		if (chan->type == IIO_LIGHT)
+> +		switch (chan->type) {
+> +		case IIO_INTENSITY:
+> +			return ltr501_read_it_time(data, val, val2);
+> +		default:
+> +			return -EINVAL;
+> +		}
+>  	}
+>  	return -EINVAL;
+>  }
+> @@ -246,16 +313,30 @@ static int ltr501_write_raw(struct iio_dev *indio_dev,
+>  		default:
+>  			return -EINVAL;
+>  		}
+> +	case IIO_CHAN_INFO_INT_TIME:
+> +		switch (chan->type) {
+> +		case IIO_INTENSITY:
 > +			if (val != 0)
 > +				return -EINVAL;
-> +			ret = isl29018_set_integration_time(chip, val2);
-> +		break;
-> +	case IIO_CHAN_INFO_SCALE:
-> +		if (chan->type == IIO_LIGHT)
-> +			ret = isl29018_set_scale(chip, val, val2);
-> +		break;
-> +	default:
-> +		break;
+> +			mutex_lock(&data->lock_als);
+> +			i = ltr501_set_it_time(data, val2);
+> +			mutex_unlock(&data->lock_als);
+> +			return i;
+> +		default:
+> +			return -EINVAL;
+> +		}
 >  	}
->  	mutex_unlock(&chip->lock);
->  
-> @@ -321,6 +420,20 @@ static int isl29018_read_raw(struct iio_dev *indio_dev,
->  		if (!ret)
->  			ret = IIO_VAL_INT;
->  		break;
-> +	case IIO_CHAN_INFO_INT_TIME:
-> +		if (chan->type == IIO_LIGHT) {
-> +			*val = 0;
-> +			*val2 = isl29018_int_utimes[chip->type][chip->int_time];
-> +			ret = IIO_VAL_INT_PLUS_MICRO;
-> +		}
-> +		break;
-> +	case IIO_CHAN_INFO_SCALE:
-> +		if (chan->type == IIO_LIGHT) {
-> +			*val = chip->scale.scale;
-> +			*val2 = chip->scale.uscale;
-> +			ret = IIO_VAL_INT_PLUS_MICRO;
-> +		}
-> +		break;
->  	case IIO_CHAN_INFO_CALIBSCALE:
->  		if (chan->type == IIO_LIGHT) {
->  			*val = chip->calibscale;
-> @@ -340,7 +453,9 @@ static int isl29018_read_raw(struct iio_dev *indio_dev,
->  	.indexed = 1,							\
->  	.channel = 0,							\
->  	.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED) |		\
-> -	BIT(IIO_CHAN_INFO_CALIBSCALE),					\
-> +	BIT(IIO_CHAN_INFO_CALIBSCALE) |					\
-> +	BIT(IIO_CHAN_INFO_SCALE) |					\
-> +	BIT(IIO_CHAN_INFO_INT_TIME),					\
+>  	return -EINVAL;
 >  }
 >  
->  #define ISL29018_IR_CHANNEL {						\
-> @@ -366,19 +481,27 @@ static const struct iio_chan_spec isl29023_channels[] = {
->  	ISL29018_IR_CHANNEL,
->  };
+>  static IIO_CONST_ATTR(in_proximity_scale_available, "1 0.25 0.125 0.0625");
+>  static IIO_CONST_ATTR(in_intensity_scale_available, "1 0.005");
+> +static IIO_CONST_ATTR_INT_TIME_AVAIL("0.05 0.1 0.2 0.4");
 >  
-> +static IIO_DEVICE_ATTR(in_illuminance_integration_time_available, S_IRUGO,
-> +		       show_int_time_available, NULL, 0);
-> +static IIO_DEVICE_ATTR(in_illuminance_scale_available, S_IRUGO,
-> +		      show_scale_available, NULL, 0);
->  static IIO_DEVICE_ATTR(proximity_on_chip_ambient_infrared_suppression,
->  					S_IRUGO | S_IWUSR,
->  					show_prox_infrared_suppression,
->  					store_prox_infrared_suppression, 0);
->  
->  #define ISL29018_DEV_ATTR(name) (&iio_dev_attr_##name.dev_attr.attr)
-> -#define ISL29018_CONST_ATTR(name) (&iio_const_attr_##name.dev_attr.attr)
-> +
->  static struct attribute *isl29018_attributes[] = {
-> +	ISL29018_DEV_ATTR(in_illuminance_scale_available),
-> +	ISL29018_DEV_ATTR(in_illuminance_integration_time_available),
->  	ISL29018_DEV_ATTR(proximity_on_chip_ambient_infrared_suppression),
+>  static struct attribute *ltr501_attributes[] = {
+>  	&iio_const_attr_in_proximity_scale_available.dev_attr.attr,
+>  	&iio_const_attr_in_intensity_scale_available.dev_attr.attr,
+> +	&iio_const_attr_integration_time_available.dev_attr.attr,
 >  	NULL
 >  };
 >  
->  static struct attribute *isl29023_attributes[] = {
-> +	ISL29018_DEV_ATTR(in_illuminance_scale_available),
-> +	ISL29018_DEV_ATTR(in_illuminance_integration_time_available),
->  	NULL
->  };
+> @@ -404,6 +485,13 @@ static int ltr501_probe(struct i2c_client *client,
+>  	mutex_init(&data->lock_als);
+>  	mutex_init(&data->lock_ps);
 >  
-> @@ -422,8 +545,6 @@ enum {
->  static int isl29018_chip_init(struct isl29018_chip *chip)
->  {
->  	int status;
-> -	unsigned int new_adc_bit;
-> -	unsigned int new_range;
->  
->  	if (chip->type == isl29035) {
->  		status = isl29035_detect(chip);
-> @@ -472,14 +593,19 @@ static int isl29018_chip_init(struct isl29018_chip *chip)
->  	usleep_range(1000, 2000);	/* per data sheet, page 10 */
->  
->  	/* set defaults */
-> -	status = isl29018_set_range(chip, chip->range, &new_range);
-> +	status = isl29018_set_scale(chip, chip->scale.scale,
-> +				    chip->scale.uscale);
->  	if (status < 0) {
->  		dev_err(chip->dev, "Init of isl29018 fails\n");
->  		return status;
->  	}
->  
-> -	status = isl29018_set_resolution(chip, chip->adc_bit,
-> -						&new_adc_bit);
-> +	status = isl29018_set_integration_time(chip,
-> +			isl29018_int_utimes[chip->type][chip->int_time]);
-> +	if (status < 0) {
-> +		dev_err(chip->dev, "Init of isl29018 fails\n");
-> +		return status;
+> +	data->reg_it = devm_regmap_field_alloc(&client->dev, regmap,
+> +					       reg_field_it);
+> +	if (IS_ERR(data->reg_it)) {
+> +		dev_err(&client->dev, "Integ time reg field init failed.\n");
+> +		return PTR_ERR(data->reg_it);
 > +	}
->  
->  	return 0;
->  }
-> @@ -609,8 +735,8 @@ static int isl29018_probe(struct i2c_client *client,
->  	chip->type = dev_id;
->  	chip->calibscale = 1;
->  	chip->ucalibscale = 0;
-> -	chip->range = 1000;
-> -	chip->adc_bit = 16;
-> +	chip->int_time = ISL29018_INT_TIME_16;
-> +	chip->scale = isl29018_scales[chip->int_time][0];
->  	chip->suspended = false;
->  
->  	chip->regmap = devm_regmap_init_i2c(client,
+> +
+>  	ret = regmap_read(data->regmap, LTR501_PART_ID, &partid);
+>  	if (ret < 0)
+>  		return ret;
 > 
+
