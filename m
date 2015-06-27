@@ -1,565 +1,614 @@
-Return-Path: <adriana.reus@intel.com>
-From: Adriana Reus <adriana.reus@intel.com>
-To: jic23@kernel.org
-Cc: linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Adriana Reus <adriana.reus@intel.com>
-Subject: [PATCH] iio: light: Add support for TXC PA12 als and proximity sensor
-Date: Fri, 26 Jun 2015 13:29:22 +0300
-Message-Id: <1435314562-12079-1-git-send-email-adriana.reus@intel.com>
+Return-Path: <knaack.h@gmx.de>
+Message-ID: <558F31B0.4060000@gmx.de>
+Date: Sun, 28 Jun 2015 01:28:48 +0200
+From: Hartmut Knaack <knaack.h@gmx.de>
+MIME-Version: 1.0
+To: Kuppuswamy Sathyanarayanan
+ <sathyanarayanan.kuppuswamy@linux.intel.com>, jic23@kernel.org,
+ pmeerw@pmeerw.net
+CC: linux-iio@vger.kernel.org, srinivas.pandruvada@linux.intel.com
+Subject: Re: [PATCH v5 4/5] iio: ltr501: Add interrupt rate control support
+References: <cover.1429433882.git.sathyanarayanan.kuppuswamy@linux.intel.com> <9feefb70cc5273c6752b8c185d0a3db1044011b3.1429433882.git.sathyanarayanan.kuppuswamy@linux.intel.com>
+In-Reply-To: <9feefb70cc5273c6752b8c185d0a3db1044011b3.1429433882.git.sathyanarayanan.kuppuswamy@linux.intel.com>
+Content-Type: text/plain; charset=ISO-8859-15
 List-ID: <linux-iio@vger.kernel.org>
 
-Add support for TXC PA12203001 als and proximity sensor.
-Support for raw illuminance and proximity readings.
+Kuppuswamy Sathyanarayanan schrieb am 19.04.2015 um 11:10:
+> Added rate control support for ALS and proximity
+> threshold interrupts.Also, Added support to modify
+> and read ALS & proximity sensor sampling frequency.
+> 
+> LTR-501 supports interrupt rate control using persistence
+> register settings. Writing <n> to persistence register
+> would generate interrupt only if there are <n> consecutive
+> data values outside the threshold range.
+> 
+> Since we don't have any existing ABI's to directly
+> control the persistence register count, we have implemented
+> the rate control using IIO_EV_INFO_PERIOD. _period event
+> attribute represents the amount of time in seconds an
+> event should be true for the device to generate the
+> interrupt. So using _period value and device frequency,
+> persistence count is calculated in driver using following
+> logic.
+> 
+> count =  period / measurement_rate
+> 
+> If the given period is not a multiple of measurement rate then
+> we round up the value to next multiple.
+> 
+> This patch also handles change to persistence count whenever
+> there is change in frequency.
+> 
 
-Signed-off-by: Adriana Reus <adriana.reus@intel.com>
----
- drivers/iio/light/Kconfig      |  11 +
- drivers/iio/light/Makefile     |   1 +
- drivers/iio/light/pa12203001.c | 501 +++++++++++++++++++++++++++++++++++++++++
- 3 files changed, 513 insertions(+)
- create mode 100644 drivers/iio/light/pa12203001.c
+Hi,
+a few more comments inline.
 
-diff --git a/drivers/iio/light/Kconfig b/drivers/iio/light/Kconfig
-index e6198b7..30fd835 100644
---- a/drivers/iio/light/Kconfig
-+++ b/drivers/iio/light/Kconfig
-@@ -198,6 +198,17 @@ config LTR501
- 	 This driver can also be built as a module.  If so, the module
-          will be called ltr501.
- 
-+config PA12203001
-+        tristate "TXC PA12203001 light and proximity sensor"
-+        depends on I2C
-+        select REGMAP_I2C
-+        help
-+         If you say yes here you get support for the TXC PA12203001
-+         ambient light and proximity sensor.
-+
-+         This driver can also be built as a module.  If so, the module
-+         will be called pa12203001.
-+
- config STK3310
- 	tristate "STK3310 ALS and proximity sensor"
- 	depends on I2C
-diff --git a/drivers/iio/light/Makefile b/drivers/iio/light/Makefile
-index e2d50fd..257fabd 100644
---- a/drivers/iio/light/Makefile
-+++ b/drivers/iio/light/Makefile
-@@ -19,6 +19,7 @@ obj-$(CONFIG_ISL29125)		+= isl29125.o
- obj-$(CONFIG_JSA1212)		+= jsa1212.o
- obj-$(CONFIG_SENSORS_LM3533)	+= lm3533-als.o
- obj-$(CONFIG_LTR501)		+= ltr501.o
-+obj-$(CONFIG_PA12203001)	+= pa12203001.o
- obj-$(CONFIG_SENSORS_TSL2563)	+= tsl2563.o
- obj-$(CONFIG_STK3310)          += stk3310.o
- obj-$(CONFIG_TCS3414)		+= tcs3414.o
-diff --git a/drivers/iio/light/pa12203001.c b/drivers/iio/light/pa12203001.c
-new file mode 100644
-index 0000000..03bee4c
---- /dev/null
-+++ b/drivers/iio/light/pa12203001.c
-@@ -0,0 +1,501 @@
-+/*
-+ * Copyright (c) 2015 Intel Corporation
-+ *
-+ * Driver for TXC PA12203001 Proximity and Ambient Light Sensor.
-+ *
-+ * This program is free software; you can redistribute it and/or modify it
-+ * under the terms of the GNU General Public License version 2 as published by
-+ * the Free Software Foundation.
-+ * To do: Interrupt support.
-+ */
-+
-+#include <linux/kernel.h>
-+#include <linux/module.h>
-+#include <linux/acpi.h>
-+#include <linux/delay.h>
-+#include <linux/i2c.h>
-+#include <linux/iio/iio.h>
-+#include <linux/iio/sysfs.h>
-+#include <linux/mutex.h>
-+#include <linux/pm.h>
-+#include <linux/pm_runtime.h>
-+#include <linux/regmap.h>
-+
-+#define PA12203001_DRIVER_NAME	"pa12203001"
-+
-+#define PA12203001_REG_CFG0		0x00
-+#define PA12203001_REG_CFG1		0x01
-+#define PA12203001_REG_CFG2		0x02
-+#define PA12203001_REG_CFG3		0x03
-+
-+#define PA12203001_REG_ADL		0x0b
-+#define PA12203001_REG_PDH		0x0e
-+
-+#define PA12203001_REG_POFS		0x10
-+#define PA12203001_REG_PSET		0x11
-+
-+#define PA12203001_ALS_EN_MASK		BIT(0)
-+#define PA12203001_PX_EN_MASK		BIT(1)
-+#define PA12203001_PX_NORMAL_MODE_MASK		(BIT(7) | BIT(6))
-+#define PA12203001_AFSR_MASK		(BIT(5) | BIT(4))
-+
-+#define PA12203001_PSCAN			0x03
-+
-+/* als range 31000, ps, als disabled */
-+#define PA12203001_REG_CFG0_DEFAULT		0x30
-+
-+/* led current: 100 mA */
-+#define PA12203001_REG_CFG1_DEFAULT		0x10
-+
-+/* ps mode: normal, interrupts not active */
-+#define PA12203001_REG_CFG2_DEFAULT		0xcc
-+
-+#define PA12203001_REG_CFG3_DEFAULT		0x00
-+
-+#define PA12203001_SLEEP_DELAY_MS		3000
-+
-+/* available scales: corresponding to [500, 4000, 7000, 31000]  lux */
-+static const int pa12203001_scales[] = { 7629, 61036, 106813, 473029};
-+
-+struct pa12203001_data {
-+	struct i2c_client *client;
-+
-+	/* protect device states */
-+	struct mutex lock;
-+
-+	bool als_enabled;
-+	bool px_enabled;
-+	bool als_needs_enable;
-+	bool px_needs_enable;
-+
-+	struct regmap *map;
-+};
-+
-+static IIO_CONST_ATTR(in_illuminance_scale_available,
-+		      "0.007629 0.061036 0.106813 0.473029");
-+
-+static struct attribute *pa12203001_attrs[] = {
-+	&iio_const_attr_in_illuminance_scale_available.dev_attr.attr,
-+	NULL
-+};
-+
-+static const struct attribute_group pa12203001_attr_group = {
-+	.attrs = pa12203001_attrs,
-+};
-+
-+static const struct iio_chan_spec pa12203001_channels[] = {
-+	{
-+		.type = IIO_LIGHT,
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
-+				      BIT(IIO_CHAN_INFO_SCALE),
-+	},
-+	{
-+		.type = IIO_PROXIMITY,
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
-+	}
-+};
-+
-+static const struct regmap_range pa12203001_volatile_regs_ranges[] = {
-+	regmap_reg_range(PA12203001_REG_ADL, PA12203001_REG_ADL + 1),
-+	regmap_reg_range(PA12203001_REG_PDH, PA12203001_REG_PDH),
-+};
-+
-+static const struct regmap_access_table pa12203001_volatile_regs = {
-+	.yes_ranges = pa12203001_volatile_regs_ranges,
-+	.n_yes_ranges = ARRAY_SIZE(pa12203001_volatile_regs_ranges),
-+};
-+
-+static const struct regmap_config pa12203001_regmap_config = {
-+	.reg_bits = 8,
-+	.val_bits = 8,
-+	.max_register = PA12203001_REG_PSET,
-+	.cache_type = REGCACHE_RBTREE,
-+	.volatile_table = &pa12203001_volatile_regs,
-+};
-+
-+static inline int pa12203001_als_enable(struct pa12203001_data *data, u8 enable)
-+{
-+	int ret;
-+
-+	ret = regmap_update_bits(data->map, PA12203001_REG_CFG0,
-+				 PA12203001_ALS_EN_MASK, enable);
-+	if (ret < 0)
-+		return ret;
-+
-+	data->als_enabled = !!enable;
-+	return 0;
-+}
-+
-+static inline int pa12203001_px_enable(struct pa12203001_data *data, u8 enable)
-+{
-+	int ret;
-+
-+	ret = regmap_update_bits(data->map, PA12203001_REG_CFG0,
-+				 PA12203001_PX_EN_MASK, enable);
-+	if (ret < 0)
-+		return ret;
-+
-+	data->px_enabled = !!enable;
-+	return 0;
-+}
-+
-+static int pa12203001_set_power_state(struct pa12203001_data *data, bool on,
-+				      u8 mask)
-+{
-+#ifdef CONFIG_PM
-+	int ret;
-+
-+	mutex_lock(&data->lock);
-+	if (on && (mask & PA12203001_ALS_EN_MASK)) {
-+		if (data->px_enabled) {
-+			ret = pa12203001_als_enable(data,
-+						    PA12203001_ALS_EN_MASK);
-+			if (ret < 0) {
-+				mutex_unlock(&data->lock);
-+				return ret;
-+			}
-+		} else {
-+			data->als_needs_enable = true;
-+		}
-+	}
-+
-+	if (on && (mask & PA12203001_PX_EN_MASK)) {
-+		if (data->als_enabled) {
-+			ret = pa12203001_px_enable(data, PA12203001_PX_EN_MASK);
-+			if (ret < 0) {
-+				mutex_unlock(&data->lock);
-+				return ret;
-+			}
-+		} else {
-+			data->px_needs_enable = true;
-+		}
-+	}
-+	mutex_unlock(&data->lock);
-+
-+	if (on) {
-+		/* Get reference and resume */
-+		ret = pm_runtime_get_sync(&data->client->dev);
-+		if (ret < 0)
-+			pm_runtime_put_noidle(&data->client->dev);
-+
-+	} else {
-+		/*
-+		 * Turning off - restart timer, drop reference
-+		 * and setup autosuspend
-+		*/
-+		pm_runtime_mark_last_busy(&data->client->dev);
-+		ret = pm_runtime_put_autosuspend(&data->client->dev);
-+	}
-+	return ret;
-+
-+#endif
-+	return 0;
-+}
-+
-+static int pa12203001_read_raw(struct iio_dev *indio_dev,
-+			       struct iio_chan_spec const *chan, int *val,
-+			       int *val2, long mask)
-+{
-+	struct pa12203001_data *data = iio_priv(indio_dev);
-+	int ret;
-+	u8 dev_mask;
-+	unsigned int reg_byte;
-+	__le16 reg_word;
-+
-+	switch (mask) {
-+	case IIO_CHAN_INFO_RAW:
-+		switch (chan->type) {
-+		case IIO_LIGHT:
-+			dev_mask = PA12203001_ALS_EN_MASK;
-+			ret = pa12203001_set_power_state(data, true, dev_mask);
-+			if (ret < 0)
-+				return ret;
-+			/*
-+			 * ALS ADC value is stored in registers
-+			 * PA12203001_REG_ADL and in PA12203001_REG_ADL + 1.
-+			 */
-+			ret = regmap_bulk_read(data->map, PA12203001_REG_ADL,
-+					       &reg_word, 2);
-+			if (ret < 0)
-+				return ret;
-+			*val = le16_to_cpu(reg_word);
-+			ret = pa12203001_set_power_state(data, false, dev_mask);
-+			if (ret < 0)
-+				return ret;
-+			break;
-+		case IIO_PROXIMITY:
-+			dev_mask = PA12203001_PX_EN_MASK;
-+			ret = pa12203001_set_power_state(data, true, dev_mask);
-+			if (ret < 0)
-+				return ret;
-+			ret = regmap_read(data->map, PA12203001_REG_PDH,
-+					  &reg_byte);
-+			if (ret < 0)
-+				return ret;
-+			*val = reg_byte;
-+			ret = pa12203001_set_power_state(data, false, dev_mask);
-+			if (ret < 0)
-+				return ret;
-+			break;
-+		default:
-+			ret = -EINVAL;
-+			break;
-+		}
-+
-+		return IIO_VAL_INT;
-+	case IIO_CHAN_INFO_SCALE:
-+		ret = regmap_read(data->map, PA12203001_REG_CFG0, &reg_byte);
-+		if (ret < 0)
-+			return ret;
-+		*val = 0;
-+		reg_byte = (reg_byte & PA12203001_AFSR_MASK);
-+		*val2 = pa12203001_scales[reg_byte >> 4];
-+		return IIO_VAL_INT_PLUS_MICRO;
-+	default:
-+		break;
-+	}
-+
-+	return -EINVAL;
-+}
-+
-+static int pa12203001_write_raw(struct iio_dev *indio_dev,
-+				struct iio_chan_spec const *chan, int val,
-+				int val2, long mask)
-+{
-+	struct pa12203001_data *data = iio_priv(indio_dev);
-+	int i, ret;
-+	unsigned int reg_byte;
-+
-+	switch (mask) {
-+	case IIO_CHAN_INFO_SCALE:
-+		ret = regmap_read(data->map, PA12203001_REG_CFG0, &reg_byte);
-+		if (val != 0 || ret < 0)
-+			return -EINVAL;
-+		for (i = 0; i < ARRAY_SIZE(pa12203001_scales); i++) {
-+			if (val2 == pa12203001_scales[i])
-+				return regmap_update_bits(data->map,
-+							  PA12203001_REG_CFG0,
-+							  PA12203001_AFSR_MASK,
-+							  (i << 4));
-+		}
-+	break;
-+	}
-+
-+	return -EINVAL;
-+}
-+
-+static const struct iio_info pa12203001_info = {
-+	.driver_module	= THIS_MODULE,
-+	.read_raw = pa12203001_read_raw,
-+	.write_raw = pa12203001_write_raw,
-+	.attrs = &pa12203001_attr_group,
-+};
-+
-+static int pa12203001_init(struct iio_dev *indio_dev)
-+{
-+	struct pa12203001_data *data = iio_priv(indio_dev);
-+	int ret;
-+
-+	ret = regmap_write(data->map, PA12203001_REG_CFG0,
-+			   PA12203001_REG_CFG0_DEFAULT);
-+	if (ret < 0)
-+		return ret;
-+
-+	ret = regmap_write(data->map, PA12203001_REG_CFG1,
-+			   PA12203001_REG_CFG1_DEFAULT);
-+	if (ret < 0)
-+		return ret;
-+
-+	ret = regmap_write(data->map, PA12203001_REG_CFG2,
-+			   PA12203001_REG_CFG2_DEFAULT);
-+	if (ret < 0)
-+		return ret;
-+
-+	ret = regmap_write(data->map, PA12203001_REG_CFG3,
-+			   PA12203001_REG_CFG3_DEFAULT);
-+	if (ret < 0)
-+		return ret;
-+
-+	return regmap_write(data->map, PA12203001_REG_PSET,
-+			    PA12203001_PSCAN);
-+}
-+
-+static int pa12203001_power_on(struct iio_dev *indio_dev)
-+{
-+	struct pa12203001_data *data = iio_priv(indio_dev);
-+	int ret;
-+	u8 enable = 0xff;
-+
-+	mutex_lock(&data->lock);
-+	ret = pa12203001_als_enable(data, enable);
-+	if (ret < 0) {
-+		mutex_unlock(&data->lock);
-+		return ret;
-+	}
-+
-+	ret = pa12203001_px_enable(data, enable);
-+	if (ret < 0) {
-+		mutex_unlock(&data->lock);
-+		return ret;
-+	}
-+	mutex_unlock(&data->lock);
-+	return 0;
-+}
-+
-+static int pa12203001_power_off(struct iio_dev *indio_dev)
-+{
-+	struct pa12203001_data *data = iio_priv(indio_dev);
-+	int ret;
-+	u8 disable = 0x00;
-+
-+	mutex_lock(&data->lock);
-+	ret = pa12203001_als_enable(data, disable);
-+	if (ret < 0) {
-+		mutex_unlock(&data->lock);
-+		return ret;
-+	}
-+
-+	ret = pa12203001_px_enable(data, disable);
-+	if (ret < 0) {
-+		mutex_unlock(&data->lock);
-+		return ret;
-+	}
-+	mutex_unlock(&data->lock);
-+	return 0;
-+}
-+
-+static int pa12203001_probe(struct i2c_client *client,
-+			    const struct i2c_device_id *id)
-+{
-+	struct pa12203001_data *data;
-+	struct iio_dev *indio_dev;
-+	int ret;
-+
-+	indio_dev = devm_iio_device_alloc(&client->dev,
-+					  sizeof(struct pa12203001_data));
-+	if (!indio_dev)
-+		return -ENOMEM;
-+
-+	data = iio_priv(indio_dev);
-+	i2c_set_clientdata(client, indio_dev);
-+	data->client = client;
-+
-+	data->map = devm_regmap_init_i2c(client, &pa12203001_regmap_config);
-+	if (IS_ERR(data->map))
-+		return PTR_ERR(data->map);
-+
-+	mutex_init(&data->lock);
-+
-+	indio_dev->dev.parent = &client->dev;
-+	indio_dev->info = &pa12203001_info;
-+	indio_dev->name = PA12203001_DRIVER_NAME;
-+	indio_dev->channels = pa12203001_channels;
-+	indio_dev->num_channels = ARRAY_SIZE(pa12203001_channels);
-+	indio_dev->modes = INDIO_DIRECT_MODE;
-+
-+	ret = pa12203001_init(indio_dev);
-+	if (ret < 0)
-+		return ret;
-+
-+	ret = pa12203001_power_on(indio_dev);
-+	if (ret < 0)
-+		return ret;
-+
-+	ret = pm_runtime_set_active(&client->dev);
-+	if (ret < 0) {
-+		pa12203001_power_off(indio_dev);
-+		return ret;
-+	}
-+
-+	pm_runtime_enable(&client->dev);
-+	pm_runtime_set_autosuspend_delay(&client->dev,
-+					 PA12203001_SLEEP_DELAY_MS);
-+	pm_runtime_use_autosuspend(&client->dev);
-+
-+	return devm_iio_device_register(&client->dev, indio_dev);
-+}
-+
-+static int pa12203001_remove(struct i2c_client *client)
-+{
-+	struct iio_dev *indio_dev = i2c_get_clientdata(client);
-+
-+	pm_runtime_disable(&client->dev);
-+	pm_runtime_set_suspended(&client->dev);
-+
-+	return pa12203001_power_off(indio_dev);
-+}
-+
-+#ifdef CONFIG_PM_SLEEP
-+static int pa12203001_suspend(struct device *dev)
-+{
-+	return pa12203001_power_off(i2c_get_clientdata(to_i2c_client(dev)));
-+}
-+
-+static int pa12203001_resume(struct device *dev)
-+{
-+	return pa12203001_power_on(i2c_get_clientdata(to_i2c_client(dev)));
-+}
-+#endif
-+
-+#ifdef CONFIG_PM
-+static int pa12203001_runtime_suspend(struct device *dev)
-+{
-+	return pa12203001_power_off(i2c_get_clientdata(to_i2c_client(dev)));
-+}
-+
-+static int pa12203001_runtime_resume(struct device *dev)
-+{
-+	struct pa12203001_data *data;
-+
-+	data = iio_priv(i2c_get_clientdata(to_i2c_client(dev)));
-+
-+	mutex_lock(&data->lock);
-+	if (data->als_needs_enable) {
-+		pa12203001_als_enable(data, PA12203001_ALS_EN_MASK);
-+		data->als_needs_enable = false;
-+	}
-+	if (data->px_needs_enable) {
-+		pa12203001_px_enable(data, PA12203001_PX_EN_MASK);
-+		data->px_needs_enable = false;
-+	}
-+	mutex_unlock(&data->lock);
-+	return 0;
-+}
-+#endif
-+
-+static const struct dev_pm_ops pa12203001_pm_ops = {
-+	SET_SYSTEM_SLEEP_PM_OPS(pa12203001_suspend, pa12203001_resume)
-+	SET_RUNTIME_PM_OPS(pa12203001_runtime_suspend,
-+			   pa12203001_runtime_resume, NULL)
-+};
-+
-+static const struct acpi_device_id pa12203001_acpi_match[] = {
-+	{ "TXCPA122", 0},
-+	{}
-+};
-+
-+MODULE_DEVICE_TABLE(acpi, pa12203001_acpi_match);
-+
-+static const struct i2c_device_id pa12203001_id[] = {
-+		{"txcpa122", 0},
-+		{}
-+};
-+
-+MODULE_DEVICE_TABLE(i2c, pa12203001_id);
-+
-+static struct i2c_driver pa12203001_driver = {
-+	.driver = {
-+		.name = PA12203001_DRIVER_NAME,
-+		.pm = &pa12203001_pm_ops,
-+		.acpi_match_table = ACPI_PTR(pa12203001_acpi_match),
-+	},
-+	.probe = pa12203001_probe,
-+	.remove = pa12203001_remove,
-+	.id_table = pa12203001_id,
-+
-+};
-+module_i2c_driver(pa12203001_driver);
-+
-+MODULE_AUTHOR("Adriana Reus <adriana.reus@intel.com>");
-+MODULE_DESCRIPTION("Driver for TXC PA12203001 Proximity and Light Sensor");
-+MODULE_LICENSE("GPL v2");
--- 
-1.9.1
+> Signed-off-by: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
+> ---
+>  drivers/iio/light/ltr501.c | 413 ++++++++++++++++++++++++++++++++++++++++++++-
+>  1 file changed, 406 insertions(+), 7 deletions(-)
+> 
+> diff --git a/drivers/iio/light/ltr501.c b/drivers/iio/light/ltr501.c
+> index 593dbb1..d9b4536 100644
+> --- a/drivers/iio/light/ltr501.c
+> +++ b/drivers/iio/light/ltr501.c
+> @@ -9,7 +9,7 @@
+>   *
+>   * 7-bit I2C slave address 0x23
+>   *
+> - * TODO: measurement rate, IR LED characteristics
+> + * TODO: IR LED characteristics
+>   */
+>  
+>  #include <linux/module.h>
+> @@ -29,6 +29,7 @@
+>  
+>  #define LTR501_ALS_CONTR 0x80 /* ALS operation mode, SW reset */
+>  #define LTR501_PS_CONTR 0x81 /* PS operation mode */
+> +#define LTR501_PS_MEAS_RATE 0x84 /* measurement rate*/
+>  #define LTR501_ALS_MEAS_RATE 0x85 /* ALS integ time, measurement rate*/
+>  #define LTR501_PART_ID 0x86
+>  #define LTR501_MANUFAC_ID 0x87
+> @@ -41,6 +42,7 @@
+>  #define LTR501_PS_THRESH_LOW 0x92 /* 11 bit, ps lower threshold */
+>  #define LTR501_ALS_THRESH_UP 0x97 /* 16 bit, ALS upper threshold */
+>  #define LTR501_ALS_THRESH_LOW 0x99 /* 16 bit, ALS lower threshold */
+> +#define LTR501_INTR_PRST 0x9e /* ps thresh, als thresh */
+>  #define LTR501_MAX_REG 0x9f
+>  
+>  #define LTR501_ALS_CONTR_SW_RESET BIT(2)
+> @@ -58,6 +60,9 @@
+>  #define LTR501_PS_THRESH_MASK 0x7ff
+>  #define LTR501_ALS_THRESH_MASK 0xffff
+>  
+> +#define LTR501_ALS_DEF_PERIOD 500000
+> +#define LTR501_PS_DEF_PERIOD 100000
+
+Seems like you missed to use those two default values for initialization.
+
+> +
+>  #define LTR501_REGMAP_NAME "ltr501_regmap"
+>  
+>  static const int int_time_mapping[] = {100000, 50000, 200000, 400000};
+> @@ -68,17 +73,171 @@ static const struct reg_field reg_field_als_intr =
+>  				REG_FIELD(LTR501_INTR, 0, 0);
+>  static const struct reg_field reg_field_ps_intr =
+>  				REG_FIELD(LTR501_INTR, 1, 1);
+> +static const struct reg_field reg_field_als_rate =
+> +				REG_FIELD(LTR501_ALS_MEAS_RATE, 0, 2);
+> +static const struct reg_field reg_field_ps_rate =
+> +				REG_FIELD(LTR501_PS_MEAS_RATE, 0, 3);
+> +static const struct reg_field reg_field_als_prst =
+> +				REG_FIELD(LTR501_INTR_PRST, 0, 3);
+> +static const struct reg_field reg_field_ps_prst =
+> +				REG_FIELD(LTR501_INTR_PRST, 4, 7);
+> +
+> +struct ltr501_samp_table {
+> +	int freq_val;  /* repetition frequency in micro HZ*/
+> +	int time_val; /* repetition rate in micro seconds */
+> +};
+>  
+>  struct ltr501_data {
+>  	struct i2c_client *client;
+>  	struct mutex lock_als, lock_ps;
+>  	u8 als_contr, ps_contr;
+> +	int als_period, ps_period; /* period in micro seconds */
+>  	struct regmap *regmap;
+>  	struct regmap_field *reg_it;
+>  	struct regmap_field *reg_als_intr;
+>  	struct regmap_field *reg_ps_intr;
+> +	struct regmap_field *reg_als_rate;
+> +	struct regmap_field *reg_ps_rate;
+> +	struct regmap_field *reg_als_prst;
+> +	struct regmap_field *reg_ps_prst;
+> +};
+> +
+> +static const struct ltr501_samp_table ltr501_als_samp_table[] = {
+> +			{20000000, 50000}, {10000000, 100000},
+> +			{5000000, 200000}, {2000000, 500000},
+> +			{1000000, 1000000}, {500000, 2000000},
+> +			{500000, 2000000}, {500000, 2000000}
+>  };
+>  
+> +static const struct ltr501_samp_table ltr501_ps_samp_table[] = {
+> +			{20000000, 50000}, {14285714, 70000},
+> +			{10000000, 100000}, {5000000, 200000},
+> +			{2000000, 500000}, {1000000, 1000000},
+> +			{500000, 2000000}, {500000, 2000000},
+> +			{500000, 2000000}
+
+The last entry is invalid. According to my data sheet there are only
+8 sampling rates available.
+
+> +};
+> +
+> +static unsigned int ltr501_match_samp_freq(const struct ltr501_samp_table *tab,
+> +					   int len, int val, int val2)
+> +{
+> +	int i, freq;
+> +
+> +	freq = val * 1000000 + val2;
+> +
+> +	for (i = 0; i < len; i++) {
+> +		if (tab[i].freq_val == freq)
+> +			return i;
+> +	}
+> +
+> +	return -EINVAL;
+> +}
+> +
+> +static int ltr501_als_read_samp_freq(struct ltr501_data *data,
+> +				     int *val, int *val2)
+> +{
+> +	int ret, i;
+> +
+> +	ret = regmap_field_read(data->reg_als_rate, &i);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	if (i < 0 || i >= ARRAY_SIZE(ltr501_als_samp_table))
+> +		return -EINVAL;
+> +
+> +	*val = ltr501_als_samp_table[i].freq_val / 1000000;
+> +	*val2 = ltr501_als_samp_table[i].freq_val % 1000000;
+> +
+> +	return IIO_VAL_INT_PLUS_MICRO;
+> +}
+> +
+> +static int ltr501_ps_read_samp_freq(struct ltr501_data *data,
+> +				    int *val, int *val2)
+> +{
+> +	int ret, i;
+> +
+> +	ret = regmap_field_read(data->reg_ps_rate, &i);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	if (i < 0 || i >= ARRAY_SIZE(ltr501_ps_samp_table))
+> +		return -EINVAL;
+> +
+> +	*val = ltr501_ps_samp_table[i].freq_val / 1000000;
+> +	*val2 = ltr501_ps_samp_table[i].freq_val % 1000000;
+> +
+> +	return IIO_VAL_INT_PLUS_MICRO;
+> +}
+> +
+> +static int ltr501_als_write_samp_freq(struct ltr501_data *data,
+> +				      int val, int val2)
+> +{
+> +	int i, ret;
+> +
+> +	i = ltr501_match_samp_freq(ltr501_als_samp_table,
+> +				   ARRAY_SIZE(ltr501_als_samp_table),
+> +				   val, val2);
+> +
+> +	if (i < 0)
+> +		return i;
+> +
+> +	mutex_lock(&data->lock_als);
+> +	ret = regmap_field_write(data->reg_als_rate, i);
+> +	mutex_unlock(&data->lock_als);
+> +
+> +	return ret;
+> +}
+> +
+> +static int ltr501_ps_write_samp_freq(struct ltr501_data *data,
+> +				     int val, int val2)
+> +{
+> +	int i, ret;
+> +
+> +	i = ltr501_match_samp_freq(ltr501_ps_samp_table,
+> +				   ARRAY_SIZE(ltr501_ps_samp_table),
+> +				   val, val2);
+> +
+> +	if (i < 0)
+> +		return i;
+> +
+> +	mutex_lock(&data->lock_ps);
+> +	ret = regmap_field_write(data->reg_ps_rate, i);
+> +	mutex_unlock(&data->lock_ps);
+> +
+> +	return ret;
+> +}
+> +
+> +static int ltr501_als_read_samp_period(struct ltr501_data *data, int *val)
+> +{
+> +	int ret, i;
+> +
+> +	ret = regmap_field_read(data->reg_als_rate, &i);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	if (i < 0 || i >= ARRAY_SIZE(ltr501_als_samp_table))
+> +		return -EINVAL;
+> +
+> +	*val = ltr501_als_samp_table[i].time_val;
+> +
+> +	return IIO_VAL_INT;
+> +}
+> +
+> +static int ltr501_ps_read_samp_period(struct ltr501_data *data, int *val)
+> +{
+> +	int ret, i;
+> +
+> +	ret = regmap_field_read(data->reg_ps_rate, &i);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	if (i < 0 || i >= ARRAY_SIZE(ltr501_ps_samp_table))
+> +		return -EINVAL;
+> +
+> +	*val = ltr501_ps_samp_table[i].time_val;
+> +
+> +	return IIO_VAL_INT;
+> +}
+> +
+>  static int ltr501_drdy(struct ltr501_data *data, u8 drdy_mask)
+>  {
+>  	int tries = 100;
+> @@ -177,6 +336,104 @@ static int ltr501_read_ps(struct ltr501_data *data)
+>  	return status;
+>  }
+>  
+> +static int ltr501_read_intr_prst(struct ltr501_data *data,
+> +				 enum iio_chan_type type,
+> +				 int *val2)
+> +{
+> +	int ret, samp_period, prst;
+> +
+> +	switch (type) {
+> +	case IIO_INTENSITY:
+> +		ret = regmap_field_read(data->reg_als_prst, &prst);
+> +		if (ret < 0)
+> +			return ret;
+> +
+> +		ret = ltr501_als_read_samp_period(data, &samp_period);
+> +
+> +		if (ret < 0)
+> +			return ret;
+> +		*val2 = samp_period * prst;
+> +		return IIO_VAL_INT_PLUS_MICRO;
+> +	case IIO_PROXIMITY:
+> +		ret = regmap_field_read(data->reg_ps_prst, &prst);
+> +		if (ret < 0)
+> +			return ret;
+> +
+> +		ret = ltr501_ps_read_samp_period(data, &samp_period);
+> +
+> +		if (ret < 0)
+> +			return ret;
+> +
+> +		*val2 = samp_period * prst;
+> +		return IIO_VAL_INT_PLUS_MICRO;
+> +	default:
+> +		return -EINVAL;
+> +	}
+> +
+> +	return -EINVAL;
+> +}
+> +
+> +static int ltr501_write_intr_prst(struct ltr501_data *data,
+> +				  enum iio_chan_type type,
+> +				  int val, int val2)
+> +{
+> +	int ret, samp_period, new_val;
+> +	unsigned long period;
+> +
+> +	if (val < 0 || val2 < 0)
+> +		return -EINVAL;
+> +
+> +	/* period in microseconds */
+> +	period = ((val * 1000000) + val2);
+> +
+> +	switch (type) {
+> +	case IIO_INTENSITY:
+> +		ret = ltr501_als_read_samp_period(data, &samp_period);
+> +		if (ret < 0)
+> +			return ret;
+> +
+> +		/* period should be atleast equal to sampling period */
+> +		if (period < samp_period)
+> +			return -EINVAL;
+> +
+> +		new_val = DIV_ROUND_UP(period, samp_period);
+> +		if (new_val < 0 || new_val > 0x0f)
+> +			return -EINVAL;
+> +
+> +		mutex_lock(&data->lock_als);
+> +		ret = regmap_field_write(data->reg_als_prst, new_val);
+> +		mutex_unlock(&data->lock_als);
+> +		if (ret >= 0)
+> +			data->als_period = period;
+> +
+> +		return ret;
+> +	case IIO_PROXIMITY:
+> +		ret = ltr501_ps_read_samp_period(data, &samp_period);
+> +		if (ret < 0)
+> +			return ret;
+> +
+> +		/* period should be atleast equal to rate */
+> +		if (period < samp_period)
+> +			return -EINVAL;
+> +
+> +		new_val = DIV_ROUND_UP(period, samp_period);
+> +		if (new_val < 0 || new_val > 0x0f)
+> +			return -EINVAL;
+> +
+> +		mutex_lock(&data->lock_ps);
+> +		ret = regmap_field_write(data->reg_ps_prst, new_val);
+> +		mutex_unlock(&data->lock_ps);
+> +		if (ret >= 0)
+> +			data->ps_period = period;
+> +
+> +		return ret;
+> +	default:
+> +		return -EINVAL;
+> +	}
+> +
+> +	return -EINVAL;
+> +}
+> +
+>  static const struct iio_event_spec ltr501_als_event_spec[] = {
+>  	{
+>  		.type = IIO_EV_TYPE_THRESH,
+> @@ -189,7 +446,8 @@ static const struct iio_event_spec ltr501_als_event_spec[] = {
+>  	}, {
+>  		.type = IIO_EV_TYPE_THRESH,
+>  		.dir = IIO_EV_DIR_EITHER,
+> -		.mask_separate = BIT(IIO_EV_INFO_ENABLE),
+> +		.mask_separate = BIT(IIO_EV_INFO_ENABLE) |
+> +				 BIT(IIO_EV_INFO_PERIOD),
+>  	},
+>  
+>  };
+> @@ -206,7 +464,8 @@ static const struct iio_event_spec ltr501_pxs_event_spec[] = {
+>  	}, {
+>  		.type = IIO_EV_TYPE_THRESH,
+>  		.dir = IIO_EV_DIR_EITHER,
+> -		.mask_separate = BIT(IIO_EV_INFO_ENABLE),
+> +		.mask_separate = BIT(IIO_EV_INFO_ENABLE) |
+> +				 BIT(IIO_EV_INFO_PERIOD),
+>  	},
+>  };
+>  
+> @@ -235,7 +494,8 @@ static const struct iio_chan_spec ltr501_channels[] = {
+>  				 ARRAY_SIZE(ltr501_als_event_spec)),
+>  	LTR501_INTENSITY_CHANNEL(1, LTR501_ALS_DATA1, IIO_MOD_LIGHT_IR,
+>  				 BIT(IIO_CHAN_INFO_SCALE) |
+> -				 BIT(IIO_CHAN_INFO_INT_TIME),
+> +				 BIT(IIO_CHAN_INFO_INT_TIME) |
+> +				 BIT(IIO_CHAN_INFO_SAMP_FREQ),
+>  				 NULL, 0),
+>  	{
+>  		.type = IIO_PROXIMITY,
+
+Aren't you missing to set IIO_CHAN_INFO_SAMP_FREQ on PS channel?
+
+> @@ -320,6 +580,15 @@ static int ltr501_read_raw(struct iio_dev *indio_dev,
+>  		default:
+>  			return -EINVAL;
+>  		}
+> +	case IIO_CHAN_INFO_SAMP_FREQ:
+> +		switch (chan->type) {
+> +		case IIO_INTENSITY:
+> +			return ltr501_als_read_samp_freq(data, val, val2);
+> +		case IIO_PROXIMITY:
+> +			return ltr501_ps_read_samp_freq(data, val, val2);
+> +		default:
+> +			return -EINVAL;
+> +		}
+>  	}
+>  	return -EINVAL;
+>  }
+> @@ -340,7 +609,7 @@ static int ltr501_write_raw(struct iio_dev *indio_dev,
+>  			    int val, int val2, long mask)
+>  {
+>  	struct ltr501_data *data = iio_priv(indio_dev);
+> -	int i;
+> +	int i, ret, freq_val, freq_val2;
+>  
+>  	if (iio_buffer_enabled(indio_dev))
+>  		return -EBUSY;
+> @@ -382,6 +651,49 @@ static int ltr501_write_raw(struct iio_dev *indio_dev,
+>  		default:
+>  			return -EINVAL;
+>  		}
+> +	case IIO_CHAN_INFO_SAMP_FREQ:
+> +		switch (chan->type) {
+> +		case IIO_INTENSITY:
+> +			ret = ltr501_als_read_samp_freq(data, &freq_val,
+> +							&freq_val2);
+> +			if (ret < 0)
+> +				return ret;
+> +
+> +			ret = ltr501_als_write_samp_freq(data, val, val2);
+> +			if (ret < 0)
+> +				return ret;
+> +
+> +			/* update persistence count when changing frequency */
+> +			ret = ltr501_write_intr_prst(data, chan->type,
+> +						     0, data->als_period);
+> +
+> +			if (ret < 0)
+> +				return ltr501_als_write_samp_freq(data,
+> +								  freq_val,
+> +								  freq_val2);
+> +			return ret;
+> +		case IIO_PROXIMITY:
+> +			ret = ltr501_ps_read_samp_freq(data, &freq_val,
+> +						       &freq_val2);
+> +			if (ret < 0)
+> +				return ret;
+> +
+> +			ret = ltr501_ps_write_samp_freq(data, val, val2);
+> +			if (ret < 0)
+> +				return ret;
+> +
+> +			/* update persistence count when changing frequency */
+> +			ret = ltr501_write_intr_prst(data, chan->type,
+> +						     0, data->ps_period);
+> +
+> +			if (ret < 0)
+> +				return ltr501_ps_write_samp_freq(data,
+> +								 freq_val,
+> +								 freq_val2);
+> +			return ret;
+> +		default:
+> +			return -EINVAL;
+> +		}
+>  	}
+>  	return -EINVAL;
+>  }
+> @@ -509,6 +821,55 @@ static int ltr501_write_thresh(struct iio_dev *indio_dev,
+>  	return -EINVAL;
+>  }
+>  
+> +static int ltr501_read_event(struct iio_dev *indio_dev,
+> +			     const struct iio_chan_spec *chan,
+> +			     enum iio_event_type type,
+> +			     enum iio_event_direction dir,
+> +			     enum iio_event_info info,
+> +			     int *val, int *val2)
+> +{
+> +	int ret;
+> +
+> +	switch (info) {
+> +	case IIO_EV_INFO_VALUE:
+> +		return ltr501_read_thresh(indio_dev, chan, type, dir,
+> +					  info, val, val2);
+> +	case IIO_EV_INFO_PERIOD:
+> +		ret = ltr501_read_intr_prst(iio_priv(indio_dev),
+> +					    chan->type, val2);
+> +		*val = *val2 / 1000000;
+> +		*val2 = *val2 % 1000000;
+> +		return ret;
+> +	default:
+> +		return -EINVAL;
+> +	}
+> +
+> +	return -EINVAL;
+> +}
+> +
+> +static int ltr501_write_event(struct iio_dev *indio_dev,
+> +			      const struct iio_chan_spec *chan,
+> +			      enum iio_event_type type,
+> +			      enum iio_event_direction dir,
+> +			      enum iio_event_info info,
+> +			      int val, int val2)
+> +{
+> +	switch (info) {
+> +	case IIO_EV_INFO_VALUE:
+> +		if (val2 != 0)
+> +			return -EINVAL;
+> +		return ltr501_write_thresh(indio_dev, chan, type, dir,
+> +					   info, val, val2);
+> +	case IIO_EV_INFO_PERIOD:
+> +		return ltr501_write_intr_prst(iio_priv(indio_dev), chan->type,
+> +					      val, val2);
+> +	default:
+> +		return -EINVAL;
+> +	}
+> +
+> +	return -EINVAL;
+> +}
+> +
+>  static int ltr501_read_event_config(struct iio_dev *indio_dev,
+>  				    const struct iio_chan_spec *chan,
+>  				    enum iio_event_type type,
+> @@ -568,11 +929,13 @@ static int ltr501_write_event_config(struct iio_dev *indio_dev,
+>  static IIO_CONST_ATTR(in_proximity_scale_available, "1 0.25 0.125 0.0625");
+>  static IIO_CONST_ATTR(in_intensity_scale_available, "1 0.005");
+>  static IIO_CONST_ATTR_INT_TIME_AVAIL("0.05 0.1 0.2 0.4");
+> +static IIO_CONST_ATTR_SAMP_FREQ_AVAIL("20 10 5 2 1 0.5");
+>  
+>  static struct attribute *ltr501_attributes[] = {
+>  	&iio_const_attr_in_proximity_scale_available.dev_attr.attr,
+>  	&iio_const_attr_in_intensity_scale_available.dev_attr.attr,
+>  	&iio_const_attr_integration_time_available.dev_attr.attr,
+> +	&iio_const_attr_sampling_frequency_available.dev_attr.attr,
+>  	NULL
+>  };
+>  
+> @@ -591,8 +954,8 @@ static const struct iio_info ltr501_info = {
+>  	.read_raw = ltr501_read_raw,
+>  	.write_raw = ltr501_write_raw,
+>  	.attrs = &ltr501_attribute_group,
+> -	.read_event_value	= &ltr501_read_thresh,
+> -	.write_event_value	= &ltr501_write_thresh,
+> +	.read_event_value	= &ltr501_read_event,
+> +	.write_event_value	= &ltr501_write_event,
+>  	.read_event_config	= &ltr501_read_event_config,
+>  	.write_event_config	= &ltr501_write_event_config,
+>  	.driver_module = THIS_MODULE,
+> @@ -706,6 +1069,14 @@ static int ltr501_init(struct ltr501_data *data)
+>  
+>  	data->ps_contr = status | LTR501_CONTR_ACTIVE;
+>  
+> +	ret = ltr501_read_intr_prst(data, IIO_INTENSITY, &data->als_period);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	ret = ltr501_read_intr_prst(data, IIO_PROXIMITY, &data->ps_period);
+> +	if (ret < 0)
+> +		return ret;
+> +
+>  	return ltr501_write_contr(data, data->als_contr, data->ps_contr);
+>  }
+>  
+> @@ -783,6 +1154,34 @@ static int ltr501_probe(struct i2c_client *client,
+>  		return PTR_ERR(data->reg_ps_intr);
+>  	}
+>  
+> +	data->reg_als_rate = devm_regmap_field_alloc(&client->dev, regmap,
+> +						     reg_field_als_rate);
+> +	if (IS_ERR(data->reg_als_rate)) {
+> +		dev_err(&client->dev, "ALS samp rate field init failed.\n");
+> +		return PTR_ERR(data->reg_als_rate);
+> +	}
+> +
+> +	data->reg_ps_rate = devm_regmap_field_alloc(&client->dev, regmap,
+> +						    reg_field_ps_rate);
+> +	if (IS_ERR(data->reg_ps_rate)) {
+> +		dev_err(&client->dev, "PS samp rate field init failed.\n");
+> +		return PTR_ERR(data->reg_ps_rate);
+> +	}
+> +
+> +	data->reg_als_prst = devm_regmap_field_alloc(&client->dev, regmap,
+> +						     reg_field_als_prst);
+> +	if (IS_ERR(data->reg_als_prst)) {
+> +		dev_err(&client->dev, "ALS prst reg field init failed\n");
+> +		return PTR_ERR(data->reg_als_prst);
+> +	}
+> +
+> +	data->reg_ps_prst = devm_regmap_field_alloc(&client->dev, regmap,
+> +						    reg_field_ps_prst);
+> +	if (IS_ERR(data->reg_ps_prst)) {
+> +		dev_err(&client->dev, "PS prst reg field init failed.\n");
+> +		return PTR_ERR(data->reg_ps_prst);
+> +	}
+> +
+>  	ret = regmap_read(data->regmap, LTR501_PART_ID, &partid);
+>  	if (ret < 0)
+>  		return ret;
+> 
