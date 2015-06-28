@@ -1,78 +1,212 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mout.gmx.net ([212.227.17.22]:49327 "EHLO mout.gmx.net"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751790AbbGELOx (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Sun, 5 Jul 2015 07:14:53 -0400
-Message-ID: <5597E1F1.8070400@gmx.de>
-Date: Sat, 04 Jul 2015 15:38:57 +0200
-From: Hartmut Knaack <knaack.h@gmx.de>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:58817 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751790AbbGELJt (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 5 Jul 2015 07:09:49 -0400
+Message-ID: <55902DF2.3020403@kernel.org>
+Date: Sun, 28 Jun 2015 18:25:06 +0100
+From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Tiberiu Breana <tiberiu.a.breana@intel.com>,
-	linux-iio@vger.kernel.org
-CC: Jonathan Cameron <jic23@kernel.org>
-Subject: Re: [PATCH v2] tools: iio: Add single-byte case for generic_buffer
-References: <1435917456-2973-1-git-send-email-tiberiu.a.breana@intel.com>
-In-Reply-To: <1435917456-2973-1-git-send-email-tiberiu.a.breana@intel.com>
-Content-Type: text/plain; charset=US-ASCII
+To: Lars-Peter Clausen <lars@metafoo.de>,
+	Hartmut Knaack <knaack.h@gmx.de>, linux-iio@vger.kernel.org
+CC: Peter Meerwald <pmeerw@pmeerw.net>
+Subject: Re: [PATCH 1/1] iio:adc:Kconfig: rework help descriptions
+References: <1434881889-2908-1-git-send-email-knaack.h@gmx.de> <5586A006.30308@metafoo.de>
+In-Reply-To: <5586A006.30308@metafoo.de>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Tiberiu Breana schrieb am 03.07.2015 um 11:57:
-> Some sensors export data in an 8-bit format.
-> Add a single-byte case for the generic_buffer tool so that
-> these sensors' buffer data can be visualized.
+On 21/06/15 12:29, Lars-Peter Clausen wrote:
+> On 06/21/2015 12:18 PM, Hartmut Knaack wrote:
+>> Rework the help text of several ADCs to make sure that:
+>>    - the module name is mentioned, if the driver can be built as a module
+>>    - "If unsure, say N" messages are dropped
+>>    - right indentation is maintained
+>>
+>> Signed-off-by: Hartmut Knaack <knaack.h@gmx.de>
 > 
-> Signed-off-by: Tiberiu Breana <tiberiu.a.breana@intel.com>
-Reviewed-by: Hartmut Knaack <knaack.h@gmx.de>
-> ---
-> v2: added the print1byte function to apply the channel shift and
-> address both signed and unsigned cases.
-> ---
->  tools/iio/generic_buffer.c | 21 +++++++++++++++++++++
->  1 file changed, 21 insertions(+)
+> Looks good. Thanks.
 > 
-> diff --git a/tools/iio/generic_buffer.c b/tools/iio/generic_buffer.c
-> index fc362d2..0e73723 100644
-> --- a/tools/iio/generic_buffer.c
-> +++ b/tools/iio/generic_buffer.c
-> @@ -61,6 +61,23 @@ int size_from_channelarray(struct iio_channel_info *channels, int num_channels)
->  	return bytes;
->  }
->  
-> +void print1byte(uint8_t input, struct iio_channel_info *info)
-> +{
-> +	/*
-> +	 * Shift before conversion to avoid sign extension
-> +	 * of left aligned data
-> +	 */
-> +	input >>= info->shift;
-> +	input &= info->mask;
-> +	if (info->is_signed) {
-> +		int8_t val = (int8_t)(input << (8 - info->bits_used)) >>
-> +			     (8 - info->bits_used);
-> +		printf("%05f ", ((float)val + info->offset) * info->scale);
-> +	} else {
-> +		printf("%05f ", ((float)input + info->offset) * info->scale);
-> +	}
-> +}
-> +
->  void print2byte(uint16_t input, struct iio_channel_info *info)
->  {
->  	/* First swap if incorrect endian */
-> @@ -152,6 +169,10 @@ void process_scan(char *data,
->  	for (k = 0; k < num_channels; k++)
->  		switch (channels[k].bytes) {
->  			/* only a few cases implemented so far */
+> Acked-by: Lars-Peter Clausen <lars@metafoo.de>
+Applied to the togreg branch of iio.git - will get pushed out as testing
+sometime, probably at the end of the week.  I'm travelling and doing two
+jobs at the same time for added fun.
 
-Not sure though how long we should keep that comment. ^^^^^
-I probably had more reason to get rid of it during my rework.
+How many hours are there in the day?
 
-> +		case 1:
-> +			print1byte(*(uint8_t *)(data + channels[k].location),
-> +				   &channels[k]);
-> +			break;
->  		case 2:
->  			print2byte(*(uint16_t *)(data + channels[k].location),
->  				   &channels[k]);
+J
 > 
+>> ---
+>> This patch is based on the cc10001_adc dependency and sort order fixes I
+>> just submitted.
+>>
+>>   drivers/iio/adc/Kconfig | 48 ++++++++++++++++++++++++++++++++++++++----------
+>>   1 file changed, 38 insertions(+), 10 deletions(-)
+>>
+>> diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+>> index 4790071..aee1e87 100644
+>> --- a/drivers/iio/adc/Kconfig
+>> +++ b/drivers/iio/adc/Kconfig
+>> @@ -20,6 +20,9 @@ config AD7266
+>>         Say yes here to build support for Analog Devices AD7265 and AD7266
+>>         ADCs.
+>>
+>> +      To compile this driver as a module, choose M here: the module will be
+>> +      called ad7266.
+>> +
+>>   config AD7291
+>>       tristate "Analog Devices AD7291 ADC driver"
+>>       depends on I2C
+>> @@ -52,8 +55,6 @@ config AD7476
+>>         AD7277, AD7278, AD7475, AD7476, AD7477, AD7478, AD7466, AD7467, AD7468,
+>>         AD7495, AD7910, AD7920, AD7920 SPI analog to digital converters (ADC).
+>>
+>> -      If unsure, say N (but it's safe to say "Y").
+>> -
+>>         To compile this driver as a module, choose M here: the
+>>         module will be called ad7476.
+>>
+>> @@ -63,8 +64,7 @@ config AD7791
+>>       select AD_SIGMA_DELTA
+>>       help
+>>         Say yes here to build support for Analog Devices AD7787, AD7788, AD7789,
+>> -      AD7790 and AD7791 SPI analog to digital converters (ADC). If unsure, say
+>> -      N (but it is safe to say "Y").
+>> +      AD7790 and AD7791 SPI analog to digital converters (ADC).
+>>
+>>         To compile this driver as a module, choose M here: the module will be
+>>         called ad7791.
+>> @@ -76,7 +76,6 @@ config AD7793
+>>       help
+>>         Say yes here to build support for Analog Devices AD7785, AD7792, AD7793,
+>>         AD7794 and AD7795 SPI analog to digital converters (ADC).
+>> -      If unsure, say N (but it's safe to say "Y").
+>>
+>>         To compile this driver as a module, choose M here: the
+>>         module will be called AD7793.
+>> @@ -89,7 +88,6 @@ config AD7887
+>>       help
+>>         Say yes here to build support for Analog Devices
+>>         AD7887 SPI analog to digital converter (ADC).
+>> -      If unsure, say N (but it's safe to say "Y").
+>>
+>>         To compile this driver as a module, choose M here: the
+>>         module will be called ad7887.
+>> @@ -117,6 +115,9 @@ config AD799X
+>>         i2c analog to digital converters (ADC). Provides direct access
+>>         via sysfs.
+>>
+>> +      To compile this driver as a module, choose M here: the module will be
+>> +      called ad799x.
+>> +
+>>   config AT91_ADC
+>>       tristate "Atmel AT91 ADC"
+>>       depends on ARCH_AT91
+>> @@ -127,6 +128,9 @@ config AT91_ADC
+>>       help
+>>         Say yes here to build support for Atmel AT91 ADC.
+>>
+>> +      To compile this driver as a module, choose M here: the module will be
+>> +      called at91_adc.
+>> +
+>>   config AXP288_ADC
+>>       tristate "X-Powers AXP288 ADC driver"
+>>       depends on MFD_AXP20X
+>> @@ -135,6 +139,9 @@ config AXP288_ADC
+>>         device. Depending on platform configuration, this general purpose ADC can
+>>         be used for sampling sensors such as thermal resistors.
+>>
+>> +      To compile this driver as a module, choose M here: the module will be
+>> +      called axp288_adc.
+>> +
+>>   config BERLIN2_ADC
+>>       tristate "Marvell Berlin2 ADC driver"
+>>       depends on ARCH_BERLIN
+>> @@ -142,6 +149,9 @@ config BERLIN2_ADC
+>>         Marvell Berlin2 ADC driver. This ADC has 8 channels, with one used for
+>>         temperature measurement.
+>>
+>> +      To compile this driver as a module, choose M here: the module will be
+>> +      called berlin2-adc.
+>> +
+>>   config CC10001_ADC
+>>       tristate "Cosmic Circuits 10001 ADC driver"
+>>       depends on HAS_IOMEM && HAVE_CLK && REGULATOR
+>> @@ -170,12 +180,18 @@ config EXYNOS_ADC
+>>         of SoCs for drivers such as the touchscreen and hwmon to use to share
+>>         this resource.
+>>
+>> +      To compile this driver as a module, choose M here: the module will be
+>> +      called exynos_adc.
+>> +
+>>   config LP8788_ADC
+>>       tristate "LP8788 ADC driver"
+>>       depends on MFD_LP8788
+>>       help
+>>         Say yes here to build support for TI LP8788 ADC.
+>>
+>> +      To compile this driver as a module, choose M here: the module will be
+>> +      called lp8788_adc.
+>> +
+>>   config MAX1027
+>>       tristate "Maxim max1027 ADC driver"
+>>       depends on SPI
+>> @@ -185,6 +201,9 @@ config MAX1027
+>>         Say yes here to build support for Maxim SPI ADC models
+>>         max1027, max1029 and max1031.
+>>
+>> +      To compile this driver as a module, choose M here: the module will be
+>> +      called max1027.
+>> +
+>>   config MAX1363
+>>       tristate "Maxim max1363 ADC driver"
+>>       depends on I2C
+>> @@ -201,6 +220,9 @@ config MAX1363
+>>         max11646, max11647) Provides direct access via sysfs and buffered
+>>         data via the iio dev interface.
+>>
+>> +      To compile this driver as a module, choose M here: the module will be
+>> +      called max1363.
+>> +
+>>   config MCP320X
+>>       tristate "Microchip Technology MCP3x01/02/04/08"
+>>       depends on SPI
+>> @@ -309,15 +331,18 @@ config TI_AM335X_ADC
+>>         Say yes here to build support for Texas Instruments ADC
+>>         driver which is also a MFD client.
+>>
+>> +      To compile this driver as a module, choose M here: the module will be
+>> +      called ti_am335x_adc.
+>> +
+>>   config TWL4030_MADC
+>>       tristate "TWL4030 MADC (Monitoring A/D Converter)"
+>>       depends on TWL4030_CORE
+>>       help
+>> -    This driver provides support for Triton TWL4030-MADC. The
+>> -    driver supports both RT and SW conversion methods.
+>> +      This driver provides support for Triton TWL4030-MADC. The
+>> +      driver supports both RT and SW conversion methods.
+>>
+>> -    This driver can also be built as a module. If so, the module will be
+>> -    called twl4030-madc.
+>> +      This driver can also be built as a module. If so, the module will be
+>> +      called twl4030-madc.
+>>
+>>   config TWL6030_GPADC
+>>       tristate "TWL6030 GPADC (General Purpose A/D Converter) Support"
+>> @@ -350,6 +375,9 @@ config VIPERBOARD_ADC
+>>         Say yes here to access the ADC part of the Nano River
+>>         Technologies Viperboard.
+>>
+>> +      To compile this driver as a module, choose M here: the module will be
+>> +      called viperboard_adc.
+>> +
+>>   config XILINX_XADC
+>>       tristate "Xilinx XADC driver"
+>>       depends on ARCH_ZYNQ || MICROBLAZE || COMPILE_TEST
+>>
+> 
+> -- 
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
 
