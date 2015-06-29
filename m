@@ -1,115 +1,64 @@
 Return-Path: <vlad.dogaru@intel.com>
-Date: Mon, 29 Jun 2015 10:42:35 +0300
+Date: Mon, 29 Jun 2015 10:36:56 +0300
 From: Vlad Dogaru <vlad.dogaru@intel.com>
-To: Hartmut Knaack <knaack.h@gmx.de>
-Cc: jic23@kernel.org, linux-iio@vger.kernel.org
-Subject: Re: [PATCH v3 1/3] iio: sx9500: optimize power usage
-Message-ID: <20150629074235.GD12017@vdogaru>
-References: <1428858561-27994-1-git-send-email-vlad.dogaru@intel.com>
- <1428858561-27994-2-git-send-email-vlad.dogaru@intel.com>
- <558D3116.5060906@gmx.de>
+To: Geert Uytterhoeven <geert@linux-m68k.org>
+Cc: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] iio: sx9500: Add missing init in
+ sx9500_buffer_pre{en,dis}able()
+Message-ID: <20150629073655.GC12017@vdogaru>
+References: <1435562073-31503-1-git-send-email-geert@linux-m68k.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <558D3116.5060906@gmx.de>
+Content-Type: text/plain; charset=utf-8
+In-Reply-To: <1435562073-31503-1-git-send-email-geert@linux-m68k.org>
 List-ID: <linux-iio@vger.kernel.org>
 
-On Fri, Jun 26, 2015 at 01:01:42PM +0200, Hartmut Knaack wrote:
-> Vlad Dogaru schrieb am 12.04.2015 um 19:09:
-> > In the interest of lowering power usage, we only activate the proximity
-> > channels and interrupts that we are currently using.
-> > 
-> > For raw reads, we activate the corresponding channel and the data ready
-> > interrupt and wait for the interrupt to trigger.  If no interrupt is
-> > available, we wait for the documented scan period, as specified in the
-> > datasheet.
-> > 
+On Mon, Jun 29, 2015 at 09:14:33AM +0200, Geert Uytterhoeven wrote:
+> drivers/iio/proximity/sx9500.c: In function ‘sx9500_buffer_preenable’:
+> drivers/iio/proximity/sx9500.c:682: warning: ‘ret’ may be used uninitialized in this function
+> drivers/iio/proximity/sx9500.c: In function ‘sx9500_buffer_predisable’:
+> drivers/iio/proximity/sx9500.c:706: warning: ‘ret’ may be used uninitialized in this function
 > 
-> Hi,
-> I have a question inline, and also spotted a bug.
+> If active_scan_mask is empty, it will loop once more over all channels,
+> doing nothing.
 > 
-> <...>
-> 
-> > +static int sx9500_read_proximity(struct sx9500_data *data,
-> > +				 const struct iio_chan_spec *chan,
-> > +				 int *val)
-> > +{
-> > +	int ret;
-> > +
-> > +	mutex_lock(&data->mutex);
-> > +
-> > +	ret = sx9500_inc_chan_users(data, chan->channel);
-> > +	if (ret < 0)
-> > +		goto out;
-> > +
-> > +	ret = sx9500_inc_data_rdy_users(data);
-> > +	if (ret < 0)
-> > +		goto out_dec_chan;
-> > +
-> > +	mutex_unlock(&data->mutex);
-> > +
-> > +	if (data->client->irq > 0)
-> > +		ret = wait_for_completion_interruptible(&data->completion);
-> > +	else
-> > +		ret = sx9500_wait_for_sample(data);
-> > +
-> > +	if (ret < 0)
-> > +		return ret;
-> 
-> If an error is encountered from here on, the device won't be able to enter
-> a low power mode again, since you don't decrease the chan_users[chan] and
-> data_rdy_users elements of sx9500_data. Is this intended?
+> Signed-off-by: Geert Uytterhoeven <geert@linux-m68k.org>
 
-No, I didn't intend that.
+Reviewed-by: Vlad Dogaru <vlad.dogaru@intel.com>
 
-> 
-> > +
-> > +	mutex_lock(&data->mutex);
-> > +
-> > +	ret = sx9500_read_prox_data(data, chan, val);
-> > +	if (ret < 0)
-> > +		goto out;
-> > +
-> > +	ret = sx9500_dec_chan_users(data, chan->channel);
-> > +	if (ret < 0)
-> > +		goto out;
-> > +
-> > +	ret = sx9500_dec_data_rdy_users(data);
-> > +	if (ret < 0)
-> > +		goto out;
-> > +
-> > +	ret = IIO_VAL_INT;
-> > +
-> > +	goto out;
-> > +
-> > +out_dec_chan:
-> > +	sx9500_dec_chan_users(data, chan->channel);
-> > +out:
-> > +	mutex_unlock(&data->mutex);
-> > +	reinit_completion(&data->completion);
-> > +
-> > +	return ret;
-> >  }
-> 
-> <...>
-> 
->   
-> > +/* Activate all channels and perform an initial compensation. */
-> > +static int sx9500_init_compensation(struct iio_dev *indio_dev)
-> > +{
-> > +	struct sx9500_data *data = iio_priv(indio_dev);
-> > +	int i, ret;
-> > +	unsigned int val;
-> > +
-> > +	ret = regmap_update_bits(data->regmap, SX9500_REG_PROX_CTRL0,
-> > +				 GENMASK(SX9500_NUM_CHANNELS, 0),
-> > +				 GENMASK(SX9500_NUM_CHANNELS, 0));
-> 
-> This mask should just reach until SX9500_NUM_CHANNELS - 1. Right now it 
-> messes with the lowest bit of SCANPERIOD. Why not define the channel mask
-> with all other definitions and use a catchy name here?
+I wonder if those functions are ever called with an empty scan mask.
+But the fix is correct nonetheless.  Nice catch :)
 
-You are correct, thanks for pointing this out.  Will send patches for
-both shortly.
-
-Thanks,
-Vlad
+> ---
+>  drivers/iio/proximity/sx9500.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/iio/proximity/sx9500.c b/drivers/iio/proximity/sx9500.c
+> index 2042e375f8351de6..7624cfa2422d4e41 100644
+> --- a/drivers/iio/proximity/sx9500.c
+> +++ b/drivers/iio/proximity/sx9500.c
+> @@ -679,7 +679,7 @@ out:
+>  static int sx9500_buffer_preenable(struct iio_dev *indio_dev)
+>  {
+>  	struct sx9500_data *data = iio_priv(indio_dev);
+> -	int ret, i;
+> +	int ret = 0, i;
+>  
+>  	mutex_lock(&data->mutex);
+>  
+> @@ -703,7 +703,7 @@ static int sx9500_buffer_preenable(struct iio_dev *indio_dev)
+>  static int sx9500_buffer_predisable(struct iio_dev *indio_dev)
+>  {
+>  	struct sx9500_data *data = iio_priv(indio_dev);
+> -	int ret, i;
+> +	int ret = 0, i;
+>  
+>  	iio_triggered_buffer_predisable(indio_dev);
+>  
+> -- 
+> 1.9.1
+> 
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
