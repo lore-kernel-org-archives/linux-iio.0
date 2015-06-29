@@ -1,215 +1,398 @@
-Return-Path: <cmo@melexis.com>
-MIME-Version: 1.0
-In-Reply-To: <alpine.DEB.2.02.1506291413340.16737@pmeerw.net>
-References: <CAKv63uv5RZxmtVpMMAZ=xtTwMQZ8D=LxPHQ+ZHezj=814_m6eg@mail.gmail.com>
-	<alpine.DEB.2.02.1506291413340.16737@pmeerw.net>
-Date: Mon, 29 Jun 2015 16:39:37 +0200
-Message-ID: <CAKv63uvqTuVwTn8pq7MVF=TPyCcCNQGvOdAh7DPNy_=W6=FBpw@mail.gmail.com>
-Subject: Re: [PATCH] iio: mlx90614: Replace offset sign and define magic numbers
-From: Crt Mori <cmo@melexis.com>
-To: Peter Meerwald <pmeerw@pmeerw.net>
-Cc: linux-iio@vger.kernel.org,
-	=?UTF-8?Q?Vianney_le_Cl=C3=A9ment_de_Saint=2DMarcq?= <vianney.leclement@essensium.com>,
-	Johnathan Iain Cameron <jic23@kernel.org>
-Content-Type: multipart/alternative; boundary=001a113904aa1df9ba0519a90f8f
+Return-Path: <teodora.baluta@intel.com>
+From: Teodora Baluta <teodora.baluta@intel.com>
+To: jic23@kernel.org
+Cc: knaack.h@gmx.de,
+	lars@metafoo.de,
+	pmeerw@pmeerw.net,
+	daniel.baluta@intel.com,
+	teodora.baluta@intel.com,
+	dan.carpenter@oracle.com,
+	linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH 2/2] iio: magnetometer: add mmc34160 magnetometer driver
+Date: Mon, 29 Jun 2015 15:44:51 +0300
+Message-Id: <1435581891-1730-3-git-send-email-teodora.baluta@intel.com>
+In-Reply-To: <1435581891-1730-1-git-send-email-teodora.baluta@intel.com>
+References: <1435581891-1730-1-git-send-email-teodora.baluta@intel.com>
 List-ID: <linux-iio@vger.kernel.org>
 
---001a113904aa1df9ba0519a90f8f
-Content-Type: text/plain; charset=UTF-8
+This patch adds support for the MMC34160 3-axis magnetometer driver. The
+MMC31460 magnetometer driver uses the same register map as MMC35240 with
+different specifications for sensitivity.
 
->> Translates the magic constant numbers to named macros and add some
->> additional comments about their meaning. Also changed the offset to
->> negative as usual equation is: (raw + offset)*scale and in this
->> case offset should be negative (as we deduct 273.15 Kelvin to get
->> temperature in Celsius)..
+According to Memsic specification, for the MMC31460 sensor, there is no
+need to apply compensation to the read values. Also, the MMC34160 sensor
+does not use the same formula as MMC35240 for transforming raw data into
+mgauss, and the current formula is based on the input driver (mmc3416x)
+provided by Memsic.
 
-> On 29 June 2015 at 14:19, Peter Meerwald <pmeerw@pmeerw.net> wrote:
->looks good; strictly, this patch is
->(a) a bugfix (the offset should be negative),
->(b) cleanup to replace constants by macros.
+Signed-off-by: Teodora Baluta <teodora.baluta@intel.com>
+---
+This depends on the following patch https://lkml.org/lkml/2015/6/15/311
+---
+ drivers/iio/magnetometer/Kconfig    |   5 +-
+ drivers/iio/magnetometer/mmc35240.c | 228 ++++++++++++++++++++++++++++--------
+ 2 files changed, 181 insertions(+), 52 deletions(-)
 
-I agree, but other things are more design than a proper change.
-
-I would also like you to reconsider the usage of
-IIO_CHAN_INFO_PROCESSED which would report calculated value
-to avoid knowing the sensor specifics and just provide general output
-(this would avoid different calculations of final temperature for different
-sensors).
-
->>
->> The diff is made towards togreg branch as that branch seems to have the
->> most recent updates of mlx90614 driver (many are yet to be merged).
->>
->> Signed-off-by: Crt Mori <cmo@melexis.com>
->> ---
->>  drivers/iio/temperature/mlx90614.c | 20 ++++++++++++++------
->>  1 file changed, 14 insertions(+), 6 deletions(-)
->>
->> diff --git a/drivers/iio/temperature/mlx90614.c
->> b/drivers/iio/temperature/mlx90614.c
->> index cb2e8ad..909278a 100644
->> --- a/drivers/iio/temperature/mlx90614.c
->> +++ b/drivers/iio/temperature/mlx90614.c
->> @@ -65,6 +65,13 @@
->>
->>  #define MLX90614_AUTOSLEEP_DELAY 5000 /* default autosleep delay */
->>
->> +/* Magic constants */
->> +#define MLX90614_CONST_OFFSET_DEC -13657 /* decimal part of the Kelvin
->> offset */
->> +#define MLX90614_CONST_OFFSET_REM 500000 /* remainder of offset
->> (273.15*50) */
->> +#define MLX90614_CONST_SCALE 20 /* Scale in milliKelvin (0.02 * 1000) */
->> +#define MLX90614_CONST_RAW_EMISSIVITY_MAX 65535 /* max value for
->> emissivity */
->> +#define MLX90614_CONST_EMISSIVITY_RESOLUTION 15259 /* 1/65535 ~
->> 0.000015259 */
->> +
->>  struct mlx90614_data {
->>         struct i2c_client *client;
->>         struct mutex lock; /* for EEPROM access only */
->> @@ -204,11 +211,11 @@ static int mlx90614_read_raw(struct iio_dev
->> *indio_dev,
->>                 *val = ret;
->>                 return IIO_VAL_INT;
->>         case IIO_CHAN_INFO_OFFSET:
->> -               *val = 13657;
->> -               *val2 = 500000;
->> +               *val = MLX90614_CONST_OFFSET_DEC;
->> +               *val2 = MLX90614_CONST_OFFSET_REM;
->>                 return IIO_VAL_INT_PLUS_MICRO;
->>         case IIO_CHAN_INFO_SCALE:
->> -               *val = 20;
->> +               *val = MLX90614_CONST_SCALE;
->>                 return IIO_VAL_INT;
->>         case IIO_CHAN_INFO_CALIBEMISSIVITY: /* 1/65535 / LSB */
->>                 mlx90614_power_get(data, false);
->> @@ -221,12 +228,12 @@ static int mlx90614_read_raw(struct iio_dev
->> *indio_dev,
->>                 if (ret < 0)
->>                         return ret;
->>
->> -               if (ret == 65535) {
->> +               if (ret == MLX90614_CONST_RAW_EMISSIVITY_MAX) {
->>                         *val = 1;
->>                         *val2 = 0;
->>                 } else {
->>                         *val = 0;
->> -                       *val2 = ret * 15259; /* 1/65535 ~ 0.000015259 */
->> +                       *val2 = ret *
-MLX90614_CONST_EMISSIVITY_RESOLUTION;
->>                 }
->>                 return IIO_VAL_INT_PLUS_NANO;
->>         default:
->> @@ -245,7 +252,8 @@ static int mlx90614_write_raw(struct iio_dev
-*indio_dev,
->>         case IIO_CHAN_INFO_CALIBEMISSIVITY: /* 1/65535 / LSB */
->>                 if (val < 0 || val2 < 0 || val > 1 || (val == 1 && val2
-!=
->> 0))
->>                         return -EINVAL;
->> -               val = val * 65535 + val2 / 15259; /* 1/65535 ~
-0.000015259
->> */
->> +               val = val * MLX90614_CONST_RAW_EMISSIVITY_MAX +
->> +                       val2 / MLX90614_CONST_EMISSIVITY_RESOLUTION;
->>
->>                 mlx90614_power_get(data, false);
->>                 mutex_lock(&data->lock);
->>
-
---001a113904aa1df9ba0519a90f8f
-Content-Type: text/html; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-
-<div dir=3D"ltr">&gt;&gt; Translates the magic constant numbers to named ma=
-cros and add some<br>&gt;&gt; additional comments about their meaning. Also=
- changed the offset to<br>&gt;&gt; negative as usual equation is: (raw + of=
-fset)*scale and in this<br>&gt;&gt; case offset should be negative (as we d=
-educt 273.15 Kelvin to get<br>&gt;&gt; temperature in Celsius)..<div><br>&g=
-t; On 29 June 2015 at 14:19, Peter Meerwald=C2=A0<span dir=3D"ltr">&lt;<a h=
-ref=3D"mailto:pmeerw@pmeerw.net" target=3D"_blank">pmeerw@pmeerw.net</a>&gt=
-;</span>=C2=A0wrote:<br>&gt;looks good; strictly, this patch is<br>&gt;(a) =
-a bugfix (the offset should be negative),<br>&gt;(b) cleanup to replace con=
-stants by macros.<div><br></div><div>I agree, but other things are more des=
-ign than a proper change.=C2=A0</div><div><br></div><div>I would also like =
-you to reconsider the usage of=C2=A0</div><div>IIO_CHAN_INFO_PROCESSED whic=
-h would report calculated value</div><div>to avoid knowing the sensor speci=
-fics and just provide general output=C2=A0</div><div>(this would avoid diff=
-erent calculations of final temperature for different=C2=A0</div><div>senso=
-rs).</div><div>=C2=A0<br>&gt;&gt;<br>&gt;&gt; The diff is made towards togr=
-eg branch as that branch seems to have the<br>&gt;&gt; most recent updates =
-of mlx90614 driver (many are yet to be merged).<br>&gt;&gt;<br>&gt;&gt; Sig=
-ned-off-by: Crt Mori &lt;<a href=3D"mailto:cmo@melexis.com">cmo@melexis.com=
-</a>&gt;<br>&gt;&gt; ---<br>&gt;&gt; =C2=A0drivers/iio/temperature/mlx90614=
-.c | 20 ++++++++++++++------<br>&gt;&gt; =C2=A01 file changed, 14 insertion=
-s(+), 6 deletions(-)<br>&gt;&gt;<br>&gt;&gt; diff --git a/drivers/iio/tempe=
-rature/mlx90614.c<br>&gt;&gt; b/drivers/iio/temperature/mlx90614.c<br>&gt;&=
-gt; index cb2e8ad..909278a 100644<br>&gt;&gt; --- a/drivers/iio/temperature=
-/mlx90614.c<br>&gt;&gt; +++ b/drivers/iio/temperature/mlx90614.c<br>&gt;&gt=
-; @@ -65,6 +65,13 @@<br>&gt;&gt;<br>&gt;&gt; =C2=A0#define MLX90614_AUTOSLE=
-EP_DELAY 5000 /* default autosleep delay */<br>&gt;&gt;<br>&gt;&gt; +/* Mag=
-ic constants */<br>&gt;&gt; +#define MLX90614_CONST_OFFSET_DEC -13657 /* de=
-cimal part of the Kelvin<br>&gt;&gt; offset */<br>&gt;&gt; +#define MLX9061=
-4_CONST_OFFSET_REM 500000 /* remainder of offset<br>&gt;&gt; (273.15*50) */=
-<br>&gt;&gt; +#define MLX90614_CONST_SCALE 20 /* Scale in milliKelvin (0.02=
- * 1000) */<br>&gt;&gt; +#define MLX90614_CONST_RAW_EMISSIVITY_MAX 65535 /*=
- max value for<br>&gt;&gt; emissivity */<br>&gt;&gt; +#define MLX90614_CONS=
-T_EMISSIVITY_RESOLUTION 15259 /* 1/65535 ~<br>&gt;&gt; 0.000015259 */<br>&g=
-t;&gt; +<br>&gt;&gt; =C2=A0struct mlx90614_data {<br>&gt;&gt; =C2=A0 =C2=A0=
- =C2=A0 =C2=A0 struct i2c_client *client;<br>&gt;&gt; =C2=A0 =C2=A0 =C2=A0 =
-=C2=A0 struct mutex lock; /* for EEPROM access only */<br>&gt;&gt; @@ -204,=
-11 +211,11 @@ static int mlx90614_read_raw(struct iio_dev<br>&gt;&gt; *indi=
-o_dev,<br>&gt;&gt; =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
-*val =3D ret;<br>&gt;&gt; =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
-=C2=A0 return IIO_VAL_INT;<br>&gt;&gt; =C2=A0 =C2=A0 =C2=A0 =C2=A0 case IIO=
-_CHAN_INFO_OFFSET:<br>&gt;&gt; - =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
-=C2=A0 *val =3D 13657;<br>&gt;&gt; - =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
-=A0 =C2=A0 *val2 =3D 500000;<br>&gt;&gt; + =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
-=A0 =C2=A0 =C2=A0 *val =3D MLX90614_CONST_OFFSET_DEC;<br>&gt;&gt; + =C2=A0 =
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 *val2 =3D MLX90614_CONST_OFFSET_R=
-EM;<br>&gt;&gt; =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 ret=
-urn IIO_VAL_INT_PLUS_MICRO;<br>&gt;&gt; =C2=A0 =C2=A0 =C2=A0 =C2=A0 case II=
-O_CHAN_INFO_SCALE:<br>&gt;&gt; - =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
-=C2=A0 *val =3D 20;<br>&gt;&gt; + =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0=
- =C2=A0 *val =3D MLX90614_CONST_SCALE;<br>&gt;&gt; =C2=A0 =C2=A0 =C2=A0 =C2=
-=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 return IIO_VAL_INT;<br>&gt;&gt; =C2=A0 =C2=
-=A0 =C2=A0 =C2=A0 case IIO_CHAN_INFO_CALIBEMISSIVITY: /* 1/65535 / LSB */<b=
-r>&gt;&gt; =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 mlx90614=
-_power_get(data, false);<br>&gt;&gt; @@ -221,12 +228,12 @@ static int mlx90=
-614_read_raw(struct iio_dev<br>&gt;&gt; *indio_dev,<br>&gt;&gt; =C2=A0 =C2=
-=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 if (ret &lt; 0)<br>&gt;&gt; =
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
-=A0 =C2=A0 return ret;<br>&gt;&gt;<br>&gt;&gt; - =C2=A0 =C2=A0 =C2=A0 =C2=
-=A0 =C2=A0 =C2=A0 =C2=A0 if (ret =3D=3D 65535) {<br>&gt;&gt; + =C2=A0 =C2=
-=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 if (ret =3D=3D MLX90614_CONST_RAW_EM=
-ISSIVITY_MAX) {<br>&gt;&gt; =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
-=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 *val =3D 1;<br>&gt;&gt; =C2=A0 =C2=
-=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 *=
-val2 =3D 0;<br>&gt;&gt; =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
-=C2=A0 } else {<br>&gt;&gt; =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
-=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 *val =3D 0;<br>&gt;&gt; - =C2=A0 =C2=
-=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 *val2 =
-=3D ret * 15259; /* 1/65535 ~ 0.000015259 */<br>&gt;&gt; + =C2=A0 =C2=A0 =
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 *val2 =3D re=
-t * MLX90614_CONST_EMISSIVITY_RESOLUTION;<br>&gt;&gt; =C2=A0 =C2=A0 =C2=A0 =
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 }<br>&gt;&gt; =C2=A0 =C2=A0 =C2=A0 =C2=
-=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 return IIO_VAL_INT_PLUS_NANO;<br>&gt;&gt; =
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 default:<br>&gt;&gt; @@ -245,7 +252,8 @@ static=
- int mlx90614_write_raw(struct iio_dev *indio_dev,<br>&gt;&gt; =C2=A0 =C2=
-=A0 =C2=A0 =C2=A0 case IIO_CHAN_INFO_CALIBEMISSIVITY: /* 1/65535 / LSB */<b=
-r>&gt;&gt; =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 if (val =
-&lt; 0 || val2 &lt; 0 || val &gt; 1 || (val =3D=3D 1 &amp;&amp; val2 !=3D<b=
-r>&gt;&gt; 0))<br>&gt;&gt; =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0=
- =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 return -EINVAL;<br>&gt;&gt; - =C2=A0 =
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 val =3D val * 65535 + val2 / 1525=
-9; /* 1/65535 ~ 0.000015259<br>&gt;&gt; */<br>&gt;&gt; + =C2=A0 =C2=A0 =C2=
-=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 val =3D val * MLX90614_CONST_RAW_EMISSIVITY=
-_MAX +<br>&gt;&gt; + =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
-=A0 =C2=A0 =C2=A0 =C2=A0 val2 / MLX90614_CONST_EMISSIVITY_RESOLUTION;<br>&g=
-t;&gt;<br>&gt;&gt; =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
-mlx90614_power_get(data, false);<br>&gt;&gt; =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 mutex_lock(&amp;data-&gt;lock);<br>&gt;&gt;</di=
-v></div></div>
-
---001a113904aa1df9ba0519a90f8f--
+diff --git a/drivers/iio/magnetometer/Kconfig b/drivers/iio/magnetometer/Kconfig
+index dcadfc4..baf59d9 100644
+--- a/drivers/iio/magnetometer/Kconfig
++++ b/drivers/iio/magnetometer/Kconfig
+@@ -52,8 +52,9 @@ config MMC35240
+ 	select REGMAP_I2C
+ 	depends on I2C
+ 	help
+-	  Say yes here to build support for the MEMSIC MMC35240 3-axis
+-	  magnetic sensor.
++	  Say yes here to build support for the MEMSIC MMC35240 3-axis magnetic
++	  sensor. This driver also adds support for the MEMSIC MMC34160 3-axis magnetic
++	  sensor.
+ 
+ 	  To compile this driver as a module, choose M here: the module
+ 	  will be called mmc35240.
+diff --git a/drivers/iio/magnetometer/mmc35240.c b/drivers/iio/magnetometer/mmc35240.c
+index 36a4b53..c1cf01e 100644
+--- a/drivers/iio/magnetometer/mmc35240.c
++++ b/drivers/iio/magnetometer/mmc35240.c
+@@ -83,6 +83,20 @@
+ 
+ #define MMC35240_OTP_START_ADDR		0x1B
+ 
++#define MMC35240_CHIP_ID	0x08
++#define MMC34160_CHIP_ID	0x06
++
++enum mmc35240_chipset {
++	MMC35240,
++	MMC34160,
++	MMC_MAX_CHIPS
++};
++
++static u8 chip_ids[MMC_MAX_CHIPS] = {
++	MMC35240_CHIP_ID,
++	MMC34160_CHIP_ID,
++};
++
+ enum mmc35240_resolution {
+ 	MMC35240_16_BITS_SLOW = 0, /* 7.92 ms */
+ 	MMC35240_16_BITS_FAST,     /* 4.08 ms */
+@@ -99,27 +113,53 @@ enum mmc35240_axis {
+ static const struct {
+ 	int sens[3]; /* sensitivity per X, Y, Z axis */
+ 	int nfo; /* null field output */
+-} mmc35240_props_table[] = {
+-	/* 16 bits, 125Hz ODR */
+-	{
+-		{1024, 1024, 1024},
+-		32768,
+-	},
+-	/* 16 bits, 250Hz ODR */
+-	{
+-		{1024, 1024, 770},
+-		32768,
+-	},
+-	/* 14 bits, 450Hz ODR */
++} mmc35240_props_table[MMC_MAX_CHIPS][4] = {
++	/* MMC35240 */
+ 	{
+-		{256, 256, 193},
+-		8192,
++		/* 16 bits, 125Hz ODR */
++		{
++			{1024, 1024, 1024},
++			32768,
++		},
++		/* 16 bits, 250Hz ODR */
++		{
++			{1024, 1024, 770},
++			32768,
++		},
++		/* 14 bits, 450Hz ODR */
++		{
++			{256, 256, 193},
++			8192,
++		},
++		/* 12 bits, 800Hz ODR */
++		{
++			{64, 64, 48},
++			2048,
++		},
+ 	},
+-	/* 12 bits, 800Hz ODR */
++	/* MMC34160 */
+ 	{
+-		{64, 64, 48},
+-		2048,
+-	},
++		/* 16 bits, 125Hz ODR */
++		{
++			{2048, 2048, 2048},
++			32768,
++		},
++		/* 16 bits, 250Hz ODR */
++		{
++			{2048, 2048, 2048},
++			32768,
++		},
++		/* 14 bits, 450Hz ODR */
++		{
++			{512, 512, 512},
++			8192,
++		},
++		/* 12 bits, 800Hz ODR */
++		{
++			{128, 128, 128},
++			2048,
++		},
++	}
+ };
+ 
+ struct mmc35240_data {
+@@ -131,6 +171,7 @@ struct mmc35240_data {
+ 	/* OTP compensation */
+ 	int axis_coef[3];
+ 	int axis_scale[3];
++	enum mmc35240_chipset chipset;
+ };
+ 
+ static const struct {
+@@ -206,6 +247,16 @@ static int mmc35240_hw_set(struct mmc35240_data *data, bool set)
+ 				  coil_bit);
+ }
+ 
++static inline bool mmc35240_needs_compensation(enum mmc35240_chipset chipset)
++{
++	switch (chipset) {
++	case MMC35240:
++		return true;
++	default:
++		return false;
++	}
++}
++
+ static int mmc35240_init(struct mmc35240_data *data)
+ {
+ 	int ret, y_convert, z_convert;
+@@ -220,6 +271,10 @@ static int mmc35240_init(struct mmc35240_data *data)
+ 
+ 	dev_dbg(&data->client->dev, "MMC35240 chip id %x\n", reg_id);
+ 
++	if (reg_id != chip_ids[data->chipset]) {
++		dev_err(&data->client->dev, "Invalid chip %x\n", ret);
++		return -ENODEV;
++	}
+ 	/*
+ 	 * make sure we restore sensor characteristics, by doing
+ 	 * a RESET/SET sequence
+@@ -240,6 +295,9 @@ static int mmc35240_init(struct mmc35240_data *data)
+ 	if (ret < 0)
+ 		return ret;
+ 
++	if (!mmc35240_needs_compensation(data->chipset))
++		return 0;
++
+ 	ret = regmap_bulk_read(data->regmap, MMC35240_OTP_START_ADDR,
+ 			       (u8 *)otp_data, sizeof(otp_data));
+ 	if (ret < 0)
+@@ -301,9 +359,51 @@ static int mmc35240_read_measurement(struct mmc35240_data *data, __le16 buf[3])
+ 				3 * sizeof(__le16));
+ }
+ 
++static int mmc34160_raw_to_mgauss(int raw[3], int sens[3], int nfo,
++				  int index, int *val)
++{
++	switch (index) {
++	case AXIS_X:
++		*val = (raw[AXIS_X] - nfo) * 1000 / sens[AXIS_X];
++		break;
++	case AXIS_Y:
++		*val = (raw[AXIS_Y] - nfo) * 1000 / sens[AXIS_Y];
++		break;
++	case AXIS_Z:
++		*val = (raw[AXIS_Z] - nfo) * 1000 / sens[AXIS_Z];
++		break;
++	default:
++		return -EINVAL;
++	}
++
++	return 0;
++}
++
++static int mmc35240_raw_to_mgauss(int raw[3], int sens[3], int nfo,
++				  int index, int *val)
++{
++	switch (index) {
++	case AXIS_X:
++		*val = (raw[AXIS_X] - nfo) * 1000 / sens[AXIS_X];
++		break;
++	case AXIS_Y:
++		*val = (raw[AXIS_Y] - nfo) * 1000 / sens[AXIS_Y] -
++			(raw[AXIS_Z] - nfo)  * 1000 / sens[AXIS_Z];
++		break;
++	case AXIS_Z:
++		*val = (raw[AXIS_Y] - nfo) * 1000 / sens[AXIS_Y] +
++			(raw[AXIS_Z] - nfo) * 1000 / sens[AXIS_Z];
++		break;
++	default:
++		return -EINVAL;
++	}
++
++	return 0;
++}
++
+ /**
+- * mmc35240_raw_to_mgauss - convert raw readings to milli gauss. Also apply
+-			    compensation for output value.
++ * memsic_raw_to_mgauss - convert raw readings to milli gauss. Also apply
++			  compensation for output value.
+  *
+  * @data: device private data
+  * @index: axis index for which we want the conversion
+@@ -312,40 +412,42 @@ static int mmc35240_read_measurement(struct mmc35240_data *data, __le16 buf[3])
+  *
+  * Returns: 0 in case of success, -EINVAL when @index is not valid
+  */
+-static int mmc35240_raw_to_mgauss(struct mmc35240_data *data, int index,
+-				  __le16 buf[], int *val)
++
++static int memsic_raw_to_mgauss(struct mmc35240_data *data, int index,
++				__le16 buf[], int *val)
+ {
+-	int raw_x, raw_y, raw_z;
+-	int sens_x, sens_y, sens_z;
++	int raw[3];
++	int sens[3];
+ 	int nfo;
++	int ret;
++	int id = data->chipset;
+ 
+-	raw_x = le16_to_cpu(buf[AXIS_X]);
+-	raw_y = le16_to_cpu(buf[AXIS_Y]);
+-	raw_z = le16_to_cpu(buf[AXIS_Z]);
++	raw[AXIS_X] = le16_to_cpu(buf[AXIS_X]);
++	raw[AXIS_Y] = le16_to_cpu(buf[AXIS_Y]);
++	raw[AXIS_Z] = le16_to_cpu(buf[AXIS_Z]);
+ 
+-	sens_x = mmc35240_props_table[data->res].sens[AXIS_X];
+-	sens_y = mmc35240_props_table[data->res].sens[AXIS_Y];
+-	sens_z = mmc35240_props_table[data->res].sens[AXIS_Z];
++	sens[AXIS_X] = mmc35240_props_table[id][data->res].sens[AXIS_X];
++	sens[AXIS_Y] = mmc35240_props_table[id][data->res].sens[AXIS_Y];
++	sens[AXIS_Z] = mmc35240_props_table[id][data->res].sens[AXIS_Z];
+ 
+-	nfo = mmc35240_props_table[data->res].nfo;
++	nfo = mmc35240_props_table[id][data->res].nfo;
+ 
+-	switch (index) {
+-	case AXIS_X:
+-		*val = (raw_x - nfo) * 1000 / sens_x;
+-		break;
+-	case AXIS_Y:
+-		*val = (raw_y - nfo) * 1000 / sens_y -
+-			(raw_z - nfo)  * 1000 / sens_z;
+-		break;
+-	case AXIS_Z:
+-		*val = (raw_y - nfo) * 1000 / sens_y +
+-			(raw_z - nfo) * 1000 / sens_z;
+-		break;
++	switch (id) {
++	case MMC35240:
++		ret = mmc35240_raw_to_mgauss(raw, sens, nfo, index, val);
++		if (ret < 0)
++			return ret;
++
++		/* apply OTP compensation */
++		*val = (*val) * data->axis_coef[index] /
++			data->axis_scale[index];
++
++		return 0;
++	case MMC34160:
++		return mmc34160_raw_to_mgauss(raw, sens, nfo, index, val);
+ 	default:
+ 		return -EINVAL;
+ 	}
+-	/* apply OTP compensation */
+-	*val = (*val) * data->axis_coef[index] / data->axis_scale[index];
+ 
+ 	return 0;
+ }
+@@ -366,7 +468,7 @@ static int mmc35240_read_raw(struct iio_dev *indio_dev,
+ 		mutex_unlock(&data->mutex);
+ 		if (ret < 0)
+ 			return ret;
+-		ret = mmc35240_raw_to_mgauss(data, chan->address, buf, val);
++		ret = memsic_raw_to_mgauss(data, chan->address, buf, val);
+ 		if (ret < 0)
+ 			return ret;
+ 		return IIO_VAL_INT;
+@@ -484,12 +586,27 @@ static const struct regmap_config mmc35240_regmap_config = {
+ 	.num_reg_defaults = ARRAY_SIZE(mmc35240_reg_defaults),
+ };
+ 
++static const char *mmc35240_match_acpi_device(struct device *dev,
++					      enum mmc35240_chipset *chipset)
++{
++	const struct acpi_device_id *id;
++
++	id = acpi_match_device(dev->driver->acpi_match_table, dev);
++	if (!id)
++		return NULL;
++
++	*chipset = (enum mmc35240_chipset)id->driver_data;
++
++	return dev_name(dev);
++}
++
+ static int mmc35240_probe(struct i2c_client *client,
+ 			  const struct i2c_device_id *id)
+ {
+ 	struct mmc35240_data *data;
+ 	struct iio_dev *indio_dev;
+ 	struct regmap *regmap;
++	const char *name;
+ 	int ret;
+ 
+ 	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
+@@ -508,11 +625,20 @@ static int mmc35240_probe(struct i2c_client *client,
+ 	data->regmap = regmap;
+ 	data->res = MMC35240_16_BITS_SLOW;
+ 
++	if (id) {
++		data->chipset = (enum mmc35240_chipset)(id->driver_data);
++		name = id->name;
++	} else if (ACPI_HANDLE(&client->dev)) {
++		name = mmc35240_match_acpi_device(&client->dev,
++						  &data->chipset);
++	} else
++		return -ENODEV;
++
+ 	mutex_init(&data->mutex);
+ 
+ 	indio_dev->dev.parent = &client->dev;
+ 	indio_dev->info = &mmc35240_info;
+-	indio_dev->name = MMC35240_DRV_NAME;
++	indio_dev->name = name;
+ 	indio_dev->channels = mmc35240_channels;
+ 	indio_dev->num_channels = ARRAY_SIZE(mmc35240_channels);
+ 	indio_dev->modes = INDIO_DIRECT_MODE;
+@@ -559,14 +685,16 @@ static const struct dev_pm_ops mmc35240_pm_ops = {
+ };
+ 
+ static const struct acpi_device_id mmc35240_acpi_match[] = {
+-	{"MMC35240", 0},
++	{"MMC35240", MMC35240},
++	{"MMC34160", MMC34160},
+ 	{ },
+ };
+ MODULE_DEVICE_TABLE(acpi, mmc35240_acpi_match);
+ 
+ static const struct i2c_device_id mmc35240_id[] = {
+-	{"mmc35240", 0},
+-	{}
++	{"mmc35240", MMC35240},
++	{"mmc34160", MMC34160},
++	{ }
+ };
+ MODULE_DEVICE_TABLE(i2c, mmc35240_id);
+ 
+-- 
+1.9.1
