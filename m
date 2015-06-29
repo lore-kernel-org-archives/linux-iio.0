@@ -1,46 +1,66 @@
-Return-Path: <k.wrona@samsung.com>
-Message-id: <5591186F.6000505@samsung.com>
-Date: Mon, 29 Jun 2015 12:05:35 +0200
-From: Karol Wrona <k.wrona@samsung.com>
-MIME-version: 1.0
-To: Antonio Borneo <borneo.antonio@gmail.com>,
- Jonathan Cameron <jic23@kernel.org>, Lars-Peter Clausen <lars@metafoo.de>,
- linux-iio@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 2/6] iio: ssp_sensors: Remove redundant spi driver bus
- initialization
-References: <1435070714-24174-1-git-send-email-borneo.antonio@gmail.com>
- <1435071148-24453-1-git-send-email-borneo.antonio@gmail.com>
-In-reply-to: <1435071148-24453-1-git-send-email-borneo.antonio@gmail.com>
-Content-type: text/plain; charset=windows-1252
+Return-Path: <knaack.h@gmx.de>
+Message-ID: <55911519.3060103@gmx.de>
+Date: Mon, 29 Jun 2015 11:51:21 +0200
+From: Hartmut Knaack <knaack.h@gmx.de>
+MIME-Version: 1.0
+To: Daniel Baluta <daniel.baluta@intel.com>
+CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+ Jonathan Cameron <jic23@kernel.org>,
+ Lars-Peter Clausen <lars@metafoo.de>,
+ Peter Meerwald <pmeerw@pmeerw.net>,
+ Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
+Subject: Re: [PATCH 2/2] iio:light:ltr501: fix variable in ltr501_init
+References: <cover.1435487041.git.knaack.h@gmx.de>	<d0d577c23f2ecb473c776cf6a684e82e07c0ab74.1435487041.git.knaack.h@gmx.de> <CAEnQRZA=P=HOAzzN=Q3uifPxGL0u58F5uk5RHo-vGKERM3Kn=Q@mail.gmail.com>
+In-Reply-To: <CAEnQRZA=P=HOAzzN=Q3uifPxGL0u58F5uk5RHo-vGKERM3Kn=Q@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
 List-ID: <linux-iio@vger.kernel.org>
 
-On 06/23/2015 04:52 PM, Antonio Borneo wrote:
-> In ancient times it was necessary to manually initialize the bus
-> field of an spi_driver to spi_bus_type. These days this is done in
-> spi_register_driver(), so we can drop the manual assignment.
+Daniel Baluta schrieb am 29.06.2015 um 09:57:
+> On Sun, Jun 28, 2015 at 1:31 PM, Hartmut Knaack <knaack.h@gmx.de> wrote:
+>> When filling data->als_contr, the register content read into status needs
+>> to be used, instead of the return status value of regmap_read.
+>>
+>> This fixes:     8592a7eefa540303dd9e60fa49340d09ca9376b4
+>>                 "iio: ltr501: Add support for ltr559 chip"
+>>
 > 
-> Signed-off-by: Antonio Borneo <borneo.antonio@gmail.com>
-> To: Jonathan Cameron <jic23@kernel.org>
-> To: Lars-Peter Clausen <lars@metafoo.de>
-> To: Karol Wrona <k.wrona@samsung.com>
-> To: linux-iio@vger.kernel.org
-> Cc: linux-kernel@vger.kernel.org
-> ---
->  drivers/iio/common/ssp_sensors/ssp_dev.c | 1 -
->  1 file changed, 1 deletion(-)
+> Ditto, as per previous patch:
 > 
-> diff --git a/drivers/iio/common/ssp_sensors/ssp_dev.c b/drivers/iio/common/ssp_sensors/ssp_dev.c
-> index 9a40097..d338bb5 100644
-> --- a/drivers/iio/common/ssp_sensors/ssp_dev.c
-> +++ b/drivers/iio/common/ssp_sensors/ssp_dev.c
-> @@ -700,7 +700,6 @@ static struct spi_driver ssp_driver = {
->  	.remove = ssp_remove,
->  	.driver = {
->  		.pm = &ssp_pm_ops,
-> -		.bus = &spi_bus_type,
->  		.owner = THIS_MODULE,
->  		.of_match_table = of_match_ptr(ssp_of_match),
->  		.name = "sensorhub"
+> Fixes: 8592a7eefa540 ("iio: ltr501: Add support for ltr559 chip")
 > 
-Acked-by: Karol Wrona <k.wrona@samsung.com>
+> Also, I'm pretty sure that checkpatch.pl should have warned you about
+> this.
+> 
+
+Unfortunately it doesn't. But I will keep it in mind.
+
+>> Signed-off-by: Hartmut Knaack <knaack.h@gmx.de>
+>> ---
+>>  drivers/iio/light/ltr501.c | 2 +-
+>>  1 file changed, 1 insertion(+), 1 deletion(-)
+>>
+>> diff --git a/drivers/iio/light/ltr501.c b/drivers/iio/light/ltr501.c
+>> index 1ef7d37..b5a0e66 100644
+>> --- a/drivers/iio/light/ltr501.c
+>> +++ b/drivers/iio/light/ltr501.c
+>> @@ -1302,7 +1302,7 @@ static int ltr501_init(struct ltr501_data *data)
+>>         if (ret < 0)
+>>                 return ret;
+>>
+>> -       data->als_contr = ret | data->chip_info->als_mode_active;
+>> +       data->als_contr = status | data->chip_info->als_mode_active;
+>>
+>>         ret = regmap_read(data->regmap, LTR501_PS_CONTR, &status);
+>>         if (ret < 0)
+>> --
+>> 2.3.6
+>>
+>> --
+>> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+>> the body of a message to majordomo@vger.kernel.org
+>> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> 
