@@ -1,36 +1,159 @@
-Return-Path: <pmeerw@pmeerw.net>
-Date: Tue, 30 Jun 2015 13:39:10 +0200 (CEST)
-From: Peter Meerwald <pmeerw@pmeerw.net>
-To: Martin Kepplinger <martink@posteo.de>
-cc: jic23@kernel.org, christoph.muellner@theobroma-systems.com,
-    martin.kepplinger@theobroma-systems.com, devicetree@vger.kernel.org,
-    linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org
-Subject: Re: [PATCH 0/2] iio: mma8452: add support for 3 more devices
-In-Reply-To: <1435663602-29868-1-git-send-email-martink@posteo.de>
-Message-ID: <alpine.DEB.2.02.1506301336410.12832@pmeerw.net>
-References: <1435663602-29868-1-git-send-email-martink@posteo.de>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from h1.radempa.de ([176.9.142.194]:35809 "EHLO mail.cosmopool.net"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1752508AbbF2THG (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Mon, 29 Jun 2015 15:07:06 -0400
+From: Harald Geyer <harald@ccbib.org>
+To: Jonathan Cameron <jic23@kernel.org>
+cc: Richard Weinberger <richard@nod.at>, linux-iio@vger.kernel.org
+Subject: Re: [PATCHv2 2/2] iio: dht11: Use new function ktime_get_resolution_ns()
+In-reply-to: <55267AEC.8000500@kernel.org>
+References: <1428405156-6761-1-git-send-email-harald@ccbib.org> <1428405156-6761-3-git-send-email-harald@ccbib.org> <55267AEC.8000500@kernel.org>
 MIME-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
-List-ID: <linux-iio@vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Date: Mon, 29 Jun 2015 20:59:45 +0200
+Message-Id: <E1Z9eHR-00014C-6g@stardust.g4.wien.funkfeuer.at>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Hello Martin,
+Hi Jonathan!
 
-> The first patch doesn't change anything for existing users of mma8452. Please
-> test this if you can!
+Jonathan Cameron writes:
+> On 07/04/15 12:12, Harald Geyer wrote:
+> > This cleans up the most ugly workaround in this driver. There are no
+> > functional changes yet in the decoding algorithm, but we improve the
+> > following things:
+> >  * Get rid of spurious warning messages on systems with fast HRTIMER.
+> >  * If the clock is not fast enough for decoding to work, we give
+> >    up immediately.
+> >  * In that case we return EAGAIN instead of EIO, so it's easier to
+> >    discriminate causes of failure.
+> > 
+> > Returning EAGAIN is somewhat controversial: It's technically correct
+> > as a faster clock might become available. OTOH once all clocks are
+> > enabled this is a permanent error. There is no ECLOCKTOOSLOW error
+> > code.
+> > 
+> > Signed-off-by: Harald Geyer <harald@ccbib.org>
+> Looks good to me.  Will wait for comments on the first patch though
+> before taking this... clearly that one will need a few acks if I take
+> it through IIO!
 
-nice to see the driver improved!
-the first patch does quite I bit more than it claims; it's not only
-adding more device, I'd prefer the patch split up for review
- 
-> The second patch corrects how interrupts are described as IIO events. It exists
-> seperately because it changes the driver's behaviour for existing users of
-> mma8452.
+The first patch has been merged via tip tree for 4.2 (is already available
+in staging-next tree). Are you going to pick up this patch or do I need
+to resend?
 
-what is the difference?
+Thanks,
+Harald
 
-thanks, p.
-
--- 
-
-Peter Meerwald
-+43-664-2444418 (mobile)
+> Jonathan
+> > ---
+> > changes since V1:
+> > call ktime_get_xxx() functions directly instead of using the wrappers
+> > of the iio subsystem.
+> > 
+> >  drivers/iio/humidity/dht11.c |   42 ++++++++++++++++++++++--------------------
+> >  1 files changed, 22 insertions(+), 20 deletions(-)
+> > 
+> > diff --git a/drivers/iio/humidity/dht11.c b/drivers/iio/humidity/dht11.c
+> > index 7d79a1a..4cb25dc 100644
+> > --- a/drivers/iio/humidity/dht11.c
+> > +++ b/drivers/iio/humidity/dht11.c
+> > @@ -33,6 +33,7 @@
+> >  #include <linux/delay.h>
+> >  #include <linux/gpio.h>
+> >  #include <linux/of_gpio.h>
+> > +#include <linux/timekeeping.h>
+> >  
+> >  #include <linux/iio/iio.h>
+> >  
+> > @@ -87,23 +88,11 @@ static unsigned char dht11_decode_byte(int *timing, int threshold)
+> >  	return ret;
+> >  }
+> >  
+> > -static int dht11_decode(struct dht11 *dht11, int offset)
+> > +static int dht11_decode(struct dht11 *dht11, int offset, int timeres)
+> >  {
+> > -	int i, t, timing[DHT11_BITS_PER_READ], threshold,
+> > -		timeres = DHT11_SENSOR_RESPONSE;
+> > +	int i, t, timing[DHT11_BITS_PER_READ], threshold;
+> >  	unsigned char temp_int, temp_dec, hum_int, hum_dec, checksum;
+> >  
+> > -	/* Calculate timestamp resolution */
+> > -	for (i = 1; i < dht11->num_edges; ++i) {
+> > -		t = dht11->edges[i].ts - dht11->edges[i-1].ts;
+> > -		if (t > 0 && t < timeres)
+> > -			timeres = t;
+> > -	}
+> > -	if (2*timeres > DHT11_DATA_BIT_HIGH) {
+> > -		pr_err("dht11: timeresolution %d too bad for decoding\n",
+> > -			timeres);
+> > -		return -EIO;
+> > -	}
+> >  	threshold = DHT11_DATA_BIT_HIGH / timeres;
+> >  	if (DHT11_DATA_BIT_LOW/timeres + 1 >= threshold)
+> >  		pr_err("dht11: WARNING: decoding ambiguous\n");
+> > @@ -126,7 +115,7 @@ static int dht11_decode(struct dht11 *dht11, int offset)
+> >  	if (((hum_int + hum_dec + temp_int + temp_dec) & 0xff) != checksum)
+> >  		return -EIO;
+> >  
+> > -	dht11->timestamp = iio_get_time_ns();
+> > +	dht11->timestamp = ktime_get_real_ns();
+> >  	if (hum_int < 20) {  /* DHT22 */
+> >  		dht11->temperature = (((temp_int & 0x7f) << 8) + temp_dec) *
+> >  					((temp_int & 0x80) ? -100 : 100);
+> > @@ -154,7 +143,7 @@ static irqreturn_t dht11_handle_irq(int irq, void *data)
+> >  
+> >  	/* TODO: Consider making the handler safe for IRQ sharing */
+> >  	if (dht11->num_edges < DHT11_EDGES_PER_READ && dht11->num_edges >= 0) {
+> > -		dht11->edges[dht11->num_edges].ts = iio_get_time_ns();
+> > +		dht11->edges[dht11->num_edges].ts = ktime_get_real_ns();
+> >  		dht11->edges[dht11->num_edges++].value =
+> >  						gpio_get_value(dht11->gpio);
+> >  
+> > @@ -170,10 +159,22 @@ static int dht11_read_raw(struct iio_dev *iio_dev,
+> >  			int *val, int *val2, long m)
+> >  {
+> >  	struct dht11 *dht11 = iio_priv(iio_dev);
+> > -	int ret;
+> > +	int ret, timeres;
+> >  
+> >  	mutex_lock(&dht11->lock);
+> > -	if (dht11->timestamp + DHT11_DATA_VALID_TIME < iio_get_time_ns()) {
+> > +	if (dht11->timestamp + DHT11_DATA_VALID_TIME < ktime_get_real_ns()) {
+> > +		timeres = ktime_get_resolution_ns();
+> > +		if (DHT11_DATA_BIT_HIGH < 2*timeres) {
+> > +			dev_err(dht11->dev, "timeresolution %dns too low\n",
+> > +						timeres);
+> > +			/* In theory a better clock could become available
+> > +			 * at some point ... and there is no error code
+> > +			 * that really fits better.
+> > +			 */
+> > +			ret = -EAGAIN;
+> > +			goto err;
+> > +		}
+> > +
+> >  		reinit_completion(&dht11->completion);
+> >  
+> >  		dht11->num_edges = 0;
+> > @@ -208,7 +209,8 @@ static int dht11_read_raw(struct iio_dev *iio_dev,
+> >  		ret = dht11_decode(dht11,
+> >  				dht11->num_edges == DHT11_EDGES_PER_READ ?
+> >  					DHT11_EDGES_PREAMBLE :
+> > -					DHT11_EDGES_PREAMBLE - 2);
+> > +					DHT11_EDGES_PREAMBLE - 2,
+> > +				timeres);
+> >  		if (ret)
+> >  			goto err;
+> >  	}
+> > @@ -274,7 +276,7 @@ static int dht11_probe(struct platform_device *pdev)
+> >  		return -EINVAL;
+> >  	}
+> >  
+> > -	dht11->timestamp = iio_get_time_ns() - DHT11_DATA_VALID_TIME - 1;
+> > +	dht11->timestamp = ktime_get_real_ns() - DHT11_DATA_VALID_TIME - 1;
+> >  	dht11->num_edges = -1;
+> >  
+> >  	platform_set_drvdata(pdev, iio);
+> > 
+> 
