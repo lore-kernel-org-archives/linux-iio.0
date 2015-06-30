@@ -4,53 +4,62 @@ To: linux-iio@vger.kernel.org,
 	jic23@kernel.org,
 	knaack.h@gmx.de
 Cc: Vlad Dogaru <vlad.dogaru@intel.com>
-Subject: [PATCH 2/2] iio: sx9500: fix bug in compensation code
-Date: Tue, 30 Jun 2015 14:20:59 +0300
-Message-Id: <1435663259-21998-3-git-send-email-vlad.dogaru@intel.com>
+Subject: [PATCH 1/2] iio: sx9500: rework error handling of raw readings
+Date: Tue, 30 Jun 2015 14:20:58 +0300
+Message-Id: <1435663259-21998-2-git-send-email-vlad.dogaru@intel.com>
 In-Reply-To: <1435663259-21998-1-git-send-email-vlad.dogaru@intel.com>
 References: <1435663259-21998-1-git-send-email-vlad.dogaru@intel.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-The initial compensation was mistakingly toggling an extra bit in the
-control register.  Fix this and make sure it's less likely to happen by
-introducing an additional macro.
+Fix error handling so that we can power the chip down even if a raw read
+fails.
 
 Reported-by: Hartmut Knaack <knaack.h@gmx.de>
 Signed-off-by: Vlad Dogaru <vlad.dogaru@intel.com>
 ---
- drivers/iio/proximity/sx9500.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/iio/proximity/sx9500.c | 16 +++++++++-------
+ 1 file changed, 9 insertions(+), 7 deletions(-)
 
 diff --git a/drivers/iio/proximity/sx9500.c b/drivers/iio/proximity/sx9500.c
-index ba1cbbe..798b973 100644
+index 2042e37..ba1cbbe 100644
 --- a/drivers/iio/proximity/sx9500.c
 +++ b/drivers/iio/proximity/sx9500.c
-@@ -80,6 +80,7 @@
- #define SX9500_COMPSTAT_MASK		GENMASK(3, 0)
+@@ -329,27 +329,29 @@ static int sx9500_read_proximity(struct sx9500_data *data,
+ 	else
+ 		ret = sx9500_wait_for_sample(data);
  
- #define SX9500_NUM_CHANNELS		4
-+#define SX9500_CHAN_MASK		GENMASK(SX9500_NUM_CHANNELS - 1, 0)
+-	if (ret < 0)
+-		return ret;
+-
+ 	mutex_lock(&data->mutex);
  
- struct sx9500_data {
- 	struct mutex mutex;
-@@ -802,8 +803,7 @@ static int sx9500_init_compensation(struct iio_dev *indio_dev)
- 	unsigned int val;
- 
- 	ret = regmap_update_bits(data->regmap, SX9500_REG_PROX_CTRL0,
--				 GENMASK(SX9500_NUM_CHANNELS, 0),
--				 GENMASK(SX9500_NUM_CHANNELS, 0));
-+				 SX9500_CHAN_MASK, SX9500_CHAN_MASK);
+-	ret = sx9500_read_prox_data(data, chan, val);
  	if (ret < 0)
- 		return ret;
+-		goto out;
++		goto out_dec_data_rdy;
  
-@@ -823,7 +823,7 @@ static int sx9500_init_compensation(struct iio_dev *indio_dev)
+-	ret = sx9500_dec_chan_users(data, chan->channel);
++	ret = sx9500_read_prox_data(data, chan, val);
+ 	if (ret < 0)
+-		goto out;
++		goto out_dec_data_rdy;
  
+ 	ret = sx9500_dec_data_rdy_users(data);
+ 	if (ret < 0)
++		goto out_dec_chan;
++
++	ret = sx9500_dec_chan_users(data, chan->channel);
++	if (ret < 0)
+ 		goto out;
+ 
+ 	ret = IIO_VAL_INT;
+ 
+ 	goto out;
+ 
++out_dec_data_rdy:
++	sx9500_dec_data_rdy_users(data);
+ out_dec_chan:
+ 	sx9500_dec_chan_users(data, chan->channel);
  out:
- 	regmap_update_bits(data->regmap, SX9500_REG_PROX_CTRL0,
--			   GENMASK(SX9500_NUM_CHANNELS, 0), 0);
-+			   SX9500_CHAN_MASK, 0);
- 	return ret;
- }
- 
 -- 
 1.9.1
