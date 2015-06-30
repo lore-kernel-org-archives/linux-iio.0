@@ -1,197 +1,52 @@
-Return-Path: <harald@ccbib.org>
+Return-Path: <martin.kepplinger@theobroma-systems.com>
+Message-ID: <559289D5.5020503@theobroma-systems.com>
+Date: Tue, 30 Jun 2015 14:21:41 +0200
+From: Martin Kepplinger <martin.kepplinger@theobroma-systems.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Date: Tue, 30 Jun 2015 21:37:05 +0200
-From: <harald@ccbib.org>
-To: Hartmut Knaack <knaack.h@gmx.de>
-Cc: Jonathan Cameron <jic23@kernel.org>, Richard Weinberger <richard@nod.at>,
- <linux-iio@vger.kernel.org>
-Subject: Re: [PATCHv2 2/2] iio: dht11: Use new function =?UTF-8?Q?ktime=5Fget=5Fre?=
- =?UTF-8?Q?solution=5Fns=28=29?=
-In-Reply-To: <55919E72.3010807@gmx.de>
-References: <1428405156-6761-1-git-send-email-harald@ccbib.org> <1428405156-6761-3-git-send-email-harald@ccbib.org> <55267AEC.8000500@kernel.org> <E1Z9eHR-00014C-6g@stardust.g4.wien.funkfeuer.at> <55919E72.3010807@gmx.de>
-Message-ID: <02a909f41c0b1c16251d016d71ac86bc@imap.cosmopool.net>
+To: Peter Meerwald <pmeerw@pmeerw.net>,
+ Martin Kepplinger <martink@posteo.de>
+CC: jic23@kernel.org, christoph.muellner@theobroma-systems.com,
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linux-iio@vger.kernel.org
+Subject: Re: [PATCH 0/2] iio: mma8452: add support for 3 more devices
+References: <1435663602-29868-1-git-send-email-martink@posteo.de> <alpine.DEB.2.02.1506301336410.12832@pmeerw.net>
+In-Reply-To: <alpine.DEB.2.02.1506301336410.12832@pmeerw.net>
+Content-Type: text/plain; charset=windows-1252
 List-ID: <linux-iio@vger.kernel.org>
 
-On Mon, 29 Jun 2015 21:37:22 +0200, Hartmut Knaack <knaack.h@gmx.de>
-wrote:
-> Harald Geyer schrieb am 29.06.2015 um 20:59:
->> Hi Jonathan!
->> 
->> Jonathan Cameron writes:
-[...]
->>> Looks good to me.  Will wait for comments on the first patch though
->>> before taking this... clearly that one will need a few acks if I take
->>> it through IIO!
->> 
->> The first patch has been merged via tip tree for 4.2 (is already
->> available
->> in staging-next tree). Are you going to pick up this patch or do I need
->> to resend?
->> 
->> Thanks,
->> Harald
->> 
+
+
+On 2015-06-30 13:39, Peter Meerwald wrote:
+> Hello Martin,
 > 
-> Hi Harald,
-> there are a few small style issues, which checkpatch.pl --strict should
-> show you. 
-
-Thanks for pointing out --strict - didn't know about that yet.
-
-I get the following output:
-
-CHECK: spaces preferred around that '*' (ctx:VxV)
-#96: FILE: drivers/iio/humidity/dht11.c:167:
-+               if (DHT11_DATA_BIT_HIGH < 2*timeres) {
-                                           ^
-
-With this one I disagree. Omitting the spaces makes the code easier to
-read, because it reflects the relative binding power of operators involed.
-This style (omitting spaces around * if there is a +, <, etc in the same
-experession) is used throughout the driver. I'd change this only if there
-is consensus, that this really is the preferred way.
-
-CHECK: Alignment should match open parenthesis
-#98: FILE: drivers/iio/humidity/dht11.c:169:
-+                       dev_err(dht11->dev, "timeresolution %dns too
-low\n",
-+                                               timeres);
-
-Ok, I'll post a patch that updates the driver to this style and update the
-above patch acordingly.
-
-Thanks,
-Harald
-
-
-> Thanks,
-> Hartmut
+>> The first patch doesn't change anything for existing users of mma8452. Please
+>> test this if you can!
 > 
->>> Jonathan
->>>> ---
->>>> changes since V1:
->>>> call ktime_get_xxx() functions directly instead of using the wrappers
->>>> of the iio subsystem.
->>>>
->>>>  drivers/iio/humidity/dht11.c |   42
->>>>  ++++++++++++++++++++++--------------------
->>>>  1 files changed, 22 insertions(+), 20 deletions(-)
->>>>
->>>> diff --git a/drivers/iio/humidity/dht11.c
->>>> b/drivers/iio/humidity/dht11.c
->>>> index 7d79a1a..4cb25dc 100644
->>>> --- a/drivers/iio/humidity/dht11.c
->>>> +++ b/drivers/iio/humidity/dht11.c
->>>> @@ -33,6 +33,7 @@
->>>>  #include <linux/delay.h>
->>>>  #include <linux/gpio.h>
->>>>  #include <linux/of_gpio.h>
->>>> +#include <linux/timekeeping.h>
->>>>  
->>>>  #include <linux/iio/iio.h>
->>>>  
->>>> @@ -87,23 +88,11 @@ static unsigned char dht11_decode_byte(int
->>>> *timing, int threshold)
->>>>  	return ret;
->>>>  }
->>>>  
->>>> -static int dht11_decode(struct dht11 *dht11, int offset)
->>>> +static int dht11_decode(struct dht11 *dht11, int offset, int
-timeres)
->>>>  {
->>>> -	int i, t, timing[DHT11_BITS_PER_READ], threshold,
->>>> -		timeres = DHT11_SENSOR_RESPONSE;
->>>> +	int i, t, timing[DHT11_BITS_PER_READ], threshold;
->>>>  	unsigned char temp_int, temp_dec, hum_int, hum_dec, checksum;
->>>>  
->>>> -	/* Calculate timestamp resolution */
->>>> -	for (i = 1; i < dht11->num_edges; ++i) {
->>>> -		t = dht11->edges[i].ts - dht11->edges[i-1].ts;
->>>> -		if (t > 0 && t < timeres)
->>>> -			timeres = t;
->>>> -	}
->>>> -	if (2*timeres > DHT11_DATA_BIT_HIGH) {
->>>> -		pr_err("dht11: timeresolution %d too bad for decoding\n",
->>>> -			timeres);
->>>> -		return -EIO;
->>>> -	}
->>>>  	threshold = DHT11_DATA_BIT_HIGH / timeres;
->>>>  	if (DHT11_DATA_BIT_LOW/timeres + 1 >= threshold)
->>>>  		pr_err("dht11: WARNING: decoding ambiguous\n");
->>>> @@ -126,7 +115,7 @@ static int dht11_decode(struct dht11 *dht11, int
->>>> offset)
->>>>  	if (((hum_int + hum_dec + temp_int + temp_dec) & 0xff) != checksum)
->>>>  		return -EIO;
->>>>  
->>>> -	dht11->timestamp = iio_get_time_ns();
->>>> +	dht11->timestamp = ktime_get_real_ns();
->>>>  	if (hum_int < 20) {  /* DHT22 */
->>>>  		dht11->temperature = (((temp_int & 0x7f) << 8) + temp_dec) *
->>>>  					((temp_int & 0x80) ? -100 : 100);
->>>> @@ -154,7 +143,7 @@ static irqreturn_t dht11_handle_irq(int irq, void
->>>> *data)
->>>>  
->>>>  	/* TODO: Consider making the handler safe for IRQ sharing */
->>>>  	if (dht11->num_edges < DHT11_EDGES_PER_READ && dht11->num_edges >=
->>>>  	0) {
->>>> -		dht11->edges[dht11->num_edges].ts = iio_get_time_ns();
->>>> +		dht11->edges[dht11->num_edges].ts = ktime_get_real_ns();
->>>>  		dht11->edges[dht11->num_edges++].value =
->>>>  						gpio_get_value(dht11->gpio);
->>>>  
->>>> @@ -170,10 +159,22 @@ static int dht11_read_raw(struct iio_dev
->>>> *iio_dev,
->>>>  			int *val, int *val2, long m)
->>>>  {
->>>>  	struct dht11 *dht11 = iio_priv(iio_dev);
->>>> -	int ret;
->>>> +	int ret, timeres;
->>>>  
->>>>  	mutex_lock(&dht11->lock);
->>>> -	if (dht11->timestamp + DHT11_DATA_VALID_TIME < iio_get_time_ns()) {
->>>> +	if (dht11->timestamp + DHT11_DATA_VALID_TIME < ktime_get_real_ns())
-{
->>>> +		timeres = ktime_get_resolution_ns();
->>>> +		if (DHT11_DATA_BIT_HIGH < 2*timeres) {
->>>> +			dev_err(dht11->dev, "timeresolution %dns too low\n",
->>>> +						timeres);
->>>> +			/* In theory a better clock could become available
->>>> +			 * at some point ... and there is no error code
->>>> +			 * that really fits better.
->>>> +			 */
->>>> +			ret = -EAGAIN;
->>>> +			goto err;
->>>> +		}
->>>> +
->>>>  		reinit_completion(&dht11->completion);
->>>>  
->>>>  		dht11->num_edges = 0;
->>>> @@ -208,7 +209,8 @@ static int dht11_read_raw(struct iio_dev
-*iio_dev,
->>>>  		ret = dht11_decode(dht11,
->>>>  				dht11->num_edges == DHT11_EDGES_PER_READ ?
->>>>  					DHT11_EDGES_PREAMBLE :
->>>> -					DHT11_EDGES_PREAMBLE - 2);
->>>> +					DHT11_EDGES_PREAMBLE - 2,
->>>> +				timeres);
->>>>  		if (ret)
->>>>  			goto err;
->>>>  	}
->>>> @@ -274,7 +276,7 @@ static int dht11_probe(struct platform_device
->>>> *pdev)
->>>>  		return -EINVAL;
->>>>  	}
->>>>  
->>>> -	dht11->timestamp = iio_get_time_ns() - DHT11_DATA_VALID_TIME - 1;
->>>> +	dht11->timestamp = ktime_get_real_ns() - DHT11_DATA_VALID_TIME - 1;
->>>>  	dht11->num_edges = -1;
->>>>  
->>>>  	platform_set_drvdata(pdev, iio);
->>>>
->>>
->> --
->> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
->> the body of a message to majordomo@vger.kernel.org
->> More majordomo info at  http://vger.kernel.org/majordomo-info.html
->>
+> nice to see the driver improved!
+> the first patch does quite I bit more than it claims; it's not only
+> adding more device, I'd prefer the patch split up for review
+
+well, yes. It adds an interrupt source for those that don't support the
+existing one, but I could come up with even more seperate changes,
+that's true.
+
+>  
+>> The second patch corrects how interrupts are described as IIO events. It exists
+>> seperately because it changes the driver's behaviour for existing users of
+>> mma8452.
+> 
+> what is the difference?
+
+Since the threshold is no signed value, it changes the event type
+from IIO_EV_TYPE_THRESH to IIO_EV_TYPE_MAG, see the patch or
+sysfs-bus-iio Documentation:
+
+What:		/sys/.../iio:deviceX/events/in_accel_x_mag_en
+
+Similar to in_accel_x_thresh[_rising|_falling]_en, but here the
+magnitude of the channel is compared to the threshold, not its
+signed value.
+
+> 
+> thanks, p.
+> 
