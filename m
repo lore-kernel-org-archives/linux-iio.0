@@ -1,52 +1,31 @@
-Return-Path: <irina.tirdea@intel.com>
-From: Irina Tirdea <irina.tirdea@intel.com>
-To: Wolfram Sang <wsa@the-dreams.de>,
-	Jonathan Cameron <jic23@kernel.org>,
-	linux-iio@vger.kernel.org,
-	linux-i2c@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org,
-	Srinivas Pandruvada <srinivas.pandruvada@intel.com>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	Irina Tirdea <irina.tirdea@intel.com>
-Subject: [PATCH v3 0/8] Add support for best effort block read emulation
-Date: Fri,  3 Jul 2015 12:33:29 +0300
-Message-Id: <1435916017-12859-1-git-send-email-irina.tirdea@intel.com>
+Return-Path: <Thomas.Betker@rohde-schwarz.com>
+In-Reply-To: <559431B0.6050304@gmx.de>
+References: <1429125111-2926-1-git-send-email-thomas.betker@freenet.de> <1429125111-2926-4-git-send-email-thomas.betker@freenet.de> <558DCA63.6040001@gmx.de> <OF4F435CFE.EBD383ED-ONC1257E74.00350661-C1257E74.003C1F9E@rohde-schwarz.com> <559431B0.6050304@gmx.de>
+To: Hartmut Knaack <knaack.h@gmx.de>
+Cc: Jonathan Cameron <jic23@kernel.org>, Lars-Peter Clausen <lars@metafoo.de>, linux-iio@vger.kernel.org, Michal Simek <michal.simek@xilinx.com>, =?ISO-8859-1?Q?S=F6ren_Brinkmann?= <soren.brinkmann@xilinx.com>
+MIME-Version: 1.0
+Subject: Re: [PATCH 3/5] iio: adc: xilinx: Fix VREFP scale
+From: Thomas.Betker@rohde-schwarz.com
+Message-ID: <OFAADB8E4A.20F38E2E-ONC1257E77.002AF662-C1257E77.002B36C5@rohde-schwarz.com>
+Date: Fri, 3 Jul 2015 09:52:00 +0200
+Content-Type: text/plain; charset="US-ASCII"
 List-ID: <linux-iio@vger.kernel.org>
 
-This is version 3 for adding i2c_smbus_read_i2c_block_data_or_emulated
-to i2c-core. The i2c core part is the same as in v2, but I have added
-3 more users for iio drivers.
+Hello Hartmut:
 
-Changes in v2:
- - changed bmc150-accel, kxcjk-1013 and bmg160 drivers to use
-i2c_smbus_read_i2c_block_data_or_emulated
+> > I would suggest opening a webcase with Xilinx for clarification, and 
+> > adding another patch for VREFN if the factor 3 is confirmed. Can you 
+do 
+> > this? If not, I can take care of it, but it may take a while as I am 
+> > pretty busy at the moment.
+> > 
+> 
+> Go ahead, whenever you find the time. I don't have a Xilinx device, just
+> reviewing the IIO patches and got a bit curious when reading through the
+> data sheet.
 
-Changes in v1:
- - dropped the RFC tag
- - changed at24 to use i2c_smbus_read_i2c_block_data_or_emulated
- - when reading an odd number of bytes using word emulation, read an even
-number of bytes and drop the last one
- - add a comment that this might not be suitable for all I2C slaves 
+Okay. I have opened a service request with Xilinx; let's see what happens 
+... (:-)
 
-Adriana Reus (2):
-  iio: accel: kxcjk-1013: use available_scan_masks
-  iio: accel: kxcjk-1013: optimize i2c transfers in trigger handler
-
-Irina Tirdea (6):
-  i2c: core: Add support for best effort block read emulation
-  eeprom: at24: use i2c_smbus_read_i2c_block_data_or_emulated
-  iio: accel: bmc150: use available_scan_masks
-  iio: accel: bmc150: optimize i2c transfers in trigger handler
-  iio: gyro: bmg160: use available_scan_masks
-  iio: gyro: bmg160: optimize i2c transfers in trigger handler
-
- drivers/i2c/i2c-core.c           | 60 ++++++++++++++++++++++++++++++++++++++++
- drivers/iio/accel/bmc150-accel.c | 23 +++++++--------
- drivers/iio/accel/kxcjk-1013.c   | 24 ++++++++--------
- drivers/iio/gyro/bmg160.c        | 23 +++++++--------
- drivers/misc/eeprom/at24.c       | 40 ++++++---------------------
- include/linux/i2c.h              |  3 ++
- 6 files changed, 108 insertions(+), 65 deletions(-)
-
--- 
-1.9.1
+Best regards,
+Thomas
