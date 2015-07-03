@@ -1,134 +1,82 @@
-Return-Path: <martink@posteo.de>
-From: Martin Kepplinger <martink@posteo.de>
-To: jic23@kernel.org,
-	knaack.h@gmx.de,
-	lars@metafoo.de,
-	pmeerw@pmeerw.net,
-	mfuzzey@parkeon.com,
-	roberta.dobrescu@gmail.com,
-	christoph.muellner@theobroma-systems.com
-Cc: linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	devicetree@vger.kernel.org,
-	Martin Kepplinger <martink@posteo.de>,
-	Martin Kepplinger <martin.kepplinger@theobroma-systems.com>
-Subject: [PATCH 3/9] iio: mma8452: add freefall / motion interrupt source
-Date: Sat,  4 Jul 2015 15:55:04 +0200
-Message-Id: <1436018110-3903-4-git-send-email-martink@posteo.de>
-In-Reply-To: <1436018110-3903-1-git-send-email-martink@posteo.de>
-References: <1436018110-3903-1-git-send-email-martink@posteo.de>
+Return-Path: <irina.tirdea@intel.com>
+From: Irina Tirdea <irina.tirdea@intel.com>
+To: Wolfram Sang <wsa@the-dreams.de>,
+	Jonathan Cameron <jic23@kernel.org>,
+	linux-iio@vger.kernel.org,
+	linux-i2c@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org,
+	Srinivas Pandruvada <srinivas.pandruvada@intel.com>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Adriana Reus <adriana.reus@intel.com>,
+	Irina Tirdea <irina.tirdea@intel.com>
+Subject: [PATCH v3 8/8] iio: accel: kxcjk-1013: optimize i2c transfers in trigger handler
+Date: Fri,  3 Jul 2015 12:33:37 +0300
+Message-Id: <1435916017-12859-9-git-send-email-irina.tirdea@intel.com>
+In-Reply-To: <1435916017-12859-1-git-send-email-irina.tirdea@intel.com>
+References: <1435916017-12859-1-git-send-email-irina.tirdea@intel.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-This adds the freefall / motion interrupt source definitions to the driver.
-It is not in use now, but mma_chip_info and iio_chan_spec can easily be
-adapted to use it instead of the transient interrupt source.
+From: Adriana Reus <adriana.reus@intel.com>
 
-Signed-off-by: Martin Kepplinger <martin.kepplinger@theobroma-systems.com>
-Signed-off-by: Christoph Muellner <christoph.muellner@theobroma-systems.com>
+Some i2c busses (e.g.: Synopsys DesignWare I2C adapter) need to
+enable/disable the bus at each i2c transfer and must wait for
+the enable/disable to happen before sending the data.
+
+When reading data in the trigger handler, the kxcjk-1013 accel driver
+does one i2c transfer for each axis. This has an impact on the
+frequency of the accelerometer at high sample rates due to additional
+delays introduced by the i2c bus at each transfer.
+
+Reading all axis values in one i2c transfer reduces the delays
+introduced by the i2c bus. Uses i2c_smbus_read_i2c_block_data_or_emulated
+that will fallback to reading each axis as a separate word in case i2c
+block read is not supported.
+
+Signed-off-by: Adriana Reus <adriana.reus@intel.com>
+Signed-off-by: Irina Tirdea <irina.tirdea@intel.com>
 ---
- drivers/iio/accel/mma8452.c | 45 ++++++++++++++++++++++++++++++++++++---------
- 1 file changed, 36 insertions(+), 9 deletions(-)
+ drivers/iio/accel/kxcjk-1013.c | 19 ++++++++-----------
+ 1 file changed, 8 insertions(+), 11 deletions(-)
 
-diff --git a/drivers/iio/accel/mma8452.c b/drivers/iio/accel/mma8452.c
-index 209b0d7..0498b6e 100644
---- a/drivers/iio/accel/mma8452.c
-+++ b/drivers/iio/accel/mma8452.c
-@@ -38,9 +38,18 @@
- #define MMA8452_DATA_CFG 0x0e
- #define MMA8452_HP_FILTER_CUTOFF 0x0f
- #define MMA8452_HP_FILTER_CUTOFF_SEL_MASK	(BIT(0) | BIT(1))
-+#define MMA8452_FF_MT_CFG 0x15
-+#define MMA8452_FF_MT_CFG_OAE			BIT(6)
-+#define MMA8452_FF_MT_CFG_ELE			BIT(7)
-+#define MMA8452_FF_MT_SRC 0x16
-+#define MMA8452_FF_MT_SRC_XHE			BIT(1)
-+#define MMA8452_FF_MT_SRC_YHE			BIT(3)
-+#define MMA8452_FF_MT_SRC_ZHE			BIT(5)
-+#define MMA8452_FF_MT_THS 0x17
-+#define MMA8452_FF_MT_THS_MASK 0x7f
-+#define MMA8452_FF_MT_COUNT 0x18
- #define MMA8452_TRANSIENT_CFG 0x1d
- #define MMA8452_TRANSIENT_CFG_ELE		BIT(4)
--#define MMA8452_TRANSIENT_CFG_CHAN(chan)	BIT(chan + 1)
- #define MMA8452_TRANSIENT_CFG_HPF_BYP		BIT(0)
- #define MMA8452_TRANSIENT_SRC 0x1e
- #define MMA8452_TRANSIENT_SRC_XTRANSE		BIT(1)
-@@ -74,6 +83,7 @@
- #define MMA8452_DATA_CFG_HPF_MASK BIT(4)
+diff --git a/drivers/iio/accel/kxcjk-1013.c b/drivers/iio/accel/kxcjk-1013.c
+index 4960397..8f401c2 100644
+--- a/drivers/iio/accel/kxcjk-1013.c
++++ b/drivers/iio/accel/kxcjk-1013.c
+@@ -923,7 +923,7 @@ static const struct iio_event_spec kxcjk1013_event = {
+ 		.realbits = 12,						\
+ 		.storagebits = 16,					\
+ 		.shift = 4,						\
+-		.endianness = IIO_CPU,					\
++		.endianness = IIO_LE,					\
+ 	},								\
+ 	.event_spec = &kxcjk1013_event,				\
+ 	.num_event_specs = 1						\
+@@ -955,19 +955,16 @@ static irqreturn_t kxcjk1013_trigger_handler(int irq, void *p)
+ 	struct iio_poll_func *pf = p;
+ 	struct iio_dev *indio_dev = pf->indio_dev;
+ 	struct kxcjk1013_data *data = iio_priv(indio_dev);
+-	int bit, ret, i = 0;
++	int ret;
  
- #define MMA8452_INT_DRDY	BIT(0)
-+#define MMA8452_INT_FF_MT	BIT(2)
- #define MMA8452_INT_TRANS	BIT(5)
+ 	mutex_lock(&data->mutex);
+-
+-	for (bit = 0; bit < AXIS_MAX; bit++) {
+-		ret = kxcjk1013_get_acc_reg(data, bit);
+-		if (ret < 0) {
+-			mutex_unlock(&data->mutex);
+-			goto err;
+-		}
+-		data->buffer[i++] = ret;
+-	}
++	ret = i2c_smbus_read_i2c_block_data_or_emulated(data->client,
++							KXCJK1013_REG_XOUT_L,
++							AXIS_MAX * 2,
++							(u8 *)data->buffer);
+ 	mutex_unlock(&data->mutex);
++	if (ret < 0)
++		goto err;
  
- #define MMA8452_DEVICE_ID 0x2a
-@@ -564,7 +574,8 @@ static int mma8452_write_event_config(struct iio_dev *indio_dev,
- 	else
- 		val &= ~BIT(chan->scan_index + chip->ev_cfg_chan_shift);
- 
--	val |= MMA8452_TRANSIENT_CFG_ELE;
-+	val |= chip->ev_cfg_ele;
-+	val |= MMA8452_FF_MT_CFG_OAE;
- 
- 	return mma8452_change_config(data, chip->ev_cfg, val);
- }
-@@ -605,6 +616,7 @@ static irqreturn_t mma8452_interrupt(int irq, void *p)
- {
- 	struct iio_dev *indio_dev = p;
- 	struct mma8452_data *data = iio_priv(indio_dev);
-+	const struct mma_chip_info *chip = data->chip_info;
- 	int ret = IRQ_NONE;
- 	int src;
- 
-@@ -617,7 +629,10 @@ static irqreturn_t mma8452_interrupt(int irq, void *p)
- 		ret = IRQ_HANDLED;
- 	}
- 
--	if (src & MMA8452_INT_TRANS) {
-+	if ((src & MMA8452_INT_TRANS &&
-+	     chip->ev_src == MMA8452_TRANSIENT_SRC) ||
-+	    (src & MMA8452_INT_FF_MT &&
-+	     chip->ev_src == MMA8452_FF_MT_SRC)) {
- 		mma8452_transient_interrupt(indio_dev);
- 		ret = IRQ_HANDLED;
- 	}
-@@ -678,6 +693,16 @@ static const struct iio_event_spec mma8452_transient_event[] = {
- 	},
- };
- 
-+static const struct iio_event_spec mma8452_motion_event[] = {
-+	{
-+		.type = IIO_EV_TYPE_THRESH,
-+		.dir = IIO_EV_DIR_RISING,
-+		.mask_separate = BIT(IIO_EV_INFO_ENABLE),
-+		.mask_shared_by_type = BIT(IIO_EV_INFO_VALUE) |
-+					BIT(IIO_EV_INFO_PERIOD)
-+	},
-+};
-+
- /*
-  * Threshold is configured in fixed 8G/127 steps regardless of
-  * currently selected scale for measurement.
-@@ -962,13 +987,15 @@ static int mma8452_probe(struct i2c_client *client,
- 
- 	if (client->irq) {
- 		/*
--		 * Although we enable the transient interrupt source once and
--		 * for all here the transient event detection itself is not
--		 * enabled until userspace asks for it by
--		 * mma8452_write_event_config()
-+		 * Although we enable the interrupt sources once and for
-+		 * all here the event detection itself is not enabled until
-+		 * userspace asks for it by mma8452_write_event_config()
- 		 */
--		int supported_interrupts = MMA8452_INT_DRDY | MMA8452_INT_TRANS;
--		int enabled_interrupts = MMA8452_INT_TRANS;
-+		int supported_interrupts = MMA8452_INT_DRDY |
-+					   MMA8452_INT_TRANS |
-+					   MMA8452_INT_FF_MT;
-+		int enabled_interrupts = MMA8452_INT_TRANS |
-+					 MMA8452_INT_FF_MT;
- 
- 		/* Assume wired to INT1 pin */
- 		ret = i2c_smbus_write_byte_data(client,
+ 	iio_push_to_buffers_with_timestamp(indio_dev, data->buffer,
+ 					   data->timestamp);
 -- 
-2.1.4
+1.9.1
