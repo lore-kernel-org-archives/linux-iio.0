@@ -1,31 +1,39 @@
-Return-Path: <Thomas.Betker@rohde-schwarz.com>
-In-Reply-To: <559431B0.6050304@gmx.de>
-References: <1429125111-2926-1-git-send-email-thomas.betker@freenet.de> <1429125111-2926-4-git-send-email-thomas.betker@freenet.de> <558DCA63.6040001@gmx.de> <OF4F435CFE.EBD383ED-ONC1257E74.00350661-C1257E74.003C1F9E@rohde-schwarz.com> <559431B0.6050304@gmx.de>
-To: Hartmut Knaack <knaack.h@gmx.de>
-Cc: Jonathan Cameron <jic23@kernel.org>, Lars-Peter Clausen <lars@metafoo.de>, linux-iio@vger.kernel.org, Michal Simek <michal.simek@xilinx.com>, =?ISO-8859-1?Q?S=F6ren_Brinkmann?= <soren.brinkmann@xilinx.com>
+Return-Path: <martink@posteo.de>
+Message-ID: <55963A77.5040202@posteo.de>
+Date: Fri, 03 Jul 2015 09:32:07 +0200
+From: Martin Kepplinger <martink@posteo.de>
 MIME-Version: 1.0
-Subject: Re: [PATCH 3/5] iio: adc: xilinx: Fix VREFP scale
-From: Thomas.Betker@rohde-schwarz.com
-Message-ID: <OFAADB8E4A.20F38E2E-ONC1257E77.002AF662-C1257E77.002B36C5@rohde-schwarz.com>
-Date: Fri, 3 Jul 2015 09:52:00 +0200
-Content-Type: text/plain; charset="US-ASCII"
+To: pmeerw@pmeerw.net, jic23@kernel.org,
+ christoph.muellner@theobroma-systems.com
+CC: devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linux-iio@vger.kernel.org
+Subject: Re: [PATCH v2 0/8] iio: mma8452: support more devices and improve
+ driver
+References: <1435738922-12580-1-git-send-email-martink@posteo.de>
+In-Reply-To: <1435738922-12580-1-git-send-email-martink@posteo.de>
+Content-Type: text/plain; charset=iso-8859-15
 List-ID: <linux-iio@vger.kernel.org>
 
-Hello Hartmut:
-
-> > I would suggest opening a webcase with Xilinx for clarification, and 
-> > adding another patch for VREFN if the factor 3 is confirmed. Can you 
-do 
-> > this? If not, I can take care of it, but it may take a while as I am 
-> > pretty busy at the moment.
-> > 
+Am 2015-07-01 um 10:21 schrieb Martin Kepplinger:
+> This is the 2nd version that adds support for motion interrupts and 3 more
+> accelerometer chips, two of which use them because they don't support the
+> until now included transient interrupt sources:
 > 
-> Go ahead, whenever you find the time. I don't have a Xilinx device, just
-> reviewing the IIO patches and got a bit curious when reading through the
-> data sheet.
+> MMA8453Q, MMA8652FC and MMA8653FC; datasheets are in the commit messages.
+> 
+> The driver and module name remains the same, seperating it from the device
+> names it now supports.
+> 
+> On top of this, there are minor documentation additions, and more notably,
+> the change of the existing iio event type from IIO_EV_TYPE_THRESH to
+> IIO_EV_TYPE_MAG since it's the magnitude of the threshold that is relevant
+> for these devices, not a signed value.
+> 
+> Please review and test if you can. For MMA8452Q, other than the event type,
+> nothing should have changed.
+> 
 
-Okay. I have opened a service request with Xilinx; let's see what happens 
-... (:-)
+Any wishes, suggestions, objections about this change?
 
-Best regards,
-Thomas
+thanks,
+                           martin
