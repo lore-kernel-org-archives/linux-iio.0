@@ -1,61 +1,165 @@
 Return-Path: <knaack.h@gmx.de>
+Message-ID: <5598020C.1060305@gmx.de>
+Date: Sat, 04 Jul 2015 17:55:56 +0200
 From: Hartmut Knaack <knaack.h@gmx.de>
-To: linux-iio@vger.kernel.org
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	Tiberiu Breana <tiberiu.a.breana@intel.com>
-Subject: [PATCH 4/5] iio:light:stk3310: use correct names and type for state
-Date: Sat,  4 Jul 2015 17:57:00 +0200
-Message-Id: <e034d85ca54ed9f46c2d494fc4af7e7e67a2ad6a.1436024257.git.knaack.h@gmx.de>
-In-Reply-To: <cover.1436024257.git.knaack.h@gmx.de>
-References: <cover.1436024257.git.knaack.h@gmx.de>
-In-Reply-To: <cover.1436024257.git.knaack.h@gmx.de>
-References: <cover.1436024257.git.knaack.h@gmx.de>
+MIME-Version: 1.0
+To: Tiberiu Breana <tiberiu.a.breana@intel.com>,
+ linux-iio@vger.kernel.org
+CC: Jonathan Cameron <jic23@kernel.org>
+Subject: Re: [PATCH v2] iio: light: STK3310: un-invert proximity values
+References: <1435753920-22825-1-git-send-email-tiberiu.a.breana@intel.com>
+In-Reply-To: <1435753920-22825-1-git-send-email-tiberiu.a.breana@intel.com>
+Content-Type: text/plain; charset=ISO-8859-15
 List-ID: <linux-iio@vger.kernel.org>
 
-Indicate the bit number of predefined states, make use of these names and
-change the state type in _resume to u8 to avoid type casting.
-
-Signed-off-by: Hartmut Knaack <knaack.h@gmx.de>
----
- drivers/iio/light/stk3310.c | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
-
-diff --git a/drivers/iio/light/stk3310.c b/drivers/iio/light/stk3310.c
-index 3650c0c..be715c7 100644
---- a/drivers/iio/light/stk3310.c
-+++ b/drivers/iio/light/stk3310.c
-@@ -35,8 +35,8 @@
- #define STK3310_REG_ID				0x3E
- #define STK3310_MAX_REG				0x80
- 
--#define STK3310_STATE_EN_PS			0x01
--#define STK3310_STATE_EN_ALS			0x02
-+#define STK3310_STATE_EN_PS			BIT(0)
-+#define STK3310_STATE_EN_ALS			BIT(1)
- #define STK3310_STATE_STANDBY			0x00
- 
- #define STK3310_CHIP_ID_VAL			0x13
-@@ -436,8 +436,8 @@ static int stk3310_set_state(struct stk3310_data *data, u8 state)
- 		dev_err(&client->dev, "failed to change sensor state\n");
- 	} else if (state != STK3310_STATE_STANDBY) {
- 		/* Don't reset the 'enabled' flags if we're going in standby */
--		data->ps_enabled  = !!(state & 0x01);
--		data->als_enabled = !!(state & 0x02);
-+		data->ps_enabled  = !!(state & STK3310_STATE_EN_PS);
-+		data->als_enabled = !!(state & STK3310_STATE_EN_ALS);
- 	}
- 	mutex_unlock(&data->lock);
- 
-@@ -684,7 +684,7 @@ static int stk3310_suspend(struct device *dev)
- 
- static int stk3310_resume(struct device *dev)
- {
--	int state = 0;
-+	u8 state = 0;
- 	struct stk3310_data *data;
- 
- 	data = iio_priv(i2c_get_clientdata(to_i2c_client(dev)));
--- 
-2.3.6
+Tiberiu Breana schrieb am 01.07.2015 um 14:32:
+> In accordance with the recent proximity ABI changes,
+> STK3310's proximity readings should be un-inversed
+> in order to return low values for far-away objects
+> and high values for close ones.
+> 
+> As consequences of this change, iio event directions
+> have been switched and maximum proximity sensor
+> reference values have also been adjusted in accordance
+> with the real readings.
+> 
+> Signed-off-by: Tiberiu Breana <tiberiu.a.breana@intel.com>
+Acked-by: Hartmut Knaack <knaack.h@gmx.de>
+> ---
+> v2: Updated the commit message to better reflect all changes
+> ---
+>  drivers/iio/light/stk3310.c | 53 +++++++++++++++------------------------------
+>  1 file changed, 17 insertions(+), 36 deletions(-)
+> 
+> diff --git a/drivers/iio/light/stk3310.c b/drivers/iio/light/stk3310.c
+> index e79b9d8..b7ec2a5 100644
+> --- a/drivers/iio/light/stk3310.c
+> +++ b/drivers/iio/light/stk3310.c
+> @@ -43,7 +43,6 @@
+>  #define STK3311_CHIP_ID_VAL			0x1D
+>  #define STK3310_PSINT_EN			0x01
+>  #define STK3310_PS_MAX_VAL			0xFFFF
+> -#define STK3310_THRESH_MAX			0xFFFF
+>  
+>  #define STK3310_DRIVER_NAME			"stk3310"
+>  #define STK3310_REGMAP_NAME			"stk3310_regmap"
+> @@ -84,15 +83,13 @@ static const struct reg_field stk3310_reg_field_flag_psint =
+>  				REG_FIELD(STK3310_REG_FLAG, 4, 4);
+>  static const struct reg_field stk3310_reg_field_flag_nf =
+>  				REG_FIELD(STK3310_REG_FLAG, 0, 0);
+> -/*
+> - * Maximum PS values with regard to scale. Used to export the 'inverse'
+> - * PS value (high values for far objects, low values for near objects).
+> - */
+> +
+> +/* Estimate maximum proximity values with regard to measurement scale. */
+>  static const int stk3310_ps_max[4] = {
+> -	STK3310_PS_MAX_VAL / 64,
+> -	STK3310_PS_MAX_VAL / 16,
+> -	STK3310_PS_MAX_VAL /  4,
+> -	STK3310_PS_MAX_VAL,
+> +	STK3310_PS_MAX_VAL / 640,
+> +	STK3310_PS_MAX_VAL / 160,
+> +	STK3310_PS_MAX_VAL /  40,
+> +	STK3310_PS_MAX_VAL /  10
+>  };
+>  
+>  static const int stk3310_scale_table[][2] = {
+> @@ -128,14 +125,14 @@ static const struct iio_event_spec stk3310_events[] = {
+>  	/* Proximity event */
+>  	{
+>  		.type = IIO_EV_TYPE_THRESH,
+> -		.dir = IIO_EV_DIR_FALLING,
+> +		.dir = IIO_EV_DIR_RISING,
+>  		.mask_separate = BIT(IIO_EV_INFO_VALUE) |
+>  				 BIT(IIO_EV_INFO_ENABLE),
+>  	},
+>  	/* Out-of-proximity event */
+>  	{
+>  		.type = IIO_EV_TYPE_THRESH,
+> -		.dir = IIO_EV_DIR_RISING,
+> +		.dir = IIO_EV_DIR_FALLING,
+>  		.mask_separate = BIT(IIO_EV_INFO_VALUE) |
+>  				 BIT(IIO_EV_INFO_ENABLE),
+>  	},
+> @@ -205,23 +202,16 @@ static int stk3310_read_event(struct iio_dev *indio_dev,
+>  	u8 reg;
+>  	u16 buf;
+>  	int ret;
+> -	unsigned int index;
+>  	struct stk3310_data *data = iio_priv(indio_dev);
+>  
+>  	if (info != IIO_EV_INFO_VALUE)
+>  		return -EINVAL;
+>  
+> -	/*
+> -	 * Only proximity interrupts are implemented at the moment.
+> -	 * Since we're inverting proximity values, the sensor's 'high'
+> -	 * threshold will become our 'low' threshold, associated with
+> -	 * 'near' events. Similarly, the sensor's 'low' threshold will
+> -	 * be our 'high' threshold, associated with 'far' events.
+> -	 */
+> +	/* Only proximity interrupts are implemented at the moment. */
+>  	if (dir == IIO_EV_DIR_RISING)
+> -		reg = STK3310_REG_THDL_PS;
+> -	else if (dir == IIO_EV_DIR_FALLING)
+>  		reg = STK3310_REG_THDH_PS;
+> +	else if (dir == IIO_EV_DIR_FALLING)
+> +		reg = STK3310_REG_THDL_PS;
+>  	else
+>  		return -EINVAL;
+>  
+> @@ -232,8 +222,7 @@ static int stk3310_read_event(struct iio_dev *indio_dev,
+>  		dev_err(&data->client->dev, "register read failed\n");
+>  		return ret;
+>  	}
+> -	regmap_field_read(data->reg_ps_gain, &index);
+> -	*val = swab16(stk3310_ps_max[index] - buf);
+> +	*val = swab16(buf);
+>  
+>  	return IIO_VAL_INT;
+>  }
+> @@ -257,13 +246,13 @@ static int stk3310_write_event(struct iio_dev *indio_dev,
+>  		return -EINVAL;
+>  
+>  	if (dir == IIO_EV_DIR_RISING)
+> -		reg = STK3310_REG_THDL_PS;
+> -	else if (dir == IIO_EV_DIR_FALLING)
+>  		reg = STK3310_REG_THDH_PS;
+> +	else if (dir == IIO_EV_DIR_FALLING)
+> +		reg = STK3310_REG_THDL_PS;
+>  	else
+>  		return -EINVAL;
+>  
+> -	buf = swab16(stk3310_ps_max[index] - val);
+> +	buf = swab16(val);
+>  	ret = regmap_bulk_write(data->regmap, reg, &buf, 2);
+>  	if (ret < 0)
+>  		dev_err(&client->dev, "failed to set PS threshold!\n");
+> @@ -334,14 +323,6 @@ static int stk3310_read_raw(struct iio_dev *indio_dev,
+>  			return ret;
+>  		}
+>  		*val = swab16(buf);
+> -		if (chan->type == IIO_PROXIMITY) {
+> -			/*
+> -			 * Invert the proximity data so we return low values
+> -			 * for close objects and high values for far ones.
+> -			 */
+> -			regmap_field_read(data->reg_ps_gain, &index);
+> -			*val = stk3310_ps_max[index] - *val;
+> -		}
+>  		mutex_unlock(&data->lock);
+>  		return IIO_VAL_INT;
+>  	case IIO_CHAN_INFO_INT_TIME:
+> @@ -581,8 +562,8 @@ static irqreturn_t stk3310_irq_event_handler(int irq, void *private)
+>  	}
+>  	event = IIO_UNMOD_EVENT_CODE(IIO_PROXIMITY, 1,
+>  				     IIO_EV_TYPE_THRESH,
+> -				     (dir ? IIO_EV_DIR_RISING :
+> -					    IIO_EV_DIR_FALLING));
+> +				     (dir ? IIO_EV_DIR_FALLING :
+> +					    IIO_EV_DIR_RISING));
+>  	iio_push_event(indio_dev, event, data->timestamp);
+>  
+>  	/* Reset the interrupt flag */
+> 
