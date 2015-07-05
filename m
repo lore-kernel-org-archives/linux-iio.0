@@ -1,79 +1,207 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:59336 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:59359 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755554AbbGEMMc (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 5 Jul 2015 08:12:32 -0400
-Message-ID: <55991F2D.3030902@kernel.org>
-Date: Sun, 05 Jul 2015 13:12:29 +0100
+	with ESMTP id S1755639AbbGEMPk (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 5 Jul 2015 08:15:40 -0400
+Message-ID: <55991FEA.50703@kernel.org>
+Date: Sun, 05 Jul 2015 13:15:38 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Martin Kepplinger <martink@posteo.de>, knaack.h@gmx.de,
-	lars@metafoo.de, pmeerw@pmeerw.net, mfuzzey@parkeon.com,
-	roberta.dobrescu@gmail.com,
-	christoph.muellner@theobroma-systems.com
-CC: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-	devicetree@vger.kernel.org,
-	Martin Kepplinger <martin.kepplinger@theobroma-systems.com>
-Subject: Re: [PATCH 5/9] iio: mma8452: add devicetree documentation
-References: <1436018110-3903-1-git-send-email-martink@posteo.de> <1436018110-3903-6-git-send-email-martink@posteo.de> <5599199B.6030006@kernel.org> <55991A1E.30608@posteo.de>
-In-Reply-To: <55991A1E.30608@posteo.de>
-Content-Type: text/plain; charset=windows-1252
+To: harald@ccbib.org, Hartmut Knaack <knaack.h@gmx.de>
+CC: Richard Weinberger <richard@nod.at>, linux-iio@vger.kernel.org
+Subject: Re: [PATCHv2 2/2] iio: dht11: Use new function ktime_get_resolution_ns()
+References: <1428405156-6761-1-git-send-email-harald@ccbib.org> <1428405156-6761-3-git-send-email-harald@ccbib.org> <55267AEC.8000500@kernel.org> <E1Z9eHR-00014C-6g@stardust.g4.wien.funkfeuer.at> <55919E72.3010807@gmx.de> <02a909f41c0b1c16251d016d71ac86bc@imap.cosmopool.net>
+In-Reply-To: <02a909f41c0b1c16251d016d71ac86bc@imap.cosmopool.net>
+Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 05/07/15 12:50, Martin Kepplinger wrote:
-> Am 2015-07-05 um 13:48 schrieb Jonathan Cameron:
->> On 04/07/15 14:55, Martin Kepplinger wrote:
->>> Signed-off-by: Martin Kepplinger <martin.kepplinger@theobroma-systems.com>
->>> Signed-off-by: Christoph Muellner <christoph.muellner@theobroma-systems.com>
->> This is trivial enough I'll take it without a device tree ack (after a few days)
->> but convention is to CC all device tree patches to the maintainers of devicetree
->> bindings as well as the devicetree list.  
->>
->> Jonathan
-> 
-> Thanks a lot so far. I'll send a next version based on your review and
-> will add devicetree people. Maybe you can take the series cleanly in one
-> go after that. Someone that quickly runs it, other than me, would be
-> awesome of course ;)
-Wuss ;)  You'd be amazed how many invasive changes go in without anyone
-every finding anyone to test them on particular obscure parts.
-Still it is indeed always nice.
-> 
->                      martin
->>> ---
->>>  .../devicetree/bindings/iio/accel/mma8452.txt       | 21 +++++++++++++++++++++
->>>  1 file changed, 21 insertions(+)
->>>  create mode 100644 Documentation/devicetree/bindings/iio/accel/mma8452.txt
+On 30/06/15 20:37, harald@ccbib.org wrote:
+> On Mon, 29 Jun 2015 21:37:22 +0200, Hartmut Knaack <knaack.h@gmx.de>
+> wrote:
+>> Harald Geyer schrieb am 29.06.2015 um 20:59:
+>>> Hi Jonathan!
 >>>
->>> diff --git a/Documentation/devicetree/bindings/iio/accel/mma8452.txt b/Documentation/devicetree/bindings/iio/accel/mma8452.txt
->>> new file mode 100644
->>> index 0000000..8d98e05
->>> --- /dev/null
->>> +++ b/Documentation/devicetree/bindings/iio/accel/mma8452.txt
->>> @@ -0,0 +1,21 @@
->>> +Freescale MMA8452Q, MMA8453Q, MMA8652FC or MMA8653FC triaxial accelerometer
->>> +
->>> +Required properties:
->>> +
->>> +  - compatible: should be "fsl,mma8653", "fsl,mma8652", "fsl,mma8453" or
->>> +    "fsl,mma8452" respectively.
->>> +  - reg: the I2C address of the chip
->>> +
->>> +Optional properties:
->>> +
->>> +  - interrupt-parent: should be the phandle for the interrupt controller
->>> +  - interrupts: interrupt mapping for GPIO IRQ
->>> +
->>> +Example:
->>> +
->>> +	mma8653fc@1d {
->>> +		compatible = "fsl,mma8653";
->>> +		reg = <0x1d>;
->>> +		interrupt-parent = <&gpio1>;
->>> +		interrupts = <5 0>;
->>> +	};
+>>> Jonathan Cameron writes:
+> [...]
+>>>> Looks good to me.  Will wait for comments on the first patch though
+>>>> before taking this... clearly that one will need a few acks if I take
+>>>> it through IIO!
+>>>
+>>> The first patch has been merged via tip tree for 4.2 (is already
+>>> available
+>>> in staging-next tree). Are you going to pick up this patch or do I need
+>>> to resend?
+>>>
+>>> Thanks,
+>>> Harald
 >>>
 >>
+>> Hi Harald,
+>> there are a few small style issues, which checkpatch.pl --strict should
+>> show you. 
 > 
+> Thanks for pointing out --strict - didn't know about that yet.
+> 
+> I get the following output:
+> 
+> CHECK: spaces preferred around that '*' (ctx:VxV)
+> #96: FILE: drivers/iio/humidity/dht11.c:167:
+> +               if (DHT11_DATA_BIT_HIGH < 2*timeres) {
+>                                            ^
+> 
+> With this one I disagree. Omitting the spaces makes the code easier to
+> read, because it reflects the relative binding power of operators involed.
+> This style (omitting spaces around * if there is a +, <, etc in the same
+> experession) is used throughout the driver. I'd change this only if there
+> is consensus, that this really is the preferred way.
+Personal taste wise I agree with you, but conventions are conventions
+and the kernel way is spaces around binary operators to distinguish them
+from unary operators...
+
+I'll only get a newbie patch 'fixing' this otherwise, so please do change it!
+> 
+> CHECK: Alignment should match open parenthesis
+> #98: FILE: drivers/iio/humidity/dht11.c:169:
+> +                       dev_err(dht11->dev, "timeresolution %dns too
+> low\n",
+> +                                               timeres);
+> 
+> Ok, I'll post a patch that updates the driver to this style and update the
+> above patch acordingly.
+> 
+> Thanks,
+> Harald
+> 
+> 
+>> Thanks,
+>> Hartmut
+>>
+>>>> Jonathan
+>>>>> ---
+>>>>> changes since V1:
+>>>>> call ktime_get_xxx() functions directly instead of using the wrappers
+>>>>> of the iio subsystem.
+>>>>>
+>>>>>  drivers/iio/humidity/dht11.c |   42
+>>>>>  ++++++++++++++++++++++--------------------
+>>>>>  1 files changed, 22 insertions(+), 20 deletions(-)
+>>>>>
+>>>>> diff --git a/drivers/iio/humidity/dht11.c
+>>>>> b/drivers/iio/humidity/dht11.c
+>>>>> index 7d79a1a..4cb25dc 100644
+>>>>> --- a/drivers/iio/humidity/dht11.c
+>>>>> +++ b/drivers/iio/humidity/dht11.c
+>>>>> @@ -33,6 +33,7 @@
+>>>>>  #include <linux/delay.h>
+>>>>>  #include <linux/gpio.h>
+>>>>>  #include <linux/of_gpio.h>
+>>>>> +#include <linux/timekeeping.h>
+>>>>>  
+>>>>>  #include <linux/iio/iio.h>
+>>>>>  
+>>>>> @@ -87,23 +88,11 @@ static unsigned char dht11_decode_byte(int
+>>>>> *timing, int threshold)
+>>>>>  	return ret;
+>>>>>  }
+>>>>>  
+>>>>> -static int dht11_decode(struct dht11 *dht11, int offset)
+>>>>> +static int dht11_decode(struct dht11 *dht11, int offset, int
+> timeres)
+>>>>>  {
+>>>>> -	int i, t, timing[DHT11_BITS_PER_READ], threshold,
+>>>>> -		timeres = DHT11_SENSOR_RESPONSE;
+>>>>> +	int i, t, timing[DHT11_BITS_PER_READ], threshold;
+>>>>>  	unsigned char temp_int, temp_dec, hum_int, hum_dec, checksum;
+>>>>>  
+>>>>> -	/* Calculate timestamp resolution */
+>>>>> -	for (i = 1; i < dht11->num_edges; ++i) {
+>>>>> -		t = dht11->edges[i].ts - dht11->edges[i-1].ts;
+>>>>> -		if (t > 0 && t < timeres)
+>>>>> -			timeres = t;
+>>>>> -	}
+>>>>> -	if (2*timeres > DHT11_DATA_BIT_HIGH) {
+>>>>> -		pr_err("dht11: timeresolution %d too bad for decoding\n",
+>>>>> -			timeres);
+>>>>> -		return -EIO;
+>>>>> -	}
+>>>>>  	threshold = DHT11_DATA_BIT_HIGH / timeres;
+>>>>>  	if (DHT11_DATA_BIT_LOW/timeres + 1 >= threshold)
+>>>>>  		pr_err("dht11: WARNING: decoding ambiguous\n");
+>>>>> @@ -126,7 +115,7 @@ static int dht11_decode(struct dht11 *dht11, int
+>>>>> offset)
+>>>>>  	if (((hum_int + hum_dec + temp_int + temp_dec) & 0xff) != checksum)
+>>>>>  		return -EIO;
+>>>>>  
+>>>>> -	dht11->timestamp = iio_get_time_ns();
+>>>>> +	dht11->timestamp = ktime_get_real_ns();
+>>>>>  	if (hum_int < 20) {  /* DHT22 */
+>>>>>  		dht11->temperature = (((temp_int & 0x7f) << 8) + temp_dec) *
+>>>>>  					((temp_int & 0x80) ? -100 : 100);
+>>>>> @@ -154,7 +143,7 @@ static irqreturn_t dht11_handle_irq(int irq, void
+>>>>> *data)
+>>>>>  
+>>>>>  	/* TODO: Consider making the handler safe for IRQ sharing */
+>>>>>  	if (dht11->num_edges < DHT11_EDGES_PER_READ && dht11->num_edges >=
+>>>>>  	0) {
+>>>>> -		dht11->edges[dht11->num_edges].ts = iio_get_time_ns();
+>>>>> +		dht11->edges[dht11->num_edges].ts = ktime_get_real_ns();
+>>>>>  		dht11->edges[dht11->num_edges++].value =
+>>>>>  						gpio_get_value(dht11->gpio);
+>>>>>  
+>>>>> @@ -170,10 +159,22 @@ static int dht11_read_raw(struct iio_dev
+>>>>> *iio_dev,
+>>>>>  			int *val, int *val2, long m)
+>>>>>  {
+>>>>>  	struct dht11 *dht11 = iio_priv(iio_dev);
+>>>>> -	int ret;
+>>>>> +	int ret, timeres;
+>>>>>  
+>>>>>  	mutex_lock(&dht11->lock);
+>>>>> -	if (dht11->timestamp + DHT11_DATA_VALID_TIME < iio_get_time_ns()) {
+>>>>> +	if (dht11->timestamp + DHT11_DATA_VALID_TIME < ktime_get_real_ns())
+> {
+>>>>> +		timeres = ktime_get_resolution_ns();
+>>>>> +		if (DHT11_DATA_BIT_HIGH < 2*timeres) {
+>>>>> +			dev_err(dht11->dev, "timeresolution %dns too low\n",
+>>>>> +						timeres);
+>>>>> +			/* In theory a better clock could become available
+>>>>> +			 * at some point ... and there is no error code
+>>>>> +			 * that really fits better.
+>>>>> +			 */
+>>>>> +			ret = -EAGAIN;
+>>>>> +			goto err;
+>>>>> +		}
+>>>>> +
+>>>>>  		reinit_completion(&dht11->completion);
+>>>>>  
+>>>>>  		dht11->num_edges = 0;
+>>>>> @@ -208,7 +209,8 @@ static int dht11_read_raw(struct iio_dev
+> *iio_dev,
+>>>>>  		ret = dht11_decode(dht11,
+>>>>>  				dht11->num_edges == DHT11_EDGES_PER_READ ?
+>>>>>  					DHT11_EDGES_PREAMBLE :
+>>>>> -					DHT11_EDGES_PREAMBLE - 2);
+>>>>> +					DHT11_EDGES_PREAMBLE - 2,
+>>>>> +				timeres);
+>>>>>  		if (ret)
+>>>>>  			goto err;
+>>>>>  	}
+>>>>> @@ -274,7 +276,7 @@ static int dht11_probe(struct platform_device
+>>>>> *pdev)
+>>>>>  		return -EINVAL;
+>>>>>  	}
+>>>>>  
+>>>>> -	dht11->timestamp = iio_get_time_ns() - DHT11_DATA_VALID_TIME - 1;
+>>>>> +	dht11->timestamp = ktime_get_real_ns() - DHT11_DATA_VALID_TIME - 1;
+>>>>>  	dht11->num_edges = -1;
+>>>>>  
+>>>>>  	platform_set_drvdata(pdev, iio);
+>>>>>
+>>>>
+>>> --
+>>> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+>>> the body of a message to majordomo@vger.kernel.org
+>>> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+>>>
 
