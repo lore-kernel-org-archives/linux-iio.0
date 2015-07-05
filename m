@@ -1,10 +1,10 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:59132 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:59154 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753703AbbGELuP (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 5 Jul 2015 07:50:15 -0400
-Message-ID: <559919F5.8070107@kernel.org>
-Date: Sun, 05 Jul 2015 12:50:13 +0100
+	with ESMTP id S1755102AbbGELv0 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 5 Jul 2015 07:51:26 -0400
+Message-ID: <55991A3C.8000701@kernel.org>
+Date: Sun, 05 Jul 2015 12:51:24 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
 To: Martin Kepplinger <martink@posteo.de>, knaack.h@gmx.de,
@@ -14,78 +14,78 @@ To: Martin Kepplinger <martink@posteo.de>, knaack.h@gmx.de,
 CC: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
 	devicetree@vger.kernel.org,
 	Martin Kepplinger <martin.kepplinger@theobroma-systems.com>
-Subject: Re: [PATCH 7/9] iio: mma8452: change iio event type to IIO_EV_TYPE_MAG
-References: <1436018110-3903-1-git-send-email-martink@posteo.de> <1436018110-3903-8-git-send-email-martink@posteo.de>
-In-Reply-To: <1436018110-3903-8-git-send-email-martink@posteo.de>
+Subject: Re: [PATCH 9/9] iio: mma8452: add devicetree property to allow all
+ pin wirings
+References: <1436018110-3903-1-git-send-email-martink@posteo.de> <1436018110-3903-10-git-send-email-martink@posteo.de>
+In-Reply-To: <1436018110-3903-10-git-send-email-martink@posteo.de>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
 On 04/07/15 14:55, Martin Kepplinger wrote:
-> IIO_EV_TYPE_THRESH in rising direction describes an event where the
-> threshold is crossed in rising direction, positive or negative values
-> being possible. This is not the case here.
+> For the devices supported by the mma8452 driver, two interrupt pins are
+> available to route the interrupt signals to. By default INT1 is assumed.
 > 
-> Since the threshold is no signed value and only the magnitude is compared,
-> IIO_EV_TYPE_MAG is what describes the behaviour of these devices, see the
-> sysfs-bus-iio ABI Documentation.
+> This adds a simple boolean DT property, for users to configure it for
+> INT2, if that is the wired interrupt pin for them.
+> 
+> This is important for everyone to be able to use this driver, no matter
+> how their chip is wired.
+> 
+> Since this doesn't change the default behaviour, it doesn't break anything
+> for existing users.
 > 
 > Signed-off-by: Martin Kepplinger <martin.kepplinger@theobroma-systems.com>
 > Signed-off-by: Christoph Muellner <christoph.muellner@theobroma-systems.com>
-This is a fix and so should have been the first patch in the series.  It will
-want to go via a different tree (iio-fixes) and probably be marked for stable.
-
-I would however like Peter's ack on this as well before taking it.
+I just wonder if we can make the naming more obvious.
 > ---
->  drivers/iio/accel/mma8452.c | 10 +++++-----
->  1 file changed, 5 insertions(+), 5 deletions(-)
+>  Documentation/devicetree/bindings/iio/accel/mma8452.txt |  2 ++
+>  drivers/iio/accel/mma8452.c                             | 14 ++++++++------
+>  2 files changed, 10 insertions(+), 6 deletions(-)
 > 
+> diff --git a/Documentation/devicetree/bindings/iio/accel/mma8452.txt b/Documentation/devicetree/bindings/iio/accel/mma8452.txt
+> index 8d98e05..0048415 100644
+> --- a/Documentation/devicetree/bindings/iio/accel/mma8452.txt
+> +++ b/Documentation/devicetree/bindings/iio/accel/mma8452.txt
+> @@ -10,6 +10,7 @@ Optional properties:
+>  
+>    - interrupt-parent: should be the phandle for the interrupt controller
+>    - interrupts: interrupt mapping for GPIO IRQ
+> +  - int2: assume interrupt pin wired to INT2 instead of INT1
+use_int2 perhaps?
+>  
+>  Example:
+>  
+> @@ -18,4 +19,5 @@ Example:
+>  		reg = <0x1d>;
+>  		interrupt-parent = <&gpio1>;
+>  		interrupts = <5 0>;
+> +		int2;
+>  	};
 > diff --git a/drivers/iio/accel/mma8452.c b/drivers/iio/accel/mma8452.c
-> index 7f6e3b4..e23ebd0 100644
+> index 2491ed0..0768e66 100644
 > --- a/drivers/iio/accel/mma8452.c
 > +++ b/drivers/iio/accel/mma8452.c
-> @@ -598,21 +598,21 @@ static void mma8452_transient_interrupt(struct iio_dev *indio_dev)
->  	if (src & data->chip_info->ev_src_xe)
->  		iio_push_event(indio_dev,
->  			       IIO_MOD_EVENT_CODE(IIO_ACCEL, 0, IIO_MOD_X,
-> -						  IIO_EV_TYPE_THRESH,
-> +						  IIO_EV_TYPE_MAG,
->  						  IIO_EV_DIR_RISING),
->  			       ts);
+> @@ -1072,12 +1072,14 @@ static int mma8452_probe(struct i2c_client *client,
+>  		int enabled_interrupts = MMA8452_INT_TRANS |
+>  					 MMA8452_INT_FF_MT;
 >  
->  	if (src & data->chip_info->ev_src_ye)
->  		iio_push_event(indio_dev,
->  			       IIO_MOD_EVENT_CODE(IIO_ACCEL, 0, IIO_MOD_Y,
-> -						  IIO_EV_TYPE_THRESH,
-> +						  IIO_EV_TYPE_MAG,
->  						  IIO_EV_DIR_RISING),
->  			       ts);
+> -		/* Assume wired to INT1 pin */
+> -		ret = i2c_smbus_write_byte_data(client,
+> -						MMA8452_CTRL_REG5,
+> -						supported_interrupts);
+> -		if (ret < 0)
+> -			return ret;
+> +		/* Assume wired to INT1 pin, except "int2" is found in DT */
+> +		if (!of_property_read_bool(client->dev.of_node, "int2")) {
+> +			ret = i2c_smbus_write_byte_data(client,
+> +							MMA8452_CTRL_REG5,
+> +							supported_interrupts);
+> +			if (ret < 0)
+> +				return ret;
+> +		}
 >  
->  	if (src & data->chip_info->ev_src_ze)
->  		iio_push_event(indio_dev,
->  			       IIO_MOD_EVENT_CODE(IIO_ACCEL, 0, IIO_MOD_Z,
-> -						  IIO_EV_TYPE_THRESH,
-> +						  IIO_EV_TYPE_MAG,
->  						  IIO_EV_DIR_RISING),
->  			       ts);
->  }
-> @@ -689,7 +689,7 @@ static int mma8452_reg_access_dbg(struct iio_dev *indio_dev,
->  
->  static const struct iio_event_spec mma8452_transient_event[] = {
->  	{
-> -		.type = IIO_EV_TYPE_THRESH,
-> +		.type = IIO_EV_TYPE_MAG,
->  		.dir = IIO_EV_DIR_RISING,
->  		.mask_separate = BIT(IIO_EV_INFO_ENABLE),
->  		.mask_shared_by_type = BIT(IIO_EV_INFO_VALUE) |
-> @@ -700,7 +700,7 @@ static const struct iio_event_spec mma8452_transient_event[] = {
->  
->  static const struct iio_event_spec mma8452_motion_event[] = {
->  	{
-> -		.type = IIO_EV_TYPE_THRESH,
-> +		.type = IIO_EV_TYPE_MAG,
->  		.dir = IIO_EV_DIR_RISING,
->  		.mask_separate = BIT(IIO_EV_INFO_ENABLE),
->  		.mask_shared_by_type = BIT(IIO_EV_INFO_VALUE) |
+>  		ret = i2c_smbus_write_byte_data(client,
+>  						MMA8452_CTRL_REG4,
 > 
 
