@@ -1,212 +1,177 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:58817 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:58856 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751790AbbGELJt (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 5 Jul 2015 07:09:49 -0400
-Message-ID: <55902DF2.3020403@kernel.org>
-Date: Sun, 28 Jun 2015 18:25:06 +0100
+	with ESMTP id S1751939AbbGELSP (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 5 Jul 2015 07:18:15 -0400
+Message-ID: <55991275.9050206@kernel.org>
+Date: Sun, 05 Jul 2015 12:18:13 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Lars-Peter Clausen <lars@metafoo.de>,
-	Hartmut Knaack <knaack.h@gmx.de>, linux-iio@vger.kernel.org
-CC: Peter Meerwald <pmeerw@pmeerw.net>
-Subject: Re: [PATCH 1/1] iio:adc:Kconfig: rework help descriptions
-References: <1434881889-2908-1-git-send-email-knaack.h@gmx.de> <5586A006.30308@metafoo.de>
-In-Reply-To: <5586A006.30308@metafoo.de>
-Content-Type: text/plain; charset=windows-1252
+To: Hartmut Knaack <knaack.h@gmx.de>,
+	Tiberiu Breana <tiberiu.a.breana@intel.com>,
+	linux-iio@vger.kernel.org
+Subject: Re: [PATCH v2] iio: light: STK3310: un-invert proximity values
+References: <1435753920-22825-1-git-send-email-tiberiu.a.breana@intel.com> <5598020C.1060305@gmx.de>
+In-Reply-To: <5598020C.1060305@gmx.de>
+Content-Type: text/plain; charset=iso-8859-15
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 21/06/15 12:29, Lars-Peter Clausen wrote:
-> On 06/21/2015 12:18 PM, Hartmut Knaack wrote:
->> Rework the help text of several ADCs to make sure that:
->>    - the module name is mentioned, if the driver can be built as a module
->>    - "If unsure, say N" messages are dropped
->>    - right indentation is maintained
+On 04/07/15 16:55, Hartmut Knaack wrote:
+> Tiberiu Breana schrieb am 01.07.2015 um 14:32:
+>> In accordance with the recent proximity ABI changes,
+>> STK3310's proximity readings should be un-inversed
+>> in order to return low values for far-away objects
+>> and high values for close ones.
 >>
->> Signed-off-by: Hartmut Knaack <knaack.h@gmx.de>
-> 
-> Looks good. Thanks.
-> 
-> Acked-by: Lars-Peter Clausen <lars@metafoo.de>
-Applied to the togreg branch of iio.git - will get pushed out as testing
-sometime, probably at the end of the week.  I'm travelling and doing two
-jobs at the same time for added fun.
+>> As consequences of this change, iio event directions
+>> have been switched and maximum proximity sensor
+>> reference values have also been adjusted in accordance
+>> with the real readings.
+>>
+>> Signed-off-by: Tiberiu Breana <tiberiu.a.breana@intel.com>
+> Acked-by: Hartmut Knaack <knaack.h@gmx.de>
+Applied to a temporary fixes-for-4.2 branch as I haven't yet
+brought my normal fixes branch past the merge window.
 
-How many hours are there in the day?
-
-J
-> 
+Will unroll this one way or another fairly soon.
 >> ---
->> This patch is based on the cc10001_adc dependency and sort order fixes I
->> just submitted.
+>> v2: Updated the commit message to better reflect all changes
+>> ---
+>>  drivers/iio/light/stk3310.c | 53 +++++++++++++++------------------------------
+>>  1 file changed, 17 insertions(+), 36 deletions(-)
 >>
->>   drivers/iio/adc/Kconfig | 48 ++++++++++++++++++++++++++++++++++++++----------
->>   1 file changed, 38 insertions(+), 10 deletions(-)
->>
->> diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
->> index 4790071..aee1e87 100644
->> --- a/drivers/iio/adc/Kconfig
->> +++ b/drivers/iio/adc/Kconfig
->> @@ -20,6 +20,9 @@ config AD7266
->>         Say yes here to build support for Analog Devices AD7265 and AD7266
->>         ADCs.
->>
->> +      To compile this driver as a module, choose M here: the module will be
->> +      called ad7266.
+>> diff --git a/drivers/iio/light/stk3310.c b/drivers/iio/light/stk3310.c
+>> index e79b9d8..b7ec2a5 100644
+>> --- a/drivers/iio/light/stk3310.c
+>> +++ b/drivers/iio/light/stk3310.c
+>> @@ -43,7 +43,6 @@
+>>  #define STK3311_CHIP_ID_VAL			0x1D
+>>  #define STK3310_PSINT_EN			0x01
+>>  #define STK3310_PS_MAX_VAL			0xFFFF
+>> -#define STK3310_THRESH_MAX			0xFFFF
+>>  
+>>  #define STK3310_DRIVER_NAME			"stk3310"
+>>  #define STK3310_REGMAP_NAME			"stk3310_regmap"
+>> @@ -84,15 +83,13 @@ static const struct reg_field stk3310_reg_field_flag_psint =
+>>  				REG_FIELD(STK3310_REG_FLAG, 4, 4);
+>>  static const struct reg_field stk3310_reg_field_flag_nf =
+>>  				REG_FIELD(STK3310_REG_FLAG, 0, 0);
+>> -/*
+>> - * Maximum PS values with regard to scale. Used to export the 'inverse'
+>> - * PS value (high values for far objects, low values for near objects).
+>> - */
 >> +
->>   config AD7291
->>       tristate "Analog Devices AD7291 ADC driver"
->>       depends on I2C
->> @@ -52,8 +55,6 @@ config AD7476
->>         AD7277, AD7278, AD7475, AD7476, AD7477, AD7478, AD7466, AD7467, AD7468,
->>         AD7495, AD7910, AD7920, AD7920 SPI analog to digital converters (ADC).
->>
->> -      If unsure, say N (but it's safe to say "Y").
->> -
->>         To compile this driver as a module, choose M here: the
->>         module will be called ad7476.
->>
->> @@ -63,8 +64,7 @@ config AD7791
->>       select AD_SIGMA_DELTA
->>       help
->>         Say yes here to build support for Analog Devices AD7787, AD7788, AD7789,
->> -      AD7790 and AD7791 SPI analog to digital converters (ADC). If unsure, say
->> -      N (but it is safe to say "Y").
->> +      AD7790 and AD7791 SPI analog to digital converters (ADC).
->>
->>         To compile this driver as a module, choose M here: the module will be
->>         called ad7791.
->> @@ -76,7 +76,6 @@ config AD7793
->>       help
->>         Say yes here to build support for Analog Devices AD7785, AD7792, AD7793,
->>         AD7794 and AD7795 SPI analog to digital converters (ADC).
->> -      If unsure, say N (but it's safe to say "Y").
->>
->>         To compile this driver as a module, choose M here: the
->>         module will be called AD7793.
->> @@ -89,7 +88,6 @@ config AD7887
->>       help
->>         Say yes here to build support for Analog Devices
->>         AD7887 SPI analog to digital converter (ADC).
->> -      If unsure, say N (but it's safe to say "Y").
->>
->>         To compile this driver as a module, choose M here: the
->>         module will be called ad7887.
->> @@ -117,6 +115,9 @@ config AD799X
->>         i2c analog to digital converters (ADC). Provides direct access
->>         via sysfs.
->>
->> +      To compile this driver as a module, choose M here: the module will be
->> +      called ad799x.
->> +
->>   config AT91_ADC
->>       tristate "Atmel AT91 ADC"
->>       depends on ARCH_AT91
->> @@ -127,6 +128,9 @@ config AT91_ADC
->>       help
->>         Say yes here to build support for Atmel AT91 ADC.
->>
->> +      To compile this driver as a module, choose M here: the module will be
->> +      called at91_adc.
->> +
->>   config AXP288_ADC
->>       tristate "X-Powers AXP288 ADC driver"
->>       depends on MFD_AXP20X
->> @@ -135,6 +139,9 @@ config AXP288_ADC
->>         device. Depending on platform configuration, this general purpose ADC can
->>         be used for sampling sensors such as thermal resistors.
->>
->> +      To compile this driver as a module, choose M here: the module will be
->> +      called axp288_adc.
->> +
->>   config BERLIN2_ADC
->>       tristate "Marvell Berlin2 ADC driver"
->>       depends on ARCH_BERLIN
->> @@ -142,6 +149,9 @@ config BERLIN2_ADC
->>         Marvell Berlin2 ADC driver. This ADC has 8 channels, with one used for
->>         temperature measurement.
->>
->> +      To compile this driver as a module, choose M here: the module will be
->> +      called berlin2-adc.
->> +
->>   config CC10001_ADC
->>       tristate "Cosmic Circuits 10001 ADC driver"
->>       depends on HAS_IOMEM && HAVE_CLK && REGULATOR
->> @@ -170,12 +180,18 @@ config EXYNOS_ADC
->>         of SoCs for drivers such as the touchscreen and hwmon to use to share
->>         this resource.
->>
->> +      To compile this driver as a module, choose M here: the module will be
->> +      called exynos_adc.
->> +
->>   config LP8788_ADC
->>       tristate "LP8788 ADC driver"
->>       depends on MFD_LP8788
->>       help
->>         Say yes here to build support for TI LP8788 ADC.
->>
->> +      To compile this driver as a module, choose M here: the module will be
->> +      called lp8788_adc.
->> +
->>   config MAX1027
->>       tristate "Maxim max1027 ADC driver"
->>       depends on SPI
->> @@ -185,6 +201,9 @@ config MAX1027
->>         Say yes here to build support for Maxim SPI ADC models
->>         max1027, max1029 and max1031.
->>
->> +      To compile this driver as a module, choose M here: the module will be
->> +      called max1027.
->> +
->>   config MAX1363
->>       tristate "Maxim max1363 ADC driver"
->>       depends on I2C
->> @@ -201,6 +220,9 @@ config MAX1363
->>         max11646, max11647) Provides direct access via sysfs and buffered
->>         data via the iio dev interface.
->>
->> +      To compile this driver as a module, choose M here: the module will be
->> +      called max1363.
->> +
->>   config MCP320X
->>       tristate "Microchip Technology MCP3x01/02/04/08"
->>       depends on SPI
->> @@ -309,15 +331,18 @@ config TI_AM335X_ADC
->>         Say yes here to build support for Texas Instruments ADC
->>         driver which is also a MFD client.
->>
->> +      To compile this driver as a module, choose M here: the module will be
->> +      called ti_am335x_adc.
->> +
->>   config TWL4030_MADC
->>       tristate "TWL4030 MADC (Monitoring A/D Converter)"
->>       depends on TWL4030_CORE
->>       help
->> -    This driver provides support for Triton TWL4030-MADC. The
->> -    driver supports both RT and SW conversion methods.
->> +      This driver provides support for Triton TWL4030-MADC. The
->> +      driver supports both RT and SW conversion methods.
->>
->> -    This driver can also be built as a module. If so, the module will be
->> -    called twl4030-madc.
->> +      This driver can also be built as a module. If so, the module will be
->> +      called twl4030-madc.
->>
->>   config TWL6030_GPADC
->>       tristate "TWL6030 GPADC (General Purpose A/D Converter) Support"
->> @@ -350,6 +375,9 @@ config VIPERBOARD_ADC
->>         Say yes here to access the ADC part of the Nano River
->>         Technologies Viperboard.
->>
->> +      To compile this driver as a module, choose M here: the module will be
->> +      called viperboard_adc.
->> +
->>   config XILINX_XADC
->>       tristate "Xilinx XADC driver"
->>       depends on ARCH_ZYNQ || MICROBLAZE || COMPILE_TEST
+>> +/* Estimate maximum proximity values with regard to measurement scale. */
+>>  static const int stk3310_ps_max[4] = {
+>> -	STK3310_PS_MAX_VAL / 64,
+>> -	STK3310_PS_MAX_VAL / 16,
+>> -	STK3310_PS_MAX_VAL /  4,
+>> -	STK3310_PS_MAX_VAL,
+>> +	STK3310_PS_MAX_VAL / 640,
+>> +	STK3310_PS_MAX_VAL / 160,
+>> +	STK3310_PS_MAX_VAL /  40,
+>> +	STK3310_PS_MAX_VAL /  10
+>>  };
+>>  
+>>  static const int stk3310_scale_table[][2] = {
+>> @@ -128,14 +125,14 @@ static const struct iio_event_spec stk3310_events[] = {
+>>  	/* Proximity event */
+>>  	{
+>>  		.type = IIO_EV_TYPE_THRESH,
+>> -		.dir = IIO_EV_DIR_FALLING,
+>> +		.dir = IIO_EV_DIR_RISING,
+>>  		.mask_separate = BIT(IIO_EV_INFO_VALUE) |
+>>  				 BIT(IIO_EV_INFO_ENABLE),
+>>  	},
+>>  	/* Out-of-proximity event */
+>>  	{
+>>  		.type = IIO_EV_TYPE_THRESH,
+>> -		.dir = IIO_EV_DIR_RISING,
+>> +		.dir = IIO_EV_DIR_FALLING,
+>>  		.mask_separate = BIT(IIO_EV_INFO_VALUE) |
+>>  				 BIT(IIO_EV_INFO_ENABLE),
+>>  	},
+>> @@ -205,23 +202,16 @@ static int stk3310_read_event(struct iio_dev *indio_dev,
+>>  	u8 reg;
+>>  	u16 buf;
+>>  	int ret;
+>> -	unsigned int index;
+>>  	struct stk3310_data *data = iio_priv(indio_dev);
+>>  
+>>  	if (info != IIO_EV_INFO_VALUE)
+>>  		return -EINVAL;
+>>  
+>> -	/*
+>> -	 * Only proximity interrupts are implemented at the moment.
+>> -	 * Since we're inverting proximity values, the sensor's 'high'
+>> -	 * threshold will become our 'low' threshold, associated with
+>> -	 * 'near' events. Similarly, the sensor's 'low' threshold will
+>> -	 * be our 'high' threshold, associated with 'far' events.
+>> -	 */
+>> +	/* Only proximity interrupts are implemented at the moment. */
+>>  	if (dir == IIO_EV_DIR_RISING)
+>> -		reg = STK3310_REG_THDL_PS;
+>> -	else if (dir == IIO_EV_DIR_FALLING)
+>>  		reg = STK3310_REG_THDH_PS;
+>> +	else if (dir == IIO_EV_DIR_FALLING)
+>> +		reg = STK3310_REG_THDL_PS;
+>>  	else
+>>  		return -EINVAL;
+>>  
+>> @@ -232,8 +222,7 @@ static int stk3310_read_event(struct iio_dev *indio_dev,
+>>  		dev_err(&data->client->dev, "register read failed\n");
+>>  		return ret;
+>>  	}
+>> -	regmap_field_read(data->reg_ps_gain, &index);
+>> -	*val = swab16(stk3310_ps_max[index] - buf);
+>> +	*val = swab16(buf);
+>>  
+>>  	return IIO_VAL_INT;
+>>  }
+>> @@ -257,13 +246,13 @@ static int stk3310_write_event(struct iio_dev *indio_dev,
+>>  		return -EINVAL;
+>>  
+>>  	if (dir == IIO_EV_DIR_RISING)
+>> -		reg = STK3310_REG_THDL_PS;
+>> -	else if (dir == IIO_EV_DIR_FALLING)
+>>  		reg = STK3310_REG_THDH_PS;
+>> +	else if (dir == IIO_EV_DIR_FALLING)
+>> +		reg = STK3310_REG_THDL_PS;
+>>  	else
+>>  		return -EINVAL;
+>>  
+>> -	buf = swab16(stk3310_ps_max[index] - val);
+>> +	buf = swab16(val);
+>>  	ret = regmap_bulk_write(data->regmap, reg, &buf, 2);
+>>  	if (ret < 0)
+>>  		dev_err(&client->dev, "failed to set PS threshold!\n");
+>> @@ -334,14 +323,6 @@ static int stk3310_read_raw(struct iio_dev *indio_dev,
+>>  			return ret;
+>>  		}
+>>  		*val = swab16(buf);
+>> -		if (chan->type == IIO_PROXIMITY) {
+>> -			/*
+>> -			 * Invert the proximity data so we return low values
+>> -			 * for close objects and high values for far ones.
+>> -			 */
+>> -			regmap_field_read(data->reg_ps_gain, &index);
+>> -			*val = stk3310_ps_max[index] - *val;
+>> -		}
+>>  		mutex_unlock(&data->lock);
+>>  		return IIO_VAL_INT;
+>>  	case IIO_CHAN_INFO_INT_TIME:
+>> @@ -581,8 +562,8 @@ static irqreturn_t stk3310_irq_event_handler(int irq, void *private)
+>>  	}
+>>  	event = IIO_UNMOD_EVENT_CODE(IIO_PROXIMITY, 1,
+>>  				     IIO_EV_TYPE_THRESH,
+>> -				     (dir ? IIO_EV_DIR_RISING :
+>> -					    IIO_EV_DIR_FALLING));
+>> +				     (dir ? IIO_EV_DIR_FALLING :
+>> +					    IIO_EV_DIR_RISING));
+>>  	iio_push_event(indio_dev, event, data->timestamp);
+>>  
+>>  	/* Reset the interrupt flag */
 >>
 > 
-> -- 
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
 
