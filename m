@@ -1,200 +1,289 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:59883 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:59908 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750740AbbGENor (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 5 Jul 2015 09:44:47 -0400
-Message-ID: <559934CE.3070109@kernel.org>
-Date: Sun, 05 Jul 2015 14:44:46 +0100
+	with ESMTP id S1751126AbbGENtY (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 5 Jul 2015 09:49:24 -0400
+Message-ID: <559935E0.6030107@kernel.org>
+Date: Sun, 05 Jul 2015 14:49:20 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Tiberiu Breana <tiberiu.a.breana@intel.com>,
+To: Antonio Ospite <ao2@ao2.it>, Simon Wood <simon@mungewell.org>
+CC: linux-input@vger.kernel.org,
+	Frank Praznik <frank.praznik@oh.rr.com>,
 	linux-iio@vger.kernel.org
-Subject: Re: [PATCH v5 2/2] iio: accel: Add sampling rate support for STK8312
-References: <1435154509-16865-1-git-send-email-tiberiu.a.breana@intel.com> <1435154509-16865-2-git-send-email-tiberiu.a.breana@intel.com>
-In-Reply-To: <1435154509-16865-2-git-send-email-tiberiu.a.breana@intel.com>
+Subject: Re: [RFC_v2 1/4] HID: hid-sony: Add basic IIO support for SixAxis
+ Controller
+References: <1435105830-2297-1-git-send-email-simon@mungewell.org>	<1435105830-2297-2-git-send-email-simon@mungewell.org> <20150624111343.9cbff925b0f25865fc6e5cd8@ao2.it>
+In-Reply-To: <20150624111343.9cbff925b0f25865fc6e5cd8@ao2.it>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 24/06/15 15:01, Tiberiu Breana wrote:
-> Added support for setting the STK8312 accelerometer's
-> sampling rate.
+On 24/06/15 10:13, Antonio Ospite wrote:
+> On Tue, 23 Jun 2015 18:30:27 -0600
+> Simon Wood <simon@mungewell.org> wrote:
 > 
-> Signed-off-by: Tiberiu Breana <tiberiu.a.breana@intel.com>
-Applied
-> ---
-> v5: no new changes
-> v4: no new changes
-> v3: no new changes
-> v2: replaced stk8312_samp_freq_table with a struct for better readability
-> ---
->  drivers/iio/accel/stk8312.c | 96 ++++++++++++++++++++++++++++++++++++++-------
->  1 file changed, 82 insertions(+), 14 deletions(-)
+>> ---
+>>  drivers/hid/hid-sony.c | 153 ++++++++++++++++++++++++++++++++++++++++++++++++-
+>>  1 file changed, 152 insertions(+), 1 deletion(-)
+>>
 > 
-> diff --git a/drivers/iio/accel/stk8312.c b/drivers/iio/accel/stk8312.c
-> index be58d66..c2bd144 100644
-> --- a/drivers/iio/accel/stk8312.c
-> +++ b/drivers/iio/accel/stk8312.c
-> @@ -29,6 +29,7 @@
->  #define STK8312_REG_ZOUT		0x02
->  #define STK8312_REG_INTSU		0x06
->  #define STK8312_REG_MODE		0x07
-> +#define STK8312_REG_SR			0x08
->  #define STK8312_REG_STH			0x13
->  #define STK8312_REG_RESET		0x20
->  #define STK8312_REG_AFECTRL		0x24
-> @@ -41,6 +42,8 @@
->  #define STK8312_DREADY_BIT		0x10
->  #define STK8312_INT_MODE		0xC0
->  #define STK8312_RNG_MASK		0xC0
-> +#define STK8312_SR_MASK			0x07
-> +#define STK8312_SR_400HZ_IDX		0
->  #define STK8312_RNG_SHIFT		6
->  #define STK8312_READ_RETRIES		16
->  #define STK8312_ALL_CHANNEL_MASK	7
-> @@ -65,20 +68,29 @@ static const int stk8312_scale_table[][2] = {
->  	{0, 461600}, {1, 231100}
->  };
->  
-> -#define STK8312_ACCEL_CHANNEL(index, reg, axis) {		\
-> -	.type = IIO_ACCEL,					\
-> -	.address = reg,						\
-> -	.modified = 1,						\
-> -	.channel2 = IIO_MOD_##axis,				\
-> -	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),		\
-> -	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),	\
-> -	.scan_index = index,					\
-> -	.scan_type = {						\
-> -		.sign = 's',					\
-> -		.realbits = 8,					\
-> -		.storagebits = 8,				\
-> -		.endianness = IIO_CPU,				\
-> -	},							\
-> +static const struct {
-> +	u16 val;
-> +	u32 val2;
-> +} stk8312_samp_freq_table[] = {
-> +	{400, 0}, {200, 0}, {100, 0}, {50, 0}, {25, 0},
-> +	{12, 500000}, {6, 250000}, {3, 125000}
-> +};
-> +
-> +#define STK8312_ACCEL_CHANNEL(index, reg, axis) {			\
-> +	.type = IIO_ACCEL,						\
-> +	.address = reg,							\
-> +	.modified = 1,							\
-> +	.channel2 = IIO_MOD_##axis,					\
-> +	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),			\
-> +	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE) |		\
-> +				    BIT(IIO_CHAN_INFO_SAMP_FREQ),	\
-> +	.scan_index = index,						\
-> +	.scan_type = {							\
-> +		.sign = 's',						\
-> +		.realbits = 8,						\
-> +		.storagebits = 8,					\
-> +		.endianness = IIO_CPU,					\
-> +	},								\
->  }
->  
->  static const struct iio_chan_spec stk8312_channels[] = {
-> @@ -92,6 +104,7 @@ struct stk8312_data {
->  	struct i2c_client *client;
->  	struct mutex lock;
->  	int range;
-> +	u8 sample_rate_idx;
->  	u8 mode;
->  	struct iio_trigger *dready_trig;
->  	bool dready_trigger_on;
-> @@ -100,8 +113,11 @@ struct stk8312_data {
->  
->  static IIO_CONST_ATTR(in_accel_scale_available, STK8312_SCALE_AVAIL);
->  
-> +static IIO_CONST_ATTR_SAMP_FREQ_AVAIL("3.125 6.25 12.5 25 50 100 200 400");
-> +
->  static struct attribute *stk8312_attributes[] = {
->  	&iio_const_attr_in_accel_scale_available.dev_attr.attr,
-> +	&iio_const_attr_sampling_frequency_available.dev_attr.attr,
->  	NULL,
->  };
->  
-> @@ -220,6 +236,39 @@ static const struct iio_trigger_ops stk8312_trigger_ops = {
->  	.owner = THIS_MODULE,
->  };
->  
-> +static int stk8312_set_sample_rate(struct stk8312_data *data, int rate)
-> +{
-> +	int ret;
-> +	u8 masked_reg;
-> +	u8 mode;
-> +	struct i2c_client *client = data->client;
-> +
-> +	if (rate == data->sample_rate_idx)
-> +		return 0;
-> +
-> +	mode = data->mode;
-> +	/* We need to go in standby mode to modify registers */
-> +	ret = stk8312_set_mode(data, STK8312_MODE_STANDBY);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	ret = i2c_smbus_read_byte_data(client, STK8312_REG_SR);
-> +	if (ret < 0) {
-> +		dev_err(&client->dev, "failed to set sampling rate\n");
-> +		return ret;
-> +	}
-> +
-> +	masked_reg = (ret & (~STK8312_SR_MASK)) | rate;
-> +
-> +	ret = i2c_smbus_write_byte_data(client, STK8312_REG_SR, masked_reg);
-> +	if (ret < 0)
-> +		dev_err(&client->dev, "failed to set sampling rate\n");
-> +	else
-> +		data->sample_rate_idx = rate;
-> +
-> +	return stk8312_set_mode(data, mode);
-> +}
-> +
->  static int stk8312_set_range(struct stk8312_data *data, u8 range)
->  {
->  	int ret;
-> @@ -303,6 +352,10 @@ static int stk8312_read_raw(struct iio_dev *indio_dev,
->  		*val = stk8312_scale_table[data->range - 1][0];
->  		*val2 = stk8312_scale_table[data->range - 1][1];
->  		return IIO_VAL_INT_PLUS_MICRO;
-> +	case IIO_CHAN_INFO_SAMP_FREQ:
-> +		*val = stk8312_samp_freq_table[data->sample_rate_idx].val;
-> +		*val2 = stk8312_samp_freq_table[data->sample_rate_idx].val2;
-> +		return IIO_VAL_INT_PLUS_MICRO;
->  	}
->  
->  	return -EINVAL;
-> @@ -333,6 +386,20 @@ static int stk8312_write_raw(struct iio_dev *indio_dev,
->  		mutex_unlock(&data->lock);
->  
->  		return ret;
-> +	case IIO_CHAN_INFO_SAMP_FREQ:
-> +		for (i = 0; i < ARRAY_SIZE(stk8312_samp_freq_table); i++)
-> +			if (val == stk8312_samp_freq_table[i].val &&
-> +			    val2 == stk8312_samp_freq_table[i].val2) {
-> +				index = i;
-> +				break;
-> +			}
-> +		if (index < 0)
-> +			return -EINVAL;
-> +		mutex_lock(&data->lock);
-> +		ret = stk8312_set_sample_rate(data, index);
-> +		mutex_unlock(&data->lock);
-> +
-> +		return ret;
->  	}
->  
->  	return -EINVAL;
-> @@ -479,6 +546,7 @@ static int stk8312_probe(struct i2c_client *client,
->  		dev_err(&client->dev, "failed to reset sensor\n");
->  		return ret;
->  	}
-> +	data->sample_rate_idx = STK8312_SR_400HZ_IDX;
->  	ret = stk8312_set_range(data, 1);
->  	if (ret < 0)
->  		return ret;
+> Hi Simon, I don't know much about the IIO API, I just have some generic
+> comments.
+> 
+>> diff --git a/drivers/hid/hid-sony.c b/drivers/hid/hid-sony.c
+>> index 6ca96ce..c4686e3 100644
+>> --- a/drivers/hid/hid-sony.c
+>> +++ b/drivers/hid/hid-sony.c
+>> @@ -36,6 +36,7 @@
+>>  #include <linux/list.h>
+>>  #include <linux/idr.h>
+>>  #include <linux/input/mt.h>
+>> +#include <linux/iio/iio.h>
+>>  
+>>  #include "hid-ids.h"
+>>  
+>> @@ -54,6 +55,7 @@
+>>  				DUALSHOCK4_CONTROLLER)
+>>  #define SONY_BATTERY_SUPPORT (SIXAXIS_CONTROLLER | DUALSHOCK4_CONTROLLER)
+>>  #define SONY_FF_SUPPORT (SIXAXIS_CONTROLLER | DUALSHOCK4_CONTROLLER)
+>> +#define SONY_IIO_SUPPORT SIXAXIS_CONTROLLER
+>>  
+>>  #define MAX_LEDS 4
+>>  
+>> @@ -835,6 +837,22 @@ struct sony_sc {
+>>  	__u8 led_delay_on[MAX_LEDS];
+>>  	__u8 led_delay_off[MAX_LEDS];
+>>  	__u8 led_count;
+>> +
+>> +#if IS_BUILTIN(CONFIG_IIO) || \
+>> +	(IS_MODULE(CONFIG_IIO) && IS_MODULE(CONFIG_HID_SONY))
+> 
+> This check can be factored out, just define a HAVE_IIO constant when it
+> passes and check for that. This is mainly for readability, it
+> avoids having to read the condition over and over.
+> 
+>> +	struct iio_dev *indio_dev;
+>> +	__u16 last_data[3];
+>> +};
+>> +
+>> +enum sony_iio_axis {
+>> +	AXIS_ACC_X,
+>> +	AXIS_ACC_Y,
+>> +	AXIS_ACC_Z,
+>> +};
+>> +
+>> +struct sony_iio {
+>> +	struct sony_sc *sc;
+>> +#endif
+>>  };
+>>  
+>>  static __u8 *sixaxis_fixup(struct hid_device *hdev, __u8 *rdesc,
+>> @@ -843,7 +861,6 @@ static __u8 *sixaxis_fixup(struct hid_device *hdev, __u8 *rdesc,
+>>  	*rsize = sizeof(sixaxis_rdesc);
+>>  	return sixaxis_rdesc;
+>>  }
+>> -
+> 
+> unrelated change, which you undo in patch 2 anyway :)
+> 
+>>  static __u8 *ps3remote_fixup(struct hid_device *hdev, __u8 *rdesc,
+>>  			     unsigned int *rsize)
+>>  {
+>> @@ -1047,6 +1064,12 @@ static int sony_raw_event(struct hid_device *hdev, struct hid_report *report,
+>>  		swap(rd[45], rd[46]);
+>>  		swap(rd[47], rd[48]);
+>>  
+>> +#if IS_BUILTIN(CONFIG_IIO) || \
+>> +	(IS_MODULE(CONFIG_IIO) && IS_MODULE(CONFIG_HID_SONY))
+>> +		sc->last_data[AXIS_ACC_X] = (rd[42] << 8) + rd[41];
+>> +		sc->last_data[AXIS_ACC_Y] = (rd[44] << 8) + rd[43];
+>> +		sc->last_data[AXIS_ACC_Z] = (rd[46] << 8) + rd[45];
+>> +#endif
+>>  		sixaxis_parse_report(sc, rd, size);
+>>  	} else if (((sc->quirks & DUALSHOCK4_CONTROLLER_USB) && rd[0] == 0x01 &&
+>>  			size == 64) || ((sc->quirks & DUALSHOCK4_CONTROLLER_BT)
+>> @@ -1769,6 +1792,114 @@ static void sony_battery_remove(struct sony_sc *sc)
+>>  	sc->battery_desc.name = NULL;
+>>  }
+>>  
+>> +#if IS_BUILTIN(CONFIG_IIO) || \
+>> +	(IS_MODULE(CONFIG_IIO) && IS_MODULE(CONFIG_HID_SONY))
+>> +
+>> +static int sony_iio_read_raw(struct iio_dev *indio_dev,
+>> +			      struct iio_chan_spec const *chan,
+>> +			      int *val, int *val2,
+>> +			      long mask)
+>> +{
+>> +	struct sony_iio *data = iio_priv(indio_dev);
+>> +
+>> +	switch (mask) {
+>> +	case IIO_CHAN_INFO_RAW:
+>> +		switch (chan->type) {
+>> +		case IIO_ACCEL:
+>> +			*val = data->sc->last_data[chan->address];
+>> +			return IIO_VAL_INT;
+>> +		default:
+>> +			return -EINVAL;
+>> +		}
+>> +	case IIO_CHAN_INFO_SCALE:
+>> +		switch (chan->type) {
+>> +		case IIO_ACCEL:
+>> +			*val = 0;	/* 9.80665/117 = 0.084540086 */
+>> +			*val2 = 84540;
+> 
+> I guess 9.80665 is 'g', but is the 117 taken from the accelerometer
+> datasheet? What is it? And BTW I get 9.80665/117 = 0.083817521
+> 
+>> +			return IIO_VAL_INT_PLUS_MICRO;
+>> +		default:
+>> +			return -EINVAL;
+>> +		}
+>> +	case IIO_CHAN_INFO_OFFSET:
+>> +		switch (chan->type) {
+>> +		case IIO_ACCEL:
+>> +			*val = -512;
+>> +			return IIO_VAL_INT;
+>> +		default:
+>> +			return -EINVAL;
+>> +		}
+>> +	}
+>> +
+>> +	return -EINVAL;
+>> +}
+>> +
+>> +#define SONY_ACC_CHANNEL(_axis) {                                       \
+>> +	.type = IIO_ACCEL,                                              \
+>> +	.modified = 1,                                                  \
+>> +	.channel2 = IIO_MOD_##_axis,                                    \
+>> +	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),                   \
+>> +	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE) |          \
+>> +		BIT(IIO_CHAN_INFO_OFFSET),                              \
+>> +	.address = AXIS_ACC_##_axis,                                    \
+>> +}
+>> +
+>> +static const struct iio_chan_spec sony_sixaxis_channels[] = {
+>> +	SONY_ACC_CHANNEL(X),
+>> +	SONY_ACC_CHANNEL(Y),
+>> +	SONY_ACC_CHANNEL(Z),
+>> +};
+>> +
+>> +static const struct iio_info sony_iio_info = {
+>> +	.read_raw = &sony_iio_read_raw,
+>> +	.driver_module = THIS_MODULE,
+>> +};
+>> +
+>> +static int sony_iio_probe(struct sony_sc *sc)
+>> +{
+>> +	struct hid_device *hdev = sc->hdev;
+>> +	struct iio_dev *indio_dev;
+>> +	struct sony_iio *data;
+>> +	int ret;
+>> +
+>> +	indio_dev = iio_device_alloc(sizeof(*data));
+> 
+> In general for new code the devm_ variants are preferred, but I am
+> not sure in this case, maybe others have comments about that?
+Absolutely for the allocation.   No ordering issues with this one.
+> 
+>> +	if (!indio_dev)
+>> +		return -ENOMEM;
+>> +
+>> +	sc->indio_dev = indio_dev;
+>> +	data = iio_priv(indio_dev);
+>> +	data->sc = sc;
+>> +
+>> +	indio_dev->dev.parent = &hdev->dev;
+>> +	indio_dev->name = dev_name(&hdev->dev);
+>> +	indio_dev->modes = INDIO_DIRECT_MODE;
+>> +	indio_dev->info = &sony_iio_info;
+>> +	indio_dev->channels = sony_sixaxis_channels;
+>> +	indio_dev->num_channels = 3;
+>> +
+>> +	ret = iio_device_register(indio_dev);
+> 
+> if you used the devm_ variant here and in the other patches, the cleanup
+> below and the sony_iio_remove() function could go away.
+I haven't checked this driver, but rule of thumb for this one is that, if there
+is any other related cleanup done without using devm functions then you should
+not use the devm_iio_device_register variant as it will mean something has been
+cleaned up BEFORE we remove the userspace interfaces that might need it.
+
+> 
+>> +	if (ret < 0) {
+>> +		hid_err(hdev, "Unable to register iio device\n");
+>> +		goto err;
+>> +	}
+>> +	return 0;
+>> +
+>> +err:
+>> +	kfree(indio_dev);
+>> +	sc->indio_dev = NULL;
+>> +	return ret;
+>> +}
+>> +
+>> +static void sony_iio_remove(struct sony_sc *sc)
+>> +{
+>> +	if (!sc->indio_dev)
+>> +		return;
+>> +
+>> +	iio_device_unregister(sc->indio_dev);
+>> +	kfree(sc->indio_dev);
+>> +	sc->indio_dev = NULL;
+>> +}
+>> +#endif
+>> +
+>>  /*
+>>   * If a controller is plugged in via USB while already connected via Bluetooth
+>>   * it will show up as two devices. A global list of connected controllers and
+>> @@ -2073,6 +2204,15 @@ static int sony_probe(struct hid_device *hdev, const struct hid_device_id *id)
+>>  		}
+>>  	}
+>>  
+>> +#if IS_BUILTIN(CONFIG_IIO) || \
+>> +	(IS_MODULE(CONFIG_IIO) && IS_MODULE(CONFIG_HID_SONY))
+>> +	if (sc->quirks & SONY_IIO_SUPPORT) {
+>> +		ret = sony_iio_probe(sc);
+>> +		if (ret < 0)
+>> +			goto err_stop;
+>> +	}
+>> +#endif
+>> +
+>>  	if (sc->quirks & SONY_FF_SUPPORT) {
+>>  		ret = sony_init_ff(sc);
+>>  		if (ret < 0)
+>> @@ -2087,6 +2227,11 @@ err_stop:
+>>  		sony_leds_remove(sc);
+>>  	if (sc->quirks & SONY_BATTERY_SUPPORT)
+>>  		sony_battery_remove(sc);
+>> +#if IS_BUILTIN(CONFIG_IIO) || \
+>> +	(IS_MODULE(CONFIG_IIO) && IS_MODULE(CONFIG_HID_SONY))
+>> +	if (sc->quirks & SONY_IIO_SUPPORT)
+>> +		sony_iio_remove(sc);
+>> +#endif
+>>  	sony_cancel_work_sync(sc);
+>>  	kfree(sc->output_report_dmabuf);
+>>  	sony_remove_dev_list(sc);
+>> @@ -2107,6 +2252,12 @@ static void sony_remove(struct hid_device *hdev)
+>>  		sony_battery_remove(sc);
+>>  	}
+>>  
+>> +#if IS_BUILTIN(CONFIG_IIO) || \
+>> +	(IS_MODULE(CONFIG_IIO) && IS_MODULE(CONFIG_HID_SONY))
+>> +	if (sc->quirks & SONY_IIO_SUPPORT)
+>> +		sony_iio_remove(sc);
+>> +#endif
+>> +
+>>  	sony_cancel_work_sync(sc);
+>>  
+>>  	kfree(sc->output_report_dmabuf);
+>> -- 
+>> 2.1.4
+>>
+>> --
+>> To unsubscribe from this list: send the line "unsubscribe linux-input" in
+>> the body of a message to majordomo@vger.kernel.org
+>> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> 
 > 
 
