@@ -1,58 +1,78 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:59655 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:59724 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752283AbbGENHQ (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 5 Jul 2015 09:07:16 -0400
-Message-ID: <55992C00.9060704@kernel.org>
-Date: Sun, 05 Jul 2015 14:07:12 +0100
+	with ESMTP id S1750740AbbGENQy (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 5 Jul 2015 09:16:54 -0400
+Message-ID: <55992E44.1000104@kernel.org>
+Date: Sun, 05 Jul 2015 14:16:52 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Karol Wrona <k.wrona@samsung.com>,
-	Antonio Borneo <borneo.antonio@gmail.com>,
-	Lars-Peter Clausen <lars@metafoo.de>, linux-iio@vger.kernel.org
-CC: linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 2/6] iio: ssp_sensors: Remove redundant spi driver bus
- initialization
-References: <1435070714-24174-1-git-send-email-borneo.antonio@gmail.com> <1435071148-24453-1-git-send-email-borneo.antonio@gmail.com> <5591186F.6000505@samsung.com>
-In-Reply-To: <5591186F.6000505@samsung.com>
-Content-Type: text/plain; charset=windows-1252
+To: Daniel Baluta <daniel.baluta@intel.com>,
+	Hartmut Knaack <knaack.h@gmx.de>
+CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Kuppuswamy Sathyanarayanan
+	<sathyanarayanan.kuppuswamy@linux.intel.com>
+Subject: Re: [PATCH 1/2] iio:light:ltr501: fix regmap dependency
+References: <cover.1435487041.git.knaack.h@gmx.de>	<06cf34cbbfd8c82272c885ff3aab8f44dc72cb41.1435487041.git.knaack.h@gmx.de> <CAEnQRZCYQE-DPb+x1Xj2eR6bxNvk5b6hCJLLiLSHqVjN2=Kqfg@mail.gmail.com>
+In-Reply-To: <CAEnQRZCYQE-DPb+x1Xj2eR6bxNvk5b6hCJLLiLSHqVjN2=Kqfg@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 29/06/15 11:05, Karol Wrona wrote:
-> On 06/23/2015 04:52 PM, Antonio Borneo wrote:
->> In ancient times it was necessary to manually initialize the bus
->> field of an spi_driver to spi_bus_type. These days this is done in
->> spi_register_driver(), so we can drop the manual assignment.
+On 29/06/15 08:56, Daniel Baluta wrote:
+> On Sun, Jun 28, 2015 at 1:31 PM, Hartmut Knaack <knaack.h@gmx.de> wrote:
+>> The use of regmap in commit [1] requires REGMAP_I2C to be selected, in
+>> order to meet all dependencies.
 >>
->> Signed-off-by: Antonio Borneo <borneo.antonio@gmail.com>
->> To: Jonathan Cameron <jic23@kernel.org>
->> To: Lars-Peter Clausen <lars@metafoo.de>
->> To: Karol Wrona <k.wrona@samsung.com>
->> To: linux-iio@vger.kernel.org
->> Cc: linux-kernel@vger.kernel.org
+>> [1]     2f2c96338afc9f90aa5a0fca04ece1a5c389ee31
+>>         "iio: ltr501: Add regmap support."
+> 
+> The standard way to do this is:
+> 
+> Fixes: 2f2c96338afc ("iio: ltr501: Add regmap support.")
+> 
+>>
+>> Signed-off-by: Hartmut Knaack <knaack.h@gmx.de>
+> 
+> Otherwise,
+> 
+> Acked-by: Daniel Baluta <daniel.baluta@intel.com>
+Hmm. My filters had eaten this patch for some reason...
+
+Anyhow, dug it out and applied.
+
+Hopefully nothing else has gone missing!
+
+Jonathan
+> 
 >> ---
->>  drivers/iio/common/ssp_sensors/ssp_dev.c | 1 -
->>  1 file changed, 1 deletion(-)
+>>  drivers/iio/light/Kconfig | 1 +
+>>  1 file changed, 1 insertion(+)
 >>
->> diff --git a/drivers/iio/common/ssp_sensors/ssp_dev.c b/drivers/iio/common/ssp_sensors/ssp_dev.c
->> index 9a40097..d338bb5 100644
->> --- a/drivers/iio/common/ssp_sensors/ssp_dev.c
->> +++ b/drivers/iio/common/ssp_sensors/ssp_dev.c
->> @@ -700,7 +700,6 @@ static struct spi_driver ssp_driver = {
->>  	.remove = ssp_remove,
->>  	.driver = {
->>  		.pm = &ssp_pm_ops,
->> -		.bus = &spi_bus_type,
->>  		.owner = THIS_MODULE,
->>  		.of_match_table = of_match_ptr(ssp_of_match),
->>  		.name = "sensorhub"
+>> diff --git a/drivers/iio/light/Kconfig b/drivers/iio/light/Kconfig
+>> index 730fa80..1f1e103 100644
+>> --- a/drivers/iio/light/Kconfig
+>> +++ b/drivers/iio/light/Kconfig
+>> @@ -199,6 +199,7 @@ config SENSORS_LM3533
+>>  config LTR501
+>>         tristate "LTR-501ALS-01 light sensor"
+>>         depends on I2C
+>> +       select REGMAP_I2C
+>>         select IIO_BUFFER
+>>         select IIO_TRIGGERED_BUFFER
+>>         help
+>> --
+>> 2.3.6
 >>
-> Acked-by: Karol Wrona <k.wrona@samsung.com>
-Applied to the togreg branch of iio.git
-
-Thanks,
-
-J
+>> --
+>> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+>> the body of a message to majordomo@vger.kernel.org
+>> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
 > 
 
