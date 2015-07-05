@@ -1,32 +1,74 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from 19pmail.ess.barracuda.com ([64.235.154.230]:59968 "EHLO
-	19pmail.ess.barracuda.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1947724AbbGaVc6 convert rfc822-to-8bit (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 31 Jul 2015 17:32:58 -0400
-From: Greg Wilson-Lindberg <GWilson@sakuraus.com>
-To: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Date: Fri, 31 Jul 2015 14:15:35 -0700
-Subject: BBB IIO ADC access not working
-Message-ID: <782E3A02C2EB2347BEA6DEA69DC7AB86021D3CB08DDB@sfamail.SAKURAUS.LOCAL>
-Content-Type: text/plain; charset="us-ascii"
+Return-Path: <knaack.h@gmx.de>
+Message-ID: <5598F27B.9030307@gmx.de>
+Date: Sun, 05 Jul 2015 11:01:47 +0200
+From: Hartmut Knaack <knaack.h@gmx.de>
 MIME-Version: 1.0
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+To: Tiberiu Breana <tiberiu.a.breana@intel.com>,
+ linux-iio@vger.kernel.org
+CC: Jonathan Cameron <jic23@kernel.org>
+Subject: Re: [PATCH v2] tools: iio: Add single-byte case for generic_buffer
+References: <1435917456-2973-1-git-send-email-tiberiu.a.breana@intel.com>
+In-Reply-To: <1435917456-2973-1-git-send-email-tiberiu.a.breana@intel.com>
+Content-Type: text/plain; charset=ISO-8859-15
+List-ID: <linux-iio@vger.kernel.org>
 
-Hi Jonathan, 
-To recap my current problems, we are using all 3 of the ADC channels that are unused by the BBB for our system. One channel has an analog mux on it to allow selecting between 2 input pots. The other two channels are hooked up to pressure transducers.
- 
-I'm processing the channels in a routine that gets called from a timer every 100ms. I enable the IIO buffer to collect data and 100ms later read the samples and turn the buffer off again. I leave the buffer off for 400 ms and then go through the process again.  I do this enable, read, disable cycle to allow the touch screen enough time to gather data to properly handle touch screen events.
- 
-With this setup the system will work properly for a few seconds, and then the buffer/adc read process slows down so that it takes more than 2 seconds to process the two enable, read, disable cycles in my read state machine. When the slow down happens, the touch screen stops responding, and even mouse presses stop working, although the mouse pointer did continue to follow mouse movements and the screen continued to update properly.
+Resending to see if vger.kernel.org is up again.
 
-Because of the size of the code I've posted it on pastebin: http://pastebin.com/TDRS1nu7
-instead of including it here.
+Tiberiu Breana schrieb am 03.07.2015 um 11:57:
+> Some sensors export data in an 8-bit format.
+> Add a single-byte case for the generic_buffer tool so that
+> these sensors' buffer data can be visualized.
+> 
+> Signed-off-by: Tiberiu Breana <tiberiu.a.breana@intel.com>
+Reviewed-by: Hartmut Knaack <knaack.h@gmx.de>
+> ---
+> v2: added the print1byte function to apply the channel shift and
+> address both signed and unsigned cases.
+> ---
+>  tools/iio/generic_buffer.c | 21 +++++++++++++++++++++
+>  1 file changed, 21 insertions(+)
+> 
+> diff --git a/tools/iio/generic_buffer.c b/tools/iio/generic_buffer.c
+> index fc362d2..0e73723 100644
+> --- a/tools/iio/generic_buffer.c
+> +++ b/tools/iio/generic_buffer.c
+> @@ -61,6 +61,23 @@ int size_from_channelarray(struct iio_channel_info *channels, int num_channels)
+>  	return bytes;
+>  }
+>  
+> +void print1byte(uint8_t input, struct iio_channel_info *info)
+> +{
+> +	/*
+> +	 * Shift before conversion to avoid sign extension
+> +	 * of left aligned data
+> +	 */
+> +	input >>= info->shift;
+> +	input &= info->mask;
+> +	if (info->is_signed) {
+> +		int8_t val = (int8_t)(input << (8 - info->bits_used)) >>
+> +			     (8 - info->bits_used);
+> +		printf("%05f ", ((float)val + info->offset) * info->scale);
+> +	} else {
+> +		printf("%05f ", ((float)input + info->offset) * info->scale);
+> +	}
+> +}
+> +
+>  void print2byte(uint16_t input, struct iio_channel_info *info)
+>  {
+>  	/* First swap if incorrect endian */
+> @@ -152,6 +169,10 @@ void process_scan(char *data,
+>  	for (k = 0; k < num_channels; k++)
+>  		switch (channels[k].bytes) {
+>  			/* only a few cases implemented so far */
 
-This is running on a Jessie debian system build from Robert C. Nelson, based on the 3.18 kernel.
+Not sure though how long we should keep that comment. ^^^^^
+I probably had more reason to get rid of it during my rework.
 
-I hope that you or someone else on the list can help me understand what is going on.
- 
-Greg Wilson-Lindberg
-Sakura Finetek
-310-783-5075
+> +		case 1:
+> +			print1byte(*(uint8_t *)(data + channels[k].location),
+> +				   &channels[k]);
+> +			break;
+>  		case 2:
+>  			print2byte(*(uint16_t *)(data + channels[k].location),
+>  				   &channels[k]);
+> 
