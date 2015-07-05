@@ -1,92 +1,79 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:59321 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:59336 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755864AbbGEMLF (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 5 Jul 2015 08:11:05 -0400
-Message-ID: <55991ED8.5020500@kernel.org>
-Date: Sun, 05 Jul 2015 13:11:04 +0100
+	with ESMTP id S1755554AbbGEMMc (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 5 Jul 2015 08:12:32 -0400
+Message-ID: <55991F2D.3030902@kernel.org>
+Date: Sun, 05 Jul 2015 13:12:29 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Irina Tirdea <irina.tirdea@intel.com>,
-	Wolfram Sang <wsa@the-dreams.de>, linux-iio@vger.kernel.org,
-	linux-i2c@vger.kernel.org
-CC: linux-kernel@vger.kernel.org,
-	Srinivas Pandruvada <srinivas.pandruvada@intel.com>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	Adriana Reus <adriana.reus@intel.com>
-Subject: Re: [PATCH v3 8/8] iio: accel: kxcjk-1013: optimize i2c transfers
- in trigger handler
-References: <1435916017-12859-1-git-send-email-irina.tirdea@intel.com> <1435916017-12859-9-git-send-email-irina.tirdea@intel.com>
-In-Reply-To: <1435916017-12859-9-git-send-email-irina.tirdea@intel.com>
+To: Martin Kepplinger <martink@posteo.de>, knaack.h@gmx.de,
+	lars@metafoo.de, pmeerw@pmeerw.net, mfuzzey@parkeon.com,
+	roberta.dobrescu@gmail.com,
+	christoph.muellner@theobroma-systems.com
+CC: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+	devicetree@vger.kernel.org,
+	Martin Kepplinger <martin.kepplinger@theobroma-systems.com>
+Subject: Re: [PATCH 5/9] iio: mma8452: add devicetree documentation
+References: <1436018110-3903-1-git-send-email-martink@posteo.de> <1436018110-3903-6-git-send-email-martink@posteo.de> <5599199B.6030006@kernel.org> <55991A1E.30608@posteo.de>
+In-Reply-To: <55991A1E.30608@posteo.de>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 03/07/15 10:33, Irina Tirdea wrote:
-> From: Adriana Reus <adriana.reus@intel.com>
+On 05/07/15 12:50, Martin Kepplinger wrote:
+> Am 2015-07-05 um 13:48 schrieb Jonathan Cameron:
+>> On 04/07/15 14:55, Martin Kepplinger wrote:
+>>> Signed-off-by: Martin Kepplinger <martin.kepplinger@theobroma-systems.com>
+>>> Signed-off-by: Christoph Muellner <christoph.muellner@theobroma-systems.com>
+>> This is trivial enough I'll take it without a device tree ack (after a few days)
+>> but convention is to CC all device tree patches to the maintainers of devicetree
+>> bindings as well as the devicetree list.  
+>>
+>> Jonathan
 > 
-> Some i2c busses (e.g.: Synopsys DesignWare I2C adapter) need to
-> enable/disable the bus at each i2c transfer and must wait for
-> the enable/disable to happen before sending the data.
+> Thanks a lot so far. I'll send a next version based on your review and
+> will add devicetree people. Maybe you can take the series cleanly in one
+> go after that. Someone that quickly runs it, other than me, would be
+> awesome of course ;)
+Wuss ;)  You'd be amazed how many invasive changes go in without anyone
+every finding anyone to test them on particular obscure parts.
+Still it is indeed always nice.
 > 
-> When reading data in the trigger handler, the kxcjk-1013 accel driver
-> does one i2c transfer for each axis. This has an impact on the
-> frequency of the accelerometer at high sample rates due to additional
-> delays introduced by the i2c bus at each transfer.
-> 
-> Reading all axis values in one i2c transfer reduces the delays
-> introduced by the i2c bus. Uses i2c_smbus_read_i2c_block_data_or_emulated
-> that will fallback to reading each axis as a separate word in case i2c
-> block read is not supported.
-> 
-> Signed-off-by: Adriana Reus <adriana.reus@intel.com>
-> Signed-off-by: Irina Tirdea <irina.tirdea@intel.com>
-Same comments as previously.
-
-Acked-by: Jonathan Cameron <jic23@kernel.org>
-> ---
->  drivers/iio/accel/kxcjk-1013.c | 19 ++++++++-----------
->  1 file changed, 8 insertions(+), 11 deletions(-)
-> 
-> diff --git a/drivers/iio/accel/kxcjk-1013.c b/drivers/iio/accel/kxcjk-1013.c
-> index 4960397..8f401c2 100644
-> --- a/drivers/iio/accel/kxcjk-1013.c
-> +++ b/drivers/iio/accel/kxcjk-1013.c
-> @@ -923,7 +923,7 @@ static const struct iio_event_spec kxcjk1013_event = {
->  		.realbits = 12,						\
->  		.storagebits = 16,					\
->  		.shift = 4,						\
-> -		.endianness = IIO_CPU,					\
-> +		.endianness = IIO_LE,					\
->  	},								\
->  	.event_spec = &kxcjk1013_event,				\
->  	.num_event_specs = 1						\
-> @@ -955,19 +955,16 @@ static irqreturn_t kxcjk1013_trigger_handler(int irq, void *p)
->  	struct iio_poll_func *pf = p;
->  	struct iio_dev *indio_dev = pf->indio_dev;
->  	struct kxcjk1013_data *data = iio_priv(indio_dev);
-> -	int bit, ret, i = 0;
-> +	int ret;
->  
->  	mutex_lock(&data->mutex);
-> -
-> -	for (bit = 0; bit < AXIS_MAX; bit++) {
-> -		ret = kxcjk1013_get_acc_reg(data, bit);
-> -		if (ret < 0) {
-> -			mutex_unlock(&data->mutex);
-> -			goto err;
-> -		}
-> -		data->buffer[i++] = ret;
-> -	}
-> +	ret = i2c_smbus_read_i2c_block_data_or_emulated(data->client,
-> +							KXCJK1013_REG_XOUT_L,
-> +							AXIS_MAX * 2,
-> +							(u8 *)data->buffer);
->  	mutex_unlock(&data->mutex);
-> +	if (ret < 0)
-> +		goto err;
->  
->  	iio_push_to_buffers_with_timestamp(indio_dev, data->buffer,
->  					   data->timestamp);
+>                      martin
+>>> ---
+>>>  .../devicetree/bindings/iio/accel/mma8452.txt       | 21 +++++++++++++++++++++
+>>>  1 file changed, 21 insertions(+)
+>>>  create mode 100644 Documentation/devicetree/bindings/iio/accel/mma8452.txt
+>>>
+>>> diff --git a/Documentation/devicetree/bindings/iio/accel/mma8452.txt b/Documentation/devicetree/bindings/iio/accel/mma8452.txt
+>>> new file mode 100644
+>>> index 0000000..8d98e05
+>>> --- /dev/null
+>>> +++ b/Documentation/devicetree/bindings/iio/accel/mma8452.txt
+>>> @@ -0,0 +1,21 @@
+>>> +Freescale MMA8452Q, MMA8453Q, MMA8652FC or MMA8653FC triaxial accelerometer
+>>> +
+>>> +Required properties:
+>>> +
+>>> +  - compatible: should be "fsl,mma8653", "fsl,mma8652", "fsl,mma8453" or
+>>> +    "fsl,mma8452" respectively.
+>>> +  - reg: the I2C address of the chip
+>>> +
+>>> +Optional properties:
+>>> +
+>>> +  - interrupt-parent: should be the phandle for the interrupt controller
+>>> +  - interrupts: interrupt mapping for GPIO IRQ
+>>> +
+>>> +Example:
+>>> +
+>>> +	mma8653fc@1d {
+>>> +		compatible = "fsl,mma8653";
+>>> +		reg = <0x1d>;
+>>> +		interrupt-parent = <&gpio1>;
+>>> +		interrupts = <5 0>;
+>>> +	};
+>>>
+>>
 > 
 
