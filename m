@@ -1,195 +1,90 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:58893 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:58923 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752463AbbGELYl (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 5 Jul 2015 07:24:41 -0400
-Message-ID: <559913F6.2010406@kernel.org>
-Date: Sun, 05 Jul 2015 12:24:38 +0100
+	with ESMTP id S1755658AbbGEL16 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 5 Jul 2015 07:27:58 -0400
+Message-ID: <559914BD.5070808@kernel.org>
+Date: Sun, 05 Jul 2015 12:27:57 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Hartmut Knaack <knaack.h@gmx.de>, linux-iio@vger.kernel.org
-CC: Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	Tiberiu Breana <tiberiu.a.breana@intel.com>
-Subject: Re: [PATCH 3/5] iio:light:stk3310: add more error handling
-References: <cover.1436024257.git.knaack.h@gmx.de> <e0c5af9c11193697c772e0c5174e2434fe589037.1436024257.git.knaack.h@gmx.de>
-In-Reply-To: <e0c5af9c11193697c772e0c5174e2434fe589037.1436024257.git.knaack.h@gmx.de>
+To: Hartmut Knaack <knaack.h@gmx.de>,
+	Tiberiu Breana <tiberiu.a.breana@intel.com>,
+	linux-iio@vger.kernel.org
+Subject: Re: [PATCH v2] tools: iio: Add single-byte case for generic_buffer
+References: <1435917456-2973-1-git-send-email-tiberiu.a.breana@intel.com> <5597E1F1.8070400@gmx.de>
+In-Reply-To: <5597E1F1.8070400@gmx.de>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 04/07/15 16:56, Hartmut Knaack wrote:
-> Check for the following error cases:
->   * lower boundary for val in _write_event
->   * return value of regmap_(field_)read
->   * possible values for chan->type
->   * return value of stk3310_gpio_probe
-> 
-> Also add an error-cleanup path in _probe to handle failure in
-> iio_device_register and devm_request_threaded_irq.
-> 
-> Signed-off-by: Hartmut Knaack <knaack.h@gmx.de>
-I'm not sure how I missed this before, but the probe order
-below is rather unusual.  I'm a little bothered by the theoretical
-race condition between the exposure of the device to userspace
-(device_register) and the configuration of it's irq later.
+On 04/07/15 14:38, Hartmut Knaack wrote:
+> Tiberiu Breana schrieb am 03.07.2015 um 11:57:
+>> Some sensors export data in an 8-bit format.
+>> Add a single-byte case for the generic_buffer tool so that
+>> these sensors' buffer data can be visualized.
+>>
+>> Signed-off-by: Tiberiu Breana <tiberiu.a.breana@intel.com>
+> Reviewed-by: Hartmut Knaack <knaack.h@gmx.de>
+Applied to the togreg branch of iio.git.
 
-It is probably possible (in theory) to enable an event before the irq
-is registered and get the event to fire, resulting in an unhandled interrupt.
-
-I'm going to hold back on the rest of this set until Tiberiu has had a chance
-to comment on them anyway.
+Thanks,
 
 Jonathan
-> ---
->  drivers/iio/light/stk3310.c | 60 ++++++++++++++++++++++++++++++++++-----------
->  1 file changed, 46 insertions(+), 14 deletions(-)
+>> ---
+>> v2: added the print1byte function to apply the channel shift and
+>> address both signed and unsigned cases.
+>> ---
+>>  tools/iio/generic_buffer.c | 21 +++++++++++++++++++++
+>>  1 file changed, 21 insertions(+)
+>>
+>> diff --git a/tools/iio/generic_buffer.c b/tools/iio/generic_buffer.c
+>> index fc362d2..0e73723 100644
+>> --- a/tools/iio/generic_buffer.c
+>> +++ b/tools/iio/generic_buffer.c
+>> @@ -61,6 +61,23 @@ int size_from_channelarray(struct iio_channel_info *channels, int num_channels)
+>>  	return bytes;
+>>  }
+>>  
+>> +void print1byte(uint8_t input, struct iio_channel_info *info)
+>> +{
+>> +	/*
+>> +	 * Shift before conversion to avoid sign extension
+>> +	 * of left aligned data
+>> +	 */
+>> +	input >>= info->shift;
+>> +	input &= info->mask;
+>> +	if (info->is_signed) {
+>> +		int8_t val = (int8_t)(input << (8 - info->bits_used)) >>
+>> +			     (8 - info->bits_used);
+>> +		printf("%05f ", ((float)val + info->offset) * info->scale);
+>> +	} else {
+>> +		printf("%05f ", ((float)input + info->offset) * info->scale);
+>> +	}
+>> +}
+>> +
+>>  void print2byte(uint16_t input, struct iio_channel_info *info)
+>>  {
+>>  	/* First swap if incorrect endian */
+>> @@ -152,6 +169,10 @@ void process_scan(char *data,
+>>  	for (k = 0; k < num_channels; k++)
+>>  		switch (channels[k].bytes) {
+>>  			/* only a few cases implemented so far */
 > 
-> diff --git a/drivers/iio/light/stk3310.c b/drivers/iio/light/stk3310.c
-> index c52c730..3650c0c 100644
-> --- a/drivers/iio/light/stk3310.c
-> +++ b/drivers/iio/light/stk3310.c
-> @@ -241,8 +241,11 @@ static int stk3310_write_event(struct iio_dev *indio_dev,
->  	struct stk3310_data *data = iio_priv(indio_dev);
->  	struct i2c_client *client = data->client;
->  
-> -	regmap_field_read(data->reg_ps_gain, &index);
-> -	if (val > stk3310_ps_max[index])
-> +	ret = regmap_field_read(data->reg_ps_gain, &index);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	if (val < 0 || val > stk3310_ps_max[index])
->  		return -EINVAL;
->  
->  	if (dir == IIO_EV_DIR_RISING)
-> @@ -266,9 +269,12 @@ static int stk3310_read_event_config(struct iio_dev *indio_dev,
->  				     enum iio_event_direction dir)
->  {
->  	unsigned int event_val;
-> +	int ret;
->  	struct stk3310_data *data = iio_priv(indio_dev);
->  
-> -	regmap_field_read(data->reg_int_ps, &event_val);
-> +	ret = regmap_field_read(data->reg_int_ps, &event_val);
-> +	if (ret < 0)
-> +		return ret;
->  
->  	return event_val;
->  }
-> @@ -307,14 +313,16 @@ static int stk3310_read_raw(struct iio_dev *indio_dev,
->  	struct stk3310_data *data = iio_priv(indio_dev);
->  	struct i2c_client *client = data->client;
->  
-> +	if (chan->type != IIO_LIGHT && chan->type != IIO_PROXIMITY)
-> +		return -EINVAL;
-> +
->  	switch (mask) {
->  	case IIO_CHAN_INFO_RAW:
->  		if (chan->type == IIO_LIGHT)
->  			reg = STK3310_REG_ALS_DATA_MSB;
-> -		else if (chan->type == IIO_PROXIMITY)
-> -			reg = STK3310_REG_PS_DATA_MSB;
->  		else
-> -			return -EINVAL;
-> +			reg = STK3310_REG_PS_DATA_MSB;
-> +
->  		mutex_lock(&data->lock);
->  		ret = regmap_bulk_read(data->regmap, reg, &buf, 2);
->  		if (ret < 0) {
-> @@ -327,17 +335,23 @@ static int stk3310_read_raw(struct iio_dev *indio_dev,
->  		return IIO_VAL_INT;
->  	case IIO_CHAN_INFO_INT_TIME:
->  		if (chan->type == IIO_LIGHT)
-> -			regmap_field_read(data->reg_als_it, &index);
-> +			ret = regmap_field_read(data->reg_als_it, &index);
->  		else
-> -			regmap_field_read(data->reg_ps_it, &index);
-> +			ret = regmap_field_read(data->reg_ps_it, &index);
-> +		if (ret < 0)
-> +			return ret;
-> +
->  		*val = stk3310_it_table[index][0];
->  		*val2 = stk3310_it_table[index][1];
->  		return IIO_VAL_INT_PLUS_MICRO;
->  	case IIO_CHAN_INFO_SCALE:
->  		if (chan->type == IIO_LIGHT)
-> -			regmap_field_read(data->reg_als_gain, &index);
-> +			ret = regmap_field_read(data->reg_als_gain, &index);
->  		else
-> -			regmap_field_read(data->reg_ps_gain, &index);
-> +			ret = regmap_field_read(data->reg_ps_gain, &index);
-> +		if (ret < 0)
-> +			return ret;
-> +
->  		*val = stk3310_scale_table[index][0];
->  		*val2 = stk3310_scale_table[index][1];
->  		return IIO_VAL_INT_PLUS_MICRO;
-> @@ -354,6 +368,9 @@ static int stk3310_write_raw(struct iio_dev *indio_dev,
->  	int index;
->  	struct stk3310_data *data = iio_priv(indio_dev);
->  
-> +	if (chan->type != IIO_LIGHT && chan->type != IIO_PROXIMITY)
-> +		return -EINVAL;
-> +
->  	switch (mask) {
->  	case IIO_CHAN_INFO_INT_TIME:
->  		index = stk3310_get_index(stk3310_it_table,
-> @@ -435,7 +452,10 @@ static int stk3310_init(struct iio_dev *indio_dev)
->  	struct stk3310_data *data = iio_priv(indio_dev);
->  	struct i2c_client *client = data->client;
->  
-> -	regmap_read(data->regmap, STK3310_REG_ID, &chipid);
-> +	ret = regmap_read(data->regmap, STK3310_REG_ID, &chipid);
-> +	if (ret < 0)
-> +		return ret;
-> +
->  	if (chipid != STK3310_CHIP_ID_VAL &&
->  	    chipid != STK3311_CHIP_ID_VAL) {
->  		dev_err(&client->dev, "invalid chip id: 0x%x\n", chipid);
-> @@ -611,11 +631,14 @@ static int stk3310_probe(struct i2c_client *client,
->  	ret = iio_device_register(indio_dev);
->  	if (ret < 0) {
->  		dev_err(&client->dev, "device_register failed\n");
-> -		stk3310_set_state(data, STK3310_STATE_STANDBY);
-> +		goto err_standby;
->  	}
->  
-> -	if (client->irq <= 0)
-> +	if (client->irq <= 0) {
->  		client->irq = stk3310_gpio_probe(client);
-> +		if (client->irq < 0)
-> +			goto err_unregister;
-> +	}
->  
->  	if (client->irq >= 0) {
->  		ret = devm_request_threaded_irq(&client->dev, client->irq,
-> @@ -624,11 +647,20 @@ static int stk3310_probe(struct i2c_client *client,
->  						IRQF_TRIGGER_FALLING |
->  						IRQF_ONESHOT,
->  						STK3310_EVENT, indio_dev);
-> -		if (ret < 0)
-> +		if (ret < 0) {
->  			dev_err(&client->dev, "request irq %d failed\n",
->  					client->irq);
-> +			goto err_unregister;
-> +		}
->  	}
->  
-> +	return 0;
-> +
-> +err_unregister:
-> +	iio_device_unregister(indio_dev);
-This made me nervous, as there is a very good reason the register is almost always
-last in the probe function.  It exposes the interfaces to userspace (and in kernel
-for that matter).  Everything must be ready before it is called.  Here
-we could (though unlikely) get an unhandled interrupt as the handler has not
-been registered as yet.
-> +err_standby:
-> +	stk3310_set_state(data, STK3310_STATE_STANDBY);
-> +
->  	return ret;
->  }
->  
+> Not sure though how long we should keep that comment. ^^^^^
+> I probably had more reason to get rid of it during my rework.
+> 
+>> +		case 1:
+>> +			print1byte(*(uint8_t *)(data + channels[k].location),
+>> +				   &channels[k]);
+>> +			break;
+>>  		case 2:
+>>  			print2byte(*(uint16_t *)(data + channels[k].location),
+>>  				   &channels[k]);
+>>
+> 
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
 > 
 
