@@ -1,274 +1,211 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:59839 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:59854 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751409AbbGENfy (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 5 Jul 2015 09:35:54 -0400
-Message-ID: <559932B7.7080901@kernel.org>
-Date: Sun, 05 Jul 2015 14:35:51 +0100
+	with ESMTP id S1750816AbbGENiW (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 5 Jul 2015 09:38:22 -0400
+Message-ID: <55993347.7010002@kernel.org>
+Date: Sun, 05 Jul 2015 14:38:15 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Tomasz Duszynski <tduszyns@gmail.com>
-CC: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 2/2] iio: pressure: ms5611: add support for MS5607 temperature
- and pressure sensor
-References: <1435085148-12404-1-git-send-email-tduszyns@gmail.com> <1435085148-12404-2-git-send-email-tduszyns@gmail.com>
-In-Reply-To: <1435085148-12404-2-git-send-email-tduszyns@gmail.com>
+To: Sanchayan Maity <maitysanchayan@gmail.com>
+CC: shawn.guo@linaro.org, kernel@pengutronix.de, robh+dt@kernel.org,
+	pawel.moll@arm.com, mark.rutland@arm.com,
+	ijc+devicetree@hellion.org.uk, galak@codeaurora.org,
+	B38611@freescale.com, devicetree@vger.kernel.org,
+	linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	linux-kernel@vger.kernel.org, stefan@agner.ch
+Subject: Re: [PATCH v2 1/2] iio: adc: Determine sampling frequencies by using
+ minimum sample time
+References: <cover.1435134626.git.maitysanchayan@gmail.com> <01b93ea50b59c93a783fac26b4671313b794bd24.1435134626.git.maitysanchayan@gmail.com>
+In-Reply-To: <01b93ea50b59c93a783fac26b4671313b794bd24.1435134626.git.maitysanchayan@gmail.com>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 23/06/15 19:45, Tomasz Duszynski wrote:
-> MS5607 is temperature and pressure sensor which hardware is similar to MS5611.
-> Both sensors share command protocol and support both I2C and SPI serial
-> protocols. They only differ in compensation algorithms.
+On 24/06/15 09:33, Sanchayan Maity wrote:
+> The driver currently does not take into account the minimum sample time
+> as per the Figure 6-8 Chapter 9.1.1 12-bit ADC electrical characteristics.
+> We set a static amount of cycles instead of considering the sample time
+> as a given value, which depends on hardware characteristics.
 > 
-> Signed-off-by: Tomasz Duszynski <tduszyns@gmail.com>
-Looks good.
-
-Applied to the togreg branch of iio.git. Pushed out shortly as testing
-for the autobuilders to play with it.
-
-Thanks,
-
-Jonathan
+> Determine sampling frequencies by first reading the device tree property
+> node and then calculating the required Long Sample Time Adder (LSTAdder)
+> value based on the ADC clock frequency and sample time value obtained
+> from the device tree, this LSTAdder value is then used for calculating
+> the sampling frequencies possible.
+> 
+> Signed-off-by: Sanchayan Maity <maitysanchayan@gmail.com>
+Looking for an Ack on this from Fugang. Device tree ack also good ;)
 > ---
->  drivers/iio/pressure/Kconfig       |  2 +-
->  drivers/iio/pressure/ms5611.h      | 16 +++++++-
->  drivers/iio/pressure/ms5611_core.c | 76 +++++++++++++++++++++++++++++++++-----
->  drivers/iio/pressure/ms5611_i2c.c  |  5 ++-
->  drivers/iio/pressure/ms5611_spi.c  |  6 ++-
->  5 files changed, 88 insertions(+), 17 deletions(-)
+>  .../devicetree/bindings/iio/adc/vf610-adc.txt      |  6 ++
+>  drivers/iio/adc/vf610_adc.c                        | 74 ++++++++++++++++++++--
+>  2 files changed, 76 insertions(+), 4 deletions(-)
 > 
-> diff --git a/drivers/iio/pressure/Kconfig b/drivers/iio/pressure/Kconfig
-> index b13ea6f..4745179 100644
-> --- a/drivers/iio/pressure/Kconfig
-> +++ b/drivers/iio/pressure/Kconfig
-> @@ -56,7 +56,7 @@ config MS5611
->  	tristate "Measurement Specialties MS5611 pressure sensor driver"
->  	help
->  	  Say Y here to build support for the Measurement Specialties
-> -	  MS5611 pressure and temperature sensor.
-> +	  MS5611, MS5607 pressure and temperature sensors.
+> diff --git a/Documentation/devicetree/bindings/iio/adc/vf610-adc.txt b/Documentation/devicetree/bindings/iio/adc/vf610-adc.txt
+> index 3eb40e2..39b86ea 100644
+> --- a/Documentation/devicetree/bindings/iio/adc/vf610-adc.txt
+> +++ b/Documentation/devicetree/bindings/iio/adc/vf610-adc.txt
+> @@ -17,6 +17,11 @@ Recommended properties:
+>    - Frequency in normal mode (ADLPC=0, ADHSC=0)
+>    - Frequency in high-speed mode (ADLPC=0, ADHSC=1)
+>    - Frequency in low-power mode (ADLPC=1, ADHSC=0)
+> +  - min-sample-time: Minimum sampling time in nanoseconds. This value has
+> +    to be chosen according to the conversion mode and the connected analog
+> +	 source resistance (R_as) and capacitance (C_as). Refer the datasheet's
+> +	 operating requirements. A safe default across a wide range of R_as and
+> +	 C_as as well as conversion modes is 1000ns.
 >  
->  	  To compile this driver as a module, choose M here: the module will
->  	  be called ms5611_core.
-> diff --git a/drivers/iio/pressure/ms5611.h b/drivers/iio/pressure/ms5611.h
-> index 099c6cd..23b93c7 100644
-> --- a/drivers/iio/pressure/ms5611.h
-> +++ b/drivers/iio/pressure/ms5611.h
-> @@ -27,6 +27,18 @@
->  
->  #define MS5611_PROM_WORDS_NB		8
->  
-> +enum {
-> +	MS5611,
-> +	MS5607,
-> +};
-> +
-> +struct ms5611_chip_info {
-> +	u16 prom[MS5611_PROM_WORDS_NB];
-> +
-> +	int (*temp_and_pressure_compensate)(struct ms5611_chip_info *chip_info,
-> +					    s32 *temp, s32 *pressure);
-> +};
-> +
->  struct ms5611_state {
->  	void *client;
->  	struct mutex lock;
-> @@ -36,9 +48,9 @@ struct ms5611_state {
->  	int (*read_adc_temp_and_pressure)(struct device *dev,
->  					  s32 *temp, s32 *pressure);
->  
-> -	u16 prom[MS5611_PROM_WORDS_NB];
-> +	struct ms5611_chip_info *chip_info;
+>  Example:
+>  adc0: adc@4003b000 {
+> @@ -27,5 +32,6 @@ adc0: adc@4003b000 {
+>  	clock-names = "adc";
+>  	fsl,adck-max-frequency = <30000000>, <40000000>,
+>  				<20000000>;
+> +	min-sample-time = <1000>;
+>  	vref-supply = <&reg_vcc_3v3_mcu>;
+>  };
+> diff --git a/drivers/iio/adc/vf610_adc.c b/drivers/iio/adc/vf610_adc.c
+> index 480f335..8322027 100644
+> --- a/drivers/iio/adc/vf610_adc.c
+> +++ b/drivers/iio/adc/vf610_adc.c
+> @@ -68,6 +68,9 @@
+>  #define VF610_ADC_CLK_DIV8		0x60
+>  #define VF610_ADC_CLK_MASK		0x60
+>  #define VF610_ADC_ADLSMP_LONG		0x10
+> +#define VF610_ADC_ADSTS_SHORT   0x100
+> +#define VF610_ADC_ADSTS_NORMAL  0x200
+> +#define VF610_ADC_ADSTS_LONG    0x300
+>  #define VF610_ADC_ADSTS_MASK		0x300
+>  #define VF610_ADC_ADLPC_EN		0x80
+>  #define VF610_ADC_ADHSC_EN		0x400
+> @@ -124,6 +127,17 @@ enum conversion_mode_sel {
+>  	VF610_ADC_CONV_LOW_POWER,
 >  };
 >  
-> -int ms5611_probe(struct iio_dev *indio_dev, struct device *dev);
-> +int ms5611_probe(struct iio_dev *indio_dev, struct device *dev, int type);
+> +enum lst_adder_sel {
+> +	VF610_ADCK_CYCLES_3,
+> +	VF610_ADCK_CYCLES_5,
+> +	VF610_ADCK_CYCLES_7,
+> +	VF610_ADCK_CYCLES_9,
+> +	VF610_ADCK_CYCLES_13,
+> +	VF610_ADCK_CYCLES_17,
+> +	VF610_ADCK_CYCLES_21,
+> +	VF610_ADCK_CYCLES_25,
+> +};
+> +
+>  struct vf610_adc_feature {
+>  	enum clk_sel	clk_sel;
+>  	enum vol_ref	vol_ref;
+> @@ -132,6 +146,8 @@ struct vf610_adc_feature {
+>  	int	clk_div;
+>  	int     sample_rate;
+>  	int	res_mode;
+> +	u32 lst_adder_index;
+> +	u32 default_sample_time;
 >  
->  #endif /* _MS5611_H */
-> diff --git a/drivers/iio/pressure/ms5611_core.c b/drivers/iio/pressure/ms5611_core.c
-> index 1109513..2f3d9b4 100644
-> --- a/drivers/iio/pressure/ms5611_core.c
-> +++ b/drivers/iio/pressure/ms5611_core.c
-> @@ -9,6 +9,7 @@
->   *
->   * Data sheet:
->   *  http://www.meas-spec.com/downloads/MS5611-01BA03.pdf
-> + *  http://www.meas-spec.com/downloads/MS5607-02BA03.pdf
->   *
->   */
+>  	bool	calibration;
+>  	bool	ovwren;
+> @@ -155,11 +171,13 @@ struct vf610_adc {
+>  };
 >  
-> @@ -50,7 +51,8 @@ static int ms5611_read_prom(struct iio_dev *indio_dev)
->  	struct ms5611_state *st = iio_priv(indio_dev);
+>  static const u32 vf610_hw_avgs[] = { 1, 4, 8, 16, 32 };
+> +static const u32 vf610_lst_adder[] = { 3, 5, 7, 9, 13, 17, 21, 25 };
 >  
->  	for (i = 0; i < MS5611_PROM_WORDS_NB; i++) {
-> -		ret = st->read_prom_word(&indio_dev->dev, i, &st->prom[i]);
-> +		ret = st->read_prom_word(&indio_dev->dev,
-> +					 i, &st->chip_info->prom[i]);
->  		if (ret < 0) {
->  			dev_err(&indio_dev->dev,
->  				"failed to read prom at %d\n", i);
-> @@ -58,7 +60,7 @@ static int ms5611_read_prom(struct iio_dev *indio_dev)
->  		}
->  	}
->  
-> -	if (!ms5611_prom_is_valid(st->prom, MS5611_PROM_WORDS_NB)) {
-> +	if (!ms5611_prom_is_valid(st->chip_info->prom, MS5611_PROM_WORDS_NB)) {
->  		dev_err(&indio_dev->dev, "PROM integrity check failed\n");
->  		return -ENODEV;
->  	}
-> @@ -70,22 +72,30 @@ static int ms5611_read_temp_and_pressure(struct iio_dev *indio_dev,
->  					 s32 *temp, s32 *pressure)
+>  static inline void vf610_adc_calculate_rates(struct vf610_adc *info)
 >  {
->  	int ret;
-> -	s32 t, p;
-> -	s64 off, sens, dt;
->  	struct ms5611_state *st = iio_priv(indio_dev);
+>  	struct vf610_adc_feature *adc_feature = &info->adc_feature;
+>  	unsigned long adck_rate, ipg_rate = clk_get_rate(info->clk);
+> +	u32 adck_period, lst_addr_min;
+>  	int divisor, i;
 >  
-> -	ret = st->read_adc_temp_and_pressure(&indio_dev->dev, &t, &p);
-> +	ret = st->read_adc_temp_and_pressure(&indio_dev->dev, temp, pressure);
->  	if (ret < 0) {
->  		dev_err(&indio_dev->dev,
->  			"failed to read temperature and pressure\n");
->  		return ret;
+>  	adck_rate = info->max_adck_rate[adc_feature->conv_mode];
+> @@ -174,6 +192,19 @@ static inline void vf610_adc_calculate_rates(struct vf610_adc *info)
 >  	}
 >  
-> -	dt = t - (st->prom[5] << 8);
-> -	off = ((s64)st->prom[2] << 16) + ((st->prom[4] * dt) >> 7);
-> -	sens = ((s64)st->prom[1] << 15) + ((st->prom[3] * dt) >> 8);
-> +	return st->chip_info->temp_and_pressure_compensate(st->chip_info,
-> +							   temp, pressure);
-> +}
-> +
-> +static int ms5611_temp_and_pressure_compensate(struct ms5611_chip_info *chip_info,
-> +					       s32 *temp, s32 *pressure)
-> +{
-> +	s32 t = *temp, p = *pressure;
-> +	s64 off, sens, dt;
->  
-> -	t = 2000 + ((st->prom[6] * dt) >> 23);
-> +	dt = t - (chip_info->prom[5] << 8);
-> +	off = ((s64)chip_info->prom[2] << 16) + ((chip_info->prom[4] * dt) >> 7);
-> +	sens = ((s64)chip_info->prom[1] << 15) + ((chip_info->prom[3] * dt) >> 8);
-> +
-> +	t = 2000 + ((chip_info->prom[6] * dt) >> 23);
->  	if (t < 2000) {
->  		s64 off2, sens2, t2;
->  
-> @@ -111,6 +121,42 @@ static int ms5611_read_temp_and_pressure(struct iio_dev *indio_dev,
->  	return 0;
->  }
->  
-> +static int ms5607_temp_and_pressure_compensate(struct ms5611_chip_info *chip_info,
-> +					       s32 *temp, s32 *pressure)
-> +{
-> +	s32 t = *temp, p = *pressure;
-> +	s64 off, sens, dt;
-> +
-> +	dt = t - (chip_info->prom[5] << 8);
-> +	off = ((s64)chip_info->prom[2] << 17) + ((chip_info->prom[4] * dt) >> 6);
-> +	sens = ((s64)chip_info->prom[1] << 16) + ((chip_info->prom[3] * dt) >> 7);
-> +
-> +	t = 2000 + ((chip_info->prom[6] * dt) >> 23);
-> +	if (t < 2000) {
-> +		s64 off2, sens2, t2;
-> +
-> +		t2 = (dt * dt) >> 31;
-> +		off2 = (61 * (t - 2000) * (t - 2000)) >> 4;
-> +		sens2 = off2 << 1;
-> +
-> +		if (t < -1500) {
-> +			s64 tmp = (t + 1500) * (t + 1500);
-> +
-> +			off2 += 15 * tmp;
-> +			sens2 += (8 * tmp);
+>  	/*
+> +	 * Determine the long sample time adder value to be used based
+> +	 * on the default minimum sample time provided.
+> +	 */
+> +	adck_period = NSEC_PER_SEC / adck_rate;
+> +	lst_addr_min = adc_feature->default_sample_time / adck_period;
+> +	for (i = 0; i < ARRAY_SIZE(vf610_lst_adder); i++) {
+> +		if (vf610_lst_adder[i] > lst_addr_min) {
+> +			adc_feature->lst_adder_index = i;
+> +			break;
 > +		}
-> +
-> +		t -= t2;
-> +		off -= off2;
-> +		sens -= sens2;
 > +	}
 > +
-> +	*temp = t;
-> +	*pressure = (((p * sens) >> 21) - off) >> 15;
-> +
-> +	return 0;
-> +}
-> +
->  static int ms5611_reset(struct iio_dev *indio_dev)
->  {
->  	int ret;
-> @@ -160,6 +206,15 @@ static int ms5611_read_raw(struct iio_dev *indio_dev,
->  	return -EINVAL;
+> +	/*
+>  	 * Calculate ADC sample frequencies
+>  	 * Sample time unit is ADCK cycles. ADCK clk source is ipg clock,
+>  	 * which is the same as bus clock.
+> @@ -182,12 +213,13 @@ static inline void vf610_adc_calculate_rates(struct vf610_adc *info)
+>  	 * SFCAdder: fixed to 6 ADCK cycles
+>  	 * AverageNum: 1, 4, 8, 16, 32 samples for hardware average.
+>  	 * BCT (Base Conversion Time): fixed to 25 ADCK cycles for 12 bit mode
+> -	 * LSTAdder(Long Sample Time): fixed to 3 ADCK cycles
+> +	 * LSTAdder(Long Sample Time): 3, 5, 7, 9, 13, 17, 21, 25 ADCK cycles
+>  	 */
+>  	adck_rate = ipg_rate / info->adc_feature.clk_div;
+>  	for (i = 0; i < ARRAY_SIZE(vf610_hw_avgs); i++)
+>  		info->sample_freq_avail[i] =
+> -			adck_rate / (6 + vf610_hw_avgs[i] * (25 + 3));
+> +			adck_rate / (6 + vf610_hw_avgs[i] *
+> +			 (25 + vf610_lst_adder[adc_feature->lst_adder_index]));
 >  }
 >  
-> +static struct ms5611_chip_info chip_info_tbl[] = {
-> +	[MS5611] = {
-> +		.temp_and_pressure_compensate = ms5611_temp_and_pressure_compensate,
-> +	},
-> +	[MS5607] = {
-> +		.temp_and_pressure_compensate = ms5607_temp_and_pressure_compensate,
+>  static inline void vf610_adc_cfg_init(struct vf610_adc *info)
+> @@ -347,8 +379,40 @@ static void vf610_adc_sample_set(struct vf610_adc *info)
+>  		break;
+>  	}
+>  
+> -	/* Use the short sample mode */
+> -	cfg_data &= ~(VF610_ADC_ADLSMP_LONG | VF610_ADC_ADSTS_MASK);
+> +	/*
+> +	 * Set ADLSMP and ADSTS based on the Long Sample Time Adder value
+> +	 * determined.
+> +	 */
+> +	switch (adc_feature->lst_adder_index) {
+> +	case VF610_ADCK_CYCLES_3:
+> +		break;
+> +	case VF610_ADCK_CYCLES_5:
+> +		cfg_data |= VF610_ADC_ADSTS_SHORT;
+> +		break;
+> +	case VF610_ADCK_CYCLES_7:
+> +		cfg_data |= VF610_ADC_ADSTS_NORMAL;
+> +		break;
+> +	case VF610_ADCK_CYCLES_9:
+> +		cfg_data |= VF610_ADC_ADSTS_LONG;
+> +		break;
+> +	case VF610_ADCK_CYCLES_13:
+> +		cfg_data |= VF610_ADC_ADLSMP_LONG;
+> +		break;
+> +	case VF610_ADCK_CYCLES_17:
+> +		cfg_data |= VF610_ADC_ADLSMP_LONG;
+> +		cfg_data |= VF610_ADC_ADSTS_SHORT;
+> +		break;
+> +	case VF610_ADCK_CYCLES_21:
+> +		cfg_data |= VF610_ADC_ADLSMP_LONG;
+> +		cfg_data |= VF610_ADC_ADSTS_NORMAL;
+> +		break;
+> +	case VF610_ADCK_CYCLES_25:
+> +		cfg_data |= VF610_ADC_ADLSMP_LONG;
+> +		cfg_data |= VF610_ADC_ADSTS_NORMAL;
+> +		break;
+> +	default:
+> +		dev_err(info->dev, "error in sample time select\n");
 > +	}
-> +};
-> +
->  static const struct iio_chan_spec ms5611_channels[] = {
->  	{
->  		.type = IIO_PRESSURE,
-> @@ -187,12 +242,13 @@ static int ms5611_init(struct iio_dev *indio_dev)
->  	return ms5611_read_prom(indio_dev);
->  }
 >  
-> -int ms5611_probe(struct iio_dev *indio_dev, struct device *dev)
-> +int ms5611_probe(struct iio_dev *indio_dev, struct device *dev, int type)
->  {
->  	int ret;
->  	struct ms5611_state *st = iio_priv(indio_dev);
+>  	/* update hardware average selection */
+>  	cfg_data &= ~VF610_ADC_AVGS_MASK;
+> @@ -712,6 +776,8 @@ static int vf610_adc_probe(struct platform_device *pdev)
 >  
->  	mutex_init(&st->lock);
-> +	st->chip_info = &chip_info_tbl[type];
->  	indio_dev->dev.parent = dev;
->  	indio_dev->name = dev->driver->name;
->  	indio_dev->info = &ms5611_info;
-> diff --git a/drivers/iio/pressure/ms5611_i2c.c b/drivers/iio/pressure/ms5611_i2c.c
-> index 748fd9a..9d504f1 100644
-> --- a/drivers/iio/pressure/ms5611_i2c.c
-> +++ b/drivers/iio/pressure/ms5611_i2c.c
-> @@ -104,11 +104,12 @@ static int ms5611_i2c_probe(struct i2c_client *client,
->  	st->read_adc_temp_and_pressure = ms5611_i2c_read_adc_temp_and_pressure;
->  	st->client = client;
+>  	of_property_read_u32_array(pdev->dev.of_node, "fsl,adck-max-frequency",
+>  			info->max_adck_rate, 3);
+> +	of_property_read_u32(pdev->dev.of_node, "min-sample-time",
+> +			&info->adc_feature.default_sample_time);
 >  
-> -	return ms5611_probe(indio_dev, &client->dev);
-> +	return ms5611_probe(indio_dev, &client->dev, id->driver_data);
->  }
+>  	platform_set_drvdata(pdev, indio_dev);
 >  
->  static const struct i2c_device_id ms5611_id[] = {
-> -	{ "ms5611", 0 },
-> +	{ "ms5611", MS5611 },
-> +	{ "ms5607", MS5607 },
->  	{ }
->  };
->  MODULE_DEVICE_TABLE(i2c, ms5611_id);
-> diff --git a/drivers/iio/pressure/ms5611_spi.c b/drivers/iio/pressure/ms5611_spi.c
-> index 976726f..08ee6e8 100644
-> --- a/drivers/iio/pressure/ms5611_spi.c
-> +++ b/drivers/iio/pressure/ms5611_spi.c
-> @@ -103,11 +103,13 @@ static int ms5611_spi_probe(struct spi_device *spi)
->  	st->read_adc_temp_and_pressure = ms5611_spi_read_adc_temp_and_pressure;
->  	st->client = spi;
->  
-> -	return ms5611_probe(indio_dev, &spi->dev);
-> +	return ms5611_probe(indio_dev, &spi->dev,
-> +			    spi_get_device_id(spi)->driver_data);
->  }
->  
->  static const struct spi_device_id ms5611_id[] = {
-> -	{ "ms5611", 0 },
-> +	{ "ms5611", MS5611 },
-> +	{ "ms5607", MS5607 },
->  	{ }
->  };
->  MODULE_DEVICE_TABLE(spi, ms5611_id);
 > 
 
