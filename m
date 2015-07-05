@@ -1,211 +1,466 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:59854 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:59870 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750816AbbGENiW (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 5 Jul 2015 09:38:22 -0400
-Message-ID: <55993347.7010002@kernel.org>
-Date: Sun, 05 Jul 2015 14:38:15 +0100
+	with ESMTP id S1751231AbbGENlm (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 5 Jul 2015 09:41:42 -0400
+Message-ID: <55993414.7060300@kernel.org>
+Date: Sun, 05 Jul 2015 14:41:40 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Sanchayan Maity <maitysanchayan@gmail.com>
-CC: shawn.guo@linaro.org, kernel@pengutronix.de, robh+dt@kernel.org,
-	pawel.moll@arm.com, mark.rutland@arm.com,
-	ijc+devicetree@hellion.org.uk, galak@codeaurora.org,
-	B38611@freescale.com, devicetree@vger.kernel.org,
-	linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-	linux-kernel@vger.kernel.org, stefan@agner.ch
-Subject: Re: [PATCH v2 1/2] iio: adc: Determine sampling frequencies by using
- minimum sample time
-References: <cover.1435134626.git.maitysanchayan@gmail.com> <01b93ea50b59c93a783fac26b4671313b794bd24.1435134626.git.maitysanchayan@gmail.com>
-In-Reply-To: <01b93ea50b59c93a783fac26b4671313b794bd24.1435134626.git.maitysanchayan@gmail.com>
+To: Tiberiu Breana <tiberiu.a.breana@intel.com>,
+	linux-iio@vger.kernel.org
+Subject: Re: [PATCHi v4] iio: accel: Add trigger support for STK8BA50
+References: <1435154086-16300-1-git-send-email-tiberiu.a.breana@intel.com>
+In-Reply-To: <1435154086-16300-1-git-send-email-tiberiu.a.breana@intel.com>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 24/06/15 09:33, Sanchayan Maity wrote:
-> The driver currently does not take into account the minimum sample time
-> as per the Figure 6-8 Chapter 9.1.1 12-bit ADC electrical characteristics.
-> We set a static amount of cycles instead of considering the sample time
-> as a given value, which depends on hardware characteristics.
+On 24/06/15 14:54, Tiberiu Breana wrote:
+> Add data-ready interrupts and trigger support for STK8BA50.
 > 
-> Determine sampling frequencies by first reading the device tree property
-> node and then calculating the required Long Sample Time Adder (LSTAdder)
-> value based on the ADC clock frequency and sample time value obtained
-> from the device tree, this LSTAdder value is then used for calculating
-> the sampling frequencies possible.
+> Additional changes:
+> - read_accel now returns raw acceleration data instead of the
+>   sign_extend32 value
+> - read_raw will now enable/disable the sensor with each reading
 > 
-> Signed-off-by: Sanchayan Maity <maitysanchayan@gmail.com>
-Looking for an Ack on this from Fugang. Device tree ack also good ;)
+> Change-Id: I9c2d7be4256b2dcc5546e4432308ea54f8004333
+hmm.  Drop these before posting to the lists please.  Otherwise I end
+up doing it by hand ;)
+> Signed-off-by: Tiberiu Breana <tiberiu.a.breana@intel.com>
+Looks good.
+
+Applied to the togreg branch of iio.git. As usual, will be
+first pushed out as testing for the autobuilders to play with it.x
+
+Thanks,
+
+Jonathan
 > ---
->  .../devicetree/bindings/iio/adc/vf610-adc.txt      |  6 ++
->  drivers/iio/adc/vf610_adc.c                        | 74 ++++++++++++++++++++--
->  2 files changed, 76 insertions(+), 4 deletions(-)
+> v4:
+> - iio_triggered_buffer_cleanup will now be called in _remove
+>   unconditionally
+> v3:
+> - addressed Jonathan's comments
+> - removed trigger_handler's local buffer, as it was unnecessary
+> - replaced the switch in trigger_handler with a lookup table
+> - cleaner approach for mutex_unlock in trigger_handler
+> v2:
+> - addressed Peter's comments
+> - added chan_info's shift field
+> - added an optimization to bulk read all accel channel data
+>   with one i2c operation when requested
+> ---
+>  drivers/iio/accel/stk8ba50.c | 296 +++++++++++++++++++++++++++++++++++++++----
+>  1 file changed, 271 insertions(+), 25 deletions(-)
 > 
-> diff --git a/Documentation/devicetree/bindings/iio/adc/vf610-adc.txt b/Documentation/devicetree/bindings/iio/adc/vf610-adc.txt
-> index 3eb40e2..39b86ea 100644
-> --- a/Documentation/devicetree/bindings/iio/adc/vf610-adc.txt
-> +++ b/Documentation/devicetree/bindings/iio/adc/vf610-adc.txt
-> @@ -17,6 +17,11 @@ Recommended properties:
->    - Frequency in normal mode (ADLPC=0, ADHSC=0)
->    - Frequency in high-speed mode (ADLPC=0, ADHSC=1)
->    - Frequency in low-power mode (ADLPC=1, ADHSC=0)
-> +  - min-sample-time: Minimum sampling time in nanoseconds. This value has
-> +    to be chosen according to the conversion mode and the connected analog
-> +	 source resistance (R_as) and capacitance (C_as). Refer the datasheet's
-> +	 operating requirements. A safe default across a wide range of R_as and
-> +	 C_as as well as conversion modes is 1000ns.
+> diff --git a/drivers/iio/accel/stk8ba50.c b/drivers/iio/accel/stk8ba50.c
+> index 9836880..16cee63 100644
+> --- a/drivers/iio/accel/stk8ba50.c
+> +++ b/drivers/iio/accel/stk8ba50.c
+> @@ -11,11 +11,17 @@
+>   */
 >  
->  Example:
->  adc0: adc@4003b000 {
-> @@ -27,5 +32,6 @@ adc0: adc@4003b000 {
->  	clock-names = "adc";
->  	fsl,adck-max-frequency = <30000000>, <40000000>,
->  				<20000000>;
-> +	min-sample-time = <1000>;
->  	vref-supply = <&reg_vcc_3v3_mcu>;
->  };
-> diff --git a/drivers/iio/adc/vf610_adc.c b/drivers/iio/adc/vf610_adc.c
-> index 480f335..8322027 100644
-> --- a/drivers/iio/adc/vf610_adc.c
-> +++ b/drivers/iio/adc/vf610_adc.c
-> @@ -68,6 +68,9 @@
->  #define VF610_ADC_CLK_DIV8		0x60
->  #define VF610_ADC_CLK_MASK		0x60
->  #define VF610_ADC_ADLSMP_LONG		0x10
-> +#define VF610_ADC_ADSTS_SHORT   0x100
-> +#define VF610_ADC_ADSTS_NORMAL  0x200
-> +#define VF610_ADC_ADSTS_LONG    0x300
->  #define VF610_ADC_ADSTS_MASK		0x300
->  #define VF610_ADC_ADLPC_EN		0x80
->  #define VF610_ADC_ADHSC_EN		0x400
-> @@ -124,6 +127,17 @@ enum conversion_mode_sel {
->  	VF610_ADC_CONV_LOW_POWER,
+>  #include <linux/acpi.h>
+> +#include <linux/gpio/consumer.h>
+>  #include <linux/i2c.h>
+> +#include <linux/interrupt.h>
+>  #include <linux/kernel.h>
+>  #include <linux/module.h>
+> +#include <linux/iio/buffer.h>
+>  #include <linux/iio/iio.h>
+>  #include <linux/iio/sysfs.h>
+> +#include <linux/iio/trigger.h>
+> +#include <linux/iio/triggered_buffer.h>
+> +#include <linux/iio/trigger_consumer.h>
+>  
+>  #define STK8BA50_REG_XOUT			0x02
+>  #define STK8BA50_REG_YOUT			0x04
+> @@ -24,6 +30,8 @@
+>  #define STK8BA50_REG_BWSEL			0x10
+>  #define STK8BA50_REG_POWMODE			0x11
+>  #define STK8BA50_REG_SWRST			0x14
+> +#define STK8BA50_REG_INTEN2			0x17
+> +#define STK8BA50_REG_INTMAP2			0x1A
+>  
+>  #define STK8BA50_MODE_NORMAL			0
+>  #define STK8BA50_MODE_SUSPEND			1
+> @@ -31,8 +39,14 @@
+>  #define STK8BA50_DATA_SHIFT			6
+>  #define STK8BA50_RESET_CMD			0xB6
+>  #define STK8BA50_SR_1792HZ_IDX			7
+> +#define STK8BA50_DREADY_INT_MASK		0x10
+> +#define STK8BA50_DREADY_INT_MAP			0x81
+> +#define STK8BA50_ALL_CHANNEL_MASK		7
+> +#define STK8BA50_ALL_CHANNEL_SIZE		6
+>  
+>  #define STK8BA50_DRIVER_NAME			"stk8ba50"
+> +#define STK8BA50_GPIO				"stk8ba50_gpio"
+> +#define STK8BA50_IRQ_NAME			"stk8ba50_event"
+>  
+>  #define STK8BA50_SCALE_AVAIL			"0.0384 0.0767 0.1534 0.3069"
+>  
+> @@ -68,14 +82,29 @@ static const struct {
+>  	{0x0C, 224}, {0x0D, 448}, {0x0E, 896}, {0x0F, 1792}
 >  };
 >  
-> +enum lst_adder_sel {
-> +	VF610_ADCK_CYCLES_3,
-> +	VF610_ADCK_CYCLES_5,
-> +	VF610_ADCK_CYCLES_7,
-> +	VF610_ADCK_CYCLES_9,
-> +	VF610_ADCK_CYCLES_13,
-> +	VF610_ADCK_CYCLES_17,
-> +	VF610_ADCK_CYCLES_21,
-> +	VF610_ADCK_CYCLES_25,
+> +/* Used to map scan mask bits to their corresponding channel register. */
+> +static const int stk8ba50_channel_table[] = {
+> +	STK8BA50_REG_XOUT,
+> +	STK8BA50_REG_YOUT,
+> +	STK8BA50_REG_ZOUT
 > +};
 > +
->  struct vf610_adc_feature {
->  	enum clk_sel	clk_sel;
->  	enum vol_ref	vol_ref;
-> @@ -132,6 +146,8 @@ struct vf610_adc_feature {
->  	int	clk_div;
->  	int     sample_rate;
->  	int	res_mode;
-> +	u32 lst_adder_index;
-> +	u32 default_sample_time;
->  
->  	bool	calibration;
->  	bool	ovwren;
-> @@ -155,11 +171,13 @@ struct vf610_adc {
+>  struct stk8ba50_data {
+>  	struct i2c_client *client;
+>  	struct mutex lock;
+>  	int range;
+>  	u8 sample_rate_idx;
+> +	struct iio_trigger *dready_trig;
+> +	bool dready_trigger_on;
+> +	/*
+> +	 * 3 x 16-bit channels (10-bit data, 6-bit padding) +
+> +	 * 1 x 16 padding +
+> +	 * 4 x 16 64-bit timestamp
+> +	 */
+> +	s16 buffer[8];
 >  };
 >  
->  static const u32 vf610_hw_avgs[] = { 1, 4, 8, 16, 32 };
-> +static const u32 vf610_lst_adder[] = { 3, 5, 7, 9, 13, 17, 21, 25 };
+> -#define STK8BA50_ACCEL_CHANNEL(reg, axis) {				\
+> +#define STK8BA50_ACCEL_CHANNEL(index, reg, axis) {			\
+>  	.type = IIO_ACCEL,						\
+>  	.address = reg,							\
+>  	.modified = 1,							\
+> @@ -83,12 +112,21 @@ struct stk8ba50_data {
+>  	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),			\
+>  	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),		\
+>  				    BIT(IIO_CHAN_INFO_SAMP_FREQ),	\
+> +	.scan_index = index,						\
+> +	.scan_type = {							\
+> +		.sign = 's',						\
+> +		.realbits = 10,						\
+> +		.storagebits = 16,					\
+> +		.shift = STK8BA50_DATA_SHIFT,				\
+> +		.endianness = IIO_CPU,					\
+> +	},								\
+>  }
 >  
->  static inline void vf610_adc_calculate_rates(struct vf610_adc *info)
->  {
->  	struct vf610_adc_feature *adc_feature = &info->adc_feature;
->  	unsigned long adck_rate, ipg_rate = clk_get_rate(info->clk);
-> +	u32 adck_period, lst_addr_min;
->  	int divisor, i;
+>  static const struct iio_chan_spec stk8ba50_channels[] = {
+> -	STK8BA50_ACCEL_CHANNEL(STK8BA50_REG_XOUT, X),
+> -	STK8BA50_ACCEL_CHANNEL(STK8BA50_REG_YOUT, Y),
+> -	STK8BA50_ACCEL_CHANNEL(STK8BA50_REG_ZOUT, Z),
+> +	STK8BA50_ACCEL_CHANNEL(0, STK8BA50_REG_XOUT, X),
+> +	STK8BA50_ACCEL_CHANNEL(1, STK8BA50_REG_YOUT, Y),
+> +	STK8BA50_ACCEL_CHANNEL(2, STK8BA50_REG_ZOUT, Z),
+> +	IIO_CHAN_SOFT_TIMESTAMP(3),
+>  };
 >  
->  	adck_rate = info->max_adck_rate[adc_feature->conv_mode];
-> @@ -174,6 +192,19 @@ static inline void vf610_adc_calculate_rates(struct vf610_adc *info)
+>  static IIO_CONST_ATTR(in_accel_scale_available, STK8BA50_SCALE_AVAIL);
+> @@ -116,7 +154,61 @@ static int stk8ba50_read_accel(struct stk8ba50_data *data, u8 reg)
+>  		return ret;
 >  	}
 >  
->  	/*
-> +	 * Determine the long sample time adder value to be used based
-> +	 * on the default minimum sample time provided.
+> -	return sign_extend32(ret >> STK8BA50_DATA_SHIFT, 9);
+> +	return ret;
+> +}
+> +
+> +static int stk8ba50_data_rdy_trigger_set_state(struct iio_trigger *trig,
+> +					       bool state)
+> +{
+> +	struct iio_dev *indio_dev = iio_trigger_get_drvdata(trig);
+> +	struct stk8ba50_data *data = iio_priv(indio_dev);
+> +	int ret;
+> +
+> +	if (state)
+> +		ret = i2c_smbus_write_byte_data(data->client,
+> +			STK8BA50_REG_INTEN2, STK8BA50_DREADY_INT_MASK);
+> +	else
+> +		ret = i2c_smbus_write_byte_data(data->client,
+> +			STK8BA50_REG_INTEN2, 0x00);
+> +
+> +	if (ret < 0)
+> +		dev_err(&data->client->dev, "failed to set trigger state\n");
+> +	else
+> +		data->dready_trigger_on = state;
+> +
+> +	return ret;
+> +}
+> +
+> +static const struct iio_trigger_ops stk8ba50_trigger_ops = {
+> +	.set_trigger_state = stk8ba50_data_rdy_trigger_set_state,
+> +	.owner = THIS_MODULE,
+> +};
+> +
+> +static int stk8ba50_set_power(struct stk8ba50_data *data, bool mode)
+> +{
+> +	int ret;
+> +	u8 masked_reg;
+> +	struct i2c_client *client = data->client;
+> +
+> +	ret = i2c_smbus_read_byte_data(client, STK8BA50_REG_POWMODE);
+> +	if (ret < 0)
+> +		goto exit_err;
+> +
+> +	if (mode)
+> +		masked_reg = ret | STK8BA50_MODE_POWERBIT;
+> +	else
+> +		masked_reg = ret & (~STK8BA50_MODE_POWERBIT);
+> +
+> +	ret = i2c_smbus_write_byte_data(client, STK8BA50_REG_POWMODE,
+> +					masked_reg);
+> +	if (ret < 0)
+> +		goto exit_err;
+> +
+> +	return ret;
+> +
+> +exit_err:
+> +	dev_err(&client->dev, "failed to change sensor mode\n");
+> +	return ret;
+>  }
+>  
+>  static int stk8ba50_read_raw(struct iio_dev *indio_dev,
+> @@ -124,11 +216,26 @@ static int stk8ba50_read_raw(struct iio_dev *indio_dev,
+>  			     int *val, int *val2, long mask)
+>  {
+>  	struct stk8ba50_data *data = iio_priv(indio_dev);
+> +	int ret;
+>  
+>  	switch (mask) {
+>  	case IIO_CHAN_INFO_RAW:
+> +		if (iio_buffer_enabled(indio_dev))
+> +			return -EBUSY;
+>  		mutex_lock(&data->lock);
+> -		*val = stk8ba50_read_accel(data, chan->address);
+> +		ret = stk8ba50_set_power(data, STK8BA50_MODE_NORMAL);
+> +		if (ret < 0) {
+> +			mutex_unlock(&data->lock);
+> +			return -EINVAL;
+> +		}
+> +		ret = stk8ba50_read_accel(data, chan->address);
+> +		if (ret < 0) {
+> +			stk8ba50_set_power(data, STK8BA50_MODE_SUSPEND);
+> +			mutex_unlock(&data->lock);
+> +			return -EINVAL;
+> +		}
+> +		*val = sign_extend32(ret >> STK8BA50_DATA_SHIFT, 9);
+> +		stk8ba50_set_power(data, STK8BA50_MODE_SUSPEND);
+>  		mutex_unlock(&data->lock);
+>  		return IIO_VAL_INT;
+>  	case IIO_CHAN_INFO_SCALE:
+> @@ -208,30 +315,100 @@ static const struct iio_info stk8ba50_info = {
+>  	.attrs			= &stk8ba50_attribute_group,
+>  };
+>  
+> -static int stk8ba50_set_power(struct stk8ba50_data *data, bool mode)
+> +static irqreturn_t stk8ba50_trigger_handler(int irq, void *p)
+> +{
+> +	struct iio_poll_func *pf = p;
+> +	struct iio_dev *indio_dev = pf->indio_dev;
+> +	struct stk8ba50_data *data = iio_priv(indio_dev);
+> +	int bit, ret, i = 0;
+> +
+> +	mutex_lock(&data->lock);
+> +	/*
+> +	 * Do a bulk read if all channels are requested,
+> +	 * from 0x02 (XOUT1) to 0x07 (ZOUT2)
 > +	 */
-> +	adck_period = NSEC_PER_SEC / adck_rate;
-> +	lst_addr_min = adc_feature->default_sample_time / adck_period;
-> +	for (i = 0; i < ARRAY_SIZE(vf610_lst_adder); i++) {
-> +		if (vf610_lst_adder[i] > lst_addr_min) {
-> +			adc_feature->lst_adder_index = i;
-> +			break;
+> +	if (*(indio_dev->active_scan_mask) == STK8BA50_ALL_CHANNEL_MASK) {
+> +		ret = i2c_smbus_read_i2c_block_data(data->client,
+> +						    STK8BA50_REG_XOUT,
+> +						    STK8BA50_ALL_CHANNEL_SIZE,
+> +						    (u8 *)data->buffer);
+> +		if (ret < STK8BA50_ALL_CHANNEL_SIZE) {
+> +			dev_err(&data->client->dev, "register read failed\n");
+> +			goto err;
+> +		}
+> +	} else {
+> +		for_each_set_bit(bit, indio_dev->active_scan_mask,
+> +				 indio_dev->masklength) {
+> +			ret = stk8ba50_read_accel(data,
+> +						  stk8ba50_channel_table[bit]);
+> +			if (ret < 0)
+> +				goto err;
+> +
+> +			data->buffer[i++] = ret;
+> +		}
+> +	}
+> +	iio_push_to_buffers_with_timestamp(indio_dev, data->buffer,
+> +					   pf->timestamp);
+> +err:
+> +	mutex_unlock(&data->lock);
+> +	iio_trigger_notify_done(indio_dev->trig);
+> +
+> +	return IRQ_HANDLED;
+> +}
+> +
+> +static irqreturn_t stk8ba50_data_rdy_trig_poll(int irq, void *private)
+>  {
+> +	struct iio_dev *indio_dev = private;
+> +	struct stk8ba50_data *data = iio_priv(indio_dev);
+> +
+> +	if (data->dready_trigger_on)
+> +		iio_trigger_poll(data->dready_trig);
+> +
+> +	return IRQ_HANDLED;
+> +}
+> +
+> +static int stk8ba50_buffer_preenable(struct iio_dev *indio_dev)
+> +{
+> +	struct stk8ba50_data *data = iio_priv(indio_dev);
+> +
+> +	return stk8ba50_set_power(data, STK8BA50_MODE_NORMAL);
+> +}
+> +
+> +static int stk8ba50_buffer_postdisable(struct iio_dev *indio_dev)
+> +{
+> +	struct stk8ba50_data *data = iio_priv(indio_dev);
+> +
+> +	return stk8ba50_set_power(data, STK8BA50_MODE_SUSPEND);
+> +}
+> +
+> +static const struct iio_buffer_setup_ops stk8ba50_buffer_setup_ops = {
+> +	.preenable   = stk8ba50_buffer_preenable,
+> +	.postenable  = iio_triggered_buffer_postenable,
+> +	.predisable  = iio_triggered_buffer_predisable,
+> +	.postdisable = stk8ba50_buffer_postdisable,
+> +};
+> +
+> +static int stk8ba50_gpio_probe(struct i2c_client *client)
+> +{
+> +	struct device *dev;
+> +	struct gpio_desc *gpio;
+>  	int ret;
+> -	u8 masked_reg;
+> -	struct i2c_client *client = data->client;
+>  
+> -	ret = i2c_smbus_read_byte_data(client, STK8BA50_REG_POWMODE);
+> -	if (ret < 0)
+> -		goto exit_err;
+> +	if (!client)
+> +		return -EINVAL;
+>  
+> -	if (mode)
+> -		masked_reg = ret | STK8BA50_MODE_POWERBIT;
+> -	else
+> -		masked_reg = ret & (~STK8BA50_MODE_POWERBIT);
+> +	dev = &client->dev;
+>  
+> -	ret = i2c_smbus_write_byte_data(client, STK8BA50_REG_POWMODE,
+> -					masked_reg);
+> -	if (ret < 0)
+> -		goto exit_err;
+> +	/* data ready gpio interrupt pin */
+> +	gpio = devm_gpiod_get_index(dev, STK8BA50_GPIO, 0, GPIOD_IN);
+> +	if (IS_ERR(gpio)) {
+> +		dev_err(dev, "acpi gpio get index failed\n");
+> +		return PTR_ERR(gpio);
+> +	}
+>  
+> -	return ret;
+> +	ret = gpiod_to_irq(gpio);
+> +	dev_dbg(dev, "GPIO resource, no:%d irq:%d\n", desc_to_gpio(gpio), ret);
+>  
+> -exit_err:
+> -	dev_err(&client->dev, "failed to change sensor mode\n");
+>  	return ret;
+>  }
+>  
+> @@ -274,14 +451,78 @@ static int stk8ba50_probe(struct i2c_client *client,
+>  	/* The default sampling rate is 1792 Hz (maximum) */
+>  	data->sample_rate_idx = STK8BA50_SR_1792HZ_IDX;
+>  
+> +	/* Set up interrupts */
+> +	ret = i2c_smbus_write_byte_data(client,
+> +			STK8BA50_REG_INTEN2, STK8BA50_DREADY_INT_MASK);
+> +	if (ret < 0) {
+> +		dev_err(&client->dev, "failed to set up interrupts\n");
+> +		goto err_power_off;
+> +	}
+> +	ret = i2c_smbus_write_byte_data(client,
+> +			STK8BA50_REG_INTMAP2, STK8BA50_DREADY_INT_MAP);
+> +	if (ret < 0) {
+> +		dev_err(&client->dev, "failed to set up interrupts\n");
+> +		goto err_power_off;
+> +	}
+> +
+> +	if (client->irq < 0)
+> +		client->irq = stk8ba50_gpio_probe(client);
+> +
+> +	if (client->irq >= 0) {
+> +		ret = devm_request_threaded_irq(&client->dev, client->irq,
+> +						stk8ba50_data_rdy_trig_poll,
+> +						NULL,
+> +						IRQF_TRIGGER_RISING |
+> +						IRQF_ONESHOT,
+> +						STK8BA50_IRQ_NAME,
+> +						indio_dev);
+> +		if (ret < 0) {
+> +			dev_err(&client->dev, "request irq %d failed\n",
+> +				client->irq);
+> +			goto err_power_off;
+> +		}
+> +
+> +		data->dready_trig = devm_iio_trigger_alloc(&client->dev,
+> +							   "%s-dev%d",
+> +							   indio_dev->name,
+> +							   indio_dev->id);
+> +		if (!data->dready_trig) {
+> +			ret = -ENOMEM;
+> +			goto err_power_off;
+> +		}
+> +
+> +		data->dready_trig->dev.parent = &client->dev;
+> +		data->dready_trig->ops = &stk8ba50_trigger_ops;
+> +		iio_trigger_set_drvdata(data->dready_trig, indio_dev);
+> +		ret = iio_trigger_register(data->dready_trig);
+> +		if (ret) {
+> +			dev_err(&client->dev, "iio trigger register failed\n");
+> +			goto err_power_off;
 > +		}
 > +	}
 > +
-> +	/*
->  	 * Calculate ADC sample frequencies
->  	 * Sample time unit is ADCK cycles. ADCK clk source is ipg clock,
->  	 * which is the same as bus clock.
-> @@ -182,12 +213,13 @@ static inline void vf610_adc_calculate_rates(struct vf610_adc *info)
->  	 * SFCAdder: fixed to 6 ADCK cycles
->  	 * AverageNum: 1, 4, 8, 16, 32 samples for hardware average.
->  	 * BCT (Base Conversion Time): fixed to 25 ADCK cycles for 12 bit mode
-> -	 * LSTAdder(Long Sample Time): fixed to 3 ADCK cycles
-> +	 * LSTAdder(Long Sample Time): 3, 5, 7, 9, 13, 17, 21, 25 ADCK cycles
->  	 */
->  	adck_rate = ipg_rate / info->adc_feature.clk_div;
->  	for (i = 0; i < ARRAY_SIZE(vf610_hw_avgs); i++)
->  		info->sample_freq_avail[i] =
-> -			adck_rate / (6 + vf610_hw_avgs[i] * (25 + 3));
-> +			adck_rate / (6 + vf610_hw_avgs[i] *
-> +			 (25 + vf610_lst_adder[adc_feature->lst_adder_index]));
->  }
->  
->  static inline void vf610_adc_cfg_init(struct vf610_adc *info)
-> @@ -347,8 +379,40 @@ static void vf610_adc_sample_set(struct vf610_adc *info)
->  		break;
+> +	ret = iio_triggered_buffer_setup(indio_dev,
+> +					 iio_pollfunc_store_time,
+> +					 stk8ba50_trigger_handler,
+> +					 &stk8ba50_buffer_setup_ops);
+> +	if (ret < 0) {
+> +		dev_err(&client->dev, "iio triggered buffer setup failed\n");
+> +		goto err_trigger_unregister;
+> +	}
+> +
+>  	ret = iio_device_register(indio_dev);
+>  	if (ret < 0) {
+>  		dev_err(&client->dev, "device_register failed\n");
+> -		goto err_power_off;
+> +		goto err_buffer_cleanup;
 >  	}
 >  
-> -	/* Use the short sample mode */
-> -	cfg_data &= ~(VF610_ADC_ADLSMP_LONG | VF610_ADC_ADSTS_MASK);
-> +	/*
-> +	 * Set ADLSMP and ADSTS based on the Long Sample Time Adder value
-> +	 * determined.
-> +	 */
-> +	switch (adc_feature->lst_adder_index) {
-> +	case VF610_ADCK_CYCLES_3:
-> +		break;
-> +	case VF610_ADCK_CYCLES_5:
-> +		cfg_data |= VF610_ADC_ADSTS_SHORT;
-> +		break;
-> +	case VF610_ADCK_CYCLES_7:
-> +		cfg_data |= VF610_ADC_ADSTS_NORMAL;
-> +		break;
-> +	case VF610_ADCK_CYCLES_9:
-> +		cfg_data |= VF610_ADC_ADSTS_LONG;
-> +		break;
-> +	case VF610_ADCK_CYCLES_13:
-> +		cfg_data |= VF610_ADC_ADLSMP_LONG;
-> +		break;
-> +	case VF610_ADCK_CYCLES_17:
-> +		cfg_data |= VF610_ADC_ADLSMP_LONG;
-> +		cfg_data |= VF610_ADC_ADSTS_SHORT;
-> +		break;
-> +	case VF610_ADCK_CYCLES_21:
-> +		cfg_data |= VF610_ADC_ADLSMP_LONG;
-> +		cfg_data |= VF610_ADC_ADSTS_NORMAL;
-> +		break;
-> +	case VF610_ADCK_CYCLES_25:
-> +		cfg_data |= VF610_ADC_ADLSMP_LONG;
-> +		cfg_data |= VF610_ADC_ADSTS_NORMAL;
-> +		break;
-> +	default:
-> +		dev_err(info->dev, "error in sample time select\n");
-> +	}
+>  	return ret;
 >  
->  	/* update hardware average selection */
->  	cfg_data &= ~VF610_ADC_AVGS_MASK;
-> @@ -712,6 +776,8 @@ static int vf610_adc_probe(struct platform_device *pdev)
+> +err_buffer_cleanup:
+> +	iio_triggered_buffer_cleanup(indio_dev);
+> +err_trigger_unregister:
+> +	if (data->dready_trig)
+> +		iio_trigger_unregister(data->dready_trig);
+>  err_power_off:
+>  	stk8ba50_set_power(data, STK8BA50_MODE_SUSPEND);
+>  	return ret;
+> @@ -290,10 +531,15 @@ err_power_off:
+>  static int stk8ba50_remove(struct i2c_client *client)
+>  {
+>  	struct iio_dev *indio_dev = i2c_get_clientdata(client);
+> +	struct stk8ba50_data *data = iio_priv(indio_dev);
 >  
->  	of_property_read_u32_array(pdev->dev.of_node, "fsl,adck-max-frequency",
->  			info->max_adck_rate, 3);
-> +	of_property_read_u32(pdev->dev.of_node, "min-sample-time",
-> +			&info->adc_feature.default_sample_time);
+>  	iio_device_unregister(indio_dev);
+> +	iio_triggered_buffer_cleanup(indio_dev);
+> +
+> +	if (data->dready_trig)
+> +		iio_trigger_unregister(data->dready_trig);
 >  
->  	platform_set_drvdata(pdev, indio_dev);
+> -	return stk8ba50_set_power(iio_priv(indio_dev), STK8BA50_MODE_SUSPEND);
+> +	return stk8ba50_set_power(data, STK8BA50_MODE_SUSPEND);
+>  }
 >  
+>  #ifdef CONFIG_PM_SLEEP
 > 
 
