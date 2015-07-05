@@ -1,78 +1,76 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:59724 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:59736 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750740AbbGENQy (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 5 Jul 2015 09:16:54 -0400
-Message-ID: <55992E44.1000104@kernel.org>
-Date: Sun, 05 Jul 2015 14:16:52 +0100
+	with ESMTP id S1750873AbbGENTN (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 5 Jul 2015 09:19:13 -0400
+Message-ID: <55992ECF.1040706@kernel.org>
+Date: Sun, 05 Jul 2015 14:19:11 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Daniel Baluta <daniel.baluta@intel.com>,
-	Hartmut Knaack <knaack.h@gmx.de>
-CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	Kuppuswamy Sathyanarayanan
-	<sathyanarayanan.kuppuswamy@linux.intel.com>
-Subject: Re: [PATCH 1/2] iio:light:ltr501: fix regmap dependency
-References: <cover.1435487041.git.knaack.h@gmx.de>	<06cf34cbbfd8c82272c885ff3aab8f44dc72cb41.1435487041.git.knaack.h@gmx.de> <CAEnQRZCYQE-DPb+x1Xj2eR6bxNvk5b6hCJLLiLSHqVjN2=Kqfg@mail.gmail.com>
-In-Reply-To: <CAEnQRZCYQE-DPb+x1Xj2eR6bxNvk5b6hCJLLiLSHqVjN2=Kqfg@mail.gmail.com>
+To: Vlad Dogaru <vlad.dogaru@intel.com>,
+	Geert Uytterhoeven <geert@linux-m68k.org>
+CC: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] iio: sx9500: Add missing init in sx9500_buffer_pre{en,dis}able()
+References: <1435562073-31503-1-git-send-email-geert@linux-m68k.org> <20150629073655.GC12017@vdogaru>
+In-Reply-To: <20150629073655.GC12017@vdogaru>
 Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 29/06/15 08:56, Daniel Baluta wrote:
-> On Sun, Jun 28, 2015 at 1:31 PM, Hartmut Knaack <knaack.h@gmx.de> wrote:
->> The use of regmap in commit [1] requires REGMAP_I2C to be selected, in
->> order to meet all dependencies.
+On 29/06/15 08:36, Vlad Dogaru wrote:
+> On Mon, Jun 29, 2015 at 09:14:33AM +0200, Geert Uytterhoeven wrote:
+>> drivers/iio/proximity/sx9500.c: In function ‘sx9500_buffer_preenable’:
+>> drivers/iio/proximity/sx9500.c:682: warning: ‘ret’ may be used uninitialized in this function
+>> drivers/iio/proximity/sx9500.c: In function ‘sx9500_buffer_predisable’:
+>> drivers/iio/proximity/sx9500.c:706: warning: ‘ret’ may be used uninitialized in this function
 >>
->> [1]     2f2c96338afc9f90aa5a0fca04ece1a5c389ee31
->>         "iio: ltr501: Add regmap support."
-> 
-> The standard way to do this is:
-> 
-> Fixes: 2f2c96338afc ("iio: ltr501: Add regmap support.")
-> 
+>> If active_scan_mask is empty, it will loop once more over all channels,
+>> doing nothing.
 >>
->> Signed-off-by: Hartmut Knaack <knaack.h@gmx.de>
+>> Signed-off-by: Geert Uytterhoeven <geert@linux-m68k.org>
 > 
-> Otherwise,
+> Reviewed-by: Vlad Dogaru <vlad.dogaru@intel.com>
 > 
-> Acked-by: Daniel Baluta <daniel.baluta@intel.com>
-Hmm. My filters had eaten this patch for some reason...
+> I wonder if those functions are ever called with an empty scan mask.
+I'm feeling to lazy to check ;)
+> But the fix is correct nonetheless.  Nice catch :)
+Applied to the fixes-for-4.2 branch of iio.git
 
-Anyhow, dug it out and applied.
-
-Hopefully nothing else has gone missing!
+Thanks,
 
 Jonathan
 > 
 >> ---
->>  drivers/iio/light/Kconfig | 1 +
->>  1 file changed, 1 insertion(+)
+>>  drivers/iio/proximity/sx9500.c | 4 ++--
+>>  1 file changed, 2 insertions(+), 2 deletions(-)
 >>
->> diff --git a/drivers/iio/light/Kconfig b/drivers/iio/light/Kconfig
->> index 730fa80..1f1e103 100644
->> --- a/drivers/iio/light/Kconfig
->> +++ b/drivers/iio/light/Kconfig
->> @@ -199,6 +199,7 @@ config SENSORS_LM3533
->>  config LTR501
->>         tristate "LTR-501ALS-01 light sensor"
->>         depends on I2C
->> +       select REGMAP_I2C
->>         select IIO_BUFFER
->>         select IIO_TRIGGERED_BUFFER
->>         help
->> --
->> 2.3.6
+>> diff --git a/drivers/iio/proximity/sx9500.c b/drivers/iio/proximity/sx9500.c
+>> index 2042e375f8351de6..7624cfa2422d4e41 100644
+>> --- a/drivers/iio/proximity/sx9500.c
+>> +++ b/drivers/iio/proximity/sx9500.c
+>> @@ -679,7 +679,7 @@ out:
+>>  static int sx9500_buffer_preenable(struct iio_dev *indio_dev)
+>>  {
+>>  	struct sx9500_data *data = iio_priv(indio_dev);
+>> -	int ret, i;
+>> +	int ret = 0, i;
+>>  
+>>  	mutex_lock(&data->mutex);
+>>  
+>> @@ -703,7 +703,7 @@ static int sx9500_buffer_preenable(struct iio_dev *indio_dev)
+>>  static int sx9500_buffer_predisable(struct iio_dev *indio_dev)
+>>  {
+>>  	struct sx9500_data *data = iio_priv(indio_dev);
+>> -	int ret, i;
+>> +	int ret = 0, i;
+>>  
+>>  	iio_triggered_buffer_predisable(indio_dev);
+>>  
+>> -- 
+>> 1.9.1
 >>
 >> --
 >> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
 >> the body of a message to majordomo@vger.kernel.org
 >> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> 
 
