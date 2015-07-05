@@ -1,195 +1,157 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:59983 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:60014 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751202AbbGEOBI (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 5 Jul 2015 10:01:08 -0400
-Message-ID: <559938A0.1000708@kernel.org>
-Date: Sun, 05 Jul 2015 15:01:04 +0100
+	with ESMTP id S1751998AbbGEOIP (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 5 Jul 2015 10:08:15 -0400
+Message-ID: <55993A4C.10105@kernel.org>
+Date: Sun, 05 Jul 2015 15:08:12 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Simon Wood <simon@mungewell.org>, linux-input@vger.kernel.org
-CC: Frank Praznik <frank.praznik@oh.rr.com>, linux-iio@vger.kernel.org
-Subject: Re: [RFC_v2 4/4] HID: hid-sony: Add IIO support for DualShock4 Controller
-References: <1435105830-2297-1-git-send-email-simon@mungewell.org> <1435105830-2297-5-git-send-email-simon@mungewell.org>
-In-Reply-To: <1435105830-2297-5-git-send-email-simon@mungewell.org>
+To: Andreas Dannenberg <dannenberg@ti.com>, linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org
+CC: Felipe Balbi <balbi@ti.com>
+Subject: Re: [PATCH v3 1/2] iio: light: add support for TI's opt3001 light
+ sensor
+References: <1435876079-26287-1-git-send-email-dannenberg@ti.com> <1435876079-26287-2-git-send-email-dannenberg@ti.com>
+In-Reply-To: <1435876079-26287-2-git-send-email-dannenberg@ti.com>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 24/06/15 01:30, Simon Wood wrote:
-A couple of trivial bits and no sign off.
-> ---
->  drivers/hid/hid-sony.c | 87 +++++++++++++++++++++++++++++++++++++++++++++-----
->  1 file changed, 79 insertions(+), 8 deletions(-)
+On 02/07/15 23:27, Andreas Dannenberg wrote:
+> TI's opt3001 light sensor is a simple and yet powerful
+> little device. The device provides 99% IR rejection,
+> automatic full-scale, very low power consumption and
+> measurements from 0.01 to 83k lux.
 > 
-> diff --git a/drivers/hid/hid-sony.c b/drivers/hid/hid-sony.c
-> index ce0526d..f1c1a16 100644
-> --- a/drivers/hid/hid-sony.c
-> +++ b/drivers/hid/hid-sony.c
-> @@ -62,7 +62,7 @@
->  				DUALSHOCK4_CONTROLLER)
->  #define SONY_BATTERY_SUPPORT (SIXAXIS_CONTROLLER | DUALSHOCK4_CONTROLLER)
->  #define SONY_FF_SUPPORT (SIXAXIS_CONTROLLER | DUALSHOCK4_CONTROLLER)
-> -#define SONY_IIO_SUPPORT SIXAXIS_CONTROLLER
-> +#define SONY_IIO_SUPPORT (SIXAXIS_CONTROLLER | DUALSHOCK4_CONTROLLER)
->  
->  #define MAX_LEDS 4
->  
-> @@ -848,13 +848,16 @@ struct sony_sc {
->  #if IS_BUILTIN(CONFIG_IIO) || \
->  	(IS_MODULE(CONFIG_IIO) && IS_MODULE(CONFIG_HID_SONY))
->  	struct iio_dev *indio_dev;
-> -	__u16 last_data[3];
-> +	__s16 last_data[6];
->  };
->  
->  enum sony_iio_axis {
->  	AXIS_ACC_X,
->  	AXIS_ACC_Y,
->  	AXIS_ACC_Z,
-> +	AXIS_GYRO_X,
-> +	AXIS_GYRO_Y,
-> +	AXIS_GYRO_Z,
->  };
->  
->  static void sony_iio_trigger_work(struct irq_work *work);
-> @@ -863,7 +866,7 @@ struct sony_iio {
->  	struct sony_sc *sc;
->  	struct iio_trigger *trig;
->  
-> -	u8 buff[16];		/* 3x 16-bit + padding + timestamp */
-> +	u8 buff[24];		/* 6x 16-bit + padding + timestamp */
->  	struct irq_work work;
->  #endif
->  };
-> @@ -1095,6 +1098,25 @@ static int sony_raw_event(struct hid_device *hdev, struct hid_report *report,
->  	} else if (((sc->quirks & DUALSHOCK4_CONTROLLER_USB) && rd[0] == 0x01 &&
->  			size == 64) || ((sc->quirks & DUALSHOCK4_CONTROLLER_BT)
->  			&& rd[0] == 0x11 && size == 78)) {
-> +#if IS_BUILTIN(CONFIG_IIO) || \
-> +	(IS_MODULE(CONFIG_IIO) && IS_MODULE(CONFIG_HID_SONY))
-> +		int offset = (sc->quirks & DUALSHOCK4_CONTROLLER_USB) ? 13 : 15;
+> This patch adds support for that device using the IIO
+> framework.
+> 
+> See http://www.ti.com/product/opt3001 for more information.
+> 
+> Signed-off-by: Felipe Balbi <balbi@ti.com>
+> Signed-off-by: Andreas Dannenberg <dannenberg@ti.com>
+Hi Andreas,
+
+Looking pretty good to me, though I'd like to give Peter time to take
+another look and give his reviewed-by etc.
+
+One really minor suggestion from me...
+<snip>
 > +
-Run checkpatch over the patches.  Spaces around the +s
-> +		sc->last_data[AXIS_ACC_X] = (rd[offset+7] << 8) + rd[offset+6];
-> +		sc->last_data[AXIS_ACC_Y] = (rd[offset+9] << 8) + rd[offset+8];
-> +		sc->last_data[AXIS_ACC_Z] = (rd[offset+11] << 8) + rd[offset+10];
+> +static int opt3001_probe(struct i2c_client *client,
+> +		const struct i2c_device_id *id)
+> +{
+> +	struct device *dev = &client->dev;
 > +
-> +		sc->last_data[AXIS_GYRO_X] = (rd[offset+1] << 8) + rd[offset];
-> +		sc->last_data[AXIS_GYRO_Y] = (rd[offset+3] << 8) + rd[offset+2];
-> +		sc->last_data[AXIS_GYRO_Z] = (rd[offset+5] << 8) + rd[offset+4];
+> +	struct iio_dev *iio;
+> +	struct opt3001 *opt;
+> +	int irq = client->irq;
+> +	int ret = -ENOMEM;
 > +
-> +		if (sc->indio_dev) {
-> +			struct sony_iio *data;
+> +	iio = devm_iio_device_alloc(dev, sizeof(*opt));
+> +	if (!iio)
+return -ENOMEM; would be cleaner, then there is no need to initialize
+ret either.
+> +		return ret;
 > +
-> +			data = iio_priv(sc->indio_dev);
-> +			sony_iio_trigger_work(&data->work);
-> +		}
-> +#endif
->  		dualshock4_parse_report(sc, rd, size);
->  	}
->  
-> @@ -1827,6 +1849,7 @@ static int sony_iio_read_raw(struct iio_dev *indio_dev,
->  	case IIO_CHAN_INFO_RAW:
->  		switch (chan->type) {
->  		case IIO_ACCEL:
-> +		case IIO_ANGL_VEL:
->  			*val = data->sc->last_data[chan->address];
->  			return IIO_VAL_INT;
->  		default:
-> @@ -1835,8 +1858,17 @@ static int sony_iio_read_raw(struct iio_dev *indio_dev,
->  	case IIO_CHAN_INFO_SCALE:
->  		switch (chan->type) {
->  		case IIO_ACCEL:
-> -			*val = 0;	/* 9.80665/117 = 0.084540086 */
-> -			*val2 = 84540;
-> +			if (data->sc->quirks & SIXAXIS_CONTROLLER) {
-> +				*val = 0;	/* 9.80665/117 = 0.084540086 */
-> +				*val2 = 84540;
-> +			} else if (data->sc->quirks & DUALSHOCK4_CONTROLLER) {
-> +				*val = 0;	/* 9.80665/8192 = 0.001197101 */
-> +				*val2 = 1197;
-> +			}
-> +			return IIO_VAL_INT_PLUS_MICRO;
-> +		case IIO_ANGL_VEL:
-> +			*val = 0;	/* 0.001 */
-> +			*val2 = 1000;
->  			return IIO_VAL_INT_PLUS_MICRO;
->  		default:
->  			return -EINVAL;
-> @@ -1844,7 +1876,13 @@ static int sony_iio_read_raw(struct iio_dev *indio_dev,
->  	case IIO_CHAN_INFO_OFFSET:
->  		switch (chan->type) {
->  		case IIO_ACCEL:
-> -			*val = -512;
-> +			if (data->sc->quirks & SIXAXIS_CONTROLLER)
-> +				*val = -512;
-> +			else if (data->sc->quirks & DUALSHOCK4_CONTROLLER)
-> +				*val = 0;
-> +			return IIO_VAL_INT;
-> +		case IIO_ANGL_VEL:
-> +			*val = 0;
->  			return IIO_VAL_INT;
->  		default:
->  			return -EINVAL;
-> @@ -1871,6 +1909,23 @@ static int sony_iio_read_raw(struct iio_dev *indio_dev,
->  	},                                                              \
->  }
->  
-> +#define SONY_GYRO_CHANNEL(_axis) {                                      \
-> +	.type = IIO_ANGL_VEL,                                           \
-> +	.modified = 1,                                                  \
-> +	.channel2 = IIO_MOD_##_axis,                                    \
-> +	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),                   \
-> +	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE) |          \
-> +		BIT(IIO_CHAN_INFO_OFFSET),                              \
-> +	.address = AXIS_GYRO_##_axis,                                   \
-> +	.scan_index = AXIS_GYRO_##_axis,                                \
-> +	.scan_type = {                                                  \
-> +		.sign = 's',                                            \
-> +		.realbits = 16,                                         \
-> +		.storagebits = 16,                                      \
-> +		.shift = 0,                                             \
-Drop the specification of shift as unnecesary.
-> +	},                                                              \
+> +	opt = iio_priv(iio);
+> +	opt->client = client;
+> +	opt->dev = dev;
+> +
+> +	mutex_init(&opt->lock);
+> +	init_waitqueue_head(&opt->result_ready_queue);
+> +	i2c_set_clientdata(client, iio);
+> +
+> +	ret = opt3001_read_id(opt);
+> +	if (ret)
+> +		return ret;
+> +
+> +	ret = opt3001_configure(opt);
+> +	if (ret)
+> +		return ret;
+> +
+> +	iio->name = client->name;
+> +	iio->channels = opt3001_channels;
+> +	iio->num_channels = ARRAY_SIZE(opt3001_channels);
+> +	iio->dev.parent = dev;
+> +	iio->modes = INDIO_DIRECT_MODE;
+> +	iio->info = &opt3001_info;
+> +
+> +	ret = devm_iio_device_register(dev, iio);
+> +	if (ret) {
+> +		dev_err(dev, "failed to register IIO device\n");
+> +		return ret;
+> +	}
+> +
+> +	ret = request_threaded_irq(irq, NULL, opt3001_irq,
+> +			IRQF_TRIGGER_FALLING | IRQF_ONESHOT,
+> +			"opt3001", iio);
+> +	if (ret) {
+> +		dev_err(dev, "failed to request IRQ #%d\n", irq);
+> +		return ret;
+> +	}
+> +
+> +	return 0;
 > +}
 > +
->  static const struct iio_chan_spec sony_sixaxis_channels[] = {
->  	SONY_ACC_CHANNEL(X),
->  	SONY_ACC_CHANNEL(Y),
-> @@ -1878,6 +1933,16 @@ static const struct iio_chan_spec sony_sixaxis_channels[] = {
->  	IIO_CHAN_SOFT_TIMESTAMP(3),
->  };
->  
-> +static const struct iio_chan_spec sony_dualshock4_channels[] = {
-> +	SONY_ACC_CHANNEL(X),
-> +	SONY_ACC_CHANNEL(Y),
-> +	SONY_ACC_CHANNEL(Z),
-> +	SONY_GYRO_CHANNEL(X),
-> +	SONY_GYRO_CHANNEL(Y),
-> +	SONY_GYRO_CHANNEL(Z),
-> +	IIO_CHAN_SOFT_TIMESTAMP(6),
+> +static int opt3001_remove(struct i2c_client *client)
+> +{
+> +	struct iio_dev *iio = i2c_get_clientdata(client);
+> +	struct opt3001 *opt = iio_priv(iio);
+> +	int ret;
+> +	u16 reg;
+> +
+> +	free_irq(client->irq, iio);
+> +
+> +	ret = i2c_smbus_read_word_swapped(opt->client, OPT3001_CONFIGURATION);
+> +	if (ret < 0) {
+> +		dev_err(opt->dev, "failed to read register %02x\n",
+> +				OPT3001_CONFIGURATION);
+> +		return ret;
+> +	}
+> +
+> +	reg = ret;
+> +	opt3001_set_mode(opt, &reg, OPT3001_CONFIGURATION_M_SHUTDOWN);
+> +
+> +	ret = i2c_smbus_write_word_swapped(opt->client, OPT3001_CONFIGURATION,
+> +			reg);
+> +	if (ret < 0) {
+> +		dev_err(opt->dev, "failed to write register %02x\n",
+> +				OPT3001_CONFIGURATION);
+> +		return ret;
+> +	}
+> +
+> +	return 0;
+> +}
+> +
+> +static const struct i2c_device_id opt3001_id[] = {
+> +	{ "opt3001", 0 },
+> +	{ } /* Terminating Entry */
+> +};
+> +MODULE_DEVICE_TABLE(i2c, opt3001_id);
+> +
+> +static const struct of_device_id opt3001_of_match[] = {
+> +	{ .compatible = "ti,opt3001" },
+> +	{ }
 > +};
 > +
->  static const struct iio_info sony_iio_info = {
->  	.read_raw = &sony_iio_read_raw,
->  	.driver_module = THIS_MODULE,
-> @@ -1943,8 +2008,14 @@ static int sony_iio_probe(struct sony_sc *sc)
->  	indio_dev->name = dev_name(&hdev->dev);
->  	indio_dev->modes = INDIO_DIRECT_MODE | INDIO_BUFFER_TRIGGERED;
->  	indio_dev->info = &sony_iio_info;
-> -	indio_dev->channels = sony_sixaxis_channels;
-> -	indio_dev->num_channels = ARRAY_SIZE(sony_sixaxis_channels);
+> +static struct i2c_driver opt3001_driver = {
+> +	.probe = opt3001_probe,
+> +	.remove = opt3001_remove,
+> +	.id_table = opt3001_id,
 > +
-> +	if (sc->quirks & SIXAXIS_CONTROLLER) {
-> +		indio_dev->channels = sony_sixaxis_channels;
-> +		indio_dev->num_channels = ARRAY_SIZE(sony_sixaxis_channels);
-> +	} else if (sc->quirks & DUALSHOCK4_CONTROLLER) {
-> +		indio_dev->channels = sony_dualshock4_channels;
-> +		indio_dev->num_channels = ARRAY_SIZE(sony_dualshock4_channels);
-> +	}
->  
->  	data->trig = iio_trigger_alloc("%s-dev%d", indio_dev->name,
->  		indio_dev->id);
+> +	.driver = {
+> +		.name = "opt3001",
+> +		.of_match_table = of_match_ptr(opt3001_of_match),
+> +		.owner = THIS_MODULE,
+> +	},
+> +};
+> +
+> +module_i2c_driver(opt3001_driver);
+> +
+> +MODULE_LICENSE("GPL v2");
+> +MODULE_AUTHOR("Andreas Dannenberg <dannenberg@ti.com>");
+> +MODULE_DESCRIPTION("Texas Instruments OPT3001 Light Sensor Driver");
 > 
 
