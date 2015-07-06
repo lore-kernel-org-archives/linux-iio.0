@@ -4,15 +4,15 @@ To: Linus Walleij <linus.walleij@linaro.org>,
 	Alexandre Courbot <gnurou@gmail.com>
 Cc: linux-gpio@vger.kernel.org,
 	kernel@pengutronix.de,
+	Tiberiu Breana <tiberiu.a.breana@intel.com>,
 	Jonathan Cameron <jic23@kernel.org>,
 	Hartmut Knaack <knaack.h@gmx.de>,
 	Lars-Peter Clausen <lars@metafoo.de>,
 	Peter Meerwald <pmeerw@pmeerw.net>,
-	Irina Tirdea <irina.tirdea@intel.com>,
 	linux-iio@vger.kernel.org
-Subject: [PATCH gpio-for-next 04/10] iio: magn: bmc150: use flags argument of devm_gpiod_get
-Date: Mon,  6 Jul 2015 11:09:44 +0200
-Message-Id: <1436173790-29963-4-git-send-email-u.kleine-koenig@pengutronix.de>
+Subject: [PATCH gpio-for-next 03/10] iio: light: stk3310: use flags argument of devm_gpiod_get
+Date: Mon,  6 Jul 2015 11:09:43 +0200
+Message-Id: <1436173790-29963-3-git-send-email-u.kleine-koenig@pengutronix.de>
 In-Reply-To: <20150706090759.GS11824@pengutronix.de>
 References: <20150706090759.GS11824@pengutronix.de>
 MIME-Version: 1.0
@@ -29,21 +29,21 @@ stops us making the flags argument to gpiod_get*() mandatory.
 Acked-by: Jonathan Cameron <jic23@kernel.org>
 Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 ---
- drivers/iio/magnetometer/bmc150_magn.c | 6 +-----
+ drivers/iio/light/stk3310.c | 6 +-----
  1 file changed, 1 insertion(+), 5 deletions(-)
 
-diff --git a/drivers/iio/magnetometer/bmc150_magn.c b/drivers/iio/magnetometer/bmc150_magn.c
-index d4c178869991..187a31fdc35a 100644
---- a/drivers/iio/magnetometer/bmc150_magn.c
-+++ b/drivers/iio/magnetometer/bmc150_magn.c
-@@ -839,16 +839,12 @@ static int bmc150_magn_gpio_probe(struct i2c_client *client)
+diff --git a/drivers/iio/light/stk3310.c b/drivers/iio/light/stk3310.c
+index fee4297d7c8f..84c77d42a2c6 100644
+--- a/drivers/iio/light/stk3310.c
++++ b/drivers/iio/light/stk3310.c
+@@ -488,16 +488,12 @@ static int stk3310_gpio_probe(struct i2c_client *client)
  	dev = &client->dev;
  
- 	/* data ready GPIO interrupt pin */
--	gpio = devm_gpiod_get_index(dev, BMC150_MAGN_GPIO_INT, 0);
-+	gpio = devm_gpiod_get_index(dev, BMC150_MAGN_GPIO_INT, 0, GPIOD_IN);
+ 	/* gpio interrupt pin */
+-	gpio = devm_gpiod_get_index(dev, STK3310_GPIO, 0);
++	gpio = devm_gpiod_get_index(dev, STK3310_GPIO, 0, GPIOD_IN);
  	if (IS_ERR(gpio)) {
- 		dev_err(dev, "ACPI GPIO get index failed\n");
+ 		dev_err(dev, "acpi gpio get index failed\n");
  		return PTR_ERR(gpio);
  	}
  
@@ -52,7 +52,7 @@ index d4c178869991..187a31fdc35a 100644
 -		return ret;
 -
  	ret = gpiod_to_irq(gpio);
- 
  	dev_dbg(dev, "GPIO resource, no:%d irq:%d\n", desc_to_gpio(gpio), ret);
+ 
 -- 
 2.1.4
