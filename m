@@ -14,40 +14,67 @@ To: jic23@kernel.org,
 Cc: devicetree@vger.kernel.org,
 	linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
-	christoph.muellner@theobroma-systems.com
-Subject: [PATCH v4 0/8] iio:mma8452: improve driver and support more chips
-Date: Mon,  6 Jul 2015 14:34:14 +0200
-Message-Id: <1436186062-5766-1-git-send-email-martink@posteo.de>
+	christoph.muellner@theobroma-systems.com,
+	Martin Kepplinger <martink@posteo.de>,
+	Martin Kepplinger <martin.kepplinger@theobroma-systems.com>
+Subject: [PATCH 5/8] iio: mma8452: add devicetree binding document
+Date: Mon,  6 Jul 2015 14:34:19 +0200
+Message-Id: <1436186062-5766-6-git-send-email-martink@posteo.de>
+In-Reply-To: <1436186062-5766-1-git-send-email-martink@posteo.de>
+References: <1436186062-5766-1-git-send-email-martink@posteo.de>
 List-ID: <linux-iio@vger.kernel.org>
 
-This is version 4 of the mma8452 driver improvements. This version removes
-one patch that changed the iio event type for existing users. It can be
-dealt with seperately and this series applies without it.
+As we support more chips now, add a binding document and remove it from
+i2c trivial-devices.txt list.
 
-Also, changes according to Jonathan's review are applied and a few
-devicetree maintainers are added as recipients.
+The binding document is further extended in a later patch of this series.
 
+Signed-off-by: Martin Kepplinger <martin.kepplinger@theobroma-systems.com>
+Signed-off-by: Christoph Muellner <christoph.muellner@theobroma-systems.com>
+---
+ .../devicetree/bindings/i2c/trivial-devices.txt     |  1 -
+ .../devicetree/bindings/iio/accel/mma8452.txt       | 21 +++++++++++++++++++++
+ 2 files changed, 21 insertions(+), 1 deletion(-)
+ create mode 100644 Documentation/devicetree/bindings/iio/accel/mma8452.txt
 
-These changes add support for motion interrupts and 3 more accelerometer
-chips, two of which use them because they don't support the until now
-included transient interrupt sources:
-
-MMA8453Q, MMA8652FC and MMA8653FC; datasheets are in the commit messages.
-
-The driver and module name remains the same, seperating it from the device
-names it now supports.
-
-On top of this, there are minor documentation additions, and more notably,
- it allows to use the driver, no matter how the interrupt pins are wired
-on your board.
-
-Please review and test if you can. For MMA8452Q, nothing should have
-changed.
-
-revision history
-----------------
-v4   cleanup; one bugfix patch removed from series; DT people added
-v3   adds one patch to allow all possible pin wirings; adds more email
-     recipients
-v2   splits the work into a series of smaller pieces
-v1   initial post
+diff --git a/Documentation/devicetree/bindings/i2c/trivial-devices.txt b/Documentation/devicetree/bindings/i2c/trivial-devices.txt
+index 00f8652..094238a 100644
+--- a/Documentation/devicetree/bindings/i2c/trivial-devices.txt
++++ b/Documentation/devicetree/bindings/i2c/trivial-devices.txt
+@@ -54,7 +54,6 @@ epson,rx8581		I2C-BUS INTERFACE REAL TIME CLOCK MODULE
+ fsl,mag3110		MAG3110: Xtrinsic High Accuracy, 3D Magnetometer
+ fsl,mc13892		MC13892: Power Management Integrated Circuit (PMIC) for i.MX35/51
+ fsl,mma8450		MMA8450Q: Xtrinsic Low-power, 3-axis Xtrinsic Accelerometer
+-fsl,mma8452		MMA8452Q: 3-axis 12-bit / 8-bit Digital Accelerometer
+ fsl,mpr121		MPR121: Proximity Capacitive Touch Sensor Controller
+ fsl,sgtl5000		SGTL5000: Ultra Low-Power Audio Codec
+ gmt,g751		G751: Digital Temperature Sensor and Thermal Watchdog with Two-Wire Interface
+diff --git a/Documentation/devicetree/bindings/iio/accel/mma8452.txt b/Documentation/devicetree/bindings/iio/accel/mma8452.txt
+new file mode 100644
+index 0000000..8d98e05
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/accel/mma8452.txt
+@@ -0,0 +1,21 @@
++Freescale MMA8452Q, MMA8453Q, MMA8652FC or MMA8653FC triaxial accelerometer
++
++Required properties:
++
++  - compatible: should be "fsl,mma8653", "fsl,mma8652", "fsl,mma8453" or
++    "fsl,mma8452" respectively.
++  - reg: the I2C address of the chip
++
++Optional properties:
++
++  - interrupt-parent: should be the phandle for the interrupt controller
++  - interrupts: interrupt mapping for GPIO IRQ
++
++Example:
++
++	mma8653fc@1d {
++		compatible = "fsl,mma8653";
++		reg = <0x1d>;
++		interrupt-parent = <&gpio1>;
++		interrupts = <5 0>;
++	};
+-- 
+2.1.4
