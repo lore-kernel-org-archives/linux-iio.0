@@ -1,108 +1,112 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga11.intel.com ([192.55.52.93]:49934 "EHLO mga11.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1750985AbbGFJFi convert rfc822-to-8bit (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 6 Jul 2015 05:05:38 -0400
-From: "Breana, Tiberiu A" <tiberiu.a.breana@intel.com>
-To: Hartmut Knaack <knaack.h@gmx.de>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-CC: Jonathan Cameron <jic23@kernel.org>,
+Return-Path: <ukl@pengutronix.de>
+Date: Mon, 6 Jul 2015 11:07:59 +0200
+From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
+To: Linus Walleij <linus.walleij@linaro.org>,
+	Alexandre Courbot <gnurou@gmail.com>
+Cc: linux-gpio@vger.kernel.org, kernel@pengutronix.de,
+	Aloisio Almeida Jr <aloisio.almeida@openbossa.org>,
+	Charles Gorand <charles.gorand@effinnov.com>,
+	Daniel Mack <daniel@zonque.org>, David Airlie <airlied@linux.ie>,
+	dri-devel@lists.freedesktop.org,
+	Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>,
+	Felipe Balbi <balbi@ti.com>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Haojian Zhuang <haojian.zhuang@gmail.com>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+	Irina Tirdea <irina.tirdea@intel.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Kishon Vijay Abraham I <kishon@ti.com>,
 	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>
-Subject: RE: [PATCH 2/5] iio:light:stk3310: make endianness independent of
- host
-Date: Mon, 6 Jul 2015 09:05:34 +0000
-Message-ID: <4586F61A4A291F4DA44D32824E7C0F402216C862@IRSMSX109.ger.corp.intel.com>
-References: <cover.1436024257.git.knaack.h@gmx.de>
- <c29ff5a7d9a6dc486389171542ebef3737cb253f.1436024257.git.knaack.h@gmx.de>
-In-Reply-To: <c29ff5a7d9a6dc486389171542ebef3737cb253f.1436024257.git.knaack.h@gmx.de>
-Content-Type: text/plain; charset="us-ascii"
+	Lauro Ramos Venancio <lauro.venancio@openbossa.org>,
+	linux-iio@vger.kernel.org, linux-media@vger.kernel.org,
+	linux-nfc@ml01.01.org, linux-omap@vger.kernel.org,
+	linux-usb@vger.kernel.org,
+	Mauro Carvalho Chehab <mchehab@osg.samsung.com>,
+	Oleg Zhurakivskyy <oleg.zhurakivskyy@intel.com>,
+	Pavel Machek <pavel@ucw.cz>, Peter Meerwald <pmeerw@pmeerw.net>,
+	Robert Jarzmik <robert.jarzmik@free.fr>,
+	Sakari Ailus <sakari.ailus@iki.fi>,
+	Samuel Ortiz <sameo@linux.intel.com>,
+	Tiberiu Breana <tiberiu.a.breana@intel.com>
+Subject: [PULL gpio-for-next] gpio: make flags mandatory for gpiod_get
+ functions
+Message-ID: <20150706090759.GS11824@pengutronix.de>
+References: <1434404169-4639-1-git-send-email-u.kleine-koenig@pengutronix.de>
 MIME-Version: 1.0
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain; charset=iso-8859-1
+In-Reply-To: <1434404169-4639-1-git-send-email-u.kleine-koenig@pengutronix.de>
+List-ID: <linux-iio@vger.kernel.org>
 
-> -----Original Message-----
-> From: Hartmut Knaack [mailto:knaack.h@gmx.de]
-> Sent: Saturday, July 4, 2015 6:57 PM
-> To: linux-iio@vger.kernel.org
-> Cc: Jonathan Cameron; Lars-Peter Clausen; Peter Meerwald; Breana, Tiberiu
-> A
-> Subject: [PATCH 2/5] iio:light:stk3310: make endianness independent of host
-> 
-> Data is stored in the device in be16 format. Make use of be16_to_cpu and
-> cpu_to_be16 to have correct endianness on any host architecture.
-> 
-> Signed-off-by: Hartmut Knaack <knaack.h@gmx.de>
+Hello,
 
-+1
+now that all patches that were in next hit Linus Torvalds' tree and
+v4.2-rc1 is out here comes the promised pull request that makes usage of
+the flags parameter mandatory for gpiod_get et al:
 
-Reviewed-by: Tiberiu Breana <tiberiu.a.breana@intel.com>
+The following changes since commit d770e558e21961ad6cfdf0ff7df0eb5d7d4f0754:
 
-> ---
->  drivers/iio/light/stk3310.c | 12 ++++++------
->  1 file changed, 6 insertions(+), 6 deletions(-)
-> 
-> diff --git a/drivers/iio/light/stk3310.c b/drivers/iio/light/stk3310.c index
-> c1a2182..c52c730 100644
-> --- a/drivers/iio/light/stk3310.c
-> +++ b/drivers/iio/light/stk3310.c
-> @@ -200,7 +200,7 @@ static int stk3310_read_event(struct iio_dev
-> *indio_dev,
->  			      int *val, int *val2)
->  {
->  	u8 reg;
-> -	u16 buf;
-> +	__be16 buf;
->  	int ret;
->  	struct stk3310_data *data = iio_priv(indio_dev);
-> 
-> @@ -222,7 +222,7 @@ static int stk3310_read_event(struct iio_dev
-> *indio_dev,
->  		dev_err(&data->client->dev, "register read failed\n");
->  		return ret;
->  	}
-> -	*val = swab16(buf);
-> +	*val = be16_to_cpu(buf);
-> 
->  	return IIO_VAL_INT;
->  }
-> @@ -235,7 +235,7 @@ static int stk3310_write_event(struct iio_dev
-> *indio_dev,
->  			       int val, int val2)
->  {
->  	u8 reg;
-> -	u16 buf;
-> +	__be16 buf;
->  	int ret;
->  	unsigned int index;
->  	struct stk3310_data *data = iio_priv(indio_dev); @@ -252,7 +252,7
-> @@ static int stk3310_write_event(struct iio_dev *indio_dev,
->  	else
->  		return -EINVAL;
-> 
-> -	buf = swab16(val);
-> +	buf = cpu_to_be16(val);
->  	ret = regmap_bulk_write(data->regmap, reg, &buf, 2);
->  	if (ret < 0)
->  		dev_err(&client->dev, "failed to set PS threshold!\n"); @@ -
-> 301,7 +301,7 @@ static int stk3310_read_raw(struct iio_dev *indio_dev,
->  			    int *val, int *val2, long mask)
->  {
->  	u8 reg;
-> -	u16 buf;
-> +	__be16 buf;
->  	int ret;
->  	unsigned int index;
->  	struct stk3310_data *data = iio_priv(indio_dev); @@ -322,7 +322,7
-> @@ static int stk3310_read_raw(struct iio_dev *indio_dev,
->  			mutex_unlock(&data->lock);
->  			return ret;
->  		}
-> -		*val = swab16(buf);
-> +		*val = be16_to_cpu(buf);
->  		mutex_unlock(&data->lock);
->  		return IIO_VAL_INT;
->  	case IIO_CHAN_INFO_INT_TIME:
-> --
-> 2.3.6
+  Linux 4.2-rc1 (2015-07-05 11:01:52 -0700)
 
+are available in the git repository at:
+
+  git://git.pengutronix.de/git/ukl/linux.git tags/gpiod-flags-for-4.3
+
+for you to fetch changes up to b17d1bf16cc72a374a48d748940f700009d40ff4:
+
+  gpio: make flags mandatory for gpiod_get functions (2015-07-06 10:39:24 +0200)
+
+----------------------------------------------------------------
+The last patch in this series makes the flags parameter for the various
+gpiod_get* functions mandatory and so allows to remove an ugly cpp hack
+introduced in commit 39b2bbe3d715 (gpio: add flags argument to gpiod_get*()
+functions) for v3.17-rc1.
+
+The other nine commits fix the last remaining users of these functions that
+don't pass flags yet. (Only etraxfs-uart wasn't fixed; this driver's use of the
+gpiod functions needs fixing anyhow.)
+
+----------------------------------------------------------------
+
+According to the coccinelle-script I wrote all users (apart from
+etraxfs-uart) are fixed now.
+
+As some of the maintainers requested it, I'll resend the patches
+contained in this series as a reply to this mail.
+
+It would be great if this could be put into next via the gpio tree to
+give new users enough time to adapt their patches.
+
+Thanks
+Uwe
+
+Uwe Kleine-König (10):
+      drm/msm/dp: use flags argument of devm_gpiod_get to set direction
+      drm/tilcdc: panel: make better use of gpiod API
+      iio: light: stk3310: use flags argument of devm_gpiod_get
+      iio: magn: bmc150: use flags argument of devm_gpiod_get
+      media: i2c/adp1653: set enable gpio to output
+      NFC: nxp-nci_i2c: use flags argument of devm_gpiod_get_index
+      phy: tusb1210: make better use of gpiod API
+      usb: dwc3: pci: make better use of gpiod API
+      usb: pass flags parameter to gpiod_get functions
+      gpio: make flags mandatory for gpiod_get functions
+
+ drivers/gpio/devres.c                  | 18 ++++----
+ drivers/gpio/gpiolib.c                 | 16 +++----
+ drivers/gpu/drm/msm/edp/edp_ctrl.c     | 17 +------
+ drivers/gpu/drm/tilcdc/tilcdc_panel.c  | 22 +++------
+ drivers/iio/light/stk3310.c            |  6 +--
+ drivers/iio/magnetometer/bmc150_magn.c |  6 +--
+ drivers/media/i2c/adp1653.c            |  2 +-
+ drivers/nfc/nxp-nci/i2c.c              | 10 ++---
+ drivers/phy/phy-tusb1210.c             | 30 +++++--------
+ drivers/usb/dwc3/dwc3-pci.c            | 26 ++++++-----
+ drivers/usb/gadget/udc/pxa27x_udc.c    |  2 +-
+ drivers/usb/phy/phy-generic.c          |  6 ++-
+ include/linux/gpio/consumer.h          | 82 ++++++++++------------------------
+ 13 files changed, 88 insertions(+), 155 deletions(-)
+
+-- 
+Pengutronix e.K.                           | Uwe Kleine-König            |
+Industrial Linux Solutions                 | http://www.pengutronix.de/  |
