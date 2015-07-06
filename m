@@ -1,55 +1,72 @@
 Return-Path: <tiberiu.a.breana@intel.com>
 From: "Breana, Tiberiu A" <tiberiu.a.breana@intel.com>
-To: =?utf-8?B?VXdlIEtsZWluZS1Lw7ZuaWc=?= <u.kleine-koenig@pengutronix.de>,
-	Linus Walleij <linus.walleij@linaro.org>, Alexandre Courbot
-	<gnurou@gmail.com>
-CC: "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>,
-	"kernel@pengutronix.de" <kernel@pengutronix.de>, Jonathan Cameron
-	<jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>, Lars-Peter Clausen
-	<lars@metafoo.de>, Peter Meerwald <pmeerw@pmeerw.net>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Subject: RE: [PATCH gpio-for-next 03/10] iio: light: stk3310: use flags
- argument of devm_gpiod_get
-Date: Mon, 6 Jul 2015 09:35:44 +0000
-Message-ID: <4586F61A4A291F4DA44D32824E7C0F402216D8E5@IRSMSX109.ger.corp.intel.com>
-References: <20150706090759.GS11824@pengutronix.de>
- <1436173790-29963-3-git-send-email-u.kleine-koenig@pengutronix.de>
-In-Reply-To: <1436173790-29963-3-git-send-email-u.kleine-koenig@pengutronix.de>
-Content-Type: text/plain; charset="utf-8"
+To: Hartmut Knaack <knaack.h@gmx.de>, "linux-iio@vger.kernel.org"
+	<linux-iio@vger.kernel.org>
+CC: Jonathan Cameron <jic23@kernel.org>, Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>
+Subject: RE: [PATCH 5/5] iio:light:stk3310: adjust indentation
+Date: Mon, 6 Jul 2015 09:34:09 +0000
+Message-ID: <4586F61A4A291F4DA44D32824E7C0F402216D8D6@IRSMSX109.ger.corp.intel.com>
+References: <cover.1436024257.git.knaack.h@gmx.de>
+ <4d3814bde208bce5f8257da0df7badc3787187ff.1436024257.git.knaack.h@gmx.de>
+In-Reply-To: <4d3814bde208bce5f8257da0df7badc3787187ff.1436024257.git.knaack.h@gmx.de>
+Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 List-ID: <linux-iio@vger.kernel.org>
 
-PiAtLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPiBGcm9tOiBVd2UgS2xlaW5lLUvDtm5pZyBb
-bWFpbHRvOnUua2xlaW5lLWtvZW5pZ0BwZW5ndXRyb25peC5kZV0NCj4gU2VudDogTW9uZGF5LCBK
-dWx5IDYsIDIwMTUgMTI6MTAgUE0NCj4gVG86IExpbnVzIFdhbGxlaWo7IEFsZXhhbmRyZSBDb3Vy
-Ym90DQo+IENjOiBsaW51eC1ncGlvQHZnZXIua2VybmVsLm9yZzsga2VybmVsQHBlbmd1dHJvbml4
-LmRlOyBCcmVhbmEsIFRpYmVyaXUgQTsNCj4gSm9uYXRoYW4gQ2FtZXJvbjsgSGFydG11dCBLbmFh
-Y2s7IExhcnMtUGV0ZXIgQ2xhdXNlbjsgUGV0ZXIgTWVlcndhbGQ7DQo+IGxpbnV4LWlpb0B2Z2Vy
-Lmtlcm5lbC5vcmcNCj4gU3ViamVjdDogW1BBVENIIGdwaW8tZm9yLW5leHQgMDMvMTBdIGlpbzog
-bGlnaHQ6IHN0azMzMTA6IHVzZSBmbGFncyBhcmd1bWVudCBvZg0KPiBkZXZtX2dwaW9kX2dldA0K
-PiANCj4gU2luY2UgMzliMmJiZTNkNzE1IChncGlvOiBhZGQgZmxhZ3MgYXJndW1lbnQgdG8gZ3Bp
-b2RfZ2V0KigpIGZ1bmN0aW9ucykNCj4gd2hpY2ggYXBwZWFyZWQgaW4gdjMuMTctcmMxLCB0aGUg
-Z3Bpb2RfZ2V0KiBmdW5jdGlvbnMgdGFrZSBhbiBhZGRpdGlvbmFsDQo+IHBhcmFtZXRlciB0aGF0
-IGFsbG93cyB0byBzcGVjaWZ5IGRpcmVjdGlvbiBhbmQgaW5pdGlhbCB2YWx1ZSBmb3Igb3V0cHV0
-Lg0KPiANCj4gU2ltcGxpZnkgZHJpdmVyIGFjY29yZGluZ2x5LiBGdXJ0aGVybW9yZSB0aGlzIGlz
-IG9uZSBjYWxsZXIgbGVzcyB0aGF0IHN0b3BzIHVzDQo+IG1ha2luZyB0aGUgZmxhZ3MgYXJndW1l
-bnQgdG8gZ3Bpb2RfZ2V0KigpIG1hbmRhdG9yeS4NCj4gDQo+IEFja2VkLWJ5OiBKb25hdGhhbiBD
-YW1lcm9uIDxqaWMyM0BrZXJuZWwub3JnPg0KPiBTaWduZWQtb2ZmLWJ5OiBVd2UgS2xlaW5lLUvD
-tm5pZyA8dS5rbGVpbmUta29lbmlnQHBlbmd1dHJvbml4LmRlPg0KDQorMQ0KDQpSZXZpZXdlZC1i
-eTogVGliZXJpdSBCcmVhbmEgPHRpYmVyaXUuYS5icmVhbmFAaW50ZWwuY29tPg0KDQo+IC0tLQ0K
-PiAgZHJpdmVycy9paW8vbGlnaHQvc3RrMzMxMC5jIHwgNiArLS0tLS0NCj4gIDEgZmlsZSBjaGFu
-Z2VkLCAxIGluc2VydGlvbigrKSwgNSBkZWxldGlvbnMoLSkNCj4gDQo+IGRpZmYgLS1naXQgYS9k
-cml2ZXJzL2lpby9saWdodC9zdGszMzEwLmMgYi9kcml2ZXJzL2lpby9saWdodC9zdGszMzEwLmMg
-aW5kZXgNCj4gZmVlNDI5N2Q3YzhmLi44NGM3N2Q0MmEyYzYgMTAwNjQ0DQo+IC0tLSBhL2RyaXZl
-cnMvaWlvL2xpZ2h0L3N0azMzMTAuYw0KPiArKysgYi9kcml2ZXJzL2lpby9saWdodC9zdGszMzEw
-LmMNCj4gQEAgLTQ4OCwxNiArNDg4LDEyIEBAIHN0YXRpYyBpbnQgc3RrMzMxMF9ncGlvX3Byb2Jl
-KHN0cnVjdCBpMmNfY2xpZW50DQo+ICpjbGllbnQpDQo+ICAJZGV2ID0gJmNsaWVudC0+ZGV2Ow0K
-PiANCj4gIAkvKiBncGlvIGludGVycnVwdCBwaW4gKi8NCj4gLQlncGlvID0gZGV2bV9ncGlvZF9n
-ZXRfaW5kZXgoZGV2LCBTVEszMzEwX0dQSU8sIDApOw0KPiArCWdwaW8gPSBkZXZtX2dwaW9kX2dl
-dF9pbmRleChkZXYsIFNUSzMzMTBfR1BJTywgMCwgR1BJT0RfSU4pOw0KPiAgCWlmIChJU19FUlIo
-Z3BpbykpIHsNCj4gIAkJZGV2X2VycihkZXYsICJhY3BpIGdwaW8gZ2V0IGluZGV4IGZhaWxlZFxu
-Iik7DQo+ICAJCXJldHVybiBQVFJfRVJSKGdwaW8pOw0KPiAgCX0NCj4gDQo+IC0JcmV0ID0gZ3Bp
-b2RfZGlyZWN0aW9uX2lucHV0KGdwaW8pOw0KPiAtCWlmIChyZXQpDQo+IC0JCXJldHVybiByZXQ7
-DQo+IC0NCj4gIAlyZXQgPSBncGlvZF90b19pcnEoZ3Bpbyk7DQo+ICAJZGV2X2RiZyhkZXYsICJH
-UElPIHJlc291cmNlLCBubzolZCBpcnE6JWRcbiIsIGRlc2NfdG9fZ3BpbyhncGlvKSwNCj4gcmV0
-KTsNCj4gDQo+IC0tDQo+IDIuMS40DQoNCg==
+> -----Original Message-----
+> From: Hartmut Knaack [mailto:knaack.h@gmx.de]
+> Sent: Saturday, July 4, 2015 6:57 PM
+> To: linux-iio@vger.kernel.org
+> Cc: Jonathan Cameron; Lars-Peter Clausen; Peter Meerwald; Breana, Tiberiu
+> A
+> Subject: [PATCH 5/5] iio:light:stk3310: adjust indentation
+>=20
+> Adjust some indentation issues as spotted by checkpatch.pl --strict
+>=20
+> Signed-off-by: Hartmut Knaack <knaack.h@gmx.de>
+
++1
+
+Reviewed-by: Tiberiu Breana <tiberiu.a.breana@intel.com>
+
+> ---
+>  drivers/iio/light/stk3310.c | 6 +++---
+>  1 file changed, 3 insertions(+), 3 deletions(-)
+>=20
+> diff --git a/drivers/iio/light/stk3310.c b/drivers/iio/light/stk3310.c in=
+dex
+> be715c7..2760f67 100644
+> --- a/drivers/iio/light/stk3310.c
+> +++ b/drivers/iio/light/stk3310.c
+> @@ -385,7 +385,7 @@ static int stk3310_write_raw(struct iio_dev
+> *indio_dev,
+>  			ret =3D regmap_field_write(data->reg_ps_it, index);
+>  		if (ret < 0)
+>  			dev_err(&data->client->dev,
+> -					"sensor configuration failed\n");
+> +				"sensor configuration failed\n");
+>  		mutex_unlock(&data->lock);
+>  		return ret;
+>=20
+> @@ -402,7 +402,7 @@ static int stk3310_write_raw(struct iio_dev
+> *indio_dev,
+>  			ret =3D regmap_field_write(data->reg_ps_gain, index);
+>  		if (ret < 0)
+>  			dev_err(&data->client->dev,
+> -					"sensor configuration failed\n");
+> +				"sensor configuration failed\n");
+>  		mutex_unlock(&data->lock);
+>  		return ret;
+>  	}
+> @@ -649,7 +649,7 @@ static int stk3310_probe(struct i2c_client *client,
+>  						STK3310_EVENT, indio_dev);
+>  		if (ret < 0) {
+>  			dev_err(&client->dev, "request irq %d failed\n",
+> -					client->irq);
+> +				client->irq);
+>  			goto err_unregister;
+>  		}
+>  	}
+> --
+> 2.3.6
