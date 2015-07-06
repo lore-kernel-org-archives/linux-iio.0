@@ -1,28 +1,21 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-wi0-f180.google.com ([209.85.212.180]:37685 "EHLO
-	mail-wi0-f180.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752695AbbGFWiy (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 6 Jul 2015 18:38:54 -0400
-Date: Tue, 7 Jul 2015 01:36:19 +0300
+Received: from mail-wi0-f176.google.com ([209.85.212.176]:35977 "EHLO
+	mail-wi0-f176.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753687AbbGFWsy (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 6 Jul 2015 18:48:54 -0400
+Date: Tue, 7 Jul 2015 01:46:19 +0300
 From: Cristina Opriceana <cristina.opriceana@gmail.com>
 To: jic23@kernel.org
 Cc: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
 	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
 	daniel.baluta@intel.com, octavian.purdila@intel.com,
 	julia.lawall@lip6.fr
-Message-ID: <20150706223618.GA23872@Inspiron>
+Subject: [PATCH 0/4] tools: iio: Send error messages to stderr
+Message-ID: <cover.1436220932.git.cristina.opriceana@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
-
-linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-daniel.baluta@intel.com, octavian.purdila@intel.com,
-julia.lawall@lip6.fr
-Bcc: 
-Subject: [PATCH 0/4] tools: iio: Send error messages to stderr
-Message-ID: <cover.1436220932.git.cristina.opriceana@gmail.com>
-Reply-To: 
 
 This patchset indends to make some cleanup and send printf
 error messages to stderr.
