@@ -14,77 +14,40 @@ To: jic23@kernel.org,
 Cc: devicetree@vger.kernel.org,
 	linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
-	christoph.muellner@theobroma-systems.com,
-	Martin Kepplinger <martink@posteo.de>,
-	Martin Kepplinger <martin.kepplinger@theobroma-systems.com>
-Subject: [PATCH 8/8] iio: mma8452: add devicetree property to allow all pin wirings
-Date: Mon,  6 Jul 2015 14:34:22 +0200
-Message-Id: <1436186062-5766-9-git-send-email-martink@posteo.de>
-In-Reply-To: <1436186062-5766-1-git-send-email-martink@posteo.de>
-References: <1436186062-5766-1-git-send-email-martink@posteo.de>
+	christoph.muellner@theobroma-systems.com
+Subject: [PATCH v4 0/8] iio:mma8452: improve driver and support more chips
+Date: Mon,  6 Jul 2015 14:34:14 +0200
+Message-Id: <1436186062-5766-1-git-send-email-martink@posteo.de>
 List-ID: <linux-iio@vger.kernel.org>
 
-For the devices supported by the mma8452 driver, two interrupt pins are
-available to route the interrupt signals to. By default INT1 is assumed.
+This is version 4 of the mma8452 driver improvements. This version removes
+one patch that changed the iio event type for existing users. It can be
+dealt with seperately and this series applies without it.
 
-This adds a simple boolean DT property, for users to configure it for
-INT2, if that is the wired interrupt pin for them.
+Also, changes according to Jonathan's review are applied and a few
+devicetree maintainers are added as recipients.
 
-This is important for everyone to be able to use this driver, no matter
-how their chip is wired.
 
-Since this doesn't change the default behaviour, it doesn't break anything
-for existing users.
+These changes add support for motion interrupts and 3 more accelerometer
+chips, two of which use them because they don't support the until now
+included transient interrupt sources:
 
-Signed-off-by: Martin Kepplinger <martin.kepplinger@theobroma-systems.com>
-Signed-off-by: Christoph Muellner <christoph.muellner@theobroma-systems.com>
----
- Documentation/devicetree/bindings/iio/accel/mma8452.txt |  2 ++
- drivers/iio/accel/mma8452.c                             | 14 ++++++++------
- 2 files changed, 10 insertions(+), 6 deletions(-)
+MMA8453Q, MMA8652FC and MMA8653FC; datasheets are in the commit messages.
 
-diff --git a/Documentation/devicetree/bindings/iio/accel/mma8452.txt b/Documentation/devicetree/bindings/iio/accel/mma8452.txt
-index 8d98e05..9bad1fc 100644
---- a/Documentation/devicetree/bindings/iio/accel/mma8452.txt
-+++ b/Documentation/devicetree/bindings/iio/accel/mma8452.txt
-@@ -10,6 +10,7 @@ Optional properties:
- 
-   - interrupt-parent: should be the phandle for the interrupt controller
-   - interrupts: interrupt mapping for GPIO IRQ
-+  - use_int2: assume interrupt pin wired to INT2 instead of INT1
- 
- Example:
- 
-@@ -18,4 +19,5 @@ Example:
- 		reg = <0x1d>;
- 		interrupt-parent = <&gpio1>;
- 		interrupts = <5 0>;
-+		use_int2;
- 	};
-diff --git a/drivers/iio/accel/mma8452.c b/drivers/iio/accel/mma8452.c
-index 2b8ed67..f8ba146 100644
---- a/drivers/iio/accel/mma8452.c
-+++ b/drivers/iio/accel/mma8452.c
-@@ -1105,12 +1105,14 @@ static int mma8452_probe(struct i2c_client *client,
- 		int enabled_interrupts = MMA8452_INT_TRANS |
- 					 MMA8452_INT_FF_MT;
- 
--		/* Assume wired to INT1 pin */
--		ret = i2c_smbus_write_byte_data(client,
--						MMA8452_CTRL_REG5,
--						supported_interrupts);
--		if (ret < 0)
--			return ret;
-+		/* Assume wired to INT1 pin, except "use_int2" is found in DT */
-+		if (!of_property_read_bool(client->dev.of_node, "use_int2")) {
-+			ret = i2c_smbus_write_byte_data(client,
-+							MMA8452_CTRL_REG5,
-+							supported_interrupts);
-+			if (ret < 0)
-+				return ret;
-+		}
- 
- 		ret = i2c_smbus_write_byte_data(client,
- 						MMA8452_CTRL_REG4,
--- 
-2.1.4
+The driver and module name remains the same, seperating it from the device
+names it now supports.
+
+On top of this, there are minor documentation additions, and more notably,
+ it allows to use the driver, no matter how the interrupt pins are wired
+on your board.
+
+Please review and test if you can. For MMA8452Q, nothing should have
+changed.
+
+revision history
+----------------
+v4   cleanup; one bugfix patch removed from series; DT people added
+v3   adds one patch to allow all possible pin wirings; adds more email
+     recipients
+v2   splits the work into a series of smaller pieces
+v1   initial post
