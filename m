@@ -1,143 +1,55 @@
-Return-Path: <martink@posteo.de>
-From: Martin Kepplinger <martink@posteo.de>
-To: jic23@kernel.org,
-	knaack.h@gmx.de,
-	lars@metafoo.de,
-	pmeerw@pmeerw.net,
-	mfuzzey@parkeon.com,
-	roberta.dobrescu@gmail.com,
-	robh+dt@kernel.org,
-	pawel.moll@arm.com,
-	mark.rutland@arm.com,
-	ijc+devicetree@hellion.org.uk,
-	galak@codeaurora.org
-Cc: devicetree@vger.kernel.org,
-	linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	christoph.muellner@theobroma-systems.com,
-	Martin Kepplinger <martink@posteo.de>,
-	Martin Kepplinger <martin.kepplinger@theobroma-systems.com>
-Subject: [PATCH 3/8] iio: mma8452: add freefall / motion interrupt source
-Date: Mon,  6 Jul 2015 14:34:17 +0200
-Message-Id: <1436186062-5766-4-git-send-email-martink@posteo.de>
-In-Reply-To: <1436186062-5766-1-git-send-email-martink@posteo.de>
-References: <1436186062-5766-1-git-send-email-martink@posteo.de>
+Return-Path: <tiberiu.a.breana@intel.com>
+From: "Breana, Tiberiu A" <tiberiu.a.breana@intel.com>
+To: =?utf-8?B?VXdlIEtsZWluZS1Lw7ZuaWc=?= <u.kleine-koenig@pengutronix.de>,
+	Linus Walleij <linus.walleij@linaro.org>, Alexandre Courbot
+	<gnurou@gmail.com>
+CC: "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>,
+	"kernel@pengutronix.de" <kernel@pengutronix.de>, Jonathan Cameron
+	<jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>, Lars-Peter Clausen
+	<lars@metafoo.de>, Peter Meerwald <pmeerw@pmeerw.net>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Subject: RE: [PATCH gpio-for-next 03/10] iio: light: stk3310: use flags
+ argument of devm_gpiod_get
+Date: Mon, 6 Jul 2015 09:35:44 +0000
+Message-ID: <4586F61A4A291F4DA44D32824E7C0F402216D8E5@IRSMSX109.ger.corp.intel.com>
+References: <20150706090759.GS11824@pengutronix.de>
+ <1436173790-29963-3-git-send-email-u.kleine-koenig@pengutronix.de>
+In-Reply-To: <1436173790-29963-3-git-send-email-u.kleine-koenig@pengutronix.de>
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
 List-ID: <linux-iio@vger.kernel.org>
 
-This adds the freefall / motion interrupt source definitions to the driver.
-It is used in this series' next patch, for chips that don't support the
-transient interrupt source.
-
-The iio event type is IIO_EV_TYPE_MAG since the threshold for comparison
-is no signed value. An interrupt occurs on positive and negative values
-when the magnitude crosses the threshold value.
-
-Signed-off-by: Martin Kepplinger <martin.kepplinger@theobroma-systems.com>
-Signed-off-by: Christoph Muellner <christoph.muellner@theobroma-systems.com>
----
- drivers/iio/accel/mma8452.c | 45 ++++++++++++++++++++++++++++++++++++---------
- 1 file changed, 36 insertions(+), 9 deletions(-)
-
-diff --git a/drivers/iio/accel/mma8452.c b/drivers/iio/accel/mma8452.c
-index 71b40f7..1337707 100644
---- a/drivers/iio/accel/mma8452.c
-+++ b/drivers/iio/accel/mma8452.c
-@@ -38,9 +38,18 @@
- #define MMA8452_DATA_CFG 0x0e
- #define MMA8452_HP_FILTER_CUTOFF 0x0f
- #define MMA8452_HP_FILTER_CUTOFF_SEL_MASK	(BIT(0) | BIT(1))
-+#define MMA8452_FF_MT_CFG 0x15
-+#define MMA8452_FF_MT_CFG_OAE			BIT(6)
-+#define MMA8452_FF_MT_CFG_ELE			BIT(7)
-+#define MMA8452_FF_MT_SRC 0x16
-+#define MMA8452_FF_MT_SRC_XHE			BIT(1)
-+#define MMA8452_FF_MT_SRC_YHE			BIT(3)
-+#define MMA8452_FF_MT_SRC_ZHE			BIT(5)
-+#define MMA8452_FF_MT_THS 0x17
-+#define MMA8452_FF_MT_THS_MASK 0x7f
-+#define MMA8452_FF_MT_COUNT 0x18
- #define MMA8452_TRANSIENT_CFG 0x1d
- #define MMA8452_TRANSIENT_CFG_ELE		BIT(4)
--#define MMA8452_TRANSIENT_CFG_CHAN(chan)	BIT(chan + 1)
- #define MMA8452_TRANSIENT_CFG_HPF_BYP		BIT(0)
- #define MMA8452_TRANSIENT_SRC 0x1e
- #define MMA8452_TRANSIENT_SRC_XTRANSE		BIT(1)
-@@ -74,6 +83,7 @@
- #define MMA8452_DATA_CFG_HPF_MASK BIT(4)
- 
- #define MMA8452_INT_DRDY	BIT(0)
-+#define MMA8452_INT_FF_MT	BIT(2)
- #define MMA8452_INT_TRANS	BIT(5)
- 
- #define MMA8452_DEVICE_ID 0x2a
-@@ -591,7 +601,8 @@ static int mma8452_write_event_config(struct iio_dev *indio_dev,
- 	else
- 		val &= ~BIT(chan->scan_index + chip->ev_cfg_chan_shift);
- 
--	val |= MMA8452_TRANSIENT_CFG_ELE;
-+	val |= chip->ev_cfg_ele;
-+	val |= MMA8452_FF_MT_CFG_OAE;
- 
- 	return mma8452_change_config(data, chip->ev_cfg, val);
- }
-@@ -632,6 +643,7 @@ static irqreturn_t mma8452_interrupt(int irq, void *p)
- {
- 	struct iio_dev *indio_dev = p;
- 	struct mma8452_data *data = iio_priv(indio_dev);
-+	const struct mma_chip_info *chip = data->chip_info;
- 	int ret = IRQ_NONE;
- 	int src;
- 
-@@ -644,7 +656,10 @@ static irqreturn_t mma8452_interrupt(int irq, void *p)
- 		ret = IRQ_HANDLED;
- 	}
- 
--	if (src & MMA8452_INT_TRANS) {
-+	if ((src & MMA8452_INT_TRANS &&
-+	     chip->ev_src == MMA8452_TRANSIENT_SRC) ||
-+	    (src & MMA8452_INT_FF_MT &&
-+	     chip->ev_src == MMA8452_FF_MT_SRC)) {
- 		mma8452_transient_interrupt(indio_dev);
- 		ret = IRQ_HANDLED;
- 	}
-@@ -705,6 +720,16 @@ static const struct iio_event_spec mma8452_transient_event[] = {
- 	},
- };
- 
-+static const struct iio_event_spec mma8452_motion_event[] = {
-+	{
-+		.type = IIO_EV_TYPE_MAG,
-+		.dir = IIO_EV_DIR_RISING,
-+		.mask_separate = BIT(IIO_EV_INFO_ENABLE),
-+		.mask_shared_by_type = BIT(IIO_EV_INFO_VALUE) |
-+					BIT(IIO_EV_INFO_PERIOD)
-+	},
-+};
-+
- /*
-  * Threshold is configured in fixed 8G/127 steps regardless of
-  * currently selected scale for measurement.
-@@ -988,13 +1013,15 @@ static int mma8452_probe(struct i2c_client *client,
- 
- 	if (client->irq) {
- 		/*
--		 * Although we enable the transient interrupt source once and
--		 * for all here the transient event detection itself is not
--		 * enabled until userspace asks for it by
--		 * mma8452_write_event_config()
-+		 * Although we enable the interrupt sources once and for
-+		 * all here the event detection itself is not enabled until
-+		 * userspace asks for it by mma8452_write_event_config()
- 		 */
--		int supported_interrupts = MMA8452_INT_DRDY | MMA8452_INT_TRANS;
--		int enabled_interrupts = MMA8452_INT_TRANS;
-+		int supported_interrupts = MMA8452_INT_DRDY |
-+					   MMA8452_INT_TRANS |
-+					   MMA8452_INT_FF_MT;
-+		int enabled_interrupts = MMA8452_INT_TRANS |
-+					 MMA8452_INT_FF_MT;
- 
- 		/* Assume wired to INT1 pin */
- 		ret = i2c_smbus_write_byte_data(client,
--- 
-2.1.4
+PiAtLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPiBGcm9tOiBVd2UgS2xlaW5lLUvDtm5pZyBb
+bWFpbHRvOnUua2xlaW5lLWtvZW5pZ0BwZW5ndXRyb25peC5kZV0NCj4gU2VudDogTW9uZGF5LCBK
+dWx5IDYsIDIwMTUgMTI6MTAgUE0NCj4gVG86IExpbnVzIFdhbGxlaWo7IEFsZXhhbmRyZSBDb3Vy
+Ym90DQo+IENjOiBsaW51eC1ncGlvQHZnZXIua2VybmVsLm9yZzsga2VybmVsQHBlbmd1dHJvbml4
+LmRlOyBCcmVhbmEsIFRpYmVyaXUgQTsNCj4gSm9uYXRoYW4gQ2FtZXJvbjsgSGFydG11dCBLbmFh
+Y2s7IExhcnMtUGV0ZXIgQ2xhdXNlbjsgUGV0ZXIgTWVlcndhbGQ7DQo+IGxpbnV4LWlpb0B2Z2Vy
+Lmtlcm5lbC5vcmcNCj4gU3ViamVjdDogW1BBVENIIGdwaW8tZm9yLW5leHQgMDMvMTBdIGlpbzog
+bGlnaHQ6IHN0azMzMTA6IHVzZSBmbGFncyBhcmd1bWVudCBvZg0KPiBkZXZtX2dwaW9kX2dldA0K
+PiANCj4gU2luY2UgMzliMmJiZTNkNzE1IChncGlvOiBhZGQgZmxhZ3MgYXJndW1lbnQgdG8gZ3Bp
+b2RfZ2V0KigpIGZ1bmN0aW9ucykNCj4gd2hpY2ggYXBwZWFyZWQgaW4gdjMuMTctcmMxLCB0aGUg
+Z3Bpb2RfZ2V0KiBmdW5jdGlvbnMgdGFrZSBhbiBhZGRpdGlvbmFsDQo+IHBhcmFtZXRlciB0aGF0
+IGFsbG93cyB0byBzcGVjaWZ5IGRpcmVjdGlvbiBhbmQgaW5pdGlhbCB2YWx1ZSBmb3Igb3V0cHV0
+Lg0KPiANCj4gU2ltcGxpZnkgZHJpdmVyIGFjY29yZGluZ2x5LiBGdXJ0aGVybW9yZSB0aGlzIGlz
+IG9uZSBjYWxsZXIgbGVzcyB0aGF0IHN0b3BzIHVzDQo+IG1ha2luZyB0aGUgZmxhZ3MgYXJndW1l
+bnQgdG8gZ3Bpb2RfZ2V0KigpIG1hbmRhdG9yeS4NCj4gDQo+IEFja2VkLWJ5OiBKb25hdGhhbiBD
+YW1lcm9uIDxqaWMyM0BrZXJuZWwub3JnPg0KPiBTaWduZWQtb2ZmLWJ5OiBVd2UgS2xlaW5lLUvD
+tm5pZyA8dS5rbGVpbmUta29lbmlnQHBlbmd1dHJvbml4LmRlPg0KDQorMQ0KDQpSZXZpZXdlZC1i
+eTogVGliZXJpdSBCcmVhbmEgPHRpYmVyaXUuYS5icmVhbmFAaW50ZWwuY29tPg0KDQo+IC0tLQ0K
+PiAgZHJpdmVycy9paW8vbGlnaHQvc3RrMzMxMC5jIHwgNiArLS0tLS0NCj4gIDEgZmlsZSBjaGFu
+Z2VkLCAxIGluc2VydGlvbigrKSwgNSBkZWxldGlvbnMoLSkNCj4gDQo+IGRpZmYgLS1naXQgYS9k
+cml2ZXJzL2lpby9saWdodC9zdGszMzEwLmMgYi9kcml2ZXJzL2lpby9saWdodC9zdGszMzEwLmMg
+aW5kZXgNCj4gZmVlNDI5N2Q3YzhmLi44NGM3N2Q0MmEyYzYgMTAwNjQ0DQo+IC0tLSBhL2RyaXZl
+cnMvaWlvL2xpZ2h0L3N0azMzMTAuYw0KPiArKysgYi9kcml2ZXJzL2lpby9saWdodC9zdGszMzEw
+LmMNCj4gQEAgLTQ4OCwxNiArNDg4LDEyIEBAIHN0YXRpYyBpbnQgc3RrMzMxMF9ncGlvX3Byb2Jl
+KHN0cnVjdCBpMmNfY2xpZW50DQo+ICpjbGllbnQpDQo+ICAJZGV2ID0gJmNsaWVudC0+ZGV2Ow0K
+PiANCj4gIAkvKiBncGlvIGludGVycnVwdCBwaW4gKi8NCj4gLQlncGlvID0gZGV2bV9ncGlvZF9n
+ZXRfaW5kZXgoZGV2LCBTVEszMzEwX0dQSU8sIDApOw0KPiArCWdwaW8gPSBkZXZtX2dwaW9kX2dl
+dF9pbmRleChkZXYsIFNUSzMzMTBfR1BJTywgMCwgR1BJT0RfSU4pOw0KPiAgCWlmIChJU19FUlIo
+Z3BpbykpIHsNCj4gIAkJZGV2X2VycihkZXYsICJhY3BpIGdwaW8gZ2V0IGluZGV4IGZhaWxlZFxu
+Iik7DQo+ICAJCXJldHVybiBQVFJfRVJSKGdwaW8pOw0KPiAgCX0NCj4gDQo+IC0JcmV0ID0gZ3Bp
+b2RfZGlyZWN0aW9uX2lucHV0KGdwaW8pOw0KPiAtCWlmIChyZXQpDQo+IC0JCXJldHVybiByZXQ7
+DQo+IC0NCj4gIAlyZXQgPSBncGlvZF90b19pcnEoZ3Bpbyk7DQo+ICAJZGV2X2RiZyhkZXYsICJH
+UElPIHJlc291cmNlLCBubzolZCBpcnE6JWRcbiIsIGRlc2NfdG9fZ3BpbyhncGlvKSwNCj4gcmV0
+KTsNCj4gDQo+IC0tDQo+IDIuMS40DQoNCg==
