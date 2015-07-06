@@ -17,34 +17,30 @@ Cc: devicetree@vger.kernel.org,
 	christoph.muellner@theobroma-systems.com,
 	Martin Kepplinger <martink@posteo.de>,
 	Martin Kepplinger <martin.kepplinger@theobroma-systems.com>
-Subject: [PATCH 7/8] iio: mma8452: leave sysfs namings to the iio core
-Date: Mon,  6 Jul 2015 14:34:21 +0200
-Message-Id: <1436186062-5766-8-git-send-email-martink@posteo.de>
+Subject: [PATCH 6/8] iio: mma8452: add copyright notice comment
+Date: Mon,  6 Jul 2015 14:34:20 +0200
+Message-Id: <1436186062-5766-7-git-send-email-martink@posteo.de>
 In-Reply-To: <1436186062-5766-1-git-send-email-martink@posteo.de>
 References: <1436186062-5766-1-git-send-email-martink@posteo.de>
 List-ID: <linux-iio@vger.kernel.org>
 
-This doesn't actually change anything since the core names the sysfs folder
-for the iio event attributes "events" anyways. It only leaves the job to the
-core.
-
 Signed-off-by: Martin Kepplinger <martin.kepplinger@theobroma-systems.com>
 Signed-off-by: Christoph Muellner <christoph.muellner@theobroma-systems.com>
 ---
- drivers/iio/accel/mma8452.c | 1 -
- 1 file changed, 1 deletion(-)
+ drivers/iio/accel/mma8452.c | 1 +
+ 1 file changed, 1 insertion(+)
 
 diff --git a/drivers/iio/accel/mma8452.c b/drivers/iio/accel/mma8452.c
-index bc4215d..2b8ed67 100644
+index cc19a5d8..bc4215d 100644
 --- a/drivers/iio/accel/mma8452.c
 +++ b/drivers/iio/accel/mma8452.c
-@@ -748,7 +748,6 @@ static struct attribute *mma8452_event_attributes[] = {
- 
- static struct attribute_group mma8452_event_attribute_group = {
- 	.attrs = mma8452_event_attributes,
--	.name = "events",
- };
- 
- #define MMA8452_CHANNEL(axis, idx, bits) { \
+@@ -6,6 +6,7 @@
+  *	MMA8652FC
+  *	MMA8653FC
+  *
++ * Copyright 2015 Martin Kepplinger <martin.kepplinger@theobroma-systems.com>
+  * Copyright 2014 Peter Meerwald <pmeerw@pmeerw.net>
+  *
+  * This file is subject to the terms and conditions of version 2 of
 -- 
 2.1.4
