@@ -1,148 +1,85 @@
-Return-Path: <martink@posteo.de>
-Message-ID: <559A78D4.3080207@posteo.de>
-Date: Mon, 06 Jul 2015 14:47:16 +0200
-From: Martin Kepplinger <martink@posteo.de>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-wi0-f180.google.com ([209.85.212.180]:37685 "EHLO
+	mail-wi0-f180.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752695AbbGFWiy (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 6 Jul 2015 18:38:54 -0400
+Date: Tue, 7 Jul 2015 01:36:19 +0300
+From: Cristina Opriceana <cristina.opriceana@gmail.com>
+To: jic23@kernel.org
+Cc: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+	daniel.baluta@intel.com, octavian.purdila@intel.com,
+	julia.lawall@lip6.fr
+Message-ID: <20150706223618.GA23872@Inspiron>
 MIME-Version: 1.0
-To: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
- pmeerw@pmeerw.net, mfuzzey@parkeon.com, roberta.dobrescu@gmail.com,
- robh+dt@kernel.org, pawel.moll@arm.com, mark.rutland@arm.com,
- ijc+devicetree@hellion.org.uk, galak@codeaurora.org
-CC: devicetree@vger.kernel.org, linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org, christoph.muellner@theobroma-systems.com,
- Martin Kepplinger <martin.kepplinger@theobroma-systems.com>
-Subject: Re: [PATCH 3/8] iio: mma8452: add freefall / motion interrupt source
-References: <1436186062-5766-1-git-send-email-martink@posteo.de> <1436186062-5766-4-git-send-email-martink@posteo.de>
-In-Reply-To: <1436186062-5766-4-git-send-email-martink@posteo.de>
-Content-Type: text/plain; charset=iso-8859-15
-List-ID: <linux-iio@vger.kernel.org>
+Content-Type: text/plain; charset=us-ascii
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Am 2015-07-06 um 14:34 schrieb Martin Kepplinger:
-> This adds the freefall / motion interrupt source definitions to the driver.
-> It is used in this series' next patch, for chips that don't support the
-> transient interrupt source.
-> 
-> The iio event type is IIO_EV_TYPE_MAG since the threshold for comparison
-> is no signed value. An interrupt occurs on positive and negative values
-> when the magnitude crosses the threshold value.
-> 
-> Signed-off-by: Martin Kepplinger <martin.kepplinger@theobroma-systems.com>
-> Signed-off-by: Christoph Muellner <christoph.muellner@theobroma-systems.com>
-> ---
->  drivers/iio/accel/mma8452.c | 45 ++++++++++++++++++++++++++++++++++++---------
->  1 file changed, 36 insertions(+), 9 deletions(-)
-> 
-> diff --git a/drivers/iio/accel/mma8452.c b/drivers/iio/accel/mma8452.c
-> index 71b40f7..1337707 100644
-> --- a/drivers/iio/accel/mma8452.c
-> +++ b/drivers/iio/accel/mma8452.c
-> @@ -38,9 +38,18 @@
->  #define MMA8452_DATA_CFG 0x0e
->  #define MMA8452_HP_FILTER_CUTOFF 0x0f
->  #define MMA8452_HP_FILTER_CUTOFF_SEL_MASK	(BIT(0) | BIT(1))
-> +#define MMA8452_FF_MT_CFG 0x15
-> +#define MMA8452_FF_MT_CFG_OAE			BIT(6)
-> +#define MMA8452_FF_MT_CFG_ELE			BIT(7)
-> +#define MMA8452_FF_MT_SRC 0x16
-> +#define MMA8452_FF_MT_SRC_XHE			BIT(1)
-> +#define MMA8452_FF_MT_SRC_YHE			BIT(3)
-> +#define MMA8452_FF_MT_SRC_ZHE			BIT(5)
-> +#define MMA8452_FF_MT_THS 0x17
-> +#define MMA8452_FF_MT_THS_MASK 0x7f
-> +#define MMA8452_FF_MT_COUNT 0x18
->  #define MMA8452_TRANSIENT_CFG 0x1d
->  #define MMA8452_TRANSIENT_CFG_ELE		BIT(4)
-> -#define MMA8452_TRANSIENT_CFG_CHAN(chan)	BIT(chan + 1)
->  #define MMA8452_TRANSIENT_CFG_HPF_BYP		BIT(0)
->  #define MMA8452_TRANSIENT_SRC 0x1e
->  #define MMA8452_TRANSIENT_SRC_XTRANSE		BIT(1)
-> @@ -74,6 +83,7 @@
->  #define MMA8452_DATA_CFG_HPF_MASK BIT(4)
->  
->  #define MMA8452_INT_DRDY	BIT(0)
-> +#define MMA8452_INT_FF_MT	BIT(2)
->  #define MMA8452_INT_TRANS	BIT(5)
->  
->  #define MMA8452_DEVICE_ID 0x2a
-> @@ -591,7 +601,8 @@ static int mma8452_write_event_config(struct iio_dev *indio_dev,
->  	else
->  		val &= ~BIT(chan->scan_index + chip->ev_cfg_chan_shift);
->  
-> -	val |= MMA8452_TRANSIENT_CFG_ELE;
-> +	val |= chip->ev_cfg_ele;
-> +	val |= MMA8452_FF_MT_CFG_OAE;
->  
->  	return mma8452_change_config(data, chip->ev_cfg, val);
->  }
-> @@ -632,6 +643,7 @@ static irqreturn_t mma8452_interrupt(int irq, void *p)
->  {
->  	struct iio_dev *indio_dev = p;
->  	struct mma8452_data *data = iio_priv(indio_dev);
-> +	const struct mma_chip_info *chip = data->chip_info;
->  	int ret = IRQ_NONE;
->  	int src;
->  
-> @@ -644,7 +656,10 @@ static irqreturn_t mma8452_interrupt(int irq, void *p)
->  		ret = IRQ_HANDLED;
->  	}
->  
-> -	if (src & MMA8452_INT_TRANS) {
-> +	if ((src & MMA8452_INT_TRANS &&
-> +	     chip->ev_src == MMA8452_TRANSIENT_SRC) ||
-> +	    (src & MMA8452_INT_FF_MT &&
-> +	     chip->ev_src == MMA8452_FF_MT_SRC)) {
->  		mma8452_transient_interrupt(indio_dev);
->  		ret = IRQ_HANDLED;
->  	}
-> @@ -705,6 +720,16 @@ static const struct iio_event_spec mma8452_transient_event[] = {
->  	},
->  };
->  
-> +static const struct iio_event_spec mma8452_motion_event[] = {
-> +	{
-> +		.type = IIO_EV_TYPE_MAG,
-> +		.dir = IIO_EV_DIR_RISING,
-> +		.mask_separate = BIT(IIO_EV_INFO_ENABLE),
-> +		.mask_shared_by_type = BIT(IIO_EV_INFO_VALUE) |
-> +					BIT(IIO_EV_INFO_PERIOD)
-> +	},
-> +};
-> +
+linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+daniel.baluta@intel.com, octavian.purdila@intel.com,
+julia.lawall@lip6.fr
+Bcc: 
+Subject: [PATCH 0/4] tools: iio: Send error messages to stderr
+Message-ID: <cover.1436220932.git.cristina.opriceana@gmail.com>
+Reply-To: 
 
-Quick thing: This series applies with all events _pushed_ being still
-THRESH.
+This patchset indends to make some cleanup and send printf
+error messages to stderr.
+The changes were performed with coccinelle for failiure
+messages and manual for other cases. The following script
+was used:
 
-For the newly added motion events, I show MAG events to the user, but
-sill, THRESH events are being pushed when they occur.
+@r@
+expression e1, e2, stdout;
+@@
+(printf(e1);
+|
+printf(e1, e2);
+|
+fprintf(stdout, e1);
+|
+fprintf(stdout, e1, e2);
+)
+@script: python get_string@
+e << r.e1;
+tdres;
+@@
+if 'could not' in e.lower() or 'fail' in e.lower() \
+or 'problem' in e.lower() or 'not set' in e.lower():
+coccinelle.tdres = e
+else:
+cocci.include_match(False)
+@r_match@
+expression r.stdout, r.e1, r.e2;
+identifier get_string.tdres;
+@@
+(
+- printf(e1);
++ fprintf(stderr, tdres);
+|
+- printf(e1, e2);
++ fprintf(stderr, tdres, e2);
+|
+- fprintf(stdout, e1)
++ fprintf(stderr, tdres)
+|
+- fprintf(stdout, e1, e2)
++ fprintf(stderr, tdres, e2)
+)
 
-In case this inconsistency is not allowed, but you want to take the
-series, please either change "IIO_EV_TYPE_MAG" to "IIO_EV_TYPE_THRESH"
-or tell me to reply PATCH 3/8 with this half word changed here.
+Cristina Opriceana (4):
+  tools: iio: Move printf failiure messages to stderr
+  tools: iio: Send usage error messages to stderr
+  tools: iio: generic_buffer: Maintain fprintf() messages consistent
+  tools: iio: iio_utils: Move general error messages to stderr
 
-thanks!
+ tools/iio/generic_buffer.c    | 21 ++++++++++--------
+ tools/iio/iio_event_monitor.c |  8 +++----
+ tools/iio/iio_utils.c         | 51 +++++++++++++++++++++++++------------------
+ tools/iio/lsiio.c             |  2 +-
+ 4 files changed, 47 insertions(+), 35 deletions(-)
 
->  /*
->   * Threshold is configured in fixed 8G/127 steps regardless of
->   * currently selected scale for measurement.
-> @@ -988,13 +1013,15 @@ static int mma8452_probe(struct i2c_client *client,
->  
->  	if (client->irq) {
->  		/*
-> -		 * Although we enable the transient interrupt source once and
-> -		 * for all here the transient event detection itself is not
-> -		 * enabled until userspace asks for it by
-> -		 * mma8452_write_event_config()
-> +		 * Although we enable the interrupt sources once and for
-> +		 * all here the event detection itself is not enabled until
-> +		 * userspace asks for it by mma8452_write_event_config()
->  		 */
-> -		int supported_interrupts = MMA8452_INT_DRDY | MMA8452_INT_TRANS;
-> -		int enabled_interrupts = MMA8452_INT_TRANS;
-> +		int supported_interrupts = MMA8452_INT_DRDY |
-> +					   MMA8452_INT_TRANS |
-> +					   MMA8452_INT_FF_MT;
-> +		int enabled_interrupts = MMA8452_INT_TRANS |
-> +					 MMA8452_INT_FF_MT;
->  
->  		/* Assume wired to INT1 pin */
->  		ret = i2c_smbus_write_byte_data(client,
-> 
+-- 
+1.9.1
+
