@@ -1,317 +1,211 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail1.bemta5.messagelabs.com ([195.245.231.145]:25362 "EHLO
-	mail1.bemta5.messagelabs.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1752781AbbGEVGc (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 5 Jul 2015 17:06:32 -0400
-Content-Type: text/plain; charset="iso-8859-15"; format=flowed; delsp=yes
-Date: Sun, 5 Jul 2015 22:00:02 +0100
-Subject: [RFC PATCH] iio: humidity: dht11: Rewrite decode algorithm, improve
- read reliability
-CC: <linux-iio@vger.kernel.org>
-To: Jonathan Cameron <jic23@kernel.org>,
-	Harald Geyer <harald@ccbib.org>,
-	Sanjeev Sharma <sanjeev_sharma@mentor.com>,
-	Richard Weinberger <richard@nod.at>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>
+Return-Path: <jic23@jic23.retrosnub.co.uk>
+In-Reply-To: <CAKv63usGO4DxYhx-Sz_BugWmi_ztJF7=ce035Wr1EZw+-wMOfg@mail.gmail.com>
+References: <CAKv63usGO4DxYhx-Sz_BugWmi_ztJF7=ce035Wr1EZw+-wMOfg@mail.gmail.com>
 MIME-Version: 1.0
-From: Jonathan Bell <jonathan@raspberrypi.org>
-Message-ID: <op.x1bjac2cfh00o9@enterprised.lan>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain;
+ charset=UTF-8
+Subject: Re: [PATCH 0/1] iio: mlx90614: Implement filter configuration
+From: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
+Date: Wed, 08 Jul 2015 17:59:52 +0100
+To: Crt Mori <cmo@melexis.com>,linux-iio@vger.kernel.org,Peter Meerwald <pmeerw@pmeerw.net>,=?ISO-8859-1?Q?Vianney_le_Cl=E9ment_de_Saint-Marcq?= <vianney.leclement@essensium.com>,Johnathan Iain Cameron <jic23@kernel.org>
+Message-ID: <BBC430FE-127C-493F-B3AF-1ED207261F9C@jic23.retrosnub.co.uk>
+List-ID: <linux-iio@vger.kernel.org>
 
 
-This driver has a poor read success rate when any amount of hard-IRQ
-latency is encountered. On the Raspberry Pi platform for example, the
-read success rate is ~50% with no hardware activity and practically 0%
-with any other significant hardware activity.
 
-Rewrite several aspects of the decode mechanism to make it more robust:
+On 7 July 2015 15:44:51 BST, Crt Mori <cmo@melexis.com> wrote:
+>Implemented FIR and IIR filter configuration which are located
+>within the configuration register of EEPROM. I have used the
+>IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY for FIR settings and
+>IIO_CHAN_INFO_HIGH_PASS_FILTER_3DB_FREQUENCY for IIR settings just
+>to reuse IIO_CHAN_INFO structure with closes resemblance of the
+>settings (although it would have been better to drop that
+>3DB_FREQUENCY part).
+>
+>The diff is made towards togreg branch as that branch seems to have the
+>most recent updates of mlx90614 driver
 
-- Cater for GPIO chips that can raise interrupts when I/O pins
-   are set as output by expanding the maximum number of edges recorded.
-- Start decoding the bitstream right-justified to make the driver agnostic
-   towards whether the start bits generate IRQs.
-- Only bother decoding for GPIO "high" bit-times - the high-time is what
-   encodes the useful information.
-- Use simple split-the-difference thresholding to decide if a received
-   data bit is a "1" or "0", instead of comparing relative bit periods.
-- Refine the start bit timing to use usleep_range() to stop the later
-   sensor models from timing out if the msleep() takes longer than expected.
+I am having a rather silly week, hence very brief reply from a train. Sorry about that,!
 
-Also tweak a few error paths to be more informative.
+Using existing abi in a non documented way is always a bad idea.  Either work out
+how to fit in with what is there fully or if that isn't possible propose new ABI for 
+what you need.
 
-The sensor decode success rate on a Pi after these changes is 99.1% with
-no other hardware activity and approximately 78% with an Ethernet ping
-flood happening concurrently.
+Will have to postpone reading actual code for a few days. Train arrived
 
-There's still a few rough corners - several versions of the datasheet seem
-to suggest that a double-read is required to get an up-to-date value, i.e.
-the last value converted is the one returned when a readout is requested.
+J
+>
+>Signed-off-by: Crt Mori <cmo@melexis.com>
+>---
+>diff --git a/drivers/iio/temperature/mlx90614.c
+>b/drivers/iio/temperature/mlx90614.c
+>index 909278a..d767d2f 100644
+>--- a/drivers/iio/temperature/mlx90614.c
+>+++ b/drivers/iio/temperature/mlx90614.c
+>@@ -20,7 +20,6 @@
+>* always has a pull-up so we do not need an extra GPIO to drive it
+>high.
+>If
+>  * the "wakeup" GPIO is not given, power management will be disabled.
+>  *
+>- * TODO: filter configuration
+>  */
+>
+> #include <linux/err.h>
+>@@ -79,6 +78,25 @@ struct mlx90614_data {
+>  unsigned long ready_timestamp; /* in jiffies */
+> };
+>
+>+/* Allowed percentage values for IIR filtering */
+>+static const u8 mlx90614_iir_values[] = {50, 25, 17, 13, 100, 80, 67,
+>57};
+>+
+>+/*
+>+ * Find the IIR value inside mlx90614_iir_values array and return its
+>position
+>+ */
+>+static inline s32 mlx90614_iir_search(int value)
+>+{
+>+ u8 i;
+>+ if (value < 0 || value > 100)
+>+ return -EINVAL;
+>+
+>+ for (i=0; i < ARRAY_SIZE(mlx90614_iir_values); ++i) {
+>+ if (value == mlx90614_iir_values[i])
+>+ return i;
+>+ }
+>+ return -EINVAL;
+>+}
+>+
+> /*
+>  * Erase an address and write word.
+>  * The mutex must be locked before calling.
+>@@ -236,6 +254,31 @@ static int mlx90614_read_raw(struct iio_dev
+>*indio_dev,
+>  *val2 = ret * MLX90614_CONST_EMISSIVITY_RESOLUTION;
+>  }
+>  return IIO_VAL_INT_PLUS_NANO;
+>+ case IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY: /* FIR setting */
+>+ mlx90614_power_get(data, false);
+>+ mutex_lock(&data->lock);
+>+ ret = i2c_smbus_read_word_data(data->client,MLX90614_CONFIG);
+>+ mutex_unlock(&data->lock);
+>+ mlx90614_power_put(data);
+>+
+>+ if (ret < 0)
+>+ return ret;
+>+
+>+ *val = (ret & MLX90614_CONFIG_FIR_MASK) >>
+>+ MLX90614_CONFIG_FIR_SHIFT;
+>+ return IIO_VAL_INT;
+>+ case IIO_CHAN_INFO_HIGH_PASS_FILTER_3DB_FREQUENCY: /* IIR setting */
+>+ mlx90614_power_get(data, false);
+>+ mutex_lock(&data->lock);
+>+ ret = i2c_smbus_read_word_data(data->client,MLX90614_CONFIG);
+>+ mutex_unlock(&data->lock);
+>+ mlx90614_power_put(data);
+>+
+>+ if (ret < 0)
+>+ return ret;
+>+
+>+ *val = mlx90614_iir_values[ret & MLX90614_CONFIG_IIR_MASK];
+>+ return IIO_VAL_INT;
+>  default:
+>  return -EINVAL;
+>  }
+>@@ -263,6 +306,52 @@ static int mlx90614_write_raw(struct iio_dev
+>*indio_dev,
+>  mlx90614_power_put(data);
+>
+>  return ret;
+>+ case IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY: /* FIR Filter */
+>+ if (val < 0 || val > 7)
+>+ return -EINVAL;
+>+
+>+ mlx90614_power_get(data, false);
+>+ mutex_lock(&data->lock);
+>+
+>+ /* CONFIG register values must not be changed so we must read
+>+ * them before we actually write changes */
+>+ ret = i2c_smbus_read_word_data(data->client,MLX90614_CONFIG);
+>+ if (ret >= 0)
+>+ {
+>+ /* Write changed values */
+>+ ret = mlx90614_write_word(data->client, MLX90614_CONFIG,
+>+  (val << MLX90614_CONFIG_FIR_SHIFT) |
+>+  ((u16) ret & (~((u16) MLX90614_CONFIG_FIR_MASK))));
+>+ }
+>+ mutex_unlock(&data->lock);
+>+ mlx90614_power_put(data);
+>+
+>+ return ret;
+>+ case IIO_CHAN_INFO_HIGH_PASS_FILTER_3DB_FREQUENCY: /* IIR Filter */
+>+ ret = mlx90614_iir_search(val);
+>+ if (ret < 0)
+>+ return ret;
+>+ /* If there is no error, then we have a sensor equivalent value
+>+ * in ret. We need to store it temporary to val, as we still
+>+ * have more data to save in ret before we can actually write */
+>+ val = ret;
+>+
+>+ mlx90614_power_get(data, false);
+>+ mutex_lock(&data->lock);
+>+ /* CONFIG register values must not be changed so we must read
+>+ * them before we actually write changes*/
+>+ ret = i2c_smbus_read_word_data(data->client,MLX90614_CONFIG);
+>+ if (ret >= 0)
+>+ {
+>+ /* Write changed values */
+>+ ret = mlx90614_write_word(data->client, MLX90614_CONFIG,
+>+  (val << MLX90614_CONFIG_IIR_SHIFT) |
+>+  ((u16) ret & (~(u16) MLX90614_CONFIG_IIR_MASK)));
+>+ }
+>+ mutex_unlock(&data->lock);
+>+ mlx90614_power_put(data);
+>+
+>+ return ret;
+>  default:
+>  return -EINVAL;
+>  }
+>@@ -275,6 +364,10 @@ static int mlx90614_write_raw_get_fmt(struct
+>iio_dev
+>*indio_dev,
+>  switch (mask) {
+>  case IIO_CHAN_INFO_CALIBEMISSIVITY:
+>  return IIO_VAL_INT_PLUS_NANO;
+>+ case IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY:
+>+ return IIO_VAL_INT_PLUS_MICRO;
+>+ case IIO_CHAN_INFO_HIGH_PASS_FILTER_3DB_FREQUENCY:
+>+ return IIO_VAL_INT_PLUS_MICRO;
+>  default:
+>  return -EINVAL;
+>  }
+>@@ -294,7 +387,9 @@ static const struct iio_chan_spec
+>mlx90614_channels[] =
+>{
+>  .modified = 1,
+>  .channel2 = IIO_MOD_TEMP_OBJECT,
+>  .info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
+>-    BIT(IIO_CHAN_INFO_CALIBEMISSIVITY),
+>+    BIT(IIO_CHAN_INFO_CALIBEMISSIVITY) |
+>+ BIT(IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY) |
+>+ BIT(IIO_CHAN_INFO_HIGH_PASS_FILTER_3DB_FREQUENCY),
+>  .info_mask_shared_by_type = BIT(IIO_CHAN_INFO_OFFSET) |
+>     BIT(IIO_CHAN_INFO_SCALE),
+>  },
+>@@ -305,7 +400,9 @@ static const struct iio_chan_spec
+>mlx90614_channels[] =
+>{
+>  .channel = 1,
+>  .channel2 = IIO_MOD_TEMP_OBJECT,
+>  .info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
+>-    BIT(IIO_CHAN_INFO_CALIBEMISSIVITY),
+>+    BIT(IIO_CHAN_INFO_CALIBEMISSIVITY) |
+>+ BIT(IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY) |
+>+ BIT(IIO_CHAN_INFO_HIGH_PASS_FILTER_3DB_FREQUENCY),
+>  .info_mask_shared_by_type = BIT(IIO_CHAN_INFO_OFFSET) |
+>     BIT(IIO_CHAN_INFO_SCALE),
+>  },
 
-This can't be easily reconciled with the minimum repeat interval that is
-also specified - a 2 second round-trip time is a long time to block for.
-
-As these sensors have a slow (~10s) response time to environment changes,
-it's reasonable to assume that a measured value from 2 seconds ago will
-not be inaccurate.
-
-Signed-off-by: Jonathan Bell <jonathan@raspberrypi.org>
----
-I only have access to an AM2302/DHT22 variant of the sensor. This patch
-could use some testing on the other models in the range.
-
-I am aware of a pending patch that causes the driver to bail out of a
-reading if the kernel's timestamp resolution is too large. With the change
-above, the driver won't be adversely affected unless the resolution is
-very coarse - ~50us per tick.
-
-  drivers/iio/humidity/dht11.c |  157  
-+++++++++++++++++++++++-------------------
-  1 file changed, 86 insertions(+), 71 deletions(-)
-
-diff --git a/drivers/iio/humidity/dht11.c b/drivers/iio/humidity/dht11.c
-index 7d79a1a..855fb30 100644
---- a/drivers/iio/humidity/dht11.c
-+++ b/drivers/iio/humidity/dht11.c
-@@ -38,22 +38,28 @@
-
-  #define DRIVER_NAME	"dht11"
-
--#define DHT11_DATA_VALID_TIME	2000000000  /* 2s in ns */
--
--#define DHT11_EDGES_PREAMBLE 2
-+#define DHT11_START_EDGES 2
-+#define DHT11_ACK_EDGES 2
-  #define DHT11_BITS_PER_READ 40
-+#define DHT11_STOP_EDGES 2
-+
-+#define DHT11_MAX_EDGES (DHT11_START_EDGES + DHT11_ACK_EDGES + \
-+			DHT11_BITS_PER_READ * 2 + DHT11_STOP_EDGES)
-+
-  /*
-- * Note that when reading the sensor actually 84 edges are detected, but
-- * since the last edge is not significant, we only store 83:
-+ * Sensor variants have differing requirements for the start pulse.
-+ * DHT11 is minimum 18ms, DHT21 is 1-10ms, DHT22 is 1ms.
-+ * If a >20ms start pulse is driven on a DHT22 then the sensor doesn't  
-respond
-+ * at all. Stick to the minimum that should work for all variants.
-   */
--#define DHT11_EDGES_PER_READ (2*DHT11_BITS_PER_READ +  
-DHT11_EDGES_PREAMBLE + 1)
--
--/* Data transmission timing (nano seconds) */
--#define DHT11_START_TRANSMISSION	18  /* ms */
--#define DHT11_SENSOR_RESPONSE	80000
--#define DHT11_START_BIT		50000
--#define DHT11_DATA_BIT_LOW	27000
--#define DHT11_DATA_BIT_HIGH	70000
-+#define DHT11_START_PULSE_MIN	18000 /* us */
-+#define DHT11_START_PULSE_MAX	20000 /* us */
-+ /* Determinant for 1 or 0 decode. 27uS high-time for a 0, 70uS for a 1.  
-*/
-+#define DHT11_BIT_THRESHOLD	51000 /* ns */
-+/* Limit repeat interval. Datasheet specifies minimum 2s interval */
-+#define DHT11_REPEAT_INTERVAL	2000000000 /* ns */
-+/* This is approx. 2x maximum readout time */
-+#define DHT11_CONV_TIMEOUT	20 /* ms */
-
-  struct dht11 {
-  	struct device			*dev;
-@@ -70,10 +76,10 @@ struct dht11 {
-
-  	/* num_edges: -1 means "no transmission in progress" */
-  	int				num_edges;
--	struct {s64 ts; int value; }	edges[DHT11_EDGES_PER_READ];
-+	struct {s64 ts; int value; }	edges[DHT11_MAX_EDGES];
-  };
-
--static unsigned char dht11_decode_byte(int *timing, int threshold)
-+static unsigned char dht11_decode_byte(s64 *timing, int threshold)
-  {
-  	unsigned char ret = 0;
-  	int i;
-@@ -87,46 +93,55 @@ static unsigned char dht11_decode_byte(int *timing,  
-int threshold)
-  	return ret;
-  }
-
--static int dht11_decode(struct dht11 *dht11, int offset)
-+static int dht11_decode(struct dht11 *dht11)
-  {
--	int i, t, timing[DHT11_BITS_PER_READ], threshold,
--		timeres = DHT11_SENSOR_RESPONSE;
-+	int i, t, offset;
-+	s64 timing[DHT11_BITS_PER_READ];
-  	unsigned char temp_int, temp_dec, hum_int, hum_dec, checksum;
-
--	/* Calculate timestamp resolution */
--	for (i = 1; i < dht11->num_edges; ++i) {
--		t = dht11->edges[i].ts - dht11->edges[i-1].ts;
--		if (t > 0 && t < timeres)
--			timeres = t;
--	}
--	if (2*timeres > DHT11_DATA_BIT_HIGH) {
--		pr_err("dht11: timeresolution %d too bad for decoding\n",
--			timeres);
-+	dht11->timestamp = iio_get_time_ns();
-+	/*
-+	 * Start our decode taking into account that some GPIO chips
-+	 * won't interrupt when we drive the start bits.
-+	 */
-+	offset = dht11->num_edges - DHT11_STOP_EDGES - DHT11_BITS_PER_READ * 2;
-+	if (offset < 0) {
-+		dev_err(dht11->dev,
-+			"Decode failure: only %d edges recorded\n",
-+			dht11->num_edges);
-  		return -EIO;
-  	}
--	threshold = DHT11_DATA_BIT_HIGH / timeres;
--	if (DHT11_DATA_BIT_LOW/timeres + 1 >= threshold)
--		pr_err("dht11: WARNING: decoding ambiguous\n");
--
--	/* scale down with timeres and check validity */
--	for (i = 0; i < DHT11_BITS_PER_READ; ++i) {
--		t = dht11->edges[offset + 2*i + 2].ts -
--			dht11->edges[offset + 2*i + 1].ts;
--		if (!dht11->edges[offset + 2*i + 1].value)
--			return -EIO;  /* lost synchronisation */
--		timing[i] = t / timeres;
-+	/* Check that our pulse train hasn't been corrupted by latency */
-+	for (i = 0; i < dht11->num_edges - 1; i++) {
-+		if (dht11->edges[i].value == dht11->edges[i + 1].value) {
-+			dev_err(dht11->dev,
-+				"Decode failure: missed edges (%d total)\n",
-+				dht11->num_edges);
-+			return -EIO;
-+		}
-+	}
-+	/* Find pairs of edges that correspond to a high interval */
-+	for (i = offset, t = 0; i < dht11->num_edges - DHT11_STOP_EDGES; i++) {
-+		if (dht11->edges[i].value == 1 &&
-+				dht11->edges[i + 1].value == 0) {
-+			if (t == DHT11_BITS_PER_READ)
-+				break;
-+			timing[t++] = dht11->edges[i + 1].ts -
-+					dht11->edges[i].ts;
-+		}
-  	}
-
--	hum_int = dht11_decode_byte(timing, threshold);
--	hum_dec = dht11_decode_byte(&timing[8], threshold);
--	temp_int = dht11_decode_byte(&timing[16], threshold);
--	temp_dec = dht11_decode_byte(&timing[24], threshold);
--	checksum = dht11_decode_byte(&timing[32], threshold);
-+	hum_int = dht11_decode_byte(timing, DHT11_BIT_THRESHOLD);
-+	hum_dec = dht11_decode_byte(&timing[8], DHT11_BIT_THRESHOLD);
-+	temp_int = dht11_decode_byte(&timing[16], DHT11_BIT_THRESHOLD);
-+	temp_dec = dht11_decode_byte(&timing[24], DHT11_BIT_THRESHOLD);
-+	checksum = dht11_decode_byte(&timing[32], DHT11_BIT_THRESHOLD);
-
--	if (((hum_int + hum_dec + temp_int + temp_dec) & 0xff) != checksum)
-+	if (((hum_int + hum_dec + temp_int + temp_dec) & 0xff) != checksum) {
-+		dev_err(dht11->dev, "Decode failure: invalid checksum\n");
-  		return -EIO;
-+	}
-
--	dht11->timestamp = iio_get_time_ns();
-  	if (hum_int < 20) {  /* DHT22 */
-  		dht11->temperature = (((temp_int & 0x7f) << 8) + temp_dec) *
-  					((temp_int & 0x80) ? -100 : 100);
-@@ -153,12 +168,13 @@ static irqreturn_t dht11_handle_irq(int irq, void  
-*data)
-  	struct dht11 *dht11 = iio_priv(iio);
-
-  	/* TODO: Consider making the handler safe for IRQ sharing */
--	if (dht11->num_edges < DHT11_EDGES_PER_READ && dht11->num_edges >= 0) {
-+	if (dht11->num_edges < DHT11_MAX_EDGES && dht11->num_edges >= 0) {
-  		dht11->edges[dht11->num_edges].ts = iio_get_time_ns();
-  		dht11->edges[dht11->num_edges++].value =
-  						gpio_get_value(dht11->gpio);
--
--		if (dht11->num_edges >= DHT11_EDGES_PER_READ)
-+		/* Ensure other cores can see our array update */
-+		smp_mb();
-+		if (dht11->num_edges >= DHT11_MAX_EDGES)
-  			complete(&dht11->completion);
-  	}
-
-@@ -173,42 +189,35 @@ static int dht11_read_raw(struct iio_dev *iio_dev,
-  	int ret;
-
-  	mutex_lock(&dht11->lock);
--	if (dht11->timestamp + DHT11_DATA_VALID_TIME < iio_get_time_ns()) {
-+	if (dht11->timestamp + DHT11_REPEAT_INTERVAL < iio_get_time_ns()) {
-  		reinit_completion(&dht11->completion);
-
-  		dht11->num_edges = 0;
-+		/* Ensure the IRQ handler knows we've started a reading */
-+		smp_mb();
-+
-  		ret = gpio_direction_output(dht11->gpio, 0);
-  		if (ret)
-  			goto err;
--		msleep(DHT11_START_TRANSMISSION);
--		ret = gpio_direction_input(dht11->gpio);
--		if (ret)
--			goto err;
-
--		ret = request_irq(dht11->irq, dht11_handle_irq,
--				  IRQF_TRIGGER_RISING | IRQF_TRIGGER_FALLING,
--				  iio_dev->name, iio_dev);
-+		usleep_range(DHT11_START_PULSE_MIN, DHT11_START_PULSE_MAX);
-+
-+		ret = gpio_direction_input(dht11->gpio);
-  		if (ret)
-  			goto err;
-
-  		ret = wait_for_completion_killable_timeout(&dht11->completion,
--								 HZ);
--
--		free_irq(dht11->irq, iio_dev);
--
--		if (ret == 0 && dht11->num_edges < DHT11_EDGES_PER_READ - 1) {
--			dev_err(&iio_dev->dev,
--					"Only %d signal edges detected\n",
--					dht11->num_edges);
--			ret = -ETIMEDOUT;
--		}
-+					msecs_to_jiffies(DHT11_CONV_TIMEOUT));
-+		/*
-+		 * If the completion call times out, it could be the case that
-+		 * the IRQ handler may have reported data which could contain
-+		 * sufficient recorded edges to achieve decode.
-+		 * Test based on the number of edges instead of timeout.
-+		 */
-  		if (ret < 0)
-  			goto err;
-
--		ret = dht11_decode(dht11,
--				dht11->num_edges == DHT11_EDGES_PER_READ ?
--					DHT11_EDGES_PREAMBLE :
--					DHT11_EDGES_PREAMBLE - 2);
-+		ret = dht11_decode(dht11);
-  		if (ret)
-  			goto err;
-  	}
-@@ -274,9 +283,15 @@ static int dht11_probe(struct platform_device *pdev)
-  		return -EINVAL;
-  	}
-
--	dht11->timestamp = iio_get_time_ns() - DHT11_DATA_VALID_TIME - 1;
-+	dht11->timestamp = iio_get_time_ns() - DHT11_REPEAT_INTERVAL - 1;
-  	dht11->num_edges = -1;
-
-+	ret = devm_request_irq(dev, dht11->irq, dht11_handle_irq,
-+			IRQF_TRIGGER_RISING | IRQF_TRIGGER_FALLING,
-+			pdev->name, iio);
-+	if (ret)
-+		return ret;
-+
-  	platform_set_drvdata(pdev, iio);
-
-  	init_completion(&dht11->completion);
 -- 
-1.7.9.5
+Sent from my Android device with K-9 Mail. Please excuse my brevity.
