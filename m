@@ -1,84 +1,79 @@
 Return-Path: <linus.walleij@linaro.org>
 MIME-Version: 1.0
-In-Reply-To: <op.x1cc5l17fh00o9@enterprised.lan>
+In-Reply-To: <6b362223e8468749e236652b1f602c1b@imap.cosmopool.net>
 References: <op.x1bjac2cfh00o9@enterprised.lan>
 	<33438a3f3e237279d0807a4241efa495@imap.cosmopool.net>
-	<op.x1cc5l17fh00o9@enterprised.lan>
-Date: Thu, 9 Jul 2015 12:49:26 +0200
-Message-ID: <CACRpkdaOdXtOj2T5h_dT+cYkKEKmqVRE-hBq9sRpOdiruvZ4+Q@mail.gmail.com>
+	<CACRpkdaj+bgGMjmJvCQhYtUGw2sZ4QG==tZ98sCrNfYfGe6b2A@mail.gmail.com>
+	<6b362223e8468749e236652b1f602c1b@imap.cosmopool.net>
+Date: Thu, 9 Jul 2015 12:59:16 +0200
+Message-ID: <CACRpkdYPT2pKRjPLVcoYXiGGeoZ+kwTaBJoA03Mn+5gKj0HVzg@mail.gmail.com>
 Subject: Re: [RFC PATCH] iio: humidity: dht11: Rewrite decode algorithm,
  improve read reliability
 From: Linus Walleij <linus.walleij@linaro.org>
-To: Jonathan Bell <jonathan@raspberrypi.org>
-Cc: Harald Geyer <harald@ccbib.org>, Jonathan Cameron <jic23@kernel.org>,
+To: Harald Geyer <harald@ccbib.org>
+Cc: Jonathan Bell <jonathan@raspberrypi.org>, Jonathan Cameron <jic23@kernel.org>,
 	Sanjeev Sharma <sanjeev_sharma@mentor.com>, Richard Weinberger <richard@nod.at>,
 	Hartmut Knaack <knaack.h@gmx.de>, Lars-Peter Clausen <lars@metafoo.de>, Peter Meerwald <pmeerw@pmeerw.net>,
 	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
 Content-Type: text/plain; charset=UTF-8
 List-ID: <linux-iio@vger.kernel.org>
 
-On Mon, Jul 6, 2015 at 9:45 AM, Jonathan Bell <jonathan@raspberrypi.org> wrote:
+On Mon, Jul 6, 2015 at 10:02 AM,  <harald@ccbib.org> wrote:
 
->> That was the original behaviour, but is actively prohibited by some GPIO
->> chip drivers. We asked Linus Walleij about it in
->> https://lkml.org/lkml/2014/12/1/171 who replied:
->> "IRQs on pins set to output *does* *not* *make* *sense*." I still
->> disagree,
->> but I don't feel like diving into discussions like this. I'll be happy if
->> you can convince him, because the DHT11 driver lost a nice diagnostic
->> feature with that change, but before that GPIO code is changed, there is
->> no chance this can be added back.
+>> I just don't understand this usecase. Can you explain to me
+>> what you are doing and why exactly so as to soften me up
+>> a bit?
 >
-> These sensors are prodded by initially driving their data line low for a
-> long period (some ms) and then reverting the pin to an input to listen to
-> their response. The first bit-edge arrives about 27us after reverting the
-> pin to an input.
+> Sure. The HW setup where this makes most sense is if the GPIO pin has
+> a fixed drive strength (say 4mA) and is connected to some pullup or
+> pulldown
+> resistor - maybe on the client device.
 
-OK that merely seems to be calls to gpiod_direction_output()
-setting the line low, msleep(x), gpiod_direction_input(), then possibly
-trigger an IRQ on that input using gpiod_to_irq(). No need for an
-output to register an IRQ?
+Pull-up or not doesn't matter I think. That is only there to stabilize
+the line if the output is set to something like high impedance.
+You must certainly do not want an IRQ because a pull-up/down
+is dragging your line past a trigger point, you still know what
+is going on.
 
-> I moved the request_irq() back to the probe function originally because the
-> first edge was going missing - request_irq wasn't completing before the
-> first edge arrived in 27uS.
+As in my other response, what could possibly make sense is
+open drain/collector or open emitter/source.
+https://en.wikipedia.org/wiki/Open_collector
 
-Aha I see. That seems fairly slow, but if it is that quick to initialize
-maybe you can just poll for it by reading the input line instead of setting
-up an IRQ? Seems like something you may want to do anyways for
-stability.
+I am open to patches handling IRQ events on GPIO descriptors flagged
+as open [drain/collector/emitter/source].
 
-> There is no electrical reason why GPIO outputs cannot also be interrupt
-> sources.  The generation of interrupts from edge/level events simply samples
-> the state of the pad and acts accordingly - it doesn't care what's driving
-> it (or at least shouldn't do). I'd be interested to see if there's any GPIO
-> hardware that gates its interrupt generation system with "am I an input?".
-> If the GPIO API doesn't support this then OK, there may be reasons why (such
-> as the locking referred to in the linked thread).
+But then make sure this line is flagged as such in the machine
+descriptor / device tree.
 
-There is no hardware limitation that I know, most SoC GPIO blocks
-use an synchronous or asynchronous interrupt generator with edge
-detection and latched status registers and that will usually trigger
-also if you drive it by writing the line registers.
+> In this case there are two uses for getting interrupts on our own output
+> edges:
+> 1) We get feedback if we successfully pulled the line up/down.
 
-What troubles me is the usecase: you want an IRQ because something
-happened and you want to know what that was. But if you just
-drive the line high or low you are being informed about your own
-actions and that just doesn't make sense.
+Seems more apropriate to check by polling the line, possibly
+using a timer. IRQ seems highly inapropriate since it is an expected
+event and it must have a timeout anyways.
 
-So in this case I assume that for this to make any sense the line
-must be open-collector/open-drain or something so it can go to
-another value even if we're driving it in some way?
+> 2) If we get interrupts on output edges, timestamps of all signal edges
+> can
+> be taken via the same codepath and thus be slightly more accurate. This
+> probably is not important, but it is a nice thing to support.
 
-In that case GPIO_OPEN_DRAIN or GPIO_OPEN_SOURCE
-should be set in the descriptor table, and we can add logic to allow
-IRQs on outputs if and only if it has one of these flags set.
+This seems more like a debug aid than something that should be done
+in drivers. I would think it is possibly something then that the driver
+can set up and handle internally using debugfs rather than exporting it
+to the gpiolib API.
 
-> Rethinking the patch a bit, if we're now right-justifying our decode then we
-> shouldn't care if we miss interrupts for the start bit or the first phase of
-> the response, so we can work around it.
+> Also, if we get spurious interrupts before receiving the actual data,
+> there
+> is less likelyhood of cache misses during reading the data, which might
+> improve reliability.
 
-OK even better.
+Isn't this usecase analogous to debouncing?
+
+For example drivers/input/keyboard/gpio_keys.c has software
+debouncing and I have toyed with the idea of simply moving this
+to the GPIO library so clients can request debouncing for any
+GPIO line if they need.
 
 Yours,
 Linus Walleij
