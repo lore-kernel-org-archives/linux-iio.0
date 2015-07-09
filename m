@@ -5,56 +5,58 @@ Cc: Jonathan Cameron <jic23@kernel.org>,
 	Lars-Peter Clausen <lars@metafoo.de>,
 	Peter Meerwald <pmeerw@pmeerw.net>,
 	Tiberiu Breana <tiberiu.a.breana@intel.com>
-Subject: [PATCH v2 1/5] iio:light:stk3310: move device register to end of probe
-Date: Thu,  9 Jul 2015 23:51:29 +0200
-Message-Id: <fe03a1248d7d1037686a7b08bd5357b95a0b9081.1436398691.git.knaack.h@gmx.de>
+Subject: [PATCH v2 4/5] iio:light:stk3310: use correct names and type for state
+Date: Thu,  9 Jul 2015 23:51:32 +0200
+Message-Id: <692d0850562d1381c92759fb8e91652be40772ab.1436398691.git.knaack.h@gmx.de>
 In-Reply-To: <cover.1436398691.git.knaack.h@gmx.de>
 References: <cover.1436398691.git.knaack.h@gmx.de>
 In-Reply-To: <cover.1436398691.git.knaack.h@gmx.de>
 References: <cover.1436398691.git.knaack.h@gmx.de>
 List-ID: <linux-iio@vger.kernel.org>
 
-iio_device_register should be the last operation during probe. Therefor
-move up interrupt setup code and while at it, change the check for invalid
-values of client->irq to be smaller than zero.
-Fixes: 3dd477acbdd1 ("iio: light: Add threshold interrupt support for STK3310")
+Indicate the bit number of predefined states, make use of these names and
+change the state type in _resume to u8 to avoid type casting.
 
 Signed-off-by: Hartmut Knaack <knaack.h@gmx.de>
+Reviewed-by: Tiberiu Breana <tiberiu.a.breana@intel.com>
 ---
- drivers/iio/light/stk3310.c | 14 +++++++-------
- 1 file changed, 7 insertions(+), 7 deletions(-)
+ drivers/iio/light/stk3310.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
 diff --git a/drivers/iio/light/stk3310.c b/drivers/iio/light/stk3310.c
-index c1a218236be5..e7e6e5a2b1f8 100644
+index d6df40220007..0056f4870357 100644
 --- a/drivers/iio/light/stk3310.c
 +++ b/drivers/iio/light/stk3310.c
-@@ -608,13 +608,7 @@ static int stk3310_probe(struct i2c_client *client,
- 	if (ret < 0)
- 		return ret;
+@@ -35,8 +35,8 @@
+ #define STK3310_REG_ID				0x3E
+ #define STK3310_MAX_REG				0x80
  
--	ret = iio_device_register(indio_dev);
--	if (ret < 0) {
--		dev_err(&client->dev, "device_register failed\n");
--		stk3310_set_state(data, STK3310_STATE_STANDBY);
--	}
--
--	if (client->irq <= 0)
-+	if (client->irq < 0)
- 		client->irq = stk3310_gpio_probe(client);
+-#define STK3310_STATE_EN_PS			0x01
+-#define STK3310_STATE_EN_ALS			0x02
++#define STK3310_STATE_EN_PS			BIT(0)
++#define STK3310_STATE_EN_ALS			BIT(1)
+ #define STK3310_STATE_STANDBY			0x00
  
- 	if (client->irq >= 0) {
-@@ -629,6 +623,12 @@ static int stk3310_probe(struct i2c_client *client,
- 					client->irq);
+ #define STK3310_CHIP_ID_VAL			0x13
+@@ -436,8 +436,8 @@ static int stk3310_set_state(struct stk3310_data *data, u8 state)
+ 		dev_err(&client->dev, "failed to change sensor state\n");
+ 	} else if (state != STK3310_STATE_STANDBY) {
+ 		/* Don't reset the 'enabled' flags if we're going in standby */
+-		data->ps_enabled  = !!(state & 0x01);
+-		data->als_enabled = !!(state & 0x02);
++		data->ps_enabled  = !!(state & STK3310_STATE_EN_PS);
++		data->als_enabled = !!(state & STK3310_STATE_EN_ALS);
  	}
+ 	mutex_unlock(&data->lock);
  
-+	ret = iio_device_register(indio_dev);
-+	if (ret < 0) {
-+		dev_err(&client->dev, "device_register failed\n");
-+		stk3310_set_state(data, STK3310_STATE_STANDBY);
-+	}
-+
- 	return ret;
- }
+@@ -683,7 +683,7 @@ static int stk3310_suspend(struct device *dev)
  
+ static int stk3310_resume(struct device *dev)
+ {
+-	int state = 0;
++	u8 state = 0;
+ 	struct stk3310_data *data;
+ 
+ 	data = iio_priv(i2c_get_clientdata(to_i2c_client(dev)));
 -- 
 2.4.3
