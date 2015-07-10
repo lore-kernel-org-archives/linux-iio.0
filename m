@@ -1,79 +1,73 @@
-Return-Path: <linus.walleij@linaro.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-la0-f48.google.com ([209.85.215.48]:34224 "EHLO
+	mail-la0-f48.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S932555AbbGJUBc (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 10 Jul 2015 16:01:32 -0400
 MIME-Version: 1.0
-In-Reply-To: <6b362223e8468749e236652b1f602c1b@imap.cosmopool.net>
-References: <op.x1bjac2cfh00o9@enterprised.lan>
-	<33438a3f3e237279d0807a4241efa495@imap.cosmopool.net>
-	<CACRpkdaj+bgGMjmJvCQhYtUGw2sZ4QG==tZ98sCrNfYfGe6b2A@mail.gmail.com>
-	<6b362223e8468749e236652b1f602c1b@imap.cosmopool.net>
-Date: Thu, 9 Jul 2015 12:59:16 +0200
-Message-ID: <CACRpkdYPT2pKRjPLVcoYXiGGeoZ+kwTaBJoA03Mn+5gKj0HVzg@mail.gmail.com>
-Subject: Re: [RFC PATCH] iio: humidity: dht11: Rewrite decode algorithm,
- improve read reliability
-From: Linus Walleij <linus.walleij@linaro.org>
-To: Harald Geyer <harald@ccbib.org>
-Cc: Jonathan Bell <jonathan@raspberrypi.org>, Jonathan Cameron <jic23@kernel.org>,
-	Sanjeev Sharma <sanjeev_sharma@mentor.com>, Richard Weinberger <richard@nod.at>,
-	Hartmut Knaack <knaack.h@gmx.de>, Lars-Peter Clausen <lars@metafoo.de>, Peter Meerwald <pmeerw@pmeerw.net>,
+In-Reply-To: <55A01972.9070405@infradead.org>
+References: <1436357088-30743-1-git-send-email-daniel.baluta@intel.com>
+	<55A01972.9070405@infradead.org>
+Date: Fri, 10 Jul 2015 23:01:31 +0300
+Message-ID: <CAEnQRZBKOG0_RGi38oXNZoFF=T37P6a9++NB9m2v01i_nvYMUg@mail.gmail.com>
+Subject: Re: [PATCH] DocBook documentation for IIO
+From: Daniel Baluta <daniel.baluta@intel.com>
+To: Randy Dunlap <rdunlap@infradead.org>,
+	Cristina Georgiana Opriceana <cristina.opriceana@gmail.com>
+Cc: Daniel Baluta <daniel.baluta@intel.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
 	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
 Content-Type: text/plain; charset=UTF-8
-List-ID: <linux-iio@vger.kernel.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Mon, Jul 6, 2015 at 10:02 AM,  <harald@ccbib.org> wrote:
+Hi Randy,
 
->> I just don't understand this usecase. Can you explain to me
->> what you are doing and why exactly so as to soften me up
->> a bit?
+On Fri, Jul 10, 2015 at 10:13 PM, Randy Dunlap <rdunlap@infradead.org> wrote:
+> On 07/08/15 05:04, Daniel Baluta wrote:
+>> In our effort to support vendors writing drivers for their own
+>> sensors we introduce IIO documentation in DocBook format.
+>>
+>> It documents Industrial I/O core including IIO devices, buffers, triggers and
+>> triggered buffers. It also offers a short list of online resources
+>> for the IIO subsystem.
+>>
+>> This is far from being complete any suggestions are welcomed. At a first
+>> glance we also need to add documentation for events. We are also working
+>> on auto-generating template drivers based on the type of the IIO sensors.
 >
-> Sure. The HW setup where this makes most sense is if the GPIO pin has
-> a fixed drive strength (say 4mA) and is connected to some pullup or
-> pulldown
-> resistor - maybe on the client device.
+> Hi Daniel,
+>
+> This is a good start.  Might as well get it merged and keep improving it.
 
-Pull-up or not doesn't matter I think. That is only there to stabilize
-the line if the output is set to something like high impedance.
-You must certainly do not want an IRQ because a pull-up/down
-is dragging your line past a trigger point, you still know what
-is going on.
+This sounds like a good plan.
 
-As in my other response, what could possibly make sense is
-open drain/collector or open emitter/source.
-https://en.wikipedia.org/wiki/Open_collector
+>
+> Here are a few nits:
+>
+> Warning(..//drivers/iio/industrialio-buffer.c:1145): cannot understand function prototype: 'struct iio_demux_table '
+>
+>>> drop the "()" in the first line:
+>  * struct iio_demux_table() - table describing demux memcpy ops
+>
+>
+> In iio_buffer_get() and iio_buffer_put(), change "may be NULL"
+> to "may be %NULL".
+>
+> In linux/iio/iio.h, struct iio_chan_spec, the sub-fields of @scan_type confuse
+> scripts/kernel-doc.  There isn't really a good way to do what you are trying
+> to do (AFAIK).  The problem is that things like "realbits:" (ending with a colon)
+> cause kernel-doc to think that that is some special comment and it generates
+> a separate paragraph for it at the end of the struct.  I changed all of those
+> colons to hyphens, but then kernel-doc just runs all of those sub-field
+> comment descriptions together... so I added a ';' at the end of each one, but
+> it doesn't look nice.
 
-I am open to patches handling IRQ events on GPIO descriptors flagged
-as open [drain/collector/emitter/source].
+We now about the warnings. Cristina is already working on a patch series to fix
+them.
 
-But then make sure this line is flagged as such in the machine
-descriptor / device tree.
-
-> In this case there are two uses for getting interrupts on our own output
-> edges:
-> 1) We get feedback if we successfully pulled the line up/down.
-
-Seems more apropriate to check by polling the line, possibly
-using a timer. IRQ seems highly inapropriate since it is an expected
-event and it must have a timeout anyways.
-
-> 2) If we get interrupts on output edges, timestamps of all signal edges
-> can
-> be taken via the same codepath and thus be slightly more accurate. This
-> probably is not important, but it is a nice thing to support.
-
-This seems more like a debug aid than something that should be done
-in drivers. I would think it is possibly something then that the driver
-can set up and handle internally using debugfs rather than exporting it
-to the gpiolib API.
-
-> Also, if we get spurious interrupts before receiving the actual data,
-> there
-> is less likelyhood of cache misses during reading the data, which might
-> improve reliability.
-
-Isn't this usecase analogous to debouncing?
-
-For example drivers/input/keyboard/gpio_keys.c has software
-debouncing and I have toyed with the idea of simply moving this
-to the GPIO library so clients can request debouncing for any
-GPIO line if they need.
-
-Yours,
-Linus Walleij
+thanks,
+Daniel.
