@@ -1,231 +1,59 @@
-Return-Path: <cmo@melexis.com>
-MIME-Version: 1.0
-In-Reply-To: <BBC430FE-127C-493F-B3AF-1ED207261F9C@jic23.retrosnub.co.uk>
-References: <CAKv63usGO4DxYhx-Sz_BugWmi_ztJF7=ce035Wr1EZw+-wMOfg@mail.gmail.com>
- <BBC430FE-127C-493F-B3AF-1ED207261F9C@jic23.retrosnub.co.uk>
-From: Crt Mori <cmo@melexis.com>
-Date: Wed, 8 Jul 2015 22:51:00 +0200
-Message-ID: <CAKv63usafKwiLqYA00Fn2dDgmYAaq7VqiS4upwkLEVGqxMa5qQ@mail.gmail.com>
-Subject: Re: [PATCH 0/1] iio: mlx90614: Implement filter configuration
-To: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
-Cc: linux-iio@vger.kernel.org, Peter Meerwald <pmeerw@pmeerw.net>,
-	=?UTF-8?Q?Vianney_le_Cl=C3=A9ment_de_Saint=2DMarcq?= <vianney.leclement@essensium.com>,
-	Johnathan Iain Cameron <jic23@kernel.org>
-Content-Type: text/plain; charset=UTF-8
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mailout1.w1.samsung.com ([210.118.77.11]:61943 "EHLO
+	mailout1.w1.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751511AbbGJGee (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 10 Jul 2015 02:34:34 -0400
+From: Krzysztof Kozlowski <k.kozlowski@samsung.com>
+To: Lars-Peter Clausen <lars@metafoo.de>,
+	Michael Hennerich <Michael.Hennerich@analog.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jarod Wilson <jarod@wilsonet.com>,
+	Mauro Carvalho Chehab <mchehab@osg.samsung.com>,
+	Antti Palosaari <crope@iki.fi>, linux-iio@vger.kernel.org,
+	devel@driverdev.osuosl.org, linux-kernel@vger.kernel.org,
+	linux-media@vger.kernel.org
+Cc: Krzysztof Kozlowski <k.kozlowski@samsung.com>
+Subject: [PATCH] Drop owner assignment from i2c_driver (and platform left-overs)
+Date: Fri, 10 Jul 2015 15:34:25 +0900
+Message-id: <1436510068-5284-1-git-send-email-k.kozlowski@samsung.com>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On 8 July 2015 at 18:59, Jonathan Cameron <jic23@jic23.retrosnub.co.uk> wrote:
-> On 7 July 2015 15:44:51 BST, Crt Mori <cmo@melexis.com> wrote:
->>Implemented FIR and IIR filter configuration which are located
->>within the configuration register of EEPROM. I have used the
->>IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY for FIR settings and
->>IIO_CHAN_INFO_HIGH_PASS_FILTER_3DB_FREQUENCY for IIR settings just
->>to reuse IIO_CHAN_INFO structure with closes resemblance of the
->>settings (although it would have been better to drop that
->>3DB_FREQUENCY part).
->>
->>The diff is made towards togreg branch as that branch seems to have the
->>most recent updates of mlx90614 driver
->
-> I am having a rather silly week, hence very brief reply from a train. Sorry about that,!
->
-> Using existing abi in a non documented way is always a bad idea.  Either work out
-> how to fit in with what is there fully or if that isn't possible propose new ABI for
-> what you need.
->
-> Will have to postpone reading actual code for a few days. Train arrived
->
-> J
+Hi,
 
-Thanks for the comment. I was considering a new ABI, but FIR filter is a LOW
-PASS filter (except that it is not on 3dB frequency), while IIR filter
-is a HIGH PASS
-filter (again not on 3dB frequency). That 3dB frequency on end was
-really not well
-thought as it is not general enough. But now it is used in quite few
-drivers and I
-would assume changing that to more general would not be possible?
-The filter settings are also very specific and require good knowledge
-of datasheet
-so I assume that enough skilled users will be using it to understand this two
-options.
 
-Once you read the code tell me if you still think it needs a special
-ABI  - I prefer
-to use already established ABIs as they allow easier hardware changes.
+The i2c drivers also do not have to set 'owner' field because
+i2c_register_driver() will do it instead.
 
->>
->>Signed-off-by: Crt Mori <cmo@melexis.com>
->>---
->>diff --git a/drivers/iio/temperature/mlx90614.c
->>b/drivers/iio/temperature/mlx90614.c
->>index 909278a..d767d2f 100644
->>--- a/drivers/iio/temperature/mlx90614.c
->>+++ b/drivers/iio/temperature/mlx90614.c
->>@@ -20,7 +20,6 @@
->>* always has a pull-up so we do not need an extra GPIO to drive it
->>high.
->>If
->>  * the "wakeup" GPIO is not given, power management will be disabled.
->>  *
->>- * TODO: filter configuration
->>  */
->>
->> #include <linux/err.h>
->>@@ -79,6 +78,25 @@ struct mlx90614_data {
->>  unsigned long ready_timestamp; /* in jiffies */
->> };
->>
->>+/* Allowed percentage values for IIR filtering */
->>+static const u8 mlx90614_iir_values[] = {50, 25, 17, 13, 100, 80, 67,
->>57};
->>+
->>+/*
->>+ * Find the IIR value inside mlx90614_iir_values array and return its
->>position
->>+ */
->>+static inline s32 mlx90614_iir_search(int value)
->>+{
->>+ u8 i;
->>+ if (value < 0 || value > 100)
->>+ return -EINVAL;
->>+
->>+ for (i=0; i < ARRAY_SIZE(mlx90614_iir_values); ++i) {
->>+ if (value == mlx90614_iir_values[i])
->>+ return i;
->>+ }
->>+ return -EINVAL;
->>+}
->>+
->> /*
->>  * Erase an address and write word.
->>  * The mutex must be locked before calling.
->>@@ -236,6 +254,31 @@ static int mlx90614_read_raw(struct iio_dev
->>*indio_dev,
->>  *val2 = ret * MLX90614_CONST_EMISSIVITY_RESOLUTION;
->>  }
->>  return IIO_VAL_INT_PLUS_NANO;
->>+ case IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY: /* FIR setting */
->>+ mlx90614_power_get(data, false);
->>+ mutex_lock(&data->lock);
->>+ ret = i2c_smbus_read_word_data(data->client,MLX90614_CONFIG);
->>+ mutex_unlock(&data->lock);
->>+ mlx90614_power_put(data);
->>+
->>+ if (ret < 0)
->>+ return ret;
->>+
->>+ *val = (ret & MLX90614_CONFIG_FIR_MASK) >>
->>+ MLX90614_CONFIG_FIR_SHIFT;
->>+ return IIO_VAL_INT;
->>+ case IIO_CHAN_INFO_HIGH_PASS_FILTER_3DB_FREQUENCY: /* IIR setting */
->>+ mlx90614_power_get(data, false);
->>+ mutex_lock(&data->lock);
->>+ ret = i2c_smbus_read_word_data(data->client,MLX90614_CONFIG);
->>+ mutex_unlock(&data->lock);
->>+ mlx90614_power_put(data);
->>+
->>+ if (ret < 0)
->>+ return ret;
->>+
->>+ *val = mlx90614_iir_values[ret & MLX90614_CONFIG_IIR_MASK];
->>+ return IIO_VAL_INT;
->>  default:
->>  return -EINVAL;
->>  }
->>@@ -263,6 +306,52 @@ static int mlx90614_write_raw(struct iio_dev
->>*indio_dev,
->>  mlx90614_power_put(data);
->>
->>  return ret;
->>+ case IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY: /* FIR Filter */
->>+ if (val < 0 || val > 7)
->>+ return -EINVAL;
->>+
->>+ mlx90614_power_get(data, false);
->>+ mutex_lock(&data->lock);
->>+
->>+ /* CONFIG register values must not be changed so we must read
->>+ * them before we actually write changes */
->>+ ret = i2c_smbus_read_word_data(data->client,MLX90614_CONFIG);
->>+ if (ret >= 0)
->>+ {
->>+ /* Write changed values */
->>+ ret = mlx90614_write_word(data->client, MLX90614_CONFIG,
->>+  (val << MLX90614_CONFIG_FIR_SHIFT) |
->>+  ((u16) ret & (~((u16) MLX90614_CONFIG_FIR_MASK))));
->>+ }
->>+ mutex_unlock(&data->lock);
->>+ mlx90614_power_put(data);
->>+
->>+ return ret;
->>+ case IIO_CHAN_INFO_HIGH_PASS_FILTER_3DB_FREQUENCY: /* IIR Filter */
->>+ ret = mlx90614_iir_search(val);
->>+ if (ret < 0)
->>+ return ret;
->>+ /* If there is no error, then we have a sensor equivalent value
->>+ * in ret. We need to store it temporary to val, as we still
->>+ * have more data to save in ret before we can actually write */
->>+ val = ret;
->>+
->>+ mlx90614_power_get(data, false);
->>+ mutex_lock(&data->lock);
->>+ /* CONFIG register values must not be changed so we must read
->>+ * them before we actually write changes*/
->>+ ret = i2c_smbus_read_word_data(data->client,MLX90614_CONFIG);
->>+ if (ret >= 0)
->>+ {
->>+ /* Write changed values */
->>+ ret = mlx90614_write_word(data->client, MLX90614_CONFIG,
->>+  (val << MLX90614_CONFIG_IIR_SHIFT) |
->>+  ((u16) ret & (~(u16) MLX90614_CONFIG_IIR_MASK)));
->>+ }
->>+ mutex_unlock(&data->lock);
->>+ mlx90614_power_put(data);
->>+
->>+ return ret;
->>  default:
->>  return -EINVAL;
->>  }
->>@@ -275,6 +364,10 @@ static int mlx90614_write_raw_get_fmt(struct
->>iio_dev
->>*indio_dev,
->>  switch (mask) {
->>  case IIO_CHAN_INFO_CALIBEMISSIVITY:
->>  return IIO_VAL_INT_PLUS_NANO;
->>+ case IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY:
->>+ return IIO_VAL_INT_PLUS_MICRO;
->>+ case IIO_CHAN_INFO_HIGH_PASS_FILTER_3DB_FREQUENCY:
->>+ return IIO_VAL_INT_PLUS_MICRO;
->>  default:
->>  return -EINVAL;
->>  }
->>@@ -294,7 +387,9 @@ static const struct iio_chan_spec
->>mlx90614_channels[] =
->>{
->>  .modified = 1,
->>  .channel2 = IIO_MOD_TEMP_OBJECT,
->>  .info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
->>-    BIT(IIO_CHAN_INFO_CALIBEMISSIVITY),
->>+    BIT(IIO_CHAN_INFO_CALIBEMISSIVITY) |
->>+ BIT(IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY) |
->>+ BIT(IIO_CHAN_INFO_HIGH_PASS_FILTER_3DB_FREQUENCY),
->>  .info_mask_shared_by_type = BIT(IIO_CHAN_INFO_OFFSET) |
->>     BIT(IIO_CHAN_INFO_SCALE),
->>  },
->>@@ -305,7 +400,9 @@ static const struct iio_chan_spec
->>mlx90614_channels[] =
->>{
->>  .channel = 1,
->>  .channel2 = IIO_MOD_TEMP_OBJECT,
->>  .info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
->>-    BIT(IIO_CHAN_INFO_CALIBEMISSIVITY),
->>+    BIT(IIO_CHAN_INFO_CALIBEMISSIVITY) |
->>+ BIT(IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY) |
->>+ BIT(IIO_CHAN_INFO_HIGH_PASS_FILTER_3DB_FREQUENCY),
->>  .info_mask_shared_by_type = BIT(IIO_CHAN_INFO_OFFSET) |
->>     BIT(IIO_CHAN_INFO_SCALE),
->>  },
->
-> --
-> Sent from my Android device with K-9 Mail. Please excuse my brevity.
+'owner' is removed from i2c drivers, which I was able to compile
+with allyesconfig (arm, arm64, i386, x86_64, ppc64).
+Only compile-tested.
+
+The coccinelle script which generated the patch was sent here:
+http://www.spinics.net/lists/kernel/msg2029903.html
+
+
+Best regards,
+Krzysztof
+
+
+Krzysztof Kozlowski (3):
+  staging: iio: Drop owner assignment from i2c_driver
+  staging: media: Drop owner assignment from i2c_driver
+  staging: Drop owner assignment from i2c_driver
+
+ drivers/staging/iio/addac/adt7316-i2c.c       | 1 -
+ drivers/staging/iio/light/isl29018.c          | 1 -
+ drivers/staging/iio/light/isl29028.c          | 1 -
+ drivers/staging/media/lirc/lirc_zilog.c       | 1 -
+ drivers/staging/media/mn88472/mn88472.c       | 1 -
+ drivers/staging/media/mn88473/mn88473.c       | 1 -
+ drivers/staging/ste_rmi4/synaptics_i2c_rmi4.c | 1 -
+ 7 files changed, 7 deletions(-)
+
+-- 
+1.9.1
+
