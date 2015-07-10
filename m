@@ -1,46 +1,47 @@
-Return-Path: <tiberiu.a.breana@intel.com>
-From: "Breana, Tiberiu A" <tiberiu.a.breana@intel.com>
-To: Hartmut Knaack <knaack.h@gmx.de>, "linux-iio@vger.kernel.org"
-	<linux-iio@vger.kernel.org>
-CC: Jonathan Cameron <jic23@kernel.org>, Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>
-Subject: RE: [PATCH v2 0/5] stk3310 fixes and cleanup
-Date: Fri, 10 Jul 2015 08:02:07 +0000
-Message-ID: <4586F61A4A291F4DA44D32824E7C0F402216EFD3@IRSMSX109.ger.corp.intel.com>
-References: <cover.1436398691.git.knaack.h@gmx.de>
-In-Reply-To: <cover.1436398691.git.knaack.h@gmx.de>
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
+Return-Path: <k.kozlowski@samsung.com>
+From: Krzysztof Kozlowski <k.kozlowski@samsung.com>
+To: Lars-Peter Clausen <lars@metafoo.de>,
+ Michael Hennerich <Michael.Hennerich@analog.com>,
+ Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
+ Peter Meerwald <pmeerw@pmeerw.net>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Jarod Wilson <jarod@wilsonet.com>,
+ Mauro Carvalho Chehab <mchehab@osg.samsung.com>,
+ Antti Palosaari <crope@iki.fi>, linux-iio@vger.kernel.org,
+ devel@driverdev.osuosl.org, linux-kernel@vger.kernel.org,
+ linux-media@vger.kernel.org
+Cc: Krzysztof Kozlowski <k.kozlowski@samsung.com>
+Subject: [PATCH 3/3] staging: Drop owner assignment from i2c_driver
+Date: Fri, 10 Jul 2015 15:34:28 +0900
+Message-id: <1436510068-5284-4-git-send-email-k.kozlowski@samsung.com>
+In-reply-to: <1436510068-5284-1-git-send-email-k.kozlowski@samsung.com>
+References: <1436510068-5284-1-git-send-email-k.kozlowski@samsung.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-> -----Original Message-----
-> From: Hartmut Knaack [mailto:knaack.h@gmx.de]
-> Sent: Friday, July 10, 2015 12:51 AM
-> To: linux-iio@vger.kernel.org
-> Cc: Jonathan Cameron; Lars-Peter Clausen; Peter Meerwald; Breana, Tiberiu
-> A
-> Subject: [PATCH v2 0/5] stk3310 fixes and cleanup
->=20
-> Changes in V2:
->   * move interrupt setup before device registration, as pointed out by
->     Jonathan and confirmed by Tiberiu Breana
->   * incooperate a check for negative-only values of the provided irq
->     number, as requested by Tiberiu Breana
->=20
-> Hartmut Knaack (5):
->   iio:light:stk3310: move device register to end of probe
->   iio:light:stk3310: make endianness independent of host
->   iio:light:stk3310: add more error handling
->   iio:light:stk3310: use correct names and type for state
->   iio:light:stk3310: adjust indentation
->=20
->  drivers/iio/light/stk3310.c | 97 ++++++++++++++++++++++++++++++--------
-> -------
->  1 file changed, 64 insertions(+), 33 deletions(-)
->=20
-> --
-> 2.4.3
+i2c_driver does not need to set an owner because i2c_register_driver()
+will set it.
 
-+1
+Signed-off-by: Krzysztof Kozlowski <k.kozlowski@samsung.com>
 
-Reviewed-by: Tiberiu Breana <tiberiu.a.breana@intel.com>
+---
+
+The coccinelle script which generated the patch was sent here:
+http://www.spinics.net/lists/kernel/msg2029903.html
+---
+ drivers/staging/ste_rmi4/synaptics_i2c_rmi4.c | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/drivers/staging/ste_rmi4/synaptics_i2c_rmi4.c b/drivers/staging/ste_rmi4/synaptics_i2c_rmi4.c
+index 0f524bb7b41d..1f9ba8beb061 100644
+--- a/drivers/staging/ste_rmi4/synaptics_i2c_rmi4.c
++++ b/drivers/staging/ste_rmi4/synaptics_i2c_rmi4.c
+@@ -1126,7 +1126,6 @@ MODULE_DEVICE_TABLE(i2c, synaptics_rmi4_id_table);
+ static struct i2c_driver synaptics_rmi4_driver = {
+ 	.driver = {
+ 		.name	=	DRIVER_NAME,
+-		.owner	=	THIS_MODULE,
+ 		.pm	=	&synaptics_rmi4_dev_pm_ops,
+ 	},
+ 	.probe		=	synaptics_rmi4_probe,
+-- 
+1.9.1
