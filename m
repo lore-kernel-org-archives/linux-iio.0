@@ -1,68 +1,46 @@
-Return-Path: <shawnguo@kernel.org>
-Date: Fri, 10 Jul 2015 16:47:04 +0800
-From: Shawn Guo <shawnguo@kernel.org>
-To: Sanchayan Maity <maitysanchayan@gmail.com>
-Cc: jic23@kernel.org, shawn.guo@linaro.org, kernel@pengutronix.de,
-	robh+dt@kernel.org, pawel.moll@arm.com, mark.rutland@arm.com,
-	ijc+devicetree@hellion.org.uk, galak@codeaurora.org,
-	B38611@freescale.com, devicetree@vger.kernel.org,
-	linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-	linux-kernel@vger.kernel.org, stefan@agner.ch
-Subject: Re: [PATCH v2 0/2] Implement sample time consideration for Vybrid's
- ADC
-Message-ID: <20150710084704.GK23464@tiger>
-References: <cover.1435134626.git.maitysanchayan@gmail.com>
+Return-Path: <tiberiu.a.breana@intel.com>
+From: "Breana, Tiberiu A" <tiberiu.a.breana@intel.com>
+To: Hartmut Knaack <knaack.h@gmx.de>, "linux-iio@vger.kernel.org"
+	<linux-iio@vger.kernel.org>
+CC: Jonathan Cameron <jic23@kernel.org>, Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>
+Subject: RE: [PATCH v2 0/5] stk3310 fixes and cleanup
+Date: Fri, 10 Jul 2015 08:02:07 +0000
+Message-ID: <4586F61A4A291F4DA44D32824E7C0F402216EFD3@IRSMSX109.ger.corp.intel.com>
+References: <cover.1436398691.git.knaack.h@gmx.de>
+In-Reply-To: <cover.1436398691.git.knaack.h@gmx.de>
+Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <cover.1435134626.git.maitysanchayan@gmail.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-On Wed, Jun 24, 2015 at 02:03:39PM +0530, Sanchayan Maity wrote:
-> Hello,
-> 
-> This patchset adds a dt binding for specifying sample time
-> for the vybrid adc driver and takes this into account for
-> sampling frequency calculation and related configuration in
-> the driver.
-> 
-> The patchset is based on top of Stefan's patches here
-> http://lkml.iu.edu/hypermail/linux/kernel/1505.3/02043.html
-> 
-> which got recently applied. Tested with shawn's for-next
-> branch.
-> 
-> Changes since v1:
-> 
-> Change from a vendor specific fsl,min-sample-time to non vendor
-> specific min-sample-time.
-
-What's the reason for that?  Property without vendor prefix would be
-the generic one, which should be defined by generic ADC bindings, not
-vf610-adc.txt.
-
-Shawn
-
-> 
-> Version 1 of the patchset can be found here
-> http://lkml.iu.edu/hypermail/linux/kernel/1506.1/00026.html
-> 
-> - Sanchayan.
-> 
-> Sanchayan Maity (2):
->   iio: adc: Determine sampling frequencies by using minimum sample time
->   ARM: dts: vfxxx: Add property for minimum sample time
-> 
->  .../devicetree/bindings/iio/adc/vf610-adc.txt      |  6 ++
->  arch/arm/boot/dts/vfxxx.dtsi                       |  2 +
->  drivers/iio/adc/vf610_adc.c                        | 74 ++++++++++++++++++++--
->  3 files changed, 78 insertions(+), 4 deletions(-)
-> 
-> -- 
-> 2.4.4
-> 
+> -----Original Message-----
+> From: Hartmut Knaack [mailto:knaack.h@gmx.de]
+> Sent: Friday, July 10, 2015 12:51 AM
+> To: linux-iio@vger.kernel.org
+> Cc: Jonathan Cameron; Lars-Peter Clausen; Peter Meerwald; Breana, Tiberiu
+> A
+> Subject: [PATCH v2 0/5] stk3310 fixes and cleanup
+>=20
+> Changes in V2:
+>   * move interrupt setup before device registration, as pointed out by
+>     Jonathan and confirmed by Tiberiu Breana
+>   * incooperate a check for negative-only values of the provided irq
+>     number, as requested by Tiberiu Breana
+>=20
+> Hartmut Knaack (5):
+>   iio:light:stk3310: move device register to end of probe
+>   iio:light:stk3310: make endianness independent of host
+>   iio:light:stk3310: add more error handling
+>   iio:light:stk3310: use correct names and type for state
+>   iio:light:stk3310: adjust indentation
+>=20
+>  drivers/iio/light/stk3310.c | 97 ++++++++++++++++++++++++++++++--------
+> -------
+>  1 file changed, 64 insertions(+), 33 deletions(-)
+>=20
 > --
-> To unsubscribe from this list: send the line "unsubscribe linux-kernel" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> Please read the FAQ at  http://www.tux.org/lkml/
-> 
+> 2.4.3
+
++1
+
+Reviewed-by: Tiberiu Breana <tiberiu.a.breana@intel.com>
