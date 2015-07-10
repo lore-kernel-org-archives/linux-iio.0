@@ -1,66 +1,66 @@
-Return-Path: <rdunlap@infradead.org>
-Message-ID: <55A01972.9070405@infradead.org>
-Date: Fri, 10 Jul 2015 12:13:54 -0700
-From: Randy Dunlap <rdunlap@infradead.org>
+Return-Path: <maitysanchayan@gmail.com>
+Date: Fri, 10 Jul 2015 23:36:40 +0530
+From: maitysanchayan@gmail.com
+To: Shawn Guo <shawnguo@kernel.org>
+Cc: jic23@kernel.org, shawn.guo@linaro.org, kernel@pengutronix.de,
+	robh+dt@kernel.org, pawel.moll@arm.com, mark.rutland@arm.com,
+	ijc+devicetree@hellion.org.uk, galak@codeaurora.org,
+	B38611@freescale.com, devicetree@vger.kernel.org,
+	linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	linux-kernel@vger.kernel.org, stefan@agner.ch
+Subject: Re: [PATCH v2 2/2] ARM: dts: vfxxx: Add property for minimum sample
+ time
+Message-ID: <20150710180640.GB8723@Sanchayan-Arch>
+References: <cover.1435134626.git.maitysanchayan@gmail.com>
+ <36fa3cef10b6a21b39e96283ea5d6961e9f6d972.1435134626.git.maitysanchayan@gmail.com>
+ <20150710085324.GL23464@tiger>
 MIME-Version: 1.0
-To: Daniel Baluta <daniel.baluta@intel.com>, jic23@kernel.org
-CC: pmeerw@pmeerw.net, knaack.h@gmx.de, lars@metafoo.de,
- linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org
-Subject: Re: [PATCH] DocBook documentation for IIO
-References: <1436357088-30743-1-git-send-email-daniel.baluta@intel.com>
-In-Reply-To: <1436357088-30743-1-git-send-email-daniel.baluta@intel.com>
-Content-Type: text/plain; charset=windows-1252
+Content-Type: text/plain; charset=utf-8
+In-Reply-To: <20150710085324.GL23464@tiger>
 List-ID: <linux-iio@vger.kernel.org>
 
-On 07/08/15 05:04, Daniel Baluta wrote:
-> In our effort to support vendors writing drivers for their own
-> sensors we introduce IIO documentation in DocBook format.
+Hello Shawn,
+
+On 15-07-10 16:53:24, Shawn Guo wrote:
+> On Wed, Jun 24, 2015 at 02:03:41PM +0530, Sanchayan Maity wrote:
+> > Add a device tree property which allows to specify the minimum sample
+> > time which can be used to calculate the actual ADC cycles required
+> > depending on the hardware.
+> > 
+> > Signed-off-by: Sanchayan Maity <maitysanchayan@gmail.com>
+> > ---
+> >  arch/arm/boot/dts/vfxxx.dtsi | 2 ++
+> >  1 file changed, 2 insertions(+)
+> > 
+> > diff --git a/arch/arm/boot/dts/vfxxx.dtsi b/arch/arm/boot/dts/vfxxx.dtsi
+> > index 90a03d5..71d9c08 100644
+> > --- a/arch/arm/boot/dts/vfxxx.dtsi
+> > +++ b/arch/arm/boot/dts/vfxxx.dtsi
+> > @@ -229,6 +229,7 @@
+> >  				status = "disabled";
+> >  				fsl,adck-max-frequency = <30000000>, <40000000>,
+> >  							<20000000>;
+> > +				min-sample-time = <1000>;
+> >  			};
+> >  
+> >  			wdoga5: wdog@4003e000 {
+> > @@ -447,6 +448,7 @@
+> >  				status = "disabled";
+> >  				fsl,adck-max-frequency = <30000000>, <40000000>,
+> >  							<20000000>;
+> > +				min-sample-time = <1000>;
 > 
-> It documents Industrial I/O core including IIO devices, buffers, triggers and
-> triggered buffers. It also offers a short list of online resources
-> for the IIO subsystem.
-> 
-> This is far from being complete any suggestions are welcomed. At a first
-> glance we also need to add documentation for events. We are also working
-> on auto-generating template drivers based on the type of the IIO sensors.
-
-Hi Daniel,
-
-This is a good start.  Might as well get it merged and keep improving it.
-
-Here are a few nits:
-
-Warning(..//drivers/iio/industrialio-buffer.c:1145): cannot understand function prototype: 'struct iio_demux_table '
-
->> drop the "()" in the first line:
- * struct iio_demux_table() - table describing demux memcpy ops
-
-
-In iio_buffer_get() and iio_buffer_put(), change "may be NULL"
-to "may be %NULL".
-
-In linux/iio/iio.h, struct iio_chan_spec, the sub-fields of @scan_type confuse
-scripts/kernel-doc.  There isn't really a good way to do what you are trying
-to do (AFAIK).  The problem is that things like "realbits:" (ending with a colon)
-cause kernel-doc to think that that is some special comment and it generates
-a separate paragraph for it at the end of the struct.  I changed all of those
-colons to hyphens, but then kernel-doc just runs all of those sub-field
-comment descriptions together... so I added a ';' at the end of each one, but
-it doesn't look nice.
-
-
-> Generated html files should be available online here http://dbaluta.github.io/
-> or you could run make htmldocs in the root of your kernel repo to get them.
-> 
-> Daniel Baluta (1):
->   DocBook: Add initial documentation for IIO
-> 
->  Documentation/DocBook/Makefile |   2 +-
->  Documentation/DocBook/iio.tmpl | 588 +++++++++++++++++++++++++++++++++++++++++
->  2 files changed, 589 insertions(+), 1 deletion(-)
->  create mode 100644 Documentation/DocBook/iio.tmpl
+> Can we code 1000 as the default in kernel driver, so that only boards
+> requiring different value need to have this property?  Doing so makes
+> the property optional rather than required.
 > 
 
+Not sure if hardcoding it in the driver is the right approach.
 
--- 
-~Randy
+However if the maintainers and others agree on doing this, I will do
+the necessary change.
+
+Thanks.
+
+Regards,
+Sanchayan.
