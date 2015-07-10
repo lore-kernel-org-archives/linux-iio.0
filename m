@@ -1,83 +1,80 @@
-Return-Path: <maitysanchayan@gmail.com>
-Date: Fri, 10 Jul 2015 23:31:28 +0530
-From: maitysanchayan@gmail.com
-To: Shawn Guo <shawnguo@kernel.org>
-Cc: jic23@kernel.org, shawn.guo@linaro.org, kernel@pengutronix.de,
-	robh+dt@kernel.org, pawel.moll@arm.com, mark.rutland@arm.com,
-	ijc+devicetree@hellion.org.uk, galak@codeaurora.org,
-	B38611@freescale.com, devicetree@vger.kernel.org,
-	linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-	linux-kernel@vger.kernel.org, stefan@agner.ch
-Subject: Re: [PATCH v2 0/2] Implement sample time consideration for Vybrid's
- ADC
-Message-ID: <20150710180128.GA8723@Sanchayan-Arch>
-References: <cover.1435134626.git.maitysanchayan@gmail.com>
- <20150710084704.GK23464@tiger>
+Return-Path: <srinivas.pandruvada@intel.com>
+From: "Pandruvada, Srinivas" <srinivas.pandruvada@intel.com>
+To: "Tirdea, Irina" <irina.tirdea@intel.com>
+CC: "wsa@the-dreams.de" <wsa@the-dreams.de>, "linux-kernel@vger.kernel.org"
+	<linux-kernel@vger.kernel.org>, "pmeerw@pmeerw.net" <pmeerw@pmeerw.net>,
+	"jic23@kernel.org" <jic23@kernel.org>, "linux-iio@vger.kernel.org"
+	<linux-iio@vger.kernel.org>, "linux-i2c@vger.kernel.org"
+	<linux-i2c@vger.kernel.org>
+Subject: Re: [PATCH v3 6/8] iio: gyro: bmg160: optimize i2c transfers in
+ trigger handler
+Date: Fri, 10 Jul 2015 17:46:35 +0000
+Message-ID: <1436550260.2377.14.camel@spandruv-DESK3.jf.intel.com>
+References: <1435916017-12859-1-git-send-email-irina.tirdea@intel.com>
+	 <1435916017-12859-7-git-send-email-irina.tirdea@intel.com>
+	 <55991E2F.5020901@kernel.org>
+	 <1F3AC3675D538145B1661F571FE1805F2F068001@irsmsx105.ger.corp.intel.com>
+In-Reply-To: <1F3AC3675D538145B1661F571FE1805F2F068001@irsmsx105.ger.corp.intel.com>
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-In-Reply-To: <20150710084704.GK23464@tiger>
 List-ID: <linux-iio@vger.kernel.org>
 
-Hello Shawn,
-
-On 15-07-10 16:47:04, Shawn Guo wrote:
-> On Wed, Jun 24, 2015 at 02:03:39PM +0530, Sanchayan Maity wrote:
-> > Hello,
-> > 
-> > This patchset adds a dt binding for specifying sample time
-> > for the vybrid adc driver and takes this into account for
-> > sampling frequency calculation and related configuration in
-> > the driver.
-> > 
-> > The patchset is based on top of Stefan's patches here
-> > http://lkml.iu.edu/hypermail/linux/kernel/1505.3/02043.html
-> > 
-> > which got recently applied. Tested with shawn's for-next
-> > branch.
-> > 
-> > Changes since v1:
-> > 
-> > Change from a vendor specific fsl,min-sample-time to non vendor
-> > specific min-sample-time.
-> 
-> What's the reason for that?  Property without vendor prefix would be
-> the generic one, which should be defined by generic ADC bindings, not
-> vf610-adc.txt.
-
-The reason for going with a generic one was discussed in the first series,
-as though there might not be any devices at the moment using this property,
-some might appear or use it in the future.
-
-I did consider putting this in the generic ADC bindings, however for lack
-of one like one present for touchscreen, I kept it in the vf610 specific
-driver binding. Thought there should not be any harm with this.
-
-- Sanchayan.
-
-> 
-> Shawn
-> 
-> > 
-> > Version 1 of the patchset can be found here
-> > http://lkml.iu.edu/hypermail/linux/kernel/1506.1/00026.html
-> > 
-> > - Sanchayan.
-> > 
-> > Sanchayan Maity (2):
-> >   iio: adc: Determine sampling frequencies by using minimum sample time
-> >   ARM: dts: vfxxx: Add property for minimum sample time
-> > 
-> >  .../devicetree/bindings/iio/adc/vf610-adc.txt      |  6 ++
-> >  arch/arm/boot/dts/vfxxx.dtsi                       |  2 +
-> >  drivers/iio/adc/vf610_adc.c                        | 74 ++++++++++++++++++++--
-> >  3 files changed, 78 insertions(+), 4 deletions(-)
-> > 
-> > -- 
-> > 2.4.4
-> > 
-> > --
-> > To unsubscribe from this list: send the line "unsubscribe linux-kernel" in
-> > the body of a message to majordomo@vger.kernel.org
-> > More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> > Please read the FAQ at  http://www.tux.org/lkml/
-> > 
+T24gRnJpLCAyMDE1LTA3LTEwIGF0IDE3OjMxICswMDAwLCBUaXJkZWEsIElyaW5hIHdyb3RlOg0K
+PiANCj4gPiAtLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPiA+IEZyb206IEpvbmF0aGFuIENh
+bWVyb24gW21haWx0bzpqaWMyM0BrZXJuZWwub3JnXQ0KPiA+IFNlbnQ6IDA1IEp1bHksIDIwMTUg
+MTU6MDgNCj4gPiBUbzogVGlyZGVhLCBJcmluYTsgV29sZnJhbSBTYW5nOyBsaW51eC1paW9Admdl
+ci5rZXJuZWwub3JnOyBsaW51eC1pMmNAdmdlci5rZXJuZWwub3JnDQo+ID4gQ2M6IGxpbnV4LWtl
+cm5lbEB2Z2VyLmtlcm5lbC5vcmc7IFBhbmRydXZhZGEsIFNyaW5pdmFzOyBQZXRlciBNZWVyd2Fs
+ZA0KPiA+IFN1YmplY3Q6IFJlOiBbUEFUQ0ggdjMgNi84XSBpaW86IGd5cm86IGJtZzE2MDogb3B0
+aW1pemUgaTJjIHRyYW5zZmVycyBpbiB0cmlnZ2VyIGhhbmRsZXINCj4gPiANCj4gPiBPbiAwMy8w
+Ny8xNSAxMDozMywgSXJpbmEgVGlyZGVhIHdyb3RlOg0KPiA+ID4gU29tZSBpMmMgYnVzc2VzIChl
+LmcuOiBTeW5vcHN5cyBEZXNpZ25XYXJlIEkyQyBhZGFwdGVyKSBuZWVkIHRvDQo+ID4gPiBlbmFi
+bGUvZGlzYWJsZSB0aGUgYnVzIGF0IGVhY2ggaTJjIHRyYW5zZmVyIGFuZCBtdXN0IHdhaXQgZm9y
+DQo+ID4gPiB0aGUgZW5hYmxlL2Rpc2FibGUgdG8gaGFwcGVuIGJlZm9yZSBzZW5kaW5nIHRoZSBk
+YXRhLg0KPiA+ID4NCj4gPiA+IFdoZW4gcmVhZGluZyBkYXRhIGluIHRoZSB0cmlnZ2VyIGhhbmRs
+ZXIsIHRoZSBibWcxNjAgZHJpdmVyIGRvZXMNCj4gPiA+IG9uZSBpMmMgdHJhbnNmZXIgZm9yIGVh
+Y2ggYXhpcy4gVGhpcyBoYXMgYW4gaW1wYWN0IG9uIHRoZSBmcmVxdWVuY3kNCj4gPiA+IG9mIHRo
+ZSBneXJvc2NvcGUgYXQgaGlnaCBzYW1wbGUgcmF0ZXMgZHVlIHRvIGFkZGl0aW9uYWwgZGVsYXlz
+DQo+ID4gPiBpbnRyb2R1Y2VkIGJ5IHRoZSBpMmMgYnVzIGF0IGVhY2ggdHJhbnNmZXIuDQo+ID4g
+Pg0KPiA+ID4gUmVhZGluZyBhbGwgYXhpcyB2YWx1ZXMgaW4gb25lIGkyYyB0cmFuc2ZlciByZWR1
+Y2VzIHRoZSBkZWxheXMNCj4gPiA+IGludHJvZHVjZWQgYnkgdGhlIGkyYyBidXMuIFVzZXMgaTJj
+X3NtYnVzX3JlYWRfaTJjX2Jsb2NrX2RhdGFfb3JfZW11bGF0ZWQNCj4gPiA+IHRoYXQgd2lsbCBm
+YWxsYmFjayB0byByZWFkaW5nIGVhY2ggYXhpcyBhcyBhIHNlcGFyYXRlIHdvcmQgaW4gY2FzZSBp
+MmMNCj4gPiA+IGJsb2NrIHJlYWQgaXMgbm90IHN1cHBvcnRlZC4NCj4gPiA+DQo+ID4gPiBTaWdu
+ZWQtb2ZmLWJ5OiBJcmluYSBUaXJkZWEgPGlyaW5hLnRpcmRlYUBpbnRlbC5jb20+DQo+ID4gQWNr
+ZWQtYnk6IEpvbmF0aGFuIENhbWVyb24gPGppYzIzQGtlcm5lbC5vcmc+DQo+ID4gDQo+IA0KPiBU
+aGFua3MgSm9uYXRoYW4hDQo+IA0KPiA+IE9idmlvdXNseSB5b3UnbGwgaWRlYWxseSBwaWNrIHVw
+IEFjaydzIGZyb20gdGhlIGRyaXZlciBhdXRob3JzIC9tYWludGFpbmVycw0KPiA+IGFzIHdlbGwu
+DQo+ID4gDQo+IA0KPiBTcmluaXZhcywgYXJlIHlvdSBPSyB3aXRoIHRoZXNlIGNoYW5nZXMgZm9y
+IGJtYzE1MCwgYm1nMTYwIGFuZCBreGNqay0xMDEzPw0KPiANClllcy4NCg0KQWNrZWQtYnk6IFNy
+aW5pdmFzIFBhbmRydXZhZGEgPHNyaW5pdmFzLnBhbmRydXZhZGFAbGludXguaW50ZWwuY29tPg0K
+DQo+IFRoYW5rcywNCj4gSXJpbmENCj4gDQo+ID4gSm9uYXRoYW4NCj4gPiA+IC0tLQ0KPiA+ID4g
+IGRyaXZlcnMvaWlvL2d5cm8vYm1nMTYwLmMgfCAxOCArKysrKysrKy0tLS0tLS0tLS0NCj4gPiA+
+ICAxIGZpbGUgY2hhbmdlZCwgOCBpbnNlcnRpb25zKCspLCAxMCBkZWxldGlvbnMoLSkNCj4gPiA+
+DQo+ID4gPiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9paW8vZ3lyby9ibWcxNjAuYyBiL2RyaXZlcnMv
+aWlvL2d5cm8vYm1nMTYwLmMNCj4gPiA+IGluZGV4IDRiNDIzZjIuLjA0ZTE1ZTkgMTAwNjQ0DQo+
+ID4gPiAtLS0gYS9kcml2ZXJzL2lpby9neXJvL2JtZzE2MC5jDQo+ID4gPiArKysgYi9kcml2ZXJz
+L2lpby9neXJvL2JtZzE2MC5jDQo+ID4gPiBAQCAtNzg0LDYgKzc4NCw3IEBAIHN0YXRpYyBjb25z
+dCBzdHJ1Y3QgaWlvX2V2ZW50X3NwZWMgYm1nMTYwX2V2ZW50ID0gew0KPiA+ID4gIAkJLnNpZ24g
+PSAncycsCQkJCQkJXA0KPiA+ID4gIAkJLnJlYWxiaXRzID0gMTYsCQkJCQlcDQo+ID4gPiAgCQku
+c3RvcmFnZWJpdHMgPSAxNiwJCQkJCVwNCj4gPiA+ICsJCS5lbmRpYW5uZXNzID0gSUlPX0xFLAkJ
+CQkJXA0KPiA+ID4gIAl9LAkJCQkJCQkJXA0KPiA+ID4gIAkuZXZlbnRfc3BlYyA9ICZibWcxNjBf
+ZXZlbnQsCQkJCQlcDQo+ID4gPiAgCS5udW1fZXZlbnRfc3BlY3MgPSAxCQkJCQkJXA0KPiA+ID4g
+QEAgLTgyMiwxOSArODIzLDE2IEBAIHN0YXRpYyBpcnFyZXR1cm5fdCBibWcxNjBfdHJpZ2dlcl9o
+YW5kbGVyKGludCBpcnEsIHZvaWQgKnApDQo+ID4gPiAgCXN0cnVjdCBpaW9fcG9sbF9mdW5jICpw
+ZiA9IHA7DQo+ID4gPiAgCXN0cnVjdCBpaW9fZGV2ICppbmRpb19kZXYgPSBwZi0+aW5kaW9fZGV2
+Ow0KPiA+ID4gIAlzdHJ1Y3QgYm1nMTYwX2RhdGEgKmRhdGEgPSBpaW9fcHJpdihpbmRpb19kZXYp
+Ow0KPiA+ID4gLQlpbnQgYml0LCByZXQsIGkgPSAwOw0KPiA+ID4gKwlpbnQgcmV0ID0gMDsNCj4g
+PiA+DQo+ID4gPiAgCW11dGV4X2xvY2soJmRhdGEtPm11dGV4KTsNCj4gPiA+IC0JZm9yIChiaXQg
+PSAwOyBiaXQgPCBBWElTX01BWDsgYml0KyspIHsNCj4gPiA+IC0JCXJldCA9IGkyY19zbWJ1c19y
+ZWFkX3dvcmRfZGF0YShkYXRhLT5jbGllbnQsDQo+ID4gPiAtCQkJCQkgICAgICAgQk1HMTYwX0FY
+SVNfVE9fUkVHKGJpdCkpOw0KPiA+ID4gLQkJaWYgKHJldCA8IDApIHsNCj4gPiA+IC0JCQltdXRl
+eF91bmxvY2soJmRhdGEtPm11dGV4KTsNCj4gPiA+IC0JCQlnb3RvIGVycjsNCj4gPiA+IC0JCX0N
+Cj4gPiA+IC0JCWRhdGEtPmJ1ZmZlcltpKytdID0gcmV0Ow0KPiA+ID4gLQl9DQo+ID4gPiArCXJl
+dCA9IGkyY19zbWJ1c19yZWFkX2kyY19ibG9ja19kYXRhX29yX2VtdWxhdGVkKGRhdGEtPmNsaWVu
+dCwNCj4gPiA+ICsJCQkJCQkJQk1HMTYwX1JFR19YT1VUX0wsDQo+ID4gPiArCQkJCQkJCUFYSVNf
+TUFYICogMiwNCj4gPiA+ICsJCQkJCQkJKHU4ICopZGF0YS0+YnVmZmVyKTsNCj4gPiA+ICAJbXV0
+ZXhfdW5sb2NrKCZkYXRhLT5tdXRleCk7DQo+ID4gPiArCWlmIChyZXQgPCAwKQ0KPiA+ID4gKwkJ
+Z290byBlcnI7DQo+ID4gPg0KPiA+ID4gIAlpaW9fcHVzaF90b19idWZmZXJzX3dpdGhfdGltZXN0
+YW1wKGluZGlvX2RldiwgZGF0YS0+YnVmZmVyLA0KPiA+ID4gIAkJCQkJICAgZGF0YS0+dGltZXN0
+YW1wKTsNCj4gPiA+DQo+IA0KDQo=
