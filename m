@@ -11,9 +11,9 @@ To: Lars-Peter Clausen <lars@metafoo.de>,
  devel@driverdev.osuosl.org, linux-kernel@vger.kernel.org,
  linux-media@vger.kernel.org
 Cc: Krzysztof Kozlowski <k.kozlowski@samsung.com>
-Subject: [PATCH 3/3] staging: Drop owner assignment from i2c_driver
-Date: Fri, 10 Jul 2015 15:34:28 +0900
-Message-id: <1436510068-5284-4-git-send-email-k.kozlowski@samsung.com>
+Subject: [PATCH 2/3] staging: media: Drop owner assignment from i2c_driver
+Date: Fri, 10 Jul 2015 15:34:27 +0900
+Message-id: <1436510068-5284-3-git-send-email-k.kozlowski@samsung.com>
 In-reply-to: <1436510068-5284-1-git-send-email-k.kozlowski@samsung.com>
 References: <1436510068-5284-1-git-send-email-k.kozlowski@samsung.com>
 List-ID: <linux-iio@vger.kernel.org>
@@ -28,20 +28,46 @@ Signed-off-by: Krzysztof Kozlowski <k.kozlowski@samsung.com>
 The coccinelle script which generated the patch was sent here:
 http://www.spinics.net/lists/kernel/msg2029903.html
 ---
- drivers/staging/ste_rmi4/synaptics_i2c_rmi4.c | 1 -
- 1 file changed, 1 deletion(-)
+ drivers/staging/media/lirc/lirc_zilog.c | 1 -
+ drivers/staging/media/mn88472/mn88472.c | 1 -
+ drivers/staging/media/mn88473/mn88473.c | 1 -
+ 3 files changed, 3 deletions(-)
 
-diff --git a/drivers/staging/ste_rmi4/synaptics_i2c_rmi4.c b/drivers/staging/ste_rmi4/synaptics_i2c_rmi4.c
-index 0f524bb7b41d..1f9ba8beb061 100644
---- a/drivers/staging/ste_rmi4/synaptics_i2c_rmi4.c
-+++ b/drivers/staging/ste_rmi4/synaptics_i2c_rmi4.c
-@@ -1126,7 +1126,6 @@ MODULE_DEVICE_TABLE(i2c, synaptics_rmi4_id_table);
- static struct i2c_driver synaptics_rmi4_driver = {
+diff --git a/drivers/staging/media/lirc/lirc_zilog.c b/drivers/staging/media/lirc/lirc_zilog.c
+index 261e27d6b054..d032745081ee 100644
+--- a/drivers/staging/media/lirc/lirc_zilog.c
++++ b/drivers/staging/media/lirc/lirc_zilog.c
+@@ -1367,7 +1367,6 @@ static const struct i2c_device_id ir_transceiver_id[] = {
+ 
+ static struct i2c_driver driver = {
  	.driver = {
- 		.name	=	DRIVER_NAME,
--		.owner	=	THIS_MODULE,
- 		.pm	=	&synaptics_rmi4_dev_pm_ops,
+-		.owner	= THIS_MODULE,
+ 		.name	= "Zilog/Hauppauge i2c IR",
  	},
- 	.probe		=	synaptics_rmi4_probe,
+ 	.probe		= ir_probe,
+diff --git a/drivers/staging/media/mn88472/mn88472.c b/drivers/staging/media/mn88472/mn88472.c
+index a8d45f44765c..cf2e96bcf395 100644
+--- a/drivers/staging/media/mn88472/mn88472.c
++++ b/drivers/staging/media/mn88472/mn88472.c
+@@ -561,7 +561,6 @@ MODULE_DEVICE_TABLE(i2c, mn88472_id_table);
+ 
+ static struct i2c_driver mn88472_driver = {
+ 	.driver = {
+-		.owner	= THIS_MODULE,
+ 		.name	= "mn88472",
+ 	},
+ 	.probe		= mn88472_probe,
+diff --git a/drivers/staging/media/mn88473/mn88473.c b/drivers/staging/media/mn88473/mn88473.c
+index f9146a146d07..a222e99935d2 100644
+--- a/drivers/staging/media/mn88473/mn88473.c
++++ b/drivers/staging/media/mn88473/mn88473.c
+@@ -507,7 +507,6 @@ MODULE_DEVICE_TABLE(i2c, mn88473_id_table);
+ 
+ static struct i2c_driver mn88473_driver = {
+ 	.driver = {
+-		.owner	= THIS_MODULE,
+ 		.name	= "mn88473",
+ 	},
+ 	.probe		= mn88473_probe,
 -- 
 1.9.1
