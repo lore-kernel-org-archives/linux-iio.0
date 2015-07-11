@@ -1,64 +1,86 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:48947 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:48956 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751035AbbGKRqQ (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 11 Jul 2015 13:46:16 -0400
-Message-ID: <55A15666.2050906@kernel.org>
-Date: Sat, 11 Jul 2015 18:46:14 +0100
+	with ESMTP id S1751035AbbGKRr0 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 11 Jul 2015 13:47:26 -0400
+Message-ID: <55A156AB.7010102@kernel.org>
+Date: Sat, 11 Jul 2015 18:47:23 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Daniel Baluta <daniel.baluta@gmail.com>,
-	Giuseppe Barba <giuseppe.barba@gmail.com>
-CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Subject: Re: Git repo to use for submitting patches
-References: <CAPMRSivAzwTCoFqRw67FuxcLZD=d0YQBVonphjAY2gRNPL-g7g@mail.gmail.com> <CAEnQRZCQOZ_prM+KUCOfhxGSSKnQTMgR9wGDioPCukdU8cu0oQ@mail.gmail.com>
-In-Reply-To: <CAEnQRZCQOZ_prM+KUCOfhxGSSKnQTMgR9wGDioPCukdU8cu0oQ@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
+To: Krzysztof Kozlowski <k.kozlowski@samsung.com>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Michael Hennerich <Michael.Hennerich@analog.com>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jarod Wilson <jarod@wilsonet.com>,
+	Mauro Carvalho Chehab <mchehab@osg.samsung.com>,
+	Antti Palosaari <crope@iki.fi>, linux-iio@vger.kernel.org,
+	devel@driverdev.osuosl.org, linux-kernel@vger.kernel.org,
+	linux-media@vger.kernel.org
+Subject: Re: [PATCH 1/3] staging: iio: Drop owner assignment from i2c_driver
+References: <1436510068-5284-1-git-send-email-k.kozlowski@samsung.com> <1436510068-5284-2-git-send-email-k.kozlowski@samsung.com>
+In-Reply-To: <1436510068-5284-2-git-send-email-k.kozlowski@samsung.com>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 10/07/15 12:51, Daniel Baluta wrote:
-> On Fri, Jul 10, 2015 at 2:42 PM, Giuseppe Barba
-> <giuseppe.barba@gmail.com> wrote:
->> Hi,
->>
->> sorry I'm new in this list.
->> I wold like to submit some patches to add support for new sensor.
->> I'm not sure what repo I have to use for code rebasing. I've found:
->>
->> git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git
->>
->> is it the correct one?
+On 10/07/15 07:34, Krzysztof Kozlowski wrote:
+> i2c_driver does not need to set an owner because i2c_register_driver()
+> will set it.
 > 
-> Yes. Please use 'testing' branch.
-Actually that's a bit risky unless you need something in it.
-It does get rebased.  I've been rather snowed under with day job stuff
-last couple of weeks so haven't kept things as clean as they should be
-but in theory:
+> Signed-off-by: Krzysztof Kozlowski <k.kozlowski@samsung.com>
+Applied to the togreg branch of iio.git
 
-1) togreg branch gets pushed out first as testing, but that's to let
-   the autobuilders play with it rather than as an official branch to
-   base anything on.
-2) I fix up issues in testing found by the autobuilders and push it as
-   as the togreg branch.
-3) When enough stuff has built up I send a pull request to Greg KH
-   and following that fastforward my tree.
-
-Just to confuse things, fixes go via the fixes-togreg branch and make
-it into the togreg branch only during the fastforward after Greg
-has pulled in the previous patches to his tree.
-
-So general principle is the togreg branch.  Actually for new sensors
-that are unlikely to interact much with recent patches, staging/staging-next
-is also usually fine, or even use Linus' mainline tree.
+Thanks,
 
 Jonathan
 > 
-> thanks,
-> Daniel.
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> ---
+> 
+> The coccinelle script which generated the patch was sent here:
+> http://www.spinics.net/lists/kernel/msg2029903.html
+> ---
+>  drivers/staging/iio/addac/adt7316-i2c.c | 1 -
+>  drivers/staging/iio/light/isl29018.c    | 1 -
+>  drivers/staging/iio/light/isl29028.c    | 1 -
+>  3 files changed, 3 deletions(-)
+> 
+> diff --git a/drivers/staging/iio/addac/adt7316-i2c.c b/drivers/staging/iio/addac/adt7316-i2c.c
+> index 75ddd4f801a3..78fe0b557280 100644
+> --- a/drivers/staging/iio/addac/adt7316-i2c.c
+> +++ b/drivers/staging/iio/addac/adt7316-i2c.c
+> @@ -124,7 +124,6 @@ static struct i2c_driver adt7316_driver = {
+>  	.driver = {
+>  		.name = "adt7316",
+>  		.pm = ADT7316_PM_OPS,
+> -		.owner  = THIS_MODULE,
+>  	},
+>  	.probe = adt7316_i2c_probe,
+>  	.id_table = adt7316_i2c_id,
+> diff --git a/drivers/staging/iio/light/isl29018.c b/drivers/staging/iio/light/isl29018.c
+> index e646c5d24004..019ba5245c23 100644
+> --- a/drivers/staging/iio/light/isl29018.c
+> +++ b/drivers/staging/iio/light/isl29018.c
+> @@ -838,7 +838,6 @@ static struct i2c_driver isl29018_driver = {
+>  			.name = "isl29018",
+>  			.acpi_match_table = ACPI_PTR(isl29018_acpi_match),
+>  			.pm = ISL29018_PM_OPS,
+> -			.owner = THIS_MODULE,
+>  			.of_match_table = isl29018_of_match,
+>  		    },
+>  	.probe	 = isl29018_probe,
+> diff --git a/drivers/staging/iio/light/isl29028.c b/drivers/staging/iio/light/isl29028.c
+> index e5b2fdc2334b..cd6f2727aa58 100644
+> --- a/drivers/staging/iio/light/isl29028.c
+> +++ b/drivers/staging/iio/light/isl29028.c
+> @@ -547,7 +547,6 @@ static struct i2c_driver isl29028_driver = {
+>  	.class	= I2C_CLASS_HWMON,
+>  	.driver  = {
+>  		.name = "isl29028",
+> -		.owner = THIS_MODULE,
+>  		.of_match_table = isl29028_of_match,
+>  	},
+>  	.probe	 = isl29028_probe,
 > 
 
