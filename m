@@ -1,309 +1,46 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mout.gmx.net ([212.227.17.21]:64301 "EHLO mout.gmx.net"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751198AbbGJVnD (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Fri, 10 Jul 2015 17:43:03 -0400
-Message-ID: <55A03C5B.1010707@gmx.de>
-Date: Fri, 10 Jul 2015 23:42:51 +0200
-From: Hartmut Knaack <knaack.h@gmx.de>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:48809 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751131AbbGKR1l (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 11 Jul 2015 13:27:41 -0400
+Message-ID: <55A1520C.5080401@kernel.org>
+Date: Sat, 11 Jul 2015 18:27:40 +0100
+From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Cristina Opriceana <cristina.opriceana@gmail.com>, jic23@kernel.org
-CC: lars@metafoo.de, pmeerw@pmeerw.net, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org, daniel.baluta@intel.com,
-	octavian.purdila@intel.com, julia.lawall@lip6.fr
-Subject: Re: [PATCH v2 1/4] tools: iio: Move printf failure messages to stderr
-References: <cover.1436524490.git.cristina.opriceana@gmail.com> <05d86faf7f3799fd8320aed19f9a465b17bfb2ff.1436524490.git.cristina.opriceana@gmail.com>
-In-Reply-To: <05d86faf7f3799fd8320aed19f9a465b17bfb2ff.1436524490.git.cristina.opriceana@gmail.com>
-Content-Type: text/plain; charset=US-ASCII
+To: Daniel Baluta <daniel.baluta@intel.com>,
+	Ana Calinov <ana.calinov@gmail.com>
+CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	Irina Tirdea <irina.tirdea@intel.com>,
+	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] iio: accel: kxcjk-1013: Remove blank lines
+References: <20150708124442.GA10598@spook> <CAEnQRZCem_5Z8rnEsFY4p7t2UFfvzaHDgepFNsSv33YHid9Mkg@mail.gmail.com>
+In-Reply-To: <CAEnQRZCem_5Z8rnEsFY4p7t2UFfvzaHDgepFNsSv33YHid9Mkg@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Cristina Opriceana schrieb am 10.07.2015 um 12:56:
-> Replace printf error messages with fprintf(stderr, ...) in order
-> to ensure consistency and to make faults easier to identify.
-> This patch uses coccinelle to detect and apply the changes.
+On 08/07/15 13:56, Daniel Baluta wrote:
+> On Wed, Jul 8, 2015 at 3:44 PM, Ana Calinov <ana.calinov@gmail.com> wrote:
+>> This patch fixes the the following errors given by
+>> checkpatch.pl with --strict:
+>> Please don't use multiple blank lines.
+>> Blank lines aren't necessary after an open brace '{'.
+>>
+>> Signed-off-by: Ana Calinov <ana.calinov@gmail.com>
 > 
-
-Hi Cristina,
-I just had a look at the series. You have all cases I regard necessary
-covered. There are however a few cases which probably qualify as error
-messages, too. Please see inline.
-However, for my personal taste, this could have been merged all in a
-single patch. Especially the third patch should have been included in
-this one (as during review, people certainly think that you missed the
-second line, just to find it fixed two patches later).
-
-> Signed-off-by: Cristina Opriceana <cristina.opriceana@gmail.com>
-> ---
-> Changes in v2:
->  - s/failiure/failure
 > 
->  tools/iio/generic_buffer.c    | 17 ++++++++++-------
->  tools/iio/iio_event_monitor.c |  6 +++---
->  tools/iio/iio_utils.c         | 34 ++++++++++++++++++++--------------
->  3 files changed, 33 insertions(+), 24 deletions(-)
+> Looks good to me.
 > 
-> diff --git a/tools/iio/generic_buffer.c b/tools/iio/generic_buffer.c
-> index 0e73723..2f4e12f 100644
-> --- a/tools/iio/generic_buffer.c
-> +++ b/tools/iio/generic_buffer.c
-> @@ -271,7 +271,7 @@ int main(int argc, char **argv)
->  	}
->  
->  	if (device_name == NULL) {
-> -		printf("Device name not set\n");
-> +		fprintf(stderr, "Device name not set\n");
->  		print_usage();
->  		return -1;
->  	}
-> @@ -279,7 +279,7 @@ int main(int argc, char **argv)
->  	/* Find the device requested */
->  	dev_num = find_type_by_name(device_name, "iio:device");
->  	if (dev_num < 0) {
-> -		printf("Failed to find the %s\n", device_name);
-> +		fprintf(stderr, "Failed to find the %s\n", device_name);
->  		return dev_num;
->  	}
->  
-> @@ -307,7 +307,8 @@ int main(int argc, char **argv)
->  		/* Verify the trigger exists */
->  		trig_num = find_type_by_name(trigger_name, "trigger");
->  		if (trig_num < 0) {
-> -			printf("Failed to find the trigger %s\n", trigger_name);
-> +			fprintf(stderr, "Failed to find the trigger %s\n",
-> +				trigger_name);
->  			ret = trig_num;
->  			goto error_free_triggername;
->  		}
-> @@ -323,7 +324,7 @@ int main(int argc, char **argv)
->  	 */
->  	ret = build_channel_array(dev_dir_name, &channels, &num_channels);
->  	if (ret) {
-> -		printf("Problem reading scan element information\n");
-> +		fprintf(stderr, "Problem reading scan element information\n");
->  		printf("diag %s\n", dev_dir_name);
-
-My preference would even be to print it all in just one fprintf.
-
->  		goto error_free_triggername;
->  	}
-> @@ -350,7 +351,8 @@ int main(int argc, char **argv)
->  						    dev_dir_name,
->  						    trigger_name);
->  		if (ret < 0) {
-> -			printf("Failed to write current_trigger file\n");
-> +			fprintf(stderr,
-> +				"Failed to write current_trigger file\n");
->  			goto error_free_buf_dir_name;
->  		}
->  	}
-> @@ -382,7 +384,7 @@ int main(int argc, char **argv)
->  	fp = open(buffer_access, O_RDONLY | O_NONBLOCK);
->  	if (fp == -1) { /* TODO: If it isn't there make the node */
->  		ret = -errno;
-> -		printf("Failed to open %s\n", buffer_access);
-> +		fprintf(stderr, "Failed to open %s\n", buffer_access);
->  		goto error_free_buffer_access;
->  	}
->  
-
-At line 410 we have a block:
-		read_size = read(fp, data, toread * scan_size);
-		if (read_size < 0) {
-			if (errno == EAGAIN) {
-				printf("nothing available\n");
-				continue;
-
-I'm tempted to say,that this should go to stderr, as well. Any opinions?
-
-> @@ -431,7 +433,8 @@ int main(int argc, char **argv)
->  		ret = write_sysfs_string("trigger/current_trigger",
->  					 dev_dir_name, "NULL");
->  		if (ret < 0)
-> -			printf("Failed to write to %s\n", dev_dir_name);
-> +			fprintf(stderr, "Failed to write to %s\n",
-> +				dev_dir_name);
->  
->  error_close_buffer_access:
->  	if (close(fp) == -1)
-> diff --git a/tools/iio/iio_event_monitor.c b/tools/iio/iio_event_monitor.c
-> index 703f4cb..843bc4c 100644
-> --- a/tools/iio/iio_event_monitor.c
-> +++ b/tools/iio/iio_event_monitor.c
-
-At line 217:
-	if (!event_is_known(event)) {
-		printf("Unknown event: time: %lld, id: %llx\n",
-		       event->timestamp, event->id);
-
-		return;
-Better have this on stderr, as well?
-
-> @@ -278,14 +278,14 @@ int main(int argc, char **argv)
->  	fd = open(chrdev_name, 0);
->  	if (fd == -1) {
->  		ret = -errno;
-> -		fprintf(stdout, "Failed to open %s\n", chrdev_name);
-> +		fprintf(stderr, "Failed to open %s\n", chrdev_name);
->  		goto error_free_chrdev_name;
->  	}
->  
->  	ret = ioctl(fd, IIO_GET_EVENT_FD_IOCTL, &event_fd);
->  	if (ret == -1 || event_fd == -1) {
->  		ret = -errno;
-> -		fprintf(stdout, "Failed to retrieve event fd\n");
-> +		fprintf(stderr, "Failed to retrieve event fd\n");
->  		if (close(fd) == -1)
->  			perror("Failed to close character device file");
->  
-
-A similar borderline case as above in line 301:
-		ret = read(event_fd, &event, sizeof(event));
-		if (ret == -1) {
-			if (errno == EAGAIN) {
-				printf("nothing available\n");
-				continue;
-
-> @@ -311,7 +311,7 @@ int main(int argc, char **argv)
->  		}
->  
->  		if (ret != sizeof(event)) {
-> -			printf("Reading event failed!\n");
-> +			fprintf(stderr, "Reading event failed!\n");
->  			ret = -EIO;
->  			break;
->  		}
-> diff --git a/tools/iio/iio_utils.c b/tools/iio/iio_utils.c
-> index 8fb3214..46dfa3f 100644
-> --- a/tools/iio/iio_utils.c
-> +++ b/tools/iio/iio_utils.c
-> @@ -140,7 +140,8 @@ int iioutils_get_type(unsigned *is_signed, unsigned *bytes, unsigned *bits_used,
->  			sysfsfp = fopen(filename, "r");
->  			if (sysfsfp == NULL) {
->  				ret = -errno;
-> -				printf("failed to open %s\n", filename);
-> +				fprintf(stderr, "failed to open %s\n",
-> +					filename);
->  				goto error_free_filename;
->  			}
->  
-> @@ -152,7 +153,8 @@ int iioutils_get_type(unsigned *is_signed, unsigned *bytes, unsigned *bits_used,
->  				     &padint, shift);
->  			if (ret < 0) {
->  				ret = -errno;
-> -				printf("failed to pass scan type description\n");
-> +				fprintf(stderr,
-> +					"failed to pass scan type description\n");
->  				goto error_close_sysfsfp;
->  			} else if (ret != 5) {
->  				ret = -EIO;
-> @@ -170,7 +172,8 @@ int iioutils_get_type(unsigned *is_signed, unsigned *bytes, unsigned *bits_used,
->  			*is_signed = (signchar == 's');
->  			if (fclose(sysfsfp)) {
->  				ret = -errno;
-> -				printf("Failed to close %s\n", filename);
-> +				fprintf(stderr, "Failed to close %s\n",
-> +					filename);
->  				goto error_free_filename;
->  			}
->  
-> @@ -454,7 +457,8 @@ int build_channel_array(const char *device_dir,
->  			sysfsfp = fopen(filename, "r");
->  			if (sysfsfp == NULL) {
->  				ret = -errno;
-> -				printf("failed to open %s\n", filename);
-> +				fprintf(stderr, "failed to open %s\n",
-> +					filename);
->  				free(filename);
->  				goto error_cleanup_array;
->  			}
-> @@ -581,11 +585,13 @@ int find_type_by_name(const char *name, const char *type)
->  			ret = sscanf(ent->d_name + strlen(type), "%d", &number);
->  			if (ret < 0) {
->  				ret = -errno;
-> -				printf("failed to read element number\n");
-> +				fprintf(stderr,
-> +					"failed to read element number\n");
->  				goto error_close_dir;
->  			} else if (ret != 1) {
->  				ret = -EIO;
-> -				printf("failed to match element number\n");
-> +				fprintf(stderr,
-> +					"failed to match element number\n");
->  				goto error_close_dir;
->  			}
->  
-> @@ -664,7 +670,7 @@ static int _write_sysfs_int(const char *filename, const char *basedir, int val,
->  	sysfsfp = fopen(temp, "w");
->  	if (sysfsfp == NULL) {
->  		ret = -errno;
-> -		printf("failed to open %s\n", temp);
-> +		fprintf(stderr, "failed to open %s\n", temp);
->  		goto error_free;
->  	}
->  
-> @@ -685,7 +691,7 @@ static int _write_sysfs_int(const char *filename, const char *basedir, int val,
->  		sysfsfp = fopen(temp, "r");
->  		if (sysfsfp == NULL) {
->  			ret = -errno;
-> -			printf("failed to open %s\n", temp);
-> +			fprintf(stderr, "failed to open %s\n", temp);
->  			goto error_free;
->  		}
->  
-> @@ -750,7 +756,7 @@ static int _write_sysfs_string(const char *filename, const char *basedir,
->  	char *temp = malloc(strlen(basedir) + strlen(filename) + 2);
->  
->  	if (temp == NULL) {
-> -		printf("Memory allocation failed\n");
-> +		fprintf(stderr, "Memory allocation failed\n");
->  		return -ENOMEM;
->  	}
->  
-> @@ -761,7 +767,7 @@ static int _write_sysfs_string(const char *filename, const char *basedir,
->  	sysfsfp = fopen(temp, "w");
->  	if (sysfsfp == NULL) {
->  		ret = -errno;
-> -		printf("Could not open %s\n", temp);
-> +		fprintf(stderr, "Could not open %s\n", temp);
->  		goto error_free;
->  	}
->  
-> @@ -782,7 +788,7 @@ static int _write_sysfs_string(const char *filename, const char *basedir,
->  		sysfsfp = fopen(temp, "r");
->  		if (sysfsfp == NULL) {
->  			ret = -errno;
-> -			printf("Could not open file to verify\n");
-> +			fprintf(stderr, "Could not open file to verify\n");
->  			goto error_free;
->  		}
->  
-> @@ -856,7 +862,7 @@ int read_sysfs_posint(const char *filename, const char *basedir)
->  	char *temp = malloc(strlen(basedir) + strlen(filename) + 2);
->  
->  	if (temp == NULL) {
-> -		printf("Memory allocation failed");
-> +		fprintf(stderr, "Memory allocation failed");
->  		return -ENOMEM;
->  	}
->  
-> @@ -903,7 +909,7 @@ int read_sysfs_float(const char *filename, const char *basedir, float *val)
->  	char *temp = malloc(strlen(basedir) + strlen(filename) + 2);
->  
->  	if (temp == NULL) {
-> -		printf("Memory allocation failed");
-> +		fprintf(stderr, "Memory allocation failed");
->  		return -ENOMEM;
->  	}
->  
-> @@ -950,7 +956,7 @@ int read_sysfs_string(const char *filename, const char *basedir, char *str)
->  	char *temp = malloc(strlen(basedir) + strlen(filename) + 2);
->  
->  	if (temp == NULL) {
-> -		printf("Memory allocation failed");
-> +		fprintf(stderr, "Memory allocation failed");
->  		return -ENOMEM;
->  	}
->  
+> Reviewed-by: Daniel Baluta <daniel.baluta@intel.com>
 > 
+> Thanks Ana!
+> 
+> Daniel.
+> 
+Applied to the togreg branch of iio.git.  Will push out
+as testing for the autobuilders to play with it.
 
+A sensible checkpatch based cleanup. Thanks
+
+Jonathan
