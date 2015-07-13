@@ -1,63 +1,71 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-ig0-f171.google.com ([209.85.213.171]:32955 "EHLO
-	mail-ig0-f171.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750919AbbGMOQa (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 13 Jul 2015 10:16:30 -0400
-Date: Mon, 13 Jul 2015 09:16:07 -0500
-From: Michael Welling <mwelling@ieee.org>
-To: Manfred Schlaegl <manfred.schlaegl@gmx.at>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Manfred Schlaegl <manfred.schlaegl@ginzinger.com>
-Subject: Re: [PATCH] iio: mcp320x: Fix NULL pointer dereference
-Message-ID: <20150713141607.GB3224@deathray>
-References: <55A03142.1020106@gmx.at>
+Received: from mail-ig0-f181.google.com ([209.85.213.181]:33985 "EHLO
+	mail-ig0-f181.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751554AbbGMR3j (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 13 Jul 2015 13:29:39 -0400
+Received: by igvi1 with SMTP id i1so36691321igv.1
+        for <linux-iio@vger.kernel.org>; Mon, 13 Jul 2015 10:29:38 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <55A03142.1020106@gmx.at>
+In-Reply-To: <55A1594F.1060204@kernel.org>
+References: <CAKzfze8sGEyU9DgDR4y2p3=5d+9024WgqgVw5fsv4b2XY1HH1g@mail.gmail.com>
+	<55A1594F.1060204@kernel.org>
+Date: Mon, 13 Jul 2015 10:29:38 -0700
+Message-ID: <CAKzfze-xEaRc5HWRCsZYS2+XVuZDtOs7-m_VsNpoeXbteL=NRQ@mail.gmail.com>
+Subject: Re: Multiple IIO_THRESHOLD events
+From: Matt Ranostay <mranostay@gmail.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: =?UTF-8?B?TWFyZWsgVmHFoXV0?= <marex@denx.de>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Fri, Jul 10, 2015 at 10:55:30PM +0200, Manfred Schlaegl wrote:
-> On reading in_voltage_scale of we got an NULL pointer dereference Oops.
-> 
-> The reason for this is, that mcp320x_read_raw tries to access
-> chip_info->resolution from struct mcp320x, but chip_info is never set.
-> 
-> chip_info was never set since the driver was added, but there was no
-> acute problem, because it was not referenced.
-> The acute problem exists since
-> b12206e917ac34bec41b9ff93d37d8bd53a2b3bc
-> iio: adc: mcp320x. Add support for more ADCs
-> 
-> This patch fixes the issue by setting chip_info in mcp320x_probe.
-> 
-> Signed-off-by: Manfred Schlaegl <manfred.schlaegl@gmx.at>
-> ---
->  drivers/iio/adc/mcp320x.c |    2 ++
->  1 file changed, 2 insertions(+)
-> 
-> diff --git a/drivers/iio/adc/mcp320x.c b/drivers/iio/adc/mcp320x.c
-> index 8d9c9b9..d819823 100644
-> --- a/drivers/iio/adc/mcp320x.c
-> +++ b/drivers/iio/adc/mcp320x.c
-> @@ -299,6 +299,8 @@ static int mcp320x_probe(struct spi_device *spi)
->  	indio_dev->channels = chip_info->channels;
->  	indio_dev->num_channels = chip_info->num_channels;
->  
-> +	adc->chip_info = chip_info;
-> +
+On Sat, Jul 11, 2015 at 10:58 AM, Jonathan Cameron <jic23@kernel.org> wrote:
+> On 09/07/15 18:23, Matt Ranostay wrote:
+>> Hello Jonathan,
+>>
+>> I am currently working on temperature sensor that has multiple trip
+>> points, and was wondering what would be the correct way to tie this to
+>> one channel if several events may have the same IIO_EV_DIR_*
+>> direction.
+>>
+>> low temp trippoint - > IIO_EV_DIR_FALLING
+>> high temp trippoint -> IIO_EV_DIR_RISING
+>> critical temp trippoint ->  ?
+>>
+>> Would it make sensor to add functionality to allow iio_event_spec to
+>> have an .index field so multiple IIO_EV_DIR_RISING could be parsed
+>> into sysfs entries?
+>>
+>>
+>> Thanks,
+>>
+>> Matt
+>>
+> Hi Matt,
+>
+> The few times this has come up before, the conclusion has been that
+> the device was actually more suited to have a hwmon driver than an IIO one.
+> We have had event units capable of being configured for this sort of operation
+> but have never actually implemented it.
 
-Looks good to me.
+Ok seems I could just mask that threshold since it is kinda redundant
+and would be more useful for a microcontroller using it.
 
-Reviewed-by: Michael Welling <mwelling@ieee.org>
+However the other issue is there is a way of marking when entering a
+threshold and when exiting it.. I suppose that is again and event code
+change... This device triggers an interrupt when it enters and exits a
+threshold, and it would seem wrong to poll and report threshold events
+till it exited...
 
->  	adc->transfer[0].tx_buf = &adc->tx_buf;
->  	adc->transfer[0].len = sizeof(adc->tx_buf);
->  	adc->transfer[1].rx_buf = adc->rx_buf;
-> -- 
-> 1.7.10.4
-> 
+I suppose the following would be too crude to add the ABI?
+
+IIO_EV_ENTER_THRESHOLD = 0,
+IIO_EV_EXIT_THRESHOLD,
+
+>
+> You are quite correct in that we don't have a current way to support
+> it.  An index field and appropriate extension of the abi is fine.  However
+> you've also got to find somewhere in the event code to place it.
+> That's nastier from an ABI change point of view.
+>
