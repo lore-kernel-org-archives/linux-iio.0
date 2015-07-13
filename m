@@ -1,266 +1,113 @@
-Return-Path: <jic23@kernel.org>
-Message-ID: <55A15F1C.9040203@kernel.org>
-Date: Sat, 11 Jul 2015 19:23:24 +0100
-From: Jonathan Cameron <jic23@kernel.org>
+Return-Path: <stefan@agner.ch>
 MIME-Version: 1.0
-To: Crt Mori <cmo@melexis.com>,
- Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
-CC: linux-iio@vger.kernel.org, Peter Meerwald <pmeerw@pmeerw.net>,
- =?UTF-8?B?Vmlhbm5leSBsZSBDbMOpbWVudCBkZSBTYWludC1NYXJjcQ==?=
- <vianney.leclement@essensium.com>
-Subject: Re: [PATCH 0/1] iio: mlx90614: Implement filter configuration
-References: <CAKv63usGO4DxYhx-Sz_BugWmi_ztJF7=ce035Wr1EZw+-wMOfg@mail.gmail.com> <BBC430FE-127C-493F-B3AF-1ED207261F9C@jic23.retrosnub.co.uk> <CAKv63usafKwiLqYA00Fn2dDgmYAaq7VqiS4upwkLEVGqxMa5qQ@mail.gmail.com>
-In-Reply-To: <CAKv63usafKwiLqYA00Fn2dDgmYAaq7VqiS4upwkLEVGqxMa5qQ@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=US-ASCII
+Date: Mon, 13 Jul 2015 08:44:26 +0200
+From: Stefan Agner <stefan@agner.ch>
+To: maitysanchayan@gmail.com, Jonathan Cameron <jic23@kernel.org>
+Cc: Shawn Guo <shawnguo@kernel.org>, shawn.guo@linaro.org,
+ kernel@pengutronix.de, robh+dt@kernel.org, pawel.moll@arm.com,
+ mark.rutland@arm.com, ijc+devicetree@hellion.org.uk, galak@codeaurora.org,
+ B38611@freescale.com, devicetree@vger.kernel.org, linux-iio@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 2/2] ARM: dts: vfxxx: Add property for minimum sample
+ time
+In-Reply-To: <20150712064753.GA1199@Sanchayan-Arch>
+References: <cover.1435134626.git.maitysanchayan@gmail.com>
+ <36fa3cef10b6a21b39e96283ea5d6961e9f6d972.1435134626.git.maitysanchayan@gmail.com>
+ <20150710085324.GL23464@tiger> <20150710180640.GB8723@Sanchayan-Arch>
+ <55A154BE.6000701@kernel.org> <20150712064753.GA1199@Sanchayan-Arch>
+Message-ID: <8550db3f2a5db8ec68fc9360dc7173e3@agner.ch>
 List-ID: <linux-iio@vger.kernel.org>
 
-On 08/07/15 21:51, Crt Mori wrote:
-> On 8 July 2015 at 18:59, Jonathan Cameron <jic23@jic23.retrosnub.co.uk> wrote:
->> On 7 July 2015 15:44:51 BST, Crt Mori <cmo@melexis.com> wrote:
->>> Implemented FIR and IIR filter configuration which are located
->>> within the configuration register of EEPROM. I have used the
->>> IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY for FIR settings and
->>> IIO_CHAN_INFO_HIGH_PASS_FILTER_3DB_FREQUENCY for IIR settings just
->>> to reuse IIO_CHAN_INFO structure with closes resemblance of the
->>> settings (although it would have been better to drop that
->>> 3DB_FREQUENCY part).
->>>
->>> The diff is made towards togreg branch as that branch seems to have the
->>> most recent updates of mlx90614 driver
->>
->> I am having a rather silly week, hence very brief reply from a train. Sorry about that,!
->>
->> Using existing abi in a non documented way is always a bad idea.  Either work out
->> how to fit in with what is there fully or if that isn't possible propose new ABI for
->> what you need.
->>
->> Will have to postpone reading actual code for a few days. Train arrived
->>
->> J
+On 2015-07-12 08:47, maitysanchayan@gmail.com wrote:
+> Hello Jonathan,
 > 
-> Thanks for the comment. I was considering a new ABI, but FIR filter is a LOW
-> PASS filter (except that it is not on 3dB frequency), while IIR filter
-> is a HIGH PASS
-> filter (again not on 3dB frequency). That 3dB frequency on end was
-> really not well
-> thought as it is not general enough. 
-It's a standard 'user friendly' description of a filter.  What people care
-about is roughly where 'most' of the signal is being blocked.  Might not
-be how a particular data sheet presents it, but it is pretty much the
-basic standard for filter description.
-
-Having looked at the application note provided I can see your challenge
-in figuring these out!
-
-http://www.melexis.com/Assets/Understanding-MLX90614-on-chip-digital-signal-filters-5272.aspx
-
-hmm. Don't suppose you have access to what the filter design underneath actually
-is?  What the tap weights are and number of stages etc? That way we could probably
-(and I'm stretching back a way to remember how!) compute the frequency response
-and map it to a vaguely standard form.
-
-For others who don't feel like diving into the datasheet, it is presented
-in terms of the percentage change seen when the sensor observes an
-impulse (single very different value given obviously you can't actually
-observe and impulse with digital sampling if we assume there isn't an
-effectively analog filter going on as well).
-
-Jonathan
-
-> But now it is used in quite few
-> drivers and I
-> would assume changing that to more general would not be possible?
-Changing no.  Adding to yes.  If we have filters where more complex
-description is needed then we extend the abi to cover them.  I'm not
-convinced that is true here.  What we have is a rather 'unusual'
-description of a very standard filter form (I think!)
-> The filter settings are also very specific and require good knowledge
-> of datasheet
-> so I assume that enough skilled users will be using it to understand this two
-> options.
-> 
-> Once you read the code tell me if you still think it needs a special
-> ABI  - I prefer
-> to use already established ABIs as they allow easier hardware changes.
-I think there is a fairly nasty mapping to be worked out to get the
-values that correspond to the existing ABI, but I'm yet to be convinced
-that that ABI isn't capable of providing a useful description of these
-filters.
-
-Jonathan
-> 
->>>
->>> Signed-off-by: Crt Mori <cmo@melexis.com>
->>> ---
->>> diff --git a/drivers/iio/temperature/mlx90614.c
->>> b/drivers/iio/temperature/mlx90614.c
->>> index 909278a..d767d2f 100644
->>> --- a/drivers/iio/temperature/mlx90614.c
->>> +++ b/drivers/iio/temperature/mlx90614.c
->>> @@ -20,7 +20,6 @@
->>> * always has a pull-up so we do not need an extra GPIO to drive it
->>> high.
->>> If
->>>  * the "wakeup" GPIO is not given, power management will be disabled.
->>>  *
->>> - * TODO: filter configuration
->>>  */
->>>
->>> #include <linux/err.h>
->>> @@ -79,6 +78,25 @@ struct mlx90614_data {
->>>  unsigned long ready_timestamp; /* in jiffies */
->>> };
->>>
->>> +/* Allowed percentage values for IIR filtering */
->>> +static const u8 mlx90614_iir_values[] = {50, 25, 17, 13, 100, 80, 67,
->>> 57};
->>> +
->>> +/*
->>> + * Find the IIR value inside mlx90614_iir_values array and return its
->>> position
->>> + */
->>> +static inline s32 mlx90614_iir_search(int value)
->>> +{
->>> + u8 i;
->>> + if (value < 0 || value > 100)
->>> + return -EINVAL;
->>> +
->>> + for (i=0; i < ARRAY_SIZE(mlx90614_iir_values); ++i) {
->>> + if (value == mlx90614_iir_values[i])
->>> + return i;
->>> + }
->>> + return -EINVAL;
->>> +}
->>> +
->>> /*
->>>  * Erase an address and write word.
->>>  * The mutex must be locked before calling.
->>> @@ -236,6 +254,31 @@ static int mlx90614_read_raw(struct iio_dev
->>> *indio_dev,
->>>  *val2 = ret * MLX90614_CONST_EMISSIVITY_RESOLUTION;
->>>  }
->>>  return IIO_VAL_INT_PLUS_NANO;
->>> + case IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY: /* FIR setting */
->>> + mlx90614_power_get(data, false);
->>> + mutex_lock(&data->lock);
->>> + ret = i2c_smbus_read_word_data(data->client,MLX90614_CONFIG);
->>> + mutex_unlock(&data->lock);
->>> + mlx90614_power_put(data);
->>> +
->>> + if (ret < 0)
->>> + return ret;
->>> +
->>> + *val = (ret & MLX90614_CONFIG_FIR_MASK) >>
->>> + MLX90614_CONFIG_FIR_SHIFT;
->>> + return IIO_VAL_INT;
->>> + case IIO_CHAN_INFO_HIGH_PASS_FILTER_3DB_FREQUENCY: /* IIR setting */
->>> + mlx90614_power_get(data, false);
->>> + mutex_lock(&data->lock);
->>> + ret = i2c_smbus_read_word_data(data->client,MLX90614_CONFIG);
->>> + mutex_unlock(&data->lock);
->>> + mlx90614_power_put(data);
->>> +
->>> + if (ret < 0)
->>> + return ret;
->>> +
->>> + *val = mlx90614_iir_values[ret & MLX90614_CONFIG_IIR_MASK];
->>> + return IIO_VAL_INT;
->>>  default:
->>>  return -EINVAL;
->>>  }
->>> @@ -263,6 +306,52 @@ static int mlx90614_write_raw(struct iio_dev
->>> *indio_dev,
->>>  mlx90614_power_put(data);
->>>
->>>  return ret;
->>> + case IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY: /* FIR Filter */
->>> + if (val < 0 || val > 7)
->>> + return -EINVAL;
->>> +
->>> + mlx90614_power_get(data, false);
->>> + mutex_lock(&data->lock);
->>> +
->>> + /* CONFIG register values must not be changed so we must read
->>> + * them before we actually write changes */
->>> + ret = i2c_smbus_read_word_data(data->client,MLX90614_CONFIG);
->>> + if (ret >= 0)
->>> + {
->>> + /* Write changed values */
->>> + ret = mlx90614_write_word(data->client, MLX90614_CONFIG,
->>> +  (val << MLX90614_CONFIG_FIR_SHIFT) |
->>> +  ((u16) ret & (~((u16) MLX90614_CONFIG_FIR_MASK))));
->>> + }
->>> + mutex_unlock(&data->lock);
->>> + mlx90614_power_put(data);
->>> +
->>> + return ret;
->>> + case IIO_CHAN_INFO_HIGH_PASS_FILTER_3DB_FREQUENCY: /* IIR Filter */
->>> + ret = mlx90614_iir_search(val);
->>> + if (ret < 0)
->>> + return ret;
->>> + /* If there is no error, then we have a sensor equivalent value
->>> + * in ret. We need to store it temporary to val, as we still
->>> + * have more data to save in ret before we can actually write */
->>> + val = ret;
->>> +
->>> + mlx90614_power_get(data, false);
->>> + mutex_lock(&data->lock);
->>> + /* CONFIG register values must not be changed so we must read
->>> + * them before we actually write changes*/
->>> + ret = i2c_smbus_read_word_data(data->client,MLX90614_CONFIG);
->>> + if (ret >= 0)
->>> + {
->>> + /* Write changed values */
->>> + ret = mlx90614_write_word(data->client, MLX90614_CONFIG,
->>> +  (val << MLX90614_CONFIG_IIR_SHIFT) |
->>> +  ((u16) ret & (~(u16) MLX90614_CONFIG_IIR_MASK)));
->>> + }
->>> + mutex_unlock(&data->lock);
->>> + mlx90614_power_put(data);
->>> +
->>> + return ret;
->>>  default:
->>>  return -EINVAL;
->>>  }
->>> @@ -275,6 +364,10 @@ static int mlx90614_write_raw_get_fmt(struct
->>> iio_dev
->>> *indio_dev,
->>>  switch (mask) {
->>>  case IIO_CHAN_INFO_CALIBEMISSIVITY:
->>>  return IIO_VAL_INT_PLUS_NANO;
->>> + case IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY:
->>> + return IIO_VAL_INT_PLUS_MICRO;
->>> + case IIO_CHAN_INFO_HIGH_PASS_FILTER_3DB_FREQUENCY:
->>> + return IIO_VAL_INT_PLUS_MICRO;
->>>  default:
->>>  return -EINVAL;
->>>  }
->>> @@ -294,7 +387,9 @@ static const struct iio_chan_spec
->>> mlx90614_channels[] =
->>> {
->>>  .modified = 1,
->>>  .channel2 = IIO_MOD_TEMP_OBJECT,
->>>  .info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
->>> -    BIT(IIO_CHAN_INFO_CALIBEMISSIVITY),
->>> +    BIT(IIO_CHAN_INFO_CALIBEMISSIVITY) |
->>> + BIT(IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY) |
->>> + BIT(IIO_CHAN_INFO_HIGH_PASS_FILTER_3DB_FREQUENCY),
->>>  .info_mask_shared_by_type = BIT(IIO_CHAN_INFO_OFFSET) |
->>>     BIT(IIO_CHAN_INFO_SCALE),
->>>  },
->>> @@ -305,7 +400,9 @@ static const struct iio_chan_spec
->>> mlx90614_channels[] =
->>> {
->>>  .channel = 1,
->>>  .channel2 = IIO_MOD_TEMP_OBJECT,
->>>  .info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
->>> -    BIT(IIO_CHAN_INFO_CALIBEMISSIVITY),
->>> +    BIT(IIO_CHAN_INFO_CALIBEMISSIVITY) |
->>> + BIT(IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY) |
->>> + BIT(IIO_CHAN_INFO_HIGH_PASS_FILTER_3DB_FREQUENCY),
->>>  .info_mask_shared_by_type = BIT(IIO_CHAN_INFO_OFFSET) |
->>>     BIT(IIO_CHAN_INFO_SCALE),
->>>  },
+> On 15-07-11 18:39:10, Jonathan Cameron wrote:
+>> On 10/07/15 19:06, maitysanchayan@gmail.com wrote:
+>> > Hello Shawn,
+>> >
+>> > On 15-07-10 16:53:24, Shawn Guo wrote:
+>> >> On Wed, Jun 24, 2015 at 02:03:41PM +0530, Sanchayan Maity wrote:
+>> >>> Add a device tree property which allows to specify the minimum sample
+>> >>> time which can be used to calculate the actual ADC cycles required
+>> >>> depending on the hardware.
+>> >>>
+>> >>> Signed-off-by: Sanchayan Maity <maitysanchayan@gmail.com>
+>> >>> ---
+>> >>>  arch/arm/boot/dts/vfxxx.dtsi | 2 ++
+>> >>>  1 file changed, 2 insertions(+)
+>> >>>
+>> >>> diff --git a/arch/arm/boot/dts/vfxxx.dtsi b/arch/arm/boot/dts/vfxxx.dtsi
+>> >>> index 90a03d5..71d9c08 100644
+>> >>> --- a/arch/arm/boot/dts/vfxxx.dtsi
+>> >>> +++ b/arch/arm/boot/dts/vfxxx.dtsi
+>> >>> @@ -229,6 +229,7 @@
+>> >>>  				status = "disabled";
+>> >>>  				fsl,adck-max-frequency = <30000000>, <40000000>,
+>> >>>  							<20000000>;
+>> >>> +				min-sample-time = <1000>;
+>> >>>  			};
+>> >>>
+>> >>>  			wdoga5: wdog@4003e000 {
+>> >>> @@ -447,6 +448,7 @@
+>> >>>  				status = "disabled";
+>> >>>  				fsl,adck-max-frequency = <30000000>, <40000000>,
+>> >>>  							<20000000>;
+>> >>> +				min-sample-time = <1000>;
+>> >>
+>> >> Can we code 1000 as the default in kernel driver, so that only boards
+>> >> requiring different value need to have this property?  Doing so makes
+>> >> the property optional rather than required.
+>> >>
+>> >
+>> > Not sure if hardcoding it in the driver is the right approach.
+>> If it is a true feature of the device (i.e. if in the case of perfect
+>> front end electronics) this is the right option, then a default makes
+>> a lot of sense.  If that isn't the case (I suspect not) then if we
+>> drop it be optional chances are no one will bother thinking about it
+>> or trying to tune this at all.
 >>
->> --
->> Sent from my Android device with K-9 Mail. Please excuse my brevity.
+>> Hence seems wrong to put a fairly arbitrary default value on it.
+>> However, we do need to still work with old device trees and new kernels
+>> so need to cope without it.
+>>
+>> Hence to my mind, if we had started out with this in the first driver
+>> version, then the default would be a bad idea.  As we didn't then we
+>> really need to cope with nothing specified (as best we can) and so
+>> we do need a sensible default (or perhaps even sensible worst
+>> case default) in there.
+
+I agree with Jonathan's argumentation, let's add a default if the dt
+propery is not there.
+
+1000ns seems to be a good default value over a wide range of external
+resistance/capacity according to the diagrams of the data sheet, so I
+would vote for that value as default.
+
+> 
+> Just to be sure, do I understand you correctly that you agree with the
+> property being in device tree?
+
+I don't think that the device tree property is in discussion, it is just
+about whether to add a default value in the driver or not...
+
+> 
+> If the device tree property is not specified the driver will just go on
+> to use the value "3" which was hardcoded earlier. In my opinion it is
+> better to allow users to change the sampling cycles by specifying or not
+> specifying this in the device tree rather than have a default value coded
+> in the driver. However this is just my opinion.
+> 
+> Also, some users might not need the somewhat worst case value of 1000. I
+> guess we could keep the driver patch the way it is right now and migrate
+> the property to be specified in our board dts file? So the property can
+> be picked up from the vf-colibri.dtsi or vf500-colibri.dtsi in the adc
+> node? Other boards can do the same?
+
+I agree too, especially when we have a default value in the driver, the
+property belongs into the board file. I suggest to add the default value
+of 1000 to the vf-colibri.dtsi (even if this is the driver default, so
+we explicitly request that "verified" value..)
+
+--
+Stefan
