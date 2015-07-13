@@ -1,45 +1,26 @@
-Return-Path: <gizero@gmail.com>
-From: Andrea Galbusera <gizero@gmail.com>
-To: jic23@kernel.org
-Cc: linux-iio@vger.kernel.org,
-	Andrea Galbusera <gizero@gmail.com>
-Subject: [PATCH 1/4] iio: adc: mcp320x: add masking of unknown bits
-Date: Tue, 14 Jul 2015 15:36:20 +0200
-Message-Id: <1436880983-29017-1-git-send-email-gizero@gmail.com>
+Return-Path: <gregkh@linuxfoundation.org>
+Date: Mon, 13 Jul 2015 14:20:09 -0700
+From: Greg KH <gregkh@linuxfoundation.org>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Subject: Re: [PULL] Second set of IIO fixes for the 4.2 cycle (merge window
+ dependency)
+Message-ID: <20150713212009.GB20482@kroah.com>
+References: <55A423C5.5040107@kernel.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <55A423C5.5040107@kernel.org>
 List-ID: <linux-iio@vger.kernel.org>
 
-According to the datasheet, the 2 MSBs for parts 3001 and 3201 are
-unspecified and should be masked out
+On Mon, Jul 13, 2015 at 09:47:01PM +0100, Jonathan Cameron wrote:
+> The following changes since commit 6aaf0da8728c55ff627619f933ed161cc89057c6:
+> 
+>   Merge tag 'md/4.2' of git://neil.brown.name/md (2015-06-29 11:10:56 -0700)
+> 
+> are available in the git repository at:
+> 
+>   git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git tags/iio-fixes-for-4.2b
 
-Signed-off-by: Andrea Galbusera <gizero@gmail.com>
----
+Pulled and pushed out, thanks.
 
-This was already suggested but for some reason got lost during review of a
-previous patch. See http://marc.info/?l=linux-iio&m=140748835509583&w=2
-and following discussion
-
- drivers/iio/adc/mcp320x.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/iio/adc/mcp320x.c b/drivers/iio/adc/mcp320x.c
-index 8d9c9b9..0673ee7 100644
---- a/drivers/iio/adc/mcp320x.c
-+++ b/drivers/iio/adc/mcp320x.c
-@@ -114,13 +114,13 @@ static int mcp320x_adc_conversion(struct mcp320x *adc, u8 channel,
- 
- 	switch (device_index) {
- 	case mcp3001:
--		return (adc->rx_buf[0] << 5 | adc->rx_buf[1] >> 3);
-+		return ((adc->rx_buf[0] & 0x1f) << 5 | adc->rx_buf[1] >> 3);
- 	case mcp3002:
- 	case mcp3004:
- 	case mcp3008:
- 		return (adc->rx_buf[0] << 2 | adc->rx_buf[1] >> 6);
- 	case mcp3201:
--		return (adc->rx_buf[0] << 7 | adc->rx_buf[1] >> 1);
-+		return ((adc->rx_buf[0] & 0x1f) << 7 | adc->rx_buf[1] >> 1);
- 	case mcp3202:
- 	case mcp3204:
- 	case mcp3208:
--- 
-1.9.1
+greg k-h
