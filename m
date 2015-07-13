@@ -1,81 +1,86 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:34133 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:34160 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752162AbbGMUrE (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 13 Jul 2015 16:47:04 -0400
-Message-ID: <55A423C5.5040107@kernel.org>
-Date: Mon, 13 Jul 2015 21:47:01 +0100
+	with ESMTP id S1753063AbbGMUua (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 13 Jul 2015 16:50:30 -0400
+Message-ID: <55A42493.2040003@kernel.org>
+Date: Mon, 13 Jul 2015 21:50:27 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Greg KH <gregkh@linuxfoundation.org>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Subject: [PULL] Second set of IIO fixes for the 4.2 cycle (merge window dependency)
+To: Matt Ranostay <mranostay@gmail.com>
+CC: =?UTF-8?B?TWFyZWsgVmHFoXV0?= <marex@denx.de>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Dan Carpenter <dan.carpenter@oracle.com>
+Subject: Re: Multiple IIO_THRESHOLD events
+References: <CAKzfze8sGEyU9DgDR4y2p3=5d+9024WgqgVw5fsv4b2XY1HH1g@mail.gmail.com>	<55A1594F.1060204@kernel.org> <CAKzfze-xEaRc5HWRCsZYS2+XVuZDtOs7-m_VsNpoeXbteL=NRQ@mail.gmail.com>
+In-Reply-To: <CAKzfze-xEaRc5HWRCsZYS2+XVuZDtOs7-m_VsNpoeXbteL=NRQ@mail.gmail.com>
 Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-The following changes since commit 6aaf0da8728c55ff627619f933ed161cc89057c6:
+On 13/07/15 18:29, Matt Ranostay wrote:
+> On Sat, Jul 11, 2015 at 10:58 AM, Jonathan Cameron <jic23@kernel.org> wrote:
+>> On 09/07/15 18:23, Matt Ranostay wrote:
+>>> Hello Jonathan,
+>>>
+>>> I am currently working on temperature sensor that has multiple trip
+>>> points, and was wondering what would be the correct way to tie this to
+>>> one channel if several events may have the same IIO_EV_DIR_*
+>>> direction.
+>>>
+>>> low temp trippoint - > IIO_EV_DIR_FALLING
+>>> high temp trippoint -> IIO_EV_DIR_RISING
+>>> critical temp trippoint ->  ?
+>>>
+>>> Would it make sensor to add functionality to allow iio_event_spec to
+>>> have an .index field so multiple IIO_EV_DIR_RISING could be parsed
+>>> into sysfs entries?
+>>>
+>>>
+>>> Thanks,
+>>>
+>>> Matt
+>>>
+>> Hi Matt,
+>>
+>> The few times this has come up before, the conclusion has been that
+>> the device was actually more suited to have a hwmon driver than an IIO one.
+>> We have had event units capable of being configured for this sort of operation
+>> but have never actually implemented it.
+> 
+> Ok seems I could just mask that threshold since it is kinda redundant
+> and would be more useful for a microcontroller using it.
+> 
+> However the other issue is there is a way of marking when entering a
+> threshold and when exiting it.. I suppose that is again and event code
+> change... This device triggers an interrupt when it enters and exits a
+> threshold, and it would seem wrong to poll and report threshold events
+> till it exited...
+> 
+> I suppose the following would be too crude to add the ABI?
+Normally threshold interrupts are assumed to be edge triggered, hence
+report a rising edge in one direction and a falling one in the other?
 
-  Merge tag 'md/4.2' of git://neil.brown.name/md (2015-06-29 11:10:56 -0700)
+Though then we are back to having multiple thresholds on a channel.
+Looks increasingly like we need to add support for this!
 
-are available in the git repository at:
+(increased cc list to get some more opinions on this).
+> 
+> IIO_EV_ENTER_THRESHOLD = 0,
+> IIO_EV_EXIT_THRESHOLD,
+> 
+>>
+>> You are quite correct in that we don't have a current way to support
+>> it.  An index field and appropriate extension of the abi is fine.  However
+>> you've also got to find somewhere in the event code to place it.
+>> That's nastier from an ABI change point of view.
+>>
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> 
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git tags/iio-fixes-for-4.2b
-
-for you to fetch changes up to 8d05abfaeff52bdf66aba3a3a337dcdbdb4911bf:
-
-  iio: tmp006: Check channel info on write (2015-07-05 14:22:33 +0100)
-
-----------------------------------------------------------------
-Second set of IIO fixes for the 4.2 cycle. Note these depend (mostly) on
-material in the recent merge window, hence their separation from set (a)
-as the fixes-togreg branch predated the merge window.  I am running rather
-later with these than I would have liked hence the large set.
-
-* stk3310 fixes from Hartmut's review that came in post merge
-  - fix direction of proximity inline with recent documentation
-    clarification.
-  - fix missing REGMAP_I2C dependency
-  - rework the error handling for raw readings to fix an failure to power
-    down in the event of a raw reading failing.
-  - fix a bug in the compensation code which was toggling an extra bit in the
-    register.
-* mmc35240 - reported samplign frequencies were wrong.
-* ltr501 fixes
-  - fix a case of returning the return value of a regmap_read instead of
-    the value read.
-  - fix missing regmap dependency
-* sx9500 - fix missing default values for ret in a couple of places to handle
-  the case of no enabled channels.
-* tmp006 - check that writes to info_mask elements are actually to writable
-  ones.  Otherwise, writing to any of them will change the sampling frequency.
-
-----------------------------------------------------------------
-Geert Uytterhoeven (1):
-      iio: sx9500: Add missing init in sx9500_buffer_pre{en,dis}able()
-
-Hartmut Knaack (3):
-      iio:light:stk3310: Fix REGMAP_I2C dependency
-      iio:light:ltr501: fix variable in ltr501_init
-      iio:light:ltr501: fix regmap dependency
-
-Peter Meerwald (1):
-      iio: tmp006: Check channel info on write
-
-Teodora Baluta (1):
-      iio: magnetometer: mmc35240: fix available sampling frequencies
-
-Tiberiu Breana (1):
-      iio: light: STK3310: un-invert proximity values
-
-Vlad Dogaru (2):
-      iio: sx9500: rework error handling of raw readings
-      iio: sx9500: fix bug in compensation code
-
- drivers/iio/light/Kconfig           |  2 ++
- drivers/iio/light/ltr501.c          |  2 +-
- drivers/iio/light/stk3310.c         | 53 ++++++++++++-------------------------
- drivers/iio/magnetometer/mmc35240.c | 35 ++++++++++++++----------
- drivers/iio/proximity/sx9500.c      | 26 +++++++++---------
- drivers/iio/temperature/tmp006.c    |  3 +++
- 6 files changed, 58 insertions(+), 63 deletions(-)
