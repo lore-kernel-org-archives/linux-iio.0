@@ -1,219 +1,97 @@
-Return-Path: <maitysanchayan@gmail.com>
-From: Sanchayan Maity <maitysanchayan@gmail.com>
+Return-Path: <gizero@gmail.com>
+From: Andrea Galbusera <gizero@gmail.com>
 To: jic23@kernel.org
-Cc: shawn.guo@linaro.org,
-	kernel@pengutronix.de,
-	robh+dt@kernel.org,
-	pawel.moll@arm.com,
-	mark.rutland@arm.com,
-	ijc+devicetree@hellion.org.uk,
-	galak@codeaurora.org,
-	B38611@freescale.com,
-	devicetree@vger.kernel.org,
-	linux-iio@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org,
-	linux-kernel@vger.kernel.org,
-	stefan@agner.ch,
-	Sanchayan Maity <maitysanchayan@gmail.com>
-Subject: [PATCH v3 1/2] iio: adc: vf610: Determine sampling frequencies by using minimum sample time
-Date: Tue, 14 Jul 2015 19:23:22 +0530
-Message-Id: <baf52bf42eff6c986fa2ba5e030a295489068d00.1436880513.git.maitysanchayan@gmail.com>
-In-Reply-To: <cover.1436880513.git.maitysanchayan@gmail.com>
-References: <cover.1436880513.git.maitysanchayan@gmail.com>
-In-Reply-To: <cover.1436880513.git.maitysanchayan@gmail.com>
-References: <cover.1436880513.git.maitysanchayan@gmail.com>
+Cc: linux-iio@vger.kernel.org,
+	Andrea Galbusera <gizero@gmail.com>
+Subject: [PATCH 2/4] iio: adc: mcp320x: Add support for mcp3301
+Date: Tue, 14 Jul 2015 15:36:21 +0200
+Message-Id: <1436880983-29017-2-git-send-email-gizero@gmail.com>
+In-Reply-To: <1436880983-29017-1-git-send-email-gizero@gmail.com>
+References: <1436880983-29017-1-git-send-email-gizero@gmail.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-The driver currently does not take into account the minimum sample time
-as per the Figure 6-8 Chapter 9.1.1 12-bit ADC electrical characteristics.
-We set a static amount of cycles instead of considering the sample time
-as a given value, which depends on hardware characteristics.
+This adds support for Microchip's 13 bit 1 channel AD converter MCP3301
 
-Determine sampling frequencies by first reading the device tree property
-node and then calculating the required Long Sample Time Adder (LSTAdder)
-value, based on the ADC clock frequency and sample time value obtained
-from the device tree. This LSTAdder value is then used for calculating
-the sampling frequencies possible.
-
-In case the sample time property is not specified through the device
-tree, a safe default value of 1000ns is assumed.
-
-Signed-off-by: Sanchayan Maity <maitysanchayan@gmail.com>
+Signed-off-by: Andrea Galbusera <gizero@gmail.com>
 ---
- .../devicetree/bindings/iio/adc/vf610-adc.txt      |  5 ++
- drivers/iio/adc/vf610_adc.c                        | 79 ++++++++++++++++++++--
- 2 files changed, 80 insertions(+), 4 deletions(-)
+ drivers/iio/adc/mcp320x.c | 16 +++++++++++++++-
+ 1 file changed, 15 insertions(+), 1 deletion(-)
 
-diff --git a/Documentation/devicetree/bindings/iio/adc/vf610-adc.txt b/Documentation/devicetree/bindings/iio/adc/vf610-adc.txt
-index 3eb40e2..1aad051 100644
---- a/Documentation/devicetree/bindings/iio/adc/vf610-adc.txt
-+++ b/Documentation/devicetree/bindings/iio/adc/vf610-adc.txt
-@@ -17,6 +17,11 @@ Recommended properties:
-   - Frequency in normal mode (ADLPC=0, ADHSC=0)
-   - Frequency in high-speed mode (ADLPC=0, ADHSC=1)
-   - Frequency in low-power mode (ADLPC=1, ADHSC=0)
-+- min-sample-time: Minimum sampling time in nanoseconds. This value has
-+  to be chosen according to the conversion mode and the connected analog
-+  source resistance (R_as) and capacitance (C_as). Refer the datasheet's
-+  operating requirements. A safe default across a wide range of R_as and
-+  C_as as well as conversion modes is 1000ns.
- 
- Example:
- adc0: adc@4003b000 {
-diff --git a/drivers/iio/adc/vf610_adc.c b/drivers/iio/adc/vf610_adc.c
-index 480f335..23b8fb9 100644
---- a/drivers/iio/adc/vf610_adc.c
-+++ b/drivers/iio/adc/vf610_adc.c
-@@ -68,6 +68,9 @@
- #define VF610_ADC_CLK_DIV8		0x60
- #define VF610_ADC_CLK_MASK		0x60
- #define VF610_ADC_ADLSMP_LONG		0x10
-+#define VF610_ADC_ADSTS_SHORT   0x100
-+#define VF610_ADC_ADSTS_NORMAL  0x200
-+#define VF610_ADC_ADSTS_LONG    0x300
- #define VF610_ADC_ADSTS_MASK		0x300
- #define VF610_ADC_ADLPC_EN		0x80
- #define VF610_ADC_ADHSC_EN		0x400
-@@ -98,6 +101,8 @@
- #define VF610_ADC_CALF			0x2
- #define VF610_ADC_TIMEOUT		msecs_to_jiffies(100)
- 
-+#define DEFAULT_SAMPLE_TIME		1000
-+
- enum clk_sel {
- 	VF610_ADCIOC_BUSCLK_SET,
- 	VF610_ADCIOC_ALTCLK_SET,
-@@ -124,6 +129,17 @@ enum conversion_mode_sel {
- 	VF610_ADC_CONV_LOW_POWER,
+diff --git a/drivers/iio/adc/mcp320x.c b/drivers/iio/adc/mcp320x.c
+index 0673ee7..4de77e4 100644
+--- a/drivers/iio/adc/mcp320x.c
++++ b/drivers/iio/adc/mcp320x.c
+@@ -25,6 +25,7 @@
+  * http://ww1.microchip.com/downloads/en/DeviceDoc/21290D.pdf  mcp3201
+  * http://ww1.microchip.com/downloads/en/DeviceDoc/21034D.pdf  mcp3202
+  * http://ww1.microchip.com/downloads/en/DeviceDoc/21298c.pdf  mcp3204/08
++ * http://ww1.microchip.com/downloads/en/DeviceDoc/21700E.pdf  mcp3301
+  *
+  * This program is free software; you can redistribute it and/or modify
+  * it under the terms of the GNU General Public License version 2 as
+@@ -47,6 +48,7 @@ enum {
+ 	mcp3202,
+ 	mcp3204,
+ 	mcp3208,
++	mcp3301,
  };
  
-+enum lst_adder_sel {
-+	VF610_ADCK_CYCLES_3,
-+	VF610_ADCK_CYCLES_5,
-+	VF610_ADCK_CYCLES_7,
-+	VF610_ADCK_CYCLES_9,
-+	VF610_ADCK_CYCLES_13,
-+	VF610_ADCK_CYCLES_17,
-+	VF610_ADCK_CYCLES_21,
-+	VF610_ADCK_CYCLES_25,
-+};
-+
- struct vf610_adc_feature {
- 	enum clk_sel	clk_sel;
- 	enum vol_ref	vol_ref;
-@@ -132,6 +148,8 @@ struct vf610_adc_feature {
- 	int	clk_div;
- 	int     sample_rate;
- 	int	res_mode;
-+	u32 lst_adder_index;
-+	u32 default_sample_time;
+ struct mcp320x_chip_info {
+@@ -76,6 +78,7 @@ static int mcp320x_channel_to_tx_data(int device_index,
+ 	switch (device_index) {
+ 	case mcp3001:
+ 	case mcp3201:
++	case mcp3301:
+ 		return 0;
+ 	case mcp3002:
+ 	case mcp3202:
+@@ -102,7 +105,7 @@ static int mcp320x_adc_conversion(struct mcp320x *adc, u8 channel,
+ 	adc->tx_buf = mcp320x_channel_to_tx_data(device_index,
+ 						channel, differential);
  
- 	bool	calibration;
- 	bool	ovwren;
-@@ -155,11 +173,13 @@ struct vf610_adc {
+-	if (device_index != mcp3001 && device_index != mcp3201) {
++	if (device_index != mcp3001 && device_index != mcp3201 && device_index != mcp3301) {
+ 		ret = spi_sync(adc->spi, &adc->msg);
+ 		if (ret < 0)
+ 			return ret;
+@@ -125,6 +128,8 @@ static int mcp320x_adc_conversion(struct mcp320x *adc, u8 channel,
+ 	case mcp3204:
+ 	case mcp3208:
+ 		return (adc->rx_buf[0] << 4 | adc->rx_buf[1] >> 4);
++	case mcp3301:
++		return sign_extend32(adc->rx_buf[0] & 0x1f << 8 | adc->rx_buf[1], 12);
+ 	default:
+ 		return -EINVAL;
+ 	}
+@@ -274,6 +279,11 @@ static const struct mcp320x_chip_info mcp320x_chip_infos[] = {
+ 		.num_channels = ARRAY_SIZE(mcp3208_channels),
+ 		.resolution = 12
+ 	},
++	[mcp3301] = {
++		.channels = mcp3201_channels,
++		.num_channels = ARRAY_SIZE(mcp3201_channels),
++		.resolution = 13
++	},
  };
  
- static const u32 vf610_hw_avgs[] = { 1, 4, 8, 16, 32 };
-+static const u32 vf610_lst_adder[] = { 3, 5, 7, 9, 13, 17, 21, 25 };
- 
- static inline void vf610_adc_calculate_rates(struct vf610_adc *info)
- {
- 	struct vf610_adc_feature *adc_feature = &info->adc_feature;
- 	unsigned long adck_rate, ipg_rate = clk_get_rate(info->clk);
-+	u32 adck_period, lst_addr_min;
- 	int divisor, i;
- 
- 	adck_rate = info->max_adck_rate[adc_feature->conv_mode];
-@@ -174,6 +194,19 @@ static inline void vf610_adc_calculate_rates(struct vf610_adc *info)
+ static int mcp320x_probe(struct spi_device *spi)
+@@ -367,6 +377,9 @@ static const struct of_device_id mcp320x_dt_ids[] = {
+ 		.compatible = "mcp3208",
+ 		.data = &mcp320x_chip_infos[mcp3208],
+ 	}, {
++		.compatible = "mcp3301",
++		.data = &mcp320x_chip_infos[mcp3301],
++	}, {
  	}
- 
- 	/*
-+	 * Determine the long sample time adder value to be used based
-+	 * on the default minimum sample time provided.
-+	 */
-+	adck_period = NSEC_PER_SEC / adck_rate;
-+	lst_addr_min = adc_feature->default_sample_time / adck_period;
-+	for (i = 0; i < ARRAY_SIZE(vf610_lst_adder); i++) {
-+		if (vf610_lst_adder[i] > lst_addr_min) {
-+			adc_feature->lst_adder_index = i;
-+			break;
-+		}
-+	}
-+
-+	/*
- 	 * Calculate ADC sample frequencies
- 	 * Sample time unit is ADCK cycles. ADCK clk source is ipg clock,
- 	 * which is the same as bus clock.
-@@ -182,12 +215,13 @@ static inline void vf610_adc_calculate_rates(struct vf610_adc *info)
- 	 * SFCAdder: fixed to 6 ADCK cycles
- 	 * AverageNum: 1, 4, 8, 16, 32 samples for hardware average.
- 	 * BCT (Base Conversion Time): fixed to 25 ADCK cycles for 12 bit mode
--	 * LSTAdder(Long Sample Time): fixed to 3 ADCK cycles
-+	 * LSTAdder(Long Sample Time): 3, 5, 7, 9, 13, 17, 21, 25 ADCK cycles
- 	 */
- 	adck_rate = ipg_rate / info->adc_feature.clk_div;
- 	for (i = 0; i < ARRAY_SIZE(vf610_hw_avgs); i++)
- 		info->sample_freq_avail[i] =
--			adck_rate / (6 + vf610_hw_avgs[i] * (25 + 3));
-+			adck_rate / (6 + vf610_hw_avgs[i] *
-+			 (25 + vf610_lst_adder[adc_feature->lst_adder_index]));
- }
- 
- static inline void vf610_adc_cfg_init(struct vf610_adc *info)
-@@ -347,8 +381,40 @@ static void vf610_adc_sample_set(struct vf610_adc *info)
- 		break;
- 	}
- 
--	/* Use the short sample mode */
--	cfg_data &= ~(VF610_ADC_ADLSMP_LONG | VF610_ADC_ADSTS_MASK);
-+	/*
-+	 * Set ADLSMP and ADSTS based on the Long Sample Time Adder value
-+	 * determined.
-+	 */
-+	switch (adc_feature->lst_adder_index) {
-+	case VF610_ADCK_CYCLES_3:
-+		break;
-+	case VF610_ADCK_CYCLES_5:
-+		cfg_data |= VF610_ADC_ADSTS_SHORT;
-+		break;
-+	case VF610_ADCK_CYCLES_7:
-+		cfg_data |= VF610_ADC_ADSTS_NORMAL;
-+		break;
-+	case VF610_ADCK_CYCLES_9:
-+		cfg_data |= VF610_ADC_ADSTS_LONG;
-+		break;
-+	case VF610_ADCK_CYCLES_13:
-+		cfg_data |= VF610_ADC_ADLSMP_LONG;
-+		break;
-+	case VF610_ADCK_CYCLES_17:
-+		cfg_data |= VF610_ADC_ADLSMP_LONG;
-+		cfg_data |= VF610_ADC_ADSTS_SHORT;
-+		break;
-+	case VF610_ADCK_CYCLES_21:
-+		cfg_data |= VF610_ADC_ADLSMP_LONG;
-+		cfg_data |= VF610_ADC_ADSTS_NORMAL;
-+		break;
-+	case VF610_ADCK_CYCLES_25:
-+		cfg_data |= VF610_ADC_ADLSMP_LONG;
-+		cfg_data |= VF610_ADC_ADSTS_NORMAL;
-+		break;
-+	default:
-+		dev_err(info->dev, "error in sample time select\n");
-+	}
- 
- 	/* update hardware average selection */
- 	cfg_data &= ~VF610_ADC_AVGS_MASK;
-@@ -713,6 +779,11 @@ static int vf610_adc_probe(struct platform_device *pdev)
- 	of_property_read_u32_array(pdev->dev.of_node, "fsl,adck-max-frequency",
- 			info->max_adck_rate, 3);
- 
-+	ret = of_property_read_u32(pdev->dev.of_node, "min-sample-time",
-+			&info->adc_feature.default_sample_time);
-+	if (ret)
-+		info->adc_feature.default_sample_time = DEFAULT_SAMPLE_TIME;
-+
- 	platform_set_drvdata(pdev, indio_dev);
- 
- 	init_completion(&info->completion);
+ };
+ MODULE_DEVICE_TABLE(of, mcp320x_dt_ids);
+@@ -381,6 +394,7 @@ static const struct spi_device_id mcp320x_id[] = {
+ 	{ "mcp3202", mcp3202 },
+ 	{ "mcp3204", mcp3204 },
+ 	{ "mcp3208", mcp3208 },
++	{ "mcp3301", mcp3301 },
+ 	{ }
+ };
+ MODULE_DEVICE_TABLE(spi, mcp320x_id);
 -- 
-2.4.5
+1.9.1
