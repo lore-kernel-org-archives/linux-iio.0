@@ -3,32 +3,43 @@ From: Andrea Galbusera <gizero@gmail.com>
 To: jic23@kernel.org
 Cc: linux-iio@vger.kernel.org,
 	Andrea Galbusera <gizero@gmail.com>
-Subject: [PATCH 3/4] iio: adc: mcp320x: Kconfig update description
-Date: Tue, 14 Jul 2015 15:36:22 +0200
-Message-Id: <1436880983-29017-3-git-send-email-gizero@gmail.com>
-In-Reply-To: <1436880983-29017-1-git-send-email-gizero@gmail.com>
-References: <1436880983-29017-1-git-send-email-gizero@gmail.com>
+Subject: [PATCH 1/4] iio: adc: mcp320x: add masking of unknown bits
+Date: Tue, 14 Jul 2015 15:36:20 +0200
+Message-Id: <1436880983-29017-1-git-send-email-gizero@gmail.com>
 List-ID: <linux-iio@vger.kernel.org>
+
+According to the datasheet, the 2 MSBs for parts 3001 and 3201 are
+unspecified and should be masked out
 
 Signed-off-by: Andrea Galbusera <gizero@gmail.com>
 ---
- drivers/iio/adc/Kconfig | 4 ++--
+
+This was already suggested but for some reason got lost during review of a
+previous patch. See http://marc.info/?l=linux-iio&m=140748835509583&w=2
+and following discussion
+
+ drivers/iio/adc/mcp320x.c | 4 ++--
  1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
-index 7c55658..f074b6a 100644
---- a/drivers/iio/adc/Kconfig
-+++ b/drivers/iio/adc/Kconfig
-@@ -207,8 +207,8 @@ config MCP320X
- 	depends on SPI
- 	help
- 	  Say yes here to build support for Microchip Technology's
--	  MCP3001, MCP3002, MCP3004, MCP3008, MCP3201, MCP3202, MCP3204 or
--	  MCP3208 analog to digital converter.
-+	  MCP3001, MCP3002, MCP3004, MCP3008, MCP3201, MCP3202, MCP3204,
-+	  MCP3208 or MCP3301 analog to digital converter.
+diff --git a/drivers/iio/adc/mcp320x.c b/drivers/iio/adc/mcp320x.c
+index 8d9c9b9..0673ee7 100644
+--- a/drivers/iio/adc/mcp320x.c
++++ b/drivers/iio/adc/mcp320x.c
+@@ -114,13 +114,13 @@ static int mcp320x_adc_conversion(struct mcp320x *adc, u8 channel,
  
- 	  This driver can also be built as a module. If so, the module will be
- 	  called mcp320x.
+ 	switch (device_index) {
+ 	case mcp3001:
+-		return (adc->rx_buf[0] << 5 | adc->rx_buf[1] >> 3);
++		return ((adc->rx_buf[0] & 0x1f) << 5 | adc->rx_buf[1] >> 3);
+ 	case mcp3002:
+ 	case mcp3004:
+ 	case mcp3008:
+ 		return (adc->rx_buf[0] << 2 | adc->rx_buf[1] >> 6);
+ 	case mcp3201:
+-		return (adc->rx_buf[0] << 7 | adc->rx_buf[1] >> 1);
++		return ((adc->rx_buf[0] & 0x1f) << 7 | adc->rx_buf[1] >> 1);
+ 	case mcp3202:
+ 	case mcp3204:
+ 	case mcp3208:
 -- 
 1.9.1
