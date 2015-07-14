@@ -1,63 +1,65 @@
-Return-Path: <manfred.schlaegl@gmx.at>
-Message-ID: <55A4F848.8060507@gmx.at>
-Date: Tue, 14 Jul 2015 13:53:44 +0200
-From: Manfred Schlaegl <manfred.schlaegl@gmx.at>
-MIME-Version: 1.0
-To: Michael Welling <mwelling@ieee.org>
-CC: Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
- Lars-Peter Clausen <lars@metafoo.de>,
- Peter Meerwald <pmeerw@pmeerw.net>, linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org,
- Manfred Schlaegl <manfred.schlaegl@ginzinger.com>
-Subject: Re: [PATCH] iio: mcp320x: Fix NULL pointer dereference
-References: <55A03142.1020106@gmx.at> <20150713141607.GB3224@deathray>
-In-Reply-To: <20150713141607.GB3224@deathray>
-Content-Type: text/plain; charset=windows-1252
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-pd0-f172.google.com ([209.85.192.172]:35623 "EHLO
+	mail-pd0-f172.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751484AbbGNN40 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 14 Jul 2015 09:56:26 -0400
+From: Sanchayan Maity <maitysanchayan@gmail.com>
+To: jic23@kernel.org
+Cc: shawn.guo@linaro.org, kernel@pengutronix.de, robh+dt@kernel.org,
+	pawel.moll@arm.com, mark.rutland@arm.com,
+	ijc+devicetree@hellion.org.uk, galak@codeaurora.org,
+	B38611@freescale.com, devicetree@vger.kernel.org,
+	linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	linux-kernel@vger.kernel.org, stefan@agner.ch,
+	Sanchayan Maity <maitysanchayan@gmail.com>
+Subject: [PATCH v3 0/2] Implement sample time consideration for Vybrid's ADC
+Date: Tue, 14 Jul 2015 19:23:21 +0530
+Message-Id: <cover.1436880513.git.maitysanchayan@gmail.com>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On 2015-07-13 16:16, Michael Welling wrote:
-> On Fri, Jul 10, 2015 at 10:55:30PM +0200, Manfred Schlaegl wrote:
->> On reading in_voltage_scale of we got an NULL pointer dereference Oops.
->>
->> The reason for this is, that mcp320x_read_raw tries to access
->> chip_info->resolution from struct mcp320x, but chip_info is never set.
->>
->> chip_info was never set since the driver was added, but there was no
->> acute problem, because it was not referenced.
->> The acute problem exists since
->> b12206e917ac34bec41b9ff93d37d8bd53a2b3bc
->> iio: adc: mcp320x. Add support for more ADCs
->>
->> This patch fixes the issue by setting chip_info in mcp320x_probe.
->>
->> Signed-off-by: Manfred Schlaegl <manfred.schlaegl@gmx.at>
->> ---
->>  drivers/iio/adc/mcp320x.c |    2 ++
->>  1 file changed, 2 insertions(+)
->>
->> diff --git a/drivers/iio/adc/mcp320x.c b/drivers/iio/adc/mcp320x.c
->> index 8d9c9b9..d819823 100644
->> --- a/drivers/iio/adc/mcp320x.c
->> +++ b/drivers/iio/adc/mcp320x.c
->> @@ -299,6 +299,8 @@ static int mcp320x_probe(struct spi_device *spi)
->>  	indio_dev->channels = chip_info->channels;
->>  	indio_dev->num_channels = chip_info->num_channels;
->>  
->> +	adc->chip_info = chip_info;
->> +
-> 
-> Looks good to me.
-> 
-> Reviewed-by: Michael Welling <mwelling@ieee.org>
-> 
->>  	adc->transfer[0].tx_buf = &adc->tx_buf;
->>  	adc->transfer[0].len = sizeof(adc->tx_buf);
->>  	adc->transfer[1].rx_buf = adc->rx_buf;
->> -- 
->> 1.7.10.4
->>
+Hello,
 
-Thanks for reviewing!
+This patchset adds a dt binding for specifying sample time
+for the vybrid adc driver and takes this into account for
+sampling frequency calculation and related configuration in
+the driver.
 
-best regards,
-manfred
+The patchset is based on top of Stefan's patches here
+http://lkml.iu.edu/hypermail/linux/kernel/1505.3/02043.html
+
+which got recently applied.
+
+Changes since v2:
+
+- Use a default value of 1000ns for sample time in the driver
+  if the property is not specified in the device tree.
+- Specify the min-sample-time property in the board device tree
+  file instead of the top level vfxxx.dtsi file for Vybrid
+
+Changes since v1:
+
+Change from a vendor specific fsl,min-sample-time to non vendor
+specific min-sample-time.
+
+Version 2 of the patchset can be found here
+https://lkml.org/lkml/2015/6/24/97
+
+Version 1 of the patchset can be found here
+http://lkml.iu.edu/hypermail/linux/kernel/1506.1/00026.html
+
+- Sanchayan.
+
+Sanchayan Maity (2):
+  iio: adc: vf610: Determine sampling frequencies by using minimum
+    sample time
+  ARM: dts: vf-colibri: Add property for minimum sample time
+
+ .../devicetree/bindings/iio/adc/vf610-adc.txt      |  5 ++
+ arch/arm/boot/dts/vf-colibri.dtsi                  |  2 +
+ drivers/iio/adc/vf610_adc.c                        | 79 ++++++++++++++++++++--
+ 3 files changed, 82 insertions(+), 4 deletions(-)
+
+-- 
+2.4.5
+
