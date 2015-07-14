@@ -1,77 +1,71 @@
-Return-Path: <knaack.h@gmx.de>
-Message-ID: <55A438B6.50205@gmx.de>
-Date: Tue, 14 Jul 2015 00:16:22 +0200
-From: Hartmut Knaack <knaack.h@gmx.de>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-la0-f42.google.com ([209.85.215.42]:36662 "EHLO
+	mail-la0-f42.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752044AbbGNJHr (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 14 Jul 2015 05:07:47 -0400
+Received: by lagw2 with SMTP id w2so2219932lag.3
+        for <linux-iio@vger.kernel.org>; Tue, 14 Jul 2015 02:07:46 -0700 (PDT)
 MIME-Version: 1.0
-To: Cristina Opriceana <cristina.opriceana@gmail.com>,
- jic23@kernel.org
-CC: lars@metafoo.de, pmeerw@pmeerw.net, linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org, daniel.baluta@intel.com,
- octavian.purdila@intel.com
-Subject: Re: [PATCH v3] tools: iio: Send error messages to stderr
-References: <b9014ff8b0916710f88ba01c41261782fcb819a8.1436792589.git.cristina.opriceana@gmail.com>
-In-Reply-To: <b9014ff8b0916710f88ba01c41261782fcb819a8.1436792589.git.cristina.opriceana@gmail.com>
-Content-Type: text/plain; charset=ISO-8859-1
-List-ID: <linux-iio@vger.kernel.org>
+In-Reply-To: <55A15666.2050906@kernel.org>
+References: <CAPMRSivAzwTCoFqRw67FuxcLZD=d0YQBVonphjAY2gRNPL-g7g@mail.gmail.com>
+	<CAEnQRZCQOZ_prM+KUCOfhxGSSKnQTMgR9wGDioPCukdU8cu0oQ@mail.gmail.com>
+	<55A15666.2050906@kernel.org>
+Date: Tue, 14 Jul 2015 11:07:46 +0200
+Message-ID: <CAPMRSitidtMgEJ52Wsg99WPbR4xet5QyQCD9pkpObbUmZyE=XQ@mail.gmail.com>
+Subject: Re: Git repo to use for submitting patches
+From: Giuseppe Barba <giuseppe.barba@gmail.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Daniel Baluta <daniel.baluta@gmail.com>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Content-Type: text/plain; charset=UTF-8
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Cristina Opriceana schrieb am 13.07.2015 um 15:33:
-> This patch intends to make some cleanup and send printf
-> error messages to stderr. The changes were performed with coccinelle
-> for failure messages and manual for other cases, such as wrong usage
-> messages.
-> 
+Thanks. It's much more clear now.
 
-Looking very good so far. Two off-by-one indentation issues spotted however
-(checkpatch didn't spot at least the first one), but after fixing you can
-add my
-
-Reviewed-by: Hartmut Knaack <knaack.h@gmx.de>
-
-> Signed-off-by: Cristina Opriceana <cristina.opriceana@gmail.com>
-> ---
-> Changes since v2:
->  - merge all replacements in one commit
-> 
->  tools/iio/generic_buffer.c    | 23 +++++++++++---------
->  tools/iio/iio_event_monitor.c | 14 ++++++-------
->  tools/iio/iio_utils.c         | 49 +++++++++++++++++++++++++------------------
->  tools/iio/lsiio.c             |  2 +-
->  4 files changed, 50 insertions(+), 38 deletions(-)
-> 
-> diff --git a/tools/iio/generic_buffer.c b/tools/iio/generic_buffer.c
-> index 9535c2d..249858a 100644
-> --- a/tools/iio/generic_buffer.c
-> +++ b/tools/iio/generic_buffer.c
-> @@ -193,7 +193,7 @@ void process_scan(char *data,
->  
->  void print_usage(void)
->  {
-> -	printf("Usage: generic_buffer [options]...\n"
-> +	fprintf(stderr, "Usage: generic_buffer [options]...\n"
->  	       "Capture, convert and output data from IIO device buffer\n"
->  	       "  -c <n>     Do n conversions\n"
->  	       "  -e         Disable wait for event (new data)\n"
-
-These lines should be moved one space to the right, as well.
-
-<...>
-> diff --git a/tools/iio/iio_utils.c b/tools/iio/iio_utils.c
-> index e177f40..15bd663 100644
-> --- a/tools/iio/iio_utils.c
-> +++ b/tools/iio/iio_utils.c
-<...>  
-> @@ -800,8 +808,9 @@ static int _write_sysfs_string(const char *filename, const char *basedir,
->  		}
->  
->  		if (strcmp(temp, val) != 0) {
-> -			printf("Possible failure in string write of %s "
-> -			       "Should be %s written to %s/%s\n", temp, val,
-> +			fprintf(stderr,
-> +				"Possible failure in string write of %s "
-> +				"Should be %s written to %s/%s\n", temp, val,
->  			       basedir, filename);
-
-And this is the other instance.
-
->  			ret = -1;
->  		}
+2015-07-11 19:46 GMT+02:00 Jonathan Cameron <jic23@kernel.org>:
+> On 10/07/15 12:51, Daniel Baluta wrote:
+>> On Fri, Jul 10, 2015 at 2:42 PM, Giuseppe Barba
+>> <giuseppe.barba@gmail.com> wrote:
+>>> Hi,
+>>>
+>>> sorry I'm new in this list.
+>>> I wold like to submit some patches to add support for new sensor.
+>>> I'm not sure what repo I have to use for code rebasing. I've found:
+>>>
+>>> git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git
+>>>
+>>> is it the correct one?
+>>
+>> Yes. Please use 'testing' branch.
+> Actually that's a bit risky unless you need something in it.
+> It does get rebased.  I've been rather snowed under with day job stuff
+> last couple of weeks so haven't kept things as clean as they should be
+> but in theory:
+>
+> 1) togreg branch gets pushed out first as testing, but that's to let
+>    the autobuilders play with it rather than as an official branch to
+>    base anything on.
+> 2) I fix up issues in testing found by the autobuilders and push it as
+>    as the togreg branch.
+> 3) When enough stuff has built up I send a pull request to Greg KH
+>    and following that fastforward my tree.
+>
+> Just to confuse things, fixes go via the fixes-togreg branch and make
+> it into the togreg branch only during the fastforward after Greg
+> has pulled in the previous patches to his tree.
+>
+> So general principle is the togreg branch.  Actually for new sensors
+> that are unlikely to interact much with recent patches, staging/staging-next
+> is also usually fine, or even use Linus' mainline tree.
+>
+> Jonathan
+>>
+>> thanks,
+>> Daniel.
+>> --
+>> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+>> the body of a message to majordomo@vger.kernel.org
+>> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+>>
+>
