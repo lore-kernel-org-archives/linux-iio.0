@@ -1,64 +1,56 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mout.gmx.net ([212.227.17.22]:54663 "EHLO mout.gmx.net"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1752227AbbGOSMm (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Wed, 15 Jul 2015 14:12:42 -0400
-Message-ID: <55A6A295.9020102@gmx.de>
-Date: Wed, 15 Jul 2015 20:12:37 +0200
-From: Hartmut Knaack <knaack.h@gmx.de>
+Received: from aserp1040.oracle.com ([141.146.126.69]:33096 "EHLO
+	aserp1040.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751592AbbGOThL (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 15 Jul 2015 15:37:11 -0400
+Date: Wed, 15 Jul 2015 22:36:51 +0300
+From: Dan Carpenter <dan.carpenter@oracle.com>
+To: aybuke.147@gmail.com
+Cc: Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>, linux-iio@vger.kernel.org
+Subject: re: staging: iio: accel: Use __be16 instead of u16
+Message-ID: <20150715193650.GA28245@mwanda>
 MIME-Version: 1.0
-To: Andrea Galbusera <gizero@gmail.com>, jic23@kernel.org
-CC: linux-iio@vger.kernel.org
-Subject: Re: [PATCH 1/4] iio: adc: mcp320x: add masking of unknown bits
-References: <1436880983-29017-1-git-send-email-gizero@gmail.com>
-In-Reply-To: <1436880983-29017-1-git-send-email-gizero@gmail.com>
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=us-ascii
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Andrea Galbusera schrieb am 14.07.2015 um 15:36:
-> According to the datasheet, the 2 MSBs for parts 3001 and 3201 are
-> unspecified and should be masked out
-> 
+Hello Aybuke Ozdemir,
 
-Hi,
-since resolution is already set, better make it more generic by applying
-the mask in _read_raw like this:
+The patch 03c6eaa37ad7: "staging: iio: accel: Use __be16 instead of
+u16" from Sep 28, 2014, leads to the following static checker warning:
 
-*val = ret & GENMASK(adc->chip_info->resolution - 1, 0);
+	drivers/staging/iio/accel/sca3000_ring.c:120 sca3000_read_first_n_hw_rb()
+	warn: potential pointer math issue ('rx' is a 16 bit pointer)
 
-Thanks,
-Hartmut
+drivers/staging/iio/accel/sca3000_ring.c
+   107           */
+   108          if (count > num_available * bytes_per_sample)
+   109                  num_read = num_available*bytes_per_sample;
+   110          else
+   111                  num_read = count;
+   112  
+   113          ret = sca3000_read_data(st,
+   114                                  SCA3000_REG_ADDR_RING_OUT,
+   115                                  &rx, num_read);
+   116          if (ret)
+   117                  goto error_ret;
+   118  
+   119          for (i = 0; i < num_read; i++)
+   120                  *(((u16 *)rx) + i) = be16_to_cpup((__be16 *)rx + i);
+                          ^^^^^^^^^^^^^^^
 
-> Signed-off-by: Andrea Galbusera <gizero@gmail.com>
-> ---
-> 
-> This was already suggested but for some reason got lost during review of a
-> previous patch. See http://marc.info/?l=linux-iio&m=140748835509583&w=2
-> and following discussion
-> 
->  drivers/iio/adc/mcp320x.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/iio/adc/mcp320x.c b/drivers/iio/adc/mcp320x.c
-> index 8d9c9b9..0673ee7 100644
-> --- a/drivers/iio/adc/mcp320x.c
-> +++ b/drivers/iio/adc/mcp320x.c
-> @@ -114,13 +114,13 @@ static int mcp320x_adc_conversion(struct mcp320x *adc, u8 channel,
->  
->  	switch (device_index) {
->  	case mcp3001:
-> -		return (adc->rx_buf[0] << 5 | adc->rx_buf[1] >> 3);
-> +		return ((adc->rx_buf[0] & 0x1f) << 5 | adc->rx_buf[1] >> 3);
->  	case mcp3002:
->  	case mcp3004:
->  	case mcp3008:
->  		return (adc->rx_buf[0] << 2 | adc->rx_buf[1] >> 6);
->  	case mcp3201:
-> -		return (adc->rx_buf[0] << 7 | adc->rx_buf[1] >> 1);
-> +		return ((adc->rx_buf[0] & 0x1f) << 7 | adc->rx_buf[1] >> 1);
->  	case mcp3202:
->  	case mcp3204:
->  	case mcp3208:
-> 
+We're writing beyond the end of the array here because of the pointer
+math issue.  The fix is probably to say:
 
+		for (i = 0; i < num_read / sizeof(u16); i++)
+			*(((u16 *)rx) + i) = be16_to_cpup((__be16 *)rx + i);
+
+   121  
+   122          if (copy_to_user(buf, rx, num_read))
+   123                  ret = -EFAULT;
+
+
+regards,
+dan carpenter
