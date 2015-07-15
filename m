@@ -1,76 +1,128 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-wi0-f180.google.com ([209.85.212.180]:32962 "EHLO
-	mail-wi0-f180.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751424AbbGOFN1 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 15 Jul 2015 01:13:27 -0400
-Received: by widic2 with SMTP id ic2so53444144wid.0
-        for <linux-iio@vger.kernel.org>; Tue, 14 Jul 2015 22:13:26 -0700 (PDT)
-MIME-Version: 1.0
-In-Reply-To: <50E24B24-6DC9-4ECB-8752-B974BD6C53E8@kernel.org>
-References: <1436880983-29017-1-git-send-email-gizero@gmail.com>
-	<50E24B24-6DC9-4ECB-8752-B974BD6C53E8@kernel.org>
-Date: Wed, 15 Jul 2015 07:13:26 +0200
-Message-ID: <CAC+thW2XeJESYC-S0BhNk6DFCnsn7HsJp69GAZZvpCL2WGF1+Q@mail.gmail.com>
-Subject: Re: [PATCH 1/4] iio: adc: mcp320x: add masking of unknown bits
-From: Andrea Galbusera <gizero@gmail.com>
-To: linux-iio@vger.kernel.org
-Content-Type: text/plain; charset=UTF-8
+Received: from mail-pd0-f173.google.com ([209.85.192.173]:35624 "EHLO
+	mail-pd0-f173.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750772AbbGOHnz (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 15 Jul 2015 03:43:55 -0400
+From: Reyad Attiyat <reyad.attiyat@gmail.com>
+To: jic23@kernel.org, srinivas.pandruvada@linux.intel.com
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+	Reyad Attiyat <reyad.attiyat@gmail.com>
+Subject: [PATCH] hid_sensor_magn_3d: Fix scale for rotation from north channels
+Date: Wed, 15 Jul 2015 02:43:18 -0500
+Message-Id: <1436946198-10395-1-git-send-email-reyad.attiyat@gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Tue, Jul 14, 2015 at 11:04 PM, Jonathan Cameron <jic23@kernel.org> wrote:
->
->
-> On 14 July 2015 14:36:20 BST, Andrea Galbusera <gizero@gmail.com> wrote:
->>According to the datasheet, the 2 MSBs for parts 3001 and 3201 are
->>unspecified and should be masked out
-> Theoretical issue or one with observed bad effects?
+Some devices on a hid sensor hub will not report a measurement unit. This
+causes the rotation from north channels to have an incorrect scale value.
+This patch will set the unit to degrees if the maximum value is 360 when
+the unit exponent value is accounted for.
 
-Hi! Thanks for reviewing. While in the business of adding support for
-3301, I couldn't figure out why no masking wasn't done for similar
-parts like 3001 and 3201. Further investigation of previous patches
-reviews [1], where masking was suggested and initially implemented,
-convinced me the bit was lost somewhere, with no explicit motivation.
-Nevertheless, 3301 is the only chip of the family I have at hands:
-hence, yes, this specific patch in the set is addressing a theoretical
-issue.
+Signed-off-by: Reyad Attiyat <reyad.attiyat@gmail.com>
+---
+ .../iio/common/hid-sensors/hid-sensor-attributes.c | 19 ++++++++++++++++
+ drivers/iio/magnetometer/hid-sensor-magn-3d.c      | 26 +++++++++++++++++++++-
+ include/linux/hid-sensor-hub.h                     |  4 ++++
+ 3 files changed, 48 insertions(+), 1 deletion(-)
 
-[1] http://marc.info/?l=linux-iio&m=140748835509583&w=2
+diff --git a/drivers/iio/common/hid-sensors/hid-sensor-attributes.c b/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
+index e81f434..3c79847 100644
+--- a/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
++++ b/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
+@@ -46,6 +46,7 @@ static struct {
+ 
+ 	{HID_USAGE_SENSOR_COMPASS_3D, 0, 0, 1000},
+ 	{HID_USAGE_SENSOR_COMPASS_3D, HID_USAGE_SENSOR_UNITS_GAUSS, 1, 0},
++	{HID_USAGE_SENSOR_COMPASS_3D, HID_USAGE_SENSOR_UNITS_DEGREES, 1, 0},
+ 
+ 	{HID_USAGE_SENSOR_INCLINOMETER_3D, 0, 0, 17453},
+ 	{HID_USAGE_SENSOR_INCLINOMETER_3D,
+@@ -317,6 +318,24 @@ static void adjust_exponent_micro(int *val0, int *val1, int scale0,
+ 	}
+ }
+ 
++void hid_sensor_get_unit_expo_fraction(
++		struct hid_sensor_hub_attribute_info *attr_info,
++		int *num, int *denom)
++{
++	s32 exp = hid_sensor_convert_exponent(attr_info->unit_expo);
++
++	if (exp == 0) {
++		*num = *denom = 1;
++	} else if (exp < 0) {
++		*num = 1;
++		*denom = pow_10(abs(exp));
++	} else if (exp > 0) {
++		*num = pow_10(exp);
++		*denom = 1;
++	}
++}
++EXPORT_SYMBOL(hid_sensor_get_unit_expo_fraction);
++
+ int hid_sensor_format_scale(u32 usage_id,
+ 			struct hid_sensor_hub_attribute_info *attr_info,
+ 			int *val0, int *val1)
+diff --git a/drivers/iio/magnetometer/hid-sensor-magn-3d.c b/drivers/iio/magnetometer/hid-sensor-magn-3d.c
+index d8a0c8d..173d2f5 100644
+--- a/drivers/iio/magnetometer/hid-sensor-magn-3d.c
++++ b/drivers/iio/magnetometer/hid-sensor-magn-3d.c
+@@ -311,6 +311,7 @@ static int magn_3d_parse_report(struct platform_device *pdev,
+ 	int i;
+ 	int attr_count = 0;
+ 	struct iio_chan_spec *_channels;
++	struct hid_sensor_hub_attribute_info *first_channel_attr_info;
+ 
+ 	/* Scan for each usage attribute supported */
+ 	for (i = 0; i < MAGN_3D_CHANNEL_MAX; i++) {
+@@ -389,9 +390,32 @@ static int magn_3d_parse_report(struct platform_device *pdev,
+ 	dev_dbg(&pdev->dev, "magn_3d Setup %d IIO channels\n",
+ 			*chan_count);
+ 
++	first_channel_attr_info = &(st->magn[_channels[0].address]);
++
++	/* Try and set unit based off exponent, logical min and max */
++	if (!first_channel_attr_info->units) {
++		int num, denom;
++		s32 log_min = first_channel_attr_info->logical_minimum;
++		s32 log_max = first_channel_attr_info->logical_maximum;
++
++		dev_dbg(&pdev->dev, "magn_3d Units not set. Unit Expo %d Logical Min: %d Max: %d\n",
++					first_channel_attr_info->unit_expo,
++					log_min, log_max);
++
++		hid_sensor_get_unit_expo_fraction(first_channel_attr_info,
++						&num, &denom);
++
++		/* Check for unit Degrees */
++		if (log_min == 0 && num == 1 && (log_max == 360 * denom)) {
++			first_channel_attr_info->units =
++					HID_USAGE_SENSOR_UNITS_DEGREES;
++			dev_dbg(&pdev->dev, "magn_3d Set units to degrees.");
++		}
++
++	}
+ 	st->scale_precision = hid_sensor_format_scale(
+ 				HID_USAGE_SENSOR_COMPASS_3D,
+-				&st->magn[CHANNEL_SCAN_INDEX_X],
++				first_channel_attr_info,
+ 				&st->scale_pre_decml, &st->scale_post_decml);
+ 
+ 	/* Set Sensitivity field ids, when there is no individual modifier */
+diff --git a/include/linux/hid-sensor-hub.h b/include/linux/hid-sensor-hub.h
+index 0042bf3..627fd68 100644
+--- a/include/linux/hid-sensor-hub.h
++++ b/include/linux/hid-sensor-hub.h
+@@ -267,6 +267,10 @@ int hid_sensor_format_scale(u32 usage_id,
+ 			    struct hid_sensor_hub_attribute_info *attr_info,
+ 			    int *val0, int *val1);
+ 
++void hid_sensor_get_unit_expo_fraction(
++			struct hid_sensor_hub_attribute_info *attr_info,
++			int *num, int *denom);
++
+ s32 hid_sensor_read_poll_value(struct hid_sensor_common *st);
+ 
+ #endif
+-- 
+2.4.3
 
-> Changes the path and timing of this getting applied. Patch itself is fine either way!
->>
->>Signed-off-by: Andrea Galbusera <gizero@gmail.com>
->>---
->>
->>This was already suggested but for some reason got lost during review
->>of a
->>previous patch. See http://marc.info/?l=linux-iio&m=140748835509583&w=2
->>and following discussion
->>
->> drivers/iio/adc/mcp320x.c | 4 ++--
->> 1 file changed, 2 insertions(+), 2 deletions(-)
->>
->>diff --git a/drivers/iio/adc/mcp320x.c b/drivers/iio/adc/mcp320x.c
->>index 8d9c9b9..0673ee7 100644
->>--- a/drivers/iio/adc/mcp320x.c
->>+++ b/drivers/iio/adc/mcp320x.c
->>@@ -114,13 +114,13 @@ static int mcp320x_adc_conversion(struct mcp320x
->>*adc, u8 channel,
->>
->>       switch (device_index) {
->>       case mcp3001:
->>-              return (adc->rx_buf[0] << 5 | adc->rx_buf[1] >> 3);
->>+              return ((adc->rx_buf[0] & 0x1f) << 5 | adc->rx_buf[1] >> 3);
->>       case mcp3002:
->>       case mcp3004:
->>       case mcp3008:
->>               return (adc->rx_buf[0] << 2 | adc->rx_buf[1] >> 6);
->>       case mcp3201:
->>-              return (adc->rx_buf[0] << 7 | adc->rx_buf[1] >> 1);
->>+              return ((adc->rx_buf[0] & 0x1f) << 7 | adc->rx_buf[1] >> 1);
->>       case mcp3202:
->>       case mcp3204:
->>       case mcp3208:
->
-> --
-> Sent from my Android device with K-9 Mail. Please excuse my brevity.
