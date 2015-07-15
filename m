@@ -1,63 +1,67 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:41098 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752683AbbGNVEZ (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 14 Jul 2015 17:04:25 -0400
-In-Reply-To: <1436880983-29017-1-git-send-email-gizero@gmail.com>
-References: <1436880983-29017-1-git-send-email-gizero@gmail.com>
+Received: from mail.kernel.org ([198.145.29.136]:47335 "EHLO mail.kernel.org"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751904AbbGOB5y (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Tue, 14 Jul 2015 21:57:54 -0400
+Date: Wed, 15 Jul 2015 09:57:26 +0800
+From: Shawn Guo <shawnguo@kernel.org>
+To: Sanchayan Maity <maitysanchayan@gmail.com>
+Cc: jic23@kernel.org, mark.rutland@arm.com, devicetree@vger.kernel.org,
+	B38611@freescale.com, pawel.moll@arm.com,
+	ijc+devicetree@hellion.org.uk, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org, stefan@agner.ch, robh+dt@kernel.org,
+	kernel@pengutronix.de, galak@codeaurora.org, shawn.guo@linaro.org,
+	linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH v3 2/2] ARM: dts: vf-colibri: Add property for minimum
+ sample time
+Message-ID: <20150715015725.GK4119@tiger>
+References: <cover.1436880513.git.maitysanchayan@gmail.com>
+ <20e2cfad3fbb1a45332e9936ea493ddc8bfaf51d.1436880513.git.maitysanchayan@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain;
- charset=UTF-8
-Subject: Re: [PATCH 1/4] iio: adc: mcp320x: add masking of unknown bits
-From: Jonathan Cameron <jic23@kernel.org>
-Date: Tue, 14 Jul 2015 22:04:23 +0100
-To: Andrea Galbusera <gizero@gmail.com>
-CC: linux-iio@vger.kernel.org
-Message-ID: <50E24B24-6DC9-4ECB-8752-B974BD6C53E8@kernel.org>
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <20e2cfad3fbb1a45332e9936ea493ddc8bfaf51d.1436880513.git.maitysanchayan@gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-
-
-On 14 July 2015 14:36:20 BST, Andrea Galbusera <gizero@gmail.com> wrote:
->According to the datasheet, the 2 MSBs for parts 3001 and 3201 are
->unspecified and should be masked out
-Theoretical issue or one with observed bad effects?
-
-Changes the path and timing of this getting applied. Patch itself is fine either way!
->
->Signed-off-by: Andrea Galbusera <gizero@gmail.com>
->---
->
->This was already suggested but for some reason got lost during review
->of a
->previous patch. See http://marc.info/?l=linux-iio&m=140748835509583&w=2
->and following discussion
->
-> drivers/iio/adc/mcp320x.c | 4 ++--
-> 1 file changed, 2 insertions(+), 2 deletions(-)
->
->diff --git a/drivers/iio/adc/mcp320x.c b/drivers/iio/adc/mcp320x.c
->index 8d9c9b9..0673ee7 100644
->--- a/drivers/iio/adc/mcp320x.c
->+++ b/drivers/iio/adc/mcp320x.c
->@@ -114,13 +114,13 @@ static int mcp320x_adc_conversion(struct mcp320x
->*adc, u8 channel,
+On Tue, Jul 14, 2015 at 07:23:23PM +0530, Sanchayan Maity wrote:
+> Add a device tree property which allows to specify the minimum sample
+> time which can be used to calculate the actual ADC cycles required
+> depending on the hardware.
 > 
-> 	switch (device_index) {
-> 	case mcp3001:
->-		return (adc->rx_buf[0] << 5 | adc->rx_buf[1] >> 3);
->+		return ((adc->rx_buf[0] & 0x1f) << 5 | adc->rx_buf[1] >> 3);
-> 	case mcp3002:
-> 	case mcp3004:
-> 	case mcp3008:
-> 		return (adc->rx_buf[0] << 2 | adc->rx_buf[1] >> 6);
-> 	case mcp3201:
->-		return (adc->rx_buf[0] << 7 | adc->rx_buf[1] >> 1);
->+		return ((adc->rx_buf[0] & 0x1f) << 7 | adc->rx_buf[1] >> 1);
-> 	case mcp3202:
-> 	case mcp3204:
-> 	case mcp3208:
+> Signed-off-by: Sanchayan Maity <maitysanchayan@gmail.com>
+> ---
+>  arch/arm/boot/dts/vf-colibri.dtsi | 2 ++
+>  1 file changed, 2 insertions(+)
+> 
+> diff --git a/arch/arm/boot/dts/vf-colibri.dtsi b/arch/arm/boot/dts/vf-colibri.dtsi
+> index ab10d2e..59f5deb 100644
+> --- a/arch/arm/boot/dts/vf-colibri.dtsi
+> +++ b/arch/arm/boot/dts/vf-colibri.dtsi
+> @@ -16,10 +16,12 @@
+>  };
+>  
+>  &adc0 {
+> +	min-sample-time = <1000>;
+>  	status = "okay";
+>  };
+>  
+>  &adc1 {
+> +	min-sample-time = <1000>;
 
--- 
-Sent from my Android device with K-9 Mail. Please excuse my brevity.
+Since this is the default value anyway, we can just save the patch,
+right?
+
+Shawn
+
+>  	status = "okay";
+>  };
+>  
+> -- 
+> 2.4.5
+> 
+> 
+> _______________________________________________
+> linux-arm-kernel mailing list
+> linux-arm-kernel@lists.infradead.org
+> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
+> 
