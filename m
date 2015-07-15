@@ -1,66 +1,51 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kmu-office.ch ([178.209.48.109]:56529 "EHLO
-	mail.kmu-office.ch" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751654AbbGONFb (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 15 Jul 2015 09:05:31 -0400
+Received: from skprod2.natinst.com ([130.164.80.23]:34468 "EHLO ni.com"
+	rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+	id S1751987AbbGOP63 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Wed, 15 Jul 2015 11:58:29 -0400
+Message-ID: <55A682F8.3090001@ni.com>
+Date: Wed, 15 Jul 2015 10:57:44 -0500
+From: Xander Huff <xander.huff@ni.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Date: Wed, 15 Jul 2015 15:02:35 +0200
-From: Stefan Agner <stefan@agner.ch>
-To: Shawn Guo <shawnguo@kernel.org>
-Cc: Sanchayan Maity <maitysanchayan@gmail.com>, jic23@kernel.org,
-	mark.rutland@arm.com, devicetree@vger.kernel.org,
-	B38611@freescale.com, pawel.moll@arm.com,
-	ijc+devicetree@hellion.org.uk, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org, robh+dt@kernel.org,
-	kernel@pengutronix.de, galak@codeaurora.org, shawn.guo@linaro.org,
-	linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH v3 2/2] ARM: dts: vf-colibri: Add property for minimum
- sample time
-In-Reply-To: <20150715015725.GK4119@tiger>
-References: <cover.1436880513.git.maitysanchayan@gmail.com>
- <20e2cfad3fbb1a45332e9936ea493ddc8bfaf51d.1436880513.git.maitysanchayan@gmail.com>
- <20150715015725.GK4119@tiger>
-Message-ID: <c84f141e3e222a48b6adf52e686df7e9@agner.ch>
+To: Shubhrajyoti Datta <shubhrajyoti.datta@gmail.com>
+CC: jic23@kernel.org, bigeasy@linutronix.de, lars@metafoo.de,
+	nathan.sullivan@ni.com, linux-rt-users@vger.kernel.org,
+	linux-iio@vger.kernel.org, jaeden.amero@ni.com, joshc@ni.com,
+	michal.simek@xilinx.com, linux-kernel@vger.kernel.org,
+	joe.hershberger@ni.com, linux-arm-kernel@lists.infradead.org,
+	pmeerw@pmeerw.net, knaack.h@gmx.de, soren.brinkmann@xilinx.com
+Subject: Re: [PATCH v2] iio: adc: xilinx-xadc: Push interrupts into threaded
+ context
+References: <5574633F.7090004@kernel.org>	<1436391502-2604-1-git-send-email-xander.huff@ni.com> <CAKfKVtGTO81wLWk50M303t2WjcBEMEt_LUnsJ3_WmvR_3izUjg@mail.gmail.com>
+In-Reply-To: <CAKfKVtGTO81wLWk50M303t2WjcBEMEt_LUnsJ3_WmvR_3izUjg@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 2015-07-15 03:57, Shawn Guo wrote:
-> On Tue, Jul 14, 2015 at 07:23:23PM +0530, Sanchayan Maity wrote:
->> Add a device tree property which allows to specify the minimum sample
->> time which can be used to calculate the actual ADC cycles required
->> depending on the hardware.
->>
->> Signed-off-by: Sanchayan Maity <maitysanchayan@gmail.com>
->> ---
->>  arch/arm/boot/dts/vf-colibri.dtsi | 2 ++
->>  1 file changed, 2 insertions(+)
->>
->> diff --git a/arch/arm/boot/dts/vf-colibri.dtsi b/arch/arm/boot/dts/vf-colibri.dtsi
->> index ab10d2e..59f5deb 100644
->> --- a/arch/arm/boot/dts/vf-colibri.dtsi
->> +++ b/arch/arm/boot/dts/vf-colibri.dtsi
->> @@ -16,10 +16,12 @@
->>  };
->>
->>  &adc0 {
->> +	min-sample-time = <1000>;
->>  	status = "okay";
->>  };
->>
->>  &adc1 {
->> +	min-sample-time = <1000>;
-> 
-> Since this is the default value anyway, we can just save the patch,
-> right?
+On 7/9/2015 12:03 AM, Shubhrajyoti Datta wrote:
+>     @@ -330,8 +310,18 @@ static irqreturn_t xadc_zynq_interrupt_handler(int irq,
+>     void *devid)
+>                      xadc_zynq_update_intmsk(xadc, 0, 0);
+>                      ret = IRQ_WAKE_THREAD;
+>              }
+>     +
+>     +       alarm = xadc->zynq_alarm;
+>     +       xadc->zynq_alarm = 0;
+>     +
+>              spin_unlock(&xadc->lock);
+>
+>     +       xadc_handle_events(indio_dev, xadc_zynq_transform_alarm(alarm));
+>     +
+>     +       /* unmask the required interrupts in timer. */
+>     +       schedule_delayed_work(&xadc->zynq_unmask_work,
+>     +                       msecs_to_jiffies(XADC_ZYNQ_UNMASK_TIMEOUT));
+>     +
+>
+> Now that we are in the threaded context do we need the  work queue stuff.
+Seems reasonable to try to remove it. I'll do some testing and send out a v3 if 
+it works, thanks.
 
-I thought it would be nice to be explicit here and define this value
-which we verified internally.
-
-On the other hand, we did not derived the minimum value from the DS
-(using the capacity/resistance of the actual analog source connected) to
-maximize the sampling frequency, hence I'm also ok with not explicitly
-defining a value.
-
---
-Stefan
+-- 
+Xander Huff
+Staff Software Engineer
+National Instruments
