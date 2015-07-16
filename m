@@ -1,779 +1,219 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:51824 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751637AbbGPTbs (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 16 Jul 2015 15:31:48 -0400
-In-Reply-To: <1436357088-30743-2-git-send-email-daniel.baluta@intel.com>
-References: <1436357088-30743-1-git-send-email-daniel.baluta@intel.com> <1436357088-30743-2-git-send-email-daniel.baluta@intel.com>
+Received: from mx07-00178001.pphosted.com ([62.209.51.94]:35389 "EHLO
+	mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1754169AbbGPJTG (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 16 Jul 2015 05:19:06 -0400
+Received: from pps.filterd (m0046670.ppops.net [127.0.0.1])
+	by mx07-00178001.pphosted.com (8.14.5/8.14.5) with SMTP id t6G9EWkr017979
+	for <linux-iio@vger.kernel.org>; Thu, 16 Jul 2015 11:19:04 +0200
+Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
+	by mx07-00178001.pphosted.com with ESMTP id 1vmbkf079r-1
+	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-SHA bits=256 verify=NOT)
+	for <linux-iio@vger.kernel.org>; Thu, 16 Jul 2015 11:19:04 +0200
+Received: from zeta.dmz-eu.st.com (zeta.dmz-eu.st.com [164.129.230.9])
+	by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id C254C3F
+	for <linux-iio@vger.kernel.org>; Thu, 16 Jul 2015 09:19:01 +0000 (GMT)
+Received: from Webmail-eu.st.com (safex1hubcas1.st.com [10.75.90.14])
+	by zeta.dmz-eu.st.com (STMicroelectronics) with ESMTP id A85C415BC
+	for <linux-iio@vger.kernel.org>; Thu, 16 Jul 2015 09:19:01 +0000 (GMT)
+From: Giuseppe Barba <giuseppe.barba@st.com>
+To: <linux-iio@vger.kernel.org>
+CC: Giuseppe Barba <giuseppe.barba@st.com>
+Subject: [PATCH 5/5] iio: st-magn: add support for lsm303agr magnetometer
+Date: Thu, 16 Jul 2015 11:17:44 +0200
+Message-ID: <1437038264-12936-6-git-send-email-giuseppe.barba@st.com>
+In-Reply-To: <1437038264-12936-1-git-send-email-giuseppe.barba@st.com>
+References: <1437038264-12936-1-git-send-email-giuseppe.barba@st.com>
 MIME-Version: 1.0
-Content-Type: text/plain;
- charset=UTF-8
-Subject: Re: [PATCH] DocBook: Add initial documentation for IIO
-From: Jonathan Cameron <jic23@kernel.org>
-Date: Thu, 16 Jul 2015 20:31:29 +0100
-To: Daniel Baluta <daniel.baluta@intel.com>,
-	Daniel Baluta <daniel.baluta@intel.com>
-CC: pmeerw@pmeerw.net, knaack.h@gmx.de, lars@metafoo.de,
-	linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-	pmeerw@pmeerw.net, knaack.h@gmx.de, lars@metafoo.de,
-	linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org
-Message-ID: <0C20DA6F-E21C-495B-A31B-4EC0DC66EF7A@kernel.org>
+Content-Type: text/plain
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
+This adds support for the lsm303agr magnetometer.
 
+Signed-off-by: Giuseppe Barba <giuseppe.barba@st.com>
+---
+ .../devicetree/bindings/iio/st-sensors.txt         |  1 +
+ drivers/iio/magnetometer/st_magn.h                 |  1 +
+ drivers/iio/magnetometer/st_magn_core.c            | 83 ++++++++++++++++++++++
+ drivers/iio/magnetometer/st_magn_i2c.c             |  5 ++
+ drivers/iio/magnetometer/st_magn_spi.c             |  1 +
+ 5 files changed, 91 insertions(+)
 
-On 8 July 2015 13:04:48 BST, Daniel Baluta <daniel.baluta@intel.com> wrote:
->This is intended to help developers faster find their way
->inside the Industrial I/O core and reduce time spent on IIO
->drivers development.
->
->Signed-off-by: Daniel Baluta <daniel.baluta@intel.com>
->---
-> Documentation/DocBook/Makefile |   2 +-
->Documentation/DocBook/iio.tmpl | 593
->+++++++++++++++++++++++++++++++++++++++++
-> 2 files changed, 594 insertions(+), 1 deletion(-)
-> create mode 100644 Documentation/DocBook/iio.tmpl
->
->diff --git a/Documentation/DocBook/Makefile
->b/Documentation/DocBook/Makefile
->index b6a6a2e..9e08606 100644
->--- a/Documentation/DocBook/Makefile
->+++ b/Documentation/DocBook/Makefile
->@@ -15,7 +15,7 @@ DOCBOOKS := z8530book.xml device-drivers.xml \
-> 	    80211.xml debugobjects.xml sh.xml regulator.xml \
-> 	    alsa-driver-api.xml writing-an-alsa-driver.xml \
-> 	    tracepoint.xml drm.xml media_api.xml w1.xml \
->-	    writing_musb_glue_layer.xml crypto-API.xml
->+	    writing_musb_glue_layer.xml crypto-API.xml iio.xml
-> 
-> include Documentation/DocBook/media/Makefile
-> 
->diff --git a/Documentation/DocBook/iio.tmpl
->b/Documentation/DocBook/iio.tmpl
->new file mode 100644
->index 0000000..417bb26
->--- /dev/null
->+++ b/Documentation/DocBook/iio.tmpl
->@@ -0,0 +1,593 @@
->+<?xml version="1.0" encoding="UTF-8"?>
->+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
->+	"http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd" []>
->+
->+<book id="iioid">
->+  <bookinfo>
->+    <title>Industrial I/O driver developer's guide </title>
->+
->+    <authorgroup>
->+      <author>
->+        <firstname>Daniel</firstname>
->+        <surname>Baluta</surname>
->+        <affiliation>
->+          <address>
->+            <email>daniel.baluta@intel.com</email>
->+          </address>
->+        </affiliation>
->+      </author>
->+    </authorgroup>
->+
->+    <copyright>
->+      <year>2015</year>
->+      <holder>Intel Corporation</holder>
->+    </copyright>
->+
->+    <legalnotice>
->+      <para>
->+        This documentation is free software; you can redistribute
->+        it and/or modify it under the terms of the GNU General Public
->+        License version 2.
->+      </para>
->+
->+      <para>
->+        This program is distributed in the hope that it will be
->+        useful, but WITHOUT ANY WARRANTY; without even the implied
->+        warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
->PURPOSE.
->+        For more details see the file COPYING in the source
->+        distribution of Linux.
->+      </para>
->+    </legalnotice>
->+  </bookinfo>
->+
->+  <toc></toc>
->+
->+  <chapter id="intro">
->+    <title>Introduction</title>
->+    <para>
->+      The main purpose of the Industrial I/O subsystem (IIO) is to
->provide
->+      support for devices that in some sense are analog to digital
->converts
->+      (ADCs). As many actual devices combine some ADCs with digital to
->analog
->+      converters (DACs), that functionality is also supported. 
+diff --git a/Documentation/devicetree/bindings/iio/st-sensors.txt b/Documentation/devicetree/bindings/iio/st-sensors.txt
+index d80bdaa..d3ccdb1 100644
+--- a/Documentation/devicetree/bindings/iio/st-sensors.txt
++++ b/Documentation/devicetree/bindings/iio/st-sensors.txt
+@@ -47,6 +47,7 @@ Gyroscopes:
+ - st,lsm330-gyro
+ 
+ Magnetometers:
++- st,lsm303agr-magn
+ - st,lsm303dlh-magn
+ - st,lsm303dlhc-magn
+ - st,lsm303dlm-magn
+diff --git a/drivers/iio/magnetometer/st_magn.h b/drivers/iio/magnetometer/st_magn.h
+index 60441023..06a4d9c 100644
+--- a/drivers/iio/magnetometer/st_magn.h
++++ b/drivers/iio/magnetometer/st_magn.h
+@@ -18,6 +18,7 @@
+ #define LSM303DLHC_MAGN_DEV_NAME	"lsm303dlhc_magn"
+ #define LSM303DLM_MAGN_DEV_NAME		"lsm303dlm_magn"
+ #define LIS3MDL_MAGN_DEV_NAME		"lis3mdl"
++#define LSM303AGR_MAGN_DEV_NAME		"lsm303agr_magn"
+ 
+ int st_magn_common_probe(struct iio_dev *indio_dev);
+ void st_magn_common_remove(struct iio_dev *indio_dev);
+diff --git a/drivers/iio/magnetometer/st_magn_core.c b/drivers/iio/magnetometer/st_magn_core.c
+index 4948185..8259e02 100644
+--- a/drivers/iio/magnetometer/st_magn_core.c
++++ b/drivers/iio/magnetometer/st_magn_core.c
+@@ -43,6 +43,7 @@
+ #define ST_MAGN_FS_AVL_8000MG			8000
+ #define ST_MAGN_FS_AVL_8100MG			8100
+ #define ST_MAGN_FS_AVL_12000MG			12000
++#define ST_MAGN_FS_AVL_15000MG			15000
+ #define ST_MAGN_FS_AVL_16000MG			16000
+ 
+ /* CUSTOM VALUES FOR SENSOR 0 */
+@@ -157,6 +158,29 @@
+ #define ST_MAGN_2_OUT_Y_L_ADDR			0x2a
+ #define ST_MAGN_2_OUT_Z_L_ADDR			0x2c
+ 
++/* CUSTOM VALUES FOR SENSOR 3 */
++#define ST_MAGN_3_WAI_ADDR			0x4f
++#define ST_MAGN_3_WAI_EXP			0x40
++#define ST_MAGN_3_ODR_ADDR			0x60
++#define ST_MAGN_3_ODR_MASK			0x0c
++#define ST_MAGN_3_ODR_AVL_10HZ_VAL		0x00
++#define ST_MAGN_3_ODR_AVL_20HZ_VAL		0x01
++#define ST_MAGN_3_ODR_AVL_50HZ_VAL		0x02
++#define ST_MAGN_3_ODR_AVL_100HZ_VAL		0x03
++#define ST_MAGN_3_PW_ADDR			0x60
++#define ST_MAGN_3_PW_MASK			0x03
++#define ST_MAGN_3_PW_ON				0x00
++#define ST_MAGN_3_PW_OFF			0x03
++#define ST_MAGN_3_BDU_ADDR			0x62
++#define ST_MAGN_3_BDU_MASK			0x10
++#define ST_MAGN_3_DRDY_IRQ_ADDR			0x62
++#define ST_MAGN_3_DRDY_INT_MASK			0x01
++#define ST_MAGN_3_FS_AVL_15000_GAIN		1500
++#define ST_MAGN_3_MULTIREAD_BIT			false
++#define ST_MAGN_3_OUT_X_L_ADDR			0x68
++#define ST_MAGN_3_OUT_Y_L_ADDR			0x6a
++#define ST_MAGN_3_OUT_Z_L_ADDR			0x6c
++
+ static const struct iio_chan_spec st_magn_16bit_channels[] = {
+ 	ST_SENSORS_LSM_CHANNELS(IIO_MAGN,
+ 			BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_SCALE),
+@@ -189,6 +213,22 @@ static const struct iio_chan_spec st_magn_2_16bit_channels[] = {
+ 	IIO_CHAN_SOFT_TIMESTAMP(3)
+ };
+ 
++static const struct iio_chan_spec st_magn_3_16bit_channels[] = {
++	ST_SENSORS_LSM_CHANNELS(IIO_MAGN,
++			BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_SCALE),
++			ST_SENSORS_SCAN_X, 1, IIO_MOD_X, 's', IIO_LE, 16, 16,
++			ST_MAGN_3_OUT_X_L_ADDR),
++	ST_SENSORS_LSM_CHANNELS(IIO_MAGN,
++			BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_SCALE),
++			ST_SENSORS_SCAN_Y, 1, IIO_MOD_Y, 's', IIO_LE, 16, 16,
++			ST_MAGN_3_OUT_Y_L_ADDR),
++	ST_SENSORS_LSM_CHANNELS(IIO_MAGN,
++			BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_SCALE),
++			ST_SENSORS_SCAN_Z, 1, IIO_MOD_Z, 's', IIO_LE, 16, 16,
++			ST_MAGN_3_OUT_Z_L_ADDR),
++	IIO_CHAN_SOFT_TIMESTAMP(3)
++};
++
+ static const struct st_sensor_settings st_magn_sensors_settings[] = {
+ 	{
+ 		.wai = 0, /* This sensor has no valid WhoAmI report 0 */
+@@ -403,6 +443,49 @@ static const struct st_sensor_settings st_magn_sensors_settings[] = {
+ 		.multi_read_bit = ST_MAGN_2_MULTIREAD_BIT,
+ 		.bootime = 2,
+ 	},
++	{
++		.wai = ST_MAGN_3_WAI_EXP,
++		.wai_addr = ST_MAGN_3_WAI_ADDR,
++		.sensors_supported = {
++			[0] = LSM303AGR_MAGN_DEV_NAME,
++		},
++		.ch = (struct iio_chan_spec *)st_magn_3_16bit_channels,
++		.odr = {
++			.addr = ST_MAGN_3_ODR_ADDR,
++			.mask = ST_MAGN_3_ODR_MASK,
++			.odr_avl = {
++				{ 10, ST_MAGN_3_ODR_AVL_10HZ_VAL, },
++				{ 20, ST_MAGN_3_ODR_AVL_20HZ_VAL, },
++				{ 50, ST_MAGN_3_ODR_AVL_50HZ_VAL, },
++				{ 100, ST_MAGN_3_ODR_AVL_100HZ_VAL, },
++			},
++		},
++		.pw = {
++			.addr = ST_MAGN_3_PW_ADDR,
++			.mask = ST_MAGN_3_PW_MASK,
++			.value_on = ST_MAGN_3_PW_ON,
++			.value_off = ST_MAGN_3_PW_OFF,
++		},
++		.fs = {
++			.fs_avl = {
++				[0] = {
++					.num = ST_MAGN_FS_AVL_15000MG,
++					.gain = ST_MAGN_3_FS_AVL_15000_GAIN,
++				},
++			},
++			.fs_avl_cnt = 1,
++		},
++		.bdu = {
++			.addr = ST_MAGN_3_BDU_ADDR,
++			.mask = ST_MAGN_3_BDU_MASK,
++		},
++		.drdy_irq = {
++			.addr = ST_MAGN_3_DRDY_IRQ_ADDR,
++			.mask_int1 = ST_MAGN_3_DRDY_INT_MASK,
++		},
++		.multi_read_bit = ST_MAGN_3_MULTIREAD_BIT,
++		.bootime = 2,
++	},
+ };
+ 
+ static int st_magn_read_raw(struct iio_dev *indio_dev,
+diff --git a/drivers/iio/magnetometer/st_magn_i2c.c b/drivers/iio/magnetometer/st_magn_i2c.c
+index 5311d8a..afe955b 100644
+--- a/drivers/iio/magnetometer/st_magn_i2c.c
++++ b/drivers/iio/magnetometer/st_magn_i2c.c
+@@ -36,6 +36,10 @@ static const struct of_device_id st_magn_of_match[] = {
+ 		.compatible = "st,lis3mdl-magn",
+ 		.data = LIS3MDL_MAGN_DEV_NAME,
+ 	},
++	{
++		.compatible = "st,lsm303agr-magn",
++		.data = LSM303AGR_MAGN_DEV_NAME,
++	},
+ 	{},
+ };
+ MODULE_DEVICE_TABLE(of, st_magn_of_match);
+@@ -79,6 +83,7 @@ static const struct i2c_device_id st_magn_id_table[] = {
+ 	{ LSM303DLHC_MAGN_DEV_NAME },
+ 	{ LSM303DLM_MAGN_DEV_NAME },
+ 	{ LIS3MDL_MAGN_DEV_NAME },
++	{ LSM303AGR_MAGN_DEV_NAME },
+ 	{},
+ };
+ MODULE_DEVICE_TABLE(i2c, st_magn_id_table);
+diff --git a/drivers/iio/magnetometer/st_magn_spi.c b/drivers/iio/magnetometer/st_magn_spi.c
+index 7adacf1..0abca2c 100644
+--- a/drivers/iio/magnetometer/st_magn_spi.c
++++ b/drivers/iio/magnetometer/st_magn_spi.c
+@@ -51,6 +51,7 @@ static const struct spi_device_id st_magn_id_table[] = {
+ 	{ LSM303DLHC_MAGN_DEV_NAME },
+ 	{ LSM303DLM_MAGN_DEV_NAME },
+ 	{ LIS3MDL_MAGN_DEV_NAME },
++	{ LSM303AGR_MAGN_DEV_NAME },
+ 	{},
+ };
+ MODULE_DEVICE_TABLE(spi, st_magn_id_table);
+-- 
+1.9.1
 
-I wonder if we now want to treat DACs at the same level in the docs as ADCs.  Right
- now our support is simpler but there are patches adding full buffered support to output devices as well (Lars?)
-
-Mind you we can always change the emphasis whenever we like!
-> The aim
->is to
->+      fill the gap between the somewhat similar hwmon and input
->subsystems.
->+      Hwmon is very much directed at low sample rate sensors used in
->+      applications such as fan speed control and temperature
->measurement. Input
->+      is, as its name suggests, focused on human interaction input
->devices
->+      (keyboard, mouse, touchscreen). In some cases there is
->considerable
->+      overlap between these and IIO.
->+  </para>
->+  <para>
->+    Devices that fall into this category are:
-Include (keep it so we don't have to always remember to update this!)
->+
->+    <itemizedlist>
->+      <listitem>
->+        analog to digital converters (ADCs)
->+      </listitem>
->+      <listitem>
->+        accelerometers
->+      </listitem>
->+      <listitem>
->+        capacitance to digital converters (CDCs)
->+      </listitem>
->+      <listitem>
->+        digital to analog converters (DACs)
->+      </listitem>
->+      <listitem>
->+        gyroscopes
->+      </listitem>
->+      <listitem>
->+        inertial measurement units (IMUs)
->+      </listitem>
->+      <listitem>
->+        color and light sensors
->+      </listitem>
->+      <listitem>
->+        magnetometers
->+      </listitem>
->+      <listitem>
->+        pressure sensors
->+      </listitem>
->+      <listitem>
->+        proximity sensors
->+      </listitem>
->+      <listitem>
->+        temperature sensors
->+      </listitem>
->+    </itemizedlist>
->+    Usually these sensors are connected via SPI or I2C.
-Maybe add something about SOC integrated parts as well?
-
-> It is also a
->common
->+    use case to have combo functionality (e.g. light plus proximity
->sensor).
->+  </para>
->+  </chapter>
->+  <chapter id='iiosubsys'>
->+    <title>Industrial I/O core</title>
->+    <para>
->+      The Industrial I/O core offers:
->+      <itemizedlist>
->+        <listitem>
->+         a unified framework for writing drivers for many different
->types of
->+         embedded sensors.
->+        </listitem>
->+        <listitem>
->+         a standard interface to user space applications manipulating
->sensors.
->+        </listitem>
->+      </itemizedlist>
->+      The implementation can be found under <filename>
->+      drivers/iio/industrialio-*</filename>
->+  </para>
->+  <sect1 id="iiodevice">
->+    <title> Industrial I/O devices </title>
->+
->+!Finclude/linux/iio/iio.h iio_dev
->+!Fdrivers/iio/industrialio-core.c iio_device_alloc
->+!Fdrivers/iio/industrialio-core.c iio_device_free
->+!Fdrivers/iio/industrialio-core.c iio_device_register
->+!Fdrivers/iio/industrialio-core.c iio_device_unregister
->+
->+    <para>
->+      An IIO device usually corresponds to a single hardware sensor
->and it
->+      provides all the information needed by a driver handling a
->device.
-
-Could clarify when it doesn't somewhere?  Maybe that is later...
->+      Let's first have a look at the functionality embedded in an IIO
->+      device then we will show how a device driver makes use of an IIO
->+      device.
->+    </para>
->+    <para>
->+        There are two ways for a user space application to interact
->+        with an IIO driver.
->+      <itemizedlist>
->+        <listitem>
->+          <filename>/sys/bus/iio/iio:deviceX/</filename>, this
->+          represents a hardware sensor and groups together the data
->+          channels of the same chip.
->+        </listitem>
->+        <listitem>
->+          <filename>/dev/iio:deviceX</filename>, character device node
->+          interface used for faster data transfer and for events
->information
->+          retrieval.
->+        </listitem>
->+      </itemizedlist>
->+    </para>
->+    A typical IIO driver will register itself as an I2C or SPI driver
->and will
->+    create two routines, <function> probe </function> and <function>
->remove
->+    </function>. At <function>probe</function>:
->+    <itemizedlist>
->+    <listitem>call <function>iio_device_alloc</function>, which
->allocates memory
->+      for an IIO device.
->+    </listitem>
->+    <listitem> initialize IIO device fields with driver specific
->information
->+              (e.g. device name, device channels).
->+    </listitem>
->+    <listitem>call <function> iio_device_register</function>, this
->registers the
->+      device with the IIO core. After this call the device is ready to
->accept
->+      requests from user space applications.
->+    </listitem>
->+    </itemizedlist>
->+      At <function>remove</function>, we free the resources allocated
->in
->+      <function>probe</function> in reverse order:
->+    <itemizedlist>
->+    <listitem><function>iio_device_unregister</function>, unregister
->the device
->+      from the IIO core.
->+    </listitem>
->+    <listitem><function>iio_device_free</function>, free the memory
->allocated
->+      for the IIO device.
->+    </listitem>
->+    </itemizedlist>
->+
->+    <sect2 id="iioattr"> <title> IIO device sysfs interface </title>
->+      <para>
->+        Attributes are sysfs files used to expose chip info and also
->allowing
->+        applications to set various configuration parameters. Common
->+        attributes are:
->+        <itemizedlist>
->+         
-><listitem><filename>/sys/bus/iio/iio:deviceX/name</filename>,
->+          description of the physical chip for device X.
->+          </listitem>
->+          <listitem><filename>/sys/bus/iio/iio:deviceX/dev</filename>,
->+            shows the major:minor pair associated with
->+            /dev/iio:deviceX node.
->+          </listitem>
->+         
-><listitem><filename>/sys/bus/iio:deviceX/sampling_frequency_available
->+          </filename> available discrete set of sampling frequency
->values
->+          for device X.
->+          </listitem>
->+      </itemizedlist>
->+      Available standard attributes for IIO devices are described in
->the
->+      <filename>Documentation/ABI/testing/sysfs-bus-iio </filename>
->file
->+      in the Linux kernel sources.
->+      </para>
->+    </sect2>
->+    <sect2 id="iiochannel"> <title> IIO device channels </title>
->+!Finclude/linux/iio/iio.h iio_chan_spec structure.
->+      <para>
->+        An IIO device channel is a representation of a data channel.
-Maybe define data channel?
-
->An
->+        IIO device can have one or multiple channels. For example:
->+        <itemizedlist>
->+          <listitem>
->+          a thermometer sensor has one channel representing the
->+          temperature measurement.
->+          </listitem>
->+          <listitem>
->+          a light sensor has 
-With instead of has (because its an example)
->two channels indicating the measurements
->in
->+          the visible and infrared spectrum.
->+          </listitem>
->+          <listitem>
->+          an accelerometer can have up two 
-to
-3 channels representing
->+          acceleration on X, Y and Z axes.
->+          </listitem>
->+        </itemizedlist>
->+      An IIO channel is described by the <type> struct iio_chan_spec
->+      </type>. A thermometer driver for the temperature sensor in the
->+      example above would have to describe its channel as follows:
->+      <programlisting>
->+      static const struct iio_chan_spec temp_channel[] = {
->+          {
->+              .type = IIO_TEMP,
->+              .info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED),
->+          },
->+      };
->+      </programlisting>
->+
->+      When there are multiple channels per device we need to set the
-><type>
->+      .modified </type> field of <type>iio_chan_spec</type> to 1. For
->example,
->+      a light sensor can have two channels one, for infrared light and
->one for
->+      both infrared and visible light.
-
-Could also be indexed.  Perhaps something describing that modifiers are
- to indicate a physically unique characteristic of the channel such as its
- direction or spectral response. If the channel is simply another instance then
- indexed is more appropriate.
->+      <programlisting>
->+      static const struct iio_chan_spec light_channels[] = {
->+          {
->+              .type = IIO_INTENSITY,
->+              .modified = 1,
->+              .channel2 = IIO_MOD_LIGHT_IR,
->+              .info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
->+              .info_mask_shared = BIT(IIO_CHAN_INFO_SAMP_FREQ),
->+          },
->+          {
->+              .type = IIO_INTENSITY,
->+              .modified = 1,
->+              .channel2 = IIO_MOD_LIGHT_BOTH,
->+              .info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
->+              .info_mask_shared = BIT(IIO_CHAN_INFO_SAMP_FREQ),
->+          },
->+      }
->+      </programlisting>
->+
->+      This channel's definition will generate two separate sysfs files
->+      for raw data retrieval:
->+      <itemizedlist>
->+      <listitem>
->+     
-><filename>/sys/bus/iio/iio:deviceX/in_intensity_ir_raw</filename>
->+      </listitem>
->+      <listitem>
->+     
-><filename>/sys/bus/iio/iio:deviceX/in_intensity_both_raw</filename>
->+      </listitem>
->+      </itemizedlist>
->+      and one shared sysfs file for sampling frequency:
->+      <itemizedlist>
->+      <listitem>
->+     
-><filename>/sys/bus/iio/iio:deviceX/in_intensity_sampling_frequency.
->+      </filename>
->+      </listitem>
->+      </itemizedlist>
->+      </para>
->+    </sect2>
->+  </sect1
-I would slight expand the example to include a computed illuminance channel.
-
-Another facet that should not over complicate the example.
->+
->+  <sect1 id="iiobuffer"> <title> Industrial I/O buffers </title>
->+!Finclude/linux/iio/buffer.h iio_buffer
->+!Edrivers/iio/industrialio-buffer.c
->+
->+    <para>
->+    The Industrial I/O core offers a way for continuous data capture
->+    based on a trigger source. Multiple data channels can be read at
->once
->+    from <filename>/dev/iio:deviceX</filename> character device node,
->+    thus reducing the CPU load.
->+    </para>
-Why reduced load? Also perhaps mention pseudo scans? (Sort of all at the same time)
->+
->+    <sect2 id="iiobuffersysfs">
->+    <title>IIO buffer sysfs interface </title>
->+    <para>
->+      An IIO buffer has an associated attributes directory under
-><filename>
->+      /sys/bus/iio/iio:deviceX/buffer/</filename>. Here are the
->existing
->+      attributes:
->+      <itemizedlist>
->+      <listitem>
->+      <emphasis>length</emphasis>, number of data samples contained by
->the
->+        buffer.
->+      </listitem>
->+      <listitem>
->+        <emphasis>enable</emphasis>, activate buffer capture.
->+      </listitem>
->+      </itemizedlist>
->+    </para>
->+    <para> In order to be useful, a buffer needs to have an associated
->+      trigger. Future chapters will add details about triggers and how
->+      drivers use triggers to start data capture, moving samples from
->device
->+      registers to buffer storage and then upward to user space
->applications.
->+    </para>
->+    </sect2>
->+    <sect2 id="iiobuffersetup"> <title> IIO buffer setup </title>
->+      <para>The important bits for selecting data channels
->+      configuration are exposed to userspace applications via the
-><filename>
->+      /sys/bus/iio/iio:deviceX/scan_elements/</filename> directory.
->This
->+      file contains attributes of the following form:
->+      <itemizedlist>
->+      <listitem><emphasis>enable</emphasis>, used for enabling a
->channel.
->+        If and only if his attribute is non zero, thena
-Then a 
-> triggered
->capture
->+        will contain data sample for this channel.
->+      </listitem>
->+      <listitem><emphasis>type</emphasis>,  description of the scan
->element
->+        data storage within the buffer and hence the form in which it
->is
->+        read from user space. Format is <emphasis>
->+        [be|le]:[s|u]bits/storagebits[>>shift] </emphasis>.
->+        <itemizedlist>
->+        <listitem> <emphasis>be</emphasis> or <emphasis>le</emphasis>
->specifies
->+          big or little endian.
->+        </listitem>
->+        <listitem>
->+        <emphasis>s </emphasis>or <emphasis>u</emphasis> specifies if
->+        signed (2's complement) or unsigned.
->+        </listitem>
->+        <listitem>bits is the number of bits of data
->+        </listitem>
->+        <listitem>storagebits is the space (after padding) that it
->occupies in the
->+          buffer.
->+        </listitem>
->+        <listitem>
->+        <emphasis>shift</emphasis> if specified, is the shift that
->needs
->+          to be a applied prior to masking out unused bits
->+        </listitem>
->+        </itemizedlist>
->+      </listitem>
->+      </itemizedlist>
->+
->+      For implementing buffer support a driver should initialize the
->following
->+      fields in <type>iio_chan_spec</type> definition:
->+
->+      <programlisting>
->+      struct iio_chan_spec {
->+          /* other members */
->+          int scan_index
->+          struct {
->+              u8 realbits;
->+              u8 storagebits;
->+              u8 shift;
->+              enum iio_endian endianness;
->+          } scan_type;
->+      }
->+      </programlisting>
->+      Here is what a 3-axis, 12 bits accelerometer channels definition
->+      looks like with buffer support:
->+
->+      <programlisting>
->+      struct struct iio_chan_spec accel_channels[] = {
->+          {
->+            .type = IIO_ACCEL,
->+            .modified = 1,
->+            .channel2 = IIO_MOD_X,
->+            /* other stuff here */
->+            .scan_index = 0,
->+            .scan_type = {
->+              .sign = 's',
->+              .realbits = 12,
->+              .storgebits = 16,
->+              .shift = 4,
->+              .endianess = IIO_CPU,
->+            },
->+        }
->+        /* similar for Y and  Z axis */
->+    }
->+    </programlisting>
->+    Here <emphasis> scan_index </emphasis> is used for ordering data
->samples
->+    (scans) when read from buffer.
->+    </para>
->+    </sect2>
->+  </sect1>
->+
->+  <sect1 id="iiotrigger"> <title> Industrial I/O triggers  </title>
->+!Finclude/linux/iio/trigger.h iio_trigger
->+!Edrivers/iio/industrialio-trigger.c
->+    <para>
->+      In many situations it is useful for a driver to be able to
->+      capture data based on some external event (trigger) as opposed
->+      to periodically polling for data. An IIO trigger can be provided
->+      by a device driver that also has an IIO device based on hardware
->+      generated events (e.g. data ready or threshold exceeded) or
->+      provided by a separate driver from an independent interrupt
->+      source (e.g. GPIO line connected to some external system, timer
->+      interrupt or user space reading a specific file in sysfs). A
->+      trigger may initialize data capture for a number of sensors and
->+      also it may be completely unrelated to the sensor itself.
->+    </para>
->+
->+    <sect2 id="iiotrigsysfs"> <title> IIO trigger sysfs interface
-></title>
->+      There are two locations in sysfs related to triggers:
->+      <itemizedlist>
->+        <listitem><filename>/sys/bus/iio/devices/triggerX</filename>,
->+          this file is created once an IIO triggered is registered
->with
->+          the IIO core and corresponds to trigger with index X.
->Because
->+          triggers can be very different depending on type there are
->few
->+          standard attributes that we can describe here:
->+          <itemizedlist>
->+            <listitem>
->+              <emphasis>name</emphasis>, trigger name that can be
->later
->+                used to for association with a device.
->+            </listitem>
->+            <listitem>
->+            <emphasis>sampling_frequency</emphasis>, some timer based
->+              triggers use this attribute to specify the frequency for
->+              trigger calls.
->+            </listitem>
->+          </itemizedlist>
->+        </listitem>
->+        <listitem>
->+         
-><filename>/sys/bus/iio/devices/iio:deviceX/trigger/</filename>, this
->+          directory is created once the device supports a triggered
->+          buffer. We can associate a trigger with our device by
->writing
->+            trigger's name in the<filename>current_trigger</filename>
->file.
->+        </listitem>
->+      </itemizedlist>
->+    </sect2>
->+
->+    <sect2 id="iiotrigattr"> <title> IIO trigger setup</title>
->+
->+    <para>
->+      Let's see a simple example of how to setup a trigger to be used
->+      by a driver.
->+
->+      <programlisting>
->+      struct iio_trigger_ops trigger_ops = {
->+          .set_trigger_state = sample_trigger_state,
->+          .validate_device = sample_validate_device,
->+      }
->+
->+      struct iio_trigger *trig;
->+
->+      /* first, allocate memory for our trigger */
->+      trig = iio_trigger_alloc(dev, "trig-%s-%d", name, idx);
->+
->+      /* setup trigger operations field */
->+      trig->ops = &amp;trigger_ops;
->+
->+      /* now register the trigger with the IIO core */
->+      iio_trigger_register(trig);
->+      </programlisting>
->+    </para>
->+    </sect2>
->+
->+    <sect2 id="iiotrigsetup"> <title> IIO trigger ops</title>
->+!Finclude/linux/iio/trigger.h iio_trigger_ops
->+     <para>
->+        Notice that a trigger has a set of operations attached:
->+        <itemizedlist>
->+        <listitem>
->+          <function>set_trigger_state</function>, switch the trigger
->on/off
->+          on demand.
->+        </listitem>
->+        <listitem>
->+          <function>validate_device</function>, function to validate
->the
->+          device when the current trigger gets changed.
->+        </listitem>
->+        </itemizedlist>
->+      </para>
->+    </sect2>
->+  </sect1>
->+  <sect1 id="iiotriggered_buffer">
->+    <title> Industrial I/O triggered buffers </title>
->+    <para>
->+    Now that we know what buffers and triggers are let's see how they
->+    work together.
->+    </para>
->+    <sect2 id="iiotrigbufsetup"> <title> IIO triggered buffer
->setup</title>
->+!Edrivers/iio/industrialio-triggered-buffer.c
->+!Finclude/linux/iio/iio.h iio_buffer_setup_ops
->+
->+
->+    <para>
->+    A typical triggered buffer setup looks like this:
->+    <programlisting>
->+    const struct iio_buffer_setup_ops sensor_buffer_setup_ops = {
->+      .preenable    = sensor_buffer_preenable,
->+      .postenable   = sensor_buffer_postenable,
->+      .postdisable  = sensor_buffer_postdisable,
->+      .predisable   = sensor_buffer_predisable,
->+    };
->+
->+    irqreturn_t sensor_iio_pollfunc(int irq, void *p)
->+    {
->+        pf->timestamp = iio_get_time_ns();
->+        return IRQ_WAKE_THREAD;
->+    }
->+
->+    irqreturn_t sensor_trigger_handler(int irq, void *p)
->+    {
->+        u16 buf[8];
->+
->+        /* read data for each active channel */
->+        for_each_set_bit(bit, active_scan_mask, masklength)
->+            buf[i++] = sensor_get_data(bit)
->+
->+        iio_push_to_buffers_with_timestamp(indio_dev, buffer,
->timestamp);
->+
->+        iio_trigger_notify_done(trigger);
->+    }
->+
->+    /* setup triggered buffer, usually in probe function */
->+    iio_triggered_buffer_setup(indio_dev, sensor_iio_polfunc,
->+                               sensor_trigger_handler,
->+                               sensor_buffer_setup_ops);
->+    </programlisting>
->+    </para>
->+    The important things to notice here are:
->+    <itemizedlist>
->+    <listitem><function> iio_buffer_setup_ops</function>, buffer setup
->+    functions to be called at predefined points in buffer
->configuration
->+    sequence (e.g. before enable, after disable). If not specified,
->IIO
->+    core uses default <type>iio_triggered_buffer_setup_ops</type>.
->+    </listitem>
->+    <listitem><function>sensor_iio_pollfunc</function>, function that
->+    will be used as top half of poll function. It usually does little
->+    processing (as it runs in interrupt context). Most common
->operation
->+    is recording of the current timestamp and for this reason one can
->+    use the IIO core defined
-><function>iio_pollfunc_store_time</function>
->+    function.
->+    </listitem>
->+    <listitem><function>sensor_trigger_handler</function>, function
->that
->+    will be used as bottom half of poll function. 
-Maybe mention it is a thread? 
-
-Here all the
->+    processing takes place. It usually reads data from the device and
->+    stores it in the internal buffer together with the timestamp
->+    recorded in the top half.
->+    </listitem>
->+    </itemizedlist>
->+    </sect2>
->+  </sect1>
->+  </chapter>
->+  <chapter id='iioresources'>
->+    <title> Resources </title>
->+      IIO core may change during time so the best documentation to
->read is the
->+      source code.
-
-Hehe 
-> There are several locations where you should look:
->+      <itemizedlist>
->+        <listitem>
->+          <filename>drivers/iio/</filename>, contains the IIO core
->plus
->+          and directories for each sensor type (e.g. accel,
->magnetometer,
->+          etc.)
->+        </listitem>
->+        <listitem>
->+          <filename>include/linux/iio/</filename>, contains the header
->+          files, nice to read for the internal kernel interfaces.
->+        </listitem>
->+        <listitem>
->+        <filename>include/uapi/linux/iio/</filename>, contains file to
->be
->+          used by user space applications.
->+        </listitem>
->+        <listitem>
->+         <filename>tools/iio/</filename>, contains tools for rapidly
->+          testing buffers, events and device creation.
->+        </listitem>
->+        <listitem>
->+          <filename>drivers/staging/iio/</filename>, contains code for
->some
->+          drivers or experimental features that are not yet mature
->enough
->+          to be moved out.
->+        </listitem>
->+      </itemizedlist>
->+    <para>
->+    Besides the code, there are some good online documentation
->sources:
->+    <itemizedlist>
->+    <listitem>
->+      <ulink url="http://marc.info/?l=linux-iio"> Industrial I/O
->mailing
->+      list </ulink>
->+    </listitem>
->+    <listitem>
->+      <ulink url="http://wiki.analog.com/software/linux/docs/iio/iio">
->+      Analog Device IIO wiki page </ulink>
->+    </listitem>
->+    <listitem>
->+      <ulink url="https://fosdem.org/2015/schedule/event/iiosdr/">
->+      Using the Linux IIO framework for SDR, Lars-Peter Clausen's
->+      presentation at FOSDEM </ulink>
-Cool. I had missed this one :)
->+    </listitem>
->+    </itemizedlist>
->+    </para>
->+  </chapter>
->+</book>
->+
->+<!--
->+vim: softtabstop=2:shiftwidth=2:expandtab:textwidth=72
->+-->
-
-Sorry for messy review. Ignoring my daughter down the park:)
-
-Anyhow, a great basis to build on. I like the example driven approach.
-Might have missed it but perhaps cross refer to the dummy driver?
-
-J
-
-I-- 
-Sent from my Android device with K-9 Mail. Please excuse my brevity.
