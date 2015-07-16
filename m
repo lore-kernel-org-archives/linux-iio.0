@@ -1,367 +1,160 @@
-Return-Path: <jic23@jic23.retrosnub.co.uk>
-In-Reply-To: <20150716042417.5d0ead50@lwn.net>
-References: <1436357088-30743-1-git-send-email-daniel.baluta@intel.com> <1436357088-30743-2-git-send-email-daniel.baluta@intel.com> <20150716042417.5d0ead50@lwn.net>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-ob0-f170.google.com ([209.85.214.170]:35268 "EHLO
+	mail-ob0-f170.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752015AbbGPNNZ (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 16 Jul 2015 09:13:25 -0400
+Received: by obbop1 with SMTP id op1so46388829obb.2
+        for <linux-iio@vger.kernel.org>; Thu, 16 Jul 2015 06:13:25 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain;
- charset=UTF-8
-Subject: Re: [PATCH] DocBook: Add initial documentation for IIO
-From: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
-Date: Thu, 16 Jul 2015 13:27:03 +0100
-To: Jonathan Corbet <corbet@lwn.net>,Daniel Baluta <daniel.baluta@intel.com>
-CC: jic23@kernel.org,pmeerw@pmeerw.net,knaack.h@gmx.de,lars@metafoo.de,linux-kernel@vger.kernel.org,linux-iio@vger.kernel.org
-Message-ID: <9FA5531F-AF30-4BC6-BD66-3F117F41DA2E@jic23.retrosnub.co.uk>
-List-ID: <linux-iio@vger.kernel.org>
+In-Reply-To: <df6bb9ff98580cdb20ab08b7351a8124@imap.cosmopool.net>
+References: <op.x1bjac2cfh00o9@enterprised.lan>
+	<33438a3f3e237279d0807a4241efa495@imap.cosmopool.net>
+	<CACRpkdaj+bgGMjmJvCQhYtUGw2sZ4QG==tZ98sCrNfYfGe6b2A@mail.gmail.com>
+	<6b362223e8468749e236652b1f602c1b@imap.cosmopool.net>
+	<CACRpkdYPT2pKRjPLVcoYXiGGeoZ+kwTaBJoA03Mn+5gKj0HVzg@mail.gmail.com>
+	<df6bb9ff98580cdb20ab08b7351a8124@imap.cosmopool.net>
+Date: Thu, 16 Jul 2015 15:13:25 +0200
+Message-ID: <CACRpkdYaAxguEsW7m7KWhRJH14N+gzSTPkRdLGMK7WwPLtUw5A@mail.gmail.com>
+Subject: Re: [RFC PATCH] iio: humidity: dht11: Rewrite decode algorithm,
+ improve read reliability
+From: Linus Walleij <linus.walleij@linaro.org>
+To: Harald Geyer <harald@ccbib.org>
+Cc: Jonathan Bell <jonathan@raspberrypi.org>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Sanjeev Sharma <sanjeev_sharma@mentor.com>,
+	Richard Weinberger <richard@nod.at>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Content-Type: text/plain; charset=UTF-8
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
+On Thu, Jul 9, 2015 at 4:06 PM,  <harald@ccbib.org> wrote:
+> On Thu, 9 Jul 2015 12:59:16 +0200, Linus Walleij
 
+>> Pull-up or not doesn't matter I think. That is only there to stabilize
+>> the line if the output is set to something like high impedance.
+>> You must certainly do not want an IRQ because a pull-up/down
+>> is dragging your line past a trigger point, you still know what
+>> is going on.
+>
+> Okay, I can simplify my point actually:
+> If our GPIO pin is configured to use a drive strength of say 4mA and is
+> connected to a device with drive strength >4mA we can always get signal
+> edges during output. - Yes, this is not exactly what is going on with
+> DHT11, but it is the most obvious example I can think of right now.
 
-On 16 July 2015 11:24:17 BST, Jonathan Corbet <corbet@lwn.net> wrote:
->On Wed,  8 Jul 2015 15:04:48 +0300
->Daniel Baluta <daniel.baluta@intel.com> wrote:
->
->> This is intended to help developers faster find their way
->> inside the Industrial I/O core and reduce time spent on IIO
->> drivers development.
->
->Seems like good stuff to have, sorry it's taken me so long to have a
->look
->at it.  Any other IIO folks want to send comments or an ack?
-Will do. Bit of a backlog to catch up with.
- Probably Sunday before I get to this.. Or might review on phone later.
+I think I need to understand exactly what is going on then, because
+I don't understand this. Why can you always get signal edges
+during output?
 
+>> As in my other response, what could possibly make sense is
+>> open drain/collector or open emitter/source.
+>> https://en.wikipedia.org/wiki/Open_collector
+>>
+>> I am open to patches handling IRQ events on GPIO descriptors flagged
+>> as open [drain/collector/emitter/source].
+>>
+>> But then make sure this line is flagged as such in the machine
+>> descriptor / device tree.
 >
->A few comments of mine below...
->
->[...]
->> diff --git a/Documentation/DocBook/iio.tmpl
->b/Documentation/DocBook/iio.tmpl
->> new file mode 100644
->> index 0000000..417bb26
->> --- /dev/null
->> +++ b/Documentation/DocBook/iio.tmpl
->> @@ -0,0 +1,593 @@
->> +<?xml version="1.0" encoding="UTF-8"?>
->> +<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
->> +	"http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd" []>
->> +
->> +<book id="iioid">
->> +  <bookinfo>
->> +    <title>Industrial I/O driver developer's guide </title>
->> +
->> +    <authorgroup>
->> +      <author>
->> +        <firstname>Daniel</firstname>
->> +        <surname>Baluta</surname>
->> +        <affiliation>
->> +          <address>
->> +            <email>daniel.baluta@intel.com</email>
->> +          </address>
->> +        </affiliation>
->> +      </author>
->> +    </authorgroup>
->> +
->> +    <copyright>
->> +      <year>2015</year>
->> +      <holder>Intel Corporation</holder>
->> +    </copyright>
->> +
->> +    <legalnotice>
->> +      <para>
->> +        This documentation is free software; you can redistribute
->> +        it and/or modify it under the terms of the GNU General
->Public
->> +        License version 2.
->> +      </para>
->> +
->> +      <para>
->> +        This program is distributed in the hope that it will be
->> +        useful, but WITHOUT ANY WARRANTY; without even the implied
->> +        warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
->PURPOSE.
->> +        For more details see the file COPYING in the source
->> +        distribution of Linux.
->
->Do we really need this paragraph?  It's not even a "program" by some
->views,
->at least.
->
->> +      </para>
->> +    </legalnotice>
->> +  </bookinfo>
->> +
->> +  <toc></toc>
->> +
->> +  <chapter id="intro">
->> +    <title>Introduction</title>
->> +    <para>
->> +      The main purpose of the Industrial I/O subsystem (IIO) is to
->provide
->> +      support for devices that in some sense are analog to digital
->converts
->
->s/converts/converters/
->
->[...]
->> +    <sect2 id="iioattr"> <title> IIO device sysfs interface </title>
->> +      <para>
->> +        Attributes are sysfs files used to expose chip info and also
->allowing
->> +        applications to set various configuration parameters. Common
->> +        attributes are:
->> +        <itemizedlist>
->> +         
-><listitem><filename>/sys/bus/iio/iio:deviceX/name</filename>,
->> +          description of the physical chip for device X.
->> +          </listitem>
->> +         
-><listitem><filename>/sys/bus/iio/iio:deviceX/dev</filename>,
->> +            shows the major:minor pair associated with
->> +            /dev/iio:deviceX node.
->> +          </listitem>
->> +         
-><listitem><filename>/sys/bus/iio:deviceX/sampling_frequency_available
->> +          </filename> available discrete set of sampling frequency
->values
->> +          for device X.
->> +          </listitem>
->> +      </itemizedlist>
->
->This list might be easier to read by proving the directory name once at
->the
->top, then just putting the attribute names here.
->
->> +      Available standard attributes for IIO devices are described in
->the
->> +      <filename>Documentation/ABI/testing/sysfs-bus-iio </filename>
->file
->> +      in the Linux kernel sources.
->
->Should that move out of testing at some point?
->
->[...]
->
->> +      An IIO channel is described by the <type> struct iio_chan_spec
->> +      </type>. A thermometer driver for the temperature sensor in
->the
->> +      example above would have to describe its channel as follows:
->> +      <programlisting>
->> +      static const struct iio_chan_spec temp_channel[] = {
->> +          {
->> +              .type = IIO_TEMP,
->> +              .info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED),
->> +          },
->> +      };
->> +      </programlisting>
->
->It seems we're skipping over the contents of .info_mask_separate?  IIO
->developers will need to know about that, right?
->
->> +      When there are multiple channels per device we need to set the
-><type>
->> +      .modified </type> field of <type>iio_chan_spec</type> to 1.
->For example,
->> +      a light sensor can have two channels one, for infrared light
->and one for
->> +      both infrared and visible light.
->
->That seems really opaque.  What does ".modified" actually indicate?
->Clearly not the number of channels...
->
->> +      <programlisting>
->> +      static const struct iio_chan_spec light_channels[] = {
->> +          {
->> +              .type = IIO_INTENSITY,
->> +              .modified = 1,
->> +              .channel2 = IIO_MOD_LIGHT_IR,
->
->It seems like the contents of this field would be good to document too.
->
->[...]
->
->> +    <para> In order to be useful, a buffer needs to have an
->associated
->> +      trigger. Future chapters will add details about triggers and
->how
->> +      drivers use triggers to start data capture, moving samples
->from device
->> +      registers to buffer storage and then upward to user space
->applications.
->
->I'm gonna hold you to that! :)
->
->> +    </para>
->> +    </sect2>
->> +    <sect2 id="iiobuffersetup"> <title> IIO buffer setup </title>
->> +      <para>The important bits for selecting data channels
->> +      configuration are exposed to userspace applications via the
-><filename>
->
->s/channels/channel/.  Even better would be "data-channel".
->
->> +      /sys/bus/iio/iio:deviceX/scan_elements/</filename> directory.
->This
->> +      file contains attributes of the following form:
->> +      <itemizedlist>
->> +      <listitem><emphasis>enable</emphasis>, used for enabling a
->channel.
->> +        If and only if his attribute is non zero, thena triggered
->capture
->
->s/his/its/; also fix "thena"
->
->> +        will contain data sample for this channel.
->
->sample*s*
->
->> +      </listitem>
->> +      <listitem><emphasis>type</emphasis>,  description of the scan
->element
->> +        data storage within the buffer and hence the form in which
->it is
->> +        read from user space. Format is <emphasis>
->> +        [be|le]:[s|u]bits/storagebits[>>shift] </emphasis>.
->
->OK, I'm slow, but this is not telling me much.  What's "scan element"?
->
->> +        <itemizedlist>
->> +        <listitem> <emphasis>be</emphasis> or
-><emphasis>le</emphasis> specifies
->> +          big or little endian.
->> +        </listitem>
->> +        <listitem>
->> +        <emphasis>s </emphasis>or <emphasis>u</emphasis> specifies
->if
->> +        signed (2's complement) or unsigned.
->> +        </listitem>
->> +        <listitem>bits is the number of bits of data
->> +        </listitem>
->> +        <listitem>storagebits is the space (after padding) that it
->occupies in the
->> +          buffer.
->> +        </listitem>
->> +        <listitem>
->> +        <emphasis>shift</emphasis> if specified, is the shift that
->needs
->> +          to be a applied prior to masking out unused bits
->> +        </listitem>
->> +        </itemizedlist>
->> +      </listitem>
->> +      </itemizedlist>
->
->An example or two would be helpful here.
->
->> +      For implementing buffer support a driver should initialize the
->following
->> +      fields in <type>iio_chan_spec</type> definition:
->> +
->> +      <programlisting>
->> +      struct iio_chan_spec {
->> +          /* other members */
->> +          int scan_index
->> +          struct {
->> +              u8 realbits;
->> +              u8 storagebits;
->> +              u8 shift;
->> +              enum iio_endian endianness;
->> +          } scan_type;
->> +      }
->> +      </programlisting>
->> +      Here is what a 3-axis, 12 bits accelerometer channels
->definition
->> +      looks like with buffer support:
->
->channel.  (or maybe "channel's").
->
->> +      <programlisting>
->> +      struct struct iio_chan_spec accel_channels[] = {
->> +          {
->> +            .type = IIO_ACCEL,
->> +            .modified = 1,
->> +            .channel2 = IIO_MOD_X,
->> +            /* other stuff here */
->> +            .scan_index = 0,
->> +            .scan_type = {
->> +              .sign = 's',
->
->You didn't mention .sign above.  Why 's'?
->
->[...]
->> +    <listitem><function> iio_buffer_setup_ops</function>, buffer
->setup
->> +    functions to be called at predefined points in buffer
->configuration
->> +    sequence (e.g. before enable, after disable). If not specified,
->IIO
->> +    core uses default <type>iio_triggered_buffer_setup_ops</type>.
->
->*the* IIO core uses *the* default...
->
->> +    </listitem>
->> +    <listitem><function>sensor_iio_pollfunc</function>, function
->that
->
->*the* function...
->
->> +    will be used as top half of poll function. It usually does
->little
->> +    processing (as it runs in interrupt context). Most common
->operation
->
->*The* most common...  [starting a new theme here, it seems]
->
->> +    is recording of the current timestamp and for this reason one
->can
->> +    use the IIO core defined
-><function>iio_pollfunc_store_time</function>
->> +    function.
->> +    </listitem>
->> +    <listitem><function>sensor_trigger_handler</function>, function
->that
->> +    will be used as bottom half of poll function. Here all the
->
->A couple more the's here, please
->
->> +    processing takes place. It usually reads data from the device
->and
->> +    stores it in the internal buffer together with the timestamp
->> +    recorded in the top half.
->> +    </listitem>
->> +    </itemizedlist>
->> +    </sect2>
->> +  </sect1>
->> +  </chapter>
->> +  <chapter id='iioresources'>
->> +    <title> Resources </title>
->> +      IIO core may change during time so the best documentation to
->read is the
->> +      source code. There are several locations where you should
->look:
->
->*The* IIO core.  So you say we're wasting our time with this file? :)
->
->> +      <itemizedlist>
->> +        <listitem>
->> +          <filename>drivers/iio/</filename>, contains the IIO core
->plus
->> +          and directories for each sensor type (e.g. accel,
->magnetometer,
->> +          etc.)
->> +        </listitem>
->> +        <listitem>
->> +          <filename>include/linux/iio/</filename>, contains the
->header
->> +          files, nice to read for the internal kernel interfaces.
->> +        </listitem>
->> +        <listitem>
->> +        <filename>include/uapi/linux/iio/</filename>, contains file
->to be
->
->file*s*
->
->> +          used by user space applications.
->
->Thanks,
->
->jon
+> With the DTH11 the sensor is open collector but not the GPIO.
 
--- 
-Sent from my Android device with K-9 Mail. Please excuse my brevity.
+The GPIO flags are set by the consumer, not the provider.
+
+The gpiolib can very well be made aware that the consumer is
+open collector and allow IRQs on the line, without the provider
+actually providing it.
+
+It is a electronically speaking a violation of good design principles
+and should maybe result in a comment in dmesg but as you
+point out, this hardware design seems to request open collector
+from a provider that doesn't really support it, but has been hacked
+to survive the usecase anyways.
+
+>>> In this case there are two uses for getting interrupts on our own
+> output
+>>> edges:
+>>> 1) We get feedback if we successfully pulled the line up/down.
+>>
+>> Seems more apropriate to check by polling the line, possibly
+>> using a timer.
+>
+> Yes, we could probably work around by polling, but that's an odd argument
+> IMHO. That's a bit like "Don't bother with the FPU, we already know how
+> to do floating point math in software".
+>
+> Of course polling is ugly: Even if we only have to do it once using a
+> timer, it makes it quite a bit more difficult to get the overall timing
+> of the data transmission right.
+
+An argument could be that you don't know if the IRQ will be
+instantiated and unmasked quickly enough under all
+circumstances. Then a crititical poll loop is more stable.
+Are we certain this cannot happen?
+
+>>> 2) If we get interrupts on output edges, timestamps of all signal edges
+>>> can
+>>> be taken via the same codepath and thus be slightly more accurate. This
+>>> probably is not important, but it is a nice thing to support.
+>>
+>> This seems more like a debug aid than something that should be done
+>> in drivers.
+>
+> As said it's nothing terribly important, but I don't see why accurate
+> timestamps wouldn't be nice to everybody trying to decode a signal.
+> The DHT11 driver needs timestamps on all input edges to work. The
+> timestamps on output edges are mostly useful for debugging in this case.
+> It could be more important with the next driver to be written and it
+> is a nice thing to support anyway.
+>
+>> I would think it is possibly something then that the driver
+>> can set up and handle internally using debugfs rather than exporting it
+>> to the gpiolib API.
+>
+> What do you have in mind? I don't get your point.
+
+Instead of putting such interfaces in <linux/gpio/driver.h>,
+put it in a local header in drivers/gpio/debug.h so that the
+drivers that can share this cleverness can still do so, in their
+debugfs hooks for example.
+
+>>> Also, if we get spurious interrupts before receiving the actual data,
+>>> there
+>>> is less likelyhood of cache misses during reading the data, which might
+>>> improve reliability.
+>>
+>> Isn't this usecase analogous to debouncing?
+>
+> Ah, sorry. "spurious interrupts" probably has the wrong spin.
+> What I was trying to say was: If we get interrupts on output edges, then
+> the interrupt handler and data structures will already be in cache when
+> we start receiving the important input edges. Thus making the data
+> transmission more reliable. That's not a usecase of it's own. Just a
+> nice sideeffekt.
+
+This seems race-prony and relies on speediness and timing,
+that makes ever more convinced that polling is a stabler
+approach.
+
+> I hope the above explains what I had in mind when I wrote dht11.c - since
+> Richard changed it mongth ago to comply with your model, I have little
+> urge to convice you. However I do wonder: Did you find any real bugs with
+> this check againt interrupts on output? If yes, then maybe some
+> GPIO_I_KNOW_I_M_DOING_SOMETHING_ODD flag would be the way to go.
+
+My concern is mostly with long term maintenance of the gpio
+subsystem and not adding too many "good to have" features making
+it obscure. Locally in specific drivers I am open to lots and lots of
+mysterious code, also to the point of catching and handling interrupts
+without exporting any irqchip for it, if that is what is needed.
+
+I think overall that if this fix can be contained inside this specific
+GPIO driver and not have us support IRQs on output lines at all,
+I would be happier. These IRQs can be used to stabilize the output,
+but only locally then, not all over the kernel.
+
+Yours,
+Linus Walleij
