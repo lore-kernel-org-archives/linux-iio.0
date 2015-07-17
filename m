@@ -1,60 +1,102 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ns.pmeerw.net ([84.19.176.92]:47843 "EHLO pmeerw.net"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1755154AbbGQJmu (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Fri, 17 Jul 2015 05:42:50 -0400
-Date: Fri, 17 Jul 2015 11:42:47 +0200 (CEST)
-From: Peter Meerwald <pmeerw@pmeerw.net>
-To: Sebastian Reichel <sre@kernel.org>
-cc: Adam YH Lee <adam.yh.lee@gmail.com>, linux-omap@vger.kernel.org,
-	linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH] [TWL4030 MADC] Fix ADC[3:6] readings
-In-Reply-To: <20150717090039.GC9331@earth>
-Message-ID: <alpine.DEB.2.02.1507171136180.14972@pmeerw.net>
-References: <1437085227-28845-1-git-send-email-adam.yh.lee@gmail.com> <1437085227-28845-2-git-send-email-adam.yh.lee@gmail.com> <20150717090039.GC9331@earth>
-MIME-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:58038 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1757252AbbGQMO5 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 17 Jul 2015 08:14:57 -0400
+References: <1436357088-30743-1-git-send-email-daniel.baluta@intel.com>
+            <1436357088-30743-2-git-send-email-daniel.baluta@intel.com>
+            <0C20DA6F-E21C-495B-A31B-4EC0DC66EF7A@kernel.org>
+            <CAEnQRZB0-iVOa0Jzc-1Bo2BK8HU51SG=Mhs6un2DQCF_qFw_dQ@mail.gmail.com>
+In-Reply-To: <CAEnQRZB0-iVOa0Jzc-1Bo2BK8HU51SG=Mhs6un2DQCF_qFw_dQ@mail.gmail.com>
+From: jic23@jic23.retrosnub.co.uk
+To: Daniel Baluta <daniel.baluta@intel.com>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	Jonathan Corbet <corbet@lwn.net>
+Subject: Re: [PATCH] DocBook: Add initial documentation for IIO
+Date: Fri, 17 Jul 2015 13:14:54 +0100
+Mime-Version: 1.0
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Message-Id: <20150717121454.90E9343115@saturn.retrosnub.co.uk>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Hello,
+Daniel Baluta writes: 
 
-adding linux-iio...
+> On Thu, Jul 16, 2015 at 10:31 PM, Jonathan Cameron <jic23@kernel.org> wrote: 
+> 
+> Thanks for your review Jonathan! I will try to address your
+> comments in v2. 
+> 
+> 
+>>>+      The main purpose of the Industrial I/O subsystem (IIO) is to
+>>>provide
+>>>+      support for devices that in some sense are analog to digital
+>>>converts
+>>>+      (ADCs). As many actual devices combine some ADCs with digital to
+>>>analog
+>>>+      converters (DACs), that functionality is also supported.
+>>
+>> I wonder if we now want to treat DACs at the same level in the docs as ADCs.  Right
+>>  now our support is simpler but there are patches adding full buffered support to output devices as well (Lars?)
+> 
+> I have very few experience with DACs IIO drivers :) but I assume that
+> the basic part
+> is the same (e.g. set .output = 1) then triggers are independent of
+> device type :). 
+> 
+> Anyhow, the above line only says that IIO also supports DACs and then
+> all the examples
+> are for ADCs :). Perhaps I can make the examples more clear. 
+> 
+> <snip> 
+> 
+>>
+>>>+    Usually these sensors are connected via SPI or I2C.
+>> Maybe add something about SOC integrated parts as well?
+> 
+> Like sensors hubs?  We can add this later.
+Not so much sensor hubs (though could mention those as well).
+A lot of our ADCs are integrated in various (typically arm) SOCs.
+These then provide services to other users (battery etc) as needed.
+> 
+>>>+    <para>
+>>>+    The Industrial I/O core offers a way for continuous data capture
+>>>+    based on a trigger source. Multiple data channels can be read at
+>>>once
+>>>+    from <filename>/dev/iio:deviceX</filename> character device node,
+>>>+    thus reducing the CPU load.
+>>>+    </para>
+>> Why reduced load? Also perhaps mention pseudo scans? (Sort of all at the same time)
+> 
+> Because, the alternative would be to use "polling" on sysfs data
+> attributes. This means:
+> * 3 userspace read()'s instead of 1.
+> * 3 kernel separate register reads instead 1 bulk read. 
+> 
+> Perhaps I can make this clearer. :)
+Also make the point that the interface is binary and scaling / offsets
+left to userspace.  Just wants some explanation I think!
+> 
+> <snip> 
+> 
+>> Sorry for messy review. Ignoring my daughter down the park:) 
+>>
+>> Anyhow, a great basis to build on. I like the example driven approach.
+>> Might have missed it but perhaps cross refer to the dummy driver?
+> 
+> Thanks again for your time Jonathan! We are really happy with your
+> per weekend review sessions, so you would better stay away from
+> your phone while in the park :D.
+*laughs*.  My daughter's 9.  She doesn't really need pushing on the swings 
+any more. Just keeps coming over to see what I'm doing :) 
 
-> To get a chance of this patch being considered for inclusion, you
-> should send this to the maintainers of the phy and iio framework.
-> There is a high chance, that none of them will see your mail.
+Busy with Ballet shows this weekend and holiday next so got to fit
+the odd bit in mid week at the moment :)
 > 
-> On Thu, Jul 16, 2015 at 03:20:27PM -0700, Adam YH Lee wrote:
-> > MADC[3:6] reads incorrect values without these two following changes:
-> 
-> uhm MADC[3:6] are externally available analog inputs. Your
-> change will result in them being tied to the USB module.
-
-change regarding TWL4030_USB_SEL_MADC_MCPC is necessary at 
-least for some hardware revisions to get proper ADC values
- 
-> > - enable the 3v1 bias regulator for ADC[3:6]
-> 
-> The regulator is not required for correct MADC functionality, but
-> for correct USB measureing. The regulator should not be requested
-> by the madc module, but by the usb module, which is connected to
-> the madc.
-
-in my experience, the MADC exhibits several strange things, I wouldn't be 
-surprised that this bias is somehow necessary for operation even if it is 
-not what the spec says -- has this been tested?
- 
-> > - configure ADC[3:6] lines as input, not as USB
-> 
-> I don't think that should be done for all boards.
-> 
-> > [...]
-> 
-> -- Sebastian
-> 
-
--- 
-
-Peter Meerwald
-+43-664-2444418 (mobile)
+> thanks,
+> Daniel.
