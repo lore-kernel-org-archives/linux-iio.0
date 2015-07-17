@@ -1,48 +1,67 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-ie0-f172.google.com ([209.85.223.172]:33927 "EHLO
-	mail-ie0-f172.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751505AbbGPRFJ (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 16 Jul 2015 13:05:09 -0400
-Received: by iebmu5 with SMTP id mu5so60068593ieb.1
-        for <linux-iio@vger.kernel.org>; Thu, 16 Jul 2015 10:05:09 -0700 (PDT)
+Return-Path: <mranostay@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <55A7771A.9020505@metafoo.de>
-References: <CAMHSBOVNOKP=Q32YTL2_vwcW+FfHYNKyOPM4CaesthfoH5xidg@mail.gmail.com>
- <55A7771A.9020505@metafoo.de>
-From: Gwendal Grignou <gwendal@google.com>
-Date: Thu, 16 Jul 2015 10:04:49 -0700
-Message-ID: <CAMHSBOWSSJP0F6jZh78ZCze9y-kYRRw11o_Ohxx3mTx-JVqYOQ@mail.gmail.com>
-Subject: Re: Question about IIO_DEGREE_TO_RAD macro in include/linux/iio.h
-To: Lars-Peter Clausen <lars@metafoo.de>
-Cc: Gwendal Grignou <gwendal@chromium.org>, linux-iio@vger.kernel.org
+In-Reply-To: <73CF94B0-47DF-493D-8F2A-0BC26EB4DEBB@kernel.org>
+References: <1436754043-6232-1-git-send-email-mranostay@gmail.com>
+	<1436754043-6232-2-git-send-email-mranostay@gmail.com>
+	<73CF94B0-47DF-493D-8F2A-0BC26EB4DEBB@kernel.org>
+Date: Thu, 16 Jul 2015 19:55:52 -0700
+Message-ID: <CAKzfze8w6PDT9oWGCSbSK70K+e3ciijdJv+AwKxwbc=uQ-iHvg@mail.gmail.com>
+Subject: Re: [PATCH v3 1/2] iio: light: DT binding docs for APDS9960 driver
+From: Matt Ranostay <mranostay@gmail.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, =?UTF-8?B?TWFyZWsgVmHFoXV0?= <marex@denx.de>,
+	linux-pm@vger.kernel.org
 Content-Type: text/plain; charset=UTF-8
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+List-ID: <linux-iio@vger.kernel.org>
 
-Got it, THX,
+Ok will fix in v4. Please review the 2/2 patch when you get a chance :)
 
-Gwendal.
-
-On Thu, Jul 16, 2015 at 2:19 AM, Lars-Peter Clausen <lars@metafoo.de> wrote:
-> On 07/16/2015 01:24 AM, Gwendal Grignou wrote:
+On Mon, Jul 13, 2015 at 2:42 AM, Jonathan Cameron <jic23@kernel.org> wrote:
+>
+>
+> On 13 July 2015 03:20:42 BST, Matt Ranostay <mranostay@gmail.com> wrote:
+>>Document compatible string, and required DT properties for APDS9960
+>>chipset driver.
 >>
->> Lars,
+>>Reviewed-by: Marek Vasut <marex@denx.de>
+>>Signed-off-by: Matt Ranostay <mranostay@gmail.com>
+>>---
+>>.../devicetree/bindings/iio/light/apds9960.txt        | 19
+>>+++++++++++++++++++
+>> 1 file changed, 19 insertions(+)
+>>create mode 100644
+>>Documentation/devicetree/bindings/iio/light/apds9960.txt
 >>
->> Looking at the macro IIO_DEGREE_TO_RAD() to translate degree/s into rad/s,
->> I don't understand why we add an offset when doing the conversion:
->>
->> #define IIO_DEGREE_TO_RAD(deg) (((deg) * 314159ULL + 9000000ULL) /
->> 18000000ULL)
->>
->> Shouldn't it just be
->> #define IIO_DEGREE_TO_RAD(deg) (((deg) * 314159ULL) / 18000000ULL)
+>>diff --git a/Documentation/devicetree/bindings/iio/light/apds9960.txt
+>>b/Documentation/devicetree/bindings/iio/light/apds9960.txt
+>>new file mode 100644
+>>index 0000000..7a47d28
+>>--- /dev/null
+>>+++ b/Documentation/devicetree/bindings/iio/light/apds9960.txt
+>>@@ -0,0 +1,19 @@
+>>+* Avago APDS9960 gesture/RGB/ALS/proximity sensor
+>>+
+>>+http://www.avagotech.com/docs/AV02-4191EN
+>>+
+>>+Required properties:
+>>+
+>>+  - compatible: must be "avago,apds9960"
+>>+  - reg: the I2c address of the sensor
+>>+  - interrupt-parent: should be the phandle for the interrupt
+>>controller
+>>+  - interrupts: interrupt mapping for GPIO IRQ
+> Usual trick here is to cross reference the interrupt bindings doc to allow all the
+>  complexity without duplicating docs too much.
+>>+
+>>+Example:
+>>+
+>>+apds9960@39 {
+>>+      compatible = "avago,apds9960";
+>>+      reg = <0x39>;
+>>+      interrupt-parent = <&gpio1>;
+>>+      interrupts = <16 1>;
+>>+};
 >
->
-> Hi,
->
-> The offset is for rounding to the nearest integer. Without the offset it
-> would round down.
->
-> - Lars
->
->
+> --
+> Sent from my Android device with K-9 Mail. Please excuse my brevity.
