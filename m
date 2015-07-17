@@ -6,43 +6,36 @@ Cc: Jonathan Cameron <jic23@kernel.org>,
 	Peter Meerwald <pmeerw@pmeerw.net>,
 	Irina Tirdea <irina.tirdea@intel.com>,
 	Vlad Dogaru <vlad.dogaru@intel.com>
-Subject: [PATCH 6/8] iio:magnetometer:bmc150_magn: protect runtime_resume with mutex
-Date: Fri, 17 Jul 2015 10:52:29 +0200
-Message-Id: <d6c36de684250b41333124b476b0d29bab00b22a.1437090791.git.knaack.h@gmx.de>
+Subject: [PATCH 1/8] iio:magnetometer:bmc150_magn: add regmap dependency
+Date: Fri, 17 Jul 2015 10:52:24 +0200
+Message-Id: <b09e8e6a55526102daf53f85c2b8079c497abad5.1437090791.git.knaack.h@gmx.de>
 In-Reply-To: <cover.1437090791.git.knaack.h@gmx.de>
 References: <cover.1437090791.git.knaack.h@gmx.de>
 In-Reply-To: <cover.1437090791.git.knaack.h@gmx.de>
 References: <cover.1437090791.git.knaack.h@gmx.de>
 List-ID: <linux-iio@vger.kernel.org>
 
-Protect bmc150_magn_runtime_resume() with a mutex, as done with other
-suspend/resume functions.
+bmc150_magn makes use of REGMAP_I2C, so select it to build always without
+errors.
+
+Fixes: c91746a2361d ("iio: magn: Add support for BMC150 magnetometer")
 
 Signed-off-by: Hartmut Knaack <knaack.h@gmx.de>
 ---
- drivers/iio/magnetometer/bmc150_magn.c | 9 +++++++--
- 1 file changed, 7 insertions(+), 2 deletions(-)
+ drivers/iio/magnetometer/Kconfig | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/iio/magnetometer/bmc150_magn.c b/drivers/iio/magnetometer/bmc150_magn.c
-index e1f804b2b244..ac0cdbde813b 100644
---- a/drivers/iio/magnetometer/bmc150_magn.c
-+++ b/drivers/iio/magnetometer/bmc150_magn.c
-@@ -1052,9 +1052,14 @@ static int bmc150_magn_runtime_resume(struct device *dev)
- {
- 	struct iio_dev *indio_dev = i2c_get_clientdata(to_i2c_client(dev));
- 	struct bmc150_magn_data *data = iio_priv(indio_dev);
-+	int ret;
- 
--	return bmc150_magn_set_power_mode(data, BMC150_MAGN_POWER_MODE_NORMAL,
--					  true);
-+	mutex_lock(&data->mutex);
-+	ret = bmc150_magn_set_power_mode(data, BMC150_MAGN_POWER_MODE_NORMAL,
-+					 true);
-+	mutex_unlock(&data->mutex);
-+
-+	return ret;
- }
- #endif
- 
+diff --git a/drivers/iio/magnetometer/Kconfig b/drivers/iio/magnetometer/Kconfig
+index dcadfc4f0661..efb9350b0d76 100644
+--- a/drivers/iio/magnetometer/Kconfig
++++ b/drivers/iio/magnetometer/Kconfig
+@@ -90,6 +90,7 @@ config IIO_ST_MAGN_SPI_3AXIS
+ config BMC150_MAGN
+ 	tristate "Bosch BMC150 Magnetometer Driver"
+ 	depends on I2C
++	select REGMAP_I2C
+ 	select IIO_BUFFER
+ 	select IIO_TRIGGERED_BUFFER
+ 	help
 -- 
 2.4.3
