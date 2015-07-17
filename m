@@ -1,52 +1,22 @@
-Return-Path: <stefan.wahren@i2se.com>
-From: Stefan Wahren <stefan.wahren@i2se.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Marek Vasut <marex@denx.de>,
-	=?UTF-8?q?Kristina=20Mart=C5=A1enko?= <kristina.martsenko@gmail.com>,
-	Fabio Estevam <fabio.estevam@freescale.com>,
-	linux-iio@vger.kernel.org,
-	devel@driverdev.osuosl.org,
-	Stefan Wahren <stefan.wahren@i2se.com>
-Subject: [PATCH 4/6] iio: mxs-lradc: remove unnecessary header includes
-Date: Sat, 18 Jul 2015 12:30:44 +0000
-Message-Id: <1437222646-8742-5-git-send-email-stefan.wahren@i2se.com>
-In-Reply-To: <1437222646-8742-1-git-send-email-stefan.wahren@i2se.com>
-References: <1437222646-8742-1-git-send-email-stefan.wahren@i2se.com>
+Return-Path: <daniel.baluta@gmail.com>
+MIME-Version: 1.0
+Sender: daniel.baluta@gmail.com
+In-Reply-To: <1437122076-29816-2-git-send-email-qingsong.gou@ck-telecom.com>
+References: <1437122076-29816-1-git-send-email-qingsong.gou@ck-telecom.com>
+	<1437122076-29816-2-git-send-email-qingsong.gou@ck-telecom.com>
+Date: Fri, 17 Jul 2015 13:38:03 +0300
+Message-ID: <CAEnQRZA=gYJCS+UJ1f7edGPGSGKw5uc=zFOFshuzupzVfGjR+g@mail.gmail.com>
+Subject: Re: [PATCH 1/2] iio: magnetometer: mmc35240: Add DT binding
+From: Daniel Baluta <daniel.baluta@intel.com>
+To: Jandy Gou <qingsong.gou@ck-telecom.com>
+Cc: Jonathan Cameron <jic23@kernel.org>, Daniel Baluta <daniel.baluta@intel.com>, viorel.suman@intel.com,
+	Hartmut Knaack <knaack.h@gmx.de>, Lars-Peter Clausen <lars@metafoo.de>, Peter Meerwald <pmeerw@pmeerw.net>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, devicetree@vger.kernel.org
+Content-Type: text/plain; charset=UTF-8
 List-ID: <linux-iio@vger.kernel.org>
 
-This patch removes the unnecessary header includes.
+On Fri, Jul 17, 2015 at 11:34 AM, Jandy Gou <qingsong.gou@ck-telecom.com> wrote:
+> Signed-off-by: Jandy Gou <qingsong.gou@ck-telecom.com>
 
-Signed-off-by: Stefan Wahren <stefan.wahren@i2se.com>
----
- drivers/staging/iio/adc/mxs-lradc.c |    5 -----
- 1 file changed, 5 deletions(-)
-
-diff --git a/drivers/staging/iio/adc/mxs-lradc.c b/drivers/staging/iio/adc/mxs-lradc.c
-index 763075b..21b0ccf 100644
---- a/drivers/staging/iio/adc/mxs-lradc.c
-+++ b/drivers/staging/iio/adc/mxs-lradc.c
-@@ -23,18 +23,13 @@
- #include <linux/of.h>
- #include <linux/of_device.h>
- #include <linux/sysfs.h>
--#include <linux/list.h>
- #include <linux/io.h>
- #include <linux/module.h>
- #include <linux/mutex.h>
- #include <linux/platform_device.h>
--#include <linux/spinlock.h>
--#include <linux/wait.h>
--#include <linux/sched.h>
- #include <linux/stmp_device.h>
- #include <linux/bitops.h>
- #include <linux/completion.h>
--#include <linux/delay.h>
- #include <linux/input.h>
- #include <linux/clk.h>
- 
--- 
-1.7.9.5
+Acked-by: Daniel Baluta <daniel.baluta@intel.com>
