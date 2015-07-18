@@ -1,31 +1,51 @@
-Return-Path: <mranostay@gmail.com>
-From: Matt Ranostay <mranostay@gmail.com>
-To: jic23@kernel.org
-Cc: linux-iio@vger.kernel.org,
-	devicetree@vger.kernel.org,
-	marex@denx.de,
-	Matt Ranostay <mranostay@gmail.com>
-Subject: [PATCH 0/2] iio: temperature: add mcp98xx driver support
-Date: Sat, 18 Jul 2015 20:04:11 -0700
-Message-Id: <1437275053-16211-1-git-send-email-mranostay@gmail.com>
+Return-Path: <marex@denx.de>
+From: Marek Vasut <marex@denx.de>
+To: Stefan Wahren <stefan.wahren@i2se.com>
+Subject: Re: [PATCH V2 0/6] iio: mxs-lradc: Clean up and add datasheet names
+Date: Sat, 18 Jul 2015 17:38:21 +0200
+Cc: Jonathan Cameron <jic23@kernel.org>,
+ Hartmut Knaack <knaack.h@gmx.de>,
+ "Lars-Peter Clausen" <lars@metafoo.de>,
+ Peter Meerwald <pmeerw@pmeerw.net>,
+ "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
+ Kristina
+ =?utf-8?q?Mart=C5=A1enko?= <kristina.martsenko@gmail.com>,
+ Fabio Estevam <fabio.estevam@freescale.com>,
+ linux-iio@vger.kernel.org,
+ devel@driverdev.osuosl.org
+References: <1437222646-8742-1-git-send-email-stefan.wahren@i2se.com>
+In-Reply-To: <1437222646-8742-1-git-send-email-stefan.wahren@i2se.com>
+MIME-Version: 1.0
+Content-Type: Text/Plain;
+  charset="us-ascii"
+Message-Id: <201507181738.21236.marex@denx.de>
 List-ID: <linux-iio@vger.kernel.org>
 
-This changeset adds driver support for the Microchip mcp98xx series of
-temperature sensors.
+On Saturday, July 18, 2015 at 02:30:40 PM, Stefan Wahren wrote:
+> This patch series does some clean up in mxs-lradc and finally add the
+> datasheet names for every usable channel.
+> 
+> Changes in V2:
+>   - remove confusing i.MX28 specific comments
+>   - fix some spelling errors
+>   - fix up includes
+>   - separate channel spec for i.MX23 and i.MX28
+> 
+> Stefan Wahren (6):
+>   iio: mxs-lradc: clarify supported devices
+>   iio: mxs-lradc: fix some spelling errors
+>   iio: mxs-lradc: add missing include
+>   iio: mxs-lradc: remove unnecessary header includes
+>   iio: mxs-lradc: reorder header includes
+>   iio: mxs-lradc: add datasheet name for every usable channel
+> 
+>  .../bindings/staging/iio/adc/mxs-lradc.txt         |    2 +-
+>  drivers/staging/iio/adc/mxs-lradc.c                |  122
+> +++++++++++++------- 2 files changed, 82 insertions(+), 42 deletions(-)
 
-This includes temperature reading, and rising/falling threshold events.
+Entire series
 
-Matt Ranostay (2):
-  iio: temperature: DT binding doc for mcp98xx
-  iio: temperature: add support for mcp98xx sensors
+Reviewed-by: Marek Vasut <marex@denx.de>
 
- .../bindings/iio/temperature/mcp98xx.txt           |  22 +
- drivers/iio/temperature/Kconfig                    |  10 +
- drivers/iio/temperature/Makefile                   |   1 +
- drivers/iio/temperature/mcp98xx.c                  | 588 +++++++++++++++++++++
- 4 files changed, 621 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/iio/temperature/mcp98xx.txt
- create mode 100644 drivers/iio/temperature/mcp98xx.c
-
--- 
-1.9.1
+Best regards,
+Marek Vasut
