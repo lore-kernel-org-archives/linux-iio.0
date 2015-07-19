@@ -1,182 +1,69 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:47607 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:47615 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751717AbbGSN51 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 19 Jul 2015 09:57:27 -0400
-Message-ID: <55ABACC5.7050601@kernel.org>
-Date: Sun, 19 Jul 2015 14:57:25 +0100
+	with ESMTP id S1751717AbbGSN6T (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 19 Jul 2015 09:58:19 -0400
+Message-ID: <55ABACFA.9020504@kernel.org>
+Date: Sun, 19 Jul 2015 14:58:18 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
 To: Hartmut Knaack <knaack.h@gmx.de>, linux-iio@vger.kernel.org
 CC: Lars-Peter Clausen <lars@metafoo.de>,
 	Peter Meerwald <pmeerw@pmeerw.net>,
 	Tiberiu Breana <tiberiu.a.breana@intel.com>
-Subject: Re: [PATCH v2 3/5] iio:light:stk3310: add more error handling
-References: <cover.1436398691.git.knaack.h@gmx.de> <0df74702f9f60f359d29dee4201a2ac3a999df94.1436398691.git.knaack.h@gmx.de>
-In-Reply-To: <0df74702f9f60f359d29dee4201a2ac3a999df94.1436398691.git.knaack.h@gmx.de>
+Subject: Re: [PATCH v2 4/5] iio:light:stk3310: use correct names and type
+ for state
+References: <cover.1436398691.git.knaack.h@gmx.de> <692d0850562d1381c92759fb8e91652be40772ab.1436398691.git.knaack.h@gmx.de>
+In-Reply-To: <692d0850562d1381c92759fb8e91652be40772ab.1436398691.git.knaack.h@gmx.de>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
 On 09/07/15 22:51, Hartmut Knaack wrote:
-> Check for the following error cases:
->   * lower boundary for val in _write_event
->   * return value of regmap_(field_)read
->   * possible values for chan->type
->   * return value of stk3310_gpio_probe
-> 
-> Also add an error path in _probe to put the sensor back into stand-by mode
-> in case of serious errors.
+> Indicate the bit number of predefined states, make use of these names and
+> change the state type in _resume to u8 to avoid type casting.
 > 
 > Signed-off-by: Hartmut Knaack <knaack.h@gmx.de>
-looks good.  Will have to hold it until the fixes have worked there way
-through though.
+> Reviewed-by: Tiberiu Breana <tiberiu.a.breana@intel.com>
+Again, needs to wait for the fixes to make their way through the trees.
 > ---
->  drivers/iio/light/stk3310.c | 59 ++++++++++++++++++++++++++++++++++-----------
->  1 file changed, 45 insertions(+), 14 deletions(-)
+>  drivers/iio/light/stk3310.c | 10 +++++-----
+>  1 file changed, 5 insertions(+), 5 deletions(-)
 > 
 > diff --git a/drivers/iio/light/stk3310.c b/drivers/iio/light/stk3310.c
-> index 11a027adc204..d6df40220007 100644
+> index d6df40220007..0056f4870357 100644
 > --- a/drivers/iio/light/stk3310.c
 > +++ b/drivers/iio/light/stk3310.c
-> @@ -241,8 +241,11 @@ static int stk3310_write_event(struct iio_dev *indio_dev,
->  	struct stk3310_data *data = iio_priv(indio_dev);
->  	struct i2c_client *client = data->client;
+> @@ -35,8 +35,8 @@
+>  #define STK3310_REG_ID				0x3E
+>  #define STK3310_MAX_REG				0x80
 >  
-> -	regmap_field_read(data->reg_ps_gain, &index);
-> -	if (val > stk3310_ps_max[index])
-> +	ret = regmap_field_read(data->reg_ps_gain, &index);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	if (val < 0 || val > stk3310_ps_max[index])
->  		return -EINVAL;
+> -#define STK3310_STATE_EN_PS			0x01
+> -#define STK3310_STATE_EN_ALS			0x02
+> +#define STK3310_STATE_EN_PS			BIT(0)
+> +#define STK3310_STATE_EN_ALS			BIT(1)
+>  #define STK3310_STATE_STANDBY			0x00
 >  
->  	if (dir == IIO_EV_DIR_RISING)
-> @@ -266,9 +269,12 @@ static int stk3310_read_event_config(struct iio_dev *indio_dev,
->  				     enum iio_event_direction dir)
+>  #define STK3310_CHIP_ID_VAL			0x13
+> @@ -436,8 +436,8 @@ static int stk3310_set_state(struct stk3310_data *data, u8 state)
+>  		dev_err(&client->dev, "failed to change sensor state\n");
+>  	} else if (state != STK3310_STATE_STANDBY) {
+>  		/* Don't reset the 'enabled' flags if we're going in standby */
+> -		data->ps_enabled  = !!(state & 0x01);
+> -		data->als_enabled = !!(state & 0x02);
+> +		data->ps_enabled  = !!(state & STK3310_STATE_EN_PS);
+> +		data->als_enabled = !!(state & STK3310_STATE_EN_ALS);
+>  	}
+>  	mutex_unlock(&data->lock);
+>  
+> @@ -683,7 +683,7 @@ static int stk3310_suspend(struct device *dev)
+>  
+>  static int stk3310_resume(struct device *dev)
 >  {
->  	unsigned int event_val;
-> +	int ret;
->  	struct stk3310_data *data = iio_priv(indio_dev);
+> -	int state = 0;
+> +	u8 state = 0;
+>  	struct stk3310_data *data;
 >  
-> -	regmap_field_read(data->reg_int_ps, &event_val);
-> +	ret = regmap_field_read(data->reg_int_ps, &event_val);
-> +	if (ret < 0)
-> +		return ret;
->  
->  	return event_val;
->  }
-> @@ -307,14 +313,16 @@ static int stk3310_read_raw(struct iio_dev *indio_dev,
->  	struct stk3310_data *data = iio_priv(indio_dev);
->  	struct i2c_client *client = data->client;
->  
-> +	if (chan->type != IIO_LIGHT && chan->type != IIO_PROXIMITY)
-> +		return -EINVAL;
-> +
->  	switch (mask) {
->  	case IIO_CHAN_INFO_RAW:
->  		if (chan->type == IIO_LIGHT)
->  			reg = STK3310_REG_ALS_DATA_MSB;
-> -		else if (chan->type == IIO_PROXIMITY)
-> -			reg = STK3310_REG_PS_DATA_MSB;
->  		else
-> -			return -EINVAL;
-> +			reg = STK3310_REG_PS_DATA_MSB;
-> +
->  		mutex_lock(&data->lock);
->  		ret = regmap_bulk_read(data->regmap, reg, &buf, 2);
->  		if (ret < 0) {
-> @@ -327,17 +335,23 @@ static int stk3310_read_raw(struct iio_dev *indio_dev,
->  		return IIO_VAL_INT;
->  	case IIO_CHAN_INFO_INT_TIME:
->  		if (chan->type == IIO_LIGHT)
-> -			regmap_field_read(data->reg_als_it, &index);
-> +			ret = regmap_field_read(data->reg_als_it, &index);
->  		else
-> -			regmap_field_read(data->reg_ps_it, &index);
-> +			ret = regmap_field_read(data->reg_ps_it, &index);
-> +		if (ret < 0)
-> +			return ret;
-> +
->  		*val = stk3310_it_table[index][0];
->  		*val2 = stk3310_it_table[index][1];
->  		return IIO_VAL_INT_PLUS_MICRO;
->  	case IIO_CHAN_INFO_SCALE:
->  		if (chan->type == IIO_LIGHT)
-> -			regmap_field_read(data->reg_als_gain, &index);
-> +			ret = regmap_field_read(data->reg_als_gain, &index);
->  		else
-> -			regmap_field_read(data->reg_ps_gain, &index);
-> +			ret = regmap_field_read(data->reg_ps_gain, &index);
-> +		if (ret < 0)
-> +			return ret;
-> +
->  		*val = stk3310_scale_table[index][0];
->  		*val2 = stk3310_scale_table[index][1];
->  		return IIO_VAL_INT_PLUS_MICRO;
-> @@ -354,6 +368,9 @@ static int stk3310_write_raw(struct iio_dev *indio_dev,
->  	int index;
->  	struct stk3310_data *data = iio_priv(indio_dev);
->  
-> +	if (chan->type != IIO_LIGHT && chan->type != IIO_PROXIMITY)
-> +		return -EINVAL;
-> +
->  	switch (mask) {
->  	case IIO_CHAN_INFO_INT_TIME:
->  		index = stk3310_get_index(stk3310_it_table,
-> @@ -435,7 +452,10 @@ static int stk3310_init(struct iio_dev *indio_dev)
->  	struct stk3310_data *data = iio_priv(indio_dev);
->  	struct i2c_client *client = data->client;
->  
-> -	regmap_read(data->regmap, STK3310_REG_ID, &chipid);
-> +	ret = regmap_read(data->regmap, STK3310_REG_ID, &chipid);
-> +	if (ret < 0)
-> +		return ret;
-> +
->  	if (chipid != STK3310_CHIP_ID_VAL &&
->  	    chipid != STK3311_CHIP_ID_VAL) {
->  		dev_err(&client->dev, "invalid chip id: 0x%x\n", chipid);
-> @@ -608,8 +628,13 @@ static int stk3310_probe(struct i2c_client *client,
->  	if (ret < 0)
->  		return ret;
->  
-> -	if (client->irq < 0)
-> +	if (client->irq < 0) {
->  		client->irq = stk3310_gpio_probe(client);
-> +		if (client->irq < 0) {
-> +			ret = client->irq;
-> +			goto err_standby;
-> +		}
-> +	}
->  
->  	if (client->irq >= 0) {
->  		ret = devm_request_threaded_irq(&client->dev, client->irq,
-> @@ -618,17 +643,23 @@ static int stk3310_probe(struct i2c_client *client,
->  						IRQF_TRIGGER_FALLING |
->  						IRQF_ONESHOT,
->  						STK3310_EVENT, indio_dev);
-> -		if (ret < 0)
-> +		if (ret < 0) {
->  			dev_err(&client->dev, "request irq %d failed\n",
->  					client->irq);
-> +			goto err_standby;
-> +		}
->  	}
->  
->  	ret = iio_device_register(indio_dev);
->  	if (ret < 0) {
->  		dev_err(&client->dev, "device_register failed\n");
-> -		stk3310_set_state(data, STK3310_STATE_STANDBY);
-> +		goto err_standby;
->  	}
->  
-> +	return 0;
-> +
-> +err_standby:
-> +	stk3310_set_state(data, STK3310_STATE_STANDBY);
->  	return ret;
->  }
->  
+>  	data = iio_priv(i2c_get_clientdata(to_i2c_client(dev)));
 > 
 
