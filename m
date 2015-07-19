@@ -1,110 +1,43 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:46602 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:46986 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752145AbbGSLdl (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 19 Jul 2015 07:33:41 -0400
-Message-ID: <55AB8B13.7090907@kernel.org>
-Date: Sun, 19 Jul 2015 12:33:39 +0100
+	with ESMTP id S1752417AbbGSMal (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 19 Jul 2015 08:30:41 -0400
+Message-ID: <55AB986F.5060202@kernel.org>
+Date: Sun, 19 Jul 2015 13:30:39 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Crt Mori <cmo@melexis.com>, linux-iio@vger.kernel.org
-CC: Peter Meerwald <pmeerw@pmeerw.net>,
-	=?UTF-8?B?Vmlhbm5leSBsZSBDbMOpbWVu?=
-	 =?UTF-8?B?dCBkZSBTYWludC1NYXJjcQ==?=
-	<vianney.leclement@essensium.com>
-Subject: Re: [PATCH] iio: mlx90614: Define magic numbers
-References: <CAKv63utwT_KTvTYcOogAWQ4NUcVUsAFvFgWwqa2rZ+5+1bM7Cw@mail.gmail.com>
-In-Reply-To: <CAKv63utwT_KTvTYcOogAWQ4NUcVUsAFvFgWwqa2rZ+5+1bM7Cw@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
+To: Fugang Duan <b38611@freescale.com>
+CC: linux-iio@vger.kernel.org
+Subject: Re: [PATCH 1/1] iio: adc: vf610: fix the adc register read fail issue
+References: <1437029349-5446-1-git-send-email-b38611@freescale.com>
+In-Reply-To: <1437029349-5446-1-git-send-email-b38611@freescale.com>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 05/07/15 19:07, Crt Mori wrote:
-> Translates the magic constant numbers to named macros and add some
-> additional comments about their meaning.
+On 16/07/15 07:49, Fugang Duan wrote:
+> Read the register only when the adc register address is 4 byte aligned.
 > 
-> The diff is made towards togreg branch as that branch seems to have the
-> most recent updates of mlx90614 driver (many are yet to be merged).
-> 
-> Signed-off-by: Crt Mori <cmo@melexis.com>
-> Acked-by: Peter Meerwald <pmeerw@pmeerw.net>
-Crt,
-
-This patch is malformed, probably as a result of your email client.
-It seems to have replaced tabs with spaces meaning I can't apply this
-without doing it line by line.
-
-Could you take a look at Documentation/SubmittingPatches and the advice
-in there on how to lure an email client into not messing things up.
-
-If you can't persuade that to work, I will take the occasional attachment.
-
-Otherwise, the patch looks fine.
-
-Jonathan
+> Signed-off-by: Haibo Chen <haibo.chen@freescale.com>
+> Signed-off-by: Fugang Duan <B38611@freescale.com>
+Applied to the fixes-togreg branch of iio.git and marked for stable.
 > ---
->  drivers/iio/temperature/mlx90614.c | 20 ++++++++++++++------
->  1 file changed, 14 insertions(+), 6 deletions(-)
+>  drivers/iio/adc/vf610_adc.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 > 
-> diff --git a/drivers/iio/temperature/mlx90614.c
-> b/drivers/iio/temperature/mlx90614.c
-> index cb2e8ad..909278a 100644
-> --- a/drivers/iio/temperature/mlx90614.c
-> +++ b/drivers/iio/temperature/mlx90614.c
-> @@ -65,6 +65,13 @@
-> 
->  #define MLX90614_AUTOSLEEP_DELAY 5000 /* default autosleep delay */
-> 
-> +/* Magic constants */
-> +#define MLX90614_CONST_OFFSET_DEC -13657 /* decimal part of the
-> Kelvin offset */
-> +#define MLX90614_CONST_OFFSET_REM 500000 /* remainder of offset (273.15*50) */
-> +#define MLX90614_CONST_SCALE 20 /* Scale in milliKelvin (0.02 * 1000) */
-> +#define MLX90614_CONST_RAW_EMISSIVITY_MAX 65535 /* max value for emissivity */
-> +#define MLX90614_CONST_EMISSIVITY_RESOLUTION 15259 /* 1/65535 ~ 0.000015259 */
-> +
->  struct mlx90614_data {
->         struct i2c_client *client;
->         struct mutex lock; /* for EEPROM access only */
-> @@ -204,11 +211,11 @@ static int mlx90614_read_raw(struct iio_dev *indio_dev,
->                 *val = ret;
->                 return IIO_VAL_INT;
->         case IIO_CHAN_INFO_OFFSET:
-> -               *val = 13657;
-> -               *val2 = 500000;
-> +               *val = MLX90614_CONST_OFFSET_DEC;
-> +               *val2 = MLX90614_CONST_OFFSET_REM;
->                 return IIO_VAL_INT_PLUS_MICRO;
->         case IIO_CHAN_INFO_SCALE:
-> -               *val = 20;
-> +               *val = MLX90614_CONST_SCALE;
->                 return IIO_VAL_INT;
->         case IIO_CHAN_INFO_CALIBEMISSIVITY: /* 1/65535 / LSB */
->                 mlx90614_power_get(data, false);
-> @@ -221,12 +228,12 @@ static int mlx90614_read_raw(struct iio_dev *indio_dev,
->                 if (ret < 0)
->                         return ret;
-> 
-> -               if (ret == 65535) {
-> +               if (ret == MLX90614_CONST_RAW_EMISSIVITY_MAX) {
->                         *val = 1;
->                         *val2 = 0;
->                 } else {
->                         *val = 0;
-> -                       *val2 = ret * 15259; /* 1/65535 ~ 0.000015259 */
-> +                       *val2 = ret * MLX90614_CONST_EMISSIVITY_RESOLUTION;
->                 }
->                 return IIO_VAL_INT_PLUS_NANO;
->         default:
-> @@ -245,7 +252,8 @@ static int mlx90614_write_raw(struct iio_dev *indio_dev,
->         case IIO_CHAN_INFO_CALIBEMISSIVITY: /* 1/65535 / LSB */
->                 if (val < 0 || val2 < 0 || val > 1 || (val == 1 && val2 != 0))
->                         return -EINVAL;
-> -               val = val * 65535 + val2 / 15259; /* 1/65535 ~ 0.000015259 */
-> +               val = val * MLX90614_CONST_RAW_EMISSIVITY_MAX +
-> +                       val2 / MLX90614_CONST_EMISSIVITY_RESOLUTION;
-> 
->                 mlx90614_power_get(data, false);
->                 mutex_lock(&data->lock);
+> diff --git a/drivers/iio/adc/vf610_adc.c b/drivers/iio/adc/vf610_adc.c
+> index 480f335..819632b 100644
+> --- a/drivers/iio/adc/vf610_adc.c
+> +++ b/drivers/iio/adc/vf610_adc.c
+> @@ -635,7 +635,7 @@ static int vf610_adc_reg_access(struct iio_dev *indio_dev,
+>  	struct vf610_adc *info = iio_priv(indio_dev);
+>  
+>  	if ((readval == NULL) ||
+> -		(!(reg % 4) || (reg > VF610_REG_ADC_PCTL)))
+> +		((reg % 4) || (reg > VF610_REG_ADC_PCTL)))
+>  		return -EINVAL;
+>  
+>  	*readval = readl(info->regs + reg);
 > 
 
