@@ -1,58 +1,150 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:48240 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753192AbbGSPfp (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 19 Jul 2015 11:35:45 -0400
-Message-ID: <55ABC3CF.8050603@kernel.org>
-Date: Sun, 19 Jul 2015 16:35:43 +0100
-From: Jonathan Cameron <jic23@kernel.org>
+Received: from mail-ig0-f172.google.com ([209.85.213.172]:37800 "EHLO
+	mail-ig0-f172.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755244AbbGSSED (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 19 Jul 2015 14:04:03 -0400
 MIME-Version: 1.0
-To: Guenter Roeck <linux@roeck-us.net>
-CC: Matt Ranostay <mranostay@gmail.com>, linux-iio@vger.kernel.org,
-	devicetree@vger.kernel.org, marex@denx.de,
-	Jean Delvare <jdelvare@suse.de>
-Subject: Re: [PATCH 0/2] iio: temperature: add mcp98xx driver support
-References: <1437275053-16211-1-git-send-email-mranostay@gmail.com> <55AB6CE5.8050505@kernel.org> <20150719152429.GA3729@roeck-us.net>
-In-Reply-To: <20150719152429.GA3729@roeck-us.net>
-Content-Type: text/plain; charset=windows-1252
+In-Reply-To: <55AB9EC7.6030909@kernel.org>
+References: <1436946198-10395-1-git-send-email-reyad.attiyat@gmail.com> <55AB9EC7.6030909@kernel.org>
+From: Reyad Attiyat <reyad.attiyat@gmail.com>
+Date: Sun, 19 Jul 2015 13:03:42 -0500
+Message-ID: <CA+BWVUSEipP3xxOp0dpV6k1YUzSOcjbZmsS8T=daMxoonwoSAA@mail.gmail.com>
+Subject: Re: [PATCH] hid_sensor_magn_3d: Fix scale for rotation from north channels
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+	linux-iio <linux-iio@vger.kernel.org>,
+	linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 19/07/15 16:24, Guenter Roeck wrote:
-> On Sun, Jul 19, 2015 at 10:24:53AM +0100, Jonathan Cameron wrote:
->> On 19/07/15 04:04, Matt Ranostay wrote:
->>> This changeset adds driver support for the Microchip mcp98xx series of
->>> temperature sensors.
->>>
-> 
-> MCP98xx is pretty a pretty far reaching claim. This could also be MCP9804
-> or MCP9843, which are JC42 compatible sensor chips and supported by the jc42
-> driver. Does the new driver claim to support those as well ?
-Indeed.  Generic driver names are almost always a bad idea!
-> 
-> Guenter
-> 
->>> This includes temperature reading, and rising/falling threshold events.
->> Why an IIO driver?  These parts already look to be supported in hwmon by
->> the lm75 driver.  We need a pretty strong reason to contemplate having
->> support in both subsystems...
->>>
->>> Matt Ranostay (2):
->>>   iio: temperature: DT binding doc for mcp98xx
->>>   iio: temperature: add support for mcp98xx sensors
->>>
->>>  .../bindings/iio/temperature/mcp98xx.txt           |  22 +
->>>  drivers/iio/temperature/Kconfig                    |  10 +
->>>  drivers/iio/temperature/Makefile                   |   1 +
->>>  drivers/iio/temperature/mcp98xx.c                  | 588 +++++++++++++++++++++
->>>  4 files changed, 621 insertions(+)
->>>  create mode 100644 Documentation/devicetree/bindings/iio/temperature/mcp98xx.txt
->>>  create mode 100644 drivers/iio/temperature/mcp98xx.c
->>>
->>
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> 
+Thanks for the review. I don't believe many devices have this problem
+no need to rush it.
 
+On Sun, Jul 19, 2015 at 7:57 AM, Jonathan Cameron <jic23@kernel.org> wrote:
+> On 15/07/15 08:43, Reyad Attiyat wrote:
+>> Some devices on a hid sensor hub will not report a measurement unit. This
+>> causes the rotation from north channels to have an incorrect scale value.
+>> This patch will set the unit to degrees if the maximum value is 360 when
+>> the unit exponent value is accounted for.
+>>
+>> Signed-off-by: Reyad Attiyat <reyad.attiyat@gmail.com>
+> Hmm. Ah well, another quirk to work around I guess.
+>
+> Looks fine to me.  Would like an Ack from Srinivas though.
+> Also this is a bit large and invasive to send on as a fix (as it's not
+> a regression) so will need to wait for the next merge window.
+> Can mark it as stable material though so it will filter back through
+> in the long run.
+>
+> If there are lots of devices being broken by this, let me know and maybe
+> we will try and see if Greg is happy to pass it on to Linus.
+>
+> Jonathan
+>
+>> ---
+>>  .../iio/common/hid-sensors/hid-sensor-attributes.c | 19 ++++++++++++++++
+>>  drivers/iio/magnetometer/hid-sensor-magn-3d.c      | 26 +++++++++++++++++++++-
+>>  include/linux/hid-sensor-hub.h                     |  4 ++++
+>>  3 files changed, 48 insertions(+), 1 deletion(-)
+>>
+>> diff --git a/drivers/iio/common/hid-sensors/hid-sensor-attributes.c b/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
+>> index e81f434..3c79847 100644
+>> --- a/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
+>> +++ b/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
+>> @@ -46,6 +46,7 @@ static struct {
+>>
+>>       {HID_USAGE_SENSOR_COMPASS_3D, 0, 0, 1000},
+>>       {HID_USAGE_SENSOR_COMPASS_3D, HID_USAGE_SENSOR_UNITS_GAUSS, 1, 0},
+>> +     {HID_USAGE_SENSOR_COMPASS_3D, HID_USAGE_SENSOR_UNITS_DEGREES, 1, 0},
+>>
+>>       {HID_USAGE_SENSOR_INCLINOMETER_3D, 0, 0, 17453},
+>>       {HID_USAGE_SENSOR_INCLINOMETER_3D,
+>> @@ -317,6 +318,24 @@ static void adjust_exponent_micro(int *val0, int *val1, int scale0,
+>>       }
+>>  }
+>>
+>> +void hid_sensor_get_unit_expo_fraction(
+>> +             struct hid_sensor_hub_attribute_info *attr_info,
+>> +             int *num, int *denom)
+>> +{
+>> +     s32 exp = hid_sensor_convert_exponent(attr_info->unit_expo);
+>> +
+>> +     if (exp == 0) {
+>> +             *num = *denom = 1;
+>> +     } else if (exp < 0) {
+>> +             *num = 1;
+>> +             *denom = pow_10(abs(exp));
+>> +     } else if (exp > 0) {
+>> +             *num = pow_10(exp);
+>> +             *denom = 1;
+>> +     }
+>> +}
+>> +EXPORT_SYMBOL(hid_sensor_get_unit_expo_fraction);
+>> +
+>>  int hid_sensor_format_scale(u32 usage_id,
+>>                       struct hid_sensor_hub_attribute_info *attr_info,
+>>                       int *val0, int *val1)
+>> diff --git a/drivers/iio/magnetometer/hid-sensor-magn-3d.c b/drivers/iio/magnetometer/hid-sensor-magn-3d.c
+>> index d8a0c8d..173d2f5 100644
+>> --- a/drivers/iio/magnetometer/hid-sensor-magn-3d.c
+>> +++ b/drivers/iio/magnetometer/hid-sensor-magn-3d.c
+>> @@ -311,6 +311,7 @@ static int magn_3d_parse_report(struct platform_device *pdev,
+>>       int i;
+>>       int attr_count = 0;
+>>       struct iio_chan_spec *_channels;
+>> +     struct hid_sensor_hub_attribute_info *first_channel_attr_info;
+>>
+>>       /* Scan for each usage attribute supported */
+>>       for (i = 0; i < MAGN_3D_CHANNEL_MAX; i++) {
+>> @@ -389,9 +390,32 @@ static int magn_3d_parse_report(struct platform_device *pdev,
+>>       dev_dbg(&pdev->dev, "magn_3d Setup %d IIO channels\n",
+>>                       *chan_count);
+>>
+>> +     first_channel_attr_info = &(st->magn[_channels[0].address]);
+>> +
+>> +     /* Try and set unit based off exponent, logical min and max */
+>> +     if (!first_channel_attr_info->units) {
+>> +             int num, denom;
+>> +             s32 log_min = first_channel_attr_info->logical_minimum;
+>> +             s32 log_max = first_channel_attr_info->logical_maximum;
+>> +
+>> +             dev_dbg(&pdev->dev, "magn_3d Units not set. Unit Expo %d Logical Min: %d Max: %d\n",
+>> +                                     first_channel_attr_info->unit_expo,
+>> +                                     log_min, log_max);
+>> +
+>> +             hid_sensor_get_unit_expo_fraction(first_channel_attr_info,
+>> +                                             &num, &denom);
+>> +
+>> +             /* Check for unit Degrees */
+>> +             if (log_min == 0 && num == 1 && (log_max == 360 * denom)) {
+>> +                     first_channel_attr_info->units =
+>> +                                     HID_USAGE_SENSOR_UNITS_DEGREES;
+>> +                     dev_dbg(&pdev->dev, "magn_3d Set units to degrees.");
+>> +             }
+>> +
+>> +     }
+>>       st->scale_precision = hid_sensor_format_scale(
+>>                               HID_USAGE_SENSOR_COMPASS_3D,
+>> -                             &st->magn[CHANNEL_SCAN_INDEX_X],
+>> +                             first_channel_attr_info,
+>>                               &st->scale_pre_decml, &st->scale_post_decml);
+>>
+>>       /* Set Sensitivity field ids, when there is no individual modifier */
+>> diff --git a/include/linux/hid-sensor-hub.h b/include/linux/hid-sensor-hub.h
+>> index 0042bf3..627fd68 100644
+>> --- a/include/linux/hid-sensor-hub.h
+>> +++ b/include/linux/hid-sensor-hub.h
+>> @@ -267,6 +267,10 @@ int hid_sensor_format_scale(u32 usage_id,
+>>                           struct hid_sensor_hub_attribute_info *attr_info,
+>>                           int *val0, int *val1);
+>>
+>> +void hid_sensor_get_unit_expo_fraction(
+>> +                     struct hid_sensor_hub_attribute_info *attr_info,
+>> +                     int *num, int *denom);
+>> +
+>>  s32 hid_sensor_read_poll_value(struct hid_sensor_common *st);
+>>
+>>  #endif
+>>
+>
