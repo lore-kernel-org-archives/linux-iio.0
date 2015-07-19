@@ -1,227 +1,146 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:47111 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:47161 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752955AbbGSMs1 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 19 Jul 2015 08:48:27 -0400
-Message-ID: <55AB9C97.8080103@kernel.org>
-Date: Sun, 19 Jul 2015 13:48:23 +0100
+	with ESMTP id S1753174AbbGSM5q (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 19 Jul 2015 08:57:46 -0400
+Message-ID: <55AB9EC7.6030909@kernel.org>
+Date: Sun, 19 Jul 2015 13:57:43 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Sanchayan Maity <maitysanchayan@gmail.com>
-CC: shawn.guo@linaro.org, kernel@pengutronix.de, robh+dt@kernel.org,
-	pawel.moll@arm.com, mark.rutland@arm.com,
-	ijc+devicetree@hellion.org.uk, galak@codeaurora.org,
-	B38611@freescale.com, devicetree@vger.kernel.org,
-	linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-	linux-kernel@vger.kernel.org, stefan@agner.ch
-Subject: Re: [PATCH v3 1/2] iio: adc: vf610: Determine sampling frequencies
- by using minimum sample time
-References: <cover.1436880513.git.maitysanchayan@gmail.com> <baf52bf42eff6c986fa2ba5e030a295489068d00.1436880513.git.maitysanchayan@gmail.com>
-In-Reply-To: <baf52bf42eff6c986fa2ba5e030a295489068d00.1436880513.git.maitysanchayan@gmail.com>
+To: Reyad Attiyat <reyad.attiyat@gmail.com>,
+	srinivas.pandruvada@linux.intel.com
+CC: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] hid_sensor_magn_3d: Fix scale for rotation from north
+ channels
+References: <1436946198-10395-1-git-send-email-reyad.attiyat@gmail.com>
+In-Reply-To: <1436946198-10395-1-git-send-email-reyad.attiyat@gmail.com>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 14/07/15 14:53, Sanchayan Maity wrote:
-> The driver currently does not take into account the minimum sample time
-> as per the Figure 6-8 Chapter 9.1.1 12-bit ADC electrical characteristics.
-> We set a static amount of cycles instead of considering the sample time
-> as a given value, which depends on hardware characteristics.
+On 15/07/15 08:43, Reyad Attiyat wrote:
+> Some devices on a hid sensor hub will not report a measurement unit. This
+> causes the rotation from north channels to have an incorrect scale value.
+> This patch will set the unit to degrees if the maximum value is 360 when
+> the unit exponent value is accounted for.
 > 
-> Determine sampling frequencies by first reading the device tree property
-> node and then calculating the required Long Sample Time Adder (LSTAdder)
-> value, based on the ADC clock frequency and sample time value obtained
-> from the device tree. This LSTAdder value is then used for calculating
-> the sampling frequencies possible.
-> 
-> In case the sample time property is not specified through the device
-> tree, a safe default value of 1000ns is assumed.
-> 
-> Signed-off-by: Sanchayan Maity <maitysanchayan@gmail.com>
-Applied with the Acks from Stefan and Fugang as the patch has changed very little
-from the previous version.
+> Signed-off-by: Reyad Attiyat <reyad.attiyat@gmail.com>
+Hmm. Ah well, another quirk to work around I guess.
 
-Applied to the togreg branch of iio.git - initially pushed out as testing for
-the autobuilders to play with it.
+Looks fine to me.  Would like an Ack from Srinivas though.
+Also this is a bit large and invasive to send on as a fix (as it's not
+a regression) so will need to wait for the next merge window.
+Can mark it as stable material though so it will filter back through
+in the long run.
 
-Thanks,
+If there are lots of devices being broken by this, let me know and maybe
+we will try and see if Greg is happy to pass it on to Linus.
 
 Jonathan
+
 > ---
->  .../devicetree/bindings/iio/adc/vf610-adc.txt      |  5 ++
->  drivers/iio/adc/vf610_adc.c                        | 79 ++++++++++++++++++++--
->  2 files changed, 80 insertions(+), 4 deletions(-)
+>  .../iio/common/hid-sensors/hid-sensor-attributes.c | 19 ++++++++++++++++
+>  drivers/iio/magnetometer/hid-sensor-magn-3d.c      | 26 +++++++++++++++++++++-
+>  include/linux/hid-sensor-hub.h                     |  4 ++++
+>  3 files changed, 48 insertions(+), 1 deletion(-)
 > 
-> diff --git a/Documentation/devicetree/bindings/iio/adc/vf610-adc.txt b/Documentation/devicetree/bindings/iio/adc/vf610-adc.txt
-> index 3eb40e2..1aad051 100644
-> --- a/Documentation/devicetree/bindings/iio/adc/vf610-adc.txt
-> +++ b/Documentation/devicetree/bindings/iio/adc/vf610-adc.txt
-> @@ -17,6 +17,11 @@ Recommended properties:
->    - Frequency in normal mode (ADLPC=0, ADHSC=0)
->    - Frequency in high-speed mode (ADLPC=0, ADHSC=1)
->    - Frequency in low-power mode (ADLPC=1, ADHSC=0)
-> +- min-sample-time: Minimum sampling time in nanoseconds. This value has
-> +  to be chosen according to the conversion mode and the connected analog
-> +  source resistance (R_as) and capacitance (C_as). Refer the datasheet's
-> +  operating requirements. A safe default across a wide range of R_as and
-> +  C_as as well as conversion modes is 1000ns.
+> diff --git a/drivers/iio/common/hid-sensors/hid-sensor-attributes.c b/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
+> index e81f434..3c79847 100644
+> --- a/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
+> +++ b/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
+> @@ -46,6 +46,7 @@ static struct {
 >  
->  Example:
->  adc0: adc@4003b000 {
-> diff --git a/drivers/iio/adc/vf610_adc.c b/drivers/iio/adc/vf610_adc.c
-> index 480f335..23b8fb9 100644
-> --- a/drivers/iio/adc/vf610_adc.c
-> +++ b/drivers/iio/adc/vf610_adc.c
-> @@ -68,6 +68,9 @@
->  #define VF610_ADC_CLK_DIV8		0x60
->  #define VF610_ADC_CLK_MASK		0x60
->  #define VF610_ADC_ADLSMP_LONG		0x10
-> +#define VF610_ADC_ADSTS_SHORT   0x100
-> +#define VF610_ADC_ADSTS_NORMAL  0x200
-> +#define VF610_ADC_ADSTS_LONG    0x300
->  #define VF610_ADC_ADSTS_MASK		0x300
->  #define VF610_ADC_ADLPC_EN		0x80
->  #define VF610_ADC_ADHSC_EN		0x400
-> @@ -98,6 +101,8 @@
->  #define VF610_ADC_CALF			0x2
->  #define VF610_ADC_TIMEOUT		msecs_to_jiffies(100)
+>  	{HID_USAGE_SENSOR_COMPASS_3D, 0, 0, 1000},
+>  	{HID_USAGE_SENSOR_COMPASS_3D, HID_USAGE_SENSOR_UNITS_GAUSS, 1, 0},
+> +	{HID_USAGE_SENSOR_COMPASS_3D, HID_USAGE_SENSOR_UNITS_DEGREES, 1, 0},
 >  
-> +#define DEFAULT_SAMPLE_TIME		1000
-> +
->  enum clk_sel {
->  	VF610_ADCIOC_BUSCLK_SET,
->  	VF610_ADCIOC_ALTCLK_SET,
-> @@ -124,6 +129,17 @@ enum conversion_mode_sel {
->  	VF610_ADC_CONV_LOW_POWER,
->  };
->  
-> +enum lst_adder_sel {
-> +	VF610_ADCK_CYCLES_3,
-> +	VF610_ADCK_CYCLES_5,
-> +	VF610_ADCK_CYCLES_7,
-> +	VF610_ADCK_CYCLES_9,
-> +	VF610_ADCK_CYCLES_13,
-> +	VF610_ADCK_CYCLES_17,
-> +	VF610_ADCK_CYCLES_21,
-> +	VF610_ADCK_CYCLES_25,
-> +};
-> +
->  struct vf610_adc_feature {
->  	enum clk_sel	clk_sel;
->  	enum vol_ref	vol_ref;
-> @@ -132,6 +148,8 @@ struct vf610_adc_feature {
->  	int	clk_div;
->  	int     sample_rate;
->  	int	res_mode;
-> +	u32 lst_adder_index;
-> +	u32 default_sample_time;
->  
->  	bool	calibration;
->  	bool	ovwren;
-> @@ -155,11 +173,13 @@ struct vf610_adc {
->  };
->  
->  static const u32 vf610_hw_avgs[] = { 1, 4, 8, 16, 32 };
-> +static const u32 vf610_lst_adder[] = { 3, 5, 7, 9, 13, 17, 21, 25 };
->  
->  static inline void vf610_adc_calculate_rates(struct vf610_adc *info)
->  {
->  	struct vf610_adc_feature *adc_feature = &info->adc_feature;
->  	unsigned long adck_rate, ipg_rate = clk_get_rate(info->clk);
-> +	u32 adck_period, lst_addr_min;
->  	int divisor, i;
->  
->  	adck_rate = info->max_adck_rate[adc_feature->conv_mode];
-> @@ -174,6 +194,19 @@ static inline void vf610_adc_calculate_rates(struct vf610_adc *info)
+>  	{HID_USAGE_SENSOR_INCLINOMETER_3D, 0, 0, 17453},
+>  	{HID_USAGE_SENSOR_INCLINOMETER_3D,
+> @@ -317,6 +318,24 @@ static void adjust_exponent_micro(int *val0, int *val1, int scale0,
 >  	}
->  
->  	/*
-> +	 * Determine the long sample time adder value to be used based
-> +	 * on the default minimum sample time provided.
-> +	 */
-> +	adck_period = NSEC_PER_SEC / adck_rate;
-> +	lst_addr_min = adc_feature->default_sample_time / adck_period;
-> +	for (i = 0; i < ARRAY_SIZE(vf610_lst_adder); i++) {
-> +		if (vf610_lst_adder[i] > lst_addr_min) {
-> +			adc_feature->lst_adder_index = i;
-> +			break;
-> +		}
-> +	}
-> +
-> +	/*
->  	 * Calculate ADC sample frequencies
->  	 * Sample time unit is ADCK cycles. ADCK clk source is ipg clock,
->  	 * which is the same as bus clock.
-> @@ -182,12 +215,13 @@ static inline void vf610_adc_calculate_rates(struct vf610_adc *info)
->  	 * SFCAdder: fixed to 6 ADCK cycles
->  	 * AverageNum: 1, 4, 8, 16, 32 samples for hardware average.
->  	 * BCT (Base Conversion Time): fixed to 25 ADCK cycles for 12 bit mode
-> -	 * LSTAdder(Long Sample Time): fixed to 3 ADCK cycles
-> +	 * LSTAdder(Long Sample Time): 3, 5, 7, 9, 13, 17, 21, 25 ADCK cycles
->  	 */
->  	adck_rate = ipg_rate / info->adc_feature.clk_div;
->  	for (i = 0; i < ARRAY_SIZE(vf610_hw_avgs); i++)
->  		info->sample_freq_avail[i] =
-> -			adck_rate / (6 + vf610_hw_avgs[i] * (25 + 3));
-> +			adck_rate / (6 + vf610_hw_avgs[i] *
-> +			 (25 + vf610_lst_adder[adc_feature->lst_adder_index]));
 >  }
 >  
->  static inline void vf610_adc_cfg_init(struct vf610_adc *info)
-> @@ -347,8 +381,40 @@ static void vf610_adc_sample_set(struct vf610_adc *info)
->  		break;
->  	}
->  
-> -	/* Use the short sample mode */
-> -	cfg_data &= ~(VF610_ADC_ADLSMP_LONG | VF610_ADC_ADSTS_MASK);
-> +	/*
-> +	 * Set ADLSMP and ADSTS based on the Long Sample Time Adder value
-> +	 * determined.
-> +	 */
-> +	switch (adc_feature->lst_adder_index) {
-> +	case VF610_ADCK_CYCLES_3:
-> +		break;
-> +	case VF610_ADCK_CYCLES_5:
-> +		cfg_data |= VF610_ADC_ADSTS_SHORT;
-> +		break;
-> +	case VF610_ADCK_CYCLES_7:
-> +		cfg_data |= VF610_ADC_ADSTS_NORMAL;
-> +		break;
-> +	case VF610_ADCK_CYCLES_9:
-> +		cfg_data |= VF610_ADC_ADSTS_LONG;
-> +		break;
-> +	case VF610_ADCK_CYCLES_13:
-> +		cfg_data |= VF610_ADC_ADLSMP_LONG;
-> +		break;
-> +	case VF610_ADCK_CYCLES_17:
-> +		cfg_data |= VF610_ADC_ADLSMP_LONG;
-> +		cfg_data |= VF610_ADC_ADSTS_SHORT;
-> +		break;
-> +	case VF610_ADCK_CYCLES_21:
-> +		cfg_data |= VF610_ADC_ADLSMP_LONG;
-> +		cfg_data |= VF610_ADC_ADSTS_NORMAL;
-> +		break;
-> +	case VF610_ADCK_CYCLES_25:
-> +		cfg_data |= VF610_ADC_ADLSMP_LONG;
-> +		cfg_data |= VF610_ADC_ADSTS_NORMAL;
-> +		break;
-> +	default:
-> +		dev_err(info->dev, "error in sample time select\n");
-> +	}
->  
->  	/* update hardware average selection */
->  	cfg_data &= ~VF610_ADC_AVGS_MASK;
-> @@ -713,6 +779,11 @@ static int vf610_adc_probe(struct platform_device *pdev)
->  	of_property_read_u32_array(pdev->dev.of_node, "fsl,adck-max-frequency",
->  			info->max_adck_rate, 3);
->  
-> +	ret = of_property_read_u32(pdev->dev.of_node, "min-sample-time",
-> +			&info->adc_feature.default_sample_time);
-> +	if (ret)
-> +		info->adc_feature.default_sample_time = DEFAULT_SAMPLE_TIME;
+> +void hid_sensor_get_unit_expo_fraction(
+> +		struct hid_sensor_hub_attribute_info *attr_info,
+> +		int *num, int *denom)
+> +{
+> +	s32 exp = hid_sensor_convert_exponent(attr_info->unit_expo);
 > +
->  	platform_set_drvdata(pdev, indio_dev);
+> +	if (exp == 0) {
+> +		*num = *denom = 1;
+> +	} else if (exp < 0) {
+> +		*num = 1;
+> +		*denom = pow_10(abs(exp));
+> +	} else if (exp > 0) {
+> +		*num = pow_10(exp);
+> +		*denom = 1;
+> +	}
+> +}
+> +EXPORT_SYMBOL(hid_sensor_get_unit_expo_fraction);
+> +
+>  int hid_sensor_format_scale(u32 usage_id,
+>  			struct hid_sensor_hub_attribute_info *attr_info,
+>  			int *val0, int *val1)
+> diff --git a/drivers/iio/magnetometer/hid-sensor-magn-3d.c b/drivers/iio/magnetometer/hid-sensor-magn-3d.c
+> index d8a0c8d..173d2f5 100644
+> --- a/drivers/iio/magnetometer/hid-sensor-magn-3d.c
+> +++ b/drivers/iio/magnetometer/hid-sensor-magn-3d.c
+> @@ -311,6 +311,7 @@ static int magn_3d_parse_report(struct platform_device *pdev,
+>  	int i;
+>  	int attr_count = 0;
+>  	struct iio_chan_spec *_channels;
+> +	struct hid_sensor_hub_attribute_info *first_channel_attr_info;
 >  
->  	init_completion(&info->completion);
+>  	/* Scan for each usage attribute supported */
+>  	for (i = 0; i < MAGN_3D_CHANNEL_MAX; i++) {
+> @@ -389,9 +390,32 @@ static int magn_3d_parse_report(struct platform_device *pdev,
+>  	dev_dbg(&pdev->dev, "magn_3d Setup %d IIO channels\n",
+>  			*chan_count);
+>  
+> +	first_channel_attr_info = &(st->magn[_channels[0].address]);
+> +
+> +	/* Try and set unit based off exponent, logical min and max */
+> +	if (!first_channel_attr_info->units) {
+> +		int num, denom;
+> +		s32 log_min = first_channel_attr_info->logical_minimum;
+> +		s32 log_max = first_channel_attr_info->logical_maximum;
+> +
+> +		dev_dbg(&pdev->dev, "magn_3d Units not set. Unit Expo %d Logical Min: %d Max: %d\n",
+> +					first_channel_attr_info->unit_expo,
+> +					log_min, log_max);
+> +
+> +		hid_sensor_get_unit_expo_fraction(first_channel_attr_info,
+> +						&num, &denom);
+> +
+> +		/* Check for unit Degrees */
+> +		if (log_min == 0 && num == 1 && (log_max == 360 * denom)) {
+> +			first_channel_attr_info->units =
+> +					HID_USAGE_SENSOR_UNITS_DEGREES;
+> +			dev_dbg(&pdev->dev, "magn_3d Set units to degrees.");
+> +		}
+> +
+> +	}
+>  	st->scale_precision = hid_sensor_format_scale(
+>  				HID_USAGE_SENSOR_COMPASS_3D,
+> -				&st->magn[CHANNEL_SCAN_INDEX_X],
+> +				first_channel_attr_info,
+>  				&st->scale_pre_decml, &st->scale_post_decml);
+>  
+>  	/* Set Sensitivity field ids, when there is no individual modifier */
+> diff --git a/include/linux/hid-sensor-hub.h b/include/linux/hid-sensor-hub.h
+> index 0042bf3..627fd68 100644
+> --- a/include/linux/hid-sensor-hub.h
+> +++ b/include/linux/hid-sensor-hub.h
+> @@ -267,6 +267,10 @@ int hid_sensor_format_scale(u32 usage_id,
+>  			    struct hid_sensor_hub_attribute_info *attr_info,
+>  			    int *val0, int *val1);
+>  
+> +void hid_sensor_get_unit_expo_fraction(
+> +			struct hid_sensor_hub_attribute_info *attr_info,
+> +			int *num, int *denom);
+> +
+>  s32 hid_sensor_read_poll_value(struct hid_sensor_common *st);
+>  
+>  #endif
 > 
 
