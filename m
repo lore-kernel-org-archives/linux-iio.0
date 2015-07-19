@@ -1,49 +1,64 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:46557 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S964874AbbGVQ3C (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 22 Jul 2015 12:29:02 -0400
-In-Reply-To: <CA+0Dg4qeAvTJ1EJFqN4=eJ3X9qecP8yPhvBBvUs-pYqP08i3jA@mail.gmail.com>
-References: <CA+0Dg4qeAvTJ1EJFqN4=eJ3X9qecP8yPhvBBvUs-pYqP08i3jA@mail.gmail.com>
+Return-Path: <jic23@jic23.retrosnub.co.uk>
+In-Reply-To: <20150719203343.GF5371@mwanda>
+References: <1437222646-8742-1-git-send-email-stefan.wahren@i2se.com> <201507181738.21236.marex@denx.de> <55AB71B9.8070307@kernel.org> <20150719203343.GF5371@mwanda>
 MIME-Version: 1.0
 Content-Type: text/plain;
  charset=UTF-8
-Subject: Re: iio_utils tool incorrectly assumes "offset" file to be present
+Subject: Re: [PATCH V2 0/6] iio: mxs-lradc: Clean up and add datasheet names
 From: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
-Date: Wed, 22 Jul 2015 17:28:36 +0100
-To: Joo Aun Saw <jasaw@dius.com.au>, linux-iio@vger.kernel.org,
-	knaack.h@gmx.de
-Message-ID: <E85353EF-6909-4FB1-A9D4-3A974F69CD97@jic23.retrosnub.co.uk>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Date: Sun, 19 Jul 2015 22:08:32 +0100
+To: Dan Carpenter <dan.carpenter@oracle.com>,Jonathan Cameron <jic23@kernel.org>
+CC: Marek Vasut <marex@denx.de>,Stefan Wahren <stefan.wahren@i2se.com>,Fabio Estevam <fabio.estevam@freescale.com>,devel@driverdev.osuosl.org,Lars-Peter Clausen <lars@metafoo.de>,linux-iio@vger.kernel.org,Greg Kroah-Hartman <gregkh@linuxfoundation.org>,Peter Meerwald <pmeerw@pmeerw.net>,Hartmut Knaack <knaack.h@gmx.de>
+Message-ID: <23874360-AA01-4BBA-BEEC-2FA699399517@jic23.retrosnub.co.uk>
+List-ID: <linux-iio@vger.kernel.org>
 
 
 
-On 22 July 2015 15:55:53 BST, Joo Aun Saw <jasaw@dius.com.au> wrote:
->Hi,
+On 19 July 2015 21:33:43 BST, Dan Carpenter <dan.carpenter@oracle.com> wrote:
+>On Sun, Jul 19, 2015 at 10:45:29AM +0100, Jonathan Cameron wrote:
+>> Thanks for looking through these. 
+>> 
+>> Just to let you know, there is currently a rather extended discussion
+>going
+>> on (as part of a suggested topic for the kernel summit) about when
+>reviewed-by
+>> tags are appropriate.
+>> 
+>> The general feeling is they must in someway indicate some substantial
+>work.  Here
+>> as a result I'd say it was appropriate for patch 6 whereas an
+>Acked-by 
+>> would be more appropriate for the cleanups (where there is nothing
+>'interesting').
+>> I've left these as reviewed by for this set though!
+>> 
+>> Note to all reviewers I may also start added reviewed by tags that
+>you haven't sent if
+>> I happen to feel you made a big contribution to review of a patch,
+>but perhaps haven't
+>> revisited later versions.  I'll probably send out an email about this
+>outside
+>> of this thread at some point to get possible wider circulation.
+>> 
 >
->I'm new to this mailing list and I'm new to IIO, so please forgive me
->if I ask silly questions. I haven't got time follow the latest
->development in IIO.
+>I didn't necessarily read the thread that way, but the thread was
+>long...  I think of Acked-by by as "I approve." which is different from
+>I reviewed this carefully.  I seldom Ack anything since I'm not an
+>official maintainer of anything so no one cares if I approve or not.
+>Sometimes I really really approve something so I will Ack it even
+>though
+>maybe no one cares.
 >
->I'm using iio_utils tool in my program and noticed build_channel_array
->function assumes "offset" file to be present under the IIO device. The
->issue is, not all IIO devices provide an "offset" file. I'm using ST
->accel, magn, and gyro drivers, and there's no "offset" file. Is offset
->supposed to be optional?
-Yes.  That function should probably be checking for the -ENOENT return value
-and setting the offset to 0 rather than faulting out.
+>I don't like the idea of someone adding my Reviewed-by tag because
+>that's a quite serious tag for me and if it has bugs then I will feel
+>responsible.
+That is fair enough. Maybe I will just need to pester people more about taking a final
+ look and giving tags if they want to or actively stating they don't mind not tagging a patch.
 
-Scale isn't required either and for some devices such a proximity sensors is not
- well defined (depends on the reflectance of the target)
-
-Hatmut, I missed this when reviewing your patch adding error handling back in May (I think...)
-
-53118557b6a9c263e4a80825da367b2116529541
-
+J
 >
->
->Joo.
+>regards,
+>dan carpenter
 >--
 >To unsubscribe from this list: send the line "unsubscribe linux-iio" in
 >the body of a message to majordomo@vger.kernel.org
