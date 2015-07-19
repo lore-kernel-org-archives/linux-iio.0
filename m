@@ -1,58 +1,49 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from aserp1040.oracle.com ([141.146.126.69]:18864 "EHLO
+Received: from aserp1040.oracle.com ([141.146.126.69]:21572 "EHLO
 	aserp1040.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753390AbbGSUeJ (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 19 Jul 2015 16:34:09 -0400
-Date: Sun, 19 Jul 2015 23:33:43 +0300
+	with ESMTP id S1753390AbbGSUuQ (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 19 Jul 2015 16:50:16 -0400
+Date: Sun, 19 Jul 2015 23:49:47 +0300
 From: Dan Carpenter <dan.carpenter@oracle.com>
 To: Jonathan Cameron <jic23@kernel.org>
 Cc: Marek Vasut <marex@denx.de>,
 	Stefan Wahren <stefan.wahren@i2se.com>,
+	devel@driverdev.osuosl.org,
 	Fabio Estevam <fabio.estevam@freescale.com>,
-	devel@driverdev.osuosl.org, Lars-Peter Clausen <lars@metafoo.de>,
 	linux-iio@vger.kernel.org,
 	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Lars-Peter Clausen <lars@metafoo.de>,
 	Peter Meerwald <pmeerw@pmeerw.net>,
 	Hartmut Knaack <knaack.h@gmx.de>
 Subject: Re: [PATCH V2 0/6] iio: mxs-lradc: Clean up and add datasheet names
-Message-ID: <20150719203343.GF5371@mwanda>
+Message-ID: <20150719204947.GG5371@mwanda>
 References: <1437222646-8742-1-git-send-email-stefan.wahren@i2se.com>
  <201507181738.21236.marex@denx.de>
  <55AB71B9.8070307@kernel.org>
+ <20150719203343.GF5371@mwanda>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <55AB71B9.8070307@kernel.org>
+In-Reply-To: <20150719203343.GF5371@mwanda>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Sun, Jul 19, 2015 at 10:45:29AM +0100, Jonathan Cameron wrote:
-> Thanks for looking through these. 
-> 
-> Just to let you know, there is currently a rather extended discussion going
-> on (as part of a suggested topic for the kernel summit) about when reviewed-by
-> tags are appropriate.
-> 
-> The general feeling is they must in someway indicate some substantial work.  Here
-> as a result I'd say it was appropriate for patch 6 whereas an Acked-by 
-> would be more appropriate for the cleanups (where there is nothing 'interesting').
-> I've left these as reviewed by for this set though!
-> 
-> Note to all reviewers I may also start added reviewed by tags that you haven't sent if
-> I happen to feel you made a big contribution to review of a patch, but perhaps haven't
-> revisited later versions.  I'll probably send out an email about this outside
-> of this thread at some point to get possible wider circulation.
-> 
+On Sun, Jul 19, 2015 at 11:33:43PM +0300, Dan Carpenter wrote:
+> I didn't necessarily read the thread that way, but the thread was
+> long...
 
-I didn't necessarily read the thread that way, but the thread was
-long...  I think of Acked-by by as "I approve." which is different from
-I reviewed this carefully.  I seldom Ack anything since I'm not an
-official maintainer of anything so no one cares if I approve or not.
-Sometimes I really really approve something so I will Ack it even though
-maybe no one cares.
+I read the thread as saying that you sometimes get:
 
-I don't like the idea of someone adding my Reviewed-by tag because
-that's a quite serious tag for me and if it has bugs then I will feel
-responsible.
+Reviewed-by: Some Person <email@bigcompany.com>
+
+With no other comments and what does that even mean because you don't
+know who that person is and if they are good at reviewing.  There isn't
+a solution to that.  But since we know Marek then that doesn't really
+apply here.  Also people were worried that companies were going to start
+counting Reviewed-by tags so we should discourage that.
+
+Anyway, I don't see Reviewed-by tags as a reward, only as added
+responsibility.
 
 regards,
 dan carpenter
+
