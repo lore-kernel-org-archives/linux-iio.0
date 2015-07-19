@@ -1,117 +1,135 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from vegas.theobroma-systems.com ([144.76.126.164]:40631 "EHLO
-	mail.theobroma-systems.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1753178AbbGSSn1 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 19 Jul 2015 14:43:27 -0400
-Message-ID: <55ABEF7D.50606@theobroma-systems.com>
-Date: Sun, 19 Jul 2015 20:42:05 +0200
-From: Martin Kepplinger <martin.kepplinger@theobroma-systems.com>
+Received: from mout.gmx.net ([212.227.15.15]:49921 "EHLO mout.gmx.net"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1753621AbbGSTyr (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Sun, 19 Jul 2015 15:54:47 -0400
+Message-ID: <55AC0079.9060507@gmx.de>
+Date: Sun, 19 Jul 2015 21:54:33 +0200
+From: Hartmut Knaack <knaack.h@gmx.de>
 MIME-Version: 1.0
 To: Jonathan Cameron <jic23@kernel.org>,
-	Martin Kepplinger <martink@posteo.de>, knaack.h@gmx.de,
-	lars@metafoo.de, pmeerw@pmeerw.net, mfuzzey@parkeon.com,
-	roberta.dobrescu@gmail.com, robh+dt@kernel.org, pawel.moll@arm.com,
-	mark.rutland@arm.com, ijc+devicetree@hellion.org.uk,
-	galak@codeaurora.org
-CC: devicetree@vger.kernel.org, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	christoph.muellner@theobroma-systems.com
-Subject: Re: [PATCH 8/8] iio: mma8452: add devicetree property to allow all
- pin wirings
-References: <1436186062-5766-1-git-send-email-martink@posteo.de> <1436186062-5766-9-git-send-email-martink@posteo.de> <55ABAA8B.3080706@kernel.org>
-In-Reply-To: <55ABAA8B.3080706@kernel.org>
-Content-Type: text/plain; charset=windows-1252
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Daniel Baluta <daniel.baluta@intel.com>
+Subject: Re: IIO : Clarifying review tags.
+References: <55ABBFE8.4090108@kernel.org>
+In-Reply-To: <55ABBFE8.4090108@kernel.org>
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Am 2015-07-19 um 15:47 schrieb Jonathan Cameron:
-> On 06/07/15 13:34, Martin Kepplinger wrote:
->> For the devices supported by the mma8452 driver, two interrupt pins are
->> available to route the interrupt signals to. By default INT1 is assumed.
->>
->> This adds a simple boolean DT property, for users to configure it for
->> INT2, if that is the wired interrupt pin for them.
->>
->> This is important for everyone to be able to use this driver, no matter
->> how their chip is wired.
->>
->> Since this doesn't change the default behaviour, it doesn't break anything
->> for existing users.
->>
->> Signed-off-by: Martin Kepplinger <martin.kepplinger@theobroma-systems.com>
->> Signed-off-by: Christoph Muellner <christoph.muellner@theobroma-systems.com>
-> The whole series looks good to me.  Just want those acks from Peter and / or
-> Martin before I apply it.
+Jonathan Cameron schrieb am 19.07.2015 um 17:19:
+> Hi All,
+> 
+<...> 
+> Our standard tags;
+> 
+> Signed-off-by:
+> 	This is part of the developer certificate of origin
+> stuff.  If you sign-off you are making an explicit statement
+> that either you wrote the code or it passed through your
+> hands and to the best of your knowledge you are not breaking
+> license terms etc (this includes me for example certifying
+> that I have made no changes that would invalidate earlier
+> sign offs) This is the one with some legal meaning
+> and I think we are all using it correctly (just here for
+> completeness).
+> 
+> Note that this also either implies that you have 'reviewed'
+> the code in detail, or that you are happy that the deep
+> review has already been done by someone you trust.
+
+Hi,
+call me paranoid, but I would feel better if you would still
+review in all cases. To load off some weight from your
+shoulders I would recommend to change the workflow a bit in the
+sense that you hold back on reviews until a patch has either
+received an acked/reviewed-by tag or an appropriate amount of
+time has passed (maybe a week). Then you should still do a very
+suspicious review before taking in that change.
+Thus, you could focus more on the details and would not have to
+deal with early respins.
+
+> (and it's this last bit that lets the Linux development
+> process scale).  There is a pretty universal view that
+> you don't bother with both signed-off-by and any other tag
+> (though tested-by can be appropriate in my view).
+> 
+<...>
+
+I'm fine with the Acked-by and Tested-by stuff.
+
+> Reviewed-by:
+> 	Now this is the one that caused most discussion in the
+> previously mentioned thread.  When is it appropriate?
+> 
+> 1) When substantial work has been applied as part of a review.
+>    This might be indicated by a series of suggested changes
+>    or by detailed comments on what they think is good / bad
+>    might be done differently.   In these cases the reviewer
+>    may 'suggest' the tag themselves.
+> 
+> 2) Where earlier versions of a patch have received substantial
+>    review but the reviewer has not commented on the latest
+>    version.  In this case some maintainers have been giving
+>    'Reviewed-by' tags to people who haven't supplied them
+>    on their own.  This is the change I would like to make to
+>    how I have done things previously (where when I had time
+>    I pestered people to give a reviewed-by).
+> 
+>    A few of you delight in early stage reviews and I feel often
+>    get little or no permanent credit for your hard work.
+>    In particular there are some here who spend a lot of time
+>    helping new submitters get large patches in order.  A job
+>    that can take a huge amount of work on occasion!
+> 
+>    So does anyone object if I sometimes add Reviewed-by tags
+>    for them?  Obviously this is all going to be a little
+>    arbitrary so do keep sending them directly (and authors
+>    keep adding them to later versions of your patches!)
+>  
+
+I'm in favor of using the Reviewed-by tag rather restrictive.
+IMHO it expresses that the reviewer was able to understand the
+change in its full extend. This may include to check all
+device specific parameters used against a data sheet (if the
+data sheet is not available due to NDA, then I would not want
+to give this tag), check each line of code, check fixes against
+the source code block it applies to (or even parent level
+blocks if required). As a result, it should indicate that the
+patch has successfully passed certain quality checks of the
+reviewer. This in turn gives appreciaction to the patch author.
+The reviewers reputation however can suffer, if significant
+bugs slipped through the review. That's why I don't feel too
+comfortable if anyone else gives reviewed-by tags in my name.
+Clearly, there is a gap in between the acked-by and reviewed-by
+tags, something that would express your contribution in the
+development process.
+
+> Anyhow, the thread that lead to this has yet again reminded
+> me of how lucky I am and we all are in IIO wrt to the quality
+> and quantity of reviewers who put huge amounts of time into
+> improving all our code!
+> 
+> I certainly know I would have burnt out long ago if it was
+> just me against the mountain.
+> 
+> I'm going to be on holiday week after next. Should get back
+> to normal in early August.
+
+Enjoy!
+
+Hartmut
+
 > 
 > Thanks,
 > 
 > Jonathan
-
-Peter at least replied to the first version of these patches, so he
-should be around. I suspect that holidays get in the way now.
-
-While I'm at it: I'll be on holidays pretty much all of august. In
-general I could maintain the driver and have more improvements planned
-on top of this patchset. Maybe I'll include a maintainers file entry
-with those (later this year).
-
-And: It shouldn't apply cleanly at least on your fixes-togreg branch of
-iio.git. I don't know if this is in -next but in case you don't want to
-resolve the diff, please feel free to ask for a clean version of the
-whole patchset against -next at any time.
-
-thanks,
-
-                  martin
-
->> ---
->>  Documentation/devicetree/bindings/iio/accel/mma8452.txt |  2 ++
->>  drivers/iio/accel/mma8452.c                             | 14 ++++++++------
->>  2 files changed, 10 insertions(+), 6 deletions(-)
->>
->> diff --git a/Documentation/devicetree/bindings/iio/accel/mma8452.txt b/Documentation/devicetree/bindings/iio/accel/mma8452.txt
->> index 8d98e05..9bad1fc 100644
->> --- a/Documentation/devicetree/bindings/iio/accel/mma8452.txt
->> +++ b/Documentation/devicetree/bindings/iio/accel/mma8452.txt
->> @@ -10,6 +10,7 @@ Optional properties:
->>  
->>    - interrupt-parent: should be the phandle for the interrupt controller
->>    - interrupts: interrupt mapping for GPIO IRQ
->> +  - use_int2: assume interrupt pin wired to INT2 instead of INT1
->>  
->>  Example:
->>  
->> @@ -18,4 +19,5 @@ Example:
->>  		reg = <0x1d>;
->>  		interrupt-parent = <&gpio1>;
->>  		interrupts = <5 0>;
->> +		use_int2;
->>  	};
->> diff --git a/drivers/iio/accel/mma8452.c b/drivers/iio/accel/mma8452.c
->> index 2b8ed67..f8ba146 100644
->> --- a/drivers/iio/accel/mma8452.c
->> +++ b/drivers/iio/accel/mma8452.c
->> @@ -1105,12 +1105,14 @@ static int mma8452_probe(struct i2c_client *client,
->>  		int enabled_interrupts = MMA8452_INT_TRANS |
->>  					 MMA8452_INT_FF_MT;
->>  
->> -		/* Assume wired to INT1 pin */
->> -		ret = i2c_smbus_write_byte_data(client,
->> -						MMA8452_CTRL_REG5,
->> -						supported_interrupts);
->> -		if (ret < 0)
->> -			return ret;
->> +		/* Assume wired to INT1 pin, except "use_int2" is found in DT */
->> +		if (!of_property_read_bool(client->dev.of_node, "use_int2")) {
->> +			ret = i2c_smbus_write_byte_data(client,
->> +							MMA8452_CTRL_REG5,
->> +							supported_interrupts);
->> +			if (ret < 0)
->> +				return ret;
->> +		}
->>  
->>  		ret = i2c_smbus_write_byte_data(client,
->>  						MMA8452_CTRL_REG4,
->>
+> 
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
 > 
 
