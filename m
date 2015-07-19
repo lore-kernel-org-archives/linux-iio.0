@@ -1,217 +1,170 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:46474 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:46549 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752653AbbGSLO4 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 19 Jul 2015 07:14:56 -0400
-Message-ID: <55AB86AE.7000008@kernel.org>
-Date: Sun, 19 Jul 2015 12:14:54 +0100
+	with ESMTP id S1752865AbbGSLZW (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 19 Jul 2015 07:25:22 -0400
+Message-ID: <55AB8920.4020201@kernel.org>
+Date: Sun, 19 Jul 2015 12:25:20 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Giuseppe Barba <giuseppe.barba@st.com>, linux-iio@vger.kernel.org
-Subject: Re: [PATCH 5/5] iio: st-magn: add support for lsm303agr magnetometer
-References: <1437038264-12936-1-git-send-email-giuseppe.barba@st.com> <1437038264-12936-6-git-send-email-giuseppe.barba@st.com>
-In-Reply-To: <1437038264-12936-6-git-send-email-giuseppe.barba@st.com>
-Content-Type: text/plain; charset=windows-1252
+To: Crt Mori <cmo@melexis.com>
+CC: linux-iio@vger.kernel.org
+Subject: Re: [PATCH] [BUGFIX] iio: mlx96014: Replace offset sign
+References: <CAKv63uv9ZzwugTcNVLQ-HDvgBLf2ORNwQiobmYQf7Gck+S3hfw@mail.gmail.com>
+In-Reply-To: <CAKv63uv9ZzwugTcNVLQ-HDvgBLf2ORNwQiobmYQf7Gck+S3hfw@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 16/07/15 10:17, Giuseppe Barba wrote:
-> This adds support for the lsm303agr magnetometer.
+On 05/07/15 19:03, Crt Mori wrote:
+> Changed the offset to negative as usual equation is: (raw +
+> offset)*scale and in this
+> case offset should be negative (as we deduct 273.15 Kelvin to get temperature
+> in Celsius).
 > 
-> Signed-off-by: Giuseppe Barba <giuseppe.barba@st.com>
-Rest of the series looks fine to me.
-Will pickup if I get an Ack from Denis and others are happy.
-(note I've been lazy and not dived into the datasheets to check
-the registers etc). To great a backlog this weekend!
+> Signed-off-by: Crt Mori <cmo@melexis.com>
+> Acked-by: Peter Meerwald <pmeerw@pmeerw.net>
+Please don't do such patches as inline replies.  The white space has
+also bee eaten.  I have hand applied the patch to the fixes-togreg
+branch of iio.git
 
-Might have a look at those before applying if I don't think
-anyone else has.
+Thanks,
 
-Anyhow, good to have yet another part supported.
-Don't suppose you fancy picking up the lis3l02dq so I can kill
-off my ancient driver for that which is still in staging?
-:)
+Jonathan
 > ---
->  .../devicetree/bindings/iio/st-sensors.txt         |  1 +
->  drivers/iio/magnetometer/st_magn.h                 |  1 +
->  drivers/iio/magnetometer/st_magn_core.c            | 83 ++++++++++++++++++++++
->  drivers/iio/magnetometer/st_magn_i2c.c             |  5 ++
->  drivers/iio/magnetometer/st_magn_spi.c             |  1 +
->  5 files changed, 91 insertions(+)
+>  drivers/iio/temperature/mlx90614.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 > 
-> diff --git a/Documentation/devicetree/bindings/iio/st-sensors.txt b/Documentation/devicetree/bindings/iio/st-sensors.txt
-> index d80bdaa..d3ccdb1 100644
-> --- a/Documentation/devicetree/bindings/iio/st-sensors.txt
-> +++ b/Documentation/devicetree/bindings/iio/st-sensors.txt
-> @@ -47,6 +47,7 @@ Gyroscopes:
->  - st,lsm330-gyro
->  
->  Magnetometers:
-> +- st,lsm303agr-magn
->  - st,lsm303dlh-magn
->  - st,lsm303dlhc-magn
->  - st,lsm303dlm-magn
-> diff --git a/drivers/iio/magnetometer/st_magn.h b/drivers/iio/magnetometer/st_magn.h
-> index 60441023..06a4d9c 100644
-> --- a/drivers/iio/magnetometer/st_magn.h
-> +++ b/drivers/iio/magnetometer/st_magn.h
-> @@ -18,6 +18,7 @@
->  #define LSM303DLHC_MAGN_DEV_NAME	"lsm303dlhc_magn"
->  #define LSM303DLM_MAGN_DEV_NAME		"lsm303dlm_magn"
->  #define LIS3MDL_MAGN_DEV_NAME		"lis3mdl"
-> +#define LSM303AGR_MAGN_DEV_NAME		"lsm303agr_magn"
->  
->  int st_magn_common_probe(struct iio_dev *indio_dev);
->  void st_magn_common_remove(struct iio_dev *indio_dev);
-> diff --git a/drivers/iio/magnetometer/st_magn_core.c b/drivers/iio/magnetometer/st_magn_core.c
-> index 4948185..8259e02 100644
-> --- a/drivers/iio/magnetometer/st_magn_core.c
-> +++ b/drivers/iio/magnetometer/st_magn_core.c
-> @@ -43,6 +43,7 @@
->  #define ST_MAGN_FS_AVL_8000MG			8000
->  #define ST_MAGN_FS_AVL_8100MG			8100
->  #define ST_MAGN_FS_AVL_12000MG			12000
-> +#define ST_MAGN_FS_AVL_15000MG			15000
->  #define ST_MAGN_FS_AVL_16000MG			16000
->  
->  /* CUSTOM VALUES FOR SENSOR 0 */
-> @@ -157,6 +158,29 @@
->  #define ST_MAGN_2_OUT_Y_L_ADDR			0x2a
->  #define ST_MAGN_2_OUT_Z_L_ADDR			0x2c
->  
-> +/* CUSTOM VALUES FOR SENSOR 3 */
-> +#define ST_MAGN_3_WAI_ADDR			0x4f
-> +#define ST_MAGN_3_WAI_EXP			0x40
-> +#define ST_MAGN_3_ODR_ADDR			0x60
-> +#define ST_MAGN_3_ODR_MASK			0x0c
-> +#define ST_MAGN_3_ODR_AVL_10HZ_VAL		0x00
-> +#define ST_MAGN_3_ODR_AVL_20HZ_VAL		0x01
-> +#define ST_MAGN_3_ODR_AVL_50HZ_VAL		0x02
-> +#define ST_MAGN_3_ODR_AVL_100HZ_VAL		0x03
-> +#define ST_MAGN_3_PW_ADDR			0x60
-> +#define ST_MAGN_3_PW_MASK			0x03
-> +#define ST_MAGN_3_PW_ON				0x00
-> +#define ST_MAGN_3_PW_OFF			0x03
-> +#define ST_MAGN_3_BDU_ADDR			0x62
-> +#define ST_MAGN_3_BDU_MASK			0x10
-> +#define ST_MAGN_3_DRDY_IRQ_ADDR			0x62
-> +#define ST_MAGN_3_DRDY_INT_MASK			0x01
-> +#define ST_MAGN_3_FS_AVL_15000_GAIN		1500
-> +#define ST_MAGN_3_MULTIREAD_BIT			false
-> +#define ST_MAGN_3_OUT_X_L_ADDR			0x68
-> +#define ST_MAGN_3_OUT_Y_L_ADDR			0x6a
-> +#define ST_MAGN_3_OUT_Z_L_ADDR			0x6c
-> +
->  static const struct iio_chan_spec st_magn_16bit_channels[] = {
->  	ST_SENSORS_LSM_CHANNELS(IIO_MAGN,
->  			BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_SCALE),
-> @@ -189,6 +213,22 @@ static const struct iio_chan_spec st_magn_2_16bit_channels[] = {
->  	IIO_CHAN_SOFT_TIMESTAMP(3)
->  };
->  
-> +static const struct iio_chan_spec st_magn_3_16bit_channels[] = {
-> +	ST_SENSORS_LSM_CHANNELS(IIO_MAGN,
-> +			BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_SCALE),
-> +			ST_SENSORS_SCAN_X, 1, IIO_MOD_X, 's', IIO_LE, 16, 16,
-> +			ST_MAGN_3_OUT_X_L_ADDR),
-> +	ST_SENSORS_LSM_CHANNELS(IIO_MAGN,
-> +			BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_SCALE),
-> +			ST_SENSORS_SCAN_Y, 1, IIO_MOD_Y, 's', IIO_LE, 16, 16,
-> +			ST_MAGN_3_OUT_Y_L_ADDR),
-> +	ST_SENSORS_LSM_CHANNELS(IIO_MAGN,
-> +			BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_SCALE),
-> +			ST_SENSORS_SCAN_Z, 1, IIO_MOD_Z, 's', IIO_LE, 16, 16,
-> +			ST_MAGN_3_OUT_Z_L_ADDR),
-> +	IIO_CHAN_SOFT_TIMESTAMP(3)
-> +};
-> +
->  static const struct st_sensor_settings st_magn_sensors_settings[] = {
->  	{
->  		.wai = 0, /* This sensor has no valid WhoAmI report 0 */
-> @@ -403,6 +443,49 @@ static const struct st_sensor_settings st_magn_sensors_settings[] = {
->  		.multi_read_bit = ST_MAGN_2_MULTIREAD_BIT,
->  		.bootime = 2,
->  	},
-> +	{
-> +		.wai = ST_MAGN_3_WAI_EXP,
-> +		.wai_addr = ST_MAGN_3_WAI_ADDR,
-> +		.sensors_supported = {
-> +			[0] = LSM303AGR_MAGN_DEV_NAME,
-> +		},
-> +		.ch = (struct iio_chan_spec *)st_magn_3_16bit_channels,
-> +		.odr = {
-> +			.addr = ST_MAGN_3_ODR_ADDR,
-> +			.mask = ST_MAGN_3_ODR_MASK,
-> +			.odr_avl = {
-> +				{ 10, ST_MAGN_3_ODR_AVL_10HZ_VAL, },
-> +				{ 20, ST_MAGN_3_ODR_AVL_20HZ_VAL, },
-> +				{ 50, ST_MAGN_3_ODR_AVL_50HZ_VAL, },
-> +				{ 100, ST_MAGN_3_ODR_AVL_100HZ_VAL, },
-> +			},
-> +		},
-> +		.pw = {
-> +			.addr = ST_MAGN_3_PW_ADDR,
-> +			.mask = ST_MAGN_3_PW_MASK,
-> +			.value_on = ST_MAGN_3_PW_ON,
-> +			.value_off = ST_MAGN_3_PW_OFF,
-> +		},
-> +		.fs = {
-> +			.fs_avl = {
-> +				[0] = {
-> +					.num = ST_MAGN_FS_AVL_15000MG,
-> +					.gain = ST_MAGN_3_FS_AVL_15000_GAIN,
-> +				},
-> +			},
-> +			.fs_avl_cnt = 1,
-> +		},
-> +		.bdu = {
-> +			.addr = ST_MAGN_3_BDU_ADDR,
-> +			.mask = ST_MAGN_3_BDU_MASK,
-> +		},
-> +		.drdy_irq = {
-> +			.addr = ST_MAGN_3_DRDY_IRQ_ADDR,
-> +			.mask_int1 = ST_MAGN_3_DRDY_INT_MASK,
-> +		},
-> +		.multi_read_bit = ST_MAGN_3_MULTIREAD_BIT,
-> +		.bootime = 2,
-> +	},
->  };
->  
->  static int st_magn_read_raw(struct iio_dev *indio_dev,
-> diff --git a/drivers/iio/magnetometer/st_magn_i2c.c b/drivers/iio/magnetometer/st_magn_i2c.c
-> index 5311d8a..afe955b 100644
-> --- a/drivers/iio/magnetometer/st_magn_i2c.c
-> +++ b/drivers/iio/magnetometer/st_magn_i2c.c
-> @@ -36,6 +36,10 @@ static const struct of_device_id st_magn_of_match[] = {
->  		.compatible = "st,lis3mdl-magn",
->  		.data = LIS3MDL_MAGN_DEV_NAME,
->  	},
-> +	{
-> +		.compatible = "st,lsm303agr-magn",
-> +		.data = LSM303AGR_MAGN_DEV_NAME,
-> +	},
->  	{},
->  };
->  MODULE_DEVICE_TABLE(of, st_magn_of_match);
-> @@ -79,6 +83,7 @@ static const struct i2c_device_id st_magn_id_table[] = {
->  	{ LSM303DLHC_MAGN_DEV_NAME },
->  	{ LSM303DLM_MAGN_DEV_NAME },
->  	{ LIS3MDL_MAGN_DEV_NAME },
-> +	{ LSM303AGR_MAGN_DEV_NAME },
->  	{},
->  };
->  MODULE_DEVICE_TABLE(i2c, st_magn_id_table);
-> diff --git a/drivers/iio/magnetometer/st_magn_spi.c b/drivers/iio/magnetometer/st_magn_spi.c
-> index 7adacf1..0abca2c 100644
-> --- a/drivers/iio/magnetometer/st_magn_spi.c
-> +++ b/drivers/iio/magnetometer/st_magn_spi.c
-> @@ -51,6 +51,7 @@ static const struct spi_device_id st_magn_id_table[] = {
->  	{ LSM303DLHC_MAGN_DEV_NAME },
->  	{ LSM303DLM_MAGN_DEV_NAME },
->  	{ LIS3MDL_MAGN_DEV_NAME },
-> +	{ LSM303AGR_MAGN_DEV_NAME },
->  	{},
->  };
->  MODULE_DEVICE_TABLE(spi, st_magn_id_table);
+> diff --git a/drivers/iio/temperature/mlx90614.c
+> b/drivers/iio/temperature/mlx90614.c
+> index c8b6ac8..951a50f 100644
+> --- a/drivers/iio/temperature/mlx90614.c
+> +++ b/drivers/iio/temperature/mlx90614.c
+> @@ -58,7 +58,7 @@ static int mlx90614_read_raw(struct iio_dev *indio_dev,
+>   *val = ret;
+>   return IIO_VAL_INT;
+>   case IIO_CHAN_INFO_OFFSET:
+> - *val = 13657;
+> + *val = -13657;
+>   *val2 = 500000;
+>   return IIO_VAL_INT_PLUS_MICRO;
+>   case IIO_CHAN_INFO_SCALE:
+> 
+> 
+> 
+> On 5 July 2015 at 14:51, Jonathan Cameron <jic23@kernel.org> wrote:
+>> On 29/06/15 15:43, Crt Mori wrote:
+>>>>> Translates the magic constant numbers to named macros and add some
+>>>>> additional comments about their meaning. Also changed the offset to
+>>>>> negative as usual equation is: (raw + offset)*scale and in this
+>>>>> case offset should be negative (as we deduct 273.15 Kelvin to get
+>>>>> temperature in Celsius)..
+>>>
+>>>> On 29 June 2015 at 14:19, Peter Meerwald <pmeerw@pmeerw.net> wrote:
+>>>> looks good; strictly, this patch is
+>>>> (a) a bugfix (the offset should be negative),
+>>>> (b) cleanup to replace constants by macros.
+>>>
+>>> I agree, but other things are more design than a proper change.
+>> True, but the fix may well go via a faster route and be backported
+>> to older kernels.  The other stuff is good, but we can take our time
+>> with it.  Please split the patch and repost.
+>>>
+>>> I would also like you to reconsider the usage of
+>>> IIO_CHAN_INFO_PROCESSED which would report calculated value
+>>> to avoid knowing the sensor specifics and just provide general output
+>>> (this would avoid different calculations of final temperature for different
+>>> sensors).
+>> If it can't be done via a straight linear map, then processed is the
+>> only option.  If it can then it really doesn't matter as generic
+>> userspace will handle it just fine.
+>>>
+>>>>>
+>>>>> The diff is made towards togreg branch as that branch seems to have the
+>>>>> most recent updates of mlx90614 driver (many are yet to be merged).
+>>>>>
+>>>>> Signed-off-by: Crt Mori <cmo@melexis.com>
+>>>>> ---
+>>>>>  drivers/iio/temperature/mlx90614.c | 20 ++++++++++++++------
+>>>>>  1 file changed, 14 insertions(+), 6 deletions(-)
+>>>>>
+>>>>> diff --git a/drivers/iio/temperature/mlx90614.c
+>>>>> b/drivers/iio/temperature/mlx90614.c
+>>>>> index cb2e8ad..909278a 100644
+>>>>> --- a/drivers/iio/temperature/mlx90614.c
+>>>>> +++ b/drivers/iio/temperature/mlx90614.c
+>>>>> @@ -65,6 +65,13 @@
+>>>>>
+>>>>>  #define MLX90614_AUTOSLEEP_DELAY 5000 /* default autosleep delay */
+>>>>>
+>>>>> +/* Magic constants */
+>>>>> +#define MLX90614_CONST_OFFSET_DEC -13657 /* decimal part of the Kelvin
+>>>>> offset */
+>>>>> +#define MLX90614_CONST_OFFSET_REM 500000 /* remainder of offset
+>>>>> (273.15*50) */
+>>>>> +#define MLX90614_CONST_SCALE 20 /* Scale in milliKelvin (0.02 * 1000) */
+>>>>> +#define MLX90614_CONST_RAW_EMISSIVITY_MAX 65535 /* max value for
+>>>>> emissivity */
+>>>>> +#define MLX90614_CONST_EMISSIVITY_RESOLUTION 15259 /* 1/65535 ~
+>>>>> 0.000015259 */
+>>>>> +
+>>>>>  struct mlx90614_data {
+>>>>>         struct i2c_client *client;
+>>>>>         struct mutex lock; /* for EEPROM access only */
+>>>>> @@ -204,11 +211,11 @@ static int mlx90614_read_raw(struct iio_dev
+>>>>> *indio_dev,
+>>>>>                 *val = ret;
+>>>>>                 return IIO_VAL_INT;
+>>>>>         case IIO_CHAN_INFO_OFFSET:
+>>>>> -               *val = 13657;
+>>>>> -               *val2 = 500000;
+>>>>> +               *val = MLX90614_CONST_OFFSET_DEC;
+>>>>> +               *val2 = MLX90614_CONST_OFFSET_REM;
+>>>>>                 return IIO_VAL_INT_PLUS_MICRO;
+>>>>>         case IIO_CHAN_INFO_SCALE:
+>>>>> -               *val = 20;
+>>>>> +               *val = MLX90614_CONST_SCALE;
+>>>>>                 return IIO_VAL_INT;
+>>>>>         case IIO_CHAN_INFO_CALIBEMISSIVITY: /* 1/65535 / LSB */
+>>>>>                 mlx90614_power_get(data, false);
+>>>>> @@ -221,12 +228,12 @@ static int mlx90614_read_raw(struct iio_dev
+>>>>> *indio_dev,
+>>>>>                 if (ret < 0)
+>>>>>                         return ret;
+>>>>>
+>>>>> -               if (ret == 65535) {
+>>>>> +               if (ret == MLX90614_CONST_RAW_EMISSIVITY_MAX) {
+>>>>>                         *val = 1;
+>>>>>                         *val2 = 0;
+>>>>>                 } else {
+>>>>>                         *val = 0;
+>>>>> -                       *val2 = ret * 15259; /* 1/65535 ~ 0.000015259 */
+>>>>> +                       *val2 = ret * MLX90614_CONST_EMISSIVITY_RESOLUTION;
+>>>>>                 }
+>>>>>                 return IIO_VAL_INT_PLUS_NANO;
+>>>>>         default:
+>>>>> @@ -245,7 +252,8 @@ static int mlx90614_write_raw(struct iio_dev *indio_dev,
+>>>>>         case IIO_CHAN_INFO_CALIBEMISSIVITY: /* 1/65535 / LSB */
+>>>>>                 if (val < 0 || val2 < 0 || val > 1 || (val == 1 && val2 !=
+>>>>> 0))
+>>>>>                         return -EINVAL;
+>>>>> -               val = val * 65535 + val2 / 15259; /* 1/65535 ~ 0.000015259
+>>>>> */
+>>>>> +               val = val * MLX90614_CONST_RAW_EMISSIVITY_MAX +
+>>>>> +                       val2 / MLX90614_CONST_EMISSIVITY_RESOLUTION;
+>>>>>
+>>>>>                 mlx90614_power_get(data, false);
+>>>>>                 mutex_lock(&data->lock);
+>>>>>
+>>> --
+>>> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+>>> the body of a message to majordomo@vger.kernel.org
+>>> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+>>>
+>>
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
 > 
 
