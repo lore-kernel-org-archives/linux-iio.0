@@ -1,10 +1,10 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:47464 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:47488 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753248AbbGSNnh (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 19 Jul 2015 09:43:37 -0400
-Message-ID: <55ABA986.6000006@kernel.org>
-Date: Sun, 19 Jul 2015 14:43:34 +0100
+	with ESMTP id S1753150AbbGSNpJ (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 19 Jul 2015 09:45:09 -0400
+Message-ID: <55ABA9E3.9050206@kernel.org>
+Date: Sun, 19 Jul 2015 14:45:07 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
 To: Martin Kepplinger <martink@posteo.de>, knaack.h@gmx.de,
@@ -16,151 +16,129 @@ CC: devicetree@vger.kernel.org, linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
 	christoph.muellner@theobroma-systems.com,
 	Martin Kepplinger <martin.kepplinger@theobroma-systems.com>
-Subject: Re: [PATCH 2/8] iio: mma8452: add support for MMA8453Q accelerometer
- chip
-References: <1436186062-5766-1-git-send-email-martink@posteo.de> <1436186062-5766-3-git-send-email-martink@posteo.de>
-In-Reply-To: <1436186062-5766-3-git-send-email-martink@posteo.de>
+Subject: Re: [PATCH 3/8] iio: mma8452: add freefall / motion interrupt source
+References: <1436186062-5766-1-git-send-email-martink@posteo.de> <1436186062-5766-4-git-send-email-martink@posteo.de>
+In-Reply-To: <1436186062-5766-4-git-send-email-martink@posteo.de>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
 On 06/07/15 13:34, Martin Kepplinger wrote:
-> This adds support for the 10 bit version if Freescale's accelerometers
-> of this series. The datasheet is available at Freescale's website:
+> This adds the freefall / motion interrupt source definitions to the driver.
+> It is used in this series' next patch, for chips that don't support the
+> transient interrupt source.
 > 
-> http://cache.freescale.com/files/sensors/doc/data_sheet/MMA8453Q.pdf
+> The iio event type is IIO_EV_TYPE_MAG since the threshold for comparison
+> is no signed value. An interrupt occurs on positive and negative values
+> when the magnitude crosses the threshold value.
 > 
 > Signed-off-by: Martin Kepplinger <martin.kepplinger@theobroma-systems.com>
 > Signed-off-by: Christoph Muellner <christoph.muellner@theobroma-systems.com>
-Again, looks good to me, but I'd like Peter / Martin's Acks ideally.
-
-Jonathan
+Again, looks fine to me.
 > ---
->  drivers/iio/accel/Kconfig   |  6 +++---
->  drivers/iio/accel/mma8452.c | 38 +++++++++++++++++++++++++++++++++++---
->  2 files changed, 38 insertions(+), 6 deletions(-)
+>  drivers/iio/accel/mma8452.c | 45 ++++++++++++++++++++++++++++++++++++---------
+>  1 file changed, 36 insertions(+), 9 deletions(-)
 > 
-> diff --git a/drivers/iio/accel/Kconfig b/drivers/iio/accel/Kconfig
-> index 00e7bcb..dc80dc9 100644
-> --- a/drivers/iio/accel/Kconfig
-> +++ b/drivers/iio/accel/Kconfig
-> @@ -87,13 +87,13 @@ config KXSD9
->  	  will be called kxsd9.
->  
->  config MMA8452
-> -	tristate "Freescale MMA8452Q Accelerometer Driver"
-> +	tristate "Freescale MMA8452Q and similar Accelerometers Driver"
->  	depends on I2C
->  	select IIO_BUFFER
->  	select IIO_TRIGGERED_BUFFER
->  	help
-> -	  Say yes here to build support for the Freescale MMA8452Q 3-axis
-> -	  accelerometer.
-> +	  Say yes here to build support for the following Freescale 3-axis
-> +	  accelerometers: MMA8452Q, MMA8453Q.
->  
->  	  To compile this driver as a module, choose M here: the module
->  	  will be called mma8452.
 > diff --git a/drivers/iio/accel/mma8452.c b/drivers/iio/accel/mma8452.c
-> index 8919bfb..71b40f7 100644
+> index 71b40f7..1337707 100644
 > --- a/drivers/iio/accel/mma8452.c
 > +++ b/drivers/iio/accel/mma8452.c
-> @@ -1,5 +1,8 @@
->  /*
-> - * mma8452.c - Support for Freescale MMA8452Q 3-axis 12-bit accelerometer
-> + * mma8452.c - Support for following Freescale 3-axis accelerometers:
-> + *
-> + *	MMA8452Q
-> + *	MMA8453Q
->   *
->   * Copyright 2014 Peter Meerwald <pmeerw@pmeerw.net>
->   *
-> @@ -27,7 +30,7 @@
+> @@ -38,9 +38,18 @@
+>  #define MMA8452_DATA_CFG 0x0e
+>  #define MMA8452_HP_FILTER_CUTOFF 0x0f
+>  #define MMA8452_HP_FILTER_CUTOFF_SEL_MASK	(BIT(0) | BIT(1))
+> +#define MMA8452_FF_MT_CFG 0x15
+> +#define MMA8452_FF_MT_CFG_OAE			BIT(6)
+> +#define MMA8452_FF_MT_CFG_ELE			BIT(7)
+> +#define MMA8452_FF_MT_SRC 0x16
+> +#define MMA8452_FF_MT_SRC_XHE			BIT(1)
+> +#define MMA8452_FF_MT_SRC_YHE			BIT(3)
+> +#define MMA8452_FF_MT_SRC_ZHE			BIT(5)
+> +#define MMA8452_FF_MT_THS 0x17
+> +#define MMA8452_FF_MT_THS_MASK 0x7f
+> +#define MMA8452_FF_MT_COUNT 0x18
+>  #define MMA8452_TRANSIENT_CFG 0x1d
+>  #define MMA8452_TRANSIENT_CFG_ELE		BIT(4)
+> -#define MMA8452_TRANSIENT_CFG_CHAN(chan)	BIT(chan + 1)
+>  #define MMA8452_TRANSIENT_CFG_HPF_BYP		BIT(0)
+>  #define MMA8452_TRANSIENT_SRC 0x1e
+>  #define MMA8452_TRANSIENT_SRC_XTRANSE		BIT(1)
+> @@ -74,6 +83,7 @@
+>  #define MMA8452_DATA_CFG_HPF_MASK BIT(4)
 >  
->  #define DRIVER_NAME "mma8452"
->  #define MMA8452_STATUS 0x00
-> -#define MMA8452_OUT_X 0x01 /* MSB first, 12-bit  */
-> +#define MMA8452_OUT_X 0x01 /* MSB first, 10 or 12-bit  */
->  #define MMA8452_OUT_Y 0x03
->  #define MMA8452_OUT_Z 0x05
->  #define MMA8452_INT_SRC 0x0c
-> @@ -74,6 +77,7 @@
+>  #define MMA8452_INT_DRDY	BIT(0)
+> +#define MMA8452_INT_FF_MT	BIT(2)
 >  #define MMA8452_INT_TRANS	BIT(5)
 >  
 >  #define MMA8452_DEVICE_ID 0x2a
-> +#define MMA8453_DEVICE_ID 0x3a
+> @@ -591,7 +601,8 @@ static int mma8452_write_event_config(struct iio_dev *indio_dev,
+>  	else
+>  		val &= ~BIT(chan->scan_index + chip->ev_cfg_chan_shift);
 >  
->  struct mma8452_data {
->  	struct i2c_client *client;
-> @@ -745,8 +749,16 @@ static const struct iio_chan_spec mma8452_channels[] = {
->  	IIO_CHAN_SOFT_TIMESTAMP(3),
+> -	val |= MMA8452_TRANSIENT_CFG_ELE;
+> +	val |= chip->ev_cfg_ele;
+> +	val |= MMA8452_FF_MT_CFG_OAE;
+>  
+>  	return mma8452_change_config(data, chip->ev_cfg, val);
+>  }
+> @@ -632,6 +643,7 @@ static irqreturn_t mma8452_interrupt(int irq, void *p)
+>  {
+>  	struct iio_dev *indio_dev = p;
+>  	struct mma8452_data *data = iio_priv(indio_dev);
+> +	const struct mma_chip_info *chip = data->chip_info;
+>  	int ret = IRQ_NONE;
+>  	int src;
+>  
+> @@ -644,7 +656,10 @@ static irqreturn_t mma8452_interrupt(int irq, void *p)
+>  		ret = IRQ_HANDLED;
+>  	}
+>  
+> -	if (src & MMA8452_INT_TRANS) {
+> +	if ((src & MMA8452_INT_TRANS &&
+> +	     chip->ev_src == MMA8452_TRANSIENT_SRC) ||
+> +	    (src & MMA8452_INT_FF_MT &&
+> +	     chip->ev_src == MMA8452_FF_MT_SRC)) {
+>  		mma8452_transient_interrupt(indio_dev);
+>  		ret = IRQ_HANDLED;
+>  	}
+> @@ -705,6 +720,16 @@ static const struct iio_event_spec mma8452_transient_event[] = {
+>  	},
 >  };
 >  
-> +static const struct iio_chan_spec mma8453_channels[] = {
-> +	MMA8452_CHANNEL(X, 0, 10),
-> +	MMA8452_CHANNEL(Y, 1, 10),
-> +	MMA8452_CHANNEL(Z, 2, 10),
-> +	IIO_CHAN_SOFT_TIMESTAMP(3),
+> +static const struct iio_event_spec mma8452_motion_event[] = {
+> +	{
+> +		.type = IIO_EV_TYPE_MAG,
+> +		.dir = IIO_EV_DIR_RISING,
+> +		.mask_separate = BIT(IIO_EV_INFO_ENABLE),
+> +		.mask_shared_by_type = BIT(IIO_EV_INFO_VALUE) |
+> +					BIT(IIO_EV_INFO_PERIOD)
+> +	},
 > +};
 > +
->  enum {
->  	mma8452,
-> +	mma8453,
->  };
+>  /*
+>   * Threshold is configured in fixed 8G/127 steps regardless of
+>   * currently selected scale for measurement.
+> @@ -988,13 +1013,15 @@ static int mma8452_probe(struct i2c_client *client,
 >  
->  static const struct mma_chip_info mma_chip_info_table[] = {
-> @@ -773,7 +785,24 @@ static const struct mma_chip_info mma_chip_info_table[] = {
->  		.ev_ths_mask = MMA8452_TRANSIENT_THS_MASK,
->  		.ev_count = MMA8452_TRANSIENT_COUNT,
->  	},
-> +	[mma8453] = {
-> +		.chip_id = MMA8453_DEVICE_ID,
-> +		.channels = mma8453_channels,
-> +		.num_channels = ARRAY_SIZE(mma8453_channels),
-> +		.mma_scales = { {0, 38307}, {0, 76614}, {0, 153228} },
-> +		.ev_cfg = MMA8452_TRANSIENT_CFG,
-> +		.ev_cfg_ele = MMA8452_TRANSIENT_CFG_ELE,
-> +		.ev_cfg_chan_shift = 1,
-> +		.ev_src = MMA8452_TRANSIENT_SRC,
-> +		.ev_src_xe = MMA8452_TRANSIENT_SRC_XTRANSE,
-> +		.ev_src_ye = MMA8452_TRANSIENT_SRC_YTRANSE,
-> +		.ev_src_ze = MMA8452_TRANSIENT_SRC_ZTRANSE,
-> +		.ev_ths = MMA8452_TRANSIENT_THS,
-> +		.ev_ths_mask = MMA8452_TRANSIENT_THS_MASK,
-> +		.ev_count = MMA8452_TRANSIENT_COUNT,
-> +	},
->  };
-> +
->  static struct attribute *mma8452_attributes[] = {
->  	&iio_dev_attr_sampling_frequency_available.dev_attr.attr,
->  	&iio_dev_attr_in_accel_scale_available.dev_attr.attr,
-> @@ -892,6 +921,7 @@ static int mma8452_reset(struct i2c_client *client)
+>  	if (client->irq) {
+>  		/*
+> -		 * Although we enable the transient interrupt source once and
+> -		 * for all here the transient event detection itself is not
+> -		 * enabled until userspace asks for it by
+> -		 * mma8452_write_event_config()
+> +		 * Although we enable the interrupt sources once and for
+> +		 * all here the event detection itself is not enabled until
+> +		 * userspace asks for it by mma8452_write_event_config()
+>  		 */
+> -		int supported_interrupts = MMA8452_INT_DRDY | MMA8452_INT_TRANS;
+> -		int enabled_interrupts = MMA8452_INT_TRANS;
+> +		int supported_interrupts = MMA8452_INT_DRDY |
+> +					   MMA8452_INT_TRANS |
+> +					   MMA8452_INT_FF_MT;
+> +		int enabled_interrupts = MMA8452_INT_TRANS |
+> +					 MMA8452_INT_FF_MT;
 >  
->  static const struct of_device_id mma8452_dt_ids[] = {
->  	{ .compatible = "fsl,mma8452", .data = &mma_chip_info_table[mma8452] },
-> +	{ .compatible = "fsl,mma8453", .data = &mma_chip_info_table[mma8453] },
->  	{ }
->  };
->  
-> @@ -906,7 +936,8 @@ static int mma8452_probe(struct i2c_client *client,
->  	ret = i2c_smbus_read_byte_data(client, MMA8452_WHO_AM_I);
->  	if (ret < 0)
->  		return ret;
-> -	if (ret != MMA8452_DEVICE_ID)
-> +
-> +	if (ret != MMA8452_DEVICE_ID && ret != MMA8453_DEVICE_ID)
-Perhaps switch this over to a switch statement to prepare for yet more
-devices being supported in future?
->  		return -ENODEV;
->  
->  	match = of_match_device(mma8452_dt_ids, &client->dev);
-> @@ -1053,6 +1084,7 @@ static SIMPLE_DEV_PM_OPS(mma8452_pm_ops, mma8452_suspend, mma8452_resume);
->  
->  static const struct i2c_device_id mma8452_id[] = {
->  	{ "mma8452", mma8452 },
-> +	{ "mma8453", mma8453 },
->  	{ }
->  };
->  MODULE_DEVICE_TABLE(i2c, mma8452_id);
+>  		/* Assume wired to INT1 pin */
+>  		ret = i2c_smbus_write_byte_data(client,
 > 
 
