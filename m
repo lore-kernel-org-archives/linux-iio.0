@@ -1,43 +1,73 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:46986 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:47003 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752417AbbGSMal (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 19 Jul 2015 08:30:41 -0400
-Message-ID: <55AB986F.5060202@kernel.org>
-Date: Sun, 19 Jul 2015 13:30:39 +0100
+	with ESMTP id S1753433AbbGSMdj (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 19 Jul 2015 08:33:39 -0400
+Message-ID: <55AB9922.2020104@kernel.org>
+Date: Sun, 19 Jul 2015 13:33:38 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Fugang Duan <b38611@freescale.com>
+To: Hartmut Knaack <knaack.h@gmx.de>,
+	Andrea Galbusera <gizero@gmail.com>
 CC: linux-iio@vger.kernel.org
-Subject: Re: [PATCH 1/1] iio: adc: vf610: fix the adc register read fail issue
-References: <1437029349-5446-1-git-send-email-b38611@freescale.com>
-In-Reply-To: <1437029349-5446-1-git-send-email-b38611@freescale.com>
+Subject: Re: [PATCH 1/4] iio: adc: mcp320x: add masking of unknown bits
+References: <1436880983-29017-1-git-send-email-gizero@gmail.com> <55A6A295.9020102@gmx.de>
+In-Reply-To: <55A6A295.9020102@gmx.de>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 16/07/15 07:49, Fugang Duan wrote:
-> Read the register only when the adc register address is 4 byte aligned.
+On 15/07/15 19:12, Hartmut Knaack wrote:
+> Andrea Galbusera schrieb am 14.07.2015 um 15:36:
+>> According to the datasheet, the 2 MSBs for parts 3001 and 3201 are
+>> unspecified and should be masked out
+>>
 > 
-> Signed-off-by: Haibo Chen <haibo.chen@freescale.com>
-> Signed-off-by: Fugang Duan <B38611@freescale.com>
-Applied to the fixes-togreg branch of iio.git and marked for stable.
-> ---
->  drivers/iio/adc/vf610_adc.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+> Hi,
+> since resolution is already set, better make it more generic by applying
+> the mask in _read_raw like this:
 > 
-> diff --git a/drivers/iio/adc/vf610_adc.c b/drivers/iio/adc/vf610_adc.c
-> index 480f335..819632b 100644
-> --- a/drivers/iio/adc/vf610_adc.c
-> +++ b/drivers/iio/adc/vf610_adc.c
-> @@ -635,7 +635,7 @@ static int vf610_adc_reg_access(struct iio_dev *indio_dev,
->  	struct vf610_adc *info = iio_priv(indio_dev);
->  
->  	if ((readval == NULL) ||
-> -		(!(reg % 4) || (reg > VF610_REG_ADC_PCTL)))
-> +		((reg % 4) || (reg > VF610_REG_ADC_PCTL)))
->  		return -EINVAL;
->  
->  	*readval = readl(info->regs + reg);
+> *val = ret & GENMASK(adc->chip_info->resolution - 1, 0);
+> 
+> Thanks,
+> Hartmut
+Agreed, that would be cleaner.
+> 
+>> Signed-off-by: Andrea Galbusera <gizero@gmail.com>
+>> ---
+>>
+>> This was already suggested but for some reason got lost during review of a
+>> previous patch. See http://marc.info/?l=linux-iio&m=140748835509583&w=2
+>> and following discussion
+>>
+>>  drivers/iio/adc/mcp320x.c | 4 ++--
+>>  1 file changed, 2 insertions(+), 2 deletions(-)
+>>
+>> diff --git a/drivers/iio/adc/mcp320x.c b/drivers/iio/adc/mcp320x.c
+>> index 8d9c9b9..0673ee7 100644
+>> --- a/drivers/iio/adc/mcp320x.c
+>> +++ b/drivers/iio/adc/mcp320x.c
+>> @@ -114,13 +114,13 @@ static int mcp320x_adc_conversion(struct mcp320x *adc, u8 channel,
+>>  
+>>  	switch (device_index) {
+>>  	case mcp3001:
+>> -		return (adc->rx_buf[0] << 5 | adc->rx_buf[1] >> 3);
+>> +		return ((adc->rx_buf[0] & 0x1f) << 5 | adc->rx_buf[1] >> 3);
+>>  	case mcp3002:
+>>  	case mcp3004:
+>>  	case mcp3008:
+>>  		return (adc->rx_buf[0] << 2 | adc->rx_buf[1] >> 6);
+>>  	case mcp3201:
+>> -		return (adc->rx_buf[0] << 7 | adc->rx_buf[1] >> 1);
+>> +		return ((adc->rx_buf[0] & 0x1f) << 7 | adc->rx_buf[1] >> 1);
+>>  	case mcp3202:
+>>  	case mcp3204:
+>>  	case mcp3208:
+>>
+> 
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
 > 
 
