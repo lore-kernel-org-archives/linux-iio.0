@@ -1,17 +1,16 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pa0-f54.google.com ([209.85.220.54]:34806 "EHLO
-	mail-pa0-f54.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754234AbbGTD7I (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 19 Jul 2015 23:59:08 -0400
+Return-Path: <mranostay@gmail.com>
 From: Matt Ranostay <mranostay@gmail.com>
 To: jic23@kernel.org
-Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-	marex@denx.de, Matt Ranostay <mranostay@gmail.com>
-Subject: [PATCH v4 2/2] iio: light: add APDS9960 ALS + promixity driver
-Date: Sun, 19 Jul 2015 21:00:21 -0700
-Message-Id: <1437364821-7580-1-git-send-email-mranostay@gmail.com>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Cc: linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org,
+	marex@denx.de,
+	Matt Ranostay <mranostay@gmail.com>
+Subject: [PATCH 2/2] iio: light: add APDS9960 ALS + promixity driver
+Date: Sun, 19 Jul 2015 20:57:20 -0700
+Message-Id: <1437364640-7470-3-git-send-email-mranostay@gmail.com>
+In-Reply-To: <1437364640-7470-1-git-send-email-mranostay@gmail.com>
+References: <1437364640-7470-1-git-send-email-mranostay@gmail.com>
+List-ID: <linux-iio@vger.kernel.org>
 
 APDS9960 is a combination of ALS, proximity, and gesture sensors.
 
@@ -1273,4 +1272,3 @@ index 0000000..4d3b56c
 +MODULE_LICENSE("GPL");
 -- 
 1.9.1
-
