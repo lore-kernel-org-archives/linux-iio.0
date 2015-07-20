@@ -1,101 +1,136 @@
-Return-Path: <adam.yh.lee@gmail.com>
-From: Adam YH Lee <adam.yh.lee@gmail.com>
-To: linux-omap@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org
-Cc: linux-iio@vger.kernel.org,
-	sre@kernel.org,
-	jic23@kernel.org,
-	pmeerw@pmeerw.net,
-	Adam YH Lee <adam.yh.lee@gmail.com>
-Subject: [V3] [TWL4030 MADC] Fix ADC[3:6] readings
-Date: Mon, 20 Jul 2015 17:49:15 -0700
-Message-Id: <1437439755-30618-1-git-send-email-adam.yh.lee@gmail.com>
+Return-Path: <xander.huff@ni.com>
+From: Xander Huff <xander.huff@ni.com>
+To: jic23@kernel.org, bigeasy@linutronix.de
+Cc: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
+        michal.simek@xilinx.com, soren.brinkmann@xilinx.com,
+        linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-rt-users@vger.kernel.org, linux-kernel@vger.kernel.org,
+        joe.hershberger@ni.com, joshc@ni.com, nathan.sullivan@ni.com,
+        jaeden.amero@ni.com, Xander Huff <xander.huff@ni.com>
+Subject: [PATCH v3] iio: adc: xilinx-xadc: Push interrupts into threaded context
+Date: Mon, 20 Jul 2015 18:14:10 -0500
+Message-Id: <1437434050-32907-1-git-send-email-xander.huff@ni.com>
+In-Reply-To: <CAKfKVtGTO81wLWk50M303t2WjcBEMEt_LUnsJ3_WmvR_3izUjg@mail.gmail.com>
+References: <CAKfKVtGTO81wLWk50M303t2WjcBEMEt_LUnsJ3_WmvR_3izUjg@mail.gmail.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-MADC[3:6] reads incorrect values without these two following changes:
+The driver currently registers a pair of irq handlers using
+request_threaded_irq(), however the synchronization mechanism between the
+hardirq and the threadedirq handler is a regular spinlock.
 
-- enable the 3v1 bias regulator for ADC[3:6]
-- configure ADC[3:6] lines as input, not as USB
+Unfortunately, this breaks PREEMPT_RT builds, where a spinlock can sleep,
+and is thus not able to be acquired from a hardirq handler. This patch gets
+rid of the hardirq handler and pushes all interrupt handling into the
+threaded context.
 
-Signed-off-by: Adam YH Lee <adam.yh.lee@gmail.com>
+To validate that this change has no impact on RT performance, here are
+cyclictest values with no processes running:
+
+$ sudo cyclictest -S -m -p 98
+# /dev/cpu_dma_latency set to 0us
+policy: fifo: loadavg: 0.05 0.04 0.05 1/237 828
+T: 0 ( 1861) P:98 I:1000 C:56925046 Min: 9 Act: 12 Avg: 12 Max: 71
+T: 1 ( 1862) P:98 I:1500 C:37950030 Min: 9 Act: 12 Avg: 13 Max: 74
+
+Then, all xadc raw handles were accessed in a continuous loop via
+/sys/bus/iio/devices/iio:device0:
+
+$ sudo cyclictest -S -m -p 98
+# /dev/cpu_dma_latency set to 0us
+policy: fifo: loadavg: 7.81 7.64 7.541 2/247 5751
+T: 0 ( 1568) P:98 I:1000 C:23845515 Min: 11 Act: 22 Avg: 21 Max: 71
+T: 1 ( 1569) P:98 I:1500 C:15897239 Min: 11 Act: 21 Avg: 22 Max: 68
+
+Signed-off-by: Xander Huff <xander.huff@ni.com>
 ---
- drivers/iio/adc/twl4030-madc.c | 36 ++++++++++++++++++++++++++++++++++++
- 1 file changed, 36 insertions(+)
+ drivers/iio/adc/xilinx-xadc-core.c | 37 ++++++++-----------------------------
+ 1 file changed, 8 insertions(+), 29 deletions(-)
 
-diff --git a/drivers/iio/adc/twl4030-madc.c b/drivers/iio/adc/twl4030-madc.c
-index 94c5f05..ae33eba 100644
---- a/drivers/iio/adc/twl4030-madc.c
-+++ b/drivers/iio/adc/twl4030-madc.c
-@@ -45,13 +45,18 @@
- #include <linux/types.h>
- #include <linux/gfp.h>
- #include <linux/err.h>
-+#include <linux/regulator/consumer.h>
+diff --git a/drivers/iio/adc/xilinx-xadc-core.c b/drivers/iio/adc/xilinx-xadc-core.c
+index ce93bd8..e16afdb 100644
+--- a/drivers/iio/adc/xilinx-xadc-core.c
++++ b/drivers/iio/adc/xilinx-xadc-core.c
+@@ -267,40 +267,15 @@ static void xadc_zynq_unmask_worker(struct work_struct *work)
+ 	xadc_zynq_update_intmsk(xadc, 0, 0);
  
- #include <linux/iio/iio.h>
- 
-+#define TWL4030_USB_SEL_MADC_MCPC	(1<<3)
-+#define TWL4030_USB_CARKIT_ANA_CTRL	0xBB
-+
- /**
-  * struct twl4030_madc_data - a container for madc info
-  * @dev:		Pointer to device structure for madc
-  * @lock:		Mutex protecting this data structure
-+ * @regulator:		Pointer to bias regulator for madc
-  * @requests:		Array of request struct corresponding to SW1, SW2 and RT
-  * @use_second_irq:	IRQ selection (main or co-processor)
-  * @imr:		Interrupt mask register of MADC
-@@ -60,6 +65,7 @@
- struct twl4030_madc_data {
- 	struct device *dev;
- 	struct mutex lock;	/* mutex protecting this data structure */
-+	struct regulator *usb3v1;
- 	struct twl4030_madc_request requests[TWL4030_MADC_NUM_METHODS];
- 	bool use_second_irq;
- 	u8 imr;
-@@ -848,6 +854,33 @@ static int twl4030_madc_probe(struct platform_device *pdev)
- 		goto err_i2c;
- 	}
- 
-+	/* Configure MADC[3:6] */
-+	ret = twl_i2c_read_u8(TWL_MODULE_USB, &regval,
-+			TWL4030_USB_CARKIT_ANA_CTRL);
-+	if (ret) {
-+		dev_err(&pdev->dev, "unable to read reg CARKIT_ANA_CTRL  0x%X\n",
-+				TWL4030_USB_CARKIT_ANA_CTRL);
-+		goto err_i2c;
-+	}
-+	regval |= TWL4030_USB_SEL_MADC_MCPC;
-+	ret = twl_i2c_write_u8(TWL_MODULE_USB, regval,
-+				 TWL4030_USB_CARKIT_ANA_CTRL);
-+	if (ret) {
-+		dev_err(&pdev->dev, "unable to write reg CARKIT_ANA_CTRL 0x%X\n",
-+				TWL4030_USB_CARKIT_ANA_CTRL);
-+		goto err_i2c;
-+	}
-+
-+
-+	/* Enable 3v1 bias regulator for MADC[3:6] */
-+	madc->usb3v1 = devm_regulator_get(madc->dev, "vusb3v1");
-+	if (IS_ERR(madc->usb3v1))
-+		return -ENODEV;
-+
-+	ret = regulator_enable(madc->usb3v1);
-+	if (ret)
-+		dev_err(madc->dev, "could not enable 3v1 bias regulator\n");
-+
- 	return 0;
- 
- err_i2c:
-@@ -867,6 +900,9 @@ static int twl4030_madc_remove(struct platform_device *pdev)
- 	twl4030_madc_set_current_generator(madc, 0, 0);
- 	twl4030_madc_set_power(madc, 0);
- 
-+	regulator_disable(madc->usb3v1);
-+	devm_regulator_put(madc->usb3v1);
-+
- 	return 0;
+ 	spin_unlock_irq(&xadc->lock);
+-
+-	/* if still pending some alarm re-trigger the timer */
+-	if (xadc->zynq_masked_alarm) {
+-		schedule_delayed_work(&xadc->zynq_unmask_work,
+-				msecs_to_jiffies(XADC_ZYNQ_UNMASK_TIMEOUT));
+-	}
  }
  
+ static irqreturn_t xadc_zynq_threaded_interrupt_handler(int irq, void *devid)
+ {
+ 	struct iio_dev *indio_dev = devid;
+ 	struct xadc *xadc = iio_priv(indio_dev);
+-	unsigned int alarm;
+-
+-	spin_lock_irq(&xadc->lock);
+-	alarm = xadc->zynq_alarm;
+-	xadc->zynq_alarm = 0;
+-	spin_unlock_irq(&xadc->lock);
+-
+-	xadc_handle_events(indio_dev, xadc_zynq_transform_alarm(alarm));
+-
+-	/* unmask the required interrupts in timer. */
+-	schedule_delayed_work(&xadc->zynq_unmask_work,
+-			msecs_to_jiffies(XADC_ZYNQ_UNMASK_TIMEOUT));
+-
+-	return IRQ_HANDLED;
+-}
+-
+-static irqreturn_t xadc_zynq_interrupt_handler(int irq, void *devid)
+-{
+-	struct iio_dev *indio_dev = devid;
+-	struct xadc *xadc = iio_priv(indio_dev);
+ 	irqreturn_t ret = IRQ_HANDLED;
+ 	uint32_t status;
++	unsigned int alarm;
+ 
+ 	xadc_read_reg(xadc, XADC_ZYNQ_REG_INTSTS, &status);
+ 
+@@ -312,7 +287,6 @@ static irqreturn_t xadc_zynq_interrupt_handler(int irq, void *devid)
+ 	spin_lock(&xadc->lock);
+ 
+ 	xadc_write_reg(xadc, XADC_ZYNQ_REG_INTSTS, status);
+-
+ 	if (status & XADC_ZYNQ_INT_DFIFO_GTH) {
+ 		xadc_zynq_update_intmsk(xadc, XADC_ZYNQ_INT_DFIFO_GTH,
+ 			XADC_ZYNQ_INT_DFIFO_GTH);
+@@ -330,8 +304,14 @@ static irqreturn_t xadc_zynq_interrupt_handler(int irq, void *devid)
+ 		xadc_zynq_update_intmsk(xadc, 0, 0);
+ 		ret = IRQ_WAKE_THREAD;
+ 	}
++
++	alarm = xadc->zynq_alarm;
++	xadc->zynq_alarm = 0;
++
+ 	spin_unlock(&xadc->lock);
+ 
++	xadc_handle_events(indio_dev, xadc_zynq_transform_alarm(alarm));
++
+ 	return ret;
+ }
+ 
+@@ -436,7 +416,6 @@ static const struct xadc_ops xadc_zynq_ops = {
+ 	.write = xadc_zynq_write_adc_reg,
+ 	.setup = xadc_zynq_setup,
+ 	.get_dclk_rate = xadc_zynq_get_dclk_rate,
+-	.interrupt_handler = xadc_zynq_interrupt_handler,
+ 	.threaded_interrupt_handler = xadc_zynq_threaded_interrupt_handler,
+ 	.update_alarm = xadc_zynq_update_alarm,
+ };
+@@ -1225,7 +1204,7 @@ static int xadc_probe(struct platform_device *pdev)
+ 	if (ret)
+ 		goto err_free_samplerate_trigger;
+ 
+-	ret = request_threaded_irq(irq, xadc->ops->interrupt_handler,
++	ret = request_threaded_irq(irq, NULL,
+ 				xadc->ops->threaded_interrupt_handler,
+ 				0, dev_name(&pdev->dev), indio_dev);
+ 	if (ret)
 -- 
-2.1.4
+1.9.1
