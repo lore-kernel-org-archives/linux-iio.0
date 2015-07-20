@@ -1,119 +1,34 @@
-Return-Path: <pmeerw@pmeerw.net>
-Date: Mon, 20 Jul 2015 20:54:51 +0200 (CEST)
-From: Peter Meerwald <pmeerw@pmeerw.net>
-To: Adam YH Lee <adam.yh.lee@gmail.com>
-cc: linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-    linux-iio@vger.kernel.org, sre@kernel.org, jic23@kernel.org
-Subject: Re: [PATCH] [TWL4030 MADC] Fix ADC[3:6] readings
-In-Reply-To: <1437416058-24586-2-git-send-email-adam.yh.lee@gmail.com>
-Message-ID: <alpine.DEB.2.02.1507202051270.18050@pmeerw.net>
-References: <1437416058-24586-1-git-send-email-adam.yh.lee@gmail.com> <1437416058-24586-2-git-send-email-adam.yh.lee@gmail.com>
+Return-Path: <dannenberg@ti.com>
+Message-ID: <55AD3C72.4050607@ti.com>
+Date: Mon, 20 Jul 2015 13:22:42 -0500
+From: Andreas Dannenberg <dannenberg@ti.com>
 MIME-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
+To: Jonathan Cameron <jic23@kernel.org>, <linux-iio@vger.kernel.org>,
+        <devicetree@vger.kernel.org>
+Subject: Re: [PATCH v3 2/2] iio: light: opt3001: Add device tree binding documentation
+References: <1435876079-26287-1-git-send-email-dannenberg@ti.com> <1435876079-26287-3-git-send-email-dannenberg@ti.com> <55993A7D.7090806@kernel.org> <55ABA358.3040700@kernel.org>
+In-Reply-To: <55ABA358.3040700@kernel.org>
+Content-Type: text/plain; charset="windows-1252"
 List-ID: <linux-iio@vger.kernel.org>
 
-On Mon, 20 Jul 2015, Adam YH Lee wrote:
+Hi Jon,
 
-> MADC[3:6] reads incorrect values without these two following changes:
-> 
-> - enable the 3v1 bias regulator for ADC[3:6]
-> - configure ADC[3:6] lines as input, not as USB
+On 07/19/2015 08:17 AM, Jonathan Cameron wrote:
+> On 05/07/15 15:09, Jonathan Cameron wrote:
+>> On 02/07/15 23:27, Andreas Dannenberg wrote:
+>>> Signed-off-by: Andreas Dannenberg <dannenberg@ti.com>
+>> Utterly standard binding so unless someone shouts, I'll pick this
+>> up with the driver.
+> Applied to the togreg branch of iio.git - initially pushed
+> out as testing for the autobuilders to play with it.
 
-comments below
- 
-> Signed-off-by: Adam YH Lee <adam.yh.lee@gmail.com>
-> ---
->  drivers/iio/adc/twl4030-madc.c | 14 ++++++++++++++
->  drivers/phy/phy-twl4030-usb.c  |  7 +++++++
->  2 files changed, 21 insertions(+)
-> 
-> diff --git a/drivers/iio/adc/twl4030-madc.c b/drivers/iio/adc/twl4030-madc.c
-> index 94c5f05..b5020ab 100644
-> --- a/drivers/iio/adc/twl4030-madc.c
-> +++ b/drivers/iio/adc/twl4030-madc.c
-> @@ -45,6 +45,7 @@
->  #include <linux/types.h>
->  #include <linux/gfp.h>
->  #include <linux/err.h>
-> +#include <linux/regulator/consumer.h>
->  
->  #include <linux/iio/iio.h>
->  
-> @@ -52,6 +53,7 @@
->   * struct twl4030_madc_data - a container for madc info
->   * @dev:		Pointer to device structure for madc
->   * @lock:		Mutex protecting this data structure
-> + * @regulator:		Pointer to bias regulator for madc
->   * @requests:		Array of request struct corresponding to SW1, SW2 and RT
->   * @use_second_irq:	IRQ selection (main or co-processor)
->   * @imr:		Interrupt mask register of MADC
-> @@ -60,6 +62,7 @@
->  struct twl4030_madc_data {
->  	struct device *dev;
->  	struct mutex lock;	/* mutex protecting this data structure */
-> +	struct regulator *usb3v1;
->  	struct twl4030_madc_request requests[TWL4030_MADC_NUM_METHODS];
->  	bool use_second_irq;
->  	u8 imr;
-> @@ -848,6 +851,14 @@ static int twl4030_madc_probe(struct platform_device *pdev)
->  		goto err_i2c;
->  	}
->  
-> +	madc->usb3v1 = devm_regulator_get(madc->dev, "vusb3v1");
-> +	if (IS_ERR(madc->usb3v1))
-> +		return -ENODEV;
-> +
-> +	ret = regulator_enable(madc->usb3v1);
-> +	if (ret)
-> +		dev_err(madc->dev, "could not be enable 3v1 bias regulator\n");
+Thanks. Found it on the 'testing' branch, pulled the entire branch,
+and successfully re-ran all my HW tests without any findings.
 
-please fix wording, "could not enable usb 3v1 bias regulator" probably
+Regards,
+Andreas
 
-> +
->  	return 0;
->  
->  err_i2c:
-> @@ -867,6 +878,9 @@ static int twl4030_madc_remove(struct platform_device *pdev)
->  	twl4030_madc_set_current_generator(madc, 0, 0);
->  	twl4030_madc_set_power(madc, 0);
->  
-> +	regulator_disable(madc->usb3v1);
-> +	regulator_put(madc->usb3v1);
-> +
->  	return 0;
->  }
->  
-> diff --git a/drivers/phy/phy-twl4030-usb.c b/drivers/phy/phy-twl4030-usb.c
-> index 7b04bef..88fc7d7 100644
-> --- a/drivers/phy/phy-twl4030-usb.c
-> +++ b/drivers/phy/phy-twl4030-usb.c
-> @@ -144,6 +144,9 @@
->  #define PMBR1				0x0D
->  #define GPIO_USB_4PIN_ULPI_2430C	(3 << 0)
->  
-> +#define TWL4030_USB_SEL_MADC_MCPC	(1<<3)
-> +#define TWL4030_USB_CARKIT_ANA_CTRL	0xBB
-> +
->  struct twl4030_usb {
->  	struct usb_phy		phy;
->  	struct device		*dev;
-> @@ -459,6 +462,10 @@ static int twl4030_phy_power_on(struct phy *phy)
->  		twl4030_i2c_access(twl, 0);
->  	schedule_delayed_work(&twl->id_workaround_work, 0);
->  
-> +	twl4030_usb_write(twl, TWL4030_USB_CARKIT_ANA_CTRL,
-> +		twl4030_usb_read(twl, TWL4030_USB_CARKIT_ANA_CTRL) |
-> +		TWL4030_USB_SEL_MADC_MCPC);
-> +
-
-shouldn't this be done is the adc driver?
-
->  	return 0;
->  }
->  
-> 
 
 -- 
-
-Peter Meerwald
-+43-664-2444418 (mobile)
+Andreas Dannenberg
+Texas Instruments Inc.
