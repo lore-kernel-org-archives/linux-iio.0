@@ -4,8 +4,8 @@ In-Reply-To: <55AB7FBE.1060707@kernel.org>
 References: <1436754043-6232-1-git-send-email-mranostay@gmail.com>
 	<1436754043-6232-3-git-send-email-mranostay@gmail.com>
 	<55AB7FBE.1060707@kernel.org>
-Date: Sun, 19 Jul 2015 18:56:52 -0700
-Message-ID: <CAKzfze_2wchApiDHRaCWTgRWL_eep42hOdyXHnrE4Ox6UVxK5A@mail.gmail.com>
+Date: Sun, 19 Jul 2015 17:07:28 -0700
+Message-ID: <CAKzfze81==60bjdp-qd1tH5jcf=+1v6QEs+LbPsC-w00AmT+fw@mail.gmail.com>
 Subject: Re: [PATCH v3 2/2] iio: light: add APDS9960 ALS + promixity driver
 From: Matt Ranostay <mranostay@gmail.com>
 To: Jonathan Cameron <jic23@kernel.org>
@@ -177,6 +177,8 @@ On Sun, Jul 19, 2015 at 3:45 AM, Jonathan Cameron <jic23@kernel.org> wrote:
 >> +             Set the gain value for the ALS + RGB sensor engines.
 > Nothing at all in here is non standard, so as things currently stand
 > you don't need the additional ABI document.
+Ok will drop in v4
+
 >>
 > diff --git a/drivers/iio/light/Kconfig b/drivers/iio/light/Kconfig
 >> index e6198b7..6a4a47c7 100644
@@ -190,6 +192,9 @@ On Sun, Jul 19, 2015 at 3:45 AM, Jonathan Cameron <jic23@kernel.org> wrote:
 >> +     tristate "Avago APDS9960 gesture/RGB/ALS/proximity sensor"
 >> +     select IIO_BUFFER
 > missing regmap_i2c dependency.
+
+Noted
+
 >> +     select IIO_TRIGGERED_BUFFER
 >> +     depends on I2C
 >> +     help
@@ -385,11 +390,15 @@ On Sun, Jul 19, 2015 at 3:45 AM, Jonathan Cameron <jic23@kernel.org> wrote:
 >> +static const struct reg_default apds9960_reg_defaults[] = {
 >> +     { APDS9960_REG_ATIME,           0xff },
 > Could you add some explantion of these.
+Ok will do in v4
+
 >> +     { APDS9960_REG_WTIME,           0xff },
 >> +     { APDS9960_REG_CONFIG_1,        0x40 },
 > Where it can be defined in terms of other various elements, please break
 > them down.  Particuarly true, when as with the above, the bit being set
 > looks to be marked reserved but so are other bits in that register...
+
+This is the POR defaults per the datasheet.
 >
 >> +     { APDS9960_REG_CONFIG_2,        0x01 },
 >> +     { APDS9960_REG_PPULSE,          0x40 },
@@ -520,6 +529,9 @@ On Sun, Jul 19, 2015 at 3:45 AM, Jonathan Cameron <jic23@kernel.org> wrote:
 >> +static const struct iio_chan_spec apds9960_channels[] = {
 > Interesting approach.  Guess it doesn't make sense to push the normal
 > proximity / als through the buffer..
+
+Also when in gesture mode the ALS + pxs sensor is disabled till it exits
+
 >> +     {
 >> +             .type = IIO_PROXIMITY,
 >> +             .address = APDS9960_REG_PDATA,
@@ -732,9 +744,6 @@ On Sun, Jul 19, 2015 at 3:45 AM, Jonathan Cameron <jic23@kernel.org> wrote:
 > If the channels don't have explicity channel mask entries for a polled
 > read then there will be no way of reading them anyway except through the
 > buffered interface.
-
-What context do you mean by channel mask entries?
-
 >> +                             /*
 >> +                              * Cannot poll the GESTURE channels which are
 >> +                              * just usable with triggered buffers.
@@ -1039,12 +1048,20 @@ What context do you mean by channel mask entries?
 > Using the chained form restricts (more or less) using this trigger to
 > driver any other sensors.  Perhaps fine for now, but we may want to
 > do the more complex approach to fire on a real interrupt later.
+
+Issue with a real interrupt is the FIFO reads take too long to
+complete (32 * 4 buffer with 32 i2c reads).. have to offload to
+threads for now.
+
 >
 >> +
 >> +     regmap_write(data->regmap, APDS9960_REG_AICLEAR, 1);
 > Might be ideal to clear the als and prox interrupts separately as in theory
 > you have a race condition here where you are clearing an interrupt you
 > haven't necessarily seen (between the status read and the clear).
+
+Noted.
+
 >> +
 >> +     return IRQ_HANDLED;
 >> +}
@@ -1128,6 +1145,7 @@ What context do you mean by channel mask entries?
 >> +             return ret;
 > return directly.  Given only false value is 0 it'll be the same and 6 lines
 > shorter.
+Got it.
 >> +
 >> +     return 0;
 >> +}
@@ -1183,6 +1201,10 @@ What context do you mean by channel mask entries?
 > This feels like a rather long function for what it is doing.
 > Worth trying to do these with an enum indexed array?  Might not
 > be worthwhile.
+
+I agree this is a bit long, but any better way to alloc all the regmap
+bitfields?
+
 >> +     data->reg_int_als =
 >> +             devm_regmap_field_alloc(dev, regmap, reg_field_int_als);
 >> +     if (IS_ERR(data->reg_int_als)) {
@@ -1279,6 +1301,10 @@ What context do you mean by channel mask entries?
 >> +      * Wait for 4 event outside gesture threshold to prevent interrupt
 >> +      * flooding.
 > Strikes me that this will want  to be configurable in the long run.
+
+Yes for sure but however this requires to disable the function and
+re-enable it. But like wtime this is something to plan for the future.
+
 >> +      */
 >> +     ret = regmap_update_bits(data->regmap, APDS9960_REG_GCONF_1,
 >> +                     APDS9960_REG_GCONF_1_GFIFO_THRES_MASK,
