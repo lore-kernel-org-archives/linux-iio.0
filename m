@@ -1,98 +1,206 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:57371 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:57391 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755806AbbGTRya (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 20 Jul 2015 13:54:30 -0400
-Message-ID: <55AD35D1.7000607@kernel.org>
-Date: Mon, 20 Jul 2015 18:54:25 +0100
+	with ESMTP id S1756983AbbGTR4X (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 20 Jul 2015 13:56:23 -0400
+Message-ID: <55AD3645.4000801@kernel.org>
+Date: Mon, 20 Jul 2015 18:56:21 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 MIME-Version: 1.0
-To: Adam Lee <adam.yh.lee@gmail.com>,
-	Peter Meerwald <pmeerw@pmeerw.net>
-CC: Sebastian Reichel <sre@kernel.org>, linux-omap@vger.kernel.org,
-	linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH] [TWL4030 MADC] Fix ADC[3:6] readings
-References: <1437085227-28845-1-git-send-email-adam.yh.lee@gmail.com>	<1437085227-28845-2-git-send-email-adam.yh.lee@gmail.com>	<20150717090039.GC9331@earth>	<alpine.DEB.2.02.1507171136180.14972@pmeerw.net> <CAFeBWL6ARBReHq8jom3kGu3iOaPib41nOJ3-gx358nYwsGKLfw@mail.gmail.com>
-In-Reply-To: <CAFeBWL6ARBReHq8jom3kGu3iOaPib41nOJ3-gx358nYwsGKLfw@mail.gmail.com>
+To: Crt Mori <cmo@melexis.com>
+CC: linux-iio@vger.kernel.org, Peter Meerwald <pmeerw@pmeerw.net>,
+	=?UTF-8?B?Vmlhbm5leSBsZSBDbMOpbWVudCBkZSBTYWludC1NYXJjcQ==?=
+	<vianney.leclement@essensium.com>
+Subject: Re: [PATCH] iio: mlx90614: Define magic numbers
+References: <CAKv63utwT_KTvTYcOogAWQ4NUcVUsAFvFgWwqa2rZ+5+1bM7Cw@mail.gmail.com> <55AB8B13.7090907@kernel.org> <CAKv63ut35A_f2P_xdrtCtsc8mPztDx1h2PaFz4JYC1r5NhR-Ww@mail.gmail.com>
+In-Reply-To: <CAKv63ut35A_f2P_xdrtCtsc8mPztDx1h2PaFz4JYC1r5NhR-Ww@mail.gmail.com>
 Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 20/07/15 18:47, Adam Lee wrote:
-> Hello, here is some more context from the TPS65950's TRM [1].
+On 19/07/15 21:14, Crt Mori wrote:
+> Translates the magic constant numbers to named macros and add some
+> additional comments about their meaning.
 > 
-> Quoting from section 15.3.1.2.1 VUSB3V1 section:
+> The diff is made towards togreg branch as that branch seems to have the
+> most recent updates of mlx90614 driver (many are yet to be merged).
 > 
->     "VUSB3V1 is also used to bias analog multiplexers on the four MCPC
-> pins between the carkit and the MADC (supplied by VINTANA2)."
-> 
-> 
-> And from section 15.4.11. MADC Monitoring Using MCPC:
-> 
->     "Four MCPC pins can be selected as analog conversion input pins by
-> setting the CARKIT_ANA_CTRL[3] SEL_MADC_MCPC bit."
-> 
-> My patch addresses both (set the register, and enable 3v1). And yes it
-> has been tested on Gumstix Overo COMs (OMAP3 + TPS65950).
-> 
-> Hope to hear from IIO maintainers!
-I dug the patch out of the archives.
+> Signed-off-by: Crt Mori <cmo@melexis.com <mailto:cmo@melexis.com>>
+> Acked-by: Peter Meerwald <pmeerw@pmeerw.net <mailto:pmeerw@pmeerw.net>>
+Hi Crt,
 
-Looks clear enough to me.  Could you resend the patch with linux-iio cc'd?
-I will want an Ack from Sebastian.
+Sorry to be a pain.  Could you send this as a fresh patch on it's own.
+It's tricky to use standard tools to pull it out of an email like this.
 
-Thanks,
+Also, could you check the spacing below as I think your email client
+may have eaten some.
 
-Jonathan
-
+J
+> ---
+>  drivers/iio/temperature/mlx90614.c | 20 ++++++++++++++------
+>  1 file changed, 14 insertions(+), 6 deletions(-)
 > 
-> [1] http://www.droid-developers.org/images/2/21/Tps65950_TRM.pdf
+> diff --git a/drivers/iio/temperature/mlx90614.c
+> b/drivers/iio/temperature/mlx90614.c
+> index cb2e8ad..909278a 100644
+> --- a/drivers/iio/temperature/mlx90614.c
+> +++ b/drivers/iio/temperature/mlx90614.c
+> @@ -65,6 +65,13 @@
 > 
-> On Fri, Jul 17, 2015 at 2:42 AM, Peter Meerwald <pmeerw@pmeerw.net> wrote:
->> Hello,
->>
->> adding linux-iio...
->>
->>> To get a chance of this patch being considered for inclusion, you
->>> should send this to the maintainers of the phy and iio framework.
->>> There is a high chance, that none of them will see your mail.
->>>
->>> On Thu, Jul 16, 2015 at 03:20:27PM -0700, Adam YH Lee wrote:
->>>> MADC[3:6] reads incorrect values without these two following changes:
->>>
->>> uhm MADC[3:6] are externally available analog inputs. Your
->>> change will result in them being tied to the USB module.
->>
->> change regarding TWL4030_USB_SEL_MADC_MCPC is necessary at
->> least for some hardware revisions to get proper ADC values
->>
->>>> - enable the 3v1 bias regulator for ADC[3:6]
->>>
->>> The regulator is not required for correct MADC functionality, but
->>> for correct USB measureing. The regulator should not be requested
->>> by the madc module, but by the usb module, which is connected to
->>> the madc.
->>
->> in my experience, the MADC exhibits several strange things, I wouldn't be
->> surprised that this bias is somehow necessary for operation even if it is
->> not what the spec says -- has this been tested?
->>
->>>> - configure ADC[3:6] lines as input, not as USB
->>>
->>> I don't think that should be done for all boards.
->>>
->>>> [...]
->>>
->>> -- Sebastian
->>>
->>
->> --
->>
->> Peter Meerwald
->> +43-664-2444418 (mobile)
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+>  #define MLX90614_AUTOSLEEP_DELAY 5000 /* default autosleep delay */
+> 
+> +/* Magic constants */
+> +#define MLX90614_CONST_OFFSET_DEC -13657 /* decimal part of the
+> Kelvin offset */
+> +#define MLX90614_CONST_OFFSET_REM 500000 /* remainder of offset (273.15*50) */
+> +#define MLX90614_CONST_SCALE 20 /* Scale in milliKelvin (0.02 * 1000) */
+> +#define MLX90614_CONST_RAW_EMISSIVITY_MAX 65535 /* max value for emissivity */
+> +#define MLX90614_CONST_EMISSIVITY_RESOLUTION 15259 /* 1/65535 ~ 0.000015259 */
+> +
+>  struct mlx90614_data {
+> struct i2c_client *client;
+> struct mutex lock; /* for EEPROM access only */
+> @@ -204,11 +211,11 @@ static int mlx90614_read_raw(struct iio_dev *indio_dev,
+> *val = ret;
+> return IIO_VAL_INT;
+> case IIO_CHAN_INFO_OFFSET:
+> -*val = 13657;
+> -*val2 = 500000;
+> +*val = MLX90614_CONST_OFFSET_DEC;
+> +*val2 = MLX90614_CONST_OFFSET_REM;
+> return IIO_VAL_INT_PLUS_MICRO;
+> case IIO_CHAN_INFO_SCALE:
+> -*val = 20;
+> +*val = MLX90614_CONST_SCALE;
+> return IIO_VAL_INT;
+> case IIO_CHAN_INFO_CALIBEMISSIVITY: /* 1/65535 / LSB */
+> mlx90614_power_get(data, false);
+> @@ -221,12 +228,12 @@ static int mlx90614_read_raw(struct iio_dev *indio_dev,
+> if (ret < 0)
+> return ret;
+> 
+> -if (ret == 65535) {
+> +if (ret == MLX90614_CONST_RAW_EMISSIVITY_MAX) {
+> *val = 1;
+> *val2 = 0;
+> } else {
+> *val = 0;
+> -*val2 = ret * 15259; /* 1/65535 ~ 0.000015259 */
+> +*val2 = ret * MLX90614_CONST_EMISSIVITY_RESOLUTION;
+> }
+> return IIO_VAL_INT_PLUS_NANO;
+> default:
+> @@ -245,7 +252,8 @@ static int mlx90614_write_raw(struct iio_dev *indio_dev,
+> case IIO_CHAN_INFO_CALIBEMISSIVITY: /* 1/65535 / LSB */
+> if (val < 0 || val2 < 0 || val > 1 || (val == 1 && val2 != 0))
+> return -EINVAL;
+> -val = val * 65535 + val2 / 15259; /* 1/65535 ~ 0.000015259 */
+> +val = val * MLX90614_CONST_RAW_EMISSIVITY_MAX +
+> +val2 / MLX90614_CONST_EMISSIVITY_RESOLUTION;
+> 
+> mlx90614_power_get(data, false);
+> mutex_lock(&data->lock);
+> 
+> 
+> On 19 July 2015 at 13:33, Jonathan Cameron <jic23@kernel.org <mailto:jic23@kernel.org>> wrote:
+> 
+>     On 05/07/15 19:07, Crt Mori wrote:
+>     > Translates the magic constant numbers to named macros and add some
+>     > additional comments about their meaning.
+>     >
+>     > The diff is made towards togreg branch as that branch seems to have the
+>     > most recent updates of mlx90614 driver (many are yet to be merged).
+>     >
+>     > Signed-off-by: Crt Mori <cmo@melexis.com <mailto:cmo@melexis.com>>
+>     > Acked-by: Peter Meerwald <pmeerw@pmeerw.net <mailto:pmeerw@pmeerw.net>>
+>     Crt,
+> 
+>     This patch is malformed, probably as a result of your email client.
+>     It seems to have replaced tabs with spaces meaning I can't apply this
+>     without doing it line by line.
+> 
+>     Could you take a look at Documentation/SubmittingPatches and the advice
+>     in there on how to lure an email client into not messing things up.
+> 
+>     If you can't persuade that to work, I will take the occasional attachment.
+> 
+>     Otherwise, the patch looks fine. 
+> 
+>     Jonathan
+> 
+> I hope it is now OK? I needed to turn off google's mail mode, and apparently plain text
+> mode also translates tabs into spaces. I have now fixed the tabs and I hope they are
+> also sent. Please let me know - I will otherwise just pull some mail client and get it
+> working.
+> 
+> Crt
+>  
+> 
+>     > ---
+>     >  drivers/iio/temperature/mlx90614.c | 20 ++++++++++++++------
+>     >  1 file changed, 14 insertions(+), 6 deletions(-)
+>     >
+>     > diff --git a/drivers/iio/temperature/mlx90614.c
+>     > b/drivers/iio/temperature/mlx90614.c
+>     > index cb2e8ad..909278a 100644
+>     > --- a/drivers/iio/temperature/mlx90614.c
+>     > +++ b/drivers/iio/temperature/mlx90614.c
+>     > @@ -65,6 +65,13 @@
+>     >
+>     >  #define MLX90614_AUTOSLEEP_DELAY 5000 /* default autosleep delay */
+>     >
+>     > +/* Magic constants */
+>     > +#define MLX90614_CONST_OFFSET_DEC -13657 /* decimal part of the
+>     > Kelvin offset */
+>     > +#define MLX90614_CONST_OFFSET_REM 500000 /* remainder of offset (273.15*50) */
+>     > +#define MLX90614_CONST_SCALE 20 /* Scale in milliKelvin (0.02 * 1000) */
+>     > +#define MLX90614_CONST_RAW_EMISSIVITY_MAX 65535 /* max value for emissivity */
+>     > +#define MLX90614_CONST_EMISSIVITY_RESOLUTION 15259 /* 1/65535 ~ 0.000015259 */
+>     > +
+>     >  struct mlx90614_data {
+>     >         struct i2c_client *client;
+>     >         struct mutex lock; /* for EEPROM access only */
+>     > @@ -204,11 +211,11 @@ static int mlx90614_read_raw(struct iio_dev *indio_dev,
+>     >                 *val = ret;
+>     >                 return IIO_VAL_INT;
+>     >         case IIO_CHAN_INFO_OFFSET:
+>     > -               *val = 13657;
+>     > -               *val2 = 500000;
+>     > +               *val = MLX90614_CONST_OFFSET_DEC;
+>     > +               *val2 = MLX90614_CONST_OFFSET_REM;
+>     >                 return IIO_VAL_INT_PLUS_MICRO;
+>     >         case IIO_CHAN_INFO_SCALE:
+>     > -               *val = 20;
+>     > +               *val = MLX90614_CONST_SCALE;
+>     >                 return IIO_VAL_INT;
+>     >         case IIO_CHAN_INFO_CALIBEMISSIVITY: /* 1/65535 / LSB */
+>     >                 mlx90614_power_get(data, false);
+>     > @@ -221,12 +228,12 @@ static int mlx90614_read_raw(struct iio_dev *indio_dev,
+>     >                 if (ret < 0)
+>     >                         return ret;
+>     >
+>     > -               if (ret == 65535) {
+>     > +               if (ret == MLX90614_CONST_RAW_EMISSIVITY_MAX) {
+>     >                         *val = 1;
+>     >                         *val2 = 0;
+>     >                 } else {
+>     >                         *val = 0;
+>     > -                       *val2 = ret * 15259; /* 1/65535 ~ 0.000015259 */
+>     > +                       *val2 = ret * MLX90614_CONST_EMISSIVITY_RESOLUTION;
+>     >                 }
+>     >                 return IIO_VAL_INT_PLUS_NANO;
+>     >         default:
+>     > @@ -245,7 +252,8 @@ static int mlx90614_write_raw(struct iio_dev *indio_dev,
+>     >         case IIO_CHAN_INFO_CALIBEMISSIVITY: /* 1/65535 / LSB */
+>     >                 if (val < 0 || val2 < 0 || val > 1 || (val == 1 && val2 != 0))
+>     >                         return -EINVAL;
+>     > -               val = val * 65535 + val2 / 15259; /* 1/65535 ~ 0.000015259 */
+>     > +               val = val * MLX90614_CONST_RAW_EMISSIVITY_MAX +
+>     > +                       val2 / MLX90614_CONST_EMISSIVITY_RESOLUTION;
+>     >
+>     >                 mlx90614_power_get(data, false);
+>     >                 mutex_lock(&data->lock);
+>     >
+> 
 > 
 
