@@ -1,43 +1,49 @@
-Return-Path: <giuseppe.barba@st.com>
-From: Giuseppe Barba <giuseppe.barba@st.com>
-To: <linux-iio@vger.kernel.org>
-CC: <denis.ciocca@st.com>, <jic23@kernel.org>,
-        Giuseppe Barba
-	<giuseppe.barba@st.com>
-Subject: [PATCH V2 0/5] Added ST LSM303AGR sensor
-Date: Mon, 20 Jul 2015 16:20:24 +0200
-Message-ID: <1437402029-29786-1-git-send-email-giuseppe.barba@st.com>
+Return-Path: <dan.carpenter@oracle.com>
+Date: Mon, 20 Jul 2015 17:14:24 +0300
+From: Dan Carpenter <dan.carpenter@oracle.com>
+To: Teodora Baluta <teodora.baluta@intel.com>
+Cc: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
+        daniel.baluta@intel.com, linux-iio@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 2/2] iio: magnetometer: add mmc34160 magnetometer
+ driver
+Message-ID: <20150720141424.GJ5422@mwanda>
+References: <1437400350-25960-1-git-send-email-teodora.baluta@intel.com>
+ <1437400350-25960-3-git-send-email-teodora.baluta@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <1437400350-25960-3-git-send-email-teodora.baluta@intel.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-This patch set add support for STMicroelectronics LSM303AGR device,
-which embeds an accelerometer and a magnetometer sensors.
-These patches have been rebased on iio repo testing branch and tested on Panda
-board.
+On Mon, Jul 20, 2015 at 04:52:30PM +0300, Teodora Baluta wrote:
+> +static int mmc34160_raw_to_mgauss(int raw[3], int sens[3], int nfo,
+> +				  int index, int *val)
+> +{
+> +	switch (index) {
+> +	case AXIS_X:
+> +		*val = (raw[AXIS_X] - nfo) * 1000 / sens[AXIS_X];
+> +		break;
+> +	case AXIS_Y:
+> +		*val = (raw[AXIS_Y] - nfo) * 1000 / sens[AXIS_Y];
+> +		break;
+> +	case AXIS_Z:
+> +		*val = (raw[AXIS_Z] - nfo) * 1000 / sens[AXIS_Z];
+> +		break;
+> +	default:
+> +		return -EINVAL;
+> +	}
+> +
+> +	return 0;
+> +}
 
-Giuseppe Barba (5):
-  iio: st-sensors: add configuration for WhoAmI address
-  iio: st-sensors: add support for single full scale device
-  iio: st_magn: Add irq trigger handling
-  iio: st-accel: add support for lsm303agr accelerometer
-  iio: st-magn: add support for lsm303agr magnetometer
+We never pass invalid indexes here so this could be replaced with:
 
- .../devicetree/bindings/iio/st-sensors.txt         |  2 +
- drivers/iio/accel/st_accel.h                       |  1 +
- drivers/iio/accel/st_accel_core.c                  |  6 ++
- drivers/iio/accel/st_accel_i2c.c                   |  5 ++
- drivers/iio/accel/st_accel_spi.c                   |  1 +
- drivers/iio/common/st_sensors/st_sensors_core.c    | 40 +++++----
- drivers/iio/gyro/st_gyro_core.c                    |  3 +
- drivers/iio/magnetometer/st_magn.h                 |  3 +
- drivers/iio/magnetometer/st_magn_buffer.c          |  7 ++
- drivers/iio/magnetometer/st_magn_core.c            | 98 +++++++++++++++++++++-
- drivers/iio/magnetometer/st_magn_i2c.c             |  5 ++
- drivers/iio/magnetometer/st_magn_spi.c             |  1 +
- drivers/iio/pressure/st_pressure_core.c            |  3 +
- include/linux/iio/common/st_sensors.h              |  2 +
- 14 files changed, 158 insertions(+), 19 deletions(-)
+static int mmc34160_raw_to_mgauss(int raw[3], int sens[3], int nfo,
+				  int index, int *val)
+{
+	*val = (raw[index] - nfo) * 1000 / sens[index];
+	return 0;
+}
 
--- 
-1.9.1
+regards,
+dan carpenter
