@@ -1,76 +1,29 @@
-Return-Path: <teodora.baluta@intel.com>
-From: Teodora Baluta <teodora.baluta@intel.com>
-To: jic23@kernel.org
-Cc: knaack.h@gmx.de,
-	lars@metafoo.de,
-	pmeerw@pmeerw.net,
-	daniel.baluta@intel.com,
-	teodora.baluta@intel.com,
-	dan.carpenter@oracle.com,
-	linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH v2 1/2] iio: mmc35240: minor change to improve code readability
-Date: Mon, 20 Jul 2015 16:52:29 +0300
-Message-Id: <1437400350-25960-2-git-send-email-teodora.baluta@intel.com>
-In-Reply-To: <1437400350-25960-1-git-send-email-teodora.baluta@intel.com>
-References: <1437400350-25960-1-git-send-email-teodora.baluta@intel.com>
+Return-Path: <giuseppe.barba@gmail.com>
+MIME-Version: 1.0
+In-Reply-To: <55AC6FD0.9010403@st.com>
+References: <1437038264-12936-1-git-send-email-giuseppe.barba@st.com>
+	<1437038264-12936-3-git-send-email-giuseppe.barba@st.com>
+	<55AB8572.3040502@kernel.org>
+	<55AC6FD0.9010403@st.com>
+Date: Mon, 20 Jul 2015 15:12:16 +0200
+Message-ID: <CAPMRSiuRL55bWhMwEt_TqBNOoTO3=czGm4rhfBnG-HzkP8pN9A@mail.gmail.com>
+Subject: Re: [PATCH 2/5] iio: st-sensors: add full scale counter field
+From: Giuseppe Barba <giuseppe.barba@gmail.com>
+To: Denis Ciocca <denis.ciocca@st.com>
+Cc: Jonathan Cameron <jic23@kernel.org>, Giuseppe BARBA <giuseppe.barba@st.com>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Content-Type: text/plain; charset=UTF-8
 List-ID: <linux-iio@vger.kernel.org>
 
-This patch changes two variables to arrays to improve code readability.
+Hi Denis,
 
-Signed-off-by: Teodora Baluta <teodora.baluta@intel.com>
----
- drivers/iio/magnetometer/mmc35240.c | 26 +++++++++++++-------------
- 1 file changed, 13 insertions(+), 13 deletions(-)
+2015-07-20 5:49 GMT+02:00 Denis Ciocca <denis.ciocca@st.com>:
+> I didn't get the benefit of this one...Just keep one more variable in memory
+> in the long array. And also forget again pressure sensors...
 
-diff --git a/drivers/iio/magnetometer/mmc35240.c b/drivers/iio/magnetometer/mmc35240.c
-index 706ebfd..29b52fa 100644
---- a/drivers/iio/magnetometer/mmc35240.c
-+++ b/drivers/iio/magnetometer/mmc35240.c
-@@ -316,31 +316,31 @@ static int mmc35240_read_measurement(struct mmc35240_data *data, __le16 buf[3])
- static int mmc35240_raw_to_mgauss(struct mmc35240_data *data, int index,
- 				  __le16 buf[], int *val)
- {
--	int raw_x, raw_y, raw_z;
--	int sens_x, sens_y, sens_z;
-+	int raw[3];
-+	int sens[3];
- 	int nfo;
- 
--	raw_x = le16_to_cpu(buf[AXIS_X]);
--	raw_y = le16_to_cpu(buf[AXIS_Y]);
--	raw_z = le16_to_cpu(buf[AXIS_Z]);
-+	raw[AXIS_X] = le16_to_cpu(buf[AXIS_X]);
-+	raw[AXIS_Y] = le16_to_cpu(buf[AXIS_Y]);
-+	raw[AXIS_Z] = le16_to_cpu(buf[AXIS_Z]);
- 
--	sens_x = mmc35240_props_table[data->res].sens[AXIS_X];
--	sens_y = mmc35240_props_table[data->res].sens[AXIS_Y];
--	sens_z = mmc35240_props_table[data->res].sens[AXIS_Z];
-+	sens[AXIS_X] = mmc35240_props_table[data->res].sens[AXIS_X];
-+	sens[AXIS_Y] = mmc35240_props_table[data->res].sens[AXIS_Y];
-+	sens[AXIS_Z] = mmc35240_props_table[data->res].sens[AXIS_Z];
- 
- 	nfo = mmc35240_props_table[data->res].nfo;
- 
- 	switch (index) {
- 	case AXIS_X:
--		*val = (raw_x - nfo) * 1000 / sens_x;
-+		*val = (raw[AXIS_X] - nfo) * 1000 / sens[AXIS_X];
- 		break;
- 	case AXIS_Y:
--		*val = (raw_y - nfo) * 1000 / sens_y -
--			(raw_z - nfo)  * 1000 / sens_z;
-+		*val = (raw[AXIS_Y] - nfo) * 1000 / sens[AXIS_Y] -
-+			(raw[AXIS_Z] - nfo)  * 1000 / sens[AXIS_Z];
- 		break;
- 	case AXIS_Z:
--		*val = (raw_y - nfo) * 1000 / sens_y +
--			(raw_z - nfo) * 1000 / sens_z;
-+		*val = (raw[AXIS_Y] - nfo) * 1000 / sens[AXIS_Y] +
-+			(raw[AXIS_Z] - nfo) * 1000 / sens[AXIS_Z];
- 		break;
- 	default:
- 		return -EINVAL;
--- 
-1.9.1
+The intent of this was to consider the case of sensors that you haven't the
+possibility to change its full scale.
+I'm agree with you and I'll change the code to avoid this new field.
+
+Thanks,
+Giuseppe
