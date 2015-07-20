@@ -1,41 +1,43 @@
-Return-Path: <dan.carpenter@oracle.com>
-Date: Mon, 20 Jul 2015 10:00:32 +0300
-From: Dan Carpenter <dan.carpenter@oracle.com>
-To: Marek Vasut <marex@denx.de>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-        Stefan Wahren <stefan.wahren@i2se.com>, devel@driverdev.osuosl.org,
-        Fabio Estevam <fabio.estevam@freescale.com>, linux-iio@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald <pmeerw@pmeerw.net>, Hartmut Knaack <knaack.h@gmx.de>
-Subject: Re: [PATCH V2 0/6] iio: mxs-lradc: Clean up and add datasheet names
-Message-ID: <20150720070032.GF5422@mwanda>
-References: <1437222646-8742-1-git-send-email-stefan.wahren@i2se.com>
- <20150719203343.GF5371@mwanda>
- <20150719204947.GG5371@mwanda>
- <201507200006.11989.marex@denx.de>
+Return-Path: <marek.belisko@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <201507200006.11989.marex@denx.de>
+Date: Mon, 20 Jul 2015 08:57:12 +0200
+Message-ID: <CAAfyv354=J+iDgLcu9KRZSScGSzYrRsCMmUEc_tW84GfduSebw@mail.gmail.com>
+Subject: twl6030-gpadc support for twl6037
+From: Belisko Marek <marek.belisko@gmail.com>
+To: Jonathan Cameron <jic23@kernel.org>, axel.lin@ingics.com, linux-iio@vger.kernel.org,
+	Tony Lindgren <tony@atomide.com>, Samuel Ortiz <sameo@linux.intel.com>,
+	Lee Jones <lee.jones@linaro.org>
+Cc: "linux-omap@vger.kernel.org" <linux-omap@vger.kernel.org>,
+	"Dr. H. Nikolaus Schaller" <hns@goldelico.com>
+Content-Type: text/plain; charset=UTF-8
 List-ID: <linux-iio@vger.kernel.org>
 
-On Mon, Jul 20, 2015 at 12:06:11AM +0200, Marek Vasut wrote:
-> On Sunday, July 19, 2015 at 10:49:47 PM, Dan Carpenter wrote:
-> > On Sun, Jul 19, 2015 at 11:33:43PM +0300, Dan Carpenter wrote:
-> > > I didn't necessarily read the thread that way, but the thread was
-> > > long...
-> > 
-> > I read the thread as saying that you sometimes get:
-> > 
-> > Reviewed-by: Some Person <email@bigcompany.com>
-> 
-> Hm, I'm trying to use this email as a single point-of-presence, but
-> maybe I should start separating reviews I do in my free time and
-> send my R-B and A-B from my private address ?
+Hi all,
 
-No no.  What I was saying is that you just sent a reviewed-by with no
-extra comments, if you were an unknown person that's useless but since
-we know you then I think that's fine.
+I'm trying to figure out what is relation between palmas mfd driver
+and twl-core for twl603x devices.
+twl-core driver seems to be older than palmas driver but seems both
+export same functionality (except that palmas have defined structs for
+gpadc but functionality is missing). My main focus is to add support
+for twl6037 to gpadc iio driver in iio/adc/twl6030-gpadc which is
+using twl-core for twl6030 and twl6032. Adding twl6037 support should
+be straightforward but dts file used in omap5-uevm using palmas driver
+and not twl6030. So it's completely confusing to me how to proceed or
+which direction is correct. Seems I'm missing some parts of puzzle ;)
+Thanks for any hints.
 
-regards,
-dan carpenter
+BR,
+
+marek
+
+-- 
+as simple and primitive as possible
+-------------------------------------------------
+Marek Belisko - OPEN-NANDRA
+Freelance Developer
+
+Ruska Nova Ves 219 | Presov, 08005 Slovak Republic
+Tel: +421 915 052 184
+skype: marekwhite
+twitter: #opennandra
+web: http://open-nandra.com
