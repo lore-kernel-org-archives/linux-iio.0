@@ -4,38 +4,85 @@ To: <linux-iio@vger.kernel.org>
 CC: <denis.ciocca@st.com>, <jic23@kernel.org>,
         Giuseppe Barba
 	<giuseppe.barba@st.com>
-Subject: [PATCH V2 2/5] iio: st-sensors: add support for single full scale device
-Date: Mon, 20 Jul 2015 16:20:26 +0200
-Message-ID: <1437402029-29786-3-git-send-email-giuseppe.barba@st.com>
+Subject: [PATCH V2 3/5] iio: st_magn: Add irq trigger handling
+Date: Mon, 20 Jul 2015 16:20:27 +0200
+Message-ID: <1437402029-29786-4-git-send-email-giuseppe.barba@st.com>
 In-Reply-To: <1437402029-29786-1-git-send-email-giuseppe.barba@st.com>
 References: <1437402029-29786-1-git-send-email-giuseppe.barba@st.com>
 MIME-Version: 1.0
 Content-Type: text/plain
 List-ID: <linux-iio@vger.kernel.org>
 
-Some sensors could have only one full scale value. This means that the sensor
-hasn't a full scale register.
-This commit add a check on the configured full scale address to support such
-kind of sensors.
+Add irq trigger handling for magnetometer also
 
 Signed-off-by: Giuseppe Barba <giuseppe.barba@st.com>
 ---
- drivers/iio/common/st_sensors/st_sensors_core.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/iio/magnetometer/st_magn.h        |  2 ++
+ drivers/iio/magnetometer/st_magn_buffer.c |  7 +++++++
+ drivers/iio/magnetometer/st_magn_core.c   | 13 ++++++++++++-
+ 3 files changed, 21 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/iio/common/st_sensors/st_sensors_core.c b/drivers/iio/common/st_sensors/st_sensors_core.c
-index 6323d32..712dbed 100644
---- a/drivers/iio/common/st_sensors/st_sensors_core.c
-+++ b/drivers/iio/common/st_sensors/st_sensors_core.c
-@@ -126,6 +126,9 @@ static int st_sensors_set_fullscale(struct iio_dev *indio_dev, unsigned int fs)
- 	int err, i = 0;
- 	struct st_sensor_data *sdata = iio_priv(indio_dev);
+diff --git a/drivers/iio/magnetometer/st_magn.h b/drivers/iio/magnetometer/st_magn.h
+index 287691c..60441023 100644
+--- a/drivers/iio/magnetometer/st_magn.h
++++ b/drivers/iio/magnetometer/st_magn.h
+@@ -25,6 +25,8 @@ void st_magn_common_remove(struct iio_dev *indio_dev);
+ #ifdef CONFIG_IIO_BUFFER
+ int st_magn_allocate_ring(struct iio_dev *indio_dev);
+ void st_magn_deallocate_ring(struct iio_dev *indio_dev);
++int st_magn_trig_set_state(struct iio_trigger *trig, bool state);
++#define ST_MAGN_TRIGGER_SET_STATE (&st_magn_trig_set_state)
+ #else /* CONFIG_IIO_BUFFER */
+ static inline int st_magn_probe_trigger(struct iio_dev *indio_dev, int irq)
+ {
+diff --git a/drivers/iio/magnetometer/st_magn_buffer.c b/drivers/iio/magnetometer/st_magn_buffer.c
+index bf427dc..ecd3bd0 100644
+--- a/drivers/iio/magnetometer/st_magn_buffer.c
++++ b/drivers/iio/magnetometer/st_magn_buffer.c
+@@ -23,6 +23,13 @@
+ #include <linux/iio/common/st_sensors.h>
+ #include "st_magn.h"
  
-+	if (sdata->sensor_settings->fs.addr == 0)
-+		return 0;
++int st_magn_trig_set_state(struct iio_trigger *trig, bool state)
++{
++	struct iio_dev *indio_dev = iio_trigger_get_drvdata(trig);
 +
- 	err = st_sensors_match_fs(sdata->sensor_settings, fs, &i);
- 	if (err < 0)
- 		goto st_accel_set_fullscale_error;
++	return st_sensors_set_dataready_irq(indio_dev, state);
++}
++
+ static int st_magn_buffer_preenable(struct iio_dev *indio_dev)
+ {
+ 	return st_sensors_set_enable(indio_dev, true);
+diff --git a/drivers/iio/magnetometer/st_magn_core.c b/drivers/iio/magnetometer/st_magn_core.c
+index 8d7d3a1..4c0cef8 100644
+--- a/drivers/iio/magnetometer/st_magn_core.c
++++ b/drivers/iio/magnetometer/st_magn_core.c
+@@ -480,6 +480,16 @@ static const struct iio_info magn_info = {
+ 	.write_raw = &st_magn_write_raw,
+ };
+ 
++#ifdef CONFIG_IIO_TRIGGER
++static const struct iio_trigger_ops st_magn_trigger_ops = {
++	.owner = THIS_MODULE,
++	.set_trigger_state = ST_MAGN_TRIGGER_SET_STATE,
++};
++#define ST_MAGN_TRIGGER_OPS (&st_magn_trigger_ops)
++#else
++#define ST_MAGN_TRIGGER_OPS NULL
++#endif
++
+ int st_magn_common_probe(struct iio_dev *indio_dev)
+ {
+ 	struct st_sensor_data *mdata = iio_priv(indio_dev);
+@@ -516,7 +526,8 @@ int st_magn_common_probe(struct iio_dev *indio_dev)
+ 		return err;
+ 
+ 	if (irq > 0) {
+-		err = st_sensors_allocate_trigger(indio_dev, NULL);
++		err = st_sensors_allocate_trigger(indio_dev,
++						ST_MAGN_TRIGGER_OPS);
+ 		if (err < 0)
+ 			goto st_magn_probe_trigger_error;
+ 	}
 -- 
 1.9.1
