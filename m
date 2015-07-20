@@ -1,6 +1,6 @@
 Return-Path: <denis.ciocca@st.com>
-Message-ID: <55AC6FD0.9010403@st.com>
-Date: Mon, 20 Jul 2015 11:49:36 +0800
+Message-ID: <55AC6F6B.6030901@st.com>
+Date: Mon, 20 Jul 2015 11:47:55 +0800
 From: Denis Ciocca <denis.ciocca@st.com>
 MIME-Version: 1.0
 To: Jonathan Cameron <jic23@kernel.org>,
@@ -8,168 +8,220 @@ To: Jonathan Cameron <jic23@kernel.org>,
 	<giuseppe.barba@st.com>,
         "linux-iio@vger.kernel.org"
 	<linux-iio@vger.kernel.org>
-Subject: Re: [PATCH 2/5] iio: st-sensors: add full scale counter field
-References: <1437038264-12936-1-git-send-email-giuseppe.barba@st.com> <1437038264-12936-3-git-send-email-giuseppe.barba@st.com> <55AB8572.3040502@kernel.org>
-In-Reply-To: <55AB8572.3040502@kernel.org>
+Subject: Re: [PATCH 1/5] iio: st-sensors: add configuration for WhoAmI address
+References: <1437038264-12936-1-git-send-email-giuseppe.barba@st.com> <1437038264-12936-2-git-send-email-giuseppe.barba@st.com> <55AB841F.5020306@kernel.org>
+In-Reply-To: <55AB841F.5020306@kernel.org>
 Content-Type: text/plain; charset="windows-1252"; format=flowed
 List-ID: <linux-iio@vger.kernel.org>
 
-I didn't get the benefit of this one...Just keep one more variable in 
-memory in the long array. And also forget again pressure sensors...
+Hi Giuseppe, Jonathan,
 
-Denis
+my comments inline.
 
 
-On 07/19/2015 07:09 PM, Jonathan Cameron wrote:
+On 07/19/2015 07:03 PM, Jonathan Cameron wrote:
 > On 16/07/15 10:17, Giuseppe Barba wrote:
->> This patch add the full scale list size variable. This is
->> needed for code clenup and to enable device with a single
->> full scale value.
+>> This patch permits to configure the WhoAmI register address
+>> because some device could doesn't have a standard address
+>> for this register.
 >>
 >> Signed-off-by: Giuseppe Barba <giuseppe.barba@st.com>
-> Hmm. I guess it is a slightly cleanup.  Not convinced you couldn't have
-> continued using the 'null' test that was previously used though.
-> I'm not that bothered either way so will take it if the rest of
-> the series is fine.
+> Hmm. I'd be tempted to rename the DEFAULT WAIT ADDRESS as it's clearly
+> only the default in the sense it was there first.  Still probably not
+> worth the hassle..
 >
-> Anyhow, Denis?
->> ---
->>   drivers/iio/accel/st_accel_core.c               |  4 ++++
->>   drivers/iio/common/st_sensors/st_sensors_core.c | 10 +++++-----
->>   drivers/iio/gyro/st_gyro_core.c                 |  3 +++
+> Looks good to me, but will leave this (and the rest of the series)
+> on the list for a few days for others to comment.
+>
+> cc'd Denis for comments. Ideally patches should also cc the reviewers
+> listed in MAINTAINERS (I don't care if you cc me as I have filters
+> set to squash stuff that comes to me and the list into one).
+>
+>>   drivers/iio/accel/st_accel_core.c               |  4 +++
+>>   drivers/iio/common/st_sensors/st_sensors_core.c | 44 +++++++++++++++----------
+>>   drivers/iio/gyro/st_gyro_core.c                 |  3 ++
 >>   drivers/iio/magnetometer/st_magn_core.c         |  2 ++
->>   include/linux/iio/common/st_sensors.h           |  1 +
->>   5 files changed, 15 insertions(+), 5 deletions(-)
+>>   include/linux/iio/common/st_sensors.h           |  2 ++
+>>   5 files changed, 37 insertions(+), 18 deletions(-)
 >>
 >> diff --git a/drivers/iio/accel/st_accel_core.c b/drivers/iio/accel/st_accel_core.c
->> index 7ce027b..207f6ef 100644
+>> index 4002e64..7ce027b 100644
 >> --- a/drivers/iio/accel/st_accel_core.c
 >> +++ b/drivers/iio/accel/st_accel_core.c
->> @@ -283,6 +283,7 @@ static const struct st_sensor_settings st_accel_sensors_settings[] = {
->>   					.gain = ST_ACCEL_1_FS_AVL_16_GAIN,
->>   				},
->>   			},
->> +			.fs_avl_cnt = 4,
+>> @@ -226,6 +226,7 @@ static const struct iio_chan_spec st_accel_16bit_channels[] = {
+>>   static const struct st_sensor_settings st_accel_sensors_settings[] = {
+>>   	{
+>>   		.wai = ST_ACCEL_1_WAI_EXP,
+>> +		.wai_addr = ST_SENSORS_DEFAULT_WAI_ADDRESS,
+>>   		.sensors_supported = {
+>>   			[0] = LIS3DH_ACCEL_DEV_NAME,
+>>   			[1] = LSM303DLHC_ACCEL_DEV_NAME,
+>> @@ -297,6 +298,7 @@ static const struct st_sensor_settings st_accel_sensors_settings[] = {
+>>   	},
+>>   	{
+>>   		.wai = ST_ACCEL_2_WAI_EXP,
+>> +		.wai_addr = ST_SENSORS_DEFAULT_WAI_ADDRESS,
+>>   		.sensors_supported = {
+>>   			[0] = LIS331DLH_ACCEL_DEV_NAME,
+>>   			[1] = LSM303DL_ACCEL_DEV_NAME,
+>> @@ -359,6 +361,7 @@ static const struct st_sensor_settings st_accel_sensors_settings[] = {
+>>   	},
+>>   	{
+>>   		.wai = ST_ACCEL_3_WAI_EXP,
+>> +		.wai_addr = ST_SENSORS_DEFAULT_WAI_ADDRESS,
+>>   		.sensors_supported = {
+>>   			[0] = LSM330_ACCEL_DEV_NAME,
 >>   		},
->>   		.bdu = {
->>   			.addr = ST_ACCEL_1_BDU_ADDR,
->> @@ -346,6 +347,7 @@ static const struct st_sensor_settings st_accel_sensors_settings[] = {
->>   					.gain = ST_ACCEL_2_FS_AVL_8_GAIN,
->>   				},
->>   			},
->> +			.fs_avl_cnt = 3,
+>> @@ -437,6 +440,7 @@ static const struct st_sensor_settings st_accel_sensors_settings[] = {
+>>   	},
+>>   	{
+>>   		.wai = ST_ACCEL_4_WAI_EXP,
+>> +		.wai_addr = ST_SENSORS_DEFAULT_WAI_ADDRESS,
+>>   		.sensors_supported = {
+>>   			[0] = LIS3LV02DL_ACCEL_DEV_NAME,
 >>   		},
->>   		.bdu = {
->>   			.addr = ST_ACCEL_2_BDU_ADDR,
->> @@ -421,6 +423,7 @@ static const struct st_sensor_settings st_accel_sensors_settings[] = {
->>   					.gain = ST_ACCEL_3_FS_AVL_16_GAIN,
->>   				},
->>   			},
->> +			.fs_avl_cnt = 5,
->>   		},
->>   		.bdu = {
->>   			.addr = ST_ACCEL_3_BDU_ADDR,
->> @@ -480,6 +483,7 @@ static const struct st_sensor_settings st_accel_sensors_settings[] = {
->>   					.gain = ST_ACCEL_4_FS_AVL_6_GAIN,
->>   				},
->>   			},
->> +			.fs_avl_cnt = 2,
->>   		},
->>   		.bdu = {
->>   			.addr = ST_ACCEL_4_BDU_ADDR,
 >> diff --git a/drivers/iio/common/st_sensors/st_sensors_core.c b/drivers/iio/common/st_sensors/st_sensors_core.c
->> index c0a611e..d9845a6 100644
+>> index 8086cbc..c0a611e 100644
 >> --- a/drivers/iio/common/st_sensors/st_sensors_core.c
 >> +++ b/drivers/iio/common/st_sensors/st_sensors_core.c
->> @@ -106,7 +106,7 @@ static int st_sensors_match_fs(struct st_sensor_settings *sensor_settings,
+>> @@ -479,35 +479,43 @@ int st_sensors_check_device_support(struct iio_dev *indio_dev,
+>>   			int num_sensors_list,
+>>   			const struct st_sensor_settings *sensor_settings)
 >>   {
->>   	int i, ret = -EINVAL;
->>   
->> -	for (i = 0; i < ST_SENSORS_FULLSCALE_AVL_MAX; i++) {
->> +	for (i = 0; i < sensor_settings->fs.fs_avl_cnt; i++) {
->>   		if (sensor_settings->fs.fs_avl[i].num == 0)
->>   			goto st_sensors_match_odr_error;
->>   
->> @@ -126,6 +126,9 @@ static int st_sensors_set_fullscale(struct iio_dev *indio_dev, unsigned int fs)
->>   	int err, i = 0;
+>> -	u8 wai;
+>>   	int i, n, err;
+>> +	u8 wai, wai_addr, found_it;
 >>   	struct st_sensor_data *sdata = iio_priv(indio_dev);
 >>   
->> +	if (sdata->sensor_settings->fs.fs_avl_cnt < 2)
->> +		return 0;
+>> +	found_it = 0;
+>> +	for (i = 0; i < num_sensors_list; i++) {
+>> +		for (n = 0; n < ST_SENSORS_MAX_4WAI; n++) {
+>> +			if (strcmp(indio_dev->name,
+>> +				sensor_settings[i].sensors_supported[n]) == 0) {
+>> +				found_it = 1;
+>> +				break;
+>> +			}
+>> +		}
+>> +		if (found_it)
+>> +			break;
+found_it is very ugly :). No need to use the variable, if (n != 
+ST_SENSORS_MAX_4WAI) it means sensor found.
+
+>> +	}
+>> +	if (!found_it) {
+here just if (i == num_sensors_list)
+
+>> +		dev_err(&indio_dev->dev, "device name %s not recognized.\n",
+>> +							indio_dev->name);
+>> +		goto sensor_name_mismatch;
+>> +	}
 >> +
->>   	err = st_sensors_match_fs(sdata->sensor_settings, fs, &i);
->>   	if (err < 0)
->>   		goto st_accel_set_fullscale_error;
->> @@ -560,10 +563,7 @@ ssize_t st_sensors_sysfs_scale_avail(struct device *dev,
->>   	struct st_sensor_data *sdata = iio_priv(indio_dev);
->>   
->>   	mutex_lock(&indio_dev->mlock);
->> -	for (i = 0; i < ST_SENSORS_FULLSCALE_AVL_MAX; i++) {
->> -		if (sdata->sensor_settings->fs.fs_avl[i].num == 0)
->> -			break;
->> -
->> +	for (i = 0; i < sdata->sensor_settings->fs.fs_avl_cnt; i++) {
->>   		len += scnprintf(buf + len, PAGE_SIZE - len, "0.%06u ",
->>   				sdata->sensor_settings->fs.fs_avl[i].gain);
+>> +	if (sensor_settings[i].wai_addr != 0)
+>> +		wai_addr = sensor_settings[i].wai_addr;
+>> +	else
+>> +		wai_addr = ST_SENSORS_DEFAULT_WAI_ADDRESS;
+No need. All sensors must be filled with wai_addr in the static array. 
+You forget to fill pressure sensors...
+
+>> +
+>>   	err = sdata->tf->read_byte(&sdata->tb, sdata->dev,
+>> -					ST_SENSORS_DEFAULT_WAI_ADDRESS, &wai);
+>> +					wai_addr, &wai);
+>>   	if (err < 0) {
+>>   		dev_err(&indio_dev->dev, "failed to read Who-Am-I register.\n");
+>>   		goto read_wai_error;
 >>   	}
+>>   
+>> -	for (i = 0; i < num_sensors_list; i++) {
+>> -		if (sensor_settings[i].wai == wai)
+>> -			break;
+>> -	}
+>> -	if (i == num_sensors_list)
+>> +	if (sensor_settings[i].wai != wai)
+>>   		goto device_not_supported;
+>>   
+>> -	for (n = 0; n < ARRAY_SIZE(sensor_settings[i].sensors_supported); n++) {
+>> -		if (strcmp(indio_dev->name,
+>> -				&sensor_settings[i].sensors_supported[n][0]) == 0)
+>> -			break;
+>> -	}
+>> -	if (n == ARRAY_SIZE(sensor_settings[i].sensors_supported)) {
+>> -		dev_err(&indio_dev->dev, "device name \"%s\" and WhoAmI (0x%02x) mismatch",
+>> -			indio_dev->name, wai);
+>> -		goto sensor_name_mismatch;
+>> -	}
+>> -
+>>   	sdata->sensor_settings =
+>>   			(struct st_sensor_settings *)&sensor_settings[i];
+>>   
 >> diff --git a/drivers/iio/gyro/st_gyro_core.c b/drivers/iio/gyro/st_gyro_core.c
->> index 4b993a5..c06e8f7 100644
+>> index ffe9664..4b993a5 100644
 >> --- a/drivers/iio/gyro/st_gyro_core.c
 >> +++ b/drivers/iio/gyro/st_gyro_core.c
->> @@ -177,6 +177,7 @@ static const struct st_sensor_settings st_gyro_sensors_settings[] = {
->>   					.gain = ST_GYRO_1_FS_AVL_2000_GAIN,
->>   				},
->>   			},
->> +			.fs_avl_cnt = 3,
+>> @@ -131,6 +131,7 @@ static const struct iio_chan_spec st_gyro_16bit_channels[] = {
+>>   static const struct st_sensor_settings st_gyro_sensors_settings[] = {
+>>   	{
+>>   		.wai = ST_GYRO_1_WAI_EXP,
+>> +		.wai_addr = ST_SENSORS_DEFAULT_WAI_ADDRESS,
+>>   		.sensors_supported = {
+>>   			[0] = L3G4200D_GYRO_DEV_NAME,
+>>   			[1] = LSM330DL_GYRO_DEV_NAME,
+>> @@ -190,6 +191,7 @@ static const struct st_sensor_settings st_gyro_sensors_settings[] = {
+>>   	},
+>>   	{
+>>   		.wai = ST_GYRO_2_WAI_EXP,
+>> +		.wai_addr = ST_SENSORS_DEFAULT_WAI_ADDRESS,
+>>   		.sensors_supported = {
+>>   			[0] = L3GD20_GYRO_DEV_NAME,
+>>   			[1] = LSM330D_GYRO_DEV_NAME,
+>> @@ -252,6 +254,7 @@ static const struct st_sensor_settings st_gyro_sensors_settings[] = {
+>>   	},
+>>   	{
+>>   		.wai = ST_GYRO_3_WAI_EXP,
+>> +		.wai_addr = ST_SENSORS_DEFAULT_WAI_ADDRESS,
+>>   		.sensors_supported = {
+>>   			[0] = L3GD20_GYRO_DEV_NAME,
 >>   		},
->>   		.bdu = {
->>   			.addr = ST_GYRO_1_BDU_ADDR,
->> @@ -240,6 +241,7 @@ static const struct st_sensor_settings st_gyro_sensors_settings[] = {
->>   					.gain = ST_GYRO_2_FS_AVL_2000_GAIN,
->>   				},
->>   			},
->> +			.fs_avl_cnt = 3,
->>   		},
->>   		.bdu = {
->>   			.addr = ST_GYRO_2_BDU_ADDR,
->> @@ -299,6 +301,7 @@ static const struct st_sensor_settings st_gyro_sensors_settings[] = {
->>   					.gain = ST_GYRO_3_FS_AVL_2000_GAIN,
->>   				},
->>   			},
->> +			.fs_avl_cnt = 3,
->>   		},
->>   		.bdu = {
->>   			.addr = ST_GYRO_3_BDU_ADDR,
 >> diff --git a/drivers/iio/magnetometer/st_magn_core.c b/drivers/iio/magnetometer/st_magn_core.c
->> index 63da293..4c0335b 100644
+>> index b4bcfb7..63da293 100644
 >> --- a/drivers/iio/magnetometer/st_magn_core.c
 >> +++ b/drivers/iio/magnetometer/st_magn_core.c
->> @@ -341,6 +341,7 @@ static const struct st_sensor_settings st_magn_sensors_settings[] = {
->>   					.gain2 = ST_MAGN_1_FS_AVL_8100_GAIN_Z,
->>   				},
->>   			},
->> +			.fs_avl_cnt = 7,
+>> @@ -268,6 +268,7 @@ static const struct st_sensor_settings st_magn_sensors_settings[] = {
+>>   	},
+>>   	{
+>>   		.wai = ST_MAGN_1_WAI_EXP,
+>> +		.wai_addr = ST_SENSORS_DEFAULT_WAI_ADDRESS,
+>>   		.sensors_supported = {
+>>   			[0] = LSM303DLHC_MAGN_DEV_NAME,
+>>   			[1] = LSM303DLM_MAGN_DEV_NAME,
+>> @@ -346,6 +347,7 @@ static const struct st_sensor_settings st_magn_sensors_settings[] = {
+>>   	},
+>>   	{
+>>   		.wai = ST_MAGN_2_WAI_EXP,
+>> +		.wai_addr = ST_SENSORS_DEFAULT_WAI_ADDRESS,
+>>   		.sensors_supported = {
+>>   			[0] = LIS3MDL_MAGN_DEV_NAME,
 >>   		},
->>   		.multi_read_bit = ST_MAGN_1_MULTIREAD_BIT,
->>   		.bootime = 2,
->> @@ -397,6 +398,7 @@ static const struct st_sensor_settings st_magn_sensors_settings[] = {
->>   					.gain = ST_MAGN_2_FS_AVL_16000_GAIN,
->>   				},
->>   			},
->> +			.fs_avl_cnt = 4,
->>   		},
->>   		.multi_read_bit = ST_MAGN_2_MULTIREAD_BIT,
->>   		.bootime = 2,
 >> diff --git a/include/linux/iio/common/st_sensors.h b/include/linux/iio/common/st_sensors.h
->> index f7c77b4..0d7d5bb 100644
+>> index 2c476ac..f7c77b4 100644
 >> --- a/include/linux/iio/common/st_sensors.h
 >> +++ b/include/linux/iio/common/st_sensors.h
->> @@ -101,6 +101,7 @@ struct st_sensor_fullscale_avl {
->>   struct st_sensor_fullscale {
->>   	u8 addr;
->>   	u8 mask;
->> +	u8 fs_avl_cnt;
->>   	struct st_sensor_fullscale_avl fs_avl[ST_SENSORS_FULLSCALE_AVL_MAX];
->>   };
->>   
+>> @@ -166,6 +166,7 @@ struct st_sensor_transfer_function {
+>>   /**
+>>    * struct st_sensor_settings - ST specific sensor settings
+>>    * @wai: Contents of WhoAmI register.
+>> + * @wai_addr: The address of WhoAmI register
+Forget . at the end.
+
+>>    * @sensors_supported: List of supported sensors by struct itself.
+>>    * @ch: IIO channels for the sensor.
+>>    * @odr: Output data rate register and ODR list available.
+>> @@ -179,6 +180,7 @@ struct st_sensor_transfer_function {
+>>    */
+>>   struct st_sensor_settings {
+>>   	u8 wai;
+>> +	u8 wai_addr;
+>>   	char sensors_supported[ST_SENSORS_MAX_4WAI][ST_SENSORS_MAX_NAME];
+>>   	struct iio_chan_spec *ch;
+>>   	int num_ch;
 >>
