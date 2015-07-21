@@ -1,253 +1,33 @@
-Return-Path: <denis.ciocca@st.com>
-Message-ID: <55ADC1C5.2010206@st.com>
-Date: Tue, 21 Jul 2015 11:51:33 +0800
-From: Denis Ciocca <denis.ciocca@st.com>
-MIME-Version: 1.0
-To: Giuseppe BARBA <giuseppe.barba@st.com>,
-        "linux-iio@vger.kernel.org"
-	<linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mx08-00178001.pphosted.com ([91.207.212.93]:56358 "EHLO
+	mx08-00178001.pphosted.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1751802AbbGUHeR convert rfc822-to-8bit
+	(ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Tue, 21 Jul 2015 03:34:17 -0400
+From: Giuseppe BARBA <giuseppe.barba@st.com>
+To: Denis CIOCCA <denis.ciocca@st.com>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
 CC: "jic23@kernel.org" <jic23@kernel.org>
+Date: Tue, 21 Jul 2015 09:33:19 +0200
 Subject: Re: [PATCH V2 1/5] iio: st-sensors: add configuration for WhoAmI
  address
-References: <1437402029-29786-1-git-send-email-giuseppe.barba@st.com> <1437402029-29786-2-git-send-email-giuseppe.barba@st.com>
-In-Reply-To: <1437402029-29786-2-git-send-email-giuseppe.barba@st.com>
-Content-Type: text/plain; charset="windows-1252"; format=flowed
-List-ID: <linux-iio@vger.kernel.org>
+Message-ID: <55ADF5BF.4010501@st.com>
+References: <1437402029-29786-1-git-send-email-giuseppe.barba@st.com>
+ <1437402029-29786-2-git-send-email-giuseppe.barba@st.com>
+ <55ADC1C5.2010206@st.com>
+In-Reply-To: <55ADC1C5.2010206@st.com>
+Content-Type: text/plain; charset="Windows-1252"
+MIME-Version: 1.0
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Hi Giuseppe,
+Hi Denis,
 
-looks better to me. Just one more thing...It is long time I would like 
-to remove some goto. If you can do it I would be very happy!
+> looks better to me. Just one more thing...It is long time I would like
+> to remove some goto. If you can do it I would be very happy!
 
+I'm agree with you. I can do that! ;-)
+I'll generate a new patch set from your comments.
 
-On 07/20/2015 10:20 PM, Giuseppe BARBA wrote:
-> This patch permits to configure the WhoAmI register address
-> because some device could have not a standard address for
-> this register.
->
-> Signed-off-by: Giuseppe Barba <giuseppe.barba@st.com>
-> ---
->   drivers/iio/accel/st_accel_core.c               |  5 ++++
->   drivers/iio/common/st_sensors/st_sensors_core.c | 37 +++++++++++++------------
->   drivers/iio/gyro/st_gyro_core.c                 |  3 ++
->   drivers/iio/magnetometer/st_magn_core.c         |  3 ++
->   drivers/iio/pressure/st_pressure_core.c         |  3 ++
->   include/linux/iio/common/st_sensors.h           |  2 ++
->   6 files changed, 35 insertions(+), 18 deletions(-)
->
-> diff --git a/drivers/iio/accel/st_accel_core.c b/drivers/iio/accel/st_accel_core.c
-> index 4002e64..12b42f6 100644
-> --- a/drivers/iio/accel/st_accel_core.c
-> +++ b/drivers/iio/accel/st_accel_core.c
-> @@ -226,6 +226,7 @@ static const struct iio_chan_spec st_accel_16bit_channels[] = {
->   static const struct st_sensor_settings st_accel_sensors_settings[] = {
->   	{
->   		.wai = ST_ACCEL_1_WAI_EXP,
-> +		.wai_addr = ST_SENSORS_DEFAULT_WAI_ADDRESS,
->   		.sensors_supported = {
->   			[0] = LIS3DH_ACCEL_DEV_NAME,
->   			[1] = LSM303DLHC_ACCEL_DEV_NAME,
-> @@ -297,6 +298,7 @@ static const struct st_sensor_settings st_accel_sensors_settings[] = {
->   	},
->   	{
->   		.wai = ST_ACCEL_2_WAI_EXP,
-> +		.wai_addr = ST_SENSORS_DEFAULT_WAI_ADDRESS,
->   		.sensors_supported = {
->   			[0] = LIS331DLH_ACCEL_DEV_NAME,
->   			[1] = LSM303DL_ACCEL_DEV_NAME,
-> @@ -359,6 +361,7 @@ static const struct st_sensor_settings st_accel_sensors_settings[] = {
->   	},
->   	{
->   		.wai = ST_ACCEL_3_WAI_EXP,
-> +		.wai_addr = ST_SENSORS_DEFAULT_WAI_ADDRESS,
->   		.sensors_supported = {
->   			[0] = LSM330_ACCEL_DEV_NAME,
->   		},
-> @@ -437,6 +440,7 @@ static const struct st_sensor_settings st_accel_sensors_settings[] = {
->   	},
->   	{
->   		.wai = ST_ACCEL_4_WAI_EXP,
-> +		.wai_addr = ST_SENSORS_DEFAULT_WAI_ADDRESS,
->   		.sensors_supported = {
->   			[0] = LIS3LV02DL_ACCEL_DEV_NAME,
->   		},
-> @@ -494,6 +498,7 @@ static const struct st_sensor_settings st_accel_sensors_settings[] = {
->   	},
->   	{
->   		.wai = ST_ACCEL_5_WAI_EXP,
-> +		.wai_addr = ST_SENSORS_DEFAULT_WAI_ADDRESS,
->   		.sensors_supported = {
->   			[0] = LIS331DL_ACCEL_DEV_NAME,
->   		},
-> diff --git a/drivers/iio/common/st_sensors/st_sensors_core.c b/drivers/iio/common/st_sensors/st_sensors_core.c
-> index 8086cbc..6323d32 100644
-> --- a/drivers/iio/common/st_sensors/st_sensors_core.c
-> +++ b/drivers/iio/common/st_sensors/st_sensors_core.c
-> @@ -479,35 +479,36 @@ int st_sensors_check_device_support(struct iio_dev *indio_dev,
->   			int num_sensors_list,
->   			const struct st_sensor_settings *sensor_settings)
->   {
-> -	u8 wai;
->   	int i, n, err;
-> +	u8 wai;
->   	struct st_sensor_data *sdata = iio_priv(indio_dev);
->   
-> +	for (i = 0; i < num_sensors_list; i++) {
-> +		for (n = 0; n < ST_SENSORS_MAX_4WAI; n++) {
-> +			if (strcmp(indio_dev->name,
-> +				sensor_settings[i].sensors_supported[n]) == 0) {
-> +				break;
-> +			}
-> +		}
-> +		if (n < ST_SENSORS_MAX_4WAI)
-> +			break;
-> +	}
-> +	if (i == num_sensors_list) {
-> +		dev_err(&indio_dev->dev, "device name %s not recognized.\n",
-> +							indio_dev->name);
-> +		goto sensor_name_mismatch;
-> +	}
-can return immediately EINVAL;
-
-> +
->   	err = sdata->tf->read_byte(&sdata->tb, sdata->dev,
-> -					ST_SENSORS_DEFAULT_WAI_ADDRESS, &wai);
-> +					sensor_settings[i].wai_addr, &wai);
->   	if (err < 0) {
->   		dev_err(&indio_dev->dev, "failed to read Who-Am-I register.\n");
->   		goto read_wai_error;
->   	}
-can return immediately err;
-
->   
-> -	for (i = 0; i < num_sensors_list; i++) {
-> -		if (sensor_settings[i].wai == wai)
-> -			break;
-> -	}
-> -	if (i == num_sensors_list)
-> +	if (sensor_settings[i].wai != wai)
->   		goto device_not_supported;
-The error message is wrong. Should print device name and wai mismatch 
-and not device not supported. Can also return immediately EINVAL;
-
-
-So we can remove the goto... :)
->   
-> -	for (n = 0; n < ARRAY_SIZE(sensor_settings[i].sensors_supported); n++) {
-> -		if (strcmp(indio_dev->name,
-> -				&sensor_settings[i].sensors_supported[n][0]) == 0)
-> -			break;
-> -	}
-> -	if (n == ARRAY_SIZE(sensor_settings[i].sensors_supported)) {
-> -		dev_err(&indio_dev->dev, "device name \"%s\" and WhoAmI (0x%02x) mismatch",
-> -			indio_dev->name, wai);
-> -		goto sensor_name_mismatch;
-> -	}
-> -
->   	sdata->sensor_settings =
->   			(struct st_sensor_settings *)&sensor_settings[i];
->   
-> diff --git a/drivers/iio/gyro/st_gyro_core.c b/drivers/iio/gyro/st_gyro_core.c
-> index ffe9664..4b993a5 100644
-> --- a/drivers/iio/gyro/st_gyro_core.c
-> +++ b/drivers/iio/gyro/st_gyro_core.c
-> @@ -131,6 +131,7 @@ static const struct iio_chan_spec st_gyro_16bit_channels[] = {
->   static const struct st_sensor_settings st_gyro_sensors_settings[] = {
->   	{
->   		.wai = ST_GYRO_1_WAI_EXP,
-> +		.wai_addr = ST_SENSORS_DEFAULT_WAI_ADDRESS,
->   		.sensors_supported = {
->   			[0] = L3G4200D_GYRO_DEV_NAME,
->   			[1] = LSM330DL_GYRO_DEV_NAME,
-> @@ -190,6 +191,7 @@ static const struct st_sensor_settings st_gyro_sensors_settings[] = {
->   	},
->   	{
->   		.wai = ST_GYRO_2_WAI_EXP,
-> +		.wai_addr = ST_SENSORS_DEFAULT_WAI_ADDRESS,
->   		.sensors_supported = {
->   			[0] = L3GD20_GYRO_DEV_NAME,
->   			[1] = LSM330D_GYRO_DEV_NAME,
-> @@ -252,6 +254,7 @@ static const struct st_sensor_settings st_gyro_sensors_settings[] = {
->   	},
->   	{
->   		.wai = ST_GYRO_3_WAI_EXP,
-> +		.wai_addr = ST_SENSORS_DEFAULT_WAI_ADDRESS,
->   		.sensors_supported = {
->   			[0] = L3GD20_GYRO_DEV_NAME,
->   		},
-> diff --git a/drivers/iio/magnetometer/st_magn_core.c b/drivers/iio/magnetometer/st_magn_core.c
-> index b4bcfb7..8d7d3a1 100644
-> --- a/drivers/iio/magnetometer/st_magn_core.c
-> +++ b/drivers/iio/magnetometer/st_magn_core.c
-> @@ -192,6 +192,7 @@ static const struct iio_chan_spec st_magn_2_16bit_channels[] = {
->   static const struct st_sensor_settings st_magn_sensors_settings[] = {
->   	{
->   		.wai = 0, /* This sensor has no valid WhoAmI report 0 */
-> +		.wai_addr = ST_SENSORS_DEFAULT_WAI_ADDRESS,
->   		.sensors_supported = {
->   			[0] = LSM303DLH_MAGN_DEV_NAME,
->   		},
-> @@ -268,6 +269,7 @@ static const struct st_sensor_settings st_magn_sensors_settings[] = {
->   	},
->   	{
->   		.wai = ST_MAGN_1_WAI_EXP,
-> +		.wai_addr = ST_SENSORS_DEFAULT_WAI_ADDRESS,
->   		.sensors_supported = {
->   			[0] = LSM303DLHC_MAGN_DEV_NAME,
->   			[1] = LSM303DLM_MAGN_DEV_NAME,
-> @@ -346,6 +348,7 @@ static const struct st_sensor_settings st_magn_sensors_settings[] = {
->   	},
->   	{
->   		.wai = ST_MAGN_2_WAI_EXP,
-> +		.wai_addr = ST_SENSORS_DEFAULT_WAI_ADDRESS,
->   		.sensors_supported = {
->   			[0] = LIS3MDL_MAGN_DEV_NAME,
->   		},
-> diff --git a/drivers/iio/pressure/st_pressure_core.c b/drivers/iio/pressure/st_pressure_core.c
-> index e881fa6..eb41d2b 100644
-> --- a/drivers/iio/pressure/st_pressure_core.c
-> +++ b/drivers/iio/pressure/st_pressure_core.c
-> @@ -178,6 +178,7 @@ static const struct iio_chan_spec st_press_lps001wp_channels[] = {
->   static const struct st_sensor_settings st_press_sensors_settings[] = {
->   	{
->   		.wai = ST_PRESS_LPS331AP_WAI_EXP,
-> +		.wai_addr = ST_SENSORS_DEFAULT_WAI_ADDRESS,
->   		.sensors_supported = {
->   			[0] = LPS331AP_PRESS_DEV_NAME,
->   		},
-> @@ -225,6 +226,7 @@ static const struct st_sensor_settings st_press_sensors_settings[] = {
->   	},
->   	{
->   		.wai = ST_PRESS_LPS001WP_WAI_EXP,
-> +		.wai_addr = ST_SENSORS_DEFAULT_WAI_ADDRESS,
->   		.sensors_supported = {
->   			[0] = LPS001WP_PRESS_DEV_NAME,
->   		},
-> @@ -260,6 +262,7 @@ static const struct st_sensor_settings st_press_sensors_settings[] = {
->   	},
->   	{
->   		.wai = ST_PRESS_LPS25H_WAI_EXP,
-> +		.wai_addr = ST_SENSORS_DEFAULT_WAI_ADDRESS,
->   		.sensors_supported = {
->   			[0] = LPS25H_PRESS_DEV_NAME,
->   		},
-> diff --git a/include/linux/iio/common/st_sensors.h b/include/linux/iio/common/st_sensors.h
-> index 2c476ac..3c17cd7 100644
-> --- a/include/linux/iio/common/st_sensors.h
-> +++ b/include/linux/iio/common/st_sensors.h
-> @@ -166,6 +166,7 @@ struct st_sensor_transfer_function {
->   /**
->    * struct st_sensor_settings - ST specific sensor settings
->    * @wai: Contents of WhoAmI register.
-> + * @wai_addr: The address of WhoAmI register.
->    * @sensors_supported: List of supported sensors by struct itself.
->    * @ch: IIO channels for the sensor.
->    * @odr: Output data rate register and ODR list available.
-> @@ -179,6 +180,7 @@ struct st_sensor_transfer_function {
->    */
->   struct st_sensor_settings {
->   	u8 wai;
-> +	u8 wai_addr;
->   	char sensors_supported[ST_SENSORS_MAX_4WAI][ST_SENSORS_MAX_NAME];
->   	struct iio_chan_spec *ch;
->   	int num_ch;
+Regards,
+Giuseppe.
