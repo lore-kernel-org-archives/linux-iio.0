@@ -1,31 +1,95 @@
-Return-Path: <adam.yh.lee@gmail.com>
-From: Adam YH Lee <adam.yh.lee@gmail.com>
-To: linux-omap@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org
-Cc: linux-iio@vger.kernel.org,
-	sre@kernel.org,
-	jic23@kernel.org,
-	pmeerw@pmeerw.net,
-	Adam YH Lee <adam.yh.lee@gmail.com>
-Subject: [PATCH] Fix incomplete initialization of ADC[3:6]$
-Date: Mon, 20 Jul 2015 11:14:17 -0700
-Message-Id: <1437416058-24586-1-git-send-email-adam.yh.lee@gmail.com>
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mx08-00178001.pphosted.com ([91.207.212.93]:49810 "EHLO
+	mx08-00178001.pphosted.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1754528AbbGUKoR (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 21 Jul 2015 06:44:17 -0400
+Message-ID: <55AE2280.3000301@st.com>
+Date: Tue, 21 Jul 2015 18:44:16 +0800
+From: Denis Ciocca <denis.ciocca@st.com>
+MIME-Version: 1.0
+To: Giuseppe BARBA <giuseppe.barba@st.com>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+CC: "jic23@kernel.org" <jic23@kernel.org>
+Subject: Re: [PATCH V4 3/5] iio: st_magn: Add irq trigger handling
+References: <1437467745-18435-1-git-send-email-giuseppe.barba@st.com> <1437467745-18435-4-git-send-email-giuseppe.barba@st.com>
+In-Reply-To: <1437467745-18435-4-git-send-email-giuseppe.barba@st.com>
+Content-Type: text/plain; charset="windows-1252"; format=flowed
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Additionally the original discussion for this patch can be found here [5].
-$
-[1] http://comments.gmane.org/gmane.linux.ports.arm.omap/83698$
-[2] http://gumstix.8.x6.nabble.com/twl4030-madc-low-read-value-td4967139.html#none$
-[3] https://e2e.ti.com/support/power_management/pmu/f/43/t/732$
-[4] http://www.droid-developers.org/images/2/21/Tps65950_TRM.pdf$
-[5] http://www.spinics.net/lists/linux-omap/msg120300.html
+Acked-by: Denis Ciocca <denis.ciocca@st.com>
 
-Adam YH Lee (1):
-  [TWL4030 MADC] Fix ADC[3:6] readings
 
- drivers/iio/adc/twl4030-madc.c | 14 ++++++++++++++
- drivers/phy/phy-twl4030-usb.c  |  7 +++++++
- 2 files changed, 21 insertions(+)
+On 07/21/2015 04:35 PM, Giuseppe BARBA wrote:
+> Add irq trigger handling for magnetometer also
+>
+> Signed-off-by: Giuseppe Barba <giuseppe.barba@st.com>
+> ---
+>   drivers/iio/magnetometer/st_magn.h        |  2 ++
+>   drivers/iio/magnetometer/st_magn_buffer.c |  7 +++++++
+>   drivers/iio/magnetometer/st_magn_core.c   | 13 ++++++++++++-
+>   3 files changed, 21 insertions(+), 1 deletion(-)
+>
+> diff --git a/drivers/iio/magnetometer/st_magn.h b/drivers/iio/magnetometer/st_magn.h
+> index 287691c..60441023 100644
+> --- a/drivers/iio/magnetometer/st_magn.h
+> +++ b/drivers/iio/magnetometer/st_magn.h
+> @@ -25,6 +25,8 @@ void st_magn_common_remove(struct iio_dev *indio_dev);
+>   #ifdef CONFIG_IIO_BUFFER
+>   int st_magn_allocate_ring(struct iio_dev *indio_dev);
+>   void st_magn_deallocate_ring(struct iio_dev *indio_dev);
+> +int st_magn_trig_set_state(struct iio_trigger *trig, bool state);
+> +#define ST_MAGN_TRIGGER_SET_STATE (&st_magn_trig_set_state)
+>   #else /* CONFIG_IIO_BUFFER */
+>   static inline int st_magn_probe_trigger(struct iio_dev *indio_dev, int irq)
+>   {
+> diff --git a/drivers/iio/magnetometer/st_magn_buffer.c b/drivers/iio/magnetometer/st_magn_buffer.c
+> index bf427dc..ecd3bd0 100644
+> --- a/drivers/iio/magnetometer/st_magn_buffer.c
+> +++ b/drivers/iio/magnetometer/st_magn_buffer.c
+> @@ -23,6 +23,13 @@
+>   #include <linux/iio/common/st_sensors.h>
+>   #include "st_magn.h"
+>   
+> +int st_magn_trig_set_state(struct iio_trigger *trig, bool state)
+> +{
+> +	struct iio_dev *indio_dev = iio_trigger_get_drvdata(trig);
+> +
+> +	return st_sensors_set_dataready_irq(indio_dev, state);
+> +}
+> +
+>   static int st_magn_buffer_preenable(struct iio_dev *indio_dev)
+>   {
+>   	return st_sensors_set_enable(indio_dev, true);
+> diff --git a/drivers/iio/magnetometer/st_magn_core.c b/drivers/iio/magnetometer/st_magn_core.c
+> index 8d7d3a1..4c0cef8 100644
+> --- a/drivers/iio/magnetometer/st_magn_core.c
+> +++ b/drivers/iio/magnetometer/st_magn_core.c
+> @@ -480,6 +480,16 @@ static const struct iio_info magn_info = {
+>   	.write_raw = &st_magn_write_raw,
+>   };
+>   
+> +#ifdef CONFIG_IIO_TRIGGER
+> +static const struct iio_trigger_ops st_magn_trigger_ops = {
+> +	.owner = THIS_MODULE,
+> +	.set_trigger_state = ST_MAGN_TRIGGER_SET_STATE,
+> +};
+> +#define ST_MAGN_TRIGGER_OPS (&st_magn_trigger_ops)
+> +#else
+> +#define ST_MAGN_TRIGGER_OPS NULL
+> +#endif
+> +
+>   int st_magn_common_probe(struct iio_dev *indio_dev)
+>   {
+>   	struct st_sensor_data *mdata = iio_priv(indio_dev);
+> @@ -516,7 +526,8 @@ int st_magn_common_probe(struct iio_dev *indio_dev)
+>   		return err;
+>   
+>   	if (irq > 0) {
+> -		err = st_sensors_allocate_trigger(indio_dev, NULL);
+> +		err = st_sensors_allocate_trigger(indio_dev,
+> +						ST_MAGN_TRIGGER_OPS);
+>   		if (err < 0)
+>   			goto st_magn_probe_trigger_error;
+>   	}
 
--- 
-2.1.4
