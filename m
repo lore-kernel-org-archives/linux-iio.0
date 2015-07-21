@@ -1,208 +1,729 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mx08-00178001.pphosted.com ([91.207.212.93]:49821 "EHLO
-	mx08-00178001.pphosted.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1754047AbbGUKod (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 21 Jul 2015 06:44:33 -0400
-Message-ID: <55AE2295.2030404@st.com>
-Date: Tue, 21 Jul 2015 18:44:37 +0800
+Received: from mx07-00178001.pphosted.com ([62.209.51.94]:57702 "EHLO
+	mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1752668AbbGULA3 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 21 Jul 2015 07:00:29 -0400
+Message-ID: <55AE264D.8060300@st.com>
+Date: Tue, 21 Jul 2015 19:00:29 +0800
 From: Denis Ciocca <denis.ciocca@st.com>
 MIME-Version: 1.0
 To: Giuseppe BARBA <giuseppe.barba@st.com>,
 	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
 CC: "jic23@kernel.org" <jic23@kernel.org>
-Subject: Re: [PATCH V4 5/5] iio: st-magn: add support for lsm303agr magnetometer
-References: <1437467745-18435-1-git-send-email-giuseppe.barba@st.com> <1437467745-18435-6-git-send-email-giuseppe.barba@st.com>
-In-Reply-To: <1437467745-18435-6-git-send-email-giuseppe.barba@st.com>
+Subject: Re: [PATCH] iio: st: rework code style removing goto statements
+References: <1437473652-29150-1-git-send-email-giuseppe.barba@st.com>
+In-Reply-To: <1437473652-29150-1-git-send-email-giuseppe.barba@st.com>
 Content-Type: text/plain; charset="windows-1252"; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Acked-by: Denis Ciocca <denis.ciocca@st.com>
+Thanks Giuseppe,
+
+such a long time I wanted do that. :)
+
+Just add one blank line please, it was missing also before!
+
+Denis
 
 
-On 07/21/2015 04:35 PM, Giuseppe BARBA wrote:
-> This adds support for the lsm303agr magnetometer.
+On 07/21/2015 06:14 PM, Giuseppe BARBA wrote:
+> The scope of this patch is to remove some goto statements and its label
+> present into st sensors driver.
 >
 > Signed-off-by: Giuseppe Barba <giuseppe.barba@st.com>
 > ---
->   .../devicetree/bindings/iio/st-sensors.txt         |  1 +
->   drivers/iio/magnetometer/st_magn.h                 |  1 +
->   drivers/iio/magnetometer/st_magn_core.c            | 82 ++++++++++++++++++++++
->   drivers/iio/magnetometer/st_magn_i2c.c             |  5 ++
->   drivers/iio/magnetometer/st_magn_spi.c             |  1 +
->   5 files changed, 90 insertions(+)
+>   drivers/iio/accel/st_accel_buffer.c               |  7 +--
+>   drivers/iio/accel/st_accel_core.c                 |  3 +-
+>   drivers/iio/common/st_sensors/st_sensors_buffer.c | 29 ++++-----
+>   drivers/iio/common/st_sensors/st_sensors_core.c   | 75 ++++++++++-------------
+>   drivers/iio/common/st_sensors/st_sensors_i2c.c    |  5 +-
+>   drivers/iio/common/st_sensors/st_sensors_spi.c    | 10 ++-
+>   drivers/iio/gyro/st_gyro_buffer.c                 |  7 +--
+>   drivers/iio/gyro/st_gyro_core.c                   |  5 +-
+>   drivers/iio/magnetometer/st_magn_buffer.c         | 20 ++----
+>   drivers/iio/magnetometer/st_magn_core.c           |  5 +-
+>   drivers/iio/magnetometer/st_magn_i2c.c            |  6 +-
+>   drivers/iio/magnetometer/st_magn_spi.c            |  6 +-
+>   drivers/iio/pressure/st_pressure_buffer.c         | 20 ++----
+>   drivers/iio/pressure/st_pressure_core.c           | 13 ++--
+>   drivers/iio/pressure/st_pressure_spi.c            |  6 +-
+>   15 files changed, 77 insertions(+), 140 deletions(-)
 >
-> diff --git a/Documentation/devicetree/bindings/iio/st-sensors.txt b/Documentation/devicetree/bindings/iio/st-sensors.txt
-> index d80bdaa..d3ccdb1 100644
-> --- a/Documentation/devicetree/bindings/iio/st-sensors.txt
-> +++ b/Documentation/devicetree/bindings/iio/st-sensors.txt
-> @@ -47,6 +47,7 @@ Gyroscopes:
->   - st,lsm330-gyro
->   
->   Magnetometers:
-> +- st,lsm303agr-magn
->   - st,lsm303dlh-magn
->   - st,lsm303dlhc-magn
->   - st,lsm303dlm-magn
-> diff --git a/drivers/iio/magnetometer/st_magn.h b/drivers/iio/magnetometer/st_magn.h
-> index 60441023..06a4d9c 100644
-> --- a/drivers/iio/magnetometer/st_magn.h
-> +++ b/drivers/iio/magnetometer/st_magn.h
-> @@ -18,6 +18,7 @@
->   #define LSM303DLHC_MAGN_DEV_NAME	"lsm303dlhc_magn"
->   #define LSM303DLM_MAGN_DEV_NAME		"lsm303dlm_magn"
->   #define LIS3MDL_MAGN_DEV_NAME		"lis3mdl"
-> +#define LSM303AGR_MAGN_DEV_NAME		"lsm303agr_magn"
->   
->   int st_magn_common_probe(struct iio_dev *indio_dev);
->   void st_magn_common_remove(struct iio_dev *indio_dev);
+> diff --git a/drivers/iio/accel/st_accel_buffer.c b/drivers/iio/accel/st_accel_buffer.c
+> index a1e642e..21b5ac4 100644
+> --- a/drivers/iio/accel/st_accel_buffer.c
+> +++ b/drivers/iio/accel/st_accel_buffer.c
+> @@ -41,10 +41,8 @@ static int st_accel_buffer_postenable(struct iio_dev *indio_dev)
+>          struct st_sensor_data *adata = iio_priv(indio_dev);
+>
+>          adata->buffer_data = kmalloc(indio_dev->scan_bytes, GFP_KERNEL);
+> -       if (adata->buffer_data == NULL) {
+> -               err = -ENOMEM;
+> -               goto allocate_memory_error;
+> -       }
+> +       if (adata->buffer_data == NULL)
+> +               return -ENOMEM;
+>
+>          err = st_sensors_set_axis_enable(indio_dev,
+>                                          (u8)indio_dev->active_scan_mask[0]);
+> @@ -59,7 +57,6 @@ static int st_accel_buffer_postenable(struct iio_dev *indio_dev)
+>
+>   st_accel_buffer_postenable_error:
+>          kfree(adata->buffer_data);
+> -allocate_memory_error:
+>          return err;
+>   }
+>
+> diff --git a/drivers/iio/accel/st_accel_core.c b/drivers/iio/accel/st_accel_core.c
+> index ff30f88..beea981 100644
+> --- a/drivers/iio/accel/st_accel_core.c
+> +++ b/drivers/iio/accel/st_accel_core.c
+> @@ -559,7 +559,7 @@ static int st_accel_read_raw(struct iio_dev *indio_dev,
+>          case IIO_CHAN_INFO_RAW:
+>                  err = st_sensors_read_info_raw(indio_dev, ch, val);
+>                  if (err < 0)
+> -                       goto read_error;
+> +                       break;
+>
+>                  return IIO_VAL_INT;
+>          case IIO_CHAN_INFO_SCALE:
+> @@ -573,7 +573,6 @@ static int st_accel_read_raw(struct iio_dev *indio_dev,
+>                  return -EINVAL;
+>          }
+>
+> -read_error:
+>          return err;
+>   }
+>
+> diff --git a/drivers/iio/common/st_sensors/st_sensors_buffer.c b/drivers/iio/common/st_sensors/st_sensors_buffer.c
+> index e18bc67..4d1f75c 100644
+> --- a/drivers/iio/common/st_sensors/st_sensors_buffer.c
+> +++ b/drivers/iio/common/st_sensors/st_sensors_buffer.c
+> @@ -32,10 +32,8 @@ int st_sensors_get_buffer_element(struct iio_dev *indio_dev, u8 *buf)
+>                          indio_dev->channels[0].scan_type.storagebits >> 3;
+>
+>          addr = kmalloc(num_data_channels, GFP_KERNEL);
+> -       if (!addr) {
+> -               len = -ENOMEM;
+> -               goto st_sensors_get_buffer_element_error;
+> -       }
+> +       if (!addr)
+> +               return -ENOMEM;
+>
+>          for (i = 0; i < num_data_channels; i++) {
+>                  if (test_bit(i, indio_dev->active_scan_mask)) {
+> @@ -59,7 +57,7 @@ int st_sensors_get_buffer_element(struct iio_dev *indio_dev, u8 *buf)
+>                                             GFP_KERNEL);
+>                          if (!rx_array) {
+>                                  len = -ENOMEM;
+> -                               goto st_sensors_free_memory;
+> +                               break;
+>                          }
+>
+>                          len = sdata->tf->read_multiple_byte(&sdata->tb,
+> @@ -68,7 +66,7 @@ int st_sensors_get_buffer_element(struct iio_dev *indio_dev, u8 *buf)
+>                                  rx_array, sdata->multiread_bit);
+>                          if (len < 0) {
+>                                  kfree(rx_array);
+> -                               goto st_sensors_free_memory;
+> +                               break;
+>                          }
+>
+>                          for (i = 0; i < n * byte_for_channel; i++) {
+> @@ -88,16 +86,13 @@ int st_sensors_get_buffer_element(struct iio_dev *indio_dev, u8 *buf)
+>                  break;
+>          default:
+>                  len = -EINVAL;
+> -               goto st_sensors_free_memory;
+> +               break;
+>          }
+> -       if (len != byte_for_channel * n) {
+> +       if ((len > 0) && (len != byte_for_channel * n))
+>                  len = -EIO;
+> -               goto st_sensors_free_memory;
+> -       }
+>
+> -st_sensors_free_memory:
+>          kfree(addr);
+> -st_sensors_get_buffer_element_error:
+> +
+>          return len;
+>   }
+>   EXPORT_SYMBOL(st_sensors_get_buffer_element);
+> @@ -110,13 +105,11 @@ irqreturn_t st_sensors_trigger_handler(int irq, void *p)
+>          struct st_sensor_data *sdata = iio_priv(indio_dev);
+>
+>          len = st_sensors_get_buffer_element(indio_dev, sdata->buffer_data);
+> -       if (len < 0)
+> -               goto st_sensors_get_buffer_element_error;
+> -
+> -       iio_push_to_buffers_with_timestamp(indio_dev, sdata->buffer_data,
+> -               pf->timestamp);
+> +       if (len > 0)
+> +               iio_push_to_buffers_with_timestamp(indio_dev,
+> +                                                       sdata->buffer_data,
+> +                                                       pf->timestamp);
+>
+> -st_sensors_get_buffer_element_error:
+>          iio_trigger_notify_done(indio_dev->trig);
+>
+>          return IRQ_HANDLED;
+> diff --git a/drivers/iio/common/st_sensors/st_sensors_core.c b/drivers/iio/common/st_sensors/st_sensors_core.c
+> index 2e7fdb5..c84b4f2 100644
+> --- a/drivers/iio/common/st_sensors/st_sensors_core.c
+> +++ b/drivers/iio/common/st_sensors/st_sensors_core.c
+> @@ -35,34 +35,32 @@ static int st_sensors_write_data_with_mask(struct iio_dev *indio_dev,
+>
+>          err = sdata->tf->read_byte(&sdata->tb, sdata->dev, reg_addr, &new_data);
+>          if (err < 0)
+> -               goto st_sensors_write_data_with_mask_error;
+> +               return err;
+>
+>          new_data = ((new_data & (~mask)) | ((data << __ffs(mask)) & mask));
+> -       err = sdata->tf->write_byte(&sdata->tb, sdata->dev, reg_addr, new_data);
+>
+> -st_sensors_write_data_with_mask_error:
+> -       return err;
+> +       return sdata->tf->write_byte(&sdata->tb, sdata->dev, reg_addr,
+> +                                                               new_data);
+>   }
+>
+>   static int st_sensors_match_odr(struct st_sensor_settings *sensor_settings,
+>                          unsigned int odr, struct st_sensor_odr_avl *odr_out)
+>   {
+> -       int i, ret = -EINVAL;
+> +       int i;
+>
+>          for (i = 0; i < ST_SENSORS_ODR_LIST_MAX; i++) {
+>                  if (sensor_settings->odr.odr_avl[i].hz == 0)
+> -                       goto st_sensors_match_odr_error;
+> +                       break;
+>
+>                  if (sensor_settings->odr.odr_avl[i].hz == odr) {
+>                          odr_out->hz = sensor_settings->odr.odr_avl[i].hz;
+>                          odr_out->value = sensor_settings->odr.odr_avl[i].value;
+> -                       ret = 0;
+> -                       break;
+> +
+> +                       return 0;
+>                  }
+>          }
+>
+> -st_sensors_match_odr_error:
+> -       return ret;
+> +       return -EINVAL;
+>   }
+>
+>   int st_sensors_set_odr(struct iio_dev *indio_dev, unsigned int odr)
+> @@ -73,7 +71,7 @@ int st_sensors_set_odr(struct iio_dev *indio_dev, unsigned int odr)
+>
+>          err = st_sensors_match_odr(sdata->sensor_settings, odr, &odr_out);
+>          if (err < 0)
+> -               goto st_sensors_match_odr_error;
+> +               return err;
+>
+>          if ((sdata->sensor_settings->odr.addr ==
+>                                          sdata->sensor_settings->pw.addr) &&
+> @@ -96,7 +94,6 @@ int st_sensors_set_odr(struct iio_dev *indio_dev, unsigned int odr)
+>          if (err >= 0)
+>                  sdata->odr = odr_out.hz;
+>
+> -st_sensors_match_odr_error:
+>          return err;
+>   }
+>   EXPORT_SYMBOL(st_sensors_set_odr);
+> @@ -104,21 +101,19 @@ EXPORT_SYMBOL(st_sensors_set_odr);
+>   static int st_sensors_match_fs(struct st_sensor_settings *sensor_settings,
+>                                          unsigned int fs, int *index_fs_avl)
+>   {
+> -       int i, ret = -EINVAL;
+> +       int i;
+>
+>          for (i = 0; i < ST_SENSORS_FULLSCALE_AVL_MAX; i++) {
+>                  if (sensor_settings->fs.fs_avl[i].num == 0)
+> -                       goto st_sensors_match_odr_error;
+> +                       break;
+>
+>                  if (sensor_settings->fs.fs_avl[i].num == fs) {
+>                          *index_fs_avl = i;
+> -                       ret = 0;
+> -                       break;
+> +                       return 0;
+>                  }
+>          }
+>
+> -st_sensors_match_odr_error:
+> -       return ret;
+> +       return -EINVAL;
+>   }
+>
+>   static int st_sensors_set_fullscale(struct iio_dev *indio_dev, unsigned int fs)
+> @@ -130,22 +125,23 @@ static int st_sensors_set_fullscale(struct iio_dev *indio_dev, unsigned int fs)
+>                  return 0;
+>
+>          err = st_sensors_match_fs(sdata->sensor_settings, fs, &i);
+> -       if (err < 0)
+> -               goto st_accel_set_fullscale_error;
+> +       if (err < 0) {
+> +               dev_err(&indio_dev->dev, "requested fullscale is not supported.\n");
+> +               return err;
+> +       }
+>
+>          err = st_sensors_write_data_with_mask(indio_dev,
+>                                  sdata->sensor_settings->fs.addr,
+>                                  sdata->sensor_settings->fs.mask,
+>                                  sdata->sensor_settings->fs.fs_avl[i].value);
+> -       if (err < 0)
+> -               goto st_accel_set_fullscale_error;
+> +       if (err < 0) {
+> +               dev_err(&indio_dev->dev, "failed to set new fullscale.\n");
+> +               return err;
+> +       }
+>
+>          sdata->current_fullscale = (struct st_sensor_fullscale_avl *)
+>                                          &sdata->sensor_settings->fs.fs_avl[i];
+> -       return err;
+>
+> -st_accel_set_fullscale_error:
+> -       dev_err(&indio_dev->dev, "failed to set new fullscale.\n");
+>          return err;
+>   }
+>
+> @@ -166,7 +162,7 @@ int st_sensors_set_enable(struct iio_dev *indio_dev, bool enable)
+>                          err = st_sensors_match_odr(sdata->sensor_settings,
+>                                                          sdata->odr, &odr_out);
+>                          if (err < 0)
+> -                               goto set_enable_error;
+> +                               return err;
+
+Add new space here. It was missing also before.
+
+
+>                          tmp_value = odr_out.value;
+>                          found = true;
+>                  }
+> @@ -174,7 +170,7 @@ int st_sensors_set_enable(struct iio_dev *indio_dev, bool enable)
+>                                  sdata->sensor_settings->pw.addr,
+>                                  sdata->sensor_settings->pw.mask, tmp_value);
+>                  if (err < 0)
+> -                       goto set_enable_error;
+> +                       return err;
+>
+>                  sdata->enabled = true;
+>
+> @@ -186,12 +182,11 @@ int st_sensors_set_enable(struct iio_dev *indio_dev, bool enable)
+>                                  sdata->sensor_settings->pw.mask,
+>                                  sdata->sensor_settings->pw.value_off);
+>                  if (err < 0)
+> -                       goto set_enable_error;
+> +                       return err;
+>
+>                  sdata->enabled = false;
+>          }
+>
+> -set_enable_error:
+>          return err;
+>   }
+>   EXPORT_SYMBOL(st_sensors_set_enable);
+> @@ -375,7 +370,7 @@ int st_sensors_set_dataready_irq(struct iio_dev *indio_dev, bool enable)
+>                                  sdata->sensor_settings->drdy_irq.ig1.en_mask,
+>                                  (int)enable);
+>                  if (err < 0)
+> -                       goto st_accel_set_dataready_irq_error;
+> +                       return err;
+>          }
+>
+>          if (sdata->drdy_int_pin == 1)
+> @@ -384,12 +379,9 @@ int st_sensors_set_dataready_irq(struct iio_dev *indio_dev, bool enable)
+>                  drdy_mask = sdata->sensor_settings->drdy_irq.mask_int2;
+>
+>          /* Enable/Disable the interrupt generator for data ready. */
+> -       err = st_sensors_write_data_with_mask(indio_dev,
+> +       return st_sensors_write_data_with_mask(indio_dev,
+>                                          sdata->sensor_settings->drdy_irq.addr,
+>                                          drdy_mask, (int)enable);
+> -
+> -st_accel_set_dataready_irq_error:
+> -       return err;
+>   }
+>   EXPORT_SYMBOL(st_sensors_set_dataready_irq);
+>
+> @@ -406,13 +398,10 @@ int st_sensors_set_fullscale_by_gain(struct iio_dev *indio_dev, int scale)
+>                  }
+>          }
+>          if (err < 0)
+> -               goto st_sensors_match_scale_error;
+> +               return err;
+>
+> -       err = st_sensors_set_fullscale(indio_dev,
+> +       return st_sensors_set_fullscale(indio_dev,
+>                                  sdata->sensor_settings->fs.fs_avl[i].num);
+> -
+> -st_sensors_match_scale_error:
+> -       return err;
+>   }
+>   EXPORT_SYMBOL(st_sensors_set_fullscale_by_gain);
+>
+> @@ -456,22 +445,22 @@ int st_sensors_read_info_raw(struct iio_dev *indio_dev,
+>          mutex_lock(&indio_dev->mlock);
+>          if (indio_dev->currentmode == INDIO_BUFFER_TRIGGERED) {
+>                  err = -EBUSY;
+> -               goto out;
+> +               goto st_sensors_mutex_unlock;
+>          } else {
+>                  err = st_sensors_set_enable(indio_dev, true);
+>                  if (err < 0)
+> -                       goto out;
+> +                       goto st_sensors_mutex_unlock;
+>
+>                  msleep((sdata->sensor_settings->bootime * 1000) / sdata->odr);
+>                  err = st_sensors_read_axis_data(indio_dev, ch, val);
+>                  if (err < 0)
+> -                       goto out;
+> +                       goto st_sensors_mutex_unlock;
+>
+>                  *val = *val >> ch->scan_type.shift;
+>
+>                  err = st_sensors_set_enable(indio_dev, false);
+>          }
+> -out:
+> +st_sensors_mutex_unlock:
+>          mutex_unlock(&indio_dev->mlock);
+>
+>          return err;
+> diff --git a/drivers/iio/common/st_sensors/st_sensors_i2c.c b/drivers/iio/common/st_sensors/st_sensors_i2c.c
+> index 98cfee29..793d7a8 100644
+> --- a/drivers/iio/common/st_sensors/st_sensors_i2c.c
+> +++ b/drivers/iio/common/st_sensors/st_sensors_i2c.c
+> @@ -33,12 +33,11 @@ static int st_sensors_i2c_read_byte(struct st_sensor_transfer_buffer *tb,
+>
+>          err = i2c_smbus_read_byte_data(to_i2c_client(dev), reg_addr);
+>          if (err < 0)
+> -               goto st_accel_i2c_read_byte_error;
+> +               return err;
+>
+>          *res_byte = err & 0xff;
+>
+> -st_accel_i2c_read_byte_error:
+> -       return err < 0 ? err : 0;
+> +       return 0;
+>   }
+>
+>   static int st_sensors_i2c_read_multiple_byte(
+> diff --git a/drivers/iio/common/st_sensors/st_sensors_spi.c b/drivers/iio/common/st_sensors/st_sensors_spi.c
+> index 5b37737..d7a14e0 100644
+> --- a/drivers/iio/common/st_sensors/st_sensors_spi.c
+> +++ b/drivers/iio/common/st_sensors/st_sensors_spi.c
+> @@ -51,16 +51,14 @@ static int st_sensors_spi_read(struct st_sensor_transfer_buffer *tb,
+>                  tb->tx_buf[0] = reg_addr | ST_SENSORS_SPI_READ;
+>
+>          err = spi_sync_transfer(to_spi_device(dev), xfers, ARRAY_SIZE(xfers));
+> -       if (err)
+> -               goto acc_spi_read_error;
+> +       if (err) {
+> +               mutex_unlock(&tb->buf_lock);
+> +               return err;
+> +       }
+>
+>          memcpy(data, tb->rx_buf, len);
+>          mutex_unlock(&tb->buf_lock);
+>          return len;
+> -
+> -acc_spi_read_error:
+> -       mutex_unlock(&tb->buf_lock);
+> -       return err;
+>   }
+>
+>   static int st_sensors_spi_read_byte(struct st_sensor_transfer_buffer *tb,
+> diff --git a/drivers/iio/gyro/st_gyro_buffer.c b/drivers/iio/gyro/st_gyro_buffer.c
+> index d67b17b..9da07ed 100644
+> --- a/drivers/iio/gyro/st_gyro_buffer.c
+> +++ b/drivers/iio/gyro/st_gyro_buffer.c
+> @@ -41,10 +41,8 @@ static int st_gyro_buffer_postenable(struct iio_dev *indio_dev)
+>          struct st_sensor_data *gdata = iio_priv(indio_dev);
+>
+>          gdata->buffer_data = kmalloc(indio_dev->scan_bytes, GFP_KERNEL);
+> -       if (gdata->buffer_data == NULL) {
+> -               err = -ENOMEM;
+> -               goto allocate_memory_error;
+> -       }
+> +       if (gdata->buffer_data == NULL)
+> +               return -ENOMEM;
+>
+>          err = st_sensors_set_axis_enable(indio_dev,
+>                                          (u8)indio_dev->active_scan_mask[0]);
+> @@ -59,7 +57,6 @@ static int st_gyro_buffer_postenable(struct iio_dev *indio_dev)
+>
+>   st_gyro_buffer_postenable_error:
+>          kfree(gdata->buffer_data);
+> -allocate_memory_error:
+>          return err;
+>   }
+>
+> diff --git a/drivers/iio/gyro/st_gyro_core.c b/drivers/iio/gyro/st_gyro_core.c
+> index 4b993a5..668e099 100644
+> --- a/drivers/iio/gyro/st_gyro_core.c
+> +++ b/drivers/iio/gyro/st_gyro_core.c
+> @@ -324,7 +324,7 @@ static int st_gyro_read_raw(struct iio_dev *indio_dev,
+>          case IIO_CHAN_INFO_RAW:
+>                  err = st_sensors_read_info_raw(indio_dev, ch, val);
+>                  if (err < 0)
+> -                       goto read_error;
+> +                       break;
+>
+>                  return IIO_VAL_INT;
+>          case IIO_CHAN_INFO_SCALE:
+> @@ -338,7 +338,6 @@ static int st_gyro_read_raw(struct iio_dev *indio_dev,
+>                  return -EINVAL;
+>          }
+>
+> -read_error:
+>          return err;
+>   }
+>
+> @@ -357,7 +356,7 @@ static int st_gyro_write_raw(struct iio_dev *indio_dev,
+>                  mutex_lock(&indio_dev->mlock);
+>                  err = st_sensors_set_odr(indio_dev, val);
+>                  mutex_unlock(&indio_dev->mlock);
+> -               return err;
+> +               break;
+>          default:
+>                  err = -EINVAL;
+>          }
+> diff --git a/drivers/iio/magnetometer/st_magn_buffer.c b/drivers/iio/magnetometer/st_magn_buffer.c
+> index ecd3bd0..ea4006f 100644
+> --- a/drivers/iio/magnetometer/st_magn_buffer.c
+> +++ b/drivers/iio/magnetometer/st_magn_buffer.c
+> @@ -41,21 +41,14 @@ static int st_magn_buffer_postenable(struct iio_dev *indio_dev)
+>          struct st_sensor_data *mdata = iio_priv(indio_dev);
+>
+>          mdata->buffer_data = kmalloc(indio_dev->scan_bytes, GFP_KERNEL);
+> -       if (mdata->buffer_data == NULL) {
+> -               err = -ENOMEM;
+> -               goto allocate_memory_error;
+> -       }
+> +       if (mdata->buffer_data == NULL)
+> +               return -ENOMEM;
+>
+>          err = iio_triggered_buffer_postenable(indio_dev);
+>          if (err < 0)
+> -               goto st_magn_buffer_postenable_error;
+> +               kfree(mdata->buffer_data);
+>
+>          return err;
+> -
+> -st_magn_buffer_postenable_error:
+> -       kfree(mdata->buffer_data);
+> -allocate_memory_error:
+> -       return err;
+>   }
+>
+>   static int st_magn_buffer_predisable(struct iio_dev *indio_dev)
+> @@ -64,12 +57,9 @@ static int st_magn_buffer_predisable(struct iio_dev *indio_dev)
+>          struct st_sensor_data *mdata = iio_priv(indio_dev);
+>
+>          err = iio_triggered_buffer_predisable(indio_dev);
+> -       if (err < 0)
+> -               goto st_magn_buffer_predisable_error;
+> -
+> -       err = st_sensors_set_enable(indio_dev, false);
+> +       if (err >= 0)
+> +               err = st_sensors_set_enable(indio_dev, false);
+>
+> -st_magn_buffer_predisable_error:
+>          kfree(mdata->buffer_data);
+>          return err;
+>   }
 > diff --git a/drivers/iio/magnetometer/st_magn_core.c b/drivers/iio/magnetometer/st_magn_core.c
-> index 4c0cef8..f8dc4b8 100644
+> index f8dc4b8..abf75c5 100644
 > --- a/drivers/iio/magnetometer/st_magn_core.c
 > +++ b/drivers/iio/magnetometer/st_magn_core.c
-> @@ -43,6 +43,7 @@
->   #define ST_MAGN_FS_AVL_8000MG			8000
->   #define ST_MAGN_FS_AVL_8100MG			8100
->   #define ST_MAGN_FS_AVL_12000MG			12000
-> +#define ST_MAGN_FS_AVL_15000MG			15000
->   #define ST_MAGN_FS_AVL_16000MG			16000
->   
->   /* CUSTOM VALUES FOR SENSOR 0 */
-> @@ -157,6 +158,29 @@
->   #define ST_MAGN_2_OUT_Y_L_ADDR			0x2a
->   #define ST_MAGN_2_OUT_Z_L_ADDR			0x2c
->   
-> +/* CUSTOM VALUES FOR SENSOR 3 */
-> +#define ST_MAGN_3_WAI_ADDR			0x4f
-> +#define ST_MAGN_3_WAI_EXP			0x40
-> +#define ST_MAGN_3_ODR_ADDR			0x60
-> +#define ST_MAGN_3_ODR_MASK			0x0c
-> +#define ST_MAGN_3_ODR_AVL_10HZ_VAL		0x00
-> +#define ST_MAGN_3_ODR_AVL_20HZ_VAL		0x01
-> +#define ST_MAGN_3_ODR_AVL_50HZ_VAL		0x02
-> +#define ST_MAGN_3_ODR_AVL_100HZ_VAL		0x03
-> +#define ST_MAGN_3_PW_ADDR			0x60
-> +#define ST_MAGN_3_PW_MASK			0x03
-> +#define ST_MAGN_3_PW_ON				0x00
-> +#define ST_MAGN_3_PW_OFF			0x03
-> +#define ST_MAGN_3_BDU_ADDR			0x62
-> +#define ST_MAGN_3_BDU_MASK			0x10
-> +#define ST_MAGN_3_DRDY_IRQ_ADDR			0x62
-> +#define ST_MAGN_3_DRDY_INT_MASK			0x01
-> +#define ST_MAGN_3_FS_AVL_15000_GAIN		1500
-> +#define ST_MAGN_3_MULTIREAD_BIT			false
-> +#define ST_MAGN_3_OUT_X_L_ADDR			0x68
-> +#define ST_MAGN_3_OUT_Y_L_ADDR			0x6a
-> +#define ST_MAGN_3_OUT_Z_L_ADDR			0x6c
-> +
->   static const struct iio_chan_spec st_magn_16bit_channels[] = {
->   	ST_SENSORS_LSM_CHANNELS(IIO_MAGN,
->   			BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_SCALE),
-> @@ -189,6 +213,22 @@ static const struct iio_chan_spec st_magn_2_16bit_channels[] = {
->   	IIO_CHAN_SOFT_TIMESTAMP(3)
->   };
->   
-> +static const struct iio_chan_spec st_magn_3_16bit_channels[] = {
-> +	ST_SENSORS_LSM_CHANNELS(IIO_MAGN,
-> +			BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_SCALE),
-> +			ST_SENSORS_SCAN_X, 1, IIO_MOD_X, 's', IIO_LE, 16, 16,
-> +			ST_MAGN_3_OUT_X_L_ADDR),
-> +	ST_SENSORS_LSM_CHANNELS(IIO_MAGN,
-> +			BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_SCALE),
-> +			ST_SENSORS_SCAN_Y, 1, IIO_MOD_Y, 's', IIO_LE, 16, 16,
-> +			ST_MAGN_3_OUT_Y_L_ADDR),
-> +	ST_SENSORS_LSM_CHANNELS(IIO_MAGN,
-> +			BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_SCALE),
-> +			ST_SENSORS_SCAN_Z, 1, IIO_MOD_Z, 's', IIO_LE, 16, 16,
-> +			ST_MAGN_3_OUT_Z_L_ADDR),
-> +	IIO_CHAN_SOFT_TIMESTAMP(3)
-> +};
-> +
->   static const struct st_sensor_settings st_magn_sensors_settings[] = {
->   	{
->   		.wai = 0, /* This sensor has no valid WhoAmI report 0 */
-> @@ -402,6 +442,48 @@ static const struct st_sensor_settings st_magn_sensors_settings[] = {
->   		.multi_read_bit = ST_MAGN_2_MULTIREAD_BIT,
->   		.bootime = 2,
->   	},
-> +	{
-> +		.wai = ST_MAGN_3_WAI_EXP,
-> +		.wai_addr = ST_MAGN_3_WAI_ADDR,
-> +		.sensors_supported = {
-> +			[0] = LSM303AGR_MAGN_DEV_NAME,
-> +		},
-> +		.ch = (struct iio_chan_spec *)st_magn_3_16bit_channels,
-> +		.odr = {
-> +			.addr = ST_MAGN_3_ODR_ADDR,
-> +			.mask = ST_MAGN_3_ODR_MASK,
-> +			.odr_avl = {
-> +				{ 10, ST_MAGN_3_ODR_AVL_10HZ_VAL, },
-> +				{ 20, ST_MAGN_3_ODR_AVL_20HZ_VAL, },
-> +				{ 50, ST_MAGN_3_ODR_AVL_50HZ_VAL, },
-> +				{ 100, ST_MAGN_3_ODR_AVL_100HZ_VAL, },
-> +			},
-> +		},
-> +		.pw = {
-> +			.addr = ST_MAGN_3_PW_ADDR,
-> +			.mask = ST_MAGN_3_PW_MASK,
-> +			.value_on = ST_MAGN_3_PW_ON,
-> +			.value_off = ST_MAGN_3_PW_OFF,
-> +		},
-> +		.fs = {
-> +			.fs_avl = {
-> +				[0] = {
-> +					.num = ST_MAGN_FS_AVL_15000MG,
-> +					.gain = ST_MAGN_3_FS_AVL_15000_GAIN,
-> +				},
-> +			},
-> +		},
-> +		.bdu = {
-> +			.addr = ST_MAGN_3_BDU_ADDR,
-> +			.mask = ST_MAGN_3_BDU_MASK,
-> +		},
-> +		.drdy_irq = {
-> +			.addr = ST_MAGN_3_DRDY_IRQ_ADDR,
-> +			.mask_int1 = ST_MAGN_3_DRDY_INT_MASK,
-> +		},
-> +		.multi_read_bit = ST_MAGN_3_MULTIREAD_BIT,
-> +		.bootime = 2,
-> +	},
->   };
->   
->   static int st_magn_read_raw(struct iio_dev *indio_dev,
+> @@ -497,7 +497,7 @@ static int st_magn_read_raw(struct iio_dev *indio_dev,
+>          case IIO_CHAN_INFO_RAW:
+>                  err = st_sensors_read_info_raw(indio_dev, ch, val);
+>                  if (err < 0)
+> -                       goto read_error;
+> +                       break;
+>
+>                  return IIO_VAL_INT;
+>          case IIO_CHAN_INFO_SCALE:
+> @@ -515,7 +515,6 @@ static int st_magn_read_raw(struct iio_dev *indio_dev,
+>                  return -EINVAL;
+>          }
+>
+> -read_error:
+>          return err;
+>   }
+>
+> @@ -534,7 +533,7 @@ static int st_magn_write_raw(struct iio_dev *indio_dev,
+>                  mutex_lock(&indio_dev->mlock);
+>                  err = st_sensors_set_odr(indio_dev, val);
+>                  mutex_unlock(&indio_dev->mlock);
+> -               return err;
+> +               break;
+>          default:
+>                  err = -EINVAL;
+>          }
 > diff --git a/drivers/iio/magnetometer/st_magn_i2c.c b/drivers/iio/magnetometer/st_magn_i2c.c
-> index 28aa807..8aa37af 100644
+> index 8aa37af..787e5bb 100644
 > --- a/drivers/iio/magnetometer/st_magn_i2c.c
 > +++ b/drivers/iio/magnetometer/st_magn_i2c.c
-> @@ -36,6 +36,10 @@ static const struct of_device_id st_magn_of_match[] = {
->   		.compatible = "st,lis3mdl-magn",
->   		.data = LIS3MDL_MAGN_DEV_NAME,
->   	},
-> +	{
-> +		.compatible = "st,lsm303agr-magn",
-> +		.data = LSM303AGR_MAGN_DEV_NAME,
-> +	},
->   	{},
->   };
->   MODULE_DEVICE_TABLE(of, st_magn_of_match);
-> @@ -79,6 +83,7 @@ static const struct i2c_device_id st_magn_id_table[] = {
->   	{ LSM303DLHC_MAGN_DEV_NAME },
->   	{ LSM303DLM_MAGN_DEV_NAME },
->   	{ LIS3MDL_MAGN_DEV_NAME },
-> +	{ LSM303AGR_MAGN_DEV_NAME },
->   	{},
->   };
->   MODULE_DEVICE_TABLE(i2c, st_magn_id_table);
+> @@ -60,14 +60,10 @@ static int st_magn_i2c_probe(struct i2c_client *client,
+>
+>          mdata = iio_priv(indio_dev);
+>          st_sensors_of_i2c_probe(client, st_magn_of_match);
+> -
+>          st_sensors_i2c_configure(indio_dev, client, mdata);
+> -
+>          err = st_magn_common_probe(indio_dev);
+> -       if (err < 0)
+> -               return err;
+>
+> -       return 0;
+> +       return (err < 0) ? err : 0;
+>   }
+>
+>   static int st_magn_i2c_remove(struct i2c_client *client)
 > diff --git a/drivers/iio/magnetometer/st_magn_spi.c b/drivers/iio/magnetometer/st_magn_spi.c
-> index 7adacf1..0abca2c 100644
+> index 0abca2c..1d78dae 100644
 > --- a/drivers/iio/magnetometer/st_magn_spi.c
 > +++ b/drivers/iio/magnetometer/st_magn_spi.c
-> @@ -51,6 +51,7 @@ static const struct spi_device_id st_magn_id_table[] = {
->   	{ LSM303DLHC_MAGN_DEV_NAME },
->   	{ LSM303DLM_MAGN_DEV_NAME },
->   	{ LIS3MDL_MAGN_DEV_NAME },
-> +	{ LSM303AGR_MAGN_DEV_NAME },
->   	{},
->   };
->   MODULE_DEVICE_TABLE(spi, st_magn_id_table);
+> @@ -29,14 +29,10 @@ static int st_magn_spi_probe(struct spi_device *spi)
+>                  return -ENOMEM;
+>
+>          mdata = iio_priv(indio_dev);
+> -
+>          st_sensors_spi_configure(indio_dev, spi, mdata);
+> -
+>          err = st_magn_common_probe(indio_dev);
+> -       if (err < 0)
+> -               return err;
+>
+> -       return 0;
+> +       return (err < 0) ? err : 0;
+>   }
+>
+>   static int st_magn_spi_remove(struct spi_device *spi)
+> diff --git a/drivers/iio/pressure/st_pressure_buffer.c b/drivers/iio/pressure/st_pressure_buffer.c
+> index 2ff53f2..d8a83e7 100644
+> --- a/drivers/iio/pressure/st_pressure_buffer.c
+> +++ b/drivers/iio/pressure/st_pressure_buffer.c
+> @@ -41,21 +41,14 @@ static int st_press_buffer_postenable(struct iio_dev *indio_dev)
+>          struct st_sensor_data *press_data = iio_priv(indio_dev);
+>
+>          press_data->buffer_data = kmalloc(indio_dev->scan_bytes, GFP_KERNEL);
+> -       if (press_data->buffer_data == NULL) {
+> -               err = -ENOMEM;
+> -               goto allocate_memory_error;
+> -       }
+> +       if (press_data->buffer_data == NULL)
+> +               return -ENOMEM;
+>
+>          err = iio_triggered_buffer_postenable(indio_dev);
+>          if (err < 0)
+> -               goto st_press_buffer_postenable_error;
+> +               kfree(press_data->buffer_data);
+>
+>          return err;
+> -
+> -st_press_buffer_postenable_error:
+> -       kfree(press_data->buffer_data);
+> -allocate_memory_error:
+> -       return err;
+>   }
+>
+>   static int st_press_buffer_predisable(struct iio_dev *indio_dev)
+> @@ -64,12 +57,9 @@ static int st_press_buffer_predisable(struct iio_dev *indio_dev)
+>          struct st_sensor_data *press_data = iio_priv(indio_dev);
+>
+>          err = iio_triggered_buffer_predisable(indio_dev);
+> -       if (err < 0)
+> -               goto st_press_buffer_predisable_error;
+> -
+> -       err = st_sensors_set_enable(indio_dev, false);
+> +       if (err >= 0)
+> +               err = st_sensors_set_enable(indio_dev, false);
+>
+> -st_press_buffer_predisable_error:
+>          kfree(press_data->buffer_data);
+>          return err;
+>   }
+> diff --git a/drivers/iio/pressure/st_pressure_core.c b/drivers/iio/pressure/st_pressure_core.c
+> index eb41d2b..b26b1a8 100644
+> --- a/drivers/iio/pressure/st_pressure_core.c
+> +++ b/drivers/iio/pressure/st_pressure_core.c
+> @@ -325,10 +325,12 @@ static int st_press_write_raw(struct iio_dev *indio_dev,
+>                  mutex_lock(&indio_dev->mlock);
+>                  err = st_sensors_set_odr(indio_dev, val);
+>                  mutex_unlock(&indio_dev->mlock);
+> -               return err;
+> +               break;
+>          default:
+>                  return -EINVAL;
+>          }
+> +
+> +       return err;
+>   }
+>
+>   static int st_press_read_raw(struct iio_dev *indio_dev,
+> @@ -342,7 +344,7 @@ static int st_press_read_raw(struct iio_dev *indio_dev,
+>          case IIO_CHAN_INFO_RAW:
+>                  err = st_sensors_read_info_raw(indio_dev, ch, val);
+>                  if (err < 0)
+> -                       goto read_error;
+> +                       break;
+>
+>                  return IIO_VAL_INT;
+>          case IIO_CHAN_INFO_SCALE:
+> @@ -356,8 +358,7 @@ static int st_press_read_raw(struct iio_dev *indio_dev,
+>                          *val2 = press_data->current_fullscale->gain2;
+>                          break;
+>                  default:
+> -                       err = -EINVAL;
+> -                       goto read_error;
+> +                       return -EINVAL;
+>                  }
+>
+>                  return IIO_VAL_INT_PLUS_NANO;
+> @@ -368,8 +369,7 @@ static int st_press_read_raw(struct iio_dev *indio_dev,
+>                          *val2 = 10;
+>                          break;
+>                  default:
+> -                       err = -EINVAL;
+> -                       goto read_error;
+> +                       return -EINVAL;
+>                  }
+>
+>                  return IIO_VAL_FRACTIONAL;
+> @@ -380,7 +380,6 @@ static int st_press_read_raw(struct iio_dev *indio_dev,
+>                  return -EINVAL;
+>          }
+>
+> -read_error:
+>          return err;
+>   }
+>
+> diff --git a/drivers/iio/pressure/st_pressure_spi.c b/drivers/iio/pressure/st_pressure_spi.c
+> index 1ffa6d4..21aac46 100644
+> --- a/drivers/iio/pressure/st_pressure_spi.c
+> +++ b/drivers/iio/pressure/st_pressure_spi.c
+> @@ -29,14 +29,10 @@ static int st_press_spi_probe(struct spi_device *spi)
+>                  return -ENOMEM;
+>
+>          press_data = iio_priv(indio_dev);
+> -
+>          st_sensors_spi_configure(indio_dev, spi, press_data);
+> -
+>          err = st_press_common_probe(indio_dev);
+> -       if (err < 0)
+> -               return err;
+>
+> -       return 0;
+> +       return (err < 0) ? err : 0;
+>   }
+>
+>   static int st_press_spi_remove(struct spi_device *spi)
+> --
+> 1.9.1
+>
 
