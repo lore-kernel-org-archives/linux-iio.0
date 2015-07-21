@@ -1,50 +1,46 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mx08-00178001.pphosted.com ([91.207.212.93]:59499 "EHLO
+Received: from mx08-00178001.pphosted.com ([91.207.212.93]:33634 "EHLO
 	mx08-00178001.pphosted.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1752507AbbGUIPW (ORCPT
+	by vger.kernel.org with ESMTP id S1753063AbbGUIPW (ORCPT
 	<rfc822;linux-iio@vger.kernel.org>); Tue, 21 Jul 2015 04:15:22 -0400
 From: Giuseppe Barba <giuseppe.barba@st.com>
 To: <linux-iio@vger.kernel.org>
 CC: <denis.ciocca@st.com>, <jic23@kernel.org>,
 	Giuseppe Barba <giuseppe.barba@st.com>
-Subject: [PATCH V3 0/5] Added ST LSM303AGR sensor
-Date: Tue, 21 Jul 2015 10:14:15 +0200
-Message-ID: <1437466460-14412-1-git-send-email-giuseppe.barba@st.com>
+Subject: [PATCH V3 2/5] iio: st-sensors: add support for single full scale device
+Date: Tue, 21 Jul 2015 10:14:17 +0200
+Message-ID: <1437466460-14412-3-git-send-email-giuseppe.barba@st.com>
+In-Reply-To: <1437466460-14412-1-git-send-email-giuseppe.barba@st.com>
+References: <1437466460-14412-1-git-send-email-giuseppe.barba@st.com>
 MIME-Version: 1.0
 Content-Type: text/plain
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-This patch set add support for STMicroelectronics LSM303AGR device,
-which embeds an accelerometer and a magnetometer sensors.
-These patches have been rebased on iio repo testing branch and tested on Panda
-board.
+Some sensors could have only one full scale value. This means that the sensor
+hasn't a full scale register.
+This commit add a check on the configured full scale address to support such
+kind of sensors.
 
-V3: this patch set remove some goto statement respect to V2 version.
+Signed-off-by: Giuseppe Barba <giuseppe.barba@st.com>
+---
+ drivers/iio/common/st_sensors/st_sensors_core.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-Giuseppe Barba (5):
-  iio: st-sensors: add configuration for WhoAmI address
-  iio: st-sensors: add support for single full scale device
-  iio: st_magn: Add irq trigger handling
-  iio: st-accel: add support for lsm303agr accelerometer
-  iio: st-magn: add support for lsm303agr magnetometer
-
- .../devicetree/bindings/iio/st-sensors.txt         |  2 +
- drivers/iio/accel/st_accel.h                       |  1 +
- drivers/iio/accel/st_accel_core.c                  |  6 ++
- drivers/iio/accel/st_accel_i2c.c                   |  5 ++
- drivers/iio/accel/st_accel_spi.c                   |  1 +
- drivers/iio/common/st_sensors/st_sensors_core.c    | 52 ++++++------
- drivers/iio/gyro/st_gyro_core.c                    |  3 +
- drivers/iio/magnetometer/st_magn.h                 |  3 +
- drivers/iio/magnetometer/st_magn_buffer.c          |  7 ++
- drivers/iio/magnetometer/st_magn_core.c            | 98 +++++++++++++++++++++-
- drivers/iio/magnetometer/st_magn_i2c.c             |  5 ++
- drivers/iio/magnetometer/st_magn_spi.c             |  1 +
- drivers/iio/pressure/st_pressure_core.c            |  3 +
- include/linux/iio/common/st_sensors.h              |  2 +
- 14 files changed, 162 insertions(+), 27 deletions(-)
-
+diff --git a/drivers/iio/common/st_sensors/st_sensors_core.c b/drivers/iio/common/st_sensors/st_sensors_core.c
+index d44bf16..2e7fdb5 100644
+--- a/drivers/iio/common/st_sensors/st_sensors_core.c
++++ b/drivers/iio/common/st_sensors/st_sensors_core.c
+@@ -126,6 +126,9 @@ static int st_sensors_set_fullscale(struct iio_dev *indio_dev, unsigned int fs)
+ 	int err, i = 0;
+ 	struct st_sensor_data *sdata = iio_priv(indio_dev);
+ 
++	if (sdata->sensor_settings->fs.addr == 0)
++		return 0;
++
+ 	err = st_sensors_match_fs(sdata->sensor_settings, fs, &i);
+ 	if (err < 0)
+ 		goto st_accel_set_fullscale_error;
 -- 
 1.9.1
 
