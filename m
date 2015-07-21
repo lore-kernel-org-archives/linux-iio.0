@@ -1,96 +1,118 @@
-Return-Path: <jic23@jic23.retrosnub.co.uk>
-In-Reply-To: <CAC+thW2WwzDf8ehoAf_dW1fwhS162No4Z2Czfqs9X2Db=SsJ2g@mail.gmail.com>
-References: <1436880983-29017-1-git-send-email-gizero@gmail.com> <55A6A295.9020102@gmx.de> <55AB9922.2020104@kernel.org> <CAC+thW2WwzDf8ehoAf_dW1fwhS162No4Z2Czfqs9X2Db=SsJ2g@mail.gmail.com>
+Return-Path: <adam.yh.lee@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain;
- charset=UTF-8
-Subject: Re: [PATCH 1/4] iio: adc: mcp320x: add masking of unknown bits
-From: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
-Date: Wed, 22 Jul 2015 06:57:55 +0100
-To: Andrea Galbusera <gizero@gmail.com>,Jonathan Cameron <jic23@kernel.org>
-CC: Hartmut Knaack <knaack.h@gmx.de>,linux-iio@vger.kernel.org
-Message-ID: <F5425B40-CA73-4EA6-8944-FC3DA030D188@jic23.retrosnub.co.uk>
+In-Reply-To: <1437439755-30618-1-git-send-email-adam.yh.lee@gmail.com>
+References: <1437439755-30618-1-git-send-email-adam.yh.lee@gmail.com>
+Date: Mon, 20 Jul 2015 17:53:14 -0700
+Message-ID: <CAFeBWL6NgLqWu5-oge0qWjSVkgQ+DH1fD4RexNy9zuMEsg1jXg@mail.gmail.com>
+Subject: Re: [V3] [TWL4030 MADC] Fix ADC[3:6] readings
+From: Adam Lee <adam.yh.lee@gmail.com>
+To: linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Cc: linux-iio@vger.kernel.org, Sebastian Reichel <sre@kernel.org>,
+	Jonathan Cameron <jic23@kernel.org>, Peter Meerwald <pmeerw@pmeerw.net>,
+	Adam YH Lee <adam.yh.lee@gmail.com>
+Content-Type: text/plain; charset=UTF-8
 List-ID: <linux-iio@vger.kernel.org>
 
+Hello Peter,
+Just sent up the V3 of my patch. Register configuration is now done in
+madc driver code.
 
+Another difference from V2 and V1 is that I am using
+`devm_regulator_put` instead of
+`regulator_put` to match the `devm_regulator_get` call.
 
-On 22 July 2015 06:15:27 BST, Andrea Galbusera <gizero@gmail.com> wrote:
->On Sun, Jul 19, 2015 at 2:33 PM, Jonathan Cameron <jic23@kernel.org>
->wrote:
->> On 15/07/15 19:12, Hartmut Knaack wrote:
->>> Andrea Galbusera schrieb am 14.07.2015 um 15:36:
->>>> According to the datasheet, the 2 MSBs for parts 3001 and 3201 are
->>>> unspecified and should be masked out
->>>>
->>>
->>> Hi,
->>> since resolution is already set, better make it more generic by
->applying
->>> the mask in _read_raw like this:
->>>
->>> *val = ret & GENMASK(adc->chip_info->resolution - 1, 0);
->>>
->>> Thanks,
->>> Hartmut
->> Agreed, that would be cleaner.
+I've tested it on Gumstix Overo (OMAP3 + TPS65950).
+
+Let me know,
+
+Adam
+
+On Mon, Jul 20, 2015 at 5:49 PM, Adam YH Lee <adam.yh.lee@gmail.com> wrote:
+> MADC[3:6] reads incorrect values without these two following changes:
 >
->Fine for me! I will respin the patch and resend. My only concern is on
->how this will get applied. If I understand correctly my other three
->patches in the series will probably get applied before this one. The
->2,3,4/4 will add the new part with masking applied in
->mcp320x_adc_conversion. Then the new version of this one should move
->masking in _read_raw. So, is it fine to rebase the new version of this
->on top of the other three and resend as a standalone patch? Otherwise
->I can respin the entire series, but this one will still affect other
->parts... Please forgive my newbie questions, and let me know the best
->approach to follow.
-Spin it to go on top. Thanks
-
-J
+> - enable the 3v1 bias regulator for ADC[3:6]
+> - configure ADC[3:6] lines as input, not as USB
 >
->>>
->>>> Signed-off-by: Andrea Galbusera <gizero@gmail.com>
->>>> ---
->>>>
->>>> This was already suggested but for some reason got lost during
->review of a
->>>> previous patch. See
->http://marc.info/?l=linux-iio&m=140748835509583&w=2
->>>> and following discussion
->>>>
->>>>  drivers/iio/adc/mcp320x.c | 4 ++--
->>>>  1 file changed, 2 insertions(+), 2 deletions(-)
->>>>
->>>> diff --git a/drivers/iio/adc/mcp320x.c b/drivers/iio/adc/mcp320x.c
->>>> index 8d9c9b9..0673ee7 100644
->>>> --- a/drivers/iio/adc/mcp320x.c
->>>> +++ b/drivers/iio/adc/mcp320x.c
->>>> @@ -114,13 +114,13 @@ static int mcp320x_adc_conversion(struct
->mcp320x *adc, u8 channel,
->>>>
->>>>      switch (device_index) {
->>>>      case mcp3001:
->>>> -            return (adc->rx_buf[0] << 5 | adc->rx_buf[1] >> 3);
->>>> +            return ((adc->rx_buf[0] & 0x1f) << 5 | adc->rx_buf[1]
->>> 3);
->>>>      case mcp3002:
->>>>      case mcp3004:
->>>>      case mcp3008:
->>>>              return (adc->rx_buf[0] << 2 | adc->rx_buf[1] >> 6);
->>>>      case mcp3201:
->>>> -            return (adc->rx_buf[0] << 7 | adc->rx_buf[1] >> 1);
->>>> +            return ((adc->rx_buf[0] & 0x1f) << 7 | adc->rx_buf[1]
->>> 1);
->>>>      case mcp3202:
->>>>      case mcp3204:
->>>>      case mcp3208:
->>>>
->>>
->>> --
->>> To unsubscribe from this list: send the line "unsubscribe linux-iio"
->in
->>> the body of a message to majordomo@vger.kernel.org
->>> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-
--- 
-Sent from my Android device with K-9 Mail. Please excuse my brevity.
+> Signed-off-by: Adam YH Lee <adam.yh.lee@gmail.com>
+> ---
+>  drivers/iio/adc/twl4030-madc.c | 36 ++++++++++++++++++++++++++++++++++++
+>  1 file changed, 36 insertions(+)
+>
+> diff --git a/drivers/iio/adc/twl4030-madc.c b/drivers/iio/adc/twl4030-madc.c
+> index 94c5f05..ae33eba 100644
+> --- a/drivers/iio/adc/twl4030-madc.c
+> +++ b/drivers/iio/adc/twl4030-madc.c
+> @@ -45,13 +45,18 @@
+>  #include <linux/types.h>
+>  #include <linux/gfp.h>
+>  #include <linux/err.h>
+> +#include <linux/regulator/consumer.h>
+>
+>  #include <linux/iio/iio.h>
+>
+> +#define TWL4030_USB_SEL_MADC_MCPC      (1<<3)
+> +#define TWL4030_USB_CARKIT_ANA_CTRL    0xBB
+> +
+>  /**
+>   * struct twl4030_madc_data - a container for madc info
+>   * @dev:               Pointer to device structure for madc
+>   * @lock:              Mutex protecting this data structure
+> + * @regulator:         Pointer to bias regulator for madc
+>   * @requests:          Array of request struct corresponding to SW1, SW2 and RT
+>   * @use_second_irq:    IRQ selection (main or co-processor)
+>   * @imr:               Interrupt mask register of MADC
+> @@ -60,6 +65,7 @@
+>  struct twl4030_madc_data {
+>         struct device *dev;
+>         struct mutex lock;      /* mutex protecting this data structure */
+> +       struct regulator *usb3v1;
+>         struct twl4030_madc_request requests[TWL4030_MADC_NUM_METHODS];
+>         bool use_second_irq;
+>         u8 imr;
+> @@ -848,6 +854,33 @@ static int twl4030_madc_probe(struct platform_device *pdev)
+>                 goto err_i2c;
+>         }
+>
+> +       /* Configure MADC[3:6] */
+> +       ret = twl_i2c_read_u8(TWL_MODULE_USB, &regval,
+> +                       TWL4030_USB_CARKIT_ANA_CTRL);
+> +       if (ret) {
+> +               dev_err(&pdev->dev, "unable to read reg CARKIT_ANA_CTRL  0x%X\n",
+> +                               TWL4030_USB_CARKIT_ANA_CTRL);
+> +               goto err_i2c;
+> +       }
+> +       regval |= TWL4030_USB_SEL_MADC_MCPC;
+> +       ret = twl_i2c_write_u8(TWL_MODULE_USB, regval,
+> +                                TWL4030_USB_CARKIT_ANA_CTRL);
+> +       if (ret) {
+> +               dev_err(&pdev->dev, "unable to write reg CARKIT_ANA_CTRL 0x%X\n",
+> +                               TWL4030_USB_CARKIT_ANA_CTRL);
+> +               goto err_i2c;
+> +       }
+> +
+> +
+> +       /* Enable 3v1 bias regulator for MADC[3:6] */
+> +       madc->usb3v1 = devm_regulator_get(madc->dev, "vusb3v1");
+> +       if (IS_ERR(madc->usb3v1))
+> +               return -ENODEV;
+> +
+> +       ret = regulator_enable(madc->usb3v1);
+> +       if (ret)
+> +               dev_err(madc->dev, "could not enable 3v1 bias regulator\n");
+> +
+>         return 0;
+>
+>  err_i2c:
+> @@ -867,6 +900,9 @@ static int twl4030_madc_remove(struct platform_device *pdev)
+>         twl4030_madc_set_current_generator(madc, 0, 0);
+>         twl4030_madc_set_power(madc, 0);
+>
+> +       regulator_disable(madc->usb3v1);
+> +       devm_regulator_put(madc->usb3v1);
+> +
+>         return 0;
+>  }
+>
+> --
+> 2.1.4
+>
