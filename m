@@ -1,156 +1,59 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-lb0-f171.google.com ([209.85.217.171]:34183 "EHLO
-	mail-lb0-f171.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752234AbbGULSn (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 21 Jul 2015 07:18:43 -0400
-Received: by lbbzr7 with SMTP id zr7so113516473lbb.1
-        for <linux-iio@vger.kernel.org>; Tue, 21 Jul 2015 04:18:42 -0700 (PDT)
+Received: from mail-la0-f52.google.com ([209.85.215.52]:33487 "EHLO
+	mail-la0-f52.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751131AbbGULXk (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 21 Jul 2015 07:23:40 -0400
+Received: by laem6 with SMTP id m6so115483286lae.0
+        for <linux-iio@vger.kernel.org>; Tue, 21 Jul 2015 04:23:39 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <55ABBFE8.4090108@kernel.org>
-References: <55ABBFE8.4090108@kernel.org>
-Date: Tue, 21 Jul 2015 14:18:41 +0300
-Message-ID: <CAEnQRZCFBsG-owATAbdZu5oOLZ6wu-K7pBevHju6oEzxdyD27w@mail.gmail.com>
-Subject: Re: IIO : Clarifying review tags.
-From: Daniel Baluta <daniel.baluta@intel.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	Daniel Baluta <daniel.baluta@intel.com>,
-	Hartmut Knaack <knaack.h@gmx.de>
+In-Reply-To: <CAPMRSivehmu204qoZD2hQ7fZedx90PnMLWfPV09TiVettCDosQ@mail.gmail.com>
+References: <1437473652-29150-1-git-send-email-giuseppe.barba@st.com>
+	<55AE264D.8060300@st.com>
+	<CAPMRSivehmu204qoZD2hQ7fZedx90PnMLWfPV09TiVettCDosQ@mail.gmail.com>
+Date: Tue, 21 Jul 2015 14:23:38 +0300
+Message-ID: <CAEnQRZC7z3ZbR40xnG2UPmVVJ34at8mKS70R5O9h24HNAKQZbQ@mail.gmail.com>
+Subject: Re: [PATCH] iio: st: rework code style removing goto statements
+From: Daniel Baluta <daniel.baluta@gmail.com>
+To: Giuseppe Barba <giuseppe.barba@gmail.com>
+Cc: Denis Ciocca <denis.ciocca@st.com>,
+	Giuseppe BARBA <giuseppe.barba@st.com>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	"jic23@kernel.org" <jic23@kernel.org>
 Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Sun, Jul 19, 2015 at 6:19 PM, Jonathan Cameron <jic23@kernel.org> wrote:
-> Hi All,
+On Tue, Jul 21, 2015 at 2:08 PM, Giuseppe Barba
+<giuseppe.barba@gmail.com> wrote:
+> Hi Denis,
 >
-> The primary aim of this email is that I'd like to
-> improve the quality of credit that we are giving people
-> for the vital job or reviewing patches.
+> thanks for review.
+>>
+>> Just add one blank line please, it was missing also before!
+>>
+>> Denis
 >
-> This is a quick(ish) email to try and clear up my interpretation
-> of when various review tags are appropriate.  This follows
-> on from a discussion as part of the kernel summit pre
-> discussion.  In particular, one issue that was raised there
-> was how to give credit where credit is due for reviews.
->
-> There are some proposals to add the option for patch
-> authors to explicitly credit anyone who pointed out bugs
-> in their earlier versions, but those may or may not come
-> to anything.  There may well be a formal statement from
-> the kernel summit (probably a clarification to
-> submittingpatches) but then there may be no clear opinion
-> and as with many kernel aspects it will be left to
-> individual maintainers.
->
-> Anyhow, another aspect was the uses various maintainers
-> are making of Acked-by vs Reviewed-by.  As such I thought
-> I would clarify my understanding (which has changed somewhat
-> as a result of those discussions).  Comments of course most
-> welcome!
->
-> Our standard tags;
->
-> Signed-off-by:
->         This is part of the developer certificate of origin
-> stuff.  If you sign-off you are making an explicit statement
-> that either you wrote the code or it passed through your
-> hands and to the best of your knowledge you are not breaking
-> license terms etc (this includes me for example certifying
-> that I have made no changes that would invalidate earlier
-> sign offs) This is the one with some legal meaning
-> and I think we are all using it correctly (just here for
-> completeness).
->
-> Note that this also either implies that you have 'reviewed'
-> the code in detail, or that you are happy that the deep
-> review has already been done by someone you trust.
-> (and it's this last bit that lets the Linux development
-> process scale).  There is a pretty universal view that
-> you don't bother with both signed-off-by and any other tag
-> (though tested-by can be appropriate in my view).
->
-> Acked-by:
->         This is kind of a looks fine to me / I am happy with this
-> tag.  Has a couple of common uses:
->
-> 1) Driver author / maintainer is saying they are happy with
-> someone else's change.  Note this includes me as IIO maintainer
-> saying I am happy for another maintainer to apply stuff to the
-> IIO tree (where cross subsystem series make this sensible).
->
-> 2) For small changes where 'review' is not really relevant.
->    e.g. Typo fixes.
+> I'll add the missed blank line and push again the patch to you.
 
-Agree with this.  I was under the impression that the Acked-by tag should
-only be used by maintainers or original authors of that code.
+Hi Giuseppe,
 
->
-> Must be provided by the person who wishes to express this
-> opinion (note the difference from reviewed by below).
->
-> Tested-by:
->         Does what is says on the tin.  If you have the hardware
-> and run a new patch to check it works then send a tested-by.
-> Note that it is absolutely encouraged to send a tested-by
-> and an ack/reviewed by.  I always want more tested-by:s as
-> they give me a warm fuzzy feeling about a patch. If someone
-> informally mentions they tested something I'll normally poke
-> them to give the tag as well.
->
-> Reviewed-by:
->         Now this is the one that caused most discussion in the
-> previously mentioned thread.  When is it appropriate?
->
-> 1) When substantial work has been applied as part of a review.
->    This might be indicated by a series of suggested changes
->    or by detailed comments on what they think is good / bad
->    might be done differently.   In these cases the reviewer
->    may 'suggest' the tag themselves.
->
-> 2) Where earlier versions of a patch have received substantial
->    review but the reviewer has not commented on the latest
->    version.  In this case some maintainers have been giving
->    'Reviewed-by' tags to people who haven't supplied them
->    on their own.  This is the change I would like to make to
->    how I have done things previously (where when I had time
->    I pestered people to give a reviewed-by).
->
->    A few of you delight in early stage reviews and I feel often
->    get little or no permanent credit for your hard work.
->    In particular there are some here who spend a lot of time
->    helping new submitters get large patches in order.  A job
->    that can take a huge amount of work on occasion!
->
->    So does anyone object if I sometimes add Reviewed-by tags
->    for them?  Obviously this is all going to be a little
->    arbitrary so do keep sending them directly (and authors
->    keep adding them to later versions of your patches!)
+Thanks a lot for your work :). One minor nit that could improve
+reviews for your next patches.
 
-I am not sure if this is a good idea. Better would be to encourage
-people to explicitly add Reviewed-by tags.
+Please add modification history from version to version. This can be done
+in the cover letter if you have multiple patches, or in the patch itself under
+the scissor line.
 
-Patch authors could, however, explicitly add lines like this:
+e.g.
+[PATCH V2] iio: st: rework code style removing goto statements
 
-Cc: Little Penguin <little.penguin@linux.com>
+The scope of this patch is to remove some goto statements and its label
+present into st sensors driver.
 
-starting with the second version of the patch, thus there is
-some sort of credit given to people participating in the review.
-
->
-> Anyhow, the thread that lead to this has yet again reminded
-> me of how lucky I am and we all are in IIO wrt to the quality
-> and quantity of reviewers who put huge amounts of time into
-> improving all our code!
->
-> I certainly know I would have burnt out long ago if it was
-> just me against the mountain.
->
-> I'm going to be on holiday week after next. Should get back
-> to normal in early August.
-
-Have fun! :)
+Signed-off-by: Giuseppe Barba <giuseppe.barba@st.com>
+--- <this is scissor line>
+Change since v1:
+   * added missing blank lines.
 
 thanks,
 Daniel.
