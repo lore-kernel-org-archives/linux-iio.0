@@ -1,15 +1,15 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mx08-00178001.pphosted.com ([91.207.212.93]:34022 "EHLO
+Received: from mx08-00178001.pphosted.com ([91.207.212.93]:36447 "EHLO
 	mx08-00178001.pphosted.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1753851AbbGUIgq (ORCPT
+	by vger.kernel.org with ESMTP id S1754091AbbGUIgq (ORCPT
 	<rfc822;linux-iio@vger.kernel.org>); Tue, 21 Jul 2015 04:36:46 -0400
 From: Giuseppe Barba <giuseppe.barba@st.com>
 To: <linux-iio@vger.kernel.org>
 CC: <denis.ciocca@st.com>, <jic23@kernel.org>,
 	Giuseppe Barba <giuseppe.barba@st.com>
-Subject: [PATCH V4 1/5] iio: st-sensors: add configuration for WhoAmI address
-Date: Tue, 21 Jul 2015 10:35:41 +0200
-Message-ID: <1437467745-18435-2-git-send-email-giuseppe.barba@st.com>
+Subject: [PATCH V4 3/5] iio: st_magn: Add irq trigger handling
+Date: Tue, 21 Jul 2015 10:35:43 +0200
+Message-ID: <1437467745-18435-4-git-send-email-giuseppe.barba@st.com>
 In-Reply-To: <1437467745-18435-1-git-send-email-giuseppe.barba@st.com>
 References: <1437467745-18435-1-git-send-email-giuseppe.barba@st.com>
 MIME-Version: 1.0
@@ -17,242 +17,77 @@ Content-Type: text/plain
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-This patch permits to configure the WhoAmI register address
-because some device could have not a standard address for
-this register.
+Add irq trigger handling for magnetometer also
 
 Signed-off-by: Giuseppe Barba <giuseppe.barba@st.com>
 ---
- drivers/iio/accel/st_accel_core.c               |  5 +++
- drivers/iio/common/st_sensors/st_sensors_core.c | 49 ++++++++++++-------------
- drivers/iio/gyro/st_gyro_core.c                 |  3 ++
- drivers/iio/magnetometer/st_magn_core.c         |  3 ++
- drivers/iio/pressure/st_pressure_core.c         |  3 ++
- include/linux/iio/common/st_sensors.h           |  2 +
- 6 files changed, 39 insertions(+), 26 deletions(-)
+ drivers/iio/magnetometer/st_magn.h        |  2 ++
+ drivers/iio/magnetometer/st_magn_buffer.c |  7 +++++++
+ drivers/iio/magnetometer/st_magn_core.c   | 13 ++++++++++++-
+ 3 files changed, 21 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/iio/accel/st_accel_core.c b/drivers/iio/accel/st_accel_core.c
-index 4002e64..12b42f6 100644
---- a/drivers/iio/accel/st_accel_core.c
-+++ b/drivers/iio/accel/st_accel_core.c
-@@ -226,6 +226,7 @@ static const struct iio_chan_spec st_accel_16bit_channels[] = {
- static const struct st_sensor_settings st_accel_sensors_settings[] = {
- 	{
- 		.wai = ST_ACCEL_1_WAI_EXP,
-+		.wai_addr = ST_SENSORS_DEFAULT_WAI_ADDRESS,
- 		.sensors_supported = {
- 			[0] = LIS3DH_ACCEL_DEV_NAME,
- 			[1] = LSM303DLHC_ACCEL_DEV_NAME,
-@@ -297,6 +298,7 @@ static const struct st_sensor_settings st_accel_sensors_settings[] = {
- 	},
- 	{
- 		.wai = ST_ACCEL_2_WAI_EXP,
-+		.wai_addr = ST_SENSORS_DEFAULT_WAI_ADDRESS,
- 		.sensors_supported = {
- 			[0] = LIS331DLH_ACCEL_DEV_NAME,
- 			[1] = LSM303DL_ACCEL_DEV_NAME,
-@@ -359,6 +361,7 @@ static const struct st_sensor_settings st_accel_sensors_settings[] = {
- 	},
- 	{
- 		.wai = ST_ACCEL_3_WAI_EXP,
-+		.wai_addr = ST_SENSORS_DEFAULT_WAI_ADDRESS,
- 		.sensors_supported = {
- 			[0] = LSM330_ACCEL_DEV_NAME,
- 		},
-@@ -437,6 +440,7 @@ static const struct st_sensor_settings st_accel_sensors_settings[] = {
- 	},
- 	{
- 		.wai = ST_ACCEL_4_WAI_EXP,
-+		.wai_addr = ST_SENSORS_DEFAULT_WAI_ADDRESS,
- 		.sensors_supported = {
- 			[0] = LIS3LV02DL_ACCEL_DEV_NAME,
- 		},
-@@ -494,6 +498,7 @@ static const struct st_sensor_settings st_accel_sensors_settings[] = {
- 	},
- 	{
- 		.wai = ST_ACCEL_5_WAI_EXP,
-+		.wai_addr = ST_SENSORS_DEFAULT_WAI_ADDRESS,
- 		.sensors_supported = {
- 			[0] = LIS331DL_ACCEL_DEV_NAME,
- 		},
-diff --git a/drivers/iio/common/st_sensors/st_sensors_core.c b/drivers/iio/common/st_sensors/st_sensors_core.c
-index 8086cbc..d44bf16 100644
---- a/drivers/iio/common/st_sensors/st_sensors_core.c
-+++ b/drivers/iio/common/st_sensors/st_sensors_core.c
-@@ -479,46 +479,43 @@ int st_sensors_check_device_support(struct iio_dev *indio_dev,
- 			int num_sensors_list,
- 			const struct st_sensor_settings *sensor_settings)
+diff --git a/drivers/iio/magnetometer/st_magn.h b/drivers/iio/magnetometer/st_magn.h
+index 287691c..60441023 100644
+--- a/drivers/iio/magnetometer/st_magn.h
++++ b/drivers/iio/magnetometer/st_magn.h
+@@ -25,6 +25,8 @@ void st_magn_common_remove(struct iio_dev *indio_dev);
+ #ifdef CONFIG_IIO_BUFFER
+ int st_magn_allocate_ring(struct iio_dev *indio_dev);
+ void st_magn_deallocate_ring(struct iio_dev *indio_dev);
++int st_magn_trig_set_state(struct iio_trigger *trig, bool state);
++#define ST_MAGN_TRIGGER_SET_STATE (&st_magn_trig_set_state)
+ #else /* CONFIG_IIO_BUFFER */
+ static inline int st_magn_probe_trigger(struct iio_dev *indio_dev, int irq)
  {
--	u8 wai;
- 	int i, n, err;
-+	u8 wai;
- 	struct st_sensor_data *sdata = iio_priv(indio_dev);
+diff --git a/drivers/iio/magnetometer/st_magn_buffer.c b/drivers/iio/magnetometer/st_magn_buffer.c
+index bf427dc..ecd3bd0 100644
+--- a/drivers/iio/magnetometer/st_magn_buffer.c
++++ b/drivers/iio/magnetometer/st_magn_buffer.c
+@@ -23,6 +23,13 @@
+ #include <linux/iio/common/st_sensors.h>
+ #include "st_magn.h"
  
--	err = sdata->tf->read_byte(&sdata->tb, sdata->dev,
--					ST_SENSORS_DEFAULT_WAI_ADDRESS, &wai);
--	if (err < 0) {
--		dev_err(&indio_dev->dev, "failed to read Who-Am-I register.\n");
--		goto read_wai_error;
--	}
--
- 	for (i = 0; i < num_sensors_list; i++) {
--		if (sensor_settings[i].wai == wai)
-+		for (n = 0; n < ST_SENSORS_MAX_4WAI; n++) {
-+			if (strcmp(indio_dev->name,
-+				sensor_settings[i].sensors_supported[n]) == 0) {
-+				break;
-+			}
-+		}
-+		if (n < ST_SENSORS_MAX_4WAI)
- 			break;
- 	}
--	if (i == num_sensors_list)
--		goto device_not_supported;
-+	if (i == num_sensors_list) {
-+		dev_err(&indio_dev->dev, "device name %s not recognized.\n",
-+							indio_dev->name);
-+		return -ENODEV;
-+	}
- 
--	for (n = 0; n < ARRAY_SIZE(sensor_settings[i].sensors_supported); n++) {
--		if (strcmp(indio_dev->name,
--				&sensor_settings[i].sensors_supported[n][0]) == 0)
--			break;
-+	err = sdata->tf->read_byte(&sdata->tb, sdata->dev,
-+					sensor_settings[i].wai_addr, &wai);
-+	if (err < 0) {
-+		dev_err(&indio_dev->dev, "failed to read Who-Am-I register.\n");
-+		return err;
- 	}
--	if (n == ARRAY_SIZE(sensor_settings[i].sensors_supported)) {
--		dev_err(&indio_dev->dev, "device name \"%s\" and WhoAmI (0x%02x) mismatch",
--			indio_dev->name, wai);
--		goto sensor_name_mismatch;
++int st_magn_trig_set_state(struct iio_trigger *trig, bool state)
++{
++	struct iio_dev *indio_dev = iio_trigger_get_drvdata(trig);
 +
-+	if (sensor_settings[i].wai != wai) {
-+		dev_err(&indio_dev->dev, "%s: WhoAmI mismatch (0x%x).\n",
-+						indio_dev->name, wai);
-+		return -EINVAL;
- 	}
- 
- 	sdata->sensor_settings =
- 			(struct st_sensor_settings *)&sensor_settings[i];
- 
- 	return i;
--
--device_not_supported:
--	dev_err(&indio_dev->dev, "device not supported: WhoAmI (0x%x).\n", wai);
--sensor_name_mismatch:
--	err = -ENODEV;
--read_wai_error:
--	return err;
- }
- EXPORT_SYMBOL(st_sensors_check_device_support);
- 
-diff --git a/drivers/iio/gyro/st_gyro_core.c b/drivers/iio/gyro/st_gyro_core.c
-index ffe9664..4b993a5 100644
---- a/drivers/iio/gyro/st_gyro_core.c
-+++ b/drivers/iio/gyro/st_gyro_core.c
-@@ -131,6 +131,7 @@ static const struct iio_chan_spec st_gyro_16bit_channels[] = {
- static const struct st_sensor_settings st_gyro_sensors_settings[] = {
- 	{
- 		.wai = ST_GYRO_1_WAI_EXP,
-+		.wai_addr = ST_SENSORS_DEFAULT_WAI_ADDRESS,
- 		.sensors_supported = {
- 			[0] = L3G4200D_GYRO_DEV_NAME,
- 			[1] = LSM330DL_GYRO_DEV_NAME,
-@@ -190,6 +191,7 @@ static const struct st_sensor_settings st_gyro_sensors_settings[] = {
- 	},
- 	{
- 		.wai = ST_GYRO_2_WAI_EXP,
-+		.wai_addr = ST_SENSORS_DEFAULT_WAI_ADDRESS,
- 		.sensors_supported = {
- 			[0] = L3GD20_GYRO_DEV_NAME,
- 			[1] = LSM330D_GYRO_DEV_NAME,
-@@ -252,6 +254,7 @@ static const struct st_sensor_settings st_gyro_sensors_settings[] = {
- 	},
- 	{
- 		.wai = ST_GYRO_3_WAI_EXP,
-+		.wai_addr = ST_SENSORS_DEFAULT_WAI_ADDRESS,
- 		.sensors_supported = {
- 			[0] = L3GD20_GYRO_DEV_NAME,
- 		},
++	return st_sensors_set_dataready_irq(indio_dev, state);
++}
++
+ static int st_magn_buffer_preenable(struct iio_dev *indio_dev)
+ {
+ 	return st_sensors_set_enable(indio_dev, true);
 diff --git a/drivers/iio/magnetometer/st_magn_core.c b/drivers/iio/magnetometer/st_magn_core.c
-index b4bcfb7..8d7d3a1 100644
+index 8d7d3a1..4c0cef8 100644
 --- a/drivers/iio/magnetometer/st_magn_core.c
 +++ b/drivers/iio/magnetometer/st_magn_core.c
-@@ -192,6 +192,7 @@ static const struct iio_chan_spec st_magn_2_16bit_channels[] = {
- static const struct st_sensor_settings st_magn_sensors_settings[] = {
- 	{
- 		.wai = 0, /* This sensor has no valid WhoAmI report 0 */
-+		.wai_addr = ST_SENSORS_DEFAULT_WAI_ADDRESS,
- 		.sensors_supported = {
- 			[0] = LSM303DLH_MAGN_DEV_NAME,
- 		},
-@@ -268,6 +269,7 @@ static const struct st_sensor_settings st_magn_sensors_settings[] = {
- 	},
- 	{
- 		.wai = ST_MAGN_1_WAI_EXP,
-+		.wai_addr = ST_SENSORS_DEFAULT_WAI_ADDRESS,
- 		.sensors_supported = {
- 			[0] = LSM303DLHC_MAGN_DEV_NAME,
- 			[1] = LSM303DLM_MAGN_DEV_NAME,
-@@ -346,6 +348,7 @@ static const struct st_sensor_settings st_magn_sensors_settings[] = {
- 	},
- 	{
- 		.wai = ST_MAGN_2_WAI_EXP,
-+		.wai_addr = ST_SENSORS_DEFAULT_WAI_ADDRESS,
- 		.sensors_supported = {
- 			[0] = LIS3MDL_MAGN_DEV_NAME,
- 		},
-diff --git a/drivers/iio/pressure/st_pressure_core.c b/drivers/iio/pressure/st_pressure_core.c
-index e881fa6..eb41d2b 100644
---- a/drivers/iio/pressure/st_pressure_core.c
-+++ b/drivers/iio/pressure/st_pressure_core.c
-@@ -178,6 +178,7 @@ static const struct iio_chan_spec st_press_lps001wp_channels[] = {
- static const struct st_sensor_settings st_press_sensors_settings[] = {
- 	{
- 		.wai = ST_PRESS_LPS331AP_WAI_EXP,
-+		.wai_addr = ST_SENSORS_DEFAULT_WAI_ADDRESS,
- 		.sensors_supported = {
- 			[0] = LPS331AP_PRESS_DEV_NAME,
- 		},
-@@ -225,6 +226,7 @@ static const struct st_sensor_settings st_press_sensors_settings[] = {
- 	},
- 	{
- 		.wai = ST_PRESS_LPS001WP_WAI_EXP,
-+		.wai_addr = ST_SENSORS_DEFAULT_WAI_ADDRESS,
- 		.sensors_supported = {
- 			[0] = LPS001WP_PRESS_DEV_NAME,
- 		},
-@@ -260,6 +262,7 @@ static const struct st_sensor_settings st_press_sensors_settings[] = {
- 	},
- 	{
- 		.wai = ST_PRESS_LPS25H_WAI_EXP,
-+		.wai_addr = ST_SENSORS_DEFAULT_WAI_ADDRESS,
- 		.sensors_supported = {
- 			[0] = LPS25H_PRESS_DEV_NAME,
- 		},
-diff --git a/include/linux/iio/common/st_sensors.h b/include/linux/iio/common/st_sensors.h
-index 2c476ac..3c17cd7 100644
---- a/include/linux/iio/common/st_sensors.h
-+++ b/include/linux/iio/common/st_sensors.h
-@@ -166,6 +166,7 @@ struct st_sensor_transfer_function {
- /**
-  * struct st_sensor_settings - ST specific sensor settings
-  * @wai: Contents of WhoAmI register.
-+ * @wai_addr: The address of WhoAmI register.
-  * @sensors_supported: List of supported sensors by struct itself.
-  * @ch: IIO channels for the sensor.
-  * @odr: Output data rate register and ODR list available.
-@@ -179,6 +180,7 @@ struct st_sensor_transfer_function {
-  */
- struct st_sensor_settings {
- 	u8 wai;
-+	u8 wai_addr;
- 	char sensors_supported[ST_SENSORS_MAX_4WAI][ST_SENSORS_MAX_NAME];
- 	struct iio_chan_spec *ch;
- 	int num_ch;
+@@ -480,6 +480,16 @@ static const struct iio_info magn_info = {
+ 	.write_raw = &st_magn_write_raw,
+ };
+ 
++#ifdef CONFIG_IIO_TRIGGER
++static const struct iio_trigger_ops st_magn_trigger_ops = {
++	.owner = THIS_MODULE,
++	.set_trigger_state = ST_MAGN_TRIGGER_SET_STATE,
++};
++#define ST_MAGN_TRIGGER_OPS (&st_magn_trigger_ops)
++#else
++#define ST_MAGN_TRIGGER_OPS NULL
++#endif
++
+ int st_magn_common_probe(struct iio_dev *indio_dev)
+ {
+ 	struct st_sensor_data *mdata = iio_priv(indio_dev);
+@@ -516,7 +526,8 @@ int st_magn_common_probe(struct iio_dev *indio_dev)
+ 		return err;
+ 
+ 	if (irq > 0) {
+-		err = st_sensors_allocate_trigger(indio_dev, NULL);
++		err = st_sensors_allocate_trigger(indio_dev,
++						ST_MAGN_TRIGGER_OPS);
+ 		if (err < 0)
+ 			goto st_magn_probe_trigger_error;
+ 	}
 -- 
 1.9.1
 
