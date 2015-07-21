@@ -1,15 +1,15 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mx08-00178001.pphosted.com ([91.207.212.93]:36447 "EHLO
+Received: from mx08-00178001.pphosted.com ([91.207.212.93]:34025 "EHLO
 	mx08-00178001.pphosted.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1754091AbbGUIgq (ORCPT
+	by vger.kernel.org with ESMTP id S1753415AbbGUIgq (ORCPT
 	<rfc822;linux-iio@vger.kernel.org>); Tue, 21 Jul 2015 04:36:46 -0400
 From: Giuseppe Barba <giuseppe.barba@st.com>
 To: <linux-iio@vger.kernel.org>
 CC: <denis.ciocca@st.com>, <jic23@kernel.org>,
 	Giuseppe Barba <giuseppe.barba@st.com>
-Subject: [PATCH V4 3/5] iio: st_magn: Add irq trigger handling
-Date: Tue, 21 Jul 2015 10:35:43 +0200
-Message-ID: <1437467745-18435-4-git-send-email-giuseppe.barba@st.com>
+Subject: [PATCH V4 5/5] iio: st-magn: add support for lsm303agr magnetometer
+Date: Tue, 21 Jul 2015 10:35:45 +0200
+Message-ID: <1437467745-18435-6-git-send-email-giuseppe.barba@st.com>
 In-Reply-To: <1437467745-18435-1-git-send-email-giuseppe.barba@st.com>
 References: <1437467745-18435-1-git-send-email-giuseppe.barba@st.com>
 MIME-Version: 1.0
@@ -17,77 +17,190 @@ Content-Type: text/plain
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Add irq trigger handling for magnetometer also
+This adds support for the lsm303agr magnetometer.
 
 Signed-off-by: Giuseppe Barba <giuseppe.barba@st.com>
 ---
- drivers/iio/magnetometer/st_magn.h        |  2 ++
- drivers/iio/magnetometer/st_magn_buffer.c |  7 +++++++
- drivers/iio/magnetometer/st_magn_core.c   | 13 ++++++++++++-
- 3 files changed, 21 insertions(+), 1 deletion(-)
+ .../devicetree/bindings/iio/st-sensors.txt         |  1 +
+ drivers/iio/magnetometer/st_magn.h                 |  1 +
+ drivers/iio/magnetometer/st_magn_core.c            | 82 ++++++++++++++++++++++
+ drivers/iio/magnetometer/st_magn_i2c.c             |  5 ++
+ drivers/iio/magnetometer/st_magn_spi.c             |  1 +
+ 5 files changed, 90 insertions(+)
 
+diff --git a/Documentation/devicetree/bindings/iio/st-sensors.txt b/Documentation/devicetree/bindings/iio/st-sensors.txt
+index d80bdaa..d3ccdb1 100644
+--- a/Documentation/devicetree/bindings/iio/st-sensors.txt
++++ b/Documentation/devicetree/bindings/iio/st-sensors.txt
+@@ -47,6 +47,7 @@ Gyroscopes:
+ - st,lsm330-gyro
+ 
+ Magnetometers:
++- st,lsm303agr-magn
+ - st,lsm303dlh-magn
+ - st,lsm303dlhc-magn
+ - st,lsm303dlm-magn
 diff --git a/drivers/iio/magnetometer/st_magn.h b/drivers/iio/magnetometer/st_magn.h
-index 287691c..60441023 100644
+index 60441023..06a4d9c 100644
 --- a/drivers/iio/magnetometer/st_magn.h
 +++ b/drivers/iio/magnetometer/st_magn.h
-@@ -25,6 +25,8 @@ void st_magn_common_remove(struct iio_dev *indio_dev);
- #ifdef CONFIG_IIO_BUFFER
- int st_magn_allocate_ring(struct iio_dev *indio_dev);
- void st_magn_deallocate_ring(struct iio_dev *indio_dev);
-+int st_magn_trig_set_state(struct iio_trigger *trig, bool state);
-+#define ST_MAGN_TRIGGER_SET_STATE (&st_magn_trig_set_state)
- #else /* CONFIG_IIO_BUFFER */
- static inline int st_magn_probe_trigger(struct iio_dev *indio_dev, int irq)
- {
-diff --git a/drivers/iio/magnetometer/st_magn_buffer.c b/drivers/iio/magnetometer/st_magn_buffer.c
-index bf427dc..ecd3bd0 100644
---- a/drivers/iio/magnetometer/st_magn_buffer.c
-+++ b/drivers/iio/magnetometer/st_magn_buffer.c
-@@ -23,6 +23,13 @@
- #include <linux/iio/common/st_sensors.h>
- #include "st_magn.h"
+@@ -18,6 +18,7 @@
+ #define LSM303DLHC_MAGN_DEV_NAME	"lsm303dlhc_magn"
+ #define LSM303DLM_MAGN_DEV_NAME		"lsm303dlm_magn"
+ #define LIS3MDL_MAGN_DEV_NAME		"lis3mdl"
++#define LSM303AGR_MAGN_DEV_NAME		"lsm303agr_magn"
  
-+int st_magn_trig_set_state(struct iio_trigger *trig, bool state)
-+{
-+	struct iio_dev *indio_dev = iio_trigger_get_drvdata(trig);
-+
-+	return st_sensors_set_dataready_irq(indio_dev, state);
-+}
-+
- static int st_magn_buffer_preenable(struct iio_dev *indio_dev)
- {
- 	return st_sensors_set_enable(indio_dev, true);
+ int st_magn_common_probe(struct iio_dev *indio_dev);
+ void st_magn_common_remove(struct iio_dev *indio_dev);
 diff --git a/drivers/iio/magnetometer/st_magn_core.c b/drivers/iio/magnetometer/st_magn_core.c
-index 8d7d3a1..4c0cef8 100644
+index 4c0cef8..f8dc4b8 100644
 --- a/drivers/iio/magnetometer/st_magn_core.c
 +++ b/drivers/iio/magnetometer/st_magn_core.c
-@@ -480,6 +480,16 @@ static const struct iio_info magn_info = {
- 	.write_raw = &st_magn_write_raw,
+@@ -43,6 +43,7 @@
+ #define ST_MAGN_FS_AVL_8000MG			8000
+ #define ST_MAGN_FS_AVL_8100MG			8100
+ #define ST_MAGN_FS_AVL_12000MG			12000
++#define ST_MAGN_FS_AVL_15000MG			15000
+ #define ST_MAGN_FS_AVL_16000MG			16000
+ 
+ /* CUSTOM VALUES FOR SENSOR 0 */
+@@ -157,6 +158,29 @@
+ #define ST_MAGN_2_OUT_Y_L_ADDR			0x2a
+ #define ST_MAGN_2_OUT_Z_L_ADDR			0x2c
+ 
++/* CUSTOM VALUES FOR SENSOR 3 */
++#define ST_MAGN_3_WAI_ADDR			0x4f
++#define ST_MAGN_3_WAI_EXP			0x40
++#define ST_MAGN_3_ODR_ADDR			0x60
++#define ST_MAGN_3_ODR_MASK			0x0c
++#define ST_MAGN_3_ODR_AVL_10HZ_VAL		0x00
++#define ST_MAGN_3_ODR_AVL_20HZ_VAL		0x01
++#define ST_MAGN_3_ODR_AVL_50HZ_VAL		0x02
++#define ST_MAGN_3_ODR_AVL_100HZ_VAL		0x03
++#define ST_MAGN_3_PW_ADDR			0x60
++#define ST_MAGN_3_PW_MASK			0x03
++#define ST_MAGN_3_PW_ON				0x00
++#define ST_MAGN_3_PW_OFF			0x03
++#define ST_MAGN_3_BDU_ADDR			0x62
++#define ST_MAGN_3_BDU_MASK			0x10
++#define ST_MAGN_3_DRDY_IRQ_ADDR			0x62
++#define ST_MAGN_3_DRDY_INT_MASK			0x01
++#define ST_MAGN_3_FS_AVL_15000_GAIN		1500
++#define ST_MAGN_3_MULTIREAD_BIT			false
++#define ST_MAGN_3_OUT_X_L_ADDR			0x68
++#define ST_MAGN_3_OUT_Y_L_ADDR			0x6a
++#define ST_MAGN_3_OUT_Z_L_ADDR			0x6c
++
+ static const struct iio_chan_spec st_magn_16bit_channels[] = {
+ 	ST_SENSORS_LSM_CHANNELS(IIO_MAGN,
+ 			BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_SCALE),
+@@ -189,6 +213,22 @@ static const struct iio_chan_spec st_magn_2_16bit_channels[] = {
+ 	IIO_CHAN_SOFT_TIMESTAMP(3)
  };
  
-+#ifdef CONFIG_IIO_TRIGGER
-+static const struct iio_trigger_ops st_magn_trigger_ops = {
-+	.owner = THIS_MODULE,
-+	.set_trigger_state = ST_MAGN_TRIGGER_SET_STATE,
++static const struct iio_chan_spec st_magn_3_16bit_channels[] = {
++	ST_SENSORS_LSM_CHANNELS(IIO_MAGN,
++			BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_SCALE),
++			ST_SENSORS_SCAN_X, 1, IIO_MOD_X, 's', IIO_LE, 16, 16,
++			ST_MAGN_3_OUT_X_L_ADDR),
++	ST_SENSORS_LSM_CHANNELS(IIO_MAGN,
++			BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_SCALE),
++			ST_SENSORS_SCAN_Y, 1, IIO_MOD_Y, 's', IIO_LE, 16, 16,
++			ST_MAGN_3_OUT_Y_L_ADDR),
++	ST_SENSORS_LSM_CHANNELS(IIO_MAGN,
++			BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_SCALE),
++			ST_SENSORS_SCAN_Z, 1, IIO_MOD_Z, 's', IIO_LE, 16, 16,
++			ST_MAGN_3_OUT_Z_L_ADDR),
++	IIO_CHAN_SOFT_TIMESTAMP(3)
 +};
-+#define ST_MAGN_TRIGGER_OPS (&st_magn_trigger_ops)
-+#else
-+#define ST_MAGN_TRIGGER_OPS NULL
-+#endif
 +
- int st_magn_common_probe(struct iio_dev *indio_dev)
- {
- 	struct st_sensor_data *mdata = iio_priv(indio_dev);
-@@ -516,7 +526,8 @@ int st_magn_common_probe(struct iio_dev *indio_dev)
- 		return err;
+ static const struct st_sensor_settings st_magn_sensors_settings[] = {
+ 	{
+ 		.wai = 0, /* This sensor has no valid WhoAmI report 0 */
+@@ -402,6 +442,48 @@ static const struct st_sensor_settings st_magn_sensors_settings[] = {
+ 		.multi_read_bit = ST_MAGN_2_MULTIREAD_BIT,
+ 		.bootime = 2,
+ 	},
++	{
++		.wai = ST_MAGN_3_WAI_EXP,
++		.wai_addr = ST_MAGN_3_WAI_ADDR,
++		.sensors_supported = {
++			[0] = LSM303AGR_MAGN_DEV_NAME,
++		},
++		.ch = (struct iio_chan_spec *)st_magn_3_16bit_channels,
++		.odr = {
++			.addr = ST_MAGN_3_ODR_ADDR,
++			.mask = ST_MAGN_3_ODR_MASK,
++			.odr_avl = {
++				{ 10, ST_MAGN_3_ODR_AVL_10HZ_VAL, },
++				{ 20, ST_MAGN_3_ODR_AVL_20HZ_VAL, },
++				{ 50, ST_MAGN_3_ODR_AVL_50HZ_VAL, },
++				{ 100, ST_MAGN_3_ODR_AVL_100HZ_VAL, },
++			},
++		},
++		.pw = {
++			.addr = ST_MAGN_3_PW_ADDR,
++			.mask = ST_MAGN_3_PW_MASK,
++			.value_on = ST_MAGN_3_PW_ON,
++			.value_off = ST_MAGN_3_PW_OFF,
++		},
++		.fs = {
++			.fs_avl = {
++				[0] = {
++					.num = ST_MAGN_FS_AVL_15000MG,
++					.gain = ST_MAGN_3_FS_AVL_15000_GAIN,
++				},
++			},
++		},
++		.bdu = {
++			.addr = ST_MAGN_3_BDU_ADDR,
++			.mask = ST_MAGN_3_BDU_MASK,
++		},
++		.drdy_irq = {
++			.addr = ST_MAGN_3_DRDY_IRQ_ADDR,
++			.mask_int1 = ST_MAGN_3_DRDY_INT_MASK,
++		},
++		.multi_read_bit = ST_MAGN_3_MULTIREAD_BIT,
++		.bootime = 2,
++	},
+ };
  
- 	if (irq > 0) {
--		err = st_sensors_allocate_trigger(indio_dev, NULL);
-+		err = st_sensors_allocate_trigger(indio_dev,
-+						ST_MAGN_TRIGGER_OPS);
- 		if (err < 0)
- 			goto st_magn_probe_trigger_error;
- 	}
+ static int st_magn_read_raw(struct iio_dev *indio_dev,
+diff --git a/drivers/iio/magnetometer/st_magn_i2c.c b/drivers/iio/magnetometer/st_magn_i2c.c
+index 28aa807..8aa37af 100644
+--- a/drivers/iio/magnetometer/st_magn_i2c.c
++++ b/drivers/iio/magnetometer/st_magn_i2c.c
+@@ -36,6 +36,10 @@ static const struct of_device_id st_magn_of_match[] = {
+ 		.compatible = "st,lis3mdl-magn",
+ 		.data = LIS3MDL_MAGN_DEV_NAME,
+ 	},
++	{
++		.compatible = "st,lsm303agr-magn",
++		.data = LSM303AGR_MAGN_DEV_NAME,
++	},
+ 	{},
+ };
+ MODULE_DEVICE_TABLE(of, st_magn_of_match);
+@@ -79,6 +83,7 @@ static const struct i2c_device_id st_magn_id_table[] = {
+ 	{ LSM303DLHC_MAGN_DEV_NAME },
+ 	{ LSM303DLM_MAGN_DEV_NAME },
+ 	{ LIS3MDL_MAGN_DEV_NAME },
++	{ LSM303AGR_MAGN_DEV_NAME },
+ 	{},
+ };
+ MODULE_DEVICE_TABLE(i2c, st_magn_id_table);
+diff --git a/drivers/iio/magnetometer/st_magn_spi.c b/drivers/iio/magnetometer/st_magn_spi.c
+index 7adacf1..0abca2c 100644
+--- a/drivers/iio/magnetometer/st_magn_spi.c
++++ b/drivers/iio/magnetometer/st_magn_spi.c
+@@ -51,6 +51,7 @@ static const struct spi_device_id st_magn_id_table[] = {
+ 	{ LSM303DLHC_MAGN_DEV_NAME },
+ 	{ LSM303DLM_MAGN_DEV_NAME },
+ 	{ LIS3MDL_MAGN_DEV_NAME },
++	{ LSM303AGR_MAGN_DEV_NAME },
+ 	{},
+ };
+ MODULE_DEVICE_TABLE(spi, st_magn_id_table);
 -- 
 1.9.1
 
