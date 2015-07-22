@@ -1,53 +1,96 @@
 Return-Path: <jic23@jic23.retrosnub.co.uk>
-In-Reply-To: <20150719204947.GG5371@mwanda>
-References: <1437222646-8742-1-git-send-email-stefan.wahren@i2se.com> <201507181738.21236.marex@denx.de> <55AB71B9.8070307@kernel.org> <20150719203343.GF5371@mwanda> <20150719204947.GG5371@mwanda>
+In-Reply-To: <CAC+thW2WwzDf8ehoAf_dW1fwhS162No4Z2Czfqs9X2Db=SsJ2g@mail.gmail.com>
+References: <1436880983-29017-1-git-send-email-gizero@gmail.com> <55A6A295.9020102@gmx.de> <55AB9922.2020104@kernel.org> <CAC+thW2WwzDf8ehoAf_dW1fwhS162No4Z2Czfqs9X2Db=SsJ2g@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain;
  charset=UTF-8
-Subject: Re: [PATCH V2 0/6] iio: mxs-lradc: Clean up and add datasheet names
+Subject: Re: [PATCH 1/4] iio: adc: mcp320x: add masking of unknown bits
 From: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
-Date: Sun, 19 Jul 2015 22:44:52 +0100
-To: Dan Carpenter <dan.carpenter@oracle.com>,Jonathan Cameron <jic23@kernel.org>
-CC: Marek Vasut <marex@denx.de>,Stefan Wahren <stefan.wahren@i2se.com>,devel@driverdev.osuosl.org,Fabio Estevam <fabio.estevam@freescale.com>,linux-iio@vger.kernel.org,Greg Kroah-Hartman <gregkh@linuxfoundation.org>,Lars-Peter Clausen <lars@metafoo.de>,Peter Meerwald <pmeerw@pmeerw.net>,Hartmut Knaack <knaack.h@gmx.de>
-Message-ID: <91C053DF-E1DB-4536-886C-76E923A0C986@jic23.retrosnub.co.uk>
+Date: Wed, 22 Jul 2015 06:57:55 +0100
+To: Andrea Galbusera <gizero@gmail.com>,Jonathan Cameron <jic23@kernel.org>
+CC: Hartmut Knaack <knaack.h@gmx.de>,linux-iio@vger.kernel.org
+Message-ID: <F5425B40-CA73-4EA6-8944-FC3DA030D188@jic23.retrosnub.co.uk>
 List-ID: <linux-iio@vger.kernel.org>
 
 
 
-On 19 July 2015 21:49:47 BST, Dan Carpenter <dan.carpenter@oracle.com> wrote:
->On Sun, Jul 19, 2015 at 11:33:43PM +0300, Dan Carpenter wrote:
->> I didn't necessarily read the thread that way, but the thread was
->> long...
+On 22 July 2015 06:15:27 BST, Andrea Galbusera <gizero@gmail.com> wrote:
+>On Sun, Jul 19, 2015 at 2:33 PM, Jonathan Cameron <jic23@kernel.org>
+>wrote:
+>> On 15/07/15 19:12, Hartmut Knaack wrote:
+>>> Andrea Galbusera schrieb am 14.07.2015 um 15:36:
+>>>> According to the datasheet, the 2 MSBs for parts 3001 and 3201 are
+>>>> unspecified and should be masked out
+>>>>
+>>>
+>>> Hi,
+>>> since resolution is already set, better make it more generic by
+>applying
+>>> the mask in _read_raw like this:
+>>>
+>>> *val = ret & GENMASK(adc->chip_info->resolution - 1, 0);
+>>>
+>>> Thanks,
+>>> Hartmut
+>> Agreed, that would be cleaner.
 >
->I read the thread as saying that you sometimes get:
->
->Reviewed-by: Some Person <email@bigcompany.com>
->
->With no other comments and what does that even mean because you don't
->know who that person is and if they are good at reviewing.  There isn't
->a solution to that.  But since we know Marek then that doesn't really
->apply here.
+>Fine for me! I will respin the patch and resend. My only concern is on
+>how this will get applied. If I understand correctly my other three
+>patches in the series will probably get applied before this one. The
+>2,3,4/4 will add the new part with masking applied in
+>mcp320x_adc_conversion. Then the new version of this one should move
+>masking in _read_raw. So, is it fine to rebase the new version of this
+>on top of the other three and resend as a standalone patch? Otherwise
+>I can respin the entire series, but this one will still affect other
+>parts... Please forgive my newbie questions, and let me know the best
+>approach to follow.
+Spin it to go on top. Thanks
 
-Absolutely.  Though I also got the impression that many won't give reviewed
- by for the little stuff but keep it for more substantial cases.
-
->  Also people were worried that companies were going to
->start
->counting Reviewed-by tags so we should discourage that.
+J
 >
->Anyway, I don't see Reviewed-by tags as a reward, only as added
->responsibility.
-
-True but I wish we had a way to make some of our unsung heroes at the coal face rather less unsung.
-
->
->regards,
->dan carpenter
->
->--
->To unsubscribe from this list: send the line "unsubscribe linux-iio" in
->the body of a message to majordomo@vger.kernel.org
->More majordomo info at  http://vger.kernel.org/majordomo-info.html
+>>>
+>>>> Signed-off-by: Andrea Galbusera <gizero@gmail.com>
+>>>> ---
+>>>>
+>>>> This was already suggested but for some reason got lost during
+>review of a
+>>>> previous patch. See
+>http://marc.info/?l=linux-iio&m=140748835509583&w=2
+>>>> and following discussion
+>>>>
+>>>>  drivers/iio/adc/mcp320x.c | 4 ++--
+>>>>  1 file changed, 2 insertions(+), 2 deletions(-)
+>>>>
+>>>> diff --git a/drivers/iio/adc/mcp320x.c b/drivers/iio/adc/mcp320x.c
+>>>> index 8d9c9b9..0673ee7 100644
+>>>> --- a/drivers/iio/adc/mcp320x.c
+>>>> +++ b/drivers/iio/adc/mcp320x.c
+>>>> @@ -114,13 +114,13 @@ static int mcp320x_adc_conversion(struct
+>mcp320x *adc, u8 channel,
+>>>>
+>>>>      switch (device_index) {
+>>>>      case mcp3001:
+>>>> -            return (adc->rx_buf[0] << 5 | adc->rx_buf[1] >> 3);
+>>>> +            return ((adc->rx_buf[0] & 0x1f) << 5 | adc->rx_buf[1]
+>>> 3);
+>>>>      case mcp3002:
+>>>>      case mcp3004:
+>>>>      case mcp3008:
+>>>>              return (adc->rx_buf[0] << 2 | adc->rx_buf[1] >> 6);
+>>>>      case mcp3201:
+>>>> -            return (adc->rx_buf[0] << 7 | adc->rx_buf[1] >> 1);
+>>>> +            return ((adc->rx_buf[0] & 0x1f) << 7 | adc->rx_buf[1]
+>>> 1);
+>>>>      case mcp3202:
+>>>>      case mcp3204:
+>>>>      case mcp3208:
+>>>>
+>>>
+>>> --
+>>> To unsubscribe from this list: send the line "unsubscribe linux-iio"
+>in
+>>> the body of a message to majordomo@vger.kernel.org
+>>> More majordomo info at  http://vger.kernel.org/majordomo-info.html
 
 -- 
 Sent from my Android device with K-9 Mail. Please excuse my brevity.
