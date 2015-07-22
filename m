@@ -1,49 +1,53 @@
-Return-Path: <marek.belisko@gmail.com>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:46557 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S964874AbbGVQ3C (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 22 Jul 2015 12:29:02 -0400
+In-Reply-To: <CA+0Dg4qeAvTJ1EJFqN4=eJ3X9qecP8yPhvBBvUs-pYqP08i3jA@mail.gmail.com>
+References: <CA+0Dg4qeAvTJ1EJFqN4=eJ3X9qecP8yPhvBBvUs-pYqP08i3jA@mail.gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <CAAfyv354=J+iDgLcu9KRZSScGSzYrRsCMmUEc_tW84GfduSebw@mail.gmail.com>
-References: <CAAfyv354=J+iDgLcu9KRZSScGSzYrRsCMmUEc_tW84GfduSebw@mail.gmail.com>
-Date: Wed, 22 Jul 2015 21:28:27 +0200
-Message-ID: <CAAfyv35bUMZKfMQDJYwD_uGRNOiqLqAB4UG=gREgCSWa8vhjdw@mail.gmail.com>
-Subject: Re: twl6030-gpadc support for twl6037
-From: Belisko Marek <marek.belisko@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>, Axel Lin <axel.lin@ingics.com>, linux-iio@vger.kernel.org,
-	Tony Lindgren <tony@atomide.com>, Samuel Ortiz <sameo@linux.intel.com>,
-	Lee Jones <lee.jones@linaro.org>
-Cc: "linux-omap@vger.kernel.org" <linux-omap@vger.kernel.org>,
-	"Dr. H. Nikolaus Schaller" <hns@goldelico.com>, balajitk@ti.com, gg@slimlogic.co.uk,
-	oleksandr.kozaruk@ti.com
-Content-Type: text/plain; charset=UTF-8
-List-ID: <linux-iio@vger.kernel.org>
+Content-Type: text/plain;
+ charset=UTF-8
+Subject: Re: iio_utils tool incorrectly assumes "offset" file to be present
+From: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
+Date: Wed, 22 Jul 2015 17:28:36 +0100
+To: Joo Aun Saw <jasaw@dius.com.au>, linux-iio@vger.kernel.org,
+	knaack.h@gmx.de
+Message-ID: <E85353EF-6909-4FB1-A9D4-3A974F69CD97@jic23.retrosnub.co.uk>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Adding also twl6030-gpadc driver authors to loop
 
-On Mon, Jul 20, 2015 at 8:57 AM, Belisko Marek <marek.belisko@gmail.com> wrote:
-> Hi all,
+
+On 22 July 2015 15:55:53 BST, Joo Aun Saw <jasaw@dius.com.au> wrote:
+>Hi,
 >
-> I'm trying to figure out what is relation between palmas mfd driver
-> and twl-core for twl603x devices.
-> twl-core driver seems to be older than palmas driver but seems both
-> export same functionality (except that palmas have defined structs for
-> gpadc but functionality is missing). My main focus is to add support
-> for twl6037 to gpadc iio driver in iio/adc/twl6030-gpadc which is
-> using twl-core for twl6030 and twl6032. Adding twl6037 support should
-> be straightforward but dts file used in omap5-uevm using palmas driver
-> and not twl6030. So it's completely confusing to me how to proceed or
-> which direction is correct. Seems I'm missing some parts of puzzle ;)
-> Thanks for any hints.
+>I'm new to this mailing list and I'm new to IIO, so please forgive me
+>if I ask silly questions. I haven't got time follow the latest
+>development in IIO.
 >
-> BR,
+>I'm using iio_utils tool in my program and noticed build_channel_array
+>function assumes "offset" file to be present under the IIO device. The
+>issue is, not all IIO devices provide an "offset" file. I'm using ST
+>accel, magn, and gyro drivers, and there's no "offset" file. Is offset
+>supposed to be optional?
+Yes.  That function should probably be checking for the -ENOENT return value
+and setting the offset to 0 rather than faulting out.
+
+Scale isn't required either and for some devices such a proximity sensors is not
+ well defined (depends on the reflectance of the target)
+
+Hatmut, I missed this when reviewing your patch adding error handling back in May (I think...)
+
+53118557b6a9c263e4a80825da367b2116529541
+
 >
-> marek
 >
-> --
-> as simple and primitive as possible
-> -------------------------------------------------
-> Marek Belisko - OPEN-NANDRA
-> Freelance Developer
->
-> Ruska Nova Ves 219 | Presov, 08005 Slovak Republic
-> Tel: +421 915 052 184
-> skype: marekwhite
-> twitter: #opennandra
-> web: http://open-nandra.com
+>Joo.
+>--
+>To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+>the body of a message to majordomo@vger.kernel.org
+>More majordomo info at  http://vger.kernel.org/majordomo-info.html
+
+-- 
+Sent from my Android device with K-9 Mail. Please excuse my brevity.
