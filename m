@@ -1,70 +1,87 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-la0-f51.google.com ([209.85.215.51]:36175 "EHLO
-	mail-la0-f51.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751211AbbGUMOM (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 21 Jul 2015 08:14:12 -0400
-Received: by lagw2 with SMTP id w2so116256658lag.3
-        for <linux-iio@vger.kernel.org>; Tue, 21 Jul 2015 05:14:10 -0700 (PDT)
+Received: from mail-wi0-f182.google.com ([209.85.212.182]:35498 "EHLO
+	mail-wi0-f182.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753948AbbGVFP2 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 22 Jul 2015 01:15:28 -0400
+Received: by wibxm9 with SMTP id xm9so146250895wib.0
+        for <linux-iio@vger.kernel.org>; Tue, 21 Jul 2015 22:15:27 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <CAEnQRZC7z3ZbR40xnG2UPmVVJ34at8mKS70R5O9h24HNAKQZbQ@mail.gmail.com>
-References: <1437473652-29150-1-git-send-email-giuseppe.barba@st.com>
-	<55AE264D.8060300@st.com>
-	<CAPMRSivehmu204qoZD2hQ7fZedx90PnMLWfPV09TiVettCDosQ@mail.gmail.com>
-	<CAEnQRZC7z3ZbR40xnG2UPmVVJ34at8mKS70R5O9h24HNAKQZbQ@mail.gmail.com>
-Date: Tue, 21 Jul 2015 14:14:10 +0200
-Message-ID: <CAPMRSisPJxrDaXmX8DcQpYsw0Z3LLmD+msaYLX7a7Zoy-JgDfQ@mail.gmail.com>
-Subject: Re: [PATCH] iio: st: rework code style removing goto statements
-From: Giuseppe Barba <giuseppe.barba@gmail.com>
-To: Daniel Baluta <daniel.baluta@gmail.com>
-Cc: Denis Ciocca <denis.ciocca@st.com>,
-	Giuseppe BARBA <giuseppe.barba@st.com>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"jic23@kernel.org" <jic23@kernel.org>
+In-Reply-To: <55AB9922.2020104@kernel.org>
+References: <1436880983-29017-1-git-send-email-gizero@gmail.com>
+	<55A6A295.9020102@gmx.de>
+	<55AB9922.2020104@kernel.org>
+Date: Wed, 22 Jul 2015 07:15:27 +0200
+Message-ID: <CAC+thW2WwzDf8ehoAf_dW1fwhS162No4Z2Czfqs9X2Db=SsJ2g@mail.gmail.com>
+Subject: Re: [PATCH 1/4] iio: adc: mcp320x: add masking of unknown bits
+From: Andrea Galbusera <gizero@gmail.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Hartmut Knaack <knaack.h@gmx.de>, linux-iio@vger.kernel.org
 Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Hi Daniel,
-
-2015-07-21 13:23 GMT+02:00 Daniel Baluta <daniel.baluta@gmail.com>:
-> On Tue, Jul 21, 2015 at 2:08 PM, Giuseppe Barba
-> <giuseppe.barba@gmail.com> wrote:
->> Hi Denis,
->>
->> thanks for review.
+On Sun, Jul 19, 2015 at 2:33 PM, Jonathan Cameron <jic23@kernel.org> wrote:
+> On 15/07/15 19:12, Hartmut Knaack wrote:
+>> Andrea Galbusera schrieb am 14.07.2015 um 15:36:
+>>> According to the datasheet, the 2 MSBs for parts 3001 and 3201 are
+>>> unspecified and should be masked out
 >>>
->>> Just add one blank line please, it was missing also before!
->>>
->>> Denis
 >>
->> I'll add the missed blank line and push again the patch to you.
->
-> Hi Giuseppe,
->
-> Thanks a lot for your work :). One minor nit that could improve
-> reviews for your next patches.
->
-> Please add modification history from version to version. This can be done
-> in the cover letter if you have multiple patches, or in the patch itself under
-> the scissor line.
->
-> e.g.
-> [PATCH V2] iio: st: rework code style removing goto statements
->
-> The scope of this patch is to remove some goto statements and its label
-> present into st sensors driver.
->
-> Signed-off-by: Giuseppe Barba <giuseppe.barba@st.com>
-> --- <this is scissor line>
-> Change since v1:
->    * added missing blank lines.
->
-> thanks,
-> Daniel.
+>> Hi,
+>> since resolution is already set, better make it more generic by applying
+>> the mask in _read_raw like this:
+>>
+>> *val = ret & GENMASK(adc->chip_info->resolution - 1, 0);
+>>
+>> Thanks,
+>> Hartmut
+> Agreed, that would be cleaner.
 
+Fine for me! I will respin the patch and resend. My only concern is on
+how this will get applied. If I understand correctly my other three
+patches in the series will probably get applied before this one. The
+2,3,4/4 will add the new part with masking applied in
+mcp320x_adc_conversion. Then the new version of this one should move
+masking in _read_raw. So, is it fine to rebase the new version of this
+on top of the other three and resend as a standalone patch? Otherwise
+I can respin the entire series, but this one will still affect other
+parts... Please forgive my newbie questions, and let me know the best
+approach to follow.
 
-Thanks for your hint.
-I'll do that next time.
-
-Regards
-Giuseppe.
+>>
+>>> Signed-off-by: Andrea Galbusera <gizero@gmail.com>
+>>> ---
+>>>
+>>> This was already suggested but for some reason got lost during review of a
+>>> previous patch. See http://marc.info/?l=linux-iio&m=140748835509583&w=2
+>>> and following discussion
+>>>
+>>>  drivers/iio/adc/mcp320x.c | 4 ++--
+>>>  1 file changed, 2 insertions(+), 2 deletions(-)
+>>>
+>>> diff --git a/drivers/iio/adc/mcp320x.c b/drivers/iio/adc/mcp320x.c
+>>> index 8d9c9b9..0673ee7 100644
+>>> --- a/drivers/iio/adc/mcp320x.c
+>>> +++ b/drivers/iio/adc/mcp320x.c
+>>> @@ -114,13 +114,13 @@ static int mcp320x_adc_conversion(struct mcp320x *adc, u8 channel,
+>>>
+>>>      switch (device_index) {
+>>>      case mcp3001:
+>>> -            return (adc->rx_buf[0] << 5 | adc->rx_buf[1] >> 3);
+>>> +            return ((adc->rx_buf[0] & 0x1f) << 5 | adc->rx_buf[1] >> 3);
+>>>      case mcp3002:
+>>>      case mcp3004:
+>>>      case mcp3008:
+>>>              return (adc->rx_buf[0] << 2 | adc->rx_buf[1] >> 6);
+>>>      case mcp3201:
+>>> -            return (adc->rx_buf[0] << 7 | adc->rx_buf[1] >> 1);
+>>> +            return ((adc->rx_buf[0] & 0x1f) << 7 | adc->rx_buf[1] >> 1);
+>>>      case mcp3202:
+>>>      case mcp3204:
+>>>      case mcp3208:
+>>>
+>>
+>> --
+>> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+>> the body of a message to majordomo@vger.kernel.org
+>> More majordomo info at  http://vger.kernel.org/majordomo-info.html
