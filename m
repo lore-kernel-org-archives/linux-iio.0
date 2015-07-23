@@ -1,27 +1,26 @@
-Return-Path: <irina.tirdea@intel.com>
-From: Irina Tirdea <irina.tirdea@intel.com>
-To: Jonathan Cameron <jic23@kernel.org>,
-	linux-iio@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Vlad Dogaru <vlad.dogaru@intel.com>,
-	Irina Tirdea <irina.tirdea@intel.com>
-Subject: [PATCH 0/2] bmc150 magnetometer cleanup
-Date: Thu, 23 Jul 2015 20:15:00 +0300
-Message-Id: <1437671702-20994-1-git-send-email-irina.tirdea@intel.com>
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from relay6-d.mail.gandi.net ([217.70.183.198]:43855 "EHLO
+	relay6-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754056AbbGWQyb (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 23 Jul 2015 12:54:31 -0400
+Message-ID: <1437670382.2863.15.camel@hadess.net>
+Subject: Re: [RFC_v2 0/4] HID: hid-sony: Add IIO Suport for Motion
+ Controllers
+From: Bastien Nocera <hadess@hadess.net>
+To: Simon Wood <simon@mungewell.org>, linux-input@vger.kernel.org
+Cc: Frank Praznik <frank.praznik@oh.rr.com>, linux-iio@vger.kernel.org
+Date: Thu, 23 Jul 2015 18:53:02 +0200
+In-Reply-To: <1435105830-2297-1-git-send-email-simon@mungewell.org>
+References: <1435105830-2297-1-git-send-email-simon@mungewell.org>
+Content-Type: text/plain; charset="UTF-8"
+Mime-Version: 1.0
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-A couple of small cleanup patches starting from Hartmut's series.
-There are no conflicts with the rest of Hartmut's patches, so they
-can be applied in any order.
+On Tue, 2015-06-23 at 18:30 -0600, Simon Wood wrote:
+> 
+<snip>
+> (1) https://richardstechnotes.wordpress.com/2015/06/17/rteiioimu-driving-a-9-dof-imu-via-industrial-io-iio/
+> 
 
-Irina Tirdea (2):
-  iio: magn: bmc150_magn: add locking comment for runtime resume
-  iio: magn: bmc150_magn: do not set power state twice when setting
-    trigger state
-
- drivers/iio/magnetometer/bmc150_magn.c | 13 +++++--------
- 1 file changed, 5 insertions(+), 8 deletions(-)
-
--- 
-1.9.1
+That URL doesn't seem to work anymore.
