@@ -1,26 +1,47 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from relay6-d.mail.gandi.net ([217.70.183.198]:43855 "EHLO
-	relay6-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754056AbbGWQyb (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 23 Jul 2015 12:54:31 -0400
-Message-ID: <1437670382.2863.15.camel@hadess.net>
-Subject: Re: [RFC_v2 0/4] HID: hid-sony: Add IIO Suport for Motion
- Controllers
-From: Bastien Nocera <hadess@hadess.net>
-To: Simon Wood <simon@mungewell.org>, linux-input@vger.kernel.org
-Cc: Frank Praznik <frank.praznik@oh.rr.com>, linux-iio@vger.kernel.org
-Date: Thu, 23 Jul 2015 18:53:02 +0200
-In-Reply-To: <1435105830-2297-1-git-send-email-simon@mungewell.org>
-References: <1435105830-2297-1-git-send-email-simon@mungewell.org>
-Content-Type: text/plain; charset="UTF-8"
-Mime-Version: 1.0
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <alexandre.belloni@free-electrons.com>
+Date: Thu, 23 Jul 2015 17:01:19 +0200
+From: Alexandre Belloni <alexandre.belloni@free-electrons.com>
+To: Octavian Purdila <octavian.purdila@intel.com>
+Cc: Linus Walleij <linus.walleij@linaro.org>,
+	Mika Westerberg <mika.westerberg@linux.intel.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Alessandro Zummo <a.zummo@towertech.it>,
+	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+	linux-iio@vger.kernel.org, rtc-linux@googlegroups.com,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 2/2] rtc: fix drivers that consider 0 as a valid IRQ
+ in client->irq
+Message-ID: <20150723150119.GA14893@piout.net>
+References: <1433512783-8183-1-git-send-email-octavian.purdila@intel.com>
+ <1433512783-8183-3-git-send-email-octavian.purdila@intel.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <1433512783-8183-3-git-send-email-octavian.purdila@intel.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-On Tue, 2015-06-23 at 18:30 -0600, Simon Wood wrote:
+On 05/06/2015 at 16:59:43 +0300, Octavian Purdila wrote :
+> Since patch "i2c / ACPI: Use 0 to indicate that device does not have
+> interrupt assigned" [1], 0 is not a valid i2c client irq anymore, so
+> change all driver's checks accordingly.
 > 
-<snip>
-> (1) https://richardstechnotes.wordpress.com/2015/06/17/rteiioimu-driving-a-9-dof-imu-via-industrial-io-iio/
+> The same issue occurs when the device is instantiated via device tree
+> with no IRQ, or from the i2c sysfs interface, even before the patch
+> above.
 > 
+> [1] http://lkml.kernel.org/g/<1430908148-201129-3-git-send-email-mika.westerberg@linux.intel.com>
+> 
+> Signed-off-by: Octavian Purdila <octavian.purdila@intel.com>
+> Reviewed-by: Mika Westerberg <mika.westerberg@linux.intel.com>
+> Acked-by: Alexandre Belloni <alexandre.belloni@free-electrons.com>
+Applied, thanks.
 
-That URL doesn't seem to work anymore.
+I included the final commit id instead of the link to the mailing list
+redirector.
+
+-- 
+Alexandre Belloni, Free Electrons
+Embedded Linux, Kernel and Android engineering
+http://free-electrons.com
