@@ -1,117 +1,143 @@
 Return-Path: <jic23@jic23.retrosnub.co.uk>
-References: <CAAfyv354=J+iDgLcu9KRZSScGSzYrRsCMmUEc_tW84GfduSebw@mail.gmail.com>
-            <CAAfyv35bUMZKfMQDJYwD_uGRNOiqLqAB4UG=gREgCSWa8vhjdw@mail.gmail.com>
-            <1437593628.2381718.330572297.2F6F1C50@webmail.messagingengine.com>
-            <1437594062.2382998.330577153.4CE28783@webmail.messagingengine.com>
-            <CB1BA4C2-51EC-493D-A290-E506DE974605@goldelico.com>
-            <1437657169.3419965.331206849.51D66A2E@webmail.messagingengine.com>
-In-Reply-To: <1437657169.3419965.331206849.51D66A2E@webmail.messagingengine.com>
+References: <1433512783-8183-1-git-send-email-octavian.purdila@intel.com>
+            <1433512783-8183-2-git-send-email-octavian.purdila@intel.com>
+            <CAE1zotJ_u+ysf+HkD=4=Nv_mJ-4++SZxjKGMRkbKzYzyunLJUg@mail.gmail.com>
+In-Reply-To: <CAE1zotJ_u+ysf+HkD=4=Nv_mJ-4++SZxjKGMRkbKzYzyunLJUg@mail.gmail.com>
 From: jic23@jic23.retrosnub.co.uk
-To: Graeme Gregory <gg@slimlogic.co.uk>
-Cc: "Dr. H. Nikolaus Schaller" <hns@goldelico.com>, Laxman Dewangan
-  <ldewangan@nvidia.com>, Belisko Marek <marek.belisko@gmail.com>,
-  Jonathan Cameron <jic23@kernel.org>, Axel Lin <axel.lin@ingics.com>,
-  linux-iio@vger.kernel.org, Tony Lindgren <tony@atomide.com>, Samuel
-  Ortiz <sameo@linux.intel.com>, Lee Jones <lee.jones@linaro.org>,
-  "linux-omap" <linux-omap@vger.kernel.org>, balajitk@ti.com,
-  oleksandr.kozaruk@ti.com, Michael Mrozek <EvilDragon@openpandora.org>,
-  Grazvydas Ignotas <notaz@openpandora.org>
-Subject: Re: gpadc iio support for tlw6037/palmas [was: twl6030-gpadc
-  support for twl6037]
-Date: Thu, 23 Jul 2015 15:12:00 +0100
+To: Octavian Purdila <octavian.purdila@intel.com>
+Cc: Jonathan Cameron <jic23@kernel.org>, Mika Westerberg
+  <mika.westerberg@linux.intel.com>, Linus Walleij
+  <linus.walleij@linaro.org>, Hartmut Knaack <knaack.h@gmx.de>,
+  Lars-Peter Clausen <lars@metafoo.de>, Peter Meerwald
+  <pmeerw@pmeerw.net>, Alessandro Zummo <a.zummo@towertech.it>,
+  Alexandre Belloni <alexandre.belloni@free-electrons.com>, Srinivas
+  Pandruvada <srinivas.pandruvada@linux.intel.com>,
+  "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+  rtc-linux@googlegroups.com, lkml <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v3 1/2] iio: fix drivers that consider 0 as a valid
+  IRQ in client->irq
+Date: Thu, 23 Jul 2015 15:05:16 +0100
 Mime-Version: 1.0
 Content-Type: text/plain; charset="utf-8"; format=flowed
-Message-Id: <20150723141200.2801F431C5@saturn.retrosnub.co.uk>
+Message-Id: <20150723140516.A3C9E4314B@saturn.retrosnub.co.uk>
 List-ID: <linux-iio@vger.kernel.org>
 
-Graeme Gregory writes: 
+Octavian Purdila writes: 
 
->  
-> 
-> On Thu, 23 Jul 2015, at 01:58 PM, Dr. H. Nikolaus Schaller wrote:
->> Hi Graeme, 
->> 
->> Am 22.07.2015 um 21:41 schrieb Graeme Gregory <gg@slimlogic.co.uk>: 
->> 
->> > 
->> > 
->> > On Wed, 22 Jul 2015, at 08:33 PM, Graeme Gregory wrote:
->> >> 
->> >> 
->> >> On Wed, 22 Jul 2015, at 08:28 PM, Belisko Marek wrote:
->> >>> Adding also twl6030-gpadc driver authors to loop
->> >>> 
->> >>> On Mon, Jul 20, 2015 at 8:57 AM, Belisko Marek <marek.belisko@gmail.com>
->> >>> wrote:
->> >>>> Hi all,
->> >>>> 
->> >>>> I'm trying to figure out what is relation between palmas mfd driver
->> >>>> and twl-core for twl603x devices.
->> >>>> twl-core driver seems to be older than palmas driver but seems both
->> >>>> export same functionality (except that palmas have defined structs for
->> >>>> gpadc but functionality is missing). My main focus is to add support
->> >>>> for twl6037 to gpadc iio driver in iio/adc/twl6030-gpadc which is
->> >>>> using twl-core for twl6030 and twl6032. Adding twl6037 support should
->> >>>> be straightforward but dts file used in omap5-uevm using palmas driver
->> >>>> and not twl6030. So it's completely confusing to me how to proceed or
->> >>>> which direction is correct. Seems I'm missing some parts of puzzle ;)
->> >>>> Thanks for any hints.
->> >>>> 
->> >> Phoenix is twl6030, twl6032
->> >> 
->> >> Palmas is twl6035, twl6037 and maybe others.
->> >> 
->> >> Phoenix and Palmas are two totally different chips but marketing gave
->> >> them numbers near each other for unknown reasons.
->> >> 
->> > Also this might be useful.
->> > 
->> > https://github.com/slimlogic/linux/commit/312a6a1c8013fd056431c31567b43d8eef40f333
->> > 
->> > A pre IIO palmas ADC driver which I never got around to upstreaming
->> > because TIpocalypse left me with no access to a palmas chip. 
->> 
->> We managed to integrate your code into our 4.1 kernel (needed minor fixes
->> mainly for
->> irq initialization) and it appears to work on the omap5432evm. Especially
->> channels
->> in6_channel and in7_channel in
->> /sys/bus/platform/drivers/palmas-gpadc/48070000.i2c:palmas@48:gpadc
->> show reasonable (and slightly fluctuating) volt values. 
->> 
->> Now the question is how to proceed. We could either write some
->> drivers/iio/adc/palmas-gpadc.c
->> wrapper around your driver, or could try this one which appears to be a
->> pure iio implementation: 
+> On Fri, Jun 5, 2015 at 4:59 PM, Octavian Purdila
+> <octavian.purdila@intel.com> wrote:
+>> Since patch "i2c / ACPI: Use 0 to indicate that device does not have
+>> interrupt assigned" [1], 0 is not a valid i2c client irq anymore, so
+>> change all driver's checks accordingly. 
 >>
-> Pure IIO is better, one of the reasons my driver never got sent upstream
-> is I knew IIO was due "real soon now" but I lost access to the chip and
-> documentation before IIO landed in the kernel.
->  
->> https://android.googlesource.com/kernel/tegra.git/+/28f245bb8f590f61bb244f1b4d03f4b4919d32ea/Documentation/devicetree/bindings/iio/adc/palmas-gpadc.txt
->> https://android.googlesource.com/kernel/tegra/+/aaabb2e045f31e5a970109ffdaae900dd403d17e/drivers/staging/iio/adc/palmas_gpadc.c 
->> 
->> Do you think the latter has a chance to be accepted upstream? 
->> 
-> I see nothing with a quick scan that looks controversial.
-There are a few odd corners (based on a 20 second look). What
-is the dual channel stuff about? 
-
-Best bet might be to do a quick cleanup pass then post it as an
-RFC to linux-iio.  Then we can take a proper look at it. 
-
-> 
->> The reason we ask is that we neither want to write new code if something
->> exists nor base
->> our work on something that can not be upstreamed. 
+>> The same issue occurs when the device is instantiated via device tree
+>> with no IRQ, or from the i2c sysfs interface, even before the patch
+>> above. 
 >>
-> I would base your product on the nvidia driver and if they are not
-> planning to upstream then submit yourself.
-Makes sense.
->  
-> Graeme 
+>> [1] http://lkml.kernel.org/g/<1430908148-201129-3-git-send-email-mika.westerberg@linux.intel.com> 
+>>
+>> Signed-off-by: Octavian Purdila <octavian.purdila@intel.com>
+>> Reviewed-by: Mika Westerberg <mika.westerberg@linux.intel.com>
 > 
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> Hi Jonathan, 
+> 
+> Does this look OK to you? If so, could you pleas ACK the patch so that
+> Linus can pick it up in its for-next branch if/when needed? 
+> 
+> Thanks,
+> Tavi 
+> 
+Hi Tavi, 
+
+This is fine, but is there a particular rush to get it in?
+Otherwise I'll just take it through the IIO tree. 
+
+Acked-by: Jonathan Cameron <jic23@kernel.org>
+Thanks, 
+
+Jonathan
+> 
+>> ---
+>>  drivers/iio/accel/bmc150-accel.c | 2 +-
+>>  drivers/iio/accel/kxcjk-1013.c   | 2 +-
+>>  drivers/iio/accel/mma9553.c      | 2 +-
+>>  drivers/iio/imu/kmx61.c          | 8 ++++----
+>>  4 files changed, 7 insertions(+), 7 deletions(-) 
+>>
+>> diff --git a/drivers/iio/accel/bmc150-accel.c b/drivers/iio/accel/bmc150-accel.c
+>> index 4e70f51..55751d9 100644
+>> --- a/drivers/iio/accel/bmc150-accel.c
+>> +++ b/drivers/iio/accel/bmc150-accel.c
+>> @@ -1663,7 +1663,7 @@ static int bmc150_accel_probe(struct i2c_client *client,
+>>         if (client->irq < 0)
+>>                 client->irq = bmc150_accel_gpio_probe(client, data); 
+>>
+>> -       if (client->irq >= 0) {
+>> +       if (client->irq > 0) {
+>>                 ret = devm_request_threaded_irq(
+>>                                                 &client->dev, client->irq,
+>>                                                 bmc150_accel_irq_handler,
+>> diff --git a/drivers/iio/accel/kxcjk-1013.c b/drivers/iio/accel/kxcjk-1013.c
+>> index 0d9bd35..aa93cbd 100644
+>> --- a/drivers/iio/accel/kxcjk-1013.c
+>> +++ b/drivers/iio/accel/kxcjk-1013.c
+>> @@ -1243,7 +1243,7 @@ static int kxcjk1013_probe(struct i2c_client *client,
+>>         if (client->irq < 0)
+>>                 client->irq = kxcjk1013_gpio_probe(client, data); 
+>>
+>> -       if (client->irq >= 0) {
+>> +       if (client->irq > 0) {
+>>                 ret = devm_request_threaded_irq(&client->dev, client->irq,
+>>                                                 kxcjk1013_data_rdy_trig_poll,
+>>                                                 kxcjk1013_event_handler,
+>> diff --git a/drivers/iio/accel/mma9553.c b/drivers/iio/accel/mma9553.c
+>> index 9d649c4..df043b3 100644
+>> --- a/drivers/iio/accel/mma9553.c
+>> +++ b/drivers/iio/accel/mma9553.c
+>> @@ -1143,7 +1143,7 @@ static int mma9553_probe(struct i2c_client *client,
+>>         if (client->irq < 0)
+>>                 client->irq = mma9553_gpio_probe(client); 
+>>
+>> -       if (client->irq >= 0) {
+>> +       if (client->irq > 0) {
+>>                 ret = devm_request_threaded_irq(&client->dev, client->irq,
+>>                                                 mma9553_irq_handler,
+>>                                                 mma9553_event_handler,
+>> diff --git a/drivers/iio/imu/kmx61.c b/drivers/iio/imu/kmx61.c
+>> index 462a010..82cdf50 100644
+>> --- a/drivers/iio/imu/kmx61.c
+>> +++ b/drivers/iio/imu/kmx61.c
+>> @@ -1363,7 +1363,7 @@ static int kmx61_probe(struct i2c_client *client,
+>>         if (client->irq < 0)
+>>                 client->irq = kmx61_gpio_probe(client, data); 
+>>
+>> -       if (client->irq >= 0) {
+>> +       if (client->irq > 0) {
+>>                 ret = devm_request_threaded_irq(&client->dev, client->irq,
+>>                                                 kmx61_data_rdy_trig_poll,
+>>                                                 kmx61_event_handler,
+>> @@ -1445,10 +1445,10 @@ err_iio_unregister_mag:
+>>  err_iio_unregister_acc:
+>>         iio_device_unregister(data->acc_indio_dev);
+>>  err_buffer_cleanup_mag:
+>> -       if (client->irq >= 0)
+>> +       if (client->irq > 0)
+>>                 iio_triggered_buffer_cleanup(data->mag_indio_dev);
+>>  err_buffer_cleanup_acc:
+>> -       if (client->irq >= 0)
+>> +       if (client->irq > 0)
+>>                 iio_triggered_buffer_cleanup(data->acc_indio_dev);
+>>  err_trigger_unregister_motion:
+>>         iio_trigger_unregister(data->motion_trig);
+>> @@ -1472,7 +1472,7 @@ static int kmx61_remove(struct i2c_client *client)
+>>         iio_device_unregister(data->acc_indio_dev);
+>>         iio_device_unregister(data->mag_indio_dev); 
+>>
+>> -       if (client->irq >= 0) {
+>> +       if (client->irq > 0) {
+>>                 iio_triggered_buffer_cleanup(data->acc_indio_dev);
+>>                 iio_triggered_buffer_cleanup(data->mag_indio_dev);
+>>                 iio_trigger_unregister(data->acc_dready_trig);
+>> --
+>> 1.9.1 
+>>
