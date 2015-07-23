@@ -1,50 +1,63 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from relay3-d.mail.gandi.net ([217.70.183.195]:55116 "EHLO
-	relay3-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751236AbbGVSuX (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 22 Jul 2015 14:50:23 -0400
-Received: from mfilter16-d.gandi.net (mfilter16-d.gandi.net [217.70.178.144])
-	by relay3-d.mail.gandi.net (Postfix) with ESMTP id C3AC5A80B0
-	for <linux-iio@vger.kernel.org>; Wed, 22 Jul 2015 20:50:21 +0200 (CEST)
-Received: from relay3-d.mail.gandi.net ([217.70.183.195])
-	by mfilter16-d.gandi.net (mfilter16-d.gandi.net [10.0.15.180]) (amavisd-new, port 10024)
-	with ESMTP id kJtY8zmc-RI1 for <linux-iio@vger.kernel.org>;
-	Wed, 22 Jul 2015 20:50:20 +0200 (CEST)
-Received: from nuvo (mon69-7-83-155-44-161.fbx.proxad.net [83.155.44.161])
-	(Authenticated sender: hadess@hadess.net)
-	by relay3-d.mail.gandi.net (Postfix) with ESMTPSA id 5BEA8A80B4
-	for <linux-iio@vger.kernel.org>; Wed, 22 Jul 2015 20:50:20 +0200 (CEST)
-Message-ID: <1437590935.30706.106.camel@hadess.net>
-Subject: bmc150_accel i2c-BMA250E:00: Invalid chip f8
-From: Bastien Nocera <hadess@hadess.net>
-To: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Date: Wed, 22 Jul 2015 20:48:55 +0200
-Content-Type: text/plain; charset="UTF-8"
-Mime-Version: 1.0
+Received: from mga09.intel.com ([134.134.136.24]:37143 "EHLO mga09.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751173AbbGWJhm (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Thu, 23 Jul 2015 05:37:42 -0400
+From: "Tirdea, Irina" <irina.tirdea@intel.com>
+To: Bastien Nocera <hadess@hadess.net>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Subject: RE: bmc150_accel i2c-BMA250E:00: Invalid chip f8
+Date: Thu, 23 Jul 2015 09:37:38 +0000
+Message-ID: <1F3AC3675D538145B1661F571FE1805F2F0A5588@irsmsx105.ger.corp.intel.com>
+References: <1437590935.30706.106.camel@hadess.net>
+In-Reply-To: <1437590935.30706.106.camel@hadess.net>
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Hey,
-
-Running kernel 4.0.8 on a WinBook TW100 tablet, I get the error message
-in the subject line when loading the bmc150_accel driver.
-
-The 2 items in udev about that device:
-P: /devices/LNXSYSTM:00/LNXSYBUS:00/80860F41:04/BMA250E:00
-E: DEVPATH=/devices/LNXSYSTM:00/LNXSYBUS:00/80860F41:04/BMA250E:00
-E: MODALIAS=acpi:BMA250E:BMA250E:
-E: SUBSYSTEM=acpi
-
-and:
-P: /devices/platform/80860F41:04/i2c-12/i2c-BMA250E:00
-E: DEVPATH=/devices/platform/80860F41:04/i2c-12/i2c-BMA250E:00
-E: MODALIAS=acpi:BMA250E:BMA250E:
-E: SUBSYSTEM=i2c
-
-And the DSDT for the device:
-https://people.gnome.org/~hadess/Winbook%20TW100%20DSDT.dsl
-
-Any ideas what I should try (apart from a more recent kernel, I'm onto
-that...)
-
-Cheers
+DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogbGludXgtaWlvLW93bmVy
+QHZnZXIua2VybmVsLm9yZyBbbWFpbHRvOmxpbnV4LWlpby1vd25lckB2Z2VyLmtlcm5lbC5vcmdd
+IE9uIEJlaGFsZiBPZiBCYXN0aWVuIE5vY2VyYQ0KPiBTZW50OiAyMiBKdWx5LCAyMDE1IDIxOjQ5
+DQo+IFRvOiBsaW51eC1paW9Admdlci5rZXJuZWwub3JnDQo+IFN1YmplY3Q6IGJtYzE1MF9hY2Nl
+bCBpMmMtQk1BMjUwRTowMDogSW52YWxpZCBjaGlwIGY4DQo+IA0KPiBIZXksDQo+IA0KPiBSdW5u
+aW5nIGtlcm5lbCA0LjAuOCBvbiBhIFdpbkJvb2sgVFcxMDAgdGFibGV0LCBJIGdldCB0aGUgZXJy
+b3IgbWVzc2FnZQ0KPiBpbiB0aGUgc3ViamVjdCBsaW5lIHdoZW4gbG9hZGluZyB0aGUgYm1jMTUw
+X2FjY2VsIGRyaXZlci4NCj4gDQo+IFRoZSAyIGl0ZW1zIGluIHVkZXYgYWJvdXQgdGhhdCBkZXZp
+Y2U6DQo+IFA6IC9kZXZpY2VzL0xOWFNZU1RNOjAwL0xOWFNZQlVTOjAwLzgwODYwRjQxOjA0L0JN
+QTI1MEU6MDANCj4gRTogREVWUEFUSD0vZGV2aWNlcy9MTlhTWVNUTTowMC9MTlhTWUJVUzowMC84
+MDg2MEY0MTowNC9CTUEyNTBFOjAwDQo+IEU6IE1PREFMSUFTPWFjcGk6Qk1BMjUwRTpCTUEyNTBF
+Og0KPiBFOiBTVUJTWVNURU09YWNwaQ0KPiANCj4gYW5kOg0KPiBQOiAvZGV2aWNlcy9wbGF0Zm9y
+bS84MDg2MEY0MTowNC9pMmMtMTIvaTJjLUJNQTI1MEU6MDANCj4gRTogREVWUEFUSD0vZGV2aWNl
+cy9wbGF0Zm9ybS84MDg2MEY0MTowNC9pMmMtMTIvaTJjLUJNQTI1MEU6MDANCj4gRTogTU9EQUxJ
+QVM9YWNwaTpCTUEyNTBFOkJNQTI1MEU6DQo+IEU6IFNVQlNZU1RFTT1pMmMNCj4gDQo+IEFuZCB0
+aGUgRFNEVCBmb3IgdGhlIGRldmljZToNCj4gaHR0cHM6Ly9wZW9wbGUuZ25vbWUub3JnL35oYWRl
+c3MvV2luYm9vayUyMFRXMTAwJTIwRFNEVC5kc2wNCj4gDQo+IEFueSBpZGVhcyB3aGF0IEkgc2hv
+dWxkIHRyeSAoYXBhcnQgZnJvbSBhIG1vcmUgcmVjZW50IGtlcm5lbCwgSSdtIG9udG8NCj4gdGhh
+dC4uLikNCg0KSGkgQmFzdGllbiwNCg0KU2VlbXMgdG8gbWUgdGhhdCB0aGUgQUNQSSB0YWJsZSBk
+ZWNsYXJlcyB5b3UgaGF2ZSBCTUEyNTBFIGNoaXAsIGJ1dA0KdGhlIGhhcmR3YXJlIGlzIGFjdHVh
+bGx5IEJNQTIyMkUuIEJvc2ggYWNjZWxlcm9tZXRlciBCTUEyNTBFIGhhcyBjaGlwDQpJRCAweEY5
+IFsxXSwgd2hpbGUgQk1BMjIyRSBoYXMgY2hpcCBJRCAweEY4IFsyXS4NClRoZXNlIGNoaXBzIGFy
+ZSB2ZXJ5IHNpbWlsYXIsIGV4Y2VwdCBmb3IgdGhlIGNoaXAgaWQgYW5kIHgveS96IHJlc29sdXRp
+b24uDQoNCllvdSBjb3VsZCB0cnkgZm9yY2luZyB0aGUgZHJpdmVyIHRvIHVzZSBibWEyMjJlIGZv
+ciB5b3VyIEFDUEkgSUQgYW5kIHNlZQ0KaWYgdGhlIHZhbHVlcyB5b3UgZ2V0IGZvciBhY2NlbGVy
+YXRpb24gYXJlIE9LLiBZb3UgbmVlZCB0byBkbyBzb21ldGhpbmcNCmxpa2UgdGhpczoNCg0KZGlm
+ZiAtLWdpdCBhL2RyaXZlcnMvaWlvL2FjY2VsL2JtYzE1MC1hY2NlbC5jIGIvZHJpdmVycy9paW8v
+YWNjZWwvYm1jMTUwLWFjY2VsLmMNCmluZGV4IDQ3YzYwMTMuLjVjYjQxM2EgMTAwNjQ0DQotLS0g
+YS9kcml2ZXJzL2lpby9hY2NlbC9ibWMxNTAtYWNjZWwuYw0KKysrIGIvZHJpdmVycy9paW8vYWNj
+ZWwvYm1jMTUwLWFjY2VsLmMNCkBAIC0xODM5LDcgKzE4MzksNyBAQCBzdGF0aWMgY29uc3Qgc3Ry
+dWN0IGFjcGlfZGV2aWNlX2lkIGJtYzE1MF9hY2NlbF9hY3BpX21hdGNoW10gPSB7DQogICAgICAg
+IHsiQk1DMTUwQSIsICAgICBibWMxNTB9LA0KICAgICAgICB7IkJNSTA1NUEiLCAgICAgYm1pMDU1
+fSwNCiAgICAgICAgeyJCTUEwMjU1IiwgICAgIGJtYTI1NX0sDQotICAgICAgIHsiQk1BMjUwRSIs
+ICAgICBibWEyNTBlfSwNCisgICAgICAgeyJCTUEyNTBFIiwgICAgIGJtYTIyMmV9LA0KICAgICAg
+ICB7IkJNQTIyMkUiLCAgICAgYm1hMjIyZX0sDQogICAgICAgIHsiQk1BMDI4MCIsICAgICBibWEy
+ODB9LA0KICAgICAgICB7IH0sDQoNCkluIGNhc2UgaXQgd29ya3MgeW91IHByb2JhYmx5IG5lZWQg
+dG8gbW9kaWZ5IHlvdXIgQUNQSSB0YWJsZS4NCg0KVGhhbmtzLA0KSXJpbmENCg0KWzFdIGh0dHBz
+Oi8vYWUtYnN0LnJlc291cmNlLmJvc2NoLmNvbS9tZWRpYS9wcm9kdWN0cy9kb2t1bWVudGUvYm1h
+MjUwZS9CU1QtQk1BMjUwRS1EUzAwNC0wNV9wdWJsaXNoZWQucGRmDQpbMl0gaHR0cHM6Ly9hZS1i
+c3QucmVzb3VyY2UuYm9zY2guY29tL21lZGlhL3Byb2R1Y3RzL2Rva3VtZW50ZS9ibWEyMjJlL0JT
+VC1CTUEyMjJFLURTMDA0LTA1X3B1Ymxpc2hlZC5wZGYNCg0KDQo+IA0KPiBDaGVlcnMNCj4gLS0N
+Cj4gVG8gdW5zdWJzY3JpYmUgZnJvbSB0aGlzIGxpc3Q6IHNlbmQgdGhlIGxpbmUgInVuc3Vic2Ny
+aWJlIGxpbnV4LWlpbyIgaW4NCj4gdGhlIGJvZHkgb2YgYSBtZXNzYWdlIHRvIG1ham9yZG9tb0B2
+Z2VyLmtlcm5lbC5vcmcNCj4gTW9yZSBtYWpvcmRvbW8gaW5mbyBhdCAgaHR0cDovL3ZnZXIua2Vy
+bmVsLm9yZy9tYWpvcmRvbW8taW5mby5odG1sDQo=
