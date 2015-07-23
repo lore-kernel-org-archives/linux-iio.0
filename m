@@ -1,92 +1,61 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mo4-p00-ob.smtp.rzone.de ([81.169.146.161]:27021 "EHLO
-	mo4-p00-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751025AbbGWM6o convert rfc822-to-8bit (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 23 Jul 2015 08:58:44 -0400
-Content-Type: text/plain; charset=us-ascii
-Mime-Version: 1.0 (Mac OS X Mail 7.3 \(1878.6\))
-Subject: Re: gpadc iio support for tlw6037/palmas [was: twl6030-gpadc support for twl6037]
-From: "Dr. H. Nikolaus Schaller" <hns@goldelico.com>
-In-Reply-To: <1437594062.2382998.330577153.4CE28783@webmail.messagingengine.com>
-Date: Thu, 23 Jul 2015 14:58:26 +0200
-Cc: Belisko Marek <marek.belisko@gmail.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Axel Lin <axel.lin@ingics.com>, linux-iio@vger.kernel.org,
-	Tony Lindgren <tony@atomide.com>,
-	Samuel Ortiz <sameo@linux.intel.com>,
-	Lee Jones <lee.jones@linaro.org>,
-	linux-omap <linux-omap@vger.kernel.org>, balajitk@ti.com,
-	oleksandr.kozaruk@ti.com,
-	Michael Mrozek <EvilDragon@openpandora.org>,
-	Grazvydas Ignotas <notaz@openpandora.org>
-Message-Id: <CB1BA4C2-51EC-493D-A290-E506DE974605@goldelico.com>
-References: <CAAfyv354=J+iDgLcu9KRZSScGSzYrRsCMmUEc_tW84GfduSebw@mail.gmail.com> <CAAfyv35bUMZKfMQDJYwD_uGRNOiqLqAB4UG=gREgCSWa8vhjdw@mail.gmail.com> <1437593628.2381718.330572297.2F6F1C50@webmail.messagingengine.com> <1437594062.2382998.330577153.4CE28783@webmail.messagingengine.com>
-To: Graeme Gregory <gg@slimlogic.co.uk>,
-	Laxman Dewangan <ldewangan@nvidia.com>
+Received: from mail-oi0-f42.google.com ([209.85.218.42]:36144 "EHLO
+	mail-oi0-f42.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752321AbbGWNLs (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 23 Jul 2015 09:11:48 -0400
+Received: by oibn4 with SMTP id n4so164848233oib.3
+        for <linux-iio@vger.kernel.org>; Thu, 23 Jul 2015 06:11:47 -0700 (PDT)
+MIME-Version: 1.0
+In-Reply-To: <CAE1zotJ_u+ysf+HkD=4=Nv_mJ-4++SZxjKGMRkbKzYzyunLJUg@mail.gmail.com>
+References: <1433512783-8183-1-git-send-email-octavian.purdila@intel.com>
+	<1433512783-8183-2-git-send-email-octavian.purdila@intel.com>
+	<CAE1zotJ_u+ysf+HkD=4=Nv_mJ-4++SZxjKGMRkbKzYzyunLJUg@mail.gmail.com>
+Date: Thu, 23 Jul 2015 15:11:47 +0200
+Message-ID: <CACRpkdYE2HG3Cm74Hg9jXy2FwvwveqpbJbwTPKvmOm6aR7BNmQ@mail.gmail.com>
+Subject: Re: [PATCH v3 1/2] iio: fix drivers that consider 0 as a valid IRQ in client->irq
+From: Linus Walleij <linus.walleij@linaro.org>
+To: Octavian Purdila <octavian.purdila@intel.com>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	Mika Westerberg <mika.westerberg@linux.intel.com>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Alessandro Zummo <a.zummo@towertech.it>,
+	Alexandre Belloni <alexandre.belloni@free-electrons.com>,
+	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	"rtc-linux@googlegroups.com" <rtc-linux@googlegroups.com>,
+	lkml <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Hi Graeme,
+On Thu, Jul 23, 2015 at 12:59 PM, Octavian Purdila
+<octavian.purdila@intel.com> wrote:
+> On Fri, Jun 5, 2015 at 4:59 PM, Octavian Purdila
+> <octavian.purdila@intel.com> wrote:
+>> Since patch "i2c / ACPI: Use 0 to indicate that device does not have
+>> interrupt assigned" [1], 0 is not a valid i2c client irq anymore, so
+>> change all driver's checks accordingly.
+>>
+>> The same issue occurs when the device is instantiated via device tree
+>> with no IRQ, or from the i2c sysfs interface, even before the patch
+>> above.
+>>
+>> [1] http://lkml.kernel.org/g/<1430908148-201129-3-git-send-email-mika.westerberg@linux.intel.com>
+>>
+>> Signed-off-by: Octavian Purdila <octavian.purdila@intel.com>
+>> Reviewed-by: Mika Westerberg <mika.westerberg@linux.intel.com>
+>
+> Hi Jonathan,
+>
+> Does this look OK to you? If so, could you pleas ACK the patch so that
+> Linus can pick it up in its for-next branch if/when needed?
 
-Am 22.07.2015 um 21:41 schrieb Graeme Gregory <gg@slimlogic.co.uk>:
+Me or Torvalds?
 
-> 
-> 
-> On Wed, 22 Jul 2015, at 08:33 PM, Graeme Gregory wrote:
->> 
->> 
->> On Wed, 22 Jul 2015, at 08:28 PM, Belisko Marek wrote:
->>> Adding also twl6030-gpadc driver authors to loop
->>> 
->>> On Mon, Jul 20, 2015 at 8:57 AM, Belisko Marek <marek.belisko@gmail.com>
->>> wrote:
->>>> Hi all,
->>>> 
->>>> I'm trying to figure out what is relation between palmas mfd driver
->>>> and twl-core for twl603x devices.
->>>> twl-core driver seems to be older than palmas driver but seems both
->>>> export same functionality (except that palmas have defined structs for
->>>> gpadc but functionality is missing). My main focus is to add support
->>>> for twl6037 to gpadc iio driver in iio/adc/twl6030-gpadc which is
->>>> using twl-core for twl6030 and twl6032. Adding twl6037 support should
->>>> be straightforward but dts file used in omap5-uevm using palmas driver
->>>> and not twl6030. So it's completely confusing to me how to proceed or
->>>> which direction is correct. Seems I'm missing some parts of puzzle ;)
->>>> Thanks for any hints.
->>>> 
->> Phoenix is twl6030, twl6032
->> 
->> Palmas is twl6035, twl6037 and maybe others.
->> 
->> Phoenix and Palmas are two totally different chips but marketing gave
->> them numbers near each other for unknown reasons.
->> 
-> Also this might be useful.
-> 
-> https://github.com/slimlogic/linux/commit/312a6a1c8013fd056431c31567b43d8eef40f333
-> 
-> A pre IIO palmas ADC driver which I never got around to upstreaming
-> because TIpocalypse left me with no access to a palmas chip.
+This looks more like a Wolfram patch to me if it should not
+go through IIO.
 
-We managed to integrate your code into our 4.1 kernel (needed minor fixes mainly for
-irq initialization) and it appears to work on the omap5432evm. Especially channels
-in6_channel and in7_channel in /sys/bus/platform/drivers/palmas-gpadc/48070000.i2c:palmas@48:gpadc
-show reasonable (and slightly fluctuating) volt values.
-
-Now the question is how to proceed. We could either write some drivers/iio/adc/palmas-gpadc.c
-wrapper around your driver, or could try this one which appears to be a pure iio implementation:
-
-https://android.googlesource.com/kernel/tegra.git/+/28f245bb8f590f61bb244f1b4d03f4b4919d32ea/Documentation/devicetree/bindings/iio/adc/palmas-gpadc.txt
-https://android.googlesource.com/kernel/tegra/+/aaabb2e045f31e5a970109ffdaae900dd403d17e/drivers/staging/iio/adc/palmas_gpadc.c
-
-Do you think the latter has a chance to be accepted upstream?
-
-The reason we ask is that we neither want to write new code if something exists nor base
-our work on something that can not be upstreamed.
-
-We have added the author(s) of this tegra/android driver so they can please also comment
-on their plans for submitting the driver upstream.
-
-BR and thank you,
-Nikolaus and Marek
-
+Yours,
+Linus Walleij
