@@ -1,206 +1,43 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:57391 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1756983AbbGTR4X (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 20 Jul 2015 13:56:23 -0400
-Message-ID: <55AD3645.4000801@kernel.org>
-Date: Mon, 20 Jul 2015 18:56:21 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-MIME-Version: 1.0
-To: Crt Mori <cmo@melexis.com>
-CC: linux-iio@vger.kernel.org, Peter Meerwald <pmeerw@pmeerw.net>,
-	=?UTF-8?B?Vmlhbm5leSBsZSBDbMOpbWVudCBkZSBTYWludC1NYXJjcQ==?=
-	<vianney.leclement@essensium.com>
-Subject: Re: [PATCH] iio: mlx90614: Define magic numbers
-References: <CAKv63utwT_KTvTYcOogAWQ4NUcVUsAFvFgWwqa2rZ+5+1bM7Cw@mail.gmail.com> <55AB8B13.7090907@kernel.org> <CAKv63ut35A_f2P_xdrtCtsc8mPztDx1h2PaFz4JYC1r5NhR-Ww@mail.gmail.com>
-In-Reply-To: <CAKv63ut35A_f2P_xdrtCtsc8mPztDx1h2PaFz4JYC1r5NhR-Ww@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <irina.tirdea@intel.com>
+From: Irina Tirdea <irina.tirdea@intel.com>
+To: Jonathan Cameron <jic23@kernel.org>,
+	linux-iio@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Irina Tirdea <irina.tirdea@intel.com>
+Subject: [PATCH 2/2] tools: iio: print error message when buffer enable fails
+Date: Thu, 23 Jul 2015 20:22:52 +0300
+Message-Id: <1437672172-21189-3-git-send-email-irina.tirdea@intel.com>
+In-Reply-To: <1437672172-21189-1-git-send-email-irina.tirdea@intel.com>
+References: <1437672172-21189-1-git-send-email-irina.tirdea@intel.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-On 19/07/15 21:14, Crt Mori wrote:
-> Translates the magic constant numbers to named macros and add some
-> additional comments about their meaning.
-> 
-> The diff is made towards togreg branch as that branch seems to have the
-> most recent updates of mlx90614 driver (many are yet to be merged).
-> 
-> Signed-off-by: Crt Mori <cmo@melexis.com <mailto:cmo@melexis.com>>
-> Acked-by: Peter Meerwald <pmeerw@pmeerw.net <mailto:pmeerw@pmeerw.net>>
-Hi Crt,
+Running generic_buffer without enabling any channel of the
+sensor will fail without printing any error message.
 
-Sorry to be a pain.  Could you send this as a fresh patch on it's own.
-It's tricky to use standard tools to pull it out of an email like this.
+Add an error message that indicates buffer enable failed.
 
-Also, could you check the spacing below as I think your email client
-may have eaten some.
+Signed-off-by: Irina Tirdea <irina.tirdea@intel.com>
+---
+ tools/iio/generic_buffer.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-J
-> ---
->  drivers/iio/temperature/mlx90614.c | 20 ++++++++++++++------
->  1 file changed, 14 insertions(+), 6 deletions(-)
-> 
-> diff --git a/drivers/iio/temperature/mlx90614.c
-> b/drivers/iio/temperature/mlx90614.c
-> index cb2e8ad..909278a 100644
-> --- a/drivers/iio/temperature/mlx90614.c
-> +++ b/drivers/iio/temperature/mlx90614.c
-> @@ -65,6 +65,13 @@
-> 
->  #define MLX90614_AUTOSLEEP_DELAY 5000 /* default autosleep delay */
-> 
-> +/* Magic constants */
-> +#define MLX90614_CONST_OFFSET_DEC -13657 /* decimal part of the
-> Kelvin offset */
-> +#define MLX90614_CONST_OFFSET_REM 500000 /* remainder of offset (273.15*50) */
-> +#define MLX90614_CONST_SCALE 20 /* Scale in milliKelvin (0.02 * 1000) */
-> +#define MLX90614_CONST_RAW_EMISSIVITY_MAX 65535 /* max value for emissivity */
-> +#define MLX90614_CONST_EMISSIVITY_RESOLUTION 15259 /* 1/65535 ~ 0.000015259 */
-> +
->  struct mlx90614_data {
-> struct i2c_client *client;
-> struct mutex lock; /* for EEPROM access only */
-> @@ -204,11 +211,11 @@ static int mlx90614_read_raw(struct iio_dev *indio_dev,
-> *val = ret;
-> return IIO_VAL_INT;
-> case IIO_CHAN_INFO_OFFSET:
-> -*val = 13657;
-> -*val2 = 500000;
-> +*val = MLX90614_CONST_OFFSET_DEC;
-> +*val2 = MLX90614_CONST_OFFSET_REM;
-> return IIO_VAL_INT_PLUS_MICRO;
-> case IIO_CHAN_INFO_SCALE:
-> -*val = 20;
-> +*val = MLX90614_CONST_SCALE;
-> return IIO_VAL_INT;
-> case IIO_CHAN_INFO_CALIBEMISSIVITY: /* 1/65535 / LSB */
-> mlx90614_power_get(data, false);
-> @@ -221,12 +228,12 @@ static int mlx90614_read_raw(struct iio_dev *indio_dev,
-> if (ret < 0)
-> return ret;
-> 
-> -if (ret == 65535) {
-> +if (ret == MLX90614_CONST_RAW_EMISSIVITY_MAX) {
-> *val = 1;
-> *val2 = 0;
-> } else {
-> *val = 0;
-> -*val2 = ret * 15259; /* 1/65535 ~ 0.000015259 */
-> +*val2 = ret * MLX90614_CONST_EMISSIVITY_RESOLUTION;
-> }
-> return IIO_VAL_INT_PLUS_NANO;
-> default:
-> @@ -245,7 +252,8 @@ static int mlx90614_write_raw(struct iio_dev *indio_dev,
-> case IIO_CHAN_INFO_CALIBEMISSIVITY: /* 1/65535 / LSB */
-> if (val < 0 || val2 < 0 || val > 1 || (val == 1 && val2 != 0))
-> return -EINVAL;
-> -val = val * 65535 + val2 / 15259; /* 1/65535 ~ 0.000015259 */
-> +val = val * MLX90614_CONST_RAW_EMISSIVITY_MAX +
-> +val2 / MLX90614_CONST_EMISSIVITY_RESOLUTION;
-> 
-> mlx90614_power_get(data, false);
-> mutex_lock(&data->lock);
-> 
-> 
-> On 19 July 2015 at 13:33, Jonathan Cameron <jic23@kernel.org <mailto:jic23@kernel.org>> wrote:
-> 
->     On 05/07/15 19:07, Crt Mori wrote:
->     > Translates the magic constant numbers to named macros and add some
->     > additional comments about their meaning.
->     >
->     > The diff is made towards togreg branch as that branch seems to have the
->     > most recent updates of mlx90614 driver (many are yet to be merged).
->     >
->     > Signed-off-by: Crt Mori <cmo@melexis.com <mailto:cmo@melexis.com>>
->     > Acked-by: Peter Meerwald <pmeerw@pmeerw.net <mailto:pmeerw@pmeerw.net>>
->     Crt,
-> 
->     This patch is malformed, probably as a result of your email client.
->     It seems to have replaced tabs with spaces meaning I can't apply this
->     without doing it line by line.
-> 
->     Could you take a look at Documentation/SubmittingPatches and the advice
->     in there on how to lure an email client into not messing things up.
-> 
->     If you can't persuade that to work, I will take the occasional attachment.
-> 
->     Otherwise, the patch looks fine. 
-> 
->     Jonathan
-> 
-> I hope it is now OK? I needed to turn off google's mail mode, and apparently plain text
-> mode also translates tabs into spaces. I have now fixed the tabs and I hope they are
-> also sent. Please let me know - I will otherwise just pull some mail client and get it
-> working.
-> 
-> Crt
->  
-> 
->     > ---
->     >  drivers/iio/temperature/mlx90614.c | 20 ++++++++++++++------
->     >  1 file changed, 14 insertions(+), 6 deletions(-)
->     >
->     > diff --git a/drivers/iio/temperature/mlx90614.c
->     > b/drivers/iio/temperature/mlx90614.c
->     > index cb2e8ad..909278a 100644
->     > --- a/drivers/iio/temperature/mlx90614.c
->     > +++ b/drivers/iio/temperature/mlx90614.c
->     > @@ -65,6 +65,13 @@
->     >
->     >  #define MLX90614_AUTOSLEEP_DELAY 5000 /* default autosleep delay */
->     >
->     > +/* Magic constants */
->     > +#define MLX90614_CONST_OFFSET_DEC -13657 /* decimal part of the
->     > Kelvin offset */
->     > +#define MLX90614_CONST_OFFSET_REM 500000 /* remainder of offset (273.15*50) */
->     > +#define MLX90614_CONST_SCALE 20 /* Scale in milliKelvin (0.02 * 1000) */
->     > +#define MLX90614_CONST_RAW_EMISSIVITY_MAX 65535 /* max value for emissivity */
->     > +#define MLX90614_CONST_EMISSIVITY_RESOLUTION 15259 /* 1/65535 ~ 0.000015259 */
->     > +
->     >  struct mlx90614_data {
->     >         struct i2c_client *client;
->     >         struct mutex lock; /* for EEPROM access only */
->     > @@ -204,11 +211,11 @@ static int mlx90614_read_raw(struct iio_dev *indio_dev,
->     >                 *val = ret;
->     >                 return IIO_VAL_INT;
->     >         case IIO_CHAN_INFO_OFFSET:
->     > -               *val = 13657;
->     > -               *val2 = 500000;
->     > +               *val = MLX90614_CONST_OFFSET_DEC;
->     > +               *val2 = MLX90614_CONST_OFFSET_REM;
->     >                 return IIO_VAL_INT_PLUS_MICRO;
->     >         case IIO_CHAN_INFO_SCALE:
->     > -               *val = 20;
->     > +               *val = MLX90614_CONST_SCALE;
->     >                 return IIO_VAL_INT;
->     >         case IIO_CHAN_INFO_CALIBEMISSIVITY: /* 1/65535 / LSB */
->     >                 mlx90614_power_get(data, false);
->     > @@ -221,12 +228,12 @@ static int mlx90614_read_raw(struct iio_dev *indio_dev,
->     >                 if (ret < 0)
->     >                         return ret;
->     >
->     > -               if (ret == 65535) {
->     > +               if (ret == MLX90614_CONST_RAW_EMISSIVITY_MAX) {
->     >                         *val = 1;
->     >                         *val2 = 0;
->     >                 } else {
->     >                         *val = 0;
->     > -                       *val2 = ret * 15259; /* 1/65535 ~ 0.000015259 */
->     > +                       *val2 = ret * MLX90614_CONST_EMISSIVITY_RESOLUTION;
->     >                 }
->     >                 return IIO_VAL_INT_PLUS_NANO;
->     >         default:
->     > @@ -245,7 +252,8 @@ static int mlx90614_write_raw(struct iio_dev *indio_dev,
->     >         case IIO_CHAN_INFO_CALIBEMISSIVITY: /* 1/65535 / LSB */
->     >                 if (val < 0 || val2 < 0 || val > 1 || (val == 1 && val2 != 0))
->     >                         return -EINVAL;
->     > -               val = val * 65535 + val2 / 15259; /* 1/65535 ~ 0.000015259 */
->     > +               val = val * MLX90614_CONST_RAW_EMISSIVITY_MAX +
->     > +                       val2 / MLX90614_CONST_EMISSIVITY_RESOLUTION;
->     >
->     >                 mlx90614_power_get(data, false);
->     >                 mutex_lock(&data->lock);
->     >
-> 
-> 
-
+diff --git a/tools/iio/generic_buffer.c b/tools/iio/generic_buffer.c
+index 32f389eb..936469c 100644
+--- a/tools/iio/generic_buffer.c
++++ b/tools/iio/generic_buffer.c
+@@ -364,8 +364,11 @@ int main(int argc, char **argv)
+ 
+ 	/* Enable the buffer */
+ 	ret = write_sysfs_int("enable", buf_dir_name, 1);
+-	if (ret < 0)
++	if (ret < 0) {
++		fprintf(stderr,
++			"Failed to enable buffer: %s\n", strerror(errno));
+ 		goto error_free_buf_dir_name;
++	}
+ 
+ 	scan_size = size_from_channelarray(channels, num_channels);
+ 	data = malloc(scan_size * buf_len);
+-- 
+1.9.1
