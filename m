@@ -1,74 +1,84 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-wi0-f171.google.com ([209.85.212.171]:38210 "EHLO
-	mail-wi0-f171.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753527AbbGXNTA (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 24 Jul 2015 09:19:00 -0400
-Date: Fri, 24 Jul 2015 16:18:09 +0300
+Return-Path: <cristina.opriceana@gmail.com>
+Date: Fri, 24 Jul 2015 16:20:12 +0300
 From: Cristina Opriceana <cristina.opriceana@gmail.com>
 To: jic23@kernel.org
 Cc: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
 	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
 	daniel.baluta@intel.com
-Subject: [PATCH 2/6] iio: buffer: Fix kernel docs warnings
-Message-ID: <b36f8de1969bd0650e07bbac57d7120d700a8d32.1437737942.git.cristina.opriceana@gmail.com>
+Subject: [PATCH 3/6] iio: trigger: Add missing fields in kernel docs
+Message-ID: <36176268d5ee1e7ee1ab2d0b306ceb66f4f5f6af.1437737942.git.cristina.opriceana@gmail.com>
 References: <cover.1437737942.git.cristina.opriceana@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 In-Reply-To: <cover.1437737942.git.cristina.opriceana@gmail.com>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+List-ID: <linux-iio@vger.kernel.org>
 
-Fix kernel docs for structures and functions in order to
-remove some warnings when the documentation gets generated.
+Fix kernel docs warnings by adding the missing description
+for each of the existing function parameters.
 
 Signed-off-by: Cristina Opriceana <cristina.opriceana@gmail.com>
 ---
- drivers/iio/industrialio-buffer.c | 15 ++++++++++++++-
- 1 file changed, 14 insertions(+), 1 deletion(-)
+ drivers/iio/industrialio-trigger.c | 27 ++++++++++++++++++++++++---
+ 1 file changed, 24 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/iio/industrialio-buffer.c b/drivers/iio/industrialio-buffer.c
-index b13f941..a671953 100644
---- a/drivers/iio/industrialio-buffer.c
-+++ b/drivers/iio/industrialio-buffer.c
-@@ -91,9 +91,16 @@ static bool iio_buffer_ready(struct iio_dev *indio_dev, struct iio_buffer *buf,
+diff --git a/drivers/iio/industrialio-trigger.c b/drivers/iio/industrialio-trigger.c
+index d31098e..cae2939 100644
+--- a/drivers/iio/industrialio-trigger.c
++++ b/drivers/iio/industrialio-trigger.c
+@@ -40,7 +40,14 @@ static DEFINE_MUTEX(iio_trigger_list_lock);
  
  /**
-  * iio_buffer_read_first_n_outer() - chrdev read for buffer access
-+ * @filp:	File structure pointer for the char device
-+ * @buf:	Destination buffer for iio buffer read
-+ * @n:		First n bytes to read
-+ * @f_ps:	Long offset provided by the user as a seek position
+  * iio_trigger_read_name() - retrieve useful identifying name
+- **/
++ * @dev:	device that holds the iio_trigger
++ * @attr:	pointer to the device_attribute structure that is
++ *		being processed
++ * @buf:	buffer to print the name into
++ *
++ * Return: a negative number on failure or the number of written
++ *	   characters on success.
++ */
+ static ssize_t iio_trigger_read_name(struct device *dev,
+ 				     struct device_attribute *attr,
+ 				     char *buf)
+@@ -288,10 +295,17 @@ EXPORT_SYMBOL_GPL(iio_dealloc_pollfunc);
+ 
+ /**
+  * iio_trigger_read_current() - trigger consumer sysfs query current trigger
++ * @dev:	Device this iio_dev belongs to
++ * @attr:	Pointer to the device_attribute structure that
++ *		is being processed
++ * @buf:	Buffer where the current trigger name will be printed into
   *
-  * This function relies on all buffer implementations having an
-  * iio_buffer as their first element.
+  * For trigger consumers the current_trigger interface allows the trigger
+  * used by the device to be queried.
+- **/
 + *
-+ * Return: negative values corresponding to error codes or ret != 0
-+ *	   for ending the reading activity
-  **/
- ssize_t iio_buffer_read_first_n_outer(struct file *filp, char __user *buf,
- 				      size_t n, loff_t *f_ps)
-@@ -143,6 +150,12 @@ ssize_t iio_buffer_read_first_n_outer(struct file *filp, char __user *buf,
++ * Return: a negative number on failure, the number of characters written
++ *	   on success or 0 if no trigger is available
++ */
+ static ssize_t iio_trigger_read_current(struct device *dev,
+ 					struct device_attribute *attr,
+ 					char *buf)
+@@ -305,11 +319,18 @@ static ssize_t iio_trigger_read_current(struct device *dev,
  
  /**
-  * iio_buffer_poll() - poll the buffer to find out if it has data
-+ * @filp:	File structure poiner for device access
-+ * @wait:	Poll table structure pointer for which the driver adds
-+ *		a wait queue
+  * iio_trigger_write_current() - trigger consumer sysfs set current trigger
++ * @dev:	Device that this iio_dev belongs to
++ * @attr:	Device attribute that is being processed
++ * @buf:	String buffer that holds the name of the trigger
++ * @len:	Length of the trigger name held by buf
+  *
+  * For trigger consumers the current_trigger interface allows the trigger
+  * used for this device to be specified at run time based on the trigger's
+  * name.
+- **/
 + *
-+ * Return: (POLLIN | POLLRDNORM) if data is available for reading
-+ *	   or 0 for other cases
-  */
- unsigned int iio_buffer_poll(struct file *filp,
- 			     struct poll_table_struct *wait)
-@@ -1136,7 +1149,7 @@ int iio_scan_mask_query(struct iio_dev *indio_dev,
- EXPORT_SYMBOL_GPL(iio_scan_mask_query);
- 
- /**
-- * struct iio_demux_table() - table describing demux memcpy ops
-+ * struct iio_demux_table - table describing demux memcpy ops
-  * @from:	index to copy from
-  * @to:		index to copy to
-  * @length:	how many bytes to copy
++ * Return: negative error code on failure or length of the buffer
++ *	   on success
++ */
+ static ssize_t iio_trigger_write_current(struct device *dev,
+ 					 struct device_attribute *attr,
+ 					 const char *buf,
 -- 
 1.9.1
-
