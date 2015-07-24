@@ -1,153 +1,113 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp-out-122.synserver.de ([212.40.185.122]:1198 "EHLO
+Received: from smtp-out-122.synserver.de ([212.40.185.122]:1084 "EHLO
 	smtp-out-122.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752442AbbGXMi6 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 24 Jul 2015 08:38:58 -0400
-Message-ID: <55B231DE.4080308@metafoo.de>
-Date: Fri, 24 Jul 2015 14:38:54 +0200
+	with ESMTP id S1752654AbbGXMwG (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 24 Jul 2015 08:52:06 -0400
+Message-ID: <55B234F2.1080200@metafoo.de>
+Date: Fri, 24 Jul 2015 14:52:02 +0200
 From: Lars-Peter Clausen <lars@metafoo.de>
 MIME-Version: 1.0
-To: Xander Huff <xander.huff@ni.com>, jic23@kernel.org,
-	bigeasy@linutronix.de
-CC: knaack.h@gmx.de, pmeerw@pmeerw.net, michal.simek@xilinx.com,
-	soren.brinkmann@xilinx.com, linux-iio@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org,
-	linux-rt-users@vger.kernel.org, linux-kernel@vger.kernel.org,
-	joe.hershberger@ni.com, joshc@ni.com, nathan.sullivan@ni.com,
-	jaeden.amero@ni.com
-Subject: Re: [PATCH v3] iio: adc: xilinx-xadc: Push interrupts into threaded
- context
-References: <CAKfKVtGTO81wLWk50M303t2WjcBEMEt_LUnsJ3_WmvR_3izUjg@mail.gmail.com> <1437434050-32907-1-git-send-email-xander.huff@ni.com>
-In-Reply-To: <1437434050-32907-1-git-send-email-xander.huff@ni.com>
-Content-Type: text/plain; charset=windows-1252; format=flowed
+To: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Jonathan Cameron <jic23@kernel.org>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Daniel Baluta <daniel.baluta@intel.com>
+Subject: Re: IIO : Clarifying review tags.
+References: <55ABBFE8.4090108@kernel.org> <55AC0079.9060507@gmx.de> <2316DF05-CDDA-4911-B573-2599579211C4@jic23.retrosnub.co.uk>
+In-Reply-To: <2316DF05-CDDA-4911-B573-2599579211C4@jic23.retrosnub.co.uk>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Hi,
+On 07/19/2015 11:23 PM, Jonathan Cameron wrote:
+[...]
+>>> (and it's this last bit that lets the Linux development
+>>> process scale).  There is a pretty universal view that
+>>> you don't bother with both signed-off-by and any other tag
+>>> (though tested-by can be appropriate in my view).
+>>>
+>> <...>
+>>
+>> I'm fine with the Acked-by and Tested-by stuff.
+>>
+>>> Reviewed-by:
+>>> 	Now this is the one that caused most discussion in the
+>>> previously mentioned thread.  When is it appropriate?
+>>>
+>>> 1) When substantial work has been applied as part of a review.
+>>>     This might be indicated by a series of suggested changes
+>>>     or by detailed comments on what they think is good / bad
+>>>     might be done differently.   In these cases the reviewer
+>>>     may 'suggest' the tag themselves.
+>>>
+>>> 2) Where earlier versions of a patch have received substantial
+>>>     review but the reviewer has not commented on the latest
+>>>     version.  In this case some maintainers have been giving
+>>>     'Reviewed-by' tags to people who haven't supplied them
+>>>     on their own.  This is the change I would like to make to
+>>>     how I have done things previously (where when I had time
+>>>     I pestered people to give a reviewed-by).
+>>>
+>>>     A few of you delight in early stage reviews and I feel often
+>>>     get little or no permanent credit for your hard work.
+>>>     In particular there are some here who spend a lot of time
+>>>     helping new submitters get large patches in order.  A job
+>>>     that can take a huge amount of work on occasion!
+>>>
+>>>     So does anyone object if I sometimes add Reviewed-by tags
+>>>     for them?  Obviously this is all going to be a little
+>>>     arbitrary so do keep sending them directly (and authors
+>>>     keep adding them to later versions of your patches!)
+>>>
+>>
+>> I'm in favor of using the Reviewed-by tag rather restrictive.
+>> IMHO it expresses that the reviewer was able to understand the
+>> change in its full extend. This may include to check all
+>> device specific parameters used against a data sheet (if the
+>> data sheet is not available due to NDA, then I would not want
+>> to give this tag), check each line of code, check fixes against
+>> the source code block it applies to (or even parent level
+>> blocks if required). As a result, it should indicate that the
+>> patch has successfully passed certain quality checks of the
+>> reviewer. This in turn gives appreciaction to the patch author.
+>> The reviewers reputation however can suffer, if significant
+>> bugs slipped through the review. That's why I don't feel too
+>> comfortable if anyone else gives reviewed-by tags in my name.
+>> Clearly, there is a gap in between the acked-by and reviewed-by
+>> tags, something that would express your contribution in the
+>> development process.
+>
+> Interesting to hear. I will refrain from adding such tags given both your
+>   response and Dan's.  Dan suggested in the mega thread an explicit
+>   acknowledgement of a bug sported in a review. This would be applies as a kind of
+>   'thanks' from the author to later versions without carrying any weight wrt to the
+>   rest of the patch being good.
 
-Sorry, but I don't think this patch has been sufficiently tested against a 
-mainline kernel. The driver wont even probe the way it is right now.
+Yeah, I understand your reasoning, but I too feel a bit uncomfortable having 
+other people add tags for me in my name. It's a bit like telling somebody to 
+sign something in your name and forge your signature.
 
-On 07/21/2015 01:14 AM, Xander Huff wrote:
-> The driver currently registers a pair of irq handlers using
-> request_threaded_irq(), however the synchronization mechanism between the
-> hardirq and the threadedirq handler is a regular spinlock.
-
-If everything runs in threaded context we don't really need the spinlock 
-anymore and can use the mutex throughout.
+I'm a bit more easy when it comes to giving Reviewed-by tags than Hartmut 
+though. If the driver looks sane from a API/ABI point I'll be ok with it. It 
+is the driver author's task of making sure that the driver writes the right 
+bits to the right registers.
 
 >
-> Unfortunately, this breaks PREEMPT_RT builds, where a spinlock can sleep,
-> and is thus not able to be acquired from a hardirq handler. This patch gets
-> rid of the hardirq handler and pushes all interrupt handling into the
-> threaded context.
+> I was kind of fishing for opinions with this email. Good to get some!
+>>
+>>> Anyhow, the thread that lead to this has yet again reminded
+>>> me of how lucky I am and we all are in IIO wrt to the quality
+>>> and quantity of reviewers who put huge amounts of time into
+>>> improving all our code!
+>>>
+>>> I certainly know I would have burnt out long ago if it was
+>>> just me against the mountain.
+>>>
+>>> I'm going to be on holiday week after next. Should get back
+>>> to normal in early August.
 
-We actually might as well run everything in the hardirq handler (which will 
-be threaded in PREEMPT_RT). The reason why we have the threaded handler is 
-because xadc_handle_event() used to sleep, but it doesn't do this anymore.
+Enjoy your well deserved vacation and don't read/write so many emails ;)
 
-> Signed-off-by: Xander Huff <xander.huff@ni.com>
-> ---
->   drivers/iio/adc/xilinx-xadc-core.c | 37 ++++++++-----------------------------
->   1 file changed, 8 insertions(+), 29 deletions(-)
->
-> diff --git a/drivers/iio/adc/xilinx-xadc-core.c b/drivers/iio/adc/xilinx-xadc-core.c
-> index ce93bd8..e16afdb 100644
-> --- a/drivers/iio/adc/xilinx-xadc-core.c
-> +++ b/drivers/iio/adc/xilinx-xadc-core.c
-> @@ -267,40 +267,15 @@ static void xadc_zynq_unmask_worker(struct work_struct *work)
->   	xadc_zynq_update_intmsk(xadc, 0, 0);
->
->   	spin_unlock_irq(&xadc->lock);
-> -
-> -	/* if still pending some alarm re-trigger the timer */
-> -	if (xadc->zynq_masked_alarm) {
-> -		schedule_delayed_work(&xadc->zynq_unmask_work,
-> -				msecs_to_jiffies(XADC_ZYNQ_UNMASK_TIMEOUT));
-> -	}
->   }
->
->   static irqreturn_t xadc_zynq_threaded_interrupt_handler(int irq, void *devid)
->   {
->   	struct iio_dev *indio_dev = devid;
->   	struct xadc *xadc = iio_priv(indio_dev);
-> -	unsigned int alarm;
-> -
-> -	spin_lock_irq(&xadc->lock);
-> -	alarm = xadc->zynq_alarm;
-> -	xadc->zynq_alarm = 0;
-> -	spin_unlock_irq(&xadc->lock);
-> -
-> -	xadc_handle_events(indio_dev, xadc_zynq_transform_alarm(alarm));
-> -
-> -	/* unmask the required interrupts in timer. */
-> -	schedule_delayed_work(&xadc->zynq_unmask_work,
-> -			msecs_to_jiffies(XADC_ZYNQ_UNMASK_TIMEOUT));
-> -
-
-With nobody scheduling the unmask worker interrupts will stay disabled 
-indefinitely after they fired once, that's not very useful.
-
-> -	return IRQ_HANDLED;
-> -}
-> -
-> -static irqreturn_t xadc_zynq_interrupt_handler(int irq, void *devid)
-> -{
-> -	struct iio_dev *indio_dev = devid;
-> -	struct xadc *xadc = iio_priv(indio_dev);
->   	irqreturn_t ret = IRQ_HANDLED;
->   	uint32_t status;
-> +	unsigned int alarm;
->
->   	xadc_read_reg(xadc, XADC_ZYNQ_REG_INTSTS, &status);
->
-> @@ -312,7 +287,6 @@ static irqreturn_t xadc_zynq_interrupt_handler(int irq, void *devid)
->   	spin_lock(&xadc->lock);
->
->   	xadc_write_reg(xadc, XADC_ZYNQ_REG_INTSTS, status);
-> -
->   	if (status & XADC_ZYNQ_INT_DFIFO_GTH) {
->   		xadc_zynq_update_intmsk(xadc, XADC_ZYNQ_INT_DFIFO_GTH,
->   			XADC_ZYNQ_INT_DFIFO_GTH);
-> @@ -330,8 +304,14 @@ static irqreturn_t xadc_zynq_interrupt_handler(int irq, void *devid)
->   		xadc_zynq_update_intmsk(xadc, 0, 0);
->   		ret = IRQ_WAKE_THREAD;
->   	}
-> +
-> +	alarm = xadc->zynq_alarm;
-> +	xadc->zynq_alarm = 0;
-
-With all running in the same handler we don't need those anymore.
-
-> +
->   	spin_unlock(&xadc->lock);
->
-> +	xadc_handle_events(indio_dev, xadc_zynq_transform_alarm(alarm));
-> +
->   	return ret;
->   }
->
-> @@ -436,7 +416,6 @@ static const struct xadc_ops xadc_zynq_ops = {
->   	.write = xadc_zynq_write_adc_reg,
->   	.setup = xadc_zynq_setup,
->   	.get_dclk_rate = xadc_zynq_get_dclk_rate,
-> -	.interrupt_handler = xadc_zynq_interrupt_handler,
-
-The corresponding field should be removed from the xadc_ops struct and then 
-you'll also notice that interrupts now don't work anymore for the AXI 
-interface version.
-
->   	.threaded_interrupt_handler = xadc_zynq_threaded_interrupt_handler,
->   	.update_alarm = xadc_zynq_update_alarm,
->   };
-> @@ -1225,7 +1204,7 @@ static int xadc_probe(struct platform_device *pdev)
->   	if (ret)
->   		goto err_free_samplerate_trigger;
->
-> -	ret = request_threaded_irq(irq, xadc->ops->interrupt_handler,
-> +	ret = request_threaded_irq(irq, NULL,
->   				xadc->ops->threaded_interrupt_handler,
->   				0, dev_name(&pdev->dev), indio_dev);
->   	if (ret)
->
+- Lars
 
