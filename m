@@ -1,72 +1,99 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mout.gmx.net ([212.227.15.19]:65038 "EHLO mout.gmx.net"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751974AbbGaWyk (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Fri, 31 Jul 2015 18:54:40 -0400
-Message-ID: <55BBFCA6.1090803@gmx.de>
-Date: Sat, 01 Aug 2015 00:54:30 +0200
-From: Hartmut Knaack <knaack.h@gmx.de>
+Return-Path: <jasaw@dius.com.au>
 MIME-Version: 1.0
-To: Crt Mori <cmo@melexis.com>
-CC: linux-iio@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	Tiberiu Breana <tiberiu.a.breana@intel.com>
-Subject: Re: [PATCH v2 2/7] iio:accel:stk8312: check for invalid value
-References: <cover.1438204273.git.knaack.h@gmx.de> <f406a1b129207e44ed3c6a07a8d44e16f6f3f74f.1438204273.git.knaack.h@gmx.de> <CAKv63utc6+a5XS5eLkzggcnvcrfN=zTsTAJfNNethnPmr2S9Yg@mail.gmail.com>
-In-Reply-To: <CAKv63utc6+a5XS5eLkzggcnvcrfN=zTsTAJfNNethnPmr2S9Yg@mail.gmail.com>
+In-Reply-To: <55B28FD6.6080305@gmx.de>
+References: <1437751409-28837-1-git-send-email-jasaw@dius.com.au>
+	<1437751409-28837-3-git-send-email-jasaw@dius.com.au>
+	<55B28FD6.6080305@gmx.de>
+Date: Sat, 25 Jul 2015 15:25:57 +1000
+Message-ID: <CA+0Dg4oRxS5ArTVRPkLm_SkvHCz7JHop8i0+RbS16O=bOpEuGg@mail.gmail.com>
+Subject: Re: [PATCH 2/2] tools: iio: remove unnecessary double pointer
+From: Joo Aun Saw <jasaw@dius.com.au>
+To: Hartmut Knaack <knaack.h@gmx.de>
+Cc: linux-iio@vger.kernel.org, jic23@kernel.org
 Content-Type: text/plain; charset=UTF-8
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+List-ID: <linux-iio@vger.kernel.org>
 
-Crt Mori schrieb am 30.07.2015 um 09:09:
-> On 29 July 2015 at 23:39, Hartmut Knaack <knaack.h@gmx.de> wrote:
->> Revision 1.2 of the datasheet recommends on page 22 to only write non-zero
->> values read from OTP register 0x70 into AFECTRL register.
->>
->> Signed-off-by: Hartmut Knaack <knaack.h@gmx.de>
->> Reviewed-by: Tiberiu Breana <tiberiu.a.breana@intel.com>
->> ---
->>  drivers/iio/accel/stk8312.c | 2 ++
->>  1 file changed, 2 insertions(+)
->>
->> diff --git a/drivers/iio/accel/stk8312.c b/drivers/iio/accel/stk8312.c
->> index c2bd1444d6da..6592be8e6377 100644
->> --- a/drivers/iio/accel/stk8312.c
->> +++ b/drivers/iio/accel/stk8312.c
->> @@ -150,6 +150,8 @@ static int stk8312_otp_init(struct stk8312_data *data)
->>                 goto exit_err;
->>
->>         ret = i2c_smbus_read_byte_data(client, STK8312_REG_OTPDATA);
->> +       if (ret == 0)
->> +               ret = -EINVAL;
-> This seems fishy. We have a macro value written to client which cannot really
-> give us EINVAL, except if we are checking the client, but then this would only
-> fail if we had some other i2c device on the line with stk8312 address, which
-> would ack other i2c commands above this.
+On Sat, Jul 25, 2015 at 5:19 AM, Hartmut Knaack <knaack.h@gmx.de> wrote:
+>
+> Joo Aun Saw schrieb am 24.07.2015 um 17:23:
+> > From: Joo Aun Saw <jasaw@dius.com.au>
+> >
+> > Remove unnecessary double pointer from channel sorting function.
+>
+> That is not really unnecessary. The way you propose expresses that
+> ci_array would be a pointer to an element of type iio_channel_info. But
+> what we want ci_array to be is a pointer to an array of elements
+> of type iio_channel_info.
+> Not sure if this is a good explanation.
+>
+1.) When passing an array to a function, the C convention is to pass a
+pointer to the start of the array and the length of the array. It
+would be best to stick to the convention to minimize error on the
+caller part. If the parameters need to be clarified, I propose
+renaming the ci_array and cnt to something more meaningful.
+2.) It is good software engineering practice to minimize the
+information available to a function. If a function does not need
+access to a double pointer to perform its job, then we should not give
+it a double pointer.
 
-I'm not sure to really understand your point, or if you actually understood
-this patch. I'm not totally happy with EINVAL as error code, but it just
-seemed to fit better than any other possible error code. Of course I would
-be happy to get recommendations for better fitting codes.
-A short explanation why this is done: in the sample code provided in the
-data sheet, it is mentioned that if the value read from that register 0x70
-is zero, then it should not be written into the AFECTRL register. So, that's
-what I have addressed here.
+Joo.
 
->>         if (ret < 0)
->>                 goto exit_err;
->>
->> --
->> 2.4.6
->>
->> --
->> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
->> the body of a message to majordomo@vger.kernel.org
->> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> 
-
+>
+> >
+> > Signed-off-by: Joo Aun Saw <jasaw@dius.com.au>
+> > ---
+> >  tools/iio/iio_utils.c | 12 ++++++------
+> >  tools/iio/iio_utils.h |  2 +-
+> >  2 files changed, 7 insertions(+), 7 deletions(-)
+> >
+> > diff --git a/tools/iio/iio_utils.c b/tools/iio/iio_utils.c
+> > index 8731905..5b0beea 100644
+> > --- a/tools/iio/iio_utils.c
+> > +++ b/tools/iio/iio_utils.c
+> > @@ -289,17 +289,17 @@ error_free_builtname:
+> >   * @cnt: the amount of array elements
+> >   **/
+> >
+> > -void bsort_channel_array_by_index(struct iio_channel_info **ci_array, int cnt)
+> > +void bsort_channel_array_by_index(struct iio_channel_info *ci_array, int cnt)
+> >  {
+> >       struct iio_channel_info temp;
+> >       int x, y;
+> >
+> >       for (x = 0; x < cnt; x++)
+> >               for (y = 0; y < (cnt - 1); y++)
+> > -                     if ((*ci_array)[y].index > (*ci_array)[y + 1].index) {
+> > -                             temp = (*ci_array)[y + 1];
+> > -                             (*ci_array)[y + 1] = (*ci_array)[y];
+> > -                             (*ci_array)[y] = temp;
+> > +                     if (ci_array[y].index > ci_array[y + 1].index) {
+> > +                             temp = ci_array[y + 1];
+> > +                             ci_array[y + 1] = ci_array[y];
+> > +                             ci_array[y] = temp;
+> >                       }
+> >  }
+> >
+> > @@ -519,7 +519,7 @@ int build_channel_array(const char *device_dir,
+> >
+> >       free(scan_el_dir);
+> >       /* reorder so that the array is in index order */
+> > -     bsort_channel_array_by_index(ci_array, *counter);
+> > +     bsort_channel_array_by_index(*ci_array, *counter);
+> >
+> >       return 0;
+> >
+> > diff --git a/tools/iio/iio_utils.h b/tools/iio/iio_utils.h
+> > index f30a109..e3503bf 100644
+> > --- a/tools/iio/iio_utils.h
+> > +++ b/tools/iio/iio_utils.h
+> > @@ -60,7 +60,7 @@ int iioutils_get_type(unsigned *is_signed, unsigned *bytes, unsigned *bits_used,
+> >  int iioutils_get_param_float(float *output, const char *param_name,
+> >                            const char *device_dir, const char *name,
+> >                            const char *generic_name);
+> > -void bsort_channel_array_by_index(struct iio_channel_info **ci_array, int cnt);
+> > +void bsort_channel_array_by_index(struct iio_channel_info *ci_array, int cnt);
+> >  int build_channel_array(const char *device_dir,
+> >                       struct iio_channel_info **ci_array, int *counter);
+> >  int find_type_by_name(const char *name, const char *type);
+> >
+>
