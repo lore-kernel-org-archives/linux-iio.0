@@ -1,7 +1,7 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mout.gmx.net ([212.227.15.19]:53444 "EHLO mout.gmx.net"
+Received: from mout.gmx.net ([212.227.15.15]:59963 "EHLO mout.gmx.net"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1754706AbbG0WjP (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	id S1754704AbbG0WjP (ORCPT <rfc822;linux-iio@vger.kernel.org>);
 	Mon, 27 Jul 2015 18:39:15 -0400
 From: Hartmut Knaack <knaack.h@gmx.de>
 To: linux-iio@vger.kernel.org
@@ -9,9 +9,9 @@ Cc: Jonathan Cameron <jic23@kernel.org>,
 	Lars-Peter Clausen <lars@metafoo.de>,
 	Peter Meerwald <pmeerw@pmeerw.net>,
 	Antoine Tenart <antoine.tenart@free-electrons.com>
-Subject: [PATCH v2 7/8] iio:adc:berlin2-adc: enable interrupts with mutex locked
-Date: Tue, 28 Jul 2015 00:39:03 +0200
-Message-Id: <0c150ffa3c97b5dc7b691efa8ba474e43c282519.1438035998.git.knaack.h@gmx.de>
+Subject: [PATCH v2 2/8] iio:adc:berlin2-adc: pass up real error code
+Date: Tue, 28 Jul 2015 00:38:58 +0200
+Message-Id: <37a921c304bd807ed57222453c1ca2bf246c9c21.1438035998.git.knaack.h@gmx.de>
 In-Reply-To: <cover.1438035998.git.knaack.h@gmx.de>
 References: <cover.1438035998.git.knaack.h@gmx.de>
 In-Reply-To: <cover.1438035998.git.knaack.h@gmx.de>
@@ -19,71 +19,32 @@ References: <cover.1438035998.git.knaack.h@gmx.de>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Move the call to enable channel interrupts into its _read() function to
-have it protected by a mutex. This ensures that only one channel is
-sampled at a time.
+Pass up the real error code returned by platform_get_irq_byname().
 
 Signed-off-by: Hartmut Knaack <knaack.h@gmx.de>
+Acked-by: Antoine Tenart <antoine.tenart@free-electrons.com>
 ---
- drivers/iio/adc/berlin2-adc.c | 17 ++++++++---------
- 1 file changed, 8 insertions(+), 9 deletions(-)
+ drivers/iio/adc/berlin2-adc.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/iio/adc/berlin2-adc.c b/drivers/iio/adc/berlin2-adc.c
-index 6e20c856f479..13cfeb494e34 100644
+index 26fa6e6cb624..b31bcf4c7c90 100644
 --- a/drivers/iio/adc/berlin2-adc.c
 +++ b/drivers/iio/adc/berlin2-adc.c
-@@ -111,6 +111,10 @@ static int berlin2_adc_read(struct iio_dev *indio_dev, int channel)
+@@ -301,11 +301,11 @@ static int berlin2_adc_probe(struct platform_device *pdev)
  
- 	mutex_lock(&priv->lock);
+ 	irq = platform_get_irq_byname(pdev, "adc");
+ 	if (irq < 0)
+-		return -ENODEV;
++		return irq;
  
-+	/* Enable the interrupts */
-+	regmap_write(priv->regmap, BERLIN2_SM_ADC_STATUS,
-+		     BERLIN2_SM_ADC_STATUS_INT_EN(channel));
-+
- 	/* Configure the ADC */
- 	regmap_update_bits(priv->regmap, BERLIN2_SM_CTRL,
- 			BERLIN2_SM_CTRL_ADC_RESET | BERLIN2_SM_CTRL_ADC_SEL_MASK
-@@ -149,6 +153,10 @@ static int berlin2_adc_tsen_read(struct iio_dev *indio_dev)
+ 	tsen_irq = platform_get_irq_byname(pdev, "tsen");
+ 	if (tsen_irq < 0)
+-		return -ENODEV;
++		return tsen_irq;
  
- 	mutex_lock(&priv->lock);
- 
-+	/* Enable interrupts */
-+	regmap_write(priv->regmap, BERLIN2_SM_TSEN_STATUS,
-+		     BERLIN2_SM_TSEN_STATUS_INT_EN);
-+
- 	/* Configure the ADC */
- 	regmap_update_bits(priv->regmap, BERLIN2_SM_CTRL,
- 			BERLIN2_SM_CTRL_TSEN_RESET | BERLIN2_SM_CTRL_ADC_ROTATE,
-@@ -190,7 +198,6 @@ static int berlin2_adc_read_raw(struct iio_dev *indio_dev,
- 		struct iio_chan_spec const *chan, int *val, int *val2,
- 		long mask)
- {
--	struct berlin2_adc_priv *priv = iio_priv(indio_dev);
- 	int temp;
- 
- 	switch (mask) {
-@@ -198,10 +205,6 @@ static int berlin2_adc_read_raw(struct iio_dev *indio_dev,
- 		if (chan->type != IIO_VOLTAGE)
- 			return -EINVAL;
- 
--		/* Enable the interrupts */
--		regmap_write(priv->regmap, BERLIN2_SM_ADC_STATUS,
--				BERLIN2_SM_ADC_STATUS_INT_EN(chan->channel));
--
- 		*val = berlin2_adc_read(indio_dev, chan->channel);
- 		if (*val < 0)
- 			return *val;
-@@ -211,10 +214,6 @@ static int berlin2_adc_read_raw(struct iio_dev *indio_dev,
- 		if (chan->type != IIO_TEMP)
- 			return -EINVAL;
- 
--		/* Enable interrupts */
--		regmap_write(priv->regmap, BERLIN2_SM_TSEN_STATUS,
--				BERLIN2_SM_TSEN_STATUS_INT_EN);
--
- 		temp = berlin2_adc_tsen_read(indio_dev);
- 		if (temp < 0)
- 			return temp;
+ 	ret = devm_request_irq(&pdev->dev, irq, berlin2_adc_irq, 0,
+ 			pdev->dev.driver->name, indio_dev);
 -- 
 2.4.6
 
