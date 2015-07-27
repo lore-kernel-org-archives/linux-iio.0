@@ -1,37 +1,109 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-la0-f49.google.com ([209.85.215.49]:33724 "EHLO
-	mail-la0-f49.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750910AbbG0H4l (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 27 Jul 2015 03:56:41 -0400
-Received: by laah7 with SMTP id h7so43932731laa.0
-        for <linux-iio@vger.kernel.org>; Mon, 27 Jul 2015 00:56:40 -0700 (PDT)
+Return-Path: <mark.rutland@arm.com>
+Date: Mon, 27 Jul 2015 18:33:45 +0100
+From: Mark Rutland <mark.rutland@arm.com>
+To: Martin Kepplinger <martink@posteo.de>
+Cc: "jic23@kernel.org" <jic23@kernel.org>,
+	"knaack.h@gmx.de" <knaack.h@gmx.de>,
+	"lars@metafoo.de" <lars@metafoo.de>,
+	"pmeerw@pmeerw.net" <pmeerw@pmeerw.net>,
+	"mfuzzey@parkeon.com" <mfuzzey@parkeon.com>,
+	"roberta.dobrescu@gmail.com" <roberta.dobrescu@gmail.com>,
+	"robh+dt@kernel.org" <robh+dt@kernel.org>,
+	Pawel Moll <Pawel.Moll@arm.com>,
+	"ijc+devicetree@hellion.org.uk" <ijc+devicetree@hellion.org.uk>,
+	"galak@codeaurora.org" <galak@codeaurora.org>,
+	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"christoph.muellner@theobroma-systems.com" <christoph.muellner@theobroma-systems.com>,
+	Martin Kepplinger <martin.kepplinger@theobroma-systems.com>
+Subject: Re: [PATCH 8/8] iio: mma8452: add devicetree property to allow all
+ pin wirings
+Message-ID: <20150727173345.GF10821@leverpostej>
+References: <1438006095-26920-1-git-send-email-martink@posteo.de>
+ <1438006095-26920-9-git-send-email-martink@posteo.de>
+ <20150727142336.GB10821@leverpostej>
+ <55B6423C.7030301@posteo.de>
 MIME-Version: 1.0
-In-Reply-To: <CA+0Dg4o_D-U-=z=4FwC=aWe0CGH+wHPe1tqrDQudR1n89bBByg@mail.gmail.com>
-References: <CA+0Dg4o_D-U-=z=4FwC=aWe0CGH+wHPe1tqrDQudR1n89bBByg@mail.gmail.com>
-Date: Mon, 27 Jul 2015 10:56:39 +0300
-Message-ID: <CAEnQRZCm3jqyWs5BUeVwdCNbmKtSYgmXcx16KN3NTpckmq9=cA@mail.gmail.com>
-Subject: Re: iio_utils.c defines _IIO_UTILS_H
-From: Daniel Baluta <daniel.baluta@gmail.com>
-To: Joo Aun Saw <jasaw@dius.com.au>
-Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Content-Type: text/plain; charset=UTF-8
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <55B6423C.7030301@posteo.de>
+List-ID: <linux-iio@vger.kernel.org>
 
-On Mon, Jul 27, 2015 at 7:21 AM, Joo Aun Saw <jasaw@dius.com.au> wrote:
-> Hi,
->
-> What is the purpose of having ifndef _IIO_UTILS_H and define
-> _IIO_UTILS_H at the top of iio_utils.c file? Is this a copy and paste
-> error from the original iio_utils.h file?
+On Mon, Jul 27, 2015 at 03:37:48PM +0100, Martin Kepplinger wrote:
+> Am 2015-07-27 um 16:23 schrieb Mark Rutland:
+> > On Mon, Jul 27, 2015 at 03:08:15PM +0100, Martin Kepplinger wrote:
+> >> For the devices supported by the mma8452 driver, two interrupt pins are
+> >> available to route the interrupt signals to. By default INT1 is assumed.
+> >>
+> >> This adds a bitmask DT property for users to configure interrupt sources
+> >> for INT2, if that is the wired interrupt pin for them.
+> > 
+> > This sounds like configureation rather than a HW property. Why does this
+> > need to be in the DT?
+> 
+> It's a hardware property of the board that uses the device. There might
+> be boards that connect just one of them at random, which is the reason
+> for this DT property. There also might be exotic users who will want
+> to use both pins to route different interrupt sources to (not yet
+> supported, but no problem with such a bitmask).
 
-Hi Joo,
+Ok, so I'm somewhat confused as to what the hardware looks like and what
+this means.
 
-It's a relict from:
+Could you elaborate on how INT1 and INT2 are used? It looks like they're
+used as output pins, and so interrupt-names would seem appropriate for
+describing the combination which is wired up.
 
-bdcb31d0480 ("staging: iio: Documentation: Introduce iio_utils.c")
+w.r.t. configuring the choice of output(s), that sounds like a runtime
+decision rather than something which needs to be configured statically.
 
-Please send a patch.
+> >> This is important for everyone to be able to use this driver, no matter
+> >> how their chip is wired. At the moment, only 0xff for using INT2 for all
+> >> available interrupt sources is supported. See the devicetree documentation
+> >> file for more details.
+> >>
+> >> Since this doesn't change the default behaviour, it doesn't break anything
+> >> for existing users.
+> >>
+> >> Signed-off-by: Martin Kepplinger <martin.kepplinger@theobroma-systems.com>
+> >> Signed-off-by: Christoph Muellner <christoph.muellner@theobroma-systems.com>
+> >> ---
+> >>  .../devicetree/bindings/iio/accel/mma8452.txt        |  4 ++++
+> >>  drivers/iio/accel/mma8452.c                          | 20 +++++++++++++-------
+> >>  2 files changed, 17 insertions(+), 7 deletions(-)
+> >>
+> >> diff --git a/Documentation/devicetree/bindings/iio/accel/mma8452.txt b/Documentation/devicetree/bindings/iio/accel/mma8452.txt
+> >> index 8d98e05..738a430 100644
+> >> --- a/Documentation/devicetree/bindings/iio/accel/mma8452.txt
+> >> +++ b/Documentation/devicetree/bindings/iio/accel/mma8452.txt
+> >> @@ -10,6 +10,9 @@ Optional properties:
+> >>  
+> >>    - interrupt-parent: should be the phandle for the interrupt controller
+> >>    - interrupts: interrupt mapping for GPIO IRQ
+> >> +  - use_int2: bitmask to choose interrupt sources assumed to be wired to
+> >> +    interrupt pin INT2 instead of INT1. Only 0xff (INT2 for every interrupt
+> >> +    source) is supported at the moment.
+> > 
+> > s/_/-/ in property names, please.
+> 
+> ok. If I don't do a version 6 really soon, I'll reply with this patch
+> corrected here.
+> 
+> > 
+> > We generally avoid bitmasks in properties, and we also usually exepct a
+> > full cell even if data is smaller. The fact that you expect /bits/ 8 
+> > must be documented here if that's truly necessary.
+> 
+> It's not truly necessary. It's just a nice fit. There is one 8 bit
+> (device memory) register that basically could (in the future) be
+> exposed through this DT property.
+> 
+> For now it's just 0xff or nothing. We only don't want to create an
+> interface that could restrict us from implementing more in the future
+> without breaking anything.
 
-thanks,
-Daniel.
+It sounds like you wouldn't need this (at least for now) if you were to
+use interrupt-names to describe whether INT1 and/or INT2 were wired up.
+
+Thanks,
+Mark.
