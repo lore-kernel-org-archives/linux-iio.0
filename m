@@ -1,63 +1,54 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from down.free-electrons.com ([37.187.137.238]:41236 "EHLO
-	mail.free-electrons.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1750940AbbG0HtL (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 27 Jul 2015 03:49:11 -0400
-Date: Mon, 27 Jul 2015 09:49:09 +0200
+Return-Path: <antoine.tenart@free-electrons.com>
+Date: Mon, 27 Jul 2015 09:49:27 +0200
 From: Antoine Tenart <antoine.tenart@free-electrons.com>
 To: Hartmut Knaack <knaack.h@gmx.de>
 Cc: linux-iio@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>,
 	Lars-Peter Clausen <lars@metafoo.de>,
 	Peter Meerwald <pmeerw@pmeerw.net>,
 	Antoine Tenart <antoine.tenart@free-electrons.com>
-Subject: Re: [PATCH 5/8] iio:adc:berlin2-adc: use short operator format
-Message-ID: <20150727074909.GE16683@kwain>
+Subject: Re: [PATCH 6/8] iio:adc:berlin2-adc: use channel-array size directly
+Message-ID: <20150727074927.GF16683@kwain>
 References: <cover.1437862404.git.knaack.h@gmx.de>
- <815876954eaf0f9e3556756001679becaabd9570.1437862404.git.knaack.h@gmx.de>
+ <e64898d4f93ba8049aa016e1cf8cf8345783557a.1437862404.git.knaack.h@gmx.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=iso-8859-1
-In-Reply-To: <815876954eaf0f9e3556756001679becaabd9570.1437862404.git.knaack.h@gmx.de>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+In-Reply-To: <e64898d4f93ba8049aa016e1cf8cf8345783557a.1437862404.git.knaack.h@gmx.de>
+List-ID: <linux-iio@vger.kernel.org>
 
-On Sun, Jul 26, 2015 at 12:43:23AM +0200, Hartmut Knaack wrote:
-> Use augmented assignment to subtract the offset for negative temperature
-> values.
-> Specify the amount of private data to be allocated through
-> devm_iio_device_alloc() with sizeof(*priv), as it is shorter and common
-> practice in IIO.
+On Sun, Jul 26, 2015 at 12:43:24AM +0200, Hartmut Knaack wrote:
+> Drop the otherwise unused definition of the channel-array size and use it
+> directly in _probe - makes it a bit more obvious.
 > 
 > Signed-off-by: Hartmut Knaack <knaack.h@gmx.de>
 
 Acked-by: Antoine Tenart <antoine.tenart@free-electrons.com>
 
 > ---
->  drivers/iio/adc/berlin2-adc.c | 5 ++---
->  1 file changed, 2 insertions(+), 3 deletions(-)
+>  drivers/iio/adc/berlin2-adc.c | 3 +--
+>  1 file changed, 1 insertion(+), 2 deletions(-)
 > 
 > diff --git a/drivers/iio/adc/berlin2-adc.c b/drivers/iio/adc/berlin2-adc.c
-> index b7df94a0b879..1d14290ba6f2 100644
+> index 1d14290ba6f2..c840ba8b2aa4 100644
 > --- a/drivers/iio/adc/berlin2-adc.c
 > +++ b/drivers/iio/adc/berlin2-adc.c
-> @@ -221,7 +221,7 @@ static int berlin2_adc_read_raw(struct iio_dev *indio_dev,
->  			return temp;
+> @@ -103,7 +103,6 @@ static const struct iio_chan_spec berlin2_adc_channels[] = {
+>  	BERLIN2_ADC_CHANNEL(7, IIO_VOLTAGE),	/* reserved */
+>  	IIO_CHAN_SOFT_TIMESTAMP(8),		/* timestamp */
+>  };
+> -#define BERLIN2_N_CHANNELS	ARRAY_SIZE(berlin2_adc_channels)
 >  
->  		if (temp > 2047)
-> -			temp = -(4096 - temp);
-> +			temp -= 4096;
+>  static int berlin2_adc_read(struct iio_dev *indio_dev, int channel)
+>  {
+> @@ -324,8 +323,8 @@ static int berlin2_adc_probe(struct platform_device *pdev)
+>  	indio_dev->modes = INDIO_DIRECT_MODE;
+>  	indio_dev->info = &berlin2_adc_info;
 >  
->  		/* Convert to milli Celsius */
->  		*val = ((temp * 100000) / 264 - 270000);
-> @@ -286,8 +286,7 @@ static int berlin2_adc_probe(struct platform_device *pdev)
->  	int irq, tsen_irq;
->  	int ret;
+> -	indio_dev->num_channels = BERLIN2_N_CHANNELS;
+>  	indio_dev->channels = berlin2_adc_channels;
+> +	indio_dev->num_channels = ARRAY_SIZE(berlin2_adc_channels);
 >  
-> -	indio_dev = devm_iio_device_alloc(&pdev->dev,
-> -					  sizeof(struct berlin2_adc_priv));
-> +	indio_dev = devm_iio_device_alloc(&pdev->dev, sizeof(*priv));
->  	if (!indio_dev)
->  		return -ENOMEM;
->  
+>  	/* Power up the ADC */
+>  	regmap_update_bits(priv->regmap, BERLIN2_SM_CTRL,
 > -- 
 > 2.4.3
 > 
