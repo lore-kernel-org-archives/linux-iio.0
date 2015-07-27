@@ -1,109 +1,63 @@
-Return-Path: <mark.rutland@arm.com>
-Date: Mon, 27 Jul 2015 18:33:45 +0100
-From: Mark Rutland <mark.rutland@arm.com>
-To: Martin Kepplinger <martink@posteo.de>
-Cc: "jic23@kernel.org" <jic23@kernel.org>,
-	"knaack.h@gmx.de" <knaack.h@gmx.de>,
-	"lars@metafoo.de" <lars@metafoo.de>,
-	"pmeerw@pmeerw.net" <pmeerw@pmeerw.net>,
-	"mfuzzey@parkeon.com" <mfuzzey@parkeon.com>,
-	"roberta.dobrescu@gmail.com" <roberta.dobrescu@gmail.com>,
-	"robh+dt@kernel.org" <robh+dt@kernel.org>,
-	Pawel Moll <Pawel.Moll@arm.com>,
-	"ijc+devicetree@hellion.org.uk" <ijc+devicetree@hellion.org.uk>,
-	"galak@codeaurora.org" <galak@codeaurora.org>,
-	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"christoph.muellner@theobroma-systems.com" <christoph.muellner@theobroma-systems.com>,
-	Martin Kepplinger <martin.kepplinger@theobroma-systems.com>
-Subject: Re: [PATCH 8/8] iio: mma8452: add devicetree property to allow all
- pin wirings
-Message-ID: <20150727173345.GF10821@leverpostej>
-References: <1438006095-26920-1-git-send-email-martink@posteo.de>
- <1438006095-26920-9-git-send-email-martink@posteo.de>
- <20150727142336.GB10821@leverpostej>
- <55B6423C.7030301@posteo.de>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <55B6423C.7030301@posteo.de>
+Return-Path: <vladimir.barinov@cogentembedded.com>
+From: Vladimir Barinov <vladimir.barinov@cogentembedded.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Rob Herring <robh+dt@kernel.org>,
+	Pawel Moll <pawel.moll@arm.com>,
+	Mark Rutland <mark.rutland@arm.com>,
+	Ian Campbell <ijc+devicetree@hellion.org.uk>,
+	Kumar Gala <galak@codeaurora.org>,
+	linux-kernel@vger.kernel.org,
+	linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org,
+	cory.tusar@pid1solutions.com
+Subject: [PATCH v2 0/5] iio: adc: hi8435: Add Holt HI-8435 threshold detector
+Date: Tue, 28 Jul 2015 02:05:00 +0300
+Message-Id: <1438038300-12855-1-git-send-email-vladimir.barinov@cogentembedded.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-On Mon, Jul 27, 2015 at 03:37:48PM +0100, Martin Kepplinger wrote:
-> Am 2015-07-27 um 16:23 schrieb Mark Rutland:
-> > On Mon, Jul 27, 2015 at 03:08:15PM +0100, Martin Kepplinger wrote:
-> >> For the devices supported by the mma8452 driver, two interrupt pins are
-> >> available to route the interrupt signals to. By default INT1 is assumed.
-> >>
-> >> This adds a bitmask DT property for users to configure interrupt sources
-> >> for INT2, if that is the wired interrupt pin for them.
-> > 
-> > This sounds like configureation rather than a HW property. Why does this
-> > need to be in the DT?
-> 
-> It's a hardware property of the board that uses the device. There might
-> be boards that connect just one of them at random, which is the reason
-> for this DT property. There also might be exotic users who will want
-> to use both pins to route different interrupt sources to (not yet
-> supported, but no problem with such a bitmask).
+Hello,
 
-Ok, so I'm somewhat confused as to what the hardware looks like and what
-this means.
+This adds the folowing:
+- Holt threshold detector driver for HI-8435 chip
+- Add Holt vendor prefix
+- Document HI-8435 DT bindings
+- Add periodic polling functionality to SYSFS trigger
+- Support triggered events
 
-Could you elaborate on how INT1 and INT2 are used? It looks like they're
-used as output pins, and so interrupt-names would seem appropriate for
-describing the combination which is wired up.
+PDF file can be found here:
+http://www.holtic.com/products/3081-hi-8435.aspx
 
-w.r.t. configuring the choice of output(s), that sounds like a runtime
-decision rather than something which needs to be configured statically.
+Vladimir Barinov (3):
+[1/5] iio: adc: hi8435: Holt HI-8435 threshold detector
+[2/5] dt: Add vendor prefix 'holt'
+[3/5] dt: Document Holt HI-8435 bindings
+[4/5] iio: trigger: Add periodic polling to SYSFS trigger
+[5/5] iio: Support triggered events
 
-> >> This is important for everyone to be able to use this driver, no matter
-> >> how their chip is wired. At the moment, only 0xff for using INT2 for all
-> >> available interrupt sources is supported. See the devicetree documentation
-> >> file for more details.
-> >>
-> >> Since this doesn't change the default behaviour, it doesn't break anything
-> >> for existing users.
-> >>
-> >> Signed-off-by: Martin Kepplinger <martin.kepplinger@theobroma-systems.com>
-> >> Signed-off-by: Christoph Muellner <christoph.muellner@theobroma-systems.com>
-> >> ---
-> >>  .../devicetree/bindings/iio/accel/mma8452.txt        |  4 ++++
-> >>  drivers/iio/accel/mma8452.c                          | 20 +++++++++++++-------
-> >>  2 files changed, 17 insertions(+), 7 deletions(-)
-> >>
-> >> diff --git a/Documentation/devicetree/bindings/iio/accel/mma8452.txt b/Documentation/devicetree/bindings/iio/accel/mma8452.txt
-> >> index 8d98e05..738a430 100644
-> >> --- a/Documentation/devicetree/bindings/iio/accel/mma8452.txt
-> >> +++ b/Documentation/devicetree/bindings/iio/accel/mma8452.txt
-> >> @@ -10,6 +10,9 @@ Optional properties:
-> >>  
-> >>    - interrupt-parent: should be the phandle for the interrupt controller
-> >>    - interrupts: interrupt mapping for GPIO IRQ
-> >> +  - use_int2: bitmask to choose interrupt sources assumed to be wired to
-> >> +    interrupt pin INT2 instead of INT1. Only 0xff (INT2 for every interrupt
-> >> +    source) is supported at the moment.
-> > 
-> > s/_/-/ in property names, please.
-> 
-> ok. If I don't do a version 6 really soon, I'll reply with this patch
-> corrected here.
-> 
-> > 
-> > We generally avoid bitmasks in properties, and we also usually exepct a
-> > full cell even if data is smaller. The fact that you expect /bits/ 8 
-> > must be documented here if that's truly necessary.
-> 
-> It's not truly necessary. It's just a nice fit. There is one 8 bit
-> (device memory) register that basically could (in the future) be
-> exposed through this DT property.
-> 
-> For now it's just 0xff or nothing. We only don't want to create an
-> interface that could restrict us from implementing more in the future
-> without breaking anything.
+---
+This patchset is against the 'kernel/git/torvalds/linux.git' repo.
 
-It sounds like you wouldn't need this (at least for now) if you were to
-use interrupt-names to describe whether INT1 and/or INT2 were wired up.
-
-Thanks,
-Mark.
+ Documentation/ABI/testing/sysfs-bus-iio-adc-hi8435    |   76 ++
+ Documentation/ABI/testing/sysfs-bus-iio-trigger-sysfs |   11 
+ Documentation/devicetree/bindings/iio/adc/hi8435.txt  |   25 
+ Documentation/devicetree/bindings/vendor-prefixes.txt |    1 
+ drivers/iio/Kconfig                                   |    6 
+ drivers/iio/Makefile                                  |    1 
+ drivers/iio/adc/Kconfig                               |   11 
+ drivers/iio/adc/Makefile                              |    1 
+ drivers/iio/adc/hi8435.c                              |  659 ++++++++++++++++++
+ drivers/iio/industrialio-core.c                       |    4 
+ drivers/iio/industrialio-trigger.c                    |   12 
+ drivers/iio/industrialio-triggered-event.c            |   67 +
+ drivers/iio/trigger/iio-trig-sysfs.c                  |   58 +
+ include/linux/iio/iio.h                               |    1 
+ include/linux/iio/triggered_event.h                   |   11 
+ 15 files changed, 940 insertions(+), 4 deletions(-)
+ create mode 100644 Documentation/ABI/testing/sysfs-bus-iio-adc-hi8435
+ create mode 100644 drivers/iio/adc/hi8435.c
+ create mode 100644 Documentation/devicetree/bindings/iio/adc/hi8435.txt
+ create mode 100644 drivers/iio/industrialio-triggered-event.c
+ create mode 100644 include/linux/iio/triggered_event.h
