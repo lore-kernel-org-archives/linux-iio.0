@@ -1,8 +1,8 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
 Received: from mga03.intel.com ([134.134.136.65]:27022 "EHLO mga03.intel.com"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S932496AbbG1OfN (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Tue, 28 Jul 2015 10:35:13 -0400
+	id S932375AbbG1OfP (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Tue, 28 Jul 2015 10:35:15 -0400
 From: Daniel Baluta <daniel.baluta@intel.com>
 To: jic23@kernel.org, corbet@lwn.net, rdunlap@infradead.org
 Cc: pmeerw@pmeerw.net, knaack.h@gmx.de, lars@metafoo.de,
@@ -10,49 +10,745 @@ Cc: pmeerw@pmeerw.net, knaack.h@gmx.de, lars@metafoo.de,
 	herbert@gondor.apana.org.au, smueller@chronox.de, mmarek@suse.cz,
 	daniel.baluta@intel.com, linux-doc@vger.kernel.org,
 	cristina.opriceana@gmail.com
-Subject: [PATCH v3] DocBook documentation for IIO
-Date: Tue, 28 Jul 2015 17:37:13 +0300
-Message-Id: <1438094234-2894-1-git-send-email-daniel.baluta@intel.com>
+Subject: [PATCH v3] DocBook: Add initial documentation for IIO
+Date: Tue, 28 Jul 2015 17:37:14 +0300
+Message-Id: <1438094234-2894-2-git-send-email-daniel.baluta@intel.com>
+In-Reply-To: <1438094234-2894-1-git-send-email-daniel.baluta@intel.com>
+References: <1438094234-2894-1-git-send-email-daniel.baluta@intel.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-In our effort to support vendors writing drivers for their own
-sensors we introduce IIO documentation in DocBook format.
+This is intended to help developers faster find their way
+inside the Industrial I/O core and reduce time spent on IIO
+drivers development.
 
-It documents Industrial I/O core including IIO devices, buffers, triggers and
-triggered buffers. It also offers a short list of online resources
-for the IIO subsystem.
-
-This is far from being complete any suggestions are welcomed. At a first
-glance we also need to add documentation for events. We are also working
-on auto-generating template drivers based on the type of the IIO sensors.
-
-Generated html files should be available online here http://dbaluta.github.io/
-or you could run make htmldocs in the root of your kernel repo to get them.
-
-Many thanks to Lars-Peter Clausen for scan_index paragraph.
-
-Changes since v2:
-	* addressed feedback from Lars-Peter
-	  * http://marc.info/?l=linux-iio&m=143774991802816&w=2
-
-Changes since v1:
-	* mostly typos and clarifications
-	* addressed comments from Jonathan Corbet and Jonathan Cameron
-	  * http://marc.info/?l=linux-iio&m=143704226629498&w=2
-	  * http://marc.info/?l=linux-iio&m=143707511006898&w=2
-	* for DocBook warnings reported by Randy, Cristina sent
-	  this patchseries:
-	  http://marc.info/?l=linux-iio&m=143774363900903&w=2
-
-Daniel Baluta (1):
-  DocBook: Add initial documentation for IIO
-
+Signed-off-by: Daniel Baluta <daniel.baluta@intel.com>
+---
  Documentation/DocBook/Makefile |   2 +-
  Documentation/DocBook/iio.tmpl | 701 +++++++++++++++++++++++++++++++++++++++++
  2 files changed, 702 insertions(+), 1 deletion(-)
  create mode 100644 Documentation/DocBook/iio.tmpl
 
+diff --git a/Documentation/DocBook/Makefile b/Documentation/DocBook/Makefile
+index b6a6a2e..9e08606 100644
+--- a/Documentation/DocBook/Makefile
++++ b/Documentation/DocBook/Makefile
+@@ -15,7 +15,7 @@ DOCBOOKS := z8530book.xml device-drivers.xml \
+ 	    80211.xml debugobjects.xml sh.xml regulator.xml \
+ 	    alsa-driver-api.xml writing-an-alsa-driver.xml \
+ 	    tracepoint.xml drm.xml media_api.xml w1.xml \
+-	    writing_musb_glue_layer.xml crypto-API.xml
++	    writing_musb_glue_layer.xml crypto-API.xml iio.xml
+ 
+ include Documentation/DocBook/media/Makefile
+ 
+diff --git a/Documentation/DocBook/iio.tmpl b/Documentation/DocBook/iio.tmpl
+new file mode 100644
+index 0000000..0d696e2
+--- /dev/null
++++ b/Documentation/DocBook/iio.tmpl
+@@ -0,0 +1,701 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
++	"http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd" []>
++
++<book id="iioid">
++  <bookinfo>
++    <title>Industrial I/O driver developer's guide </title>
++
++    <authorgroup>
++      <author>
++        <firstname>Daniel</firstname>
++        <surname>Baluta</surname>
++        <affiliation>
++          <address>
++            <email>daniel.baluta@intel.com</email>
++          </address>
++        </affiliation>
++      </author>
++    </authorgroup>
++
++    <copyright>
++      <year>2015</year>
++      <holder>Intel Corporation</holder>
++    </copyright>
++
++    <legalnotice>
++      <para>
++        This documentation is free software; you can redistribute
++        it and/or modify it under the terms of the GNU General Public
++        License version 2.
++      </para>
++    </legalnotice>
++  </bookinfo>
++
++  <toc></toc>
++
++  <chapter id="intro">
++    <title>Introduction</title>
++    <para>
++      The main purpose of the Industrial I/O subsystem (IIO) is to provide
++      support for devices that in some sense perform either analog-to-digital
++      conversion (ADC) or digital-to-analog conversion (DAC) or both. The aim
++      is to fill the gap between the somewhat similar hwmon and input
++      subsystems.
++      Hwmon is very much directed at low sample rate sensors used in
++      applications such as fan speed control and temperature measurement. Input
++      is, as its name suggests, focused on human interaction input devices
++      (keyboard, mouse, touchscreen). In some cases there is considerable
++      overlap between these and IIO.
++  </para>
++  <para>
++    Devices that fall into this category include:
++    <itemizedlist>
++      <listitem>
++        analog to digital converters (ADCs)
++      </listitem>
++      <listitem>
++        accelerometers
++      </listitem>
++      <listitem>
++        capacitance to digital converters (CDCs)
++      </listitem>
++      <listitem>
++        digital to analog converters (DACs)
++      </listitem>
++      <listitem>
++        gyroscopes
++      </listitem>
++      <listitem>
++        inertial measurement units (IMUs)
++      </listitem>
++      <listitem>
++        color and light sensors
++      </listitem>
++      <listitem>
++        magnetometers
++      </listitem>
++      <listitem>
++        pressure sensors
++      </listitem>
++      <listitem>
++        proximity sensors
++      </listitem>
++      <listitem>
++        temperature sensors
++      </listitem>
++    </itemizedlist>
++    Usually these sensors are connected via SPI or I2C. It is also a common
++    use case to have combo functionality (e.g. light plus proximity sensor).
++  </para>
++  </chapter>
++  <chapter id='iiosubsys'>
++    <title>Industrial I/O core</title>
++    <para>
++      The Industrial I/O core offers:
++      <itemizedlist>
++        <listitem>
++         a unified framework for writing drivers for many different types of
++         embedded sensors.
++        </listitem>
++        <listitem>
++         a standard interface to user space applications manipulating sensors.
++        </listitem>
++      </itemizedlist>
++      The implementation can be found under <filename>
++      drivers/iio/industrialio-*</filename>
++  </para>
++  <sect1 id="iiodevice">
++    <title> Industrial I/O devices </title>
++
++!Finclude/linux/iio/iio.h iio_dev
++!Fdrivers/iio/industrialio-core.c iio_device_alloc
++!Fdrivers/iio/industrialio-core.c iio_device_free
++!Fdrivers/iio/industrialio-core.c iio_device_register
++!Fdrivers/iio/industrialio-core.c iio_device_unregister
++
++    <para>
++      An IIO device usually corresponds to a single hardware sensor and it
++      provides all the information needed by a driver handling a device.
++      Let's first have a look at the functionality embedded in an IIO
++      device then we will show how a device driver makes use of an IIO
++      device.
++    </para>
++    <para>
++        There are two ways for a user space application to interact
++        with an IIO driver.
++      <itemizedlist>
++        <listitem>
++          <filename>/sys/bus/iio/iio:deviceX/</filename>, this
++          represents a hardware sensor and groups together the data
++          channels of the same chip.
++        </listitem>
++        <listitem>
++          <filename>/dev/iio:deviceX</filename>, character device node
++          interface used for faster data transfer and for events information
++          retrieval.
++        </listitem>
++      </itemizedlist>
++    </para>
++    A typical IIO driver will register itself as an I2C or SPI driver and will
++    create two routines, <function> probe </function> and <function> remove
++    </function>. At <function>probe</function>:
++    <itemizedlist>
++    <listitem>call <function>iio_device_alloc</function>, which allocates memory
++      for an IIO device.
++    </listitem>
++    <listitem> initialize IIO device fields with driver specific information
++              (e.g. device name, device channels).
++    </listitem>
++    <listitem>call <function> iio_device_register</function>, this registers the
++      device with the IIO core. After this call the device is ready to accept
++      requests from user space applications.
++    </listitem>
++    </itemizedlist>
++      At <function>remove</function>, we free the resources allocated in
++      <function>probe</function> in reverse order:
++    <itemizedlist>
++    <listitem><function>iio_device_unregister</function>, unregister the device
++      from the IIO core.
++    </listitem>
++    <listitem><function>iio_device_free</function>, free the memory allocated
++      for the IIO device.
++    </listitem>
++    </itemizedlist>
++
++    <sect2 id="iioattr"> <title> IIO device sysfs interface </title>
++      <para>
++        Attributes are sysfs files used to expose chip info and also allowing
++        applications to set various configuration parameters. For device
++        with index X, attributes can be found under
++        <filename>/sys/bus/iio/iio:deviceX/ </filename> directory.
++        Common attributes are:
++        <itemizedlist>
++          <listitem><filename>name</filename>, description of the physical
++            chip.
++          </listitem>
++          <listitem><filename>dev</filename>, shows the major:minor pair
++            associated with <filename>/dev/iio:deviceX</filename> node.
++          </listitem>
++          <listitem><filename>sampling_frequency_available</filename>,
++            available discrete set of sampling frequency values for
++            device.
++          </listitem>
++      </itemizedlist>
++      Available standard attributes for IIO devices are described in the
++      <filename>Documentation/ABI/testing/sysfs-bus-iio </filename> file
++      in the Linux kernel sources.
++      </para>
++    </sect2>
++    <sect2 id="iiochannel"> <title> IIO device channels </title>
++!Finclude/linux/iio/iio.h iio_chan_spec structure.
++      <para>
++        An IIO device channel is a representation of a data channel. An
++        IIO device can have one or multiple channels. For example:
++        <itemizedlist>
++          <listitem>
++          a thermometer sensor has one channel representing the
++          temperature measurement.
++          </listitem>
++          <listitem>
++          a light sensor with two channels indicating the measurements in
++          the visible and infrared spectrum.
++          </listitem>
++          <listitem>
++          an accelerometer can have up to 3 channels representing
++          acceleration on X, Y and Z axes.
++          </listitem>
++        </itemizedlist>
++      An IIO channel is described by the <type> struct iio_chan_spec
++      </type>. A thermometer driver for the temperature sensor in the
++      example above would have to describe its channel as follows:
++      <programlisting>
++      static const struct iio_chan_spec temp_channel[] = {
++          {
++              .type = IIO_TEMP,
++              .info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED),
++          },
++      };
++
++      </programlisting>
++      Channel sysfs attributes exposed to userspace are specified in
++      the form of <emphasis>bitmasks</emphasis>. Depending on their
++      shared info, attributes can be set in one of the following masks:
++      <itemizedlist>
++      <listitem><emphasis>info_mask_separate</emphasis>, attributes will
++        be specific to this channel</listitem>
++      <listitem><emphasis>info_mask_shared_by_type</emphasis>,
++        attributes are shared by all channels of the same type</listitem>
++      <listitem><emphasis>info_mask_shared_by_dir</emphasis>, attributes
++        are shared by all channels of the same direction </listitem>
++      <listitem><emphasis>info_mask_shared_by_all</emphasis>,
++        attributes are shared by all channels</listitem>
++      </itemizedlist>
++      When there are multiple data channels per sensor type there are two
++      ways to distinguish between them:
++      <itemizedlist>
++      <listitem> set <emphasis> .modified</emphasis> field of <type>
++        iio_chan_spec</type> to 1. Modifiers are specified using
++        <emphasis>.channel2</emphasis> field of the same
++        <type>iio_chan_spec</type> structure and are used to indicate a
++        physically unique characteristic of the channel such as its direction
++        or spectral response. For example, a light sensor can have two channels,
++        one for infrared light and one for both infrared and visible light.
++      </listitem>
++      <listitem> set <emphasis>.indexed </emphasis> field of
++        <type>iio_chan_spec</type> to 1. In this case the channel is
++        simply another instance with an index specified by the
++        <emphasis>.channel</emphasis> field.
++      </listitem>
++      </itemizedlist>
++      Here is how we can make use of the channel's modifiers:
++      <programlisting>
++      static const struct iio_chan_spec light_channels[] = {
++          {
++              .type = IIO_INTENSITY,
++              .modified = 1,
++              .channel2 = IIO_MOD_LIGHT_IR,
++              .info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
++              .info_mask_shared = BIT(IIO_CHAN_INFO_SAMP_FREQ),
++          },
++          {
++              .type = IIO_INTENSITY,
++              .modified = 1,
++              .channel2 = IIO_MOD_LIGHT_BOTH,
++              .info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
++              .info_mask_shared = BIT(IIO_CHAN_INFO_SAMP_FREQ),
++          },
++          {
++              .type = IIO_LIGHT,
++              .info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED),
++              .info_mask_shared = BIT(IIO_CHAN_INFO_SAMP_FREQ),
++          },
++
++      }
++      </programlisting>
++      This channel's definition will generate two separate sysfs files
++      for raw data retrieval:
++      <itemizedlist>
++      <listitem>
++      <filename>/sys/bus/iio/iio:deviceX/in_intensity_ir_raw</filename>
++      </listitem>
++      <listitem>
++      <filename>/sys/bus/iio/iio:deviceX/in_intensity_both_raw</filename>
++      </listitem>
++      </itemizedlist>
++      one file for processed data:
++      <itemizedlist>
++      <listitem>
++      <filename>/sys/bus/iio/iio:deviceX/in_illuminance_input
++      </filename>
++      </listitem>
++      </itemizedlist>
++      and one shared sysfs file for sampling frequency:
++      <itemizedlist>
++      <listitem>
++      <filename>/sys/bus/iio/iio:deviceX/in_intensity_sampling_frequency.
++      </filename>
++      </listitem>
++      </itemizedlist>
++      </para>
++      <para>
++      Here is how we can make use of the channel's indexing:
++      <programlisting>
++      static const struct iio_chan_spec light_channels[] = {
++          {
++              .type = IIO_VOLTAGE,
++              .indexed = 1,
++              .channel = 0,
++              .info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
++          },
++          {
++              .type = IIO_VOLTAGE,
++              .indexed = 1,
++              .channel = 1,
++              .info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
++          },
++      }
++      </programlisting>
++      This will generate two separate attributes files for raw data
++      retrieval:
++      <itemizedlist>
++      <listitem>
++        <filename>/sys/bus/iio/devices/iio:deviceX/in_voltage0_raw</filename>,
++          representing voltage measurement for channel 0.
++      </listitem>
++      <listitem>
++        <filename>/sys/bus/iio/devices/iio:deviceX/in_voltage1_raw</filename>,
++          representing voltage measurement for channel 1.
++      </listitem>
++      </itemizedlist>
++      </para>
++    </sect2>
++  </sect1>
++
++  <sect1 id="iiobuffer"> <title> Industrial I/O buffers </title>
++!Finclude/linux/iio/buffer.h iio_buffer
++!Edrivers/iio/industrialio-buffer.c
++
++    <para>
++    The Industrial I/O core offers a way for continuous data capture
++    based on a trigger source. Multiple data channels can be read at once
++    from <filename>/dev/iio:deviceX</filename> character device node,
++    thus reducing the CPU load.
++    </para>
++
++    <sect2 id="iiobuffersysfs">
++    <title>IIO buffer sysfs interface </title>
++    <para>
++      An IIO buffer has an associated attributes directory under <filename>
++      /sys/bus/iio/iio:deviceX/buffer/</filename>. Here are the existing
++      attributes:
++      <itemizedlist>
++      <listitem>
++      <emphasis>length</emphasis>, number of data samples contained by the
++        buffer.
++      </listitem>
++      <listitem>
++        <emphasis>enable</emphasis>, activate buffer capture.
++      </listitem>
++      </itemizedlist>
++    </para>
++    </sect2>
++    <sect2 id="iiobuffersetup"> <title> IIO buffer setup </title>
++      <para>The meta information associated with a channel reading
++        placed in a buffer is called a <emphasis> scan element </emphasis>.
++        The important bits configuring scan elements are exposed to
++        userspace applications via the <filename>
++        /sys/bus/iio/iio:deviceX/scan_elements/</filename> directory. This
++        file contains attributes of the following form:
++      <itemizedlist>
++      <listitem><emphasis>enable</emphasis>, used for enabling a channel.
++        If and only if its attribute is non zero, then a triggered capture
++        will contain data samples for this channel.
++      </listitem>
++      <listitem><emphasis>type</emphasis>, description of the scan element
++        data storage within the buffer and hence the form in which it is
++        read from user space. Format is <emphasis>
++        [be|le]:[s|u]bits/storagebitsXrepeat[>>shift] </emphasis>.
++        <itemizedlist>
++        <listitem> <emphasis>be</emphasis> or <emphasis>le</emphasis> specifies
++          big or little endian.
++        </listitem>
++        <listitem>
++        <emphasis>s </emphasis>or <emphasis>u</emphasis> specifies if
++          signed (2's complement) or unsigned.
++        </listitem>
++        <listitem><emphasis>bits</emphasis> is the number of bits of data
++        </listitem>
++        <listitem><emphasis>storagebits</emphasis> is the space (after padding)
++          that it occupies in the buffer.
++        </listitem>
++        <listitem>
++        <emphasis>shift</emphasis> if specified, is the shift that needs
++          to be a applied prior to masking out unused bits
++        </listitem>
++        <listitem>
++        <emphasis>repeat</emphasis>, specifies the number of real/storage bits
++        repetitions. When the repeat element is 0 or 1, then the repeat
++        value is omitted.
++        </listitem>
++        </itemizedlist>
++      </listitem>
++      </itemizedlist>
++      For example, a driver for a 3-axis accelerometer with 12 bit
++      resolution where data is stored in two 8-bits registers as
++      follows:
++      <programlisting>
++        7   6   5   4   3   2   1   0
++      +---+---+---+---+---+---+---+---+
++      |D3 |D2 |D1 |D0 | X | X | X | X | (LOW byte, address 0x06)
++      +---+---+---+---+---+---+---+---+
++
++        7   6   5   4   3   2   1   0
++      +---+---+---+---+---+---+---+---+
++      |D11|D10|D9 |D8 |D7 |D6 |D5 |D4 | (HIGH byte, address 0x07)
++      +---+---+---+---+---+---+---+---+
++      </programlisting>
++
++      will have the following scan element type for each axis:
++      <programlisting>
++      $ cat /sys/bus/iio/devices/iio:device0/scan_elements/in_accel_y_type
++      le:s12/16>>4
++      </programlisting>
++      The userspace applications will interpret data samples read from buffer
++      as two byte little endian signed data, that needs a 4 bits right
++      shift before masking out the only 12 valid bits of real data.
++    </para>
++    <para>
++      For implementing buffer support a driver should initialize the following
++      fields in <type>iio_chan_spec</type> definition:
++      <programlisting>
++          struct iio_chan_spec {
++              /* other members */
++              int scan_index
++              struct {
++                  char sign;
++                  u8 realbits;
++                  u8 storagebits;
++                  u8 shift;
++                  u8 repeat;
++                  enum iio_endian endianness;
++              } scan_type;
++          };
++      </programlisting>
++      The driver implementing the accelerometer described above will
++      have the following channel definition:
++      <programlisting>
++      struct struct iio_chan_spec accel_channels[] = {
++          {
++            .type = IIO_ACCEL,
++            .modified = 1,
++            .channel2 = IIO_MOD_X,
++            /* other stuff here */
++            .scan_index = 0,
++            .scan_type = {
++              .sign = 's',
++              .realbits = 12,
++              .storgebits = 16,
++              .shift = 4,
++              .endianness = IIO_LE,
++            },
++        }
++        /* similar for Y and  Z axis */
++    }
++    </programlisting>
++    </para>
++    <para>
++    Here <emphasis> scan_index </emphasis> defines the relative order in which
++    the enabled channels are placed inside the buffer, a channel with a lower
++    scan_index will be placed before a channel with a higher index. Each
++    channels needs to have a unique scan_index.
++    </para>
++    <para>
++    It is important to realize that the scan_index does not define the
++    absolution position in the buffer. E.g. a channel with the scan_index = 3
++    will not be at offset 3 bytes or 3 words, but rather will be placed in the
++    buffer after any channel with a scan_index lower than 3 and before
++    any channel with a scan_index larger than 3.
++    Furthermore the scan indices do not have to be consecutive. E.g. A
++    channel spec array that defines 3 channels with the indices 1, 2 and 3 is
++    just as valid as a channel spec that uses the indices 100, 200, 300. The
++    relative order of the channels will be the same.
++    </para>
++    <para>
++    Setting scan_index to -1 can be used to indicate that the specific
++    channel does not support buffered capture. In this case no entries will
++    be created for the channel in the scan_elements directory.
++    </para>
++    </sect2>
++  </sect1>
++
++  <sect1 id="iiotrigger"> <title> Industrial I/O triggers  </title>
++!Finclude/linux/iio/trigger.h iio_trigger
++!Edrivers/iio/industrialio-trigger.c
++    <para>
++      In many situations it is useful for a driver to be able to
++      capture data based on some external event (trigger) as opposed
++      to periodically polling for data. An IIO trigger can be provided
++      by a device driver that also has an IIO device based on hardware
++      generated events (e.g. data ready or threshold exceeded) or
++      provided by a separate driver from an independent interrupt
++      source (e.g. GPIO line connected to some external system, timer
++      interrupt or user space reading a specific file in sysfs). A
++      trigger may initialize data capture for a number of sensors and
++      also it may be completely unrelated to the sensor itself.
++    </para>
++
++    <sect2 id="iiotrigsysfs"> <title> IIO trigger sysfs interface </title>
++      There are two locations in sysfs related to triggers:
++      <itemizedlist>
++        <listitem><filename>/sys/bus/iio/devices/triggerX</filename>,
++          this file is created once an IIO triggered is registered with
++          the IIO core and corresponds to trigger with index X. Because
++          triggers can be very different depending on type there are few
++          standard attributes that we can describe here:
++          <itemizedlist>
++            <listitem>
++              <emphasis>name</emphasis>, trigger name that can be later
++                used to for association with a device.
++            </listitem>
++            <listitem>
++            <emphasis>sampling_frequency</emphasis>, some timer based
++              triggers use this attribute to specify the frequency for
++              trigger calls.
++            </listitem>
++          </itemizedlist>
++        </listitem>
++        <listitem>
++          <filename>/sys/bus/iio/devices/iio:deviceX/trigger/</filename>, this
++          directory is created once the device supports a triggered
++          buffer. We can associate a trigger with our device by writing
++            trigger's name in the<filename>current_trigger</filename> file.
++        </listitem>
++      </itemizedlist>
++    </sect2>
++
++    <sect2 id="iiotrigattr"> <title> IIO trigger setup</title>
++
++    <para>
++      Let's see a simple example of how to setup a trigger to be used
++      by a driver.
++
++      <programlisting>
++      struct iio_trigger_ops trigger_ops = {
++          .set_trigger_state = sample_trigger_state,
++          .validate_device = sample_validate_device,
++      }
++
++      struct iio_trigger *trig;
++
++      /* first, allocate memory for our trigger */
++      trig = iio_trigger_alloc(dev, "trig-%s-%d", name, idx);
++
++      /* setup trigger operations field */
++      trig->ops = &amp;trigger_ops;
++
++      /* now register the trigger with the IIO core */
++      iio_trigger_register(trig);
++      </programlisting>
++    </para>
++    </sect2>
++
++    <sect2 id="iiotrigsetup"> <title> IIO trigger ops</title>
++!Finclude/linux/iio/trigger.h iio_trigger_ops
++     <para>
++        Notice that a trigger has a set of operations attached:
++        <itemizedlist>
++        <listitem>
++          <function>set_trigger_state</function>, switch the trigger on/off
++          on demand.
++        </listitem>
++        <listitem>
++          <function>validate_device</function>, function to validate the
++          device when the current trigger gets changed.
++        </listitem>
++        </itemizedlist>
++      </para>
++    </sect2>
++  </sect1>
++  <sect1 id="iiotriggered_buffer">
++    <title> Industrial I/O triggered buffers </title>
++    <para>
++    Now that we know what buffers and triggers are let's see how they
++    work together.
++    </para>
++    <sect2 id="iiotrigbufsetup"> <title> IIO triggered buffer setup</title>
++!Edrivers/iio/industrialio-triggered-buffer.c
++!Finclude/linux/iio/iio.h iio_buffer_setup_ops
++
++
++    <para>
++    A typical triggered buffer setup looks like this:
++    <programlisting>
++    const struct iio_buffer_setup_ops sensor_buffer_setup_ops = {
++      .preenable    = sensor_buffer_preenable,
++      .postenable   = sensor_buffer_postenable,
++      .postdisable  = sensor_buffer_postdisable,
++      .predisable   = sensor_buffer_predisable,
++    };
++
++    irqreturn_t sensor_iio_pollfunc(int irq, void *p)
++    {
++        pf->timestamp = iio_get_time_ns();
++        return IRQ_WAKE_THREAD;
++    }
++
++    irqreturn_t sensor_trigger_handler(int irq, void *p)
++    {
++        u16 buf[8];
++
++        /* read data for each active channel */
++        for_each_set_bit(bit, active_scan_mask, masklength)
++            buf[i++] = sensor_get_data(bit)
++
++        iio_push_to_buffers_with_timestamp(indio_dev, buffer, timestamp);
++
++        iio_trigger_notify_done(trigger);
++    }
++
++    /* setup triggered buffer, usually in probe function */
++    iio_triggered_buffer_setup(indio_dev, sensor_iio_polfunc,
++                               sensor_trigger_handler,
++                               sensor_buffer_setup_ops);
++    </programlisting>
++    </para>
++    The important things to notice here are:
++    <itemizedlist>
++    <listitem><function> iio_buffer_setup_ops</function>, the buffer setup
++    functions to be called at predefined points in buffer configuration
++    sequence (e.g. before enable, after disable). If not specified, the
++    IIO core uses the default <type>iio_triggered_buffer_setup_ops</type>.
++    </listitem>
++    <listitem><function>sensor_iio_pollfunc</function>, the function that
++    will be used as top half of poll function. It usually does little
++    processing (as it runs in interrupt context). The most common operation
++    is recording of the current timestamp and for this reason one can
++    use the IIO core defined <function>iio_pollfunc_store_time</function>
++    function.
++    </listitem>
++    <listitem><function>sensor_trigger_handler</function>, the function that
++    will be used as bottom half of the poll function. This runs in the
++    context of a kernel thread and all the processing takes place here.
++    It usually reads data from the device and stores it in the internal
++    buffer together with the timestamp recorded in the top half.
++    </listitem>
++    </itemizedlist>
++    </sect2>
++  </sect1>
++  </chapter>
++  <chapter id='iioresources'>
++    <title> Resources </title>
++      IIO core may change during time so the best documentation to read is the
++      source code. There are several locations where you should look:
++      <itemizedlist>
++        <listitem>
++          <filename>drivers/iio/</filename>, contains the IIO core plus
++          and directories for each sensor type (e.g. accel, magnetometer,
++          etc.)
++        </listitem>
++        <listitem>
++          <filename>include/linux/iio/</filename>, contains the header
++          files, nice to read for the internal kernel interfaces.
++        </listitem>
++        <listitem>
++        <filename>include/uapi/linux/iio/</filename>, contains files to be
++          used by user space applications.
++        </listitem>
++        <listitem>
++         <filename>tools/iio/</filename>, contains tools for rapidly
++          testing buffers, events and device creation.
++        </listitem>
++        <listitem>
++          <filename>drivers/staging/iio/</filename>, contains code for some
++          drivers or experimental features that are not yet mature enough
++          to be moved out.
++        </listitem>
++      </itemizedlist>
++    <para>
++    Besides the code, there are some good online documentation sources:
++    <itemizedlist>
++    <listitem>
++      <ulink url="http://marc.info/?l=linux-iio"> Industrial I/O mailing
++      list </ulink>
++    </listitem>
++    <listitem>
++      <ulink url="http://wiki.analog.com/software/linux/docs/iio/iio">
++      Analog Device IIO wiki page </ulink>
++    </listitem>
++    <listitem>
++      <ulink url="https://fosdem.org/2015/schedule/event/iiosdr/">
++      Using the Linux IIO framework for SDR, Lars-Peter Clausen's
++      presentation at FOSDEM </ulink>
++    </listitem>
++    </itemizedlist>
++    </para>
++  </chapter>
++</book>
++
++<!--
++vim: softtabstop=2:shiftwidth=2:expandtab:textwidth=72
++-->
 -- 
 1.9.1
 
