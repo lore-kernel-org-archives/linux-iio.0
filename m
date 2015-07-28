@@ -1,52 +1,42 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-la0-f52.google.com ([209.85.215.52]:35523 "EHLO
-	mail-la0-f52.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752846AbbG1IP3 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 28 Jul 2015 04:15:29 -0400
-Received: by lahh5 with SMTP id h5so63700187lah.2
-        for <linux-iio@vger.kernel.org>; Tue, 28 Jul 2015 01:15:27 -0700 (PDT)
+Return-Path: <daniel.baluta@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <1438047973-5635-1-git-send-email-jasaw@dius.com.au>
-References: <1438047973-5635-1-git-send-email-jasaw@dius.com.au>
-Date: Tue, 28 Jul 2015 11:15:27 +0300
-Message-ID: <CAEnQRZA5QaXmNjWJJuT+An12M5zmaTK4os7Catwf5H=ZWupgtA@mail.gmail.com>
-Subject: Re: [PATCH v2] tools: iio: iio_utils: Make calc_digits static
+In-Reply-To: <1438047695-5248-1-git-send-email-jasaw@dius.com.au>
+References: <1438047695-5248-1-git-send-email-jasaw@dius.com.au>
+Date: Tue, 28 Jul 2015 11:16:16 +0300
+Message-ID: <CAEnQRZCmTdDXX45D1FbE_kviwHp=Pc+P_8LByxtMgb0fy=Ty6Q@mail.gmail.com>
+Subject: Re: [PATCH v2] tools: iio: iio_utils: remove unnecessary define guard
 From: Daniel Baluta <daniel.baluta@gmail.com>
 To: Joo Aun Saw <jasaw@dius.com.au>
-Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	Jonathan Cameron <jic23@kernel.org>
+Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>, Jonathan Cameron <jic23@kernel.org>
 Content-Type: text/plain; charset=UTF-8
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+List-ID: <linux-iio@vger.kernel.org>
 
-On Tue, Jul 28, 2015 at 4:46 AM, Joo Aun Saw <jasaw@dius.com.au> wrote:
+On Tue, Jul 28, 2015 at 4:41 AM, Joo Aun Saw <jasaw@dius.com.au> wrote:
 > From: Joo Aun Saw <jasaw@dius.com.au>
 >
 > Signed-off-by: Joo Aun Saw <jasaw@dius.com.au>
-
-Acked-by: Daniel Baluta <daniel.baluta@intel.com>
-
 > ---
->  tools/iio/iio_utils.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+>  tools/iio/iio_utils.c | 4 ----
+>  1 file changed, 4 deletions(-)
 >
 > diff --git a/tools/iio/iio_utils.c b/tools/iio/iio_utils.c
-> index e9fbaf8..563d9f0 100644
+> index 1dcdf03..e9fbaf8 100644
 > --- a/tools/iio/iio_utils.c
 > +++ b/tools/iio/iio_utils.c
-> @@ -537,7 +537,7 @@ error_free_name:
+> @@ -6,9 +6,6 @@
+>   * under the terms of the GNU General Public License version 2 as published by
+>   * the Free Software Foundation.
+>   */
+> -#ifndef _IIO_UTILS_H
+> -#define _IIO_UTILS_H
+> -
+>  #include <string.h>
+>  #include <stdlib.h>
+>  #include <stdio.h>
+> @@ -991,4 +988,3 @@ error_free:
 >         return ret;
 >  }
 >
-> -int calc_digits(int num)
-> +static int calc_digits(int num)
->  {
->         int count = 0;
->
-> --
-> 1.9.1
->
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+Please also remove the new line at the end of file now.
+
+> -#endif /* _IIO_UTILS_H */
