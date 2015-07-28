@@ -1,87 +1,136 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mout.gmx.net ([212.227.15.15]:59796 "EHLO mout.gmx.net"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1750915AbbG1XNL (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Tue, 28 Jul 2015 19:13:11 -0400
-Message-ID: <55B80C7E.1060409@gmx.de>
-Date: Wed, 29 Jul 2015 01:13:02 +0200
-From: Hartmut Knaack <knaack.h@gmx.de>
+Return-Path: <martink@posteo.de>
+Message-ID: <55B80C6D.5040607@posteo.de>
+Date: Wed, 29 Jul 2015 01:12:45 +0200
+From: Martin Kepplinger <martink@posteo.de>
 MIME-Version: 1.0
-To: "Breana, Tiberiu A" <tiberiu.a.breana@intel.com>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-CC: Jonathan Cameron <jic23@kernel.org>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>
-Subject: Re: [PATCH 6/7] iio:accel:stk8312: code style cleanup
-References: <cover.1437955135.git.knaack.h@gmx.de> <e385d57dcb753a56fdee5be5ddb4fb963f502b9c.1437955135.git.knaack.h@gmx.de> <4586F61A4A291F4DA44D32824E7C0F4022187F18@IRSMSX109.ger.corp.intel.com>
-In-Reply-To: <4586F61A4A291F4DA44D32824E7C0F4022187F18@IRSMSX109.ger.corp.intel.com>
-Content-Type: text/plain; charset=ISO-8859-1
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+To: Mark Rutland <mark.rutland@arm.com>,
+ Martin Kepplinger <martin.kepplinger@theobroma-systems.com>
+CC: "jic23@kernel.org" <jic23@kernel.org>,
+ "knaack.h@gmx.de" <knaack.h@gmx.de>,
+ "lars@metafoo.de" <lars@metafoo.de>,
+ "pmeerw@pmeerw.net" <pmeerw@pmeerw.net>,
+ "mfuzzey@parkeon.com" <mfuzzey@parkeon.com>,
+ "roberta.dobrescu@gmail.com" <roberta.dobrescu@gmail.com>,
+ "robh+dt@kernel.org" <robh+dt@kernel.org>,
+ Pawel Moll <Pawel.Moll@arm.com>,
+ "ijc+devicetree@hellion.org.uk" <ijc+devicetree@hellion.org.uk>,
+ "galak@codeaurora.org" <galak@codeaurora.org>,
+ "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+ "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+ "christoph.muellner@theobroma-systems.com" <christoph.muellner@theobroma-systems.com>
+Subject: Re: [PATCH 8/8] iio: mma8452: add devicetree property to allow all
+ pin wirings
+References: <1438006095-26920-1-git-send-email-martink@posteo.de> <1438006095-26920-9-git-send-email-martink@posteo.de> <20150727142336.GB10821@leverpostej> <55B6423C.7030301@posteo.de> <20150727173345.GF10821@leverpostej> <55B74741.3000408@theobroma-systems.com> <20150728092809.GA15213@leverpostej>
+In-Reply-To: <20150728092809.GA15213@leverpostej>
+Content-Type: text/plain; charset=windows-1252
+List-ID: <linux-iio@vger.kernel.org>
 
-Breana, Tiberiu A schrieb am 28.07.2015 um 15:45:
->> -----Original Message-----
->> From: Hartmut Knaack [mailto:knaack.h@gmx.de]
->> Sent: Tuesday, July 28, 2015 1:49 AM
->> To: linux-iio@vger.kernel.org
->> Cc: Jonathan Cameron; Lars-Peter Clausen; Peter Meerwald; Breana, Tiberiu
->> A
->> Subject: [PATCH 6/7] iio:accel:stk8312: code style cleanup
+Am 2015-07-28 um 11:28 schrieb Mark Rutland:
+> On Tue, Jul 28, 2015 at 10:11:29AM +0100, Martin Kepplinger wrote:
 >>
->> Adjust some indentation issues to make checkpatch.pl happy in strict mode.
 >>
->> Signed-off-by: Hartmut Knaack <knaack.h@gmx.de>
-> 
-> Comment inline.
-> 
->> ---
->>  drivers/iio/accel/stk8312.c | 5 ++---
->>  1 file changed, 2 insertions(+), 3 deletions(-)
+>> On 2015-07-27 19:33, Mark Rutland wrote:
+>>> On Mon, Jul 27, 2015 at 03:37:48PM +0100, Martin Kepplinger wrote:
+>>>> Am 2015-07-27 um 16:23 schrieb Mark Rutland:
+>>>>> On Mon, Jul 27, 2015 at 03:08:15PM +0100, Martin Kepplinger wrote:
+>>>>>> For the devices supported by the mma8452 driver, two interrupt pins are
+>>>>>> available to route the interrupt signals to. By default INT1 is assumed.
+>>>>>>
+>>>>>> This adds a bitmask DT property for users to configure interrupt sources
+>>>>>> for INT2, if that is the wired interrupt pin for them.
+>>>>>
+>>>>> This sounds like configureation rather than a HW property. Why does this
+>>>>> need to be in the DT?
+>>>>
+>>>> It's a hardware property of the board that uses the device. There might
+>>>> be boards that connect just one of them at random, which is the reason
+>>>> for this DT property. There also might be exotic users who will want
+>>>> to use both pins to route different interrupt sources to (not yet
+>>>> supported, but no problem with such a bitmask).
+>>>
+>>> Ok, so I'm somewhat confused as to what the hardware looks like and what
+>>> this means.
+>>>
+>>> Could you elaborate on how INT1 and INT2 are used? It looks like they're
+>>> used as output pins, and so interrupt-names would seem appropriate for
+>>> describing the combination which is wired up.
 >>
->> diff --git a/drivers/iio/accel/stk8312.c b/drivers/iio/accel/stk8312.c index
->> e3624e2b3ec4..b059a6cabfbb 100644
->> --- a/drivers/iio/accel/stk8312.c
->> +++ b/drivers/iio/accel/stk8312.c
->> @@ -157,8 +157,7 @@ static int stk8312_otp_init(struct stk8312_data *data)
->>  	if (ret < 0)
->>  		goto exit_err;
+>> They are just the chip's two possible interrupt lines for us to get
+>> notified about event.
+> 
+> Ok. So that matches my understanding.
+> 
+>> You build a board, you use one of these 4 chips, wiring up just one of
+>> the 2 interrupt pins. By far most people won't ever need both pins.
 >>
->> -	ret = i2c_smbus_write_byte_data(data->client,
->> -			STK8312_REG_AFECTRL, ret);
->> +	ret = i2c_smbus_write_byte_data(data->client,
->> STK8312_REG_AFECTRL,
->> +ret);
+>> DT describes your hardware, right? So you describe how you built your
+>> board (wired the accelerometer chip) with this DT property.
 > 
-> On a single line, this write op would take up 81 chars.
-> I think it's best to just add 2 tabs to the 2nd line.
+> Ok.
+> 
+>>> w.r.t. configuring the choice of output(s), that sounds like a runtime
+>>> decision rather than something which needs to be configured statically.
+>>
+>> This won't be useful during runtime. (De)activating events is what you
+>> do in iio sysfs.
+>>
+>> Even in the rare case (maybe supported in the future) when you want one
+>> interrupt source on one pin and another source on the other pin, that
+>> describes your hardware. You wire, say, data-ready to Linux and
+>> motion-detection to some strange alarm system. When you change your
+>> hardware (say, use Linux for both pins), I think it would justify
+>> changing a DT property.
+> 
+> In that case you would need additional properties anyway.
+> 
+>> Btw, we are talking about very theoretical stuff here. For now (and even
+>> possibly forever) we just don't ever want to break a DT propery we
+>> introduce here, thus the bitmask.
+> 
+> I don't think you need the bitmask.
+> 
+> I think all you need is interrupt-names, e.g.
+> 
+> dev1 {
+> 	/* both wired up */
+> 	interrupts = <&some_ic 0 47>, <&some_ic 5 62>;
+> 	interrupt-names = "INT1", "INT2";
+> }
+> 
+> dev2 {
+> 	/* only INT2 wired up */
+> 	interrupts = <&some_ic 3 96>;
+> 	interrupt-names = "INT2";
+> }
+> 
+> You can figure out which interrupts are wired up by trying to acquire
+> them by name, then falling back to acquiting an anonymouos interrupt
+> (assuming it's INT1) to keep compatible with existing DTBs. You can
+> choose which to use arbitrarily, try to load balance, or whatever you'd
+> like.
+> 
+> If it's later necessary to route some interrupts to another device,
+> additional properties can be added to accomodate that. We already know
+> that the bitmask alone is not sufficient for that case.
 > 
 
-Don't worry, it is 80 chars sharp. I have double checked, even checkpatch.pl
-in strict mode doesn't complain on this one. Just on 2 other points, which I
-don't consider essential.
-Thanks,
+Yes, this sounds reasonable indeed. I like the idea. I'm sorry I won't
+rewrite patch 8/8 now. Relocation and a lot to do before holidays. I'll
+be happy to write and test this properly in one month from now, if not
+done by somebody until then.
 
-Hartmut
+Until then, since patches 1-7 only introduce a bindings document, they
+shouldn't be problematic for devicetree people.
 
->>  	if (ret < 0)
->>  		goto exit_err;
->>  	msleep(150);
->> @@ -453,7 +452,7 @@ static irqreturn_t stk8312_trigger_handler(int irq, void
->> *p)
->>  		data->buffer[2] = buffer[2];
->>  	} else {
->>  		for_each_set_bit(bit, indio_dev->active_scan_mask,
->> -			   indio_dev->masklength) {
->> +				 indio_dev->masklength) {
->>  			ret = stk8312_read_accel(data, bit);
->>  			if (ret < 0) {
->>  				mutex_unlock(&data->lock);
->> --
->> 2.4.6
+
+So if Jonathan and IIO people find anybody for review, feel free to take
+patches 1-7. In any case, there is direct register access via debugfs to
+at least somehow make the driver work for everybody ;)
+
+so long, thanks.
+                    martin
+
+> Thanks,
+> Mark.
 > 
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> 
-
