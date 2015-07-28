@@ -1,73 +1,58 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga01.intel.com ([192.55.52.88]:6709 "EHLO mga01.intel.com"
+Received: from mga03.intel.com ([134.134.136.65]:27022 "EHLO mga03.intel.com"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S932320AbbG1Nvx convert rfc822-to-8bit (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 28 Jul 2015 09:51:53 -0400
-From: "Breana, Tiberiu A" <tiberiu.a.breana@intel.com>
-To: Hartmut Knaack <knaack.h@gmx.de>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-CC: Jonathan Cameron <jic23@kernel.org>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>
-Subject: RE: [PATCH 6/7] iio:accel:stk8312: code style cleanup
-Date: Tue, 28 Jul 2015 13:45:00 +0000
-Message-ID: <4586F61A4A291F4DA44D32824E7C0F4022187F18@IRSMSX109.ger.corp.intel.com>
-References: <cover.1437955135.git.knaack.h@gmx.de>
- <e385d57dcb753a56fdee5be5ddb4fb963f502b9c.1437955135.git.knaack.h@gmx.de>
-In-Reply-To: <e385d57dcb753a56fdee5be5ddb4fb963f502b9c.1437955135.git.knaack.h@gmx.de>
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
+	id S932496AbbG1OfN (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Tue, 28 Jul 2015 10:35:13 -0400
+From: Daniel Baluta <daniel.baluta@intel.com>
+To: jic23@kernel.org, corbet@lwn.net, rdunlap@infradead.org
+Cc: pmeerw@pmeerw.net, knaack.h@gmx.de, lars@metafoo.de,
+	linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
+	herbert@gondor.apana.org.au, smueller@chronox.de, mmarek@suse.cz,
+	daniel.baluta@intel.com, linux-doc@vger.kernel.org,
+	cristina.opriceana@gmail.com
+Subject: [PATCH v3] DocBook documentation for IIO
+Date: Tue, 28 Jul 2015 17:37:13 +0300
+Message-Id: <1438094234-2894-1-git-send-email-daniel.baluta@intel.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-> -----Original Message-----
-> From: Hartmut Knaack [mailto:knaack.h@gmx.de]
-> Sent: Tuesday, July 28, 2015 1:49 AM
-> To: linux-iio@vger.kernel.org
-> Cc: Jonathan Cameron; Lars-Peter Clausen; Peter Meerwald; Breana, Tiberiu
-> A
-> Subject: [PATCH 6/7] iio:accel:stk8312: code style cleanup
-> 
-> Adjust some indentation issues to make checkpatch.pl happy in strict mode.
-> 
-> Signed-off-by: Hartmut Knaack <knaack.h@gmx.de>
+In our effort to support vendors writing drivers for their own
+sensors we introduce IIO documentation in DocBook format.
 
-Comment inline.
+It documents Industrial I/O core including IIO devices, buffers, triggers and
+triggered buffers. It also offers a short list of online resources
+for the IIO subsystem.
 
-> ---
->  drivers/iio/accel/stk8312.c | 5 ++---
->  1 file changed, 2 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/iio/accel/stk8312.c b/drivers/iio/accel/stk8312.c index
-> e3624e2b3ec4..b059a6cabfbb 100644
-> --- a/drivers/iio/accel/stk8312.c
-> +++ b/drivers/iio/accel/stk8312.c
-> @@ -157,8 +157,7 @@ static int stk8312_otp_init(struct stk8312_data *data)
->  	if (ret < 0)
->  		goto exit_err;
-> 
-> -	ret = i2c_smbus_write_byte_data(data->client,
-> -			STK8312_REG_AFECTRL, ret);
-> +	ret = i2c_smbus_write_byte_data(data->client,
-> STK8312_REG_AFECTRL,
-> +ret);
+This is far from being complete any suggestions are welcomed. At a first
+glance we also need to add documentation for events. We are also working
+on auto-generating template drivers based on the type of the IIO sensors.
 
-On a single line, this write op would take up 81 chars.
-I think it's best to just add 2 tabs to the 2nd line.
+Generated html files should be available online here http://dbaluta.github.io/
+or you could run make htmldocs in the root of your kernel repo to get them.
 
->  	if (ret < 0)
->  		goto exit_err;
->  	msleep(150);
-> @@ -453,7 +452,7 @@ static irqreturn_t stk8312_trigger_handler(int irq, void
-> *p)
->  		data->buffer[2] = buffer[2];
->  	} else {
->  		for_each_set_bit(bit, indio_dev->active_scan_mask,
-> -			   indio_dev->masklength) {
-> +				 indio_dev->masklength) {
->  			ret = stk8312_read_accel(data, bit);
->  			if (ret < 0) {
->  				mutex_unlock(&data->lock);
-> --
-> 2.4.6
+Many thanks to Lars-Peter Clausen for scan_index paragraph.
+
+Changes since v2:
+	* addressed feedback from Lars-Peter
+	  * http://marc.info/?l=linux-iio&m=143774991802816&w=2
+
+Changes since v1:
+	* mostly typos and clarifications
+	* addressed comments from Jonathan Corbet and Jonathan Cameron
+	  * http://marc.info/?l=linux-iio&m=143704226629498&w=2
+	  * http://marc.info/?l=linux-iio&m=143707511006898&w=2
+	* for DocBook warnings reported by Randy, Cristina sent
+	  this patchseries:
+	  http://marc.info/?l=linux-iio&m=143774363900903&w=2
+
+Daniel Baluta (1):
+  DocBook: Add initial documentation for IIO
+
+ Documentation/DocBook/Makefile |   2 +-
+ Documentation/DocBook/iio.tmpl | 701 +++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 702 insertions(+), 1 deletion(-)
+ create mode 100644 Documentation/DocBook/iio.tmpl
+
+-- 
+1.9.1
 
