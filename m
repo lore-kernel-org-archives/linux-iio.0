@@ -1,36 +1,36 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga09.intel.com ([134.134.136.24]:42387 "EHLO mga09.intel.com"
+Received: from mga02.intel.com ([134.134.136.20]:25960 "EHLO mga02.intel.com"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1755641AbbG1N1x convert rfc822-to-8bit (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 28 Jul 2015 09:27:53 -0400
+	id S1753046AbbG1N2P convert rfc822-to-8bit (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 28 Jul 2015 09:28:15 -0400
 From: "Breana, Tiberiu A" <tiberiu.a.breana@intel.com>
 To: Hartmut Knaack <knaack.h@gmx.de>,
 	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
 CC: Jonathan Cameron <jic23@kernel.org>,
 	Lars-Peter Clausen <lars@metafoo.de>,
 	Peter Meerwald <pmeerw@pmeerw.net>
-Subject: RE: [PATCH 2/7] iio:accel:stk8312: check for invalid value
-Date: Tue, 28 Jul 2015 13:27:50 +0000
-Message-ID: <4586F61A4A291F4DA44D32824E7C0F4022187E91@IRSMSX109.ger.corp.intel.com>
+Subject: RE: [PATCH 4/7] iio:accel:stk8312: rework macro definitions
+Date: Tue, 28 Jul 2015 13:28:10 +0000
+Message-ID: <4586F61A4A291F4DA44D32824E7C0F4022187E9B@IRSMSX109.ger.corp.intel.com>
 References: <cover.1437955135.git.knaack.h@gmx.de>
- <f406a1b129207e44ed3c6a07a8d44e16f6f3f74f.1437955135.git.knaack.h@gmx.de>
-In-Reply-To: <f406a1b129207e44ed3c6a07a8d44e16f6f3f74f.1437955135.git.knaack.h@gmx.de>
+ <aa5a9b6fdfbd4d19d3b3eea3a8c4dbe53efd5a59.1437955135.git.knaack.h@gmx.de>
+In-Reply-To: <aa5a9b6fdfbd4d19d3b3eea3a8c4dbe53efd5a59.1437955135.git.knaack.h@gmx.de>
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
 > -----Original Message-----
-> From: linux-iio-owner@vger.kernel.org [mailto:linux-iio-
-> owner@vger.kernel.org] On Behalf Of Hartmut Knaack
+> From: Hartmut Knaack [mailto:knaack.h@gmx.de]
 > Sent: Tuesday, July 28, 2015 1:49 AM
 > To: linux-iio@vger.kernel.org
 > Cc: Jonathan Cameron; Lars-Peter Clausen; Peter Meerwald; Breana, Tiberiu
 > A
-> Subject: [PATCH 2/7] iio:accel:stk8312: check for invalid value
+> Subject: [PATCH 4/7] iio:accel:stk8312: rework macro definitions
 > 
-> Revision 1.2 of the datasheet recommends on page 22 to only write non-zero
-> values read from OTP register 0x70 into AFECTRL register.
+> Make use of BIT to describe register bits, GENMASK for consecutive
+> bitmasks, rename and sort existing definitions, replace magic value with an
+> expressive definition, drop an unused definition.
 > 
 > Signed-off-by: Hartmut Knaack <knaack.h@gmx.de>
 
@@ -39,26 +39,74 @@ List-Id: linux-iio@vger.kernel.org
 Reviewed-by: Tiberiu Breana <tiberiu.a.breana@intel.com>
 
 > ---
->  drivers/iio/accel/stk8312.c | 2 ++
->  1 file changed, 2 insertions(+)
+>  drivers/iio/accel/stk8312.c | 25 +++++++++++++------------
+>  1 file changed, 13 insertions(+), 12 deletions(-)
 > 
 > diff --git a/drivers/iio/accel/stk8312.c b/drivers/iio/accel/stk8312.c index
-> c2bd1444d6da..6592be8e6377 100644
+> 50a102ca44d3..8783f0bf7c53 100644
 > --- a/drivers/iio/accel/stk8312.c
 > +++ b/drivers/iio/accel/stk8312.c
-> @@ -150,6 +150,8 @@ static int stk8312_otp_init(struct stk8312_data *data)
->  		goto exit_err;
+> @@ -37,16 +37,16 @@
+>  #define STK8312_REG_OTPDATA		0x3E
+>  #define STK8312_REG_OTPCTRL		0x3F
 > 
->  	ret = i2c_smbus_read_byte_data(client, STK8312_REG_OTPDATA);
-> +	if (ret == 0)
-> +		ret = -EINVAL;
+> -#define STK8312_MODE_ACTIVE		0x01
+> +#define STK8312_MODE_ACTIVE		BIT(0)
+>  #define STK8312_MODE_STANDBY		0x00
+> -#define STK8312_DREADY_BIT		0x10
+> -#define STK8312_INT_MODE		0xC0
+> -#define STK8312_RNG_MASK		0xC0
+> -#define STK8312_SR_MASK			0x07
+> -#define STK8312_SR_400HZ_IDX		0
+> +#define STK8312_MODE_INT_AH_PP		0xC0	/* active-high, push-
+> pull */
+> +#define STK8312_DREADY_BIT		BIT(4)
+> +#define STK8312_RNG_6G			1
+>  #define STK8312_RNG_SHIFT		6
+> -#define STK8312_READ_RETRIES		16
+> -#define STK8312_ALL_CHANNEL_MASK	7
+> +#define STK8312_RNG_MASK		GENMASK(7, 6)
+> +#define STK8312_SR_MASK			GENMASK(2, 0)
+> +#define STK8312_SR_400HZ_IDX		0
+> +#define STK8312_ALL_CHANNEL_MASK	GENMASK(2, 0)
+>  #define STK8312_ALL_CHANNEL_SIZE	3
+> 
+>  #define STK8312_DRIVER_NAME		"stk8312"
+> @@ -144,7 +144,7 @@ static int stk8312_otp_init(struct stk8312_data *data)
+>  		if (ret < 0)
+>  			goto exit_err;
+>  		count--;
+> -	} while (!(ret & 0x80) && count > 0);
+> +	} while (!(ret & BIT(7)) && count > 0);
+> 
+>  	if (count == 0) {
+>  		ret = -ETIMEDOUT;
+> @@ -560,11 +560,12 @@ static int stk8312_probe(struct i2c_client *client,
+>  		return ret;
+>  	}
+>  	data->sample_rate_idx = STK8312_SR_400HZ_IDX;
+> -	ret = stk8312_set_range(data, 1);
+> +	ret = stk8312_set_range(data, STK8312_RNG_6G);
 >  	if (ret < 0)
->  		goto exit_err;
+>  		return ret;
 > 
+> -	ret = stk8312_set_mode(data, STK8312_INT_MODE |
+> STK8312_MODE_ACTIVE);
+> +	ret = stk8312_set_mode(data,
+> +			       STK8312_MODE_INT_AH_PP |
+> STK8312_MODE_ACTIVE);
+>  	if (ret < 0)
+>  		return ret;
+> 
+> @@ -685,7 +686,7 @@ MODULE_DEVICE_TABLE(acpi, stk8312_acpi_id);
+> 
+>  static struct i2c_driver stk8312_driver = {
+>  	.driver = {
+> -		.name = "stk8312",
+> +		.name = STK8312_DRIVER_NAME,
+>  		.pm = STK8312_PM_OPS,
+>  		.acpi_match_table = ACPI_PTR(stk8312_acpi_id),
+>  	},
 > --
 > 2.4.6
-> 
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in the body
-> of a message to majordomo@vger.kernel.org More majordomo info at
-> http://vger.kernel.org/majordomo-info.html
+
