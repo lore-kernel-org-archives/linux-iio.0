@@ -1,10 +1,10 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-wi0-f170.google.com ([209.85.212.170]:34352 "EHLO
-	mail-wi0-f170.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753309AbbG2M5V (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 29 Jul 2015 08:57:21 -0400
-Received: by wibud3 with SMTP id ud3so219562093wib.1
-        for <linux-iio@vger.kernel.org>; Wed, 29 Jul 2015 05:57:20 -0700 (PDT)
+Received: from mail-wi0-f178.google.com ([209.85.212.178]:34188 "EHLO
+	mail-wi0-f178.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753141AbbG2M5O (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 29 Jul 2015 08:57:14 -0400
+Received: by wibud3 with SMTP id ud3so219557848wib.1
+        for <linux-iio@vger.kernel.org>; Wed, 29 Jul 2015 05:57:13 -0700 (PDT)
 From: Vladimir Barinov <vladimir.barinov@cogentembedded.com>
 To: Jonathan Cameron <jic23@kernel.org>
 Cc: Hartmut Knaack <knaack.h@gmx.de>,
@@ -17,62 +17,39 @@ Cc: Hartmut Knaack <knaack.h@gmx.de>,
 	Kumar Gala <galak@codeaurora.org>,
 	linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
 	devicetree@vger.kernel.org, cory.tusar@pid1solutions.com
-Subject: [PATCH v3 3/7] dt: Document Holt HI-8435 bindings
-Date: Wed, 29 Jul 2015 15:57:16 +0300
-Message-Id: <1438174636-19218-1-git-send-email-vladimir.barinov@cogentembedded.com>
+Subject: [PATCH v3 2/7] dt: Add vendor prefix 'holt'
+Date: Wed, 29 Jul 2015 15:57:10 +0300
+Message-Id: <1438174630-19180-1-git-send-email-vladimir.barinov@cogentembedded.com>
 In-Reply-To: <1438174469-19054-1-git-send-email-vladimir.barinov@cogentembedded.com>
 References: <1438174469-19054-1-git-send-email-vladimir.barinov@cogentembedded.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-These bindings can be used to register Holt HI-8435 threshold detector
+Add Holt Integrated Circuits, Inc. to the list of device tree vendor
+prefixes
 
 Signed-off-by: Vladimir Barinov <vladimir.barinov@cogentembedded.com>
 ---
 Changes in version 2:
-- renamed file name hi-843x.txt to hi8435.txt
-- removed hi-8436,hi-8436,hi-8437
-- removed holt,debounce-soft field
-- renamed holt,debounc-soft-delay to holt,debounce-interval
-- renamed mr-gpio to reset-gpios
+- none
 Changes in version 3:
 - none
 
- .../devicetree/bindings/iio/adc/hi8435.txt         | 25 ++++++++++++++++++++++
- 1 file changed, 25 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/iio/adc/hi8435.txt
+ Documentation/devicetree/bindings/vendor-prefixes.txt | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/Documentation/devicetree/bindings/iio/adc/hi8435.txt b/Documentation/devicetree/bindings/iio/adc/hi8435.txt
-new file mode 100644
-index 0000000..1d33ad0
---- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/adc/hi8435.txt
-@@ -0,0 +1,25 @@
-+Holt Integrated Circuits HI-8435 threshold detector bindings
-+
-+Required properties:
-+ - compatible: should be "holt,hi8435"
-+ - reg: spi chip select number for the device
-+
-+Recommended properties:
-+ - spi-max-frequency: definition as per
-+		Documentation/devicetree/bindings/spi/spi-bus.txt
-+
-+Optional properties:
-+ - holt,reset-gpios: GPIO used for controlling the reset pin
-+ - holt,debounce-interval: software debounce interval in milliseconds
-+
-+Example:
-+sensor@0 {
-+	compatible = "holt,hi8435";
-+	reg = <0>;
-+
-+	holt,reset-gpios = <&gpio6 1 0>;
-+
-+	holt,debounce-interval = <100>;
-+
-+	spi-max-frequency = <1000000>;
-+};
+diff --git a/Documentation/devicetree/bindings/vendor-prefixes.txt b/Documentation/devicetree/bindings/vendor-prefixes.txt
+index d444757..bc64cc9 100644
+--- a/Documentation/devicetree/bindings/vendor-prefixes.txt
++++ b/Documentation/devicetree/bindings/vendor-prefixes.txt
+@@ -99,6 +99,7 @@ himax	Himax Technologies, Inc.
+ hisilicon	Hisilicon Limited.
+ hit	Hitachi Ltd.
+ hitex	Hitex Development Tools
++holt	Holt Integrated Circuits, Inc.
+ honeywell	Honeywell
+ hp	Hewlett Packard
+ i2se	I2SE GmbH
 -- 
 1.9.1
 
