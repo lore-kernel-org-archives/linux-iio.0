@@ -1,17 +1,17 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mout.gmx.net ([212.227.17.20]:53883 "EHLO mout.gmx.net"
+Received: from mout.gmx.net ([212.227.17.22]:58702 "EHLO mout.gmx.net"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1753543AbbG2Vj6 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Wed, 29 Jul 2015 17:39:58 -0400
+	id S1753543AbbG2Vj7 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Wed, 29 Jul 2015 17:39:59 -0400
 From: Hartmut Knaack <knaack.h@gmx.de>
 To: linux-iio@vger.kernel.org
 Cc: Jonathan Cameron <jic23@kernel.org>,
 	Lars-Peter Clausen <lars@metafoo.de>,
 	Peter Meerwald <pmeerw@pmeerw.net>,
 	Tiberiu Breana <tiberiu.a.breana@intel.com>
-Subject: [PATCH v2 5/7] iio:accel:stk8312: use appropriate variable types
-Date: Wed, 29 Jul 2015 23:39:38 +0200
-Message-Id: <edc03b2d6ca2a5ffe767192a02f5cdd2ca021b34.1438204273.git.knaack.h@gmx.de>
+Subject: [PATCH v2 2/7] iio:accel:stk8312: check for invalid value
+Date: Wed, 29 Jul 2015 23:39:35 +0200
+Message-Id: <f406a1b129207e44ed3c6a07a8d44e16f6f3f74f.1438204273.git.knaack.h@gmx.de>
 In-Reply-To: <cover.1438204273.git.knaack.h@gmx.de>
 References: <cover.1438204273.git.knaack.h@gmx.de>
 In-Reply-To: <cover.1438204273.git.knaack.h@gmx.de>
@@ -19,47 +19,28 @@ References: <cover.1438204273.git.knaack.h@gmx.de>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Adapt some variable types to reduce unnecessary casting.
+Revision 1.2 of the datasheet recommends on page 22 to only write non-zero
+values read from OTP register 0x70 into AFECTRL register.
 
 Signed-off-by: Hartmut Knaack <knaack.h@gmx.de>
 Reviewed-by: Tiberiu Breana <tiberiu.a.breana@intel.com>
 ---
- drivers/iio/accel/stk8312.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ drivers/iio/accel/stk8312.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
 diff --git a/drivers/iio/accel/stk8312.c b/drivers/iio/accel/stk8312.c
-index 8807927d4d0b..8b9b3815aac2 100644
+index c2bd1444d6da..6592be8e6377 100644
 --- a/drivers/iio/accel/stk8312.c
 +++ b/drivers/iio/accel/stk8312.c
-@@ -69,8 +69,8 @@ static const int stk8312_scale_table[][2] = {
- };
+@@ -150,6 +150,8 @@ static int stk8312_otp_init(struct stk8312_data *data)
+ 		goto exit_err;
  
- static const struct {
--	u16 val;
--	u32 val2;
-+	int val;
-+	int val2;
- } stk8312_samp_freq_table[] = {
- 	{400, 0}, {200, 0}, {100, 0}, {50, 0}, {25, 0},
- 	{12, 500000}, {6, 250000}, {3, 125000}
-@@ -103,7 +103,7 @@ static const struct iio_chan_spec stk8312_channels[] = {
- struct stk8312_data {
- 	struct i2c_client *client;
- 	struct mutex lock;
--	int range;
-+	u8 range;
- 	u8 sample_rate_idx;
- 	u8 mode;
- 	struct iio_trigger *dready_trig;
-@@ -243,7 +243,7 @@ static const struct iio_trigger_ops stk8312_trigger_ops = {
- 	.owner = THIS_MODULE,
- };
+ 	ret = i2c_smbus_read_byte_data(client, STK8312_REG_OTPDATA);
++	if (ret == 0)
++		ret = -EINVAL;
+ 	if (ret < 0)
+ 		goto exit_err;
  
--static int stk8312_set_sample_rate(struct stk8312_data *data, int rate)
-+static int stk8312_set_sample_rate(struct stk8312_data *data, u8 rate)
- {
- 	int ret;
- 	u8 masked_reg;
 -- 
 2.4.6
 
