@@ -1,51 +1,38 @@
-Return-Path: <mpa@pengutronix.de>
-From: Markus Pargmann <mpa@pengutronix.de>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
-	Vlad Dogaru <vlad.dogaru@intel.com>,
-	linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	kernel@pengutronix.de,
-	Markus Pargmann <mpa@pengutronix.de>
-Subject: [PATCH 0/7] iio: bmg160: Add SPI connection
-Date: Wed, 29 Jul 2015 15:46:02 +0200
-Message-Id: <1438177569-18772-1-git-send-email-mpa@pengutronix.de>
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mout.gmx.net ([212.227.17.20]:49679 "EHLO mout.gmx.net"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1753264AbbG2Vjz (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Wed, 29 Jul 2015 17:39:55 -0400
+From: Hartmut Knaack <knaack.h@gmx.de>
+To: linux-iio@vger.kernel.org
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Tiberiu Breana <tiberiu.a.breana@intel.com>
+Subject: [PATCH v2 0/7] stk8312 fixes and cleanup
+Date: Wed, 29 Jul 2015 23:39:33 +0200
+Message-Id: <cover.1438204273.git.knaack.h@gmx.de>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Hi,
+Fixing some issues I spotted during review.
 
-bmg160 and bmi055 can be used via I2C and SPI. This series converts the driver
-to regmap and splits core driver and I2C/SPI.
+Changes in V2:
+  - put device back in active mode in case of an error
 
-I only have a board which has a bmi055 connected via SPI. I am not able to test
-the I2C part. Would be great if someone could test that the I2C driver is still
-working.
+Hartmut Knaack (7):
+  iio:accel:stk8312: add triggered buffer dependency
+  iio:accel:stk8312: check for invalid value
+  iio:accel:stk8312: improve error handling
+  iio:accel:stk8312: rework macro definitions
+  iio:accel:stk8312: use appropriate variable types
+  iio:accel:stk8312: code style cleanup
+  iio:accel:stk8312: drop local buffer
 
-Best regards,
-
-Markus
-
-
-Markus Pargmann (7):
-  iio: bmg160: IIO_BUFFER and IIO_TRIGGERED_BUFFER are required
-  iio: bmg160: Use i2c regmap instead of direct i2c access
-  iio: bmg160: Remove i2c_client from data struct
-  iio: bmg160: Use generic dev_drvdata
-  iio: bmg160: Remove remaining uses of i2c_client
-  iio: bmg160: Separate i2c and core driver
-  iio: bmg160: Add SPI driver
-
- drivers/iio/gyro/Kconfig                     |  32 ++-
- drivers/iio/gyro/Makefile                    |   4 +-
- drivers/iio/gyro/bmg160.h                    |  10 +
- drivers/iio/gyro/{bmg160.c => bmg160_core.c} | 356 +++++++++++----------------
- drivers/iio/gyro/bmg160_i2c.c                |  73 ++++++
- drivers/iio/gyro/bmg160_spi.c                |  59 +++++
- 6 files changed, 312 insertions(+), 222 deletions(-)
- create mode 100644 drivers/iio/gyro/bmg160.h
- rename drivers/iio/gyro/{bmg160.c => bmg160_core.c} (74%)
- create mode 100644 drivers/iio/gyro/bmg160_i2c.c
- create mode 100644 drivers/iio/gyro/bmg160_spi.c
+ drivers/iio/accel/Kconfig   |   2 +
+ drivers/iio/accel/stk8312.c | 106 +++++++++++++++++++++++++-------------------
+ 2 files changed, 62 insertions(+), 46 deletions(-)
 
 -- 
-2.1.4
+2.4.6
+
