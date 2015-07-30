@@ -1,246 +1,297 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-yk0-f172.google.com ([209.85.160.172]:34706 "EHLO
-	mail-yk0-f172.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754383AbbG3JkW (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 30 Jul 2015 05:40:22 -0400
-Received: by ykax123 with SMTP id x123so29749510yka.1
-        for <linux-iio@vger.kernel.org>; Thu, 30 Jul 2015 02:40:21 -0700 (PDT)
+Received: from mano-163-81-shared.jabatus.fr ([109.234.163.81]:38075 "EHLO
+	mano-163-81-shared.jabatus.fr" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1751074AbbG3JpC (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 30 Jul 2015 05:45:02 -0400
+From: Ludovic Tancerel <ludovic.tancerel@maplehightech.com>
+To: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
+	pmeerw@pmeerw.net, linux-iio@vger.kernel.org,
+	ludovic.tancerel@maplehightech.com, William.Markezana@meas-spec.com
+Subject: [PATCH V2 2/6] iio: Add tsys01 meas-spec driver support
+Date: Thu, 30 Jul 2015 11:25:41 +0200
+Message-Id: <1438248345-25820-3-git-send-email-ludovic.tancerel@maplehightech.com>
+In-Reply-To: <1438248345-25820-1-git-send-email-ludovic.tancerel@maplehightech.com>
+References: <1438248345-25820-1-git-send-email-ludovic.tancerel@maplehightech.com>
 MIME-Version: 1.0
-In-Reply-To: <4586F61A4A291F4DA44D32824E7C0F402218813D@IRSMSX109.ger.corp.intel.com>
-References: <cover.1438204273.git.knaack.h@gmx.de> <ba37bdc28af46b4bd38e4a923d87a5d8e78ce2ee.1438204273.git.knaack.h@gmx.de>
- <CAKv63uuz5X6=3Z2pB9MHXgjgry8zWpxeV4KRcr-0_bxs57LCQw@mail.gmail.com> <4586F61A4A291F4DA44D32824E7C0F402218813D@IRSMSX109.ger.corp.intel.com>
-From: Crt Mori <cmo@melexis.com>
-Date: Thu, 30 Jul 2015 11:39:42 +0200
-Message-ID: <CAKv63uuOMrOg77aBHAFtre-_MdgAFU5NqgMfj_WS3XEWKnVLUA@mail.gmail.com>
-Subject: Re: [PATCH v2 3/7] iio:accel:stk8312: improve error handling
-To: "Breana, Tiberiu A" <tiberiu.a.breana@intel.com>
-Cc: Hartmut Knaack <knaack.h@gmx.de>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>
 Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 30 July 2015 at 11:07, Breana, Tiberiu A <tiberiu.a.breana@intel.com> wrote:
->> -----Original Message-----
->> From: Crt Mori [mailto:cmo@melexis.com]
->> Sent: Thursday, July 30, 2015 10:04 AM
->> To: Hartmut Knaack
->> Cc: linux-iio@vger.kernel.org; Jonathan Cameron; Lars-Peter Clausen; Peter
->> Meerwald; Breana, Tiberiu A
->> Subject: Re: [PATCH v2 3/7] iio:accel:stk8312: improve error handling
->>
->> Hi, some comments/questions below:
->>
->> On 29 July 2015 at 23:39, Hartmut Knaack <knaack.h@gmx.de> wrote:
->> > Improve error handling in the following ways:
->> >   - set return value on error condition to an appropriate error code
->> >   - return error code immediately in case of an error (slightly changes
->> >     code structure)
->> >   - pass up real error code
->> >   - add missing error handling
->> >   - return 0 when error have been caught already
->> >   - put device back in active mode after error occurs
->> >
->> > Signed-off-by: Hartmut Knaack <knaack.h@gmx.de>
->
-> Comments inline.
->
->> > ---
->> >  drivers/iio/accel/stk8312.c | 60
->> > ++++++++++++++++++++++++++++-----------------
->> >  1 file changed, 38 insertions(+), 22 deletions(-)
->> >
->> > diff --git a/drivers/iio/accel/stk8312.c b/drivers/iio/accel/stk8312.c
->> > index 6592be8e6377..4e1dda7e896d 100644
->> > --- a/drivers/iio/accel/stk8312.c
->> > +++ b/drivers/iio/accel/stk8312.c
->> > @@ -146,8 +146,10 @@ static int stk8312_otp_init(struct stk8312_data
->> *data)
->> >                 count--;
->> >         } while (!(ret & 0x80) && count > 0);
->> >
->> > -       if (count == 0)
->> > +       if (count == 0) {
->> > +               ret = -ETIMEDOUT;
->> >                 goto exit_err;
->> > +       }
->> You dont need braces since it is a one word statement or add a dev_err()
->> report.
->
-> +1
->
->> >
->> >         ret = i2c_smbus_read_byte_data(client, STK8312_REG_OTPDATA);
->> >         if (ret == 0)
->> > @@ -161,7 +163,7 @@ static int stk8312_otp_init(struct stk8312_data
->> *data)
->> >                 goto exit_err;
->> Why dont we return here as well?
->
-> I'm not sure I follow.
->
->> >         msleep(150);
->> >
->> > -       return ret;
->> > +       return 0;
->> >
->> >  exit_err:
->> >         dev_err(&client->dev, "failed to initialize sensor\n"); @@
->> > -205,8 +207,11 @@ static int stk8312_set_interrupts(struct stk8312_data
->> *data, u8 int_mask)
->> >                 return ret;
->> >
->> >         ret = i2c_smbus_write_byte_data(client, STK8312_REG_INTSU,
->> int_mask);
->> > -       if (ret < 0)
->> > +       if (ret < 0) {
->> >                 dev_err(&client->dev, "failed to set interrupts\n");
->> > +               stk8312_set_mode(data, mode);
->> > +               return ret;
->> > +       }
->> >
->> >         return stk8312_set_mode(data, mode);  } @@ -230,7 +235,7 @@
->> > static int stk8312_data_rdy_trigger_set_state(struct iio_trigger
->> > *trig,
->> >
->> >         data->dready_trigger_on = state;
->> >
->> > -       return ret;
->> > +       return 0;
->> >  }
->> >
->> >  static const struct iio_trigger_ops stk8312_trigger_ops = { @@
->> > -255,20 +260,24 @@ static int stk8312_set_sample_rate(struct
->> stk8312_data *data, int rate)
->> >                 return ret;
->> >
->> >         ret = i2c_smbus_read_byte_data(client, STK8312_REG_SR);
->> > -       if (ret < 0) {
->> > -               dev_err(&client->dev, "failed to set sampling rate\n");
->> > -               return ret;
->> > -       }
->> > +       if (ret < 0)
->> > +               goto err_activate;
->> >
->> >         masked_reg = (ret & (~STK8312_SR_MASK)) | rate;
->> >
->> >         ret = i2c_smbus_write_byte_data(client, STK8312_REG_SR,
->> masked_reg);
->> >         if (ret < 0)
->> > -               dev_err(&client->dev, "failed to set sampling rate\n");
->> > -       else
->> > -               data->sample_rate_idx = rate;
->> > +               goto err_activate;
->> > +
->> > +       data->sample_rate_idx = rate;
->> >
->> >         return stk8312_set_mode(data, mode);
->> > +
->> > +err_activate:
->> > +       dev_err(&client->dev, "failed to set sampling rate\n");
->> > +       stk8312_set_mode(data, mode);
->> > +
->> > +       return ret;
->> >  }
->> >
->> >  static int stk8312_set_range(struct stk8312_data *data, u8 range) @@
->> > -290,21 +299,25 @@ static int stk8312_set_range(struct stk8312_data
->> *data, u8 range)
->> >                 return ret;
->> >
->> >         ret = i2c_smbus_read_byte_data(client, STK8312_REG_STH);
->> > -       if (ret < 0) {
->> > -               dev_err(&client->dev, "failed to change sensor range\n");
->> > -               return ret;
->> > -       }
->> > +       if (ret < 0)
->> > +               goto err_activate;
->> >
->> >         masked_reg = ret & (~STK8312_RNG_MASK);
->> >         masked_reg |= range << STK8312_RNG_SHIFT;
->> >
->> >         ret = i2c_smbus_write_byte_data(client, STK8312_REG_STH,
->> masked_reg);
->> >         if (ret < 0)
->> So in case of error we print error, but continue without returning error value,
->> but if it is a success then we go to err_activate and return a positive value?
->> Either label is
->> confusing or the whole process.
->
-> I suggest you take a closer look.
->
+Signed-off-by: Ludovic Tancerel <ludovic.tancerel@maplehightech.com>
+---
+ drivers/iio/temperature/Kconfig  |  11 ++
+ drivers/iio/temperature/Makefile |   1 +
+ drivers/iio/temperature/tsys01.c | 232 +++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 244 insertions(+)
+ create mode 100644 drivers/iio/temperature/tsys01.c
 
-Ow sorry, messed with - and + (combined them together actually). This is
-OK.
+diff --git a/drivers/iio/temperature/Kconfig b/drivers/iio/temperature/Kconfig
+index 21feaa4..35712032 100644
+--- a/drivers/iio/temperature/Kconfig
++++ b/drivers/iio/temperature/Kconfig
+@@ -23,4 +23,15 @@ config TMP006
+ 	  This driver can also be built as a module. If so, the module will
+ 	  be called tmp006.
+ 
++config TSYS01
++	tristate "Measurement Specialties TSYS01 temperature sensor using I2C bus connection"
++	depends on I2C
++	select IIO_MS_SENSORS_I2C
++	help
++	  If you say yes here you get support for the Measurement Specialties
++	  TSYS01 I2C temperature sensor.
++
++	  This driver can also be built as a module. If so, the module will
++	  be called tsys01.
++
+ endmenu
+diff --git a/drivers/iio/temperature/Makefile b/drivers/iio/temperature/Makefile
+index 40710a8..368a2a2 100644
+--- a/drivers/iio/temperature/Makefile
++++ b/drivers/iio/temperature/Makefile
+@@ -4,3 +4,4 @@
+ 
+ obj-$(CONFIG_MLX90614) += mlx90614.o
+ obj-$(CONFIG_TMP006) += tmp006.o
++obj-$(CONFIG_TSYS01) += tsys01.o
+diff --git a/drivers/iio/temperature/tsys01.c b/drivers/iio/temperature/tsys01.c
+new file mode 100644
+index 0000000..c863aaf
+--- /dev/null
++++ b/drivers/iio/temperature/tsys01.c
+@@ -0,0 +1,232 @@
++/*
++ * tsys01.c - Support for Measurement-Specialties tsys01 temperature sensor
++ *
++ * Copyright (c) 2015 Measurement-Specialties
++ *
++ * Licensed under the GPL-2.
++ *
++ * Datasheet:
++ *  http://www.meas-spec.com/downloads/TSYS01_Digital_Temperature_Sensor.pdf
++ *
++ */
++
++#include <linux/iio/iio.h>
++#include <linux/iio/sysfs.h>
++#include <linux/device.h>
++#include <linux/mutex.h>
++#include <linux/module.h>
++#include <linux/init.h>
++#include <linux/kernel.h>
++#include <linux/stat.h>
++#include "../common/ms_sensors/ms_sensors_i2c.h"
++
++/* TSYS01 Commands */
++#define TSYS01_RESET				0x1E
++#define TSYS01_CONVERSION_START			0x48
++#define TSYS01_ADC_READ				0x00
++#define TSYS01_PROM_READ			0xA0
++
++#define TSYS01_PROM_WORDS_NB			8
++
++struct tsys01_dev {
++	void *client;
++	struct mutex lock; /* lock during conversion */
++
++	int (*reset)(void *cli, u8 cmd, unsigned int delay);
++	int (*convert_and_read)(void *cli, u8 conv, u8 rd,
++				unsigned int delay, u32 *adc);
++	int (*read_prom_word)(void *cli, int cmd, u16 *word);
++
++	u16 prom[TSYS01_PROM_WORDS_NB];
++};
++
++/* Multiplication coefficients for temperature computation */
++static const int coeff_mul[] = { -1500000, 1000000, -2000000,
++				 4000000, -2000000 };
++
++static int tsys01_read_temperature(struct iio_dev *indio_dev,
++				   s32 *temperature)
++{
++	int ret, i;
++	u32 adc;
++	s64 temp = 0;
++	struct tsys01_dev *dev_data = iio_priv(indio_dev);
++
++	mutex_lock(&dev_data->lock);
++	ret = dev_data->convert_and_read(dev_data->client,
++					 TSYS01_CONVERSION_START,
++					 TSYS01_ADC_READ, 9000, &adc);
++	mutex_unlock(&dev_data->lock);
++	if (ret)
++		return ret;
++
++	adc >>= 8;
++
++	/* Temperature algorithm */
++	for (i = 4; i > 0; i--) {
++		temp += coeff_mul[i] *
++			(s64)dev_data->prom[5 - i];
++		temp *= (s64)adc;
++		temp = div64_s64(temp, 100000);
++	}
++	temp *= 10;
++	temp += coeff_mul[0] * (s64)dev_data->prom[5];
++	temp = div64_s64(temp, 100000);
++
++	*temperature = temp;
++
++	return 0;
++}
++
++static int tsys01_read_raw(struct iio_dev *indio_dev,
++			   struct iio_chan_spec const *channel, int *val,
++			   int *val2, long mask)
++{
++	int ret;
++	s32 temperature;
++
++	switch (mask) {
++	case IIO_CHAN_INFO_PROCESSED:
++		switch (channel->type) {
++		case IIO_TEMP:	/* in milli °C */
++			ret = tsys01_read_temperature(indio_dev, &temperature);
++			if (ret)
++				return ret;
++			*val = temperature;
++
++			return IIO_VAL_INT;
++		default:
++			return -EINVAL;
++		}
++	default:
++		return -EINVAL;
++	}
++}
++
++static const struct iio_chan_spec tsys01_channels[] = {
++	{
++		.type = IIO_TEMP,
++		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_PROCESSED),
++	}
++};
++
++static const struct iio_info tsys01_info = {
++	.read_raw = tsys01_read_raw,
++	.driver_module = THIS_MODULE,
++};
++
++static bool tsys01_crc_valid(u16 *n_prom)
++{
++	u8 cnt;
++	u8 sum = 0;
++
++	for (cnt = 0; cnt < TSYS01_PROM_WORDS_NB; cnt++)
++		sum += ((n_prom[0] >> 8) + (n_prom[0] & 0xFF));
++
++	return (sum == 0);
++}
++
++static int tsys01_read_prom(struct iio_dev *indio_dev)
++{
++	int i, ret;
++	struct tsys01_dev *dev_data = iio_priv(indio_dev);
++	char buf[7 * TSYS01_PROM_WORDS_NB + 1];
++	char *ptr = buf;
++
++	for (i = 0; i < TSYS01_PROM_WORDS_NB; i++) {
++		ret = dev_data->read_prom_word(dev_data->client,
++					       TSYS01_PROM_READ + (i << 1),
++					       &dev_data->prom[i]);
++		if (ret)
++			return ret;
++
++		ret = sprintf(ptr, "0x%04x ", dev_data->prom[i]);
++		ptr += ret;
++	}
++
++	if (!tsys01_crc_valid(dev_data->prom)) {
++		dev_err(&indio_dev->dev, "prom crc check error\n");
++		return -ENODEV;
++	}
++	*ptr = 0;
++	dev_info(&indio_dev->dev, "PROM coefficients : %s\n", buf);
++
++	return 0;
++}
++
++static int tsys01_probe(struct iio_dev *indio_dev, struct device *dev)
++{
++	int ret;
++	struct tsys01_dev *dev_data = iio_priv(indio_dev);
++
++	mutex_init(&dev_data->lock);
++
++	indio_dev->info = &tsys01_info;
++	indio_dev->name = dev->driver->name;
++	indio_dev->dev.parent = dev;
++	indio_dev->modes = INDIO_DIRECT_MODE;
++	indio_dev->channels = tsys01_channels;
++	indio_dev->num_channels = ARRAY_SIZE(tsys01_channels);
++
++	ret = dev_data->reset(dev_data->client, TSYS01_RESET, 3000);
++	if (ret)
++		return ret;
++
++	ret = tsys01_read_prom(indio_dev);
++	if (ret)
++		return ret;
++
++	return devm_iio_device_register(dev, indio_dev);
++}
++
++static int tsys01_i2c_probe(struct i2c_client *client,
++			    const struct i2c_device_id *id)
++{
++	struct tsys01_dev *dev_data;
++	struct iio_dev *indio_dev;
++
++	if (!i2c_check_functionality(client->adapter,
++				     I2C_FUNC_SMBUS_WORD_DATA |
++				     I2C_FUNC_SMBUS_WRITE_BYTE |
++				     I2C_FUNC_SMBUS_READ_I2C_BLOCK)) {
++		dev_err(&client->dev,
++			"Adapter does not support some i2c transaction\n");
++		return -ENODEV;
++	}
++
++	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*dev_data));
++	if (!indio_dev)
++		return -ENOMEM;
++
++	dev_data = iio_priv(indio_dev);
++	dev_data->client = client;
++	dev_data->reset = ms_sensors_i2c_reset;
++	dev_data->read_prom_word = ms_sensors_i2c_read_prom_word;
++	dev_data->convert_and_read = ms_sensors_i2c_convert_and_read;
++
++	i2c_set_clientdata(client, indio_dev);
++
++	return tsys01_probe(indio_dev, &client->dev);
++}
++
++static const struct i2c_device_id tsys01_id[] = {
++	{"tsys01", 0},
++	{}
++};
++MODULE_DEVICE_TABLE(i2c, tsys01_id);
++
++static struct i2c_driver tsys01_driver = {
++	.probe = tsys01_i2c_probe,
++	.id_table = tsys01_id,
++	.driver = {
++		   .name = "tsys01",
++		   .owner = THIS_MODULE,
++		   },
++};
++
++module_i2c_driver(tsys01_driver);
++
++MODULE_DESCRIPTION("Measurement-Specialties tsys01 temperature driver");
++MODULE_AUTHOR("William Markezana <william.markezana@meas-spec.com>");
++MODULE_AUTHOR("Ludovic Tancerel <ludovic.tancerel@maplehightech.com>");
++MODULE_LICENSE("GPL v2");
+-- 
+2.3.7
 
->> > -               dev_err(&client->dev, "failed to change sensor range\n");
->> > -       else
->> > -               data->range = range;
->> > +               goto err_activate;
->> > +
->> > +       data->range = range;
->> >
->> >         return stk8312_set_mode(data, mode);
->> > +
->> > +err_activate:
->> > +       dev_err(&client->dev, "failed to change sensor range\n");
->> > +       stk8312_set_mode(data, mode);
->> > +
->> > +       return ret;
->> >  }
->> >
->> >  static int stk8312_read_accel(struct stk8312_data *data, u8 address)
->> > @@ -337,18 +350,21 @@ static int stk8312_read_raw(struct iio_dev
->> *indio_dev,
->> >                 ret = stk8312_set_mode(data, data->mode |
->> STK8312_MODE_ACTIVE);
->> >                 if (ret < 0) {
->> >                         mutex_unlock(&data->lock);
->> > -                       return -EINVAL;
->> > +                       return ret;
->> >                 }
->> >                 ret = stk8312_read_accel(data, chan->address);
->> >                 if (ret < 0) {
->> >                         stk8312_set_mode(data,
->> >                                          data->mode & (~STK8312_MODE_ACTIVE));
->> >                         mutex_unlock(&data->lock);
->> > -                       return -EINVAL;
->> > +                       return ret;
->> >                 }
->> >                 *val = sign_extend32(ret, 7);
->> > -               stk8312_set_mode(data, data->mode &
->> (~STK8312_MODE_ACTIVE));
->> > +               ret = stk8312_set_mode(data,
->> > +                                      data->mode &
->> > + (~STK8312_MODE_ACTIVE));
->> >                 mutex_unlock(&data->lock);
->> > +               if (ret < 0)
->> > +                       return ret;
->
-> Hartmut, I stand by my comment from the first patch version.
-> We shouldn't return a read error if we're not able to put the
-> sensor back in standby mode after reading the values.
->
->> >                 return IIO_VAL_INT;
->> >         case IIO_CHAN_INFO_SCALE:
->> >                 *val = stk8312_scale_table[data->range - 1][0]; @@
->> > -608,7 +624,7 @@ static int stk8312_probe(struct i2c_client *client,
->> >                 goto err_buffer_cleanup;
->> >         }
->> >
->> > -       return ret;
->> > +       return 0;
->> >
->> >  err_buffer_cleanup:
->> >         iio_triggered_buffer_cleanup(indio_dev);
->> > --
->> > 2.4.6
->> >
->> > --
->> > To unsubscribe from this list: send the line "unsubscribe linux-iio"
->> > in the body of a message to majordomo@vger.kernel.org More
->> majordomo
->> > info at  http://vger.kernel.org/majordomo-info.html
