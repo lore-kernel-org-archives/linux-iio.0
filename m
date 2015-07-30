@@ -1,102 +1,109 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from lists.s-osg.org ([54.187.51.154]:55147 "EHLO lists.s-osg.org"
+Received: from lists.s-osg.org ([54.187.51.154]:55089 "EHLO lists.s-osg.org"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1753787AbbG3QUa (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Thu, 30 Jul 2015 12:20:30 -0400
+	id S1753674AbbG3QUF (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Thu, 30 Jul 2015 12:20:05 -0400
 From: Javier Martinez Canillas <javier@osg.samsung.com>
 To: linux-kernel@vger.kernel.org
 Cc: Javier Martinez Canillas <javier@osg.samsung.com>,
-	alsa-devel@alsa-project.org, Mark Brown <broonie@kernel.org>,
-	linux-iio@vger.kernel.org, linux-fbdev@vger.kernel.org,
-	linux-i2c@vger.kernel.org, linux-leds@vger.kernel.org,
-	Sebastian Reichel <sre@kernel.org>,
-	Chanwoo Choi <cw00.choi@samsung.com>,
-	Tomi Valkeinen <tomi.valkeinen@ti.com>,
-	lm-sensors@lm-sensors.org,
-	Alexandre Belloni <alexandre.belloni@free-electrons.com>,
-	linux-input@vger.kernel.org,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jean Delvare <jdelvare@suse.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	linux-media@vger.kernel.org, rtc-linux@googlegroups.com,
-	linux-pm@vger.kernel.org,
-	Mauro Carvalho Chehab <mchehab@osg.samsung.com>,
-	Guenter Roeck <linux@roeck-us.net>,
-	Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-	Wolfram Sang <wsa@the-dreams.de>,
-	Takashi Iwai <tiwai@suse.com>,
-	Liam Girdwood <lgirdwood@gmail.com>,
-	Sjoerd Simons <sjoerd.simons@collabora.co.uk>,
-	Lee Jones <lee.jones@linaro.org>,
-	Bryan Wu <cooloney@gmail.com>, linux-omap@vger.kernel.org,
-	Sakari Ailus <sakari.ailus@iki.fi>, linux-usb@vger.kernel.org,
-	linux-spi@vger.kernel.org,
-	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-	Tony Lindgren <tony@atomide.com>,
-	MyungJoo Ham <myungjoo.ham@samsung.com>,
-	linuxppc-dev@lists.ozlabs.org
-Subject: [PATCH 27/27] i2c: (RFC, don't apply) report OF style modalias when probing using DT
-Date: Thu, 30 Jul 2015 18:18:52 +0200
-Message-Id: <1438273132-20926-28-git-send-email-javier@osg.samsung.com>
+	linux-iio@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>
+Subject: [PATCH 17/27] iio: Export OF module alias information in missing drivers
+Date: Thu, 30 Jul 2015 18:18:42 +0200
+Message-Id: <1438273132-20926-18-git-send-email-javier@osg.samsung.com>
 In-Reply-To: <1438273132-20926-1-git-send-email-javier@osg.samsung.com>
 References: <1438273132-20926-1-git-send-email-javier@osg.samsung.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-An I2C driver that supports both OF and legacy platforms, will have
-both a OF and I2C ID table. This means that when built as a module,
-the aliases will be filled from both tables but currently always an
-alias of the form i2c:<deviceId> is reported, e.g:
+The I2C core always reports the MODALIAS uevent as "i2c:<client name"
+regardless if the driver was matched using the I2C id_table or the
+of_match_table. So technically there's no need for a driver to export
+the OF table since currently it's not used.
 
-$ cat /sys/class/i2c-adapter/i2c-8/8-004b/modalias
-i2c:maxtouch
+In fact, the I2C device ID table is mandatory for I2C drivers since
+a i2c_device_id is passed to the driver's probe function even if the
+I2C core used the OF table to match the driver.
 
-So if a device is probed by matching its compatible string, udev can
-get a MODALIAS uevent env var that doesn't match with one of the valid
-aliases so the module won't be auto-loaded.
+And since the I2C core uses different tables, OF-only drivers needs to
+have duplicated data that has to be kept in sync and also the dev node
+compatible manufacturer prefix is stripped when reporting the MODALIAS.
 
-This patch changes the I2C core to report a OF related MODALIAS uevent
-(of:N*T*C) env var instead so the module can be auto-loaded and also
-report the correct alias using sysfs:
-
-$ cat /sys/class/i2c-adapter/i2c-8/8-004b/modalias
-of:NtrackpadT<NULL>Catmel,maxtouch
+To avoid the above, the I2C core behavior may be changed in the future
+to not require an I2C device table for OF-only drivers and report the
+OF module alias. So, it's better to also export the OF table to prevent
+breaking module autoloading if that happens.
 
 Signed-off-by: Javier Martinez Canillas <javier@osg.samsung.com>
 
-
-
 ---
 
- drivers/i2c/i2c-core.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
+ drivers/iio/accel/mma8452.c      | 1 +
+ drivers/iio/light/cm32181.c      | 1 +
+ drivers/iio/light/cm3232.c       | 1 +
+ drivers/iio/light/cm36651.c      | 1 +
+ drivers/iio/light/gp2ap020a00f.c | 1 +
+ 5 files changed, 5 insertions(+)
 
-diff --git a/drivers/i2c/i2c-core.c b/drivers/i2c/i2c-core.c
-index 92dddfeb3f39..c0668c2ed9da 100644
---- a/drivers/i2c/i2c-core.c
-+++ b/drivers/i2c/i2c-core.c
-@@ -489,6 +489,10 @@ static int i2c_device_uevent(struct device *dev, struct kobj_uevent_env *env)
- 	struct i2c_client	*client = to_i2c_client(dev);
- 	int rc;
+diff --git a/drivers/iio/accel/mma8452.c b/drivers/iio/accel/mma8452.c
+index 13ea1ea23328..b7ad3dce6ff4 100644
+--- a/drivers/iio/accel/mma8452.c
++++ b/drivers/iio/accel/mma8452.c
+@@ -968,6 +968,7 @@ static const struct of_device_id mma8452_dt_ids[] = {
+ 	{ .compatible = "fsl,mma8452" },
+ 	{ }
+ };
++MODULE_DEVICE_TABLE(of, mma8452_dt_ids);
  
-+	rc = of_device_uevent_modalias(dev, env);
-+	if (rc != -ENODEV)
-+		return rc;
-+
- 	rc = acpi_device_uevent_modalias(dev, env);
- 	if (rc != -ENODEV)
- 		return rc;
-@@ -726,6 +730,10 @@ show_modalias(struct device *dev, struct device_attribute *attr, char *buf)
- 	struct i2c_client *client = to_i2c_client(dev);
- 	int len;
+ static struct i2c_driver mma8452_driver = {
+ 	.driver = {
+diff --git a/drivers/iio/light/cm32181.c b/drivers/iio/light/cm32181.c
+index 1c0de2f8885d..d6fd0dace74f 100644
+--- a/drivers/iio/light/cm32181.c
++++ b/drivers/iio/light/cm32181.c
+@@ -353,6 +353,7 @@ static const struct of_device_id cm32181_of_match[] = {
+ 	{ .compatible = "capella,cm32181" },
+ 	{ }
+ };
++MODULE_DEVICE_TABLE(of, cm32181_of_match);
  
-+	len = of_device_get_modalias(dev, buf, PAGE_SIZE - 1);
-+	if (len != -ENODEV)
-+		return len;
-+
- 	len = acpi_device_modalias(dev, buf, PAGE_SIZE -1);
- 	if (len != -ENODEV)
- 		return len;
+ static struct i2c_driver cm32181_driver = {
+ 	.driver = {
+diff --git a/drivers/iio/light/cm3232.c b/drivers/iio/light/cm3232.c
+index 1b508c65877c..fe89b6823217 100644
+--- a/drivers/iio/light/cm3232.c
++++ b/drivers/iio/light/cm3232.c
+@@ -417,6 +417,7 @@ static const struct of_device_id cm3232_of_match[] = {
+ 	{.compatible = "capella,cm3232"},
+ 	{}
+ };
++MODULE_DEVICE_TABLE(of, cm3232_of_match);
+ 
+ static struct i2c_driver cm3232_driver = {
+ 	.driver = {
+diff --git a/drivers/iio/light/cm36651.c b/drivers/iio/light/cm36651.c
+index 2a39e141e90c..c8d7b5ea7e78 100644
+--- a/drivers/iio/light/cm36651.c
++++ b/drivers/iio/light/cm36651.c
+@@ -731,6 +731,7 @@ static const struct of_device_id cm36651_of_match[] = {
+ 	{ .compatible = "capella,cm36651" },
+ 	{ }
+ };
++MODULE_DEVICE_TABLE(of, cm36651_of_match);
+ 
+ static struct i2c_driver cm36651_driver = {
+ 	.driver = {
+diff --git a/drivers/iio/light/gp2ap020a00f.c b/drivers/iio/light/gp2ap020a00f.c
+index 0334a814b5eb..6d41086f7c64 100644
+--- a/drivers/iio/light/gp2ap020a00f.c
++++ b/drivers/iio/light/gp2ap020a00f.c
+@@ -1634,6 +1634,7 @@ static const struct of_device_id gp2ap020a00f_of_match[] = {
+ 	{ .compatible = "sharp,gp2ap020a00f" },
+ 	{ }
+ };
++MODULE_DEVICE_TABLE(of, gp2ap020a00f_of_match);
+ #endif
+ 
+ static struct i2c_driver gp2ap020a00f_driver = {
 -- 
 2.4.3
 
