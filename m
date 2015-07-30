@@ -1,75 +1,36 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mano-163-71-shared.jabatus.fr ([109.234.163.71]:41606 "EHLO
-	mano-163-71-shared.jabatus.fr" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1754753AbbG3KAD (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 30 Jul 2015 06:00:03 -0400
-From: Ludovic Tancerel <ludovic.tancerel@maplehightech.com>
-To: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
-	pmeerw@pmeerw.net, linux-iio@vger.kernel.org,
-	ludovic.tancerel@maplehightech.com, William.Markezana@meas-spec.com
-Subject: [PATCH V2 0/6] iio: TSYS01, TSYS02D, HTU21, MS5637, MS8607 Measurement Specialties driver development
-Date: Thu, 30 Jul 2015 11:25:39 +0200
-Message-Id: <1438248345-25820-1-git-send-email-ludovic.tancerel@maplehightech.com>
+Received: from lb1-smtp-cloud3.xs4all.net ([194.109.24.22]:57771 "EHLO
+	lb1-smtp-cloud3.xs4all.net" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1751177AbbG3Ktc (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 30 Jul 2015 06:49:32 -0400
+Message-ID: <1438253368.15571.31.camel@tiscali.nl>
+Subject: Re: [PATCH 2/7] iio: bmg160: Use i2c regmap instead of direct i2c
+ access
+From: Paul Bolle <pebolle@tiscali.nl>
+To: Markus Pargmann <mpa@pengutronix.de>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+	Vlad Dogaru <vlad.dogaru@intel.com>, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org, kernel@pengutronix.de
+Date: Thu, 30 Jul 2015 12:49:28 +0200
+In-Reply-To: <20150729183738.GL30895@pengutronix.de>
+References: <1438177569-18772-1-git-send-email-mpa@pengutronix.de>
+	 <1438177569-18772-3-git-send-email-mpa@pengutronix.de>
+	 <20150729183738.GL30895@pengutronix.de>
+Content-Type: text/plain; charset="UTF-8"
+Mime-Version: 1.0
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-This is the resubmission of patches for measurement specialties drivers.
-The format of patchset has been moved into several incremental patches as requested, plus the other feedback.
-The list of changes are :
-        - Split into multiple patches
-        - the split of MS8607 into 2 drivers based on htu21 ans ms5637
-        - Alignment of units for processed channels
-        - Documentation of private ABI
-        - kernel-doc for exported functions
-        - Other minor changes from feedback
+On wo, 2015-07-29 at 20:37 +0200, Markus Pargmann wrote:
+> On Wed, Jul 29, 2015 at 03:46:04PM +0200, Markus Pargmann wrote:
+> > +struct regmap_config bmg160_regmap_i2c_conf = {
+> 
+> This should probably be static const ...
 
-Please have a look,
-and thanks a lot for your feedback.
+Likewise for "bmg160_regmap_conf", which you add in 7/7, right?
 
-Regards,
-Ludovic
+Thanks,
 
-revision history
-----------------
-v2      Split ms8607/Align units/Document private ABI/ kernel-doc ABI
-v1      initial post
 
-Ludovic Tancerel (6):
-  Add iio: meas-spec sensors common part
-  Add iio: tsys01 meas-spec driver support
-  Add iio: tsys02d meas-spec driver support
-  Add iio: htu21 meas-spec driver support
-  Add iio: ms5637 meas-spec driver support
-  Add iio: ms8607 meas-spec driver support
-
- Documentation/ABI/testing/sysfs-bus-iio-meas-spec |  15 +
- drivers/iio/common/Kconfig                        |   1 +
- drivers/iio/common/Makefile                       |   1 +
- drivers/iio/common/ms_sensors/Kconfig             |   6 +
- drivers/iio/common/ms_sensors/Makefile            |   5 +
- drivers/iio/common/ms_sensors/ms_sensors_i2c.c    | 634 ++++++++++++++++++++++
- drivers/iio/common/ms_sensors/ms_sensors_i2c.h    |  54 ++
- drivers/iio/humidity/Kconfig                      |  11 +
- drivers/iio/humidity/Makefile                     |   1 +
- drivers/iio/humidity/htu21.c                      | 254 +++++++++
- drivers/iio/pressure/Kconfig                      |  28 +-
- drivers/iio/pressure/Makefile                     |   1 +
- drivers/iio/pressure/ms5637.c                     | 192 +++++++
- drivers/iio/temperature/Kconfig                   |  22 +
- drivers/iio/temperature/Makefile                  |   2 +
- drivers/iio/temperature/tsys01.c                  | 232 ++++++++
- drivers/iio/temperature/tsys02d.c                 | 193 +++++++
- 17 files changed, 1650 insertions(+), 2 deletions(-)
- create mode 100644 Documentation/ABI/testing/sysfs-bus-iio-meas-spec
- create mode 100644 drivers/iio/common/ms_sensors/Kconfig
- create mode 100644 drivers/iio/common/ms_sensors/Makefile
- create mode 100644 drivers/iio/common/ms_sensors/ms_sensors_i2c.c
- create mode 100644 drivers/iio/common/ms_sensors/ms_sensors_i2c.h
- create mode 100644 drivers/iio/humidity/htu21.c
- create mode 100644 drivers/iio/pressure/ms5637.c
- create mode 100644 drivers/iio/temperature/tsys01.c
- create mode 100644 drivers/iio/temperature/tsys02d.c
-
--- 
-2.3.7
-
+Paul Bolle
