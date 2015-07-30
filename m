@@ -1,77 +1,102 @@
-Return-Path: <antoine.tenart@free-electrons.com>
-Date: Thu, 30 Jul 2015 14:47:43 +0200
-From: Antoine Tenart <antoine.tenart@free-electrons.com>
-To: Hartmut Knaack <knaack.h@gmx.de>
-Cc: linux-iio@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	Antoine Tenart <antoine.tenart@free-electrons.com>
-Subject: Re: [PATCH v2 3/8] iio:adc:berlin2-adc: use GENMASK and BIT for masks
-Message-ID: <20150730124743.GB16416@kwain>
-References: <cover.1438035998.git.knaack.h@gmx.de>
- <1e5a908f364c1fb18982be097ac83689820d64a8.1438035998.git.knaack.h@gmx.de>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-In-Reply-To: <1e5a908f364c1fb18982be097ac83689820d64a8.1438035998.git.knaack.h@gmx.de>
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from lists.s-osg.org ([54.187.51.154]:55147 "EHLO lists.s-osg.org"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1753787AbbG3QUa (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Thu, 30 Jul 2015 12:20:30 -0400
+From: Javier Martinez Canillas <javier@osg.samsung.com>
+To: linux-kernel@vger.kernel.org
+Cc: Javier Martinez Canillas <javier@osg.samsung.com>,
+	alsa-devel@alsa-project.org, Mark Brown <broonie@kernel.org>,
+	linux-iio@vger.kernel.org, linux-fbdev@vger.kernel.org,
+	linux-i2c@vger.kernel.org, linux-leds@vger.kernel.org,
+	Sebastian Reichel <sre@kernel.org>,
+	Chanwoo Choi <cw00.choi@samsung.com>,
+	Tomi Valkeinen <tomi.valkeinen@ti.com>,
+	lm-sensors@lm-sensors.org,
+	Alexandre Belloni <alexandre.belloni@free-electrons.com>,
+	linux-input@vger.kernel.org,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jean Delvare <jdelvare@suse.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	linux-media@vger.kernel.org, rtc-linux@googlegroups.com,
+	linux-pm@vger.kernel.org,
+	Mauro Carvalho Chehab <mchehab@osg.samsung.com>,
+	Guenter Roeck <linux@roeck-us.net>,
+	Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+	Wolfram Sang <wsa@the-dreams.de>,
+	Takashi Iwai <tiwai@suse.com>,
+	Liam Girdwood <lgirdwood@gmail.com>,
+	Sjoerd Simons <sjoerd.simons@collabora.co.uk>,
+	Lee Jones <lee.jones@linaro.org>,
+	Bryan Wu <cooloney@gmail.com>, linux-omap@vger.kernel.org,
+	Sakari Ailus <sakari.ailus@iki.fi>, linux-usb@vger.kernel.org,
+	linux-spi@vger.kernel.org,
+	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+	Tony Lindgren <tony@atomide.com>,
+	MyungJoo Ham <myungjoo.ham@samsung.com>,
+	linuxppc-dev@lists.ozlabs.org
+Subject: [PATCH 27/27] i2c: (RFC, don't apply) report OF style modalias when probing using DT
+Date: Thu, 30 Jul 2015 18:18:52 +0200
+Message-Id: <1438273132-20926-28-git-send-email-javier@osg.samsung.com>
+In-Reply-To: <1438273132-20926-1-git-send-email-javier@osg.samsung.com>
+References: <1438273132-20926-1-git-send-email-javier@osg.samsung.com>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Tue, Jul 28, 2015 at 12:38:59AM +0200, Hartmut Knaack wrote:
-> Make use of GENMASK for consecutive bitmasks and BIT for single bitmasks.
-> 
-> Signed-off-by: Hartmut Knaack <knaack.h@gmx.de>
+An I2C driver that supports both OF and legacy platforms, will have
+both a OF and I2C ID table. This means that when built as a module,
+the aliases will be filled from both tables but currently always an
+alias of the form i2c:<deviceId> is reported, e.g:
 
-Acked-by: Antoine Tenart <antoine.tenart@free-electrons.com>
+$ cat /sys/class/i2c-adapter/i2c-8/8-004b/modalias
+i2c:maxtouch
 
-> ---
->  drivers/iio/adc/berlin2-adc.c | 10 +++++-----
->  1 file changed, 5 insertions(+), 5 deletions(-)
-> 
-> diff --git a/drivers/iio/adc/berlin2-adc.c b/drivers/iio/adc/berlin2-adc.c
-> index b31bcf4c7c90..ed31a0a8d78e 100644
-> --- a/drivers/iio/adc/berlin2-adc.c
-> +++ b/drivers/iio/adc/berlin2-adc.c
-> @@ -27,13 +27,13 @@
->  #define  BERLIN2_SM_CTRL_SM_SOC_INT		BIT(1)
->  #define  BERLIN2_SM_CTRL_SOC_SM_INT		BIT(2)
->  #define  BERLIN2_SM_CTRL_ADC_SEL(x)		((x) << 5)	/* 0-15 */
-> -#define  BERLIN2_SM_CTRL_ADC_SEL_MASK		(0xf << 5)
-> +#define  BERLIN2_SM_CTRL_ADC_SEL_MASK		GENMASK(8, 5)
->  #define  BERLIN2_SM_CTRL_ADC_POWER		BIT(9)
->  #define  BERLIN2_SM_CTRL_ADC_CLKSEL_DIV2	(0x0 << 10)
->  #define  BERLIN2_SM_CTRL_ADC_CLKSEL_DIV3	(0x1 << 10)
->  #define  BERLIN2_SM_CTRL_ADC_CLKSEL_DIV4	(0x2 << 10)
->  #define  BERLIN2_SM_CTRL_ADC_CLKSEL_DIV8	(0x3 << 10)
-> -#define  BERLIN2_SM_CTRL_ADC_CLKSEL_MASK	(0x3 << 10)
-> +#define  BERLIN2_SM_CTRL_ADC_CLKSEL_MASK	GENMASK(11, 10)
->  #define  BERLIN2_SM_CTRL_ADC_START		BIT(12)
->  #define  BERLIN2_SM_CTRL_ADC_RESET		BIT(13)
->  #define  BERLIN2_SM_CTRL_ADC_BANDGAP_RDY	BIT(14)
-> @@ -50,7 +50,7 @@
->  #define  BERLIN2_SM_CTRL_TSEN_MODE_10_50	(0x1 << 22)	/* 10-50 C */
->  #define  BERLIN2_SM_CTRL_TSEN_RESET		BIT(29)
->  #define BERLIN2_SM_ADC_DATA			0x20
-> -#define  BERLIN2_SM_ADC_MASK			0x3ff
-> +#define  BERLIN2_SM_ADC_MASK			GENMASK(9, 0)
->  #define BERLIN2_SM_ADC_STATUS			0x1c
->  #define  BERLIN2_SM_ADC_STATUS_DATA_RDY(x)	BIT(x)		/* 0-15 */
->  #define  BERLIN2_SM_ADC_STATUS_DATA_RDY_MASK	GENMASK(15, 0)
-> @@ -65,9 +65,9 @@
->  #define  BERLIN2_SM_TSEN_CTRL_START		BIT(8)
->  #define  BERLIN2_SM_TSEN_CTRL_SETTLING_4	(0x0 << 21)	/* 4 us */
->  #define  BERLIN2_SM_TSEN_CTRL_SETTLING_12	(0x1 << 21)	/* 12 us */
-> -#define  BERLIN2_SM_TSEN_CTRL_SETTLING_MASK	(0x1 << 21)
-> +#define  BERLIN2_SM_TSEN_CTRL_SETTLING_MASK	BIT(21)
->  #define  BERLIN2_SM_TSEN_CTRL_TRIM(x)		((x) << 22)
-> -#define  BERLIN2_SM_TSEN_CTRL_TRIM_MASK		(0xf << 22)
-> +#define  BERLIN2_SM_TSEN_CTRL_TRIM_MASK		GENMASK(25, 22)
->  
->  struct berlin2_adc_priv {
->  	struct regmap		*regmap;
-> -- 
-> 2.4.6
-> 
+So if a device is probed by matching its compatible string, udev can
+get a MODALIAS uevent env var that doesn't match with one of the valid
+aliases so the module won't be auto-loaded.
 
+This patch changes the I2C core to report a OF related MODALIAS uevent
+(of:N*T*C) env var instead so the module can be auto-loaded and also
+report the correct alias using sysfs:
+
+$ cat /sys/class/i2c-adapter/i2c-8/8-004b/modalias
+of:NtrackpadT<NULL>Catmel,maxtouch
+
+Signed-off-by: Javier Martinez Canillas <javier@osg.samsung.com>
+
+
+
+---
+
+ drivers/i2c/i2c-core.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
+
+diff --git a/drivers/i2c/i2c-core.c b/drivers/i2c/i2c-core.c
+index 92dddfeb3f39..c0668c2ed9da 100644
+--- a/drivers/i2c/i2c-core.c
++++ b/drivers/i2c/i2c-core.c
+@@ -489,6 +489,10 @@ static int i2c_device_uevent(struct device *dev, struct kobj_uevent_env *env)
+ 	struct i2c_client	*client = to_i2c_client(dev);
+ 	int rc;
+ 
++	rc = of_device_uevent_modalias(dev, env);
++	if (rc != -ENODEV)
++		return rc;
++
+ 	rc = acpi_device_uevent_modalias(dev, env);
+ 	if (rc != -ENODEV)
+ 		return rc;
+@@ -726,6 +730,10 @@ show_modalias(struct device *dev, struct device_attribute *attr, char *buf)
+ 	struct i2c_client *client = to_i2c_client(dev);
+ 	int len;
+ 
++	len = of_device_get_modalias(dev, buf, PAGE_SIZE - 1);
++	if (len != -ENODEV)
++		return len;
++
+ 	len = acpi_device_modalias(dev, buf, PAGE_SIZE -1);
+ 	if (len != -ENODEV)
+ 		return len;
 -- 
-Antoine Ténart, Free Electrons
-Embedded Linux, Kernel and Android engineering
-http://free-electrons.com
+2.4.3
+
