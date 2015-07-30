@@ -1,57 +1,76 @@
-Return-Path: <Pengyu.Ma@windriver.com>
-Subject: Re: [PATCH] iio: declare struct to fix warning
-To: <jic23@kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-iio@vger.kernel.org>
-References: <1438247937-29955-1-git-send-email-pengyu.ma@windriver.com>
-From: Pengyu Ma <pengyu.ma@windriver.com>
-Message-ID: <55B9EDD7.4@windriver.com>
-Date: Thu, 30 Jul 2015 17:26:47 +0800
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from metis.ext.pengutronix.de ([92.198.50.35]:41450 "EHLO
+	metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750879AbbG3LoW (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 30 Jul 2015 07:44:22 -0400
+Date: Thu, 30 Jul 2015 13:44:15 +0200
+From: Markus Pargmann <mpa@pengutronix.de>
+To: Paul Bolle <pebolle@tiscali.nl>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+	Vlad Dogaru <vlad.dogaru@intel.com>, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org, kernel@pengutronix.de
+Subject: Re: [PATCH 2/7] iio: bmg160: Use i2c regmap instead of direct i2c
+ access
+Message-ID: <20150730114415.GP30895@pengutronix.de>
+References: <1438177569-18772-1-git-send-email-mpa@pengutronix.de>
+ <1438177569-18772-3-git-send-email-mpa@pengutronix.de>
+ <20150729183738.GL30895@pengutronix.de>
+ <1438253368.15571.31.camel@tiscali.nl>
 MIME-Version: 1.0
-In-Reply-To: <1438247937-29955-1-git-send-email-pengyu.ma@windriver.com>
-Content-Type: text/plain; charset="windows-1252"; format=flowed
-List-ID: <linux-iio@vger.kernel.org>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="3hAdtgBjtgL7p0NQ"
+In-Reply-To: <1438253368.15571.31.camel@tiscali.nl>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Since my email doesn't subscribe lkml, I will send again with my gmail
 
-Pengyu
+--3hAdtgBjtgL7p0NQ
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-On 07/30/2015 05:18 PM, Pengyu Ma wrote:
-> When compile iio related driver the following warning shown:
->
-> include/linux/iio/trigger.h:35:34: warning: 'struct iio_trigger'
-> declared inside parameter list
->    int (*set_trigger_state)(struct iio_trigger *trig, bool state);
->
-> include/linux/iio/trigger.h:38:18: warning: 'struct iio_dev'
-> declared inside parameter list
->             struct iio_dev *indio_dev);
->
-> 1st warning: 'struct iio_trigger' was used before declaration;
-> 2nd warning: 'struct iio_dev' was used without including head file.
->
-> Signed-off-by: Pengyu Ma <pengyu.ma@windriver.com>
-> ---
->   include/linux/iio/trigger.h | 3 +++
->   1 file changed, 3 insertions(+)
->
-> diff --git a/include/linux/iio/trigger.h b/include/linux/iio/trigger.h
-> index 68f46cd..cbe4286 100644
-> --- a/include/linux/iio/trigger.h
-> +++ b/include/linux/iio/trigger.h
-> @@ -9,6 +9,7 @@
->   #include <linux/irq.h>
->   #include <linux/module.h>
->   #include <linux/atomic.h>
-> +#include <linux/iio/iio.h>
->   
->   #ifndef _IIO_TRIGGER_H_
->   #define _IIO_TRIGGER_H_
-> @@ -18,6 +19,8 @@ struct iio_subirq {
->   	bool enabled;
->   };
->   
-> +struct iio_trigger; /* forward declaration */
-> +
->   /**
->    * struct iio_trigger_ops - operations structure for an iio_trigger.
->    * @owner:		used to monitor usage count of the trigger.
+On Thu, Jul 30, 2015 at 12:49:28PM +0200, Paul Bolle wrote:
+> On wo, 2015-07-29 at 20:37 +0200, Markus Pargmann wrote:
+> > On Wed, Jul 29, 2015 at 03:46:04PM +0200, Markus Pargmann wrote:
+> > > +struct regmap_config bmg160_regmap_i2c_conf =3D {
+> >=20
+> > This should probably be static const ...
+>=20
+> Likewise for "bmg160_regmap_conf", which you add in 7/7, right?
+
+Yes, thanks.
+
+Best regards,
+
+Markus
+
+--=20
+Pengutronix e.K.                           |                             |
+Industrial Linux Solutions                 | http://www.pengutronix.de/  |
+Peiner Str. 6-8, 31137 Hildesheim, Germany | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+
+--3hAdtgBjtgL7p0NQ
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
+
+iQIcBAEBAgAGBQJVug4PAAoJEEpcgKtcEGQQe2AP/ijpYaNWUSqQ4EjJblUjCRKk
+C7qBrnYHRMrqriJau05isyEAHz/MZnZxwsj938S8HFBvxyo6TgnlrnhdbKDMcAv/
+xsrfnOfGNzRzXazzQWfIZ6vlXNVbjty5eKK2gNOTrK/XPiZB7SWGrrE9pVzBnuSp
+ACmL2FXjENLpoGldPB/s/N+tst/lq96EQ8FmejTO5xDBvU+OAfZhKu5XdPxtaC2b
+gsd+NRVNvL0Cmd1z8SQTLk7W8WYNioOBDgskavitl2KKJgNeiNx3LwgtaH0uQ4xF
+S09CvjnFWlmgDJ9Pm/AZKrx/kjr+gwIWeueGDMDECBU068H3m5hYID9vkAY+/h59
+eVOk0Hjxv2fh6Pn5WC9fQoudDJrRc/UgdQ0ryJcJRP6Y8bzr0ZXA49ht46Lrwyjt
+ddihC3wERmxJcAsWBqqdI3cs0l0mVUGPCnQDqEACJilX56wjyk1qS4bnOunp0RkF
+dDRibFJMvCOF8lpZK9SYphTicAxaDsJ38MoCCpIfXo6Wq3f2zpVz4uDwhfUp0nwb
+KTFN7+JctU9BZXmSQdDwE7CiLDbU2MCm8a1Qz69XNx4tKudd40NSmDVVtXgIo76Z
+yp4qeeHgP9UxaClBMFeeu98MGS9A9wLwoZEC1Ep8ex73JMDXUqeQUeE2dq9xx/+a
+qphctoj5FBm9sgrYiTZC
+=+Fcn
+-----END PGP SIGNATURE-----
+
+--3hAdtgBjtgL7p0NQ--
