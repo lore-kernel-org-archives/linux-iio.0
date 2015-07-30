@@ -1,109 +1,104 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from lists.s-osg.org ([54.187.51.154]:55089 "EHLO lists.s-osg.org"
+Received: from lists.s-osg.org ([54.187.51.154]:55168 "EHLO lists.s-osg.org"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1753674AbbG3QUF (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Thu, 30 Jul 2015 12:20:05 -0400
-From: Javier Martinez Canillas <javier@osg.samsung.com>
-To: linux-kernel@vger.kernel.org
-Cc: Javier Martinez Canillas <javier@osg.samsung.com>,
-	linux-iio@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>
-Subject: [PATCH 17/27] iio: Export OF module alias information in missing drivers
-Date: Thu, 30 Jul 2015 18:18:42 +0200
-Message-Id: <1438273132-20926-18-git-send-email-javier@osg.samsung.com>
-In-Reply-To: <1438273132-20926-1-git-send-email-javier@osg.samsung.com>
+	id S1754003AbbG3RN4 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Thu, 30 Jul 2015 13:13:56 -0400
+Subject: Re: [PATCH 00/27] Export I2C and OF module aliases in missing drivers
+To: Dmitry Torokhov <dmitry.torokhov@gmail.com>
 References: <1438273132-20926-1-git-send-email-javier@osg.samsung.com>
+ <20150730163517.GA13165@dtor-ws> <20150730163708.GB13165@dtor-ws>
+From: Javier Martinez Canillas <javier@osg.samsung.com>
+Cc: linux-kernel@vger.kernel.org, alsa-devel@alsa-project.org,
+	Mark Brown <broonie@kernel.org>, linux-iio@vger.kernel.org,
+	linux-fbdev@vger.kernel.org, linux-i2c@vger.kernel.org,
+	linux-leds@vger.kernel.org,
+	Alexandre Belloni <alexandre.belloni@free-electrons.com>,
+	Chanwoo Choi <cw00.choi@samsung.com>,
+	Tomi Valkeinen <tomi.valkeinen@ti.com>,
+	lm-sensors@lm-sensors.org, Sebastian Reichel <sre@kernel.org>,
+	linux-input@vger.kernel.org,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jean Delvare <jdelvare@suse.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	linux-media@vger.kernel.org, rtc-linux@googlegroups.com,
+	linux-pm@vger.kernel.org,
+	Mauro Carvalho Chehab <mchehab@osg.samsung.com>,
+	Guenter Roeck <linux@roeck-us.net>,
+	Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+	Wolfram Sang <wsa@the-dreams.de>,
+	Takashi Iwai <tiwai@suse.com>,
+	Liam Girdwood <lgirdwood@gmail.com>,
+	Sjoerd Simons <sjoerd.simons@collabora.co.uk>,
+	Lee Jones <lee.jones@linaro.org>,
+	Bryan Wu <cooloney@gmail.com>, linux-omap@vger.kernel.org,
+	Sakari Ailus <sakari.ailus@iki.fi>, linux-usb@vger.kernel.org,
+	linux-spi@vger.kernel.org, Tony Lindgren <tony@atomide.com>,
+	MyungJoo Ham <myungjoo.ham@samsung.com>,
+	linuxppc-dev@lists.ozlabs.org
+Message-ID: <55BA5B48.1050005@osg.samsung.com>
+Date: Thu, 30 Jul 2015 19:13:44 +0200
+MIME-Version: 1.0
+In-Reply-To: <20150730163708.GB13165@dtor-ws>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-The I2C core always reports the MODALIAS uevent as "i2c:<client name"
-regardless if the driver was matched using the I2C id_table or the
-of_match_table. So technically there's no need for a driver to export
-the OF table since currently it's not used.
+Hello Dmitry,
 
-In fact, the I2C device ID table is mandatory for I2C drivers since
-a i2c_device_id is passed to the driver's probe function even if the
-I2C core used the OF table to match the driver.
+Thanks a lot for your feedback.
 
-And since the I2C core uses different tables, OF-only drivers needs to
-have duplicated data that has to be kept in sync and also the dev node
-compatible manufacturer prefix is stripped when reporting the MODALIAS.
+On 07/30/2015 06:37 PM, Dmitry Torokhov wrote:
+> On Thu, Jul 30, 2015 at 09:35:17AM -0700, Dmitry Torokhov wrote:
+>> Hi Javier,
+>>
+>> On Thu, Jul 30, 2015 at 06:18:25PM +0200, Javier Martinez Canillas wrote:
+>>> Hello,
+>>>
+>>> Short version:
+>>>
+>>> This series add the missing MODULE_DEVICE_TABLE() for OF and I2C tables
+>>> to export that information so modules have the correct aliases built-in
+>>> and autoloading works correctly.
+>>>
+>>> Longer version:
+>>>
+>>> Currently it's mandatory for I2C drivers to have an I2C device ID table
+>>> regardless if the device was registered using platform data or OF. This
+>>> is because the I2C core needs an I2C device ID table for two reasons:
+>>>
+>>> 1) Match the I2C client with a I2C device ID so a struct i2c_device_id
+>>>    is passed to the I2C driver probe() function.
+>>>
+>>> 2) Export the module aliases from the I2C device ID table so userspace
+>>>    can auto-load the correct module. This is because i2c_device_uevent
+>>>    always reports a MODALIAS of the form i2c:<client->name>.
+>>
+>> Why are we not fixing this? We emit specially carved uevent for
+>> ACPI-based devices, why not the same for OF? Platform bus does this...
+> 
+> Ah, now I see the 27/27 patch. I think it is exactly what we need. And
 
-To avoid the above, the I2C core behavior may be changed in the future
-to not require an I2C device table for OF-only drivers and report the
-OF module alias. So, it's better to also export the OF table to prevent
-breaking module autoloading if that happens.
+Yes, patch 27/27 is needed but the problem is as I explained before that
+there are drivers relying on the current behavior. The item c) in the list
+of issues that I mentioned. So those drivers need to be fixed before that
+patch is merged...
 
-Signed-off-by: Javier Martinez Canillas <javier@osg.samsung.com>
+> probably for SPI bus as well.
+>
 
----
+Yes, I didn't mention SPI because the cover letter became too long
+already but it does indeed have the same issue and I discussed this
+with  Mark already some time ago [0].
 
- drivers/iio/accel/mma8452.c      | 1 +
- drivers/iio/light/cm32181.c      | 1 +
- drivers/iio/light/cm3232.c       | 1 +
- drivers/iio/light/cm36651.c      | 1 +
- drivers/iio/light/gp2ap020a00f.c | 1 +
- 5 files changed, 5 insertions(+)
+Once I2C uevent report is fixed, I plan to do the same for SPI.
 
-diff --git a/drivers/iio/accel/mma8452.c b/drivers/iio/accel/mma8452.c
-index 13ea1ea23328..b7ad3dce6ff4 100644
---- a/drivers/iio/accel/mma8452.c
-+++ b/drivers/iio/accel/mma8452.c
-@@ -968,6 +968,7 @@ static const struct of_device_id mma8452_dt_ids[] = {
- 	{ .compatible = "fsl,mma8452" },
- 	{ }
- };
-+MODULE_DEVICE_TABLE(of, mma8452_dt_ids);
- 
- static struct i2c_driver mma8452_driver = {
- 	.driver = {
-diff --git a/drivers/iio/light/cm32181.c b/drivers/iio/light/cm32181.c
-index 1c0de2f8885d..d6fd0dace74f 100644
---- a/drivers/iio/light/cm32181.c
-+++ b/drivers/iio/light/cm32181.c
-@@ -353,6 +353,7 @@ static const struct of_device_id cm32181_of_match[] = {
- 	{ .compatible = "capella,cm32181" },
- 	{ }
- };
-+MODULE_DEVICE_TABLE(of, cm32181_of_match);
- 
- static struct i2c_driver cm32181_driver = {
- 	.driver = {
-diff --git a/drivers/iio/light/cm3232.c b/drivers/iio/light/cm3232.c
-index 1b508c65877c..fe89b6823217 100644
---- a/drivers/iio/light/cm3232.c
-+++ b/drivers/iio/light/cm3232.c
-@@ -417,6 +417,7 @@ static const struct of_device_id cm3232_of_match[] = {
- 	{.compatible = "capella,cm3232"},
- 	{}
- };
-+MODULE_DEVICE_TABLE(of, cm3232_of_match);
- 
- static struct i2c_driver cm3232_driver = {
- 	.driver = {
-diff --git a/drivers/iio/light/cm36651.c b/drivers/iio/light/cm36651.c
-index 2a39e141e90c..c8d7b5ea7e78 100644
---- a/drivers/iio/light/cm36651.c
-+++ b/drivers/iio/light/cm36651.c
-@@ -731,6 +731,7 @@ static const struct of_device_id cm36651_of_match[] = {
- 	{ .compatible = "capella,cm36651" },
- 	{ }
- };
-+MODULE_DEVICE_TABLE(of, cm36651_of_match);
- 
- static struct i2c_driver cm36651_driver = {
- 	.driver = {
-diff --git a/drivers/iio/light/gp2ap020a00f.c b/drivers/iio/light/gp2ap020a00f.c
-index 0334a814b5eb..6d41086f7c64 100644
---- a/drivers/iio/light/gp2ap020a00f.c
-+++ b/drivers/iio/light/gp2ap020a00f.c
-@@ -1634,6 +1634,7 @@ static const struct of_device_id gp2ap020a00f_of_match[] = {
- 	{ .compatible = "sharp,gp2ap020a00f" },
- 	{ }
- };
-+MODULE_DEVICE_TABLE(of, gp2ap020a00f_of_match);
- #endif
- 
- static struct i2c_driver gp2ap020a00f_driver = {
+> Thanks.
+> 
+
+[0]: https://lkml.org/lkml/2014/9/11/458
+
+Best regards,
 -- 
-2.4.3
-
+Javier Martinez Canillas
+Open Source Group
+Samsung Research America
