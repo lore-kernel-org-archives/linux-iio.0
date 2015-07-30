@@ -1,76 +1,78 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from metis.ext.pengutronix.de ([92.198.50.35]:41450 "EHLO
-	metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750879AbbG3LoW (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 30 Jul 2015 07:44:22 -0400
-Date: Thu, 30 Jul 2015 13:44:15 +0200
-From: Markus Pargmann <mpa@pengutronix.de>
-To: Paul Bolle <pebolle@tiscali.nl>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
-	Vlad Dogaru <vlad.dogaru@intel.com>, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org, kernel@pengutronix.de
-Subject: Re: [PATCH 2/7] iio: bmg160: Use i2c regmap instead of direct i2c
- access
-Message-ID: <20150730114415.GP30895@pengutronix.de>
-References: <1438177569-18772-1-git-send-email-mpa@pengutronix.de>
- <1438177569-18772-3-git-send-email-mpa@pengutronix.de>
- <20150729183738.GL30895@pengutronix.de>
- <1438253368.15571.31.camel@tiscali.nl>
+Received: from down.free-electrons.com ([37.187.137.238]:36322 "EHLO
+	mail.free-electrons.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S1751925AbbG3MrI (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 30 Jul 2015 08:47:08 -0400
+Date: Thu, 30 Jul 2015 14:47:06 +0200
+From: Antoine Tenart <antoine.tenart@free-electrons.com>
+To: Hartmut Knaack <knaack.h@gmx.de>
+Cc: linux-iio@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Antoine Tenart <antoine.tenart@free-electrons.com>
+Subject: Re: [PATCH v2 1/8] iio:adc:berlin2-adc: Fix register definition
+Message-ID: <20150730124706.GA16416@kwain>
+References: <cover.1438035998.git.knaack.h@gmx.de>
+ <b29e36386c3542057638334db8049cc64486157f.1438035998.git.knaack.h@gmx.de>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="3hAdtgBjtgL7p0NQ"
-In-Reply-To: <1438253368.15571.31.camel@tiscali.nl>
+Content-Type: text/plain; charset=iso-8859-1
+In-Reply-To: <b29e36386c3542057638334db8049cc64486157f.1438035998.git.knaack.h@gmx.de>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
+On Tue, Jul 28, 2015 at 12:38:57AM +0200, Hartmut Knaack wrote:
+> Active channel number is stored in BERLIN2_SM_CTRL as value, instead of a
+> bit map.
+> The masks for channel interrupts and data ready are a 16 bits wide bit
+> map each, instead of just 4 bits.
+> 
+> Also correct the data mask for the temperature sensor, which was
+> Reported-by: Antoine Tenart <antoine.tenart@free-electrons.com>
+> 
+> Signed-off-by: Hartmut Knaack <knaack.h@gmx.de>
 
---3hAdtgBjtgL7p0NQ
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Acked-by: Antoine Tenart <antoine.tenart@free-electrons.com>
 
-On Thu, Jul 30, 2015 at 12:49:28PM +0200, Paul Bolle wrote:
-> On wo, 2015-07-29 at 20:37 +0200, Markus Pargmann wrote:
-> > On Wed, Jul 29, 2015 at 03:46:04PM +0200, Markus Pargmann wrote:
-> > > +struct regmap_config bmg160_regmap_i2c_conf =3D {
-> >=20
-> > This should probably be static const ...
->=20
-> Likewise for "bmg160_regmap_conf", which you add in 7/7, right?
+> ---
+>  drivers/iio/adc/berlin2-adc.c | 8 ++++----
+>  1 file changed, 4 insertions(+), 4 deletions(-)
+> 
+> diff --git a/drivers/iio/adc/berlin2-adc.c b/drivers/iio/adc/berlin2-adc.c
+> index aecc9ad995ad..26fa6e6cb624 100644
+> --- a/drivers/iio/adc/berlin2-adc.c
+> +++ b/drivers/iio/adc/berlin2-adc.c
+> @@ -26,7 +26,7 @@
+>  #define BERLIN2_SM_CTRL				0x14
+>  #define  BERLIN2_SM_CTRL_SM_SOC_INT		BIT(1)
+>  #define  BERLIN2_SM_CTRL_SOC_SM_INT		BIT(2)
+> -#define  BERLIN2_SM_CTRL_ADC_SEL(x)		(BIT(x) << 5)	/* 0-15 */
+> +#define  BERLIN2_SM_CTRL_ADC_SEL(x)		((x) << 5)	/* 0-15 */
+>  #define  BERLIN2_SM_CTRL_ADC_SEL_MASK		(0xf << 5)
+>  #define  BERLIN2_SM_CTRL_ADC_POWER		BIT(9)
+>  #define  BERLIN2_SM_CTRL_ADC_CLKSEL_DIV2	(0x0 << 10)
+> @@ -53,14 +53,14 @@
+>  #define  BERLIN2_SM_ADC_MASK			0x3ff
+>  #define BERLIN2_SM_ADC_STATUS			0x1c
+>  #define  BERLIN2_SM_ADC_STATUS_DATA_RDY(x)	BIT(x)		/* 0-15 */
+> -#define  BERLIN2_SM_ADC_STATUS_DATA_RDY_MASK	0xf
+> +#define  BERLIN2_SM_ADC_STATUS_DATA_RDY_MASK	GENMASK(15, 0)
+>  #define  BERLIN2_SM_ADC_STATUS_INT_EN(x)	(BIT(x) << 16)	/* 0-15 */
+> -#define  BERLIN2_SM_ADC_STATUS_INT_EN_MASK	(0xf << 16)
+> +#define  BERLIN2_SM_ADC_STATUS_INT_EN_MASK	GENMASK(31, 16)
+>  #define BERLIN2_SM_TSEN_STATUS			0x24
+>  #define  BERLIN2_SM_TSEN_STATUS_DATA_RDY	BIT(0)
+>  #define  BERLIN2_SM_TSEN_STATUS_INT_EN		BIT(1)
+>  #define BERLIN2_SM_TSEN_DATA			0x28
+> -#define  BERLIN2_SM_TSEN_MASK			0xfff
+> +#define  BERLIN2_SM_TSEN_MASK			GENMASK(9, 0)
+>  #define BERLIN2_SM_TSEN_CTRL			0x74
+>  #define  BERLIN2_SM_TSEN_CTRL_START		BIT(8)
+>  #define  BERLIN2_SM_TSEN_CTRL_SETTLING_4	(0x0 << 21)	/* 4 us */
+> -- 
+> 2.4.6
+> 
 
-Yes, thanks.
-
-Best regards,
-
-Markus
-
---=20
-Pengutronix e.K.                           |                             |
-Industrial Linux Solutions                 | http://www.pengutronix.de/  |
-Peiner Str. 6-8, 31137 Hildesheim, Germany | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
-
---3hAdtgBjtgL7p0NQ
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
-
-iQIcBAEBAgAGBQJVug4PAAoJEEpcgKtcEGQQe2AP/ijpYaNWUSqQ4EjJblUjCRKk
-C7qBrnYHRMrqriJau05isyEAHz/MZnZxwsj938S8HFBvxyo6TgnlrnhdbKDMcAv/
-xsrfnOfGNzRzXazzQWfIZ6vlXNVbjty5eKK2gNOTrK/XPiZB7SWGrrE9pVzBnuSp
-ACmL2FXjENLpoGldPB/s/N+tst/lq96EQ8FmejTO5xDBvU+OAfZhKu5XdPxtaC2b
-gsd+NRVNvL0Cmd1z8SQTLk7W8WYNioOBDgskavitl2KKJgNeiNx3LwgtaH0uQ4xF
-S09CvjnFWlmgDJ9Pm/AZKrx/kjr+gwIWeueGDMDECBU068H3m5hYID9vkAY+/h59
-eVOk0Hjxv2fh6Pn5WC9fQoudDJrRc/UgdQ0ryJcJRP6Y8bzr0ZXA49ht46Lrwyjt
-ddihC3wERmxJcAsWBqqdI3cs0l0mVUGPCnQDqEACJilX56wjyk1qS4bnOunp0RkF
-dDRibFJMvCOF8lpZK9SYphTicAxaDsJ38MoCCpIfXo6Wq3f2zpVz4uDwhfUp0nwb
-KTFN7+JctU9BZXmSQdDwE7CiLDbU2MCm8a1Qz69XNx4tKudd40NSmDVVtXgIo76Z
-yp4qeeHgP9UxaClBMFeeu98MGS9A9wLwoZEC1Ep8ex73JMDXUqeQUeE2dq9xx/+a
-qphctoj5FBm9sgrYiTZC
-=+Fcn
------END PGP SIGNATURE-----
-
---3hAdtgBjtgL7p0NQ--
+-- 
+Antoine Ténart, Free Electrons
+Embedded Linux, Kernel and Android engineering
+http://free-electrons.com
