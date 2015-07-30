@@ -1,36 +1,57 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from lb1-smtp-cloud3.xs4all.net ([194.109.24.22]:57771 "EHLO
-	lb1-smtp-cloud3.xs4all.net" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1751177AbbG3Ktc (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 30 Jul 2015 06:49:32 -0400
-Message-ID: <1438253368.15571.31.camel@tiscali.nl>
-Subject: Re: [PATCH 2/7] iio: bmg160: Use i2c regmap instead of direct i2c
- access
-From: Paul Bolle <pebolle@tiscali.nl>
-To: Markus Pargmann <mpa@pengutronix.de>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
-	Vlad Dogaru <vlad.dogaru@intel.com>, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org, kernel@pengutronix.de
-Date: Thu, 30 Jul 2015 12:49:28 +0200
-In-Reply-To: <20150729183738.GL30895@pengutronix.de>
-References: <1438177569-18772-1-git-send-email-mpa@pengutronix.de>
-	 <1438177569-18772-3-git-send-email-mpa@pengutronix.de>
-	 <20150729183738.GL30895@pengutronix.de>
-Content-Type: text/plain; charset="UTF-8"
-Mime-Version: 1.0
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <Pengyu.Ma@windriver.com>
+Subject: Re: [PATCH] iio: declare struct to fix warning
+To: <jic23@kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-iio@vger.kernel.org>
+References: <1438247937-29955-1-git-send-email-pengyu.ma@windriver.com>
+From: Pengyu Ma <pengyu.ma@windriver.com>
+Message-ID: <55B9EDD7.4@windriver.com>
+Date: Thu, 30 Jul 2015 17:26:47 +0800
+MIME-Version: 1.0
+In-Reply-To: <1438247937-29955-1-git-send-email-pengyu.ma@windriver.com>
+Content-Type: text/plain; charset="windows-1252"; format=flowed
+List-ID: <linux-iio@vger.kernel.org>
 
-On wo, 2015-07-29 at 20:37 +0200, Markus Pargmann wrote:
-> On Wed, Jul 29, 2015 at 03:46:04PM +0200, Markus Pargmann wrote:
-> > +struct regmap_config bmg160_regmap_i2c_conf = {
-> 
-> This should probably be static const ...
+Since my email doesn't subscribe lkml, I will send again with my gmail
 
-Likewise for "bmg160_regmap_conf", which you add in 7/7, right?
+Pengyu
 
-Thanks,
-
-
-Paul Bolle
+On 07/30/2015 05:18 PM, Pengyu Ma wrote:
+> When compile iio related driver the following warning shown:
+>
+> include/linux/iio/trigger.h:35:34: warning: 'struct iio_trigger'
+> declared inside parameter list
+>    int (*set_trigger_state)(struct iio_trigger *trig, bool state);
+>
+> include/linux/iio/trigger.h:38:18: warning: 'struct iio_dev'
+> declared inside parameter list
+>             struct iio_dev *indio_dev);
+>
+> 1st warning: 'struct iio_trigger' was used before declaration;
+> 2nd warning: 'struct iio_dev' was used without including head file.
+>
+> Signed-off-by: Pengyu Ma <pengyu.ma@windriver.com>
+> ---
+>   include/linux/iio/trigger.h | 3 +++
+>   1 file changed, 3 insertions(+)
+>
+> diff --git a/include/linux/iio/trigger.h b/include/linux/iio/trigger.h
+> index 68f46cd..cbe4286 100644
+> --- a/include/linux/iio/trigger.h
+> +++ b/include/linux/iio/trigger.h
+> @@ -9,6 +9,7 @@
+>   #include <linux/irq.h>
+>   #include <linux/module.h>
+>   #include <linux/atomic.h>
+> +#include <linux/iio/iio.h>
+>   
+>   #ifndef _IIO_TRIGGER_H_
+>   #define _IIO_TRIGGER_H_
+> @@ -18,6 +19,8 @@ struct iio_subirq {
+>   	bool enabled;
+>   };
+>   
+> +struct iio_trigger; /* forward declaration */
+> +
+>   /**
+>    * struct iio_trigger_ops - operations structure for an iio_trigger.
+>    * @owner:		used to monitor usage count of the trigger.
