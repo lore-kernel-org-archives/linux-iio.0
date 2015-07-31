@@ -1,23 +1,72 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga01.intel.com ([192.55.52.88]:17540 "EHLO mga01.intel.com"
+Received: from mout.gmx.net ([212.227.15.19]:65038 "EHLO mout.gmx.net"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751989AbbGaTpo (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Fri, 31 Jul 2015 15:45:44 -0400
-From: "Pandruvada, Srinivas" <srinivas.pandruvada@intel.com>
-To: "vladimir.barinov@cogentembedded.com"
-	<vladimir.barinov@cogentembedded.com>
-CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Subject: Re: [PATCH v3 4/7] iio: trigger: Add periodic polling to SYSFS
- trigger
-Date: Fri, 31 Jul 2015 19:45:43 +0000
-Message-ID: <1438371660.10028.11.camel@spandruv-DESK3.jf.intel.com>
-Content-Type: text/plain; charset="utf-8"
+	id S1751974AbbGaWyk (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Fri, 31 Jul 2015 18:54:40 -0400
+Message-ID: <55BBFCA6.1090803@gmx.de>
+Date: Sat, 01 Aug 2015 00:54:30 +0200
+From: Hartmut Knaack <knaack.h@gmx.de>
 MIME-Version: 1.0
+To: Crt Mori <cmo@melexis.com>
+CC: linux-iio@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Tiberiu Breana <tiberiu.a.breana@intel.com>
+Subject: Re: [PATCH v2 2/7] iio:accel:stk8312: check for invalid value
+References: <cover.1438204273.git.knaack.h@gmx.de> <f406a1b129207e44ed3c6a07a8d44e16f6f3f74f.1438204273.git.knaack.h@gmx.de> <CAKv63utc6+a5XS5eLkzggcnvcrfN=zTsTAJfNNethnPmr2S9Yg@mail.gmail.com>
+In-Reply-To: <CAKv63utc6+a5XS5eLkzggcnvcrfN=zTsTAJfNNethnPmr2S9Yg@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-DQo+PkFkZCBwZXJpb2RpYyBwb2xsaW5nIGZ1bmN0aW9uYWxpdHkgdG8gU1lTRlMgdHJpZ2dlciAN
-ClsuLl0NCj4+K1doYXQ6IC9zeXMvYnVzL2lpby9kZXZpY2VzL3RyaWdnZXJYL3RyaWdnZXJfcG9s
-bCANCg0KVGVzdGVkIHRoaXMgcGF0Y2gsIHdvcmtzIGdyZWF0LiBJIHByZWZlciB0aGlzIHRvIHRv
-IGJlIGNhbGxlZA0KInRyaWdnZXJfcG9sbF9tcyIuDQpTb3JyeSBmb3IgdGhlIG1haWwgZm9ybWF0
-Lg0KDQpUaGFua3MsDQpTcmluaXZhcw0K
+Crt Mori schrieb am 30.07.2015 um 09:09:
+> On 29 July 2015 at 23:39, Hartmut Knaack <knaack.h@gmx.de> wrote:
+>> Revision 1.2 of the datasheet recommends on page 22 to only write non-zero
+>> values read from OTP register 0x70 into AFECTRL register.
+>>
+>> Signed-off-by: Hartmut Knaack <knaack.h@gmx.de>
+>> Reviewed-by: Tiberiu Breana <tiberiu.a.breana@intel.com>
+>> ---
+>>  drivers/iio/accel/stk8312.c | 2 ++
+>>  1 file changed, 2 insertions(+)
+>>
+>> diff --git a/drivers/iio/accel/stk8312.c b/drivers/iio/accel/stk8312.c
+>> index c2bd1444d6da..6592be8e6377 100644
+>> --- a/drivers/iio/accel/stk8312.c
+>> +++ b/drivers/iio/accel/stk8312.c
+>> @@ -150,6 +150,8 @@ static int stk8312_otp_init(struct stk8312_data *data)
+>>                 goto exit_err;
+>>
+>>         ret = i2c_smbus_read_byte_data(client, STK8312_REG_OTPDATA);
+>> +       if (ret == 0)
+>> +               ret = -EINVAL;
+> This seems fishy. We have a macro value written to client which cannot really
+> give us EINVAL, except if we are checking the client, but then this would only
+> fail if we had some other i2c device on the line with stk8312 address, which
+> would ack other i2c commands above this.
+
+I'm not sure to really understand your point, or if you actually understood
+this patch. I'm not totally happy with EINVAL as error code, but it just
+seemed to fit better than any other possible error code. Of course I would
+be happy to get recommendations for better fitting codes.
+A short explanation why this is done: in the sample code provided in the
+data sheet, it is mentioned that if the value read from that register 0x70
+is zero, then it should not be written into the AFECTRL register. So, that's
+what I have addressed here.
+
+>>         if (ret < 0)
+>>                 goto exit_err;
+>>
+>> --
+>> 2.4.6
+>>
+>> --
+>> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+>> the body of a message to majordomo@vger.kernel.org
+>> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> 
+
