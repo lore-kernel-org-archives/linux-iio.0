@@ -1,104 +1,118 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from lists.s-osg.org ([54.187.51.154]:55168 "EHLO lists.s-osg.org"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1754003AbbG3RN4 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Thu, 30 Jul 2015 13:13:56 -0400
-Subject: Re: [PATCH 00/27] Export I2C and OF module aliases in missing drivers
-To: Dmitry Torokhov <dmitry.torokhov@gmail.com>
-References: <1438273132-20926-1-git-send-email-javier@osg.samsung.com>
- <20150730163517.GA13165@dtor-ws> <20150730163708.GB13165@dtor-ws>
-From: Javier Martinez Canillas <javier@osg.samsung.com>
-Cc: linux-kernel@vger.kernel.org, alsa-devel@alsa-project.org,
-	Mark Brown <broonie@kernel.org>, linux-iio@vger.kernel.org,
-	linux-fbdev@vger.kernel.org, linux-i2c@vger.kernel.org,
-	linux-leds@vger.kernel.org,
-	Alexandre Belloni <alexandre.belloni@free-electrons.com>,
-	Chanwoo Choi <cw00.choi@samsung.com>,
-	Tomi Valkeinen <tomi.valkeinen@ti.com>,
-	lm-sensors@lm-sensors.org, Sebastian Reichel <sre@kernel.org>,
-	linux-input@vger.kernel.org,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jean Delvare <jdelvare@suse.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	linux-media@vger.kernel.org, rtc-linux@googlegroups.com,
-	linux-pm@vger.kernel.org,
-	Mauro Carvalho Chehab <mchehab@osg.samsung.com>,
-	Guenter Roeck <linux@roeck-us.net>,
-	Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-	Wolfram Sang <wsa@the-dreams.de>,
-	Takashi Iwai <tiwai@suse.com>,
-	Liam Girdwood <lgirdwood@gmail.com>,
-	Sjoerd Simons <sjoerd.simons@collabora.co.uk>,
-	Lee Jones <lee.jones@linaro.org>,
-	Bryan Wu <cooloney@gmail.com>, linux-omap@vger.kernel.org,
-	Sakari Ailus <sakari.ailus@iki.fi>, linux-usb@vger.kernel.org,
-	linux-spi@vger.kernel.org, Tony Lindgren <tony@atomide.com>,
-	MyungJoo Ham <myungjoo.ham@samsung.com>,
-	linuxppc-dev@lists.ozlabs.org
-Message-ID: <55BA5B48.1050005@osg.samsung.com>
-Date: Thu, 30 Jul 2015 19:13:44 +0200
+Received: from mail-lb0-f170.google.com ([209.85.217.170]:35080 "EHLO
+	mail-lb0-f170.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751235AbbGaNsb (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 31 Jul 2015 09:48:31 -0400
 MIME-Version: 1.0
-In-Reply-To: <20150730163708.GB13165@dtor-ws>
-Content-Type: text/plain; charset=windows-1252
+In-Reply-To: <CAKv63usNYi6RRVRfG9BMLtTCkdVoefm2K2mMd+wchS0avZ6yXA@mail.gmail.com>
+References: <1438094234-2894-1-git-send-email-daniel.baluta@intel.com>
+	<1438094234-2894-2-git-send-email-daniel.baluta@intel.com>
+	<CAKv63usNYi6RRVRfG9BMLtTCkdVoefm2K2mMd+wchS0avZ6yXA@mail.gmail.com>
+Date: Fri, 31 Jul 2015 16:48:28 +0300
+Message-ID: <CAEnQRZASTP2i=nGuUodXjeU44JK5pTuBSF4Y-zFw-nJsWLc_Kg@mail.gmail.com>
+Subject: Re: [PATCH v3] DocBook: Add initial documentation for IIO
+From: Daniel Baluta <daniel.baluta@intel.com>
+To: Crt Mori <cmo@melexis.com>
+Cc: Daniel Baluta <daniel.baluta@intel.com>,
+	Johnathan Iain Cameron <jic23@kernel.org>,
+	Jonathan Corbet <corbet@lwn.net>,
+	Randy Dunlap <rdunlap@infradead.org>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	Herbert Xu <herbert@gondor.apana.org.au>, smueller@chronox.de,
+	mmarek@suse.cz, linux-doc@vger.kernel.org,
+	Cristina Georgiana Opriceana <cristina.opriceana@gmail.com>
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Hello Dmitry,
+Hi,
 
-Thanks a lot for your feedback.
+Thanks a lot for review.
 
-On 07/30/2015 06:37 PM, Dmitry Torokhov wrote:
-> On Thu, Jul 30, 2015 at 09:35:17AM -0700, Dmitry Torokhov wrote:
->> Hi Javier,
->>
->> On Thu, Jul 30, 2015 at 06:18:25PM +0200, Javier Martinez Canillas wrote:
->>> Hello,
->>>
->>> Short version:
->>>
->>> This series add the missing MODULE_DEVICE_TABLE() for OF and I2C tables
->>> to export that information so modules have the correct aliases built-in
->>> and autoloading works correctly.
->>>
->>> Longer version:
->>>
->>> Currently it's mandatory for I2C drivers to have an I2C device ID table
->>> regardless if the device was registered using platform data or OF. This
->>> is because the I2C core needs an I2C device ID table for two reasons:
->>>
->>> 1) Match the I2C client with a I2C device ID so a struct i2c_device_id
->>>    is passed to the I2C driver probe() function.
->>>
->>> 2) Export the module aliases from the I2C device ID table so userspace
->>>    can auto-load the correct module. This is because i2c_device_uevent
->>>    always reports a MODALIAS of the form i2c:<client->name>.
->>
->> Why are we not fixing this? We emit specially carved uevent for
->> ACPI-based devices, why not the same for OF? Platform bus does this...
-> 
-> Ah, now I see the 27/27 patch. I think it is exactly what we need. And
+<snip>
 
-Yes, patch 27/27 is needed but the problem is as I explained before that
-there are drivers relying on the current behavior. The item c) in the list
-of issues that I mentioned. So those drivers need to be fixed before that
-patch is merged...
-
-> probably for SPI bus as well.
+>> +      Hwmon is very much directed at low sample rate sensors used in
+>> +      applications such as fan speed control and temperature measurement. Input
+>> +      is, as its name suggests, focused on human interaction input devices
+>> +      (keyboard, mouse, touchscreen). In some cases there is considerable
+>> +      overlap between these and IIO.
 >
+> I would make this first sentence in last paragraph more in sense:
+> Hwmon is directed at low sample rate sensors used to monitor and control the
+> system itself, like fan speed control and temperature measurement.
 
-Yes, I didn't mention SPI because the cover letter became too long
-already but it does indeed have the same issue and I discussed this
-with  Mark already some time ago [0].
+Agree.
 
-Once I2C uevent report is fixed, I plan to do the same for SPI.
+<snip>
 
-> Thanks.
-> 
+>> +    Usually these sensors are connected via SPI or I2C. It is also a common
+>> +    use case to have combo functionality (e.g. light plus proximity sensor).
+>
+> I would spell it out: A common use case of the IIO devices is to
+> provide combined
+> functionality (e.g. illuminance plus proximity sensor)
 
-[0]: https://lkml.org/lkml/2014/9/11/458
+Agree.
 
-Best regards,
--- 
-Javier Martinez Canillas
-Open Source Group
-Samsung Research America
+<snip>
+
+>> +    Here <emphasis> scan_index </emphasis> defines the relative order in which
+>> +    the enabled channels are placed inside the buffer, a channel with a lower
+> I would change this line to:
+> +   the enabled channels are placed inside the buffer. Channel with a lower
+>> +    scan_index will be placed before a channel with a higher index. Each
+>> +    channels needs to have a unique scan_index.
+
+Agree.
+
+>> +    </para>
+>> +    <para>
+>> +    It is important to realize that the scan_index does not define the
+>> +    absolution position in the buffer. E.g. a channel with the scan_index = 3
+> absolute position in buffer.
+
+Correct :).
+
+<snip>
+
+>> +    <sect2 id="iiotrigsysfs"> <title> IIO trigger sysfs interface </title>
+>> +      There are two locations in sysfs related to triggers:
+>> +      <itemizedlist>
+>> +        <listitem><filename>/sys/bus/iio/devices/triggerX</filename>,
+> I am missing in here the information that X corresponds to deviceX
+
+Triggers can be independent of devices, but indeed I changed it to
+triggerY in order
+to avoid confusion.
+
+<snip>
+
+>> +    <listitem><function> iio_buffer_setup_ops</function>, the buffer setup
+>> +    functions to be called at predefined points in buffer configuration
+> functions should be called at predefined points in buffer configuration
+>> +    sequence (e.g. before enable, after disable). If not specified, the
+>> +    IIO core uses the default <type>iio_triggered_buffer_setup_ops</type>.
+>> +    </listitem>
+
+Well, I'm not sure if I understand. iio_buffer_setup_ops is a
+structure with function pointers
+to be called at certain points in the trigger setup phase (before
+enable, after disable
+etc).  So, I think the phrasing is correct.
+
+
+>> +    <listitem><function>sensor_iio_pollfunc</function>, the function that
+>> +    will be used as top half of poll function. It usually does little
+> ... It should do as little processing as possible, because it runs in
+> interrupt context.
+
+Agree.
+
+I will send v4 asap.
+
+thanks,
+Daniel.
