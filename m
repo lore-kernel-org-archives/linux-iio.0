@@ -1,113 +1,260 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp-out-122.synserver.de ([212.40.185.122]:1084 "EHLO
-	smtp-out-122.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752654AbbGXMwG (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 24 Jul 2015 08:52:06 -0400
-Message-ID: <55B234F2.1080200@metafoo.de>
-Date: Fri, 24 Jul 2015 14:52:02 +0200
-From: Lars-Peter Clausen <lars@metafoo.de>
+Received: from mout.gmx.net ([212.227.17.22]:54314 "EHLO mout.gmx.net"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1753112AbbGaXpg (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Fri, 31 Jul 2015 19:45:36 -0400
+Message-ID: <55BC0895.5080902@gmx.de>
+Date: Sat, 01 Aug 2015 01:45:25 +0200
+From: Hartmut Knaack <knaack.h@gmx.de>
 MIME-Version: 1.0
-To: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>,
-	Hartmut Knaack <knaack.h@gmx.de>,
+To: "Breana, Tiberiu A" <tiberiu.a.breana@intel.com>,
+	Crt Mori <cmo@melexis.com>
+CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
 	Jonathan Cameron <jic23@kernel.org>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	Daniel Baluta <daniel.baluta@intel.com>
-Subject: Re: IIO : Clarifying review tags.
-References: <55ABBFE8.4090108@kernel.org> <55AC0079.9060507@gmx.de> <2316DF05-CDDA-4911-B573-2599579211C4@jic23.retrosnub.co.uk>
-In-Reply-To: <2316DF05-CDDA-4911-B573-2599579211C4@jic23.retrosnub.co.uk>
-Content-Type: text/plain; charset=utf-8; format=flowed
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>
+Subject: Re: [PATCH v2 3/7] iio:accel:stk8312: improve error handling
+References: <cover.1438204273.git.knaack.h@gmx.de> <ba37bdc28af46b4bd38e4a923d87a5d8e78ce2ee.1438204273.git.knaack.h@gmx.de> <CAKv63uuz5X6=3Z2pB9MHXgjgry8zWpxeV4KRcr-0_bxs57LCQw@mail.gmail.com> <4586F61A4A291F4DA44D32824E7C0F402218813D@IRSMSX109.ger.corp.intel.com>
+In-Reply-To: <4586F61A4A291F4DA44D32824E7C0F402218813D@IRSMSX109.ger.corp.intel.com>
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 07/19/2015 11:23 PM, Jonathan Cameron wrote:
-[...]
->>> (and it's this last bit that lets the Linux development
->>> process scale).  There is a pretty universal view that
->>> you don't bother with both signed-off-by and any other tag
->>> (though tested-by can be appropriate in my view).
->>>
->> <...>
+Breana, Tiberiu A schrieb am 30.07.2015 um 11:07:
+>> -----Original Message-----
+>> From: Crt Mori [mailto:cmo@melexis.com]
+>> Sent: Thursday, July 30, 2015 10:04 AM
+>> To: Hartmut Knaack
+>> Cc: linux-iio@vger.kernel.org; Jonathan Cameron; Lars-Peter Clausen; Peter
+>> Meerwald; Breana, Tiberiu A
+>> Subject: Re: [PATCH v2 3/7] iio:accel:stk8312: improve error handling
 >>
->> I'm fine with the Acked-by and Tested-by stuff.
+>> Hi, some comments/questions below:
 >>
->>> Reviewed-by:
->>> 	Now this is the one that caused most discussion in the
->>> previously mentioned thread.  When is it appropriate?
+>> On 29 July 2015 at 23:39, Hartmut Knaack <knaack.h@gmx.de> wrote:
+>>> Improve error handling in the following ways:
+>>>   - set return value on error condition to an appropriate error code
+>>>   - return error code immediately in case of an error (slightly changes
+>>>     code structure)
+>>>   - pass up real error code
+>>>   - add missing error handling
+>>>   - return 0 when error have been caught already
+>>>   - put device back in active mode after error occurs
 >>>
->>> 1) When substantial work has been applied as part of a review.
->>>     This might be indicated by a series of suggested changes
->>>     or by detailed comments on what they think is good / bad
->>>     might be done differently.   In these cases the reviewer
->>>     may 'suggest' the tag themselves.
+>>> Signed-off-by: Hartmut Knaack <knaack.h@gmx.de>
+> 
+> Comments inline.
+> 
+>>> ---
+>>>  drivers/iio/accel/stk8312.c | 60
+>>> ++++++++++++++++++++++++++++-----------------
+>>>  1 file changed, 38 insertions(+), 22 deletions(-)
 >>>
->>> 2) Where earlier versions of a patch have received substantial
->>>     review but the reviewer has not commented on the latest
->>>     version.  In this case some maintainers have been giving
->>>     'Reviewed-by' tags to people who haven't supplied them
->>>     on their own.  This is the change I would like to make to
->>>     how I have done things previously (where when I had time
->>>     I pestered people to give a reviewed-by).
+>>> diff --git a/drivers/iio/accel/stk8312.c b/drivers/iio/accel/stk8312.c
+>>> index 6592be8e6377..4e1dda7e896d 100644
+>>> --- a/drivers/iio/accel/stk8312.c
+>>> +++ b/drivers/iio/accel/stk8312.c
+>>> @@ -146,8 +146,10 @@ static int stk8312_otp_init(struct stk8312_data
+>> *data)
+>>>                 count--;
+>>>         } while (!(ret & 0x80) && count > 0);
 >>>
->>>     A few of you delight in early stage reviews and I feel often
->>>     get little or no permanent credit for your hard work.
->>>     In particular there are some here who spend a lot of time
->>>     helping new submitters get large patches in order.  A job
->>>     that can take a huge amount of work on occasion!
->>>
->>>     So does anyone object if I sometimes add Reviewed-by tags
->>>     for them?  Obviously this is all going to be a little
->>>     arbitrary so do keep sending them directly (and authors
->>>     keep adding them to later versions of your patches!)
->>>
->>
->> I'm in favor of using the Reviewed-by tag rather restrictive.
->> IMHO it expresses that the reviewer was able to understand the
->> change in its full extend. This may include to check all
->> device specific parameters used against a data sheet (if the
->> data sheet is not available due to NDA, then I would not want
->> to give this tag), check each line of code, check fixes against
->> the source code block it applies to (or even parent level
->> blocks if required). As a result, it should indicate that the
->> patch has successfully passed certain quality checks of the
->> reviewer. This in turn gives appreciaction to the patch author.
->> The reviewers reputation however can suffer, if significant
->> bugs slipped through the review. That's why I don't feel too
->> comfortable if anyone else gives reviewed-by tags in my name.
->> Clearly, there is a gap in between the acked-by and reviewed-by
->> tags, something that would express your contribution in the
->> development process.
->
-> Interesting to hear. I will refrain from adding such tags given both your
->   response and Dan's.  Dan suggested in the mega thread an explicit
->   acknowledgement of a bug sported in a review. This would be applies as a kind of
->   'thanks' from the author to later versions without carrying any weight wrt to the
->   rest of the patch being good.
+>>> -       if (count == 0)
+>>> +       if (count == 0) {
+>>> +               ret = -ETIMEDOUT;
+>>>                 goto exit_err;
+>>> +       }
+>> You dont need braces since it is a one word statement or add a dev_err()
+>> report.
+> 
 
-Yeah, I understand your reasoning, but I too feel a bit uncomfortable having 
-other people add tags for me in my name. It's a bit like telling somebody to 
-sign something in your name and forge your signature.
+It's two lines of code to be executed if this condition is true, so
+braces are needed. The dev_err() however is located under exit_err,
+which is the reason for the goto, instead of directly returning.
 
-I'm a bit more easy when it comes to giving Reviewed-by tags than Hartmut 
-though. If the driver looks sane from a API/ABI point I'll be ok with it. It 
-is the driver author's task of making sure that the driver writes the right 
-bits to the right registers.
-
->
-> I was kind of fishing for opinions with this email. Good to get some!
->>
->>> Anyhow, the thread that lead to this has yet again reminded
->>> me of how lucky I am and we all are in IIO wrt to the quality
->>> and quantity of reviewers who put huge amounts of time into
->>> improving all our code!
+> +1
+> 
 >>>
->>> I certainly know I would have burnt out long ago if it was
->>> just me against the mountain.
+>>>         ret = i2c_smbus_read_byte_data(client, STK8312_REG_OTPDATA);
+>>>         if (ret == 0)
+>>> @@ -161,7 +163,7 @@ static int stk8312_otp_init(struct stk8312_data
+>> *data)
+>>>                 goto exit_err;
+>> Why dont we return here as well?
+> 
+> I'm not sure I follow.
+> 
+>>>         msleep(150);
 >>>
->>> I'm going to be on holiday week after next. Should get back
->>> to normal in early August.
+>>> -       return ret;
+>>> +       return 0;
+>>>
+>>>  exit_err:
+>>>         dev_err(&client->dev, "failed to initialize sensor\n"); @@
+>>> -205,8 +207,11 @@ static int stk8312_set_interrupts(struct stk8312_data
+>> *data, u8 int_mask)
+>>>                 return ret;
+>>>
+>>>         ret = i2c_smbus_write_byte_data(client, STK8312_REG_INTSU,
+>> int_mask);
+>>> -       if (ret < 0)
+>>> +       if (ret < 0) {
+>>>                 dev_err(&client->dev, "failed to set interrupts\n");
+>>> +               stk8312_set_mode(data, mode);
+>>> +               return ret;
+>>> +       }
+>>>
+>>>         return stk8312_set_mode(data, mode);  } @@ -230,7 +235,7 @@
+>>> static int stk8312_data_rdy_trigger_set_state(struct iio_trigger
+>>> *trig,
+>>>
+>>>         data->dready_trigger_on = state;
+>>>
+>>> -       return ret;
+>>> +       return 0;
+>>>  }
+>>>
+>>>  static const struct iio_trigger_ops stk8312_trigger_ops = { @@
+>>> -255,20 +260,24 @@ static int stk8312_set_sample_rate(struct
+>> stk8312_data *data, int rate)
+>>>                 return ret;
+>>>
+>>>         ret = i2c_smbus_read_byte_data(client, STK8312_REG_SR);
+>>> -       if (ret < 0) {
+>>> -               dev_err(&client->dev, "failed to set sampling rate\n");
+>>> -               return ret;
+>>> -       }
+>>> +       if (ret < 0)
+>>> +               goto err_activate;
+>>>
+>>>         masked_reg = (ret & (~STK8312_SR_MASK)) | rate;
+>>>
+>>>         ret = i2c_smbus_write_byte_data(client, STK8312_REG_SR,
+>> masked_reg);
+>>>         if (ret < 0)
+>>> -               dev_err(&client->dev, "failed to set sampling rate\n");
+>>> -       else
+>>> -               data->sample_rate_idx = rate;
+>>> +               goto err_activate;
+>>> +
+>>> +       data->sample_rate_idx = rate;
+>>>
+>>>         return stk8312_set_mode(data, mode);
+>>> +
+>>> +err_activate:
+>>> +       dev_err(&client->dev, "failed to set sampling rate\n");
+>>> +       stk8312_set_mode(data, mode);
+>>> +
+>>> +       return ret;
+>>>  }
+>>>
+>>>  static int stk8312_set_range(struct stk8312_data *data, u8 range) @@
+>>> -290,21 +299,25 @@ static int stk8312_set_range(struct stk8312_data
+>> *data, u8 range)
+>>>                 return ret;
+>>>
+>>>         ret = i2c_smbus_read_byte_data(client, STK8312_REG_STH);
+>>> -       if (ret < 0) {
+>>> -               dev_err(&client->dev, "failed to change sensor range\n");
+>>> -               return ret;
+>>> -       }
+>>> +       if (ret < 0)
+>>> +               goto err_activate;
+>>>
+>>>         masked_reg = ret & (~STK8312_RNG_MASK);
+>>>         masked_reg |= range << STK8312_RNG_SHIFT;
+>>>
+>>>         ret = i2c_smbus_write_byte_data(client, STK8312_REG_STH,
+>> masked_reg);
+>>>         if (ret < 0)
+>> So in case of error we print error, but continue without returning error value,
+>> but if it is a success then we go to err_activate and return a positive value?
+>> Either label is
+>> confusing or the whole process.
+> 
+> I suggest you take a closer look.
+> 
+>>> -               dev_err(&client->dev, "failed to change sensor range\n");
+>>> -       else
+>>> -               data->range = range;
+>>> +               goto err_activate;
+>>> +
+>>> +       data->range = range;
+>>>
+>>>         return stk8312_set_mode(data, mode);
+>>> +
+>>> +err_activate:
+>>> +       dev_err(&client->dev, "failed to change sensor range\n");
+>>> +       stk8312_set_mode(data, mode);
+>>> +
+>>> +       return ret;
+>>>  }
+>>>
+>>>  static int stk8312_read_accel(struct stk8312_data *data, u8 address)
+>>> @@ -337,18 +350,21 @@ static int stk8312_read_raw(struct iio_dev
+>> *indio_dev,
+>>>                 ret = stk8312_set_mode(data, data->mode |
+>> STK8312_MODE_ACTIVE);
+>>>                 if (ret < 0) {
+>>>                         mutex_unlock(&data->lock);
+>>> -                       return -EINVAL;
+>>> +                       return ret;
+>>>                 }
+>>>                 ret = stk8312_read_accel(data, chan->address);
+>>>                 if (ret < 0) {
+>>>                         stk8312_set_mode(data,
+>>>                                          data->mode & (~STK8312_MODE_ACTIVE));
+>>>                         mutex_unlock(&data->lock);
+>>> -                       return -EINVAL;
+>>> +                       return ret;
+>>>                 }
+>>>                 *val = sign_extend32(ret, 7);
+>>> -               stk8312_set_mode(data, data->mode &
+>> (~STK8312_MODE_ACTIVE));
+>>> +               ret = stk8312_set_mode(data,
+>>> +                                      data->mode &
+>>> + (~STK8312_MODE_ACTIVE));
+>>>                 mutex_unlock(&data->lock);
+>>> +               if (ret < 0)
+>>> +                       return ret;
+> 
+> Hartmut, I stand by my comment from the first patch version.
+> We shouldn't return a read error if we're not able to put the
+> sensor back in standby mode after reading the values.
+> 
 
-Enjoy your well deserved vacation and don't read/write so many emails ;)
+I don't know how often you would usually encounter problems
+when setting the device in standby mode. Since it is just
+a single I2C byte write, that should never fail, unless there
+is some serious host adapter-, bus- or client-failure, which
+qualifies to be reported. 
+This is handled similarly in the following drivers, as well 
+(probably some more):
+https://git.kernel.org/cgit/linux/kernel/git/jic23/iio.git/tree/drivers/iio/accel/bmc150-accel.c?h=testing#n643
+https://git.kernel.org/cgit/linux/kernel/git/jic23/iio.git/tree/drivers/iio/accel/kxcjk-1013.c?h=testing#n713
+https://git.kernel.org/cgit/linux/kernel/git/jic23/iio.git/tree/drivers/iio/gyro/bmg160.c?h=testing#n512
+https://git.kernel.org/cgit/linux/kernel/git/jic23/iio.git/tree/drivers/iio/light/jsa1212.c?h=testing#n218
 
-- Lars
+>>>                 return IIO_VAL_INT;
+>>>         case IIO_CHAN_INFO_SCALE:
+>>>                 *val = stk8312_scale_table[data->range - 1][0]; @@
+>>> -608,7 +624,7 @@ static int stk8312_probe(struct i2c_client *client,
+>>>                 goto err_buffer_cleanup;
+>>>         }
+>>>
+>>> -       return ret;
+>>> +       return 0;
+>>>
+>>>  err_buffer_cleanup:
+>>>         iio_triggered_buffer_cleanup(indio_dev);
+>>> --
+>>> 2.4.6
+>>>
+>>> --
+>>> To unsubscribe from this list: send the line "unsubscribe linux-iio"
+>>> in the body of a message to majordomo@vger.kernel.org More
+>> majordomo
+>>> info at  http://vger.kernel.org/majordomo-info.html
+> N�����r��y���b�X��ǧv�^�)޺{.n�+����{��*"��^n�r���z���h����&���G���h�(�階�ݢj"���m�����z�ޖ���f���h���~�mml==
+> 
 
