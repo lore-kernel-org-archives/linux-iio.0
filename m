@@ -1,260 +1,93 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mout.gmx.net ([212.227.17.22]:54314 "EHLO mout.gmx.net"
+Received: from mout.gmx.net ([212.227.17.22]:64214 "EHLO mout.gmx.net"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1753112AbbGaXpg (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Fri, 31 Jul 2015 19:45:36 -0400
-Message-ID: <55BC0895.5080902@gmx.de>
-Date: Sat, 01 Aug 2015 01:45:25 +0200
+	id S1751701AbbGaXyr (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Fri, 31 Jul 2015 19:54:47 -0400
+Message-ID: <55BC0ABF.5080204@gmx.de>
+Date: Sat, 01 Aug 2015 01:54:39 +0200
 From: Hartmut Knaack <knaack.h@gmx.de>
 MIME-Version: 1.0
-To: "Breana, Tiberiu A" <tiberiu.a.breana@intel.com>,
-	Crt Mori <cmo@melexis.com>
-CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	Jonathan Cameron <jic23@kernel.org>,
+To: linux-iio@vger.kernel.org
+CC: Jonathan Cameron <jic23@kernel.org>,
 	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>
-Subject: Re: [PATCH v2 3/7] iio:accel:stk8312: improve error handling
-References: <cover.1438204273.git.knaack.h@gmx.de> <ba37bdc28af46b4bd38e4a923d87a5d8e78ce2ee.1438204273.git.knaack.h@gmx.de> <CAKv63uuz5X6=3Z2pB9MHXgjgry8zWpxeV4KRcr-0_bxs57LCQw@mail.gmail.com> <4586F61A4A291F4DA44D32824E7C0F402218813D@IRSMSX109.ger.corp.intel.com>
-In-Reply-To: <4586F61A4A291F4DA44D32824E7C0F402218813D@IRSMSX109.ger.corp.intel.com>
-Content-Type: text/plain; charset=UTF-8
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Antoine Tenart <antoine.tenart@free-electrons.com>
+Subject: Re: [PATCH v2 7/8] iio:adc:berlin2-adc: enable interrupts
+ with mutex locked
+References: <cover.1438035998.git.knaack.h@gmx.de> <0c150ffa3c97b5dc7b691efa8ba474e43c282519.1438035998.git.knaack.h@gmx.de>
+In-Reply-To: <0c150ffa3c97b5dc7b691efa8ba474e43c282519.1438035998.git.knaack.h@gmx.de>
+Content-Type: text/plain; charset=ISO-8859-15
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Breana, Tiberiu A schrieb am 30.07.2015 um 11:07:
->> -----Original Message-----
->> From: Crt Mori [mailto:cmo@melexis.com]
->> Sent: Thursday, July 30, 2015 10:04 AM
->> To: Hartmut Knaack
->> Cc: linux-iio@vger.kernel.org; Jonathan Cameron; Lars-Peter Clausen; Peter
->> Meerwald; Breana, Tiberiu A
->> Subject: Re: [PATCH v2 3/7] iio:accel:stk8312: improve error handling
->>
->> Hi, some comments/questions below:
->>
->> On 29 July 2015 at 23:39, Hartmut Knaack <knaack.h@gmx.de> wrote:
->>> Improve error handling in the following ways:
->>>   - set return value on error condition to an appropriate error code
->>>   - return error code immediately in case of an error (slightly changes
->>>     code structure)
->>>   - pass up real error code
->>>   - add missing error handling
->>>   - return 0 when error have been caught already
->>>   - put device back in active mode after error occurs
->>>
->>> Signed-off-by: Hartmut Knaack <knaack.h@gmx.de>
-> 
-> Comments inline.
-> 
->>> ---
->>>  drivers/iio/accel/stk8312.c | 60
->>> ++++++++++++++++++++++++++++-----------------
->>>  1 file changed, 38 insertions(+), 22 deletions(-)
->>>
->>> diff --git a/drivers/iio/accel/stk8312.c b/drivers/iio/accel/stk8312.c
->>> index 6592be8e6377..4e1dda7e896d 100644
->>> --- a/drivers/iio/accel/stk8312.c
->>> +++ b/drivers/iio/accel/stk8312.c
->>> @@ -146,8 +146,10 @@ static int stk8312_otp_init(struct stk8312_data
->> *data)
->>>                 count--;
->>>         } while (!(ret & 0x80) && count > 0);
->>>
->>> -       if (count == 0)
->>> +       if (count == 0) {
->>> +               ret = -ETIMEDOUT;
->>>                 goto exit_err;
->>> +       }
->> You dont need braces since it is a one word statement or add a dev_err()
->> report.
-> 
+Antoine, any opinion about this one?
 
-It's two lines of code to be executed if this condition is true, so
-braces are needed. The dev_err() however is located under exit_err,
-which is the reason for the goto, instead of directly returning.
 
-> +1
+Hartmut Knaack schrieb am 28.07.2015 um 00:39:
+> Move the call to enable channel interrupts into its _read() function to
+> have it protected by a mutex. This ensures that only one channel is
+> sampled at a time.
 > 
->>>
->>>         ret = i2c_smbus_read_byte_data(client, STK8312_REG_OTPDATA);
->>>         if (ret == 0)
->>> @@ -161,7 +163,7 @@ static int stk8312_otp_init(struct stk8312_data
->> *data)
->>>                 goto exit_err;
->> Why dont we return here as well?
+> Signed-off-by: Hartmut Knaack <knaack.h@gmx.de>
+> ---
+>  drivers/iio/adc/berlin2-adc.c | 17 ++++++++---------
+>  1 file changed, 8 insertions(+), 9 deletions(-)
 > 
-> I'm not sure I follow.
-> 
->>>         msleep(150);
->>>
->>> -       return ret;
->>> +       return 0;
->>>
->>>  exit_err:
->>>         dev_err(&client->dev, "failed to initialize sensor\n"); @@
->>> -205,8 +207,11 @@ static int stk8312_set_interrupts(struct stk8312_data
->> *data, u8 int_mask)
->>>                 return ret;
->>>
->>>         ret = i2c_smbus_write_byte_data(client, STK8312_REG_INTSU,
->> int_mask);
->>> -       if (ret < 0)
->>> +       if (ret < 0) {
->>>                 dev_err(&client->dev, "failed to set interrupts\n");
->>> +               stk8312_set_mode(data, mode);
->>> +               return ret;
->>> +       }
->>>
->>>         return stk8312_set_mode(data, mode);  } @@ -230,7 +235,7 @@
->>> static int stk8312_data_rdy_trigger_set_state(struct iio_trigger
->>> *trig,
->>>
->>>         data->dready_trigger_on = state;
->>>
->>> -       return ret;
->>> +       return 0;
->>>  }
->>>
->>>  static const struct iio_trigger_ops stk8312_trigger_ops = { @@
->>> -255,20 +260,24 @@ static int stk8312_set_sample_rate(struct
->> stk8312_data *data, int rate)
->>>                 return ret;
->>>
->>>         ret = i2c_smbus_read_byte_data(client, STK8312_REG_SR);
->>> -       if (ret < 0) {
->>> -               dev_err(&client->dev, "failed to set sampling rate\n");
->>> -               return ret;
->>> -       }
->>> +       if (ret < 0)
->>> +               goto err_activate;
->>>
->>>         masked_reg = (ret & (~STK8312_SR_MASK)) | rate;
->>>
->>>         ret = i2c_smbus_write_byte_data(client, STK8312_REG_SR,
->> masked_reg);
->>>         if (ret < 0)
->>> -               dev_err(&client->dev, "failed to set sampling rate\n");
->>> -       else
->>> -               data->sample_rate_idx = rate;
->>> +               goto err_activate;
->>> +
->>> +       data->sample_rate_idx = rate;
->>>
->>>         return stk8312_set_mode(data, mode);
->>> +
->>> +err_activate:
->>> +       dev_err(&client->dev, "failed to set sampling rate\n");
->>> +       stk8312_set_mode(data, mode);
->>> +
->>> +       return ret;
->>>  }
->>>
->>>  static int stk8312_set_range(struct stk8312_data *data, u8 range) @@
->>> -290,21 +299,25 @@ static int stk8312_set_range(struct stk8312_data
->> *data, u8 range)
->>>                 return ret;
->>>
->>>         ret = i2c_smbus_read_byte_data(client, STK8312_REG_STH);
->>> -       if (ret < 0) {
->>> -               dev_err(&client->dev, "failed to change sensor range\n");
->>> -               return ret;
->>> -       }
->>> +       if (ret < 0)
->>> +               goto err_activate;
->>>
->>>         masked_reg = ret & (~STK8312_RNG_MASK);
->>>         masked_reg |= range << STK8312_RNG_SHIFT;
->>>
->>>         ret = i2c_smbus_write_byte_data(client, STK8312_REG_STH,
->> masked_reg);
->>>         if (ret < 0)
->> So in case of error we print error, but continue without returning error value,
->> but if it is a success then we go to err_activate and return a positive value?
->> Either label is
->> confusing or the whole process.
-> 
-> I suggest you take a closer look.
-> 
->>> -               dev_err(&client->dev, "failed to change sensor range\n");
->>> -       else
->>> -               data->range = range;
->>> +               goto err_activate;
->>> +
->>> +       data->range = range;
->>>
->>>         return stk8312_set_mode(data, mode);
->>> +
->>> +err_activate:
->>> +       dev_err(&client->dev, "failed to change sensor range\n");
->>> +       stk8312_set_mode(data, mode);
->>> +
->>> +       return ret;
->>>  }
->>>
->>>  static int stk8312_read_accel(struct stk8312_data *data, u8 address)
->>> @@ -337,18 +350,21 @@ static int stk8312_read_raw(struct iio_dev
->> *indio_dev,
->>>                 ret = stk8312_set_mode(data, data->mode |
->> STK8312_MODE_ACTIVE);
->>>                 if (ret < 0) {
->>>                         mutex_unlock(&data->lock);
->>> -                       return -EINVAL;
->>> +                       return ret;
->>>                 }
->>>                 ret = stk8312_read_accel(data, chan->address);
->>>                 if (ret < 0) {
->>>                         stk8312_set_mode(data,
->>>                                          data->mode & (~STK8312_MODE_ACTIVE));
->>>                         mutex_unlock(&data->lock);
->>> -                       return -EINVAL;
->>> +                       return ret;
->>>                 }
->>>                 *val = sign_extend32(ret, 7);
->>> -               stk8312_set_mode(data, data->mode &
->> (~STK8312_MODE_ACTIVE));
->>> +               ret = stk8312_set_mode(data,
->>> +                                      data->mode &
->>> + (~STK8312_MODE_ACTIVE));
->>>                 mutex_unlock(&data->lock);
->>> +               if (ret < 0)
->>> +                       return ret;
-> 
-> Hartmut, I stand by my comment from the first patch version.
-> We shouldn't return a read error if we're not able to put the
-> sensor back in standby mode after reading the values.
-> 
-
-I don't know how often you would usually encounter problems
-when setting the device in standby mode. Since it is just
-a single I2C byte write, that should never fail, unless there
-is some serious host adapter-, bus- or client-failure, which
-qualifies to be reported. 
-This is handled similarly in the following drivers, as well 
-(probably some more):
-https://git.kernel.org/cgit/linux/kernel/git/jic23/iio.git/tree/drivers/iio/accel/bmc150-accel.c?h=testing#n643
-https://git.kernel.org/cgit/linux/kernel/git/jic23/iio.git/tree/drivers/iio/accel/kxcjk-1013.c?h=testing#n713
-https://git.kernel.org/cgit/linux/kernel/git/jic23/iio.git/tree/drivers/iio/gyro/bmg160.c?h=testing#n512
-https://git.kernel.org/cgit/linux/kernel/git/jic23/iio.git/tree/drivers/iio/light/jsa1212.c?h=testing#n218
-
->>>                 return IIO_VAL_INT;
->>>         case IIO_CHAN_INFO_SCALE:
->>>                 *val = stk8312_scale_table[data->range - 1][0]; @@
->>> -608,7 +624,7 @@ static int stk8312_probe(struct i2c_client *client,
->>>                 goto err_buffer_cleanup;
->>>         }
->>>
->>> -       return ret;
->>> +       return 0;
->>>
->>>  err_buffer_cleanup:
->>>         iio_triggered_buffer_cleanup(indio_dev);
->>> --
->>> 2.4.6
->>>
->>> --
->>> To unsubscribe from this list: send the line "unsubscribe linux-iio"
->>> in the body of a message to majordomo@vger.kernel.org More
->> majordomo
->>> info at  http://vger.kernel.org/majordomo-info.html
-> N�����r��y���b�X��ǧv�^�)޺{.n�+����{��*"��^n�r���z���h����&���G���h�(�階�ݢj"���m�����z�ޖ���f���h���~�mml==
+> diff --git a/drivers/iio/adc/berlin2-adc.c b/drivers/iio/adc/berlin2-adc.c
+> index 6e20c856f479..13cfeb494e34 100644
+> --- a/drivers/iio/adc/berlin2-adc.c
+> +++ b/drivers/iio/adc/berlin2-adc.c
+> @@ -111,6 +111,10 @@ static int berlin2_adc_read(struct iio_dev *indio_dev, int channel)
+>  
+>  	mutex_lock(&priv->lock);
+>  
+> +	/* Enable the interrupts */
+> +	regmap_write(priv->regmap, BERLIN2_SM_ADC_STATUS,
+> +		     BERLIN2_SM_ADC_STATUS_INT_EN(channel));
+> +
+>  	/* Configure the ADC */
+>  	regmap_update_bits(priv->regmap, BERLIN2_SM_CTRL,
+>  			BERLIN2_SM_CTRL_ADC_RESET | BERLIN2_SM_CTRL_ADC_SEL_MASK
+> @@ -149,6 +153,10 @@ static int berlin2_adc_tsen_read(struct iio_dev *indio_dev)
+>  
+>  	mutex_lock(&priv->lock);
+>  
+> +	/* Enable interrupts */
+> +	regmap_write(priv->regmap, BERLIN2_SM_TSEN_STATUS,
+> +		     BERLIN2_SM_TSEN_STATUS_INT_EN);
+> +
+>  	/* Configure the ADC */
+>  	regmap_update_bits(priv->regmap, BERLIN2_SM_CTRL,
+>  			BERLIN2_SM_CTRL_TSEN_RESET | BERLIN2_SM_CTRL_ADC_ROTATE,
+> @@ -190,7 +198,6 @@ static int berlin2_adc_read_raw(struct iio_dev *indio_dev,
+>  		struct iio_chan_spec const *chan, int *val, int *val2,
+>  		long mask)
+>  {
+> -	struct berlin2_adc_priv *priv = iio_priv(indio_dev);
+>  	int temp;
+>  
+>  	switch (mask) {
+> @@ -198,10 +205,6 @@ static int berlin2_adc_read_raw(struct iio_dev *indio_dev,
+>  		if (chan->type != IIO_VOLTAGE)
+>  			return -EINVAL;
+>  
+> -		/* Enable the interrupts */
+> -		regmap_write(priv->regmap, BERLIN2_SM_ADC_STATUS,
+> -				BERLIN2_SM_ADC_STATUS_INT_EN(chan->channel));
+> -
+>  		*val = berlin2_adc_read(indio_dev, chan->channel);
+>  		if (*val < 0)
+>  			return *val;
+> @@ -211,10 +214,6 @@ static int berlin2_adc_read_raw(struct iio_dev *indio_dev,
+>  		if (chan->type != IIO_TEMP)
+>  			return -EINVAL;
+>  
+> -		/* Enable interrupts */
+> -		regmap_write(priv->regmap, BERLIN2_SM_TSEN_STATUS,
+> -				BERLIN2_SM_TSEN_STATUS_INT_EN);
+> -
+>  		temp = berlin2_adc_tsen_read(indio_dev);
+>  		if (temp < 0)
+>  			return temp;
 > 
 
