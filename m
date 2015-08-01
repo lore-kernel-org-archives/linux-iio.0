@@ -1,93 +1,81 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mout.gmx.net ([212.227.17.22]:64214 "EHLO mout.gmx.net"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751701AbbGaXyr (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Fri, 31 Jul 2015 19:54:47 -0400
-Message-ID: <55BC0ABF.5080204@gmx.de>
-Date: Sat, 01 Aug 2015 01:54:39 +0200
-From: Hartmut Knaack <knaack.h@gmx.de>
+Received: from mail-yk0-f182.google.com ([209.85.160.182]:35556 "EHLO
+	mail-yk0-f182.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751023AbbHAHgE (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 1 Aug 2015 03:36:04 -0400
+Received: by ykdu72 with SMTP id u72so76084647ykd.2
+        for <linux-iio@vger.kernel.org>; Sat, 01 Aug 2015 00:36:02 -0700 (PDT)
 MIME-Version: 1.0
-To: linux-iio@vger.kernel.org
-CC: Jonathan Cameron <jic23@kernel.org>,
+In-Reply-To: <55BBFCA6.1090803@gmx.de>
+References: <cover.1438204273.git.knaack.h@gmx.de> <f406a1b129207e44ed3c6a07a8d44e16f6f3f74f.1438204273.git.knaack.h@gmx.de>
+ <CAKv63utc6+a5XS5eLkzggcnvcrfN=zTsTAJfNNethnPmr2S9Yg@mail.gmail.com> <55BBFCA6.1090803@gmx.de>
+From: Crt Mori <cmo@melexis.com>
+Date: Sat, 1 Aug 2015 09:35:23 +0200
+Message-ID: <CAKv63usdVqx_kX8H45SpWX4wzpQ44SwMAHbBSjY8eC0bnw3dkQ@mail.gmail.com>
+Subject: Re: [PATCH v2 2/7] iio:accel:stk8312: check for invalid value
+To: Hartmut Knaack <knaack.h@gmx.de>
+Cc: linux-iio@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>,
 	Lars-Peter Clausen <lars@metafoo.de>,
 	Peter Meerwald <pmeerw@pmeerw.net>,
-	Antoine Tenart <antoine.tenart@free-electrons.com>
-Subject: Re: [PATCH v2 7/8] iio:adc:berlin2-adc: enable interrupts
- with mutex locked
-References: <cover.1438035998.git.knaack.h@gmx.de> <0c150ffa3c97b5dc7b691efa8ba474e43c282519.1438035998.git.knaack.h@gmx.de>
-In-Reply-To: <0c150ffa3c97b5dc7b691efa8ba474e43c282519.1438035998.git.knaack.h@gmx.de>
-Content-Type: text/plain; charset=ISO-8859-15
+	Tiberiu Breana <tiberiu.a.breana@intel.com>
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Antoine, any opinion about this one?
+On 1 August 2015 at 00:54, Hartmut Knaack <knaack.h@gmx.de> wrote:
+> Crt Mori schrieb am 30.07.2015 um 09:09:
+>> On 29 July 2015 at 23:39, Hartmut Knaack <knaack.h@gmx.de> wrote:
+>>> Revision 1.2 of the datasheet recommends on page 22 to only write non-zero
+>>> values read from OTP register 0x70 into AFECTRL register.
+>>>
+>>> Signed-off-by: Hartmut Knaack <knaack.h@gmx.de>
+>>> Reviewed-by: Tiberiu Breana <tiberiu.a.breana@intel.com>
+>>> ---
+>>>  drivers/iio/accel/stk8312.c | 2 ++
+>>>  1 file changed, 2 insertions(+)
+>>>
+>>> diff --git a/drivers/iio/accel/stk8312.c b/drivers/iio/accel/stk8312.c
+>>> index c2bd1444d6da..6592be8e6377 100644
+>>> --- a/drivers/iio/accel/stk8312.c
+>>> +++ b/drivers/iio/accel/stk8312.c
+>>> @@ -150,6 +150,8 @@ static int stk8312_otp_init(struct stk8312_data *data)
+>>>                 goto exit_err;
+>>>
+>>>         ret = i2c_smbus_read_byte_data(client, STK8312_REG_OTPDATA);
+>>> +       if (ret == 0)
+>>> +               ret = -EINVAL;
+>> This seems fishy. We have a macro value written to client which cannot really
+>> give us EINVAL, except if we are checking the client, but then this would only
+>> fail if we had some other i2c device on the line with stk8312 address, which
+>> would ack other i2c commands above this.
+>
+> I'm not sure to really understand your point, or if you actually understood
+> this patch. I'm not totally happy with EINVAL as error code, but it just
+> seemed to fit better than any other possible error code. Of course I would
+> be happy to get recommendations for better fitting codes.
+> A short explanation why this is done: in the sample code provided in the
+> data sheet, it is mentioned that if the value read from that register 0x70
+> is zero, then it should not be written into the AFECTRL register. So, that's
+> what I have addressed here.
+EINVAL is more like bad user input, so if this fails because of the last command
+then it is correct, otherwise I would put more like -EBUSY or -EACCES
 
+Thank you for the explanation.
 
-Hartmut Knaack schrieb am 28.07.2015 um 00:39:
-> Move the call to enable channel interrupts into its _read() function to
-> have it protected by a mutex. This ensures that only one channel is
-> sampled at a time.
-> 
-> Signed-off-by: Hartmut Knaack <knaack.h@gmx.de>
-> ---
->  drivers/iio/adc/berlin2-adc.c | 17 ++++++++---------
->  1 file changed, 8 insertions(+), 9 deletions(-)
-> 
-> diff --git a/drivers/iio/adc/berlin2-adc.c b/drivers/iio/adc/berlin2-adc.c
-> index 6e20c856f479..13cfeb494e34 100644
-> --- a/drivers/iio/adc/berlin2-adc.c
-> +++ b/drivers/iio/adc/berlin2-adc.c
-> @@ -111,6 +111,10 @@ static int berlin2_adc_read(struct iio_dev *indio_dev, int channel)
->  
->  	mutex_lock(&priv->lock);
->  
-> +	/* Enable the interrupts */
-> +	regmap_write(priv->regmap, BERLIN2_SM_ADC_STATUS,
-> +		     BERLIN2_SM_ADC_STATUS_INT_EN(channel));
-> +
->  	/* Configure the ADC */
->  	regmap_update_bits(priv->regmap, BERLIN2_SM_CTRL,
->  			BERLIN2_SM_CTRL_ADC_RESET | BERLIN2_SM_CTRL_ADC_SEL_MASK
-> @@ -149,6 +153,10 @@ static int berlin2_adc_tsen_read(struct iio_dev *indio_dev)
->  
->  	mutex_lock(&priv->lock);
->  
-> +	/* Enable interrupts */
-> +	regmap_write(priv->regmap, BERLIN2_SM_TSEN_STATUS,
-> +		     BERLIN2_SM_TSEN_STATUS_INT_EN);
-> +
->  	/* Configure the ADC */
->  	regmap_update_bits(priv->regmap, BERLIN2_SM_CTRL,
->  			BERLIN2_SM_CTRL_TSEN_RESET | BERLIN2_SM_CTRL_ADC_ROTATE,
-> @@ -190,7 +198,6 @@ static int berlin2_adc_read_raw(struct iio_dev *indio_dev,
->  		struct iio_chan_spec const *chan, int *val, int *val2,
->  		long mask)
->  {
-> -	struct berlin2_adc_priv *priv = iio_priv(indio_dev);
->  	int temp;
->  
->  	switch (mask) {
-> @@ -198,10 +205,6 @@ static int berlin2_adc_read_raw(struct iio_dev *indio_dev,
->  		if (chan->type != IIO_VOLTAGE)
->  			return -EINVAL;
->  
-> -		/* Enable the interrupts */
-> -		regmap_write(priv->regmap, BERLIN2_SM_ADC_STATUS,
-> -				BERLIN2_SM_ADC_STATUS_INT_EN(chan->channel));
-> -
->  		*val = berlin2_adc_read(indio_dev, chan->channel);
->  		if (*val < 0)
->  			return *val;
-> @@ -211,10 +214,6 @@ static int berlin2_adc_read_raw(struct iio_dev *indio_dev,
->  		if (chan->type != IIO_TEMP)
->  			return -EINVAL;
->  
-> -		/* Enable interrupts */
-> -		regmap_write(priv->regmap, BERLIN2_SM_TSEN_STATUS,
-> -				BERLIN2_SM_TSEN_STATUS_INT_EN);
-> -
->  		temp = berlin2_adc_tsen_read(indio_dev);
->  		if (temp < 0)
->  			return temp;
-> 
-
+>
+>>>         if (ret < 0)
+>>>                 goto exit_err;
+>>>
+>>> --
+>>> 2.4.6
+>>>
+>>> --
+>>> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+>>> the body of a message to majordomo@vger.kernel.org
+>>> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+>> --
+>> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+>> the body of a message to majordomo@vger.kernel.org
+>> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+>>
+>
