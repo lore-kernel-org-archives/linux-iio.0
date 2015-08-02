@@ -1,114 +1,70 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:45162 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:45201 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750972AbbHBQz1 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 2 Aug 2015 12:55:27 -0400
-Subject: Re: [V3] [TWL4030 MADC] Fix ADC[3:6] readings
-To: Adam YH Lee <adam.yh.lee@gmail.com>, linux-omap@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org
-References: <1437439755-30618-1-git-send-email-adam.yh.lee@gmail.com>
-Cc: linux-iio@vger.kernel.org, sre@kernel.org, pmeerw@pmeerw.net
+	with ESMTP id S1751180AbbHBRBF (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 2 Aug 2015 13:01:05 -0400
+Subject: Re: [PATCH 4/4] iio: adc: ti-adc128s052: Add devicetree support
+To: Denis Carikli <denis@eukrea.com>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Rob Herring <robh+dt@kernel.org>
+References: <1437581064-9733-1-git-send-email-denis@eukrea.com>
+ <1437581064-9733-4-git-send-email-denis@eukrea.com>
+Cc: =?UTF-8?Q?Eric_B=c3=a9nard?= <eric@eukrea.com>,
+	linux-iio@vger.kernel.org, devicetree@vger.kernel.org
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <55BE4B75.9090708@kernel.org>
-Date: Sun, 2 Aug 2015 17:55:17 +0100
+Message-ID: <55BE4CCF.1080102@kernel.org>
+Date: Sun, 2 Aug 2015 18:01:03 +0100
 MIME-Version: 1.0
-In-Reply-To: <1437439755-30618-1-git-send-email-adam.yh.lee@gmail.com>
+In-Reply-To: <1437581064-9733-4-git-send-email-denis@eukrea.com>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 21/07/15 01:49, Adam YH Lee wrote:
-> MADC[3:6] reads incorrect values without these two following changes:
-> 
-> - enable the 3v1 bias regulator for ADC[3:6]
-> - configure ADC[3:6] lines as input, not as USB
-> 
-> Signed-off-by: Adam YH Lee <adam.yh.lee@gmail.com>
+On 22/07/15 17:04, Denis Carikli wrote:
+> Signed-off-by: Denis Carikli <denis@eukrea.com>
 > ---
->  drivers/iio/adc/twl4030-madc.c | 36 ++++++++++++++++++++++++++++++++++++
->  1 file changed, 36 insertions(+)
+>  drivers/iio/adc/ti-adc128s052.c | 14 +++++++++++++-
+>  1 file changed, 13 insertions(+), 1 deletion(-)
 > 
-> diff --git a/drivers/iio/adc/twl4030-madc.c b/drivers/iio/adc/twl4030-madc.c
-> index 94c5f05..ae33eba 100644
-> --- a/drivers/iio/adc/twl4030-madc.c
-> +++ b/drivers/iio/adc/twl4030-madc.c
-> @@ -45,13 +45,18 @@
->  #include <linux/types.h>
->  #include <linux/gfp.h>
+> diff --git a/drivers/iio/adc/ti-adc128s052.c b/drivers/iio/adc/ti-adc128s052.c
+> index 8aca0ff..2558508 100644
+> --- a/drivers/iio/adc/ti-adc128s052.c
+> +++ b/drivers/iio/adc/ti-adc128s052.c
+> @@ -13,10 +13,11 @@
+>   */
+>  
 >  #include <linux/err.h>
-> +#include <linux/regulator/consumer.h>
->  
+> -#include <linux/spi/spi.h>
+>  #include <linux/module.h>
 >  #include <linux/iio/iio.h>
+> +#include <linux/of.h>
+>  #include <linux/regulator/consumer.h>
+> +#include <linux/spi/spi.h>
+Why the reorder?
 >  
-> +#define TWL4030_USB_SEL_MADC_MCPC	(1<<3)
-> +#define TWL4030_USB_CARKIT_ANA_CTRL	0xBB
-> +
->  /**
->   * struct twl4030_madc_data - a container for madc info
->   * @dev:		Pointer to device structure for madc
->   * @lock:		Mutex protecting this data structure
-> + * @regulator:		Pointer to bias regulator for madc
->   * @requests:		Array of request struct corresponding to SW1, SW2 and RT
->   * @use_second_irq:	IRQ selection (main or co-processor)
->   * @imr:		Interrupt mask register of MADC
-> @@ -60,6 +65,7 @@
->  struct twl4030_madc_data {
->  	struct device *dev;
->  	struct mutex lock;	/* mutex protecting this data structure */
-> +	struct regulator *usb3v1;
->  	struct twl4030_madc_request requests[TWL4030_MADC_NUM_METHODS];
->  	bool use_second_irq;
->  	u8 imr;
-> @@ -848,6 +854,33 @@ static int twl4030_madc_probe(struct platform_device *pdev)
->  		goto err_i2c;
->  	}
+>  struct adc128_configuration {
+>  	const struct iio_chan_spec	*channels;
+> @@ -183,10 +184,21 @@ static const struct spi_device_id adc128_id[] = {
+>  };
+>  MODULE_DEVICE_TABLE(spi, adc128_id);
 >  
-At this point in the driver the userspace (an in kernel) interfaces to read
-from the device are exposed. Thus if you need this stuff set up right, it
-wants to be done before the iio_device_register call.
-> +	/* Configure MADC[3:6] */
-> +	ret = twl_i2c_read_u8(TWL_MODULE_USB, &regval,
-> +			TWL4030_USB_CARKIT_ANA_CTRL);
-> +	if (ret) {
-> +		dev_err(&pdev->dev, "unable to read reg CARKIT_ANA_CTRL  0x%X\n",
-> +				TWL4030_USB_CARKIT_ANA_CTRL);
-> +		goto err_i2c;
-> +	}
-> +	regval |= TWL4030_USB_SEL_MADC_MCPC;
-> +	ret = twl_i2c_write_u8(TWL_MODULE_USB, regval,
-> +				 TWL4030_USB_CARKIT_ANA_CTRL);
-> +	if (ret) {
-> +		dev_err(&pdev->dev, "unable to write reg CARKIT_ANA_CTRL 0x%X\n",
-> +				TWL4030_USB_CARKIT_ANA_CTRL);
-> +		goto err_i2c;
-> +	}
+> +#ifdef CONFIG_OF
+> +static const struct of_device_id adc128_of_match[] = {
+> +	{ .compatible = "ti,adc128s052" },
+> +	{ .compatible = "ti,adc122s021" },
+> +	{ .compatible = "ti,adc108s022" },
+> +	{}
+> +};
+> +MODULE_DEVICE_TABLE(of, adc128_of_match);
+> +#endif
 > +
-> +
-> +	/* Enable 3v1 bias regulator for MADC[3:6] */
-> +	madc->usb3v1 = devm_regulator_get(madc->dev, "vusb3v1");
-> +	if (IS_ERR(madc->usb3v1))
-> +		return -ENODEV;
-> +
-> +	ret = regulator_enable(madc->usb3v1);
-> +	if (ret)
-> +		dev_err(madc->dev, "could not enable 3v1 bias regulator\n");
-> +
->  	return 0;
->  
->  err_i2c:
-> @@ -867,6 +900,9 @@ static int twl4030_madc_remove(struct platform_device *pdev)
->  	twl4030_madc_set_current_generator(madc, 0, 0);
->  	twl4030_madc_set_power(madc, 0);
->  
-> +	regulator_disable(madc->usb3v1);
-> +	devm_regulator_put(madc->usb3v1);
-The whole point of devm_ allocators (or in this case _gets) is that when
-the driver is removed they are cleaned up automatically.  Hence you don't
-need them in your remove call.  Obviously it also clears up the error
-handling in probe as well.
-> +
->  	return 0;
->  }
->  
+>  static struct spi_driver adc128_driver = {
+>  	.driver = {
+>  		.name = "adc128s052",
+>  		.owner = THIS_MODULE,
+> +		.of_match_table = of_match_ptr(adc128_of_match),
+>  	},
+>  	.probe = adc128_probe,
+>  	.remove = adc128_remove,
 > 
 
