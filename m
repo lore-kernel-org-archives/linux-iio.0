@@ -1,78 +1,81 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:45552 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:45586 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751090AbbHBRvl (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 2 Aug 2015 13:51:41 -0400
-Subject: Re: [PATCH] iio: inv-mpu: make inv_write_raw_get_fmt() more readable
-To: Luis Henriques <luis.henriques@canonical.com>
-References: <1438033697-22772-1-git-send-email-luis.henriques@canonical.com>
-Cc: Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
+	with ESMTP id S1751270AbbHBR7l (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 2 Aug 2015 13:59:41 -0400
+Subject: Re: [PATCH v2 1/8] iio:adc:berlin2-adc: Fix register definition
+To: Antoine Tenart <antoine.tenart@free-electrons.com>,
+	Hartmut Knaack <knaack.h@gmx.de>
+References: <cover.1438035998.git.knaack.h@gmx.de>
+ <b29e36386c3542057638334db8049cc64486157f.1438035998.git.knaack.h@gmx.de>
+ <20150730124706.GA16416@kwain>
+Cc: linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <55BE58AA.4090701@kernel.org>
-Date: Sun, 2 Aug 2015 18:51:38 +0100
+Message-ID: <55BE5A8A.30900@kernel.org>
+Date: Sun, 2 Aug 2015 18:59:38 +0100
 MIME-Version: 1.0
-In-Reply-To: <1438033697-22772-1-git-send-email-luis.henriques@canonical.com>
+In-Reply-To: <20150730124706.GA16416@kwain>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 27/07/15 22:48, Luis Henriques wrote:
-> Replace nested switch statements by a single if statement, making function
-> inv_write_raw_get_fmt() more readable.
+On 30/07/15 13:47, Antoine Tenart wrote:
+> On Tue, Jul 28, 2015 at 12:38:57AM +0200, Hartmut Knaack wrote:
+>> Active channel number is stored in BERLIN2_SM_CTRL as value, instead of a
+>> bit map.
+>> The masks for channel interrupts and data ready are a 16 bits wide bit
+>> map each, instead of just 4 bits.
+>>
+>> Also correct the data mask for the temperature sensor, which was
+>> Reported-by: Antoine Tenart <antoine.tenart@free-electrons.com>
+>>
+>> Signed-off-by: Hartmut Knaack <knaack.h@gmx.de>
 > 
-> Signed-off-by: Luis Henriques <luis.henriques@canonical.com>
-Hi Luis,
+> Acked-by: Antoine Tenart <antoine.tenart@free-electrons.com>
+Applied to the fixes-togreg branch of iio.git
 
-I can see where you are coming from here, but my gut feeling
-is to leave it be as the chances are more stuff will get added
-to this function in the future.  The mpu6050 are complex parts
-for which we currently only support a very limited subset of
-functionality.  An example of this is we have no filter
-control at the moment.  The double case statement is ugly
-but it easy to verify.
-
-So I'm not going to take this one.
-
-Sorry,
+Thanks,
 
 Jonathan
-> ---
->  drivers/iio/imu/inv_mpu6050/inv_mpu_core.c | 16 +++-------------
->  1 file changed, 3 insertions(+), 13 deletions(-)
 > 
-> diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-> index 65ce86837177..afbc2d2b8608 100644
-> --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-> +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-> @@ -434,19 +434,9 @@ static int inv_mpu6050_write_gyro_scale(struct inv_mpu6050_state *st, int val)
->  static int inv_write_raw_get_fmt(struct iio_dev *indio_dev,
->  				 struct iio_chan_spec const *chan, long mask)
->  {
-> -	switch (mask) {
-> -	case IIO_CHAN_INFO_SCALE:
-> -		switch (chan->type) {
-> -		case IIO_ANGL_VEL:
-> -			return IIO_VAL_INT_PLUS_NANO;
-> -		default:
-> -			return IIO_VAL_INT_PLUS_MICRO;
-> -		}
-> -	default:
-> -		return IIO_VAL_INT_PLUS_MICRO;
-> -	}
-> -
-> -	return -EINVAL;
-> +	if ((mask == IIO_CHAN_INFO_SCALE) && (chan->type == IIO_ANGL_VEL))
-> +		return IIO_VAL_INT_PLUS_NANO;
-> +	return IIO_VAL_INT_PLUS_MICRO;
->  }
->  static int inv_mpu6050_write_accel_scale(struct inv_mpu6050_state *st, int val)
->  {
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+>> ---
+>>  drivers/iio/adc/berlin2-adc.c | 8 ++++----
+>>  1 file changed, 4 insertions(+), 4 deletions(-)
+>>
+>> diff --git a/drivers/iio/adc/berlin2-adc.c b/drivers/iio/adc/berlin2-adc.c
+>> index aecc9ad995ad..26fa6e6cb624 100644
+>> --- a/drivers/iio/adc/berlin2-adc.c
+>> +++ b/drivers/iio/adc/berlin2-adc.c
+>> @@ -26,7 +26,7 @@
+>>  #define BERLIN2_SM_CTRL				0x14
+>>  #define  BERLIN2_SM_CTRL_SM_SOC_INT		BIT(1)
+>>  #define  BERLIN2_SM_CTRL_SOC_SM_INT		BIT(2)
+>> -#define  BERLIN2_SM_CTRL_ADC_SEL(x)		(BIT(x) << 5)	/* 0-15 */
+>> +#define  BERLIN2_SM_CTRL_ADC_SEL(x)		((x) << 5)	/* 0-15 */
+>>  #define  BERLIN2_SM_CTRL_ADC_SEL_MASK		(0xf << 5)
+>>  #define  BERLIN2_SM_CTRL_ADC_POWER		BIT(9)
+>>  #define  BERLIN2_SM_CTRL_ADC_CLKSEL_DIV2	(0x0 << 10)
+>> @@ -53,14 +53,14 @@
+>>  #define  BERLIN2_SM_ADC_MASK			0x3ff
+>>  #define BERLIN2_SM_ADC_STATUS			0x1c
+>>  #define  BERLIN2_SM_ADC_STATUS_DATA_RDY(x)	BIT(x)		/* 0-15 */
+>> -#define  BERLIN2_SM_ADC_STATUS_DATA_RDY_MASK	0xf
+>> +#define  BERLIN2_SM_ADC_STATUS_DATA_RDY_MASK	GENMASK(15, 0)
+>>  #define  BERLIN2_SM_ADC_STATUS_INT_EN(x)	(BIT(x) << 16)	/* 0-15 */
+>> -#define  BERLIN2_SM_ADC_STATUS_INT_EN_MASK	(0xf << 16)
+>> +#define  BERLIN2_SM_ADC_STATUS_INT_EN_MASK	GENMASK(31, 16)
+>>  #define BERLIN2_SM_TSEN_STATUS			0x24
+>>  #define  BERLIN2_SM_TSEN_STATUS_DATA_RDY	BIT(0)
+>>  #define  BERLIN2_SM_TSEN_STATUS_INT_EN		BIT(1)
+>>  #define BERLIN2_SM_TSEN_DATA			0x28
+>> -#define  BERLIN2_SM_TSEN_MASK			0xfff
+>> +#define  BERLIN2_SM_TSEN_MASK			GENMASK(9, 0)
+>>  #define BERLIN2_SM_TSEN_CTRL			0x74
+>>  #define  BERLIN2_SM_TSEN_CTRL_START		BIT(8)
+>>  #define  BERLIN2_SM_TSEN_CTRL_SETTLING_4	(0x0 << 21)	/* 4 us */
+>> -- 
+>> 2.4.6
+>>
 > 
 
