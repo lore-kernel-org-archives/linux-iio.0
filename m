@@ -1,77 +1,91 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:45316 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:45343 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750972AbbHBRUO (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 2 Aug 2015 13:20:14 -0400
-Subject: Re: [PATCH 2/2] iio: magn: bmc150_magn: do not set power state twice
- when setting trigger state
-To: Irina Tirdea <irina.tirdea@intel.com>, linux-iio@vger.kernel.org
-References: <1437671702-20994-1-git-send-email-irina.tirdea@intel.com>
- <1437671702-20994-3-git-send-email-irina.tirdea@intel.com>
-Cc: linux-kernel@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>,
-	Vlad Dogaru <vlad.dogaru@intel.com>
+	with ESMTP id S1751568AbbHBRZC (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 2 Aug 2015 13:25:02 -0400
+Subject: Re: [PATCH 1/6] iio: core: Add function params for kernel docs
+To: Cristina Opriceana <cristina.opriceana@gmail.com>
+References: <cover.1437737942.git.cristina.opriceana@gmail.com>
+ <0301f753bd699ce58336c5418443a9e0358b8ffb.1437737942.git.cristina.opriceana@gmail.com>
+Cc: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+	daniel.baluta@intel.com
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <55BE514C.4070601@kernel.org>
-Date: Sun, 2 Aug 2015 18:20:12 +0100
+Message-ID: <55BE526B.2080302@kernel.org>
+Date: Sun, 2 Aug 2015 18:24:59 +0100
 MIME-Version: 1.0
-In-Reply-To: <1437671702-20994-3-git-send-email-irina.tirdea@intel.com>
+In-Reply-To: <0301f753bd699ce58336c5418443a9e0358b8ffb.1437737942.git.cristina.opriceana@gmail.com>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 23/07/15 18:15, Irina Tirdea wrote:
-> When setting the trigger state, the device power state is set through
-> buffer preenable and postdisable hooks. There is no need
-> to also set it in the trigger set state call.
+On 24/07/15 14:16, Cristina Opriceana wrote:
+> This patch adds the missing fields in kernel docs to remove
+> some warnings that appear when the IIO Documentation DocBook
+> is generated.
 > 
-> Remove duplicate set power state from the trigger set
-> state call.
-> 
-> Signed-off-by: Irina Tirdea <irina.tirdea@intel.com>
-Applied to the togreg branch of iio.git
+> Signed-off-by: Cristina Opriceana <cristina.opriceana@gmail.com>
+Mostly good.  Some typos.  (some from the original).
 
+Fixed up as noted below and applied to the togreg branch of iio.git
 Thanks,
 
 Jonathan
 > ---
->  drivers/iio/magnetometer/bmc150_magn.c | 10 ++--------
->  1 file changed, 2 insertions(+), 8 deletions(-)
+>  drivers/iio/industrialio-core.c | 25 ++++++++++++++++++++-----
+>  1 file changed, 20 insertions(+), 5 deletions(-)
 > 
-> diff --git a/drivers/iio/magnetometer/bmc150_magn.c b/drivers/iio/magnetometer/bmc150_magn.c
-> index d66f8cf..38c2eb64 100644
-> --- a/drivers/iio/magnetometer/bmc150_magn.c
-> +++ b/drivers/iio/magnetometer/bmc150_magn.c
-> @@ -783,29 +783,23 @@ static int bmc150_magn_data_rdy_trigger_set_state(struct iio_trigger *trig,
->  	if (state == data->dready_trigger_on)
->  		goto err_unlock;
+> diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+> index d8051cd..da643b9 100644
+> --- a/drivers/iio/industrialio-core.c
+> +++ b/drivers/iio/industrialio-core.c
+> @@ -406,10 +406,16 @@ EXPORT_SYMBOL_GPL(iio_enum_write);
 >  
-> -	ret = bmc150_magn_set_power_state(data, state);
-> -	if (ret < 0)
-> -		goto err_unlock;
-> -
->  	ret = regmap_update_bits(data->regmap, BMC150_MAGN_REG_INT_DRDY,
->  				 BMC150_MAGN_MASK_DRDY_EN,
->  				 state << BMC150_MAGN_SHIFT_DRDY_EN);
->  	if (ret < 0)
-> -		goto err_poweroff;
-> +		goto err_unlock;
+>  /**
+>   * iio_format_value() - Formats a IIO value into its string representation
+> - * @buf: The buffer to which the formated value gets written
+> - * @type: One of the IIO_VAL_... constants. This decides how the val and val2
+> - *        parameters are formatted.
+> - * @vals: pointer to the values, exact meaning depends on the type parameter.
+> + * @buf:	The buffer to which the formated value gets written
+formatted
+> + * @type:	One of the IIO_VAL_... constants. This decides how the val
+> + *		and val2 parameters are formatted.
+> + * @size:	Number of IIO value entries contained in vals
+> + * @vals:	Pointer to the values, exact meaning depends on the
+> + *		type parameter.
+> + *
+> + * Return: 0 by default, a negative number on failiure or the
+failure
+> + *	   total number of characters written for a type that belongs
+> + *	   to the IIO_VAL_... constant.
+>   */
+>  ssize_t iio_format_value(char *buf, unsigned int type, int size, int *vals)
+>  {
+> @@ -1096,6 +1102,11 @@ EXPORT_SYMBOL_GPL(devm_iio_device_free);
 >  
->  	data->dready_trigger_on = state;
+>  /**
+>   * iio_chrdev_open() - chrdev file open for buffer access and ioctls
+> + * @inode:	Inode structure for identifying the device in the file system
+> + * @filp:	File structure for iio device used to keep and later access
+> + *		private data
+> + *
+> + * Return: 0 on success or -EBUSY if the device is already opened
+>   **/
+>  static int iio_chrdev_open(struct inode *inode, struct file *filp)
+>  {
+> @@ -1114,7 +1125,11 @@ static int iio_chrdev_open(struct inode *inode, struct file *filp)
 >  
->  	if (state) {
->  		ret = bmc150_magn_reset_intr(data);
->  		if (ret < 0)
-> -			goto err_poweroff;
-> +			goto err_unlock;
->  	}
->  	mutex_unlock(&data->mutex);
->  
->  	return 0;
->  
-> -err_poweroff:
-> -	bmc150_magn_set_power_state(data, false);
->  err_unlock:
->  	mutex_unlock(&data->mutex);
->  	return ret;
+>  /**
+>   * iio_chrdev_release() - chrdev file close buffer access and ioctls
+> - **/
+> + * @inode:	Inode structure pointer for the char device
+> + * @filp:	File structure pointer for the char device
+> + *
+> + * Return: 0 for successful release
+> + */
+>  static int iio_chrdev_release(struct inode *inode, struct file *filp)
+>  {
+>  	struct iio_dev *indio_dev = container_of(inode->i_cdev,
 > 
 
