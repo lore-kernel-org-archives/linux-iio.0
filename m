@@ -1,7 +1,7 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mout.gmx.net ([212.227.15.18]:51797 "EHLO mout.gmx.net"
+Received: from mout.gmx.net ([212.227.15.18]:52480 "EHLO mout.gmx.net"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751554AbbHBUoG (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	id S1751614AbbHBUoG (ORCPT <rfc822;linux-iio@vger.kernel.org>);
 	Sun, 2 Aug 2015 16:44:06 -0400
 From: Hartmut Knaack <knaack.h@gmx.de>
 To: linux-iio@vger.kernel.org
@@ -11,27 +11,65 @@ Cc: Jonathan Cameron <jic23@kernel.org>,
 	Martin Fuzzey <mfuzzey@parkeon.com>,
 	Roberta Dobrescu <roberta.dobrescu@gmail.com>,
 	martink@posteo.de
-Subject: [PATCH 0/7] mma8452 fixes and cleanup
-Date: Sun,  2 Aug 2015 22:43:45 +0200
-Message-Id: <cover.1438483410.git.knaack.h@gmx.de>
+Subject: [PATCH 7/7] iio:accel:mma8452: reorder Kconfig entry
+Date: Sun,  2 Aug 2015 22:43:52 +0200
+Message-Id: <f2c8c8dd008120917ceb2c87367e2e1bd5bbaf93.1438483410.git.knaack.h@gmx.de>
+In-Reply-To: <cover.1438483410.git.knaack.h@gmx.de>
+References: <cover.1438483410.git.knaack.h@gmx.de>
+In-Reply-To: <cover.1438483410.git.knaack.h@gmx.de>
+References: <cover.1438483410.git.knaack.h@gmx.de>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-This series addresses some issues found during review.
+Move the entry in Kconfig to its alphabetically correct position.
 
-Hartmut Knaack (7):
-  iio:accel:mma8452: fix _get_hp_filter_index
-  iio:accel:mma8452: drop double include
-  iio:accel:mma8452: pass up real error code
-  iio:accel:mma8452: check values to be written
-  iio:accel:mma8452: rework register definitions
-  iio:accel:mma8452: coding style cleanup
-  iio:accel:mma8452: reorder Kconfig entry
+Signed-off-by: Hartmut Knaack <knaack.h@gmx.de>
+---
+ drivers/iio/accel/Kconfig | 24 ++++++++++++------------
+ 1 file changed, 12 insertions(+), 12 deletions(-)
 
- drivers/iio/accel/Kconfig   |  24 ++---
- drivers/iio/accel/mma8452.c | 216 +++++++++++++++++++++++++-------------------
- 2 files changed, 134 insertions(+), 106 deletions(-)
-
+diff --git a/drivers/iio/accel/Kconfig b/drivers/iio/accel/Kconfig
+index 00e7bcbdbe24..b8fc12c7640b 100644
+--- a/drivers/iio/accel/Kconfig
++++ b/drivers/iio/accel/Kconfig
+@@ -86,18 +86,6 @@ config KXSD9
+ 	  To compile this driver as a module, choose M here: the module
+ 	  will be called kxsd9.
+ 
+-config MMA8452
+-	tristate "Freescale MMA8452Q Accelerometer Driver"
+-	depends on I2C
+-	select IIO_BUFFER
+-	select IIO_TRIGGERED_BUFFER
+-	help
+-	  Say yes here to build support for the Freescale MMA8452Q 3-axis
+-	  accelerometer.
+-
+-	  To compile this driver as a module, choose M here: the module
+-	  will be called mma8452.
+-
+ config KXCJK1013
+ 	tristate "Kionix 3-Axis Accelerometer Driver"
+ 	depends on I2C
+@@ -111,6 +99,18 @@ config KXCJK1013
+ 	  To compile this driver as a module, choose M here: the module will
+ 	  be called kxcjk-1013.
+ 
++config MMA8452
++	tristate "Freescale MMA8452Q Accelerometer Driver"
++	depends on I2C
++	select IIO_BUFFER
++	select IIO_TRIGGERED_BUFFER
++	help
++	  Say yes here to build support for the Freescale MMA8452Q 3-axis
++	  accelerometer.
++
++	  To compile this driver as a module, choose M here: the module
++	  will be called mma8452.
++
+ config MMA9551_CORE
+ 	tristate
+ 
 -- 
 2.4.6
 
