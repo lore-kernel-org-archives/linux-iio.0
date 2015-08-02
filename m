@@ -1,29 +1,29 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:45232 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:45240 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751603AbbHBREE (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 2 Aug 2015 13:04:04 -0400
-Subject: Re: [PATCH 7/8] iio:magnetometer:bmc150_magn: expand mutex in
- trigger_handler
+	with ESMTP id S1751605AbbHBRFP (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 2 Aug 2015 13:05:15 -0400
+Subject: Re: [PATCH 8/8] iio:magnetometer:bmc150_magn: use descriptive name
+ for mask
 To: "Tirdea, Irina" <irina.tirdea@intel.com>,
 	Hartmut Knaack <knaack.h@gmx.de>,
 	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
 References: <cover.1437090791.git.knaack.h@gmx.de>
- <6b1b2b7f33cc5a9654f32785626a10c8276d73e6.1437090791.git.knaack.h@gmx.de>
- <1F3AC3675D538145B1661F571FE1805F2F06BBD6@irsmsx105.ger.corp.intel.com>
+ <81887eb78fef9a2a6c589cb6d4b1f5329c7149b6.1437090791.git.knaack.h@gmx.de>
+ <1F3AC3675D538145B1661F571FE1805F2F06C20C@irsmsx105.ger.corp.intel.com>
 Cc: Lars-Peter Clausen <lars@metafoo.de>,
 	Peter Meerwald <pmeerw@pmeerw.net>,
 	"Dogaru, Vlad" <vlad.dogaru@intel.com>
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <55BE4D82.5050600@kernel.org>
-Date: Sun, 2 Aug 2015 18:04:02 +0100
+Message-ID: <55BE4DC9.9010509@kernel.org>
+Date: Sun, 2 Aug 2015 18:05:13 +0100
 MIME-Version: 1.0
-In-Reply-To: <1F3AC3675D538145B1661F571FE1805F2F06BBD6@irsmsx105.ger.corp.intel.com>
+In-Reply-To: <1F3AC3675D538145B1661F571FE1805F2F06C20C@irsmsx105.ger.corp.intel.com>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 20/07/15 18:48, Tirdea, Irina wrote:
+On 20/07/15 18:52, Tirdea, Irina wrote:
 > 
 > 
 >> -----Original Message-----
@@ -31,45 +31,54 @@ On 20/07/15 18:48, Tirdea, Irina wrote:
 >> Sent: 17 July, 2015 11:53
 >> To: linux-iio@vger.kernel.org
 >> Cc: Jonathan Cameron; Lars-Peter Clausen; Peter Meerwald; Tirdea, Irina; Dogaru, Vlad
->> Subject: [PATCH 7/8] iio:magnetometer:bmc150_magn: expand mutex in trigger_handler
+>> Subject: [PATCH 8/8] iio:magnetometer:bmc150_magn: use descriptive name for mask
 >>
->> Keep the mutex locked, until the content of data->buffer has been pushed
->> out.
+>> Define and use a descriptive name for the repetition registers data mask,
+>> instead of a 'magic' value.
 >>
 > 
-> Looks good to me.
+> Missed this hardcoded value. Thanks for catching this!
 > 
 > Acked-by: Irina Tirdea <irina.tirdea@intel.com>
-Applied to the togreg branch of iio.git.
+Applied, thanks!
 
-Thanks,
-
-> 
+Jonathan
+>  
 >> Signed-off-by: Hartmut Knaack <knaack.h@gmx.de>
 >> ---
->>  drivers/iio/magnetometer/bmc150_magn.c | 2 +-
->>  1 file changed, 1 insertion(+), 1 deletion(-)
+>>  drivers/iio/magnetometer/bmc150_magn.c | 5 +++--
+>>  1 file changed, 3 insertions(+), 2 deletions(-)
 >>
 >> diff --git a/drivers/iio/magnetometer/bmc150_magn.c b/drivers/iio/magnetometer/bmc150_magn.c
->> index ac0cdbde813b..bdcf49ee75df 100644
+>> index bdcf49ee75df..e8cf08ee2d15 100644
 >> --- a/drivers/iio/magnetometer/bmc150_magn.c
 >> +++ b/drivers/iio/magnetometer/bmc150_magn.c
->> @@ -664,7 +664,6 @@ static irqreturn_t bmc150_magn_trigger_handler(int irq, void *p)
+>> @@ -85,6 +85,7 @@
+>>  #define BMC150_MAGN_REG_HIGH_THRESH		0x50
+>>  #define BMC150_MAGN_REG_REP_XY			0x51
+>>  #define BMC150_MAGN_REG_REP_Z			0x52
+>> +#define BMC150_MAGN_REG_REP_DATAMASK		GENMASK(7, 0)
 >>
->>  	mutex_lock(&data->mutex);
->>  	ret = bmc150_magn_read_xyz(data, data->buffer);
->> -	mutex_unlock(&data->mutex);
->>  	if (ret < 0)
->>  		goto err;
->>
->> @@ -672,6 +671,7 @@ static irqreturn_t bmc150_magn_trigger_handler(int irq, void *p)
->>  					   pf->timestamp);
->>
->>  err:
->> +	mutex_unlock(&data->mutex);
->>  	iio_trigger_notify_done(indio_dev->trig);
->>
->>  	return IRQ_HANDLED;
+>>  #define BMC150_MAGN_REG_TRIM_START		0x5D
+>>  #define BMC150_MAGN_REG_TRIM_END		0x71
+>> @@ -559,7 +560,7 @@ static int bmc150_magn_write_raw(struct iio_dev *indio_dev,
+>>  			}
+>>  			ret = regmap_update_bits(data->regmap,
+>>  						 BMC150_MAGN_REG_REP_XY,
+>> -						 0xFF,
+>> +						 BMC150_MAGN_REG_REP_DATAMASK,
+>>  						 BMC150_MAGN_REPXY_TO_REGVAL
+>>  						 (val));
+>>  			mutex_unlock(&data->mutex);
+>> @@ -575,7 +576,7 @@ static int bmc150_magn_write_raw(struct iio_dev *indio_dev,
+>>  			}
+>>  			ret = regmap_update_bits(data->regmap,
+>>  						 BMC150_MAGN_REG_REP_Z,
+>> -						 0xFF,
+>> +						 BMC150_MAGN_REG_REP_DATAMASK,
+>>  						 BMC150_MAGN_REPZ_TO_REGVAL
+>>  						 (val));
+>>  			mutex_unlock(&data->mutex);
 >> --
 >> 2.4.3
 > 
