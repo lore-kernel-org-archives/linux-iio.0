@@ -1,96 +1,114 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:45140 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:45162 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751603AbbHBQuu (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 2 Aug 2015 12:50:50 -0400
-Subject: Re: [PATCH] iio: mlx90614: Define magic numbers
-To: Crt Mori <cmo@melexis.com>, linux-iio@vger.kernel.org,
-	pmeerw@pmeerw.net, vianney.leclement@essensium.com
-References: <1437421107-5986-1-git-send-email-cmo@melexis.com>
+	with ESMTP id S1750972AbbHBQz1 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 2 Aug 2015 12:55:27 -0400
+Subject: Re: [V3] [TWL4030 MADC] Fix ADC[3:6] readings
+To: Adam YH Lee <adam.yh.lee@gmail.com>, linux-omap@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org
+References: <1437439755-30618-1-git-send-email-adam.yh.lee@gmail.com>
+Cc: linux-iio@vger.kernel.org, sre@kernel.org, pmeerw@pmeerw.net
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <55BE4A67.9000503@kernel.org>
-Date: Sun, 2 Aug 2015 17:50:47 +0100
+Message-ID: <55BE4B75.9090708@kernel.org>
+Date: Sun, 2 Aug 2015 17:55:17 +0100
 MIME-Version: 1.0
-In-Reply-To: <1437421107-5986-1-git-send-email-cmo@melexis.com>
+In-Reply-To: <1437439755-30618-1-git-send-email-adam.yh.lee@gmail.com>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 20/07/15 20:38, Crt Mori wrote:
-> Translates the magic constant numbers to named macros and add some
-> additional comments about their meaning.
+On 21/07/15 01:49, Adam YH Lee wrote:
+> MADC[3:6] reads incorrect values without these two following changes:
 > 
-> The diff is made towards togreg branch as that branch seems to have the
-> most recent updates of mlx90614 driver (many are yet to be merged).
+> - enable the 3v1 bias regulator for ADC[3:6]
+> - configure ADC[3:6] lines as input, not as USB
 > 
-> Signed-off-by: Crt Mori <cmo@melexis.com>
-> Acked-by: Peter Meerwald <pmeerw@pmeerw.net>
-Applied to the togreg branch of iio.git - initially pushed out as
-testing for the autobuilders to play with it.
-Should get a pull request out to Greg later in the week,
-
-Jonathan
+> Signed-off-by: Adam YH Lee <adam.yh.lee@gmail.com>
 > ---
->  drivers/iio/temperature/mlx90614.c | 20 ++++++++++++++------
->  1 file changed, 14 insertions(+), 6 deletions(-)
+>  drivers/iio/adc/twl4030-madc.c | 36 ++++++++++++++++++++++++++++++++++++
+>  1 file changed, 36 insertions(+)
 > 
-> diff --git a/drivers/iio/temperature/mlx90614.c b/drivers/iio/temperature/mlx90614.c
-> index cb2e8ad..4590f83 100644
-> --- a/drivers/iio/temperature/mlx90614.c
-> +++ b/drivers/iio/temperature/mlx90614.c
-> @@ -65,6 +65,13 @@
+> diff --git a/drivers/iio/adc/twl4030-madc.c b/drivers/iio/adc/twl4030-madc.c
+> index 94c5f05..ae33eba 100644
+> --- a/drivers/iio/adc/twl4030-madc.c
+> +++ b/drivers/iio/adc/twl4030-madc.c
+> @@ -45,13 +45,18 @@
+>  #include <linux/types.h>
+>  #include <linux/gfp.h>
+>  #include <linux/err.h>
+> +#include <linux/regulator/consumer.h>
 >  
->  #define MLX90614_AUTOSLEEP_DELAY 5000 /* default autosleep delay */
+>  #include <linux/iio/iio.h>
 >  
-> +/* Magic constants */
-> +#define MLX90614_CONST_OFFSET_DEC -13657 /* decimal part of the Kelvin offset */
-> +#define MLX90614_CONST_OFFSET_REM 500000 /* remainder of offset (273.15*50) */
-> +#define MLX90614_CONST_SCALE 20 /* Scale in milliKelvin (0.02 * 1000) */
-> +#define MLX90614_CONST_RAW_EMISSIVITY_MAX 65535 /* max value for emissivity */
-> +#define MLX90614_CONST_EMISSIVITY_RESOLUTION 15259 /* 1/65535 ~ 0.000015259 */
+> +#define TWL4030_USB_SEL_MADC_MCPC	(1<<3)
+> +#define TWL4030_USB_CARKIT_ANA_CTRL	0xBB
 > +
->  struct mlx90614_data {
->  	struct i2c_client *client;
->  	struct mutex lock; /* for EEPROM access only */
-> @@ -204,11 +211,11 @@ static int mlx90614_read_raw(struct iio_dev *indio_dev,
->  		*val = ret;
->  		return IIO_VAL_INT;
->  	case IIO_CHAN_INFO_OFFSET:
-> -		*val = 13657;
-> -		*val2 = 500000;
-> +		*val = MLX90614_CONST_OFFSET_DEC;
-> +		*val2 = MLX90614_CONST_OFFSET_REM;
->  		return IIO_VAL_INT_PLUS_MICRO;
->  	case IIO_CHAN_INFO_SCALE:
-> -		*val = 20;
-> +		*val = MLX90614_CONST_SCALE;
->  		return IIO_VAL_INT;
->  	case IIO_CHAN_INFO_CALIBEMISSIVITY: /* 1/65535 / LSB */
->  		mlx90614_power_get(data, false);
-> @@ -221,12 +228,12 @@ static int mlx90614_read_raw(struct iio_dev *indio_dev,
->  		if (ret < 0)
->  			return ret;
+>  /**
+>   * struct twl4030_madc_data - a container for madc info
+>   * @dev:		Pointer to device structure for madc
+>   * @lock:		Mutex protecting this data structure
+> + * @regulator:		Pointer to bias regulator for madc
+>   * @requests:		Array of request struct corresponding to SW1, SW2 and RT
+>   * @use_second_irq:	IRQ selection (main or co-processor)
+>   * @imr:		Interrupt mask register of MADC
+> @@ -60,6 +65,7 @@
+>  struct twl4030_madc_data {
+>  	struct device *dev;
+>  	struct mutex lock;	/* mutex protecting this data structure */
+> +	struct regulator *usb3v1;
+>  	struct twl4030_madc_request requests[TWL4030_MADC_NUM_METHODS];
+>  	bool use_second_irq;
+>  	u8 imr;
+> @@ -848,6 +854,33 @@ static int twl4030_madc_probe(struct platform_device *pdev)
+>  		goto err_i2c;
+>  	}
 >  
-> -		if (ret == 65535) {
-> +		if (ret == MLX90614_CONST_RAW_EMISSIVITY_MAX) {
->  			*val = 1;
->  			*val2 = 0;
->  		} else {
->  			*val = 0;
-> -			*val2 = ret * 15259; /* 1/65535 ~ 0.000015259 */
-> +			*val2 = ret * MLX90614_CONST_EMISSIVITY_RESOLUTION;
->  		}
->  		return IIO_VAL_INT_PLUS_NANO;
->  	default:
-> @@ -245,7 +252,8 @@ static int mlx90614_write_raw(struct iio_dev *indio_dev,
->  	case IIO_CHAN_INFO_CALIBEMISSIVITY: /* 1/65535 / LSB */
->  		if (val < 0 || val2 < 0 || val > 1 || (val == 1 && val2 != 0))
->  			return -EINVAL;
-> -		val = val * 65535 + val2 / 15259; /* 1/65535 ~ 0.000015259 */
-> +		val = val * MLX90614_CONST_RAW_EMISSIVITY_MAX +
-> +			val2 / MLX90614_CONST_EMISSIVITY_RESOLUTION;
+At this point in the driver the userspace (an in kernel) interfaces to read
+from the device are exposed. Thus if you need this stuff set up right, it
+wants to be done before the iio_device_register call.
+> +	/* Configure MADC[3:6] */
+> +	ret = twl_i2c_read_u8(TWL_MODULE_USB, &regval,
+> +			TWL4030_USB_CARKIT_ANA_CTRL);
+> +	if (ret) {
+> +		dev_err(&pdev->dev, "unable to read reg CARKIT_ANA_CTRL  0x%X\n",
+> +				TWL4030_USB_CARKIT_ANA_CTRL);
+> +		goto err_i2c;
+> +	}
+> +	regval |= TWL4030_USB_SEL_MADC_MCPC;
+> +	ret = twl_i2c_write_u8(TWL_MODULE_USB, regval,
+> +				 TWL4030_USB_CARKIT_ANA_CTRL);
+> +	if (ret) {
+> +		dev_err(&pdev->dev, "unable to write reg CARKIT_ANA_CTRL 0x%X\n",
+> +				TWL4030_USB_CARKIT_ANA_CTRL);
+> +		goto err_i2c;
+> +	}
+> +
+> +
+> +	/* Enable 3v1 bias regulator for MADC[3:6] */
+> +	madc->usb3v1 = devm_regulator_get(madc->dev, "vusb3v1");
+> +	if (IS_ERR(madc->usb3v1))
+> +		return -ENODEV;
+> +
+> +	ret = regulator_enable(madc->usb3v1);
+> +	if (ret)
+> +		dev_err(madc->dev, "could not enable 3v1 bias regulator\n");
+> +
+>  	return 0;
 >  
->  		mlx90614_power_get(data, false);
->  		mutex_lock(&data->lock);
+>  err_i2c:
+> @@ -867,6 +900,9 @@ static int twl4030_madc_remove(struct platform_device *pdev)
+>  	twl4030_madc_set_current_generator(madc, 0, 0);
+>  	twl4030_madc_set_power(madc, 0);
+>  
+> +	regulator_disable(madc->usb3v1);
+> +	devm_regulator_put(madc->usb3v1);
+The whole point of devm_ allocators (or in this case _gets) is that when
+the driver is removed they are cleaned up automatically.  Hence you don't
+need them in your remove call.  Obviously it also clears up the error
+handling in probe as well.
+> +
+>  	return 0;
+>  }
+>  
 > 
 
