@@ -1,119 +1,82 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:44707 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:44731 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751090AbbHBPjM (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 2 Aug 2015 11:39:12 -0400
-Subject: Re: [PATCH 17/27] iio: Export OF module alias information in missing
- drivers
-To: Javier Martinez Canillas <javier@osg.samsung.com>,
-	linux-kernel@vger.kernel.org
-References: <1438273132-20926-1-git-send-email-javier@osg.samsung.com>
- <1438273132-20926-18-git-send-email-javier@osg.samsung.com>
-Cc: linux-iio@vger.kernel.org
+	with ESMTP id S1751405AbbHBPpl (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 2 Aug 2015 11:45:41 -0400
+Subject: Re: [PATCH v4 0/2] iio: light: add support for APDS9660 sensor
+To: Matt Ranostay <mranostay@gmail.com>
+References: <1437364640-7470-1-git-send-email-mranostay@gmail.com>
+ <CAKzfze8tccxiWTcx4DWocdnm4M=W-5fToK-ABELW-JrdKtq-iA@mail.gmail.com>
+Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+	=?UTF-8?Q?Marek_Va=c5=a1ut?= <marex@denx.de>
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <55BE399E.8070908@kernel.org>
-Date: Sun, 2 Aug 2015 16:39:10 +0100
+Message-ID: <55BE3B23.8010608@kernel.org>
+Date: Sun, 2 Aug 2015 16:45:39 +0100
 MIME-Version: 1.0
-In-Reply-To: <1438273132-20926-18-git-send-email-javier@osg.samsung.com>
-Content-Type: text/plain; charset=windows-1252
+In-Reply-To: <CAKzfze8tccxiWTcx4DWocdnm4M=W-5fToK-ABELW-JrdKtq-iA@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 30/07/15 17:18, Javier Martinez Canillas wrote:
-> The I2C core always reports the MODALIAS uevent as "i2c:<client name"
-> regardless if the driver was matched using the I2C id_table or the
-> of_match_table. So technically there's no need for a driver to export
-> the OF table since currently it's not used.
+On 29/07/15 05:28, Matt Ranostay wrote:
+> Jonathan,
 > 
-> In fact, the I2C device ID table is mandatory for I2C drivers since
-> a i2c_device_id is passed to the driver's probe function even if the
-> I2C core used the OF table to match the driver.
+> Does this solve the issues in v3 minus the apds9960_regfield_init() cleanup?
 > 
-> And since the I2C core uses different tables, OF-only drivers needs to
-> have duplicated data that has to be kept in sync and also the dev node
-> compatible manufacturer prefix is stripped when reporting the MODALIAS.
 > 
-> To avoid the above, the I2C core behavior may be changed in the future
-> to not require an I2C device table for OF-only drivers and report the
-> OF module alias. So, it's better to also export the OF table to prevent
-> breaking module autoloading if that happens.
+> Thanks,
 > 
-> Signed-off-by: Javier Martinez Canillas <javier@osg.samsung.com>
-Applied to the togreg branch of iio.git - initially pushed out as testing
-for the autobuilders to play with it,
-
-Thanks
-
-Jonathan
+> Matt
 > 
-> ---
-> 
->  drivers/iio/accel/mma8452.c      | 1 +
->  drivers/iio/light/cm32181.c      | 1 +
->  drivers/iio/light/cm3232.c       | 1 +
->  drivers/iio/light/cm36651.c      | 1 +
->  drivers/iio/light/gp2ap020a00f.c | 1 +
->  5 files changed, 5 insertions(+)
-> 
-> diff --git a/drivers/iio/accel/mma8452.c b/drivers/iio/accel/mma8452.c
-> index 13ea1ea23328..b7ad3dce6ff4 100644
-> --- a/drivers/iio/accel/mma8452.c
-> +++ b/drivers/iio/accel/mma8452.c
-> @@ -968,6 +968,7 @@ static const struct of_device_id mma8452_dt_ids[] = {
->  	{ .compatible = "fsl,mma8452" },
->  	{ }
->  };
-> +MODULE_DEVICE_TABLE(of, mma8452_dt_ids);
->  
->  static struct i2c_driver mma8452_driver = {
->  	.driver = {
-> diff --git a/drivers/iio/light/cm32181.c b/drivers/iio/light/cm32181.c
-> index 1c0de2f8885d..d6fd0dace74f 100644
-> --- a/drivers/iio/light/cm32181.c
-> +++ b/drivers/iio/light/cm32181.c
-> @@ -353,6 +353,7 @@ static const struct of_device_id cm32181_of_match[] = {
->  	{ .compatible = "capella,cm32181" },
->  	{ }
->  };
-> +MODULE_DEVICE_TABLE(of, cm32181_of_match);
->  
->  static struct i2c_driver cm32181_driver = {
->  	.driver = {
-> diff --git a/drivers/iio/light/cm3232.c b/drivers/iio/light/cm3232.c
-> index 1b508c65877c..fe89b6823217 100644
-> --- a/drivers/iio/light/cm3232.c
-> +++ b/drivers/iio/light/cm3232.c
-> @@ -417,6 +417,7 @@ static const struct of_device_id cm3232_of_match[] = {
->  	{.compatible = "capella,cm3232"},
->  	{}
->  };
-> +MODULE_DEVICE_TABLE(of, cm3232_of_match);
->  
->  static struct i2c_driver cm3232_driver = {
->  	.driver = {
-> diff --git a/drivers/iio/light/cm36651.c b/drivers/iio/light/cm36651.c
-> index 2a39e141e90c..c8d7b5ea7e78 100644
-> --- a/drivers/iio/light/cm36651.c
-> +++ b/drivers/iio/light/cm36651.c
-> @@ -731,6 +731,7 @@ static const struct of_device_id cm36651_of_match[] = {
->  	{ .compatible = "capella,cm36651" },
->  	{ }
->  };
-> +MODULE_DEVICE_TABLE(of, cm36651_of_match);
->  
->  static struct i2c_driver cm36651_driver = {
->  	.driver = {
-> diff --git a/drivers/iio/light/gp2ap020a00f.c b/drivers/iio/light/gp2ap020a00f.c
-> index 0334a814b5eb..6d41086f7c64 100644
-> --- a/drivers/iio/light/gp2ap020a00f.c
-> +++ b/drivers/iio/light/gp2ap020a00f.c
-> @@ -1634,6 +1634,7 @@ static const struct of_device_id gp2ap020a00f_of_match[] = {
->  	{ .compatible = "sharp,gp2ap020a00f" },
->  	{ }
->  };
-> +MODULE_DEVICE_TABLE(of, gp2ap020a00f_of_match);
->  #endif
->  
->  static struct i2c_driver gp2ap020a00f_driver = {
+Sorry, was on holiday last week.  Catching up now.
+> On Sun, Jul 19, 2015 at 8:57 PM, Matt Ranostay <mranostay@gmail.com> wrote:
+>> This patchset adds support for the APDS9960 ALS + proximity + gesture
+>> sensor.
+>>
+>> Included support for the various adjustable settings and controls:
+>>  * Falling and rising ALS + proximity thresholds events
+>>  * Gain controls
+>>  * ALS time integration
+>>
+>> Changes from v3:
+>>  * Added interrupt client mode document reference in DT bindings
+>>  * Add missing dep for CONFIG_REGMAP_I2C in respective Kconfig
+>>  * Changed from iio_trigger_poll_chained() to irq_work queue
+>>  * Changed channel masks to prevent channels that can't be polled from
+>>    having sysfs entries
+>>  * Renamed regmap_field declarations with apds9660_* prefix
+>>  * Added available channel masks and removed unneeded buffer copy in
+>>    poll function
+>>  * Remove unneeded default regmap values in apds9960_reg_defaults
+>>  * Clear interrupts from ALS and proximity sensor seperately to avoid
+>>    race condition
+>>  * Changed max threshold values to a macro define, and prevent values
+>>    less than 0
+>>  * Avoid needlessly checking the APDS9960_REG_GFLVL value until we read
+>>    all the FIFO from the count value. Note this can save up to 32
+>>    superfluous i2c reads per gesture engine entry
+>>
+>> Matt Ranostay (2):
+>>   iio: light: DT binding docs for APDS9960 driver
+>>   iio: light: add APDS9960 ALS + promixity driver
+>>
+>>  .../ABI/testing/sysfs-bus-iio-light-apds9960       |    7 +
+>>  .../devicetree/bindings/iio/light/apds9960.txt     |   22 +
+>>  drivers/iio/light/Kconfig                          |   13 +
+>>  drivers/iio/light/Makefile                         |    1 +
+>>  drivers/iio/light/apds9960.c                       | 1191 ++++++++++++++++++++
+>>  5 files changed, 1234 insertions(+)
+>>  create mode 100644 Documentation/ABI/testing/sysfs-bus-iio-light-apds9960
+>>  create mode 100644 Documentation/devicetree/bindings/iio/light/apds9960.txt
+>>  create mode 100644 drivers/iio/light/apds9960.c
+>>
+>> --
+>> 1.9.1
+>>
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
 > 
 
