@@ -1,65 +1,58 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:46218 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751738AbbHBTxB (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 2 Aug 2015 15:53:01 -0400
-Subject: Re: [PATCH 2/2] iio: proximity: add support for PulsedLight LIDAR
-To: Lars-Peter Clausen <lars@metafoo.de>,
-	Matt Ranostay <mranostay@gmail.com>, marex@denx.de,
-	matt@ohporter.com, pantelis.antoniou@gmail.com
-References: <1438401484-22101-1-git-send-email-mranostay@gmail.com>
- <1438401484-22101-3-git-send-email-mranostay@gmail.com>
- <55BDE5F8.9090201@metafoo.de> <55BE6025.5030001@kernel.org>
- <55BE63F2.5080204@metafoo.de>
-Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <55BE751A.5040308@kernel.org>
-Date: Sun, 2 Aug 2015 20:52:58 +0100
-MIME-Version: 1.0
-In-Reply-To: <55BE63F2.5080204@metafoo.de>
-Content-Type: text/plain; charset=windows-1252
+Received: from mout.gmx.net ([212.227.15.19]:64430 "EHLO mout.gmx.net"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751434AbbHBUoG (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Sun, 2 Aug 2015 16:44:06 -0400
+From: Hartmut Knaack <knaack.h@gmx.de>
+To: linux-iio@vger.kernel.org
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Martin Fuzzey <mfuzzey@parkeon.com>,
+	Roberta Dobrescu <roberta.dobrescu@gmail.com>,
+	martink@posteo.de
+Subject: [PATCH 4/7] iio:accel:mma8452: check values to be written
+Date: Sun,  2 Aug 2015 22:43:49 +0200
+Message-Id: <35eaf1398b5b084bf611a1d5c024d98068531b93.1438483410.git.knaack.h@gmx.de>
+In-Reply-To: <cover.1438483410.git.knaack.h@gmx.de>
+References: <cover.1438483410.git.knaack.h@gmx.de>
+In-Reply-To: <cover.1438483410.git.knaack.h@gmx.de>
+References: <cover.1438483410.git.knaack.h@gmx.de>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 02/08/15 19:39, Lars-Peter Clausen wrote:
-> On 08/02/2015 08:23 PM, Jonathan Cameron wrote:
->> On 02/08/15 10:42, Lars-Peter Clausen wrote:
->>> On 08/01/2015 05:58 AM, Matt Ranostay wrote:
->>> [...]
->>>> +
->>>> +struct lidar_data {
->>>> +	struct mutex lock;
->>>> +	struct iio_dev *indio_dev;
->>>> +	struct i2c_client *client;
->>>> +
->>>> +	/* config */
->>>> +	int calib_bias;
->>>> +
->>>> +	u16 buffer[5]; /* 2 byte distance + 8 byte timestamp */
->>>
->>> Needs to be in its own cacheline to avoid issues if the I2C controller is
->>> using DMA.
->> Would do if spi, but in the case of i2c I thought all bus drivers were
->> obliged to deal with this rather than leaving it to the client drivers?
-> 
-> Where did you find this? There definitely seem to be I2C drivers which
-> directly map the i2c_msg buffers.
-Right now I can't track down an explicit reference.  However, all sorts
-of nastiness occurs if we end up using the i2c_smbus_xfer_emulated as
-that uses local buffers on the stack.
+Check values to be written to the device for valid lower and upper bounds.
 
-Hmm. Will look into this more when I get a chance.  We have a lot of
-i2c drivers that don't have aligned buffers...
+Signed-off-by: Hartmut Knaack <knaack.h@gmx.de>
+---
+ drivers/iio/accel/mma8452.c | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
 
-> 
-> But I just realized that in this case the buffer is not passed to the i2c
-> driver anyway so we should be fine.
-> 
-> - Lars
-> 
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> 
+diff --git a/drivers/iio/accel/mma8452.c b/drivers/iio/accel/mma8452.c
+index 1463392f679c..516b6108d5f8 100644
+--- a/drivers/iio/accel/mma8452.c
++++ b/drivers/iio/accel/mma8452.c
+@@ -471,15 +471,17 @@ static int mma8452_write_thresh(struct iio_dev *indio_dev,
+ 
+ 	switch (info) {
+ 	case IIO_EV_INFO_VALUE:
+-		return mma8452_change_config(data, MMA8452_TRANSIENT_THS,
+-					     val & MMA8452_TRANSIENT_THS_MASK);
++		if (val < 0 || val > MMA8452_TRANSIENT_THS_MASK)
++			return -EINVAL;
++
++		return mma8452_change_config(data, MMA8452_TRANSIENT_THS, val);
+ 
+ 	case IIO_EV_INFO_PERIOD:
+ 		steps = (val * USEC_PER_SEC + val2) /
+ 				mma8452_transient_time_step_us[
+ 					mma8452_get_odr_index(data)];
+ 
+-		if (steps > 0xff)
++		if (steps < 0 || steps > 0xff)
+ 			return -EINVAL;
+ 
+ 		return mma8452_change_config(data, MMA8452_TRANSIENT_COUNT,
+-- 
+2.4.6
 
