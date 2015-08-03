@@ -1,28 +1,26 @@
-Return-Path: <pmeerw@pmeerw.net>
-Date: Mon, 3 Aug 2015 23:26:12 +0200 (CEST)
-From: Peter Meerwald <pmeerw@pmeerw.net>
-To: Matt Porter <mporter@konsulko.com>
-cc: Linux IIO List <linux-iio@vger.kernel.org>,
-    Jonathan Cameron <jic23@kernel.org>,
-    Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 2/3] iio: temperature: add max6675 thermocouple converter
- driver
-In-Reply-To: <1438635410-3757-3-git-send-email-mporter@konsulko.com>
-Message-ID: <alpine.DEB.2.02.1508032313380.17732@pmeerw.net>
-References: <1438635410-3757-1-git-send-email-mporter@konsulko.com> <1438635410-3757-3-git-send-email-mporter@konsulko.com>
+Return-Path: <mranostay@gmail.com>
 MIME-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
+In-Reply-To: <1438635410-3757-3-git-send-email-mporter@konsulko.com>
+References: <1438635410-3757-1-git-send-email-mporter@konsulko.com>
+	<1438635410-3757-3-git-send-email-mporter@konsulko.com>
+Date: Mon, 3 Aug 2015 15:39:00 -0700
+Message-ID: <CAKzfze9EcW0=yRGq=JBim7P8kQ4q+UgOd00qm=zA6oLz+Ut4DQ@mail.gmail.com>
+Subject: Re: [PATCH 2/3] iio: temperature: add max6675 thermocouple converter driver
+From: Matt Ranostay <mranostay@gmail.com>
+To: Matt Porter <mporter@konsulko.com>
+Cc: Linux IIO List <linux-iio@vger.kernel.org>, Devicetree List <devicetree@vger.kernel.org>,
+	Jonathan Cameron <jic23@kernel.org>, Rob Herring <robh+dt@kernel.org>,
+	Mark Rutland <mark.rutland@arm.com>,
+	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset=UTF-8
 List-ID: <linux-iio@vger.kernel.org>
 
-On Mon, 3 Aug 2015, Matt Porter wrote:
-
+On Mon, Aug 3, 2015 at 1:56 PM, Matt Porter <mporter@konsulko.com> wrote:
 > Add a driver for the MAX6675 thermocouple converter. This
 > device interfaces with K-type thermocouples and provides
 > cold-junction compensated temperature readings via a
 > SPI interface.
-
-comments below
- 
+>
 > Signed-off-by: Matt Porter <mporter@konsulko.com>
 > ---
 >  drivers/iio/temperature/Kconfig   |  11 +++
@@ -30,7 +28,7 @@ comments below
 >  drivers/iio/temperature/max6675.c | 155 ++++++++++++++++++++++++++++++++++++++
 >  3 files changed, 167 insertions(+)
 >  create mode 100644 drivers/iio/temperature/max6675.c
-> 
+>
 > diff --git a/drivers/iio/temperature/Kconfig b/drivers/iio/temperature/Kconfig
 > index 21feaa4..b73fbf4 100644
 > --- a/drivers/iio/temperature/Kconfig
@@ -38,24 +36,21 @@ comments below
 > @@ -3,6 +3,17 @@
 >  #
 >  menu "Temperature sensors"
->  
+>
 > +config MAX6675
-> +	tristate "MAX6675 thermocouple converter"
-> +	depends on SPI
-> +	help
-> +	  If you say yes here you get support for the Maxim
-> +	  MAX6675 thermocouple converter connected with SPI.
+> +       tristate "MAX6675 thermocouple converter"
+> +       depends on SPI
+> +       help
+> +         If you say yes here you get support for the Maxim
+> +         MAX6675 thermocouple converter connected with SPI.
 > +
-> +	  This driver can also be built as a module. If so, the module will
-> +	  be called max6675.
+> +         This driver can also be built as a module. If so, the module will
+> +         be called max6675.
 > +
-
-extra newline
-
 > +
 >  config MLX90614
->  	tristate "MLX90614 contact-less infrared sensor"
->  	depends on I2C
+>         tristate "MLX90614 contact-less infrared sensor"
+>         depends on I2C
 > diff --git a/drivers/iio/temperature/Makefile b/drivers/iio/temperature/Makefile
 > index 40710a8..d67ef40 100644
 > --- a/drivers/iio/temperature/Makefile
@@ -63,7 +58,7 @@ extra newline
 > @@ -2,5 +2,6 @@
 >  # Makefile for industrial I/O temperature drivers
 >  #
->  
+>
 > +obj-$(CONFIG_MAX6675) += max6675.o
 >  obj-$(CONFIG_MLX90614) += mlx90614.o
 >  obj-$(CONFIG_TMP006) += tmp006.o
@@ -98,142 +93,134 @@ extra newline
 > +#include <linux/spi/spi.h>
 > +
 > +struct max6675_state {
-> +	struct spi_device *spi;
+> +       struct spi_device *spi;
 > +};
 > +
 > +static const struct iio_chan_spec max6675_channels[] = {
-> +	{
-> +		.type = IIO_TEMP,
-> +		.info_mask_separate =
-> +			BIT(IIO_CHAN_INFO_RAW) |
-> +			BIT(IIO_CHAN_INFO_SCALE),
-> +	},
+> +       {
+> +               .type = IIO_TEMP,
+> +               .info_mask_separate =
+> +                       BIT(IIO_CHAN_INFO_RAW) |
+> +                       BIT(IIO_CHAN_INFO_SCALE),
+> +       },
 > +};
 > +
 > +static int max6675_read(struct max6675_state *st, int *val)
 > +{
-> +	int ret;
+> +       int ret;
 > +
-> +	ret = spi_read(st->spi, val, 2);
-> +	if (ret < 0)
-> +		return ret;
+> +       ret = spi_read(st->spi, val, 2);
+> +       if (ret < 0)
+> +               return ret;
 > +
-> +	/* Temperature is bits 14..3 */
-> +	*val = (*val >> 3) & 0xfff;
-
-what about endianness conversion?
-use be16_to_cpu()
-
+> +       /* Temperature is bits 14..3 */
+> +       *val = (*val >> 3) & 0xfff;
 > +
-> +	return ret;
+> +       return ret;
 > +}
 > +
 > +static int max6675_read_raw(struct iio_dev *indio_dev,
-> +			    struct iio_chan_spec const *chan,
-> +			    int *val,
-> +			    int *val2,
-> +			    long m)
+> +                           struct iio_chan_spec const *chan,
+> +                           int *val,
+> +                           int *val2,
+> +                           long m)
 > +{
-> +	struct max6675_state *st = iio_priv(indio_dev);
-> +	int ret;
+> +       struct max6675_state *st = iio_priv(indio_dev);
+> +       int ret;
 > +
-> +	if (m == IIO_CHAN_INFO_RAW) {
-> +		*val2 = 0;
-
-no need to set *val2 to 0 when returning VAL_INT
-
-> +		ret = max6675_read(st, val);
-> +		if (ret)
-> +			return ret;
-> +	} else if (m == IIO_CHAN_INFO_SCALE) {
-> +		*val = 250;
-> +		*val2 = 0;
-> +	} else
-> +		return -EINVAL;
+> +       if (m == IIO_CHAN_INFO_RAW) {
+> +               *val2 = 0;
+> +               ret = max6675_read(st, val);
+> +               if (ret)
+> +                       return ret;
+> +       } else if (m == IIO_CHAN_INFO_SCALE) {
+> +               *val = 250;
+> +               *val2 = 0;
+> +       } else
+> +               return -EINVAL;
 > +
-> +	return IIO_VAL_INT;
+> +       return IIO_VAL_INT;
 > +}
 > +
 > +static const struct iio_info max6675_info = {
-> +	.driver_module = THIS_MODULE,
-> +	.read_raw = &max6675_read_raw,
+> +       .driver_module = THIS_MODULE,
+> +       .read_raw = &max6675_read_raw,
 > +};
 > +
 > +static int max6675_probe(struct spi_device *spi)
 > +{
-> +	struct iio_dev *indio_dev;
-> +	struct max6675_state *st;
-> +	int ret = 0;
+> +       struct iio_dev *indio_dev;
+> +       struct max6675_state *st;
+> +       int ret = 0;
+> +
+> +       indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*st));
+> +       if (!indio_dev)
+> +               return -ENOMEM;
+> +
+> +       st = iio_priv(indio_dev);
+> +       st->spi = spi;
+> +
+> +       spi->mode = SPI_MODE_1;
+> +       spi->bits_per_word = 16;
 
-no need to initialize ret
+Have this error or display a warning when it doesn't match the passed
+DT binding settings. Otherwise it may get confusing why other SPI
+modes and word sizes don't work.
 
 > +
-> +	indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*st));
-> +	if (!indio_dev)
-> +		return -ENOMEM;
+> +       spi_set_drvdata(spi, indio_dev);
 > +
-> +	st = iio_priv(indio_dev);
-> +	st->spi = spi;
+> +       indio_dev->dev.parent = &spi->dev;
+> +       indio_dev->name = spi_get_device_id(spi)->name;
+> +       indio_dev->channels = max6675_channels;
+> +       indio_dev->num_channels = ARRAY_SIZE(max6675_channels);
+> +       indio_dev->modes = INDIO_DIRECT_MODE;
+> +       indio_dev->info = &max6675_info;
 > +
-> +	spi->mode = SPI_MODE_1;
-> +	spi->bits_per_word = 16;
+> +       ret = iio_device_register(indio_dev);
+> +       if (ret < 0)
+> +               dev_err(&spi->dev, "unable to register device\n");
 > +
-> +	spi_set_drvdata(spi, indio_dev);
-> +
-> +	indio_dev->dev.parent = &spi->dev;
-> +	indio_dev->name = spi_get_device_id(spi)->name;
-> +	indio_dev->channels = max6675_channels;
-> +	indio_dev->num_channels = ARRAY_SIZE(max6675_channels);
-> +	indio_dev->modes = INDIO_DIRECT_MODE;
-> +	indio_dev->info = &max6675_info;
-> +
-> +	ret = iio_device_register(indio_dev);
-
-devm_ and drop _remove()
-
-> +	if (ret < 0)
-> +		dev_err(&spi->dev, "unable to register device\n");
-> +
-> +	return ret;
+> +       return ret;
 > +}
 > +
 > +static int max6675_remove(struct spi_device *spi)
 > +{
-> +	struct iio_dev *indio_dev = spi_get_drvdata(spi);
+> +       struct iio_dev *indio_dev = spi_get_drvdata(spi);
 > +
-> +	iio_device_unregister(indio_dev);
+> +       iio_device_unregister(indio_dev);
 > +
-> +	return 0;
+> +       return 0;
 > +}
 > +
 > +static const struct acpi_device_id max6675_acpi_ids[] = {
-> +	{ "MXIM6675", 0 },
-> +	{},
+> +       { "MXIM6675", 0 },
+> +       {},
 > +};
 > +MODULE_DEVICE_TABLE(acpi, max6675_acpi_ids);
 > +
 > +static const struct of_device_id max6675_dt_ids[] = {
-> +	{ .compatible = "maxim,max6675" },
-> +	{},
+> +       { .compatible = "maxim,max6675" },
+> +       {},
 > +};
 > +MODULE_DEVICE_TABLE(of, max6675_dt_ids);
 > +
 > +static const struct spi_device_id max6675_spi_ids[] = {
-> +	{"max6675", 0},
-> +	{},
+> +       {"max6675", 0},
+> +       {},
 > +};
 > +MODULE_DEVICE_TABLE(spi, max6675_spi_ids);
 > +
 > +static struct spi_driver max6675_driver = {
-> +	.driver = {
-> +		.name	= "max6675",
-> +		.owner	= THIS_MODULE,
-> +		.acpi_match_table = ACPI_PTR(max6675_acpi_ids),
-> +		.of_match_table = of_match_ptr(max6675_dt_ids),
-> +	},
-> +	.probe		= max6675_probe,
-> +	.remove		= max6675_remove,
-> +	.id_table	= max6675_spi_ids,
+> +       .driver = {
+> +               .name   = "max6675",
+> +               .owner  = THIS_MODULE,
+> +               .acpi_match_table = ACPI_PTR(max6675_acpi_ids),
+> +               .of_match_table = of_match_ptr(max6675_dt_ids),
+> +       },
+> +       .probe          = max6675_probe,
+> +       .remove         = max6675_remove,
+> +       .id_table       = max6675_spi_ids,
 > +};
 > +module_spi_driver(max6675_driver);
 > +
@@ -241,9 +228,11 @@ devm_ and drop _remove()
 > +MODULE_DESCRIPTION("MAX6675 thermocouple converter driver");
 > +MODULE_LICENSE("GPL");
 > +MODULE_ALIAS("spi:max6675");
-> 
-
--- 
-
-Peter Meerwald
-+43-664-2444418 (mobile)
+> --
+> 2.1.4
+>
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-kernel" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> Please read the FAQ at  http://www.tux.org/lkml/
