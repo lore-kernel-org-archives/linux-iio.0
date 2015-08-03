@@ -1,285 +1,206 @@
-Return-Path: <pmeerw@pmeerw.net>
-Date: Mon, 3 Aug 2015 17:24:48 +0200 (CEST)
-From: Peter Meerwald <pmeerw@pmeerw.net>
-To: Sanchayan Maity <maitysanchayan@gmail.com>
-cc: jic23@kernel.org, linux-iio@vger.kernel.org, stefan@agner.ch,
-    B38611@freescale.com, hofrat@osadl.org, sanjeev_sharma@mentor.com,
-    fabio.estevam@freescale.com, knaack.h@gmx.de, lars@metafoo.de,
-    antoine.tenart@free-electrons.com, linux-kernel@vger.kernel.org,
-    linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH] iio: adc: vf610: Add IIO buffer support for Vybrid ADC
-In-Reply-To: <1f11be7d7bc1c3fcebf7d0bcf274f1fcbef35999.1438610517.git.maitysanchayan@gmail.com>
-Message-ID: <alpine.DEB.2.02.1508031716370.12576@pmeerw.net>
-References: <cover.1438610517.git.maitysanchayan@gmail.com> <1f11be7d7bc1c3fcebf7d0bcf274f1fcbef35999.1438610517.git.maitysanchayan@gmail.com>
-MIME-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
+Return-Path: <srinivas.pandruvada@linux.intel.com>
+Message-ID: <1438632544.17718.46.camel@spandruv-DESK3.jf.intel.com>
+Subject: Re: [PATCH 2/2] iio:accel:bmc150-accel: Use the chip ID to detect
+ sensor variant
+From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Bastien Nocera <hadess@hadess.net>, "linux-iio@vger.kernel.org"
+	 <linux-iio@vger.kernel.org>, Octavian Purdila <octavian.purdila@intel.com>
+Date: Mon, 03 Aug 2015 13:09:04 -0700
+In-Reply-To: <55BE50D5.30905@kernel.org>
+References: <1437664867.2863.13.camel@hadess.net>
+	 <55BE50D5.30905@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Mime-Version: 1.0
 List-ID: <linux-iio@vger.kernel.org>
 
-On Mon, 3 Aug 2015, Sanchayan Maity wrote:
-
-> This patch adds support for IIO buffer to the Vybrid ADC driver.
-> IIO triggered buffer infrastructure along with iio sysfs trigger
-> is used to leverage continuous sampling support provided by the
-> ADC block.
-
-comments below
- 
-> Signed-off-by: Sanchayan Maity <maitysanchayan@gmail.com>
-> ---
->  drivers/iio/adc/Kconfig     |   4 ++
->  drivers/iio/adc/vf610_adc.c | 122 +++++++++++++++++++++++++++++++++++++++++---
->  2 files changed, 120 insertions(+), 6 deletions(-)
+On Sun, 2015-08-02 at 18:18 +0100, Jonathan Cameron wrote:
+> On 23/07/15 16:21, Bastien Nocera wrote:
+> > Instead of using the I2C or ACPI ID to determine which variant of
+> > the chipset to use, determine that from the chip ID.
+> > 
+> > Under Windows, the same driver is used for those variants and, despite
+> > incorrect ACPI data, it is able to load and operate the accelerometer.
+> > 
+> > Fixes the accelerometer failing with:
+> > bmc150_accel i2c-BMA250E:00: Invalid chip f8
+> > on the WinBook TW100
+> > 
+> > Signed-off-by: Bastien Nocera <hadess@hadess.net>
+> I'll start by saying I hate that this change is necessary down
+> at the driver level.
 > 
-> diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
-> index 7c55658..4661241 100644
-> --- a/drivers/iio/adc/Kconfig
-> +++ b/drivers/iio/adc/Kconfig
-> @@ -337,6 +337,10 @@ config TWL6030_GPADC
->  config VF610_ADC
->  	tristate "Freescale vf610 ADC driver"
->  	depends on OF
-> +	select IIO_BUFFER
-> +	select IIO_TRIGGER
-> +	select IIO_SYSFS_TRIGGER
-> +	select IIO_TRIGGERED_BUFFER
->  	help
->  	  Say yes here to support for Vybrid board analog-to-digital converter.
->  	  Since the IP is used for i.MX6SLX, the driver also support i.MX6SLX.
-> diff --git a/drivers/iio/adc/vf610_adc.c b/drivers/iio/adc/vf610_adc.c
-> index 23b8fb9..af72b9a 100644
-> --- a/drivers/iio/adc/vf610_adc.c
-> +++ b/drivers/iio/adc/vf610_adc.c
-> @@ -34,8 +34,11 @@
->  #include <linux/err.h>
->  
->  #include <linux/iio/iio.h>
-> +#include <linux/iio/buffer.h>
->  #include <linux/iio/sysfs.h>
-> -#include <linux/iio/driver.h>
-> +#include <linux/iio/trigger.h>
-> +#include <linux/iio/trigger_consumer.h>
-> +#include <linux/iio/triggered_buffer.h>
->  
->  /* This will be the driver name the kernel reports */
->  #define DRIVER_NAME "vf610-adc"
-> @@ -170,6 +173,7 @@ struct vf610_adc {
->  	u32 sample_freq_avail[5];
->  
->  	struct completion completion;
-> +	u16 *buffer;
->  };
->  
->  static const u32 vf610_hw_avgs[] = { 1, 4, 8, 16, 32 };
-> @@ -505,12 +509,22 @@ static const struct iio_chan_spec_ext_info vf610_ext_info[] = {
->  	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE) |	\
->  				BIT(IIO_CHAN_INFO_SAMP_FREQ),	\
->  	.ext_info = vf610_ext_info,				\
-> +	.address = (_idx),				\
-
-address is not used, no need to set it
-
-> +	.scan_index = (_idx),			\
-
-often this is written .scan_type = {.sign = 'u', ...}
-
-> +	.scan_type.sign = 'u',			\
-> +	.scan_type.realbits = 12,		\
-> +	.scan_type.storagebits = 16,	\
->  }
->  
->  #define VF610_ADC_TEMPERATURE_CHAN(_idx, _chan_type) {	\
->  	.type = (_chan_type),	\
->  	.channel = (_idx),		\
->  	.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED),	\
-> +	.address = (_idx),						\
-> +	.scan_index = (_idx),					\
-> +	.scan_type.sign = 'u',					\
-> +	.scan_type.realbits = 12,				\
-> +	.scan_type.storagebits = 16,			\
->  }
->  
->  static const struct iio_chan_spec vf610_adc_iio_channels[] = {
-> @@ -531,6 +545,7 @@ static const struct iio_chan_spec vf610_adc_iio_channels[] = {
->  	VF610_ADC_CHAN(14, IIO_VOLTAGE),
->  	VF610_ADC_CHAN(15, IIO_VOLTAGE),
->  	VF610_ADC_TEMPERATURE_CHAN(26, IIO_TEMP),
-> +	IIO_CHAN_SOFT_TIMESTAMP(32),
->  	/* sentinel */
->  };
->  
-> @@ -559,13 +574,21 @@ static int vf610_adc_read_data(struct vf610_adc *info)
->  
->  static irqreturn_t vf610_adc_isr(int irq, void *dev_id)
->  {
-> -	struct vf610_adc *info = (struct vf610_adc *)dev_id;
-> +	struct iio_dev *indio_dev = (struct iio_dev *)dev_id;
-> +	struct vf610_adc *info = iio_priv(indio_dev);
->  	int coco;
->  
->  	coco = readl(info->regs + VF610_REG_ADC_HS);
->  	if (coco & VF610_ADC_HS_COCO0) {
->  		info->value = vf610_adc_read_data(info);
-> -		complete(&info->completion);
-> +		if (iio_buffer_enabled(indio_dev)) {
-> +			info->buffer[0] = info->value;
-> +			writel(0, info->regs + VF610_REG_ADC_HS);
-> +			iio_push_to_buffers_with_timestamp(indio_dev,
-> +					info->buffer, iio_get_time_ns());
-> +			iio_trigger_notify_done(indio_dev->trig);
-> +		} else
-> +			complete(&info->completion);
->  	}
->  
->  	return IRQ_HANDLED;
-> @@ -612,6 +635,9 @@ static int vf610_read_raw(struct iio_dev *indio_dev,
->  	switch (mask) {
->  	case IIO_CHAN_INFO_RAW:
->  	case IIO_CHAN_INFO_PROCESSED:
-> +		if (iio_buffer_enabled(indio_dev))
-> +			return -EBUSY;
-> +
->  		mutex_lock(&indio_dev->mlock);
->  		reinit_completion(&info->completion);
->  
-> @@ -694,6 +720,81 @@ static int vf610_write_raw(struct iio_dev *indio_dev,
->  	return -EINVAL;
->  }
->  
-> +static int vf610_adc_buffer_postenable(struct iio_dev *indio_dev)
-> +{
-> +	struct vf610_adc *info = iio_priv(indio_dev);
-> +	unsigned int channel;
-> +	int ret;
-> +	int val;
-> +
-> +	ret = iio_triggered_buffer_postenable(indio_dev);
-> +	if (ret)
-> +		return ret;
-> +
-> +	val = readl(info->regs + VF610_REG_ADC_GC);
-> +	val |= VF610_ADC_ADCON;
-> +	writel(val, info->regs + VF610_REG_ADC_GC);
-> +
-> +	channel = find_first_bit(indio_dev->active_scan_mask,
-> +						indio_dev->masklength);
-> +
-> +	val = VF610_ADC_ADCHC(channel);
-> +	val |= VF610_ADC_AIEN;
-> +
-> +	writel(val, info->regs + VF610_REG_ADC_HC0);
-> +
-> +	return 0;
-> +}
-> +
-> +static int vf610_adc_buffer_postdisable(struct iio_dev *indio_dev)
-> +{
-> +	struct vf610_adc *info = iio_priv(indio_dev);
-> +	unsigned int hc_cfg = 0;
-> +	int val;
-> +
-> +	val = readl(info->regs + VF610_REG_ADC_GC);
-> +	val &= ~VF610_ADC_ADCON;
-> +	writel(val, info->regs + VF610_REG_ADC_GC);
-> +
-> +	hc_cfg |= VF610_ADC_CONV_DISABLE;
-> +	hc_cfg &= ~VF610_ADC_AIEN;
-> +
-> +	writel(hc_cfg, info->regs + VF610_REG_ADC_HC0);
-> +
-> +	return 0;
-> +}
-> +
-> +static int vf610_adc_update_scan_mode(struct iio_dev *indio_dev,
-> +	const unsigned long *scan_mask)
-> +{
-> +	struct vf610_adc *info = iio_priv(indio_dev);
-> +
-> +	kfree(info->buffer);
-
-only one channel can be read (onehot), why not use a fixed size buffer 
-(one u16, perhaps as a local variable in _adc_isr()?
-
-> +	info->buffer = kmalloc(indio_dev->scan_bytes, GFP_KERNEL);
-> +	if (!info->buffer)
-> +		return -ENOMEM;
-> +
-> +	return 0;
-> +}
-> +
-> +static const struct iio_buffer_setup_ops iio_triggered_buffer_setup_ops = {
-> +	.postenable = &vf610_adc_buffer_postenable,
-> +	.predisable = &iio_triggered_buffer_predisable,
-> +	.postdisable = &vf610_adc_buffer_postdisable,
-> +	.validate_scan_mask = &iio_validate_scan_mask_onehot,
-> +};
-> +
-> +static int vf610_adc_buffer_init(struct iio_dev *indio_dev)
-> +{
-> +	return iio_triggered_buffer_setup(indio_dev, &iio_pollfunc_store_time,
-> +		NULL, &iio_triggered_buffer_setup_ops);
-> +}
-> +
-> +static void vf610_adc_buffer_remove(struct iio_dev *indio_dev)
-> +{
-> +	iio_triggered_buffer_cleanup(indio_dev);
-> +}
-> +
->  static int vf610_adc_reg_access(struct iio_dev *indio_dev,
->  			unsigned reg, unsigned writeval,
->  			unsigned *readval)
-> @@ -714,6 +815,7 @@ static const struct iio_info vf610_adc_iio_info = {
->  	.read_raw = &vf610_read_raw,
->  	.write_raw = &vf610_write_raw,
->  	.debugfs_reg_access = &vf610_adc_reg_access,
-> +	.update_scan_mode = &vf610_adc_update_scan_mode,
->  	.attrs = &vf610_attribute_group,
->  };
->  
-> @@ -753,7 +855,7 @@ static int vf610_adc_probe(struct platform_device *pdev)
->  
->  	ret = devm_request_irq(info->dev, irq,
->  				vf610_adc_isr, 0,
-> -				dev_name(&pdev->dev), info);
-> +				dev_name(&pdev->dev), indio_dev);
->  	if (ret < 0) {
->  		dev_err(&pdev->dev, "failed requesting irq, irq = %d\n", irq);
->  		return ret;
-> @@ -806,15 +908,22 @@ static int vf610_adc_probe(struct platform_device *pdev)
->  	vf610_adc_cfg_init(info);
->  	vf610_adc_hw_init(info);
->  
-> +	ret = vf610_adc_buffer_init(indio_dev);
-> +	if (ret < 0) {
-> +		dev_err(&pdev->dev, "Couldn't initialise the buffer\n");
-> +		goto error_iio_device_register;
-> +	}
-> +
->  	ret = iio_device_register(indio_dev);
->  	if (ret) {
->  		dev_err(&pdev->dev, "Couldn't register the device.\n");
-> -		goto error_iio_device_register;
-> +		goto error_adc_buffer_init;
->  	}
->  
->  	return 0;
->  
-> -
-> +error_adc_buffer_init:
-> +	vf610_adc_buffer_remove(indio_dev);
->  error_iio_device_register:
->  	clk_disable_unprepare(info->clk);
->  error_adc_clk_enable:
-> @@ -829,6 +938,7 @@ static int vf610_adc_remove(struct platform_device *pdev)
->  	struct vf610_adc *info = iio_priv(indio_dev);
->  
->  	iio_device_unregister(indio_dev);
-> +	vf610_adc_buffer_remove(indio_dev);
->  	regulator_disable(info->vref);
->  	clk_disable_unprepare(info->clk);
->  
+> Is there no way to catch it as an ACPI quirk? (I know next to nothing about
+> ACPI and a quick a google isn't pointing me in the right direction!)
+> Seems irritating that we have to deal with this but such is life I guess
+> (anyone want to take the bet that at some point the windows driver will break
+>  horribly as well for these machines?)
 > 
+> Anyhow, Srinivas, could you also take a look at this one.
+> 
+> I suppose I'll cope with the horribleness :)
+We have seen where manufactures replaces a part for some reason, without
+modifying ACPI tables. So matching chip id makes sense logically. But
+even this is not fail proof. Some parts have same chip id with different
+features (clones), in that case ACPI match makes more sense.
+There is a way to patch ACPI tables but that also need to be based on
+some DMI information.
+I am not aware of such issue with Bosch parts. So I think this would be
+OK to use chip id here instead of acpi id here. But what about using
+this only when the current logic fails? In this way we can still have
+another entry in the table for clones, if required.
 
--- 
-
-Peter Meerwald
-+43-664-2444418 (mobile)
+Thanks,
+Srinivas
+> 
+> > ---
+> >  drivers/iio/accel/bmc150-accel.c | 46 +++++++++++++++++-----------------------
+> >  1 file changed, 19 insertions(+), 27 deletions(-)
+> > 
+> > diff --git a/drivers/iio/accel/bmc150-accel.c b/drivers/iio/accel/bmc150-accel.c
+> > index 2ec9b56..7df221c 100644
+> > --- a/drivers/iio/accel/bmc150-accel.c
+> > +++ b/drivers/iio/accel/bmc150-accel.c
+> > @@ -151,6 +151,7 @@ struct bmc150_scale_info {
+> >  };
+> >  
+> >  struct bmc150_accel_chip_info {
+> > +	const char *name;
+> >  	u8 chip_id;
+> >  	const struct iio_chan_spec *channels;
+> >  	int num_channels;
+> > @@ -1061,6 +1062,7 @@ enum {
+> >  
+> >  static const struct bmc150_accel_chip_info bmc150_accel_chip_info_tbl[] = {
+> >  	[bmc150] = {
+> > +		.name = "BMC150A",
+> >  		.chip_id = 0xFA,
+> >  		.channels = bmc150_accel_channels,
+> >  		.num_channels = ARRAY_SIZE(bmc150_accel_channels),
+> > @@ -1070,6 +1072,7 @@ static const struct bmc150_accel_chip_info bmc150_accel_chip_info_tbl[] = {
+> >  				 {76590, BMC150_ACCEL_DEF_RANGE_16G} },
+> >  	},
+> >  	[bmi055] = {
+> > +		.name = "BMI055A",
+> >  		.chip_id = 0xFA,
+> >  		.channels = bmc150_accel_channels,
+> >  		.num_channels = ARRAY_SIZE(bmc150_accel_channels),
+> > @@ -1079,6 +1082,7 @@ static const struct bmc150_accel_chip_info bmc150_accel_chip_info_tbl[] = {
+> >  				 {76590, BMC150_ACCEL_DEF_RANGE_16G} },
+> >  	},
+> >  	[bma255] = {
+> > +		.name = "BMA0255",
+> >  		.chip_id = 0xFA,
+> >  		.channels = bmc150_accel_channels,
+> >  		.num_channels = ARRAY_SIZE(bmc150_accel_channels),
+> > @@ -1088,6 +1092,7 @@ static const struct bmc150_accel_chip_info bmc150_accel_chip_info_tbl[] = {
+> >  				 {76590, BMC150_ACCEL_DEF_RANGE_16G} },
+> >  	},
+> >  	[bma250e] = {
+> > +		.name = "BMA250E",
+> >  		.chip_id = 0xF9,
+> >  		.channels = bma250e_accel_channels,
+> >  		.num_channels = ARRAY_SIZE(bma250e_accel_channels),
+> > @@ -1097,6 +1102,7 @@ static const struct bmc150_accel_chip_info bmc150_accel_chip_info_tbl[] = {
+> >  				 {306457, BMC150_ACCEL_DEF_RANGE_16G} },
+> >  	},
+> >  	[bma222e] = {
+> > +		.name = "BMA222E",
+> >  		.chip_id = 0xF8,
+> >  		.channels = bma222e_accel_channels,
+> >  		.num_channels = ARRAY_SIZE(bma222e_accel_channels),
+> > @@ -1106,6 +1112,7 @@ static const struct bmc150_accel_chip_info bmc150_accel_chip_info_tbl[] = {
+> >  				 {1225831, BMC150_ACCEL_DEF_RANGE_16G} },
+> >  	},
+> >  	[bma280] = {
+> > +		.name = "BMA0280",
+> >  		.chip_id = 0xFB,
+> >  		.channels = bma280_accel_channels,
+> >  		.num_channels = ARRAY_SIZE(bma280_accel_channels),
+> > @@ -1344,20 +1351,6 @@ static irqreturn_t bmc150_accel_irq_handler(int irq, void *private)
+> >  	return IRQ_NONE;
+> >  }
+> >  
+> > -static const char *bmc150_accel_match_acpi_device(struct device *dev, int *data)
+> > -{
+> > -	const struct acpi_device_id *id;
+> > -
+> > -	id = acpi_match_device(dev->driver->acpi_match_table, dev);
+> > -
+> > -	if (!id)
+> > -		return NULL;
+> > -
+> > -	*data = (int) id->driver_data;
+> > -
+> > -	return dev_name(dev);
+> > -}
+> > -
+> >  static int bmc150_accel_gpio_probe(struct i2c_client *client,
+> >  					struct bmc150_accel_data *data)
+> >  {
+> > @@ -1554,7 +1547,7 @@ static const struct iio_buffer_setup_ops bmc150_accel_buffer_ops = {
+> >  
+> >  static int bmc150_accel_chip_init(struct bmc150_accel_data *data)
+> >  {
+> > -	int ret;
+> > +	int ret, i;
+> >  
+> >  	ret = i2c_smbus_read_byte_data(data->client, BMC150_ACCEL_REG_CHIP_ID);
+> >  	if (ret < 0) {
+> > @@ -1564,8 +1557,15 @@ static int bmc150_accel_chip_init(struct bmc150_accel_data *data)
+> >  	}
+> >  
+> >  	dev_dbg(&data->client->dev, "Chip Id %x\n", ret);
+> > -	if (ret != data->chip_info->chip_id) {
+> > -		dev_err(&data->client->dev, "Invalid chip %x\n", ret);
+> This isn't really init (was a bit debatable that the previous sanity
+> check was either but there we are). Ah well.
+> 
+> > +	for (i = 0; i < ARRAY_SIZE(bmc150_accel_chip_info_tbl); i++) {
+> > +		if (bmc150_accel_chip_info_tbl[i].chip_id == ret) {
+> > +			data->chip_info = &bmc150_accel_chip_info_tbl[i];
+> > +			break;
+> > +		}
+> > +	}
+> > +
+> > +	if (!data->chip_info) {
+> > +		dev_err(&data->client->dev, "Unsupported chip %x\n", ret);
+> >  		return -ENODEV;
+> >  	}
+> >  
+> > @@ -1618,7 +1618,6 @@ static int bmc150_accel_probe(struct i2c_client *client,
+> >  	struct iio_dev *indio_dev;
+> >  	int ret;
+> >  	const char *name = NULL;
+> > -	int chip_id = 0;
+> >  
+> >  	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
+> >  	if (!indio_dev)
+> > @@ -1628,15 +1627,8 @@ static int bmc150_accel_probe(struct i2c_client *client,
+> >  	i2c_set_clientdata(client, indio_dev);
+> >  	data->client = client;
+> >  
+> > -	if (id) {
+> > +	if (id)
+> >  		name = id->name;
+> > -		chip_id = id->driver_data;
+> > -	}
+> > -
+> > -	if (ACPI_HANDLE(&client->dev))
+> > -		name = bmc150_accel_match_acpi_device(&client->dev, &chip_id);
+> > -
+> > -	data->chip_info = &bmc150_accel_chip_info_tbl[chip_id];
+> >  
+> >  	ret = bmc150_accel_chip_init(data);
+> >  	if (ret < 0)
+> > @@ -1647,7 +1639,7 @@ static int bmc150_accel_probe(struct i2c_client *client,
+> >  	indio_dev->dev.parent = &client->dev;
+> >  	indio_dev->channels = data->chip_info->channels;
+> >  	indio_dev->num_channels = data->chip_info->num_channels;
+> > -	indio_dev->name = name;
+> > +	indio_dev->name = name ? name : data->chip_info->name;
+> >  	indio_dev->modes = INDIO_DIRECT_MODE;
+> >  	indio_dev->info = &bmc150_accel_info;
+> >  
+> > 
+> 
