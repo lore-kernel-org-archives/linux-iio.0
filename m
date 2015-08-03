@@ -1,78 +1,235 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kmu-office.ch ([178.209.48.109]:45493 "EHLO
-	mail.kmu-office.ch" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753289AbbHCMZv (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 3 Aug 2015 08:25:51 -0400
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Date: Mon, 03 Aug 2015 14:22:30 +0200
-From: Stefan Agner <stefan@agner.ch>
-To: shawn.guo@linaro.org
-Cc: Jonathan Cameron <jic23@kernel.org>, kernel@pengutronix.de,
-	knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
-	robh+dt@kernel.org, pawel.moll@arm.com, mark.rutland@arm.com,
-	ijc+devicetree@hellion.org.uk, galak@codeaurora.org,
-	B38611@freescale.com, maitysanchayan@gmail.com,
-	devicetree@vger.kernel.org, linux-iio@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v5 2/2] ARM: dts: add property for maximum ADC clock
- frequencies
-In-Reply-To: <557477BE.5050108@kernel.org>
-References: <1432730872-14325-1-git-send-email-stefan@agner.ch>
- <1432730872-14325-3-git-send-email-stefan@agner.ch>
- <557477BE.5050108@kernel.org>
-Message-ID: <f598169164aaacc28292d8ccc6afb32d@agner.ch>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <hadess@hadess.net>
+Message-ID: <1438608882.22369.3.camel@hadess.net>
+Subject: Re: [PATCH 2/2] iio:accel:bmc150-accel: Use the chip ID to detect
+ sensor variant
+From: Bastien Nocera <hadess@hadess.net>
+To: Jonathan Cameron <jic23@kernel.org>, "linux-iio@vger.kernel.org"
+	 <linux-iio@vger.kernel.org>, Srinivas Pandruvada
+	 <srinivas.pandruvada@linux.intel.com>, Octavian Purdila
+	 <octavian.purdila@intel.com>
+Date: Mon, 03 Aug 2015 15:34:42 +0200
+In-Reply-To: <55BE50D5.30905@kernel.org>
+References: <1437664867.2863.13.camel@hadess.net>
+	 <55BE50D5.30905@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Mime-Version: 1.0
+List-ID: <linux-iio@vger.kernel.org>
 
-Hi Shawn,
-
-I guess this will go through your tree? Haven't seen it appear on imx/dt
-so far...
-
---
-Stefan
-
-On 2015-06-07 18:56, Jonathan Cameron wrote:
-> On 27/05/15 13:47, Stefan Agner wrote:
->> The ADC clock frequency is limited depending on modes used. Add
->> device tree property which allow to set the mode used and the
->> maximum frequency ratings for the instance. These allows to
->> set the ADC clock to a frequency which is within specification
->> according to the actual mode used.
->>
->> Acked-by: Fugang Duan <B38611@freescale.com>
->> Signed-off-by: Stefan Agner <stefan@agner.ch>
-> I'm happy to take this via IIO if people want me to, otherwise give
-> it's connection to the previous patch that I just applied,
+On Sun, 2015-08-02 at 18:18 +0100, Jonathan Cameron wrote:
+> On 23/07/15 16:21, Bastien Nocera wrote:
+> > Instead of using the I2C or ACPI ID to determine which variant of
+> > the chipset to use, determine that from the chip ID.
+> > 
+> > Under Windows, the same driver is used for those variants and, 
+> > despite
+> > incorrect ACPI data, it is able to load and operate the 
+> > accelerometer.
+> > 
+> > Fixes the accelerometer failing with:
+> > bmc150_accel i2c-BMA250E:00: Invalid chip f8
+> > on the WinBook TW100
+> > 
+> > Signed-off-by: Bastien Nocera <hadess@hadess.net>
+> I'll start by saying I hate that this change is necessary down
+> at the driver level.
 > 
-> Acked-by: Jonathan Cameron <jic23@kernel.org>
-> 
->> ---
->>  arch/arm/boot/dts/vfxxx.dtsi | 4 ++++
->>  1 file changed, 4 insertions(+)
->>
->> diff --git a/arch/arm/boot/dts/vfxxx.dtsi b/arch/arm/boot/dts/vfxxx.dtsi
->> index a29c7ce..c6609bd 100644
->> --- a/arch/arm/boot/dts/vfxxx.dtsi
->> +++ b/arch/arm/boot/dts/vfxxx.dtsi
->> @@ -189,6 +189,8 @@
->>  				clocks = <&clks VF610_CLK_ADC0>;
->>  				clock-names = "adc";
->>  				status = "disabled";
->> +				fsl,adck-max-frequency = <30000000>, <40000000>,
->> +							<20000000>;
->>  			};
->>
->>  			wdoga5: wdog@4003e000 {
->> @@ -387,6 +389,8 @@
->>  				clocks = <&clks VF610_CLK_ADC1>;
->>  				clock-names = "adc";
->>  				status = "disabled";
->> +				fsl,adck-max-frequency = <30000000>, <40000000>,
->> +							<20000000>;
->>  			};
->>
->>  			esdhc1: esdhc@400b2000 {
->>
+> Is there no way to catch it as an ACPI quirk? (I know next to nothing 
+> about
+> ACPI and a quick a google isn't pointing me in the right direction!)
 
+I could add DMI matches, but that seems silly when the new code is
+actually simpler.
+
+> Seems irritating that we have to deal with this but such is life I 
+> guess
+> (anyone want to take the bet that at some point the windows driver 
+> will break
+>  horribly as well for these machines?)
+> 
+> Anyhow, Srinivas, could you also take a look at this one.
+> 
+> I suppose I'll cope with the horribleness :)
+> 
+> > ---
+> >  drivers/iio/accel/bmc150-accel.c | 46 +++++++++++++++++-----------
+> > ------------
+> >  1 file changed, 19 insertions(+), 27 deletions(-)
+> > 
+> > diff --git a/drivers/iio/accel/bmc150-accel.c 
+> > b/drivers/iio/accel/bmc150-accel.c
+> > index 2ec9b56..7df221c 100644
+> > --- a/drivers/iio/accel/bmc150-accel.c
+> > +++ b/drivers/iio/accel/bmc150-accel.c
+> > @@ -151,6 +151,7 @@ struct bmc150_scale_info {
+> >  };
+> >  
+> >  struct bmc150_accel_chip_info {
+> > +	const char *name;
+> >  	u8 chip_id;
+> >  	const struct iio_chan_spec *channels;
+> >  	int num_channels;
+> > @@ -1061,6 +1062,7 @@ enum {
+> >  
+> >  static const struct bmc150_accel_chip_info 
+> > bmc150_accel_chip_info_tbl[] = {
+> >  	[bmc150] = {
+> > +		.name = "BMC150A",
+> >  		.chip_id = 0xFA,
+> >  		.channels = bmc150_accel_channels,
+> >  		.num_channels = ARRAY_SIZE(bmc150_accel_channels),
+> > @@ -1070,6 +1072,7 @@ static const struct bmc150_accel_chip_info 
+> > bmc150_accel_chip_info_tbl[] = {
+> >  				 {76590, 
+> > BMC150_ACCEL_DEF_RANGE_16G} },
+> >  	},
+> >  	[bmi055] = {
+> > +		.name = "BMI055A",
+> >  		.chip_id = 0xFA,
+> >  		.channels = bmc150_accel_channels,
+> >  		.num_channels = ARRAY_SIZE(bmc150_accel_channels),
+> > @@ -1079,6 +1082,7 @@ static const struct bmc150_accel_chip_info 
+> > bmc150_accel_chip_info_tbl[] = {
+> >  				 {76590, 
+> > BMC150_ACCEL_DEF_RANGE_16G} },
+> >  	},
+> >  	[bma255] = {
+> > +		.name = "BMA0255",
+> >  		.chip_id = 0xFA,
+> >  		.channels = bmc150_accel_channels,
+> >  		.num_channels = ARRAY_SIZE(bmc150_accel_channels),
+> > @@ -1088,6 +1092,7 @@ static const struct bmc150_accel_chip_info 
+> > bmc150_accel_chip_info_tbl[] = {
+> >  				 {76590, 
+> > BMC150_ACCEL_DEF_RANGE_16G} },
+> >  	},
+> >  	[bma250e] = {
+> > +		.name = "BMA250E",
+> >  		.chip_id = 0xF9,
+> >  		.channels = bma250e_accel_channels,
+> >  		.num_channels = 
+> > ARRAY_SIZE(bma250e_accel_channels),
+> > @@ -1097,6 +1102,7 @@ static const struct bmc150_accel_chip_info 
+> > bmc150_accel_chip_info_tbl[] = {
+> >  				 {306457, 
+> > BMC150_ACCEL_DEF_RANGE_16G} },
+> >  	},
+> >  	[bma222e] = {
+> > +		.name = "BMA222E",
+> >  		.chip_id = 0xF8,
+> >  		.channels = bma222e_accel_channels,
+> >  		.num_channels = 
+> > ARRAY_SIZE(bma222e_accel_channels),
+> > @@ -1106,6 +1112,7 @@ static const struct bmc150_accel_chip_info 
+> > bmc150_accel_chip_info_tbl[] = {
+> >  				 {1225831, 
+> > BMC150_ACCEL_DEF_RANGE_16G} },
+> >  	},
+> >  	[bma280] = {
+> > +		.name = "BMA0280",
+> >  		.chip_id = 0xFB,
+> >  		.channels = bma280_accel_channels,
+> >  		.num_channels = ARRAY_SIZE(bma280_accel_channels),
+> > @@ -1344,20 +1351,6 @@ static irqreturn_t 
+> > bmc150_accel_irq_handler(int irq, void *private)
+> >  	return IRQ_NONE;
+> >  }
+> >  
+> > -static const char *bmc150_accel_match_acpi_device(struct device 
+> > *dev, int *data)
+> > -{
+> > -	const struct acpi_device_id *id;
+> > -
+> > -	id = acpi_match_device(dev->driver->acpi_match_table, 
+> > dev);
+> > -
+> > -	if (!id)
+> > -		return NULL;
+> > -
+> > -	*data = (int) id->driver_data;
+> > -
+> > -	return dev_name(dev);
+> > -}
+> > -
+> >  static int bmc150_accel_gpio_probe(struct i2c_client *client,
+> >  					struct bmc150_accel_data 
+> > *data)
+> >  {
+> > @@ -1554,7 +1547,7 @@ static const struct iio_buffer_setup_ops 
+> > bmc150_accel_buffer_ops = {
+> >  
+> >  static int bmc150_accel_chip_init(struct bmc150_accel_data *data)
+> >  {
+> > -	int ret;
+> > +	int ret, i;
+> >  
+> >  	ret = i2c_smbus_read_byte_data(data->client, 
+> > BMC150_ACCEL_REG_CHIP_ID);
+> >  	if (ret < 0) {
+> > @@ -1564,8 +1557,15 @@ static int bmc150_accel_chip_init(struct 
+> > bmc150_accel_data *data)
+> >  	}
+> >  
+> >  	dev_dbg(&data->client->dev, "Chip Id %x\n", ret);
+> > -	if (ret != data->chip_info->chip_id) {
+> > -		dev_err(&data->client->dev, "Invalid chip %x\n", 
+> > ret);
+> This isn't really init (was a bit debatable that the previous sanity
+> check was either but there we are). Ah well.
+> 
+> > +	for (i = 0; i < ARRAY_SIZE(bmc150_accel_chip_info_tbl); 
+> > i++) {
+> > +		if (bmc150_accel_chip_info_tbl[i].chip_id == ret) 
+> > {
+> > +			data->chip_info = 
+> > &bmc150_accel_chip_info_tbl[i];
+> > +			break;
+> > +		}
+> > +	}
+> > +
+> > +	if (!data->chip_info) {
+> > +		dev_err(&data->client->dev, "Unsupported chip 
+> > %x\n", ret);
+> >  		return -ENODEV;
+> >  	}
+> >  
+> > @@ -1618,7 +1618,6 @@ static int bmc150_accel_probe(struct 
+> > i2c_client *client,
+> >  	struct iio_dev *indio_dev;
+> >  	int ret;
+> >  	const char *name = NULL;
+> > -	int chip_id = 0;
+> >  
+> >  	indio_dev = devm_iio_device_alloc(&client->dev, 
+> > sizeof(*data));
+> >  	if (!indio_dev)
+> > @@ -1628,15 +1627,8 @@ static int bmc150_accel_probe(struct 
+> > i2c_client *client,
+> >  	i2c_set_clientdata(client, indio_dev);
+> >  	data->client = client;
+> >  
+> > -	if (id) {
+> > +	if (id)
+> >  		name = id->name;
+> > -		chip_id = id->driver_data;
+> > -	}
+> > -
+> > -	if (ACPI_HANDLE(&client->dev))
+> > -		name = bmc150_accel_match_acpi_device(&client
+> > ->dev, &chip_id);
+> > -
+> > -	data->chip_info = &bmc150_accel_chip_info_tbl[chip_id];
+> >  
+> >  	ret = bmc150_accel_chip_init(data);
+> >  	if (ret < 0)
+> > @@ -1647,7 +1639,7 @@ static int bmc150_accel_probe(struct 
+> > i2c_client *client,
+> >  	indio_dev->dev.parent = &client->dev;
+> >  	indio_dev->channels = data->chip_info->channels;
+> >  	indio_dev->num_channels = data->chip_info->num_channels;
+> > -	indio_dev->name = name;
+> > +	indio_dev->name = name ? name : data->chip_info->name;
+> >  	indio_dev->modes = INDIO_DIRECT_MODE;
+> >  	indio_dev->info = &bmc150_accel_info;
+> >  
+> > 
+> 
