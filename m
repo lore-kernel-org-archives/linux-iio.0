@@ -1,52 +1,27 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.windriver.com ([147.11.1.11]:49842 "EHLO
-	mail.windriver.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752574AbbHCCjo (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 2 Aug 2015 22:39:44 -0400
-From: Pengyu Ma <pengyu.ma@windriver.com>
-To: <jic23@kernel.org>, <linux-kernel@vger.kernel.org>,
-	<linux-iio@vger.kernel.org>, <pengyu.ma@windriver.com>
-Subject: [PATCH V2] iio: declare struct to fix warning
-Date: Mon, 3 Aug 2015 10:39:40 +0800
-Message-ID: <1438569580-3712-1-git-send-email-pengyu.ma@windriver.com>
+Return-Path: <lars@metafoo.de>
+Message-ID: <55BF22D9.90903@metafoo.de>
+Date: Mon, 03 Aug 2015 10:14:17 +0200
+From: Lars-Peter Clausen <lars@metafoo.de>
 MIME-Version: 1.0
-Content-Type: text/plain
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+To: Daniel Baluta <daniel.baluta@intel.com>, jic23@kernel.org,
+ corbet@lwn.net, rdunlap@infradead.org, cmo@melexis.com
+CC: pmeerw@pmeerw.net, knaack.h@gmx.de, linux-kernel@vger.kernel.org,
+ linux-iio@vger.kernel.org, herbert@gondor.apana.org.au,
+ smueller@chronox.de, mmarek@suse.cz, linux-doc@vger.kernel.org,
+ cristina.opriceana@gmail.com
+Subject: Re: [PATCH v4] DocBook: Add initial documentation for IIO
+References: <1438351461-19948-1-git-send-email-daniel.baluta@intel.com> <1438351461-19948-2-git-send-email-daniel.baluta@intel.com>
+In-Reply-To: <1438351461-19948-2-git-send-email-daniel.baluta@intel.com>
+Content-Type: text/plain; charset=windows-1252
+List-ID: <linux-iio@vger.kernel.org>
 
-When compile iio related driver the following warning shown:
+On 07/31/2015 04:04 PM, Daniel Baluta wrote:
+> This is intended to help developers faster find their way
+> inside the Industrial I/O core and reduce time spent on IIO
+> drivers development.
+> 
+> Signed-off-by: Daniel Baluta <daniel.baluta@intel.com>
 
-include/linux/iio/trigger.h:35:34: warning: 'struct iio_trigger'
-declared inside parameter list
-  int (*set_trigger_state)(struct iio_trigger *trig, bool state);
+Looks good to me. Thanks again.
 
-include/linux/iio/trigger.h:38:18: warning: 'struct iio_dev'
-declared inside parameter list
-           struct iio_dev *indio_dev);
-
-'struct iio_dev' and 'struct iio_trigger' was used before declaration,
-forward declaration for these structs to fix warning.
-
-Signed-off-by: Pengyu Ma <pengyu.ma@windriver.com>
----
- include/linux/iio/trigger.h | 4 ++++
- 1 file changed, 4 insertions(+)
-
-diff --git a/include/linux/iio/trigger.h b/include/linux/iio/trigger.h
-index fa76c79..974cf73 100644
---- a/include/linux/iio/trigger.h
-+++ b/include/linux/iio/trigger.h
-@@ -18,6 +18,10 @@ struct iio_subirq {
- 	bool enabled;
- };
- 
-+/* forward declaration */
-+struct iio_dev;
-+struct iio_trigger;
-+
- /**
-  * struct iio_trigger_ops - operations structure for an iio_trigger.
-  * @owner:		used to monitor usage count of the trigger.
--- 
-2.4.3
-
+Reviewed-by: Lars-Peter Clausen <lars@metafoo.de>
