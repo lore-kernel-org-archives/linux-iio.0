@@ -1,235 +1,176 @@
-Return-Path: <hadess@hadess.net>
-Message-ID: <1438608882.22369.3.camel@hadess.net>
-Subject: Re: [PATCH 2/2] iio:accel:bmc150-accel: Use the chip ID to detect
- sensor variant
-From: Bastien Nocera <hadess@hadess.net>
-To: Jonathan Cameron <jic23@kernel.org>, "linux-iio@vger.kernel.org"
-	 <linux-iio@vger.kernel.org>, Srinivas Pandruvada
-	 <srinivas.pandruvada@linux.intel.com>, Octavian Purdila
-	 <octavian.purdila@intel.com>
-Date: Mon, 03 Aug 2015 15:34:42 +0200
-In-Reply-To: <55BE50D5.30905@kernel.org>
-References: <1437664867.2863.13.camel@hadess.net>
-	 <55BE50D5.30905@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Mime-Version: 1.0
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-wi0-f182.google.com ([209.85.212.182]:37815 "EHLO
+	mail-wi0-f182.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753209AbbHCPNl (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 3 Aug 2015 11:13:41 -0400
+From: Sanchayan Maity <maitysanchayan@gmail.com>
+To: jic23@kernel.org, linux-iio@vger.kernel.org
+Cc: stefan@agner.ch, B38611@freescale.com, hofrat@osadl.org,
+	sanjeev_sharma@mentor.com, fabio.estevam@freescale.com,
+	knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
+	antoine.tenart@free-electrons.com, linux-kernel@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	Sanchayan Maity <maitysanchayan@gmail.com>
+Subject: [PATCH] Add continuous sampling with IIO buffers for Vybrid
+Date: Mon,  3 Aug 2015 20:40:28 +0530
+Message-Id: <cover.1438610517.git.maitysanchayan@gmail.com>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Sun, 2015-08-02 at 18:18 +0100, Jonathan Cameron wrote:
-> On 23/07/15 16:21, Bastien Nocera wrote:
-> > Instead of using the I2C or ACPI ID to determine which variant of
-> > the chipset to use, determine that from the chip ID.
-> > 
-> > Under Windows, the same driver is used for those variants and, 
-> > despite
-> > incorrect ACPI data, it is able to load and operate the 
-> > accelerometer.
-> > 
-> > Fixes the accelerometer failing with:
-> > bmc150_accel i2c-BMA250E:00: Invalid chip f8
-> > on the WinBook TW100
-> > 
-> > Signed-off-by: Bastien Nocera <hadess@hadess.net>
-> I'll start by saying I hate that this change is necessary down
-> at the driver level.
-> 
-> Is there no way to catch it as an ACPI quirk? (I know next to nothing 
-> about
-> ACPI and a quick a google isn't pointing me in the right direction!)
+Hello,
 
-I could add DMI matches, but that seems silly when the new code is
-actually simpler.
+This patch adds support for continuous sampling provided by the
+ADC block on Vybrid by leveraging the IIO triggered buffer and
+IIO sysfs trigger infrastructure.
 
-> Seems irritating that we have to deal with this but such is life I 
-> guess
-> (anyone want to take the bet that at some point the windows driver 
-> will break
->  horribly as well for these machines?)
-> 
-> Anyhow, Srinivas, could you also take a look at this one.
-> 
-> I suppose I'll cope with the horribleness :)
-> 
-> > ---
-> >  drivers/iio/accel/bmc150-accel.c | 46 +++++++++++++++++-----------
-> > ------------
-> >  1 file changed, 19 insertions(+), 27 deletions(-)
-> > 
-> > diff --git a/drivers/iio/accel/bmc150-accel.c 
-> > b/drivers/iio/accel/bmc150-accel.c
-> > index 2ec9b56..7df221c 100644
-> > --- a/drivers/iio/accel/bmc150-accel.c
-> > +++ b/drivers/iio/accel/bmc150-accel.c
-> > @@ -151,6 +151,7 @@ struct bmc150_scale_info {
-> >  };
-> >  
-> >  struct bmc150_accel_chip_info {
-> > +	const char *name;
-> >  	u8 chip_id;
-> >  	const struct iio_chan_spec *channels;
-> >  	int num_channels;
-> > @@ -1061,6 +1062,7 @@ enum {
-> >  
-> >  static const struct bmc150_accel_chip_info 
-> > bmc150_accel_chip_info_tbl[] = {
-> >  	[bmc150] = {
-> > +		.name = "BMC150A",
-> >  		.chip_id = 0xFA,
-> >  		.channels = bmc150_accel_channels,
-> >  		.num_channels = ARRAY_SIZE(bmc150_accel_channels),
-> > @@ -1070,6 +1072,7 @@ static const struct bmc150_accel_chip_info 
-> > bmc150_accel_chip_info_tbl[] = {
-> >  				 {76590, 
-> > BMC150_ACCEL_DEF_RANGE_16G} },
-> >  	},
-> >  	[bmi055] = {
-> > +		.name = "BMI055A",
-> >  		.chip_id = 0xFA,
-> >  		.channels = bmc150_accel_channels,
-> >  		.num_channels = ARRAY_SIZE(bmc150_accel_channels),
-> > @@ -1079,6 +1082,7 @@ static const struct bmc150_accel_chip_info 
-> > bmc150_accel_chip_info_tbl[] = {
-> >  				 {76590, 
-> > BMC150_ACCEL_DEF_RANGE_16G} },
-> >  	},
-> >  	[bma255] = {
-> > +		.name = "BMA0255",
-> >  		.chip_id = 0xFA,
-> >  		.channels = bmc150_accel_channels,
-> >  		.num_channels = ARRAY_SIZE(bmc150_accel_channels),
-> > @@ -1088,6 +1092,7 @@ static const struct bmc150_accel_chip_info 
-> > bmc150_accel_chip_info_tbl[] = {
-> >  				 {76590, 
-> > BMC150_ACCEL_DEF_RANGE_16G} },
-> >  	},
-> >  	[bma250e] = {
-> > +		.name = "BMA250E",
-> >  		.chip_id = 0xF9,
-> >  		.channels = bma250e_accel_channels,
-> >  		.num_channels = 
-> > ARRAY_SIZE(bma250e_accel_channels),
-> > @@ -1097,6 +1102,7 @@ static const struct bmc150_accel_chip_info 
-> > bmc150_accel_chip_info_tbl[] = {
-> >  				 {306457, 
-> > BMC150_ACCEL_DEF_RANGE_16G} },
-> >  	},
-> >  	[bma222e] = {
-> > +		.name = "BMA222E",
-> >  		.chip_id = 0xF8,
-> >  		.channels = bma222e_accel_channels,
-> >  		.num_channels = 
-> > ARRAY_SIZE(bma222e_accel_channels),
-> > @@ -1106,6 +1112,7 @@ static const struct bmc150_accel_chip_info 
-> > bmc150_accel_chip_info_tbl[] = {
-> >  				 {1225831, 
-> > BMC150_ACCEL_DEF_RANGE_16G} },
-> >  	},
-> >  	[bma280] = {
-> > +		.name = "BMA0280",
-> >  		.chip_id = 0xFB,
-> >  		.channels = bma280_accel_channels,
-> >  		.num_channels = ARRAY_SIZE(bma280_accel_channels),
-> > @@ -1344,20 +1351,6 @@ static irqreturn_t 
-> > bmc150_accel_irq_handler(int irq, void *private)
-> >  	return IRQ_NONE;
-> >  }
-> >  
-> > -static const char *bmc150_accel_match_acpi_device(struct device 
-> > *dev, int *data)
-> > -{
-> > -	const struct acpi_device_id *id;
-> > -
-> > -	id = acpi_match_device(dev->driver->acpi_match_table, 
-> > dev);
-> > -
-> > -	if (!id)
-> > -		return NULL;
-> > -
-> > -	*data = (int) id->driver_data;
-> > -
-> > -	return dev_name(dev);
-> > -}
-> > -
-> >  static int bmc150_accel_gpio_probe(struct i2c_client *client,
-> >  					struct bmc150_accel_data 
-> > *data)
-> >  {
-> > @@ -1554,7 +1547,7 @@ static const struct iio_buffer_setup_ops 
-> > bmc150_accel_buffer_ops = {
-> >  
-> >  static int bmc150_accel_chip_init(struct bmc150_accel_data *data)
-> >  {
-> > -	int ret;
-> > +	int ret, i;
-> >  
-> >  	ret = i2c_smbus_read_byte_data(data->client, 
-> > BMC150_ACCEL_REG_CHIP_ID);
-> >  	if (ret < 0) {
-> > @@ -1564,8 +1557,15 @@ static int bmc150_accel_chip_init(struct 
-> > bmc150_accel_data *data)
-> >  	}
-> >  
-> >  	dev_dbg(&data->client->dev, "Chip Id %x\n", ret);
-> > -	if (ret != data->chip_info->chip_id) {
-> > -		dev_err(&data->client->dev, "Invalid chip %x\n", 
-> > ret);
-> This isn't really init (was a bit debatable that the previous sanity
-> check was either but there we are). Ah well.
-> 
-> > +	for (i = 0; i < ARRAY_SIZE(bmc150_accel_chip_info_tbl); 
-> > i++) {
-> > +		if (bmc150_accel_chip_info_tbl[i].chip_id == ret) 
-> > {
-> > +			data->chip_info = 
-> > &bmc150_accel_chip_info_tbl[i];
-> > +			break;
-> > +		}
-> > +	}
-> > +
-> > +	if (!data->chip_info) {
-> > +		dev_err(&data->client->dev, "Unsupported chip 
-> > %x\n", ret);
-> >  		return -ENODEV;
-> >  	}
-> >  
-> > @@ -1618,7 +1618,6 @@ static int bmc150_accel_probe(struct 
-> > i2c_client *client,
-> >  	struct iio_dev *indio_dev;
-> >  	int ret;
-> >  	const char *name = NULL;
-> > -	int chip_id = 0;
-> >  
-> >  	indio_dev = devm_iio_device_alloc(&client->dev, 
-> > sizeof(*data));
-> >  	if (!indio_dev)
-> > @@ -1628,15 +1627,8 @@ static int bmc150_accel_probe(struct 
-> > i2c_client *client,
-> >  	i2c_set_clientdata(client, indio_dev);
-> >  	data->client = client;
-> >  
-> > -	if (id) {
-> > +	if (id)
-> >  		name = id->name;
-> > -		chip_id = id->driver_data;
-> > -	}
-> > -
-> > -	if (ACPI_HANDLE(&client->dev))
-> > -		name = bmc150_accel_match_acpi_device(&client
-> > ->dev, &chip_id);
-> > -
-> > -	data->chip_info = &bmc150_accel_chip_info_tbl[chip_id];
-> >  
-> >  	ret = bmc150_accel_chip_init(data);
-> >  	if (ret < 0)
-> > @@ -1647,7 +1639,7 @@ static int bmc150_accel_probe(struct 
-> > i2c_client *client,
-> >  	indio_dev->dev.parent = &client->dev;
-> >  	indio_dev->channels = data->chip_info->channels;
-> >  	indio_dev->num_channels = data->chip_info->num_channels;
-> > -	indio_dev->name = name;
-> > +	indio_dev->name = name ? name : data->chip_info->name;
-> >  	indio_dev->modes = INDIO_DIRECT_MODE;
-> >  	indio_dev->info = &bmc150_accel_info;
-> >  
-> > 
-> 
+The patch has been tested on Colibri VF50 and VF61 on shawn's
+tree for-next branch with the patches [1] and [2] applied.
+
+The below script was used for testing.
+
+#!/bin/sh
+echo 0 > /sys/bus/iio/devices/iio:device0/scan_elements/in_voltage8_en
+echo 0 > /sys/bus/iio/devices/iio:device0/scan_elements/in_voltage9_en
+echo 1 > /sys/bus/iio/devices/iio:device0/scan_elements/in_temp_en
+echo 1 > /sys/bus/iio/devices/iio:device0/scan_elements/in_timestamp_en
+echo 0 > /sys/bus/iio/devices/iio_sysfs_trigger/add_trigger
+/home/root/generic_buffer -n 4003b000.adc -t sysfstrig0 -l 512 -c 10
+echo 0 > /sys/bus/iio/devices/iio:device0/scan_elements/in_timestamp_en
+echo 0 > /sys/bus/iio/devices/iio:device0/scan_elements/in_temp_en
+echo 0 > /sys/bus/iio/devices/iio:device0/scan_elements/in_voltage8_en
+echo 0 > /sys/bus/iio/devices/iio:device0/scan_elements/in_voltage9_en
+
+Feedback and comments are most welcome.
+
+Had some additional queries.
+
+On shawn's tree, using imx_v6_v7_defconfig and running the above
+script on VF50 gives me the following trace:
+
+[  199.976662] INFO: rcu_sched self-detected stall on CPU
+[  199.982015]  0: (2600 ticks this GP) idle=181/140000000000002/0 softirq=14591/14591 fqs=0
+[  199.990406]   (t=2600 jiffies g=11024 c=11023 q=20)
+[  199.995430] rcu_sched kthread starved for 2600 jiffies! g11024 c11023 f0x0
+[  200.002523] Task dump for CPU 0:
+[  200.005830] generic_buffer  R running      0   414    413 0x00000002
+[  200.012370] Backtrace:
+[  200.014974] [<80013708>] (dump_backtrace) from [<800138fc>] (show_stack+0x18/0x1c)
+[  200.022665]  r7:80ae0f40 r6:80b374e8 r5:0000019d r4:85fdd080
+[  200.028578] [<800138e4>] (show_stack) from [<800557bc>] (sched_show_task+0x11c/0x22c)
+[  200.036555] [<800556a0>] (sched_show_task) from [<80057efc>] (dump_cpu_task+0x34/0x44)
+[  200.044596]  r6:80000193 r5:80ae0f40 r4:00000000
+[  200.049432] [<80057ec8>] (dump_cpu_task) from [<800820f8>] (rcu_dump_cpu_stacks+0x8c/0xd0)
+[  200.057821]  r5:80ae0f40 r4:00000000
+[  200.061563] [<8008206c>] (rcu_dump_cpu_stacks) from [<80085b88>] (rcu_check_callbacks+0x4dc/0x854)
+[  200.070655]  r9:80ae0f40 r8:0720b000 r7:80ad09cc r6:80ae0f40 r5:80acd600 r4:87cd8600
+[  200.078701] [<800856ac>] (rcu_check_callbacks) from [<80088820>] (update_process_times+0x40/0x6c)
+[  200.087699]  r10:87cd5fc0 r9:8009a180 r8:80aedb80 r7:0000002e r6:8764c12d r5:00000000
+[  200.095800]  r4:85fdd080
+[  200.098462] [<800887e0>] (update_process_times) from [<8009a17c>] (tick_sched_handle.isra.19+0x4c/0x50)
+[  200.108049]  r5:85e85d40 r4:87cd5fc0
+[  200.111822] [<8009a130>] (tick_sched_handle.isra.19) from [<8009a1e4>] (tick_sched_timer+0x64/0xb0)
+[  200.121098] [<8009a180>] (tick_sched_timer) from [<80089220>] (__hrtimer_run_queues+0xc4/0x1cc)
+[  200.129989]  r7:0000002e r6:87649b3a r5:87cd5d00 r4:87cd5c80
+[  200.135915] [<8008915c>] (__hrtimer_run_queues) from [<80089950>] (hrtimer_interrupt+0xc8/0x21c)
+[  200.144898]  r10:87cd5d38 r9:87cd5d58 r8:87cd5c80 r7:87cd5cc0 r6:ffffffff r5:7fffffff
+[  200.153061]  r4:00000003
+[  200.155752] [<80089888>] (hrtimer_interrupt) from [<8054dcd0>] (gt_clockevent_interrupt+0x48/0x74)
+[  200.164905]  r10:85e85f80 r9:87806000 r8:00000010 r7:87817b40 r6:87808100 r5:87cdab40
+[  200.173082]  r4:00000001
+[  200.175758] [<8054dc88>] (gt_clockevent_interrupt) from [<8007cab0>] (handle_percpu_devid_irq+0x8c/0xac)
+[  200.185442]  r5:80aedd20 r4:87cdab40
+[  200.189215] [<8007ca24>] (handle_percpu_devid_irq) from [<800786e4>] (generic_handle_irq+0x30/0x44)
+[  200.198460]  r9:87806000 r8:00000001 r7:85e85e30 r6:80ad0b30 r5:00000010 r4:00000010
+[  200.206567] [<800786b4>] (generic_handle_irq) from [<80078a08>] (__handle_domain_irq+0x6c/0xe8)
+[  200.215455]  r5:00000010 r4:80acb5fc
+[  200.219219] [<8007899c>] (__handle_domain_irq) from [<80009560>] (gic_handle_irq+0x28/0x68)
+[  200.227759]  r9:87806000 r8:00000001 r7:88002100 r6:80ad0ca8 r5:8800210c r4:85e85d40
+[  200.235861] [<80009538>] (gic_handle_irq) from [<80014564>] (__irq_svc+0x44/0x5c)
+[  200.243526] Exception stack(0x85e85d40 to 0x85e85d88)
+[  200.248720] 5d40: 00000001 85fdd548 00000000 85fdd080 00000202 00000000 80ad0b30 80ad0080
+[  200.257104] 5d60: 00000001 87806000 85e85f80 85e85dcc 80c9f5d0 85e85d88 8006b5a0 8002ff80
+[  200.265468] 5d80: 60000113 ffffffff
+[  200.269056]  r7:85e85d74 r6:ffffffff r5:60000113 r4:8002ff80
+[  200.274995] [<8002fec8>] (__do_softirq) from [<800304c8>] (irq_exit+0xc4/0x138)
+[  200.282486]  r10:85e85f80 r9:87806000 r8:00000001 r7:00000000 r6:80ad0b30 r5:00000000
+[  200.290660]  r4:80acb5fc
+[  200.293345] [<80030404>] (irq_exit) from [<80078a10>] (__handle_domain_irq+0x74/0xe8)
+[  200.301367]  r5:00000000 r4:80acb5fc
+[  200.305135] [<8007899c>] (__handle_domain_irq) from [<80009560>] (gic_handle_irq+0x28/0x68)
+[  200.313680]  r9:85efc60c r8:85e4bc00 r7:88002100 r6:80ad0ca8 r5:8800210c r4:85e85e30
+[  200.321777] [<80009538>] (gic_handle_irq) from [<80014564>] (__irq_svc+0x44/0x5c)
+[  200.329442] Exception stack(0x85e85e30 to 0x85e85e78)
+[  200.334628] 5e20:                                     00000001 85fdd548 00000000 85fdd080
+[  200.343010] 5e40: 00000001 803ce7c8 85e4bc00 00000000 85e4bc00 85efc60c 85e85f80 85e85e84
+[  200.351384] 5e60: 80c9f5d0 85e85e78 8006b5a0 803ce7e8 60000013 ffffffff
+[  200.358131]  r7:85e85e64 r6:ffffffff r5:60000013 r4:803ce7e8
+[  200.364087] [<803ce7c8>] (dev_attr_store) from [<801739a0>] (sysfs_kf_write+0x54/0x58)
+[  200.372217] [<8017394c>] (sysfs_kf_write) from [<80172b60>] (kernfs_fop_write+0xc4/0x1a8)
+[  200.380579]  r7:00000000 r6:00000000 r5:00000001 r4:85efc600
+[  200.386518] [<80172a9c>] (kernfs_fop_write) from [<80104f10>] (__vfs_write+0x2c/0xe0)
+[  200.394535]  r10:00000000 r9:85e84000 r8:8000fc84 r7:85e85f80 r6:76fa3000 r5:85e85f80
+[  200.402696]  r4:85fb2500
+[  200.405376] [<80104ee4>] (__vfs_write) from [<801057b4>] (vfs_write+0x98/0x16c)
+[  200.412865]  r8:8000fc84 r7:85e85f80 r6:76fa3000 r5:00000001 r4:85fb2500
+[  200.419878] [<8010571c>] (vfs_write) from [<80106028>] (SyS_write+0x4c/0xa8)
+[  200.427072]  r8:8000fc84 r7:00000001 r6:76fa3000 r5:85fb2500 r4:85fb2500
+[  200.434099] [<80105fdc>] (SyS_write) from [<8000faa0>] (ret_fast_syscall+0x0/0x54)
+[  200.441848]  r7:00000004 r6:76fa3000 r5:00000001 r4:002be960
+
+On shawn's tree, using our own defconfig it all works fine.
+
+The RCU related configs in imx_v6_v7_defconfig are:
+# RCU Subsystem
+CONFIG_TREE_RCU=y
+# CONFIG_RCU_EXPERT is not set
+CONFIG_SRCU=y
+# CONFIG_TASKS_RCU is not set
+CONFIG_RCU_STALL_COMMON=y
+# CONFIG_TREE_RCU_TRACE is not set
+# CONFIG_RCU_NOCB_CPU is not set
+# CONFIG_RCU_EXPEDITE_BOOT is not set
+# RCU Debugging
+CONFIG_PROVE_RCU=y
+# CONFIG_PROVE_RCU_REPEATEDLY is not set
+# CONFIG_SPARSE_RCU_POINTER is not set
+# CONFIG_RCU_TORTURE_TEST is not set
+CONFIG_RCU_CPU_STALL_TIMEOUT=21
+CONFIG_RCU_CPU_STALL_INFO=y
+# CONFIG_RCU_TRACE is not set
+# CONFIG_RCU_EQS_DEBUG is not set
+
+The RCU configs in our own defconfig are:
+# RCU Subsystem
+CONFIG_TINY_RCU=y
+CONFIG_SRCU=y
+# CONFIG_TASKS_RCU is not set
+# CONFIG_RCU_STALL_COMMON is not set
+# CONFIG_TREE_RCU_TRACE is not set
+CONFIG_RCU_KTHREAD_PRIO=0
+# RCU Debugging
+# CONFIG_SPARSE_RCU_POINTER is not set
+# CONFIG_RCU_TORTURE_TEST is not set
+# CONFIG_RCU_TRACE is not set
+
+With the above second set of configs I do not encounter any problems.
+
+I do not have any knowledge on the RCU front, can someone also comment
+with regards to that? Perhaps I am doing something wrong in the driver?
+My guess would be those RCU STALL configs?
+
+[1]. https://lkml.org/lkml/2015/5/27/350
+[2]. https://lkml.org/lkml/2015/7/14/395
+
+Thanks & Regards,
+Sanchayan Maity.
+
+Sanchayan Maity (1):
+  iio: adc: vf610: Add IIO buffer support for Vybrid ADC
+
+ drivers/iio/adc/Kconfig     |   4 ++
+ drivers/iio/adc/vf610_adc.c | 122 +++++++++++++++++++++++++++++++++++++++++---
+ 2 files changed, 120 insertions(+), 6 deletions(-)
+
+-- 
+2.5.0
+
