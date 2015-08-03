@@ -1,41 +1,224 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from skprod3.natinst.com ([130.164.80.24]:50211 "EHLO ni.com"
-	rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-	id S1755252AbbHCUTZ (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Mon, 3 Aug 2015 16:19:25 -0400
-Message-ID: <55BFCC9C.5040305@ni.com>
-Date: Mon, 03 Aug 2015 15:18:36 -0500
-From: Xander Huff <xander.huff@ni.com>
-MIME-Version: 1.0
-To: Lars-Peter Clausen <lars@metafoo.de>, jic23@kernel.org,
-	bigeasy@linutronix.de
-CC: knaack.h@gmx.de, pmeerw@pmeerw.net, michal.simek@xilinx.com,
-	soren.brinkmann@xilinx.com, linux-iio@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org,
-	linux-rt-users@vger.kernel.org, linux-kernel@vger.kernel.org,
-	joe.hershberger@ni.com, joshc@ni.com, nathan.sullivan@ni.com,
-	jaeden.amero@ni.com
-Subject: Re: [PATCH v3] iio: adc: xilinx-xadc: Push interrupts into threaded
- context
-References: <CAKfKVtGTO81wLWk50M303t2WjcBEMEt_LUnsJ3_WmvR_3izUjg@mail.gmail.com> <1437434050-32907-1-git-send-email-xander.huff@ni.com> <55B231DE.4080308@metafoo.de>
-In-Reply-To: <55B231DE.4080308@metafoo.de>
-Content-Type: text/plain; charset=windows-1252; format=flowed
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <mporter@konsulko.com>
+From: Matt Porter <mporter@konsulko.com>
+To: Linux IIO List <linux-iio@vger.kernel.org>,
+	Devicetree List <devicetree@vger.kernel.org>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	Rob Herring <robh+dt@kernel.org>,
+	Mark Rutland <mark.rutland@arm.com>,
+	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Subject: [PATCH 2/3] iio: temperature: add max6675 thermocouple converter driver
+Date: Mon,  3 Aug 2015 16:56:49 -0400
+Message-Id: <1438635410-3757-3-git-send-email-mporter@konsulko.com>
+In-Reply-To: <1438635410-3757-1-git-send-email-mporter@konsulko.com>
+References: <1438635410-3757-1-git-send-email-mporter@konsulko.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-On 7/24/2015 7:38 AM, Lars-Peter Clausen wrote:
-> Hi,
->
-> Sorry, but I don't think this patch has been sufficiently tested against a
-> mainline kernel. The driver wont even probe the way it is right now.
->
-Thanks for your responses. I'm not sure why it doesn't probe for you since I was 
-able to do a fair amount of tests with it on our device.
+Add a driver for the MAX6675 thermocouple converter. This
+device interfaces with K-type thermocouples and provides
+cold-junction compensated temperature readings via a
+SPI interface.
 
-I'll get to work on your suggestions and hopefully having a v4 out sometime next 
-week.
+Signed-off-by: Matt Porter <mporter@konsulko.com>
+---
+ drivers/iio/temperature/Kconfig   |  11 +++
+ drivers/iio/temperature/Makefile  |   1 +
+ drivers/iio/temperature/max6675.c | 155 ++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 167 insertions(+)
+ create mode 100644 drivers/iio/temperature/max6675.c
 
+diff --git a/drivers/iio/temperature/Kconfig b/drivers/iio/temperature/Kconfig
+index 21feaa4..b73fbf4 100644
+--- a/drivers/iio/temperature/Kconfig
++++ b/drivers/iio/temperature/Kconfig
+@@ -3,6 +3,17 @@
+ #
+ menu "Temperature sensors"
+ 
++config MAX6675
++	tristate "MAX6675 thermocouple converter"
++	depends on SPI
++	help
++	  If you say yes here you get support for the Maxim
++	  MAX6675 thermocouple converter connected with SPI.
++
++	  This driver can also be built as a module. If so, the module will
++	  be called max6675.
++
++
+ config MLX90614
+ 	tristate "MLX90614 contact-less infrared sensor"
+ 	depends on I2C
+diff --git a/drivers/iio/temperature/Makefile b/drivers/iio/temperature/Makefile
+index 40710a8..d67ef40 100644
+--- a/drivers/iio/temperature/Makefile
++++ b/drivers/iio/temperature/Makefile
+@@ -2,5 +2,6 @@
+ # Makefile for industrial I/O temperature drivers
+ #
+ 
++obj-$(CONFIG_MAX6675) += max6675.o
+ obj-$(CONFIG_MLX90614) += mlx90614.o
+ obj-$(CONFIG_TMP006) += tmp006.o
+diff --git a/drivers/iio/temperature/max6675.c b/drivers/iio/temperature/max6675.c
+new file mode 100644
+index 0000000..2d1fda2
+--- /dev/null
++++ b/drivers/iio/temperature/max6675.c
+@@ -0,0 +1,155 @@
++/*
++ * max6675.c - MAX6675 thermocouple converter driver
++ *
++ * Copyright (C) 2015 Konsulko Group, Matt Porter <mporter@konsulko.com>
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License as published by
++ * the Free Software Foundation; either version 2 of the License, or
++ * (at your option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
++ * GNU General Public License for more details.
++ *
++ */
++
++#include <linux/acpi.h>
++#include <linux/init.h>
++#include <linux/module.h>
++#include <linux/of.h>
++#include <linux/iio/iio.h>
++#include <linux/spi/spi.h>
++
++struct max6675_state {
++	struct spi_device *spi;
++};
++
++static const struct iio_chan_spec max6675_channels[] = {
++	{
++		.type = IIO_TEMP,
++		.info_mask_separate =
++			BIT(IIO_CHAN_INFO_RAW) |
++			BIT(IIO_CHAN_INFO_SCALE),
++	},
++};
++
++static int max6675_read(struct max6675_state *st, int *val)
++{
++	int ret;
++
++	ret = spi_read(st->spi, val, 2);
++	if (ret < 0)
++		return ret;
++
++	/* Temperature is bits 14..3 */
++	*val = (*val >> 3) & 0xfff;
++
++	return ret;
++}
++
++static int max6675_read_raw(struct iio_dev *indio_dev,
++			    struct iio_chan_spec const *chan,
++			    int *val,
++			    int *val2,
++			    long m)
++{
++	struct max6675_state *st = iio_priv(indio_dev);
++	int ret;
++
++	if (m == IIO_CHAN_INFO_RAW) {
++		*val2 = 0;
++		ret = max6675_read(st, val);
++		if (ret)
++			return ret;
++	} else if (m == IIO_CHAN_INFO_SCALE) {
++		*val = 250;
++		*val2 = 0;
++	} else
++		return -EINVAL;
++
++	return IIO_VAL_INT;
++}
++
++static const struct iio_info max6675_info = {
++	.driver_module = THIS_MODULE,
++	.read_raw = &max6675_read_raw,
++};
++
++static int max6675_probe(struct spi_device *spi)
++{
++	struct iio_dev *indio_dev;
++	struct max6675_state *st;
++	int ret = 0;
++
++	indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*st));
++	if (!indio_dev)
++		return -ENOMEM;
++
++	st = iio_priv(indio_dev);
++	st->spi = spi;
++
++	spi->mode = SPI_MODE_1;
++	spi->bits_per_word = 16;
++
++	spi_set_drvdata(spi, indio_dev);
++
++	indio_dev->dev.parent = &spi->dev;
++	indio_dev->name = spi_get_device_id(spi)->name;
++	indio_dev->channels = max6675_channels;
++	indio_dev->num_channels = ARRAY_SIZE(max6675_channels);
++	indio_dev->modes = INDIO_DIRECT_MODE;
++	indio_dev->info = &max6675_info;
++
++	ret = iio_device_register(indio_dev);
++	if (ret < 0)
++		dev_err(&spi->dev, "unable to register device\n");
++
++	return ret;
++}
++
++static int max6675_remove(struct spi_device *spi)
++{
++	struct iio_dev *indio_dev = spi_get_drvdata(spi);
++
++	iio_device_unregister(indio_dev);
++
++	return 0;
++}
++
++static const struct acpi_device_id max6675_acpi_ids[] = {
++	{ "MXIM6675", 0 },
++	{},
++};
++MODULE_DEVICE_TABLE(acpi, max6675_acpi_ids);
++
++static const struct of_device_id max6675_dt_ids[] = {
++	{ .compatible = "maxim,max6675" },
++	{},
++};
++MODULE_DEVICE_TABLE(of, max6675_dt_ids);
++
++static const struct spi_device_id max6675_spi_ids[] = {
++	{"max6675", 0},
++	{},
++};
++MODULE_DEVICE_TABLE(spi, max6675_spi_ids);
++
++static struct spi_driver max6675_driver = {
++	.driver = {
++		.name	= "max6675",
++		.owner	= THIS_MODULE,
++		.acpi_match_table = ACPI_PTR(max6675_acpi_ids),
++		.of_match_table = of_match_ptr(max6675_dt_ids),
++	},
++	.probe		= max6675_probe,
++	.remove		= max6675_remove,
++	.id_table	= max6675_spi_ids,
++};
++module_spi_driver(max6675_driver);
++
++MODULE_AUTHOR("Matt Porter <mporter@konsulko.com>");
++MODULE_DESCRIPTION("MAX6675 thermocouple converter driver");
++MODULE_LICENSE("GPL");
++MODULE_ALIAS("spi:max6675");
 -- 
-Xander Huff
-Staff Software Engineer
-National Instruments
+2.1.4
