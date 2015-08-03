@@ -1,62 +1,78 @@
-Return-Path: <daniel.baluta@gmail.com>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail.kmu-office.ch ([178.209.48.109]:45493 "EHLO
+	mail.kmu-office.ch" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753289AbbHCMZv (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 3 Aug 2015 08:25:51 -0400
 MIME-Version: 1.0
-Sender: daniel.baluta@gmail.com
-In-Reply-To: <4193254d1067149430a5a8d84a21def37f09bcec.1438598039.git.cristina.opriceana@gmail.com>
-References: <4193254d1067149430a5a8d84a21def37f09bcec.1438598039.git.cristina.opriceana@gmail.com>
-Date: Mon, 3 Aug 2015 13:44:00 +0300
-Message-ID: <CAEnQRZBOd_5O+8-pWOJLDD-sycYmcn5cbkFctH4Fr73R21cr-Q@mail.gmail.com>
-Subject: Re: [PATCH] iio: industrialio-buffer: Fix iio_buffer_poll return value
-From: Daniel Baluta <daniel.baluta@intel.com>
-To: Cristina Opriceana <cristina.opriceana@gmail.com>
-Cc: Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>, Peter Meerwald <pmeerw@pmeerw.net>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Daniel Baluta <daniel.baluta@intel.com>
-Content-Type: text/plain; charset=UTF-8
-List-ID: <linux-iio@vger.kernel.org>
+Content-Type: text/plain; charset=US-ASCII
+Date: Mon, 03 Aug 2015 14:22:30 +0200
+From: Stefan Agner <stefan@agner.ch>
+To: shawn.guo@linaro.org
+Cc: Jonathan Cameron <jic23@kernel.org>, kernel@pengutronix.de,
+	knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
+	robh+dt@kernel.org, pawel.moll@arm.com, mark.rutland@arm.com,
+	ijc+devicetree@hellion.org.uk, galak@codeaurora.org,
+	B38611@freescale.com, maitysanchayan@gmail.com,
+	devicetree@vger.kernel.org, linux-iio@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v5 2/2] ARM: dts: add property for maximum ADC clock
+ frequencies
+In-Reply-To: <557477BE.5050108@kernel.org>
+References: <1432730872-14325-1-git-send-email-stefan@agner.ch>
+ <1432730872-14325-3-git-send-email-stefan@agner.ch>
+ <557477BE.5050108@kernel.org>
+Message-ID: <f598169164aaacc28292d8ccc6afb32d@agner.ch>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Mon, Aug 3, 2015 at 1:37 PM, Cristina Opriceana
-<cristina.opriceana@gmail.com> wrote:
-> Change return value to 0 if no device is bound since
-> unsigned int cannot support negative error codes.
->
-> Signed-off-by: Cristina Opriceana <cristina.opriceana@gmail.com>
+Hi Shawn,
 
-Fixes: f18e7a068 ("iio: Return -ENODEV for file operations if the
-device has been unregistered")
+I guess this will go through your tree? Haven't seen it appear on imx/dt
+so far...
 
-> ---
->  drivers/iio/industrialio-buffer.c | 6 ++++--
->  1 file changed, 4 insertions(+), 2 deletions(-)
->
-> diff --git a/drivers/iio/industrialio-buffer.c b/drivers/iio/industrialio-buffer.c
-> index faed6ef..e8e87cf 100644
-> --- a/drivers/iio/industrialio-buffer.c
-> +++ b/drivers/iio/industrialio-buffer.c
-> @@ -155,7 +155,9 @@ ssize_t iio_buffer_read_first_n_outer(struct file *filp, char __user *buf,
->   *             a wait queue
->   *
->   * Return: (POLLIN | POLLRDNORM) if data is available for reading
-> - *        or 0 for other cases
-> + *        and 0 for other cases, e.g. no device is bound or no
-> + *        hardware fifo flush could be triggered.
-> + *
->   */
->  unsigned int iio_buffer_poll(struct file *filp,
->                              struct poll_table_struct *wait)
-> @@ -164,7 +166,7 @@ unsigned int iio_buffer_poll(struct file *filp,
->         struct iio_buffer *rb = indio_dev->buffer;
->
->         if (!indio_dev->info)
-> -               return -ENODEV;
-> +               return 0;
->
->         poll_wait(filp, &rb->pollq, wait);
->         if (iio_buffer_ready(indio_dev, rb, rb->watermark, 0))
-> --
-> 1.9.1
->
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+--
+Stefan
+
+On 2015-06-07 18:56, Jonathan Cameron wrote:
+> On 27/05/15 13:47, Stefan Agner wrote:
+>> The ADC clock frequency is limited depending on modes used. Add
+>> device tree property which allow to set the mode used and the
+>> maximum frequency ratings for the instance. These allows to
+>> set the ADC clock to a frequency which is within specification
+>> according to the actual mode used.
+>>
+>> Acked-by: Fugang Duan <B38611@freescale.com>
+>> Signed-off-by: Stefan Agner <stefan@agner.ch>
+> I'm happy to take this via IIO if people want me to, otherwise give
+> it's connection to the previous patch that I just applied,
+> 
+> Acked-by: Jonathan Cameron <jic23@kernel.org>
+> 
+>> ---
+>>  arch/arm/boot/dts/vfxxx.dtsi | 4 ++++
+>>  1 file changed, 4 insertions(+)
+>>
+>> diff --git a/arch/arm/boot/dts/vfxxx.dtsi b/arch/arm/boot/dts/vfxxx.dtsi
+>> index a29c7ce..c6609bd 100644
+>> --- a/arch/arm/boot/dts/vfxxx.dtsi
+>> +++ b/arch/arm/boot/dts/vfxxx.dtsi
+>> @@ -189,6 +189,8 @@
+>>  				clocks = <&clks VF610_CLK_ADC0>;
+>>  				clock-names = "adc";
+>>  				status = "disabled";
+>> +				fsl,adck-max-frequency = <30000000>, <40000000>,
+>> +							<20000000>;
+>>  			};
+>>
+>>  			wdoga5: wdog@4003e000 {
+>> @@ -387,6 +389,8 @@
+>>  				clocks = <&clks VF610_CLK_ADC1>;
+>>  				clock-names = "adc";
+>>  				status = "disabled";
+>> +				fsl,adck-max-frequency = <30000000>, <40000000>,
+>> +							<20000000>;
+>>  			};
+>>
+>>  			esdhc1: esdhc@400b2000 {
+>>
+
