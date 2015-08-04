@@ -1,46 +1,66 @@
-Return-Path: <irina.tirdea@intel.com>
-From: "Tirdea, Irina" <irina.tirdea@intel.com>
-To: Wolfram Sang <wsa@the-dreams.de>
-CC: Jonathan Cameron <jic23@kernel.org>, "linux-iio@vger.kernel.org"
-	<linux-iio@vger.kernel.org>, "linux-i2c@vger.kernel.org"
-	<linux-i2c@vger.kernel.org>, "linux-kernel@vger.kernel.org"
-	<linux-kernel@vger.kernel.org>, "Pandruvada, Srinivas"
-	<srinivas.pandruvada@intel.com>, Peter Meerwald <pmeerw@pmeerw.net>
-Subject: RE: [PATCH v3 2/8] eeprom: at24: use
- i2c_smbus_read_i2c_block_data_or_emulated
-Date: Tue, 4 Aug 2015 13:52:18 +0000
-Message-ID: <1F3AC3675D538145B1661F571FE1805F2F0ADC7C@irsmsx105.ger.corp.intel.com>
-References: <1435916017-12859-1-git-send-email-irina.tirdea@intel.com>
- <1435916017-12859-3-git-send-email-irina.tirdea@intel.com>
- <20150801195756.GB1590@katana>
-In-Reply-To: <20150801195756.GB1590@katana>
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mga09.intel.com ([134.134.136.24]:6151 "EHLO mga09.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1756008AbbHDOSG (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Tue, 4 Aug 2015 10:18:06 -0400
+From: Daniel Baluta <daniel.baluta@intel.com>
+To: jic23@kernel.org, corbet@lwn.net, rdunlap@infradead.org,
+	cmo@melexis.com
+Cc: pmeerw@pmeerw.net, knaack.h@gmx.de, lars@metafoo.de,
+	linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
+	herbert@gondor.apana.org.au, smueller@chronox.de, mmarek@suse.cz,
+	daniel.baluta@intel.com, linux-doc@vger.kernel.org,
+	cristina.opriceana@gmail.com
+Subject: [PATCH v5] DocBook: Add initial documentation for IIO
+Date: Tue,  4 Aug 2015 17:20:07 +0300
+Message-Id: <1438698008-13718-1-git-send-email-daniel.baluta@intel.com>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
+In our effort to support vendors writing drivers for their own
+sensors we introduce IIO documentation in DocBook format.
 
+It documents Industrial I/O core including IIO devices, buffers, triggers and
+triggered buffers. It also offers a short list of online resources
+for the IIO subsystem.
 
-> -----Original Message-----
-> From: Wolfram Sang [mailto:wsa@the-dreams.de]
-> Sent: 01 August, 2015 22:58
-> To: Tirdea, Irina
-> Cc: Jonathan Cameron; linux-iio@vger.kernel.org; linux-i2c@vger.kernel.or=
-g; linux-kernel@vger.kernel.org; Pandruvada, Srinivas;
-> Peter Meerwald
-> Subject: Re: [PATCH v3 2/8] eeprom: at24: use i2c_smbus_read_i2c_block_da=
-ta_or_emulated
->=20
-> > +		if (at24->use_smbus) {
-> > +			status =3D
-> > +			    i2c_smbus_read_i2c_block_data_or_emulated(client,
-> > +								      offset,
-> > +								      count,
-> > +								      buf);
->=20
-> Please ignore checkpatch warnings for this one and find a nice readable
-> way to squeeze that into two lines.
+This is far from being complete any suggestions are welcomed. At a first
+glance we also need to add documentation for events. We are also working
+on auto-generating template drivers based on the type of the IIO sensors.
 
-Sure, I will fix this.
+Generated html files should be available online here http://dbaluta.github.io/
+or you could run make htmldocs in the root of your kernel repo to get them.
 
-Thanks,
-Irina
+Changes since v4:
+	* addressed feedback from Peter Meerwald
+	  * http://marc.info/?l=linux-iio&m=143859386402036&w=2
+
+Changes since v3:
+	* addressed feedback from Crt Mori
+	  * http://marc.info/?l=linux-iio&m=143815719008296&w=2
+
+Changes since v2:
+	* addressed feedback from Lars-Peter
+	  * http://marc.info/?l=linux-iio&m=143774991802816&w=2
+	* Many thanks to Lars-Peter Clausen for scan_index paragraph.
+
+Changes since v1:
+	* mostly typos and clarifications
+	* addressed comments from Jonathan Corbet and Jonathan Cameron
+	  * http://marc.info/?l=linux-iio&m=143704226629498&w=2
+	  * http://marc.info/?l=linux-iio&m=143707511006898&w=2
+	* for DocBook warnings reported by Randy, Cristina sent
+	  this patchseries:
+	  http://marc.info/?l=linux-iio&m=143774363900903&w=2
+
+Daniel Baluta (1):
+  DocBook: Add initial documentation for IIO
+
+ Documentation/DocBook/Makefile |   2 +-
+ Documentation/DocBook/iio.tmpl | 697 +++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 698 insertions(+), 1 deletion(-)
+ create mode 100644 Documentation/DocBook/iio.tmpl
+
+-- 
+1.9.1
+
