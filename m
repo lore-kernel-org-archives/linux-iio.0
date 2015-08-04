@@ -1,238 +1,44 @@
-Return-Path: <mranostay@gmail.com>
-MIME-Version: 1.0
-In-Reply-To: <1438635410-3757-3-git-send-email-mporter@konsulko.com>
-References: <1438635410-3757-1-git-send-email-mporter@konsulko.com>
-	<1438635410-3757-3-git-send-email-mporter@konsulko.com>
-Date: Mon, 3 Aug 2015 15:39:00 -0700
-Message-ID: <CAKzfze9EcW0=yRGq=JBim7P8kQ4q+UgOd00qm=zA6oLz+Ut4DQ@mail.gmail.com>
-Subject: Re: [PATCH 2/3] iio: temperature: add max6675 thermocouple converter driver
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-pd0-f179.google.com ([209.85.192.179]:33049 "EHLO
+	mail-pd0-f179.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753381AbbHDEWh (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 4 Aug 2015 00:22:37 -0400
 From: Matt Ranostay <mranostay@gmail.com>
-To: Matt Porter <mporter@konsulko.com>
-Cc: Linux IIO List <linux-iio@vger.kernel.org>, Devicetree List <devicetree@vger.kernel.org>,
-	Jonathan Cameron <jic23@kernel.org>, Rob Herring <robh+dt@kernel.org>,
-	Mark Rutland <mark.rutland@arm.com>,
-	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset=UTF-8
-List-ID: <linux-iio@vger.kernel.org>
+To: marex@denx.de, jic23@kernel.org, lars@metafoo.de,
+	vladimir.barinov@cogentembedded.com
+Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+	Matt Ranostay <mranostay@gmail.com>
+Subject: [PATCH v3 0/2] iio: proximity: add PulsedLight LIDAR sensor support
+Date: Mon,  3 Aug 2015 21:23:55 -0700
+Message-Id: <1438662237-19991-1-git-send-email-mranostay@gmail.com>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Mon, Aug 3, 2015 at 1:56 PM, Matt Porter <mporter@konsulko.com> wrote:
-> Add a driver for the MAX6675 thermocouple converter. This
-> device interfaces with K-type thermocouples and provides
-> cold-junction compensated temperature readings via a
-> SPI interface.
->
-> Signed-off-by: Matt Porter <mporter@konsulko.com>
-> ---
->  drivers/iio/temperature/Kconfig   |  11 +++
->  drivers/iio/temperature/Makefile  |   1 +
->  drivers/iio/temperature/max6675.c | 155 ++++++++++++++++++++++++++++++++++++++
->  3 files changed, 167 insertions(+)
->  create mode 100644 drivers/iio/temperature/max6675.c
->
-> diff --git a/drivers/iio/temperature/Kconfig b/drivers/iio/temperature/Kconfig
-> index 21feaa4..b73fbf4 100644
-> --- a/drivers/iio/temperature/Kconfig
-> +++ b/drivers/iio/temperature/Kconfig
-> @@ -3,6 +3,17 @@
->  #
->  menu "Temperature sensors"
->
-> +config MAX6675
-> +       tristate "MAX6675 thermocouple converter"
-> +       depends on SPI
-> +       help
-> +         If you say yes here you get support for the Maxim
-> +         MAX6675 thermocouple converter connected with SPI.
-> +
-> +         This driver can also be built as a module. If so, the module will
-> +         be called max6675.
-> +
-> +
->  config MLX90614
->         tristate "MLX90614 contact-less infrared sensor"
->         depends on I2C
-> diff --git a/drivers/iio/temperature/Makefile b/drivers/iio/temperature/Makefile
-> index 40710a8..d67ef40 100644
-> --- a/drivers/iio/temperature/Makefile
-> +++ b/drivers/iio/temperature/Makefile
-> @@ -2,5 +2,6 @@
->  # Makefile for industrial I/O temperature drivers
->  #
->
-> +obj-$(CONFIG_MAX6675) += max6675.o
->  obj-$(CONFIG_MLX90614) += mlx90614.o
->  obj-$(CONFIG_TMP006) += tmp006.o
-> diff --git a/drivers/iio/temperature/max6675.c b/drivers/iio/temperature/max6675.c
-> new file mode 100644
-> index 0000000..2d1fda2
-> --- /dev/null
-> +++ b/drivers/iio/temperature/max6675.c
-> @@ -0,0 +1,155 @@
-> +/*
-> + * max6675.c - MAX6675 thermocouple converter driver
-> + *
-> + * Copyright (C) 2015 Konsulko Group, Matt Porter <mporter@konsulko.com>
-> + *
-> + * This program is free software; you can redistribute it and/or modify
-> + * it under the terms of the GNU General Public License as published by
-> + * the Free Software Foundation; either version 2 of the License, or
-> + * (at your option) any later version.
-> + *
-> + * This program is distributed in the hope that it will be useful,
-> + * but WITHOUT ANY WARRANTY; without even the implied warranty of
-> + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-> + * GNU General Public License for more details.
-> + *
-> + */
-> +
-> +#include <linux/acpi.h>
-> +#include <linux/init.h>
-> +#include <linux/module.h>
-> +#include <linux/of.h>
-> +#include <linux/iio/iio.h>
-> +#include <linux/spi/spi.h>
-> +
-> +struct max6675_state {
-> +       struct spi_device *spi;
-> +};
-> +
-> +static const struct iio_chan_spec max6675_channels[] = {
-> +       {
-> +               .type = IIO_TEMP,
-> +               .info_mask_separate =
-> +                       BIT(IIO_CHAN_INFO_RAW) |
-> +                       BIT(IIO_CHAN_INFO_SCALE),
-> +       },
-> +};
-> +
-> +static int max6675_read(struct max6675_state *st, int *val)
-> +{
-> +       int ret;
-> +
-> +       ret = spi_read(st->spi, val, 2);
-> +       if (ret < 0)
-> +               return ret;
-> +
-> +       /* Temperature is bits 14..3 */
-> +       *val = (*val >> 3) & 0xfff;
-> +
-> +       return ret;
-> +}
-> +
-> +static int max6675_read_raw(struct iio_dev *indio_dev,
-> +                           struct iio_chan_spec const *chan,
-> +                           int *val,
-> +                           int *val2,
-> +                           long m)
-> +{
-> +       struct max6675_state *st = iio_priv(indio_dev);
-> +       int ret;
-> +
-> +       if (m == IIO_CHAN_INFO_RAW) {
-> +               *val2 = 0;
-> +               ret = max6675_read(st, val);
-> +               if (ret)
-> +                       return ret;
-> +       } else if (m == IIO_CHAN_INFO_SCALE) {
-> +               *val = 250;
-> +               *val2 = 0;
-> +       } else
-> +               return -EINVAL;
-> +
-> +       return IIO_VAL_INT;
-> +}
-> +
-> +static const struct iio_info max6675_info = {
-> +       .driver_module = THIS_MODULE,
-> +       .read_raw = &max6675_read_raw,
-> +};
-> +
-> +static int max6675_probe(struct spi_device *spi)
-> +{
-> +       struct iio_dev *indio_dev;
-> +       struct max6675_state *st;
-> +       int ret = 0;
-> +
-> +       indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*st));
-> +       if (!indio_dev)
-> +               return -ENOMEM;
-> +
-> +       st = iio_priv(indio_dev);
-> +       st->spi = spi;
-> +
-> +       spi->mode = SPI_MODE_1;
-> +       spi->bits_per_word = 16;
+PulsedLight "blue label" v2 LIDAR sensor can be polled over 100HZ with
+the sysfs + hrtimer iio trigger, or using single raw measurment.
 
-Have this error or display a warning when it doesn't match the passed
-DT binding settings. Otherwise it may get confusing why other SPI
-modes and word sizes don't work.
+This patchset adds support for this range finding LIDAR module, and reports
+distance back in meters to centimeter resolution with +/- 2.5 CM of accuracy
+at ~40 meters.
 
-> +
-> +       spi_set_drvdata(spi, indio_dev);
-> +
-> +       indio_dev->dev.parent = &spi->dev;
-> +       indio_dev->name = spi_get_device_id(spi)->name;
-> +       indio_dev->channels = max6675_channels;
-> +       indio_dev->num_channels = ARRAY_SIZE(max6675_channels);
-> +       indio_dev->modes = INDIO_DIRECT_MODE;
-> +       indio_dev->info = &max6675_info;
-> +
-> +       ret = iio_device_register(indio_dev);
-> +       if (ret < 0)
-> +               dev_err(&spi->dev, "unable to register device\n");
-> +
-> +       return ret;
-> +}
-> +
-> +static int max6675_remove(struct spi_device *spi)
-> +{
-> +       struct iio_dev *indio_dev = spi_get_drvdata(spi);
-> +
-> +       iio_device_unregister(indio_dev);
-> +
-> +       return 0;
-> +}
-> +
-> +static const struct acpi_device_id max6675_acpi_ids[] = {
-> +       { "MXIM6675", 0 },
-> +       {},
-> +};
-> +MODULE_DEVICE_TABLE(acpi, max6675_acpi_ids);
-> +
-> +static const struct of_device_id max6675_dt_ids[] = {
-> +       { .compatible = "maxim,max6675" },
-> +       {},
-> +};
-> +MODULE_DEVICE_TABLE(of, max6675_dt_ids);
-> +
-> +static const struct spi_device_id max6675_spi_ids[] = {
-> +       {"max6675", 0},
-> +       {},
-> +};
-> +MODULE_DEVICE_TABLE(spi, max6675_spi_ids);
-> +
-> +static struct spi_driver max6675_driver = {
-> +       .driver = {
-> +               .name   = "max6675",
-> +               .owner  = THIS_MODULE,
-> +               .acpi_match_table = ACPI_PTR(max6675_acpi_ids),
-> +               .of_match_table = of_match_ptr(max6675_dt_ids),
-> +       },
-> +       .probe          = max6675_probe,
-> +       .remove         = max6675_remove,
-> +       .id_table       = max6675_spi_ids,
-> +};
-> +module_spi_driver(max6675_driver);
-> +
-> +MODULE_AUTHOR("Matt Porter <mporter@konsulko.com>");
-> +MODULE_DESCRIPTION("MAX6675 thermocouple converter driver");
-> +MODULE_LICENSE("GPL");
-> +MODULE_ALIAS("spi:max6675");
-> --
-> 2.1.4
->
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-kernel" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> Please read the FAQ at  http://www.tux.org/lkml/
+Changes from v2:
+* Add of_match_table for dt lookup 
+* Return error if timeout happens in reading measurement
+* Document why i2c_smbus_read_byte_data can't be used
+* Add pulsedlight,lidar to trivial-devices.txt
+
+Matt Ranostay (2):
+  devicetree: add PulsedLight vendor + device docs
+  iio: proximity: add support for PulsedLight LIDAR
+
+ .../devicetree/bindings/i2c/trivial-devices.txt    |   1 +
+ .../devicetree/bindings/vendor-prefixes.txt        |   1 +
+ drivers/iio/proximity/Kconfig                      |  12 +
+ drivers/iio/proximity/Makefile                     |   1 +
+ drivers/iio/proximity/lidar.c                      | 295 +++++++++++++++++++++
+ 5 files changed, 310 insertions(+)
+ create mode 100644 drivers/iio/proximity/lidar.c
+
+-- 
+1.9.1
+
