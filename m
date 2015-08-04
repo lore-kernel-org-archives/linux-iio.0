@@ -1,294 +1,395 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ns.pmeerw.net ([84.19.176.92]:36710 "EHLO pmeerw.net"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1754000AbbHDHcY (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Tue, 4 Aug 2015 03:32:24 -0400
-Date: Tue, 4 Aug 2015 09:32:23 +0200 (CEST)
-From: Peter Meerwald <pmeerw@pmeerw.net>
-To: Sanchayan Maity <maitysanchayan@gmail.com>
-cc: fabio.estevam@freescale.com, lars@metafoo.de, B38611@freescale.com,
-	linux-iio@vger.kernel.org, knaack.h@gmx.de, stefan@agner.ch,
-	jic23@kernel.org
-Subject: Re: [PATCH] iio: adc: vf610: Add IIO buffer support for Vybrid ADC
-In-Reply-To: <alpine.DEB.2.02.1508031716370.12576@pmeerw.net>
-Message-ID: <alpine.DEB.2.02.1508040930050.3094@pmeerw.net>
-References: <cover.1438610517.git.maitysanchayan@gmail.com> <1f11be7d7bc1c3fcebf7d0bcf274f1fcbef35999.1438610517.git.maitysanchayan@gmail.com> <alpine.DEB.2.02.1508031716370.12576@pmeerw.net>
+Received: from mail-la0-f51.google.com ([209.85.215.51]:36253 "EHLO
+	mail-la0-f51.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754510AbbHDHei (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 4 Aug 2015 03:34:38 -0400
 MIME-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
+In-Reply-To: <alpine.DEB.2.02.1508040918550.3094@pmeerw.net>
+References: <1438662237-19991-1-git-send-email-mranostay@gmail.com>
+	<1438662237-19991-3-git-send-email-mranostay@gmail.com>
+	<alpine.DEB.2.02.1508040918550.3094@pmeerw.net>
+Date: Tue, 4 Aug 2015 00:34:36 -0700
+Message-ID: <CAKzfze-jdJHd-Vn=pTnRyiPmO0Fb00-Nbt4AUjZ9RJStdG9PUw@mail.gmail.com>
+Subject: Re: [PATCH v3 2/2] iio: proximity: add support for PulsedLight LIDAR
+From: Matt Ranostay <mranostay@gmail.com>
+To: Peter Meerwald <pmeerw@pmeerw.net>
+Cc: =?UTF-8?B?TWFyZWsgVmHFoXV0?= <marex@denx.de>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Vladimir Barinov <vladimir.barinov@cogentembedded.com>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-> > This patch adds support for IIO buffer to the Vybrid ADC driver.
-> > IIO triggered buffer infrastructure along with iio sysfs trigger
-> > is used to leverage continuous sampling support provided by the
-> > ADC block.
-> 
-> comments below
+On Tue, Aug 4, 2015 at 12:27 AM, Peter Meerwald <pmeerw@pmeerw.net> wrote:
+>
+>> Add support for the PulsedLight LIDAR rangefinder sensor which allows
+>> high speed (over 300Hz) distance measurements using Barker Coding within
+>> 40 meter range.
+>
+> comments inline
+>
+>> Support only tested on the "blue label" rev 2, but may work using low
+>> sample frequencies on the original version.
+>>
+>> Signed-off-by: Matt Ranostay <mranostay@gmail.com>
+>> ---
+>>  drivers/iio/proximity/Kconfig  |  12 ++
+>>  drivers/iio/proximity/Makefile |   1 +
+>>  drivers/iio/proximity/lidar.c  | 295 +++++++++++++++++++++++++++++++++++++++++
+>>  3 files changed, 308 insertions(+)
+>>  create mode 100644 drivers/iio/proximity/lidar.c
+>>
+>> diff --git a/drivers/iio/proximity/Kconfig b/drivers/iio/proximity/Kconfig
+>> index 41a8d8f..e64fc5b 100644
+>> --- a/drivers/iio/proximity/Kconfig
+>> +++ b/drivers/iio/proximity/Kconfig
+>> @@ -20,6 +20,18 @@ endmenu
+>>
+>>  menu "Proximity sensors"
+>>
+>> +config LIDAR
+>> +     tristate "PulsedLight LIDAR sensor"
+>> +     select IIO_BUFFER
+>> +     select IIO_TRIGGERED_BUFFER
+>> +     depends on I2C
+>> +     help
+>> +       Say Y to build a driver for PulsedLight LIDAR range finding
+>> +       sensor.
+>> +
+>> +       To compile this driver as a module, choose M here: the
+>> +       module will be called lidar.
+>> +
+>>  config SX9500
+>>       tristate "SX9500 Semtech proximity sensor"
+>>       select IIO_BUFFER
+>> diff --git a/drivers/iio/proximity/Makefile b/drivers/iio/proximity/Makefile
+>> index 9818dc5..36a95f3 100644
+>> --- a/drivers/iio/proximity/Makefile
+>> +++ b/drivers/iio/proximity/Makefile
+>> @@ -4,4 +4,5 @@
+>>
+>>  # When adding new entries keep the list in alphabetical order
+>>  obj-$(CONFIG_AS3935)         += as3935.o
+>> +obj-$(CONFIG_LIDAR)          += lidar.o
+>>  obj-$(CONFIG_SX9500)         += sx9500.o
+>> diff --git a/drivers/iio/proximity/lidar.c b/drivers/iio/proximity/lidar.c
+>> new file mode 100644
+>> index 0000000..133e016
+>> --- /dev/null
+>> +++ b/drivers/iio/proximity/lidar.c
+>> @@ -0,0 +1,295 @@
+>> +/*
+>> + * lidar.c - Support for PulsedLight LIDAR range finding sensor
+>> + *
+>> + * Copyright (C) 2015 Matt Ranostay <mranostay@gmail.com>
+>> + *
+>> + * This program is free software; you can redistribute it and/or modify
+>> + * it under the terms of the GNU General Public License as published by
+>> + * the Free Software Foundation; either version 2 of the License, or
+>> + * (at your option) any later version.
+>> + *
+>> + * This program is distributed in the hope that it will be useful,
+>> + * but WITHOUT ANY WARRANTY; without even the implied warranty of
+>> + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+>> + * GNU General Public License for more details.
+>> + *
+>> + * TODO: runtime pm, interrupt mode, and signal strength reporting
+>> + *
+>> + */
+>> +
+>> +#include <linux/err.h>
+>> +#include <linux/init.h>
+>> +#include <linux/i2c.h>
+>> +#include <linux/delay.h>
+>> +#include <linux/mutex.h>
+>> +#include <linux/module.h>
+>> +#include <linux/iio/iio.h>
+>> +#include <linux/iio/sysfs.h>
+>> +#include <linux/iio/buffer.h>
+>> +#include <linux/iio/trigger.h>
+>> +#include <linux/iio/triggered_buffer.h>
+>> +#include <linux/iio/trigger_consumer.h>
+>> +
+>> +#define LIDAR_REG_CONTROL            0x00
+>> +#define LIDAR_REG_CONTROL_ACQUIRE    BIT(2)
+>> +
+>> +#define LIDAR_REG_STATUS             0x01
+>> +#define LIDAR_REG_STATUS_INVALID     BIT(3)
+>> +#define LIDAR_REG_STATUS_READY               BIT(0)
+>> +
+>> +#define LIDAR_REG_DATA_HBYTE 0x0f
+>> +#define LIDAR_REG_DATA_LBYTE 0x10
+>> +
+>> +#define LIDAR_DRV_NAME "lidar"
+>> +
+>> +struct lidar_data {
+>> +     struct mutex lock;
+>> +     struct iio_dev *indio_dev;
+>> +     struct i2c_client *client;
+>> +
+>> +     u16 buffer[5]; /* 2 byte distance + 8 byte timestamp */
+>
+> at least 16 bytes are necessary; the timestamp is 8-byte aligned by
+> iio_push_to_buffers_with_timestamp()
+>
+Ok noted will be fixed in v5.
 
-gave some ill advise regarding buffer size..
-  
-> > Signed-off-by: Sanchayan Maity <maitysanchayan@gmail.com>
-> > ---
-> >  drivers/iio/adc/Kconfig     |   4 ++
-> >  drivers/iio/adc/vf610_adc.c | 122 +++++++++++++++++++++++++++++++++++++++++---
-> >  2 files changed, 120 insertions(+), 6 deletions(-)
-> > 
-> > diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
-> > index 7c55658..4661241 100644
-> > --- a/drivers/iio/adc/Kconfig
-> > +++ b/drivers/iio/adc/Kconfig
-> > @@ -337,6 +337,10 @@ config TWL6030_GPADC
-> >  config VF610_ADC
-> >  	tristate "Freescale vf610 ADC driver"
-> >  	depends on OF
-> > +	select IIO_BUFFER
-> > +	select IIO_TRIGGER
-> > +	select IIO_SYSFS_TRIGGER
-> > +	select IIO_TRIGGERED_BUFFER
-> >  	help
-> >  	  Say yes here to support for Vybrid board analog-to-digital converter.
-> >  	  Since the IP is used for i.MX6SLX, the driver also support i.MX6SLX.
-> > diff --git a/drivers/iio/adc/vf610_adc.c b/drivers/iio/adc/vf610_adc.c
-> > index 23b8fb9..af72b9a 100644
-> > --- a/drivers/iio/adc/vf610_adc.c
-> > +++ b/drivers/iio/adc/vf610_adc.c
-> > @@ -34,8 +34,11 @@
-> >  #include <linux/err.h>
-> >  
-> >  #include <linux/iio/iio.h>
-> > +#include <linux/iio/buffer.h>
-> >  #include <linux/iio/sysfs.h>
-> > -#include <linux/iio/driver.h>
-> > +#include <linux/iio/trigger.h>
-> > +#include <linux/iio/trigger_consumer.h>
-> > +#include <linux/iio/triggered_buffer.h>
-> >  
-> >  /* This will be the driver name the kernel reports */
-> >  #define DRIVER_NAME "vf610-adc"
-> > @@ -170,6 +173,7 @@ struct vf610_adc {
-> >  	u32 sample_freq_avail[5];
-> >  
-> >  	struct completion completion;
-> > +	u16 *buffer;
-> >  };
-> >  
-> >  static const u32 vf610_hw_avgs[] = { 1, 4, 8, 16, 32 };
-> > @@ -505,12 +509,22 @@ static const struct iio_chan_spec_ext_info vf610_ext_info[] = {
-> >  	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE) |	\
-> >  				BIT(IIO_CHAN_INFO_SAMP_FREQ),	\
-> >  	.ext_info = vf610_ext_info,				\
-> > +	.address = (_idx),				\
-> 
-> address is not used, no need to set it
-> 
-> > +	.scan_index = (_idx),			\
-> 
-> often this is written .scan_type = {.sign = 'u', ...}
-> 
-> > +	.scan_type.sign = 'u',			\
-> > +	.scan_type.realbits = 12,		\
-> > +	.scan_type.storagebits = 16,	\
-> >  }
-> >  
-> >  #define VF610_ADC_TEMPERATURE_CHAN(_idx, _chan_type) {	\
-> >  	.type = (_chan_type),	\
-> >  	.channel = (_idx),		\
-> >  	.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED),	\
-> > +	.address = (_idx),						\
-> > +	.scan_index = (_idx),					\
-> > +	.scan_type.sign = 'u',					\
-> > +	.scan_type.realbits = 12,				\
-> > +	.scan_type.storagebits = 16,			\
-> >  }
-> >  
-> >  static const struct iio_chan_spec vf610_adc_iio_channels[] = {
-> > @@ -531,6 +545,7 @@ static const struct iio_chan_spec vf610_adc_iio_channels[] = {
-> >  	VF610_ADC_CHAN(14, IIO_VOLTAGE),
-> >  	VF610_ADC_CHAN(15, IIO_VOLTAGE),
-> >  	VF610_ADC_TEMPERATURE_CHAN(26, IIO_TEMP),
-> > +	IIO_CHAN_SOFT_TIMESTAMP(32),
-> >  	/* sentinel */
-> >  };
-> >  
-> > @@ -559,13 +574,21 @@ static int vf610_adc_read_data(struct vf610_adc *info)
-> >  
-> >  static irqreturn_t vf610_adc_isr(int irq, void *dev_id)
-> >  {
-> > -	struct vf610_adc *info = (struct vf610_adc *)dev_id;
-> > +	struct iio_dev *indio_dev = (struct iio_dev *)dev_id;
-> > +	struct vf610_adc *info = iio_priv(indio_dev);
-> >  	int coco;
-> >  
-> >  	coco = readl(info->regs + VF610_REG_ADC_HS);
-> >  	if (coco & VF610_ADC_HS_COCO0) {
-> >  		info->value = vf610_adc_read_data(info);
-> > -		complete(&info->completion);
-> > +		if (iio_buffer_enabled(indio_dev)) {
-> > +			info->buffer[0] = info->value;
-> > +			writel(0, info->regs + VF610_REG_ADC_HS);
-> > +			iio_push_to_buffers_with_timestamp(indio_dev,
-> > +					info->buffer, iio_get_time_ns());
-> > +			iio_trigger_notify_done(indio_dev->trig);
-> > +		} else
-> > +			complete(&info->completion);
-> >  	}
-> >  
-> >  	return IRQ_HANDLED;
-> > @@ -612,6 +635,9 @@ static int vf610_read_raw(struct iio_dev *indio_dev,
-> >  	switch (mask) {
-> >  	case IIO_CHAN_INFO_RAW:
-> >  	case IIO_CHAN_INFO_PROCESSED:
-> > +		if (iio_buffer_enabled(indio_dev))
-> > +			return -EBUSY;
-> > +
-> >  		mutex_lock(&indio_dev->mlock);
-> >  		reinit_completion(&info->completion);
-> >  
-> > @@ -694,6 +720,81 @@ static int vf610_write_raw(struct iio_dev *indio_dev,
-> >  	return -EINVAL;
-> >  }
-> >  
-> > +static int vf610_adc_buffer_postenable(struct iio_dev *indio_dev)
-> > +{
-> > +	struct vf610_adc *info = iio_priv(indio_dev);
-> > +	unsigned int channel;
-> > +	int ret;
-> > +	int val;
-> > +
-> > +	ret = iio_triggered_buffer_postenable(indio_dev);
-> > +	if (ret)
-> > +		return ret;
-> > +
-> > +	val = readl(info->regs + VF610_REG_ADC_GC);
-> > +	val |= VF610_ADC_ADCON;
-> > +	writel(val, info->regs + VF610_REG_ADC_GC);
-> > +
-> > +	channel = find_first_bit(indio_dev->active_scan_mask,
-> > +						indio_dev->masklength);
-> > +
-> > +	val = VF610_ADC_ADCHC(channel);
-> > +	val |= VF610_ADC_AIEN;
-> > +
-> > +	writel(val, info->regs + VF610_REG_ADC_HC0);
-> > +
-> > +	return 0;
-> > +}
-> > +
-> > +static int vf610_adc_buffer_postdisable(struct iio_dev *indio_dev)
-> > +{
-> > +	struct vf610_adc *info = iio_priv(indio_dev);
-> > +	unsigned int hc_cfg = 0;
-> > +	int val;
-> > +
-> > +	val = readl(info->regs + VF610_REG_ADC_GC);
-> > +	val &= ~VF610_ADC_ADCON;
-> > +	writel(val, info->regs + VF610_REG_ADC_GC);
-> > +
-> > +	hc_cfg |= VF610_ADC_CONV_DISABLE;
-> > +	hc_cfg &= ~VF610_ADC_AIEN;
-> > +
-> > +	writel(hc_cfg, info->regs + VF610_REG_ADC_HC0);
-> > +
-> > +	return 0;
-> > +}
-> > +
-> > +static int vf610_adc_update_scan_mode(struct iio_dev *indio_dev,
-> > +	const unsigned long *scan_mask)
-> > +{
-> > +	struct vf610_adc *info = iio_priv(indio_dev);
-> > +
-> > +	kfree(info->buffer);
-> 
-> only one channel can be read (onehot), why not use a fixed size buffer 
-> (one u16, perhaps as a local variable in _adc_isr()?
+>> +};
+>> +
+>> +static const struct iio_chan_spec lidar_channels[] = {
+>> +     {
+>> +             .type = IIO_DISTANCE,
+>> +             .info_mask_separate =
+>> +                     BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_SCALE),
+>> +             .scan_index = 0,
+>> +             .scan_type = {
+>> +                     .sign = 'u',
+>> +                     .realbits = 16,
+>> +                     .storagebits = 16,
+>> +             },
+>> +     },
+>> +     IIO_CHAN_SOFT_TIMESTAMP(1),
+>> +};
+>> +
+>> +static int lidar_read_byte(struct lidar_data *data, int reg)
+>> +{
+>> +     struct i2c_client *client = data->client;
+>> +     int ret;
+>> +
+>> +     ret = i2c_smbus_write_byte(client, reg);
+>> +     if (ret < 0) {
+>> +             dev_err(&client->dev, "cannot write addr value");
+>> +             return ret;
+>> +     }
+>> +
+>> +     ret = i2c_smbus_read_byte(client);
+>> +     if (ret < 0) {
+>> +             dev_err(&client->dev, "cannot read data value");
+>> +             return ret;
+>> +     }
+>> +
+>> +     return ret;
+>> +}
+>> +
+>> +static inline int lidar_write_control(struct lidar_data *data, int val)
+>> +{
+>> +     return i2c_smbus_write_byte_data(data->client, LIDAR_REG_CONTROL, val);
+>> +}
+>> +
+>> +static int lidar_read_measurement(struct lidar_data *data, u16 *reg)
+>> +{
+>> +     int ret;
+>> +     int val;
+>> +
+>> +     /*
+>> +      * Device needs a STOP condition between address write, and data read
+>> +      * so in turn i2c_smbus_read_byte_data cannot be used
+>> +      */
+>> +
+>> +     ret = lidar_read_byte(data, LIDAR_REG_DATA_HBYTE);
+>> +     if (ret < 0)
+>> +             return ret;
+>> +     val = ret << 8;
+>> +
+>> +     ret = lidar_read_byte(data, LIDAR_REG_DATA_LBYTE);
+>> +     if (ret < 0)
+>> +             return ret;
+>> +
+>> +     val |= ret;
+>> +     *reg = val;
+>> +
+>> +     return 0;
+>> +}
+>> +
+>> +static int lidar_get_measurement(struct lidar_data *data, u16 *reg)
+>> +{
+>> +     struct i2c_client *client = data->client;
+>> +     int tries = 10;
+>> +     int ret;
+>> +
+>> +     /* start sample */
+>> +     ret = lidar_write_control(data, LIDAR_REG_CONTROL_ACQUIRE);
+>> +     if (ret < 0) {
+>> +             dev_err(&client->dev, "cannot send start measurement command");
+>> +             return ret;
+>> +     }
+>> +
+>> +     while (tries--) {
+>> +             usleep_range(1000, 2000);
+>> +
+>> +             ret = lidar_read_byte(data, LIDAR_REG_STATUS);
+>> +             if (ret < 0)
+>> +                     break;
+>> +
+>> +             /* return 0 since laser is likely pointed out of range */
+>> +             if (ret & LIDAR_REG_STATUS_INVALID) {
+>> +                     *reg = 0;
+>> +                     ret = 0;
+>> +                     break;
+>> +             }
+>> +
+>> +             /* sample ready to read */
+>> +             if (!(ret & LIDAR_REG_STATUS_READY)) {
+>> +                     ret = lidar_read_measurement(data, reg);
+>> +                     break;
+>> +             }
+>> +             ret = -EIO;
+>> +     }
+>> +
+>> +     return ret;
+>> +}
+>> +
+>> +static int lidar_read_raw(struct iio_dev *indio_dev,
+>> +                       struct iio_chan_spec const *chan,
+>> +                       int *val, int *val2, long mask)
+>> +{
+>> +     struct lidar_data *data = iio_priv(indio_dev);
+>> +     int ret = -EINVAL;
+>> +
+>> +     mutex_lock(&data->lock);
+>> +
+>> +     if (iio_buffer_enabled(indio_dev) && mask == IIO_CHAN_INFO_RAW) {
+>> +             ret = -EBUSY;
+>> +             goto error_busy;
+>> +     }
+>> +
+>
+> extra newline
+>
+Yeah noticed right after submitting :).
 
-fixed size buffer might still be a good idea but it has to be 16 bytes:
-one u16 + padding (6 bytes) + timestamp (8 bytes aligned at 8 bytes 
-offset)
- 
-> > +	info->buffer = kmalloc(indio_dev->scan_bytes, GFP_KERNEL);
-> > +	if (!info->buffer)
-> > +		return -ENOMEM;
-> > +
-> > +	return 0;
-> > +}
-> > +
-> > +static const struct iio_buffer_setup_ops iio_triggered_buffer_setup_ops = {
-> > +	.postenable = &vf610_adc_buffer_postenable,
-> > +	.predisable = &iio_triggered_buffer_predisable,
-> > +	.postdisable = &vf610_adc_buffer_postdisable,
-> > +	.validate_scan_mask = &iio_validate_scan_mask_onehot,
-> > +};
-> > +
-> > +static int vf610_adc_buffer_init(struct iio_dev *indio_dev)
-> > +{
-> > +	return iio_triggered_buffer_setup(indio_dev, &iio_pollfunc_store_time,
-> > +		NULL, &iio_triggered_buffer_setup_ops);
-> > +}
-> > +
-> > +static void vf610_adc_buffer_remove(struct iio_dev *indio_dev)
-> > +{
-> > +	iio_triggered_buffer_cleanup(indio_dev);
-> > +}
-> > +
-> >  static int vf610_adc_reg_access(struct iio_dev *indio_dev,
-> >  			unsigned reg, unsigned writeval,
-> >  			unsigned *readval)
-> > @@ -714,6 +815,7 @@ static const struct iio_info vf610_adc_iio_info = {
-> >  	.read_raw = &vf610_read_raw,
-> >  	.write_raw = &vf610_write_raw,
-> >  	.debugfs_reg_access = &vf610_adc_reg_access,
-> > +	.update_scan_mode = &vf610_adc_update_scan_mode,
-> >  	.attrs = &vf610_attribute_group,
-> >  };
-> >  
-> > @@ -753,7 +855,7 @@ static int vf610_adc_probe(struct platform_device *pdev)
-> >  
-> >  	ret = devm_request_irq(info->dev, irq,
-> >  				vf610_adc_isr, 0,
-> > -				dev_name(&pdev->dev), info);
-> > +				dev_name(&pdev->dev), indio_dev);
-> >  	if (ret < 0) {
-> >  		dev_err(&pdev->dev, "failed requesting irq, irq = %d\n", irq);
-> >  		return ret;
-> > @@ -806,15 +908,22 @@ static int vf610_adc_probe(struct platform_device *pdev)
-> >  	vf610_adc_cfg_init(info);
-> >  	vf610_adc_hw_init(info);
-> >  
-> > +	ret = vf610_adc_buffer_init(indio_dev);
-> > +	if (ret < 0) {
-> > +		dev_err(&pdev->dev, "Couldn't initialise the buffer\n");
-> > +		goto error_iio_device_register;
-> > +	}
-> > +
-> >  	ret = iio_device_register(indio_dev);
-> >  	if (ret) {
-> >  		dev_err(&pdev->dev, "Couldn't register the device.\n");
-> > -		goto error_iio_device_register;
-> > +		goto error_adc_buffer_init;
-> >  	}
-> >  
-> >  	return 0;
-> >  
-> > -
-> > +error_adc_buffer_init:
-> > +	vf610_adc_buffer_remove(indio_dev);
-> >  error_iio_device_register:
-> >  	clk_disable_unprepare(info->clk);
-> >  error_adc_clk_enable:
-> > @@ -829,6 +938,7 @@ static int vf610_adc_remove(struct platform_device *pdev)
-> >  	struct vf610_adc *info = iio_priv(indio_dev);
-> >  
-> >  	iio_device_unregister(indio_dev);
-> > +	vf610_adc_buffer_remove(indio_dev);
-> >  	regulator_disable(info->vref);
-> >  	clk_disable_unprepare(info->clk);
-> >  
-> > 
-> 
-> 
-
--- 
-
-Peter Meerwald
-+43-664-2444418 (mobile)
+>> +
+>> +     switch (mask) {
+>> +     case IIO_CHAN_INFO_RAW: {
+>> +             u16 reg;
+>> +
+>> +             ret = lidar_get_measurement(data, &reg);
+>> +             if (!ret) {
+>> +                     *val = reg;
+>> +                     ret = IIO_VAL_INT;
+>> +             }
+>> +             break;
+>> +     }
+>> +     case IIO_CHAN_INFO_SCALE:
+>> +             *val = 0;
+>> +             *val2 = 10000;
+>> +             ret = IIO_VAL_INT_PLUS_MICRO;
+>> +             break;
+>> +     }
+>> +
+>> +error_busy:
+>> +     mutex_unlock(&data->lock);
+>> +
+>> +     return ret;
+>> +}
+>> +
+>> +static irqreturn_t lidar_trigger_handler(int irq, void *private)
+>> +{
+>> +     struct iio_poll_func *pf = private;
+>> +     struct iio_dev *indio_dev = pf->indio_dev;
+>> +     struct lidar_data *data = iio_priv(indio_dev);
+>> +     int ret;
+>> +
+>> +     ret = lidar_get_measurement(data, &data->buffer[0]);
+>> +     if (!ret) {
+>> +             iio_push_to_buffers_with_timestamp(indio_dev, data->buffer,
+>> +                                                iio_get_time_ns());
+>> +     } else {
+>> +             dev_err(&data->client->dev, "cannot read LIDAR measurement");
+>> +     }
+>> +
+>> +     iio_trigger_notify_done(indio_dev->trig);
+>> +
+>> +     return IRQ_HANDLED;
+>> +}
+>> +
+>> +static const struct iio_info lidar_info = {
+>> +     .driver_module = THIS_MODULE,
+>> +     .read_raw = lidar_read_raw,
+>> +};
+>> +
+>> +static int lidar_probe(struct i2c_client *client,
+>> +                    const struct i2c_device_id *id)
+>> +{
+>> +     struct lidar_data *data;
+>> +     struct iio_dev *indio_dev;
+>> +     int ret;
+>> +
+>> +     indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
+>> +     if (!indio_dev)
+>> +             return -ENOMEM;
+>> +
+>> +     indio_dev->info = &lidar_info;
+>> +     indio_dev->name = LIDAR_DRV_NAME;
+>> +     indio_dev->channels = lidar_channels;
+>> +     indio_dev->num_channels = ARRAY_SIZE(lidar_channels);
+>> +     indio_dev->modes = INDIO_DIRECT_MODE;
+>> +
+>> +     data = iio_priv(indio_dev);
+>> +     i2c_set_clientdata(client, indio_dev);
+>> +
+>> +     data->client = client;
+>> +     data->indio_dev = indio_dev;
+>> +     mutex_init(&data->lock);
+>> +
+>> +     ret = iio_triggered_buffer_setup(indio_dev, NULL,
+>> +                                      lidar_trigger_handler, NULL);
+>> +     if (ret)
+>> +             return ret;
+>> +
+>> +     ret = iio_device_register(indio_dev);
+>> +     if (ret)
+>> +             goto error_unreg_buffer;
+>> +
+>> +     return 0;
+>> +
+>> +error_unreg_buffer:
+>> +     iio_triggered_buffer_cleanup(indio_dev);
+>> +
+>> +     return ret;
+>> +}
+>> +
+>> +static int lidar_remove(struct i2c_client *client)
+>> +{
+>> +     struct iio_dev *indio_dev = i2c_get_clientdata(client);
+>> +
+>> +     iio_device_unregister(indio_dev);
+>> +     iio_triggered_buffer_cleanup(indio_dev);
+>> +
+>> +     return 0;
+>> +}
+>> +
+>> +static const struct i2c_device_id lidar_id[] = {
+>> +     {"lidar", 0},
+>> +     { },
+>> +};
+>> +MODULE_DEVICE_TABLE(i2c, lidar_id);
+>> +
+>> +static const struct of_device_id lidar_dt_ids[] = {
+>> +     { .compatible = "pulsedlight,lidar" },
+>> +     { }
+>> +};
+>> +
+>> +static struct i2c_driver lidar_driver = {
+>> +     .driver = {
+>> +             .name   = LIDAR_DRV_NAME,
+>> +             .of_match_table = of_match_ptr(lidar_dt_ids),
+>> +     },
+>> +     .probe          = lidar_probe,
+>> +     .remove         = lidar_remove,
+>> +     .id_table       = lidar_id,
+>> +};
+>> +module_i2c_driver(lidar_driver);
+>> +
+>> +MODULE_AUTHOR("Matt Ranostay <mranostay@gmail.com>");
+>> +MODULE_DESCRIPTION("PulsedLight LIDAR sensor");
+>> +MODULE_LICENSE("GPL");
+>>
+>
+> --
+>
+> Peter Meerwald
+> +43-664-2444418 (mobile)
