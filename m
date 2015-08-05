@@ -1,70 +1,79 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-lb0-f172.google.com ([209.85.217.172]:35537 "EHLO
-	mail-lb0-f172.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750966AbbHEMWZ (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 5 Aug 2015 08:22:25 -0400
-MIME-Version: 1.0
-In-Reply-To: <1438776912-25798-1-git-send-email-lars1.svensson@sonymobile.com>
-References: <1438776912-25798-1-git-send-email-lars1.svensson@sonymobile.com>
-Date: Wed, 5 Aug 2015 15:22:24 +0300
-Message-ID: <CAEnQRZBLXpPn_i8LJ1=844rUBRMZa9GAY0gKOU1rH8k4MFdZKg@mail.gmail.com>
-Subject: Re: [PATCH] staging: iio_simple_dummy: Fix indentation errors
-From: Daniel Baluta <daniel.baluta@gmail.com>
-To: Lars Svensson <lars1.svensson@sonymobile.com>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	driverdev <devel@driverdev.osuosl.org>,
-	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset=UTF-8
+Received: from smtp-out-232.synserver.de ([212.40.185.232]:1089 "EHLO
+	smtp-out-230.synserver.de" rhost-flags-OK-OK-OK-FAIL)
+	by vger.kernel.org with ESMTP id S1751242AbbHENic (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 5 Aug 2015 09:38:32 -0400
+From: Lars-Peter Clausen <lars@metafoo.de>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Hartmut Knaack <knaack.h@gmx.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>, linux-iio@vger.kernel.org,
+	Lars-Peter Clausen <lars@metafoo.de>
+Subject: [PATCH 2/9] iio: Add inverse unit conversion macros
+Date: Wed,  5 Aug 2015 15:38:14 +0200
+Message-Id: <1438781901-28000-3-git-send-email-lars@metafoo.de>
+In-Reply-To: <1438781901-28000-1-git-send-email-lars@metafoo.de>
+References: <1438781901-28000-1-git-send-email-lars@metafoo.de>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Wed, Aug 5, 2015 at 3:15 PM, Lars Svensson
-<lars1.svensson@sonymobile.com> wrote:
-> Fixing indentation errors in
-> drivers/staging/iio/iio_simple_dummy_events.c.
->
-> Signed-off-by: Lars Svensson <lars1.svensson@sonymobile.com>
+Add inverse unit conversion macro to convert from standard IIO units to
+units that might be used by some devices.
 
-Good catch.
+Those are useful in combination with scale factors that are specified as
+IIO_VAL_FRACTIONAL. Typically the denominator for those specifications will
+contain the maximum raw value the sensor will generate and the numerator
+the value it maps to in a specific unit. Sometimes datasheets specify those
+in different units than the standard IIO units (e.g. degree/s instead of
+rad/s) and so we need to do a unit conversion.
 
-Acked-by: Daniel Baluta <daniel.baluta@intel.com>
+>From a mathematical point of view it does not make a difference whether we
+apply the unit conversion to the numerator or the inverse unit conversion
+to the denominator since (x / y) / z = x / (y * z). But as the denominator
+is typically a larger value and we are rounding both the numerator and
+denominator to integer values using the later method gives us a better
+precision (E.g. the relative error is smaller if we round 8000.3 to 8000
+rather than rounding 8.3 to 8).
 
+This is where in inverse unit conversion macros will be used.
 
-> ---
->  drivers/staging/iio/iio_simple_dummy_events.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
->
-> diff --git a/drivers/staging/iio/iio_simple_dummy_events.c b/drivers/staging/iio/iio_simple_dummy_events.c
-> index ecc563c..73108ba 100644
-> --- a/drivers/staging/iio/iio_simple_dummy_events.c
-> +++ b/drivers/staging/iio/iio_simple_dummy_events.c
-> @@ -120,7 +120,7 @@ int iio_simple_dummy_read_event_value(struct iio_dev *indio_dev,
->                                       const struct iio_chan_spec *chan,
->                                       enum iio_event_type type,
->                                       enum iio_event_direction dir,
-> -                                         enum iio_event_info info,
-> +                                     enum iio_event_info info,
->                                       int *val, int *val2)
->  {
->         struct iio_dummy_state *st = iio_priv(indio_dev);
-> @@ -143,7 +143,7 @@ int iio_simple_dummy_write_event_value(struct iio_dev *indio_dev,
->                                        const struct iio_chan_spec *chan,
->                                        enum iio_event_type type,
->                                        enum iio_event_direction dir,
-> -                                          enum iio_event_info info,
-> +                                      enum iio_event_info info,
->                                        int val, int val2)
->  {
->         struct iio_dummy_state *st = iio_priv(indio_dev);
-> --
-> 1.8.2.2
->
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+---
+ include/linux/iio/iio.h | 17 +++++++++++++++++
+ 1 file changed, 17 insertions(+)
+
+diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
+index f791482..6bcc9537 100644
+--- a/include/linux/iio/iio.h
++++ b/include/linux/iio/iio.h
+@@ -645,6 +645,15 @@ int iio_str_to_fixpoint(const char *str, int fract_mult, int *integer,
+ #define IIO_DEGREE_TO_RAD(deg) (((deg) * 314159ULL + 9000000ULL) / 18000000ULL)
+ 
+ /**
++ * IIO_RAD_TO_DEGREE() - Convert rad to degree
++ * @rad: A value in rad
++ *
++ * Returns the given value converted from rad to degree
++ */
++#define IIO_RAD_TO_DEGREE(rad) \
++	(((rad) * 18000000ULL + 314159ULL / 2) / 314159ULL)
++
++/**
+  * IIO_G_TO_M_S_2() - Convert g to meter / second**2
+  * @g: A value in g
+  *
+@@ -652,4 +661,12 @@ int iio_str_to_fixpoint(const char *str, int fract_mult, int *integer,
+  */
+ #define IIO_G_TO_M_S_2(g) ((g) * 980665ULL / 100000ULL)
+ 
++/**
++ * IIO_M_S_2_TO_G() - Convert meter / second**2 to g
++ * @ms2: A value in meter / second**2
++ *
++ * Returns the given value converted from meter / second**2 to g
++ */
++#define IIO_M_S_2_TO_G(ms2) (((ms2) * 100000ULL + 980665ULL / 2) / 980665ULL)
++
+ #endif /* _INDUSTRIAL_IO_H_ */
+-- 
+2.1.4
+
