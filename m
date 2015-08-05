@@ -1,49 +1,60 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-lb0-f175.google.com ([209.85.217.175]:35172 "EHLO
-	mail-lb0-f175.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752200AbbHEJ2W (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 5 Aug 2015 05:28:22 -0400
-Received: by lbbpo9 with SMTP id po9so21049921lbb.2
-        for <linux-iio@vger.kernel.org>; Wed, 05 Aug 2015 02:28:21 -0700 (PDT)
-From: Linus Walleij <linus.walleij@linaro.org>
-To: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org
-Cc: Linus Walleij <linus.walleij@linaro.org>,
-	Denis Ciocca <denis.ciocca@st.com>
-Subject: [PATCH] iio: st_common: use standard trigger suffix
-Date: Wed,  5 Aug 2015 11:28:15 +0200
-Message-Id: <1438766895-15824-1-git-send-email-linus.walleij@linaro.org>
+Received: from mail-ig0-f182.google.com ([209.85.213.182]:37294 "EHLO
+	mail-ig0-f182.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752181AbbHELn0 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 5 Aug 2015 07:43:26 -0400
+Received: by igbpg9 with SMTP id pg9so30832830igb.0
+        for <linux-iio@vger.kernel.org>; Wed, 05 Aug 2015 04:43:25 -0700 (PDT)
+Date: Wed, 5 Aug 2015 07:43:21 -0400
+From: Matt Porter <mporter@konsulko.com>
+To: Daniel Baluta <daniel.baluta@gmail.com>
+Cc: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>,
+	Linux IIO List <linux-iio@vger.kernel.org>,
+	Devicetree List <devicetree@vger.kernel.org>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Rob Herring <robh+dt@kernel.org>,
+	Mark Rutland <mark.rutland@arm.com>,
+	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 0/3] MAX6675 IIO temperature driver
+Message-ID: <20150805114321.GA23173@beef>
+References: <1438635410-3757-1-git-send-email-mporter@konsulko.com>
+ <897A4C3B-DF7E-4AEE-A117-00CCB510F4DD@jic23.retrosnub.co.uk>
+ <20150804173417.GN15004@beef>
+ <CAEnQRZCh7+z9=rvP9znwggzF2-xOSrrD=LeuW9wHMXdt47WtSw@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <CAEnQRZCh7+z9=rvP9znwggzF2-xOSrrD=LeuW9wHMXdt47WtSw@mail.gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-The triggers from ST sensors are named <iio_device_name>-trigger
-instead of the standard <iio_device_name>-dev<iio_dev_id> as
-used by most and also in the iio-tools. Change this to match
-the norm.
+On Wed, Aug 05, 2015 at 11:33:25AM +0300, Daniel Baluta wrote:
+> On Tue, Aug 4, 2015 at 8:34 PM, Matt Porter <mporter@konsulko.com> wrote:
+> > On Tue, Aug 04, 2015 at 05:52:17PM +0100, Jonathan Cameron wrote:
+> >>
+> >>
+> >> On 3 August 2015 21:56:47 BST, Matt Porter <mporter@konsulko.com> wrote:
+> >> >This series adds a driver for the MAX6675 SPI thermocouple converter.
+> >> >The device supports temperature measurements via type-K thermocouples
+> >> >and implements cold-junction compensation within the part. The
+> >> >datasheet
+> >> >can be found at http://datasheets.maximintegrated.com/en/ds/MAX6675.pdf
+> >> For a device like this where perhaps it's position wrt iio/hwmon boundary is unclear
+> >> I want to see an argument for why IIO makes more sense in the cover letter + cc
+> >>  at least the hwmon MAINTAINERS if not the list...
+> >
+> > Will do. Just to summarize here, the typical use case for this type of
+> > thermocouple converter involves sample rates that are relatively high
+> > compared to what the hwmon interface can support. The upcoming hrtimer
+> > trigger will match up well with this to support fine-grained
+> > periodic samples. I'll add this in the v2 cover latter.
+> 
+> Are we talking about this hrtimer trigger patches:
+> 
+> http://marc.info/?l=linux-iio&m=143109196107382&w=2
+> 
+> Right? I've been busy with some other things, but I hope to have a
+> final version by Sunday :).
 
-After this I can do tests with generic_buffer -n <dev_name>
-without having to manually specify the trigger with the -t
-option.
+That's it! Thanks. :)
 
-Cc: Denis Ciocca <denis.ciocca@st.com>
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
----
- drivers/iio/common/st_sensors/st_sensors_trigger.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/iio/common/st_sensors/st_sensors_trigger.c b/drivers/iio/common/st_sensors/st_sensors_trigger.c
-index 3e907040c2c7..3c0aa17d753f 100644
---- a/drivers/iio/common/st_sensors/st_sensors_trigger.c
-+++ b/drivers/iio/common/st_sensors/st_sensors_trigger.c
-@@ -24,7 +24,8 @@ int st_sensors_allocate_trigger(struct iio_dev *indio_dev,
- 	int err;
- 	struct st_sensor_data *sdata = iio_priv(indio_dev);
- 
--	sdata->trig = iio_trigger_alloc("%s-trigger", indio_dev->name);
-+	sdata->trig = iio_trigger_alloc("%s-dev%d",
-+					indio_dev->name, indio_dev->id);
- 	if (sdata->trig == NULL) {
- 		err = -ENOMEM;
- 		dev_err(&indio_dev->dev, "failed to allocate iio trigger.\n");
--- 
-2.4.3
-
+-Matt
