@@ -1,95 +1,62 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.136]:48277 "EHLO mail.kernel.org"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1753750AbbHENqf (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Wed, 5 Aug 2015 09:46:35 -0400
-Date: Wed, 5 Aug 2015 21:46:03 +0800
-From: Shawn Guo <shawnguo@kernel.org>
-To: Stefan Agner <stefan@agner.ch>
-Cc: shawn.guo@linaro.org, mark.rutland@arm.com,
-	devicetree@vger.kernel.org, lars@metafoo.de, B38611@freescale.com,
-	kernel@pengutronix.de, pawel.moll@arm.com,
-	ijc+devicetree@hellion.org.uk, linux-iio@vger.kernel.org,
-	galak@codeaurora.org, linux-kernel@vger.kernel.org,
-	maitysanchayan@gmail.com, robh+dt@kernel.org,
-	linux-arm-kernel@lists.infradead.org, pmeerw@pmeerw.net,
-	knaack.h@gmx.de, Jonathan Cameron <jic23@kernel.org>
-Subject: Re: [PATCH v5 2/2] ARM: dts: add property for maximum ADC clock
- frequencies
-Message-ID: <20150805134603.GN12927@tiger>
-References: <1432730872-14325-1-git-send-email-stefan@agner.ch>
- <1432730872-14325-3-git-send-email-stefan@agner.ch>
- <557477BE.5050108@kernel.org>
- <f598169164aaacc28292d8ccc6afb32d@agner.ch>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:39486 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751890AbbHEUPe (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 5 Aug 2015 16:15:34 -0400
+In-Reply-To: <1438766895-15824-1-git-send-email-linus.walleij@linaro.org>
+References: <1438766895-15824-1-git-send-email-linus.walleij@linaro.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <f598169164aaacc28292d8ccc6afb32d@agner.ch>
+Content-Type: text/plain;
+ charset=UTF-8
+Subject: Re: [PATCH] iio: st_common: use standard trigger suffix
+From: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
+Date: Wed, 05 Aug 2015 21:15:08 +0100
+To: Linus Walleij <linus.walleij@linaro.org>,
+	Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org
+CC: Denis Ciocca <denis.ciocca@st.com>
+Message-ID: <9F97DF0A-7CD3-4A1B-8B41-9B060A080F47@jic23.retrosnub.co.uk>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Mon, Aug 03, 2015 at 02:22:30PM +0200, Stefan Agner wrote:
-> Hi Shawn,
-> 
-> I guess this will go through your tree? Haven't seen it appear on imx/dt
-> so far...
 
-Sorry.  I missed it.  Please use my kernel.org mailbox, which I'm using
-for kernel maintenance now.
 
-Applied, thanks.
+On 5 August 2015 10:28:15 BST, Linus Walleij <linus.walleij@linaro.org> wrote:
+>The triggers from ST sensors are named <iio_device_name>-trigger
+>instead of the standard <iio_device_name>-dev<iio_dev_id> as
+>used by most and also in the iio-tools. Change this to match
+>the norm.
+>
+>After this I can do tests with generic_buffer -n <dev_name>
+>without having to manually specify the trigger with the -t
+>option.
+Hmm ABI change... Not a requirement that this naming be followed...
 
-Shawn
+Could register the trigger twice I suppose so as to keep old name available.... 
 
+
+>
+>Cc: Denis Ciocca <denis.ciocca@st.com>
+>Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+>---
+> drivers/iio/common/st_sensors/st_sensors_trigger.c | 3 ++-
+> 1 file changed, 2 insertions(+), 1 deletion(-)
+>
+>diff --git a/drivers/iio/common/st_sensors/st_sensors_trigger.c
+>b/drivers/iio/common/st_sensors/st_sensors_trigger.c
+>index 3e907040c2c7..3c0aa17d753f 100644
+>--- a/drivers/iio/common/st_sensors/st_sensors_trigger.c
+>+++ b/drivers/iio/common/st_sensors/st_sensors_trigger.c
+>@@ -24,7 +24,8 @@ int st_sensors_allocate_trigger(struct iio_dev
+>*indio_dev,
+> 	int err;
+> 	struct st_sensor_data *sdata = iio_priv(indio_dev);
 > 
-> --
-> Stefan
-> 
-> On 2015-06-07 18:56, Jonathan Cameron wrote:
-> > On 27/05/15 13:47, Stefan Agner wrote:
-> >> The ADC clock frequency is limited depending on modes used. Add
-> >> device tree property which allow to set the mode used and the
-> >> maximum frequency ratings for the instance. These allows to
-> >> set the ADC clock to a frequency which is within specification
-> >> according to the actual mode used.
-> >>
-> >> Acked-by: Fugang Duan <B38611@freescale.com>
-> >> Signed-off-by: Stefan Agner <stefan@agner.ch>
-> > I'm happy to take this via IIO if people want me to, otherwise give
-> > it's connection to the previous patch that I just applied,
-> > 
-> > Acked-by: Jonathan Cameron <jic23@kernel.org>
-> > 
-> >> ---
-> >>  arch/arm/boot/dts/vfxxx.dtsi | 4 ++++
-> >>  1 file changed, 4 insertions(+)
-> >>
-> >> diff --git a/arch/arm/boot/dts/vfxxx.dtsi b/arch/arm/boot/dts/vfxxx.dtsi
-> >> index a29c7ce..c6609bd 100644
-> >> --- a/arch/arm/boot/dts/vfxxx.dtsi
-> >> +++ b/arch/arm/boot/dts/vfxxx.dtsi
-> >> @@ -189,6 +189,8 @@
-> >>  				clocks = <&clks VF610_CLK_ADC0>;
-> >>  				clock-names = "adc";
-> >>  				status = "disabled";
-> >> +				fsl,adck-max-frequency = <30000000>, <40000000>,
-> >> +							<20000000>;
-> >>  			};
-> >>
-> >>  			wdoga5: wdog@4003e000 {
-> >> @@ -387,6 +389,8 @@
-> >>  				clocks = <&clks VF610_CLK_ADC1>;
-> >>  				clock-names = "adc";
-> >>  				status = "disabled";
-> >> +				fsl,adck-max-frequency = <30000000>, <40000000>,
-> >> +							<20000000>;
-> >>  			};
-> >>
-> >>  			esdhc1: esdhc@400b2000 {
-> >>
-> 
-> 
-> _______________________________________________
-> linux-arm-kernel mailing list
-> linux-arm-kernel@lists.infradead.org
-> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
-> 
+>-	sdata->trig = iio_trigger_alloc("%s-trigger", indio_dev->name);
+>+	sdata->trig = iio_trigger_alloc("%s-dev%d",
+>+					indio_dev->name, indio_dev->id);
+> 	if (sdata->trig == NULL) {
+> 		err = -ENOMEM;
+> 		dev_err(&indio_dev->dev, "failed to allocate iio trigger.\n");
+
+-- 
+Sent from my Android device with K-9 Mail. Please excuse my brevity.
