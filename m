@@ -1,68 +1,95 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp-out-232.synserver.de ([212.40.185.232]:1123 "EHLO
-	smtp-out-230.synserver.de" rhost-flags-OK-OK-OK-FAIL)
-	by vger.kernel.org with ESMTP id S1751797AbbHENij (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 5 Aug 2015 09:38:39 -0400
-From: Lars-Peter Clausen <lars@metafoo.de>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Hartmut Knaack <knaack.h@gmx.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>, linux-iio@vger.kernel.org,
-	Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH 7/9] iio: adis16400: Add ADIS16367 support
-Date: Wed,  5 Aug 2015 15:38:19 +0200
-Message-Id: <1438781901-28000-8-git-send-email-lars@metafoo.de>
-In-Reply-To: <1438781901-28000-1-git-send-email-lars@metafoo.de>
-References: <1438781901-28000-1-git-send-email-lars@metafoo.de>
+Received: from mail.kernel.org ([198.145.29.136]:48277 "EHLO mail.kernel.org"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1753750AbbHENqf (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Wed, 5 Aug 2015 09:46:35 -0400
+Date: Wed, 5 Aug 2015 21:46:03 +0800
+From: Shawn Guo <shawnguo@kernel.org>
+To: Stefan Agner <stefan@agner.ch>
+Cc: shawn.guo@linaro.org, mark.rutland@arm.com,
+	devicetree@vger.kernel.org, lars@metafoo.de, B38611@freescale.com,
+	kernel@pengutronix.de, pawel.moll@arm.com,
+	ijc+devicetree@hellion.org.uk, linux-iio@vger.kernel.org,
+	galak@codeaurora.org, linux-kernel@vger.kernel.org,
+	maitysanchayan@gmail.com, robh+dt@kernel.org,
+	linux-arm-kernel@lists.infradead.org, pmeerw@pmeerw.net,
+	knaack.h@gmx.de, Jonathan Cameron <jic23@kernel.org>
+Subject: Re: [PATCH v5 2/2] ARM: dts: add property for maximum ADC clock
+ frequencies
+Message-ID: <20150805134603.GN12927@tiger>
+References: <1432730872-14325-1-git-send-email-stefan@agner.ch>
+ <1432730872-14325-3-git-send-email-stefan@agner.ch>
+ <557477BE.5050108@kernel.org>
+ <f598169164aaacc28292d8ccc6afb32d@agner.ch>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <f598169164aaacc28292d8ccc6afb32d@agner.ch>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-The ADIS16367 is mostly register compatible to the ADIS16360. The only
-difference is the scale factor for the gyroscope output.
+On Mon, Aug 03, 2015 at 02:22:30PM +0200, Stefan Agner wrote:
+> Hi Shawn,
+> 
+> I guess this will go through your tree? Haven't seen it appear on imx/dt
+> so far...
 
-Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
----
- drivers/iio/imu/adis16400_core.c | 14 ++++++++++++++
- 1 file changed, 14 insertions(+)
+Sorry.  I missed it.  Please use my kernel.org mailbox, which I'm using
+for kernel maintenance now.
 
-diff --git a/drivers/iio/imu/adis16400_core.c b/drivers/iio/imu/adis16400_core.c
-index e4cc2ec..a9f4043 100644
---- a/drivers/iio/imu/adis16400_core.c
-+++ b/drivers/iio/imu/adis16400_core.c
-@@ -139,6 +139,7 @@ enum adis16400_chip_variant {
- 	ADIS16360,
- 	ADIS16362,
- 	ADIS16364,
-+	ADIS16367,
- 	ADIS16400,
- 	ADIS16448,
- };
-@@ -764,6 +765,18 @@ static struct adis16400_chip_info adis16400_chips[] = {
- 		.set_freq = adis16400_set_freq,
- 		.get_freq = adis16400_get_freq,
- 	},
-+	[ADIS16367] = {
-+		.channels = adis16350_channels,
-+		.num_channels = ARRAY_SIZE(adis16350_channels),
-+		.flags = ADIS16400_HAS_PROD_ID | ADIS16400_HAS_SLOW_MODE |
-+				ADIS16400_HAS_SERIAL_NUMBER,
-+		.gyro_scale_micro = IIO_DEGREE_TO_RAD(2000), /* 0.2 deg/s */
-+		.accel_scale_micro = IIO_G_TO_M_S_2(3333), /* 3.333 mg */
-+		.temp_scale_nano = 136000000, /* 0.136 C */
-+		.temp_offset = 25000000 / 136000, /* 25 C = 0x00 */
-+		.set_freq = adis16400_set_freq,
-+		.get_freq = adis16400_get_freq,
-+	},
- 	[ADIS16400] = {
- 		.channels = adis16400_channels,
- 		.num_channels = ARRAY_SIZE(adis16400_channels),
-@@ -936,6 +949,7 @@ static const struct spi_device_id adis16400_id[] = {
- 	{"adis16362", ADIS16362},
- 	{"adis16364", ADIS16364},
- 	{"adis16365", ADIS16360},
-+	{"adis16367", ADIS16367},
- 	{"adis16400", ADIS16400},
- 	{"adis16405", ADIS16400},
- 	{"adis16448", ADIS16448},
--- 
-2.1.4
+Applied, thanks.
 
+Shawn
+
+> 
+> --
+> Stefan
+> 
+> On 2015-06-07 18:56, Jonathan Cameron wrote:
+> > On 27/05/15 13:47, Stefan Agner wrote:
+> >> The ADC clock frequency is limited depending on modes used. Add
+> >> device tree property which allow to set the mode used and the
+> >> maximum frequency ratings for the instance. These allows to
+> >> set the ADC clock to a frequency which is within specification
+> >> according to the actual mode used.
+> >>
+> >> Acked-by: Fugang Duan <B38611@freescale.com>
+> >> Signed-off-by: Stefan Agner <stefan@agner.ch>
+> > I'm happy to take this via IIO if people want me to, otherwise give
+> > it's connection to the previous patch that I just applied,
+> > 
+> > Acked-by: Jonathan Cameron <jic23@kernel.org>
+> > 
+> >> ---
+> >>  arch/arm/boot/dts/vfxxx.dtsi | 4 ++++
+> >>  1 file changed, 4 insertions(+)
+> >>
+> >> diff --git a/arch/arm/boot/dts/vfxxx.dtsi b/arch/arm/boot/dts/vfxxx.dtsi
+> >> index a29c7ce..c6609bd 100644
+> >> --- a/arch/arm/boot/dts/vfxxx.dtsi
+> >> +++ b/arch/arm/boot/dts/vfxxx.dtsi
+> >> @@ -189,6 +189,8 @@
+> >>  				clocks = <&clks VF610_CLK_ADC0>;
+> >>  				clock-names = "adc";
+> >>  				status = "disabled";
+> >> +				fsl,adck-max-frequency = <30000000>, <40000000>,
+> >> +							<20000000>;
+> >>  			};
+> >>
+> >>  			wdoga5: wdog@4003e000 {
+> >> @@ -387,6 +389,8 @@
+> >>  				clocks = <&clks VF610_CLK_ADC1>;
+> >>  				clock-names = "adc";
+> >>  				status = "disabled";
+> >> +				fsl,adck-max-frequency = <30000000>, <40000000>,
+> >> +							<20000000>;
+> >>  			};
+> >>
+> >>  			esdhc1: esdhc@400b2000 {
+> >>
+> 
+> 
+> _______________________________________________
+> linux-arm-kernel mailing list
+> linux-arm-kernel@lists.infradead.org
+> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
+> 
