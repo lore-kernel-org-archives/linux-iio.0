@@ -1,79 +1,41 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp-out-232.synserver.de ([212.40.185.232]:1089 "EHLO
+Received: from smtp-out-232.synserver.de ([212.40.185.232]:1078 "EHLO
 	smtp-out-230.synserver.de" rhost-flags-OK-OK-OK-FAIL)
-	by vger.kernel.org with ESMTP id S1751242AbbHENic (ORCPT
+	by vger.kernel.org with ESMTP id S1751255AbbHENic (ORCPT
 	<rfc822;linux-iio@vger.kernel.org>); Wed, 5 Aug 2015 09:38:32 -0400
 From: Lars-Peter Clausen <lars@metafoo.de>
 To: Jonathan Cameron <jic23@kernel.org>
 Cc: Hartmut Knaack <knaack.h@gmx.de>,
 	Peter Meerwald <pmeerw@pmeerw.net>, linux-iio@vger.kernel.org,
 	Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH 2/9] iio: Add inverse unit conversion macros
-Date: Wed,  5 Aug 2015 15:38:14 +0200
-Message-Id: <1438781901-28000-3-git-send-email-lars@metafoo.de>
+Subject: [PATCH 1/9] iio: adis16400: Fix adis16448 gyroscope scale
+Date: Wed,  5 Aug 2015 15:38:13 +0200
+Message-Id: <1438781901-28000-2-git-send-email-lars@metafoo.de>
 In-Reply-To: <1438781901-28000-1-git-send-email-lars@metafoo.de>
 References: <1438781901-28000-1-git-send-email-lars@metafoo.de>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Add inverse unit conversion macro to convert from standard IIO units to
-units that might be used by some devices.
-
-Those are useful in combination with scale factors that are specified as
-IIO_VAL_FRACTIONAL. Typically the denominator for those specifications will
-contain the maximum raw value the sensor will generate and the numerator
-the value it maps to in a specific unit. Sometimes datasheets specify those
-in different units than the standard IIO units (e.g. degree/s instead of
-rad/s) and so we need to do a unit conversion.
-
->From a mathematical point of view it does not make a difference whether we
-apply the unit conversion to the numerator or the inverse unit conversion
-to the denominator since (x / y) / z = x / (y * z). But as the denominator
-is typically a larger value and we are rounding both the numerator and
-denominator to integer values using the later method gives us a better
-precision (E.g. the relative error is smaller if we round 8000.3 to 8000
-rather than rounding 8.3 to 8).
-
-This is where in inverse unit conversion macros will be used.
+Use the correct scale for the adis16448 gyroscope output.
 
 Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
 ---
- include/linux/iio/iio.h | 17 +++++++++++++++++
- 1 file changed, 17 insertions(+)
+ drivers/iio/imu/adis16400_core.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
-index f791482..6bcc9537 100644
---- a/include/linux/iio/iio.h
-+++ b/include/linux/iio/iio.h
-@@ -645,6 +645,15 @@ int iio_str_to_fixpoint(const char *str, int fract_mult, int *integer,
- #define IIO_DEGREE_TO_RAD(deg) (((deg) * 314159ULL + 9000000ULL) / 18000000ULL)
- 
- /**
-+ * IIO_RAD_TO_DEGREE() - Convert rad to degree
-+ * @rad: A value in rad
-+ *
-+ * Returns the given value converted from rad to degree
-+ */
-+#define IIO_RAD_TO_DEGREE(rad) \
-+	(((rad) * 18000000ULL + 314159ULL / 2) / 314159ULL)
-+
-+/**
-  * IIO_G_TO_M_S_2() - Convert g to meter / second**2
-  * @g: A value in g
-  *
-@@ -652,4 +661,12 @@ int iio_str_to_fixpoint(const char *str, int fract_mult, int *integer,
-  */
- #define IIO_G_TO_M_S_2(g) ((g) * 980665ULL / 100000ULL)
- 
-+/**
-+ * IIO_M_S_2_TO_G() - Convert meter / second**2 to g
-+ * @ms2: A value in meter / second**2
-+ *
-+ * Returns the given value converted from meter / second**2 to g
-+ */
-+#define IIO_M_S_2_TO_G(ms2) (((ms2) * 100000ULL + 980665ULL / 2) / 980665ULL)
-+
- #endif /* _INDUSTRIAL_IO_H_ */
+diff --git a/drivers/iio/imu/adis16400_core.c b/drivers/iio/imu/adis16400_core.c
+index 2fd68f22..d42e4fe 100644
+--- a/drivers/iio/imu/adis16400_core.c
++++ b/drivers/iio/imu/adis16400_core.c
+@@ -780,7 +780,7 @@ static struct adis16400_chip_info adis16400_chips[] = {
+ 		.flags = ADIS16400_HAS_PROD_ID |
+ 				ADIS16400_HAS_SERIAL_NUMBER |
+ 				ADIS16400_BURST_DIAG_STAT,
+-		.gyro_scale_micro = IIO_DEGREE_TO_RAD(10000), /* 0.01 deg/s */
++		.gyro_scale_micro = IIO_DEGREE_TO_RAD(40000), /* 0.04 deg/s */
+ 		.accel_scale_micro = IIO_G_TO_M_S_2(833), /* 1/1200 g */
+ 		.temp_scale_nano = 73860000, /* 0.07386 C */
+ 		.temp_offset = 31000000 / 73860, /* 31 C = 0x00 */
 -- 
 2.1.4
 
