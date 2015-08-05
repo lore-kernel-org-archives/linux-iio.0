@@ -1,91 +1,55 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pa0-f41.google.com ([209.85.220.41]:35945 "EHLO
-	mail-pa0-f41.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750742AbbHEHKi (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 5 Aug 2015 03:10:38 -0400
-Received: by pacgq8 with SMTP id gq8so28441921pac.3
-        for <linux-iio@vger.kernel.org>; Wed, 05 Aug 2015 00:10:38 -0700 (PDT)
-Date: Wed, 5 Aug 2015 00:13:52 -0700
-From: Tristan Lelong <tristan@lelong.xyz>
-To: Matt Ranostay <mranostay@gmail.com>
-Cc: Peter Meerwald <pmeerw@pmeerw.net>,
-	Marek =?utf-8?B?VmHFoXV0?= <marex@denx.de>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Vladimir Barinov <vladimir.barinov@cogentembedded.com>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Subject: Re: [PATCH v2 2/2] iio: proximity: add support for PulsedLight LIDAR
-Message-ID: <20150805071352.GA1662@lenderer>
-References: <1438576076-7890-1-git-send-email-mranostay@gmail.com>
- <1438576076-7890-3-git-send-email-mranostay@gmail.com>
- <alpine.DEB.2.02.1508030847190.30782@pmeerw.net>
- <CAKzfze9ogwcNDw2P4WO1WefTJEuze+zkWVUGPCeFLhQrE6nb=g@mail.gmail.com>
- <20150804203537.GA22584@localhost.localdomain>
- <CAKzfze8uxGRv=GuTLYCDbZqw4yzF=V1935jfeM8M96sN7T-Oww@mail.gmail.com>
+Received: from mail-la0-f46.google.com ([209.85.215.46]:32931 "EHLO
+	mail-la0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750966AbbHEId1 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 5 Aug 2015 04:33:27 -0400
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <CAKzfze8uxGRv=GuTLYCDbZqw4yzF=V1935jfeM8M96sN7T-Oww@mail.gmail.com>
+In-Reply-To: <20150804173417.GN15004@beef>
+References: <1438635410-3757-1-git-send-email-mporter@konsulko.com>
+	<897A4C3B-DF7E-4AEE-A117-00CCB510F4DD@jic23.retrosnub.co.uk>
+	<20150804173417.GN15004@beef>
+Date: Wed, 5 Aug 2015 11:33:25 +0300
+Message-ID: <CAEnQRZCh7+z9=rvP9znwggzF2-xOSrrD=LeuW9wHMXdt47WtSw@mail.gmail.com>
+Subject: Re: [PATCH 0/3] MAX6675 IIO temperature driver
+From: Daniel Baluta <daniel.baluta@gmail.com>
+To: Matt Porter <mporter@konsulko.com>
+Cc: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>,
+	Linux IIO List <linux-iio@vger.kernel.org>,
+	Devicetree List <devicetree@vger.kernel.org>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Rob Herring <robh+dt@kernel.org>,
+	Mark Rutland <mark.rutland@arm.com>,
+	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Tue, Aug 04, 2015 at 06:45:22PM -0700, Matt Ranostay wrote:
-> On Tue, Aug 4, 2015 at 1:35 PM, Tristan Lelong <tristan@lelong.xyz> wrote:
-> > On Mon, Aug 03, 2015 at 01:21:08AM -0700, Matt Ranostay wrote:
-> >> On Sun, Aug 2, 2015 at 11:48 PM, Peter Meerwald <pmeerw@pmeerw.net> wrote:
-> >> > On Sun, 2 Aug 2015, Matt Ranostay wrote:
-> >> >
-> >> >> +
-> >> >> +static int lidar_get_measurement(struct lidar_data *data, u16 *reg)
-> >> >> +{
-> >> >> +     struct i2c_client *client = data->client;
-> >> >> +     int tries = 10;
-> >> >> +     int ret;
-> >> >> +
-> >> >> +     /* start sample */
-> >> >> +     ret = lidar_write_control(data, LIDAR_REG_CONTROL_ACQUIRE);
-> >> >> +     if (ret < 0) {
-> >> >> +             dev_err(&client->dev, "cannot send start measurement command");
-> >> >> +             return ret;
-> >> >> +     }
-> >> >> +
-> >> >> +     while (tries--) {
-> >> >> +             usleep_range(1000, 2000);
-> >> >> +
-> >> >> +             ret = lidar_read_byte(data, LIDAR_REG_STATUS);
-> >> >> +             if (ret < 0)
-> >> >> +                     break;
-> >> >> +
-> >> >> +             /* return 0 since laser is likely pointed out of range */
-> >> >> +             if (ret & LIDAR_REG_STATUS_INVALID) {
-> >> >> +                     *reg = 0;
-> >> >> +                     ret = 0;
-> >> >> +                     break;
-> >> >> +             }
-> >> >> +
-> >> >> +             /* sample ready to read */
-> >> >> +             if (!(ret & LIDAR_REG_STATUS_READY)) {
-> >> >> +                     ret = lidar_read_measurement(data, reg);
-> >> >> +                     break;
-> >> >> +             }
-> >> >> +     }
-> >> >> +
-> >> >
-> >> > what happens when the timeout occurs?
-> >> > no error code is set
-> >>
-> >> Ah yes it should return an error code.  Would a -EIO be a logical choice?
-> >>
-> >
-> > I would think -ETIMEDOUT to make more sense here.
-> 
-> Isn't that more applicable for a networking driver to use?
+On Tue, Aug 4, 2015 at 8:34 PM, Matt Porter <mporter@konsulko.com> wrote:
+> On Tue, Aug 04, 2015 at 05:52:17PM +0100, Jonathan Cameron wrote:
+>>
+>>
+>> On 3 August 2015 21:56:47 BST, Matt Porter <mporter@konsulko.com> wrote:
+>> >This series adds a driver for the MAX6675 SPI thermocouple converter.
+>> >The device supports temperature measurements via type-K thermocouples
+>> >and implements cold-junction compensation within the part. The
+>> >datasheet
+>> >can be found at http://datasheets.maximintegrated.com/en/ds/MAX6675.pdf
+>> For a device like this where perhaps it's position wrt iio/hwmon boundary is unclear
+>> I want to see an argument for why IIO makes more sense in the cover letter + cc
+>>  at least the hwmon MAINTAINERS if not the list...
+>
+> Will do. Just to summarize here, the typical use case for this type of
+> thermocouple converter involves sample rates that are relatively high
+> compared to what the hwmon interface can support. The upcoming hrtimer
+> trigger will match up well with this to support fine-grained
+> periodic samples. I'll add this in the v2 cover latter.
 
-IMHO this error code is generic and should be used when a certain operation doesn't provide any result after a determined period of time. 
-In your case, no measurement is available after 10 to 20 msec.
+Are we talking about this hrtimer trigger patches:
 
-It is used in other iio drivers on similar use cases,
-Although it often comes after wait_for_completion_timeout, the scenario is pretty similar:
-- start measurement
-- wait for measure to be ready
+http://marc.info/?l=linux-iio&m=143109196107382&w=2
 
-Regards
+Right? I've been busy with some other things, but I hope to have a
+final version by Sunday :).
+
+thanks,
+Daniel.
