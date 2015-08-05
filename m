@@ -1,88 +1,77 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp-out-232.synserver.de ([212.40.185.232]:1057 "EHLO
-	smtp-out-230.synserver.de" rhost-flags-OK-OK-OK-FAIL)
-	by vger.kernel.org with ESMTP id S1751861AbbHENij (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 5 Aug 2015 09:38:39 -0400
-From: Lars-Peter Clausen <lars@metafoo.de>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Hartmut Knaack <knaack.h@gmx.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>, linux-iio@vger.kernel.org,
-	Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH 8/9] iio: adis16400: Add ADIS16445 support
-Date: Wed,  5 Aug 2015 15:38:20 +0200
-Message-Id: <1438781901-28000-9-git-send-email-lars@metafoo.de>
-In-Reply-To: <1438781901-28000-1-git-send-email-lars@metafoo.de>
-References: <1438781901-28000-1-git-send-email-lars@metafoo.de>
+Received: from 19pmail.ess.barracuda.com ([64.235.154.230]:38494 "EHLO
+	19pmail.ess.barracuda.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751305AbbHEXIw convert rfc822-to-8bit (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 5 Aug 2015 19:08:52 -0400
+From: Greg Wilson-Lindberg <GWilson@sakuraus.com>
+To: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Date: Wed, 5 Aug 2015 16:07:32 -0700
+Subject: RE: BBB IIO ADC access not working
+Message-ID: <782E3A02C2EB2347BEA6DEA69DC7AB86021D3CB090F6@sfamail.SAKURAUS.LOCAL>
+References: <782E3A02C2EB2347BEA6DEA69DC7AB86021D3CB08DDB@sfamail.SAKURAUS.LOCAL>
+In-Reply-To: <782E3A02C2EB2347BEA6DEA69DC7AB86021D3CB08DDB@sfamail.SAKURAUS.LOCAL>
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-The ADIS16445 is similar to the ADIS16448, but without the magnetometer and
-pressure channels as well as different scale factors for the gyroscope and
-accelerometer outputs.
-
-Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
----
- drivers/iio/imu/adis16400_core.c | 26 ++++++++++++++++++++++++++
- 1 file changed, 26 insertions(+)
-
-diff --git a/drivers/iio/imu/adis16400_core.c b/drivers/iio/imu/adis16400_core.c
-index a9f4043..abc4c50 100644
---- a/drivers/iio/imu/adis16400_core.c
-+++ b/drivers/iio/imu/adis16400_core.c
-@@ -141,6 +141,7 @@ enum adis16400_chip_variant {
- 	ADIS16364,
- 	ADIS16367,
- 	ADIS16400,
-+	ADIS16445,
- 	ADIS16448,
- };
  
-@@ -623,6 +624,17 @@ static const struct iio_chan_spec adis16400_channels[] = {
- 	IIO_CHAN_SOFT_TIMESTAMP(ADIS16400_SCAN_TIMESTAMP),
- };
- 
-+static const struct iio_chan_spec adis16445_channels[] = {
-+	ADIS16400_GYRO_CHAN(X, ADIS16400_XGYRO_OUT, 16),
-+	ADIS16400_GYRO_CHAN(Y, ADIS16400_YGYRO_OUT, 16),
-+	ADIS16400_GYRO_CHAN(Z, ADIS16400_ZGYRO_OUT, 16),
-+	ADIS16400_ACCEL_CHAN(X, ADIS16400_XACCL_OUT, 16),
-+	ADIS16400_ACCEL_CHAN(Y, ADIS16400_YACCL_OUT, 16),
-+	ADIS16400_ACCEL_CHAN(Z, ADIS16400_ZACCL_OUT, 16),
-+	ADIS16400_TEMP_CHAN(ADIS16448_TEMP_OUT, 12),
-+	IIO_CHAN_SOFT_TIMESTAMP(ADIS16400_SCAN_TIMESTAMP),
-+};
-+
- static const struct iio_chan_spec adis16448_channels[] = {
- 	ADIS16400_GYRO_CHAN(X, ADIS16400_XGYRO_OUT, 16),
- 	ADIS16400_GYRO_CHAN(Y, ADIS16400_YGYRO_OUT, 16),
-@@ -788,6 +800,19 @@ static struct adis16400_chip_info adis16400_chips[] = {
- 		.set_freq = adis16400_set_freq,
- 		.get_freq = adis16400_get_freq,
- 	},
-+	[ADIS16445] = {
-+		.channels = adis16445_channels,
-+		.num_channels = ARRAY_SIZE(adis16445_channels),
-+		.flags = ADIS16400_HAS_PROD_ID |
-+				ADIS16400_HAS_SERIAL_NUMBER |
-+				ADIS16400_BURST_DIAG_STAT,
-+		.gyro_scale_micro = IIO_DEGREE_TO_RAD(10000), /* 0.01 deg/s */
-+		.accel_scale_micro = IIO_G_TO_M_S_2(250), /* 1/4000 g */
-+		.temp_scale_nano = 73860000, /* 0.07386 C */
-+		.temp_offset = 31000000 / 73860, /* 31 C = 0x00 */
-+		.set_freq = adis16334_set_freq,
-+		.get_freq = adis16334_get_freq,
-+	},
- 	[ADIS16448] = {
- 		.channels = adis16448_channels,
- 		.num_channels = ARRAY_SIZE(adis16448_channels),
-@@ -952,6 +977,7 @@ static const struct spi_device_id adis16400_id[] = {
- 	{"adis16367", ADIS16367},
- 	{"adis16400", ADIS16400},
- 	{"adis16405", ADIS16400},
-+	{"adis16445", ADIS16445},
- 	{"adis16448", ADIS16448},
- 	{}
- };
--- 
-2.1.4
+Hi Jonathan,
+I modified my code to only read the ADC channels once a second, and it is still
+locking up the touch screen, although if takes longer now.
 
+Again, any insight on what might be happening would be appreciated.
+
+Regards,
+Greg
+
+> -----Original Message-----
+> From: linux-iio-owner@vger.kernel.org 
+> [mailto:linux-iio-owner@vger.kernel.org] On Behalf Of Greg 
+> Wilson-Lindberg
+> Sent: Friday, July 31, 2015 2:16 PM
+> To: linux-iio@vger.kernel.org
+> Subject: BBB IIO ADC access not working
+> 
+> Hi Jonathan,
+> To recap my current problems, we are using all 3 of the ADC 
+> channels that are unused by the BBB for our system. One 
+> channel has an analog mux on it to allow selecting between 2 
+> input pots. The other two channels are hooked up to pressure 
+> transducers.
+>  
+> I'm processing the channels in a routine that gets called 
+> from a timer every 100ms. I enable the IIO buffer to collect 
+> data and 100ms later read the samples and turn the buffer off 
+> again. I leave the buffer off for 400 ms and then go through 
+> the process again.  I do this enable, read, disable cycle to 
+> allow the touch screen enough time to gather data to properly 
+> handle touch screen events.
+>  
+> With this setup the system will work properly for a few 
+> seconds, and then the buffer/adc read process slows down so 
+> that it takes more than 2 seconds to process the two enable, 
+> read, disable cycles in my read state machine. When the slow 
+> down happens, the touch screen stops responding, and even 
+> mouse presses stop working, although the mouse pointer did 
+> continue to follow mouse movements and the screen continued 
+> to update properly.
+> 
+> Because of the size of the code I've posted it on pastebin: 
+> http://pastebin.com/TDRS1nu7 instead of including it here.
+> 
+> This is running on a Jessie debian system build from Robert 
+> C. Nelson, based on the 3.18 kernel.
+> 
+> I hope that you or someone else on the list can help me 
+> understand what is going on.
+>  
+> Greg Wilson-Lindberg
+> Sakura Finetek
+> 310-783-5075
+> --
+> To unsubscribe from this list: send the line "unsubscribe 
+> linux-iio" in the body of a message to 
+> majordomo@vger.kernel.org More majordomo info at  
+> http://vger.kernel.org/majordomo-info.html
+> 
