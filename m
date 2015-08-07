@@ -1,33 +1,38 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp-out-018.synserver.de ([212.40.185.18]:1178 "EHLO
-	smtp-out-239.synserver.de" rhost-flags-OK-OK-OK-FAIL)
-	by vger.kernel.org with ESMTP id S1753060AbbHFS7J (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 6 Aug 2015 14:59:09 -0400
-Message-ID: <55C3AE79.7000708@metafoo.de>
-Date: Thu, 06 Aug 2015 20:59:05 +0200
-From: Lars-Peter Clausen <lars@metafoo.de>
+Received: from mail-ig0-f196.google.com ([209.85.213.196]:35562 "EHLO
+	mail-ig0-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752671AbbHGDzt (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 6 Aug 2015 23:55:49 -0400
 MIME-Version: 1.0
-To: Linus Walleij <linus.walleij@linaro.org>,
-	Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
-CC: Jonathan Cameron <jic23@kernel.org>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	Denis Ciocca <denis.ciocca@st.com>
-Subject: Re: [PATCH] iio: st_common: use standard trigger suffix
-References: <1438766895-15824-1-git-send-email-linus.walleij@linaro.org>	<9F97DF0A-7CD3-4A1B-8B41-9B060A080F47@jic23.retrosnub.co.uk> <CACRpkdauLeQbVpOiN3G6dttRKrhV4yyu_K-how-hHHXjSQN9dA@mail.gmail.com>
-In-Reply-To: <CACRpkdauLeQbVpOiN3G6dttRKrhV4yyu_K-how-hHHXjSQN9dA@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <55C0722C.7080904@metafoo.de>
+References: <CAKfKVtGTO81wLWk50M303t2WjcBEMEt_LUnsJ3_WmvR_3izUjg@mail.gmail.com>
+	<1437434050-32907-1-git-send-email-xander.huff@ni.com>
+	<55B231DE.4080308@metafoo.de>
+	<CAKfKVtGegy2P_YWQAtKEzByN-+q+bq=uus4zNvO4sghXRjpGPQ@mail.gmail.com>
+	<55C0722C.7080904@metafoo.de>
+Date: Fri, 7 Aug 2015 09:25:48 +0530
+Message-ID: <CAKfKVtHPYqB1zjRad2=_xe9LEAuWs8PipNHHC5eUfW=XwChT2A@mail.gmail.com>
+Subject: Re: [PATCH v3] iio: adc: xilinx-xadc: Push interrupts into threaded context
+From: Shubhrajyoti Datta <shubhrajyoti.datta@gmail.com>
+To: Lars-Peter Clausen <lars@metafoo.de>
+Cc: Xander Huff <xander.huff@ni.com>, jic23@kernel.org,
+	bigeasy@linutronix.de, knaack.h@gmx.de,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Michal Simek <michal.simek@xilinx.com>,
+	=?UTF-8?Q?S=C3=B6ren_Brinkmann?= <soren.brinkmann@xilinx.com>,
+	linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	linux-rt-users@vger.kernel.org, linux-kernel@vger.kernel.org,
+	joe.hershberger@ni.com, joshc@ni.com, nathan.sullivan@ni.com,
+	jaeden.amero@ni.com
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 08/06/2015 05:03 PM, Linus Walleij wrote:
-[..]
-> I don't know if it's a problem with generic_buffer though, is there
-> another userspace that everyone is using without telling me?
-
-Try libiio[1] and the iio_readdev[2] tool or the IIO scope[3].
-
-- Lars
-
-[1] https://github.com/analogdevicesinc/libiio
-[2] https://github.com/analogdevicesinc/libiio/blob/master/tests/iio_readdev.c
-[3] https://github.com/analogdevicesinc/iio-oscilloscope
+On Tue, Aug 4, 2015 at 1:35 PM, Lars-Peter Clausen <lars@metafoo.de> wrote:
+>
+> Well there is no need to use a threaded IRQ. The interrupt handler is quite
+> small and doesn't take too much time and doesn't have any delays or sleeps
+> in it either.
+>
+>
+Ok thanks for the explanation.
