@@ -1,52 +1,29 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp-out-038.synserver.de ([212.40.185.38]:1032 "EHLO
-	smtp-out-038.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752136AbbHGLiu (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 7 Aug 2015 07:38:50 -0400
-Message-ID: <55C498C2.1070709@metafoo.de>
-Date: Fri, 07 Aug 2015 13:38:42 +0200
+Return-Path: <lars@metafoo.de>
+Message-ID: <55C4B5CB.9060400@metafoo.de>
+Date: Fri, 07 Aug 2015 15:42:35 +0200
 From: Lars-Peter Clausen <lars@metafoo.de>
 MIME-Version: 1.0
-To: Dan Carpenter <dan.carpenter@oracle.com>,
-	Daniel Baluta <daniel.baluta@gmail.com>
-CC: =?windows-1252?Q?ayb=FCke_=F6zdemir?= <aybuke.147@gmail.com>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Subject: Re: staging: iio: accel: Use __be16 instead of u16
-References: <20150715193650.GA28245@mwanda> <CAEnQRZC6-4n7ZUi0PPiQ2bG-c1P3fADn6CmyYLmHa2NbWVeaJg@mail.gmail.com> <20150807112733.GI5096@mwanda>
-In-Reply-To: <20150807112733.GI5096@mwanda>
+To: Vladimir Barinov <vladimir.barinov@cogentembedded.com>,
+ Jonathan Cameron <jic23@kernel.org>
+CC: Hartmut Knaack <knaack.h@gmx.de>, Peter Meerwald <pmeerw@pmeerw.net>,
+ Rob Herring <robh+dt@kernel.org>,
+ Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>,
+ Ian Campbell <ijc+devicetree@hellion.org.uk>,
+ Kumar Gala <galak@codeaurora.org>, linux-kernel@vger.kernel.org,
+ linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+ cory.tusar@pid1solutions.com, Daniel Baluta <daniel.baluta@intel.com>
+Subject: Re: [PATCH v3 4/7] iio: trigger: Add periodic polling to SYSFS trigger
+References: <1438174469-19054-1-git-send-email-vladimir.barinov@cogentembedded.com> <1438174642-19258-1-git-send-email-vladimir.barinov@cogentembedded.com>
+In-Reply-To: <1438174642-19258-1-git-send-email-vladimir.barinov@cogentembedded.com>
 Content-Type: text/plain; charset=windows-1252
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+List-ID: <linux-iio@vger.kernel.org>
 
-On 08/07/2015 01:27 PM, Dan Carpenter wrote:
-> On Fri, Aug 07, 2015 at 01:59:40PM +0300, Daniel Baluta wrote:
->>>    119          for (i = 0; i < num_read; i++)
->>>    120                  *(((u16 *)rx) + i) = be16_to_cpup((__be16 *)rx + i);
->>>                           ^^^^^^^^^^^^^^^
->>>
->>> We're writing beyond the end of the array here because of the pointer
->>> math issue.  The fix is probably to say:
->>>
->>>                 for (i = 0; i < num_read / sizeof(u16); i++)
->>>                         *(((u16 *)rx) + i) = be16_to_cpup((__be16 *)rx + i);
->>>
->>>    121
->>>    122          if (copy_to_user(buf, rx, num_read))
->>>    123                  ret = -EFAULT;
->>
->> Looks good to me. Please send a formal patch.
-> 
-> It's weird that no one has noticed this bug in testing because we end
-> up corrupting memory every time this function is called.
+On 07/29/2015 02:57 PM, Vladimir Barinov wrote:
+> Add periodic polling functionality to SYSFS trigger
 
-The buffers are probably smaller than the minimum allocation size so there
-is a bit of unused space after the buffer and overwriting it will not result
-in a corruption of used memory and nobody ever noticed.
+Daniel's hrtimer trigger should be used for this instead of modifying the
+sysfs trigger timer. See https://lkml.org/lkml/2015/5/8/367
 
-But in any way we should just drop the endianness conversion in kernelspace
-and advertise the data as big-endian to userspace.
+He said he'll send out a new version shortly.
 
 - Lars
-
