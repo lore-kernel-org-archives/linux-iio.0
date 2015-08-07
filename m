@@ -1,54 +1,64 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-lb0-f176.google.com ([209.85.217.176]:34542 "EHLO
-	mail-lb0-f176.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750718AbbHGJha (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 7 Aug 2015 05:37:30 -0400
-Received: by lbbtg9 with SMTP id tg9so19772081lbb.1
-        for <linux-iio@vger.kernel.org>; Fri, 07 Aug 2015 02:37:29 -0700 (PDT)
-From: Linus Walleij <linus.walleij@linaro.org>
-To: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org
-Cc: Linus Walleij <linus.walleij@linaro.org>
-Subject: [PATCH] iio: generic_buffer: be helpful about enabling channels
-Date: Fri,  7 Aug 2015 11:37:25 +0200
-Message-Id: <1438940245-18998-1-git-send-email-linus.walleij@linaro.org>
+Received: from aserp1040.oracle.com ([141.146.126.69]:45903 "EHLO
+	aserp1040.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752092AbbHGKrg (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 7 Aug 2015 06:47:36 -0400
+Date: Fri, 7 Aug 2015 13:47:18 +0300
+From: Dan Carpenter <dan.carpenter@oracle.com>
+To: aybuke.147@gmail.com
+Cc: Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>, linux-iio@vger.kernel.org
+Subject: Re: staging: iio: accel: Use __be16 instead of u16
+Message-ID: <20150807104718.GH5096@mwanda>
+References: <20150715193650.GA28245@mwanda>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <20150715193650.GA28245@mwanda>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Currently if generic_buffer is invoked without first enabling any
-channels in scan_elements/*_en, it will fail unable to enable the
-buffer because bytes_per_datum inside the kernel will be zero if
-no channels are available.
+Ping!
 
-It is implied that the user of the program should enable channels
-manually or with a script before executing generic_buffer.
+regards,
+dan carpenter
 
-Be more helpful by stopping execution if no enabled channels can
-be found, and print a helptext that will tell you what is wrong
-and what needs to be done.
-
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
----
- tools/iio/generic_buffer.c | 7 +++++++
- 1 file changed, 7 insertions(+)
-
-diff --git a/tools/iio/generic_buffer.c b/tools/iio/generic_buffer.c
-index 4eebb6616e5c..10a74ca6818b 100644
---- a/tools/iio/generic_buffer.c
-+++ b/tools/iio/generic_buffer.c
-@@ -299,6 +299,13 @@ int main(int argc, char **argv)
- 		printf("diag %s\n", dev_dir_name);
- 		goto error_free_triggername;
- 	}
-+	if (!num_channels) {
-+		printf("No channels are enabled, we have nothing to scan.\n");
-+		printf("Enable channels manually in " FORMAT_SCAN_ELEMENTS_DIR
-+		       "/*_en and try again.\n", dev_dir_name);
-+		ret = -ENOENT;
-+		goto error_free_triggername;
-+	}
- 
- 	/*
- 	 * Construct the directory name for the associated buffer.
--- 
-2.4.3
-
+On Wed, Jul 15, 2015 at 10:36:51PM +0300, Dan Carpenter wrote:
+> Hello Aybuke Ozdemir,
+> 
+> The patch 03c6eaa37ad7: "staging: iio: accel: Use __be16 instead of
+> u16" from Sep 28, 2014, leads to the following static checker warning:
+> 
+> 	drivers/staging/iio/accel/sca3000_ring.c:120 sca3000_read_first_n_hw_rb()
+> 	warn: potential pointer math issue ('rx' is a 16 bit pointer)
+> 
+> drivers/staging/iio/accel/sca3000_ring.c
+>    107           */
+>    108          if (count > num_available * bytes_per_sample)
+>    109                  num_read = num_available*bytes_per_sample;
+>    110          else
+>    111                  num_read = count;
+>    112  
+>    113          ret = sca3000_read_data(st,
+>    114                                  SCA3000_REG_ADDR_RING_OUT,
+>    115                                  &rx, num_read);
+>    116          if (ret)
+>    117                  goto error_ret;
+>    118  
+>    119          for (i = 0; i < num_read; i++)
+>    120                  *(((u16 *)rx) + i) = be16_to_cpup((__be16 *)rx + i);
+>                           ^^^^^^^^^^^^^^^
+> 
+> We're writing beyond the end of the array here because of the pointer
+> math issue.  The fix is probably to say:
+> 
+> 		for (i = 0; i < num_read / sizeof(u16); i++)
+> 			*(((u16 *)rx) + i) = be16_to_cpup((__be16 *)rx + i);
+> 
+>    121  
+>    122          if (copy_to_user(buf, rx, num_read))
+>    123                  ret = -EFAULT;
+> 
+> 
+> regards,
+> dan carpenter
