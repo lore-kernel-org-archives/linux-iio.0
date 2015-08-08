@@ -1,67 +1,76 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:57951 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:57964 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754097AbbHHLZK (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 8 Aug 2015 07:25:10 -0400
-Subject: Re: [PATCH v2 7/7] iio:accel:stk8312: drop local buffer
-To: Hartmut Knaack <knaack.h@gmx.de>, linux-iio@vger.kernel.org
-References: <cover.1438204273.git.knaack.h@gmx.de>
- <f3fe313ea881ad695de6b088b60cd7efbe0cc38d.1438204273.git.knaack.h@gmx.de>
-Cc: Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	Tiberiu Breana <tiberiu.a.breana@intel.com>
+	with ESMTP id S1754249AbbHHL1a (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 8 Aug 2015 07:27:30 -0400
+Subject: Re: [PATCH V2] iio: declare struct to fix warning
+To: Daniel Baluta <daniel.baluta@gmail.com>,
+	Pengyu Ma <pengyu.ma@windriver.com>
+References: <1438569580-3712-1-git-send-email-pengyu.ma@windriver.com>
+ <CAEnQRZDF=1Dec85yyMT0AEMEct_V4DFOK6vXpUi2UjMdZFrQMg@mail.gmail.com>
+ <55C073A7.10907@windriver.com>
+ <CAEnQRZA0wm=LB1mn_h-uKY=6XD+xMo7Q=-CGF+QAC08A4RDnCg@mail.gmail.com>
+Cc: Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <55C5E714.2050009@kernel.org>
-Date: Sat, 8 Aug 2015 12:25:08 +0100
+Message-ID: <55C5E7A0.5050902@kernel.org>
+Date: Sat, 8 Aug 2015 12:27:28 +0100
 MIME-Version: 1.0
-In-Reply-To: <f3fe313ea881ad695de6b088b60cd7efbe0cc38d.1438204273.git.knaack.h@gmx.de>
-Content-Type: text/plain; charset=windows-1252
+In-Reply-To: <CAEnQRZA0wm=LB1mn_h-uKY=6XD+xMo7Q=-CGF+QAC08A4RDnCg@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 29/07/15 22:39, Hartmut Knaack wrote:
-> Drop the local buffer in stk8312_trigger_handler() and use data->buffer
-> instead for bulk reads.
+On 04/08/15 09:14, Daniel Baluta wrote:
+> On Tue, Aug 4, 2015 at 11:11 AM, Pengyu Ma <pengyu.ma@windriver.com> wrote:
+>>
+>>
+>> On 08/04/2015 04:03 PM, Daniel Baluta wrote:
+>>>
+>>> On Mon, Aug 3, 2015 at 5:39 AM, Pengyu Ma <pengyu.ma@windriver.com> wrote:
+>>>>
+>>>> When compile iio related driver the following warning shown:
+>>>>
+>>>> include/linux/iio/trigger.h:35:34: warning: 'struct iio_trigger'
+>>>> declared inside parameter list
+>>>>    int (*set_trigger_state)(struct iio_trigger *trig, bool state);
+>>>>
+>>>> include/linux/iio/trigger.h:38:18: warning: 'struct iio_dev'
+>>>> declared inside parameter list
+>>>>             struct iio_dev *indio_dev);
+>>>>
+>>>> 'struct iio_dev' and 'struct iio_trigger' was used before declaration,
+>>>> forward declaration for these structs to fix warning.
+>>>>
+>>>> Signed-off-by: Pengyu Ma <pengyu.ma@windriver.com>
+>>>> ---
+>>>>   include/linux/iio/trigger.h | 4 ++++
+>>>>   1 file changed, 4 insertions(+)
+>>>>
+>>>> diff --git a/include/linux/iio/trigger.h b/include/linux/iio/trigger.h
+>>>> index fa76c79..974cf73 100644
+>>>> --- a/include/linux/iio/trigger.h
+>>>> +++ b/include/linux/iio/trigger.h
+>>>> @@ -18,6 +18,10 @@ struct iio_subirq {
+>>>>          bool enabled;
+>>>>   };
+>>>>
+>>>> +/* forward declaration */
+>>>
+>>> I would remove this comment. It doesn't says much.
+>>
+>> OK, Do I need a v3 review or you apply it with your modification directly?
 > 
-> Signed-off-by: Hartmut Knaack <knaack.h@gmx.de>
-> Reviewed-by: Tiberiu Breana <tiberiu.a.breana@intel.com>
-Applied.
+> Please send v3, Jonathan will appreciate this :).
+I will indeed ;)
 
 Thanks,
-
-Jonathan
-> ---
->  drivers/iio/accel/stk8312.c | 6 +-----
->  1 file changed, 1 insertion(+), 5 deletions(-)
 > 
-> diff --git a/drivers/iio/accel/stk8312.c b/drivers/iio/accel/stk8312.c
-> index 39eb9f4ea5c0..c88baabe08e7 100644
-> --- a/drivers/iio/accel/stk8312.c
-> +++ b/drivers/iio/accel/stk8312.c
-> @@ -435,7 +435,6 @@ static irqreturn_t stk8312_trigger_handler(int irq, void *p)
->  	struct iio_dev *indio_dev = pf->indio_dev;
->  	struct stk8312_data *data = iio_priv(indio_dev);
->  	int bit, ret, i = 0;
-> -	u8 buffer[STK8312_ALL_CHANNEL_SIZE];
->  
->  	mutex_lock(&data->lock);
->  	/*
-> @@ -446,15 +445,12 @@ static irqreturn_t stk8312_trigger_handler(int irq, void *p)
->  		ret = i2c_smbus_read_i2c_block_data(data->client,
->  						    STK8312_REG_XOUT,
->  						    STK8312_ALL_CHANNEL_SIZE,
-> -						    buffer);
-> +						    data->buffer);
->  		if (ret < STK8312_ALL_CHANNEL_SIZE) {
->  			dev_err(&data->client->dev, "register read failed\n");
->  			mutex_unlock(&data->lock);
->  			goto err;
->  		}
-> -		data->buffer[0] = buffer[0];
-> -		data->buffer[1] = buffer[1];
-> -		data->buffer[2] = buffer[2];
->  	} else {
->  		for_each_set_bit(bit, indio_dev->active_scan_mask,
->  				 indio_dev->masklength) {
+> thanks,
+> Daniel.
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
 > 
 
