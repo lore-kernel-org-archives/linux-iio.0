@@ -1,174 +1,93 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:59067 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:59081 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S964799AbbHHPa7 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 8 Aug 2015 11:30:59 -0400
-Subject: Re: [PATCH 1/2] iio:accel:bmc150-accel: Move bmc150_accel_chip_init()
+	with ESMTP id S1946737AbbHHPg1 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 8 Aug 2015 11:36:27 -0400
+Subject: Re: [PATCH 2/2] iio:accel:bmc150-accel: Use the chip ID to detect
+ sensor variant
 To: Bastien Nocera <hadess@hadess.net>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-References: <1437664859.2863.12.camel@hadess.net>
+	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+References: <1437664867.2863.13.camel@hadess.net> <55BE50D5.30905@kernel.org>
+ <1438632544.17718.46.camel@spandruv-DESK3.jf.intel.com>
+ <1438682293.22369.10.camel@hadess.net>
+Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	Octavian Purdila <octavian.purdila@intel.com>
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <55C620B0.4050709@kernel.org>
-Date: Sat, 8 Aug 2015 16:30:56 +0100
+Message-ID: <55C621F9.3070702@kernel.org>
+Date: Sat, 8 Aug 2015 16:36:25 +0100
 MIME-Version: 1.0
-In-Reply-To: <1437664859.2863.12.camel@hadess.net>
+In-Reply-To: <1438682293.22369.10.camel@hadess.net>
 Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 23/07/15 16:20, Bastien Nocera wrote:
-> Move bmc150_accel_chip_init() so that we can use
-> bmc150_accel_chip_info_tbl[] in it.
+On 04/08/15 10:58, Bastien Nocera wrote:
+> On Mon, 2015-08-03 at 13:09 -0700, Srinivas Pandruvada wrote:
+>> On Sun, 2015-08-02 at 18:18 +0100, Jonathan Cameron wrote:
+>>> On 23/07/15 16:21, Bastien Nocera wrote:
+>>>> Instead of using the I2C or ACPI ID to determine which variant of
+>>>> the chipset to use, determine that from the chip ID.
+>>>>
+>>>> Under Windows, the same driver is used for those variants and, 
+>>>> despite
+>>>> incorrect ACPI data, it is able to load and operate the 
+>>>> accelerometer.
+>>>>
+>>>> Fixes the accelerometer failing with:
+>>>> bmc150_accel i2c-BMA250E:00: Invalid chip f8
+>>>> on the WinBook TW100
+>>>>
+>>>> Signed-off-by: Bastien Nocera <hadess@hadess.net>
+>>> I'll start by saying I hate that this change is necessary down
+>>> at the driver level.
+>>>
+>>> Is there no way to catch it as an ACPI quirk? (I know next to 
+>>> nothing about
+>>> ACPI and a quick a google isn't pointing me in the right 
+>>> direction!)
+>>> Seems irritating that we have to deal with this but such is life I 
+>>> guess
+>>> (anyone want to take the bet that at some point the windows driver 
+>>> will break
+>>>  horribly as well for these machines?)
+>>>
+>>> Anyhow, Srinivas, could you also take a look at this one.
+>>>
+>>> I suppose I'll cope with the horribleness :)
+>> We have seen where manufactures replaces a part for some reason, 
+>> without
+>> modifying ACPI tables. So matching chip id makes sense logically. But
+>> even this is not fail proof. Some parts have same chip id with 
+>> different
+>> features (clones), in that case ACPI match makes more sense.
+>> There is a way to patch ACPI tables but that also need to be based on
+>> some DMI information.
+>> I am not aware of such issue with Bosch parts. So I think this would 
+>> be
+>> OK to use chip id here instead of acpi id here. But what about using
+>> this only when the current logic fails? In this way we can still have
+>> another entry in the table for clones, if required.
 > 
-> Signed-off-by: Bastien Nocera <hadess@hadess.net>
-Whilst it would be nice to have this in stable etc it's going to need
-some backporting.  For now I've applied it by hand to the togreg
-branch of iio.git (late in cycle so I'm wary of pushing this out
-in a fixes patchset).
+> For clones which don't advertise the right chip ID, I'd just have a
+> separate quirk table, "use this chip ID for that hardware".
+> 
+> Seems simpler, and I'm happy to write that code when we encounter the
+> problem.
+I'm convinced.  Applied to the togreg branch of iio.git (too large to push
+out as a fix at this point in the cycle as it's not fixing a regression).
 
-I have marked it as for stable, but it almost certainly won't apply as is.
-(or at least the chances of both applying is rather small!)
+Note that it didn't apply cleanly so please take a quick look to check
+I haven't messed it up!
+
+Will be pushed out as testing as soon as my local sanity check build is
+done so the autobuilders can hit it harder.
+
+Thanks,
 
 Jonathan
-> ---
->  drivers/iio/accel/bmc150-accel.c | 118 +++++++++++++++++++--------------------
->  1 file changed, 59 insertions(+), 59 deletions(-)
-> 
-> diff --git a/drivers/iio/accel/bmc150-accel.c b/drivers/iio/accel/bmc150-accel.c
-> index cc5a357..2ec9b56 100644
-> --- a/drivers/iio/accel/bmc150-accel.c
-> +++ b/drivers/iio/accel/bmc150-accel.c
-> @@ -345,65 +345,6 @@ static int bmc150_accel_any_motion_setup(struct bmc150_accel_trigger *t,
->  	return 0;
->  }
->  
-> -static int bmc150_accel_chip_init(struct bmc150_accel_data *data)
-> -{
-> -	int ret;
-> -
-> -	ret = i2c_smbus_read_byte_data(data->client, BMC150_ACCEL_REG_CHIP_ID);
-> -	if (ret < 0) {
-> -		dev_err(&data->client->dev,
-> -			"Error: Reading chip id\n");
-> -		return ret;
-> -	}
-> -
-> -	dev_dbg(&data->client->dev, "Chip Id %x\n", ret);
-> -	if (ret != data->chip_info->chip_id) {
-> -		dev_err(&data->client->dev, "Invalid chip %x\n", ret);
-> -		return -ENODEV;
-> -	}
-> -
-> -	ret = bmc150_accel_set_mode(data, BMC150_ACCEL_SLEEP_MODE_NORMAL, 0);
-> -	if (ret < 0)
-> -		return ret;
-> -
-> -	/* Set Bandwidth */
-> -	ret = bmc150_accel_set_bw(data, BMC150_ACCEL_DEF_BW, 0);
-> -	if (ret < 0)
-> -		return ret;
-> -
-> -	/* Set Default Range */
-> -	ret = i2c_smbus_write_byte_data(data->client,
-> -					BMC150_ACCEL_REG_PMU_RANGE,
-> -					BMC150_ACCEL_DEF_RANGE_4G);
-> -	if (ret < 0) {
-> -		dev_err(&data->client->dev,
-> -					"Error writing reg_pmu_range\n");
-> -		return ret;
-> -	}
-> -
-> -	data->range = BMC150_ACCEL_DEF_RANGE_4G;
-> -
-> -	/* Set default slope duration and thresholds */
-> -	data->slope_thres = BMC150_ACCEL_DEF_SLOPE_THRESHOLD;
-> -	data->slope_dur = BMC150_ACCEL_DEF_SLOPE_DURATION;
-> -	ret = bmc150_accel_update_slope(data);
-> -	if (ret < 0)
-> -		return ret;
-> -
-> -	/* Set default as latched interrupts */
-> -	ret = i2c_smbus_write_byte_data(data->client,
-> -					BMC150_ACCEL_REG_INT_RST_LATCH,
-> -					BMC150_ACCEL_INT_MODE_LATCH_INT |
-> -					BMC150_ACCEL_INT_MODE_LATCH_RESET);
-> -	if (ret < 0) {
-> -		dev_err(&data->client->dev,
-> -			"Error writing reg_int_rst_latch\n");
-> -		return ret;
-> -	}
-> -
-> -	return 0;
-> -}
-> -
->  static int bmc150_accel_get_bw(struct bmc150_accel_data *data, int *val,
->  			       int *val2)
->  {
-> @@ -1611,6 +1552,65 @@ static const struct iio_buffer_setup_ops bmc150_accel_buffer_ops = {
->  	.postdisable = bmc150_accel_buffer_postdisable,
->  };
->  
-> +static int bmc150_accel_chip_init(struct bmc150_accel_data *data)
-> +{
-> +	int ret;
-> +
-> +	ret = i2c_smbus_read_byte_data(data->client, BMC150_ACCEL_REG_CHIP_ID);
-> +	if (ret < 0) {
-> +		dev_err(&data->client->dev,
-> +			"Error: Reading chip id\n");
-> +		return ret;
-> +	}
-> +
-> +	dev_dbg(&data->client->dev, "Chip Id %x\n", ret);
-> +	if (ret != data->chip_info->chip_id) {
-> +		dev_err(&data->client->dev, "Invalid chip %x\n", ret);
-> +		return -ENODEV;
-> +	}
-> +
-> +	ret = bmc150_accel_set_mode(data, BMC150_ACCEL_SLEEP_MODE_NORMAL, 0);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	/* Set Bandwidth */
-> +	ret = bmc150_accel_set_bw(data, BMC150_ACCEL_DEF_BW, 0);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	/* Set Default Range */
-> +	ret = i2c_smbus_write_byte_data(data->client,
-> +					BMC150_ACCEL_REG_PMU_RANGE,
-> +					BMC150_ACCEL_DEF_RANGE_4G);
-> +	if (ret < 0) {
-> +		dev_err(&data->client->dev,
-> +					"Error writing reg_pmu_range\n");
-> +		return ret;
-> +	}
-> +
-> +	data->range = BMC150_ACCEL_DEF_RANGE_4G;
-> +
-> +	/* Set default slope duration and thresholds */
-> +	data->slope_thres = BMC150_ACCEL_DEF_SLOPE_THRESHOLD;
-> +	data->slope_dur = BMC150_ACCEL_DEF_SLOPE_DURATION;
-> +	ret = bmc150_accel_update_slope(data);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	/* Set default as latched interrupts */
-> +	ret = i2c_smbus_write_byte_data(data->client,
-> +					BMC150_ACCEL_REG_INT_RST_LATCH,
-> +					BMC150_ACCEL_INT_MODE_LATCH_INT |
-> +					BMC150_ACCEL_INT_MODE_LATCH_RESET);
-> +	if (ret < 0) {
-> +		dev_err(&data->client->dev,
-> +			"Error writing reg_int_rst_latch\n");
-> +		return ret;
-> +	}
-> +
-> +	return 0;
-> +}
-> +
->  static int bmc150_accel_probe(struct i2c_client *client,
->  			      const struct i2c_device_id *id)
->  {
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
 > 
 
