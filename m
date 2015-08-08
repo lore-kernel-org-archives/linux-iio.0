@@ -1,304 +1,317 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:59539 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:59547 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753358AbbHHRDP (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 8 Aug 2015 13:03:15 -0400
+	with ESMTP id S1751982AbbHHREh (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 8 Aug 2015 13:04:37 -0400
 Subject: Re: [PATCH V2 2/6] iio: Add tsys01 meas-spec driver support
 To: Ludovic Tancerel <ludovic.tancerel@maplehightech.com>,
 	knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
 	linux-iio@vger.kernel.org, William.Markezana@meas-spec.com
 References: <1438248345-25820-1-git-send-email-ludovic.tancerel@maplehightech.com>
  <1438248345-25820-3-git-send-email-ludovic.tancerel@maplehightech.com>
+ <55C63651.6090002@kernel.org>
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <55C63651.6090002@kernel.org>
-Date: Sat, 8 Aug 2015 18:03:13 +0100
+Message-ID: <55C636A4.7010401@kernel.org>
+Date: Sat, 8 Aug 2015 18:04:36 +0100
 MIME-Version: 1.0
-In-Reply-To: <1438248345-25820-3-git-send-email-ludovic.tancerel@maplehightech.com>
+In-Reply-To: <55C63651.6090002@kernel.org>
 Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 30/07/15 10:25, Ludovic Tancerel wrote:
-> Signed-off-by: Ludovic Tancerel <ludovic.tancerel@maplehightech.com>
-One little point inline (right at the end).
+On 08/08/15 18:03, Jonathan Cameron wrote:
+> On 30/07/15 10:25, Ludovic Tancerel wrote:
+>> Signed-off-by: Ludovic Tancerel <ludovic.tancerel@maplehightech.com>
+> One little point inline (right at the end).
+One more thing, could you mention the type of sensor in the patch title.
+Will make keeping track of which is which easier ;)
 
-Jonathan
-> ---
->  drivers/iio/temperature/Kconfig  |  11 ++
->  drivers/iio/temperature/Makefile |   1 +
->  drivers/iio/temperature/tsys01.c | 232 +++++++++++++++++++++++++++++++++++++++
->  3 files changed, 244 insertions(+)
->  create mode 100644 drivers/iio/temperature/tsys01.c
+Also a brief description of the part in a new driver patch is always good 
+(above the signed-off-by:)
 > 
-> diff --git a/drivers/iio/temperature/Kconfig b/drivers/iio/temperature/Kconfig
-> index 21feaa4..35712032 100644
-> --- a/drivers/iio/temperature/Kconfig
-> +++ b/drivers/iio/temperature/Kconfig
-> @@ -23,4 +23,15 @@ config TMP006
->  	  This driver can also be built as a module. If so, the module will
->  	  be called tmp006.
->  
-> +config TSYS01
-> +	tristate "Measurement Specialties TSYS01 temperature sensor using I2C bus connection"
-> +	depends on I2C
-> +	select IIO_MS_SENSORS_I2C
-> +	help
-> +	  If you say yes here you get support for the Measurement Specialties
-> +	  TSYS01 I2C temperature sensor.
-> +
-> +	  This driver can also be built as a module. If so, the module will
-> +	  be called tsys01.
-> +
->  endmenu
-> diff --git a/drivers/iio/temperature/Makefile b/drivers/iio/temperature/Makefile
-> index 40710a8..368a2a2 100644
-> --- a/drivers/iio/temperature/Makefile
-> +++ b/drivers/iio/temperature/Makefile
-> @@ -4,3 +4,4 @@
->  
->  obj-$(CONFIG_MLX90614) += mlx90614.o
->  obj-$(CONFIG_TMP006) += tmp006.o
-> +obj-$(CONFIG_TSYS01) += tsys01.o
-> diff --git a/drivers/iio/temperature/tsys01.c b/drivers/iio/temperature/tsys01.c
-> new file mode 100644
-> index 0000000..c863aaf
-> --- /dev/null
-> +++ b/drivers/iio/temperature/tsys01.c
-> @@ -0,0 +1,232 @@
-> +/*
-> + * tsys01.c - Support for Measurement-Specialties tsys01 temperature sensor
-> + *
-> + * Copyright (c) 2015 Measurement-Specialties
-> + *
-> + * Licensed under the GPL-2.
-> + *
-> + * Datasheet:
-> + *  http://www.meas-spec.com/downloads/TSYS01_Digital_Temperature_Sensor.pdf
-> + *
-> + */
-> +
-> +#include <linux/iio/iio.h>
-> +#include <linux/iio/sysfs.h>
-> +#include <linux/device.h>
-> +#include <linux/mutex.h>
-> +#include <linux/module.h>
-> +#include <linux/init.h>
-> +#include <linux/kernel.h>
-> +#include <linux/stat.h>
-> +#include "../common/ms_sensors/ms_sensors_i2c.h"
-> +
-> +/* TSYS01 Commands */
-> +#define TSYS01_RESET				0x1E
-> +#define TSYS01_CONVERSION_START			0x48
-> +#define TSYS01_ADC_READ				0x00
-> +#define TSYS01_PROM_READ			0xA0
-> +
-> +#define TSYS01_PROM_WORDS_NB			8
-> +
-> +struct tsys01_dev {
-> +	void *client;
-> +	struct mutex lock; /* lock during conversion */
-> +
-> +	int (*reset)(void *cli, u8 cmd, unsigned int delay);
-> +	int (*convert_and_read)(void *cli, u8 conv, u8 rd,
-> +				unsigned int delay, u32 *adc);
-> +	int (*read_prom_word)(void *cli, int cmd, u16 *word);
-> +
-> +	u16 prom[TSYS01_PROM_WORDS_NB];
-> +};
-> +
-> +/* Multiplication coefficients for temperature computation */
-> +static const int coeff_mul[] = { -1500000, 1000000, -2000000,
-> +				 4000000, -2000000 };
-> +
-> +static int tsys01_read_temperature(struct iio_dev *indio_dev,
-> +				   s32 *temperature)
-> +{
-> +	int ret, i;
-> +	u32 adc;
-> +	s64 temp = 0;
-> +	struct tsys01_dev *dev_data = iio_priv(indio_dev);
-> +
-> +	mutex_lock(&dev_data->lock);
-> +	ret = dev_data->convert_and_read(dev_data->client,
-> +					 TSYS01_CONVERSION_START,
-> +					 TSYS01_ADC_READ, 9000, &adc);
-> +	mutex_unlock(&dev_data->lock);
-> +	if (ret)
-> +		return ret;
-> +
-> +	adc >>= 8;
-> +
-> +	/* Temperature algorithm */
-> +	for (i = 4; i > 0; i--) {
-> +		temp += coeff_mul[i] *
-> +			(s64)dev_data->prom[5 - i];
-> +		temp *= (s64)adc;
-> +		temp = div64_s64(temp, 100000);
-> +	}
-> +	temp *= 10;
-> +	temp += coeff_mul[0] * (s64)dev_data->prom[5];
-> +	temp = div64_s64(temp, 100000);
-> +
-> +	*temperature = temp;
-> +
-> +	return 0;
-> +}
-> +
-> +static int tsys01_read_raw(struct iio_dev *indio_dev,
-> +			   struct iio_chan_spec const *channel, int *val,
-> +			   int *val2, long mask)
-> +{
-> +	int ret;
-> +	s32 temperature;
-> +
-> +	switch (mask) {
-> +	case IIO_CHAN_INFO_PROCESSED:
-> +		switch (channel->type) {
-> +		case IIO_TEMP:	/* in milli °C */
-> +			ret = tsys01_read_temperature(indio_dev, &temperature);
-> +			if (ret)
-> +				return ret;
-> +			*val = temperature;
-> +
-> +			return IIO_VAL_INT;
-> +		default:
-> +			return -EINVAL;
-> +		}
-> +	default:
-> +		return -EINVAL;
-> +	}
-> +}
-> +
-> +static const struct iio_chan_spec tsys01_channels[] = {
-> +	{
-> +		.type = IIO_TEMP,
-> +		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_PROCESSED),
-> +	}
-> +};
-> +
-> +static const struct iio_info tsys01_info = {
-> +	.read_raw = tsys01_read_raw,
-> +	.driver_module = THIS_MODULE,
-> +};
-> +
-> +static bool tsys01_crc_valid(u16 *n_prom)
-> +{
-> +	u8 cnt;
-> +	u8 sum = 0;
-> +
-> +	for (cnt = 0; cnt < TSYS01_PROM_WORDS_NB; cnt++)
-> +		sum += ((n_prom[0] >> 8) + (n_prom[0] & 0xFF));
-> +
-> +	return (sum == 0);
-> +}
-> +
-> +static int tsys01_read_prom(struct iio_dev *indio_dev)
-> +{
-> +	int i, ret;
-> +	struct tsys01_dev *dev_data = iio_priv(indio_dev);
-> +	char buf[7 * TSYS01_PROM_WORDS_NB + 1];
-> +	char *ptr = buf;
-> +
-> +	for (i = 0; i < TSYS01_PROM_WORDS_NB; i++) {
-> +		ret = dev_data->read_prom_word(dev_data->client,
-> +					       TSYS01_PROM_READ + (i << 1),
-> +					       &dev_data->prom[i]);
-> +		if (ret)
-> +			return ret;
-> +
-> +		ret = sprintf(ptr, "0x%04x ", dev_data->prom[i]);
-> +		ptr += ret;
-> +	}
-> +
-> +	if (!tsys01_crc_valid(dev_data->prom)) {
-> +		dev_err(&indio_dev->dev, "prom crc check error\n");
-> +		return -ENODEV;
-> +	}
-> +	*ptr = 0;
-> +	dev_info(&indio_dev->dev, "PROM coefficients : %s\n", buf);
-> +
-> +	return 0;
-> +}
-> +
-> +static int tsys01_probe(struct iio_dev *indio_dev, struct device *dev)
-> +{
-> +	int ret;
-> +	struct tsys01_dev *dev_data = iio_priv(indio_dev);
-> +
-> +	mutex_init(&dev_data->lock);
-> +
-> +	indio_dev->info = &tsys01_info;
-> +	indio_dev->name = dev->driver->name;
-> +	indio_dev->dev.parent = dev;
-> +	indio_dev->modes = INDIO_DIRECT_MODE;
-> +	indio_dev->channels = tsys01_channels;
-> +	indio_dev->num_channels = ARRAY_SIZE(tsys01_channels);
-> +
-> +	ret = dev_data->reset(dev_data->client, TSYS01_RESET, 3000);
-> +	if (ret)
-> +		return ret;
-> +
-> +	ret = tsys01_read_prom(indio_dev);
-> +	if (ret)
-> +		return ret;
-> +
-> +	return devm_iio_device_register(dev, indio_dev);
-> +}
-> +
-> +static int tsys01_i2c_probe(struct i2c_client *client,
-> +			    const struct i2c_device_id *id)
-> +{
-> +	struct tsys01_dev *dev_data;
-> +	struct iio_dev *indio_dev;
-> +
-> +	if (!i2c_check_functionality(client->adapter,
-> +				     I2C_FUNC_SMBUS_WORD_DATA |
-> +				     I2C_FUNC_SMBUS_WRITE_BYTE |
-> +				     I2C_FUNC_SMBUS_READ_I2C_BLOCK)) {
-> +		dev_err(&client->dev,
-> +			"Adapter does not support some i2c transaction\n");
-> +		return -ENODEV;
-> +	}
-> +
-> +	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*dev_data));
-> +	if (!indio_dev)
-> +		return -ENOMEM;
-> +
-> +	dev_data = iio_priv(indio_dev);
-> +	dev_data->client = client;
-> +	dev_data->reset = ms_sensors_i2c_reset;
-> +	dev_data->read_prom_word = ms_sensors_i2c_read_prom_word;
-> +	dev_data->convert_and_read = ms_sensors_i2c_convert_and_read;
-> +
-> +	i2c_set_clientdata(client, indio_dev);
-> +
-> +	return tsys01_probe(indio_dev, &client->dev);
-> +}
-> +
-> +static const struct i2c_device_id tsys01_id[] = {
-> +	{"tsys01", 0},
-> +	{}
-> +};
-> +MODULE_DEVICE_TABLE(i2c, tsys01_id);
-> +
-> +static struct i2c_driver tsys01_driver = {
-> +	.probe = tsys01_i2c_probe,
-> +	.id_table = tsys01_id,
-> +	.driver = {
-> +		   .name = "tsys01",
-> +		   .owner = THIS_MODULE,
-Don't need to assign the .owner anymore as i2c_register_driver
-(part of the module_i2c_driver macro) will do it.
-
-> +		   },
-> +};
-> +
-> +module_i2c_driver(tsys01_driver);
-> +
-> +MODULE_DESCRIPTION("Measurement-Specialties tsys01 temperature driver");
-> +MODULE_AUTHOR("William Markezana <william.markezana@meas-spec.com>");
-> +MODULE_AUTHOR("Ludovic Tancerel <ludovic.tancerel@maplehightech.com>");
-> +MODULE_LICENSE("GPL v2");
+> Jonathan
+>> ---
+>>  drivers/iio/temperature/Kconfig  |  11 ++
+>>  drivers/iio/temperature/Makefile |   1 +
+>>  drivers/iio/temperature/tsys01.c | 232 +++++++++++++++++++++++++++++++++++++++
+>>  3 files changed, 244 insertions(+)
+>>  create mode 100644 drivers/iio/temperature/tsys01.c
+>>
+>> diff --git a/drivers/iio/temperature/Kconfig b/drivers/iio/temperature/Kconfig
+>> index 21feaa4..35712032 100644
+>> --- a/drivers/iio/temperature/Kconfig
+>> +++ b/drivers/iio/temperature/Kconfig
+>> @@ -23,4 +23,15 @@ config TMP006
+>>  	  This driver can also be built as a module. If so, the module will
+>>  	  be called tmp006.
+>>  
+>> +config TSYS01
+>> +	tristate "Measurement Specialties TSYS01 temperature sensor using I2C bus connection"
+>> +	depends on I2C
+>> +	select IIO_MS_SENSORS_I2C
+>> +	help
+>> +	  If you say yes here you get support for the Measurement Specialties
+>> +	  TSYS01 I2C temperature sensor.
+>> +
+>> +	  This driver can also be built as a module. If so, the module will
+>> +	  be called tsys01.
+>> +
+>>  endmenu
+>> diff --git a/drivers/iio/temperature/Makefile b/drivers/iio/temperature/Makefile
+>> index 40710a8..368a2a2 100644
+>> --- a/drivers/iio/temperature/Makefile
+>> +++ b/drivers/iio/temperature/Makefile
+>> @@ -4,3 +4,4 @@
+>>  
+>>  obj-$(CONFIG_MLX90614) += mlx90614.o
+>>  obj-$(CONFIG_TMP006) += tmp006.o
+>> +obj-$(CONFIG_TSYS01) += tsys01.o
+>> diff --git a/drivers/iio/temperature/tsys01.c b/drivers/iio/temperature/tsys01.c
+>> new file mode 100644
+>> index 0000000..c863aaf
+>> --- /dev/null
+>> +++ b/drivers/iio/temperature/tsys01.c
+>> @@ -0,0 +1,232 @@
+>> +/*
+>> + * tsys01.c - Support for Measurement-Specialties tsys01 temperature sensor
+>> + *
+>> + * Copyright (c) 2015 Measurement-Specialties
+>> + *
+>> + * Licensed under the GPL-2.
+>> + *
+>> + * Datasheet:
+>> + *  http://www.meas-spec.com/downloads/TSYS01_Digital_Temperature_Sensor.pdf
+>> + *
+>> + */
+>> +
+>> +#include <linux/iio/iio.h>
+>> +#include <linux/iio/sysfs.h>
+>> +#include <linux/device.h>
+>> +#include <linux/mutex.h>
+>> +#include <linux/module.h>
+>> +#include <linux/init.h>
+>> +#include <linux/kernel.h>
+>> +#include <linux/stat.h>
+>> +#include "../common/ms_sensors/ms_sensors_i2c.h"
+>> +
+>> +/* TSYS01 Commands */
+>> +#define TSYS01_RESET				0x1E
+>> +#define TSYS01_CONVERSION_START			0x48
+>> +#define TSYS01_ADC_READ				0x00
+>> +#define TSYS01_PROM_READ			0xA0
+>> +
+>> +#define TSYS01_PROM_WORDS_NB			8
+>> +
+>> +struct tsys01_dev {
+>> +	void *client;
+>> +	struct mutex lock; /* lock during conversion */
+>> +
+>> +	int (*reset)(void *cli, u8 cmd, unsigned int delay);
+>> +	int (*convert_and_read)(void *cli, u8 conv, u8 rd,
+>> +				unsigned int delay, u32 *adc);
+>> +	int (*read_prom_word)(void *cli, int cmd, u16 *word);
+>> +
+>> +	u16 prom[TSYS01_PROM_WORDS_NB];
+>> +};
+>> +
+>> +/* Multiplication coefficients for temperature computation */
+>> +static const int coeff_mul[] = { -1500000, 1000000, -2000000,
+>> +				 4000000, -2000000 };
+>> +
+>> +static int tsys01_read_temperature(struct iio_dev *indio_dev,
+>> +				   s32 *temperature)
+>> +{
+>> +	int ret, i;
+>> +	u32 adc;
+>> +	s64 temp = 0;
+>> +	struct tsys01_dev *dev_data = iio_priv(indio_dev);
+>> +
+>> +	mutex_lock(&dev_data->lock);
+>> +	ret = dev_data->convert_and_read(dev_data->client,
+>> +					 TSYS01_CONVERSION_START,
+>> +					 TSYS01_ADC_READ, 9000, &adc);
+>> +	mutex_unlock(&dev_data->lock);
+>> +	if (ret)
+>> +		return ret;
+>> +
+>> +	adc >>= 8;
+>> +
+>> +	/* Temperature algorithm */
+>> +	for (i = 4; i > 0; i--) {
+>> +		temp += coeff_mul[i] *
+>> +			(s64)dev_data->prom[5 - i];
+>> +		temp *= (s64)adc;
+>> +		temp = div64_s64(temp, 100000);
+>> +	}
+>> +	temp *= 10;
+>> +	temp += coeff_mul[0] * (s64)dev_data->prom[5];
+>> +	temp = div64_s64(temp, 100000);
+>> +
+>> +	*temperature = temp;
+>> +
+>> +	return 0;
+>> +}
+>> +
+>> +static int tsys01_read_raw(struct iio_dev *indio_dev,
+>> +			   struct iio_chan_spec const *channel, int *val,
+>> +			   int *val2, long mask)
+>> +{
+>> +	int ret;
+>> +	s32 temperature;
+>> +
+>> +	switch (mask) {
+>> +	case IIO_CHAN_INFO_PROCESSED:
+>> +		switch (channel->type) {
+>> +		case IIO_TEMP:	/* in milli °C */
+>> +			ret = tsys01_read_temperature(indio_dev, &temperature);
+>> +			if (ret)
+>> +				return ret;
+>> +			*val = temperature;
+>> +
+>> +			return IIO_VAL_INT;
+>> +		default:
+>> +			return -EINVAL;
+>> +		}
+>> +	default:
+>> +		return -EINVAL;
+>> +	}
+>> +}
+>> +
+>> +static const struct iio_chan_spec tsys01_channels[] = {
+>> +	{
+>> +		.type = IIO_TEMP,
+>> +		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_PROCESSED),
+>> +	}
+>> +};
+>> +
+>> +static const struct iio_info tsys01_info = {
+>> +	.read_raw = tsys01_read_raw,
+>> +	.driver_module = THIS_MODULE,
+>> +};
+>> +
+>> +static bool tsys01_crc_valid(u16 *n_prom)
+>> +{
+>> +	u8 cnt;
+>> +	u8 sum = 0;
+>> +
+>> +	for (cnt = 0; cnt < TSYS01_PROM_WORDS_NB; cnt++)
+>> +		sum += ((n_prom[0] >> 8) + (n_prom[0] & 0xFF));
+>> +
+>> +	return (sum == 0);
+>> +}
+>> +
+>> +static int tsys01_read_prom(struct iio_dev *indio_dev)
+>> +{
+>> +	int i, ret;
+>> +	struct tsys01_dev *dev_data = iio_priv(indio_dev);
+>> +	char buf[7 * TSYS01_PROM_WORDS_NB + 1];
+>> +	char *ptr = buf;
+>> +
+>> +	for (i = 0; i < TSYS01_PROM_WORDS_NB; i++) {
+>> +		ret = dev_data->read_prom_word(dev_data->client,
+>> +					       TSYS01_PROM_READ + (i << 1),
+>> +					       &dev_data->prom[i]);
+>> +		if (ret)
+>> +			return ret;
+>> +
+>> +		ret = sprintf(ptr, "0x%04x ", dev_data->prom[i]);
+>> +		ptr += ret;
+>> +	}
+>> +
+>> +	if (!tsys01_crc_valid(dev_data->prom)) {
+>> +		dev_err(&indio_dev->dev, "prom crc check error\n");
+>> +		return -ENODEV;
+>> +	}
+>> +	*ptr = 0;
+>> +	dev_info(&indio_dev->dev, "PROM coefficients : %s\n", buf);
+>> +
+>> +	return 0;
+>> +}
+>> +
+>> +static int tsys01_probe(struct iio_dev *indio_dev, struct device *dev)
+>> +{
+>> +	int ret;
+>> +	struct tsys01_dev *dev_data = iio_priv(indio_dev);
+>> +
+>> +	mutex_init(&dev_data->lock);
+>> +
+>> +	indio_dev->info = &tsys01_info;
+>> +	indio_dev->name = dev->driver->name;
+>> +	indio_dev->dev.parent = dev;
+>> +	indio_dev->modes = INDIO_DIRECT_MODE;
+>> +	indio_dev->channels = tsys01_channels;
+>> +	indio_dev->num_channels = ARRAY_SIZE(tsys01_channels);
+>> +
+>> +	ret = dev_data->reset(dev_data->client, TSYS01_RESET, 3000);
+>> +	if (ret)
+>> +		return ret;
+>> +
+>> +	ret = tsys01_read_prom(indio_dev);
+>> +	if (ret)
+>> +		return ret;
+>> +
+>> +	return devm_iio_device_register(dev, indio_dev);
+>> +}
+>> +
+>> +static int tsys01_i2c_probe(struct i2c_client *client,
+>> +			    const struct i2c_device_id *id)
+>> +{
+>> +	struct tsys01_dev *dev_data;
+>> +	struct iio_dev *indio_dev;
+>> +
+>> +	if (!i2c_check_functionality(client->adapter,
+>> +				     I2C_FUNC_SMBUS_WORD_DATA |
+>> +				     I2C_FUNC_SMBUS_WRITE_BYTE |
+>> +				     I2C_FUNC_SMBUS_READ_I2C_BLOCK)) {
+>> +		dev_err(&client->dev,
+>> +			"Adapter does not support some i2c transaction\n");
+>> +		return -ENODEV;
+>> +	}
+>> +
+>> +	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*dev_data));
+>> +	if (!indio_dev)
+>> +		return -ENOMEM;
+>> +
+>> +	dev_data = iio_priv(indio_dev);
+>> +	dev_data->client = client;
+>> +	dev_data->reset = ms_sensors_i2c_reset;
+>> +	dev_data->read_prom_word = ms_sensors_i2c_read_prom_word;
+>> +	dev_data->convert_and_read = ms_sensors_i2c_convert_and_read;
+>> +
+>> +	i2c_set_clientdata(client, indio_dev);
+>> +
+>> +	return tsys01_probe(indio_dev, &client->dev);
+>> +}
+>> +
+>> +static const struct i2c_device_id tsys01_id[] = {
+>> +	{"tsys01", 0},
+>> +	{}
+>> +};
+>> +MODULE_DEVICE_TABLE(i2c, tsys01_id);
+>> +
+>> +static struct i2c_driver tsys01_driver = {
+>> +	.probe = tsys01_i2c_probe,
+>> +	.id_table = tsys01_id,
+>> +	.driver = {
+>> +		   .name = "tsys01",
+>> +		   .owner = THIS_MODULE,
+> Don't need to assign the .owner anymore as i2c_register_driver
+> (part of the module_i2c_driver macro) will do it.
+> 
+>> +		   },
+>> +};
+>> +
+>> +module_i2c_driver(tsys01_driver);
+>> +
+>> +MODULE_DESCRIPTION("Measurement-Specialties tsys01 temperature driver");
+>> +MODULE_AUTHOR("William Markezana <william.markezana@meas-spec.com>");
+>> +MODULE_AUTHOR("Ludovic Tancerel <ludovic.tancerel@maplehightech.com>");
+>> +MODULE_LICENSE("GPL v2");
+>>
+> 
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
 > 
 
