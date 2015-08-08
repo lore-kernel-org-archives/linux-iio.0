@@ -1,583 +1,319 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:58886 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:58944 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S964774AbbHHOyr (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 8 Aug 2015 10:54:47 -0400
-Subject: Re: [PATCH v2] iio: light: Add support for UPISEMI uS5182d als and
- proximity sensor
-To: Adriana Reus <adriana.reus@intel.com>
-References: <1438095798-10693-1-git-send-email-adriana.reus@intel.com>
- <1438695613-6394-1-git-send-email-adriana.reus@intel.com>
-Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+	with ESMTP id S964774AbbHHPFM (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 8 Aug 2015 11:05:12 -0400
+Subject: Re: [PATCH v4 2/2] iio: proximity: add support for PulsedLight LIDAR
+To: Matt Ranostay <mranostay@gmail.com>, marex@denx.de,
+	lars@metafoo.de, vladimir.barinov@cogentembedded.com
+References: <1438749676-28781-1-git-send-email-mranostay@gmail.com>
+ <1438749676-28781-3-git-send-email-mranostay@gmail.com>
+Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <55C61834.2080608@kernel.org>
-Date: Sat, 8 Aug 2015 15:54:44 +0100
+Message-ID: <55C61AA5.10105@kernel.org>
+Date: Sat, 8 Aug 2015 16:05:09 +0100
 MIME-Version: 1.0
-In-Reply-To: <1438695613-6394-1-git-send-email-adriana.reus@intel.com>
+In-Reply-To: <1438749676-28781-3-git-send-email-mranostay@gmail.com>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 04/08/15 14:40, Adriana Reus wrote:
-> Add support for UPISEMI us5182d als and proximity sensor.
-> Supports raw readings.
-> Data sheet for this device can be found here:
-> http://www.upi-semi.com/temp/uS5182D-DS-P0103-temp.pdf
+On 05/08/15 05:41, Matt Ranostay wrote:
+> Add support for the PulsedLight LIDAR rangefinder sensor which allows
+> high speed (over 300Hz) distance measurements using Barker Coding within
+> 40 meter range.
 > 
-> Signed-off-by: Adriana Reus <adriana.reus@intel.com>
-Device tree docs?
+> Support only tested on the "blue label" rev 2, but may work using low
+> sample frequencies on the original version.
+> 
+> Signed-off-by: Matt Ranostay <mranostay@gmail.com>
+Couple of bits inline.  Only one that really matters is I suspect
+that simply calling it lidar (and naming the file lidar.c) is going
+to give us problems if they or someone else produces a similar lidar
+device in future.
 
-Various other bits and bobs inline.
+Perhaps file name as pulsedlight-lidar-lite-v2.c
+and name as lidar-lite-v2 for device tree etc.
+
+Otherwise, nice little driver for a nice looking bit of kit.
+
+Thanks,
+
+Jonathan
 > ---
->  Changes since v1: added data-sheet link to commit message
->  drivers/iio/light/Kconfig   |  10 +
->  drivers/iio/light/Makefile  |   1 +
->  drivers/iio/light/us5182d.c | 539 ++++++++++++++++++++++++++++++++++++++++++++
->  3 files changed, 550 insertions(+)
->  create mode 100644 drivers/iio/light/us5182d.c
+>  drivers/iio/proximity/Kconfig  |  12 ++
+>  drivers/iio/proximity/Makefile |   1 +
+>  drivers/iio/proximity/lidar.c  | 294 +++++++++++++++++++++++++++++++++++++++++
+>  3 files changed, 307 insertions(+)
+>  create mode 100644 drivers/iio/proximity/lidar.c
 > 
-> diff --git a/drivers/iio/light/Kconfig b/drivers/iio/light/Kconfig
-> index a459341..0aa819d 100644
-> --- a/drivers/iio/light/Kconfig
-> +++ b/drivers/iio/light/Kconfig
-> @@ -285,6 +285,16 @@ config TSL4531
->  	 To compile this driver as a module, choose M here: the
->  	 module will be called tsl4531.
+> diff --git a/drivers/iio/proximity/Kconfig b/drivers/iio/proximity/Kconfig
+> index 41a8d8f..e64fc5b 100644
+> --- a/drivers/iio/proximity/Kconfig
+> +++ b/drivers/iio/proximity/Kconfig
+> @@ -20,6 +20,18 @@ endmenu
 >  
-> +config US5182D
-> +	tristate "UPISEMI light and proximity sensor"
+>  menu "Proximity sensors"
+>  
+> +config LIDAR
+> +	tristate "PulsedLight LIDAR sensor"
+> +	select IIO_BUFFER
+> +	select IIO_TRIGGERED_BUFFER
 > +	depends on I2C
 > +	help
-> +	 If you say yes here you get support for the UPISEMI US5182D
-> +	 ambient light and proximity sensor.
+> +	  Say Y to build a driver for PulsedLight LIDAR range finding
+> +	  sensor.
 > +
-> +	 This driver can also be built as a module.  If so, the module
-> +	 will be called us5182d.
+> +	  To compile this driver as a module, choose M here: the
+> +	  module will be called lidar.
 > +
->  config VCNL4000
->  	tristate "VCNL4000 combined ALS and proximity sensor"
->  	depends on I2C
-> diff --git a/drivers/iio/light/Makefile b/drivers/iio/light/Makefile
-> index 91c74c0..528cc8f 100644
-> --- a/drivers/iio/light/Makefile
-> +++ b/drivers/iio/light/Makefile
-> @@ -27,4 +27,5 @@ obj-$(CONFIG_STK3310)          += stk3310.o
->  obj-$(CONFIG_TCS3414)		+= tcs3414.o
->  obj-$(CONFIG_TCS3472)		+= tcs3472.o
->  obj-$(CONFIG_TSL4531)		+= tsl4531.o
-> +obj-$(CONFIG_US5182D)		+= us5182d.o
->  obj-$(CONFIG_VCNL4000)		+= vcnl4000.o
-> diff --git a/drivers/iio/light/us5182d.c b/drivers/iio/light/us5182d.c
+>  config SX9500
+>  	tristate "SX9500 Semtech proximity sensor"
+>  	select IIO_BUFFER
+> diff --git a/drivers/iio/proximity/Makefile b/drivers/iio/proximity/Makefile
+> index 9818dc5..36a95f3 100644
+> --- a/drivers/iio/proximity/Makefile
+> +++ b/drivers/iio/proximity/Makefile
+> @@ -4,4 +4,5 @@
+>  
+>  # When adding new entries keep the list in alphabetical order
+>  obj-$(CONFIG_AS3935)		+= as3935.o
+> +obj-$(CONFIG_LIDAR)		+= lidar.o
+>  obj-$(CONFIG_SX9500)		+= sx9500.o
+> diff --git a/drivers/iio/proximity/lidar.c b/drivers/iio/proximity/lidar.c
 > new file mode 100644
-> index 0000000..6654bb0
+> index 0000000..fdec9a2
 > --- /dev/null
-> +++ b/drivers/iio/light/us5182d.c
-> @@ -0,0 +1,539 @@
+> +++ b/drivers/iio/proximity/lidar.c
+> @@ -0,0 +1,294 @@
 > +/*
-> + * Copyright (c) 2015 Intel Corporation
+> + * lidar.c - Support for PulsedLight LIDAR range finding sensor
 > + *
-> + * Driver for UPISEMI us5182d Proximity and Ambient Light Sensor.
+> + * Copyright (C) 2015 Matt Ranostay <mranostay@gmail.com>
 > + *
-> + * This program is free software; you can redistribute it and/or modify it
-> + * under the terms of the GNU General Public License version 2 as published by
-> + * the Free Software Foundation.
+> + * This program is free software; you can redistribute it and/or modify
+> + * it under the terms of the GNU General Public License as published by
+> + * the Free Software Foundation; either version 2 of the License, or
+> + * (at your option) any later version.
 > + *
-> + * This program is distributed in the hope it will be useful, but WITHOUT
-> + * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-> + * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
-> + * more details.
+> + * This program is distributed in the hope that it will be useful,
+> + * but WITHOUT ANY WARRANTY; without even the implied warranty of
+> + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+> + * GNU General Public License for more details.
 > + *
-> + * To do: Interrupt support.
+> + * TODO: runtime pm, interrupt mode, and signal strength reporting
+> + *
 > + */
 > +
-> +#include <linux/kernel.h>
-> +#include <linux/module.h>
-> +#include <linux/acpi.h>
-> +#include <linux/delay.h>
+> +#include <linux/err.h>
+> +#include <linux/init.h>
 > +#include <linux/i2c.h>
+> +#include <linux/delay.h>
+> +#include <linux/mutex.h>
+> +#include <linux/module.h>
 > +#include <linux/iio/iio.h>
 > +#include <linux/iio/sysfs.h>
-> +#include <linux/mutex.h>
+> +#include <linux/iio/buffer.h>
+> +#include <linux/iio/trigger.h>
+> +#include <linux/iio/triggered_buffer.h>
+> +#include <linux/iio/trigger_consumer.h>
 > +
-> +#define US5182D_REG_CFG0		0x00
-> +#define US5182D_REG_CFG1		0x01
-> +#define US5182D_REG_CFG2		0x02
-> +#define US5182D_REG_CFG3		0x03
-> +#define US5182D_REG_CFG4		0x10
+> +#define LIDAR_REG_CONTROL		0x00
+> +#define LIDAR_REG_CONTROL_ACQUIRE	BIT(2)
 > +
-> +/*
-> + * Registers for tuning the auto dark current cancelling feature.
-> + * DARK_TH(reg 0x27,0x28) - threshold (counts) for auto dark cancelling.
-> + * when ALS  > DARK_TH --> ALS_Code = ALS - Upper(0x2A) * Dark
-> + * when ALS < DARK_TH --> ALS_Code = ALS - Lower(0x29) * Dark
-> + */
-> +#define US5182D_REG_UDARK_TH			0x27
-> +#define US5182D_REG_DARK_AUTO_EN		0x2b
-> +#define US5182D_REG_AUTO_LDARK_TH		0x29
-> +#define US5182D_REG_AUTO_HDARK_TH		0x2a
+> +#define LIDAR_REG_STATUS		0x01
+> +#define LIDAR_REG_STATUS_INVALID	BIT(3)
+> +#define LIDAR_REG_STATUS_READY		BIT(0)
 > +
-> +/*
-> + * power-mode - oneshot, non-interrupt, word mode access for
-> + * als code, th registers.
-> + */
-> +#define US5182D_REG_CFG0_DEFAULT		0x81
-I'd prefer to see the elements of this register broken down.  Something
-like (guessing what is in this reg to a degree).
-
-#define US5182D_REG_CFG0_DEFAULT \
-	(US5182D_AGAIN_1X | (US5182_OPMODE_ALS << US5182D_OPMODE_SHIFT))
-
-Perhaps even define the inverse cases so that the values themselves act
-as documentation. (so SHUTDOWN_DIS and ONESHOT_DIS)
-
-Same is true for any of thes registers that are compound values.
-
-Basically the code should be explicity where it can be rather than requiring
-docs that don't make it obvious which parts of the value are the cause
-of what.
-
+> +#define LIDAR_REG_DATA_HBYTE	0x0f
+> +#define LIDAR_REG_DATA_LBYTE	0x10
 > +
-> +/*
-> + * no als fault queue, 16 bit als resolution (supports 12 and 14 also),
-> + * max-range 12354.
-> + */
-> +#define US5182D_REG_CFG1_DEFAULT		0x10
+> +#define LIDAR_DRV_NAME "lidar"
 > +
-> +/*
-> + * 16 bit resolution for PX, x16 sensing amplifier for px
-> + * supports [x1 x2 x4 x8 x16 x32 x64 x128]
-> + */
-> +#define US5182D_REG_CFG2_DEFAULT		0x14
-> +
-> +/*
-> + * led current : 100mA, supports [12.5 25 50 100] mA,
-> + * interrupt source selection "px approach",
-> + * [als or ps, als only, ps only, ps approach]
-> + */
-> +#define US5182D_REG_CFG3_DEFAULT		0x3C
-> +
-> +/*
-> + * led frequency ADC Clock/2 from [ADC Clock/2, /4, /8, /10]
-> + * automatic 50/60 Hz ripple rejection disabled.
-> + */
-> +#define US5182D_REG_CFG4_DEFAULT		0x00
-> +
-> +#define US5182D_REG_DARK_AUTO_EN_DEFAULT	0x80
-> +#define US5182D_REG_AUTO_LDARK_TH_DEFAULT	0x16
-> +#define US5182D_REG_AUTO_HDARK_TH_DEFAULT	0x00
-> +
-> +#define US5182D_REG_ADL			0x0c
-> +#define US5182D_REG_PDL			0x0e
-> +
-> +#define US5182D_REG_MODE_STORE		0x21
-> +#define US5182D_STORE_MODE		0x01
-> +
-> +#define US5182D_REG_CHIPID		0xb2
-> +
-Where these are fields in a particular register I'd
-like to see the naming reflect that.
-> +#define US5182D_ONESHOT_EN_MASK		BIT(6)
-on this one, is it really a mask? Seems like a single
-bit value so I'd drop the mask naming.
-
-#define US5182D_ONESHOT_EN BIT(6)
-> +#define US5182D_SHUTDOWN_EN_MASK	BIT(7)
-> +#define US5182D_OPMODE_MASK		GENMASK(5, 4)
-
-> +#define US5182D_AGAIN_MASK		0x07
-
-> +#define US5182D_OPMODE_ALS		0x01
-> +#define US5182D_OPMODE_PX		0x02
-> +#define US5182D_OPMODE_SHIFT		4
-
-> +#define US5182D_RESET_CHIP		0x01
-> +
-> +#define US5182D_CHIPID			0x26
-> +#define US5182D_DRV_NAME		"us5182d"
-> +
-> +#define US5182D_GA_RESOLUTION		1000
-> +
-> +#define READ_BYTE		1
-> +#define READ_WORD		2
-> +#define OPSTORE_SLEEP_TIME	20 /* ms */
-> +
-> +/* available ranges: [12354, 7065, 3998, 2202, 1285, 498, 256, 138] lux*/
-> +static const int us5182d_scales[] = {188500, 107800, 61000, 33600, 19600, 7600,
-> +				     3900, 2100};
-> +
-> +/*
-> + * experimental th's that work with US5182D sensor on evaluation board
-> + * roughly between 12-32 lux
-> + */
-> +static u16 us5182d_dark_ths_vals[] = {170, 200, 512, 512, 800, 2000, 4000,
-> +				      8000};
-> +
-> +enum mode {
-> +	ALS_PX,
-> +	ALS_ONLY,
-> +	PX_ONLY
-> +};
-> +
-> +struct us5182d_data {
-> +	struct i2c_client *client;
-> +	/* protect opmode */
+> +struct lidar_data {
 > +	struct mutex lock;
+> +	struct iio_dev *indio_dev;
+> +	struct i2c_client *client;
 > +
-> +	/* Glass attenuation factor */
-> +	u32 ga;
-> +
-> +	/* Dark gain tuning */
-> +	u16 lower_dark_th;
-> +	u16 upper_dark_th;
-> +	u16 *us5182d_dark_ths;
-> +
-> +	u8 opmode;
+> +	u16 buffer[8]; /* 2 byte distance + 8 byte timestamp */
 > +};
 > +
-> +static IIO_CONST_ATTR(in_illuminance_scale_available,
-> +		      "0.0021 0.0039 0.0076 0.0196 0.0336 0.061 0.1078 0.1885");
-> +
-> +static struct attribute *us5182d_attrs[] = {
-> +	&iio_const_attr_in_illuminance_scale_available.dev_attr.attr,
-> +	NULL
-> +};
-> +
-> +static const struct attribute_group us5182d_attr_group = {
-> +	.attrs = us5182d_attrs,
-> +};
-> +
-> +static const struct {
-> +	u8 reg;
-> +	u8 val;
-> +} us5182d_regvals[] = {
-> +	{US5182D_REG_CFG0, US5182D_REG_CFG0_DEFAULT},
-> +	{US5182D_REG_CFG1, US5182D_REG_CFG1_DEFAULT},
-> +	{US5182D_REG_CFG2, US5182D_REG_CFG2_DEFAULT},
-> +	{US5182D_REG_CFG3, US5182D_REG_CFG3_DEFAULT},
-> +	{US5182D_REG_MODE_STORE, US5182D_STORE_MODE},
-> +	{US5182D_REG_CFG4, US5182D_REG_CFG4_DEFAULT},
-> +};
-> +
-> +static const struct iio_chan_spec us5182d_channels[] = {
+> +static const struct iio_chan_spec lidar_channels[] = {
 > +	{
-> +		.type = IIO_LIGHT,
-> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
-> +				      BIT(IIO_CHAN_INFO_SCALE),
-> +	},
-> +	{
-> +		.type = IIO_PROXIMITY,
-> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
-> +	}
-> +};
-> +
-> +static int us5182d_read(struct i2c_client *client, u8 reg, int len, u8 *val)
-> +{
-> +	struct i2c_msg msg[2] = {
-> +		{
-> +			/* Write - use repeated start */
-> +			.addr = client->addr,
-> +			.flags = I2C_M_NOSTART,
-> +			.len = 1,
-> +			.buf = &reg
+> +		.type = IIO_DISTANCE,
+> +		.info_mask_separate =
+> +			BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_SCALE),
+> +		.scan_index = 0,
+> +		.scan_type = {
+> +			.sign = 'u',
+> +			.realbits = 16,
+> +			.storagebits = 16,
 > +		},
-> +		{
-> +			.addr = client->addr,
-> +			.flags = I2C_M_RD,
-> +			.len = len,
-> +			.buf = val
-> +		}
-> +	};
-Close to an smbus_read_byte / word call, but that NOSTART is odd..
-The docs state:
- If you set the I2C_M_NOSTART variable for the first partial message,
-    we do not generate Addr, but we do generate the startbit S. This will
-    probably confuse all other clients on your bus, so don't try this.
-
-So what is going on here?
+> +	},
+> +	IIO_CHAN_SOFT_TIMESTAMP(1),
+> +};
 > +
-> +	return i2c_transfer(client->adapter, msg, 2);
-> +}
-> +
-> +static int us5182d_read_byte_data(struct i2c_client *client, u8 reg)
+> +static int lidar_read_byte(struct lidar_data *data, int reg)
 > +{
-> +	u8 val[1];
+> +	struct i2c_client *client = data->client;
 > +	int ret;
 > +
-> +	ret = us5182d_read(client, reg, READ_BYTE, val);
-Just pass &val and don't have val as an array?
-> +	return (ret < 0) ? ret : val[0];
-> +}
-> +
-> +static int us5182d_read_word_data(struct i2c_client *client, u8 reg)
-> +{
-> +	u8 val[2];
-> +	int ret;
-> +
-> +	ret = us5182d_read(client, reg, READ_WORD, val);
-> +	return (ret < 0) ? ret : (val[0] | (val[1] << 8));
-I'd split this up and avoid the trinary operator as it makes
-it harder to read.
-
-
-> +}
-> +
-> +static int us5182d_get_als(struct us5182d_data *data)
-> +{
-> +	int ret;
-> +	unsigned long result;
-> +
-> +	ret = us5182d_read_word_data(data->client,
-> +				     US5182D_REG_ADL);
-> +	if (ret < 0)
+> +	ret = i2c_smbus_write_byte(client, reg);
+> +	if (ret < 0) {
+> +		dev_err(&client->dev, "cannot write addr value");
 > +		return ret;
-> +
-> +	result = ret * data->ga / US5182D_GA_RESOLUTION;
-> +	if (result > 0xffff)
-> +		result = 0xffff;
-> +
-> +	return result;
-> +}
-> +
-> +static int us5182d_set_opmode(struct us5182d_data *data, u8 mode)
-> +{
-> +	int ret;
-> +
-> +	ret = us5182d_read_byte_data(data->client, US5182D_REG_CFG0);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	ret = ret | US5182D_ONESHOT_EN_MASK;
-> +
-> +	/* update mode */
-> +	ret = ret & ~US5182D_OPMODE_MASK;
-> +	ret = ret | (mode << US5182D_OPMODE_SHIFT);
-> +
-> +	ret = i2c_smbus_write_byte_data(data->client, US5182D_REG_CFG0, ret);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	if (mode == data->opmode)
-> +		return 0;
-> +
-> +	data->opmode = mode;
-> +	ret = i2c_smbus_write_byte_data(data->client, US5182D_REG_MODE_STORE,
-> +					US5182D_STORE_MODE);
-> +	if (ret < 0)
-> +		return ret;
-> +	msleep(OPSTORE_SLEEP_TIME);
-> +
-> +	return 0;
-> +}
-> +
-> +static int us5182d_read_raw(struct iio_dev *indio_dev,
-> +			    struct iio_chan_spec const *chan, int *val,
-> +			    int *val2, long mask)
-> +{
-> +	struct us5182d_data *data = iio_priv(indio_dev);
-> +	int ret;
-> +
-> +	switch (mask) {
-> +	case IIO_CHAN_INFO_RAW:
-> +		switch (chan->type) {
-> +		case IIO_LIGHT:
-> +			mutex_lock(&data->lock);
-> +			ret = us5182d_set_opmode(data, US5182D_OPMODE_ALS);
-> +			if (ret < 0)
-> +				goto out_err;
-> +
-> +			ret = us5182d_get_als(data);
-> +			if (ret < 0)
-> +				goto out_err;
-> +			mutex_unlock(&data->lock);
-> +			*val = ret;
-> +			*val2 = 0;
-Should be no need to set val2 for a VAL_INT type (core won't touch it).
-> +			return IIO_VAL_INT;
-> +		case IIO_PROXIMITY:
-> +			mutex_lock(&data->lock);
-> +			ret = us5182d_set_opmode(data, US5182D_OPMODE_PX);
-> +			if (ret < 0)
-> +				goto out_err;
-> +
-> +			ret = us5182d_read_word_data(data->client,
-> +						     US5182D_REG_PDL);
-> +			if (ret < 0)
-> +				goto out_err;
-> +			mutex_unlock(&data->lock);
-> +			*val = ret;
-> +			*val2 = 0;
-> +			return  IIO_VAL_INT;
-> +		default:
-> +			break;
-> +		}
-> +
-> +	case IIO_CHAN_INFO_SCALE:
-> +		ret = us5182d_read_byte_data(data->client, US5182D_REG_CFG1);
-> +		if (ret < 0)
-> +			return ret;
-> +		*val = 0;
-> +		ret = (ret & US5182D_AGAIN_MASK);
-> +		*val2 = us5182d_scales[ret];
-> +		return IIO_VAL_INT_PLUS_MICRO;
-> +	default:
-> +		return -EINVAL;
 > +	}
 > +
-> +	return -EINVAL;
-> +out_err:
-> +	mutex_unlock(&data->lock);
+> +	ret = i2c_smbus_read_byte(client);
+> +	if (ret < 0) {
+> +		dev_err(&client->dev, "cannot read data value");
+> +		return ret;
+Drop this return ret as otherwise various static checkers
+will moan at me (falling through gives the same result)
+> +	}
+> +
 > +	return ret;
 > +}
 > +
-> +static int us5182d_update_dark_th(struct us5182d_data *data, int index)
+> +static inline int lidar_write_control(struct lidar_data *data, int val)
 > +{
-> +	__be16 dark_th = cpu_to_be16(data->us5182d_dark_ths[index]);
-> +	u8 *bytes = (u8 *)&dark_th;
-> +	int ret;
-> +
-> +	/* Registers Dark_Th (0x27 0x28) don't work in word mode accessing */
-> +	ret = i2c_smbus_write_byte_data(data->client, US5182D_REG_UDARK_TH,
-> +					bytes[0]);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	return i2c_smbus_write_byte_data(data->client, US5182D_REG_UDARK_TH + 1,
-> +					bytes[1]);
+> +	return i2c_smbus_write_byte_data(data->client, LIDAR_REG_CONTROL, val);
 > +}
 > +
-> +static int us5182d_apply_scale(struct us5182d_data *data, int index)
+> +static int lidar_read_measurement(struct lidar_data *data, u16 *reg)
 > +{
 > +	int ret;
+> +	int val;
 > +
-> +	ret = us5182d_read_byte_data(data->client, US5182D_REG_CFG1);
+> +	/*
+> +	 * Device needs a STOP condition between address write, and data read
+> +	 * so in turn i2c_smbus_read_byte_data cannot be used
+Good documentation of this.  However, I'd move it to inside the read_byte
+function above rather than here. 
+> +	 */
+> +
+> +	ret = lidar_read_byte(data, LIDAR_REG_DATA_HBYTE);
+> +	if (ret < 0)
+> +		return ret;
+> +	val = ret << 8;
+> +
+> +	ret = lidar_read_byte(data, LIDAR_REG_DATA_LBYTE);
 > +	if (ret < 0)
 > +		return ret;
 > +
-> +	ret = ret & (~US5182D_AGAIN_MASK);
-> +	ret |= index;
+> +	val |= ret;
+> +	*reg = val;
 > +
-> +	ret = i2c_smbus_write_byte_data(data->client, US5182D_REG_CFG1, ret);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	return us5182d_update_dark_th(data, index);
+> +	return 0;
 > +}
 > +
-> +static int us5182d_write_raw(struct iio_dev *indio_dev,
-> +			     struct iio_chan_spec const *chan, int val,
-> +			     int val2, long mask)
+> +static int lidar_get_measurement(struct lidar_data *data, u16 *reg)
 > +{
-> +	struct us5182d_data *data = iio_priv(indio_dev);
-> +	int i;
+> +	struct i2c_client *client = data->client;
+> +	int tries = 10;
+> +	int ret;
+> +
+> +	/* start sample */
+> +	ret = lidar_write_control(data, LIDAR_REG_CONTROL_ACQUIRE);
+> +	if (ret < 0) {
+> +		dev_err(&client->dev, "cannot send start measurement command");
+> +		return ret;
+> +	}
+> +
+> +	while (tries--) {
+> +		usleep_range(1000, 2000);
+> +
+> +		ret = lidar_read_byte(data, LIDAR_REG_STATUS);
+> +		if (ret < 0)
+> +			break;
+> +
+> +		/* return 0 since laser is likely pointed out of range */
+> +		if (ret & LIDAR_REG_STATUS_INVALID) {
+> +			*reg = 0;
+> +			ret = 0;
+> +			break;
+> +		}
+> +
+> +		/* sample ready to read */
+> +		if (!(ret & LIDAR_REG_STATUS_READY)) {
+> +			ret = lidar_read_measurement(data, reg);
+> +			break;
+> +		}
+> +		ret = -EIO;
+> +	}
+> +
+> +	return ret;
+> +}
+> +
+> +static int lidar_read_raw(struct iio_dev *indio_dev,
+> +			  struct iio_chan_spec const *chan,
+> +			  int *val, int *val2, long mask)
+> +{
+> +	struct lidar_data *data = iio_priv(indio_dev);
+> +	int ret = -EINVAL;
+> +
+> +	mutex_lock(&data->lock);
+> +
+> +	if (iio_buffer_enabled(indio_dev) && mask == IIO_CHAN_INFO_RAW) {
+> +		ret = -EBUSY;
+> +		goto error_busy;
+> +	}
 > +
 > +	switch (mask) {
-> +	case IIO_CHAN_INFO_SCALE:
-> +		if (val != 0)
-> +			return -EINVAL;
-> +		for (i = 0; i < ARRAY_SIZE(us5182d_scales); i++)
-> +			if (val2 == us5182d_scales[i])
-> +				return us5182d_apply_scale(data, i);
+> +	case IIO_CHAN_INFO_RAW: {
+> +		u16 reg;
+> +
+> +		ret = lidar_get_measurement(data, &reg);
+> +		if (!ret) {
+> +			*val = reg;
+> +			ret = IIO_VAL_INT;
+> +		}
 > +		break;
-> +	default:
+> +	}
+> +	case IIO_CHAN_INFO_SCALE:
+> +		*val = 0;
+> +		*val2 = 10000;
+> +		ret = IIO_VAL_INT_PLUS_MICRO;
 > +		break;
 > +	}
 > +
-> +	return -EINVAL;
+> +error_busy:
+> +	mutex_unlock(&data->lock);
+> +
+> +	return ret;
 > +}
 > +
-> +static const struct iio_info us5182d_info = {
-> +	.driver_module	= THIS_MODULE,
-> +	.read_raw = us5182d_read_raw,
-> +	.write_raw = us5182d_write_raw,
-> +	.attrs = &us5182d_attr_group,
+> +static irqreturn_t lidar_trigger_handler(int irq, void *private)
+> +{
+> +	struct iio_poll_func *pf = private;
+> +	struct iio_dev *indio_dev = pf->indio_dev;
+> +	struct lidar_data *data = iio_priv(indio_dev);
+> +	int ret;
+> +
+> +	ret = lidar_get_measurement(data, &data->buffer[0]);
+data->buffer should be the same pointer unless I'm going crazy (always
+a posibility)
+> +	if (!ret) {
+> +		iio_push_to_buffers_with_timestamp(indio_dev, data->buffer,
+> +						   iio_get_time_ns());
+> +	} else {
+> +		dev_err(&data->client->dev, "cannot read LIDAR measurement");
+> +	}
+> +
+> +	iio_trigger_notify_done(indio_dev->trig);
+> +
+> +	return IRQ_HANDLED;
+> +}
+> +
+> +static const struct iio_info lidar_info = {
+> +	.driver_module = THIS_MODULE,
+> +	.read_raw = lidar_read_raw,
 > +};
 > +
-> +static int us5182d_reset(struct iio_dev *indio_dev)
+> +static int lidar_probe(struct i2c_client *client,
+> +		       const struct i2c_device_id *id)
 > +{
-> +	struct us5182d_data *data = iio_priv(indio_dev);
-> +	int ret;
-> +
-> +	ret = i2c_smbus_write_byte_data(data->client, US5182D_REG_CFG3,
-> +					US5182D_RESET_CHIP);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	return 0;
-> +}
-> +
-> +static int us5182d_init(struct iio_dev *indio_dev)
-> +{
-> +	struct us5182d_data *data = iio_priv(indio_dev);
-> +	int i, ret;
-> +
-> +	ret = us5182d_reset(indio_dev);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	data->opmode = 0;
-> +	for (i = 0; i < ARRAY_SIZE(us5182d_regvals); i++) {
-> +		ret = i2c_smbus_write_byte_data(data->client,
-> +						us5182d_regvals[i].reg,
-> +						us5182d_regvals[i].val);
-> +		if (ret < 0)
-> +			return ret;
-> +	}
-> +
-> +	return 0;
-> +}
-> +
-> +static void us5182d_get_platform_data(struct iio_dev *indio_dev)
-> +{
-> +	struct us5182d_data *data = iio_priv(indio_dev);
-> +
-> +	if (device_property_read_u32(&data->client->dev, "upisemi,glass-coef",
-> +				     &data->ga))
-> +		data->ga = US5182D_GA_RESOLUTION;
-> +	if (device_property_read_u16_array(&data->client->dev,
-> +					   "upisemi,dark-ths",
-> +					   data->us5182d_dark_ths,
-> +					   ARRAY_SIZE(us5182d_dark_ths_vals)))
-> +		data->us5182d_dark_ths = us5182d_dark_ths_vals;
-> +	if (device_property_read_u16(&data->client->dev,
-> +				     "upisemi,upper-dark-gain",
-> +				     &data->upper_dark_th))
-> +		data->upper_dark_th = US5182D_REG_AUTO_HDARK_TH_DEFAULT;
-> +	if (device_property_read_u16(&data->client->dev,
-> +				     "upisemi,lower-dark-gain",
-> +				     &data->lower_dark_th))
-> +		data->lower_dark_th = US5182D_REG_AUTO_LDARK_TH_DEFAULT;
-No problem with these, but the need docs and those docs need a device
-tree sign off (or a long period being ignored on their list)
-> +}
-> +
-> +static int  us5182d_dark_gain_config(struct iio_dev *indio_dev)
-> +{
-> +	struct us5182d_data *data = iio_priv(indio_dev);
-> +	u8 index = US5182D_REG_CFG1_DEFAULT & US5182D_AGAIN_MASK;
-> +	int ret;
-> +
-> +	ret = us5182d_update_dark_th(data, index);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	ret = i2c_smbus_write_byte_data(data->client, US5182D_REG_AUTO_LDARK_TH,
-> +					data->lower_dark_th);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	ret = i2c_smbus_write_byte_data(data->client, US5182D_REG_AUTO_HDARK_TH,
-> +					data->upper_dark_th);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	return i2c_smbus_write_byte_data(data->client, US5182D_REG_DARK_AUTO_EN,
-> +					US5182D_REG_DARK_AUTO_EN_DEFAULT);
-> +}
-> +
-> +static int us5182d_probe(struct i2c_client *client,
-> +			 const struct i2c_device_id *id)
-> +{
-> +	struct us5182d_data *data;
+> +	struct lidar_data *data;
 > +	struct iio_dev *indio_dev;
 > +	int ret;
 > +
@@ -585,71 +321,79 @@ tree sign off (or a long period being ignored on their list)
 > +	if (!indio_dev)
 > +		return -ENOMEM;
 > +
-> +	data = iio_priv(indio_dev);
-> +	i2c_set_clientdata(client, indio_dev);
-> +	data->client = client;
-> +
-> +	mutex_init(&data->lock);
-> +
-> +	indio_dev->dev.parent = &client->dev;
-> +	indio_dev->info = &us5182d_info;
-> +	indio_dev->name = US5182D_DRV_NAME;
-> +	indio_dev->channels = us5182d_channels;
-> +	indio_dev->num_channels = ARRAY_SIZE(us5182d_channels);
+> +	indio_dev->info = &lidar_info;
+> +	indio_dev->name = LIDAR_DRV_NAME;
+> +	indio_dev->channels = lidar_channels;
+> +	indio_dev->num_channels = ARRAY_SIZE(lidar_channels);
 > +	indio_dev->modes = INDIO_DIRECT_MODE;
 > +
-> +	ret = us5182d_read_byte_data(data->client, US5182D_REG_CHIPID);
-> +	if (ret != US5182D_CHIPID)
-> +		dev_warn(&data->client->dev,
-> +			 "Failed to detect US5182 light chip\n");
+> +	data = iio_priv(indio_dev);
+> +	i2c_set_clientdata(client, indio_dev);
 > +
-> +	us5182d_get_platform_data(indio_dev);
-> +	ret = us5182d_init(indio_dev);
-> +	if (ret < 0)
+> +	data->client = client;
+> +	data->indio_dev = indio_dev;
+> +	mutex_init(&data->lock);
+> +
+> +	ret = iio_triggered_buffer_setup(indio_dev, NULL,
+> +					 lidar_trigger_handler, NULL);
+> +	if (ret)
 > +		return ret;
 > +
-> +	ret = us5182d_dark_gain_config(indio_dev);
-> +	if (ret < 0)
-> +		return ret;
+> +	ret = iio_device_register(indio_dev);
+> +	if (ret)
+> +		goto error_unreg_buffer;
 > +
-> +	return iio_device_register(indio_dev);
+> +	return 0;
+> +
+> +error_unreg_buffer:
+> +	iio_triggered_buffer_cleanup(indio_dev);
+> +
+> +	return ret;
 > +}
 > +
-> +static int us5182d_remove(struct i2c_client *client)
+> +static int lidar_remove(struct i2c_client *client)
 > +{
-> +	iio_device_unregister(i2c_get_clientdata(client));
-> +	return i2c_smbus_write_byte_data(client, US5182D_REG_CFG0,
-> +					 US5182D_REG_CFG0_DEFAULT);
+> +	struct iio_dev *indio_dev = i2c_get_clientdata(client);
+> +
+> +	iio_device_unregister(indio_dev);
+> +	iio_triggered_buffer_cleanup(indio_dev);
+> +
+> +	return 0;
 > +}
 > +
-> +static const struct acpi_device_id us5182d_acpi_match[] = {
-> +	{ "USD5182", 0},
-> +	{}
+> +static const struct i2c_device_id lidar_id[] = {
+> +	{"lidar", 0},
+> +	{ },
+> +};
+> +MODULE_DEVICE_TABLE(i2c, lidar_id);
+> +
+> +static const struct of_device_id lidar_dt_ids[] = {
+> +	{ .compatible = "pulsedlight,lidar" },
+
+Not a more descriptive name?  Website suggests
+things like
+lidar-lite-v2
+
+I just worry they'll come out with a completely incompatible
+interface to some new unit that is also a lidar and we'll be
+forever confused!
+
+> +	{ }
 > +};
 > +
-> +MODULE_DEVICE_TABLE(acpi, us5182d_acpi_match);
-> +
-> +static const struct i2c_device_id us5182d_id[] = {
-> +		{"usd5182", 0},
-> +		{}
-> +};
-> +
-> +MODULE_DEVICE_TABLE(i2c, us5182d_id);
-> +
-> +static struct i2c_driver us5182d_driver = {
+> +static struct i2c_driver lidar_driver = {
 > +	.driver = {
-> +		.name = US5182D_DRV_NAME,
-> +		.acpi_match_table = ACPI_PTR(us5182d_acpi_match),
+> +		.name	= LIDAR_DRV_NAME,
+> +		.of_match_table	= of_match_ptr(lidar_dt_ids),
 > +	},
-> +	.probe = us5182d_probe,
-> +	.remove = us5182d_remove,
-> +	.id_table = us5182d_id,
-> +
+> +	.probe		= lidar_probe,
+> +	.remove		= lidar_remove,
+> +	.id_table	= lidar_id,
 > +};
-> +module_i2c_driver(us5182d_driver);
+> +module_i2c_driver(lidar_driver);
 > +
-> +MODULE_AUTHOR("Adriana Reus <adriana.reus@intel.com>");
-> +MODULE_DESCRIPTION("Driver for us5182d Proximity and Light Sensor");
-> +MODULE_LICENSE("GPL v2");
+> +MODULE_AUTHOR("Matt Ranostay <mranostay@gmail.com>");
+> +MODULE_DESCRIPTION("PulsedLight LIDAR sensor");
+> +MODULE_LICENSE("GPL");
 > 
 
