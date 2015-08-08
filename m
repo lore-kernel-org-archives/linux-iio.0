@@ -1,82 +1,119 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:58116 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:58124 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S932495AbbHHLvn (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 8 Aug 2015 07:51:43 -0400
-Subject: Re: [PATCH 2/9] iio: Add inverse unit conversion macros
+	with ESMTP id S932495AbbHHLw5 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 8 Aug 2015 07:52:57 -0400
+Subject: Re: [PATCH 3/9] iio: adis16480: Fix scale factors
 To: Lars-Peter Clausen <lars@metafoo.de>
 References: <1438781901-28000-1-git-send-email-lars@metafoo.de>
- <1438781901-28000-3-git-send-email-lars@metafoo.de>
+ <1438781901-28000-4-git-send-email-lars@metafoo.de>
 Cc: Hartmut Knaack <knaack.h@gmx.de>,
 	Peter Meerwald <pmeerw@pmeerw.net>, linux-iio@vger.kernel.org
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <55C5ED4D.3000105@kernel.org>
-Date: Sat, 8 Aug 2015 12:51:41 +0100
+Message-ID: <55C5ED97.5050805@kernel.org>
+Date: Sat, 8 Aug 2015 12:52:55 +0100
 MIME-Version: 1.0
-In-Reply-To: <1438781901-28000-3-git-send-email-lars@metafoo.de>
+In-Reply-To: <1438781901-28000-4-git-send-email-lars@metafoo.de>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
 On 05/08/15 14:38, Lars-Peter Clausen wrote:
-> Add inverse unit conversion macro to convert from standard IIO units to
-> units that might be used by some devices.
-> 
-> Those are useful in combination with scale factors that are specified as
-> IIO_VAL_FRACTIONAL. Typically the denominator for those specifications will
-> contain the maximum raw value the sensor will generate and the numerator
-> the value it maps to in a specific unit. Sometimes datasheets specify those
-> in different units than the standard IIO units (e.g. degree/s instead of
-> rad/s) and so we need to do a unit conversion.
-> 
-> From a mathematical point of view it does not make a difference whether we
-> apply the unit conversion to the numerator or the inverse unit conversion
-> to the denominator since (x / y) / z = x / (y * z). But as the denominator
-> is typically a larger value and we are rounding both the numerator and
-> denominator to integer values using the later method gives us a better
-> precision (E.g. the relative error is smaller if we round 8000.3 to 8000
-> rather than rounding 8.3 to 8).
-> 
-> This is where in inverse unit conversion macros will be used.
+> The different devices support by the adis16480 driver have slightly
+> different scales for the gyroscope and accelerometer channels.
 > 
 > Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
-Applied and marked for stable given the next patch.
+Applied to the togreg branch of iio.git and marked for stable.
+
+Thanks,
+
+Jonathan
 > ---
->  include/linux/iio/iio.h | 17 +++++++++++++++++
->  1 file changed, 17 insertions(+)
+>  drivers/iio/imu/adis16480.c | 39 +++++++++++++++++++++++++++++++++------
+>  1 file changed, 33 insertions(+), 6 deletions(-)
 > 
-> diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
-> index f791482..6bcc9537 100644
-> --- a/include/linux/iio/iio.h
-> +++ b/include/linux/iio/iio.h
-> @@ -645,6 +645,15 @@ int iio_str_to_fixpoint(const char *str, int fract_mult, int *integer,
->  #define IIO_DEGREE_TO_RAD(deg) (((deg) * 314159ULL + 9000000ULL) / 18000000ULL)
+> diff --git a/drivers/iio/imu/adis16480.c b/drivers/iio/imu/adis16480.c
+> index 989605d..b94bfd3 100644
+> --- a/drivers/iio/imu/adis16480.c
+> +++ b/drivers/iio/imu/adis16480.c
+> @@ -110,6 +110,10 @@
+>  struct adis16480_chip_info {
+>  	unsigned int num_channels;
+>  	const struct iio_chan_spec *channels;
+> +	unsigned int gyro_max_val;
+> +	unsigned int gyro_max_scale;
+> +	unsigned int accel_max_val;
+> +	unsigned int accel_max_scale;
+>  };
 >  
->  /**
-> + * IIO_RAD_TO_DEGREE() - Convert rad to degree
-> + * @rad: A value in rad
-> + *
-> + * Returns the given value converted from rad to degree
-> + */
-> +#define IIO_RAD_TO_DEGREE(rad) \
-> +	(((rad) * 18000000ULL + 314159ULL / 2) / 314159ULL)
+>  struct adis16480 {
+> @@ -497,19 +501,21 @@ static int adis16480_set_filter_freq(struct iio_dev *indio_dev,
+>  static int adis16480_read_raw(struct iio_dev *indio_dev,
+>  	const struct iio_chan_spec *chan, int *val, int *val2, long info)
+>  {
+> +	struct adis16480 *st = iio_priv(indio_dev);
 > +
-> +/**
->   * IIO_G_TO_M_S_2() - Convert g to meter / second**2
->   * @g: A value in g
->   *
-> @@ -652,4 +661,12 @@ int iio_str_to_fixpoint(const char *str, int fract_mult, int *integer,
->   */
->  #define IIO_G_TO_M_S_2(g) ((g) * 980665ULL / 100000ULL)
+>  	switch (info) {
+>  	case IIO_CHAN_INFO_RAW:
+>  		return adis_single_conversion(indio_dev, chan, 0, val);
+>  	case IIO_CHAN_INFO_SCALE:
+>  		switch (chan->type) {
+>  		case IIO_ANGL_VEL:
+> -			*val = 0;
+> -			*val2 = IIO_DEGREE_TO_RAD(20000); /* 0.02 degree/sec */
+> -			return IIO_VAL_INT_PLUS_MICRO;
+> +			*val = st->chip_info->gyro_max_scale;
+> +			*val2 = st->chip_info->gyro_max_val;
+> +			return IIO_VAL_FRACTIONAL;
+>  		case IIO_ACCEL:
+> -			*val = 0;
+> -			*val2 = IIO_G_TO_M_S_2(800); /* 0.8 mg */
+> -			return IIO_VAL_INT_PLUS_MICRO;
+> +			*val = st->chip_info->accel_max_scale;
+> +			*val2 = st->chip_info->accel_max_val;
+> +			return IIO_VAL_FRACTIONAL;
+>  		case IIO_MAGN:
+>  			*val = 0;
+>  			*val2 = 100; /* 0.0001 gauss */
+> @@ -674,18 +680,39 @@ static const struct adis16480_chip_info adis16480_chip_info[] = {
+>  	[ADIS16375] = {
+>  		.channels = adis16485_channels,
+>  		.num_channels = ARRAY_SIZE(adis16485_channels),
+> +		/*
+> +		 * storing the value in rad/degree and the scale in degree
+> +		 * gives us the result in rad and better precession than
+> +		 * storing the scale directly in rad.
+> +		 */
+> +		.gyro_max_val = IIO_RAD_TO_DEGREE(22887),
+> +		.gyro_max_scale = 300,
+> +		.accel_max_val = IIO_M_S_2_TO_G(21973),
+> +		.accel_max_scale = 18,
+>  	},
+>  	[ADIS16480] = {
+>  		.channels = adis16480_channels,
+>  		.num_channels = ARRAY_SIZE(adis16480_channels),
+> +		.gyro_max_val = IIO_RAD_TO_DEGREE(22500),
+> +		.gyro_max_scale = 450,
+> +		.accel_max_val = IIO_M_S_2_TO_G(12500),
+> +		.accel_max_scale = 5,
+>  	},
+>  	[ADIS16485] = {
+>  		.channels = adis16485_channels,
+>  		.num_channels = ARRAY_SIZE(adis16485_channels),
+> +		.gyro_max_val = IIO_RAD_TO_DEGREE(22500),
+> +		.gyro_max_scale = 450,
+> +		.accel_max_val = IIO_M_S_2_TO_G(20000),
+> +		.accel_max_scale = 5,
+>  	},
+>  	[ADIS16488] = {
+>  		.channels = adis16480_channels,
+>  		.num_channels = ARRAY_SIZE(adis16480_channels),
+> +		.gyro_max_val = IIO_RAD_TO_DEGREE(22500),
+> +		.gyro_max_scale = 450,
+> +		.accel_max_val = IIO_M_S_2_TO_G(22500),
+> +		.accel_max_scale = 18,
+>  	},
+>  };
 >  
-> +/**
-> + * IIO_M_S_2_TO_G() - Convert meter / second**2 to g
-> + * @ms2: A value in meter / second**2
-> + *
-> + * Returns the given value converted from meter / second**2 to g
-> + */
-> +#define IIO_M_S_2_TO_G(ms2) (((ms2) * 100000ULL + 980665ULL / 2) / 980665ULL)
-> +
->  #endif /* _INDUSTRIAL_IO_H_ */
 > 
 
