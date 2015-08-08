@@ -1,119 +1,52 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:58124 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:58129 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S932495AbbHHLw5 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 8 Aug 2015 07:52:57 -0400
-Subject: Re: [PATCH 3/9] iio: adis16480: Fix scale factors
+	with ESMTP id S932495AbbHHLyG (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 8 Aug 2015 07:54:06 -0400
+Subject: Re: [PATCH 4/9] iio: adis16400: adis16300 has product ID and serial
+ number
 To: Lars-Peter Clausen <lars@metafoo.de>
 References: <1438781901-28000-1-git-send-email-lars@metafoo.de>
- <1438781901-28000-4-git-send-email-lars@metafoo.de>
+ <1438781901-28000-5-git-send-email-lars@metafoo.de>
 Cc: Hartmut Knaack <knaack.h@gmx.de>,
 	Peter Meerwald <pmeerw@pmeerw.net>, linux-iio@vger.kernel.org
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <55C5ED97.5050805@kernel.org>
-Date: Sat, 8 Aug 2015 12:52:55 +0100
+Message-ID: <55C5EDDD.6020706@kernel.org>
+Date: Sat, 8 Aug 2015 12:54:05 +0100
 MIME-Version: 1.0
-In-Reply-To: <1438781901-28000-4-git-send-email-lars@metafoo.de>
+In-Reply-To: <1438781901-28000-5-git-send-email-lars@metafoo.de>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
 On 05/08/15 14:38, Lars-Peter Clausen wrote:
-> The different devices support by the adis16480 driver have slightly
-> different scales for the gyroscope and accelerometer channels.
+> The ADIS16300 has the product ID and serial number registers, they are just
+> not documented. Set the appropriate flags so the driver makes use of them.
+*mutters darkly*
 > 
 > Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
-Applied to the togreg branch of iio.git and marked for stable.
+Applied to the togreg branch of iio.git.
 
 Thanks,
 
 Jonathan
 > ---
->  drivers/iio/imu/adis16480.c | 39 +++++++++++++++++++++++++++++++++------
->  1 file changed, 33 insertions(+), 6 deletions(-)
+>  drivers/iio/imu/adis16400_core.c | 3 ++-
+>  1 file changed, 2 insertions(+), 1 deletion(-)
 > 
-> diff --git a/drivers/iio/imu/adis16480.c b/drivers/iio/imu/adis16480.c
-> index 989605d..b94bfd3 100644
-> --- a/drivers/iio/imu/adis16480.c
-> +++ b/drivers/iio/imu/adis16480.c
-> @@ -110,6 +110,10 @@
->  struct adis16480_chip_info {
->  	unsigned int num_channels;
->  	const struct iio_chan_spec *channels;
-> +	unsigned int gyro_max_val;
-> +	unsigned int gyro_max_scale;
-> +	unsigned int accel_max_val;
-> +	unsigned int accel_max_scale;
->  };
->  
->  struct adis16480 {
-> @@ -497,19 +501,21 @@ static int adis16480_set_filter_freq(struct iio_dev *indio_dev,
->  static int adis16480_read_raw(struct iio_dev *indio_dev,
->  	const struct iio_chan_spec *chan, int *val, int *val2, long info)
->  {
-> +	struct adis16480 *st = iio_priv(indio_dev);
-> +
->  	switch (info) {
->  	case IIO_CHAN_INFO_RAW:
->  		return adis_single_conversion(indio_dev, chan, 0, val);
->  	case IIO_CHAN_INFO_SCALE:
->  		switch (chan->type) {
->  		case IIO_ANGL_VEL:
-> -			*val = 0;
-> -			*val2 = IIO_DEGREE_TO_RAD(20000); /* 0.02 degree/sec */
-> -			return IIO_VAL_INT_PLUS_MICRO;
-> +			*val = st->chip_info->gyro_max_scale;
-> +			*val2 = st->chip_info->gyro_max_val;
-> +			return IIO_VAL_FRACTIONAL;
->  		case IIO_ACCEL:
-> -			*val = 0;
-> -			*val2 = IIO_G_TO_M_S_2(800); /* 0.8 mg */
-> -			return IIO_VAL_INT_PLUS_MICRO;
-> +			*val = st->chip_info->accel_max_scale;
-> +			*val2 = st->chip_info->accel_max_val;
-> +			return IIO_VAL_FRACTIONAL;
->  		case IIO_MAGN:
->  			*val = 0;
->  			*val2 = 100; /* 0.0001 gauss */
-> @@ -674,18 +680,39 @@ static const struct adis16480_chip_info adis16480_chip_info[] = {
->  	[ADIS16375] = {
->  		.channels = adis16485_channels,
->  		.num_channels = ARRAY_SIZE(adis16485_channels),
-> +		/*
-> +		 * storing the value in rad/degree and the scale in degree
-> +		 * gives us the result in rad and better precession than
-> +		 * storing the scale directly in rad.
-> +		 */
-> +		.gyro_max_val = IIO_RAD_TO_DEGREE(22887),
-> +		.gyro_max_scale = 300,
-> +		.accel_max_val = IIO_M_S_2_TO_G(21973),
-> +		.accel_max_scale = 18,
->  	},
->  	[ADIS16480] = {
->  		.channels = adis16480_channels,
->  		.num_channels = ARRAY_SIZE(adis16480_channels),
-> +		.gyro_max_val = IIO_RAD_TO_DEGREE(22500),
-> +		.gyro_max_scale = 450,
-> +		.accel_max_val = IIO_M_S_2_TO_G(12500),
-> +		.accel_max_scale = 5,
->  	},
->  	[ADIS16485] = {
->  		.channels = adis16485_channels,
->  		.num_channels = ARRAY_SIZE(adis16485_channels),
-> +		.gyro_max_val = IIO_RAD_TO_DEGREE(22500),
-> +		.gyro_max_scale = 450,
-> +		.accel_max_val = IIO_M_S_2_TO_G(20000),
-> +		.accel_max_scale = 5,
->  	},
->  	[ADIS16488] = {
->  		.channels = adis16480_channels,
->  		.num_channels = ARRAY_SIZE(adis16480_channels),
-> +		.gyro_max_val = IIO_RAD_TO_DEGREE(22500),
-> +		.gyro_max_scale = 450,
-> +		.accel_max_val = IIO_M_S_2_TO_G(22500),
-> +		.accel_max_scale = 18,
->  	},
->  };
->  
+> diff --git a/drivers/iio/imu/adis16400_core.c b/drivers/iio/imu/adis16400_core.c
+> index d42e4fe..7d612ab 100644
+> --- a/drivers/iio/imu/adis16400_core.c
+> +++ b/drivers/iio/imu/adis16400_core.c
+> @@ -696,7 +696,8 @@ static struct adis16400_chip_info adis16400_chips[] = {
+>  	[ADIS16300] = {
+>  		.channels = adis16300_channels,
+>  		.num_channels = ARRAY_SIZE(adis16300_channels),
+> -		.flags = ADIS16400_HAS_SLOW_MODE,
+> +		.flags = ADIS16400_HAS_PROD_ID | ADIS16400_HAS_SLOW_MODE |
+> +				ADIS16400_HAS_SERIAL_NUMBER,
+>  		.gyro_scale_micro = IIO_DEGREE_TO_RAD(50000), /* 0.05 deg/s */
+>  		.accel_scale_micro = 5884,
+>  		.temp_scale_nano = 140000000, /* 0.14 C */
 > 
 
