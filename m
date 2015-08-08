@@ -1,304 +1,101 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:57926 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:57932 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754113AbbHHLV7 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 8 Aug 2015 07:21:59 -0400
-Subject: Re: [PATCH v2 3/7] iio:accel:stk8312: improve error handling
-To: "Breana, Tiberiu A" <tiberiu.a.breana@intel.com>,
-	Crt Mori <cmo@melexis.com>, Hartmut Knaack <knaack.h@gmx.de>
+	with ESMTP id S1754097AbbHHLWc (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 8 Aug 2015 07:22:32 -0400
+Subject: Re: [PATCH v2 4/7] iio:accel:stk8312: rework macro definitions
+To: Hartmut Knaack <knaack.h@gmx.de>, linux-iio@vger.kernel.org
 References: <cover.1438204273.git.knaack.h@gmx.de>
- <ba37bdc28af46b4bd38e4a923d87a5d8e78ce2ee.1438204273.git.knaack.h@gmx.de>
- <CAKv63uuz5X6=3Z2pB9MHXgjgry8zWpxeV4KRcr-0_bxs57LCQw@mail.gmail.com>
- <4586F61A4A291F4DA44D32824E7C0F402218813D@IRSMSX109.ger.corp.intel.com>
- <55BC0895.5080902@gmx.de>
- <CAKv63uuuf7mAfO++SyXsMoBrywjMR3Jc3LgCRnHnMY=zXEGyqg@mail.gmail.com>
- <4586F61A4A291F4DA44D32824E7C0F4022188715@IRSMSX109.ger.corp.intel.com>
-Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>
+ <85ebbe977981145ab175742de362d050e38be955.1438204273.git.knaack.h@gmx.de>
+Cc: Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Tiberiu Breana <tiberiu.a.breana@intel.com>
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <55C5E652.5050006@kernel.org>
-Date: Sat, 8 Aug 2015 12:21:54 +0100
+Message-ID: <55C5E677.2070800@kernel.org>
+Date: Sat, 8 Aug 2015 12:22:31 +0100
 MIME-Version: 1.0
-In-Reply-To: <4586F61A4A291F4DA44D32824E7C0F4022188715@IRSMSX109.ger.corp.intel.com>
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <85ebbe977981145ab175742de362d050e38be955.1438204273.git.knaack.h@gmx.de>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 03/08/15 09:05, Breana, Tiberiu A wrote:
->> -----Original Message-----
->> From: Crt Mori [mailto:cmo@melexis.com]
->> Sent: Saturday, August 1, 2015 10:41 AM
->> To: Hartmut Knaack
->> Cc: Breana, Tiberiu A; linux-iio@vger.kernel.org; Jonathan Cameron; Lars-
->> Peter Clausen; Peter Meerwald
->> Subject: Re: [PATCH v2 3/7] iio:accel:stk8312: improve error handling
->>
->> On 1 August 2015 at 01:45, Hartmut Knaack <knaack.h@gmx.de> wrote:
->>> Breana, Tiberiu A schrieb am 30.07.2015 um 11:07:
->>>>> -----Original Message-----
->>>>> From: Crt Mori [mailto:cmo@melexis.com]
->>>>> Sent: Thursday, July 30, 2015 10:04 AM
->>>>> To: Hartmut Knaack
->>>>> Cc: linux-iio@vger.kernel.org; Jonathan Cameron; Lars-Peter Clausen;
->>>>> Peter Meerwald; Breana, Tiberiu A
->>>>> Subject: Re: [PATCH v2 3/7] iio:accel:stk8312: improve error
->>>>> handling
->>>>>
->>>>> Hi, some comments/questions below:
->>>>>
->>>>> On 29 July 2015 at 23:39, Hartmut Knaack <knaack.h@gmx.de> wrote:
->>>>>> Improve error handling in the following ways:
->>>>>>   - set return value on error condition to an appropriate error code
->>>>>>   - return error code immediately in case of an error (slightly changes
->>>>>>     code structure)
->>>>>>   - pass up real error code
->>>>>>   - add missing error handling
->>>>>>   - return 0 when error have been caught already
->>>>>>   - put device back in active mode after error occurs
->>>>>>
->>>>>> Signed-off-by: Hartmut Knaack <knaack.h@gmx.de>
->>>>
->>>> Comments inline.
->>>>
->>>>>> ---
->>>>>>  drivers/iio/accel/stk8312.c | 60
->>>>>> ++++++++++++++++++++++++++++-----------------
->>>>>>  1 file changed, 38 insertions(+), 22 deletions(-)
->>>>>>
->>>>>> diff --git a/drivers/iio/accel/stk8312.c
->>>>>> b/drivers/iio/accel/stk8312.c index 6592be8e6377..4e1dda7e896d
->>>>>> 100644
->>>>>> --- a/drivers/iio/accel/stk8312.c
->>>>>> +++ b/drivers/iio/accel/stk8312.c
->>>>>> @@ -146,8 +146,10 @@ static int stk8312_otp_init(struct
->>>>>> stk8312_data
->>>>> *data)
->>>>>>                 count--;
->>>>>>         } while (!(ret & 0x80) && count > 0);
->>>>>>
->>>>>> -       if (count == 0)
->>>>>> +       if (count == 0) {
->>>>>> +               ret = -ETIMEDOUT;
->>>>>>                 goto exit_err;
->>>>>> +       }
->>>>> You dont need braces since it is a one word statement or add a
->>>>> dev_err() report.
->>>>
->>>> +1
->>>
->>> It's two lines of code to be executed if this condition is true, so
->>> braces are needed. The dev_err() however is located under exit_err,
->>> which is the reason for the goto, instead of directly returning.
->>>
->> Agreed - I have again misread the diff, same as Tiberiu. Sorry for this.
->>>>
->>>>>>
->>>>>>         ret = i2c_smbus_read_byte_data(client, STK8312_REG_OTPDATA);
->>>>>>         if (ret == 0)
->>>>>> @@ -161,7 +163,7 @@ static int stk8312_otp_init(struct stk8312_data
->>>>> *data)
->>>>>>                 goto exit_err;
->>>>> Why dont we return here as well?
->>>>
->>>> I'm not sure I follow.
->>>>
->>>>>>         msleep(150);
->>>>>>
->>>>>> -       return ret;
->>>>>> +       return 0;
->>>>>>
->>>>>>  exit_err:
->>>>>>         dev_err(&client->dev, "failed to initialize sensor\n"); @@
->>>>>> -205,8 +207,11 @@ static int stk8312_set_interrupts(struct
->>>>>> stk8312_data
->>>>> *data, u8 int_mask)
->>>>>>                 return ret;
->>>>>>
->>>>>>         ret = i2c_smbus_write_byte_data(client, STK8312_REG_INTSU,
->>>>> int_mask);
->>>>>> -       if (ret < 0)
->>>>>> +       if (ret < 0) {
->>>>>>                 dev_err(&client->dev, "failed to set
->>>>>> interrupts\n");
->>>>>> +               stk8312_set_mode(data, mode);
->>>>>> +               return ret;
->>>>>> +       }
->>>>>>
->>>>>>         return stk8312_set_mode(data, mode);  } @@ -230,7 +235,7 @@
->>>>>> static int stk8312_data_rdy_trigger_set_state(struct iio_trigger
->>>>>> *trig,
->>>>>>
->>>>>>         data->dready_trigger_on = state;
->>>>>>
->>>>>> -       return ret;
->>>>>> +       return 0;
->>>>>>  }
->>>>>>
->>>>>>  static const struct iio_trigger_ops stk8312_trigger_ops = { @@
->>>>>> -255,20 +260,24 @@ static int stk8312_set_sample_rate(struct
->>>>> stk8312_data *data, int rate)
->>>>>>                 return ret;
->>>>>>
->>>>>>         ret = i2c_smbus_read_byte_data(client, STK8312_REG_SR);
->>>>>> -       if (ret < 0) {
->>>>>> -               dev_err(&client->dev, "failed to set sampling rate\n");
->>>>>> -               return ret;
->>>>>> -       }
->>>>>> +       if (ret < 0)
->>>>>> +               goto err_activate;
->>>>>>
->>>>>>         masked_reg = (ret & (~STK8312_SR_MASK)) | rate;
->>>>>>
->>>>>>         ret = i2c_smbus_write_byte_data(client, STK8312_REG_SR,
->>>>> masked_reg);
->>>>>>         if (ret < 0)
->>>>>> -               dev_err(&client->dev, "failed to set sampling rate\n");
->>>>>> -       else
->>>>>> -               data->sample_rate_idx = rate;
->>>>>> +               goto err_activate;
->>>>>> +
->>>>>> +       data->sample_rate_idx = rate;
->>>>>>
->>>>>>         return stk8312_set_mode(data, mode);
->>>>>> +
->>>>>> +err_activate:
->>>>>> +       dev_err(&client->dev, "failed to set sampling rate\n");
->>>>>> +       stk8312_set_mode(data, mode);
->>>>>> +
->>>>>> +       return ret;
->>>>>>  }
->>>>>>
->>>>>>  static int stk8312_set_range(struct stk8312_data *data, u8 range)
->>>>>> @@
->>>>>> -290,21 +299,25 @@ static int stk8312_set_range(struct stk8312_data
->>>>> *data, u8 range)
->>>>>>                 return ret;
->>>>>>
->>>>>>         ret = i2c_smbus_read_byte_data(client, STK8312_REG_STH);
->>>>>> -       if (ret < 0) {
->>>>>> -               dev_err(&client->dev, "failed to change sensor range\n");
->>>>>> -               return ret;
->>>>>> -       }
->>>>>> +       if (ret < 0)
->>>>>> +               goto err_activate;
->>>>>>
->>>>>>         masked_reg = ret & (~STK8312_RNG_MASK);
->>>>>>         masked_reg |= range << STK8312_RNG_SHIFT;
->>>>>>
->>>>>>         ret = i2c_smbus_write_byte_data(client, STK8312_REG_STH,
->>>>> masked_reg);
->>>>>>         if (ret < 0)
->>>>> So in case of error we print error, but continue without returning
->>>>> error value, but if it is a success then we go to err_activate and return a
->> positive value?
->>>>> Either label is
->>>>> confusing or the whole process.
->>>>
->>>> I suggest you take a closer look.
->>>>
->>>>>> -               dev_err(&client->dev, "failed to change sensor range\n");
->>>>>> -       else
->>>>>> -               data->range = range;
->>>>>> +               goto err_activate;
->>>>>> +
->>>>>> +       data->range = range;
->>>>>>
->>>>>>         return stk8312_set_mode(data, mode);
->>>>>> +
->>>>>> +err_activate:
->>>>>> +       dev_err(&client->dev, "failed to change sensor range\n");
->>>>>> +       stk8312_set_mode(data, mode);
->>>>>> +
->>>>>> +       return ret;
->>>>>>  }
->>>>>>
->>>>>>  static int stk8312_read_accel(struct stk8312_data *data, u8
->>>>>> address) @@ -337,18 +350,21 @@ static int stk8312_read_raw(struct
->>>>>> iio_dev
->>>>> *indio_dev,
->>>>>>                 ret = stk8312_set_mode(data, data->mode |
->>>>> STK8312_MODE_ACTIVE);
->>>>>>                 if (ret < 0) {
->>>>>>                         mutex_unlock(&data->lock);
->>>>>> -                       return -EINVAL;
->>>>>> +                       return ret;
->>>>>>                 }
->>>>>>                 ret = stk8312_read_accel(data, chan->address);
->>>>>>                 if (ret < 0) {
->>>>>>                         stk8312_set_mode(data,
->>>>>>                                          data->mode & (~STK8312_MODE_ACTIVE));
->>>>>>                         mutex_unlock(&data->lock);
->>>>>> -                       return -EINVAL;
->>>>>> +                       return ret;
->>>>>>                 }
->>>>>>                 *val = sign_extend32(ret, 7);
->>>>>> -               stk8312_set_mode(data, data->mode &
->>>>> (~STK8312_MODE_ACTIVE));
->>>>>> +               ret = stk8312_set_mode(data,
->>>>>> +                                      data->mode &
->>>>>> + (~STK8312_MODE_ACTIVE));
->>>>>>                 mutex_unlock(&data->lock);
->>>>>> +               if (ret < 0)
->>>>>> +                       return ret;
->>>>
->>>> Hartmut, I stand by my comment from the first patch version.
->>>> We shouldn't return a read error if we're not able to put the sensor
->>>> back in standby mode after reading the values.
->>>>
->>>
->>> I don't know how often you would usually encounter problems when
->>> setting the device in standby mode. Since it is just a single I2C byte
->>> write, that should never fail, unless there is some serious host
->>> adapter-, bus- or client-failure, which qualifies to be reported.
->>> This is handled similarly in the following drivers, as well (probably
->>> some more):
->>> https://git.kernel.org/cgit/linux/kernel/git/jic23/iio.git/tree/driver
->>> s/iio/accel/bmc150-accel.c?h=testing#n643
->>> https://git.kernel.org/cgit/linux/kernel/git/jic23/iio.git/tree/driver
->>> s/iio/accel/kxcjk-1013.c?h=testing#n713
->>> https://git.kernel.org/cgit/linux/kernel/git/jic23/iio.git/tree/driver
->>> s/iio/gyro/bmg160.c?h=testing#n512
->>> https://git.kernel.org/cgit/linux/kernel/git/jic23/iio.git/tree/driver
->>> s/iio/light/jsa1212.c?h=testing#n218
->>>
+On 29/07/15 22:39, Hartmut Knaack wrote:
+> Make use of BIT to describe register bits, GENMASK for consecutive
+> bitmasks, rename and sort existing definitions, replace magic value with
+> an expressive definition, drop an unused definition.
 > 
-> Ok, if that's the standard procedure, then this should be no different.
-> +1
-Having divided through thread, unless I have missed something
-I think this is a good improvement on the existing situation.
-Please submit any further changes on top of this.
-
-Applied to the togreg branch of iio.git
+> Signed-off-by: Hartmut Knaack <knaack.h@gmx.de>
+> Reviewed-by: Tiberiu Breana <tiberiu.a.breana@intel.com>
+Applied to the togreg branch of iio.git.
 
 Thanks,
 
 Jonathan
+> ---
+>  drivers/iio/accel/stk8312.c | 25 +++++++++++++------------
+>  1 file changed, 13 insertions(+), 12 deletions(-)
 > 
->>>>>>                 return IIO_VAL_INT;
->>>>>>         case IIO_CHAN_INFO_SCALE:
->>>>>>                 *val = stk8312_scale_table[data->range - 1][0]; @@
->>>>>> -608,7 +624,7 @@ static int stk8312_probe(struct i2c_client *client,
->>>>>>                 goto err_buffer_cleanup;
->>>>>>         }
->>>>>>
->>>>>> -       return ret;
->>>>>> +       return 0;
->>>>>>
->>>>>>  err_buffer_cleanup:
->>>>>>         iio_triggered_buffer_cleanup(indio_dev);
->>>>>> --
->>>>>> 2.4.6
->>>>>>
->>>>>> --
->>>>>> To unsubscribe from this list: send the line "unsubscribe linux-iio"
->>>>>> in the body of a message to majordomo@vger.kernel.org More
->>>>> majordomo
->>>>>> info at  http://vger.kernel.org/majordomo-info.html
->>>> N     r  y   b X  ǧv ^ )޺{.n +    {  *"  ^n r   z    h    &    G   h
->>>> ( 階 ݢj"     m     z ޖ   f   h   ~ mml==
->>>>
->>>
-> N�����r��y���b�X��ǧv�^�)޺{.n�+����{��*"��^n�r���z���h����&���G���h�(�階�ݢj"���m�����z�ޖ���f���h���~�mml==
+> diff --git a/drivers/iio/accel/stk8312.c b/drivers/iio/accel/stk8312.c
+> index 4e1dda7e896d..8807927d4d0b 100644
+> --- a/drivers/iio/accel/stk8312.c
+> +++ b/drivers/iio/accel/stk8312.c
+> @@ -37,16 +37,16 @@
+>  #define STK8312_REG_OTPDATA		0x3E
+>  #define STK8312_REG_OTPCTRL		0x3F
+>  
+> -#define STK8312_MODE_ACTIVE		0x01
+> +#define STK8312_MODE_ACTIVE		BIT(0)
+>  #define STK8312_MODE_STANDBY		0x00
+> -#define STK8312_DREADY_BIT		0x10
+> -#define STK8312_INT_MODE		0xC0
+> -#define STK8312_RNG_MASK		0xC0
+> -#define STK8312_SR_MASK			0x07
+> -#define STK8312_SR_400HZ_IDX		0
+> +#define STK8312_MODE_INT_AH_PP		0xC0	/* active-high, push-pull */
+> +#define STK8312_DREADY_BIT		BIT(4)
+> +#define STK8312_RNG_6G			1
+>  #define STK8312_RNG_SHIFT		6
+> -#define STK8312_READ_RETRIES		16
+> -#define STK8312_ALL_CHANNEL_MASK	7
+> +#define STK8312_RNG_MASK		GENMASK(7, 6)
+> +#define STK8312_SR_MASK			GENMASK(2, 0)
+> +#define STK8312_SR_400HZ_IDX		0
+> +#define STK8312_ALL_CHANNEL_MASK	GENMASK(2, 0)
+>  #define STK8312_ALL_CHANNEL_SIZE	3
+>  
+>  #define STK8312_DRIVER_NAME		"stk8312"
+> @@ -144,7 +144,7 @@ static int stk8312_otp_init(struct stk8312_data *data)
+>  		if (ret < 0)
+>  			goto exit_err;
+>  		count--;
+> -	} while (!(ret & 0x80) && count > 0);
+> +	} while (!(ret & BIT(7)) && count > 0);
+>  
+>  	if (count == 0) {
+>  		ret = -ETIMEDOUT;
+> @@ -565,11 +565,12 @@ static int stk8312_probe(struct i2c_client *client,
+>  		return ret;
+>  	}
+>  	data->sample_rate_idx = STK8312_SR_400HZ_IDX;
+> -	ret = stk8312_set_range(data, 1);
+> +	ret = stk8312_set_range(data, STK8312_RNG_6G);
+>  	if (ret < 0)
+>  		return ret;
+>  
+> -	ret = stk8312_set_mode(data, STK8312_INT_MODE | STK8312_MODE_ACTIVE);
+> +	ret = stk8312_set_mode(data,
+> +			       STK8312_MODE_INT_AH_PP | STK8312_MODE_ACTIVE);
+>  	if (ret < 0)
+>  		return ret;
+>  
+> @@ -690,7 +691,7 @@ MODULE_DEVICE_TABLE(acpi, stk8312_acpi_id);
+>  
+>  static struct i2c_driver stk8312_driver = {
+>  	.driver = {
+> -		.name = "stk8312",
+> +		.name = STK8312_DRIVER_NAME,
+>  		.pm = STK8312_PM_OPS,
+>  		.acpi_match_table = ACPI_PTR(stk8312_acpi_id),
+>  	},
 > 
 
