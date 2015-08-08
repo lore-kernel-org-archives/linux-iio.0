@@ -1,93 +1,77 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:59081 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:59120 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1946737AbbHHPg1 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 8 Aug 2015 11:36:27 -0400
-Subject: Re: [PATCH 2/2] iio:accel:bmc150-accel: Use the chip ID to detect
- sensor variant
-To: Bastien Nocera <hadess@hadess.net>,
-	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-References: <1437664867.2863.13.camel@hadess.net> <55BE50D5.30905@kernel.org>
- <1438632544.17718.46.camel@spandruv-DESK3.jf.intel.com>
- <1438682293.22369.10.camel@hadess.net>
-Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	Octavian Purdila <octavian.purdila@intel.com>
+	with ESMTP id S1946068AbbHHPof (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 8 Aug 2015 11:44:35 -0400
+Subject: Re: [PATCH] iio: industrialio-buffer: Fix iio_buffer_poll return
+ value
+To: Daniel Baluta <daniel.baluta@intel.com>,
+	Cristina Opriceana <cristina.opriceana@gmail.com>
+References: <4193254d1067149430a5a8d84a21def37f09bcec.1438598039.git.cristina.opriceana@gmail.com>
+ <CAEnQRZBOd_5O+8-pWOJLDD-sycYmcn5cbkFctH4Fr73R21cr-Q@mail.gmail.com>
+Cc: Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <55C621F9.3070702@kernel.org>
-Date: Sat, 8 Aug 2015 16:36:25 +0100
+Message-ID: <55C623E0.4090802@kernel.org>
+Date: Sat, 8 Aug 2015 16:44:32 +0100
 MIME-Version: 1.0
-In-Reply-To: <1438682293.22369.10.camel@hadess.net>
+In-Reply-To: <CAEnQRZBOd_5O+8-pWOJLDD-sycYmcn5cbkFctH4Fr73R21cr-Q@mail.gmail.com>
 Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 04/08/15 10:58, Bastien Nocera wrote:
-> On Mon, 2015-08-03 at 13:09 -0700, Srinivas Pandruvada wrote:
->> On Sun, 2015-08-02 at 18:18 +0100, Jonathan Cameron wrote:
->>> On 23/07/15 16:21, Bastien Nocera wrote:
->>>> Instead of using the I2C or ACPI ID to determine which variant of
->>>> the chipset to use, determine that from the chip ID.
->>>>
->>>> Under Windows, the same driver is used for those variants and, 
->>>> despite
->>>> incorrect ACPI data, it is able to load and operate the 
->>>> accelerometer.
->>>>
->>>> Fixes the accelerometer failing with:
->>>> bmc150_accel i2c-BMA250E:00: Invalid chip f8
->>>> on the WinBook TW100
->>>>
->>>> Signed-off-by: Bastien Nocera <hadess@hadess.net>
->>> I'll start by saying I hate that this change is necessary down
->>> at the driver level.
->>>
->>> Is there no way to catch it as an ACPI quirk? (I know next to 
->>> nothing about
->>> ACPI and a quick a google isn't pointing me in the right 
->>> direction!)
->>> Seems irritating that we have to deal with this but such is life I 
->>> guess
->>> (anyone want to take the bet that at some point the windows driver 
->>> will break
->>>  horribly as well for these machines?)
->>>
->>> Anyhow, Srinivas, could you also take a look at this one.
->>>
->>> I suppose I'll cope with the horribleness :)
->> We have seen where manufactures replaces a part for some reason, 
->> without
->> modifying ACPI tables. So matching chip id makes sense logically. But
->> even this is not fail proof. Some parts have same chip id with 
->> different
->> features (clones), in that case ACPI match makes more sense.
->> There is a way to patch ACPI tables but that also need to be based on
->> some DMI information.
->> I am not aware of such issue with Bosch parts. So I think this would 
->> be
->> OK to use chip id here instead of acpi id here. But what about using
->> this only when the current logic fails? In this way we can still have
->> another entry in the table for clones, if required.
+On 03/08/15 11:44, Daniel Baluta wrote:
+> On Mon, Aug 3, 2015 at 1:37 PM, Cristina Opriceana
+> <cristina.opriceana@gmail.com> wrote:
+>> Change return value to 0 if no device is bound since
+>> unsigned int cannot support negative error codes.
+>>
+>> Signed-off-by: Cristina Opriceana <cristina.opriceana@gmail.com>
 > 
-> For clones which don't advertise the right chip ID, I'd just have a
-> separate quirk table, "use this chip ID for that hardware".
+> Fixes: f18e7a068 ("iio: Return -ENODEV for file operations if the
+> device has been unregistered")
 > 
-> Seems simpler, and I'm happy to write that code when we encounter the
-> problem.
-I'm convinced.  Applied to the togreg branch of iio.git (too large to push
-out as a fix at this point in the cycle as it's not fixing a regression).
-
-Note that it didn't apply cleanly so please take a quick look to check
-I haven't messed it up!
-
-Will be pushed out as testing as soon as my local sanity check build is
-done so the autobuilders can hit it harder.
-
-Thanks,
+I've applied a variant of this to the the fixes-togreg branch.
+The docs aren't there yet so this is going to make for some messy
+merging.  We can fix the docs once the fix has worked it's way through.
 
 Jonathan
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> 
+>> ---
+>>  drivers/iio/industrialio-buffer.c | 6 ++++--
+>>  1 file changed, 4 insertions(+), 2 deletions(-)
+>>
+>> diff --git a/drivers/iio/industrialio-buffer.c b/drivers/iio/industrialio-buffer.c
+>> index faed6ef..e8e87cf 100644
+>> --- a/drivers/iio/industrialio-buffer.c
+>> +++ b/drivers/iio/industrialio-buffer.c
+>> @@ -155,7 +155,9 @@ ssize_t iio_buffer_read_first_n_outer(struct file *filp, char __user *buf,
+>>   *             a wait queue
+>>   *
+>>   * Return: (POLLIN | POLLRDNORM) if data is available for reading
+>> - *        or 0 for other cases
+>> + *        and 0 for other cases, e.g. no device is bound or no
+>> + *        hardware fifo flush could be triggered.
+>> + *
+>>   */
+>>  unsigned int iio_buffer_poll(struct file *filp,
+>>                              struct poll_table_struct *wait)
+>> @@ -164,7 +166,7 @@ unsigned int iio_buffer_poll(struct file *filp,
+>>         struct iio_buffer *rb = indio_dev->buffer;
+>>
+>>         if (!indio_dev->info)
+>> -               return -ENODEV;
+>> +               return 0;
+>>
+>>         poll_wait(filp, &rb->pollq, wait);
+>>         if (iio_buffer_ready(indio_dev, rb, rb->watermark, 0))
+>> --
+>> 1.9.1
+>>
+>> --
+>> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+>> the body of a message to majordomo@vger.kernel.org
+>> More majordomo info at  http://vger.kernel.org/majordomo-info.html
 
