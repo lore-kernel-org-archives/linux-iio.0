@@ -1,66 +1,52 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:59280 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:59335 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1946068AbbHHQUk (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 8 Aug 2015 12:20:40 -0400
-Subject: Re: [PATCH] iio: event: Remove negative error code from
- iio_event_poll
-To: Cristina Opriceana <cristina.opriceana@gmail.com>
-References: <3a7c7c8ea195b6bb8b6972a22a487d870b2faec0.1438595639.git.cristina.opriceana@gmail.com>
-Cc: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-	daniel.baluta@intel.com
+	with ESMTP id S1946068AbbHHQ2T (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 8 Aug 2015 12:28:19 -0400
+Subject: Re: [PATCH 1/7] iio:accel:mma8452: fix _get_hp_filter_index
+To: Hartmut Knaack <knaack.h@gmx.de>, linux-iio@vger.kernel.org
+References: <cover.1438483410.git.knaack.h@gmx.de>
+ <0296b82421da1d80a12a6a153e803585bee43cd4.1438483410.git.knaack.h@gmx.de>
+Cc: Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Martin Fuzzey <mfuzzey@parkeon.com>,
+	Roberta Dobrescu <roberta.dobrescu@gmail.com>,
+	martink@posteo.de
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <55C62C56.2030406@kernel.org>
-Date: Sat, 8 Aug 2015 17:20:38 +0100
+Message-ID: <55C62E20.9090202@kernel.org>
+Date: Sat, 8 Aug 2015 17:28:16 +0100
 MIME-Version: 1.0
-In-Reply-To: <3a7c7c8ea195b6bb8b6972a22a487d870b2faec0.1438595639.git.cristina.opriceana@gmail.com>
+In-Reply-To: <0296b82421da1d80a12a6a153e803585bee43cd4.1438483410.git.knaack.h@gmx.de>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 03/08/15 11:00, Cristina Opriceana wrote:
-> Negative return values are not supported by iio_event_poll since
-> its return type is unsigned int.
+On 02/08/15 21:43, Hartmut Knaack wrote:
+> To iterate through the available frequencies of mma8452_hp_filter_cutoff[],
+> the array size of a row of that table needs to be provided to
+> _get_int_plus_micros_index().
 > 
-> Signed-off-by: Cristina Opriceana <cristina.opriceana@gmail.com>
-As with the other one, the docs aren't yet there in the fixes tree where
-I have applied this (by hand).  I've also added the fixes line and
-marked it for stable.
-
-Could you resend the docs updates after that patch has worked it's
-way through to the togreg branch of iio.git
-
-(I'll try and remember this as well!)
-
-Thanks,
-
-Jonathan
+> Fixes: 	1e79841a00e46 ("iio: mma8452: Add highpass filter configuration.")
+> 
+> Signed-off-by: Hartmut Knaack <knaack.h@gmx.de>
+Applied to the togreg branch of iio.git - initially pushed out as testing
+etc.
 > ---
->  drivers/iio/industrialio-event.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
+>  drivers/iio/accel/mma8452.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 > 
-> diff --git a/drivers/iio/industrialio-event.c b/drivers/iio/industrialio-event.c
-> index b2f63f9..eb44dab 100644
-> --- a/drivers/iio/industrialio-event.c
-> +++ b/drivers/iio/industrialio-event.c
-> @@ -80,7 +80,7 @@ EXPORT_SYMBOL(iio_push_event);
->   * @wait:	Poll table pointer to add the wait queue on
->   *
->   * Return: (POLLIN | POLLRDNORM) if data is available for reading
-> - *	   or a negative error code on failure
-> + *	   or 0 on failure
->   */
->  static unsigned int iio_event_poll(struct file *filep,
->  			     struct poll_table_struct *wait)
-> @@ -90,7 +90,7 @@ static unsigned int iio_event_poll(struct file *filep,
->  	unsigned int events = 0;
+> diff --git a/drivers/iio/accel/mma8452.c b/drivers/iio/accel/mma8452.c
+> index e8e2077c7244..245b95fc22be 100644
+> --- a/drivers/iio/accel/mma8452.c
+> +++ b/drivers/iio/accel/mma8452.c
+> @@ -229,7 +229,7 @@ static int mma8452_get_hp_filter_index(struct mma8452_data *data,
+>  	int i = mma8452_get_odr_index(data);
 >  
->  	if (!indio_dev->info)
-> -		return -ENODEV;
-> +		return events;
+>  	return mma8452_get_int_plus_micros_index(mma8452_hp_filter_cutoff[i],
+> -		ARRAY_SIZE(mma8452_scales[0]), val, val2);
+> +		ARRAY_SIZE(mma8452_hp_filter_cutoff[0]), val, val2);
+>  }
 >  
->  	poll_wait(filep, &ev_int->wait, wait);
->  
+>  static int mma8452_read_hp_filter(struct mma8452_data *data, int *hz, int *uHz)
 > 
 
