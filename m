@@ -1,97 +1,53 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:58090 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:58101 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S964788AbbHHLqH (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 8 Aug 2015 07:46:07 -0400
-Subject: Re: [PATCH v2] iio: trigger: Add missing fields in kernel docs
-To: Cristina Opriceana <cristina.opriceana@gmail.com>
-References: <7f6bc59643f226ee60469e2b4917126061cef956.1438861163.git.cristina.opriceana@gmail.com>
-Cc: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-	daniel.baluta@intel.com
+	with ESMTP id S964772AbbHHLsh (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 8 Aug 2015 07:48:37 -0400
+Subject: Re: [PATCH 1/9] iio: adis16400: Fix adis16448 gyroscope scale
+To: Lars-Peter Clausen <lars@metafoo.de>
+References: <1438781901-28000-1-git-send-email-lars@metafoo.de>
+ <1438781901-28000-2-git-send-email-lars@metafoo.de>
+Cc: Hartmut Knaack <knaack.h@gmx.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>, linux-iio@vger.kernel.org
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <55C5EBFD.1020503@kernel.org>
-Date: Sat, 8 Aug 2015 12:46:05 +0100
+Message-ID: <55C5EC92.2000805@kernel.org>
+Date: Sat, 8 Aug 2015 12:48:34 +0100
 MIME-Version: 1.0
-In-Reply-To: <7f6bc59643f226ee60469e2b4917126061cef956.1438861163.git.cristina.opriceana@gmail.com>
+In-Reply-To: <1438781901-28000-2-git-send-email-lars@metafoo.de>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 06/08/15 12:56, Cristina Opriceana wrote:
-> Fix kernel docs warnings by adding the missing description
-> for each of the existing function parameters.
+On 05/08/15 14:38, Lars-Peter Clausen wrote:
+> Use the correct scale for the adis16448 gyroscope output.
 > 
-> Signed-off-by: Cristina Opriceana <cristina.opriceana@gmail.com>
-Applied to the togreg branch of iio.git
+> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+Given we are late in the cycle and these are fixes for long broken
+issues, I'm going to take them through the togreg tree and mark
+for stable so they'll get pushed back to stable after the next
+merge window.
+
+So applied to the togreg branch of iio.git and marked for stable.
 
 Thanks,
+
+Jonathan
 > ---
-> Changes in v2:
->  - Change @dev description in all functions to illustrate better the
->  connection with IIO devices or IIO trigger.
+>  drivers/iio/imu/adis16400_core.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 > 
->  drivers/iio/industrialio-trigger.c | 27 ++++++++++++++++++++++++---
->  1 file changed, 24 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/iio/industrialio-trigger.c b/drivers/iio/industrialio-trigger.c
-> index d31098e..570606c 100644
-> --- a/drivers/iio/industrialio-trigger.c
-> +++ b/drivers/iio/industrialio-trigger.c
-> @@ -40,7 +40,14 @@ static DEFINE_MUTEX(iio_trigger_list_lock);
->  
->  /**
->   * iio_trigger_read_name() - retrieve useful identifying name
-> - **/
-> + * @dev:	device associated with the iio_trigger
-> + * @attr:	pointer to the device_attribute structure that is
-> + *		being processed
-> + * @buf:	buffer to print the name into
-> + *
-> + * Return: a negative number on failure or the number of written
-> + *	   characters on success.
-> + */
->  static ssize_t iio_trigger_read_name(struct device *dev,
->  				     struct device_attribute *attr,
->  				     char *buf)
-> @@ -288,10 +295,17 @@ EXPORT_SYMBOL_GPL(iio_dealloc_pollfunc);
->  
->  /**
->   * iio_trigger_read_current() - trigger consumer sysfs query current trigger
-> + * @dev:	device associated with an industrial I/O device
-> + * @attr:	pointer to the device_attribute structure that
-> + *		is being processed
-> + * @buf:	buffer where the current trigger name will be printed into
->   *
->   * For trigger consumers the current_trigger interface allows the trigger
->   * used by the device to be queried.
-> - **/
-> + *
-> + * Return: a negative number on failure, the number of characters written
-> + *	   on success or 0 if no trigger is available
-> + */
->  static ssize_t iio_trigger_read_current(struct device *dev,
->  					struct device_attribute *attr,
->  					char *buf)
-> @@ -305,11 +319,18 @@ static ssize_t iio_trigger_read_current(struct device *dev,
->  
->  /**
->   * iio_trigger_write_current() - trigger consumer sysfs set current trigger
-> + * @dev:	device associated with an industrial I/O device
-> + * @attr:	device attribute that is being processed
-> + * @buf:	string buffer that holds the name of the trigger
-> + * @len:	length of the trigger name held by buf
->   *
->   * For trigger consumers the current_trigger interface allows the trigger
->   * used for this device to be specified at run time based on the trigger's
->   * name.
-> - **/
-> + *
-> + * Return: negative error code on failure or length of the buffer
-> + *	   on success
-> + */
->  static ssize_t iio_trigger_write_current(struct device *dev,
->  					 struct device_attribute *attr,
->  					 const char *buf,
+> diff --git a/drivers/iio/imu/adis16400_core.c b/drivers/iio/imu/adis16400_core.c
+> index 2fd68f22..d42e4fe 100644
+> --- a/drivers/iio/imu/adis16400_core.c
+> +++ b/drivers/iio/imu/adis16400_core.c
+> @@ -780,7 +780,7 @@ static struct adis16400_chip_info adis16400_chips[] = {
+>  		.flags = ADIS16400_HAS_PROD_ID |
+>  				ADIS16400_HAS_SERIAL_NUMBER |
+>  				ADIS16400_BURST_DIAG_STAT,
+> -		.gyro_scale_micro = IIO_DEGREE_TO_RAD(10000), /* 0.01 deg/s */
+> +		.gyro_scale_micro = IIO_DEGREE_TO_RAD(40000), /* 0.04 deg/s */
+>  		.accel_scale_micro = IIO_G_TO_M_S_2(833), /* 1/1200 g */
+>  		.temp_scale_nano = 73860000, /* 0.07386 C */
+>  		.temp_offset = 31000000 / 73860, /* 31 C = 0x00 */
 > 
 
