@@ -1,294 +1,655 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:58790 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:58886 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754102AbbHHO3y (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 8 Aug 2015 10:29:54 -0400
-Subject: Re: [PATCH v2] iio: adc: vf610: Add IIO buffer support for Vybrid ADC
-To: Sanchayan Maity <maitysanchayan@gmail.com>,
-	linux-iio@vger.kernel.org
-References: <cover.1438775572.git.maitysanchayan@gmail.com>
- <1bb1f290da601bbda41875a92ba6e983b423d7b0.1438775572.git.maitysanchayan@gmail.com>
-Cc: stefan@agner.ch, B38611@freescale.com, hofrat@osadl.org,
-	sanjeev_sharma@mentor.com, fabio.estevam@freescale.com,
-	knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
-	antoine.tenart@free-electrons.com, linux-kernel@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org
+	with ESMTP id S964774AbbHHOyr (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 8 Aug 2015 10:54:47 -0400
+Subject: Re: [PATCH v2] iio: light: Add support for UPISEMI uS5182d als and
+ proximity sensor
+To: Adriana Reus <adriana.reus@intel.com>
+References: <1438095798-10693-1-git-send-email-adriana.reus@intel.com>
+ <1438695613-6394-1-git-send-email-adriana.reus@intel.com>
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <55C6125B.1060103@kernel.org>
-Date: Sat, 8 Aug 2015 15:29:47 +0100
+Message-ID: <55C61834.2080608@kernel.org>
+Date: Sat, 8 Aug 2015 15:54:44 +0100
 MIME-Version: 1.0
-In-Reply-To: <1bb1f290da601bbda41875a92ba6e983b423d7b0.1438775572.git.maitysanchayan@gmail.com>
+In-Reply-To: <1438695613-6394-1-git-send-email-adriana.reus@intel.com>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 05/08/15 13:10, Sanchayan Maity wrote:
-> This patch adds support for IIO buffer to the Vybrid ADC driver.
-> IIO triggered buffer infrastructure along with iio sysfs trigger
-> is used to leverage continuous sampling support provided by the
-> ADC block.
-Looking good.  Just a couple more bits and pieces inline from me.
-One or two of which aren't corrected from Peter's review of v1.
-
-I will want Fugang Dong's ack / review tag on the final version
-before applying it however.  This driver is some distance form my
-area of expertise!
-
-Jonathan
+On 04/08/15 14:40, Adriana Reus wrote:
+> Add support for UPISEMI us5182d als and proximity sensor.
+> Supports raw readings.
+> Data sheet for this device can be found here:
+> http://www.upi-semi.com/temp/uS5182D-DS-P0103-temp.pdf
 > 
-> Signed-off-by: Sanchayan Maity <maitysanchayan@gmail.com>
+> Signed-off-by: Adriana Reus <adriana.reus@intel.com>
+Device tree docs?
+
+Various other bits and bobs inline.
 > ---
->  drivers/iio/adc/Kconfig     |   4 ++
->  drivers/iio/adc/vf610_adc.c | 107 +++++++++++++++++++++++++++++++++++++++++---
->  2 files changed, 105 insertions(+), 6 deletions(-)
+>  Changes since v1: added data-sheet link to commit message
+>  drivers/iio/light/Kconfig   |  10 +
+>  drivers/iio/light/Makefile  |   1 +
+>  drivers/iio/light/us5182d.c | 539 ++++++++++++++++++++++++++++++++++++++++++++
+>  3 files changed, 550 insertions(+)
+>  create mode 100644 drivers/iio/light/us5182d.c
 > 
-> diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
-> index 7c55658..4661241 100644
-> --- a/drivers/iio/adc/Kconfig
-> +++ b/drivers/iio/adc/Kconfig
-> @@ -337,6 +337,10 @@ config TWL6030_GPADC
->  config VF610_ADC
->  	tristate "Freescale vf610 ADC driver"
->  	depends on OF
-> +	select IIO_BUFFER
-> +	select IIO_TRIGGER
-> +	select IIO_SYSFS_TRIGGER
-Unless I missed something there is no dependency on this particular
-trigger (it just happens to be the one you've been testing with I guess).
-Could be driven from a hardware trigger belonging to another device for
-example.
+> diff --git a/drivers/iio/light/Kconfig b/drivers/iio/light/Kconfig
+> index a459341..0aa819d 100644
+> --- a/drivers/iio/light/Kconfig
+> +++ b/drivers/iio/light/Kconfig
+> @@ -285,6 +285,16 @@ config TSL4531
+>  	 To compile this driver as a module, choose M here: the
+>  	 module will be called tsl4531.
+>  
+> +config US5182D
+> +	tristate "UPISEMI light and proximity sensor"
+> +	depends on I2C
+> +	help
+> +	 If you say yes here you get support for the UPISEMI US5182D
+> +	 ambient light and proximity sensor.
+> +
+> +	 This driver can also be built as a module.  If so, the module
+> +	 will be called us5182d.
+> +
+>  config VCNL4000
+>  	tristate "VCNL4000 combined ALS and proximity sensor"
+>  	depends on I2C
+> diff --git a/drivers/iio/light/Makefile b/drivers/iio/light/Makefile
+> index 91c74c0..528cc8f 100644
+> --- a/drivers/iio/light/Makefile
+> +++ b/drivers/iio/light/Makefile
+> @@ -27,4 +27,5 @@ obj-$(CONFIG_STK3310)          += stk3310.o
+>  obj-$(CONFIG_TCS3414)		+= tcs3414.o
+>  obj-$(CONFIG_TCS3472)		+= tcs3472.o
+>  obj-$(CONFIG_TSL4531)		+= tsl4531.o
+> +obj-$(CONFIG_US5182D)		+= us5182d.o
+>  obj-$(CONFIG_VCNL4000)		+= vcnl4000.o
+> diff --git a/drivers/iio/light/us5182d.c b/drivers/iio/light/us5182d.c
+> new file mode 100644
+> index 0000000..6654bb0
+> --- /dev/null
+> +++ b/drivers/iio/light/us5182d.c
+> @@ -0,0 +1,539 @@
+> +/*
+> + * Copyright (c) 2015 Intel Corporation
+> + *
+> + * Driver for UPISEMI us5182d Proximity and Ambient Light Sensor.
+> + *
+> + * This program is free software; you can redistribute it and/or modify it
+> + * under the terms of the GNU General Public License version 2 as published by
+> + * the Free Software Foundation.
+> + *
+> + * This program is distributed in the hope it will be useful, but WITHOUT
+> + * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+> + * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+> + * more details.
+> + *
+> + * To do: Interrupt support.
+> + */
+> +
+> +#include <linux/kernel.h>
+> +#include <linux/module.h>
+> +#include <linux/acpi.h>
+> +#include <linux/delay.h>
+> +#include <linux/i2c.h>
+> +#include <linux/iio/iio.h>
+> +#include <linux/iio/sysfs.h>
+> +#include <linux/mutex.h>
+> +
+> +#define US5182D_REG_CFG0		0x00
+> +#define US5182D_REG_CFG1		0x01
+> +#define US5182D_REG_CFG2		0x02
+> +#define US5182D_REG_CFG3		0x03
+> +#define US5182D_REG_CFG4		0x10
+> +
+> +/*
+> + * Registers for tuning the auto dark current cancelling feature.
+> + * DARK_TH(reg 0x27,0x28) - threshold (counts) for auto dark cancelling.
+> + * when ALS  > DARK_TH --> ALS_Code = ALS - Upper(0x2A) * Dark
+> + * when ALS < DARK_TH --> ALS_Code = ALS - Lower(0x29) * Dark
+> + */
+> +#define US5182D_REG_UDARK_TH			0x27
+> +#define US5182D_REG_DARK_AUTO_EN		0x2b
+> +#define US5182D_REG_AUTO_LDARK_TH		0x29
+> +#define US5182D_REG_AUTO_HDARK_TH		0x2a
+> +
+> +/*
+> + * power-mode - oneshot, non-interrupt, word mode access for
+> + * als code, th registers.
+> + */
+> +#define US5182D_REG_CFG0_DEFAULT		0x81
+I'd prefer to see the elements of this register broken down.  Something
+like (guessing what is in this reg to a degree).
 
-> +	select IIO_TRIGGERED_BUFFER
->  	help
->  	  Say yes here to support for Vybrid board analog-to-digital converter.
->  	  Since the IP is used for i.MX6SLX, the driver also support i.MX6SLX.
-> diff --git a/drivers/iio/adc/vf610_adc.c b/drivers/iio/adc/vf610_adc.c
-> index 23b8fb9..97cb2ed 100644
-> --- a/drivers/iio/adc/vf610_adc.c
-> +++ b/drivers/iio/adc/vf610_adc.c
-> @@ -34,8 +34,11 @@
->  #include <linux/err.h>
->  
->  #include <linux/iio/iio.h>
-> +#include <linux/iio/buffer.h>
->  #include <linux/iio/sysfs.h>
-> -#include <linux/iio/driver.h>
-> +#include <linux/iio/trigger.h>
-> +#include <linux/iio/trigger_consumer.h>
-> +#include <linux/iio/triggered_buffer.h>
->  
->  /* This will be the driver name the kernel reports */
->  #define DRIVER_NAME "vf610-adc"
-> @@ -170,6 +173,7 @@ struct vf610_adc {
->  	u32 sample_freq_avail[5];
->  
->  	struct completion completion;
-> +	u16 buffer[2];
-Note the requirements on the buffer provided to
-iio_push_to_buffers_with_timestamp
-Needs to be u16 buffer[8] to allow for the aligned 64bit (4 word) timestamp.
+#define US5182D_REG_CFG0_DEFAULT \
+	(US5182D_AGAIN_1X | (US5182_OPMODE_ALS << US5182D_OPMODE_SHIFT))
 
-Peter pointed this out in his follow up email and you said you'd implement
-it.. Guessing this got lost somewhere.
+Perhaps even define the inverse cases so that the values themselves act
+as documentation. (so SHUTDOWN_DIS and ONESHOT_DIS)
 
+Same is true for any of thes registers that are compound values.
 
->  };
->  
->  static const u32 vf610_hw_avgs[] = { 1, 4, 8, 16, 32 };
-> @@ -505,12 +509,22 @@ static const struct iio_chan_spec_ext_info vf610_ext_info[] = {
->  	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE) |	\
->  				BIT(IIO_CHAN_INFO_SAMP_FREQ),	\
->  	.ext_info = vf610_ext_info,				\
-> +	.address = (_idx),				\
-> +	.scan_index = (_idx),			\
-> +	.scan_type.sign = 'u',			\
-> +	.scan_type.realbits = 12,		\
-> +	.scan_type.storagebits = 16,	\
->  }
->  
->  #define VF610_ADC_TEMPERATURE_CHAN(_idx, _chan_type) {	\
->  	.type = (_chan_type),	\
->  	.channel = (_idx),		\
->  	.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED),	\
-> +	.address = (_idx),						\
-> +	.scan_index = (_idx),					\
-.scan_type = {
-	   .sign = 'u',
-	   etc.
+Basically the code should be explicity where it can be rather than requiring
+docs that don't make it obvious which parts of the value are the cause
+of what.
 
-Peter picked up on this..
+> +
+> +/*
+> + * no als fault queue, 16 bit als resolution (supports 12 and 14 also),
+> + * max-range 12354.
+> + */
+> +#define US5182D_REG_CFG1_DEFAULT		0x10
+> +
+> +/*
+> + * 16 bit resolution for PX, x16 sensing amplifier for px
+> + * supports [x1 x2 x4 x8 x16 x32 x64 x128]
+> + */
+> +#define US5182D_REG_CFG2_DEFAULT		0x14
+> +
+> +/*
+> + * led current : 100mA, supports [12.5 25 50 100] mA,
+> + * interrupt source selection "px approach",
+> + * [als or ps, als only, ps only, ps approach]
+> + */
+> +#define US5182D_REG_CFG3_DEFAULT		0x3C
+> +
+> +/*
+> + * led frequency ADC Clock/2 from [ADC Clock/2, /4, /8, /10]
+> + * automatic 50/60 Hz ripple rejection disabled.
+> + */
+> +#define US5182D_REG_CFG4_DEFAULT		0x00
+> +
+> +#define US5182D_REG_DARK_AUTO_EN_DEFAULT	0x80
+> +#define US5182D_REG_AUTO_LDARK_TH_DEFAULT	0x16
+> +#define US5182D_REG_AUTO_HDARK_TH_DEFAULT	0x00
+> +
+> +#define US5182D_REG_ADL			0x0c
+> +#define US5182D_REG_PDL			0x0e
+> +
+> +#define US5182D_REG_MODE_STORE		0x21
+> +#define US5182D_STORE_MODE		0x01
+> +
+> +#define US5182D_REG_CHIPID		0xb2
+> +
+Where these are fields in a particular register I'd
+like to see the naming reflect that.
+> +#define US5182D_ONESHOT_EN_MASK		BIT(6)
+on this one, is it really a mask? Seems like a single
+bit value so I'd drop the mask naming.
 
-> +	.scan_type.sign = 'u',					\
-> +	.scan_type.realbits = 12,				\
-> +	.scan_type.storagebits = 16,			\
->  }
->  
->  static const struct iio_chan_spec vf610_adc_iio_channels[] = {
-> @@ -531,6 +545,7 @@ static const struct iio_chan_spec vf610_adc_iio_channels[] = {
->  	VF610_ADC_CHAN(14, IIO_VOLTAGE),
->  	VF610_ADC_CHAN(15, IIO_VOLTAGE),
->  	VF610_ADC_TEMPERATURE_CHAN(26, IIO_TEMP),
-> +	IIO_CHAN_SOFT_TIMESTAMP(32),
-It's bit extreme throwing it out at scan_index 32.  Is there a reason
-to think that migh be neccesary?  Mind you, why is the temperature
-channel down at 26?  Are we dealing with a set of reserved real channels
-inbetween?
->  	/* sentinel */
->  };
->  
-> @@ -559,13 +574,20 @@ static int vf610_adc_read_data(struct vf610_adc *info)
->  
->  static irqreturn_t vf610_adc_isr(int irq, void *dev_id)
->  {
-> -	struct vf610_adc *info = (struct vf610_adc *)dev_id;
-> +	struct iio_dev *indio_dev = (struct iio_dev *)dev_id;
-> +	struct vf610_adc *info = iio_priv(indio_dev);
->  	int coco;
->  
->  	coco = readl(info->regs + VF610_REG_ADC_HS);
->  	if (coco & VF610_ADC_HS_COCO0) {
->  		info->value = vf610_adc_read_data(info);
+#define US5182D_ONESHOT_EN BIT(6)
+> +#define US5182D_SHUTDOWN_EN_MASK	BIT(7)
+> +#define US5182D_OPMODE_MASK		GENMASK(5, 4)
 
-I'd be tempted to make the non buffered path also use
-info->bufffer[0] and drop info->value entirely.
-A more invasive patch, but a cleaner resulting code (slightly!)
-> -		complete(&info->completion);
-> +		if (iio_buffer_enabled(indio_dev)) {
-> +			info->buffer[0] = info->value;
-> +			iio_push_to_buffers_with_timestamp(indio_dev,
-> +					info->buffer, iio_get_time_ns());
-> +			iio_trigger_notify_done(indio_dev->trig);
-> +		} else
-> +			complete(&info->completion);
->  	}
->  
->  	return IRQ_HANDLED;
-> @@ -612,6 +634,9 @@ static int vf610_read_raw(struct iio_dev *indio_dev,
->  	switch (mask) {
->  	case IIO_CHAN_INFO_RAW:
->  	case IIO_CHAN_INFO_PROCESSED:
+> +#define US5182D_AGAIN_MASK		0x07
 
-To avoid possible races this check should be done under the mlock.
-> +		if (iio_buffer_enabled(indio_dev))
-> +			return -EBUSY;
+> +#define US5182D_OPMODE_ALS		0x01
+> +#define US5182D_OPMODE_PX		0x02
+> +#define US5182D_OPMODE_SHIFT		4
+
+> +#define US5182D_RESET_CHIP		0x01
 > +
->  		mutex_lock(&indio_dev->mlock);
->  		reinit_completion(&info->completion);
->  
-> @@ -694,6 +719,68 @@ static int vf610_write_raw(struct iio_dev *indio_dev,
->  	return -EINVAL;
->  }
->  
-> +static int vf610_adc_buffer_postenable(struct iio_dev *indio_dev)
-> +{
-> +	struct vf610_adc *info = iio_priv(indio_dev);
-> +	unsigned int channel;
-> +	int ret;
-> +	int val;
+> +#define US5182D_CHIPID			0x26
+> +#define US5182D_DRV_NAME		"us5182d"
 > +
-> +	ret = iio_triggered_buffer_postenable(indio_dev);
-> +	if (ret)
-> +		return ret;
+> +#define US5182D_GA_RESOLUTION		1000
 > +
-> +	val = readl(info->regs + VF610_REG_ADC_GC);
-> +	val |= VF610_ADC_ADCON;
-> +	writel(val, info->regs + VF610_REG_ADC_GC);
+> +#define READ_BYTE		1
+> +#define READ_WORD		2
+> +#define OPSTORE_SLEEP_TIME	20 /* ms */
 > +
-> +	channel = find_first_bit(indio_dev->active_scan_mask,
-> +						indio_dev->masklength);
+> +/* available ranges: [12354, 7065, 3998, 2202, 1285, 498, 256, 138] lux*/
+> +static const int us5182d_scales[] = {188500, 107800, 61000, 33600, 19600, 7600,
+> +				     3900, 2100};
 > +
-> +	val = VF610_ADC_ADCHC(channel);
-> +	val |= VF610_ADC_AIEN;
+> +/*
+> + * experimental th's that work with US5182D sensor on evaluation board
+> + * roughly between 12-32 lux
+> + */
+> +static u16 us5182d_dark_ths_vals[] = {170, 200, 512, 512, 800, 2000, 4000,
+> +				      8000};
 > +
-> +	writel(val, info->regs + VF610_REG_ADC_HC0);
-> +
-> +	return 0;
-> +}
-> +
-> +static int vf610_adc_buffer_postdisable(struct iio_dev *indio_dev)
-> +{
-> +	struct vf610_adc *info = iio_priv(indio_dev);
-> +	unsigned int hc_cfg = 0;
-> +	int val;
-> +
-> +	val = readl(info->regs + VF610_REG_ADC_GC);
-> +	val &= ~VF610_ADC_ADCON;
-> +	writel(val, info->regs + VF610_REG_ADC_GC);
-> +
-> +	hc_cfg |= VF610_ADC_CONV_DISABLE;
-> +	hc_cfg &= ~VF610_ADC_AIEN;
-> +
-> +	writel(hc_cfg, info->regs + VF610_REG_ADC_HC0);
-> +
-> +	return 0;
-> +}
-> +
-> +static const struct iio_buffer_setup_ops iio_triggered_buffer_setup_ops = {
-> +	.postenable = &vf610_adc_buffer_postenable,
-> +	.predisable = &iio_triggered_buffer_predisable,
-> +	.postdisable = &vf610_adc_buffer_postdisable,
-> +	.validate_scan_mask = &iio_validate_scan_mask_onehot,
+> +enum mode {
+> +	ALS_PX,
+> +	ALS_ONLY,
+> +	PX_ONLY
 > +};
 > +
-> +static int vf610_adc_buffer_init(struct iio_dev *indio_dev)
-> +{
-> +	return iio_triggered_buffer_setup(indio_dev, &iio_pollfunc_store_time,
-> +		NULL, &iio_triggered_buffer_setup_ops);
-> +}
+> +struct us5182d_data {
+> +	struct i2c_client *client;
+> +	/* protect opmode */
+> +	struct mutex lock;
 > +
-> +static void vf610_adc_buffer_remove(struct iio_dev *indio_dev)
+> +	/* Glass attenuation factor */
+> +	u32 ga;
+> +
+> +	/* Dark gain tuning */
+> +	u16 lower_dark_th;
+> +	u16 upper_dark_th;
+> +	u16 *us5182d_dark_ths;
+> +
+> +	u8 opmode;
+> +};
+> +
+> +static IIO_CONST_ATTR(in_illuminance_scale_available,
+> +		      "0.0021 0.0039 0.0076 0.0196 0.0336 0.061 0.1078 0.1885");
+> +
+> +static struct attribute *us5182d_attrs[] = {
+> +	&iio_const_attr_in_illuminance_scale_available.dev_attr.attr,
+> +	NULL
+> +};
+> +
+> +static const struct attribute_group us5182d_attr_group = {
+> +	.attrs = us5182d_attrs,
+> +};
+> +
+> +static const struct {
+> +	u8 reg;
+> +	u8 val;
+> +} us5182d_regvals[] = {
+> +	{US5182D_REG_CFG0, US5182D_REG_CFG0_DEFAULT},
+> +	{US5182D_REG_CFG1, US5182D_REG_CFG1_DEFAULT},
+> +	{US5182D_REG_CFG2, US5182D_REG_CFG2_DEFAULT},
+> +	{US5182D_REG_CFG3, US5182D_REG_CFG3_DEFAULT},
+> +	{US5182D_REG_MODE_STORE, US5182D_STORE_MODE},
+> +	{US5182D_REG_CFG4, US5182D_REG_CFG4_DEFAULT},
+> +};
+> +
+> +static const struct iio_chan_spec us5182d_channels[] = {
+> +	{
+> +		.type = IIO_LIGHT,
+> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
+> +				      BIT(IIO_CHAN_INFO_SCALE),
+> +	},
+> +	{
+> +		.type = IIO_PROXIMITY,
+> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
+> +	}
+> +};
+> +
+> +static int us5182d_read(struct i2c_client *client, u8 reg, int len, u8 *val)
 > +{
-> +	iio_triggered_buffer_cleanup(indio_dev);
-> +}
-These to wrappers seem a little superflous. I'd have just put the code
-inline, but it's obviously a matter of personal taste and I don't care
-that much!
+> +	struct i2c_msg msg[2] = {
+> +		{
+> +			/* Write - use repeated start */
+> +			.addr = client->addr,
+> +			.flags = I2C_M_NOSTART,
+> +			.len = 1,
+> +			.buf = &reg
+> +		},
+> +		{
+> +			.addr = client->addr,
+> +			.flags = I2C_M_RD,
+> +			.len = len,
+> +			.buf = val
+> +		}
+> +	};
+Close to an smbus_read_byte / word call, but that NOSTART is odd..
+The docs state:
+ If you set the I2C_M_NOSTART variable for the first partial message,
+    we do not generate Addr, but we do generate the startbit S. This will
+    probably confuse all other clients on your bus, so don't try this.
 
+So what is going on here?
 > +
->  static int vf610_adc_reg_access(struct iio_dev *indio_dev,
->  			unsigned reg, unsigned writeval,
->  			unsigned *readval)
-> @@ -753,7 +840,7 @@ static int vf610_adc_probe(struct platform_device *pdev)
->  
->  	ret = devm_request_irq(info->dev, irq,
->  				vf610_adc_isr, 0,
-> -				dev_name(&pdev->dev), info);
-> +				dev_name(&pdev->dev), indio_dev);
->  	if (ret < 0) {
->  		dev_err(&pdev->dev, "failed requesting irq, irq = %d\n", irq);
->  		return ret;
-> @@ -806,15 +893,22 @@ static int vf610_adc_probe(struct platform_device *pdev)
->  	vf610_adc_cfg_init(info);
->  	vf610_adc_hw_init(info);
->  
-> +	ret = vf610_adc_buffer_init(indio_dev);
-> +	if (ret < 0) {
-> +		dev_err(&pdev->dev, "Couldn't initialise the buffer\n");
-> +		goto error_iio_device_register;
+> +	return i2c_transfer(client->adapter, msg, 2);
+> +}
+> +
+> +static int us5182d_read_byte_data(struct i2c_client *client, u8 reg)
+> +{
+> +	u8 val[1];
+> +	int ret;
+> +
+> +	ret = us5182d_read(client, reg, READ_BYTE, val);
+Just pass &val and don't have val as an array?
+> +	return (ret < 0) ? ret : val[0];
+> +}
+> +
+> +static int us5182d_read_word_data(struct i2c_client *client, u8 reg)
+> +{
+> +	u8 val[2];
+> +	int ret;
+> +
+> +	ret = us5182d_read(client, reg, READ_WORD, val);
+> +	return (ret < 0) ? ret : (val[0] | (val[1] << 8));
+I'd split this up and avoid the trinary operator as it makes
+it harder to read.
+
+
+> +}
+> +
+> +static int us5182d_get_als(struct us5182d_data *data)
+> +{
+> +	int ret;
+> +	unsigned long result;
+> +
+> +	ret = us5182d_read_word_data(data->client,
+> +				     US5182D_REG_ADL);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	result = ret * data->ga / US5182D_GA_RESOLUTION;
+> +	if (result > 0xffff)
+> +		result = 0xffff;
+> +
+> +	return result;
+> +}
+> +
+> +static int us5182d_set_opmode(struct us5182d_data *data, u8 mode)
+> +{
+> +	int ret;
+> +
+> +	ret = us5182d_read_byte_data(data->client, US5182D_REG_CFG0);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	ret = ret | US5182D_ONESHOT_EN_MASK;
+> +
+> +	/* update mode */
+> +	ret = ret & ~US5182D_OPMODE_MASK;
+> +	ret = ret | (mode << US5182D_OPMODE_SHIFT);
+> +
+> +	ret = i2c_smbus_write_byte_data(data->client, US5182D_REG_CFG0, ret);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	if (mode == data->opmode)
+> +		return 0;
+> +
+> +	data->opmode = mode;
+> +	ret = i2c_smbus_write_byte_data(data->client, US5182D_REG_MODE_STORE,
+> +					US5182D_STORE_MODE);
+> +	if (ret < 0)
+> +		return ret;
+> +	msleep(OPSTORE_SLEEP_TIME);
+> +
+> +	return 0;
+> +}
+> +
+> +static int us5182d_read_raw(struct iio_dev *indio_dev,
+> +			    struct iio_chan_spec const *chan, int *val,
+> +			    int *val2, long mask)
+> +{
+> +	struct us5182d_data *data = iio_priv(indio_dev);
+> +	int ret;
+> +
+> +	switch (mask) {
+> +	case IIO_CHAN_INFO_RAW:
+> +		switch (chan->type) {
+> +		case IIO_LIGHT:
+> +			mutex_lock(&data->lock);
+> +			ret = us5182d_set_opmode(data, US5182D_OPMODE_ALS);
+> +			if (ret < 0)
+> +				goto out_err;
+> +
+> +			ret = us5182d_get_als(data);
+> +			if (ret < 0)
+> +				goto out_err;
+> +			mutex_unlock(&data->lock);
+> +			*val = ret;
+> +			*val2 = 0;
+Should be no need to set val2 for a VAL_INT type (core won't touch it).
+> +			return IIO_VAL_INT;
+> +		case IIO_PROXIMITY:
+> +			mutex_lock(&data->lock);
+> +			ret = us5182d_set_opmode(data, US5182D_OPMODE_PX);
+> +			if (ret < 0)
+> +				goto out_err;
+> +
+> +			ret = us5182d_read_word_data(data->client,
+> +						     US5182D_REG_PDL);
+> +			if (ret < 0)
+> +				goto out_err;
+> +			mutex_unlock(&data->lock);
+> +			*val = ret;
+> +			*val2 = 0;
+> +			return  IIO_VAL_INT;
+> +		default:
+> +			break;
+> +		}
+> +
+> +	case IIO_CHAN_INFO_SCALE:
+> +		ret = us5182d_read_byte_data(data->client, US5182D_REG_CFG1);
+> +		if (ret < 0)
+> +			return ret;
+> +		*val = 0;
+> +		ret = (ret & US5182D_AGAIN_MASK);
+> +		*val2 = us5182d_scales[ret];
+> +		return IIO_VAL_INT_PLUS_MICRO;
+> +	default:
+> +		return -EINVAL;
 > +	}
 > +
->  	ret = iio_device_register(indio_dev);
->  	if (ret) {
->  		dev_err(&pdev->dev, "Couldn't register the device.\n");
-> -		goto error_iio_device_register;
-> +		goto error_adc_buffer_init;
->  	}
->  
->  	return 0;
->  
-> -
-> +error_adc_buffer_init:
-> +	vf610_adc_buffer_remove(indio_dev);
->  error_iio_device_register:
->  	clk_disable_unprepare(info->clk);
->  error_adc_clk_enable:
-> @@ -829,6 +923,7 @@ static int vf610_adc_remove(struct platform_device *pdev)
->  	struct vf610_adc *info = iio_priv(indio_dev);
->  
->  	iio_device_unregister(indio_dev);
-> +	vf610_adc_buffer_remove(indio_dev);
->  	regulator_disable(info->vref);
->  	clk_disable_unprepare(info->clk);
->  
+> +	return -EINVAL;
+> +out_err:
+> +	mutex_unlock(&data->lock);
+> +	return ret;
+> +}
+> +
+> +static int us5182d_update_dark_th(struct us5182d_data *data, int index)
+> +{
+> +	__be16 dark_th = cpu_to_be16(data->us5182d_dark_ths[index]);
+> +	u8 *bytes = (u8 *)&dark_th;
+> +	int ret;
+> +
+> +	/* Registers Dark_Th (0x27 0x28) don't work in word mode accessing */
+> +	ret = i2c_smbus_write_byte_data(data->client, US5182D_REG_UDARK_TH,
+> +					bytes[0]);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	return i2c_smbus_write_byte_data(data->client, US5182D_REG_UDARK_TH + 1,
+> +					bytes[1]);
+> +}
+> +
+> +static int us5182d_apply_scale(struct us5182d_data *data, int index)
+> +{
+> +	int ret;
+> +
+> +	ret = us5182d_read_byte_data(data->client, US5182D_REG_CFG1);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	ret = ret & (~US5182D_AGAIN_MASK);
+> +	ret |= index;
+> +
+> +	ret = i2c_smbus_write_byte_data(data->client, US5182D_REG_CFG1, ret);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	return us5182d_update_dark_th(data, index);
+> +}
+> +
+> +static int us5182d_write_raw(struct iio_dev *indio_dev,
+> +			     struct iio_chan_spec const *chan, int val,
+> +			     int val2, long mask)
+> +{
+> +	struct us5182d_data *data = iio_priv(indio_dev);
+> +	int i;
+> +
+> +	switch (mask) {
+> +	case IIO_CHAN_INFO_SCALE:
+> +		if (val != 0)
+> +			return -EINVAL;
+> +		for (i = 0; i < ARRAY_SIZE(us5182d_scales); i++)
+> +			if (val2 == us5182d_scales[i])
+> +				return us5182d_apply_scale(data, i);
+> +		break;
+> +	default:
+> +		break;
+> +	}
+> +
+> +	return -EINVAL;
+> +}
+> +
+> +static const struct iio_info us5182d_info = {
+> +	.driver_module	= THIS_MODULE,
+> +	.read_raw = us5182d_read_raw,
+> +	.write_raw = us5182d_write_raw,
+> +	.attrs = &us5182d_attr_group,
+> +};
+> +
+> +static int us5182d_reset(struct iio_dev *indio_dev)
+> +{
+> +	struct us5182d_data *data = iio_priv(indio_dev);
+> +	int ret;
+> +
+> +	ret = i2c_smbus_write_byte_data(data->client, US5182D_REG_CFG3,
+> +					US5182D_RESET_CHIP);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	return 0;
+> +}
+> +
+> +static int us5182d_init(struct iio_dev *indio_dev)
+> +{
+> +	struct us5182d_data *data = iio_priv(indio_dev);
+> +	int i, ret;
+> +
+> +	ret = us5182d_reset(indio_dev);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	data->opmode = 0;
+> +	for (i = 0; i < ARRAY_SIZE(us5182d_regvals); i++) {
+> +		ret = i2c_smbus_write_byte_data(data->client,
+> +						us5182d_regvals[i].reg,
+> +						us5182d_regvals[i].val);
+> +		if (ret < 0)
+> +			return ret;
+> +	}
+> +
+> +	return 0;
+> +}
+> +
+> +static void us5182d_get_platform_data(struct iio_dev *indio_dev)
+> +{
+> +	struct us5182d_data *data = iio_priv(indio_dev);
+> +
+> +	if (device_property_read_u32(&data->client->dev, "upisemi,glass-coef",
+> +				     &data->ga))
+> +		data->ga = US5182D_GA_RESOLUTION;
+> +	if (device_property_read_u16_array(&data->client->dev,
+> +					   "upisemi,dark-ths",
+> +					   data->us5182d_dark_ths,
+> +					   ARRAY_SIZE(us5182d_dark_ths_vals)))
+> +		data->us5182d_dark_ths = us5182d_dark_ths_vals;
+> +	if (device_property_read_u16(&data->client->dev,
+> +				     "upisemi,upper-dark-gain",
+> +				     &data->upper_dark_th))
+> +		data->upper_dark_th = US5182D_REG_AUTO_HDARK_TH_DEFAULT;
+> +	if (device_property_read_u16(&data->client->dev,
+> +				     "upisemi,lower-dark-gain",
+> +				     &data->lower_dark_th))
+> +		data->lower_dark_th = US5182D_REG_AUTO_LDARK_TH_DEFAULT;
+No problem with these, but the need docs and those docs need a device
+tree sign off (or a long period being ignored on their list)
+> +}
+> +
+> +static int  us5182d_dark_gain_config(struct iio_dev *indio_dev)
+> +{
+> +	struct us5182d_data *data = iio_priv(indio_dev);
+> +	u8 index = US5182D_REG_CFG1_DEFAULT & US5182D_AGAIN_MASK;
+> +	int ret;
+> +
+> +	ret = us5182d_update_dark_th(data, index);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	ret = i2c_smbus_write_byte_data(data->client, US5182D_REG_AUTO_LDARK_TH,
+> +					data->lower_dark_th);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	ret = i2c_smbus_write_byte_data(data->client, US5182D_REG_AUTO_HDARK_TH,
+> +					data->upper_dark_th);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	return i2c_smbus_write_byte_data(data->client, US5182D_REG_DARK_AUTO_EN,
+> +					US5182D_REG_DARK_AUTO_EN_DEFAULT);
+> +}
+> +
+> +static int us5182d_probe(struct i2c_client *client,
+> +			 const struct i2c_device_id *id)
+> +{
+> +	struct us5182d_data *data;
+> +	struct iio_dev *indio_dev;
+> +	int ret;
+> +
+> +	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
+> +	if (!indio_dev)
+> +		return -ENOMEM;
+> +
+> +	data = iio_priv(indio_dev);
+> +	i2c_set_clientdata(client, indio_dev);
+> +	data->client = client;
+> +
+> +	mutex_init(&data->lock);
+> +
+> +	indio_dev->dev.parent = &client->dev;
+> +	indio_dev->info = &us5182d_info;
+> +	indio_dev->name = US5182D_DRV_NAME;
+> +	indio_dev->channels = us5182d_channels;
+> +	indio_dev->num_channels = ARRAY_SIZE(us5182d_channels);
+> +	indio_dev->modes = INDIO_DIRECT_MODE;
+> +
+> +	ret = us5182d_read_byte_data(data->client, US5182D_REG_CHIPID);
+> +	if (ret != US5182D_CHIPID)
+> +		dev_warn(&data->client->dev,
+> +			 "Failed to detect US5182 light chip\n");
+> +
+> +	us5182d_get_platform_data(indio_dev);
+> +	ret = us5182d_init(indio_dev);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	ret = us5182d_dark_gain_config(indio_dev);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	return iio_device_register(indio_dev);
+> +}
+> +
+> +static int us5182d_remove(struct i2c_client *client)
+> +{
+> +	iio_device_unregister(i2c_get_clientdata(client));
+> +	return i2c_smbus_write_byte_data(client, US5182D_REG_CFG0,
+> +					 US5182D_REG_CFG0_DEFAULT);
+> +}
+> +
+> +static const struct acpi_device_id us5182d_acpi_match[] = {
+> +	{ "USD5182", 0},
+> +	{}
+> +};
+> +
+> +MODULE_DEVICE_TABLE(acpi, us5182d_acpi_match);
+> +
+> +static const struct i2c_device_id us5182d_id[] = {
+> +		{"usd5182", 0},
+> +		{}
+> +};
+> +
+> +MODULE_DEVICE_TABLE(i2c, us5182d_id);
+> +
+> +static struct i2c_driver us5182d_driver = {
+> +	.driver = {
+> +		.name = US5182D_DRV_NAME,
+> +		.acpi_match_table = ACPI_PTR(us5182d_acpi_match),
+> +	},
+> +	.probe = us5182d_probe,
+> +	.remove = us5182d_remove,
+> +	.id_table = us5182d_id,
+> +
+> +};
+> +module_i2c_driver(us5182d_driver);
+> +
+> +MODULE_AUTHOR("Adriana Reus <adriana.reus@intel.com>");
+> +MODULE_DESCRIPTION("Driver for us5182d Proximity and Light Sensor");
+> +MODULE_LICENSE("GPL v2");
 > 
 
