@@ -1,69 +1,64 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:58027 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:58048 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754134AbbHHLg1 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 8 Aug 2015 07:36:27 -0400
-Subject: Re: [PATCH 0/3] MAX6675 IIO temperature driver
+	with ESMTP id S1754137AbbHHLjn (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 8 Aug 2015 07:39:43 -0400
+Subject: Re: [PATCH 2/3] iio: temperature: add max6675 thermocouple converter
+ driver
 To: Matt Porter <mporter@konsulko.com>,
-	Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
+	Peter Meerwald <pmeerw@pmeerw.net>
 References: <1438635410-3757-1-git-send-email-mporter@konsulko.com>
- <897A4C3B-DF7E-4AEE-A117-00CCB510F4DD@jic23.retrosnub.co.uk>
- <20150804173417.GN15004@beef>
+ <1438635410-3757-3-git-send-email-mporter@konsulko.com>
+ <alpine.DEB.2.02.1508032313380.17732@pmeerw.net>
+ <20150806173844.GI23173@beef>
 Cc: Linux IIO List <linux-iio@vger.kernel.org>,
-	Devicetree List <devicetree@vger.kernel.org>,
-	Rob Herring <robh+dt@kernel.org>,
-	Mark Rutland <mark.rutland@arm.com>,
 	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <55C5E9B8.5030404@kernel.org>
-Date: Sat, 8 Aug 2015 12:36:24 +0100
+Message-ID: <55C5EA7C.70906@kernel.org>
+Date: Sat, 8 Aug 2015 12:39:40 +0100
 MIME-Version: 1.0
-In-Reply-To: <20150804173417.GN15004@beef>
+In-Reply-To: <20150806173844.GI23173@beef>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 04/08/15 18:34, Matt Porter wrote:
-> On Tue, Aug 04, 2015 at 05:52:17PM +0100, Jonathan Cameron wrote:
->>
->>
->> On 3 August 2015 21:56:47 BST, Matt Porter <mporter@konsulko.com> wrote:
->>> This series adds a driver for the MAX6675 SPI thermocouple converter.
->>> The device supports temperature measurements via type-K thermocouples
->>> and implements cold-junction compensation within the part. The
->>> datasheet
->>> can be found at http://datasheets.maximintegrated.com/en/ds/MAX6675.pdf
->> For a device like this where perhaps it's position wrt iio/hwmon boundary is unclear
->> I want to see an argument for why IIO makes more sense in the cover letter + cc
->>  at least the hwmon MAINTAINERS if not the list...
+On 06/08/15 18:38, Matt Porter wrote:
+> On Mon, Aug 03, 2015 at 11:26:12PM +0200, Peter Meerwald wrote:
+>> On Mon, 3 Aug 2015, Matt Porter wrote:
 > 
-> Will do. Just to summarize here, the typical use case for this type of
-> thermocouple converter involves sample rates that are relatively high
-> compared to what the hwmon interface can support. The upcoming hrtimer
-> trigger will match up well with this to support fine-grained
-> periodic samples. I'll add this in the v2 cover latter.
-Fair enough - will want a least an OK from Jean / Guenter that they accept
-this reasoning before I take the driver though.  Best to avoid stepping
-one peoples toes!
+> ...
+> 
+>>> +static int max6675_read(struct max6675_state *st, int *val)
+>>> +{
+>>> +	int ret;
+>>> +
+>>> +	ret = spi_read(st->spi, val, 2);
+>>> +	if (ret < 0)
+>>> +		return ret;
+>>> +
+>>> +	/* Temperature is bits 14..3 */
+>>> +	*val = (*val >> 3) & 0xfff;
+>>
+>> what about endianness conversion?
+>> use be16_to_cpu()
+> 
+> Apologies, I spoke before engaging the brain on my first reply to this
+> As specified by the SPI subsystem docs, SPI buffers are always stored
+> in native endian order. There is no need for endianness conversion here.
+First of all, which doc say this?
+Secondly how does SPI know the endianness of the sensor which is what
+actually matters here?  I2C can in theory make these guarantees as there
+is an expected byte order on the wire (even if quite a few drivers don't
+conform to the spec anyway). No such guarantee can exist for SPI.
+
+Jonathan
+
+
 > 
 > -Matt
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
 > 
->>> Matt Porter (3):
->>>  iio: temperature: add max6675 dt binding
->>>  iio: temperature: add max6675 thermocouple converter driver
->>>  MAINTAINERS: add max6675 driver
->>>
->>> .../bindings/iio/temperature/max6675.txt           |  19 +++
->>> MAINTAINERS                                        |   7 +
->>> drivers/iio/temperature/Kconfig                    |  11 ++
->>> drivers/iio/temperature/Makefile                   |   1 +
->>> drivers/iio/temperature/max6675.c                  | 155
->>> +++++++++++++++++++++
->>> 5 files changed, 193 insertions(+)
->>> create mode 100644
->>> Documentation/devicetree/bindings/iio/temperature/max6675.txt
->>> create mode 100644 drivers/iio/temperature/max6675.c
->>
->> -- 
->> Sent from my Android device with K-9 Mail. Please excuse my brevity.
 
