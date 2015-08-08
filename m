@@ -1,93 +1,70 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:58685 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:58701 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754102AbbHHOJI (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 8 Aug 2015 10:09:08 -0400
-Subject: Re: [PATCH 8/9] iio: adis16400: Add ADIS16445 support
+	with ESMTP id S1754102AbbHHOKc (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 8 Aug 2015 10:10:32 -0400
+Subject: Re: [PATCH 9/9] iio: adis16136: Add ADIS16137 support
 To: Lars-Peter Clausen <lars@metafoo.de>
 References: <1438781901-28000-1-git-send-email-lars@metafoo.de>
- <1438781901-28000-9-git-send-email-lars@metafoo.de>
+ <1438781901-28000-10-git-send-email-lars@metafoo.de>
 Cc: Hartmut Knaack <knaack.h@gmx.de>,
 	Peter Meerwald <pmeerw@pmeerw.net>, linux-iio@vger.kernel.org
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <55C60D83.6070600@kernel.org>
-Date: Sat, 8 Aug 2015 15:09:07 +0100
+Message-ID: <55C60DD7.90006@kernel.org>
+Date: Sat, 8 Aug 2015 15:10:31 +0100
 MIME-Version: 1.0
-In-Reply-To: <1438781901-28000-9-git-send-email-lars@metafoo.de>
+In-Reply-To: <1438781901-28000-10-git-send-email-lars@metafoo.de>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
 On 05/08/15 14:38, Lars-Peter Clausen wrote:
-> The ADIS16445 is similar to the ADIS16448, but without the magnetometer and
-> pressure channels as well as different scale factors for the gyroscope and
-> accelerometer outputs.
+> The ADIS16137 is register map compatible to the ADIS16136, but has a
+> different scale factor for the gyroscope output.
 > 
 > Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
-Applied.
+Applied - as usual initially pushed out as testing to let the autobuilder
+do all the hardwork (remember when one locally built the patches for
+a couple of architectures before pushing everything? - isn't it nice now
+to do a cursory check and let the experts take over ;)
 
-Thanks,
+Thanks
+
+Jonathan
 > ---
->  drivers/iio/imu/adis16400_core.c | 26 ++++++++++++++++++++++++++
->  1 file changed, 26 insertions(+)
+>  drivers/iio/gyro/adis16136.c | 6 ++++++
+>  1 file changed, 6 insertions(+)
 > 
-> diff --git a/drivers/iio/imu/adis16400_core.c b/drivers/iio/imu/adis16400_core.c
-> index a9f4043..abc4c50 100644
-> --- a/drivers/iio/imu/adis16400_core.c
-> +++ b/drivers/iio/imu/adis16400_core.c
-> @@ -141,6 +141,7 @@ enum adis16400_chip_variant {
->  	ADIS16364,
->  	ADIS16367,
->  	ADIS16400,
-> +	ADIS16445,
->  	ADIS16448,
+> diff --git a/drivers/iio/gyro/adis16136.c b/drivers/iio/gyro/adis16136.c
+> index 591bd55..26de876 100644
+> --- a/drivers/iio/gyro/adis16136.c
+> +++ b/drivers/iio/gyro/adis16136.c
+> @@ -473,6 +473,7 @@ enum adis16136_id {
+>  	ID_ADIS16133,
+>  	ID_ADIS16135,
+>  	ID_ADIS16136,
+> +	ID_ADIS16137,
 >  };
 >  
-> @@ -623,6 +624,17 @@ static const struct iio_chan_spec adis16400_channels[] = {
->  	IIO_CHAN_SOFT_TIMESTAMP(ADIS16400_SCAN_TIMESTAMP),
->  };
->  
-> +static const struct iio_chan_spec adis16445_channels[] = {
-> +	ADIS16400_GYRO_CHAN(X, ADIS16400_XGYRO_OUT, 16),
-> +	ADIS16400_GYRO_CHAN(Y, ADIS16400_YGYRO_OUT, 16),
-> +	ADIS16400_GYRO_CHAN(Z, ADIS16400_ZGYRO_OUT, 16),
-> +	ADIS16400_ACCEL_CHAN(X, ADIS16400_XACCL_OUT, 16),
-> +	ADIS16400_ACCEL_CHAN(Y, ADIS16400_YACCL_OUT, 16),
-> +	ADIS16400_ACCEL_CHAN(Z, ADIS16400_ZACCL_OUT, 16),
-> +	ADIS16400_TEMP_CHAN(ADIS16448_TEMP_OUT, 12),
-> +	IIO_CHAN_SOFT_TIMESTAMP(ADIS16400_SCAN_TIMESTAMP),
-> +};
-> +
->  static const struct iio_chan_spec adis16448_channels[] = {
->  	ADIS16400_GYRO_CHAN(X, ADIS16400_XGYRO_OUT, 16),
->  	ADIS16400_GYRO_CHAN(Y, ADIS16400_YGYRO_OUT, 16),
-> @@ -788,6 +800,19 @@ static struct adis16400_chip_info adis16400_chips[] = {
->  		.set_freq = adis16400_set_freq,
->  		.get_freq = adis16400_get_freq,
+>  static const struct adis16136_chip_info adis16136_chip_info[] = {
+> @@ -488,6 +489,10 @@ static const struct adis16136_chip_info adis16136_chip_info[] = {
+>  		.precision = IIO_DEGREE_TO_RAD(450),
+>  		.fullscale = 24623,
 >  	},
-> +	[ADIS16445] = {
-> +		.channels = adis16445_channels,
-> +		.num_channels = ARRAY_SIZE(adis16445_channels),
-> +		.flags = ADIS16400_HAS_PROD_ID |
-> +				ADIS16400_HAS_SERIAL_NUMBER |
-> +				ADIS16400_BURST_DIAG_STAT,
-> +		.gyro_scale_micro = IIO_DEGREE_TO_RAD(10000), /* 0.01 deg/s */
-> +		.accel_scale_micro = IIO_G_TO_M_S_2(250), /* 1/4000 g */
-> +		.temp_scale_nano = 73860000, /* 0.07386 C */
-> +		.temp_offset = 31000000 / 73860, /* 31 C = 0x00 */
-> +		.set_freq = adis16334_set_freq,
-> +		.get_freq = adis16334_get_freq,
+> +	[ID_ADIS16137] = {
+> +		.precision = IIO_DEGREE_TO_RAD(1000),
+> +		.fullscale = 24609,
 > +	},
->  	[ADIS16448] = {
->  		.channels = adis16448_channels,
->  		.num_channels = ARRAY_SIZE(adis16448_channels),
-> @@ -952,6 +977,7 @@ static const struct spi_device_id adis16400_id[] = {
->  	{"adis16367", ADIS16367},
->  	{"adis16400", ADIS16400},
->  	{"adis16405", ADIS16400},
-> +	{"adis16445", ADIS16445},
->  	{"adis16448", ADIS16448},
->  	{}
 >  };
+>  
+>  static int adis16136_probe(struct spi_device *spi)
+> @@ -557,6 +562,7 @@ static const struct spi_device_id adis16136_ids[] = {
+>  	{ "adis16133", ID_ADIS16133 },
+>  	{ "adis16135", ID_ADIS16135 },
+>  	{ "adis16136", ID_ADIS16136 },
+> +	{ "adis16137", ID_ADIS16137 },
+>  	{ }
+>  };
+>  MODULE_DEVICE_TABLE(spi, adis16136_ids);
 > 
 
