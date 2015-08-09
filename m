@@ -1,160 +1,150 @@
-Return-Path: <wsa@the-dreams.de>
-Date: Sun, 9 Aug 2015 09:31:36 +0200
-From: Wolfram Sang <wsa@the-dreams.de>
-To: Irina Tirdea <irina.tirdea@intel.com>
-Cc: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
-	linux-i2c@vger.kernel.org, linux-kernel@vger.kernel.org,
-	Srinivas Pandruvada <srinivas.pandruvada@intel.com>,
-	Peter Meerwald <pmeerw@pmeerw.net>
-Subject: Re: [PATCH v4 1/8] i2c: core: Add support for best effort block read
- emulation
-Message-ID: <20150809073135.GB1526@katana>
-References: <1438697056-2946-1-git-send-email-irina.tirdea@intel.com>
- <1438697056-2946-2-git-send-email-irina.tirdea@intel.com>
+Return-Path: <knaack.h@gmx.de>
+Message-ID: <55C716E4.3070003@gmx.de>
+Date: Sun, 09 Aug 2015 11:01:24 +0200
+From: Hartmut Knaack <knaack.h@gmx.de>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="61jdw2sOBCFtR2d/"
-In-Reply-To: <1438697056-2946-2-git-send-email-irina.tirdea@intel.com>
+To: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org
+CC: Lars-Peter Clausen <lars@metafoo.de>,
+ Peter Meerwald <pmeerw@pmeerw.net>, Martin Fuzzey
+ <mfuzzey@parkeon.com>, Roberta Dobrescu <roberta.dobrescu@gmail.com>,
+ martink@posteo.de
+Subject: Re: [PATCH 5/7] iio:accel:mma8452: rework register definitions
+References: <cover.1438483410.git.knaack.h@gmx.de> <34fd2ccf719564a27a3a9d9285d236b0f2ec385b.1438483410.git.knaack.h@gmx.de> <55C6301A.5050603@kernel.org>
+In-Reply-To: <55C6301A.5050603@kernel.org>
+Content-Type: text/plain; charset=windows-1252
 List-ID: <linux-iio@vger.kernel.org>
 
+Jonathan Cameron schrieb am 08.08.2015 um 18:36:
+> On 02/08/15 21:43, Hartmut Knaack wrote:
+>> Rework register definitions to be sorted by register and bit number, with
+>> bit definitions cascaded under the appropriate register, use GENMASK for
+>> consecutive bitmasks and realign properly.
+>>
+>> Signed-off-by: Hartmut Knaack <knaack.h@gmx.de>
+> Partly a matter of taste, but I like it and it does make things a little
+> easier to follow.  I wouldn't advocate bothering to do this for
+> all drivers though! (the reordering, the GENMASK stuff is fine everywhere!)
 
---61jdw2sOBCFtR2d/
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-On Tue, Aug 04, 2015 at 05:04:09PM +0300, Irina Tirdea wrote:
-> There are devices that need to handle block transactions
-> regardless of the capabilities exported by the adapter.
-> For performance reasons, they need to use i2c read blocks
-> if available, otherwise emulate the block transaction with word
-> or byte transactions.
->=20
-> Add support for a helper function that would read a data block
-> using the best transfer available: I2C_FUNC_SMBUS_READ_I2C_BLOCK,
-> I2C_FUNC_SMBUS_READ_WORD_DATA or I2C_FUNC_SMBUS_READ_BYTE_DATA.
->=20
-> Signed-off-by: Irina Tirdea <irina.tirdea@intel.com>
-
-We are close, but I think there is one optimization left to do.
-
-> +/**
-> + * i2c_smbus_read_i2c_block_data_or_emulated - read block or emulate
-> + * @client: Handle to slave device
-> + * @command: Byte interpreted by slave
-> + * @length: Size of data block; SMBus allows at most 32 bytes
-
-Please refer to I2C_SMBUS_BLOCK_MAX instead of 32. The new SMBus specs
-increased this amount to 256. (Yes, we don't support that yet.)
-
-> + * @values: Byte array into which data will be read; big enough to hold
-> + *	the data returned by the slave.  SMBus allows at most 32 bytes.
-> + *
-> + * This executes the SMBus "block read" protocol if supported by the ada=
-pter.
-> + * If block read is not supported, it emulates it using either word or b=
-yte
-> + * read protocols depending on availability.
-> + *
-> + * The addresses of the I2C slave device that are accessed with this fun=
-ction
-> + * must be mapped to a linear region, so that a block read will have the=
- same
-> + * effect as a byte read. Before using this function you must double-che=
-ck
-> + * if the I2C slave does support exchanging a block transfer with a byte
-> + * transfer.
-> + */
-> +s32 i2c_smbus_read_i2c_block_data_or_emulated(const struct i2c_client *c=
-lient,
-> +					      u8 command, u8 length, u8 *values)
-> +{
-> +	u8 i;
-> +	int status;
-> +
-> +	if (length > I2C_SMBUS_BLOCK_MAX)
-> +		length =3D I2C_SMBUS_BLOCK_MAX;
-> +
-> +	if (i2c_check_functionality(client->adapter, I2C_FUNC_SMBUS_READ_I2C_BL=
-OCK))
-> +		return i2c_smbus_read_i2c_block_data(client, command, length, values);
-> +
-> +	if (i2c_check_functionality(client->adapter, I2C_FUNC_SMBUS_READ_WORD_D=
-ATA |
-> +				    I2C_FUNC_SMBUS_READ_BYTE_DATA)) {
-> +		for (i =3D 0; (i + 2) <=3D length; i +=3D 2) {
-> +			status =3D i2c_smbus_read_word_data(client, command + i);
-> +			if (status < 0)
-> +				return status;
-> +			values[i] =3D status & 0xff;
-> +			values[i + 1] =3D status >> 8;
-> +		}
-> +		if (i < length) {
-> +			status =3D i2c_smbus_read_byte_data(client, command + i);
-> +			if (status < 0)
-> +				return status;
-> +			values[i] =3D status;
-> +			i++;
-> +		}
-> +		return i;
-> +	}
-> +
-> +	if (i2c_check_functionality(client->adapter, I2C_FUNC_SMBUS_READ_BYTE_D=
-ATA)) {
-> +		for (i =3D 0; i < length; i++) {
-> +			status =3D i2c_smbus_read_byte_data(client, command + i);
-> +			if (status < 0)
-> +				return status;
-> +			values[i] =3D status;
-> +		}
-> +		return i;
-> +	}
-
-We have two very similar blocks for transferring READ_BYTE_DATA now.
-What about this pseudo code:
-
-	if (check_func(I2C_BLOCK))
-		return i2c_smbus_read_i2c_block_data(...);
-
-	if (!check_func(I2C_READ_BYTE_DATA)
-		return -EOPNOTSUPP;
-
-	if (check_func(I2C_READ_WORD_DATA)
-		read_as_many_words_as_possible;
-
-	read_all_the_remaining_bytes;
-
-
-> +	dev_err(&client->adapter->dev, "Unsupported transactions\n");
-
-Again, if you want to keep this one, it should be the client device
-reporting the error.
-
+No worries, this was mainly a "while I'm on it, I can get this done, too".
 Thanks,
+Hartmut
 
-   Wolfram
-
-
---61jdw2sOBCFtR2d/
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
-
-iQIcBAEBAgAGBQJVxwHXAAoJEBQN5MwUoCm2loAQALKaH0C1g5pJuv1pcJHHILl2
-eGQjcXO92tQSMQcy5uvz9P1auAwnBDeqLz/7OYGNvNrZKm6xQzzbWsZiDPkh2/KT
-4V7i10gGgIOy0GxlI/crGvMqXBugu6+8LlQse4bEFl7pNd175OBsx12+nBvut5Iz
-kA9AvIgIuWws4QYaP9DiQB7rEjaiw4zmfEA3Pu/NzTXRqvXbBQYNznOfvMUW7ppg
-vlAFQmH1Bj+nckEYAK4tSeEoOZfZc1SjC9SxGbWfr3A+pIhYxBIBffdSOSQ746fh
-heQiplgB8SqDNLRCp/ezlHBWAQEiadPG0YM9TID9hStDLS7zaBlWak1kextJGAa3
-a+h0Y2KMY6MjCQ+T1xG05N1figM/opbhX0a6LdbMVgdKuj2UqLXZ0vYOYtnG+s/d
-ClpnEolDgsdVg034P04pKHd44M4rTyC/z462EoupzZ75k0yGnGieagfyExk+JUjE
-l8L3iogctOL/nt/+YLutzAEioJ9uOD770Y8WU8VTDt2uaiF7JPbvS+5o/knFxsTM
-RjHxfuCFj8BZpuySnJ3cTRvKy9lKGiAiBR4FBQydwyeCWUIzLvMzz1Wk3Hp+9zQj
-ra6C2XaM/Q6LE5xcFs1fXnnWgeUXz4wHkqxe6kPyej6K/YopO2el2vr98KG+lEOS
-r1z/8yGtOWW3xwvmHc0R
-=490i
------END PGP SIGNATURE-----
-
---61jdw2sOBCFtR2d/--
+> 
+> Applied
+> 
+> Jonathan
+>> ---
+>>  drivers/iio/accel/mma8452.c | 93 ++++++++++++++++++++++-----------------------
+>>  1 file changed, 45 insertions(+), 48 deletions(-)
+>>
+>> diff --git a/drivers/iio/accel/mma8452.c b/drivers/iio/accel/mma8452.c
+>> index 516b6108d5f8..10e9623431e4 100644
+>> --- a/drivers/iio/accel/mma8452.c
+>> +++ b/drivers/iio/accel/mma8452.c
+>> @@ -23,54 +23,51 @@
+>>  #include <linux/iio/events.h>
+>>  #include <linux/delay.h>
+>>  
+>> -#define MMA8452_STATUS 0x00
+>> -#define MMA8452_OUT_X 0x01 /* MSB first, 12-bit  */
+>> -#define MMA8452_OUT_Y 0x03
+>> -#define MMA8452_OUT_Z 0x05
+>> -#define MMA8452_INT_SRC 0x0c
+>> -#define MMA8452_WHO_AM_I 0x0d
+>> -#define MMA8452_DATA_CFG 0x0e
+>> -#define MMA8452_HP_FILTER_CUTOFF 0x0f
+>> -#define MMA8452_HP_FILTER_CUTOFF_SEL_MASK	(BIT(0) | BIT(1))
+>> -#define MMA8452_TRANSIENT_CFG 0x1d
+>> -#define MMA8452_TRANSIENT_CFG_ELE		BIT(4)
+>> -#define MMA8452_TRANSIENT_CFG_CHAN(chan)	BIT(chan + 1)
+>> -#define MMA8452_TRANSIENT_CFG_HPF_BYP		BIT(0)
+>> -#define MMA8452_TRANSIENT_SRC 0x1e
+>> -#define MMA8452_TRANSIENT_SRC_XTRANSE		BIT(1)
+>> -#define MMA8452_TRANSIENT_SRC_YTRANSE		BIT(3)
+>> -#define MMA8452_TRANSIENT_SRC_ZTRANSE		BIT(5)
+>> -#define MMA8452_TRANSIENT_THS 0x1f
+>> -#define MMA8452_TRANSIENT_THS_MASK	0x7f
+>> -#define MMA8452_TRANSIENT_COUNT 0x20
+>> -#define MMA8452_OFF_X 0x2f
+>> -#define MMA8452_OFF_Y 0x30
+>> -#define MMA8452_OFF_Z 0x31
+>> -#define MMA8452_CTRL_REG1 0x2a
+>> -#define MMA8452_CTRL_REG2 0x2b
+>> -#define MMA8452_CTRL_REG2_RST		BIT(6)
+>> -#define MMA8452_CTRL_REG4 0x2d
+>> -#define MMA8452_CTRL_REG5 0x2e
+>> -
+>> -#define MMA8452_MAX_REG 0x31
+>> -
+>> -#define MMA8452_STATUS_DRDY (BIT(2) | BIT(1) | BIT(0))
+>> -
+>> -#define MMA8452_CTRL_DR_MASK (BIT(5) | BIT(4) | BIT(3))
+>> -#define MMA8452_CTRL_DR_SHIFT 3
+>> -#define MMA8452_CTRL_DR_DEFAULT 0x4 /* 50 Hz sample frequency */
+>> -#define MMA8452_CTRL_ACTIVE BIT(0)
+>> -
+>> -#define MMA8452_DATA_CFG_FS_MASK (BIT(1) | BIT(0))
+>> -#define MMA8452_DATA_CFG_FS_2G 0
+>> -#define MMA8452_DATA_CFG_FS_4G 1
+>> -#define MMA8452_DATA_CFG_FS_8G 2
+>> -#define MMA8452_DATA_CFG_HPF_MASK BIT(4)
+>> -
+>> -#define MMA8452_INT_DRDY	BIT(0)
+>> -#define MMA8452_INT_TRANS	BIT(5)
+>> -
+>> -#define MMA8452_DEVICE_ID 0x2a
+>> +#define MMA8452_STATUS				0x00
+>> +#define  MMA8452_STATUS_DRDY			(BIT(2) | BIT(1) | BIT(0))
+>> +#define MMA8452_OUT_X				0x01 /* MSB first, 12-bit  */
+>> +#define MMA8452_OUT_Y				0x03
+>> +#define MMA8452_OUT_Z				0x05
+>> +#define MMA8452_INT_SRC				0x0c
+>> +#define MMA8452_WHO_AM_I			0x0d
+>> +#define MMA8452_DATA_CFG			0x0e
+>> +#define  MMA8452_DATA_CFG_FS_MASK		GENMASK(1, 0)
+>> +#define  MMA8452_DATA_CFG_FS_2G			0
+>> +#define  MMA8452_DATA_CFG_FS_4G			1
+>> +#define  MMA8452_DATA_CFG_FS_8G			2
+>> +#define  MMA8452_DATA_CFG_HPF_MASK		BIT(4)
+>> +#define MMA8452_HP_FILTER_CUTOFF		0x0f
+>> +#define  MMA8452_HP_FILTER_CUTOFF_SEL_MASK	GENMASK(1, 0)
+>> +#define MMA8452_TRANSIENT_CFG			0x1d
+>> +#define  MMA8452_TRANSIENT_CFG_HPF_BYP		BIT(0)
+>> +#define  MMA8452_TRANSIENT_CFG_CHAN(chan)	BIT(chan + 1)
+>> +#define  MMA8452_TRANSIENT_CFG_ELE		BIT(4)
+>> +#define MMA8452_TRANSIENT_SRC			0x1e
+>> +#define  MMA8452_TRANSIENT_SRC_XTRANSE		BIT(1)
+>> +#define  MMA8452_TRANSIENT_SRC_YTRANSE		BIT(3)
+>> +#define  MMA8452_TRANSIENT_SRC_ZTRANSE		BIT(5)
+>> +#define MMA8452_TRANSIENT_THS			0x1f
+>> +#define  MMA8452_TRANSIENT_THS_MASK		GENMASK(6, 0)
+>> +#define MMA8452_TRANSIENT_COUNT			0x20
+>> +#define MMA8452_CTRL_REG1			0x2a
+>> +#define  MMA8452_CTRL_ACTIVE			BIT(0)
+>> +#define  MMA8452_CTRL_DR_MASK			GENMASK(5, 3)
+>> +#define  MMA8452_CTRL_DR_SHIFT			3
+>> +#define  MMA8452_CTRL_DR_DEFAULT		0x4 /* 50 Hz sample frequency */
+>> +#define MMA8452_CTRL_REG2			0x2b
+>> +#define  MMA8452_CTRL_REG2_RST			BIT(6)
+>> +#define MMA8452_CTRL_REG4			0x2d
+>> +#define MMA8452_CTRL_REG5			0x2e
+>> +#define MMA8452_OFF_X				0x2f
+>> +#define MMA8452_OFF_Y				0x30
+>> +#define MMA8452_OFF_Z				0x31
+>> +
+>> +#define MMA8452_MAX_REG				0x31
+>> +
+>> +#define  MMA8452_INT_DRDY			BIT(0)
+>> +#define  MMA8452_INT_TRANS			BIT(5)
+>> +
+>> +#define  MMA8452_DEVICE_ID			0x2a
+>>  
+>>  struct mma8452_data {
+>>  	struct i2c_client *client;
+>>
+> 
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> 
