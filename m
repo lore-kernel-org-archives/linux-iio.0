@@ -1,97 +1,190 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtprelay0065.hostedemail.com ([216.40.44.65]:58883 "EHLO
-	smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
-	by vger.kernel.org with ESMTP id S933363AbbHJV6z (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 10 Aug 2015 17:58:55 -0400
-From: Joe Perches <joe@perches.com>
-To: devel@driverdev.osuosl.org, driverdev-devel@linuxdriverproject.org,
-	ac100@lists.launchpad.net, linux-tegra@vger.kernel.org,
-	speakup@linux-speakup.org, linux-wireless@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-	HPDD-discuss@lists.01.org
-Subject: [PATCH 00/19] staging: Remove unnecessary externs
-Date: Mon, 10 Aug 2015 14:51:15 -0700
-Message-Id: <cover.1439241825.git.joe@perches.com>
+Received: from 19pmail.ess.barracuda.com ([64.235.150.245]:43888 "EHLO
+	19pmail.ess.barracuda.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S933306AbbHJWXK convert rfc822-to-8bit (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 10 Aug 2015 18:23:10 -0400
+From: Greg Wilson-Lindberg <GWilson@sakuraus.com>
+To: Michael Welling <mwelling@ieee.org>
+CC: Daniel Baluta <daniel.baluta@gmail.com>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Date: Mon, 10 Aug 2015 15:22:58 -0700
+Subject: RE: BBB IIO ADC access not working
+Message-ID: <782E3A02C2EB2347BEA6DEA69DC7AB86021D3CB0937F@sfamail.SAKURAUS.LOCAL>
+References: <782E3A02C2EB2347BEA6DEA69DC7AB86021D3CB08DDB@sfamail.SAKURAUS.LOCAL>
+ <CAEnQRZAwD+s0C4et9OTeWrwaq3ZDy3+g0YT_KKMUst_PM31DyA@mail.gmail.com>
+ <782E3A02C2EB2347BEA6DEA69DC7AB86021D3CB09132@sfamail.SAKURAUS.LOCAL>
+ <20150806180730.GA1360@deathstar>
+In-Reply-To: <20150806180730.GA1360@deathstar>
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-trivial neatening of prototypes
+Hello Michael,  
 
-Joe Perches (19):
-  staging: android: Remove unnecessary externs
-  staging: dgnc: Remove unnecessary externs
-  staging: fbtft: Remove unnecessary externs
-  staging: ft1000: Remove unnecessary externs
-  staging: iio: Remove unnecessary externs
-  staging: lustre: Remove unnecessary externs
-  staging: most: Remove unnecessary externs
-  staging: mt29f_spinand: Remove unnecessary externs
-  staging: netlogic: Remove unnecessary externs
-  staging: nvec: Remove unnecessary externs
-  staging: octeon: Remove unnecessary externs
-  staging: olpc_dcon: Remove unnecessary externs
-  staging: rtl8188eu: Remove unnecessary externs
-  staging: rtl8192e: Remove unnecessary externs
-  staging: rtl8192u: Remove unnecessary externs
-  staging: rtl8712: Remove unnecessary externs
-  staging: speakup: Remove unnecessary externs
-  staging: wilc1000: Remove unnecessary externs
-  staging: xgifb: Remove unnecessary externs
+> -----Original Message-----
+> From: Michael Welling [mailto:mwelling79@gmail.com] On Behalf 
+> Of Michael Welling
+> Sent: Thursday, August 06, 2015 11:08 AM
+> To: Greg Wilson-Lindberg
+> Cc: Daniel Baluta; linux-iio@vger.kernel.org
+> Subject: Re: BBB IIO ADC access not working
+> 
+> On Thu, Aug 06, 2015 at 08:42:21AM -0700, Greg Wilson-Lindberg wrote:
+> > Hello Daniel,
+> > See my comments in, line
+> > 
+> > > -----Original Message-----
+> > > From: Daniel Baluta [mailto:daniel.baluta@gmail.com]
+> > > Sent: Thursday, August 06, 2015 12:36 AM
+> > > To: Greg Wilson-Lindberg
+> > > Cc: linux-iio@vger.kernel.org
+> > > Subject: Re: BBB IIO ADC access not working
+> > > 
+> > > Hi Greg,
+> > > 
+> > > On Sat, Aug 1, 2015 at 12:15 AM, Greg Wilson-Lindberg 
+> > > <GWilson@sakuraus.com> wrote:
+> > > > Hi Jonathan,
+> > > > To recap my current problems, we are using all 3 of the ADC
+> > > channels that are unused by the BBB for our system. One 
+> channel has 
+> > > an analog mux on it to allow selecting between 2 input pots. The 
+> > > other two channels are hooked up to pressure transducers.
+> > > 
+> > > What devices and drivers are you exactly using?
+> > 
+> > The pressure transducers are a MPXV7007GP and a MPXV7002GP. I'm not 
+> > using any driver, just reading that analog input and 
+> processing in my 
+> > application.
+> > 
+> > > 
+> > > >
+> > > > I'm processing the channels in a routine that gets called
+> > > from a timer every 100ms. I enable the IIO buffer to collect data 
+> > > and 100ms later read the samples and turn the buffer off again. I 
+> > > leave the buffer off for 400 ms and then go through the process 
+> > > again.  I do this enable, read, disable cycle to allow the touch 
+> > > screen enough time to gather data to properly handle touch screen 
+> > > events.
+> > > >
+> > > > With this setup the system will work properly for a few
+> > > seconds, and then the buffer/adc read process slows down 
+> so that it 
+> > > takes more than 2 seconds to process the two enable, 
+> read, disable 
+> > > cycles in my read state machine. When the slow down happens, the 
+> > > touch screen stops responding, and even mouse presses 
+> stop working, 
+> > > although the mouse pointer did continue to follow mouse movements 
+> > > and the screen continued to update properly.
+> > > >
+> > > > Because of the size of the code I've posted it on pastebin: 
+> > > > http://pastebin.com/TDRS1nu7 instead of including it here.
+> > > >
+> > > > This is running on a Jessie debian system build from Robert
+> > > C. Nelson, based on the 3.18 kernel.
+> 
+> The kernel messages say otherwise:
+> [    0.000000] Linux version 3.14.40-ti-r62 
+> (root@a4-imx6q-wandboard-2gb) (gcc version 4.9.2 (Debian 
+> 4.9.2-10) ) #1 SMP PREEMPT Thu Apr 30 18:28:06 UTC 2015
 
- drivers/staging/android/sync.h                     |  10 +-
- drivers/staging/dgnc/dgnc_sysfs.h                  |  16 +-
- drivers/staging/fbtft/fbtft.h                      |  52 ++-
- drivers/staging/ft1000/ft1000-pcmcia/ft1000.h      |  19 +-
- drivers/staging/ft1000/ft1000-usb/ft1000_usb.h     |   4 +-
- drivers/staging/iio/meter/ade7854.h                |   4 +-
- .../staging/lustre/lnet/klnds/o2iblnd/o2iblnd.h    |   2 +-
- .../staging/lustre/lnet/klnds/socklnd/socklnd.h    | 141 +++++----
- drivers/staging/lustre/lnet/selftest/console.h     |  90 +++---
- .../staging/lustre/lustre/include/lprocfs_status.h | 313 +++++++++----------
- .../lustre/lustre/include/lustre/lustre_idl.h      | 133 ++++----
- .../lustre/lustre/include/lustre/lustre_user.h     |   2 +-
- drivers/staging/lustre/lustre/include/lustre_dlm.h |   2 +-
- .../staging/lustre/lustre/include/lustre_export.h  |   4 +-
- .../staging/lustre/lustre/include/lustre_import.h  |   4 +-
- drivers/staging/lustre/lustre/include/lustre_net.h |  16 +-
- drivers/staging/lustre/lustre/include/obd_class.h  |  16 +-
- .../staging/lustre/lustre/include/obd_support.h    |   6 +-
- drivers/staging/lustre/lustre/ldlm/ldlm_internal.h |   2 +-
- drivers/staging/lustre/lustre/libcfs/tracefile.h   |  32 +-
- .../staging/lustre/lustre/llite/llite_internal.h   |  16 +-
- drivers/staging/most/hdm-dim2/dim2_hal.h           |   8 +-
- drivers/staging/mt29f_spinand/mt29f_spinand.h      |   4 +-
- drivers/staging/netlogic/xlr_net.h                 |   2 +-
- drivers/staging/nvec/nvec.h                        |  19 +-
- drivers/staging/octeon/ethernet-mdio.h             |   2 +-
- drivers/staging/octeon/octeon-ethernet.h           |  22 +-
- drivers/staging/olpc_dcon/olpc_dcon.h              |   2 +-
- drivers/staging/rtl8188eu/include/osdep_service.h  |   2 +-
- drivers/staging/rtl8188eu/include/rtw_mlme_ext.h   |   8 +-
- drivers/staging/rtl8188eu/include/sta_info.h       |  18 +-
- drivers/staging/rtl8192e/rtl8192e/r8190P_rtl8256.h |  10 +-
- drivers/staging/rtl8192e/rtl8192e/r8192E_cmdpkt.h  |   4 +-
- .../staging/rtl8192e/rtl8192e/r8192E_firmware.h    |   2 +-
- drivers/staging/rtl8192e/rtl8192e/r8192E_phy.h     |  52 ++-
- drivers/staging/rtl8192e/rtl8192e/rtl_dm.h         |  22 +-
- drivers/staging/rtl8192e/rtllib.h                  | 347 ++++++++++-----------
- drivers/staging/rtl8192u/ieee80211/ieee80211.h     | 345 ++++++++++----------
- drivers/staging/rtl8192u/r8190_rtl8256.h           |  11 +-
- drivers/staging/rtl8192u/r8192U.h                  |   2 +-
- drivers/staging/rtl8192u/r8192U_dm.h               |  36 +--
- drivers/staging/rtl8192u/r8192U_wx.h               |   2 +-
- drivers/staging/rtl8192u/r819xU_cmdpkt.h           |   8 +-
- drivers/staging/rtl8192u/r819xU_phy.h              |  55 ++--
- drivers/staging/rtl8712/rtl871x_ioctl.h            |  28 +-
- drivers/staging/speakup/i18n.h                     |  12 +-
- drivers/staging/speakup/speakup.h                  |  68 ++--
- drivers/staging/wilc1000/coreconfigurator.h        |  30 +-
- drivers/staging/wilc1000/linux_wlan_common.h       |   4 +-
- drivers/staging/wilc1000/wilc_wfi_cfgoperations.h  |   2 +-
- drivers/staging/xgifb/vb_init.h                    |   4 +-
- drivers/staging/xgifb/vb_setmode.h                 |  34 +-
- 52 files changed, 1007 insertions(+), 1042 deletions(-)
+I guess I got messed up, I had been messaging RCN referring to 3.8/3.14, and I must have put them together.
 
--- 
-2.1.2
+> 
+> Here are a few messages that I noticed that are related to the tsadc:
+> [    2.838041] TI-am335x-tsc TI-am335x-tsc: ti,charge-delay 
+> not specified
+> [    2.838401] input: ti-tsc as 
+> /devices/ocp.3/44e0d000.tscadc/TI-am335x-tsc/input/input0
+> 
+> Something to try is specifying the ti,charge-delay in the appropriate
+> device tree file.
+> 
+> IE:
+> ti,charge-delay = <0xB000>;
+> 
+> Increasing this delay slows the touchscreen response time but 
+> may help in
+> this situation.
 
+I added the charge-delay, it does make the system last longer before the touch screen locks up, but it does still lock up.  The program that I'm testing this from is written in qt, the main GUI loop is still running, even though the touch screen has locked up, so the calls to the IIO lib are still being made, although I don't know if I'm getting back the same data as the last time it worked, or I'm not getting back any data at all.
+
+I tested it with the sampling set to twice a second, and the touch screen locked up more quickly than when set to only sample once a second.
+
+Regards,
+Greg
+
+> 
+> > > > I hope that you or someone else on the list can help me 
+> > > understand what is going on.
+> > > 
+> > > Could you provide your dmesg output and also cat /proc/interrupts.
+> > 
+> > Because of the length I've posted the dmesg to: 
+> http://pastebin.com/v8kSbSAw
+> > There aren't any new messages at the end of the dmesg 
+> output after the 
+> > touch screen lockup.
+> > 
+> > cat /proc/interrupts:
+> >             CPU0       
+> >  23:          0      INTC   7  tps65217
+> >  28:       7149      INTC  12  edma
+> >  30:        155      INTC  14  edma_error
+> >  32:      35030      INTC  16  TI-am335x-tsc, TI-am335x-adc
+> >  33:        348      INTC  17  47400000.dma-controller
+> >  34:          0      INTC  18  musb-hdrc.0.auto
+> >  35:        203      INTC  19  musb-hdrc.1.auto
+> >  36:          0      INTC  20  4a300000.pruss
+> >  37:          0      INTC  21  4a300000.pruss
+> >  38:          0      INTC  22  4a300000.pruss
+> >  39:          0      INTC  23  4a300000.pruss
+> >  40:          0      INTC  24  4a300000.pruss
+> >  41:          0      INTC  25  4a300000.pruss
+> >  42:          0      INTC  26  4a300000.pruss
+> >  43:          0      INTC  27  4a300000.pruss
+> >  44:       1790      INTC  28  mmc1
+> >  46:          0      INTC  30  4819c000.i2c
+> >  52:    3600215      INTC  36  tilcdc
+> >  56:          0      INTC  40  4a100000.ethernet
+> >  57:    1750286      INTC  41  4a100000.ethernet
+> >  58:       1114      INTC  42  4a100000.ethernet
+> >  59:          0      INTC  43  4a100000.ethernet
+> >  80:      21331      INTC  64  mmc0
+> >  84:   11923739      INTC  68  gp_timer
+> >  86:    4399997      INTC  70  44e0b000.i2c
+> >  88:        453      INTC  72  serial
+> >  90:        951      INTC  74  serial
+> >  91:          0      INTC  75  rtc0
+> >  92:          0      INTC  76  rtc0
+> >  93:          0      INTC  77  wkup_m3
+> >  94:          1      INTC  78  wkup_m3_txev
+> > 125:          0      INTC 109  53100000.sham
+> > 127:          0      INTC 111  48310000.rng
+> > 150:          0  44e07000.gpio   6  mmc0
+> > IPI0:          0  CPU wakeup interrupts
+> > IPI1:          0  Timer broadcast interrupts
+> > IPI2:          0  Rescheduling interrupts
+> > IPI3:          0  Function call interrupts
+> > IPI4:          0  Single function call interrupts
+> > IPI5:          0  CPU stop interrupts
+> > IPI6:          0  IRQ work interrupts
+> > IPI7:          0  completion interrupts
+> > Err:          0 
+> > 
+> > Please let me know if there is any thing else that I can provide.
+> > Regards,
+> > Greg
+> > 
+> > > 
+> > > thanks,
+> > > Daniel.
+> > > --
+> > To unsubscribe from this list: send the line "unsubscribe 
+> linux-iio" in
+> > the body of a message to majordomo@vger.kernel.org
+> > More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> 
