@@ -1,45 +1,48 @@
-Return-Path: <lars@metafoo.de>
-Message-ID: <55CA424F.1030704@metafoo.de>
-Date: Tue, 11 Aug 2015 20:43:27 +0200
-From: Lars-Peter Clausen <lars@metafoo.de>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mout.gmx.net ([212.227.15.15]:54440 "EHLO mout.gmx.net"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751950AbbHKSqf (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Tue, 11 Aug 2015 14:46:35 -0400
+Message-ID: <55CA4302.8080609@gmx.de>
+Date: Tue, 11 Aug 2015 20:46:26 +0200
+From: Hartmut Knaack <knaack.h@gmx.de>
 MIME-Version: 1.0
-To: Joe Perches <joe@perches.com>, devel@driverdev.osuosl.org,
- Michael Hennerich <Michael.Hennerich@analog.com>
-CC: Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
- Peter Meerwald <pmeerw@pmeerw.net>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 05/19] staging: iio: Remove unnecessary externs
-References: <cover.1439241825.git.joe@perches.com> <fba2902597293652f4d8561730c0cf16cd4369a0.1439241825.git.joe@perches.com>
-In-Reply-To: <fba2902597293652f4d8561730c0cf16cd4369a0.1439241825.git.joe@perches.com>
-Content-Type: text/plain; charset=windows-1252
-List-ID: <linux-iio@vger.kernel.org>
+To: Linus Walleij <linus.walleij@linaro.org>,
+	Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org
+Subject: Re: [PATCH] iio: event_monitor: report unsupported events
+References: <1439296478-19567-1-git-send-email-linus.walleij@linaro.org>
+In-Reply-To: <1439296478-19567-1-git-send-email-linus.walleij@linaro.org>
+Content-Type: text/plain; charset=ISO-8859-15
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On 08/10/2015 11:51 PM, Joe Perches wrote:
-> Using 'extern' is not necessary for function prototypes.
+Linus Walleij schrieb am 11.08.2015 um 14:34:
+> This makes the event monitor bail out with a helpful error
+> message if a device does not support events, as a related
+> fix to iio core now makes it return -ENODEV properly.
 > 
-> Signed-off-by: Joe Perches <joe@perches.com>
-
-Acked-by: Lars-Peter Clausen <lars@metafoo.de>
-
-Thanks.
-
+> Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+Acked-by: Hartmut Knaack <knaack.h@gmx.de>
 > ---
->  drivers/staging/iio/meter/ade7854.h | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
+>  tools/iio/iio_event_monitor.c | 6 +++++-
+>  1 file changed, 5 insertions(+), 1 deletion(-)
 > 
-> diff --git a/drivers/staging/iio/meter/ade7854.h b/drivers/staging/iio/meter/ade7854.h
-> index 52ca541..52f4195 100644
-> --- a/drivers/staging/iio/meter/ade7854.h
-> +++ b/drivers/staging/iio/meter/ade7854.h
-> @@ -168,7 +168,7 @@ struct ade7854_state {
+> diff --git a/tools/iio/iio_event_monitor.c b/tools/iio/iio_event_monitor.c
+> index cd3fd41b481d..d51eb04202e9 100644
+> --- a/tools/iio/iio_event_monitor.c
+> +++ b/tools/iio/iio_event_monitor.c
+> @@ -284,7 +284,11 @@ int main(int argc, char **argv)
+>  	ret = ioctl(fd, IIO_GET_EVENT_FD_IOCTL, &event_fd);
+>  	if (ret == -1 || event_fd == -1) {
+>  		ret = -errno;
+> -		fprintf(stderr, "Failed to retrieve event fd\n");
+> +		if (ret == -ENODEV)
+> +			fprintf(stderr,
+> +				"This device does not support events\n");
+> +		else
+> +			fprintf(stderr, "Failed to retrieve event fd\n");
+>  		if (close(fd) == -1)
+>  			perror("Failed to close character device file");
 >  
->  };
->  
-> -extern int ade7854_probe(struct iio_dev *indio_dev, struct device *dev);
-> -extern int ade7854_remove(struct iio_dev *indio_dev);
-> +int ade7854_probe(struct iio_dev *indio_dev, struct device *dev);
-> +int ade7854_remove(struct iio_dev *indio_dev);
->  
->  #endif
 > 
+
