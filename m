@@ -1,49 +1,162 @@
-Return-Path: <gregkh@linuxfoundation.org>
-Date: Tue, 11 Aug 2015 15:42:57 -0700
-From: Greg KH <gregkh@linuxfoundation.org>
-To: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Subject: Re: [PULL] 4th set of IIO fixes for the 4.2 cycle
-Message-ID: <20150811224257.GC4475@kroah.com>
-References: <55C6536E.3030300@kernel.org>
- <20150811000610.GC31712@kroah.com>
- <02E11430-3ABA-48FE-AFE6-2BE958614C31@jic23.retrosnub.co.uk>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <02E11430-3ABA-48FE-AFE6-2BE958614C31@jic23.retrosnub.co.uk>
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from skprod2.natinst.com ([130.164.80.23]:48483 "EHLO ni.com"
+	rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+	id S932265AbbHKXBv (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Tue, 11 Aug 2015 19:01:51 -0400
+From: Xander Huff <xander.huff@ni.com>
+To: jic23@kernel.org, bigeasy@linutronix.de, lars@metafoo.de
+Cc: knaack.h@gmx.de, pmeerw@pmeerw.net, michal.simek@xilinx.com,
+	soren.brinkmann@xilinx.com, linux-iio@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	linux-rt-users@vger.kernel.org, linux-kernel@vger.kernel.org,
+	joe.hershberger@ni.com, joshc@ni.com, nathan.sullivan@ni.com,
+	jaeden.amero@ni.com, Xander Huff <xander.huff@ni.com>
+Subject: [PATCH v4] iio: adc: xilinx-xadc: Push interrupts into hardirq context
+Date: Tue, 11 Aug 2015 18:00:49 -0500
+Message-Id: <1439334049-28671-1-git-send-email-xander.huff@ni.com>
+In-Reply-To: <55C07160.5040907@metafoo.de>
+References: <55C07160.5040907@metafoo.de>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Tue, Aug 11, 2015 at 08:29:16AM +0100, Jonathan Cameron wrote:
-> 
-> 
-> On 11 August 2015 01:06:10 BST, Greg KH <gregkh@linuxfoundation.org> wrote:
-> >On Sat, Aug 08, 2015 at 08:07:26PM +0100, Jonathan Cameron wrote:
-> >> The following changes since commit
-> >40c3ef9d2f14cce91dbd6ae9c9ccf6210d8c5df7:
-> >> 
-> >>   staging: comedi: das1800: add missing break in switch (2015-07-31
-> >16:59:47 -0700)
-> >> 
-> >> are available in the git repository at:
-> >> 
-> >>   git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git
-> >tags/iio-fixes-for-4.2d
-> >
-> >Can these wait for 4.3-rc1?  I'd like my last set of pull requests to
-> >be
-> >the last one for 4.2.  If it's a big deal, we can mark these for
-> >-stable
-> >and get them into 4.2.1?
-> >
-> >thanks,
-> >
-> >greg k-h
-> Sure. Can sit for a while.
+The driver currently registers a pair of irq handlers using
+request_threaded_irq(), however the synchronization mechanism between the
+hardirq and the threadedirq handler is a regular spinlock.
 
-Ok, can you add these to your other pull request for 4.3 and resend that
-one?
+Unfortunately, this breaks PREEMPT_RT builds, where a spinlock can sleep,
+and is thus not able to be acquired from a hardirq handler. This patch gets
+rid of the threaded handler and pushes all interrupt handling into the
+hardirq context, and uses request_irq().
 
-thanks,
+To validate that this change has no impact on RT performance, here are
+cyclictest values with no processes running:
 
-greg k-h
+$ sudo cyclictest -S -m -p 98
+# /dev/cpu_dma_latency set to 0us
+policy: fifo: loadavg: 0.00 0.01 0.05 1/174 2539
+T: 0 ( 1405) P:98 I:1000 C:167010520 Min: 9 Act: 12 Avg: 12 Max: 75
+T: 1 ( 1862) P:98 I:1500 C:111340339 Min: 9 Act: 12 Avg: 12 Max: 73
+
+Then, all xadc raw handles were accessed in a continuous loop via
+/sys/bus/iio/devices/iio:device0:
+
+$ sudo cyclictest -S -m -p 98
+# /dev/cpu_dma_latency set to 0us
+policy: fifo: loadavg: 7.84 7.70 7.63 3/182 4260
+T: 0 ( 2559) P:98 I:1000 C:241557018 Min: 11 Act: 18 Avg: 21 Max: 74
+T: 1 ( 2560) P:98 I:1500 C:161038006 Min: 10 Act: 21 Avg: 20 Max: 73
+
+Signed-off-by: Xander Huff <xander.huff@ni.com>
+---
+ drivers/iio/adc/xilinx-xadc-core.c | 37 ++++++++++---------------------------
+ drivers/iio/adc/xilinx-xadc.h      |  2 --
+ 2 files changed, 10 insertions(+), 29 deletions(-)
+
+diff --git a/drivers/iio/adc/xilinx-xadc-core.c b/drivers/iio/adc/xilinx-xadc-core.c
+index ce93bd8..0370624 100644
+--- a/drivers/iio/adc/xilinx-xadc-core.c
++++ b/drivers/iio/adc/xilinx-xadc-core.c
+@@ -273,33 +273,13 @@ static void xadc_zynq_unmask_worker(struct work_struct *work)
+ 		schedule_delayed_work(&xadc->zynq_unmask_work,
+ 				msecs_to_jiffies(XADC_ZYNQ_UNMASK_TIMEOUT));
+ 	}
+-}
+-
+-static irqreturn_t xadc_zynq_threaded_interrupt_handler(int irq, void *devid)
+-{
+-	struct iio_dev *indio_dev = devid;
+-	struct xadc *xadc = iio_priv(indio_dev);
+-	unsigned int alarm;
+-
+-	spin_lock_irq(&xadc->lock);
+-	alarm = xadc->zynq_alarm;
+-	xadc->zynq_alarm = 0;
+-	spin_unlock_irq(&xadc->lock);
+-
+-	xadc_handle_events(indio_dev, xadc_zynq_transform_alarm(alarm));
+ 
+-	/* unmask the required interrupts in timer. */
+-	schedule_delayed_work(&xadc->zynq_unmask_work,
+-			msecs_to_jiffies(XADC_ZYNQ_UNMASK_TIMEOUT));
+-
+-	return IRQ_HANDLED;
+ }
+ 
+ static irqreturn_t xadc_zynq_interrupt_handler(int irq, void *devid)
+ {
+ 	struct iio_dev *indio_dev = devid;
+ 	struct xadc *xadc = iio_priv(indio_dev);
+-	irqreturn_t ret = IRQ_HANDLED;
+ 	uint32_t status;
+ 
+ 	xadc_read_reg(xadc, XADC_ZYNQ_REG_INTSTS, &status);
+@@ -321,18 +301,23 @@ static irqreturn_t xadc_zynq_interrupt_handler(int irq, void *devid)
+ 
+ 	status &= XADC_ZYNQ_INT_ALARM_MASK;
+ 	if (status) {
+-		xadc->zynq_alarm |= status;
+ 		xadc->zynq_masked_alarm |= status;
+ 		/*
+ 		 * mask the current event interrupt,
+ 		 * unmask it when the interrupt is no more active.
+ 		 */
+ 		xadc_zynq_update_intmsk(xadc, 0, 0);
+-		ret = IRQ_WAKE_THREAD;
++
++		xadc_handle_events(indio_dev,
++				xadc_zynq_transform_alarm(status));
++
++		/* unmask the required interrupts in timer. */
++		schedule_delayed_work(&xadc->zynq_unmask_work,
++				msecs_to_jiffies(XADC_ZYNQ_UNMASK_TIMEOUT));
+ 	}
+ 	spin_unlock(&xadc->lock);
+ 
+-	return ret;
++	return IRQ_HANDLED;
+ }
+ 
+ #define XADC_ZYNQ_TCK_RATE_MAX 50000000
+@@ -437,7 +422,6 @@ static const struct xadc_ops xadc_zynq_ops = {
+ 	.setup = xadc_zynq_setup,
+ 	.get_dclk_rate = xadc_zynq_get_dclk_rate,
+ 	.interrupt_handler = xadc_zynq_interrupt_handler,
+-	.threaded_interrupt_handler = xadc_zynq_threaded_interrupt_handler,
+ 	.update_alarm = xadc_zynq_update_alarm,
+ };
+ 
+@@ -1225,9 +1209,8 @@ static int xadc_probe(struct platform_device *pdev)
+ 	if (ret)
+ 		goto err_free_samplerate_trigger;
+ 
+-	ret = request_threaded_irq(irq, xadc->ops->interrupt_handler,
+-				xadc->ops->threaded_interrupt_handler,
+-				0, dev_name(&pdev->dev), indio_dev);
++	ret = request_irq(irq, xadc->ops->interrupt_handler, 0,
++			dev_name(&pdev->dev), indio_dev);
+ 	if (ret)
+ 		goto err_clk_disable_unprepare;
+ 
+diff --git a/drivers/iio/adc/xilinx-xadc.h b/drivers/iio/adc/xilinx-xadc.h
+index 54adc50..f6f0819 100644
+--- a/drivers/iio/adc/xilinx-xadc.h
++++ b/drivers/iio/adc/xilinx-xadc.h
+@@ -60,7 +60,6 @@ struct xadc {
+ 
+ 	enum xadc_external_mux_mode external_mux_mode;
+ 
+-	unsigned int zynq_alarm;
+ 	unsigned int zynq_masked_alarm;
+ 	unsigned int zynq_intmask;
+ 	struct delayed_work zynq_unmask_work;
+@@ -79,7 +78,6 @@ struct xadc_ops {
+ 	void (*update_alarm)(struct xadc *, unsigned int);
+ 	unsigned long (*get_dclk_rate)(struct xadc *);
+ 	irqreturn_t (*interrupt_handler)(int, void *);
+-	irqreturn_t (*threaded_interrupt_handler)(int, void *);
+ 
+ 	unsigned int flags;
+ };
+-- 
+1.9.1
+
