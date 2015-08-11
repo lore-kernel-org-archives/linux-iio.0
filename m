@@ -1,47 +1,60 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-wi0-f179.google.com ([209.85.212.179]:33236 "EHLO
-	mail-wi0-f179.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S934022AbbHKKV4 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 11 Aug 2015 06:21:56 -0400
-Date: Tue, 11 Aug 2015 13:20:53 +0300
-From: Cristina Opriceana <cristina.opriceana@gmail.com>
-To: jic23@kernel.org
-Cc: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
-	gregkh@linuxfoundation.org, linux-iio@vger.kernel.org,
-	devel@driverdev.osuosl.org, linux-kernel@vger.kernel.org,
-	daniel.baluta@intel.com
-Subject: [PATCH 2/2] Staging: iio: trigger: Use braces on both branches of if
- statement
-Message-ID: <d9079236646cd08ab1f55a71ec67830dd8813e72.1439286814.git.cristina.opriceana@gmail.com>
-References: <cover.1439286814.git.cristina.opriceana@gmail.com>
+Received: from mail-lb0-f180.google.com ([209.85.217.180]:34776 "EHLO
+	mail-lb0-f180.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755243AbbHKKwW (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 11 Aug 2015 06:52:22 -0400
+Received: by lbbtg9 with SMTP id tg9so3783463lbb.1
+        for <linux-iio@vger.kernel.org>; Tue, 11 Aug 2015 03:52:20 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <cover.1439286814.git.cristina.opriceana@gmail.com>
+In-Reply-To: <1439287000-31506-1-git-send-email-linus.walleij@linaro.org>
+References: <1439287000-31506-1-git-send-email-linus.walleij@linaro.org>
+Date: Tue, 11 Aug 2015 13:52:20 +0300
+Message-ID: <CAEnQRZCen5ewAnnuiTSwQ5Yynpx0=_xnb0EUFohqb+v9LhZjzA@mail.gmail.com>
+Subject: Re: [PATCH] iio: percolate error if event fd fails
+From: Daniel Baluta <daniel.baluta@gmail.com>
+To: Linus Walleij <linus.walleij@linaro.org>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Fix style issue related to missing braces, detected by checkpatch.pl.
+On Tue, Aug 11, 2015 at 12:56 PM, Linus Walleij
+<linus.walleij@linaro.org> wrote:
+> This makes the error from iio_event_getfd() percolate up
+> to userspace properly so we can know for sure there is no
+> events on this device (-ENODEV returned). Before this patch
+> we would bail out looking for the unsupported evens on the
+> erroneous (negative) file descriptor.
 
-Signed-off-by: Cristina Opriceana <cristina.opriceana@gmail.com>
----
- drivers/staging/iio/trigger/iio-trig-periodic-rtc.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+Good catch. s/evens/events
 
-diff --git a/drivers/staging/iio/trigger/iio-trig-periodic-rtc.c b/drivers/staging/iio/trigger/iio-trig-periodic-rtc.c
-index a2a42c2..2db8857 100644
---- a/drivers/staging/iio/trigger/iio-trig-periodic-rtc.c
-+++ b/drivers/staging/iio/trigger/iio-trig-periodic-rtc.c
-@@ -74,8 +74,9 @@ static ssize_t iio_trig_periodic_write_freq(struct device *dev,
- 		if (ret == 0 && trig_info->state && trig_info->frequency == 0)
- 			ret = rtc_irq_set_state(trig_info->rtc,
- 						&trig_info->task, 1);
--	} else
-+	} else {
- 		ret = rtc_irq_set_state(trig_info->rtc, &trig_info->task, 0);
-+	}
- 	if (ret)
- 		goto error_ret;
- 
--- 
-1.9.1
+>
+> Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
 
+Acked-by: Daniel Baluta <daniel.baluta@intel.com>
+
+> ---
+>  drivers/iio/industrialio-core.c | 2 ++
+>  1 file changed, 2 insertions(+)
+>
+> diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+> index 3524b0de8721..9492aa443a26 100644
+> --- a/drivers/iio/industrialio-core.c
+> +++ b/drivers/iio/industrialio-core.c
+> @@ -1130,6 +1130,8 @@ static long iio_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
+>
+>         if (cmd == IIO_GET_EVENT_FD_IOCTL) {
+>                 fd = iio_event_getfd(indio_dev);
+> +               if (fd < 0)
+> +                       return fd;
+>                 if (copy_to_user(ip, &fd, sizeof(fd)))
+>                         return -EFAULT;
+>                 return 0;
+> --
+> 2.4.3
+>
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
