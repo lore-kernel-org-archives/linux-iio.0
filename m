@@ -1,130 +1,61 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-lb0-f169.google.com ([209.85.217.169]:35070 "EHLO
-	mail-lb0-f169.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S964936AbbHKOBK (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 11 Aug 2015 10:01:10 -0400
-Received: by lbcbn3 with SMTP id bn3so19249381lbc.2
-        for <linux-iio@vger.kernel.org>; Tue, 11 Aug 2015 07:01:09 -0700 (PDT)
-From: Linus Walleij <linus.walleij@linaro.org>
-To: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org
-Cc: Linus Walleij <linus.walleij@linaro.org>,
-	Denis Ciocca <denis.ciocca@st.com>
-Subject: [PATCH] iio: st_sensors: add debugfs register read hook
-Date: Tue, 11 Aug 2015 16:01:05 +0200
-Message-Id: <1439301665-4373-1-git-send-email-linus.walleij@linaro.org>
+Received: from mail-wi0-f180.google.com ([209.85.212.180]:33183 "EHLO
+	mail-wi0-f180.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S965005AbbHKOcT (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 11 Aug 2015 10:32:19 -0400
+Received: by wijp15 with SMTP id p15so179072723wij.0
+        for <linux-iio@vger.kernel.org>; Tue, 11 Aug 2015 07:32:18 -0700 (PDT)
+From: Crt Mori <cmo@melexis.com>
+To: Mark Brown <broonie@kernel.org>,
+	Jonathan Cameron <jic23@kernel.org>
+Cc: linux-iio@vger.kernel.org, Crt Mori <cmo@melexis.com>
+Subject: [PATCH] iio: base: Adding flags to regmap_i2c
+Date: Tue, 11 Aug 2015 16:32:04 +0200
+Message-Id: <1439303524-30801-1-git-send-email-cmo@melexis.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-This adds a debugfs hook to read/write registers in the ST
-sensors using debugfs. Proved to be awesome help when trying
-to debug why IRQs do not arrive.
+Providing access to i2c flags within regmap i2c functions.
 
-Cc: Denis Ciocca <denis.ciocca@st.com>
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+Signed-off-by: Crt Mori <cmo@melexis.com>
 ---
- drivers/iio/accel/st_accel_core.c               |  1 +
- drivers/iio/common/st_sensors/st_sensors_core.c | 21 +++++++++++++++++++++
- drivers/iio/gyro/st_gyro_core.c                 |  1 +
- drivers/iio/magnetometer/st_magn_core.c         |  1 +
- drivers/iio/pressure/st_pressure_core.c         |  1 +
- include/linux/iio/common/st_sensors.h           |  4 ++++
- 6 files changed, 29 insertions(+)
+ drivers/base/regmap/regmap-i2c.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/iio/accel/st_accel_core.c b/drivers/iio/accel/st_accel_core.c
-index 6617e779aa87..f5f2684c0090 100644
---- a/drivers/iio/accel/st_accel_core.c
-+++ b/drivers/iio/accel/st_accel_core.c
-@@ -612,6 +612,7 @@ static const struct iio_info accel_info = {
- 	.attrs = &st_accel_attribute_group,
- 	.read_raw = &st_accel_read_raw,
- 	.write_raw = &st_accel_write_raw,
-+	.debugfs_reg_access = st_sensors_debugfs_reg_access,
- };
+diff --git a/drivers/base/regmap/regmap-i2c.c b/drivers/base/regmap/regmap-i2c.c
+index fa6bf52..33e5229 100644
+--- a/drivers/base/regmap/regmap-i2c.c
++++ b/drivers/base/regmap/regmap-i2c.c
+@@ -46,12 +46,12 @@ static int regmap_i2c_gather_write(void *context,
+ 		return -ENOTSUPP;
  
- #ifdef CONFIG_IIO_TRIGGER
-diff --git a/drivers/iio/common/st_sensors/st_sensors_core.c b/drivers/iio/common/st_sensors/st_sensors_core.c
-index 8086cbcff87d..05b519ef111f 100644
---- a/drivers/iio/common/st_sensors/st_sensors_core.c
-+++ b/drivers/iio/common/st_sensors/st_sensors_core.c
-@@ -44,6 +44,27 @@ st_sensors_write_data_with_mask_error:
- 	return err;
- }
+ 	xfer[0].addr = i2c->addr;
+-	xfer[0].flags = 0;
++	xfer[0].flags = i2c->flags;
+ 	xfer[0].len = reg_size;
+ 	xfer[0].buf = (void *)reg;
  
-+int st_sensors_debugfs_reg_access(struct iio_dev *indio_dev,
-+				  unsigned reg, unsigned writeval,
-+				  unsigned *readval)
-+{
-+	struct st_sensor_data *sdata = iio_priv(indio_dev);
-+	u8 readdata;
-+	int err;
-+
-+	if (!readval)
-+		return sdata->tf->write_byte(&sdata->tb, sdata->dev,
-+					     (u8)reg, (u8)writeval);
-+
-+	err = sdata->tf->read_byte(&sdata->tb, sdata->dev, (u8)reg, &readdata);
-+	if (err < 0)
-+		return err;
-+
-+	*readval = (unsigned)readdata;
-+
-+	return 0;
-+}
-+
- static int st_sensors_match_odr(struct st_sensor_settings *sensor_settings,
- 			unsigned int odr, struct st_sensor_odr_avl *odr_out)
- {
-diff --git a/drivers/iio/gyro/st_gyro_core.c b/drivers/iio/gyro/st_gyro_core.c
-index ffe96642b6d0..39138e53ba24 100644
---- a/drivers/iio/gyro/st_gyro_core.c
-+++ b/drivers/iio/gyro/st_gyro_core.c
-@@ -380,6 +380,7 @@ static const struct iio_info gyro_info = {
- 	.attrs = &st_gyro_attribute_group,
- 	.read_raw = &st_gyro_read_raw,
- 	.write_raw = &st_gyro_write_raw,
-+	.debugfs_reg_access = st_sensors_debugfs_reg_access,
- };
+ 	xfer[1].addr = i2c->addr;
+-	xfer[1].flags = I2C_M_NOSTART;
++	xfer[1].flags = i2c->flags | I2C_M_NOSTART;
+ 	xfer[1].len = val_size;
+ 	xfer[1].buf = (void *)val;
  
- #ifdef CONFIG_IIO_TRIGGER
-diff --git a/drivers/iio/magnetometer/st_magn_core.c b/drivers/iio/magnetometer/st_magn_core.c
-index b4bcfb790f49..e4da514efa9f 100644
---- a/drivers/iio/magnetometer/st_magn_core.c
-+++ b/drivers/iio/magnetometer/st_magn_core.c
-@@ -475,6 +475,7 @@ static const struct iio_info magn_info = {
- 	.attrs = &st_magn_attribute_group,
- 	.read_raw = &st_magn_read_raw,
- 	.write_raw = &st_magn_write_raw,
-+	.debugfs_reg_access = st_sensors_debugfs_reg_access,
- };
+@@ -74,12 +74,12 @@ static int regmap_i2c_read(void *context,
+ 	int ret;
  
- int st_magn_common_probe(struct iio_dev *indio_dev)
-diff --git a/drivers/iio/pressure/st_pressure_core.c b/drivers/iio/pressure/st_pressure_core.c
-index e881fa6291e9..1306d8284bdd 100644
---- a/drivers/iio/pressure/st_pressure_core.c
-+++ b/drivers/iio/pressure/st_pressure_core.c
-@@ -397,6 +397,7 @@ static const struct iio_info press_info = {
- 	.attrs = &st_press_attribute_group,
- 	.read_raw = &st_press_read_raw,
- 	.write_raw = &st_press_write_raw,
-+	.debugfs_reg_access = st_sensors_debugfs_reg_access,
- };
+ 	xfer[0].addr = i2c->addr;
+-	xfer[0].flags = 0;
++	xfer[0].flags = i2c->flags;
+ 	xfer[0].len = reg_size;
+ 	xfer[0].buf = (void *)reg;
  
- #ifdef CONFIG_IIO_TRIGGER
-diff --git a/include/linux/iio/common/st_sensors.h b/include/linux/iio/common/st_sensors.h
-index 2c476acb87d9..d8b4a7bc4029 100644
---- a/include/linux/iio/common/st_sensors.h
-+++ b/include/linux/iio/common/st_sensors.h
-@@ -269,6 +269,10 @@ void st_sensors_power_enable(struct iio_dev *indio_dev);
+ 	xfer[1].addr = i2c->addr;
+-	xfer[1].flags = I2C_M_RD;
++	xfer[1].flags = i2c->flags | I2C_M_RD;
+ 	xfer[1].len = val_size;
+ 	xfer[1].buf = val;
  
- void st_sensors_power_disable(struct iio_dev *indio_dev);
- 
-+int st_sensors_debugfs_reg_access(struct iio_dev *indio_dev,
-+				  unsigned reg, unsigned writeval,
-+				  unsigned *readval);
-+
- int st_sensors_set_odr(struct iio_dev *indio_dev, unsigned int odr);
- 
- int st_sensors_set_dataready_irq(struct iio_dev *indio_dev, bool enable);
 -- 
-2.4.3
+2.1.4
 
