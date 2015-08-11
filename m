@@ -1,77 +1,243 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-wi0-f171.google.com ([209.85.212.171]:37701 "EHLO
-	mail-wi0-f171.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S933835AbbHKJIR (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 11 Aug 2015 05:08:17 -0400
+Received: from mail-wi0-f173.google.com ([209.85.212.173]:35084 "EHLO
+	mail-wi0-f173.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S933874AbbHKJIU (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 11 Aug 2015 05:08:20 -0400
 From: Sanchayan Maity <maitysanchayan@gmail.com>
 To: jic23@kernel.org, linux-iio@vger.kernel.org
 Cc: stefan@agner.ch, B38611@freescale.com, pmeerw@pmeerw.net,
 	linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
 	Sanchayan Maity <maitysanchayan@gmail.com>
-Subject: [PATCH v3] Add continuous sampling with IIO buffers for Vybrid
-Date: Tue, 11 Aug 2015 14:35:00 +0530
-Message-Id: <cover.1439283162.git.maitysanchayan@gmail.com>
+Subject: [PATCH v3] iio: adc: vf610: Add IIO buffer support for Vybrid ADC
+Date: Tue, 11 Aug 2015 14:35:01 +0530
+Message-Id: <d556443a26070be505f9a5f5f0999253b73d9b71.1439283162.git.maitysanchayan@gmail.com>
+In-Reply-To: <cover.1439283162.git.maitysanchayan@gmail.com>
+References: <cover.1439283162.git.maitysanchayan@gmail.com>
+In-Reply-To: <cover.1439283162.git.maitysanchayan@gmail.com>
+References: <cover.1439283162.git.maitysanchayan@gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Hello,
+This patch adds support for IIO buffer to the Vybrid ADC driver.
+IIO triggered buffer infrastructure along with iio sysfs trigger
+is used to leverage continuous sampling support provided by the
+ADC block.
 
-This patch adds support for continuous sampling provided by the
-ADC block on Vybrid by leveraging the IIO triggered buffers
-infrastructure.
-
-The patch has been tested on Colibri VF50 and VF61 on shawn's
-tree for-next branch with the patches [1] and [2] applied.
-
-The below script was used for testing.
-
-#!/bin/sh
-echo 0 > /sys/bus/iio/devices/iio:device0/scan_elements/in_voltage8_en
-echo 0 > /sys/bus/iio/devices/iio:device0/scan_elements/in_voltage9_en
-echo 1 > /sys/bus/iio/devices/iio:device0/scan_elements/in_temp_en
-echo 1 > /sys/bus/iio/devices/iio:device0/scan_elements/in_timestamp_en
-echo 0 > /sys/bus/iio/devices/iio_sysfs_trigger/add_trigger
-/home/root/generic_buffer -n 4003b000.adc -t sysfstrig0 -l 512 -c 10
-echo 0 > /sys/bus/iio/devices/iio:device0/scan_elements/in_timestamp_en
-echo 0 > /sys/bus/iio/devices/iio:device0/scan_elements/in_temp_en
-echo 0 > /sys/bus/iio/devices/iio:device0/scan_elements/in_voltage8_en
-echo 0 > /sys/bus/iio/devices/iio:device0/scan_elements/in_voltage9_en
-
-Feedback and comments are most welcome.
-
-Changes since v2:
-1. Fix the wrong buffer size for statically allocated buffer
-2. Drop the use of .address field from the iio_chan_spec
-3. Use iio_buffer_enabled call inside the lock
-4. Drop wrapper function around iio_trigered_* function calls
-5. Drop Kconfig select of sysfs trigger
-6. Drop Kconfig select IIO_TRIGGER as it is already selected by
-IIO_TRIGGERED_BUFFER
-
-Changes since v1:
-1. Use a fixed size buffer instead of kmalloc allocated during update
-scan mode
-2. Remove a write to read only register ADC_HS (COCO bit)
-
-Version 2 patch can be found here
-http://www.gossamer-threads.com/lists/linux/kernel/2235178
-
-Version 1 patch can be found here
-http://www.spinics.net/lists/linux-iio/msg20053.html
-
-[1]. https://lkml.org/lkml/2015/5/27/350
-[2]. https://lkml.org/lkml/2015/7/14/395
-
-Thanks & Regards,
-Sanchayan Maity.
-
-Sanchayan Maity (1):
-  iio: adc: vf610: Add IIO buffer support for Vybrid ADC
-
+Signed-off-by: Sanchayan Maity <maitysanchayan@gmail.com>
+---
  drivers/iio/adc/Kconfig     |   2 +
  drivers/iio/adc/vf610_adc.c | 102 +++++++++++++++++++++++++++++++++++++++++---
  2 files changed, 97 insertions(+), 7 deletions(-)
 
+diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+index 7c55658..660f790 100644
+--- a/drivers/iio/adc/Kconfig
++++ b/drivers/iio/adc/Kconfig
+@@ -337,6 +337,8 @@ config TWL6030_GPADC
+ config VF610_ADC
+ 	tristate "Freescale vf610 ADC driver"
+ 	depends on OF
++	select IIO_BUFFER
++	select IIO_TRIGGERED_BUFFER
+ 	help
+ 	  Say yes here to support for Vybrid board analog-to-digital converter.
+ 	  Since the IP is used for i.MX6SLX, the driver also support i.MX6SLX.
+diff --git a/drivers/iio/adc/vf610_adc.c b/drivers/iio/adc/vf610_adc.c
+index 23b8fb9..de62c48 100644
+--- a/drivers/iio/adc/vf610_adc.c
++++ b/drivers/iio/adc/vf610_adc.c
+@@ -34,8 +34,11 @@
+ #include <linux/err.h>
+ 
+ #include <linux/iio/iio.h>
++#include <linux/iio/buffer.h>
+ #include <linux/iio/sysfs.h>
+-#include <linux/iio/driver.h>
++#include <linux/iio/trigger.h>
++#include <linux/iio/trigger_consumer.h>
++#include <linux/iio/triggered_buffer.h>
+ 
+ /* This will be the driver name the kernel reports */
+ #define DRIVER_NAME "vf610-adc"
+@@ -170,6 +173,7 @@ struct vf610_adc {
+ 	u32 sample_freq_avail[5];
+ 
+ 	struct completion completion;
++	u16 buffer[8];
+ };
+ 
+ static const u32 vf610_hw_avgs[] = { 1, 4, 8, 16, 32 };
+@@ -505,12 +509,24 @@ static const struct iio_chan_spec_ext_info vf610_ext_info[] = {
+ 	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE) |	\
+ 				BIT(IIO_CHAN_INFO_SAMP_FREQ),	\
+ 	.ext_info = vf610_ext_info,				\
++	.scan_index = (_idx),			\
++	.scan_type = {					\
++		.sign = 'u',				\
++		.realbits = 12,				\
++		.storagebits = 16,			\
++	},						\
+ }
+ 
+ #define VF610_ADC_TEMPERATURE_CHAN(_idx, _chan_type) {	\
+ 	.type = (_chan_type),	\
+ 	.channel = (_idx),		\
+ 	.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED),	\
++	.scan_index = (_idx),					\
++	.scan_type = {						\
++		.sign = 'u',					\
++		.realbits = 12,					\
++		.storagebits = 16,				\
++	},							\
+ }
+ 
+ static const struct iio_chan_spec vf610_adc_iio_channels[] = {
+@@ -531,6 +547,7 @@ static const struct iio_chan_spec vf610_adc_iio_channels[] = {
+ 	VF610_ADC_CHAN(14, IIO_VOLTAGE),
+ 	VF610_ADC_CHAN(15, IIO_VOLTAGE),
+ 	VF610_ADC_TEMPERATURE_CHAN(26, IIO_TEMP),
++	IIO_CHAN_SOFT_TIMESTAMP(32),
+ 	/* sentinel */
+ };
+ 
+@@ -559,13 +576,20 @@ static int vf610_adc_read_data(struct vf610_adc *info)
+ 
+ static irqreturn_t vf610_adc_isr(int irq, void *dev_id)
+ {
+-	struct vf610_adc *info = (struct vf610_adc *)dev_id;
++	struct iio_dev *indio_dev = (struct iio_dev *)dev_id;
++	struct vf610_adc *info = iio_priv(indio_dev);
+ 	int coco;
+ 
+ 	coco = readl(info->regs + VF610_REG_ADC_HS);
+ 	if (coco & VF610_ADC_HS_COCO0) {
+ 		info->value = vf610_adc_read_data(info);
+-		complete(&info->completion);
++		if (iio_buffer_enabled(indio_dev)) {
++			info->buffer[0] = info->value;
++			iio_push_to_buffers_with_timestamp(indio_dev,
++					info->buffer, iio_get_time_ns());
++			iio_trigger_notify_done(indio_dev->trig);
++		} else
++			complete(&info->completion);
+ 	}
+ 
+ 	return IRQ_HANDLED;
+@@ -613,8 +637,12 @@ static int vf610_read_raw(struct iio_dev *indio_dev,
+ 	case IIO_CHAN_INFO_RAW:
+ 	case IIO_CHAN_INFO_PROCESSED:
+ 		mutex_lock(&indio_dev->mlock);
+-		reinit_completion(&info->completion);
++		if (iio_buffer_enabled(indio_dev)) {
++			mutex_unlock(&indio_dev->mlock);
++			return -EBUSY;
++		}
+ 
++		reinit_completion(&info->completion);
+ 		hc_cfg = VF610_ADC_ADCHC(chan->channel);
+ 		hc_cfg |= VF610_ADC_AIEN;
+ 		writel(hc_cfg, info->regs + VF610_REG_ADC_HC0);
+@@ -694,6 +722,57 @@ static int vf610_write_raw(struct iio_dev *indio_dev,
+ 	return -EINVAL;
+ }
+ 
++static int vf610_adc_buffer_postenable(struct iio_dev *indio_dev)
++{
++	struct vf610_adc *info = iio_priv(indio_dev);
++	unsigned int channel;
++	int ret;
++	int val;
++
++	ret = iio_triggered_buffer_postenable(indio_dev);
++	if (ret)
++		return ret;
++
++	val = readl(info->regs + VF610_REG_ADC_GC);
++	val |= VF610_ADC_ADCON;
++	writel(val, info->regs + VF610_REG_ADC_GC);
++
++	channel = find_first_bit(indio_dev->active_scan_mask,
++						indio_dev->masklength);
++
++	val = VF610_ADC_ADCHC(channel);
++	val |= VF610_ADC_AIEN;
++
++	writel(val, info->regs + VF610_REG_ADC_HC0);
++
++	return 0;
++}
++
++static int vf610_adc_buffer_postdisable(struct iio_dev *indio_dev)
++{
++	struct vf610_adc *info = iio_priv(indio_dev);
++	unsigned int hc_cfg = 0;
++	int val;
++
++	val = readl(info->regs + VF610_REG_ADC_GC);
++	val &= ~VF610_ADC_ADCON;
++	writel(val, info->regs + VF610_REG_ADC_GC);
++
++	hc_cfg |= VF610_ADC_CONV_DISABLE;
++	hc_cfg &= ~VF610_ADC_AIEN;
++
++	writel(hc_cfg, info->regs + VF610_REG_ADC_HC0);
++
++	return 0;
++}
++
++static const struct iio_buffer_setup_ops iio_triggered_buffer_setup_ops = {
++	.postenable = &vf610_adc_buffer_postenable,
++	.predisable = &iio_triggered_buffer_predisable,
++	.postdisable = &vf610_adc_buffer_postdisable,
++	.validate_scan_mask = &iio_validate_scan_mask_onehot,
++};
++
+ static int vf610_adc_reg_access(struct iio_dev *indio_dev,
+ 			unsigned reg, unsigned writeval,
+ 			unsigned *readval)
+@@ -753,7 +832,7 @@ static int vf610_adc_probe(struct platform_device *pdev)
+ 
+ 	ret = devm_request_irq(info->dev, irq,
+ 				vf610_adc_isr, 0,
+-				dev_name(&pdev->dev), info);
++				dev_name(&pdev->dev), indio_dev);
+ 	if (ret < 0) {
+ 		dev_err(&pdev->dev, "failed requesting irq, irq = %d\n", irq);
+ 		return ret;
+@@ -806,15 +885,23 @@ static int vf610_adc_probe(struct platform_device *pdev)
+ 	vf610_adc_cfg_init(info);
+ 	vf610_adc_hw_init(info);
+ 
++	ret = iio_triggered_buffer_setup(indio_dev, &iio_pollfunc_store_time,
++					NULL, &iio_triggered_buffer_setup_ops);
++	if (ret < 0) {
++		dev_err(&pdev->dev, "Couldn't initialise the buffer\n");
++		goto error_iio_device_register;
++	}
++
+ 	ret = iio_device_register(indio_dev);
+ 	if (ret) {
+ 		dev_err(&pdev->dev, "Couldn't register the device.\n");
+-		goto error_iio_device_register;
++		goto error_adc_buffer_init;
+ 	}
+ 
+ 	return 0;
+ 
+-
++error_adc_buffer_init:
++	iio_triggered_buffer_cleanup(indio_dev);
+ error_iio_device_register:
+ 	clk_disable_unprepare(info->clk);
+ error_adc_clk_enable:
+@@ -829,6 +916,7 @@ static int vf610_adc_remove(struct platform_device *pdev)
+ 	struct vf610_adc *info = iio_priv(indio_dev);
+ 
+ 	iio_device_unregister(indio_dev);
++	iio_triggered_buffer_cleanup(indio_dev);
+ 	regulator_disable(info->vref);
+ 	clk_disable_unprepare(info->clk);
+ 
 -- 
 2.5.0
 
