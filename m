@@ -1,29 +1,53 @@
-Return-Path: <gregkh@linuxfoundation.org>
-Date: Mon, 10 Aug 2015 17:06:10 -0700
-From: Greg KH <gregkh@linuxfoundation.org>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Subject: Re: [PULL] 4th set of IIO fixes for the 4.2 cycle
-Message-ID: <20150811000610.GC31712@kroah.com>
-References: <55C6536E.3030300@kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from 19pmail.ess.barracuda.com ([64.235.150.244]:57245 "EHLO
+	19pmail.ess.barracuda.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752728AbbHKQE5 convert rfc822-to-8bit (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 11 Aug 2015 12:04:57 -0400
+From: Greg Wilson-Lindberg <GWilson@sakuraus.com>
+To: Michael Welling <mwelling@ieee.org>
+CC: Daniel Baluta <daniel.baluta@gmail.com>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Date: Tue, 11 Aug 2015 09:00:21 -0700
+Subject: RE: BBB IIO ADC access not working
+Message-ID: <782E3A02C2EB2347BEA6DEA69DC7AB86021D3CBD3DB3@sfamail.SAKURAUS.LOCAL>
+References: <782E3A02C2EB2347BEA6DEA69DC7AB86021D3CB08DDB@sfamail.SAKURAUS.LOCAL>
+ <CAEnQRZAwD+s0C4et9OTeWrwaq3ZDy3+g0YT_KKMUst_PM31DyA@mail.gmail.com>
+ <782E3A02C2EB2347BEA6DEA69DC7AB86021D3CB09132@sfamail.SAKURAUS.LOCAL>
+ <20150806180730.GA1360@deathstar>
+ <782E3A02C2EB2347BEA6DEA69DC7AB86021D3CB0937F@sfamail.SAKURAUS.LOCAL>
+ <20150810223338.GA23548@deathstar>
+In-Reply-To: <20150810223338.GA23548@deathstar>
+Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <55C6536E.3030300@kernel.org>
-List-ID: <linux-iio@vger.kernel.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Sat, Aug 08, 2015 at 08:07:26PM +0100, Jonathan Cameron wrote:
-> The following changes since commit 40c3ef9d2f14cce91dbd6ae9c9ccf6210d8c5df7:
+Hello Michael,
+
+.....
+> Try increasing the charge-delay and see if you can find a 
+> value where it stops happening.
 > 
->   staging: comedi: das1800: add missing break in switch (2015-07-31 16:59:47 -0700)
+> Something tells me that it won't fix the issue.
 > 
-> are available in the git repository at:
-> 
->   git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git tags/iio-fixes-for-4.2d
+> Where is the source tree for this kernel?
+> Which dtb are you using?
+>  
 
-Can these wait for 4.3-rc1?  I'd like my last set of pull requests to be
-the last one for 4.2.  If it's a big deal, we can mark these for -stable
-and get them into 4.2.1?
+I increased the charge-delay to 0x10000 and left the system over night with no user
+interaction and it was locked up this morning, I think I'm going to have to agree 
+that changing that to a larger number will not fix the problem.
 
-thanks,
+Here is a link to the dts that we use:
+http://pastebin.com/5nU27sML
+I did not include the standard dtsi files that we include from the linux source tree,
+just the files that we built ourselves or that we modified.
 
-greg k-h
+RCN replied thusly to my request for the source tree:
+   Here's the kernel source, the config we use is "bb.org_defconfig"
+   https://github.com/beagleboard/linux/tree/3.14.40-ti-r62
+
+Thanks for your help in tracking down this problem.
+
+Regards,
+Greg
