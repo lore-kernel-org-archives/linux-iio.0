@@ -1,48 +1,49 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mout.gmx.net ([212.227.15.15]:54440 "EHLO mout.gmx.net"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751950AbbHKSqf (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Tue, 11 Aug 2015 14:46:35 -0400
-Message-ID: <55CA4302.8080609@gmx.de>
-Date: Tue, 11 Aug 2015 20:46:26 +0200
-From: Hartmut Knaack <knaack.h@gmx.de>
+Return-Path: <gregkh@linuxfoundation.org>
+Date: Tue, 11 Aug 2015 15:42:57 -0700
+From: Greg KH <gregkh@linuxfoundation.org>
+To: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Subject: Re: [PULL] 4th set of IIO fixes for the 4.2 cycle
+Message-ID: <20150811224257.GC4475@kroah.com>
+References: <55C6536E.3030300@kernel.org>
+ <20150811000610.GC31712@kroah.com>
+ <02E11430-3ABA-48FE-AFE6-2BE958614C31@jic23.retrosnub.co.uk>
 MIME-Version: 1.0
-To: Linus Walleij <linus.walleij@linaro.org>,
-	Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org
-Subject: Re: [PATCH] iio: event_monitor: report unsupported events
-References: <1439296478-19567-1-git-send-email-linus.walleij@linaro.org>
-In-Reply-To: <1439296478-19567-1-git-send-email-linus.walleij@linaro.org>
-Content-Type: text/plain; charset=ISO-8859-15
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <02E11430-3ABA-48FE-AFE6-2BE958614C31@jic23.retrosnub.co.uk>
+List-ID: <linux-iio@vger.kernel.org>
 
-Linus Walleij schrieb am 11.08.2015 um 14:34:
-> This makes the event monitor bail out with a helpful error
-> message if a device does not support events, as a related
-> fix to iio core now makes it return -ENODEV properly.
+On Tue, Aug 11, 2015 at 08:29:16AM +0100, Jonathan Cameron wrote:
 > 
-> Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
-Acked-by: Hartmut Knaack <knaack.h@gmx.de>
-> ---
->  tools/iio/iio_event_monitor.c | 6 +++++-
->  1 file changed, 5 insertions(+), 1 deletion(-)
 > 
-> diff --git a/tools/iio/iio_event_monitor.c b/tools/iio/iio_event_monitor.c
-> index cd3fd41b481d..d51eb04202e9 100644
-> --- a/tools/iio/iio_event_monitor.c
-> +++ b/tools/iio/iio_event_monitor.c
-> @@ -284,7 +284,11 @@ int main(int argc, char **argv)
->  	ret = ioctl(fd, IIO_GET_EVENT_FD_IOCTL, &event_fd);
->  	if (ret == -1 || event_fd == -1) {
->  		ret = -errno;
-> -		fprintf(stderr, "Failed to retrieve event fd\n");
-> +		if (ret == -ENODEV)
-> +			fprintf(stderr,
-> +				"This device does not support events\n");
-> +		else
-> +			fprintf(stderr, "Failed to retrieve event fd\n");
->  		if (close(fd) == -1)
->  			perror("Failed to close character device file");
->  
-> 
+> On 11 August 2015 01:06:10 BST, Greg KH <gregkh@linuxfoundation.org> wrote:
+> >On Sat, Aug 08, 2015 at 08:07:26PM +0100, Jonathan Cameron wrote:
+> >> The following changes since commit
+> >40c3ef9d2f14cce91dbd6ae9c9ccf6210d8c5df7:
+> >> 
+> >>   staging: comedi: das1800: add missing break in switch (2015-07-31
+> >16:59:47 -0700)
+> >> 
+> >> are available in the git repository at:
+> >> 
+> >>   git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git
+> >tags/iio-fixes-for-4.2d
+> >
+> >Can these wait for 4.3-rc1?  I'd like my last set of pull requests to
+> >be
+> >the last one for 4.2.  If it's a big deal, we can mark these for
+> >-stable
+> >and get them into 4.2.1?
+> >
+> >thanks,
+> >
+> >greg k-h
+> Sure. Can sit for a while.
 
+Ok, can you add these to your other pull request for 4.3 and resend that
+one?
+
+thanks,
+
+greg k-h
