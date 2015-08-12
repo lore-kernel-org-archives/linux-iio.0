@@ -1,117 +1,100 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:58215 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:58229 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751050AbbHLVSh (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 12 Aug 2015 17:18:37 -0400
-Subject: Re: [PATCH 2/8] iio:magnetometer:bmc150_magn: sort entry
- alphabetically
+	with ESMTP id S1751050AbbHLVVF (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 12 Aug 2015 17:21:05 -0400
+Subject: Re: [PATCH 2/2] iio:adc:cc10001_adc: resort entry in Kconfig and
+ Makefile
 To: Hartmut Knaack <knaack.h@gmx.de>, linux-iio@vger.kernel.org
-References: <cover.1437090791.git.knaack.h@gmx.de>
- <187b63157fb2a62f1d4d4820a5fb4b914298c7a7.1437090791.git.knaack.h@gmx.de>
- <55AB75D8.5090408@kernel.org>
+References: <cover.1434844874.git.knaack.h@gmx.de>
+ <8b5a272b03bdf2c039edf722b8179690be8909de.1434844874.git.knaack.h@gmx.de>
+ <5586D576.1050508@kernel.org>
 Cc: Lars-Peter Clausen <lars@metafoo.de>,
 	Peter Meerwald <pmeerw@pmeerw.net>,
-	Irina Tirdea <irina.tirdea@intel.com>,
-	Vlad Dogaru <vlad.dogaru@intel.com>
+	Ezequiel Garcia <ezequiel.garcia@imgtec.com>,
+	Naidu Tellapati <naidu.tellapati@imgtec.com>,
+	Phani Movva <Phani.Movva@imgtec.com>
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <55CBB82A.7020103@kernel.org>
-Date: Wed, 12 Aug 2015 22:18:34 +0100
+Message-ID: <55CBB8BF.5020503@kernel.org>
+Date: Wed, 12 Aug 2015 22:21:03 +0100
 MIME-Version: 1.0
-In-Reply-To: <55AB75D8.5090408@kernel.org>
+In-Reply-To: <5586D576.1050508@kernel.org>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 19/07/15 11:03, Jonathan Cameron wrote:
-> On 17/07/15 09:52, Hartmut Knaack wrote:
->> Sort the entry for bmc105_magn in Kconfig and Makefile to its correct
->> position. Also add the minor module information for completeness.
->>
->> Fixes: c91746a2361d ("iio: magn: Add support for BMC150 magnetometer")
+On 21/06/15 16:17, Jonathan Cameron wrote:
+> On 21/06/15 11:15, Hartmut Knaack wrote:
+>> Move the entry for the CC 10001 ADC driver in Kconfig and Makefile up to
+>> maintain alphabetic order.
 >>
 >> Signed-off-by: Hartmut Knaack <knaack.h@gmx.de>
-> Technically this isn't a fix so will have to go the slow way.  Obviously it's
-> dependent on the previous patch, so if I forget about it do poke me!
+> As you might have guessed, will have to hold this one for now to let
+> the fix get through to my togreg tree.
+> Same for the other patch you sent.
+> 
+> Give me a poke if I look to have forgotten either of them!
+Applied (with fuzz)
 > 
 > Jonathan
-Applied.
 >> ---
->>  drivers/iio/magnetometer/Kconfig  | 33 ++++++++++++++++++---------------
->>  drivers/iio/magnetometer/Makefile |  3 +--
->>  2 files changed, 19 insertions(+), 17 deletions(-)
+>>  drivers/iio/adc/Kconfig  | 18 +++++++++---------
+>>  drivers/iio/adc/Makefile |  2 +-
+>>  2 files changed, 10 insertions(+), 10 deletions(-)
 >>
->> diff --git a/drivers/iio/magnetometer/Kconfig b/drivers/iio/magnetometer/Kconfig
->> index efb9350b0d76..868abada3409 100644
->> --- a/drivers/iio/magnetometer/Kconfig
->> +++ b/drivers/iio/magnetometer/Kconfig
->> @@ -24,6 +24,24 @@ config AK09911
->>  	help
->>  	  Deprecated: AK09911 is now supported by AK8975 driver.
+>> diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+>> index eb0cd89..4790071 100644
+>> --- a/drivers/iio/adc/Kconfig
+>> +++ b/drivers/iio/adc/Kconfig
+>> @@ -142,15 +142,6 @@ config BERLIN2_ADC
+>>  	  Marvell Berlin2 ADC driver. This ADC has 8 channels, with one used for
+>>  	  temperature measurement.
 >>  
->> +config BMC150_MAGN
->> +	tristate "Bosch BMC150 Magnetometer Driver"
->> +	depends on I2C
->> +	select REGMAP_I2C
->> +	select IIO_BUFFER
->> +	select IIO_TRIGGERED_BUFFER
->> +	help
->> +	  Say yes here to build support for the BMC150 magnetometer.
->> +
->> +	  Currently this only supports the device via an i2c interface.
->> +
->> +	  This is a combo module with both accelerometer and magnetometer.
->> +	  This driver is only implementing magnetometer part, which has
->> +	  its own address and register map.
->> +
->> +	  To compile this driver as a module, choose M here: the module will be
->> +	  called bmc150_magn.
->> +
->>  config MAG3110
->>  	tristate "Freescale MAG3110 3-Axis Magnetometer"
->>  	depends on I2C
->> @@ -87,19 +105,4 @@ config IIO_ST_MAGN_SPI_3AXIS
->>  	depends on IIO_ST_MAGN_3AXIS
->>  	depends on IIO_ST_SENSORS_SPI
->>  
->> -config BMC150_MAGN
->> -	tristate "Bosch BMC150 Magnetometer Driver"
->> -	depends on I2C
->> -	select REGMAP_I2C
->> -	select IIO_BUFFER
->> -	select IIO_TRIGGERED_BUFFER
+>> -config DA9150_GPADC
+>> -	tristate "Dialog DA9150 GPADC driver support"
+>> -	depends on MFD_DA9150
 >> -	help
->> -	  Say yes here to build support for the BMC150 magnetometer.
+>> -	  Say yes here to build support for Dialog DA9150 GPADC.
 >> -
->> -	  Currently this only supports the device via an i2c interface.
+>> -	  This driver can also be built as a module. If chosen, the module name
+>> -	  will be da9150-gpadc.
 >> -
->> -	  This is a combo module with both accelerometer and magnetometer.
->> -	  This driver is only implementing magnetometer part, which has
->> -	  its own address and register map.
->> -
->>  endmenu
->> diff --git a/drivers/iio/magnetometer/Makefile b/drivers/iio/magnetometer/Makefile
->> index 33b1d4d54ee7..2c72df458ec2 100644
->> --- a/drivers/iio/magnetometer/Makefile
->> +++ b/drivers/iio/magnetometer/Makefile
->> @@ -4,6 +4,7 @@
+>>  config CC10001_ADC
+>>  	tristate "Cosmic Circuits 10001 ADC driver"
+>>  	depends on HAS_IOMEM && HAVE_CLK && REGULATOR
+>> @@ -162,6 +153,15 @@ config CC10001_ADC
+>>  	  This driver can also be built as a module. If so, the module will be
+>>  	  called cc10001_adc.
 >>  
->>  # When adding new entries keep the list in alphabetical order
->>  obj-$(CONFIG_AK8975)	+= ak8975.o
->> +obj-$(CONFIG_BMC150_MAGN) += bmc150_magn.o
->>  obj-$(CONFIG_MAG3110)	+= mag3110.o
->>  obj-$(CONFIG_HID_SENSOR_MAGNETOMETER_3D) += hid-sensor-magn-3d.o
->>  obj-$(CONFIG_MMC35240)	+= mmc35240.o
->> @@ -14,5 +15,3 @@ st_magn-$(CONFIG_IIO_BUFFER) += st_magn_buffer.o
->>  
->>  obj-$(CONFIG_IIO_ST_MAGN_I2C_3AXIS) += st_magn_i2c.o
->>  obj-$(CONFIG_IIO_ST_MAGN_SPI_3AXIS) += st_magn_spi.o
->> -
->> -obj-$(CONFIG_BMC150_MAGN) += bmc150_magn.o
+>> +config DA9150_GPADC
+>> +	tristate "Dialog DA9150 GPADC driver support"
+>> +	depends on MFD_DA9150
+>> +	help
+>> +	  Say yes here to build support for Dialog DA9150 GPADC.
+>> +
+>> +	  This driver can also be built as a module. If chosen, the module name
+>> +	  will be da9150-gpadc.
+>> +
+>>  config EXYNOS_ADC
+>>  	tristate "Exynos ADC driver support"
+>>  	depends on ARCH_EXYNOS || ARCH_S3C24XX || ARCH_S3C64XX || (OF && COMPILE_TEST)
+>> diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
+>> index a096210..fa5723a 100644
+>> --- a/drivers/iio/adc/Makefile
+>> +++ b/drivers/iio/adc/Makefile
+>> @@ -16,8 +16,8 @@ obj-$(CONFIG_AD799X) += ad799x.o
+>>  obj-$(CONFIG_AT91_ADC) += at91_adc.o
+>>  obj-$(CONFIG_AXP288_ADC) += axp288_adc.o
+>>  obj-$(CONFIG_BERLIN2_ADC) += berlin2-adc.o
+>> -obj-$(CONFIG_DA9150_GPADC) += da9150-gpadc.o
+>>  obj-$(CONFIG_CC10001_ADC) += cc10001_adc.o
+>> +obj-$(CONFIG_DA9150_GPADC) += da9150-gpadc.o
+>>  obj-$(CONFIG_EXYNOS_ADC) += exynos_adc.o
+>>  obj-$(CONFIG_LP8788_ADC) += lp8788_adc.o
+>>  obj-$(CONFIG_MAX1027) += max1027.o
 >>
 > 
 > --
 > To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
 > 
 
