@@ -1,148 +1,77 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mx08-00178001.pphosted.com ([91.207.212.93]:44782 "EHLO
-	mx08-00178001.pphosted.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1750767AbbHLLP6 convert rfc822-to-8bit
-	(ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Wed, 12 Aug 2015 07:15:58 -0400
-From: Denis CIOCCA <denis.ciocca@st.com>
-To: Linus Walleij <linus.walleij@linaro.org>
-CC: Jonathan Cameron <jic23@kernel.org>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Date: Wed, 12 Aug 2015 13:15:37 +0200
-Subject: Re: [PATCH v2] iio: st_sensors: add debugfs register read hook
-Message-ID: <8193DC26-31D2-468C-918F-2584DF30F47A@st.com>
-References: <1439367761-16975-1-git-send-email-linus.walleij@linaro.org>
-In-Reply-To: <1439367761-16975-1-git-send-email-linus.walleij@linaro.org>
-Content-Type: text/plain; charset="us-ascii"
+Received: from mezzanine.sirena.org.uk ([106.187.55.193]:40283 "EHLO
+	mezzanine.sirena.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751490AbbHLLUm (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 12 Aug 2015 07:20:42 -0400
+Date: Wed, 12 Aug 2015 12:20:35 +0100
+From: Mark Brown <broonie@kernel.org>
+To: Markus Pargmann <mpa@pengutronix.de>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org, kernel@pengutronix.de
+Message-ID: <20150812112035.GX10748@sirena.org.uk>
+References: <1439374365-20623-1-git-send-email-mpa@pengutronix.de>
+ <1439374365-20623-10-git-send-email-mpa@pengutronix.de>
 MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="tgO4DUqb0GCKXXLG"
+In-Reply-To: <1439374365-20623-10-git-send-email-mpa@pengutronix.de>
+Subject: Re: [PATCH 09/20] regmap: _regmap_raw_write fix for busses without
+ write()
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Looks good to me.
 
-Acked-by: Denis Ciocca <denis.ciocca@st.com>
+--tgO4DUqb0GCKXXLG
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Denis
+On Wed, Aug 12, 2015 at 12:12:34PM +0200, Markus Pargmann wrote:
 
+> @@ -1229,6 +1229,11 @@ int _regmap_raw_write(struct regmap *map, unsigned=
+ int reg,
+>  		}
+>  	}
+> =20
+> +	if (!map->bus->write && val_len =3D=3D map->format.val_bytes) {
+> +		ret =3D _regmap_bus_reg_write(map, reg, *(unsigned int *)val);
+> +		return ret;
+> +	}
 
+This is broken - you can't use a raw value as a register value.  The
+endianness of the device may not be the same as the endianness of the
+system and you can't cast a value to unsigned int, the value may be of
+any size.
 
-> On Aug 12, 2015, at 16:22, Linus Walleij <linus.walleij@linaro.org> wrote:
-> 
-> This adds a debugfs hook to read/write registers in the ST
-> sensors using debugfs. Proved to be awesome help when trying
-> to debug why IRQs do not arrive.
-> 
-> Cc: Denis Ciocca <denis.ciocca@st.com>
-> Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
-> ---
-> ChangeLog v1->v2:
-> - User &ampersand i front of function name for debugfs helper
-> - EXPORT the debugfs regread symbol so modules work
-> ---
-> drivers/iio/accel/st_accel_core.c               |  1 +
-> drivers/iio/common/st_sensors/st_sensors_core.c | 22 ++++++++++++++++++++++
-> drivers/iio/gyro/st_gyro_core.c                 |  1 +
-> drivers/iio/magnetometer/st_magn_core.c         |  1 +
-> drivers/iio/pressure/st_pressure_core.c         |  1 +
-> include/linux/iio/common/st_sensors.h           |  4 ++++
-> 6 files changed, 30 insertions(+)
-> 
-> diff --git a/drivers/iio/accel/st_accel_core.c b/drivers/iio/accel/st_accel_core.c
-> index 6617e779aa87..058c87d9f564 100644
-> --- a/drivers/iio/accel/st_accel_core.c
-> +++ b/drivers/iio/accel/st_accel_core.c
-> @@ -612,6 +612,7 @@ static const struct iio_info accel_info = {
->    .attrs = &st_accel_attribute_group,
->    .read_raw = &st_accel_read_raw,
->    .write_raw = &st_accel_write_raw,
-> +    .debugfs_reg_access = &st_sensors_debugfs_reg_access,
-> };
-> 
-> #ifdef CONFIG_IIO_TRIGGER
-> diff --git a/drivers/iio/common/st_sensors/st_sensors_core.c b/drivers/iio/common/st_sensors/st_sensors_core.c
-> index 8086cbcff87d..3129128857ea 100644
-> --- a/drivers/iio/common/st_sensors/st_sensors_core.c
-> +++ b/drivers/iio/common/st_sensors/st_sensors_core.c
-> @@ -44,6 +44,28 @@ st_sensors_write_data_with_mask_error:
->    return err;
-> }
-> 
-> +int st_sensors_debugfs_reg_access(struct iio_dev *indio_dev,
-> +                  unsigned reg, unsigned writeval,
-> +                  unsigned *readval)
-> +{
-> +    struct st_sensor_data *sdata = iio_priv(indio_dev);
-> +    u8 readdata;
-> +    int err;
-> +
-> +    if (!readval)
-> +        return sdata->tf->write_byte(&sdata->tb, sdata->dev,
-> +                         (u8)reg, (u8)writeval);
-> +
-> +    err = sdata->tf->read_byte(&sdata->tb, sdata->dev, (u8)reg, &readdata);
-> +    if (err < 0)
-> +        return err;
-> +
-> +    *readval = (unsigned)readdata;
-> +
-> +    return 0;
-> +}
-> +EXPORT_SYMBOL(st_sensors_debugfs_reg_access);
-> +
-> static int st_sensors_match_odr(struct st_sensor_settings *sensor_settings,
->            unsigned int odr, struct st_sensor_odr_avl *odr_out)
-> {
-> diff --git a/drivers/iio/gyro/st_gyro_core.c b/drivers/iio/gyro/st_gyro_core.c
-> index ffe96642b6d0..3bbe63117175 100644
-> --- a/drivers/iio/gyro/st_gyro_core.c
-> +++ b/drivers/iio/gyro/st_gyro_core.c
-> @@ -380,6 +380,7 @@ static const struct iio_info gyro_info = {
->    .attrs = &st_gyro_attribute_group,
->    .read_raw = &st_gyro_read_raw,
->    .write_raw = &st_gyro_write_raw,
-> +    .debugfs_reg_access = &st_sensors_debugfs_reg_access,
-> };
-> 
-> #ifdef CONFIG_IIO_TRIGGER
-> diff --git a/drivers/iio/magnetometer/st_magn_core.c b/drivers/iio/magnetometer/st_magn_core.c
-> index b4bcfb790f49..d612069e4e70 100644
-> --- a/drivers/iio/magnetometer/st_magn_core.c
-> +++ b/drivers/iio/magnetometer/st_magn_core.c
-> @@ -475,6 +475,7 @@ static const struct iio_info magn_info = {
->    .attrs = &st_magn_attribute_group,
->    .read_raw = &st_magn_read_raw,
->    .write_raw = &st_magn_write_raw,
-> +    .debugfs_reg_access = &st_sensors_debugfs_reg_access,
-> };
-> 
-> int st_magn_common_probe(struct iio_dev *indio_dev)
-> diff --git a/drivers/iio/pressure/st_pressure_core.c b/drivers/iio/pressure/st_pressure_core.c
-> index e881fa6291e9..84f965deff80 100644
-> --- a/drivers/iio/pressure/st_pressure_core.c
-> +++ b/drivers/iio/pressure/st_pressure_core.c
-> @@ -397,6 +397,7 @@ static const struct iio_info press_info = {
->    .attrs = &st_press_attribute_group,
->    .read_raw = &st_press_read_raw,
->    .write_raw = &st_press_write_raw,
-> +    .debugfs_reg_access = &st_sensors_debugfs_reg_access,
-> };
-> 
-> #ifdef CONFIG_IIO_TRIGGER
-> diff --git a/include/linux/iio/common/st_sensors.h b/include/linux/iio/common/st_sensors.h
-> index 2c476acb87d9..d8b4a7bc4029 100644
-> --- a/include/linux/iio/common/st_sensors.h
-> +++ b/include/linux/iio/common/st_sensors.h
-> @@ -269,6 +269,10 @@ void st_sensors_power_enable(struct iio_dev *indio_dev);
-> 
-> void st_sensors_power_disable(struct iio_dev *indio_dev);
-> 
-> +int st_sensors_debugfs_reg_access(struct iio_dev *indio_dev,
-> +                  unsigned reg, unsigned writeval,
-> +                  unsigned *readval);
-> +
-> int st_sensors_set_odr(struct iio_dev *indio_dev, unsigned int odr);
-> 
-> int st_sensors_set_dataready_irq(struct iio_dev *indio_dev, bool enable);
-> -- 
-> 2.4.3
-> 
+> @@ -1340,7 +1345,7 @@ int _regmap_raw_write(struct regmap *map, unsigned =
+int reg,
+>  	 * send the work_buf directly, otherwise try to do a gather
+>  	 * write.
+>  	 */
+> -	if (val =3D=3D work_val) {
+> +	if (val =3D=3D work_val && map->bus->write) {
+>  		ret =3D map->bus->write(map->bus_context, map->work_buf,
+>  				      map->format.reg_bytes +
+>  				      map->format.pad_bytes +
+
+This appears to be another case of merging an unrelated change :(
+
+--tgO4DUqb0GCKXXLG
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2
+
+iQEcBAEBCAAGBQJVyywCAAoJECTWi3JdVIfQmR4H+wVcO7r1GeBFJoY+3IrlwD1T
+U4c8wvoQnwJeTm/UPmjoyoP7YXvfj/yTRZvONH1dMGHSyR4zIaFSIyyjh5U0wL4j
+4gj0OoIyPfBVZhjV5h91MybniYOnn3HLccjv+2M27TfMER46QFWYEmYm9jsb7onT
+BU7wx2wZvsXm/d5EtahyMlC2m0nAItFF3tZPLkpMvbOYGcfsG6BCZHi7P46qkGzN
+mNp/K/qh28HXHk9l4cXijl1EDCZhRmfrWbYXbVIZYYBNL+Xt2fP6hXB95+ZnvTEN
+Zbfk/u3cQOtnGKvmXI2c/frB99M1ywl+T+1BUzMWJT07AsKAVzQGBeWUxZxAI0I=
+=yNjz
+-----END PGP SIGNATURE-----
+
+--tgO4DUqb0GCKXXLG--
