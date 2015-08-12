@@ -1,83 +1,108 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from metis.ext.pengutronix.de ([92.198.50.35]:60933 "EHLO
-	metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751967AbbHLNRw (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 12 Aug 2015 09:17:52 -0400
-Date: Wed, 12 Aug 2015 15:17:50 +0200
-From: Markus Pargmann <mpa@pengutronix.de>
-To: Mark Brown <broonie@kernel.org>
-Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-	Jonathan Cameron <jic23@kernel.org>, kernel@pengutronix.de,
-	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
-	linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH 10/20] regmap: _regmap_raw_multi_reg_write: Add
- reg_write() support
-Message-ID: <20150812131750.GO19600@pengutronix.de>
-References: <1439374365-20623-1-git-send-email-mpa@pengutronix.de>
- <1439374365-20623-11-git-send-email-mpa@pengutronix.de>
- <20150812123923.GI10748@sirena.org.uk>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="5OY1VMnxNaoJKAjw"
-In-Reply-To: <20150812123923.GI10748@sirena.org.uk>
+Received: from mga11.intel.com ([192.55.52.93]:19420 "EHLO mga11.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751898AbbHLN1x (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Wed, 12 Aug 2015 09:27:53 -0400
+From: sdliyong@gmail.com
+To: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
+	pmeerw@pmeerw.net, gregkh@linuxfoundation.org,
+	cristina.opriceana@gmail.com, tolga.ceylan@gmail.com,
+	k.kozlowski@samsung.com, sdliyong@gmail.com,
+	linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
+	linux-kernel@vger.kernel.org, marek@goldelico.com
+Subject: [PATCH v2] staging: iio: hmc5843: Set iio name dynamically
+Date: Wed, 12 Aug 2015 21:25:46 +0800
+Message-Id: <1439385946-28388-1-git-send-email-sdliyong@gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
+From: Yong Li <sdliyong@gmail.com>
 
---5OY1VMnxNaoJKAjw
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Load the driver using the below command:
+echo hmc5983 0x1e > /sys/bus/i2c/devices/i2c-?/new_device
 
-On Wed, Aug 12, 2015 at 01:39:23PM +0100, Mark Brown wrote:
-> On Wed, Aug 12, 2015 at 12:12:35PM +0200, Markus Pargmann wrote:
-> > Define a fallback for busses which do not define a write() function.
-> > Instead we write one register at a time using reg_write().
-> >=20
-> > Without this patch, _regmap_raw_multi_reg_write would break as it tries
-> > to call bus->write() without checking if it exists before.
->=20
-> Why are we trying to use multi write APIs in the first place if we can't
-> do raw I/O?
+In sysfs, the iio name is hmc5843, however the i2c name is hmc5983,
+they are inconsistent.
 
-Because we may not know if the bus supports raw IO and I would prefer
-if it is not necessary to know in the driver that just uses the regmap
-API if the underlying bus supports it.
+With this patch, the iio name will be the same as the i2c device name
 
-Sorry this patch is wrong, instead it should set can_multi_write
-properly depending on the availability of map->bus->write(). The code
-would already handle multi writes then.
+Signed-off-by: Yong Li <sdliyong@gmail.com>
+---
+ drivers/staging/iio/magnetometer/hmc5843.h      | 2 +-
+ drivers/staging/iio/magnetometer/hmc5843_core.c | 4 ++--
+ drivers/staging/iio/magnetometer/hmc5843_i2c.c  | 2 +-
+ drivers/staging/iio/magnetometer/hmc5843_spi.c  | 3 ++-
+ 4 files changed, 6 insertions(+), 5 deletions(-)
 
-Thanks,
+diff --git a/drivers/staging/iio/magnetometer/hmc5843.h b/drivers/staging/iio/magnetometer/hmc5843.h
+index f3d0da2..06f35d3 100644
+--- a/drivers/staging/iio/magnetometer/hmc5843.h
++++ b/drivers/staging/iio/magnetometer/hmc5843.h
+@@ -48,7 +48,7 @@ struct hmc5843_data {
+ };
+ 
+ int hmc5843_common_probe(struct device *dev, struct regmap *regmap,
+-			 enum hmc5843_ids id);
++			 enum hmc5843_ids id, const char *name);
+ int hmc5843_common_remove(struct device *dev);
+ 
+ int hmc5843_common_suspend(struct device *dev);
+diff --git a/drivers/staging/iio/magnetometer/hmc5843_core.c b/drivers/staging/iio/magnetometer/hmc5843_core.c
+index fffca3a..4aab022 100644
+--- a/drivers/staging/iio/magnetometer/hmc5843_core.c
++++ b/drivers/staging/iio/magnetometer/hmc5843_core.c
+@@ -577,7 +577,7 @@ int hmc5843_common_resume(struct device *dev)
+ EXPORT_SYMBOL(hmc5843_common_resume);
+ 
+ int hmc5843_common_probe(struct device *dev, struct regmap *regmap,
+-			 enum hmc5843_ids id)
++			 enum hmc5843_ids id, const char *name)
+ {
+ 	struct hmc5843_data *data;
+ 	struct iio_dev *indio_dev;
+@@ -597,7 +597,7 @@ int hmc5843_common_probe(struct device *dev, struct regmap *regmap,
+ 	mutex_init(&data->lock);
+ 
+ 	indio_dev->dev.parent = dev;
+-	indio_dev->name = dev->driver->name;
++	indio_dev->name = name;
+ 	indio_dev->info = &hmc5843_info;
+ 	indio_dev->modes = INDIO_DIRECT_MODE;
+ 	indio_dev->channels = data->variant->channels;
+diff --git a/drivers/staging/iio/magnetometer/hmc5843_i2c.c b/drivers/staging/iio/magnetometer/hmc5843_i2c.c
+index ff08667..3e06ceb 100644
+--- a/drivers/staging/iio/magnetometer/hmc5843_i2c.c
++++ b/drivers/staging/iio/magnetometer/hmc5843_i2c.c
+@@ -61,7 +61,7 @@ static int hmc5843_i2c_probe(struct i2c_client *cli,
+ {
+ 	return hmc5843_common_probe(&cli->dev,
+ 			devm_regmap_init_i2c(cli, &hmc5843_i2c_regmap_config),
+-			id->driver_data);
++			id->driver_data, id->name);
+ }
+ 
+ static int hmc5843_i2c_remove(struct i2c_client *client)
+diff --git a/drivers/staging/iio/magnetometer/hmc5843_spi.c b/drivers/staging/iio/magnetometer/hmc5843_spi.c
+index 8e658f7..8a80d01 100644
+--- a/drivers/staging/iio/magnetometer/hmc5843_spi.c
++++ b/drivers/staging/iio/magnetometer/hmc5843_spi.c
+@@ -59,6 +59,7 @@ static const struct regmap_config hmc5843_spi_regmap_config = {
+ static int hmc5843_spi_probe(struct spi_device *spi)
+ {
+ 	int ret;
++	const struct spi_device_id *id = spi_get_device_id(spi);
+ 
+ 	spi->mode = SPI_MODE_3;
+ 	spi->max_speed_hz = 8000000;
+@@ -69,7 +70,7 @@ static int hmc5843_spi_probe(struct spi_device *spi)
+ 
+ 	return hmc5843_common_probe(&spi->dev,
+ 			devm_regmap_init_spi(spi, &hmc5843_spi_regmap_config),
+-			HMC5983_ID);
++			id->driver_data, id->name);
+ }
+ 
+ static int hmc5843_spi_remove(struct spi_device *spi)
+-- 
+2.1.0
 
-Markus
-
---=20
-Pengutronix e.K.                           |                             |
-Industrial Linux Solutions                 | http://www.pengutronix.de/  |
-Peiner Str. 6-8, 31137 Hildesheim, Germany | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
-
---5OY1VMnxNaoJKAjw
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
-
-iQIcBAEBAgAGBQJVy0d+AAoJEEpcgKtcEGQQYkUP+QHzGbUE2Mr2jHSuwA2R9aiJ
-jl0iFTsspn6be0S55d0wBkImkpLj/Rag8i05+TRIsoSXGFR+9IOomW5B+oe52+6K
-L/4HvelJgIg+ST0qpAojDqbqVhVBaByUCHrM7A3FOShAt3YfRO40hmUEwYU89qe7
-q4p6e/Nem5mEnIiFyIm2tO5BfWU8mfKkX41eHV/0OlacUBmuQyCikHyxfqmX4tXm
-QsCK1XBU3JSUK5Q1Pyz/hVXIBepT96Oaf4N5E1ak9dIQrXQcxEiGelapwtr2IcUr
-hINZFm5n0MiQcJMhx9MMVGbmR9GUSjLiTu7wj9j8iwbHsoZKwoh5I7ylv7gcMZJq
-m+1a3H9ZeZV23HwlkM2dplE8y+JHHAJUL3EjwHVlENviAq74fPUIpmBq7yhIM9PL
-Nr8glEa5M+xL4Zl/1PX2e69V8g+tTUW1/Bo8Iu9odNHHjnLa6FyPlY6mwfUAHkRz
-63XKdzHvy/dp3Nd8oJpI5ea6rZt9X5q6RFRfKJ9eAezlAQAqedjqpaFK0wTSB5/t
-T/JyDdxooL0ZpTgJ1uai0GUdy+9BOoPPD10r6KjZZWfGJiuztEMIoMMivGpJpO+H
-kGHoRVCvBoQn7VOdIjpabEYEPonlrMCbSedWar4vIrSGxVxp/UQZYSN942pQAdWv
-BQqXEh2OgICYlqFmE/NG
-=ttgo
------END PGP SIGNATURE-----
-
---5OY1VMnxNaoJKAjw--
