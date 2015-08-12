@@ -1,194 +1,483 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga11.intel.com ([192.55.52.93]:24091 "EHLO mga11.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S932152AbbHLQIe (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Wed, 12 Aug 2015 12:08:34 -0400
-Message-ID: <1439395708.2244.38.camel@spandruv-desk3.jf.intel.com>
-Subject: Re: [PATCH v3 4/6] iio: bmg160: Remove remaining uses of i2c_client
+Return-Path: <srinivas.pandruvada@linux.intel.com>
+Message-ID: <1439395274.2244.34.camel@spandruv-desk3.jf.intel.com>
+Subject: Re: [PATCH v3 1/6] iio: bmg160: Use i2c regmap instead of direct
+ i2c access
 From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
 To: Markus Pargmann <mpa@pengutronix.de>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	Vlad Dogaru <vlad.dogaru@intel.com>,
-	Paul Bolle <pebolle@tiscali.nl>, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org, kernel@pengutronix.de
-Date: Wed, 12 Aug 2015 09:08:28 -0700
-In-Reply-To: <1439391009-6051-5-git-send-email-mpa@pengutronix.de>
+Cc: Jonathan Cameron <jic23@kernel.org>, Vlad Dogaru
+ <vlad.dogaru@intel.com>,  Paul Bolle <pebolle@tiscali.nl>,
+ linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+ kernel@pengutronix.de
+Date: Wed, 12 Aug 2015 09:01:14 -0700
+In-Reply-To: <1439391009-6051-2-git-send-email-mpa@pengutronix.de>
 References: <1439391009-6051-1-git-send-email-mpa@pengutronix.de>
-	 <1439391009-6051-5-git-send-email-mpa@pengutronix.de>
+	 <1439391009-6051-2-git-send-email-mpa@pengutronix.de>
 Content-Type: text/plain; charset="UTF-8"
 Mime-Version: 1.0
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+List-ID: <linux-iio@vger.kernel.org>
 
-Can you not merge this with patch 2/6?
 On Wed, 2015-08-12 at 16:50 +0200, Markus Pargmann wrote:
-> Signed-off-by: Markus Pargmann <mpa@pengutronix.de>
-> ---
->  drivers/iio/gyro/bmg160.c | 55 +++++++++++++++++++++++------------------------
->  1 file changed, 27 insertions(+), 28 deletions(-)
+> This patch introduces regmap usage into the driver. This is done to
+> later easily support the SPI interface of this chip.
 > 
+> Signed-off-by: Markus Pargmann <mpa@pengutronix.de>
+Reviewed-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+> ---
+>  drivers/iio/gyro/Kconfig  |   1 +
+>  drivers/iio/gyro/bmg160.c | 198 ++++++++++++++++++++--------------------------
+>  2 files changed, 88 insertions(+), 111 deletions(-)
+> 
+> diff --git a/drivers/iio/gyro/Kconfig b/drivers/iio/gyro/Kconfig
+> index 8d2439345673..cf82d74139a2 100644
+> --- a/drivers/iio/gyro/Kconfig
+> +++ b/drivers/iio/gyro/Kconfig
+> @@ -55,6 +55,7 @@ config BMG160
+>  	depends on I2C
+>  	select IIO_BUFFER
+>  	select IIO_TRIGGERED_BUFFER
+> +	select REGMAP_I2C
+>  	help
+>  	  Say yes here to build support for Bosch BMG160 Tri-axis Gyro Sensor
+>  	  driver. This driver also supports BMI055 gyroscope.
 > diff --git a/drivers/iio/gyro/bmg160.c b/drivers/iio/gyro/bmg160.c
-> index 6eab91ba8977..39df64fb4262 100644
+> index 460bf715d541..bbe02053e98a 100644
 > --- a/drivers/iio/gyro/bmg160.c
 > +++ b/drivers/iio/gyro/bmg160.c
-> @@ -110,6 +110,7 @@ struct bmg160_data {
->  	int slope_thres;
->  	bool dready_trigger_on;
->  	bool motion_trigger_on;
-> +	int irq;
->  };
+> @@ -28,6 +28,7 @@
+>  #include <linux/iio/events.h>
+>  #include <linux/iio/trigger_consumer.h>
+>  #include <linux/iio/triggered_buffer.h>
+> +#include <linux/regmap.h>
 >  
->  enum bmg160_axis {
-> @@ -961,18 +962,14 @@ static const struct iio_buffer_setup_ops bmg160_buffer_setup_ops = {
->  	.postdisable = bmg160_buffer_postdisable,
->  };
+>  #define BMG160_DRV_NAME		"bmg160"
+>  #define BMG160_IRQ_NAME		"bmg160_event"
+> @@ -98,6 +99,7 @@
 >  
-> -static int bmg160_gpio_probe(struct i2c_client *client,
-> -			     struct bmg160_data *data)
-> +static int bmg160_gpio_probe(struct bmg160_data *data)
+>  struct bmg160_data {
+>  	struct i2c_client *client;
+> +	struct regmap *regmap;
+>  	struct iio_trigger *dready_trig;
+>  	struct iio_trigger *motion_trig;
+>  	struct mutex mutex;
+> @@ -134,12 +136,17 @@ static const struct {
+>  			   { 133, BMG160_RANGE_250DPS},
+>  			   { 66, BMG160_RANGE_125DPS} };
 >  
+> +struct regmap_config bmg160_regmap_i2c_conf = {
+> +	.reg_bits = 8,
+> +	.val_bits = 8,
+> +	.max_register = 0x3f
+> +};
+> +
+>  static int bmg160_set_mode(struct bmg160_data *data, u8 mode)
 >  {
->  	struct device *dev;
->  	struct gpio_desc *gpio;
 >  	int ret;
 >  
-> -	if (!client)
-> -		return -EINVAL;
-> -
-> -	dev = &client->dev;
-> +	dev = data->dev;
+> -	ret = i2c_smbus_write_byte_data(data->client,
+> -					BMG160_REG_PMU_LPW, mode);
+> +	ret = regmap_write(data->regmap, BMG160_REG_PMU_LPW, mode);
+>  	if (ret < 0) {
+>  		dev_err(&data->client->dev, "Error writing reg_pmu_lpw\n");
+>  		return ret;
+> @@ -169,8 +176,7 @@ static int bmg160_set_bw(struct bmg160_data *data, int val)
+>  	if (bw_bits < 0)
+>  		return bw_bits;
 >  
->  	/* data ready gpio interrupt pin */
->  	gpio = devm_gpiod_get_index(dev, BMG160_GPIO_NAME, 0, GPIOD_IN);
-> @@ -981,11 +978,11 @@ static int bmg160_gpio_probe(struct i2c_client *client,
->  		return PTR_ERR(gpio);
+> -	ret = i2c_smbus_write_byte_data(data->client, BMG160_REG_PMU_BW,
+> -					bw_bits);
+> +	ret = regmap_write(data->regmap, BMG160_REG_PMU_BW, bw_bits);
+>  	if (ret < 0) {
+>  		dev_err(&data->client->dev, "Error writing reg_pmu_bw\n");
+>  		return ret;
+> @@ -184,16 +190,17 @@ static int bmg160_set_bw(struct bmg160_data *data, int val)
+>  static int bmg160_chip_init(struct bmg160_data *data)
+>  {
+>  	int ret;
+> +	unsigned int val;
+>  
+> -	ret = i2c_smbus_read_byte_data(data->client, BMG160_REG_CHIP_ID);
+> +	ret = regmap_read(data->regmap, BMG160_REG_CHIP_ID, &val);
+>  	if (ret < 0) {
+>  		dev_err(&data->client->dev, "Error reading reg_chip_id\n");
+>  		return ret;
 >  	}
 >  
-> -	ret = gpiod_to_irq(gpio);
-> +	data->irq = gpiod_to_irq(gpio);
+> -	dev_dbg(&data->client->dev, "Chip Id %x\n", ret);
+> -	if (ret != BMG160_CHIP_ID_VAL) {
+> -		dev_err(&data->client->dev, "invalid chip %x\n", ret);
+> +	dev_dbg(&data->client->dev, "Chip Id %x\n", val);
+> +	if (val != BMG160_CHIP_ID_VAL) {
+> +		dev_err(&data->client->dev, "invalid chip %x\n", val);
+>  		return -ENODEV;
+>  	}
 >  
->  	dev_dbg(dev, "GPIO resource, no:%d irq:%d\n", desc_to_gpio(gpio), ret);
+> @@ -210,40 +217,31 @@ static int bmg160_chip_init(struct bmg160_data *data)
+>  		return ret;
 >  
-> -	return ret;
-> +	return 0;
->  }
+>  	/* Set Default Range */
+> -	ret = i2c_smbus_write_byte_data(data->client,
+> -					BMG160_REG_RANGE,
+> -					BMG160_RANGE_500DPS);
+> +	ret = regmap_write(data->regmap, BMG160_REG_RANGE, BMG160_RANGE_500DPS);
+>  	if (ret < 0) {
+>  		dev_err(&data->client->dev, "Error writing reg_range\n");
+>  		return ret;
+>  	}
+>  	data->dps_range = BMG160_RANGE_500DPS;
 >  
->  static const char *bmg160_match_acpi_device(struct device *dev)
-> @@ -1007,6 +1004,7 @@ static int bmg160_probe(struct i2c_client *client,
+> -	ret = i2c_smbus_read_byte_data(data->client, BMG160_REG_SLOPE_THRES);
+> +	ret = regmap_read(data->regmap, BMG160_REG_SLOPE_THRES, &val);
+>  	if (ret < 0) {
+>  		dev_err(&data->client->dev, "Error reading reg_slope_thres\n");
+>  		return ret;
+>  	}
+> -	data->slope_thres = ret;
+> +	data->slope_thres = val;
+>  
+>  	/* Set default interrupt mode */
+> -	ret = i2c_smbus_read_byte_data(data->client, BMG160_REG_INT_EN_1);
+> -	if (ret < 0) {
+> -		dev_err(&data->client->dev, "Error reading reg_int_en_1\n");
+> -		return ret;
+> -	}
+> -	ret &= ~BMG160_INT1_BIT_OD;
+> -	ret = i2c_smbus_write_byte_data(data->client,
+> -					BMG160_REG_INT_EN_1, ret);
+> +	ret = regmap_update_bits(data->regmap, BMG160_REG_INT_EN_1,
+> +				 BMG160_INT1_BIT_OD, 0);
+>  	if (ret < 0) {
+> -		dev_err(&data->client->dev, "Error writing reg_int_en_1\n");
+> +		dev_err(&data->client->dev, "Error updating bits in reg_int_en_1\n");
+>  		return ret;
+>  	}
+>  
+> -	ret = i2c_smbus_write_byte_data(data->client,
+> -					BMG160_REG_INT_RST_LATCH,
+> -					BMG160_INT_MODE_LATCH_INT |
+> -					BMG160_INT_MODE_LATCH_RESET);
+> +	ret = regmap_write(data->regmap, BMG160_REG_INT_RST_LATCH,
+> +			   BMG160_INT_MODE_LATCH_INT |
+> +			   BMG160_INT_MODE_LATCH_RESET);
+>  	if (ret < 0) {
+>  		dev_err(&data->client->dev,
+>  			"Error writing reg_motion_intr\n");
+> @@ -284,41 +282,28 @@ static int bmg160_setup_any_motion_interrupt(struct bmg160_data *data,
+>  	int ret;
+>  
+>  	/* Enable/Disable INT_MAP0 mapping */
+> -	ret = i2c_smbus_read_byte_data(data->client,  BMG160_REG_INT_MAP_0);
+> -	if (ret < 0) {
+> -		dev_err(&data->client->dev, "Error reading reg_int_map0\n");
+> -		return ret;
+> -	}
+> -	if (status)
+> -		ret |= BMG160_INT_MAP_0_BIT_ANY;
+> -	else
+> -		ret &= ~BMG160_INT_MAP_0_BIT_ANY;
+> -
+> -	ret = i2c_smbus_write_byte_data(data->client,
+> -					BMG160_REG_INT_MAP_0,
+> -					ret);
+> +	ret = regmap_update_bits(data->regmap, BMG160_REG_INT_MAP_0,
+> +				 BMG160_INT_MAP_0_BIT_ANY,
+> +				 (status ? BMG160_INT_MAP_0_BIT_ANY : 0));
+>  	if (ret < 0) {
+> -		dev_err(&data->client->dev, "Error writing reg_int_map0\n");
+> +		dev_err(&data->client->dev, "Error updating bits reg_int_map0\n");
+>  		return ret;
+>  	}
+>  
+>  	/* Enable/Disable slope interrupts */
+>  	if (status) {
+>  		/* Update slope thres */
+> -		ret = i2c_smbus_write_byte_data(data->client,
+> -						BMG160_REG_SLOPE_THRES,
+> -						data->slope_thres);
+> +		ret = regmap_write(data->regmap, BMG160_REG_SLOPE_THRES,
+> +				   data->slope_thres);
+>  		if (ret < 0) {
+>  			dev_err(&data->client->dev,
+>  				"Error writing reg_slope_thres\n");
+>  			return ret;
+>  		}
+>  
+> -		ret = i2c_smbus_write_byte_data(data->client,
+> -						BMG160_REG_MOTION_INTR,
+> -						BMG160_INT_MOTION_X |
+> -						BMG160_INT_MOTION_Y |
+> -						BMG160_INT_MOTION_Z);
+> +		ret = regmap_write(data->regmap, BMG160_REG_MOTION_INTR,
+> +				   BMG160_INT_MOTION_X | BMG160_INT_MOTION_Y |
+> +				   BMG160_INT_MOTION_Z);
+>  		if (ret < 0) {
+>  			dev_err(&data->client->dev,
+>  				"Error writing reg_motion_intr\n");
+> @@ -331,10 +316,10 @@ static int bmg160_setup_any_motion_interrupt(struct bmg160_data *data,
+>  		 * to set latched mode, we will be flooded anyway with INTR
+>  		 */
+>  		if (!data->dready_trigger_on) {
+> -			ret = i2c_smbus_write_byte_data(data->client,
+> -						BMG160_REG_INT_RST_LATCH,
+> -						BMG160_INT_MODE_LATCH_INT |
+> -						BMG160_INT_MODE_LATCH_RESET);
+> +			ret = regmap_write(data->regmap,
+> +					   BMG160_REG_INT_RST_LATCH,
+> +					   BMG160_INT_MODE_LATCH_INT |
+> +					   BMG160_INT_MODE_LATCH_RESET);
+>  			if (ret < 0) {
+>  				dev_err(&data->client->dev,
+>  					"Error writing reg_rst_latch\n");
+> @@ -342,14 +327,12 @@ static int bmg160_setup_any_motion_interrupt(struct bmg160_data *data,
+>  			}
+>  		}
+>  
+> -		ret = i2c_smbus_write_byte_data(data->client,
+> -						BMG160_REG_INT_EN_0,
+> -						BMG160_DATA_ENABLE_INT);
+> +		ret = regmap_write(data->regmap, BMG160_REG_INT_EN_0,
+> +				   BMG160_DATA_ENABLE_INT);
+>  
+> -	} else
+> -		ret = i2c_smbus_write_byte_data(data->client,
+> -						BMG160_REG_INT_EN_0,
+> -						0);
+> +	} else {
+> +		ret = regmap_write(data->regmap, BMG160_REG_INT_EN_0, 0);
+> +	}
+>  
+>  	if (ret < 0) {
+>  		dev_err(&data->client->dev, "Error writing reg_int_en0\n");
+> @@ -365,55 +348,39 @@ static int bmg160_setup_new_data_interrupt(struct bmg160_data *data,
+>  	int ret;
+>  
+>  	/* Enable/Disable INT_MAP1 mapping */
+> -	ret = i2c_smbus_read_byte_data(data->client, BMG160_REG_INT_MAP_1);
+> -	if (ret < 0) {
+> -		dev_err(&data->client->dev, "Error reading reg_int_map1\n");
+> -		return ret;
+> -	}
+> -
+> -	if (status)
+> -		ret |= BMG160_INT_MAP_1_BIT_NEW_DATA;
+> -	else
+> -		ret &= ~BMG160_INT_MAP_1_BIT_NEW_DATA;
+> -
+> -	ret = i2c_smbus_write_byte_data(data->client,
+> -					BMG160_REG_INT_MAP_1,
+> -					ret);
+> +	ret = regmap_update_bits(data->regmap, BMG160_REG_INT_MAP_1,
+> +				 BMG160_INT_MAP_1_BIT_NEW_DATA,
+> +				 (status ? BMG160_INT_MAP_1_BIT_NEW_DATA : 0));
+>  	if (ret < 0) {
+> -		dev_err(&data->client->dev, "Error writing reg_int_map1\n");
+> +		dev_err(&data->client->dev, "Error updating bits in reg_int_map1\n");
+>  		return ret;
+>  	}
+>  
+>  	if (status) {
+> -		ret = i2c_smbus_write_byte_data(data->client,
+> -						BMG160_REG_INT_RST_LATCH,
+> -						BMG160_INT_MODE_NON_LATCH_INT |
+> -						BMG160_INT_MODE_LATCH_RESET);
+> +		ret = regmap_write(data->regmap, BMG160_REG_INT_RST_LATCH,
+> +				   BMG160_INT_MODE_NON_LATCH_INT |
+> +				   BMG160_INT_MODE_LATCH_RESET);
+>  		if (ret < 0) {
+>  			dev_err(&data->client->dev,
+>  				"Error writing reg_rst_latch\n");
+>  				return ret;
+>  		}
+>  
+> -		ret = i2c_smbus_write_byte_data(data->client,
+> -						BMG160_REG_INT_EN_0,
+> -						BMG160_DATA_ENABLE_INT);
+> +		ret = regmap_write(data->regmap, BMG160_REG_INT_EN_0,
+> +				   BMG160_DATA_ENABLE_INT);
+>  
+>  	} else {
+>  		/* Restore interrupt mode */
+> -		ret = i2c_smbus_write_byte_data(data->client,
+> -						BMG160_REG_INT_RST_LATCH,
+> -						BMG160_INT_MODE_LATCH_INT |
+> -						BMG160_INT_MODE_LATCH_RESET);
+> +		ret = regmap_write(data->regmap, BMG160_REG_INT_RST_LATCH,
+> +				   BMG160_INT_MODE_LATCH_INT |
+> +				   BMG160_INT_MODE_LATCH_RESET);
+>  		if (ret < 0) {
+>  			dev_err(&data->client->dev,
+>  				"Error writing reg_rst_latch\n");
+>  				return ret;
+>  		}
+>  
+> -		ret = i2c_smbus_write_byte_data(data->client,
+> -						BMG160_REG_INT_EN_0,
+> -						0);
+> +		ret = regmap_write(data->regmap, BMG160_REG_INT_EN_0, 0);
+>  	}
+>  
+>  	if (ret < 0) {
+> @@ -444,10 +411,8 @@ static int bmg160_set_scale(struct bmg160_data *data, int val)
+>  
+>  	for (i = 0; i < ARRAY_SIZE(bmg160_scale_table); ++i) {
+>  		if (bmg160_scale_table[i].scale == val) {
+> -			ret = i2c_smbus_write_byte_data(
+> -					data->client,
+> -					BMG160_REG_RANGE,
+> -					bmg160_scale_table[i].dps_range);
+> +			ret = regmap_write(data->regmap, BMG160_REG_RANGE,
+> +					   bmg160_scale_table[i].dps_range);
+>  			if (ret < 0) {
+>  				dev_err(&data->client->dev,
+>  					"Error writing reg_range\n");
+> @@ -464,6 +429,7 @@ static int bmg160_set_scale(struct bmg160_data *data, int val)
+>  static int bmg160_get_temp(struct bmg160_data *data, int *val)
+>  {
+>  	int ret;
+> +	unsigned int raw_val;
+>  
+>  	mutex_lock(&data->mutex);
+>  	ret = bmg160_set_power_state(data, true);
+> @@ -472,7 +438,7 @@ static int bmg160_get_temp(struct bmg160_data *data, int *val)
+>  		return ret;
+>  	}
+>  
+> -	ret = i2c_smbus_read_byte_data(data->client, BMG160_REG_TEMP);
+> +	ret = regmap_read(data->regmap, BMG160_REG_TEMP, &raw_val);
+>  	if (ret < 0) {
+>  		dev_err(&data->client->dev, "Error reading reg_temp\n");
+>  		bmg160_set_power_state(data, false);
+> @@ -480,7 +446,7 @@ static int bmg160_get_temp(struct bmg160_data *data, int *val)
+>  		return ret;
+>  	}
+>  
+> -	*val = sign_extend32(ret, 7);
+> +	*val = sign_extend32(raw_val, 7);
+>  	ret = bmg160_set_power_state(data, false);
+>  	mutex_unlock(&data->mutex);
+>  	if (ret < 0)
+> @@ -492,6 +458,7 @@ static int bmg160_get_temp(struct bmg160_data *data, int *val)
+>  static int bmg160_get_axis(struct bmg160_data *data, int axis, int *val)
+>  {
+>  	int ret;
+> +	unsigned int raw_val;
+>  
+>  	mutex_lock(&data->mutex);
+>  	ret = bmg160_set_power_state(data, true);
+> @@ -500,7 +467,8 @@ static int bmg160_get_axis(struct bmg160_data *data, int axis, int *val)
+>  		return ret;
+>  	}
+>  
+> -	ret = i2c_smbus_read_word_data(data->client, BMG160_AXIS_TO_REG(axis));
+> +	ret = regmap_bulk_read(data->regmap, BMG160_AXIS_TO_REG(axis), &raw_val,
+> +			       2);
+>  	if (ret < 0) {
+>  		dev_err(&data->client->dev, "Error reading axis %d\n", axis);
+>  		bmg160_set_power_state(data, false);
+> @@ -508,7 +476,7 @@ static int bmg160_get_axis(struct bmg160_data *data, int axis, int *val)
+>  		return ret;
+>  	}
+>  
+> -	*val = sign_extend32(ret, 15);
+> +	*val = sign_extend32(raw_val, 15);
+>  	ret = bmg160_set_power_state(data, false);
+>  	mutex_unlock(&data->mutex);
+>  	if (ret < 0)
+> @@ -807,12 +775,13 @@ static irqreturn_t bmg160_trigger_handler(int irq, void *p)
+>  	struct iio_dev *indio_dev = pf->indio_dev;
+>  	struct bmg160_data *data = iio_priv(indio_dev);
+>  	int bit, ret, i = 0;
+> +	unsigned int val;
+>  
+>  	mutex_lock(&data->mutex);
+>  	for_each_set_bit(bit, indio_dev->active_scan_mask,
+>  			 indio_dev->masklength) {
+> -		ret = i2c_smbus_read_word_data(data->client,
+> -					       BMG160_AXIS_TO_REG(bit));
+> +		ret = regmap_bulk_read(data->regmap, BMG160_AXIS_TO_REG(bit),
+> +				       &val, 2);
+>  		if (ret < 0) {
+>  			mutex_unlock(&data->mutex);
+>  			goto err;
+> @@ -840,10 +809,9 @@ static int bmg160_trig_try_reen(struct iio_trigger *trig)
+>  		return 0;
+>  
+>  	/* Set latched mode interrupt and clear any latched interrupt */
+> -	ret = i2c_smbus_write_byte_data(data->client,
+> -					BMG160_REG_INT_RST_LATCH,
+> -					BMG160_INT_MODE_LATCH_INT |
+> -					BMG160_INT_MODE_LATCH_RESET);
+> +	ret = regmap_write(data->regmap, BMG160_REG_INT_RST_LATCH,
+> +			   BMG160_INT_MODE_LATCH_INT |
+> +			   BMG160_INT_MODE_LATCH_RESET);
+>  	if (ret < 0) {
+>  		dev_err(&data->client->dev, "Error writing reg_rst_latch\n");
+>  		return ret;
+> @@ -907,33 +875,34 @@ static irqreturn_t bmg160_event_handler(int irq, void *private)
+>  	struct bmg160_data *data = iio_priv(indio_dev);
+>  	int ret;
+>  	int dir;
+> +	unsigned int val;
+>  
+> -	ret = i2c_smbus_read_byte_data(data->client, BMG160_REG_INT_STATUS_2);
+> +	ret = regmap_read(data->regmap, BMG160_REG_INT_STATUS_2, &val);
+>  	if (ret < 0) {
+>  		dev_err(&data->client->dev, "Error reading reg_int_status2\n");
+>  		goto ack_intr_status;
+>  	}
+>  
+> -	if (ret & 0x08)
+> +	if (val & 0x08)
+>  		dir = IIO_EV_DIR_RISING;
+>  	else
+>  		dir = IIO_EV_DIR_FALLING;
+>  
+> -	if (ret & BMG160_ANY_MOTION_BIT_X)
+> +	if (val & BMG160_ANY_MOTION_BIT_X)
+>  		iio_push_event(indio_dev, IIO_MOD_EVENT_CODE(IIO_ANGL_VEL,
+>  							0,
+>  							IIO_MOD_X,
+>  							IIO_EV_TYPE_ROC,
+>  							dir),
+>  							iio_get_time_ns());
+> -	if (ret & BMG160_ANY_MOTION_BIT_Y)
+> +	if (val & BMG160_ANY_MOTION_BIT_Y)
+>  		iio_push_event(indio_dev, IIO_MOD_EVENT_CODE(IIO_ANGL_VEL,
+>  							0,
+>  							IIO_MOD_Y,
+>  							IIO_EV_TYPE_ROC,
+>  							dir),
+>  							iio_get_time_ns());
+> -	if (ret & BMG160_ANY_MOTION_BIT_Z)
+> +	if (val & BMG160_ANY_MOTION_BIT_Z)
+>  		iio_push_event(indio_dev, IIO_MOD_EVENT_CODE(IIO_ANGL_VEL,
+>  							0,
+>  							IIO_MOD_Z,
+> @@ -943,10 +912,9 @@ static irqreturn_t bmg160_event_handler(int irq, void *private)
+>  
+>  ack_intr_status:
+>  	if (!data->dready_trigger_on) {
+> -		ret = i2c_smbus_write_byte_data(data->client,
+> -					BMG160_REG_INT_RST_LATCH,
+> -					BMG160_INT_MODE_LATCH_INT |
+> -					BMG160_INT_MODE_LATCH_RESET);
+> +		ret = regmap_write(data->regmap, BMG160_REG_INT_RST_LATCH,
+> +				   BMG160_INT_MODE_LATCH_INT |
+> +				   BMG160_INT_MODE_LATCH_RESET);
+>  		if (ret < 0)
+>  			dev_err(&data->client->dev,
+>  				"Error writing reg_rst_latch\n");
+> @@ -1038,6 +1006,14 @@ static int bmg160_probe(struct i2c_client *client,
+>  	struct iio_dev *indio_dev;
 >  	int ret;
 >  	const char *name = NULL;
->  	struct regmap *regmap;
-> +	struct device *dev = &client->dev;
+> +	struct regmap *regmap;
+> +
+> +	regmap = devm_regmap_init_i2c(client, &bmg160_regmap_i2c_conf);
+> +	if (IS_ERR(regmap)) {
+> +		dev_err(&client->dev, "Failed to register i2c regmap %d\n",
+> +			(int)PTR_ERR(regmap));
+> +		return PTR_ERR(regmap);
+> +	}
 >  
->  	regmap = devm_regmap_init_i2c(client, &bmg160_regmap_i2c_conf);
->  	if (IS_ERR(regmap)) {
-> @@ -1020,8 +1018,9 @@ static int bmg160_probe(struct i2c_client *client,
->  		return -ENOMEM;
->  
->  	data = iio_priv(indio_dev);
-> -	dev_set_drvdata(&client->dev, indio_dev);
-> -	data->dev = &client->dev;
-> +	dev_set_drvdata(dev, indio_dev);
-> +	data->dev = dev;
-> +	data->irq = client->irq;
->  
->  	ret = bmg160_chip_init(data);
->  	if (ret < 0)
-> @@ -1032,22 +1031,22 @@ static int bmg160_probe(struct i2c_client *client,
->  	if (id)
->  		name = id->name;
->  
-> -	if (ACPI_HANDLE(&client->dev))
-> -		name = bmg160_match_acpi_device(&client->dev);
-> +	if (ACPI_HANDLE(dev))
-> +		name = bmg160_match_acpi_device(dev);
->  
-> -	indio_dev->dev.parent = &client->dev;
-> +	indio_dev->dev.parent = dev;
->  	indio_dev->channels = bmg160_channels;
->  	indio_dev->num_channels = ARRAY_SIZE(bmg160_channels);
->  	indio_dev->name = name;
->  	indio_dev->modes = INDIO_DIRECT_MODE;
->  	indio_dev->info = &bmg160_info;
->  
-> -	if (client->irq <= 0)
-> -		client->irq = bmg160_gpio_probe(client, data);
-> +	if (data->irq <= 0)
-> +		bmg160_gpio_probe(data);
->  
-> -	if (client->irq > 0) {
-> -		ret = devm_request_threaded_irq(&client->dev,
-> -						client->irq,
-> +	if (data->irq > 0) {
-> +		ret = devm_request_threaded_irq(dev,
-> +						data->irq,
->  						bmg160_data_rdy_trig_poll,
->  						bmg160_event_handler,
->  						IRQF_TRIGGER_RISING,
-> @@ -1056,28 +1055,28 @@ static int bmg160_probe(struct i2c_client *client,
->  		if (ret)
->  			return ret;
->  
-> -		data->dready_trig = devm_iio_trigger_alloc(&client->dev,
-> +		data->dready_trig = devm_iio_trigger_alloc(dev,
->  							   "%s-dev%d",
->  							   indio_dev->name,
->  							   indio_dev->id);
->  		if (!data->dready_trig)
->  			return -ENOMEM;
->  
-> -		data->motion_trig = devm_iio_trigger_alloc(&client->dev,
-> +		data->motion_trig = devm_iio_trigger_alloc(dev,
->  							  "%s-any-motion-dev%d",
->  							  indio_dev->name,
->  							  indio_dev->id);
->  		if (!data->motion_trig)
->  			return -ENOMEM;
->  
-> -		data->dready_trig->dev.parent = &client->dev;
-> +		data->dready_trig->dev.parent = dev;
->  		data->dready_trig->ops = &bmg160_trigger_ops;
->  		iio_trigger_set_drvdata(data->dready_trig, indio_dev);
->  		ret = iio_trigger_register(data->dready_trig);
->  		if (ret)
->  			return ret;
->  
-> -		data->motion_trig->dev.parent = &client->dev;
-> +		data->motion_trig->dev.parent = dev;
->  		data->motion_trig->ops = &bmg160_trigger_ops;
->  		iio_trigger_set_drvdata(data->motion_trig, indio_dev);
->  		ret = iio_trigger_register(data->motion_trig);
-> @@ -1092,25 +1091,25 @@ static int bmg160_probe(struct i2c_client *client,
->  					 bmg160_trigger_handler,
->  					 &bmg160_buffer_setup_ops);
->  	if (ret < 0) {
-> -		dev_err(&client->dev,
-> +		dev_err(dev,
->  			"iio triggered buffer setup failed\n");
->  		goto err_trigger_unregister;
->  	}
->  
->  	ret = iio_device_register(indio_dev);
->  	if (ret < 0) {
-> -		dev_err(&client->dev, "unable to register iio device\n");
-> +		dev_err(dev, "unable to register iio device\n");
->  		goto err_buffer_cleanup;
->  	}
->  
-> -	ret = pm_runtime_set_active(&client->dev);
-> +	ret = pm_runtime_set_active(dev);
->  	if (ret)
->  		goto err_iio_unregister;
->  
-> -	pm_runtime_enable(&client->dev);
-> -	pm_runtime_set_autosuspend_delay(&client->dev,
-> +	pm_runtime_enable(dev);
-> +	pm_runtime_set_autosuspend_delay(dev,
->  					 BMG160_AUTO_SUSPEND_DELAY_MS);
-> -	pm_runtime_use_autosuspend(&client->dev);
-> +	pm_runtime_use_autosuspend(dev);
->  
->  	return 0;
->  
-
-
+>  	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
+>  	if (!indio_dev)
