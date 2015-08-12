@@ -1,57 +1,97 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mezzanine.sirena.org.uk ([106.187.55.193]:40447 "EHLO
-	mezzanine.sirena.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754155AbbHLMj2 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 12 Aug 2015 08:39:28 -0400
-Date: Wed, 12 Aug 2015 13:39:23 +0100
-From: Mark Brown <broonie@kernel.org>
-To: Markus Pargmann <mpa@pengutronix.de>
+Received: from metis.ext.pengutronix.de ([92.198.50.35]:54381 "EHLO
+	metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755547AbbHLMis (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 12 Aug 2015 08:38:48 -0400
+Date: Wed, 12 Aug 2015 14:38:44 +0200
+From: Markus Pargmann <mpa@pengutronix.de>
+To: Mark Brown <broonie@kernel.org>
 Cc: Jonathan Cameron <jic23@kernel.org>,
 	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
 	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
 	linux-arm-kernel@lists.infradead.org, kernel@pengutronix.de
-Message-ID: <20150812123923.GI10748@sirena.org.uk>
+Subject: Re: [PATCH 12/20] regmap: Introduce max_raw_io for
+ regmap_bulk_read/write
+Message-ID: <20150812123844.GH19600@pengutronix.de>
 References: <1439374365-20623-1-git-send-email-mpa@pengutronix.de>
- <1439374365-20623-11-git-send-email-mpa@pengutronix.de>
+ <1439374365-20623-13-git-send-email-mpa@pengutronix.de>
+ <20150812114931.GZ10748@sirena.org.uk>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="8D3PigL67BfDl295"
-In-Reply-To: <1439374365-20623-11-git-send-email-mpa@pengutronix.de>
-Subject: Re: [PATCH 10/20] regmap: _regmap_raw_multi_reg_write: Add
- reg_write() support
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="QeLBvw8fqdL68NWb"
+In-Reply-To: <20150812114931.GZ10748@sirena.org.uk>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
 
---8D3PigL67BfDl295
-Content-Type: text/plain; charset=us-ascii
+--QeLBvw8fqdL68NWb
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Wed, Aug 12, 2015 at 12:12:35PM +0200, Markus Pargmann wrote:
-> Define a fallback for busses which do not define a write() function.
-> Instead we write one register at a time using reg_write().
+On Wed, Aug 12, 2015 at 12:49:31PM +0100, Mark Brown wrote:
+> On Wed, Aug 12, 2015 at 12:12:37PM +0200, Markus Pargmann wrote:
 >=20
-> Without this patch, _regmap_raw_multi_reg_write would break as it tries
-> to call bus->write() without checking if it exists before.
+> > +	/* if set, raw reads/writes are limited to this size */
+> > +	size_t max_raw_io;
+> > +
+>=20
+> Do this separately for read and write, there's doubtless going to be
+> something that has asymmetry.
 
-Why are we trying to use multi write APIs in the first place if we can't
-do raw I/O?
+Okay.
 
---8D3PigL67BfDl295
+>=20
+> > +		if (!map->use_single_rw) {
+> > +			write_count =3D total_bytes / map->max_raw_io;
+> > +			write_bytes =3D map->max_raw_io;
+>=20
+> We may not be able to fit a whole number of values into whatever the
+> constraint that the bus has is and partial values don't seem like a good
+> idea.
+
+Oh right. Will change the calculation so that there are no partial
+values being written.
+
+>=20
+> > +			reg_stride *=3D write_bytes / val_bytes;
+> > +		}
+>=20
+> This is very confusing, regmap already has a concept of stride and this
+> isn't the same thing.
+
+Okay, will rename it.
+
+Thanks,
+
+Markus
+
+--=20
+Pengutronix e.K.                           |                             |
+Industrial Linux Solutions                 | http://www.pengutronix.de/  |
+Peiner Str. 6-8, 31137 Hildesheim, Germany | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+
+--QeLBvw8fqdL68NWb
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: Digital signature
 
 -----BEGIN PGP SIGNATURE-----
-Version: GnuPG v2
+Version: GnuPG v1
 
-iQEcBAEBCAAGBQJVyz56AAoJECTWi3JdVIfQ8DcH/1QaD1LZS8pgnzT55iHMC6Nv
-cbn3xX8OPilN4NzZPgB5ZoLN/kWXZac+7hGYeuCZWOFLvVMFCAQRQD+GpPsn4n61
-epn4c+/F214wfK1MJPmAZVIYW3YiC9cltJwhugvnkgvK7INAw/E8i9q39gb87nJf
-bUtKwiXIOimkc0CvkQg96OPrxCyyTAOs2bIwSCcrFCAv7ZTLg9BRDI9cTZOxCjXC
-PXnpiCp/mElzmFvDwxwStdpMgDraTMi3MQI2ZtB1b9cJope8bD9BG9CHhuDZEl9F
-w6Owknkll6q5+lzKqfP7w8QXgHdjbBjEw02H5WwzkPVKAEanWH6mY1Jls5FYWTw=
-=5mcj
+iQIcBAEBAgAGBQJVyz5TAAoJEEpcgKtcEGQQCJMQAKSta+Up5y+sjHGZSdIr0ojc
+orsdKRiKBUMDnq7DnJlCC4BnMEG0JgTnzv7QpR/rpskMB8cbKNLBZyimT8Sp/zkm
+B7FZAK/8Et1HvwO8D5Q/Tqo31zs3qRYDQAG/9rvA2sLJlmz1vo+L8xaDEHuVkgHK
+MTVTaV3cER0T058GFKT3wWaZ+oMfM2TroxlEHBDf9js0TuPNqf9wzy3ejq5XryR5
+9Pdw92jCTAXjQFpvdocMXPjtAcgFXr7pQ3rAxrUkQOXS1eErDHLpfiamaiGaQcse
+AVIh+yaAsy/s8ZdMyem3RUN59iDbn31hWrHq7nyhN+XN/rX4Wj0jyXOzZWTq+fzF
+fqG+fmo9KEsoqHBxjdYStUbdYLMcBEyrTkbs4sFOkN1p9SxJinE887orU+m+qfIf
+79dr9Oe2ncKfQN3iid0lo+xB+URHXnSkbzvU7uq+Zhvbrbpfjch+nnTON7hfOG0x
+A36gHFmM3lg/US7Dzd6sXxizFukgRy/leC6c9WEq/8utP02ll3RUz7m1n8BcYBK+
+bGFYHFm0g34miq3tmVM8u3nb2u3/xqbEnOqqnMSs/SPyDdjpLgJAd5TZHZeI9uzR
+QiLYNXZ4OEJ+WU8OURGIf/Gss4bV1qG5X0gKmCbJxc6aNAndKpisPKshc0HtMUiE
+8Ff3BV1QPt2L1Go2jXja
+=u7AH
 -----END PGP SIGNATURE-----
 
---8D3PigL67BfDl295--
+--QeLBvw8fqdL68NWb--
