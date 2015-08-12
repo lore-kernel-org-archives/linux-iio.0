@@ -1,146 +1,38 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ns.pmeerw.net ([84.19.176.92]:40843 "EHLO pmeerw.net"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1754131AbbHLPTk (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Wed, 12 Aug 2015 11:19:40 -0400
-Date: Wed, 12 Aug 2015 17:19:37 +0200 (CEST)
-From: Peter Meerwald <pmeerw@pmeerw.net>
-To: Markus Pargmann <mpa@pengutronix.de>
-cc: Jonathan Cameron <jic23@kernel.org>,
-	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
-	Vlad Dogaru <vlad.dogaru@intel.com>,
-	Paul Bolle <pebolle@tiscali.nl>, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org, kernel@pengutronix.de
-Subject: Re: [PATCH v3 6/6] iio: bmg160: Add SPI driver
-In-Reply-To: <1439391009-6051-7-git-send-email-mpa@pengutronix.de>
-Message-ID: <alpine.DEB.2.02.1508121716430.13952@pmeerw.net>
-References: <1439391009-6051-1-git-send-email-mpa@pengutronix.de> <1439391009-6051-7-git-send-email-mpa@pengutronix.de>
+Received: from smtp-out-194.synserver.de ([212.40.185.194]:1093 "EHLO
+	smtp-out-194.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751083AbbHLPVu (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 12 Aug 2015 11:21:50 -0400
+Message-ID: <55CB6475.4020506@metafoo.de>
+Date: Wed, 12 Aug 2015 17:21:25 +0200
+From: Lars-Peter Clausen <lars@metafoo.de>
 MIME-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
+To: sdliyong@gmail.com, jic23@kernel.org, knaack.h@gmx.de,
+	pmeerw@pmeerw.net, gregkh@linuxfoundation.org,
+	cristina.opriceana@gmail.com, tolga.ceylan@gmail.com,
+	k.kozlowski@samsung.com, linux-iio@vger.kernel.org,
+	devel@driverdev.osuosl.org, linux-kernel@vger.kernel.org,
+	marek@goldelico.com
+Subject: Re: [PATCH v2] staging: iio: hmc5843: Set iio name dynamically
+References: <1439385946-28388-1-git-send-email-sdliyong@gmail.com>
+In-Reply-To: <1439385946-28388-1-git-send-email-sdliyong@gmail.com>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Wed, 12 Aug 2015, Markus Pargmann wrote:
-
-> Signed-off-by: Markus Pargmann <mpa@pengutronix.de>
-
-the spelling of Bosch is inconsistent, sometimes it is BOSCH, I'd prefer 
-the former
-
-please find a slightly more relevant comment below :)
-
-> ---
->  drivers/iio/gyro/Kconfig      | 11 +++++++++
->  drivers/iio/gyro/Makefile     |  1 +
->  drivers/iio/gyro/bmg160_spi.c | 57 +++++++++++++++++++++++++++++++++++++++++++
->  3 files changed, 69 insertions(+)
->  create mode 100644 drivers/iio/gyro/bmg160_spi.c
+On 08/12/2015 03:25 PM, sdliyong@gmail.com wrote:
+> From: Yong Li <sdliyong@gmail.com>
 > 
-> diff --git a/drivers/iio/gyro/Kconfig b/drivers/iio/gyro/Kconfig
-> index 13f8e0051615..a77dbb0062fe 100644
-> --- a/drivers/iio/gyro/Kconfig
-> +++ b/drivers/iio/gyro/Kconfig
-> @@ -71,6 +71,17 @@ config BMG160_I2C
->  	  This driver can also be built as a module.  If so, the module
->  	  will be called bmg160_i2c.
->  
-> +config BMG160_SPI
-> +	tristate "Driver for connection via SPI"
-> +	depends on SPI
-> +	select REGMAP_SPI
-> +	help
-> +	  Say yes here to build support for Bosch BMG160 Tri-axis Gyro Sensor
-> +	  driver connected via SPI. This driver also supports BMI055 gyroscope.
-> +
-> +	  This driver can also be built as a module.  If so, the module
-> +	  will be called bmg160_spi.
-> +
->  endif
->  
->  config HID_SENSOR_GYRO_3D
-> diff --git a/drivers/iio/gyro/Makefile b/drivers/iio/gyro/Makefile
-> index 73b41e43a974..848e55c605c0 100644
-> --- a/drivers/iio/gyro/Makefile
-> +++ b/drivers/iio/gyro/Makefile
-> @@ -9,6 +9,7 @@ obj-$(CONFIG_ADIS16136) += adis16136.o
->  obj-$(CONFIG_ADIS16260) += adis16260.o
->  obj-$(CONFIG_ADXRS450) += adxrs450.o
->  obj-$(CONFIG_BMG160_I2C) += bmg160_core.o bmg160_i2c.o
-> +obj-$(CONFIG_BMG160_I2C) += bmg160_core.o bmg160_spi.o
->  
->  obj-$(CONFIG_HID_SENSOR_GYRO_3D) += hid-sensor-gyro-3d.o
->  
-> diff --git a/drivers/iio/gyro/bmg160_spi.c b/drivers/iio/gyro/bmg160_spi.c
-> new file mode 100644
-> index 000000000000..8a358571b702
-> --- /dev/null
-> +++ b/drivers/iio/gyro/bmg160_spi.c
-> @@ -0,0 +1,57 @@
-> +#include <linux/spi/spi.h>
-> +#include <linux/regmap.h>
-> +#include <linux/iio/iio.h>
-> +#include <linux/module.h>
-> +
-> +#include <bmg160.h>
-
-I think this should be
-#include "bmg160.h"
-as in the _i2c part of the driver
-
-> +
-> +static const struct regmap_config bmg160_regmap_spi_conf = {
-> +	.reg_bits = 8,
-> +	.val_bits = 8,
-> +	.max_register = 0x3f,
-> +};
-> +
-> +static int bmg160_spi_probe(struct spi_device *spi)
-> +{
-> +	struct regmap *regmap;
-> +	const struct spi_device_id *id = spi_get_device_id(spi);
-> +
-> +	regmap = devm_regmap_init_spi(spi, &bmg160_regmap_spi_conf);
-> +	if (IS_ERR(regmap)) {
-> +		dev_err(&spi->dev, "Failed to register spi regmap %d\n",
-> +			(int)PTR_ERR(regmap));
-> +		return PTR_ERR(regmap);
-> +	}
-> +
-> +	return bmg160_core_probe(&spi->dev, regmap, spi->irq, id->name);
-> +}
-> +
-> +static int bmg160_spi_remove(struct spi_device *spi)
-> +{
-> +	bmg160_core_remove(&spi->dev);
-> +
-> +	return 0;
-> +}
-> +
-> +static const struct spi_device_id bmg160_spi_id[] = {
-> +	{"bmg160", 0},
-> +	{"bmi055_gyro", 0},
-> +	{}
-> +};
-> +
-> +MODULE_DEVICE_TABLE(spi, bmg160_spi_id);
-> +
-> +static struct spi_driver bmg160_spi_driver = {
-> +	.driver = {
-> +		.name	= "bmg160_spi",
-> +		.pm	= &bmg160_pm_ops,
-> +	},
-> +	.probe		= bmg160_spi_probe,
-> +	.remove		= bmg160_spi_remove,
-> +	.id_table	= bmg160_spi_id,
-> +};
-> +module_spi_driver(bmg160_spi_driver);
-> +
-> +MODULE_AUTHOR("Markus Pargmann <mpa@pengutronix.de>");
-> +MODULE_LICENSE("GPL v2");
-> +MODULE_DESCRIPTION("BMG160 SPI Gyro driver");
+> Load the driver using the below command:
+> echo hmc5983 0x1e > /sys/bus/i2c/devices/i2c-?/new_device
 > 
+> In sysfs, the iio name is hmc5843, however the i2c name is hmc5983,
+> they are inconsistent.
+> 
+> With this patch, the iio name will be the same as the i2c device name
+> 
+> Signed-off-by: Yong Li <sdliyong@gmail.com>
 
--- 
+Looks good.
 
-Peter Meerwald
-+43-664-2444418 (mobile)
+Reviewed-by: Lars-Peter Clausen <lars@metafoo.de>
