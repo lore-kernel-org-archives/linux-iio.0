@@ -1,67 +1,124 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from sauhun.de ([89.238.76.85]:54074 "EHLO pokefinder.org"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1755174AbbHLOtR (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Wed, 12 Aug 2015 10:49:17 -0400
-Date: Wed, 12 Aug 2015 16:49:06 +0200
-From: Wolfram Sang <wsa@the-dreams.de>
-To: "Tirdea, Irina" <irina.tirdea@intel.com>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"linux-i2c@vger.kernel.org" <linux-i2c@vger.kernel.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"Pandruvada, Srinivas" <srinivas.pandruvada@intel.com>,
-	Peter Meerwald <pmeerw@pmeerw.net>
-Subject: Re: [PATCH v4 1/8] i2c: core: Add support for best effort block read
- emulation
-Message-ID: <20150812144905.GA1524@katana>
-References: <1438697056-2946-1-git-send-email-irina.tirdea@intel.com>
- <1438697056-2946-2-git-send-email-irina.tirdea@intel.com>
- <20150809073135.GB1526@katana>
- <1F3AC3675D538145B1661F571FE1805F2F0B0B8C@irsmsx105.ger.corp.intel.com>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="wRRV7LY7NUeQGEoC"
-In-Reply-To: <1F3AC3675D538145B1661F571FE1805F2F0B0B8C@irsmsx105.ger.corp.intel.com>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <mpa@pengutronix.de>
+From: Markus Pargmann <mpa@pengutronix.de>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+	Vlad Dogaru <vlad.dogaru@intel.com>,
+	Paul Bolle <pebolle@tiscali.nl>,
+	linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	kernel@pengutronix.de,
+	Markus Pargmann <mpa@pengutronix.de>
+Subject: [PATCH v3 6/6] iio: bmg160: Add SPI driver
+Date: Wed, 12 Aug 2015 16:50:09 +0200
+Message-Id: <1439391009-6051-7-git-send-email-mpa@pengutronix.de>
+In-Reply-To: <1439391009-6051-1-git-send-email-mpa@pengutronix.de>
+References: <1439391009-6051-1-git-send-email-mpa@pengutronix.de>
+List-ID: <linux-iio@vger.kernel.org>
 
+Signed-off-by: Markus Pargmann <mpa@pengutronix.de>
+---
+ drivers/iio/gyro/Kconfig      | 11 +++++++++
+ drivers/iio/gyro/Makefile     |  1 +
+ drivers/iio/gyro/bmg160_spi.c | 57 +++++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 69 insertions(+)
+ create mode 100644 drivers/iio/gyro/bmg160_spi.c
 
---wRRV7LY7NUeQGEoC
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-
-
-> to print any error messages, but I was not sure. Anyway, I think I'll drop the error
-> message entirely and leave error handling to the calling code.
-
-Even better :)
-
-Thanks,
-
-   Wolfram
-
-
---wRRV7LY7NUeQGEoC
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
-
-iQIcBAEBAgAGBQJVy1zhAAoJEBQN5MwUoCm2+psQAKp4zUBlayuLpYgrDrk8/0eY
-9jbOqM438HuiC1t0LDMhVx54a+sDpTfIkc4RiCMTgUlAiYiLB6XIbDGSrtiP5SEa
-kH0ioj66ILE26vob9whwafpNRC+DSofuVGHdmI1ooPbJh2q+zi7R6Jsr8uhecM4F
-tEkZZESBWmWigHqqMVlbvQal8RjqwfqZVi7miT5GtHcq3UORKqPgQlVzOTljTQq5
-uk7HrTuVjn7UHdlSWY4tSz/HcSjR5LwEts0JDqfbkhjdLdioU3S/UUbIZ6mHe0zk
-3MQXTe9UWWFhGKIhJFEy3M9MMbs5I4ZC7qo0IUTnJsybZCbLUClAj69lKI+tNxR9
-CZLa2Fr4NFbidD2jMSQTc7ds4yrj9IrxB+bkPohrcLDHr30Y6lfzEWP5PtS90XYB
-4EUgrIRbxUEFiwkMgPVm91FHRb76yjLBNxNxMHz/leomyI/streC3Ya4gqQgtH5P
-qPeK8LnUbG4UIWTyT/YHJi2H9a2GONIOQQwzeKnty03IdZfIRgfygfi3sse89vt+
-QHFRUIVrJHmtdQnjX4V0u67V0hSIPjwOSsQM1broFE+A4NfZo+Z7paHiAU/Wd0EJ
-yI9RJxgRrusmFjOl+CQ4Iakce1ykAZQNahZZwsoIGEIi/gubCpBK4RaZZj8AP8DM
-dLuD7BVGu5BFPcca0Clj
-=AJ5e
------END PGP SIGNATURE-----
-
---wRRV7LY7NUeQGEoC--
+diff --git a/drivers/iio/gyro/Kconfig b/drivers/iio/gyro/Kconfig
+index 13f8e0051615..a77dbb0062fe 100644
+--- a/drivers/iio/gyro/Kconfig
++++ b/drivers/iio/gyro/Kconfig
+@@ -71,6 +71,17 @@ config BMG160_I2C
+ 	  This driver can also be built as a module.  If so, the module
+ 	  will be called bmg160_i2c.
+ 
++config BMG160_SPI
++	tristate "Driver for connection via SPI"
++	depends on SPI
++	select REGMAP_SPI
++	help
++	  Say yes here to build support for Bosch BMG160 Tri-axis Gyro Sensor
++	  driver connected via SPI. This driver also supports BMI055 gyroscope.
++
++	  This driver can also be built as a module.  If so, the module
++	  will be called bmg160_spi.
++
+ endif
+ 
+ config HID_SENSOR_GYRO_3D
+diff --git a/drivers/iio/gyro/Makefile b/drivers/iio/gyro/Makefile
+index 73b41e43a974..848e55c605c0 100644
+--- a/drivers/iio/gyro/Makefile
++++ b/drivers/iio/gyro/Makefile
+@@ -9,6 +9,7 @@ obj-$(CONFIG_ADIS16136) += adis16136.o
+ obj-$(CONFIG_ADIS16260) += adis16260.o
+ obj-$(CONFIG_ADXRS450) += adxrs450.o
+ obj-$(CONFIG_BMG160_I2C) += bmg160_core.o bmg160_i2c.o
++obj-$(CONFIG_BMG160_I2C) += bmg160_core.o bmg160_spi.o
+ 
+ obj-$(CONFIG_HID_SENSOR_GYRO_3D) += hid-sensor-gyro-3d.o
+ 
+diff --git a/drivers/iio/gyro/bmg160_spi.c b/drivers/iio/gyro/bmg160_spi.c
+new file mode 100644
+index 000000000000..8a358571b702
+--- /dev/null
++++ b/drivers/iio/gyro/bmg160_spi.c
+@@ -0,0 +1,57 @@
++#include <linux/spi/spi.h>
++#include <linux/regmap.h>
++#include <linux/iio/iio.h>
++#include <linux/module.h>
++
++#include <bmg160.h>
++
++static const struct regmap_config bmg160_regmap_spi_conf = {
++	.reg_bits = 8,
++	.val_bits = 8,
++	.max_register = 0x3f,
++};
++
++static int bmg160_spi_probe(struct spi_device *spi)
++{
++	struct regmap *regmap;
++	const struct spi_device_id *id = spi_get_device_id(spi);
++
++	regmap = devm_regmap_init_spi(spi, &bmg160_regmap_spi_conf);
++	if (IS_ERR(regmap)) {
++		dev_err(&spi->dev, "Failed to register spi regmap %d\n",
++			(int)PTR_ERR(regmap));
++		return PTR_ERR(regmap);
++	}
++
++	return bmg160_core_probe(&spi->dev, regmap, spi->irq, id->name);
++}
++
++static int bmg160_spi_remove(struct spi_device *spi)
++{
++	bmg160_core_remove(&spi->dev);
++
++	return 0;
++}
++
++static const struct spi_device_id bmg160_spi_id[] = {
++	{"bmg160", 0},
++	{"bmi055_gyro", 0},
++	{}
++};
++
++MODULE_DEVICE_TABLE(spi, bmg160_spi_id);
++
++static struct spi_driver bmg160_spi_driver = {
++	.driver = {
++		.name	= "bmg160_spi",
++		.pm	= &bmg160_pm_ops,
++	},
++	.probe		= bmg160_spi_probe,
++	.remove		= bmg160_spi_remove,
++	.id_table	= bmg160_spi_id,
++};
++module_spi_driver(bmg160_spi_driver);
++
++MODULE_AUTHOR("Markus Pargmann <mpa@pengutronix.de>");
++MODULE_LICENSE("GPL v2");
++MODULE_DESCRIPTION("BMG160 SPI Gyro driver");
+-- 
+2.4.6
