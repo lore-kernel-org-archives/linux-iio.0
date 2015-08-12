@@ -1,122 +1,67 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga03.intel.com ([134.134.136.65]:50416 "EHLO mga03.intel.com"
+Received: from sauhun.de ([89.238.76.85]:54074 "EHLO pokefinder.org"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1754094AbbHLOcZ (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Wed, 12 Aug 2015 10:32:25 -0400
-From: Irina Tirdea <irina.tirdea@intel.com>
-To: Wolfram Sang <wsa@the-dreams.de>,
-	Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
-	linux-i2c@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org,
-	Srinivas Pandruvada <srinivas.pandruvada@intel.com>,
-	Peter Meerwald <pmeerw@pmeerw.net>,
-	Irina Tirdea <irina.tirdea@intel.com>
-Subject: [PATCH v5 1/8] i2c: core: Add support for best effort block read emulation
-Date: Wed, 12 Aug 2015 17:31:33 +0300
-Message-Id: <1439389900-10108-2-git-send-email-irina.tirdea@intel.com>
-In-Reply-To: <1439389900-10108-1-git-send-email-irina.tirdea@intel.com>
-References: <1439389900-10108-1-git-send-email-irina.tirdea@intel.com>
+	id S1755174AbbHLOtR (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Wed, 12 Aug 2015 10:49:17 -0400
+Date: Wed, 12 Aug 2015 16:49:06 +0200
+From: Wolfram Sang <wsa@the-dreams.de>
+To: "Tirdea, Irina" <irina.tirdea@intel.com>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	"linux-i2c@vger.kernel.org" <linux-i2c@vger.kernel.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"Pandruvada, Srinivas" <srinivas.pandruvada@intel.com>,
+	Peter Meerwald <pmeerw@pmeerw.net>
+Subject: Re: [PATCH v4 1/8] i2c: core: Add support for best effort block read
+ emulation
+Message-ID: <20150812144905.GA1524@katana>
+References: <1438697056-2946-1-git-send-email-irina.tirdea@intel.com>
+ <1438697056-2946-2-git-send-email-irina.tirdea@intel.com>
+ <20150809073135.GB1526@katana>
+ <1F3AC3675D538145B1661F571FE1805F2F0B0B8C@irsmsx105.ger.corp.intel.com>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="wRRV7LY7NUeQGEoC"
+In-Reply-To: <1F3AC3675D538145B1661F571FE1805F2F0B0B8C@irsmsx105.ger.corp.intel.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-There are devices that need to handle block transactions
-regardless of the capabilities exported by the adapter.
-For performance reasons, they need to use i2c read blocks
-if available, otherwise emulate the block transaction with word
-or byte transactions.
 
-Add support for a helper function that would read a data block
-using the best transfer available: I2C_FUNC_SMBUS_READ_I2C_BLOCK,
-I2C_FUNC_SMBUS_READ_WORD_DATA or I2C_FUNC_SMBUS_READ_BYTE_DATA.
+--wRRV7LY7NUeQGEoC
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-Signed-off-by: Irina Tirdea <irina.tirdea@intel.com>
----
- drivers/i2c/i2c-core.c | 57 ++++++++++++++++++++++++++++++++++++++++++++++++++
- include/linux/i2c.h    |  3 +++
- 2 files changed, 60 insertions(+)
 
-diff --git a/drivers/i2c/i2c-core.c b/drivers/i2c/i2c-core.c
-index 07a83f3..0c581bc 100644
---- a/drivers/i2c/i2c-core.c
-+++ b/drivers/i2c/i2c-core.c
-@@ -2969,6 +2969,63 @@ trace:
- }
- EXPORT_SYMBOL(i2c_smbus_xfer);
- 
-+/**
-+ * i2c_smbus_read_i2c_block_data_or_emulated - read block or emulate
-+ * @client: Handle to slave device
-+ * @command: Byte interpreted by slave
-+ * @length: Size of data block; SMBus allows at most I2C_SMBUS_BLOCK_MAX bytes
-+ * @values: Byte array into which data will be read; big enough to hold
-+ *	the data returned by the slave.  SMBus allows at most
-+ *	I2C_SMBUS_BLOCK_MAX bytes.
-+ *
-+ * This executes the SMBus "block read" protocol if supported by the adapter.
-+ * If block read is not supported, it emulates it using either word or byte
-+ * read protocols depending on availability.
-+ *
-+ * The addresses of the I2C slave device that are accessed with this function
-+ * must be mapped to a linear region, so that a block read will have the same
-+ * effect as a byte read. Before using this function you must double-check
-+ * if the I2C slave does support exchanging a block transfer with a byte
-+ * transfer.
-+ */
-+s32 i2c_smbus_read_i2c_block_data_or_emulated(const struct i2c_client *client,
-+					      u8 command, u8 length, u8 *values)
-+{
-+	u8 i = 0;
-+	int status;
-+
-+	if (length > I2C_SMBUS_BLOCK_MAX)
-+		length = I2C_SMBUS_BLOCK_MAX;
-+
-+	if (i2c_check_functionality(client->adapter, I2C_FUNC_SMBUS_READ_I2C_BLOCK))
-+		return i2c_smbus_read_i2c_block_data(client, command, length, values);
-+
-+	if (!i2c_check_functionality(client->adapter, I2C_FUNC_SMBUS_READ_BYTE_DATA))
-+		return -EOPNOTSUPP;
-+
-+	if (i2c_check_functionality(client->adapter, I2C_FUNC_SMBUS_READ_WORD_DATA)) {
-+		while ((i + 2) <= length) {
-+			status = i2c_smbus_read_word_data(client, command + i);
-+			if (status < 0)
-+				return status;
-+			values[i] = status & 0xff;
-+			values[i + 1] = status >> 8;
-+			i += 2;
-+		}
-+	}
-+
-+	while (i < length) {
-+		status = i2c_smbus_read_byte_data(client, command + i);
-+		if (status < 0)
-+			return status;
-+		values[i] = status;
-+		i++;
-+	}
-+
-+	return i;
-+}
-+EXPORT_SYMBOL(i2c_smbus_read_i2c_block_data_or_emulated);
-+
- #if IS_ENABLED(CONFIG_I2C_SLAVE)
- int i2c_slave_register(struct i2c_client *client, i2c_slave_cb_t slave_cb)
- {
-diff --git a/include/linux/i2c.h b/include/linux/i2c.h
-index e2c859b..32b925c 100644
---- a/include/linux/i2c.h
-+++ b/include/linux/i2c.h
-@@ -121,6 +121,9 @@ extern s32 i2c_smbus_read_i2c_block_data(const struct i2c_client *client,
- extern s32 i2c_smbus_write_i2c_block_data(const struct i2c_client *client,
- 					  u8 command, u8 length,
- 					  const u8 *values);
-+extern s32
-+i2c_smbus_read_i2c_block_data_or_emulated(const struct i2c_client *client,
-+					  u8 command, u8 length, u8 *values);
- #endif /* I2C */
- 
- /**
--- 
-1.9.1
+> to print any error messages, but I was not sure. Anyway, I think I'll drop the error
+> message entirely and leave error handling to the calling code.
 
+Even better :)
+
+Thanks,
+
+   Wolfram
+
+
+--wRRV7LY7NUeQGEoC
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
+
+iQIcBAEBAgAGBQJVy1zhAAoJEBQN5MwUoCm2+psQAKp4zUBlayuLpYgrDrk8/0eY
+9jbOqM438HuiC1t0LDMhVx54a+sDpTfIkc4RiCMTgUlAiYiLB6XIbDGSrtiP5SEa
+kH0ioj66ILE26vob9whwafpNRC+DSofuVGHdmI1ooPbJh2q+zi7R6Jsr8uhecM4F
+tEkZZESBWmWigHqqMVlbvQal8RjqwfqZVi7miT5GtHcq3UORKqPgQlVzOTljTQq5
+uk7HrTuVjn7UHdlSWY4tSz/HcSjR5LwEts0JDqfbkhjdLdioU3S/UUbIZ6mHe0zk
+3MQXTe9UWWFhGKIhJFEy3M9MMbs5I4ZC7qo0IUTnJsybZCbLUClAj69lKI+tNxR9
+CZLa2Fr4NFbidD2jMSQTc7ds4yrj9IrxB+bkPohrcLDHr30Y6lfzEWP5PtS90XYB
+4EUgrIRbxUEFiwkMgPVm91FHRb76yjLBNxNxMHz/leomyI/streC3Ya4gqQgtH5P
+qPeK8LnUbG4UIWTyT/YHJi2H9a2GONIOQQwzeKnty03IdZfIRgfygfi3sse89vt+
+QHFRUIVrJHmtdQnjX4V0u67V0hSIPjwOSsQM1broFE+A4NfZo+Z7paHiAU/Wd0EJ
+yI9RJxgRrusmFjOl+CQ4Iakce1ykAZQNahZZwsoIGEIi/gubCpBK4RaZZj8AP8DM
+dLuD7BVGu5BFPcca0Clj
+=AJ5e
+-----END PGP SIGNATURE-----
+
+--wRRV7LY7NUeQGEoC--
