@@ -1,53 +1,34 @@
-Return-Path: <knaack.h@gmx.de>
-Message-ID: <55CBA8A6.7020404@gmx.de>
-Date: Wed, 12 Aug 2015 22:12:22 +0200
-From: Hartmut Knaack <knaack.h@gmx.de>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail.linuxfoundation.org ([140.211.169.12]:43799 "EHLO
+	mail.linuxfoundation.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751745AbbHLTpJ (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 12 Aug 2015 15:45:09 -0400
+Date: Wed, 12 Aug 2015 12:45:08 -0700
+From: Greg KH <gregkh@linuxfoundation.org>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Subject: Re: [PULL v2] Second set of new drivers, functionality and cleanup
+ for IIO in the 4.3 cycle (+ some fixes)
+Message-ID: <20150812194508.GA4279@kroah.com>
+References: <55CB9E42.907@kernel.org>
 MIME-Version: 1.0
-To: Markus Pargmann <mpa@pengutronix.de>,
- Mark Brown <broonie@kernel.org>, Jonathan Cameron <jic23@kernel.org>
-CC: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
- linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org, kernel@pengutronix.de
-Subject: Re: [PATCH 01/20] regmap: Add missing comments about struct regmap_bus
-References: <1439374365-20623-1-git-send-email-mpa@pengutronix.de> <1439374365-20623-2-git-send-email-mpa@pengutronix.de>
-In-Reply-To: <1439374365-20623-2-git-send-email-mpa@pengutronix.de>
-Content-Type: text/plain; charset=ISO-8859-15
-List-ID: <linux-iio@vger.kernel.org>
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <55CB9E42.907@kernel.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Markus Pargmann schrieb am 12.08.2015 um 12:12:
-> There are some fields of this struct undocumented or old. This patch
-> updates the missing comments.
+On Wed, Aug 12, 2015 at 08:28:02PM +0100, Jonathan Cameron wrote:
+> The following changes since commit b8d1f261fe7e4967593a5637d62991b6197a03f8:
 > 
-> Signed-off-by: Markus Pargmann <mpa@pengutronix.de>
-> ---
->  include/linux/regmap.h | 4 +++-
->  1 file changed, 3 insertions(+), 1 deletion(-)
+>   staging: dgap: remove duplicate code (2015-07-16 10:19:55 -0700)
 > 
-> diff --git a/include/linux/regmap.h b/include/linux/regmap.h
-> index 59c55ea0f0b5..6ff83c9ddb45 100644
-> --- a/include/linux/regmap.h
-> +++ b/include/linux/regmap.h
-> @@ -296,8 +296,11 @@ typedef void (*regmap_hw_free_context)(void *context);
->   *                if not implemented  on a given device.
->   * @async_write: Write operation which completes asynchronously, optional and
->   *               must serialise with respect to non-async I/O.
-> + * @reg_write: Write operation for a register. Writes value to register.
->   * @read: Read operation.  Data is returned in the buffer used to transmit
->   *         data.
-> + * @reg_read: Read operation for a register. Reads a value from a register.
-> + * @free_conetext: Free context.
+> are available in the git repository at:
+> 
+>   git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git tags/iio-for-4.3b-2
 
-Typo: free_context
+I had to do a merge conflict resolution in one driver, it was pretty
+trivial, but if you could check I got it right, that would be great.
 
->   * @async_alloc: Allocate a regmap_async() structure.
->   * @read_flag_mask: Mask to be set in the top byte of the register when doing
->   *                  a read.
-> @@ -307,7 +310,6 @@ typedef void (*regmap_hw_free_context)(void *context);
->   * @val_format_endian_default: Default endianness for formatted register
->   *     values. Used when the regmap_config specifies DEFAULT. If this is
->   *     DEFAULT, BIG is assumed.
-> - * @async_size: Size of struct used for async work.
->   */
->  struct regmap_bus {
->  	bool fast_io;
-> 
+thanks,
+
+greg k-h
