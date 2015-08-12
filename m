@@ -1,58 +1,146 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp-out-194.synserver.de ([212.40.185.194]:1067 "EHLO
-	smtp-out-194.synserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755057AbbHLPRl (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 12 Aug 2015 11:17:41 -0400
-Message-ID: <55CB6391.7060502@metafoo.de>
-Date: Wed, 12 Aug 2015 17:17:37 +0200
-From: Lars-Peter Clausen <lars@metafoo.de>
+Received: from ns.pmeerw.net ([84.19.176.92]:40843 "EHLO pmeerw.net"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1754131AbbHLPTk (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Wed, 12 Aug 2015 11:19:40 -0400
+Date: Wed, 12 Aug 2015 17:19:37 +0200 (CEST)
+From: Peter Meerwald <pmeerw@pmeerw.net>
+To: Markus Pargmann <mpa@pengutronix.de>
+cc: Jonathan Cameron <jic23@kernel.org>,
+	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+	Vlad Dogaru <vlad.dogaru@intel.com>,
+	Paul Bolle <pebolle@tiscali.nl>, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org, kernel@pengutronix.de
+Subject: Re: [PATCH v3 6/6] iio: bmg160: Add SPI driver
+In-Reply-To: <1439391009-6051-7-git-send-email-mpa@pengutronix.de>
+Message-ID: <alpine.DEB.2.02.1508121716430.13952@pmeerw.net>
+References: <1439391009-6051-1-git-send-email-mpa@pengutronix.de> <1439391009-6051-7-git-send-email-mpa@pengutronix.de>
 MIME-Version: 1.0
-To: Xander Huff <xander.huff@ni.com>, jic23@kernel.org,
-	bigeasy@linutronix.de
-CC: knaack.h@gmx.de, pmeerw@pmeerw.net, michal.simek@xilinx.com,
-	soren.brinkmann@xilinx.com, linux-iio@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org,
-	linux-rt-users@vger.kernel.org, linux-kernel@vger.kernel.org,
-	joe.hershberger@ni.com, joshc@ni.com, nathan.sullivan@ni.com,
-	jaeden.amero@ni.com
-Subject: Re: [PATCH v4] iio: adc: xilinx-xadc: Push interrupts into hardirq
- context
-References: <55C07160.5040907@metafoo.de> <1439334049-28671-1-git-send-email-xander.huff@ni.com>
-In-Reply-To: <1439334049-28671-1-git-send-email-xander.huff@ni.com>
-Content-Type: text/plain; charset=windows-1252
+Content-Type: TEXT/PLAIN; charset=US-ASCII
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 08/12/2015 01:00 AM, Xander Huff wrote:
-> The driver currently registers a pair of irq handlers using
-> request_threaded_irq(), however the synchronization mechanism between the
-> hardirq and the threadedirq handler is a regular spinlock.
-> 
-> Unfortunately, this breaks PREEMPT_RT builds, where a spinlock can sleep,
-> and is thus not able to be acquired from a hardirq handler. This patch gets
-> rid of the threaded handler and pushes all interrupt handling into the
-> hardirq context, and uses request_irq().
-> 
-> To validate that this change has no impact on RT performance, here are
-> cyclictest values with no processes running:
-> 
-> $ sudo cyclictest -S -m -p 98
-> # /dev/cpu_dma_latency set to 0us
-> policy: fifo: loadavg: 0.00 0.01 0.05 1/174 2539
-> T: 0 ( 1405) P:98 I:1000 C:167010520 Min: 9 Act: 12 Avg: 12 Max: 75
-> T: 1 ( 1862) P:98 I:1500 C:111340339 Min: 9 Act: 12 Avg: 12 Max: 73
-> 
-> Then, all xadc raw handles were accessed in a continuous loop via
-> /sys/bus/iio/devices/iio:device0:
-> 
-> $ sudo cyclictest -S -m -p 98
-> # /dev/cpu_dma_latency set to 0us
-> policy: fifo: loadavg: 7.84 7.70 7.63 3/182 4260
-> T: 0 ( 2559) P:98 I:1000 C:241557018 Min: 11 Act: 18 Avg: 21 Max: 74
-> T: 1 ( 2560) P:98 I:1500 C:161038006 Min: 10 Act: 21 Avg: 20 Max: 73
-> 
-> Signed-off-by: Xander Huff <xander.huff@ni.com>
+On Wed, 12 Aug 2015, Markus Pargmann wrote:
 
-Looks good, thanks.
+> Signed-off-by: Markus Pargmann <mpa@pengutronix.de>
 
-Acked-by: Lars-Peter Clausen <lars@metafoo.de>
+the spelling of Bosch is inconsistent, sometimes it is BOSCH, I'd prefer 
+the former
+
+please find a slightly more relevant comment below :)
+
+> ---
+>  drivers/iio/gyro/Kconfig      | 11 +++++++++
+>  drivers/iio/gyro/Makefile     |  1 +
+>  drivers/iio/gyro/bmg160_spi.c | 57 +++++++++++++++++++++++++++++++++++++++++++
+>  3 files changed, 69 insertions(+)
+>  create mode 100644 drivers/iio/gyro/bmg160_spi.c
+> 
+> diff --git a/drivers/iio/gyro/Kconfig b/drivers/iio/gyro/Kconfig
+> index 13f8e0051615..a77dbb0062fe 100644
+> --- a/drivers/iio/gyro/Kconfig
+> +++ b/drivers/iio/gyro/Kconfig
+> @@ -71,6 +71,17 @@ config BMG160_I2C
+>  	  This driver can also be built as a module.  If so, the module
+>  	  will be called bmg160_i2c.
+>  
+> +config BMG160_SPI
+> +	tristate "Driver for connection via SPI"
+> +	depends on SPI
+> +	select REGMAP_SPI
+> +	help
+> +	  Say yes here to build support for Bosch BMG160 Tri-axis Gyro Sensor
+> +	  driver connected via SPI. This driver also supports BMI055 gyroscope.
+> +
+> +	  This driver can also be built as a module.  If so, the module
+> +	  will be called bmg160_spi.
+> +
+>  endif
+>  
+>  config HID_SENSOR_GYRO_3D
+> diff --git a/drivers/iio/gyro/Makefile b/drivers/iio/gyro/Makefile
+> index 73b41e43a974..848e55c605c0 100644
+> --- a/drivers/iio/gyro/Makefile
+> +++ b/drivers/iio/gyro/Makefile
+> @@ -9,6 +9,7 @@ obj-$(CONFIG_ADIS16136) += adis16136.o
+>  obj-$(CONFIG_ADIS16260) += adis16260.o
+>  obj-$(CONFIG_ADXRS450) += adxrs450.o
+>  obj-$(CONFIG_BMG160_I2C) += bmg160_core.o bmg160_i2c.o
+> +obj-$(CONFIG_BMG160_I2C) += bmg160_core.o bmg160_spi.o
+>  
+>  obj-$(CONFIG_HID_SENSOR_GYRO_3D) += hid-sensor-gyro-3d.o
+>  
+> diff --git a/drivers/iio/gyro/bmg160_spi.c b/drivers/iio/gyro/bmg160_spi.c
+> new file mode 100644
+> index 000000000000..8a358571b702
+> --- /dev/null
+> +++ b/drivers/iio/gyro/bmg160_spi.c
+> @@ -0,0 +1,57 @@
+> +#include <linux/spi/spi.h>
+> +#include <linux/regmap.h>
+> +#include <linux/iio/iio.h>
+> +#include <linux/module.h>
+> +
+> +#include <bmg160.h>
+
+I think this should be
+#include "bmg160.h"
+as in the _i2c part of the driver
+
+> +
+> +static const struct regmap_config bmg160_regmap_spi_conf = {
+> +	.reg_bits = 8,
+> +	.val_bits = 8,
+> +	.max_register = 0x3f,
+> +};
+> +
+> +static int bmg160_spi_probe(struct spi_device *spi)
+> +{
+> +	struct regmap *regmap;
+> +	const struct spi_device_id *id = spi_get_device_id(spi);
+> +
+> +	regmap = devm_regmap_init_spi(spi, &bmg160_regmap_spi_conf);
+> +	if (IS_ERR(regmap)) {
+> +		dev_err(&spi->dev, "Failed to register spi regmap %d\n",
+> +			(int)PTR_ERR(regmap));
+> +		return PTR_ERR(regmap);
+> +	}
+> +
+> +	return bmg160_core_probe(&spi->dev, regmap, spi->irq, id->name);
+> +}
+> +
+> +static int bmg160_spi_remove(struct spi_device *spi)
+> +{
+> +	bmg160_core_remove(&spi->dev);
+> +
+> +	return 0;
+> +}
+> +
+> +static const struct spi_device_id bmg160_spi_id[] = {
+> +	{"bmg160", 0},
+> +	{"bmi055_gyro", 0},
+> +	{}
+> +};
+> +
+> +MODULE_DEVICE_TABLE(spi, bmg160_spi_id);
+> +
+> +static struct spi_driver bmg160_spi_driver = {
+> +	.driver = {
+> +		.name	= "bmg160_spi",
+> +		.pm	= &bmg160_pm_ops,
+> +	},
+> +	.probe		= bmg160_spi_probe,
+> +	.remove		= bmg160_spi_remove,
+> +	.id_table	= bmg160_spi_id,
+> +};
+> +module_spi_driver(bmg160_spi_driver);
+> +
+> +MODULE_AUTHOR("Markus Pargmann <mpa@pengutronix.de>");
+> +MODULE_LICENSE("GPL v2");
+> +MODULE_DESCRIPTION("BMG160 SPI Gyro driver");
+> 
+
+-- 
+
+Peter Meerwald
++43-664-2444418 (mobile)
