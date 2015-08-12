@@ -1,59 +1,77 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mezzanine.sirena.org.uk ([106.187.55.193]:40192 "EHLO
-	mezzanine.sirena.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751403AbbHLKoB (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 12 Aug 2015 06:44:01 -0400
-Date: Wed, 12 Aug 2015 11:43:55 +0100
-From: Mark Brown <broonie@kernel.org>
-To: Markus Pargmann <mpa@pengutronix.de>
+Received: from metis.ext.pengutronix.de ([92.198.50.35]:34447 "EHLO
+	metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755014AbbHLKom (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 12 Aug 2015 06:44:42 -0400
+Date: Wed, 12 Aug 2015 12:44:36 +0200
+From: Markus Pargmann <mpa@pengutronix.de>
+To: Mark Brown <broonie@kernel.org>
 Cc: Jonathan Cameron <jic23@kernel.org>,
 	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
 	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org, kernel@pengutronix.de
-Message-ID: <20150812104355.GS10748@sirena.org.uk>
+	linux-arm-kernel@lists.infradead.org, kernel@pengutronix.de,
+	Stephen Boyd <sboyd@codeaurora.org>
+Subject: Re: [PATCH 02/20] regmap: Remove regmap_bulk_write 64bit support
+Message-ID: <20150812104436.GA19600@pengutronix.de>
 References: <1439374365-20623-1-git-send-email-mpa@pengutronix.de>
- <1439374365-20623-5-git-send-email-mpa@pengutronix.de>
+ <1439374365-20623-3-git-send-email-mpa@pengutronix.de>
+ <20150812102550.GQ10748@sirena.org.uk>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="O3bhLwMadv7h6/J9"
-In-Reply-To: <1439374365-20623-5-git-send-email-mpa@pengutronix.de>
-Subject: Re: [PATCH 04/20] regmap: Do not skip format initialization
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="G32kpiKURVjWs3Ul"
+In-Reply-To: <20150812102550.GQ10748@sirena.org.uk>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
 
---O3bhLwMadv7h6/J9
-Content-Type: text/plain; charset=us-ascii
+--G32kpiKURVjWs3Ul
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-On Wed, Aug 12, 2015 at 12:12:29PM +0200, Markus Pargmann wrote:
+On Wed, Aug 12, 2015 at 11:25:50AM +0100, Mark Brown wrote:
+> On Wed, Aug 12, 2015 at 12:12:27PM +0200, Markus Pargmann wrote:
+> > Regmap does not support 64bit. The ival that is used to write the 64bit
+> > data to, is unsigned int and can't hold 64bit. _regmap_write also just
+> > supports unsigend int.
+>=20
+> What makes you say that unsigned int can't hold 64 bit?  An architecture
+> can have 64 bit ints if it likes.
 
-> It is not obvious why format initialization is skipped here. format
-> functions are used for example in regmap_bulk_read even if bus is not
-> set. So they are used even if skipped here which leads to null pointer
-> errors.
+I wasn't aware that any 64 bit architecture actually has unsigned ints
+that are 64 bit in size. So wouldn't at least on x86_64 this would lead
+to a compiler warning as unsigned int is 4 byte and u64 8 bytes?
 
-> This patch adds format initialization for !bus and !bus->read/write.
+Best Regards,
 
-Format initialisation is skipped because it is not clear what the wire
-format actually is if we're not using the regmap internal marshalling.
-Someone needs to do a survey of what the existing users are trying to do
-before changing anything here.
+Markus
 
---O3bhLwMadv7h6/J9
+--=20
+Pengutronix e.K.                           |                             |
+Industrial Linux Solutions                 | http://www.pengutronix.de/  |
+Peiner Str. 6-8, 31137 Hildesheim, Germany | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+
+--G32kpiKURVjWs3Ul
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: Digital signature
 
 -----BEGIN PGP SIGNATURE-----
-Version: GnuPG v2
+Version: GnuPG v1
 
-iQEcBAEBCAAGBQJVyyNqAAoJECTWi3JdVIfQ4LsH/1O1MyF+BG2ei9KHfOYXaihl
-zSoavMOGjvVCI8Qz2M7p+bXhhWS2T/5IQRq24pXu5zbXBtztNTZjjaiLknIpiSm5
-Aa5F3IphJDhL166Kr9jEjPVVN7i3ufeC2Cs+oc5nICMiryWrFD3LueFrL49eVGdw
-ChX7alIU1JYIx5R0tMQhY0R1inWiuvvOFkINmyWGH2aEbyd4+wl1qZxTpwLDe/Tx
-ob8JEC275XK7qz4hJw8+Aphh+FjJ1D9RxRUkpbIRH5P04sMd1KkhkM45sA2UcIyr
-sI4XD7b0NZzJDDksUjx2/Ln2+nQFijcfu3HfDpH/hGx9Rfon3WKrT4jLcIZZUsQ=
-=hTM+
+iQIcBAEBAgAGBQJVyyOUAAoJEEpcgKtcEGQQijUP/An7vweVDwpChKFyMeKkL993
+FYJ59AVdyulZsLlacve1eWoC2q/fitxFgiLim50VzzO6eSYzjbLcBNLczc2GMK8O
+egjuO+tUmj0qNNRBYaE++7QMihIODhMFWbKdw1Q3Tb8hmSWrcSNPd+7WmdE1aziO
+YxBhXCPjwizgC9ACJ1BfF/lPlMUkiAO+dDVAH5D5fOUrv9HBJEII0q+nztJjVwZd
+R6Wtu9iAtyPqKXnTki5dN/xucEJjFFQ45NhuZSSBKGuSmSX37EY4OnIR+SiloKC9
+UP5eAhQ0PeaeYsj0O6F+u4mRHE3lWqo7LLgQBEnaRKkcdW7DgbxIZiX8J0rt1eU3
+OI5DmQr0iItIXoiFD3Wv9YYnKB/lvoGaOKRCDvTMu2bkhUkA96wniJ/wIH53POj1
+XyHb2UV//MXU8HWlagDuMQW9ToKQojRBk/bqIPBjs/0dS2WjjTVkZCEfeR42NX2f
+GJlLOYqqavFAUl0l0zSDvowHi6pXMwD3+OQt/qECJh5TnoaTDM02vnRDWS518qcO
+70NEko1tWrllmRGOwRa0eHnRMA1CwIVR3eQxNMVmnq8ua7M0enVVcVaN/y8VUfMZ
+ZthU7rl9e0JDib68IiPZTBoaggBDnro7YO2QGQDn7qirLP6sbenmLD73q8Zbj25A
+6z7lkYnc/G+dZAJ77Tmq
+=jxJ0
 -----END PGP SIGNATURE-----
 
---O3bhLwMadv7h6/J9--
+--G32kpiKURVjWs3Ul--
