@@ -1,8 +1,8 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
 Received: from mga03.intel.com ([134.134.136.65]:50416 "EHLO mga03.intel.com"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1753347AbbHLOcY (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Wed, 12 Aug 2015 10:32:24 -0400
+	id S1754660AbbHLOc3 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Wed, 12 Aug 2015 10:32:29 -0400
 From: Irina Tirdea <irina.tirdea@intel.com>
 To: Wolfram Sang <wsa@the-dreams.de>,
 	Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
@@ -11,67 +11,84 @@ Cc: linux-kernel@vger.kernel.org,
 	Srinivas Pandruvada <srinivas.pandruvada@intel.com>,
 	Peter Meerwald <pmeerw@pmeerw.net>,
 	Irina Tirdea <irina.tirdea@intel.com>
-Subject: [PATCH v5 0/8] Add support for best effort block read emulation
-Date: Wed, 12 Aug 2015 17:31:32 +0300
-Message-Id: <1439389900-10108-1-git-send-email-irina.tirdea@intel.com>
+Subject: [PATCH v5 2/8] eeprom: at24: use i2c_smbus_read_i2c_block_data_or_emulated
+Date: Wed, 12 Aug 2015 17:31:34 +0300
+Message-Id: <1439389900-10108-3-git-send-email-irina.tirdea@intel.com>
+In-Reply-To: <1439389900-10108-1-git-send-email-irina.tirdea@intel.com>
+References: <1439389900-10108-1-git-send-email-irina.tirdea@intel.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-This is version 5 for adding i2c_smbus_read_i2c_block_data_or_emulated
-to i2c-core.
+For i2c busses that support only SMBUS extensions, the eeprom at24
+driver reads data from the device using the SMBus block, word or byte
+read protocols depending on availability.
 
-Jonathan, I did not add your Reviewed-by to the patch adding the 
-i2c_smbus_read_i2c_block_data_or_emulated function since I made some
-changes to the code.
+Replace the block read emulation from the driver with the
+i2c_smbus_read_i2c_block_data_or_emulated call from i2c core.
 
-Thanks,
-Irina
+Signed-off-by: Irina Tirdea <irina.tirdea@intel.com>
+---
+ drivers/misc/eeprom/at24.c | 37 ++++++-------------------------------
+ 1 file changed, 6 insertions(+), 31 deletions(-)
 
-Changes from v4:
- - optimized the code for i2c_smbus_read_i2c_block_data_or_emulated as
-Wolfram suggested
- - dropped the error message from i2c_smbus_read_i2c_block_data_or_emulated
- - fixed documentation to specify I2C_SMBUS_BLOCK_MAX instead of 32
-
-Changes from v3:
- - when reading an odd number of bytes using word emulation, read an even
-number of bytes using word reads and the last byte using byte read
- - code styling changes to improve readability
- - add a comment about addressing assumptions to the
-i2c_smbus_read_i2c_block_data_or_emulated function as Jonathan suggested
- - add Acked-by from Jonathan and Srinivas to the iio changes
-
-Changes from v2:
- - changed bmc150-accel, kxcjk-1013 and bmg160 drivers to use
-i2c_smbus_read_i2c_block_data_or_emulated
-
-Changes from v1:
- - dropped the RFC tag
- - changed at24 to use i2c_smbus_read_i2c_block_data_or_emulated
- - when reading an odd number of bytes using word emulation, read an even
-number of bytes and drop the last one
- - add a comment that this might not be suitable for all I2C slaves
-
-Adriana Reus (2):
-  iio: accel: kxcjk-1013: use available_scan_masks
-  iio: accel: kxcjk-1013: optimize i2c transfers in trigger handler
-
-Irina Tirdea (6):
-  i2c: core: Add support for best effort block read emulation
-  eeprom: at24: use i2c_smbus_read_i2c_block_data_or_emulated
-  iio: accel: bmc150: use available_scan_masks
-  iio: accel: bmc150: optimize i2c transfers in trigger handler
-  iio: gyro: bmg160: use available_scan_masks
-  iio: gyro: bmg160: optimize i2c transfers in trigger handler
-
- drivers/i2c/i2c-core.c           | 57 ++++++++++++++++++++++++++++++++++++++++
- drivers/iio/accel/bmc150-accel.c | 23 ++++++++--------
- drivers/iio/accel/kxcjk-1013.c   | 24 ++++++++---------
- drivers/iio/gyro/bmg160.c        | 23 ++++++++--------
- drivers/misc/eeprom/at24.c       | 37 +++++---------------------
- include/linux/i2c.h              |  3 +++
- 6 files changed, 102 insertions(+), 65 deletions(-)
-
+diff --git a/drivers/misc/eeprom/at24.c b/drivers/misc/eeprom/at24.c
+index 2b254f3..c6cb7f8 100644
+--- a/drivers/misc/eeprom/at24.c
++++ b/drivers/misc/eeprom/at24.c
+@@ -186,19 +186,11 @@ static ssize_t at24_eeprom_read(struct at24_data *at24, char *buf,
+ 	if (count > io_limit)
+ 		count = io_limit;
+ 
+-	switch (at24->use_smbus) {
+-	case I2C_SMBUS_I2C_BLOCK_DATA:
++	if (at24->use_smbus) {
+ 		/* Smaller eeproms can work given some SMBus extension calls */
+ 		if (count > I2C_SMBUS_BLOCK_MAX)
+ 			count = I2C_SMBUS_BLOCK_MAX;
+-		break;
+-	case I2C_SMBUS_WORD_DATA:
+-		count = 2;
+-		break;
+-	case I2C_SMBUS_BYTE_DATA:
+-		count = 1;
+-		break;
+-	default:
++	} else {
+ 		/*
+ 		 * When we have a better choice than SMBus calls, use a
+ 		 * combined I2C message. Write address; then read up to
+@@ -229,27 +221,10 @@ static ssize_t at24_eeprom_read(struct at24_data *at24, char *buf,
+ 	timeout = jiffies + msecs_to_jiffies(write_timeout);
+ 	do {
+ 		read_time = jiffies;
+-		switch (at24->use_smbus) {
+-		case I2C_SMBUS_I2C_BLOCK_DATA:
+-			status = i2c_smbus_read_i2c_block_data(client, offset,
+-					count, buf);
+-			break;
+-		case I2C_SMBUS_WORD_DATA:
+-			status = i2c_smbus_read_word_data(client, offset);
+-			if (status >= 0) {
+-				buf[0] = status & 0xff;
+-				buf[1] = status >> 8;
+-				status = count;
+-			}
+-			break;
+-		case I2C_SMBUS_BYTE_DATA:
+-			status = i2c_smbus_read_byte_data(client, offset);
+-			if (status >= 0) {
+-				buf[0] = status;
+-				status = count;
+-			}
+-			break;
+-		default:
++		if (at24->use_smbus) {
++			status = i2c_smbus_read_i2c_block_data_or_emulated(client, offset,
++									   count, buf);
++		} else {
+ 			status = i2c_transfer(client->adapter, msg, 2);
+ 			if (status == 2)
+ 				status = count;
 -- 
 1.9.1
 
