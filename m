@@ -1,98 +1,59 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from metis.ext.pengutronix.de ([92.198.50.35]:57759 "EHLO
+Received: from metis.ext.pengutronix.de ([92.198.50.35]:42794 "EHLO
 	metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S933295AbbHLKpu (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 12 Aug 2015 06:45:50 -0400
-Date: Wed, 12 Aug 2015 12:45:45 +0200
+	with ESMTP id S1754263AbbHLKro (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 12 Aug 2015 06:47:44 -0400
+Date: Wed, 12 Aug 2015 12:47:39 +0200
 From: Markus Pargmann <mpa@pengutronix.de>
-To: Daniel Kurtz <djkurtz@chromium.org>
-Cc: Mark Brown <broonie@kernel.org>,
-	Jonathan Cameron <jic23@kernel.org>,
+To: Mark Brown <broonie@kernel.org>
+Cc: Jonathan Cameron <jic23@kernel.org>,
 	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
-	linux-iio@vger.kernel.org,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"linux-arm-kernel@lists.infradead.org"
-	<linux-arm-kernel@lists.infradead.org>,
-	Sasha Hauer <kernel@pengutronix.de>,
-	Henry Chen <henryc.chen@mediatek.com>,
-	Matthias Brugger <matthias.bgg@gmail.com>,
-	linux-mediatek@lists.infradead.org,
-	Kevin Hilman <khilman@kernel.org>
-Subject: Re: [PATCH 07/20] regmap: Without bus read() or write(), force
- use_single_rw
-Message-ID: <20150812104545.GB19600@pengutronix.de>
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org, kernel@pengutronix.de
+Subject: Re: [PATCH 00/20] Regmap max_raw_io and bmc150 SPI support
+Message-ID: <20150812104739.GC19600@pengutronix.de>
 References: <1439374365-20623-1-git-send-email-mpa@pengutronix.de>
- <1439374365-20623-8-git-send-email-mpa@pengutronix.de>
- <CAGS+omC6dFVnzWmQN2XGy31s1nm-hQJ6DigJREynCAf7A-PcFg@mail.gmail.com>
+ <20150812103736.GR10748@sirena.org.uk>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="Nwn6wlxaqfRJxJFc"
-In-Reply-To: <CAGS+omC6dFVnzWmQN2XGy31s1nm-hQJ6DigJREynCAf7A-PcFg@mail.gmail.com>
+	protocol="application/pgp-signature"; boundary="FYos7FMnk2wAe7eG"
+In-Reply-To: <20150812103736.GR10748@sirena.org.uk>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
 
---Nwn6wlxaqfRJxJFc
+--FYos7FMnk2wAe7eG
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-Hi,
-
-On Wed, Aug 12, 2015 at 06:33:55PM +0800, Daniel Kurtz wrote:
-> Hi Markus,
+On Wed, Aug 12, 2015 at 11:37:36AM +0100, Mark Brown wrote:
+> On Wed, Aug 12, 2015 at 12:12:25PM +0200, Markus Pargmann wrote:
+> > Hi,
+> >=20
+> > this series was created to add SPI support to the bmc150 accelerometer =
+driver.
+> > To not add any regressions, I had to add some infrastructure that allow=
+s to use
+> > regmap with busses that do limit the size of transfers (block smbus). I=
+ hope
+> > this is sufficient to not break anything.
 >=20
-> On Wed, Aug 12, 2015 at 6:12 PM, Markus Pargmann <mpa@pengutronix.de> wro=
-te:
-> >
-> > The implementation of regmap bus read() and write() methods are
-> > optional. Therefore we have to handle busses which do not have these
-> > functions. If raw read() and write() is not supported we have to use
-> > reg_read and reg_write always.
-> >
-> > This patch sets use_single_rw if read() or write() is not set.
-> >
-> > Signed-off-by: Markus Pargmann <mpa@pengutronix.de>
-> > ---
-> >  drivers/base/regmap/regmap.c | 2 +-
-> >  1 file changed, 1 insertion(+), 1 deletion(-)
-> >
-> > diff --git a/drivers/base/regmap/regmap.c b/drivers/base/regmap/regmap.c
-> > index f98bd5bf5c62..35ad3783da70 100644
-> > --- a/drivers/base/regmap/regmap.c
-> > +++ b/drivers/base/regmap/regmap.c
-> > @@ -573,7 +573,7 @@ struct regmap *regmap_init(struct device *dev,
-> >                 map->reg_stride =3D config->reg_stride;
-> >         else
-> >                 map->reg_stride =3D 1;
-> > -       map->use_single_rw =3D config->use_single_rw;
-> > +       map->use_single_rw =3D config->use_single_rw || !bus->read || !=
-bus->write;
->=20
-> What if bus is NULL?
+> This is a really big series but looking at at least the initial patches
+> there's a lot of unrelated cleanups mixed in with it.  Please don't do
+> this, send things like cleanups separately so that your series is
+> focused on the relevant topic.  This makes things much easier to work
+> with.
 
-Yes thanks, that has to be checked.
+Ok. I can try to separate them but there are lots of dependencies
+between the patches and most of them touch regmap.c so I thought it may
+be better to put it in one series.
+
+I will try my best to separate them for the next version.
 
 Best Regards,
 
 Markus
-
->=20
-> -Dan
->=20
-> >         map->can_multi_write =3D config->can_multi_write;
-> >         map->dev =3D dev;
-> >         map->bus =3D bus;
-> > --
-> > 2.4.6
-> >
-> > --
-> > To unsubscribe from this list: send the line "unsubscribe linux-kernel"=
- in
-> > the body of a message to majordomo@vger.kernel.org
-> > More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> > Please read the FAQ at  http://www.tux.org/lkml/
->=20
 
 --=20
 Pengutronix e.K.                           |                             |
@@ -100,26 +61,26 @@ Industrial Linux Solutions                 | http://www.pengutronix.de/  |
 Peiner Str. 6-8, 31137 Hildesheim, Germany | Phone: +49-5121-206917-0    |
 Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
 
---Nwn6wlxaqfRJxJFc
+--FYos7FMnk2wAe7eG
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: Digital signature
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v1
 
-iQIcBAEBAgAGBQJVyyPZAAoJEEpcgKtcEGQQxqUP/20kVCqJjcAXbm49iSrAniF3
-Grypc/uWZqbNsdk7xs7i8W/JaQymRu9GWj0YVKjFJEz0uZ4C7kM5zVMj2v1Hazuq
-Z8N2VaGIRiQC1Xez2LvQ8g2yMCANSWK2QS41PdEo9AcFXAkpaz4J466utUwZ8QDW
-do+IaOve9sSLx5CjqfHh6WgnSsNiRBaTkP1pxc1gq38sx118bourMd0i2XS6Ogi+
-kitgJhJUtqFI/h4vogkPmj+jCg9+WZHw3NHdwFZrlXrcibMvOpeGNgxyWM+YyjJV
-67jYMZq3ANxMgrBbj0BG/7mbWsRcOV0qjxAxHhSlIXEIkFgOJwf87+mPDKuSGvQ5
-ohvrp1bW52qUeY/RY/A+rqxBe9R/ojS1AEN0lyGqnZOvrn6mRnWbzydEUnwMSotm
-mgtC5iatsYWux2edKSJC4VOzav+XkMCqRCYBnPHqcM3UbUngm+ilW0zI9i4CydSQ
-iGFDur8jCredUFuC2JI1ctsxCitEktnrWNCHRkweghP8/FWVSqYZQ4EsGfzdh5jZ
-ke56MLd5wXq91Ed1k2HpSGuaiRm5+PdfFaRSh2Cus7q+MExasYWIXIW69bmLYvia
-g/amwGfQ02NoXBnzM+gslANAZ5fEjL8asCoLzvVvgg8nvz+sqYiw7iF/zNHo31HB
-8VQ0pFkQ2Dcm7YnGkzse
-=RpIV
+iQIcBAEBAgAGBQJVyyRKAAoJEEpcgKtcEGQQa6gP+QEx3jQkQlEQOd+Q9hUaft17
+8h2FHzeLM4VSwVHeOKnJ2czx/1BK4FKyTa05dk+xqpp+9LYv42ey30Q1ANYR9Cym
+pCLpSHpv01nKcYB+6Yv0pjPJDAWqlwrySPyMohwjPe6S/Tv5neh09PltrlXCLJbb
+U+x1ftcG73GRd/aD31XSN3iklqt5xRY52iTrJVpSWzVXTIXIjBKTN9uGeHjAPRRI
+LyGNdmuldEfnuPRlzSAsP3rwpmm6YTaDq8A/HkyR1PCuSJx87Ck+QuvHtjCK9rsH
+IFkJp8wwRackJsYhyDFzg/6f3w8VIVIPL29K5StPtHd+pDVlUUOcCfD6dmmLTUgu
+lbxfQuC3YXHjRAEeK4I/y7dI3h7tQrfdjTWtLIDN+/UGvFeiq3QY6V0R2aao2UAt
+RLzmyzIAYL1dEyzbZXa7ZHC0PnP1uoscxBPQ1OsZeWI0ubDUoYzJHVSnOrumRtXt
+VV8SprpF44zgy4LdqD0/v5TBwVoTjMwao748PRBinfNl1nyQmmAkarEDmaJi4uNE
+wBrEJUOAFtGxw5IEQYcItChufLJQMjp8Nb/sPPcowuYAuiMDTZB7Fac16uxhK1fY
+MhhKC/02SuI/aDjt2Qw1v5f0KFwlg+m+agVUJoogt2IPGMJfZEGPGiFxXmosk5XM
+1hM8o6Jza5W432OqBbK1
+=LNuH
 -----END PGP SIGNATURE-----
 
---Nwn6wlxaqfRJxJFc--
+--FYos7FMnk2wAe7eG--
