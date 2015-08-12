@@ -1,135 +1,48 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-lb0-f169.google.com ([209.85.217.169]:36345 "EHLO
-	mail-lb0-f169.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S934026AbbHLIWs (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 12 Aug 2015 04:22:48 -0400
-Received: by lbbpu9 with SMTP id pu9so5318076lbb.3
-        for <linux-iio@vger.kernel.org>; Wed, 12 Aug 2015 01:22:47 -0700 (PDT)
-From: Linus Walleij <linus.walleij@linaro.org>
-To: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org
-Cc: Linus Walleij <linus.walleij@linaro.org>,
-	Denis Ciocca <denis.ciocca@st.com>
-Subject: [PATCH v2] iio: st_sensors: add debugfs register read hook
-Date: Wed, 12 Aug 2015 10:22:41 +0200
-Message-Id: <1439367761-16975-1-git-send-email-linus.walleij@linaro.org>
+Received: from mga01.intel.com ([192.55.52.88]:30685 "EHLO mga01.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S933639AbbHLIWb (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Wed, 12 Aug 2015 04:22:31 -0400
+From: sdliyong@gmail.com
+To: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
+	pmeerw@pmeerw.net, gregkh@linuxfoundation.org,
+	cristina.opriceana@gmail.com, tolga.ceylan@gmail.com,
+	k.kozlowski@samsung.com, sdliyong@gmail.com,
+	linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH v1] staging: iio: hmc5843: Set iio name dynamically based on i2c name
+Date: Wed, 12 Aug 2015 16:20:30 +0800
+Message-Id: <1439367630-8964-1-git-send-email-sdliyong@gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-This adds a debugfs hook to read/write registers in the ST
-sensors using debugfs. Proved to be awesome help when trying
-to debug why IRQs do not arrive.
+From: Yong Li <sdliyong@gmail.com>
 
-Cc: Denis Ciocca <denis.ciocca@st.com>
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
----
-ChangeLog v1->v2:
-- User &ampersand i front of function name for debugfs helper
-- EXPORT the debugfs regread symbol so modules work
----
- drivers/iio/accel/st_accel_core.c               |  1 +
- drivers/iio/common/st_sensors/st_sensors_core.c | 22 ++++++++++++++++++++++
- drivers/iio/gyro/st_gyro_core.c                 |  1 +
- drivers/iio/magnetometer/st_magn_core.c         |  1 +
- drivers/iio/pressure/st_pressure_core.c         |  1 +
- include/linux/iio/common/st_sensors.h           |  4 ++++
- 6 files changed, 30 insertions(+)
+Load the driver using the below command:
+echo hmc5983 0x1e > /sys/bus/i2c/devices/i2c-?/new_device
 
-diff --git a/drivers/iio/accel/st_accel_core.c b/drivers/iio/accel/st_accel_core.c
-index 6617e779aa87..058c87d9f564 100644
---- a/drivers/iio/accel/st_accel_core.c
-+++ b/drivers/iio/accel/st_accel_core.c
-@@ -612,6 +612,7 @@ static const struct iio_info accel_info = {
- 	.attrs = &st_accel_attribute_group,
- 	.read_raw = &st_accel_read_raw,
- 	.write_raw = &st_accel_write_raw,
-+	.debugfs_reg_access = &st_sensors_debugfs_reg_access,
- };
- 
- #ifdef CONFIG_IIO_TRIGGER
-diff --git a/drivers/iio/common/st_sensors/st_sensors_core.c b/drivers/iio/common/st_sensors/st_sensors_core.c
-index 8086cbcff87d..3129128857ea 100644
---- a/drivers/iio/common/st_sensors/st_sensors_core.c
-+++ b/drivers/iio/common/st_sensors/st_sensors_core.c
-@@ -44,6 +44,28 @@ st_sensors_write_data_with_mask_error:
- 	return err;
- }
- 
-+int st_sensors_debugfs_reg_access(struct iio_dev *indio_dev,
-+				  unsigned reg, unsigned writeval,
-+				  unsigned *readval)
-+{
-+	struct st_sensor_data *sdata = iio_priv(indio_dev);
-+	u8 readdata;
-+	int err;
-+
-+	if (!readval)
-+		return sdata->tf->write_byte(&sdata->tb, sdata->dev,
-+					     (u8)reg, (u8)writeval);
-+
-+	err = sdata->tf->read_byte(&sdata->tb, sdata->dev, (u8)reg, &readdata);
-+	if (err < 0)
-+		return err;
-+
-+	*readval = (unsigned)readdata;
-+
-+	return 0;
-+}
-+EXPORT_SYMBOL(st_sensors_debugfs_reg_access);
-+
- static int st_sensors_match_odr(struct st_sensor_settings *sensor_settings,
- 			unsigned int odr, struct st_sensor_odr_avl *odr_out)
+In sysfs, the iio name is hmc5843, however the i2c name is hmc5983,
+they are inconsistent.
+
+With this patch, the iio name will be the same as the i2c device name
+
+Signed-off-by: Yong Li <sdliyong@gmail.com>
+---
+ drivers/staging/iio/magnetometer/hmc5843_i2c.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/drivers/staging/iio/magnetometer/hmc5843_i2c.c b/drivers/staging/iio/magnetometer/hmc5843_i2c.c
+index ff08667..3b03644 100644
+--- a/drivers/staging/iio/magnetometer/hmc5843_i2c.c
++++ b/drivers/staging/iio/magnetometer/hmc5843_i2c.c
+@@ -59,6 +59,7 @@ static const struct regmap_config hmc5843_i2c_regmap_config = {
+ static int hmc5843_i2c_probe(struct i2c_client *cli,
+ 			     const struct i2c_device_id *id)
  {
-diff --git a/drivers/iio/gyro/st_gyro_core.c b/drivers/iio/gyro/st_gyro_core.c
-index ffe96642b6d0..3bbe63117175 100644
---- a/drivers/iio/gyro/st_gyro_core.c
-+++ b/drivers/iio/gyro/st_gyro_core.c
-@@ -380,6 +380,7 @@ static const struct iio_info gyro_info = {
- 	.attrs = &st_gyro_attribute_group,
- 	.read_raw = &st_gyro_read_raw,
- 	.write_raw = &st_gyro_write_raw,
-+	.debugfs_reg_access = &st_sensors_debugfs_reg_access,
- };
- 
- #ifdef CONFIG_IIO_TRIGGER
-diff --git a/drivers/iio/magnetometer/st_magn_core.c b/drivers/iio/magnetometer/st_magn_core.c
-index b4bcfb790f49..d612069e4e70 100644
---- a/drivers/iio/magnetometer/st_magn_core.c
-+++ b/drivers/iio/magnetometer/st_magn_core.c
-@@ -475,6 +475,7 @@ static const struct iio_info magn_info = {
- 	.attrs = &st_magn_attribute_group,
- 	.read_raw = &st_magn_read_raw,
- 	.write_raw = &st_magn_write_raw,
-+	.debugfs_reg_access = &st_sensors_debugfs_reg_access,
- };
- 
- int st_magn_common_probe(struct iio_dev *indio_dev)
-diff --git a/drivers/iio/pressure/st_pressure_core.c b/drivers/iio/pressure/st_pressure_core.c
-index e881fa6291e9..84f965deff80 100644
---- a/drivers/iio/pressure/st_pressure_core.c
-+++ b/drivers/iio/pressure/st_pressure_core.c
-@@ -397,6 +397,7 @@ static const struct iio_info press_info = {
- 	.attrs = &st_press_attribute_group,
- 	.read_raw = &st_press_read_raw,
- 	.write_raw = &st_press_write_raw,
-+	.debugfs_reg_access = &st_sensors_debugfs_reg_access,
- };
- 
- #ifdef CONFIG_IIO_TRIGGER
-diff --git a/include/linux/iio/common/st_sensors.h b/include/linux/iio/common/st_sensors.h
-index 2c476acb87d9..d8b4a7bc4029 100644
---- a/include/linux/iio/common/st_sensors.h
-+++ b/include/linux/iio/common/st_sensors.h
-@@ -269,6 +269,10 @@ void st_sensors_power_enable(struct iio_dev *indio_dev);
- 
- void st_sensors_power_disable(struct iio_dev *indio_dev);
- 
-+int st_sensors_debugfs_reg_access(struct iio_dev *indio_dev,
-+				  unsigned reg, unsigned writeval,
-+				  unsigned *readval);
-+
- int st_sensors_set_odr(struct iio_dev *indio_dev, unsigned int odr);
- 
- int st_sensors_set_dataready_irq(struct iio_dev *indio_dev, bool enable);
++	cli->dev.driver->name = id->name;
+ 	return hmc5843_common_probe(&cli->dev,
+ 			devm_regmap_init_i2c(cli, &hmc5843_i2c_regmap_config),
+ 			id->driver_data);
 -- 
-2.4.3
+2.1.0
 
