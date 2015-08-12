@@ -1,97 +1,109 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mezzanine.sirena.org.uk ([106.187.55.193]:40427 "EHLO
-	mezzanine.sirena.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754927AbbHLMeS (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 12 Aug 2015 08:34:18 -0400
-Date: Wed, 12 Aug 2015 13:34:06 +0100
-From: Mark Brown <broonie@kernel.org>
-To: Markus Pargmann <mpa@pengutronix.de>
-Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-	Jonathan Cameron <jic23@kernel.org>, kernel@pengutronix.de,
+Received: from metis.ext.pengutronix.de ([92.198.50.35]:36809 "EHLO
+	metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752588AbbHLMrM (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 12 Aug 2015 08:47:12 -0400
+Date: Wed, 12 Aug 2015 14:47:06 +0200
+From: Markus Pargmann <mpa@pengutronix.de>
+To: Mark Brown <broonie@kernel.org>
+Cc: Jonathan Cameron <jic23@kernel.org>,
 	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
-	linux-arm-kernel@lists.infradead.org
-Message-ID: <20150812123406.GG10748@sirena.org.uk>
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org, kernel@pengutronix.de
+Subject: Re: [PATCH 14/20] regmap: Add raw_write/read checks for
+ max_raw_write/read sizes
+Message-ID: <20150812124706.GI19600@pengutronix.de>
 References: <1439374365-20623-1-git-send-email-mpa@pengutronix.de>
- <1439374365-20623-10-git-send-email-mpa@pengutronix.de>
- <20150812112035.GX10748@sirena.org.uk>
- <20150812122011.GE19600@pengutronix.de>
+ <1439374365-20623-15-git-send-email-mpa@pengutronix.de>
+ <20150812115759.GB10748@sirena.org.uk>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="9iFHQ9JnogSZzyzY"
-In-Reply-To: <20150812122011.GE19600@pengutronix.de>
-Subject: Re: [PATCH 09/20] regmap: _regmap_raw_write fix for busses without
- write()
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="ceI9FlwgjS98XxYT"
+In-Reply-To: <20150812115759.GB10748@sirena.org.uk>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
 
---9iFHQ9JnogSZzyzY
-Content-Type: text/plain; charset=us-ascii
+--ceI9FlwgjS98XxYT
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Wed, Aug 12, 2015 at 02:20:11PM +0200, Markus Pargmann wrote:
-> On Wed, Aug 12, 2015 at 12:20:35PM +0100, Mark Brown wrote:
-> > On Wed, Aug 12, 2015 at 12:12:34PM +0200, Markus Pargmann wrote:
-> >=20
-> > > @@ -1229,6 +1229,11 @@ int _regmap_raw_write(struct regmap *map, unsi=
-gned int reg,
-> > >  		}
-> > >  	}
-> > > =20
-> > > +	if (!map->bus->write && val_len =3D=3D map->format.val_bytes) {
-> > > +		ret =3D _regmap_bus_reg_write(map, reg, *(unsigned int *)val);
-> > > +		return ret;
-> > > +	}
+On Wed, Aug 12, 2015 at 12:57:59PM +0100, Mark Brown wrote:
+> On Wed, Aug 12, 2015 at 12:12:39PM +0200, Markus Pargmann wrote:
+>=20
+> > Check in regmap_raw_read() and regmap_raw_write() for correct maximum
+> > sizes of the operations. Return -E2BIG if this size is not supported
+> > because it is too big.
+>=20
+> Why not just split the transaction up like your other changes did?
 
-> > This is broken - you can't use a raw value as a register value.  The
+My intention was to keep these raw functions as close to the actual
+hardware as possible also reporting proper error values. For
+transactions that are split up you could still use the bulk functions.
 
-> I am not sure what you mean here?
+The actual use case is the bmc150 driver. This chip has a FIFO behind
+one of its registers. At exactly that register there is no autoincrement
+of the address or anything, it is just a much larger register. But you
+have to read from it in bigger chunks than normal. If you read in
+chunks that do not have the correct size samples from the sensor get
+discarded.
 
-> The register value given to _regmap_raw_write is the real register
-> value, not formatted differenty. This is given directly towards
-> bus->reg_write() which should handle the rest.
+>=20
+> > Also this patch causes an uninitialized variable warning so it
+> > initializes ret (although not necessary).
+>=20
+> That's just shutting the warning up without understanding where it came
+> from or why this is a good way of handling it :(
 
-I mean the value for the register, not the register address.
+Yes, will have a look if I can find the issue.
 
-> At least that's how I understood the code. For example regmap_read()
-> directly calls _regmap_read() which in turn calls directly
-> bus->reg_read() without any formating.
+>=20
+> > @@ -2273,8 +2276,14 @@ int regmap_raw_read(struct regmap *map, unsigned=
+ int reg, void *val,
+> > =20
+> >  	map->lock(map->lock_arg);
+> > =20
+> > -	if (regmap_volatile_range(map, reg, val_count) || map->cache_bypass ||
+> > -	    map->cache_type =3D=3D REGCACHE_NONE) {
+> > +	if (map->bus->read &&
+>=20
+> This change doesn't match your commit log...
 
-You're adding this code to regmap_raw_write() which takes raw register
-values for the device, not unsigned integers.
+Sorry.
 
-> > endianness of the device may not be the same as the endianness of the
-> > system and you can't cast a value to unsigned int, the value may be of
-> > any size.
+Thanks,
 
-> Yes right. On the other hand if bus->read() and bus->write() was not set
-> in the init method (before this patch series) no formatting functions at
-> all were assigned. So it was always ignored for bus->reg_read() and
-> bus->reg_write()?!
+Markus
 
-I'm not sure what the "it" you're talking about here is, sorry.  There
-are unsupported features in the API especially for cases that don't make
-a huge amount of sense, the error handling isn't always complete.  It
-sounds like you might be trying to support one of these nonsensical
-cases - it's not obvious what raw I/O on a device where we don't know
-the raw format of the device should mean or how anything could sensibly
-use that.
 
---9iFHQ9JnogSZzyzY
+
+--=20
+Pengutronix e.K.                           |                             |
+Industrial Linux Solutions                 | http://www.pengutronix.de/  |
+Peiner Str. 6-8, 31137 Hildesheim, Germany | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+
+--ceI9FlwgjS98XxYT
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: Digital signature
 
 -----BEGIN PGP SIGNATURE-----
-Version: GnuPG v2
+Version: GnuPG v1
 
-iQEcBAEBCAAGBQJVyz09AAoJECTWi3JdVIfQ7FgH/RfVkdmwJ54moqfAiDADG4gr
-ao5EOxN0w1IUK/GshfgNdDQ3ib91z4+oMUY5CmE+2gezf2pSxCQ6kjwX3xbqaKOh
-1RDNiqVbIxROoTM93/xyCqpKEviBgjJmYUh7x+CficzEk0gyoyau44YNTV1E6wK8
-SOWRo41hCVONU2Ekpt/NGZQeUtwPDPDlUOYCvdLrmUx+7N/DX+NB8wg6QEqZH/zV
-hIEv3/Mt9gC/jCyeasBGezFEHsGifgvmfCtBxmY86qXnLrCtXM319KGuPH6S+t+p
-hGHnLsSRHL5oaYijC0pZmfI/Jx44N+H/RL7cOz8xyPV0pVBxjkkpeSfCd/2FJtc=
-=buHi
+iQIcBAEBAgAGBQJVy0BKAAoJEEpcgKtcEGQQ12oP/130C8MLeoHfw76MZtR7U2Xk
+rQH4YIa2jCKyuIB2C2th1h6c42vMzgTNE4+eTot/h6UJ1xZ0jETaexKzbH+YIX4E
+zJTlGlVXSdWJV/sCQMKnL2sutgYWwuc97AG5awIPLNaVwE7Gek9OfboJL6+ZrTkg
+Bsx6kjDoALBtMW9FkS8ZLL7eOYyGeDIXzy178TiVPmF7KA70WAkpZYEsAitmiNqG
+CdcYCAcnFJu7kDW1OYXWuewxSKbTes3p7SmQAHYjjGuxqXbN57puytJ5/nOxFGEE
+HaqMpluZL6YlrGvWOxBjnkqcYgFhi9bGbGyaPi3cEXvVKErFZeJ9OQuNK6U8TQvg
+ktM4gxaB1rl4ntCZfIXK7VLsmJkXh1QHM8AwDdO2jOKufLJbuB08tussJ28a3fIc
+euCCIkqqeCli4J95LT9Jgf6vWIv7Tsv17IqlLQeZ0r3azz9lMPHoiTORaiYx6aLT
+v/bNXkJ3iVi8VW8CKBw5mAc5MUVyu2mGukJdYD9Oe6dJtXUXZz2FM1mMzy0qIBfq
+BeZ2ou/Ye3pt5C9rZ/RxSSC5Wyz6JtuwpgV/It7GsBmd4xsJxiR2Ye6xjgDb17Wp
+Tm2L6mvUFTDCnm9bJa+HenpxkW3M8v1WgB42gZmIo53FuqNXrcHJaGrllWE2jEIR
+9hHyHw6roEwxIz7Ikzar
+=zErd
 -----END PGP SIGNATURE-----
 
---9iFHQ9JnogSZzyzY--
+--ceI9FlwgjS98XxYT--
