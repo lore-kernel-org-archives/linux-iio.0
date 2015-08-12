@@ -1,417 +1,146 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-la0-f42.google.com ([209.85.215.42]:33050 "EHLO
-	mail-la0-f42.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750902AbbHLEYr (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 12 Aug 2015 00:24:47 -0400
+Received: from mx07-00178001.pphosted.com ([62.209.51.94]:36827 "EHLO
+	mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1751766AbbHLEbD (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 12 Aug 2015 00:31:03 -0400
+Message-ID: <55CACC13.7040907@st.com>
+Date: Wed, 12 Aug 2015 12:31:15 +0800
+From: Denis Ciocca <denis.ciocca@st.com>
 MIME-Version: 1.0
-In-Reply-To: <55C61AA5.10105@kernel.org>
-References: <1438749676-28781-1-git-send-email-mranostay@gmail.com>
-	<1438749676-28781-3-git-send-email-mranostay@gmail.com>
-	<55C61AA5.10105@kernel.org>
-Date: Tue, 11 Aug 2015 21:24:45 -0700
-Message-ID: <CAKzfze9zL2DXsKF2Rwhz5_he1=pZe_EdvMFhC=junsBC+N57eg@mail.gmail.com>
-Subject: Re: [PATCH v4 2/2] iio: proximity: add support for PulsedLight LIDAR
-From: Matt Ranostay <mranostay@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: =?UTF-8?B?TWFyZWsgVmHFoXV0?= <marex@denx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Vladimir Barinov <vladimir.barinov@cogentembedded.com>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>
-Content-Type: text/plain; charset=UTF-8
+To: Linus Walleij <linus.walleij@linaro.org>,
+	Jonathan Cameron <jic23@kernel.org>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Subject: Re: [PATCH] iio: st_sensors: add debugfs register read hook
+References: <1439301665-4373-1-git-send-email-linus.walleij@linaro.org>
+In-Reply-To: <1439301665-4373-1-git-send-email-linus.walleij@linaro.org>
+Content-Type: text/plain; charset="windows-1252"; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Sat, Aug 8, 2015 at 8:05 AM, Jonathan Cameron <jic23@kernel.org> wrote:
-> On 05/08/15 05:41, Matt Ranostay wrote:
->> Add support for the PulsedLight LIDAR rangefinder sensor which allows
->> high speed (over 300Hz) distance measurements using Barker Coding within
->> 40 meter range.
->>
->> Support only tested on the "blue label" rev 2, but may work using low
->> sample frequencies on the original version.
->>
->> Signed-off-by: Matt Ranostay <mranostay@gmail.com>
-> Couple of bits inline.  Only one that really matters is I suspect
-> that simply calling it lidar (and naming the file lidar.c) is going
-> to give us problems if they or someone else produces a similar lidar
-> device in future.
->
-> Perhaps file name as pulsedlight-lidar-lite-v2.c
-> and name as lidar-lite-v2 for device tree etc.
+Hi Linus,
 
-Got it. Pretty 80% the v1 will suck at anything over 10 Hz... however
-the v2 I have running at 120Hz with high correlation settings possible
-(default) which is required for a 3d scan of a room/artifact :).
+Thanks for your job! My comments inline.
 
+> This adds a debugfs hook to read/write registers in the ST
+> sensors using debugfs. Proved to be awesome help when trying
+> to debug why IRQs do not arrive.
 >
-> Otherwise, nice little driver for a nice looking bit of kit.
+> Cc: Denis Ciocca <denis.ciocca@st.com>
+> Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+> ---
+>   drivers/iio/accel/st_accel_core.c               |  1 +
+>   drivers/iio/common/st_sensors/st_sensors_core.c | 21 +++++++++++++++++++++
+>   drivers/iio/gyro/st_gyro_core.c                 |  1 +
+>   drivers/iio/magnetometer/st_magn_core.c         |  1 +
+>   drivers/iio/pressure/st_pressure_core.c         |  1 +
+>   include/linux/iio/common/st_sensors.h           |  4 ++++
+>   6 files changed, 29 insertions(+)
 >
-> Thanks,
->
-> Jonathan
->> ---
->>  drivers/iio/proximity/Kconfig  |  12 ++
->>  drivers/iio/proximity/Makefile |   1 +
->>  drivers/iio/proximity/lidar.c  | 294 +++++++++++++++++++++++++++++++++++++++++
->>  3 files changed, 307 insertions(+)
->>  create mode 100644 drivers/iio/proximity/lidar.c
->>
->> diff --git a/drivers/iio/proximity/Kconfig b/drivers/iio/proximity/Kconfig
->> index 41a8d8f..e64fc5b 100644
->> --- a/drivers/iio/proximity/Kconfig
->> +++ b/drivers/iio/proximity/Kconfig
->> @@ -20,6 +20,18 @@ endmenu
->>
->>  menu "Proximity sensors"
->>
->> +config LIDAR
->> +     tristate "PulsedLight LIDAR sensor"
->> +     select IIO_BUFFER
->> +     select IIO_TRIGGERED_BUFFER
->> +     depends on I2C
->> +     help
->> +       Say Y to build a driver for PulsedLight LIDAR range finding
->> +       sensor.
->> +
->> +       To compile this driver as a module, choose M here: the
->> +       module will be called lidar.
->> +
->>  config SX9500
->>       tristate "SX9500 Semtech proximity sensor"
->>       select IIO_BUFFER
->> diff --git a/drivers/iio/proximity/Makefile b/drivers/iio/proximity/Makefile
->> index 9818dc5..36a95f3 100644
->> --- a/drivers/iio/proximity/Makefile
->> +++ b/drivers/iio/proximity/Makefile
->> @@ -4,4 +4,5 @@
->>
->>  # When adding new entries keep the list in alphabetical order
->>  obj-$(CONFIG_AS3935)         += as3935.o
->> +obj-$(CONFIG_LIDAR)          += lidar.o
->>  obj-$(CONFIG_SX9500)         += sx9500.o
->> diff --git a/drivers/iio/proximity/lidar.c b/drivers/iio/proximity/lidar.c
->> new file mode 100644
->> index 0000000..fdec9a2
->> --- /dev/null
->> +++ b/drivers/iio/proximity/lidar.c
->> @@ -0,0 +1,294 @@
->> +/*
->> + * lidar.c - Support for PulsedLight LIDAR range finding sensor
->> + *
->> + * Copyright (C) 2015 Matt Ranostay <mranostay@gmail.com>
->> + *
->> + * This program is free software; you can redistribute it and/or modify
->> + * it under the terms of the GNU General Public License as published by
->> + * the Free Software Foundation; either version 2 of the License, or
->> + * (at your option) any later version.
->> + *
->> + * This program is distributed in the hope that it will be useful,
->> + * but WITHOUT ANY WARRANTY; without even the implied warranty of
->> + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
->> + * GNU General Public License for more details.
->> + *
->> + * TODO: runtime pm, interrupt mode, and signal strength reporting
->> + *
->> + */
->> +
->> +#include <linux/err.h>
->> +#include <linux/init.h>
->> +#include <linux/i2c.h>
->> +#include <linux/delay.h>
->> +#include <linux/mutex.h>
->> +#include <linux/module.h>
->> +#include <linux/iio/iio.h>
->> +#include <linux/iio/sysfs.h>
->> +#include <linux/iio/buffer.h>
->> +#include <linux/iio/trigger.h>
->> +#include <linux/iio/triggered_buffer.h>
->> +#include <linux/iio/trigger_consumer.h>
->> +
->> +#define LIDAR_REG_CONTROL            0x00
->> +#define LIDAR_REG_CONTROL_ACQUIRE    BIT(2)
->> +
->> +#define LIDAR_REG_STATUS             0x01
->> +#define LIDAR_REG_STATUS_INVALID     BIT(3)
->> +#define LIDAR_REG_STATUS_READY               BIT(0)
->> +
->> +#define LIDAR_REG_DATA_HBYTE 0x0f
->> +#define LIDAR_REG_DATA_LBYTE 0x10
->> +
->> +#define LIDAR_DRV_NAME "lidar"
->> +
->> +struct lidar_data {
->> +     struct mutex lock;
->> +     struct iio_dev *indio_dev;
->> +     struct i2c_client *client;
->> +
->> +     u16 buffer[8]; /* 2 byte distance + 8 byte timestamp */
->> +};
->> +
->> +static const struct iio_chan_spec lidar_channels[] = {
->> +     {
->> +             .type = IIO_DISTANCE,
->> +             .info_mask_separate =
->> +                     BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_SCALE),
->> +             .scan_index = 0,
->> +             .scan_type = {
->> +                     .sign = 'u',
->> +                     .realbits = 16,
->> +                     .storagebits = 16,
->> +             },
->> +     },
->> +     IIO_CHAN_SOFT_TIMESTAMP(1),
->> +};
->> +
->> +static int lidar_read_byte(struct lidar_data *data, int reg)
->> +{
->> +     struct i2c_client *client = data->client;
->> +     int ret;
->> +
->> +     ret = i2c_smbus_write_byte(client, reg);
->> +     if (ret < 0) {
->> +             dev_err(&client->dev, "cannot write addr value");
->> +             return ret;
->> +     }
->> +
->> +     ret = i2c_smbus_read_byte(client);
->> +     if (ret < 0) {
->> +             dev_err(&client->dev, "cannot read data value");
->> +             return ret;
-> Drop this return ret as otherwise various static checkers
-> will moan at me (falling through gives the same result)
+> diff --git a/drivers/iio/accel/st_accel_core.c b/drivers/iio/accel/st_accel_core.c
+> index 6617e779aa87..f5f2684c0090 100644
+> --- a/drivers/iio/accel/st_accel_core.c
+> +++ b/drivers/iio/accel/st_accel_core.c
+> @@ -612,6 +612,7 @@ static const struct iio_info accel_info = {
+>   	.attrs = &st_accel_attribute_group,
+>   	.read_raw = &st_accel_read_raw,
+>   	.write_raw = &st_accel_write_raw,
+> +	.debugfs_reg_access = st_sensors_debugfs_reg_access,
+To keep the style, can u use & before the function name?
 
-Ok seems pedantic but meh, will drop  :)
 
->> +     }
->> +
->> +     return ret;
->> +}
->> +
->> +static inline int lidar_write_control(struct lidar_data *data, int val)
->> +{
->> +     return i2c_smbus_write_byte_data(data->client, LIDAR_REG_CONTROL, val);
->> +}
->> +
->> +static int lidar_read_measurement(struct lidar_data *data, u16 *reg)
->> +{
->> +     int ret;
->> +     int val;
->> +
->> +     /*
->> +      * Device needs a STOP condition between address write, and data read
->> +      * so in turn i2c_smbus_read_byte_data cannot be used
-> Good documentation of this.  However, I'd move it to inside the read_byte
-> function above rather than here.
->> +      */
->> +
->> +     ret = lidar_read_byte(data, LIDAR_REG_DATA_HBYTE);
->> +     if (ret < 0)
->> +             return ret;
->> +     val = ret << 8;
->> +
->> +     ret = lidar_read_byte(data, LIDAR_REG_DATA_LBYTE);
->> +     if (ret < 0)
->> +             return ret;
->> +
->> +     val |= ret;
->> +     *reg = val;
->> +
->> +     return 0;
->> +}
->> +
->> +static int lidar_get_measurement(struct lidar_data *data, u16 *reg)
->> +{
->> +     struct i2c_client *client = data->client;
->> +     int tries = 10;
->> +     int ret;
->> +
->> +     /* start sample */
->> +     ret = lidar_write_control(data, LIDAR_REG_CONTROL_ACQUIRE);
->> +     if (ret < 0) {
->> +             dev_err(&client->dev, "cannot send start measurement command");
->> +             return ret;
->> +     }
->> +
->> +     while (tries--) {
->> +             usleep_range(1000, 2000);
->> +
->> +             ret = lidar_read_byte(data, LIDAR_REG_STATUS);
->> +             if (ret < 0)
->> +                     break;
->> +
->> +             /* return 0 since laser is likely pointed out of range */
->> +             if (ret & LIDAR_REG_STATUS_INVALID) {
->> +                     *reg = 0;
->> +                     ret = 0;
->> +                     break;
->> +             }
->> +
->> +             /* sample ready to read */
->> +             if (!(ret & LIDAR_REG_STATUS_READY)) {
->> +                     ret = lidar_read_measurement(data, reg);
->> +                     break;
->> +             }
->> +             ret = -EIO;
->> +     }
->> +
->> +     return ret;
->> +}
->> +
->> +static int lidar_read_raw(struct iio_dev *indio_dev,
->> +                       struct iio_chan_spec const *chan,
->> +                       int *val, int *val2, long mask)
->> +{
->> +     struct lidar_data *data = iio_priv(indio_dev);
->> +     int ret = -EINVAL;
->> +
->> +     mutex_lock(&data->lock);
->> +
->> +     if (iio_buffer_enabled(indio_dev) && mask == IIO_CHAN_INFO_RAW) {
->> +             ret = -EBUSY;
->> +             goto error_busy;
->> +     }
->> +
->> +     switch (mask) {
->> +     case IIO_CHAN_INFO_RAW: {
->> +             u16 reg;
->> +
->> +             ret = lidar_get_measurement(data, &reg);
->> +             if (!ret) {
->> +                     *val = reg;
->> +                     ret = IIO_VAL_INT;
->> +             }
->> +             break;
->> +     }
->> +     case IIO_CHAN_INFO_SCALE:
->> +             *val = 0;
->> +             *val2 = 10000;
->> +             ret = IIO_VAL_INT_PLUS_MICRO;
->> +             break;
->> +     }
->> +
->> +error_busy:
->> +     mutex_unlock(&data->lock);
->> +
->> +     return ret;
->> +}
->> +
->> +static irqreturn_t lidar_trigger_handler(int irq, void *private)
->> +{
->> +     struct iio_poll_func *pf = private;
->> +     struct iio_dev *indio_dev = pf->indio_dev;
->> +     struct lidar_data *data = iio_priv(indio_dev);
->> +     int ret;
->> +
->> +     ret = lidar_get_measurement(data, &data->buffer[0]);
-> data->buffer should be the same pointer unless I'm going crazy (always
-> a posibility)
-Yeah it would be.. this is an artifact when I didn't have the buffer
-size aligned correctly. Will fix.
+>   };
+>   
+>   #ifdef CONFIG_IIO_TRIGGER
+> diff --git a/drivers/iio/common/st_sensors/st_sensors_core.c b/drivers/iio/common/st_sensors/st_sensors_core.c
+> index 8086cbcff87d..05b519ef111f 100644
+> --- a/drivers/iio/common/st_sensors/st_sensors_core.c
+> +++ b/drivers/iio/common/st_sensors/st_sensors_core.c
+> @@ -44,6 +44,27 @@ st_sensors_write_data_with_mask_error:
+>   	return err;
+>   }
+>   
+> +int st_sensors_debugfs_reg_access(struct iio_dev *indio_dev,
+> +				  unsigned reg, unsigned writeval,
+> +				  unsigned *readval)
+> +{
+> +	struct st_sensor_data *sdata = iio_priv(indio_dev);
+> +	u8 readdata;
+> +	int err;
+> +
+> +	if (!readval)
+> +		return sdata->tf->write_byte(&sdata->tb, sdata->dev,
+> +					     (u8)reg, (u8)writeval);
+> +
+> +	err = sdata->tf->read_byte(&sdata->tb, sdata->dev, (u8)reg, &readdata);
+> +	if (err < 0)
+> +		return err;
+> +
+> +	*readval = (unsigned)readdata;
+> +
+> +	return 0;
+> +}
+> +
+This function should export the symbol when modules are in use...
 
->> +     if (!ret) {
->> +             iio_push_to_buffers_with_timestamp(indio_dev, data->buffer,
->> +                                                iio_get_time_ns());
->> +     } else {
->> +             dev_err(&data->client->dev, "cannot read LIDAR measurement");
->> +     }
->> +
->> +     iio_trigger_notify_done(indio_dev->trig);
->> +
->> +     return IRQ_HANDLED;
->> +}
->> +
->> +static const struct iio_info lidar_info = {
->> +     .driver_module = THIS_MODULE,
->> +     .read_raw = lidar_read_raw,
->> +};
->> +
->> +static int lidar_probe(struct i2c_client *client,
->> +                    const struct i2c_device_id *id)
->> +{
->> +     struct lidar_data *data;
->> +     struct iio_dev *indio_dev;
->> +     int ret;
->> +
->> +     indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
->> +     if (!indio_dev)
->> +             return -ENOMEM;
->> +
->> +     indio_dev->info = &lidar_info;
->> +     indio_dev->name = LIDAR_DRV_NAME;
->> +     indio_dev->channels = lidar_channels;
->> +     indio_dev->num_channels = ARRAY_SIZE(lidar_channels);
->> +     indio_dev->modes = INDIO_DIRECT_MODE;
->> +
->> +     data = iio_priv(indio_dev);
->> +     i2c_set_clientdata(client, indio_dev);
->> +
->> +     data->client = client;
->> +     data->indio_dev = indio_dev;
->> +     mutex_init(&data->lock);
->> +
->> +     ret = iio_triggered_buffer_setup(indio_dev, NULL,
->> +                                      lidar_trigger_handler, NULL);
->> +     if (ret)
->> +             return ret;
->> +
->> +     ret = iio_device_register(indio_dev);
->> +     if (ret)
->> +             goto error_unreg_buffer;
->> +
->> +     return 0;
->> +
->> +error_unreg_buffer:
->> +     iio_triggered_buffer_cleanup(indio_dev);
->> +
->> +     return ret;
->> +}
->> +
->> +static int lidar_remove(struct i2c_client *client)
->> +{
->> +     struct iio_dev *indio_dev = i2c_get_clientdata(client);
->> +
->> +     iio_device_unregister(indio_dev);
->> +     iio_triggered_buffer_cleanup(indio_dev);
->> +
->> +     return 0;
->> +}
->> +
->> +static const struct i2c_device_id lidar_id[] = {
->> +     {"lidar", 0},
->> +     { },
->> +};
->> +MODULE_DEVICE_TABLE(i2c, lidar_id);
->> +
->> +static const struct of_device_id lidar_dt_ids[] = {
->> +     { .compatible = "pulsedlight,lidar" },
->
-> Not a more descriptive name?  Website suggests
-> things like
-> lidar-lite-v2
->
-> I just worry they'll come out with a completely incompatible
-> interface to some new unit that is also a lidar and we'll be
-> forever confused!
 
-Good point noted.
->
->> +     { }
->> +};
->> +
->> +static struct i2c_driver lidar_driver = {
->> +     .driver = {
->> +             .name   = LIDAR_DRV_NAME,
->> +             .of_match_table = of_match_ptr(lidar_dt_ids),
->> +     },
->> +     .probe          = lidar_probe,
->> +     .remove         = lidar_remove,
->> +     .id_table       = lidar_id,
->> +};
->> +module_i2c_driver(lidar_driver);
->> +
->> +MODULE_AUTHOR("Matt Ranostay <mranostay@gmail.com>");
->> +MODULE_DESCRIPTION("PulsedLight LIDAR sensor");
->> +MODULE_LICENSE("GPL");
->>
->
+>   static int st_sensors_match_odr(struct st_sensor_settings *sensor_settings,
+>   			unsigned int odr, struct st_sensor_odr_avl *odr_out)
+>   {
+> diff --git a/drivers/iio/gyro/st_gyro_core.c b/drivers/iio/gyro/st_gyro_core.c
+> index ffe96642b6d0..39138e53ba24 100644
+> --- a/drivers/iio/gyro/st_gyro_core.c
+> +++ b/drivers/iio/gyro/st_gyro_core.c
+> @@ -380,6 +380,7 @@ static const struct iio_info gyro_info = {
+>   	.attrs = &st_gyro_attribute_group,
+>   	.read_raw = &st_gyro_read_raw,
+>   	.write_raw = &st_gyro_write_raw,
+> +	.debugfs_reg_access = st_sensors_debugfs_reg_access,
+>   };
+& same here
+
+>   
+>   #ifdef CONFIG_IIO_TRIGGER
+> diff --git a/drivers/iio/magnetometer/st_magn_core.c b/drivers/iio/magnetometer/st_magn_core.c
+> index b4bcfb790f49..e4da514efa9f 100644
+> --- a/drivers/iio/magnetometer/st_magn_core.c
+> +++ b/drivers/iio/magnetometer/st_magn_core.c
+> @@ -475,6 +475,7 @@ static const struct iio_info magn_info = {
+>   	.attrs = &st_magn_attribute_group,
+>   	.read_raw = &st_magn_read_raw,
+>   	.write_raw = &st_magn_write_raw,
+> +	.debugfs_reg_access = st_sensors_debugfs_reg_access,
+>   };
+& same here
+
+>   
+>   int st_magn_common_probe(struct iio_dev *indio_dev)
+> diff --git a/drivers/iio/pressure/st_pressure_core.c b/drivers/iio/pressure/st_pressure_core.c
+> index e881fa6291e9..1306d8284bdd 100644
+> --- a/drivers/iio/pressure/st_pressure_core.c
+> +++ b/drivers/iio/pressure/st_pressure_core.c
+> @@ -397,6 +397,7 @@ static const struct iio_info press_info = {
+>   	.attrs = &st_press_attribute_group,
+>   	.read_raw = &st_press_read_raw,
+>   	.write_raw = &st_press_write_raw,
+> +	.debugfs_reg_access = st_sensors_debugfs_reg_access,
+>   };
+& same here
+
+>   
+>   #ifdef CONFIG_IIO_TRIGGER
+> diff --git a/include/linux/iio/common/st_sensors.h b/include/linux/iio/common/st_sensors.h
+> index 2c476acb87d9..d8b4a7bc4029 100644
+> --- a/include/linux/iio/common/st_sensors.h
+> +++ b/include/linux/iio/common/st_sensors.h
+> @@ -269,6 +269,10 @@ void st_sensors_power_enable(struct iio_dev *indio_dev);
+>   
+>   void st_sensors_power_disable(struct iio_dev *indio_dev);
+>   
+> +int st_sensors_debugfs_reg_access(struct iio_dev *indio_dev,
+> +				  unsigned reg, unsigned writeval,
+> +				  unsigned *readval);
+> +
+>   int st_sensors_set_odr(struct iio_dev *indio_dev, unsigned int odr);
+>   
+>   int st_sensors_set_dataready_irq(struct iio_dev *indio_dev, bool enable);
+
