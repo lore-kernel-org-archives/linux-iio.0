@@ -1,45 +1,85 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:58139 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:58159 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751073AbbHLVIH (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 12 Aug 2015 17:08:07 -0400
-Subject: Re: [PULL v2] Second set of new drivers, functionality and cleanup
- for IIO in the 4.3 cycle (+ some fixes)
-To: Greg KH <gregkh@linuxfoundation.org>
-References: <55CB9E42.907@kernel.org> <20150812194508.GA4279@kroah.com>
-Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+	with ESMTP id S1751302AbbHLVLq (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 12 Aug 2015 17:11:46 -0400
+Subject: Re: [PATCH v2 3/8] iio:adc:berlin2-adc: use GENMASK and BIT for masks
+To: Antoine Tenart <antoine.tenart@free-electrons.com>,
+	Hartmut Knaack <knaack.h@gmx.de>
+References: <cover.1438035998.git.knaack.h@gmx.de>
+ <1e5a908f364c1fb18982be097ac83689820d64a8.1438035998.git.knaack.h@gmx.de>
+ <20150730124743.GB16416@kwain>
+Cc: linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <55CBB5B3.1050307@kernel.org>
-Date: Wed, 12 Aug 2015 22:08:03 +0100
+Message-ID: <55CBB690.2080103@kernel.org>
+Date: Wed, 12 Aug 2015 22:11:44 +0100
 MIME-Version: 1.0
-In-Reply-To: <20150812194508.GA4279@kroah.com>
+In-Reply-To: <20150730124743.GB16416@kwain>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 12/08/15 20:45, Greg KH wrote:
-> On Wed, Aug 12, 2015 at 08:28:02PM +0100, Jonathan Cameron wrote:
->> The following changes since commit b8d1f261fe7e4967593a5637d62991b6197a03f8:
+On 30/07/15 13:47, Antoine Tenart wrote:
+> On Tue, Jul 28, 2015 at 12:38:59AM +0200, Hartmut Knaack wrote:
+>> Make use of GENMASK for consecutive bitmasks and BIT for single bitmasks.
 >>
->>   staging: dgap: remove duplicate code (2015-07-16 10:19:55 -0700)
->>
->> are available in the git repository at:
->>
->>   git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git tags/iio-for-4.3b-2
+>> Signed-off-by: Hartmut Knaack <knaack.h@gmx.de>
 > 
-> I had to do a merge conflict resolution in one driver, it was pretty
-> trivial, but if you could check I got it right, that would be great.
+> Acked-by: Antoine Tenart <antoine.tenart@free-electrons.com>
 > 
-> thanks,
-> 
-> greg k-h
-I guess that would be the mlx90614.c (mentioned in the reply to the previous
-pull request so knew that one was coming!)
+Applied to the togreg branch of iio.git.
 
-Looks fine to me.
-
-Thanks
+Thanks,
 
 Jonathan
-
+>> ---
+>>  drivers/iio/adc/berlin2-adc.c | 10 +++++-----
+>>  1 file changed, 5 insertions(+), 5 deletions(-)
+>>
+>> diff --git a/drivers/iio/adc/berlin2-adc.c b/drivers/iio/adc/berlin2-adc.c
+>> index b31bcf4c7c90..ed31a0a8d78e 100644
+>> --- a/drivers/iio/adc/berlin2-adc.c
+>> +++ b/drivers/iio/adc/berlin2-adc.c
+>> @@ -27,13 +27,13 @@
+>>  #define  BERLIN2_SM_CTRL_SM_SOC_INT		BIT(1)
+>>  #define  BERLIN2_SM_CTRL_SOC_SM_INT		BIT(2)
+>>  #define  BERLIN2_SM_CTRL_ADC_SEL(x)		((x) << 5)	/* 0-15 */
+>> -#define  BERLIN2_SM_CTRL_ADC_SEL_MASK		(0xf << 5)
+>> +#define  BERLIN2_SM_CTRL_ADC_SEL_MASK		GENMASK(8, 5)
+>>  #define  BERLIN2_SM_CTRL_ADC_POWER		BIT(9)
+>>  #define  BERLIN2_SM_CTRL_ADC_CLKSEL_DIV2	(0x0 << 10)
+>>  #define  BERLIN2_SM_CTRL_ADC_CLKSEL_DIV3	(0x1 << 10)
+>>  #define  BERLIN2_SM_CTRL_ADC_CLKSEL_DIV4	(0x2 << 10)
+>>  #define  BERLIN2_SM_CTRL_ADC_CLKSEL_DIV8	(0x3 << 10)
+>> -#define  BERLIN2_SM_CTRL_ADC_CLKSEL_MASK	(0x3 << 10)
+>> +#define  BERLIN2_SM_CTRL_ADC_CLKSEL_MASK	GENMASK(11, 10)
+>>  #define  BERLIN2_SM_CTRL_ADC_START		BIT(12)
+>>  #define  BERLIN2_SM_CTRL_ADC_RESET		BIT(13)
+>>  #define  BERLIN2_SM_CTRL_ADC_BANDGAP_RDY	BIT(14)
+>> @@ -50,7 +50,7 @@
+>>  #define  BERLIN2_SM_CTRL_TSEN_MODE_10_50	(0x1 << 22)	/* 10-50 C */
+>>  #define  BERLIN2_SM_CTRL_TSEN_RESET		BIT(29)
+>>  #define BERLIN2_SM_ADC_DATA			0x20
+>> -#define  BERLIN2_SM_ADC_MASK			0x3ff
+>> +#define  BERLIN2_SM_ADC_MASK			GENMASK(9, 0)
+>>  #define BERLIN2_SM_ADC_STATUS			0x1c
+>>  #define  BERLIN2_SM_ADC_STATUS_DATA_RDY(x)	BIT(x)		/* 0-15 */
+>>  #define  BERLIN2_SM_ADC_STATUS_DATA_RDY_MASK	GENMASK(15, 0)
+>> @@ -65,9 +65,9 @@
+>>  #define  BERLIN2_SM_TSEN_CTRL_START		BIT(8)
+>>  #define  BERLIN2_SM_TSEN_CTRL_SETTLING_4	(0x0 << 21)	/* 4 us */
+>>  #define  BERLIN2_SM_TSEN_CTRL_SETTLING_12	(0x1 << 21)	/* 12 us */
+>> -#define  BERLIN2_SM_TSEN_CTRL_SETTLING_MASK	(0x1 << 21)
+>> +#define  BERLIN2_SM_TSEN_CTRL_SETTLING_MASK	BIT(21)
+>>  #define  BERLIN2_SM_TSEN_CTRL_TRIM(x)		((x) << 22)
+>> -#define  BERLIN2_SM_TSEN_CTRL_TRIM_MASK		(0xf << 22)
+>> +#define  BERLIN2_SM_TSEN_CTRL_TRIM_MASK		GENMASK(25, 22)
+>>  
+>>  struct berlin2_adc_priv {
+>>  	struct regmap		*regmap;
+>> -- 
+>> 2.4.6
+>>
+> 
 
