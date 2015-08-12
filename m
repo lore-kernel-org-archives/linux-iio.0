@@ -1,53 +1,47 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mezzanine.sirena.org.uk ([106.187.55.193]:40369 "EHLO
-	mezzanine.sirena.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752107AbbHLL7n (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 12 Aug 2015 07:59:43 -0400
-Date: Wed, 12 Aug 2015 12:59:37 +0100
+Return-Path: <broonie@sirena.org.uk>
+Date: Wed, 12 Aug 2015 13:01:46 +0100
 From: Mark Brown <broonie@kernel.org>
 To: Markus Pargmann <mpa@pengutronix.de>
 Cc: Jonathan Cameron <jic23@kernel.org>,
 	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
 	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
 	linux-arm-kernel@lists.infradead.org, kernel@pengutronix.de
-Message-ID: <20150812115936.GC10748@sirena.org.uk>
+Message-ID: <20150812120146.GD10748@sirena.org.uk>
 References: <1439374365-20623-1-git-send-email-mpa@pengutronix.de>
- <1439374365-20623-16-git-send-email-mpa@pengutronix.de>
+ <1439374365-20623-18-git-send-email-mpa@pengutronix.de>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="wbs6g7essDTrqL3S"
-In-Reply-To: <1439374365-20623-16-git-send-email-mpa@pengutronix.de>
-Subject: Re: [PATCH 15/20] regmap-i2c: Add smbus i2c block support
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+	protocol="application/pgp-signature"; boundary="xFHWmGwbilGjB8dh"
+In-Reply-To: <1439374365-20623-18-git-send-email-mpa@pengutronix.de>
+Subject: Re: [PATCH 17/20] iio: bmc150: Use i2c regmap
+List-ID: <linux-iio@vger.kernel.org>
 
 
---wbs6g7essDTrqL3S
+--xFHWmGwbilGjB8dh
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 
-On Wed, Aug 12, 2015 at 12:12:40PM +0200, Markus Pargmann wrote:
+On Wed, Aug 12, 2015 at 12:12:42PM +0200, Markus Pargmann wrote:
 
-> +	if (count < 1 || count >= I2C_SMBUS_BLOCK_MAX)
-> +		return -EINVAL;
+> +	select REGMAP
+> +	select REGMAP_I2C
 
-Elsewhere you added returns of -E2BIG if the transfer was too big, why
-not do that here as well?
+You don't need to select regmap, only REGMAP_I2C.
 
---wbs6g7essDTrqL3S
+--xFHWmGwbilGjB8dh
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: Digital signature
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2
 
-iQEcBAEBCAAGBQJVyzUoAAoJECTWi3JdVIfQ4HMH+wQraNxvBPCNOPF8ycBcWRzN
-aB+A4aaAJUFhNCJCTEQbYNJrhwtw7IKRT89d4cB5M/dVWediizaCuYX5MWPZ8ejP
-8tLLgNOT1TpuklfqSIcL6lTU0lzZ/bWwgCe8gyWv1GQDnmcxQgAUJjUax8f9fvi+
-N01XMo0iB247asE4FfQF/IJ7SAW/xse+dS7qrsLtPH7phZRg0cBv4DtWylQR0PR9
-6HqbPVnewz8AOJPUknCdoNNMRuTDEjVLu4ee58w8rzx1XRhAiTmnHwivYICeqwrZ
-G3yaWAAL1R4TH1Hp+c3l0VSoPhjUi3mhS5Xb+zchBoOJlwqBDoAekZekOvMEY2U=
-=t4QD
+iQEcBAEBCAAGBQJVyzWpAAoJECTWi3JdVIfQI6UH/1cdX7STM24Nba5Rus7jL5gq
+VJWEOu+tv6r5MJMf/nfpG8fePAeHRAYQ+4XnRynqKhSMW2HyNIR8tdQ8lHj8MjIc
+1QH0usmHp5dQ7mRyCfAEOjH104c8YNA1tTLqfEfFZxuRb8nS3IEtK44G4KmMgb5E
+zAtbjb4sKvyZhtJhSIw5/EUNE3u0g2nddmv3AjIE7+uCRnuqzI+sTmQ5MbKzpNI4
+v0m59h8efu6SE1gccXb2I5cNMlvBospZlwLFJZHzoWhdKvCt5kMLEjdZHEb9AQAg
+e5oBqi0KQs0p/KkXEGBrZP47156QUCAWrjVEk0aauuD/kpmzwzTmZXs4TiEp3c4=
+=U0z1
 -----END PGP SIGNATURE-----
 
---wbs6g7essDTrqL3S--
+--xFHWmGwbilGjB8dh--
